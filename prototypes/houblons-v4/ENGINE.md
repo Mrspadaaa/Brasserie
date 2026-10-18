@@ -150,17 +150,25 @@ Règle (`LEVEL_RULE`, testée) :
 
 ## Moments libres : tranches de 5′, ébullition de 60 à 120′, whirlpool, jour du dry hop
 
-- `ebullitionMinutes` et `ebullitionSource` sur S1, S4, S5 (60 min, recette du prototype reprise
-  de la v3 ; aucune durée propre dans le dépôt) et sur la variante **S1E120** (120 min).
+- Aucun « quand » n'est figé : `ebullitionMinutes` (S1, S4, S5 : 60 min ; S1E120 : 120 min) n'est
+  qu'une valeur de départ (`ebullitionNote`) ; la durée se règle sur l'étape par pas de 5′.
 - `ibuTables` (`TABLES_RULE`) sur chaque houblon de `recetteHoublons` et des ajouts rapides
-  disponibles (et de la construction S4) : `ibuParMinute5` (minutes restantes 0 à 120 par 5,
-  `null` au-delà de l'ébullition), `ibuPremierMout` (60, 75, 90, 105, 120 min), `ibuWhirlpool`
-  (70 à 95 °C par 5, 10 à 40 min par 5), à la dose de l'ajout et à l'alpha retenu (`alphaUtilise`),
-  par `BrewingMath.hopIbu`. Tinseth ne dépend que des minutes restantes ; seul le premier moût
-  dépend de la durée totale ; BrewingMath ne fait varier ni densité ni volume pendant l'ébullition.
-- `dryHopJour` (`DRY_HOP_DAY`) : jour libre J+0 à J+14, sans IBU ; V5.5 ne déduit pas la phase du
-  jour (`hopTripletsOfRecipe`) : la phase « en fermentation active » ou « après fermentation » est
-  un choix explicite.
+  disponibles (et de la construction S4), à la dose de l'ajout et à l'alpha retenu (`alphaUtilise`),
+  par `BrewingMath.hopIbu` :
+  - `ibuParMinute5` : minutes restantes de 0 à 240 par 5 (49 valeurs), sans borne ; la page borne
+    avec la durée choisie ;
+  - `ibuPremierMout` : une valeur par durée d'ébullition de 5 à 240 par 5 (48 valeurs, alignées sur
+    `tablesIbu.dureesPremierMout`) ; relation exacte : 1,10 × `ibuParMinute5` à la minute égale à
+    la durée ;
+  - `ibuWhirlpool.ibu[T][m]` : 60 à 100 °C par 5, 5 à 60 min par 5 ; relation exacte :
+    `ibuParMinute5[m]` × 2^((T − 100)/10).
+- Autres variables : le volume n'est pas en table (à g/L égal, l'IBU ne dépend pas du volume) ;
+  la densité initiale l'est par un facteur (`tablesIbu.facteurDensite`, 1,030 à 1,120 par 0,005,
+  rapport à la densité de la recette) ; le jour du dry hop est libre et sans borne
+  (`dryHopJour`, V5.5 accepte 0 à 365 jours, sans en déduire la phase) ; les prédictions d'arôme
+  gardent les contacts du solveur (whirlpool 80 °C 20 min, à froid 24 h à 18 °C), non tabulés.
+- S1E120 reste une page de test, réduite à la recette et à son houblon : les tables ne dépendent
+  plus de la durée d'ébullition.
 - **Taille du pack** : tables absentes des listes longues (épuisés, catalogue), comme
   `ibuParMoment` ; les voies ne portent plus `after` (profil V5.5 0–100 de la recette, presque
   toujours « non situé ») : `profilApresNiveaux`, `profilApresContinu` et `profilApresCrans` le

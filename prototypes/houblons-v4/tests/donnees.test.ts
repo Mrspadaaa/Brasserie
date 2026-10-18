@@ -3,7 +3,7 @@ import facts from '../data/faits-cites.json';
 import { NO_GOUTS, afterCrans, beerCrans, citations, hopRef, shoppingList, targetCrans } from '../src/engine';
 import { CHARACTERIZED_YEASTS, applyVoie, compareRankKeys, yeastDoubleImpact, yeastSignals } from '../src/engine';
 import { ROUE_AROMES, afterLevelsDelta, hopSheet, beerContinuous, targetContinuous, afterContinuous } from '../src/engine';
-import { buildFromEmpty, hopAlpha, hopRole, ibuTables, DRY_HOP_DAY } from '../src/engine';
+import { buildFromEmpty, hopAlpha, hopRole, ibuTables, DRY_HOP_DAY, MINUTES_5, BOIL_LENGTHS, WP_TEMPERATURES, WP_MINUTES, densityFactors } from '../src/engine';
 import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, loadedRecipe, momentCatalogue, quickAddKey, recipeIbu, recipeLines, targetLevels, tastingMention, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
@@ -81,19 +81,30 @@ describe('Cas de figure S4 (sans houblon) et S5 (recette chargée)', () => {
 describe('Tables d’IBU libres (tranches de 5′, ébullition 60 à 120′, whirlpool)', () => {
   it('Nugget 46 g : minutes restantes, premier moût selon la durée, whirlpool cohérent avec ibuParMoment ; null au-delà de l’ébullition', () => {
     const t = ibuTables('beermaverick-nugget', 46, s1Recipe());
-    expect(t.ibuParMinute5).toHaveLength(25);
-    expect(t.ibuParMinute5![12]).toBeCloseTo(additionIbu(s1Recipe().additions[0], s1Recipe()).value, 1); // 60′
+    const idx = (m: number) => MINUTES_5.indexOf(m);
+    expect(MINUTES_5).toHaveLength(49);
+    expect(t.ibuParMinute5).toHaveLength(49);
+    expect(t.ibuParMinute5![idx(60)]).toBeCloseTo(additionIbu(s1Recipe().additions[0], s1Recipe()).value, 1);
     expect(t.ibuParMinute5![0]).toBe(0);
-    expect(t.ibuParMinute5![18]).toBeNull(); // 90′ > 60′ d'ébullition
-    for (let i = 1; i <= 12; i++) expect(t.ibuParMinute5![i]!).toBeGreaterThan(t.ibuParMinute5![i - 1]!);
-    expect(t.ibuPremierMout!.map((x) => x.ebullition)).toEqual([60, 75, 90, 105, 120]);
-    expect(t.ibuPremierMout![4].ibu).toBeGreaterThan(t.ibuPremierMout![0].ibu);
+    expect(t.ibuParMinute5![idx(200)]).not.toBeNull(); // aucune borne : la page borne avec la durée choisie
+    for (let i = 1; i < 49; i++) expect(t.ibuParMinute5![i]).toBeGreaterThanOrEqual(t.ibuParMinute5![i - 1]);
+    // Premier moût : 48 durées, relation exacte 1,10 × la minute égale à la durée (arrondis à part).
+    expect(BOIL_LENGTHS).toHaveLength(48);
+    expect(t.ibuPremierMout).toHaveLength(48);
+    for (const d of [45, 60, 120, 200]) expect(Math.abs(t.ibuPremierMout![BOIL_LENGTHS.indexOf(d)] - 1.1 * t.ibuParMinute5![idx(d)])).toBeLessThanOrEqual(0.11);
+    // Whirlpool : relation exacte avec la minute d'ébullition et le facteur de température.
     const wp = ibuByMoment('beermaverick-nugget', 46, s1Recipe()).find((m) => m.code === 'wp')!.ibu!.value;
-    expect(t.whirlpool!.ibu[2][2]).toBeCloseTo(wp, 1); // 80 °C, 20 min
+    expect(t.whirlpool!.ibu[WP_TEMPERATURES.indexOf(80)][WP_MINUTES.indexOf(20)]).toBeCloseTo(wp, 1);
+    expect(t.whirlpool!.ibu[WP_TEMPERATURES.indexOf(90)][WP_MINUTES.indexOf(30)]).toBeCloseTo(t.ibuParMinute5![idx(30)] * 2 ** -1, 0);
+    // La durée totale ne change que le premier moût : les autres tables sont identiques.
     const long = ibuTables('beermaverick-nugget', 46, { ...s1Recipe(), boilMin: 120 });
-    expect(long.ibuParMinute5![18]).not.toBeNull();
-    expect(long.ibuParMinute5![12]).toBe(t.ibuParMinute5![12]); // Tinseth : minutes restantes seulement
-    expect(DRY_HOP_DAY).toMatchObject({ jours: { min: 0, max: 14 }, ibu: null });
+    expect(long.ibuParMinute5).toEqual(t.ibuParMinute5);
+    expect(long.ibuPremierMout).toEqual(t.ibuPremierMout);
+    const dens = densityFactors(s1Recipe());
+    expect(dens[0].og).toBe(1.03);
+    expect(dens[0].facteur).toBeGreaterThan(1);
+    expect(dens[dens.length - 1].facteur).toBeLessThan(1);
+    expect(DRY_HOP_DAY).toMatchObject({ jours: { min: 0, max: null }, ibu: null });
   });
 });
 

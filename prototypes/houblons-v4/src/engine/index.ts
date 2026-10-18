@@ -10,7 +10,7 @@ export { tastingFrom, situateBeer, levelRange, tastingMention, TASTING_USAGE, ty
 export { offModelLeads, type OffModelLead } from './leads';
 export { readBeer, readingSummary, voiesSummary, gapSummary, type ReadingEntry, type ReadingVerdict } from './reading';
 export { quickAdds, quickAddKey, QUICK_ADD_RULE, type QuickAdd } from './quickAdd';
-export { ibuByMoment, momentCatalogue, IBU_MOMENTS, ibuTables, TABLES_RULE, DRY_HOP_DAY, MINUTES_5, type IbuAtMoment, type MomentInfo, type IbuTables } from './ibuMoments';
+export { ibuByMoment, momentCatalogue, IBU_MOMENTS, ibuTables, TABLES_RULE, DRY_HOP_DAY, MINUTES_5, BOIL_LENGTHS, WP_TEMPERATURES, WP_MINUTES, densityFactors, type IbuAtMoment, type MomentInfo, type IbuTables } from './ibuMoments';
 export { loadedRecipe, recipeLines, shoppingList, buildFromEmpty, LOADED_RECIPE_RULE, CONSTRUCTION_RULE } from './cases';
 export { hopRole, hopAlpha, ROLE_RULE, type HopRoleValue, type HopAlpha } from './roles';
 export { additionEffect } from './voies';

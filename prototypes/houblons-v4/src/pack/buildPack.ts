@@ -6,7 +6,7 @@ import {
   proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,
   beerLevels, targetLevels, afterLevels, ficheLevels, recipeProfile, LEVEL_RULE, recipeIbu, loadedRecipe, recipeLines, LOADED_RECIPE_RULE,
   shoppingList, NO_GOUTS, GOUTS_RULE, beerCrans, targetCrans, afterCrans, CRANS_RULE, yeastDoubleImpact, yeastSignals,
-  afterLevelsDelta, ROUE_AROMES, hopSheet, sheetKeys, hopAlpha, hopRole, buildFromEmpty, ibuTables, TABLES_RULE, DRY_HOP_DAY, MINUTES_5, beerContinuous, targetContinuous, afterContinuous, CONTINU_RULE,
+  afterLevelsDelta, ROUE_AROMES, hopSheet, sheetKeys, hopAlpha, hopRole, buildFromEmpty, ibuTables, TABLES_RULE, DRY_HOP_DAY, MINUTES_5, BOIL_LENGTHS, WP_TEMPERATURES, WP_MINUTES, densityFactors, beerContinuous, targetContinuous, afterContinuous, CONTINU_RULE,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie, type FicheLevel,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
@@ -66,7 +66,8 @@ function styleEntry(s: StyleScale) {
 const round = (x: number, n = 1) => Math.round(x * 10 ** n) / 10 ** n;
 /** Durée d'ébullition de la recette et sa source (S1 : recette du prototype, reprise de la v3 à 60 min). */
 const boilOf = (r: Recipe) => ({ ebullitionMinutes: r.boilMin,
-  ebullitionSource: r.boilMin === 60 ? 'recette S1 du prototype (v3 : ébullition de 60 min) ; aucune durée propre à cette recette dans le dépôt' : `variante de la recette S1 : ébullition de ${r.boilMin} min` });
+  ebullitionSource: r.boilMin === 60 ? 'recette S1 du prototype (v3 : ébullition de 60 min) ; aucune durée propre à cette recette dans le dépôt' : `variante de la recette S1 : ébullition de ${r.boilMin} min`,
+  ebullitionNote: 'Valeur de départ seulement : la durée se règle sur l’étape par pas de 5′ (tables de 5 à 240 min).' });
 /** Tables d'IBU d'un ajout à sa dose (ibuTables), avec le whirlpool nommé ibuWhirlpool. */
 const tablesOf = (key: string, grams: number | null, r: Recipe) => { const { whirlpool, ...t } = ibuTables(key, grams, r); return { ...t, ibuWhirlpool: whirlpool }; };
 type WithDose = { key: string; dose: { grams: number } | null };
@@ -244,8 +245,7 @@ function buildPackCore() {
     recipe: s1e120, style: '16D', ...boilOf(s1e120), ibu: round(recipeIbu(s1e120).value),
     recetteHoublons: s1e120.additions.map((a) => ({ additionId: a.id, hopKey: a.hopKey, name: hopRef(a.hopKey)?.name ?? a.hopKey, alpha: hopAlpha(a.hopKey), role: hopRole(a.hopKey),
       moment: a.moment, grams: a.grams, gramsPerLitre: round(a.grams / s1e120.volumeL, 2), ibuParMoment: ibuByMoment(a.hopKey, a.grams, s1e120), ...tablesOf(a.hopKey, a.grams, s1e120) })),
-    ajoutsRapides: withTablesQ({ style: '16D', ...quickAdds(s1e120, s16d, S1_TASTING, { catalogueLimit: 0 }) }, s1e120),
-    note: 'Tinseth ne dépend que des minutes restantes : seule l’IBU au premier moût change avec la durée d’ébullition. Catalogue à acheter : voir S1 (même règle).',
+    note: 'Page de test. Les tables ne dépendent plus de la durée d’ébullition (minutes 0 à 240, premier moût 5 à 240) : les ajouts rapides sont ceux de S1 ; la page borne ibuParMinute5 et lit ibuPremierMout à la durée choisie.',
   };
 
   // S3 : American IPA, tout le stock classé par adéquation documentaire au style.
@@ -286,7 +286,10 @@ function buildPackCore() {
     // Ordre des familles pour les radars (adjacences de la roue Beer Maverick), noms courts.
     roueAromes: ROUE_AROMES,
     // Tables d’IBU libres (tranches de 5′, ébullition 60 à 120′, whirlpool) et jour du houblonnage à cru.
-    tablesIbu: { regle: TABLES_RULE, minutes: MINUTES_5, ebullitions: [60, 75, 90, 105, 120] }, dryHopJour: DRY_HOP_DAY,
+    tablesIbu: { regle: TABLES_RULE, minutes: MINUTES_5, dureesPremierMout: BOIL_LENGTHS, whirlpool: { temperatures: WP_TEMPERATURES, minutes: WP_MINUTES },
+      densiteRecette: s1Recipe().og, facteurDensite: densityFactors(s1Recipe()), volume: 'À g/L égal, l’IBU ne dépend pas du volume (BrewingMath : IBU ∝ g/L).',
+      aromeContact: 'Les prédictions d’arôme (V5.5) gardent les contacts du solveur : whirlpool 80 °C 20 min, à froid 24 h à 18 °C ; l’ébullition prend la minute de l’ajout. Non tabulé par minute.' },
+    dryHopJour: DRY_HOP_DAY,
     styles,
     stock,
     catalogue,
