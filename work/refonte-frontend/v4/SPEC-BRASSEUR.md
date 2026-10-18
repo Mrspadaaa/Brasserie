@@ -47,6 +47,14 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   l'intégration de la levure directement dans la p8 mais la p2 a un meilleur visuel, j'aimerais
   aussi pouvoir une fois mon houblons sélectionner pouvoir glisser comme un slider le moment de
   l'ajout. » — 18.10, soir (D27, D28).
+- **Penser en brasseur** (recette vide de p2) : « quand la recette est vide, je trouve que les
+  info sur les houblons sont pas pertinent pour le brasseur, pour la création de bière, j'aime
+  bien le code couleur pour savoir quelle arôme ça ajoute mais c'est trop centré sur le ibu, pas
+  d'info sur les AA. C'est un bon visuel, à garder mais le rendre plus pertinent. Le stock
+  toujours trop mis en avant... » ; « Toujours pensé comme un brasseur » — 18.10, soir (D29,
+  D23 ter).
+- **Critique des barres** : « Je peux aussi faire déjà la critique des barre ou c'est trop tôt ? »
+  — 18.10, soir (réponse : oui, les barres de p2, p3, p8 sont stables).
 - **La baseline** : « Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça
   différent complètement ? » — 18.10, soir (D26).
 - **Levure et biotransformation** : « Et tout ce qui est biotransformation avec levures, dry
