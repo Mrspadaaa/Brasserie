@@ -158,6 +158,50 @@ async function geste(page, p) {
   for (const x of await propre(page)) p('D35 après : ' + x);
 }
 
+// D37 (18.10, soir) : « attention toujours garder des variables dynamique car cela peut
+// changer... Je peux me dire tiens 200' c'est mieux ou 45' ça le fait aussi ect.. ». La durée
+// d'ébullition se règle sur l'étape : data-role="ebullition" est soit un champ texte
+// (inputmode numérique), soit un bloc avec data-action="ebullition-moins" et
+// "ebullition-plus" (pas de 5′). Réglée à 200′ puis à 45′, le rail commence à cette durée
+// (data-etape="b200", "b45"), et à 45′ aucune ligne ne reste au-delà de 45′.
+async function regler(page, cible) {
+  const champ = await page.$('[data-role="ebullition"] input, input[data-role="ebullition"]');
+  if (champ) {
+    await champ.evaluate((e) => { e.focus(); e.select(); });
+    await page.keyboard.type(String(cible));
+    await page.keyboard.press('Enter');
+    await champ.evaluate((e) => e.blur());
+    await wait(400);
+    return true;
+  }
+  const lire = () => page.evaluate(() => { const e = document.querySelector('[data-role="ebullition"]'); const m = e && (e.getAttribute('data-minutes') || e.innerText).match(/\d+/); return m ? Number(m[0]) : null; });
+  for (let i = 0; i < 50; i++) {
+    const v = await lire();
+    if (v === null) return false;
+    if (v === cible) return true;
+    const b = await page.$('[data-action="' + (v < cible ? 'ebullition-plus' : 'ebullition-moins') + '"]');
+    if (!b) return false;
+    try { await b.tap(); } catch { await b.click(); }
+    await wait(60);
+  }
+  return (await lire()) === cible;
+}
+async function duree(page, p) {
+  if (!(await page.$('[data-role="ebullition"]'))) { p('D37 : la durée d\'ébullition ne se règle pas sur l\'étape (data-role="ebullition")'); return; }
+  for (const c of [200, 45]) {
+    if (!(await regler(page, c))) { p('D37 : impossible de régler l\'ébullition à ' + c + '′ (champ ou boutons ebullition-plus / ebullition-moins)'); return; }
+    await wait(400);
+    const e = await etat(page);
+    if (!e.etapes.some((x) => x.code === 'b' + c)) p('D37 : réglée à ' + c + '′, le rail ne commence pas à ' + c + '′ (data-etape="b' + c + '")');
+    if (c === 45) {
+      const trop = e.etapes.filter((x) => /^b\d+$/.test(x.code) && Number(x.code.slice(1)) > 45);
+      if (trop.length) p('D37 : réglée à 45′, le rail garde des repères au-delà (' + trop.slice(0, 3).map((x) => x.code).join(', ') + ')');
+      const m = (e.quand || '').match(/(\d+)\s*(′|'|min)/);
+      if (m && Number(m[1]) > 45) p('D37 : réglée à 45′, la première ligne reste à ' + m[1] + '′');
+    }
+  }
+}
+
 for (const id of ids) {
   const p = (m) => problems.push(id + ' : ' + m);
   const url = pathToFileURL(path.join(dir, id, 'index.html')).href;
@@ -181,6 +225,9 @@ for (const id of ids) {
   await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
   await wait(300);
   await geste(page, p);
+  await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+  await wait(300);
+  await duree(page, p);
   await page.close();
   // D36 : ébullition de 120′.
   const f120 = path.join(dir, id, 'cas-ebu120.html');

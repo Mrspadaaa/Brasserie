@@ -70,6 +70,9 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   défini, pas de timing imposé hein » ; « Soit pas supide, c'est des tranche de 5'. » ;
   « Parcontre prendre en compte que le boil peut durer 120' ou d'autres timing que 60 » ; « Ça
   semble un peu bancale, c'est l'idée mais pas hyper bien réalisé » (D34, D35, D36).
+- **Rien de figé** : « Ébullition de 120′  attention toujours garder des variables dynamique car
+  cela peut changer... Je peux me dire tiens 200' c'est mieux ou 45' ça le fait aussi ect.. »
+  — 18.10, soir (D37).
 - **La baseline** : « Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça
   différent complètement ? » — 18.10, soir (D26).
 - **Levure et biotransformation** : « Et tout ce qui est biotransformation avec levures, dry

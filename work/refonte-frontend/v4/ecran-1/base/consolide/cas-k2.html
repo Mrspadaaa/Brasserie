@@ -295,13 +295,41 @@
   .rapide { min-height: 48px; }
   .vide-l.cran .drop::after { display: none; }
   .rapides .ou { font-size: 12px; color: var(--gris2); padding-left: 44px; margin: -2px 0; }
+  /* Rail par tranches de 5′ (D34) : chaque tranche est une graduation fine ; les repères utiles sont écrits. */
+  .frise { gap: 0; }
+  .frise > .blk, .frise > .rap-zone, .frise > .etape-levure { margin: 3px 0; }
+  .marque { display: grid; grid-template-columns: 44px 1fr; align-items: center; column-gap: 2px; height: var(--tick); }
+  .marque .rail-l { width: 6px; height: 2px; margin: 0; border: 0; border-radius: 1px; background: #b5b5b5; }
+  .marque .drop { height: auto; }
+  .marque .drop::after { display: none; }
+  .marque.ecrit { height: 18px; }
+  .marque.ecrit .rail-l { width: 10px; height: 10px; border-radius: 5px; border: 1.5px solid #9a9a9a; background: #fff; }
+  .marque.ecrit .drop::after { display: block; border-top: 1px dashed #d6d6d6; }
+  .marque.survol .rail-l { width: 14px; height: 3px; background: var(--encre); }
+  .marque.survol .drop { visibility: hidden; }
+  /* Carte glissée : dans le flux, au-dessus de tout, les autres s'écartent (D35). */
+  .blk[data-glisse] { position: relative; z-index: 10; }
+  .blk[data-glisse] .corps-b { box-shadow: 0 6px 18px rgba(0,0,0,.22); background: #fff; }
+  .blk[data-glisse] .quand { background: var(--encre); color: #fff; }
+  /* Réglages libres : whirlpool (°C, minutes), jour de dry hop. */
+  .l3 { gap: 8px; flex-wrap: wrap; }
+  .reglages { display: inline-flex; gap: 8px; margin-left: auto; }
+  .regl { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; }
+  .regl .moins, .regl .plus { width: 24px; height: 24px; border-radius: 12px; }
+  .regl .moins::before, .regl .plus::before, .regl .plus::after { left: 6px; top: 10.5px; width: 9px; }
+  .regl-v { min-width: 38px; text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .l3 .mini .c { width: 7px; }
+  .l3 .mini .c.sep { margin-left: 4px; }
+  .regl .moins, .regl .plus { width: 22px; height: 22px; }
+  .regl-v { min-width: 34px; }
+  .reglages { gap: 4px; }
 
 </style>
 </head>
 <body data-variante="consolide" data-vue="etape" data-ouvre="" data-lentille="barres" data-dirs="" data-echelle="">
 <main class="ecran" id="app"></main>
 <script>
-const D = {"scen":"S4","nom":"Stout export (nouvelle)","code":"16D","ibuStyle":[50,70],"og":"1,066","ebc":70,"ordre":["floral","herbal","earthy","citrus","tropical","stoneFruit","pomeFruit","berries","melon","resin","spice","green"],"court":{"floral":"Floral","herbal":"Herbacé","earthy":"Terreux","citrus":"Agrumes","tropical":"Tropicaux","stoneFruit":"Noyau","pomeFruit":"Pépins","berries":"Baies","melon":"Melon","resin":"Résineux","spice":"Épicé","green":"Végétal"},"long":{"citrus":"Agrumes","tropical":"Fruits tropicaux","stoneFruit":"Fruits à noyau","pomeFruit":"Pomme et poire","berries":"Petits fruits","melon":"Melon","floral":"Floral","herbal":"Herbacé aromatique","resin":"Boisé et résineux","spice":"Épicé","green":"Végétal vert","earthy":"Terreux"},"attendues":["floral","herbal","earthy"],"profil":[{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":0,"display":"≈ 0","source":"modèle","approx":true,"exact":0.49},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null}],"cible":[{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"}],"continu":{"biere":[null,null,null,0.15,null,null,null,null,null,null,null,null],"cible":[{"bas":0,"haut":1.65},{"bas":0,"haut":1.65},{"bas":0,"haut":1.65},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9}],"ecart":[null,null,null,null,null,null,null,null,null,null,null,null],"viseeDir":{}},"degustation":null,"phrase":"1 au style · 11 non situées","voiesResume":[],"lignes":[],"rapides":{"stock":[],"epuises":[],"catalogue":[],"construction":[{"cle":"beermaverick-pahto","nom":"Pahto","groupe":"catalogue","moment":"b60","g":32.5,"ibu":60.1,"ibuPG":{},"libre":0,"fiche":{"niv":[0,1,1,0,0,0,0,0,0,0,0,0],"n":[0,1,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":null,"alpha":{"min":17,"max":20},"role":"amérisant","alternative":true},{"cle":"beermaverick-marco-polo","nom":"Marco Polo","groupe":"catalogue","moment":"b60","g":48.1,"ibu":60.1,"ibuPG":{},"libre":0,"fiche":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1},"effet":null,"alpha":{"min":12,"max":13},"role":"amérisant","alternative":true},{"cle":"beermaverick-saaz-late","nom":"Saaz Late","groupe":"catalogue","moment":"b10","g":20,"ibu":3.4,"ibuPG":{},"libre":0,"fiche":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":{"crans":[null,null,null,null,null,null,null,null,null,null,null,null],"delta":[1,1,1,"non établi","non établi","non établi","non établi","non établi","non établi","non établi","non établi","non établi"]},"alpha":{"min":3.5,"max":6},"role":"aromatique","alternative":false},{"cle":"beermaverick-spalt","nom":"Spalt","groupe":"catalogue","moment":"b10","g":20,"ibu":3,"ibuPG":{},"libre":0,"fiche":{"niv":[1,1,1,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":{"crans":[null,null,null,null,null,null,null,null,null,null,null,null],"delta":[1,1,1,"non établi","non établi","non établi","non établi","non établi","non établi","non établi","non établi","non établi"]},"alpha":{"min":2.5,"max":5.7},"role":"aromatique","alternative":false},{"cle":"beermaverick-whitbread-golding-variety-wgv","nom":"Whitbread Golding Variety (WGV)","groupe":"catalogue","moment":"b10","g":20,"ibu":4.7,"ibuPG":{},"libre":0,"fiche":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":{"crans":[null,null,null,null,null,null,null,null,null,null,null,null],"delta":[1,1,1,"non établi","non établi","non établi","non établi","non établi","non établi","non établi","non établi","non établi"]},"alpha":{"min":5.4,"max":7.7},"role":"double","alternative":false}]},"rapidesMoment":"b60","tousRapidesNoms":["Pahto","Marco Polo","Saaz Late","Spalt","Whitbread Golding Variety (WGV)"],"voies":[],"sansHoublon":{},"fiches":{"Motueka":{"niv":[1,0,0,2,1,0,0,0,0,0,0,0],"n":[1,0,0,2,1,0,0,0,0,0,0,0],"of":2},"Citra cryo":{"niv":[1,0,0,2,1,1,0,0,1,0,0,0],"n":[1,0,0,1,1,1,0,0,1,0,0,0],"of":1},"Cascade":{"niv":[1,1,0,2,0,0,0,1,0,1,1,0],"n":[1,1,0,2,0,0,0,1,0,1,1,0],"of":2},"Target":{"niv":[1,2,0,2,0,0,0,0,0,2,1,0],"n":[1,2,0,1,0,0,0,0,0,1,1,0],"of":2},"Sabro":{"niv":[0,1,0,2,1,1,0,0,0,1,0,0],"n":[0,1,0,1,1,1,0,0,0,1,0,0],"of":1},"Idaho 7":{"niv":[1,1,1,1,1,1,0,2,0,1,0,0],"n":[1,1,1,1,1,1,0,1,0,1,0,0],"of":1},"Nelson Sauvin":{"niv":[0,0,0,1,0,0,0,0,0,0,1,0],"n":[0,0,0,1,0,0,0,0,0,0,1,0],"of":2},"Galaxy":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"Hallertau Blanc":{"niv":[0,0,0,1,2,0,0,1,0,0,1,0],"n":[0,0,0,1,1,0,0,1,0,0,1,0],"of":2},"East Kent Goldings":{"niv":[2,1,1,1,0,0,0,0,0,0,2,0],"n":[1,1,1,1,0,0,0,0,0,0,1,0],"of":2},"Lotus":{"niv":[1,0,0,2,2,0,0,2,0,0,0,0],"n":[1,0,0,2,2,0,0,2,0,0,0,0],"of":2},"Fuggle":{"niv":[0,2,1,0,0,0,0,0,0,2,1,2],"n":[0,2,1,0,0,0,0,0,0,2,1,2],"of":2},"Simcoe":{"niv":[0,0,1,1,1,1,0,1,0,1,0,0],"n":[0,0,1,1,1,1,0,1,0,1,0,0],"of":1},"Nugget":{"niv":[2,2,1,1,2,0,0,0,0,2,2,0],"n":[2,2,1,1,2,0,0,0,0,2,1,0],"of":4},"Ariana":{"niv":[2,1,0,2,2,1,1,2,0,1,0,0],"n":[2,1,0,2,2,1,1,1,0,1,0,0],"of":2},"Nectaron":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"Saaz Late":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Spalt":{"niv":[1,1,1,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Whitbread Golding Variety (WGV)":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Pahto":{"niv":[0,1,1,0,0,0,0,0,0,0,0,0],"n":[0,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Wild Wolf":{"niv":[0,1,1,0,0,0,0,0,0,0,0,0],"n":[0,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Yakima Cluster":{"niv":[1,0,2,0,0,0,0,0,0,0,0,0],"n":[1,0,1,0,0,0,0,0,0,0,0,0],"of":1},"Marco Polo":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1},"Sun":{"niv":[0,2,0,0,0,0,0,0,0,0,0,0],"n":[0,1,0,0,0,0,0,0,0,0,0,0],"of":1},"Teamaker":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1},"Ultra":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1}},"comparerDefaut":["Pahto","Marco Polo","Saaz Late"],"cles":{"Ariana":"beermaverick-ariana","Fuggle":"beermaverick-fuggle","Hallertau Blanc":"beermaverick-hallertau-blanc","Idaho 7":"beermaverick-idaho-7","Lotus":"beermaverick-lotus","Nectaron":"beermaverick-nectaron","Simcoe":"beermaverick-simcoe","Cascade":"beermaverick-cascade","Target":"beermaverick-target","East Kent Goldings":"beermaverick-east-kent-goldings","Galaxy":"beermaverick-galaxy","Nelson Sauvin":"beermaverick-nelson-sauvin","Sabro":"beermaverick-sabro","Motueka":"beermaverick-motueka","Citra cryo":"beermaverick-citra:cryo","Nugget":"beermaverick-nugget","Pahto":"beermaverick-pahto","Marco Polo":"beermaverick-marco-polo","Saaz Late":"beermaverick-saaz-late","Spalt":"beermaverick-spalt","Whitbread Golding Variety (WGV)":"beermaverick-whitbread-golding-variety-wgv"},"groupes":{"Ariana":"epuise","Fuggle":"epuise","Hallertau Blanc":"stock","Idaho 7":"stock","Lotus":"epuise","Nectaron":"epuise","Simcoe":"epuise","Cascade":"stock","Target":"stock","East Kent Goldings":"epuise","Galaxy":"stock","Nelson Sauvin":"stock","Sabro":"stock","Motueka":"stock","Citra cryo":"stock","Nugget":"epuise"},"candidats":[],"horsModele":[],"levure":{"nom":"SafAle US-05","statut":"caractérisée"},"notes":{"ibu":"IBU 0 face à 50–70 : il manque l’amertume.","profil":"Rien de dégusté (jamais brassée) ; sans houblon, le modèle ne voit que le fond de levure US-05.","voies":"Pas de voie : aucune dégustation ni direction ; commencer par l’amertume (ajouts rapides)."}};
+const D = {"scen":"S4","ebullition":60,"dryJours":{"min":0,"max":14},"nom":"Stout export (nouvelle)","code":"16D","ibuStyle":[50,70],"og":"1,066","ebc":70,"ordre":["floral","herbal","earthy","citrus","tropical","stoneFruit","pomeFruit","berries","melon","resin","spice","green"],"court":{"floral":"Floral","herbal":"Herbacé","earthy":"Terreux","citrus":"Agrumes","tropical":"Tropicaux","stoneFruit":"Noyau","pomeFruit":"Pépins","berries":"Baies","melon":"Melon","resin":"Résineux","spice":"Épicé","green":"Végétal"},"long":{"citrus":"Agrumes","tropical":"Fruits tropicaux","stoneFruit":"Fruits à noyau","pomeFruit":"Pomme et poire","berries":"Petits fruits","melon":"Melon","floral":"Floral","herbal":"Herbacé aromatique","resin":"Boisé et résineux","spice":"Épicé","green":"Végétal vert","earthy":"Terreux"},"attendues":["floral","herbal","earthy"],"profil":[{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":0,"display":"≈ 0","source":"modèle","approx":true,"exact":0.49},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null}],"cible":[{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"}],"continu":{"biere":[null,null,null,0.15,null,null,null,null,null,null,null,null],"cible":[{"bas":0,"haut":1.65},{"bas":0,"haut":1.65},{"bas":0,"haut":1.65},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9},{"bas":0,"haut":0.9}],"ecart":[null,null,null,null,null,null,null,null,null,null,null,null],"viseeDir":{}},"degustation":null,"phrase":"1 au style · 11 non situées","voiesResume":[],"lignes":[],"rapides":{"stock":[],"epuises":[],"catalogue":[],"construction":[{"cle":"beermaverick-pahto","nom":"Pahto","groupe":"catalogue","moment":"b60","g":32.5,"ibu":60.1,"ibuPG":{},"tab":{"g0":32.5,"min5":[0,12,21.8,29.8,36.4,41.8,46.2,49.8,52.7,55.1,57.1,58.7,60.1,null,null,null,null,null,null,null,null,null,null,null,null],"fwh":66.1,"wp":{"temperatures":[70,75,80,85,90,95],"minutes":[10,15,20,25,30,35,40],"ibu":[[2.7,3.7,4.5,5.2,5.8,6.2,6.6],[3.8,5.3,6.4,7.4,8.2,8.8,9.3],[5.4,7.4,9.1,10.4,11.5,12.4,13.2],[7.7,10.5,12.9,14.8,16.3,17.6,18.6],[10.9,14.9,18.2,20.9,23.1,24.9,26.4],[15.4,21.1,25.7,29.5,32.6,35.2,37.3]]}},"libre":0,"fiche":{"niv":[0,1,1,0,0,0,0,0,0,0,0,0],"n":[0,1,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":null,"alpha":{"min":17,"max":20},"role":"amérisant","alternative":true},{"cle":"beermaverick-marco-polo","nom":"Marco Polo","groupe":"catalogue","moment":"b60","g":48.1,"ibu":60.1,"ibuPG":{},"tab":{"g0":48.1,"min5":[0,12,21.8,29.8,36.4,41.8,46.2,49.8,52.7,55.1,57.1,58.7,60.1,null,null,null,null,null,null,null,null,null,null,null,null],"fwh":66.1,"wp":{"temperatures":[70,75,80,85,90,95],"minutes":[10,15,20,25,30,35,40],"ibu":[[2.7,3.7,4.5,5.2,5.8,6.2,6.6],[3.8,5.3,6.4,7.4,8.2,8.8,9.3],[5.4,7.4,9.1,10.4,11.5,12.4,13.2],[7.7,10.5,12.9,14.8,16.3,17.6,18.6],[10.9,14.9,18.2,20.9,23.1,24.9,26.4],[15.4,21.1,25.7,29.5,32.6,35.2,37.3]]}},"libre":0,"fiche":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1},"effet":null,"alpha":{"min":12,"max":13},"role":"amérisant","alternative":true},{"cle":"beermaverick-saaz-late","nom":"Saaz Late","groupe":"catalogue","moment":"b10","g":20,"ibu":3.4,"ibuPG":{},"tab":{"g0":20,"min5":[0,1.9,3.4,4.7,5.7,6.6,7.3,7.9,8.3,8.7,9,9.3,9.5,null,null,null,null,null,null,null,null,null,null,null,null],"fwh":10.4,"wp":{"temperatures":[70,75,80,85,90,95],"minutes":[10,15,20,25,30,35,40],"ibu":[[0.4,0.6,0.7,0.8,0.9,1,1],[0.6,0.8,1,1.2,1.3,1.4,1.5],[0.9,1.2,1.4,1.6,1.8,2,2.1],[1.2,1.7,2,2.3,2.6,2.8,2.9],[1.7,2.4,2.9,3.3,3.6,3.9,4.2],[2.4,3.3,4.1,4.7,5.2,5.6,5.9]]}},"libre":0,"fiche":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":{"crans":[null,null,null,null,null,null,null,null,null,null,null,null],"delta":[1,1,1,"non établi","non établi","non établi","non établi","non établi","non établi","non établi","non établi","non établi"]},"alpha":{"min":3.5,"max":6},"role":"aromatique","alternative":false},{"cle":"beermaverick-spalt","nom":"Spalt","groupe":"catalogue","moment":"b10","g":20,"ibu":3,"ibuPG":{},"tab":{"g0":20,"min5":[0,1.6,3,4.1,5,5.7,6.3,6.8,7.2,7.5,7.8,8,8.2,null,null,null,null,null,null,null,null,null,null,null,null],"fwh":9,"wp":{"temperatures":[70,75,80,85,90,95],"minutes":[10,15,20,25,30,35,40],"ibu":[[0.4,0.5,0.6,0.7,0.8,0.8,0.9],[0.5,0.7,0.9,1,1.1,1.2,1.3],[0.7,1,1.2,1.4,1.6,1.7,1.8],[1,1.4,1.8,2,2.2,2.4,2.5],[1.5,2,2.5,2.8,3.1,3.4,3.6],[2.1,2.9,3.5,4,4.5,4.8,5.1]]}},"libre":0,"fiche":{"niv":[1,1,1,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":{"crans":[null,null,null,null,null,null,null,null,null,null,null,null],"delta":[1,1,1,"non établi","non établi","non établi","non établi","non établi","non établi","non établi","non établi","non établi"]},"alpha":{"min":2.5,"max":5.7},"role":"aromatique","alternative":false},{"cle":"beermaverick-whitbread-golding-variety-wgv","nom":"Whitbread Golding Variety (WGV)","groupe":"catalogue","moment":"b10","g":20,"ibu":4.7,"ibuPG":{},"tab":{"g0":20,"min5":[0,2.6,4.7,6.5,7.9,9.1,10.1,10.8,11.5,12,12.4,12.8,13.1,null,null,null,null,null,null,null,null,null,null,null,null],"fwh":14.4,"wp":{"temperatures":[70,75,80,85,90,95],"minutes":[10,15,20,25,30,35,40],"ibu":[[0.6,0.8,1,1.1,1.3,1.4,1.4],[0.8,1.1,1.4,1.6,1.8,1.9,2],[1.2,1.6,2,2.3,2.5,2.7,2.9],[1.7,2.3,2.8,3.2,3.6,3.8,4.1],[2.4,3.2,4,4.5,5,5.4,5.7],[3.4,4.6,5.6,6.4,7.1,7.7,8.1]]}},"libre":0,"fiche":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":{"crans":[null,null,null,null,null,null,null,null,null,null,null,null],"delta":[1,1,1,"non établi","non établi","non établi","non établi","non établi","non établi","non établi","non établi","non établi"]},"alpha":{"min":5.4,"max":7.7},"role":"double","alternative":false}]},"rapidesMoment":"b60","tousRapidesNoms":["Pahto","Marco Polo","Saaz Late","Spalt","Whitbread Golding Variety (WGV)"],"voies":[],"sansHoublon":{},"fiches":{"Motueka":{"niv":[1,0,0,2,1,0,0,0,0,0,0,0],"n":[1,0,0,2,1,0,0,0,0,0,0,0],"of":2},"Citra cryo":{"niv":[1,0,0,2,1,1,0,0,1,0,0,0],"n":[1,0,0,1,1,1,0,0,1,0,0,0],"of":1},"Cascade":{"niv":[1,1,0,2,0,0,0,1,0,1,1,0],"n":[1,1,0,2,0,0,0,1,0,1,1,0],"of":2},"Target":{"niv":[1,2,0,2,0,0,0,0,0,2,1,0],"n":[1,2,0,1,0,0,0,0,0,1,1,0],"of":2},"Sabro":{"niv":[0,1,0,2,1,1,0,0,0,1,0,0],"n":[0,1,0,1,1,1,0,0,0,1,0,0],"of":1},"Idaho 7":{"niv":[1,1,1,1,1,1,0,2,0,1,0,0],"n":[1,1,1,1,1,1,0,1,0,1,0,0],"of":1},"Nelson Sauvin":{"niv":[0,0,0,1,0,0,0,0,0,0,1,0],"n":[0,0,0,1,0,0,0,0,0,0,1,0],"of":2},"Galaxy":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"Hallertau Blanc":{"niv":[0,0,0,1,2,0,0,1,0,0,1,0],"n":[0,0,0,1,1,0,0,1,0,0,1,0],"of":2},"East Kent Goldings":{"niv":[2,1,1,1,0,0,0,0,0,0,2,0],"n":[1,1,1,1,0,0,0,0,0,0,1,0],"of":2},"Lotus":{"niv":[1,0,0,2,2,0,0,2,0,0,0,0],"n":[1,0,0,2,2,0,0,2,0,0,0,0],"of":2},"Fuggle":{"niv":[0,2,1,0,0,0,0,0,0,2,1,2],"n":[0,2,1,0,0,0,0,0,0,2,1,2],"of":2},"Simcoe":{"niv":[0,0,1,1,1,1,0,1,0,1,0,0],"n":[0,0,1,1,1,1,0,1,0,1,0,0],"of":1},"Nugget":{"niv":[2,2,1,1,2,0,0,0,0,2,2,0],"n":[2,2,1,1,2,0,0,0,0,2,1,0],"of":4},"Ariana":{"niv":[2,1,0,2,2,1,1,2,0,1,0,0],"n":[2,1,0,2,2,1,1,1,0,1,0,0],"of":2},"Nectaron":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"Saaz Late":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Spalt":{"niv":[1,1,1,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Whitbread Golding Variety (WGV)":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Pahto":{"niv":[0,1,1,0,0,0,0,0,0,0,0,0],"n":[0,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Wild Wolf":{"niv":[0,1,1,0,0,0,0,0,0,0,0,0],"n":[0,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Yakima Cluster":{"niv":[1,0,2,0,0,0,0,0,0,0,0,0],"n":[1,0,1,0,0,0,0,0,0,0,0,0],"of":1},"Marco Polo":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1},"Sun":{"niv":[0,2,0,0,0,0,0,0,0,0,0,0],"n":[0,1,0,0,0,0,0,0,0,0,0,0],"of":1},"Teamaker":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1},"Ultra":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1}},"comparerDefaut":["Pahto","Marco Polo","Saaz Late"],"cles":{"Ariana":"beermaverick-ariana","Fuggle":"beermaverick-fuggle","Hallertau Blanc":"beermaverick-hallertau-blanc","Idaho 7":"beermaverick-idaho-7","Lotus":"beermaverick-lotus","Nectaron":"beermaverick-nectaron","Simcoe":"beermaverick-simcoe","Cascade":"beermaverick-cascade","Target":"beermaverick-target","East Kent Goldings":"beermaverick-east-kent-goldings","Galaxy":"beermaverick-galaxy","Nelson Sauvin":"beermaverick-nelson-sauvin","Sabro":"beermaverick-sabro","Motueka":"beermaverick-motueka","Citra cryo":"beermaverick-citra:cryo","Nugget":"beermaverick-nugget","Pahto":"beermaverick-pahto","Marco Polo":"beermaverick-marco-polo","Saaz Late":"beermaverick-saaz-late","Spalt":"beermaverick-spalt","Whitbread Golding Variety (WGV)":"beermaverick-whitbread-golding-variety-wgv"},"groupes":{"Ariana":"epuise","Fuggle":"epuise","Hallertau Blanc":"stock","Idaho 7":"stock","Lotus":"epuise","Nectaron":"epuise","Simcoe":"epuise","Cascade":"stock","Target":"stock","East Kent Goldings":"epuise","Galaxy":"stock","Nelson Sauvin":"stock","Sabro":"stock","Motueka":"stock","Citra cryo":"stock","Nugget":"epuise"},"candidats":[],"horsModele":[],"levure":{"nom":"SafAle US-05","statut":"caractérisée"},"notes":{"ibu":"IBU 0 face à 50–70 : il manque l’amertume.","profil":"Rien de dégusté (jamais brassée) ; sans houblon, le modèle ne voit que le fond de levure US-05.","voies":"Pas de voie : aucune dégustation ni direction ; commencer par l’amertume (ajouts rapides)."}};
 /* Lot 3, variantes de p3 (p02, p03) : logique commune. Données : pack-mini-protos (const D).
    Quatre objets (MODELE.md) : 1 ma bière et 2 la cible (crans du style), 3 les fiches des
    houblons (citations 0 à 2), 4 les voies du moteur (avant / après en crans). Aucun chiffre
@@ -351,30 +379,35 @@ const cleDe = (nom) => (D.cles && D.cles[nom]) || null;
 function nomsHoublons(noms) { return noms.flatMap((n, k) => [k ? ' + ' : null, h('span', { 'data-houblon': cleDe(n) }, n)]).filter((x) => x != null); }
 const nomCourt = (f) => D.court[f];
 
-/* Moments : la frise 60′ → à froid. Le type d'ajout et le moment se lisent sur la frise. */
-/* Les moments du pack (moments[].code), dans l'ordre du brassage ; « vide » nomme l'étape vide. */
+/* Moments du rail du brassage : premier moût ; ébullition par tranches de 5′, de la durée de la
+   recette (D.ebullition, pack ebullitionMinutes) à 0′ ; whirlpool ; à froid, en fermentation active
+   ou après (la phase est un choix du brasseur, le jour est libre). « vide » nomme l'étape vide. */
+const EBU = D.ebullition || 60;
 const MOMENTS = [
   { code: 'fwh', type: 'premier moût', quand: 'moût', vide: 'premier moût' },
-  { code: 'b60', type: 'ébullition', quand: '60′' },
-  { code: 'b30', type: 'ébullition', quand: '30′', cran: true },
-  { code: 'b15', type: 'ébullition', quand: '15′', cran: true },
-  { code: 'b10', type: 'ébullition', quand: '10′' },
-  { code: 'b5', type: 'ébullition', quand: '5′', cran: true },
-  { code: 'b0', type: 'ébullition', quand: '0′' },
+  ...Array.from({ length: EBU / 5 + 1 }, (x, k) => { const m = EBU - 5 * k; return { code: 'b' + m, type: 'ébullition', quand: m + '′', minute: m }; }),
   { code: 'wp', type: 'whirlpool', quand: '80 °C', vide: 'whirlpool' },
   { code: 'dryActive', type: 'à froid', quand: 'J+3', vide: 'fermentation' },
   { code: 'dryPost', type: 'à froid', quand: 'après', vide: 'après fermentation' },
 ];
+/* Repères écrits sur le rail : la durée d'ébullition, 60′, 30′ et 0′ (les autres tranches sont des graduations). */
+const REPERES = new Set([EBU, 60, 30, 0]);
 const TYPES = ['ébullition', 'whirlpool', 'à froid', 'premier moût'];
-const mom = (code) => MOMENTS.find((m) => m.code === code) || MOMENTS[0];
-const quand = (l) => (l.moment === 'dryActive' ? 'J+' + l.jour : mom(l.moment).quand);
-const quandLong = (l) => ({ fwh: 'premier moût', b60: '60 minutes d\'ébullition', b30: '30 minutes d\'ébullition', b15: '15 minutes d\'ébullition', b10: '10 minutes d\'ébullition', b5: '5 minutes d\'ébullition', b0: 'fin d\'ébullition', wp: 'whirlpool à 80 °C', dryActive: 'à froid, jour ' + l.jour + ', en fermentation active', dryPost: 'à froid, après fermentation' })[l.moment];
+const mom = (code) => MOMENTS.find((m) => m.code === code) || (/^b\d+$/.test(code) ? { code, type: 'ébullition', quand: code.slice(1) + '′', minute: Number(code.slice(1)) } : MOMENTS[0]);
+const quand = (l) => (mom(l.moment).type === 'à froid' ? 'J+' + l.jour : l.moment === 'wp' ? (l.wpT || 80) + ' °C' : mom(l.moment).quand);
+const quandLong = (l) => {
+  const m = mom(l.moment);
+  if (l.moment === 'fwh') return 'premier moût, ' + EBU + ' minutes d\'ébullition';
+  if (m.type === 'ébullition') return m.minute === 0 ? 'fin d\'ébullition' : m.minute + ' minutes d\'ébullition';
+  if (l.moment === 'wp') return 'whirlpool à ' + (l.wpT || 80) + ' °C pendant ' + (l.wpMin || 20) + ' minutes';
+  return 'à froid, jour ' + l.jour + (l.moment === 'dryActive' ? ', en fermentation active' : ', après fermentation');
+};
 
 /* État de l'écran. */
 const B = document.body.dataset;
 const ETAT = {
   vue: B.vue, partie: B.ouvre || 'biere', lentille: B.lentille || 'barres',
-  lignes: D.lignes.map((l) => ({ ...l })),
+  lignes: D.lignes.map((l) => ({ wpT: 80, wpMin: 20, ...l })),
   gouts: { aime: new Set(), exclut: new Set() }, goutOuvert: null,
   visee: {}, sel: null, filtreVoies: null, marques: null,
   comp: D.comparerDefaut.slice(), effet: null, ibuAffiche: null, focusK: null, momentR: {}, focusSerie: null,
@@ -391,15 +424,27 @@ document.addEventListener('pointerdown', () => { ETAT.clavier = false; }, true);
 let VARIANTE = null;
 
 /* IBU : valeur du pack au moment et à la dose de la recette, sinon IBU par gramme du pack × dose. */
+/* IBU d'une ligne (pack, tablesIbu) : null à froid (« aucun IBU »), undefined sans table pour ce
+   moment (« IBU à recalculer ») ; la table est donnée à la dose g0, l'IBU suit la dose. */
 function ibuLigne(l) {
+  const m = mom(l.moment);
+  if (m.type === 'à froid') return null;
+  const t = l.tab;
+  if (t) {
+    let v;
+    if (l.moment === 'fwh') v = t.fwh;
+    else if (l.moment === 'wp') { if (t.wp) { const ti = t.wp.temperatures.indexOf(l.wpT || 80), di = t.wp.minutes.indexOf(l.wpMin || 20); v = ti >= 0 && di >= 0 ? t.wp.ibu[ti][di] : null; } }
+    else v = t.min5[m.minute / 5];
+    if (v != null) return (v * l.g) / t.g0;
+  }
   if (l.ibu0 && l.ibu0.v != null && l.ibu0.moment === l.moment && l.ibu0.g === l.g) return l.ibu0.v;
   const pg = l.ibuPG[l.moment];
-  return pg == null ? null : pg * l.g;
+  return pg == null ? undefined : pg * l.g;
 }
 const ibuTotal = () => ETAT.lignes.reduce((s, l) => s + (ibuLigne(l) || 0), 0);
 function ibuEl(l) {
-  if (!(l.moment in l.ibuPG) && !(l.ibu0 && l.ibu0.moment === l.moment && l.ibu0.g === l.g) && mom(l.moment).type !== 'à froid') return h('span', { class: 'ibu-l' }, 'IBU à recalculer');
   const v = ibuLigne(l);
+  if (v === undefined) return h('span', { class: 'ibu-l' }, 'IBU à recalculer');
   // À froid : le pack ne donne aucun IBU Tinseth (moments[].ibuModel : « aucun »).
   return v == null ? h('span', { class: 'ibu-l' }, 'aucun IBU') : h('span', { class: 'ibu-l' }, ibuTexte(v) + ' IBU');
 }
@@ -438,7 +483,6 @@ function effetTag(l) {
 function bioEl(l) {
   const actif = l.moment === 'dryActive';
   return h('div', { class: 'bio' },
-    h('span', { class: 'quand-bio' }, actif ? 'fermentation active' : 'après fermentation'),
     actif ? h('span', { class: 'sigs', 'data-role': 'biotransformation', 'aria-label': 'Avec ' + D.levure.nom + ' : biotransformation possible, non quantifiée' },
       h('span', { class: 'sig' }, 'biotransformation possible, non quantifiée'),
       l.signaux.map((x) => h('span', { class: 'sig' + (x.statut === 'possible' ? '' : ' ne'), title: x.titre + ' : ' + x.statut, 'aria-label': x.titre + ' : ' + x.statut }, x.court))) : null);
@@ -456,7 +500,7 @@ let SEQ = 0;
 function ajouter(r, moment) {
   const id = 'n' + (++SEQ);
   ETAT.lignes.push({
-    id, cle: r.cle, nom: r.nom, moment: moment || r.moment, g: r.g, alpha: r.alpha, role: r.role, jour: 3, ibuPG: r.ibuPG, ibu0: { moment: r.moment, g: r.g, v: r.ibu },
+    id, cle: r.cle, nom: r.nom, moment: moment || r.moment, g: r.g, alpha: r.alpha, role: r.role, tab: r.tab, wpT: 80, wpMin: 20, jour: 3, ibuPG: r.ibuPG, ibu0: { moment: r.moment, g: r.g, v: r.ibu },
     libre: r.libre, achat: r.groupe === 'catalogue', citation: null, fiche: r.fiche, effet: r.effet, effetCle: { moment: r.moment, g: r.g }, nouveau: true, signaux: [],
   });
   ETAT.effet = id;
@@ -1250,20 +1294,20 @@ function rendre(animerIbu) {
 }
 function demarrer() { rendre(false); }
 
-/* Version consolidée de l'étape (choix du brasseur, 18.10, soir) : le visuel de p2 (rail des
-   couloirs, cartes, ajouts proposés, stock discret), la levure comme étape du rail entre le
-   whirlpool et le dry hop en fermentation (D28, comme p8), et le moment qui se glisse comme un
-   curseur le long du rail (D27) : on tient la pastille, la carte suit le doigt, l'étape survolée
-   s'éclaire, l'IBU se lit en direct, et au lâcher la carte se range sous l'étape. */
-
-/* Ordre du rail : les moments du pack, la levure entre le whirlpool et le dry hop actif. */
-const ETAPES = ['fwh', 'b60', 'b30', 'b15', 'b10', 'b5', 'b0', 'wp', 'levure', 'dryActive', 'dryPost'];
+/* Version consolidée de l'étape (choix du brasseur, 18.10, soir) : le visuel de p2 (rail,
+   cartes, ajouts proposés, stock discret), la levure comme étape du rail entre le whirlpool et
+   le dry hop (D28, comme p8), et le moment qui se glisse le long du rail (D27).
+   Rail (D34, D36) : l'ébullition est une échelle de temps de la durée de la recette à 0′, une
+   graduation fine par tranche de 5′ (data-etape="b<minute>"), des repères écrits aux valeurs
+   utiles seulement ; lâchée entre deux repères, la carte prend la tranche la plus proche.
+   Geste (D35) : la carte glissée reste dans le flux (CSS order, sans sortir du document) : elle
+   se range au fil du doigt, les autres s'écartent, l'origine se referme, une seule pastille. */
 
 /* Après un glisser, le clic qui suit le lâcher est ignoré (il tomberait sous le doigt). */
 let IGNORE_CLIC = 0;
 document.addEventListener('click', (e) => { if (performance.now() < IGNORE_CLIC) { e.stopPropagation(); e.preventDefault(); } }, true);
 
-/* Pendant le glisser : moment, type et IBU de l'étape survolée, sans rien enregistrer. */
+/* Pendant le glisser : moment, type et IBU de l'étape visée, lus dans les tables du pack. */
 function apercuGlisse(carte, l, code) {
   const fictif = { ...l, moment: code };
   carte.querySelector('.ibu-l').textContent = ibuEl(fictif).textContent;
@@ -1274,24 +1318,36 @@ function brancherGlisser(poignee, carte, l) {
   let g = null;
   poignee.addEventListener('pointerdown', (e) => {
     if (e.button > 0) return;
-    const r = poignee.getBoundingClientRect();
-    const etapes = [...document.querySelectorAll('[data-etape]')].filter((x) => x.dataset.etape !== 'levure')
-      .map((x) => { const b = (x.querySelector('.rail-l') || x).getBoundingClientRect(); return { code: x.dataset.etape, y: b.top + b.height / 2, el: x }; });
-    g = { y0: e.clientY, cy: r.top + r.height / 2, bouge: false, etapes, code: l.moment };
+    g = { y0: e.clientY, bouge: false, code: l.moment };
     try { poignee.setPointerCapture(e.pointerId); } catch (x) { /* rien */ }
   });
+  const commencer = () => {
+    // Repères à leur place d'avant le geste : le doigt descend de d, la carte prend la tranche qui
+    // était d sous son repère ; ces positions ne bougent plus pendant le geste (pas de va-et-vient).
+    const rc = carte.getBoundingClientRect();
+    g.reperes = [...carte.parentElement.querySelectorAll('.marque')].map((x) => {
+      const r = x.getBoundingClientRect();
+      return { code: x.dataset.etape, el: x, ordre: Number(x.style.order), y: r.top + r.height / 2 };
+    });
+    const depart = g.reperes.find((x) => x.code === l.moment);
+    g.base = depart ? depart.y : rc.top;
+    carte.setAttribute('data-glisse', '');
+    carte.classList.add('glisse');
+  };
   poignee.addEventListener('pointermove', (e) => {
     if (!g) return;
-    const dy = e.clientY - g.y0;
-    if (!g.bouge && Math.abs(dy) < 6) return;
-    g.bouge = true;
-    carte.classList.add('glisse');
-    carte.style.transform = 'translateY(' + dy + 'px)';
-    const y = g.cy + dy;
-    let best = g.etapes[0];
-    for (const x of g.etapes) if (Math.abs(x.y - y) < Math.abs(best.y - y)) best = x;
-    if (best.code !== g.code) { g.code = best.code; apercuGlisse(carte, l, best.code); }
-    for (const x of g.etapes) x.el.classList.toggle('survol', x === best);
+    const d = e.clientY - g.y0;
+    if (!g.bouge && Math.abs(d) < 6) return;
+    if (!g.bouge) { g.bouge = true; commencer(); }
+    const y = g.base + d;
+    let best = g.reperes[0];
+    for (const x of g.reperes) if (Math.abs(x.y - y) < Math.abs(best.y - y)) best = x;
+    if (best.code !== g.code || !g.place) {
+      g.code = best.code; g.place = true;
+      carte.style.order = String(best.ordre + 1);
+      apercuGlisse(carte, l, best.code);
+      for (const x of g.reperes) x.el.classList.toggle('survol', x === best);
+    }
   });
   poignee.addEventListener('pointerup', () => {
     const d = g;
@@ -1304,12 +1360,35 @@ function brancherGlisser(poignee, carte, l) {
   poignee.addEventListener('pointercancel', () => { if (g && g.bouge) rendre(false); g = null; });
 }
 
-function blocRail(l, i, st, etape) {
+/* Réglages libres là où le moteur donne une table : whirlpool (°C, minutes), dry hop (jour). */
+function reglage(libelle, valeur, moins, plus) {
+  return h('span', { class: 'regl', role: 'group', 'aria-label': libelle },
+    h('button', { class: 'moins', 'aria-label': libelle + ' : moins', onclick: (e) => { e.stopPropagation(); moins(); } }),
+    h('span', { class: 'regl-v' }, valeur),
+    h('button', { class: 'plus', 'aria-label': libelle + ' : plus', onclick: (e) => { e.stopPropagation(); plus(); } }));
+}
+function reglagesMoment(l) {
+  const m = mom(l.moment);
+  if (l.moment === 'wp' && l.tab && l.tab.wp) {
+    const T = l.tab.wp.temperatures, M = l.tab.wp.minutes, t = T.indexOf(l.wpT), n = M.indexOf(l.wpMin);
+    return h('div', { class: 'reglages' },
+      reglage('Température du whirlpool', l.wpT + ' °C', () => { if (t > 0) { l.wpT = T[t - 1]; rendre(true); } }, () => { if (t < T.length - 1) { l.wpT = T[t + 1]; rendre(true); } }),
+      reglage('Durée du whirlpool', l.wpMin + ' min', () => { if (n > 0) { l.wpMin = M[n - 1]; rendre(true); } }, () => { if (n < M.length - 1) { l.wpMin = M[n + 1]; rendre(true); } }));
+  }
+  if (m.type === 'à froid') {
+    const J = D.dryJours || { min: 0, max: 14 };
+    return h('div', { class: 'reglages' },
+      reglage('Jour du houblonnage à froid', 'J+' + l.jour, () => { if (l.jour > J.min) { l.jour -= 1; rendre(false); } }, () => { if (l.jour < J.max) { l.jour += 1; rendre(false); } }));
+  }
+  return null;
+}
+
+function blocRail(l, i, st, ordre) {
   const premier = i === 0;
   const m = mom(l.moment);
   const pastille = h('button', {
     class: 'quand', 'data-role': 'quand', 'data-k': 'q' + l.id, 'data-booster': premier ? 'moment qui tourne' : null,
-    'aria-label': 'Moment : ' + quandLong(l) + ' ; glisser le long du rail pour le changer, toucher pour passer au suivant, flèches haut et bas',
+    'aria-label': 'Moment : ' + quandLong(l) + ' ; glisser le long du rail pour le changer (tranches de 5 minutes), toucher pour passer au suivant, flèches haut et bas',
     onkeydown: (e) => {
       if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
       e.preventDefault();
@@ -1317,11 +1396,8 @@ function blocRail(l, i, st, etape) {
       if (k >= 0 && k < MOMENTS.length) { ETAT.focusK = 'q' + l.id; placer(l, MOMENTS[k].code); }
     },
   }, quand(l));
-  const poignee = h('span', {
-    class: 'poignee', 'data-role': 'glisser-moment', 'data-etape': etape || null,
-    onclick: () => { ETAT.focusK = 'q' + l.id; momentSuivant(l); },
-  }, pastille);
-  const carte = h('li', { class: 'blk', 'data-role': 'ligne-houblon' },
+  const poignee = h('span', { class: 'poignee', 'data-role': 'glisser-moment', onclick: () => { ETAT.focusK = 'q' + l.id; momentSuivant(l); } }, pastille);
+  const carte = h('div', { class: 'blk', 'data-role': 'ligne-houblon', style: 'order:' + ordre },
     poignee,
     h('div', { class: 'corps-b' },
       h('div', { class: 'l1' },
@@ -1336,16 +1412,15 @@ function blocRail(l, i, st, etape) {
           h('button', { class: 'plus', 'data-k': 'd' + l.id, 'data-booster': premier ? 'dose au pas' : null, 'aria-label': 'Ajouter 2 g de ' + l.nom, onclick: () => { ETAT.focusK = 'd' + l.id; doser(l, 2); } })),
         h('button', { class: 'corbeille', 'aria-label': 'Retirer ' + l.nom + ' de la recette', onclick: () => retirer(l) })),
       h('div', { class: 'l2' }, alphaEl(l.alpha), roleEl(l.role), stockIcone(st.code, st.txt), citationTag(l), effetTag(l), ibuEl(l)),
-      h('div', { class: 'l3' }, miniProfil(l.fiche, l.nom)),
-      m.type === 'à froid' ? bioEl(l) : null));
+      h('div', { class: 'l3' }, miniProfil(l.fiche, l.nom), reglagesMoment(l)),
+      l.moment === 'dryActive' ? bioEl(l) : null));
   brancherGlisser(poignee, carte, l);
   return carte;
 }
-/* Les ajouts proposés se rangent sous l'étape de leur moment (amérisants à 60′, aromatiques
-   tardifs) ; sans carte au-dessus, la zone porte elle-même data-etape. */
-function zoneRapides(code, liste, marque, tete, premier) {
-  return h('div', { class: 'rap-zone', 'data-etape': marque ? code : null },
-    marque ? h('span', { class: 'rail-l plein' }, mom(code).quand) : h('span'),
+function zoneRapides(code, liste, tete, premier, ordre, seule) {
+  // Sous une carte de la même étape, la zone ne répète pas le moment (une seule pastille).
+  return h('div', { class: 'rap-zone', 'data-etape': code, style: 'order:' + ordre },
+    seule ? h('span', { class: 'rail-l plein' }, mom(code).quand) : h('span'),
     h('div', { class: 'rap-corps' },
       tete ? noteIbu() : null,
       tete ? champ() : null,
@@ -1353,33 +1428,38 @@ function zoneRapides(code, liste, marque, tete, premier) {
         // Deux amérisants « au choix » (un seul suffit pour l'IBU visé) : un « ou » les sépare.
         liste.flatMap((r, n) => [rapideLigne(r, premier && n === 0, false), r.alternative && liste[n + 1] && liste[n + 1].alternative ? h('li', { class: 'ou' }, 'ou') : null]).filter(Boolean))));
 }
+/* Repère du rail : une graduation fine ; son nom n'est écrit qu'aux valeurs utiles. */
+function repere(code, libelle, ordre) {
+  const m = mom(code);
+  return h('div', {
+    class: 'marque' + (libelle ? ' ecrit' : '') + (m.type === 'ébullition' ? ' ebu' : ''), 'data-etape': code, style: 'order:' + ordre,
+    'aria-label': 'Étape : ' + quandLong({ moment: code, jour: 3, wpT: 80, wpMin: 20 }),
+  }, h('span', { class: 'rail-l' }), h('span', { class: 'drop' }, libelle || null));
+}
 VARIANTE = {
   etape(app) {
     app.append(enTete(), resume());
-    const fr = h('section', { class: 'frise', 'data-role': 'houblons-recette', 'aria-label': 'Houblons de la recette, posés sur le rail du brassage' }, h('i', { class: 'axe', 'aria-hidden': 'true' }));
+    const fr = h('section', { class: 'frise', 'data-role': 'houblons-recette', 'aria-label': 'Houblons de la recette, posés sur le rail du brassage', style: '--tick:' + Math.max(4, Math.min(9, Math.floor(110 / (EBU / 5)))) + 'px' },
+      h('i', { class: 'axe', 'aria-hidden': 'true' }));
     const et = etatsStock();
-    // Propositions selon la place : 5 pour une recette vide, puis 3, 2, 1, et aucune au-delà de 3 ajouts (le champ reste).
     const n = ETAT.lignes.length;
+    // Propositions selon la place : 5 pour une recette vide, puis 3, 2, 1, et aucune au-delà de 3 ajouts (le champ reste).
     const proposes = rapidesVisibles(n === 0 ? 5 : Math.max(0, 4 - n));
     const parMoment = (c) => proposes.filter((r) => r.moment === c);
-    const premiereZone = ETAPES.find((c) => parMoment(c).length) || D.rapidesMoment;
-    for (const code of ETAPES) {
-      if (code === 'levure') {
-        // D28 : la levure est une étape du rail, avant le dry hop en fermentation active.
-        fr.append(h('div', { class: 'etape-levure', 'data-etape': 'levure' }, h('span', { class: 'rail-lev', 'aria-hidden': 'true' }), levure()));
-        continue;
-      }
+    const codes = MOMENTS.map((m) => m.code);
+    const premiereZone = codes.find((c) => parMoment(c).length) || D.rapidesMoment;
+    let ordre = 0;
+    const suite = () => (ordre += 2);
+    for (const code of codes) {
       const blocs = ETAT.lignes.map((l, i) => [l, i]).filter(([l]) => l.moment === code);
-      const co = h('ul', { class: 'couloir', 'aria-label': 'Étape ' + quandLong({ moment: code, jour: 3 }) });
-      blocs.forEach(([l, i], k) => co.append(blocRail(l, i, et[i], k === 0 ? code : null)));
-      if (parMoment(code).length || code === premiereZone) co.append(h('li', {}, zoneRapides(code, parMoment(code), !blocs.length, code === premiereZone, code === premiereZone)));
-      else if (!blocs.length) {
-        // Crans intermédiaires (30′, 15′, 5′) : un simple repère du rail ; on lit leur nom sur la pastille en glissant.
-        const m = mom(code);
-        co.append(h('li', { class: 'vide-l' + (m.cran ? ' cran' : ''), 'data-etape': code, 'aria-label': 'Étape vide : ' + quandLong({ moment: code, jour: 3 }) },
-          h('span', { class: 'rail-l' }), h('span', { class: 'drop' }, m.cran ? null : m.vide || m.quand)));
-      }
-      fr.append(co);
+      const zone = parMoment(code).length || code === premiereZone;
+      const m = mom(code);
+      // Repère écrit : étapes nommées (premier moût, whirlpool, phases à froid) et minutes utiles, quand rien ne les dit déjà.
+      const ecrit = m.type === 'à froid' ? m.vide : blocs.length || zone ? null : m.vide || (REPERES.has(m.minute) ? m.quand : null);
+      fr.append(repere(code, ecrit, suite()));
+      blocs.forEach(([l, i]) => fr.append(blocRail(l, i, et[i], suite())));
+      if (zone) fr.append(zoneRapides(code, parMoment(code), code === premiereZone, code === premiereZone, suite(), !blocs.length));
+      if (code === 'wp') fr.append(h('div', { class: 'etape-levure', 'data-etape': 'levure', style: 'order:' + suite() }, h('span', { class: 'rail-lev', 'aria-hidden': 'true' }), levure()));
     }
     app.append(...[fr, goutsLigne(), panLigne()].filter(Boolean));
   },

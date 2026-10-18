@@ -75,6 +75,8 @@ maquette. Et le brasseur ne voyait le résultat qu'à la fin.
 | D35 | « Ça semble un peu bancale, c'est l'idée mais pas hyper bien réalisé » (18.10, soir, capture pendant le geste) | `controle-rail.mjs`, doigt posé puis lâché : `data-glisse` sur l'élément qui suit le doigt, au-dessus de tout, ne cachant aucun texte ; aucun chevauchement de textes ; aucun vide de plus de 64 px dans la colonne du rail | 0 | base consolidée v1 → 3 échecs (« 10′ » doublé, vide de 95 px, rien de marqué) |
 | D36 | « Parcontre prendre en compte que le boil peut durer 120' ou d'autres timing que 60 » (18.10, soir) | `controle-rail.mjs` : `cas-ebu120.html`, rail à `b120`, une ligne se pose au-delà de 60′ | présent | base consolidée v1 → échec |
 
+| D37 | « attention toujours garder des variables dynamique car cela peut changer... Je peux me dire tiens 200' c'est mieux ou 45' ça le fait aussi ect.. » (18.10, soir) | `controle-rail.mjs` : `data-role="ebullition"` réglable sur l'étape (champ ou boutons) ; réglée à 200′ puis à 45′, le rail commence à cette durée et aucune ligne ne reste au-delà | présent et efficace | base consolidée v1 → échec ; témoin positif à durée réglable → OK |
+
 D18 est désormais vérifié par le même script, partie par partie.
 
 Commande (toutes les mesures D1 à D7, D10, D13, D14, D16 à D19) :
