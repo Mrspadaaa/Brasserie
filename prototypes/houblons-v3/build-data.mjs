@@ -71,10 +71,13 @@ const hsByName = new Map();
 for (const v of hs) {
   const fams = v.descriptions.map((d) => d.text.match(/Familles déclarées sur houblon brut : (.+)\.$/)?.[1]).find(Boolean)?.split(/,\s*/) || [];
   const thiol = v.descriptions.map((d) => d.text.match(/Thiol impact » : (\w+)/)?.[1]).find(Boolean) || null;
-  const rec = { fams, thiol, lin: range(v, 'linalool'), url: v.descriptions[0]?.source?.reference || null };
+  const rec = { fams, thiol, lin: range(v, 'linalool'), url: v.descriptions[0]?.source?.reference || null, origin: v.origin || null };
   for (const n of [v.name, ...v.name.split(/\s*[/(]\s*/)]) if (n) hsByName.set(fold(n.replace(/\)$/, '')), rec);
 }
-const HS_ALIAS = { saazcz: 'saazer', styriangoldings: 'styriangoldingcelea', saaz: 'saazer', saazczech: 'saazer', hallertau: 'hallertauermittelfruh', hallertaumittelfruh: 'hallertauermittelfruh', magnum: 'hallertauermagnum', eastkentgoldings: 'goldinguk', columbus: 'columbus', ctz: 'columbus' };
+const HS_ALIAS = { saazcz: 'saazer', styriangoldings: 'styriangoldingcelea', saaz: 'saazer', saazczech: 'saazer', hallertau: 'hallertauermittelfruh', hallertaumittelfruh: 'hallertauermittelfruh', hallertautaurus: 'hallertauertaurus', hallertautradition: 'hallertauertradition', magnum: 'hallertauermagnum', eastkentgoldings: 'goldinguk', columbus: 'columbus', ctz: 'columbus' };
+// Origines corrigées : Beer Maverick se contredit avec la fiche de l'obtenteur ou du négociant (Hopsteiner 2025).
+// Relevé par la revue Fable du remplacement (18.10.2026) ; on garde la fiche Hopsteiner et on le dit.
+const ORIGIN_FIX = { 'hallertau-taurus': { o: 'Allemagne', src: 'Hopsteiner, fiche Hallertauer Taurus (Beer Maverick : Royaume-Uni)' }, northdown: { o: 'Royaume-Uni', src: 'Hopsteiner, fiche Northdown (Beer Maverick : États-Unis)' } };
 
 // Usages par style attestés (IPA seulement dans le dépôt).
 const usageByName = new Map();
@@ -92,8 +95,9 @@ const varieties = bm.map((v) => {
   const key = fold(v.name);
   const h = hsByName.get(key) || hsByName.get(HS_ALIAS[key]) || (v.aliases || []).map((a) => hsByName.get(fold(a))).find(Boolean) || null;
   const u = usageByName.get(key) || (v.aliases || []).map((a) => usageByName.get(fold(a))).find(Boolean) || null;
+  const id = v.id.replace(/^beermaverick-/, ''); const fix = ORIGIN_FIX[id];
   return {
-    id: v.id.replace(/^beermaverick-/, ''), n: v.name, o: origin(v.origin),
+    id, n: v.name, o: fix ? fix.o : origin(v.origin), ...(fix ? { oSrc: fix.src } : {}),
     a: range(v, 'alpha'), b: range(v, 'beta'), oil: range(v, 'totalOil'),
     my: range(v, 'myrcene'), hu: range(v, 'humulene'), ca: range(v, 'caryophyllene'),
     // Intensité par axe : 0 absent, 1 présent, 2 marqué, 3 dominant (nombre de descripteurs, plafonné). null : aucun descripteur.

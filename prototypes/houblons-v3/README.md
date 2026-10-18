@@ -12,10 +12,10 @@ Page privée : https://claude.ai/artifact/UrdkDumB4m95s1iHr4ye27
 
 | Geste | Où | Ce qu'on voit |
 |---|---|---|
-| Choisir | Liste « Mes houblons », sans toucher | mes houblons classés du + au − pour le style (typique, compatible, hors style), arômes en mots, stock, et ce que « + » ajoute |
-| Comparer | Cases de la liste ; volet en bas dès 2 houblons | radar superposé et IBU à dose égale ; « Tout comparer » : arômes côte à côte, IBU, dose face au stock, plages α, β, huiles, descripteurs |
-| Simuler | « Mon houblonnage » | IBU de chaque ajout et total sur la jauge du style, arôme dominant, stock suffisant ou manque, recalcul à chaque réglage |
-| Remplacer | « Remplacer » sur un ajout | 5 remplaçants, stock d'abord, dose au même IBU, gagné et perdu |
+| Choisir | Liste « Mes houblons », sans toucher | mes houblons classés du + au − pour le style (typique, compatible, hors style), arômes en mots, stock, et la dose que « + » ajoute (« assez » ou « manque N g ») ; la rangée « + ajoute » choisit l'ajout (amertume 60′, whirlpool, dry hop) |
+| Comparer | Cases de la liste, « 4 premiers », ou « ses 3 plus proches » ; volet en bas dès 2 houblons | radar superposé et IBU à dose égale ; « Tout comparer » : arômes côte à côte, IBU, dose face au stock, plages α, β, huiles, descripteurs |
+| Simuler | « Mon houblonnage » | IBU de chaque ajout ; jauge : IBU à chaud dans la plage du style, après dry hop (estimé), arôme dominant ; moment changé : écart et dose à ajouter maintenant |
+| Remplacer | Icône ⇄ sur un ajout | 5 remplaçants du stock (stock libre), 3 à acheter ; même IBU pour l'amertume, même masse pour l'arôme ; gagné et perdu |
 | Questions | Bouton « Questions » | les 30 questions, chacune avec sa réponse calculée sur la recette et le stock, ou « non documenté » et ce qui manque |
 
 ## Construire
