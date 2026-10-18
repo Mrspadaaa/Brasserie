@@ -1,0 +1,310 @@
+import { checkHopExclusions } from '@app/domain/hopIndex/solver';
+import { suggestedHopVarieties } from '@app/domain/hopIndex/styleSelection';
+import { AXES, CATALOGUE, STOCK, VARIETY_BY_ID, hopRef } from './data';
+import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
+import { cites } from './hops';
+import {
+  MOMENTS, additionIbu, gramsForIbu, ibuPerGram, matrixContext, predictTriplet, recipeIbu, recipeProfile, searchDoses, tripletOf, yeastInfo,
+  type Addition, type FamilyEstimate, type MatrixContext, type MomentId, type Profile, type Recipe, type RecipeProfile, type YeastInfo,
+} from './recipe';
+import { getStyleScale, type StyleScale } from '../style/scale';
+
+/** Direction relative à la recette : nombre de crans par famille (+1 « plus floral », −1 « moins résineux »). */
+export type Direction = Partial<Record<FamilyId, number>>;
+
+export interface Action {
+  op: 'ajouter' | 'modifier' | 'retirer';
+  additionId: string; hopKey: string; hopName: string; moment: MomentId; momentLabel: string;
+  grams: number; gramsPerLitre: number; previousGrams?: number; previousHopKey?: string;
+}
+export type VoieType = 'ajouter' | 'augmenter' | 'diminuer' | 'retirer' | 'remplacer à IBU égal' | 'remplacer à masse égale' | 'assemblage';
+export interface FamilyEffect {
+  family: FamilyId;
+  /** Variation prévue (points 0–100), somme signée des apports V5.5 des ajouts changés ; null si aucun apport établi. */
+  central: number | null;
+  /** Au moins un houblon changé cite cette famille dans une fiche. */
+  established: boolean;
+  /** Une partie des ajouts changés ne cite pas la famille : leur apport n'est pas compté. */
+  partial: boolean;
+}
+export interface DirectedTarget {
+  family: FamilyId; name: string; crans: number; status: string;
+  /** Variation visée, en points : crans × cran du style. */
+  delta: number; cran: number; width: number;
+  current: FamilyEstimate; targetAbsolute: number | null; note: string | null;
+}
+export interface Voie {
+  id: string; type: VoieType; label: string; domain: 'stock' | 'à acheter';
+  actions: Action[]; estimated: boolean; estimatedWhy: string[];
+  conflicts: string[];
+  effect: Record<FamilyId, FamilyEffect>;
+  /** Distance à la cible, en unités du style (largeurs de bande), par famille visée et au total. */
+  distance: { total: number | null; byFamily: Partial<Record<FamilyId, number | null>> };
+  stock: { status: 'suffisant' | 'manque' | 'à acheter'; missing: { hopKey: string; hopName: string; grams: number }[] };
+  ibu: { before: number; after: number; drift: number; unknown: boolean };
+  after: Profile | null;
+  rank: number;
+}
+export interface VoieResult {
+  recipe: Recipe; style: StyleScale; yeast: YeastInfo; matrix: MatrixContext;
+  before: RecipeProfile; ibu: number; direction: DirectedTarget[];
+  voies: Voie[]; evaluated: number; skipped: { what: string; why: string }[]; notes: string[];
+  ranking: string[];
+}
+export interface VoieOptions {
+  /** Variétés « à acheter » examinées (défaut 6). */ maxBuy?: number;
+  /** Voies du stock retenues (défaut 10). */ limit?: number;
+  /** Voies à acheter retenues après celles du stock (défaut 4). */ buyLimit?: number;
+  /** Voies au plus par houblon ou couple de houblons (défaut 2). */ perHop?: number;
+  moments?: MomentId[]; assemblages?: boolean;
+}
+
+export const RANKING = [
+  'conflits (exclusions V5.5 : famille « moins » citée par le houblon ajouté ; famille indésirable du style citée ; IBU sorti de la plage du style)',
+  'distance à la cible en unités du style (somme sur les familles visées de |variation prévue − variation visée| / largeur de bande ; inconnue en dernier)',
+  'stock : suffisant, puis manque, puis à acheter',
+  'dérive d’IBU (valeur absolue)',
+];
+
+const round = (x: number, n = 1) => Math.round(x * 10 ** n) / 10 ** n;
+const nameOf = (key: string) => hopRef(key)?.name ?? key;
+
+// Apport d'un ajout seul : repère central V5.5 à cette dose moins celui à dose nulle (fond de levure).
+const apportCache = new Map<string, Record<FamilyId, number | null> | null>();
+function apport(a: Addition, recipe: Recipe): Record<FamilyId, number | null> | null {
+  const key = `${a.hopKey}|${a.moment}|${a.grams}|${recipe.volumeL}|${recipe.yeastId}|${recipe.boilMin}`;
+  if (apportCache.has(key)) return apportCache.get(key)!;
+  const t = tripletOf(a, recipe);
+  const on = predictTriplet(t, {}), off = predictTriplet({ ...t, doseGL: 0 }, {});
+  const any = FAMILIES.some((f) => on.profile[f]?.range);
+  const out = any ? Object.fromEntries(FAMILIES.map((f) => {
+    const c1 = on.profile[f]?.central, c0 = off.profile[f]?.central;
+    return [f, c1 !== undefined && c0 !== undefined ? c1 - c0 : null];
+  })) as Record<FamilyId, number | null> : null;
+  apportCache.set(key, out);
+  return out;
+}
+
+/** Un ajout changé. `share` : part de la dose d'un assemblage ; l'apport est alors pris à la dose
+ * totale du moment et pondéré par cette part (convention de cumul V5.5 : dose cumulée par phase,
+ * descripteurs pondérés par les doses), jamais en additionnant deux courbes saturées. */
+interface Change { addition: Addition; sign: 1 | -1; share?: number }
+function effectOf(changes: Change[], recipe: Recipe): Record<FamilyId, FamilyEffect> | null {
+  const rows = changes.map((c) => {
+    const pooled = c.share === undefined ? c.addition : { ...c.addition, grams: round(c.addition.grams / c.share) };
+    return { ...c, weight: c.share ?? 1, apport: apport(pooled, recipe), varietyId: hopRef(c.addition.hopKey)?.varietyId ?? '' };
+  });
+  if (rows.some((r) => !r.apport)) return null;
+  return Object.fromEntries(FAMILIES.map((f) => {
+    const est = rows.filter((r) => cites(r.varietyId, f) && r.apport![f] !== null);
+    const central = est.length ? round(est.reduce((s, r) => s + r.sign * r.weight * r.apport![f]!, 0)) : null;
+    return [f, { family: f, central, established: est.length > 0, partial: est.length > 0 && est.length < rows.length }];
+  })) as Record<FamilyId, FamilyEffect>;
+}
+
+/** Voies pour pousser la recette dans la direction voulue : stock d'abord, puis à acheter. */
+export function proposeVoies(recipe: Recipe, direction: Direction, options: VoieOptions = {}): VoieResult {
+  const { maxBuy = 6, limit = 10, buyLimit = 4, perHop = 2, moments = ['b10', 'wp', 'dryActive', 'dryPost'], assemblages = true } = options;
+  const style = getStyleScale(recipe.styleCode);
+  const before = recipeProfile(recipe);
+  const ibu0 = recipeIbu(recipe);
+  const plus = FAMILIES.filter((f) => (direction[f] ?? 0) > 0), minus = FAMILIES.filter((f) => (direction[f] ?? 0) < 0);
+  const directed = [...plus, ...minus];
+  const skipped: VoieResult['skipped'] = [];
+  const notes: string[] = [];
+
+  const targets: DirectedTarget[] = directed.map((f) => {
+    const fs = style.families[f], crans = direction[f]!;
+    const delta = round(crans * fs.cran);
+    const current = before.profile[f];
+    const citedNow = recipe.additions.some((a) => cites(hopRef(a.hopKey)?.varietyId ?? '', f));
+    const note = crans < 0 && !citedNow ? `${FAMILY_NAMES[f]} : aucun ajout actuel n’est cité pour cette famille dans les fiches (Beer Maverick, Hopsteiner) ; aucune voie ne peut établir une baisse. La cause perçue peut venir d’ailleurs (malt torréfié, levure, oxydation) : non modélisé.` : null;
+    if (note) notes.push(note);
+    return { family: f, name: FAMILY_NAMES[f], crans, status: fs.status, delta, cran: round(fs.cran), width: fs.width, current,
+      targetAbsolute: current.central !== undefined ? round(Math.max(0, Math.min(100, current.central + delta))) : null, note };
+  });
+
+  // Stock libre = stock − ajouts de la recette (hors ajout remplacé ou modifié).
+  const used = (key: string, except?: string) => recipe.additions.filter((a) => a.hopKey === key && a.id !== except).reduce((s, a) => s + a.grams, 0);
+  const free = (key: string, except?: string) => { const s = STOCK.find((x) => x.key === key); return s ? s.grams - used(key, except) : null; };
+
+  const stockHops = STOCK.filter((s) => (free(s.key) ?? 0) > 0).map((s) => s.key);
+  // À acheter : variétés sans stock libre (épuisées comprises), classées par familles visées citées,
+  // puis familles attendues par le style citées, puis usage attesté, puis nom.
+  const available = new Set(STOCK.filter((s) => (free(s.key) ?? 0) > 0).map((s) => s.varietyId));
+  const suggested = new Set(suggestedHopVarieties(CATALOGUE.map((c) => VARIETY_BY_ID.get(c.id)!), style.name).map((v) => v.id));
+  const expected = style.documented ? FAMILIES.filter((f) => style.families[f].status === 'attendue') : [];
+  const buyPool = (requirePlus: boolean) => CATALOGUE.filter((c) => !available.has(c.id))
+    .map((c) => ({ c, plus: plus.filter((f) => cites(c.id, f)).length, fit: expected.filter((f) => cites(c.id, f)).length,
+      bad: minus.some((f) => cites(c.id, f)) || FAMILIES.some((f) => style.families[f].status === 'indésirable' && cites(c.id, f)) }))
+    .filter((r) => !r.bad && (!requirePlus || r.plus > 0))
+    .sort((a, b) => b.plus - a.plus || b.fit - a.fit || Number(suggested.has(b.c.id)) - Number(suggested.has(a.c.id)) || a.c.name.localeCompare(b.c.name, 'fr'))
+    .slice(0, maxBuy).map((r) => STOCK.find((s) => s.varietyId === r.c.id && s.form !== 'cryo')?.key ?? r.c.id);
+
+  let n = 0;
+  const evaluate = (type: VoieType, label: string, actions: Action[], changes: Change[], next: Recipe, extraEstimated: string[] = []): Voie => {
+    n++;
+    const effect = effectOf(changes, recipe);
+    const byFamily: Voie['distance']['byFamily'] = {};
+    let total: number | null = effect ? 0 : null;
+    for (const t of targets) {
+      const d = effect ? Math.abs((effect[t.family].central ?? 0) - t.delta) / t.width : null;
+      byFamily[t.family] = d === null ? null : round(d, 3);
+      if (total !== null && d !== null) total += d;
+    }
+    const conflicts: string[] = [];
+    for (const c of changes.filter((x) => x.sign > 0)) {
+      const h = hopRef(c.addition.hopKey)!;
+      const replaced = changes.find((x) => x.sign < 0 && x.addition.hopKey === c.addition.hopKey);
+      if (replaced && replaced.addition.grams >= c.addition.grams) continue; // diminution du même houblon
+      for (const f of minus) if (cites(h.varietyId, f)) conflicts.push(`${h.name} : ${FAMILY_NAMES[f].toLowerCase()} cité dans une fiche, exclu par ta direction.`);
+      for (const f of FAMILIES) if (style.families[f].status === 'indésirable' && cites(h.varietyId, f)) conflicts.push(`${h.name} : ${FAMILY_NAMES[f].toLowerCase()} exclu par le style, cité dans une fiche.`);
+      for (const k of checkHopExclusions(predictTriplet(tripletOf(c.addition, next), {}), minus, AXES)) if (k.status === 'conflict') conflicts.push(`${h.name} : ${k.message}`);
+      if (!(c.addition.grams > 0)) conflicts.push('Dose invalide.');
+    }
+    const ibu1 = recipeIbu(next);
+    if (style.ibu) {
+      const inside = (x: number) => x >= style.ibu![0] - 0.5 && x <= style.ibu![1] + 0.5;
+      const dist = (x: number) => Math.max(0, style.ibu![0] - x, x - style.ibu![1]);
+      if (!inside(ibu1.value) && dist(ibu1.value) > dist(ibu0.value) + 0.5) conflicts.push(`IBU ${round(ibu1.value)} hors de la plage du style (${style.ibu[0]}–${style.ibu[1]}).`);
+    }
+    const missing: Voie['stock']['missing'] = [];
+    let status: Voie['stock']['status'] = 'suffisant';
+    const needed = [...new Set(actions.filter((a) => a.op !== 'retirer' && (a.previousGrams === undefined || a.grams > a.previousGrams || a.previousHopKey)).map((a) => a.hopKey))];
+    for (const key of needed) {
+      const s = STOCK.find((x) => x.key === key);
+      const total = next.additions.filter((a) => a.hopKey === key).reduce((t, a) => t + a.grams, 0);
+      if (!s || s.grams <= 0) { status = 'à acheter'; missing.push({ hopKey: key, hopName: nameOf(key), grams: round(total) }); continue; }
+      if (s.grams < total - 1e-9) { if (status === 'suffisant') status = 'manque'; missing.push({ hopKey: key, hopName: nameOf(key), grams: round(total - Math.max(0, s.grams)) }); }
+    }
+    const estimatedWhy = [...extraEstimated, ...new Set(actions.filter((a) => a.op !== 'retirer').map((a) => MOMENTS[a.moment].estimated).filter((x): x is string => !!x))];
+    return {
+      id: `${type}|${actions.map((a) => `${a.hopKey}@${a.moment}:${round(a.grams)}`).join('+')}`, type, label,
+      domain: needed.every((k) => STOCK.some((s) => s.key === k && s.grams > 0)) ? 'stock' : 'à acheter',
+      actions, estimated: estimatedWhy.length > 0, estimatedWhy, conflicts,
+      effect: effect ?? (Object.fromEntries(FAMILIES.map((f) => [f, { family: f, central: null, established: false, partial: false }])) as Record<FamilyId, FamilyEffect>),
+      distance: { total: total === null ? null : round(total, 3), byFamily },
+      stock: { status, missing }, ibu: { before: round(ibu0.value), after: round(ibu1.value), drift: round(ibu1.value - ibu0.value), unknown: ibu1.unknown.length > 0 },
+      after: null, rank: 0,
+    };
+  };
+  const act = (op: Action['op'], a: Addition, extra: Partial<Action> = {}): Action => ({ op, additionId: a.id, hopKey: a.hopKey, hopName: nameOf(a.hopKey), moment: a.moment, momentLabel: MOMENTS[a.moment].label, grams: round(a.grams), gramsPerLitre: round(a.grams / recipe.volumeL, 2), ...extra });
+
+  const all: Voie[] = [];
+  // 1. Ajouter (seulement si une famille doit monter).
+  if (plus.length) {
+    const pool = [...stockHops, ...buyPool(true)];
+    for (const key of pool) for (const m of moments) {
+      const doses = searchDoses(m).map((g) => g * recipe.volumeL);
+      const f = free(key);
+      if (f !== null && f > 0 && f < Math.max(...doses) && !doses.some((d) => Math.abs(d - f) < 0.5)) doses.push(f);
+      let best: Voie | null = null;
+      for (const grams of doses) {
+        const a: Addition = { id: `v-${key}-${m}`, hopKey: key, moment: m, grams: round(grams) };
+        const next = { ...recipe, additions: [...recipe.additions, a] };
+        const v = evaluate('ajouter', `Ajouter ${nameOf(key)} · ${MOMENTS[m].label} · ${round(a.grams, 0)} g`, [act('ajouter', a)], [{ addition: a, sign: 1 }], next);
+        if (!best || compareVoies(v, best) < 0) best = v;
+      }
+      if (best) all.push(best);
+    }
+  }
+  // 2. Augmenter, diminuer, retirer un ajout existant.
+  for (const a of recipe.additions) {
+    for (const [type, k] of [['augmenter', 1.5], ['augmenter', 2], ['diminuer', 0.5], ['retirer', 0]] as const) {
+      const grams = round(a.grams * k);
+      const b: Addition = { ...a, grams };
+      const next = { ...recipe, additions: recipe.additions.map((x) => (x.id === a.id ? b : x)).filter((x) => x.grams > 0) };
+      const changes: Change[] = k === 0 ? [{ addition: a, sign: -1 }] : [{ addition: b, sign: 1 }, { addition: a, sign: -1 }];
+      const label = k === 0 ? `Retirer ${nameOf(a.hopKey)} · ${MOMENTS[a.moment].label}` : `${type === 'augmenter' ? 'Augmenter' : 'Diminuer'} ${nameOf(a.hopKey)} · ${MOMENTS[a.moment].label} · ${round(a.grams, 0)} → ${round(grams, 0)} g`;
+      all.push(evaluate(type, label, [k === 0 ? act('retirer', a) : act('modifier', b, { previousGrams: round(a.grams) })], changes, next));
+    }
+    // 3. Remplacer : à IBU égal (amertume, à 0,5 IBU près) ou à masse égale (arôme).
+    const bitter = MOMENTS[a.moment].kind === 'amertume';
+    const target = additionIbu(a, recipe);
+    for (const key of [...stockHops, ...buyPool(false)].filter((k) => k !== a.hopKey)) {
+      const ref = hopRef(key)!;
+      let grams = a.grams;
+      if (bitter) {
+        if (target.unknown.length || !ref.alpha) { skipped.push({ what: `Remplacer ${nameOf(a.hopKey)} par ${ref.name}`, why: 'alpha inconnu : IBU égal incalculable' }); continue; }
+        const exact = gramsForIbu(target.value, ref, a.moment, recipe)!;
+        const k = ibuPerGram(ref.alpha.value, a.moment, recipe);
+        grams = [1, 0.5, 0.1].map((step) => Math.round(exact / step) * step).find((g) => Math.abs(g * k - target.value) <= 0.5) ?? exact;
+      }
+      const b: Addition = { id: a.id, hopKey: key, moment: a.moment, grams: round(grams) };
+      const next = { ...recipe, additions: recipe.additions.map((x) => (x.id === a.id ? b : x)) };
+      const type: VoieType = bitter ? 'remplacer à IBU égal' : 'remplacer à masse égale';
+      all.push(evaluate(type, `Remplacer ${nameOf(a.hopKey)} par ${ref.name} · ${MOMENTS[a.moment].label} · ${round(b.grams, 1)} g`,
+        [act('modifier', b, { previousGrams: round(a.grams), previousHopKey: a.hopKey })], [{ addition: b, sign: 1 }, { addition: a, sign: -1 }], next));
+    }
+  }
+  // 4. Assemblage de deux houblons du stock, à moitié de dose chacun : toujours estimé.
+  if (assemblages && plus.length) {
+    const singles = all.filter((v) => v.type === 'ajouter' && v.domain === 'stock' && !v.conflicts.length).sort(compareVoies);
+    const tops: Voie[] = [];
+    for (const v of singles) if (!tops.some((t) => t.actions[0].hopKey === v.actions[0].hopKey)) tops.push(v);
+    const heads = tops.slice(0, 4);
+    for (let i = 0; i < heads.length; i++) for (let j = i + 1; j < heads.length; j++) {
+      const lead = heads[i].actions[0], other = heads[j].actions[0];
+      const half = lead.grams / 2;
+      const a1: Addition = { id: `v-${lead.hopKey}-${lead.moment}`, hopKey: lead.hopKey, moment: lead.moment, grams: round(half) };
+      const a2: Addition = { id: `v-${other.hopKey}-${lead.moment}`, hopKey: other.hopKey, moment: lead.moment, grams: round(half) };
+      const next = { ...recipe, additions: [...recipe.additions, a1, a2] };
+      all.push(evaluate('assemblage', `Assembler ${lead.hopName} + ${other.hopName} · ${lead.momentLabel} · ${round(half, 0)} g + ${round(half, 0)} g`,
+        [act('ajouter', a1), act('ajouter', a2)], [{ addition: a1, sign: 1, share: 0.5 }, { addition: a2, sign: 1, share: 0.5 }], next,
+        ['Assemblage : apports des deux houblons additionnés, interactions du mélange non quantifiées (hypothèse).']));
+    }
+  }
+
+  // Stock d'abord, puis à acheter ; dans chaque domaine, classement lexicographique.
+  const kept: Voie[] = [];
+  const perHopCount = new Map<string, number>();
+  let blends = 0;
+  // Une voie doit rapprocher au moins une famille visée par un apport établi (fiche qui la cite).
+  const progress = (v: Voie) => targets.some((t) => v.effect[t.family].established && Math.sign(v.effect[t.family].central ?? 0) === Math.sign(t.delta));
+  const withoutProgress = all.filter((v) => !progress(v)).length;
+  if (withoutProgress) notes.push(`${withoutProgress} voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.`);
+  for (const [domain, cap] of [['stock', limit], ['à acheter', buyLimit]] as const) {
+    let count = 0;
+    for (const v of all.filter((x) => x.domain === domain && progress(x)).sort(compareVoies)) {
+      const key = v.actions.map((a) => a.hopKey).sort().join('+');
+      if ((perHopCount.get(key) ?? 0) >= perHop) continue;
+      // Deux assemblages au plus : ils restent estimés et ne doivent pas masquer les voies simples.
+      if (v.type === 'assemblage' && ++blends > 2) continue;
+      perHopCount.set(key, (perHopCount.get(key) ?? 0) + 1);
+      kept.push(v);
+      if (++count >= cap) break;
+    }
+  }
+  // Profil de la recette entière après chaque voie retenue (cumul V5.5).
+  for (const v of kept) {
+    const next = applyVoie(recipe, v);
+    v.after = recipeProfile(next).profile;
+  }
+  kept.forEach((v, i) => { v.rank = i + 1; });
+  const complete = FAMILIES.filter((f) => before.profile[f].completeDomain).length;
+  if (complete) notes.push(`${complete} familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.`);
+  if (kept.some((v) => v.after && FAMILIES.every((f) => v.after![f].completeDomain || v.after![f].status === 'inconnu'))) notes.push('Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille.');
+  return { recipe, style, yeast: yeastInfo(recipe.yeastId), matrix: matrixContext(recipe), before, ibu: round(ibu0.value), direction: targets, voies: kept, evaluated: n, skipped, notes, ranking: RANKING };
+}
+
+const STOCK_RANK = { suffisant: 0, manque: 1, 'à acheter': 2 } as const;
+/** Classement lexicographique, comme le solveur V5.5 : conflits, distance, stock, dérive d'IBU. */
+export function compareVoies(a: Voie, b: Voie): number {
+  const da = a.distance.total, db = b.distance.total;
+  return a.conflicts.length - b.conflicts.length
+    || (da === null ? (db === null ? 0 : 1) : db === null ? -1 : da - db)
+    || STOCK_RANK[a.stock.status] - STOCK_RANK[b.stock.status]
+    || Math.abs(a.ibu.drift) - Math.abs(b.ibu.drift)
+    || a.id.localeCompare(b.id);
+}
+
+/** Recette après la voie (pour « poser la voie » ; l'annulation garde la recette d'avant). */
+export function applyVoie(recipe: Recipe, v: Voie): Recipe {
+  let additions = [...recipe.additions];
+  for (const a of v.actions) {
+    if (a.op === 'retirer') additions = additions.filter((x) => x.id !== a.additionId);
+    else if (a.op === 'modifier') additions = additions.map((x) => (x.id === a.additionId ? { ...x, hopKey: a.hopKey, grams: a.grams } : x));
+    else additions.push({ id: a.additionId, hopKey: a.hopKey, moment: a.moment, grams: a.grams });
+  }
+  return { ...recipe, additions };
+}

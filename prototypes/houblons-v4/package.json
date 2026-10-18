@@ -1,0 +1,20 @@
+{
+  "name": "affinee-houblons-v4",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Moteur et échelles au style du prototype houblons v4 (#119). Importe le moteur V5.5 de l'app sans le modifier ; produit le pack de données des mini-prototypes.",
+  "type": "module",
+  "scripts": {
+    "data": "node scripts/build-data.mjs && node scripts/build-bands.mjs",
+    "pack": "node scripts/build-data.mjs && node scripts/build-bands.mjs && vite-node scripts/build-pack.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "check:engine": "node scripts/check-engine.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "typescript": "~5.8.3",
+    "vite": "^6.4.0",
+    "vitest": "^3.2.7"
+  }
+}

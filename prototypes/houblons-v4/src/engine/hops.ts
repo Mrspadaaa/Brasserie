@@ -1,0 +1,73 @@
+import { createHopExtrapolationCache, hopDescriptorEvidence } from '@functions/hopExtrapolationCore';
+import { suggestedHopVarieties } from '@app/domain/hopIndex/styleSelection';
+import { ENGINE_DATA, EXTRAPOLATION, POLICY, STOCK, VARIETY_BY_ID, hopRef, type HopRef } from './data';
+import { FAMILIES, type FamilyId } from './families';
+import { MOMENTS, predictTriplet, profileOf, tripletOf, yeastInfo, type FamilyEstimate, type MomentId, type Recipe, type YeastInfo } from './recipe';
+import type { StyleScale } from '../style/scale';
+
+// ---------- Descripteurs (preuve documentaire V5.5) ----------
+const cache = createHopExtrapolationCache();
+const terms = new Map(EXTRAPOLATION.axes.map((a) => [a.id, a.terms]));
+export type Citation = 'cité' | 'non cité' | 'sans descripteur';
+/** Famille citée dans une fiche du houblon, selon les termes du modèle V5.5 (hopDescriptorEvidence). */
+export function citations(varietyId: string): Record<FamilyId, { status: Citation; sources: string[] }> {
+  const v = VARIETY_BY_ID.get(varietyId);
+  const any = !!v && FAMILIES.some((f) => hopDescriptorEvidence(v, terms.get(f) ?? [], cache).length > 0);
+  return Object.fromEntries(FAMILIES.map((f) => {
+    const ev = v ? hopDescriptorEvidence(v, terms.get(f) ?? [], cache) : [];
+    return [f, { status: ev.length ? 'cité' : any ? 'non cité' : 'sans descripteur', sources: [...new Set(ev.map((d) => d.source.author))] }];
+  })) as Record<FamilyId, { status: Citation; sources: string[] }>;
+}
+export const cites = (varietyId: string, f: FamilyId) => citations(varietyId)[f].status === 'cité';
+
+// ---------- Profil d'un houblon à une dose de référence ----------
+export interface Reference { moment: MomentId; doseGL: number; yeastId: string | null; volumeL: number; og: number; boilMin: number }
+/** Référence commune à tous les houblons (échelles communes, R47) : préréglage whirlpool du solveur V5.5. */
+export const REFERENCE: Reference = { moment: 'wp', doseGL: POLICY.defaults.whirlpool.doseGL!.central, yeastId: 'fermentis-us05', volumeL: 20, og: 1.05, boilMin: 60 };
+
+export interface HopProfile {
+  key: string; name: string; origin: string | null;
+  inStock: number | null; alpha: HopRef['alpha'];
+  reference: Reference & { label: string }; yeast: YeastInfo;
+  families: Record<FamilyId, FamilyEstimate & { citation: Citation }>;
+  descriptors: { beerMaverick: string[]; hopsteiner: string[] };
+}
+export function hopProfile(key: string, ref: Partial<Reference> = {}): HopProfile {
+  const r = { ...REFERENCE, ...ref };
+  const h = hopRef(key);
+  if (!h) throw Error(`Houblon inconnu : ${key}`);
+  const recipe: Recipe = { name: 'référence', styleCode: '', volumeL: r.volumeL, og: r.og, boilMin: r.boilMin, yeastId: r.yeastId, additions: [] };
+  const p = predictTriplet(tripletOf({ id: 'ref', hopKey: key, moment: r.moment, grams: r.doseGL * r.volumeL }, recipe, h), {});
+  const prof = profileOf(p);
+  const cit = citations(h.varietyId);
+  return {
+    key, name: h.name, origin: h.catalogue.origin, inStock: h.stock ? h.stock.grams : null, alpha: h.alpha,
+    reference: { ...r, label: `${MOMENTS[r.moment].label}, ${r.doseGL.toLocaleString('fr-CH')} g/L` }, yeast: yeastInfo(r.yeastId),
+    families: Object.fromEntries(FAMILIES.map((f) => [f, { ...prof[f], citation: cit[f].status }])) as HopProfile['families'],
+    descriptors: { beerMaverick: h.catalogue.tagsFr, hopsteiner: h.catalogue.descriptions.filter((d) => d.source.author === 'Hopsteiner').map((d) => d.text) },
+  };
+}
+
+// ---------- Adéquation au style (liste « Mes houblons ») ----------
+export type FitClass = 'usage attesté' | 'cohérent' | 'peu documenté' | 'hors style' | 'non documenté';
+export interface StyleFit { key: string; name: string; grams: number; fit: FitClass; conflicts: string[]; supports: FamilyId[]; usage: boolean; reasons: string[] }
+/** Adéquation documentaire : familles indésirables citées (conflit), usage attesté pour ce style,
+ * familles attendues citées. Aucun score chiffré (un rang chiffré ne serait pas crédible). */
+export function styleFit(keys: string[], scale: StyleScale): StyleFit[] {
+  const suggested = new Set(suggestedHopVarieties(keys.map((k) => VARIETY_BY_ID.get(hopRef(k)!.varietyId)!), scale.name).map((v) => v.id));
+  const rows = keys.map((key) => {
+    const h = hopRef(key)!;
+    const cit = citations(h.varietyId);
+    const documented = FAMILIES.some((f) => cit[f].status !== 'sans descripteur');
+    const conflicts = scale.documented ? FAMILIES.filter((f) => scale.families[f].status === 'indésirable' && cit[f].status === 'cité').map((f) => `${f} exclu par le style, cité dans la fiche`) : [];
+    const supports = scale.documented ? scale.order.filter((f) => scale.families[f].status === 'attendue' && cit[f].status === 'cité') : [];
+    const usage = suggested.has(h.varietyId);
+    const fit: FitClass = conflicts.length ? 'hors style' : usage ? 'usage attesté' : !documented ? 'non documenté' : supports.length ? 'cohérent' : 'peu documenté';
+    const reasons = [...(usage ? ['usage attesté par un fournisseur pour ce style (hopStyleUsageBootstrap)'] : []), ...(supports.length ? [`familles attendues citées : ${supports.join(', ')}`] : []), ...conflicts];
+    return { key, name: h.name, grams: h.stock?.grams ?? 0, fit, conflicts, supports, usage, reasons };
+  });
+  const order: Record<FitClass, number> = { 'usage attesté': 0, cohérent: 1, 'peu documenté': 2, 'non documenté': 3, 'hors style': 4 };
+  return rows.sort((a, b) => order[a.fit] - order[b.fit] || Number(b.grams > 0) - Number(a.grams > 0) || b.supports.length - a.supports.length || b.grams - a.grams || a.name.localeCompare(b.name, 'fr'));
+}
+export const stockKeys = (inStockOnly = false) => STOCK.filter((s) => !inStockOnly || s.grams > 0).map((s) => s.key);
+export const engineVarieties = () => ENGINE_DATA.varieties;
