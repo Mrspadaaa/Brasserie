@@ -3,7 +3,7 @@
 import { HOP_RECIPE_ENGINE_VERSION } from '@functions/hopRecipePrediction';
 import {
   CATALOGUE, FAMILIES, FAMILY_NAMES, REFERENCE, SCALE_PARAMETERS, STOCK, STOCK_SOURCE, gapVerdict, getStyleScale, hopProfile, hopRef, valueVerdict,
-  proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE,
+  proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
@@ -96,6 +96,10 @@ export function buildPack() {
     // Pistes hors houblon, sourcées, sans chiffres.
     horsModele: offModelLeads(S1_DIRECTION),
   };
+  // Lecture commune : une entrée par famille dans l'ordre du style ; la dégustation prime.
+  const reading1 = readBeer(r1.before.profile, S1_TASTING, getStyleScale('16D'));
+  const summary1 = readingSummary(reading1), voies1 = voiesSummary(r1);
+  Object.assign(S1, { reading: reading1, readingSummary: { counts: summary1.counts, sentence: summary1.sentence, voies: voies1.byFamily, voiesSentence: voies1.sentence } });
 
   // S2 : Czech Premium Pale Lager 3B (floral attendu 33–68), trois houblons floraux du catalogue,
   // levure de lager LalBrew Diamond, sans profil dans V5.5 : enveloppe inconnue, gardée telle quelle.
@@ -118,6 +122,10 @@ export function buildPack() {
     hops: trio.map((h) => ({ ...hopEntry(h),
       styleVerdicts: Object.fromEntries(s3b.order.filter((f) => s3b.families[f].status === 'attendue').map((f) => [f, valueVerdict(est2(h, f), s3b.families[f])])) })),
     pairs,
+    // Résumé seulement : à la référence, les profils des trois houblons sont des plages pleines
+    // (non situés) ; une lecture par houblon n'écrirait que « non situé ».
+    readingSummary: { ...gapSummary(trio.map((h) => h.name), pairs),
+      note: 'Profils à la référence : plages pleines, non situées ; seul l’écart entre houblons se lit.' },
     illustration: (() => {
       // « Un écart faible pour une ipa peut être très grand pour un autre style » : un cran du floral de la 3B, arrondi.
       const gap = Math.round(s3b.families.floral.cran);

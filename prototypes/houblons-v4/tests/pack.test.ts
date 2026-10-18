@@ -52,6 +52,10 @@ describe('Pack des mini-prototypes', () => {
     for (const e of estimates) if (e.completeDomain) expect(e.display).toBe('non situé');
     expect(S1.tasting.axes.filter((a: { perceived: string | null }) => a.perceived !== null)).toEqual([expect.objectContaining({ family: 'resin', perceived: 'marqué' })]);
     expect(S1.horsModele[0].leads.every((l: { horsModele: boolean }) => l.horsModele)).toBe(true);
+    expect(S1.reading.map((r: { family: string }) => r.family)).toEqual(stored.styles['16D'].order);
+    expect(S1.readingSummary.sentence).toBeTruthy();
+    expect(S1.readingSummary.voiesSentence).toBeTruthy();
+    expect(stored.scenarios.S2.readingSummary.sentence).toBeTruthy();
     expect(stored.scenarios.S2.pairs).toHaveLength(3);
     expect(stored.scenarios.S3.ranked.length).toBe(stored.stock.length);
     // JSON simple : il se relit et se réécrit à l'identique (aucune valeur non sérialisable).

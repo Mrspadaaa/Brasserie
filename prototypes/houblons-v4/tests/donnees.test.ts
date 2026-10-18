@@ -1,7 +1,34 @@
 import { describe, expect, it } from 'vitest';
 import facts from '../data/faits-cites.json';
-import { FAMILIES, describeFamilies, getStyleScale, hopProfile, offModelLeads, proposeVoies, recipeProfile, situateBeer, tastingFrom } from '../src/engine';
+import { FAMILIES, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe } from '../src/pack/buildPack';
+
+describe('Lecture commune (reading)', () => {
+  it('S1 : une entrée par famille dans l’ordre du style, la dégustation prime, comptes et phrases calculés', () => {
+    const scale = getStyleScale('16D');
+    const reading = readBeer(recipeProfile(s1Recipe()).profile, S1_TASTING, scale);
+    expect(reading.map((r) => r.family)).toEqual(scale.order);
+    expect(reading.find((r) => r.family === 'resin')).toMatchObject({ source: 'dégustation', verdict: 'trop', perceived: 'marqué', verdictFrom: 'dégustation' });
+    for (const r of reading.filter((x) => x.source === 'non situé')) expect(r).toMatchObject({ verdict: 'non situé', byCentral: null });
+    const s = readingSummary(reading);
+    expect(Object.values(s.counts).reduce((a, b) => a + b, 0)).toBe(12);
+    expect(s.sentence).toContain(`${s.counts['au style']} au style`);
+    expect(s.sentence).toContain(`${s.counts['non situé']} non situées`);
+    expect(s.sentence.startsWith('Boisé et résineux trop marqué')).toBe(true);
+    const r1 = proposeVoies(s1Recipe(), S1_DIRECTION);
+    const v = voiesSummary(r1);
+    const floral = r1.voies.filter((x) => x.effect.floral.established && x.effect.floral.central! > 0);
+    expect(v.byFamily[0].sensible + v.byFamily[0].weak).toBe(floral.length);
+    expect(v.byFamily[1].sensible).toBe(0);
+    expect(v.sentence).toMatch(/^Plus floral : \d+ voies?.* · Moins boisé et résineux : \d+ voies?, faibles?$/);
+  });
+
+  it('S2 : résumé des écarts entre houblons, compté sur les paires', () => {
+    const s = gapSummary(['A', 'B'], [{ families: { floral: { verdict: '≈', why: 'plages recouvrantes' }, spice: { verdict: 'écart', why: 'au-delà du seuil' } } }]);
+    expect(s.counts).toEqual({ '≈ (plages recouvrantes)': 1, 'écart (au-delà du seuil)': 1 });
+    expect(s.sentence).toContain('sur 2 comparaisons');
+  });
+});
 
 describe('Données citées, niveaux de citation, dégustation (D25)', () => {
   it('Nugget : la résine devient citée par deux fiches sourcées (boutique Hopsteiner US, Yakima Chief)', () => {
