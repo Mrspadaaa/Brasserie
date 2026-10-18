@@ -19,7 +19,9 @@ describe('Pack des mini-prototypes', () => {
     expect(stored.meta.status).toBe('à valider par le brasseur');
     expect(stored.meta.bands.version).toBeTruthy();
     expect(stored.families.map((f: { order: number }) => f.order)).toEqual([...Array(12).keys()]);
-    expect(Object.keys(stored.styles)).toEqual(['16D', '3A', '21A']);
+    expect(Object.keys(stored.styles)).toEqual(['16D', '3A', '3B', '21A']);
+    expect(stored.scenarios.S2.style).toBe('3B');
+    expect(stored.styles['3B'].families.floral).toMatchObject({ status: 'attendue', band: [33, 68] });
     for (const s of Object.values(stored.styles) as { families: Record<string, { band: number[]; status: string; threshold: number }>; ibu: number[] }[]) {
       expect(s.ibu).toHaveLength(2);
       for (const f of Object.values(s.families)) { expect(f.band).toHaveLength(2); expect(['attendue', 'neutre', 'indésirable']).toContain(f.status); expect(f.threshold).toBeGreaterThan(0); }

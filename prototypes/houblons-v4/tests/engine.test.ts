@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  FAMILIES, additionIbu, applyVoie, gramsForIbu, hopProfile, hopRef, matrixContext, proposeVoies, recipeIbu, recipeProfile, styleFit, getStyleScale, yeastInfo, STOCK, CATALOGUE,
+  FAMILIES, additionIbu, applyVoie, compareRankKeys, gramsForIbu, hopProfile, hopRef, matrixContext, proposeVoies, recipeIbu, recipeProfile, styleFit, getStyleScale, yeastInfo, STOCK, CATALOGUE,
   type Recipe,
 } from '../src/engine';
 import { s1Recipe } from '../src/pack/buildPack';
@@ -45,16 +45,39 @@ describe('Moteur v4 sur le moteur V5.5 importé', () => {
     expect(proposeVoies(s1Recipe(), { floral: 2 }).direction[0].delta).toBeCloseTo(2 * scale.families.floral.cran, 1);
   });
 
-  it('classement lexicographique : conflits, puis distance en unités du style, puis stock, puis dérive d’IBU ; stock d’abord, à acheter ensuite', () => {
-    const domains = s1.voies.map((v) => v.domain);
-    expect(domains.lastIndexOf('stock')).toBeLessThan(domains.indexOf('à acheter') === -1 ? Infinity : domains.indexOf('à acheter'));
-    const stockVoies = s1.voies.filter((v) => v.domain === 'stock');
-    for (let i = 1; i < stockVoies.length; i++) {
-      const [p, q] = [stockVoies[i - 1], stockVoies[i]];
-      expect(p.conflicts.length).toBeLessThanOrEqual(q.conflicts.length);
-      if (p.conflicts.length === q.conflicts.length && p.distance.total !== null && q.distance.total !== null) expect(p.distance.total).toBeLessThanOrEqual(q.distance.total + 1e-9);
+  it('classement lexicographique : conflits, débordement de style, distance, effets de bord, stock, IBU ; égalités au même rang', () => {
+    for (let i = 1; i < s1.voies.length; i++) {
+      const [p, q] = [s1.voies[i - 1], s1.voies[i]];
+      expect(compareRankKeys(p, q)).toBeLessThanOrEqual(0);
+      expect(q.rank).toBe(compareRankKeys(p, q) === 0 ? p.rank : i + 1);
+      if (compareRankKeys(p, q) === 0) { expect(p.tieWith).toContain(q.label); expect(q.tieWith).toContain(p.label); }
     }
+    // Les deux groupes restent visibles.
+    expect(s1.voies.some((v) => v.domain === 'stock')).toBe(true);
     expect(s1.voies.some((v) => v.domain === 'à acheter' && v.stock.status === 'à acheter')).toBe(true);
+  });
+
+  it('reste au style : en S1, une voie Goldings ou Celeia passe devant Citra cryo, et un débordement est exposé en crans', () => {
+    const best = (pred: (k: string) => boolean) => Math.min(...s1.voies.filter((v) => v.actions.some((a) => pred(a.hopKey))).map((v) => v.rank));
+    const goldings = best((k) => /golding|celeia/.test(k));
+    const citra = best((k) => k === 'beermaverick-citra:cryo');
+    expect(goldings).toBeLessThan(citra);
+    // Une voie plus forte de Citra cryo pousse des familles neutres de la stout au-dessus de 30.
+    const wide = proposeVoies(s1Recipe(), { floral: 1, resin: -1 }, { limit: 60, buyLimit: 20, perHop: 8 });
+    const over = wide.voies.find((v) => v.overflowTotal > 0)!;
+    expect(over).toBeDefined();
+    for (const o of over.styleOverflow) {
+      expect(['neutre', 'indésirable', 'attendue']).toContain(o.status);
+      expect(o.band).toHaveLength(2);
+      expect(o.crans).toBeGreaterThan(0);
+      expect(o.why).toMatch(/bande/);
+    }
+    expect(over.overflowTotal).toBeCloseTo(over.styleOverflow.reduce((s, o) => s + o.crans, 0), 1);
+    // Une voie du stock qui sort du style ne passe pas devant une voie à acheter qui y reste (à conflits égaux).
+    for (let i = 0; i < wide.voies.length; i++) for (let j = i + 1; j < wide.voies.length; j++) {
+      const [p, q] = [wide.voies[i], wide.voies[j]];
+      if (p.conflicts.length === q.conflicts.length && p.domain === 'stock' && q.domain === 'à acheter') expect(p.overflowTotal).toBeLessThanOrEqual(q.overflowTotal);
+    }
   });
 
   it('stock libre = stock moins les ajouts de la recette', () => {

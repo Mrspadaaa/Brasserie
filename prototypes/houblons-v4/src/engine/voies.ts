@@ -42,9 +42,17 @@ export interface Voie {
   distance: { total: number | null; byFamily: Partial<Record<FamilyId, number | null>> };
   stock: { status: 'suffisant' | 'manque' | 'à acheter'; missing: { hopKey: string; hopName: string; grams: number }[] };
   ibu: { before: number; after: number; drift: number; unknown: boolean };
+  /** Débordement de style imputable à la voie : famille poussée au-dessus de la bande d'une famille
+   * neutre ou indésirable, ou hors de la bande d'une famille attendue, en crans du style. */
+  styleOverflow: StyleOverflow[]; overflowTotal: number;
+  /** Effets de bord dans la bande : familles neutres ou indésirables non visées poussées vers le
+   * haut par un apport établi, en crans du style (même sans sortir de la bande). */
+  sideEffects: { family: FamilyId; status: string; crans: number }[]; sideTotal: number;
   after: Profile | null;
-  rank: number;
+  /** Rang partagé par les voies dont toutes les clés de classement sont égales. */
+  rank: number; tieWith: string[];
 }
+export interface StyleOverflow { family: FamilyId; status: string; band: [number, number]; crans: number; why: string }
 export interface VoieResult {
   recipe: Recipe; style: StyleScale; yeast: YeastInfo; matrix: MatrixContext;
   before: RecipeProfile; ibu: number; direction: DirectedTarget[];
@@ -54,16 +62,18 @@ export interface VoieResult {
 export interface VoieOptions {
   /** Variétés « à acheter » examinées (défaut 6). */ maxBuy?: number;
   /** Voies du stock retenues (défaut 10). */ limit?: number;
-  /** Voies à acheter retenues après celles du stock (défaut 4). */ buyLimit?: number;
+  /** Voies à acheter retenues, classées avec celles du stock (défaut 4). */ buyLimit?: number;
   /** Voies au plus par houblon ou couple de houblons (défaut 2). */ perHop?: number;
   moments?: MomentId[]; assemblages?: boolean;
 }
 
 export const RANKING = [
   'conflits (exclusions V5.5 : famille « moins » citée par le houblon ajouté ; famille indésirable du style citée ; IBU sorti de la plage du style)',
+  'débordement de style (somme des crans hors bande imputables à la voie ; base : repère central de la recette, ou aucune présence établie)',
   'distance à la cible en unités du style (somme sur les familles visées de |variation prévue − variation visée| / largeur de bande ; inconnue en dernier)',
-  'stock : suffisant, puis manque, puis à acheter',
-  'dérive d’IBU (valeur absolue)',
+  'effets de bord dans la bande (somme des crans des familles neutres ou indésirables non visées poussées vers le haut)',
+  'stock : suffisant, puis manque, puis à acheter (une voie du stock qui sort du style ne passe pas devant une voie à acheter qui y reste)',
+  'dérive d’IBU (valeur absolue) ; égalité de toutes les clés : même rang',
 ];
 
 const round = (x: number, n = 1) => Math.round(x * 10 ** n) / 10 ** n;
@@ -178,6 +188,27 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       if (s.grams < total - 1e-9) { if (status === 'suffisant') status = 'manque'; missing.push({ hopKey: key, hopName: nameOf(key), grams: round(total - Math.max(0, s.grams)) }); }
     }
     const estimatedWhy = [...extraEstimated, ...new Set(actions.filter((a) => a.op !== 'retirer').map((a) => MOMENTS[a.moment].estimated).filter((x): x is string => !!x))];
+    // Débordement de style et effets de bord : seulement les apports établis (fiche qui cite la famille).
+    const styleOverflow: StyleOverflow[] = [];
+    const sideEffects: Voie['sideEffects'] = [];
+    if (effect && style.documented) for (const f of FAMILIES) {
+      const e = effect[f], fs = style.families[f];
+      if (!e.established || e.central === null || !fs.band) continue;
+      const base = before.profile[f].central;
+      const ref = base ?? 0, after = ref + e.central;
+      const [lo, hi] = fs.band;
+      const excess = (x: number) => Math.max(0, x - hi), deficit = (x: number) => Math.max(0, lo - x);
+      const up = Math.max(0, excess(after) - excess(ref));
+      const down = fs.status === 'attendue' ? Math.max(0, deficit(after) - deficit(ref)) : 0;
+      const baseText = base === undefined ? 'aucune présence établie avant' : `repère ${round(base)} avant`;
+      if (up > 0) styleOverflow.push({ family: f, status: fs.status, band: fs.band, crans: round(up / fs.cran, 2),
+        why: `${FAMILY_NAMES[f]} : ${baseText}, ${round(after)} après (+${round(e.central)}), au-dessus de la bande ${lo}–${hi} (${fs.status}).` });
+      if (down > 0) styleOverflow.push({ family: f, status: fs.status, band: fs.band, crans: round(down / fs.cran, 2),
+        why: `${FAMILY_NAMES[f]} : ${baseText}, ${round(after)} après (${round(e.central)}), sous la bande attendue ${lo}–${hi}.` });
+      if (fs.status !== 'attendue' && !directed.includes(f) && e.central > 0) sideEffects.push({ family: f, status: fs.status, crans: round(e.central / fs.cran, 2) });
+    }
+    const overflowTotal = round(styleOverflow.reduce((s, o) => s + o.crans, 0), 2);
+    const sideTotal = round(sideEffects.reduce((s, o) => s + o.crans, 0), 2);
     return {
       id: `${type}|${actions.map((a) => `${a.hopKey}@${a.moment}:${round(a.grams)}`).join('+')}`, type, label,
       domain: needed.every((k) => STOCK.some((s) => s.key === k && s.grams > 0)) ? 'stock' : 'à acheter',
@@ -185,7 +216,8 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       effect: effect ?? (Object.fromEntries(FAMILIES.map((f) => [f, { family: f, central: null, established: false, partial: false }])) as Record<FamilyId, FamilyEffect>),
       distance: { total: total === null ? null : round(total, 3), byFamily },
       stock: { status, missing }, ibu: { before: round(ibu0.value), after: round(ibu1.value), drift: round(ibu1.value - ibu0.value), unknown: ibu1.unknown.length > 0 },
-      after: null, rank: 0,
+      styleOverflow, overflowTotal, sideEffects, sideTotal,
+      after: null, rank: 0, tieWith: [],
     };
   };
   const act = (op: Action['op'], a: Addition, extra: Partial<Action> = {}): Action => ({ op, additionId: a.id, hopKey: a.hopKey, hopName: nameOf(a.hopKey), moment: a.moment, momentLabel: MOMENTS[a.moment].label, grams: round(a.grams), gramsPerLitre: round(a.grams / recipe.volumeL, 2), ...extra });
@@ -255,32 +287,35 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     }
   }
 
-  // Stock d'abord, puis à acheter ; dans chaque domaine, classement lexicographique.
+  // Les deux groupes restent visibles (jusqu'à `limit` voies du stock et `buyLimit` à acheter),
+  // classés ensemble : le stock n'est qu'un critère de rang, après le style et la distance.
   const kept: Voie[] = [];
   const perHopCount = new Map<string, number>();
+  const perDomain = { stock: 0, 'à acheter': 0 };
   let blends = 0;
   // Une voie doit rapprocher au moins une famille visée par un apport établi (fiche qui la cite).
   const progress = (v: Voie) => targets.some((t) => v.effect[t.family].established && Math.sign(v.effect[t.family].central ?? 0) === Math.sign(t.delta));
   const withoutProgress = all.filter((v) => !progress(v)).length;
   if (withoutProgress) notes.push(`${withoutProgress} voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.`);
-  for (const [domain, cap] of [['stock', limit], ['à acheter', buyLimit]] as const) {
-    let count = 0;
-    for (const v of all.filter((x) => x.domain === domain && progress(x)).sort(compareVoies)) {
-      const key = v.actions.map((a) => a.hopKey).sort().join('+');
-      if ((perHopCount.get(key) ?? 0) >= perHop) continue;
-      // Deux assemblages au plus : ils restent estimés et ne doivent pas masquer les voies simples.
-      if (v.type === 'assemblage' && ++blends > 2) continue;
-      perHopCount.set(key, (perHopCount.get(key) ?? 0) + 1);
-      kept.push(v);
-      if (++count >= cap) break;
-    }
+  for (const v of all.filter(progress).sort(compareVoies)) {
+    if (perDomain[v.domain] >= (v.domain === 'stock' ? limit : buyLimit)) continue;
+    const key = v.actions.map((a) => a.hopKey).sort().join('+');
+    if ((perHopCount.get(key) ?? 0) >= perHop) continue;
+    // Deux assemblages au plus : ils restent estimés et ne doivent pas masquer les voies simples.
+    if (v.type === 'assemblage' && blends >= 2) continue;
+    if (v.type === 'assemblage') blends++;
+    perHopCount.set(key, (perHopCount.get(key) ?? 0) + 1);
+    perDomain[v.domain]++;
+    kept.push(v);
   }
   // Profil de la recette entière après chaque voie retenue (cumul V5.5).
   for (const v of kept) {
     const next = applyVoie(recipe, v);
     v.after = recipeProfile(next).profile;
   }
-  kept.forEach((v, i) => { v.rank = i + 1; });
+  // Rang partagé quand toutes les clés sont égales (aucun ordre arbitraire présenté comme un rang).
+  kept.forEach((v, i) => { v.rank = i > 0 && compareRankKeys(kept[i - 1], v) === 0 ? kept[i - 1].rank : i + 1; });
+  for (const v of kept) v.tieWith = kept.filter((w) => w !== v && compareRankKeys(v, w) === 0).map((w) => w.label);
   const complete = FAMILIES.filter((f) => before.profile[f].completeDomain).length;
   if (complete) notes.push(`${complete} familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.`);
   if (kept.some((v) => v.after && FAMILIES.every((f) => v.after![f].completeDomain || v.after![f].status === 'inconnu'))) notes.push('Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille.');
@@ -288,14 +323,19 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
 }
 
 const STOCK_RANK = { suffisant: 0, manque: 1, 'à acheter': 2 } as const;
-/** Classement lexicographique, comme le solveur V5.5 : conflits, distance, stock, dérive d'IBU. */
-export function compareVoies(a: Voie, b: Voie): number {
+/** Clés du classement lexicographique (voir RANKING). 0 = égalité réelle de toutes les clés. */
+export function compareRankKeys(a: Voie, b: Voie): number {
   const da = a.distance.total, db = b.distance.total;
   return a.conflicts.length - b.conflicts.length
+    || a.overflowTotal - b.overflowTotal
     || (da === null ? (db === null ? 0 : 1) : db === null ? -1 : da - db)
+    || a.sideTotal - b.sideTotal
     || STOCK_RANK[a.stock.status] - STOCK_RANK[b.stock.status]
-    || Math.abs(a.ibu.drift) - Math.abs(b.ibu.drift)
-    || a.id.localeCompare(b.id);
+    || Math.abs(a.ibu.drift) - Math.abs(b.ibu.drift);
+}
+/** Ordre d'affichage : clés de classement, puis libellé pour une liste stable (sans changer le rang). */
+export function compareVoies(a: Voie, b: Voie): number {
+  return compareRankKeys(a, b) || a.label.localeCompare(b.label, 'fr') || a.id.localeCompare(b.id);
 }
 
 /** Recette après la voie (pour « poser la voie » ; l'annulation garde la recette d'avant). */

@@ -6,6 +6,6 @@ export {
   type MomentId, type Moment, type Recipe, type Addition, type FamilyEstimate, type Profile, type RecipeProfile, type YeastInfo, type MatrixContext, type Ibu,
 } from './recipe';
 export { hopProfile, styleFit, citations, REFERENCE, stockKeys, type HopProfile, type StyleFit, type FitClass, type Citation, type Reference } from './hops';
-export { proposeVoies, compareVoies, applyVoie, RANKING, type Direction, type Voie, type VoieType, type Action, type VoieResult, type FamilyEffect, type DirectedTarget } from './voies';
+export { proposeVoies, compareVoies, compareRankKeys, applyVoie, RANKING, type Direction, type Voie, type VoieType, type Action, type VoieResult, type FamilyEffect, type DirectedTarget, type StyleOverflow } from './voies';
 export { getStyleScale, documentedStyleCodes, SCALE_PARAMETERS, type StyleScale, type FamilyScale, type FamilyStatus } from '../style/scale';
 export { valueVerdict, gapVerdict, trackPosition, trackShare, type ValueVerdict, type GapVerdict, type EstimateLike } from '../style/verdict';

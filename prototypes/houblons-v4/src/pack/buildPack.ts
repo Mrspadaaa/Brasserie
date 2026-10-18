@@ -2,12 +2,12 @@
 // + ajouts v4). JSON simple, déterministe (aucune horloge), relu par tests/pack.test.ts.
 import { HOP_RECIPE_ENGINE_VERSION } from '@functions/hopRecipePrediction';
 import {
-  CATALOGUE, FAMILIES, FAMILY_NAMES, REFERENCE, SCALE_PARAMETERS, STOCK, STOCK_SOURCE, gapVerdict, getStyleScale, hopProfile, hopRef,
+  CATALOGUE, FAMILIES, FAMILY_NAMES, REFERENCE, SCALE_PARAMETERS, STOCK, STOCK_SOURCE, gapVerdict, getStyleScale, hopProfile, hopRef, valueVerdict,
   proposeVoies, styleFit, trackShare, type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie,
 } from '../engine';
 
 export const PACK_DATE = '2026-10-18';
-export const PACK_STYLES = ['16D', '3A', '21A'] as const;
+export const PACK_STYLES = ['16D', '3A', '3B', '21A'] as const;
 export const CATALOGUE_IDS = {
   '16D': ['challenger', 'northdown', 'northern-brewer-gr', 'willamette', 'bramling-cross', 'first-gold', 'golding', 'admiral'],
   '3A': ['saaz-cz', 'styrian-golding', 'hallertau-mittelfruh', 'tettnanger', 'spalt', 'perle-gr', 'hersbrucker', 'hallertau-tradition'],
@@ -56,6 +56,9 @@ function voieEntry(v: Voie, directed: FamilyId[]) {
     directedEffect: Object.fromEntries(directed.map((f) => [f, v.effect[f].central])),
     ibu: v.ibu,
     stock: v.stock,
+    styleOverflow: v.styleOverflow, overflowTotal: v.overflowTotal,
+    sideEffects: v.sideEffects, sideTotal: v.sideTotal,
+    tieWith: v.tieWith,
     after: v.after ? profile(v.after) : null,
   };
 }
@@ -77,26 +80,29 @@ export function buildPack() {
     voies: r1.voies.map((v) => voieEntry(v, directed)),
   };
 
-  // S2 : lager tchèque, trois houblons floraux (catalogue), levure de lager sans profil V5.5.
-  const s3a = getStyleScale('3A'), s21a = getStyleScale('21A');
+  // S2 : Czech Premium Pale Lager 3B (floral attendu 33–68), trois houblons floraux du catalogue,
+  // levure de lager LalBrew Diamond, sans profil dans V5.5 : enveloppe inconnue, gardée telle quelle.
+  const s3a = getStyleScale('3A'), s3b = getStyleScale('3B'), s21a = getStyleScale('21A');
   const lagerYeast = 'lalbrew-diamond';
-  const trio = ['saaz-cz', 'styrian-golding', 'hallertau-mittelfruh'].map((id) => hopProfile(`beermaverick-${id}`, { yeastId: lagerYeast, og: 1.044 }));
+  const trio = ['saaz-cz', 'styrian-golding', 'hallertau-mittelfruh'].map((id) => hopProfile(`beermaverick-${id}`, { yeastId: lagerYeast, og: 1.052 }));
+  const est2 = (h: HopProfile, f: FamilyId) => ({ range: h.families[f].range, central: h.families[f].central });
   const pairs = [[0, 1], [0, 2], [1, 2]].map(([i, j]) => ({
     a: trio[i].name, b: trio[j].name,
-    families: Object.fromEntries(s3a.order.map((f) => {
-      const g = gapVerdict({ range: trio[i].families[f].range, central: trio[i].families[f].central }, { range: trio[j].families[f].range, central: trio[j].families[f].central }, s3a.families[f]);
-      const g21 = gapVerdict({ range: trio[i].families[f].range, central: trio[i].families[f].central }, { range: trio[j].families[f].range, central: trio[j].families[f].central }, s21a.families[f]);
+    families: Object.fromEntries(s3b.order.map((f) => {
+      const g = gapVerdict(est2(trio[i], f), est2(trio[j], f), s3b.families[f]);
+      const g21 = gapVerdict(est2(trio[i], f), est2(trio[j], f), s21a.families[f]);
       return [f, { verdict: g.verdict, why: g.why, gap: g.gap === null ? null : round(g.gap), threshold: round(g.threshold), share: g.share === null ? null : round(g.share, 3),
         onIpa: { verdict: g21.verdict, why: g21.why, threshold: round(g21.threshold), share: g21.share === null ? null : round(g21.share, 3) } }];
     })),
   }));
   const S2 = {
-    question: 'Lager tchèque : lequel de Saaz, Styrian Golding et Hallertau Mittelfrüh est le plus floral, et l’écart compte-t-il ?',
-    style: '3A', yeast: trio[0].yeast, reference: trio[0].reference, inStock: false,
-    hops: trio.map(hopEntry),
+    question: 'Lager tchèque premium : lequel de Saaz, Styrian Golding et Hallertau Mittelfrüh est le plus floral, et l’écart compte-t-il ?',
+    style: '3B', yeast: trio[0].yeast, reference: trio[0].reference, inStock: false,
+    hops: trio.map((h) => ({ ...hopEntry(h),
+      styleVerdicts: Object.fromEntries(s3b.order.filter((f) => s3b.families[f].status === 'attendue').map((f) => [f, valueVerdict(est2(h, f), s3b.families[f])])) })),
     pairs,
     illustration: {
-      note: 'Même écart absolu de 8 points de floral, lu sur la piste de chaque style (repères ponctuels, sans incertitude).',
+      style: '3A', note: 'Même écart absolu de 8 points de floral, lu sur la piste de la Czech Pale Lager 3A (floral neutre, 0–30) et de l’American IPA 21A (repères ponctuels, sans incertitude).',
       lager: { share: round(trackShare(8, s3a.families.floral), 3), verdict: gapVerdict({ range: { min: 20, max: 20 } }, { range: { min: 28, max: 28 } }, s3a.families.floral).verdict, threshold: round(s3a.families.floral.threshold) },
       ipa: { share: round(trackShare(8, s21a.families.floral), 3), verdict: gapVerdict({ range: { min: 20, max: 20 } }, { range: { min: 28, max: 28 } }, s21a.families.floral).verdict, threshold: round(s21a.families.floral.threshold) },
     },

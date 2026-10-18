@@ -75,9 +75,16 @@ yeastInfo(id) -> 'caractérisée' | 'inconnue' | 'absente' ; matrixContext(recip
   égale (arôme), assemblage de 2 houblons du stock. Doses : `searchDosesGL` du solveur
   V5.5, plus « tout mon stock libre ». Une voie sans mouvement établi vers la cible
   n'est pas proposée.
-- **Classement** : stock d'abord, puis à acheter ; dans chaque domaine : conflits,
-  distance (Σ |variation prévue − visée| / largeur de bande), stock (suffisant, manque,
-  à acheter), dérive d'IBU.
+- **Classement** (stock et à acheter classés ensemble, les deux groupes restent visibles) :
+  1. conflits ;
+  2. débordement de style (`styleOverflow`, `overflowTotal`) : crans hors bande imputables
+     à la voie, au-dessus d'une famille neutre ou indésirable, ou hors d'une famille attendue ;
+     base = repère central de la recette, ou « aucune présence établie » ;
+  3. distance (Σ |variation prévue − visée| / largeur de bande) ;
+  4. effets de bord dans la bande (`sideEffects`, `sideTotal`) : crans des familles neutres
+     ou indésirables non visées poussées vers le haut ;
+  5. stock (suffisant, manque, à acheter) ; 6. dérive d'IBU.
+  Égalité de toutes les clés : même rang et `tieWith`.
 - **Estimé** (`estimated: true`) : assemblage, dry hop en fermentation active
   (biotransformation non quantifiée).
 
