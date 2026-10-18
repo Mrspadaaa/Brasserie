@@ -41,7 +41,9 @@ export interface QuickAdd {
   /** Familles citées (niveau, N fiches sur M) ; nom et statut dans families et cibleStyle du pack. */
   cited: { family: FamilyId; level: string; sources: number; of: number }[];
   /** IBU à la dose proposée et par gramme, pour chaque moment que V5.5 sait traiter (BrewingMath.hopIbu). */
-  ibuParMoment: IbuAtMoment[];
+  /** Présent sur les disponibles ; absent des listes longues (épuisés, catalogue) pour la taille du pack :
+   * l'entrée garde ibuAdded au moment proposé, et ibuByMoment le recalcule sur demande. */
+  ibuParMoment?: IbuAtMoment[];
 }
 const round = (x: number, n = 1) => Math.round(x * 10 ** n) / 10 ** n;
 const FIT_RANK: Record<FitClass, number> = { 'usage attesté': 0, cohérent: 1, 'peu documenté': 2, 'non documenté': 3, 'hors style': 4 };
@@ -51,6 +53,8 @@ export interface QuickAddOptions {
   gouts?: Gouts;
   /** Houblons hors stock (« à acheter ») gardés après classement (défaut 10). */
   catalogueLimit?: number;
+  /** IBU par moment aussi sur les épuisés et le catalogue (défaut : disponibles seulement). */
+  ibuParMomentPartout?: boolean;
 }
 export function quickAdds(recipe: Recipe, scale: StyleScale, tasting: Tasting | null = null, options: QuickAddOptions = {}):
   { disponibles: QuickAdd[]; epuises: QuickAdd[]; catalogue: QuickAdd[]; catalogueTotal: number; rule: string[]; tastingTrop: FamilyId[] } {
@@ -101,8 +105,9 @@ export function quickAdds(recipe: Recipe, scale: StyleScale, tasting: Tasting | 
     return sorted;
   };
   const toBuy = ranked(rows.filter((r) => r.stock.status === 'à acheter'));
-  return { disponibles: ranked(rows.filter((r) => r.stock.status !== 'à acheter' && r.stock.free > 0)), epuises: ranked(rows.filter((r) => r.stock.status !== 'à acheter' && r.stock.free <= 0)),
-    catalogue: toBuy.slice(0, options.catalogueLimit ?? 10), catalogueTotal: toBuy.length, rule: QUICK_ADD_RULE, tastingTrop: trop };
+  const short = (r: QuickAdd) => { if (!options.ibuParMomentPartout) delete r.ibuParMoment; return r; };
+  return { disponibles: ranked(rows.filter((r) => r.stock.status !== 'à acheter' && r.stock.free > 0)), epuises: ranked(rows.filter((r) => r.stock.status !== 'à acheter' && r.stock.free <= 0)).map(short),
+    catalogue: toBuy.slice(0, options.catalogueLimit ?? 10).map(short), catalogueTotal: toBuy.length, rule: QUICK_ADD_RULE, tastingTrop: trop };
 }
 /** Clés du classement (voir QUICK_ADD_RULE), dans l'ordre lexicographique. */
 export const quickAddKey = (r: QuickAdd) => [FIT_RANK[r.fit], r.tastingConflicts.length > 0 ? 1 : 0, r.offStyleWeight, -r.supports.length, -r.stock.free];

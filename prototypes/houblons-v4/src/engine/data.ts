@@ -7,6 +7,7 @@ import knowledgeBootstrap from '@app/data/hopKnowledgeBootstrap.json';
 import extrapolationBootstrap from '@app/data/hopExtrapolationBootstrap.json';
 import yeastBootstrap from '@app/data/hopYeastBootstrap.json';
 import solverBootstrap from '@app/data/hopSolverBootstrap.json';
+import trialBootstrap from '@app/data/hopTrialBootstrap.json';
 import protoData from '../../data/proto-data.json';
 
 /** Données du prototype : produites par scripts/build-data.mjs depuis le dépôt et le fixture
@@ -15,6 +16,9 @@ export interface CatalogueHop {
   id: string; name: string; aliases: string[]; origin: string | null;
   alpha: [number, number] | null; beta: [number, number] | null; oil: [number, number] | null;
   tags: string[]; tagsFr: string[]; hopsteinerId: string | null; url: string | null;
+  /** Hopsteiner : linalol (% de l'huile) et classe « Thiol impact » ; signaux, jamais des intensités. */
+  hsLinalool: { range: [number, number]; unit: string; reference: string; year: number | null } | null;
+  hsThiol: { class: string; reference: string | null } | null;
   descriptions: HopVariety['descriptions'];
 }
 export interface StockHop {
@@ -27,7 +31,9 @@ export const CATALOGUE = protoData.varieties as unknown as CatalogueHop[];
 export const STOCK = protoData.stock as unknown as StockHop[];
 export const STOCK_SOURCE = { fixture: protoData.fixture, note: protoData.fixtureSource, unlinked: protoData.unlinked as string[] };
 
-const knowledge = [...knowledgeBootstrap, ...extrapolationBootstrap, ...yeastBootstrap, ...solverBootstrap] as unknown as HopKnowledge[];
+// Levures du programme d'essais (LalBrew Pomona…) : seulement leurs fiches de souche, pas les essais.
+const trialYeasts = (trialBootstrap.hopKnowledge as { kind: string }[]).filter((k) => k.kind === 'yeast');
+const knowledge = [...knowledgeBootstrap, ...extrapolationBootstrap, ...yeastBootstrap, ...solverBootstrap, ...trialYeasts] as unknown as HopKnowledge[];
 export const AXES = knowledge.filter((k): k is HopAxis => k.kind === 'axis');
 export const YEASTS = knowledge.filter((k): k is HopYeast => k.kind === 'yeast');
 export const EXTRAPOLATION = knowledge.find((k): k is HopExtrapolation => k.kind === 'extrapolation' && k.enabled)!;

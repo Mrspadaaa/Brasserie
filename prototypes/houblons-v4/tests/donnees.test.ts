@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import facts from '../data/faits-cites.json';
 import { NO_GOUTS, afterCrans, beerCrans, citations, hopRef, shoppingList, targetCrans } from '../src/engine';
+import { CHARACTERIZED_YEASTS, applyVoie, compareRankKeys, yeastDoubleImpact, yeastSignals } from '../src/engine';
 import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, loadedRecipe, momentCatalogue, quickAddKey, recipeIbu, recipeLines, targetLevels, tastingMention, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
@@ -75,6 +76,50 @@ describe('Cas de figure S4 (sans houblon) et S5 (recette chargée)', () => {
   });
 });
 
+describe('La levure : double impact, leviers, signaux (R43, R44)', () => {
+  const s16d = getStyleScale('16D');
+
+  it('double impact : arôme propre par famille (spécifique ou enveloppe) séparé de l’expression du houblon ; souche non caractérisée « inconnu »', () => {
+    const y = yeastDoubleImpact(s1Recipe());
+    expect(y.status).toBe('caractérisée');
+    expect(y.aromePropre.citrus).toMatchObject({ specifique: true });
+    expect(y.aromePropre.floral).toMatchObject({ specifique: false });
+    expect(y.expression).toMatchObject({ parFamille: false, facteur: { min: 0.65, max: 1.35 } });
+    const lager = yeastDoubleImpact({ ...s1Recipe(), yeastId: 'lalbrew-diamond' });
+    expect(lager.expression).toBe('inconnu');
+    for (const f of FAMILIES) expect(lager.aromePropre[f]).toBe('inconnu');
+  });
+
+  it('leviers levure dans les voies de S1 : changer vers chaque souche caractérisée, et houblonner à froid en fermentation active', () => {
+    const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING, leviersLevure: true });
+    const levure = r.voies.filter((v) => v.type === 'levure');
+    expect(levure.filter((v) => v.yeastChange).map((v) => v.yeastChange!.to).sort()).toEqual(CHARACTERIZED_YEASTS.filter((y) => y !== 'fermentis-us05').sort());
+    for (const v of levure.filter((x) => x.yeastChange)) {
+      expect(v.estimated).toBe(true);
+      expect(applyVoie(s1Recipe(), v).yeastId).toBe(v.yeastChange!.to);
+      expect(Object.values(v.effect).some((e) => e.established)).toBe(true);
+    }
+    const dry = levure.find((v) => v.actions[0]?.moment === 'dryActive')!;
+    expect(dry.effect.floral.central!).toBeGreaterThan(0);
+    expect(dry.estimatedWhy.join(' ')).toMatch(/biotransformation/);
+    // Les rangs restent ceux du classement commun.
+    for (let i = 1; i < r.voies.length; i++) expect(compareRankKeys(r.voies[i - 1], r.voies[i])).toBeLessThanOrEqual(0);
+  });
+
+  it('signaux d’un ajout à froid (S5, Citra cryo J+3) : sourcés, non quantifiés ; aucun signal hors ajout à froid', () => {
+    const recipe = loadedRecipe(s1Recipe(), s16d);
+    const cold = recipe.additions.find((a) => a.moment === 'dryActive')!;
+    const s = yeastSignals(cold, recipe)!;
+    expect(s.jour).toBe('J+3');
+    expect(s.signaux.map((x) => x.id)).toEqual(['geraniol-citronellol', 'thiols', 'hop-creep']);
+    for (const x of s.signaux) { expect(x.quantifie).toBe(false); expect(x.sources.length).toBeGreaterThan(0); }
+    expect(s.signaux.find((x) => x.id === 'thiols')!.statut).toBe('possible');
+    expect(s.signaux.find((x) => x.id === 'geraniol-citronellol')!.statut).toBe('non évaluable');
+    expect(s.signaux.find((x) => x.id === 'hop-creep')!.statut).toBe('possible');
+    expect(yeastSignals(recipe.additions[0], recipe)).toBeNull();
+  });
+});
+
 describe('Crans du style (objets 1, 2 et 4)', () => {
   const s16d = getStyleScale('16D');
   const beer = beerLevels(recipeProfile(s1Recipe()).profile, S1_TASTING, s16d);
@@ -113,7 +158,10 @@ describe('Achats, catalogue à acheter et goûts du brasseur', () => {
     const q = quickAdds(s1Recipe(), s16d, S1_TASTING);
     expect(q.catalogue.length).toBe(10);
     expect(q.catalogueTotal).toBeGreaterThan(250);
-    for (const r of q.catalogue) { expect(r.stock).toMatchObject({ grams: 0, free: 0, status: 'à acheter' }); expect(r.ibuParMoment).toHaveLength(IBU_MOMENTS.length); }
+    // Listes longues : pas d'IBU par moment (taille du pack) ; l'IBU au moment proposé reste.
+    for (const r of [...q.catalogue, ...q.epuises]) { expect(r.ibuParMoment).toBeUndefined(); expect(r).toHaveProperty('ibuAdded'); }
+    for (const r of q.disponibles) expect(r.ibuParMoment).toHaveLength(IBU_MOMENTS.length);
+    for (const r of q.catalogue) expect(r.stock).toMatchObject({ grams: 0, free: 0, status: 'à acheter' });
     for (let i = 1; i < q.catalogue.length; i++) {
       const a = quickAddKey(q.catalogue[i - 1]), b = quickAddKey(q.catalogue[i]); const d = a.findIndex((x, j) => x !== b[j]);
       if (d >= 0) expect(a[d]).toBeLessThan(b[d]);

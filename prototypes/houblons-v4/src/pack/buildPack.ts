@@ -5,7 +5,7 @@ import {
   CATALOGUE, FAMILIES, FAMILY_NAMES, REFERENCE, SCALE_PARAMETERS, STOCK, STOCK_SOURCE, gapVerdict, getStyleScale, hopProfile, hopRef, valueVerdict,
   proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,
   beerLevels, targetLevels, afterLevels, ficheLevels, recipeProfile, LEVEL_RULE, recipeIbu, loadedRecipe, recipeLines, LOADED_RECIPE_RULE,
-  shoppingList, NO_GOUTS, GOUTS_RULE, beerCrans, targetCrans, afterCrans, CRANS_RULE,
+  shoppingList, NO_GOUTS, GOUTS_RULE, beerCrans, targetCrans, afterCrans, CRANS_RULE, yeastDoubleImpact, yeastSignals,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie, type FicheLevel,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
@@ -80,6 +80,8 @@ function voieEntry(v: Voie, directed: FamilyId[]) {
     styleOverflow: v.styleOverflow, overflowTotal: v.overflowTotal,
     sideEffects: v.sideEffects, sideTotal: v.sideTotal,
     tieWith: v.tieWith,
+    ...(v.yeastChange ? { yeastChange: v.yeastChange } : {}),
+    ...(v.type === 'levure' && v.actions[0]?.moment === 'dryActive' ? { signauxLevure: yeastSignals({ id: v.actions[0].additionId, hopKey: v.actions[0].hopKey, moment: 'dryActive', grams: v.actions[0].grams }, s1Recipe()) } : {}),
     after: v.after ? profile(v.after) : null,
   };
 }
@@ -90,11 +92,11 @@ export function buildPack() {
   const catalogue = Object.entries(CATALOGUE_IDS).flatMap(([style, ids]) => ids.map((id) => ({ ...hopEntry(hopProfile(`beermaverick-${id}`)), forStyle: style })));
 
   // S1 : stout export, « plus floral, moins résineux ».
-  const r1 = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING });
+  const r1 = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING, leviersLevure: true });
   const directed = r1.direction.map((d) => d.family);
   const S1 = {
     question: 'Ma stout export est trop résineuse ; je la veux plus florale.',
-    recipe: r1.recipe, style: '16D', yeast: r1.yeast, ibu: r1.ibu, matrix: r1.matrix,
+    recipe: r1.recipe, style: '16D', yeast: yeastDoubleImpact(s1Recipe()), ibu: r1.ibu, matrix: r1.matrix,
     before: profile(r1.before.profile),
     direction: r1.direction.map((d) => ({ family: d.family, name: d.name, crans: d.crans, status: d.status, delta: d.delta, cran: d.cran, width: d.width, targetAbsolute: d.targetAbsolute, targetFrom: d.targetFrom, note: d.note })),
     ranking: r1.ranking, evaluated: r1.evaluated, notes: r1.notes, skipped: r1.skipped,
@@ -121,11 +123,13 @@ export function buildPack() {
     achats: shoppingList(s1Recipe()), gouts: NO_GOUTS, goutsRule: GOUTS_RULE,
     voiesSansHoublon: {
       rule: 'Le moteur recalcule avec la variété exclue (domaine de recherche) : les voies qui l’utilisent disparaissent, l’ordre relatif des autres ne change pas (clés de classement indépendantes), mais des voies écartées par les plafonds (10 du stock, 4 à acheter, 2 par houblon, 2 assemblages) ou de nouveaux assemblages peuvent entrer.',
+      // Forme compacte (taille du pack) : seulement ce qui change par rapport à S1.voies.
       parVariete: s1Varieties.map((id) => {
-        const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING, gouts: { aime: [], exclut: [{ type: 'variété', id, source: 'simulation' }] } });
-        const before = new Set(r1.voies.map((v) => v.id));
+        const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING, leviersLevure: true, gouts: { aime: [], exclut: [{ type: 'variété', id, source: 'simulation' }] } });
+        const now = new Set(r.voies.map((v) => v.id)), before = new Set(r1.voies.map((v) => v.id));
         return { varietyId: id, name: CATALOGUE.find((c) => c.id === id)?.name ?? id,
-          voies: r.voies.map((v) => ({ rank: v.rank, label: v.label, ...(before.has(v.id) ? {} : { nouvelle: true }) })) };
+          retirees: r1.voies.filter((v) => !now.has(v.id)).map((v) => v.label),
+          nouvelles: r.voies.filter((v) => !before.has(v.id)).map((v) => ({ rank: v.rank, label: v.label })) };
       }),
     },
   });
@@ -155,7 +159,7 @@ export function buildPack() {
   }));
   const S2 = {
     question: 'Lager tchèque premium : lequel de Saaz, Styrian Golding et Hallertau Mittelfrüh est le plus floral, et l’écart compte-t-il ?',
-    style: '3B', yeast: trio[0].yeast, reference: trio[0].reference, inStock: false,
+    style: '3B', yeast: yeastDoubleImpact(s2Recipe()), reference: trio[0].reference, inStock: false,
     hops: trio.map((h) => ({ ...hopEntry(h),
       styleVerdicts: Object.fromEntries(s3b.order.filter((f) => s3b.families[f].status === 'attendue').map((f) => [f, valueVerdict(est2(h, f), s3b.families[f])])) })),
     pairs,
@@ -193,7 +197,8 @@ export function buildPack() {
     const reading = readBeer(prof.profile, null, s16d), summary = readingSummary(reading);
     const ibuTotal = recipeIbu(recipe);
     return {
-      question, recipe, style: '16D', yeast: prof.yeast,
+      question, recipe, style: '16D', yeast: yeastDoubleImpact(recipe),
+      signauxLevure: recipe.additions.map((a) => yeastSignals(a, recipe)).filter((x) => x !== null),
       ibu: round(ibuTotal.value), ibuStyle: s16d.ibu, ibuRange: { min: round(ibuTotal.min), max: round(ibuTotal.max) },
       recetteHoublons: recipeLines(recipe).map((line) => ({ ...line, ibuParMoment: ibuByMoment(line.hopKey, line.grams, recipe) })),
       ajoutsRapides: { style: '16D', ...quickAdds(recipe, s16d, null, { catalogueLimit }) },

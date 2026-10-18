@@ -40,7 +40,12 @@ const ORIGIN_FIX = { 'hallertau-taurus': 'Allemagne', northdown: 'Royaume-Uni' }
 // Hopsteiner : descriptions sur houblon brut (familles déclarées, descripteurs), reliées par le nom.
 const hsByName = new Map();
 for (const v of hs) {
-  const rec = { id: v.id, descriptions: v.descriptions.filter((d) => /^(Familles déclarées|Descripteurs de la fiche)/.test(d.text)) };
+  // Linalol (% de l'huile) et classe « Thiol impact » : signaux de biotransformation, jamais une intensité.
+  const lin = v.analysis.find((a) => a.analyte === 'linalool');
+  const thiol = v.descriptions.map((d) => d.text.match(/Thiol impact » : (\w+)/)?.[1]).find(Boolean) ?? null;
+  const rec = { id: v.id, descriptions: v.descriptions.filter((d) => /^(Familles déclarées|Descripteurs de la fiche)/.test(d.text)),
+    linalool: lin ? { range: lin.range ? [lin.range.min, lin.range.max] : [lin.value, lin.value], unit: lin.unit, reference: lin.source.reference, year: lin.source.year } : null,
+    thiol: thiol ? { class: thiol, reference: v.descriptions[0]?.source?.reference ?? null } : null };
   for (const n of [v.name, ...v.name.split(/\s*[/(]\s*/)]) if (n) hsByName.set(fold(n.replace(/\)$/, '')), rec);
 }
 const HS_ALIAS = { saazcz: 'saazer', styriangoldings: 'styriangoldingcelea', styriangolding: 'styriangoldingcelea', saaz: 'saazer', hallertau: 'hallertauermittelfruh', hallertaumittelfruh: 'hallertauermittelfruh', hallertautaurus: 'hallertauertaurus', hallertautradition: 'hallertauertradition', magnum: 'hallertauermagnum', eastkentgoldings: 'goldinguk', ctz: 'columbus' };
@@ -63,7 +68,7 @@ const varieties = bm.map((v) => {
     descriptions: [...(v.descriptions || []).filter((d) => /Tags documentaires/.test(d.text)), ...(h ? h.descriptions : []),
       ...facts.filter((f) => f.varietyId === id).map((f) => f.description)],
     citedFacts: facts.filter((f) => f.varietyId === id).map((f) => f.id),
-    hopsteinerId: h?.id ?? null,
+    hopsteinerId: h?.id ?? null, hsLinalool: h?.linalool ?? null, hsThiol: h?.thiol ?? null,
     url: v.descriptions?.[0]?.source?.reference || null,
   };
 });

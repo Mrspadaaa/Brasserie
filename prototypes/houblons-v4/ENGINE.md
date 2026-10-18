@@ -148,6 +148,25 @@ Règle (`LEVEL_RULE`, testée) :
 - S2 (3B) : cible et fiches calculées ; profil de la bière tout « non situé » (recette sans
   houblon, levure sans profil V5.5, pas de dégustation) ; pas de voies, donc pas d'après.
 
+## La levure (`yeast.ts` ; MODELE.md « La levure », R43, R44, rapport E rec. 8)
+
+- **Double impact** (`yeastDoubleImpact`, `yeast` de S1, S2, S4, S5) : `aromePropre` = repère
+  V5.5 de la levure seule (ajout à dose nulle), par famille, `specifique` si la souche a un
+  paramètre propre, sinon enveloppe commune ; `expression` = facteur latent sur l'apport du
+  houblon (0,65–1,35, le même pour les trois souches caractérisées : le modèle ne les distingue
+  pas). Souche non caractérisée : « inconnu ».
+- **Leviers** (`leviersLevure`, voies de type `levure` dans S1) : « Changer de levure » vers
+  chaque souche caractérisée (Verdant IPA, Pomona) : effet = différence des arômes propres,
+  établi seulement là où une souche a un paramètre propre ; « Houblonner à froid en fermentation
+  active » = meilleure voie à froid du stock sans conflit, avec ses `signauxLevure`. Classés avec
+  les autres voies, montrés même sans progrès (leur débordement les place en fin de liste).
+- **Signaux d'un ajout à froid** (`yeastSignals`, `S5.signauxLevure`) : géraniol → citronellol
+  (Takoi 2010 ; « possible » si le linalol du houblon est documenté, sinon « non évaluable ») ;
+  thiols (fait cité 4MSP, classe Hopsteiner, β-lyase de la levure, politique V5.5 des
+  précurseurs) ; hop creep (politique de risque V5.5). Tous « non quantifié ».
+- **Taille du pack** : `ibuParMoment` retiré des listes longues (épuisés, catalogue ; `ibuAdded`
+  reste) et `voiesSansHoublon` réduit aux différences (`retirees`, `nouvelles`).
+
 ## Crans du style (`CRANS_RULE` ; `profilBiereCrans`, `cibleStyleCrans`, `profilApresCrans`)
 
 Décision du pilote : les objets 1, 2 et 4 se disent en crans du style (les niveaux 0–3

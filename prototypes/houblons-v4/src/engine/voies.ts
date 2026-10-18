@@ -1,6 +1,6 @@
 import { checkHopExclusions } from '@app/domain/hopIndex/solver';
 import { suggestedHopVarieties } from '@app/domain/hopIndex/styleSelection';
-import { AXES, CATALOGUE, STOCK, VARIETY_BY_ID, hopRef } from './data';
+import { AXES, CATALOGUE, STOCK, VARIETY_BY_ID, YEASTS, hopRef } from './data';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { cites } from './hops';
 import {
@@ -11,6 +11,7 @@ import { getStyleScale, type StyleScale } from '../style/scale';
 import { valueVerdict } from '../style/verdict';
 import type { Tasting } from './tasting';
 import { goutsSets, type Gouts } from './gouts';
+import { CHARACTERIZED_YEASTS, yeastChangeEffect } from './yeast';
 
 /** Direction relative à la recette : nombre de crans par famille (+1 « plus floral », −1 « moins résineux »). */
 export type Direction = Partial<Record<FamilyId, number>>;
@@ -20,7 +21,7 @@ export interface Action {
   additionId: string; hopKey: string; hopName: string; moment: MomentId; momentLabel: string;
   grams: number; gramsPerLitre: number; previousGrams?: number; previousHopKey?: string;
 }
-export type VoieType = 'ajouter' | 'augmenter' | 'diminuer' | 'retirer' | 'remplacer à IBU égal' | 'remplacer à masse égale' | 'assemblage';
+export type VoieType = 'ajouter' | 'augmenter' | 'diminuer' | 'retirer' | 'remplacer à IBU égal' | 'remplacer à masse égale' | 'assemblage' | 'levure';
 export interface FamilyEffect {
   family: FamilyId;
   /** Variation prévue (points 0–100), somme signée des apports V5.5 des ajouts changés ; null si aucun apport établi. */
@@ -55,6 +56,8 @@ export interface Voie {
    * haut par un apport établi, en crans du style (même sans sortir de la bande). */
   sideEffects: { family: FamilyId; status: string; crans: number }[]; sideTotal: number;
   after: Profile | null;
+  /** Levier levure : changement de souche (de, vers), sinon absent. */
+  yeastChange?: { from: string | null; to: string; toName: string };
   /** Rang partagé par les voies dont toutes les clés de classement sont égales. */
   rank: number; tieWith: string[];
 }
@@ -71,6 +74,8 @@ export interface VoieOptions {
   /** Voies à acheter retenues, classées avec celles du stock (défaut 4). */ buyLimit?: number;
   /** Voies au plus par houblon ou couple de houblons (défaut 2). */ perHop?: number;
   moments?: MomentId[]; assemblages?: boolean;
+  /** Leviers levure (R43, R44) : changer de souche vers chaque souche caractérisée, houblonner à froid en fermentation active. */
+  leviersLevure?: boolean;
   /** Dégustation du brasseur : situe la bière et fixe la cible d'une famille jugée « trop » ou « peu ». */
   tasting?: Tasting | null;
   /** Goûts du brasseur (vides par défaut) : voir GOUTS_RULE. */
@@ -172,9 +177,9 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     .slice(0, maxBuy).map((r) => STOCK.find((s) => s.varietyId === r.c.id && s.form !== 'cryo')?.key ?? r.c.id);
 
   let n = 0;
-  const evaluate = (type: VoieType, label: string, actions: Action[], changes: Change[], next: Recipe, extraEstimated: string[] = []): Voie => {
+  const evaluate = (type: VoieType, label: string, actions: Action[], changes: Change[], next: Recipe, extraEstimated: string[] = [], effectOverride?: Record<FamilyId, FamilyEffect> | null): Voie => {
     n++;
-    const effect = effectOf(changes, recipe);
+    const effect = effectOverride !== undefined ? effectOverride : effectOf(changes, recipe);
     const byFamily: Voie['distance']['byFamily'] = {};
     let total: number | null = effect ? 0 : null;
     for (const t of targets) {
@@ -340,6 +345,23 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     perDomain[v.domain]++;
     kept.push(v);
   }
+  // Leviers levure, évalués par le moteur et montrés même sans progrès établi (classés avec les autres).
+  if (options.leviersLevure) {
+    for (const to of CHARACTERIZED_YEASTS.filter((y) => y !== recipe.yeastId)) {
+      const effect = yeastChangeEffect(recipe, to);
+      const name = YEASTS.find((y) => y.id === to)?.name ?? to;
+      const v = evaluate('levure', `Changer de levure : ${name}`, [], [], { ...recipe, yeastId: to },
+        ['Changement de souche pour toute la bière : quantité de levure et programme de fermentation à revoir ; seul l’arôme propre de la souche change dans le modèle.', 'Stock de levure non suivi par le prototype.'], effect);
+      v.yeastChange = { from: recipe.yeastId, to, toName: name };
+      v.id = `levure|${to}`;
+      if (!effect) v.estimatedWhy.push('Levure actuelle sans profil V5.5 : effet non évaluable.');
+      kept.push(v);
+    }
+    const dry = all.filter((v) => v.type === 'ajouter' && v.actions[0].moment === 'dryActive' && v.domain === 'stock' && !v.conflicts.length && progress(v)).sort(compareVoies)[0];
+    if (dry) kept.push({ ...dry, type: 'levure', id: `levure|${dry.id}`, label: `Houblonner à froid en fermentation active : ${dry.actions[0].hopName}, ${Math.round(dry.actions[0].grams)} g` });
+    else notes.push('Houblonner à froid en fermentation active : aucun houblon du stock ne donne un progrès établi sans conflit.');
+    kept.sort(compareVoies);
+  }
   // Profil de la recette entière après chaque voie retenue (cumul V5.5).
   for (const v of kept) {
     const next = applyVoie(recipe, v);
@@ -378,5 +400,5 @@ export function applyVoie(recipe: Recipe, v: Voie): Recipe {
     else if (a.op === 'modifier') additions = additions.map((x) => (x.id === a.additionId ? { ...x, hopKey: a.hopKey, grams: a.grams } : x));
     else additions.push({ id: a.additionId, hopKey: a.hopKey, moment: a.moment, grams: a.grams });
   }
-  return { ...recipe, additions };
+  return { ...recipe, ...(v.yeastChange ? { yeastId: v.yeastChange.to } : {}), additions };
 }

@@ -41,8 +41,9 @@ describe('Pack des mini-prototypes', () => {
     expect(S1.voies.length).toBeGreaterThanOrEqual(5);
     for (const v of S1.voies) {
       expect(typeof v.estimated).toBe('boolean');
-      expect(v.actions[0]).toHaveProperty('grams');
-      expect(v.actions[0]).toHaveProperty('gramsPerLitre');
+      // Une voie de houblon porte ses actions en g et g/L ; un changement de levure, son yeastChange.
+      if (v.yeastChange) expect(v.actions).toEqual([]);
+      else { expect(v.actions[0]).toHaveProperty('grams'); expect(v.actions[0]).toHaveProperty('gramsPerLitre'); }
       expect(v.after).not.toBeNull();
       expect(v.ibu).toHaveProperty('after');
       expect(['suffisant', 'manque', 'à acheter']).toContain(v.stock.status);
