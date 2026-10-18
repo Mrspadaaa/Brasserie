@@ -1,92 +1,105 @@
-  /* Version consolidée : rail des étapes de p2, levure sur le rail (D28), moment à glisser (D27) */
-  .frise { position: relative; display: flex; flex-direction: column; gap: 3px; }
-  .axe { position: absolute; left: 21px; top: 8px; bottom: 8px; width: 2px; background: #cfcfcf; }
-  .couloir { display: flex; flex-direction: column; gap: 4px; }
-  .blk, .rap-zone, .vide-l, .etape-levure { display: grid; grid-template-columns: 44px 1fr; align-items: start; column-gap: 2px; }
-  .poignee { justify-self: center; position: relative; z-index: 1; margin-top: 5px; touch-action: none; cursor: grab; border-radius: 15px; }
-  .quand, .rail-l.plein { justify-self: center; position: relative; z-index: 1; min-width: 40px; height: 26px; padding: 0 5px; border-radius: 13px; background: #fff; border: 1.5px solid var(--encre); font-size: 12px; font-weight: 650; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; }
-  .rail-l.plein { margin-top: 5px; }
-  .quand { cursor: grab; touch-action: none; }
+  /* Étape houblons, base v4 : le rail des étapes (BRIEF-RAIL.md), les ajouts proposés à part. */
+  .frise { position: relative; display: flex; flex-direction: column; padding: 1px 0; }
+  .axe { position: absolute; left: 21px; top: 12px; bottom: 12px; width: 2px; border-radius: 1px; background: #d4d4d4; }
+  .frise > [data-rang] { display: grid; grid-template-columns: 44px 1fr; column-gap: 2px; align-items: center; }
+  /* Points du rail : début de l'ébullition, étapes nommées, fin d'ébullition, levure (D28). */
+  .pt { justify-self: center; position: relative; z-index: 1; border-radius: 50%; background: #fff; }
+  .pt-ebu { width: 12px; height: 12px; border: 2px solid var(--encre); }
+  .pt-etape { width: 10px; height: 10px; border: 1.5px solid #9a9a9a; }
+  .pt-fin { width: 8px; height: 8px; border: 1.5px solid #b5b5b5; }
+  .pt-levure { width: 14px; height: 14px; background: var(--encre); }
+  .r-ebu, .r-etape { min-height: 28px; }
+  .r-fin { min-height: 24px; }
+  .r-nom { font-size: 12px; color: var(--gris2); }
+  .ebu-v { font-weight: 650; font-variant-numeric: tabular-nums; }
+  /* D37 révisé : la durée est réglée dans la fiche de brassage ; la rangée y renvoie (chevron). */
+  .renvoi { display: flex; align-items: baseline; gap: 6px; min-height: 28px; align-items: center; color: inherit; text-decoration: none; }
+  .renvoi::after { content: ''; margin-left: auto; margin-right: 6px; width: 7px; height: 7px; border-right: 1.5px solid var(--gris2); border-bottom: 1.5px solid var(--gris2); transform: rotate(-45deg); }
+  .etape-levure { margin: 3px 0; }
+  /* Recette vide : la place des houblons sur l'ébullition. */
+  .r-vide { width: 100%; padding: 2px 0; text-align: left; }
+  .vide-c { height: 38px; border: 1.5px dashed #cfcfcf; border-radius: 12px; background: #fafafa; position: relative; }
+  .vide-c::before, .vide-c::after { content: ''; position: absolute; left: 50%; top: 50%; width: 14px; height: 1.6px; margin: -0.8px 0 0 -7px; background: #9a9a9a; }
+  .vide-c::after { transform: rotate(90deg); }
+  .etape-levure .levure { background: #fff; border: 1.5px solid var(--trait); min-height: 30px; }
+
+  /* Lignes de la recette posées sur le rail : la pastille du moment est la poignée (D27). */
+  .frise > .blk { align-items: start; margin: 2px 0; }
+  .poignee { justify-self: center; position: relative; z-index: 2; margin-top: 5px; touch-action: none; cursor: grab; border-radius: 13px; }
+  .quand { justify-self: center; position: relative; min-width: 40px; height: 26px; padding: 0 5px; border-radius: 13px; background: #fff; border: 1.5px solid var(--encre); font-size: 12px; font-weight: 650; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; cursor: grab; touch-action: none; font-variant-numeric: tabular-nums; }
   /* Repère de la poignée : on la glisse de haut en bas. */
   .poignee::before, .poignee::after { content: ''; position: absolute; left: 50%; margin-left: -3px; border: 3px solid transparent; }
   .poignee::before { top: -6px; border-bottom-color: #9a9a9a; }
   .poignee::after { bottom: -6px; border-top-color: #9a9a9a; }
-  .rail-l { justify-self: center; position: relative; z-index: 1; width: 10px; height: 10px; margin-top: 5px; border-radius: 5px; background: #fff; border: 1.5px solid #9a9a9a; }
-  .corps-b { background: var(--fond); border-radius: 12px; padding: 7px 6px 8px 8px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .corps-b .l2 { min-height: 24px; }
+  .corps-b { background: var(--fond); border-radius: 12px; padding: 6px 6px 6px 8px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .corps-b .l2 { min-height: 24px; flex-wrap: wrap; row-gap: 3px; }
   .l1 { display: flex; align-items: center; gap: 6px; min-width: 0; }
   .l1 .nom { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-  /* Étapes vides : fines, le rail ne doit pas déborder de l'écran. */
-  .vide-l { min-height: 20px; }
-  .drop { display: flex; align-items: center; gap: 8px; height: 20px; font-size: 12px; color: var(--gris2); }
-  .drop::after { content: ''; flex: 1; border-top: 1.5px dashed #d0d0d0; }
-  .rap-corps { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .rap-corps .champ { flex: 1; min-width: 0; }
-  .rap-corps .champ input { height: 30px; }
-  .l3 { display: flex; align-items: center; min-height: 16px; }
-  .l3 .mini .c { width: 9px; height: 10px; }
+  .l3 { display: flex; align-items: center; min-height: 16px; gap: 8px; flex-wrap: wrap; }
   .l3 .mini { gap: 2px; }
-  .l3 .mini .c.sep { margin-left: 6px; }
-  /* La levure, étape pleine du rail (comme p8). */
-  .etape-levure { align-items: center; margin: 2px 0; }
-  .rail-lev { justify-self: center; position: relative; z-index: 1; width: 14px; height: 14px; border-radius: 7px; background: var(--encre); }
-  .etape-levure .levure { background: #fff; border: 1.5px solid var(--trait); min-height: 34px; }
-  /* Glisser : la carte suit le doigt, l'étape survolée s'éclaire. */
-  .blk.glisse { position: relative; z-index: 5; }
-  .blk.glisse .corps-b { box-shadow: 0 6px 18px rgba(0,0,0,.22); background: #fff; }
-  .blk.glisse .quand { background: var(--encre); color: #fff; }
-  .vide-l.survol .drop { color: var(--encre); font-weight: 650; }
-  .vide-l.survol .drop::after { border-top-color: var(--encre); }
-  .vide-l.survol .rail-l, .rail-l.plein.survol { background: var(--encre); border-color: var(--encre); }
-  .rail-l.plein.survol { color: #fff; }
-  .poignee.survol .quand { box-shadow: 0 0 0 3px #d4d4d4; }
-  .vide-l.cran { min-height: 14px; }
-  .vide-l.cran .rail-l { width: 6px; height: 6px; margin-top: 4px; border-radius: 3px; }
-  .vide-l.cran .drop { height: 14px; }
-  .note-ibu { padding: 8px 0 4px; }
-  .rapide { min-height: 48px; }
-  .vide-l.cran .drop::after { display: none; }
-  .rapides .ou { font-size: 12px; color: var(--gris2); padding-left: 44px; margin: -2px 0; }
-  /* Rail par tranches de 5′ (D34) : chaque tranche est une graduation fine ; les repères utiles sont écrits. */
-  .frise { gap: 0; }
-  .frise > .blk, .frise > .rap-zone, .frise > .etape-levure { margin: 3px 0; }
-  .marque { display: grid; grid-template-columns: 44px 1fr; align-items: center; column-gap: 2px; height: var(--tick); }
-  .marque .rail-l { width: 6px; height: 2px; margin: 0; border: 0; border-radius: 1px; background: #b5b5b5; }
-  .marque .drop { height: auto; }
-  .marque .drop::after { display: none; }
-  .marque.ecrit { height: 18px; }
-  .marque.ecrit .rail-l { width: 10px; height: 10px; border-radius: 5px; border: 1.5px solid #9a9a9a; background: #fff; }
-  .marque.ecrit .drop::after { display: block; border-top: 1px dashed #d6d6d6; }
-  .marque.survol .rail-l { width: 14px; height: 3px; background: var(--encre); }
-  .marque.survol .drop { visibility: hidden; }
-  /* Carte glissée : dans le flux, au-dessus de tout, les autres s'écartent (D35). */
-  .blk[data-glisse] { position: relative; z-index: 10; }
-  .blk[data-glisse] .corps-b { box-shadow: 0 6px 18px rgba(0,0,0,.22); background: #fff; }
-  .blk[data-glisse] .quand { background: var(--encre); color: #fff; }
-  /* Réglages libres : whirlpool (°C, minutes), jour de dry hop. */
-  .l3 { gap: 8px; flex-wrap: wrap; }
-  .reglages { display: inline-flex; gap: 8px; margin-left: auto; }
-  .regl { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; }
-  .regl .moins, .regl .plus { width: 24px; height: 24px; border-radius: 12px; }
-  .regl .moins::before, .regl .plus::before, .regl .plus::after { left: 6px; top: 10.5px; width: 9px; }
-  .regl-v { min-width: 38px; text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .l3 .mini .c { width: 7px; }
+  .l3 .mini .c { width: 7px; height: 10px; }
   .l3 .mini .c.sep { margin-left: 4px; }
-  .regl .moins, .regl .plus { width: 22px; height: 22px; }
-  .regl-v { min-width: 34px; }
-  .reglages { gap: 4px; }
-  /* Durée d'ébullition réglable en tête du rail (D37). */
-  .ebu-regl { display: grid; grid-template-columns: 44px 1fr; align-items: center; column-gap: 2px; min-height: 30px; }
-  .rail-ebu { justify-self: center; position: relative; z-index: 1; width: 12px; height: 12px; border-radius: 6px; border: 2px solid var(--encre); background: #fff; }
-  .ebu-corps { display: flex; align-items: center; gap: 6px; }
-  .ebu-corps .moins, .ebu-corps .plus { width: 26px; height: 26px; }
-  .ebu-corps button:disabled { opacity: .35; }
-  .ebu-v { min-width: 40px; text-align: center; font-weight: 650; font-variant-numeric: tabular-nums; }
-  .ebu-regl { min-height: 26px; }
-  .marque.ecrit { height: 16px; }
-  .frise > .blk, .frise > .rap-zone, .frise > .etape-levure { margin: 2px 0; }
-  .etape-levure .levure { min-height: 30px; }
-  .corps-b { padding: 6px 6px 6px 8px; gap: 3px; }
-  .corps-b .l2 { flex-wrap: wrap; row-gap: 3px; }
-  /* D42 : au repos, aucune carte n'a d'ombre ; l'ombre n'existe que pendant le geste (data-glisse). */
+  .reglages { display: inline-flex; gap: 4px; margin-left: auto; }
+  .regl { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; }
+  .regl .moins, .regl .plus { width: 22px; height: 22px; border-radius: 11px; }
+  .regl .moins::before, .regl .plus::before, .regl .plus::after { left: 5px; top: 9.5px; width: 9px; }
+  .regl button:disabled { opacity: .35; }
+  .regl-v { min-width: 34px; text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  /* D42 : au repos, aucune carte n'a d'ombre ; l'ombre n'existe que pendant le geste. */
   .blk:not([data-glisse]), .blk:not([data-glisse]) .corps-b { box-shadow: none; }
+
+  /* La loupe (D47) : la poignée prise, le rail s'ouvre en échelles ; tout glisse en translation. */
+  .grads { display: none; }
+  .frise[data-geste] { user-select: none; -webkit-user-select: none; transition: height 180ms cubic-bezier(.2,.8,.2,1); }
+  .frise[data-geste] > [data-rang] { position: absolute; left: 0; right: 0; top: 0; margin: 0; transition: transform 180ms cubic-bezier(.2,.8,.2,1); }
+  .frise[data-geste] > .leve { z-index: 20; transition: none; will-change: transform; }
+  .frise[data-geste] .axe { bottom: auto; transition: top 180ms cubic-bezier(.2,.8,.2,1), height 180ms cubic-bezier(.2,.8,.2,1); }
+  .frise[data-geste] .grads { display: block; position: absolute; left: 0; top: 0; width: 44px; height: 0; z-index: 1; pointer-events: none; }
+  .grad { position: absolute; left: 18px; top: 0; width: 8px; height: 1.5px; border-radius: 1px; background: #8f8f8f; opacity: 0; transition: opacity 140ms ease-out, transform 160ms cubic-bezier(.2,.8,.2,1); }
+  .grad.maj { left: 15px; width: 14px; height: 2px; background: var(--encre); }
+  .grad.vue { opacity: 1; }
+  /* Le segment sous le doigt se nomme en encre ; les autres restent gris. */
+  .frise[data-geste] > .focus .r-nom, .frise[data-geste] > .focus .cle { color: var(--encre); font-weight: 650; }
+  .frise[data-geste] > .focus .pt-etape { border-color: var(--encre); }
+  /* La carte prise : blanche, soulevée ; son IBU attend le lâcher (rien n'est recalculé pendant le geste). */
+  .blk.leve .corps-b { background: #fff; box-shadow: 0 10px 28px rgba(0,0,0,.16), 0 2px 6px rgba(0,0,0,.08); }
+  .blk.leve .quand { background: var(--encre); color: #fff; border-color: var(--encre); }
+  .blk.leve .poignee { cursor: grabbing; }
+  .blk.leve .ibu-l { opacity: .3; }
+  /* Les autres lignes, réduites à leur nom et leur moment, s'écartent de la carte. */
+  .blk.jeton { height: 26px; overflow: hidden; align-items: center; z-index: 3; }
+  .frise[data-geste] > .r-ebu, .frise[data-geste] > .r-etape, .frise[data-geste] > .r-fin, .frise[data-geste] > .etape-levure { z-index: 2; }
+  .blk.jeton .corps-b { background: transparent; padding: 0 6px; }
+  .blk.jeton .l2, .blk.jeton .l3, .blk.jeton .bio, .blk.jeton .pas, .blk.jeton .corbeille, .blk.jeton .type { display: none; }
+  .blk.jeton .poignee { margin-top: 0; }
+  .blk.jeton .poignee::before, .blk.jeton .poignee::after { display: none; }
+  .blk.jeton .quand { height: 22px; border-color: #9a9a9a; color: var(--gris); }
+  .blk.jeton .nom { font-weight: 400; color: var(--gris); }
+  /* Le rail monte sur l'en-tête quand la place manque au-dessus (longue ébullition) : il l'estompe. */
+  .ecran > .barre, .ecran > .resume { transition: opacity 160ms; }
+  .ecran.rail-haut > .barre, .ecran.rail-haut > .resume { opacity: 0; }
+
+  /* Les ajouts proposés, hors du rail (D41) : nom, α, rôle, arômes en couleur, dose, IBU, moment suggéré. */
+  .ajouts { display: flex; flex-direction: column; gap: 4px; padding-top: 6px; }
+  .ajouts .champ input { height: 32px; }
+  .rapide { min-height: 54px; gap: 8px; padding: 4px 6px; }
+  .rapide .txt { gap: 4px; }
+  .rapide .r2 { gap: 8px; }
+  .rapide .r2 .mini { margin-left: auto; }
+  .rapides .ou { font-size: 12px; color: var(--gris2); padding-left: 36px; margin: -2px 0; }
+  /* Le moment suggéré : la même pastille que sur le rail, en pointillé tant qu'elle n'y est pas posée. */
+  .suggere { flex: none; min-width: 40px; height: 24px; padding: 0 6px; border-radius: 12px; border: 1.5px dashed #8f8f8f; background: #fff; font-size: 12px; font-weight: 650; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; }
+
+  /* Arômes en couleur (D29) : une teinte par famille, marqué plein, cité clair, non décrit gris. */
+  .mini .c { position: relative; }
+  .ajouts .mini { gap: 2px; }
+  .ajouts .mini .c { width: 6px; }
+  .mini .c.f-citrus { --c: #d9b414; } .mini .c.f-tropical { --c: #ee9b2f; } .mini .c.f-melon { --c: #6fc09b; }
+  .mini .c.f-stoneFruit { --c: #e88d68; } .mini .c.f-pomeFruit { --c: #a3bd38; } .mini .c.f-berries { --c: #9b3f74; }
+  .mini .c.f-floral { --c: #bf86d6; } .mini .c.f-green { --c: #6aa33a; } .mini .c.f-herbal { --c: #3f8a5f; }
+  .mini .c.f-spice { --c: #7a4e3a; } .mini .c.f-earthy { --c: #9a8a66; } .mini .c.f-resin { --c: #2f6b5f; }
+  .frise .mini .c.ci, .ajouts .mini .c.ci, .frise .mini .c.acc.ci, .ajouts .mini .c.acc.ci { background: color-mix(in srgb, var(--c) 42%, #fff); opacity: 1; }
+  .frise .mini .c.m, .ajouts .mini .c.m, .frise .mini .c.acc.m, .ajouts .mini .c.acc.m { background: var(--c); opacity: 1; }
+  /* La famille que ma bière a déjà en trop : un trait d'accent sous sa case. */
+  .frise .mini .c.acc::after, .ajouts .mini .c.acc::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 2px; border-radius: 1px; background: var(--acc); }
+  @media (prefers-reduced-motion: reduce) { .frise[data-geste], .frise[data-geste] > [data-rang], .frise[data-geste] .axe, .grad { transition: none; } }

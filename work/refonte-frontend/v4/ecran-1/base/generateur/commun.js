@@ -50,10 +50,10 @@ const nomCourt = (f) => D.court[f];
 /* Moments du rail du brassage : premier moût ; ébullition par tranches de 5′, de la durée de la
    recette (D.ebullition, pack ebullitionMinutes) à 0′ ; whirlpool ; à froid, en fermentation active
    ou après (la phase est un choix du brasseur, le jour est libre). « vide » nomme l'étape vide. */
-/* La durée d'ébullition est une variable de la recette (pack ebullitionMinutes = valeur de départ),
-   réglable sur l'étape de 5 à 240′ par 5 ; le rail et les moments en dépendent. */
-const EBU_MIN = 5, EBU_MAX = 240;
-let EBU = D.ebullition || 60, MOMENTS = [], REPERES = new Set();
+/* La durée d'ébullition est une donnée de la recette, réglée ailleurs dans l'application (fiche de
+   brassage ; pack ebullitionMinutes) : l'étape la lit (D37 révisé), le rail et les moments en
+   dépendent (45′, 60′, 120′, 200′…). */
+let EBU = D.ebullition || 60, MOMENTS = [];
 function construireMoments() {
   MOMENTS = [
     { code: 'fwh', type: 'premier moût', quand: 'moût', vide: 'premier moût' },
@@ -62,20 +62,8 @@ function construireMoments() {
     { code: 'dryActive', type: 'à froid', quand: 'J+3', vide: 'fermentation' },
     { code: 'dryPost', type: 'à froid', quand: 'après', vide: 'post-fermentation' },
   ];
-  // Repères écrits : la durée d'ébullition, 60′ et 0′ ; les autres tranches sont des graduations.
-  REPERES = new Set([EBU, 60, 0]);
 }
 construireMoments();
-/* Changer la durée : les lignes au-delà se ramènent au début de l'ébullition, et le disent. */
-function changerEbu(v) {
-  EBU = Math.max(EBU_MIN, Math.min(EBU_MAX, Math.round(v / 5) * 5));
-  construireMoments();
-  for (const l of ETAT.lignes) {
-    const m = /^b(\d+)$/.exec(l.moment);
-    if (m && Number(m[1]) > EBU) { l.moment = 'b' + EBU; l.ramene = true; }
-  }
-  rendre(true);
-}
 /* Moment d'un ajout proposé, borné à la durée d'ébullition choisie. */
 const momentBorne = (code) => { const m = /^b(\d+)$/.exec(code); return m && Number(m[1]) > EBU ? 'b' + EBU : code; };
 const TYPES = ['ébullition', 'whirlpool', 'à froid', 'premier moût'];
@@ -104,6 +92,9 @@ const ETAT = {
   voieRadar: null, compGrand: null,
 };
 for (const f of (B.dirs ? B.dirs.split(',') : [])) ETAT.visee[f] = D.cible[fi(f)].visee;
+/* Une recette dont l'ébullition est plus courte qu'un ajout (60′ dans une ébullition de 45′) : l'ajout
+   se ramène au début de l'ébullition, et la ligne le dit (« ramenée au début »). */
+for (const l of ETAT.lignes) { const m = /^b(\d+)$/.exec(l.moment); if (m && Number(m[1]) > EBU) { l.moment = 'b' + EBU; l.ramene = true; } }
 /* D33 : le focus ne se replace qu'après une action au clavier (au doigt, la vue web du téléphone
    l'entourerait de jaune) ; le contour reste réservé à :focus-visible. */
 for (const f of (B.dirs ? B.dirs.split(',') : [])) if (D.continu && D.continu.viseeDir[f] != null) ETAT.viseeAbs[f] = D.continu.viseeDir[f];
@@ -196,7 +187,6 @@ function ajouter(r, moment) {
   rendre(true);
 }
 function placer(l, code) { l.moment = code; rendre(true); }
-function momentSuivant(l) { const i = MOMENTS.findIndex((m) => m.code === l.moment); placer(l, MOMENTS[(i + 1) % MOMENTS.length].code); }
 function typeSuivant(l) {
   const t = TYPES[(TYPES.indexOf(mom(l.moment).type) + 1) % TYPES.length];
   placer(l, MOMENTS.find((m) => m.type === t).code);
@@ -267,33 +257,38 @@ function alphaEl(a) {
   return h('span', { class: 'alpha', 'aria-label': t + ' % d\'acides alpha', title: t + ' % d\'acides alpha' }, 'α ' + t);
 }
 function roleEl(role) { return role ? h('span', { class: 'role', 'data-role': 'role' }, role) : null; }
+/* Les arômes cités par les fiches, une case par famille dans l'ordre du style, en couleur de la
+   famille (marqué plein, cité clair, non décrit gris) : on voit d'un coup d'œil ce que le houblon
+   ajoute (D29). La famille que ma bière a déjà en trop est soulignée de l'accent. */
 function miniProfil(fiche, nom) {
   const cites = D.ordre.filter((f, i) => fiche.niv[i] > 0).map((f) => nomCourt(f).toLowerCase());
   const w = h('span', { class: 'mini', role: 'img', 'data-role': 'aromes', 'aria-label': 'Arômes cités par les fiches de ' + nom + ' : ' + (cites.join(', ') || 'non décrit') });
   D.ordre.forEach((f, i) => {
     const lv = fiche.niv[i];
     const trop = D.profil[i].crans === 4;
-    w.append(h('i', { class: 'c' + (lv === 2 ? ' m' : lv === 1 ? ' ci' : '') + (trop && lv ? ' acc' : '') + (i === D.attendues.length ? ' sep' : '') }));
+    w.append(h('i', { class: 'c f-' + f + (lv === 2 ? ' m' : lv === 1 ? ' ci' : '') + (trop && lv ? ' acc' : '') + (i === D.attendues.length ? ' sep' : ''), title: lv ? nomCourt(f) + (lv === 2 ? ', marqué' : ', cité') : null }));
   });
   return w;
 }
-/* Un ajout proposé : « 10 g → + 3 IBU » (D16, « genre 5g -> 20ibu en plus »), son stock, ses fiches.
-   colonne : les IBU en colonne à droite (p03, greffe de p11) ; sinon dans la ligne (p02). */
-function rapideLigne(r, premier, colonne) {
+/* Un ajout proposé, pensé en brasseur (D29, D41) : nom, α, rôle, arômes en couleur, dose, ce qu'il
+   ajoute en IBU (D16) et son moment suggéré, qui dit où la ligne se posera sur le rail ; le stock
+   reste une icône (D23 ter). Un toucher l'ajoute à ce moment. */
+function rapideLigne(r, premier) {
   const mb = momentBorne(r.moment);
   const v = mb === r.moment ? r.ibu : ibuLigne({ ...r, moment: mb, ibu0: null, wpT: 80, wpMin: 20 });
   const ibu = v === undefined ? 'IBU à recalculer' : v == null ? 'aucun IBU' : '+' + ibuTexte(v) + ' IBU';
-  const corps = colonne
-    ? [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), statutRapide(r)), h('span', { class: 'r2' }, miniProfil(r.fiche, r.nom))),
-      h('span', { class: 'col-ibu' }, h('b', { class: 'plus-ibu' }, ibu), h('span', { class: 'dose-r' }, grammes(r.g)))]
-    : [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), alphaEl(r.alpha), roleEl(r.role), statutRapide(r)),
-      h('span', { class: 'r2' }, h('span', { class: 'dose-r fl' }, grammes(r.g)), h('span', { class: 'plus-ibu' }, ibu), miniProfil(r.fiche, r.nom)))];
+  const q = quand({ moment: mb, jour: 3, wpT: 80 });
   return h('li', { class: 'rapide-l' },
     h('button', {
       class: 'rapide', 'data-role': 'ajout-rapide', 'data-booster': premier ? 'ajout rapide' : null, 'data-k': 'r' + r.cle,
-      'aria-label': 'Ajouter ' + r.nom + ', ' + grammes(r.g) + ' à ' + mom(r.moment).quand + ' : ' + ibu,
-      onclick: () => ajouter(r, mb),
-    }, h('span', { class: 'plus-i', 'aria-hidden': 'true' }), corps),
+      'aria-label': 'Ajouter ' + r.nom + ', ' + grammes(r.g) + ', suggéré à ' + quandLong({ moment: mb, jour: 3, wpT: 80, wpMin: 20 }) + ' : ' + ibu,
+      onclick: (e) => { const de = e.currentTarget.getBoundingClientRect(); ajouter(r, mb); if (typeof atterrir === 'function') atterrir(de); },
+    },
+    h('span', { class: 'plus-i', 'aria-hidden': 'true' }),
+    h('span', { class: 'txt' },
+      h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), alphaEl(r.alpha), roleEl(r.role), statutRapide(r)),
+      h('span', { class: 'r2' }, h('span', { class: 'dose-r' }, grammes(r.g)), h('span', { class: 'plus-ibu' }, ibu), miniProfil(r.fiche, r.nom))),
+    h('span', { class: 'suggere', 'data-role': 'quand', title: 'Moment suggéré : ' + q }, q)),
     goutBouton(r.nom, 'r', premier ? 'goût' : null));
 }
 

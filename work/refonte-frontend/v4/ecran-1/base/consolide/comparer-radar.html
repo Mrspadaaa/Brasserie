@@ -246,98 +246,111 @@
   .serie .fams { font-size: 12px; color: var(--gris); min-width: 0; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .serie .fams.monte::before { content: '↑ '; color: var(--encre); }
   @media (prefers-reduced-motion: reduce) { .partie.entre, .tourne.roule::after { animation: none; } }
-  /* Version consolidée : rail des étapes de p2, levure sur le rail (D28), moment à glisser (D27) */
-  .frise { position: relative; display: flex; flex-direction: column; gap: 3px; }
-  .axe { position: absolute; left: 21px; top: 8px; bottom: 8px; width: 2px; background: #cfcfcf; }
-  .couloir { display: flex; flex-direction: column; gap: 4px; }
-  .blk, .rap-zone, .vide-l, .etape-levure { display: grid; grid-template-columns: 44px 1fr; align-items: start; column-gap: 2px; }
-  .poignee { justify-self: center; position: relative; z-index: 1; margin-top: 5px; touch-action: none; cursor: grab; border-radius: 15px; }
-  .quand, .rail-l.plein { justify-self: center; position: relative; z-index: 1; min-width: 40px; height: 26px; padding: 0 5px; border-radius: 13px; background: #fff; border: 1.5px solid var(--encre); font-size: 12px; font-weight: 650; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; }
-  .rail-l.plein { margin-top: 5px; }
-  .quand { cursor: grab; touch-action: none; }
+  /* Étape houblons, base v4 : le rail des étapes (BRIEF-RAIL.md), les ajouts proposés à part. */
+  .frise { position: relative; display: flex; flex-direction: column; padding: 1px 0; }
+  .axe { position: absolute; left: 21px; top: 12px; bottom: 12px; width: 2px; border-radius: 1px; background: #d4d4d4; }
+  .frise > [data-rang] { display: grid; grid-template-columns: 44px 1fr; column-gap: 2px; align-items: center; }
+  /* Points du rail : début de l'ébullition, étapes nommées, fin d'ébullition, levure (D28). */
+  .pt { justify-self: center; position: relative; z-index: 1; border-radius: 50%; background: #fff; }
+  .pt-ebu { width: 12px; height: 12px; border: 2px solid var(--encre); }
+  .pt-etape { width: 10px; height: 10px; border: 1.5px solid #9a9a9a; }
+  .pt-fin { width: 8px; height: 8px; border: 1.5px solid #b5b5b5; }
+  .pt-levure { width: 14px; height: 14px; background: var(--encre); }
+  .r-ebu, .r-etape { min-height: 28px; }
+  .r-fin { min-height: 24px; }
+  .r-nom { font-size: 12px; color: var(--gris2); }
+  .ebu-v { font-weight: 650; font-variant-numeric: tabular-nums; }
+  /* D37 révisé : la durée est réglée dans la fiche de brassage ; la rangée y renvoie (chevron). */
+  .renvoi { display: flex; align-items: baseline; gap: 6px; min-height: 28px; align-items: center; color: inherit; text-decoration: none; }
+  .renvoi::after { content: ''; margin-left: auto; margin-right: 6px; width: 7px; height: 7px; border-right: 1.5px solid var(--gris2); border-bottom: 1.5px solid var(--gris2); transform: rotate(-45deg); }
+  .etape-levure { margin: 3px 0; }
+  /* Recette vide : la place des houblons sur l'ébullition. */
+  .r-vide { width: 100%; padding: 2px 0; text-align: left; }
+  .vide-c { height: 38px; border: 1.5px dashed #cfcfcf; border-radius: 12px; background: #fafafa; position: relative; }
+  .vide-c::before, .vide-c::after { content: ''; position: absolute; left: 50%; top: 50%; width: 14px; height: 1.6px; margin: -0.8px 0 0 -7px; background: #9a9a9a; }
+  .vide-c::after { transform: rotate(90deg); }
+  .etape-levure .levure { background: #fff; border: 1.5px solid var(--trait); min-height: 30px; }
+
+  /* Lignes de la recette posées sur le rail : la pastille du moment est la poignée (D27). */
+  .frise > .blk { align-items: start; margin: 2px 0; }
+  .poignee { justify-self: center; position: relative; z-index: 2; margin-top: 5px; touch-action: none; cursor: grab; border-radius: 13px; }
+  .quand { justify-self: center; position: relative; min-width: 40px; height: 26px; padding: 0 5px; border-radius: 13px; background: #fff; border: 1.5px solid var(--encre); font-size: 12px; font-weight: 650; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; cursor: grab; touch-action: none; font-variant-numeric: tabular-nums; }
   /* Repère de la poignée : on la glisse de haut en bas. */
   .poignee::before, .poignee::after { content: ''; position: absolute; left: 50%; margin-left: -3px; border: 3px solid transparent; }
   .poignee::before { top: -6px; border-bottom-color: #9a9a9a; }
   .poignee::after { bottom: -6px; border-top-color: #9a9a9a; }
-  .rail-l { justify-self: center; position: relative; z-index: 1; width: 10px; height: 10px; margin-top: 5px; border-radius: 5px; background: #fff; border: 1.5px solid #9a9a9a; }
-  .corps-b { background: var(--fond); border-radius: 12px; padding: 7px 6px 8px 8px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .corps-b .l2 { min-height: 24px; }
+  .corps-b { background: var(--fond); border-radius: 12px; padding: 6px 6px 6px 8px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .corps-b .l2 { min-height: 24px; flex-wrap: wrap; row-gap: 3px; }
   .l1 { display: flex; align-items: center; gap: 6px; min-width: 0; }
   .l1 .nom { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-  /* Étapes vides : fines, le rail ne doit pas déborder de l'écran. */
-  .vide-l { min-height: 20px; }
-  .drop { display: flex; align-items: center; gap: 8px; height: 20px; font-size: 12px; color: var(--gris2); }
-  .drop::after { content: ''; flex: 1; border-top: 1.5px dashed #d0d0d0; }
-  .rap-corps { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .rap-corps .champ { flex: 1; min-width: 0; }
-  .rap-corps .champ input { height: 30px; }
-  .l3 { display: flex; align-items: center; min-height: 16px; }
-  .l3 .mini .c { width: 9px; height: 10px; }
+  .l3 { display: flex; align-items: center; min-height: 16px; gap: 8px; flex-wrap: wrap; }
   .l3 .mini { gap: 2px; }
-  .l3 .mini .c.sep { margin-left: 6px; }
-  /* La levure, étape pleine du rail (comme p8). */
-  .etape-levure { align-items: center; margin: 2px 0; }
-  .rail-lev { justify-self: center; position: relative; z-index: 1; width: 14px; height: 14px; border-radius: 7px; background: var(--encre); }
-  .etape-levure .levure { background: #fff; border: 1.5px solid var(--trait); min-height: 34px; }
-  /* Glisser : la carte suit le doigt, l'étape survolée s'éclaire. */
-  .blk.glisse { position: relative; z-index: 5; }
-  .blk.glisse .corps-b { box-shadow: 0 6px 18px rgba(0,0,0,.22); background: #fff; }
-  .blk.glisse .quand { background: var(--encre); color: #fff; }
-  .vide-l.survol .drop { color: var(--encre); font-weight: 650; }
-  .vide-l.survol .drop::after { border-top-color: var(--encre); }
-  .vide-l.survol .rail-l, .rail-l.plein.survol { background: var(--encre); border-color: var(--encre); }
-  .rail-l.plein.survol { color: #fff; }
-  .poignee.survol .quand { box-shadow: 0 0 0 3px #d4d4d4; }
-  .vide-l.cran { min-height: 14px; }
-  .vide-l.cran .rail-l { width: 6px; height: 6px; margin-top: 4px; border-radius: 3px; }
-  .vide-l.cran .drop { height: 14px; }
-  .note-ibu { padding: 8px 0 4px; }
-  .rapide { min-height: 48px; }
-  .vide-l.cran .drop::after { display: none; }
-  .rapides .ou { font-size: 12px; color: var(--gris2); padding-left: 44px; margin: -2px 0; }
-  /* Rail par tranches de 5′ (D34) : chaque tranche est une graduation fine ; les repères utiles sont écrits. */
-  .frise { gap: 0; }
-  .frise > .blk, .frise > .rap-zone, .frise > .etape-levure { margin: 3px 0; }
-  .marque { display: grid; grid-template-columns: 44px 1fr; align-items: center; column-gap: 2px; height: var(--tick); }
-  .marque .rail-l { width: 6px; height: 2px; margin: 0; border: 0; border-radius: 1px; background: #b5b5b5; }
-  .marque .drop { height: auto; }
-  .marque .drop::after { display: none; }
-  .marque.ecrit { height: 18px; }
-  .marque.ecrit .rail-l { width: 10px; height: 10px; border-radius: 5px; border: 1.5px solid #9a9a9a; background: #fff; }
-  .marque.ecrit .drop::after { display: block; border-top: 1px dashed #d6d6d6; }
-  .marque.survol .rail-l { width: 14px; height: 3px; background: var(--encre); }
-  .marque.survol .drop { visibility: hidden; }
-  /* Carte glissée : dans le flux, au-dessus de tout, les autres s'écartent (D35). */
-  .blk[data-glisse] { position: relative; z-index: 10; }
-  .blk[data-glisse] .corps-b { box-shadow: 0 6px 18px rgba(0,0,0,.22); background: #fff; }
-  .blk[data-glisse] .quand { background: var(--encre); color: #fff; }
-  /* Réglages libres : whirlpool (°C, minutes), jour de dry hop. */
-  .l3 { gap: 8px; flex-wrap: wrap; }
-  .reglages { display: inline-flex; gap: 8px; margin-left: auto; }
-  .regl { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; }
-  .regl .moins, .regl .plus { width: 24px; height: 24px; border-radius: 12px; }
-  .regl .moins::before, .regl .plus::before, .regl .plus::after { left: 6px; top: 10.5px; width: 9px; }
-  .regl-v { min-width: 38px; text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .l3 .mini .c { width: 7px; }
+  .l3 .mini .c { width: 7px; height: 10px; }
   .l3 .mini .c.sep { margin-left: 4px; }
-  .regl .moins, .regl .plus { width: 22px; height: 22px; }
-  .regl-v { min-width: 34px; }
-  .reglages { gap: 4px; }
-  /* Durée d'ébullition réglable en tête du rail (D37). */
-  .ebu-regl { display: grid; grid-template-columns: 44px 1fr; align-items: center; column-gap: 2px; min-height: 30px; }
-  .rail-ebu { justify-self: center; position: relative; z-index: 1; width: 12px; height: 12px; border-radius: 6px; border: 2px solid var(--encre); background: #fff; }
-  .ebu-corps { display: flex; align-items: center; gap: 6px; }
-  .ebu-corps .moins, .ebu-corps .plus { width: 26px; height: 26px; }
-  .ebu-corps button:disabled { opacity: .35; }
-  .ebu-v { min-width: 40px; text-align: center; font-weight: 650; font-variant-numeric: tabular-nums; }
-  .ebu-regl { min-height: 26px; }
-  .marque.ecrit { height: 16px; }
-  .frise > .blk, .frise > .rap-zone, .frise > .etape-levure { margin: 2px 0; }
-  .etape-levure .levure { min-height: 30px; }
-  .corps-b { padding: 6px 6px 6px 8px; gap: 3px; }
-  .corps-b .l2 { flex-wrap: wrap; row-gap: 3px; }
-  /* D42 : au repos, aucune carte n'a d'ombre ; l'ombre n'existe que pendant le geste (data-glisse). */
+  .reglages { display: inline-flex; gap: 4px; margin-left: auto; }
+  .regl { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; }
+  .regl .moins, .regl .plus { width: 22px; height: 22px; border-radius: 11px; }
+  .regl .moins::before, .regl .plus::before, .regl .plus::after { left: 5px; top: 9.5px; width: 9px; }
+  .regl button:disabled { opacity: .35; }
+  .regl-v { min-width: 34px; text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  /* D42 : au repos, aucune carte n'a d'ombre ; l'ombre n'existe que pendant le geste. */
   .blk:not([data-glisse]), .blk:not([data-glisse]) .corps-b { box-shadow: none; }
+
+  /* La loupe (D47) : la poignée prise, le rail s'ouvre en échelles ; tout glisse en translation. */
+  .grads { display: none; }
+  .frise[data-geste] { user-select: none; -webkit-user-select: none; transition: height 180ms cubic-bezier(.2,.8,.2,1); }
+  .frise[data-geste] > [data-rang] { position: absolute; left: 0; right: 0; top: 0; margin: 0; transition: transform 180ms cubic-bezier(.2,.8,.2,1); }
+  .frise[data-geste] > .leve { z-index: 20; transition: none; will-change: transform; }
+  .frise[data-geste] .axe { bottom: auto; transition: top 180ms cubic-bezier(.2,.8,.2,1), height 180ms cubic-bezier(.2,.8,.2,1); }
+  .frise[data-geste] .grads { display: block; position: absolute; left: 0; top: 0; width: 44px; height: 0; z-index: 1; pointer-events: none; }
+  .grad { position: absolute; left: 18px; top: 0; width: 8px; height: 1.5px; border-radius: 1px; background: #8f8f8f; opacity: 0; transition: opacity 140ms ease-out, transform 160ms cubic-bezier(.2,.8,.2,1); }
+  .grad.maj { left: 15px; width: 14px; height: 2px; background: var(--encre); }
+  .grad.vue { opacity: 1; }
+  /* Le segment sous le doigt se nomme en encre ; les autres restent gris. */
+  .frise[data-geste] > .focus .r-nom, .frise[data-geste] > .focus .cle { color: var(--encre); font-weight: 650; }
+  .frise[data-geste] > .focus .pt-etape { border-color: var(--encre); }
+  /* La carte prise : blanche, soulevée ; son IBU attend le lâcher (rien n'est recalculé pendant le geste). */
+  .blk.leve .corps-b { background: #fff; box-shadow: 0 10px 28px rgba(0,0,0,.16), 0 2px 6px rgba(0,0,0,.08); }
+  .blk.leve .quand { background: var(--encre); color: #fff; border-color: var(--encre); }
+  .blk.leve .poignee { cursor: grabbing; }
+  .blk.leve .ibu-l { opacity: .3; }
+  /* Les autres lignes, réduites à leur nom et leur moment, s'écartent de la carte. */
+  .blk.jeton { height: 26px; overflow: hidden; align-items: center; z-index: 3; }
+  .frise[data-geste] > .r-ebu, .frise[data-geste] > .r-etape, .frise[data-geste] > .r-fin, .frise[data-geste] > .etape-levure { z-index: 2; }
+  .blk.jeton .corps-b { background: transparent; padding: 0 6px; }
+  .blk.jeton .l2, .blk.jeton .l3, .blk.jeton .bio, .blk.jeton .pas, .blk.jeton .corbeille, .blk.jeton .type { display: none; }
+  .blk.jeton .poignee { margin-top: 0; }
+  .blk.jeton .poignee::before, .blk.jeton .poignee::after { display: none; }
+  .blk.jeton .quand { height: 22px; border-color: #9a9a9a; color: var(--gris); }
+  .blk.jeton .nom { font-weight: 400; color: var(--gris); }
+  /* Le rail monte sur l'en-tête quand la place manque au-dessus (longue ébullition) : il l'estompe. */
+  .ecran > .barre, .ecran > .resume { transition: opacity 160ms; }
+  .ecran.rail-haut > .barre, .ecran.rail-haut > .resume { opacity: 0; }
+
+  /* Les ajouts proposés, hors du rail (D41) : nom, α, rôle, arômes en couleur, dose, IBU, moment suggéré. */
+  .ajouts { display: flex; flex-direction: column; gap: 4px; padding-top: 6px; }
+  .ajouts .champ input { height: 32px; }
+  .rapide { min-height: 54px; gap: 8px; padding: 4px 6px; }
+  .rapide .txt { gap: 4px; }
+  .rapide .r2 { gap: 8px; }
+  .rapide .r2 .mini { margin-left: auto; }
+  .rapides .ou { font-size: 12px; color: var(--gris2); padding-left: 36px; margin: -2px 0; }
+  /* Le moment suggéré : la même pastille que sur le rail, en pointillé tant qu'elle n'y est pas posée. */
+  .suggere { flex: none; min-width: 40px; height: 24px; padding: 0 6px; border-radius: 12px; border: 1.5px dashed #8f8f8f; background: #fff; font-size: 12px; font-weight: 650; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; }
+
+  /* Arômes en couleur (D29) : une teinte par famille, marqué plein, cité clair, non décrit gris. */
+  .mini .c { position: relative; }
+  .ajouts .mini { gap: 2px; }
+  .ajouts .mini .c { width: 6px; }
+  .mini .c.f-citrus { --c: #d9b414; } .mini .c.f-tropical { --c: #ee9b2f; } .mini .c.f-melon { --c: #6fc09b; }
+  .mini .c.f-stoneFruit { --c: #e88d68; } .mini .c.f-pomeFruit { --c: #a3bd38; } .mini .c.f-berries { --c: #9b3f74; }
+  .mini .c.f-floral { --c: #bf86d6; } .mini .c.f-green { --c: #6aa33a; } .mini .c.f-herbal { --c: #3f8a5f; }
+  .mini .c.f-spice { --c: #7a4e3a; } .mini .c.f-earthy { --c: #9a8a66; } .mini .c.f-resin { --c: #2f6b5f; }
+  .frise .mini .c.ci, .ajouts .mini .c.ci, .frise .mini .c.acc.ci, .ajouts .mini .c.acc.ci { background: color-mix(in srgb, var(--c) 42%, #fff); opacity: 1; }
+  .frise .mini .c.m, .ajouts .mini .c.m, .frise .mini .c.acc.m, .ajouts .mini .c.acc.m { background: var(--c); opacity: 1; }
+  /* La famille que ma bière a déjà en trop : un trait d'accent sous sa case. */
+  .frise .mini .c.acc::after, .ajouts .mini .c.acc::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 2px; border-radius: 1px; background: var(--acc); }
+  @media (prefers-reduced-motion: reduce) { .frise[data-geste], .frise[data-geste] > [data-rang], .frise[data-geste] .axe, .grad { transition: none; } }
 
   /* Radar unique (radar.js) : rangées, puces de voie, petits multiples de Comparer */
   .rdr { overflow: visible; }
@@ -505,10 +518,10 @@ const nomCourt = (f) => D.court[f];
 /* Moments du rail du brassage : premier moût ; ébullition par tranches de 5′, de la durée de la
    recette (D.ebullition, pack ebullitionMinutes) à 0′ ; whirlpool ; à froid, en fermentation active
    ou après (la phase est un choix du brasseur, le jour est libre). « vide » nomme l'étape vide. */
-/* La durée d'ébullition est une variable de la recette (pack ebullitionMinutes = valeur de départ),
-   réglable sur l'étape de 5 à 240′ par 5 ; le rail et les moments en dépendent. */
-const EBU_MIN = 5, EBU_MAX = 240;
-let EBU = D.ebullition || 60, MOMENTS = [], REPERES = new Set();
+/* La durée d'ébullition est une donnée de la recette, réglée ailleurs dans l'application (fiche de
+   brassage ; pack ebullitionMinutes) : l'étape la lit (D37 révisé), le rail et les moments en
+   dépendent (45′, 60′, 120′, 200′…). */
+let EBU = D.ebullition || 60, MOMENTS = [];
 function construireMoments() {
   MOMENTS = [
     { code: 'fwh', type: 'premier moût', quand: 'moût', vide: 'premier moût' },
@@ -517,20 +530,8 @@ function construireMoments() {
     { code: 'dryActive', type: 'à froid', quand: 'J+3', vide: 'fermentation' },
     { code: 'dryPost', type: 'à froid', quand: 'après', vide: 'post-fermentation' },
   ];
-  // Repères écrits : la durée d'ébullition, 60′ et 0′ ; les autres tranches sont des graduations.
-  REPERES = new Set([EBU, 60, 0]);
 }
 construireMoments();
-/* Changer la durée : les lignes au-delà se ramènent au début de l'ébullition, et le disent. */
-function changerEbu(v) {
-  EBU = Math.max(EBU_MIN, Math.min(EBU_MAX, Math.round(v / 5) * 5));
-  construireMoments();
-  for (const l of ETAT.lignes) {
-    const m = /^b(\d+)$/.exec(l.moment);
-    if (m && Number(m[1]) > EBU) { l.moment = 'b' + EBU; l.ramene = true; }
-  }
-  rendre(true);
-}
 /* Moment d'un ajout proposé, borné à la durée d'ébullition choisie. */
 const momentBorne = (code) => { const m = /^b(\d+)$/.exec(code); return m && Number(m[1]) > EBU ? 'b' + EBU : code; };
 const TYPES = ['ébullition', 'whirlpool', 'à froid', 'premier moût'];
@@ -559,6 +560,9 @@ const ETAT = {
   voieRadar: null, compGrand: null,
 };
 for (const f of (B.dirs ? B.dirs.split(',') : [])) ETAT.visee[f] = D.cible[fi(f)].visee;
+/* Une recette dont l'ébullition est plus courte qu'un ajout (60′ dans une ébullition de 45′) : l'ajout
+   se ramène au début de l'ébullition, et la ligne le dit (« ramenée au début »). */
+for (const l of ETAT.lignes) { const m = /^b(\d+)$/.exec(l.moment); if (m && Number(m[1]) > EBU) { l.moment = 'b' + EBU; l.ramene = true; } }
 /* D33 : le focus ne se replace qu'après une action au clavier (au doigt, la vue web du téléphone
    l'entourerait de jaune) ; le contour reste réservé à :focus-visible. */
 for (const f of (B.dirs ? B.dirs.split(',') : [])) if (D.continu && D.continu.viseeDir[f] != null) ETAT.viseeAbs[f] = D.continu.viseeDir[f];
@@ -651,7 +655,6 @@ function ajouter(r, moment) {
   rendre(true);
 }
 function placer(l, code) { l.moment = code; rendre(true); }
-function momentSuivant(l) { const i = MOMENTS.findIndex((m) => m.code === l.moment); placer(l, MOMENTS[(i + 1) % MOMENTS.length].code); }
 function typeSuivant(l) {
   const t = TYPES[(TYPES.indexOf(mom(l.moment).type) + 1) % TYPES.length];
   placer(l, MOMENTS.find((m) => m.type === t).code);
@@ -722,33 +725,38 @@ function alphaEl(a) {
   return h('span', { class: 'alpha', 'aria-label': t + ' % d\'acides alpha', title: t + ' % d\'acides alpha' }, 'α ' + t);
 }
 function roleEl(role) { return role ? h('span', { class: 'role', 'data-role': 'role' }, role) : null; }
+/* Les arômes cités par les fiches, une case par famille dans l'ordre du style, en couleur de la
+   famille (marqué plein, cité clair, non décrit gris) : on voit d'un coup d'œil ce que le houblon
+   ajoute (D29). La famille que ma bière a déjà en trop est soulignée de l'accent. */
 function miniProfil(fiche, nom) {
   const cites = D.ordre.filter((f, i) => fiche.niv[i] > 0).map((f) => nomCourt(f).toLowerCase());
   const w = h('span', { class: 'mini', role: 'img', 'data-role': 'aromes', 'aria-label': 'Arômes cités par les fiches de ' + nom + ' : ' + (cites.join(', ') || 'non décrit') });
   D.ordre.forEach((f, i) => {
     const lv = fiche.niv[i];
     const trop = D.profil[i].crans === 4;
-    w.append(h('i', { class: 'c' + (lv === 2 ? ' m' : lv === 1 ? ' ci' : '') + (trop && lv ? ' acc' : '') + (i === D.attendues.length ? ' sep' : '') }));
+    w.append(h('i', { class: 'c f-' + f + (lv === 2 ? ' m' : lv === 1 ? ' ci' : '') + (trop && lv ? ' acc' : '') + (i === D.attendues.length ? ' sep' : ''), title: lv ? nomCourt(f) + (lv === 2 ? ', marqué' : ', cité') : null }));
   });
   return w;
 }
-/* Un ajout proposé : « 10 g → + 3 IBU » (D16, « genre 5g -> 20ibu en plus »), son stock, ses fiches.
-   colonne : les IBU en colonne à droite (p03, greffe de p11) ; sinon dans la ligne (p02). */
-function rapideLigne(r, premier, colonne) {
+/* Un ajout proposé, pensé en brasseur (D29, D41) : nom, α, rôle, arômes en couleur, dose, ce qu'il
+   ajoute en IBU (D16) et son moment suggéré, qui dit où la ligne se posera sur le rail ; le stock
+   reste une icône (D23 ter). Un toucher l'ajoute à ce moment. */
+function rapideLigne(r, premier) {
   const mb = momentBorne(r.moment);
   const v = mb === r.moment ? r.ibu : ibuLigne({ ...r, moment: mb, ibu0: null, wpT: 80, wpMin: 20 });
   const ibu = v === undefined ? 'IBU à recalculer' : v == null ? 'aucun IBU' : '+' + ibuTexte(v) + ' IBU';
-  const corps = colonne
-    ? [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), statutRapide(r)), h('span', { class: 'r2' }, miniProfil(r.fiche, r.nom))),
-      h('span', { class: 'col-ibu' }, h('b', { class: 'plus-ibu' }, ibu), h('span', { class: 'dose-r' }, grammes(r.g)))]
-    : [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), alphaEl(r.alpha), roleEl(r.role), statutRapide(r)),
-      h('span', { class: 'r2' }, h('span', { class: 'dose-r fl' }, grammes(r.g)), h('span', { class: 'plus-ibu' }, ibu), miniProfil(r.fiche, r.nom)))];
+  const q = quand({ moment: mb, jour: 3, wpT: 80 });
   return h('li', { class: 'rapide-l' },
     h('button', {
       class: 'rapide', 'data-role': 'ajout-rapide', 'data-booster': premier ? 'ajout rapide' : null, 'data-k': 'r' + r.cle,
-      'aria-label': 'Ajouter ' + r.nom + ', ' + grammes(r.g) + ' à ' + mom(r.moment).quand + ' : ' + ibu,
-      onclick: () => ajouter(r, mb),
-    }, h('span', { class: 'plus-i', 'aria-hidden': 'true' }), corps),
+      'aria-label': 'Ajouter ' + r.nom + ', ' + grammes(r.g) + ', suggéré à ' + quandLong({ moment: mb, jour: 3, wpT: 80, wpMin: 20 }) + ' : ' + ibu,
+      onclick: (e) => { const de = e.currentTarget.getBoundingClientRect(); ajouter(r, mb); if (typeof atterrir === 'function') atterrir(de); },
+    },
+    h('span', { class: 'plus-i', 'aria-hidden': 'true' }),
+    h('span', { class: 'txt' },
+      h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), alphaEl(r.alpha), roleEl(r.role), statutRapide(r)),
+      h('span', { class: 'r2' }, h('span', { class: 'dose-r' }, grammes(r.g)), h('span', { class: 'plus-ibu' }, ibu), miniProfil(r.fiche, r.nom))),
+    h('span', { class: 'suggere', 'data-role': 'quand', title: 'Moment suggéré : ' + q }, q)),
     goutBouton(r.nom, 'r', premier ? 'goût' : null));
 }
 
@@ -1208,116 +1216,104 @@ function rendre(animerIbu) {
 }
 function demarrer() { rendre(false); }
 
-/* Version consolidée de l'étape (choix du brasseur, 18.10, soir) : le visuel de p2 (rail,
-   cartes, ajouts proposés, stock discret), la levure comme étape du rail entre le whirlpool et
-   le dry hop (D28, comme p8), et le moment qui se glisse le long du rail (D27).
-   Rail (D34, D36) : l'ébullition est une échelle de temps de la durée de la recette à 0′, une
-   graduation fine par tranche de 5′ (data-etape="b<minute>"), des repères écrits aux valeurs
-   utiles seulement ; lâchée entre deux repères, la carte prend la tranche la plus proche.
-   Geste (D35) : la carte glissée reste dans le flux (CSS order, sans sortir du document) : elle
-   se range au fil du doigt, les autres s'écartent, l'origine se referme, une seule pastille ;
-   elle n'a d'ombre que pendant le geste, et un geste interrompu la rend à sa place (D42). */
+/* Étape houblons, base v4 : le rail des étapes (BRIEF-RAIL.md ; D27, D28, D34 à D37, D41 à D47).
+   Au repos, un rail compact et sans graduation : la durée d'ébullition lue dans la recette (avec un
+   renvoi, D37 révisé), les lignes de la recette posées à leur moment, 0′, le whirlpool, la levure
+   (D28), la fermentation et la post-fermentation. Le rail ne porte que la recette : les ajouts
+   proposés vivent à part, sous le rail, chacun avec son moment suggéré (D41).
+   La loupe (D47) : la poignée prise, le rail s'ouvre en échelles continues, une par segment, chacune
+   régulière (D45) : ébullition par 5′ de la durée à 0′ (D34, D36), whirlpool de 100 à 60 °C par 5,
+   fermentation puis post-fermentation de J+0 à J+14 (D44). Le segment de la ligne prise s'ouvre
+   autour du doigt (sa graduation reste sous le doigt), les autres se resserrent, et seules les
+   graduations du segment sous le doigt se montrent. Le geste (D46) : la carte suit le doigt en
+   translation seule, l'étiquette suit la tranche, les autres lignes réduites s'écartent ; rien n'est
+   recalculé avant le lâcher, où la ligne prend la tranche, puis l'IBU et le total (tables du pack),
+   et tout se referme. Ombre pendant le geste seulement ; un geste interrompu rend tout (D42). */
 
 /* Après un glisser, le clic qui suit le lâcher est ignoré (il tomberait sous le doigt). */
 let IGNORE_CLIC = 0;
 document.addEventListener('click', (e) => { if (performance.now() < IGNORE_CLIC) { e.stopPropagation(); e.preventDefault(); } }, true);
 
-/* Pendant le glisser : moment, type et IBU de l'étape visée, lus dans les tables du pack. */
-function apercuGlisse(carte, l, code) {
-  const fictif = { ...l, moment: code };
-  carte.querySelector('.ibu-l').textContent = ibuEl(fictif).textContent;
-  carte.querySelector('[data-role="quand"]').textContent = quand(fictif);
-  carte.querySelector('[data-role="type-ajout"]').textContent = mom(code).type;
+/* ---------- Les valeurs du rail ---------- */
+const J_MAX = 14;
+const SEGMENTS = ['ebullition', 'whirlpool', 'fermentation', 'post'];
+const TETE_SEG = { ebullition: 'T-ebu', whirlpool: 'T-wp', fermentation: 'T-dryActive', post: 'T-dryPost' };
+function valeursSeg(s) {
+  if (s === 'ebullition') return Array.from({ length: EBU / 5 + 1 }, (x, k) => 'b' + (EBU - 5 * k));
+  if (s === 'whirlpool') return [...((D.tables.wp && D.tables.wp.temperatures) || [60, 65, 70, 75, 80, 85, 90, 95, 100])].sort((a, b) => b - a).map((t) => 'wp' + t);
+  return Array.from({ length: J_MAX + 1 }, (x, j) => (s === 'fermentation' ? 'f' : 'p') + j);
 }
-function brancherGlisser(poignee, carte, l) {
-  let g = null;
-  poignee.addEventListener('pointerdown', (e) => {
-    if (e.button > 0) return;
-    g = { y0: e.clientY, bouge: false, code: l.moment };
-    try { poignee.setPointerCapture(e.pointerId); } catch (x) { /* rien */ }
-  });
-  const commencer = () => {
-    // Repères à leur place d'avant le geste : le doigt descend de d, la carte prend la tranche qui
-    // était d sous son repère ; ces positions ne bougent plus pendant le geste (pas de va-et-vient).
-    const rc = carte.getBoundingClientRect();
-    g.reperes = [...carte.parentElement.querySelectorAll('.marque')].map((x) => {
-      const r = x.getBoundingClientRect();
-      return { code: x.dataset.etape, el: x, ordre: Number(x.style.order), y: r.top + r.height / 2 };
-    });
-    const depart = g.reperes.find((x) => x.code === l.moment);
-    g.base = depart ? depart.y : rc.top;
-    carte.setAttribute('data-glisse', '');
-    carte.classList.add('glisse');
-  };
-  poignee.addEventListener('pointermove', (e) => {
-    if (!g) return;
-    const d = e.clientY - g.y0;
-    if (!g.bouge && Math.abs(d) < 6) return;
-    if (!g.bouge) { g.bouge = true; commencer(); }
-    const y = g.base + d;
-    let best = g.reperes[0];
-    for (const x of g.reperes) if (Math.abs(x.y - y) < Math.abs(best.y - y)) best = x;
-    if (best.code !== g.code || !g.place) {
-      g.code = best.code; g.place = true;
-      carte.style.order = String(best.ordre + 1);
-      apercuGlisse(carte, l, best.code);
-      for (const x of g.reperes) x.el.classList.toggle('survol', x === best);
-    }
-  });
-  poignee.addEventListener('pointerup', () => {
-    const d = g;
-    g = null;
-    if (!d || !d.bouge) return;
-    IGNORE_CLIC = performance.now() + 400;
-    ETAT.focusK = 'q' + l.id;
-    if (d.code !== l.moment) placer(l, d.code); else rendre(false);
-  });
-  // D42 : un geste interrompu par le téléphone (pointercancel, touchcancel, capture perdue) rend la
-  // carte à sa place, sans ombre ni data-glisse.
-  const interrompre = () => { const d = g; g = null; if (d && d.bouge) rendre(false); };
-  poignee.addEventListener('pointercancel', interrompre);
-  poignee.addEventListener('touchcancel', interrompre);
-  poignee.addEventListener('lostpointercapture', () => { setTimeout(() => { if (g && g.bouge) interrompre(); }, 0); });
+const segDe = (v) => (v === 'fwh' || /^b\d/.test(v) ? 'ebullition' : /^wp/.test(v) ? 'whirlpool' : /^f\d/.test(v) ? 'fermentation' : 'post');
+function valeurDe(l) {
+  if (l.moment === 'wp') return 'wp' + (l.wpT || 80);
+  if (l.moment === 'dryActive') return 'f' + l.jour;
+  if (l.moment === 'dryPost') return 'p' + l.jour;
+  return l.moment;
 }
+function appliquer(l, v) {
+  if (/^wp\d/.test(v)) { l.moment = 'wp'; l.wpT = Number(v.slice(2)); }
+  else if (/^f\d/.test(v)) { l.moment = 'dryActive'; l.jour = Number(v.slice(1)); }
+  else if (/^p\d/.test(v)) { l.moment = 'dryPost'; l.jour = Number(v.slice(1)); }
+  else l.moment = v;
+  l.ramene = false;
+}
+const toutesValeurs = () => ['fwh', ...SEGMENTS.flatMap(valeursSeg)];
+/* Ordre d'une ligne dans son segment : premier moût, puis minutes restantes, °C, jours. */
+const rangValeur = (v) => (v === 'fwh' ? -1 : /^b/.test(v) ? EBU - Number(v.slice(1)) : /^wp/.test(v) ? 100 - Number(v.slice(2)) : Number(v.slice(1)));
+const majeure = (s, v) => {
+  const n = Number(v.replace(/^\D+/, ''));
+  return s === 'ebullition' ? n % (EBU > 90 ? 30 : 15) === 0 : s === 'whirlpool' ? n % 10 === 0 : n % 7 === 0;
+};
 
-/* Réglages libres là où le moteur donne une table : whirlpool (°C, minutes), dry hop (jour). */
-function reglage(libelle, valeur, moins, plus) {
+/* ---------- Le rail au repos ---------- */
+function pt(c) { return h('span', { class: 'pt ' + c, 'aria-hidden': 'true' }); }
+/* D37 révisé : la durée se lit ici et se règle dans la fiche de brassage (renvoi). */
+function teteEbullition() {
+  // Une rangée de renvoi (comme un réglage d'iPhone) : le chevron mène à la fiche de brassage.
+  return h('div', { class: 'r-ebu', 'data-role': 'ebullition', 'data-minutes': String(EBU), 'data-rang': 'T-ebu' },
+    pt('pt-ebu'),
+    h('a', { class: 'renvoi', href: '#fiche-brassage', 'data-action': 'renvoi-ebullition', title: 'Réglée dans la fiche de brassage', 'aria-label': 'Ébullition ' + EBU + ' minutes, réglée dans la fiche de brassage', onclick: (e) => e.preventDefault() },
+      h('span', { class: 'cle' }, 'Ébullition'), h('b', { class: 'ebu-v' }, EBU + '′')));
+}
+function rangEtape(code, nom) { return h('div', { class: 'r-etape', 'data-etape': code, 'data-rang': 'T-' + code }, pt('pt-etape'), h('span', { class: 'r-nom' }, nom)); }
+function rangFin() { return h('div', { class: 'r-fin', 'data-rang': 'T-fin', 'aria-label': 'Fin de l\'ébullition' }, pt('pt-fin'), h('span', { class: 'r-nom' }, '0′')); }
+function rangLevure() { return h('div', { class: 'etape-levure', 'data-etape': 'levure', 'data-rang': 'T-levure' }, pt('pt-levure'), levure()); }
+
+/* Réglages qui restent sur la carte : la durée du whirlpool ; le jour d'un ajout à froid (D43). */
+function reglage(libelle, valeur, moins, plus, action) {
   return h('span', { class: 'regl', role: 'group', 'aria-label': libelle },
-    h('button', { class: 'moins', 'aria-label': libelle + ' : moins', onclick: (e) => { e.stopPropagation(); moins(); } }),
+    h('button', { class: 'moins', 'data-action': action + '-moins', 'aria-label': libelle + ' : moins', disabled: moins ? null : true, onclick: (e) => { e.stopPropagation(); if (moins) moins(); } }),
     h('span', { class: 'regl-v' }, valeur),
-    h('button', { class: 'plus', 'aria-label': libelle + ' : plus', onclick: (e) => { e.stopPropagation(); plus(); } }));
+    h('button', { class: 'plus', 'data-action': action + '-plus', 'aria-label': libelle + ' : plus', disabled: plus ? null : true, onclick: (e) => { e.stopPropagation(); if (plus) plus(); } }));
 }
 function reglagesMoment(l) {
-  const m = mom(l.moment);
-  if (l.moment === 'wp' && l.tab && l.tab.wp && D.tables.wp) {
-    const T = D.tables.wp.temperatures, M = D.tables.wp.minutes, t = T.indexOf(l.wpT), n = M.indexOf(l.wpMin);
-    return h('div', { class: 'reglages' },
-      reglage('Température du whirlpool', l.wpT + ' °C', () => { if (t > 0) { l.wpT = T[t - 1]; rendre(true); } }, () => { if (t < T.length - 1) { l.wpT = T[t + 1]; rendre(true); } }),
-      reglage('Durée du whirlpool', l.wpMin + ' min', () => { if (n > 0) { l.wpMin = M[n - 1]; rendre(true); } }, () => { if (n < M.length - 1) { l.wpMin = M[n + 1]; rendre(true); } }));
+  if (l.moment === 'wp' && D.tables.wp) {
+    const M = D.tables.wp.minutes, n = M.indexOf(l.wpMin);
+    return h('div', { class: 'reglages' }, reglage('Durée du whirlpool', l.wpMin + ' min',
+      n > 0 ? () => { l.wpMin = M[n - 1]; rendre(true); } : null, n >= 0 && n < M.length - 1 ? () => { l.wpMin = M[n + 1]; rendre(true); } : null, 'wp-min'));
   }
-  if (m.type === 'à froid') {
-    const J = D.dryJours || { min: 0, max: 14 };
-    return h('div', { class: 'reglages' },
-      reglage('Jour du houblonnage à froid', 'J+' + l.jour, () => { if (l.jour > J.min) { l.jour -= 1; rendre(false); } }, () => { if (l.jour < J.max) { l.jour += 1; rendre(false); } }));
+  if (mom(l.moment).type === 'à froid') {
+    return h('div', { class: 'reglages' }, reglage('Jour du houblonnage à froid', 'J+' + l.jour,
+      l.jour > 0 ? () => { l.jour -= 1; rendre(false); } : null, l.jour < J_MAX ? () => { l.jour += 1; rendre(false); } : null, 'jour'));
   }
   return null;
 }
 
-function blocRail(l, i, st, ordre) {
+function blocRail(l, i, st) {
   const premier = i === 0;
   const m = mom(l.moment);
   const pastille = h('button', {
-    class: 'quand', 'data-role': 'quand', 'data-k': 'q' + l.id, 'data-booster': premier ? 'moment qui tourne' : null,
-    'aria-label': 'Moment : ' + quandLong(l) + ' ; glisser le long du rail pour le changer (tranches de 5 minutes), toucher pour passer au suivant, flèches haut et bas',
+    class: 'quand', 'data-role': 'quand', 'data-k': 'q' + l.id,
+    'aria-label': 'Moment : ' + quandLong(l) + ' ; glisser le long du rail pour le changer, ou flèches haut et bas',
     onkeydown: (e) => {
       if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
       e.preventDefault();
-      const k = MOMENTS.findIndex((x) => x.code === l.moment) + (e.key === 'ArrowDown' ? 1 : -1);
-      if (k >= 0 && k < MOMENTS.length) { ETAT.focusK = 'q' + l.id; placer(l, MOMENTS[k].code); }
+      const V = toutesValeurs(), k = V.indexOf(valeurDe(l)) + (e.key === 'ArrowDown' ? 1 : -1);
+      if (k >= 0 && k < V.length) { ETAT.focusK = 'q' + l.id; appliquer(l, V[k]); rendre(true); }
     },
   }, quand(l));
-  const poignee = h('span', { class: 'poignee', 'data-role': 'glisser-moment', onclick: () => { ETAT.focusK = 'q' + l.id; momentSuivant(l); } }, pastille);
-  const carte = h('div', { class: 'blk', 'data-role': 'ligne-houblon', style: 'order:' + ordre },
+  const poignee = h('span', { class: 'poignee', 'data-role': 'glisser-moment' }, pastille);
+  const carte = h('div', { class: 'blk', 'data-role': 'ligne-houblon', 'data-rang': 'L' + l.id },
     poignee,
     h('div', { class: 'corps-b' },
       h('div', { class: 'l1' },
@@ -1337,58 +1333,285 @@ function blocRail(l, i, st, ordre) {
   brancherGlisser(poignee, carte, l);
   return carte;
 }
-function zoneRapides(code, liste, tete, premier, ordre, seule) {
-  // Sous une carte de la même étape, la zone ne répète pas le moment (une seule pastille).
-  return h('div', { class: 'rap-zone', 'data-etape': code, style: 'order:' + ordre },
-    seule ? h('span', { class: 'rail-l plein' }, mom(code).quand) : h('span'),
-    h('div', { class: 'rap-corps' },
-      tete ? noteIbu() : null,
-      tete ? champ() : null,
-      h('ul', { class: 'rapides', 'aria-label': 'Ajouts proposés à ' + mom(code).quand + ', selon le moteur' },
-        // Deux amérisants « au choix » (un seul suffit pour l'IBU visé) : un « ou » les sépare.
-        liste.flatMap((r, n) => [rapideLigne(r, premier && n === 0, false), r.alternative && liste[n + 1] && liste[n + 1].alternative ? h('li', { class: 'ou' }, 'ou') : null]).filter(Boolean))));
+/* Les graduations : toutes présentes (data-etape), cachées au repos, montrées par la loupe. */
+function graduations() {
+  const g = h('div', { class: 'grads', 'aria-hidden': 'true' });
+  for (const s of SEGMENTS) for (const v of valeursSeg(s)) g.append(h('i', { class: 'grad' + (majeure(s, v) ? ' maj' : ''), 'data-etape': v, 'data-graduation': s }));
+  return g;
 }
-/* Repère du rail : une graduation fine ; son nom n'est écrit qu'aux valeurs utiles. */
-function repere(code, libelle, ordre) {
-  const m = mom(code);
-  return h('div', {
-    class: 'marque' + (libelle ? ' ecrit' : '') + (m.type === 'ébullition' ? ' ebu' : ''), 'data-etape': code, style: 'order:' + ordre,
-    'aria-label': 'Étape : ' + quandLong({ moment: code, jour: 3, wpT: 80, wpMin: 20 }),
-  }, h('span', { class: 'rail-l' }), h('span', { class: 'drop' }, libelle || null));
+function frise() {
+  const fr = h('section', { class: 'frise', 'data-role': 'houblons-recette', 'aria-label': 'Houblons de la recette, posés sur le rail du brassage' }, h('i', { class: 'axe', 'aria-hidden': 'true' }));
+  const st = etatsStock();
+  const lignes = (seg) => ETAT.lignes.map((l, i) => [l, i]).filter(([l]) => segDe(valeurDe(l)) === seg)
+    .sort((a, b) => rangValeur(valeurDe(a[0])) - rangValeur(valeurDe(b[0])) || a[1] - b[1]).map(([l, i]) => blocRail(l, i, st[i]));
+  // Recette vide : la place des houblons sur l'ébullition, en pointillé ; un toucher mène à la recherche.
+  const vide = ETAT.lignes.length ? null : h('button', { class: 'r-vide', 'data-rang': 'T-vide', 'aria-label': 'Aucun houblon dans la recette : chercher un houblon à ajouter',
+    onclick: () => { const i = document.querySelector('.ajouts .champ input'); if (i) i.focus({ preventScroll: true }); } }, h('span'), h('span', { class: 'vide-c', 'aria-hidden': 'true' }));
+  fr.append(...[teteEbullition(), ...lignes('ebullition'), vide, rangFin(),
+    rangEtape('wp', 'whirlpool'), ...lignes('whirlpool'),
+    rangLevure(),
+    rangEtape('dryActive', 'fermentation'), ...lignes('fermentation'),
+    rangEtape('dryPost', 'post-fermentation'), ...lignes('post'),
+    graduations()].filter(Boolean));
+  return fr;
 }
+
+/* ---------- Les ajouts proposés, hors du rail (D41) ---------- */
+function zoneAjouts() {
+  const n = ETAT.lignes.length;
+  // Propositions selon la place : 5 pour une recette vide, puis 3, 2, 1 ; au-delà, le champ reste.
+  const proposes = rapidesVisibles(n === 0 ? 5 : Math.max(0, 4 - n));
+  return h('section', { class: 'ajouts', 'data-role': 'ajouts-proposes', 'aria-label': 'Ajouter un houblon' },
+    noteIbu(), champ(),
+    proposes.length ? h('ul', { class: 'rapides', 'aria-label': 'Ajouts proposés par le moteur, chacun à son moment suggéré' },
+      proposes.flatMap((r, k) => [rapideLigne(r, k === 0), r.alternative && proposes[k + 1] && proposes[k + 1].alternative ? h('li', { class: 'ou' }, 'ou') : null]).filter(Boolean)) : null);
+}
+/* Un ajout touché : sa ligne se pose sur le rail en venant de la carte touchée. */
+function atterrir(de) {
+  const l = ETAT.lignes[ETAT.lignes.length - 1];
+  const c = l && document.querySelector('[data-rang="L' + l.id + '"]');
+  if (!c || REDUIT) return;
+  const b = c.getBoundingClientRect();
+  c.animate([{ transform: 'translate(' + (de.left - b.left) + 'px,' + (de.top - b.top) + 'px)', opacity: 0.4 }, { transform: 'none', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(.2,.8,.2,1)' });
+}
+
+/* ---------- La loupe et le geste ---------- */
+// Écart entre deux graduations (px) : segment ouvert, segments d'avant (avant ajustement), segments
+// d'après (resserrés jusqu'à ce que le doigt y entre), plafond, confort, plancher.
+const ESP = { ouvert: { ebullition: 16, whirlpool: 13, fermentation: 10, post: 10 }, serre: { ebullition: 8, whirlpool: 9, fermentation: 7, post: 7 }, apres: 4, max: 14, confort: 8, min: 5 };
+const nIntervalles = (s) => valeursSeg(s).length - 1;
+/* Plan du rail ouvert pour des écarts donnés, le centre de la tête d'ébullition à hE (px, depuis le
+   haut du rail) : y de chaque graduation (P), centre de chaque rangée nommée (T), bas du rail. */
+function plan(e, hE) {
+  const P = {}, T = { 'T-ebu': hE };
+  let y = hE + 26;
+  const poser = (s) => { valeursSeg(s).forEach((v, k) => { P[v] = y + k * e[s]; }); return y + nIntervalles(s) * e[s]; };
+  const b0 = poser('ebullition');
+  T['T-fin'] = b0; T['T-wp'] = b0 + 28; y = T['T-wp'] + 24;
+  const wp = poser('whirlpool');
+  T['T-levure'] = wp + 32; T['T-dryActive'] = T['T-levure'] + 34; y = T['T-dryActive'] + 24;
+  const f = poser('fermentation');
+  T['T-dryPost'] = f + 28; y = T['T-dryPost'] + 24;
+  const p = poser('post');
+  return { P, T, fin: p, bas: p + 16 };
+}
+/* Écarts et ancrage : la graduation de la ligne prise (vA) tombe sous le doigt (yA). La place au-dessus
+   ouvre un peu les segments d'avant ; si elle manque, on les resserre, puis le segment de la ligne
+   jusqu'au confort ; puis le rail peut monter sur l'en-tête (estompé), et en dernier se serrer encore. */
+function disposer(vA, yA, frTop) {
+  const segA = segDe(vA);
+  const avant = SEGMENTS.slice(0, SEGMENTS.indexOf(segA));
+  const e = {}; for (const s of SEGMENTS) e[s] = s === segA ? ESP.ouvert[s] : avant.includes(s) ? ESP.serre[s] : ESP.apres;
+  const V = valeursSeg(segA);
+  let iA = V.indexOf(vA);
+  if (iA < 0) iA = vA === 'fwh' ? -1 : Math.min(V.length - 1, Math.max(0, Number(vA.replace(/^\D+/, '')))); // premier moût : juste au-dessus du début
+  const pos = () => { const p = plan(e, 0); return p.P[V[0]] + iA * e[segA]; };
+  // Poids de chaque écart dans la position de vA, pour viser une position (cible) en réglant des écarts.
+  const viser = (cles, poids, cible, lo, hi) => {
+    const n = cles.reduce((t, s) => t + poids(s), 0);
+    if (!n) return;
+    const fixe = pos() - cles.reduce((t, s) => t + poids(s) * e[s], 0);
+    const v = Math.max(lo, Math.min(hi, (cible - fixe) / n));
+    for (const s of cles) e[s] = v;
+  };
+  const HAUT = 14, HAUT_TETE = 8 - frTop + 14; // tête d'ébullition dans le rail, ou au plus haut de l'écran
+  const wAvant = (s) => nIntervalles(s), wA = () => Math.max(0, iA);
+  if (yA - pos() > HAUT) viser(avant, wAvant, yA - HAUT, Math.min(...avant.map((s) => e[s]), ESP.max), ESP.max);
+  else if (yA - pos() < HAUT) {
+    viser(avant, wAvant, yA - HAUT, ESP.min, Math.min(ESP.max, ...avant.map((s) => e[s])));
+    if (yA - pos() < HAUT) viser([segA], wA, yA - HAUT, ESP.confort, e[segA]);
+    if (yA - pos() < HAUT_TETE) viser([segA], wA, yA - HAUT_TETE, ESP.min, e[segA]);
+  }
+  const G = plan(e, yA - pos());
+  G.e = e;
+  return G;
+}
+
+let GESTE = null;
+/* La loupe s'ouvre au premier mouvement du doigt, ou après 120 ms de maintien : un toucher bref
+   sur la poignée ne fait rien clignoter. */
+function brancherGlisser(poignee, carte, l) {
+  let attente = null;
+  const demarrer = (cy) => {
+    const a = attente;
+    attente = null;
+    clearTimeout(a.timer);
+    GESTE = ouvrirLoupe(carte, l, a);
+    if (cy != null) GESTE.suivre(cy);
+  };
+  poignee.addEventListener('pointerdown', (e) => {
+    if (e.button > 0 || GESTE || attente) return;
+    e.preventDefault();
+    try { poignee.setPointerCapture(e.pointerId); } catch (x) { /* rien */ }
+    attente = { clientY: e.clientY, pointerId: e.pointerId };
+    attente.timer = setTimeout(() => { if (attente) demarrer(null); }, 120);
+  });
+  poignee.addEventListener('pointermove', (e) => {
+    if (attente && attente.pointerId === e.pointerId) { if (Math.abs(e.clientY - attente.clientY) >= 2) demarrer(e.clientY); }
+    else if (GESTE && GESTE.id === e.pointerId) GESTE.suivre(e.clientY);
+  });
+  poignee.addEventListener('pointerup', (e) => {
+    if (attente && attente.pointerId === e.pointerId) { clearTimeout(attente.timer); attente = null; return; }
+    if (GESTE && GESTE.id === e.pointerId) GESTE.lacher(e.clientY);
+  });
+  // D42 : un geste interrompu par le téléphone (pointercancel, touchcancel, capture perdue) rend tout.
+  const interrompre = () => {
+    if (attente) { clearTimeout(attente.timer); attente = null; }
+    if (GESTE && GESTE.carte === carte) GESTE.annuler();
+  };
+  poignee.addEventListener('pointercancel', interrompre);
+  poignee.addEventListener('touchcancel', interrompre);
+  poignee.addEventListener('lostpointercapture', () => { setTimeout(interrompre, 0); });
+}
+
+function ouvrirLoupe(carte, l, ev) {
+  const fr = carte.parentElement, app = fr.parentElement;
+  const R0 = fr.getBoundingClientRect();
+  const rangs = [...fr.children].filter((r) => r.dataset.rang);
+  const repos = new Map(rangs.map((r) => { const b = r.getBoundingClientRect(); return [r, { top: b.top - R0.top, h: b.height }]; }));
+  const pq = carte.querySelector('.quand').getBoundingClientRect();
+  const yA = pq.top + pq.height / 2 - R0.top;
+  const cr = repos.get(carte);
+  const vA = valeurDe(l);
+  let G = disposer(vA, yA, R0.top);
+  const limiteBas = innerHeight - R0.top - 10;
+  const q = carte.querySelector('[data-role="quand"]'), type = carte.querySelector('[data-role="type-ajout"]');
+  const ticks = [...fr.querySelectorAll('.grad')].map((el) => ({ el, v: el.dataset.etape, s: el.dataset.graduation }));
+  const tetes = Object.fromEntries(rangs.filter((r) => /^T-/.test(r.dataset.rang)).map((r) => [r.dataset.rang, r]));
+  const axe = fr.querySelector('.axe');
+  const JETON = 26;
+  const jetons = rangs.filter((r) => r !== carte && /^L/.test(r.dataset.rang)).map((r) => ({ el: r, l: ETAT.lignes.find((y) => 'L' + y.id === r.dataset.rang), h: JETON, top: null }));
+  let obstacles = [];
+  const y0 = ev.clientY;
+  const g = { id: ev.pointerId, carte, v: vA, seg: null, bouge: false, dy: 0 };
+
+  // Place chaque rangée, chaque graduation et le rail selon le plan G (transitions CSS).
+  const poserPlan = () => {
+    for (const [k, r] of Object.entries(tetes)) r.style.transform = 'translateY(' + (G.T[k] - repos.get(r).h / 2) + 'px)';
+    for (const t of ticks) t.el.style.transform = 'translateY(' + (G.P[t.v] - 1) + 'px)';
+    obstacles = Object.entries(tetes).map(([k, r]) => ({ top: G.T[k] - repos.get(r).h / 2, bas: G.T[k] + repos.get(r).h / 2 }));
+    for (const j of jetons) {
+      // Premier moût : juste au-dessus du début de l'ébullition ; un jour au-delà de l'échelle : sa fin.
+      const v = valeurDe(j.l);
+      const y = G.P[v] ?? (v === 'fwh' ? G.P['b' + EBU] - G.e.ebullition : G.P[valeursSeg(segDe(v)).slice(-1)[0]]);
+      j.pref = y - JETON / 2;
+    }
+    fr.style.height = Math.max(G.bas, 0) + 'px';
+    axe.style.top = G.T['T-ebu'] + 'px'; axe.style.height = (G.fin - G.T['T-ebu']) + 'px';
+  };
+
+  // 1. Tout reste en place, sorti du flux (positions mesurées au repos).
+  fr.style.height = R0.height + 'px';
+  fr.setAttribute('data-geste', '');
+  for (const [r, p] of repos) { r.style.transition = 'none'; r.style.transform = 'translateY(' + p.top + 'px)'; }
+  for (const t of ticks) { t.el.style.transition = 'none'; t.el.style.transform = 'translateY(' + (G.P[t.v] - 1) + 'px)'; }
+  carte.setAttribute('data-glisse', '');
+  carte.classList.add('leve');
+  void fr.offsetHeight;
+  // 2. Puis le rail s'ouvre : chaque rangée glisse à sa place sur l'échelle, les autres lignes se réduisent.
+  for (const r of rangs) if (r !== carte) r.style.transition = '';
+  for (const t of ticks) t.el.style.transition = '';
+  for (const j of jetons) j.el.classList.add('jeton');
+  poserPlan();
+  if (G.T['T-ebu'] - 14 < -6) app.classList.add('rail-haut');
+
+  // La tranche sous le doigt : la graduation affichée la plus proche (même pendant qu'un segment s'ouvre).
+  const plusProche = (yRel) => {
+    let b = ticks[0], d = Infinity;
+    for (const t of ticks) { const r = t.el.getBoundingClientRect(); const x = Math.abs(r.top + r.height / 2 - R0.top - yRel); if (x < d) { d = x; b = t; } }
+    return b;
+  };
+  const focus = (s) => {
+    if (s === g.seg) return;
+    if (g.seg) { for (const t of ticks) if (t.s === g.seg) t.el.classList.remove('vue'); tetes[TETE_SEG[g.seg]].classList.remove('focus'); }
+    g.seg = s;
+    for (const t of ticks) if (t.s === s) t.el.classList.add('vue');
+    tetes[TETE_SEG[s]].classList.add('focus');
+  };
+  // La loupe suit le doigt sans rien déplacer au-dessus de lui (pas de saut sous le doigt) : un
+  // segment atteint par le haut s'ouvre vers le bas ; quitté vers le haut, il se resserre. Le rail
+  // reste dans l'écran : en bas, le segment ouvert se serre au besoin.
+  const basculer = (s) => {
+    const avant = g.seg, e = { ...G.e };
+    if (SEGMENTS.indexOf(s) > SEGMENTS.indexOf(avant)) {
+      e[s] = Math.max(e[s], ESP.ouvert[s]);
+      const trop = plan(e, G.T['T-ebu']).bas - limiteBas;
+      if (trop > 0) e[s] = Math.max(G.e[s], e[s] - trop / nIntervalles(s));
+    } else e[avant] = Math.min(e[avant], ESP.apres);
+    G = plan(e, G.T['T-ebu']); G.e = e;
+    poserPlan();
+  };
+  // Les autres lignes s'écartent de la carte : au-dessus si elles sont avant, en dessous sinon.
+  const ecarter = (cTop) => {
+    if (!jetons.length) return;
+    const cBas = cTop + cr.h, centre = (cTop + cBas) / 2;
+    // 1. Chaque ligne à sa graduation, écartée d'une rangée nommée du plus petit déplacement (elle
+    //    reste dans son segment), sans chevaucher la précédente.
+    const tri = [...jetons].sort((a, b) => a.pref - b.pref);
+    let plancher = -Infinity;
+    for (const j of tri) {
+      let t = j.pref;
+      for (const o of obstacles) if (t < o.bas + 2 && t + j.h > o.top - 2) t = t + j.h / 2 < (o.top + o.bas) / 2 ? o.top - 2 - j.h : o.bas + 2;
+      j.y = Math.max(t, plancher); plancher = j.y + j.h + 2;
+    }
+    // 2. La carte prise passe : les lignes d'avant montent au-dessus d'elle, les suivantes descendent.
+    const haut = tri.filter((j) => j.y + j.h / 2 < centre), bas = tri.filter((j) => j.y + j.h / 2 >= centre);
+    let plafond = cTop - 4;
+    for (const j of [...haut].reverse()) { if (j.y + j.h > plafond) j.y = plafond - j.h; plafond = j.y - 2; }
+    plancher = cBas + 4;
+    for (const j of bas) { if (j.y < plancher) j.y = plancher; plancher = j.y + j.h + 2; }
+    for (const j of jetons) if (j.top === null || Math.abs(j.top - j.y) > 0.5) { j.top = j.y; j.el.style.transform = 'translateY(' + j.y + 'px)'; }
+  };
+  g.suivre = (cy) => {
+    const dy = cy - y0;
+    g.dy = dy;
+    carte.style.transform = 'translateY(' + (cr.top + dy) + 'px)';
+    if (!g.bouge && Math.abs(dy) >= 3) g.bouge = true;
+    const p = plusProche(yA + dy);
+    if (p.s !== g.seg) { basculer(p.s); focus(p.s); }
+    if (g.bouge && p.v !== g.v) {
+      g.v = p.v;
+      const x = { ...l }; appliquer(x, p.v);
+      q.textContent = quand(x);
+      if (type) type.textContent = mom(x.moment).type;
+    }
+    ecarter(cr.top + dy);
+  };
+  const fermer = (change) => {
+    GESTE = null;
+    const avant = new Map(rangs.map((r) => [r.dataset.rang, r.getBoundingClientRect().top]));
+    const estompe = app.classList.contains('rail-haut');
+    app.classList.remove('rail-haut');
+    if (g.bouge) IGNORE_CLIC = performance.now() + 400;
+    ETAT.focusK = 'q' + l.id;
+    rendre(change);
+    if (REDUIT) return;
+    // Tout se referme : chaque rangée revient de sa place sur l'échelle à sa place au repos.
+    const fr2 = app.querySelector('.frise');
+    if (fr2) for (const r of fr2.children) {
+      const t0 = avant.get(r.dataset.rang);
+      if (t0 == null) continue;
+      const d = t0 - r.getBoundingClientRect().top;
+      if (Math.abs(d) > 0.5) r.animate([{ transform: 'translateY(' + d + 'px)' }, { transform: 'none' }], { duration: 240, easing: 'cubic-bezier(.2,.8,.2,1)' });
+    }
+    if (estompe) for (const x of app.querySelectorAll(':scope > .barre, :scope > .resume')) x.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
+  };
+  g.lacher = (cy) => {
+    g.suivre(cy);
+    const v = g.bouge ? plusProche(yA + g.dy).v : vA;
+    const change = v !== vA;
+    if (change) appliquer(l, v);
+    fermer(change);
+  };
+  g.annuler = () => fermer(false);
+  focus(segDe(vA));
+  ecarter(cr.top);
+  return g;
+}
+
 VARIANTE = {
   etape(app) {
-    app.append(enTete(), resume());
-    const fr = h('section', { class: 'frise', 'data-role': 'houblons-recette', 'aria-label': 'Houblons de la recette, posés sur le rail du brassage', style: '--tick:' + Math.max(2, Math.min(9, Math.floor(110 / (EBU / 5)))) + 'px' },
-      h('i', { class: 'axe', 'aria-hidden': 'true' }),
-      // D37 : la durée d'ébullition se règle ici, par pas de 5′ ; le rail se redessine à cette durée.
-      h('div', { class: 'ebu-regl', 'data-role': 'ebullition', 'data-minutes': String(EBU), style: 'order:-1' },
-        h('span', { class: 'rail-ebu', 'aria-hidden': 'true' }),
-        h('span', { class: 'ebu-corps' }, h('span', { class: 'cle' }, 'ébullition'),
-          h('button', { class: 'moins', 'data-action': 'ebullition-moins', 'aria-label': 'Ébullition plus courte de 5 minutes', disabled: EBU <= EBU_MIN || null, onclick: () => changerEbu(EBU - 5) }),
-          h('output', { class: 'ebu-v', 'aria-live': 'polite' }, EBU + '′'),
-          h('button', { class: 'plus', 'data-action': 'ebullition-plus', 'aria-label': 'Ébullition plus longue de 5 minutes', disabled: EBU >= EBU_MAX || null, onclick: () => changerEbu(EBU + 5) }))));
-    const et = etatsStock();
-    const n = ETAT.lignes.length;
-    // Propositions selon la place : 5 pour une recette vide, puis 3, 2, 1, et aucune au-delà de 3 ajouts (le champ reste).
-    const proposes = rapidesVisibles(n === 0 ? 5 : Math.max(0, 4 - n));
-    const parMoment = (c) => proposes.filter((r) => momentBorne(r.moment) === c);
-    const codes = MOMENTS.map((m) => m.code);
-    const premiereZone = codes.find((c) => parMoment(c).length) || D.rapidesMoment;
-    let ordre = 0;
-    const suite = () => (ordre += 2);
-    for (const code of codes) {
-      const blocs = ETAT.lignes.map((l, i) => [l, i]).filter(([l]) => l.moment === code);
-      const zone = parMoment(code).length || code === premiereZone;
-      const m = mom(code);
-      // Repère écrit : étapes nommées (premier moût, whirlpool, phases à froid) et minutes utiles, quand rien ne les dit déjà.
-      const ecrit = m.type === 'à froid' ? m.vide : blocs.length || zone ? null : m.vide || (REPERES.has(m.minute) ? m.quand : null);
-      fr.append(repere(code, ecrit, suite()));
-      blocs.forEach(([l, i]) => fr.append(blocRail(l, i, et[i], suite())));
-      if (zone) fr.append(zoneRapides(code, parMoment(code), code === premiereZone, code === premiereZone, suite(), !blocs.length));
-      if (code === 'wp') fr.append(h('div', { class: 'etape-levure', 'data-etape': 'levure', style: 'order:' + suite() }, h('span', { class: 'rail-lev', 'aria-hidden': 'true' }), levure()));
-    }
-    app.append(...[fr, goutsLigne(), panLigne()].filter(Boolean));
+    app.append(enTete(), resume(), frise(), zoneAjouts(), ...[goutsLigne(), panLigne()].filter(Boolean));
   },
 };
 
@@ -1403,8 +1626,14 @@ VARIANTE = {
    dépasse la zone (Ma bière), le sommet de l'avant au-dessus de la zone (Suggestions). Jamais sur
    une voie, un houblon ou une fiche.
    Contrat D24 : data-radar, data-objet, data-axes (ordre de la roue des arômes du pack, sens
-   horaire depuis le haut ; une famille sans valeur n'est pas un axe, elle se dit à côté),
-   data-serie et data-valeurs alignées sur data-axes, au plus 2 séries hors zone par radar.
+   horaire depuis le haut), data-serie et data-valeurs alignées sur data-axes, au plus 2 séries
+   hors zone par radar.
+   D48 (« Il y a pas 12 radar ? » ; « Ni là ») : les 12 familles partout, chacune toujours à la
+   même place de la roue (agrumes en haut, fiche comprise). Une famille sans valeur (non située
+   dans ma bière) garde son axe : son secteur est hachuré (data-inconnu), son libellé gris, sa
+   valeur vide dans data-valeurs, et la silhouette ne relie que les familles connues (elle se
+   referme par le centre au bord d'un secteur inconnu). Pour les fiches, « non décrit » est une
+   valeur (0), pas une inconnue : le houblon y est au centre, libellé gris.
    Échelles : ma bière, la zone et les voies en intensité continue 0–3 du pack ; les fiches en
    citations 0–2. Aucun chiffre calculé : les valeurs du pack sont placées, rien d'autre. */
 const RADAR = (() => {
@@ -1443,7 +1672,7 @@ const RADAR = (() => {
     const grille = sv('g', { class: 'c-grille', transform: 'translate(' + cx + ',' + cy + ')' }, svg);
     const centre = sv('g', { class: 'c-dessin', transform: 'translate(' + cx + ',' + cy + ')' }, svg);
     const C = {};
-    for (const k of ['zone', 'series', 'marques', 'visees']) C[k] = sv('g', { class: 'c-' + k }, centre);
+    for (const k of ['zone', 'inconnu', 'series', 'marques', 'visees']) C[k] = sv('g', { class: 'c-' + k }, centre);
     const labG = sv('g', { class: 'c-lab' }, svg);
     for (const v of o.anneaux || []) sv('path', { d: ligne(axes.map(() => v)), fill: 'none', stroke: v === o.max ? '#d6d6d6' : GRILLE, 'stroke-width': 1 }, grille);
     axes.forEach((f, k) => { const a = P(k, 0), b = P(k, o.max); sv('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: GRILLE, 'stroke-width': 1 }, grille); });
@@ -1467,12 +1696,40 @@ const RADAR = (() => {
     sv('path', { d: g.ligne(haut) + (bas.some((v) => v > 0) ? g.ligne(bas) : ''), 'fill-rule': 'evenodd', fill: ZONE_F, stroke: ZONE_T, 'stroke-width': 1 }, z);
     return z;
   }
+  /* D48 : la silhouette ne relie que les familles connues. Toutes connues : un contour fermé. Sinon,
+     chaque suite de familles connues voisines est un trait ouvert, et son remplissage se referme par
+     le centre au bord du secteur inconnu (pas de zigzag à travers ce qu'on ignore). */
+  function traces(g, vals) {
+    if (vals.every((v) => v != null)) { const d = g.ligne(vals); return { plein: d, trait: d }; }
+    const n = vals.length, suites = [];
+    const k0 = vals.findIndex((v) => v == null);
+    let cur = [];
+    for (let j = 1; j <= n; j++) { const k = (k0 + j) % n; if (vals[k] == null) { if (cur.length) suites.push(cur); cur = []; } else cur.push(k); }
+    const pts = (s) => s.map((k) => g.P(k, vals[k]).map((x) => x.toFixed(1)).join(','));
+    return { plein: suites.map((s) => 'M0,0L' + pts(s).join('L') + 'Z').join(''), trait: suites.filter((s) => s.length > 1).map((s) => 'M' + pts(s).join('L')).join('') };
+  }
   /* Une série : pleine translucide (sujet) ou en contour (repère). */
   function serie(g, s) {
-    const e = sv('g', { 'data-serie': s.nom, 'data-valeurs': s.valeurs.join(','), opacity: s.op ?? 1 }, g.C.series);
-    s.chemin = sv('path', { d: g.ligne(s.valeurs), fill: s.plein ? s.couleur : 'none', 'fill-opacity': s.plein ? OP : null, stroke: s.couleur, 'stroke-width': s.plein ? T_SUJET : T_REPERE, 'stroke-linejoin': 'round' }, e);
+    const e = sv('g', { 'data-serie': s.nom, 'data-valeurs': s.valeurs.map((v) => (v == null ? '' : v)).join(','), opacity: s.op ?? 1 }, g.C.series);
+    const t = traces(g, s.valeurs);
+    if (s.plein) s.fond = sv('path', { d: t.plein, fill: s.couleur, 'fill-opacity': OP, stroke: 'none' }, e);
+    s.chemin = sv('path', { d: t.trait, fill: 'none', stroke: s.couleur, 'stroke-width': s.plein ? T_SUJET : T_REPERE, 'stroke-linejoin': 'round' }, e);
+    s.maj = (vals) => { const x = traces(g, vals); if (s.fond) s.fond.setAttribute('d', x.plein); s.chemin.setAttribute('d', x.trait); };
     s.g = e;
     return e;
+  }
+  /* D48 : le secteur d'une famille sans valeur, hachuré, à sa place dans la roue. */
+  function inconnus(g, fams) {
+    if (!fams.length) return;
+    const id = g.id + '-hachure';
+    const pat = sv('pattern', { id, width: 5, height: 5, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, g.defs);
+    sv('line', { x1: 0, y1: 0, x2: 0, y2: 5, stroke: '#d2d2d2', 'stroke-width': 1.5 }, pat);
+    const a = Math.PI / g.n, R = g.r(g.max);
+    const p = (t) => (Math.sin(t) * R).toFixed(1) + ',' + (-Math.cos(t) * R).toFixed(1);
+    for (const f of fams) {
+      const t = (2 * Math.PI * g.axes.indexOf(f)) / g.n;
+      sv('path', { d: 'M0,0L' + p(t - a) + 'A' + R.toFixed(1) + ',' + R.toFixed(1) + ' 0 0 1 ' + p(t + a) + 'Z', fill: 'url(#' + id + ')', 'data-inconnu': f }, g.C.inconnu);
+    }
   }
   /* La part de ma bière au-dessus de la zone, en accent : la série masquée par l'intérieur de la zone. */
   function accentHors(g, s, haut) {
@@ -1480,7 +1737,7 @@ const RADAR = (() => {
     const m = sv('mask', { id, maskUnits: 'userSpaceOnUse', x: -g.cx, y: -g.cy, width: g.cx * 2, height: g.svg.getAttribute('height') }, g.defs);
     sv('rect', { x: -g.cx, y: -g.cy, width: g.cx * 2, height: g.svg.getAttribute('height'), fill: '#fff' }, m);
     sv('path', { d: g.ligne(haut), fill: '#000' }, m);
-    sv('path', { d: g.ligne(s.valeurs), fill: ACC, 'fill-opacity': OP_ACC, stroke: 'none', mask: 'url(#' + id + ')' }, s.g);
+    sv('path', { d: traces(g, s.valeurs).plein, fill: ACC, 'fill-opacity': OP_ACC, stroke: 'none', mask: 'url(#' + id + ')' }, s.g);
   }
   function point(parent, p, a) { return sv('circle', { cx: p[0].toFixed(1), cy: p[1].toFixed(1), ...a }, parent); }
   /* Ma visée (posée par une direction ou un geste) : un losange creux sur l'axe, échelle absolue. */
@@ -1498,6 +1755,7 @@ const RADAR = (() => {
     if (t === 'zone') sv('rect', { x: 1, y: 2, width: 16, height: 10, rx: 2, fill: ZONE_F, stroke: ZONE_T }, s);
     else if (t === 'sujet' || t === 'voie') sv('rect', { x: 1, y: 2, width: 16, height: 10, rx: 2, fill: t === 'voie' ? GRIS : ENC, 'fill-opacity': OP, stroke: t === 'voie' ? GRIS : ENC, 'stroke-width': T_SUJET }, s);
     else if (t === 'contour') sv('rect', { x: 1.5, y: 2.5, width: 15, height: 9, rx: 2, fill: 'none', stroke: ENC, 'stroke-width': T_REPERE }, s);
+    else if (t === 'inconnu') { sv('rect', { x: 1, y: 2, width: 16, height: 10, rx: 2, fill: '#fff', stroke: '#d2d2d2' }, s); sv('path', { d: 'M2,11L8,3M6,11L12,3M10,11L16,3', stroke: '#c4c4c4', 'stroke-width': 1.3 }, s); }
     else sv('circle', { cx: 9, cy: 7, r: 4.5, fill: t === 'plein' ? ENC : t === 'acc' ? ACC : '#fff', stroke: t === 'acc' ? ACC : t === 'muet' ? MUET : t === 'creux-gris' ? GRIS : ENC, 'stroke-width': 1.6 }, s);
     return s;
   }
@@ -1516,38 +1774,40 @@ const RADAR = (() => {
   }
   const terne = (cle) => (ETAT.focusSerie && ETAT.focusSerie !== cle ? 0.15 : 1);
 
-  /* Ma bière (objets 1 et 2) : axes = familles situées ; ma bière d'abord dégustée, sinon prévue. */
+  /* Ma bière (objets 1 et 2) : les 12 familles (D48) ; ma bière d'abord dégustée, sinon prévue ;
+     une famille non située reste à sa place, en secteur inconnu. */
   function donneesBiere() {
-    const axes = ROUE.filter((f) => D.continu.biere[fi(f)] != null);
-    const val = axes.map((f) => D.continu.biere[fi(f)]);
+    const axes = ROUE;
+    const val = axes.map((f) => (D.continu.biere[fi(f)] != null ? D.continu.biere[fi(f)] : null));
     const bas = axes.map((f) => D.continu.cible[fi(f)].bas), haut = axes.map((f) => D.continu.cible[fi(f)].haut);
-    return { axes, hors: ROUE.filter((f) => !axes.includes(f)), val, bas, haut,
-      deg: axes.map((f) => D.profil[fi(f)].source === 'dégustation'), dessus: axes.map((f, k) => val[k] > haut[k] + 0.05) };
+    return { axes, hors: axes.filter((f, k) => val[k] == null), val, bas, haut,
+      deg: axes.map((f) => D.profil[fi(f)].source === 'dégustation'), dessus: axes.map((f, k) => val[k] != null && val[k] > haut[k] + 0.05) };
   }
   function biere(cont, redraw) {
     const b = donneesBiere();
     const g = cadre(cont, {
       objet: 'biere-cible', axes: b.axes, max: 3, H: 330, taille: 14, anneaux: [1, 2, 3], echelle: [[0.5, 'faible'], [1.5, 'moyen'], [2.5, 'marqué']],
-      couleur: (f, k) => (b.dessus[k] ? ACC : ENC),
-      label: 'Radar de ma bière dans la zone du style, intensité de 0 à 3 ; en accent, la part au-dessus de la zone',
+      couleur: (f, k) => (b.val[k] == null ? MUET : b.dessus[k] ? ACC : ENC),
+      label: 'Radar de ma bière dans la zone du style, intensité de 0 à 3 ; en accent, la part au-dessus de la zone ; hachurées, les familles non situées',
     });
     zone(g, b.bas, b.haut, terne('zone'));
+    inconnus(g, b.hors);
     const s = { nom: 'ma bière', valeurs: b.val, couleur: ENC, plein: true, op: terne('ma bière') };
     serie(g, s);
     if (b.dessus.some(Boolean)) accentHors(g, s, b.haut);
     const m = sv('g', { opacity: terne('ma bière') }, g.C.marques);
-    b.val.forEach((v, k) => point(m, g.P(k, v), b.deg[k]
+    b.val.forEach((v, k) => { if (v != null) point(m, g.P(k, v), b.deg[k]
       ? { r: 5, fill: b.dessus[k] ? ACC : ENC }
-      : { r: 4, fill: '#fff', stroke: b.dessus[k] ? ACC : ENC, 'stroke-width': 1.6 }));
+      : { r: 4, fill: '#fff', stroke: b.dessus[k] ? ACC : ENC, 'stroke-width': 1.6 }); });
     visees(g);
-    const au = b.axes.filter((f, k) => b.dessus[k]), prevu = b.axes.filter((f, k) => !b.deg[k] && !b.dessus[k]);
+    const au = b.axes.filter((f, k) => b.dessus[k]), prevu = b.axes.filter((f, k) => b.val[k] != null && !b.deg[k] && !b.dessus[k]);
     const degTxt = 'dégusté' + (D.degustation ? ' ' + D.degustation.date : '');
     cont.append(rangees([
       au.length ? { focus: 'ma bière', quoi: 'ma bière', pastille: 'acc', titre: 'Au-dessus', cle: mots(au), texte: b.deg[b.axes.indexOf(au[0])] ? degTxt : 'prévu' }
         : { focus: 'ma bière', quoi: 'ma bière', pastille: 'sujet', titre: 'Ma bière', texte: 'dans la zone' },
       prevu.length ? { pastille: 'creux', titre: 'Prévu', texte: mots(prevu) } : null,
       { focus: 'zone', quoi: 'la zone du style', pastille: 'zone', titre: 'Zone du style', cle: 'attendues', texte: mots(b.axes.filter((f) => D.attendues.includes(f))) },
-      b.hors.length ? { pastille: 'muet', titre: 'Non situées', texte: mots(b.hors) } : null,
+      b.hors.length ? { pastille: 'inconnu', titre: 'Non situées', texte: mots(b.hors) } : null,
     ].filter(Boolean), redraw));
   }
 
@@ -1577,24 +1837,26 @@ const RADAR = (() => {
     }
     const g = cadre(cont, {
       objet: 'voies', axes: b.axes, max: 3, H: 286, taille: 14, anneaux: [1, 2, 3],
-      label: 'Radar des voies : l\'avant en contour, l\'après d\'une voie plein ; balayer pour passer à la voie suivante',
+      couleur: (f, k) => (b.val[k] == null ? MUET : ENC),
+      label: 'Radar des voies : l\'avant en contour, l\'après d\'une voie plein ; hachurées, les familles non situées ; balayer pour passer à la voie suivante',
     });
     zone(g, b.bas, b.haut, terne('zone'));
+    inconnus(g, b.hors);
     const nomV = (v) => 'après ' + v.houblons.join(' + ');
     const sV = { nom: nomV(vs[i]), valeurs: A[i].valeurs, couleur: GRIS, plein: true, op: terne('voie') };
     serie(g, sV);
     const sA = { nom: 'avant', valeurs: b.val, couleur: ENC, plein: false, op: terne('avant') };
     serie(g, sA);
     const mV = sv('g', { opacity: terne('voie') }, g.C.marques), mA = sv('g', { opacity: terne('avant') }, g.C.marques);
-    const marquerVoie = (vals, et) => { mV.innerHTML = ''; vals.forEach((v, k) => point(mV, g.P(k, v), et[k] ? { r: 3.5, fill: GRIS } : { r: 3.5, fill: '#fff', stroke: GRIS, 'stroke-width': 1.5 })); };
+    const marquerVoie = (vals, et) => { mV.innerHTML = ''; vals.forEach((v, k) => { if (v != null) point(mV, g.P(k, v), et[k] ? { r: 3.5, fill: GRIS } : { r: 3.5, fill: '#fff', stroke: GRIS, 'stroke-width': 1.5 }); }); };
     marquerVoie(A[i].valeurs, A[i].etabli);
     // Le sommet de l'avant au-dessus de la zone porte l'accent (ma bière face à la cible).
-    b.val.forEach((v, k) => point(mA, g.P(k, v), b.dessus[k] ? { r: 4.5, fill: ACC } : { r: 2.5, fill: ENC }));
+    b.val.forEach((v, k) => { if (v != null) point(mA, g.P(k, v), b.dessus[k] ? { r: 4.5, fill: ACC } : { r: 2.5, fill: ENC }); });
     visees(g);
-    // Une image du passage de la voie i vers la voie j, avancée de t (0 à 1).
+    // Une image du passage de la voie i vers la voie j, avancée de t (0 à 1) ; une famille inconnue reste vide.
     const image = (j, t) => {
-      const vals = A[i].valeurs.map((x, k) => x + (A[j].valeurs[k] - x) * t);
-      sV.chemin.setAttribute('d', g.ligne(vals));
+      const vals = A[i].valeurs.map((x, k) => { const y = A[j].valeurs[k]; return x == null || y == null ? (t < 0.5 ? x : y) : x + (y - x) * t; });
+      sV.maj(vals);
       marquerVoie(vals, t < 0.5 ? A[i].etabli : A[j].etabli);
     };
     let anim = null;
@@ -1639,24 +1901,24 @@ const RADAR = (() => {
       svg.addEventListener('pointercancel', lacher);
     }
     const v = vs[i], a = A[i];
-    const monte = b.axes.filter((f, k) => a.etabli[k] && a.valeurs[k] > b.val[k]), baisse = b.axes.filter((f, k) => a.etabli[k] && a.valeurs[k] < b.val[k]);
-    const ne = b.axes.filter((f, k) => !a.etabli[k]);
+    const connu = (k) => a.etabli[k] && b.val[k] != null;
+    const monte = b.axes.filter((f, k) => connu(k) && a.valeurs[k] > b.val[k]), baisse = b.axes.filter((f, k) => connu(k) && a.valeurs[k] < b.val[k]);
+    const ne = b.axes.filter((f, k) => !a.etabli[k] && b.val[k] != null);
     const fl = (monte.length ? '↑ ' + mots(monte) : '') + (baisse.length ? ' ↓ ' + mots(baisse) : '') || '≈ inchangé';
     cont.append(rangees([
-      { focus: 'avant', quoi: 'l\'avant', pastille: 'contour', titre: 'Avant', texte: b.hors.length ? b.hors.length + ' non situées' : null },
+      // Les familles non situées se voient hachurées sur la roue (D48) : la rangée ne les recompte plus.
+      { focus: 'avant', quoi: 'l\'avant', pastille: 'contour', titre: 'Avant' },
       { focus: 'voie', quoi: 'la voie', pastille: 'voie', titre: titre(v), texte: ne.length ? h('span', {}, fl, h('span', { class: 'ne' }, pastille('creux-gris'), 'non établi')) : fl },
     ], redraw));
   }
 
-  /* Comparer (objet 3) : les fiches, en citations 0–2 ; un petit radar par houblon (même roue), et
-     ce que sa fiche est seule à citer. Aucun repère tiré de ma bière. Toucher un petit l'agrandit. */
+  /* Comparer (objet 3) : les fiches, en citations 0–2 ; un petit radar par houblon (la même roue de
+     12 familles que la fiche, D48), et ce que sa fiche est seule à citer. Aucun repère tiré de ma
+     bière. Toucher un petit l'agrandit. « Non décrit » est une valeur (0) : libellé gris. */
   function donneesHoublons(noms) {
-    const cite = (f) => noms.some((n) => D.fiches[n].niv[fi(f)] > 0);
-    const pris = new Set(ROUE.filter(cite));
-    for (const f of [...D.attendues, ...ROUE]) if (pris.size < 5) pris.add(f);
-    const axes = ROUE.filter((f) => pris.has(f));
+    const axes = ROUE;
     const val = (n) => axes.map((f) => D.fiches[n].niv[fi(f)]);
-    return { axes, hors: ROUE.filter((f) => !pris.has(f)), val,
+    return { axes, val,
       seul: (n) => axes.filter((f) => noms.length > 1 && noms.every((m) => m === n || D.fiches[n].niv[fi(f)] > D.fiches[m].niv[fi(f)])) };
   }
   function houblon(g, nom, vals) {
@@ -1669,7 +1931,8 @@ const RADAR = (() => {
     const couleur = (n) => (f, k) => (d.val(n)[k] ? ENC : MUET);
     const legende = (n) => {
       const s = d.seul(n);
-      return [h('b', {}, h('span', { 'data-houblon': cleDe(n) }, n)), h('span', { class: 'p gris' }, s.length ? 'seul' : noms.length > 1 ? 'rien en propre' : ''), s.length ? h('span', { class: 'tags' }, s.map((x) => h('span', { class: 'tag-f' }, D.court[x].toLowerCase()))) : null];
+      // Avec les 12 familles sur chaque petit radar (D48), seul ce qu'une fiche est seule à citer s'écrit.
+      return [h('b', {}, h('span', { 'data-houblon': cleDe(n) }, n)), s.length ? h('span', { class: 'p gris' }, 'seul') : null, s.length ? h('span', { class: 'tags' }, s.map((x) => h('span', { class: 'tag-f' }, D.court[x].toLowerCase()))) : null];
     };
     const basculer = (n) => () => { ETAT.compGrand = ETAT.compGrand === n ? null : n; redraw(); };
     if (grand) {
@@ -1693,7 +1956,6 @@ const RADAR = (() => {
         pan.append(h('div', { class: 'pm-t' }, legende(n)));
       });
     }
-    if (d.hors.length) cont.append(h('p', { class: 'p gris nd' }, h('b', {}, 'Non décrit'), ' ' + mots(d.hors)));
   }
   /* Vignette : la même silhouette en petit, sans libellés (ce n'est pas un radar de lecture). */
   function vignette(axes, vals) {
@@ -1903,7 +2165,7 @@ function placerFeuille(fe) {
 }
 function masquerSous(top) {
   demasquer();
-  const rangs = [...document.querySelectorAll('#app > *')].flatMap((e) => (e.matches('.frise, .partie') ? [...e.children].flatMap((c) => (c.matches('ul') ? [...c.children] : [c])) : [e]));
+  const rangs = [...document.querySelectorAll('#app > *')].flatMap((e) => (e.matches('.frise, .partie, .ajouts') ? [...e.children].flatMap((c) => (c.matches('ul') ? [...c.children] : [c])) : [e]));
   for (const r of rangs) { if (r.matches('.axe')) continue; const b = r.getBoundingClientRect(); if (b.height && b.bottom > top - 4) r.classList.add('sous-fiche'); }
 }
 function demasquer() { for (const e of document.querySelectorAll('.sous-fiche')) e.classList.remove('sous-fiche'); }
@@ -1962,11 +2224,27 @@ function ficheApresRendu() { if (FICHE.cle != null && FICHE.racine) construireFi
 function planifierFermeture(ms) { clearTimeout(FICHE.tFerme); FICHE.tFerme = setTimeout(() => { if (!FICHE.epingle) fermerFiche(); }, ms); }
 
 /* ---------- Gestes : appui long (doigt), survol long (souris), clavier ---------- */
-function houblonSous(t) {
+/* D49 : « La zone de trigger est que le nom alors que ça devrait être la fiche entière... » : tout nom
+   de houblon, et toute la carte d'un houblon (ligne de la recette, ajout proposé) hors de ses
+   commandes (−/+, type, ×, cœur, poignée de glissement), qui gardent leur toucher court. */
+const CARTE_H = '[data-role="ligne-houblon"], [data-role="ajout-rapide"]';
+const COMMANDE_H = 'button, input, select, textarea, a, [role="button"], [data-action], [data-role="glisser-moment"], [data-role="type-ajout"], [data-role="gout"]';
+function zoneHoublon(t) {
   if (!t || !t.closest || (FICHE.racine && FICHE.racine.contains(t))) return null;
   const e = t.closest('[data-houblon]');
-  return e && D.fichesH[e.getAttribute('data-houblon')] ? e : null;
+  if (e) {
+    if (!D.fichesH[e.getAttribute('data-houblon')]) return null;
+    const c = e.closest(CARTE_H);
+    return { el: e, zone: c && !c.closest('[data-glisse]') ? c : e };
+  }
+  const c = t.closest(CARTE_H);
+  if (!c || c.closest('[data-glisse]')) return null;
+  const cmd = t.closest(COMMANDE_H);
+  if (cmd && cmd !== c && c.contains(cmd)) return null;
+  const n = c.querySelector('[data-houblon]');
+  return n && D.fichesH[n.getAttribute('data-houblon')] ? { el: n, zone: c } : null;
 }
+function houblonSous(t) { const z = zoneHoublon(t); return z ? z.el : null; }
 let APPUI = null, AVALE = 0;
 // Après un appui long, le clic qui suit le lâcher n'agit pas (ajout, case à cocher, ni le voile de
 // la fiche qui vient de s'ouvrir sous le doigt) ; un nouveau toucher remet AVALE à zéro.
@@ -2000,21 +2278,24 @@ document.addEventListener('touchend', () => { if (APPUI && APPUI.actif) relacher
 document.addEventListener('touchmove', (e) => { if (APPUI && APPUI.actif) e.preventDefault(); }, { passive: false });
 
 let SURVOL = null;
+function finSurvol() { if (SURVOL) { clearTimeout(SURVOL.timer); SURVOL.el.classList.remove('survol'); SURVOL = null; } }
 document.addEventListener('pointerover', (e) => {
   if (e.pointerType !== 'mouse') return;
   if (FICHE.racine && FICHE.racine.contains(e.target)) { clearTimeout(FICHE.tFerme); return; }
-  const el = houblonSous(e.target);
-  if (!el || (SURVOL && SURVOL.el === el)) return;
-  if (SURVOL) clearTimeout(SURVOL.timer);
-  const cle = el.getAttribute('data-houblon');
-  if (FICHE.cle === cle) { clearTimeout(FICHE.tFerme); SURVOL = { el }; return; }
+  const z = zoneHoublon(e.target);
+  // Sur une commande de la carte (−/+, type, ×, cœur, poignée), le survol long s'arrête.
+  if (!z) { if (SURVOL && SURVOL.zone.contains(e.target)) finSurvol(); return; }
+  if (SURVOL && SURVOL.el === z.el && SURVOL.zone === z.zone) return;
+  finSurvol();
+  const el = z.el, cle = el.getAttribute('data-houblon');
+  if (FICHE.cle === cle) { clearTimeout(FICHE.tFerme); SURVOL = { el, zone: z.zone }; return; }
   el.classList.add('survol');
-  SURVOL = { el, timer: setTimeout(() => { el.classList.remove('survol'); if (FICHE.mode === 'feuille' && FICHE.cle != null) return; ouvrirFiche(cle, { source: el, mode: 'bulle' }); }, SURVOL_MS) };
+  SURVOL = { el, zone: z.zone, timer: setTimeout(() => { el.classList.remove('survol'); if (FICHE.mode === 'feuille' && FICHE.cle != null) return; ouvrirFiche(cle, { source: el, mode: 'bulle' }); }, SURVOL_MS) };
 });
 document.addEventListener('pointerout', (e) => {
   if (e.pointerType !== 'mouse') return;
   const vers = e.relatedTarget;
-  if (SURVOL && SURVOL.el.contains(e.target) && !(vers && SURVOL.el.contains(vers))) { clearTimeout(SURVOL.timer); SURVOL.el.classList.remove('survol'); SURVOL = null; }
+  if (SURVOL && SURVOL.zone.contains(e.target) && !(vers && SURVOL.zone.contains(vers))) finSurvol();
   if (FICHE.cle != null && FICHE.mode === 'bulle' && !FICHE.epingle) {
     const hv = vers && houblonSous(vers);
     if (!(vers && FICHE.racine.contains(vers)) && !(hv && hv.getAttribute('data-houblon') === FICHE.cle)) planifierFermeture(650);

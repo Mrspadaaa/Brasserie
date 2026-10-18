@@ -9,8 +9,14 @@
    dépasse la zone (Ma bière), le sommet de l'avant au-dessus de la zone (Suggestions). Jamais sur
    une voie, un houblon ou une fiche.
    Contrat D24 : data-radar, data-objet, data-axes (ordre de la roue des arômes du pack, sens
-   horaire depuis le haut ; une famille sans valeur n'est pas un axe, elle se dit à côté),
-   data-serie et data-valeurs alignées sur data-axes, au plus 2 séries hors zone par radar.
+   horaire depuis le haut), data-serie et data-valeurs alignées sur data-axes, au plus 2 séries
+   hors zone par radar.
+   D48 (« Il y a pas 12 radar ? » ; « Ni là ») : les 12 familles partout, chacune toujours à la
+   même place de la roue (agrumes en haut, fiche comprise). Une famille sans valeur (non située
+   dans ma bière) garde son axe : son secteur est hachuré (data-inconnu), son libellé gris, sa
+   valeur vide dans data-valeurs, et la silhouette ne relie que les familles connues (elle se
+   referme par le centre au bord d'un secteur inconnu). Pour les fiches, « non décrit » est une
+   valeur (0), pas une inconnue : le houblon y est au centre, libellé gris.
    Échelles : ma bière, la zone et les voies en intensité continue 0–3 du pack ; les fiches en
    citations 0–2. Aucun chiffre calculé : les valeurs du pack sont placées, rien d'autre. */
 const RADAR = (() => {
@@ -49,7 +55,7 @@ const RADAR = (() => {
     const grille = sv('g', { class: 'c-grille', transform: 'translate(' + cx + ',' + cy + ')' }, svg);
     const centre = sv('g', { class: 'c-dessin', transform: 'translate(' + cx + ',' + cy + ')' }, svg);
     const C = {};
-    for (const k of ['zone', 'series', 'marques', 'visees']) C[k] = sv('g', { class: 'c-' + k }, centre);
+    for (const k of ['zone', 'inconnu', 'series', 'marques', 'visees']) C[k] = sv('g', { class: 'c-' + k }, centre);
     const labG = sv('g', { class: 'c-lab' }, svg);
     for (const v of o.anneaux || []) sv('path', { d: ligne(axes.map(() => v)), fill: 'none', stroke: v === o.max ? '#d6d6d6' : GRILLE, 'stroke-width': 1 }, grille);
     axes.forEach((f, k) => { const a = P(k, 0), b = P(k, o.max); sv('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: GRILLE, 'stroke-width': 1 }, grille); });
@@ -73,12 +79,40 @@ const RADAR = (() => {
     sv('path', { d: g.ligne(haut) + (bas.some((v) => v > 0) ? g.ligne(bas) : ''), 'fill-rule': 'evenodd', fill: ZONE_F, stroke: ZONE_T, 'stroke-width': 1 }, z);
     return z;
   }
+  /* D48 : la silhouette ne relie que les familles connues. Toutes connues : un contour fermé. Sinon,
+     chaque suite de familles connues voisines est un trait ouvert, et son remplissage se referme par
+     le centre au bord du secteur inconnu (pas de zigzag à travers ce qu'on ignore). */
+  function traces(g, vals) {
+    if (vals.every((v) => v != null)) { const d = g.ligne(vals); return { plein: d, trait: d }; }
+    const n = vals.length, suites = [];
+    const k0 = vals.findIndex((v) => v == null);
+    let cur = [];
+    for (let j = 1; j <= n; j++) { const k = (k0 + j) % n; if (vals[k] == null) { if (cur.length) suites.push(cur); cur = []; } else cur.push(k); }
+    const pts = (s) => s.map((k) => g.P(k, vals[k]).map((x) => x.toFixed(1)).join(','));
+    return { plein: suites.map((s) => 'M0,0L' + pts(s).join('L') + 'Z').join(''), trait: suites.filter((s) => s.length > 1).map((s) => 'M' + pts(s).join('L')).join('') };
+  }
   /* Une série : pleine translucide (sujet) ou en contour (repère). */
   function serie(g, s) {
-    const e = sv('g', { 'data-serie': s.nom, 'data-valeurs': s.valeurs.join(','), opacity: s.op ?? 1 }, g.C.series);
-    s.chemin = sv('path', { d: g.ligne(s.valeurs), fill: s.plein ? s.couleur : 'none', 'fill-opacity': s.plein ? OP : null, stroke: s.couleur, 'stroke-width': s.plein ? T_SUJET : T_REPERE, 'stroke-linejoin': 'round' }, e);
+    const e = sv('g', { 'data-serie': s.nom, 'data-valeurs': s.valeurs.map((v) => (v == null ? '' : v)).join(','), opacity: s.op ?? 1 }, g.C.series);
+    const t = traces(g, s.valeurs);
+    if (s.plein) s.fond = sv('path', { d: t.plein, fill: s.couleur, 'fill-opacity': OP, stroke: 'none' }, e);
+    s.chemin = sv('path', { d: t.trait, fill: 'none', stroke: s.couleur, 'stroke-width': s.plein ? T_SUJET : T_REPERE, 'stroke-linejoin': 'round' }, e);
+    s.maj = (vals) => { const x = traces(g, vals); if (s.fond) s.fond.setAttribute('d', x.plein); s.chemin.setAttribute('d', x.trait); };
     s.g = e;
     return e;
+  }
+  /* D48 : le secteur d'une famille sans valeur, hachuré, à sa place dans la roue. */
+  function inconnus(g, fams) {
+    if (!fams.length) return;
+    const id = g.id + '-hachure';
+    const pat = sv('pattern', { id, width: 5, height: 5, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, g.defs);
+    sv('line', { x1: 0, y1: 0, x2: 0, y2: 5, stroke: '#d2d2d2', 'stroke-width': 1.5 }, pat);
+    const a = Math.PI / g.n, R = g.r(g.max);
+    const p = (t) => (Math.sin(t) * R).toFixed(1) + ',' + (-Math.cos(t) * R).toFixed(1);
+    for (const f of fams) {
+      const t = (2 * Math.PI * g.axes.indexOf(f)) / g.n;
+      sv('path', { d: 'M0,0L' + p(t - a) + 'A' + R.toFixed(1) + ',' + R.toFixed(1) + ' 0 0 1 ' + p(t + a) + 'Z', fill: 'url(#' + id + ')', 'data-inconnu': f }, g.C.inconnu);
+    }
   }
   /* La part de ma bière au-dessus de la zone, en accent : la série masquée par l'intérieur de la zone. */
   function accentHors(g, s, haut) {
@@ -86,7 +120,7 @@ const RADAR = (() => {
     const m = sv('mask', { id, maskUnits: 'userSpaceOnUse', x: -g.cx, y: -g.cy, width: g.cx * 2, height: g.svg.getAttribute('height') }, g.defs);
     sv('rect', { x: -g.cx, y: -g.cy, width: g.cx * 2, height: g.svg.getAttribute('height'), fill: '#fff' }, m);
     sv('path', { d: g.ligne(haut), fill: '#000' }, m);
-    sv('path', { d: g.ligne(s.valeurs), fill: ACC, 'fill-opacity': OP_ACC, stroke: 'none', mask: 'url(#' + id + ')' }, s.g);
+    sv('path', { d: traces(g, s.valeurs).plein, fill: ACC, 'fill-opacity': OP_ACC, stroke: 'none', mask: 'url(#' + id + ')' }, s.g);
   }
   function point(parent, p, a) { return sv('circle', { cx: p[0].toFixed(1), cy: p[1].toFixed(1), ...a }, parent); }
   /* Ma visée (posée par une direction ou un geste) : un losange creux sur l'axe, échelle absolue. */
@@ -104,6 +138,7 @@ const RADAR = (() => {
     if (t === 'zone') sv('rect', { x: 1, y: 2, width: 16, height: 10, rx: 2, fill: ZONE_F, stroke: ZONE_T }, s);
     else if (t === 'sujet' || t === 'voie') sv('rect', { x: 1, y: 2, width: 16, height: 10, rx: 2, fill: t === 'voie' ? GRIS : ENC, 'fill-opacity': OP, stroke: t === 'voie' ? GRIS : ENC, 'stroke-width': T_SUJET }, s);
     else if (t === 'contour') sv('rect', { x: 1.5, y: 2.5, width: 15, height: 9, rx: 2, fill: 'none', stroke: ENC, 'stroke-width': T_REPERE }, s);
+    else if (t === 'inconnu') { sv('rect', { x: 1, y: 2, width: 16, height: 10, rx: 2, fill: '#fff', stroke: '#d2d2d2' }, s); sv('path', { d: 'M2,11L8,3M6,11L12,3M10,11L16,3', stroke: '#c4c4c4', 'stroke-width': 1.3 }, s); }
     else sv('circle', { cx: 9, cy: 7, r: 4.5, fill: t === 'plein' ? ENC : t === 'acc' ? ACC : '#fff', stroke: t === 'acc' ? ACC : t === 'muet' ? MUET : t === 'creux-gris' ? GRIS : ENC, 'stroke-width': 1.6 }, s);
     return s;
   }
@@ -122,38 +157,40 @@ const RADAR = (() => {
   }
   const terne = (cle) => (ETAT.focusSerie && ETAT.focusSerie !== cle ? 0.15 : 1);
 
-  /* Ma bière (objets 1 et 2) : axes = familles situées ; ma bière d'abord dégustée, sinon prévue. */
+  /* Ma bière (objets 1 et 2) : les 12 familles (D48) ; ma bière d'abord dégustée, sinon prévue ;
+     une famille non située reste à sa place, en secteur inconnu. */
   function donneesBiere() {
-    const axes = ROUE.filter((f) => D.continu.biere[fi(f)] != null);
-    const val = axes.map((f) => D.continu.biere[fi(f)]);
+    const axes = ROUE;
+    const val = axes.map((f) => (D.continu.biere[fi(f)] != null ? D.continu.biere[fi(f)] : null));
     const bas = axes.map((f) => D.continu.cible[fi(f)].bas), haut = axes.map((f) => D.continu.cible[fi(f)].haut);
-    return { axes, hors: ROUE.filter((f) => !axes.includes(f)), val, bas, haut,
-      deg: axes.map((f) => D.profil[fi(f)].source === 'dégustation'), dessus: axes.map((f, k) => val[k] > haut[k] + 0.05) };
+    return { axes, hors: axes.filter((f, k) => val[k] == null), val, bas, haut,
+      deg: axes.map((f) => D.profil[fi(f)].source === 'dégustation'), dessus: axes.map((f, k) => val[k] != null && val[k] > haut[k] + 0.05) };
   }
   function biere(cont, redraw) {
     const b = donneesBiere();
     const g = cadre(cont, {
       objet: 'biere-cible', axes: b.axes, max: 3, H: 330, taille: 14, anneaux: [1, 2, 3], echelle: [[0.5, 'faible'], [1.5, 'moyen'], [2.5, 'marqué']],
-      couleur: (f, k) => (b.dessus[k] ? ACC : ENC),
-      label: 'Radar de ma bière dans la zone du style, intensité de 0 à 3 ; en accent, la part au-dessus de la zone',
+      couleur: (f, k) => (b.val[k] == null ? MUET : b.dessus[k] ? ACC : ENC),
+      label: 'Radar de ma bière dans la zone du style, intensité de 0 à 3 ; en accent, la part au-dessus de la zone ; hachurées, les familles non situées',
     });
     zone(g, b.bas, b.haut, terne('zone'));
+    inconnus(g, b.hors);
     const s = { nom: 'ma bière', valeurs: b.val, couleur: ENC, plein: true, op: terne('ma bière') };
     serie(g, s);
     if (b.dessus.some(Boolean)) accentHors(g, s, b.haut);
     const m = sv('g', { opacity: terne('ma bière') }, g.C.marques);
-    b.val.forEach((v, k) => point(m, g.P(k, v), b.deg[k]
+    b.val.forEach((v, k) => { if (v != null) point(m, g.P(k, v), b.deg[k]
       ? { r: 5, fill: b.dessus[k] ? ACC : ENC }
-      : { r: 4, fill: '#fff', stroke: b.dessus[k] ? ACC : ENC, 'stroke-width': 1.6 }));
+      : { r: 4, fill: '#fff', stroke: b.dessus[k] ? ACC : ENC, 'stroke-width': 1.6 }); });
     visees(g);
-    const au = b.axes.filter((f, k) => b.dessus[k]), prevu = b.axes.filter((f, k) => !b.deg[k] && !b.dessus[k]);
+    const au = b.axes.filter((f, k) => b.dessus[k]), prevu = b.axes.filter((f, k) => b.val[k] != null && !b.deg[k] && !b.dessus[k]);
     const degTxt = 'dégusté' + (D.degustation ? ' ' + D.degustation.date : '');
     cont.append(rangees([
       au.length ? { focus: 'ma bière', quoi: 'ma bière', pastille: 'acc', titre: 'Au-dessus', cle: mots(au), texte: b.deg[b.axes.indexOf(au[0])] ? degTxt : 'prévu' }
         : { focus: 'ma bière', quoi: 'ma bière', pastille: 'sujet', titre: 'Ma bière', texte: 'dans la zone' },
       prevu.length ? { pastille: 'creux', titre: 'Prévu', texte: mots(prevu) } : null,
       { focus: 'zone', quoi: 'la zone du style', pastille: 'zone', titre: 'Zone du style', cle: 'attendues', texte: mots(b.axes.filter((f) => D.attendues.includes(f))) },
-      b.hors.length ? { pastille: 'muet', titre: 'Non situées', texte: mots(b.hors) } : null,
+      b.hors.length ? { pastille: 'inconnu', titre: 'Non situées', texte: mots(b.hors) } : null,
     ].filter(Boolean), redraw));
   }
 
@@ -183,24 +220,26 @@ const RADAR = (() => {
     }
     const g = cadre(cont, {
       objet: 'voies', axes: b.axes, max: 3, H: 286, taille: 14, anneaux: [1, 2, 3],
-      label: 'Radar des voies : l\'avant en contour, l\'après d\'une voie plein ; balayer pour passer à la voie suivante',
+      couleur: (f, k) => (b.val[k] == null ? MUET : ENC),
+      label: 'Radar des voies : l\'avant en contour, l\'après d\'une voie plein ; hachurées, les familles non situées ; balayer pour passer à la voie suivante',
     });
     zone(g, b.bas, b.haut, terne('zone'));
+    inconnus(g, b.hors);
     const nomV = (v) => 'après ' + v.houblons.join(' + ');
     const sV = { nom: nomV(vs[i]), valeurs: A[i].valeurs, couleur: GRIS, plein: true, op: terne('voie') };
     serie(g, sV);
     const sA = { nom: 'avant', valeurs: b.val, couleur: ENC, plein: false, op: terne('avant') };
     serie(g, sA);
     const mV = sv('g', { opacity: terne('voie') }, g.C.marques), mA = sv('g', { opacity: terne('avant') }, g.C.marques);
-    const marquerVoie = (vals, et) => { mV.innerHTML = ''; vals.forEach((v, k) => point(mV, g.P(k, v), et[k] ? { r: 3.5, fill: GRIS } : { r: 3.5, fill: '#fff', stroke: GRIS, 'stroke-width': 1.5 })); };
+    const marquerVoie = (vals, et) => { mV.innerHTML = ''; vals.forEach((v, k) => { if (v != null) point(mV, g.P(k, v), et[k] ? { r: 3.5, fill: GRIS } : { r: 3.5, fill: '#fff', stroke: GRIS, 'stroke-width': 1.5 }); }); };
     marquerVoie(A[i].valeurs, A[i].etabli);
     // Le sommet de l'avant au-dessus de la zone porte l'accent (ma bière face à la cible).
-    b.val.forEach((v, k) => point(mA, g.P(k, v), b.dessus[k] ? { r: 4.5, fill: ACC } : { r: 2.5, fill: ENC }));
+    b.val.forEach((v, k) => { if (v != null) point(mA, g.P(k, v), b.dessus[k] ? { r: 4.5, fill: ACC } : { r: 2.5, fill: ENC }); });
     visees(g);
-    // Une image du passage de la voie i vers la voie j, avancée de t (0 à 1).
+    // Une image du passage de la voie i vers la voie j, avancée de t (0 à 1) ; une famille inconnue reste vide.
     const image = (j, t) => {
-      const vals = A[i].valeurs.map((x, k) => x + (A[j].valeurs[k] - x) * t);
-      sV.chemin.setAttribute('d', g.ligne(vals));
+      const vals = A[i].valeurs.map((x, k) => { const y = A[j].valeurs[k]; return x == null || y == null ? (t < 0.5 ? x : y) : x + (y - x) * t; });
+      sV.maj(vals);
       marquerVoie(vals, t < 0.5 ? A[i].etabli : A[j].etabli);
     };
     let anim = null;
@@ -245,24 +284,24 @@ const RADAR = (() => {
       svg.addEventListener('pointercancel', lacher);
     }
     const v = vs[i], a = A[i];
-    const monte = b.axes.filter((f, k) => a.etabli[k] && a.valeurs[k] > b.val[k]), baisse = b.axes.filter((f, k) => a.etabli[k] && a.valeurs[k] < b.val[k]);
-    const ne = b.axes.filter((f, k) => !a.etabli[k]);
+    const connu = (k) => a.etabli[k] && b.val[k] != null;
+    const monte = b.axes.filter((f, k) => connu(k) && a.valeurs[k] > b.val[k]), baisse = b.axes.filter((f, k) => connu(k) && a.valeurs[k] < b.val[k]);
+    const ne = b.axes.filter((f, k) => !a.etabli[k] && b.val[k] != null);
     const fl = (monte.length ? '↑ ' + mots(monte) : '') + (baisse.length ? ' ↓ ' + mots(baisse) : '') || '≈ inchangé';
     cont.append(rangees([
-      { focus: 'avant', quoi: 'l\'avant', pastille: 'contour', titre: 'Avant', texte: b.hors.length ? b.hors.length + ' non situées' : null },
+      // Les familles non situées se voient hachurées sur la roue (D48) : la rangée ne les recompte plus.
+      { focus: 'avant', quoi: 'l\'avant', pastille: 'contour', titre: 'Avant' },
       { focus: 'voie', quoi: 'la voie', pastille: 'voie', titre: titre(v), texte: ne.length ? h('span', {}, fl, h('span', { class: 'ne' }, pastille('creux-gris'), 'non établi')) : fl },
     ], redraw));
   }
 
-  /* Comparer (objet 3) : les fiches, en citations 0–2 ; un petit radar par houblon (même roue), et
-     ce que sa fiche est seule à citer. Aucun repère tiré de ma bière. Toucher un petit l'agrandit. */
+  /* Comparer (objet 3) : les fiches, en citations 0–2 ; un petit radar par houblon (la même roue de
+     12 familles que la fiche, D48), et ce que sa fiche est seule à citer. Aucun repère tiré de ma
+     bière. Toucher un petit l'agrandit. « Non décrit » est une valeur (0) : libellé gris. */
   function donneesHoublons(noms) {
-    const cite = (f) => noms.some((n) => D.fiches[n].niv[fi(f)] > 0);
-    const pris = new Set(ROUE.filter(cite));
-    for (const f of [...D.attendues, ...ROUE]) if (pris.size < 5) pris.add(f);
-    const axes = ROUE.filter((f) => pris.has(f));
+    const axes = ROUE;
     const val = (n) => axes.map((f) => D.fiches[n].niv[fi(f)]);
-    return { axes, hors: ROUE.filter((f) => !pris.has(f)), val,
+    return { axes, val,
       seul: (n) => axes.filter((f) => noms.length > 1 && noms.every((m) => m === n || D.fiches[n].niv[fi(f)] > D.fiches[m].niv[fi(f)])) };
   }
   function houblon(g, nom, vals) {
@@ -275,7 +314,8 @@ const RADAR = (() => {
     const couleur = (n) => (f, k) => (d.val(n)[k] ? ENC : MUET);
     const legende = (n) => {
       const s = d.seul(n);
-      return [h('b', {}, h('span', { 'data-houblon': cleDe(n) }, n)), h('span', { class: 'p gris' }, s.length ? 'seul' : noms.length > 1 ? 'rien en propre' : ''), s.length ? h('span', { class: 'tags' }, s.map((x) => h('span', { class: 'tag-f' }, D.court[x].toLowerCase()))) : null];
+      // Avec les 12 familles sur chaque petit radar (D48), seul ce qu'une fiche est seule à citer s'écrit.
+      return [h('b', {}, h('span', { 'data-houblon': cleDe(n) }, n)), s.length ? h('span', { class: 'p gris' }, 'seul') : null, s.length ? h('span', { class: 'tags' }, s.map((x) => h('span', { class: 'tag-f' }, D.court[x].toLowerCase()))) : null];
     };
     const basculer = (n) => () => { ETAT.compGrand = ETAT.compGrand === n ? null : n; redraw(); };
     if (grand) {
@@ -299,7 +339,6 @@ const RADAR = (() => {
         pan.append(h('div', { class: 'pm-t' }, legende(n)));
       });
     }
-    if (d.hors.length) cont.append(h('p', { class: 'p gris nd' }, h('b', {}, 'Non décrit'), ' ' + mots(d.hors)));
   }
   /* Vignette : la même silhouette en petit, sans libellés (ce n'est pas un radar de lecture). */
   function vignette(axes, vals) {

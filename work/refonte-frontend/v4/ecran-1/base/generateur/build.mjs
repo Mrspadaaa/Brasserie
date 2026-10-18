@@ -107,8 +107,10 @@ function tablesDe(a, g0) {
 
 function scenario(id) {
   // Variante d'une recette (S1E120 : la même recette, 120′ d'ébullition) : ce qu'elle ne redonne pas vient de la recette de base.
+  // S1E45, S1E200 : la même recette avec une autre durée d'ébullition, réglée dans la fiche de
+  // brassage (D37 révisé) ; l'IBU se lit dans les tables du pack (0 à 240′ par 5, premier moût par durée).
   const base = id.replace(/E[0-9]+$/, '');
-  const S = base !== id ? { ...pack.scenarios[base], ...pack.scenarios[id] } : pack.scenarios[id];
+  const S = base !== id ? { ...pack.scenarios[base], ...(pack.scenarios[id] || { ebullitionMinutes: Number(id.match(/E([0-9]+)$/)[1]) }) } : pack.scenarios[id];
   const EBU = S.ebullitionMinutes || S.recipe.boilMin || 60;
   const F = fiches(pack.scenarios.S1);
   const voiesBrutes = S.voies || [];
@@ -250,11 +252,13 @@ const VUES = {
   'comparer-radar.html': ['S1', 'panneau', 'comparer', 'radar', ''],
   'cas-k2.html': ['S4', 'etape', '', 'barres', ''],
   'cas-k3.html': ['S5', 'etape', '', 'barres', ''],
+  'cas-ebu45.html': ['S1E45', 'etape', '', 'barres', ''],
   'cas-ebu120.html': ['S1E120', 'etape', '', 'barres', ''],
+  'cas-ebu200.html': ['S1E200', 'etape', '', 'barres', ''],
   // L'étape, la fiche de Nugget ouverte (appui long déjà fait).
   'fiche.html': ['S1', 'etape', '', 'barres', '', '', 'beermaverick-nugget'],
 };
-const DATA = { S1: scenario('S1'), S4: scenario('S4'), S5: scenario('S5'), S1E120: scenario('S1E120') };
+const DATA = Object.fromEntries(['S1', 'S4', 'S5', 'S1E45', 'S1E120', 'S1E200'].map((s) => [s, scenario(s)]));
 const TITRES = { consolide: 'Houblons, rail du brassage' };
 for (const id of ['consolide']) {
   const variante = fs.readFileSync(path.join(HERE, 'etape-' + id + '.js'), 'utf8');

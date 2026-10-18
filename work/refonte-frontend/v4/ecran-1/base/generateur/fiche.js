@@ -177,7 +177,7 @@ function placerFeuille(fe) {
 }
 function masquerSous(top) {
   demasquer();
-  const rangs = [...document.querySelectorAll('#app > *')].flatMap((e) => (e.matches('.frise, .partie') ? [...e.children].flatMap((c) => (c.matches('ul') ? [...c.children] : [c])) : [e]));
+  const rangs = [...document.querySelectorAll('#app > *')].flatMap((e) => (e.matches('.frise, .partie, .ajouts') ? [...e.children].flatMap((c) => (c.matches('ul') ? [...c.children] : [c])) : [e]));
   for (const r of rangs) { if (r.matches('.axe')) continue; const b = r.getBoundingClientRect(); if (b.height && b.bottom > top - 4) r.classList.add('sous-fiche'); }
 }
 function demasquer() { for (const e of document.querySelectorAll('.sous-fiche')) e.classList.remove('sous-fiche'); }
@@ -236,11 +236,27 @@ function ficheApresRendu() { if (FICHE.cle != null && FICHE.racine) construireFi
 function planifierFermeture(ms) { clearTimeout(FICHE.tFerme); FICHE.tFerme = setTimeout(() => { if (!FICHE.epingle) fermerFiche(); }, ms); }
 
 /* ---------- Gestes : appui long (doigt), survol long (souris), clavier ---------- */
-function houblonSous(t) {
+/* D49 : « La zone de trigger est que le nom alors que ça devrait être la fiche entière... » : tout nom
+   de houblon, et toute la carte d'un houblon (ligne de la recette, ajout proposé) hors de ses
+   commandes (−/+, type, ×, cœur, poignée de glissement), qui gardent leur toucher court. */
+const CARTE_H = '[data-role="ligne-houblon"], [data-role="ajout-rapide"]';
+const COMMANDE_H = 'button, input, select, textarea, a, [role="button"], [data-action], [data-role="glisser-moment"], [data-role="type-ajout"], [data-role="gout"]';
+function zoneHoublon(t) {
   if (!t || !t.closest || (FICHE.racine && FICHE.racine.contains(t))) return null;
   const e = t.closest('[data-houblon]');
-  return e && D.fichesH[e.getAttribute('data-houblon')] ? e : null;
+  if (e) {
+    if (!D.fichesH[e.getAttribute('data-houblon')]) return null;
+    const c = e.closest(CARTE_H);
+    return { el: e, zone: c && !c.closest('[data-glisse]') ? c : e };
+  }
+  const c = t.closest(CARTE_H);
+  if (!c || c.closest('[data-glisse]')) return null;
+  const cmd = t.closest(COMMANDE_H);
+  if (cmd && cmd !== c && c.contains(cmd)) return null;
+  const n = c.querySelector('[data-houblon]');
+  return n && D.fichesH[n.getAttribute('data-houblon')] ? { el: n, zone: c } : null;
 }
+function houblonSous(t) { const z = zoneHoublon(t); return z ? z.el : null; }
 let APPUI = null, AVALE = 0;
 // Après un appui long, le clic qui suit le lâcher n'agit pas (ajout, case à cocher, ni le voile de
 // la fiche qui vient de s'ouvrir sous le doigt) ; un nouveau toucher remet AVALE à zéro.
@@ -274,21 +290,24 @@ document.addEventListener('touchend', () => { if (APPUI && APPUI.actif) relacher
 document.addEventListener('touchmove', (e) => { if (APPUI && APPUI.actif) e.preventDefault(); }, { passive: false });
 
 let SURVOL = null;
+function finSurvol() { if (SURVOL) { clearTimeout(SURVOL.timer); SURVOL.el.classList.remove('survol'); SURVOL = null; } }
 document.addEventListener('pointerover', (e) => {
   if (e.pointerType !== 'mouse') return;
   if (FICHE.racine && FICHE.racine.contains(e.target)) { clearTimeout(FICHE.tFerme); return; }
-  const el = houblonSous(e.target);
-  if (!el || (SURVOL && SURVOL.el === el)) return;
-  if (SURVOL) clearTimeout(SURVOL.timer);
-  const cle = el.getAttribute('data-houblon');
-  if (FICHE.cle === cle) { clearTimeout(FICHE.tFerme); SURVOL = { el }; return; }
+  const z = zoneHoublon(e.target);
+  // Sur une commande de la carte (−/+, type, ×, cœur, poignée), le survol long s'arrête.
+  if (!z) { if (SURVOL && SURVOL.zone.contains(e.target)) finSurvol(); return; }
+  if (SURVOL && SURVOL.el === z.el && SURVOL.zone === z.zone) return;
+  finSurvol();
+  const el = z.el, cle = el.getAttribute('data-houblon');
+  if (FICHE.cle === cle) { clearTimeout(FICHE.tFerme); SURVOL = { el, zone: z.zone }; return; }
   el.classList.add('survol');
-  SURVOL = { el, timer: setTimeout(() => { el.classList.remove('survol'); if (FICHE.mode === 'feuille' && FICHE.cle != null) return; ouvrirFiche(cle, { source: el, mode: 'bulle' }); }, SURVOL_MS) };
+  SURVOL = { el, zone: z.zone, timer: setTimeout(() => { el.classList.remove('survol'); if (FICHE.mode === 'feuille' && FICHE.cle != null) return; ouvrirFiche(cle, { source: el, mode: 'bulle' }); }, SURVOL_MS) };
 });
 document.addEventListener('pointerout', (e) => {
   if (e.pointerType !== 'mouse') return;
   const vers = e.relatedTarget;
-  if (SURVOL && SURVOL.el.contains(e.target) && !(vers && SURVOL.el.contains(vers))) { clearTimeout(SURVOL.timer); SURVOL.el.classList.remove('survol'); SURVOL = null; }
+  if (SURVOL && SURVOL.zone.contains(e.target) && !(vers && SURVOL.zone.contains(vers))) finSurvol();
   if (FICHE.cle != null && FICHE.mode === 'bulle' && !FICHE.epingle) {
     const hv = vers && houblonSous(vers);
     if (!(vers && FICHE.racine.contains(vers)) && !(hv && hv.getAttribute('data-houblon') === FICHE.cle)) planifierFermeture(650);
