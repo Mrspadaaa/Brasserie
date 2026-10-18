@@ -97,6 +97,29 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
+## État (18.10, ~23:00) — lots 6 et 7 rentrés, rail en vol
+
+- **Lot 6** : les 11 fils de fer de chaque objet passent `controle-fil6.mjs`. Comparer et
+  Suggestions sont à 11/11. Les planches sont envoyées au brasseur, qui doit encore choisir.
+  - Coût mesuré : 130 à 350 k jetons et 8 à 28 min par auteur, contre une heure et 450 k au lot 5.
+  - Contrôle complété en route : nom du houblon sur chaque barre ou en tête de sa colonne
+    (D51, point 1) ; pistes mesurées où qu'elles soient, dans leur plus grande dimension ;
+    plafond de 90 mots pour Comparer.
+- **Lot 7, la base radar** (10 technologies, mêmes données
+  `ecran-1/fils7-radar/donnees.json`, extraites par `tournoi/outils/extraire-radars.mjs`) :
+  - le brasseur sur p08 : « Seul le premier est ok... ». Le radar Comparer en SVG maison devient
+    la base radar ;
+  - pour Ma bière et Suggestions, toutes les technologies donnent une pointe. Cause vérifiée :
+    les données manquent. La dégustation ne note que le résineux, la prévision est « confiance
+    faible » (plages 0–50), 5 familles sont non situées, et il n'y a pas d'intensités (#131) ;
+  - proposé : grille de dégustation (12 familles, 0–3) et prévision dessinée en plage ; en
+    attendant, barres et pistes. **Question ouverte au brasseur.**
+- **Rail** : D61 (la hauteur dit le temps, indépendante de la vitesse du doigt), témoin négatif
+  base v4.1 (4 échecs). L'auteur du rail `a17d51434443f441e` est relancé.
+- **Contrôles nouveaux** : D61 (`controle-rail.mjs`), D62 (`controle-radar.mjs`,
+  `controle-fil6.mjs` : séries fermées sur tous les axes, sans valeur vide ; témoin négatif base
+  v4.1, positif Comparer p03), D48 bis.
+
 ## État (18.10, ~21:30) — lot 6 en fils de fer, 12 auteurs en vol
 
 - **Ses choix sur les planches du lot 5** (SPEC-BRASSEUR, SPEC OK 131/131) :

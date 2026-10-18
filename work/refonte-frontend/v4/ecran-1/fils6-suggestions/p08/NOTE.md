@@ -1,0 +1,3 @@
+Parti : deux jauges debout, une colonne par objectif ; la réponse en grand en tête (verdict + avant → après), puis une jauge verticale de 270 px (zone du style en bas, T nommées, plus haut = plus de la famille), visée par défaut sur 22 (atteinte) ; radar 12 axes (D62) à un toucher par la lentille.
+En 5 s : « Floral atteint 6 → 22 · 7 voies », « Résineux : aucune voie houblon, 6,1 → 5,8 T » + bouton Hors houblon ; le point orangé loin au-dessus de la zone grise dit pourquoi. 69 mots (jauges), 63 (radar).
+Manque : au-delà de deux objectifs les colonnes rétrécissent (trois au plus) ; l'après résineux se cache presque sous ma bière (écart écrit seulement) ; la page radar ne montre que la voie choisie ; le menu des gestes derrière la flèche n'est pas dessiné.

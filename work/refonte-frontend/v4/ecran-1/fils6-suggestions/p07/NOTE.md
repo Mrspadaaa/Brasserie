@@ -1,0 +1,3 @@
+Parti : la carte, mes deux objectifs deviennent les deux axes d'un même plan (floral en x, résineux en y) ; style = rectangle, ma bière = point orangé, voies = flèches ; ma visée réglée sur chaque axe (losanges) et à l'intersection ; radar 12 axes (D62) à un toucher par la lentille.
+En 5 s : « Floral approché 6 → 22 (visée 25) », « Résineux : aucune voie houblon » + bouton Hors houblon ; la carte montre que le houblon pousse à droite mais jamais vers le bas (6,1 → 5,8 T écrit). 68 mots sur les deux pages.
+Manque : ne tient que pour deux objectifs (un troisième demande une autre forme) ; les noms des voies sur la carte (« 1–7 ») ; la page radar ne montre que la voie choisie (pas de pas à pas codé) ; le menu des gestes derrière le nom d'axe n'est pas dessiné.

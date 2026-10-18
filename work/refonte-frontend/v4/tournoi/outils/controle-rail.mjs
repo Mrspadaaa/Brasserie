@@ -359,6 +359,79 @@ for (const id of ids) {
     } else p('D56 : cas-k3.html, aucune ligne à saisir');
     await q.close();
   }
+  // D61 (18.10, soir, ses deux captures de la base v4.1 au téléphone) : « on est à 35' et on a
+  // l'impression d'être quasiment à 60' » ; « Aussi les deux sont à 25' mais on dirait que l'autre
+  // est à 0' ». Pendant le geste dans l'ébullition, la hauteur dit le temps : chaque houblon de
+  // l'ébullition (celui qu'on tient et les autres) est à sa place entre le début (E′) et 0′, à
+  // 12 % de la descente près ; deux houblons au même moment sont à la même hauteur.
+  {
+    const place = (q, cleTenue) => q.evaluate((cleTenue) => {
+      const vis = (e) => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && Number(cs.opacity) > 0.15; };
+      const yc = (e) => { const r = e.getBoundingClientRect(); return r.top + r.height / 2; };
+      const ebEl = document.querySelector('[data-role="ebullition"]');
+      const E = Number(((ebEl && ebEl.innerText) || '').match(/(\d+)\s*(′|'|min)/)?.[1] || 60);
+      const tete = [...document.querySelectorAll('[data-etape="b' + E + '"]')].find(vis) || ebEl;
+      const zero = [...document.querySelectorAll('[data-etape="b0"]')].find(vis)
+        || [...document.querySelectorAll('[data-etape] *, [data-etape]')].filter(vis).find((e) => /^\s*0\s*(′|')\s*$/.test(e.innerText || ''));
+      if (!tete || !zero) return { E, err: 'début ' + (tete ? 'vu' : 'introuvable') + ', 0′ ' + (zero ? 'vu' : 'introuvable') };
+      const y0 = yc(tete), y1 = yc(zero);
+      const lignes = [...document.querySelectorAll('[data-role="ligne-houblon"]')].map((l) => {
+        const k = l.querySelector('[data-houblon]')?.getAttribute('data-houblon') || l.getAttribute('data-houblon');
+        const h = l.querySelector('[data-role="glisser-moment"]') || l;
+        const q = l.querySelector('[data-role="quand"]');
+        const m = ((q && q.innerText) || h.innerText || '').match(/^\s*(\d+)\s*(′|')/);
+        return { k, tenue: k === cleTenue, t: m ? Number(m[1]) : null, y: vis(h) ? yc(h) : null };
+      });
+      return { E, y0, y1, lignes };
+    }, cleTenue);
+    const juger = (cas, r, tTenue) => {
+      if (r.err) { p('D61 : ' + cas + ', ' + r.err + ' pendant le geste'); return; }
+      const L = r.y1 - r.y0;
+      if (L <= 0) { p('D61 : ' + cas + ', 0′ n\'est pas sous le début de l\'ébullition'); return; }
+      for (const l of r.lignes) {
+        const t = l.tenue ? tTenue : l.t;
+        if (t === null || t > r.E || l.y === null) continue;
+        const f = (l.y - r.y0) / L, att = (r.E - t) / r.E;
+        if (Math.abs(f - att) > 0.12) p('D61 : ' + cas + ', ' + l.k + (l.tenue ? ' (tenu)' : '') + ' à ' + t + '′ est placé aux ' + Math.round(f * 100) + ' % de la descente ' + r.E + '′ → 0′ (' + Math.round(att * 100) + ' % attendus) : la hauteur ne dit plus le temps');
+      }
+    };
+    const q1 = await ouvrir(index);
+    const g1 = await poser(q1, 'doigt');
+    let descente = null;
+    if (g1 && await g1.vers('b35')) { juger('index, tenu à 35′', await place(q1, g1.a.cle), 35); descente = g1.y - g1.a.poignee.y; }
+    else p('D61 : index, le doigt n\'atteint pas 35′');
+    if (g1) await g1.lacher();
+    await q1.close();
+    // La même descente du doigt, d'un trait (trois bonds) : le même point du rail doit donner le
+    // même moment, quelle que soit la vitesse du doigt (± 5′).
+    if (descente !== null) {
+      const q3 = await ouvrir(index);
+      const g3 = await poser(q3, 'doigt');
+      if (g3) {
+        const y0 = g3.y;
+        for (let i = 1; i <= 3; i++) { await g3.bouger(y0 + (descente * i) / 3); await wait(16); }
+        await wait(150);
+        const lu = await q3.evaluate((cle) => { const l = [...document.querySelectorAll('[data-role="ligne-houblon"]')].find((x) => x.querySelector('[data-houblon="' + cle + '"]')); const q = l && l.querySelector('[data-role="quand"]'); return q ? q.innerText.trim() : null; }, g3.a.cle);
+        const m = (lu || '').match(/^(\d+)\s*(′|')/);
+        if (!m || Math.abs(Number(m[1]) - 35) > 5) p('D61 : index, la même descente du doigt (' + Math.round(descente) + ' px) donne 35′ lentement et « ' + lu + ' » d\'un trait : le moment dépend de la vitesse du doigt');
+        else juger('index, d\'un trait jusqu\'à ' + m[1] + '′', await place(q3, g3.a.cle), Number(m[1]));
+        await g3.lacher();
+      }
+      await q3.close();
+    }
+    if (fs.existsSync(k3)) {
+      const q2 = await ouvrir(k3);
+      const g2 = await poser(q2, 'doigt');
+      if (g2) {
+        for (const [code, t] of [['b35', 35], ['b10', 10]]) {
+          if (await g2.vers(code)) juger('cas-k3, tenu à ' + t + '′', await place(q2, g2.a.cle), t);
+          else p('D61 : cas-k3, le doigt n\'atteint pas ' + t + '′');
+        }
+        await g2.lacher();
+      }
+      await q2.close();
+    }
+  }
   console.log(id + ' · rail contrôlé');
 }
 await browser.close();

@@ -1,0 +1,3 @@
+Parti (tiède) : la réponse écrite par objectif (verdict + « 6 → 22 », « 6,1 → 5,8 T ») sur une longue piste en T, puis un tableau sobre voie × objectif, une mini-barre par cellule (anneau = ma bière, point = après) ; radar D62 (12 axes fermés, non situées au centre) avec une puce par voie.
+En 5 s : Floral approché, 22 dans le style pour une visée de 25 ; Résineux sans voie houblon (au mieux 5,8 T), « Autres pistes » ouvre les 4 pistes hors houblon du pack ; « non établi » dit une fois en pied.
+Manque : la zone du style retirée du radar (le brief demande « rien d'autre »), donc `data-serie="zone"` absent ; gestes d'objectif repliés derrière « ⋯ » ; voies 4 à 14 non dessinées ; le radar reste une pointe, ce que dit sa phrase.

@@ -1,0 +1,3 @@
+Parti (tiède) : la même réponse écrite sur deux longues pistes en T, puis des petits multiples, une vignette par voie aux mêmes échelles 0–100 que les pistes (▲ Floral, ▼ Résineux) ; en Radar, la vignette touchée s'ouvre en grand avec son radar D62, les autres restent en vignettes.
+En 5 s : Floral approché (6 → 22, visée 25), Résineux sans voie houblon (6,1 → 5,8 T) et « Autres pistes » ; trois vignettes identiques en floral (22) et pointillées en résineux, donc équivalentes sur mes objectifs.
+Manque : zone du style hors du radar (`data-serie="zone"` absent, « rien d'autre ») ; vignettes fermées réduites au nom en Radar ; voies 4 à 14 non dessinées ; le radar reste une pointe, ce que dit sa phrase.

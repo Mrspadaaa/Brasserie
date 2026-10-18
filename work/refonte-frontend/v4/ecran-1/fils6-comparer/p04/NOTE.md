@@ -1,0 +1,3 @@
+Parti (tiède) : chaque bande dit ce que le houblon apporte en 16D : jauges des 3 attendues (floral, herbacé, terreux, en-tête commun) puis « + » les familles marquées non nommées ; la barre d'IBU de la bande est posée sur la zone 16D 50–70.
+Ajouts : centre et mon lot (triangle nommé, « article » creux) sur chaque plage, noms sur chaque barre, plages d'IBU et de dose écrites ; tableau 12 familles × 3 (N/M) sans pli, descripteurs en puces, styles d'emploi, composants des huiles, farnésène et cohumulone « non importés (#131) ».
+Manque : les puces ne tiennent pas dans la bande sous 90 mots, elles vont sous le tableau ; non nommées seulement si marquées (les citées sont dans le tableau) ; « lot 13 » au lieu de « mon lot 13 » pour le plafond ; ratio α/β absent.

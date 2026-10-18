@@ -133,6 +133,21 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   meilleur que le site original » ; sur la planche des radars : « Je pense que c'est aussi la 3
   même si ils sont tous un peu semblable » — 18.10, soir (D57 à D59 ; p03 retenu pour Barres et
   Radar).
+- **Suggestions, lot 5b** (planche des radars) : « C'est vraiment difficile à lire, pour moi il
+  faut revoir, mais si il faut vraiment en choisir un ça serait la 6 » — 18.10, soir (D60).
+- **Le trait noir** (Comparer p03) : « Pourquoi il y a parfois le truc noir pas toujours ?? » —
+  18.10, soir (D57).
+- **Le rail, base v4.1 au téléphone** : « C'est mieux mais c'est toujours un peu étrange, on est à
+  35' et on a l'impression d'être quasiment à 60' » ; « Aussi les deux sont à 25' mais on dirait que
+  l'autre est à 0' » — 18.10, soir (D61).
+- **Les radars** : « Les spidergraph/radar graph resemble a rien, c'est une vrai régression... » ;
+  sur celui de Ma bière : « Celui-ci est encore pire ??? » ; « Comment c'est possible d'avoir autant
+  de problèmes avec ces Spider graph. Fait moi des fils de fere avec de lib, third party, custom, ou
+  autre afin de faire une vrai baseline » — 18.10, soir (D62 ; lot 7, une base radar).
+- **La base radar, lot 7** (p08, les radars de Ma bière et de Suggestions entourés) : « Seul le
+  premier est ok... » — 18.10, soir. Le radar de Comparer (SVG maison, polygones fermés, une
+  couleur par houblon) devient la base radar ; ceux de Ma bière et de Suggestions restent à
+  trouver.
 - **Le fil de fer perdu** (planche des fiches du lot 4 à l'appui) : « Pourquoi j'ai plus juste des
   maquettes fil de fer de ce type ? Qqch a dû être perdu dans le workflow et je comprends mieux
   pourquoi ça prends du longtemps » — 18.10, soir (méthode : explorer en fil de fer, finir une

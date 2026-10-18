@@ -103,7 +103,13 @@ for (const id of ids) {
             const o = Number(cs.fillOpacity) * Number(cs.opacity);
             return o >= 0.06 && o <= 0.7;
           });
-          return { nom: e.getAttribute('data-serie'), filled, v: (e.getAttribute('data-valeurs') || '').split(',').map((x) => (x.trim() === '' ? null : Number(x.trim()))) };
+          // D62 : la forme dessinée de la série, un polygone fermé sur tous les axes ?
+          const formes = (e.matches('path,polygon') ? [e] : [...e.querySelectorAll('path,polygon')]).map((x) => {
+            if (x.tagName.toLowerCase() === 'polygon') return { n: x.points.numberOfItems, ferme: true };
+            const d = x.getAttribute('d') || '';
+            return { n: (d.match(/[ML]/gi) || []).length, ferme: /z\s*$/i.test(d.trim()) };
+          });
+          return { nom: e.getAttribute('data-serie'), filled, formes, v: (e.getAttribute('data-valeurs') || '').split(',').map((x) => (x.trim() === '' ? null : Number(x.trim()))) };
         });
         const labels = [...radar.querySelectorAll('text')].filter((t) => t.textContent.trim()).map((t) => { const r = t.getBoundingClientRect(); return { t: t.textContent.trim(), fs: parseFloat(getComputedStyle(t).fontSize), x0: r.left, x1: r.right, y0: r.top, y1: r.bottom }; });
         let chevauche = 0;
@@ -146,6 +152,16 @@ for (const id of ids) {
         if (s.v.length !== m.axes.length) q('série « ' + s.nom + ' »' + n + ' : ' + s.v.length + ' valeurs pour ' + m.axes.length + ' axes');
         const videsNonMarques = m.axes.filter((f, k) => s.v[k] === null && !m.inconnus.includes(f));
         if (videsNonMarques.length) q('série « ' + s.nom + ' »' + n + ' : valeur vide sans secteur inconnu marqué (data-inconnu) : ' + videsNonMarques.join(', '));
+        // D62 (18.10, soir, radars de Suggestions et de Ma bière entourés) : « Les spidergraph/radar
+        // graph resemble a rien, c'est une vrai régression... » ; « Celui-ci est encore pire ??? ».
+        // Une série qui saute les familles non situées n'est plus un polygone : elle relie quelques
+        // points et fait une aiguille. Chaque série (hors zone) : aucune valeur vide (une famille non
+        // située se pose au centre, marquée), et un polygone fermé qui passe par tous les axes.
+        if (s.nom !== 'zone') {
+          const vides = m.axes.filter((f, k) => s.v[k] === null);
+          if (vides.length) p('D62 ' + file + n + ' : série « ' + s.nom + ' » sans valeur sur ' + vides.join(', ') + ' : le tracé saute ces axes (une famille non située se pose au centre, marquée)');
+          if (!s.formes.some((f) => f.ferme && f.n >= m.axes.length)) p('D62 ' + file + n + ' : série « ' + s.nom + ' » dessinée sans polygone fermé sur les ' + m.axes.length + ' axes (' + (s.formes.map((f) => f.n + (f.ferme ? ' fermé' : ' ouvert')).join(', ') || 'aucune forme') + ')');
+        }
         if (s.v.some((x) => x !== null && (!Number.isFinite(x) || x < minV || x > maxV))) q('série « ' + s.nom + ' »' + n + ' : valeurs hors de ' + minV + ' à ' + maxV);
       }
       if (!hors.some((s) => s.filled)) q('aucune silhouette pleine translucide' + n + ' (opacité de remplissage 0,06 à 0,7)');

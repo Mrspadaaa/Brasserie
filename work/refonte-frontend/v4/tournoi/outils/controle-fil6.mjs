@@ -65,7 +65,17 @@ for (const id of ids) {
       const plages = [...document.querySelectorAll('[data-plage]')].filter(vis).map((e) => {
         const c = e.querySelector('[data-role="central"]'); const l = e.querySelector('[data-role="lot"]');
         const rangee = e.closest('tr, li, [data-rangee]') || e.parentElement;
+        const court = (e.dataset.houblon || '').split(' ')[0];
         return { h: e.dataset.houblon, mesure: e.dataset.mesure, min: +e.dataset.min, max: +e.dataset.max,
+          // Le nom sur la barre, dans sa rangée, ou en tête de la colonne du houblon qui la contient.
+          nomme: !!court && (((e.innerText || '') + ' ' + (rangee ? rangee.innerText : '')).includes(court)
+            || [...document.querySelectorAll('[data-houblon-compare]')].some((c) => {
+              if (!(c.innerText || '').includes(court)) return false;
+              if (c.contains(e)) return true;
+              // En-tête de colonne : au-dessus de la barre, et la barre dans sa largeur.
+              const a = c.getBoundingClientRect(), b = e.getBoundingClientRect(), x = b.left + b.width / 2;
+              return a.bottom <= b.top + 1 && x >= a.left && x <= a.right;
+            })),
           central: c && vis(c) ? +c.dataset.valeur : null, sigC: c && vis(c) ? sig(c) : null,
           lot: l ? { v: +l.dataset.valeur, origine: l.dataset.origine || '', vis: vis(l), sig: vis(l) ? sig(l) : null,
             nomme: /\b(lot|article)\b/i.test((l.innerText || '') + ' ' + (rangee ? rangee.innerText : '')) } : null };
@@ -82,6 +92,12 @@ for (const id of ids) {
       const style = [...document.querySelectorAll('[data-role="style"][data-code="16D"]')].some(vis);
       const bande = [...document.querySelectorAll('[data-role="bande-style"][data-mesure="ibu"]')].filter(vis).map((e) => [+e.dataset.min, +e.dataset.max]);
       const objectifs = [...document.querySelectorAll('[data-role="objectif"]')].map((e) => e.dataset.famille);
+      // Toutes les pistes visibles du premier écran, rattachées à leur famille (la leur ou celle
+      // d'un parent), mesurées dans leur plus grande dimension (une piste peut être verticale).
+      const pistes = [...document.querySelectorAll('[data-role="piste"]')].filter(vis).map((e) => {
+        const r = e.getBoundingClientRect();
+        return { fam: e.dataset.famille || e.closest('[data-famille]')?.dataset.famille || '', top: r.top + scrollY, long: Math.max(r.width, r.height) };
+      });
       const reponses = [...document.querySelectorAll('[data-role="reponse"]')].filter(vis).map((e) => ({
         fam: e.dataset.famille, verdict: e.dataset.verdict, top: box(e).top, h: box(e).h, fs: parseFloat(getComputedStyle(e).fontSize), txt: e.innerText }));
       const effets = [...document.querySelectorAll('[data-role="effet"]')].filter(vis).map((e) => {
@@ -89,17 +105,36 @@ for (const id of ids) {
         return { fam: e.dataset.famille, top: box(e).top, piste: pi && vis(pi) ? pi.getBoundingClientRect().width : 0,
           ea: e.dataset.ecartAvant, ep: e.dataset.ecartApres, txt: (e.innerText || '') + ' ' + ((e.closest('[data-voie]') || {}).innerText || '') };
       });
-      return { mini, miniTxt, plages, chiffres, aromes, houblons: [...new Set(houblons)], desc, usage, style, bande, objectifs, reponses, effets, hauteur: document.documentElement.scrollHeight };
+      // D62 : chaque série d'un radar (hors zone) est un polygone fermé sur tous ses axes.
+      const radars = [...document.querySelectorAll('svg[data-radar]')].filter(vis).map((r) => {
+        const axes = (r.getAttribute('data-axes') || '').split(',').filter(Boolean);
+        return { axes: axes.length, series: [...r.querySelectorAll('[data-serie]')].filter((e) => e.getAttribute('data-serie') !== 'zone').map((e) => {
+          const formes = (e.matches('path,polygon') ? [e] : [...e.querySelectorAll('path,polygon')]).map((x) => {
+            if (x.tagName.toLowerCase() === 'polygon') return { n: x.points.numberOfItems, ferme: true };
+            const d = x.getAttribute('d') || '';
+            return { n: (d.match(/[ML]/gi) || []).length, ferme: /z\s*$/i.test(d.trim()) };
+          });
+          const v = (e.getAttribute('data-valeurs') || '').split(',');
+          return { nom: e.getAttribute('data-serie'), vides: v.filter((x) => x.trim() === '').length, n: v.length, formes };
+        }) };
+      });
+      return { radars, pistes, mini, miniTxt, plages, chiffres, aromes, houblons: [...new Set(houblons)], desc, usage, style, bande, objectifs, reponses, effets, hauteur: document.documentElement.scrollHeight };
     });
     await page.close();
     const q = (msg) => p(id, nomPage, msg);
     if (m.mini < 12) q('texte de ' + m.mini + ' px au premier écran (« ' + m.miniTxt + ' »), 12 au moins (D60)');
+    if (/radar/.test(nomPage) && !m.radars.length) q('aucun radar visible (svg[data-radar]) (D62)');
+    for (const r of m.radars) for (const s of r.series) {
+      if (s.vides) q('radar, série « ' + s.nom + ' » : ' + s.vides + ' valeur(s) vide(s), le tracé saute des axes (D62)');
+      if (!s.formes.some((f) => f.ferme && f.n >= r.axes)) q('radar, série « ' + s.nom + ' » sans polygone fermé sur les ' + r.axes + ' axes (D62)');
+    }
 
     if (objet === 'comparer') {
       // D57 : un centre sur chaque barre, mon lot distinct et nommé, IBU et dose en plage.
       if (!m.plages.length) q('aucune barre-plage');
       for (const b of m.plages) {
         const lib = b.h + ' ' + b.mesure;
+        if (!b.nomme) q(lib + ' : le nom du houblon n\'est pas sur sa barre (D51, point 1 : mieux que Beer Maverick)');
         if (b.central === null) { q(lib + ' : pas de trait de centre visible (D57)'); continue; }
         if (b.central < b.min - 0.05 || b.central > b.max + 0.05) q(lib + ' : centre ' + b.central + ' hors de la plage (D57)');
         const c = centreAttendu(b.h, b.mesure);
@@ -153,7 +188,7 @@ for (const id of ids) {
       }
       // Au moins une piste longue par objectif au premier écran (les petits multiples restent permis).
       for (const fam of new Set(m.objectifs)) {
-        const l = Math.max(0, ...m.effets.filter((x) => x.fam === fam && x.top < 844).map((x) => x.piste));
+        const l = Math.max(0, ...m.pistes.filter((x) => x.fam === fam && x.top < 844).map((x) => x.long));
         if (l < 240) q('objectif ' + fam + ' : piste la plus longue au premier écran ' + Math.round(l) + ' px, 240 au moins (D60)');
       }
       for (const e of m.effets.filter((x) => x.top < 844)) {
