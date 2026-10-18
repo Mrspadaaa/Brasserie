@@ -95,7 +95,9 @@ function blocArome(F) {
   const z = h('div', { class: 'f-arome', 'data-role': 'fiche-arome' });
   RADAR.roue(z, F, { W: FICHE.mode === 'bulle' ? 326 : 358, H: 246 });
   const of = (F.aromes[0] || {}).of || 0;
-  z.append(h('p', { class: 'f-leg' }, h('span', {}, of + ' fiches'), h('i', { class: 'pt-c', 'aria-hidden': 'true' }), h('span', {}, 'cité'), h('i', { class: 'pt-m', 'aria-hidden': 'true' }), h('span', {}, 'marqué')));
+  z.append(h('p', { class: 'f-leg' }, h('span', {}, of + ' fiches'), h('i', { class: 'pt-c', 'aria-hidden': 'true' }), h('span', {}, 'cité'), h('i', { class: 'pt-m', 'aria-hidden': 'true' }), h('span', {}, 'marqué'),
+    // D65 : une famille que ses fiches ne décrivent pas est inconnue (au centre, libellé « ? »), pas à zéro.
+    F.aromes.filter((a) => a.lv).length < D.roue.length ? [h('i', { class: 'pt-i', 'aria-hidden': 'true' }), h('span', {}, 'inconnu, ce n’est pas zéro')] : null));
   return z;
 }
 /* Mon goût (aimer, exclure ; retoucher revient à neutre) et les actions d'un toucher (p02). */

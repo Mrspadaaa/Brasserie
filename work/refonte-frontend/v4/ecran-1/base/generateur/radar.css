@@ -1,24 +1,9 @@
-  /* Radar unique (radar.js) : rangées, puces de voie, petits multiples de Comparer */
-  .rdr { overflow: visible; }
+  /* Radar unique (radar.js) : le SVG, sa bulle au toucher, les puces de voie. */
+  .rdr-boite { position: relative; }
+  .rdr { display: block; overflow: visible; }
   .rdr[data-geste="balayer"] { cursor: grab; }
   .rdr.balaye { cursor: grabbing; }
-  .serie.fixe { background: #fafafa; }
-  .serie .ne { white-space: nowrap; margin-left: 6px; display: inline-flex; align-items: center; gap: 3px; }
-  .serie .ne .pst { width: 14px; }
-  .pst { flex: none; }
+  .rdr-bulle { position: absolute; left: 0; top: 0; z-index: 3; display: none; pointer-events: none; width: max-content; max-width: 100%; padding: 4px 8px; border: 1px solid #999; border-radius: 6px; background: #fff; color: var(--encre); font-size: 14px; line-height: 1.3; box-shadow: 0 2px 6px rgba(0, 0, 0, .12); }
+  .rdr-bulle.on { display: block; }
+  .rdr-bulle b { font-weight: 650; }
   .puces-v .chip { height: 30px; font-weight: 600; }
-  /* Comparer : un petit radar par houblon (même largeur), ce que sa fiche est seule à citer. */
-  .pm { display: flex; align-items: center; gap: 4px; border-bottom: 1px solid var(--fond2); border-radius: 10px; cursor: pointer; }
-  .pm:last-of-type { border-bottom: 0; }
-  .pm > svg { flex: none; }
-  .pm-t { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .pm-t b { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-  .pm-t.ligne { flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: 8px; }
-  .pm.compact { min-height: 52px; gap: 10px; padding: 2px 4px; }
-  .pm.compact .vig { flex: none; }
-  .pm-grand { display: flex; flex-direction: column; gap: 2px; cursor: pointer; border-radius: 10px; }
-  .pm:focus, .pm-grand:focus { outline: none; }
-  .pm:focus-visible, .pm-grand:focus-visible { outline: 2px solid var(--encre); outline-offset: 2px; }
-  .tags { display: flex; flex-wrap: wrap; gap: 3px; }
-  .tag-f { font-size: 12px; padding: 1px 7px; border-radius: 9px; background: var(--fond); color: var(--gris); }
-  .nd { min-height: 18px; }

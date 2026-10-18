@@ -52,6 +52,8 @@
   .f-leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gris); min-height: 18px; }
   .f-leg .pt-c, .f-leg .pt-m { width: 9px; height: 9px; border-radius: 5px; border: 1.4px solid var(--encre); background: #fff; margin-left: 6px; }
   .f-leg .pt-m { background: var(--encre); }
+  .f-leg { flex-wrap: wrap; }
+  .f-leg .pt-i { width: 9px; height: 9px; border-radius: 5px; border: 1.5px solid #555; background: #fff; margin-left: 6px; }
   /* Goût et actions d'un toucher (p02) */
   .f-actions { display: flex; align-items: center; gap: 6px; min-height: 34px; }
   .f-gout { display: inline-flex; gap: 2px; padding: 2px; border-radius: 16px; background: var(--fond2); flex: none; }
