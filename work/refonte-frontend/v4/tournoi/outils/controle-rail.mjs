@@ -1,19 +1,39 @@
-// D27 et D28 (18.10, soir), sur la capture de p2 avec une flèche de 60′ à 10′ :
-// D27 : « j'aimerais aussi pouvoir une fois mon houblons sélectionner pouvoir glisser comme
-//        un slider le moment de l'ajout » ;
-// D28 : « J'aime beaucoup l'intégration de la levure directement dans la p8 mais la p2 a un
-//        meilleur visuel ».
+// Contrôle du rail des étapes (étape houblons), réécrit le 18.10 au soir pour la loupe (D47).
+// Les mots du brasseur, dans l'ordre où ils ont fait naître chaque règle :
+//   D27 « j'aimerais aussi pouvoir une fois mon houblons sélectionner pouvoir glisser comme un
+//       slider le moment de l'ajout » ;
+//   D28 « J'aime beaucoup l'intégration de la levure directement dans la p8 mais la p2 a un
+//       meilleur visuel » ;
+//   D34 « Je veux choisir pas de 10' défini, pas de timing imposé hein » ; « Soit pas supide,
+//       c'est des tranche de 5'. » ;
+//   D35 « Ça semble un peu bancale, c'est l'idée mais pas hyper bien réalisé » ;
+//   D36 « Parcontre prendre en compte que le boil peut durer 120' ou d'autres timing que 60 » ;
+//   D37 « toujours garder des variables dynamique » ; puis « C'est defini ailleur dans
+//       l'application... » (l'ébullition se lit dans la recette, elle ne se règle pas ici) ;
+//   D41 « On a un 10' qui sort de null part. […] les possible ajoute d'houblon sont vraiment à
+//       la bonne place ? » ; D42 « Pourquoi celui choisi à de l'ombre ? » ;
+//   D43 « Que de j+3 » ; D44 « Que du j+3 SI on est en dehors du boil » ; « Le slider
+//       fonctionne pour le boil mais pas pour les autres étape, pas dechelle pour les autres que
+//       des choix fix » ; D45 « le passage entre 10' et 5' de fait très mal car on doit passe au
+//       dessus des houblons... » ; D46 « Et le slider est clancky pas fluide du tout » ;
+//       « Probablement lié au recalcule de l'ibu pas forcément utile à la volée instantané.. » ;
+//   D47 « Pas besoin d'afficher une échelle linéaire avec tout les gradient du raille, ça doit
+//       rester cohérent. Juste les affiches quand on est à cette emplacement lors du changement
+//       avec le houblon. Genre quand on focus sur un type on affiche mieux l'échelle un peu un
+//       truc type UX apple qui zoom focus la où on est. »
+//
 // Usage : node work/refonte-frontend/v4/tournoi/outils/controle-rail.mjs <dossier> [ids…]
-// Convention auteur, sur index.html (l'étape) :
-//   data-etape="<code>"            chaque étape du rail, codes du pack : fwh, b60, b30, b15,
-//                                  b10, b5, b0, wp, dryActive, dryPost ; et "levure" ;
-//   data-role="glisser-moment"     dans chaque ligne-houblon, la poignée qu'on glisse le long
-//                                  du rail (la pastille du moment, ou la carte elle-même).
-// Vérifie : (D28) une étape data-etape="levure" porte la levure (data-role="levure") et se
-// place sur le rail après le whirlpool (wp) et avant le dry hop en fermentation (dryActive) ;
-// (D27) à 390 px au doigt, puis à 1280 px à la souris, glisser la poignée de la première ligne
-// jusqu'à une autre étape du rail change son moment (data-role="quand") et ses IBU, et range
-// la ligne sous cette étape.
+// Convention auteur, sur l'étape (index.html et cas-*) :
+//   data-etape="<code>"   les étapes nommées du rail, visibles au repos : wp (whirlpool),
+//                         levure, dryActive (fermentation), dryPost (post-fermentation) ; et les
+//                         graduations, qui portent aussi data-graduation="ebullition|whirlpool|
+//                         fermentation|post" : b<minute> (par 5′), wp<°C> (par 5), f<jour>,
+//                         p<jour> (J+0 à J+14). Les graduations sont CACHÉES au repos et seules
+//                         celles du segment sous le doigt se montrent pendant le geste (loupe).
+//   data-role="glisser-moment"  la poignée de chaque ligne-houblon ; data-glisse sur l'élément
+//                         qui suit le doigt pendant le geste ; data-role="quand" le moment écrit.
+//   data-role="ebullition"  la durée de la recette, avec un renvoi (lien ou
+//                         data-action="renvoi-ebullition"), sans champ ni −/+.
 // Imprime RAIL OK si tout passe, sinon RAIL ECHEC et la liste.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -27,12 +47,14 @@ const ids = fs.readdirSync(dir).filter((d) => /^p\d+$|^consolide$|^version-/.tes
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const problems = [];
+const STANDARD = new Set([60, 30, 15, 10, 5, 0]);
 
-// État de la première ligne : clé, moment, IBU, position ; et les étapes du rail.
+// État : la ligne (clé, moment, IBU, poignée) et les étapes VISIBLES du rail.
 const etat = (page, cle) => page.evaluate((cle) => {
+  const vis = (e) => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && Number(cs.opacity) > 0.15; };
   const lignes = [...document.querySelectorAll('[data-role="ligne-houblon"]')];
   const l = cle ? lignes.find((x) => x.querySelector('[data-houblon="' + cle + '"]') || x.getAttribute('data-houblon') === cle) : lignes[0];
-  const etapes = [...document.querySelectorAll('[data-etape]')].map((e) => { const r = e.getBoundingClientRect(); return { code: e.getAttribute('data-etape'), y: r.top + r.height / 2, x: r.left + r.width / 2, levure: !!(e.matches('[data-role="levure"]') || e.querySelector('[data-role="levure"]')) }; });
+  const etapes = [...document.querySelectorAll('[data-etape]')].filter(vis).map((e) => { const r = e.getBoundingClientRect(); return { code: e.getAttribute('data-etape'), grad: e.getAttribute('data-graduation'), y: r.top + r.height / 2, levure: !!(e.matches('[data-role="levure"]') || e.querySelector('[data-role="levure"]')) }; });
   if (!l) return { etapes };
   const h = l.querySelector('[data-role="glisser-moment"]') || (l.matches('[data-role="glisser-moment"]') ? l : null);
   const hr = h ? h.getBoundingClientRect() : null;
@@ -42,72 +64,50 @@ const etat = (page, cle) => page.evaluate((cle) => {
   return { cle: k, quand: q ? q.innerText.trim() : null, ibu, top: l.getBoundingClientRect().top, poignee: hr ? { x: hr.left + hr.width / 2, y: hr.top + hr.height / 2 } : null, etapes };
 }, cle);
 
-async function glisser(page, mode, id, p) {
+// Un geste comme celui du brasseur : poser, attendre la loupe, aller vers une graduation (sa
+// position est relue à chaque pas, la loupe pouvant la déplacer), lâcher.
+async function poser(page, mode) {
   const a = await etat(page);
-  if (!a.cle) { p('D27 : aucune ligne de houblon repérable (data-role="ligne-houblon" et data-houblon)'); return; }
-  if (!a.poignee) { p('D27 : pas de poignée data-role="glisser-moment" sur la ligne « ' + a.cle + ' »'); return; }
-  // Étape cible : la première étape du rail, sous la poignée, d'un autre moment que l'actuel.
-  const cible = a.etapes.filter((e) => e.code !== 'levure' && e.y > a.poignee.y + 24).sort((x, y) => x.y - y.y)[0];
-  if (!cible) { p('D27 : aucune autre étape du rail sous la ligne (data-etape)'); return; }
-  const pas = 12;
-  if (mode === 'doigt') {
-    const t = await page.touchscreen.touchStart(a.poignee.x, a.poignee.y);
-    for (let i = 1; i <= pas; i++) { await t.move(a.poignee.x, a.poignee.y + ((cible.y - a.poignee.y) * i) / pas); await wait(25); }
-    await t.end();
-  } else {
-    await page.mouse.move(a.poignee.x, a.poignee.y);
-    await page.mouse.down();
-    for (let i = 1; i <= pas; i++) { await page.mouse.move(a.poignee.x, a.poignee.y + ((cible.y - a.poignee.y) * i) / pas); await wait(25); }
-    await page.mouse.up();
-  }
-  await wait(500);
-  const b = await etat(page, a.cle);
-  const m = mode === 'doigt' ? '390 px, au doigt' : '1280 px, à la souris';
-  if (b.quand === a.quand) p('D27 (' + m + ') : glisser « ' + a.cle + ' » vers ' + cible.code + ' ne change pas son moment (' + a.quand + ')');
-  else if (b.ibu === a.ibu) p('D27 (' + m + ') : le moment change mais pas les IBU de la ligne (' + a.ibu + ')');
-  const etapeApres = b.etapes.find((e) => e.code === cible.code);
-  if (b.quand !== a.quand && etapeApres && !(b.top > etapeApres.y - 30)) p('D27 (' + m + ') : la ligne ne se range pas sous l\'étape ' + cible.code);
+  if (!a.poignee) return null;
+  let y = a.poignee.y;
+  const x = a.poignee.x;
+  let t = null;
+  if (mode === 'souris') { await page.mouse.move(x, y); await page.mouse.down(); }
+  else t = await page.touchscreen.touchStart(x, y);
+  const bouger = async (ny) => { y = ny; if (t) await t.move(x, y); else await page.mouse.move(x, y); await wait(25); };
+  await bouger(y + 3);
+  await wait(200);
+  return {
+    a, x, get y() { return y; }, bouger,
+    async vers(code) {
+      for (let i = 0; i < 200; i++) {
+        const e = (await etat(page)).etapes.find((s) => s.code === code);
+        if (!e) {
+          // Graduation encore cachée : approcher de l'étape nommée de son segment, ou descendre.
+          const seg = /^wp\d/.test(code) ? 'wp' : /^f\d/.test(code) ? 'dryActive' : /^p\d/.test(code) ? 'dryPost' : null;
+          const s = seg && (await etat(page)).etapes.find((q) => q.code === seg);
+          await bouger(s ? y + Math.sign(s.y + 6 - y) * Math.min(10, Math.abs(s.y + 6 - y)) : y + 6);
+          continue;
+        }
+        const dy = e.y - y;
+        if (Math.abs(dy) < 1.5) return true;
+        await bouger(y + Math.sign(dy) * Math.min(8, Math.abs(dy)));
+      }
+      return false;
+    },
+    async lacher() { if (t) await t.end(); else await page.mouse.up(); await wait(450); },
+  };
 }
-
-// D34 (18.10, soir), sur « 10′ s'allume et l'IBU affiche 22 en direct » : « Je veux choisir pas
-// de 10' défini, pas de timing imposé hein » ; puis : « Soit pas supide, c'est des tranche de
-// 5'. » Le rail d'ébullition se règle par tranches de 5′ : lâcher la ligne entre deux repères
-// donne une minute multiple de 5, pas forcément un repère (45′, 35′, 20′…), et l'IBU de cette
-// minute ; deux lâchers différents donnent deux minutes et deux IBU.
-// D36 : « Parcontre prendre en compte que le boil peut durer 120' ou d'autres timing que 60 » :
-// sur cas-ebu120.html (même recette, ébullition de 120′), le rail commence à 120′
-// (data-etape="b120") et une ligne se pose au-delà de 60′.
-const STANDARD = new Set([60, 30, 15, 10, 5, 0]);
-async function libre(page, p) {
-  const minutes = [];
-  for (const f of [0.42, 0.77]) {
-    const a = await etat(page);
-    if (!a.poignee) return;
-    const y60 = a.etapes.find((e) => e.code === 'b60')?.y, y10 = a.etapes.find((e) => e.code === 'b10')?.y;
-    if (y60 === undefined || y10 === undefined) { p('D34 : le rail ne montre pas les repères 60′ et 10′ (data-etape b60, b10)'); return; }
-    const yc = y60 + (y10 - y60) * f;
-    const t = await page.touchscreen.touchStart(a.poignee.x, a.poignee.y);
-    for (let i = 1; i <= 12; i++) { await t.move(a.poignee.x, a.poignee.y + ((yc - a.poignee.y) * i) / 12); await wait(25); }
-    await t.end();
-    await wait(500);
-    const b = await etat(page, a.cle);
-    const m = (b.quand || '').match(/(\d+)\s*(′|'|min)/);
-    minutes.push({ min: m ? Number(m[1]) : null, ibu: b.ibu, quand: b.quand });
-  }
-  if (minutes.some((x) => x.min === null)) p('D34 : lâchée entre deux repères, la ligne ne dit pas sa minute (« ' + minutes.map((x) => x.quand).join(' », « ') + ' »)');
-  else if (minutes.some((x) => x.min % 5)) p('D34 : minute hors des tranches de 5′ (' + minutes.map((x) => x.min + '′').join(', ') + ')');
-  else if (minutes.every((x) => STANDARD.has(x.min))) p('D34 : la ligne s\'accroche aux repères (' + minutes.map((x) => x.min + '′').join(', ') + ') : timing imposé');
-  else if (minutes[0].min === minutes[1].min || minutes[0].ibu === minutes[1].ibu) p('D34 : deux lâchers différents donnent la même minute ou le même IBU (' + minutes.map((x) => x.min + '′ ' + x.ibu).join(' ; ') + ')');
+async function lacherSur(page, code, mode = 'doigt') {
+  const g = await poser(page, mode);
+  if (!g) return { ok: false, apres: null, avant: null };
+  const ok = await g.vers(code);
+  await g.lacher();
+  return { ok, avant: g.a, apres: await etat(page, g.a.cle) };
 }
+const minute = (q) => { const m = (q || '').match(/(\d+)\s*(′|'|min)/); return m ? Number(m[1]) : null; };
 
-// D35 (18.10, soir) : « Ça semble un peu bancale, c'est l'idée mais pas hyper bien réalisé »
-// (capture pendant le glissement : la carte passe sous Motueka, recouvre « Ajouter » et une
-// carte, deux pastilles « 10′ » se chevauchent, un trou reste à l'origine). Mesuré le doigt
-// posé, à mi-chemin, puis après le lâcher. Convention : l'élément qui suit le doigt porte
-// data-glisse. Échoue si : (a) il n'est pas au-dessus de tout en son centre ; (b) il cache au
-// moins 30 % d'un autre texte (les autres lignes s'écartent pour lui faire place) ; (c) deux
-// textes visibles se chevauchent ; (d) un vide de plus de 64 px s'ouvre dans la colonne du
-// rail (pendant, ou après le lâcher).
+// D35 : propreté du geste (le doigt posé, puis après le lâcher).
 const propre = (page) => page.evaluate(() => {
   const out = [];
   const g = document.querySelector('[data-glisse]');
@@ -130,279 +130,179 @@ const propre = (page) => page.evaluate(() => {
     if (inter(ra, rb) > 0.3 * Math.min(ra.width * ra.height, rb.width * rb.height)) { chev++; ex = ex || a.innerText.trim().slice(0, 10) + ' / ' + b.innerText.trim().slice(0, 10); }
   }
   if (chev) out.push(chev + ' chevauchement(s) de textes (' + ex + ')');
-  // Vide dans la colonne du rail : du premier au dernier repère data-etape.
   const et = [...document.querySelectorAll('[data-etape]')].map((e) => e.getBoundingClientRect()).filter((r) => r.height > 0);
   if (et.length) {
     const y0 = Math.max(0, Math.min(...et.map((r) => r.top))), y1 = Math.min(innerHeight, Math.max(...et.map((r) => r.bottom)));
     const rows = new Uint8Array(Math.max(0, Math.ceil(y1 - y0)));
-    for (const e of feuilles) { const b = e.getBoundingClientRect(); for (let y = Math.max(y0, Math.floor(b.top)); y < Math.min(y1, Math.ceil(b.bottom)); y++) rows[y - Math.floor(y0)] = 1; }
-    for (const e of document.querySelectorAll('[data-role="ligne-houblon"], [data-role="ajout-rapide"], input, [data-etape], [data-etape] > *')) { const b = e.getBoundingClientRect(); if (!b.height) continue; for (let y = Math.max(y0, Math.floor(b.top)); y < Math.min(y1, Math.ceil(b.bottom)); y++) rows[y - Math.floor(y0)] = 1; }
+    for (const e of [...feuilles, ...document.querySelectorAll('[data-role="ligne-houblon"], [data-role="ajout-rapide"], input, [data-etape], [data-etape] > *')]) { const b = e.getBoundingClientRect(); if (!b.height) continue; for (let y = Math.max(y0, Math.floor(b.top)); y < Math.min(y1, Math.ceil(b.bottom)); y++) rows[y - Math.floor(y0)] = 1; }
     let run = 0, max = 0; for (const v of rows) { run = v ? 0 : run + 1; max = Math.max(max, run); }
     if (max > 64) out.push('vide de ' + max + ' px dans la colonne du rail');
   }
   return out;
 });
-async function geste(page, p) {
-  const a = await etat(page);
-  if (!a.poignee) return;
-  const y60 = a.etapes.find((e) => e.code === 'b60')?.y, y10 = a.etapes.find((e) => e.code === 'b10')?.y;
-  if (y60 === undefined || y10 === undefined) return;
-  const yc = y60 + (y10 - y60) * 0.6;
-  const t = await page.touchscreen.touchStart(a.poignee.x, a.poignee.y);
-  for (let i = 1; i <= 10; i++) { await t.move(a.poignee.x, a.poignee.y + ((yc - a.poignee.y) * i) / 10); await wait(25); }
-  await wait(200);
-  if (!(await page.$('[data-glisse]'))) p('D35 : pendant le glissement, rien ne porte data-glisse (l\'élément qui suit le doigt)');
-  for (const x of await propre(page)) p('D35 pendant : ' + x);
-  await t.end();
-  await wait(500);
-  for (const x of await propre(page)) p('D35 après : ' + x);
-}
+const ombre = (page) => page.evaluate(() => [...document.querySelectorAll('[data-role="ligne-houblon"], [data-glisse]')].filter((e) => getComputedStyle(e).boxShadow !== 'none').length);
+const gradsVisibles = (page) => page.evaluate(() => [...document.querySelectorAll('[data-graduation]')].filter((e) => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && Number(cs.opacity) > 0.15; }).map((e) => { const r = e.getBoundingClientRect(); return { seg: e.getAttribute('data-graduation'), code: e.getAttribute('data-etape'), y: r.top + r.height / 2 }; }));
 
-
-// D37 (18.10, soir) : « toujours garder des variables dynamique » ; révisé sur la base v2 :
-// « C'est defini ailleur dans l'application... » (le réglage −/+ de l'ébullition sur l'étape).
-// La durée vient de la recette : l'étape l'affiche (data-role="ebullition", « 60′ ») avec un
-// renvoi vers l'endroit où elle se règle (lien ou bouton data-action="renvoi-ebullition"),
-// sans la modifier ici. Le rail s'adapte à toute durée : cas-ebu45.html et cas-ebu200.html (la
-// même recette, ébullition de 45′ et de 200′) commencent à b45 et b200 ; à 45′, aucun repère
-// ni aucune ligne au-delà de 45′.
-async function dureeLue(page, p) {
-  const e = await page.evaluate(() => {
-    const el = document.querySelector('[data-role="ebullition"]');
-    if (!el) return null;
-    return {
-      valeur: /\d+\s*(′|'|min)/.test(el.innerText),
-      champ: !!el.querySelector('input, select, textarea') || el.matches('input'),
-      plusMoins: !!document.querySelector('[data-action="ebullition-plus"], [data-action="ebullition-moins"]'),
-      renvoi: !!(el.querySelector('a, [data-action="renvoi-ebullition"]') || el.matches('a, [data-action="renvoi-ebullition"]')),
-    };
-  });
-  if (!e) { p('D37 : la durée d\'ébullition de la recette n\'est pas affichée sur l\'étape (data-role="ebullition")'); return; }
-  if (!e.valeur) p('D37 : data-role="ebullition" ne dit pas la durée (« 60′ »)');
-  if (e.champ || e.plusMoins) p('D37 : l\'ébullition se modifie sur l\'étape alors qu\'elle est « defini ailleur dans l\'application » (champ ou −/+) : un renvoi suffit');
-  if (!e.renvoi) p('D37 : pas de renvoi vers l\'endroit où se règle l\'ébullition (lien ou data-action="renvoi-ebullition")');
-}
-// D43 (18.10, soir, commentaire sur la page partagée) : « Que de j+3 ». Sur la base v2, les
-// boutons −/+ du jour existaient mais le jour restait à J+3. Sur cas-k3.html, la ligne à froid
-// porte data-action="jour-plus" et "jour-moins" : un toucher sur « plus » fait passer J+3 à J+4,
-// « moins » le ramène ; le jour reste libre (J+0 à J+14, pack dryHopJour).
-async function jourLibre(id, p) {
-  const f = path.join(dir, id, 'cas-k3.html');
-  if (!fs.existsSync(f)) return;
-  const q = await browser.newPage();
-  await q.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-  await q.goto(pathToFileURL(f).href, { waitUntil: 'networkidle0', timeout: 30000 });
+async function ouvrir(f, w = 390) {
+  const page = await browser.newPage();
+  if (w === 390) await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+  else await page.setViewport({ width: w, height: 900, deviceScaleFactor: 1 });
+  await page.goto(pathToFileURL(f).href, { waitUntil: 'networkidle0', timeout: 30000 });
   await wait(300);
-  const jour = () => q.evaluate(() => { const l = [...document.querySelectorAll('[data-role="ligne-houblon"]')].find((x) => /J\s*\+\s*\d+/.test(x.innerText)); const m = l && l.innerText.match(/J\s*\+\s*(\d+)/); return m ? Number(m[1]) : null; });
-  const j0 = await jour();
-  if (j0 === null) { p('D43 : cas-k3.html sans ajout à froid daté (J+N)'); await q.close(); return; }
-  for (const [action, attendu] of [['jour-plus', j0 + 1], ['jour-moins', j0]]) {
-    const b = await q.$('[data-role="ligne-houblon"] [data-action="' + action + '"]');
-    if (!b) { p('D43 : pas de geste data-action="' + action + '" sur la ligne à froid'); break; }
-    try { await b.tap(); } catch { await b.click(); }
-    await wait(350);
-    const j = await jour();
-    if (j !== attendu) { p('D43 : « ' + action + ' » laisse le jour à J+' + j + ' (J+' + attendu + ' attendu)'); break; }
-  }
-  await q.close();
-}
-// D44 (18.10, soir) : « Que du j+3 SI on est en dehors du boil » ; « Le slider fonctionne pour
-// le boil mais pas pour les autres étape, pas dechelle pour les autres que des choix fix ».
-// Après l'ébullition, le rail continue avec ses propres échelles : whirlpool (température et/ou
-// durée), fermentation et post-fermentation (jour). Lâcher la ligne à deux endroits d'un même
-// segment donne deux réglages différents : « 85 °C » / « 75 °C » ou « 20 min » / « 35 min » au
-// whirlpool ; « J+2 » / « J+6 » en fermentation.
-// D45 : « le passage entre 10' et 5' de fait très mal car on doit passe au dessus des
-// houblons... » : sur le segment d'ébullition, l'échelle de temps est régulière (écart entre
-// graduations successives b<N> : écart-type / moyenne ≤ 0,25) : aucun bloc ne s'intercale.
-async function echelles(page, p) {
-  const lacher = async (y) => {
-    const a = await etat(page);
-    if (!a.poignee) return null;
-    const t = await page.touchscreen.touchStart(a.poignee.x, a.poignee.y);
-    for (let i = 1; i <= 14; i++) { await t.move(a.poignee.x, a.poignee.y + ((y - a.poignee.y) * i) / 14); await wait(25); }
-    await t.end();
-    await wait(450);
-    return (await etat(page, a.cle)).quand || '';
-  };
-  const e = await etat(page);
-  const y = (c) => e.etapes.find((x) => x.code === c)?.y;
-  // D45 : régularité de l'échelle d'ébullition.
-  const ticks = e.etapes.filter((x) => /^b\d+$/.test(x.code)).sort((a, b) => a.y - b.y);
-  if (ticks.length >= 4) {
-    const gaps = ticks.slice(1).map((t, i) => t.y - ticks[i].y).filter((g) => g > 0);
-    const m = gaps.reduce((s, g) => s + g, 0) / gaps.length;
-    const sd = Math.sqrt(gaps.reduce((s, g) => s + (g - m) ** 2, 0) / gaps.length);
-    if (m > 0 && sd / m > 0.25) p('D45 : échelle d\'ébullition irrégulière (écart des graduations de ' + Math.round(Math.min(...gaps)) + ' à ' + Math.round(Math.max(...gaps)) + ' px) : un bloc s\'intercale entre deux minutes');
-  }
-  // D44 : whirlpool puis fermentation.
-  const segments = [
-    ['wp', 'levure', /(\d+)\s*°C|(\d+)\s*min/i, 'whirlpool'],
-    ['dryActive', 'dryPost', /J\s*\+\s*(\d+)/i, 'fermentation'],
-  ];
-  for (const [deb, fin, re, nom] of segments) {
-    const y0 = y(deb), y1 = y(fin) ?? (y0 !== undefined ? y0 + 80 : undefined);
-    if (y0 === undefined) { p('D44 : le rail n\'a pas de segment ' + nom + ' (data-etape="' + deb + '")'); continue; }
-    const q1 = await lacher(y0 + (y1 - y0) * 0.3);
-    const q2 = await lacher(y0 + (y1 - y0) * 0.75);
-    const v1 = (q1 || '').match(re), v2 = (q2 || '').match(re);
-    if (!v1 || !v2) p('D44 : lâchée dans le segment ' + nom + ', la ligne ne dit pas son réglage (« ' + q1 + ' », « ' + q2 + ' »)');
-    else if (v1[0] === v2[0]) p('D44 : deux endroits du segment ' + nom + ' donnent le même réglage (« ' + v1[0] + ' ») : choix figé, pas d\'échelle');
-  }
-}
-// D46 (18.10, soir) : « Et le slider est clancky pas fluide du tout ». La base v2 déplaçait la
-// carte par réordonnancement : rien avant un demi-cran, puis des sauts de tranche en tranche.
-// Désormais la carte suit le doigt : sur 10 déplacements de 6 px, elle bouge à chaque fois
-// (au moins 9 sur 10) et son écart au doigt reste constant (± 4 px) ; l'accroche aux tranches
-// se fait au lâcher, pendant le geste seule la valeur affichée change de tranche.
-async function fluide(page, p) {
-  const a = await etat(page);
-  if (!a.poignee) return;
-  const t = await page.touchscreen.touchStart(a.poignee.x, a.poignee.y);
-  await t.move(a.poignee.x, a.poignee.y + 2); await wait(60);
-  const haut = () => page.evaluate(() => { const g = document.querySelector('[data-glisse]'); return g ? g.getBoundingClientRect().top : null; });
-  let prec = await haut(), bouge = 0, ecarts = [];
-  for (let i = 1; i <= 10; i++) {
-    await t.move(a.poignee.x, a.poignee.y + 2 + i * 6); await wait(40);
-    const h = await haut();
-    if (h !== null && prec !== null) { if (Math.abs(h - prec) > 0.5) bouge++; ecarts.push(h - prec - 6); }
-    prec = h;
-  }
-  await t.end();
-  await wait(300);
-  if (!ecarts.length) { p('D46 : pendant le geste, rien ne porte data-glisse : impossible de suivre la carte'); return; }
-  const pire = Math.max(...ecarts.map(Math.abs));
-  if (bouge < 9 || pire > 4) p('D46 : la carte ne suit pas le doigt (' + bouge + ' mouvements sur 10, écart jusqu\'à ' + Math.round(pire) + ' px) : geste saccadé');
-}
-async function dureesRecette(id, p) {
-  for (const c of [45, 200]) {
-    const f = path.join(dir, id, 'cas-ebu' + c + '.html');
-    if (!fs.existsSync(f)) { p('D37 : cas-ebu' + c + '.html absente (la même recette avec une ébullition de ' + c + '′)'); continue; }
-    const q = await browser.newPage();
-    await q.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-    await q.goto(pathToFileURL(f).href, { waitUntil: 'networkidle0', timeout: 30000 });
-    await wait(300);
-    const e = await etat(q);
-    if (!e.etapes.some((x) => x.code === 'b' + c)) p('D37 : à ' + c + '′ d\'ébullition, le rail ne commence pas à ' + c + '′ (data-etape="b' + c + '")');
-    if (c === 45) {
-      const trop = e.etapes.filter((x) => /^b\d+$/.test(x.code) && Number(x.code.slice(1)) > 45);
-      if (trop.length) p('D37 : à 45′, le rail garde des repères au-delà (' + trop.slice(0, 3).map((x) => x.code).join(', ') + ')');
-      const m = (e.quand || '').match(/(\d+)\s*(′|'|min)/);
-      if (m && Number(m[1]) > 45) p('D37 : à 45′, la première ligne reste à ' + m[1] + '′');
-    }
-    await q.close();
-  }
-}
-
-// D41 (18.10, soir) : « On a un 10' qui sort de null part. C'est pas encore ça, les possible
-// ajoute d'houblon sont vraiment à la bonne place ? ». Le rail ne porte que la recette : aucun
-// ajout proposé (data-role="ajout-rapide") n'est rangé dans une étape du rail ([data-etape]),
-// et les minutes écrites sur le rail (« 10′ ») sont la durée d'ébullition, 0′, ou le moment
-// d'une ligne de la recette.
-const railRecette = (page) => page.evaluate(() => {
-  const out = [];
-  const vis = (e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
-  const dansRail = [...document.querySelectorAll('[data-role="ajout-rapide"]')].filter(vis).filter((a) => a.closest('[data-etape]'));
-  if (dansRail.length) out.push(dansRail.length + ' ajout(s) proposé(s) rangé(s) dans une étape du rail (« ' + dansRail[0].innerText.trim().split('\n')[0].slice(0, 16) + ' »)');
-  const quand = new Set([...document.querySelectorAll('[data-role="ligne-houblon"] [data-role="quand"]')].map((q) => (q.innerText.match(/(\d+)\s*(′|')/) || [])[1]).filter(Boolean).map(Number));
-  const eb = (document.querySelector('[data-role="ebullition"]')?.innerText.match(/(\d+)\s*(′|')/) || [])[1];
-  if (eb) quand.add(Number(eb));
-  quand.add(0);
-  const lignes = new Set([...document.querySelectorAll('[data-role="ligne-houblon"], [data-role="ajout-rapide"]')]);
-  const libres = [...document.querySelectorAll('[data-etape], [data-etape] *')].filter(vis)
-    .filter((e) => ![...lignes].some((l) => l.contains(e)))
-    .filter((e) => [...e.childNodes].some((n) => n.nodeType === 3 && /^\s*\d+\s*(′|')\s*$/.test(n.textContent)))
-    .map((e) => Number(e.innerText.match(/\d+/)[0])).filter((m) => !quand.has(m));
-  if (libres.length) out.push('minute(s) écrite(s) sur le rail sans ligne de la recette : ' + [...new Set(libres)].map((m) => m + '′').join(', '));
-  return out;
-});
-
-// D42 (18.10, soir) : « Pourquoi celui choisi à de l'ombre ? » (capture : la carte soulevée,
-// ombrée, à 55 IBU alors que l'en-tête dit 60). Au repos, aucune carte du rail n'a d'ombre ; et
-// un geste interrompu par le téléphone (touchcancel) rend la carte à son état de repos.
-async function interruption(page, client, p) {
-  const ombre = () => page.evaluate(() => [...document.querySelectorAll('[data-role="ligne-houblon"], [data-glisse]')].filter((e) => getComputedStyle(e).boxShadow !== 'none').length);
-  if (await ombre()) p('D42 : au repos, une carte du rail porte une ombre');
-  const a = await etat(page);
-  if (!a.poignee) return;
-  await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: a.poignee.x, y: a.poignee.y }] });
-  for (let i = 1; i <= 8; i++) { await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: a.poignee.x, y: a.poignee.y + i * 12 }] }); await wait(25); }
-  await client.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
-  await wait(500);
-  if (await page.$('[data-glisse]')) p('D42 : après un geste interrompu (touchcancel), la carte reste soulevée (data-glisse)');
-  if (await ombre()) p('D42 : après un geste interrompu, une carte garde son ombre');
+  return page;
 }
 
 for (const id of ids) {
   const p = (m) => problems.push(id + ' : ' + m);
-  const url = pathToFileURL(path.join(dir, id, 'index.html')).href;
-  const page = await browser.newPage();
-  await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
-  await wait(300);
+  const index = path.join(dir, id, 'index.html');
+  let page = await ouvrir(index);
+  const recharger = async () => { await page.close(); page = await ouvrir(index); };
   const e = await etat(page);
+  if (!e.cle) { p('D27 : aucune ligne de houblon repérable (data-role="ligne-houblon" et data-houblon)'); await page.close(); continue; }
+  if (!e.poignee) { p('D27 : pas de poignée data-role="glisser-moment" sur la première ligne'); await page.close(); continue; }
   const y = (c) => e.etapes.find((x) => x.code === c)?.y;
+  // D28 : la levure, étape du rail entre le whirlpool et la fermentation.
   const lev = e.etapes.find((x) => x.code === 'levure');
   if (!lev) p('D28 : la levure n\'est pas une étape du rail (data-etape="levure")');
   else {
     if (!lev.levure) p('D28 : l\'étape levure du rail ne porte pas la levure (data-role="levure")');
-    if (y('wp') === undefined || y('dryActive') === undefined) p('D28 : le rail ne montre pas le whirlpool (wp) et le dry hop en fermentation (dryActive) autour de la levure');
-    else if (!(y('wp') < lev.y && lev.y < y('dryActive'))) p('D28 : la levure n\'est pas entre le whirlpool et le dry hop en fermentation');
+    if (y('wp') === undefined || y('dryActive') === undefined) p('D28 : le rail ne montre pas le whirlpool (wp) et la fermentation (dryActive) autour de la levure');
+    else if (!(y('wp') < lev.y && lev.y < y('dryActive'))) p('D28 : la levure n\'est pas entre le whirlpool et la fermentation');
   }
-  await glisser(page, 'doigt', id, p);
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
-  await wait(300);
-  await libre(page, p);
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
-  await wait(300);
-  await geste(page, p);
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
-  await wait(300);
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
-  await wait(300);
-  await fluide(page, p);
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
-  await wait(300);
-  await echelles(page, p);
-  await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
-  await wait(300);
-  await dureeLue(page, p);
-  for (const x of await railRecette(page)) p('D41 : ' + x);
-  const client = await page.target().createCDPSession();
-  await interruption(page, client, p);
-  await page.close();
-  await dureesRecette(id, p);
-  await jourLibre(id, p);
-  // D36 : ébullition de 120′.
-  const f120 = path.join(dir, id, 'cas-ebu120.html');
-  if (!fs.existsSync(f120)) p('D36 : cas-ebu120.html absente (la même recette avec une ébullition de 120′)');
+  // D47 : au repos, aucune graduation ; D41 : le rail ne porte que la recette ; D42 : pas d'ombre.
+  const repos = await gradsVisibles(page);
+  if (repos.length) p('D47 : au repos, ' + repos.length + ' graduation(s) visibles : l\'échelle ne s\'ouvre que sous le doigt');
+  const r41 = await page.evaluate(() => {
+    const out = [];
+    const vis = (e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+    const dansRail = [...document.querySelectorAll('[data-role="ajout-rapide"]')].filter(vis).filter((a) => a.closest('[data-etape]'));
+    if (dansRail.length) out.push(dansRail.length + ' ajout(s) proposé(s) rangé(s) dans une étape du rail');
+    const quand = new Set([...document.querySelectorAll('[data-role="ligne-houblon"] [data-role="quand"]')].map((q) => (q.innerText.match(/(\d+)\s*(′|')/) || [])[1]).filter(Boolean).map(Number));
+    const eb = (document.querySelector('[data-role="ebullition"]')?.innerText.match(/(\d+)\s*(′|')/) || [])[1];
+    if (eb) quand.add(Number(eb));
+    quand.add(0);
+    const lignes = [...document.querySelectorAll('[data-role="ligne-houblon"], [data-role="ajout-rapide"]')];
+    const libres = [...document.querySelectorAll('[data-etape], [data-etape] *')].filter(vis).filter((x) => !lignes.some((l) => l.contains(x)))
+      .filter((x) => [...x.childNodes].some((n) => n.nodeType === 3 && /^\s*\d+\s*(′|')\s*$/.test(n.textContent)))
+      .map((x) => Number(x.innerText.match(/\d+/)[0])).filter((m) => !quand.has(m));
+    if (libres.length) out.push('minute(s) écrite(s) sur le rail sans ligne de la recette : ' + [...new Set(libres)].map((m) => m + '′').join(', '));
+    return out;
+  });
+  for (const x of r41) p('D41 : ' + x);
+  if (await ombre(page)) p('D42 : au repos, une carte du rail porte une ombre');
+  // D37 : l'ébullition lue dans la recette, avec un renvoi.
+  const eb = await page.evaluate(() => {
+    const el = document.querySelector('[data-role="ebullition"]');
+    if (!el) return null;
+    return { valeur: /\d+\s*(′|'|min)/.test(el.innerText), champ: !!el.querySelector('input, select, textarea') || el.matches('input'), plusMoins: !!document.querySelector('[data-action="ebullition-plus"], [data-action="ebullition-moins"]'), renvoi: !!(el.querySelector('a, [data-action="renvoi-ebullition"]') || el.matches('a, [data-action="renvoi-ebullition"]')) };
+  });
+  if (!eb) p('D37 : la durée d\'ébullition de la recette n\'est pas affichée sur l\'étape (data-role="ebullition")');
   else {
-    const q = await browser.newPage();
-    await q.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-    await q.goto(pathToFileURL(f120).href, { waitUntil: 'networkidle0', timeout: 30000 });
-    await wait(300);
-    const a = await etat(q);
-    const y120 = a.etapes.find((e) => e.code === 'b120')?.y, y60 = a.etapes.find((e) => e.code === 'b60')?.y;
-    if (y120 === undefined) p('D36 : à 120′ d\'ébullition, le rail ne commence pas à 120′ (data-etape="b120")');
-    else if (y60 === undefined || !a.poignee) p('D36 : à 120′, pas de repère 60′ ou pas de poignée sur la première ligne');
-    else {
-      const yc = y120 + (y60 - y120) * 0.45;
-      const t = await q.touchscreen.touchStart(a.poignee.x, a.poignee.y);
-      for (let i = 1; i <= 12; i++) { await t.move(a.poignee.x, a.poignee.y + ((yc - a.poignee.y) * i) / 12); await wait(25); }
-      await t.end();
-      await wait(500);
-      const b = await etat(q, a.cle);
-      const m = (b.quand || '').match(/(\d+)\s*(′|'|min)/);
-      if (!m || !(Number(m[1]) > 60) || Number(m[1]) % 5) p('D36 : à 120′, une ligne lâchée entre 120′ et 60′ ne se pose pas au-delà de 60′ par tranche de 5′ (« ' + b.quand + ' »)');
+    if (!eb.valeur) p('D37 : data-role="ebullition" ne dit pas la durée (« 60′ »)');
+    if (eb.champ || eb.plusMoins) p('D37 : l\'ébullition se modifie sur l\'étape alors qu\'elle est « defini ailleur dans l\'application » : un renvoi suffit');
+    if (!eb.renvoi) p('D37 : pas de renvoi vers l\'endroit où se règle l\'ébullition');
+  }
+
+  // D47, D45, D35, D46 pendant un même geste dans l'ébullition.
+  {
+    const g = await poser(page, 'doigt');
+    const pendant = await gradsVisibles(page);
+    const eb5 = pendant.filter((x) => x.seg === 'ebullition');
+    if (eb5.length < 6) p('D47 : le doigt posé dans l\'ébullition, l\'échelle des minutes ne s\'ouvre pas (' + eb5.length + ' graduation(s) visibles)');
+    if (pendant.some((x) => x.seg && x.seg !== 'ebullition')) p('D47 : pendant le geste dans l\'ébullition, des graduations d\'autres segments restent ouvertes (pas de focus)');
+    if (eb5.length >= 4) {
+      const tri = [...eb5].sort((a, b) => a.y - b.y);
+      const gaps = tri.slice(1).map((t, i) => t.y - tri[i].y).filter((d) => d > 0);
+      const m = gaps.reduce((s, d) => s + d, 0) / gaps.length, sd = Math.sqrt(gaps.reduce((s, d) => s + (d - m) ** 2, 0) / gaps.length);
+      if (m > 0 && sd / m > 0.25) p('D45 : échelle d\'ébullition irrégulière sous le doigt (' + Math.round(Math.min(...gaps)) + ' à ' + Math.round(Math.max(...gaps)) + ' px)');
+    }
+    if (!(await page.$('[data-glisse]'))) p('D35 : pendant le glissement, rien ne porte data-glisse (l\'élément qui suit le doigt)');
+    // D46 : la carte suit le doigt.
+    const haut = () => page.evaluate(() => { const x = document.querySelector('[data-glisse]'); return x ? x.getBoundingClientRect().top : null; });
+    let prec = await haut(), bouge = 0, ecarts = [];
+    for (let i = 1; i <= 10; i++) { await g.bouger(g.y + 6); await wait(15); const h = await haut(); if (h !== null && prec !== null) { if (Math.abs(h - prec) > 0.5) bouge++; ecarts.push(h - prec - 6); } prec = h; }
+    if (!ecarts.length) p('D46 : impossible de suivre la carte (rien ne porte data-glisse)');
+    else { const pire = Math.max(...ecarts.map(Math.abs)); if (bouge < 9 || pire > 4) p('D46 : la carte ne suit pas le doigt (' + bouge + ' mouvements sur 10, écart jusqu\'à ' + Math.round(pire) + ' px) : geste saccadé'); }
+    for (const x of await propre(page)) p('D35 pendant : ' + x);
+    await g.lacher();
+    for (const x of await propre(page)) p('D35 après : ' + x);
+    if ((await gradsVisibles(page)).length) p('D47 : après le lâcher, l\'échelle reste ouverte');
+  }
+  // D27, D34 : poser à 45′ puis à 20′ (tranches libres), le moment et l'IBU suivent.
+  await recharger();
+  const r45 = await lacherSur(page, 'b45');
+  await recharger();
+  const r20 = await lacherSur(page, 'b20');
+  if (!r45.ok || !r20.ok) p('D34 : le doigt n\'atteint pas les graduations 45′ et 20′ (data-etape="b45", "b20" pendant le geste)');
+  else {
+    const m45 = minute(r45.apres.quand), m20 = minute(r20.apres.quand);
+    if (m45 !== 45 || m20 !== 20) p('D34 : lâchée sur 45′ puis 20′, la ligne dit « ' + r45.apres.quand + ' » puis « ' + r20.apres.quand + ' »');
+    if (r45.apres.ibu === r45.avant.ibu) p('D27 : le moment change mais pas les IBU de la ligne (' + r45.avant.ibu + ')');
+    if (r45.apres.ibu === r20.apres.ibu) p('D34 : 45′ et 20′ donnent le même IBU (' + r20.apres.ibu + ')');
+  }
+  // D44 : whirlpool (85 °C / 70 °C) puis fermentation (J+2 / J+6).
+  for (const [c1, c2, re, nom] of [['wp85', 'wp70', /(\d+)\s*°C/, 'whirlpool'], ['f2', 'f6', /J\s*\+\s*(\d+)/i, 'fermentation']]) {
+    await recharger();
+    const a1 = await lacherSur(page, c1);
+    await recharger();
+    const a2 = await lacherSur(page, c2);
+    if (!a1.ok || !a2.ok) { p('D44 : le doigt n\'atteint pas les graduations ' + c1 + ' et ' + c2 + ' du segment ' + nom + ' (pas d\'échelle sous le doigt)'); continue; }
+    const v1 = (a1.apres.quand || '').match(re), v2 = (a2.apres.quand || '').match(re);
+    if (!v1 || !v2) p('D44 : lâchée dans le segment ' + nom + ', la ligne ne dit pas son réglage (« ' + a1.apres.quand + ' », « ' + a2.apres.quand + ' »)');
+    else if (v1[0] === v2[0]) p('D44 : deux graduations du segment ' + nom + ' donnent le même réglage (« ' + v1[0] + ' ») : choix figé');
+  }
+  // D42 : geste interrompu.
+  await recharger();
+  {
+    const client = await page.target().createCDPSession();
+    const a = await etat(page);
+    await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: a.poignee.x, y: a.poignee.y }] });
+    for (let i = 1; i <= 8; i++) { await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: a.poignee.x, y: a.poignee.y + i * 12 }] }); await wait(25); }
+    await client.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
+    await wait(500);
+    if (await page.$('[data-glisse]')) p('D42 : après un geste interrompu (touchcancel), la carte reste soulevée');
+    if (await ombre(page)) p('D42 : après un geste interrompu, une carte garde son ombre');
+  }
+  await page.close();
+  // D27 à la souris, à 1280.
+  {
+    const d = await ouvrir(index, 1280);
+    const r = await lacherSur(d, 'b30', 'souris');
+    if (!r.ok || minute(r.apres?.quand) !== 30) p('D27 (1280 px, à la souris) : glisser vers 30′ ne pose pas la ligne à 30′ (« ' + (r.apres?.quand || '') + ' »)');
+    await d.close();
+  }
+  // D36, D37 : la même recette à 45′, 120′, 200′ d'ébullition.
+  for (const [c, cible] of [[45, null], [120, 'b90'], [200, 'b150']]) {
+    const f = path.join(dir, id, 'cas-ebu' + c + '.html');
+    if (!fs.existsSync(f)) { p('D37 : cas-ebu' + c + '.html absente (la même recette avec une ébullition de ' + c + '′)'); continue; }
+    const q = await ouvrir(f);
+    const dom = await q.evaluate((c) => ({ debut: !!document.querySelector('[data-etape="b' + c + '"]'), audela: [...document.querySelectorAll('[data-etape^="b"]')].map((e) => Number(e.getAttribute('data-etape').slice(1))).filter((m) => m > c).length }), c);
+    if (!dom.debut) p('D37 : à ' + c + '′ d\'ébullition, le rail ne commence pas à ' + c + '′ (data-etape="b' + c + '")');
+    if (dom.audela) p('D37 : à ' + c + '′, le rail a des graduations au-delà de ' + c + '′');
+    if (c === 45) { const m = minute((await etat(q)).quand); if (m !== null && m > 45) p('D37 : à 45′, la première ligne reste à ' + m + '′'); }
+    if (cible) {
+      const r = await lacherSur(q, cible);
+      if (!r.ok || minute(r.apres?.quand) !== Number(cible.slice(1))) p('D36 : à ' + c + '′, la ligne ne se pose pas à ' + cible.slice(1) + '′ (« ' + (r.apres?.quand || '') + ' »)');
     }
     await q.close();
   }
-  const d = await browser.newPage();
-  await d.setViewport({ width: 1280, height: 900, deviceScaleFactor: 1 });
-  await d.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
-  await wait(300);
-  await glisser(d, 'souris', id, p);
-  await d.close();
+  // D43 : le jour de l'ajout à froid se règle (recette chargée).
+  const k3 = path.join(dir, id, 'cas-k3.html');
+  if (fs.existsSync(k3)) {
+    const q = await ouvrir(k3);
+    const jour = () => q.evaluate(() => { const l = [...document.querySelectorAll('[data-role="ligne-houblon"]')].find((x) => /J\s*\+\s*\d+/.test(x.innerText)); const m = l && l.innerText.match(/J\s*\+\s*(\d+)/); return m ? Number(m[1]) : null; });
+    const j0 = await jour();
+    if (j0 === null) p('D43 : cas-k3.html sans ajout à froid daté (J+N)');
+    else for (const [action, attendu] of [['jour-plus', j0 + 1], ['jour-moins', j0]]) {
+      const b = await q.$('[data-role="ligne-houblon"] [data-action="' + action + '"]');
+      if (!b) { p('D43 : pas de geste data-action="' + action + '" sur la ligne à froid'); break; }
+      try { await b.tap(); } catch { await b.click(); }
+      await wait(350);
+      const j = await jour();
+      if (j !== attendu) { p('D43 : « ' + action + ' » laisse le jour à J+' + j + ' (J+' + attendu + ' attendu)'); break; }
+    }
+    await q.close();
+  }
   console.log(id + ' · rail contrôlé');
 }
 await browser.close();

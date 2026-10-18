@@ -75,25 +75,18 @@
   .regl .moins, .regl .plus { width: 22px; height: 22px; }
   .regl-v { min-width: 34px; }
   .reglages { gap: 4px; }
-  /* Durée d'ébullition lue dans la recette, en tête du rail, avec un renvoi (D37 révisé). */
+  /* Durée d'ébullition réglable en tête du rail (D37). */
   .ebu-regl { display: grid; grid-template-columns: 44px 1fr; align-items: center; column-gap: 2px; min-height: 30px; }
   .rail-ebu { justify-self: center; position: relative; z-index: 1; width: 12px; height: 12px; border-radius: 6px; border: 2px solid var(--encre); background: #fff; }
   .ebu-corps { display: flex; align-items: center; gap: 6px; }
-  .ebu-lien { display: inline-flex; align-items: baseline; gap: 6px; min-height: 26px; text-align: left; }
-  .ebu-lien::after { content: '›'; color: var(--gris2); margin-left: 2px; }
-  .ebu-note { font-size: 12px; color: var(--gris2); white-space: nowrap; }
-  .ebu-v { font-weight: 650; font-variant-numeric: tabular-nums; }
+  .ebu-corps .moins, .ebu-corps .plus { width: 26px; height: 26px; }
+  .ebu-corps button:disabled { opacity: .35; }
+  .ebu-v { min-width: 40px; text-align: center; font-weight: 650; font-variant-numeric: tabular-nums; }
   .ebu-regl { min-height: 26px; }
   .marque.ecrit { height: 16px; }
   .frise > .blk, .frise > .rap-zone, .frise > .etape-levure { margin: 2px 0; }
   .etape-levure .levure { min-height: 30px; }
   .corps-b { padding: 6px 6px 6px 8px; gap: 3px; }
   .corps-b .l2 { flex-wrap: wrap; row-gap: 3px; }
-  /* D41 : les ajouts proposés quittent le rail ; une zone à part, sous le rail, chacun avec son moment suggéré. */
-  .ajouts { display: flex; flex-direction: column; gap: 4px; padding-top: 4px; }
-  .ajouts .champ input { height: 30px; }
-  .rapides .ou { padding-left: 30px; }
-  .sugg { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 10px; border: 1px solid var(--trait); background: #fff; font-size: 12px; font-weight: 650; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .sugg-m { font-weight: 400; color: var(--gris2); margin-left: 3px; }
   /* D42 : au repos, aucune carte n'a d'ombre ; l'ombre n'existe que pendant le geste (data-glisse). */
   .blk:not([data-glisse]), .blk:not([data-glisse]) .corps-b { box-shadow: none; }

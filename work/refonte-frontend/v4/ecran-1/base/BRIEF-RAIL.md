@@ -22,8 +22,20 @@ obliques inverses ou accents graves : outil Write, jamais `node -e` dans Bash.
 - Ce qu'il a aimé : le visuel de p2, la levure intégrée au rail comme dans p8, le geste lui-même
   (« c'est l'idée »).
 
+- Puis, sur l'échelle : « Pas besoin d'afficher une échelle linéaire avec tout les gradient du
+  raille, ça doit rester cohérent. Juste les affiches quand on est à cette emplacement lors du
+  changement avec le houblon. Genre quand on focus sur un type on affiche mieux l'échelle un peu
+  un truc type UX apple qui zoom focus la où on est. »
+
 ## Ce qu'il faut
 
+0. **Une loupe, pas une règle graduée.** Au repos, le rail reste compact et cohérent : étapes
+   nommées (durée d'ébullition, 0′, whirlpool, levure, fermentation, post-fermentation) et
+   lignes de la recette, **aucune graduation**. Pendant le geste, le segment sous le doigt
+   s'ouvre (il grandit, à la manière des loupes d'Apple : roue du sélecteur, Dock), révèle ses
+   graduations et les autres se resserrent ; au lâcher, tout se referme. Les graduations portent
+   `data-graduation="ebullition|whirlpool|fermentation|post"` et `data-etape` : `b<minute>`,
+   `wp<°C>`, `f<jour>`, `p<jour>`.
 1. **Un rail = une échelle continue, segment par segment**, chacun régulier :
    - ébullition : minutes restantes par tranches de 5′, de la durée de la recette à 0′ ;
    - whirlpool : température de 100 à 60 °C par 5 (et sa durée, réglable sur la carte) ;

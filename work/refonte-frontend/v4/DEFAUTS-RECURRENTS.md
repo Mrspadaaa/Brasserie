@@ -91,6 +91,8 @@ maquette. Et le brasseur ne voyait le résultat qu'à la fin.
 | D45 | « le passage entre 10' et 5' de fait très mal car on doit passe au dessus des houblons... » | `controle-rail.mjs` : graduations d'ébullition régulières (écart-type / moyenne ≤ 0,25) | régulier | base v2 → échec (9 à 100 px) |
 | D46 | « Et le slider est clancky pas fluide du tout » ; « Probablement lié au recalcule de l'ibu pas forcément utile à la volée instantané.. » | `controle-rail.mjs` : sur 10 pas de 6 px, la carte bouge ≥ 9 fois, écart au doigt ≤ 4 px ; l'IBU se recalcule au lâcher | fluide | base v2 → échec (1 sur 10) ; ancien témoin → échec |
 
+| D47 | « Pas besoin d'afficher une échelle linéaire avec tout les gradient du raille, ça doit rester cohérent. Juste les affiches quand on est à cette emplacement lors du changement avec le houblon. Genre quand on focus sur un type on affiche mieux l'échelle un peu un truc type UX apple qui zoom focus la où on est. » (18.10, soir) | `controle-rail.mjs` (réécrit) : au repos aucune graduation visible ; le doigt posé dans l'ébullition, ≥ 6 graduations de ce segment seulement ; refermées au lâcher. Le contrôle vise des graduations précises (45′, 20′, 85 °C, 70 °C, J+2, J+6, 90′ à 120′, 150′ à 200′) comme un doigt | loupe | base v2 → 15 échecs ; témoin positif à loupe → RAIL OK |
+
 D18 est désormais vérifié par le même script, partie par partie.
 
 Commande (toutes les mesures D1 à D7, D10, D13, D14, D16 à D19) :

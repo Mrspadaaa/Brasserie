@@ -61,6 +61,7 @@ function blocAlpha(F) {
    le moment de l'ajout s'il est ailleurs. IBU de cette dose, lu dans les tables du pack (dose ×
    table) ; un houblon ni dans la recette ni proposé n'a que son IBU par gramme (fiche). */
 const froidF = (c) => /^dry/.test(c);
+const libMoment = (c) => (c === 'fwh' ? 'premier moût' : c === 'wp' ? 'whirlpool' : froidF(c) ? 'à froid' : c.slice(1) + '′');
 function tableMoments(F, cle) {
   const l = ligneDe(cle), r = l ? null : rapideDe(cle);
   const base = l || (r ? { ...r, ibu0: { moment: r.moment, g: r.g, v: r.ibu }, wpT: 80, wpMin: 20, jour: 3 } : null);
@@ -241,8 +242,9 @@ function houblonSous(t) {
   return e && D.fichesH[e.getAttribute('data-houblon')] ? e : null;
 }
 let APPUI = null, AVALE = 0;
-// Après un appui long, le clic qui suit le lâcher n'agit pas (ajout, case à cocher…).
-document.addEventListener('click', (e) => { if (performance.now() < AVALE && !(FICHE.racine && FICHE.racine.contains(e.target))) { e.stopPropagation(); e.preventDefault(); } }, true);
+// Après un appui long, le clic qui suit le lâcher n'agit pas (ajout, case à cocher, ni le voile de
+// la fiche qui vient de s'ouvrir sous le doigt) ; un nouveau toucher remet AVALE à zéro.
+document.addEventListener('click', (e) => { if (performance.now() < AVALE) { e.stopPropagation(); e.preventDefault(); } }, true);
 document.addEventListener('contextmenu', (e) => { if ((APPUI && APPUI.type !== 'mouse') || performance.now() < AVALE) e.preventDefault(); });
 function annulerAppui() { const a = APPUI; APPUI = null; if (a) { clearTimeout(a.timer); a.el.classList.remove('appui'); } }
 document.addEventListener('pointerdown', (e) => {

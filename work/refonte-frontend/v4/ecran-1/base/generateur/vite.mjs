@@ -10,7 +10,7 @@ const DIR = 'C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/r
 const OUT = path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), 'shots');
 fs.mkdirSync(OUT, { recursive: true });
 const ids = ['consolide'];
-const pages = process.argv.slice(2).length ? process.argv.slice(2) : ['index', 'biere', 'biere-absolu', 'biere-radar', 'etat-b', 'suggestions-radar', 'comparer', 'comparer-radar', 'cas-k2', 'cas-k3', 'cas-ebu120', 'cas-ebu45', 'cas-ebu200', 'fiche'];
+const pages = process.argv.slice(2).length ? process.argv.slice(2) : ['index', 'biere', 'biere-absolu', 'biere-radar', 'etat-b', 'suggestions-radar', 'comparer', 'comparer-radar', 'cas-k2', 'cas-k3', 'cas-ebu120', 'fiche'];
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 for (const id of ids) for (const pg of pages) {
   const page = await browser.newPage();

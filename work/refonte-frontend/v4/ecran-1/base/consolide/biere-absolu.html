@@ -323,26 +323,19 @@
   .regl .moins, .regl .plus { width: 22px; height: 22px; }
   .regl-v { min-width: 34px; }
   .reglages { gap: 4px; }
-  /* Durée d'ébullition lue dans la recette, en tête du rail, avec un renvoi (D37 révisé). */
+  /* Durée d'ébullition réglable en tête du rail (D37). */
   .ebu-regl { display: grid; grid-template-columns: 44px 1fr; align-items: center; column-gap: 2px; min-height: 30px; }
   .rail-ebu { justify-self: center; position: relative; z-index: 1; width: 12px; height: 12px; border-radius: 6px; border: 2px solid var(--encre); background: #fff; }
   .ebu-corps { display: flex; align-items: center; gap: 6px; }
-  .ebu-lien { display: inline-flex; align-items: baseline; gap: 6px; min-height: 26px; text-align: left; }
-  .ebu-lien::after { content: '›'; color: var(--gris2); margin-left: 2px; }
-  .ebu-note { font-size: 12px; color: var(--gris2); white-space: nowrap; }
-  .ebu-v { font-weight: 650; font-variant-numeric: tabular-nums; }
+  .ebu-corps .moins, .ebu-corps .plus { width: 26px; height: 26px; }
+  .ebu-corps button:disabled { opacity: .35; }
+  .ebu-v { min-width: 40px; text-align: center; font-weight: 650; font-variant-numeric: tabular-nums; }
   .ebu-regl { min-height: 26px; }
   .marque.ecrit { height: 16px; }
   .frise > .blk, .frise > .rap-zone, .frise > .etape-levure { margin: 2px 0; }
   .etape-levure .levure { min-height: 30px; }
   .corps-b { padding: 6px 6px 6px 8px; gap: 3px; }
   .corps-b .l2 { flex-wrap: wrap; row-gap: 3px; }
-  /* D41 : les ajouts proposés quittent le rail ; une zone à part, sous le rail, chacun avec son moment suggéré. */
-  .ajouts { display: flex; flex-direction: column; gap: 4px; padding-top: 4px; }
-  .ajouts .champ input { height: 30px; }
-  .rapides .ou { padding-left: 30px; }
-  .sugg { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 10px; border: 1px solid var(--trait); background: #fff; font-size: 12px; font-weight: 650; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .sugg-m { font-weight: 400; color: var(--gris2); margin-left: 3px; }
   /* D42 : au repos, aucune carte n'a d'ombre ; l'ombre n'existe que pendant le geste (data-glisse). */
   .blk:not([data-glisse]), .blk:not([data-glisse]) .corps-b { box-shadow: none; }
 
@@ -512,11 +505,10 @@ const nomCourt = (f) => D.court[f];
 /* Moments du rail du brassage : premier moût ; ébullition par tranches de 5′, de la durée de la
    recette (D.ebullition, pack ebullitionMinutes) à 0′ ; whirlpool ; à froid, en fermentation active
    ou après (la phase est un choix du brasseur, le jour est libre). « vide » nomme l'étape vide. */
-/* La durée d'ébullition est une variable de la recette (D37, révisé : « C'est defini ailleur dans
-   l'application... ») : l'étape la lit et l'affiche avec un renvoi, sans la régler ; le rail et les
-   moments s'adaptent à toute durée de 5 à 240′ (tables du pack). */
+/* La durée d'ébullition est une variable de la recette (pack ebullitionMinutes = valeur de départ),
+   réglable sur l'étape de 5 à 240′ par 5 ; le rail et les moments en dépendent. */
 const EBU_MIN = 5, EBU_MAX = 240;
-let EBU = Math.max(EBU_MIN, Math.min(EBU_MAX, D.ebullition || 60)), MOMENTS = [], REPERES = new Set();
+let EBU = D.ebullition || 60, MOMENTS = [], REPERES = new Set();
 function construireMoments() {
   MOMENTS = [
     { code: 'fwh', type: 'premier moût', quand: 'moût', vide: 'premier moût' },
@@ -525,17 +517,19 @@ function construireMoments() {
     { code: 'dryActive', type: 'à froid', quand: 'J+3', vide: 'fermentation' },
     { code: 'dryPost', type: 'à froid', quand: 'après', vide: 'post-fermentation' },
   ];
-  // Minutes écrites sur le rail (D41) : la durée d'ébullition et 0′ ; ailleurs, seules les lignes
-  // de la recette disent leur minute ; les autres tranches sont des graduations muettes.
-  REPERES = new Set([EBU, 0]);
+  // Repères écrits : la durée d'ébullition, 60′ et 0′ ; les autres tranches sont des graduations.
+  REPERES = new Set([EBU, 60, 0]);
 }
 construireMoments();
-/* Une ligne au-delà de la durée de la recette se ramène au début de l'ébullition, et le dit. */
-function borneLignes() {
+/* Changer la durée : les lignes au-delà se ramènent au début de l'ébullition, et le disent. */
+function changerEbu(v) {
+  EBU = Math.max(EBU_MIN, Math.min(EBU_MAX, Math.round(v / 5) * 5));
+  construireMoments();
   for (const l of ETAT.lignes) {
     const m = /^b(\d+)$/.exec(l.moment);
     if (m && Number(m[1]) > EBU) { l.moment = 'b' + EBU; l.ramene = true; }
   }
+  rendre(true);
 }
 /* Moment d'un ajout proposé, borné à la durée d'ébullition choisie. */
 const momentBorne = (code) => { const m = /^b(\d+)$/.exec(code); return m && Number(m[1]) > EBU ? 'b' + EBU : code; };
@@ -565,7 +559,6 @@ const ETAT = {
   voieRadar: null, compGrand: null,
 };
 for (const f of (B.dirs ? B.dirs.split(',') : [])) ETAT.visee[f] = D.cible[fi(f)].visee;
-borneLignes();
 /* D33 : le focus ne se replace qu'après une action au clavier (au doigt, la vue web du téléphone
    l'entourerait de jaune) ; le contour reste réservé à :focus-visible. */
 for (const f of (B.dirs ? B.dirs.split(',') : [])) if (D.continu && D.continu.viseeDir[f] != null) ETAT.viseeAbs[f] = D.continu.viseeDir[f];
@@ -739,22 +732,21 @@ function miniProfil(fiche, nom) {
   });
   return w;
 }
-/* Un moment en clair : « 10′ », « premier moût », « whirlpool », « à froid ». */
-const libMoment = (c) => (c === 'fwh' ? 'premier moût' : c === 'wp' ? 'whirlpool' : /^dry/.test(c) ? 'à froid' : c.slice(1) + '′');
-/* Un ajout proposé (D41) : hors du rail, dans la zone d'ajout ; il dit son moment SUGGÉRÉ, son α,
-   son rôle, « 10 g → + 3 IBU » (D16) et ses arômes en couleur ; un toucher l'ajoute et la ligne se
-   pose à ce moment sur le rail, où on la glisse. */
-function rapideLigne(r, premier) {
+/* Un ajout proposé : « 10 g → + 3 IBU » (D16, « genre 5g -> 20ibu en plus »), son stock, ses fiches.
+   colonne : les IBU en colonne à droite (p03, greffe de p11) ; sinon dans la ligne (p02). */
+function rapideLigne(r, premier, colonne) {
   const mb = momentBorne(r.moment);
   const v = mb === r.moment ? r.ibu : ibuLigne({ ...r, moment: mb, ibu0: null, wpT: 80, wpMin: 20 });
   const ibu = v === undefined ? 'IBU à recalculer' : v == null ? 'aucun IBU' : '+' + ibuTexte(v) + ' IBU';
-  const corps = [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), alphaEl(r.alpha), roleEl(r.role), statutRapide(r)),
-    h('span', { class: 'r2' }, h('span', { class: 'sugg', 'data-role': 'quand', title: 'moment suggéré par le moteur' }, libMoment(mb), h('span', { class: 'sugg-m' }, ' suggéré')),
-      h('span', { class: 'dose-r fl' }, grammes(r.g)), h('span', { class: 'plus-ibu' }, ibu), miniProfil(r.fiche, r.nom)))];
+  const corps = colonne
+    ? [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), statutRapide(r)), h('span', { class: 'r2' }, miniProfil(r.fiche, r.nom))),
+      h('span', { class: 'col-ibu' }, h('b', { class: 'plus-ibu' }, ibu), h('span', { class: 'dose-r' }, grammes(r.g)))]
+    : [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), alphaEl(r.alpha), roleEl(r.role), statutRapide(r)),
+      h('span', { class: 'r2' }, h('span', { class: 'dose-r fl' }, grammes(r.g)), h('span', { class: 'plus-ibu' }, ibu), miniProfil(r.fiche, r.nom)))];
   return h('li', { class: 'rapide-l' },
     h('button', {
       class: 'rapide', 'data-role': 'ajout-rapide', 'data-booster': premier ? 'ajout rapide' : null, 'data-k': 'r' + r.cle,
-      'aria-label': 'Ajouter ' + r.nom + ', ' + grammes(r.g) + ' à ' + libMoment(mb) + ' (moment suggéré) : ' + ibu,
+      'aria-label': 'Ajouter ' + r.nom + ', ' + grammes(r.g) + ' à ' + mom(r.moment).quand + ' : ' + ibu,
       onclick: () => ajouter(r, mb),
     }, h('span', { class: 'plus-i', 'aria-hidden': 'true' }), corps),
     goutBouton(r.nom, 'r', premier ? 'goût' : null));
@@ -1217,16 +1209,14 @@ function rendre(animerIbu) {
 function demarrer() { rendre(false); }
 
 /* Version consolidée de l'étape (choix du brasseur, 18.10, soir) : le visuel de p2 (rail,
-   cartes, stock discret), la levure comme étape du rail entre le whirlpool et le dry hop (D28,
-   comme p8), et le moment qui se glisse le long du rail (D27).
-   Rail (D34, D36, D37) : l'ébullition est une échelle de temps de la durée de la recette (lue, pas
-   réglée ici) à 0′, une graduation fine par tranche de 5′ (data-etape="b<minute>") ; ne sont
-   écrites que la durée, 0′ et les minutes des lignes (D41) ; lâchée entre deux repères, la carte
-   prend la tranche la plus proche. Le rail ne porte que la recette : les ajouts proposés vivent
-   dans une zone à part, sous le rail, chacun avec son moment suggéré (D41).
-   Geste (D35, D42) : la carte glissée reste dans le flux (CSS order, sans sortir du document) : elle
-   se range au fil du doigt, les autres s'écartent, l'origine se referme, une seule pastille ; elle
-   n'a d'ombre que pendant le geste, et un geste interrompu la rend à sa place. */
+   cartes, ajouts proposés, stock discret), la levure comme étape du rail entre le whirlpool et
+   le dry hop (D28, comme p8), et le moment qui se glisse le long du rail (D27).
+   Rail (D34, D36) : l'ébullition est une échelle de temps de la durée de la recette à 0′, une
+   graduation fine par tranche de 5′ (data-etape="b<minute>"), des repères écrits aux valeurs
+   utiles seulement ; lâchée entre deux repères, la carte prend la tranche la plus proche.
+   Geste (D35) : la carte glissée reste dans le flux (CSS order, sans sortir du document) : elle
+   se range au fil du doigt, les autres s'écartent, l'origine se referme, une seule pastille ;
+   elle n'a d'ombre que pendant le geste, et un geste interrompu la rend à sa place (D42). */
 
 /* Après un glisser, le clic qui suit le lâcher est ignoré (il tomberait sous le doigt). */
 let IGNORE_CLIC = 0;
@@ -1282,12 +1272,12 @@ function brancherGlisser(poignee, carte, l) {
     ETAT.focusK = 'q' + l.id;
     if (d.code !== l.moment) placer(l, d.code); else rendre(false);
   });
-  // D42 : un geste interrompu par le téléphone (appel, défilement repris) rend la carte à sa place,
-  // sans ombre ni data-glisse.
+  // D42 : un geste interrompu par le téléphone (pointercancel, touchcancel, capture perdue) rend la
+  // carte à sa place, sans ombre ni data-glisse.
   const interrompre = () => { const d = g; g = null; if (d && d.bouge) rendre(false); };
   poignee.addEventListener('pointercancel', interrompre);
   poignee.addEventListener('touchcancel', interrompre);
-  poignee.addEventListener('lostpointercapture', () => { if (g && g.bouge) setTimeout(() => { if (g && g.bouge) interrompre(); }, 0); });
+  poignee.addEventListener('lostpointercapture', () => { setTimeout(() => { if (g && g.bouge) interrompre(); }, 0); });
 }
 
 /* Réglages libres là où le moteur donne une table : whirlpool (°C, minutes), dry hop (jour). */
@@ -1347,30 +1337,16 @@ function blocRail(l, i, st, ordre) {
   brancherGlisser(poignee, carte, l);
   return carte;
 }
-/* D41 : le rail ne porte que la recette. Les ajouts proposés vivent dans une zone à part, sous le
-   rail : le champ, puis chaque proposition avec son moment suggéré ; un toucher l'ajoute et la
-   ligne se pose à ce moment sur le rail. */
-function zoneAjouts(liste) {
-  return h('section', { class: 'ajouts', 'aria-label': 'Ajouter un houblon : stock ou catalogue, et propositions du moteur' },
-    noteIbu(),
-    champ(),
-    liste.length ? h('ul', { class: 'rapides', 'aria-label': 'Ajouts proposés par le moteur, au moment suggéré' },
-      // Deux amérisants « au choix » (un seul suffit pour l'IBU visé) : un « ou » les sépare.
-      liste.flatMap((r, n) => [rapideLigne(r, n === 0), r.alternative && liste[n + 1] && liste[n + 1].alternative ? h('li', { class: 'ou' }, 'ou') : null]).filter(Boolean)) : null);
-}
-/* D37 révisé : la durée d'ébullition vient de la recette ; l'étape l'affiche et renvoie à l'endroit
-   où elle se règle (« C'est defini ailleur dans l'application... »), sans champ ni −/+. */
-let RENVOI_T = null;
-function ebullitionLue() {
-  const note = h('span', { class: 'ebu-note', 'aria-live': 'polite' });
-  return h('div', { class: 'ebu-regl', 'data-role': 'ebullition', 'data-minutes': String(EBU), style: 'order:-1' },
-    h('span', { class: 'rail-ebu', 'aria-hidden': 'true' }),
-    h('span', { class: 'ebu-corps' },
-      h('button', {
-        class: 'ebu-lien', 'data-action': 'renvoi-ebullition', 'aria-label': 'Ébullition de ' + EBU + ' minutes, définie dans la recette : aller à l\'étape où elle se règle',
-        onclick: () => { note.textContent = 'réglée à l\'étape Ébullition'; clearTimeout(RENVOI_T); RENVOI_T = setTimeout(() => { if (note.isConnected) note.textContent = ''; }, 2200); },
-      }, h('span', { class: 'cle' }, 'ébullition'), h('b', { class: 'ebu-v' }, EBU + '′')),
-      note));
+function zoneRapides(code, liste, tete, premier, ordre, seule) {
+  // Sous une carte de la même étape, la zone ne répète pas le moment (une seule pastille).
+  return h('div', { class: 'rap-zone', 'data-etape': code, style: 'order:' + ordre },
+    seule ? h('span', { class: 'rail-l plein' }, mom(code).quand) : h('span'),
+    h('div', { class: 'rap-corps' },
+      tete ? noteIbu() : null,
+      tete ? champ() : null,
+      h('ul', { class: 'rapides', 'aria-label': 'Ajouts proposés à ' + mom(code).quand + ', selon le moteur' },
+        // Deux amérisants « au choix » (un seul suffit pour l'IBU visé) : un « ou » les sépare.
+        liste.flatMap((r, n) => [rapideLigne(r, premier && n === 0, false), r.alternative && liste[n + 1] && liste[n + 1].alternative ? h('li', { class: 'ou' }, 'ou') : null]).filter(Boolean))));
 }
 /* Repère du rail : une graduation fine ; son nom n'est écrit qu'aux valeurs utiles. */
 function repere(code, libelle, ordre) {
@@ -1385,24 +1361,34 @@ VARIANTE = {
     app.append(enTete(), resume());
     const fr = h('section', { class: 'frise', 'data-role': 'houblons-recette', 'aria-label': 'Houblons de la recette, posés sur le rail du brassage', style: '--tick:' + Math.max(2, Math.min(9, Math.floor(110 / (EBU / 5)))) + 'px' },
       h('i', { class: 'axe', 'aria-hidden': 'true' }),
-      ebullitionLue());
+      // D37 : la durée d'ébullition se règle ici, par pas de 5′ ; le rail se redessine à cette durée.
+      h('div', { class: 'ebu-regl', 'data-role': 'ebullition', 'data-minutes': String(EBU), style: 'order:-1' },
+        h('span', { class: 'rail-ebu', 'aria-hidden': 'true' }),
+        h('span', { class: 'ebu-corps' }, h('span', { class: 'cle' }, 'ébullition'),
+          h('button', { class: 'moins', 'data-action': 'ebullition-moins', 'aria-label': 'Ébullition plus courte de 5 minutes', disabled: EBU <= EBU_MIN || null, onclick: () => changerEbu(EBU - 5) }),
+          h('output', { class: 'ebu-v', 'aria-live': 'polite' }, EBU + '′'),
+          h('button', { class: 'plus', 'data-action': 'ebullition-plus', 'aria-label': 'Ébullition plus longue de 5 minutes', disabled: EBU >= EBU_MAX || null, onclick: () => changerEbu(EBU + 5) }))));
     const et = etatsStock();
     const n = ETAT.lignes.length;
     // Propositions selon la place : 5 pour une recette vide, puis 3, 2, 1, et aucune au-delà de 3 ajouts (le champ reste).
     const proposes = rapidesVisibles(n === 0 ? 5 : Math.max(0, 4 - n));
+    const parMoment = (c) => proposes.filter((r) => momentBorne(r.moment) === c);
+    const codes = MOMENTS.map((m) => m.code);
+    const premiereZone = codes.find((c) => parMoment(c).length) || D.rapidesMoment;
     let ordre = 0;
     const suite = () => (ordre += 2);
-    // Le rail ne porte que la recette (D41) : repères, lignes, levure.
-    for (const code of MOMENTS.map((m) => m.code)) {
+    for (const code of codes) {
       const blocs = ETAT.lignes.map((l, i) => [l, i]).filter(([l]) => l.moment === code);
+      const zone = parMoment(code).length || code === premiereZone;
       const m = mom(code);
-      // Repère écrit : étapes nommées (premier moût, whirlpool, phases à froid), la durée et 0′, quand aucune ligne ne les dit déjà.
-      const ecrit = m.type === 'à froid' ? m.vide : blocs.length ? null : m.vide || (REPERES.has(m.minute) ? m.quand : null);
+      // Repère écrit : étapes nommées (premier moût, whirlpool, phases à froid) et minutes utiles, quand rien ne les dit déjà.
+      const ecrit = m.type === 'à froid' ? m.vide : blocs.length || zone ? null : m.vide || (REPERES.has(m.minute) ? m.quand : null);
       fr.append(repere(code, ecrit, suite()));
       blocs.forEach(([l, i]) => fr.append(blocRail(l, i, et[i], suite())));
+      if (zone) fr.append(zoneRapides(code, parMoment(code), code === premiereZone, code === premiereZone, suite(), !blocs.length));
       if (code === 'wp') fr.append(h('div', { class: 'etape-levure', 'data-etape': 'levure', style: 'order:' + suite() }, h('span', { class: 'rail-lev', 'aria-hidden': 'true' }), levure()));
     }
-    app.append(...[fr, zoneAjouts(proposes), goutsLigne(), panLigne()].filter(Boolean));
+    app.append(...[fr, goutsLigne(), panLigne()].filter(Boolean));
   },
 };
 
@@ -1471,7 +1457,7 @@ const RADAR = (() => {
       return t;
     });
     // Échelle le long de l'axe du haut (faible, moyen, marqué ; cité, marqué).
-    for (const [v, t] of o.echelle || []) { const p = P(0, v); sv('text', { x: cx + p[0] + 5, y: cy + p[1] + 4, 'font-size': 12, fill: '#8a8a8a', stroke: '#fff', 'stroke-width': 3, 'paint-order': 'stroke', 'stroke-linejoin': 'round' }, labG).textContent = t; }
+    for (const [v, t] of o.echelle || []) { const p = P(0, v); sv('text', { x: cx + p[0] + 9, y: cy + p[1] + 4, 'font-size': 12, fill: '#8a8a8a', stroke: '#fff', 'stroke-width': 3, 'paint-order': 'stroke', 'stroke-linejoin': 'round' }, labG).textContent = t; }
     return { svg, defs, C, axes, n, cx, cy, R, r, P, ligne, textes, max: o.max, id: 'rd' + (++RID) };
   }
 
@@ -1801,6 +1787,7 @@ function blocAlpha(F) {
    le moment de l'ajout s'il est ailleurs. IBU de cette dose, lu dans les tables du pack (dose ×
    table) ; un houblon ni dans la recette ni proposé n'a que son IBU par gramme (fiche). */
 const froidF = (c) => /^dry/.test(c);
+const libMoment = (c) => (c === 'fwh' ? 'premier moût' : c === 'wp' ? 'whirlpool' : froidF(c) ? 'à froid' : c.slice(1) + '′');
 function tableMoments(F, cle) {
   const l = ligneDe(cle), r = l ? null : rapideDe(cle);
   const base = l || (r ? { ...r, ibu0: { moment: r.moment, g: r.g, v: r.ibu }, wpT: 80, wpMin: 20, jour: 3 } : null);
@@ -1981,8 +1968,9 @@ function houblonSous(t) {
   return e && D.fichesH[e.getAttribute('data-houblon')] ? e : null;
 }
 let APPUI = null, AVALE = 0;
-// Après un appui long, le clic qui suit le lâcher n'agit pas (ajout, case à cocher…).
-document.addEventListener('click', (e) => { if (performance.now() < AVALE && !(FICHE.racine && FICHE.racine.contains(e.target))) { e.stopPropagation(); e.preventDefault(); } }, true);
+// Après un appui long, le clic qui suit le lâcher n'agit pas (ajout, case à cocher, ni le voile de
+// la fiche qui vient de s'ouvrir sous le doigt) ; un nouveau toucher remet AVALE à zéro.
+document.addEventListener('click', (e) => { if (performance.now() < AVALE) { e.stopPropagation(); e.preventDefault(); } }, true);
 document.addEventListener('contextmenu', (e) => { if ((APPUI && APPUI.type !== 'mouse') || performance.now() < AVALE) e.preventDefault(); });
 function annulerAppui() { const a = APPUI; APPUI = null; if (a) { clearTimeout(a.timer); a.el.classList.remove('appui'); } }
 document.addEventListener('pointerdown', (e) => {

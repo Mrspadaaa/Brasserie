@@ -63,7 +63,7 @@ const RADAR = (() => {
       return t;
     });
     // Échelle le long de l'axe du haut (faible, moyen, marqué ; cité, marqué).
-    for (const [v, t] of o.echelle || []) { const p = P(0, v); sv('text', { x: cx + p[0] + 5, y: cy + p[1] + 4, 'font-size': 12, fill: '#8a8a8a', stroke: '#fff', 'stroke-width': 3, 'paint-order': 'stroke', 'stroke-linejoin': 'round' }, labG).textContent = t; }
+    for (const [v, t] of o.echelle || []) { const p = P(0, v); sv('text', { x: cx + p[0] + 9, y: cy + p[1] + 4, 'font-size': 12, fill: '#8a8a8a', stroke: '#fff', 'stroke-width': 3, 'paint-order': 'stroke', 'stroke-linejoin': 'round' }, labG).textContent = t; }
     return { svg, defs, C, axes, n, cx, cy, R, r, P, ligne, textes, max: o.max, id: 'rd' + (++RID) };
   }
 

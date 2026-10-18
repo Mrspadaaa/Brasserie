@@ -88,6 +88,10 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   étape, pas dechelle pour les autres que des choix fix » ; « Et le slider est clancky pas
   fluide du tout » ; « Probablement lié au recalcule de l'ibu pas forcément utile à la volée
   instantané.. » (D43 à D46).
+- **L'échelle en loupe** : « Pas besoin d'afficher une échelle linéaire avec tout les gradient du
+  raille, ça doit rester cohérent. Juste les affiches quand on est à cette emplacement lors du
+  changement avec le houblon. Genre quand on focus sur un type on affiche mieux l'échelle un peu
+  un truc type UX apple qui zoom focus la où on est. » — 18.10, soir (D47).
 - **La baseline** : « Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça
   différent complètement ? » — 18.10, soir (D26).
 - **Levure et biotransformation** : « Et tout ce qui est biotransformation avec levures, dry
