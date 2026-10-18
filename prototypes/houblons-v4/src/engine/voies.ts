@@ -253,6 +253,16 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     // 3. Remplacer : à IBU égal (amertume, à 0,5 IBU près) ou à masse égale (arôme).
     const bitter = MOMENTS[a.moment].kind === 'amertume';
     const target = additionIbu(a, recipe);
+    // 2 bis. Amertume : diminuer jusqu'au bas de la bande d'IBU du style, sans en sortir.
+    if (bitter && style.ibu && !target.unknown.length && target.value > 0 && ibu0.value > style.ibu[0] + 0.5) {
+      const grams = round(a.grams * (target.value - (ibu0.value - style.ibu[0])) / target.value);
+      if (grams > 0 && grams < a.grams) {
+        const b: Addition = { ...a, grams };
+        const next = { ...recipe, additions: recipe.additions.map((x) => (x.id === a.id ? b : x)) };
+        all.push(evaluate('diminuer', `Diminuer ${nameOf(a.hopKey)} · ${MOMENTS[a.moment].label} · ${round(a.grams, 0)} → ${round(grams, 1)} g (bas de la bande d’IBU)`,
+          [act('modifier', b, { previousGrams: round(a.grams) })], [{ addition: b, sign: 1 }, { addition: a, sign: -1 }], next));
+      }
+    }
     for (const key of [...stockHops, ...buyPool(false)].filter((k) => k !== a.hopKey)) {
       const ref = hopRef(key)!;
       let grams = a.grams;

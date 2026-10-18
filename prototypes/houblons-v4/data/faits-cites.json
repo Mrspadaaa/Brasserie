@@ -1,0 +1,44 @@
+{
+  "version": "faits-cites-v1",
+  "date": "2026-10-18",
+  "status": "Relevé ponctuel, fait par fait, sans import en masse : les fiches Hopsteiner et Yakima Chief n'affichent aucune licence ouverte (D25, en attente du brasseur).",
+  "report": "work/refonte-frontend/v4/recherche/E-donnees-houblon.md, section 3, explication 1 ; sources [5] et [6]",
+  "facts": [
+    {
+      "id": "nugget-hopsteiner-boutique",
+      "varietyId": "beermaverick-nugget",
+      "families": ["resin"],
+      "quote": "woody and resiny",
+      "description": {
+        "text": "Descripteurs de la boutique (langue source) : woody and resiny ; étiquette Resinous.",
+        "context": "rawHop",
+        "source": {
+          "title": "Hopsteiner, boutique, Nugget Pellets Type 90",
+          "author": "Hopsteiner (boutique US)",
+          "year": 2024,
+          "kind": "manufacturer",
+          "reference": "https://shop.hopsteiner.com/43209089.html",
+          "locator": "Page lue le 18.10.2026 (rapport E, source [5]) ; © 2024 ; descripteurs sur houblon brut. Diverge de la fiche variété Hopsteiner, qui ne cite pas la résine."
+        }
+      }
+    },
+    {
+      "id": "nugget-yakima-chief",
+      "varietyId": "beermaverick-nugget",
+      "families": ["resin"],
+      "quote": "woody",
+      "description": {
+        "text": "Descripteur (langue source) : woody.",
+        "context": "rawHop",
+        "source": {
+          "title": "Yakima Chief Hops, Nugget",
+          "author": "Yakima Chief Hops",
+          "year": null,
+          "kind": "manufacturer",
+          "reference": "https://www.yakimachief.com/nugget.html",
+          "locator": "Relevé le 18.10.2026 par un résumé de moteur de recherche, la page ayant répondu 429 : relayé, non lu en direct (rapport E, source [6]). Date de la fiche inconnue."
+        }
+      }
+    }
+  ]
+}

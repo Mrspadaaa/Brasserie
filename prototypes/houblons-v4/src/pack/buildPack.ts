@@ -3,8 +3,10 @@
 import { HOP_RECIPE_ENGINE_VERSION } from '@functions/hopRecipePrediction';
 import {
   CATALOGUE, FAMILIES, FAMILY_NAMES, REFERENCE, SCALE_PARAMETERS, STOCK, STOCK_SOURCE, gapVerdict, getStyleScale, hopProfile, hopRef, valueVerdict,
-  proposeVoies, styleFit, trackShare, type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie,
+  proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE,
+  type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie,
 } from '../engine';
+import facts from '../../data/faits-cites.json';
 
 export const PACK_DATE = '2026-10-18';
 export const PACK_STYLES = ['16D', '3A', '3B', '21A'] as const;
@@ -22,14 +24,24 @@ export function s1Recipe(): Recipe {
     additions: [{ id: 'a1', hopKey: 'beermaverick-nugget', moment: 'b60', grams: 46 }] };
 }
 export const S1_DIRECTION = { floral: 1, resin: -1 } as const;
+/** Ce que le brasseur a dit lui-même (brief v4, § 1, 18.10.2026) : « trop résineuses » → résine marquée.
+ * « je la veux plus floral » est une direction, pas un niveau perçu : floral reste null. */
+export const S1_TASTING = tastingFrom({ resin: 'marqué' }, {
+  origin: 'parole du brasseur', date: '2026-10-18',
+  quote: 'ma stout est trop résineuses, je la veux plus floral',
+  source: 'Phrase du brasseur du 18.10.2026 (work/refonte-frontend/v4/brief-v4.md, § 1) : « trop résineuses ».',
+});
 
-type PackEstimate = { status: 'inconnu' } | { status: 'estimé'; min: number; max: number; central?: number; confidence: string; completeDomain?: true };
+type PackEstimate = { status: 'inconnu' } | { status: 'estimé'; min: number; max: number; central?: number; confidence: string; completeDomain?: true; display?: 'non situé' };
+// display « non situé » : plage pleine (0–100) ou plage partant de 0 sans repère central ; la vue
+// n'affiche pas la plage. Les champs min et max restent pour la traçabilité.
 const est = (e: FamilyEstimate): PackEstimate => e.status === 'inconnu' || !e.range ? { status: 'inconnu' }
-  : { status: 'estimé', min: e.range.min, max: e.range.max, ...(e.central !== undefined ? { central: e.central } : {}), confidence: e.confidence, ...(e.completeDomain ? { completeDomain: true as const } : {}) };
+  : { status: 'estimé', min: e.range.min, max: e.range.max, ...(e.central !== undefined ? { central: e.central } : {}), confidence: e.confidence,
+    ...(e.completeDomain ? { completeDomain: true as const } : {}), ...(!e.situated ? { display: 'non situé' as const } : {}) };
 const profile = (p: Profile) => Object.fromEntries(FAMILIES.map((f) => [f, est(p[f])]));
 const hopEntry = (h: HopProfile) => ({
   key: h.key, name: h.name, origin: h.origin, alpha: h.alpha ? { value: h.alpha.value, min: h.alpha.min, max: h.alpha.max, from: h.alpha.from } : null,
-  profile: Object.fromEntries(FAMILIES.map((f) => [f, { ...est(h.families[f]), citation: h.families[f].citation }])),
+  profile: Object.fromEntries(FAMILIES.map((f) => [f, { ...est(h.families[f]), citation: h.families[f].citation, description: h.families[f].description }])),
   descriptors: h.descriptors,
 });
 
@@ -78,6 +90,11 @@ export function buildPack() {
     direction: r1.direction.map((d) => ({ family: d.family, name: d.name, crans: d.crans, status: d.status, delta: d.delta, cran: d.cran, width: d.width, targetAbsolute: d.targetAbsolute, note: d.note })),
     ranking: r1.ranking, evaluated: r1.evaluated, notes: r1.notes, skipped: r1.skipped,
     voies: r1.voies.map((v) => voieEntry(v, directed)),
+    // Dégustation du brasseur : seulement ce qu'il a dit (aucune valeur inventée).
+    tasting: { ...S1_TASTING, usage: TASTING_USAGE,
+      situated: Object.fromEntries(FAMILIES.map((f) => [f, (({ family: _f, ...rest }) => rest)(situateBeer(r1.before.profile, S1_TASTING, getStyleScale('16D'))[f])])) },
+    // Pistes hors houblon, sourcées, sans chiffres.
+    horsModele: offModelLeads(S1_DIRECTION),
   };
 
   // S2 : Czech Premium Pale Lager 3B (floral attendu 33–68), trois houblons floraux du catalogue,
@@ -127,6 +144,8 @@ export function buildPack() {
       engine: { v55: ['functions/src/hopPredictionCore.ts', 'functions/src/hopExtrapolationCore.ts', 'functions/src/hopRecipePrediction.ts', 'src/domain/hopIndex/solver.ts (checkHopExclusions)', 'src/services/brewingMath.ts (hopIbu)'],
         recipeEngine: HOP_RECIPE_ENGINE_VERSION, v4: 'prototypes/houblons-v4/src/engine (direction relative, stock, voies, échelles au style)' },
       bands: { version: SCALE_PARAMETERS.version, words: SCALE_PARAMETERS.words, status: SCALE_PARAMETERS.status, file: 'prototypes/houblons-v4/data/style-bands.json' },
+      facts: { version: facts.version, file: 'prototypes/houblons-v4/data/faits-cites.json', status: facts.status,
+        items: facts.facts.map((f) => ({ id: f.id, varietyId: f.varietyId, families: f.families, quote: f.quote, source: f.description.source.title, url: f.description.source.reference })) },
       sources: {
         varieties: 'Beer Maverick (318 variétés, descripteurs), src/data/hopBeerMaverickBootstrap.json',
         hopsteiner: 'Hopsteiner 2025 (familles déclarées, descripteurs), src/data/hopManufacturerBootstrap.json',
@@ -140,6 +159,8 @@ export function buildPack() {
         'completeDomain : plage 0–100 entière, le modèle ne situe pas cette famille.',
         'Bandes, cran et seuil d’écart : hypothèses [H] à valider par le brasseur (table mots → bandes, data/style-bands.json).',
         'IBU, g, g/L et intensités 0–100 restent sur des échelles séparées.',
+        'display: "non situé" : la plage couvre tout le domaine ou part de 0 sans repère central ; ne pas l’afficher, écrire « non situé ».',
+        'description par famille : non décrit (aucune fiche), cité (une fiche), marqué (au moins deux fiches ou premier descripteur), avec « sources sur of » fiches lues.',
       ],
     },
     families: FAMILIES.map((f, i) => ({ id: f, name: FAMILY_NAMES[f], order: i })),

@@ -88,6 +88,23 @@ yeastInfo(id) -> 'caractérisée' | 'inconnue' | 'absente' ; matrixContext(recip
 - **Estimé** (`estimated: true`) : assemblage, dry hop en fermentation active
   (biotransformation non quantifiée).
 
+## Données citées et dégustation (D25)
+
+- **Faits cités** : `data/faits-cites.json`, un fait à la fois, avec URL et date de relevé,
+  fusionnés aux descriptions de la variété par `build-data.mjs`. Aucun import en masse.
+  Nugget : boutique Hopsteiner US (« woody and resiny ») et Yakima Chief (« woody », relayé).
+- **Niveaux de citation** (`describeFamilies`) : non décrit, cité (une fiche), marqué (au
+  moins deux fiches ou premier descripteur), avec « N fiches sur M ». Jamais une intensité.
+- **Non situé** : `FamilyEstimate.situated` faux pour une plage pleine ou une plage partant
+  de 0 sans repère central ; le pack porte `display: "non situé"`.
+- **Dégustation** (`tastingFrom`, `situateBeer`) : niveaux faible, moyen, marqué sur les
+  classes des axes (0–33, 33–66, 66–100), comme `HopTasting.axes[].perceived`. La perception
+  du brasseur situe la bière d'abord ; le repère central du modèle en appui ; sinon non situé.
+- **Pistes hors modèle** (`offModelLeads`) : amertume, torréfié, oxydation, forte dose à
+  l'ébullition ; sourcées, sans chiffres.
+- **Voie d'amertume** : diminuer jusqu'au bas de la bande d'IBU du style, en plus des
+  facteurs fixes.
+
 ## Hypothèses [H] et limites
 
 - Table mots → bandes, cran, seuil, plancher de 15 points, recouvrement de 50 % :
@@ -99,8 +116,9 @@ yeastInfo(id) -> 'caractérisée' | 'inconnue' | 'absente' ; matrixContext(recip
   fiches. Ce n'est pas une mesure.
 - Saaz, Styrian Golding et Hallertau Mittelfrüh ont des profils V5.5 identiques en
   floral : « ≈ ». Le modèle ne distingue que cité / non cité.
-- Nugget n'est cité résineux ni par Beer Maverick ni par Hopsteiner : aucune voie ne peut
-  établir une baisse de la résine dans S1 ; le moteur le dit.
+- Nugget est cité « boisé et résineux » par deux fiches relevées à la main (D25), pas par
+  Beer Maverick ni la fiche variété Hopsteiner. Son apport résineux à 60′ reste faible dans
+  le modèle (repère central) : les voies Nugget baissent peu la résine.
 - Facteur de matrice V5.5 : une plage commune (0,85–1,15) sans lien au torréfié, à la
   douceur, à l'alcool ou à l'acidité ; rendu comme hypothèse, aucun coefficient ajouté.
 - Levure : 3 souches caractérisées dans V5.5 (US-05, Verdant IPA, Pomona) ; les autres

@@ -45,6 +45,10 @@ for (const v of hs) {
 }
 const HS_ALIAS = { saazcz: 'saazer', styriangoldings: 'styriangoldingcelea', styriangolding: 'styriangoldingcelea', saaz: 'saazer', hallertau: 'hallertauermittelfruh', hallertaumittelfruh: 'hallertauermittelfruh', hallertautaurus: 'hallertauertaurus', hallertautradition: 'hallertauertradition', magnum: 'hallertauermagnum', eastkentgoldings: 'goldinguk', ctz: 'columbus' };
 
+// Faits cités un à un (data/faits-cites.json, D25) : descriptions sourcées ajoutées à la variété.
+const facts = JSON.parse(fs.readFileSync(path.join(here, 'data', 'faits-cites.json'), 'utf8')).facts;
+for (const f of facts) if (!bm.some((v) => v.id === f.varietyId)) throw Error(`Fait cité sur une variété absente : ${f.id}`);
+
 // Descriptions conservées pour le moteur : seulement celles qui portent des descripteurs.
 const varieties = bm.map((v) => {
   const id = v.id;
@@ -56,7 +60,9 @@ const varieties = bm.map((v) => {
     id, name: v.name, aliases: v.aliases || [], origin: ORIGIN_FIX[short] || origin(v.origin), form: v.form,
     alpha: range(v, 'alpha'), beta: range(v, 'beta'), oil: range(v, 'totalOil'),
     tags, tagsFr: tags.map((t) => FR[t] || t),
-    descriptions: [...(v.descriptions || []).filter((d) => /Tags documentaires/.test(d.text)), ...(h ? h.descriptions : [])],
+    descriptions: [...(v.descriptions || []).filter((d) => /Tags documentaires/.test(d.text)), ...(h ? h.descriptions : []),
+      ...facts.filter((f) => f.varietyId === id).map((f) => f.description)],
+    citedFacts: facts.filter((f) => f.varietyId === id).map((f) => f.id),
     hopsteinerId: h?.id ?? null,
     url: v.descriptions?.[0]?.source?.reference || null,
   };
@@ -100,6 +106,7 @@ const out = {
     hopsteiner: 'Hopsteiner 2025, familles déclarées et descripteurs, src/data/hopManufacturerBootstrap.json',
     styles: 'BJCP 2021, statistiques, src/data/brewingStylesBootstrap.json',
     stock: `Stock de production, lecture seule, ${FIXTURE}`,
+    facts: `Faits cités un à un, data/faits-cites.json (${facts.length})`,
   },
   varieties, stock, unlinked, styles,
 };

@@ -46,6 +46,12 @@ describe('Pack des mini-prototypes', () => {
       expect(v.ibu).toHaveProperty('after');
       expect(['suffisant', 'manque', 'à acheter']).toContain(v.stock.status);
     }
+    // Aucune plage pleine sans « non situé » ; dégustation : null partout sauf la résine dite par le brasseur.
+    const estimates = [...stored.stock, ...stored.catalogue].flatMap((h: { profile: object }) => Object.values(h.profile))
+      .concat(Object.values(S1.before), ...S1.voies.map((v: { after: object }) => Object.values(v.after))) as { completeDomain?: boolean; display?: string }[];
+    for (const e of estimates) if (e.completeDomain) expect(e.display).toBe('non situé');
+    expect(S1.tasting.axes.filter((a: { perceived: string | null }) => a.perceived !== null)).toEqual([expect.objectContaining({ family: 'resin', perceived: 'marqué' })]);
+    expect(S1.horsModele[0].leads.every((l: { horsModele: boolean }) => l.horsModele)).toBe(true);
     expect(stored.scenarios.S2.pairs).toHaveLength(3);
     expect(stored.scenarios.S3.ranked.length).toBe(stored.stock.length);
     // JSON simple : il se relit et se réécrit à l'identique (aucune valeur non sérialisable).

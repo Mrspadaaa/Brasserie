@@ -20,6 +20,34 @@ export function citations(varietyId: string): Record<FamilyId, { status: Citatio
 }
 export const cites = (varietyId: string, f: FamilyId) => citations(varietyId)[f].status === 'cité';
 
+// ---------- Niveaux de citation (D25) ----------
+export type DescriptionLevel = 'non décrit' | 'cité' | 'marqué';
+export interface FamilyDescription {
+  level: DescriptionLevel;
+  /** « N fiches sur M » : fiches (sources distinctes) qui citent la famille, sur les fiches lues pour ce houblon. */
+  sources: number; of: number;
+  /** La famille est le premier descripteur d'au moins une fiche. */
+  first: boolean;
+  authors: string[];
+}
+const sourceKey = (d: { source: { author: string; reference: string } }) => `${d.source.author}|${d.source.reference}`;
+/** Premier descripteur d'une description « … : a, b, c » (sans dièse ni point final). */
+const firstItem = (text: string) => (text.split(':').slice(1).join(':') || text).split(/,|;| and /)[0].replace(/^[\s#]+|[\s.]+$/g, '').replace(/[_-]+/g, ' ');
+/** Non décrit (aucune fiche), cité (une fiche), marqué (au moins deux fiches, ou premier descripteur d'une fiche).
+ * Un « non décrit » reste « non décrit » : jamais une intensité nulle. */
+export function describeFamilies(varietyId: string): Record<FamilyId, FamilyDescription> {
+  const v = VARIETY_BY_ID.get(varietyId);
+  const descriptions = v?.descriptions ?? [];
+  const all = new Set(descriptions.map(sourceKey));
+  return Object.fromEntries(FAMILIES.map((f) => {
+    const ev = v ? hopDescriptorEvidence(v, terms.get(f) ?? [], cache) : [];
+    const keys = new Set(ev.map(sourceKey));
+    const first = descriptions.some((d) => hopDescriptorEvidence({ ...v!, descriptions: [{ ...d, text: firstItem(d.text) }] }, terms.get(f) ?? []).length > 0);
+    const level: DescriptionLevel = keys.size === 0 ? 'non décrit' : keys.size >= 2 || first ? 'marqué' : 'cité';
+    return [f, { level, sources: keys.size, of: all.size, first, authors: [...new Set(ev.map((d) => d.source.author))] }];
+  })) as Record<FamilyId, FamilyDescription>;
+}
+
 // ---------- Profil d'un houblon à une dose de référence ----------
 export interface Reference { moment: MomentId; doseGL: number; yeastId: string | null; volumeL: number; og: number; boilMin: number }
 /** Référence commune à tous les houblons (échelles communes, R47) : préréglage whirlpool du solveur V5.5. */
@@ -29,8 +57,8 @@ export interface HopProfile {
   key: string; name: string; origin: string | null;
   inStock: number | null; alpha: HopRef['alpha'];
   reference: Reference & { label: string }; yeast: YeastInfo;
-  families: Record<FamilyId, FamilyEstimate & { citation: Citation }>;
-  descriptors: { beerMaverick: string[]; hopsteiner: string[] };
+  families: Record<FamilyId, FamilyEstimate & { citation: Citation; description: FamilyDescription }>;
+  descriptors: { beerMaverick: string[]; hopsteiner: string[]; cited: { text: string; author: string; reference: string }[] };
 }
 export function hopProfile(key: string, ref: Partial<Reference> = {}): HopProfile {
   const r = { ...REFERENCE, ...ref };
@@ -39,12 +67,13 @@ export function hopProfile(key: string, ref: Partial<Reference> = {}): HopProfil
   const recipe: Recipe = { name: 'référence', styleCode: '', volumeL: r.volumeL, og: r.og, boilMin: r.boilMin, yeastId: r.yeastId, additions: [] };
   const p = predictTriplet(tripletOf({ id: 'ref', hopKey: key, moment: r.moment, grams: r.doseGL * r.volumeL }, recipe, h), {});
   const prof = profileOf(p);
-  const cit = citations(h.varietyId);
+  const cit = citations(h.varietyId), desc = describeFamilies(h.varietyId);
   return {
     key, name: h.name, origin: h.catalogue.origin, inStock: h.stock ? h.stock.grams : null, alpha: h.alpha,
     reference: { ...r, label: `${MOMENTS[r.moment].label}, ${r.doseGL.toLocaleString('fr-CH')} g/L` }, yeast: yeastInfo(r.yeastId),
-    families: Object.fromEntries(FAMILIES.map((f) => [f, { ...prof[f], citation: cit[f].status }])) as HopProfile['families'],
-    descriptors: { beerMaverick: h.catalogue.tagsFr, hopsteiner: h.catalogue.descriptions.filter((d) => d.source.author === 'Hopsteiner').map((d) => d.text) },
+    families: Object.fromEntries(FAMILIES.map((f) => [f, { ...prof[f], citation: cit[f].status, description: desc[f] }])) as HopProfile['families'],
+    descriptors: { beerMaverick: h.catalogue.tagsFr, hopsteiner: h.catalogue.descriptions.filter((d) => d.source.author === 'Hopsteiner').map((d) => d.text),
+      cited: h.catalogue.descriptions.filter((d) => d.source.author !== 'Hopsteiner' && d.source.author !== 'Beer Maverick').map((d) => ({ text: d.text, author: d.source.author, reference: d.source.reference })) },
   };
 }
 

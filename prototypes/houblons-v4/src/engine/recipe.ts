@@ -75,15 +75,19 @@ export interface FamilyEstimate {
   confidence: 'low' | 'medium' | 'high';
   /** Plage 0–100 entière : le modèle ne discrimine pas cette intensité. */
   completeDomain: boolean;
+  /** Le modèle situe cette famille : ni plage pleine, ni plage partant de 0 sans repère central.
+   * Sinon la vue écrit « non situé » et n'affiche pas la plage. */
+  situated: boolean;
   extrapolated: boolean;
 }
 export type Profile = Record<FamilyId, FamilyEstimate>;
 const round1 = (x: number) => Math.round(x * 10) / 10;
 export function toEstimate(family: FamilyId, e: HopEstimate | undefined, extrapolated: boolean): FamilyEstimate {
-  if (!e?.range) return { family, status: 'inconnu', range: null, confidence: 'low', completeDomain: false, extrapolated };
+  if (!e?.range) return { family, status: 'inconnu', range: null, confidence: 'low', completeDomain: false, situated: false, extrapolated };
   const range = { min: round1(e.range.min), max: round1(e.range.max) };
+  const completeDomain = range.min <= 0.5 && range.max >= 99.5;
   return { family, status: 'estimé', range, ...(e.central !== undefined ? { central: round1(e.central) } : {}), confidence: e.confidence,
-    completeDomain: range.min <= 0.5 && range.max >= 99.5, extrapolated };
+    completeDomain, situated: !completeDomain && (e.central !== undefined || range.min > 0.5), extrapolated };
 }
 export const profileOf = (p: Pick<HopPrediction, 'profile' | 'extrapolatedAxes'>): Profile =>
   Object.fromEntries(FAMILIES.map((f) => [f, toEstimate(f, p.profile[f], !!p.extrapolatedAxes?.includes(f))])) as Profile;
