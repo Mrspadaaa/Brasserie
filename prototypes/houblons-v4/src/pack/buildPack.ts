@@ -158,9 +158,25 @@ function buildPackCore() {
   // Valeurs 0–100 tirées de l'échelle continue 0–3 (× 100/3) : dégustation d'abord, sinon modèle.
   const tol1 = toleranceScale('16D');
   const v100 = (x: number | null) => (x === null ? null : Math.round((x * 100) / 3 * 10) / 10);
-  const ecartsDe = (vals: { family: FamilyId; value: number | null }[]) => vals.map(({ family, value }) => ({ family, valeur: v100(value), ecart: ecartTolerances(tol1.familles.find((t) => t.family === family)!, v100(value)) }));
-  S1.voies.forEach((v, i) => Object.assign(v, { ecartsApres: ecartsDe(afterContinuous(beer1, r1.voies[i].effect)) }));
-  Object.assign(S1, { tolerance: { regle: TOLERANCE_RULE, ...tol1, biere: ecartsDe(beerContinuous(beer1)) } });
+  // Plages (D53) : une famille dégustée prend la plage de sa classe perçue (décalée par l'effet établi
+  // d'une voie) ; une famille du modèle, la plage V5.5 (avant : before ; après : profil recalculé).
+  // Plage complète ou non située : null (la vue dit « plage inconnue »).
+  const r1d = (x: number) => Math.round(x * 10) / 10;
+  const c100 = (x: number) => Math.max(0, Math.min(100, x));
+  const plageEst = (e?: FamilyEstimate) => (e && e.status === 'estimé' && e.range && e.situated && !e.completeDomain ? { min: r1d(e.range.min), max: r1d(e.range.max) } : null);
+  const goute = (f: FamilyId) => { const x = beer1.find((y) => y.family === f)!; return x.source === 'dégustation' && x.basis?.range ? x.basis.range : null; };
+  const plageAvant = (f: FamilyId) => { const g = goute(f); return g ? { min: r1d(g.min), max: r1d(g.max) } : plageEst(r1.before.profile[f]); };
+  const plageApres = (i: number) => (f: FamilyId) => {
+    const g = goute(f), e = r1.voies[i].effect[f];
+    if (g) return e.established && e.central !== null ? { min: r1d(c100(g.min + e.central)), max: r1d(c100(g.max + e.central)) } : null;
+    return plageEst(r1.voies[i].after?.[f]);
+  };
+  const ecartsDe = (vals: { family: FamilyId; value: number | null }[], plage: (f: FamilyId) => { min: number; max: number } | null) => vals.map(({ family, value }) => {
+    const t = tol1.familles.find((x) => x.family === family)!, p = plage(family);
+    return { family, valeur: v100(value), ecart: ecartTolerances(t, v100(value)), plage: p, ecartPlage: p ? [ecartTolerances(t, p.min), ecartTolerances(t, p.max)] : null };
+  }).filter((x) => x.valeur !== null || x.plage !== null); // familles sans valeur ni plage : absentes (plafond du pack)
+  S1.voies.forEach((v, i) => Object.assign(v, { ecartsApres: ecartsDe(afterContinuous(beer1, r1.voies[i].effect), plageApres(i)) }));
+  Object.assign(S1, { tolerance: { regle: TOLERANCE_RULE, ...tol1, biere: ecartsDe(beerContinuous(beer1), plageAvant) } });
   Object.assign(S1, { echelles: LEVEL_RULE, echellesCrans: CRANS_RULE, profilBiereCrans: beerCrans(beer1, s16d), cibleStyleCrans: targetCrans(s16d, r1.direction),
     profilBiere: beer1, cibleStyle: targetLevels(s16d),
     profilFiches: ficheKeys.map((k) => ({ key: k, name: hopRef(k)!.name, families: ficheLevels(hopRef(k)!.varietyId, s16d).map(compactFiche) })) });
