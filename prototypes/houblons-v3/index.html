@@ -48,21 +48,23 @@ a { color: var(--c50); text-underline-offset: 2px; }
 .btn.primary { background: var(--straw); color: var(--c950); border-color: var(--straw); font-weight: 600; }
 .btn.ghost { background: none; border-color: transparent; }
 .btn.sq { width: 28px; padding: 0; justify-content: center; }
-.gauge { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-bottom: 1px solid var(--c800); min-height: 40px; }
+.gauge { display: grid; gap: 2px; padding: 6px 10px; border-bottom: 1px solid var(--c800); min-height: 40px; }
+.gauge .g1 { display: flex; align-items: center; gap: 8px; }
+.gauge .g2 { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 12px; line-height: 16px; color: var(--c400); }
+.note.comp { border-radius: 10px; flex-wrap: wrap; border: 1px solid var(--c700); }
 .gauge .v { font: 600 20px/24px var(--mono); color: var(--c50); }
 .gauge .u { font-size: 12px; color: var(--c400); }
-.track { position: relative; flex: 1; height: 10px; border-radius: 5px; background: var(--c850); min-width: 60px; }
+.track { position: relative; flex: 1; height: 10px; border-radius: 5px; background: var(--c850); min-width: 100px; }
 .track .band { position: absolute; top: 0; bottom: 0; border: 1px solid var(--hop); background: #6E9B5B33; border-radius: 5px; }
 .track .mk { position: absolute; top: -3px; width: 3px; height: 16px; border-radius: 2px; background: var(--c50); transform: translateX(-1px); }
 .track .dryr { position: absolute; top: 3px; height: 4px; background: var(--c200); opacity: .5; border-radius: 2px; }
-.gauge .aro { font-size: 12px; color: var(--c400); max-width: 40%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
 
 .main { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
 .sec { display: flex; align-items: center; gap: 6px; padding: 6px 10px 4px; min-height: 32px; }
 .sec h2 { margin: 0; font-size: 14px; font-weight: 600; color: var(--c50); white-space: nowrap; }
 .sec .muted { font-size: 12px; }
 .seg { display: inline-flex; border: 1px solid var(--c700); border-radius: 10px; overflow: hidden; background: var(--c900); }
-.seg button { height: 26px; padding: 0 9px; font-size: 13px; color: var(--c400); }
+.seg button { height: 28px; padding: 0 9px; font-size: 13px; color: var(--c400); }
 .seg button[aria-pressed="true"] { background: var(--c800); color: var(--c50); font-weight: 600; }
 .grp { display: flex; align-items: center; gap: 6px; padding: 3px 10px; min-height: 24px; font-size: 12px; color: var(--c400); background: var(--c900); border-top: 1px solid var(--c800); }
 .grp b { color: var(--c200); font-weight: 600; }
@@ -141,8 +143,8 @@ a { color: var(--c50); text-underline-offset: 2px; }
 .lgi .q { font: 12px var(--mono); color: var(--c400); }
 .lgi button { width: 24px; height: 24px; display: grid; place-items: center; color: var(--c400); border-radius: 8px; }
 .shape { width: 12px; height: 12px; flex: none; }
-.cmp h3 { margin: 0; padding: 10px 10px 4px; font-size: 13px; font-weight: 600; color: var(--c50); display: flex; align-items: baseline; gap: 6px; }
-.cmp h3 .muted { font-weight: 400; font-size: 12px; }
+.cmp h3 { margin: 0; padding: 10px 10px 4px; font-size: 13px; font-weight: 600; color: var(--c50); display: block; }
+.cmp h3 .muted { font-weight: 400; font-size: 12px; margin-left: 4px; }
 .radar { display: flex; justify-content: center; padding: 0 4px; }
 .radar svg { width: 100%; max-width: 240px; height: auto; }
 .app.full .radar svg { max-width: 320px; }
@@ -227,7 +229,7 @@ a { color: var(--c50); text-underline-offset: 2px; }
 .toast { display: flex; align-items: center; gap: 8px; padding: 4px 10px; min-height: 36px; font-size: 13px; background: var(--c850); border-top: 1px solid var(--c700); }
 
 @media (min-width: 900px) {
-  #app { display: grid; grid-template-columns: 340px minmax(0, 1fr) 460px; grid-template-rows: auto minmax(0, 1fr); }
+  #app { display: grid; grid-template-columns: 380px minmax(0, 1fr) 460px; grid-template-rows: auto minmax(0, 1fr); }
   .top { grid-column: 1 / -1; }
   .gauge .track { max-width: 520px; }
   .progp { display: block; border-top: 1px solid var(--c800); }
@@ -240,7 +242,6 @@ a { color: var(--c50); text-underline-offset: 2px; }
   .app.full .main { display: contents; }
   .sheet { left: 50%; right: auto; width: 640px; transform: translateX(-50%); bottom: 0; }
   .sheet.fullv { top: 24px; bottom: 24px; border-radius: 24px; }
-  .gauge .aro { max-width: 120px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -397,16 +398,22 @@ const hasBitter = (adds = S.adds) => adds.some((a) => ['fwh', 'b60', 'b30'].incl
 // Prochain ajout : choisi par le brasseur (« + » ajoute…), sinon l'amertume tant qu'elle manque, puis le whirlpool.
 const nextStep = () => S.next || (hasBitter() ? 'wp' : 'b60');
 const STEP_LABEL = { b60: 'Amertume 60′', wp: 'Whirlpool', dry: 'Dry hop' };
-// Ce que « + » ajoute pour ce houblon : dose pour l'IBU visé (amertume) ou dose de départ plafonnée au stock (arôme).
+// Stock encore libre d'un houblon : son stock moins ses ajouts déjà prévus (hors l'ajout `exceptId`).
+const usedG = (key, exceptId) => sum(S.adds.filter((a) => a.key === key && a.id !== exceptId).map((a) => a.g));
+const avail = (h, exceptId) => h.g - usedG(h.key, exceptId);
+// Ce que « + » ajoute pour ce houblon : dose pour l'IBU visé (amertume) ou dose de départ plafonnée au stock libre (arôme).
 function plusPlan(h, c = ctx(), t = nextStep()) {
-  if (t === 'b60') { const n = need(c); const d = doseFor(h, n.ibu, 'b60', c); const g = d == null ? null : Math.max(1, Math.round(d)); return { t, g, short: h.g > 0 && g != null && g > h.g ? g - h.g : 0 }; }
-  const want = Math.round(START_GL[t] * c.V); return { t, g: h.g > 0 ? Math.min(h.g, want) : want, all: h.g > 0 && h.g < want, short: 0 };
+  const left = Math.max(0, avail(h));
+  if (t === 'b60') { const n = need(c); const d = doseFor(h, n.ibu, 'b60', c); const g = d == null ? null : Math.max(1, Math.round(d)); return { t, g, short: h.g > 0 && g != null && g > left ? g - left : 0 }; }
+  const want = Math.round(START_GL[t] * c.V);
+  if (h.g <= 0) return { t, g: want, short: 0 };
+  return left > 0 ? { t, g: Math.min(left, want), all: left < want, short: 0 } : { t, g: want, short: want };
 }
 // Classement de la liste : toujours par adéquation au style (groupes), puis, dans chaque groupe,
 // selon le prochain ajout : amertume → stock suffisant, pellets avant cryo, alpha ; arôme → adéquation, stock.
 function rankList(list, st, t = nextStep(), c = ctx()) {
   const n = need(c);
-  return list.map((h) => { const r = { h, cls: classOf(h.v, st), fit: fitOf(h.v, st.dir) }; if (t === 'b60') { r.dose = doseFor(h, n.ibu, 'b60', c); r.enough = r.dose != null && h.g >= r.dose; } return r; })
+  return list.map((h) => { const r = { h, cls: classOf(h.v, st), fit: fitOf(h.v, st.dir) }; if (t === 'b60') { r.dose = doseFor(h, n.ibu, 'b60', c); r.enough = r.dose != null && avail(h) >= r.dose; } return r; })
     .sort((a, b) => CLS_ORDER[a.cls] - CLS_ORDER[b.cls]
       || (t === 'b60' ? ((b.enough - a.enough) || ((a.h.form === 'cryo') - (b.h.form === 'cryo')) || ((alphaOf(b.h)?.val ?? 0) - (alphaOf(a.h)?.val ?? 0)))
         : ((b.fit?.score ?? -9) - (a.fit?.score ?? -9) || b.h.g - a.h.g))
@@ -423,7 +430,8 @@ function proposal(c = ctx()) {
     const ar = rankAroma(inStock(), st).find((r) => ['attest', 'typique', 'compatible'].includes(r.cls));
     if (ar) { const t = st.dir.int >= 2 ? 'wp' : 'b10'; const g = Math.max(1, Math.min(ar.h.g, Math.round(START_GL[t] * c.V))); adds.push({ key: ar.h.key, g, t }); used.set(ar.h.key, g); }
   }
-  const n = need(c, adds);
+  // Même dose que « + » en amertume : l'IBU visé entier à 60 min (l'arôme ajoute quelques IBU en plus).
+  const n = need(c, []);
   const b = rankBitter(inStock(), st, n, c).find((r) => r.dose != null && r.h.g - (used.get(r.h.key) || 0) >= r.dose);
   if (b) adds.unshift({ key: b.h.key, g: Math.round(b.dose), t: 'b60' });
   return adds;
@@ -469,21 +477,28 @@ function similar(h, pool, n = 3) {
 }
 
 /* ---------- Remplacement ---------- */
-function substitutes(a, c = ctx(), limit = 5) {
-  const h = hop(a.key); const r = ibuOf(h, a.g, a.t, c); const w = TI[a.t].w;
+// Remplaçants d'un ajout. Ajout d'amertume (premier moût, 60′, 30′, 15′) : même IBU au même moment.
+// Ajout d'arôme (10′ et moins, whirlpool, dry hop) : même masse, l'IBU change et s'affiche.
+// Stock : celui qui reste libre, hors cet ajout. Deux groupes : dans mon stock (5), à acheter (3, typiques du style d'abord).
+const aromaAdd = (t) => TI[t].w >= 0.5;
+function substitutes(a, c = ctx(), nStock = 5, nBuy = 3) {
+  const h = hop(a.key); const r = ibuOf(h, a.g, a.t, c); const w = TI[a.t].w; const aroma = aromaAdd(a.t); const st = c.st;
   const cos = (x, y) => { if (!x || !y) return 0; const d = Math.sqrt(sum(x.map((v) => v * v)) * sum(y.map((v) => v * v))); return d ? sum(x.map((v, i) => v * y[i])) / d : 0; };
   const pool = [...inStock(), ...catalogue()].filter((o) => o.v.id !== h.v.id);
   const out = pool.map((o) => {
-    const dose = a.t === 'dry' ? a.g : (r ? doseFor(o, r.val, a.t, c) : null);
+    const dose = aroma ? a.g : (r ? doseFor(o, r.val, a.t, c) : null);
+    const left = o.g > 0 ? o.g - usedG(o.key, a.id) : 0;
     const sim = cos(h.v.ax, o.v.ax);
-    const grp = o.g <= 0 ? 2 : dose != null && o.g >= dose ? 0 : 1;
+    const grp = o.g <= 0 ? 2 : dose != null && left >= dose ? 0 : 1;
     const gain = [], lose = [];
     if (h.v.ax && o.v.ax) h.v.ax.forEach((x, i) => { const dlt = o.v.ax[i] - x; if (dlt >= 1) gain.push([dlt, i]); if (dlt <= -1) lose.push([-dlt, i]); });
     gain.sort((p, q) => q[0] - p[0]); lose.sort((p, q) => q[0] - p[0]);
-    return { h: o, dose, sim, grp, gain: gain.slice(0, 2).map(([, i]) => AX[i].toLowerCase()), lose: lose.slice(0, 2).map(([, i]) => AX[i].toLowerCase()) };
+    return { h: o, dose, left, sim, grp, cls: classOf(o.v, st), ibu: dose != null ? ibuOf(o, dose, a.t, c) : null, gain: gain.slice(0, 2).map(([, i]) => AX[i].toLowerCase()), lose: lose.slice(0, 2).map(([, i]) => AX[i].toLowerCase()) };
   }).filter((x) => x.dose != null);
-  out.sort((x, y) => x.grp - y.grp || (w ? y.sim - x.sim : (alphaOf(y.h)?.val ?? 0) - (alphaOf(x.h)?.val ?? 0)) || y.sim - x.sim);
-  return { h, r, list: out.slice(0, limit), all: out };
+  const byFit = (x, y) => (w ? y.sim - x.sim : (alphaOf(y.h)?.val ?? 0) - (alphaOf(x.h)?.val ?? 0)) || y.sim - x.sim;
+  const stock = out.filter((x) => x.grp < 2).sort((x, y) => x.grp - y.grp || byFit(x, y)).slice(0, nStock);
+  const buy = out.filter((x) => x.grp === 2).sort((x, y) => CLS_ORDER[x.cls] - CLS_ORDER[y.cls] || byFit(x, y)).slice(0, nBuy);
+  return { h, r, aroma, stock, buy, list: [...stock, ...buy], all: out };
 }
 
 /* ---------- Rendu ---------- */
@@ -507,16 +522,16 @@ function render() {
 function renderTop(p) {
   const st = style(); const t = st.ibu; const max = Math.max(100, t ? t[1] * 1.25 : 60, p.hi * 1.1);
   const pos = (x) => (Math.min(x, max) / max * 100).toFixed(1) + '%';
-  const aro = !S.adds.length ? 'aucun ajout' : p.aroW > 0 ? 'arôme : ' + topAxes(p.prof).join(', ') : 'peu d’arôme';
+  const aro = !S.adds.length ? '' : p.aroW > 0 ? 'Arôme dominant : ' + topAxes(p.prof, 3).join(', ') : 'Peu d’arôme : ajouts d’amertume seulement';
   const ibuTxtTop = Math.abs(p.hi - p.lo) >= 1 ? `${nf(p.lo)}–${nf(p.hi)}` : nf(p.hot);
-  const dryTxt = p.dry && !p.dry.over ? `<span class="u">à cru ${nf(p.dry.lo)}–${nf(p.dry.hi)}</span>` : '';
+  const dryTxt = p.dry ? (p.dry.over ? `<span>Après dry hop : dose au-delà des essais publiés, amertume non estimée</span>` : `<span>Après dry hop : <b class="strong mono">${nf(p.dry.lo)}–${nf(p.dry.hi)} IBU</b> estimés</span>`) : '';
   return `<div class="top"><div class="hd">
     <button class="title" data-act="recipe" aria-label="Changer le style et la recette : ${esc(st.n)}"><b>${esc(st.n)}</b>${ico('down')}</button>
     <span class="meta mono">${nf(S.V)} L · ${nf(S.og, 3)}</span><span class="sp"></span>
     <button class="btn" data-act="questions">${ico('help')}Questions</button></div>
-    <div class="gauge" title="IBU à chaud (Tinseth)"><span class="v">${ibuTxtTop}</span><span class="u">IBU${t ? ` · visé ${t[0]}–${t[1]}` : ''}</span>
-      <div class="track" role="img" aria-label="IBU ${ibuTxtTop}${t ? `, plage du style ${t[0]} à ${t[1]}` : ''}">${t ? `<div class="band" style="left:${pos(t[0])};width:calc(${pos(t[1])} - ${pos(t[0])})"></div>` : ''}${p.dry && !p.dry.over ? `<div class="dryr" style="left:${pos(p.dry.lo)};width:calc(${pos(p.dry.hi)} - ${pos(p.dry.lo)})"></div>` : ''}<div class="mk" style="left:${pos(p.hot)}"></div></div>
-      ${dryTxt}<span class="aro">${esc(aro)}</span></div></div>`;
+    <div class="gauge"><div class="g1"><span class="v">${ibuTxtTop}</span><span class="u">IBU à chaud${t ? ` · visé ${t[0]}–${t[1]}` : ''}</span>
+      <div class="track" role="img" aria-label="IBU à chaud ${ibuTxtTop}${t ? `, plage du style ${t[0]} à ${t[1]}` : ''}${p.dry && !p.dry.over ? `, après dry hop ${nf(p.dry.lo)} à ${nf(p.dry.hi)}` : ''}">${t ? `<div class="band" style="left:${pos(t[0])};width:calc(${pos(t[1])} - ${pos(t[0])})"></div>` : ''}${p.dry && !p.dry.over ? `<div class="dryr" style="left:${pos(p.dry.lo)};width:calc(${pos(p.dry.hi)} - ${pos(p.dry.lo)})"></div>` : ''}<div class="mk" style="left:${pos(p.hot)}"></div></div></div>
+      ${dryTxt || aro ? `<div class="g2">${dryTxt}${aro ? `<span>${esc(aro)}</span>` : ''}</div>` : ''}</div></div>`;
 }
 function renderMain(p) {
   return `<div class="col-a">${renderToast()}${renderAdds(p)}</div><div class="col-b">${renderList()}</div>`;
@@ -549,10 +564,19 @@ function renderAdd(L) {
     const aro = w && h.v.ax ? `Arôme : ${topAxes(h.v.ax.map((v) => v * w), 3).join(', ')} (poids ${nf(w, 1)} à ce moment)` : 'Amertume seulement : à ce moment, l’arôme part presque entièrement.';
     x += `<div class="ed"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="step"><button class="btn sq" data-act="dose" data-id="${a.id}" data-d="-1" aria-label="Retirer 1 g">${ico('minus')}</button><input type="text" inputmode="decimal" aria-label="Dose en grammes" data-act="dosein" data-id="${a.id}" data-focuskey="dose-${a.id}" value="${gtxt(a.g)}"><button class="btn sq" data-act="dose" data-id="${a.id}" data-d="1" aria-label="Ajouter 1 g">${ico('plus')}</button></span><span class="muted">g · ${nf(a.g / S.V, 1)} g/L</span></div>
       <div class="chips" role="group" aria-label="Moment de l’ajout">${TIMES.map((t) => `<button class="chip" data-act="time" data-id="${a.id}" data-t="${t.id}" aria-pressed="${a.t === t.id}">${t.short}</button>`).join('')}</div>
-      <div class="line">${esc(aro)} · ${alphaTxt(h)}${alphaOf(h)?.lot ? ` (${esc(h.alphaFrom)})` : ' (plage de la variété)'}</div>
+      ${compNote(a, h, r)}
+      <div class="line">${esc(aro)} · ${alphaTxt(h)}${alphaOf(h)?.lot ? ` (${esc(h.alphaFrom)})` : ' (plage de la variété)'} · IBU : Tinseth, DI ${nf(S.og, 3)}, ${nf(S.V)} L</div>
       <div class="acts"><button class="btn" data-act="remove" data-id="${a.id}">${ico('trash')}Retirer</button><span class="sp"></span><button class="btn ghost" data-act="openadd" data-id="${a.id}">Fermer</button></div></div>`;
   }
   return x + '</div>';
+}
+// Moment changé (Q25) : écart d'IBU par rapport au moment précédent, et la dose à ajouter maintenant pour le retrouver.
+function compNote(a, h, r) {
+  if (!a.prev || a.prev.ibu == null) return '';
+  const now = a.t === 'dry' ? 0 : r ? r.val : null; if (now == null) return '';
+  const d = now - a.prev.ibu; if (Math.abs(d) < 1) return '';
+  const extra = d < 0 && a.t !== 'dry' ? Math.round(doseFor(h, -d, a.t, ctx()) * 10) / 10 : null;
+  return `<div class="note comp"><span class="sp"><b class="strong">${TI[a.prev.t].short} → ${TI[a.t].short}</b> : ${nf(now)} IBU au lieu de ${nf(a.prev.ibu)} (${d > 0 ? '+' : '−'}${nf(Math.abs(d))})${extra ? `. Pour retrouver ${nf(a.prev.ibu)} IBU :` : a.t === 'dry' ? ' ; à cru, plus d’IBU à chaud.' : ''}</span>${extra ? `<button class="btn" data-act="comp" data-id="${a.id}" data-g="${extra}">Ajouter ${gtxt(extra)} g maintenant</button>` : ''}</div>`;
 }
 function lvl(n) { return `<span class="lv" aria-hidden="true">${[1, 2, 3].map((i) => `<i class="${i <= n ? 'f' : ''}"></i>`).join('')}</span>`; }
 // Arômes en mots : d'abord ceux du style (en clair), puis l'arôme dominant hors style ; 3 au plus.
@@ -568,7 +592,7 @@ function aromaLine(v, st) {
 function renderRow(r, rank) {
   const h = r.h, st = style(); const on = S.sel.find((s) => s.key === h.key); const added = S.adds.some((a) => a.key === h.key);
   const plan = plusPlan(h); const ex = S.adds.find((a) => a.key === h.key);
-  const planTxt = plan.g == null ? 'α inconnu' : h.g <= 0 ? `${nf(plan.g)} g` : plan.short ? `${nf(plan.g)} g · manque ${nf(plan.short)}` : plan.t === 'b60' ? `${nf(plan.g)} g · assez` : plan.all ? `${nf(plan.g)} g · tout` : `${nf(plan.g)} g`;
+  const planTxt = plan.g == null ? 'α inconnu' : h.g <= 0 ? `${nf(plan.g)} g` : plan.short ? `${nf(plan.g)} g · manque ${nf(plan.short)} g` : plan.t === 'b60' ? `${nf(plan.g)} g · assez` : plan.all ? `${nf(plan.g)} g · max` : `${nf(plan.g)} g`;
   const box = on ? `<span class="box" style="background:${SERHEX[on.k]}">${SHAPE_IN[on.k]}</span>` : '<span class="box"></span>';
   const addLabel = ex ? `${hname(h)} est dans mon houblonnage : régler l’ajout` : `Ajouter ${plan.g == null ? '' : nf(plan.g) + ' g de '}${hname(h)} ${plan.t === 'b60' ? 'à 60 min' : plan.t === 'wp' ? 'au whirlpool' : 'en dry hop'}`;
   let x = `<div class="row${on ? ' on' : ''}" data-hop="${esc(h.key)}"><button class="cb" role="checkbox" aria-checked="${!!on}" data-act="sel" data-key="${esc(h.key)}" aria-label="Comparer ${esc(hname(h))}">${box}</button>
@@ -595,8 +619,8 @@ const GROUP_LABEL = (st) => ({ attest: `Usage attesté pour ${esc(st.n)}`, typiq
 function renderList() {
   const st = style(); const t = nextStep(); const n = need();
   const wantTxt = st.dir && st.dir.want.length ? st.dir.want.map((a) => AX[AXI[a]].toLowerCase()).join(', ') : 'non documentés pour ce style';
-  let h = `<div class="sec"><h2>Mes houblons</h2><span class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">du + au − pour ${esc(st.n)}</span><span class="sp"></span><button class="btn" data-act="top4" aria-label="Comparer les 4 premiers">${ico('cmp')}4 premiers</button><button class="btn sq ghost" data-act="legend" aria-label="Comment la liste est classée" aria-expanded="${!!S.legend}">${ico('info')}</button></div>`;
-  h += `<div class="sec step"><span class="muted">« + » ajoute</span><span class="seg" role="group" aria-label="Prochain ajout">${['b60', 'wp', 'dry'].map((x) => `<button data-act="next" data-t="${x}" aria-pressed="${t === x}">${STEP_LABEL[x]}</button>`).join('')}</span><span class="muted">${t === 'b60' ? `pour ${n.ibu} IBU` : `${nf(START_GL[t], 0)} g/L`}</span></div>`;
+  let h = `<div class="sec"><h2>Mes houblons</h2><span class="muted" style="white-space:nowrap">du + au −</span><span class="sp"></span><button class="btn" data-act="top4" aria-label="Comparer les 4 premiers">${ico('cmp')}4 premiers</button><button class="btn sq ghost" data-act="legend" aria-label="Comment la liste est classée" aria-expanded="${!!S.legend}">${ico('info')}</button></div>`;
+  h += `<div class="sec step"><span class="muted" style="display:inline-flex;align-items:center;gap:2px;white-space:nowrap">${ico('plus')}ajoute</span><span class="seg" role="group" aria-label="Prochain ajout">${['b60', 'wp', 'dry'].map((x) => `<button data-act="next" data-t="${x}" aria-pressed="${t === x}">${STEP_LABEL[x]}</button>`).join('')}</span><span class="muted">${t === 'b60' ? `pour ${n.txt}` : `${nf(START_GL[t], 0)} g/L${!S.next && hasBitter() ? ' · amertume faite' : ''}`}</span></div>`;
   if (S.legend) h += `<div class="info" style="padding-left:10px"><p>Groupes : <b class="strong">typique</b> (origine citée par le guide BJCP pour ce style et arômes du style), <b class="strong">compatible</b> (au moins 40 % de ses descripteurs dans les arômes du style), <b class="strong">hors style</b>. Arômes du style, en clair sur chaque ligne : ${wantTxt}.</p><p>Dans chaque groupe : pour l’amertume, d’abord les houblons dont le stock suffit, puis l’alpha ; pour le whirlpool et le dry hop, du plus au moins proche du style, puis le stock. À droite : mon stock, puis la dose que « + » ajoute (« manque » si le stock ne suffit pas). Rang chiffré seulement quand l’usage pour le style est attesté (IPA).</p></div>`;
   const groups = (rows, cat) => {
     let out = '', cur = null, idx = 0;
@@ -668,7 +692,7 @@ function renderCompare(L) {
   h += `<h3>Dans ma recette <span class="muted">IBU pour ${nf(g)} g à ${TI[t].label}${ref ? ` (comme ${esc(hname(hop(ref.key)))})` : ''}</span></h3><div class="bars">${ibus.map(({ s, r }) => `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span class="b">${r ? (r.lot ? `<i style="left:0;width:${(r.val / imax * 100).toFixed(1)}%;background:${SERHEX[s.k]}"></i>` : `<i style="left:0;width:${(r.lo / imax * 100).toFixed(1)}%;background:${SERHEX[s.k]}"></i><i style="left:${(r.lo / imax * 100).toFixed(1)}%;width:${((r.hi - r.lo) / imax * 100).toFixed(1)}%;background:${SERHEX[s.k]};opacity:.4"></i>`) : ''}</span><span class="n">${r ? (r.lot ? nf(r.val) : `${nf(r.lo)}–${nf(r.hi)}`) : '?'} IBU</span></div>`).join('')}</div>`;
   const doses = L.map((s) => ({ s, d: doseFor(s.h, n.ibu, 'b60', c) }));
   const dmax = Math.max(1, ...doses.map((x) => Math.max(x.d || 0, x.s.h.g)));
-  h += `<h3>Dose pour ${n.txt} à 60′ <span class="muted">barre : mon stock · trait : dose</span></h3><div class="bars">${doses.map(({ s, d }) => `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span class="b">${s.h.g > 0 ? `<i style="left:0;width:${(s.h.g / dmax * 100).toFixed(1)}%;background:${SERHEX[s.k]};opacity:.55"></i>` : ''}${d != null ? `<span class="need" style="left:${(Math.min(d, dmax) / dmax * 100).toFixed(1)}%"></span>` : ''}</span><span class="n">${d == null ? '?' : `${nf(d)} g`} ${s.h.g <= 0 ? '<span class="warn">à acheter</span>' : d != null && s.h.g >= d ? `<span class="ok">assez</span>` : `<span class="bad">manque ${nf(d - s.h.g)}</span>`}</span></div>`).join('')}</div>`;
+  h += `<h3>Dose pour ${n.txt} à 60′ <span class="muted">barre : mon stock · trait : dose</span></h3><div class="bars">${doses.map(({ s, d }) => `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span class="b">${s.h.g > 0 ? `<i style="left:0;width:${(s.h.g / dmax * 100).toFixed(1)}%;background:${SERHEX[s.k]};opacity:.55"></i>` : ''}${d != null ? `<span class="need" style="left:${(Math.min(d, dmax) / dmax * 100).toFixed(1)}%"></span>` : ''}</span><span class="n">${d == null ? '?' : `${gtxt(Math.round(d * 10) / 10)} g`} ${s.h.g <= 0 ? '<span class="warn">à acheter</span>' : d != null && avail(s.h) >= d ? `<span class="ok">assez</span>` : `<span class="bad">manque ${nf(d - Math.max(0, avail(s.h)))} g</span>`}</span></div>`).join('')}</div>`;
   h += `<h3>Pour ${esc(st.n)}</h3><div class="bars">${L.map((s) => `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span><span class="cls">${CLS_LABEL[classOf(s.h.v, st)]}</span><span class="o">${esc(s.h.v.o || '')}</span></span><span></span></div>`).join('')}</div>`;
   // Valeurs : barres de plage sur échelle commune
   const METRICS = [['a', 'Alpha', '%', 20, 1], ['b', 'Bêta', '%', 10, 1], ['oil', 'Huiles totales', 'mL/100 g', 4, 1], ['my', 'Myrcène', '% de l’huile', 80, 0], ['hu', 'Humulène', '% de l’huile', 50, 0], ['ca', 'Caryophyllène', '% de l’huile', 20, 0]];
@@ -705,10 +729,12 @@ function renderRecipe() {
 function renderReplace() {
   const a = S.adds.find((x) => x.id === S.replaceFor); if (!a) return '';
   const R = substitutes(a); const h = R.h;
+  const sub = (x) => `<button class="sub" data-act="applysub" data-id="${a.id}" data-key="${esc(x.h.key)}"><span class="m"><b>${esc(hname(x.h))}</b><small>${x.gain.length ? 'gagné : ' + x.gain.join(', ') : 'rien de gagné'} · ${x.lose.length ? 'perdu : ' + x.lose.join(', ') : 'rien de perdu'}${R.aroma && x.ibu ? ` · ${ibuTxt(x.ibu)}` : ''}</small></span><span><span class="d">${gtxt(Math.round(x.dose * 10) / 10)} g</span><span class="s">${x.grp === 0 ? `<span class="ok">reste ${nf(x.left)} g</span>` : x.grp === 1 ? `<span class="bad">manque ${nf(x.dose - Math.max(0, x.left))} g</span>` : `<span class="warn">à acheter</span>`}</span></span></button>`;
   return `<div class="scrim" data-act="close"></div><section class="sheet" role="dialog" aria-modal="true" aria-label="Remplacer"><div class="sheeth"><h2>Remplacer ${esc(hname(h))}</h2><span class="sp"></span><button class="btn sq" data-act="close" aria-label="Fermer">${ico('x')}</button></div>
-    <div class="sec"><span class="muted">${nf(a.g)} g · ${TI[a.t].label} · ${a.t === 'dry' ? 'même masse' : `même IBU : ${ibuTxt(R.r)}`}</span><span class="sp"></span><button class="btn" data-act="cmpsubs" data-id="${a.id}">${ico('cmp')}Comparer les 3 premiers</button></div>
-    <div class="sheetb">${R.list.map((x) => `<button class="sub" data-act="applysub" data-id="${a.id}" data-key="${esc(x.h.key)}"><span class="m"><b>${esc(hname(x.h))}</b><small>${x.gain.length ? 'gagné : ' + x.gain.join(', ') : 'rien de gagné'} · ${x.lose.length ? 'perdu : ' + x.lose.join(', ') : 'rien de perdu'}</small></span><span><span class="d">${gtxt(Math.round(x.dose * 10) / 10)} g</span><span class="s">${x.grp === 0 ? `<span class="ok">en stock ${nf(x.h.g)} g</span>` : x.grp === 1 ? `<span class="bad">manque ${nf(x.dose - x.h.g)} g</span>` : '<span class="warn">à acheter</span>'}</span></span></button>`).join('')}
-    <p class="src">Ordre : assez en stock, puis pas assez, puis à acheter ; dans chaque groupe, ${TI[a.t].w ? 'arômes les plus proches' : 'alpha le plus haut (ajout d’amertume : l’arôme compte peu)'}. Dose : ${a.t === 'dry' ? 'même masse à cru' : 'même IBU au même moment, alpha du lot si connu'}. Proximité : profils d’arôme d’après les descripteurs Beer Maverick ; ce n’est pas une garantie de goût.</p></div></section>`;
+    <div class="sec"><span class="muted">${gtxt(a.g)} g · ${TI[a.t].label} · ${R.aroma ? `ajout d’arôme : même masse (${ibuTxt(R.r)} avant)` : `ajout d’amertume : même IBU, ${ibuTxt(R.r)}`}</span><span class="sp"></span><button class="btn sq ghost" data-act="repinfo" aria-label="Comment les remplaçants sont classés" aria-expanded="${!!S.repInfo}">${ico('info')}</button></div>
+    ${S.repInfo ? `<div class="info" style="padding-left:12px"><p>Dans chaque groupe : ${TI[a.t].w ? 'arômes les plus proches d’abord' : 'alpha le plus haut d’abord (ajout d’amertume : l’arôme compte peu)'}. « Reste » : stock moins tes autres ajouts de ce houblon. À acheter : typiques de ${esc(style().n)} d’abord. Proximité : profils d’arôme d’après les descripteurs Beer Maverick ; ce n’est pas une garantie de goût.</p></div>` : ''}
+    <div class="sheetb"><div class="grp"><b>Dans mon stock</b><span class="sp"></span><button class="btn" data-act="cmpsubs" data-id="${a.id}">${ico('cmp')}Comparer aux 3 premiers</button></div>${R.stock.map(sub).join('') || '<div class="empty">Aucun houblon de ton stock.</div>'}
+    <div class="grp"><b>À acheter</b><span>· typiques de ${esc(style().n)} d’abord</span></div>${R.buy.map(sub).join('')}</div></section>`;
 }
 
 /* ---------- Questions ---------- */
@@ -787,7 +813,8 @@ q('Q04', 'Comparer', 'Stout amérisée au Nugget : trop résineuse ou pas assez 
 q('Q15', 'Simuler', 'Quel IBU total, dry hop compris ?', () => {
   const P = progOrProposal(); const p = prog(P.adds);
   const tot = p.dry && !p.dry.over ? `${nf(p.dry.lo)}–${nf(p.dry.hi)}` : null;
-  return { short: `<b class="strong mono">${nf(p.hot)} IBU</b> à chaud${p.dryG ? `, ${tot ? `<b class="strong mono">${tot}</b> après ${nf(p.dryG)} g à cru` : `dry hop de ${nf(p.dryG / S.V, 1)} g/L au-delà des essais publiés`}` : ', aucun dry hop'} <span class="muted">· ${P.label}</span>`,
+  const sg = (x) => (x >= 0 ? '+' : '−') + nf(Math.abs(x));
+  return { short: `<b class="strong mono">${nf(p.hot)} IBU</b> à chaud${p.dryG ? ` · ${tot ? `après ${nf(p.dryG)} g de dry hop : <b class="strong mono">${tot} IBU</b> estimés (part du dry hop : ${sg(p.dry.lo - p.hot)} à ${sg(p.dry.hi - p.hot)})` : `dry hop de ${nf(p.dryG / S.V, 1)} g/L au-delà des essais publiés : total non estimé`}` : ' · aucun dry hop'} <span class="muted">· ${P.label}</span>`,
     detail: `<p>À chaud : Tinseth par ajout. À cru : équivalent d’amertume (humulinones ajoutées, iso-alpha perdus), scénarios Maye 2016 (Cascade et Centennial, 16 °C, 1 à 5 jours) : une plage, pas une mesure d’IBU.</p>` };
 });
 q('Q17', 'Simuler', 'IBU et arôme de chaque ajout', () => {
@@ -831,9 +858,11 @@ q('Q19', 'Simuler', 'Tel houblon, tel moment, telle levure : quel résultat ?', 
     detail: `<p>${nf(START_GL[t] || 1, 0)} g/L : dose de départ de l’app pour ce moment. Un seul essai houblon × levure est documenté dans les données (Cascade × Wyeast 1728, Lafontaine 2018).</p>` };
 });
 q('Q06', 'Remplacer', 'Houblon indisponible : avec quoi le remplacer ?', () => {
-  const key = S.qp.q06 || (S.adds[0]?.key) || 'galaxy'; const h = hop(key) || hop('galaxy'); const t = S.adds.find((a) => a.key === h.key)?.t || 'wp'; const g = S.adds.find((a) => a.key === h.key)?.g || 20;
-  const R = substitutes({ key: h.key, g, t });
-  return { short: `${pickVar('q06', h.key, varOpts())} ${nf(g)} g ${TI[t].short} :<ul>${R.list.map((x) => li(`${esc(hname(x.h))} · ${x.grp === 0 ? 'en stock' : x.grp === 1 ? `manque ${nf(x.dose - x.h.g)} g` : 'à acheter'} · ${x.gain.length ? 'gagné ' + x.gain.join(', ') : 'rien de gagné'} · ${x.lose.length ? 'perdu ' + x.lose.join(', ') : 'rien de perdu'}`, `${nf(x.dose)} g`)).join('')}</ul>`,
+  const key = S.qp.q06 || (S.adds[0]?.key) || 'galaxy'; const h = hop(key) || hop('galaxy'); const mine = S.adds.find((a) => a.key === h.key);
+  const t = S.qp.q06t || mine?.t || 'b60'; const g = mine && mine.t === t ? mine.g : 20;
+  const R = substitutes({ key: h.key, g, t, id: mine?.id }, ctx(), 4, 2);
+  const row = (x) => li(`${esc(hname(x.h))} · ${x.grp === 0 ? `reste ${nf(x.left)} g` : x.grp === 1 ? `manque ${nf(x.dose - Math.max(0, x.left))} g` : `à acheter, ${CLS_LABEL[x.cls]}`} · ${x.gain.length ? 'gagné ' + x.gain.join(', ') : 'rien de gagné'} · ${x.lose.length ? 'perdu ' + x.lose.join(', ') : 'rien de perdu'}`, `${gtxt(Math.round(x.dose * 10) / 10)} g`);
+  return { short: `${pickVar('q06', h.key, varOpts())} ${pickVar('q06t', t, TIMES.map((x) => [x.id, x.label]))} ${gtxt(g)} g, ${R.aroma ? 'même masse' : `même IBU (${ibuTxt(R.r)})`} :<ul>${R.stock.map(row).join('')}${R.buy.map(row).join('')}</ul>`,
     detail: `<p>Ordre : stock suffisant, puis insuffisant, puis à acheter ; dans chaque groupe, proximité des profils d’arôme (descripteurs). Dose : même IBU au même moment, ou même masse à cru. Sur une ligne d’ajout, « Remplacer » applique le choix en un toucher.</p>` };
 });
 q('Q18', 'Remplacer', 'Si je remplace X par Y, quelle quantité pour le même IBU ?', () => {
@@ -963,10 +992,12 @@ app.addEventListener('click', (e) => {
     case 'propose': for (const a of proposal()) S.adds.push({ id: S.nextId++, ...a }); break;
     case 'openadd': S.open = S.open === id ? null : id; break;
     case 'dose': { const a = A(); a.g = Math.max(0, a.g + Number(el.dataset.d)); break; }
-    case 'time': { const a = A(); const old = ibuOf(hop(a.key), a.g, a.t, ctx()); a.t = el.dataset.t; break; }
-    case 'remove': { const i = S.adds.findIndex((a) => a.id === id); const [a] = S.adds.splice(i, 1); S.toast = { msg: `${hname(hop(a.key))} retiré.`, undo: () => S.adds.splice(i, 0, a) }; S.open = null; break; }
+    case 'time': { const a = A(); if (a.t === el.dataset.t) break; const old = ibuOf(hop(a.key), a.g, a.t, ctx()); a.prev = { t: a.t, ibu: old ? old.val : null }; a.t = el.dataset.t; break; }
+    case 'remove': { const i = S.adds.findIndex((a) => a.id === id); const [a] = S.adds.splice(i, 1); S.toast = { msg: `${hname(hop(a.key))} retiré.`, undo: () => { S.adds.splice(i, 0, a); S.open = a.id; } }; S.open = null; break; }
     case 'replace': S.sheet = 'replace'; S.replaceFor = id; break;
     case 'cmpsubs': { const a = A(); const R = substitutes(a); setSel([a.key, ...R.list.slice(0, 3).map((x) => x.h.key)]); S.sheet = null; break; }
+    case 'repinfo': S.repInfo = !S.repInfo; break;
+    case 'comp': { const a = A(); a.g = Math.round((a.g + Number(el.dataset.g)) * 10) / 10; a.prev = null; break; }
     case 'applysub': { const a = A(); const R = substitutes(a); const x = R.all.find((s) => s.h.key === key); const before = { key: a.key, g: a.g }; const oldName = hname(hop(a.key));
       a.key = key; a.g = Math.max(0.1, Math.round((x ? x.dose : a.g) * 10) / 10); S.sheet = null; S.open = a.id;
       S.toast = { msg: `${oldName} remplacé par ${hname(hop(key))}, ${gtxt(a.g)} g.`, undo: () => { a.key = before.key; a.g = before.g; } }; break; }
