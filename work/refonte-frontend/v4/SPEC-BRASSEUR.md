@@ -147,7 +147,11 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
 - **La base radar, lot 7** (p08, les radars de Ma bière et de Suggestions entourés) : « Seul le
   premier est ok... » — 18.10, soir. Le radar de Comparer (SVG maison, polygones fermés, une
   couleur par houblon) devient la base radar ; ceux de Ma bière et de Suggestions restent à
-  trouver.
+  trouver. Puis, sur la planche entière : « P3,4,6,7 semble pas mal » (ECharts, D3, ApexCharts,
+  SVG maison fidèle à Beer Maverick) — 18.10, soir. Décision du pilote parmi les quatre : D3
+  (p04 ; d3-shape et d3-scale, environ 9 ko, licence ISC, rendu SVG par React), le même rendu que
+  p03 sans ECharts (335 ko pour un seul type de graphe) ; ApexCharts écarté pour sa licence
+  (payante au-delà de 2 M$ de revenus ou pour un produit utilisé par d'autres).
 - **Le fil de fer perdu** (planche des fiches du lot 4 à l'appui) : « Pourquoi j'ai plus juste des
   maquettes fil de fer de ce type ? Qqch a dû être perdu dans le workflow et je comprends mieux
   pourquoi ça prends du longtemps » — 18.10, soir (méthode : explorer en fil de fer, finir une
