@@ -1,5 +1,5 @@
 import { POLICY, hopRef } from './data';
-import { MOMENTS, ibuPerGram, type MomentId, type Recipe } from './recipe';
+import { MOMENTS, ibuPerGram, ibuPerGramAt, type MomentId, type Recipe } from './recipe';
 
 /** Liste canonique des types d'ajout et du « quand » (unités), dans l'ordre d'affichage. */
 export interface MomentInfo {
@@ -40,6 +40,44 @@ export interface IbuAtMoment {
 const r2 = (x: number) => Math.round(x * 100) / 100, r1 = (x: number) => Math.round(x * 10) / 10;
 /** Raison courte ; le détail (humulinones, Maye 2016, hopBitternessCore non branché) est dans momentCatalogue. */
 export const DRY_REASON = 'À cru : non modélisé (voir moments).';
+// ---------- Tables libres (tranches de 5′, ébullition de 60 à 120′, whirlpool) ----------
+export const MINUTES_5 = Array.from({ length: 25 }, (_, i) => i * 5);
+export const BOIL_LENGTHS = [60, 75, 90, 105, 120];
+export const WP_TEMPERATURES = [70, 75, 80, 85, 90, 95];
+export const WP_MINUTES = [10, 15, 20, 25, 30, 35, 40];
+export const TABLES_RULE = [
+  'IBU à la dose de l’ajout et à l’alpha retenu (BrewingMath.hopIbu, mêmes hypothèses que ibuParMoment : volume de la recette pris comme volume d’ébullition, densité initiale de la recette). L’IBU est proportionnel à l’alpha : la plage d’alpha donne la plage d’IBU.',
+  'Ébullition (ibuParMinute5) : minutes restantes de 0 à 120 par 5. Tinseth ne dépend que des minutes restantes, pas de la durée totale d’ébullition ; une minute au-delà de la durée d’ébullition de la recette vaut null.',
+  'Premier moût (ibuPremierMout) : dépend de la durée totale d’ébullition (Tinseth sur toute l’ébullition, +10 %) ; table pour 60, 75, 90, 105, 120 min.',
+  'Whirlpool : modélisé par BrewingMath (Tinseth atténué de moitié tous les 10 °C sous l’ébullition) : table 70 à 95 °C par 5 et 10 à 40 min par 5.',
+  'Densité et volume : BrewingMath ne fait pas varier la densité ni le volume pendant l’ébullition ; une ébullition plus longue ne change donc l’IBU que par le premier moût.',
+];
+export interface IbuTables {
+  alphaUtilise: number | null;
+  ibuParMinute5: (number | null)[] | null;
+  ibuPremierMout: { ebullition: number; ibu: number }[] | null;
+  whirlpool: { temperatures: number[]; minutes: number[]; ibu: number[][] } | null;
+  raison?: string;
+}
+/** Tables d'IBU d'un ajout à sa dose (voir TABLES_RULE). */
+export function ibuTables(hopKey: string, grams: number | null, recipe: Recipe): IbuTables {
+  const a = hopRef(hopKey)?.alpha?.value;
+  if (a === undefined || grams === null) return { alphaUtilise: a ?? null, ibuParMinute5: null, ibuPremierMout: null, whirlpool: null, raison: a === undefined ? 'Alpha inconnu : IBU incalculable.' : 'Dose inconnue.' };
+  const at = (stage: 'firstWort' | 'boil' | 'whirlpool', t: number | undefined, temp: number | undefined, boil = recipe.boilMin) => r1(grams * ibuPerGramAt(a, stage, t, temp, recipe, boil));
+  return {
+    alphaUtilise: a,
+    ibuParMinute5: MINUTES_5.map((m) => (m > recipe.boilMin ? null : at('boil', m, undefined))),
+    ibuPremierMout: BOIL_LENGTHS.map((b) => ({ ebullition: b, ibu: at('firstWort', undefined, undefined, b) })),
+    whirlpool: { temperatures: WP_TEMPERATURES, minutes: WP_MINUTES, ibu: WP_TEMPERATURES.map((t) => WP_MINUTES.map((m) => at('whirlpool', m, t))) },
+  };
+}
+/** Houblonnage à cru : le jour est libre ; aucune IBU ; le moteur ne relie pas le jour à la phase. */
+export const DRY_HOP_DAY = {
+  jours: { min: 0, max: 14 }, ibu: null,
+  regle: 'Jour libre de J+0 à J+14, sans IBU Tinseth. Le moteur V5.5 ne déduit pas la phase du jour : HopRecipeInput.dayOffset est validé mais pas utilisé pour l’arôme, et hopTripletsOfRecipe refuse explicitement de deviner la phase de fermentation à partir du jour. La phase est un choix explicite : « en fermentation active » (biotransformation possible, estimée) ou « après fermentation » ; elle dépend de la levure et du programme de fermentation, non modélisés ici.',
+  source: 'functions/src/hopPredictionCore.ts (hopTripletsOfRecipe) ; functions/src/hopRecipePrediction.ts (dayOffset)',
+};
+
 /** IBU par moment pour un houblon et une dose, par BrewingMath.hopIbu (importé de l'app). */
 export function ibuByMoment(hopKey: string, grams: number, recipe: Recipe): IbuAtMoment[] {
   const ref = hopRef(hopKey);

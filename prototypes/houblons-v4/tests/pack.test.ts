@@ -50,13 +50,13 @@ describe('Pack des mini-prototypes', () => {
       // Une voie de houblon porte ses actions en g et g/L ; un changement de levure, son yeastChange.
       if (v.yeastChange) expect(v.actions).toEqual([]);
       else { expect(v.actions[0]).toHaveProperty('grams'); expect(v.actions[0]).toHaveProperty('gramsPerLitre'); }
-      expect(v.after).not.toBeNull();
+      expect(v.profilApresNiveaux).toHaveLength(12);
       expect(v.ibu).toHaveProperty('after');
       expect(['suffisant', 'manque', 'à acheter']).toContain(v.stock.status);
     }
     // Aucune plage pleine sans « non situé » ; dégustation : null partout sauf la résine dite par le brasseur.
     const estimates = [...stored.stock, ...stored.catalogue].flatMap((h: { profile: object }) => Object.values(h.profile))
-      .concat(Object.values(S1.before), ...S1.voies.map((v: { after: object }) => Object.values(v.after))) as { completeDomain?: boolean; display?: string }[];
+      .concat(Object.values(S1.before)) as { completeDomain?: boolean; display?: string }[];
     for (const e of estimates) if (e.completeDomain) expect(e.display).toBe('non situé');
     expect(S1.tasting.axes.filter((a: { perceived: string | null }) => a.perceived !== null)).toEqual([expect.objectContaining({ family: 'resin', perceived: 'marqué' })]);
     expect(S1.horsModele[0].leads.every((l: { horsModele: boolean }) => l.horsModele)).toBe(true);

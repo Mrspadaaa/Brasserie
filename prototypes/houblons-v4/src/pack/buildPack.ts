@@ -6,7 +6,7 @@ import {
   proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,
   beerLevels, targetLevels, afterLevels, ficheLevels, recipeProfile, LEVEL_RULE, recipeIbu, loadedRecipe, recipeLines, LOADED_RECIPE_RULE,
   shoppingList, NO_GOUTS, GOUTS_RULE, beerCrans, targetCrans, afterCrans, CRANS_RULE, yeastDoubleImpact, yeastSignals,
-  afterLevelsDelta, ROUE_AROMES, hopSheet, sheetKeys, hopAlpha, hopRole, buildFromEmpty, beerContinuous, targetContinuous, afterContinuous, CONTINU_RULE,
+  afterLevelsDelta, ROUE_AROMES, hopSheet, sheetKeys, hopAlpha, hopRole, buildFromEmpty, ibuTables, TABLES_RULE, DRY_HOP_DAY, MINUTES_5, beerContinuous, targetContinuous, afterContinuous, CONTINU_RULE,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie, type FicheLevel,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
@@ -64,6 +64,14 @@ function styleEntry(s: StyleScale) {
   };
 }
 const round = (x: number, n = 1) => Math.round(x * 10 ** n) / 10 ** n;
+/** Durée d'ébullition de la recette et sa source (S1 : recette du prototype, reprise de la v3 à 60 min). */
+const boilOf = (r: Recipe) => ({ ebullitionMinutes: r.boilMin,
+  ebullitionSource: r.boilMin === 60 ? 'recette S1 du prototype (v3 : ébullition de 60 min) ; aucune durée propre à cette recette dans le dépôt' : `variante de la recette S1 : ébullition de ${r.boilMin} min` });
+/** Tables d'IBU d'un ajout à sa dose (ibuTables), avec le whirlpool nommé ibuWhirlpool. */
+const tablesOf = (key: string, grams: number | null, r: Recipe) => { const { whirlpool, ...t } = ibuTables(key, grams, r); return { ...t, ibuWhirlpool: whirlpool }; };
+type WithDose = { key: string; dose: { grams: number } | null };
+const withTablesQ = <T extends Record<string, unknown>>(q: T, r: Recipe): T => Object.fromEntries(Object.entries(q).map(([k, v]) =>
+  [k, ['disponibles', 'amerisants', 'aromatiques'].includes(k) && Array.isArray(v) ? (v as WithDose[]).map((e) => ({ ...e, ...tablesOf(e.key, e.dose?.grams ?? null, r) })) : v])) as T;
 /** Fiche compacte : niveau 0 non décrit, 1 cité, 2 marqué ; « sources sur of » fiches. Nom et statut : voir families et cibleStyle. */
 const compactFiche = ({ family, level, sources, of }: FicheLevel) => ({ family, level, sources, of });
 
@@ -83,7 +91,6 @@ function voieEntry(v: Voie, directed: FamilyId[]) {
     tieWith: v.tieWith,
     ...(v.yeastChange ? { yeastChange: v.yeastChange } : {}),
     ...(v.type === 'levure' && v.actions[0]?.moment === 'dryActive' ? { signauxLevure: yeastSignals({ id: v.actions[0].additionId, hopKey: v.actions[0].hopKey, moment: 'dryActive', grams: v.actions[0].grams }, s1Recipe()) } : {}),
-    after: v.after ? profile(v.after) : null,
   };
 }
 
@@ -97,7 +104,7 @@ function buildPackCore() {
   const directed = r1.direction.map((d) => d.family);
   const S1 = {
     question: 'Ma stout export est trop résineuse ; je la veux plus florale.',
-    recipe: r1.recipe, style: '16D', yeast: yeastDoubleImpact(s1Recipe()), ibu: r1.ibu, matrix: r1.matrix,
+    recipe: r1.recipe, style: '16D', ...boilOf(s1Recipe()), yeast: yeastDoubleImpact(s1Recipe()), ibu: r1.ibu, matrix: r1.matrix,
     before: profile(r1.before.profile),
     direction: r1.direction.map((d) => ({ family: d.family, name: d.name, crans: d.crans, status: d.status, delta: d.delta, cran: d.cran, width: d.width, targetAbsolute: d.targetAbsolute, targetFrom: d.targetFrom, note: d.note })),
     ranking: r1.ranking, evaluated: r1.evaluated, notes: r1.notes, skipped: r1.skipped,
@@ -113,10 +120,10 @@ function buildPackCore() {
   const summary1 = readingSummary(reading1), voies1 = voiesSummary(r1);
   Object.assign(S1, { reading: reading1, readingSummary: { counts: summary1.counts, sentence: summary1.sentence, voies: voies1.byFamily, voiesSentence: voies1.sentence } });
   // Ajout en un toucher (comme l'étape Malts) : houblons du stock classés pour le style, règle écrite.
-  Object.assign(S1, { ajoutsRapides: { style: '16D', ...quickAdds(s1Recipe(), getStyleScale('16D'), S1_TASTING) } });
+  Object.assign(S1, { ajoutsRapides: withTablesQ({ style: '16D', ...quickAdds(s1Recipe(), getStyleScale('16D'), S1_TASTING) }, s1Recipe()) });
   // Houblons de la recette, avec l'IBU de leur dose à chaque moment (BrewingMath.hopIbu).
   Object.assign(S1, { recetteHoublons: s1Recipe().additions.map((a) => ({ additionId: a.id, hopKey: a.hopKey, name: hopRef(a.hopKey)?.name ?? a.hopKey, alpha: hopAlpha(a.hopKey), role: hopRole(a.hopKey),
-    moment: a.moment, grams: a.grams, gramsPerLitre: round(a.grams / s1Recipe().volumeL, 2), ibuParMoment: ibuByMoment(a.hopKey, a.grams, s1Recipe()) })) });
+    moment: a.moment, grams: a.grams, gramsPerLitre: round(a.grams / s1Recipe().volumeL, 2), ibuParMoment: ibuByMoment(a.hopKey, a.grams, s1Recipe()), ...tablesOf(a.hopKey, a.grams, s1Recipe()) })) });
   // Liste d'achats (le stock informe, il ne limite pas) et goûts du brasseur (vides : aucun goût inventé).
   // voiesSansHoublon : pour chaque variété des voies, le classement recalculé par le moteur si on l'exclut.
   const s1Varieties = [...new Set(r1.voies.flatMap((v) => v.actions.map((a) => hopRef(a.hopKey)!.varietyId)))];
@@ -202,11 +209,11 @@ function buildPackCore() {
     const reading = readBeer(prof.profile, null, s16d), summary = readingSummary(reading);
     const ibuTotal = recipeIbu(recipe);
     return {
-      question, recipe, style: '16D', yeast: yeastDoubleImpact(recipe),
+      question, recipe, style: '16D', ...boilOf(recipe), yeast: yeastDoubleImpact(recipe),
       signauxLevure: recipe.additions.map((a) => yeastSignals(a, recipe)).filter((x) => x !== null),
       ibu: round(ibuTotal.value), ibuStyle: s16d.ibu, ibuRange: { min: round(ibuTotal.min), max: round(ibuTotal.max) },
-      recetteHoublons: recipeLines(recipe).map((line) => ({ ...line, alpha: hopAlpha(line.hopKey), role: hopRole(line.hopKey), ibuParMoment: ibuByMoment(line.hopKey, line.grams, recipe) })),
-      ajoutsRapides: recipe.additions.length ? { style: '16D', ...quickAdds(recipe, s16d, null, { catalogueLimit }) } : buildFromEmpty(recipe, s16d),
+      recetteHoublons: recipeLines(recipe).map((line) => ({ ...line, alpha: hopAlpha(line.hopKey), role: hopRole(line.hopKey), ibuParMoment: ibuByMoment(line.hopKey, line.grams, recipe), ...tablesOf(line.hopKey, line.grams, recipe) })),
+      ajoutsRapides: withTablesQ(recipe.additions.length ? { style: '16D', ...quickAdds(recipe, s16d, null, { catalogueLimit }) } : buildFromEmpty(recipe, s16d), recipe),
       achats: shoppingList(recipe), gouts: NO_GOUTS,
       tasting: null,
       echelles: LEVEL_RULE, profilBiere: beerLevels(prof.profile, null, s16d), cibleStyle: targetLevels(s16d),
@@ -229,6 +236,17 @@ function buildPackCore() {
     voiesNote: 'Pas de voie : aucune direction posée.',
     catalogueNote: 'Catalogue à acheter non repris ici (voir S1 et S4, même règle) pour tenir la taille du pack.',
   }, 0), composition: LOADED_RECIPE_RULE };
+
+  // S1E120 : la même recette que S1, ébullition de 120 min (page cas-ebu120.html), avec les mêmes tables.
+  const s1e120: Recipe = { ...s1Recipe(), name: 'Stout export (ébullition 120′)', boilMin: 120 };
+  const S1E120 = {
+    question: 'La même stout export, avec une ébullition de 120 minutes.',
+    recipe: s1e120, style: '16D', ...boilOf(s1e120), ibu: round(recipeIbu(s1e120).value),
+    recetteHoublons: s1e120.additions.map((a) => ({ additionId: a.id, hopKey: a.hopKey, name: hopRef(a.hopKey)?.name ?? a.hopKey, alpha: hopAlpha(a.hopKey), role: hopRole(a.hopKey),
+      moment: a.moment, grams: a.grams, gramsPerLitre: round(a.grams / s1e120.volumeL, 2), ibuParMoment: ibuByMoment(a.hopKey, a.grams, s1e120), ...tablesOf(a.hopKey, a.grams, s1e120) })),
+    ajoutsRapides: withTablesQ({ style: '16D', ...quickAdds(s1e120, s16d, S1_TASTING, { catalogueLimit: 0 }) }, s1e120),
+    note: 'Tinseth ne dépend que des minutes restantes : seule l’IBU au premier moût change avec la durée d’ébullition. Catalogue à acheter : voir S1 (même règle).',
+  };
 
   // S3 : American IPA, tout le stock classé par adéquation documentaire au style.
   const S3 = {
@@ -267,10 +285,12 @@ function buildPackCore() {
     moments: momentCatalogue(60),
     // Ordre des familles pour les radars (adjacences de la roue Beer Maverick), noms courts.
     roueAromes: ROUE_AROMES,
+    // Tables d’IBU libres (tranches de 5′, ébullition 60 à 120′, whirlpool) et jour du houblonnage à cru.
+    tablesIbu: { regle: TABLES_RULE, minutes: MINUTES_5, ebullitions: [60, 75, 90, 105, 120] }, dryHopJour: DRY_HOP_DAY,
     styles,
     stock,
     catalogue,
-    scenarios: { S1, S2, S3, S4, S5 },
+    scenarios: { S1, S2, S3, S4, S5, S1E120 },
   };
 }
 export const catalogueSize = () => CATALOGUE.length;

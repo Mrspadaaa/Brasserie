@@ -52,6 +52,10 @@ export function ibuPerGram(alpha: number, moment: MomentId, recipe: Recipe): num
   const m = MOMENTS[moment];
   return BrewingMath.hopIbu({ weightG: 1, alpha, stage: IBU_STAGE[moment], timeMin: m.minutes ?? (moment === 'wp' ? 20 : undefined), tempC: moment === 'wp' ? 80 : undefined } as never, recipe.volumeL, recipe.og, recipe.boilMin);
 }
+/** IBU d'un gramme pour un stade, une durée et une température libres (BrewingMath.hopIbu). */
+export function ibuPerGramAt(alpha: number, stage: 'firstWort' | 'boil' | 'whirlpool', timeMin: number | undefined, tempC: number | undefined, recipe: Recipe, boilMin = recipe.boilMin): number {
+  return BrewingMath.hopIbu({ weightG: 1, alpha, stage, timeMin, tempC } as never, recipe.volumeL, recipe.og, boilMin);
+}
 export interface Ibu { value: number; min: number; max: number; unknown: string[] }
 export function additionIbu(a: Addition, recipe: Recipe): Ibu {
   const ref = hopRef(a.hopKey);

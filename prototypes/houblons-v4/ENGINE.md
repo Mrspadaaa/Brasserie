@@ -148,6 +148,24 @@ Règle (`LEVEL_RULE`, testée) :
 - S2 (3B) : cible et fiches calculées ; profil de la bière tout « non situé » (recette sans
   houblon, levure sans profil V5.5, pas de dégustation) ; pas de voies, donc pas d'après.
 
+## Moments libres : tranches de 5′, ébullition de 60 à 120′, whirlpool, jour du dry hop
+
+- `ebullitionMinutes` et `ebullitionSource` sur S1, S4, S5 (60 min, recette du prototype reprise
+  de la v3 ; aucune durée propre dans le dépôt) et sur la variante **S1E120** (120 min).
+- `ibuTables` (`TABLES_RULE`) sur chaque houblon de `recetteHoublons` et des ajouts rapides
+  disponibles (et de la construction S4) : `ibuParMinute5` (minutes restantes 0 à 120 par 5,
+  `null` au-delà de l'ébullition), `ibuPremierMout` (60, 75, 90, 105, 120 min), `ibuWhirlpool`
+  (70 à 95 °C par 5, 10 à 40 min par 5), à la dose de l'ajout et à l'alpha retenu (`alphaUtilise`),
+  par `BrewingMath.hopIbu`. Tinseth ne dépend que des minutes restantes ; seul le premier moût
+  dépend de la durée totale ; BrewingMath ne fait varier ni densité ni volume pendant l'ébullition.
+- `dryHopJour` (`DRY_HOP_DAY`) : jour libre J+0 à J+14, sans IBU ; V5.5 ne déduit pas la phase du
+  jour (`hopTripletsOfRecipe`) : la phase « en fermentation active » ou « après fermentation » est
+  un choix explicite.
+- **Taille du pack** : tables absentes des listes longues (épuisés, catalogue), comme
+  `ibuParMoment` ; les voies ne portent plus `after` (profil V5.5 0–100 de la recette, presque
+  toujours « non situé ») : `profilApresNiveaux`, `profilApresContinu` et `profilApresCrans` le
+  remplacent pour l'affichage.
+
 ## Penser comme un brasseur : alpha, rôle, recette vide (`roles.ts`, `buildFromEmpty`)
 
 - **Alpha** (`hopAlpha`) sur chaque houblon de `recetteHoublons` (S1, S5) et des ajouts rapides :

@@ -3,7 +3,7 @@ import facts from '../data/faits-cites.json';
 import { NO_GOUTS, afterCrans, beerCrans, citations, hopRef, shoppingList, targetCrans } from '../src/engine';
 import { CHARACTERIZED_YEASTS, applyVoie, compareRankKeys, yeastDoubleImpact, yeastSignals } from '../src/engine';
 import { ROUE_AROMES, afterLevelsDelta, hopSheet, beerContinuous, targetContinuous, afterContinuous } from '../src/engine';
-import { buildFromEmpty, hopAlpha, hopRole } from '../src/engine';
+import { buildFromEmpty, hopAlpha, hopRole, ibuTables, DRY_HOP_DAY } from '../src/engine';
 import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, loadedRecipe, momentCatalogue, quickAddKey, recipeIbu, recipeLines, targetLevels, tastingMention, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
@@ -75,6 +75,25 @@ describe('Cas de figure S4 (sans houblon) et S5 (recette chargée)', () => {
     expect(resin.mention).toMatch(/^dégustation du brasseur, 18\.10 : « ma stout est trop résineuses/);
     expect(tastingMention({ ...S1_TASTING, batch: { id: 'B-12', date: '2026-09-30' } })).toBe('brassin du 30.09');
     expect(beerLevels(recipeProfile(s1Recipe()).profile, S1_TASTING, s16d).filter((b) => b.source !== 'dégustation').every((b) => b.mention === undefined)).toBe(true);
+  });
+});
+
+describe('Tables d’IBU libres (tranches de 5′, ébullition 60 à 120′, whirlpool)', () => {
+  it('Nugget 46 g : minutes restantes, premier moût selon la durée, whirlpool cohérent avec ibuParMoment ; null au-delà de l’ébullition', () => {
+    const t = ibuTables('beermaverick-nugget', 46, s1Recipe());
+    expect(t.ibuParMinute5).toHaveLength(25);
+    expect(t.ibuParMinute5![12]).toBeCloseTo(additionIbu(s1Recipe().additions[0], s1Recipe()).value, 1); // 60′
+    expect(t.ibuParMinute5![0]).toBe(0);
+    expect(t.ibuParMinute5![18]).toBeNull(); // 90′ > 60′ d'ébullition
+    for (let i = 1; i <= 12; i++) expect(t.ibuParMinute5![i]!).toBeGreaterThan(t.ibuParMinute5![i - 1]!);
+    expect(t.ibuPremierMout!.map((x) => x.ebullition)).toEqual([60, 75, 90, 105, 120]);
+    expect(t.ibuPremierMout![4].ibu).toBeGreaterThan(t.ibuPremierMout![0].ibu);
+    const wp = ibuByMoment('beermaverick-nugget', 46, s1Recipe()).find((m) => m.code === 'wp')!.ibu!.value;
+    expect(t.whirlpool!.ibu[2][2]).toBeCloseTo(wp, 1); // 80 °C, 20 min
+    const long = ibuTables('beermaverick-nugget', 46, { ...s1Recipe(), boilMin: 120 });
+    expect(long.ibuParMinute5![18]).not.toBeNull();
+    expect(long.ibuParMinute5![12]).toBe(t.ibuParMinute5![12]); // Tinseth : minutes restantes seulement
+    expect(DRY_HOP_DAY).toMatchObject({ jours: { min: 0, max: 14 }, ibu: null });
   });
 });
 
