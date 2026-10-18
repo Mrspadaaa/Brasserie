@@ -97,6 +97,44 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
+## Matin du 19.10, suite — jurys rentrés, loupes prêtes, tout posté : à lui de choisir
+
+Rien d'intégré (D50). Aucun agent en vol. Tout est commenté dans les tickets et sur la page de
+la nuit, version 3 : https://claude.ai/artifact/2VTRQP7nLXhX5GqDaAGAyU (section #131 ajoutée).
+
+- **Jurys indicatifs** (`ecran-1/JURY-NUIT-A.md`, `-B.md`, `-C.md`), postés en commentaire :
+  - #134 : p01 bulle ★★★, p03 ★★, p02 ★, p04 ★ ;
+  - #135 : m4 ★★★, h3 et h4 ★★★, aucune Suggestions à ★★★ ;
+  - #136 : r1 et c1 ★★★ ;
+  - #137 : u3 ★★★ ;
+  - #138 : Comparer p05 et p09 ★★★ ; Suggestions p03, p05 et p11 ★★★.
+- **#139** : le formulaire de note du journal de références (`src/ui/hopV55/ReferencePanel.tsx`)
+  est inachevé récupérable. Il lui manque « non goûté » ≠ « pas senti », un identifiant de
+  dégustation, la saisie en une fois et les 12 familles. `ObservationStateEditor` ne sert pas :
+  il ne saisit pas de note. Lignes contrôlées.
+- **Corrections des fils de fer** (fichiers locaux, ignorés par git par règle) :
+  - m4 : « pas goûté » dans le disque du centre (`RC = r(MIN/2)`), plus sur l'anneau 0 ;
+  - r2 : « mon lot 114 » avant « fiches 46–69 » ;
+  - Suggestions p03 : « +1,8 IBU ».
+  Toutes FIL6 OK, captures regardées.
+- **Moteur de substitution** : la raison écrit l'α qui fait la dose, « α 9,6 % (lot) contre
+  13 % (lot) » avec 62 g. Nouveau test, vérifié en échec sur l'ancien texte ; 77 tests verts.
+  Dans le pack, seules 192 raisons changent ; `pack-mini-protos.json` est identique.
+  Question posée dans #137 : à l'amertume, le moins de grammes d'abord entre scores proches ?
+- **Loupe (#134), prête sans intégration** : `ecran-1/candidats-v44/` = base v4.3 + loupe.
+  - Sources versionnées dans `sources/<id>/` ; `preparer.mjs` reconstruit à l'octet près.
+  - Candidats : p01, p02, p03, plus `version-p01-haut` (bulle au-dessus du doigt, ±10′).
+  - `controle-rail` : RAIL OK 4/4. Captures des trois cas dans `candidats-v44/captures/`.
+  - Intégrer le choix = copier `sources/<id>/*` dans `base/generateur/`, `node build.mjs`, puis
+    la batterie complète (base v4.4).
+- **#131** : `v4/sources-houblons/RAPPORT-SOURCES.md` (script
+  `prototypes/houblons-v4/scripts/rapport-sources.mjs`) : 146 mesures à source unique sur 320,
+  dont 134 Beer Maverick seule ; 129 absentes. `SOURCES.md` couvre 23 sources, avec licence lue.
+  BarthHaas (Ariana) et USDA (Cascade) vérifiés par le pilote.
+  Défaut trouvé : la fiche Citra cryo porte les plages de Citra en pellets.
+- **Prochaine action** : attendre ses choix (#134 loupe, #135, #136, #137 écran et règle, #138,
+  #139, #131 licences). Ensuite, intégrer en fidélité la seule variante choisie.
+
 ## Reprise après compaction (19.10, matin) — suite autonome, rien à refaire
 
 Le brasseur : « Je vais compacter ton contexte, continue sans mon intervention ». Rien ne

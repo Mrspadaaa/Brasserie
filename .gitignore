@@ -66,6 +66,8 @@ firestore.rules
 !/work/refonte-frontend/v4/ecran-1/fils3/generateur-*/*
 !/work/refonte-frontend/v4/ecran-1/base/consolide/*.html
 !/work/refonte-frontend/v4/ecran-1/base/generateur/*
+# Sources des loupes candidates de la base v4.4 (#134), reconstruites par candidats-v44/preparer.mjs.
+!/work/refonte-frontend/v4/ecran-1/candidats-v44/sources/*/*
 /work/refonte-frontend/**/_ecartes/
 /work/refonte-frontend/**/_v[0-9]*/
 /work/refonte-frontend/**/captures/
