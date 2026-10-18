@@ -35,10 +35,15 @@ adaptation locale d'une commande ; ils n'imposent pas de grossir toute l'app.
 
 ## Priorité d'interface : densité utile sur mobile
 
-**Maximiser l'espace disponible et compacter les données autant que possible,
-en conservant une lecture et des actions claires.** Cette décision explicite
-s'applique à toute l'interface : boutons, champs, en-têtes, pieds de page,
-navigation, titres, lignes, marges et panneaux.
+**Beaucoup d'information utile au même endroit, sans surcharge : au premier
+plan seulement ce qui sert vraiment, le reste à un toucher.** Mots du brasseur
+(18.10.2026) : « Il faut que ce soit dense sur téléphone car je veux voir un Max
+d'info au même endroit mais ça doit pas être surchargé, et surtout on doit voir
+que en premier plan les informations réellement utilise. Ensuite on peut trouver
+plus d'infos avec des raccords, renvoie, replis ou autre. » La compacité vise
+le chrome : boutons, champs, en-têtes, pieds de page, navigation, titres,
+lignes, marges et panneaux. Elle ne veut pas dire plus de texte ni du texte
+plus petit pour ce qu'on lit (« trop de text ouvert de base. ça pollue », C082).
 
 Des tailles standardisées sont souhaitées, mais nettement plus petites.
 Le téléphone doit montrer le travail du brasseur : données comparables,

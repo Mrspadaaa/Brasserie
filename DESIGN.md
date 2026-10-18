@@ -1,6 +1,6 @@
 ---
 name: L'Affinée
-description: Instrument de brasserie compact — un maximum de données utiles sur téléphone, des gestes courts et une lecture claire.
+description: Instrument de brasserie — l'information utile d'abord, le détail à un toucher ; un chrome compact, des gestes courts et une lecture claire.
 colors:
   cave-950: "#12100E"
   cave-900: "#1A1613"
@@ -382,6 +382,31 @@ légales. L'utiliser selon le rôle ci-dessus, avec contraste et zoom conservés
 Les mesures à surveiller restent plus visibles que leurs métadonnées. Éviter
 les titres géants, les unités sur une ligne séparée et les hauteurs de ligne
 qui doublent artificiellement chaque rangée.
+
+### Deux régimes : chrome compact, lecture claire (18.10.2026, D24)
+
+La compacité demandée par le brasseur visait les commandes et les espaces
+(C086 à C090) ; sur l'information, il demande l'inverse du texte : « trop de
+text ouvert de base. ça pollue » (C082), « on doit voir que en premier plan les
+informations réellement utilise » (18.10). Deux régimes en découlent.
+
+- **Chrome compact** : boutons, champs, en-têtes, barres, marges, libellés,
+  selon l'échelle ci-dessus (commandes 12–13 px).
+- **Lecture et décision** : la réponse de l'écran tient en une ligne à 16–17 px ;
+  la valeur lue à 14–16 px. Pas de paragraphe explicatif au premier plan.
+- **Trois plans.** Plan 1, visible sans geste : la réponse et ce qui permet
+  d'agir, 7 éléments au plus, 60 mots au plus dans le premier écran à 390 × 844
+  (mesuré par script). Plan 2, à un geste sur place : dépliage, groupe replié
+  sous sa synthèse. Plan 3, à deux gestes au plus : feuille de détail, calcul,
+  sources. Chaque déclencheur nomme ce qu'il ouvre.
+- **N'étiqueter que l'exception.** Verdict et couleur d'alerte seulement pour ce
+  qui sort de la norme ; ce qui est conforme reste neutre.
+- **Trois tailles de texte au plus par écran, une seule couleur d'alerte, pas de
+  légende au premier plan.** Une marque qui demande une légende est mal choisie,
+  ou sa légende va au plan 2.
+- **Cibles et contraste.** Une commande dans une rangée compacte prend toute la
+  rangée comme cible (24 px au moins, WCAG 2.5.8). Texte de 12–13 px à 4,5:1 au
+  moins sur son fond.
 
 Un champ peut garder du texte à 16 px dans une hauteur de 32 px : réduire son
 rembourrage, pas le zoom utilisateur. Ne pas écraser la protection de saisie

@@ -5,6 +5,12 @@ primary_target: "prototypes/houblons-v4/index.html"
 related_targets: []
 ---
 
+> **Superseded (18.10.2026, D23–D24).** The FIRST VIEWPORT and FORM sections below imposed
+> 70 to 80 objects on the first screen and produced the rejected "cockpit" mockups. They no
+> longer apply. Current sources: `work/refonte-frontend/v4/ecran-1/PRIORITE.md` (three
+> planes, budgets), `work/refonte-frontend/v4/SPEC-BRASSEUR.md`, `docs/ux-boosters.md`,
+> DESIGN.md « Deux régimes ». This contract is rewritten at the vertical slice.
+
 ## Scope and mode
 
 Prototype houblons v4, isolated project `prototypes/houblons-v4/`. Mode: Operate. Full brief: `work/refonte-frontend/v4/brief-v4.md`. Method: `docs/qualite/methode-conception-frontend.md`.

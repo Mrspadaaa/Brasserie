@@ -1,135 +1,117 @@
-# Méthode de conception frontend — L'Affinée
+# Méthode de conception frontend — L'Affinée (v2)
 
-Adoptée le 18.10.2026 après deux prototypes houblons refusés (v2, puis v3 arrêtée).
-Elle vaut pour tout écran de l'app, pas seulement les houblons. Elle complète
-[PRODUCT.md](../../PRODUCT.md), [DESIGN.md](../../DESIGN.md),
-[le guide UI](../ui-compacte.md) et [le protocole de revue UX](protocole-revue-ux.md).
+Version 2, 18.10.2026 (D24), après le rejet des 23 mini-maquettes houblons v4 :
+« On dirait des écrans de central nucléaire ou cockpit d'avion ». Elle vaut pour
+tout écran de l'app. Elle complète [PRODUCT.md](../../PRODUCT.md),
+[DESIGN.md](../../DESIGN.md) (section « Deux régimes ») et [le guide
+UI](../ui-compacte.md). Recherche qui la fonde : `work/refonte-frontend/v4/recherche/`
+(A causes, B pratiques UI, C workflow, D profils de goût, E données).
 
-## Pourquoi cette méthode
+## Pourquoi la v2
 
-Les échecs de la v2 et de la v3 ont trois causes vérifiées (décisions D17 à D19) :
+La v1 passait du brief à des pages haute fidélité. Les consignes mettaient tout au
+premier plan, la règle de vérité punissait l'omission et jamais le bavardage, le jury
+IA lisait le texte sans effort, et les formes imposées étaient des documents et des
+pupitres. Résultat mesuré : 166 à 383 mots au premier écran à 390 px (audit A).
 
-1. **Des substituts ont jugé à la place du brasseur** : contrôles automatiques et
-   relecteurs Fable étaient au vert, le brasseur a refusé.
-2. **Ses propres références ont été perdues** : l'inventaire n'a lu que ses messages
-   directs. Les demandes relayées dans les briefs d'agents (carte Territoire, échelles
-   relatives au style, bascule Barres / Radar) en sont sorties.
-3. **Aucune méthode de conception** : pas de parcours écrit avant les écrans, une seule
-   idée explorée à chaque fois, pas de critère à nous. D'où la comparaison avec un site
-   concurrent comme critère de réussite.
+## Huit principes
 
-## Cinq principes
+1. **Le brasseur juge, tout le reste filtre.** Les contrôles et le jury éliminent ; ils
+   ne choisissent pas à sa place.
+2. **Un seul document de ses demandes.** Tout brief part de
+   `SPEC-BRASSEUR.md` (ses mots exacts, citations vérifiées par script).
+3. **Le premier plan se décide avant de dessiner.** Trois plans (DESIGN.md) : plan 1
+   sans geste, plan 2 à un geste, plan 3 à deux gestes au plus.
+4. **Des références réelles et modernes**, pas des métaphores d'objets anciens.
+5. **Des composants communs.** Les auteurs composent avec un atelier de primitives ; ils
+   ne réinventent ni en-tête, ni piste, ni légende.
+6. **Maquettes basse fidélité en HTML gris, haute fidélité dans `prototypes/`** avec les
+   composants, les jetons et le moteur de l'app (sans changer le `package.json` de
+   l'app). La version choisie se déplace dans l'app, elle n'est pas réécrite.
+7. **Un écran fini avant d'élargir** (tranche verticale), une boîte de temps par étape,
+   un coupe-circuit : si une étape déborde, on réduit le périmètre, on n'ajoute ni règle
+   ni document.
+8. **Brief auteur d'une page.** Le reste passe dans les contrôles automatiques.
 
-1. **Le brasseur juge. Tout le reste filtre.** Les contrôles et les relecteurs
-   éliminent les défauts avant lui ; ils ne valident jamais à sa place.
-2. **Ses mots et ses choix passés d'abord.** On relit tout le corpus : messages,
-   briefs d'agents, décisions d'archive, concepts qu'il a aimés ou rejetés.
-3. **Le parcours et les données avant l'apparence.** On écrit ce que le brasseur
-   fait, dans quel ordre, avec quelles données et quels états, puis on dessine.
-4. **Une maquette reste une maquette.** Tant qu'on conçoit, on travaille en pages
-   HTML légères, avec de vraies données. Une maquette qui fonctionne en partie
-   suffit. La pile de l'app, les tests et l'outillage de production arrivent à
-   l'intégration, après l'accord du brasseur. (Mots du brasseur, 18.10 : « c'est
-   pour le moment juste des maquettes ».)
-5. **Pas plus d'outils que l'étape n'en demande.** Chaque étape a un outil et une
-   sortie ; on n'ajoute rien qui ne serve pas la décision du moment.
+## Le flux
 
-## Phase maquette (maintenant)
+| # | Étape | Livrable | Contrôle | Qui |
+|---|---|---|---|---|
+| 1 | Cadrer | Une page : 3 à 5 récits « Quand…, je veux…, pour… » avec citation, la question de l'écran, la boîte de temps, le coupe-circuit | citations vérifiées (`check-spec.mjs`) | pilote |
+| 2 | **Prioriser** | Guide de priorité : chaque élément reçoit un plan, la question qu'il sert, le nom de son déclencheur ; phrases canoniques des états (« non situé », « aucune voie », « ≈ ») | plan 1 ≤ 7 éléments ; chaque élément du plan 1 répond à un récit ; un juge neuf répond « le plan 1 seul répond-il à la question ? » | pilote, juge Opus neuf |
+| 3 | Références | Planche de 2 ou 3 écrans d'apps réelles par motif, plus Territoire ; une ligne « on prend… » par écran | chaque référence sert un élément des plans 1 ou 2 | Haiku collecte, pilote choisit |
+| 4 | Atelier | Primitives : piste au style (bullet graph), en-tête, segmenté, puce, rangée dépliable, feuille ; à partir de `src/ui` quand elles existent | capturées et regardées | pilote |
+| 5 | **Fils de fer gris** | Un lot de 11 (4 tièdes, 5 chauds, 2 froids), en boîtes grises avec vrais mots et chiffres, à 390 px | mesures automatiques, puis jury par paires ; 3 retenus | auteurs, jury |
+| 6 | **Coup d'œil du brasseur** | Une planche des 3 fils de fer retenus, un ping ; 30 s, une réponse d'un mot | ses mots consignés | brasseur |
+| 7 | Tranche verticale | Le fil de fer choisi devient un écran complet dans `prototypes/`, avec composants, jetons, moteur et états | build ; coup d'œil réduit ; parcours joué dans Chrome ; mesures | pilote |
+| 8 | Trois versions | 3 partis distincts, à 390, 412 et 1280 | mesures ; `impeccable critique` ; jury par paires avec ses critiques réelles en exemples | auteurs, pilote |
+| 9 | Porte B | Lien privé, 3 questions : « que vois-tu en premier ? », « où touches-tu pour… ? », « laquelle, et que changer ? » | ses mots consignés | brasseur |
+| 10 | Intégration et rétro | Écran par écran dans l'app ; jury comparé à son choix, grille corrigée | Vitest, `check-hop-*`, a11y, build | pilote |
 
-| Étape | Sortie | Outils |
-|---|---|---|
-| E0 Besoin | Corpus complet, banque de questions, 3 à 5 scénarios, chacun avec une citation du brasseur | Scripts d'extraction, vérification des citations mot pour mot |
-| E1 Références | Ce qu'il a aimé, ce qu'il a refusé, et pourquoi. La grammaire graphique prise ailleurs sert à dessiner, jamais à juger | Captures (Chrome, galerie d'archive), Claude in Chrome en lecture seule |
-| E2 Cadrage | Brief : tâche, résultat, états, limites ; structures possibles ; contrat de direction | Skill **impeccable** : `shape`, `concept-seed`, `surface-brief` |
-| E3 Données | Un jeu de données réel commun à toutes les maquettes, calculé par le moteur de l'app (importé, pas recopié) | Script Node, quelques tests de cohérence |
-| E4 Tournois | À chaque petite étape, des mini-maquettes, un jury à l'aveugle, puis une consolidation (section suivante) | HTML autonome, captures 390 et 1280 pour le jury, jury Fable |
-| E5 Trois maquettes finales | Trois maquettes complètes et cliquables, sur les vrais scénarios, construites sur des partis pris différents à partir des consolidations. Demande du brasseur : « me faire 3 version à la fin plutôt qu'une » | HTML autonome, Artifact privé |
-| E6 Revue | Pour chaque maquette : une critique notée, puis une relecture neuve | `impeccable critique`, relecteur Fable à l'aveugle |
-| E7 Le brasseur | Son choix parmi les trois, et son avis sur les finalistes des étapes serrées s'il le veut | Lien privé (Artifact). C'est la porte B |
+## Températures d'un lot (décision du brasseur : « 4 tiède, 5 chaude, 2 froide »)
 
-## Phase intégration (après l'accord du brasseur)
+- **Tiède** : un parti de structure imposé (liste dense et feuille, carte et liste,
+  tableau et détail en ligne, réponse d'abord et pistes…), jamais une métaphore d'objet.
+- **Chaud** : aucune contrainte de forme ; rupture attendue, dans les mêmes contrôles.
+- **Froid** : repart des idées déjà retenues par le brasseur ou par l'audit.
 
-La maquette retenue est reconstruite dans l'app (React, TypeScript, Tailwind, jetons de
-DESIGN.md). On y ajoute les vérifications de production :
+Relance obligatoire si aucun retenu ne passe les contrôles du plan 1 (une fois par
+étape, D22).
 
-- tests du domaine (Vitest) ;
-- contrôles de parcours `check-hop-*` (un toucher, règles U, budgets) ;
-- accessibilité (`a11y-audit`) ;
-- `impeccable detect` ;
-- revue finale **impeccable-finish-reviewer** ;
-- documentation **impeccable-documenter**.
+## Une plainte du brasseur devient un contrôle, avant tout autre travail
 
-Un atelier de composants ou des scénarios automatisés ne s'ajoutent que si un besoin
-réel apparaît.
+Le brasseur (18.10) : « je te demande à chaque fois, ce qu'il faut mettre en place,
+modifier, changer ect mais que au final on se retour toujours pas les même problèmes ».
+Une correction écrite dans un document ne suffit pas. Chaque plainte devient un
+contrôle automatique (ou une question fermée du jury), qui doit d'abord échouer sur la
+version rejetée. Rien ne lui est montré sans que tous ces contrôles passent. Registre :
+`work/refonte-frontend/v4/DEFAUTS-RECURRENTS.md` ; il ne se raccourcit pas.
 
-## Diverger puis converger, à chaque petite étape
+## UX boosters : exigés et récompensés
 
-Demande du brasseur (18.10) : « à chaque mini étape ajoute la création de mini Proto
-5,10,15,20 le nombre qu'il en faut. Ensuite jette les pire et consolide les meilleurs
-[…] Pour les Proto récompense à fond la créativité, disruption, l'ux ».
+Demande du brasseur (18.10) : « D'autres type de UX booster du genre doivent être mis en
+avant. C'est pas assez encourager. » Catalogue : [ux-boosters.md](../ux-boosters.md)
+(non exhaustif). Le guide de priorité (étape 2) nomme, pour chaque récit, le booster qui
+le sert. Chaque maquette en fait **fonctionner au moins quatre**, dont la bascule de
+lentille quand l'écran montre un profil (barres ↔ radar). Le jury les compte et les
+juge : un booster qui sert un récit rapporte, un gadget sans récit coûte.
 
-Chaque petite étape de conception suit ce cycle. Exemples d'étapes : une feuille de
-lecture, un geste, une comparaison, une vue d'ensemble, l'assemblage d'une page.
+## Contrôles automatiques (avant tout jury)
 
-1. **Diverger.** De 5 à 20 mini-prototypes, autant qu'il en faut pour couvrir des idées
-   vraiment différentes.
-   - Chacun est une page HTML jetable, sur le même jeu de données réel, qui joue les
-     mêmes scénarios.
-   - La diversité est forcée :
-     - chaque auteur reçoit une contrainte de forme différente (structures et défis
-       tirés par `impeccable concept-seed`, formes étrangères au métier) ;
-     - les auteurs sont de modèles différents (Opus, Sonnet, Fable) ;
-     - aucun auteur ne voit le travail des autres.
-   - À ce stade, on récompense la créativité, la rupture et l'intelligence du geste ;
-     la finition ne compte pas.
-2. **Juger à l'aveugle.** Un jury Fable, qui n'a rien conçu, note les captures (390 et
-   1280) sur une grille fixe :
-   - **créativité et rupture** : 30 % ;
-   - **clarté pour la tâche du brasseur** : 30 % ;
-   - **vérité des données** (rien d'inventé, une inconnue n'est jamais zéro, pas de
-     granularité plus fine que la donnée) : 20 % ;
-   - **densité selon DESIGN.md** : 10 % ;
-   - **faisabilité** : 10 %.
+- Mots visibles au premier écran à 390 × 844 : budget du guide de priorité, 80 au plus
+  (`tournoi/outils/mots-premier-ecran.mjs --max=80`).
+- Densité : part de la hauteur du premier écran couverte par du contenu, 0,80 au moins
+  (`fill` dans le JSON de `capture.mjs`).
+- Tout le plan 1 visible au premier écran ; aucun élément du plan 3 visible.
+- Aucun paragraphe de plus de deux lignes au premier écran.
+- Pas d'erreur de page ni de débordement horizontal (`tournoi/outils/capture.mjs`).
 
-   Un mini-prototype qui ment sur les données est éliminé, quelle que soit sa note.
-3. **Jeter.** La moitié la plus faible part, avec une ligne de raison chacune.
-4. **Consolider.** Un consolidateur part du meilleur et y greffe les idées nommées des
-   autres finalistes. Chaque greffe porte le nom de sa source. Le résultat devient le
-   composant de l'atelier (E4).
-5. **Garder la trace.** Captures, notes, raisons d'élimination et greffes vont dans le
-   dossier du tournoi. À la fin, le brasseur voit le résultat consolidé ; pour les étapes
-   où le tournoi a été serré, il voit aussi les deux ou trois finalistes, s'il le veut.
+Un échec élimine, comme un mensonge sur les données.
 
-Ce cycle est l'étape E4 de la phase maquette.
+## Le jury
+
+- **Un filtre, pas un juge de goût** (recherche C : les modèles choisissent le meilleur
+  écran à peine mieux que le hasard, avec un fort biais de position).
+- Il regarde d'abord le **coup d'œil** (`pNN-oeil.png`, premier écran réduit à 40 %) et
+  répond : « que dit cet écran en premier ? ». La réponse est comparée au plan 1.
+- Il compare ensuite **par paires, dans les deux ordres**, sur trois questions : le
+  plan 1 répond-il à la question ? lequel se lit le plus vite ? lequel montre le geste
+  suivant sans texte ? Un verdict qui change avec l'ordre compte comme égalité.
+- Il reçoit en exemples les verdicts réels du brasseur (SPEC-BRASSEUR, § 6).
 
 ## Rôles
 
-- **Pilote (Opus)** : besoin, cadrage, contrat, organisation des tournois, regard sur
-  chaque capture.
-- **Auteurs de mini-maquettes** (Opus, Sonnet, Fable, contexte neuf) : une ou deux
-  formes imposées chacun.
-- **Jury** (Fable, contexte neuf, sans les notes des auteurs) : notes et élimination.
-- **Consolidateur** (Opus) : le meilleur, plus les greffes nommées.
-- **Haiku** : extractions et captures ; le pilote relit.
-- **Le brasseur** : juge final de la maquette.
-
-## Outils de la phase maquette
-
-| Outil | Rôle | Où |
-|---|---|---|
-| impeccable | Cadrage, tirage de formes, contrat, critique | `.claude/skills/impeccable` |
-| Pages HTML autonomes | Mini-maquettes et maquette consolidée | `work/…/tournoi/`, `prototypes/` |
-| Script de captures (puppeteer-core) | Captures 390 et 1280 pour le jury, pas des tests | `work/refonte-frontend/v4/tournoi/outils/capture.mjs` |
-| Moteur de l'app, importé par un script Node | Le jeu de données réel commun | `prototypes/houblons-v4/` |
-| Fable | Jury à l'aveugle, relecture | Agents en contexte neuf |
-| Artifact privé | Montrer la maquette au brasseur | claude.ai |
-
-Le `package.json` de l'app ne change pas avant l'accord du brasseur.
+- **Pilote (Opus)** : cadrage, priorité, atelier, organisation, regard sur chaque capture.
+- **Auteurs** (Opus, Sonnet, Fable, contexte neuf) : un brief d'une page, l'atelier, les
+  références.
+- **Jury** (contexte neuf) : filtre par paires.
+- **Haiku** : collecte de références, mesures, captures ; le pilote relit.
+- **Le brasseur** : un coup d'œil sur les fils de fer, puis le choix entre 3 versions.
 
 ## Ce qui est interdit
 
-- Juger une version contre un site concurrent. La concurrence fournit une grammaire,
-  pas un critère.
+- Mettre au premier plan une explication, une légende, une source ou une note du moteur.
+- Imposer une métaphore d'objet comme gabarit de page.
 - Déclarer une étape faite sur un reçu ou une capture non regardée.
 - Recopier un calcul du domaine dans une maquette : les chiffres viennent du moteur.
-- Alourdir la phase maquette avec l'outillage de production.
+- Ajouter un document de cadrage quand une étape déborde.
