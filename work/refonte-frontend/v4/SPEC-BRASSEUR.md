@@ -98,6 +98,9 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
 - **Ses variations** (base v3) : « C'est n'importe quoi ce radar, pareil pourquoi j'ai pas eu mes
   variations ? » (commentaire) ; « Pourquoi j'ai pas vu les screen de test de mini proto pour les
   autres vue ??? » — 18.10, soir (D50 : aucun choix intégré sans son coup d'œil).
+- **Verdict sur le lot 4 publié** : « Pour la fiche, on est bon, ma bière moyen convaincu. Les deux
+  autres c'est n'importe quoi... » ; « Je vais compacter ton contexte et on va de focus là dessus » —
+  18.10, soir. (« les deux autres » : les radars de Suggestions et de Comparer.)
 - **La baseline** : « Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça
   différent complètement ? » — 18.10, soir (D26).
 - **Levure et biotransformation** : « Et tout ce qui est biotransformation avec levures, dry

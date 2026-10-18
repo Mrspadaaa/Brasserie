@@ -97,6 +97,42 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
+## Reprise après compaction (18.10, ~19:30) — FOCUS : Suggestions et Comparer
+
+- **Verdict du brasseur sur le lot 4 publié** (https://claude.ai/artifact/V657sqy2X8DoCkxW7r8ttV) :
+  « Pour la fiche, on est bon, ma bière moyen convaincu. Les deux autres c'est n'importe quoi... »
+  ; « on va de focus là dessus ». Les deux autres = Suggestions et Comparer (radars). Plus tôt, sur
+  leurs barres : « tout ce qui est suggestions et comparaison, c'est très mauvaise et de mon point
+  de vu pas terminé ». La fiche : celle de la base v3 (f08 greffée) — à confirmer d'un mot.
+- **Prochaine étape : Suggestions et Comparer, de zéro, pensés en brasseur.**
+  1. Cadrage court : quelle décision le brasseur prend dans chaque partie (Suggestions : quelle
+     voie appliquer à ma recette — le changement concret, l'effet sur mes familles face à la
+     cible du style, l'IBU tenu, le coût et le stock en icône ; Comparer : choisir entre 2 à 4
+     houblons — α, rôle, arômes, usage dans CETTE recette). Les quatre objets (D19, D40) :
+     ma bière, la cible du style, la comparaison manuelle, les suggestions de l'outil, jamais
+     mélangés.
+  2. Plaintes déjà connues en contrôles (D1–D50) ; écrire d'abord ce qui manque (avec témoin).
+  3. Lot 5 : 4 tièdes, 5 chaudes, 2 froides, sur la base v3/v4 (barres ET radar de ces deux
+     parties, un seul style de radar D39, 12 axes D48).
+  4. **D50** : publier TOUTES les variantes pour lui (page partagée, vue par vue), pinger,
+     attendre son choix cité dans SPEC-BRASSEUR, PUIS intégrer.
+- **En cours** : refonte du rail (base v4) `a17d51434443f441e`, brief `ecran-1/base/BRIEF-RAIL.md`
+  + 12 axes dans tous les radars (D48) + appui long sur toute la carte (D49). À son retour :
+  contrôle indépendant (`controle-lot.mjs work/refonte-frontend/v4/ecran-1/base --mots=80
+  --fill=0.8 --boosters=4 --recette --rail --detail --palette --radar --fiche --coherence
+  --objets`), regard, publication sur la page partagée (même file_path :
+  `scratchpad/artifact-lot3/site/index.html`, générateur `build.mjs --src=…`), puis fermer le fil
+  de commentaires 303c6753 (D49) une fois publié.
+- **État de la base** : v3 figée dans `base/_v3` (LOT OK indépendant), publiée sur
+  https://claude.ai/artifact/WSzBr4fBJerouWVtWqFiMJ ; v2 dans `base/_v2`.
+- **Moteur** : dernier commit `598610f5` (tables d'IBU 0–240′, premier moût, whirlpool, densité).
+  Point ouvert : durée de contact pour l'arôme figée.
+- **Contrôles** : D1 à D50 dans `v4/DEFAUTS-RECURRENTS.md` ; outils dans `v4/tournoi/outils/`
+  (controle-lot, -recette, -radar, -rail, -fiche, -baseline, -detail, -palette, -coherence,
+  -objets, fuite-touchers). SPEC-BRASSEUR : 100+ citations vérifiées.
+- **Mémoires** ajoutées ce soir : penser en brasseur, rien de figé, le brasseur choisit.
+- **Leçon git** : ne committer un dossier qu'une fois son auteur rentré.
+
 ## Reprise après compaction (18.10, ~16:00)
 
 - **En cours, lot 3** (`v4/ecran-1/fils3/`, brief `fils3/BRIEF-AUTEUR.md`, 9 pages par
