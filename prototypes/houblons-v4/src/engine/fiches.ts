@@ -6,6 +6,7 @@ import { describeFamilies } from './hops';
 import { additionIbu, MOMENTS, type Recipe } from './recipe';
 import { ibuByMoment } from './ibuMoments';
 import { goutsSets, type Gouts } from './gouts';
+import { SUBSTITUTION_METHOD, substitutes, type Substitute } from './substitution';
 
 type Span = [number, number] | null;
 interface SourcedRange { source: string; min: number; max: number; annee: number | null; url: string | null }
@@ -50,7 +51,8 @@ export function hopSheet(key: string, ctx: HopSheetContext) {
     aromes: FAMILIES.map((f: FamilyId) => ({ family: f, name: FAMILY_NAMES[f], level: desc[f].level === 'marqué' ? 2 : desc[f].level === 'cité' ? 1 : 0, label: desc[f].level, sources: desc[f].sources, of: desc[f].of, authors: desc[f].authors })),
     descripteurs: { beerMaverick: c.tagsFr, hopsteiner: c.descriptions.filter((d) => d.source.author === 'Hopsteiner').map((d) => d.text),
       cites: c.descriptions.filter((d) => d.source.author !== 'Hopsteiner' && d.source.author !== 'Beer Maverick').map((d) => ({ text: d.text, author: d.source.author, url: d.source.reference })) },
-    substituts: null, substitutsRaison: 'Aucune donnée de substitution dans le dépôt (les scores de substitution de Beer Maverick n’ont pas été importés).',
+    substituts: null, substitutsRaison: 'Aucune donnée de substitution dans le dépôt (les scores de substitution de Beer Maverick n’ont pas été importés). Remplaçants calculés depuis les fiches du dépôt : substitutsCalcules.',
+    substitutsCalcules: computedSubstitutes(key, ctx),
     stock: { grams: s ? s.grams : 0, etat: !s ? 'hors stock' : s.grams <= 0 ? 'épuisé' : 'en stock',
       libre: Object.fromEntries(ctx.recipes.map(({ scenario, recipe }) => [scenario, s ? Math.round((s.grams - recipe.additions.filter((a) => a.hopKey === key).reduce((t, a) => t + a.grams, 0)) * 10) / 10 : null])) },
     dansRecette: ctx.recipes.flatMap(({ scenario, recipe }) => recipe.additions.filter((a) => a.hopKey === key).map((a) => {
@@ -61,6 +63,30 @@ export function hopSheet(key: string, ctx: HopSheetContext) {
     ibuParGramme: { base: `${ctx.ibuBase.volumeL} L, DI ${ctx.ibuBase.og.toLocaleString('fr-CH', { minimumFractionDigits: 3 })}, ébullition ${ctx.ibuBase.boilMin} min`,
       moments: ibuByMoment(key, 1, ctx.ibuBase).map((m) => ({ code: m.code, ibuPerGram: m.ibuPerGram, ...(m.raison ? { raison: m.raison } : {}) })) },
     gout: { aime: liked.has(key) || liked.has(h.varietyId), exclu: excludedVarieties.has(h.varietyId) },
+  };
+}
+/** Remplaçants calculés d'une fiche (top 5, et les 3 meilleurs du stock, « en stock d'abord »).
+ * Référence de dose : premier ajout du houblon dans une recette des scénarios (son moment règle aussi les
+ * poids : Nugget à 60′ → amertume) ; sinon 1 g à 60′ sur la base d'IBU, poids par défaut. */
+function computedSubstitutes(key: string, ctx: HopSheetContext) {
+  const use = ctx.recipes.flatMap(({ scenario, recipe }) => recipe.additions.filter((a) => a.hopKey === key).map((a) => ({ scenario, recipe, moment: a.moment, grams: a.grams })))[0] ?? null;
+  const opts = use ? { moment: use.moment, grams: use.grams, recipe: use.recipe } : { moment: 'b60' as const, grams: 1, recipe: ctx.ibuBase, context: 'défaut' as const };
+  const all = substitutes(key, opts), stockFirst = substitutes(key, { ...opts, stockFirst: true });
+  const generalRank = new Map(all.remplacants.map((s) => [s.key, s.rank]));
+  const compact = (s: Substitute) => ({
+    rang: s.rank, key: s.key, name: s.name, score: s.score, palier: s.palier, composantes: s.composantes, couverture: s.couverture,
+    gagne: s.familles.gagne, perd: s.familles.perd,
+    dose: { grams: s.dose.grams, min: s.dose.min, max: s.dose.max, regle: s.dose.regle, ...(s.dose.raison ? { raison: s.dose.raison } : {}) },
+    stock: s.stock, ...(s.memeVariete ? { memeVariete: true } : {}), ...(s.amertumeDeconseillee ? { amertumeDeconseillee: s.amertumeDeconseillee } : {}), raison: s.raison,
+  });
+  return {
+    methode: SUBSTITUTION_METHOD.nom, date: SUBSTITUTION_METHOD.date, statut: SUBSTITUTION_METHOD.statut,
+    contexte: all.contexte, poids: all.poids,
+    reference: { scenario: use?.scenario ?? null, moment: all.reference.moment, momentLabel: all.reference.momentLabel, grams: all.reference.grams, ibu: all.reference.ibu,
+      base: use ? `ajout de la recette ${use.scenario}` : `1 g à 60′ (${ctx.ibuBase.volumeL} L, DI ${ctx.ibuBase.og.toLocaleString('fr-CH', { minimumFractionDigits: 3 })}) : la dose se lit en g par g` },
+    candidats: all.candidats, manque: all.manque,
+    remplacants: all.remplacants.slice(0, 5).map(compact),
+    enStock: stockFirst.remplacants.filter((s) => s.stock.etat === 'en stock').slice(0, 3).map((s) => ({ ...compact(s), rangGeneral: generalRank.get(s.key)! })),
   };
 }
 export const sheetKeys = (keys: string[]) => [...new Set(keys)].filter((k) => !!hopRef(k)).sort((a, b) => hopRef(a)!.name.localeCompare(hopRef(b)!.name, 'fr'));

@@ -107,6 +107,28 @@ yeastInfo(id) -> 'caractérisée' | 'inconnue' | 'absente' ; matrixContext(recip
 - **Voie d'amertume** : diminuer jusqu'au bas de la bande d'IBU du style, en plus des
   facteurs fixes.
 
+## Substitution de houblons (`substitutes`, `src/engine/substitution.ts`)
+
+Demande du brasseur (18.10.2026, soir). Les scores de substitution de Beer Maverick ne sont pas importés
+(`substituts: null` reste dans les fiches) : la ressemblance est **calculée** sur ce que les fiches savent,
+règle `SUBSTITUTION_RANKING` (exportée `RANKING` par le module), testée dans `tests/substitution.test.ts`.
+
+- Score 0–100 = moyenne pondérée des composantes connues : **arôme** (vecteur des 12 familles, niveau / 2 ×
+  N/M, cosinus), **huiles** (myrcène, humulène, caryophyllène, linalol ; écart des moitiés centrales des plages
+  / 2σ du catalogue), **amertume** (α 50 %, β 25 %, rôle-α 25 %). Poids : défaut 0,5/0,25/0,25 ; moment
+  d'amertume 0,2/0,2/0,6 ; moment d'arôme 0,6/0,3/0,1. À l'amertume, l'arôme ne compte que par la part
+  étrangère du remplaçant, et un α plus haut vaut 1.
+- Couverture : bonne, partielle (huiles inconnues), faible (arôme inconnu, classée derrière).
+- Classement : conflit de style (famille indésirable gagnée), couverture faible, à un moment d'amertume
+  produit d'arôme (cryo, lupuline, poudre) ou houblon de rôle aromatique derrière (« cher pour amériser »,
+  sauf original lui-même aromatique), puis si « en stock d'abord » palier (≥ 80, ≥ 65, ≥ 50) et stock, puis
+  score, puis nom.
+- Dose : même IBU au même moment (`ibuPerGram`), plage par l'α du remplaçant ; à froid, masse égale.
+- Pack : `fichesHoublons[].substitutsCalcules` (top 5 et 3 meilleurs du stock), règle dans
+  `pack-fiches.json` → `meta.substitution`.
+- Témoin négatif : `V4_TEMOIN_NEGATIF=substitution` met les poids à zéro ; les témoins de bon sens et la
+  cohérence du pack échouent.
+
 ## Ajout en un toucher (`quickAdds`, `S1.ajoutsRapides`, `S2.ajoutsRapides`)
 
 Règle (`QUICK_ADD_RULE`, testée dans `tests/donnees.test.ts`) :

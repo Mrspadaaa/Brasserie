@@ -6,6 +6,7 @@ import {
   proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,
   beerLevels, targetLevels, afterLevels, ficheLevels, recipeProfile, LEVEL_RULE, recipeIbu, loadedRecipe, recipeLines, LOADED_RECIPE_RULE,
   shoppingList, NO_GOUTS, GOUTS_RULE, beerCrans, targetCrans, afterCrans, CRANS_RULE, yeastDoubleImpact, yeastSignals,
+  SUBSTITUTION_METHOD, SUBSTITUTION_RANKING, SUBSTITUTION_WEIGHTS, SUBSTITUTION_PALIERS, oilScales,
   toleranceScale, ecartTolerances, TOLERANCE_RULE, afterLevelsDelta, ROUE_AROMES, hopSheet, sheetKeys, hopAlpha, hopRole, buildFromEmpty, ibuTables, TABLES_RULE, DRY_HOP_DAY, MINUTES_5, BOIL_LENGTHS, WP_TEMPERATURES, WP_MINUTES, densityFactors, beerContinuous, targetContinuous, afterContinuous, CONTINU_RULE,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie, type FicheLevel,
 } from '../engine';
@@ -355,7 +356,9 @@ export function buildAll() {
   const pointer = { fichier: FICHES_FILE, nombre: fiches.length, raison: 'Pack et fiches dépassent 500 ko ensemble : fiches dans un fichier à part.' };
   return { pack: { ...pack, meta: { ...pack.meta, fichesHoublons: pointer } },
     fiches: { meta: { name: 'Fiches houblons des mini-prototypes v4', date: PACK_DATE, status: 'à valider par le brasseur', pack: 'prototypes/houblons-v4/data/pack-mini-protos.json',
-      lecture: ['Chaque fiche ne contient que des données du dépôt, avec leur source ; null et une raison quand la donnée manque.', 'aromes : citations des fiches (0 non décrit, 1 cité, 2 marqué), pas une intensité dans la bière.', 'ibuParGramme : BrewingMath.hopIbu, sur la base indiquée.'] },
+      lecture: ['Chaque fiche ne contient que des données du dépôt, avec leur source ; null et une raison quand la donnée manque.', 'aromes : citations des fiches (0 non décrit, 1 cité, 2 marqué), pas une intensité dans la bière.', 'ibuParGramme : BrewingMath.hopIbu, sur la base indiquée.',
+        'substitutsCalcules : remplaçants calculés par le moteur depuis les fiches du dépôt (règle dans substitution) ; substituts reste null (scores Beer Maverick non importés). Top 5 parmi le catalogue et le stock, puis les 3 meilleurs du stock (« en stock d’abord », rangGeneral = rang sans préférence de stock).'],
+      substitution: { methode: SUBSTITUTION_METHOD, regle: SUBSTITUTION_RANKING, poids: SUBSTITUTION_WEIGHTS, paliers: SUBSTITUTION_PALIERS, ecartTypesHuiles: oilScales() } },
       fichesHoublons: fiches } };
 }
 export function buildPack() { return buildAll().pack; }

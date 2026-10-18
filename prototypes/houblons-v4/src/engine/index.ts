@@ -12,7 +12,11 @@ export { readBeer, readingSummary, voiesSummary, gapSummary, type ReadingEntry, 
 export { quickAdds, quickAddKey, QUICK_ADD_RULE, type QuickAdd } from './quickAdd';
 export { ibuByMoment, momentCatalogue, IBU_MOMENTS, ibuTables, TABLES_RULE, DRY_HOP_DAY, MINUTES_5, BOIL_LENGTHS, WP_TEMPERATURES, WP_MINUTES, densityFactors, type IbuAtMoment, type MomentInfo, type IbuTables } from './ibuMoments';
 export { loadedRecipe, recipeLines, shoppingList, buildFromEmpty, LOADED_RECIPE_RULE, CONSTRUCTION_RULE } from './cases';
-export { hopRole, hopAlpha, ROLE_RULE, type HopRoleValue, type HopAlpha } from './roles';
+export { hopRole, hopAlpha, roleFromAlpha, ROLE_RULE, type HopRoleValue, type HopAlpha } from './roles';
+export {
+  substitutes, oilScales, RANKING as SUBSTITUTION_RANKING, SUBSTITUTION_METHOD, WEIGHTS as SUBSTITUTION_WEIGHTS, PALIERS as SUBSTITUTION_PALIERS,
+  type Substitute, type SubstitutionOptions, type SubstitutionResult, type SubstitutionContext, type SubstitutionWeights,
+} from './substitution';
 export { additionEffect } from './voies';
 export { NO_GOUTS, GOUTS_RULE, goutsSets, type Gouts, type GoutEntry } from './gouts';
 export { yeastDoubleImpact, yeastChangeEffect, yeastSignals, CHARACTERIZED_YEASTS, type YeastDoubleImpact, type YeastSignal } from './yeast';

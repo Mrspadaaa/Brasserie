@@ -35,7 +35,7 @@ export function hopRole(key: string): { value: HopRoleValue | null; source: stri
   const a = h.alpha?.value;
   if (a === undefined) return { value: null, source: 'règle', raison: 'Alpha inconnu : rôle non déterminé.' };
   const desc = describeFamilies(h.varietyId);
-  const marked = FAMILIES.some((f) => desc[f].level === 'marqué');
-  const value: HopRoleValue = a >= 10 ? (marked ? 'double' : 'amérisant') : a <= 6 ? 'aromatique' : 'double';
-  return { value, source: `règle : ${ROLE_RULE.nom}` };
+  return { value: roleFromAlpha(a, FAMILIES.some((f) => desc[f].level === 'marqué')), source: `règle : ${ROLE_RULE.nom}` };
 }
+/** Deuxième partie de ROLE_RULE : rôle par l'alpha seul (une famille « marquée » rend double un α ≥ 10 %). */
+export const roleFromAlpha = (alpha: number, marked: boolean): HopRoleValue => (alpha >= 10 ? (marked ? 'double' : 'amérisant') : alpha <= 6 ? 'aromatique' : 'double');
