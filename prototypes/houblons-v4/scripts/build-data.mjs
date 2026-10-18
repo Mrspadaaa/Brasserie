@@ -45,10 +45,22 @@ for (const v of hs) {
   const thiol = v.descriptions.map((d) => d.text.match(/Thiol impact » : (\w+)/)?.[1]).find(Boolean) ?? null;
   const rec = { id: v.id, descriptions: v.descriptions.filter((d) => /^(Familles déclarées|Descripteurs de la fiche)/.test(d.text)),
     linalool: lin ? { range: lin.range ? [lin.range.min, lin.range.max] : [lin.value, lin.value], unit: lin.unit, reference: lin.source.reference, year: lin.source.year } : null,
-    thiol: thiol ? { class: thiol, reference: v.descriptions[0]?.source?.reference ?? null } : null };
+    thiol: thiol ? { class: thiol, reference: v.descriptions[0]?.source?.reference ?? null } : null,
+    // Fiche houblon : alpha, bêta, huile totale de la fiche Hopsteiner (pour comparer aux plages Beer Maverick).
+    name: v.name, analysis: { alpha: range(v, 'alpha'), beta: range(v, 'beta'), totalOil: range(v, 'totalOil') },
+    reference: v.descriptions[0]?.source?.reference ?? null, year: v.descriptions[0]?.source?.year ?? null };
   for (const n of [v.name, ...v.name.split(/\s*[/(]\s*/)]) if (n) hsByName.set(fold(n.replace(/\)$/, '')), rec);
 }
 const HS_ALIAS = { saazcz: 'saazer', styriangoldings: 'styriangoldingcelea', styriangolding: 'styriangoldingcelea', saaz: 'saazer', hallertau: 'hallertauermittelfruh', hallertaumittelfruh: 'hallertauermittelfruh', hallertautaurus: 'hallertauertaurus', hallertautradition: 'hallertauertradition', magnum: 'hallertauermagnum', eastkentgoldings: 'goldinguk', ctz: 'columbus' };
+
+// Usages attestés par style (fournisseurs, IPA seulement dans le dépôt), reliés par le nom ou un alias (repris de la v3).
+const usagePack = read('src/data/hopStyleUsageBootstrap.json').varieties;
+const usageByName = new Map();
+for (const u of usagePack) for (const n of [u.name, ...(u.aliases || [])]) usageByName.set(fold(n), u);
+const usageOf = (v) => {
+  const u = usageByName.get(fold(v.name)) || (v.aliases || []).map((a) => usageByName.get(fold(a))).find(Boolean);
+  return u ? u.uses.map((x) => ({ styles: x.styles, source: x.source ? `${x.source.author}, ${x.source.title}` : null, url: x.source?.reference ?? null })) : null;
+};
 
 // Faits cités un à un (data/faits-cites.json, D25) : descriptions sourcées ajoutées à la variété.
 const facts = JSON.parse(fs.readFileSync(path.join(here, 'data', 'faits-cites.json'), 'utf8')).facts;
@@ -69,6 +81,11 @@ const varieties = bm.map((v) => {
       ...facts.filter((f) => f.varietyId === id).map((f) => f.description)],
     citedFacts: facts.filter((f) => f.varietyId === id).map((f) => f.id),
     hopsteinerId: h?.id ?? null, hsLinalool: h?.linalool ?? null, hsThiol: h?.thiol ?? null,
+    hs: h ? { name: h.name, alpha: h.analysis.alpha, beta: h.analysis.beta, totalOil: h.analysis.totalOil, reference: h.reference, year: h.year } : null,
+    // Composants de l'huile (% de l'huile, Beer Maverick) ; le farnésène n'a pas été importé dans le dépôt.
+    oils: { myrcene: range(v, 'myrcene'), humulene: range(v, 'humulene'), caryophyllene: range(v, 'caryophyllene') },
+    bmYear: v.descriptions?.[0]?.source?.year ?? null,
+    usage: usageOf(v),
     url: v.descriptions?.[0]?.source?.reference || null,
   };
 });

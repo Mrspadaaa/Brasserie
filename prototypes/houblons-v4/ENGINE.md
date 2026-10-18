@@ -148,6 +148,23 @@ Règle (`LEVEL_RULE`, testée) :
 - S2 (3B) : cible et fiches calculées ; profil de la bière tout « non situé » (recette sans
   houblon, levure sans profil V5.5, pas de dégustation) ; pas de voies, donc pas d'après.
 
+## Radars en intensité absolue (D24) et fiches houblons
+
+- **`profilApresNiveaux`, `deltaNiveaux`** (voies de S1 ; `afterLevelsDelta`) : niveaux 0–3
+  après la voie, même convention que `profilBiere` (la dégustation prime) ; écart de niveau par
+  famille, « ≈ » si l'effet établi reste sous le seuil d'écart du style, `null` s'il n'est pas
+  établi. S4 et S5 n'ont pas de voies.
+- **`roueAromes`** (pack) : ordre des familles pour les radars, adjacences de la roue de Beer
+  Maverick (grammaire, pas critère), avec noms courts français.
+- **Fiches houblons** (`hopSheet`, `buildAll`) : une fiche par houblon de S1, S4, S5 (recette,
+  ajouts rapides, voies, profilFiches) et des comparés de S2 : origine, usages attestés, alpha
+  et bêta (Beer Maverick, Hopsteiner, divergence, valeur retenue), huiles (totale ; myrcène,
+  humulène, caryophyllène Beer Maverick ; linalol Hopsteiner ; farnésène `null`, non importé),
+  arômes (citations 0–2, N fiches sur M, auteurs), descripteurs, substituts (`null` : aucune
+  donnée dans le dépôt), stock (état, libre par scénario), présence dans les recettes (dose, IBU),
+  IBU par gramme selon le moment (base S1), goût. Pack et fiches dépassent 500 ko ensemble : les
+  fiches sont dans `data/pack-fiches.json`, pointé par `meta.fichesHoublons` du pack.
+
 ## La levure (`yeast.ts` ; MODELE.md « La levure », R43, R44, rapport E rec. 8)
 
 - **Double impact** (`yeastDoubleImpact`, `yeast` de S1, S2, S4, S5) : `aromePropre` = repère

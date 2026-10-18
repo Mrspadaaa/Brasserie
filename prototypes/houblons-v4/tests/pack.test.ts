@@ -1,17 +1,23 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { buildPack } from '../src/pack/buildPack';
+import { buildAll } from '../src/pack/buildPack';
 
 const file = path.resolve(__dirname, '../data/pack-mini-protos.json');
+const fichesFile = path.resolve(__dirname, '../data/pack-fiches.json');
 
 describe('Pack des mini-prototypes', () => {
   // Fin de ligne normalisée : Git peut extraire le fichier en CRLF sous Windows.
   const text = fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n');
   const stored = JSON.parse(text);
+  const built = buildAll();
 
-  it('les chiffres du pack sont exactement ceux que rend le moteur', () => {
-    expect(stored).toEqual(JSON.parse(JSON.stringify(buildPack())));
+  it('les chiffres du pack et des fiches sont exactement ceux que rend le moteur', () => {
+    expect(stored).toEqual(JSON.parse(JSON.stringify(built.pack)));
+    if (built.fiches) {
+      expect(stored.meta.fichesHoublons.fichier).toBe('prototypes/houblons-v4/data/pack-fiches.json');
+      expect(JSON.parse(fs.readFileSync(fichesFile, 'utf8'))).toEqual(JSON.parse(JSON.stringify(built.fiches)));
+    } else expect(stored.fichesHoublons.length).toBeGreaterThan(0);
   });
 
   it('forme : JSON simple sous 400 ko, 12 familles, 3 styles, stock et catalogue, 3 scénarios', () => {

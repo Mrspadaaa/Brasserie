@@ -6,6 +6,7 @@ import {
   proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,
   beerLevels, targetLevels, afterLevels, ficheLevels, recipeProfile, LEVEL_RULE, recipeIbu, loadedRecipe, recipeLines, LOADED_RECIPE_RULE,
   shoppingList, NO_GOUTS, GOUTS_RULE, beerCrans, targetCrans, afterCrans, CRANS_RULE, yeastDoubleImpact, yeastSignals,
+  afterLevelsDelta, ROUE_AROMES, hopSheet, sheetKeys,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie, type FicheLevel,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
@@ -86,7 +87,7 @@ function voieEntry(v: Voie, directed: FamilyId[]) {
   };
 }
 
-export function buildPack() {
+function buildPackCore() {
   const styles = Object.fromEntries(PACK_STYLES.map((c) => [c, styleEntry(getStyleScale(c))]));
   const stock = STOCK.map((s) => ({ ...hopEntry(hopProfile(s.key)), grams: s.grams, form: s.form, items: s.items, exhausted: s.grams <= 0 }));
   const catalogue = Object.entries(CATALOGUE_IDS).flatMap(([style, ids]) => ids.map((id) => ({ ...hopEntry(hopProfile(`beermaverick-${id}`)), forStyle: style })));
@@ -136,7 +137,9 @@ export function buildPack() {
   // Les quatre objets de l'écran (work/refonte-frontend/v4/ecran-1/MODELE.md), en niveaux prêts à dessiner.
   const s16d = getStyleScale('16D');
   const beer1 = beerLevels(r1.before.profile, S1_TASTING, s16d);
-  S1.voies.forEach((v, i) => Object.assign(v, { profilApres: afterLevels(beer1, r1.voies[i].effect), profilApresCrans: afterCrans(beer1, r1.voies[i].effect, s16d).map(({ family, crans, display, deltaCrans }) => ({ family, crans, display, deltaCrans })) }));
+  S1.voies.forEach((v, i) => Object.assign(v, { profilApres: afterLevels(beer1, r1.voies[i].effect), profilApresCrans: afterCrans(beer1, r1.voies[i].effect, s16d).map(({ family, crans, display, deltaCrans }) => ({ family, crans, display, deltaCrans })),
+    // Radars en intensité absolue (D24) : niveaux 0–3 après la voie et écart de niveau.
+    profilApresNiveaux: afterLevelsDelta(beer1, r1.voies[i].effect, s16d).niveaux, deltaNiveaux: afterLevelsDelta(beer1, r1.voies[i].effect, s16d).delta }));
   const ficheKeys = [...new Set([...s1Recipe().additions.map((a) => a.hopKey), ...STOCK.map((s) => s.key)])];
   Object.assign(S1, { echelles: LEVEL_RULE, echellesCrans: CRANS_RULE, profilBiereCrans: beerCrans(beer1, s16d), cibleStyleCrans: targetCrans(s16d, r1.direction),
     profilBiere: beer1, cibleStyle: targetLevels(s16d),
@@ -259,6 +262,8 @@ export function buildPack() {
     families: FAMILIES.map((f, i) => ({ id: f, name: FAMILY_NAMES[f], order: i })),
     // Types d'ajout et « quand », dans l'ordre d'affichage (ébullition de 60 min des recettes du pack).
     moments: momentCatalogue(60),
+    // Ordre des familles pour les radars (adjacences de la roue Beer Maverick), noms courts.
+    roueAromes: ROUE_AROMES,
     styles,
     stock,
     catalogue,
@@ -266,3 +271,39 @@ export function buildPack() {
   };
 }
 export const catalogueSize = () => CATALOGUE.length;
+
+export const PACK_MAX_BYTES = 500 * 1024;
+export const FICHES_FILE = 'prototypes/houblons-v4/data/pack-fiches.json';
+type Core = ReturnType<typeof buildPackCore>;
+type KeyRow = { key?: string; hopKey?: string };
+/** Houblons qui apparaissent dans S1, S4 ou S5 (recette, ajouts rapides, voies, profilFiches) et les comparés de S2. */
+function sheetKeysOf(pack: Core) {
+  const sc = pack.scenarios as unknown as Record<string, Record<string, unknown>>;
+  const list = (x: unknown) => (Array.isArray(x) ? (x as KeyRow[]) : []);
+  const keys: string[] = [];
+  for (const id of ['S1', 'S4', 'S5']) {
+    const s = sc[id];
+    keys.push(...list(s.recetteHoublons).map((r) => r.hopKey!));
+    const q = s.ajoutsRapides as Record<string, unknown>;
+    for (const part of ['disponibles', 'epuises', 'catalogue']) keys.push(...list(q[part]).map((r) => r.key!));
+    for (const v of list(s.voies) as unknown as { actions: KeyRow[] }[]) keys.push(...v.actions.map((a) => a.hopKey!));
+    keys.push(...list(s.profilFiches).map((r) => r.key!));
+  }
+  keys.push(...list(sc.S2.hops).map((r) => r.key!));
+  return sheetKeys(keys.filter(Boolean));
+}
+/** Pack et fiches houblons : fiches dans le pack si l'ensemble tient sous 500 ko, sinon dans pack-fiches.json. */
+export function buildAll() {
+  const pack = buildPackCore();
+  const sc = pack.scenarios as unknown as Record<string, { recipe: Recipe }>;
+  const ctx = { recipes: ['S1', 'S4', 'S5'].map((scenario) => ({ scenario, recipe: sc[scenario].recipe })), ibuBase: s1Recipe(), gouts: NO_GOUTS };
+  const fiches = sheetKeysOf(pack).map((k) => hopSheet(k, ctx));
+  const embedded = { ...pack, fichesHoublons: fiches };
+  if (Buffer.byteLength(JSON.stringify(embedded)) + 1 <= PACK_MAX_BYTES) return { pack: embedded, fiches: null };
+  const pointer = { fichier: FICHES_FILE, nombre: fiches.length, raison: 'Pack et fiches dépassent 500 ko ensemble : fiches dans un fichier à part.' };
+  return { pack: { ...pack, meta: { ...pack.meta, fichesHoublons: pointer } },
+    fiches: { meta: { name: 'Fiches houblons des mini-prototypes v4', date: PACK_DATE, status: 'à valider par le brasseur', pack: 'prototypes/houblons-v4/data/pack-mini-protos.json',
+      lecture: ['Chaque fiche ne contient que des données du dépôt, avec leur source ; null et une raison quand la donnée manque.', 'aromes : citations des fiches (0 non décrit, 1 cité, 2 marqué), pas une intensité dans la bière.', 'ibuParGramme : BrewingMath.hopIbu, sur la base indiquée.'] },
+      fichesHoublons: fiches } };
+}
+export function buildPack() { return buildAll().pack; }

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import facts from '../data/faits-cites.json';
 import { NO_GOUTS, afterCrans, beerCrans, citations, hopRef, shoppingList, targetCrans } from '../src/engine';
 import { CHARACTERIZED_YEASTS, applyVoie, compareRankKeys, yeastDoubleImpact, yeastSignals } from '../src/engine';
+import { ROUE_AROMES, afterLevelsDelta, hopSheet } from '../src/engine';
 import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, loadedRecipe, momentCatalogue, quickAddKey, recipeIbu, recipeLines, targetLevels, tastingMention, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
@@ -73,6 +74,49 @@ describe('Cas de figure S4 (sans houblon) et S5 (recette chargée)', () => {
     expect(resin.mention).toMatch(/^dégustation du brasseur, 18\.10 : « ma stout est trop résineuses/);
     expect(tastingMention({ ...S1_TASTING, batch: { id: 'B-12', date: '2026-09-30' } })).toBe('brassin du 30.09');
     expect(beerLevels(recipeProfile(s1Recipe()).profile, S1_TASTING, s16d).filter((b) => b.source !== 'dégustation').every((b) => b.mention === undefined)).toBe(true);
+  });
+});
+
+describe('Radars en intensité absolue (D24) et fiches houblons', () => {
+  const s16d = getStyleScale('16D');
+  const beer = beerLevels(recipeProfile(s1Recipe()).profile, S1_TASTING, s16d);
+
+  it('profilApresNiveaux et deltaNiveaux : la dégustation prime, « ≈ » sous le seuil, null sans effet établi', () => {
+    const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING, leviersLevure: true });
+    for (const v of r.voies) {
+      const { niveaux, delta } = afterLevelsDelta(beer, v.effect, s16d);
+      expect(niveaux.map((n) => n.family)).toEqual(s16d.order);
+      expect(niveaux.find((n) => n.family === 'resin')!.level).toBe(3);
+      for (const f of FAMILIES) {
+        const e = v.effect[f];
+        if (!e.established) expect(delta[f]).toBeNull();
+        else if (Math.abs(e.central!) < s16d.families[f].threshold) expect(delta[f]).toBe('≈');
+        else expect(delta[f] === null || Number.isInteger(delta[f])).toBe(true);
+      }
+    }
+    expect(new Set(ROUE_AROMES.map((r) => r.id)).size).toBe(12);
+    expect(ROUE_AROMES.map((r) => r.id)).toEqual(['citrus', 'tropical', 'melon', 'stoneFruit', 'pomeFruit', 'berries', 'floral', 'green', 'herbal', 'spice', 'earthy', 'resin']);
+  });
+
+  it('fiche houblon : sources et divergences, composants absents à null avec raison, recette, IBU par gramme, goût', () => {
+    const ctx = { recipes: [{ scenario: 'S1', recipe: s1Recipe() }, { scenario: 'S5', recipe: loadedRecipe(s1Recipe(), s16d) }], ibuBase: s1Recipe(), gouts: NO_GOUTS };
+    const f = hopSheet('beermaverick-nugget', ctx);
+    expect(f.alpha.sources.map((s) => s.source)).toEqual(['Beer Maverick', 'Hopsteiner']);
+    expect(f.alpha.divergence).toBe('recouvrantes');
+    expect(f.alpha.retenu).toMatchObject({ value: 13, from: 'fiche de stock' });
+    expect(f.huiles.composants.myrcene).toMatchObject({ min: 48, max: 59, unite: '% de l’huile' });
+    expect(f.huiles.composants.farnesene).toBeNull();
+    expect(f.huiles.composants.farneseneRaison).toMatch(/non importé/);
+    expect(f.substituts).toBeNull();
+    expect(f.dansRecette.map((d) => [d.scenario, d.grams])).toEqual([['S1', 46], ['S5', 42.5]]);
+    expect(f.dansRecette[0].ibu).toBeCloseTo(59.7, 1);
+    const b60 = f.ibuParGramme.moments.find((m) => m.code === 'b60')!;
+    expect(b60.ibuPerGram!.value).toBeCloseTo(1.3, 1);
+    expect(f.ibuParGramme.moments.find((m) => m.code === 'dryPost')).toMatchObject({ ibuPerGram: null });
+    expect(f.gout).toEqual({ aime: false, exclu: false });
+    expect(f.aromes.find((a) => a.family === 'resin')).toMatchObject({ level: 2, sources: 2, of: 4 });
+    expect(f.stock).toMatchObject({ etat: 'épuisé', libre: { S1: -46, S5: -42.5 } });
+    expect(hopSheet('beermaverick-saaz-late', ctx).stock.etat).toBe('hors stock');
   });
 });
 

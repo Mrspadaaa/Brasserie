@@ -132,6 +132,26 @@ export function afterCrans(beer: BeerLevel[], effect: Record<FamilyId, FamilyEff
   });
 }
 
+/** Radars en intensité absolue (D24) : niveaux 0–3 après la voie, et écart de niveau par famille :
+ * « ≈ » si l'effet établi reste sous le seuil d'écart du style, null s'il n'est pas établi ou si un niveau manque. */
+export function afterLevelsDelta(beer: BeerLevel[], effect: Record<FamilyId, FamilyEffect>, scale: StyleScale) {
+  const after = afterLevels(beer, effect);
+  const niveaux = after.map((a) => ({ family: a.family, level: a.level }));
+  const delta = Object.fromEntries(after.map((a) => {
+    const e = effect[a.family], b = beer.find((x) => x.family === a.family)!;
+    if (!e.established || e.central === null) return [a.family, null];
+    if (Math.abs(e.central) < scale.families[a.family].threshold) return [a.family, '≈'];
+    return [a.family, a.level === null || b.level === null ? null : a.level - b.level];
+  })) as Record<FamilyId, number | '≈' | null>;
+  return { niveaux, delta };
+}
+/** Ordre des familles pour les radars : adjacences de la roue d'arômes de Beer Maverick (grammaire, pas critère). */
+export const ROUE_AROMES: { id: FamilyId; nom: string }[] = [
+  { id: 'citrus', nom: 'Agrumes' }, { id: 'tropical', nom: 'Tropical' }, { id: 'melon', nom: 'Melon' }, { id: 'stoneFruit', nom: 'Noyau' },
+  { id: 'pomeFruit', nom: 'Pomme-poire' }, { id: 'berries', nom: 'Petits fruits' }, { id: 'floral', nom: 'Floral' }, { id: 'green', nom: 'Herbe' },
+  { id: 'herbal', nom: 'Herbacé' }, { id: 'spice', nom: 'Épicé' }, { id: 'earthy', nom: 'Terreux' }, { id: 'resin', nom: 'Résine' },
+];
+
 export interface FicheLevel { family: FamilyId; name: string; status: FamilyStatus; level: 0 | 1 | 2; label: string; sources: number; of: number }
 /** Fiches d'un houblon sur les 12 familles, dans l'ordre du style. */
 export function ficheLevels(varietyId: string, scale: StyleScale): FicheLevel[] {

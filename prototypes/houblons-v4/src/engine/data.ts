@@ -19,6 +19,13 @@ export interface CatalogueHop {
   /** Hopsteiner : linalol (% de l'huile) et classe « Thiol impact » ; signaux, jamais des intensités. */
   hsLinalool: { range: [number, number]; unit: string; reference: string; year: number | null } | null;
   hsThiol: { class: string; reference: string | null } | null;
+  /** Fiche Hopsteiner reliée : alpha, bêta, huile totale (plages), référence et année. */
+  hs: { name: string; alpha: [number, number] | null; beta: [number, number] | null; totalOil: [number, number] | null; reference: string | null; year: number | null } | null;
+  /** Composants de l'huile, % de l'huile (Beer Maverick). */
+  oils: { myrcene: [number, number] | null; humulene: [number, number] | null; caryophyllene: [number, number] | null };
+  bmYear: number | null;
+  /** Usages attestés par un fournisseur (hopStyleUsageBootstrap), ou null. */
+  usage: { styles: string[]; source: string | null; url: string | null }[] | null;
   descriptions: HopVariety['descriptions'];
 }
 export interface StockHop {
