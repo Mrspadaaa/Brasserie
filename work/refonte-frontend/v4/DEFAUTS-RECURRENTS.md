@@ -94,6 +94,7 @@ maquette. Et le brasseur ne voyait le résultat qu'à la fin.
 | D47 | « Pas besoin d'afficher une échelle linéaire avec tout les gradient du raille, ça doit rester cohérent. Juste les affiches quand on est à cette emplacement lors du changement avec le houblon. Genre quand on focus sur un type on affiche mieux l'échelle un peu un truc type UX apple qui zoom focus la où on est. » (18.10, soir) | `controle-rail.mjs` (réécrit) : au repos aucune graduation visible ; le doigt posé dans l'ébullition, ≥ 6 graduations de ce segment seulement ; refermées au lâcher. Le contrôle vise des graduations précises (45′, 20′, 85 °C, 70 °C, J+2, J+6, 90′ à 120′, 150′ à 200′) comme un doigt | loupe | base v2 → 15 échecs ; témoin positif à loupe → RAIL OK |
 
 | D48 | « Il y a pas 12 radar ? » ; « Ni là » (18.10, soir : Ma bière et Suggestions à 7 axes, Comparer à 9, la fiche à 12) | `controle-radar.mjs` : 12 axes dans chaque radar (fiche comprise), même famille en haut partout ; une valeur vide n'est admise que si son secteur est marqué `data-inconnu` (hachuré) | 12 | base v3 → 5 échecs |
+| D49 | « La zone de trigger est que le nom alors que ça devrait être la fiche entière... » (commentaire sur la page partagée, 18.10, soir) | `controle-fiche.mjs` : un appui long sur une zone libre de la carte du houblon (ni le nom, ni une commande) ouvre la fiche ; pages sans carte de houblon (Comparer) exclues | ouvre | base v3 → échec (index.html) |
 
 D18 est désormais vérifié par le même script, partie par partie.
 

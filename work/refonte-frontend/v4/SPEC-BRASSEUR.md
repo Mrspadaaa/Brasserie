@@ -93,6 +93,8 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   changement avec le houblon. Genre quand on focus sur un type on affiche mieux l'échelle un peu
   un truc type UX apple qui zoom focus la où on est. » — 18.10, soir (D47).
 - **Les 12 axes** (base v3) : « Il y a pas 12 radar ? » ; « Ni là » — 18.10, soir (D48).
+- **La fiche, toute la carte** : « La zone de trigger est que le nom alors que ça devrait être la
+  fiche entière... » (commentaire) — 18.10, soir (D49).
 - **La baseline** : « Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça
   différent complètement ? » — 18.10, soir (D26).
 - **Levure et biotransformation** : « Et tout ce qui est biotransformation avec levures, dry

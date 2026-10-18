@@ -83,6 +83,34 @@ for (const id of ids) {
     if (fermer) { try { await fermer.tap(); } catch { await fermer.click(); } } else await page.keyboard.press('Escape');
     await wait(450);
     if (await ficheEtat(page)) p('D25 ' + file + ' : la fiche ne se ferme pas (data-role="fermer-fiche" ou Échap)');
+    // D49 (18.10, soir, commentaire sur la page partagée) : « La zone de trigger est que le nom
+    // alors que ça devrait être la fiche entière... ». L'appui long ouvre la fiche depuis
+    // n'importe quel point de la carte du houblon (ligne de recette ou ajout proposé), pas
+    // seulement depuis son nom : on appuie sur une zone de la carte qui n'est ni le nom ni une
+    // commande (bouton, champ).
+    {
+      await page.goto(url, { waitUntil: 'networkidle0' }); await wait(300);
+      const pt = await page.evaluate(() => {
+        const cartes = [...document.querySelectorAll('[data-role="ligne-houblon"], [data-role="ajout-rapide"]')].filter((c) => { const r = c.getBoundingClientRect(); return r.height > 20 && r.top > 0 && r.bottom < innerHeight; });
+        for (const c of cartes) {
+          const r = c.getBoundingClientRect();
+          for (const [fx, fy] of [[0.6, 0.75], [0.45, 0.8], [0.7, 0.5], [0.3, 0.85], [0.55, 0.3]]) {
+            const x = r.left + r.width * fx, y = r.top + r.height * fy;
+            const e = document.elementFromPoint(x, y);
+            if (!e || !c.contains(e)) continue;
+            if (e.closest('button, input, select, textarea, a, [role="button"], [data-action], [data-houblon], [data-role="glisser-moment"], [data-role="type-ajout"], [data-role="gout"]')) continue;
+            return { x, y, carte: (c.innerText || '').trim().split('\n')[0].slice(0, 16) };
+          }
+        }
+        return cartes.length ? null : 'sans-carte';
+      });
+      if (pt === 'sans-carte') { /* pas de carte de houblon sur cette page (Comparer : en-têtes de colonne) */ }
+      else if (!pt) p('D49 ' + file + ' : aucune zone de carte libre (hors nom et commandes) pour l\'appui long');
+      else {
+        const t2 = await page.touchscreen.touchStart(pt.x, pt.y); await wait(650); await t2.end(); await wait(450);
+        if (!(await ficheEtat(page))) p('D49 ' + file + ' : un appui long sur la carte « ' + pt.carte + ' », hors de son nom, n\'ouvre pas la fiche (« la fiche entière »)');
+      }
+    }
     await page.close();
     // (6) survol long à l'ordinateur
     const d = await browser.newPage();
