@@ -8,31 +8,38 @@ copier.
 
 ## 1. Accès à la page, le 18.10.2026
 
-| Tentative | Résultat |
-|---|---|
-| Chrome du brasseur (extension Claude in Chrome), autorisé en lecture seule | Extension **non connectée**, deux essais. Rien n'a été ouvert. |
-| Navigateur intégré de l'app Claude, `beermaverick.com/hops/hop-comparison-tool/` | Page Cloudflare « Vérification de sécurité en cours » pendant plus de 16 s, puis toujours la même page. **Non contournée.** L'onglet a été fermé. |
-| Page variété `beermaverick.com/hop/target/` | Non tentée : même domaine, même vérification. |
-| Archives tierces (copie mise en cache) | Écartées : ce serait contourner la protection que le site a choisie. |
+**Vu le 18.10 dans le Chrome du brasseur**, en lecture seule, par le pilote de la
+mission, après que le brasseur a connecté l'extension. Aucune vérification
+anti-robot, aucune bannière de cookies. Rien n'a été saisi, sauf des noms de
+houblons dans le menu du comparateur. Captures et constats :
+`work/refonte-frontend/v3/reference/beer-maverick/` (16 captures JPEG et
+`constats.md`) : comparateur 01 à 07, fiche Target 10 à 13, fiche Fuggle 20,
+fiche East Kent Goldings 30 à 32, tableau des substitutions 40.
 
-Conséquence : **aucune capture de Beer Maverick n'existe dans ce dossier.** Les
-faits ci-dessous viennent de trois sources, de fiabilité différente :
+**Limites, telles quelles :**
+- La comparaison à 2 ou 3 houblons n'a pas pu être vue : les menus de Beer
+  Maverick restaient à 0 option (trois essais, deux rechargements). Le tableau des
+  substitutions était vide aussi.
+- La largeur téléphone n'a pas été capturée (la fenêtre restait à 1278 px).
+- La référence est donc le comparateur à un houblon, plus les fiches.
 
-1. **Notes de lecture antérieures**, écrites par des agents qui ont vu la page
-   (`work/houblons-v5-cadrage-2026-09-29/references-lues.md`, archive) :
-   comparateur jusqu'à **trois** variétés ; rubriques arômes et saveurs, valeurs
-   brassicoles, composition des huiles ; le texte de la page avertit qu'un zéro
-   du radar peut désigner une donnée absente ; une sélection Sabro + Bravo
-   n'avait pas rempli les graphiques ce jour-là. Fiche variété : identité et
-   origine, profil aromatique, plages analytiques historiques, huiles, styles,
-   associations relevées dans des recettes, substituts, formes commerciales.
+Tentatives précédentes, le même jour : l'extension n'était pas encore connectée ;
+le navigateur intégré de l'app Claude restait bloqué sur la vérification
+Cloudflare, non contournée ; les archives tierces ont été écartées. La première
+version de ce document, écrite à l'aveugle, se trompait sur plusieurs points ; la
+section 2 est corrigée d'après les captures.
+
+Autres sources, de fiabilité moindre :
+1. **Notes de lecture de septembre** (`work/houblons-v5-cadrage-2026-09-29/references-lues.md`,
+   archive) : une sélection Sabro + Bravo n'avait déjà pas rempli les graphiques.
+   Le comparateur de Beer Maverick est fragile.
 2. **Les données Beer Maverick du dépôt** (`src/data/hopBeerMaverickBootstrap.json`) :
    318 variétés ; alpha, bêta et huiles totales pour 318 ; myrcène, humulène,
    caryophyllène pour 260 ; descripteurs (« tags ») ; plages historiques
-   agrégées de fournisseurs, pas des analyses de lot. Scores de substitution et
-   styles de Beer Maverick non importés.
-3. **Ma connaissance de l'outil**, antérieure à cette mission et **non revérifiée
-   à l'écran** le 18.10. Chaque point de la section 2 porte sa source.
+   agrégées de fournisseurs, pas des analyses de lot. **Les intensités du radar de
+   Beer Maverick n'y sont pas** (vérifié) ; les moyennes, les zones typiques, les
+   scores de substitution et les styles non plus. Les recopier depuis le site est
+   exclu.
 
 Les mots du brasseur sur cette référence :
 - « aucune des maquette fait mieux que […] hop-comparison-tool/?hops=sabro,bravo »
@@ -44,17 +51,19 @@ Les mots du brasseur sur cette référence :
 
 ## 2. Ce que fait le comparateur
 
-| Élément | Ce qu'on voit | Source |
+| Élément | Ce qu'on voit | Capture |
 |---|---|---|
-| Sélection | En haut de page, un champ par variété avec recherche ; l'adresse garde la liste (`?hops=sabro,bravo`) ; on retire une variété par sa croix. | adresse citée par le brasseur (C068) ; notes 1 |
-| Nombre | Jusqu'à 3 variétés. | notes 1 |
-| Couleur | Une couleur par variété, la même dans tous les graphiques et en tête de colonne. | connaissance, non revérifiée |
-| Profil d'arôme | Un radar unique : un polygone par variété, superposés, sur les mêmes axes de famille d'arôme (agrumes, fruits tropicaux, fruits à noyau, baies, floral, herbacé, épicé, résine/pin, terreux…). | notes 1 (rubrique arômes) ; axes : connaissance |
-| Valeurs brassicoles | Alpha, bêta, rapport alpha/bêta, cohumulone, indice de conservation, huiles totales : chaque grandeur sur une ligne, une barre de plage (min–max) par variété, sur une échelle commune, avec les nombres et l'unité. | notes 1 ; forme des barres : connaissance |
-| Huiles | Myrcène, humulène, caryophyllène, farnésène, autres : en plages, côte à côte. | notes 1 |
-| Texte | Peu de prose ; descripteurs en mots ; une note sur les zéros du radar. | notes 1 |
-| Fiche variété (`/hop/<nom>/`) | En-tête nom, origine, emploi (amérisant, aromatique, mixte) ; descripteurs ; plages ; styles typiques ; substituts avec un pourcentage de similarité ; formes commerciales ; liens d'achat. | notes 1 ; C071 |
-| Substituts | Méthode publiée : corrélation sur environ 70 variables, pondérée selon l'emploi (amertume ou arôme). | article « your-hop-substitutions-are-wrong », notes 1 |
+| Sélection | « Hop Comparison Wizard », deux lignes d'introduction, « Choose up to 3 hops to compare » : trois menus côte à côte, chacun avec sa couleur (rouge, vert, bleu) en bordure et en fond pâle ; « clear selection », « Share this comparison ». | 01, 04 |
+| Nombre | Jusqu'à 3 variétés. Le 18.10, un seul houblon s'affichait (menus à 0 option). | 02, 03 |
+| Ordre | Trois sections, toujours dans cet ordre, sous un bandeau gris clair qui ne porte que son titre : Flavor & Aroma, Brewing Values, Oil Composition ; puis « Data Sources » en texte. | 04 à 07 |
+| Profil d'arôme | Une phrase (« Fuggle is an Aroma hop from United Kingdom. Descriptors include… »), puis un radar à **9 axes** (Citrus, Tropical Fruit, Stone Fruit, Berry, Floral, Grassy, Herbal, Spice, Resin / Pine), échelle **0 à 5**, polygone rempli de la couleur du menu. Sous le radar : « All zero values mean there are no aroma values available for that hop. » | 04 |
+| Valeurs brassicoles | Une pastille de couleur avec le nom (la légende), puis pour chaque mesure : le titre en gras, **une ligne grise qui dit à quoi sert la mesure**, la plage en texte (« 2.4-6.1% ») et une barre courte : **bande pâle = plage, segment saturé = zone typique, trait fin = moyenne**. Mesures : alpha, bêta, rapport alpha/bêta, cohumulone. | 05 |
+| Huiles | Huiles totales (mL/100 g) et un encadré « Did you know? » ; puis myrcène, humulène, autres, caryophyllène, farnésène, chacune avec sa ligne de saveurs et sa barre de plage. | 06, 07 |
+| Air | Fond blanc sur gris très clair, peu de tailles de texte, aucun bouton dans le contenu, un graphique par notion. | 04 à 07 |
+| Fiche variété (`/hop/<nom>/`) | Deux colonnes. Tableau d'identité (emploi, pays, code, lien « Compare with other hops ») ; achat (logos) ; origine ; profil (tags, même radar) ; valeurs en tableau, « 11% avg » sous chaque mini-barre, une couleur par mesure, indice de conservation pour EKG ; styles en une phrase ; substituts en liste. | 10 à 13, 20, 30 à 32 |
+| Styles | Target : « British Ale, British Lager & Pale Ale » ; East Kent Goldings : « English Ale, ESB & Belgian Ale ». **Aucun style ne cite la stout.** | 13, 32 |
+| Substituts | Liste « Experienced brewers have chosen… » : Target → Fuggle, Willamette ; EKG → Golding, Fuggle, Willamette. Sans pourcentage sur la fiche ; le tableau des substitutions était vide le 18.10. | 13, 32, 40 |
+| Qualité des données | **East Kent Goldings est classé « Bittering »** ; son texte dit « commonly used only to bitter », puis décrit un arôme floral, lavande, miel. Beer Maverick n'est pas une vérité. | 30, 31 |
 
 ## 3. Pourquoi c'est « propre » : sept traits
 
@@ -106,9 +115,8 @@ maquette `candidate-v55-final-22-preview`, ouverte en lecture seule) :
 - **R1** Une vue de comparaison qui se lit sans texte : radar superposé, puis
   barres de plage sur échelle commune, une couleur et une forme par houblon,
   identiques dans toute la page.
-- **R2** Huit axes d'arôme au plus sur le radar, en mots du brasseur ; un axe
-  sans donnée est marqué « inconnu », jamais tracé à zéro (piège noté chez Beer
-  Maverick).
+- **R2** Huit axes d'arôme sur le radar (Beer Maverick en a 9, de 0 à 5), en mots
+  du brasseur ; un houblon sans donnée est marqué « inconnu », jamais tracé à zéro.
 - **R3** Au-dessus des graphiques, seulement les noms, les couleurs, le stock.
   Aucun bandeau d'avertissement ; la base de chaque estimation est à la demande.
 - **R4** Ajouter ce que la référence n'a pas, sous forme graphique : IBU à dose
@@ -120,14 +128,20 @@ maquette `candidate-v55-final-22-preview`, ouverte en lecture seule) :
 - **R7** Thème sombre de `DESIGN.md`, densité compacte, mais de l'air entre les
   sections : la propreté vient de l'alignement et de la hiérarchie, pas de la
   taille.
-- **R8** Le relecteur indépendant juge la propreté contre ce document et les
-  captures V5.5 ; le brasseur reste le seul juge de la comparaison directe avec
-  Beer Maverick, à la porte B.
+- **R8** Le relecteur indépendant juge la propreté sur les captures réelles de
+  Beer Maverick (section 1) confrontées aux captures de la v3 ; le brasseur reste
+  le juge final, à la porte B.
+- **R9** (vu le 18.10) Chaque mesure se lit sans glossaire : son nom, une ligne
+  « à quoi ça sert », puis la valeur.
+- **R10** (vu le 18.10) Le radar de la v3 est une estimation tirée du nombre de
+  descripteurs, pas les intensités de Beer Maverick (absentes du dépôt, à ne pas
+  recopier) : il le dit sous le graphique, aussi clairement que la note
+  « zéro = pas de donnée » de Beer Maverick.
 
 ## 7. Limites
 
-- Aucune capture de Beer Maverick : le critère « au moins aussi propre que Beer
-  Maverick » se juge contre la section 2 et les captures V5.5, pas contre une
-  capture côte à côte. C'est un écart au brief, signalé au brasseur.
-- Le nombre maximal de variétés (3) vient d'une note de septembre ; il a pu
-  changer.
+- La comparaison à plusieurs houblons de Beer Maverick n'a pas pu être vue (menus
+  vides le 18.10), ni sa mise en page téléphone. La confrontation porte sur le
+  comparateur à un houblon et les fiches, en largeur bureau.
+- Beer Maverick a ses propres erreurs de données (East Kent Goldings classé
+  « Bittering ») : la référence est une référence de présentation, pas de vérité.

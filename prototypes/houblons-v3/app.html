@@ -145,6 +145,19 @@ a { color: var(--c50); text-underline-offset: 2px; }
 .lgi button { width: 24px; height: 24px; display: grid; place-items: center; color: var(--c400); border-radius: 8px; }
 .shape { width: 12px; height: 12px; flex: none; }
 .cmp h3 { margin: 0; padding: 10px 10px 4px; font-size: 13px; font-weight: 600; color: var(--c50); display: block; }
+.cmp h3.band { margin: 14px 0 6px; padding: 7px 10px; font-size: 15px; background: var(--c850); border-top: 1px solid var(--c700); border-bottom: 1px solid var(--c700); }
+.cmp h3.band:first-child { margin-top: 0; }
+.cmp .why { margin: 0 0 6px; font-size: 13px; line-height: 18px; color: var(--c400); }
+.cmp .why.center { text-align: center; padding: 0 14px; }
+.cmp .why.warn { color: var(--attention); margin-top: 6px; }
+.cmp .metric { padding: 4px 10px 10px; }
+.cmp .metric .mh { font-size: 13px; padding: 2px 0 2px; }
+.cmp .metric .mh b { font-size: 14px; color: var(--c50); }
+.cmp .br { font-size: 13px; min-height: 26px; grid-template-columns: 112px minmax(0, 1fr) auto; }
+.cmp .br .n { font-size: 13px; }
+.cmp .br .b { height: 10px; border-radius: 5px; }
+.cmp .br .b i { height: 10px; border-radius: 5px; }
+.app.full .top .gauge { display: none; }
 .cmp h3 .muted { font-weight: 400; font-size: 12px; margin-left: 4px; }
 .radar { display: flex; justify-content: center; padding: 0 4px; }
 .radar svg { width: 100%; max-width: 240px; height: auto; }
@@ -565,7 +578,7 @@ function renderAdd(L) {
   const { a, h, r, w } = L; const open = S.open === a.id;
   let x = `<div class="add" data-add="${a.id}"><div class="addrow"><button class="addh" data-act="openadd" data-id="${a.id}" aria-expanded="${open}" aria-label="${esc(hname(h))} ${gtxt(a.g)} g ${TI[a.t].label} : régler"><span class="nm">${esc(hname(h))}</span><span class="d">${gtxt(a.g)} g</span><span class="t">${TI[a.t].short}</span><span class="i">${a.t === 'dry' ? 'à cru' : r ? (r.lot ? nf(r.val) : `${nf(r.lo)}–${nf(r.hi)}`) + ' IBU' : 'IBU ?'}</span><span class="st">${stockState(h, a.g)}</span></button><button class="btn sq ghost" data-act="replace" data-id="${a.id}" aria-label="Remplacer ${esc(hname(h))}">${ico('swap')}</button></div>`;
   if (open) {
-    const aro = w && h.v.ax ? `Arôme : ${topAxes(h.v.ax.map((v) => v * w), 3).join(', ')} (poids ${nf(w, 1)} à ce moment)` : 'Amertume seulement : à ce moment, l’arôme part presque entièrement.';
+    const aro = w && h.v.ax ? `Arôme : ${topAxes(h.v.ax.map((v) => v * w), 3).join(', ')} (estimation)` : 'Amertume seulement : à ce moment, l’arôme part presque entièrement.';
     x += `<div class="ed"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="step"><button class="btn sq" data-act="dose" data-id="${a.id}" data-d="-1" aria-label="Retirer 1 g">${ico('minus')}</button><input type="text" inputmode="decimal" aria-label="Dose en grammes" data-act="dosein" data-id="${a.id}" data-focuskey="dose-${a.id}" value="${gtxt(a.g)}"><button class="btn sq" data-act="dose" data-id="${a.id}" data-d="1" aria-label="Ajouter 1 g">${ico('plus')}</button></span><span class="muted">g · ${nf(a.g / S.V, 1)} g/L</span></div>
       <div class="chips" role="group" aria-label="Moment de l’ajout">${TIMES.map((t) => `<button class="chip" data-act="time" data-id="${a.id}" data-t="${t.id}" aria-pressed="${a.t === t.id}">${t.short}</button>`).join('')}</div>
       ${compNote(a, h, r)}
@@ -605,7 +618,7 @@ function renderRow(r, rank) {
   const exAdds = S.adds.filter((a) => a.key === h.key);
   const planTxt = ex ? `${exAdds.length > 1 ? `${exAdds.length} ajouts · ${gtxt(sum(exAdds.map((a) => a.g)))} g` : `${gtxt(ex.g)} g ${TI[ex.t].short}`}${exShort ? ` · manque ${nf(exShort)} g` : ''}` : plan.g == null ? 'α inconnu' : h.g <= 0 ? `${nf(plan.g)} g` : plan.short ? `${nf(plan.g)} g · manque ${nf(plan.short)} g` : plan.t === 'b60' ? `${nf(plan.g)} g · assez` : plan.all ? `${nf(plan.g)} g · max` : `${nf(plan.g)} g`;
   const box = on ? `<span class="box" style="background:${SERHEX[on.k]}">${SHAPE_IN[on.k]}</span>` : '<span class="box"></span>';
-  const addLabel = ex ? `${hname(h)} est dans mon houblonnage : régler l’ajout` : `Ajouter ${plan.g == null ? '' : nf(plan.g) + ' g de '}${hname(h)} ${plan.t === 'b60' ? 'à 60 min' : plan.t === 'wp' ? 'au whirlpool' : 'en dry hop'}`;
+  const addLabel = ex ? `${hname(h)} est dans mon houblonnage : régler l’ajout` : `Ajouter ${plan.g == null ? '' : nf(plan.g) + ' g ' + (/^[aeiouyhéèêâîôûAEIOUYHÉ]/.test(hname(h)) ? 'd’' : 'de ')}${hname(h)} ${plan.t === 'b60' ? 'à 60 min' : plan.t === 'wp' ? 'au whirlpool' : 'en dry hop'}`;
   let x = `<div class="row${on ? ' on' : ''}" data-hop="${esc(h.key)}"><button class="cb" role="checkbox" aria-checked="${!!on}" data-act="sel" data-key="${esc(h.key)}" aria-label="Comparer ${esc(hname(h))}">${box}</button>
     <button class="rowmain" data-act="info" data-key="${esc(h.key)}" aria-expanded="${S.info === h.key}" aria-label="${esc(hname(h))} : détails"><span class="l1">${rank ? `<span class="rk">${rank}</span>` : ''}<span class="nm">${esc(hname(h))}</span></span><span class="l2">${aromaLine(h.v, st)}</span></button>
     <span class="qty"><span class="${h.g > 0 ? '' : 'zero'}">${h.g > 0 ? `${nf(h.g)} g` : 'à acheter'}</span><small class="${(ex ? exShort : plan.short) ? 'warn' : ''}">${planTxt}</small></span>
@@ -632,7 +645,7 @@ function renderList() {
   const wantTxt = st.dir && st.dir.want.length ? st.dir.want.map((a) => AX[AXI[a]].toLowerCase()).join(', ') : 'non documentés pour ce style';
   let h = `<div class="sec"><h2>Mes houblons</h2><span class="muted" style="white-space:nowrap">du + au −</span><span class="sp"></span><button class="btn" data-act="top4" aria-label="Comparer les 4 premiers">${ico('cmp')}4 premiers</button><button class="btn sq ghost" data-act="legend" aria-label="Comment la liste est classée" aria-expanded="${!!S.legend}">${ico('info')}</button></div>`;
   h += `<div class="sec step"><span class="muted" style="display:inline-flex;align-items:center;gap:2px;white-space:nowrap">${ico('plus')}ajoute</span><span class="seg" role="group" aria-label="Prochain ajout">${['b60', 'wp', 'dry'].map((x) => `<button data-act="next" data-t="${x}" aria-pressed="${t === x}">${STEP_LABEL[x]}</button>`).join('')}</span><span class="muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${t === 'b60' ? `pour ${n.partial ? `${n.ibu} IBU de plus` : `${n.ibu} IBU`}` : `${nf(START_GL[t], 0)} g/L`}</span></div>`;
-  if (S.legend) h += `<div class="info" style="padding-left:10px"><p>Groupes : <b class="strong">typique</b> (origine citée par le guide BJCP pour ce style et arômes du style), <b class="strong">compatible</b> (au moins 40 % de ses descripteurs dans les arômes du style), <b class="strong">hors style</b>. Arômes du style, en clair sur chaque ligne : ${wantTxt}.</p><p>Dans chaque groupe : pour l’amertume, d’abord les houblons dont le stock suffit, puis l’alpha ; pour le whirlpool et le dry hop, du plus au moins proche du style, puis le stock. À droite : mon stock, puis la dose que « + » ajoute (« manque » si le stock ne suffit pas). Rang chiffré seulement quand l’usage pour le style est attesté (IPA).</p></div>`;
+  if (S.legend) h += `<div class="info" style="padding-left:10px"><p>Groupes : <b class="strong">typique</b> (origine citée par le guide BJCP pour ce style et arômes du style), <b class="strong">compatible</b> (au moins 40 % de ses descripteurs dans les arômes du style), <b class="strong">hors style</b>. Arômes du style, en clair sur chaque ligne : ${wantTxt}.</p><p>Dans chaque groupe : pour l’amertume, d’abord les houblons dont le stock suffit, les pellets avant le cryo (réservé à l’arôme), puis l’alpha le plus haut ; pour le whirlpool et le dry hop, du plus au moins proche du style, puis le stock. À droite : mon stock, puis la dose que « + » ajoute (« manque » si le stock ne suffit pas). Rang chiffré seulement quand l’usage pour le style est attesté (IPA).</p></div>`;
   const groups = (rows, cat) => {
     let out = '', cur = null, idx = 0;
     for (const r of rows) {
@@ -679,11 +692,32 @@ function renderDock(p) {
     return `<aside class="dock peek" aria-label="Comparaison"><div class="peekb"><div class="radar">${radarSvg(L.map((s) => ({ ax: s.h.v.ax, k: s.k })), 200, { aria: 'Profils d’arôme superposés de ' + L.map((s) => hname(s.h)).join(', '), small: true })}</div>
       <div class="peekr"><h2>Comparer · ${L.length}</h2>
       <div class="pl">${L.map((s) => { const r = ibuOf(s.h, g, t, c); return `${shape(s.k)}<span class="nm">${esc(hname(s.h))}</span><span class="mono">${r ? (r.lot ? nf(r.val) : `${nf(r.lo)}–${nf(r.hi)}`) : '?'}</span>`; }).join('')}</div>
-      <span class="cap">IBU pour ${nf(g)} g à ${TI[t].short}</span><span class="sp"></span><div class="ph"><button class="btn" data-act="full" aria-label="Agrandir la comparaison">${ico('expand')}Tout comparer</button><span class="sp"></span><button class="btn sq" data-act="clearsel" aria-label="Fermer la comparaison">${ico('x')}</button></div></div></div></aside>`;
+      <span class="cap">IBU pour ${nf(g)} g à ${TI[t].short}</span><span class="cap"><span style="color:var(--hop-text)">●</span> et gras : arômes du style · profil estimé d’après les descripteurs</span><span class="sp"></span><div class="ph"><button class="btn" data-act="full" aria-label="Agrandir la comparaison">${ico('expand')}Tout comparer</button><span class="sp"></span><button class="btn sq" data-act="clearsel" aria-label="Fermer la comparaison">${ico('x')}</button></div></div></div></aside>`;
   }
   return `<aside class="dock cmp" aria-label="Comparaison"><div class="dockh"><h2>Comparer · ${L.length}</h2><span class="sp"></span><button class="btn" data-act="full" aria-label="${S.full ? 'Réduire la comparaison' : 'Agrandir la comparaison'}">${ico(S.full ? 'shrink' : 'expand')}${S.full ? 'Réduire' : 'Agrandir'}</button><button class="btn sq" data-act="clearsel" aria-label="Fermer la comparaison">${ico('x')}</button></div>
     <div class="legend">${L.map((s) => `<span class="lgi">${shape(s.k)}<span>${esc(hname(s.h))}</span><button data-act="sel" data-key="${esc(s.key)}" aria-label="Retirer ${esc(hname(s.h))} de la comparaison">${ico('x')}</button></span>`).join('')}</div>
     <div class="dockb">${renderCompare(L)}</div></aside>`;
+}
+// Comparaison complète : la grammaire de Beer Maverick (une notion par section sous un bandeau,
+// une ligne « à quoi ça sert » par mesure, une barre par houblon sur une échelle commune),
+// plus ce qu'il n'a pas : ma recette, ma dose face au stock, mon style, le nom et la forme sur chaque barre.
+const MEASURE = {
+  a: ['Alpha', '%', 20, 1, 'Source de l’amertume : ils s’isomérisent à l’ébullition. Plus d’alpha, moins de grammes pour le même IBU.'],
+  b: ['Bêta', '%', 10, 1, 'Presque pas d’amertume à l’ébullition ; leur oxydation au stockage peut en ajouter un peu.'],
+  oil: ['Huiles totales', 'mL/100 g', 4, 1, 'Elles portent l’arôme. Très volatiles, elles partent à l’ébullition : elles comptent pour les ajouts tardifs et le dry hop.'],
+  my: ['Myrcène', '% de l’huile', 80, 0, 'Saveurs : vert, résineux, agrumes. La plus volatile : surtout en dry hop.'],
+  hu: ['Humulène', '% de l’huile', 50, 0, 'Saveurs : boisé, épicé, « noble ». Tient mieux à la chaleur que le myrcène.'],
+  ca: ['Caryophyllène', '% de l’huile', 20, 0, 'Saveurs : poivré, boisé, herbacé.'],
+};
+function rangeBars(L, k) {
+  const [lab, unit, scale0, dec, why] = MEASURE[k];
+  const scale = Math.max(scale0, ...L.map((s) => s.h.v[k] ? s.h.v[k][1] : 0), ...(k === 'a' ? L.map((s) => s.h.alpha ? Math.ceil(s.h.alpha) : 0) : []));
+  const u = unit === 'mL/100 g' ? ' mL' : ' %';
+  const pc = (x) => (x / scale * 100).toFixed(1) + '%';
+  return `<div class="metric"><div class="mh"><b>${lab}</b><span>échelle 0–${nf(scale)} ${unit}</span></div><p class="why">${why}</p><div class="bars" style="padding:0">${L.map((s) => {
+    const r = s.h.v[k]; const lot = k === 'a' && s.h.alpha ? s.h.alpha : null; const out = lot && r && (lot < r[0] || lot > r[1]);
+    return `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span class="b">${r ? `<i style="left:0;width:${pc(r[0])};background:${SERHEX[s.k]};opacity:.3"></i><i style="left:${pc(r[0])};width:${pc(Math.max(scale * 0.015, r[1] - r[0]))};background:${SERHEX[s.k]}"></i>` : ''}${lot ? `<span class="tick" style="left:${pc(lot)}"></span>` : ''}</span><span class="n">${r ? rng(r, dec, u) : 'inconnu'}</span></div>`;
+  }).join('')}</div>${k === 'a' ? (() => { const outs = L.filter((s) => s.h.alpha && s.h.v.a && (s.h.alpha < s.h.v.a[0] || s.h.alpha > s.h.v.a[1])); return outs.length ? `<p class="why warn">Lot hors de la plage des fournisseurs : ${outs.map((s) => `${esc(hname(s.h))} ${nf(s.h.alpha, 1)} %`).join(', ')}.</p>` : ''; })() : ''}</div>`;
 }
 function renderCompare(L) {
   const st = style(); const c = ctx(); const n = need();
@@ -691,33 +725,32 @@ function renderCompare(L) {
   const g = ref ? ref.g : 20, t = ref && ref.t !== 'dry' ? ref.t : 'b60';
   const unknown = L.filter((s) => !s.h.v.ax);
   const want = new Set((st.dir?.want || []).map((a) => AXI[a]));
-  let h = `<h3>Profil d’arôme <span class="muted">nombre de descripteurs par arôme, 0 à 3 · <span style="color:var(--hop-text)">●</span> arômes du style</span></h3><div class="radar">${radarSvg(L.map((s) => ({ ax: s.h.v.ax, k: s.k })), 300, { aria: 'Profils d’arôme superposés de ' + L.map((s) => hname(s.h)).join(', ') })}</div>`;
-  if (unknown.length) h += `<div class="diffs"><span>${unknown.map((s) => esc(hname(s.h))).join(', ')} : profil inconnu (aucun descripteur), non tracé.</span></div>`;
-  // Arômes côte à côte : un axe par ligne, un repère par houblon sur la même échelle 0–3.
-  const known = L.filter((s) => s.h.v.ax);
-  const lane = 7, rowH = Math.max(18, known.length * lane + 6);
-  // Axes du style d'abord, puis par valeur maximale ; un repère à 0 est dessiné en creux (aucun descripteur).
-  const order = AX.map((_, i) => i).sort((x, y) => want.has(y) - want.has(x) || Math.max(0, ...known.map((s) => s.h.v.ax[y])) - Math.max(0, ...known.map((s) => s.h.v.ax[x])));
-  h += `<h3>Arômes côte à côte <span class="muted">même échelle que le radar · arômes du style en tête · repère creux : aucun descripteur${unknown.length ? ` · ${unknown.map((s) => esc(hname(s.h))).join(', ')} : inconnu` : ''}</span></h3><div class="dots"><div class="dr"><span></span><span class="tr sc">${[0, 1, 2, 3].map((x) => `<b style="left:${(x / 3 * 100).toFixed(1)}%">${x}</b>`).join('')}</span></div>${order.map((i) => { const lab = AX[i]; return `<div class="dr" style="min-height:${rowH}px"><span class="t${want.has(i) ? ' st' : ''}">${lab}</span><span class="tr" style="height:${rowH}px" role="img" aria-label="${lab} : ${known.map((s) => `${esc(hname(s.h))} ${s.h.v.ax[i]}`).join(', ')}">${[0, 1, 2, 3].map((x) => `<i class="g" style="left:${(x / 3 * 100).toFixed(1)}%"></i>`).join('')}${known.map((s, j) => `<span class="mk${s.h.v.ax[i] ? '' : ' z'}" style="left:${(s.h.v.ax[i] / 3 * 100).toFixed(1)}%;top:${3 + j * lane - 1.5}px">${s.h.v.ax[i] ? shape(s.k) : `<svg class="shape" viewBox="0 0 12 12" aria-hidden="true">${SHAPES[s.k]('none').replace('fill="none"', `fill="none" stroke="${SERHEX[s.k]}" stroke-width="1.5"`)}</svg>`}</span>`).join('')}</span></div>`; }).join('')}</div>`;
-  // Dans ma recette
+  const band = (title, note = '') => `<h3 class="band">${title}${note ? ` <span class="muted">${note}</span>` : ''}</h3>`;
+  // 1. Profil d'arôme : le radar superposé, et ce qu'il mesure, dit sous le graphique.
+  let h = band('Profil d’arôme') + `<div class="radar">${radarSvg(L.map((s) => ({ ax: s.h.v.ax, k: s.k })), 300, { aria: 'Profils d’arôme superposés de ' + L.map((s) => hname(s.h)).join(', ') })}</div>
+    <p class="why center">Estimation : nombre de descripteurs Beer Maverick par arôme, de 0 (aucun) à 3 (dominant) ; ce n’est pas une intensité mesurée. <span style="color:var(--hop-text)">●</span> et gras : arômes du style.${unknown.length ? ` ${unknown.map((s) => esc(hname(s.h))).join(', ')} : aucun descripteur, profil inconnu, non tracé.` : ''}</p>`;
+  // 2. Dans ma recette : IBU à dose égale, dose pour l'IBU visé face au stock, adéquation au style.
   const ibus = L.map((s) => ({ s, r: ibuOf(s.h, g, t, c) }));
   const imax = Math.max(1, ...ibus.map((x) => x.r ? x.r.hi : 0));
-  h += `<h3>Dans ma recette <span class="muted">IBU pour ${nf(g)} g à ${TI[t].label}${ref ? ` (comme ${esc(hname(hop(ref.key)))})` : ''}</span></h3><div class="bars">${ibus.map(({ s, r }) => `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span class="b">${r ? (r.lot ? `<i style="left:0;width:${(r.val / imax * 100).toFixed(1)}%;background:${SERHEX[s.k]}"></i>` : `<i style="left:0;width:${(r.lo / imax * 100).toFixed(1)}%;background:${SERHEX[s.k]}"></i><i style="left:${(r.lo / imax * 100).toFixed(1)}%;width:${((r.hi - r.lo) / imax * 100).toFixed(1)}%;background:${SERHEX[s.k]};opacity:.4"></i>`) : ''}</span><span class="n">${r ? (r.lot ? nf(r.val) : `${nf(r.lo)}–${nf(r.hi)}`) : '?'} IBU</span></div>`).join('')}</div>`;
+  h += band('Dans ma recette', `${esc(st.n)}, ${nf(S.V)} L, DI ${nf(S.og, 3)}`);
+  h += `<div class="metric"><div class="mh"><b>IBU pour ${nf(g)} g à ${TI[t].label}</b><span>${ref ? `comme ${esc(hname(hop(ref.key)))}` : 'même dose pour tous'}</span></div><p class="why">À dose égale, ce que chaque houblon donne en amertume dans cette recette (Tinseth, alpha du lot si connu).</p><div class="bars" style="padding:0">${ibus.map(({ s, r }) => `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span class="b">${r ? (r.lot ? `<i style="left:0;width:${(r.val / imax * 100).toFixed(1)}%;background:${SERHEX[s.k]}"></i>` : `<i style="left:0;width:${(r.lo / imax * 100).toFixed(1)}%;background:${SERHEX[s.k]}"></i><i style="left:${(r.lo / imax * 100).toFixed(1)}%;width:${((r.hi - r.lo) / imax * 100).toFixed(1)}%;background:${SERHEX[s.k]};opacity:.4"></i>`) : ''}</span><span class="n">${r ? (r.lot ? nf(r.val) : `${nf(r.lo)}–${nf(r.hi)}`) : '?'} IBU</span></div>`).join('')}</div></div>`;
   const doses = L.map((s) => ({ s, d: doseFor(s.h, n.ibu, 'b60', c) }));
   const dmax = Math.max(1, ...doses.map((x) => Math.max(x.d || 0, x.s.h.g)));
-  h += `<h3>Dose pour ${n.txt} à 60′ <span class="muted">barre : mon stock · trait : dose</span></h3><div class="bars">${doses.map(({ s, d }) => `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span class="b">${s.h.g > 0 ? `<i style="left:0;width:${(s.h.g / dmax * 100).toFixed(1)}%;background:${SERHEX[s.k]};opacity:.55"></i>` : ''}${d != null ? `<span class="need" style="left:${(Math.min(d, dmax) / dmax * 100).toFixed(1)}%"></span>` : ''}</span><span class="n">${d == null ? '?' : `${nf(Math.round(d))} g`} ${s.h.g <= 0 ? '<span class="warn">à acheter</span>' : d != null && availBitter(s.h) >= d ? `<span class="ok">assez</span>` : `<span class="bad">manque ${nf(d - Math.max(0, availBitter(s.h)))} g</span>`}</span></div>`).join('')}</div>`;
-  h += `<h3>Pour ${esc(st.n)}</h3><div class="bars">${L.map((s) => `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span><span class="cls">${CLS_LABEL[classOf(s.h.v, st)]}</span><span class="o">${esc(s.h.v.o || '')}</span></span><span></span></div>`).join('')}</div>`;
-  // Valeurs : barres de plage sur échelle commune
-  const METRICS = [['a', 'Alpha', '%', 20, 1], ['b', 'Bêta', '%', 10, 1], ['oil', 'Huiles totales', 'mL/100 g', 4, 1], ['my', 'Myrcène', '% de l’huile', 80, 0], ['hu', 'Humulène', '% de l’huile', 50, 0], ['ca', 'Caryophyllène', '% de l’huile', 20, 0]];
-  h += `<h3>Valeurs <span class="muted">plages des fournisseurs · trait blanc : mon lot</span></h3>`;
-  for (const [k, lab, unit, scale0, dec] of METRICS) {
-    const scale = Math.max(scale0, ...L.map((s) => s.h.v[k] ? s.h.v[k][1] : 0), ...(k === 'a' ? L.map((s) => s.h.alpha ? Math.ceil(s.h.alpha) : 0) : []));
-    h += `<div class="metric"><div class="mh"><b>${lab}</b><span>0–${nf(scale)} ${unit}</span></div><div class="bars" style="padding:0">${L.map((s) => { const r = s.h.v[k]; const lot = k === 'a' && s.h.alpha ? s.h.alpha : null; return `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span class="b">${r ? `<i style="left:${(r[0] / scale * 100).toFixed(1)}%;width:${Math.max(1.5, (r[1] - r[0]) / scale * 100).toFixed(1)}%;background:${SERHEX[s.k]}"></i>` : ''}${lot ? `<span class="tick" style="left:${(lot / scale * 100).toFixed(1)}%"></span>` : ''}</span><span class="n">${r ? rng(r, dec, unit === '%' ? ' %' : unit === 'mL/100 g' ? ' mL' : ' %') : 'inconnu'}</span></div>`; }).join('')}</div></div>`;
-  }
-  h += `<h3>Descripteurs</h3><div class="tagsl">${L.map((s) => `<div class="t">${shape(s.k)}<span><b class="strong">${esc(hname(s.h))}</b> ${s.h.v.tags.length ? esc(s.h.v.tags.join(', ')) : 'aucun'}${s.h.v.hs?.f?.length ? ` <span class="muted">· Hopsteiner : ${esc(s.h.v.hs.f.join(', ').toLowerCase())}</span>` : ''}</span></div>`).join('')}</div>`;
+  h += `<div class="metric"><div class="mh"><b>Dose pour ${n.txt} à 60′</b><span>barre : mon stock · trait : dose</span></div><p class="why">Ce houblon peut-il faire l’amertume seul avec ce que j’ai ?</p><div class="bars" style="padding:0">${doses.map(({ s, d }) => `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span class="b">${s.h.g > 0 ? `<i style="left:0;width:${(s.h.g / dmax * 100).toFixed(1)}%;background:${SERHEX[s.k]};opacity:.55"></i>` : ''}${d != null ? `<span class="need" style="left:${(Math.min(d, dmax) / dmax * 100).toFixed(1)}%"></span>` : ''}</span><span class="n">${d == null ? '?' : `${nf(Math.round(d))} g`} ${s.h.g <= 0 ? '<span class="warn">à acheter</span>' : d != null && availBitter(s.h) >= d ? `<span class="ok">assez</span>` : `<span class="bad">manque ${nf(d - Math.max(0, availBitter(s.h)))} g</span>`}</span></div>`).join('')}</div></div>`;
+  h += `<div class="metric"><div class="mh"><b>Pour ${esc(st.n)}</b></div><p class="why">${esc(st.dir ? 'Le guide BJCP : ' + st.dir.note + '.' : 'Direction houblon non documentée pour ce style.')}</p><div class="bars" style="padding:0">${L.map((s) => `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span><span class="cls">${CLS_LABEL[classOf(s.h.v, st)]}</span><span class="o">${esc(s.h.v.o || '')}</span></span><span></span></div>`).join('')}</div></div>`;
+  // 3. Valeurs brassicoles, 4. Huiles : une ligne « à quoi ça sert », une barre par houblon, échelle commune.
+  h += band('Valeurs brassicoles', 'plages des fournisseurs · trait blanc : mon lot') + rangeBars(L, 'a') + rangeBars(L, 'b');
+  h += band('Huiles') + rangeBars(L, 'oil') + rangeBars(L, 'my') + rangeBars(L, 'hu') + rangeBars(L, 'ca');
+  h += `<p class="why" style="padding:0 10px">Barre pâle : de 0 au bas de la plage ; barre pleine : la plage des fournisseurs. Nos données n’ont ni moyenne ni zone typique : aucune n’est dessinée.</p>`;
+  // 5. Arômes axe par axe : le classement exact et les égalités, que le radar ne montre pas.
+  const known = L.filter((s) => s.h.v.ax);
+  const lane = 7, rowH = Math.max(18, known.length * lane + 6);
+  const order = AX.map((_, i) => i).sort((x, y) => want.has(y) - want.has(x) || Math.max(0, ...known.map((s) => s.h.v.ax[y])) - Math.max(0, ...known.map((s) => s.h.v.ax[x])));
+  h += band('Arômes axe par axe', 'même échelle que le radar · rond vide : aucun descripteur') + `<div class="dots"><div class="dr"><span></span><span class="tr sc">${[0, 1, 2, 3].map((x) => `<b style="left:${(x / 3 * 100).toFixed(1)}%">${x}</b>`).join('')}</span></div>${order.map((i) => { const lab = AX[i]; return `<div class="dr" style="min-height:${rowH}px"><span class="t${want.has(i) ? ' st' : ''}">${lab}</span><span class="tr" style="height:${rowH}px" role="img" aria-label="${lab} : ${known.map((s) => `${esc(hname(s.h))} ${s.h.v.ax[i]}`).join(', ')}">${[0, 1, 2, 3].map((x) => `<i class="g" style="left:${(x / 3 * 100).toFixed(1)}%"></i>`).join('')}${known.map((s, j) => `<span class="mk${s.h.v.ax[i] ? '' : ' z'}" style="left:${(s.h.v.ax[i] / 3 * 100).toFixed(1)}%;top:${3 + j * lane - 1.5}px">${s.h.v.ax[i] ? shape(s.k) : `<svg class="shape" viewBox="0 0 12 12" aria-hidden="true">${SHAPES[s.k]('none').replace('fill="none"', `fill="none" stroke="${SERHEX[s.k]}" stroke-width="1.5"`)}</svg>`}</span>`).join('')}</span></div>`; }).join('')}</div>`;
+  h += band('Descripteurs') + `<div class="tagsl">${L.map((s) => `<div class="t">${shape(s.k)}<span><b class="strong">${esc(hname(s.h))}</b> ${s.h.v.tags.length ? esc(s.h.v.tags.join(', ')) : 'aucun'}${s.h.v.hs?.f?.length ? ` <span class="muted">· Hopsteiner : ${esc(s.h.v.hs.f.join(', ').toLowerCase())}</span>` : ''}</span></div>`).join('')}</div>`;
   const openAdd = S.adds.find((a) => a.id === S.open);
   h += `<div class="cmpacts">${L.map((s) => `<button class="btn" data-act="addhop" data-key="${esc(s.key)}">${ico('plus')}${esc(hname(s.h))}</button>`).join('')}${openAdd ? L.filter((s) => s.key !== openAdd.key).map((s) => `<button class="btn" data-act="applysub" data-id="${openAdd.id}" data-key="${esc(s.key)}">${ico('swap')}${esc(hname(hop(openAdd.key)))} → ${esc(hname(s.h))}</button>`).join('') : ''}</div>`;
-  h += `<p class="src">Plages : Beer Maverick (agrégat de fournisseurs, pas une analyse de lot). Profils : nombre de descripteurs par arôme, plafonné à 3. IBU : Tinseth, alpha du lot si connu, sinon plage de la variété.</p>`;
+  h += `<p class="src">Plages et descripteurs : Beer Maverick (agrégat de fournisseurs, pas une analyse de lot). Familles Hopsteiner : fiches 2025. IBU : Tinseth, alpha du lot si connu, sinon plage de la variété. Explications des mesures : repères généraux de brassage.</p>`;
   return `<div class="cmp">${h}</div>`;
 }
 function renderSheet() {
@@ -742,10 +775,10 @@ function renderRecipe() {
 function renderReplace() {
   const a = S.adds.find((x) => x.id === S.replaceFor); if (!a) return '';
   const R = substitutes(a); const h = R.h;
-  const sub = (x) => `<button class="sub" data-act="applysub" data-id="${a.id}" data-key="${esc(x.h.key)}"><span class="m"><b>${esc(hname(x.h))}</b><small>${x.gain.length ? 'gagné : ' + x.gain.join(', ') : 'rien de gagné'} · ${x.lose.length ? 'perdu : ' + x.lose.join(', ') : 'rien de perdu'}${R.aroma && x.ibu ? ` · ${ibuTxt(x.ibu)}` : ''}</small></span><span><span class="d">${gtxt(Math.round(x.dose * 10) / 10)} g</span><span class="s">${x.grp === 0 ? `<span class="ok">reste ${nf(x.left)} g</span>` : x.grp === 1 ? `<span class="bad">manque ${nf(x.dose - Math.max(0, x.left))} g</span>` : `<span class="warn">à acheter</span>`}</span></span></button>`;
+  const sub = (x) => `<button class="sub" data-act="applysub" data-id="${a.id}" data-key="${esc(x.h.key)}"><span class="m"><b>${esc(hname(x.h))}</b><small>${x.gain.length ? 'gagné : ' + x.gain.join(', ') : 'rien de gagné'} · ${x.lose.length ? 'perdu : ' + x.lose.join(', ') : 'rien de perdu'}${R.aroma && x.ibu ? ` · ${ibuTxt(x.ibu)}` : ''}</small></span><span><span class="d">${gtxt(Math.round(x.dose * 10) / 10)} g</span><span class="s">${x.grp === 0 ? `<span class="ok">${nf(x.left)} g libres</span>` : x.grp === 1 ? `<span class="bad">manque ${nf(x.dose - Math.max(0, x.left))} g</span>` : `<span class="warn">à acheter</span>`}</span></span></button>`;
   return `<div class="scrim" data-act="close"></div><section class="sheet" role="dialog" aria-modal="true" aria-label="Remplacer"><div class="sheeth"><h2>Remplacer ${esc(hname(h))}</h2><span class="sp"></span><button class="btn sq" data-act="close" aria-label="Fermer">${ico('x')}</button></div>
     <div class="sec"><span class="muted">${gtxt(a.g)} g · ${TI[a.t].label} · ${R.aroma ? `ajout d’arôme : même masse (${ibuTxt(R.r)} avant)` : `ajout d’amertume : même IBU, ${ibuTxt(R.r)}`}</span><span class="sp"></span><button class="btn sq ghost" data-act="repinfo" aria-label="Comment les remplaçants sont classés" aria-expanded="${!!S.repInfo}">${ico('info')}</button></div>
-    ${S.repInfo ? `<div class="info" style="padding-left:12px"><p>Dans chaque groupe : ${TI[a.t].w ? 'arômes les plus proches d’abord' : 'alpha le plus haut d’abord (ajout d’amertume : l’arôme compte peu)'}. « Reste » : stock moins tes autres ajouts de ce houblon. À acheter : typiques de ${esc(style().n)} d’abord. Proximité : profils d’arôme d’après les descripteurs Beer Maverick ; ce n’est pas une garantie de goût.</p></div>` : ''}
+    ${S.repInfo ? `<div class="info" style="padding-left:12px"><p>Dans chaque groupe : ${TI[a.t].w ? 'arômes les plus proches d’abord' : 'alpha le plus haut d’abord (ajout d’amertume : l’arôme compte peu)'}. « Libres » : stock moins tes autres ajouts de ce houblon. Ordre : stock suffisant d’abord, puis insuffisant. À acheter : typiques de ${esc(style().n)} d’abord. Proximité : profils d’arôme d’après les descripteurs Beer Maverick ; ce n’est pas une garantie de goût.</p></div>` : ''}
     <div class="sheetb"><div class="grp"><b>Dans mon stock</b><span class="sp"></span><button class="btn" data-act="cmpsubs" data-id="${a.id}">${ico('cmp')}Comparer aux 3 premiers</button></div>${R.stock.map(sub).join('') || '<div class="empty">Aucun houblon de ton stock.</div>'}
     <div class="grp"><b>À acheter</b><span>· typiques de ${esc(style().n)} d’abord</span></div>${R.buy.map(sub).join('')}</div></section>`;
 }
@@ -832,7 +865,7 @@ q('Q15', 'Simuler', 'Quel IBU total, dry hop compris ?', () => {
 });
 q('Q17', 'Simuler', 'IBU et arôme de chaque ajout', () => {
   const P = progOrProposal(); const p = prog(P.adds);
-  return { short: `<ul>${p.lines.map((L) => li(`${esc(hname(L.h))} ${nf(L.a.g)} g ${TI[L.a.t].short} · ${L.w && L.h.v.ax ? topAxes(L.h.v.ax, 2).join(', ') + ` (poids ${nf(L.w, 1)})` : 'amertume seulement'}`, L.a.t === 'dry' ? 'à cru' : ibuTxt(L.r), L.a.t === 'dry')).join('')}</ul><span class="muted">${P.label}</span>`,
+  return { short: `<ul>${p.lines.map((L) => li(`${esc(hname(L.h))} ${nf(L.a.g)} g ${TI[L.a.t].short} · ${L.w && L.h.v.ax ? 'arôme ' + topAxes(L.h.v.ax, 2).join(', ') + ` (${Math.round(L.w * 100)} % gardé à ce moment, estimation)` : 'amertume seulement'}`, L.a.t === 'dry' ? 'à cru' : ibuTxt(L.r), L.a.t === 'dry')).join('')}</ul><span class="muted">${P.label}</span>`,
     detail: `<p>Chaque ligne de « Mon houblonnage » montre son IBU et se recalcule à chaque réglage. Poids d’arôme par moment : dry hop 1, whirlpool 0,8, 5 à 10 min 0,5, 15 min 0,3, au-delà 0 (estimation, pas une mesure).</p>` };
 });
 q('Q20', 'Simuler', 'Saveur et chimie de l’ensemble de mes ajouts', () => {
@@ -867,7 +900,7 @@ q('Q12', 'Simuler', 'Blanche : dry hop si j’enlève 20 g dans le moût', () =>
 q('Q19', 'Simuler', 'Tel houblon, tel moment, telle levure : quel résultat ?', () => {
   const h = hop(S.qp.q19 || inStock()[0].key) || hop(inStock()[0].key); const t = S.qp.q19t; const c = ctx(); const g = Math.round((START_GL[t] || 1) * c.V);
   const r = ibuOf(h, g, t, c);
-  return { short: `${pickVar('q19', h.key, varOpts())} ${pickVar('q19t', t, TIMES.map((x) => [x.id, x.label]))}<br>${nf(g)} g : <b class="strong">${t === 'dry' ? 'à cru, sans IBU à chaud' : ibuTxt(r)}</b> · ${TI[t].w && h.v.ax ? 'arôme ' + topAxes(h.v.ax, 3).join(', ') + ` (poids ${nf(TI[t].w, 1)})` : 'amertume seulement'}. Part de la levure : ${ND(`son effet sur ce houblon (β-lyase inconnue pour les ${D.yeasts.length} levures des données : ${D.yeasts.map((y) => y.n.replace(/\s*\(.*\)$/, '')).join(', ')})`)}`,
+  return { short: `${pickVar('q19', h.key, varOpts())} ${pickVar('q19t', t, TIMES.map((x) => [x.id, x.label]))}<br>${nf(g)} g : <b class="strong">${t === 'dry' ? 'à cru, sans IBU à chaud' : ibuTxt(r)}</b> · ${TI[t].w && h.v.ax ? 'arôme ' + topAxes(h.v.ax, 3).join(', ') : 'amertume seulement'}. Part de la levure : ${ND(`son effet sur ce houblon (β-lyase inconnue pour les ${D.yeasts.length} levures des données : ${D.yeasts.map((y) => y.n.replace(/\s*\(.*\)$/, '')).join(', ')})`)}`,
     detail: `<p>${nf(START_GL[t] || 1, 0)} g/L : dose de départ de l’app pour ce moment. Un seul essai houblon × levure est documenté dans les données (Cascade × Wyeast 1728, Lafontaine 2018).</p>` };
 });
 q('Q06', 'Remplacer', 'Houblon indisponible : avec quoi le remplacer ?', () => {
@@ -976,7 +1009,10 @@ function addHop(key, t, g0) {
   if (g == null && (t === 'b60' || t === 'fwh' || t === 'b30')) { const n = need(); g = Math.round(doseFor(h, n.ibu, t, c) || 20); }
   else if (g == null) g = Math.round((START_GL[t] || 1) * S.V);
   const a = { id: S.nextId++, key, g: Math.max(1, g), t };
+  const before = nextStep();
   S.adds.push(a); S.toast = null;
+  // Le prochain ajout change seul après l'amertume : on l'annonce.
+  if (!S.next && before !== nextStep()) S.toast = { msg: `Amertume faite. « + » ajoute maintenant au ${STEP_LABEL[nextStep()].toLowerCase()} ; change-le au-dessus de la liste.` };
   return a;
 }
 function parseNum(s) { const x = Number(String(s).replace(/\s/g, '').replace(',', '.')); return Number.isFinite(x) ? x : null; }
