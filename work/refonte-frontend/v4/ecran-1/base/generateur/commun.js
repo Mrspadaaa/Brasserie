@@ -74,8 +74,16 @@ const ETAT = {
   gouts: { aime: new Set(), exclut: new Set() }, goutOuvert: null,
   visee: {}, sel: null, filtreVoies: null, marques: null,
   comp: D.comparerDefaut.slice(), effet: null, ibuAffiche: null, focusK: null, momentR: {}, focusSerie: null,
+  // La famille hors de sa zone s'ouvre d'emblée : ses gestes (bannir, réduire, augmenter) se voient.
+  viseeAbs: {}, selFam: D.continu ? D.ordre.find((f, i) => D.continu.biere[i] != null && D.continu.biere[i] > D.continu.cible[i].haut + 0.05) || null : null,
+  echelle: B.echelle || 'style', clavier: false,
 };
 for (const f of (B.dirs ? B.dirs.split(',') : [])) ETAT.visee[f] = D.cible[fi(f)].visee;
+/* D33 : le focus ne se replace qu'après une action au clavier (au doigt, la vue web du téléphone
+   l'entourerait de jaune) ; le contour reste réservé à :focus-visible. */
+for (const f of (B.dirs ? B.dirs.split(',') : [])) if (D.continu && D.continu.viseeDir[f] != null) ETAT.viseeAbs[f] = D.continu.viseeDir[f];
+document.addEventListener('keydown', () => { ETAT.clavier = true; }, true);
+document.addEventListener('pointerdown', () => { ETAT.clavier = false; }, true);
 let VARIANTE = null;
 
 /* IBU : valeur du pack au moment et à la dose de la recette, sinon IBU par gramme du pack × dose. */
@@ -595,44 +603,143 @@ function chipsDirection(onToggle) {
       return h('button', {
         class: 'chip dir-' + (plus ? 'plus' : 'moins'), 'aria-pressed': String(f in ETAT.visee), 'data-k': 'c' + f,
         'data-booster': n === 0 ? 'puce direction' : null, 'aria-label': (plus ? 'Plus ' : 'Moins ') + D.long[f].toLowerCase(),
-        onclick: () => { if (f in ETAT.visee) delete ETAT.visee[f]; else ETAT.visee[f] = D.cible[i].visee ?? (plus ? p + 1 : D.cible[i].max); ETAT.filtreVoies = null; ETAT.marques = null; if (onToggle) onToggle(); else rendre(false); },
+        onclick: () => {
+          if (f in ETAT.visee) viserAbs(f, null);
+          else if (D.continu && D.continu.viseeDir[f] != null) viserAbs(f, D.continu.viseeDir[f]);
+          else ETAT.visee[f] = D.cible[i].visee ?? (plus ? p + 1 : D.cible[i].max);
+          ETAT.filtreVoies = null; ETAT.marques = null; if (onToggle) onToggle(); else rendre(false);
+        },
       }, nomCourt(f).toLowerCase());
     }),
     h('button', { class: 'chip dir-autre', 'aria-label': 'Autres directions : glisser la visée sur une famille' }));
 }
+/* ---------- Partie 1 : Ma bière et la cible, le détail (D31, D32, D33) ----------
+   Une ligne par famille (data-famille). Deux échelles, même données (pack, échelle continue 0–3) :
+   « au style » (la zone du style remplit la même largeur pour chaque famille, ses trois crans
+   marqués, « au-dessus » à droite) et « absolu » (une piste commune 0–3 : absent, faible, moyen,
+   marqué ; la zone du style à sa vraie place, ma bière à sa vraie valeur). Une sortie de zone dit
+   son ampleur (« ×2,8 »), jamais écrasée au bord. Toucher une ligne ouvre bannir, réduire,
+   augmenter : ma visée, de 0 (bannie) à 3 (marqué), qui pilote aussi les puces de direction. */
+// Classes V5.5 sur l'échelle continue du pack (0–1 faible, 1–2 moyen, 2–3 marqué) ; une visée se
+// pose au milieu d'une classe (la dégustation y est placée de même : 0,5 ; 1,5 ; 2,5) ou à 0, bannie.
+const CLASSES = ['faible', 'moyen', 'marqué'];
+const PALIERS = [0, 0.5, 1.5, 2.5];
+const nomPalier = (v) => (v === 0 ? 'bannie' : PALIERS.includes(v) ? CLASSES[PALIERS.indexOf(v) - 1] : virgule(v, 1));
+/* Ma visée (échelle absolue 0–3) : posée par un geste ou par une puce de direction ; la visée en
+   crans des Suggestions suit (mêmes bornes que la zone du style). */
+function viserAbs(f, v) {
+  const i = fi(f), C = D.continu.cible[i];
+  if (v == null) { delete ETAT.viseeAbs[f]; delete ETAT.visee[f]; return; }
+  ETAT.viseeAbs[f] = Math.max(0, Math.min(3, v));
+  const larg = Math.max(0.01, C.haut - C.bas);
+  ETAT.visee[f] = ETAT.viseeAbs[f] > C.haut + 0.01 ? 4 : Math.max(0, Math.min(3, Math.floor(((ETAT.viseeAbs[f] - C.bas) / larg) * 3)));
+}
+/* Position (0–100 %) d'une valeur absolue sur la piste, selon l'échelle. */
+function posPiste(i, v) {
+  const C = D.continu.cible[i];
+  if (ETAT.echelle === 'absolu') return Math.max(0, Math.min(100, (v / 3) * 100));
+  if (v > C.haut + 0.01) return 90;
+  const larg = Math.max(0.01, C.haut - C.bas);
+  return Math.max(0, Math.min(80, ((v - C.bas) / larg) * 80));
+}
+function ligneFamille(f, i) {
+  const P = D.profil[i], C = D.continu.cible[i], v = D.continu.biere[i], vi = ETAT.viseeAbs[f];
+  const ouvert = ETAT.selFam === f, att = D.attendues.includes(f);
+  const dessus = v != null && v > C.haut + 0.05;
+  const piste = h('div', { class: 'piste-f' + (v == null ? ' ns' : ''), 'data-role': 'piste' });
+  const zone = ETAT.echelle === 'absolu'
+    ? h('span', { class: 'zone-f', 'data-role': 'zone', style: 'left:' + (C.bas / 3 * 100) + '%;width:' + ((C.haut - C.bas) / 3 * 100) + '%' })
+    : h('span', { class: 'zone-f crans', 'data-role': 'zone', style: 'left:0;width:80%' });
+  piste.append(zone);
+  if (ETAT.echelle !== 'absolu') piste.append(h('span', { class: 'au-dessus', 'aria-hidden': 'true' }));
+  if (vi != null) piste.append(h('span', { class: 'visee-f', style: 'left:' + posPiste(i, vi) + '%', 'aria-hidden': 'true' }));
+  if (v != null) {
+    const x = posPiste(i, v);
+    if (vi != null) { const a = Math.min(x, posPiste(i, vi)), b = Math.max(x, posPiste(i, vi)); piste.append(h('span', { class: 'lien-visee', style: 'left:' + a + '%;width:' + (b - a) + '%' })); }
+    piste.append(h('span', { class: 'biere-f ' + (P.source === 'dégustation' ? 'deg' : 'mod') + (dessus ? ' dessus' : ''), 'data-role': 'biere', style: 'left:' + x + '%', 'aria-hidden': 'true' }));
+  }
+  const droite = h('span', { class: 'droite-f' },
+    dessus ? h('span', { class: 'ecart', 'data-role': 'ecart', 'aria-label': 'Au-dessus de la zone du style : ' + D.continu.ecart[i] }, D.continu.ecart[i]) : null,
+    v == null ? h('span', { class: 'ns-pt', role: 'img', 'aria-label': 'non situé' }) : !dessus ? h('span', { class: 'src-f' }, P.source === 'dégustation' ? 'dégusté' : 'prévu') : null);
+  const label = D.long[f] + ' : ' + (v == null ? 'non situé' : (P.source === 'dégustation' ? 'dégusté ' : 'prévu ') + virgule(v, 2) + ' sur 3') + ' ; zone du style ' + virgule(C.bas, 2) + ' à ' + virgule(C.haut, 2) + (vi != null ? ' ; ma visée ' + (vi === 0 ? 'bannie' : virgule(vi, 1)) : '');
+  const ligne = h('div', {
+    class: 'fam' + (att ? ' att' : '') + (ouvert ? ' ouvert' : '') + (vi === 0 ? ' bannie' : ''), 'data-famille': f, 'data-visee': vi != null ? String(Math.round(vi * 10) / 10) : null,
+    onclick: (e) => { if (e.target.closest('[data-action]')) return; ETAT.selFam = ouvert ? null : f; rendre(false); },
+  },
+  h('button', { class: 'nom-f' + (dessus ? ' acc' : ''), 'aria-expanded': String(ouvert), 'aria-label': label + ' ; ouvrir bannir, réduire, augmenter', 'data-k': 'f' + f, 'data-booster': i === fi('resin') ? 'toucher famille' : null }, nomCourt(f)),
+  piste, droite);
+  if (ouvert) {
+    const base = vi != null ? vi : v != null ? v : 0;
+    const agir = (a) => (e) => {
+      e.stopPropagation();
+      const haut = PALIERS.find((p) => p > base + 1e-9), bas = [...PALIERS].reverse().find((p) => p < base - 1e-9);
+      viserAbs(f, a === 'bannir' ? 0 : a === 'reduire' ? (bas ?? 0) : (haut ?? 2.5));
+      ETAT.filtreVoies = null; ETAT.marques = null;
+      rendre(false);
+    };
+    ligne.append(h('div', { class: 'actions-f', role: 'group', 'aria-label': 'Ma visée pour ' + D.long[f] },
+      h('button', { 'data-action': 'bannir', 'aria-label': 'Bannir ' + D.long[f] + ' : visée absente', onclick: agir('bannir') }, 'bannir'),
+      h('button', { 'data-action': 'reduire', 'aria-label': 'Réduire ma visée de ' + D.long[f] + ' d\'un niveau', onclick: agir('reduire') }, '−'),
+      h('span', { class: 'niv' }, vi != null ? nomPalier(vi) : 'sans visée'),
+      h('button', { 'data-action': 'augmenter', 'aria-label': 'Augmenter ma visée de ' + D.long[f] + ' d\'un niveau', onclick: agir('augmenter') }, '+'),
+      vi != null ? h('button', { class: 'oublier', 'aria-label': 'Retirer ma visée', onclick: (e) => { e.stopPropagation(); viserAbs(f, null); rendre(false); } }, '×') : null));
+  }
+  return ligne;
+}
+function echelleSeg() {
+  const seg = h('span', { class: 'seg', role: 'radiogroup', 'aria-label': 'Échelle : au style ou absolue', 'data-booster': 'lentille absolue' },
+    [['style', 'Au style'], ['absolu', 'Absolu']].map(([k, t]) => h('button', { role: 'radio', 'aria-checked': String(ETAT.echelle === k), 'data-e': k }, t)));
+  seg.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    ETAT.echelle = b && b.dataset.e !== ETAT.echelle ? b.dataset.e : ETAT.echelle === 'absolu' ? 'style' : 'absolu';
+    rendre(false);
+  });
+  return seg;
+}
 function partieBiere(part) {
   const { exc, cpts } = phraseParts();
   part.append(h('div', { class: 'titre' }, h('span', {}, exc.map((t) => h('span', { class: 'exc' }, t + ' ')), cpts.length && !exc.length ? cpts.join(' · ') : null), lentille()));
-  part.append(h('div', { class: 'rangee' }, exc.length ? cpts.map((t) => h('span', { class: 'cpt' }, t)) : null,
-    h('span', { class: 'ctx', 'aria-label': 'Houblons de ma bière' }, ETAT.lignes.map((l) => h('span', { class: 'ctx-h' }, h('span', { 'data-houblon': l.cle }, l.nom), ' ' + quand(l) + ' ' + grammes(l.g))))));
-  const svg = sv('svg', { width: 358, role: 'group', 'aria-label': 'Ma bière face à la zone du style, en crans ; poser ma visée en touchant un cran' });
-  // Bloc radar (svg + rangées), marqué data-composant="radar" quand la lentille est Radar.
+  // L'échelle (au style ou absolue) se choisit à côté des comptes ; elle ne vaut que pour les barres.
+  const rangee = h('div', { class: 'rangee' }, exc.length ? cpts.map((t) => h('span', { class: 'cpt' }, t)) : null);
+  part.append(rangee);
   const bloc = h('div', { class: 'bloc-lecture' });
   part.append(bloc);
-  bloc.append(svg);
-  const B2 = new Biere(svg);
-  B2.dessiner();
-  const zoneS = h('div');
-  bloc.append(zoneS);
-  const series = () => {
-    if (ETAT.lentille === 'radar') bloc.setAttribute('data-composant', 'radar'); else bloc.removeAttribute('data-composant');
-    zoneS.innerHTML = '';
-    if (ETAT.lentille !== 'radar') return;
-    const idx = D.ordre.map((f, i) => i);
-    const deg = idx.filter((i) => D.profil[i].source === 'dégustation'), mod = idx.filter((i) => D.profil[i].source === 'modèle');
-    const dessus = (i) => D.profil[i].crans > D.cible[i].max;
-    const rg = [
-      ...(deg.length ? [{ nom: 'ma bière', cleK: 'deg', titre: 'Dégusté' + (D.degustation ? ' ' + D.degustation.date : ''), st: { point: 'plein', acc: deg.some(dessus) }, cle: deg.some(dessus) ? 'au-dessus' : null, texte: listeFams(deg) }] : []),
-      ...(mod.length ? [{ nom: 'ma bière', cleK: 'mod', titre: 'Prévu', st: { point: 'creux' }, texte: listeFams(mod) }] : []),
-      { nom: 'cible', titre: 'Cible', st: { zone: true }, cle: 'attendues', texte: listeFams(D.attendues.map(fi)) },
-      ...(D.profil.some((p) => p.crans == null) ? [{ nom: 'non situé', titre: 'Non situées', st: { point: 'pointille' }, texte: listeFams(D.ordre.map((f, i) => i).filter((i) => D.profil[i].crans == null)) }] : []),
-    ];
-    const vis = dirsActives();
-    if (vis.length) rg.push({ nom: 'visée', titre: 'Ma visée', st: { stroke: '#111', dash: '3 2' }, texte: vis.map((f) => nomCourt(f).toLowerCase() + ' ' + ETAT.visee[f]).join(', ') });
-    zoneS.append(rangeesSeries(rg, () => { B2.dessiner(); series(); }));
+  const dessiner = () => {
+    bloc.innerHTML = '';
+    if (ETAT.lentille === 'radar') {
+      const ancien = rangee.querySelector('.seg'); if (ancien) ancien.remove();
+      // Radar (crans du style) : la même partie, ses séries sous le radar ; marqué data-composant.
+      bloc.setAttribute('data-composant', 'radar');
+      const svg = sv('svg', { width: 358, role: 'group', 'aria-label': 'Radar de ma bière face à la zone du style, en crans' });
+      bloc.append(svg);
+      const B2 = new Biere(svg);
+      B2.dessiner();
+      const idx = D.ordre.map((f, i) => i);
+      const deg = idx.filter((i) => D.profil[i].source === 'dégustation'), mod = idx.filter((i) => D.profil[i].source === 'modèle');
+      const dessus = (i) => D.profil[i].crans > D.cible[i].max;
+      bloc.append(rangeesSeries([
+        ...(deg.length ? [{ nom: 'ma bière', cleK: 'deg', titre: 'Dégusté' + (D.degustation ? ' ' + D.degustation.date : ''), st: { point: 'plein', acc: deg.some(dessus) }, cle: deg.some(dessus) ? 'au-dessus' : null, texte: listeFams(deg) }] : []),
+        ...(mod.length ? [{ nom: 'ma bière', cleK: 'mod', titre: 'Prévu', st: { point: 'creux' }, texte: listeFams(mod) }] : []),
+        { nom: 'cible', titre: 'Cible', st: { zone: true }, cle: 'attendues', texte: listeFams(D.attendues.map(fi)) },
+        ...(D.profil.some((p) => p.crans == null) ? [{ nom: 'non situé', titre: 'Non situées', st: { point: 'pointille' }, texte: listeFams(idx.filter((i) => D.profil[i].crans == null)) }] : []),
+      ], dessiner));
+      return;
+    }
+    bloc.removeAttribute('data-composant');
+    const ancien = rangee.querySelector('.seg'); if (ancien) ancien.remove();
+    const seg = echelleSeg(); seg.style.marginLeft = 'auto'; rangee.append(seg);
+    bloc.append(h('div', { class: 'legende-f', 'aria-label': 'Sources de ma bière' },
+      D.degustation ? h('span', {}, h('i', { class: 'pt-deg' }), 'dégusté ' + D.degustation.date) : null,
+      h('span', {}, h('i', { class: 'pt-mod' }), 'prévu'),
+      D.continu.biere.some((v) => v == null) ? h('span', {}, h('i', { class: 'pt-ns' }), 'non situé') : null));
+    bloc.append(h('div', { class: 'tete-f' },
+      ETAT.echelle === 'absolu'
+        ? h('span', { class: 'graduations', 'aria-hidden': 'true' }, CLASSES.map((n) => h('span', {}, n)))
+        : h('span', { class: 'graduations gr-style', 'aria-hidden': 'true' }, h('span', {}, 'zone du style'), h('span', {}, 'au-dessus'))));
+    bloc.append(h('div', { class: 'familles', role: 'list', 'aria-label': 'Ma bière face à la zone du style, ' + (ETAT.echelle === 'absolu' ? 'échelle absolue' : 'échelle du style') }, D.ordre.map((f, i) => ligneFamille(f, i))));
   };
-  series();
-  LENTILLE_CB = (l) => { B2.basculer(l); series(); };
+  dessiner();
+  LENTILLE_CB = () => dessiner();
   part.append(chipsDirection());
   const dirs = dirsActives();
   const liens = D.voiesResume.filter((v) => dirs.includes(v.fam));
@@ -835,6 +942,6 @@ function rendre(animerIbu) {
   majIbu(animerIbu);
   const k = ETAT.focusK || actif;
   ETAT.focusK = null;
-  if (k) { const e = app.querySelector('[data-k="' + CSS.escape(k) + '"]'); if (e) e.focus({ preventScroll: true }); }
+  if (k && ETAT.clavier) { const e = app.querySelector('[data-k="' + CSS.escape(k) + '"]'); if (e) e.focus({ preventScroll: true }); }
 }
 function demarrer() { rendre(false); }

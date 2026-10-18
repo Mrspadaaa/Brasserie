@@ -65,7 +65,7 @@ fiche) et `NOTE.md` (5 lignes : parti, geste, contenu au premier plan, ce qui es
 limites). Ajoute une page `fiche.html` : l'étape avec la fiche de Nugget **déjà ouverte** (pour
 les captures et la planche).
 
-`node work/refonte-frontend/v4/tournoi/outils/controle-lot.mjs work/refonte-frontend/v4/ecran-1/fils4-fiche pNN [pMM] --mots=80 --fill=0.8 --boosters=4 --recette --fiche --baseline=work/refonte-frontend/v4/ecran-1/fils3/p03`
+`node work/refonte-frontend/v4/tournoi/outils/controle-lot.mjs work/refonte-frontend/v4/ecran-1/fils4-fiche pNN [pMM] --mots=80 --fill=0.8 --boosters=4 --fiche --baseline=work/refonte-frontend/v4/ecran-1/fils3/p03`
 
 Il doit imprimer `LOT OK`. Regarde tes captures (`fils4-fiche/captures/`, dont `pNN-fiche-390.png`).
 Trois passes au plus. Réponse finale : une ligne par variante (parti, geste, mots dans la

@@ -71,6 +71,10 @@ maquette. Et le brasseur ne voyait le résultat qu'à la fin.
 | D32 | « je sais pas comment bannir une contraintes ou réduire une autre » (18.10, soir) | `controle-detail.mjs` : `data-action` bannir, réduire, augmenter sur chaque famille (sur la ligne ou après un toucher) ; bannir → `data-visee="0"` ; augmenter élève la visée | présents et efficaces | lot 3 p02, p08 → échec |
 | D33 | « il y a des truc jaune ?? » (18.10, soir : le focus posé par script sur une ligne, entouré de jaune par la vue web du téléphone) | `controle-palette.mjs` (`--palette`) : surlignage du toucher neutralisé ; après un toucher, aucun contour ni focus sur un élément qui n'est pas une commande ; une seule teinte saturée hors arômes et radars | 0 | lot 3 p02 → échec |
 
+| D34 | « Je veux choisir pas de 10' défini, pas de timing imposé hein » ; « Soit pas supide, c'est des tranche de 5'. » (18.10, soir) | `controle-rail.mjs` : deux lâchers entre 60′ et 10′ donnent des minutes multiples de 5, pas seulement des repères, et deux IBU différents | tous | base consolidée v1 (accroche à 30′ et 10′) → échec ; témoin positif → OK |
+| D35 | « Ça semble un peu bancale, c'est l'idée mais pas hyper bien réalisé » (18.10, soir, capture pendant le geste) | `controle-rail.mjs`, doigt posé puis lâché : `data-glisse` sur l'élément qui suit le doigt, au-dessus de tout, ne cachant aucun texte ; aucun chevauchement de textes ; aucun vide de plus de 64 px dans la colonne du rail | 0 | base consolidée v1 → 3 échecs (« 10′ » doublé, vide de 95 px, rien de marqué) |
+| D36 | « Parcontre prendre en compte que le boil peut durer 120' ou d'autres timing que 60 » (18.10, soir) | `controle-rail.mjs` : `cas-ebu120.html`, rail à `b120`, une ligne se pose au-delà de 60′ | présent | base consolidée v1 → échec |
+
 D18 est désormais vérifié par le même script, partie par partie.
 
 Commande (toutes les mesures D1 à D7, D10, D13, D14, D16 à D19) :

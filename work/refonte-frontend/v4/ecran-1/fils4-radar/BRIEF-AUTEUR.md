@@ -84,7 +84,7 @@ retenues. Une bibliothèque n'est pas une excuse : son rendu par défaut doit ê
 radars refaits) et `NOTE.md` (5 lignes : parti, bibliothèque et taille du script, ce qui est
 réglé à la main, limites).
 
-`node work/refonte-frontend/v4/tournoi/outils/controle-lot.mjs work/refonte-frontend/v4/ecran-1/fils4-radar pNN [pMM] --mots=80 --fill=0.8 --boosters=4 --radar --recette --baseline=work/refonte-frontend/v4/ecran-1/fils3/p03`
+`node work/refonte-frontend/v4/tournoi/outils/controle-lot.mjs work/refonte-frontend/v4/ecran-1/fils4-radar pNN [pMM] --mots=80 --fill=0.8 --boosters=4 --radar --baseline=work/refonte-frontend/v4/ecran-1/fils3/p03`
 
 Il doit imprimer `LOT OK`. Regarde les captures de tes 3 radars (`fils4-radar/captures/`) et
 compare-les à l'étalon Beer Maverick. Trois passes au plus. Réponse finale : une ligne par

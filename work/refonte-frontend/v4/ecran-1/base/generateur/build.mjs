@@ -145,6 +145,20 @@ function scenario(id) {
     ordre: ORDRE, court, long, attendues: ORDRE.filter((f) => cs[f].status === 'attendue'),
     profil: ORDRE.map((f) => ({ crans: pb[f].crans, display: pb[f].display, source: pb[f].source, approx: pb[f].approx, exact: pb[f].exact })),
     cible: ORDRE.map((f) => ({ min: cs[f].bande.min, max: cs[f].bande.max, visee: cs[f].visee ?? null, statut: cs[f].status })),
+    // Échelle continue 0–3 du pack (echellesContinu) : ma bière, la zone du style, l'écart quand
+    // ma bière en sort (« ×2,8 » = valeur / haut de zone), la visée posée par la direction.
+    continu: (() => {
+      const bc = parFam(S.profilBiereContinu || []), cc = parFam(S.cibleStyleContinu || []);
+      const biere = ORDRE.map((f) => (bc[f] && bc[f].value != null ? bc[f].value : null));
+      const cible = ORDRE.map((f) => (cc[f] ? { bas: cc[f].bas, haut: cc[f].haut } : { bas: 0, haut: 3 }));
+      const ecart = ORDRE.map((f, i) => {
+        const v = biere[i], h = cible[i].haut;
+        if (v == null || !(v > h + 0.05)) return null;
+        return h > 0 ? '×' + virgule(Math.round((v / h) * 10) / 10) : '+' + virgule(Math.round((v - h) * 10) / 10);
+      });
+      const viseeDir = Object.fromEntries((S.direction || []).map((d) => [d.family, Math.round((d.targetAbsolute / 33.33) * 10) / 10]));
+      return { biere, cible, ecart, viseeDir };
+    })(),
     degustation: S.tasting ? { date: S.tasting.date.slice(8, 10) + '.' + S.tasting.date.slice(5, 7) } : null,
     phrase, voiesResume: ((S.readingSummary && S.readingSummary.voies) || []).map((v) => ({ fam: v.family, texte: v.text })),
     lignes, rapides, rapidesMoment: (tousRapides[0] || {}).moment || 'b10', tousRapidesNoms: tousRapides.map((r) => r.nom),
@@ -174,6 +188,7 @@ const VUES = {
   'index.html': ['S1', 'etape', '', 'barres', ''],
   'biere.html': ['S1', 'panneau', 'biere', 'barres', ''],
   'biere-radar.html': ['S1', 'panneau', 'biere', 'radar', ''],
+  'biere-absolu.html': ['S1', 'panneau', 'biere', 'barres', '', 'absolu'],
   'etat-b.html': ['S1', 'panneau', 'suggestions', 'barres', 'floral,resin'],
   'suggestions-radar.html': ['S1', 'panneau', 'suggestions', 'radar', 'floral,resin'],
   'comparer.html': ['S1', 'panneau', 'comparer', 'barres', ''],
@@ -187,14 +202,14 @@ for (const id of ['consolide']) {
   const variante = fs.readFileSync(path.join(HERE, 'etape-' + id + '.js'), 'utf8');
   const css = fs.readFileSync(path.join(HERE, 'etape-' + id + '.css'), 'utf8');
   fs.mkdirSync(path.join(OUT, id), { recursive: true });
-  for (const [f, [scen, vue, partie, lentille, dirs]] of Object.entries(VUES).filter(([f]) => !PAGES.length || PAGES.includes(f))) {
+  for (const [f, [scen, vue, partie, lentille, dirs, echelle]] of Object.entries(VUES).filter(([f]) => !PAGES.length || PAGES.includes(f))) {
     const html = tpl
       .replace('@TITRE@', TITRES[id])
       .replace('/*@CSS@*/', () => css)
       .replace('/*@DATA@*/', () => 'const D = ' + JSON.stringify(DATA[scen]) + ';')
       .replace('/*@COMMUN@*/', () => commun)
       .replace('/*@VARIANTE@*/', () => variante)
-      .replace('@BODY@', `data-variante="${id}" data-vue="${vue}" data-ouvre="${partie}" data-lentille="${lentille}" data-dirs="${dirs}"`);
+      .replace('@BODY@', `data-variante="${id}" data-vue="${vue}" data-ouvre="${partie}" data-lentille="${lentille}" data-dirs="${dirs}" data-echelle="${echelle || ''}"`);
     fs.writeFileSync(path.join(OUT, id, f), html);
   }
   console.log(id, 'écrit');

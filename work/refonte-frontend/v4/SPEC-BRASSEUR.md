@@ -66,6 +66,10 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   lager super tropical genre 50/100 ça sera pas vraiment affiché » — 18.10, soir (D31).
 - **Suggestions et comparaison** : « Parcontre tout ce qui est suggestions et comparaison, c'est
   très mauvaise et de mon point de vu pas terminé on est d'accord » — 18.10, soir (lot dédié).
+- **Le moment, libre** (sur le glissement de la base, 18.10, soir) : « Je veux choisir pas de 10'
+  défini, pas de timing imposé hein » ; « Soit pas supide, c'est des tranche de 5'. » ;
+  « Parcontre prendre en compte que le boil peut durer 120' ou d'autres timing que 60 » ; « Ça
+  semble un peu bancale, c'est l'idée mais pas hyper bien réalisé » (D34, D35, D36).
 - **La baseline** : « Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça
   différent complètement ? » — 18.10, soir (D26).
 - **Levure et biotransformation** : « Et tout ce qui est biotransformation avec levures, dry
