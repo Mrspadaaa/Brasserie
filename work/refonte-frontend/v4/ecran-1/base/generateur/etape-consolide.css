@@ -50,14 +50,17 @@
 
   /* La loupe (D47) : la poignée prise, le rail s'ouvre en échelles ; tout glisse en translation. */
   .grads { display: none; }
-  .frise[data-geste] { user-select: none; -webkit-user-select: none; transition: height 180ms cubic-bezier(.2,.8,.2,1); }
-  .frise[data-geste] > [data-rang] { position: absolute; left: 0; right: 0; top: 0; margin: 0; transition: transform 180ms cubic-bezier(.2,.8,.2,1); }
-  .frise[data-geste] > .leve { z-index: 20; transition: none; will-change: transform; }
-  .frise[data-geste] .axe { bottom: auto; transition: top 180ms cubic-bezier(.2,.8,.2,1), height 180ms cubic-bezier(.2,.8,.2,1); }
+  /* Les positions suivent le doigt image par image (calculées, sans transition) ; seule l'ouverture est animée. */
+  .frise[data-geste] { user-select: none; -webkit-user-select: none; }
+  .frise[data-geste] > [data-rang] { position: absolute; left: 0; right: 0; top: 0; margin: 0; will-change: transform; }
+  .frise[data-geste] > .leve { z-index: 20; }
+  .frise[data-geste] .axe { bottom: auto; }
   .frise[data-geste] .grads { display: block; position: absolute; left: 0; top: 0; width: 44px; height: 0; z-index: 1; pointer-events: none; }
-  .grad { position: absolute; left: 18px; top: 0; width: 8px; height: 1.5px; border-radius: 1px; background: #8f8f8f; opacity: 0; transition: opacity 140ms ease-out, transform 160ms cubic-bezier(.2,.8,.2,1); }
+  .grad { position: absolute; left: 18px; top: 0; width: 8px; height: 1.5px; border-radius: 1px; background: #8f8f8f; opacity: 0; transition: opacity 140ms ease-out; }
   .grad.maj { left: 15px; width: 14px; height: 2px; background: var(--encre); }
   .grad.vue { opacity: 1; }
+  /* Loin du doigt, l'échelle se resserre : graduations courtes et claires (comme le Dock). */
+  .grad.vue.loin, .grad.maj.vue.loin { left: 19.5px; width: 5px; height: 1.5px; background: #8f8f8f; opacity: .45; }
   /* Le segment sous le doigt se nomme en encre ; les autres restent gris. */
   .frise[data-geste] > .focus .r-nom, .frise[data-geste] > .focus .cle { color: var(--encre); font-weight: 650; }
   .frise[data-geste] > .focus .pt-etape { border-color: var(--encre); }
@@ -67,13 +70,17 @@
   .blk.leve .poignee { cursor: grabbing; }
   .blk.leve .ibu-l { opacity: .3; }
   /* Les autres lignes, réduites à leur nom et leur moment, s'écartent de la carte. */
-  .blk.jeton { height: 26px; overflow: hidden; align-items: center; z-index: 3; }
+  .blk.jeton { height: 22px; overflow: hidden; align-items: center; z-index: 3; }
+  /* Pendant le geste, les rangées nommées se compactent : le rail tient dans sa hauteur du repos. */
+  .frise[data-geste] > .r-ebu, .frise[data-geste] > .r-etape, .frise[data-geste] > .r-ebu .renvoi { min-height: 20px; }
+  .frise[data-geste] > .r-fin { min-height: 16px; }
+  .frise[data-geste] > .etape-levure .levure { min-height: 24px; }
   .frise[data-geste] > .r-ebu, .frise[data-geste] > .r-etape, .frise[data-geste] > .r-fin, .frise[data-geste] > .etape-levure { z-index: 2; }
   .blk.jeton .corps-b { background: transparent; padding: 0 6px; }
   .blk.jeton .l2, .blk.jeton .l3, .blk.jeton .bio, .blk.jeton .pas, .blk.jeton .corbeille, .blk.jeton .type { display: none; }
   .blk.jeton .poignee { margin-top: 0; }
   .blk.jeton .poignee::before, .blk.jeton .poignee::after { display: none; }
-  .blk.jeton .quand { height: 22px; border-color: #9a9a9a; color: var(--gris); }
+  .blk.jeton .quand { height: 20px; border-color: #9a9a9a; color: var(--gris); }
   .blk.jeton .nom { font-weight: 400; color: var(--gris); }
   /* Le rail monte sur l'en-tête quand la place manque au-dessus (longue ébullition) : il l'estompe. */
   .ecran > .barre, .ecran > .resume { transition: opacity 160ms; }

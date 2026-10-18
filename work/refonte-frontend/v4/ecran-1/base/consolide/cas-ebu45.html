@@ -298,14 +298,17 @@
 
   /* La loupe (D47) : la poignée prise, le rail s'ouvre en échelles ; tout glisse en translation. */
   .grads { display: none; }
-  .frise[data-geste] { user-select: none; -webkit-user-select: none; transition: height 180ms cubic-bezier(.2,.8,.2,1); }
-  .frise[data-geste] > [data-rang] { position: absolute; left: 0; right: 0; top: 0; margin: 0; transition: transform 180ms cubic-bezier(.2,.8,.2,1); }
-  .frise[data-geste] > .leve { z-index: 20; transition: none; will-change: transform; }
-  .frise[data-geste] .axe { bottom: auto; transition: top 180ms cubic-bezier(.2,.8,.2,1), height 180ms cubic-bezier(.2,.8,.2,1); }
+  /* Les positions suivent le doigt image par image (calculées, sans transition) ; seule l'ouverture est animée. */
+  .frise[data-geste] { user-select: none; -webkit-user-select: none; }
+  .frise[data-geste] > [data-rang] { position: absolute; left: 0; right: 0; top: 0; margin: 0; will-change: transform; }
+  .frise[data-geste] > .leve { z-index: 20; }
+  .frise[data-geste] .axe { bottom: auto; }
   .frise[data-geste] .grads { display: block; position: absolute; left: 0; top: 0; width: 44px; height: 0; z-index: 1; pointer-events: none; }
-  .grad { position: absolute; left: 18px; top: 0; width: 8px; height: 1.5px; border-radius: 1px; background: #8f8f8f; opacity: 0; transition: opacity 140ms ease-out, transform 160ms cubic-bezier(.2,.8,.2,1); }
+  .grad { position: absolute; left: 18px; top: 0; width: 8px; height: 1.5px; border-radius: 1px; background: #8f8f8f; opacity: 0; transition: opacity 140ms ease-out; }
   .grad.maj { left: 15px; width: 14px; height: 2px; background: var(--encre); }
   .grad.vue { opacity: 1; }
+  /* Loin du doigt, l'échelle se resserre : graduations courtes et claires (comme le Dock). */
+  .grad.vue.loin, .grad.maj.vue.loin { left: 19.5px; width: 5px; height: 1.5px; background: #8f8f8f; opacity: .45; }
   /* Le segment sous le doigt se nomme en encre ; les autres restent gris. */
   .frise[data-geste] > .focus .r-nom, .frise[data-geste] > .focus .cle { color: var(--encre); font-weight: 650; }
   .frise[data-geste] > .focus .pt-etape { border-color: var(--encre); }
@@ -315,13 +318,17 @@
   .blk.leve .poignee { cursor: grabbing; }
   .blk.leve .ibu-l { opacity: .3; }
   /* Les autres lignes, réduites à leur nom et leur moment, s'écartent de la carte. */
-  .blk.jeton { height: 26px; overflow: hidden; align-items: center; z-index: 3; }
+  .blk.jeton { height: 22px; overflow: hidden; align-items: center; z-index: 3; }
+  /* Pendant le geste, les rangées nommées se compactent : le rail tient dans sa hauteur du repos. */
+  .frise[data-geste] > .r-ebu, .frise[data-geste] > .r-etape, .frise[data-geste] > .r-ebu .renvoi { min-height: 20px; }
+  .frise[data-geste] > .r-fin { min-height: 16px; }
+  .frise[data-geste] > .etape-levure .levure { min-height: 24px; }
   .frise[data-geste] > .r-ebu, .frise[data-geste] > .r-etape, .frise[data-geste] > .r-fin, .frise[data-geste] > .etape-levure { z-index: 2; }
   .blk.jeton .corps-b { background: transparent; padding: 0 6px; }
   .blk.jeton .l2, .blk.jeton .l3, .blk.jeton .bio, .blk.jeton .pas, .blk.jeton .corbeille, .blk.jeton .type { display: none; }
   .blk.jeton .poignee { margin-top: 0; }
   .blk.jeton .poignee::before, .blk.jeton .poignee::after { display: none; }
-  .blk.jeton .quand { height: 22px; border-color: #9a9a9a; color: var(--gris); }
+  .blk.jeton .quand { height: 20px; border-color: #9a9a9a; color: var(--gris); }
   .blk.jeton .nom { font-weight: 400; color: var(--gris); }
   /* Le rail monte sur l'en-tête quand la place manque au-dessus (longue ébullition) : il l'estompe. */
   .ecran > .barre, .ecran > .resume { transition: opacity 160ms; }
@@ -1216,19 +1223,21 @@ function rendre(animerIbu) {
 }
 function demarrer() { rendre(false); }
 
-/* Étape houblons, base v4 : le rail des étapes (BRIEF-RAIL.md ; D27, D28, D34 à D37, D41 à D47).
+/* Étape houblons, base v4 : le rail des étapes (BRIEF-RAIL.md ; D27, D28, D34 à D37, D41 à D47, D55, D56).
    Au repos, un rail compact et sans graduation : la durée d'ébullition lue dans la recette (avec un
    renvoi, D37 révisé), les lignes de la recette posées à leur moment, 0′, le whirlpool, la levure
    (D28), la fermentation et la post-fermentation. Le rail ne porte que la recette : les ajouts
    proposés vivent à part, sous le rail, chacun avec son moment suggéré (D41).
-   La loupe (D47) : la poignée prise, le rail s'ouvre en échelles continues, une par segment, chacune
-   régulière (D45) : ébullition par 5′ de la durée à 0′ (D34, D36), whirlpool de 100 à 60 °C par 5,
-   fermentation puis post-fermentation de J+0 à J+14 (D44). Le segment de la ligne prise s'ouvre
-   autour du doigt (sa graduation reste sous le doigt), les autres se resserrent, et seules les
-   graduations du segment sous le doigt se montrent. Le geste (D46) : la carte suit le doigt en
-   translation seule, l'étiquette suit la tranche, les autres lignes réduites s'écartent ; rien n'est
-   recalculé avant le lâcher, où la ligne prend la tranche, puis l'IBU et le total (tables du pack),
-   et tout se referme. Ombre pendant le geste seulement ; un geste interrompu rend tout (D42). */
+   La loupe, façon Dock (D47, D55) : la poignée prise, le rail devient une échelle continue (ébullition
+   par 5′ de la durée à 0′, whirlpool de 100 à 60 °C par 5, fermentation puis post-fermentation de J+0
+   à J+14) ; seul le voisinage du doigt grossit (une fenêtre régulière de ±3 tranches, D45), le
+   grossissement décroît avec la distance, le reste du rail reste compact entre les bornes du repos ;
+   la graduation sous le doigt reste sous le doigt. Seules les graduations du segment sous le doigt se
+   montrent. Le geste (D46) : la carte suit le doigt en translation seule, l'étiquette suit la tranche ;
+   les rangées (étapes, 0′, levure) et les autres lignes, réduites, restent à leur place et s'écartent
+   de la carte sans jamais se chevaucher (D56). Rien n'est recalculé avant le lâcher, où la ligne prend
+   la tranche, puis l'IBU et le total (tables du pack), et tout se referme. Ombre pendant le geste
+   seulement ; un geste interrompu rend tout (D42). */
 
 /* Après un glisser, le clic qui suit le lâcher est ignoré (il tomberait sous le doigt). */
 let IGNORE_CLIC = 0;
@@ -1375,56 +1384,112 @@ function atterrir(de) {
   c.animate([{ transform: 'translate(' + (de.left - b.left) + 'px,' + (de.top - b.top) + 'px)', opacity: 0.4 }, { transform: 'none', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(.2,.8,.2,1)' });
 }
 
-/* ---------- La loupe et le geste ---------- */
-// Écart entre deux graduations (px) : segment ouvert, segments d'avant (avant ajustement), segments
-// d'après (resserrés jusqu'à ce que le doigt y entre), plafond, confort, plancher.
-const ESP = { ouvert: { ebullition: 16, whirlpool: 13, fermentation: 10, post: 10 }, serre: { ebullition: 8, whirlpool: 9, fermentation: 7, post: 7 }, apres: 4, max: 14, confort: 8, min: 5 };
+/* ---------- La loupe et le geste, façon Dock (D47, D55, D56) ---------- */
+/* L'axe des tranches : t compte les graduations dans l'ordre du rail, avec des unités de passage
+   entre segments (0′ → whirlpool : 3 ; whirlpool → fermentation : 4, la levure au milieu ;
+   fermentation → post : 3). Les rangées nommées et les autres lignes ont leur ancre sur cet axe. */
 const nIntervalles = (s) => valeursSeg(s).length - 1;
-/* Plan du rail ouvert pour des écarts donnés, le centre de la tête d'ébullition à hE (px, depuis le
-   haut du rail) : y de chaque graduation (P), centre de chaque rangée nommée (T), bas du rail. */
-function plan(e, hE) {
-  const P = {}, T = { 'T-ebu': hE };
-  let y = hE + 26;
-  const poser = (s) => { valeursSeg(s).forEach((v, k) => { P[v] = y + k * e[s]; }); return y + nIntervalles(s) * e[s]; };
-  const b0 = poser('ebullition');
-  T['T-fin'] = b0; T['T-wp'] = b0 + 28; y = T['T-wp'] + 24;
-  const wp = poser('whirlpool');
-  T['T-levure'] = wp + 32; T['T-dryActive'] = T['T-levure'] + 34; y = T['T-dryActive'] + 24;
-  const f = poser('fermentation');
-  T['T-dryPost'] = f + 28; y = T['T-dryPost'] + 24;
-  const p = poser('post');
-  return { P, T, fin: p, bas: p + 16 };
-}
-/* Écarts et ancrage : la graduation de la ligne prise (vA) tombe sous le doigt (yA). La place au-dessus
-   ouvre un peu les segments d'avant ; si elle manque, on les resserre, puis le segment de la ligne
-   jusqu'au confort ; puis le rail peut monter sur l'en-tête (estompé), et en dernier se serrer encore. */
-function disposer(vA, yA, frTop) {
-  const segA = segDe(vA);
-  const avant = SEGMENTS.slice(0, SEGMENTS.indexOf(segA));
-  const e = {}; for (const s of SEGMENTS) e[s] = s === segA ? ESP.ouvert[s] : avant.includes(s) ? ESP.serre[s] : ESP.apres;
-  const V = valeursSeg(segA);
-  let iA = V.indexOf(vA);
-  if (iA < 0) iA = vA === 'fwh' ? -1 : Math.min(V.length - 1, Math.max(0, Number(vA.replace(/^\D+/, '')))); // premier moût : juste au-dessus du début
-  const pos = () => { const p = plan(e, 0); return p.P[V[0]] + iA * e[segA]; };
-  // Poids de chaque écart dans la position de vA, pour viser une position (cible) en réglant des écarts.
-  const viser = (cles, poids, cible, lo, hi) => {
-    const n = cles.reduce((t, s) => t + poids(s), 0);
-    if (!n) return;
-    const fixe = pos() - cles.reduce((t, s) => t + poids(s) * e[s], 0);
-    const v = Math.max(lo, Math.min(hi, (cible - fixe) / n));
-    for (const s of cles) e[s] = v;
-  };
-  const HAUT = 14, HAUT_TETE = 8 - frTop + 14; // tête d'ébullition dans le rail, ou au plus haut de l'écran
-  const wAvant = (s) => nIntervalles(s), wA = () => Math.max(0, iA);
-  if (yA - pos() > HAUT) viser(avant, wAvant, yA - HAUT, Math.min(...avant.map((s) => e[s]), ESP.max), ESP.max);
-  else if (yA - pos() < HAUT) {
-    viser(avant, wAvant, yA - HAUT, ESP.min, Math.min(ESP.max, ...avant.map((s) => e[s])));
-    if (yA - pos() < HAUT) viser([segA], wA, yA - HAUT, ESP.confort, e[segA]);
-    if (yA - pos() < HAUT_TETE) viser([segA], wA, yA - HAUT_TETE, ESP.min, e[segA]);
+const LOUPE = { W: 3, R: 2, lmin: 1.4, lmax: 6, ouverture: 170, ecart: { ebullition: 16, whirlpool: 14, fermentation: 12, post: 12 } };
+function axeLoupe() {
+  const T = {}, ticks = [], bornes = {};
+  let t = 0;
+  for (const [s, passage] of [['ebullition', 0], ['whirlpool', 3], ['fermentation', 4], ['post', 3]]) {
+    t += passage;
+    valeursSeg(s).forEach((v, k) => { T[v] = t + k; ticks.push({ v, s, t: t + k }); });
+    bornes[s] = [t, t + nIntervalles(s)];
+    t += nIntervalles(s);
   }
-  const G = plan(e, yA - pos());
-  G.e = e;
-  return G;
+  const ancres = { 'T-ebu': -1.4, 'T-fin': T.b0, 'T-wp': T[valeursSeg('whirlpool')[0]] - 1.4, 'T-levure': T[valeursSeg('whirlpool').slice(-1)[0]] + 2, 'T-dryActive': T.f0 - 1.4, 'T-dryPost': T.p0 - 1.4 };
+  return { T, ticks, ancres, bornes, t0: -2, t1: t + 0.5, tMin: 0, tMax: t };
+}
+const ancreValeur = (A, v) => A.T[v] ?? (v === 'fwh' ? -0.6 : A.T[valeursSeg(segDe(v)).slice(-1)[0]]);
+
+/* Une moitié du rail hors de la fenêtre, du bord (distance 0) vers le bout (distance n), posée à partir
+   de y0 dans le sens « sens » et tenant dans « dispo » px si possible : une rampe qui passe de l'écart
+   de la loupe à l'écart resserré λ (le grossissement décroît avec la distance), puis λ. Les contraintes
+   { d0, d1, besoin } gardent la place des rangées : il manque de la place entre deux ancres, elle est
+   insérée juste avant la seconde. λ est résolu pour remplir la place ; si elle manque, la rampe se
+   resserre aussi, et en dernier la moitié déborde. */
+const RAMPE = [0.55, 0.22];
+function demiRail(n, y0, sens, dispo, s, contraintes, poids) {
+  const cel = [];
+  for (let k = 0; k < Math.ceil(n - 1e-9); k++) cel.push([k, Math.min(n, k + 1)]);
+  const base = (k, lam, rho) => { const l = lam * poids(k); return l + (s - l) * (RAMPE[k] || 0) * rho; };
+  const brut = (d, lam, rho) => { let y = 0; for (let k = 0; k < cel.length && d > cel[k][0]; k++) y += base(k, lam, rho) * (Math.min(d, cel[k][1]) - cel[k][0]); return y; };
+  const calc = (lam, rho) => {
+    const ajouts = [];
+    let cumul = 0;
+    for (const q of contraintes) {
+      const yi = brut(q.d0, lam, rho) + ajouts.filter((a) => a.d <= q.d0).reduce((t, a) => t + a.e, 0);
+      const yj = brut(q.d1, lam, rho) + cumul;
+      const e = Math.max(0, q.besoin - (yj - yi));
+      if (e > 0) { ajouts.push({ d: q.d1, e }); cumul += e; }
+    }
+    return { lam, rho, ajouts, total: brut(n, lam, rho) + cumul };
+  };
+  let r;
+  const lmax = Math.min(s, LOUPE.lmax);
+  if (calc(lmax, 1).total <= dispo) {
+    // De la place en trop : loin du doigt l'échelle reste resserrée (pas de grand vide) ; la place se
+    // répartit à parts égales devant chaque rangée de cette moitié (elles restent près de leur place).
+    r = calc(lmax, 1);
+    const ancres = contraintes.map((q) => q.d1);
+    if (contraintes.length) ancres.unshift(contraintes[0].d0);
+    if (ancres.length) { const e = (dispo - r.total) / ancres.length; for (const d of ancres) r.ajouts.push({ d, e }); r.total = dispo; }
+  } else if (calc(LOUPE.lmin, 1).total <= dispo) {
+    let lo = LOUPE.lmin, hi = lmax;
+    for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (calc(m, 1).total > dispo) hi = m; else lo = m; }
+    r = calc(lo, 1);
+  } else {
+    let lo = 0, hi = 1;
+    for (let i = 0; i < 16; i++) { const m = (lo + hi) / 2; if (calc(LOUPE.lmin, m).total > dispo) hi = m; else lo = m; }
+    r = calc(LOUPE.lmin, lo);
+  }
+  const f = (d) => y0 + sens * (brut(d, r.lam, r.rho) + r.ajouts.filter((a) => a.d <= d + 1e-9).reduce((t, a) => t + a.e, 0));
+  // Pas moyen de cette moitié (px par tranche) : celui du rail resserré, que le doigt suit au-delà de la fenêtre.
+  f.moy = n > 0 ? r.total / n : s;
+  return f;
+}
+
+/* Le rail pendant le geste. La fenêtre (centre c, affiché en Yc, écart s) est régulière ; hors d'elle,
+   le rail se resserre pour tenir entre ses bornes (haut, bas). Les rangées sont à leur ancre, sauf
+   près de la carte prise (elles s'écartent au-dessus ou en dessous) ; elles ne se chevauchent jamais. */
+function calculerLoupe(A, st, rangs, carte) {
+  const W = LOUPE.W, ta = Math.max(A.t0, st.c - W), tb = Math.min(A.t1, st.c + W);
+  const ya = st.Yc - (st.c - ta) * st.s, yb = st.Yc + (tb - st.c) * st.s;
+  // L'échelle garde la place des rangées entre elles ; la carte, elle, écarte les rangées, pas les
+  // graduations (sinon elle pousserait l'échelle devant le doigt).
+  const contraintes = (liste, bord) => {
+    const out = [];
+    let prec = null;
+    for (const r of liste) {
+      const d = Math.abs(r.t - bord);
+      if (prec) out.push({ d0: prec.d, d1: d, besoin: prec.h / 2 + r.h / 2 + 2 });
+      prec = { d, h: r.h };
+    }
+    return out;
+  };
+  const bas = rangs.filter((r) => r.t > tb).sort((a, b) => a.t - b.t);
+  const haut = rangs.filter((r) => r.t < ta).sort((a, b) => b.t - a.t);
+  // En haut, la place de la demi-tête d'ébullition au-dessus de son ancre.
+  // Les graduations cachées (autres segments, passages) se serrent davantage que celles du segment sous le doigt.
+  const [s0, s1] = A.bornes[st.seg];
+  const poids = (t) => (t >= s0 && t <= s1 ? 1 : 0.4);
+  const fBas = demiRail(A.t1 - tb, yb, 1, st.basB - yb - 4, st.s, contraintes(bas, tb), (k) => poids(tb + k + 0.5));
+  const fHaut = demiRail(ta - A.t0, ya, -1, ya - st.hautB - 16, st.s, contraintes(haut, ta), (k) => poids(ta - k - 0.5));
+  const Y = (t) => (t > tb ? fBas(t - tb) : t < ta ? fHaut(ta - t) : st.Yc + (t - st.c) * st.s);
+  const P = {};
+  for (const k of A.ticks) P[k.v] = Y(k.t);
+  // Rangées : à leur ancre ; au-dessus de la carte, on remonte depuis elle ; en dessous, on descend.
+  const pos = {};
+  let lim = carte.haut - 4;
+  for (const r of rangs.filter((x) => x.t < st.tf).sort((a, b) => b.t - a.t)) { const b = Math.min(Y(r.t) + r.h / 2, lim); pos[r.cle] = b - r.h; lim = b - r.h - 2; }
+  const hautMin = lim + 2;
+  lim = carte.bas + 4;
+  let basMax = Y(A.t1);
+  for (const r of rangs.filter((x) => x.t >= st.tf).sort((a, b) => a.t - b.t)) { const t = Math.max(Y(r.t) - r.h / 2, lim); pos[r.cle] = t; lim = t + r.h + 2; basMax = Math.max(basMax, lim - 2); }
+  // La carte peut dépasser le bas du rail ; seules les rangées le font grandir.
+  return { P, pos, Y, hautMin, basMax, carteBas: carte.bas, moyB: fBas.moy, moyH: fHaut.moy };
 }
 
 let GESTE = null;
@@ -1467,119 +1532,101 @@ function brancherGlisser(poignee, carte, l) {
 function ouvrirLoupe(carte, l, ev) {
   const fr = carte.parentElement, app = fr.parentElement;
   const R0 = fr.getBoundingClientRect();
-  const rangs = [...fr.children].filter((r) => r.dataset.rang);
-  const repos = new Map(rangs.map((r) => { const b = r.getBoundingClientRect(); return [r, { top: b.top - R0.top, h: b.height }]; }));
+  const lignes = [...fr.children].filter((r) => r.dataset.rang);
+  const repos = new Map(lignes.map((r) => { const b = r.getBoundingClientRect(); return [r, { top: b.top - R0.top, h: b.height }]; }));
   const pq = carte.querySelector('.quand').getBoundingClientRect();
   const yA = pq.top + pq.height / 2 - R0.top;
-  const cr = repos.get(carte);
+  const cr = repos.get(carte), off = yA - cr.top;
   const vA = valeurDe(l);
-  let G = disposer(vA, yA, R0.top);
-  const limiteBas = innerHeight - R0.top - 10;
+  const A = axeLoupe();
   const q = carte.querySelector('[data-role="quand"]'), type = carte.querySelector('[data-role="type-ajout"]');
-  const ticks = [...fr.querySelectorAll('.grad')].map((el) => ({ el, v: el.dataset.etape, s: el.dataset.graduation }));
-  const tetes = Object.fromEntries(rangs.filter((r) => /^T-/.test(r.dataset.rang)).map((r) => [r.dataset.rang, r]));
+  const ticks = [...fr.querySelectorAll('.grad')].map((el) => ({ el, v: el.dataset.etape, s: el.dataset.graduation, t: A.T[el.dataset.etape], etat: '', y: null }));
+  const tetes = Object.fromEntries(lignes.filter((r) => /^T-/.test(r.dataset.rang)).map((r) => [r.dataset.rang, r]));
   const axe = fr.querySelector('.axe');
-  const JETON = 26;
-  const jetons = rangs.filter((r) => r !== carte && /^L/.test(r.dataset.rang)).map((r) => ({ el: r, l: ETAT.lignes.find((y) => 'L' + y.id === r.dataset.rang), h: JETON, top: null }));
-  let obstacles = [];
-  const y0 = ev.clientY;
-  const g = { id: ev.pointerId, carte, v: vA, seg: null, bouge: false, dy: 0 };
-
-  // Place chaque rangée, chaque graduation et le rail selon le plan G (transitions CSS).
-  const poserPlan = () => {
-    for (const [k, r] of Object.entries(tetes)) r.style.transform = 'translateY(' + (G.T[k] - repos.get(r).h / 2) + 'px)';
-    for (const t of ticks) t.el.style.transform = 'translateY(' + (G.P[t.v] - 1) + 'px)';
-    obstacles = Object.entries(tetes).map(([k, r]) => ({ top: G.T[k] - repos.get(r).h / 2, bas: G.T[k] + repos.get(r).h / 2 }));
-    for (const j of jetons) {
-      // Premier moût : juste au-dessus du début de l'ébullition ; un jour au-delà de l'échelle : sa fin.
-      const v = valeurDe(j.l);
-      const y = G.P[v] ?? (v === 'fwh' ? G.P['b' + EBU] - G.e.ebullition : G.P[valeursSeg(segDe(v)).slice(-1)[0]]);
-      j.pref = y - JETON / 2;
-    }
-    fr.style.height = Math.max(G.bas, 0) + 'px';
-    axe.style.top = G.T['T-ebu'] + 'px'; axe.style.height = (G.fin - G.T['T-ebu']) + 'px';
-  };
-
-  // 1. Tout reste en place, sorti du flux (positions mesurées au repos).
+  // Tout sort du flux sans bouger (positions du repos) ; les rangées se compactent, les autres lignes se
+  // réduisent à leur nom et leur moment ; leurs hauteurs sont mesurées ensuite.
   fr.style.height = R0.height + 'px';
   fr.setAttribute('data-geste', '');
-  for (const [r, p] of repos) { r.style.transition = 'none'; r.style.transform = 'translateY(' + p.top + 'px)'; }
-  for (const t of ticks) { t.el.style.transition = 'none'; t.el.style.transform = 'translateY(' + (G.P[t.v] - 1) + 'px)'; }
+  for (const [r, pp] of repos) r.style.transform = 'translateY(' + pp.top + 'px)';
   carte.setAttribute('data-glisse', '');
   carte.classList.add('leve');
-  void fr.offsetHeight;
-  // 2. Puis le rail s'ouvre : chaque rangée glisse à sa place sur l'échelle, les autres lignes se réduisent.
-  for (const r of rangs) if (r !== carte) r.style.transition = '';
-  for (const t of ticks) t.el.style.transition = '';
-  for (const j of jetons) j.el.classList.add('jeton');
-  poserPlan();
-  if (G.T['T-ebu'] - 14 < -6) app.classList.add('rail-haut');
+  for (const r of lignes) if (r !== carte && /^L/.test(r.dataset.rang)) r.classList.add('jeton');
+  const hauteur = new Map(lignes.map((r) => [r, r.getBoundingClientRect().height]));
+  // Les rangées sur l'axe : rangées nommées et autres lignes.
+  const rangs = [
+    ...Object.entries(tetes).filter(([k]) => k in A.ancres).map(([k, el]) => ({ cle: k, el, t: A.ancres[k], h: hauteur.get(el) })),
+    ...lignes.filter((r) => r !== carte && /^L/.test(r.dataset.rang)).map((el) => ({ cle: el.dataset.rang, el, t: ancreValeur(A, valeurDe(ETAT.lignes.find((y) => 'L' + y.id === el.dataset.rang))), h: hauteur.get(el) })),
+  ];
+  const y0 = ev.clientY;
+  const g = { id: ev.pointerId, carte, v: vA, seg: segDe(vA), bouge: false, dy: 0 };
+  // État de la loupe : centre c sur la tranche de la ligne, affiché sous le doigt ; bornes du repos.
+  const st = { seg: segDe(vA), c: ancreValeur(A, vA), Yc: yA, s: LOUPE.ecart[segDe(vA)], tf: ancreValeur(A, vA), hautB: 0, basB: R0.height };
+  const carteEn = (y) => ({ haut: y - off, bas: y - off + cr.h });
+  let G = calculerLoupe(A, st, rangs, carteEn(yA));
+  const plusProche = (y) => { let b = A.ticks[0], d = Infinity; for (const k of A.ticks) { const x = Math.abs(G.P[k.v] - y); if (x < d) { d = x; b = k; } } return b; };
 
-  // La tranche sous le doigt : la graduation affichée la plus proche (même pendant qu'un segment s'ouvre).
-  const plusProche = (yRel) => {
-    let b = ticks[0], d = Infinity;
-    for (const t of ticks) { const r = t.el.getBoundingClientRect(); const x = Math.abs(r.top + r.height / 2 - R0.top - yRel); if (x < d) { d = x; b = t; } }
-    return b;
-  };
-  const focus = (s) => {
-    if (s === g.seg) return;
-    if (g.seg) { for (const t of ticks) if (t.s === g.seg) t.el.classList.remove('vue'); tetes[TETE_SEG[g.seg]].classList.remove('focus'); }
-    g.seg = s;
-    for (const t of ticks) if (t.s === s) t.el.classList.add('vue');
-    tetes[TETE_SEG[s]].classList.add('focus');
-  };
-  // La loupe suit le doigt sans rien déplacer au-dessus de lui (pas de saut sous le doigt) : un
-  // segment atteint par le haut s'ouvre vers le bas ; quitté vers le haut, il se resserre. Le rail
-  // reste dans l'écran : en bas, le segment ouvert se serre au besoin.
-  const basculer = (s) => {
-    const avant = g.seg, e = { ...G.e };
-    if (SEGMENTS.indexOf(s) > SEGMENTS.indexOf(avant)) {
-      e[s] = Math.max(e[s], ESP.ouvert[s]);
-      const trop = plan(e, G.T['T-ebu']).bas - limiteBas;
-      if (trop > 0) e[s] = Math.max(G.e[s], e[s] - trop / nIntervalles(s));
-    } else e[avant] = Math.min(e[avant], ESP.apres);
-    G = plan(e, G.T['T-ebu']); G.e = e;
-    poserPlan();
-  };
-  // Les autres lignes s'écartent de la carte : au-dessus si elles sont avant, en dessous sinon.
-  const ecarter = (cTop) => {
-    if (!jetons.length) return;
-    const cBas = cTop + cr.h, centre = (cTop + cBas) / 2;
-    // 1. Chaque ligne à sa graduation, écartée d'une rangée nommée du plus petit déplacement (elle
-    //    reste dans son segment), sans chevaucher la précédente.
-    const tri = [...jetons].sort((a, b) => a.pref - b.pref);
-    let plancher = -Infinity;
-    for (const j of tri) {
-      let t = j.pref;
-      for (const o of obstacles) if (t < o.bas + 2 && t + j.h > o.top - 2) t = t + j.h / 2 < (o.top + o.bas) / 2 ? o.top - 2 - j.h : o.bas + 2;
-      j.y = Math.max(t, plancher); plancher = j.y + j.h + 2;
+  // L'ouverture : de la place au repos à la place sur l'échelle, en 170 ms (aussitôt en mouvement réduit).
+  let p = REDUIT ? 1 : 0;
+  const t0 = performance.now();
+  const lisse = (k) => 1 - Math.pow(1 - k, 3);
+  const deplacer = (el, y) => { if (el._y === undefined || Math.abs(el._y - y) > 0.3) { el._y = y; el.style.transform = 'translateY(' + y.toFixed(1) + 'px)'; } };
+  const poserTout = () => {
+    const k = p >= 1 ? 1 : lisse(p);
+    for (const r of rangs) deplacer(r.el, repos.get(r.el).top + (G.pos[r.cle] - repos.get(r.el).top) * k);
+    for (const tk of ticks) {
+      deplacer(tk.el, G.P[tk.v] - 1);
+      const etat = tk.s !== g.seg ? '' : Math.abs(tk.t - st.c) <= LOUPE.W + 0.01 ? 'vue' : 'vue loin';
+      if (etat !== tk.etat) { tk.etat = etat; tk.el.classList.toggle('vue', etat !== ''); tk.el.classList.toggle('loin', etat === 'vue loin'); }
     }
-    // 2. La carte prise passe : les lignes d'avant montent au-dessus d'elle, les suivantes descendent.
-    const haut = tri.filter((j) => j.y + j.h / 2 < centre), bas = tri.filter((j) => j.y + j.h / 2 >= centre);
-    let plafond = cTop - 4;
-    for (const j of [...haut].reverse()) { if (j.y + j.h > plafond) j.y = plafond - j.h; plafond = j.y - 2; }
-    plancher = cBas + 4;
-    for (const j of bas) { if (j.y < plancher) j.y = plancher; plancher = j.y + j.h + 2; }
-    for (const j of jetons) if (j.top === null || Math.abs(j.top - j.y) > 0.5) { j.top = j.y; j.el.style.transform = 'translateY(' + j.y + 'px)'; }
+    const haut = Math.min(G.pos['T-ebu'] + hauteur.get(tetes['T-ebu']) / 2, G.P[A.ticks[0].v]);
+    axe.style.top = haut + 'px';
+    axe.style.height = Math.max(0, Math.max(G.pos['T-dryPost'] + hauteur.get(tetes['T-dryPost']) / 2, G.P[A.ticks[A.ticks.length - 1].v]) - haut) + 'px';
+    fr.style.height = Math.max(st.basB, G.basMax + 6, G.carteBas + 6) + 'px';
+    app.classList.toggle('rail-haut', Math.min(G.hautMin, G.P[A.ticks[0].v]) < -8);
   };
+
+  tetes[TETE_SEG[g.seg]].classList.add('focus');
+  poserTout();
+  if (p < 1) requestAnimationFrame(function ouvre(now) { if (g.ferme) return; p = Math.min(1, (now - t0) / LOUPE.ouverture); poserTout(); if (p < 1 && !g.ferme) requestAnimationFrame(ouvre); });
+
   g.suivre = (cy) => {
-    const dy = cy - y0;
+    const dy = cy - y0, y = yA + dy;
     g.dy = dy;
     carte.style.transform = 'translateY(' + (cr.top + dy) + 'px)';
     if (!g.bouge && Math.abs(dy) >= 3) g.bouge = true;
-    const p = plusProche(yA + dy);
-    if (p.s !== g.seg) { basculer(p.s); focus(p.s); }
-    if (g.bouge && p.v !== g.v) {
-      g.v = p.v;
-      const x = { ...l }; appliquer(x, p.v);
+    // La tranche sous le doigt ; au bord de la fenêtre, le doigt l'entraîne (la tranche reste sous lui).
+    // Dans la fenêtre, la tranche suit le doigt à l'écart de la loupe (on vise juste) ; au-delà de son
+    // bord, le doigt l'entraîne au pas du rail resserré (comme le Dock : le bas du rail, c'est la fin
+    // du rail), et la tranche atteinte se pose au bord de la fenêtre, sous le doigt.
+    const W = LOUPE.W, yb = st.Yc + W * st.s, ya = st.Yc - W * st.s;
+    let tf;
+    if (y > yb && st.c + W < A.tMax) { tf = Math.min(A.tMax, st.c + W + (y - yb) / G.moyB); st.c = tf - W; st.Yc = y - W * st.s; }
+    else if (y < ya && st.c - W > A.tMin) { tf = Math.max(A.tMin, st.c - W - (ya - y) / G.moyH); st.c = tf + W; st.Yc = y + W * st.s; }
+    else tf = Math.max(A.tMin, Math.min(A.tMax, st.c + (y - st.Yc) / st.s));
+    st.tf = tf;
+    G = calculerLoupe(A, st, rangs, carteEn(y));
+    const pr = plusProche(y);
+    // Un autre segment sous le doigt : sa loupe prend son écart, la tranche sous le doigt ne bouge pas.
+    if (pr.s !== g.seg) {
+      tetes[TETE_SEG[g.seg]].classList.remove('focus');
+      g.seg = pr.s;
+      tetes[TETE_SEG[g.seg]].classList.add('focus');
+      st.seg = g.seg; st.s = LOUPE.ecart[g.seg]; st.Yc = y - (tf - st.c) * st.s;
+      G = calculerLoupe(A, st, rangs, carteEn(y));
+    }
+    poserTout();
+    const v = plusProche(y).v;
+    if (g.bouge && v !== g.v) {
+      g.v = v;
+      const x = { ...l }; appliquer(x, v);
       q.textContent = quand(x);
       if (type) type.textContent = mom(x.moment).type;
     }
-    ecarter(cr.top + dy);
   };
   const fermer = (change) => {
+    g.ferme = true;
     GESTE = null;
-    const avant = new Map(rangs.map((r) => [r.dataset.rang, r.getBoundingClientRect().top]));
+    const avant = new Map(lignes.map((r) => [r.dataset.rang, r.getBoundingClientRect().top]));
     const estompe = app.classList.contains('rail-haut');
     app.classList.remove('rail-haut');
     if (g.bouge) IGNORE_CLIC = performance.now() + 400;
@@ -1589,9 +1636,9 @@ function ouvrirLoupe(carte, l, ev) {
     // Tout se referme : chaque rangée revient de sa place sur l'échelle à sa place au repos.
     const fr2 = app.querySelector('.frise');
     if (fr2) for (const r of fr2.children) {
-      const t0 = avant.get(r.dataset.rang);
-      if (t0 == null) continue;
-      const d = t0 - r.getBoundingClientRect().top;
+      const t0b = avant.get(r.dataset.rang);
+      if (t0b == null) continue;
+      const d = t0b - r.getBoundingClientRect().top;
       if (Math.abs(d) > 0.5) r.animate([{ transform: 'translateY(' + d + 'px)' }, { transform: 'none' }], { duration: 240, easing: 'cubic-bezier(.2,.8,.2,1)' });
     }
     if (estompe) for (const x of app.querySelectorAll(':scope > .barre, :scope > .resume')) x.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
@@ -1604,8 +1651,6 @@ function ouvrirLoupe(carte, l, ev) {
     fermer(change);
   };
   g.annuler = () => fermer(false);
-  focus(segDe(vA));
-  ecarter(cr.top);
   return g;
 }
 
