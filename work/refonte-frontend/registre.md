@@ -114,11 +114,20 @@ Voir `decisions.md` (D1 à D12).
 - **Lot 5a Comparer** : brief `ecran-1/fils5-comparer/BRIEF-AUTEUR.md` ; baseline gelée
   `scratchpad/baseline-lot5/` (v3 + Comparer en `data-composant`, cas Nugget, East Kent
   Goldings, Fuggle). Puis publication de toutes les variantes (D50).
-- **Ensuite** : moteur, tolérance par style et a priori du brasseur (D54 à écrire : familles hors
-  du caractère décrit par le BJCP, masquage par la bière de base, réglage strict / normal /
-  libre / banni) ; puis D52 et lot 5b Suggestions (sans voies levure).
-- **Rail** : agent `a17d51434443f441e` toujours en cours (6 fichiers du générateur de la base
-  modifiés, pages pas encore reconstruites à 19:28).
+- **Fait ensuite** : D54, tolérance par style (`src/engine/tolerance.ts`, commit `e534483`) et
+  plages avant/après en tolérances (`b68a014`, pack 498 ko) ; D52 `controle-suggestions.mjs` avec
+  témoins (`e032685`) ; brief `ecran-1/fils5-suggestions/BRIEF-AUTEUR.md`, baseline gelée
+  `scratchpad/baseline-lot5b/`.
+- **En cours (19:45)** : 8 auteurs, lot 5a Comparer (p01–p03, p04–p06, p07–p09, p10–p11) et
+  lot 5b Suggestions (mêmes découpes). À leur retour : contrôle indépendant par lot (commande des
+  briefs), regard des captures, jury léger (★ indicatives), puis page de publication
+  `scratchpad/artifact-lot3/build-lot5.mjs <ecran-1>` (site-lot5, files-lot5.json,
+  notes-lot5.json), publication, ping ; attendre son choix (D50).
+- **Rail, fait** : base v4 (commit `25c0b71`), LOT OK indépendant, gestes regardés (vides
+  pendant le geste : prix assumé, à faire juger), publiée sur la page partagée (version 5), fil
+  303c6753 répondu et fermé. Fil 664b425c (radar « n'importe quoi », variations) : à fermer quand
+  le lot 5 sera publié. À faire juger aussi : pastille « 10′ » suggérée sur les ajouts proposés,
+  « résine 2/4 » en orange d'alerte sur la carte de Nugget.
 
 ## Reprise après compaction (18.10, ~19:30) — FOCUS : Suggestions et Comparer
 

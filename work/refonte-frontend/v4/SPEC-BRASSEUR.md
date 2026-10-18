@@ -121,6 +121,11 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   houblon à l'autre suivant l'année terroir ou autre » — 18.10, soir. Conséquence : lot 5 sans
   voies levure ni biotransformation ; la variabilité (année, terroir, lot) se montre en plages,
   et la valeur de mon lot en stock sur la plage de la variété.
+- **La loupe, vraiment** (base v4 publiée, capture du geste, la zone vide entourée) : « Ça semble un
+  peu étrange d'avoir autant d'espace, j'avais dit à la apple en mode zoom loop » ; avec deux
+  houblons (« 0′ » et « Nugget » l'un sur l'autre) : « Avec deux houblons ça marche aussi un peu
+  moins bien, parcontre c'est très positif, c'est vraiment dans la bonne direction » — 18.10, soir
+  (D55, D56).
 - **Tickets** : « Fait une issue, mettre à jour les fichiers de houblons, donné de bio Transfo
   ect.. » ; « Hop mavrerick ne doit pas être là seul source. » (#131) ; « Autre ticket pour les
   levures, choisir une levure remplis aussi sa dose (gram, sachet) » (#132) ; « Aussi, je crois

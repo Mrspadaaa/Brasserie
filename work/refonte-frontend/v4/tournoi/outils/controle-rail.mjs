@@ -203,15 +203,34 @@ for (const id of ids) {
     if (!eb.renvoi) p('D37 : pas de renvoi vers l\'endroit où se règle l\'ébullition');
   }
 
-  // D47, D45, D35, D46 pendant un même geste dans l'ébullition.
+  // D47, D45, D35, D46, D55 pendant un même geste dans l'ébullition.
   {
+    // D55 (18.10, soir, capture de la base v4 entourée) : « Ça semble un peu étrange d'avoir autant
+    // d'espace, j'avais dit à la apple en mode zoom loop ». Une loupe grossit le voisinage du doigt ;
+    // le reste du rail reste compact et presque à sa place. Pendant le geste : aucun vide de plus de
+    // 80 px entre deux éléments du rail, et le premier ajout proposé (sous le rail) ne descend pas de
+    // plus de 120 px.
+    const releve = () => page.evaluate(() => {
+      const vis = (e) => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' && Number(cs.opacity) > 0.15 && (!e.checkVisibility || e.checkVisibility({ opacityProperty: true, visibilityProperty: true })); };
+      const items = [...document.querySelectorAll('[data-etape], [data-role="ligne-houblon"], [data-role="levure"]')].filter(vis).map((e) => { const r = e.getBoundingClientRect(); return { top: r.top + scrollY, bottom: r.bottom + scrollY }; }).sort((a, b) => a.top - b.top);
+      let fin = -Infinity, vide = 0;
+      for (const it of items) { if (fin > -Infinity) vide = Math.max(vide, it.top - fin); fin = Math.max(fin, it.bottom); }
+      const a = [...document.querySelectorAll('[data-role="ajout-rapide"]')].find(vis);
+      return { vide, apres: a ? a.getBoundingClientRect().top + scrollY : null };
+    });
+    const auRepos = await releve();
     const g = await poser(page, 'doigt');
     const pendant = await gradsVisibles(page);
     const eb5 = pendant.filter((x) => x.seg === 'ebullition');
     if (eb5.length < 6) p('D47 : le doigt posé dans l\'ébullition, l\'échelle des minutes ne s\'ouvre pas (' + eb5.length + ' graduation(s) visibles)');
     if (pendant.some((x) => x.seg && x.seg !== 'ebullition')) p('D47 : pendant le geste dans l\'ébullition, des graduations d\'autres segments restent ouvertes (pas de focus)');
-    if (eb5.length >= 4) {
-      const tri = [...eb5].sort((a, b) => a.y - b.y);
+    const enGeste = await releve();
+    if (enGeste.vide > 80) p('D55 : pendant le geste, un vide de ' + Math.round(enGeste.vide) + ' px dans le rail (80 au plus) : la loupe grossit le voisinage du doigt, elle n\'étire pas le rail');
+    if (auRepos.apres !== null && enGeste.apres !== null && enGeste.apres - auRepos.apres > 120) p('D55 : pendant le geste, les ajouts proposés descendent de ' + Math.round(enGeste.apres - auRepos.apres) + ' px (120 au plus) : le reste du rail doit rester compact');
+    // D45 : régularité mesurée sur les 5 graduations voisines du doigt (une loupe resserre au loin).
+    const proches = [...eb5].sort((a, b) => Math.abs(a.y - g.y) - Math.abs(b.y - g.y)).slice(0, 5);
+    if (proches.length >= 4) {
+      const tri = [...proches].sort((a, b) => a.y - b.y);
       const gaps = tri.slice(1).map((t, i) => t.y - tri[i].y).filter((d) => d > 0);
       const m = gaps.reduce((s, d) => s + d, 0) / gaps.length, sd = Math.sqrt(gaps.reduce((s, d) => s + (d - m) ** 2, 0) / gaps.length);
       if (m > 0 && sd / m > 0.25) p('D45 : échelle d\'ébullition irrégulière sous le doigt (' + Math.round(Math.min(...gaps)) + ' à ' + Math.round(Math.max(...gaps)) + ' px)');
@@ -301,6 +320,43 @@ for (const id of ids) {
       const j = await jour();
       if (j !== attendu) { p('D43 : « ' + action + ' » laisse le jour à J+' + j + ' (J+' + attendu + ' attendu)'); break; }
     }
+    await q.close();
+  }
+  // D56 (18.10, soir, sa capture à deux houblons : « 0′ » et « Nugget » l'un sur l'autre) : « Avec
+  // deux houblons ça marche aussi un peu moins bien ». Recette à plusieurs houblons (cas-k3) : la
+  // première ligne descend dans l'ébullition par pas de 10 px ; à chaque pas, aucun texte du rail
+  // (graduations, étapes, autres lignes) n'en chevauche un autre, hors de la carte qui suit le doigt.
+  if (fs.existsSync(k3)) {
+    const q = await ouvrir(k3);
+    const chevauche = () => q.evaluate(() => {
+      const glisse = document.querySelector('[data-glisse]');
+      const vus = new Set(), rects = [];
+      for (const z of document.querySelectorAll('[data-etape], [data-role="ligne-houblon"], [data-role="levure"]')) {
+        const w = document.createTreeWalker(z, NodeFilter.SHOW_TEXT);
+        for (let n = w.nextNode(); n; n = w.nextNode()) {
+          if (vus.has(n) || !n.textContent.trim()) continue;
+          vus.add(n);
+          const el = n.parentElement;
+          if (!el || (glisse && glisse.contains(el))) continue;
+          if (el.checkVisibility && !el.checkVisibility({ opacityProperty: true, visibilityProperty: true })) continue;
+          const r = document.createRange(); r.selectNodeContents(n);
+          for (const b of r.getClientRects()) if (b.width > 1 && b.height > 1) rects.push({ t: n.textContent.trim().slice(0, 14), el, x0: b.left, x1: b.right, y0: b.top, y1: b.bottom });
+        }
+      }
+      for (let i = 0; i < rects.length; i++) for (let j = i + 1; j < rects.length; j++) {
+        const a = rects[i], b = rects[j];
+        if (a.el === b.el) continue;
+        if (Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0) > 2 && Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0) > 2) return '« ' + a.t + ' » sur « ' + b.t + ' »';
+      }
+      return null;
+    });
+    const g = await poser(q, 'doigt');
+    if (g) {
+      let vu = null;
+      for (let i = 0; i < 40 && !vu; i++) { await g.bouger(g.y + 10); await wait(20); vu = await chevauche(); }
+      await g.lacher();
+      if (vu) p('D56 : cas-k3.html, pendant le geste, ' + vu + ' (textes du rail l\'un sur l\'autre)');
+    } else p('D56 : cas-k3.html, aucune ligne à saisir');
     await q.close();
   }
   console.log(id + ' · rail contrôlé');
