@@ -97,6 +97,39 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
+## Matin du 19.10 — tout est rentré, à lui de choisir
+
+Page de la nuit : https://claude.ai/artifact/2VTRQP7nLXhX5GqDaAGAyU (une section par ticket).
+Page partagée : https://claude.ai/artifact/WSzBr4fBJerouWVtWqFiMJ (version 8, base v4.3).
+
+- **#134 Rail (lot 8)** : 4 loupes jouables.
+  - RAIL OK au contrôle indépendant : p01 bulle iOS, p02 Dock sans état (marge D61 serrée près des
+    bouts), p03 règle à côté.
+  - p04 verre aimanté : échec D45.
+  - **À lui de choisir** ; puis intégration dans la base. La base garde le rail v4.2, qui échoue
+    sur D63 et D64.
+- **#135 Radars (lot 9)** : 12 radars FIL6 OK (D62, D65, D66).
+  - Ma bière : m1 à m4 (m4 grille de dégustation).
+  - Suggestions : s1 à s4.
+  - Fiche : h1 à h4.
+  - Base v4.3 : un seul radar D3 partout (commit 61960cf), tous les contrôles radar verts.
+- **#136 Échelles (lot 10)** : e1, e2, r1, r2, c1, c2 FIL6 OK.
+- **#137 Substitution** :
+  - moteur `prototypes/houblons-v4/src/engine/substitution.ts`, 76 tests verts (commit 8f5b5fa),
+    règle « pas de cryo pour amériser » ;
+  - lot 11 : u1 à u4 FIL6 OK (commit 688e669).
+  - À valider : les remplaçants, la note d'arôme à l'amertume, et l'import éventuel des scores de
+    Beer Maverick (#131).
+- **#138 Lot 6** : son choix attendu.
+- **#139 Dégustation** : proposition (m4).
+- **Nouveaux contrôles de la nuit** :
+  - D63, D64, D61 bis (`controle-rail.mjs`) ;
+  - D65 inconnu ≠ zéro et D66 échelle hors du dessin (`controle-fil6.mjs`, sans faux positif pour
+    « pas senti ») ;
+  - `--objet=libre` pour les vues nouvelles.
+- **Coût mesuré** : 130 à 350 k jetons et 7 à 25 min par auteur en fil de fer ; seuls le moteur
+  (2 passes) et l'intégration radar dans la base dépassent.
+
 ## Nuit du 18 au 19.10 — programme autonome (le brasseur dort, quota illimité)
 
 Sa demande : « Plusieurs versions de radar graph. De suggestions Aussi de ma bière et de mon
