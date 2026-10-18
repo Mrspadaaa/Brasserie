@@ -158,48 +158,87 @@ async function geste(page, p) {
   for (const x of await propre(page)) p('D35 après : ' + x);
 }
 
-// D37 (18.10, soir) : « attention toujours garder des variables dynamique car cela peut
-// changer... Je peux me dire tiens 200' c'est mieux ou 45' ça le fait aussi ect.. ». La durée
-// d'ébullition se règle sur l'étape : data-role="ebullition" est soit un champ texte
-// (inputmode numérique), soit un bloc avec data-action="ebullition-moins" et
-// "ebullition-plus" (pas de 5′). Réglée à 200′ puis à 45′, le rail commence à cette durée
-// (data-etape="b200", "b45"), et à 45′ aucune ligne ne reste au-delà de 45′.
-async function regler(page, cible) {
-  const champ = await page.$('[data-role="ebullition"] input, input[data-role="ebullition"]');
-  if (champ) {
-    await champ.evaluate((e) => { e.focus(); e.select(); });
-    await page.keyboard.type(String(cible));
-    await page.keyboard.press('Enter');
-    await champ.evaluate((e) => e.blur());
-    await wait(400);
-    return true;
-  }
-  const lire = () => page.evaluate(() => { const e = document.querySelector('[data-role="ebullition"]'); const m = e && (e.getAttribute('data-minutes') || e.innerText).match(/\d+/); return m ? Number(m[0]) : null; });
-  for (let i = 0; i < 50; i++) {
-    const v = await lire();
-    if (v === null) return false;
-    if (v === cible) return true;
-    const b = await page.$('[data-action="' + (v < cible ? 'ebullition-plus' : 'ebullition-moins') + '"]');
-    if (!b) return false;
-    try { await b.tap(); } catch { await b.click(); }
-    await wait(60);
-  }
-  return (await lire()) === cible;
+
+// D37 (18.10, soir) : « toujours garder des variables dynamique » ; révisé sur la base v2 :
+// « C'est defini ailleur dans l'application... » (le réglage −/+ de l'ébullition sur l'étape).
+// La durée vient de la recette : l'étape l'affiche (data-role="ebullition", « 60′ ») avec un
+// renvoi vers l'endroit où elle se règle (lien ou bouton data-action="renvoi-ebullition"),
+// sans la modifier ici. Le rail s'adapte à toute durée : cas-ebu45.html et cas-ebu200.html (la
+// même recette, ébullition de 45′ et de 200′) commencent à b45 et b200 ; à 45′, aucun repère
+// ni aucune ligne au-delà de 45′.
+async function dureeLue(page, p) {
+  const e = await page.evaluate(() => {
+    const el = document.querySelector('[data-role="ebullition"]');
+    if (!el) return null;
+    return {
+      valeur: /\d+\s*(′|'|min)/.test(el.innerText),
+      champ: !!el.querySelector('input, select, textarea') || el.matches('input'),
+      plusMoins: !!document.querySelector('[data-action="ebullition-plus"], [data-action="ebullition-moins"]'),
+      renvoi: !!(el.querySelector('a, [data-action="renvoi-ebullition"]') || el.matches('a, [data-action="renvoi-ebullition"]')),
+    };
+  });
+  if (!e) { p('D37 : la durée d\'ébullition de la recette n\'est pas affichée sur l\'étape (data-role="ebullition")'); return; }
+  if (!e.valeur) p('D37 : data-role="ebullition" ne dit pas la durée (« 60′ »)');
+  if (e.champ || e.plusMoins) p('D37 : l\'ébullition se modifie sur l\'étape alors qu\'elle est « defini ailleur dans l\'application » (champ ou −/+) : un renvoi suffit');
+  if (!e.renvoi) p('D37 : pas de renvoi vers l\'endroit où se règle l\'ébullition (lien ou data-action="renvoi-ebullition")');
 }
-async function duree(page, p) {
-  if (!(await page.$('[data-role="ebullition"]'))) { p('D37 : la durée d\'ébullition ne se règle pas sur l\'étape (data-role="ebullition")'); return; }
-  for (const c of [200, 45]) {
-    if (!(await regler(page, c))) { p('D37 : impossible de régler l\'ébullition à ' + c + '′ (champ ou boutons ebullition-plus / ebullition-moins)'); return; }
-    await wait(400);
-    const e = await etat(page);
-    if (!e.etapes.some((x) => x.code === 'b' + c)) p('D37 : réglée à ' + c + '′, le rail ne commence pas à ' + c + '′ (data-etape="b' + c + '")');
+async function dureesRecette(id, p) {
+  for (const c of [45, 200]) {
+    const f = path.join(dir, id, 'cas-ebu' + c + '.html');
+    if (!fs.existsSync(f)) { p('D37 : cas-ebu' + c + '.html absente (la même recette avec une ébullition de ' + c + '′)'); continue; }
+    const q = await browser.newPage();
+    await q.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+    await q.goto(pathToFileURL(f).href, { waitUntil: 'networkidle0', timeout: 30000 });
+    await wait(300);
+    const e = await etat(q);
+    if (!e.etapes.some((x) => x.code === 'b' + c)) p('D37 : à ' + c + '′ d\'ébullition, le rail ne commence pas à ' + c + '′ (data-etape="b' + c + '")');
     if (c === 45) {
       const trop = e.etapes.filter((x) => /^b\d+$/.test(x.code) && Number(x.code.slice(1)) > 45);
-      if (trop.length) p('D37 : réglée à 45′, le rail garde des repères au-delà (' + trop.slice(0, 3).map((x) => x.code).join(', ') + ')');
+      if (trop.length) p('D37 : à 45′, le rail garde des repères au-delà (' + trop.slice(0, 3).map((x) => x.code).join(', ') + ')');
       const m = (e.quand || '').match(/(\d+)\s*(′|'|min)/);
-      if (m && Number(m[1]) > 45) p('D37 : réglée à 45′, la première ligne reste à ' + m[1] + '′');
+      if (m && Number(m[1]) > 45) p('D37 : à 45′, la première ligne reste à ' + m[1] + '′');
     }
+    await q.close();
   }
+}
+
+// D41 (18.10, soir) : « On a un 10' qui sort de null part. C'est pas encore ça, les possible
+// ajoute d'houblon sont vraiment à la bonne place ? ». Le rail ne porte que la recette : aucun
+// ajout proposé (data-role="ajout-rapide") n'est rangé dans une étape du rail ([data-etape]),
+// et les minutes écrites sur le rail (« 10′ ») sont la durée d'ébullition, 0′, ou le moment
+// d'une ligne de la recette.
+const railRecette = (page) => page.evaluate(() => {
+  const out = [];
+  const vis = (e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+  const dansRail = [...document.querySelectorAll('[data-role="ajout-rapide"]')].filter(vis).filter((a) => a.closest('[data-etape]'));
+  if (dansRail.length) out.push(dansRail.length + ' ajout(s) proposé(s) rangé(s) dans une étape du rail (« ' + dansRail[0].innerText.trim().split('\n')[0].slice(0, 16) + ' »)');
+  const quand = new Set([...document.querySelectorAll('[data-role="ligne-houblon"] [data-role="quand"]')].map((q) => (q.innerText.match(/(\d+)\s*(′|')/) || [])[1]).filter(Boolean).map(Number));
+  const eb = (document.querySelector('[data-role="ebullition"]')?.innerText.match(/(\d+)\s*(′|')/) || [])[1];
+  if (eb) quand.add(Number(eb));
+  quand.add(0);
+  const lignes = new Set([...document.querySelectorAll('[data-role="ligne-houblon"], [data-role="ajout-rapide"]')]);
+  const libres = [...document.querySelectorAll('[data-etape], [data-etape] *')].filter(vis)
+    .filter((e) => ![...lignes].some((l) => l.contains(e)))
+    .filter((e) => [...e.childNodes].some((n) => n.nodeType === 3 && /^\s*\d+\s*(′|')\s*$/.test(n.textContent)))
+    .map((e) => Number(e.innerText.match(/\d+/)[0])).filter((m) => !quand.has(m));
+  if (libres.length) out.push('minute(s) écrite(s) sur le rail sans ligne de la recette : ' + [...new Set(libres)].map((m) => m + '′').join(', '));
+  return out;
+});
+
+// D42 (18.10, soir) : « Pourquoi celui choisi à de l'ombre ? » (capture : la carte soulevée,
+// ombrée, à 55 IBU alors que l'en-tête dit 60). Au repos, aucune carte du rail n'a d'ombre ; et
+// un geste interrompu par le téléphone (touchcancel) rend la carte à son état de repos.
+async function interruption(page, client, p) {
+  const ombre = () => page.evaluate(() => [...document.querySelectorAll('[data-role="ligne-houblon"], [data-glisse]')].filter((e) => getComputedStyle(e).boxShadow !== 'none').length);
+  if (await ombre()) p('D42 : au repos, une carte du rail porte une ombre');
+  const a = await etat(page);
+  if (!a.poignee) return;
+  await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: a.poignee.x, y: a.poignee.y }] });
+  for (let i = 1; i <= 8; i++) { await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: a.poignee.x, y: a.poignee.y + i * 12 }] }); await wait(25); }
+  await client.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
+  await wait(500);
+  if (await page.$('[data-glisse]')) p('D42 : après un geste interrompu (touchcancel), la carte reste soulevée (data-glisse)');
+  if (await ombre()) p('D42 : après un geste interrompu, une carte garde son ombre');
 }
 
 for (const id of ids) {
@@ -227,8 +266,12 @@ for (const id of ids) {
   await geste(page, p);
   await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
   await wait(300);
-  await duree(page, p);
+  await dureeLue(page, p);
+  for (const x of await railRecette(page)) p('D41 : ' + x);
+  const client = await page.target().createCDPSession();
+  await interruption(page, client, p);
   await page.close();
+  await dureesRecette(id, p);
   // D36 : ébullition de 120′.
   const f120 = path.join(dir, id, 'cas-ebu120.html');
   if (!fs.existsSync(f120)) p('D36 : cas-ebu120.html absente (la même recette avec une ébullition de 120′)');

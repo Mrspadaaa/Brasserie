@@ -100,6 +100,8 @@ const ETAT = {
   // La famille hors de sa zone s'ouvre d'emblée : ses gestes (bannir, réduire, augmenter) se voient.
   viseeAbs: {}, selFam: D.continu ? D.ordre.find((f, i) => D.continu.biere[i] != null && D.continu.biere[i] > D.continu.cible[i].haut + 0.05) || null : null,
   echelle: B.echelle || 'style', clavier: false,
+  // Radars (radar.js) : la voie montrée dans Suggestions, le houblon agrandi dans Comparer.
+  voieRadar: null, compGrand: null,
 };
 for (const f of (B.dirs ? B.dirs.split(',') : [])) ETAT.visee[f] = D.cible[fi(f)].visee;
 /* D33 : le focus ne se replace qu'après une action au clavier (au doigt, la vue web du téléphone
@@ -424,212 +426,7 @@ function panneau(app) {
   ({ biere: partieBiere, suggestions: partieSuggestions, comparer: partieComparer })[ETAT.partie](part);
 }
 
-/* Sous un radar : une rangée par série (ce qui la distingue) ; la toucher isole la série. */
-function trait(st) {
-  const s = sv('svg', { width: 18, height: 10, style: 'display:inline-block;vertical-align:middle;flex:none', 'aria-hidden': 'true' });
-  if (st.zone) sv('rect', { x: 0, y: 1, width: 18, height: 8, rx: 2, fill: '#ececec', stroke: '#bdbdbd' }, s);
-  else if (st.point) sv('circle', { cx: 9, cy: 5, r: 4, fill: st.point === 'plein' ? (st.acc ? ACC : '#111') : '#fff', stroke: st.point === 'pointille' ? '#7a7a7a' : st.acc ? ACC : '#111', 'stroke-width': 1.5, 'stroke-dasharray': st.point === 'pointille' ? '2 1.5' : null }, s);
-  else sv('line', { x1: 0, y1: 5, x2: 18, y2: 5, stroke: st.stroke, 'stroke-width': st.w ? Math.min(st.w, 4) : 2, 'stroke-dasharray': st.dash || null }, s);
-  return s;
-}
-function rangeesSeries(rangees, redessiner) {
-  return h('ul', { class: 'series', 'aria-label': 'Séries du radar' }, rangees.map((r, n) => h('li', {},
-    h('button', {
-      class: 'serie', 'aria-pressed': String(ETAT.focusSerie === r.nom), 'data-booster': n === 0 ? 'série' : null, 'data-k': 's' + (r.cleK || r.nom),
-      'aria-label': 'Isoler la série ' + r.nom + ' sur le radar',
-      onclick: () => { ETAT.focusSerie = ETAT.focusSerie === r.nom ? null : r.nom; redessiner(); },
-    }, trait(r.st), h('b', {}, r.houblons ? nomsHoublons(r.houblons) : r.titre), r.cle ? h('span', { class: 'cle' }, r.cle) : null, h('span', { class: 'fams' + (r.fleche ? ' monte' : '') }, r.texte)))));
-}
-const listeFams = (idx) => idx.map((i) => nomCourt(D.ordre[i]).toLowerCase()).join(', ');
-
-/* Radar générique (parties 2 et 3) : 12 axes dans l'ordre du style, séries data-serie / data-valeurs. */
-function radar(objet, series, o) {
-  const W = 358, H = o.H || 330, cx = W / 2, cy = H / 2 + 4, R = o.R || 104;
-  const s = sv('svg', { width: W, height: H, 'data-radar': '', 'data-objet': objet, role: 'img', 'aria-label': o.label });
-  const u = (v) => (v - o.min + o.pad) / (o.max - o.min + 2 * o.pad);
-  const P = (i, v) => { const a = i * Math.PI / 6, r = u(v) * R; return [cx + Math.sin(a) * r, cy - Math.cos(a) * r]; };
-  for (const v of o.anneaux) sv('polygon', { points: D.ordre.map((f, i) => P(i, v).join(',')).join(' '), fill: 'none', stroke: '#dedede', 'stroke-width': 1, 'stroke-dasharray': v === o.min && o.zeroPointille ? '2 2' : null }, s);
-  if (o.bande) sv('polygon', { points: D.ordre.map((f, i) => P(i, o.bande[i] + 0.5).join(',')).join(' '), fill: '#ececec', stroke: '#bdbdbd', 'stroke-width': 1 }, s);
-  D.ordre.forEach((f, i) => {
-    const e = P(i, o.max + o.pad * 0.6);
-    sv('line', { x1: cx, y1: cy, x2: e[0], y2: e[1], stroke: D.attendues.includes(f) ? '#9a9a9a' : '#dcdcdc', 'stroke-width': D.attendues.includes(f) ? 1.5 : 1 }, s);
-    const a = i * Math.PI / 6, sn = Math.sin(a), cs = Math.cos(a), q = [cx + sn * (R + 10), cy - cs * (R + 10)];
-    const t = sv('text', { x: q[0], y: q[1] + (cs > 0.5 ? -2 : cs < -0.5 ? 12 : 4), 'font-size': 12, 'text-anchor': sn > 0.25 ? 'start' : sn < -0.25 ? 'end' : 'middle', 'font-weight': D.attendues.includes(f) ? 650 : 400, fill: (o.accent || [])[i] ? ACC : '#111' }, s);
-    t.textContent = nomCourt(f);
-  });
-  for (const se of series) {
-    const g = sv('g', { 'data-serie': se.nom, 'data-valeurs': se.valeurs.map((v) => (v == null ? '' : v)).join(','), opacity: ETAT.focusSerie && ETAT.focusSerie !== se.nom ? 0.18 : 1 }, s);
-    const pts = se.valeurs.map((v, i) => (v == null ? null : P(i, v)));
-    const plein = pts.every(Boolean);
-    if (plein) sv('polygon', { points: pts.map((p) => p.join(',')).join(' '), fill: se.fill || 'none', 'fill-opacity': se.fillOp || 1, stroke: se.stroke, 'stroke-width': se.w || 1.8, 'stroke-dasharray': se.dash || null }, g);
-    else {
-      let d = '';
-      pts.forEach((p, i) => { if (!p) return; const prev = pts[(i + 11) % 12]; d += (prev && i > 0 ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1); });
-      if (pts[0] && pts[11]) d += 'L' + pts[0][0].toFixed(1) + ',' + pts[0][1].toFixed(1);
-      sv('path', { d, fill: 'none', stroke: se.stroke, 'stroke-width': se.w || 1.8, 'stroke-dasharray': se.dash || null }, g);
-    }
-    pts.forEach((p, i) => { if (p && se.point) se.point(g, p, i); });
-  }
-  if (o.apres) o.apres(s, P);
-  return s;
-}
-
-/* ---------- Partie 1 : Ma bière et la cible (objets 1 et 2), barres ↔ radar en morphing ---------- */
-class Biere {
-  constructor(svg) {
-    this.svg = svg; this.t = ETAT.lentille === 'radar' ? 1 : 0; this.drag = null;
-    const rows = []; let y = 22;
-    D.ordre.forEach((f, i) => { const att = D.attendues.includes(f); if (i === D.attendues.length) y += 8; const rh = att ? 48 : 39; rows.push({ y: y + rh / 2, rh, att }); y += rh; });
-    this.rows = rows; this.H = y + 4; this.Hr = 332;
-    this.construire();
-    svg.addEventListener('pointermove', (e) => this.bouge(e));
-    svg.addEventListener('pointerup', (e) => this.lache(e));
-    svg.addEventListener('pointercancel', () => { this.drag = null; });
-  }
-  /* Le radar a sa propre hauteur (Hr) : la vue se resserre pendant le morphing. */
-  R() { return { cx: 179, cy: this.Hr / 2 + 4, R: 112 }; }
-  P(i, v, t = this.t) {
-    const r = this.rows[i], R = this.R(), a = i * Math.PI / 6, u = (v + 1) / 5.5;
-    const bx = 92 + (v + 0.5) * 38;
-    return [lerp(bx, R.cx + Math.sin(a) * u * R.R, t), lerp(r.y, R.cy - Math.cos(a) * u * R.R, t)];
-  }
-  construire() {
-    const s = this.svg;
-    s.innerHTML = '';
-    s.setAttribute('data-objet', 'biere-cible');
-    this.entete = sv('g', { 'font-size': 12, fill: '#6e6e6e', 'text-anchor': 'middle' }, s);
-    [[0, '0'], [3, '3']].forEach(([v, t]) => { sv('text', { x: 92 + (v + 0.5) * 38, y: 12 }, this.entete).textContent = t; });
-    sv('text', { x: 92 + 2 * 38, y: 12 }, this.entete).textContent = 'zone du style';
-    sv('line', { x1: 92, y1: 17, x2: 92 + 4 * 38, y2: 17, stroke: '#bdbdbd' }, this.entete);
-    this.polyBande = sv('polygon', { fill: '#ececec', stroke: '#bdbdbd', 'stroke-width': 1, 'data-serie': 'cible', 'data-valeurs': D.cible.map((c) => c.max).join(',') }, s);
-    this.cheminBiere = sv('path', { fill: 'none', stroke: '#111', 'stroke-width': 1.6, 'data-serie': 'ma bière', 'data-valeurs': D.profil.map((p) => (p.crans == null ? '' : p.crans)).join(',') }, s);
-    this.g = D.ordre.map((f, i) => {
-      const o = {}, P = D.profil[i], C = D.cible[i], att = D.attendues.includes(f);
-      o.g = sv('g', { 'data-fam': f }, s);
-      o.piste = sv('line', { stroke: P.crans == null ? '#c4c4c4' : '#ececec', 'stroke-linecap': 'round', 'stroke-dasharray': P.crans == null ? '3 3' : null }, o.g);
-      o.bande = sv('line', { stroke: P.crans == null ? 'none' : att ? '#bdbdbd' : '#cfcfcf' }, o.g);
-      o.b2 = sv('line', { stroke: '#555', 'stroke-width': 1.5 }, o.g);
-      if (P.crans != null && P.crans > C.max) { o.dep = sv('line', { stroke: ACC, 'stroke-linecap': 'round' }, o.g); o.fleche = sv('path', { fill: ACC }, o.g); }
-      o.vl = sv('line', { stroke: '#111', 'stroke-width': 1.5, 'stroke-dasharray': '3 2' }, o.g);
-      o.vd = sv('path', { fill: '#fff', stroke: '#111', 'stroke-width': 1.8 }, o.g);
-      o.hs = sv('text', { 'font-size': 12, 'font-weight': 650, fill: '#111', 'text-anchor': 'middle' }, o.g);
-      o.m = sv('g', {}, o.g);
-      o.nom = sv('text', { 'font-size': att ? 14 : 12, 'font-weight': att ? 650 : 400, fill: P.crans != null && P.crans > C.max ? ACC : '#111' }, o.g);
-      o.nom.textContent = nomCourt(f);
-      o.src = sv('text', { 'font-size': 12, 'text-anchor': 'end', fill: P.crans != null && P.crans > C.max ? ACC : '#6e6e6e', 'font-weight': P.source === 'dégustation' ? 650 : 400 }, o.g);
-      o.ns = P.crans == null ? sv('circle', { r: 4.5, fill: 'none', stroke: '#7a7a7a', 'stroke-width': 1.5, 'stroke-dasharray': '2.2 1.6' }, o.g) : null;
-      o.chiffres = sv('g', { 'font-size': 12, fill: '#6e6e6e', 'text-anchor': 'middle' }, o.g);
-      o.zone = sv('rect', { fill: 'transparent', role: 'button', tabindex: 0, 'data-k': 'z' + f, 'data-booster': i === fi('resin') ? 'toucher famille' : null,
-        'aria-label': D.long[f] + ' : ' + P.display + (P.source !== 'non situé' ? ', ' + (P.source === 'dégustation' ? 'dégusté' : 'prévu par le modèle') : '') + ' ; zone du style ' + C.min + ' à ' + C.max + ' crans ; flèches pour poser ma visée' }, o.g);
-      o.zone.addEventListener('click', () => { ETAT.sel = ETAT.sel === f ? null : f; this.dessiner(); });
-      o.zone.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ETAT.sel = ETAT.sel === f ? null : f; this.dessiner(); }
-        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const v0 = ETAT.visee[f] ?? P.crans ?? 0; this.viser(i, Math.max(0, Math.min(4, v0 + (e.key === 'ArrowRight' ? 1 : -1))), true); }
-      });
-      o.slots = [0, 1, 2, 3, 4].map((k) => {
-        const z = sv('rect', { fill: 'transparent', 'data-booster': f === 'floral' && k === 2 ? 'cible à glisser' : null, 'aria-hidden': 'true' }, o.g);
-        z.addEventListener('pointerdown', (e) => { this.drag = { i, k, x: e.clientX, y: e.clientY, bouge: false }; try { s.setPointerCapture(e.pointerId); } catch (x) { /* rien */ } e.preventDefault(); });
-        return z;
-      });
-      return o;
-    });
-  }
-  local(e) { const r = this.svg.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
-  bouge(e) {
-    const d = this.drag;
-    if (!d) return;
-    if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 6) d.bouge = true;
-    if (!d.bouge) return;
-    const q = this.local(e);
-    let best = 0, bd = 1e9;
-    for (let k = 0; k <= 4; k++) { const p = this.P(d.i, k); const dd = Math.hypot(p[0] - q[0], p[1] - q[1]); if (dd < bd) { bd = dd; best = k; } }
-    ETAT.visee[D.ordre[d.i]] = best;
-    this.dessiner();
-  }
-  lache() {
-    const d = this.drag;
-    this.drag = null;
-    if (!d) return;
-    if (d.bouge) { rendre(false); return; }
-    this.viser(d.i, d.k, false);
-  }
-  viser(i, k, garder) {
-    const f = D.ordre[i], p = D.profil[i].crans;
-    if (!garder && (ETAT.visee[f] === k || k === p)) delete ETAT.visee[f]; else ETAT.visee[f] = k;
-    ETAT.focusK = 'z' + f;
-    rendre(false);
-  }
-  dessiner() {
-    const t = this.t, R = this.R();
-    this.svg.setAttribute('height', lerp(this.H, this.Hr, t));
-    if (t > 0.5) this.svg.setAttribute('data-radar', ''); else this.svg.removeAttribute('data-radar');
-    this.svg.style.touchAction = t < 0.5 ? 'pan-y' : 'none';
-    const ptsB = [];
-    let d = '';
-    D.ordre.forEach((f, i) => {
-      const o = this.g[i], Pf = D.profil[i], C = D.cible[i], row = this.rows[i];
-      const P = (v) => this.P(i, v);
-      const p0 = P(-0.5), pD = P(4.5);
-      const L = Math.hypot(pD[0] - p0[0], pD[1] - p0[1]) || 1, dir = [(pD[0] - p0[0]) / L, (pD[1] - p0[1]) / L], n = [-dir[1], dir[0]];
-      const ep = row.att ? 12 : 9;
-      const set = (el, a, b, w) => { el.setAttribute('x1', a[0]); el.setAttribute('y1', a[1]); el.setAttribute('x2', b[0]); el.setAttribute('y2', b[1]); if (w != null) el.setAttribute('stroke-width', w); };
-      set(o.piste, p0, pD, lerp(ep, 2, t));
-      const pb = P(C.min - 0.5), ph = P(C.max + 0.5);
-      set(o.bande, pb, ph, lerp(ep, 3, t));
-      const k = lerp(ep / 2 + 3, 4, t);
-      set(o.b2, [ph[0] - n[0] * k, ph[1] - n[1] * k], [ph[0] + n[0] * k, ph[1] + n[1] * k]);
-      ptsB.push(ph);
-      if (o.dep) {
-        const e1 = P(4.3);
-        set(o.dep, ph, e1, lerp(ep - 3, 3, t));
-        const a = [e1[0] + dir[0] * 2, e1[1] + dir[1] * 2];
-        o.fleche.setAttribute('d', `M${a[0] + dir[0] * 7},${a[1] + dir[1] * 7} L${a[0] + n[0] * 5},${a[1] + n[1] * 5} L${a[0] - n[0] * 5},${a[1] - n[1] * 5}Z`);
-      }
-      o.m.innerHTML = '';
-      if (Pf.crans != null) {
-        const c = P(Pf.crans);
-        marqueBiere(o.m, Pf, i, c, row.att ? 5.5 : 4.5);
-        d += (d && D.profil[(i + 11) % 12].crans != null && i > 0 ? 'L' : 'M') + c[0].toFixed(1) + ',' + c[1].toFixed(1);
-        if (i === 11 && D.profil[0].crans != null) { const c0 = P(D.profil[0].crans); d += 'L' + c0[0].toFixed(1) + ',' + c0[1].toFixed(1); }
-      }
-      const vi = ETAT.visee[f];
-      if (vi != null) {
-        const de = Pf.crans != null ? P(Pf.crans) : p0, a = P(vi);
-        set(o.vl, de, a); o.vd.setAttribute('d', losange(a, 6));
-        o.vl.style.display = o.vd.style.display = '';
-        o.hs.textContent = vi > C.max ? 'hors style' : '';
-        o.hs.setAttribute('x', a[0]); o.hs.setAttribute('y', a[1] - 9);
-      } else { o.vl.style.display = o.vd.style.display = 'none'; o.hs.textContent = ''; }
-      // Nom, source et zones : de la rangée au sommet du radar.
-      const an = i * Math.PI / 6, sn = Math.sin(an), cs = Math.cos(an);
-      const w = (o.w = o.w || o.nom.getComputedTextLength() || 50);
-      const q = [R.cx + sn * (R.R + 10), R.cy - cs * (R.R + 10)];
-      const left = sn > 0.25 ? q[0] : sn < -0.25 ? q[0] - w : q[0] - w / 2;
-      const base = cs > 0.5 ? q[1] - 4 : cs < -0.5 ? q[1] + 12 : q[1] + 4;
-      o.nom.setAttribute('x', lerp(0, left, t)); o.nom.setAttribute('y', lerp(row.y + (row.att ? 5 : 4), base, t));
-      const sel = ETAT.sel === f;
-      o.src.textContent = Pf.source === 'dégustation' ? 'dégusté' + (sel && D.degustation ? ' ' + D.degustation.date : '') : Pf.source === 'modèle' ? (sel ? 'prévu, modèle' : 'prévu') : '';
-      o.src.setAttribute('x', 358); o.src.setAttribute('y', row.y + 4);
-      o.src.setAttribute('opacity', 1 - t);
-      if (o.ns) { o.ns.setAttribute('cx', lerp(350, left + w / 2, t)); o.ns.setAttribute('cy', lerp(row.y, base + 9, t)); }
-      const zb = { x: 0, y: row.y - row.rh / 2, w: 88, h: row.rh }, zr = { x: left - 6, y: base - 16, w: w + 12, h: 24 };
-      o.zone.setAttribute('x', lerp(zb.x, zr.x, t)); o.zone.setAttribute('y', lerp(zb.y, zr.y, t));
-      o.zone.setAttribute('width', lerp(zb.w, zr.w, t)); o.zone.setAttribute('height', lerp(zb.h, zr.h, t));
-      o.slots.forEach((z, kk) => { const c = P(kk), sw = lerp(38, 22, t), sh = lerp(row.rh, 22, t); z.setAttribute('x', c[0] - sw / 2); z.setAttribute('y', c[1] - sh / 2); z.setAttribute('width', sw); z.setAttribute('height', sh); });
-      o.chiffres.innerHTML = '';
-      if (sel) for (let kk = 0; kk <= C.max; kk++) { const c = P(kk); sv('text', { x: c[0] - n[0] * (k + 8), y: c[1] - n[1] * (k + 8) + 4 }, o.chiffres).textContent = String(kk); }
-      o.g.setAttribute('opacity', ETAT.sel && !sel ? 0.45 : 1);
-    });
-    this.entete.setAttribute('opacity', 1 - t);
-    this.polyBande.setAttribute('points', ptsB.map((p) => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' '));
-    const fs = ETAT.focusSerie;
-    this.polyBande.setAttribute('opacity', t * (fs === 'ma bière' ? 0.3 : 1));
-    this.cheminBiere.setAttribute('d', d || 'M0,0');
-    this.cheminBiere.setAttribute('opacity', t * (fs === 'cible' ? 0.2 : 1));
-    this.g.forEach((o) => o.m.setAttribute('opacity', fs === 'cible' && t > 0.5 ? 0.2 : 1));
-  }
-  basculer(l) { const de = this.t, a = l === 'radar' ? 1 : 0; anime(300, (k) => { this.t = lerp(de, a, k); this.dessiner(); }); }
-}
+/* Les radars des trois parties et de la fiche : un seul composant, radar.js (RADAR). */
 const dirsActives = () => Object.keys(ETAT.visee);
 function chipsDirection(onToggle) {
   const fams = [...new Set([...D.voiesResume.map((v) => v.fam), ...dirsActives()])];
@@ -745,21 +542,9 @@ function partieBiere(part) {
     bloc.innerHTML = '';
     if (ETAT.lentille === 'radar') {
       const ancien = rangee.querySelector('.seg'); if (ancien) ancien.remove();
-      // Radar (crans du style) : la même partie, ses séries sous le radar ; marqué data-composant.
+      // Radar (radar.js, intensité 0–3) : la zone en fond, ma bière pleine, la part au-dessus en accent.
       bloc.setAttribute('data-composant', 'radar');
-      const svg = sv('svg', { width: 358, role: 'group', 'aria-label': 'Radar de ma bière face à la zone du style, en crans' });
-      bloc.append(svg);
-      const B2 = new Biere(svg);
-      B2.dessiner();
-      const idx = D.ordre.map((f, i) => i);
-      const deg = idx.filter((i) => D.profil[i].source === 'dégustation'), mod = idx.filter((i) => D.profil[i].source === 'modèle');
-      const dessus = (i) => D.profil[i].crans > D.cible[i].max;
-      bloc.append(rangeesSeries([
-        ...(deg.length ? [{ nom: 'ma bière', cleK: 'deg', titre: 'Dégusté' + (D.degustation ? ' ' + D.degustation.date : ''), st: { point: 'plein', acc: deg.some(dessus) }, cle: deg.some(dessus) ? 'au-dessus' : null, texte: listeFams(deg) }] : []),
-        ...(mod.length ? [{ nom: 'ma bière', cleK: 'mod', titre: 'Prévu', st: { point: 'creux' }, texte: listeFams(mod) }] : []),
-        { nom: 'cible', titre: 'Cible', st: { zone: true }, cle: 'attendues', texte: listeFams(D.attendues.map(fi)) },
-        ...(D.profil.some((p) => p.crans == null) ? [{ nom: 'non situé', titre: 'Non situées', st: { point: 'pointille' }, texte: listeFams(idx.filter((i) => D.profil[i].crans == null)) }] : []),
-      ], dessiner));
+      RADAR.biere(bloc, dessiner);
       return;
     }
     bloc.removeAttribute('data-composant');
@@ -888,17 +673,9 @@ function partieSuggestions(part) {
   const dessiner = () => {
     zone.innerHTML = '';
     if (ETAT.lentille === 'radar') zone.setAttribute('data-composant', 'radar'); else zone.removeAttribute('data-composant');
-    if (ETAT.lentille === 'radar') {
-      const series = [{ nom: 'avant', valeurs: D.profil.map((p) => p.crans), stroke: '#8f8f8f', w: 4, point: (gg, p, i) => marqueBiere(gg, D.profil[i], i, p, 4) },
-        ...marq.map((v, k) => ({ nom: 'après ' + v.houblons.join(' + '), valeurs: v.crans, ...styleApres(k), w: 1.8 }))];
-      zone.append(radar('voies', series, { min: 0, max: 4, pad: 0.6, anneaux: [0, 4], bande: D.cible.map((c) => c.max), H: 300, R: 98, label: 'Radar des voies : avant et après, en crans du style', accent: D.profil.map((p) => p.crans === 4),
-        apres: (s, P) => { for (const f of dirs) { const i = fi(f); sv('path', { d: losange(P(i, ETAT.visee[f]), 6), fill: '#fff', stroke: '#111', 'stroke-width': 1.6 }, s); } } }));
-      zone.append(rangeesSeries([{ nom: 'avant', titre: 'Avant', st: { stroke: '#8f8f8f', w: 4 }, texte: '' }, ...marq.map((v, k) => {
-        const monte = D.ordre.map((f, i) => i).filter((i) => typeof v.delta[i] === 'number' && v.delta[i] > 0);
-        const baisse = D.ordre.map((f, i) => i).filter((i) => typeof v.delta[i] === 'number' && v.delta[i] < 0);
-        return { nom: 'après ' + v.houblons.join(' + '), titre: v.houblons.join(' + '), houblons: v.cles.length ? v.houblons : null, st: styleApres(k), fleche: monte.length > 0, texte: (monte.length ? listeFams(monte) : '') + (baisse.length ? ' ↓ ' + listeFams(baisse) : '') || '≈' };
-      })], dessiner));
-    } else zone.append(matriceVoies(marq));
+    // Radar (radar.js) : l'avant en contour, une voie marquée pleine en gris ; puces ou balayage.
+    if (ETAT.lentille === 'radar') RADAR.voies(zone, { marq, liste }, dessiner);
+    else zone.append(matriceVoies(marq));
   };
   dessiner();
   LENTILLE_CB = () => anime(160, (k) => { zone.style.opacity = 1 - k; }, () => { dessiner(); anime(160, (k) => { zone.style.opacity = k; }); });
@@ -926,14 +703,14 @@ function matriceFiches(noms) {
   });
   return s;
 }
-/* En-tête des colonnes : le houblon, son groupe de stock, mon goût et le retrait. */
-const STYLES_FICHES = [{ stroke: '#111', fill: '#111', fillOp: 0.08 }, { stroke: '#111', dash: '5 3' }, { stroke: '#6e6e6e', dash: '2 2' }, { stroke: '#8f8f8f', w: 3 }];
+/* En-tête des colonnes : le houblon, son groupe de stock, mon goût et le retrait (en Radar, chaque
+   petit radar porte son nom : plus de trait de légende en tirets). */
 function enteteFiches(noms) {
   const mot = { stock: '', epuise: 'à racheter', catalogue: 'à acheter' };
   return h('div', { class: 'cols', style: 'grid-template-columns:' + NOM_W + 'px repeat(' + noms.length + ', 1fr)', role: 'group', 'aria-label': 'Houblons comparés' },
     h('span'),
-    noms.map((n, k) => h('span', { class: 'col' },
-      h('b', { class: ETAT.gouts.exclut.has(n) ? 'exclu' : null }, ETAT.lentille === 'radar' ? trait(STYLES_FICHES[k]) : null, h('span', { 'data-houblon': cleDe(n) }, n)),
+    noms.map((n) => h('span', { class: 'col' },
+      h('b', { class: ETAT.gouts.exclut.has(n) ? 'exclu' : null }, h('span', { 'data-houblon': cleDe(n) }, n)),
       h('span', { class: 'p gris' }, mot[D.groupes[n]] || ''),
       h('span', { class: 'col-act' }, goutBouton(n, 'c', null),
         h('button', { class: 'x', 'aria-label': 'Retirer ' + n + ' du comparatif', disabled: noms.length <= 2 || null, onclick: () => { ETAT.comp = ETAT.comp.filter((x) => x !== n); rendre(false); } })))));
@@ -952,21 +729,12 @@ function partieComparer(part) {
   const dessiner = () => {
     zone.innerHTML = '';
     if (ETAT.lentille === 'radar') zone.setAttribute('data-composant', 'radar'); else zone.removeAttribute('data-composant');
-    if (ETAT.lentille === 'radar') {
-      zone.append(radar('houblons', noms.map((n, k) => ({ nom: n, valeurs: D.fiches[n].niv, ...STYLES_FICHES[k] })), { min: 0, max: 2, pad: 0.5, anneaux: [0, 1, 2], zeroPointille: true, H: 318, R: 100, label: 'Radar des fiches : citations de 0 (non décrit) à 2 (marqué)' }));
-      // Ce qui distingue chaque houblon : les familles où sa fiche dit plus que toutes les autres.
-      zone.append(h('p', { class: 'cle' }, 'Se distingue par'));
-      zone.append(rangeesSeries(noms.map((n, k) => {
-        const propre = D.ordre.map((f, i) => i).filter((i) => noms.every((m) => m === n || D.fiches[n].niv[i] > D.fiches[m].niv[i]));
-        return { nom: n, titre: n, houblons: [n], st: STYLES_FICHES[k], texte: propre.length ? listeFams(propre) : 'rien en propre' };
-      }).concat((() => {
-        const vide = D.ordre.map((f, i) => i).filter((i) => noms.every((m) => !D.fiches[m].niv[i]));
-        return vide.length ? [{ nom: 'non décrit', titre: 'Non décrit', st: { point: 'pointille' }, texte: listeFams(vide) }] : [];
-      })()), dessiner));
-    } else zone.append(matriceFiches(noms));
+    // Radar (radar.js) : un petit radar par houblon, ce que sa fiche est seule à citer ; toucher l'agrandit.
+    if (ETAT.lentille === 'radar') RADAR.houblons(zone, noms, dessiner);
+    else zone.append(matriceFiches(noms));
   };
   dessiner();
-  LENTILLE_CB = () => anime(160, (k) => { zone.style.opacity = 1 - k; }, () => { dessiner(); part.querySelector('.cols').replaceWith(enteteFiches(noms)); anime(160, (k) => { zone.style.opacity = k; }); });
+  LENTILLE_CB = () => anime(160, (k) => { zone.style.opacity = 1 - k; }, () => { dessiner(); anime(160, (k) => { zone.style.opacity = k; }); });
 }
 
 /* ---------- Rendu ---------- */
@@ -977,6 +745,8 @@ function rendre(animerIbu) {
   document.body.dataset.vue = ETAT.vue;
   if (ETAT.vue === 'etape') VARIANTE.etape(app); else panneau(app);
   majIbu(animerIbu);
+  // La fiche ouverte suit l'état (un moment touché dans sa table déplace la ligne au-dessus).
+  if (typeof ficheApresRendu === 'function') ficheApresRendu();
   const k = ETAT.focusK || actif;
   ETAT.focusK = null;
   if (k && ETAT.clavier) { const e = app.querySelector('[data-k="' + CSS.escape(k) + '"]'); if (e) e.focus({ preventScroll: true }); }

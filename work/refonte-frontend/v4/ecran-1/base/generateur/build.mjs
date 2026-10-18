@@ -57,6 +57,39 @@ const roleDe = (item) => {
   const v = typeof r === 'string' ? r : r.value || r.label || r.code;
   return v ? String(v).toLowerCase() : null;
 };
+/* Fiche d'un houblon (D25, pack-fiches.json) : champs repris tels quels ; un champ absent reste null
+   (la page dit « non renseigné »). Le rôle (amérisant, aromatique, double, avec sa source) vient
+   du pack courant, là où le houblon est une ligne ou un ajout proposé. */
+const ROLES = {};
+for (const S of Object.values(pack.scenarios)) {
+  const AR = S.ajoutsRapides || {};
+  for (const x of [...(S.recetteHoublons || []), ...(AR.disponibles || []), ...(AR.epuises || []), ...(AR.catalogue || []), ...(AR.amerisants || []), ...(AR.aromatiques || [])]) {
+    const k = x.key || x.hopKey;
+    if (k && x.role && x.role.value && !ROLES[k]) ROLES[k] = { v: x.role.value, src: x.role.source || null };
+  }
+}
+const plageSrc = (s) => ({ src: s.source, an: s.annee ?? null, min: s.min, max: s.max });
+function ficheH(f) {
+  const comp = (f.huiles && f.huiles.composants) || {};
+  const NOMS_H = { myrcene: 'myrcène', humulene: 'humulène', caryophyllene: 'caryophyllène', farnesene: 'farnésène', linalool: 'linalol' };
+  const de = f.alpha && f.alpha.retenu ? f.alpha.retenu.from : null;
+  return {
+    nom: f.name, origine: f.origin || null, role: ROLES[f.key] || null,
+    alpha: ((f.alpha && f.alpha.sources) || []).map(plageSrc),
+    // La valeur de mon lot seulement (fiche de stock, article) : un milieu de plage n'est pas un lot.
+    lot: de === 'fiche de stock' || de === 'lu sur l’article' ? f.alpha.retenu.value : null,
+    beta: ((f.beta && f.beta.sources) || []).map(plageSrc),
+    huiles: ((f.huiles && f.huiles.totale && f.huiles.totale.sources) || []).map(plageSrc),
+    composants: Object.entries(NOMS_H).map(([k, nom]) => (comp[k] ? { nom, min: comp[k].min, max: comp[k].max, src: comp[k].source } : { nom, raison: comp[k + 'Raison'] || null })),
+    aromes: (f.aromes || []).map((a) => ({ f: a.family, lv: a.level, n: a.sources, of: a.of, auteurs: a.authors || [] })),
+    desc: (f.descripteurs && f.descripteurs.beerMaverick) || [],
+    subs: Array.isArray(f.substituts) ? f.substituts.map((x) => (typeof x === 'string' ? x : x.name || x.nom || '')).filter(Boolean) : [], subsRaison: f.substitutsRaison || null,
+    styles: (f.usage || []).flatMap((u) => u.styles || []), stylesSrc: (f.usage || []).map((u) => u.source).filter(Boolean), stylesRaison: f.usageRaison || null,
+    ibuPG: Object.fromEntries(((f.ibuParGramme && f.ibuParGramme.moments) || []).map((m) => [m.code, m.ibuPerGram ? m.ibuPerGram.value : null])),
+    base: (f.ibuParGramme && f.ibuParGramme.base) || null,
+  };
+}
+
 // Fiches des houblons (citations) : propriété du houblon, communes à tous les scénarios.
 const S1 = pack.scenarios.S1;
 const FICHES_TOUTES = Object.fromEntries([
@@ -142,6 +175,8 @@ function scenario(id) {
       dir: v.directedEffect,
       faible: Object.fromEntries(Object.entries(v.directedEffect).map(([k, x]) => [k, x == null || Math.abs(x) < seuil[k]])),
       crans: ORDRE.map((f) => m[f].crans), delta: ORDRE.map((f) => m[f].deltaCrans),
+      // Radar : l'après en intensité continue 0–3 (profilApresContinu), null où l'effet n'est pas établi.
+      apresC: (() => { const c = parFam(v.profilApresContinu || []); return ORDRE.map((f) => (c[f] && c[f].value != null ? c[f].value : null)); })(),
     };
   });
   const sansHoublon = {};
@@ -151,7 +186,7 @@ function scenario(id) {
   const phrase = S.readingSummary.sentence;
   const recNoms = [...new Set(lignes.map((l) => l.nom))];
   const comparerDefaut = [...recNoms, ...tousRapides.map((r) => r.nom).filter((n) => !recNoms.includes(n))].filter((n, k, a) => FICHES_TOUTES[n] && a.indexOf(n) === k).slice(0, 3);
-  return {
+  const D0 = {
     scen: id, ebullition: EBU, tables: { dureesFwh: pack.tablesIbu.dureesPremierMout, wp: pack.tablesIbu.whirlpool }, dryJours: (pack.dryHopJour && pack.dryHopJour.jours) || { min: 0, max: 14 }, nom: S.recipe.name, code: '16D', ibuStyle: st.ibu, og: virgule(S.recipe.og), ebc: S.recipe.ebc,
     ordre: ORDRE, court, long, attendues: ORDRE.filter((f) => cs[f].status === 'attendue'),
     profil: ORDRE.map((f) => ({ crans: pb[f].crans, display: pb[f].display, source: pb[f].source, approx: pb[f].approx, exact: pb[f].exact })),
@@ -191,9 +226,18 @@ function scenario(id) {
     levure: { nom: S.yeast.name.replace(/\s*\(.*\)\s*$/, ''), statut: S.yeast.status },
     notes: { ibu: S.ibuNote || null, profil: S.profilNote || null, voies: S.voiesNote || null },
   };
+  // Radar : la roue des arômes du pack (ordre des axes). Fiche : chaque houblon nommé sur la page.
+  D0.roue = pack.roueAromes.map((r) => ({ f: r.id, nom: r.nom }));
+  const cles = new Set(Object.values(D0.cles));
+  D0.fichesH = Object.fromEntries(FICHES.filter((f) => cles.has(f.key)).map((f) => [f.key, ficheH(f)]));
+  return D0;
 }
 
 const commun = fs.readFileSync(path.join(HERE, 'commun.js'), 'utf8');
+// Radar unique et fiche du houblon (lot 4 intégré) ; d3-shape, d3-scale et motion empaquetés par libs.mjs.
+const lib = fs.readFileSync(path.join(HERE, 'lib-radar.js'), 'utf8');
+const radarJs = fs.readFileSync(path.join(HERE, 'radar.js'), 'utf8') + '\n' + fs.readFileSync(path.join(HERE, 'fiche.js'), 'utf8');
+const radarCss = fs.readFileSync(path.join(HERE, 'radar.css'), 'utf8') + '\n' + fs.readFileSync(path.join(HERE, 'fiche.css'), 'utf8');
 const tpl = fs.readFileSync(path.join(HERE, 'page.html'), 'utf8');
 const VUES = {
   'index.html': ['S1', 'etape', '', 'barres', ''],
@@ -207,6 +251,8 @@ const VUES = {
   'cas-k2.html': ['S4', 'etape', '', 'barres', ''],
   'cas-k3.html': ['S5', 'etape', '', 'barres', ''],
   'cas-ebu120.html': ['S1E120', 'etape', '', 'barres', ''],
+  // L'étape, la fiche de Nugget ouverte (appui long déjà fait).
+  'fiche.html': ['S1', 'etape', '', 'barres', '', '', 'beermaverick-nugget'],
 };
 const DATA = { S1: scenario('S1'), S4: scenario('S4'), S5: scenario('S5'), S1E120: scenario('S1E120') };
 const TITRES = { consolide: 'Houblons, rail du brassage' };
@@ -214,14 +260,15 @@ for (const id of ['consolide']) {
   const variante = fs.readFileSync(path.join(HERE, 'etape-' + id + '.js'), 'utf8');
   const css = fs.readFileSync(path.join(HERE, 'etape-' + id + '.css'), 'utf8');
   fs.mkdirSync(path.join(OUT, id), { recursive: true });
-  for (const [f, [scen, vue, partie, lentille, dirs, echelle]] of Object.entries(VUES).filter(([f]) => !PAGES.length || PAGES.includes(f))) {
+  for (const [f, [scen, vue, partie, lentille, dirs, echelle, ficheInit]] of Object.entries(VUES).filter(([f]) => !PAGES.length || PAGES.includes(f))) {
     const html = tpl
       .replace('@TITRE@', TITRES[id])
-      .replace('/*@CSS@*/', () => css)
+      .replace('/*@CSS@*/', () => css + '\n' + radarCss)
+      .replace('/*@LIB@*/', () => lib)
       .replace('/*@DATA@*/', () => 'const D = ' + JSON.stringify(DATA[scen]) + ';')
       .replace('/*@COMMUN@*/', () => commun)
-      .replace('/*@VARIANTE@*/', () => variante)
-      .replace('@BODY@', `data-variante="${id}" data-vue="${vue}" data-ouvre="${partie}" data-lentille="${lentille}" data-dirs="${dirs}" data-echelle="${echelle || ''}"`);
+      .replace('/*@VARIANTE@*/', () => variante + '\n' + radarJs)
+      .replace('@BODY@', `data-variante="${id}" data-vue="${vue}" data-ouvre="${partie}" data-lentille="${lentille}" data-dirs="${dirs}" data-echelle="${echelle || ''}"` + (ficheInit ? ` data-fiche-init="${ficheInit}"` : ''));
     fs.writeFileSync(path.join(OUT, id, f), html);
   }
   console.log(id, 'écrit');

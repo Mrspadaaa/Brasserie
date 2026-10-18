@@ -79,6 +79,9 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   C'était quoi ce batch ? » — 18.10, soir (D39).
 - **Le piège, encore** : « Déjà dit mais attention au piège !! » (rappel des quatre objets) —
   18.10, soir (D40).
+- **La base v2** (sa capture, 18.10, soir) : « C'est defini ailleur dans l'application... » ;
+  « On a un 10' qui sort de null part. C'est pas encore ça, les possible ajoute d'houblon sont
+  vraiment à la bonne place ? Pourquoi celui choisi à de l'ombre ? » (D37 révisé, D41, D42).
 - **La baseline** : « Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça
   différent complètement ? » — 18.10, soir (D26).
 - **Levure et biotransformation** : « Et tout ce qui est biotransformation avec levures, dry
