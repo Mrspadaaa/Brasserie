@@ -82,7 +82,7 @@ export function buildPack() {
 
   // S2 : Czech Premium Pale Lager 3B (floral attendu 33–68), trois houblons floraux du catalogue,
   // levure de lager LalBrew Diamond, sans profil dans V5.5 : enveloppe inconnue, gardée telle quelle.
-  const s3a = getStyleScale('3A'), s3b = getStyleScale('3B'), s21a = getStyleScale('21A');
+  const s3b = getStyleScale('3B'), s21a = getStyleScale('21A');
   const lagerYeast = 'lalbrew-diamond';
   const trio = ['saaz-cz', 'styrian-golding', 'hallertau-mittelfruh'].map((id) => hopProfile(`beermaverick-${id}`, { yeastId: lagerYeast, og: 1.052 }));
   const est2 = (h: HopProfile, f: FamilyId) => ({ range: h.families[f].range, central: h.families[f].central });
@@ -102,9 +102,9 @@ export function buildPack() {
       styleVerdicts: Object.fromEntries(s3b.order.filter((f) => s3b.families[f].status === 'attendue').map((f) => [f, valueVerdict(est2(h, f), s3b.families[f])])) })),
     pairs,
     illustration: {
-      style: '3A', note: 'Même écart absolu de 8 points de floral, lu sur la piste de la Czech Pale Lager 3A (floral neutre, 0–30) et de l’American IPA 21A (repères ponctuels, sans incertitude).',
-      lager: { share: round(trackShare(8, s3a.families.floral), 3), verdict: gapVerdict({ range: { min: 20, max: 20 } }, { range: { min: 28, max: 28 } }, s3a.families.floral).verdict, threshold: round(s3a.families.floral.threshold) },
-      ipa: { share: round(trackShare(8, s21a.families.floral), 3), verdict: gapVerdict({ range: { min: 20, max: 20 } }, { range: { min: 28, max: 28 } }, s21a.families.floral).verdict, threshold: round(s21a.families.floral.threshold) },
+      style: '3B', note: 'Même écart absolu de 8 points de floral (40 contre 48), lu sur la piste de la Czech Premium Pale Lager 3B (floral attendue, 33–68) et de l’American IPA 21A (repères ponctuels, sans incertitude).',
+      lager: { share: round(trackShare(8, s3b.families.floral), 3), verdict: gapVerdict({ range: { min: 40, max: 40 } }, { range: { min: 48, max: 48 } }, s3b.families.floral).verdict, threshold: round(s3b.families.floral.threshold) },
+      ipa: { share: round(trackShare(8, s21a.families.floral), 3), verdict: gapVerdict({ range: { min: 40, max: 40 } }, { range: { min: 48, max: 48 } }, s21a.families.floral).verdict, threshold: round(s21a.families.floral.threshold) },
     },
   };
 
