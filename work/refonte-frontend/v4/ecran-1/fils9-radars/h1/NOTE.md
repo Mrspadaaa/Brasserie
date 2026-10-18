@@ -1,0 +1,3 @@
+Marche : un seul polygone plein façon Beer Maverick (plancher p04, D3), libellés entiers sans « 2/4 », échelle en légende seulement (D66) ; les 5 familles dont aucune fiche ne parle sont inconnues, pas zéro (D65) : tracé au centre, marque creuse, secteur hachuré, libellé gris « Melon ? » ; le toucher écrit dessous « Épicé · marqué · 1 fiche sur 4 : Hopsteiner » (FIL6 OK, toucher joué).
+Coince : la fiche ne donne que 1 ou 2 (des citations, pas une intensité, #131), d'où une étoile à pointes plutôt que la forme ronde de Beer Maverick ; Épicé « marqué » avec 1 fiche sur 4 vient tel quel de la fiche.
+Avis : bonne lecture du premier plan ; la lecture sous le radar évite la bulle qui couvrait un libellé voisin dans p04.

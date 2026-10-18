@@ -1,0 +1,3 @@
+s4 (libre) · Suggestions « vers la bière voulue » : la demande dessinée sur un seul grand radar (trait vert au niveau visé, pointe dans le sens voulu : floral 24,8 ou plus, résineux 30 ou moins, tirés de S1.direction), une voie à la fois choisie dans une rangée de 17 puces.
+Sous le radar, la réponse écrite par famille demandée : sens de l'effet (bon sens, faible sous le seuil du moteur, contraire, non établi), puis la plage prévue ou le goûté décalé de l'effet, face au visé ; effets de bord, IBU et lecture du moteur ensuite. Bandes avant/après, goûté orange à part, D65/D66 comme s3.
+Limite : un seul radar à la fois (pas de vue d'ensemble des voies) ; la bulle couvre une partie du radar ; page de 1 040 px.
