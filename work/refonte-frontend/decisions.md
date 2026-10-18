@@ -410,6 +410,20 @@ Choix :
 - les 8 variantes écartées du lot 3 rangées dans `fils3/_ecartes/`, pour qu'aucune planche
   ne les remontre.
 
+## D29 — Base consolidée : p2, la levure de p8, le moment qu'on glisse (18.10.2026, soir)
+
+Le brasseur, sur la page partagée (capture de p2, flèche de 60′ à 10′) : « J'aime beaucoup
+l'intégration de la levure directement dans la p8 mais la p2 a un meilleur visuel, j'aimerais
+aussi pouvoir une fois mon houblons sélectionner pouvoir glisser comme un slider le moment de
+l'ajout. »
+
+Choix : la base de l'étape devient p2 (visuel), avec la levure comme étape du rail entre le
+whirlpool et le dry hop en fermentation (p8), et le moment de chaque ajout glissable le long du
+rail, au doigt comme à la souris, IBU en direct depuis le pack. Contrôles D27 et D28
+(`controle-rail.mjs`, `--rail`) prouvés dans les deux sens : page témoin à poignée inerte et
+levure mal placée → échec ; page qui fonctionne → RAIL OK. Sortie : `ecran-1/base/consolide/`.
+Le lot 4 (radars, fiche) garde la baseline p03 : ses composants se greffent ensuite sur la base.
+
 ## D7 — Issue de suivi de la mission (17.10.2026)
 
 Une issue GitHub suit la mission, liée à #115 et #116, et reçoit l'état de

@@ -64,6 +64,8 @@ firestore.rules
 !/work/refonte-frontend/v4/ecran-1/fils3/p03/*.html
 !/work/refonte-frontend/v4/ecran-1/fils3/p08/*.html
 !/work/refonte-frontend/v4/ecran-1/fils3/generateur-*/*
+!/work/refonte-frontend/v4/ecran-1/base/consolide/*.html
+!/work/refonte-frontend/v4/ecran-1/base/generateur/*
 /work/refonte-frontend/**/_ecartes/
 /work/refonte-frontend/**/captures/
 /work/refonte-frontend/v4/tournoi/M1/_lots-1-2/

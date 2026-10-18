@@ -43,6 +43,10 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
 - **La fiche du houblon** : « Aussi je voudrais que quand je fasse un appuie long, hover long
   super ordinateur, sur houblons, je puisse voir sa fiche en détails. » ; « Regarde pour des
   mini Proto de ça aussi » — 18.10, soir (D25).
+- **Le rail des étapes** (sur la capture de p2, une flèche de 60′ à 10′) : « J'aime beaucoup
+  l'intégration de la levure directement dans la p8 mais la p2 a un meilleur visuel, j'aimerais
+  aussi pouvoir une fois mon houblons sélectionner pouvoir glisser comme un slider le moment de
+  l'ajout. » — 18.10, soir (D27, D28).
 - **La baseline** : « Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça
   différent complètement ? » — 18.10, soir (D26).
 - **Levure et biotransformation** : « Et tout ce qui est biotransformation avec levures, dry

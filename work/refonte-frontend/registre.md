@@ -127,6 +127,21 @@ Voir `decisions.md` (D1 à D12).
   `ecran-1/fils4-fiche/BRIEF-AUTEUR.md` (4 tiède, 5 chaude, 2 froide chacun, 4 auteurs par
   lot). p2, p3, p8 : LOT OK 3/3 (contrôle indépendant) ; page Artifact prête à générer
   (`scratchpad/artifact-lot3/build.mjs`), en attente des radars refaits.
+- **18.10 soir, lot 4 lancé** (baseline `fils3/p03`, générateur `fils3/generateur-p02p03/`) :
+  radars `fils4-radar/` p01–p03 `a5b117c36ff16a4b2`, p04 p10 p11 `aef70991de69efe90`, p05–p07
+  `a9c6fe37d5e9be19c`, p08–p09 `a835faa60ebf9cb1b` ; fiche `fils4-fiche/` p01–p03
+  `ac412a37047b66094`, p04 p10 p11 `aa33d9fdef55a88e0`, p05–p07 `ae0657909f01f22fe`, p08–p09
+  `a52a4e6140b388807`. Contrôle : `controle-lot.mjs <fils4-…> --mots=80 --fill=0.8 --boosters=4
+  --recette [--radar | --fiche] --baseline=work/refonte-frontend/v4/ecran-1/fils3/p03`.
+  Git : `/work/refonte-frontend` versionné en partie (`.gitignore`, commit `220ac000`) ; issue
+  #119 commentée. Page privée p2, p3, p8 sans radars :
+  https://claude.ai/artifact/WSzBr4fBJerouWVtWqFiMJ (générateur
+  `scratchpad/artifact-lot3/build.mjs … --sans-radar`, test `test.mjs`).
+- **18.10 soir, D29** : base consolidée (p2 + levure de p8 + moment glissable) confiée à
+  `aca844c5cdc3c873d`, sortie `ecran-1/base/consolide/`, contrôle `controle-lot.mjs
+  work/refonte-frontend/v4/ecran-1/base --mots=80 --fill=0.8 --boosters=4 --recette --rail`.
+  Contrôles D27, D28 (`controle-rail.mjs`), témoins `scratchpad/temoin-rail` (échec) et
+  `scratchpad/temoin-rail-positif` (OK).
 - **Moteur** (leaf A `a115e8520cde8e241`, réutilisable) : dernier commit `3f973ed2`, pack
   436 ko (plafond 500), `ENGINE-V4 OK (50 tests)`. Contient S1 à S5, crans du style,
   quatre objets, catalogue, achats, goûts, voiesSansHoublon, levure (double impact, leviers,

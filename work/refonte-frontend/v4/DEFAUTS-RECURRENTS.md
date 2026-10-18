@@ -59,6 +59,9 @@ maquette. Et le brasseur ne voyait le résultat qu'à la fin.
 | D25 | « quand je fasse un appuie long, hover long super ordinateur, sur houblons, je puisse voir sa fiche en détails » (18.10, soir) | `controle-fiche.mjs` (avec `--fiche`) : toucher court sans fiche ; appui long 650 ms → fiche nommée, alpha, arômes sourcés, silhouette, goût, ≤ 100 mots, sans fuite ; fermeture ; survol 900 ms à 1280 px | présent | lot 3 p03 → 2 échecs |
 | D26 | « Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça différent complètement ? » (18.10, soir) | `controle-baseline.mjs` (avec `--baseline=<dossier>`) : dans un lot de composant, texte visible hors `data-composant` et hors fiche identique à la baseline, page par page ; et rien d'écarté ne se montre (variantes écartées rangées dans `_ecartes/`) | identique | lot 3 p11 face à p03 → 5 échecs ; p03 face à elle-même → OK |
 
+| D27 | « j'aimerais aussi pouvoir une fois mon houblons sélectionner pouvoir glisser comme un slider le moment de l'ajout » (18.10, soir, capture de p2 avec une flèche de 60′ à 10′) | `controle-rail.mjs` (avec `--rail`) : étapes du rail `data-etape` (codes du pack), poignée `data-role="glisser-moment"` sur chaque ligne ; au doigt à 390 px puis à la souris à 1280 px, glisser la première ligne vers une autre étape change son moment et ses IBU et la range sous cette étape | présent et efficace | lot 3 p02, p03, p08 → échec ; page témoin à poignée inerte → échec ; page qui fonctionne → RAIL OK |
+| D28 | « J'aime beaucoup l'intégration de la levure directement dans la p8 mais la p2 a un meilleur visuel » (18.10, soir) | `controle-rail.mjs` : `data-etape="levure"` porte la levure et se place entre le whirlpool (`wp`) et le dry hop en fermentation (`dryActive`) | présent | lot 3 p02, p03 → échec ; page témoin (levure après le dry hop) → échec |
+
 D18 est désormais vérifié par le même script, partie par partie.
 
 Commande (toutes les mesures D1 à D7, D10, D13, D14, D16 à D19) :
