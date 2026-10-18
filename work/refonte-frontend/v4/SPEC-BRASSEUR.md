@@ -140,6 +140,11 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
 - **Le rail, base v4.1 au téléphone** : « C'est mieux mais c'est toujours un peu étrange, on est à
   35' et on a l'impression d'être quasiment à 60' » ; « Aussi les deux sont à 25' mais on dirait que
   l'autre est à 0' » — 18.10, soir (D61).
+- **Le rail, base v4.2 au téléphone** (trois captures : Nugget tenu à 15′, à 35′, Motueka à 35′) :
+  « Ça fait pas zoom focus sur l'emplacement. Les ajouter déjà présent saute à droite. C'est moins
+  bien qu'avant... » ; « L'échelle est plus du tout respecter quand on passe dessus... » — 18.10,
+  soir (D63, D64, D61 bis). La loupe façon Apple (D47, D55) et la hauteur qui dit le temps (D61)
+  doivent tenir ensemble.
 - **Les radars** : « Les spidergraph/radar graph resemble a rien, c'est une vrai régression... » ;
   sur celui de Ma bière : « Celui-ci est encore pire ??? » ; « Comment c'est possible d'avoir autant
   de problèmes avec ces Spider graph. Fait moi des fils de fere avec de lib, third party, custom, ou

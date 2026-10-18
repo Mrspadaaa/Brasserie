@@ -398,7 +398,28 @@ for (const id of ids) {
     const q1 = await ouvrir(index);
     const g1 = await poser(q1, 'doigt');
     let descente = null;
-    if (g1 && await g1.vers('b35')) { juger('index, tenu à 35′', await place(q1, g1.a.cle), 35); descente = g1.y - g1.a.poignee.y; }
+    if (g1 && await g1.vers('b35')) {
+      juger('index, tenu à 35′', await place(q1, g1.a.cle), 35); descente = g1.y - g1.a.poignee.y;
+      // D63 (18.10, soir, base v4.2 : « Ça fait pas zoom focus sur l'emplacement ») : une loupe
+      // sous le doigt, mesurée ici où rien ne s'intercale dans l'ébullition : une bulle
+      // [data-role="loupe"] qui écrit au moins 5 minutes, ou une tranche de 5′ au moins 2 fois
+      // plus haute (et de 12 px au moins) près du doigt qu'au loin (médiane, à 20′ et plus).
+      const lp = await q1.evaluate(() => {
+        const vis = (e) => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && Number(cs.opacity) > 0.15; };
+        const bulle = [...document.querySelectorAll('[data-role="loupe"]')].find(vis);
+        const grads = Object.fromEntries([...document.querySelectorAll('[data-graduation="ebullition"]')].filter(vis).map((e) => { const r = e.getBoundingClientRect(); return [Number((e.getAttribute('data-etape') || '').slice(1)), r.top + r.height / 2]; }));
+        return { minutesBulle: bulle ? (bulle.innerText.match(/\d+\s*(′|')/g) || []).length : 0, grads };
+      });
+      if (lp.minutesBulle < 5) {
+        const pas = Object.keys(lp.grads).map(Number).filter((m) => lp.grads[m - 5] !== undefined).map((m) => ({ m: m - 2.5, d: Math.abs(lp.grads[m - 5] - lp.grads[m]) }));
+        const pres = pas.filter((x) => Math.abs(x.m - 35) <= 5), loin = pas.filter((x) => Math.abs(x.m - 35) >= 20);
+        if (!pres.length || !loin.length) p('D63 : index, tenu à 35′, pas de loupe mesurable (' + pas.length + ' tranches de 5′ visibles, aucune bulle data-role="loupe")');
+        else {
+          const s = loin.map((x) => x.d).sort((u, v) => u - v), dl = s[Math.floor(s.length / 2)], dp = Math.min(...pres.map((x) => x.d));
+          if (!(dp >= 12 && dp >= 2 * dl)) p('D63 : index, tenu à 35′, pas de loupe : une tranche de 5′ fait ' + Math.round(dp) + ' px sous le doigt et ' + Math.round(dl) + ' px au loin (2 fois plus et 12 px au moins), aucune bulle data-role="loupe"');
+        }
+      }
+    }
     else p('D61 : index, le doigt n\'atteint pas 35′');
     if (g1) await g1.lacher();
     await q1.close();
@@ -431,6 +452,67 @@ for (const id of ids) {
       }
       await q2.close();
     }
+  }
+  // D63, D64, D61 bis (18.10, soir, base v4.2 au téléphone) : « Ça fait pas zoom focus sur
+  // l'emplacement. Les ajouter déjà présent saute à droite. C'est moins bien qu'avant... » ;
+  // « L'échelle est plus du tout respecter quand on passe dessus... ». La loupe (D47, D55) et la
+  // hauteur qui dit le temps (D61) tiennent ensemble.
+  // D63 : pendant le geste, une loupe : une bulle [data-role="loupe"] visible qui écrit au moins
+  //   5 minutes, ou, sur le rail, les graduations voisines du doigt au moins 2 fois plus espacées
+  //   que les plus lointaines de l'ébullition (et 12 px au moins).
+  // D64 : les houblons déjà posés ne sautent pas de côté (x à 8 px près de leur place au repos)
+  //   et restent dans le segment de leur moment (whirlpool entre wp et la levure ; à froid sous
+  //   la fermentation).
+  // D61 bis : en descendant l'ébullition par pas de 10 px, le moment tenu ne remonte jamais et ne
+  //   saute pas de plus de 10′ ; aucun autre houblon ne bouge de plus de 24 px d'un pas à l'autre.
+  if (fs.existsSync(k3)) {
+    const lignes = (q) => q.evaluate(() => [...document.querySelectorAll('[data-role="ligne-houblon"]')].map((l) => {
+      const k = l.querySelector('[data-houblon]')?.getAttribute('data-houblon') || l.getAttribute('data-houblon');
+      const h = l.querySelector('[data-role="glisser-moment"]') || l;
+      const r = h.getBoundingClientRect();
+      const qd = l.querySelector('[data-role="quand"]');
+      return { k, x: r.left + r.width / 2, y: r.top + r.height / 2, quand: qd ? qd.innerText.trim() : '', glisse: !!l.closest('[data-glisse]') };
+    }));
+    const q = await ouvrir(k3);
+    const repos = await lignes(q);
+    const g = await poser(q, 'doigt');
+    if (g && await g.vers('b35')) {
+      const now = await lignes(q);
+      const et = (await etat(q)).etapes;
+      const yE = (c) => et.find((x) => x.code === c)?.y;
+      for (const l of now.filter((x) => !x.glisse && x.k !== g.a.cle)) {
+        const r0 = repos.find((x) => x.k === l.k);
+        if (r0 && Math.abs(l.x - r0.x) > 8) p('D64 : cas-k3, pendant le geste, ' + l.k + ' (' + l.quand + ') saute de côté de ' + Math.round(l.x - r0.x) + ' px : un houblon déjà posé reste à sa place');
+        if (/°C/.test(l.quand) && yE('wp') !== undefined && yE('levure') !== undefined && !(l.y >= yE('wp') - 4 && l.y <= yE('levure') + 4)) p('D64 : cas-k3, pendant le geste, ' + l.k + ' (' + l.quand + ') n\'est plus dans le segment du whirlpool');
+        if (/J\s*\+/.test(l.quand) && yE('dryActive') !== undefined && l.y < yE('dryActive') - 4) p('D64 : cas-k3, pendant le geste, ' + l.k + ' (' + l.quand + ') remonte au-dessus de la fermentation');
+      }
+    } else p('D63 : cas-k3, le doigt n\'atteint pas 35′');
+    if (g) await g.lacher();
+    await q.close();
+    const q2 = await ouvrir(k3);
+    const g2 = await poser(q2, 'doigt');
+    if (g2) {
+      let prevT = null, prevPos = null, pire = null, cote = false;
+      for (let i = 0; i < 60 && !pire; i++) {
+        await g2.bouger(g2.y + 10); await wait(30);
+        const ls = await lignes(q2);
+        const tenu = ls.find((x) => x.k === g2.a.cle);
+        const m = tenu && tenu.quand.match(/^(\d+)\s*(′|')/);
+        if (!m) break;
+        const t = Number(m[1]);
+        if (prevT !== null && (t > prevT || prevT - t > 10)) pire = 'le moment tenu passe de ' + prevT + '′ à ' + t + '′ en 10 px';
+        const pos = Object.fromEntries(ls.filter((x) => x.k !== g2.a.cle).map((x) => [x.k, x]));
+        if (prevPos && !pire) for (const [k, l] of Object.entries(pos)) {
+          const a = prevPos[k]; if (!a) continue;
+          if (Math.abs(l.y - a.y) > 24) { pire = k + ' bondit de ' + Math.round(l.y - a.y) + ' px en un pas de 10 px (tenu à ' + t + '′)'; break; }
+          if (Math.abs(l.x - a.x) > 8 && !cote) { p('D64 : cas-k3, en passant à ' + t + '′, ' + k + ' (' + l.quand + ') saute de côté de ' + Math.round(l.x - a.x) + ' px : un houblon déjà posé reste à sa place'); cote = true; }
+        }
+        prevT = t; prevPos = pos;
+      }
+      await g2.lacher();
+      if (pire) p('D61 bis : cas-k3, en descendant l\'ébullition par pas de 10 px, ' + pire + ' : l\'échelle ne tient pas quand on passe sur un autre houblon');
+    }
+    await q2.close();
   }
   console.log(id + ' · rail contrôlé');
 }
