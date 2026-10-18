@@ -101,6 +101,33 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
 - **Verdict sur le lot 4 publié** : « Pour la fiche, on est bon, ma bière moyen convaincu. Les deux
   autres c'est n'importe quoi... » ; « Je vais compacter ton contexte et on va de focus là dessus » —
   18.10, soir. (« les deux autres » : les radars de Suggestions et de Comparer.)
+- **Beer Maverick, le plancher de Comparer** (ses captures du comparateur, Fuggle, Citra,
+  Idaho 7, à l'appui) : « J'ai d'ailleurs donné des exemples concrets... C'est pas possible de
+  faire moins bien... » ; « D'ailleurs, il faut des intervalles de confiance » ; « Beer Maverick
+  pour le mode Comparer, c'est une des base, il faut faire mieux, pas moins bien ou la même
+  chose... » — 18.10, soir (D24 et D40 révisés, D51 à D53 ; `ecran-1/CADRAGE-SC.md`).
+- **L'échelle dépend du style et de mon a priori** : « Je pense que les échelles doivent
+  notamment jouer, un peu plus résineux pour une stout est pas très problématique, pour une
+  lager kolsch très. » ; « C'est un exemple mais il y en a beaucoup d'autres où certains style
+  ou même mon apprioi est important et une petite différence peut en fait faire complément
+  changé dechelle. C'est clair ? C'est possible de mettre ça en place ? » — 18.10, soir. Constat :
+  le moteur donnait la même zone par défaut (0–30, neutre) à une famille non citée, quel que soit
+  le style (résine : 16D, 5B et 3B identiques). Réponse : tolérance par style (familles hors du
+  caractère que le BJCP décrit, masquage par la bière de base) et réglage du brasseur par famille
+  (strict, normal, libre, banni) ; l'écart se lit en tolérances.
+- **Pas tout de suite** : « Tout ce qui est bio Transfo, dry hopping, levure et thyole et autre
+  spécificités, c'est pas pour tout de suite, on est d'accord ? » ; « Parce que au final, le
+  problème c'est que ces échelle sont un peu 'abstraite' et peuvent même changé d'un même
+  houblon à l'autre suivant l'année terroir ou autre » — 18.10, soir. Conséquence : lot 5 sans
+  voies levure ni biotransformation ; la variabilité (année, terroir, lot) se montre en plages,
+  et la valeur de mon lot en stock sur la plage de la variété.
+- **Tickets** : « Fait une issue, mettre à jour les fichiers de houblons, donné de bio Transfo
+  ect.. » ; « Hop mavrerick ne doit pas être là seul source. » (#131) ; « Autre ticket pour les
+  levures, choisir une levure remplis aussi sa dose (gram, sachet) » (#132) ; « Aussi, je crois
+  que on a un bon background de création de UI, on va faire ça pour tout les screen de l'app.
+  Faire un ticket pour ça et sauver la méthodologie, ajouter le fait que dans le ticket ça devra
+  être spécifique au topic » (#133 ; méthode v3 dans `docs/qualite/methode-conception-frontend.md`)
+  — 18.10, soir.
 - **La baseline** : « Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça
   différent complètement ? » — 18.10, soir (D26).
 - **Levure et biotransformation** : « Et tout ce qui est biotransformation avec levures, dry

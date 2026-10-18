@@ -148,7 +148,10 @@ function buildPackCore() {
   S1.voies.forEach((v, i) => Object.assign(v, { profilApres: afterLevels(beer1, r1.voies[i].effect), profilApresCrans: afterCrans(beer1, r1.voies[i].effect, s16d).map(({ family, crans, display, deltaCrans }) => ({ family, crans, display, deltaCrans })),
     // Radars en intensité absolue (D24) : niveaux 0–3 après la voie et écart de niveau.
     profilApresNiveaux: afterLevelsDelta(beer1, r1.voies[i].effect, s16d).niveaux, deltaNiveaux: afterLevelsDelta(beer1, r1.voies[i].effect, s16d).delta,
-    profilApresContinu: afterContinuous(beer1, r1.voies[i].effect) }));
+    profilApresContinu: afterContinuous(beer1, r1.voies[i].effect),
+    // Intervalles de confiance (lot 5) : la plage V5.5 de ma bière après la voie, à lire face à `before`.
+    // Une plage complète (0–100) reste marquée « non situé » : la vue le dit, elle n'invente rien.
+    apresPlage: r1.voies[i].after ? profile(r1.voies[i].after) : null }));
   const ficheKeys = [...new Set([...s1Recipe().additions.map((a) => a.hopKey), ...STOCK.map((s) => s.key)])];
   Object.assign(S1, { echellesContinu: CONTINU_RULE, profilBiereContinu: beerContinuous(beer1), cibleStyleContinu: targetContinuous(s16d) });
   Object.assign(S1, { echelles: LEVEL_RULE, echellesCrans: CRANS_RULE, profilBiereCrans: beerCrans(beer1, s16d), cibleStyleCrans: targetCrans(s16d, r1.direction),

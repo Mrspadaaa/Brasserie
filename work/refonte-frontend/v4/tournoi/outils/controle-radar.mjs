@@ -29,7 +29,9 @@
 //                                  une famille sans valeur n'est pas un axe (elle se liste à côté) ;
 //   data-serie / data-valeurs      alignées sur data-axes, sans vide ; data-serie="zone" pour
 //                                  la zone du style (haut de la zone), hors du compte des séries ;
-//   au plus 2 séries hors zone par radar : 3 ou 4 houblons → petits multiples (plusieurs svg) ;
+//   au plus 2 séries hors zone par radar, sauf les houblons de Comparer : jusqu'à 4 superposés,
+//   une couleur chacun (révision du 18.10, soir : « Beer Maverick pour le mode Comparer, c'est une
+//   des base, il faut faire mieux » ; son radar superpose 3 houblons ; couleurs : controle-comparer) ;
 //   au moins une silhouette pleine translucide (opacité de remplissage 0,06 à 0,7) ;
 //   largeur ≥ 75 % de l'écran (≥ 42 % chacun en petits multiples) ;
 //   libellés ≥ 11 px, dans l'écran, sans chevauchement.
@@ -135,7 +137,8 @@ for (const id of ids) {
       if (!ordreRoue(m.axes)) q('axes hors de l\'ordre de la roue des arômes' + n + ' : ' + m.axes.join(','));
       const hors = m.series.filter((s) => s.nom !== 'zone');
       total += hors.length;
-      if (hors.length > 2) q(hors.length + ' séries superposées' + n + ' : 2 au plus, petits multiples au-delà');
+      const maxSup = objet === 'houblons' ? 4 : 2;
+      if (hors.length > maxSup) q(hors.length + ' séries superposées' + n + ' : ' + maxSup + ' au plus, petits multiples au-delà');
       for (const s of m.series) {
         if (s.v.length !== m.axes.length) q('série « ' + s.nom + ' »' + n + ' : ' + s.v.length + ' valeurs pour ' + m.axes.length + ' axes');
         const videsNonMarques = m.axes.filter((f, k) => s.v[k] === null && !m.inconnus.includes(f));

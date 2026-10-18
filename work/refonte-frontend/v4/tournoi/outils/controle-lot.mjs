@@ -38,6 +38,8 @@ const palette = args.includes('--palette') ? run('controle-palette.mjs', []).std
 const coherence = args.includes('--coherence') ? run('controle-coherence.mjs', []).stdout : 'COHERENCE OK';
 // D40 : avec --objets, la couleur d'alerte ne vit que sur « ma bière face à la cible ».
 const objets = args.includes('--objets') ? run('controle-objets.mjs', []).stdout : 'OBJETS OK';
+// D51 et D53 : avec --comparer, Comparer au plancher Beer Maverick et mieux, barres en plages.
+const comparer = args.includes('--comparer') ? run('controle-comparer.mjs', []).stdout : 'COMPARER OK';
 // D31, D32 : avec --detail, Ma bière au style + vue absolue, écarts chiffrés, gestes par famille.
 const detail = args.includes('--detail') ? run('controle-detail.mjs', []).stdout : '';
 // D27, D28 : avec --rail, la levure est une étape du rail et le moment se glisse le long du rail.
@@ -90,6 +92,7 @@ for (const id of ids) {
 if (!/FUITE OK/.test(fuite)) for (const l of fuite.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D14 fuite)');
 if (!/COHERENCE OK/.test(coherence)) for (const l of coherence.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D39 cohérence)');
 if (!/OBJETS OK/.test(objets)) for (const l of objets.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D40 objets)');
+if (!/COMPARER OK/.test(comparer)) for (const l of comparer.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D51 Comparer)');
 if (!/PALETTE OK/.test(palette)) for (const l of palette.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D33 palette)');
 if (args.includes('--detail') && !/DETAIL OK/.test(detail)) for (const l of detail.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D31-D32 détail)');
 if (args.includes('--rail') && !/RAIL OK/.test(rail)) for (const l of rail.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D27-D28 rail)');
