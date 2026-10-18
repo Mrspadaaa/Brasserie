@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import facts from '../data/faits-cites.json';
 import { NO_GOUTS, afterCrans, beerCrans, citations, hopRef, shoppingList, targetCrans } from '../src/engine';
 import { CHARACTERIZED_YEASTS, applyVoie, compareRankKeys, yeastDoubleImpact, yeastSignals } from '../src/engine';
-import { ROUE_AROMES, afterLevelsDelta, hopSheet } from '../src/engine';
+import { ROUE_AROMES, afterLevelsDelta, hopSheet, beerContinuous, targetContinuous, afterContinuous } from '../src/engine';
 import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, loadedRecipe, momentCatalogue, quickAddKey, recipeIbu, recipeLines, targetLevels, tastingMention, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
@@ -96,6 +96,24 @@ describe('Radars en intensité absolue (D24) et fiches houblons', () => {
     }
     expect(new Set(ROUE_AROMES.map((r) => r.id)).size).toBe(12);
     expect(ROUE_AROMES.map((r) => r.id)).toEqual(['citrus', 'tropical', 'melon', 'stoneFruit', 'pomeFruit', 'berries', 'floral', 'green', 'herbal', 'spice', 'earthy', 'resin']);
+  });
+
+  it('échelle continue 0–3 : la dégustation prime (marqué 2,5), repère / 33,33, null sans effet établi ou non situé', () => {
+    const avant = beerContinuous(beer);
+    expect(avant.map((a) => a.family)).toEqual(s16d.order);
+    expect(avant.find((a) => a.family === 'resin')).toEqual({ family: 'resin', value: 2.5, source: 'dégustation' });
+    const floral0 = avant.find((a) => a.family === 'floral')!;
+    expect(floral0.source).toBe('modèle');
+    expect(floral0.value).toBeCloseTo(beer.find((b) => b.family === 'floral')!.basis!.central! / (100 / 3), 2);
+    for (const a of avant.filter((x) => x.source === 'non situé')) expect(a.value).toBeNull();
+    const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING });
+    const golding = r.voies.find((v) => v.actions.some((a) => a.hopKey === 'beermaverick-golding'))!;
+    const apres = afterContinuous(beer, golding.effect);
+    expect(apres.find((a) => a.family === 'floral')!.value!).toBeGreaterThan(floral0.value! + 0.4);
+    for (const a of apres) if (!golding.effect[a.family].established) expect(a.value).toBeNull();
+    const cible = targetContinuous(s16d);
+    expect(cible.find((c) => c.family === 'floral')).toMatchObject({ bas: 0, haut: 1.65 });
+    expect(cible.find((c) => c.family === 'resin')).toMatchObject({ bas: 0, haut: 0.9 });
   });
 
   it('fiche houblon : sources et divergences, composants absents à null avec raison, recette, IBU par gramme, goût', () => {

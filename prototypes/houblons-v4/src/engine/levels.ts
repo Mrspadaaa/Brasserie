@@ -145,6 +145,35 @@ export function afterLevelsDelta(beer: BeerLevel[], effect: Record<FamilyId, Fam
   })) as Record<FamilyId, number | '≈' | null>;
   return { niveaux, delta };
 }
+// ---------- Échelle continue 0–3 (classes V5.5 : valeur / 33,33) ----------
+export const CONTINU_RULE = [
+  'Échelle continue 0–3, cohérente avec les classes V5.5 (0–33, 33–66, 66–100) : valeur 0–100 / 33,33, à 2 décimales.',
+  'Profil : la dégustation prime et prend le milieu de sa classe (faible 0,5 ; moyen 1,5 ; marqué 2,5) ; sinon le repère central V5.5 ; « absent » prouvé : borne haute de la plage ; sinon null (non situé).',
+  'Cible : bas et haut de la bande du style / 33,33.',
+  'Après une voie : null si l’effet n’est pas établi sur la famille ; sinon la base (dégustation ou repère) plus l’effet / 33,33, bornée à 0–3.',
+];
+const UNIT = 100 / 3;
+const r2 = (x: number) => Math.round(x * 100) / 100;
+const clamp3 = (x: number) => Math.max(0, Math.min(3, x));
+function continuousBase(b: BeerLevel): number | null {
+  if (b.source === 'dégustation' && b.level !== null) return b.level - 0.5;
+  if (b.source === 'modèle' && b.basis?.central !== undefined) return b.basis.central / UNIT;
+  if (b.source === 'modèle' && b.level === 0 && b.basis?.range) return b.basis.range.max / UNIT;
+  return null;
+}
+export function beerContinuous(beer: BeerLevel[]) {
+  return beer.map((b) => { const v = continuousBase(b); return { family: b.family, value: v === null ? null : r2(v), source: v === null ? 'non situé' : b.source }; });
+}
+export function targetContinuous(scale: StyleScale) {
+  return scale.order.map((f) => { const fs = scale.families[f]; return { family: f, status: fs.status, bas: fs.band ? r2(fs.band[0] / UNIT) : null, haut: fs.band ? r2(fs.band[1] / UNIT) : null }; });
+}
+export function afterContinuous(beer: BeerLevel[], effect: Record<FamilyId, FamilyEffect>) {
+  return beer.map((b) => {
+    const e = effect[b.family], base = continuousBase(b);
+    return { family: b.family, value: !e.established || e.central === null || base === null ? null : r2(clamp3(base + e.central / UNIT)) };
+  });
+}
+
 /** Ordre des familles pour les radars : adjacences de la roue d'arômes de Beer Maverick (grammaire, pas critère). */
 export const ROUE_AROMES: { id: FamilyId; nom: string }[] = [
   { id: 'citrus', nom: 'Agrumes' }, { id: 'tropical', nom: 'Tropical' }, { id: 'melon', nom: 'Melon' }, { id: 'stoneFruit', nom: 'Noyau' },

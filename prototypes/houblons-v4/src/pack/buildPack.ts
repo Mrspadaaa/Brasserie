@@ -6,7 +6,7 @@ import {
   proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,
   beerLevels, targetLevels, afterLevels, ficheLevels, recipeProfile, LEVEL_RULE, recipeIbu, loadedRecipe, recipeLines, LOADED_RECIPE_RULE,
   shoppingList, NO_GOUTS, GOUTS_RULE, beerCrans, targetCrans, afterCrans, CRANS_RULE, yeastDoubleImpact, yeastSignals,
-  afterLevelsDelta, ROUE_AROMES, hopSheet, sheetKeys,
+  afterLevelsDelta, ROUE_AROMES, hopSheet, sheetKeys, beerContinuous, targetContinuous, afterContinuous, CONTINU_RULE,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie, type FicheLevel,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
@@ -139,8 +139,10 @@ function buildPackCore() {
   const beer1 = beerLevels(r1.before.profile, S1_TASTING, s16d);
   S1.voies.forEach((v, i) => Object.assign(v, { profilApres: afterLevels(beer1, r1.voies[i].effect), profilApresCrans: afterCrans(beer1, r1.voies[i].effect, s16d).map(({ family, crans, display, deltaCrans }) => ({ family, crans, display, deltaCrans })),
     // Radars en intensité absolue (D24) : niveaux 0–3 après la voie et écart de niveau.
-    profilApresNiveaux: afterLevelsDelta(beer1, r1.voies[i].effect, s16d).niveaux, deltaNiveaux: afterLevelsDelta(beer1, r1.voies[i].effect, s16d).delta }));
+    profilApresNiveaux: afterLevelsDelta(beer1, r1.voies[i].effect, s16d).niveaux, deltaNiveaux: afterLevelsDelta(beer1, r1.voies[i].effect, s16d).delta,
+    profilApresContinu: afterContinuous(beer1, r1.voies[i].effect) }));
   const ficheKeys = [...new Set([...s1Recipe().additions.map((a) => a.hopKey), ...STOCK.map((s) => s.key)])];
+  Object.assign(S1, { echellesContinu: CONTINU_RULE, profilBiereContinu: beerContinuous(beer1), cibleStyleContinu: targetContinuous(s16d) });
   Object.assign(S1, { echelles: LEVEL_RULE, echellesCrans: CRANS_RULE, profilBiereCrans: beerCrans(beer1, s16d), cibleStyleCrans: targetCrans(s16d, r1.direction),
     profilBiere: beer1, cibleStyle: targetLevels(s16d),
     profilFiches: ficheKeys.map((k) => ({ key: k, name: hopRef(k)!.name, families: ficheLevels(hopRef(k)!.varietyId, s16d).map(compactFiche) })) });
@@ -209,6 +211,7 @@ function buildPackCore() {
       tasting: null,
       echelles: LEVEL_RULE, profilBiere: beerLevels(prof.profile, null, s16d), cibleStyle: targetLevels(s16d),
       echellesCrans: CRANS_RULE, profilBiereCrans: beerCrans(beerLevels(prof.profile, null, s16d), s16d), cibleStyleCrans: targetCrans(s16d),
+      echellesContinu: CONTINU_RULE, profilBiereContinu: beerContinuous(beerLevels(prof.profile, null, s16d)), cibleStyleContinu: targetContinuous(s16d),
       readingSummary: { counts: summary.counts, sentence: summary.sentence },
       voies: [], ...notes,
     };

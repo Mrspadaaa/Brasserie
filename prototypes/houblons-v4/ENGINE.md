@@ -154,6 +154,11 @@ Règle (`LEVEL_RULE`, testée) :
   après la voie, même convention que `profilBiere` (la dégustation prime) ; écart de niveau par
   famille, « ≈ » si l'effet établi reste sous le seuil d'écart du style, `null` s'il n'est pas
   établi. S4 et S5 n'ont pas de voies.
+- **Échelle continue 0–3** (`CONTINU_RULE` ; `profilBiereContinu`, `cibleStyleContinu` de S1, S4,
+  S5 ; `profilApresContinu` des voies de S1) : valeur 0–100 / 33,33, à 2 décimales, cohérente avec
+  les classes V5.5. La dégustation prime (faible 0,5, moyen 1,5, marqué 2,5) ; sinon le repère
+  central ; `null` si non situé. Après une voie : `null` si l'effet n'est pas établi sur la famille,
+  sinon la base plus l'effet / 33,33. Les niveaux entiers effaçaient l'effet d'une voie (Golding).
 - **`roueAromes`** (pack) : ordre des familles pour les radars, adjacences de la roue de Beer
   Maverick (grammaire, pas critère), avec noms courts français.
 - **Fiches houblons** (`hopSheet`, `buildAll`) : une fiche par houblon de S1, S4, S5 (recette,

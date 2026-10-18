@@ -14,7 +14,7 @@ export { ibuByMoment, momentCatalogue, IBU_MOMENTS, type IbuAtMoment, type Momen
 export { loadedRecipe, recipeLines, shoppingList, LOADED_RECIPE_RULE } from './cases';
 export { NO_GOUTS, GOUTS_RULE, goutsSets, type Gouts, type GoutEntry } from './gouts';
 export { yeastDoubleImpact, yeastChangeEffect, yeastSignals, CHARACTERIZED_YEASTS, type YeastDoubleImpact, type YeastSignal } from './yeast';
-export { afterLevelsDelta, ROUE_AROMES } from './levels';
+export { afterLevelsDelta, ROUE_AROMES, beerContinuous, targetContinuous, afterContinuous, CONTINU_RULE } from './levels';
 export { hopSheet, sheetKeys, type HopSheetContext } from './fiches';
 export { beerCrans, targetCrans, afterCrans, CRANS_RULE, type CransPosition, type TargetCrans, type AfterCrans } from './levels';
 export { beerLevels, targetLevels, afterLevels, ficheLevels, classOf, LEVEL_RULE, type Level, type BeerLevel, type TargetLevel, type AfterLevel, type FicheLevel } from './levels';
