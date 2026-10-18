@@ -96,6 +96,8 @@ maquette. Et le brasseur ne voyait le résultat qu'à la fin.
 | D48 | « Il y a pas 12 radar ? » ; « Ni là » (18.10, soir : Ma bière et Suggestions à 7 axes, Comparer à 9, la fiche à 12) | `controle-radar.mjs` : 12 axes dans chaque radar (fiche comprise), même famille en haut partout ; une valeur vide n'est admise que si son secteur est marqué `data-inconnu` (hachuré) | 12 | base v3 → 5 échecs |
 | D49 | « La zone de trigger est que le nom alors que ça devrait être la fiche entière... » (commentaire sur la page partagée, 18.10, soir) | `controle-fiche.mjs` : un appui long sur une zone libre de la carte du houblon (ni le nom, ni une commande) ouvre la fiche ; pages sans carte de houblon (Comparer) exclues | ouvre | base v3 → échec (index.html) |
 
+| D50 | « C'est n'importe quoi ce radar, pareil pourquoi j'ai pas eu mes variations ? » ; « Pourquoi j'ai pas vu les screen de test de mini proto pour les autres vue ??? » (18.10, soir : les 22 mini-protos du lot 4 jugés par un jury et intégrés sans lui être montrés) | règle de méthode, vérifiée avant toute intégration : chaque lot est publié pour le brasseur (page partagée, toutes les variantes, vue par vue) et son choix est cité dans `SPEC-BRASSEUR.md` (check-spec) AVANT d'entrer dans la base ; le jury filtre et marque (★), il ne décide pas | choix cité | lot 4 → intégré sans choix (v3) : échec de méthode |
+
 D18 est désormais vérifié par le même script, partie par partie.
 
 Commande (toutes les mesures D1 à D7, D10, D13, D14, D16 à D19) :
