@@ -25,7 +25,7 @@ export interface CatalogueHop {
   oils: { myrcene: [number, number] | null; humulene: [number, number] | null; caryophyllene: [number, number] | null };
   bmYear: number | null;
   /** Usages attestés par un fournisseur (hopStyleUsageBootstrap), ou null. */
-  usage: { styles: string[]; source: string | null; url: string | null }[] | null;
+  usage: { styles: string[]; roles: string[]; source: string | null; url: string | null }[] | null;
   descriptions: HopVariety['descriptions'];
 }
 export interface StockHop {

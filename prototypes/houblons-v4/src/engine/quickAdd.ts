@@ -1,5 +1,6 @@
 import { CATALOGUE, STOCK, hopRef } from './data';
 import { goutsSets, type Gouts } from './gouts';
+import { hopAlpha, hopRole, type HopAlpha } from './roles';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { describeFamilies, styleFit, type FitClass } from './hops';
 import { MOMENTS, additionIbu, gramsForIbu, recipeIbu, searchDoses, type MomentId, type Recipe } from './recipe';
@@ -27,6 +28,8 @@ export const QUICK_ADD_RULE = [
 
 export interface QuickAdd {
   rank: number; key: string; name: string; fit: FitClass;
+  /** Alpha retenu (lot, sinon plage variétale) et rôle (fournisseur, sinon règle rôle-α v1). */
+  alpha: HopAlpha | null; role: ReturnType<typeof hopRole>;
   supports: FamilyId[]; offStyle: FamilyId[]; conflicts: string[];
   /** Familles citées par le houblon que la dégustation juge « trop » face au style. */
   tastingConflicts: FamilyId[];
@@ -88,7 +91,7 @@ export function quickAdds(recipe: Recipe, scale: StyleScale, tasting: Tasting | 
     }
     const ibu = dose ? additionIbu({ id: 'quick', hopKey: s.key, moment, grams: dose.grams }, recipe) : null;
     return {
-      rank: 0, key: s.key, name: ref.name, fit: fit.fit, supports: fit.supports, offStyle, conflicts: fit.conflicts,
+      rank: 0, key: s.key, name: ref.name, fit: fit.fit, alpha: hopAlpha(s.key), role: hopRole(s.key), supports: fit.supports, offStyle, conflicts: fit.conflicts,
       tastingConflicts, tags: tastingConflicts.map(tagOf), offStyleWeight,
       stock: { grams: s.grams ?? 0, free, status: s.grams === null ? 'à acheter' : s.grams <= 0 ? 'épuisé' : dose && free >= dose.grams ? 'suffisant' : 'manque' },
       moment, momentLabel: MOMENTS[moment].label, dose,

@@ -148,6 +148,23 @@ Règle (`LEVEL_RULE`, testée) :
 - S2 (3B) : cible et fiches calculées ; profil de la bière tout « non situé » (recette sans
   houblon, levure sans profil V5.5, pas de dégustation) ; pas de voies, donc pas d'après.
 
+## Penser comme un brasseur : alpha, rôle, recette vide (`roles.ts`, `buildFromEmpty`)
+
+- **Alpha** (`hopAlpha`) sur chaque houblon de `recetteHoublons` (S1, S5) et des ajouts rapides :
+  alpha du lot (fiche de stock ou article), sinon plage variétale Beer Maverick, avec la source.
+- **Rôle** (`hopRole`, `ROLE_RULE`) : le rôle du fournisseur d'abord (hopStyleUsageBootstrap,
+  champ `roles`) ; sinon la **règle rôle-α v1** (prototype, à valider) : α ≥ 10 % → double si
+  une famille est « marquée » dans les fiches, sinon amérisant ; α ≤ 6 % → aromatique ; entre les
+  deux → double. Aucune règle de rôle par variété n'existe dans le domaine de l'app
+  (`hopBalance` classe les ajouts par moment, pas les variétés).
+- **Recette vide (S4)** : `ajoutsRapides` devient une construction (`mode: "construction"`) :
+  deux amérisants au choix (rôle amérisant ou double, α ≥ 10 %, adéquation au style, rôle
+  amérisant d'abord, moins de familles neutres, α décroissant), chacun seul à 60′ pour le milieu
+  de la bande d'IBU (BrewingMath) ; puis trois aromatiques (rôle aromatique ou double) au premier
+  moment d'arôme du préréglage du style dans le solveur V5.5 (stout : ébullition → 10′), à la dose
+  de départ du solveur pour ce moment (1 g/L à 10′, 3 g/L au whirlpool, 4 g/L à froid :
+  hopSolverBootstrap `defaults`, « presets de formulation à adapter »), avec leur effet établi.
+
 ## Radars en intensité absolue (D24) et fiches houblons
 
 - **`profilApresNiveaux`, `deltaNiveaux`** (voies de S1 ; `afterLevelsDelta`) : niveaux 0–3

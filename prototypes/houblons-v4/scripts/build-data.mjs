@@ -59,7 +59,7 @@ const usageByName = new Map();
 for (const u of usagePack) for (const n of [u.name, ...(u.aliases || [])]) usageByName.set(fold(n), u);
 const usageOf = (v) => {
   const u = usageByName.get(fold(v.name)) || (v.aliases || []).map((a) => usageByName.get(fold(a))).find(Boolean);
-  return u ? u.uses.map((x) => ({ styles: x.styles, source: x.source ? `${x.source.author}, ${x.source.title}` : null, url: x.source?.reference ?? null })) : null;
+  return u ? u.uses.map((x) => ({ styles: x.styles, roles: x.roles ?? [], source: x.source ? `${x.source.author}, ${x.source.title}` : null, url: x.source?.reference ?? null })) : null;
 };
 
 // Faits cités un à un (data/faits-cites.json, D25) : descriptions sourcées ajoutées à la variété.
@@ -115,6 +115,8 @@ const stock = [...byKey.values()];
 
 const styles = bjcp.styles.map((s) => ({
   id: s.id, code: s.code, name: s.name,
+  // Préréglage houblon du style (correspondance de formulation L'Affinée) : clé des presets du solveur V5.5.
+  hopPreset: s.suggestions?.hop ?? null,
   ibu: s.stats?.ibu ? [s.stats.ibu.min, s.stats.ibu.max] : null,
   og: s.stats?.og ? [s.stats.og.min, s.stats.og.max] : null,
   srm: s.stats?.srm ? [s.stats.srm.min, s.stats.srm.max] : null,

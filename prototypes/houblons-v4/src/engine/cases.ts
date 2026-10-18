@@ -1,7 +1,12 @@
 // Cas de figure de l'écran (work/refonte-frontend/v4/ecran-1/CAS.md) : recettes construites par règle.
 import { STOCK, hopRef } from './data';
 import { MOMENTS, additionIbu, gramsForIbu, ibuPerGram, recipeIbu, searchDoses, type Addition, type MomentId, type Recipe } from './recipe';
-import { quickAdds } from './quickAdd';
+import { quickAdds, quickAddKey, type QuickAdd } from './quickAdd';
+import { POLICY } from './data';
+import { ficheLevels } from './levels';
+import { ROLE_RULE } from './roles';
+import { additionEffect } from './voies';
+import protoData from '../../data/proto-data.json';
 import type { StyleScale } from '../style/scale';
 
 export const LOADED_RECIPE_RULE = [
@@ -31,6 +36,65 @@ export function loadedRecipe(base: Recipe, scale: StyleScale, bitteringKey = 'be
   const k = ref.alpha ? ibuPerGram(ref.alpha.value, 'b60', base) : 0;
   const grams = [1, 0.5, 0.1].map((step) => Math.round(exact / step) * step).find((g) => Math.abs(aroma + g * k - target) <= 0.5) ?? exact;
   return { ...base, additions: [{ id: 'a60', hopKey: bitteringKey, moment: 'b60', grams: round1(grams) }, ...additions] };
+}
+
+// ---------- Recette vide : construire comme un brasseur (S4) ----------
+export const CONSTRUCTION_RULE = {
+  amerisants: 'Amérisants : rôle amérisant ou double, α ≥ 10 % ; classés par adéquation au style (QUICK_ADD_RULE), rôle amérisant avant double, moins de familles neutres ou indésirables citées, α décroissant, stock libre ; deux propositions, au choix : chacune seule à 60′, dosée par BrewingMath.hopIbu pour le milieu de la bande d’IBU du style.',
+  momentArome: 'Moment d’arôme : premier moment d’arôme du préréglage houblon du style dans le solveur V5.5 (hopSolverBootstrap, styles[].timings : ébullition → 10′, whirlpool → whirlpool, fermentation → à froid en fermentation active, après fermentation → à froid après fermentation).',
+  doseArome: 'Dose d’arôme : dose de départ du solveur V5.5 pour ce moment (hopSolverBootstrap, defaults[moment].doseGL, « presets de formulation à adapter »), × volume.',
+  aromatiques: 'Aromatiques : rôle aromatique ou double, hors amérisants proposés ; classés par QUICK_ADD_RULE (adéquation au style, familles neutres pondérées, familles attendues citées, stock libre) ; trois propositions, avec leur effet établi par famille (apport V5.5 des familles citées).',
+};
+const TIMING_TO_MOMENT: Record<string, MomentId> = { boil: 'b10', whirlpool: 'wp', fermentation: 'dryActive', postFermentation: 'dryPost' };
+const FIT_ORDER: Record<string, number> = { 'usage attesté': 0, cohérent: 1, 'peu documenté': 2, 'non documenté': 3, 'hors style': 4 };
+
+/** Ajouts rapides d'une recette vide : amérisants à 60′ puis aromatiques tardifs, chacun avec sa règle. */
+export function buildFromEmpty(recipe: Recipe, scale: StyleScale) {
+  const q = quickAdds(recipe, scale, null, { catalogueLimit: 10000 });
+  const all = [...q.disponibles, ...q.epuises, ...q.catalogue];
+  const mid = scale.ibu ? (scale.ibu[0] + scale.ibu[1]) / 2 : null;
+  const etat = (k: string) => { const s = STOCK.find((x) => x.key === k); return !s ? 'hors stock' : s.grams <= 0 ? 'épuisé' : 'en stock'; };
+  const base = (r: QuickAdd) => ({ key: r.key, name: r.name, alpha: r.alpha, role: r.role, fit: r.fit,
+    stock: { etat: etat(r.key), grams: r.stock.grams, libre: r.stock.free }, fiches: ficheLevels(hopRef(r.key)!.varietyId, scale).map(({ family, level }) => ({ family, level })) });
+  // 1. Amérisants à 60′.
+  const bitter = all.filter((r) => r.alpha && r.alpha.value >= 10 && (r.role.value === 'amérisant' || r.role.value === 'double'))
+    .sort((a, b) => FIT_ORDER[a.fit] - FIT_ORDER[b.fit] || Number(a.role.value === 'double') - Number(b.role.value === 'double') || a.offStyleWeight - b.offStyleWeight
+      || b.alpha!.value - a.alpha!.value || b.stock.free - a.stock.free || a.name.localeCompare(b.name, 'fr'))
+    .slice(0, 2).map((r) => {
+      const ref = hopRef(r.key)!;
+      const g = mid === null ? null : gramsForIbu(mid, ref, 'b60', recipe);
+      const ibu = g === null ? null : additionIbu({ id: 'b', hopKey: r.key, moment: 'b60', grams: round1(g) }, recipe);
+      return { ...base(r), moment: 'b60' as MomentId, momentLabel: MOMENTS.b60.label,
+        dose: g === null ? null : { grams: round1(g), gramsPerLitre: Math.round((g / recipe.volumeL) * 100) / 100, regle: 'milieu de la bande d’IBU' },
+        ibu: ibu ? { value: round1(ibu.value), min: round1(ibu.min), max: round1(ibu.max) } : null, alternative: true };
+    });
+  // 2. Aromatiques au moment d'arôme du préréglage du style.
+  const preset = (protoData.styles as { code: string; hopPreset: string | null }[]).find((s) => s.code === scale.code)?.hopPreset ?? null;
+  const policyStyle = POLICY.styles.find((p) => p.id === preset);
+  const timing = policyStyle?.timings.find((t) => TIMING_TO_MOMENT[t]) ?? null;
+  const moment: MomentId | null = timing ? TIMING_TO_MOMENT[timing] : null;
+  const doseGL = timing ? POLICY.defaults[timing as keyof typeof POLICY.defaults].doseGL?.central ?? null : null;
+  const used = new Set(bitter.map((b) => b.key));
+  const aroma = moment && doseGL ? [...q.disponibles, ...q.epuises, ...q.catalogue]
+    .filter((r) => !used.has(r.key) && (r.role.value === 'aromatique' || r.role.value === 'double'))
+    .sort((a, b) => { const ka = quickAddKey(a), kb = quickAddKey(b); for (let i = 0; i < ka.length; i++) if (ka[i] !== kb[i]) return ka[i] - kb[i]; return a.name.localeCompare(b.name, 'fr'); })
+    .slice(0, 3).map((r) => {
+      const a: Addition = { id: 'a', hopKey: r.key, moment, grams: round1(doseGL * recipe.volumeL) };
+      const ibu = additionIbu(a, recipe);
+      const cold = MOMENTS[moment].timing === 'fermentation' || MOMENTS[moment].timing === 'postFermentation';
+      const eff = additionEffect(a, recipe);
+      return { ...base(r), moment, momentLabel: MOMENTS[moment].label,
+        dose: { grams: a.grams, gramsPerLitre: doseGL, regle: `dose de départ du solveur V5.5 (${MOMENTS[moment].label})` },
+        ibu: cold ? null : { value: round1(ibu.value), min: round1(ibu.min), max: round1(ibu.max) },
+        effetEtabli: eff ? Object.values(eff).filter((e) => e.established && e.central !== null).map((e) => ({ family: e.family, points: e.central, crans: Math.round((e.central! / scale.families[e.family].cran) * 100) / 100 })) : null };
+    }) : [];
+  return {
+    style: scale.code, mode: 'construction', ibuCible: mid,
+    preset: policyStyle ? { id: policyStyle.id, name: policyStyle.name, timings: policyStyle.timings, source: policyStyle.source.title } : null,
+    amerisants: bitter, aromatiques: aroma,
+    regles: { role: ROLE_RULE, ...CONSTRUCTION_RULE },
+    note: 'Deux amérisants au choix (un seul suffit pour l’IBU visé), puis trois aromatiques ; stock donné à titre d’information (« je fais une recette puis j’achète »).',
+  };
 }
 
 /** Liste d'achats : la recette d'abord, le stock informe (« je fais une recette puis j'achète »).

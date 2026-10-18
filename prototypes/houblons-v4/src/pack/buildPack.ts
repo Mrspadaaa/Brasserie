@@ -6,7 +6,7 @@ import {
   proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,
   beerLevels, targetLevels, afterLevels, ficheLevels, recipeProfile, LEVEL_RULE, recipeIbu, loadedRecipe, recipeLines, LOADED_RECIPE_RULE,
   shoppingList, NO_GOUTS, GOUTS_RULE, beerCrans, targetCrans, afterCrans, CRANS_RULE, yeastDoubleImpact, yeastSignals,
-  afterLevelsDelta, ROUE_AROMES, hopSheet, sheetKeys, beerContinuous, targetContinuous, afterContinuous, CONTINU_RULE,
+  afterLevelsDelta, ROUE_AROMES, hopSheet, sheetKeys, hopAlpha, hopRole, buildFromEmpty, beerContinuous, targetContinuous, afterContinuous, CONTINU_RULE,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie, type FicheLevel,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
@@ -115,7 +115,7 @@ function buildPackCore() {
   // Ajout en un toucher (comme l'étape Malts) : houblons du stock classés pour le style, règle écrite.
   Object.assign(S1, { ajoutsRapides: { style: '16D', ...quickAdds(s1Recipe(), getStyleScale('16D'), S1_TASTING) } });
   // Houblons de la recette, avec l'IBU de leur dose à chaque moment (BrewingMath.hopIbu).
-  Object.assign(S1, { recetteHoublons: s1Recipe().additions.map((a) => ({ additionId: a.id, hopKey: a.hopKey, name: hopRef(a.hopKey)?.name ?? a.hopKey,
+  Object.assign(S1, { recetteHoublons: s1Recipe().additions.map((a) => ({ additionId: a.id, hopKey: a.hopKey, name: hopRef(a.hopKey)?.name ?? a.hopKey, alpha: hopAlpha(a.hopKey), role: hopRole(a.hopKey),
     moment: a.moment, grams: a.grams, gramsPerLitre: round(a.grams / s1Recipe().volumeL, 2), ibuParMoment: ibuByMoment(a.hopKey, a.grams, s1Recipe()) })) });
   // Liste d'achats (le stock informe, il ne limite pas) et goûts du brasseur (vides : aucun goût inventé).
   // voiesSansHoublon : pour chaque variété des voies, le classement recalculé par le moteur si on l'exclut.
@@ -205,8 +205,8 @@ function buildPackCore() {
       question, recipe, style: '16D', yeast: yeastDoubleImpact(recipe),
       signauxLevure: recipe.additions.map((a) => yeastSignals(a, recipe)).filter((x) => x !== null),
       ibu: round(ibuTotal.value), ibuStyle: s16d.ibu, ibuRange: { min: round(ibuTotal.min), max: round(ibuTotal.max) },
-      recetteHoublons: recipeLines(recipe).map((line) => ({ ...line, ibuParMoment: ibuByMoment(line.hopKey, line.grams, recipe) })),
-      ajoutsRapides: { style: '16D', ...quickAdds(recipe, s16d, null, { catalogueLimit }) },
+      recetteHoublons: recipeLines(recipe).map((line) => ({ ...line, alpha: hopAlpha(line.hopKey), role: hopRole(line.hopKey), ibuParMoment: ibuByMoment(line.hopKey, line.grams, recipe) })),
+      ajoutsRapides: recipe.additions.length ? { style: '16D', ...quickAdds(recipe, s16d, null, { catalogueLimit }) } : buildFromEmpty(recipe, s16d),
       achats: shoppingList(recipe), gouts: NO_GOUTS,
       tasting: null,
       echelles: LEVEL_RULE, profilBiere: beerLevels(prof.profile, null, s16d), cibleStyle: targetLevels(s16d),
@@ -219,7 +219,7 @@ function buildPackCore() {
   const s4 = { ...s1Recipe(), name: 'Stout export (nouvelle)', additions: [] };
   const S4 = caseScenario('Nouvelle stout export, aucun houblon : par où commencer ?', s4, {
     ibuNote: `IBU 0 face à ${s16d.ibu![0]}–${s16d.ibu![1]} : il manque l’amertume.`,
-    ajoutsRapidesNote: `Recette sous la bande d’IBU : la règle propose 60′ et la dose qui amène l’IBU au milieu de la bande (${(s16d.ibu![0] + s16d.ibu![1]) / 2} IBU).`,
+    ajoutsRapidesNote: 'Recette vide : construction de brasseur, amérisants à 60′ (au choix) puis aromatiques tardifs ; règles dans ajoutsRapides.regles.',
     profilNote: 'Rien de dégusté (jamais brassée) ; sans houblon, le modèle ne voit que le fond de levure US-05.',
     voiesNote: 'Pas de voie : aucune dégustation ni direction ; commencer par l’amertume (ajouts rapides).',
   });

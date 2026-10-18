@@ -3,6 +3,7 @@ import facts from '../data/faits-cites.json';
 import { NO_GOUTS, afterCrans, beerCrans, citations, hopRef, shoppingList, targetCrans } from '../src/engine';
 import { CHARACTERIZED_YEASTS, applyVoie, compareRankKeys, yeastDoubleImpact, yeastSignals } from '../src/engine';
 import { ROUE_AROMES, afterLevelsDelta, hopSheet, beerContinuous, targetContinuous, afterContinuous } from '../src/engine';
+import { buildFromEmpty, hopAlpha, hopRole } from '../src/engine';
 import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, loadedRecipe, momentCatalogue, quickAddKey, recipeIbu, recipeLines, targetLevels, tastingMention, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
@@ -74,6 +75,43 @@ describe('Cas de figure S4 (sans houblon) et S5 (recette chargée)', () => {
     expect(resin.mention).toMatch(/^dégustation du brasseur, 18\.10 : « ma stout est trop résineuses/);
     expect(tastingMention({ ...S1_TASTING, batch: { id: 'B-12', date: '2026-09-30' } })).toBe('brassin du 30.09');
     expect(beerLevels(recipeProfile(s1Recipe()).profile, S1_TASTING, s16d).filter((b) => b.source !== 'dégustation').every((b) => b.mention === undefined)).toBe(true);
+  });
+});
+
+describe('Penser comme un brasseur : alpha, rôle, recette vide construite', () => {
+  const s16d = getStyleScale('16D');
+
+  it('rôle : le fournisseur d’abord, sinon la règle rôle-α v1 ; alpha retenu avec sa source', () => {
+    const citra = hopRole('beermaverick-citra');
+    expect(citra.source).toMatch(/^fournisseur/);
+    const nugget = hopRole('beermaverick-nugget');
+    expect(nugget).toMatchObject({ value: 'double', source: expect.stringMatching(/règle rôle-α v1/) });
+    expect(hopAlpha('beermaverick-nugget')).toMatchObject({ value: 13, source: 'fiche de stock' });
+    for (const r of quickAdds(s1Recipe(), s16d, S1_TASTING).disponibles) { expect(r).toHaveProperty('alpha'); expect(r.role).toHaveProperty('source'); }
+  });
+
+  it('S4 recette vide : deux amérisants au choix à 60′ pour le milieu de la bande, puis trois aromatiques tardifs à la dose de départ du solveur', () => {
+    const recipe = { ...s1Recipe(), additions: [] };
+    const c = buildFromEmpty(recipe, s16d);
+    expect(c.amerisants.length).toBeGreaterThanOrEqual(1);
+    expect(c.amerisants.length).toBeLessThanOrEqual(2);
+    for (const b of c.amerisants) {
+      expect(b.moment).toBe('b60');
+      expect(b.alpha!.value).toBeGreaterThanOrEqual(10);
+      expect(['amérisant', 'double']).toContain(b.role.value);
+      expect(Math.abs(b.ibu!.value - 60)).toBeLessThanOrEqual(0.5);
+    }
+    expect(c.preset).toMatchObject({ id: 'stout', timings: ['boil', 'whirlpool'] });
+    expect(c.aromatiques).toHaveLength(3);
+    for (const a of c.aromatiques) {
+      expect(a.moment).toBe('b10');
+      expect(a.dose).toMatchObject({ grams: 20, gramsPerLitre: 1 });
+      expect(['aromatique', 'double']).toContain(a.role.value);
+      expect(c.amerisants.some((b) => b.key === a.key)).toBe(false);
+      expect(a.ibu!.value).toBeLessThan(10);
+      expect(a.fiches).toHaveLength(12);
+      expect(['en stock', 'épuisé', 'hors stock']).toContain(a.stock.etat);
+    }
   });
 });
 

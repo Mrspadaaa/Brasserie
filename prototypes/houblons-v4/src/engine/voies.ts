@@ -127,6 +127,9 @@ function effectOf(changes: Change[], recipe: Recipe): Record<FamilyId, FamilyEff
   })) as Record<FamilyId, FamilyEffect>;
 }
 
+/** Effet d'un ajout seul sur la recette (apports V5.5 des familles citées). */
+export function additionEffect(addition: Addition, recipe: Recipe) { return effectOf([{ addition, sign: 1 }], recipe); }
+
 /** Voies pour pousser la recette dans la direction voulue : stock d'abord, puis à acheter. */
 export function proposeVoies(recipe: Recipe, direction: Direction, options: VoieOptions = {}): VoieResult {
   const { maxBuy = 6, limit = 10, buyLimit = 4, perHop = 2, moments = ['b10', 'wp', 'dryActive', 'dryPost'], assemblages = true } = options;
