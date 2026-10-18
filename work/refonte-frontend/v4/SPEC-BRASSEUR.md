@@ -157,6 +157,10 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   (p04 ; d3-shape et d3-scale, environ 9 ko, licence ISC, rendu SVG par React), le même rendu que
   p03 sans ECharts (335 ko pour un seul type de graphe) ; ApexCharts écarté pour sa licence
   (payante au-delà de 2 M$ de revenus ou pour un produit utilisé par d'autres).
+- **Radar de la fiche, lot 9 (h2)**, le mot « cité » entouré près de Melon : « Pourquoi il y a
+  cité ? » ; « Aussi attention au piège, souvent les spidergraph ne montre pas que certaines données
+  sont inconnus et du coup ont les traitements comme connue mais valeur à 0 » — 18.10, nuit (D65,
+  D66).
 - **Pour la nuit** : « Plusieurs versions de radar graph. De suggestions Aussi de ma bière et de mon
   houblons. Fait des fils de fere, et un ladder de comparaison et un ranking ect... » ; « Aussi des
   vrais comparaison... » ; « Et un système pour la substitution de houblons. Introduir ça. » ;

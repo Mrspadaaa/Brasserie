@@ -119,10 +119,18 @@ for (const id of ids) {
             return { n: (d.match(/[ML]/gi) || []).length, ferme: /z\s*$/i.test(d.trim()) };
           });
           const v = (e.getAttribute('data-valeurs') || '').split(',');
-          return { nom: e.getAttribute('data-serie'), vides: v.filter((x) => x.trim() === '').length, n: v.length, formes };
-        }) };
+          return { nom: e.getAttribute('data-serie'), vides: v.filter((x) => x.trim() === '').length, n: v.length, formes, inconnues: (e.getAttribute('data-inconnues') || '').split(',').filter(Boolean), valeurs: v.map((x) => (x.trim() === '' ? null : Number(x))) };
+        }),
+        // D65, D66 : libellés du radar (familles et noms d'échelle), familles sans donnée.
+        familles: axes,
+        textes: [...r.querySelectorAll('text')].filter((t) => t.textContent.trim() && vis(t)).map((t) => {
+          const b = t.getBoundingClientRect(), cs = getComputedStyle(t);
+          return { t: t.textContent.trim(), x0: b.left, x1: b.right, y0: b.top, y1: b.bottom, couleur: cs.fill + '|' + cs.color, opacite: Number(cs.opacity) * Number(cs.fillOpacity || 1) };
+        }),
+        marquesInconnues: [...r.querySelectorAll('[data-inconnu]')].map((e) => e.getAttribute('data-inconnu')) };
       });
-      return { radars, pistes, mini, miniTxt, plages, chiffres, aromes, houblons: [...new Set(houblons)], desc, usage, style, bande, objectifs, reponses, effets, hauteur: document.documentElement.scrollHeight };
+      const legendeInconnu = /inconnu|non situ|non décrit|pas de donnée|aucune fiche|n'en parle/i.test(document.body.innerText);
+      return { radars, legendeInconnu, pistes, mini, miniTxt, plages, chiffres, aromes, houblons: [...new Set(houblons)], desc, usage, style, bande, objectifs, reponses, effets, hauteur: document.documentElement.scrollHeight };
     });
     await page.close();
     const q = (msg) => p(id, nomPage, msg);
@@ -131,6 +139,34 @@ for (const id of ids) {
     for (const r of m.radars) for (const s of r.series) {
       if (s.vides) q('radar, série « ' + s.nom + ' » : ' + s.vides + ' valeur(s) vide(s), le tracé saute des axes (D62)');
       if (!s.formes.some((f) => f.ferme && f.n >= r.axes)) q('radar, série « ' + s.nom + ' » sans polygone fermé sur les ' + r.axes + ' axes (D62)');
+    }
+    // D66 (« Pourquoi il y a cité ? ») : un nom d'échelle n'est jamais collé au libellé d'une
+    // famille, où il se lit comme sa valeur ; 24 px au moins entre les deux.
+    // D65 (« souvent les spidergraph ne montre pas que certaines données sont inconnus et du coup
+    // ont les traitements comme connue mais valeur à 0 ») : une famille sans donnée (data-inconnu,
+    // data-inconnues d'une série, ou nulle dans toutes les séries) a un libellé distinct des
+    // familles connues (couleur, opacité ou « ? »), et la page dit « inconnu », « non situé » ou
+    // « non décrit ».
+    const RE = { citrus: /agrume/i, tropical: /tropica/i, melon: /melon/i, stoneFruit: /noyau/i, pomeFruit: /pomme|pépin/i, berries: /baie|petits fruits/i, floral: /floral/i, herbal: /herbac/i, resin: /résin|boisé/i, spice: /épic/i, green: /végétal/i, earthy: /terreux/i };
+    const ECHELLE = /^(à peine|faible|moyen|marqué|cité|non décrit|style|[+−-]?\s*\d+\s*(cran|crans|T)?|\d+)$/i;
+    const gap = (a, b) => Math.max(0, Math.max(a.x0, b.x0) - Math.min(a.x1, b.x1), Math.max(a.y0, b.y0) - Math.min(a.y1, b.y1));
+    for (const r of m.radars) {
+      const axeTextes = r.textes.filter((x) => Object.values(RE).some((re) => re.test(x.t)));
+      for (const e of r.textes.filter((x) => ECHELLE.test(x.t))) {
+        const proche = axeTextes.map((a) => [a, gap(a, e)]).sort((u, v) => u[1] - v[1])[0];
+        if (proche && proche[1] < 24) q('radar : le nom d\'échelle « ' + e.t + ' » est à ' + Math.round(proche[1]) + ' px du libellé « ' + proche[0].t + ' », il s\'y lit comme sa valeur (D66)');
+      }
+      const series = r.series.filter((s) => s.nom !== 'zone' && s.nom !== 'bande');
+      const inconnues = new Set([...r.marquesInconnues, ...series.flatMap((s) => s.inconnues)]);
+      if (series.length) r.familles.forEach((f, k) => { if (series.every((s) => !s.valeurs[k])) inconnues.add(f); });
+      if (!inconnues.size) continue;
+      if (!m.legendeInconnu) q('radar : ' + inconnues.size + ' famille(s) sans donnée et aucune légende « inconnu », « non situé » ou « non décrit » (D65)');
+      const style = (f) => { const t = axeTextes.find((x) => RE[f] && RE[f].test(x.t)); return t ? t.couleur + '|' + Math.round(t.opacite * 10) + (/\?/.test(t.t) ? '|?' : '') : null; };
+      const connus = r.familles.filter((f) => !inconnues.has(f)).map(style).filter(Boolean);
+      for (const f of inconnues) {
+        const s = style(f);
+        if (s && connus.includes(s)) q('radar : la famille sans donnée « ' + f + ' » a le même libellé qu\'une famille connue, elle se lit comme un zéro (D65)');
+      }
     }
 
     if (objet === 'comparer') {
