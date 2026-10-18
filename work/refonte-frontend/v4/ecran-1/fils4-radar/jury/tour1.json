@@ -1,0 +1,207 @@
+{
+  "jury": "Tour 1, jury neuf (Opus 5.5, n'a rien conçu), 18.10.2026",
+  "lot": "v4 / ecran-1 / fils4-radar (lot 4 · radars), variantes p01 à p11",
+  "lu": [
+    "work/refonte-frontend/v4/SPEC-BRASSEUR.md",
+    "work/refonte-frontend/v4/DEFAUTS-RECURRENTS.md (D11, D12, D15, D18, D19, D24, D30)",
+    "v3/reference/beer-maverick/telephone/t3-radar-3-houblons.jpg et v3/reference/beer-maverick/11-fiche-target-arome.jpg (ce second fichier n'est pas dans telephone/)",
+    "fils4-radar/BRIEF-AUTEUR.md",
+    "captures/planche-{biere,suggestions,comparer}-radar-390.png, puis pNN-{biere,suggestions,comparer}-radar-390.png et pNN/NOTE.md pour p01 à p11"
+  ],
+  "convention": "Q1, Q2, Q4, Q5, Q6 : oui = favorable. Q3 : oui = défaut (fantôme trompeur). Un motif est donné pour chaque réponse défavorable. decompte_oui compte les réponses favorables sur 6 (oui à Q1, Q2, Q4, Q5, Q6 ; non à Q3). Une variante répond pour ses trois radars : un seul radar en défaut suffit pour répondre non, et le motif le nomme.",
+  "limites": [
+    "Captures fixes : le morphing Barres ⇄ Radar (p05), le balayage à ressort (p08) et les transitions animées (p02) n'ont pas été vus en mouvement.",
+    "Q3 est jugé sur le dessin face à ce que dit la page (« 6 voies, faibles », « ↑ floral, herbacé, épicé, terreux ») ; le pack n'a pas été relu (consigne : rien d'autre). Toutes les notes disent tracer profilApresContinu : la géométrie est donc supposée juste, seule l'emphase est jugée.",
+    "D12, seconde moitié (« la bande change-t-elle avec le style ? ») : un seul style dans les maquettes, non jugeable."
+  ],
+  "oeil": {
+    "planche_biere": "Sur les 11, la pointe Résine qui sort de la zone grise se voit. Ce qui saute aux yeux en premier : la part hors zone peinte en accent (p01, p02, p09, p11) et le pétale orange de la rose p07. Les autres (p04, p06, p08, p10) n'ont qu'un point orange. p05 n'a qu'un trait orange. p03 se brouille : ses anneaux gris concentriques ressemblent à la zone. p05, p06 et p07 tournent la roue (Floral en haut). p06 ajoute deux glyphes qui répètent le grand radar.",
+    "planche_suggestions": "En 3 secondes, la plupart montrent deux polygones gris voisins, avant et voie, qu'on sépare mal. Deux font exception : p09, où le gain en orange crie, et p07, où des pétales noirs étroits ressortent. p06 empile trois radars, ce qui est lourd. p04, p09 et p11 ont des puces pour changer de voie, et p08 des vignettes. La pointe Résine reste identique avant et après partout : aucune voie n'établit de baisse.",
+    "planche_comparer": "C'est la partie la plus inégale. Les radars sont minuscules en 2 × 2 dans p01 et p02, et à côté d'un grand dans p03. p04 et p10 ont de grandes paires superposées, p05 et p11 trois radars empilés. p08 montre un seul grand radar avec repère, p07 des roses et une case « Clé » qui perd un quart. Dans p09, la grande surface hachurée domine tout. Toutes les variantes sont en gris : les houblons ne se distinguent que par le trait, quand Beer Maverick leur donne une couleur chacun.",
+    "commun": [
+      "Toutes respectent l'ordre de la roue et le plafond de deux séries par radar : plus aucun spaghetti, c'est le vrai progrès sur le lot 3.",
+      "Les valeurs de la bière sont basses (faible ou moins, sauf la résine). Sa silhouette tient donc dans le tiers central, et la zone du style fait l'essentiel de l'image.",
+      "Les points posés à zéro s'entassent au centre (Comparer de p04, p10 et p11), ce qui fait du bruit là où il n'y a rien à lire."
+    ]
+  },
+  "questions": {
+    "p01": {
+      "Q1": { "reponse": "oui" },
+      "Q2": { "reponse": "oui" },
+      "Q3": { "reponse": "non" },
+      "Q4": { "reponse": "non", "motif": "Comparer : vignettes d'environ 42 px de rayon et une case grise « Repère » à moitié vide, loin de l'étalon pleine largeur." },
+      "Q5": { "reponse": "oui" },
+      "Q6": { "reponse": "non", "motif": "Rayon d'environ 42 px : Motueka n'est plus qu'un trait, et les libellés prennent plus de place que le radar." }
+    },
+    "p02": {
+      "Q1": { "reponse": "oui" },
+      "Q2": { "reponse": "oui" },
+      "Q3": { "reponse": "non", "note": "Le lissage gonfle un peu l'aire entre deux axes, mais pas les sommets." },
+      "Q4": { "reponse": "non", "motif": "La zone lissée en « blob » ne passe plus nettement par les axes (moins lisible que les polygones de l'étalon), et Comparer garde des vignettes de 42 px avec une case vide." },
+      "Q5": { "reponse": "oui" },
+      "Q6": { "reponse": "non", "motif": "Mêmes vignettes que p01, d'environ 42 px de rayon : la silhouette de Motueka est illisible." }
+    },
+    "p03": {
+      "Q1": { "reponse": "oui" },
+      "Q2": { "reponse": "non", "motif": "Les anneaux gris faible / moyen / marqué ont la teinte de la zone : on ne sait plus quel gris est le style, et la part qui dépasse n'a pas de teinte (ECharts ne masque pas)." },
+      "Q3": { "reponse": "non" },
+      "Q4": { "reponse": "non", "motif": "Le fond en cible, avec ses anneaux gris pleins, charge le dessin, et les petits radars de Comparer font environ 40 px." },
+      "Q5": { "reponse": "non", "motif": "Dans Comparer, Motueka et Citra cryo n'ont qu'une vignette et aucune rangée : il faut toucher pour savoir ce qu'ils apportent." },
+      "Q6": { "reponse": "non", "motif": "Motueka et Citra cryo ont environ 40 px de rayon : leurs silhouettes sont illisibles." }
+    },
+    "p04": {
+      "Q1": { "reponse": "oui", "note": "Dans une paire, deux gris superposés que seul le trait sépare." },
+      "Q2": { "reponse": "oui", "note": "La part hors zone est signalée par un point orange, sans surface." },
+      "Q3": { "reponse": "non" },
+      "Q4": { "reponse": "oui" },
+      "Q5": { "reponse": "oui" },
+      "Q6": { "reponse": "oui", "note": "Pas de vignettes : des paires pleine largeur, libellés en 14 px." }
+    },
+    "p05": {
+      "Q1": { "reponse": "oui" },
+      "Q2": { "reponse": "oui", "note": "L'accent tient sur un simple trait, moins frappant qu'une surface." },
+      "Q3": { "reponse": "non" },
+      "Q4": { "reponse": "oui" },
+      "Q5": { "reponse": "non", "motif": "La roue tourne d'un onglet à l'autre (Floral en haut sur Ma bière et Suggestions, Agrumes en haut sur Comparer) : la famille cherchée change de place." },
+      "Q6": { "reponse": "oui", "note": "Environ 65 px de rayon, libellés en 12 px réduits aux familles décrites." }
+    },
+    "p06": {
+      "Q1": { "reponse": "non", "motif": "Dans Suggestions, les glyphes de voie montrent l'après sans l'avant, et Golding et Motueka y ont presque la même silhouette." },
+      "Q2": { "reponse": "oui" },
+      "Q3": { "reponse": "non" },
+      "Q4": { "reponse": "non", "motif": "Trois radars en Suggestions et deux glyphes redondants sous Ma bière (ma bière seule, zone seule) : plus de dessin pour la même information." },
+      "Q5": { "reponse": "non", "motif": "Pour voir ce qu'une voie change, il faut comparer deux radars éloignés ; la roue tourne aussi entre les onglets, comme dans p05." },
+      "Q6": { "reponse": "oui" }
+    },
+    "p07": {
+      "Q1": { "reponse": "oui" },
+      "Q2": { "reponse": "oui" },
+      "Q3": { "reponse": "oui", "motif": "Défaut. Avec un rayon en racine, un gain faible près du centre s'allonge en pétale noir étroit et saillant : la voie « faible » paraît forte." },
+      "Q4": { "reponse": "non", "motif": "Suggestions superpose pétales larges, pétales étroits, pétales hachurés « non établi » et anneaux pointillés ; dans Comparer, la case « Clé » perd un quart de la grille." },
+      "Q5": { "reponse": "non", "motif": "La roue tourne entre les onglets, et des longueurs en racine ne se comparent pas à l'œil." },
+      "Q6": { "reponse": "oui" }
+    },
+    "p08": {
+      "Q1": { "reponse": "oui" },
+      "Q2": { "reponse": "oui", "note": "Point orange seul, sans surface accent sur la part hors zone." },
+      "Q3": { "reponse": "non" },
+      "Q4": { "reponse": "oui" },
+      "Q5": { "reponse": "oui" },
+      "Q6": { "reponse": "oui", "note": "Les vignettes servent à naviguer ; la lecture se fait sur le grand radar." }
+    },
+    "p09": {
+      "Q1": { "reponse": "oui" },
+      "Q2": { "reponse": "oui" },
+      "Q3": { "reponse": "oui", "motif": "Défaut, par l'emphase. Le gain de la voie est peint en accent plein, avec quatre libellés en accent : une voie que le moteur dit « faible » paraît forte. Et l'accent veut dire « trop » sur Ma bière." },
+      "Q4": { "reponse": "non", "motif": "Dans Comparer, une grande surface hachurée « moins que Nugget » domine le radar, et il faut apprendre trois codes (accent, hachure, gris)." },
+      "Q5": { "reponse": "oui" },
+      "Q6": { "reponse": "oui", "note": "Pas de petits multiples : un sélecteur." }
+    },
+    "p10": {
+      "Q1": { "reponse": "oui" },
+      "Q2": { "reponse": "oui", "note": "Point orange seul." },
+      "Q3": { "reponse": "non" },
+      "Q4": { "reponse": "oui" },
+      "Q5": { "reponse": "oui" },
+      "Q6": { "reponse": "oui" }
+    },
+    "p11": {
+      "Q1": { "reponse": "oui" },
+      "Q2": { "reponse": "oui" },
+      "Q3": { "reponse": "non" },
+      "Q4": { "reponse": "oui" },
+      "Q5": { "reponse": "oui" },
+      "Q6": { "reponse": "oui", "note": "Rayon 57 px et libellés en 12 px : lisible, mais les libellés se répètent trois fois." }
+    }
+  },
+  "decompte_oui": {
+    "p01": 4, "p02": 4, "p03": 2, "p04": 6, "p05": 5, "p06": 3,
+    "p07": 3, "p08": 6, "p09": 4, "p10": 6, "p11": 6
+  },
+  "classement": [
+    { "rang": 1, "variante": "p11", "favorables": 6, "motif": "Seule des 6/6 à peindre en accent la part hors zone. Même grammaire sur les trois parties. Dans Comparer, des étiquettes « seul : … » disent ce que chaque fiche est seule à citer. Recharts, déjà dans l'app." },
+    { "rang": 2, "variante": "p08", "favorables": 6, "motif": "Un grand radar à la fois avec repère en fantôme : la superposition de Beer Maverick sans spaghetti. Geste de balayage et vignettes de secours. La plus moderne." },
+    { "rang": 3, "variante": "p04", "favorables": 6, "motif": "La plus fidèle à l'étalon. Comparer en paires superposées pleine largeur, libellés en 14 px, 24 Ko." },
+    { "rang": 4, "variante": "p10", "favorables": 6, "motif": "Aussi juste que p04, mais doublon de p11 (même parti froid, même bibliothèque), en moins net : point orange seul, radar de Comparer plus étroit." },
+    { "rang": 5, "variante": "p05", "favorables": 5, "motif": "Radars propres, mais la roue tourne entre les onglets. Le morphing qui fait son parti n'a pas pu être vu sur capture." },
+    { "rang": 6, "variante": "p09", "favorables": 4, "motif": "Meilleure lecture de Ma bière (au-dessus, sous, dans la zone) et l'idée la plus « brasseur » pour Comparer (face au houblon de ma bière), mais accent qui dramatise (D15) et hachures lourdes." },
+    { "rang": 7, "variante": "p01", "favorables": 4, "motif": "Ma bière et Suggestions justes, Comparer en vignettes de 42 px." },
+    { "rang": 8, "variante": "p02", "favorables": 4, "motif": "Comme p01, avec un lissage qui ment entre les axes." },
+    { "rang": 9, "variante": "p07", "favorables": 3, "motif": "Rose frappante sur Ma bière, mais échelle en racine, Suggestions surchargée et roue tournée." },
+    { "rang": 10, "variante": "p06", "favorables": 3, "motif": "Petits multiples partout : Suggestions ne montre plus l'effet d'une voie." },
+    { "rang": 11, "variante": "p03", "favorables": 2, "motif": "Fond en cible confondu avec la zone, pas d'accent hors zone, petits radars illisibles." }
+  ],
+  "note_classement": "Le classement mesure la qualité. Les retenus sont choisis ensuite pour offrir un vrai choix (Q7, D38) : c'est pourquoi p09 (6e) remplace p04 (3e), quasi-doublon de p11.",
+  "Q7_lot": {
+    "question": "Q7 (D38) : les 3 radars retenus sont-ils visiblement différents l'un de l'autre sur le radar lui-même (forme, encodage, geste), pour offrir un vrai choix ? Quelles variantes sont, à l'œil, des quasi-doublons ?",
+    "parole": "« Ce batch là semble être beaucoup plus cohérente en terme de UI sur le Spider graph (radar graph) mais ils sont sous quasiment identique » (brasseur, fiches du lot 4).",
+    "reponse_trio_initial": "non",
+    "motif": "Le trio initial (p11, p08, p04) n'offre pas un vrai choix. p04 et p11 sont des quasi-doublons : sur Ma bière et Suggestions, même polygone, Agrumes en haut, zone grise, avant gris et voie noire, chevrons, sommets creux en pointillé, puces Golding / Motueka. Seul Comparer diffère (paires superposées contre radars empilés). p08 se distingue par le geste et la composition (un radar à la fois avec fantôme), mais son image fixe de Ma bière est le même polygone.",
+    "quasi_doublons": [
+      { "groupe": ["p04", "p10", "p11"], "a_l_oeil": "Polygone Beer Maverick avec Agrumes en haut. Ma bière et Suggestions se confondent (mêmes chevrons, mêmes sommets creux, même légende). p04 et p10 ont aussi le même Comparer en paires superposées. p11 ne s'en détache que par la surface accent hors zone." },
+      { "groupe": ["p01", "p02", "p03"], "a_l_oeil": "Même page, mêmes rangées, même Comparer en 2 × 2 (identique entre p01 et p02). Seule la grille change : polygone, cercle lissé, cercle à bandes." },
+      { "groupe": ["p01", "p11"], "a_l_oeil": "Ma bière identique : polygone et surface accent hors zone." },
+      { "groupe": ["p05", "p06"], "a_l_oeil": "Même roue tournée (Floral en haut) et même géométrie de Ma bière. Elles ne diffèrent que par la légende (rangées ou glyphes) et la mise en page de Comparer." },
+      { "groupe": ["p08", "p09"], "a_l_oeil": "Ma bière identique : en-tête « Ma bière / zone du style », échelle 1-2-3, légende dégusté / prévu. p09 n'ajoute que la surface accent." }
+    ],
+    "encodages_vraiment_distincts": {
+      "p07": "Rose polaire : pétales au lieu d'un polygone.",
+      "p09": "Radar d'écart : la différence est dessinée (gain, manque) plutôt que deux séries.",
+      "p08": "Radar « focus » : une série en grand et un fantôme, on passe de l'une à l'autre au doigt.",
+      "p06": "Glyphes en petits multiples partout.",
+      "p05": "Morphing Barres ⇄ Radar, invisible sur capture fixe."
+    },
+    "trio_revise": ["p11", "p08", "p09"],
+    "pourquoi_trio_revise": "Trois encodages distincts. p11 juxtapose les séries (petits multiples, sujet plein sur repère). p08 montre une série à la fois, au geste, avec son fantôme. p09 dessine l'écart lui-même, face au style, à l'avant ou au houblon de ma bière. L'atout propre de p04 (les paires superposées dans Comparer) se reporte dans p11.",
+    "reserve": "Sur Ma bière (une série et une zone), même le trio révisé reste proche à l'œil, car les trois ont la surface accent hors zone. La forme ne change vraiment qu'avec la rose p07. Si le brasseur veut aussi une forme différente sur Ma bière, montrer p07 en quatrième option, en échelle linéaire et avec Suggestions allégée."
+  },
+  "retenus": [
+    {
+      "variante": "p11",
+      "parti": "Froid : consolidation sage, une seule grammaire (repère en fond ou en contour, sujet plein).",
+      "bibliotheque": "Recharts 2.15 (API RadarChart identique dans Recharts 3), formes et libellés faits à la main.",
+      "fait_de_mieux": "Sur Ma bière, ce qui cloche se voit sans lire : la part de la résine au-dessus de la zone est une surface accent (masque). La même grammaire vaut partout. Dans Comparer, un radar par houblon sur la même roue, avec ce que sa fiche est seule à citer en étiquettes : c'est la réponse à « quel houblon apporte quoi ».",
+      "defaut_prioritaire": "Dans Comparer, les trois radars sont empilés sans superposition : pour voir ce que Motueka apporte face à Nugget, l'œil fait des allers-retours et relit trois fois les mêmes libellés. Poser le houblon de ma bière (Nugget) en repère gris derrière chaque petit multiple (idée de p08 et p09), et ne nommer qu'une fois les axes non décrits."
+    },
+    {
+      "variante": "p08",
+      "parti": "Chaud : radar « focus », une série en grand à la fois, balayage du doigt avec ressort.",
+      "bibliotheque": "SVG maison avec motion 12 (62 Ko).",
+      "fait_de_mieux": "Un seul grand radar pleine largeur, avec le repère en fantôme (l'avant pour une voie, Nugget dans Comparer) : on garde la superposition de l'étalon sans spaghetti. C'est la plus moderne : balayage, vignettes de secours, toucher un axe pour sa valeur et ses sources, échelle 1-2-3 sur l'axe du haut.",
+      "defaut_prioritaire": "Sur Ma bière, la part au-dessus de la zone n'est marquée que par un point : reprendre la surface accent de p11 et retirer les vignettes « Ma bière / Zone du style », qui doublent le grand radar. Ensuite, nommer les vignettes de voie, sans nom à cause du plafond de 80 mots."
+    },
+    {
+      "variante": "p09",
+      "parti": "Chaud : radar d'écart. Une série face à sa référence en fond : la zone du style, l'avant, ou le houblon de ma bière.",
+      "bibliotheque": "SVG maison avec d3-shape et d3-scale (23,6 Ko), plus clipPath, mask et motif de hachures.",
+      "fait_de_mieux": "Elle dessine l'écart lui-même plutôt que deux séries à comparer de l'œil. Sur Ma bière, chaque famille est rangée au-dessus, sous ou dans la zone : c'est la seule variante qui prévoit le « sous la zone », utile pour une famille attendue absente ou pour la lager « super tropical » de D31. Comparer se lit face au houblon de ma bière : « plus que Nugget : agrumes » répond à « si je remplace Nugget, je gagne quoi ».",
+      "defaut_prioritaire": "D15. Réserver l'accent à « au-dessus de la zone ». Tracer le gain d'une voie à l'encre neutre (gris foncé) sans accentuer les libellés, pour qu'une voie « faible » le reste à l'œil. Remplacer la grande surface hachurée « moins que » par un contour creux léger."
+    }
+  ],
+  "retenus_avant_Q7": ["p11", "p08", "p04"],
+  "ecartes": [
+    { "variante": "p10", "raison": "Solide, mais doublon de p11 (même parti froid, même Recharts) en moins net : point orange seul sur Ma bière, radar de Comparer plus étroit. Ses rangées « Se distingue par » sont reprises par p11 en étiquettes." },
+    { "variante": "p05", "raison": "La roue tourne d'un onglet à l'autre. Son atout, le morphing Barres ⇄ Radar, ne se juge pas sur capture : à garder comme idée de transition pour la haute fidélité." },
+    { "variante": "p04", "raison": "3e en qualité (6/6, la plus fidèle à l'étalon), écartée par Q7 : quasi-doublon de p11 et de p10 à l'œil. Son atout propre, les paires superposées pleine largeur dans Comparer, passe dans p11." },
+    { "variante": "p01", "raison": "Ma bière et Suggestions sont justes, mais Comparer a des vignettes de 42 px de rayon et une case vide. p11 fait la même chose en mieux, avec la même bibliothèque." },
+    { "variante": "p02", "raison": "Le lissage de Nivo déforme le dessin entre les axes et ajoute react-spring ; même Comparer minuscule que p01." },
+    { "variante": "p07", "raison": "La rose frappe sur Ma bière, mais son échelle en racine gonfle les gains faibles (D15), Suggestions est surchargée, la roue tourne et l'étalon du brasseur reste un radar." },
+    { "variante": "p06", "raison": "Petits multiples partout : en Suggestions, l'après sans l'avant ne montre plus ce que fait une voie, et Ma bière ajoute deux glyphes redondants." },
+    { "variante": "p03", "raison": "ECharts n'a pas permis l'accent hors zone. Le fond en cible se confond avec la zone, les petits radars sont illisibles, et il faut contourner le sens antihoraire." }
+  ],
+  "bibliotheque_recommandee": {
+    "choix": "SVG maison en React avec d3-shape (lineRadial, curveLinearClosed) et d3-scale, plus motion pour le geste et les transitions. Recharts 3 reste pour les barres et les autres graphiques de l'app.",
+    "pourquoi": [
+      "Ce qui fait la lisibilité a été écrit à la main dans toutes les variantes, y compris sous Recharts (p11 et p10 : formes propres, Customized, libellés placés à la main, domaine décalé à −0,5 pour l'anneau du zéro, zone en série « plage ») : surface accent hors zone par masque, zone en anneau du bas au haut, sommets creux « non établi », chevrons, repère en fantôme. Recharts n'apporte guère que le repère polaire.",
+      "Deux des trois retenus (p08, p09) sont en SVG maison, comme p04, la plus fidèle à l'étalon. Le cœur du dessin pèse 24 Ko, contre environ 510 Ko pour la page Recharts.",
+      "Le geste de p08 (la silhouette suit le doigt) et le morphing de p05 demandent de piloter le chemin directement, ce que l'animation de Recharts ne permet pas proprement.",
+      "Les attributs du contrat (data-axes, data-serie, data-valeurs) se posent directement, sans retrouver les séries par leur teinte (p03) ni passer par des formes de substitution.",
+      "Recharts dépend probablement déjà de d3-shape et d3-scale (via victory-vendor) : la dépendance réelle serait quasi nulle. À vérifier dans package-lock.json, non lu ici."
+    ],
+    "repli": "Recharts 3 est acceptable si l'on refuse tout code de géométrie : p11 prouve que le contrat passe. On y paie des contournements, et le geste de p08 y serait difficile.",
+    "ecartees": {
+      "ECharts": "p03 : pas de masque pour l'accent hors zone, sens antihoraire à inverser, séries retrouvées par leur teinte, 398 Ko et une nouvelle dépendance lourde.",
+      "Nivo": "p02 : couches sur mesure de toute façon, react-spring en plus, et un lissage par défaut qui ment entre les axes sur des données grossières."
+    }
+  }
+}

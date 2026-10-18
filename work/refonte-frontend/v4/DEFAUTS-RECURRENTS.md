@@ -79,6 +79,9 @@ maquette. Et le brasseur ne voyait le résultat qu'à la fin.
 
 | D38 | « Ce batch là semble être beaucoup plus cohérente en terme de UI sur le Spider graph (radar graph) mais ils sont sous quasiment identique » (18.10, soir, planche des fiches du lot 4) | non mesurable seul (essai d'un écart de pixels entre captures : il ne suit pas la perception, retiré) : question fermée du jury, pour chaque lot : « les variantes offrent-elles au moins 3 partis visiblement différents SUR LE COMPOSANT étudié, et pas seulement autour ? » ; au brief : la température porte sur le composant lui-même | oui | lot 4 fiches : silhouettes quasi identiques → non (sur la silhouette) |
 
+| D39 | « Je m'attendais plus à qqch du genre mais plus cohérent. » (18.10, soir, planche Comparer du lot 4 radars) | `controle-coherence.mjs` (`--coherence`) sur toutes les pages d'une variante : libellés de radar ≤ 2 tailles, traits de série ≤ 2 épaisseurs, aucune série en tirets ou pointillés, ≤ 3 opacités, petits multiples de même taille et ≥ 42 % | tous | lot 4 radars → 15 échecs (tirets dans 10 variantes, opacités) ; fiches p01, p05, p10 → 6 échecs |
+| D40 | « Déjà dit mais attention au piège !! Je pense qu'il y a confusion entre, ce que j'ai actuellement dans ma bière, son profil. Le style de la bière, un target. La comparaison manuel entre plusieurs houblons. Et la comparaison par suggestions de l'outils » (18.10, soir) | `controle-objets.mjs` (`--objets`) : aucune teinte saturée (l'alerte) dans un radar de houblons, dans la fiche ouverte ni sur une voie ; l'alerte ne vit que sur « ma bière face à la cible » | 0 | fiches p01, p08, p11 (« Résineux 2/4 » en orange) → échec ; radar p09 (houblons et voie en accent) → échec ; radars p08, p11 → OK |
+
 D18 est désormais vérifié par le même script, partie par partie.
 
 Commande (toutes les mesures D1 à D7, D10, D13, D14, D16 à D19) :
