@@ -6,7 +6,7 @@ import {
   proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,
   beerLevels, targetLevels, afterLevels, ficheLevels, recipeProfile, LEVEL_RULE, recipeIbu, loadedRecipe, recipeLines, LOADED_RECIPE_RULE,
   shoppingList, NO_GOUTS, GOUTS_RULE, beerCrans, targetCrans, afterCrans, CRANS_RULE, yeastDoubleImpact, yeastSignals,
-  afterLevelsDelta, ROUE_AROMES, hopSheet, sheetKeys, hopAlpha, hopRole, buildFromEmpty, ibuTables, TABLES_RULE, DRY_HOP_DAY, MINUTES_5, BOIL_LENGTHS, WP_TEMPERATURES, WP_MINUTES, densityFactors, beerContinuous, targetContinuous, afterContinuous, CONTINU_RULE,
+  toleranceScale, ecartTolerances, TOLERANCE_RULE, afterLevelsDelta, ROUE_AROMES, hopSheet, sheetKeys, hopAlpha, hopRole, buildFromEmpty, ibuTables, TABLES_RULE, DRY_HOP_DAY, MINUTES_5, BOIL_LENGTHS, WP_TEMPERATURES, WP_MINUTES, densityFactors, beerContinuous, targetContinuous, afterContinuous, CONTINU_RULE,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie, type FicheLevel,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
@@ -154,6 +154,13 @@ function buildPackCore() {
     apresPlage: r1.voies[i].after ? profile(r1.voies[i].after) : null }));
   const ficheKeys = [...new Set([...s1Recipe().additions.map((a) => a.hopKey), ...STOCK.map((s) => s.key)])];
   Object.assign(S1, { echellesContinu: CONTINU_RULE, profilBiereContinu: beerContinuous(beer1), cibleStyleContinu: targetContinuous(s16d) });
+  // D54 : tolérance par style et a priori du brasseur (champs ajoutés, bandes inchangées).
+  // Valeurs 0–100 tirées de l'échelle continue 0–3 (× 100/3) : dégustation d'abord, sinon modèle.
+  const tol1 = toleranceScale('16D');
+  const v100 = (x: number | null) => (x === null ? null : Math.round((x * 100) / 3 * 10) / 10);
+  const ecartsDe = (vals: { family: FamilyId; value: number | null }[]) => vals.map(({ family, value }) => ({ family, valeur: v100(value), ecart: ecartTolerances(tol1.familles.find((t) => t.family === family)!, v100(value)) }));
+  S1.voies.forEach((v, i) => Object.assign(v, { ecartsApres: ecartsDe(afterContinuous(beer1, r1.voies[i].effect)) }));
+  Object.assign(S1, { tolerance: { regle: TOLERANCE_RULE, ...tol1, biere: ecartsDe(beerContinuous(beer1)) } });
   Object.assign(S1, { echelles: LEVEL_RULE, echellesCrans: CRANS_RULE, profilBiereCrans: beerCrans(beer1, s16d), cibleStyleCrans: targetCrans(s16d, r1.direction),
     profilBiere: beer1, cibleStyle: targetLevels(s16d),
     profilFiches: ficheKeys.map((k) => ({ key: k, name: hopRef(k)!.name, families: ficheLevels(hopRef(k)!.varietyId, s16d).map(compactFiche) })) });

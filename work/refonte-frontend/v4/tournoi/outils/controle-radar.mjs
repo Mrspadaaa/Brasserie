@@ -45,6 +45,9 @@ import puppeteer from 'puppeteer-core';
 
 const dir = path.resolve(process.argv[2] || '.');
 const only = process.argv.slice(3).filter((a) => !a.startsWith('--'));
+// --pages=a.html,b.html : ne contrôler que ces pages (lot d'un composant sur une baseline gelée).
+const PAGES = (process.argv.find((x) => x.startsWith('--pages=')) || '').slice(8).split(',').filter(Boolean);
+const garde = (f) => !PAGES.length || PAGES.includes(f);
 const ids = fs.readdirSync(dir).filter((d) => /^p\d+$|^consolide$|^version-/.test(d) && fs.existsSync(path.join(dir, d, 'index.html')))
   .filter((d) => !only.length || only.includes(d)).sort();
 const parties = [['biere.html', 'biere'], ['etat-b.html', 'suggestions'], ['comparer.html', 'comparer']];
@@ -80,14 +83,14 @@ const open = async (id, file) => {
 for (const id of ids) {
   const premiers = [];
   const p = (m) => problems.push(id + ' : ' + m);
-  for (const [file, partie] of parties) {
+  for (const [file, partie] of parties.filter(([f]) => garde(f) || garde(f.replace('.html', '-radar.html').replace('etat-b-radar', 'suggestions-radar')))) {
     if (!fs.existsSync(path.join(dir, id, file))) { p('D19 page ' + file + ' absente (partie « ' + partie + ' »)'); continue; }
     const page = await open(id, file);
     const ok = await page.$('[data-partie="' + partie + '"]');
     if (!ok) p('D19 ' + file + ' : la partie ne se nomme pas (data-partie="' + partie + '")');
     await page.close();
   }
-  for (const [file, objet, minS, maxS, minV, maxV] of radars) {
+  for (const [file, objet, minS, maxS, minV, maxV] of radars.filter(([f]) => garde(f))) {
     if (!fs.existsSync(path.join(dir, id, file))) { p('D18 page ' + file + ' absente'); continue; }
     const page = await open(id, file);
     const ms = await page.evaluate(() => {
@@ -158,7 +161,7 @@ for (const id of ids) {
     if (total < minS || total > maxS) p('D18 ' + file + ' : ' + total + ' série(s) hors zone sur la page, ' + minS + ' à ' + maxS + ' attendues');
   }
   // D48 (suite) : la fiche aussi, et la même famille en haut de tous les radars de la variante.
-  if (fs.existsSync(path.join(dir, id, 'fiche.html'))) {
+  if (garde('fiche.html') && fs.existsSync(path.join(dir, id, 'fiche.html'))) {
     const page = await open(id, 'fiche.html');
     const fa = await page.evaluate(() => [...document.querySelectorAll('svg[data-radar]')].filter((s) => s.getBoundingClientRect().width > 0).map((s) => (s.getAttribute('data-axes') || '').split(',').filter(Boolean)));
     await page.close();

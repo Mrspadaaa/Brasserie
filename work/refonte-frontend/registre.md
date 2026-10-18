@@ -97,6 +97,29 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
+## Avancement (18.10, ~19:30) — Comparer d'abord, Suggestions ensuite
+
+- **Nouveaux mots** (SPEC-BRASSEUR, 120 citations) : Beer Maverick est le **plancher** de
+  Comparer (« faire mieux, pas moins bien ou la même chose ») ; « il faut des intervalles de
+  confiance » ; l'échelle dépend du style et de son a priori (résine : stout ≠ Kölsch) ;
+  biotransformation, levure, thiols : « pas pour tout de suite ».
+- **Fait** (commit `48ae5bb`) : cadrage `ecran-1/CADRAGE-SC.md` ; `controle-comparer.mjs`
+  (D51, D53) avec témoins (`scratchpad/temoin-comparer` : p01 Beer Maverick tel quel échoue,
+  p02 passe, p02 altéré échoue) ; D24 bis (4 houblons superposés), D40 bis (seule la couleur
+  d'alerte est interdite) ; pack : `apresPlage` par voie ; méthode v3
+  (`docs/qualite/methode-conception-frontend.md`) ; tickets #131 (données houblons
+  multi-sources, biotransformation), #132 (dose de levure), #133 (méthode sur tous les écrans).
+- **Après le commit** : `controle-radar.mjs --pages=` et `controle-lot.mjs --radar-pages=`
+  (lot d'un composant sur baseline gelée).
+- **Lot 5a Comparer** : brief `ecran-1/fils5-comparer/BRIEF-AUTEUR.md` ; baseline gelée
+  `scratchpad/baseline-lot5/` (v3 + Comparer en `data-composant`, cas Nugget, East Kent
+  Goldings, Fuggle). Puis publication de toutes les variantes (D50).
+- **Ensuite** : moteur, tolérance par style et a priori du brasseur (D54 à écrire : familles hors
+  du caractère décrit par le BJCP, masquage par la bière de base, réglage strict / normal /
+  libre / banni) ; puis D52 et lot 5b Suggestions (sans voies levure).
+- **Rail** : agent `a17d51434443f441e` toujours en cours (6 fichiers du générateur de la base
+  modifiés, pages pas encore reconstruites à 19:28).
+
 ## Reprise après compaction (18.10, ~19:30) — FOCUS : Suggestions et Comparer
 
 - **Verdict du brasseur sur le lot 4 publié** (https://claude.ai/artifact/V657sqy2X8DoCkxW7r8ttV) :

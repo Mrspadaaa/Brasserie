@@ -23,3 +23,4 @@ export { beerLevels, targetLevels, afterLevels, ficheLevels, classOf, LEVEL_RULE
 export { proposeVoies, compareVoies, compareRankKeys, applyVoie, RANKING, type Direction, type Voie, type VoieType, type Action, type VoieResult, type FamilyEffect, type DirectedTarget, type StyleOverflow } from './voies';
 export { getStyleScale, documentedStyleCodes, SCALE_PARAMETERS, type StyleScale, type FamilyScale, type FamilyStatus } from '../style/scale';
 export { valueVerdict, gapVerdict, trackPosition, trackShare, type ValueVerdict, type GapVerdict, type EstimateLike } from '../style/verdict';
+export { toleranceScale, styleMasking, ecartTolerances, TOLERANCE_RULE, type Apriori, type FamilyTolerance, type ToleranceScale, type Masking } from './tolerance';

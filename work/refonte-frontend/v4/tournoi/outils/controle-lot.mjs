@@ -28,7 +28,9 @@ const motsB = run('mots-premier-ecran.mjs', ['--max=' + maxMots, '--page=etat-b.
 run('jouer-boosters.mjs', []);
 const recette = needRecette ? run('controle-recette.mjs', []).stdout : '';
 // D18 : avec --radar, le radar compare 2 à 4 houblons qui ont une silhouette.
-const radar = needRadar ? run('controle-radar.mjs', []).stdout : '';
+// --radar-pages=a.html,… : le contrôle radar ne regarde que ces pages (lot d'un composant).
+const radarPages = (args.find((x) => x.startsWith('--radar-pages=')) || '').slice(14);
+const radar = needRadar ? run('controle-radar.mjs', radarPages ? ['--pages=' + radarPages] : []).stdout : '';
 // D14 (suite) : tous les éléments interactifs touchés un à un, pas seulement les data-booster.
 const fuite = run('fuite-touchers.mjs', []).stdout;
 // D33 : avec --palette, une seule couleur d'alerte et aucun contour de focus après un toucher
