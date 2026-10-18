@@ -107,10 +107,12 @@ describe('Données citées, niveaux de citation, dégustation (D25)', () => {
     expect(tasted.find((d) => d.family === 'floral')!.targetFrom).toBe('modèle');
     const plain = proposeVoies(s1Recipe(), S1_DIRECTION).direction.find((d) => d.family === 'resin')!;
     expect(plain).toMatchObject({ targetAbsolute: 0, targetFrom: 'modèle' });
-    // « peu » : bord bas de la bande (floral attendu 33–68 en 3B, perçu faible).
+    // Bord : « faible » (0–33) touche le bas de la bande floral 3B (33–68) ; ce n'est pas « peu »
+    // (plage pas entièrement sous la bande), la règle du modèle reste. Aucune bande actuelle n'a
+    // un bas au-dessus de 33 : « peu » par la dégustation ne survient pas avec la table v1.
     const lager = { ...s1Recipe(), styleCode: '3B' };
     const weak = tastingFrom({ floral: 'faible' }, { origin: 'test', date: '2026-10-18', quote: null, source: 'test' });
-    expect(proposeVoies(lager, { floral: 1 }, { tasting: weak }).direction[0]).toMatchObject({ targetAbsolute: 33, targetFrom: 'dégustation' });
+    expect(proposeVoies(lager, { floral: 1 }, { tasting: weak }).direction[0].targetFrom).toBe('modèle');
   });
 
   it('trois niveaux : non décrit, cité, marqué ; un « non décrit » reste « non décrit », jamais 0', () => {
