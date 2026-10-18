@@ -73,6 +73,8 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
 - **Rien de figé** : « Ébullition de 120′  attention toujours garder des variables dynamique car
   cela peut changer... Je peux me dire tiens 200' c'est mieux ou 45' ça le fait aussi ect.. »
   — 18.10, soir (D37).
+- **Les fiches du lot 4** : « Ce batch là semble être beaucoup plus cohérente en terme de UI sur
+  le Spider graph (radar graph) mais ils sont sous quasiment identique » — 18.10, soir (D38).
 - **La baseline** : « Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça
   différent complètement ? » — 18.10, soir (D26).
 - **Levure et biotransformation** : « Et tout ce qui est biotransformation avec levures, dry

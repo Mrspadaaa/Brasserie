@@ -64,8 +64,19 @@ const FICHES_TOUTES = Object.fromEntries([
   ...Object.entries(fiches(S1)),
 ]);
 
+// Tables d'IBU d'un houblon à la dose g0 (tablesIbu du pack) ; null pour les listes sans table.
+function tablesDe(a, g0) {
+  if (!a || !Array.isArray(a.ibuParMinute5)) return null;
+  // Premier moût : liste alignée sur tablesIbu.dureesPremierMout (5 à 240′ par 5) ; whirlpool : ibu[température][minutes].
+  const fwh = Array.isArray(a.ibuPremierMout) ? a.ibuPremierMout.filter((x) => typeof x === 'number') : [];
+  return { g0, min5: a.ibuParMinute5, fwh, wp: a.ibuWhirlpool && a.ibuWhirlpool.ibu ? a.ibuWhirlpool.ibu : null };
+}
+
 function scenario(id) {
-  const S = pack.scenarios[id];
+  // Variante d'une recette (S1E120 : la même recette, 120′ d'ébullition) : ce qu'elle ne redonne pas vient de la recette de base.
+  const base = id.replace(/E[0-9]+$/, '');
+  const S = base !== id ? { ...pack.scenarios[base], ...pack.scenarios[id] } : pack.scenarios[id];
+  const EBU = S.ebullitionMinutes || S.recipe.boilMin || 60;
   const F = fiches(pack.scenarios.S1);
   const voiesBrutes = S.voies || [];
   const effetDe = (key, moment, g) => {
@@ -76,7 +87,7 @@ function scenario(id) {
   };
   const rapide = (a, groupe) => ({
     cle: a.key, nom: a.name, groupe, moment: a.moment, g: a.dose.grams, ibu: a.ibuAdded ? a.ibuAdded.value : null,
-    ibuPG: ibuPG(a.ibuParMoment), libre: Math.max(0, a.stock.free), statut: a.stock.status,
+    ibuPG: ibuPG(a.ibuParMoment), tab: tablesDe(a, a.dose.grams), libre: Math.max(0, a.stock.free), statut: a.stock.status,
     fiche: F[a.name] || ficheDeCited(a.cited), effet: effetDe(a.key, a.moment, a.dose.grams),
     alpha: alphaDe(a, a.key, a.name), role: roleDe(a),
   });
@@ -84,7 +95,7 @@ function scenario(id) {
   // Mode « construction » (recette vide) : 1 ou 2 amérisants à 60′ au choix, puis des aromatiques.
   const construit = (a, alternative) => ({
     cle: a.key, nom: a.name, groupe: /hors stock|acheter/.test(a.stock.etat || '') ? 'catalogue' : /épuis/.test(a.stock.etat || '') ? 'epuise' : 'stock',
-    moment: a.moment, g: a.dose.grams, ibu: a.ibu ? a.ibu.value : null, ibuPG: {}, libre: Math.max(0, a.stock.libre || 0),
+    moment: a.moment, g: a.dose.grams, ibu: a.ibu ? a.ibu.value : null, ibuPG: {}, tab: tablesDe(a, a.dose.grams), libre: Math.max(0, a.stock.libre || 0),
     fiche: FICHES_TOUTES[a.name] || { niv: ORDRE.map((f) => ((a.fiches || []).find((x) => x.family === f) || {}).level || 0), n: ORDRE.map(() => 0), of: 0 },
     effet: a.effetEtabli ? { crans: ORDRE.map(() => null), delta: ORDRE.map((f) => { const e = a.effetEtabli.find((x) => x.family === f); return e ? Math.round(e.crans) || '≈' : 'non établi'; }) } : null,
     alpha: alphaDe(a, a.key, a.name), role: roleDe(a), alternative: !!alternative,
@@ -107,7 +118,7 @@ function scenario(id) {
     return {
       id: r.additionId, cle: r.hopKey, nom: r.name, moment: r.moment, g: r.grams, jour: r.day || 3,
       alpha: alphaDe(r, r.hopKey, r.name), role: roleDe(r),
-      ibuPG: pg, ibu0: { moment: r.moment, g: r.grams, v: ibu0 }, libre: stockLibre, achat: false,
+      ibuPG: pg, tab: tablesDe(r, r.grams), ibu0: { moment: r.moment, g: r.grams, v: ibu0 }, libre: stockLibre, achat: false,
       citation: resine, fiche: fi || { niv: ORDRE.map(() => 0), n: ORDRE.map(() => 0), of: 0 },
       signaux: (((S.signauxLevure || []).find((x) => x.additionId === r.additionId) || {}).signaux || []).filter((x) => !x.quantifie).map((x) => ({ titre: x.titre.split(' : ')[0], court: { 'geraniol-citronellol': 'géraniol', thiols: 'thiols', 'hop-creep': 'hop creep' }[x.id] || x.titre.split(' : ')[0], statut: x.statut })),
     };
@@ -141,7 +152,7 @@ function scenario(id) {
   const recNoms = [...new Set(lignes.map((l) => l.nom))];
   const comparerDefaut = [...recNoms, ...tousRapides.map((r) => r.nom).filter((n) => !recNoms.includes(n))].filter((n, k, a) => FICHES_TOUTES[n] && a.indexOf(n) === k).slice(0, 3);
   return {
-    scen: id, nom: S.recipe.name, code: '16D', ibuStyle: st.ibu, og: virgule(S.recipe.og), ebc: S.recipe.ebc,
+    scen: id, ebullition: EBU, tables: { dureesFwh: pack.tablesIbu.dureesPremierMout, wp: pack.tablesIbu.whirlpool }, dryJours: (pack.dryHopJour && pack.dryHopJour.jours) || { min: 0, max: 14 }, nom: S.recipe.name, code: '16D', ibuStyle: st.ibu, og: virgule(S.recipe.og), ebc: S.recipe.ebc,
     ordre: ORDRE, court, long, attendues: ORDRE.filter((f) => cs[f].status === 'attendue'),
     profil: ORDRE.map((f) => ({ crans: pb[f].crans, display: pb[f].display, source: pb[f].source, approx: pb[f].approx, exact: pb[f].exact })),
     cible: ORDRE.map((f) => ({ min: cs[f].bande.min, max: cs[f].bande.max, visee: cs[f].visee ?? null, statut: cs[f].status })),
@@ -195,8 +206,9 @@ const VUES = {
   'comparer-radar.html': ['S1', 'panneau', 'comparer', 'radar', ''],
   'cas-k2.html': ['S4', 'etape', '', 'barres', ''],
   'cas-k3.html': ['S5', 'etape', '', 'barres', ''],
+  'cas-ebu120.html': ['S1E120', 'etape', '', 'barres', ''],
 };
-const DATA = { S1: scenario('S1'), S4: scenario('S4'), S5: scenario('S5') };
+const DATA = { S1: scenario('S1'), S4: scenario('S4'), S5: scenario('S5'), S1E120: scenario('S1E120') };
 const TITRES = { consolide: 'Houblons, rail du brassage' };
 for (const id of ['consolide']) {
   const variante = fs.readFileSync(path.join(HERE, 'etape-' + id + '.js'), 'utf8');

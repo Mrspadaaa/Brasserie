@@ -77,6 +77,8 @@ maquette. Et le brasseur ne voyait le résultat qu'à la fin.
 
 | D37 | « attention toujours garder des variables dynamique car cela peut changer... Je peux me dire tiens 200' c'est mieux ou 45' ça le fait aussi ect.. » (18.10, soir) | `controle-rail.mjs` : `data-role="ebullition"` réglable sur l'étape (champ ou boutons) ; réglée à 200′ puis à 45′, le rail commence à cette durée et aucune ligne ne reste au-delà | présent et efficace | base consolidée v1 → échec ; témoin positif à durée réglable → OK |
 
+| D38 | « Ce batch là semble être beaucoup plus cohérente en terme de UI sur le Spider graph (radar graph) mais ils sont sous quasiment identique » (18.10, soir, planche des fiches du lot 4) | non mesurable seul (essai d'un écart de pixels entre captures : il ne suit pas la perception, retiré) : question fermée du jury, pour chaque lot : « les variantes offrent-elles au moins 3 partis visiblement différents SUR LE COMPOSANT étudié, et pas seulement autour ? » ; au brief : la température porte sur le composant lui-même | oui | lot 4 fiches : silhouettes quasi identiques → non (sur la silhouette) |
+
 D18 est désormais vérifié par le même script, partie par partie.
 
 Commande (toutes les mesures D1 à D7, D10, D13, D14, D16 à D19) :

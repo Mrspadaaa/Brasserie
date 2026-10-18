@@ -142,6 +142,14 @@ Voir `decisions.md` (D1 à D12).
   work/refonte-frontend/v4/ecran-1/base --mots=80 --fill=0.8 --boosters=4 --recette --rail`.
   Contrôles D27, D28 (`controle-rail.mjs`), témoins `scratchpad/temoin-rail` (échec) et
   `scratchpad/temoin-rail-positif` (OK).
+- **18.10 soir, suite** : D29 à D37 contrôlés (α et rôle, stock en icône, Ma bière au style +
+  absolu, gestes, palette, moment par 5′, geste propre, ébullition réglable). Moteur :
+  `d8c94594` (recette vide en brasseur, α, rôle), `cf2b6b78` puis `598610f5` (tables d'IBU 0–240′
+  par 5, premier moût, whirlpool 60–100 °C × 5–60 min, facteur de densité). **Point ouvert** :
+  la durée de contact pour l'arôme reste figée (whirlpool 80 °C 20 min, à froid 24 h 18 °C) ;
+  lot dédié à prévoir. Issue #130 (IBU, houblons libres ou en sac) créée pour après. Lot 4 :
+  radars p01–p03, p05–p09 et fiches p08–p09 rentrés LOT OK (commande sans `--recette`, pack
+  figé `scratchpad/pack-lot4`). Base consolidée en reprise (`aca844c5cdc3c873d`).
 - **Moteur** (leaf A `a115e8520cde8e241`, réutilisable) : dernier commit `3f973ed2`, pack
   436 ko (plafond 500), `ENGINE-V4 OK (50 tests)`. Contient S1 à S5, crans du style,
   quatre objets, catalogue, achats, goûts, voiesSansHoublon, levure (double impact, leviers,

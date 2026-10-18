@@ -47,3 +47,44 @@
   .rapide { min-height: 48px; }
   .vide-l.cran .drop::after { display: none; }
   .rapides .ou { font-size: 12px; color: var(--gris2); padding-left: 44px; margin: -2px 0; }
+  /* Rail par tranches de 5′ (D34) : chaque tranche est une graduation fine ; les repères utiles sont écrits. */
+  .frise { gap: 0; }
+  .frise > .blk, .frise > .rap-zone, .frise > .etape-levure { margin: 3px 0; }
+  .marque { display: grid; grid-template-columns: 44px 1fr; align-items: center; column-gap: 2px; height: var(--tick); }
+  .marque .rail-l { width: 6px; height: 2px; margin: 0; border: 0; border-radius: 1px; background: #b5b5b5; }
+  .marque .drop { height: auto; }
+  .marque .drop::after { display: none; }
+  .marque.ecrit { height: 18px; }
+  .marque.ecrit .rail-l { width: 10px; height: 10px; border-radius: 5px; border: 1.5px solid #9a9a9a; background: #fff; }
+  .marque.ecrit .drop::after { display: block; border-top: 1px dashed #d6d6d6; }
+  .marque.survol .rail-l { width: 14px; height: 3px; background: var(--encre); }
+  .marque.survol .drop { visibility: hidden; }
+  /* Carte glissée : dans le flux, au-dessus de tout, les autres s'écartent (D35). */
+  .blk[data-glisse] { position: relative; z-index: 10; }
+  .blk[data-glisse] .corps-b { box-shadow: 0 6px 18px rgba(0,0,0,.22); background: #fff; }
+  .blk[data-glisse] .quand { background: var(--encre); color: #fff; }
+  /* Réglages libres : whirlpool (°C, minutes), jour de dry hop. */
+  .l3 { gap: 8px; flex-wrap: wrap; }
+  .reglages { display: inline-flex; gap: 8px; margin-left: auto; }
+  .regl { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; }
+  .regl .moins, .regl .plus { width: 24px; height: 24px; border-radius: 12px; }
+  .regl .moins::before, .regl .plus::before, .regl .plus::after { left: 6px; top: 10.5px; width: 9px; }
+  .regl-v { min-width: 38px; text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .l3 .mini .c { width: 7px; }
+  .l3 .mini .c.sep { margin-left: 4px; }
+  .regl .moins, .regl .plus { width: 22px; height: 22px; }
+  .regl-v { min-width: 34px; }
+  .reglages { gap: 4px; }
+  /* Durée d'ébullition réglable en tête du rail (D37). */
+  .ebu-regl { display: grid; grid-template-columns: 44px 1fr; align-items: center; column-gap: 2px; min-height: 30px; }
+  .rail-ebu { justify-self: center; position: relative; z-index: 1; width: 12px; height: 12px; border-radius: 6px; border: 2px solid var(--encre); background: #fff; }
+  .ebu-corps { display: flex; align-items: center; gap: 6px; }
+  .ebu-corps .moins, .ebu-corps .plus { width: 26px; height: 26px; }
+  .ebu-corps button:disabled { opacity: .35; }
+  .ebu-v { min-width: 40px; text-align: center; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .ebu-regl { min-height: 26px; }
+  .marque.ecrit { height: 16px; }
+  .frise > .blk, .frise > .rap-zone, .frise > .etape-levure { margin: 2px 0; }
+  .etape-levure .levure { min-height: 30px; }
+  .corps-b { padding: 6px 6px 6px 8px; gap: 3px; }
+  .corps-b .l2 { flex-wrap: wrap; row-gap: 3px; }

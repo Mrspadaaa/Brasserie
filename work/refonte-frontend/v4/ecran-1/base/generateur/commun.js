@@ -47,30 +47,53 @@ const cleDe = (nom) => (D.cles && D.cles[nom]) || null;
 function nomsHoublons(noms) { return noms.flatMap((n, k) => [k ? ' + ' : null, h('span', { 'data-houblon': cleDe(n) }, n)]).filter((x) => x != null); }
 const nomCourt = (f) => D.court[f];
 
-/* Moments : la frise 60′ → à froid. Le type d'ajout et le moment se lisent sur la frise. */
-/* Les moments du pack (moments[].code), dans l'ordre du brassage ; « vide » nomme l'étape vide. */
-const MOMENTS = [
-  { code: 'fwh', type: 'premier moût', quand: 'moût', vide: 'premier moût' },
-  { code: 'b60', type: 'ébullition', quand: '60′' },
-  { code: 'b30', type: 'ébullition', quand: '30′', cran: true },
-  { code: 'b15', type: 'ébullition', quand: '15′', cran: true },
-  { code: 'b10', type: 'ébullition', quand: '10′' },
-  { code: 'b5', type: 'ébullition', quand: '5′', cran: true },
-  { code: 'b0', type: 'ébullition', quand: '0′' },
-  { code: 'wp', type: 'whirlpool', quand: '80 °C', vide: 'whirlpool' },
-  { code: 'dryActive', type: 'à froid', quand: 'J+3', vide: 'fermentation' },
-  { code: 'dryPost', type: 'à froid', quand: 'après', vide: 'après fermentation' },
-];
+/* Moments du rail du brassage : premier moût ; ébullition par tranches de 5′, de la durée de la
+   recette (D.ebullition, pack ebullitionMinutes) à 0′ ; whirlpool ; à froid, en fermentation active
+   ou après (la phase est un choix du brasseur, le jour est libre). « vide » nomme l'étape vide. */
+/* La durée d'ébullition est une variable de la recette (pack ebullitionMinutes = valeur de départ),
+   réglable sur l'étape de 5 à 240′ par 5 ; le rail et les moments en dépendent. */
+const EBU_MIN = 5, EBU_MAX = 240;
+let EBU = D.ebullition || 60, MOMENTS = [], REPERES = new Set();
+function construireMoments() {
+  MOMENTS = [
+    { code: 'fwh', type: 'premier moût', quand: 'moût', vide: 'premier moût' },
+    ...Array.from({ length: EBU / 5 + 1 }, (x, k) => { const m = EBU - 5 * k; return { code: 'b' + m, type: 'ébullition', quand: m + '′', minute: m }; }),
+    { code: 'wp', type: 'whirlpool', quand: '80 °C', vide: 'whirlpool' },
+    { code: 'dryActive', type: 'à froid', quand: 'J+3', vide: 'fermentation' },
+    { code: 'dryPost', type: 'à froid', quand: 'après', vide: 'post-fermentation' },
+  ];
+  // Repères écrits : la durée d'ébullition, 60′ et 0′ ; les autres tranches sont des graduations.
+  REPERES = new Set([EBU, 60, 0]);
+}
+construireMoments();
+/* Changer la durée : les lignes au-delà se ramènent au début de l'ébullition, et le disent. */
+function changerEbu(v) {
+  EBU = Math.max(EBU_MIN, Math.min(EBU_MAX, Math.round(v / 5) * 5));
+  construireMoments();
+  for (const l of ETAT.lignes) {
+    const m = /^b(\d+)$/.exec(l.moment);
+    if (m && Number(m[1]) > EBU) { l.moment = 'b' + EBU; l.ramene = true; }
+  }
+  rendre(true);
+}
+/* Moment d'un ajout proposé, borné à la durée d'ébullition choisie. */
+const momentBorne = (code) => { const m = /^b(\d+)$/.exec(code); return m && Number(m[1]) > EBU ? 'b' + EBU : code; };
 const TYPES = ['ébullition', 'whirlpool', 'à froid', 'premier moût'];
-const mom = (code) => MOMENTS.find((m) => m.code === code) || MOMENTS[0];
-const quand = (l) => (l.moment === 'dryActive' ? 'J+' + l.jour : mom(l.moment).quand);
-const quandLong = (l) => ({ fwh: 'premier moût', b60: '60 minutes d\'ébullition', b30: '30 minutes d\'ébullition', b15: '15 minutes d\'ébullition', b10: '10 minutes d\'ébullition', b5: '5 minutes d\'ébullition', b0: 'fin d\'ébullition', wp: 'whirlpool à 80 °C', dryActive: 'à froid, jour ' + l.jour + ', en fermentation active', dryPost: 'à froid, après fermentation' })[l.moment];
+const mom = (code) => MOMENTS.find((m) => m.code === code) || (/^b\d+$/.test(code) ? { code, type: 'ébullition', quand: code.slice(1) + '′', minute: Number(code.slice(1)) } : MOMENTS[0]);
+const quand = (l) => (mom(l.moment).type === 'à froid' ? 'J+' + l.jour : l.moment === 'wp' ? (l.wpT || 80) + ' °C' : mom(l.moment).quand);
+const quandLong = (l) => {
+  const m = mom(l.moment);
+  if (l.moment === 'fwh') return 'premier moût, ' + EBU + ' minutes d\'ébullition';
+  if (m.type === 'ébullition') return m.minute === 0 ? 'fin d\'ébullition' : m.minute + ' minutes d\'ébullition';
+  if (l.moment === 'wp') return 'whirlpool à ' + (l.wpT || 80) + ' °C pendant ' + (l.wpMin || 20) + ' minutes';
+  return 'à froid, jour ' + l.jour + (l.moment === 'dryActive' ? ', en fermentation active' : ', après fermentation');
+};
 
 /* État de l'écran. */
 const B = document.body.dataset;
 const ETAT = {
   vue: B.vue, partie: B.ouvre || 'biere', lentille: B.lentille || 'barres',
-  lignes: D.lignes.map((l) => ({ ...l })),
+  lignes: D.lignes.map((l) => ({ wpT: 80, wpMin: 20, ...l })),
   gouts: { aime: new Set(), exclut: new Set() }, goutOuvert: null,
   visee: {}, sel: null, filtreVoies: null, marques: null,
   comp: D.comparerDefaut.slice(), effet: null, ibuAffiche: null, focusK: null, momentR: {}, focusSerie: null,
@@ -87,15 +110,27 @@ document.addEventListener('pointerdown', () => { ETAT.clavier = false; }, true);
 let VARIANTE = null;
 
 /* IBU : valeur du pack au moment et à la dose de la recette, sinon IBU par gramme du pack × dose. */
+/* IBU d'une ligne (pack, tablesIbu) : null à froid (« aucun IBU »), undefined sans table pour ce
+   moment (« IBU à recalculer ») ; la table est donnée à la dose g0, l'IBU suit la dose. */
 function ibuLigne(l) {
+  const m = mom(l.moment);
+  if (m.type === 'à froid') return null;
+  const t = l.tab;
+  if (t) {
+    let v;
+    if (l.moment === 'fwh') v = t.fwh[(D.tables.dureesFwh || []).indexOf(EBU)];
+    else if (l.moment === 'wp') { const A = D.tables.wp; if (t.wp && A) { const ti = A.temperatures.indexOf(l.wpT || 80), di = A.minutes.indexOf(l.wpMin || 20); v = ti >= 0 && di >= 0 ? t.wp[ti][di] : null; } }
+    else v = t.min5[m.minute / 5];
+    if (v != null) return (v * l.g) / t.g0;
+  }
   if (l.ibu0 && l.ibu0.v != null && l.ibu0.moment === l.moment && l.ibu0.g === l.g) return l.ibu0.v;
   const pg = l.ibuPG[l.moment];
-  return pg == null ? null : pg * l.g;
+  return pg == null ? undefined : pg * l.g;
 }
 const ibuTotal = () => ETAT.lignes.reduce((s, l) => s + (ibuLigne(l) || 0), 0);
 function ibuEl(l) {
-  if (!(l.moment in l.ibuPG) && !(l.ibu0 && l.ibu0.moment === l.moment && l.ibu0.g === l.g) && mom(l.moment).type !== 'à froid') return h('span', { class: 'ibu-l' }, 'IBU à recalculer');
   const v = ibuLigne(l);
+  if (v === undefined) return h('span', { class: 'ibu-l' }, 'IBU à recalculer');
   // À froid : le pack ne donne aucun IBU Tinseth (moments[].ibuModel : « aucun »).
   return v == null ? h('span', { class: 'ibu-l' }, 'aucun IBU') : h('span', { class: 'ibu-l' }, ibuTexte(v) + ' IBU');
 }
@@ -120,6 +155,7 @@ function effetCourant() {
   return l ? effetLigne(l) : null;
 }
 function effetTag(l) {
+  if (l.ramene && mom(l.moment).minute === EBU) return h('span', { class: 'effet ne' }, 'ramenée au début');
   if (!l.nouveau) return null;
   const e = effetLigne(l);
   if (!e) return h('span', { class: 'effet ne' }, 'effet non établi');
@@ -134,7 +170,6 @@ function effetTag(l) {
 function bioEl(l) {
   const actif = l.moment === 'dryActive';
   return h('div', { class: 'bio' },
-    h('span', { class: 'quand-bio' }, actif ? 'fermentation active' : 'après fermentation'),
     actif ? h('span', { class: 'sigs', 'data-role': 'biotransformation', 'aria-label': 'Avec ' + D.levure.nom + ' : biotransformation possible, non quantifiée' },
       h('span', { class: 'sig' }, 'biotransformation possible, non quantifiée'),
       l.signaux.map((x) => h('span', { class: 'sig' + (x.statut === 'possible' ? '' : ' ne'), title: x.titre + ' : ' + x.statut, 'aria-label': x.titre + ' : ' + x.statut }, x.court))) : null);
@@ -152,7 +187,7 @@ let SEQ = 0;
 function ajouter(r, moment) {
   const id = 'n' + (++SEQ);
   ETAT.lignes.push({
-    id, cle: r.cle, nom: r.nom, moment: moment || r.moment, g: r.g, alpha: r.alpha, role: r.role, jour: 3, ibuPG: r.ibuPG, ibu0: { moment: r.moment, g: r.g, v: r.ibu },
+    id, cle: r.cle, nom: r.nom, moment: moment || r.moment, g: r.g, alpha: r.alpha, role: r.role, tab: r.tab, wpT: 80, wpMin: 20, jour: 3, ibuPG: r.ibuPG, ibu0: { moment: r.moment, g: r.g, v: r.ibu },
     libre: r.libre, achat: r.groupe === 'catalogue', citation: null, fiche: r.fiche, effet: r.effet, effetCle: { moment: r.moment, g: r.g }, nouveau: true, signaux: [],
   });
   ETAT.effet = id;
@@ -243,7 +278,9 @@ function miniProfil(fiche, nom) {
 /* Un ajout proposé : « 10 g → + 3 IBU » (D16, « genre 5g -> 20ibu en plus »), son stock, ses fiches.
    colonne : les IBU en colonne à droite (p03, greffe de p11) ; sinon dans la ligne (p02). */
 function rapideLigne(r, premier, colonne) {
-  const ibu = r.ibu == null ? 'aucun IBU' : '+' + ibuTexte(r.ibu) + ' IBU';
+  const mb = momentBorne(r.moment);
+  const v = mb === r.moment ? r.ibu : ibuLigne({ ...r, moment: mb, ibu0: null, wpT: 80, wpMin: 20 });
+  const ibu = v === undefined ? 'IBU à recalculer' : v == null ? 'aucun IBU' : '+' + ibuTexte(v) + ' IBU';
   const corps = colonne
     ? [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), statutRapide(r)), h('span', { class: 'r2' }, miniProfil(r.fiche, r.nom))),
       h('span', { class: 'col-ibu' }, h('b', { class: 'plus-ibu' }, ibu), h('span', { class: 'dose-r' }, grammes(r.g)))]
@@ -253,7 +290,7 @@ function rapideLigne(r, premier, colonne) {
     h('button', {
       class: 'rapide', 'data-role': 'ajout-rapide', 'data-booster': premier ? 'ajout rapide' : null, 'data-k': 'r' + r.cle,
       'aria-label': 'Ajouter ' + r.nom + ', ' + grammes(r.g) + ' à ' + mom(r.moment).quand + ' : ' + ibu,
-      onclick: () => ajouter(r),
+      onclick: () => ajouter(r, mb),
     }, h('span', { class: 'plus-i', 'aria-hidden': 'true' }), corps),
     goutBouton(r.nom, 'r', premier ? 'goût' : null));
 }
