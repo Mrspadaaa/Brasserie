@@ -158,7 +158,10 @@ for (const id of ids) {
       }
       const series = r.series.filter((s) => s.nom !== 'zone' && s.nom !== 'bande');
       const inconnues = new Set([...r.marquesInconnues, ...series.flatMap((s) => s.inconnues)]);
-      if (series.length) r.familles.forEach((f, k) => { if (series.every((s) => !s.valeurs[k])) inconnues.add(f); });
+      // Sans marquage explicite, une famille nulle partout est réputée inconnue (citations « non
+      // décrit ») ; si la page marque elle-même ses inconnus, un zéro est une donnée connue
+      // (« pas senti » dans une grille de dégustation).
+      if (series.length && !inconnues.size) r.familles.forEach((f, k) => { if (series.every((s) => !s.valeurs[k])) inconnues.add(f); });
       if (!inconnues.size) continue;
       if (!m.legendeInconnu) q('radar : ' + inconnues.size + ' famille(s) sans donnée et aucune légende « inconnu », « non situé » ou « non décrit » (D65)');
       const style = (f) => { const t = axeTextes.find((x) => RE[f] && RE[f].test(x.t)); return t ? t.couleur + '|' + Math.round(t.opacite * 10) + (/\?/.test(t.t) ? '|?' : '') : null; };
