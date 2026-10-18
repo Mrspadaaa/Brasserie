@@ -6,7 +6,8 @@ import { buildPack } from '../src/pack/buildPack';
 const file = path.resolve(__dirname, '../data/pack-mini-protos.json');
 
 describe('Pack des mini-prototypes', () => {
-  const text = fs.readFileSync(file, 'utf8');
+  // Fin de ligne normalisée : Git peut extraire le fichier en CRLF sous Windows.
+  const text = fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n');
   const stored = JSON.parse(text);
 
   it('les chiffres du pack sont exactement ceux que rend le moteur', () => {
