@@ -1,0 +1,25 @@
+w4 · Tes questions, répondues (la réponse d'abord, question par question).
+
+- **Ce qui tient** :
+  - **Les cinq vraies questions du brasseur**, chacune avec sa réponse lisible sans toucher ; les chiffres viennent des données, les familles sont écrites dans leur ton avec leur picto. Un toucher ouvre le petit simulateur de la question, puis sa preuve.
+  - **« Pourquoi à 10′ pas à 60′ ? »** : « À 60′, l'arôme part : agrumes ~ +1 cran, contre ~ +3 crans à 10′. Reste l'amertume : ≈ 100 IBU. »
+    - Cinq cases de moment, avec Citra en plein et Cascade en contour devant la zone de la 16D, les IBU de Citra à la dose choisie et la bande de Citra en pointillés.
+    - Réglages : famille et dose.
+    - Preuve : Sharp (cuit, végétal, herbacé associés à l'ébullition, panel) et 4MMP −91 % en 60′ (Kishimoto).
+  - **« Citra et Cascade, pareils en dry hop ? »** : non, à dose égale (tropical ~ +4 crans contre ~ +2). Deux repères par famille, à la même dose.
+    - Réglages : la dose, et l'autre houblon (Cascade, Galaxy, Idaho 7).
+    - Preuve : quatre bandes logarithmiques, E06 et Kishimoto. Le trou est dit : aucune étude à dose égale.
+  - **« 3 j de Citra puis 7 j de Galaxy ? »** : « 7 j ne font pas plus que 1 j ». La courbe jour par jour (K3, parJour) montre les marches et la bande ~ du simulé. Un curseur de jour, et la bascule vers « puis Idaho 7 5 j ». L'ordre est inconnu. Preuve : Wolfe, Titus (1 h ≈ 96 h), Eureka!.
+  - **« Deux houblons ensemble ? »** : « ~ 71 % de la somme ». Pour chaque famille : chacun seul additionné en pâle, ensemble en plein, et ce qu'il reste. Preuve : E04 (23 % → 7 %, intensité 6,3 / 10,4 / 12,3 sur 15).
+  - **« Et la levure ? »** : en dry hop actif seulement, Pomona ~ +0,5 cran d'agrumes (simulé, petit) ; prix : le hop creep (cas K4, quatre levures × actif / après). La biotransformation est dite levure par levure, Diamond avec la mesure de Samia.
+- **Écart à la baseline** : pas de profil à 12 familles. Chaque question n'a que les familles qu'elle concerne, en cases ou en repères.
+- **Ce qui casse** :
+  - 232 mots au premier écran : c'est une page de réponses écrites. Elles ont été raccourcies, mais elles restent des phrases.
+  - L'ajout cumulé, la levure et la biotransformation sont dans les questions 4 et 5, fermées au repos : CUMUL échoue au repos (un toucher les ouvre).
+  - Les cases de moment tiennent juste à 390 px (cinq de 66 px).
+  - La courbe des jours coupe à 60 points ; les hauts au-delà ne sont pas dessinés, et la page le dit.
+- **Contrôles** (indicatifs en v0, joués une fois) :
+  - COMMUN ECHEC 1 : mots ECHEC (232 > 70) ; couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende et parlant OK ;
+  - LISIBLE OK, SIMULATION OK, ALPHA OK, FICHE-BASELINE OK ;
+  - CUMUL ECHEC 3 : C1, C2 et C3 au repos (questions 4 et 5 fermées).
+- **Pire contraste** : 4,96:1, « agrumes » (ton texte de la famille sur blanc).

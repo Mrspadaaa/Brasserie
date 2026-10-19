@@ -1,0 +1,22 @@
+w3 · Dessine ta bière (la réponse d'abord, à l'envers du simulateur).
+
+- **Ce qui tient** :
+  - **Le brasseur ne choisit pas un houblon : il touche, sur les 12 pistes de sa bière, l'endroit où il veut aller.** Un tiret noir marque sa cible (« cible 2 »), en crans du style ; toucher la cible l'efface, et les flèches du clavier la déplacent. Au départ : agrumes 2 crans et floral 2 crans (la dégustation du 18.10 : « je la veux plus floral »).
+  - **La page répond tout de suite par le geste qui y mène**, cherché parmi 716 gestes ~ simulés : la grille (un houblon, 5 moments, 4 doses, 5 durées, US-05 ou Pomona), les 90 paires (deux houblons ensemble, US-05, Pomona ou Verdant) et Diamond (cas K4).
+  - Le rang suit un seul critère écrit : l'écart à la cible (ce qui manque compte plein, ce qui dépasse compte moitié). Ce n'est pas « le meilleur ».
+  - **Le geste s'affiche** sur les pistes (barre après, ~ simulé), avec les écarts écrits (« agrumes ~ 2 / 2 crans ✓ », « floral ~ 1,4 / 2 crans » en orangé quand il manque) et les grammes pour 20 L face au stock (« 160 g d'Idaho 7, stock insuffisant (20 g) »).
+  - Viennent ensuite la biotransformation de sa levure, ses risques (sortie du style, hop creep chiffré, saturation, synergie inconnue) et sa confiance. Une paire montre ce que chacun apporte.
+  - **Les cinq plus proches ensuite**, un par houblon ou paire, α compris : un toucher pose le geste sur les pistes.
+  - **Trois filtres** : rester dans ta 16D ou sans limite ; 1 ou 2 houblons ; levure (toute, US-05, Pomona, Verdant).
+  - La preuve dit comment la page cherche, et donne les mesures (E06, E04, E01 β-citronellol, E08), les bandes logarithmiques et les inconnus.
+- **Écart à la baseline** : les lignes nommées deviennent la commande. On ne lit plus seulement le profil, on le dessine. C'est l'idée « si tu veux… fais… » poussée jusqu'au geste direct.
+- **Ce qui casse** :
+  - 165 mots au premier écran.
+  - Toucher la piste demande de viser au doigt (pas d'un demi-cran sur 36 px) ; pas encore de glisser.
+  - Le premier geste trouvé peut être lourd (Idaho 7 8 g/L à 10′ pour floral 2) : le moteur sous-estime probablement Idaho 7 (note du moteur), et le floral de la 16D est difficile à atteindre.
+  - Le critère d'écart, avec ses poids (1 et 0,5), est une convention.
+  - Le résineux (déjà marqué) ne peut pas baisser : la page le dit, mais la piste se touche quand même.
+- **Contrôles** (indicatifs en v0, joués une fois) :
+  - COMMUN ECHEC 1 : mots ECHEC (165 > 70) ; couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende et parlant OK ;
+  - LISIBLE OK, SIMULATION OK, CUMUL OK, ALPHA OK, FICHE-BASELINE OK.
+- **Pire contraste** : 4,96:1, « Agrumes » (ton texte de la famille sur blanc).

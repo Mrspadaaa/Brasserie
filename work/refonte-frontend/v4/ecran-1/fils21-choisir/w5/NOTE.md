@@ -1,0 +1,35 @@
+w5 · Ça ne marchera pas (la réponse d'abord, par le refus expliqué).
+
+- **Ce qui tient** :
+  - **Neuf idées du brasseur au crible de sa 16D**, chacune avec :
+    - son verdict en mots : « ne marchera pas », « risque », « on ne sait pas » ou « ça tient » ;
+    - la raison en une ligne, avec sa vraie valeur ;
+    - « fais plutôt ».
+  - En tête, le compte : 3 ne marcheront pas, 2 risques, 3 on ne sait pas, 1 ça tient.
+  - Les neuf idées et leurs raisons :
+    - Citra 4 g/L en dry hop : sort de la 16D (agrumes, tropical) ; 4MMP ×4 au moins le seuil.
+    - Citra à 60′ : ≈ 100 IBU, 4MMP −91 % en 60′.
+    - Galaxy 7 j : rien après 3 j (Wolfe), 1 h ≈ 96 h (Titus).
+    - 8 g/L : saturation (E04).
+    - Deux houblons ensemble : ~ 71 % de la somme.
+    - Dry hop actif avec US-05 : biotransformation non publiée, hop creep +0,39 % vol.
+    - Diamond : plus de thiols mesurés, fruité perçu le plus faible.
+    - Le Citra cryo du stock : α 24,8 %, huile non relevée, rien de simulé.
+    - Cascade 4 g/L : ça tient.
+  - **Le crash-test** : un toucher ouvre l'idée, et on la **pousse** (dose, moment, jours, forme à dose totale égale, levure). Chaque pas montre ses crans gagnés et « dans / au bord / sort ».
+    - Le mur « ta 16D » se dessine là où l'idée casse.
+    - Dessous, le profil ~ simulé des familles qui comptent, les houblons avec leur α, la biotransformation de la levure, et « Essaie : 1 g/L » pour revenir au geste qui tient.
+  - **La saturation, mesurée** : la courbe d'E04 (Cascade, 24 h, intensité 3 / 6,3 / 8,1 / 10,4 / 12,3 sur 15 de 0 à 16 g/L) est montrée seule, sans mélange d'unités avec le simulé. La contradiction de lecture entre H et J sur les lignes agrumes et herbacé du même tableau porte « à vérifier ».
+  - **L'inconnu n'est jamais zéro** : le cryo dit « rien de simulé, pas de zéro ».
+- **Écart à la baseline** : la page part des idées, pas des familles. Les familles n'apparaissent que dans le crash-test, en lignes nommées.
+- **Ce qui casse** :
+  - 204 mots au premier écran : verdicts et raisons sont écrits.
+  - La levure et la biotransformation sont dans les idées 6 et 7, fermées au repos : CUMUL C2 et C3 échouent au repos (un toucher).
+  - Les pas de la forme (« Citra 2 + Galaxy 2 ») sont étroits.
+  - « 3 j » dans l'idée 1, alors que la piste dit « 1 g/L, 2 j » : les jours ne changent rien au simulé après 1 j.
+  - Le moteur ne sait pas simuler 4 + 4 g/L ensemble : la saturation se pousse sur un seul houblon.
+- **Contrôles** (indicatifs en v0, joués une fois) :
+  - COMMUN ECHEC 1 : mots ECHEC (204 > 70) ; couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende et parlant OK ;
+  - LISIBLE OK, SIMULATION OK, ALPHA OK, FICHE-BASELINE OK ;
+  - CUMUL ECHEC 2 : C2 et C3 au repos (l'ajout cumulé est au repos, dans l'idée 5).
+- **Pire contraste** : 4,64:1, « ~ +3,6 » (orangé sur la case pâle d'un pas qui sort).

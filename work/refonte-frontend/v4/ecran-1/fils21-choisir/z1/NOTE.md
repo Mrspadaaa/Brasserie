@@ -1,0 +1,21 @@
+# z1 · La table de brassage
+
+- **L'idée, en une phrase** : la recette est une table à six cases (60′, 10′, whirlpool, dry hop actif, dry hop après, puis) sur laquelle on pose des sachets de houblon au doigt, et chaque pose redessine ma bière.
+- **Pourquoi ça aide à comprendre et à choisir** :
+  - « quand » est un lieu, pas un menu : le même sachet posé à 60′ donne ~100 IBU et presque rien à l'arôme, posé en cuve il fait sortir agrumes, tropicaux et baies du style 16D ; la réponse à « pourquoi 10′ pas 60′ » se voit en deux poses ;
+  - « combien de jours » est une règle de jours sous la cuve (J+0 à J+18), chaque barre de contact porte son nom ; les jours se règlent sur la grille (1, 2, 3, 5, 7 j) et le drapeau « au-delà de 3 j : rien de plus » tombe à 5 j ;
+  - « ensemble ou l'un après l'autre » sont deux gestes distincts : deux sachets dans la même case = ajout cumulé (2 + 2 g/L, 3 j, la dose totale compte, « ensemble = 71 % de la somme des deux seuls ») ; la case « puis » = l'enchaînement, avec l'ordre dit inconnu ;
+  - la levure se choisit sous la bière ; une levure que le moteur ne simule pas pour l'agencement est barrée et le dit, au lieu de faire semblant ;
+  - les vraies valeurs des sachets posés (α du lot puis des fiches, huile, 4MMP et linalol au seuil en bandes logarithmiques, mesures en bière des 10 études) restent à côté du simulé.
+- **Ce qui tient** (acquis de la baseline, enrichis) : les 12 pictos au trait aux tons des familles, les barres debout devant la zone du style avec l'orangé au-delà (l5b), « au style » par défaut et l'absolu à un toucher, l'α du lot d'abord puis les fiches avec le livre et « pellets » pour le cryo, l'usage en mot, la légende derrière « ? », l'appui long qui ouvre la fiche dans le langage de la page, le stock absent (pas de données de stock ici). En plus : la frise à cases, la règle des jours nommée, les sachets, la case « puis », les essais tout prêts (K1 à K5), la confiance du moteur, l'IBU simulé à chaud, le trait fin jusqu'au haut de la plage (jamais rogné), les hachures « rien de simulé ».
+- **Ce qui casse** :
+  - 190 mots au premier écran (70 visés) : les six cases, les quatre sachets avec leur α et les curseurs comptent ;
+  - la grille ne simule que 1, 2, 4, 8 g/L, 1 à 7 j, une seule paire (2 + 2 g/L, 3 j) et deux enchaînements (Citra d'abord) : hors de là, la table dit « non simulé » et montre ma bière avant en pâle. C'est honnête, mais la liberté du geste dépasse la grille ;
+  - le résineux est hors du style avant tout ajout (la dégustation « trop résineuse » prime) : l'orangé est toujours là sur cette colonne ; la page le dit (« résineux : ta dégustation ») ;
+  - un sachet posé puis déplacé demande deux gestes (retirer, reposer) ; pas de glisser.
+- **À greffer dans la baseline** : la règle des jours nommée sous les voies de dry hop ; la case « puis » comme forme de l'enchaînement ; les essais tout prêts ; « non simulé » plutôt qu'une barre inventée ; la confiance du moteur à côté du mot « simulé ».
+- **Données** : simulé = fils21-choisir/donnees/profils-simules.json (grille, paires, cas K3 et K4, IBU des cas K1) via z1/moteur-z.mjs ; vraies valeurs = base/consolide (α, huile, familles), fils19-choix/donnees (rapports au seuil, mesures en bière), comparatifs-dryhop.json (10 études ; « lu sur une figure » et « à vérifier » affichés quand le JSON le dit) ; style = style-bands.json (16D).
+- **Contrôles** (indicatifs en v0, sauf honnêteté et usage au doigt) :
+  - LISIBLE OK (20 pictos, 11 mesurées, 18 simulées, 0 faute) ; SIMULATION OK (7 réglages, le simulé bouge) ; CUMUL OK (4 levures, biotransformation visible, la levure fait bouger le simulé) ; ALPHA OK ; FICHE-BASELINE OK (fiche de Citra, 5 familles, 5 pictos) ;
+  - COMMUN : MOTS ECHEC (190 > 70) ; COULEURS, AU-STYLE, SURVOL, BLOCS, FICHE, STANDARD, TRAIT, LEGENDE, PARLANT OK ; CONTRASTE : « Verdant », « Diamond » barrés à 1,47:1 dans la première passe, corrigés (gris 5b5b66) après.
+- **Captures** (fils21-choisir/captures/z1-*.png, regardées) : haut, page, sachet-pris, pose-puis, citra-60, ensemble, jours-7, levure-pomona, absolu, fiche, legende.
