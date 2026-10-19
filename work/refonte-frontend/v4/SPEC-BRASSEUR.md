@@ -215,7 +215,9 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
     Baseline 2 type fil » (D88) ; « Pas d'info sur les AA, j'en vrai valeur » (D87) ; « Tu peux même
     mettre un peu plus d'icone et autre, mais il faut un bouton légende un peu caché pour pas que ça
     gêne » (D89) ;
-  - sur l5b : « Meilleures bar » ; « Les bar de ce type sont plus informative donc meilleur » ;
+  - sur l5b : « Meilleures bar » ; « Les bar de ce type sont plus informative donc meilleur » ; puis,
+    sur la page entière de l5b, cochée : « Il est très très bien celui-ci aussi » (l5b reste en lice
+    à côté de la disposition l8 : variante l5d avec tous les retours) ;
   - sur l8e, captures entourées :
     - « Les icône sont pas parlant du tout » (la goutte, le souffle : l'usage en mot, D90) ;
     - « Ça c'est inutile » (la bande « ‹ visée | visée », D91) ;

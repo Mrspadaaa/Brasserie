@@ -132,6 +132,8 @@ Voir `decisions.md` (D1 à D12).
 - **Agents en cours** (attendre leurs notifications, ne pas refaire leur travail) :
   - l7–l9 (a3f5fc091a01e0007), relancé : l8g (usage en mot entier) et l8h (pastille « amer »,
     « arôme », « mixte »), sur la base de l8e, avec les pistes de l5b et sans la bande « visée » ;
+  - l5d (ad87b1e660b90482c) : l5b (« Il est très très bien celui-ci aussi ») avec tous les retours
+    de la baseline (D87 à D93) ; l8g et l8h refont aussi leur fiche (D93) ;
   - d1–d3 et d4–d6 : le lot 20, mini maquettes de l'outil de dry hop
     (`ecran-1/fils20-dryhop/BRIEF-AUTEUR.md`), habillage l8b, chiffres lus dans les sorties du
     moteur, `controle-commun` + ALPHA ; prévenus de D88 à D92.
