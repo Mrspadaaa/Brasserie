@@ -532,18 +532,21 @@ function echelleSeg() {
    radar au-dessus se redessine. Peu de mots : la note au-dessus du style passe à l'orangé, rien
    d'autre ne s'écrit. */
 const NIV_DEG = ['pas senti', 'faible', 'moyen', 'marqué'];
+/* La grille (m4, 19.10 : « attention à pas surchargé en texte ») : les quatre notes écrites une
+   seule fois en tête de colonne ; chaque rangée a quatre pastilles, de l'anneau (pas senti) au gros
+   point (marqué). Rien de coché : pas goûté. */
 function grilleDegustation(redessiner) {
   return h('div', { class: 'deg-grille', role: 'group', 'data-role': 'degustation', 'aria-label': 'Ma dégustation : une note par famille' },
+    h('div', { class: 'deg-rang deg-tete', 'aria-hidden': 'true' }, h('span'), ...NIV_DEG.map((mot) => h('span', {}, mot))),
     D.roue.map((r) => r.f).map((f) => {
       const i = fi(f), v = ETAT.notes[i], haut = D.continu.cible[i].haut;
-      return h('div', { class: 'deg-rang', 'data-role': 'note', 'data-famille': f },
+      return h('div', { class: 'deg-rang', 'data-role': 'note', 'data-famille': f, role: 'radiogroup', 'aria-label': D.long[f] },
         h('span', { class: 'deg-nom' + (D.attendues.includes(f) ? ' attendue' : '') }, D.court[f]),
-        h('span', { class: 'deg-seg', role: 'radiogroup', 'aria-label': D.long[f] },
-          NIV_DEG.map((mot, n) => h('button', {
-            type: 'button', role: 'radio', 'aria-checked': String(v === n), class: v === n && n > haut + 0.05 ? 'trop' : null, 'data-k': 'deg-' + f + '-' + n,
-            'aria-label': D.long[f] + ' : ' + mot + (v === n ? ' (retoucher : pas goûté)' : ''),
-            onclick: (e) => { e.stopPropagation(); ETAT.notes[i] = ETAT.notes[i] === n ? null : n; redessiner(); },
-          }, mot))));
+        ...NIV_DEG.map((mot, n) => h('button', {
+          type: 'button', role: 'radio', 'aria-checked': String(v === n), class: 'deg-n n' + n + (v === n && n > haut + 0.05 ? ' trop' : ''), 'data-k': 'deg-' + f + '-' + n,
+          'aria-label': D.long[f] + ' : ' + mot + (v === n ? ' (retoucher : pas goûté)' : ''),
+          onclick: (e) => { e.stopPropagation(); ETAT.notes[i] = ETAT.notes[i] === n ? null : n; redessiner(); },
+        }, h('i'))));
     }));
 }
 function partieBiere(part) {
@@ -554,20 +557,25 @@ function partieBiere(part) {
   part.append(rangee);
   const bloc = h('div', { class: 'bloc-lecture' });
   part.append(bloc);
+  const dirs = dirsActives();
+  const liens = D.voiesResume.filter((v) => dirs.includes(v.fam));
+  const prevu = liens.length ? null : h('div', { class: 'rangee p gris' }, 'Prévu avec ' + D.levure.nom + ', ' + D.levure.statut);
   const dessiner = () => {
     bloc.innerHTML = '';
     if (ETAT.lentille === 'radar') {
       const ancien = rangee.querySelector('.seg'); if (ancien) ancien.remove();
       // Radar (radar.js, m4) : ce que j'ai goûté face à la zone du style, la grille dessous.
       bloc.setAttribute('data-composant', 'radar');
-      // Les comptes de la prévision (au style, non situées) ne disent rien de la dégustation : cachés.
+      // Les comptes et la levure de la prévision ne disent rien de la dégustation : cachés.
       rangee.hidden = true;
+      if (prevu) prevu.hidden = true;
       RADAR.biere(bloc);
       bloc.append(grilleDegustation(dessiner));
       return;
     }
     bloc.removeAttribute('data-composant');
     rangee.hidden = false;
+    if (prevu) prevu.hidden = false;
     const ancien = rangee.querySelector('.seg'); if (ancien) ancien.remove();
     const seg = echelleSeg(); seg.style.marginLeft = 'auto'; rangee.append(seg);
     bloc.append(h('div', { class: 'legende-f', 'aria-label': 'Sources de ma bière' },
@@ -583,10 +591,8 @@ function partieBiere(part) {
   dessiner();
   LENTILLE_CB = () => dessiner();
   part.append(chipsDirection());
-  const dirs = dirsActives();
-  const liens = D.voiesResume.filter((v) => dirs.includes(v.fam));
   if (liens.length) part.append(h('div', { class: 'rangee', style: 'flex-wrap:wrap' }, liens.map((v) => h('button', { class: 'lien', onclick: () => { ETAT.filtreVoies = v.fam; ouvrir('suggestions'); } }, v.texte))));
-  else part.append(h('div', { class: 'rangee p gris' }, 'Prévu avec ' + D.levure.nom + ', ' + D.levure.statut));
+  else part.append(prevu);
 }
 
 /* ---------- Partie 2 : Suggestions (objet 4), avant / après face à la cible ---------- */

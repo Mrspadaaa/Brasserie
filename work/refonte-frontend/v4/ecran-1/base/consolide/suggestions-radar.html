@@ -381,15 +381,24 @@
   .rdr.balaye { cursor: grabbing; }
   .rdr-bulle { position: absolute; left: 0; top: 0; z-index: 3; display: none; pointer-events: none; width: max-content; max-width: 100%; padding: 4px 8px; border: 1px solid #999; border-radius: 6px; background: #fff; color: var(--encre); font-size: 14px; line-height: 1.3; box-shadow: 0 2px 6px rgba(0, 0, 0, .12); }
   .rdr-bulle.on { display: block; }
-  /* La grille de dégustation (m4) : une rangée par famille, quatre notes d'un toucher. */
-  .deg-grille { display: grid; gap: 3px; margin-top: 4px; }
-  .deg-rang { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 30px; }
-  .deg-nom { min-width: 0; font-size: 13px; color: var(--encre); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* La grille de dégustation (m4) : une rangée par famille, quatre pastilles d'un toucher ; les
+     quatre notes écrites une fois, en tête de colonne. */
+  .deg-grille { display: grid; margin-top: 2px; }
+  .deg-rang { display: grid; grid-template-columns: minmax(0, 1fr) repeat(4, 58px); align-items: center; min-height: 26px; }
+  .deg-tete { min-height: 18px; }
+  .deg-tete span { font-size: 12px; color: var(--gris); text-align: center; white-space: nowrap; }
+  .deg-nom { min-width: 0; font-size: 14px; color: var(--encre); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .deg-nom.attendue { font-weight: 650; }
-  .deg-seg { display: grid; grid-template-columns: repeat(4, 56px); gap: 3px; }
-  .deg-seg button { height: 28px; padding: 0; border: 1px solid var(--trait); border-radius: 6px; background: #fff; color: var(--gris); font: inherit; font-size: 12px; cursor: pointer; }
-  .deg-seg button[aria-checked="true"] { background: #0072B2; border-color: #0072B2; color: #fff; font-weight: 600; }
-  .deg-seg button.trop { background: var(--acc); border-color: var(--acc); }
+  .deg-n { display: grid; place-items: center; height: 26px; padding: 0; border: 0; background: none; cursor: pointer; }
+  .deg-n i { display: block; border-radius: 50%; background: var(--trait); }
+  .deg-n.n0 i { width: 10px; height: 10px; background: none; border: 1.5px solid var(--trait); }
+  .deg-n.n1 i { width: 7px; height: 7px; }
+  .deg-n.n2 i { width: 11px; height: 11px; }
+  .deg-n.n3 i { width: 15px; height: 15px; }
+  .deg-n[aria-checked="true"] i { background: #0072B2; box-shadow: 0 0 0 4px rgba(0, 114, 178, .16); }
+  .deg-n.n0[aria-checked="true"] i { background: #fff; border-color: #0072B2; }
+  .deg-n.trop i { background: var(--acc); box-shadow: 0 0 0 4px color-mix(in srgb, var(--acc) 18%, transparent); }
+  .rangee[hidden] { display: none; }
   .rdr-bulle b { font-weight: 650; }
   .puces-v .chip { height: 30px; font-weight: 600; }
 
@@ -446,7 +455,7 @@
   .f-arome { display: flex; flex-direction: column; align-items: center; gap: 0; }
   .f-leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gris); min-height: 18px; }
   /* h4 : la réponse de ses fiches à ma demande, sous la roue. */
-  .f-dem { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 2px 0 0; font-size: 13px; color: var(--gris); }
+  .f-dem { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 2px 0 0; font-size: 12px; color: var(--gris); }
   .f-dem-i b { color: var(--encre); font-weight: 650; }
   .f-leg .pt-c, .f-leg .pt-m { width: 9px; height: 9px; border-radius: 5px; border: 1.4px solid var(--encre); background: #fff; margin-left: 6px; }
   .f-leg .pt-m { background: var(--encre); }
@@ -1021,18 +1030,21 @@ function echelleSeg() {
    radar au-dessus se redessine. Peu de mots : la note au-dessus du style passe à l'orangé, rien
    d'autre ne s'écrit. */
 const NIV_DEG = ['pas senti', 'faible', 'moyen', 'marqué'];
+/* La grille (m4, 19.10 : « attention à pas surchargé en texte ») : les quatre notes écrites une
+   seule fois en tête de colonne ; chaque rangée a quatre pastilles, de l'anneau (pas senti) au gros
+   point (marqué). Rien de coché : pas goûté. */
 function grilleDegustation(redessiner) {
   return h('div', { class: 'deg-grille', role: 'group', 'data-role': 'degustation', 'aria-label': 'Ma dégustation : une note par famille' },
+    h('div', { class: 'deg-rang deg-tete', 'aria-hidden': 'true' }, h('span'), ...NIV_DEG.map((mot) => h('span', {}, mot))),
     D.roue.map((r) => r.f).map((f) => {
       const i = fi(f), v = ETAT.notes[i], haut = D.continu.cible[i].haut;
-      return h('div', { class: 'deg-rang', 'data-role': 'note', 'data-famille': f },
+      return h('div', { class: 'deg-rang', 'data-role': 'note', 'data-famille': f, role: 'radiogroup', 'aria-label': D.long[f] },
         h('span', { class: 'deg-nom' + (D.attendues.includes(f) ? ' attendue' : '') }, D.court[f]),
-        h('span', { class: 'deg-seg', role: 'radiogroup', 'aria-label': D.long[f] },
-          NIV_DEG.map((mot, n) => h('button', {
-            type: 'button', role: 'radio', 'aria-checked': String(v === n), class: v === n && n > haut + 0.05 ? 'trop' : null, 'data-k': 'deg-' + f + '-' + n,
-            'aria-label': D.long[f] + ' : ' + mot + (v === n ? ' (retoucher : pas goûté)' : ''),
-            onclick: (e) => { e.stopPropagation(); ETAT.notes[i] = ETAT.notes[i] === n ? null : n; redessiner(); },
-          }, mot))));
+        ...NIV_DEG.map((mot, n) => h('button', {
+          type: 'button', role: 'radio', 'aria-checked': String(v === n), class: 'deg-n n' + n + (v === n && n > haut + 0.05 ? ' trop' : ''), 'data-k': 'deg-' + f + '-' + n,
+          'aria-label': D.long[f] + ' : ' + mot + (v === n ? ' (retoucher : pas goûté)' : ''),
+          onclick: (e) => { e.stopPropagation(); ETAT.notes[i] = ETAT.notes[i] === n ? null : n; redessiner(); },
+        }, h('i'))));
     }));
 }
 function partieBiere(part) {
@@ -1043,20 +1055,25 @@ function partieBiere(part) {
   part.append(rangee);
   const bloc = h('div', { class: 'bloc-lecture' });
   part.append(bloc);
+  const dirs = dirsActives();
+  const liens = D.voiesResume.filter((v) => dirs.includes(v.fam));
+  const prevu = liens.length ? null : h('div', { class: 'rangee p gris' }, 'Prévu avec ' + D.levure.nom + ', ' + D.levure.statut);
   const dessiner = () => {
     bloc.innerHTML = '';
     if (ETAT.lentille === 'radar') {
       const ancien = rangee.querySelector('.seg'); if (ancien) ancien.remove();
       // Radar (radar.js, m4) : ce que j'ai goûté face à la zone du style, la grille dessous.
       bloc.setAttribute('data-composant', 'radar');
-      // Les comptes de la prévision (au style, non situées) ne disent rien de la dégustation : cachés.
+      // Les comptes et la levure de la prévision ne disent rien de la dégustation : cachés.
       rangee.hidden = true;
+      if (prevu) prevu.hidden = true;
       RADAR.biere(bloc);
       bloc.append(grilleDegustation(dessiner));
       return;
     }
     bloc.removeAttribute('data-composant');
     rangee.hidden = false;
+    if (prevu) prevu.hidden = false;
     const ancien = rangee.querySelector('.seg'); if (ancien) ancien.remove();
     const seg = echelleSeg(); seg.style.marginLeft = 'auto'; rangee.append(seg);
     bloc.append(h('div', { class: 'legende-f', 'aria-label': 'Sources de ma bière' },
@@ -1072,10 +1089,8 @@ function partieBiere(part) {
   dessiner();
   LENTILLE_CB = () => dessiner();
   part.append(chipsDirection());
-  const dirs = dirsActives();
-  const liens = D.voiesResume.filter((v) => dirs.includes(v.fam));
   if (liens.length) part.append(h('div', { class: 'rangee', style: 'flex-wrap:wrap' }, liens.map((v) => h('button', { class: 'lien', onclick: () => { ETAT.filtreVoies = v.fam; ouvrir('suggestions'); } }, v.texte))));
-  else part.append(h('div', { class: 'rangee p gris' }, 'Prévu avec ' + D.levure.nom + ', ' + D.levure.statut));
+  else part.append(prevu);
 }
 
 /* ---------- Partie 2 : Suggestions (objet 4), avant / après face à la cible ---------- */
@@ -1427,27 +1442,28 @@ function atterrir(de) {
 }
 
 /* ---------- La loupe et le geste : p02, Dock sans état (D47, D55, D56, D61, D63, D64) ---------- */
-/* Le rail sous le doigt se grossit comme le Dock : ×2,5 au doigt, retombée linéaire jusqu'à ×1 à
-   ±20′ (4 graduations du segment tenu), et rien d'autre ne change d'échelle. Le grossissement est
-   calculé à partir de la seule position du doigt : aucune fenêtre ne se fait entraîner, aucun état.
-   Le haut du rail reste fixe ; l'excès du grossissement (au plus 1,5 × 20′) pousse le bas, et le
-   rail de base est choisi pour que la longueur totale reste celle du repos (+ 80 px au plus).
+/* Le rail sous le doigt se grossit comme le Dock, à plateau (19.10 : « L'échelle ne s'adapte
+   toujours pas à l'endroit où on est ??? ») : ×3 régulier sur ±5′ autour du doigt, une rampe
+   linéaire sur 2 graduations de chaque côté, puis ×1 ; rien d'autre ne change d'échelle. Le
+   grossissement est calculé à partir de la seule position du doigt : aucune fenêtre ne se fait
+   entraîner, aucun état. Le haut du rail reste fixe ; l'excès du grossissement (2 × (2 plateaux +
+   rampe)) pousse le bas, et le rail de base est choisi pour que la longueur totale reste celle du
+   repos (+ 120 px au plus).
    Le moment sous le doigt : le point c du rail de base tel que Y(c ; c) = doigt (fonction strictement
    croissante, pente ≥ 1), puis la graduation la plus proche de c. Les autres houblons restent à leur
    moment et ne vont jamais de côté (D64) ; deux houblons au même moment : une seule étiquette réunie. */
 const nIntervalles = (s) => valeursSeg(s).length - 1;
-const LOUPE = { poids: 5, max: { focus: 14, autre: 3 }, min: { focus: 8, autre: 1.2 }, plancher: 6, marge: 80, ouverture: 170, gros: 2.5, rayon: 4 };
+// Un cran déplace le plateau de 2 écarts du rail de base : au plus 11,5 px par 5′, soit 23 px (D61 bis).
+const LOUPE = { poids: 5, max: { focus: 11.5, autre: 3 }, min: { focus: 8, autre: 1.2 }, plancher: 6, marge: 120, ouverture: 170, gros: 3, plateau: 1, rampe: 2 };
 const KG = LOUPE.gros - 1;
-/* Les crans : le centre du Dock reste sur la graduation tenue tant que le doigt est dans la moitié
-   centrale de sa tranche, puis passe en douceur à la suivante (pente 2) : la graduation visée ne fuit
-   pas sous le doigt, et rien ne saute (au plus un écart de graduation × 1,5). */
+/* Les crans : le centre du Dock est la graduation tenue (la plus proche du doigt). Le rail reste
+   immobile tant que le doigt est dans sa tranche (le doigt à une demi-tranche au plus de la
+   graduation tenue), puis passe d'un cran à la suivante. Un passage en douceur (pente 2, base v4.4)
+   ferait couler le rail à 4 fois la vitesse du doigt sous un ×3 : la graduation visée fuirait. */
 function cran(G, c) {
-  const Z = G.Z;
-  if (c <= Z[0] || c >= Z[Z.length - 1]) return c;
-  let i = 0; while (Z[i + 1] < c) i++;
-  const a = Z[i], b = Z[i + 1], m = (a + b) / 2, d = (b - a) / 2;
-  if (c < m) { const t = (c - a) / d; return t <= 0.5 ? a : a + (2 * t - 1) * d; }
-  const t = (b - c) / d; return t <= 0.5 ? b : b - (2 * t - 1) * d;
+  let b = G.Z[0];
+  for (const z of G.Z) if (Math.abs(z - c) < Math.abs(b - c)) b = z;
+  return b;
 }
 // Écarts fixes de la structure (px) : tête d'ébullition → début, 0′ → whirlpool, whirlpool → 100 °C,
 // 60 °C → levure, levure → fermentation, fermentation → J+0, J+14 → post, post → J+0, fin du rail.
@@ -1474,13 +1490,21 @@ function planFixe(e, x, h) {
   return { P, R, haut: h - 10, bas: y + g(8) };
 }
 const structAvant = (v) => ({ ebullition: 1, whirlpool: 3, fermentation: 6, post: 8 })[segDe(v)];
-/* Le Dock : intégrale de la tente (1 au doigt, 0 à ±1 rayon), impaire. */
-const Stente = (a) => { const b = Math.min(1, Math.abs(a)); return Math.sign(a) * (b - (b * b) / 2); };
-const grossi = (G, z, c) => 1 + KG * Math.max(0, 1 - Math.abs(z - c) / G.W);
+/* Le Dock : forme du plateau (1 sur ±Pl, rampe jusqu'à 0 sur Ra) et son intégrale M, impaire. */
+const forme = (G, d) => { const a = Math.abs(d); return a <= G.Pl ? 1 : Math.max(0, 1 - (a - G.Pl) / G.Ra); };
+const Mpl = (G, x) => {
+  const a = Math.abs(x), r = a - G.Pl;
+  const v = a <= G.Pl ? a : r <= G.Ra ? G.Pl + r - (r * r) / (2 * G.Ra) : G.Pl + G.Ra / 2;
+  return Math.sign(x) * v;
+};
+const grossi = (G, z, c) => 1 + KG * forme(G, z - c);
 /* Position affichée du point z du rail de base, le doigt sur c (haut du rail fixe). */
-/* Hors du segment tenu, le Dock reste garé au bord du segment : le rail y est immobile. */
+/* Hors du segment tenu, le Dock reste garé au bord du segment : le rail y est immobile. Le plateau
+   reste dans le segment : au début et à la fin (60′, 0′), son centre se tient à une graduation du
+   bord, et le doigt y est encore sur le plateau (D45 : les graduations voisines restent régulières). */
 const borne = (G, c) => Math.max(G.F0, Math.min(G.F1, c));
-const Yd = (G, z, c) => { const k = borne(G, c); return G.O + z + KG * G.W * (Stente((z - k) / G.W) + Stente((k - G.haut) / G.W)); };
+const centre = (G, c) => { const a = G.F0 + G.Pl, b = G.F1 - G.Pl; return a > b ? (G.F0 + G.F1) / 2 : Math.max(a, Math.min(b, c)); };
+const Yd = (G, z, c) => { const k = centre(G, c); return G.O + z + KG * (Mpl(G, z - k) + Mpl(G, k - G.haut)); };
 const phi = (G, c) => Yd(G, c, c) - G.O;
 /* Le point c du rail de base sous le doigt : seule la position du doigt compte. */
 function sousDoigt(G, yF) {
@@ -1490,7 +1514,7 @@ function sousDoigt(G, yF) {
   return (lo + hi) / 2;
 }
 /* Le rail de base de la prise : écarts e = λ × poids (le segment tenu pèse LOUPE.poids), λ le plus
-   grand qui tient : le bas, grossissement compris (au plus 1,5 rayon), dans la hauteur du repos + 80 px,
+   grand qui tient : le bas, grossissement compris (surplus du plateau), dans la hauteur du repos + 120 px,
    et la tête dans le rail (longue ébullition : jusqu'en haut de l'écran). La graduation de la ligne
    tenue reste sous le doigt à la prise. La place en trop va aux écarts de structure. */
 function disposerDock(vA, yA, H0, frTop) {
@@ -1498,9 +1522,9 @@ function disposerDock(vA, yA, H0, frTop) {
   const ecarts = (lam) => Object.fromEntries(SEGMENTS.map((s) => [s, s === segA
     ? Math.max(LOUPE.min.focus, Math.min(LOUPE.max.focus, lam * LOUPE.poids))
     : Math.max(LOUPE.min.autre, Math.min(LOUPE.max.autre, lam))]));
-  const plan = (e, x) => { const G = planFixe(e, x, 0); G.e = e; G.W = LOUPE.rayon * e[segA]; G.cA = vA === 'fwh' ? G.P['b' + EBU] - e.ebullition : G.P[vA]; const Va = valeursSeg(segA); G.F0 = G.P[Va[0]]; G.F1 = G.P[Va[Va.length - 1]]; G.O = 0; G.O = yA - phi(G, G.cA); G.Z = Va.map((v) => G.P[v]); return G; };
+  const plan = (e, x) => { const G = planFixe(e, x, 0); G.e = e; G.Pl = LOUPE.plateau * e[segA]; G.Ra = LOUPE.rampe * e[segA]; G.surplus = KG * (2 * G.Pl + G.Ra); G.cA = vA === 'fwh' ? G.P['b' + EBU] - e.ebullition : G.P[vA]; const Va = valeursSeg(segA); G.F0 = G.P[Va[0]]; G.F1 = G.P[Va[Va.length - 1]]; G.O = 0; G.O = yA - phi(G, G.cA); G.Z = Va.map((v) => G.P[v]); return G; };
   const bas = (G) => Yd(G, G.bas, G.cA);
-  const tient = (lam, haut) => { const G = plan(ecarts(lam), []); return G.O + G.bas + KG * G.W <= H0 + LOUPE.marge && G.O + G.haut >= haut; };
+  const tient = (lam, haut) => { const G = plan(ecarts(lam), []); return G.O + G.bas + G.surplus <= H0 + LOUPE.marge && G.O + G.haut >= haut; };
   let haut = 0, lam = 0.05;
   for (const essai of [0, 8 - frTop]) {
     haut = essai;
@@ -1643,7 +1667,7 @@ function ouvrirLoupe(carte, l, ev) {
     // Le Dock écrit ses minutes (19.10, défaut du jury : la minute n'était lue que dans la pastille,
     // sous le pouce) : sur les graduations grossies, à droite du trait, hors de la pastille tenue
     // (20 px au moins du doigt), sans toucher une carte, une étape ni la minute écrite au-dessus.
-    const occupe = [[yC0 - 3, yC1 + 3], ...rangees.map((r) => [r.y - r.h / 2, r.y + r.h / 2]), ...jetons.filter((j) => !j.fondu).map((j) => [j.y - j.h / 2, j.y + j.h / 2])];
+    const occupe = [[yC0, yC1], ...rangees.map((r) => [r.y - r.h / 2, r.y + r.h / 2]), ...jetons.filter((j) => !j.fondu).map((j) => [j.y - j.h / 2, j.y + j.h / 2])];
     let dernier = -Infinity;
     for (const tk of ticks) {
       const ecrit = k >= 1 && tk.etat === 'vue' && tk.v !== g.v && Math.abs(tk.y - yDoigt) >= 20 && tk.y - dernier >= 16

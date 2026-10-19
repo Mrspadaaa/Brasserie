@@ -163,27 +163,28 @@ function atterrir(de) {
 }
 
 /* ---------- La loupe et le geste : p02, Dock sans état (D47, D55, D56, D61, D63, D64) ---------- */
-/* Le rail sous le doigt se grossit comme le Dock : ×2,5 au doigt, retombée linéaire jusqu'à ×1 à
-   ±20′ (4 graduations du segment tenu), et rien d'autre ne change d'échelle. Le grossissement est
-   calculé à partir de la seule position du doigt : aucune fenêtre ne se fait entraîner, aucun état.
-   Le haut du rail reste fixe ; l'excès du grossissement (au plus 1,5 × 20′) pousse le bas, et le
-   rail de base est choisi pour que la longueur totale reste celle du repos (+ 80 px au plus).
+/* Le rail sous le doigt se grossit comme le Dock, à plateau (19.10 : « L'échelle ne s'adapte
+   toujours pas à l'endroit où on est ??? ») : ×3 régulier sur ±5′ autour du doigt, une rampe
+   linéaire sur 2 graduations de chaque côté, puis ×1 ; rien d'autre ne change d'échelle. Le
+   grossissement est calculé à partir de la seule position du doigt : aucune fenêtre ne se fait
+   entraîner, aucun état. Le haut du rail reste fixe ; l'excès du grossissement (2 × (2 plateaux +
+   rampe)) pousse le bas, et le rail de base est choisi pour que la longueur totale reste celle du
+   repos (+ 120 px au plus).
    Le moment sous le doigt : le point c du rail de base tel que Y(c ; c) = doigt (fonction strictement
    croissante, pente ≥ 1), puis la graduation la plus proche de c. Les autres houblons restent à leur
    moment et ne vont jamais de côté (D64) ; deux houblons au même moment : une seule étiquette réunie. */
 const nIntervalles = (s) => valeursSeg(s).length - 1;
-const LOUPE = { poids: 5, max: { focus: 14, autre: 3 }, min: { focus: 8, autre: 1.2 }, plancher: 6, marge: 80, ouverture: 170, gros: 2.5, rayon: 4 };
+// Un cran déplace le plateau de 2 écarts du rail de base : au plus 11,5 px par 5′, soit 23 px (D61 bis).
+const LOUPE = { poids: 5, max: { focus: 11.5, autre: 3 }, min: { focus: 8, autre: 1.2 }, plancher: 6, marge: 120, ouverture: 170, gros: 3, plateau: 1, rampe: 2 };
 const KG = LOUPE.gros - 1;
-/* Les crans : le centre du Dock reste sur la graduation tenue tant que le doigt est dans la moitié
-   centrale de sa tranche, puis passe en douceur à la suivante (pente 2) : la graduation visée ne fuit
-   pas sous le doigt, et rien ne saute (au plus un écart de graduation × 1,5). */
+/* Les crans : le centre du Dock est la graduation tenue (la plus proche du doigt). Le rail reste
+   immobile tant que le doigt est dans sa tranche (le doigt à une demi-tranche au plus de la
+   graduation tenue), puis passe d'un cran à la suivante. Un passage en douceur (pente 2, base v4.4)
+   ferait couler le rail à 4 fois la vitesse du doigt sous un ×3 : la graduation visée fuirait. */
 function cran(G, c) {
-  const Z = G.Z;
-  if (c <= Z[0] || c >= Z[Z.length - 1]) return c;
-  let i = 0; while (Z[i + 1] < c) i++;
-  const a = Z[i], b = Z[i + 1], m = (a + b) / 2, d = (b - a) / 2;
-  if (c < m) { const t = (c - a) / d; return t <= 0.5 ? a : a + (2 * t - 1) * d; }
-  const t = (b - c) / d; return t <= 0.5 ? b : b - (2 * t - 1) * d;
+  let b = G.Z[0];
+  for (const z of G.Z) if (Math.abs(z - c) < Math.abs(b - c)) b = z;
+  return b;
 }
 // Écarts fixes de la structure (px) : tête d'ébullition → début, 0′ → whirlpool, whirlpool → 100 °C,
 // 60 °C → levure, levure → fermentation, fermentation → J+0, J+14 → post, post → J+0, fin du rail.
@@ -210,13 +211,21 @@ function planFixe(e, x, h) {
   return { P, R, haut: h - 10, bas: y + g(8) };
 }
 const structAvant = (v) => ({ ebullition: 1, whirlpool: 3, fermentation: 6, post: 8 })[segDe(v)];
-/* Le Dock : intégrale de la tente (1 au doigt, 0 à ±1 rayon), impaire. */
-const Stente = (a) => { const b = Math.min(1, Math.abs(a)); return Math.sign(a) * (b - (b * b) / 2); };
-const grossi = (G, z, c) => 1 + KG * Math.max(0, 1 - Math.abs(z - c) / G.W);
+/* Le Dock : forme du plateau (1 sur ±Pl, rampe jusqu'à 0 sur Ra) et son intégrale M, impaire. */
+const forme = (G, d) => { const a = Math.abs(d); return a <= G.Pl ? 1 : Math.max(0, 1 - (a - G.Pl) / G.Ra); };
+const Mpl = (G, x) => {
+  const a = Math.abs(x), r = a - G.Pl;
+  const v = a <= G.Pl ? a : r <= G.Ra ? G.Pl + r - (r * r) / (2 * G.Ra) : G.Pl + G.Ra / 2;
+  return Math.sign(x) * v;
+};
+const grossi = (G, z, c) => 1 + KG * forme(G, z - c);
 /* Position affichée du point z du rail de base, le doigt sur c (haut du rail fixe). */
-/* Hors du segment tenu, le Dock reste garé au bord du segment : le rail y est immobile. */
+/* Hors du segment tenu, le Dock reste garé au bord du segment : le rail y est immobile. Le plateau
+   reste dans le segment : au début et à la fin (60′, 0′), son centre se tient à une graduation du
+   bord, et le doigt y est encore sur le plateau (D45 : les graduations voisines restent régulières). */
 const borne = (G, c) => Math.max(G.F0, Math.min(G.F1, c));
-const Yd = (G, z, c) => { const k = borne(G, c); return G.O + z + KG * G.W * (Stente((z - k) / G.W) + Stente((k - G.haut) / G.W)); };
+const centre = (G, c) => { const a = G.F0 + G.Pl, b = G.F1 - G.Pl; return a > b ? (G.F0 + G.F1) / 2 : Math.max(a, Math.min(b, c)); };
+const Yd = (G, z, c) => { const k = centre(G, c); return G.O + z + KG * (Mpl(G, z - k) + Mpl(G, k - G.haut)); };
 const phi = (G, c) => Yd(G, c, c) - G.O;
 /* Le point c du rail de base sous le doigt : seule la position du doigt compte. */
 function sousDoigt(G, yF) {
@@ -226,7 +235,7 @@ function sousDoigt(G, yF) {
   return (lo + hi) / 2;
 }
 /* Le rail de base de la prise : écarts e = λ × poids (le segment tenu pèse LOUPE.poids), λ le plus
-   grand qui tient : le bas, grossissement compris (au plus 1,5 rayon), dans la hauteur du repos + 80 px,
+   grand qui tient : le bas, grossissement compris (surplus du plateau), dans la hauteur du repos + 120 px,
    et la tête dans le rail (longue ébullition : jusqu'en haut de l'écran). La graduation de la ligne
    tenue reste sous le doigt à la prise. La place en trop va aux écarts de structure. */
 function disposerDock(vA, yA, H0, frTop) {
@@ -234,9 +243,9 @@ function disposerDock(vA, yA, H0, frTop) {
   const ecarts = (lam) => Object.fromEntries(SEGMENTS.map((s) => [s, s === segA
     ? Math.max(LOUPE.min.focus, Math.min(LOUPE.max.focus, lam * LOUPE.poids))
     : Math.max(LOUPE.min.autre, Math.min(LOUPE.max.autre, lam))]));
-  const plan = (e, x) => { const G = planFixe(e, x, 0); G.e = e; G.W = LOUPE.rayon * e[segA]; G.cA = vA === 'fwh' ? G.P['b' + EBU] - e.ebullition : G.P[vA]; const Va = valeursSeg(segA); G.F0 = G.P[Va[0]]; G.F1 = G.P[Va[Va.length - 1]]; G.O = 0; G.O = yA - phi(G, G.cA); G.Z = Va.map((v) => G.P[v]); return G; };
+  const plan = (e, x) => { const G = planFixe(e, x, 0); G.e = e; G.Pl = LOUPE.plateau * e[segA]; G.Ra = LOUPE.rampe * e[segA]; G.surplus = KG * (2 * G.Pl + G.Ra); G.cA = vA === 'fwh' ? G.P['b' + EBU] - e.ebullition : G.P[vA]; const Va = valeursSeg(segA); G.F0 = G.P[Va[0]]; G.F1 = G.P[Va[Va.length - 1]]; G.O = 0; G.O = yA - phi(G, G.cA); G.Z = Va.map((v) => G.P[v]); return G; };
   const bas = (G) => Yd(G, G.bas, G.cA);
-  const tient = (lam, haut) => { const G = plan(ecarts(lam), []); return G.O + G.bas + KG * G.W <= H0 + LOUPE.marge && G.O + G.haut >= haut; };
+  const tient = (lam, haut) => { const G = plan(ecarts(lam), []); return G.O + G.bas + G.surplus <= H0 + LOUPE.marge && G.O + G.haut >= haut; };
   let haut = 0, lam = 0.05;
   for (const essai of [0, 8 - frTop]) {
     haut = essai;
@@ -379,7 +388,7 @@ function ouvrirLoupe(carte, l, ev) {
     // Le Dock écrit ses minutes (19.10, défaut du jury : la minute n'était lue que dans la pastille,
     // sous le pouce) : sur les graduations grossies, à droite du trait, hors de la pastille tenue
     // (20 px au moins du doigt), sans toucher une carte, une étape ni la minute écrite au-dessus.
-    const occupe = [[yC0 - 3, yC1 + 3], ...rangees.map((r) => [r.y - r.h / 2, r.y + r.h / 2]), ...jetons.filter((j) => !j.fondu).map((j) => [j.y - j.h / 2, j.y + j.h / 2])];
+    const occupe = [[yC0, yC1], ...rangees.map((r) => [r.y - r.h / 2, r.y + r.h / 2]), ...jetons.filter((j) => !j.fondu).map((j) => [j.y - j.h / 2, j.y + j.h / 2])];
     let dernier = -Infinity;
     for (const tk of ticks) {
       const ecrit = k >= 1 && tk.etat === 'vue' && tk.v !== g.v && Math.abs(tk.y - yDoigt) >= 20 && tk.y - dernier >= 16

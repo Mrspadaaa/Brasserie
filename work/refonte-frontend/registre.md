@@ -109,13 +109,34 @@ regardées), on publie sur la page partagée, on commente le ticket.
 
 | Ticket | Choix | État |
 |---|---|---|
-| #134 rail | p02 Dock | intégré (base v4.4, b74432d), **mais il le juge trop faible** (voir 1) |
-| #135 radars | m4 (Ma bière) et h4 (fiche), **sans légende écrite**, peu de texte | codé, **batterie en échec** (voir 3) |
+| #134 rail | p02 Dock | **Dock à plateau, base v4.5** (×3 sur ±5′, crans nets) : RAIL OK, LOT OK ; à juger au doigt |
+| #135 radars | m4 (Ma bière) et h4 (fiche), **sans légende écrite**, peu de texte | **fini, base v4.5** : LOT OK 1/1 |
 | #136 échelles, classements | mis de côté | rien à faire |
 | #137 substitution | **u4** (le jury mettait u3) | à intégrer (voir 6) |
 | #138 Comparer | **p06** en barres ; **radar de p02 + intervalle de confiance** | à intégrer (voir 4) |
 | #138 Suggestions | radar **p10, p5, p3 → « mais radar beaucoup plus grand »** | à intégrer (voir 5) |
 | #139 grille | m4 en est la saisie ; le code de l'app manque « non goûté » (commentaire du ticket) | après la porte B |
+
+### Fait le 19.10, midi (session neuve) : base v4.5, étapes 1 à 3
+
+- **Rail (1)** : Dock à plateau codé dans `etape-consolide.js` (`forme`, `Mpl`, `centre`, `cran`,
+  `LOUPE` gros 3, plateau 1, rampe 2, marge 120, max focus 11,5).
+  - Écart à la piste : `cran` passe d'un cran net (la graduation la plus proche du doigt). Le
+    passage doux (pente 2) faisait couler le rail à 4 fois la vitesse du doigt sous un ×3 : le doigt
+    du contrôle ratait 35′ (D61) et Motueka bondissait de 27 px (D61 bis). Le max focus 11,5 borne
+    le cran à 23 px (D61 bis : 24).
+  - `centre` garde le plateau dans le segment (D45 échouait à 60′ : 9 à 28 px).
+  - Sonde : 26 px par 5′ sous le doigt sur `index` (9 au loin), 35 sur `cas-k3` (12) ; D61 −12 %
+    tenu à 10′ (seuil 12 % : sans marge). Le rail de base d'`index` reste à 8,7 px : la marge de 120
+    est celle de D55 (ajouts proposés descendus de 120 px au plus).
+  - Captures `base/captures/consolide-*-pendant.png` regardées : minutes écrites autour du doigt.
+- **m4 et h4 (3)** : grille à quatre pastilles, mots en tête (95 → 48 mots, un écran) ; comptes et
+  levure cachés en Radar (`rangee[hidden]` ne cachait rien : `.rangee{display:flex}`) ; `.f-dem`
+  et `.deg-nom` alignés sur l'échelle 12 / 14 / 19.
+- **Page partagée (2)** : générateur `v4/outils/page-partagee/build.mjs` réécrit pour la seule
+  base (puces par écran, 5 captures du geste, sans notes) ; `test.mjs` joué ; publiée en version 10
+  au même lien, titre « Houblons, base v4.5 », 36 fichiers de p02, p03 et p08 en null.
+- Preuves : `LOT OK 1/1`, `SPEC OK` (162/162), `RAIL OK`. Commentaires #134 et #135.
 
 ### À faire, dans l'ordre
 
