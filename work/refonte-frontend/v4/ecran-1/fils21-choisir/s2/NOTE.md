@@ -1,0 +1,27 @@
+s2 · Trois plans côte à côte (comparer plusieurs scénarios en réglant tout, puis choisir ; vrai `donnees/profils-simules.json`).
+
+- **Ce qui tient** : trois plans, au départ les cas du brasseur : A = Citra 2 g/L 3 j puis Galaxy 2 g/L 7 j (K3), B = Citra 3 j puis Idaho 7 5 j (K3), C = Citra seul 4 g/L 3 j (K2), à la même dose totale.
+  - **Les cartes** : chaque plan dit ses houblons (couleur + nom), leur dose et leurs jours, l'α de chacun (le lot, ou la plage des fiches), la confiance du moteur (« moyenne », « bonne »), un bouton **réf.** et un bouton **choisir**. Toucher une carte la règle.
+  - **À dose égale** : une ligne dit « à dose égale : 4 g/L à cru chacun, même moment », ou prévient « doses ou moments différents : l'écart mêle houblon et dose » (I, idée 1).
+  - **Une même grille** : 12 familles nommées, trois barres par famille, superposées (A plein, B contour, C hachures : la **forme** distingue, pas la couleur, qui reste celle de la famille), devant la zone du style 16D ; la bande bas–haut entière du plan touché ; l'orangé au-delà du style.
+  - **L'écart écrit à la référence** : « +0,8 cran », « pareil », avec l'unité ; puis « ~ B contre C : Résineux +0,8 cran ; 4 hors du style 16D ». La référence se change d'un toucher.
+  - **Une vue « écarts »** : chaque plan contre la référence, de part et d'autre d'un trait (±3 crans). Elle montre ce que la vue « valeurs » cache : ici, Citra 3 j puis Idaho 7 donne un peu **moins** de fruit que Citra seul (−0,7 cran en agrumes et tropical). La réserve du moteur (Idaho 7 sans doute trop bas) est écrite à côté de ses vraies valeurs.
+  - **Le classement à la demande** : toucher le nom d'une famille classe les plans pour elle, avec leurs valeurs (« Tropicaux, du plus au moins : B ~4,2 crans · A ~4,1 crans · C ~4,1 crans »). Rien n'est classé à la place du brasseur ; il choisit, et le dock le garde (« choisi : C, Citra 4 g/L »).
+  - **Tout se règle** pour le plan touché : moment, premier et second houblon (ou « aucun »), dose et jours de chacun, levure ; la biotransformation de la levure est écrite (data-role="biotransformation").
+  - **Vraies valeurs du plan touché** : α, huile, bandes logarithmiques des rapports au seuil (Galaxy : 4MMP « ≥ ×4 », la bande ouverte à droite), mesures en bière et trous de comparatifs-dryhop.json.
+  - Écart à la baseline, comme s1 : barres couchées pour nommer les familles ; trois séries dans une rangée plutôt que trois tuiles, pour comparer à l'œil à la même échelle.
+- **Ce qui casse** :
+  - **166 mots au premier écran** pour 70 : les trois cartes en prennent 50 (doses, jours, α, confiance), les 12 familles et leurs écarts 37, les réglages 27.
+  - **CUMUL C2** échoue pour la même raison que s1 : plans après fermentation, la levure ne joue pas dans le moteur ; la page le dit et propose « essayer en actif ».
+  - Les trois plans de départ se ressemblent beaucoup (écarts sous un cran) : la vue « valeurs » les rend presque pareils ; il faut la vue « écarts » pour voir quelque chose.
+  - Le moment se règle pour tout le plan (pas par houblon) ; l'ordre « puis » n'est pas montré en jours (le moteur ne le chiffre pas).
+  - Trois barres de 5 px par famille : lisible, mais serré.
+- **Contrôles** (indicatifs en v0, joués le 19.10 sur `etat.html`) :
+  - COMMUN ECHEC 1 contrôle(s) : mots ECHEC (166 > 70) ; couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende, parlant OK ;
+  - LISIBLE OK : « s2 · 12 pictos · 6 mesurées · 45 simulées · 0 faute(s) » ;
+  - SIMULATION OK : « 1 simulation(s) · 29 réglage(s) · 19 mesurée(s) · le simulé bouge » ;
+  - CUMUL ECHEC : « 2 ajout(s) cumulé(s) · 4 choix de levure · biotransformation visible · levure sans effet » ;
+  - ALPHA OK (5 voies, 5 avec leur α) ; FICHE-BASELINE OK (fiche de Citra, 12 familles nommées, 17 pictos, 0 faute).
+- **Pire contraste** : 4,96:1, « Agrumes » (#856e0c sur blanc), sur 177 textes mesurés ; aucun sous 4,5:1 (le bouton « Garder ce plan » éteint est passé de 3,21:1 à #55555f sur #ececf1).
+- Captures (`../captures/`) : `s2-390.png` (page), `s2-premier-ecran-390.png`, `s2-ecarts.png` (B touché, vue écarts), `s2-regle-choisi.png` (dose changée, classement par Tropicaux, C choisi), `s2-legende.png`, `s2-absolu.png`, `s2-fiche.png`, `s2-page-390.png`.
+- Généré par `generateur-s2.mjs` avec `../s1/socle-s.mjs`, `../s1/sim-runtime.js` et `page-s2.js`. États par adresse : `?foc=B`, `?vue=ecart`, `?classe=tropical`, `?choix=C`, `?abs`, `?legende`.
