@@ -205,7 +205,20 @@ Voir `decisions.md` (D1 à D12).
     tous OK (FIL6 11/11, MOTS, COULEURS 11/11, AU-STYLE, AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE,
     SURVOL, BLOCS, FICHE 11/11, STANDARD ×11). Publication : page des fils de fer, version 14,
     section `t142-lot18` ; #142 commenté (6272136992). Générateurs dans chaque `lN/`.
-  - **Intégration de q2b dans la base, v4.10, en cours** : `base/BRIEF-INTEGRATION-Q2B.md`, chez un
+  - **Base v4.10 livrée** : q2b intégré (suggestions.js, suggestions.css, `suggestionsQ2b` dans
+    build.mjs, pictos dans page.html, `role` ajouté aux fiches par buildPack.ts). Les 17 voies sont
+    celles de s1.json, dans le même ordre. Le « + » ajoute à `ETAT.comp`, et l'appui long ouvre la
+    vraie fiche.
+    - Contrôles, rejoués par le pilote : LOT OK 1/1, FICHE OK (etat-b et comparer), FIL6, MOTS,
+      COULEURS, AU-STYLE, AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE, SURVOL et BLOCS OK ; vitest
+      78/78. `controle-suggestions` (D52) ne s'applique plus (D52 bis).
+    - Page à jour republiée (MoohEoyjPGAWqpMQZZCq5T, version 6), et `test.mjs` sans erreur.
+    - Fragile :
+      - le remplissage de l'écran B est à 0,81 ;
+      - la liste défile sous un en-tête fixe ;
+      - la fiche n'affiche pas encore l'usage (la vue fiche ne lit pas `role`) ;
+      - les mots des fiches mêlent le français et l'anglais.
+  - **Intégration de q2b dans la base, v4.10** : `base/BRIEF-INTEGRATION-Q2B.md`, chez un
     auteur dédié. Il possède suggestions.js et .css, l'acheminement dans build.mjs et buildPack.ts
     (S1 enrichi).
   - **Lot 18, baseline** (`ecran-1/fils18-baseline/`, `BRIEF-AUTEUR.md`) : l1 Cave (l'identité

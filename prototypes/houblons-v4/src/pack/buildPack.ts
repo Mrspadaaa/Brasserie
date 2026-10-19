@@ -350,7 +350,10 @@ export function buildAll() {
   const pack = buildPackCore();
   const sc = pack.scenarios as unknown as Record<string, { recipe: Recipe }>;
   const ctx = { recipes: ['S1', 'S4', 'S5'].map((scenario) => ({ scenario, recipe: sc[scenario].recipe })), ibuBase: s1Recipe(), gouts: NO_GOUTS };
-  const fiches = sheetKeysOf(pack).map((k) => hopSheet(k, ctx));
+  // role : l'usage du houblon selon le moteur (hopRole : fournisseur, sinon règle rôle-α), lu par les voies
+  // de Suggestions (#138, q2b : « le type de houblon pour son usage »). Golding et Columbus n'avaient de rôle
+  // nulle part dans le pack ; le pack lui-même est à 2 ko de son plafond de 500 ko, d'où la fiche.
+  const fiches = sheetKeysOf(pack).map((k) => ({ ...hopSheet(k, ctx), role: hopRole(k) }));
   const embedded = { ...pack, fichesHoublons: fiches };
   if (Buffer.byteLength(JSON.stringify(embedded)) + 1 <= PACK_MAX_BYTES) return { pack: embedded, fiches: null };
   const pointer = { fichier: FICHES_FILE, nombre: fiches.length, raison: 'Pack et fiches dépassent 500 ko ensemble : fiches dans un fichier à part.' };

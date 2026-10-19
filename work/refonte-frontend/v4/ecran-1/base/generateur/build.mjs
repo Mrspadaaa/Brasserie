@@ -308,7 +308,46 @@ function scenario(id) {
     const v = VARIETES.find((x) => x.id === c.cle);
     if (v) D0.fichesH[c.cle] = ficheCatalogue(v, D0.fichesH[s.cle], c, s.ref);
   }
+  suggestionsQ2b(S, D0, voiesBrutes);
   return D0;
+}
+
+/* Suggestions en Barres, base v4.10 (q2b, #138) : pour chaque voie du pack, ce que q2b lisait dans
+   donnees/s1.json (prototypes/houblons-v4/scripts/cas-suggestions.ts), avec les mêmes règles et rien
+   d'autre que le pack :
+   - tout : les familles que la voie fait bouger (effet établi, 0,05 point au moins), l'effet en points
+     (effect) et en crans du style (effet ÷ cran de la famille au style) ;
+   - fichesV : les houblons ajoutés ou changés (pas une simple baisse de dose), leurs niveaux de fiche
+     (pack-fiches, aromes : 2 marqué, 1 cité) et leur usage selon le moteur (hopRole, pack-fiches role) ;
+   - bio : les signaux de biotransformation du dry hop en fermentation active (signauxLevure) ;
+   - hs : les familles poussées hors du style (styleOverflow) ; estime, levureVers.
+   D.sugg : bande, cran, statut et repère avant (before) de chaque famille ; la plage dégustée ; les
+   pistes hors houblon avec leur action et leur preuve. */
+function suggestionsQ2b(S, D0, voiesBrutes) {
+  if (!voiesBrutes.length || !S.before) return;
+  const stS = pack.styles[S.style] || st;
+  const r1 = (x) => (x == null ? null : Math.round(x * 10) / 10);
+  const avant = (f) => (S.before[f] && S.before[f].central != null ? S.before[f].central : null);
+  D0.sugg = {
+    familles: Object.fromEntries(ORDRE.map((f) => [f, { bande: stS.families[f].band, cran: stS.families[f].cran, statut: stS.families[f].status, avant: r1(avant(f)) }])),
+    degustation: Object.fromEntries(((S.tasting && S.tasting.axes) || []).filter((a) => a.perceivedRange).map((a) => [a.family, [a.perceivedRange.min, a.perceivedRange.max]])),
+    horsModele: ((S.horsModele || [])[0] || { leads: [] }).leads.map((l) => ({ titre: l.title, action: l.action, preuve: l.evidence })),
+  };
+  voiesBrutes.forEach((b, i) => {
+    const tout = ORDRE.filter((f) => b.effect[f] && b.effect[f].established && b.effect[f].central != null && Math.abs(b.effect[f].central) >= 0.05)
+      .map((f) => ({ f, e: r1(b.effect[f].central), c: stS.families[f].cran ? r1(b.effect[f].central / stS.families[f].cran) : null }));
+    const cles = [...new Set(b.actions.filter((a) => a.op !== 'retirer' && !(a.previousGrams !== undefined && a.grams < a.previousGrams && !a.previousHop)).map((a) => a.hopKey))];
+    const fichesV = cles.map((k) => {
+      const f = FICHES.find((x) => x.key === k), role = (f && f.role) || { value: null, source: 'règle' };
+      return { cle: k, nom: f ? f.name : (b.actions.find((a) => a.hopKey === k) || {}).hop || k, usage: role.value || 'inconnu', source: /^fournisseur/.test(role.source || '') ? 'fournisseur' : 'règle', sourceTxt: role.source || null,
+        niv: Object.fromEntries(((f && f.aromes) || []).filter((a) => a.level > 0).map((a) => [a.family, a.level])) };
+    });
+    const sl = b.signauxLevure;
+    Object.assign(D0.voies[i], {
+      tout, fichesV, hs: (b.styleOverflow || []).map((x) => x.family), estime: !!b.estimated, levureVers: b.yeastChange ? b.yeastChange.toName : null,
+      bio: sl && (sl.signaux || []).length ? { houblon: sl.hop, moment: sl.moment, signaux: sl.signaux.map((x) => ({ id: x.id, titre: x.titre, statut: x.statut, pourquoi: x.pourquoi, sources: (x.sources || []).map((y) => y.title) })) } : null,
+    });
+  });
 }
 
 const commun = fs.readFileSync(path.join(HERE, 'commun.js'), 'utf8');
@@ -338,6 +377,8 @@ const VUES = {
   'substitution.html': ['S1', 'substitution', '', 'barres', '', '', '', 'beermaverick-nugget'],
 };
 const DATA = Object.fromEntries(['S1', 'S4', 'S5', 'S1E45', 'S1E120', 'S1E200'].map((s) => [s, scenario(s)]));
+// Le cas de la page des voies (contrôles du lot 15 : donnees/<cas>.json, mêmes voies dans le même ordre).
+const CAS = { 'etat-b.html': 's1' };
 const TITRES = { consolide: 'Houblons, rail du brassage' };
 for (const id of ['consolide']) {
   const variante = fs.readFileSync(path.join(HERE, 'etape-' + id + '.js'), 'utf8');
@@ -345,6 +386,7 @@ for (const id of ['consolide']) {
   fs.mkdirSync(path.join(OUT, id), { recursive: true });
   for (const [f, [scen, vue, partie, lentille, dirs, echelle, ficheInit, subst]] of Object.entries(VUES).filter(([f]) => !PAGES.length || PAGES.includes(f))) {
     const html = tpl
+      .replace('<html lang="fr">', CAS[f] ? `<html lang="fr" data-cas="${CAS[f]}">` : '<html lang="fr">')
       .replace('@TITRE@', TITRES[id])
       .replace('/*@CSS@*/', () => css + '\n' + radarCss)
       .replace('/*@LIB@*/', () => lib)
