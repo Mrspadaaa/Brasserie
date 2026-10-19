@@ -119,23 +119,33 @@ Voir `decisions.md` (D1 à D12).
   - le diagnostic et l'inventaire (`fils19-choix/`) ;
   - les contrôles D84 à D87, `controle-commun.mjs` (toutes les exigences transversales) et
     `controle-contraste.mjs`.
+- **Mise à jour, ~21 h** :
+  - l8e et l8f sont faits, contrôlés et publiés (page des fils de fer, version 16, ancre
+    t142-lot18c), commit 69a99c5. Quatre fils sont répondus et résolus. Le fil « Les bar de ce
+    type… » n'est pas envoyé à Claude et reste ouvert.
+  - Nouveaux contrôles :
+    - D88 TRAIT (pas de halo) et D89 LEGENDE (bouton discret), dans `controle-commun` ;
+    - D90 et D91 PARLANT (usage en mot, pas de bande « visée »), dans `controle-commun` ;
+    - D92 PISTE (pistes de l5b sous les objectifs), joué à part.
+  - Trois retours du brasseur sur l8e (SPEC-BRASSEUR, « La baseline l8 ») : les pictos d'usage ne
+    sont pas parlants, la bande « visée » est inutile, la barre d'objectif doit être la piste de l5b.
 - **Agents en cours** (attendre leurs notifications, ne pas refaire leur travail) :
-  - l7–l9 : l8e et l8f (l8b + pictos au trait, de l2 ou de v2, + α + barres de l5b + légende
-    cachée) ;
+  - l7–l9 (a3f5fc091a01e0007), relancé : l8g (usage en mot entier) et l8h (pastille « amer »,
+    « arôme », « mixte »), sur la base de l8e, avec les pistes de l5b et sans la bande « visée » ;
   - d1–d3 et d4–d6 : le lot 20, mini maquettes de l'outil de dry hop
     (`ecran-1/fils20-dryhop/BRIEF-AUTEUR.md`), habillage l8b, chiffres lus dans les sorties du
-    moteur, `controle-commun` + ALPHA.
+    moteur, `controle-commun` + ALPHA ; prévenus de D88 à D92.
 - **Prochaine action** :
-  - rejouer `controle-commun.mjs` et les contrôles de chaque lot sur l8e, l8f et d1–d6 ;
+  - rejouer `controle-commun.mjs`, PISTE, ALPHA et PLACE sur l8g, l8h et d1–d6 ;
   - regarder les captures ;
   - publier sur la page des fils de fer (`outils/page-nuit/ajouter-lot.mjs`, une ancre propre par
-    lot, puis l'outil Artifact sur `site/index.html`) ;
+    lot, puis l'outil Artifact sur `site/index.html`, root = site, fichiers = nouvelles images) ;
   - répondre aux fils ouverts et les résoudre ;
   - committer.
 - **À faire valider par lui** :
   - les conventions [H] du moteur (×10 pour « hors du style », densité des hydrocarbures,
     transfert des sesquiterpènes) ;
-  - le trait des pictos, l8e ou l8f ;
+  - le trait des pictos, l8e ou l8f ; l'usage en mot, l8g ou l8h ;
   - le radar de Comparer, r3 ou r2 (lot 16).
 - **Risques ouverts** :
   - V5.5 donne toujours le même effet aux voies (même amplitude par famille citée) ;

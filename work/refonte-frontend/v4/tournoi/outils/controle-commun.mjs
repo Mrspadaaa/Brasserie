@@ -6,7 +6,9 @@
 //   MOTS (≤ 70 au premier écran) ; COULEURS (D74) ; AU-STYLE (D75) ; SURVOL (D81) ; BLOCS (D82) ;
 //   STANDARD (D83) ; CONTRASTE (D86) ; FICHE (D25 : l'appui long ouvre la vraie fiche, sur toute page
 //   qui nomme un houblon) ; TRAIT (D88 : pictos d'arôme au trait, sans halo) ; LEGENDE (D89 : légende
-//   derrière un bouton discret, fermée au repos).
+//   derrière un bouton discret, fermée au repos) ; PARLANT (D90 : l'usage d'un houblon en mot, pas en
+//   picto seul ; D91 : pas de bande d'axe « visée » hors des objectifs). La piste d'objectif (D92,
+//   controle-piste-objectif) ne vaut que sur un écran à objectifs : elle se joue à part.
 // Usage : node controle-commun.mjs <dossier> <id> [id…] [--page=etat-b.html] [--sans=fiche,au-style]
 // (--sans seulement avec une raison écrite dans la NOTE de la variante). Imprime COMMUN OK, ou
 // COMMUN ECHEC et le détail de chaque contrôle en échec.
@@ -32,6 +34,7 @@ const CONTROLES = [
   ['standard', 'controle-standard.mjs', ids.map((id) => path.join(dir, id, pg)), /STANDARD OK/],
   ['trait', 'controle-pictos-trait.mjs', [dir, ...ids, '--page=' + pg], /TRAIT OK/],
   ['legende', 'controle-legende.mjs', [dir, ...ids, '--page=' + pg], /LEGENDE OK/],
+  ['parlant', 'controle-usage-parlant.mjs', [dir, ...ids, '--page=' + pg], /PARLANT OK/],
 ];
 let echecs = 0;
 for (const [nom, script, a, ok] of CONTROLES) {

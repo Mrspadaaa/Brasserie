@@ -208,6 +208,23 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   cileur sur le spider graph » ; à la question « surtout dans Comparer ? » : « surtout genant là » —
   19.10, soir (D77 ; lot 16, cinq rendus du radar). Et, dans les tickets : « "normaliser"
   l'affichage, les forme. couleur aromonisé ça coorectement » (#142).
+- **La baseline l8 (lot 18)** :
+  - sur l8 : « Visuellement horrible, mais la manière dont sont disposés les choses j'aime
+    beaucoup !! » ;
+  - sur l8b : « C'est la meilleure version mais le glowing des icône de arôme c'est non, plutôt type
+    Baseline 2 type fil » (D88) ; « Pas d'info sur les AA, j'en vrai valeur » (D87) ; « Tu peux même
+    mettre un peu plus d'icone et autre, mais il faut un bouton légende un peu caché pour pas que ça
+    gêne » (D89) ;
+  - sur l5b : « Meilleures bar » ; « Les bar de ce type sont plus informative donc meilleur » ;
+  - sur l8e, captures entourées :
+    - « Les icône sont pas parlant du tout » (la goutte, le souffle : l'usage en mot, D90) ;
+    - « Ça c'est inutile » (la bande « ‹ visée | visée », D91) ;
+    - sur la petite jauge d'objectif : « La barre là, c'est mieux mais il y avait mieux.... C'est pas
+      exactement ce que j'ai demandé » (les pistes de l5b sous chaque objectif, D92).
+  - Leçon : « les barres de l5b » voulait dire aussi ses pistes d'objectif, pas seulement ses barres
+    de voie. Quand une demande désigne un élément d'une autre variante, reprendre tous ses éléments du
+    même genre sur l'écran, ou demander lequel.
+  — 19.10, soir.
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce
