@@ -1,0 +1,42 @@
+e2 · Le duel, par gramme puis par famille.
+
+- **Ce qui tient** :
+  - **L'idée** : la question du brasseur, telle quelle. « Citra aura un effet extrêmement différent en dry hopping que Cascade alors que d'après nos outils ils sont assez similaires. » Deux houblons, avec les mêmes réglages : A en plein (Citra), B en contour (Cascade d'abord).
+    - On change A d'un toucher (⇆).
+    - B se choisit dans une rangée « contre », en pleine largeur : un autre houblon simulé, ou une **paire** (A + un autre ensemble, 2 + 2 g/L, contre A seul à 4 g/L : ce que l'ajout cumulé change, à dose totale égale).
+  - **Par gramme de houblon, les vraies valeurs d'abord** (`composes-houblon.json`, par le moteur). Pour l'huile, le 4MMP, le 4MMP mesuré par une même méthode (Hopsteiner 2024), le linalol et le myrcène :
+    - « A contre B » en valeurs ;
+    - le facteur A ÷ B en bande, sur une piste logarithmique centrée sur « = » (à gauche B devant, à droite A devant), aux tons de la famille du composé ;
+    - une bande qui passe « = » est rayée et dite « ≈ non départagés ».
+  - **Le constat se lit d'un coup** :
+    - huile ×0,38 à ×6, 4MMP toutes sources ×0,6 à ×48, linalol ×0,83 à ×20 : non départagés ;
+    - mais sur la même méthode, **Citra devant, ×2,6 à ×16 en 4MMP**. C'est l'écart que les fiches ne montrent pas : elles citent les agrumes pour les deux.
+    - Les quatre lots certifiés de Cascade sont cités (huile 1,1 à 1,7 mL/100 g).
+  - **En bière** :
+    - si une même étude a mesuré A et B, ses valeurs. Contre Nelson Sauvin (E06), on lit linalol 144 contre 70 µg/L, et **×4,2 au-dessus de la bière sans houblon (47)** ; le limonène est « ≈ sans houblon » (109 dans la bière témoin) ;
+    - sinon, le trou se voit : « aucune étude ne mesure Citra contre Cascade ».
+  - **Famille par famille, l'estimé ~** (`profils-simules.json`) :
+    - deux pistes par famille, A pleine et B en contour, devant la zone de la 16D, l'orangé au-delà ;
+    - les familles où ils diffèrent le plus en tête ;
+    - le verdict est écrit : « ≈ Citra ~+21 pts » quand les bandes se recouvrent de moitié ou plus (règle de style-bands.json), « Citra devant ~+2 crans » sinon.
+    - Contre Cascade à 4 g/L, dry hop après : tropical +21, floral +16, agrumes +14 pour Citra ; épicé +11 et herbacé +10 pour Cascade. Tout est non départagé : 9 sur 9.
+  - **Les réglages reclassent les familles** (dose, moment, jours, levure). En dry hop actif avec Pomona, la ligne « Bio-transfo » et ses drapeaux apparaissent.
+  - **Toucher une famille** ouvre ses preuves : les deux estimés nommés, le calculé du moteur pour chacun (bande en log), les mesures en bière de chacun. L'appui long sur un nom ouvre sa fiche.
+  - **Écarts à la baseline** : pas de tuiles. L'opposition plein et contour vient de la recherche I (idée 1, « c'est la forme qui distingue, pas la seule couleur ») ; la piste divergente en log est nouvelle. Restent : pictos au trait, au style et absolu, α du lot puis des fiches, légende derrière « ? », fiche à l'appui long.
+- **Ce qui casse** :
+  - 184 mots au premier écran, pour 70 visés (indicatif).
+  - La levure, en dry hop après, ne change rien (CUMUL C2) : c'est la vérité du moteur, et la page le dit.
+  - Verdant et Diamond ne sont pas proposés : grille[] ne les simule pas pour un houblon seul, et un duel doit garder les mêmes réglages des deux côtés.
+  - Pour une paire, la section par gramme compare A à son partenaire, pas à la paire.
+  - Les étiquettes des bornes touchent parfois le repère central, sur les bandes étroites.
+  - Seuls six houblons ont un estimé. Les composés de Motueka et de Nelson Sauvin manquent pour le 4MMP (« inconnu : une des deux valeurs manque »).
+- **Contrôles** (indicatifs en v0, joués une fois) :
+  - `controle-commun` : COMMUN ECHEC 1 contrôle(s). Seul MOTS échoue (184 mots). COULEURS est OK (3 teintes, une fois les bandes aux tons des familles) ; AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE et PARLANT sont OK.
+  - `controle-lisible` : LISIBLE OK (7 pictos, 16 mesurées, 3 simulées, 0 faute).
+  - `controle-simulation` : SIMULATION OK (14 réglages, le simulé bouge).
+  - `controle-cumul-levure` : CUMUL ECHEC 1 problème(s), C2 « le choix de levure ne fait bouger aucune valeur simulée » (raison ci-dessus).
+  - `controle-alpha` : ALPHA OK (2 voies, 2 avec leur α).
+  - `controle-fiche-baseline` : FICHE-BASELINE OK (fiche de Citra, 12 familles, 24 pictos, 0 faute).
+  - Parcours joué au doigt : adversaire, levure, famille → preuves, Échap. Aucune erreur, aucun défilement horizontal, aucune cible sous 24 px.
+- **Pire contraste** : 4,96:1, « Agrumes » (#856e0c sur blanc).
+- Générée par `generateur-e2.mjs` et `runtime-e2.js`, avec le socle de e1 (`../e1/socle-e.mjs`, `../e1/runtime-commun.js`). Captures : `node ../e1/captures-etats.mjs e2`.

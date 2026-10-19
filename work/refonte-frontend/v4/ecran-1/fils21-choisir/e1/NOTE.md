@@ -1,0 +1,47 @@
+e1 · Deux classements : le mesuré au-dessus, l'estimé reclassé au doigt, les trous visibles.
+
+- **Ce qui tient** :
+  - **L'idée** : pour une famille, deux ladders l'un sous l'autre.
+    - En haut, le classement **mesuré en bière**, une étude à la fois (`comparatifs-dryhop.json`). En floral, E06 : linalol de Citra 144 ± 2,7 µg/L, Centennial 78, Nelson Sauvin 70, et la bière sans houblon 47 en trait pointillé. « E06 · 1 sur 8 » passe aux autres études et composés (E02, E03…). « à vérifier » et « figure » s'écrivent quand le JSON le dit.
+    - En dessous, le classement **estimé ~** des houblons simulés (`profils-simules.json`, grille[] : Citra, Galaxy, Idaho 7, Cascade, Motueka, Nelson Sauvin). Il se reclasse au doigt : dose 1, 2, 4, 8 g/L ; moment (après, actif, whirlpool, 10′, 60′) ; jours 1 à 7 ; levure US-05 ou Pomona ; et l'**ajout cumulé** « Ensemble avec », en pleine largeur (grillePaires[], 2 + 2 g/L, 3 j, avec Citra seul à 4 g/L pour repère).
+  - **Chaque ligne** porte :
+    - le rang ; le nom (appui long : la fiche) ; le stock en icône ; l'α du lot, ou des fiches ;
+    - la piste estimée devant la zone de la 16D en pâle, l'orangé au-delà ; une borne haute au-delà de la piste sort par une flèche, sans être rognée ;
+    - les crans avec leur unité (« ~+4 crans », « ≈ sans écart ») ;
+    - une colonne **vraie valeur** : la mesure en bière de l'étude ; sinon le composé marqueur dans le houblon, avec son picto (4MMP en µg/kg, linalol en % de l'huile) ; sinon « inconnu », hachuré.
+  - **Ex æquo** : la règle du dépôt (style-bands.json, track.overlapIndiscernable : un recouvrement d'au moins la moitié de la plus étroite) donne un rang partagé « 1= », avec une accolade et « ≈ non départagés ».
+    - Le constat se voit : en floral comme en tropical, les six bandes ne se départagent pas ; seul le repère central les ordonne.
+    - Trié « mesuré », E06 met Citra nettement devant Nelson Sauvin.
+  - **Le plafond de la 16D** coupe le classement. En tropical, 4 g/L, dry hop après : Galaxy et Citra sont au-dessus, hors du style ; Cascade, Idaho 7, Motueka et Nelson Sauvin restent dedans. À 60′, tous passent à « ≈ sans écart », avec « À 60′, presque tout part : il reste l'amertume. » C'est la réponse à « Pourquoi à 10′ pas à 60′ ? ».
+  - **La biotransformation** : en dry hop actif avec Pomona, une pastille « bio-transfo » (floral → agrumes) apparaît sur Citra, Idaho 7 et Cascade, qui ont un géraniol publié. Idaho 7 remonte, et la ligne « Bio-transfo » dit 50 % au centre, 0 à 87 %.
+  - **« Pourquoi ? » en une phrase**, sourcée : elle change avec le dernier réglage touché.
+  - **Les 27 autres houblons du pack** sont « non simulés », parce que leurs composés ne sont pas publiés. Ils restent visibles par leurs fiches seules (barre « fiches », α) ; le reste est « inconnu, pas zéro ».
+  - **Toucher une ligne** ouvre ses preuves :
+    - le mesuré en bière, étude par étude, avec « à vérifier » ;
+    - les lots, un point par certificat ; le panel ;
+    - le calculé du moteur : huile, composé marqueur, bande en log (linalol de Citra ×0,058 à ×2 060, plus de 120 px), seuil en noir, ×10 en orangé, base commune ;
+    - l'estimé en grand, avec ses drapeaux ;
+    - les fiches, et « Voir la fiche › ».
+  - Le reclassement s'anime seulement après un geste : les lignes glissent, la pastille touchée s'éclaire.
+  - **Écarts à la baseline**, permis par le brasseur (« pas de plafond de verre ») :
+    - les barres de l5b deviennent horizontales, une piste par houblon : à 390 px, la largeur montre la zone, le plafond et la bande d'incertitude ;
+    - pas de tuiles deux par rangée : un classement se lit en colonne, avec ses rangs.
+    - Restent : le fond l5e, les pictos au trait au même `<symbol>`, l'α du lot puis des fiches, l'usage en mot (fiche, titre des preuves), la légende derrière « ? », la fiche à l'appui long (copie de celle de l5e, plus un bloc des vraies valeurs).
+  - Données : `../e1/donnees/moteur-e.json`, du moteur « pouvoir » rejoué sans modification par `moteur-e.ts`. Ma maquette « stub » du profil simulé est retirée, et le vrai fichier est branché.
+- **Ce qui casse** :
+  - 177 mots au premier écran, pour 70 visés (indicatif en v0). Ce sont surtout des noms et des nombres, mais c'est beaucoup.
+  - La levure, en dry hop après fermentation, ne change rien : le moteur ne simule la biotransformation qu'en fermentation active. Le contrôle CUMUL C2 échoue au repos ; la page le dit (« hors du cas documenté après fermentation : rien de simulé »).
+  - Verdant et Diamond ne sont pas simulés pour un houblon seul (grille[] : US-05 et Pomona) : la pastille levure ne les propose pas ici.
+  - Six houblons seulement sont simulés. Le calculé, avec ses bandes énormes, est à un toucher, pas sur la ligne.
+  - Aucune étude ne mesure Citra contre Cascade en bière. E06 n'a pas publié sa dose, et E03 est au pitch.
+  - La page est lourde : 1,7 Mo, 33 fiches embarquées.
+- **Contrôles** (indicatifs en v0, joués une fois) :
+  - `controle-commun` : COMMUN ECHEC 1 contrôle(s). Seul MOTS échoue (177 mots) ; COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE et PARLANT sont OK.
+  - `controle-lisible` : LISIBLE OK (20 pictos, 11 mesurées, 6 simulées, 0 faute).
+  - `controle-simulation` : SIMULATION OK (11 réglages, le simulé bouge).
+  - `controle-cumul-levure` : CUMUL ECHEC 1 problème(s), C2 « le choix de levure ne fait bouger aucune valeur simulée » (raison ci-dessus).
+  - `controle-alpha` : ALPHA OK (25 voies, 25 avec leur α).
+  - `controle-fiche-baseline` : FICHE-BASELINE OK (fiche de Citra, 12 familles nommées, 24 pictos, 0 faute).
+  - Parcours joué au doigt dans Chrome : famille, levure, ligne → preuves, Échap. Aucune erreur de console, aucun défilement horizontal à 390 px, aucune cible sous 24 px.
+- **Pire contraste** : 4,66:1, « Floral » (#9840bc sur #f3e8f7, la pastille de famille). 59 textes sont sur le fond en dégradé de l5e, non mesurables par le contrôle.
+- Générée par `generateur-e1.mjs` (avec `socle-e.mjs`, `runtime-commun.js` et `runtime-e1.js`, communs à e2 et e3). Captures : `node captures-etats.mjs e1`, dans `../captures/e1-*.png`.
