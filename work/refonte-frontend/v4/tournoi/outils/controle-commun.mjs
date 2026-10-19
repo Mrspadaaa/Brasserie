@@ -35,6 +35,7 @@ const CONTROLES = [
   ['trait', 'controle-pictos-trait.mjs', [dir, ...ids, '--page=' + pg], /TRAIT OK/],
   ['legende', 'controle-legende.mjs', [dir, ...ids, '--page=' + pg], /LEGENDE OK/],
   ['parlant', 'controle-usage-parlant.mjs', [dir, ...ids, '--page=' + pg], /PARLANT OK/],
+  ['brutes', 'controle-valeurs-brutes.mjs', [dir, ...ids, '--page=' + pg], /BRUTES OK/],
 ];
 let echecs = 0;
 for (const [nom, script, a, ok] of CONTROLES) {
