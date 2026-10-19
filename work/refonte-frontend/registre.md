@@ -144,8 +144,11 @@ Voir `decisions.md` (D1 à D12).
     l'état de départ (dry hop après) ;
   - recherche K : tableau 3 de Lafontaine 2018 vérifié, H a raison. J se corrige
     (ab952db6fe3db486e), et le moteur passe à 4,75 % vol. (aedb55bab5aac3251) ;
+  - profils-simules.json régénéré à 4,75 % vol. : les centres baissent d'environ 4 % (jusqu'à
+    −2,25 points) et 15 cas changent de drapeau. Toutes les pages devront être régénérées en
+    seconde passe ;
   - prochaine action : à l'arrivée de la synthèse, renvoyer les retouches aux auteurs (seconde
-    passe), relancer ce qui doit l'être, choisir les 5 avec le jury, publier les variantes, puis les
+    passe, avec la régénération sur le nouveau JSON), relancer ce qui doit l'être, choisir les 5 avec le jury, publier les variantes, puis les
     5 améliorées.
 - **Mise à jour, ~22 h 15 : lot 21** (`ecran-1/fils21-choisir/`, brief commun `BRIEF-AUTEUR.md`). Le
   lot 20 est « très difficile à comprendre ». Le brasseur veut de vraies valeurs mieux présentées, des
