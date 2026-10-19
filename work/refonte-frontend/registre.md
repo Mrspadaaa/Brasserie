@@ -194,6 +194,37 @@ regardées), on publie sur la page partagée, on commente le ticket.
    - À brancher depuis la fiche (bouton « Substituts › ») en fidélité.
    - Question ouverte dans #137 : à l'amertume, le moins de grammes d'abord entre scores proches.
 
+### Livraison (sa consigne du 19.10)
+
+« Dit lui de me partager les pages en artefacts des que c'est clean et réglé ».
+- Dès qu'une étape est propre (LOT OK, captures regardées), la publier en artefact et lui donner le
+  lien, sans attendre la fin de la liste.
+- Le rail, m4 et h4, Comparer, Suggestions et u4 vont sur la page partagée à jour, au même lien.
+- Un écran neuf peut avoir sa propre page s'il la rend plus claire.
+
+### Autres points à transmettre
+
+- **Le changement `RC`** (l'inconnu dans le disque du centre) vaut pour tous les radars : vérifier
+  aussi Suggestions et Comparer à l'œil.
+- **Saut à l'ouverture du geste**, hérité de la base : au toucher, les cartes se replient et
+  Motueka (10′) descend une fois de 73 à 95 px. Le jury l'a relevé, il ne l'a pas encore vu
+  nommé : le lui montrer, ou l'adoucir.
+- **Si le Dock à plateau échoue**, les autres loupes sont prêtes sur la base v4.3, dans
+  `ecran-1/candidats-v44/` (sources versionnées, `preparer.mjs`) : p01 bulle, p01-haut (bulle
+  au-dessus du doigt), p03 règle. Les lui proposer seulement avec les mesures.
+- **Questions ouvertes de son côté** :
+  - #137 : à l'amertume, le moins de grammes d'abord entre scores proches ?
+  - #131 : les licences des sources (BarthHaas, Hopsteiner, Yakima Chief, Beer Maverick) ;
+  - #138 : les barres de Suggestions ne sont pas choisies ;
+  - #139 : la grille dans l'app, après la porte B.
+- **Défaut de donnée connu (#131)** : la fiche Citra cryo porte les plages de Citra en pellets
+  (α 10–15). Le dire sur tout écran qui montre ces plages ; ne pas le corriger sans source.
+- **Page de la nuit** (https://claude.ai/artifact/2VTRQP7nLXhX5GqDaAGAyU) : les lots en fil de fer.
+  Son générateur est resté dans le scratchpad de l'ancienne session : la page reste, mais ne sera
+  plus reconstruite.
+- **Mémoire** : `affinee-geste-se-voit` (une loupe doit se voir, ×3 au moins) et
+  `affinee-page-partagee-a-jour` (seulement l'état à jour, pas de légende sur la version finale).
+
 ### Garde-fous et méthode
 
 - **Contrôle de la base** :
