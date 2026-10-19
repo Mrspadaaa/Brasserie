@@ -243,7 +243,9 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
     Baseline mais il faudrait évidemment d'enrichir et pas de limiter à ça !!! » (la baseline est un
     plancher) ; « Il y a pas de limitation, pas de plafond de verre, il faut être créatif, disrutif,
     trouver des solutions et des options. Un agent créatif à fond peut aider quelques mini maquettes »
-    (z1–z5).
+    (z1–z5) ; « y compris s'écarter de la baseline si l'idée le vaut. Extact » ; « Tu peux peut être
+    même en faire 35 » ; sur s1–s3 : « Simulation et simulateur mais c'est normalement dans
+    quasiment chaque variante le simu » (D95).
   - Leçon : « les barres de l5b » voulait dire aussi ses pistes d'objectif, pas seulement ses barres
     de voie. Quand une demande désigne un élément d'une autre variante, reprendre tous ses éléments du
     même genre sur l'écran, ou demander lequel.

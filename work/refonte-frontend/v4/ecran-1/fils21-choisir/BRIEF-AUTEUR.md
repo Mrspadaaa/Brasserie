@@ -107,9 +107,14 @@ Leurs règles, toutes contrôlées :
    - au moins une vraie valeur `data-nature="mesure"` au premier écran ;
    - le simulé est marqué.
    Témoin : `fils20-dryhop` d1 à d6 y échouent.
-3. `node O/controle-alpha.mjs D <v> --page=etat.html` → ALPHA OK.
-4. `node O/controle-fiche-baseline.mjs D <v> --page=etat.html` → FICHE-BASELINE OK, si la page nomme un houblon.
-5. Les captures, prises avec `node O/capture-page.mjs <page.html> D/captures/<v>-390.png 1688` : la page entière, le premier écran, et chaque état qui compte (curseur bougé, détail ouvert). **Regarde chaque capture toi-même** : une capture non regardée ne valide rien.
+3. `node O/controle-simulation.mjs D <v> --page=etat.html` → SIMULATION OK (D95 ; « c'est normalement dans quasiment chaque variante le simu ») :
+   - une simulation visible, `data-role="simulation"`, avec des valeurs `data-nature="simule"` ;
+   - au moins un réglage visible, `data-role="reglage"` (bouton, curseur, liste, carte), qui fait bouger le simulé ;
+   - une vraie valeur visible à côté.
+   Une variante qui s'en passe le justifie dans sa NOTE. Témoin : le lot 20 y échoue.
+4. `node O/controle-alpha.mjs D <v> --page=etat.html` → ALPHA OK.
+5. `node O/controle-fiche-baseline.mjs D <v> --page=etat.html` → FICHE-BASELINE OK, si la page nomme un houblon.
+6. Les captures, prises avec `node O/capture-page.mjs <page.html> D/captures/<v>-390.png 1688` : la page entière, le premier écran, et chaque état qui compte (curseur bougé, détail ouvert). **Regarde chaque capture toi-même** : une capture non regardée ne valide rien.
 
 ## Rendu, par variante
 
