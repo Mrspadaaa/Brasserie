@@ -5,7 +5,8 @@
 // exigence transversale ne doit plus dépendre d'un brief : ce lanceur les joue toutes.
 //   MOTS (≤ 70 au premier écran) ; COULEURS (D74) ; AU-STYLE (D75) ; SURVOL (D81) ; BLOCS (D82) ;
 //   STANDARD (D83) ; CONTRASTE (D86) ; FICHE (D25 : l'appui long ouvre la vraie fiche, sur toute page
-//   qui nomme un houblon).
+//   qui nomme un houblon) ; TRAIT (D88 : pictos d'arôme au trait, sans halo) ; LEGENDE (D89 : légende
+//   derrière un bouton discret, fermée au repos).
 // Usage : node controle-commun.mjs <dossier> <id> [id…] [--page=etat-b.html] [--sans=fiche,au-style]
 // (--sans seulement avec une raison écrite dans la NOTE de la variante). Imprime COMMUN OK, ou
 // COMMUN ECHEC et le détail de chaque contrôle en échec.
@@ -29,6 +30,8 @@ const CONTROLES = [
   ['contraste', 'controle-contraste.mjs', [dir, ...ids, '--page=' + pg], /CONTRASTE OK/],
   ['fiche', 'controle-fiche.mjs', [dir, ...ids, '--pages=' + pg], /FICHE OK/],
   ['standard', 'controle-standard.mjs', ids.map((id) => path.join(dir, id, pg)), /STANDARD OK/],
+  ['trait', 'controle-pictos-trait.mjs', [dir, ...ids, '--page=' + pg], /TRAIT OK/],
+  ['legende', 'controle-legende.mjs', [dir, ...ids, '--page=' + pg], /LEGENDE OK/],
 ];
 let echecs = 0;
 for (const [nom, script, a, ok] of CONTROLES) {

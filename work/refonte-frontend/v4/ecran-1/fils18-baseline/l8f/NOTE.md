@@ -1,0 +1,18 @@
+- **Ce qui tient** : l8b à l'identique, et les mêmes ajouts que l8e (l'α de chaque houblon, plus de pictos par voie, la légende derrière « ? », les barres de l5b à 8 px par cran). Seul le dessin des pictos d'arôme diffère.
+  - **Pictos au trait de v2** (lot 17) : trait lucide d'une seule épaisseur, 1,5 px rendu à toute taille, sans disque ni halo.
+  - **Le ton** : base de la famille si elle tient 3:1 (objet graphique) sur le blanc et sur la tuile de sa famille, sinon le ton texte.
+    - Ton texte pour floral, agrumes, tropical, noyau, pépins, melon et végétal : leur base passait sous 3:1, c'était la faiblesse de v2.
+    - Ton base pour herbacé, terreux, petits fruits, résineux et épicé.
+  - **Contraste du trait vérifié** :
+    - sur blanc, de 3,39:1 (terreux) à 7,05:1 (épicé) ;
+    - sur sa tuile, 3,00:1 au plus bas (terreux, qui n'en a pas à l'écran).
+- **Ce qui casse** :
+  - Les mêmes points que l8e : les voies à deux houblons passent sur trois lignes, et la médiane monte à 61 px.
+  - Terreux est juste à 3:1 sur son fond.
+  - Le trait de 1,5 px des petits pictos (13 px, biotransformation) reste fin.
+  - Barres / Radar est inerte ; « Comparer (2) » mène au comparer de q2b.
+- **Contrôles** :
+  - COMMUN OK (MOTS 67, COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD), ALPHA OK (15 sur 15), PLACE OK (6 voies, 61 px) ;
+  - les 12 du brief sont OK ;
+  - les fiches comptent de 54 à 76 mots.
+- **Pire contraste** : 4,65:1, « Plus agrumes » (#856e0c, 12 px) sur sa tuile #fcf8e3.
