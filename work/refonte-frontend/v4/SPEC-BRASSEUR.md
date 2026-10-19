@@ -238,7 +238,10 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
     corrigée) ; « Aussi trouve plus de comparatif entre dryhop et variété de houblons » (recherche J) ;
     « Fait plus de lot de mini maquettes avec un vrai ladder et des vrai exploration » (e1–e3, x1–x5) ;
     « Aussi explore la voie de l'ajout cumulé. 2 houblons en dry hopping. Et la bio Transfo et la
-    levure » (K5 ; a1–a3).
+    levure » (K5 ; a1–a3) ; « Plus de mini maquettes que juste 11, fait en qqch comme 30 et prends
+    les 5 meilleures version et améliore les » (w1–w5, y1–y5, jury) ; « J'ai dis de réutiliser la
+    Baseline mais il faudrait évidemment d'enrichir et pas de limiter à ça !!! » (la baseline est un
+    plancher).
   - Leçon : « les barres de l5b » voulait dire aussi ses pistes d'objectif, pas seulement ses barres
     de voie. Quand une demande désigne un élément d'une autre variante, reprendre tous ses éléments du
     même genre sur l'écran, ou demander lequel.

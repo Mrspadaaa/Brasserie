@@ -33,7 +33,12 @@ Un brasseur, téléphone en main, comprend en quelques secondes ce que change un
 - **Les vraies valeurs sont toujours là, à côté du simulé** : α du lot et des fiches, huile totale, dose, jours, mesures en bière quand elles existent, rapport au seuil d'un composé. Ce sont elles qui permettent de vérifier.
 - **« Tricher un peu »** : arrondir, simplifier, regrouper, montrer une valeur centrale avec une bande. Ne jamais inventer un chiffre sans le marquer simulé, et ne jamais cacher un « on ne sait pas ».
 
-## La baseline, le langage visuel établi : à reprendre, pas à réinventer
+## La baseline, le langage visuel établi : un plancher à enrichir, pas un plafond
+
+Le brasseur : « J'ai dis de réutiliser la Baseline mais il faudrait évidemment d'enrichir et pas de limiter à ça !!! ».
+- Garde ses acquis, listés ci-dessous.
+- Ajoute de nouvelles formes, couleurs, éléments, gestes et représentations, partout où ils aident à comprendre et à choisir.
+- Une variante qui recopie la baseline sans l'enrichir a manqué la demande.
 
 Les deux baselines en lice, avec tous les retours du brasseur :
 - **l5e** (`fils18-baseline/l5e/`, `tuiles-l5e.mjs`, `generateur-l5e.mjs`) : tuiles deux par rangée ;
