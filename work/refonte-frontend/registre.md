@@ -131,7 +131,15 @@ Voir `decisions.md` (D1 à D12).
   Commentaire #140 (6264842384). Trouvé : « mojito » n'est dans aucune liste de termes du moteur.
 - **Page à jour, version 4** : la page jouable en pleine largeur (fils « 1/4 mais full ? »,
   « 2/4 mais full ? », résolus).
-- **En attente de lui** : son choix dans le lot 12 ; puis la variante choisie entre dans la base.
+- **Lot 12 refusé** : « Non c'est très mauvais. Tu as pas du tout bien compris le besoin, c'est entre la
+  version actuelle qui est déjà vraiment plutôt bien et une de ces versions ». Contrôle D70
+  (`controle-appui.mjs` A6 à A8 : la carte de la base au repos ; au long appui 30 mots et 160 px au
+  plus, collé à la carte, titre et champ libres) ; témoin : lot 12 → 18 échecs. Mémoire
+  `affinee-partir-de-l-actuel`.
+- **Lot 12b** `ecran-1/fils12b-mi-chemin/` (b1 à b6, une idée du lot 12 en léger chacune, mêmes
+  auteurs) : `APPUI OK 6/6`, `FIL6 OK 6/6`, mots ≤ 90. Section #140 remplacée sur la page des fils de
+  fer (version 5 ; images du lot 12 retirées). Commentaire #140 (6265519941).
+- **En attente de lui** : son choix dans le lot 12b ; puis la variante choisie entre dans la base.
 
 ## ÉTAT AU 19.10, FIN D'APRÈS-MIDI (avant la reprise du matin ci-dessous)
 

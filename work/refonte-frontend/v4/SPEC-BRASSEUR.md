@@ -174,6 +174,12 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   J+14 au bas de l'écran, puis la page défilée, Motueka à 85 °C)** : « On arrive pas à aller de
   l'extrême haut, à l'extrême bas » — 19.10 (D69 : d'un seul geste, de la durée d'ébullition à J+14 de
   la post-fermentation, dans l'écran).
+- **Les carrés d'arômes, au long appui** (capture : les carrés de la carte Motueka entourés) : « On va
+  refaire un batch de description de houblons, et notamment montrer à quoi correspond exactement ces
+  valeurs facile lors du long appuie sur le houblons » — 19.10, soir (#140, lot 12). Puis, sur le lot
+  12 : « Non c'est très mauvais. Tu as pas du tout bien compris le besoin, c'est entre la version
+  actuelle qui est déjà vraiment plutôt bien et une de ces versions » (D70 : la carte actuelle intacte,
+  un petit ajout au long appui ; lot 12b).
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce
