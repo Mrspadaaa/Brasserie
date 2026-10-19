@@ -1,0 +1,678 @@
+{
+ "pages": [
+  "ecran-1/base/consolide/index.html",
+  "ecran-1/base/consolide/biere.html",
+  "ecran-1/base/consolide/biere-absolu.html",
+  "ecran-1/base/consolide/biere-radar.html",
+  "ecran-1/base/consolide/etat-b.html",
+  "ecran-1/base/consolide/suggestions-radar.html",
+  "ecran-1/base/consolide/comparer.html",
+  "ecran-1/base/consolide/comparer-radar.html",
+  "ecran-1/base/consolide/fiche.html",
+  "ecran-1/base/consolide/substitution.html",
+  "ecran-1/base/consolide/cas-k3.html",
+  "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+  "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+ ],
+ "familles": {
+  "floral": {
+   "#bf86d6": [
+    "ecran-1/base/consolide/index.html",
+    "ecran-1/base/consolide/fiche.html",
+    "ecran-1/base/consolide/substitution.html",
+    "ecran-1/base/consolide/cas-k3.html",
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ],
+   "#0072b2": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#009e73": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#cc79a7": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#7a3f9b": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ],
+   "#4f46e5": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "herbal": {
+   "#3f8a5f": [
+    "ecran-1/base/consolide/index.html",
+    "ecran-1/base/consolide/fiche.html",
+    "ecran-1/base/consolide/substitution.html",
+    "ecran-1/base/consolide/cas-k3.html"
+   ],
+   "#0072b2": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#009e73": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#cc79a7": [
+    "ecran-1/base/consolide/comparer.html"
+   ]
+  },
+  "earthy": {
+   "#9a8a66": [
+    "ecran-1/base/consolide/index.html",
+    "ecran-1/base/consolide/fiche.html",
+    "ecran-1/base/consolide/substitution.html",
+    "ecran-1/base/consolide/cas-k3.html"
+   ],
+   "#0072b2": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#009e73": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#cc79a7": [
+    "ecran-1/base/consolide/comparer.html"
+   ]
+  },
+  "citrus": {
+   "#d9b414": [
+    "ecran-1/base/consolide/index.html",
+    "ecran-1/base/consolide/fiche.html",
+    "ecran-1/base/consolide/substitution.html",
+    "ecran-1/base/consolide/cas-k3.html",
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ],
+   "#0072b2": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#009e73": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#cc79a7": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#6f5a00": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ],
+   "#0e7490": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ],
+   "#c2410c": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "tropical": {
+   "#ee9b2f": [
+    "ecran-1/base/consolide/index.html",
+    "ecran-1/base/consolide/fiche.html",
+    "ecran-1/base/consolide/substitution.html",
+    "ecran-1/base/consolide/cas-k3.html"
+   ],
+   "#0072b2": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#009e73": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#cc79a7": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#c2410c": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "stoneFruit": {
+   "#e88d68": [
+    "ecran-1/base/consolide/index.html",
+    "ecran-1/base/consolide/fiche.html",
+    "ecran-1/base/consolide/substitution.html",
+    "ecran-1/base/consolide/cas-k3.html"
+   ],
+   "#0072b2": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#009e73": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#cc79a7": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#c2410c": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "pomeFruit": {
+   "#a3bd38": [
+    "ecran-1/base/consolide/index.html",
+    "ecran-1/base/consolide/fiche.html",
+    "ecran-1/base/consolide/substitution.html",
+    "ecran-1/base/consolide/cas-k3.html"
+   ],
+   "#0072b2": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#009e73": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#cc79a7": [
+    "ecran-1/base/consolide/comparer.html"
+   ]
+  },
+  "berries": {
+   "#9b3f74": [
+    "ecran-1/base/consolide/index.html",
+    "ecran-1/base/consolide/fiche.html",
+    "ecran-1/base/consolide/substitution.html",
+    "ecran-1/base/consolide/cas-k3.html"
+   ],
+   "#0072b2": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#009e73": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#cc79a7": [
+    "ecran-1/base/consolide/comparer.html"
+   ]
+  },
+  "melon": {
+   "#6fc09b": [
+    "ecran-1/base/consolide/index.html",
+    "ecran-1/base/consolide/fiche.html",
+    "ecran-1/base/consolide/substitution.html",
+    "ecran-1/base/consolide/cas-k3.html"
+   ],
+   "#0072b2": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#009e73": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#cc79a7": [
+    "ecran-1/base/consolide/comparer.html"
+   ]
+  },
+  "resin": {
+   "#2f6b5f": [
+    "ecran-1/base/consolide/index.html",
+    "ecran-1/base/consolide/fiche.html",
+    "ecran-1/base/consolide/substitution.html",
+    "ecran-1/base/consolide/cas-k3.html",
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ],
+   "#c2410c": [
+    "ecran-1/base/consolide/biere.html",
+    "ecran-1/base/consolide/biere-absolu.html",
+    "ecran-1/base/consolide/biere-radar.html"
+   ],
+   "#0072b2": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#009e73": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#cc79a7": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#1f5247": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "spice": {
+   "#7a4e3a": [
+    "ecran-1/base/consolide/index.html",
+    "ecran-1/base/consolide/fiche.html",
+    "ecran-1/base/consolide/substitution.html",
+    "ecran-1/base/consolide/cas-k3.html"
+   ],
+   "#0072b2": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#009e73": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#cc79a7": [
+    "ecran-1/base/consolide/comparer.html"
+   ]
+  },
+  "green": {
+   "#6aa33a": [
+    "ecran-1/base/consolide/index.html",
+    "ecran-1/base/consolide/fiche.html",
+    "ecran-1/base/consolide/substitution.html",
+    "ecran-1/base/consolide/cas-k3.html"
+   ],
+   "#0072b2": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#009e73": [
+    "ecran-1/base/consolide/comparer.html"
+   ],
+   "#cc79a7": [
+    "ecran-1/base/consolide/comparer.html"
+   ]
+  }
+ },
+ "houblons": {
+  "ma dégustation": {
+   "#0072b2": [
+    "ecran-1/base/consolide/biere-radar.html"
+   ]
+  },
+  "après Golding": {
+   "#0072b2": [
+    "ecran-1/base/consolide/suggestions-radar.html"
+   ]
+  },
+  "avant": {
+   "#333": [
+    "ecran-1/base/consolide/suggestions-radar.html"
+   ]
+  },
+  "Nugget": {
+   "#0072b2": [
+    "ecran-1/base/consolide/comparer.html",
+    "ecran-1/base/consolide/comparer-radar.html",
+    "ecran-1/base/consolide/substitution.html"
+   ],
+   "#111": [
+    "ecran-1/base/consolide/fiche.html"
+   ]
+  },
+  "East Kent Goldings": {
+   "#009e73": [
+    "ecran-1/base/consolide/comparer.html",
+    "ecran-1/base/consolide/comparer-radar.html"
+   ]
+  },
+  "Fuggle": {
+   "#cc79a7": [
+    "ecran-1/base/consolide/comparer.html",
+    "ecran-1/base/consolide/comparer-radar.html"
+   ]
+  },
+  "Magnat": {
+   "#009e73": [
+    "ecran-1/base/consolide/substitution.html"
+   ]
+  },
+  "Nelson Sauvin": {
+   "#cc79a7": [
+    "ecran-1/base/consolide/substitution.html"
+   ]
+  }
+ },
+ "icones": {
+  "motueka": {
+   "1bz5a6p": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ],
+   "s6zuvw": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "en stock": {
+   "q4u8kt": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "aurum": {
+   "s6zuvw": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "à acheter": {
+   "1pv1har": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "east kent goldings": {
+   "1bz5a6p": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "columbus": {
+   "1bz5a6p": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ],
+   "s6zuvw": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "celeia": {
+   "s6zuvw": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "citra cryo": {
+   "s6zuvw": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "nelson sauvin": {
+   "1bz5a6p": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ],
+   "s6zuvw": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "galaxy": {
+   "1bz5a6p": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ],
+   "s6zuvw": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "hallertau blanc": {
+   "1bz5a6p": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ],
+   "s6zuvw": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "stock insuffisant": {
+   "nw4w4q": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "moment": {
+   "15wuf7f": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ],
+   "1f6vxc9": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "géraniol → citronellol": {
+   "yhy5yu": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "hop creep": {
+   "17w13mj": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "floral": {
+   "1ttwjn7": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "à monter": {
+   "hxire0": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "agrumes": {
+   "1ay1jca": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "boisé et résineux": {
+   "176ydus": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "à baisser": {
+   "2uvyij": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "fruits tropicaux": {
+   "58n6vz": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "herbacé": {
+   "jm3wh9": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "terreux": {
+   "12eei87": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "fruits à noyau": {
+   "1sgss7y": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "fruits à pépins": {
+   "xm6sh": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "petits fruits": {
+   "9c6n58": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "melon": {
+   "1rzwapk": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "épicé": {
+   "1ol7feu": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "végétal": {
+   "1nylhet": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  }
+ },
+ "traits": {
+  "motueka": {
+   "13px/plein": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ],
+   "13px/2": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "en stock": {
+   "11px/1.6": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "aurum": {
+   "13px/2": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "à acheter": {
+   "12px/1.5": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "east kent goldings": {
+   "13px/plein": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "columbus": {
+   "13px/plein": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ],
+   "13px/2": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "celeia": {
+   "13px/2": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "citra cryo": {
+   "13px/2": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "nelson sauvin": {
+   "13px/plein": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ],
+   "13px/2": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "galaxy": {
+   "13px/plein": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ],
+   "13px/2": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "hallertau blanc": {
+   "13px/plein": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ],
+   "13px/2": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "stock insuffisant": {
+   "11px/1.4": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "moment": {
+   "14px/1.7": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ],
+   "16px/1.8": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html"
+   ]
+  },
+  "géraniol → citronellol": {
+   "11px/1.6": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "hop creep": {
+   "15px/1.6": [
+    "ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "floral": {
+   "20px/plein": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "à monter": {
+   "9px/plein": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "agrumes": {
+   "20px/?": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "boisé et résineux": {
+   "20px/plein": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "à baisser": {
+   "9px/plein": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "fruits tropicaux": {
+   "18px/?": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "herbacé": {
+   "16px/?": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "terreux": {
+   "16px/plein": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "fruits à noyau": {
+   "16px/?": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "fruits à pépins": {
+   "16px/?": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "petits fruits": {
+   "16px/?": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "melon": {
+   "16px/plein": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "épicé": {
+   "16px/?": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  },
+  "végétal": {
+   "16px/plein": [
+    "ecran-1/fils15-s5-complexe/q2b/comparer.html"
+   ]
+  }
+ },
+ "tailles": {
+  "19px": 42,
+  "14px": 203,
+  "12px": 440,
+  "13px": 42,
+  "16px": 2
+ },
+ "rayons": {
+  "14px": 27,
+  "10px": 52,
+  "20px": 10,
+  "4px": 57,
+  "1px": 305,
+  "50%": 62,
+  "13px": 34,
+  "12px": 29,
+  "5px": 68,
+  "7px": 28,
+  "11px": 17,
+  "2px": 50,
+  "16px": 35,
+  "15px": 39,
+  "6px": 75,
+  "9px": 20,
+  "3px": 69,
+  "18px": 2,
+  "8px": 16,
+  "25px": 1
+ }
+}

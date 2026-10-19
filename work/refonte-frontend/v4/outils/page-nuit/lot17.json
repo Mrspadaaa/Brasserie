@@ -1,0 +1,64 @@
+{
+ "ticket": 142,
+ "ancre": "t142",
+ "court": "Standard et boosters",
+ "titre": "Le jeu commun, les petits icônes et six boosters (lot 17, 19.10 soir)",
+ "etat": "à choisir",
+ "puces": [
+  "Inventaire de la base et de q2b. Le même bleu dit Nugget, « ma dégustation » et « après Golding ». Le vert dit East Kent Goldings dans Comparer et Magnat dans Substitution. La matrice de Comparer peint les familles à la couleur du houblon. On compte 20 rayons d’angle et 5 épaisseurs de trait. Le contrôle D83 refuse tout cela, et la base y échoue.",
+  "Le jeu commun en trois styles : v1 plein (tes pictos), v2 trait (lucide, comme l’app), v3 duo (fond pâle et trait). Chaque famille a trois tons : base, texte lisible à 4,6:1 au moins, fond. Les icônes d’action viennent de lucide, au même trait de 1,5 px. Les rayons sont de 2, 4 ou 8 px, en pilule ou en rond.",
+  "Les couleurs des houblons suivent le houblon sur tous les écrans, et ma bière reste en noir. Dans la matrice de Comparer, la case garde la couleur de sa famille ; le houblon se lit à sa colonne.",
+  "Six boosters sur q2b : b1 l’IBU qui roule après « + » (+1,7) ; b2 Annuler ; b3 toucher une famille la fait ressortir dans toutes les voies ; b4 la frise des moments filtre ; b5 l’appui long montre l’aperçu de la fiche (Nelson Sauvin : vin blanc, groseille à maquereau) ; b6 l’aperçu fantôme sur les objectifs.",
+  "Contrôles rejoués : STANDARD et SURVOL sur v1–v3 ; les dix contrôles de q2b sur b1–b6. Limites : en v1, « cité » efface les familles claires ; en v2 et v3, le trait des familles claires reste sous 3:1."
+ ],
+ "images": [
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils17-standard/captures/planche-planche-390.png",
+   "le jeu commun : v1 plein, v2 trait, v3 duo"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils17-standard/captures/planche-exemple-390.png",
+   "les trois sur une voie et sur Comparer"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils17-standard/captures/v1-planche-390.png",
+   "v1 plein"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils17-standard/captures/v2-planche-390.png",
+   "v2 trait"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils17-standard/captures/v3-planche-390.png",
+   "v3 duo"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils17-standard/captures/planche-b-390.png",
+   "les six boosters sur q2b"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils17-standard/captures/b1-b-390.png",
+   "b1 l’IBU qui roule après « + »"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils17-standard/captures/b2-b-390.png",
+   "b2 Annuler"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils17-standard/captures/b3-b-390.png",
+   "b3 toucher une famille"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils17-standard/captures/b4-b-390.png",
+   "b4 filtrer par moment"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils17-standard/captures/b5-b-390.png",
+   "b5 appui long : aperçu de la fiche"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils17-standard/captures/b6-b-390.png",
+   "b6 aperçu fantôme"
+  ]
+ ]
+}

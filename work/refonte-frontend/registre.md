@@ -181,6 +181,17 @@ Voir `decisions.md` (D1 à D12).
     - Publication : page des fils de fer, version 12, section `t138-lot15b`. Les six fils traités
       sont résolus.
     - Générateurs : `q2b/generateur-q2b.mjs` et `p1/generateur-serie-p.mjs`.
+  - **Lot 17 livré, à choisir** : v1–v3 (STANDARD et SURVOL OK, pire contraste 4,64:1) et b1–b6
+    (dix contrôles de q2b OK), rejoués par le pilote. Publication : page des fils de fer, version
+    13, section `t142` ; #142 commenté (6270949338). Générateurs : `b1/generateur-boosters.mjs`.
+    Limites : en v1, « cité » (40 %) efface les familles claires ; en v2 et v3, le trait des
+    familles claires reste sous 3:1 ; `controle-standard` ne lit pas les couleurs dans un `<use>`.
+  - **Lot 17 (#142)** (`ecran-1/fils17-standard/`) : « regarde aussi pour la
+    standardisation, UX booster, petit icone et autres ». Inventaire `inventaire-forme.mjs` ;
+    contrôle D83 `controle-standard.mjs` (la base et q2b échouent) ; `jetons-familles.json` (base,
+    texte ≥ 4,6:1 sur blanc et sur le fond, fond). Auteurs : v1–v3 (jeu commun : plein, trait,
+    duo ; lucide-react pour les actions), chez un nouvel auteur ; b1–b6 (boosters L5, A2, C6, H4,
+    X3, J6 sur q2b), chez l'auteur q. Briefs : `BRIEF-STANDARD.md`, `BRIEF-BOOSTERS.md`.
   - **Prochaine action** : sur son OK, intégrer q2b dans la base (Suggestions, `suggestions.js`),
     avec ses contrôles (D76, D78–D82 sur la base).
 - **Lot 15, série p** : remarques de son auteur :
