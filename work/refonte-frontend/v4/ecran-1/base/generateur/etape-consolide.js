@@ -237,13 +237,15 @@ function sousDoigt(G, yF) {
 /* Le rail de base de la prise : écarts e = λ × poids (le segment tenu pèse LOUPE.poids), λ le plus
    grand qui tient : le bas, grossissement compris (surplus du plateau), dans la hauteur du repos + 120 px,
    et la tête dans le rail (longue ébullition : jusqu'en haut de l'écran). La graduation de la ligne
-   tenue reste sous le doigt à la prise. La place en trop va aux écarts de structure. */
-function disposerDock(vA, yA, H0, frTop) {
+   tenue reste sous le doigt à la prise. La place en trop va aux écarts de structure.
+   compact (D67, le doigt passé dans un autre segment) : le rail se refait autour du doigt sans remplir
+   de vide la place au-dessus ; sa tête descend, le segment sous le doigt devient la loupe. */
+function disposerDock(vA, yA, H0, frTop, compact) {
   const segA = segDe(vA);
   const ecarts = (lam) => Object.fromEntries(SEGMENTS.map((s) => [s, s === segA
     ? Math.max(LOUPE.min.focus, Math.min(LOUPE.max.focus, lam * LOUPE.poids))
     : Math.max(LOUPE.min.autre, Math.min(LOUPE.max.autre, lam))]));
-  const plan = (e, x) => { const G = planFixe(e, x, 0); G.e = e; G.Pl = LOUPE.plateau * e[segA]; G.Ra = LOUPE.rampe * e[segA]; G.surplus = KG * (2 * G.Pl + G.Ra); G.cA = vA === 'fwh' ? G.P['b' + EBU] - e.ebullition : G.P[vA]; const Va = valeursSeg(segA); G.F0 = G.P[Va[0]]; G.F1 = G.P[Va[Va.length - 1]]; G.O = 0; G.O = yA - phi(G, G.cA); G.Z = Va.map((v) => G.P[v]); return G; };
+  const plan = (e, x) => { const G = planFixe(e, x, 0); G.seg = segA; G.e = e; G.Pl = LOUPE.plateau * e[segA]; G.Ra = LOUPE.rampe * e[segA]; G.surplus = KG * (2 * G.Pl + G.Ra); G.cA = vA === 'fwh' ? G.P['b' + EBU] - e.ebullition : G.P[vA]; const Va = valeursSeg(segA); G.F0 = G.P[Va[0]]; G.F1 = G.P[Va[Va.length - 1]]; G.O = 0; G.O = yA - phi(G, G.cA); G.Z = Va.map((v) => G.P[v]); return G; };
   const bas = (G) => Yd(G, G.bas, G.cA);
   const tient = (lam, haut) => { const G = plan(ecarts(lam), []); return G.O + G.bas + G.surplus <= H0 + LOUPE.marge && G.O + G.haut >= haut; };
   let haut = 0, lam = 0.05;
@@ -269,7 +271,7 @@ function disposerDock(vA, yA, H0, frTop) {
   const G0 = plan(e, x);
   const reste = H0 - bas(G0);
   if (reste > 0) { const n = STRUCT.length - 1 - k; for (let i = k; i < STRUCT.length - 1; i++) x[i] = reste / n; }
-  if (segA !== 'ebullition') { const libre = G0.O + G0.haut - 10; if (libre > 0) for (let i = 0; i < k; i++) x[i] = (x[i] || 0) + libre / k; }
+  if (segA !== 'ebullition' && !compact) { const libre = G0.O + G0.haut - 10; if (libre > 0) for (let i = 0; i < k; i++) x[i] = (x[i] || 0) + libre / k; }
   return plan(e, x);
 }
 
@@ -337,9 +339,9 @@ function ouvrirLoupe(carte, l, ev) {
   const avecTenu = avecDe(carte);
   const hauteur = new Map(lignes.map((r) => [r, r.getBoundingClientRect().height]));
   const hCarte = hauteur.get(carte);
-  const G = disposerDock(vA, yA, R0.height, R0.top);
+  let G = disposerDock(vA, yA, R0.height, R0.top);
   const ancre = (v) => G.P[v] ?? (v === 'fwh' ? G.P['b' + EBU] - G.e.ebullition : G.P[valeursSeg(segDe(v)).slice(-1)[0]]);
-  const rangees = Object.entries(tetes).filter(([k]) => k in G.R).map(([k, el]) => ({ el, z: G.R[k], h: hauteur.get(el) }));
+  const rangees = Object.entries(tetes).filter(([k]) => k in G.R).map(([k, el]) => ({ el, k, z: G.R[k], h: hauteur.get(el) }));
   const jetons = lignes.filter((r) => r !== carte && /^L/.test(r.dataset.rang)).map((el) => {
     const x = ETAT.lignes.find((y) => 'L' + y.id === el.dataset.rang);
     const v = valeurDe(x);
@@ -350,14 +352,14 @@ function ouvrirLoupe(carte, l, ev) {
   const plusProche = (c) => { let b = A.ticks[0], d = Infinity; for (const k of A.ticks) { const x = Math.abs(G.P[k.v] - c); if (x < d) { d = x; b = k; } } return b; };
   const croise = (a0, a1, b0, b1) => a0 < b1 + 1 && b0 < a1 + 1;
   // L'ouverture : de la place au repos à la place sur le Dock, en 170 ms (aussitôt en mouvement réduit).
-  let p = REDUIT ? 1 : 0;
-  const t0 = performance.now();
+  // Le point de départ du passage : la place au repos, puis (D67) la place du moment où le rail se refait.
+  let p = REDUIT ? 1 : 0, t0 = performance.now(), depart = repos;
   const lisse = (k) => 1 - Math.pow(1 - k, 3);
   const placer = (el, y) => { const s = 'translateY(' + y.toFixed(1) + 'px)'; if (el._t !== s) { el._t = s; el.style.transform = s; } };
   let yDoigt = yA, txtTenu = '';
   const poserTout = () => {
     const k = p >= 1 ? 1 : lisse(p);
-    const vers = (el, cible) => repos.get(el) + (cible - repos.get(el)) * k;
+    const vers = (el, cible) => depart.get(el) + (cible - depart.get(el)) * k;
     const c = cran(G, borne(G, sousDoigt(G, yDoigt)));
     for (const r of rangees) { r.y = vers(r.el, Yd(G, r.z, c) - r.h / 2) + r.h / 2; placer(r.el, r.y - r.h / 2); }
     // Les autres houblons : à leur moment, jamais de côté. Sous la carte tenue, ils s'effacent ; au
@@ -405,7 +407,20 @@ function ouvrirLoupe(carte, l, ev) {
   };
   tetes[TETE_SEG[g.seg]].classList.add('focus');
   poserTout();
-  if (p < 1) requestAnimationFrame(function ouvre(now) { if (g.ferme) return; p = Math.min(1, (now - t0) / LOUPE.ouverture); poserTout(); if (p < 1) requestAnimationFrame(ouvre); });
+  const animer = (now) => { if (g.ferme) return; p = Math.min(1, (now - t0) / LOUPE.ouverture); poserTout(); if (p < 1) requestAnimationFrame(animer); };
+  if (p < 1) requestAnimationFrame(animer);
+  /* D67 (19.10, au téléphone : « L'échelle ne s'adapte pas ni de focus, pas là où je suis ») : le doigt
+     passé dans un autre segment (de l'ébullition au whirlpool…), ce segment devient la loupe ; le rail
+     se refait autour du doigt, en 170 ms depuis sa place du moment. */
+  const refaire = (v) => {
+    const top = fr.getBoundingClientRect().top;
+    depart = new Map(lignes.map((r) => [r, r.getBoundingClientRect().top - top]));
+    G = disposerDock(v, yDoigt, R0.height, R0.top, true);
+    for (const r of rangees) r.z = G.R[r.k];
+    for (const j of jetons) j.z = ancre(j.v);
+    p = REDUIT ? 1 : 0; t0 = performance.now();
+    if (p < 1) requestAnimationFrame(animer);
+  };
 
   g.suivre = (cy) => {
     const dy = cy - y0;
@@ -413,6 +428,7 @@ function ouvrirLoupe(carte, l, ev) {
     carte.style.transform = 'translateY(' + (topCarte + dy) + 'px)';
     if (!g.bouge && Math.abs(dy) >= 3) g.bouge = true;
     const pr = plusProche(sousDoigt(G, yDoigt));
+    if (pr.s !== G.seg) refaire(pr.v);
     if (pr.s !== g.seg) { tetes[TETE_SEG[g.seg]].classList.remove('focus'); g.seg = pr.s; tetes[TETE_SEG[g.seg]].classList.add('focus'); }
     if (g.bouge && pr.v !== g.v) {
       g.v = pr.v;

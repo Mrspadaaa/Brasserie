@@ -138,6 +138,32 @@ regardées), on publie sur la page partagée, on commente le ticket.
   au même lien, titre « Houblons, base v4.5 », 36 fichiers de p02, p03 et p08 en null.
 - Preuves : `LOT OK 1/1`, `SPEC OK` (162/162), `RAIL OK`. Commentaires #134 et #135.
 
+### Fait le 19.10, début d'après-midi : base v4.6 (page partagée version 11)
+
+- **Rail, D67** (sa capture au téléphone, Nugget glissé au whirlpool : « L'échelle ne s'adapte pas ne
+  de focus, homme pas là où je suis… ») : `refaire` dans `ouvrirLoupe` rappelle `disposerDock`
+  (mode compact) quand le doigt change de segment ; animé en 170 ms. Mesuré : au whirlpool 24 px par
+  tranche sous le doigt, ébullition entière 14 px ; retour à 30′ normal. Contrôle D67 (témoin : v10
+  → 2 px contre 12,9). Reste visible : la tête du rail descend pendant le geste (vide d'environ 130 px
+  sous la barre d'IBU), à juger par lui.
+- **Comparer (4)** : `comparer.js`, `comparer.css` ; p06 en Barres (bandes, matrice, barres-plages),
+  p02 en Radar avec l'intervalle (noyau = toutes les fiches, deux au moins ; bande pâle = certaines) ;
+  fiche de cas Nugget, East Kent, Fuggle (`CAS_COMPARER`). COMPARER OK. Mots 79 et 77 : l'α est sorti
+  des bandes (rangée α), la plage d'IBU n'est plus écrite (dessinée), les noms quittent la matrice.
+  `controle-fil6` : 10 points restants, en conflit avec D1, D5 et « pas de légende » (dits dans #138).
+- **D33 bis** : `controle-palette` exclut les couleurs de houblon déclarées (`data-couleur`) ; témoin
+  `scratchpad/temoin-palette` → échec.
+- **Suggestions en Radar (5)** : `suggestions.js`, `suggestions.css` ; p10 (réponse par objectif,
+  voies en lignes d'action), radar `grand` (~340 px) ; verdict honnête : Floral « Approche 6 → 22 »
+  (visée 25), Résineux « Aucune voie houblon +6,1 → +5,8 T » ; données `tol`, `dirPack`, `ea`…
+- `check-spec` lit aussi les paroles de la séance 16fc09ec (messages du brasseur seulement, commandes
+  en attente comprises) : 163/163.
+- Preuves : `LOT OK 1/1` avec `--comparer`, `RAIL OK`, `SPEC OK`, captures regardées. Commentaires
+  #134, #138.
+- **En cours : u4 (6)** : `subst.js`, `subst.css`, données `subst` et `ficheCatalogue` dans
+  `build.mjs`, bouton « Substituts » de la fiche ; page `substitution.html` pas encore dans
+  `consolide` ni contrôlée.
+
 ### À faire, dans l'ordre
 
 1. **Rail : « L'échelle ne s'adapte toujours pas à l'endroit où on est ??? »** (19.10, sur la

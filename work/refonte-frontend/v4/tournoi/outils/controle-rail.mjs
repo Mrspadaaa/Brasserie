@@ -453,6 +453,29 @@ for (const id of ids) {
       await q2.close();
     }
   }
+  // D67 (19.10, au téléphone, base v4.5 : Nugget glissé de 60′ jusqu'au whirlpool, à 75 °C) :
+  // « L'échelle ne s'adapte pas ni de focus, pas là où je suis. L'échelle ébullition est très grande
+  // alors que celle où l'on est, Whirlpool, est toute petite ». Le doigt passé dans un autre segment,
+  // ce segment devient la loupe : une tranche sous le doigt (deux graduations voisines du doigt) fait
+  // au moins 2 fois une tranche du segment quitté (sa descente ÷ ses intervalles) et 12 px au moins.
+  {
+    const q = await ouvrir(index);
+    const g = await poser(q, 'doigt');
+    if (g && await g.vers('wp75')) {
+      const m = await q.evaluate((yF) => {
+        const yc = (e) => { const r = e.getBoundingClientRect(); return r.top + r.height / 2; };
+        const wp = [...document.querySelectorAll('[data-graduation="whirlpool"]')].map(yc).sort((a, b) => a - b);
+        const eb = [...document.querySelectorAll('[data-graduation="ebullition"]')].map(yc).sort((a, b) => a - b);
+        let gap = null;
+        for (let i = 1; i < wp.length; i++) if (wp[i - 1] <= yF + 0.5 && wp[i] >= yF - 0.5) { const d = Math.max(wp[i] - wp[i - 1], i + 1 < wp.length ? wp[i + 1] - wp[i] : 0); gap = gap === null ? d : Math.max(gap, d); }
+        return { gap, pas: eb.length > 1 ? (eb[eb.length - 1] - eb[0]) / (eb.length - 1) : null };
+      }, g.y);
+      if (m.gap === null || m.pas === null) p('D67 : index, tenu à 75 °C, graduations du whirlpool ou de l\'ébullition introuvables');
+      else if (!(m.gap >= 12 && m.gap >= 2 * m.pas)) p('D67 : index, Nugget glissé au whirlpool (75 °C) : une tranche sous le doigt fait ' + Math.round(m.gap) + ' px, une tranche de l\'ébullition quittée ' + Math.round(m.pas * 10) / 10 + ' px : la loupe n\'a pas suivi le doigt dans son segment');
+    } else p('D67 : index, le doigt n\'atteint pas 75 °C dans le whirlpool');
+    if (g) await g.lacher();
+    await q.close();
+  }
   // D63, D64, D61 bis (18.10, soir, base v4.2 au téléphone) : « Ça fait pas zoom focus sur
   // l'emplacement. Les ajouter déjà présent saute à droite. C'est moins bien qu'avant... » ;
   // « L'échelle est plus du tout respecter quand on passe dessus... ». La loupe (D47, D55) et la

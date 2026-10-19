@@ -36,7 +36,36 @@ function ficheDeCited(cited) {
   return { niv: ORDRE.map((f) => (m[f] ? niveauCite(m[f].level) : 0)), n: ORDRE.map((f) => (m[f] ? m[f].sources : 0)), of };
 }
 
-const FICHES = JSON.parse(fs.readFileSync(ROOT + '/prototypes/houblons-v4/data/pack-fiches.json', 'utf8')).fichesHoublons;
+const PACK_FICHES = JSON.parse(fs.readFileSync(ROOT + '/prototypes/houblons-v4/data/pack-fiches.json', 'utf8'));
+const FICHES = PACK_FICHES.fichesHoublons;
+// Le catalogue du moteur (Beer Maverick, 318 variétés) : les remplaçants sans fiche du pack (u4).
+const VARIETES = JSON.parse(fs.readFileSync(ROOT + '/prototypes/houblons-v4/data/proto-data.json', 'utf8')).varieties;
+// La règle rôle-α v1 du moteur (prototypes/houblons-v4/src/engine/roles.ts, roleFromAlpha).
+const roleRegle = (a, marque) => (a >= 10 ? (marque ? 'double' : 'amérisant') : a <= 6 ? 'aromatique' : 'double');
+/* Un remplaçant sans fiche du pack : une fiche réduite tirée du catalogue du moteur. Ses arômes sont
+   ceux de l'original corrigés par ce que le pack dit qu'il gagne ou perd ; son α de référence est le
+   milieu de sa plage variétale (la règle du moteur pour la dose : l'IBU par gramme suit α) ; son IBU
+   par gramme au moment de la référence vient de la dose du pack à IBU égal. Rien d'autre. */
+function ficheCatalogue(v, orig, c, ref) {
+  const NOMS_H = { myrcene: 'myrcène', humulene: 'humulène', caryophyllene: 'caryophyllène', farnesene: 'farnésène', linalool: 'linalol' };
+  const src = (a) => (Array.isArray(a) ? [{ src: 'Beer Maverick', an: v.bmYear || null, min: a[0], max: a[1] }] : []);
+  const M = (v.descriptions || []).length + (v.citedFacts || []).length;
+  const corr = Object.fromEntries([...c.gagne, ...c.perd].map((x) => [x.family, x.a]));
+  const aromes = orig.aromes.map((a) => { const lv = a.f in corr ? corr[a.f] : a.lv; return { f: a.f, lv, n: lv && M === 1 ? 1 : 0, of: M === 1 ? 1 : 0, auteurs: lv ? ['Beer Maverick'] : [] }; });
+  const aMid = Array.isArray(v.alpha) ? (v.alpha[0] + v.alpha[1]) / 2 : null;
+  const comp = { ...(v.oils || {}), linalool: Array.isArray(v.hsLinalool) ? v.hsLinalool : null };
+  return {
+    nom: v.name, origine: v.origin || null,
+    role: aMid != null ? { v: roleRegle(aMid, aromes.some((a) => a.lv === 2)), src: 'règle : règle rôle-α v1 (prototype, à valider)' } : null,
+    alpha: src(v.alpha), lot: null, lotOrigine: null, alphaRef: aMid,
+    beta: src(v.beta), huiles: src(v.oil),
+    composants: Object.entries(NOMS_H).map(([k, nom]) => (Array.isArray(comp[k]) ? { nom, min: comp[k][0], max: comp[k][1], src: k === 'linalool' ? 'Hopsteiner' : 'Beer Maverick' } : { nom, raison: k === 'farnesene' ? 'non importé (#131)' : 'non publié dans le catalogue' })),
+    aromes, desc: v.tagsFr || [], subsCalc: [], subs: [], subsRaison: null,
+    styles: [], stylesSrc: [], stylesRaison: 'styles d’emploi non publiés dans le dépôt',
+    ibuPG: c.dose && c.dose.g ? { [ref.moment]: ref.ibu / c.dose.g } : {}, base: c.dose ? 'dose du pack à IBU égal, ' + ref.quand : null,
+    catalogue: true,
+  };
+}
 const enAlpha = (a) => {
   if (a == null) return null;
   if (typeof a === 'number') return { v: a };
@@ -61,6 +90,7 @@ const roleDe = (item) => {
    (la page dit « non renseigné »). Le rôle (amérisant, aromatique, double, avec sa source) vient
    du pack courant, là où le houblon est une ligne ou un ajout proposé. */
 const ROLES = {};
+const CAS_COMPARER = ['Nugget', 'East Kent Goldings', 'Fuggle'];
 for (const S of Object.values(pack.scenarios)) {
   const AR = S.ajoutsRapides || {};
   for (const x of [...(S.recetteHoublons || []), ...(AR.disponibles || []), ...(AR.epuises || []), ...(AR.catalogue || []), ...(AR.amerisants || []), ...(AR.aromatiques || [])]) {
@@ -78,11 +108,15 @@ function ficheH(f) {
     alpha: ((f.alpha && f.alpha.sources) || []).map(plageSrc),
     // La valeur de mon lot seulement (fiche de stock, article) : un milieu de plage n'est pas un lot.
     lot: de === 'fiche de stock' || de === 'lu sur l’article' ? f.alpha.retenu.value : null,
+    // L'origine de mon lot (Comparer : ▼ fiche de stock, ▽ article) et l'α des tables d'IBU de la fiche.
+    lotOrigine: de === 'fiche de stock' ? 'stock' : de === 'lu sur l’article' ? 'article' : null,
+    alphaRef: f.alpha && f.alpha.retenu ? f.alpha.retenu.value : null,
     beta: ((f.beta && f.beta.sources) || []).map(plageSrc),
     huiles: ((f.huiles && f.huiles.totale && f.huiles.totale.sources) || []).map(plageSrc),
     composants: Object.entries(NOMS_H).map(([k, nom]) => (comp[k] ? { nom, min: comp[k].min, max: comp[k].max, src: comp[k].source } : { nom, raison: comp[k + 'Raison'] || null })),
     aromes: (f.aromes || []).map((a) => ({ f: a.family, lv: a.level, n: a.sources, of: a.of, auteurs: a.authors || [] })),
     desc: (f.descripteurs && f.descripteurs.beerMaverick) || [],
+    subsCalc: ((f.substitutsCalcules && f.substitutsCalcules.remplacants) || []).map((x) => x.name).filter((n) => FICHES.some((y) => y.name === n)),
     subs: Array.isArray(f.substituts) ? f.substituts.map((x) => (typeof x === 'string' ? x : x.name || x.nom || '')).filter(Boolean) : [], subsRaison: f.substitutsRaison || null,
     styles: (f.usage || []).flatMap((u) => u.styles || []), stylesSrc: (f.usage || []).map((u) => u.source).filter(Boolean), stylesRaison: f.usageRaison || null,
     ibuPG: Object.fromEntries(((f.ibuParGramme && f.ibuParGramme.moments) || []).map((m) => [m.code, m.ibuPerGram ? m.ibuPerGram.value : null])),
@@ -175,6 +209,12 @@ function scenario(id) {
       stock: v.yeastChange ? 'stock non suivi' : stockMot(v), ibuDrift: v.ibu.drift, ibuApres: v.ibu.after,
       bords: v.sideEffects.filter((e) => e.crans >= 0.5).sort((a, b) => b.crans - a.crans).map((e) => court[e.family].toLowerCase()),
       dir: v.directedEffect,
+      // Suggestions, lot 6 (p10) : le changement (actions du pack), l'IBU avant, le stock, les effets de
+      // bord, et l'effet sur chaque famille en tolérances du style (ecartsApres : valeur 0–100, écart en T, plage).
+      type: v.type, ibuAvant: v.ibu.before, stockStatut: v.stock.status, manque: (v.stock.missing || []).reduce((t, m) => t + m.grams, 0),
+      actionsP: v.actions.map((a) => ({ op: a.op, cle: a.hopKey, nom: a.hop, moment: a.moment, g: a.grams, gAvant: a.previousGrams ?? null, avantNom: a.previousHop ?? null })),
+      side: (v.sideEffects || []).map((e) => ({ f: e.family, crans: e.crans })),
+      ea: Object.fromEntries((v.ecartsApres || []).map((e) => [e.family, { v: e.valeur, e: e.ecart, plage: e.plage || null }])),
       faible: Object.fromEntries(Object.entries(v.directedEffect).map(([k, x]) => [k, x == null || Math.abs(x) < seuil[k]])),
       crans: ORDRE.map((f) => m[f].crans), delta: ORDRE.map((f) => m[f].deltaCrans),
       // Radar : l'après en intensité continue 0–3 (profilApresContinu), null où l'effet n'est pas établi.
@@ -187,7 +227,10 @@ function scenario(id) {
   }
   const phrase = S.readingSummary.sentence;
   const recNoms = [...new Set(lignes.map((l) => l.nom))];
-  const comparerDefaut = [...recNoms, ...tousRapides.map((r) => r.nom).filter((n) => !recNoms.includes(n))].filter((n, k, a) => FICHES_TOUTES[n] && a.indexOf(n) === k).slice(0, 3);
+  // Comparer (lot 6, controle-comparer) : la fiche de cas, Nugget de ma recette face à East Kent
+  // Goldings et Fuggle, quand ma recette porte Nugget ; sinon ma recette puis les ajouts proposés.
+  const comparerDefaut = recNoms.includes(CAS_COMPARER[0]) && CAS_COMPARER.every((n) => FICHES.some((f) => f.name === n)) ? CAS_COMPARER.slice()
+    : [...recNoms, ...tousRapides.map((r) => r.nom).filter((n) => !recNoms.includes(n))].filter((n, k, a) => FICHES_TOUTES[n] && a.indexOf(n) === k).slice(0, 3);
   const D0 = {
     scen: id, ebullition: EBU, tables: { dureesFwh: pack.tablesIbu.dureesPremierMout, wp: pack.tablesIbu.whirlpool }, dryJours: (pack.dryHopJour && pack.dryHopJour.jours) || { min: 0, max: 14 }, nom: S.recipe.name, code: '16D', ibuStyle: st.ibu, og: virgule(S.recipe.og), ebc: S.recipe.ebc,
     ordre: ORDRE, court, long, attendues: ORDRE.filter((f) => cs[f].status === 'attendue'),
@@ -226,27 +269,52 @@ function scenario(id) {
       ...tousRapides.map((x) => [x.nom, x.cle]),
       ...S.recetteHoublons.map((x) => [x.name, x.hopKey]),
       ...voiesBrutes.flatMap((v) => v.actions.map((a) => [a.hop, a.hopKey])),
+      ...FICHES.filter((f) => comparerDefaut.includes(f.name)).map((f) => [f.name, f.key]),
     ]),
     groupes: Object.fromEntries([...rapides.catalogue.map((r) => [r.nom, 'catalogue']), ...pack.stock.map((x) => [x.name, x.exhausted ? 'epuise' : 'stock'])]),
     candidats: [
       ...rapides.stock.map((r) => [r.nom, 'stock']), ...rapides.epuises.map((r) => [r.nom, 'epuise']), ...rapides.catalogue.map((r) => [r.nom, 'catalogue']),
     ].filter(([n]) => !comparerDefaut.includes(n)),
     horsModele: ((S.horsModele || [])[0] || { leads: [] }).leads.map((l) => l.title),
+    horsModeleFam: ((S.horsModele || [])[0] || {}).family || null,
+    // Tolérances du style (D54) : bande et T par famille, ma bière en points 0–100 et en T ; la direction du pack.
+    tol: S.tolerance ? { code: S.tolerance.code, familles: Object.fromEntries(S.tolerance.familles.map((f) => [f.family, { statut: f.status, apriori: f.apriori, bande: f.bande, T: f.T }])),
+      biere: Object.fromEntries(S.tolerance.biere.map((b) => [b.family, { v: b.valeur, e: b.ecart, plage: b.plage || null }])) } : null,
+    dirPack: (S.direction || []).map((d) => ({ f: d.family, crans: d.crans, cible: d.targetAbsolute, de: d.targetFrom })),
     levure: { nom: S.yeast.name.replace(/\s*\(.*\)\s*$/, ''), statut: S.yeast.status },
     notes: { ibu: S.ibuNote || null, profil: S.profilNote || null, voies: S.voiesNote || null },
   };
   // Radar : la roue des arômes du pack (ordre des axes). Fiche : chaque houblon nommé sur la page.
   D0.roue = pack.roueAromes.map((r) => ({ f: r.id, nom: r.nom }));
+  // Substitution (u4, #137) : les remplaçants calculés du pack pour chaque houblon de ma recette (les
+  // meilleurs du catalogue et du stock, substitutsCalcules : remplacants et enStock).
+  D0.subst = {};
+  for (const l of S.recetteHoublons || []) {
+    const f = FICHES.find((x) => x.key === l.hopKey), sc = f && f.substitutsCalcules;
+    if (!sc || !sc.remplacants || D0.subst[f.key]) continue;
+    const cand = [...sc.remplacants, ...(sc.enStock || [])].map((r) => ({ cle: r.key, nom: r.name, score: r.score, palier: r.palier, comp: r.composantes, fiab: r.couverture ? r.couverture.fiabilite : null,
+      dose: r.dose ? { g: r.dose.grams, min: r.dose.min, max: r.dose.max } : null, stock: r.stock ? r.stock.etat : null, suffisant: r.stock ? r.stock.suffisant : null, raison: r.raison, gagne: r.gagne || [], perd: r.perd || [] }))
+      .filter((c, k, a) => a.findIndex((x) => x.cle === c.cle) === k);
+    D0.subst[f.key] = { cle: f.key, nom: f.name, contexte: sc.contexte, poids: sc.poids, statut: sc.statut, paliers: PACK_FICHES.meta.substitution.paliers,
+      ref: { moment: sc.reference.moment, quand: sc.reference.momentLabel, g: sc.reference.grams, ibu: sc.reference.ibu }, cand };
+    for (const c of cand) if (!D0.cles[c.nom]) D0.cles[c.nom] = c.cle;
+  }
   const cles = new Set(Object.values(D0.cles));
   D0.fichesH = Object.fromEntries(FICHES.filter((f) => cles.has(f.key)).map((f) => [f.key, ficheH(f)]));
+  for (const s of Object.values(D0.subst)) for (const c of s.cand) {
+    if (D0.fichesH[c.cle] || !D0.fichesH[s.cle]) continue;
+    const v = VARIETES.find((x) => x.id === c.cle);
+    if (v) D0.fichesH[c.cle] = ficheCatalogue(v, D0.fichesH[s.cle], c, s.ref);
+  }
   return D0;
 }
 
 const commun = fs.readFileSync(path.join(HERE, 'commun.js'), 'utf8');
 // Radar unique et fiche du houblon (lot 4 intégré) ; d3-shape, d3-scale et motion empaquetés par libs.mjs.
 const lib = fs.readFileSync(path.join(HERE, 'lib-radar.js'), 'utf8');
-const radarJs = fs.readFileSync(path.join(HERE, 'radar.js'), 'utf8') + '\n' + fs.readFileSync(path.join(HERE, 'fiche.js'), 'utf8');
-const radarCss = fs.readFileSync(path.join(HERE, 'radar.css'), 'utf8') + '\n' + fs.readFileSync(path.join(HERE, 'fiche.css'), 'utf8');
+// Comparer, lot 6 (comparer.js) : après la fiche, dont il reprend ROLE_MOT, ligneDe, rapideDe, stockFiche.
+const radarJs = ['radar.js', 'fiche.js', 'comparer.js', 'suggestions.js', 'subst.js'].map((f) => fs.readFileSync(path.join(HERE, f), 'utf8')).join('\n');
+const radarCss = ['radar.css', 'fiche.css', 'comparer.css', 'suggestions.css', 'subst.css'].map((f) => fs.readFileSync(path.join(HERE, f), 'utf8')).join('\n');
 const tpl = fs.readFileSync(path.join(HERE, 'page.html'), 'utf8');
 const VUES = {
   'index.html': ['S1', 'etape', '', 'barres', ''],
@@ -264,6 +332,8 @@ const VUES = {
   'cas-ebu200.html': ['S1E200', 'etape', '', 'barres', ''],
   // L'étape, la fiche de Nugget ouverte (appui long déjà fait).
   'fiche.html': ['S1', 'etape', '', 'barres', '', '', 'beermaverick-nugget'],
+  // Substitution (u4) : les remplaçants de Nugget, ouverts depuis sa fiche (« Substituts »).
+  'substitution.html': ['S1', 'substitution', '', 'barres', '', '', '', 'beermaverick-nugget'],
 };
 const DATA = Object.fromEntries(['S1', 'S4', 'S5', 'S1E45', 'S1E120', 'S1E200'].map((s) => [s, scenario(s)]));
 const TITRES = { consolide: 'Houblons, rail du brassage' };
@@ -271,7 +341,7 @@ for (const id of ['consolide']) {
   const variante = fs.readFileSync(path.join(HERE, 'etape-' + id + '.js'), 'utf8');
   const css = fs.readFileSync(path.join(HERE, 'etape-' + id + '.css'), 'utf8');
   fs.mkdirSync(path.join(OUT, id), { recursive: true });
-  for (const [f, [scen, vue, partie, lentille, dirs, echelle, ficheInit]] of Object.entries(VUES).filter(([f]) => !PAGES.length || PAGES.includes(f))) {
+  for (const [f, [scen, vue, partie, lentille, dirs, echelle, ficheInit, subst]] of Object.entries(VUES).filter(([f]) => !PAGES.length || PAGES.includes(f))) {
     const html = tpl
       .replace('@TITRE@', TITRES[id])
       .replace('/*@CSS@*/', () => css + '\n' + radarCss)
@@ -279,7 +349,7 @@ for (const id of ['consolide']) {
       .replace('/*@DATA@*/', () => 'const D = ' + JSON.stringify(DATA[scen]) + ';')
       .replace('/*@COMMUN@*/', () => commun)
       .replace('/*@VARIANTE@*/', () => variante + '\n' + radarJs)
-      .replace('@BODY@', `data-variante="${id}" data-vue="${vue}" data-ouvre="${partie}" data-lentille="${lentille}" data-dirs="${dirs}" data-echelle="${echelle || ''}"` + (ficheInit ? ` data-fiche-init="${ficheInit}"` : ''));
+      .replace('@BODY@', `data-variante="${id}" data-vue="${vue}" data-ouvre="${partie}" data-lentille="${lentille}" data-dirs="${dirs}" data-echelle="${echelle || ''}"` + (ficheInit ? ` data-fiche-init="${ficheInit}"` : '') + (subst ? ` data-subst="${subst}"` : ''));
     fs.writeFileSync(path.join(OUT, id, f), html);
   }
   console.log(id, 'écrit');

@@ -18,8 +18,27 @@ const sources = [
 ].map((p) => path.join(ROOT, p));
 const transcript = path.join(os.homedir(), '.claude/projects/C--Users-mrspa--codex-worktrees-openai-clean-start-Brasserie/055d83f7-e384-467e-9f02-749828cb09f6.jsonl');
 if (fs.existsSync(transcript)) sources.push(transcript);
+// Séances suivantes (19.10 : 16fc09ec…) : seuls les messages du brasseur comptent (rôle user, texte
+// tapé ou dicté) ; ni les réponses ni les écritures de l'agent, qui citent ses mots et rendraient
+// le contrôle circulaire.
+const SEANCES = ['16fc09ec-4e69-48a9-9744-5912b6ef6552'];
+const paroles = (f) => fs.readFileSync(f, 'utf8').split('\n').filter(Boolean).flatMap((l) => {
+  try {
+    const o = JSON.parse(l), m = o.message;
+    const textes = (c) => (typeof c === 'string' ? [c] : (c || []).filter((x) => x.type === 'text').map((x) => x.text));
+    // Un message envoyé pendant que l'agent travaille arrive en commande en attente (queued_command).
+    if (o.type === 'attachment' && o.attachment && o.attachment.type === 'queued_command') return textes(o.attachment.prompt);
+    if (o.type !== 'user' || !m || m.role !== 'user') return [];
+    return textes(m.content);
+  } catch (e) { return []; }
+}).join(' ');
 const norm = (s) => s.replace(/\\n/g, ' ').replace(/[’']/g, "'").replace(/\s+/g, ' ').trim();
-const hay = process.argv.includes('--control') ? '' : sources.map((f) => norm(fs.readFileSync(f, 'utf8'))).join(' ');
+const textes = sources.map((f) => fs.readFileSync(f, 'utf8'));
+for (const id of SEANCES) {
+  const f = path.join(os.homedir(), '.claude/projects/C--Users-mrspa--codex-worktrees-openai-clean-start-Brasserie/' + id + '.jsonl');
+  if (fs.existsSync(f)) textes.push(paroles(f));
+}
+const hay = process.argv.includes('--control') ? '' : textes.map(norm).join(' ');
 const quotes = [...spec.matchAll(/«\s*([^»]+?)\s*»/g)].map((m) => m[1]);
 let ok = 0;
 const missing = [];

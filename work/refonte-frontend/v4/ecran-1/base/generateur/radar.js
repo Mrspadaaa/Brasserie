@@ -11,11 +11,11 @@
    les traitements comme connue mais valeur à 0 ») : une famille sans donnée (non située dans ma
    bière ; décrite par aucune fiche dans Comparer et la fiche) se pose au centre, jamais sur
    l'anneau du zéro ; son libellé est gris et suivi de « ? », une marque creuse sur son axe, un
-   secteur hachuré (data-inconnu), et la bulle au toucher dit « inconnu, ce n'est pas zéro ». Ma bière
-   et la fiche n'ont plus de légende écrite (19.10 : « Pas besoin d'écrire la légende sur la version
-   finale ») ; Suggestions et Comparer gardent la leur jusqu'à leur intégration.
+   secteur hachuré (data-inconnu), et la bulle au toucher dit « inconnu, ce n'est pas zéro ». Aucun
+   radar n'a plus de légende écrite (19.10 : « Pas besoin d'écrire la légende sur la version
+   finale » ; Ma bière et la fiche en v4.5, Comparer et Suggestions à leur intégration en v4.6).
    D66 (« Pourquoi il y a cité ? ») : aucun nom d'échelle dans le dessin, où il se lisait comme la
-   valeur du libellé voisin ; l'échelle est une clé de la légende, sous le radar.
+   valeur du libellé voisin ; les niveaux se nomment dans la bulle au toucher.
    Silhouettes pleines translucides et points aux sommets ; aucune série en tirets ni en
    pointillés (D39). Libellés entiers de 12 px, sur deux lignes si besoin, ancrés selon l'angle ;
    au toucher (ou au survol) d'un sommet, la famille et la valeur en mots.
@@ -45,7 +45,6 @@ const RADAR = (() => {
   const plein = (c, r) => ({ r, fill: c, stroke: '#fff', 'stroke-width': 1.5 });
   const creux = (c, r) => ({ r, fill: '#fff', stroke: c, 'stroke-width': 1.6 });
   const f1 = (x) => x.toFixed(1);
-  const INCONNU = 'inconnu, ce n\'est pas zéro';
   let RID = 0;
 
   // Un toucher hors d'un radar referme sa bulle.
@@ -222,10 +221,6 @@ const RADAR = (() => {
       sv('path', { d: `M${x + 13},${y + 4}L${x + 19},${y - 4}M${x + 17},${y + 4}L${x + 23},${y - 4}M${x + 21},${y + 4}L${x + 27},${y - 4}`, stroke: '#c4c4c4', 'stroke-width': 1.2 }, parent);
     }
   }
-  /* D66 : l'échelle hors du dessin, en clé. Intensité : un arc par anneau, du plus petit au plus
-     grand, chacun suivi de son nom. Citations : le sommet creux (cité) et plein (marqué). */
-  const CLE_I = { t: 'cle', parts: [{ t: 'anneau', r: 5, mot: 'faible' }, { t: 'anneau', r: 8, mot: 'moyen' }, { t: 'anneau', r: 11, mot: 'marqué' }] };
-  const cleC = (c) => ({ t: 'cle', parts: [{ t: 'creux', c, r: 3.5, mot: 'cité' }, { t: 'rond', c, r: 4, mot: 'marqué' }] });
 
   /* La zone du style : un fond gris jusqu'au haut (un anneau si le bas dépasse 0). */
   function zone(g, bas, haut) {
@@ -315,7 +310,10 @@ const RADAR = (() => {
     const etabli = b.axes.map((f) => v.apresC[fi(f)] != null);
     return { etabli, valeurs: b.axes.map((f, k) => (etabli[k] ? v.apresC[fi(f)] : b.val[k])) };
   }
-  function voies(cont, ctx, redraw) {
+  /* Base v4.6 (Suggestions p10, « mais radar beaucoup plus grand ») : o.grand, le radar pleine largeur
+     (libellés jusqu'au bord de l'écran) ; o.sansPuces, la voie se choisit sur sa ligne (son œil) ;
+     sans légende écrite, comme Ma bière et la fiche. */
+  function voies(cont, ctx, redraw, o = {}) {
     const vs = ctx.marq.length ? ctx.marq : ctx.liste.filter((v) => !v.nouvelle).slice(0, 1);
     if (!vs.length) return;
     if (!vs.some((v) => v.rang === ETAT.voieRadar)) ETAT.voieRadar = vs[0].rang;
@@ -324,7 +322,7 @@ const RADAR = (() => {
     const A = vs.map((v) => apresDe(v, b));
     const titre = (v) => (v.cles.length ? nomsHoublons(v.houblons) : v.houblons.join(' + '));
     const nomV = (v) => 'après ' + v.houblons.join(' + ');
-    if (vs.length > 1) {
+    if (vs.length > 1 && !o.sansPuces) {
       cont.append(h('div', { class: 'chips puces-v', role: 'group', 'aria-label': 'Voie montrée sur le radar (ou balayer le radar)' }, vs.map((v, k) => h('button', {
         class: 'chip', 'aria-pressed': String(k === i), 'data-k': 'pv' + v.rang, 'data-booster': k === (i + 1) % vs.length ? 'voie suivante' : null,
         'aria-label': 'Montrer la voie ' + v.label, onclick: () => aller(k),
@@ -333,11 +331,10 @@ const RADAR = (() => {
     const a = A[i];
     const inconnue = (k) => b.val[k] == null && a.valeurs[k] == null;
     const hors = b.axes.filter((f, k) => inconnue(k));
-    // Légende courte (budget de mots de la page) : la puce allumée dit déjà quelle voie est l'après.
+    // Sans légende : la ligne allumée dit quelle voie est l'après ; la bulle au toucher dit le reste.
     const g = radar(cont, {
-      objet: 'voies', min: -1, max: 3, anneaux: ANNEAUX_I, deborde: 12, Hmin: 0, Hmax: 430,
+      objet: 'voies', min: -1, max: 3, anneaux: ANNEAUX_I, deborde: o.grand ? 16 : 12, Hmin: 0, Hmax: o.grand ? 380 : 430,
       libelle: (f, k) => ({ gras: D.attendues.includes(f), inconnu: inconnue(k) }),
-      legende: [{ t: 'contour', c: AVANT, texte: 'avant' }, { t: 'plein', c: MOI, texte: 'après' }, CLE_I, hors.length ? { t: 'centre', texte: INCONNU } : null],
       label: 'Radar des voies : l\'avant en contour, ' + nomV(vs[i]) + ' plein, dans la zone du style en gris ; au centre, les familles non situées, inconnues et pas à zéro' + (vs.length > 1 ? ' ; balayer pour passer à la voie suivante' : ''),
     });
     zone(g, b.bas, b.haut);
@@ -410,34 +407,51 @@ const RADAR = (() => {
   }
 
   /* Comparer (objet 3) : les fiches en citations 0–2, tous les houblons superposés sur un seul
-     radar, une couleur chacun. Une famille qu'aucune fiche ne décrit est inconnue (D65) : au
-     centre, marquée ; celle qu'une autre fiche décrit reste « non décrit » (0) pour ce houblon.
-     Aucun repère tiré de ma bière. */
+     radar, la couleur de sa bande pour chacun. Une famille qu'aucune fiche ne décrit est inconnue
+     (D65) : au centre, marquée ; celle qu'une autre fiche décrit reste « non décrit » (0) pour ce
+     houblon. Aucun repère tiré de ma bière. Sans légende (base v4.6) : les couleurs sont celles des
+     bandes au-dessus, la bulle au toucher dit le reste.
+     L'intervalle de chaque famille (19.10 : « radar p2 mais avec ajoute d'intervalle de confiance ») :
+     la plage entre les fiches du houblon. Le bord extérieur (le trait, les sommets) dit ce que les
+     fiches disent réunies (le niveau du pack : cité par une, marqué par deux ou plus) ; le noyau plein
+     dit ce que toutes ses fiches disent, quand il en a deux au moins ; la bande pâle entre les deux,
+     ce que seules certaines disent. Aucun chiffre nouveau : le niveau et le compte N sur M du pack. */
   const marqueCitation = (c, v) => (v === 2 ? plein(c, 4) : v === 1 ? creux(c, 3.5) : plein(c, 2));
-  const compteFiches = (F, i) => (F.of ? ' (' + F.n[i] + '/' + F.of + ' fiches)' : '');
-  function houblons(cont, noms) {
-    const niv = (nom, f) => D.fiches[nom].niv[fi(f)];
+  const OP_NOYAU = 0.4, OP_PALE = 0.3;
+  function houblons(cont, noms, o = {}) {
+    const dn = Object.fromEntries(noms.map((x) => [x, o.donnees ? o.donnees(x)
+      : { niv: (f) => D.fiches[x].niv[fi(f)], n: (f) => D.fiches[x].n[fi(f)], of: D.fiches[x].of, noyau: () => 0 }]));
+    const niv = (nom, f) => dn[nom].niv(f);
+    const coul = (nom, j) => (o.couleur ? o.couleur(nom) : HOUBLONS[j]);
     const inconnue = (f) => noms.every((x) => !niv(x, f));
     const hors = ROUE.filter(inconnue);
-    // Ce que la fiche d'un houblon est seule à citer (plus fort que toutes les autres).
-    const seul = (nom) => ROUE.filter((f) => noms.length > 1 && noms.every((m) => m === nom || niv(nom, f) > niv(m, f)));
     const g = radar(cont, {
-      objet: 'houblons', min: -0.5, max: 2, anneaux: ANNEAUX_C, deborde: 12, colonne: true, Hmin: 492,
+      objet: 'houblons', min: -0.5, max: 2, anneaux: ANNEAUX_C, deborde: 12, Hmax: o.Hmax || 430,
       libelle: (f) => ({ gras: D.attendues.includes(f), inconnu: inconnue(f) }),
-      legende: noms.map((x, j) => ({ t: 'rond', c: HOUBLONS[j], texte: x, details: seul(x).length ? 'seul : ' + seul(x).map((f) => nomF(f).toLowerCase()).join(', ') : null }))
-        .concat([cleC(LEG), hors.length ? { t: 'centre', texte: 'aucune fiche : ' + INCONNU } : null]),
-      label: 'Radar des fiches de ' + noms.join(', ') + ', superposées : 1 cité, 2 marqué ; au centre, les familles qu\'aucune fiche ne décrit, inconnues et pas à zéro',
+      label: 'Radar des fiches de ' + noms.join(', ') + ', superposées : 1 cité, 2 marqué ; le noyau plein, ce que toutes les fiches d\'un houblon disent ; la bande pâle, ce que certaines seulement disent ; au centre, les familles qu\'aucune fiche ne décrit, inconnues et pas à zéro',
     });
     inconnus(g, hors, 'aucune fiche ne le décrit');
+    // Le noyau : 0 (aucun accord) au centre, jamais sur l'anneau du zéro.
+    const ligneNoyau = D3.lineRadial().angle((v, k) => k * g.pas).radius((v) => (v > 0 ? g.r(v) : 0)).curve(D3.curveLinearClosed);
     // Le plus grand houblon dessous, le plus petit dessus : aucune silhouette cachée par une autre.
     const somme = (nom) => ROUE.reduce((s, f) => s + niv(nom, f), 0);
     const ordre = noms.map((nom, j) => [nom, j]).sort((x, y) => somme(y[0]) - somme(x[0]));
-    for (const [nom, j] of ordre) serie(g, { nom, valeurs: ROUE.map((f) => (inconnue(f) ? null : niv(nom, f))), couleur: HOUBLONS[j], plein: true });
-    for (const [nom, j] of ordre) ROUE.forEach((f, k) => {
-      if (inconnue(f)) return;
-      const v = niv(nom, f);
-      g.marque(g.P(k, v), marqueCitation(HOUBLONS[j], v), [h('b', {}, nom), ' · ' + nomF(f) + ' : ' + CLASSES_C[v] + compteFiches(D.fiches[nom], fi(f))]);
-    });
+    for (const [nom, j] of ordre) {
+      const c = coul(nom, j), s = serie(g, { nom, valeurs: ROUE.map((f) => (inconnue(f) ? null : niv(nom, f))), couleur: c, plein: true });
+      const noyau = ROUE.map((f) => (inconnue(f) ? 0 : dn[nom].noyau(f)));
+      if (noyau.some((v) => v > 0)) sv('path', { d: ligneNoyau(noyau), fill: c, 'fill-opacity': OP_NOYAU, stroke: 'none', 'data-noyau': nom, 'data-valeurs': noyau.join(',') }, s.g);
+      // Un houblon isolé (toucher sa bande) : les autres pâlissent.
+      if (o.focus && o.focus !== nom) s.g.setAttribute('opacity', OP_PALE);
+    }
+    for (const [nom, j] of ordre) {
+      const mg = o.focus && o.focus !== nom ? sv('g', { opacity: OP_PALE }, g.C.marques) : null;
+      ROUE.forEach((f, k) => {
+        if (inconnue(f)) return;
+        const v = niv(nom, f), d = dn[nom], n = d.n(f), tous = d.noyau(f) > 0;
+        const plage = !v ? '' : tous ? ', toutes ses fiches' : d.of >= 2 ? ', ' + n + ' fiche' + (n > 1 ? 's' : '') + ' sur ' + d.of + ' (plage : non décrit à ' + CLASSES_C[v] + ')' : ', une seule fiche';
+        g.marque(g.P(k, v), marqueCitation(coul(nom, j), v), [h('b', {}, nom), ' · ' + nomF(f) + ' : ' + CLASSES_C[v] + plage], mg);
+      });
+    }
   }
 
   /* La roue de la fiche d'un houblon : citations 0–2, « N/M » fiches sous chaque famille citée ;

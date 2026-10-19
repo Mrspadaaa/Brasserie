@@ -148,7 +148,13 @@ function blocReplis(F) {
   return [
     h('div', { class: 'f-replis', role: 'group', 'aria-label': 'Détail de la fiche' }, SECTIONS.map(([id, titre], n) => h('button', {
       class: 'f-repli', 'aria-expanded': String(FICHE.sec === id), 'data-k': 'fr' + id, 'data-booster': n === 0 ? 'repli de la fiche' : null,
-      'aria-label': (FICHE.sec === id ? 'Replier ' : 'Déplier ') + titre.toLowerCase(), onclick: (e) => { e.stopPropagation(); FICHE.sec = FICHE.sec === id ? null : id; construireFiche(true); },
+      'aria-label': id === 'subs' && D.subst && D.subst[FICHE.cle] ? 'Ouvrir les remplaçants de ' + D.fichesH[FICHE.cle].nom : (FICHE.sec === id ? 'Replier ' : 'Déplier ') + titre.toLowerCase(),
+      onclick: (e) => {
+        e.stopPropagation();
+        // u4 (#137) : les remplaçants calculés s'ouvrent en écran, depuis la fiche.
+        if (id === 'subs' && D.subst && D.subst[FICHE.cle]) { const c = FICHE.cle; fermerFiche(); ETAT.substDe = c; ETAT.vue = 'substitution'; rendre(false); return; }
+        FICHE.sec = FICHE.sec === id ? null : id; construireFiche(true);
+      },
     }, titre))),
     sec ? h('section', { class: 'f-sec', 'aria-label': sec[1] }, ...sec[2](F).filter(Boolean)) : null,
   ];

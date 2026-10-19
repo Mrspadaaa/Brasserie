@@ -90,6 +90,8 @@ const ETAT = {
   echelle: B.echelle || 'style', clavier: false,
   // Radars (radar.js) : la voie montrée dans Suggestions, le houblon agrandi dans Comparer.
   voieRadar: null, compGrand: null,
+  // Substitution (u4) : le houblon dont on cherche les remplaçants.
+  substDe: B.subst || null,
   // Ma dégustation (m4) : une note par famille, dans l'écran seulement (la maquette n'enregistre rien).
   notes: D.degustation && D.degustation.notes ? D.degustation.notes.slice() : D.ordre.map(() => null),
 };
@@ -677,6 +679,8 @@ function matriceVoies(marq) {
   return s;
 }
 function partieSuggestions(part) {
+  // En Radar, le lot 6 choisi par le brasseur (p10, radar agrandi) : suggestions.js.
+  if (ETAT.lentille === 'radar' && SUGG.ok()) { SUGG.partieRadar(part); return; }
   const dirs = dirsActives();
   part.append(h('div', { class: 'titre' }, chipsDirection(), lentille()));
   if (!dirs.length || !D.voies.length) {
@@ -704,64 +708,13 @@ function partieSuggestions(part) {
     else zone.append(matriceVoies(marq));
   };
   dessiner();
-  LENTILLE_CB = () => anime(160, (k) => { zone.style.opacity = 1 - k; }, () => { dessiner(); anime(160, (k) => { zone.style.opacity = k; }); });
+  // Passer en Radar redessine toute la partie (sa composition est autre, suggestions.js).
+  LENTILLE_CB = () => anime(160, (k) => { zone.style.opacity = 1 - k; }, () => { if (ETAT.lentille === 'radar' && SUGG.ok()) { rendre(false); return; } dessiner(); anime(160, (k) => { zone.style.opacity = k; }); });
 }
 
-/* ---------- Partie 3 : Comparer des houblons (objet 3), ce que disent les fiches ---------- */
-const NOM_W = 72;
-function matriceFiches(noms) {
-  const colW = (358 - NOM_W) / noms.length;
-  const rows = []; let y = 4;
-  D.ordre.forEach((f, i) => { const att = D.attendues.includes(f); if (i === D.attendues.length) y += 6; const rh = att ? 43 : 41; rows.push({ y: y + rh / 2, att }); y += rh; });
-  const s = sv('svg', { width: 358, height: y + 2, role: 'img', 'aria-label': 'Ce que disent les fiches, famille par famille : non décrit, cité ou marqué' });
-  D.ordre.forEach((f, i) => {
-    const r = rows[i];
-    if (r.att) sv('rect', { x: 0, y: r.y - 15, width: 358, height: 30, rx: 6, fill: '#f5f5f5' }, s);
-    sv('text', { x: 4, y: r.y + 4, 'font-size': 12, 'font-weight': r.att ? 650 : 400 }, s).textContent = nomCourt(f);
-    noms.forEach((n, k) => {
-      const F = D.fiches[n], x0 = NOM_W + k * colW + 4, bw = colW - 40;
-      const lv = F.niv[i];
-      if (!lv) { sv('rect', { x: x0, y: r.y - 4, width: bw, height: 8, rx: 4, fill: 'none', stroke: '#b5b5b5', 'stroke-dasharray': '2 2' }, s); return; }
-      sv('rect', { x: x0, y: r.y - 4, width: bw, height: 8, rx: 4, fill: '#ededed' }, s);
-      sv('rect', { x: x0, y: r.y - 4, width: lv === 2 ? bw : bw / 2, height: 8, rx: 4, fill: lv === 2 ? '#3d3d3d' : '#9a9a9a' }, s);
-      sv('text', { x: x0 + bw + 4, y: r.y + 4, 'font-size': 12, fill: '#555' }, s).textContent = F.n[i] + '/' + F.of;
-    });
-  });
-  return s;
-}
-/* En-tête des colonnes : le houblon, son groupe de stock, mon goût et le retrait (en Radar, chaque
-   petit radar porte son nom : plus de trait de légende en tirets). */
-function enteteFiches(noms) {
-  const mot = { stock: '', epuise: 'à racheter', catalogue: 'à acheter' };
-  return h('div', { class: 'cols', style: 'grid-template-columns:' + NOM_W + 'px repeat(' + noms.length + ', 1fr)', role: 'group', 'aria-label': 'Houblons comparés' },
-    h('span'),
-    noms.map((n) => h('span', { class: 'col' },
-      h('b', { class: ETAT.gouts.exclut.has(n) ? 'exclu' : null }, h('span', { 'data-houblon': cleDe(n) }, n)),
-      h('span', { class: 'p gris' }, mot[D.groupes[n]] || ''),
-      h('span', { class: 'col-act' }, goutBouton(n, 'c', null),
-        h('button', { class: 'x', 'aria-label': 'Retirer ' + n + ' du comparatif', disabled: noms.length <= 2 || null, onclick: () => { ETAT.comp = ETAT.comp.filter((x) => x !== n); rendre(false); } })))));
-}
-function partieComparer(part) {
-  const noms = ETAT.comp.filter((n) => D.fiches[n]).slice(0, 4);
-  part.append(h('div', { class: 'titre' }, h('span', { class: 'objet' }, 'Ce que disent les fiches'), lentille()));
-  part.append(enteteFiches(noms));
-  const cand = noms.length < 4 ? [['stock', 'en stock'], ['epuise', 'à racheter'], ['catalogue', 'à acheter']].map(([g, mot]) => {
-    const c = D.candidats.find(([n, gg]) => gg === g && !noms.includes(n) && D.fiches[n]);
-    return c && h('button', { class: 'chip ajt', 'data-k': 'a' + c[0], 'data-booster': g === 'stock' ? 'ajouter au comparatif' : null, 'data-houblon': cleDe(c[0]), 'aria-label': 'Comparer aussi ' + c[0] + ', ' + mot, onclick: () => { ETAT.comp.push(c[0]); rendre(false); } }, c[0]);
-  }).filter(Boolean) : [];
-  if (cand.length) part.append(h('div', { class: 'chips cand' }, cand));
-  const zone = h('div', { class: 'vue-fiches' });
-  part.append(zone);
-  const dessiner = () => {
-    zone.innerHTML = '';
-    if (ETAT.lentille === 'radar') zone.setAttribute('data-composant', 'radar'); else zone.removeAttribute('data-composant');
-    // Radar (radar.js) : un petit radar par houblon, ce que sa fiche est seule à citer ; toucher l'agrandit.
-    if (ETAT.lentille === 'radar') RADAR.houblons(zone, noms, dessiner);
-    else zone.append(matriceFiches(noms));
-  };
-  dessiner();
-  LENTILLE_CB = () => anime(160, (k) => { zone.style.opacity = 1 - k; }, () => { dessiner(); anime(160, (k) => { zone.style.opacity = k; }); });
-}
+/* ---------- Partie 3 : Comparer des houblons (objet 3) ---------- */
+/* Le lot 6 choisi par le brasseur (p06 en Barres, p02 en Radar avec son intervalle) : comparer.js. */
+function partieComparer(part) { COMPARER.partie(part); }
 
 /* ---------- Rendu ---------- */
 function rendre(animerIbu) {
@@ -769,7 +722,7 @@ function rendre(animerIbu) {
   const actif = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.k : null;
   app.innerHTML = '';
   document.body.dataset.vue = ETAT.vue;
-  if (ETAT.vue === 'etape') VARIANTE.etape(app); else panneau(app);
+  if (ETAT.vue === 'etape') VARIANTE.etape(app); else if (ETAT.vue === 'substitution') SUBST.vue(app); else panneau(app);
   majIbu(animerIbu);
   // La fiche ouverte suit l'état (un moment touché dans sa table déplace la ligne au-dessus).
   if (typeof ficheApresRendu === 'function') ficheApresRendu();

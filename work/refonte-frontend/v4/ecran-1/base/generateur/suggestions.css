@@ -1,0 +1,47 @@
+  /* Suggestions en Radar, lot 6 p10 (suggestions.js) : réponses par objectif, grand radar, voies. */
+  .reps { display: flex; flex-direction: column; gap: 6px; }
+  .rep-c { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; column-gap: 10px; align-items: center; padding: 8px 10px; border-radius: 12px; background: var(--fond); }
+  .rep-i { width: 26px; height: 26px; border-radius: 13px; position: relative; }
+  .v-atteint .rep-i { background: var(--encre); }
+  .v-atteint .rep-i::after { content: ''; position: absolute; left: 9px; top: 5px; width: 6px; height: 12px; border-right: 2.5px solid #fff; border-bottom: 2.5px solid #fff; transform: rotate(45deg); }
+  .v-approche .rep-i { border: 2px solid var(--encre); background: linear-gradient(90deg, var(--encre) 50%, transparent 50%); }
+  .v-aucune .rep-i { border: 2px solid var(--encre); }
+  .v-aucune .rep-i::after { content: ''; position: absolute; left: 10px; top: 2px; width: 2.5px; height: 18px; background: var(--encre); transform: rotate(45deg); }
+  .rep-t { display: flex; flex-direction: column; min-width: 0; }
+  .rep-f { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--gris); }
+  .rep-s { font-size: 12px; }
+  .rep-v { display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 6px; }
+  .rep-v b { font-size: 19px; font-weight: 650; line-height: 1.2; }
+  .rep-m { font-size: 14px; }
+  .rep-n { font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .rep-h { height: 32px; padding: 0 12px; border-radius: 16px; border: 1.5px solid var(--encre); background: #fff; font-size: 14px; font-weight: 650; white-space: nowrap; }
+  .rep-h::after { content: ' ›'; }
+  .rep-h[aria-expanded="true"]::after { content: ' ‹'; }
+  .rep-p { grid-column: 2 / -1; margin: 6px 0 0; padding-left: 16px; font-size: 12px; color: var(--gris); line-height: 1.4; }
+
+  /* Les voies en lignes d'action. */
+  .vls { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .vl { display: grid; grid-template-columns: 22px minmax(0, 1fr) 34px 14px 32px 32px; column-gap: 6px; align-items: center; min-height: 44px; padding: 3px 6px; border-radius: 12px; background: var(--fond); }
+  .vl.on { background: #fff; box-shadow: inset 0 0 0 1.5px var(--encre); }
+  .vl-n { width: 20px; height: 20px; border-radius: 10px; background: var(--encre); color: #fff; font-size: 12px; font-weight: 650; display: grid; place-items: center; }
+  .vl-c { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
+  .chg { font-size: 14px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .vl-ibu { font-size: 12px; font-weight: 650; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .vl-st { display: flex; justify-content: center; }
+  .mom { display: inline-flex; align-items: center; height: 24px; border-radius: 12px; border: 1px solid var(--trait); background: #fff; }
+  .mom-b { width: 24px; height: 22px; position: relative; }
+  .mom-b::before { content: ''; position: absolute; top: 7px; width: 6px; height: 6px; border-left: 1.6px solid var(--encre); border-bottom: 1.6px solid var(--encre); }
+  .mom-b.tot::before { left: 10px; transform: rotate(45deg); }
+  .mom-b.tard::before { left: 7px; transform: rotate(-135deg); }
+  .mom-b:disabled { opacity: .3; }
+  .mom-q { min-width: 30px; text-align: center; font-size: 12px; font-weight: 650; }
+  /* L'œil du radar : la voie montrée en plein. */
+  .vl-r { width: 32px; height: 32px; border-radius: 16px; border: 1px solid var(--trait); background: #fff; position: relative; }
+  .vl-r::before { content: ''; position: absolute; left: 8px; top: 8px; width: 14px; height: 14px; border-radius: 3px; border: 1.6px solid var(--encre); transform: rotate(45deg) scale(.82); }
+  .vl-r[aria-pressed="true"] { background: var(--encre); border-color: var(--encre); }
+  .vl-r[aria-pressed="true"]::before { border-color: #fff; background: rgba(255, 255, 255, .35); }
+  .vl-a { width: 32px; height: 32px; border-radius: 16px; background: var(--encre); position: relative; }
+  .vl-a::after { content: ''; position: absolute; left: 12px; top: 7px; width: 6px; height: 12px; border-right: 2.2px solid #fff; border-bottom: 2.2px solid #fff; transform: rotate(45deg); }
+  .vl-a.fait { background: #fff; border: 1.5px solid var(--encre); }
+  .vl-a.fait::after { left: 9px; top: 14px; width: 12px; height: 0; border-bottom: 2px solid var(--encre); border-right: 0; transform: none; }
+  .vl-plus { align-self: flex-start; height: 30px; padding: 0 12px; border-radius: 15px; border: 1px dashed var(--gris2); background: #fff; font-size: 12px; font-weight: 650; }

@@ -34,6 +34,11 @@ const teintes = (page) => page.evaluate(() => {
     h = (h * 60 + 360) % 360;
     return s > 0.35 && l > 0.15 && l < 0.85 ? Math.round(h) : null;
   };
+  // D33 bis (19.10, base v4.6) : dans Comparer, une couleur par houblon est exigée partout (D51, comme
+  // D40 bis) ; ces couleurs déclarées (data-couleur) sont un code, comme celui des arômes, et ne
+  // comptent pas. Toute autre teinte saturée compte toujours (le cadre jaune de D33 échoue encore).
+  const declarees = [...document.querySelectorAll('[data-couleur]')].map((e) => { const t = document.createElement('i'); t.style.color = e.getAttribute('data-couleur'); document.body.appendChild(t); const c = getComputedStyle(t).color; t.remove(); return hsl(c); }).filter((x) => x !== null);
+  const code = (h) => declarees.some((d) => Math.min(Math.abs(d - h), 360 - Math.abs(d - h)) <= 6);
   const out = new Set();
   for (const e of document.querySelectorAll('body *')) {
     if (e.closest('[data-role="aromes"], svg[data-radar]')) continue;
@@ -42,7 +47,7 @@ const teintes = (page) => page.evaluate(() => {
     for (const k of ['color', 'backgroundColor', 'borderTopColor', 'outlineColor', 'fill', 'stroke']) {
       if (k === 'borderTopColor' && parseFloat(cs.borderTopWidth) === 0) continue;
       if (k === 'outlineColor' && (cs.outlineStyle === 'none' || parseFloat(cs.outlineWidth) === 0)) continue;
-      const h = hsl(cs[k]); if (h !== null) out.add(h);
+      const h = hsl(cs[k]); if (h !== null && !code(h)) out.add(h);
     }
   }
   return [...out].sort((a, b) => a - b);

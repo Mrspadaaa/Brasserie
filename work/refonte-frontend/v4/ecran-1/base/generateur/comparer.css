@@ -1,0 +1,140 @@
+  /* Comparer, lot 6 (comparer.js) : bandes des houblons, matrice p06, radar p02, barres-plages.
+     Échelle de la page : 12, 14 et 19 px ; aucune légende, chaque marque nommée sur place. */
+  .cmp { gap: 6px; }
+  .c-titre { min-height: 30px; gap: 8px; justify-content: flex-end; }
+  .c-titre .c-plus { margin-left: auto; }
+  .c-nom { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .c-alpha { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .c-alpha b { font-weight: 650; }
+  .c-grec { color: var(--gris2); margin-right: 3px; }
+  .c-role { color: var(--gris); white-space: nowrap; }
+  .c-role.regle { text-decoration: underline dotted #9a9a9a; text-underline-offset: 3px; }
+  .cmp span[data-role][data-houblon], .cmp b[data-role][data-houblon], .cmp .pl[data-houblon] { text-decoration: none; cursor: auto; }
+  .c-x { width: 26px; height: 26px; min-width: 26px; position: relative; flex: none; border-radius: 13px; }
+  .c-x::before, .c-x::after { content: ''; position: absolute; left: 8px; top: 12px; width: 10px; height: 1.5px; background: var(--gris2); transform: rotate(45deg); }
+  .c-x::after { transform: rotate(-45deg); }
+  .c-x:disabled { opacity: .3; }
+  .c-plus { width: 30px; height: 30px; border-radius: 15px; border: 1px dashed var(--gris2); position: relative; flex: none; background: #fff; }
+  .c-plus::before, .c-plus::after { content: ''; position: absolute; left: 9px; top: 13.5px; width: 10px; height: 1.6px; background: var(--encre); }
+  .c-plus::after { transform: rotate(90deg); }
+  .c-plus[aria-expanded="true"] { background: var(--encre); border-color: var(--encre); }
+  .c-plus[aria-expanded="true"]::before, .c-plus[aria-expanded="true"]::after { background: #fff; }
+  .c-plus:disabled { opacity: .3; }
+  .c-choix .chip { height: 30px; }
+
+  /* La bande d'un houblon : nom, IBU dans ma recette, dose, retrait ; α et rôle ; IBU face au style. */
+  .c-bandes { display: flex; flex-direction: column; gap: 6px; }
+  .c-bande { display: grid; grid-template-columns: minmax(0, 1fr) 58px 86px 26px; grid-template-rows: 20px 18px 16px; column-gap: 6px; align-items: center; padding: 4px 2px 5px 8px; border-radius: 10px; background: var(--fond); border-left: 5px solid var(--c); }
+  .c-bande[role="button"] { cursor: pointer; }
+  .c-bande.isole { background: #fff; box-shadow: inset 0 0 0 1.5px var(--c); }
+  .c-bande:focus { outline: none; }
+  .c-bande:focus-visible { outline: 2px solid var(--encre); outline-offset: 2px; }
+  .b-nom { grid-column: 1; grid-row: 1; display: flex; align-items: center; gap: 5px; min-width: 0; }
+  .c-bande .c-ibu { grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; font-size: 14px; font-weight: 650; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .b-dose { grid-column: 3; grid-row: 1 / 4; display: flex; justify-content: flex-start; }
+  .c-bande .c-x { grid-column: 4; grid-row: 1 / 4; }
+  .b-l2 { grid-column: 1; grid-row: 2; display: flex; align-items: baseline; gap: 6px; font-size: 12px; min-width: 0; white-space: nowrap; overflow: hidden; }
+  .b-l2 > * + *::before { content: '·'; margin-right: 6px; color: var(--gris2); font-weight: 400; }
+  .b-pl { display: block; font-size: 12px; font-weight: 400; color: var(--gris2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .c-dose { display: inline-grid; grid-template-columns: auto auto; column-gap: 5px; align-items: center; min-height: 38px; padding: 2px 10px 2px 8px; border-radius: 12px; background: #fff; border: 1px solid var(--trait); font-weight: 650; white-space: nowrap; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .c-dose::before { content: '⇄'; grid-row: 1 / 3; font-weight: 400; color: var(--gris2); }
+  .c-dose > span, .c-dose > small { grid-column: 2; }
+  .c-dose:active { background: var(--fond2); }
+  .c-dose.ne { border-style: dashed; color: var(--gris2); font-weight: 400; }
+  .c-dose.ne::before { content: none; }
+  .c-recette { display: inline-flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: 38px; padding: 2px 10px; border-radius: 12px; background: var(--encre); color: #fff; white-space: nowrap; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .c-recette .c-rl { display: inline-flex; align-items: center; gap: 4px; }
+  .c-recette b { font-weight: 650; }
+  .c-recette .c-sep::before { content: '·'; color: #bdbdbd; }
+  .c-recette .b-pl { color: #c4c4c4; }
+  /* L'IBU à la dose de ma ligne, face à la bande d'IBU du style (pointillé). */
+  .b-ibu { grid-column: 1 / 3; grid-row: 3; position: relative; height: 16px; }
+  .b-tr { position: absolute; left: 0; right: 0; bottom: 4px; height: 6px; border-radius: 3px; background: #e0e0e0; }
+  .b-tr .pl-pale, .b-tr .pl-seg { border-radius: 3px; }
+  .b-st { position: absolute; top: -4px; bottom: -4px; border: 1.5px dashed #6e6e6e; border-radius: 3px; background: rgba(17, 17, 17, .05); }
+  .b-tr .pl-cen { top: -3px; bottom: -3px; }
+
+  /* Barre-plage (D53, D57) : piste commune, pâle de 0 au bas, segment de la plage, centre, mon lot. */
+  .c-tab { display: flex; flex-direction: column; gap: 2px; }
+  .c-grp { display: flex; flex-direction: column; border-top: 1px solid #e6e6e6; }
+  .pl-piste { position: relative; display: block; height: 10px; border-radius: 5px; background: #ececec; }
+  .pl-pale { position: absolute; left: 0; top: 0; bottom: 0; opacity: .28; border-radius: 5px 0 0 5px; }
+  .pl-seg { position: absolute; top: 0; bottom: 0; min-width: 3px; border-radius: 3px; }
+  .pl-cen { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--encre); border-radius: 1px; z-index: 2; }
+  .pl-lot { position: absolute; top: -12px; width: 10px; height: 10px; margin-left: -5px; z-index: 3; font-style: normal; }
+  .pl-lot::before { content: '▼'; position: absolute; left: 0; top: 0; font-size: 10px; line-height: 10px; color: var(--encre); }
+  .pl-lot[data-origine="article"]::before { content: '▽'; }
+  .pl-lot-t { position: absolute; left: 12px; top: -2px; font-size: 12px; line-height: 14px; color: var(--encre); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .pl-lot-t.g { left: auto; right: 12px; }
+  .pl-src { position: absolute; height: 2px; min-width: 2px; border-radius: 1px; background: #8a8a8a; }
+  .pl-nom { display: flex; align-items: center; font-size: 12px; color: var(--gris); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .pl-v { display: flex; align-items: center; justify-content: flex-end; font-size: 12px; font-weight: 650; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .pl.c-r { display: grid; grid-template-columns: 34px 58px 54px minmax(0, 1fr) 12px; align-items: center; column-gap: 6px; width: 100%; min-height: 26px; padding: 0; text-align: left; border-bottom: 1px solid #f2f2f2; }
+  .pl.c-r .pl-piste { margin: 4px 0 6px; }
+  .pl.c-r.lot-l { min-height: 32px; }
+  .pl.c-r.lot-l .pl-piste { margin: 14px 0 6px; }
+  .l-radar .pl.c-r { min-height: 24px; }
+  .l-radar .pl.c-r .pl-piste { margin: 3px 0 5px; }
+  .l-radar .pl.c-r.lot-l { min-height: 30px; }
+  .l-radar .pl.c-r.lot-l .pl-piste { margin: 13px 0 5px; }
+  .pl.c-r::after { content: '›'; color: var(--gris2); font-size: 14px; transition: transform .15s; }
+  .pl.c-r.ouvert::after { transform: rotate(90deg); }
+  .pl.c-r.ouvert { background: var(--fond); border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  .r-mes { display: flex; align-items: center; padding-left: 2px; font-size: 14px; }
+  .r-mes b { font-weight: 650; }
+  .r-mes b.long { font-size: 12px; }
+  .c-det { display: flex; flex-direction: column; padding: 0 0 4px; background: var(--fond); border-radius: 0 0 8px 8px; margin-bottom: 2px; }
+  .d-l { display: grid; grid-template-columns: 34px 58px 54px minmax(0, 1fr) 12px; column-gap: 6px; align-items: center; min-height: 26px; }
+  .d-src { grid-column: 2 / 4; display: flex; align-items: center; justify-content: flex-end; font-size: 12px; color: var(--gris); white-space: nowrap; }
+  .d-piste { grid-column: 4; position: relative; height: 6px; border-radius: 3px; background: #e4e4e4; }
+  .d-seg { position: absolute; top: 0; bottom: 0; min-width: 2px; border-radius: 3px; }
+  .d-v { position: absolute; top: 50%; transform: translateY(-50%); font-size: 12px; font-weight: 650; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  /* p06 « Matrice » : 12 familles × houblons ; teinte du niveau, une pastille par fiche. */
+  .c-mx { display: flex; flex-direction: column; padding: 2px 0 6px; overflow-x: auto; }
+  .mx-g { display: grid; align-items: end; }
+  .mx-16 { display: flex; flex-direction: column; align-items: stretch; gap: 2px; padding: 0 1px; }
+  .mx-16 .r16-code { align-self: center; }
+  .mx-16::after { content: ''; height: 5px; border: 1.5px solid var(--encre); border-bottom: 0; border-radius: 2px 2px 0 0; }
+  .r16-code { display: inline-flex; align-items: center; height: 18px; padding: 0 5px; border-radius: 5px; background: var(--encre); color: #fff; font-size: 12px; font-weight: 650; }
+  .mx-h { height: 66px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; }
+  .mx-h span { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 12px; white-space: nowrap; color: var(--gris); }
+  .mx-h.att { background: var(--fond); border-radius: 6px 6px 0 0; }
+  .mx-h.att span { color: var(--encre); font-weight: 650; }
+  .mx-n { align-self: stretch; margin: 1px 4px 1px 0; border-radius: 2px; background: var(--c); }
+  .mx-c { position: relative; height: 34px; margin: 1px; border-radius: 4px; display: flex; flex-wrap: wrap; align-content: center; align-items: center; justify-content: center; gap: 2px; align-self: stretch; padding: 0 3px; }
+  .mx-c.m4 { width: 22px; justify-self: center; padding: 0 2px; }
+  .mx-c.n2 { background: var(--c); }
+  .mx-c.n1 { background: color-mix(in srgb, var(--c) 28%, #fff); }
+  .mx-c.n0 { background: #fff; box-shadow: inset 0 0 0 1px #c4c4c4; }
+  .mx-c.att.n0 { background: var(--fond); }
+  .mx-c i { width: 6px; height: 6px; border-radius: 3px; background: var(--encre); flex: none; }
+  .mx-c i.v { background: none; box-shadow: inset 0 0 0 1px #8a8a8a; }
+  .mx-c.n2 i { background: #fff; }
+  .mx-c.n2 i.v { background: none; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .8); }
+
+  /* Radar (p02) : le radar commun, centré ; le noyau et la bande pâle sont dans radar.js. */
+  .c-radar { display: flex; justify-content: center; }
+
+  /* À un toucher : composants des huiles et descripteurs. */
+  .c-mt { display: flex; align-items: center; gap: 6px; min-height: 28px; font-size: 14px; text-align: left; }
+  .c-mt.repli::after { content: '›'; margin-left: 2px; color: var(--gris2); display: inline-block; transition: transform .15s; }
+  .c-mt.repli[aria-expanded="true"]::after { transform: rotate(90deg); }
+  .c-plus-b { align-self: flex-start; padding: 0 2px; color: var(--encre); }
+  .c-plus-d { display: flex; flex-direction: column; gap: 4px; }
+  .hd { display: flex; flex-direction: column; padding: 2px 0 4px; }
+  .hd-r { display: grid; grid-template-columns: 92px repeat(3, minmax(0, 1fr)); column-gap: 8px; align-items: center; min-height: 30px; border-bottom: 1px solid #f2f2f2; }
+  .hd-h { min-height: 22px; font-size: 12px; font-weight: 650; color: var(--gris); }
+  .hd-n b { font-weight: 650; font-size: 12px; }
+  .hd-c { display: flex; flex-direction: column; gap: 3px; font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .hd-p { position: relative; display: block; height: 6px; border-radius: 3px; background: #e8e8e8; }
+  .hd-p .s { position: absolute; top: 0; bottom: 0; min-width: 3px; border-radius: 3px; }
+  .hd-p .ce { position: absolute; top: -2px; bottom: -2px; width: 2px; margin-left: -1px; background: var(--encre); }
+  .hd-vide { font-weight: 400; color: var(--gris2); }
+  .hd-src { font-size: 12px; color: var(--gris2); padding: 3px 0 0; }
+  .fh { display: grid; grid-template-columns: 70px 1fr; column-gap: 8px; padding: 4px 0 5px; border-bottom: 1px solid #f2f2f2; font-size: 12px; line-height: 1.3; }
+  .fh > b { font-weight: 650; border-left: 4px solid var(--c); padding-left: 5px; align-self: start; }
+  .fh p { display: inline; margin: 0; }
+  .fh p.us { color: var(--gris); }
+  .fh p.us::before { content: ' · '; color: var(--gris2); }
+  .fh p.lu16 { display: block; font-weight: 650; color: var(--encre); }

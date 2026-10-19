@@ -41,6 +41,7 @@ const GESTES = [
   ['nugget-10', 'index', 'Nugget à 10′'],
   ['nugget-15-motueka-40', 'cas-k3', 'Nugget à 15′, Motueka à 40′'],
   ['motueka-35-nugget-35', 'cas-k3', 'Motueka et Nugget à 35′'],
+  ['nugget-wp75', 'index', 'Nugget glissé au whirlpool'],
 ];
 const cap = (v) => (v === 'index' ? id : v === 'etat-b' ? id + '-b' : id + '-' + v) + '-390.png';
 const files = {};

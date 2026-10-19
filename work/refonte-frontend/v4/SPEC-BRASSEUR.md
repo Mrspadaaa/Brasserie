@@ -163,6 +163,10 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
 - **Le Dock p02 à l'essai sur la page partagée (version 9)** : « L'échelle ne s'adapte toujours pas
   à l'endroit où on est ??? » — 19.10. Mesuré : 19–20 px par 5′ sous le doigt contre 8–13 au loin ;
   le grossissement doit se voir à l'œil (piste : un Dock à plateau ×3, registre).
+- **Le Dock à plateau au téléphone (base v4.5, Nugget glissé de 60′ jusqu'au whirlpool, capture à
+  l'appui)** : « L'échelle ne s'adapte pas ne de focus, homme pas là où je suis. L'échelle ébullition
+  est très grande alors que celles où l'on est Whirlpool est toute petite » — 19.10 (D67 : le doigt
+  passé dans un autre segment, ce segment devient la loupe).
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce
   qui n'est pas un to date » — 19.10 : n'y garder que la base à jour.
 - **Les radars** : « Les spidergraph/radar graph resemble a rien, c'est une vrai régression... » ;

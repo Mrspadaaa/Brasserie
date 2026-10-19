@@ -14,6 +14,8 @@ const CAS = [
   ['cas-k3', ['Nugget', 'b35'], 'Motueka', 'b35', 'motueka-35-nugget-35'],
   ['index', null, 'Nugget', 'b10', 'nugget-10'],
   ['index', null, 'Nugget', 'b55', 'nugget-55'],
+  // D67 (19.10, au téléphone) : Nugget glissé de 60′ jusqu'au whirlpool.
+  ['index', null, 'Nugget', 'wp75', 'nugget-wp75'],
 ];
 const b = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 for (const [pg, prep, tenu, cible, nom] of CAS) {
