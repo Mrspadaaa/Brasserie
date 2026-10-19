@@ -1,0 +1,68 @@
+{
+ "ticket": 138,
+ "ancre": "t138-lot15",
+ "court": "Suggestions, cas durs",
+ "titre": "Suggestions : s5 à l’épreuve, et ce que chaque voie ajoute d’autre (lot 15, 19.10 soir)",
+ "etat": "à choisir",
+ "puces": [
+  "« on voit pas quels sont les autre ajouts » : chaque voie montre ce qu’elle ajoute hors de tes objectifs, en pictos (plein : les fiches le marquent ; pâle : une seule le cite). Contrôle D76 : le lot 14 y échoue, les 10 maquettes passent.",
+  "Le moteur donne la même amplitude à toute famille citée : les voies 1 à 7 font exactement floral +15,9 et agrumes +15,7. q2 les regroupe (« même effet sur tes objectifs ») et l’extra fait le choix : Motueka + tropical, Columbus + épicé et terreux, Nelson Sauvin + épicé seulement.",
+  "q1 : ton procédé, cocher puis Comparer, avec « ensemble » (Motueka 10′ + Motueka à la place du Nugget à 60′ : agrumes 23,6, floral 22,9, résineux 3,9, IBU 62,8). q3 : la bande de 12 cases de la fiche sous chaque voie. q4 : toucher une voie la projette sur toute ma bière.",
+  "p1 à p6 : s5 sur trois objectifs, deux dans le même sens, la lager 3B (levure sans profil : « inconnu », jamais zéro), 17 voies par moment, s4 empilé, et p6 avec l’épicé et Citra bannis (voies écartées visibles, barrées). Dry hop en fermentation active : biotransformation hachurée, sans chiffre.",
+  "Contrôles rejoués : FIL6 10/10, mots ≤ 70, COULEURS 10/10, AU-STYLE, AUTRES (D76). À trancher : le résineux de ma bière (modèle 6,5 ou dégustation 66–100) ; les auteurs ont gardé la dégustation."
+ ],
+ "images": [
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/planche-b-390.png",
+   "planche, les 10"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2-b-390.png",
+   "q2 même effet, l’extra choisit"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q1-b-390.png",
+   "q1 cocher"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q1-comparer-390.png",
+   "q1 puis Comparer, avec « ensemble »"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q3-b-390.png",
+   "q3 la bande de 12 cases"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q4-b-v15-390.png",
+   "q4 toute ma bière (dry hop, biotransformation)"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/p1-b-390.png",
+   "p1 s5, trois objectifs"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/p2-b-390.png",
+   "p2 s5, même sens"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/p3-b-390.png",
+   "p3 s5, lager non située"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/p4-b-390.png",
+   "p4 s5 généralisé, par moment"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/p5-b-390.png",
+   "p5 s4, voies empilées"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/p6-b-390.png",
+   "p6 s5, bannis"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/pictos-familles.png",
+   "les 12 pictos"
+  ]
+ ]
+}

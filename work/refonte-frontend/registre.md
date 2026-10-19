@@ -155,8 +155,16 @@ Voir `decisions.md` (D1 à D12).
   - Planche sur la page des fils de fer, version 9 : section `t136-radar` (`ajouter-lot.mjs` accepte
     `ancre`, pour ne pas remplacer le lot 10 de #136).
   - Après son choix : faire du rendu choisi le défaut, retirer les autres, relancer D77 sur la base.
-- **Lot 15, série p livrée** (p1–p6 ; l'auteur annonce FIL6, MOTS, COULEURS, AU-STYLE et AUTRES en
-  6/6, encore à vérifier par le pilote). Ses remarques :
+- **Lot 15 livré, à choisir** : p1–p6 et q1–q4.
+  - Contrôles rejoués par le pilote : FIL6 10/10, MOTS OK, COULEURS 10/10, AU-STYLE, AUTRES (D76 ;
+    q1 avec `--via-comparer`).
+  - Planche : page des fils de fer, version 10, section `t138-lot15` ; le lot 14 est gardé, `t138`.
+  - #138 commenté (6269292178) ; fil a9f98db9 résolu.
+  - Générateurs : `p1/generateur-serie-p.mjs` et `q1/generateur-serie-q.mjs`, qui lisent
+    `donnees/`.
+  - Remarques de l'auteur q : la liste de q1 seule ne montre pas les extras, il faut cocher ; q3 est
+    la plus haute ; dans q4, au style, un même +15,9 paraît de longueur différente selon les bandes.
+- **Lot 15, série p** : remarques de son auteur :
   - le résineux de c1 : ma bière est au repère du modèle (6,5), ce qui donnerait « atteint » sans
     rien faire ; il a gardé la dégustation de S1 (66–100). À trancher dans le moteur ;
   - `mots-premier-ecran.mjs` compte le texte des plis fermés ;

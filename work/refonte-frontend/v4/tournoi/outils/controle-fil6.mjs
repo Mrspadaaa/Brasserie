@@ -240,7 +240,10 @@ for (const id of ids) {
       for (const fam of new Set(m.objectifs)) {
         const r = m.reponses.find((x) => x.fam === fam);
         if (!r) { q('objectif ' + fam + ' : pas de réponse écrite ([data-role="reponse"]) (D60)'); continue; }
-        if (!/^(atteint|approche|aucune)$/.test(r.verdict || '')) q('réponse ' + fam + ' : data-verdict « ' + r.verdict + ' » (D60)');
+        // Lot 15 (c3, lager sous une levure sans profil V5.5) : « inconnu » est une réponse, à condition
+        // de l'écrire (« non situé », « inconnu ») ; jamais un zéro ni un verdict muet.
+        if (r.verdict === 'inconnu') { if (!/inconnu|non situ/i.test(r.txt || '')) q('réponse ' + fam + ' : verdict « inconnu » sans « inconnu » ni « non situé » écrit (D60)'); }
+        else if (!/^(atteint|approche|aucune)$/.test(r.verdict || '')) q('réponse ' + fam + ' : data-verdict « ' + r.verdict + ' » (D60)');
         if (r.top + r.h > 844) q('réponse ' + fam + ' hors du premier écran (D60)');
         if (r.fs < 13) q('réponse ' + fam + ' en ' + r.fs + ' px, 13 au moins (D60)');
       }
