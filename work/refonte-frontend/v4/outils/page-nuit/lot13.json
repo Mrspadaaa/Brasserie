@@ -1,0 +1,74 @@
+{
+ "ticket": 140,
+ "court": "Carte et fiche",
+ "titre": "La carte et la fiche d'un houblon, ensemble (lot 13, 19.10 soir)",
+ "etat": "à choisir",
+ "puces": [
+  "L'appui long ouvre la fiche, comme avant ; la carte et la fiche partent de la base et corrigent ses quatre problèmes.",
+  "Les quatre : relier chaque case à sa famille par la couleur ; un seul code (le compte) ou le « marqué » expliqué (« nommé en premier ») ; les mots des fiches lisibles sans déplier ; « 1 seule fiche » au lieu de « 1/1 ».",
+  "g1 bande étiquetée sous l'α ; g2 un seul code, le compte (case à moitié pleine pour 1 fiche) ; g3 roue en couleur, étiquettes avec compte et mots ; g4 mots en étiquettes sous la roue ; g5 un trait par fiche sur chaque case ; g6 les mots de chaque fiche en pastilles de leur couleur.",
+  "Contrôles : CARTE-FICHE OK 6/6 (la base y échoue 23 fois), FIL6 OK 6/6, mots au repos ≤ 90. « gingembre » et « groseille à maquereau » n'ont pas de famille dans le moteur."
+ ],
+ "images": [
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/planche-fiche-nugget-390.png",
+   "planche, fiche de Nugget (4 fiches)"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/planche-fiche-citra-390.png",
+   "planche, fiche de Citra cryo (1 fiche)"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/planche-vue-390.png",
+   "planche, les cartes au repos"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g1-fiche-nugget-390.png",
+   "g1 fiche étiquetée, Nugget"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g1-fiche-citra-390.png",
+   "g1, Citra cryo"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g2-fiche-nugget-390.png",
+   "g2 un seul code, le compte, Nugget"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g2-fiche-citra-390.png",
+   "g2, Citra cryo"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g3-fiche-nugget-390.png",
+   "g3 roue en couleur, Nugget"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g3-fiche-citra-390.png",
+   "g3, Citra cryo"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g4-fiche-nugget-390.png",
+   "g4 mots sous la roue, Nugget"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g4-fiche-citra-390.png",
+   "g4, Citra cryo"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g5-fiche-nugget-390.png",
+   "g5 la carte annonce sa fiche, Nugget"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g5-fiche-citra-390.png",
+   "g5, Citra cryo"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g6-fiche-nugget-390.png",
+   "g6 les mots qui font les couleurs, Nugget"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g6-fiche-citra-390.png",
+   "g6, Citra cryo"
+  ]
+ ]
+}

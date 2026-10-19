@@ -1,0 +1,7 @@
+- **Parti (la fiche étiquetée)** : c'est la base telle qu'elle s'affiche, prise sur son rendu ; la fiche s'ouvre par `ouvrirFiche`, puis la page est figée sans ses scripts. La carte ne change pas. Dans la fiche, sous l'α, la même bande de 12 carrés que la carte, agrandie, puis une ligne par famille décrite : sa couleur, son nom, son niveau et pourquoi (« marqué · 2 fiches sur 4 », « marqué : nommé en premier par Hopsteiner »), ses mots par fiche. Suivent les mots sans famille et les non décrites. Les axes de la roue prennent la couleur de leur famille. La table, la roue, la demande, les actions et les replis restent à leur place.
+- **Ce qu'elle corrige** :
+  - P1 : la couleur de la case se retrouve dans la ligne et sur l'axe de la roue ;
+  - P2 : le niveau est expliqué (Épicé marqué parce que nommé en premier, Agrumes cité à 1 sur 4) ;
+  - P3 : les mots sont écrits sans rien déplier (géranium, ananas, litchi, noix de coco ; « gingembre » sans famille) ;
+  - P4 : Citra cryo dit « 1 seule fiche : Beer Maverick », n'écrit plus « 1/1 », et l'α signale la plage en pellets (#131).
+- **Ce qui manque** : la fiche s'allonge d'environ 300 px avant la table des moments. Les deux codes existent toujours (niveau sur la carte, compte dans la roue) : ils sont expliqués, pas unifiés (c'est g2). Les mots de Beer Maverick sont ceux du pack, en français ; le moteur lit les tags anglais, d'où « groseille à maquereau » sans famille (#gooseberry), malgré le terme « groseille » de Baies.

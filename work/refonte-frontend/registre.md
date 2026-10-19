@@ -139,7 +139,19 @@ Voir `decisions.md` (D1 à D12).
 - **Lot 12b** `ecran-1/fils12b-mi-chemin/` (b1 à b6, une idée du lot 12 en léger chacune, mêmes
   auteurs) : `APPUI OK 6/6`, `FIL6 OK 6/6`, mots ≤ 90. Section #140 remplacée sur la page des fils de
   fer (version 5 ; images du lot 12 retirées). Commentaire #140 (6265519941).
-- **En attente de lui** : son choix dans le lot 12b ; puis la variante choisie entre dans la base.
+- **Lot 12b refusé aussi** : « Non... Un appuie long ouvre sa fiche. Comme avant, saufe que sa fiche est
+  plus fourni avec les labels.. revoit et challenge de point avant de faire quoi que ce soit ». L'appui
+  long ouvrait déjà la fiche (fiche.js) : les lots 12 et 12b l'avaient ignoré. Analyse rendue (quatre
+  problèmes de la fiche et de la carte, P1 à P4). Sa réponse : « Non, il faut changer la carte et tout.
+  Mais c'est déjà pas mal comme visuel de base. Mais il y a quelques problèmes dessus... Donc fait moi
+  des mini maquettes de ça ».
+- **Lot 13** `ecran-1/fils13-carte-fiche/` (g1 à g6, carte et fiche ensemble, en partant de la base) ;
+  contrôle D71 `tournoi/outils/controle-carte-fiche.mjs` F1 à F6 (témoin `--base` → 23 échecs).
+  `CARTE-FICHE OK 6/6`, `FIL6 OK 6/6`, mots ≤ 90. Planches (fiche Nugget, fiche Citra cryo, cartes) à la
+  place du lot 12b sur la page des fils de fer, version 6 (`v4/outils/page-nuit/lot13.json`).
+  Commentaire #140 (6266285105). Les auteurs ont écrit leurs générateurs dans le scratchpad (hors dépôt).
+- **En attente de lui** : son choix dans le lot 13 ; puis la variante choisie entre dans la base
+  (carte, fiche, et peut-être la règle des niveaux si elle choisit le compte seul : g2, g5).
 
 ## ÉTAT AU 19.10, FIN D'APRÈS-MIDI (avant la reprise du matin ci-dessous)
 

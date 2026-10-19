@@ -179,7 +179,12 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   valeurs facile lors du long appuie sur le houblons » — 19.10, soir (#140, lot 12). Puis, sur le lot
   12 : « Non c'est très mauvais. Tu as pas du tout bien compris le besoin, c'est entre la version
   actuelle qui est déjà vraiment plutôt bien et une de ces versions » (D70 : la carte actuelle intacte,
-  un petit ajout au long appui ; lot 12b).
+  un petit ajout au long appui ; lot 12b). Puis, sur le lot 12b : « Non... Un appuie long ouvre sa
+  fiche. Comme avant, saufe que sa fiche est plus fourni avec les labels.. revoit et challenge de point
+  avant de faire quoi que ce soit » ; et, sur l'analyse de la fiche actuelle (quatre problèmes) : « Non,
+  il faut changer la carte et tout. Mais c'est déjà pas mal comme visuel de base. Mais il y a quelques
+  problèmes dessus... Donc fait moi des mini maquettes de ça » — 19.10, soir (D71 ; lot 13, la carte et
+  la fiche ensemble).
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce
