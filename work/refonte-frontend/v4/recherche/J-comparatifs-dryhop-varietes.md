@@ -1,5 +1,7 @@
 # J. Comparatifs dry hop et variétés : ce qui est mesuré
 
+> **Erratum (2026-10-19, correction du pilote).** Dans la première version, les lignes agrumes et herbacé/thé du tableau 3 de Lafontaine et Shellhammer 2018 (E04) étaient inversées. Lecture correcte : agrumes de 1,9 à 7,0 (plafond dès 800 g/hL), herbacé/thé de 2,5 à 10,4, échelle 0 à 15 ; bière à 4,75 % vol. Source : `work/refonte-frontend/v4/recherche/K-lafontaine-2018-verif.md`. Les passages qui en dépendent (résumé 7, ligne E04, section « La dose et les jours ») sont corrigés ci-dessous.
+
 Date : 2026-10-19. Demande : trouver des comparaisons entre dry hop et variétés de houblon, avec des valeurs réelles. La chimie déjà traitée dans H (93 sources) n'est pas refaite : ici, seulement les essais qui comparent des variétés, des doses, des durées ou des moments, avec mesures en bière ou panel.
 
 Données lisibles par les maquettes : `work/refonte-frontend/v4/ecran-1/fils21-choisir/donnees/comparatifs-dryhop.json` (10 études, 129 mesures).
@@ -16,7 +18,7 @@ Niveaux : [P] article à comité de lecture ; [F] fournisseur ; [S] autre (thès
 4. Galaxy : aucune comparaison chiffrée trouvée. Idaho 7 : une seule étude (E03), en co-fermentation, pas en dry hop, avec un panel non entraîné.
 5. À huile visée égale, les variétés divergent encore fortement : linalol de 83 µg/L (Saaz) à 323 µg/L (Harmonie), soit ×4 (E02, Tusha 2022).
 6. Le moment : chez Simcoe, le whirlpool 10 min et le dry hop 48 h donnent des profils différents de l'ébullition 60 min (E07, poster, qualitatif). Le résumé de Sharp 2018 (JASBC, inaccessible) place le whirlpool en tête pour géraniol, linalol et citronellol : à vérifier.
-7. Dose (Cascade, E04) : la part de linalol extraite tombe de 23 % à 2 g/L à 7 % à 16 g/L ; la note herbacée/thé plafonne à partir de 8 g/L.
+7. Dose (Cascade, E04) : la part de linalol extraite tombe de 23 % à 2 g/L à 7 % à 16 g/L ; les agrumes plafonnent dès 800 g/hL (7,1 puis 7,0), tandis que l'herbacé/thé continue de monter jusqu'à 10,4.
 8. Durée : Eureka! (2,5 g/L) transfère l'essentiel en 2 jours (E08) ; Cascade (1,43 g/L) ne montre aucune différence perçue entre 1 h et 96 h dans la bière jeune (E10).
 9. La levure : aucune comparaison variété × levure × dry hop mesurée. McCabe (au pitch) et Sharp 2014 (la levure a l'effet le plus faible) sont les seuls indices.
 10. Trous majeurs : Galaxy, Idaho 7 et Motueka en dry hop mesuré ; thiols (4-MMP, 3MH, 3MHA) en bière par variété ; Citra contre Cascade à dose égale.
@@ -30,7 +32,7 @@ Niveaux : [P] article à comité de lecture ; [F] fournisseur ; [S] autre (thès
 | E01 | Kankolongo Cibaka et al., 2017, J. Am. Soc. Brew. Chem. 75(2), p. 122-129. DOI 10.1094/ASBCJ-2017-2257-01 | Amarillo, Citra, Hallertau Blanc, Mosaic, Sorachi Ace | Bières pilotes monovariétales (base non décrite) | Non indiquées (résumé) | Dry hop | Linalol, géraniol, β-citronellol libres en bière | Linalol 72-178 µg/L (seuil 8) ; géraniol 7-57 µg/L (seuil 4) ; citronellol au-dessus du seuil chez Amarillo, Citra, Sorachi Ace | Non | P |
 | E02 | Tusha et al., 2022, Foods 11(16):2520. DOI 10.3390/foods11162520 | Rubín, Saaz, Vital, Harmonie, Kazbek | Lager dry-hopée (base non détaillée) | 2,7 à 5,0 g/L selon variété (doses réglées à ~3 g d'huile/100 L) ; 30 j | Dry hop statique, sacs de nylon | 16 composés, dont linalol, myrcène, géraniol, citronellol (µg/L) | Linalol 83 (Saaz) à 323 (Harmonie) ; myrcène 23 à 101 ; géraniol 22 (Vital), 179 (Kazbek) ; citronellol 28 à 64 | Non | P |
 | E03 | McCabe et al., 2023, Molecules 28(15):5802. DOI 10.3390/molecules28155802 | Azacca, Idaho-7, Sultana | Hazy IPA, moût non houblonné (Ska Brewing) | Non donnée en g/L (10,5 lb par fermenteur de 3,5 bbl) ; 14 j | Au pitch, présent pendant toute la fermentation (co-fermentation) | 51 composés semi-quantifiés (mg/L) | Myrcène 0,085 (Idaho-7) à 0,661 (Sultana) mg/L ; linalol 0,012 à 0,101 mg/L ; humulène 0,130 à 0,875 mg/L | CATA non entraîné (14-22 personnes) : Sultana 9 descripteurs, Azacca et Idaho-7 6 | P |
-| E04 | Lafontaine et Shellhammer, 2018, J. Inst. Brew. 124(4), p. 434-442. DOI 10.1002/jib.517 | Cascade 2015, cône entier | Pale ale non houblonnée, pilote 80 L | 0 ; 2 ; 3,86 ; 8 ; 16 g/L ; 24 h | Dry hop statique, dose seule | Intensité houblonnée, citrus, herbal/tea (0-15) ; part extraite de linalol, géraniol, nérol | Intensité 3,0 (0 g/L) à 12,3 (16 g/L) ; citrus 2,5 à 10,4 ; herbal 1,9 à 7,1 puis 7,0 ; linalol extrait 23 % (2 g/L) à 7 % (16 g/L) | Oui, panel de 10 | P |
+| E04 | Lafontaine et Shellhammer, 2018, J. Inst. Brew. 124(4), p. 434-442. DOI 10.1002/jib.517 | Cascade 2015, cône entier | Pale ale non houblonnée à 4,75 % vol., pilote 80 L | 0 ; 2 ; 3,86 ; 8 ; 16 g/L ; 24 h | Dry hop statique, dose seule | Intensité houblonnée, citrus, herbal/tea (0-15) ; part extraite de linalol, géraniol, nérol | Intensité 3,0 (0 g/L) à 12,3 (16 g/L) ; agrumes 1,9 à 7,0 (plafond dès 800 g/hL) ; herbacé/thé 2,5 à 10,4 ; linalol extrait 23 % (2 g/L) à 7 % (16 g/L) | Oui, panel de 10 | P |
 | E05 | Wolfe, 2012, thèse MSc, Oregon State University | Cascade 2011, pastilles et cônes | Pilote 3,5 hL (340 L par traitement) ; modèle eau-éthanol 6 % | 3,86 g/L ; 6 h à 12 j | Dry hop en cuve, passif ou agité | Linalol, géraniol, limonène, humulène : part extraite de l'huile | Pastilles agitées, linalol : 89,2 / 100,7 / 90,6 % (6 h / pic / final) ; passif : 43,1 / 43,1 / 39,5 % | Intensité globale : agité le plus fort (qualitatif) | S |
 | E06 | Feng, Qian, Qian (OSU), ASBC 2015, présentation 33, diapositives | Centennial, Citra, Nelson Sauvin | Bières pilotes (style non indiqué) | Non indiquées | Dry hop | Myrcène, limonène, linalol, géraniol, nérol, humulène (SBSE-GC-MS, µg/L) | Linalol : témoin 46,8 ; Centennial 78,4 ; Citra 144 ; Nelson Sauvin 70,2 ; myrcène Citra 131, Nelson Sauvin 110, Centennial 48,2 | Non | S |
 | E07 | Sharp, Shellhammer G., Shellhammer T.H., ASBC 2014, poster A-70 | Simcoe, Hallertau Mittelfrüh | Pale ale 12 °P, pilote 40 L | 1,5 g/L ; 48 h | Ébullition 60 min ; whirlpool 10 min ; dry hop 48 h à 19 °C | Panel seul | Non chiffré (statistiques F seulement) | Simcoe plus fort que Hallertau : global, tropical, citrus, fruit à noyau, pin ; cuit/végétal et herbacé liés à l'ébullition | S |
@@ -68,9 +70,9 @@ Niveaux : [P] article à comité de lecture ; [F] fournisseur ; [S] autre (thès
 
 **Dose (Cascade, E04, pilote 80 L, 24 h)**
 - Intensité globale : 3,0 à 0 g/L, 6,3 à 2 g/L, 8,1 à 3,86 g/L, 10,4 à 8 g/L, 12,3 à 16 g/L (0 à 15).
-- Citrus : 2,5 à 10,4. Herbal/tea : 1,9 à 4,4, 5,8, 7,1, puis 7,0 : plafond à partir de 8 g/L.
+- Agrumes : 1,9 à 4,4, 5,8, 7,1, puis 7,0 : plafond dès 800 g/hL. Herbacé/thé : 2,5 à 4,3, 5,7, 7,4, puis 10,4 : il continue de monter.
 - Part de linalol extraite : 23 % à 2 g/L, 7 % à 16 g/L. Géraniol : 13 % puis 3 %. Nérol : 6 % puis 1 %.
-- Lecture : au-delà de 8 g/L, chaque gramme extrait moins de terpénols, et la qualité change plus que l'intensité. Les auteurs donnent 400 à 800 g/hL comme plage idéale, d'après l'extraction de quelques volatils.
+- Lecture : au-delà de 800 g/hL, les agrumes plafonnent pendant que l'herbacé/thé continue de monter, et chaque gramme extrait moins de terpénols : la qualité change plus que l'intensité. Les auteurs donnent 400 à 800 g/hL comme plage idéale, d'après l'extraction de quelques volatils.
 - Dose par variété : E02 règle les doses à l'huile (2,7 à 5,0 g/L) ; E08 utilise 2,5 g/L pour Eureka!. Aucune comparaison à dose égale entre variétés dans les sources lues, sauf E06 (dose non indiquée).
 
 **Durée**
