@@ -194,6 +194,18 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   entourées : « Attention, trop de texte » (D73) ; sur celle de Citra cryo : « Ça c'est très bien » ; et,
   le bouton entouré : « Ajouter à 10' est un palace holder? Ça doit venir des prévisions du model, on est
   d'accord ? » — 19.10, soir.
+- **Suggestions en Barres, lot 14 (planche)** : « s4-s5 semble pas mal, s5 semble vraiment le mieux
+  dans ce cas, mais proablement très compliqué si plusieurs voies, et pour les cas complexe, pas sûr
+  que ça aille » ; « l'autre limitation, c'est que on voit pas quels sont les autre ajouts, alors oui
+  par nelson sauving agumente un peu le floral mais on voit pas ce qu'il ajoute en plus... c'est pas
+  vraiment non plus idéal » ; « le seul procédé qui permet de fixer ça. Tu en as peut être un autre,
+  ça serait le top, mais ça serait d'amener à ensuite l'onglet comparaison. on selectionne plusieurs
+  houbon et ensuite on peut comparer » — 19.10, soir (D76 ; lot 15, s5 sur trois cas calculés et quatre
+  façons de montrer les extras).
+- **Le radar de Comparer, base v4.9 (page à jour)** : « très compliqué à voir les différence avec les
+  cileur sur le spider graph » ; à la question « surtout dans Comparer ? » : « surtout genant là » —
+  19.10, soir (D77 ; lot 16, cinq rendus du radar). Et, dans les tickets : « "normaliser"
+  l'affichage, les forme. couleur aromonisé ça coorectement » (#142).
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce

@@ -309,7 +309,11 @@ const COMPARER = (() => {
     if (radar) {
       const z = h('div', { class: 'c-radar', 'data-composant': 'radar' });
       part.append(z);
-      RADAR.houblons(z, ns, { donnees: donneesRadar, couleur, focus: ETAT.focusSerie, Hmax: 250 });
+      // r3 (lot 16, D77) : un petit radar par houblon, deux par rangée ; sinon tous superposés.
+      if (typeof window !== 'undefined' && window.RENDU_RADAR === 'r3') {
+        z.classList.add('c-radar-multi');
+        for (const n of ns) { const c = h('div', { class: 'c-radar-un', style: '--c:' + couleur(n) }, h('b', {}, bref(n))); z.append(c); RADAR.houblons(c, [n], { donnees: donneesRadar, couleur, W: 168, Hmax: 190 }); }
+      } else RADAR.houblons(z, ns, { donnees: donneesRadar, couleur, focus: ETAT.focusSerie, Hmax: 250 });
     } else part.append(matrice(ns));
     part.append(h('div', { class: 'c-tab' }, ['alpha', 'beta', 'huiles'].map((m, i) => groupe(m, ns, i === 1))));
     part.append(h('button', { class: 'c-mt repli c-plus-b', 'aria-expanded': String(!!ETAT.cPlus), 'data-k': 'cplus', 'data-booster': 'détail des huiles',

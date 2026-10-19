@@ -24,7 +24,8 @@ const figures = lot.images.map(([source, legende]) => {
   fs.copyFileSync(source, path.join(img, nom));
   return '<figure><a href="img/' + nom + '"><img loading="lazy" src="img/' + nom + '" alt="' + esc(legende) + '"></a><figcaption>' + esc(legende) + '</figcaption></figure>';
 });
-const ancre = 't' + lot.ticket;
+// lot.ancre : une section à part pour un lot qui ne remplace pas celui du même ticket (lot 16, #136).
+const ancre = lot.ancre || 't' + lot.ticket;
 html = html.replace(new RegExp('<section id="' + ancre + '">[\\s\\S]*?</section>'), '');
 html = html.replace(new RegExp('<a href="#' + ancre + '">[^<]*</a>'), '');
 const section = '<section id="' + ancre + '"><h2><a href="https://github.com/Mrspadaaa/Brasserie/issues/' + lot.ticket + '">#' + lot.ticket + '</a> ' + esc(lot.titre) + '</h2>'

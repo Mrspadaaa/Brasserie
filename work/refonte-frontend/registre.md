@@ -114,6 +114,54 @@ Voir `decisions.md` (D1 à D12).
   → Ma bière OK, Suggestions, Comparer, fiche et substitution en échec. Réponse dans le fil de la page
   à jour. Mémoire `affinee-exigence-transversale`. Reste : mini maquettes de la fiche et de Comparer
   au style, sur la stout 16D et la lager 3B (S2).
+- **Lot 15, s5 à l'épreuve et les extras** (`ecran-1/fils15-s5-complexe/`, en cours) :
+  - sur le lot 14, il retient s5 (et cite s4) : « mais proablement très compliqué si plusieurs voies,
+    et pour les cas complexe, pas sûr que ça aille ». Puis : « on voit pas quels sont les autre ajouts »
+    et « on selectionne plusieurs houbon et ensuite on peut comparer » ;
+  - les cas calculés : `prototypes/houblons-v4/scripts/cas-suggestions.ts` → `donnees/c1–c3.json`. c1
+    stout à trois objectifs, c2 stout, deux objectifs dans le même sens, c3 lager 3B. Pour chaque
+    voie : `tout` (toutes les familles qui bougent) et `fiches` (marqué ou cité) ;
+  - les constats : sous LalBrew Diamond (sans profil V5.5), la lager n'est située sur aucune famille ;
+    le même houblonnage sous US-05 l'est. Le modèle donne la même amplitude à toute famille citée : les
+    voies 1 à 7 de c1 ont le même effet sur les objectifs, et seuls leurs extras les distinguent ;
+  - le contrôle D76 `controle-autres-ajouts.mjs` (les extras de chaque voie visibles ; avec
+    `--via-comparer`, choisir puis Comparer). Le lot 14 → 9/9 en échec. FIL6 accepte le verdict
+    « inconnu » s'il est écrit ;
+  - fil a9f98db9 (13 h 31) : « si je veux banir, ou ouvrir vers plusieurs voie ça semble un peu
+    limité ? D'ailleur ça prends pas encore en compte bio transfo, levure. et dry hopping ». Décision
+    du pilote, puisque la question auto-postée est restée sans réponse : bannir une famille **et** une
+    variété (c1b : épicé et Citra). On ajoute `ensemble` (voies posées ensemble, convention des voies
+    seulement si les moments diffèrent), `momentId` et `bio` (yeastSignals, jamais chiffrés). p6 est
+    ajouté. Fil fleur/sapin résolu : les 12 pictos `pictos-familles.html` ;
+  - **risque ouvert, moteur** : l'effet d'une voie (Motueka 10′ : floral +15,9, soit 6,5 → 22,4)
+    diffère du profil recalculé de la recette après la voie (`apresPlage` : floral 14,6). Le profil
+    recalculé monte aussi résineux, épicé et terreux, que les fiches de Motueka ne citent pas. Après un
+    dry hop en fermentation active, le profil recalculé n'est plus situé (0–100). Le moteur le note
+    (« la variation prévue s'appuie alors sur les repères centraux de l'ajout seul »), mais Ma bière
+    et Suggestions peuvent montrer deux chiffres. À trancher avant la porte B ;
+  - ticket #142 (à faire, `status:backlog`) : « "normaliser" l'affichage, les forme. couleur
+    aromonisé ça coorectement ». Un seul jeu de couleurs et de pictos sur tous les écrans, avec un
+    contrôle ;
+  - les auteurs : série p (p1–p6, s5 et s4 sur c1, c1b, c2, c3) chez l'auteur de s4–s6 ; série q (q1 cocher
+    puis Comparer, q2 grouper par même effet, q3 la bande de 12 cases sous chaque voie, q4 projeter
+    sur toute ma bière) chez un second auteur.
+- **Lot 16, le radar de Comparer** (`ecran-1/fils16-radar-comparer/`) : fil b1c676bf, « très
+  compliqué à voir les différence avec les cileur sur le spider graph », « surtout genant là ».
+  - Contrôle D77 `controle-radar-series.mjs` ; la base v4.9 échoue (3 surfaces, traits de 2 px).
+  - Générateur : `RENDUS` dans radar.js (`actuel` par défaut, inchangé ; r1 contours, r2 un plein,
+    r4 tirets), r3 dans comparer.js (un radar par houblon), choisis par `window.RENDU_RADAR`.
+    Base reconstruite → LOT OK 1/1.
+  - Pages : `construire.mjs` (3 et 4 houblons, Motueka en 4ᵉ) ; captures : `captures.mjs`.
+  - Planche sur la page des fils de fer, version 9 : section `t136-radar` (`ajouter-lot.mjs` accepte
+    `ancre`, pour ne pas remplacer le lot 10 de #136).
+  - Après son choix : faire du rendu choisi le défaut, retirer les autres, relancer D77 sur la base.
+- **Lot 15, série p livrée** (p1–p6 ; l'auteur annonce FIL6, MOTS, COULEURS, AU-STYLE et AUTRES en
+  6/6, encore à vérifier par le pilote). Ses remarques :
+  - le résineux de c1 : ma bière est au repère du modèle (6,5), ce qui donnerait « atteint » sans
+    rien faire ; il a gardé la dégustation de S1 (66–100). À trancher dans le moteur ;
+  - `mots-premier-ecran.mjs` compte le texte des plis fermés ;
+  - générateur `p1/generateur-serie-p.mjs`.
+  La série q est en cours.
 - **En attente de lui** : son choix dans le lot 14 ; le fil « refaire des mini maquette pour cette
   partie » (de0e8403), pris pour Suggestions ; les commentaires de la planche (« aucun actionnable ? »,
   « très dur à comprendre ces graph », la vignette qui ouvre toute la page, « plus tard clicker ici

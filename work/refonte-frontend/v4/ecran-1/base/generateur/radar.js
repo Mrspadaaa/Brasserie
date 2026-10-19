@@ -244,7 +244,8 @@ const RADAR = (() => {
   /* Une série : polygone fermé, plein translucide (sujet) ou en contour (repère). */
   function serie(g, s) {
     const e = sv('g', { 'data-serie': s.nom, 'data-valeurs': s.valeurs.map((v) => (v == null ? 0 : v)).join(','), 'data-couleur': s.couleur, fill: 'none' }, g.C.series);
-    const p = sv('path', { d: g.ligne(s.valeurs), fill: s.plein ? s.couleur : 'none', 'fill-opacity': s.plein ? OP : null, stroke: s.couleur, 'stroke-width': s.plein ? T_SUJET : T_REPERE, 'stroke-linejoin': 'round' }, e);
+    const p = sv('path', { d: g.ligne(s.valeurs), fill: s.plein ? s.couleur : 'none', 'fill-opacity': s.plein ? OP : null, stroke: s.couleur,
+      'stroke-width': s.trait || (s.plein ? T_SUJET : T_REPERE), 'stroke-dasharray': s.tirets || null, 'stroke-linejoin': 'round' }, e);
     s.maj = (vals) => p.setAttribute('d', g.ligne(vals));
     s.g = e;
     return s;
@@ -419,7 +420,17 @@ const RADAR = (() => {
      ce que seules certaines disent. Aucun chiffre nouveau : le niveau et le compte N sur M du pack. */
   const marqueCitation = (c, v) => (v === 2 ? plein(c, 4) : v === 1 ? creux(c, 3.5) : plein(c, 2));
   const OP_NOYAU = 0.4, OP_PALE = 0.3;
+  /* D77 (19.10, soir : « très compliqué à voir les différence avec les cileur sur le spider graph »,
+     « surtout genant là », dans Comparer) : les rendus du lot 16, au choix du brasseur. « actuel » :
+     toutes les surfaces pleines (base v4.9) ; r1 : contours seuls, épais ; r2 : un seul houblon plein
+     (celui qu'on touche, sinon le premier), les autres en contour ; r4 : contours à tirets différents.
+     r3 (un radar par houblon) se fait dans Comparer. window.RENDU_RADAR : les pages du lot. */
+  const RENDUS = { actuel: {}, r1: { sansPlein: true, trait: 3 }, r2: { unPlein: true, trait: 3 }, r3: {}, r4: { sansPlein: true, trait: 3, tirets: true } };
+  const TIRETS = [null, '7 4', '2 3.5', '10 3 2 3'];
+  const rendu = () => (typeof window !== 'undefined' && window.RENDU_RADAR) || 'actuel';
   function houblons(cont, noms, o = {}) {
+    const R = RENDUS[o.rendu || rendu()] || {};
+    const focus = R.unPlein ? (noms.includes(o.focus) ? o.focus : noms[0]) : o.focus;
     const dn = Object.fromEntries(noms.map((x) => [x, o.donnees ? o.donnees(x)
       : { niv: (f) => D.fiches[x].niv[fi(f)], n: (f) => D.fiches[x].n[fi(f)], of: D.fiches[x].of, noyau: () => 0 }]));
     const niv = (nom, f) => dn[nom].niv(f);
@@ -427,7 +438,7 @@ const RADAR = (() => {
     const inconnue = (f) => noms.every((x) => !niv(x, f));
     const hors = ROUE.filter(inconnue);
     const g = radar(cont, {
-      objet: 'houblons', min: -0.5, max: 2, anneaux: ANNEAUX_C, deborde: 12, Hmax: o.Hmax || 430,
+      objet: 'houblons', min: -0.5, max: 2, anneaux: ANNEAUX_C, deborde: 12, Hmax: o.Hmax || 430, W: o.W,
       libelle: (f) => ({ gras: D.attendues.includes(f), inconnu: inconnue(f) }),
       label: 'Radar des fiches de ' + noms.join(', ') + ', superposées : 1 cité, 2 marqué ; le noyau plein, ce que toutes les fiches d\'un houblon disent ; la bande pâle, ce que certaines seulement disent ; au centre, les familles qu\'aucune fiche ne décrit, inconnues et pas à zéro',
     });
@@ -437,15 +448,21 @@ const RADAR = (() => {
     // Le plus grand houblon dessous, le plus petit dessus : aucune silhouette cachée par une autre.
     const somme = (nom) => ROUE.reduce((s, f) => s + niv(nom, f), 0);
     const ordre = noms.map((nom, j) => [nom, j]).sort((x, y) => somme(y[0]) - somme(x[0]));
+    // r2 : le houblon plein se dessine dessus.
+    if (R.unPlein) ordre.sort((x, y) => (x[0] === focus) - (y[0] === focus));
     for (const [nom, j] of ordre) {
-      const c = coul(nom, j), s = serie(g, { nom, valeurs: ROUE.map((f) => (inconnue(f) ? null : niv(nom, f))), couleur: c, plein: true });
+      const pleine = R.sansPlein ? false : R.unPlein ? nom === focus : true;
+      const c = coul(nom, j), s = serie(g, { nom, valeurs: ROUE.map((f) => (inconnue(f) ? null : niv(nom, f))), couleur: c, plein: pleine,
+        trait: R.trait || (pleine ? null : T_SUJET), tirets: R.tirets ? TIRETS[j % TIRETS.length] : null });
       const noyau = ROUE.map((f) => (inconnue(f) ? 0 : dn[nom].noyau(f)));
-      if (noyau.some((v) => v > 0)) sv('path', { d: ligneNoyau(noyau), fill: c, 'fill-opacity': OP_NOYAU, stroke: 'none', 'data-noyau': nom, 'data-valeurs': noyau.join(',') }, s.g);
-      // Un houblon isolé (toucher sa bande) : les autres pâlissent.
-      if (o.focus && o.focus !== nom) s.g.setAttribute('opacity', OP_PALE);
+      // Le noyau : plein avec sa surface ; en contour fin pointillé sans elle.
+      if (noyau.some((v) => v > 0)) sv('path', pleine ? { d: ligneNoyau(noyau), fill: c, 'fill-opacity': OP_NOYAU, stroke: 'none', 'data-noyau': nom, 'data-valeurs': noyau.join(',') }
+        : { d: ligneNoyau(noyau), fill: 'none', stroke: c, 'stroke-width': 1.2, 'stroke-dasharray': '2 2', 'data-noyau': nom, 'data-valeurs': noyau.join(',') }, s.g);
+      // Un houblon isolé (toucher sa bande) : les autres pâlissent (sauf r2, où le toucher choisit le plein).
+      if (!R.unPlein && o.focus && o.focus !== nom) s.g.setAttribute('opacity', OP_PALE);
     }
     for (const [nom, j] of ordre) {
-      const mg = o.focus && o.focus !== nom ? sv('g', { opacity: OP_PALE }, g.C.marques) : null;
+      const mg = !R.unPlein && o.focus && o.focus !== nom ? sv('g', { opacity: OP_PALE }, g.C.marques) : null;
       ROUE.forEach((f, k) => {
         if (inconnue(f)) return;
         const v = niv(nom, f), d = dn[nom], n = d.n(f), tous = d.noyau(f) > 0;

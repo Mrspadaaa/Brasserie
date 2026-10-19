@@ -115,6 +115,10 @@
 
   /* Radar (p02) : le radar commun, centré ; le noyau et la bande pâle sont dans radar.js. */
   .c-radar { display: flex; justify-content: center; }
+  /* r3 (lot 16, D77) : un petit radar par houblon, deux par rangée, le nom dans sa couleur. */
+  .c-radar.c-radar-multi { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; justify-items: center; }
+  .c-radar-un { display: grid; justify-items: center; min-width: 0; }
+  .c-radar-un > b { color: var(--c); font-size: 13px; }
 
   /* À un toucher : composants des huiles et descripteurs. */
   .c-mt { display: flex; align-items: center; gap: 6px; min-height: 28px; font-size: 14px; text-align: left; }
