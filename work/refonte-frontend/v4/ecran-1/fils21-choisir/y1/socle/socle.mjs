@@ -234,6 +234,11 @@ export const SPECTRE_CSS = `
   .sp-dots i.ho { background: var(--acc); }
   .sp-q { width: 72px; flex: none; font-size: 12px; line-height: 1; white-space: nowrap; color: var(--gris); }
   .sp-q.ho { color: var(--acc); font-weight: 600; }
+  .spec.pale .sp-p { background: #fff; box-shadow: inset 0 0 0 1px #e3e5eb; }
+  .spec.pale .sp-f { top: 4px; height: 7px; background: rgba(22,22,26,.09); border-radius: 2px; z-index: 0; }
+  .spec.pale .sp-f::before { display: none; } .spec.pale .sp-f::after { display: none; }
+  .spec.pale .sp-f.ouvert::after { display: block; right: -6px; top: 0; width: 0; height: 0; background: none; border: 3.5px solid transparent; border-left: 5px solid #6b6f7a; border-right: 0; }
+  .sp-l[hidden] { display: none; }
   .spec.mini .sp-n { width: 62px; } .spec.mini .sp-axe { margin-left: 84px; margin-right: 62px; } .spec.mini .sp-q { width: 58px; } .spec.mini .sp-l { height: 15px; } .spec.mini .sp-p { height: 13px; }
   .spec.mini .sp-l .pi { width: 14px; height: 14px; }`;
 // Le dessin, en JS dans la page : Spectre(el, { hmax, pxc }).set({ p, ghost, avant, motif, dots }).
@@ -276,9 +281,11 @@ class Spectre {
   // l'orangé au-delà du style porte le mot « hors du style », une famille sans simulation le mot « inconnu ».
   constructor(el, o = {}) {
     this.el = el; this.o = Object.assign({ crans: 7 }, o);
-    el.classList.add('spec'); if (o.mini) el.classList.add('mini');
+    el.classList.add('spec'); if (o.mini) el.classList.add('mini'); if (o.pale) el.classList.add('pale');
     el.innerHTML = '<div class="sp-axe" aria-hidden="true"><span class="sp-axe-t"></span></div>' + FAM.map((f) => '<div class="sp-l" data-famille="' + f + '" role="img">' + pictoH(f, o.mini ? 14 : 16) + '<span class="sp-n">' + NOMF[f] + '</span><span class="sp-p" style="--c:' + JET[f].base + ';--zf:' + rgbaJ(JET[f].base, 0.24) + ';--zt:' + JET[f].texte + '"><i class="sp-z" data-role="zone"></i><i class="sp-b" data-nature="simule"></i><i class="sp-m" hidden></i><i class="sp-x"></i><i class="sp-f"></i><i class="sp-g" hidden></i><i class="sp-a"></i><i class="sp-i" hidden></i><span class="sp-dots"></span></span><span class="sp-q"></span></div>').join('');
     this.rows = [...el.querySelectorAll('.sp-l')];
+    // o.sans : des familles tenues hors de la figure (le résineux de la dégustation, dit à part).
+    this.sans = o.sans || []; this.rows.forEach((c) => { if (this.sans.includes(c.dataset.famille)) c.hidden = true; });
     this.cols = this.rows;
     this.W = 0;
   }
@@ -288,6 +295,7 @@ class Spectre {
   axe() {
     const t = this.el.querySelector('.sp-axe-t');
     if (absolu()) t.innerHTML = [0, 50, 100].map((v) => '<span style="left:' + (v / ABS_MAX * 100) + '%">' + v + '</span>').join('') + '<span class="u" style="left:100%">sur 100</span>';
+    else if (this.o.pale) t.innerHTML = '<span class="z" style="left:' + (3 / this.o.crans * 100) + '%">haut du style</span>';
     else t.innerHTML = '<span style="left:0">0</span><span class="z" style="left:' + (3 / this.o.crans * 100) + '%">haut du style</span><span style="left:' + (6 / this.o.crans * 100) + '%">6 crans</span>';
   }
   set(s) {
@@ -323,9 +331,9 @@ class Spectre {
   // Ce que ça change, en mots : les familles qui bougent le plus (en crans), face à la référence.
   ecarts(n = 3) {
     const ref = this.s.ref || AVANT;
-    return FAM.map((f, i) => ({ f, i, d: inconnuP(this.s.p[i]) || inconnuP(ref[i]) ? 0 : crans(i, this.s.p[i][1]) - crans(i, ref[i][1]), hors: !inconnuP(this.s.p[i]) && this.s.p[i][1] > ZONE[f][1] })).filter((x) => Math.abs(x.d) >= 0.75).sort((a, b) => Math.abs(b.d) - Math.abs(a.d)).slice(0, n);
+    return FAM.map((f, i) => ({ f, i, d: inconnuP(this.s.p[i]) || inconnuP(ref[i]) ? 0 : crans(i, this.s.p[i][1]) - crans(i, ref[i][1]), hors: !inconnuP(this.s.p[i]) && this.s.p[i][1] > ZONE[f][1] })).filter((x) => Math.abs(x.d) >= 0.75 && !(this.sans || []).includes(x.f)).sort((a, b) => Math.abs(b.d) - Math.abs(a.d)).slice(0, n);
   }
-  hors() { return FAM.filter((f, i) => !inconnuP(this.s.p[i]) && this.s.p[i][1] > ZONE[f][1]); }
+  hors() { return FAM.filter((f, i) => !(this.sans || []).includes(f) && !inconnuP(this.s.p[i]) && this.s.p[i][1] > ZONE[f][1]); }
   inconnues() { return FAM.filter((f, i) => inconnuP(this.s.p[i])); }
 }
 const pictoH = (f, s = 14) => '<svg class="pi" width="' + s + '" height="' + s + '" data-famille="' + f + '" aria-label="' + NOMF[f] + '"><use href="#p-' + f + '"/></svg>';
