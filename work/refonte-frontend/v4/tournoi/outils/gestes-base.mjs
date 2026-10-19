@@ -16,13 +16,16 @@ const CAS = [
   ['index', null, 'Nugget', 'b55', 'nugget-55'],
   // D67 (19.10, au téléphone) : Nugget glissé de 60′ jusqu'au whirlpool.
   ['index', null, 'Nugget', 'wp75', 'nugget-wp75'],
+  // D69 (19.10, au téléphone, page partagée d'environ 390 × 620) : d'un bout du rail à l'autre.
+  ['cas-k3', null, 'Nugget', 'p14', 'nugget-p14-620', 620],
+  ['cas-k3', null, 'Citra cryo', 'b60', 'citra-60-620', 620],
 ];
 const b = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
-for (const [pg, prep, tenu, cible, nom] of CAS) {
+for (const [pg, prep, tenu, cible, nom, H = 844] of CAS) {
   const p = await b.newPage();
   const err = [];
   p.on('pageerror', (e) => err.push(String(e.message)));
-  await p.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  await p.setViewport({ width: 390, height: H, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   await p.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }]);
   await p.goto(pathToFileURL(path.join(F, ID, pg + '.html')).href, { waitUntil: 'networkidle0' });
   await pause(300);

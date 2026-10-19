@@ -170,6 +170,10 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
 - **La loupe suit le doigt, base v4.6 au téléphone (Nugget glissé à J+2, la tête du rail descendue
   sous la barre d'IBU, capture à l'appui)** : « Toujours un petit soucis... » — 19.10 (D68 : le rail ne
   se détache pas du haut).
+- **Le rail, base v4.7 au téléphone, dans la page partagée (deux captures : Motueka glissé jusqu'à
+  J+14 au bas de l'écran, puis la page défilée, Motueka à 85 °C)** : « On arrive pas à aller de
+  l'extrême haut, à l'extrême bas » — 19.10 (D69 : d'un seul geste, de la durée d'ébullition à J+14 de
+  la post-fermentation, dans l'écran).
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce

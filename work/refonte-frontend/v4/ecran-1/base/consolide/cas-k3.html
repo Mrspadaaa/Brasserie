@@ -1640,14 +1640,17 @@ function atterrir(de) {
    linéaire sur 2 graduations de chaque côté, puis ×1 ; rien d'autre ne change d'échelle. Le
    grossissement est calculé à partir de la seule position du doigt : aucune fenêtre ne se fait
    entraîner, aucun état. Le haut du rail reste fixe ; l'excès du grossissement (2 × (2 plateaux +
-   rampe)) pousse le bas, et le rail de base est choisi pour que la longueur totale reste celle du
-   repos (+ 120 px au plus).
+   rampe)) pousse le bas, et le rail de base est choisi pour que le doigt en atteigne les deux bouts
+   dans l'écran (D69).
    Le moment sous le doigt : le point c du rail de base tel que Y(c ; c) = doigt (fonction strictement
    croissante, pente ≥ 1), puis la graduation la plus proche de c. Les autres houblons restent à leur
    moment et ne vont jamais de côté (D64) ; deux houblons au même moment : une seule étiquette réunie. */
 const nIntervalles = (s) => valeursSeg(s).length - 1;
 // Un cran déplace le plateau de 2 écarts du rail de base : au plus 11,5 px par 5′, soit 23 px (D61 bis).
-const LOUPE = { poids: 5, max: { focus: 11.5, autre: 3 }, min: { focus: 8, autre: 1.2 }, plancher: 6, marge: 120, ouverture: 170, gros: 3, plateau: 1, rampe: 2 };
+// La loupe : 11,5 px par graduation au plus, 6 au moins (D69 : moins sur un petit écran) ; au loin,
+// un cinquième, entre 1,2 et 3 px. bord : le bas du rail à 16 px du bas de l'écran ; garde : la marge
+// de la traversée (D69).
+const LOUPE = { poids: 5, max: { focus: 11.5, autre: 3 }, min: { focus: 6, autre: 1.2 }, marge: 120, bord: 16, garde: 8, ouverture: 170, gros: 3, plateau: 1, rampe: 2 };
 const KG = LOUPE.gros - 1;
 /* Les crans : le centre du Dock est la graduation tenue (la plus proche du doigt). Le rail reste
    immobile tant que le doigt est dans sa tranche (le doigt à une demi-tranche au plus de la
@@ -1692,11 +1695,12 @@ const Mpl = (G, x) => {
 };
 const grossi = (G, z, c) => 1 + KG * forme(G, z - c);
 /* Position affichée du point z du rail de base, le doigt sur c (haut du rail fixe). */
-/* Hors du segment tenu, le Dock reste garé au bord du segment : le rail y est immobile. Le plateau
-   reste dans le segment : au début et à la fin (60′, 0′), son centre se tient à une graduation du
-   bord, et le doigt y est encore sur le plateau (D45 : les graduations voisines restent régulières). */
+/* Hors du segment tenu, le Dock reste garé au bord du segment : le rail y est immobile. Aux deux bouts
+   du rail (la durée d'ébullition, J+14 de la post-fermentation), le centre du plateau se tient à une
+   graduation du bord, et le doigt y est encore sur le plateau (D45 : les graduations voisines restent
+   régulières). Entre deux segments, il passe sans s'arrêter : le doigt y avance au pas du rail (D69). */
 const borne = (G, c) => Math.max(G.F0, Math.min(G.F1, c));
-const centre = (G, c) => { const a = G.F0 + G.Pl, b = G.F1 - G.Pl; return a > b ? (G.F0 + G.F1) / 2 : Math.max(a, Math.min(b, c)); };
+const centre = (G, c) => Math.max(G.Zh + G.Pl, Math.min(G.Zb - G.Pl, c));
 const Yd = (G, z, c) => { const k = centre(G, c); return G.O + z + KG * (Mpl(G, z - k) + Mpl(G, k - G.haut)); };
 const phi = (G, c) => Yd(G, c, c) - G.O;
 /* Le point c du rail de base sous le doigt : seule la position du doigt compte. */
@@ -1706,54 +1710,71 @@ function sousDoigt(G, yF) {
   for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (phi(G, m) < t) lo = m; else hi = m; }
   return (lo + hi) / 2;
 }
-/* Le rail de base de la prise : écarts e = λ × poids (le segment tenu pèse LOUPE.poids), λ le plus
-   grand qui tient : le bas, grossissement compris (surplus du plateau), dans la hauteur du repos + 120 px,
-   et la tête dans le rail (longue ébullition : jusqu'en haut de l'écran). La graduation de la ligne
-   tenue reste sous le doigt à la prise. La place en trop va aux écarts de structure.
-   compact (D67, le doigt passé dans un autre segment) : le rail se refait autour du doigt, le segment
-   sous le doigt devient la loupe ; la place au-dessus va d'abord aux segments au-dessus (jamais plus
-   grands que lui), le reste aux écarts de structure : la tête du rail reste en haut. */
-function disposerDock(vA, yA, H0, frTop, compact) {
-  const segA = segDe(vA);
-  const ecarts = (lam) => Object.fromEntries(SEGMENTS.map((s) => [s, s === segA
-    ? Math.max(LOUPE.min.focus, Math.min(LOUPE.max.focus, lam * LOUPE.poids))
-    : Math.max(LOUPE.min.autre, Math.min(LOUPE.max.autre, lam))]));
-  const plan = (e, x) => { const G = planFixe(e, x, 0); G.seg = segA; G.e = e; G.Pl = LOUPE.plateau * e[segA]; G.Ra = LOUPE.rampe * e[segA]; G.surplus = KG * (2 * G.Pl + G.Ra); G.cA = vA === 'fwh' ? G.P['b' + EBU] - e.ebullition : G.P[vA]; const Va = valeursSeg(segA); G.F0 = G.P[Va[0]]; G.F1 = G.P[Va[Va.length - 1]]; G.O = 0; G.O = yA - phi(G, G.cA); G.Z = Va.map((v) => G.P[v]); return G; };
-  const bas = (G) => Yd(G, G.bas, G.cA);
-  const tient = (lam, haut) => { const G = plan(ecarts(lam), []); return G.O + G.bas + G.surplus <= H0 + LOUPE.marge && G.O + G.haut >= haut; };
-  let haut = 0, lam = 0.05;
-  for (const essai of [0, 8 - frTop]) {
-    haut = essai;
-    let lo = 0.05, hi = 20;
-    if (!tient(lo, haut)) { lam = lo; continue; }
-    for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (tient(m, haut)) lo = m; else hi = m; }
-    lam = lo;
-    if (ecarts(lam)[segA] >= LOUPE.min.focus || segA !== 'ebullition') break;
+/* D69 (19.10, au téléphone, dans la page partagée : « On arrive pas à aller de l'extrême haut, à
+   l'extrême bas ») : la traversée. Le doigt avance d'un écart de loupe F par graduation ; aux deux
+   bouts du rail, le plateau tenu au bord en coûte 2 de plus ; d'un segment à l'autre, le rail se refait
+   quand le doigt a passé la moitié des écarts de structure entre eux. Pour aller de la graduation v
+   jusqu'en bas : sB pas dans le segment de v et aB dans les autres, plus fixeB px (en haut : sH, aH,
+   fixeH). */
+const COUTURES = [[1, 2], [3, 4, 5], [6, 7]]; // écarts de structure entre deux segments voisins
+function traversee(v) {
+  const iS = SEGMENTS.indexOf(segDe(v)), V = valeursSeg(SEGMENTS[iS]), i = Math.max(0, V.indexOf(v));
+  // Le bout du rail coûte 2 pas de plus à qui doit y aller ; rien à qui y est déjà.
+  const premier = iS === 0, dernier = iS === SEGMENTS.length - 1, j = V.length - 1 - i;
+  const n = (a) => a.reduce((t, s) => t + nIntervalles(s), 0);
+  const demi = (a) => a.reduce((t, c) => t + c.reduce((u, k) => u + STRUCT[k], 0) / 2, 0);
+  return {
+    sB: j + (dernier && j ? 2 : 0), aB: n(SEGMENTS.slice(iS + 1)) + (dernier ? 0 : 2), fixeB: demi(COUTURES.slice(iS)) + STRUCT[8] + LOUPE.garde,
+    sH: i + (premier && i ? 2 : 0), aH: n(SEGMENTS.slice(0, iS)) + (premier ? 0 : 2), fixeH: demi(COUTURES.slice(0, iS)) + STRUCT[0] + 10 + LOUPE.garde,
+  };
+}
+/* L'échelle du geste, choisie à la prise et gardée jusqu'au lâcher : la loupe F la plus grande (11,5 px
+   au plus) avec laquelle le doigt va du houblon tenu jusqu'à J+14 de la post-fermentation en bas de
+   l'écran, et jusqu'à la durée d'ébullition sans que la tête du rail passe au-dessus de sa place (si
+   la loupe y tomberait sous 6 px : jusqu'en haut de l'écran, la barre d'IBU s'efface). */
+function echelleGeste(vA, yA, frTop) {
+  const vHaut = Math.max(0, 8 - frTop), vBas = innerHeight - LOUPE.bord - frTop;
+  const t = traversee(vA);
+  const pasB = t.sB + t.aB, pasH = t.sH + t.aH;
+  const Fb = pasB ? (vBas - yA - t.fixeB) / pasB : Infinity, Fh = (h) => (pasH ? (yA - h - t.fixeH) / pasH : Infinity);
+  let haut = vHaut, F = Math.min(Fb, Fh(haut));
+  if (F < LOUPE.min.focus && Fh(haut) < Fb) { haut = 8 - frTop; F = Math.min(Fb, Fh(haut)); }
+  return { F: Math.max(LOUPE.min.focus, Math.min(LOUPE.max.focus, F)), haut, vHaut, vBas };
+}
+/* Le rail de base, la graduation v sous le doigt : le segment de v en loupe, les autres au cinquième de
+   l'échelle du geste (1,2 à 3 px). La graduation de la ligne tenue reste sous le doigt. La loupe : la
+   plus grande (11,5 px au plus) qui laisse au doigt la traversée jusqu'aux deux bouts, les autres
+   segments comptés à l'échelle du geste (D69).
+   D67 : le doigt passé dans un autre segment, le rail se refait autour du doigt, ce segment devient la
+   loupe. D68 (19.10, au téléphone, Nugget glissé à J+2 : « Toujours un petit soucis... », la tête du
+   rail descendue de 220 px) : la place libre au-dessus de la tête revient aux segments au-dessus, sans
+   dépasser l'échelle de la loupe, puis aux écarts de structure : la tête du rail reste en haut. Sous
+   le doigt, seule la place que la traversée laisse libre va aux écarts.
+   Garde-fou : un rail qui ne tiendrait pas dans l'écran resserre sa loupe ; à la prise, le bas reste
+   aussi dans la hauteur du repos + 120 px (D55 : le reste du rail reste compact). */
+function disposerDock(vA, yA, H0, ech, prise) {
+  const plafond = prise ? Math.min(ech.vBas, H0 + LOUPE.marge - 2) : ech.vBas;
+  const segA = segDe(vA), t = traversee(vA);
+  const loupe = Math.min(LOUPE.max.focus,
+    t.sH ? (yA - ech.haut - t.fixeH - ech.F * t.aH) / t.sH : Infinity,
+    t.sB ? (ech.vBas - yA - t.fixeB - ech.F * t.aB) / t.sB : Infinity);
+  const e = Object.fromEntries(SEGMENTS.map((s) => [s, s === segA ? Math.max(LOUPE.min.autre, loupe) : Math.max(LOUPE.min.autre, Math.min(LOUPE.max.autre, ech.F / LOUPE.poids))]));
+  const plan = (e, x) => { const G = planFixe(e, x, 0); G.seg = segA; G.e = e; G.Pl = LOUPE.plateau * e[segA]; G.Ra = LOUPE.rampe * e[segA]; G.surplus = KG * (2 * G.Pl + G.Ra); G.cA = vA === 'fwh' ? G.P['b' + EBU] - e.ebullition : G.P[vA]; const Va = valeursSeg(segA); G.F0 = G.P[Va[0]]; G.F1 = G.P[Va[Va.length - 1]]; G.Zh = G.P['b' + EBU]; G.Zb = G.P['p' + J_MAX]; G.O = 0; G.O = yA - phi(G, G.cA); G.Z = Va.map((v) => G.P[v]); return G; };
+  const tient = (G) => G.O + G.bas + G.surplus <= plafond + 0.5 && G.O + G.haut >= ech.haut - 0.5;
+  if (!tient(plan(e, []))) {
+    let lo = LOUPE.min.autre, hi = e[segA];
+    for (let i = 0; i < 24; i++) { e[segA] = (lo + hi) / 2; if (tient(plan(e, []))) lo = e[segA]; else hi = e[segA]; }
+    e[segA] = lo;
   }
-  const e = ecarts(lam);
-  // Longue ébullition qui ne tient pas : l'ébullition descend jusqu'au plancher, et le rail monte.
-  if (segA === 'ebullition') {
-    const G = plan(e, []);
-    if (G.O + G.haut < haut) {
-      const iA = vA === 'fwh' ? 0 : valeursSeg('ebullition').indexOf(vA);
-      if (iA > 0) e.ebullition = Math.max(LOUPE.plancher, Math.min(e.ebullition, (yA - 10 - haut - STRUCT[0]) / (iA * (1 + KG / 2))));
-    }
-  }
-  // Compact (D67) sans vide au-dessus (19.10, au téléphone, Nugget glissé à J+2 : « Toujours un petit
-  // soucis... », la tête du rail descendue de 220 px) : la place libre au-dessus de la tête revient
-  // aux segments au-dessus du segment tenu, sans dépasser son échelle de base ; la loupe reste sous le
-  // doigt, la tête du rail remonte sous la barre d'IBU.
-  if (compact) {
-    const avant = SEGMENTS.slice(0, SEGMENTS.indexOf(segA)), N = avant.reduce((t, s) => t + nIntervalles(s), 0);
-    const G1 = plan(e, []), vide = G1.O + G1.haut;
-    if (N && vide > 0) for (const s of avant) e[s] = Math.min(e[segA], e[s] + vide / N);
-  }
+  const avant = SEGMENTS.slice(0, SEGMENTS.indexOf(segA)), N = avant.reduce((t, s) => t + nIntervalles(s), 0);
+  const G1 = plan(e, []), vide = G1.O + G1.haut - ech.vHaut;
+  if (N && vide > 0) for (const s of avant) e[s] = Math.min(e[segA], e[s] + vide / N);
   const x = [];
   const k = structAvant(vA);
   const G0 = plan(e, x);
-  const reste = H0 - bas(G0);
+  const reste = Math.min(H0 - Yd(G0, G0.bas, G0.cA), ech.vBas - yA - t.fixeB - t.sB * e[segA] - t.aB * ech.F);
   if (reste > 0) { const n = STRUCT.length - 1 - k; for (let i = k; i < STRUCT.length - 1; i++) x[i] = reste / n; }
-  if (segA !== 'ebullition') { const libre = G0.O + G0.haut - 10; if (libre > 0) for (let i = 0; i < k; i++) x[i] = (x[i] || 0) + libre / k; }
+  if (segA !== 'ebullition') { const libre = G0.O + G0.haut - ech.vHaut - 10; if (libre > 0) for (let i = 0; i < k; i++) x[i] = (x[i] || 0) + libre / k; }
   return plan(e, x);
 }
 
@@ -1821,7 +1842,8 @@ function ouvrirLoupe(carte, l, ev) {
   const avecTenu = avecDe(carte);
   const hauteur = new Map(lignes.map((r) => [r, r.getBoundingClientRect().height]));
   const hCarte = hauteur.get(carte);
-  let G = disposerDock(vA, yA, R0.height, R0.top);
+  const ech = echelleGeste(vA, yA, R0.top);
+  let G = disposerDock(vA, yA, R0.height, ech, true);
   const ancre = (v) => G.P[v] ?? (v === 'fwh' ? G.P['b' + EBU] - G.e.ebullition : G.P[valeursSeg(segDe(v)).slice(-1)[0]]);
   const rangees = Object.entries(tetes).filter(([k]) => k in G.R).map(([k, el]) => ({ el, k, z: G.R[k], h: hauteur.get(el) }));
   const jetons = lignes.filter((r) => r !== carte && /^L/.test(r.dataset.rang)).map((el) => {
@@ -1897,7 +1919,7 @@ function ouvrirLoupe(carte, l, ev) {
   const refaire = (v) => {
     const top = fr.getBoundingClientRect().top;
     depart = new Map(lignes.map((r) => [r, r.getBoundingClientRect().top - top]));
-    G = disposerDock(v, yDoigt, R0.height, R0.top, true);
+    G = disposerDock(v, yDoigt, R0.height, ech);
     for (const r of rangees) r.z = G.R[r.k];
     for (const j of jetons) j.z = ancre(j.v);
     p = REDUIT ? 1 : 0; t0 = performance.now();

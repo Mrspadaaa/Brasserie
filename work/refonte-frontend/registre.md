@@ -97,7 +97,34 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
-## ÉTAT AU 19.10, FIN D'APRÈS-MIDI : lire en premier (avant la reprise du matin ci-dessous)
+## ÉTAT AU 19.10, SOIR : lire en premier (puis la fin d'après-midi ci-dessous)
+
+- **Son retour** (deux captures au téléphone, page partagée, base v4.7) : « On arrive pas à aller de
+  l'extrême haut, à l'extrême bas ». Mesuré : la page jouable y fait environ 390 × 620 ; Nugget glissé
+  de 60′ au bas de l'écran s'arrêtait à J+3 (le rail sortait de 180 px sous l'écran) ; à 844 px, J+8.
+  Cause : chaque rail refait (D67) prenait la loupe la plus grande pour son segment, sans garder la
+  place des segments suivants.
+- **Contrôle D69** (`controle-rail.mjs`) : cas-k3, écrans de 620 et 844, page en haut et défilée ; vers
+  le bas, J+14 de la post-fermentation ; vers le haut, la durée d'ébullition ; le bout visé dans
+  l'écran. Témoin : la v4.7 (`scratchpad/temoin-v47`) → 9 échecs.
+- **Essai écarté** : un rail uniforme sans rail refait (6 px par graduation à 620) passait D69 mais
+  cassait 8 contrôles de précision (D27, D34, D36, D44, D56, D67, D68).
+- **Base v4.8** : `echelleGeste` choisit à la prise l'échelle du geste (6 à 11,5 px) avec laquelle le
+  doigt va jusqu'aux deux bouts dans l'écran (`traversee`) ; chaque rail refait prend la loupe la plus
+  grande qui laisse cette traversée ; le plateau passe d'un segment à l'autre (il ne se garde qu'aux
+  deux bouts du rail, D45) ; à la prise, le bas reste dans le repos + 120 px (D55). Mesuré : à 620,
+  J+14 de la post-fermentation tenu à 573 px (bas du rail 593) ; retour à 60′ ; tête à 40 px au plus.
+  Captures `gestes-base.mjs` : 8 cas, dont `nugget-p14-620` et `citra-60-620`.
+- **Limite dite** : un houblon pris tout près du bord de l'écran ne laisse pas la place au bout opposé
+  (le rail en sort de ce côté) : défiler un peu avant de le prendre.
+- **Preuves** : `RAIL OK 1/1`, `LOT OK 1/1` (avec `--comparer`), `SPEC OK`. Page à jour republiée :
+  https://claude.ai/artifact/MoohEoyjPGAWqpMQZZCq5T, « Houblons, base v4.8 », version 3 (puce Rail :
+  « De 60′ à J+14 après fermentation », « De J+3 à 60′ »). Commentaire #134 (6264437187).
+- **Sa demande suivante** (19.10, soir, capture : les petits carrés de profil des ajouts proposés
+  entourés) : refaire un lot de descriptions de houblons, et montrer au long appui sur un houblon à
+  quoi correspondent ces valeurs ; fils de fer d'abord, dans la file des tickets.
+
+## ÉTAT AU 19.10, FIN D'APRÈS-MIDI (avant la reprise du matin ci-dessous)
 
 - **Fait** : les 6 étapes de la reprise du matin, plus ses deux retours sur le rail (D67, D68).
   **Base v4.7** : `ecran-1/base/consolide`, 15 pages (dont `substitution.html`) ; `LOT OK 1/1` avec

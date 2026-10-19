@@ -143,9 +143,9 @@ const propre = (page) => page.evaluate(() => {
 const ombre = (page) => page.evaluate(() => [...document.querySelectorAll('[data-role="ligne-houblon"], [data-glisse]')].filter((e) => getComputedStyle(e).boxShadow !== 'none').length);
 const gradsVisibles = (page) => page.evaluate(() => [...document.querySelectorAll('[data-graduation]')].filter((e) => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && Number(cs.opacity) > 0.15; }).map((e) => { const r = e.getBoundingClientRect(); return { seg: e.getAttribute('data-graduation'), code: e.getAttribute('data-etape'), y: r.top + r.height / 2 }; }));
 
-async function ouvrir(f, w = 390) {
+async function ouvrir(f, w = 390, H = 844) {
   const page = await browser.newPage();
-  if (w === 390) await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+  if (w === 390) await page.setViewport({ width: 390, height: H, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
   else await page.setViewport({ width: w, height: 900, deviceScaleFactor: 1 });
   await page.goto(pathToFileURL(f).href, { waitUntil: 'networkidle0', timeout: 30000 });
   await wait(300);
@@ -474,6 +474,49 @@ for (const id of ids) {
     }
     if (g) await g.lacher();
     await q.close();
+  }
+  // D69 (19.10, au téléphone, dans la page partagée, page jouable d'environ 390 × 620) : « On arrive
+  // pas à aller de l'extrême haut, à l'extrême bas ». D'un seul geste et sans défiler : le houblon le
+  // plus haut de l'écran glissé jusqu'au bas de l'écran atteint J+14 de la post-fermentation ; le plus
+  // bas glissé jusqu'en haut atteint la durée d'ébullition ; pendant le geste, le bout visé du rail
+  // reste dans l'écran. Écrans de 620 et 844 px, page en haut et page défilée jusqu'au dernier houblon.
+  {
+    const f69 = fs.existsSync(k3) ? k3 : index, nom69 = path.basename(f69, '.html');
+    for (const H of [620, 844]) for (const defile of ['en haut', 'défilée']) for (const sens of ['bas', 'haut']) {
+      const q = await ouvrir(f69, 390, H);
+      if (defile === 'défilée') await q.evaluate(() => { const ls = [...document.querySelectorAll('[data-role="ligne-houblon"]')]; ls[ls.length - 1].scrollIntoView({ block: 'end' }); scrollBy(0, 40); });
+      await wait(200);
+      const ebu = await q.evaluate(() => (document.querySelector('[data-role="ebullition"]')?.innerText.match(/(\d+)\s*(′|')/) || [])[1]);
+      const ls = (await q.evaluate(() => [...document.querySelectorAll('[data-role="ligne-houblon"]')].map((l) => {
+        const r = l.querySelector('[data-role="glisser-moment"]').getBoundingClientRect();
+        return { x: r.left + r.width / 2, y: r.top + r.height / 2, quand: l.querySelector('[data-role="quand"]').innerText.trim() };
+      }))).filter((l) => l.y > 40 && l.y < H - 40);
+      const l = sens === 'bas' ? ls[0] : ls[ls.length - 1];
+      const ou = nom69 + ', écran ' + H + ' px, page ' + defile + ', ' + (l ? l.quand : '') + ' glissé jusqu\'en ' + sens;
+      if (!l) { p('D69 : ' + ou + ' : aucun houblon dans l\'écran'); await q.close(); continue; }
+      const t = await q.touchscreen.touchStart(l.x, l.y);
+      let yF = l.y;
+      await t.move(l.x, yF + 3); await wait(200);
+      const fin = sens === 'bas' ? H - 6 : 6;
+      let m = null;
+      while (Math.abs(fin - yF) > 0.5) {
+        yF += Math.sign(fin - yF) * Math.min(6, Math.abs(fin - yF));
+        await t.move(l.x, yF); await wait(20);
+      }
+      await wait(300);
+      m = await q.evaluate(() => {
+        const g = document.querySelector('[data-glisse] [data-role="quand"]');
+        const f = document.querySelector('[data-rang].focus');
+        const ax = document.querySelector('[data-geste] .axe')?.getBoundingClientRect();
+        return { quand: g ? g.innerText.trim() : null, seg: f ? f.dataset.rang : null, axe: ax ? [ax.top, ax.bottom] : null };
+      });
+      await t.end(); await wait(400);
+      const vise = sens === 'bas' ? { quand: 'J+14', seg: 'T-dryPost', lib: 'J+14 de la post-fermentation' } : { quand: ebu + '′', seg: 'T-ebu', lib: ebu + '′' };
+      if (m.quand !== vise.quand || m.seg !== vise.seg) p('D69 : ' + ou + ' : le doigt au bord de l\'écran tient ' + (m.quand || '?') + ' (' + (m.seg || '?') + '), pas ' + vise.lib + ' : on n\'atteint pas l\'extrémité du rail');
+      // Le bout visé reste dans l'écran (l'autre bout peut en sortir quand le houblon est près du bord).
+      if (m.axe && (sens === 'bas' ? m.axe[1] > H + 1 : m.axe[0] < -1)) p('D69 : ' + ou + ' : pendant le geste, le ' + sens + ' du rail sort de l\'écran (' + Math.round(m.axe[0]) + ' à ' + Math.round(m.axe[1]) + ' px pour ' + H + ')');
+      await q.close();
+    }
   }
   {
     const q = await ouvrir(index);
