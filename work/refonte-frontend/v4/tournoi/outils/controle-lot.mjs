@@ -80,7 +80,11 @@ for (const id of ids) {
     if (k === 'w412' && v.screens > 1.05) p('plus d\'un écran à 412 (téléphone du brasseur : ' + v.screens + ')');
     if (ecrans.has(k) && v.paragraphe > maxPara) p('bloc de texte de ' + v.paragraphe + ' lignes > ' + maxPara + ' (' + k + ')');
   }
-  for (const [partie, m] of Object.entries(mParties)) if (id in m && !(m[id] <= maxMots)) p('mots dans ' + partie + '.html : ' + m[id] + ' > ' + maxMots);
+  // D25 bis (19.10, soir, base v4.9) : fiche.html montre la fiche ouverte par l'appui long, le détail
+  // à un toucher. Ses mots sont bornés par la fiche elle-même : 100 visibles au plus (D25,
+  // controle-fiche) et 45 dans ses étiquettes (D73, controle-carte-fiche ; la fiche de Citra cryo,
+  // 84 mots, approuvée : « Ça c'est très bien »), pas par les 80 du premier écran.
+  for (const [partie, m] of Object.entries(mParties)) if (partie !== 'fiche' && id in m && !(m[id] <= maxMots)) p('mots dans ' + partie + '.html : ' + m[id] + ' > ' + maxMots);
   if (!c.b390) p('état B absent (etat-b.html)');
   if (!(mA[id] <= maxMots)) p('mots en A : ' + mA[id] + ' > ' + maxMots);
   if (c.b390 && !(mB[id] <= maxMots)) p('mots en B : ' + mB[id] + ' > ' + maxMots);

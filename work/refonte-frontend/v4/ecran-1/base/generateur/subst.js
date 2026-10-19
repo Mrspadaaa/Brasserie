@@ -83,7 +83,7 @@ const SUBST = (() => {
         h('span', { class: 'sb-fa', 'data-role': 'alpha' }, h('span', { class: 'c-grec' }, 'α'), alpha),
         h('span', { class: 'sb-fr', 'data-role': 'role' }, F.role ? (F.role.v === 'double' ? 'double' : ROLE_MOT[F.role.v] || F.role.v) : ''),
         // Ses arômes en couleur (le code de l'étape) : ce qu'il garde ou perd de l'original, sans un mot.
-        miniProfil({ niv: D.ordre.map((f) => ((F.aromes || []).find((a) => a.f === f) || { lv: 0 }).lv) }, nom),
+        miniProfil({ niv: D.ordre.map((f) => ((F.aromes || []).find((a) => a.f === f) || { lv: 0 }).lv), n: D.ordre.map((f) => ((F.aromes || []).find((a) => a.f === f) || { n: 0 }).n), of: ((F.aromes || [])[0] || {}).of || 0 }, nom),
         pisteA(nom));
     };
     return h('div', { class: 'sb-ff', role: 'group', 'aria-label': 'À IBU égal : ' + noms.join(', ') }, noms.map(ligneF));

@@ -61,7 +61,9 @@ for (const id of ids) {
       const out = [];
       const zones = [...document.querySelectorAll('svg[data-objet="houblons"], svg[data-objet="fiche"], [data-role="fiche"]')].filter(vis);
       for (const z of zones) {
-        const fautifs = [...z.querySelectorAll('*')].filter(vis).filter(colore);
+        // D40 ter (19.10, base v4.9, fiche g1 choisie : « la v1 est la meilleure ») : la case ou l'axe qui
+        // déclare sa famille (data-famille) porte le code couleur des arômes, pas l'alerte de ma bière.
+        const fautifs = [...z.querySelectorAll('*')].filter(vis).filter((e) => !e.closest('[data-famille]')).filter(colore);
         if (fautifs.length) out.push((z.getAttribute('data-objet') || 'fiche') + ' : ' + fautifs.length + ' élément(s) en couleur d\'alerte (« ' + (fautifs[0].textContent || fautifs[0].tagName).trim().slice(0, 18) + ' »)');
       }
       for (const s of [...document.querySelectorAll('svg[data-objet="voies"]')].filter(vis)) {

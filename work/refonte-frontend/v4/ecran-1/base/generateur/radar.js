@@ -144,7 +144,8 @@ const RADAR = (() => {
     // Anneaux, sans nom (D66) : 0 en trait clair quand il n'est pas au centre, les autres en gris ; rayons.
     const valsAnneaux = (o.min < 0 ? [0] : []).concat(o.anneaux || []);
     for (const v of valsAnneaux) sv('path', { d: ligne(axes.map(() => v)), fill: 'none', stroke: v === 0 ? ANNEAU0 : ANNEAU, 'stroke-width': 1 }, C.grille);
-    axes.forEach((f, k) => { const [x, y] = xy(ang(k), R); sv('line', { x1: 0, y1: 0, x2: f1(x), y2: f1(y), stroke: GRILLE, 'stroke-width': 1 }, C.grille); });
+    // o.axeF(f) : l'axe prend la couleur de sa famille (fiche, g1 du lot 13 ; classes de fiche.css).
+    axes.forEach((f, k) => { const [x, y] = xy(ang(k), R); sv('line', { x1: 0, y1: 0, x2: f1(x), y2: f1(y), stroke: GRILLE, 'stroke-width': 1, class: o.axeF && o.axeF(f) ? 'ax-f f-' + f : null, 'data-famille': o.axeF && o.axeF(f) ? f : null }, C.grille); });
     // Les 12 libellés, entiers.
     lib.forEach((l, k) => {
       const p = pos[k];
@@ -454,26 +455,31 @@ const RADAR = (() => {
     }
   }
 
-  /* La roue de la fiche d'un houblon : citations 0–2, « N/M » fiches sous chaque famille citée ;
-     une famille que ses fiches ne décrivent pas est inconnue (D65). Ni zone ni accent : la fiche
-     décrit le houblon, pas le problème de ma bière. La clé (cité, marqué, inconnu) est celle de
-     la fiche (fiche.js, .f-leg). */
+  /* La roue de la fiche d'un houblon : le nombre de fiches qui citent chaque famille, « N/M » sous la
+     famille (D72, 19.10, sur g1 : « 1/4, 2/4 mais même valeur ??? » : la place suit le nombre écrit,
+     1 fiche au milieu, 2 au bord, comme les cases de la carte) ; une fiche unique n'écrit pas « 1/1 »
+     (la bande de la fiche dit « 1 seule fiche »). Une famille que ses fiches ne décrivent pas est
+     inconnue (D65). Axes aux couleurs des familles décrites (g1). Ni zone ni accent : la fiche décrit
+     le houblon, pas le problème de ma bière. */
   function roue(cont, F, o) {
     const lv = Object.fromEntries(F.aromes.map((a) => [a.f, a]));
-    const vals = ROUE.map((f) => (lv[f] && lv[f].lv ? lv[f].lv : null));
+    const vals = ROUE.map((f) => (lv[f] && lv[f].n ? lv[f].n : null));
+    const max = Math.max(2, ...vals.filter((v) => v != null));
+    const cpt = (f) => (lv[f].of === 1 ? 'une seule fiche' : lv[f].n + '/' + lv[f].of + ' fiches');
     // h4 (choix du brasseur, 19.10) : ma demande (D.direction : plus de floral, moins de résineux) fléchée
     // au bord du radar, vers l'extérieur = plus, vers le centre = moins ; ces familles en gras, écartées.
     const dem = Object.fromEntries((D.direction || []).map((d) => [d.f, d.sens]));
     const g = radar(cont, {
-      objet: 'fiche', W: o.W, Hmin: o.H, Hmax: o.H, min: -0.5, max: 2, anneaux: ANNEAUX_C,
-      libelle: (f, k) => ({ gras: !!dem[f], ecart: dem[f] ? 20 : 0, inconnu: vals[k] == null, compte: vals[k] ? lv[f].n + '/' + lv[f].of : null }),
-      label: 'Silhouette de ' + F.nom + ' selon ses fiches : ' + (ROUE.filter((f, k) => vals[k]).map((f) => nomF(f).toLowerCase() + ' ' + lv[f].n + ' sur ' + lv[f].of).join(', ') || 'aucun arôme décrit') + ' ; les autres familles sont inconnues, pas à zéro',
+      objet: 'fiche', W: o.W, Hmin: o.H, Hmax: o.H, min: -0.5, max, anneaux: ANNEAUX_C,
+      axeF: (f) => vals[ROUE.indexOf(f)] != null,
+      libelle: (f, k) => ({ gras: !!dem[f], ecart: dem[f] ? 20 : 0, inconnu: vals[k] == null, compte: vals[k] && lv[f].of > 1 ? lv[f].n + '/' + lv[f].of : null }),
+      label: 'Silhouette de ' + F.nom + ' selon ses fiches : ' + (ROUE.filter((f, k) => vals[k]).map((f) => nomF(f).toLowerCase() + ' ' + (lv[f].of === 1 ? 'une seule fiche' : lv[f].n + ' sur ' + lv[f].of)).join(', ') || 'aucun arôme décrit') + ' ; les autres familles sont inconnues, pas à zéro',
     });
     inconnus(g, ROUE.filter((f, k) => vals[k] == null), 'ses fiches ne le décrivent pas');
     serie(g, { nom: F.nom, valeurs: vals, couleur: ENC, plein: true });
     ROUE.forEach((f, k) => {
       const v = vals[k];
-      if (v != null) g.marque(g.P(k, v), marqueCitation(ENC, v), [h('b', {}, nomF(f)), ' : ' + CLASSES_C[v] + ' (' + lv[f].n + '/' + lv[f].of + ' fiches)']);
+      if (v != null) g.marque(g.P(k, v), marqueCitation(ENC, Math.min(2, v)), [h('b', {}, nomF(f)), ' : ' + cpt(f)]);
     });
     // Les flèches de ma demande, hors du radar (aucune valeur), en encre (jamais l'orangé d'alerte).
     ROUE.forEach((f, k) => {
@@ -488,7 +494,7 @@ const RADAR = (() => {
         sv('path', { d: 'M0,' + -(R + 5) + 'L-5,' + -(R + 14) + 'L5,' + -(R + 14) + 'Z', fill: ENC }, fl);
       }
       const p = [Math.sin(k * g.pas) * (R + 13), -Math.cos(k * g.pas) * (R + 13)];
-      g.cibles.push({ x: p[0], y: p[1], mots: [h('b', {}, nomF(f)), ' : tu en veux ' + (s > 0 ? 'plus' : 'moins') + ' ; ' + F.nom + ' : ' + (vals[k] ? CLASSES_C[vals[k]] + ' (' + lv[f].n + '/' + lv[f].of + ' fiches)' : 'inconnu, ses fiches n\'en parlent pas')] });
+      g.cibles.push({ x: p[0], y: p[1], mots: [h('b', {}, nomF(f)), ' : tu en veux ' + (s > 0 ? 'plus' : 'moins') + ' ; ' + F.nom + ' : ' + (vals[k] ? cpt(f) : 'inconnu, ses fiches n\'en parlent pas')] });
     });
     return g.svg;
   }

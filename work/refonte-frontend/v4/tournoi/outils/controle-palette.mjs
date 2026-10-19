@@ -41,7 +41,9 @@ const teintes = (page) => page.evaluate(() => {
   const code = (h) => declarees.some((d) => Math.min(Math.abs(d - h), 360 - Math.abs(d - h)) <= 6);
   const out = new Set();
   for (const e of document.querySelectorAll('body *')) {
-    if (e.closest('[data-role="aromes"], svg[data-radar]')) continue;
+    // D33 ter (19.10, base v4.9, fiche g1 choisie par le brasseur : « la v1 est la meilleure ») : une
+    // case ou un axe qui déclare sa famille (data-famille) porte le code couleur des arômes.
+    if (e.closest('[data-role="aromes"], svg[data-radar], [data-famille]')) continue;
     const r = e.getBoundingClientRect(); if (!r.width || !r.height || r.top > innerHeight) continue;
     const cs = getComputedStyle(e);
     for (const k of ['color', 'backgroundColor', 'borderTopColor', 'outlineColor', 'fill', 'stroke']) {

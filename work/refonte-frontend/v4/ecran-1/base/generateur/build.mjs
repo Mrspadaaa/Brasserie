@@ -114,7 +114,9 @@ function ficheH(f) {
     beta: ((f.beta && f.beta.sources) || []).map(plageSrc),
     huiles: ((f.huiles && f.huiles.totale && f.huiles.totale.sources) || []).map(plageSrc),
     composants: Object.entries(NOMS_H).map(([k, nom]) => (comp[k] ? { nom, min: comp[k].min, max: comp[k].max, src: comp[k].source } : { nom, raison: comp[k + 'Raison'] || null })),
-    aromes: (f.aromes || []).map((a) => ({ f: a.family, lv: a.level, n: a.sources, of: a.of, auteurs: a.authors || [] })),
+    // #140 (lot 13, g1) : les mots des fiches qui font chaque famille, et qui la nomme en premier.
+    aromes: (f.aromes || []).map((a) => ({ f: a.family, lv: a.level, n: a.sources, of: a.of, auteurs: a.authors || [], mots: a.mots || [], premier: a.premier || [] })),
+    sansFamille: f.motsSansFamille || [],
     desc: (f.descripteurs && f.descripteurs.beerMaverick) || [],
     subsCalc: ((f.substitutsCalcules && f.substitutsCalcules.remplacants) || []).map((x) => x.name).filter((n) => FICHES.some((y) => y.name === n)),
     subs: Array.isArray(f.substituts) ? f.substituts.map((x) => (typeof x === 'string' ? x : x.name || x.nom || '')).filter(Boolean) : [], subsRaison: f.substitutsRaison || null,

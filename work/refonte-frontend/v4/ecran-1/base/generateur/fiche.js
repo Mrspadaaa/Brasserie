@@ -1,11 +1,11 @@
 /* La fiche du houblon (D25), sur toute la base : appui long de 500 ms au doigt, survol de 750 ms à
    la souris, sur tout nom de houblon (data-houblon) ; un toucher court garde son action.
-   La fiche p08 du lot 4 avec les greffes du jury : α et rôle au premier plan ; la table des
-   moments de p11 (l'IBU de CE houblon à chaque moment, lu dans les tables du pack à la durée
-   d'ébullition courante ; un toucher y place l'ajout, le résumé IBU bouge au-dessus) ; la roue
-   chiffrée « N/M » et sa légende (p01, p02) à la place des puces d'arômes ; une feuille à
-   mi-hauteur qui laisse voir la ligne et le résumé IBU (p01, p11) ; les actions Ajouter et
-   Comparer (p02) ; Styles, Huiles, Sources, Substituts repliés.
+   La fiche p08 du lot 4 avec les greffes du jury : α et rôle au premier plan ; puis g1 (lot 13,
+   choix du brasseur, 19.10) : la bande des carrés de la carte étiquetée, famille par famille, avec
+   les mots de ses fiches ; la table des IBU par moment est retirée (« Inutile ») ; la roue chiffrée
+   « N/M », placée au nombre de fiches, axes aux couleurs des familles ; une feuille à mi-hauteur qui
+   laisse voir la ligne et le résumé IBU (p01, p11) ; les actions Ajouter et Comparer (p02) ;
+   Styles, Huiles, Sources, Substituts repliés.
    La fiche décrit le houblon (ce que ses fiches citent), pas le problème de ma bière : aucune
    couleur d'alerte (D40). Aucun chiffre calculé : tables et fiches du pack, dose × table. */
 const APPUI_MS = 500, SURVOL_MS = 750;
@@ -57,38 +57,50 @@ function blocAlpha(F) {
     a ? reglette(F, a) : null,
     role ? h('span', { class: 'f-role' + (/^règle/.test(F.role.src || '') ? ' regle' : ''), title: F.role.src || '', 'aria-label': 'Rôle : ' + role + (F.role.src ? ', ' + F.role.src : '') }, role) : null);
 }
-/* La table des moments (p11) : début de l'ébullition (durée courante), 10′, whirlpool, à froid, et
-   le moment de l'ajout s'il est ailleurs. IBU de cette dose, lu dans les tables du pack (dose ×
-   table) ; un houblon ni dans la recette ni proposé n'a que son IBU par gramme (fiche). */
+/* #131 : un cryo porte les plages de la variété en pellets (sa propre fiche manque) ; mon lot hors des
+   plages de ses fiches se dit. */
+function noteAlpha(F, cle) {
+  if (/:cryo$/.test(cle || '')) return h('p', { class: 'f-note' }, 'α : plages de ' + F.nom.replace(/\s*cryo$/i, '') + ' en pellets ; la fiche du cryo manque.');
+  if (F.lot != null && F.alpha.length && F.alpha.every((s) => F.lot < s.min || F.lot > s.max)) return h('p', { class: 'f-note' }, 'Mon lot ' + nbF(F.lot) + ' % : hors des plages de ses fiches.');
+  return null;
+}
 const froidF = (c) => /^dry/.test(c);
 const libMoment = (c) => (c === 'fwh' ? 'premier moût' : c === 'wp' ? 'whirlpool' : froidF(c) ? 'à froid' : c.slice(1) + '′');
-function tableMoments(F, cle) {
-  const l = ligneDe(cle), r = l ? null : rapideDe(cle);
-  const base = l || (r ? { ...r, ibu0: { moment: r.moment, g: r.g, v: r.ibu }, wpT: 80, wpMin: 20, jour: 3 } : null);
-  const courant = l ? l.moment : r ? FICHE.moment[cle] || momentBorne(r.moment) : null;
-  const codes = ['b' + EBU, EBU > 10 ? 'b10' : null, 'wp', 'dryActive'].filter(Boolean);
-  if (courant && !froidF(courant) && !codes.includes(courant)) codes.push(courant);
-  const rang = (c) => { const k = MOMENTS.findIndex((m) => m.code === c); return k < 0 ? 99 : k; };
-  codes.sort((a, b) => rang(a) - rang(b));
-  const titre = l ? 'IBU, ' + grammes(l.g) : r ? 'IBU ajoutés, ' + grammes(r.g) : 'IBU par gramme';
-  return h('div', { class: 'f-table', role: 'group', 'aria-label': 'Moments de ' + F.nom + ' : ' + titre },
-    h('div', { class: 'f-titre' }, titre),
-    codes.map((c, n) => {
-      const code = froidF(c) && courant && froidF(courant) ? courant : c;
-      const ici = courant === code;
-      let txt;
-      if (base) { const v = ibuLigne({ ...base, moment: code }); txt = v === undefined ? 'à recalculer' : v == null ? 'aucun' : (r ? '+' : '') + ibuTexte(v); }
-      else { const pg = F.ibuPG[code]; txt = pg == null ? (froidF(code) ? 'aucun' : NR) : nbF(pg) + '/g'; }
-      return h('button', {
-        class: 'f-m' + (ici ? ' ici' : '') + (froidF(code) ? ' froid' : code === 'wp' ? ' wp' : ''), 'aria-pressed': String(ici), 'data-k': 'fm' + c, disabled: base ? null : true,
-        'data-booster': n === 1 && base ? 'moment de la fiche' : null,
-        'aria-label': (l ? 'Placer ' + F.nom + ' : ' : r ? 'Proposer ' + F.nom + ' : ' : '') + quandLong({ moment: code, jour: (l && l.jour) || 3, wpT: (l && l.wpT) || 80, wpMin: (l && l.wpMin) || 20 }) + ', ' + (txt === 'aucun' ? 'aucun IBU' : txt + ' IBU'),
-        onclick: (e) => {
-          e.stopPropagation();
-          if (l) { ETAT.focusK = null; placer(l, code); } else if (r) { FICHE.moment[cle] = code; construireFiche(); }
-        },
-      }, h('i', { class: 'f-pt', 'aria-hidden': 'true' }), h('span', { class: 'f-ml' }, libMoment(code)), h('span', { class: 'f-mi' }, txt));
-    }));
+/* g1 (lot 13, choix du brasseur, 19.10 : « la v1 est la meilleure » ; la table des IBU par moment,
+   barrée : « Inutile ») : la bande des carrés de la carte, en grand, puis une ligne par famille
+   décrite, dans l'ordre de la bande : sa case, son nom, le nombre de ses fiches (« 1/4, 2/4 mais même
+   valeur ??? » : la case et la roue suivent ce nombre), qui la nomme en premier, et les mots de ses
+   fiches qui la font (moteur, familyWords). Puis les mots sans famille et les familles non décrites
+   (D65). Une fiche unique se dit « 1 seule fiche », jamais « 1/1 ». */
+// « 2/4 », comme la roue (D25 : 100 mots visibles au plus dans la fiche).
+const fichesTxt = (a) => (a.of === 1 ? '' : a.n + '/' + a.of);
+// data-famille : la case porte le code couleur de sa famille (D33 bis, D40 ter).
+const caseF = (f, n, sep) => h('i', { class: 'c f-' + f + (n >= 2 ? ' m' : n === 1 ? ' ci' : '') + (sep ? ' sep' : ''), 'data-famille': f, 'aria-hidden': 'true' });
+function blocLabels(F) {
+  const par = Object.fromEntries(F.aromes.map((a) => [a.f, a]));
+  const of = (F.aromes[0] || {}).of || 0;
+  const seule = of === 1 ? (F.aromes.find((a) => a.n) || { auteurs: [] }).auteurs[0] : null;
+  const decrites = D.ordre.filter((f) => par[f] && par[f].n > 0), nd = D.ordre.filter((f) => !par[f] || !par[f].n);
+  // D73 (« Attention, trop de texte », sur Nugget) et la fiche de Citra cryo (« Ça c'est très bien ») :
+  // la mise en page de Citra pour tous : le nom, son nombre de fiches, « nommé en premier » à 1 fiche,
+  // puis ses mots ; jamais le nom des sources dans les lignes (repli « Sources », et au toucher : title).
+  const lignes = decrites.map((f) => {
+    const a = par[f], cpt = fichesTxt(a);
+    const prem = a.n === 1 && (a.premier || []).length ? 'nommé en premier' : '';
+    const mots = [...new Set((a.mots || []).flatMap((m) => m.mots).map((w) => w.toLowerCase()))];
+    return h('div', { class: 'f-lab', 'data-explique': f, title: (a.mots || []).map((m) => m.source + ' : ' + m.mots.join(', ')).join(' ; ') || null },
+      caseF(f, a.n),
+      h('span', {}, h('span', { class: 'f-lab-n' }, D.court[f]), [cpt, prem].filter(Boolean).length ? ' ' + [cpt, prem].filter(Boolean).join(' · ') : ''),
+      mots.length ? h('span', { class: 'f-lab-mots' }, h('b', {}, mots.join(', '))) : null);
+  });
+  const sans = F.sansFamille || [];
+  return h('div', { class: 'f-labels', 'data-role': 'fiche-labels' },
+    h('div', { class: 'f-bande', role: 'img', 'aria-label': 'Les familles citées par les fiches de ' + F.nom },
+      h('span', { class: 'f-bande-c' }, D.ordre.map((f, i) => caseF(f, par[f] ? par[f].n : 0, i === D.attendues.length))),
+      seule ? h('span', { class: 'f-seule' }, '1 seule fiche : ' + seule) : null),
+    ...lignes,
+    sans.length ? h('p', { class: 'f-lab-sans', title: sans.map((s) => s.mot + ' : ' + s.source).join(' ; ') }, 'sans famille : ' + sans.map((s) => s.mot).join(', ')) : null,
+    nd.length ? h('p', { class: 'f-lab-nd' }, nd.length + ' non décrite' + (nd.length > 1 ? 's' : '') + ' : ' + nd.map((f) => D.court[f]).join(', ')) : null);
 }
 /* La roue chiffrée : ce que disent ses fiches (citations 0–2, « N/M » sous la famille). */
 function blocArome(F) {
@@ -97,10 +109,10 @@ function blocArome(F) {
   // h4 : sans légende (19.10) ; sous la roue, la réponse de ses fiches à ma demande, une famille visée
   // par puce (le signe de la flèche, la famille, ce que disent ses fiches).
   const lv = Object.fromEntries(F.aromes.map((a) => [a.f, a]));
-  const NIV = ['non décrit', 'cité', 'marqué'];
+  // Le nombre de fiches, comme la roue et les cases (D72) ; une fiche unique, jamais « 1/1 ».
   if ((D.direction || []).length) z.append(h('p', { class: 'f-dem', 'data-role': 'demande' }, D.direction.map((d) => {
     const a = lv[d.f];
-    return h('span', { class: 'f-dem-i' }, h('b', {}, (d.sens > 0 ? '+ ' : '− ') + D.court[d.f]), ' ' + (a && a.lv ? NIV[a.lv] + ' ' + a.n + '/' + a.of : 'inconnu'));
+    return h('span', { class: 'f-dem-i' }, h('b', {}, (d.sens > 0 ? '+ ' : '− ') + D.court[d.f]), ' ' + (a && a.n ? (a.of === 1 ? '1 seule fiche' : a.n + '/' + a.of) : 'inconnu'));
   })));
   return z;
 }
@@ -139,7 +151,7 @@ const SECTIONS = [
     ...(F.lot != null ? [rangee('α mon lot', nbF(F.lot) + ' %')] : []),
     ...(F.beta.length ? F.beta.map((s) => rangee('β ' + srcTxt(s), plageF(s) + ' %')) : [rangee('β', NR)]),
     h('p', { class: 'f-txt' }, 'Origine : ' + (F.origine || NR) + (F.base ? ' ; IBU : ' + F.base : '')),
-    ...F.aromes.filter((a) => a.lv > 0).map((a) => h('p', { class: 'f-txt' }, h('b', {}, D.court[a.f] + ' ' + a.n + '/' + a.of), ' ' + (a.auteurs.join(', ') || NR))),
+    ...F.aromes.filter((a) => a.n > 0).map((a) => h('p', { class: 'f-txt' }, h('b', {}, D.court[a.f] + (a.of === 1 ? '' : ' ' + a.n + '/' + a.of)), ' ' + (a.auteurs.join(', ') || NR))),
     F.desc.length ? h('div', { class: 'tags' }, F.desc.map((t) => h('span', { class: 'tag-f' }, t))) : null]],
   ['subs', 'Substituts', (F) => [F.subs.length ? h('div', { class: 'tags' }, F.subs.map((t) => h('span', { class: 'tag-f' }, t))) : h('p', { class: 'f-txt gris' }, F.subsRaison || NR)]],
 ];
@@ -168,7 +180,7 @@ function construireFiche(versSection) {
   const defil = ancien ? ancien.scrollTop : 0;
   const fe = h('section', { class: 'f-fiche f-' + FICHE.mode, 'data-role': 'fiche', role: 'dialog', tabindex: '-1', 'aria-modal': FICHE.mode === 'feuille' ? 'true' : null, 'aria-label': 'Fiche de ' + F.nom },
     FICHE.mode === 'feuille' ? h('div', { class: 'f-poignee', 'aria-hidden': 'true' }) : null,
-    h('div', { class: 'f-corps' }, tete(F, cle), blocAlpha(F), tableMoments(F, cle), blocArome(F), blocActions(F, cle), ...blocReplis(F)));
+    h('div', { class: 'f-corps' }, tete(F, cle), blocAlpha(F), noteAlpha(F, cle), blocLabels(F), blocArome(F), blocActions(F, cle), ...blocReplis(F)));
   const voile = FICHE.mode === 'feuille' ? h('div', { class: 'f-voile', 'aria-hidden': 'true', onclick: () => fermerFiche() }) : null;
   FICHE.racine.replaceChildren(...[voile, fe].filter(Boolean));
   if (FICHE.mode === 'feuille') { placerFeuille(fe); poigneeFeuille(fe); } else placerBulle(fe);

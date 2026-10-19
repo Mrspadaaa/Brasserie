@@ -184,7 +184,13 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   avant de faire quoi que ce soit » ; et, sur l'analyse de la fiche actuelle (quatre problèmes) : « Non,
   il faut changer la carte et tout. Mais c'est déjà pas mal comme visuel de base. Mais il y a quelques
   problèmes dessus... Donc fait moi des mini maquettes de ça » — 19.10, soir (D71 ; lot 13, la carte et
-  la fiche ensemble).
+  la fiche ensemble). Sur g1, Épicé 1/4 et Tropicaux 2/4 entourés : « 1/4, 2/4 mais même valeur ??? »
+  (D72 : la place sur la roue et la case de la carte suivent le nombre de fiches). Puis, sur la planche,
+  la table des IBU par moment de g1 barrée : « Inutile mais la v1 est la meilleure » — 19.10, soir (g1
+  entre dans la base v4.9, sans la table des moments). Sur la fiche de Nugget de la v4.9, les étiquettes
+  entourées : « Attention, trop de texte » (D73) ; sur celle de Citra cryo : « Ça c'est très bien » ; et,
+  le bouton entouré : « Ajouter à 10' est un palace holder? Ça doit venir des prévisions du model, on est
+  d'accord ? » — 19.10, soir.
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce

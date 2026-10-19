@@ -32,21 +32,27 @@
   .f-reglette { flex: none; }
   .f-role { margin-left: auto; font-size: 12px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--gris2); color: var(--gris); }
   .f-role.regle { border-color: var(--trait); }
-  /* La table des moments (p11) : le temps du brassin de haut en bas, le moment de l'ajout plein. */
-  .f-table { display: flex; flex-direction: column; padding: 3px 8px 5px; border-radius: 12px; background: var(--fond); }
-  .f-titre { font-size: 12px; color: var(--gris2); padding: 0 0 1px 26px; min-height: 16px; }
-  .f-m { display: grid; grid-template-columns: 18px 1fr auto; align-items: center; gap: 8px; min-height: 30px; text-align: left; position: relative; border-radius: 8px; padding-right: 6px; }
-  .f-m::before { content: ''; position: absolute; left: 8px; top: -1px; bottom: -1px; border-left: 2px solid #b5b5b5; }
-  .f-table .f-m:nth-child(2)::before { top: 50%; }
-  .f-table .f-m:last-child::before { bottom: 50%; }
-  .f-m.wp::before, .f-m.froid::before { border-left-color: #d6d6d6; }
-  .f-pt { width: 14px; height: 14px; border-radius: 7px; border: 2px solid var(--encre); background: #fff; position: relative; z-index: 1; margin-left: 2px; }
-  .f-m.ici { background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
-  .f-m.ici .f-pt { background: var(--encre); }
-  .f-ml { font-weight: 650; white-space: nowrap; }
-  .f-mi { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--gris); }
-  .f-m.ici .f-mi { color: var(--encre); font-weight: 650; }
-  .f-m:disabled { cursor: default; }
+  /* g1 (lot 13, #140) : la bande de la carte, en grand, puis une ligne par famille décrite (sa case,
+     son nom, ses fiches, ses mots). Les couleurs des familles sont celles des cases de la carte. */
+  .f-fiche .f-citrus { --c: #d9b414; } .f-fiche .f-tropical { --c: #ee9b2f; } .f-fiche .f-melon { --c: #6fc09b; }
+  .f-fiche .f-stoneFruit { --c: #e88d68; } .f-fiche .f-pomeFruit { --c: #a3bd38; } .f-fiche .f-berries { --c: #9b3f74; }
+  .f-fiche .f-floral { --c: #bf86d6; } .f-fiche .f-green { --c: #6aa33a; } .f-fiche .f-herbal { --c: #3f8a5f; }
+  .f-fiche .f-spice { --c: #7a4e3a; } .f-fiche .f-earthy { --c: #9a8a66; } .f-fiche .f-resin { --c: #2f6b5f; }
+  .f-labels { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px 10px; border-radius: 12px; background: var(--fond); }
+  .f-labels .c { display: inline-block; width: 13px; height: 18px; border-radius: 2px; background: #e6e6e6; flex: none; }
+  .f-labels .c.ci { background: color-mix(in srgb, var(--c) 42%, #fff); }
+  .f-labels .c.m { background: var(--c); }
+  .f-bande { display: flex; align-items: center; gap: 3px; min-height: 22px; }
+  .f-bande .c.sep { margin-left: 6px; }
+  .f-seule { margin-left: auto; font-size: 12px; color: var(--gris); text-align: right; }
+  .f-lab { display: grid; grid-template-columns: 13px 1fr; column-gap: 10px; align-items: start; font-size: 12px; line-height: 1.35; color: var(--gris); }
+  .f-lab .c { margin-top: 1px; }
+  .f-lab-n { font-size: 14px; font-weight: 650; color: var(--encre); }
+  .f-lab-mots { grid-column: 2; }
+  .f-lab-mots b { font-weight: 400; color: var(--encre); }
+  .f-lab-sans, .f-lab-nd { padding-left: 23px; font-size: 12px; color: var(--gris); line-height: 1.35; }
+  .f-note { font-size: 12px; color: var(--gris); line-height: 1.3; margin: -2px 0 0; }
+  .f-fiche .rdr line.ax-f { stroke: var(--c); stroke-width: 1.5; }
   /* La roue chiffrée et sa légende (p01, p02) */
   .f-arome { display: flex; flex-direction: column; align-items: center; gap: 0; }
   .f-leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gris); min-height: 18px; }

@@ -26,6 +26,12 @@
 //   F4 (P4) la fiche de Citra cryo n'écrit pas « 1/1 » et dit qu'il n'y a qu'une fiche (« seule ») ;
 //   F5 chaque famille décrite dit son nom et ses fiches (« 2 sur 4 », ou le nom des sources) ;
 //      « non décrit » est écrit (D65) ;
+//   F7 (D72, 19.10, soir, sur g1, Épicé 1/4 et Tropicaux 2/4 entourés au même rayon : « 1/4, 2/4 mais
+//      même valeur ??? ») : sur la roue, la place suit le nombre écrit. Deux familles au même nombre
+//      de fiches sont au même rayon ; plus de fiches, plus loin du centre (contrat de la base :
+//      svg[data-radar][data-axes] et [data-serie][data-valeurs]) ;
+//   F8 (D73, 19.10, soir, sur la fiche de la base v4.9, le bloc des étiquettes entouré : « Attention,
+//      trop de texte ») : les étiquettes de la fiche ([data-role="fiche-labels"]) tiennent en 45 mots (la fiche de Citra cryo, 40 mots : « Ça c'est très bien ») ;
 //   F6 la carte reste une carte : au repos, ses mots de la base (nom, α, dose, IBU, moment), 14 mots
 //      au plus, 72 px de haut au plus pour un ajout proposé ; aucune légende écrite au repos.
 // Usage : node controle-carte-fiche.mjs <dossier du lot> [ids…]
@@ -41,7 +47,7 @@ const PAR = Object.fromEntries(FICHES.map((f) => [f.key, f]));
 const COULEUR = { citrus: '#d9b414', tropical: '#ee9b2f', melon: '#6fc09b', stoneFruit: '#e88d68', pomeFruit: '#a3bd38', berries: '#9b3f74', floral: '#bf86d6', green: '#6aa33a', herbal: '#3f8a5f', spice: '#7a4e3a', earthy: '#9a8a66', resin: '#2f6b5f' };
 const COURT = { citrus: 'Agrumes', tropical: 'Tropicaux', stoneFruit: 'Noyau', pomeFruit: 'Pépins', berries: 'Baies', melon: 'Melon', floral: 'Floral', green: 'Végétal', herbal: 'Herbacé', spice: 'Épicé', earthy: 'Terreux', resin: 'Résineux' };
 const NUG = 'beermaverick-nugget', CIT = 'beermaverick-citra:cryo';
-const base = process.argv.includes('--base');
+const base = process.argv.some((a) => a === '--base' || a.startsWith('--base='));
 const dir = base ? null : path.resolve(process.argv[2] || '.');
 const only = process.argv.slice(3).filter((a) => !a.startsWith('--'));
 const ids = base ? ['base'] : (only.length ? only : fs.readdirSync(dir).filter((d) => /^[a-z]+\d+$/.test(d) && fs.existsSync(path.join(dir, d, 'vue.html')))).sort();
@@ -58,7 +64,12 @@ async function lire(f, ouvrir) {
   if (ouvrir) { await page.evaluate((k) => { if (typeof ouvrirFiche === 'function') ouvrirFiche(k, { mode: 'feuille', anim: false, epingle: true }); }, ouvrir); await new Promise((r) => setTimeout(r, 400)); }
   const r = await page.evaluate(() => {
     const vis = (e) => { const b = e.getBoundingClientRect(); const cs = getComputedStyle(e); return b.width > 0 && b.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' && Number(cs.opacity) > 0.15 && (!e.checkVisibility || e.checkVisibility({ opacityProperty: true, visibilityProperty: true })); };
-    const rgb = (s) => { const m = (s || '').match(/rgba?\(([^)]+)\)/); if (!m) return null; const p = m[1].split(',').map((x) => parseFloat(x)); return p.length > 3 && p[3] < 0.3 ? null : p.slice(0, 3); };
+    // rgb(a) ; ou color(srgb r g b), la forme que Chrome rend pour un color-mix (la case claire).
+    const rgb = (s) => {
+      const c = (s || '').match(/color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\)/);
+      if (c) return c[4] != null && Number(c[4]) < 0.3 ? null : [1, 2, 3].map((i) => Math.round(Number(c[i]) * 255));
+      const m = (s || '').match(/rgba?\(([^)]+)\)/); if (!m) return null; const p = m[1].split(',').map((x) => parseFloat(x)); return p.length > 3 && p[3] < 0.3 ? null : p.slice(0, 3);
+    };
     const couleurs = (el) => { const out = []; for (const e of [el, ...el.querySelectorAll('*')]) { if (!vis(e) && e !== el) continue; const cs = getComputedStyle(e); for (const v of [cs.backgroundColor, cs.color, cs.borderTopColor, cs.borderLeftColor, cs.borderBottomColor, cs.fill, cs.stroke, cs.outlineColor]) { const c = rgb(v); if (c) out.push(c); } } return out; };
     const cartes = Object.fromEntries([...document.querySelectorAll('[data-houblon]')].filter(vis).map((c) => {
       let el = c; if (el.tagName === 'B' && el.closest('.rapide, [data-role="ligne-houblon"]')) el = el.closest('.rapide, [data-role="ligne-houblon"]');
@@ -71,7 +82,12 @@ async function lire(f, ouvrir) {
     }).filter(Boolean));
     const fiche = [...document.querySelectorAll('[data-role="fiche"], .fiche')].filter(vis)[0] || null;
     const ex = fiche ? Object.fromEntries([...fiche.querySelectorAll('[data-explique]')].filter(vis).map((e) => [e.dataset.explique, { t: e.innerText.replace(/\s+/g, ' ').trim(), c: couleurs(e) }])) : {};
-    return { cartes, fiche: !!fiche, ficheTexte: fiche ? fiche.innerText.replace(/\s+/g, ' ') : '', ex };
+    const rd = fiche ? fiche.querySelector('svg[data-radar]') : null;
+    const se = rd ? rd.querySelector('[data-serie][data-valeurs]') : null;
+    const roue = rd && se ? { axes: rd.dataset.axes.split(','), vals: se.dataset.valeurs.split(',').map((v) => (v === '' || v === 'null' ? null : Number(v))) } : null;
+    const lab = fiche ? fiche.querySelector('[data-role="fiche-labels"]') : null;
+    const motsLab = lab ? lab.innerText.split(/\s+/).filter((w) => /[\p{L}\d]/u.test(w)).length : null;
+    return { cartes, fiche: !!fiche, ficheTexte: fiche ? fiche.innerText.replace(/\s+/g, ' ') : '', ex, roue, motsLab };
   });
   await page.close();
   return r;
@@ -80,7 +96,9 @@ const proche = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) <= 40
 
 for (const id of ids) {
   const p = (m) => problems.push(id + ' : ' + m);
-  const f = (n) => (base ? path.join(root, 'work/refonte-frontend/v4/ecran-1/base/consolide/index.html') : path.join(dir, id, n));
+  // --base=<dossier> : une autre base consolidée (un témoin), sinon la base courante.
+  const baseDir = (process.argv.find((a) => a.startsWith('--base=')) || '').slice(7) || path.join(root, 'work/refonte-frontend/v4/ecran-1/base/consolide');
+  const f = (n) => (base ? path.join(baseDir, 'index.html') : path.join(dir, id, n));
   for (const n of ['vue.html', 'fiche-nugget.html', 'fiche-citra.html']) if (!base && !fs.existsSync(f(n))) p('pas de page ' + n);
   if (!base && !fs.existsSync(f('fiche-citra.html'))) continue;
   const vue = await lire(f('vue.html'));
@@ -103,7 +121,7 @@ for (const id of ids) {
       const e = fi.ex[a.family];
       if (!e) { p(nom + ' : F5, ' + a.name + ' n\'a pas d\'étiquette ([data-explique="' + a.family + '"])'); continue; }
       if (!e.t.toLowerCase().includes(COURT[a.family].toLowerCase()) && !e.t.toLowerCase().includes(a.name.toLowerCase())) p(nom + ' : F5, ' + a.family + ' étiqueté sans son nom');
-      if (!(new RegExp(a.sources + '\\s*(fiches?|sources?)?\\s*sur\\s*' + a.of).test(e.t) || a.authors.every((n) => e.t.includes(n)) || (a.of === 1 && /seule?/.test(e.t + fi.ficheTexte)))) p(nom + ' : F5, ' + a.name + ' étiqueté sans ses fiches (« ' + a.sources + ' sur ' + a.of + ' » ou ' + a.authors.join(', ') + ')');
+      if (!(new RegExp(a.sources + '\\s*(fiches?|sources?)?\\s*(sur|/)\\s*' + a.of).test(e.t) || a.authors.every((n) => e.t.includes(n)) || (a.of === 1 && /seule?/.test(e.t + fi.ficheTexte)))) p(nom + ' : F5, ' + a.name + ' étiqueté sans ses fiches (« ' + a.sources + ' sur ' + a.of + ' » ou ' + a.authors.join(', ') + ')');
       // F1 : la couleur de la famille, dans la fiche et sur la carte.
       if (!e.c.some((c) => teintes(a.family).some((t) => proche(c, t)))) p(nom + ' : F1, l\'étiquette de ' + a.name + ' n\'a pas la couleur de sa famille');
       const cs = carte && carte.cases.find((x) => x.f === a.family);
@@ -121,6 +139,22 @@ for (const id of ids) {
         if (!/premier/i.test((fi.ex[a.family] || {}).t || '')) p(nom + ' : F2, ' + a.name + ' et ' + b.name + ' sont à ' + a.sources + ' sur ' + a.of + ', mais leurs cases diffèrent sur la carte ; la fiche ne dit pas pourquoi (« premier »)');
       }
     } else p(nom + ' : la carte du houblon n\'est pas sur la page (ses cases data-famille)');
+    // F8 : « Attention, trop de texte ».
+    if (fi.motsLab != null && fi.motsLab > 45) p(nom + ' : F8, les étiquettes de la fiche ont ' + fi.motsLab + ' mots (45 au plus) : trop de texte');
+    // F7 : sur la roue, la place suit le nombre de fiches écrit.
+    if (!fi.roue) p(nom + ' : F7, la roue ne suit pas le contrat de la base (svg[data-radar][data-axes], [data-serie][data-valeurs])');
+    else {
+      const val = (f) => { const k = fi.roue.axes.indexOf(f); return k < 0 ? undefined : fi.roue.vals[k]; };
+      const vu = new Set();
+      for (const a of decrites) for (const b of decrites) {
+        if (a === b || a.sources < b.sources) continue;
+        const va = val(a.family), vb = val(b.family);
+        if (va == null || vb == null) continue;
+        const k = [a.family, b.family].sort().join(); if (vu.has(k)) continue; vu.add(k);
+        if (a.sources === b.sources && Math.abs(va - vb) > 0.01) p(nom + ' : F7, ' + a.name + ' et ' + b.name + ' sont à ' + a.sources + ' sur ' + a.of + ', mais pas au même rayon sur la roue (' + va + ' et ' + vb + ')');
+        if (a.sources > b.sources && !(va > vb + 0.01)) p(nom + ' : F7, ' + a.name + ' (' + a.sources + ' sur ' + a.of + ') et ' + b.name + ' (' + b.sources + ' sur ' + b.of + ') sont au même rayon sur la roue (' + va + ', ' + vb + ') : la place ne suit pas le nombre écrit');
+      }
+    }
     if (carte) for (const a of F.aromes) { const c = carte.cases.find((x) => x.f === a.family); if (c && c.n != null && (c.n !== a.sources || c.of !== a.of)) p(nom + ' : la case ' + a.name + ' porte ' + c.n + '/' + c.of + ' au lieu de ' + a.sources + '/' + a.of + ' (pack)'); }
   }
   // F3 : les mots de Beer Maverick, sans rien déplier.

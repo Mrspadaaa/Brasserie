@@ -150,8 +150,18 @@ Voir `decisions.md` (D1 à D12).
   `CARTE-FICHE OK 6/6`, `FIL6 OK 6/6`, mots ≤ 90. Planches (fiche Nugget, fiche Citra cryo, cartes) à la
   place du lot 12b sur la page des fils de fer, version 6 (`v4/outils/page-nuit/lot13.json`).
   Commentaire #140 (6266285105). Les auteurs ont écrit leurs générateurs dans le scratchpad (hors dépôt).
-- **En attente de lui** : son choix dans le lot 13 ; puis la variante choisie entre dans la base
-  (carte, fiche, et peut-être la règle des niveaux si elle choisit le compte seul : g2, g5).
+- **Ses retours sur le lot 13** :
+  - « 1/4, 2/4 mais même valeur ??? » (sur g1, Épicé et Tropicaux au même rayon) : contrôle F7 / D72 (la
+    roue suit le nombre écrit ; échec sur la base v4.8, g1, g3, g4, g6) ;
+  - puis « Inutile mais la v1 est la meilleure » (table des IBU par moment de g1 barrée). g1 corrigée
+    par son auteur (roue et cases au nombre de fiches, sans la table) et publiée seule (page des fils de
+    fer, version 7) ; g3, g4, g6 arrêtées.
+- **Moteur** (commit 9c4cb3c) : `familyWords` (hops.ts) donne les mots des fiches qui font chaque famille
+  (même découpe que firstItem, même rattachement que les niveaux), dans `pack-fiches.json`
+  (`aromes[].mots`, `aromes[].premier`, `motsSansFamille`) ; test sur tout le catalogue ; 78 tests verts.
+- **Base v4.9** : fiche g1 (`blocLabels`, `noteAlpha`, plus de table des moments), roue et cases au
+  nombre de fiches (D72), axes colorés. `CARTE-FICHE OK` en `--base` (la base v4.8 y échouait 33 fois).
+  D25 (100 mots visibles dans la fiche) tenu en écrivant « 2/4 » et « sans famille : … » (97 mots).
 
 ## ÉTAT AU 19.10, FIN D'APRÈS-MIDI (avant la reprise du matin ci-dessous)
 

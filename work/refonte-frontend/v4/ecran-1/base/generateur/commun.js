@@ -262,15 +262,20 @@ function alphaEl(a) {
 }
 function roleEl(role) { return role ? h('span', { class: 'role', 'data-role': 'role' }, role) : null; }
 /* Les arômes cités par les fiches, une case par famille dans l'ordre du style, en couleur de la
-   famille (marqué plein, cité clair, non décrit gris) : on voit d'un coup d'œil ce que le houblon
-   ajoute (D29). La famille que ma bière a déjà en trop est soulignée de l'accent. */
+   famille : on voit d'un coup d'œil ce que le houblon ajoute (D29). La case suit le nombre de fiches
+   qui citent la famille, comme la roue de la fiche (D72, 19.10 : « 1/4, 2/4 mais même valeur ??? ») :
+   pleine à 2 fiches ou plus, claire à 1, grise à aucune. La famille que ma bière a déjà en trop est
+   soulignée de l'accent. data-famille, data-n, data-of, data-niveau : contrôle carte et fiche (D71). */
 function miniProfil(fiche, nom) {
-  const cites = D.ordre.filter((f, i) => fiche.niv[i] > 0).map((f) => nomCourt(f).toLowerCase());
+  // Sans compte de fiches (of 0 : un houblon du catalogue sans fiche), le niveau du pack.
+  const compte = !!(fiche.n && fiche.of);
+  const nb = (i) => (compte ? fiche.n[i] : fiche.niv[i]) || 0;
+  const cites = D.ordre.filter((f, i) => nb(i) > 0).map((f) => nomCourt(f).toLowerCase());
   const w = h('span', { class: 'mini', role: 'img', 'data-role': 'aromes', 'aria-label': 'Arômes cités par les fiches de ' + nom + ' : ' + (cites.join(', ') || 'non décrit') });
   D.ordre.forEach((f, i) => {
-    const lv = fiche.niv[i];
+    const n = nb(i), lv = Math.min(2, n);
     const trop = D.profil[i].crans === 4;
-    w.append(h('i', { class: 'c f-' + f + (lv === 2 ? ' m' : lv === 1 ? ' ci' : '') + (trop && lv ? ' acc' : '') + (i === D.attendues.length ? ' sep' : ''), title: lv ? nomCourt(f) + (lv === 2 ? ', marqué' : ', cité') : null }));
+    w.append(h('i', { class: 'c f-' + f + (lv === 2 ? ' m' : lv === 1 ? ' ci' : '') + (trop && lv ? ' acc' : '') + (i === D.attendues.length ? ' sep' : ''), 'data-famille': f, 'data-niveau': lv, 'data-n': compte ? n : null, 'data-of': compte ? fiche.of : null, title: n ? nomCourt(f) + (compte ? ', ' + (fiche.of === 1 ? 'une seule fiche' : n + ' fiche' + (n > 1 ? 's' : '') + ' sur ' + fiche.of) : '') : null }));
   });
   return w;
 }
