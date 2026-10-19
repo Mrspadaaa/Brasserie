@@ -5,6 +5,7 @@ import { CHARACTERIZED_YEASTS, applyVoie, compareRankKeys, yeastDoubleImpact, ye
 import { ROUE_AROMES, afterLevelsDelta, hopSheet, beerContinuous, targetContinuous, afterContinuous } from '../src/engine';
 import { buildFromEmpty, hopAlpha, hopRole, ibuTables, DRY_HOP_DAY, MINUTES_5, BOIL_LENGTHS, WP_TEMPERATURES, WP_MINUTES, densityFactors } from '../src/engine';
 import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, loadedRecipe, momentCatalogue, quickAddKey, recipeIbu, recipeLines, targetLevels, tastingMention, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
+import { CATALOGUE, familyWords } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
 describe('Les quatre objets de l’écran (niveaux)', () => {
@@ -456,6 +457,23 @@ describe('Données citées, niveaux de citation, dégustation (D25)', () => {
     const lager = { ...s1Recipe(), styleCode: '3B' };
     const weak = tastingFrom({ floral: 'faible' }, { origin: 'test', date: '2026-10-18', quote: null, source: 'test' });
     expect(proposeVoies(lager, { floral: 1 }, { tasting: weak }).direction[0].targetFrom).toBe('modèle');
+  });
+
+  // #140 (19.10, soir) : « sa fiche est plus fourni avec les labels » ; la fiche écrit, sous chaque
+  // famille, les mots des fiches qui la font. Mêmes rattachements que les niveaux, sur les 32 houblons.
+  it('les mots des fiches par famille : une famille a des mots si et seulement si une fiche la cite, de la même source ; « nommé en premier » = first', () => {
+    for (const h of CATALOGUE) {
+      const d = describeFamilies(h.id), w = familyWords(h.id, h);
+      for (const f of FAMILIES) {
+        expect(w.mots[f].length > 0, h.name + ' ' + f).toBe(d[f].sources > 0);
+        expect(new Set(w.mots[f].map((r) => r.source)), h.name + ' ' + f).toEqual(new Set(d[f].authors));
+        expect(w.premier[f].length > 0, h.name + ' ' + f + ' premier').toBe(d[f].first);
+      }
+    }
+    const n = familyWords('beermaverick-nugget', CATALOGUE.find((c) => c.id === 'beermaverick-nugget'));
+    expect(n.mots.tropical).toEqual(expect.arrayContaining([{ source: 'Beer Maverick', mots: ['ananas', 'litchi', 'noix de coco'] }]));
+    expect(n.premier.spice).toEqual(['Hopsteiner']);
+    expect(n.sansFamille).toEqual(expect.arrayContaining([{ source: 'Beer Maverick', mot: 'gingembre' }]));
   });
 
   it('trois niveaux : non décrit, cité, marqué ; un « non décrit » reste « non décrit », jamais 0', () => {

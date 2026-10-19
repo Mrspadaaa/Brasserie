@@ -2,7 +2,7 @@
 // null avec une raison quand la donnée manque. Aucune valeur inventée.
 import { STOCK, hopRef } from './data';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
-import { describeFamilies } from './hops';
+import { describeFamilies, familyWords } from './hops';
 import { additionIbu, MOMENTS, type Recipe } from './recipe';
 import { ibuByMoment } from './ibuMoments';
 import { goutsSets, type Gouts } from './gouts';
@@ -32,6 +32,7 @@ export function hopSheet(key: string, ctx: HopSheetContext) {
   const oilRows = rows(c.oil, c.bmYear, c.url, hs?.totalOil ?? null, hs?.year ?? null, hs?.reference ?? null);
   const comp = (r: Span) => (r ? { min: r[0], max: r[1], unite: '% de l’huile', source: 'Beer Maverick', annee: c.bmYear, url: c.url } : null);
   const desc = describeFamilies(h.varietyId);
+  const mots = familyWords(h.varietyId, c);
   const s = h.stock;
   const { excludedVarieties, liked } = goutsSets(ctx.gouts);
   return {
@@ -48,7 +49,9 @@ export function hopSheet(key: string, ctx: HopSheetContext) {
         linalool: c.hsLinalool ? { min: c.hsLinalool.range[0], max: c.hsLinalool.range[1], unite: '% de l’huile', source: 'Hopsteiner', annee: c.hsLinalool.year, url: c.hsLinalool.reference } : null,
       },
     },
-    aromes: FAMILIES.map((f: FamilyId) => ({ family: f, name: FAMILY_NAMES[f], level: desc[f].level === 'marqué' ? 2 : desc[f].level === 'cité' ? 1 : 0, label: desc[f].level, sources: desc[f].sources, of: desc[f].of, authors: desc[f].authors })),
+    // #140 : les mots des fiches qui font chaque famille, et les fiches qui la nomment en premier.
+    aromes: FAMILIES.map((f: FamilyId) => ({ family: f, name: FAMILY_NAMES[f], level: desc[f].level === 'marqué' ? 2 : desc[f].level === 'cité' ? 1 : 0, label: desc[f].level, sources: desc[f].sources, of: desc[f].of, authors: desc[f].authors, mots: mots.mots[f], premier: mots.premier[f] })),
+    motsSansFamille: mots.sansFamille,
     descripteurs: { beerMaverick: c.tagsFr, hopsteiner: c.descriptions.filter((d) => d.source.author === 'Hopsteiner').map((d) => d.text),
       cites: c.descriptions.filter((d) => d.source.author !== 'Hopsteiner' && d.source.author !== 'Beer Maverick').map((d) => ({ text: d.text, author: d.source.author, url: d.source.reference })) },
     substituts: null, substitutsRaison: 'Aucune donnée de substitution dans le dépôt (les scores de substitution de Beer Maverick n’ont pas été importés). Remplaçants calculés depuis les fiches du dépôt : substitutsCalcules.',

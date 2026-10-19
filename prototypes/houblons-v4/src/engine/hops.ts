@@ -48,6 +48,48 @@ export function describeFamilies(varietyId: string): Record<FamilyId, FamilyDesc
   })) as Record<FamilyId, FamilyDescription>;
 }
 
+/** Les mots des fiches qui font chaque famille (#140, 19.10 : « sa fiche est plus fourni avec les
+ * labels »). Chaque description est coupée comme firstItem (après « : », aux virgules, points-virgules
+ * et « and ») ; chaque mot est rattaché par hopDescriptorEvidence, la règle des niveaux. Beer Maverick :
+ * le mot français de son étiquette (tagsFr), sinon le mot de la fiche. Un mot qui ne fait aucune
+ * famille est rendu à part, jamais rangé de force. premier : les fiches qui nomment la famille en
+ * premier (le « nommé en premier » de describeFamilies). */
+export interface FamilyWords {
+  mots: Record<FamilyId, { source: string; mots: string[] }[]>;
+  premier: Record<FamilyId, string[]>;
+  sansFamille: { source: string; mot: string }[];
+}
+const itemsOf = (text: string) => (text.split(':').slice(1).join(':') || text).split(/,|;| and /)
+  .map((s) => s.replace(/^[\s#]+|[\s.]+$/g, '').replace(/[_-]+/g, ' ')).filter(Boolean);
+export function familyWords(varietyId: string, tags?: { tags: string[]; tagsFr: string[] }): FamilyWords {
+  const v = VARIETY_BY_ID.get(varietyId);
+  const mots = Object.fromEntries(FAMILIES.map((f) => [f, [] as { source: string; mots: string[] }[]])) as FamilyWords['mots'];
+  const premier = Object.fromEntries(FAMILIES.map((f) => [f, [] as string[]])) as FamilyWords['premier'];
+  const sansFamille: FamilyWords['sansFamille'] = [];
+  if (!v) return { mots, premier, sansFamille };
+  const fr = (w: string) => {
+    const i = tags ? tags.tags.findIndex((t) => t.toLowerCase().replace(/[_-]+/g, ' ') === w.toLowerCase()) : -1;
+    return i >= 0 && tags!.tagsFr[i] ? tags!.tagsFr[i] : w;
+  };
+  for (const d of v.descriptions ?? []) {
+    if (d.context === 'beer') continue;
+    itemsOf(d.text).forEach((item, n) => {
+      const fams = FAMILIES.filter((f) => hopDescriptorEvidence({ ...v, descriptions: [{ ...d, text: item }] }, terms.get(f) ?? []).length > 0);
+      // Le mot montré : sans le mot d'appel « étiquette » ; un même mot à la casse près n'est écrit qu'une fois.
+      const mot = (d.source.author === 'Beer Maverick' ? fr(item) : item).replace(/^étiquette\s+/i, '');
+      const deja = (l: string[]) => l.some((x) => x.toLowerCase() === mot.toLowerCase());
+      if (!fams.length) { if (!sansFamille.some((x) => x.source === d.source.author && x.mot.toLowerCase() === mot.toLowerCase())) sansFamille.push({ source: d.source.author, mot }); return; }
+      for (const f of fams) {
+        let row = mots[f].find((r) => r.source === d.source.author);
+        if (!row) mots[f].push((row = { source: d.source.author, mots: [] }));
+        if (!deja(row.mots)) row.mots.push(mot);
+        if (n === 0 && !premier[f].includes(d.source.author)) premier[f].push(d.source.author);
+      }
+    });
+  }
+  return { mots, premier, sansFamille };
+}
+
 // ---------- Profil d'un houblon à une dose de référence ----------
 export interface Reference { moment: MomentId; doseGL: number; yeastId: string | null; volumeL: number; og: number; boilMin: number }
 /** Référence commune à tous les houblons (échelles communes, R47) : préréglage whirlpool du solveur V5.5. */

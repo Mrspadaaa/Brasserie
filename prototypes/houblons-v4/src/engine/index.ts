@@ -5,7 +5,7 @@ export {
   MOMENTS, searchDoses, recipeIbu, additionIbu, gramsForIbu, ibuPerGram, recipeProfile, yeastInfo, matrixContext,
   type MomentId, type Moment, type Recipe, type Addition, type FamilyEstimate, type Profile, type RecipeProfile, type YeastInfo, type MatrixContext, type Ibu,
 } from './recipe';
-export { hopProfile, styleFit, citations, describeFamilies, REFERENCE, stockKeys, type HopProfile, type StyleFit, type FitClass, type Citation, type Reference, type DescriptionLevel, type FamilyDescription } from './hops';
+export { hopProfile, styleFit, citations, describeFamilies, familyWords, type FamilyWords, REFERENCE, stockKeys, type HopProfile, type StyleFit, type FitClass, type Citation, type Reference, type DescriptionLevel, type FamilyDescription } from './hops';
 export { tastingFrom, situateBeer, levelRange, tastingMention, TASTING_USAGE, type Tasting, type TastingAxis, type PerceivedLevel, type SituatedFamily } from './tasting';
 export { offModelLeads, type OffModelLead } from './leads';
 export { readBeer, readingSummary, voiesSummary, gapSummary, type ReadingEntry, type ReadingVerdict } from './reading';
