@@ -145,6 +145,20 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   bien qu'avant... » ; « L'échelle est plus du tout respecter quand on passe dessus... » — 18.10,
   soir (D63, D64, D61 bis). La loupe façon Apple (D47, D55) et la hauteur qui dit le temps (D61)
   doivent tenir ensemble.
+- **Le rail, son choix dans le lot 8** (page de la nuit : p01 bulle, p02 Dock, p03 règle, p04
+  verre ; le jury indicatif mettait p01 devant et p02 au fond) : « Rial: P2 le grossissement suit le
+  doigt. » — 19.10, matin. p02 (Dock sans état) devient la loupe de la base v4.4 ; finie une seule
+  fois, en fidélité, sur les défauts relevés par le jury.
+- **Les radars, son choix dans le lot 9** : « Radar: m4 h4 très bien, attention à pas surchargé en
+  texte ni en légende. Pas besoin d'écrire la légende sur la version finale » — 19.10, matin. m4 (Ma
+  bière : grille de dégustation, « pas senti » ≠ « pas goûté ») et h4 (la fiche face à ta demande)
+  entrent dans la base v4.4, sans légende écrite : l'inconnu se dit par le libellé gris « ? », le
+  secteur hachuré et la bulle au toucher.
+- **Ses autres choix du 19.10, matin** : « Pour 136 Comparer : échelles, classements, vraies
+  comparaisons (lot 10) Mettre de côté pour le moment » ; « Substitution, ça serait plus du u4 »
+  (#137 : le jury mettait u3 devant) ; « Comparé : radar p2 mais avec ajoute d'intervalle de
+  confiance » ; « Comparé: p06 » (#138 : Comparer du lot 6, p06 en barres, le radar de p02 avec un
+  intervalle de confiance ; le jury mettait p05 et p09 devant).
 - **Les radars** : « Les spidergraph/radar graph resemble a rien, c'est une vrai régression... » ;
   sur celui de Ma bière : « Celui-ci est encore pire ??? » ; « Comment c'est possible d'avoir autant
   de problèmes avec ces Spider graph. Fait moi des fils de fere avec de lib, third party, custom, ou

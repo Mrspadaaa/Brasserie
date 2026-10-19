@@ -97,6 +97,34 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
+## 19.10, matin — ses choix arrivent ; base v4.4 (loupe p02)
+
+Ses choix (SPEC-BRASSEUR §1) :
+- rail p02 Dock (#134) ;
+- radars m4 et h4, sans légende écrite et sans surcharge de texte (#135) ;
+- #136 mis de côté ;
+- substitution u4 (#137) ;
+- Comparer : p06 en barres, le radar de p02 avec un intervalle de confiance (#138).
+
+Suggestions (#138) et la grille (#139) restent à choisir.
+
+- **Fait : base v4.4 = loupe p02** (`base/generateur/etape-consolide.js` et `.css`), finie une fois.
+  - Le Dock écrit ses minutes sur les graduations grossies (défaut du jury : la minute n'était
+    écrite que dans la pastille).
+  - Réglage gardé : ×2,5 sur ±20′. Essais ×3/±15′, ×3,5/±15′ et ×4/±10′ : tous échouent à D45 et
+    D34. Dans un Dock sans état, la précision du doigt est celle du rail de base ; grossir plus
+    resserre ce rail. Sonde : `scratchpad/loupe-v44/sonde-dock.mjs`.
+  - Mesures, réglage gardé : D61 de −8 à +8 % ; 19–20 px par 5′ sous le doigt, 8–13 au loin.
+  - `controle-lot.mjs … base --recette --rail --detail --palette --radar --fiche --coherence
+    --objets` → LOT OK 1/1.
+  - Captures de 5 cas regardées (`base/captures/consolide-*-pendant.png`).
+  - Page partagée en version 9.
+- **Suite, dans l'ordre** :
+  1. radars m4 (Ma bière) et h4 (fiche) dans la base, sans légende (D65 révisé : l'inconnu dit par
+     « ? », les hachures et la bulle au toucher) ;
+  2. Comparer p06 + radar p02 avec intervalle ;
+  3. substitution u4 (nouvel écran).
+
 ## Matin du 19.10, suite — jurys rentrés, loupes prêtes, tout posté : à lui de choisir
 
 Rien d'intégré (D50). Aucun agent en vol. Tout est commenté dans les tickets et sur la page de

@@ -59,6 +59,11 @@
   .grad { position: absolute; left: 18px; top: 0; width: 8px; height: 1.5px; border-radius: 1px; background: #8f8f8f; opacity: 0; transition: opacity 140ms ease-out; }
   .grad.maj { left: 15px; width: 14px; height: 2px; background: var(--encre); }
   .grad.vue { opacity: 1; }
+  /* Le Dock écrit ses minutes : à droite du trait (x = 32 px, comme les noms qui suivent), 12 px. */
+  .grad-v { display: none; position: absolute; left: 14px; top: -7px; font: 500 12px/14px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: #6b6b6b; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .grad.maj .grad-v { left: 17px; color: var(--encre); font-weight: 600; }
+  .grad.ecrit .grad-v { display: block; }
   /* Loin du doigt, l'échelle se resserre : graduations courtes et claires (comme le Dock). */
   .grad.vue.loin, .grad.maj.vue.loin { left: 19.5px; width: 5px; height: 1.5px; background: #8f8f8f; opacity: .45; }
   /* Le segment sous le doigt se nomme en encre ; les autres restent gris. */
@@ -112,3 +117,11 @@
   /* La famille que ma bière a déjà en trop : un trait d'accent sous sa case. */
   .frise .mini .c.acc::after, .ajouts .mini .c.acc::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 2px; border-radius: 1px; background: var(--acc); }
   @media (prefers-reduced-motion: reduce) { .frise[data-geste], .frise[data-geste] > [data-rang], .frise[data-geste] .axe, .grad { transition: none; } }
+
+/* p02 · Dock sans état : sous la carte tenue, un autre houblon s'efface ; au même moment, son nom
+   rejoint l'étiquette (« Motueka · Nugget ») ; jamais de côté (D64). */
+.frise[data-geste] > .blk.jeton { transition: opacity 120ms ease-out; }
+.frise[data-geste] > .blk.fondu { opacity: 0; }
+.avec { font-weight: 400; color: var(--gris); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.avec:empty { display: none; }
+.blk.leve .avec { color: var(--encre); font-weight: 500; }
