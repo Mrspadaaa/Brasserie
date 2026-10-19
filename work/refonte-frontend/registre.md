@@ -134,6 +134,18 @@ Voir `decisions.md` (D1 à D12).
   cours. Fils de la page : tous répondus et résolus, sauf « Les bar de ce type… », non envoyé à
   Claude. À faire valider par lui : l8 (l8g ou l8h ; trait l8e ou l8f) contre l5 (l5e ou l5d) ; les
   conventions [H] du moteur ; les icônes Barres et Radar de l5e (D31).
+- **Mise à jour, ~22 h 15 : lot 21** (`ecran-1/fils21-choisir/`, brief commun `BRIEF-AUTEUR.md`). Le
+  lot 20 est « très difficile à comprendre ». Le brasseur veut de vraies valeurs mieux présentées, des
+  simulations, un simulateur et des représentations distinctes, avec plusieurs agents. Agents en
+  cours, à attendre :
+  - recherche (Haiku, a53ebc2e997a2faec) : `recherche/I-mieux-representer-choisir.md` ;
+  - moteur profil-simule (aedb55bab5aac3251) : `prototypes/houblons-v4/src/engine/profil-simule.ts`
+    et `fils21-choisir/donnees/profils-simules.json` ;
+  - vraies valeurs v1 à v3 (a5467c9663a0794ae) ;
+  - simulation et simulateur s1 à s3 (a9fbb2a0a36de6b55), qui attend le JSON ;
+  - représentations distinctes r1 à r3 (adda9af009048910c), qui attend le JSON et la recherche.
+  À l'arrivée du JSON : prévenir s et r (SendMessage). À l'arrivée de la recherche : transmettre ses
+  conclusions à r et s. Contrôle D94 LISIBLE (le lot 20 y échoue).
 - **Agents (état à ~21 h, tous rendus depuis)** :
   - l7–l9 (a3f5fc091a01e0007), relancé : l8g (usage en mot entier) et l8h (pastille « amer »,
     « arôme », « mixte »), sur la base de l8e, avec les pistes de l5b et sans la bande « visée » ;

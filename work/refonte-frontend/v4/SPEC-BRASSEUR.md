@@ -226,6 +226,14 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
     - sur la fiche ouverte par l'appui long : « Pourquoi la fiche est pareil ??? C'est pas du tout la
       bonne, ça suit pas la Baseline, ça suit rien du tout ??? » (D93) ;
     - sur la légende ouverte : « Quoi ouvre ça ??? » (la capture doit montrer le doigt sur le « ? »).
+  - sur le lot 20 (outil de dry hop) : « C'est très difficile à comprendre. Lance un agent pour
+    regarder ce qui peut aider à choisir. Lance plusieurs mini maquettes. On a établi la Baseline.. » ;
+    « Trouve des vrais solution. On peut aussi simuler un 'faux' profil aromatique, pour mieux de rendre
+    compte. Trouves des solutions pour mieux représentées. Mieux comprendre, mieux choisir. Quitte à
+    tricher un peu sur certains points... » ; « Des vrai donné, mieux présenté, mais aussi des
+    simulation, simulateur, des représentants distinctes. Lance plusieurs agent pour ces travaux » ;
+    sur la chimie et le langage du brasseur : « Les deux se complément » ; « Je veux aussi des vrais
+    valeur » (D94 ; lot 21, `fils21-choisir/`).
   - Leçon : « les barres de l5b » voulait dire aussi ses pistes d'objectif, pas seulement ses barres
     de voie. Quand une demande désigne un élément d'une autre variante, reprendre tous ses éléments du
     même genre sur l'écran, ou demander lequel.
