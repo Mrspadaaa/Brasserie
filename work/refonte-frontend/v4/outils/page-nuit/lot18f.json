@@ -1,0 +1,31 @@
+{
+ "ticket": 142,
+ "ancre": "t142-lot18f",
+ "court": "l5e : la grille de l5b",
+ "titre": "l5b avec tes retours, sa grille gardée (l5e, 19.10 soir)",
+ "etat": "à choisir : l5e ou l5d",
+ "puces": [
+  "l5e garde les deux tuiles par rangée de l5b que tu as cochées, avec 7 voies au premier écran, et prend tous tes retours : pictos au trait, α du lot, usage en pastille (« amer », « arôme », « mixte », pâle si déduit), légende derrière le « ? », fiche dans le langage de la page.",
+  "Pour tenir 70 mots en deux colonnes : la tuile montre l’α du lot seul (la plage des fiches et « pellets » sont dans la fiche) ; « +1 » et « +2 » sans le mot « cran » ; le second « même effet » ne répète pas « 10 g 10′ » ; Comparer sans « (3) » ; Barres et Radar en icônes seules, nommées dans la légende. Dis-moi si ces deux icônes ne te parlent pas.",
+  "Contrôles rejoués : COMMUN OK (70 mots, pile), PISTE, ALPHA, FICHE-BASELINE et PLACE (7 voies, 87 px).",
+  "Ce qui casse : la tuile Motueka + Citra cryo étire sa voisine Celeia ; « amer » et « arôme » se ressemblent à 12 px ; la plage des fiches d’un houblon en stock n’est visible qu’à l’appui long."
+ ],
+ "images": [
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l5e-etat-b-390.png",
+   "l5e, la grille de l5b"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l5e-haut-390.png",
+   "l5e, le premier écran"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l5e-fiche-390.png",
+   "l5e, la fiche"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l5e-legende-390.png",
+   "l5e, la légende"
+  ]
+ ]
+}

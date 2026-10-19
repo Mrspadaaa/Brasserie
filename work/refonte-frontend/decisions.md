@@ -445,3 +445,18 @@ base consolidée.
 
 Une issue GitHub suit la mission, liée à #115 et #116, et reçoit l'état de
 chaque phase. L'épopée « Houblons pour le brasseur » vient en phase 5.
+
+## D31 — l5e : la grille de l5b gardée, quatre coupes pour tenir 70 mots (19.10.2026, soir)
+
+Contexte : le brasseur a coché l5b tel quel (« Il est très très bien celui-ci aussi »). l5d prend
+tous ses retours (α, usage en mot, légende, fiche) mais passe à une tuile par voie pour tenir les
+70 mots : la page s'allonge et sa grille change. l5e garde les deux tuiles par rangée ; il est à
+79 mots au premier écran.
+Choix du pilote, sans question bloquante : les quatre coupes de l'auteur.
+- Le second widget ne répète pas « 10 g 10′ ».
+- « +1 » et « +2 » perdent le mot « cran », que la légende explique.
+- Barres et Radar s'affichent en icônes seules, avec leur libellé accessible.
+- « Comparer » perd le « (3) », puisque les trois pastilles du dock montrent le nombre.
+La coupe des icônes est la plus risquée après « Les icône sont pas parlant du tout » : elle est
+signalée sur la page, et réversible si les deux icônes ne lui parlent pas. l5d reste publié à
+côté : c'est lui qui choisit.

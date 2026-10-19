@@ -129,7 +129,12 @@ Voir `decisions.md` (D1 à D12).
     - D92 PISTE (pistes de l5b sous les objectifs), joué à part.
   - Trois retours du brasseur sur l8e (SPEC-BRASSEUR, « La baseline l8 ») : les pictos d'usage ne
     sont pas parlants, la bande « visée » est inutile, la barre d'objectif doit être la piste de l5b.
-- **Agents en cours** (attendre leurs notifications, ne pas refaire leur travail) :
+- **Mise à jour, ~22 h** : tout est rendu, contrôlé par le pilote, publié et commité. Page des fils
+  de fer : version 17 (l8g, l8h), 18 (lot 20, d1–d6), 19 (l5d), 20 (l5e, D31). Aucun agent en
+  cours. Fils de la page : tous répondus et résolus, sauf « Les bar de ce type… », non envoyé à
+  Claude. À faire valider par lui : l8 (l8g ou l8h ; trait l8e ou l8f) contre l5 (l5e ou l5d) ; les
+  conventions [H] du moteur ; les icônes Barres et Radar de l5e (D31).
+- **Agents (état à ~21 h, tous rendus depuis)** :
   - l7–l9 (a3f5fc091a01e0007), relancé : l8g (usage en mot entier) et l8h (pastille « amer »,
     « arôme », « mixte »), sur la base de l8e, avec les pistes de l5b et sans la bande « visée » ;
   - l5d (ad87b1e660b90482c) : l5b (« Il est très très bien celui-ci aussi ») avec tous les retours
