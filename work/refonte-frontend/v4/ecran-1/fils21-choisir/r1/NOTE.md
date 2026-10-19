@@ -1,5 +1,10 @@
 r1 · Le verre : « qu'est-ce que je vais sentir, et est-ce que ça reste dans ma 16D ? »
 
+- **Seconde passe (pilote, ~1 h)** :
+  - Le « null » à 60′ (D14) venait d'un `append` natif qui écrivait `null` sur la ligne du verdict. Il est corrigé. Le contrôle D14 est rejoué sur 9 états (`?m=b60`, `b10`, `wp`, `b60&d=8`, ensemble, Pomona, absolu, détail) : propre.
+  - Page régénérée sur `profils-simules.json` à 4,75 % vol. À 10′, Citra 4 g/L est « au bord de la 16D » : les agrumes ne sortent plus.
+  - Captures refaites : `r1-390`, `r1-haut`, `r1-60`, `r1-10`, `r1-ensemble`, `r1-pomona`, `r1-absolu`, `r1-detail`.
+
 - **Ce qui tient** :
   - **Un verre dessiné**. Chaque famille y flotte :
     - à la hauteur de son niveau au style : le bord du verre est la limite 16D de cette famille ;
