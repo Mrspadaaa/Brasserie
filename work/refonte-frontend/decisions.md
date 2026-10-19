@@ -473,3 +473,14 @@ Le brasseur a dit, entre-temps, « Soit pas trop contraignante pour les contrôl
 70 mots deviennent indicatifs. Choix du pilote : l5f rend les mots, répare la grille et met le trait
 noir sur les trois pistes. l5e reste intact pour comparer. D31 est donc révisée : une icône que la
 légende doit expliquer est un défaut, pas une économie.
+
+## D33 — Le critique fait office de jury pour le lot 21 (20.10.2026, nuit)
+
+Le brasseur a voulu un critique « qui pourrait être moi ». Calibré sur ses verdicts réels (test à
+l'aveugle : 3,5 sur 4), il a joué un geste sur chacune des 41 variantes jugées, et sa synthèse
+(`fils21-choisir/critique/SYNTHESE.md`) choisit déjà les cinq pour la diversité utile : y1, x3, v1,
+s3, w3. Un jury de plus referait le même travail. Choix du pilote : la synthèse du critique tient lieu
+de verdict de jury. JURY.md reste la grille de lecture. Les cinq passent en seconde passe chez leurs
+auteurs (y1b, x3b, v1b, s3b, w3b), et trois relances ciblées partent : r3b, a2b et e4. MOTS se compte
+hors données (`--sans-donnees`, 70 au plus), avec 110 au total comme cible indicative. Le brasseur voit
+les 44 variantes et les cinq améliorées, et c'est lui qui choisit.
