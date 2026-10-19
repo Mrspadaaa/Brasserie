@@ -99,6 +99,10 @@ Voir `decisions.md` (D1 à D12).
 
 ## ÉTAT AU 19.10, FIN DE SOIRÉE : lire en premier
 
+- **BASELINE CHOISIE (19.10, 18 h 12)** : « C'est la meilleure version mais le glowing des icône de
+  arôme c'est non, plutôt type Baseline 2 type fil » (sur l8b). l8b est retenu : la disposition l8,
+  le style q2b et la typographie de l'app. Les pictos passent au trait : l8e (pictos de l2) ou l8f
+  (v2 trait), à trancher par lui. Ensuite, porter l8b dans la base.
 - **Porte B : toujours fermée.** Il l'a ouverte (« Je donne mon plein accord »), puis l'a
   refermée aussitôt : « Ah non pardon, attends encore pour la porte b ». Aucun code de l'app
   (`src/`) n'a été touché ; la note de mémoire ajoutée entre-temps a été retirée.

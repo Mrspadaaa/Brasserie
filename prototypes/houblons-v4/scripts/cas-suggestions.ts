@@ -7,7 +7,7 @@
 // Usage : vite-node scripts/cas-suggestions.ts <dossier de sortie>
 import fs from 'node:fs';
 import path from 'node:path';
-import { applyVoie, describeFamilies, getStyleScale, hopRef, hopRole, offModelLeads, proposeVoies, recipeIbu, yeastSignals, FAMILIES, FAMILY_NAMES,
+import { applyVoie, describeFamilies, getStyleScale, hopRef, hopRole, STOCK, offModelLeads, proposeVoies, recipeIbu, yeastSignals, FAMILIES, FAMILY_NAMES,
   type FamilyId, type Gouts, type Recipe, type Voie } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
@@ -69,7 +69,10 @@ for (const c of CAS) {
         const id = hopRef(k)?.varietyId ?? k, d = describeFamilies(id);
         const role = hopRole(k);
         // Usage du houblon (19.10 : « le type de houbon pour son usage, mixte, amérisant, aromatique ») : rôle du fournisseur, sinon règle rôle-α (prototype), sinon inconnu.
-        return { houblon: hopRef(k)?.name ?? k, role: role.value, roleSource: role.source, roleRaison: role.raison ?? null, familles: FAMILIES.filter((f) => d[f].level !== 'non décrit')
+        // α (19.10 : « Pas d'info sur les AA, j'en vrai valeur ») : celui du lot en stock (qui fait la dose), sinon la plage des fiches.
+        const lot = STOCK.find((x) => x.key === k), cat = (hopRef(k) as any)?.catalogue?.alpha ?? null;
+        const alpha = { lot: lot ? lot.alpha : null, lotSource: lot ? (lot as any).alphaFrom ?? null : null, fiches: cat, horsFiches: !!(lot && cat && (lot.alpha < cat[0] || lot.alpha > cat[1])) };
+        return { houblon: hopRef(k)?.name ?? k, role: role.value, roleSource: role.source, roleRaison: role.raison ?? null, alpha, familles: FAMILIES.filter((f) => d[f].level !== 'non décrit')
           .map((f) => ({ famille: f, nom: FAMILY_NAMES[f], niveau: d[f].level, n: d[f].sources, sur: d[f].of, premier: d[f].first })) };
       }),
       bio: bio(v),
