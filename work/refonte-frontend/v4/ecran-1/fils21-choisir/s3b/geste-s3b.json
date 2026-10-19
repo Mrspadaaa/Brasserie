@@ -1,0 +1,225 @@
+{
+ "page": "s3b/etat.html",
+ "date": "2026-10-19T22:00:36.685Z",
+ "geste": "glisser le doigt sur la carte : actif 4 g/L → whirlpool 4 g/L → 10′ 2 g/L (gardé) → 60′ 4 g/L",
+ "avant": {
+  "case": "dry hop actif, 4 g/L : ~ hors du style 16D : Agrumes, Tropicaux, Baies",
+  "titre": "Citra 4 g/L · dry hop actif · 3 j · US-05",
+  "reponse": "~ Citra, dry hop actif : au style jusqu’à 2 g/L ; à 60′, presque tout part.",
+  "ecart": "",
+  "tropical": {
+   "ecart": "+4 crans",
+   "barre": 57
+  },
+  "citrus": {
+   "ecart": "+3 crans",
+   "barre": 52
+  },
+  "floral": {
+   "ecart": "+2 crans",
+   "barre": 26
+  },
+  "actif4": {
+   "libelle": "dry hop actif, 4 g/L : ~ hors du style 16D : Agrumes, Tropicaux, Baies",
+   "barres": [
+    12.7,
+    14,
+    7.9,
+    11.5
+   ]
+  },
+  "bio": "US-05 biotransformation inconnu hop creep",
+  "loupe": null
+ },
+ "pendant": {
+  "case": "10′, 2 g/L : ~ au style 16D",
+  "titre": "Citra 2 g/L · 10′ · US-05",
+  "reponse": "~ Citra, 10′ : au style jusqu’à 4 g/L ; à 60′, presque tout part.",
+  "ecart": "",
+  "tropical": {
+   "ecart": "+2 crans",
+   "barre": 27
+  },
+  "citrus": {
+   "ecart": "+2 crans",
+   "barre": 30
+  },
+  "floral": {
+   "ecart": "+0,9 cran",
+   "barre": 14
+  },
+  "actif4": {
+   "libelle": "dry hop actif, 4 g/L : ~ hors du style 16D : Agrumes, Tropicaux, Baies",
+   "barres": [
+    12.7,
+    14,
+    7.9,
+    11.5
+   ]
+  },
+  "bio": "US-05 à chaud : non comptée par le moteur",
+  "loupe": {
+   "texte": "10′ · 2 g/L au style",
+   "police": 36,
+   "policeCase": 12,
+   "haut": 186
+  }
+ },
+ "apres": {
+  "case": "60′, 4 g/L : ~ au style 16D",
+  "titre": "Citra 4 g/L · 60′ · US-05",
+  "reponse": "~ Citra, 60′ : au style même à 8 g/L.",
+  "ecart": "~ dry hop actif 4 g/L → 60′ 4 g/L : Tropicaux −3 crans, Baies −3 crans, Agrumes −3 crans.",
+  "tropical": {
+   "ecart": "+0,6 cran",
+   "barre": 9
+  },
+  "citrus": {
+   "ecart": "+0,6 cran",
+   "barre": 11
+  },
+  "floral": {
+   "ecart": "pareil",
+   "barre": 5
+  },
+  "actif4": {
+   "libelle": "dry hop actif, 4 g/L : ~ hors du style 16D : Agrumes, Tropicaux, Baies",
+   "barres": [
+    12.7,
+    14,
+    7.9,
+    11.5
+   ]
+  },
+  "bio": "US-05 à 60′, presque rien ne reste à transformer",
+  "loupe": null
+ },
+ "pomona": {
+  "case": "60′, 4 g/L : ~ au style 16D",
+  "titre": "Citra 4 g/L · 60′ · Pomona",
+  "reponse": "~ Citra, 60′ : au style même à 8 g/L.",
+  "ecart": "~ US-05 → Pomona : presque rien ne change.",
+  "tropical": {
+   "ecart": "+0,6 cran",
+   "barre": 9
+  },
+  "citrus": {
+   "ecart": "+0,6 cran",
+   "barre": 11
+  },
+  "floral": {
+   "ecart": "pareil",
+   "barre": 5
+  },
+  "actif4": {
+   "libelle": "dry hop actif, 4 g/L : ~ hors du style 16D : Agrumes, Tropicaux, Baies",
+   "barres": [
+    13.9,
+    14.2,
+    8.5,
+    11.5
+   ]
+  },
+  "bio": "Pomona à 60′, presque rien ne reste à transformer",
+  "loupe": null
+ },
+ "pomonaActif": {
+  "case": "dry hop actif, 4 g/L : ~ hors du style 16D : Agrumes, Tropicaux, Baies",
+  "titre": "Citra 4 g/L · dry hop actif · 3 j · Pomona",
+  "reponse": "~ Citra, dry hop actif : au style jusqu’à 2 g/L ; à 60′, presque tout part.",
+  "ecart": "~ 60′ 4 g/L → dry hop actif 4 g/L : Tropicaux +3 crans, Agrumes +3 crans, Baies +3 crans.",
+  "tropical": {
+   "ecart": "+4 crans",
+   "barre": 58
+  },
+  "citrus": {
+   "ecart": "+4 crans",
+   "barre": 56
+  },
+  "floral": {
+   "ecart": "+2 crans",
+   "barre": 28
+  },
+  "actif4": {
+   "libelle": "dry hop actif, 4 g/L : ~ hors du style 16D : Agrumes, Tropicaux, Baies",
+   "barres": [
+    13.9,
+    14.2,
+    8.5,
+    11.5
+   ]
+  },
+  "bio": "Pomona géraniol → citronellol, « medium » sens hop creep",
+  "loupe": null
+ },
+ "ensemble": {
+  "case": "dry hop actif, 4 g/L : ~ hors du style 16D : Agrumes, Tropicaux, Baies",
+  "titre": "Citra 4 g/L + Galaxy 2 g/L · dry hop actif · 3 j · Pomona",
+  "reponse": "~ Citra + Galaxy, dry hop actif : hors dès 1 g/L.",
+  "ecart": "~ + Galaxy : Noyau +0,5 cran, Tropicaux +0,5 cran.",
+  "tropical": {
+   "ecart": "+4 crans",
+   "barre": 65
+  },
+  "citrus": {
+   "ecart": "+4 crans",
+   "barre": 60
+  },
+  "floral": {
+   "ecart": "+2 crans",
+   "barre": 30
+  },
+  "actif4": {
+   "libelle": "dry hop actif, 4 g/L : ~ hors du style 16D : Agrumes, Tropicaux, Baies",
+   "barres": [
+    14.7,
+    16,
+    10.4,
+    12.6
+   ]
+  },
+  "bio": "Pomona géraniol → citronellol, « medium » sens hop creep",
+  "loupe": null
+ },
+ "pente": {
+  "bulle": {
+   "visible": true,
+   "texte": "≈ 2,8 → 2 g/L",
+   "police": 36,
+   "policeAxe": 12,
+   "reponse": "~ Tropicaux, de 1 à 2 g/L : 0,5 cran par g/L, contre 0,7 pour le premier."
+  },
+  "apres": {
+   "case": "dry hop actif, 2 g/L : ~ hors du style 16D : Agrumes, Tropicaux",
+   "titre": "Citra 2 g/L + Galaxy 2 g/L · dry hop actif · 3 j · Pomona",
+   "reponse": "~ Tropicaux, de 1 à 2 g/L : 0,5 cran par g/L, contre 0,7 pour le premier.",
+   "ecart": "~ dry hop actif 4 g/L → dry hop actif 2 g/L : Melon −0,9 cran, Baies −0,8 cran, Noyau −0,7 cran.",
+   "tropical": {
+    "ecart": "+4 crans",
+    "barre": 56
+   },
+   "citrus": {
+    "ecart": "+3 crans",
+    "barre": 50
+   },
+   "floral": {
+    "ecart": "+1 cran",
+    "barre": 23
+   },
+   "actif4": {
+    "libelle": "dry hop actif, 4 g/L : ~ hors du style 16D : Agrumes, Tropicaux, Baies",
+    "barres": [
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "bio": "Pomona géraniol → citronellol, « medium » sens hop creep",
+   "loupe": null
+  }
+ },
+ "grossissementLoupe": 3,
+ "grossissementBulle": 3,
+ "erreurs": []
+}
