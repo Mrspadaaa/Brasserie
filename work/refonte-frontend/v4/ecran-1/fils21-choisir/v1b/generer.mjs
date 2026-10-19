@@ -75,7 +75,10 @@ const DEG = SIMU.biere.degustation;
 const KC = Object.fromEntries(ORDRE.map((f) => [f, f === 'citrus' ? 4.5 : f === 'herbal' || f === 'green' ? 16 : 5.6]));
 const COURBE = { K: KC, P: Object.fromEntries(ORDRE.map((f) => [f, (26 * (3.86 + KC[f])) / 3.86])) };
 const LEVN = Object.fromEntries(Object.entries(LEV).map(([k, id]) => [k, CH.levures[id].nom]));
-const LEVF = Object.fromEntries(Object.entries(LEV).map(([k, id]) => { const L = CH.levures[id]; return [k, { nom: L.nom, esters: L.esters, gc: L.geraniolCitronellol, betaLyase: L.betaLyase, notes: L.notes, src: L.sources }]; }));
+// Les mots des fiches de levure, en français : le catalogue garde les niveaux du fournisseur en anglais.
+const EN = { low: 'faible', medium: 'moyenne', high: 'élevée', unknown: 'inconnu', conditional: 'conditionnelle' };
+const enFr = (t) => (t == null ? t : String(t).replace(/\b(low|medium|high|unknown|conditional)\b/gi, (m) => EN[m.toLowerCase()]));
+const LEVF = Object.fromEntries(Object.entries(LEV).map(([k, id]) => { const L = CH.levures[id]; return [k, { nom: L.nom, esters: enFr(L.esters), gc: enFr(L.geraniolCitronellol), betaLyase: enFr(L.betaLyase), notes: (L.notes || []).map(enFr), src: L.sources }]; }));
 
 // ---------- en bière, mesuré : dose connue d'abord, « dose non publiée » une fois ----------
 const E02 = etude('E02'), E03 = etude('E03'), E06 = etude('E06'), E01 = etude('E01'), E04 = etude('E04');

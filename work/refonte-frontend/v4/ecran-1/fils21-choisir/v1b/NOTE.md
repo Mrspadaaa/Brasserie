@@ -50,7 +50,7 @@ v1b · Le duel à dose égale, seconde passe de v1 (retenue par le critique ; v1
   - Dans Chrome mobile émulé, le toucher qui suit un glissé ne recevait pas son clic. La page le lui donne, sauf après un appui long (la fiche) ou un doigt qui a bougé.
   - Le rapport au seuil du moteur reste celui de K2 (après fermentation, 4 g/L chacun), et c'est écrit.
 - **Contrôles** (joués le 20.10 sur `etat.html`) :
-  - COMMUN OK, avec `--sans=mots` (MOTS se joue à part, ci-dessous) : COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE et PARLANT OK ;
+  - COMMUN OK, avec `--sans=mots` (MOTS se joue à part, ci-dessous) : COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE, PARLANT et BRUTES OK ; les niveaux des fiches de levure (« low », « medium », « high ») sont écrits en français (`enFr` dans `generer.mjs`), et un balayage de 16 états ouverts ne trouve plus aucune valeur brute en anglais (31 avant) ;
   - MOTS OK : 70 mots hors données (`--sans-donnees --max=70`), 153 sans l'option ;
   - LISIBLE OK (27 pictos, 26 mesurées, 5 simulées, 0 faute) ;
   - SIMULATION OK (9 réglages, le simulé bouge) ;
@@ -66,4 +66,4 @@ v1b · Le duel à dose égale, seconde passe de v1 (retenue par le critique ; v1
   - les premiers écrans : `captures/v1b-premier-ecran.png`, `v1b-haut-390.png`, et la page entière `v1b-pleine-390.png` ;
   - le geste du mélange : `v1b-avant.png`, `v1b-pendant.png`, `v1b-apres.png` ;
   - les touchers : `v1b-galaxy-tap.png`, `v1b-pomona-tap.png`, `v1b-apres-tap.png` ;
-  - les états : `v1b-profil-390.png`, `v1b-ensemble-390.png`, `v1b-defi-tirage-390.png`, `v1b-preuves-390.png`, `v1b-detail-390.png`, `v1b-apres-390.png`, `v1b-galaxy-390.png`, `v1b-fiche-390.png`, `v1b-legende-390.png`.
+  - les états : `v1b-profil-390.png`, `v1b-ensemble-390.png`, `v1b-pomona-bio-390.png`, `v1b-defi-tirage-390.png`, `v1b-preuves-390.png`, `v1b-detail-390.png`, `v1b-apres-390.png`, `v1b-galaxy-390.png`, `v1b-fiche-390.png`, `v1b-legende-390.png`.
