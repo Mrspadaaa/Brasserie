@@ -1,0 +1,14 @@
+- **Ce qui tient** : l5 en plus fin, avec le même rangement : objectifs en bandes, un widget large par groupe au même effet, ses voies en petits widgets deux par rangée, les gestes en widgets moyens.
+  - Moins de rembourrage (4 à 8 px) et des ombres légères (`0 2px 6px -3px`).
+  - Des couloirs s5 de 7 px, des pistes de 5 px et des barres d'intensité de 7 px de large (6 px par cran), devant la zone du style en pâle.
+  - La typographie de DESIGN.md : Source Sans 3 en 400 et 600 pour les mots, IBM Plex Mono pour les mesures, de 12 à 15 px, sans grand titre.
+  - Les objectifs ne sont plus répétés en pictos dans chaque widget. Il en reste une trace fine, leurs crans, qu'exige I1. Dans un widget seul, la barre s5 porte elle-même leurs crans (`data-crans`).
+  - D84 : 7 voies entières au premier écran, médiane 79 px (l5 : 4 voies, 121 px). 64 mots. Les 12 contrôles du brief, D84 et FICHE sont OK.
+- **Ce qui casse** :
+  - Les barres de 6 px par cran restent petites ; un effet sous un demi-cran n'est qu'un filet.
+  - La grille à deux colonnes laisse du vide dans un widget quand son voisin a un nom sur deux lignes.
+  - Les widgets moyens gardent un blanc au-dessus de la barre s5.
+  - La marque « α » (déduit de l'α) est maintenant dessinée en icône d'un trait de 1,5 px, et non plus écrite. Elle ne compte plus comme un mot ; c'est un choix à valider.
+  - Les polices viennent de Google Fonts, comme dans l'app (repli : polices du système).
+- **Pire contraste** : 4,65:1, « Plus agrumes » (#856e0c sur #fcf8e3, 14 px). Mesuré au rendu sur 96 textes, puis sur 151 avec la fiche et ses replis ouverts. Aucun texte sous 4,5:1.
+- Générée par `generateur-l5b.mjs`, avec les briques de `tuiles-compactes.mjs` (communes avec l5c) et les données de `../l5/donnees-l5-l6.mjs`. l5 n'est pas modifié.

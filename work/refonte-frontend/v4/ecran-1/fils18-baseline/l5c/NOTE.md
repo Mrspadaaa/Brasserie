@@ -1,0 +1,13 @@
+- **Ce qui tient** : les tuiles compactes de l5b, rangées autrement : une tuile par groupe.
+  - Un groupe au même effet est une seule tuile. Sa barre s5 vient en tête, puis ses voies en lignes séparées par un filet, sans sous-tuiles.
+  - Chaque voie occupe deux étages : la ligne (usage, nom, stock, « + »), puis ses familles, chacune avec son picto et sa barre côte à côte, devant la zone du style.
+  - Chaque geste (assembler, remplacer Nugget, dry hop, levure) est aussi une tuile. Ses voies ont leur propre barre s5, qui porte leurs crans.
+  - Typographie de DESIGN.md (Source Sans 3, Plex Mono pour les mesures, de 12 à 15 px).
+  - D84 : 8 voies entières au premier écran, médiane 54 px. 64 mots. Les 12 contrôles du brief, D84 et FICHE sont OK.
+  - Toute la page tient en un peu plus de 3 écrans.
+- **Ce qui casse** :
+  - En lignes d'un seul étage (31 px), le premier écran montrait 11 voies, mais 96 mots : d'où les deux étages, et le plafond de 70 mots borne le nombre de noms visibles.
+  - Les barres de 4 px par cran, à côté des pictos, sont petites. Les objectifs n'y sont qu'une trace sans picto ; ils se lisent sur la barre du groupe.
+  - La marque « α » est dessinée en icône, comme dans l5b.
+- **Pire contraste** : 4,65:1, « Plus agrumes » (#856e0c sur #fcf8e3, 14 px). Mesuré au rendu sur 96 textes, puis sur 151 avec la fiche et ses replis ouverts.
+- Générée par `generateur-l5c.mjs`, avec `../l5b/tuiles-compactes.mjs` et `../l5/donnees-l5-l6.mjs`.
