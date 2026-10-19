@@ -97,6 +97,38 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
+## ÉTAT AU 19.10, FIN D'APRÈS-MIDI : lire en premier (avant la reprise du matin ci-dessous)
+
+- **Fait** : les 6 étapes de la reprise du matin, plus ses deux retours sur le rail (D67, D68).
+  **Base v4.7** : `ecran-1/base/consolide`, 15 pages (dont `substitution.html`) ; `LOT OK 1/1` avec
+  la commande ci-dessous **plus `--comparer`** ; `SPEC OK`. Commits locaux 1303ac6 (v4.5), a1ee3e2
+  (v4.6), f14a788 (v4.7), 0a85159 (planche sans cache). Rien de poussé.
+- **Page à jour, la seule à publier** : https://claude.ai/artifact/MoohEoyjPGAWqpMQZZCq5T
+  (« Houblons, base v4.7 », version 2). Générateur `v4/outils/page-partagee/build.mjs
+  --src=<ecran-1>/base:consolide --version=v4.x` → `a-jour/` ; `test.mjs` ; publier
+  `a-jour/index.html` (même chemin = même adresse), fichiers en liste `{path}` avec `root` `a-jour`.
+  Captures du geste : `tournoi/outils/gestes-base.mjs consolide` (6 cas, dont `nugget-wp75`).
+- **Pages à supprimer, impossible depuis une séance** : WSzBr4… (ancienne v4.6), V657sqy… (lot 4),
+  FxHJbe7… (fils de fer), UrdkDumB4… (prototype v2). Le brasseur ne peut pas non plus : ne pas créer
+  de nouvelles pages. Gardée : 2VTRQP7… (nuit : Barres de Suggestions à choisir).
+- **Commentaires** : sur WSzBr4…, les fils 368630b0 et 664b425c ont eu leur réponse et sont fermés ;
+  d9fb8227 (« On est pas à jour sur cette page, on est d'accord ? ») est resté ouvert, faute d'avoir
+  été envoyé à Claude.
+- **En attente de lui** : ses jugements au doigt (rail v4.7, Comparer, Suggestions, u4) ; ses choix
+  ouverts : Barres de Suggestions (#138 ; lot 6 p03, p05, p11) ; #137 « le moins de grammes
+  d'abord » ; #131 licences ; #139 après la porte B ; #136 mis de côté.
+- **Points dits, à surveiller** : quand le doigt est bas, l'ébullition au-dessus est un trait sans
+  graduations (D47) ; D61 −12 % tenu à 10′ (seuil 12 %, sans marge) ; `controle-fil6` garde
+  10 points sur Comparer, en conflit avec D1, D5 et « pas de légende » (#138) ; plage de score de
+  u4 = seul calcul de la page (à valider) ; le défaut de donnée Citra cryo (#131) reste.
+- **Pièges de l'outillage** : Bash avale les barres obliques inverses (regex, `'\n'`) : passer par
+  Edit ou un fichier écrit avec Write ; ne pas reconstruire `consolide` pendant qu'une batterie
+  tourne (copie de travail : `node build.mjs --out=<scratchpad>/dev`) ; la batterie complète prend
+  environ 8 min (en arrière-plan).
+- **Révisions de contrôles faites à découvert** : D33 bis (`controle-palette` : les `data-couleur`
+  des houblons sont un code) ; `check-spec` lit aussi les messages du brasseur de la séance
+  16fc09ec (commandes en attente comprises). Nouveaux : D67, D68 (`controle-rail`).
+
 ## REPRISE — session neuve (19.10, fin de matinée) : lire en premier
 
 Le brasseur ouvre une session neuve. Mission #119 : maquette houblons v4, hors de l'app, dans
