@@ -97,7 +97,53 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
-## ÉTAT AU 19.10, FIN DE SOIRÉE : lire en premier
+## REPRISE APRÈS COMPACTION (19.10, ~20 h 30) : lire en premier
+
+- **Objectif courant** : l'outil pour choisir les houblons et faire un dry hop (« Comment choisir deux
+  houblons ? » ; « un outil de dry hopping, bio Transfo, levure »).
+- **Décisions** :
+  - **porte B fermée** (« attends encore pour la porte b ») ;
+  - **baseline l8b** (disposition l8, style q2b, typographie de l'app). Les pictos passent au
+    trait, sans halo ; l'α réel s'affiche par voie (D87) ; les barres de l5b remplacent les jauges ;
+    plus de pictos, avec une légende derrière un « ? » discret (« Légende bis ») ;
+  - **q2b** est intégré à la base v4.10 ;
+  - **icônes v3 duo**, mais pictos d'arôme au trait.
+- **Fait et commité** :
+  - le moteur « pouvoir aromatique » (`prototypes/houblons-v4/src/engine/pouvoir.ts`,
+    `data/composes-houblon.json`, `tests/pouvoir.test.ts`, 97 tests, tsc vert ; commit 4d93d0e).
+    Il sépare Citra et Cascade (4MMP sur la base Hopsteiner 2024). Ses sorties sont dans
+    `ecran-1/fils19-choix/donnees/` (non versionnées, à régénérer avec
+    `vite-node scripts/pouvoir-cas.ts`) ;
+  - l'état de l'art H (93 sources) ;
+  - l'index des recherches (`docs/research/INDEX-houblon-levure.md`) ;
+  - le diagnostic et l'inventaire (`fils19-choix/`) ;
+  - les contrôles D84 à D87, `controle-commun.mjs` (toutes les exigences transversales) et
+    `controle-contraste.mjs`.
+- **Agents en cours** (attendre leurs notifications, ne pas refaire leur travail) :
+  - l7–l9 : l8e et l8f (l8b + pictos au trait, de l2 ou de v2, + α + barres de l5b + légende
+    cachée) ;
+  - d1–d3 et d4–d6 : le lot 20, mini maquettes de l'outil de dry hop
+    (`ecran-1/fils20-dryhop/BRIEF-AUTEUR.md`), habillage l8b, chiffres lus dans les sorties du
+    moteur, `controle-commun` + ALPHA.
+- **Prochaine action** :
+  - rejouer `controle-commun.mjs` et les contrôles de chaque lot sur l8e, l8f et d1–d6 ;
+  - regarder les captures ;
+  - publier sur la page des fils de fer (`outils/page-nuit/ajouter-lot.mjs`, une ancre propre par
+    lot, puis l'outil Artifact sur `site/index.html`) ;
+  - répondre aux fils ouverts et les résoudre ;
+  - committer.
+- **À faire valider par lui** :
+  - les conventions [H] du moteur (×10 pour « hors du style », densité des hydrocarbures,
+    transfert des sesquiterpènes) ;
+  - le trait des pictos, l8e ou l8f ;
+  - le radar de Comparer, r3 ou r2 (lot 16).
+- **Risques ouverts** :
+  - V5.5 donne toujours le même effet aux voies (même amplitude par famille citée) ;
+  - écart entre l'effet d'une voie et le profil recalculé (`apresPlage`) ;
+  - mots des fiches mêlant le français et l'anglais ; « Ajouter à 10′ » figé ; Celeia sans
+    fiche (tâche proposée : task_8db44248).
+
+## ÉTAT AU 19.10, FIN DE SOIRÉE
 
 - **BASELINE CHOISIE (19.10, 18 h 12)** : « C'est la meilleure version mais le glowing des icône de
   arôme c'est non, plutôt type Baseline 2 type fil » (sur l8b). l8b est retenu : la disposition l8,
