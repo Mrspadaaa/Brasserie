@@ -146,7 +146,8 @@ async function open(i) {
   $('#vt').textContent = x.groupe + (x.libelle ? ' · ' + x.libelle : '');
   $('#viewer').hidden = false;
   try {
-    const r = await fetch(x.page);
+    // Jamais une copie en cache : la page jouable est toujours celle de la dernière publication.
+    const r = await fetch(x.page, { cache: 'no-store' });
     $('#frame').srcdoc = await r.text();
   } catch (e) { $('#frame').srcdoc = '<p style="font:15px system-ui;padding:16px">Page indisponible ici.</p>'; }
 }
