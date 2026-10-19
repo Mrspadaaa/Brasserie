@@ -1,11 +1,17 @@
 {
+ "haut": {
+  "defilement": 0,
+  "curseur": 387,
+  "barres": 667,
+  "ecran": 844
+ },
  "avant": {
   "duel": "Citra contre Cascade",
   "reglage": "actif, US-05, 3 j",
   "melange": "Citra 4 g/L",
-  "reponse": "Mêmes mots, pas le même cône : Citra ×7,7 en \n4MMP, Cascade ×10 en \nfarnésène.",
-  "verdict": "~ Dans ta 16D : Citra sort en agrumes ~+3,4, tropicaux ~+3,8, baies ~+3,2 crans ; Cascade reste.",
-  "egal": "Pour égaler Citra 4 g/L : Cascade ~11,5 g/L (prolongée) en agrumes, ~16 g/L (prolongée) en tropicaux.",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,4 crans, Cascade reste et l’égalerait à ~11,5 g/L (courbe prolongée). Le détail",
+  "detail": "(fermé)",
   "barres": {
    "floral": {
     "valeur": "~+1,7 cran",
@@ -54,9 +60,9 @@
   "duel": "Citra contre Cascade",
   "reglage": "actif, US-05, 3 j",
   "melange": "ensemble, 2 + 2 g/L",
-  "reponse": "Mêmes mots, pas le même cône : Citra ×7,7 en \n4MMP, Cascade ×10 en \nfarnésène.",
-  "verdict": "~ Dans ta 16D : Citra sort en agrumes ~+3,4, tropicaux ~+3,8, baies ~+3,2 crans ; Cascade reste.",
-  "egal": "Pour égaler Citra 4 g/L : Cascade ~11,5 g/L (prolongée) en agrumes, ~16 g/L (prolongée) en tropicaux.",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,4 crans, Cascade reste et l’égalerait à ~11,5 g/L (courbe prolongée). Le détail",
+  "detail": "(fermé)",
   "barres": {
    "floral": {
     "valeur": "~+1,4 cran",
@@ -99,15 +105,15 @@
     "hauteur": 6
    }
   },
-  "ajout": "Citra + Cascade , même dry hop · la saturation partagée garde ~78 % des agrumes des deux seuls · synergie, masquage : inconnu"
+  "ajout": "Citra + Cascade, même dry hop · la saturation partagée garde ~78 % des agrumes des deux seuls · synergie, masquage : inconnu"
  },
  "apres": {
   "duel": "Citra contre Cascade",
   "reglage": "actif, US-05, 3 j",
   "melange": "Cascade 4 g/L",
-  "reponse": "Mêmes mots, pas le même cône : Citra ×7,7 en \n4MMP, Cascade ×10 en \nfarnésène.",
-  "verdict": "~ Dans ta 16D : Citra sort en agrumes ~+3,4, tropicaux ~+3,8, baies ~+3,2 crans ; Cascade reste.",
-  "egal": "Pour égaler Citra 4 g/L : Cascade ~11,5 g/L (prolongée) en agrumes, ~16 g/L (prolongée) en tropicaux.",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,4 crans, Cascade reste et l’égalerait à ~11,5 g/L (courbe prolongée). Le détail",
+  "detail": "(fermé)",
   "barres": {
    "floral": {
     "valeur": "~+0,8 cran",
@@ -156,9 +162,9 @@
   "duel": "Citra contre Galaxy",
   "reglage": "actif, US-05, 3 j",
   "melange": "Galaxy 4 g/L",
-  "reponse": "Mêmes mots, pas le même cône : Galaxy ×7,2 en \nfarnésène.",
-  "verdict": "~ Dans ta 16D : Citra sort en agrumes ~+3,4, tropicaux ~+3,8, baies ~+3,2 crans ; Galaxy sort en tropicaux ~+3,7 crans.",
-  "egal": "Pour égaler Citra 4 g/L : Galaxy ~6,9 g/L en agrumes, ~4,4 g/L en tropicaux.",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,4 crans, Galaxy sort en tropicaux ~+3,7 crans, et l’égalerait en agrumes à ~6,9 g/L. Le détail",
+  "detail": "(fermé)",
   "barres": {
    "floral": {
     "valeur": "~+0,9 cran",
@@ -203,9 +209,9 @@
   "duel": "Citra contre Galaxy",
   "reglage": "actif, US-05, 3 j",
   "melange": "Galaxy 4 g/L",
-  "reponse": "Mêmes mots, pas le même cône : Galaxy ×7,2 en \nfarnésène.",
-  "verdict": "~ Dans ta 16D : Citra sort en agrumes ~+3,4, tropicaux ~+3,8, baies ~+3,2 crans ; Galaxy sort en tropicaux ~+3,7 crans.",
-  "egal": "Pour égaler Citra 4 g/L : Galaxy ~6,9 g/L en agrumes, ~4,4 g/L en tropicaux.",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,4 crans, Galaxy sort en tropicaux ~+3,7 crans, et l’égalerait en agrumes à ~6,9 g/L. Le détail",
+  "detail": "(fermé)",
   "barres": {
    "floral": {
     "valeur": "~+0,9 cran",
@@ -250,9 +256,9 @@
   "duel": "Citra contre Galaxy",
   "reglage": "actif, Pomona, 3 j",
   "melange": "Galaxy 4 g/L",
-  "reponse": "Mêmes mots, pas le même cône : Galaxy ×7,2 en \nfarnésène.",
-  "verdict": "~ Dans ta 16D : Citra sort en agrumes ~+3,8, tropicaux ~+3,9, baies ~+3,2 crans ; Galaxy sort en tropicaux ~+3,7 crans.",
-  "egal": "Pour égaler Citra 4 g/L : Galaxy ~8,8 g/L (prolongée) en agrumes, ~4,6 g/L en tropicaux.",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,8 crans, Galaxy sort en tropicaux ~+3,7 crans, et l’égalerait en agrumes à ~8,8 g/L (courbe prolongée). Le détail",
+  "detail": "(fermé)",
   "barres": {
    "floral": {
     "valeur": "~+0,9 cran",
@@ -297,9 +303,60 @@
   "duel": "Citra contre Galaxy",
   "reglage": "après, 3 j",
   "melange": "Galaxy 4 g/L",
-  "reponse": "Mêmes mots, pas le même cône : Galaxy ×7,2 en \nfarnésène.",
-  "verdict": "~ Dans ta 16D : Citra sort en agrumes ~+3,5, tropicaux ~+3,9, baies ~+3,2 crans ; Galaxy sort en tropicaux ~+3,9 crans.",
-  "egal": "Pour égaler Citra 4 g/L : Galaxy ~6,4 g/L en agrumes, ~9,5 g/L (prolongée) en baies.",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,5 crans, Galaxy sort en tropicaux ~+3,9 crans, et l’égalerait en agrumes à ~6,4 g/L. Le détail",
+  "detail": "(fermé)",
+  "barres": {
+   "floral": {
+    "valeur": "~+0,9 cran",
+    "hauteur": 10
+   },
+   "herbal": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "earthy": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "citrus": {
+    "valeur": "~+2,9 crans",
+    "hauteur": 33
+   },
+   "tropical": {
+    "valeur": "~+3,9 crans",
+    "hauteur": 44
+   },
+   "stoneFruit": {
+    "valeur": "~+2,4 crans",
+    "hauteur": 26
+   },
+   "berries": {
+    "valeur": "~+1,9 cran",
+    "hauteur": 21
+   },
+   "melon": {
+    "valeur": "inconnu",
+    "hauteur": 0
+   },
+   "spice": {
+    "valeur": "~+0,2 cran",
+    "hauteur": 3
+   },
+   "green": {
+    "valeur": "~+1,7 cran",
+    "hauteur": 20
+   }
+  },
+  "ajout": ""
+ },
+ "detail": {
+  "duel": "Citra contre Galaxy",
+  "reglage": "après, 3 j",
+  "melange": "Galaxy 4 g/L",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,5 crans, Galaxy sort en tropicaux ~+3,9 crans, et l’égalerait en agrumes à ~6,4 g/L. Le détail",
+  "detail": "Dans le cône, par gramme : Galaxy ×7,2 en farnésène. Citra sort aussi en tropicaux ~+3,9 crans, baies ~+3,2 crans. En baies, Galaxy l’égalerait à ~9,5 g/L (courbe prolongée). Équivalence : la courbe du moteur, de 1 à 8 g/L ; au-delà de 12 g/L, « ~jamais ».",
   "barres": {
    "floral": {
     "valeur": "~+0,9 cran",

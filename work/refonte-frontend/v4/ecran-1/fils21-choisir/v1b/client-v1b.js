@@ -45,36 +45,63 @@ function ecart(a, b) {
 function lecture(e, r) {
   if (r && r.id === 'ych' && e.c != null && e.c >= 0.8 && e.c <= 1.25) return { t: '≈ pareil', cls: 'eg' };
   const aD = e.lo != null && e.lo >= 1, bD = e.hi != null && e.hi <= 1;
-  if (aD) return { t: st.A + ' devant ×' + fr(e.lo) + (e.hi != null ? '–' + fr(e.hi) : '+'), cls: 'a', qui: st.A, k: e.c != null ? e.c : e.lo };
-  if (bD) return { t: st.B + ' devant ×' + fr(1 / e.hi) + (e.lo != null && e.lo > 0 ? '–' + fr(1 / e.lo) : '+'), cls: 'b', qui: st.B, k: e.c != null ? 1 / e.c : 1 / e.hi };
+  if (aD) return { t: st.A + ' devant' + (e.hi == null && e.lo < 1.05 ? '' : ' ×' + fr(e.lo) + (e.hi != null ? '–' + fr(e.hi) : '+')), cls: 'a', qui: st.A, k: e.c != null ? e.c : e.lo };
+  if (bD) return { t: st.B + ' devant' + ((e.lo == null || e.lo <= 0) && e.hi > 0.95 ? '' : ' ×' + fr(1 / e.hi) + (e.lo != null && e.lo > 0 ? '–' + fr(1 / e.lo) : '+')), cls: 'b', qui: st.B, k: e.c != null ? 1 / e.c : 1 / e.hi };
   if (e.c == null && e.lo == null && e.hi == null) return { t: 'inconnu', cls: 'nd' };
   return { t: 'non départagés', cls: 'nd' };
 }
+// En haut, une ligne de réponse, puis une phrase : le verdict dans ta 16D et l'équivalence fondus.
+// Le reste (les teneurs du cône, les autres familles, la seconde équivalence) attend un toucher sur la phrase.
+// La ponctuation reste collée aux mots : un signe seul dans un nœud compterait comme un mot.
 function reponse() {
-  const decides = ROWS.filter((r) => !r.papier).map((r) => ({ r, l: lecture(ecart(H[st.A][r.id], H[st.B][r.id]), r) })).filter((x) => x.l.qui);
+  const na = H[st.A].niveaux, nb = H[st.B].niveaux, deux = ORD.some((f) => na[f] > 0 && nb[f] > 0);
+  $('#reponse').textContent = deux ? 'Mêmes mots, pas le même cône.' : 'Ni les mêmes mots, ni le même cône.';
+}
+function duCone() {
+  const decides = ROWS.filter((r) => !r.papier).map((r) => { const e = ecart(H[st.A][r.id], H[st.B][r.id]); return { r, e, l: lecture(e, r) }; }).filter((x) => x.l.qui);
   const top = (n) => decides.filter((x) => x.l.qui === n).sort((a, b) => b.l.k - a.l.k)[0];
   const a = top(st.A), b = top(st.B);
-  const dit = (n, x, p) => '<b>' + esc(n) + ' ×' + fr(x.l.k) + '</b> en <span class="fx">' + pics(x.r.fams, 14) + esc(x.r.tag.split(',')[0] + p) + '</span>';
-  const na = H[st.A].niveaux, nb = H[st.B].niveaux, deux = ORD.some((f) => na[f] > 0 && nb[f] > 0);
-  $('#reponse').innerHTML = (deux ? 'Mêmes mots, pas le même cône' : 'Ni les mêmes mots, ni le même cône') + (a || b ? ' : ' + (a && b ? dit(st.A, a, ',') + ' ' + dit(st.B, b, '.') : a ? dit(st.A, a, '.') : dit(st.B, b, '.')) : '.');
+  // Le rapport des centres quand il existe ; sinon la borne, dite « au moins » ; sinon « devant », sans chiffre.
+  const kt = (x) => (x.e.c != null ? ' ×' + fr(x.l.k) : x.l.k > 1.05 ? ' au moins ×' + fr(x.l.k) : ' devant');
+  const dit = (n, x, p) => '<b>' + esc(n) + kt(x) + '</b> en <span class="fx">' + pics(x.r.fams, 14) + esc(x.r.tag.split(',')[0] + p) + '</span>';
+  return a || b ? '<span>Dans le cône, par gramme : ' + (a && b ? dit(st.A, a, ',') + ' ' + dit(st.B, b, '.') : a ? dit(st.A, a, '.') : dit(st.B, b, '.')) + '</span>' : '';
 }
-function verdict() {
-  const ga = un(st.A), gb = un(st.B);
-  if (!ga || !gb) { $('#verdict').innerHTML = '<span class="vd-t">~ Dans ta 16D :</span> ' + inc('pas simulé', 'moteur') + ' pour ce réglage.'; $('#egal').innerHTML = ''; return; }
-  const fam = ORD.filter((f) => f !== 'resin');
-  const ligne = (n, g, fin) => { const s = fam.filter((f) => sort(g.p, f)); return '<b>' + esc(n) + '</b> ' + (s.length ? '<span class="hst">sort</span> en ' + s.map((f, i) => fx(f) + ' ' + vs('~' + f1(dC(f, g.p[f][1])) + (i < s.length - 1 ? ',' : ' crans' + fin))).join(' ') : '<span>reste' + fin + '</span>'); };
-  $('#verdict').innerHTML = '<span class="vd-t">~ Dans ta 16D :</span> ' + ligne(st.A, ga, ' ;') + ' ' + ligne(st.B, gb, '.');
-  // L'équivalence (y3) : la dose du second houblon qui égalerait le premier, par la courbe du moteur.
+// L'équivalence (y3) : la dose du second houblon qui égalerait le premier, par la courbe du moteur.
+// La grille s'arrête à 8 g/L : au-delà, la courbe est prolongée ; au-delà de 12 g/L, « ~jamais ».
+const LIM = 12;
+function equivalences(ga, gb, fam) {
   const g1 = un(st.B, 1); const cibles = fam.filter((f) => sort(ga.p, f) && ga.p[f][1] > gb.p[f][1]);
   const liste = (cibles.length ? cibles : fam.filter((f) => ga.p[f][1] - gb.p[f][1] > 5).slice(0, 2)).slice(0, 2);
-  if (!liste.length || !g1) { $('#egal').innerHTML = ''; return; }
-  const eq = liste.map((f) => {
+  if (!g1) return [];
+  return liste.map((f) => {
     const Pf = COURBE.P[f], K = COURBE.K[f], av = AV[f].c || 0, It = ga.p[f][1] - av, I1 = g1.p[f][1] - av;
     if (nul(g1.p, f) || I1 <= 0.05 || It >= Pf * 0.98) return { f, d: null };
     const x1 = (K * I1) / (Pf - I1), d = (K * It) / (Pf - It) / x1;
-    return { f, d: d > 16 ? null : d };
+    return { f, d: d > LIM ? null : d };
   });
-  $('#egal').innerHTML = 'Pour égaler <b>' + esc(st.A) + ' 4 g/L :</b> <b>' + esc(st.B) + '</b> ' + eq.map((x, i) => (x.d == null ? vs('~jamais') : vs('~' + fr(x.d, 1) + ' g/L') + (x.d > 8 ? ' <span class="gris">(prolongée)</span>' : '')) + ' en ' + fx(x.f, COURT_[x.f].toLowerCase() + (i < eq.length - 1 ? ',' : '.'))).join(' ');
+}
+function verdict() {
+  const ga = un(st.A), gb = un(st.B), plus = '<span class="vd-b">Le détail' + ic('bas2', 12) + '</span>';
+  if (!ga || !gb) { $('#verdict').innerHTML = '<span class="vd-t">~ Dans ta 16D,</span> ' + inc('pas simulé', 'moteur') + ' <span>pour ce réglage.</span>'; $('#vd-plus').innerHTML = duCone(); return; }
+  const fam = ORD.filter((f) => f !== 'resin');
+  const sA = fam.filter((f) => sort(ga.p, f)), sB = fam.filter((f) => sort(gb.p, f));
+  const eq = equivalences(ga, gb, fam), e0 = eq[0];
+  const fort = (g, s) => s.slice().sort((x, y) => dC(y, g.p[y][1]) - dC(x, g.p[x][1]))[0];
+  const fA = e0 && sA.includes(e0.f) ? e0.f : fort(ga, sA), fB = fort(gb, sB);
+  const cr = (g, f, p) => vs('~' + crU(dC(f, g.p[f][1])) + p);
+  const pa = '<b>' + esc(st.A) + '</b> ' + (fA ? '<span class="hst">sort</span> en ' + fx(fA) + ' ' + cr(ga, fA, ',') : '<span>reste,</span>');
+  const nomme = e0 && (e0.f !== fA || sB.length);
+  const eg = !e0 ? '' : e0.d == null
+    ? ' <span>et ne l’égale</span> ' + vs('~jamais' + (nomme ? '' : '.')) + (nomme ? ' en ' + fx(e0.f, COURT_[e0.f].toLowerCase() + '.') : '')
+    : ' <span>et l’égalerait' + (nomme ? ' en' : ' à') + '</span> ' + (nomme ? fx(e0.f) + ' à ' : '') + vs('~' + fr(e0.d, 1) + ' g/L' + (e0.d > 8 ? '' : '.')) + (e0.d > 8 ? ' <span class="gris">(courbe prolongée).</span>' : '');
+  const pb = '<b>' + esc(st.B) + '</b> ' + (fB ? '<span class="hst">sort</span> en ' + fx(fB) + ' ' + cr(gb, fB, e0 ? ',' : '.') : '<span>reste' + (e0 ? '' : '.') + '</span>');
+  $('#verdict').innerHTML = '<span class="vd-t">~ Dans ta 16D,</span> ' + pa + ' ' + pb + eg + ' ' + plus;
+  // Le détail, à un toucher : les teneurs du cône, les autres familles qui sortent, la seconde équivalence.
+  const aussi = (n, g, s, f0) => { const r = s.filter((f) => f !== f0); return r.length ? '<span><b>' + esc(n) + '</b> sort aussi en ' + r.map((f, i) => fx(f) + ' ' + cr(g, f, i < r.length - 1 ? ',' : '.')).join(' ') + '</span>' : ''; };
+  const e1 = eq[1] && eq[1].f !== (e0 && e0.f) ? eq[1] : null;
+  const seconde = e1 ? '<span>En ' + fx(e1.f) + ', <b>' + esc(st.B) + '</b> ' + (e1.d == null ? 'ne l’égale ' + vs('~jamais.') : 'l’égalerait à ' + (e1.d > 8 && !(e0 && e0.d > 8) ? vs('~' + fr(e1.d, 1) + ' g/L') + ' <span class="gris">(courbe prolongée).</span>' : vs('~' + fr(e1.d, 1) + ' g/L.'))) + '</span>' : '';
+  $('#vd-plus').innerHTML = duCone() + aussi(st.A, ga, sA, fA) + aussi(st.B, gb, sB, fB) + seconde
+    + '<span class="gris">Équivalence : la courbe du moteur, de 1 à 8 g/L ; au-delà de ' + LIM + ' g/L, « ~jamais ».</span>';
 }
 
 // ---------- le duel ----------
@@ -159,9 +186,9 @@ function sim() {
   $('#sim-ctx').textContent = '';
   if (!pr) { $('#sim').innerHTML = '<p class="gris petit">' + inc('pas simulé', 'moteur') + ' : ' + esc(LEVN[st.lev]) + ' pour ce mélange.</p>'; $('#ajout').innerHTML = ''; $('#resine').innerHTML = ''; return; }
   const tir = tirages(pr.p, fams);
-  $('#sim').innerHTML = barresB(fams, pr.p, tir) + '<div class="sb-leg"><b>' + esc(pr.nom) + '</b><span class="gris">' + (actif() ? 'actif, ' + esc(LEVN[st.mix === 1 ? levS() : levU()]) : 'après') + ', 3 j · pâle : la 16D, orangé : au-delà</span></div>' + (st.fam && fams.includes(st.fam) ? detailFam(pr.p, st.fam, pr.nom) : '');
+  $('#sim').innerHTML = barresB(fams, pr.p, tir) + '<div class="sb-leg"><b>' + esc(pr.nom) + '</b><span class="gris">pâle : 16D, orangé : au-delà</span></div>' + (st.fam && fams.includes(st.fam) ? detailFam(pr.p, st.fam, pr.nom) : '');
   document.querySelectorAll('#sim .sb').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.f === st.fam)));
-  $('#ajout').innerHTML = st.mix === 1 ? '<div data-role="ajout">' + ic('plus2', 14) + hn(st.A) + ' + ' + hn(st.B) + ', même dry hop · la saturation partagée garde ' + vs('~' + Math.round((pr.g.fs.citrus || 0) * 100) + ' %') + ' des agrumes des deux seuls · synergie, masquage : ' + inc('synergie, masquage', 'H67 H72') + '</div>' : '';
+  $('#ajout').innerHTML = st.mix === 1 ? '<div data-role="ajout">' + ic('plus2', 14) + hn(st.A) + ' + ' + hn(st.B) + ', même dry hop · la saturation partagée garde ' + vs('~' + Math.round((pr.g.fs.citrus || 0) * 100) + ' %') + ' des agrumes des deux seuls · <span class="nw">synergie, masquage : ' + inc('synergie, masquage', 'H67 H72') + '</span></div>' : '';
   $('#resine').innerHTML = pic('resin', 14) + ' Résineux : ta dégustation (« ' + esc(DEG.citation.split(',')[0]) + ' ») le met déjà au-delà de la 16D ; ce dry hop ' + vs('~' + crU(dC('resin', pr.p.resin[1]) - dC('resin', AV.resin.c))) + '.';
   // Le défi de ta dégustation (x5) et le tirage (y5), à un toucher.
   const out = fams.filter((f) => sort(pr.p, f));
@@ -189,7 +216,7 @@ function reglages() {
   const ks = actif() ? Object.keys(LEVK).filter(levOK) : [];
   document.querySelectorAll('#levs [data-lev]').forEach((x) => { x.hidden = !ks.includes(x.dataset.lev); x.setAttribute('aria-pressed', String(x.dataset.lev === (st.mix === 1 ? st.lev : levU()))); });
   $('#levs').hidden = !actif();
-  $('#lev-n').textContent = actif() ? (st.mix === 1 ? 'Diamond : pas encore simulée.' : st.lev === 'verdant' ? 'Verdant : simulée seulement ensemble (le mélange au milieu) ; seul, la page lit US-05.' : 'Verdant, Diamond : pas encore simulées pour un houblon seul.') : 'Après fermentation, la levure est au repos : le moteur ne la compte pas.';
+  $('#lev-n').textContent = actif() ? (st.mix === 1 ? 'Diamond : pas encore simulée.' : st.lev === 'verdant' ? 'Verdant : simulée seulement ensemble (le mélange au milieu) ; seul, la page lit US-05.' : 'Verdant, Diamond non simulées à 4 g/L.') : 'Après fermentation, la levure est au repos : le moteur ne la compte pas.';
 }
 // ---------- le moteur et le panel (comme v1) ----------
 const MOT = [['thiols', ['tropical', 'berries'], 'Tropicaux, baies', '4MMP'], ['linalol', ['floral', 'citrus'], 'Floral, agrumes', 'linalol'], ['myrcene', ['resin', 'green'], 'Résineux, végétal', 'myrcène']];
@@ -223,6 +250,7 @@ const reinit = () => { st.tir = 0; };
 document.addEventListener('click', (e) => {
   const c = e.target.closest('[data-h]');
   if (c) { const n = c.dataset.h; if (n === st.B) { st.B = st.A; st.A = n; } else if (n !== st.A) st.B = n; reinit(); rendre(); return; }
+  if (e.target.closest('#verdict')) { const p = $('#vd-plus'); p.hidden = !p.hidden; $('#verdict').setAttribute('aria-expanded', String(!p.hidden)); return; }
   if (e.target.closest('#regl-b')) { const r = $('#regl'); r.scrollIntoView({ block: 'center', behavior: REDUIT ? 'auto' : 'smooth' }); r.classList.remove('vu'); void r.offsetWidth; r.classList.add('vu'); return; }
   const mo = e.target.closest('[data-mom]'); if (mo) { st.mom = mo.dataset.mom; reinit(); rendre(); return; }
   const lv = e.target.closest('[data-lev]'); if (lv) { st.lev = lv.dataset.lev; reinit(); rendre(); return; }
@@ -233,7 +261,7 @@ document.addEventListener('click', (e) => {
   if (dr && !e.target.closest('.dr-d') && !e.target.closest('[data-houblon]')) { const id = dr.dataset.row; if (ouverts.has(id)) ouverts.delete(id); else ouverts.add(id); dr.classList.toggle('ouvert'); dr.setAttribute('aria-expanded', String(ouverts.has(id))); }
 });
 document.addEventListener('keydown', (e) => {
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.dr[data-row]')) { e.preventDefault(); e.target.click(); }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.dr[data-row], #verdict')) { e.preventDefault(); e.target.click(); }
   if (e.target && e.target.id === 'mix' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { e.preventDefault(); st.mix = Math.max(0, Math.min(2, st.mix + (e.key === 'ArrowRight' ? 1 : -1))); reinit(); rendre(); }
 });
 // Le mélange au doigt : on glisse de l'un à l'autre ; trois positions simulées (seul, ensemble 2 + 2 g/L, l'autre seul),
@@ -269,10 +297,12 @@ document.addEventListener('keydown', (e) => {
   if (q.has('preuves')) ouvrirP(true);
 })();
 if (q.has('reglages')) $('#regl').scrollIntoView({ block: 'center' });
+if (q.has('detail')) { $('#vd-plus').hidden = false; $('#verdict').setAttribute('aria-expanded', 'true'); }
 // Ce que la page affiche, pour la preuve du geste (jouer-v1b.mjs).
 window.__releve = () => ({
   duel: st.A + ' contre ' + st.B, reglage: $('#regl-t').textContent, melange: $('#mix').getAttribute('aria-valuetext'),
-  reponse: $('#reponse').innerText.trim(), verdict: $('#verdict').innerText.replace(/\s+/g, ' ').trim(), egal: $('#egal').innerText.replace(/\s+/g, ' ').trim(),
+  reponse: $('#reponse').innerText.trim(), verdict: $('#verdict').innerText.replace(/\s+/g, ' ').trim(),
+  detail: $('#vd-plus').hidden ? '(fermé)' : $('#vd-plus').innerText.replace(/\s+/g, ' ').trim(),
   barres: Object.fromEntries([...document.querySelectorAll('#sim .sb[data-f]')].map((b) => { const x = b.querySelector('.sb-b'); return [b.dataset.f, { valeur: (b.querySelector('.sb-v') || {}).innerText || '', hauteur: x ? Math.round(x.getBoundingClientRect().height) : 0 }]; })),
   ajout: ($('#ajout').innerText || '').replace(/\s+/g, ' ').trim(),
 });

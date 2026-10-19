@@ -147,32 +147,32 @@ const corps = `
   ${barre('<span id="titre"></span>')}
   <div class="outils">${lentille()}<button type="button" class="pill" id="regl-b" aria-controls="regl" aria-label="Les réglages du dry hop, avec le profil">${ic('cuveA', 14)}<span id="regl-t"></span>${ic('bas2', 14)}</button></div>
   <p class="reponse" id="reponse"></p>
-  <div class="verdict" id="verdict" data-role="simulation"></div>
-  <p class="egal" id="egal"></p>
+  <div class="verdict" id="verdict" data-role="simulation" role="button" tabindex="0" aria-expanded="false" aria-controls="vd-plus"></div>
+  <div class="vd-plus" id="vd-plus" hidden></div>
   <div class="hcs" role="group" aria-label="Choisir les deux houblons du duel">${QUATRE.map(carte).join('')}</div>
-  <section class="carte duel" aria-label="Le duel : qui en a le plus, à dose égale">
-    <p class="sous-t" id="outil"></p>
-    <div class="axe-d" aria-hidden="true"><span class="ax-b">${ic('chev-l', 12)}<span id="ax-b"></span></span><span class="ax-0"></span><span class="ax-a"><span id="ax-a"></span>${ic('chev-r', 12)}</span></div>
-    <div id="rows"></div>
-  </section>
   <section class="carte" id="sim16" aria-label="Dans ta 16D">
     <div class="sim" data-role="simulation">
       <h2 class="sim-h">${conf('simule')}<small id="sim-ctx"></small></h2>
       <div class="mix" id="mix" data-role="reglage" data-reglage="ajout-cumule" role="slider" tabindex="0" aria-label="Le mélange des deux houblons" aria-valuemin="0" aria-valuemax="2" aria-valuenow="0"><div class="mix-t"><i class="mix-r"></i><i class="mix-s s0"></i><i class="mix-s s1"></i><i class="mix-s s2"></i><i class="mix-p" id="mix-p"></i></div><div class="mix-l"><span id="mix-a"></span><span id="mix-m">ensemble, 2 + 2 g/L</span><span id="mix-b"></span></div></div>
+      <div id="sim"></div>
+      <div id="ajout"></div>
 <div class="regl-f" id="regl">
     <div class="regl" role="group" aria-label="Le moment du dry hop"><button type="button" class="chip" data-mom="dryActive" data-role="reglage" aria-pressed="true">${ic('cuveA', 14)}fermentation active</button><button type="button" class="chip" data-mom="dryPost" data-role="reglage" aria-pressed="false">${ic('cuveP', 14)}après</button></div>
     <div class="regl" role="group" aria-label="La levure" id="levs">${['us05', 'pomona', 'verdant'].map((k) => `<button type="button" class="chip" data-lev="${k}" data-role="reglage" data-reglage="levure" aria-pressed="${k === 'us05'}">${ic('levure', 14)}${esc(LEVN[k].replace(/^(SafAle|LalBrew) /, '').replace(' IPA', ''))}</button>`).join('')}</div>
     <p class="gris petit" id="lev-n"></p>
   </div>
-      <div id="ajout"></div>
-      <div id="sim"></div>
-      <p class="resine" id="resine"></p>
-      <div class="blocs" role="group" aria-label="À un toucher"><button type="button" class="chip" data-bloc="defi" aria-expanded="false">${ic('drapeau', 14)}Le défi de ta dégustation</button><button type="button" class="chip" data-bloc="tirage" aria-expanded="false" id="tire">${ic('simul', 14)}Tire une bière</button><button type="button" class="chip" data-role="preuve-bouton" aria-expanded="false">${ic('flacon', 14)}Preuves</button></div>
+      <div class="blocs" role="group" aria-label="À un toucher"><button type="button" class="chip" data-bloc="defi" aria-expanded="false">${ic('drapeau', 14)}Ta dégustation</button><button type="button" class="chip" data-bloc="tirage" aria-expanded="false" id="tire">${ic('simul', 14)}Tire une bière</button><button type="button" class="chip" data-role="preuve-bouton" aria-expanded="false">${ic('flacon', 14)}Preuves</button></div>
       <div id="defi" hidden></div>
       <div id="tirage" hidden></div>
       <div id="bio"></div>
+      <p class="resine" id="resine"></p>
       <details class="det"><summary>${ic('info', 14)}Le profil simulé ${ic('bas2', 14)}</summary><div class="det-c"><span>~ ${esc(SIMU.mention)}</span><span>Conventions à valider (donnees/PROFIL-SIMULE.md) : ancre Cascade 3,86 g/L = 26 points d’agrumes à 4,75 % vol. (H22, K) ; poids des fiches et des composés ; géraniol → citronellol 50 % pour Pomona.</span><span>La barre : le centre ; le pâle : de bas à haut ; « + » : le haut publié manque pour un composé, le vrai haut peut être plus haut.</span></div></details>
     </div>
+  </section>
+  <section class="carte duel" aria-label="Le duel : qui en a le plus, à dose égale">
+    <p class="sous-t" id="outil"></p>
+    <div class="axe-d" aria-hidden="true"><span class="ax-b">${ic('chev-l', 12)}<span id="ax-b"></span></span><span class="ax-0"></span><span class="ax-a"><span id="ax-a"></span>${ic('chev-r', 12)}</span></div>
+    <div id="rows"></div>
   </section>
   <section class="carte" aria-label="Le rapport au seuil, calculé">
     <h2>Le rapport au seuil ${conf('calcule')}<small>4 g/L chacun, après, 3 j</small></h2>
