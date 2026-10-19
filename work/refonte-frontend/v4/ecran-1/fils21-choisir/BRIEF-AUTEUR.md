@@ -39,6 +39,10 @@ Le brasseur : « J'ai dis de réutiliser la Baseline mais il faudrait évidemmen
 - Garde ses acquis, listés ci-dessous.
 - Ajoute de nouvelles formes, couleurs, éléments, gestes et représentations, partout où ils aident à comprendre et à choisir.
 - Une variante qui recopie la baseline sans l'enrichir a manqué la demande.
+- « Il y a pas de limitation, pas de plafond de verre, il faut être créatif, disrutif, trouver des solutions et des options ». À « y compris s'écarter de la baseline si l'idée le vaut », il a répondu « Exact ». S'en écarter est donc permis, quand l'idée aide mieux à comprendre ou à choisir, avec la raison écrite dans la NOTE.
+- Deux limites restent strictes :
+  - l'honnêteté des données : vraies valeurs sourcées, simulé marqué, incertitude visible, inconnu ≠ zéro ;
+  - l'usage au doigt sur 390 px.
 
 Les deux baselines en lice, avec tous les retours du brasseur :
 - **l5e** (`fils18-baseline/l5e/`, `tuiles-l5e.mjs`, `generateur-l5e.mjs`) : tuiles deux par rangée ;
