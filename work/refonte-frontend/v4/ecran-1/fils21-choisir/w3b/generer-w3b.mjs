@@ -84,11 +84,6 @@ const corps = `
     <div class="w3b-al" id="al"></div>
     <div class="w3b-bio" id="bio" data-role="biotransformation"></div>
     <div class="w3b-ec" id="ecart" hidden></div>
-    <div class="w3b-regs">
-      ${seg('moment', 'Moment', [{ v: 'dryActive', h: ic('cuveA', 14) + 'actif' }, { v: 'dryPost', h: ic('cuveP', 14) + 'après' }, { v: 'chaud', h: ic('ebu', 14) + 'à chaud' }], 'dryActive', 'w3b-seg')}
-      ${seg('ajout-cumule', 'Assemblage', [{ v: 'seul', t: 'seul' }, { v: 'ensemble', t: 'ensemble' }, { v: 'puis', t: 'puis' }], 'seul', 'w3b-seg')}
-      ${seg('levure', 'Levure', ['US-05', 'Pomona', 'Verdant', 'Diamond'].map((l) => ({ v: l, t: l })), 'US-05', 'w3b-seg')}
-    </div>
     <p class="w3b-msg" id="msg" hidden></p>
   </section>
   <section class="w3b-fig" data-role="simulation" aria-label="Ta bière, ta cible, le geste">
@@ -100,10 +95,10 @@ const corps = `
     <p class="w3b-tir" id="tir" hidden></p>
   </section>
   <section class="w3b-plans" id="plans" aria-label="Trois façons d’y aller"></section>
-  <div class="w3b-act"><button type="button" class="w-pq" data-detail="defi">${ic('cible', 14)}<span>Ton défi</span></button><button type="button" class="w-pq" data-detail="preuve">${ic('labo', 14)}<span>Preuve</span></button></div>
+  <div class="w3b-act"><button type="button" class="w-pq" data-detail="defi">${ic('cible', 14)}<span>Ton défi</span></button><button type="button" class="w-pq" data-detail="preuve">${ic('labo', 14)}<span>Preuve</span></button><button type="button" class="w-pq" id="b-proches" aria-expanded="false" aria-controls="proches-b">${ic('melange', 14)}<span>Les plus proches</span></button></div>
   <section class="w3b-oeil" id="oeil" data-role="simulation" aria-label="Les trois sur une même piste"></section>
-  <section class="w3b-proches"><h3 class="w3b-h3">Les plus proches ensuite</h3><p class="w3b-n">rangés par écart à ta cible : ce qui manque compte plein, ce qui dépasse moitié</p><div id="proches"></div></section>
-  <p class="w3b-pied">${conf('simule')}<span>${STUB_MOT}</span><span>· ta 16D, Nugget 60′</span>${alpha('Nugget')}<span>· IBU de ta stout</span>${V(fr(IBU0.v, 0) + ' IBU', IBU0.src)}</p>`;
+  <section class="w3b-proches" id="proches-b" hidden><h3 class="w3b-h3">Les plus proches</h3><p class="w3b-n">rangés par écart à ta cible : ce qui manque compte plein, ce qui dépasse moitié</p><div id="proches"></div></section>
+  <p class="w3b-pied">${conf('simule')}<span title="">profil-simule</span><span>Nugget 60′</span>${alpha('Nugget')}${V(fr(IBU0.v, 0) + ' IBU', IBU0.src)}</p>`;
 
 const css = `
   .ecran { gap: 8px; }
@@ -120,6 +115,8 @@ const css = `
   .w3b-tok { display: inline-flex; align-items: center; gap: 2px; min-height: 30px; padding: 0 5px 0 7px; border-radius: 8px; background: #f3f3f6; box-shadow: inset 0 -2px 0 #c4c4cc; font-size: 16px; }
   .w3b-tok[aria-expanded="true"] { background: #fff; box-shadow: inset 0 0 0 2px var(--encre); }
   .w3b-tok.fixe { box-shadow: inset 0 0 0 1.5px var(--encre); }
+  .w3b-tok.mot { font-size: 15px; font-weight: 600; background: #fff; box-shadow: inset 0 0 0 1px var(--trait2), inset 0 -2px 0 #c4c4cc; }
+  .w3b-tok.mot .w-mo { font-size: 15px; }
   .w3b-tok .hn { font-size: 16px; } .w3b-tok b { font-weight: 600; }
   .w3b-fix { font-size: 12px; color: var(--gris); }
   .w3b-mot { display: inline-flex; align-items: center; gap: 3px; font-size: 16px; font-weight: 600; }
@@ -187,7 +184,8 @@ const css = `
   .w3b-pl .r .hn { font-size: 13px; }
   .w3b-pl .r .mono { font-size: 12px; font-weight: 600; }
   .w3b-pl .v { font-size: 12px; font-weight: 700; } .w3b-pl .v.tient { color: #2f6b4f; } .w3b-pl .v.sort { color: var(--acc); } .w3b-pl .v.non, .w3b-pl .v.presque { color: var(--gris); }
-  .w3b-act { display: flex; gap: 8px; }
+  .w3b-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  #b-proches[aria-expanded="true"] { background: var(--encre); color: #fff; }
   .w3b-oeil { display: flex; flex-direction: column; gap: 3px; }
   .w3b-h3 { font-size: 14px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .w3b-ol { display: flex; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--gris); }
@@ -250,8 +248,8 @@ const dose = (g) => g.d + (g.d2 || (g.a === 'ensemble' ? 2 : 0));
 function plans() {
   const base = G.filter((g) => mOK(g) && g.l === ST.l && pinOK(g));
   const contr = base.filter((g) => g.a === ST.a && dose(g) <= 4 && !sortDe(g.P).length).map((g) => ({ g, e: ecart(g) })).sort((x, y) => x.e - y.e);
-  const libre = base.filter((g) => ST.a === 'seul' || g.a === ST.a).map((g) => ({ g, e: ecart(g) })).sort((x, y) => x.e - y.e);
   const franc = contr[0] || null;
+  const libre = base.filter((g) => g.a === ST.a && (!franc || (g.h === franc.g.h && g.h2 === franc.g.h2))).map((g) => ({ g, e: ecart(g) })).sort((x, y) => x.e - y.e);
   const sage = franc ? contr.filter((x) => x.e <= franc.e + 0.4).sort((x, y) => dose(x.g) - dose(y.g) || x.e - y.e)[0] : null;
   const ose = libre[0] || null;
   const proches = []; const vu = new Set(); for (const x of contr) { const k = [x.g.h, x.g.h2].sort().join('+'); if (vu.has(k)) continue; vu.add(k); proches.push(x); if (proches.length >= 5) break; }
@@ -266,16 +264,21 @@ function verdictDe(g) {
   return s <= 0.25 ? { k: 'tient', t: 'ça tient' } : s <= 0.75 ? { k: 'presque', t: 'presque' } : { k: 'non', t: 'ne marchera pas' };
 }
 // la phrase-recette du geste : les mots fixés par toi (moment, levure, assemblage) et ceux que la page cherche
+// Les mots que tu fixes (moment, assemblage, levure) sont des réglages : un toucher passe au choix suivant et ouvre leurs choix.
+const FIXES = { m: ['moment', ['dryActive', 'dryPost', 'chaud']], a: ['ajout-cumule', ['seul', 'ensemble', 'puis']], l: ['levure', ['US-05', 'Pomona', 'Verdant', 'Diamond']] };
+const motFixe = (k, inner) => '<button type="button" class="w3b-tok mot" data-role="reglage" data-reglage="' + FIXES[k][0] + '" data-fixe="' + k + '" aria-expanded="' + (ST.ouvert === k) + '" aria-label="' + { m: 'Moment', a: 'Assemblage', l: 'Levure' }[k] + ' : toucher pour changer">' + inner + ICO('chevb', 12) + '</button>';
+const motM = (m) => (m === 'chaud' ? '<span class="w-mo">' + ICO('ebu', 14) + '<span>à chaud</span></span>' : momHtml(m, 14));
+function squelette() { return '<span class="w3b-m">Mets</span><span class="w3b-m">?</span>' + motFixe('m', motM(ST.m)) + motFixe('a', ST.a) + '<span class="w3b-m">avec</span>' + motFixe('l', ST.l); }
 function phrase(g) {
   const tok = (k, inner, fixe) => '<button type="button" class="w3b-tok' + (fixe ? ' fixe' : '') + '" data-tok="' + k + '" aria-expanded="' + (ST.ouvert === k) + '" aria-label="Changer : ' + k + '">' + inner + ICO('chevb', 12) + '</button>';
   const dry = g.m.startsWith('dry');
   const seul = g.a === 'seul', dz = '<b class="mono">' + (g.a === 'ensemble' ? '2 + 2' : String(g.d).replace('.', ',')) + ' g/L</b>', jz = '<b class="mono">' + g.j + ' j</b>';
-  let h = '<span class="w3b-m">Mets</span>' + tok('h', HOPS[g.h].nom, 'h' in ST.pin) + (seul ? tok('d', dz, 'd' in ST.pin) : '<span class="w3b-mot">' + dz + '</span>') + '<span class="w3b-mot">' + momHtml(g.m, 14) + '</span>';
+  let h = '<span class="w3b-m">Mets</span>' + tok('h', HOPS[g.h].nom, 'h' in ST.pin) + (seul ? tok('d', dz, 'd' in ST.pin) : '<span class="w3b-mot">' + dz + '</span>') + motFixe('m', momHtml(g.m, 14));
   if (dry) h += seul ? tok('j', jz, 'j' in ST.pin) : '<span class="w3b-mot">' + jz + '</span>';
-  if (g.a === 'ensemble') h += '<span class="w3b-mot">+</span>' + tok('h2', HOPS[g.h2].nom, 'h2' in ST.pin) + '<span class="w3b-mot">ensemble</span>';
-  else if (g.a === 'puis') h += '<span class="w3b-mot">puis</span>' + '<span class="w3b-mot">' + HOPS[g.h2].nom + '</span><b class="mono">' + g.d2 + ' g/L ' + g.j2 + ' j</b>';
-  else h += '<span class="w3b-mot">seul</span>';
-  return h + '<span class="w3b-m">avec</span><span class="w3b-mot">' + g.l + '</span>';
+  if (g.a === 'ensemble') h += motFixe('a', 'ensemble') + '<span class="w3b-mot">+</span>' + tok('h2', HOPS[g.h2].nom, 'h2' in ST.pin);
+  else if (g.a === 'puis') h += motFixe('a', 'puis') + '<span class="w3b-mot">' + HOPS[g.h2].nom + '</span><b class="mono">' + g.d2 + ' g/L ' + g.j2 + ' j</b>';
+  else h += motFixe('a', 'seul');
+  return h + '<span class="w3b-m">avec</span>' + motFixe('l', g.l);
 }
 // si tu t'en écartes : le même geste, un mot changé, et ce qu'il donne sur ta cible
 function ecarts(g, k) {
@@ -287,22 +290,29 @@ function ecarts(g, k) {
     return '<button type="button" class="w3b-c ' + vd + '" data-role="reglage" data-reglage="ecart-' + k + '" data-v="' + v + '" aria-checked="' + (String(g[k]) === String(v)) + '"><b data-nature="simule">~ ' + (c == null ? '?' : fr1(c)) + '</b><span>' + lab(v) + '</span><span class="vv">' + (vd === 'sort' ? 'sort' : vd === 'tient' ? 'tient' : vd === 'presque' ? 'presque' : 'loin') + '</span></button>'; }).join('');
   return '<div class="w3b-ec-t">' + ICO('reglages', 12) + '<span>si tu t’en écartes · ~ crans de ' + MOTS_F[f0] + '</span>' + (Object.keys(ST.pin).length ? '<button type="button" data-libere="1">tout libérer</button>' : '') + '</div><div class="w3b-cs">' + cells + '</div>';
 }
+function choixFixes(k) {
+  const f0 = Object.keys(ST.cible)[0] || 'floral', vals = FIXES[k][1], garde = ST[k], gp = { ...ST.pin };
+  const lab = { m: (v) => (v === 'chaud' ? 'à chaud' : MOMENT[v].t), a: (v) => v, l: (v) => v }[k];
+  const cells = vals.map((v) => { ST[k] = v; if (k === 'a') ST.pin = {}; const P = plans(), x = P[ST.plan] && P[ST.plan].g; ST[k] = garde; ST.pin = gp;
+    const vd = !x ? 'non' : sortDe(x.P).length ? 'sort' : verdictDe(x).k, c = x && !x.P[f0].inconnu ? x.P[f0].crans : null;
+    return '<button type="button" class="w3b-c ' + vd + '" data-role="reglage" data-reglage="fixe-' + k + '" data-v="' + v + '" aria-checked="' + (garde === v) + '"><b data-nature="simule">' + (x ? '~ ' + (c == null ? '?' : fr1(c)) : 'non simulé') + '</b><span>' + lab(v) + '</span><span class="vv">' + (!x ? 'on ne sait pas' : vd === 'sort' ? 'sort' : vd === 'tient' ? 'tient' : vd === 'presque' ? 'presque' : 'loin') + '</span></button>'; }).join('');
+  return '<div class="w3b-ec-t">' + ICO('reglages', 12) + '<span>' + { m: 'moment', a: 'seul, ensemble ou puis', l: 'levure' }[k] + ' · ~ crans de ' + MOTS_F[f0] + '</span></div><div class="w3b-cs">' + cells + '</div>';
+}
 function geste() { const P = plans(); ST._p = P; if (ST.choix != null) return G[ST.choix]; const x = P[ST.plan]; return x ? x.g : null; }
 function rendre() {
   const P = plans(), g = geste(), msg = $('#msg');
-  for (const k of ['moment', 'levure', 'ajout-cumule']) { const v = { moment: ST.m, levure: ST.l, 'ajout-cumule': ST.a }[k]; document.querySelectorAll('#rep [data-reglage="' + k + '"][role="radio"]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.v === v))); }
   if (!g) {
     msg.hidden = false;
     const pour = ST.l === 'Verdant' ? 'Verdant n’est simulée qu’à deux houblons' : ST.l === 'Diamond' ? 'Diamond n’est simulée que pour Citra puis Idaho 7' : 'aucun geste simulé avec ces mots';
     msg.innerHTML = '<span class="w3b-vd inc">on ne sait pas</span><span>' + pour + '</span>' + (ST.l === 'Verdant' && ST.a !== 'ensemble' ? '<button type="button" data-aller="a:ensemble">passer à ensemble</button>' : ST.l === 'Diamond' && ST.a !== 'puis' ? '<button type="button" data-aller="a:puis">passer à puis</button>' : '<button type="button" data-libere="1">tout libérer</button>');
-    $('#phrase').innerHTML = ''; $('#al').innerHTML = ''; $('#vd').innerHTML = ''; $('#cib').innerHTML = ''; $('#plans').innerHTML = ''; $('#oeil').innerHTML = ''; $('#proches').innerHTML = '';
+    $('#phrase').innerHTML = squelette(); const e0 = $('#ecart'); e0.hidden = !FIXES[ST.ouvert]; if (FIXES[ST.ouvert]) e0.innerHTML = choixFixes(ST.ouvert); $('#al').innerHTML = ''; $('#vd').innerHTML = ''; $('#cib').innerHTML = ''; $('#plans').innerHTML = ''; $('#oeil').innerHTML = ''; $('#proches').innerHTML = '';
     return;
   }
   msg.hidden = true;
   const vd = verdictDe(g), sort = sortDe(g.P);
   $('#vd').className = 'w3b-vd ' + (vd.k === 'tient' && sort.length ? 'sort' : vd.k);
   $('#vd').innerHTML = ICO(vd.k === 'tient' ? 'ok' : vd.k === 'non' ? 'refus' : vd.k === 'inc' ? 'aide2' : 'cible', 14) + '~ ' + vd.t + (sort.length ? ', sort de ta 16D' : '');
-  $('#cib').innerHTML = Object.entries(ST.cible).map(([f, v]) => { const c = g.P[f].inconnu ? null : g.P[f].crans; return '<span>' + PIC(f, 14) + MOTS_F[f] + ' <b>~ ' + (c == null ? '?' : fr1(c)) + '</b>pour<b>' + fr1(v) + ' cran' + (v >= 2 ? 's' : '') + '</b></span>'; }).join('') || '<span>touche une piste</span>';
+  $('#cib').innerHTML = Object.entries(ST.cible).map(([f, v]) => { const c = g.P[f].inconnu ? null : g.P[f].crans; return '<span>' + PIC(f, 14) + MOTS_F[f] + ' <b>~' + (c == null ? '?' : fr1(c)) + ' cran' + (c != null && c >= 2 ? 's' : '') + '</b>(visé ' + fr1(v) + ')</span>'; }).join('') || '<span>touche une piste</span>';
   $('#phrase').innerHTML = phrase(g);
   const pq = $('#pq'), O = P.ose && P.ose.g, oFait = O && O !== g && manque(O) < manque(g) - 0.2;
   pq.hidden = vd.k === 'tient' || ST.choix != null || ST.plan === 'ose';
@@ -310,7 +320,7 @@ function rendre() {
   const n = dose(g) * 20;
   $('#al').innerHTML = '<span class="w-hop">' + HOPS[g.h].nom + HOPS[g.h].alphaP + HOPS[g.h].usage + stockIc(g.h, g.a === 'ensemble' ? 40 : g.d * 20) + '</span>' + (g.h2 ? '<span class="w-hop">' + HOPS[g.h2].nom + HOPS[g.h2].alpha + HOPS[g.h2].usage + stockIc(g.h2, (g.d2 || 2) * 20) + '</span>' : '') + '<span class="w3b-n"><b class="mono" data-nature="mesure" data-source="dose × 20 L">' + n + ' g</b> pour 20 L</span>';
   $('#bio').innerHTML = ICO('bio', 14) + (g.m !== 'dryActive' ? '<span class="w-inc"><i class="w-hach"></i>biotransformation ' + (g.m.startsWith('dry') ? 'au repos' : 'à chaud : aucune') + '</span>' : g.l === 'Pomona' ? '<span>géraniol</span>' + PIC('floral', 14) + ICO('fleche', 12) + PIC('citrus', 14) + '<span>citronellol ~ 50 %</span>' : g.l === 'Verdant' || g.l === 'Diamond' ? '<span>thiols libérés ~ 0,1 %</span>' + PIC('tropical', 14) : '<span class="w-inc"><i class="w-hach"></i>biotransformation non publiée</span>');
-  const e = $('#ecart'); e.hidden = !ST.ouvert || !g; if (ST.ouvert && g) e.innerHTML = ecarts(g, ST.ouvert);
+  const e = $('#ecart'); e.hidden = !ST.ouvert; if (ST.ouvert) e.innerHTML = FIXES[ST.ouvert] ? choixFixes(ST.ouvert) : ecarts(g, ST.ouvert);
   majProfil($('#prof'), g.P, AV);
   $('#prof').querySelectorAll('.w-row').forEach((r) => {
     const f = r.dataset.famille, v = ST.cible[f]; r.classList.toggle('vise', v != null);
@@ -321,7 +331,7 @@ function rendre() {
   });
   document.querySelector('.w3b-rep').style.setProperty('--pl', PL[ST.choix != null ? 'franc' : ST.plan][1]);
   // trois façons d'y aller
-  $('#plans').innerHTML = ['sage', 'franc', 'ose'].map((k) => { const x = P[k]; if (!x) return '<div class="w3b-pl" style="--pl:' + PL[k][1] + '"><b class="n">' + PL[k][0] + '</b><span class="w3b-n">aucun</span></div>'; const y = x.g, v2 = sortDe(y.P).length ? { k: 'sort', t: 'sort' } : verdictDe(y);
+  $('#plans').innerHTML = ['sage', 'franc', 'ose'].map((k) => { const x = P[k]; if (!x) return '<div class="w3b-pl" style="--pl:' + PL[k][1] + '"><b class="n">' + PL[k][0] + '</b><span class="w3b-n">aucun</span></div>'; const y = x.g, v2 = sortDe(y.P).length ? { k: 'sort', t: 'sort' } : verdictDe(y); if (k === 'ose' && P.franc && y === P.franc.g) return '<div class="w3b-pl" style="--pl:' + PL[k][1] + '"><b class="n"><i class="w3b-mk">O</i>Osé<span class="w3b-sl">sans limite</span></b><span class="w3b-n">rien de plus</span></div>';
     return '<button type="button" class="w3b-pl" data-role="reglage" data-reglage="plan" data-v="' + k + '" aria-checked="' + (ST.choix == null && ST.plan === k) + '" style="--pl:' + PL[k][1] + '"><b class="n"><i class="w3b-mk">' + PL[k][0][0] + '</i>' + PL[k][0] + (k === 'ose' ? '<span class="w3b-sl">sans limite</span>' : '') + '</b><span class="r">' + hn(y.h) + (y.h2 ? '<span>' + (y.a === 'puis' ? 'puis' : '+') + '</span>' + hn(y.h2) : '') + '</span><span class="r"><span class="mono">' + dose(y) + ' g/L</span>' + (ST.m === 'chaud' || !mOK(y) ? MOMENT[y.m].t : '') + '<span class="v ' + v2.k + '" data-nature="simule">~ ' + v2.t + '</span></span></button>'; }).join('');
   // le coup d'œil : les trois sur une même piste, familles visées et familles qui sortent
   const fams = ORD.filter((f) => f !== 'resin' && (ST.cible[f] != null || ['sage', 'franc', 'ose'].some((k) => P[k] && sortDe(P[k].g.P).includes(f)))).slice(0, 6);
@@ -397,6 +407,7 @@ const lacher = (e) => {
 $('#prof').addEventListener('pointerup', lacher); $('#prof').addEventListener('pointercancel', lacher);
 $('#prof').addEventListener('keydown', (e) => { const r = e.target.closest('.w-row'); if (!r || !['ArrowRight', 'ArrowLeft', 'Delete', 'Backspace'].includes(e.key)) return; const f = r.dataset.famille; if (e.key === 'Delete' || e.key === 'Backspace') delete ST.cible[f]; else ST.cible[f] = Math.max(0.5, Math.min(5, (ST.cible[f] || 0) + (e.key === 'ArrowRight' ? 0.5 : -0.5))); ST.choix = null; rendre(); e.preventDefault(); });
 document.addEventListener('click', (e) => {
+  const fx = e.target.closest('[data-fixe]'); if (fx) { const k = fx.dataset.fixe, vals = FIXES[k][1]; ST[k] = vals[(vals.indexOf(ST[k]) + 1) % vals.length]; if (k === 'a') ST.pin = {}; if (k === 'm' && ST.m === 'chaud') delete ST.pin.j; ST.choix = null; ST.ouvert = k; rendre(); return; }
   const t = e.target.closest('[data-tok]'); if (t) { const k = t.dataset.tok; ST.ouvert = ST.ouvert === k ? null : k; rendre(); return; }
   const lib = e.target.closest('[data-libere]'); if (lib) { ST.pin = {}; ST.choix = null; rendre(); return; }
   const al = e.target.closest('[data-aller]'); if (al) { const [k, v] = al.dataset.aller.split(':'); ST[k] = v; ST.pin = {}; ST.choix = null; rendre(); return; }
@@ -408,10 +419,11 @@ document.addEventListener('click', (e) => {
   else if (k === 'plan') { ST.plan = v; ST.choix = null; }
   else if (k === 'choix') ST.choix = Number(v);
   else if (k === 'tirage') { const g = geste(); if (g) tirer(g); dessinerTirs(g); return; }
+  else if (k.startsWith('fixe-')) { const w = k.slice(5); ST[w] = v; if (w === 'a') ST.pin = {}; if (w === 'm' && v === 'chaud') delete ST.pin.j; ST.choix = null; }
   else if (k.startsWith('ecart-')) { const w = k.slice(6); ST.pin[w] = ['d', 'j'].includes(w) ? Number(v) : v; ST.choix = null; }
   rendre();
 });
-document.addEventListener('detail', () => {});
+document.getElementById('b-proches').addEventListener('click', (e) => { const b = e.currentTarget, s2 = document.getElementById('proches-b'), o = b.getAttribute('aria-expanded') !== 'true'; b.setAttribute('aria-expanded', String(o)); s2.hidden = !o; if (o) s2.scrollIntoView({ block: 'nearest' }); });
 // ce que la page affiche, pour la preuve du geste (jouer-w3b.mjs)
 window.__releve = () => { const g = geste(); const P = ST._p || plans(); return {
   cible: { ...ST.cible }, reglages: { moment: ST.m, levure: ST.l, assemblage: ST.a, plan: ST.choix != null ? 'choix' : ST.plan },

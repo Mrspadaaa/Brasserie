@@ -139,7 +139,7 @@ const css = `
   .blk .poi i { width: 6px; height: 18px; border-radius: 3px; background: #fff; box-shadow: 0 0 0 1.5px var(--encre); }
   .rep { position: absolute; font: 500 12px/14px var(--mono); color: var(--encre); white-space: nowrap; transform: translateX(-50%); }
   .rep.sg { transform: none; font-family: var(--sans); color: var(--gris); }
-  .bio-m { position: absolute; font-size: 12px; white-space: nowrap; display: inline-flex; align-items: center; gap: 2px; background: #fff; padding: 0 3px; border-radius: 4px; box-shadow: 0 0 0 1px #c9b3dd; }
+  .bio-m { position: absolute; font-size: 12px; white-space: nowrap; display: inline-flex; align-items: center; gap: 3px; height: 22px; background: #fff; padding: 0 6px; border-radius: 4px; box-shadow: 0 0 0 1px #c9b3dd; color: var(--encre); }
   .rub { position: absolute; overflow: visible; }
   .cur { position: absolute; width: 0; border-left: 2px solid var(--encre); z-index: 5; pointer-events: none; }
   .cur::before { content: attr(data-j); position: absolute; bottom: -16px; left: -18px; width: 36px; text-align: center; font: 600 12px var(--mono); background: var(--encre); color: #fff; border-radius: 4px; }
@@ -242,9 +242,9 @@ function geo() { const W = document.querySelector('.fr-g').clientWidth - LW; ret
 const ROWS = (n) => { let y = 18; const r = { axe: 0, lev: y }; y += 26; if (R && R.bio) { r.bio = y; y += 24; } r.blocs = []; for (let i = 0; i < n; i++) { r.blocs.push(y); y += 40; } r.rub = y; y += RUB.length * 34; r.fin = y + 18; return r; };
 function fond() {
   const g = GEO, Y = ROWS(R.ajouts.length);
-  let h = '<span class="ax-t">jour</span>' + [0, 6, 12].map((j) => '<span class="ax" style="left:' + g.x(j) + 'px">' + j + '</span>').join('');
+  let h = '<span class="ax-t"><span class="estime">~ simulé</span></span>' + [0, 6, 12].map((j) => '<span class="ax" style="left:' + g.x(j) + 'px">' + j + '</span>').join('');
   h += '<span class="lab" style="top:' + Y.lev + 'px;height:20px">' + ic('levure', 14) + 'levure</span><span class="lane lev-a" style="top:' + Y.lev + 'px;left:' + g.x(0) + 'px;width:' + (g.x(6) - g.x(0) - 2) + 'px">active</span><span class="lane lev-r" style="top:' + Y.lev + 'px;left:' + g.x(6) + 'px;width:' + (g.x(NJ) - g.x(6)) + 'px">au repos</span>';
-  if (R.bio) h += '<span class="lab" style="top:' + Y.bio + 'px;height:20px">' + ic('etincelle', 14) + 'biotransfo</span><span class="bio-m" data-role="biotransformation" style="top:' + Y.bio + 'px;left:' + g.x(R.j0) + 'px">' + picto('floral', 12) + ic('fleche', 12) + picto('citrus', 12) + (R.lv === 'pomona' ? '<span data-nature="simule">~' + Math.round(R.bio[1]) + ' µg/L citronellol</span>' : '<span>citronellol <span data-nature="simule">~0–' + Math.round(R.bio[2]) + ' µg/L</span> ' + inc('non publié') + '</span>') + '</span>';
+  if (R.bio) h += '<span class="lab" style="top:' + Y.bio + 'px;height:20px">' + ic('etincelle', 14) + 'biotransfo</span><button class="bio-m" data-role="biotransformation" data-action="preuve-bio" aria-label="Biotransformation : la plage dans la preuve" style="top:' + Y.bio + 'px;left:' + g.x(R.j0) + 'px">' + picto('floral', 12) + ic('fleche', 12) + picto('citrus', 12) + (R.lv === 'pomona' ? '<span data-nature="simule">floral → agrumes, estimé</span>' : '<span>floral → agrumes, ' + inc('non publié') + '</span>') + '</button>';
   R.ajouts.forEach((a, i) => { const y = Y.blocs[i]; h += '<span class="lab" style="top:' + y + 'px;height:22px" data-houblon="' + HBJ[a.h].nom + '">' + D.points[a.h] + '<span>' + HBJ[a.h].nom + '<small>' + a.dose + ' g/L</small></span></span>';
     // les repères mesurés sous la barre (v3) : 24 h, 2 j, 3 j, puis « sans gain mesuré »
     if (i === 0) h += D.reperes.filter((r) => r.j <= a.jours).map((r) => '<span class="rep" style="top:' + (y + 24) + 'px;left:' + (g.x(a.start + r.j) - 1) + 'px" data-nature="mesure" data-source="' + esc(r.src) + '">' + r.t + '</span>').join('');
@@ -379,12 +379,16 @@ function defi() {
 }
 function preuve() {
   const P = D.preuve;
-  document.querySelector('[data-role="preuve"]').innerHTML = '<p class="pv-t">Mesuré en bière</p>' + P.mesures.map(([f, t, src, mot, note]) => '<div class="pv">' + (f ? picto(f, 14) : ic('biere', 14)) + '<span>' + vrai(esc(t), src, mot, 'vv txt') + (/vérifier/.test(note) ? ' <span class="mot-c mot-verif">à vérifier</span>' : '') + ' <span class="vr-s">' + esc(note) + '</span></span></div>').join('')
+  const bio = R.bio ? '<p class="pv-t" id="preuve-bio">La biotransformation de ce plan</p><div class="pv">' + picto('floral', 14) + '<span><span data-nature="simule">~' + Math.round(R.bio[1]) + ' µg/L de citronellol, de ' + Math.round(R.bio[0]) + ' à ' + Math.round(R.bio[2]) + ' µg/L, estimé</span> <span class="vr-s">' + LVN[R.lv] + '' + (R.bio[0] > 0 ? ' ; une plage de ×' + Math.round(R.bio[2] / R.bio[0]) : ' ; borne basse à 0 : l’ampleur ne se chiffre pas') + '</span></span></div>'
+    + '<div class="pv">' + ic('levure', 14) + '<span>' + vrai('géraniol → citronellol : Pomona « medium »', 'Escarpment Labs, LalBrew Pomona [51]', 'fiche', 'vv txt') + ' <span class="vr-s">le moteur : conversion 50 % au centre pour Pomona, 0 % pour les autres, 87 % au plus (H41, convention)</span></span></div>'
+    + '<div class="pv">' + picto('tropical', 14) + '<span>' + vrai('thiols libérés : 0,01–0,35 %', 'Christiaens 2025 [42]', 'publié', 'vv txt') + ' <span class="vr-s">sur précurseur synthétique seulement</span></span></div>' : '';
+  document.querySelector('[data-role="preuve"]').innerHTML = bio + '<p class="pv-t">Mesuré en bière</p>' + P.mesures.map(([f, t, src, mot, note]) => '<div class="pv">' + (f ? picto(f, 14) : ic('biere', 14)) + '<span>' + vrai(esc(t), src, mot, 'vv txt') + (/vérifier/.test(note) ? ' <span class="mot-c mot-verif">à vérifier</span>' : '') + ' <span class="vr-s">' + esc(note) + '</span></span></div>').join('')
     + '<p class="pv-t">La simulation tombe-t-elle juste ?</p>' + P.verifs.map((v) => '<div class="pv">' + (v.ok ? ic('check', 14) : ic('alerte', 14)) + '<span>' + vrai(esc(v.t), v.src, 'mesuré', 'vv txt') + ' <span class="vr-s">calcul ' + esc(v.c) + ' : ' + esc(v.verdict) + '</span></span></div>').join('')
     + '<p class="pv-t">Les trous</p>' + P.trous.map((t) => '<div class="pv">' + inc('') + '<span>' + esc(t) + '</span></div>').join('');
 }
 // ---------- les gestes ----------
-document.addEventListener('click', (e) => { const b = e.target.closest('button[data-reglage]'); if (!b) return; const r = b.dataset.reglage, v = b.dataset.v;
+document.addEventListener('click', (e) => { const bb = e.target.closest('[data-action="preuve-bio"]'); if (bb) { const rp = document.querySelector('[aria-controls="preuve"]'); if (rp.getAttribute('aria-expanded') !== 'true') rp.click(); const t = document.getElementById('preuve-bio'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+  const b = e.target.closest('button[data-reglage]'); if (!b) return; const r = b.dataset.reglage, v = b.dataset.v;
   if (r === 'scenario') { const o = b.getAttribute('aria-expanded') !== 'true'; b.setAttribute('aria-expanded', String(o)); document.getElementById('plans').hidden = !o; return; }
   if (r === 'plan') { const P = D.plans.find((p) => p.id === v); ST.plan = v; ST.jours = P.arr === 'seul' ? [3] : P.arr === 'suite' ? (P.hops[1] === 'galaxy' ? [3, 7] : [3, 5]) : [3, 3]; if (P.hops[1] === 'galaxy' && P.arr === 'suite') ST.start = 7; document.getElementById('plans').hidden = true; document.querySelector('[data-reglage="scenario"]').setAttribute('aria-expanded', 'false'); }
   if (r === 'levure') ST.lv = v;

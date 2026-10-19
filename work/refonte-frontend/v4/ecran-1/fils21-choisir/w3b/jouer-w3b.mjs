@@ -27,12 +27,12 @@ const apres = await J.releve();
 await J.capture('w3b-apres');
 // un toucher à la fois
 const touche = async (sel) => { const b = await J.boite(sel); await J.toucher(b.cx, b.cy); return J.releve(); };
-const pomona = await touche('#rep [data-reglage="levure"][data-v="Pomona"]');
+const pomona = await touche('#phrase [data-fixe="l"]');
 await J.capture('w3b-pomona');
-const apresFerm = await touche('#rep [data-reglage="moment"][data-v="dryPost"]');
+const apresFerm = await touche('#phrase [data-fixe="m"]');
 const ose = await touche('[data-reglage="plan"][data-v="ose"]');
 await J.capture('w3b-ose');
-const ensemble = await touche('#rep [data-reglage="ajout-cumule"][data-v="ensemble"]');
+const ensemble = await touche('#phrase [data-fixe="a"]');
 await J.capture('w3b-ensemble');
 await touche('#tire'); await touche('#tire'); const tirage = await touche('#tire');
 // un tirage ne change pas tant que rien ne change : on relit sans toucher

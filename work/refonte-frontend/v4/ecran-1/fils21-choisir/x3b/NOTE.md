@@ -1,5 +1,6 @@
 x3b · Ma cuve, jour après jour : seconde passe de x3, retenue par le critique. x3 reste intacte. **Chaude** : la frise du temps, au doigt.
 
+- **Troisième passe (20.10)** : la bannière de biotransformation de la frise ne montre plus de chiffre, seulement un mot (« floral → agrumes, estimé » avec Pomona ; « floral → agrumes, non publié » sinon). La toucher ouvre la preuve sur « La biotransformation de ce plan » : ~137 µg/L de citronellol, de 0 à 1004 µg/L, la source Pomona « medium » [51], la convention du moteur (H41) et les thiols 0,01–0,35 % [42]. Pour que la frise reste marquée comme simulée, son coin porte « ~ simulé ». Contrôles rejoués : COMMUN OK, MOTS OK (52 mots hors données, 117 au total), LISIBLE, SIMULATION, CUMUL, ALPHA et FICHE-BASELINE OK, geste sans erreur.
 - **Ce qui a changé**, retouches communes (§3 de la synthèse) :
   1. **Départ en dry hop actif avec US-05** : la suite Citra 3 j puis Idaho 7 5 j, le cas K4 du moteur. Les quatre levures y sont simulées ; chacune fait bouger les barres au premier toucher (Pomona : agrumes 2,8 → 3,4 crans, « ~137 µg/L citronellol »). Une levure non simulée se dit une fois (« Diamond : pas encore simulée ici »), sans bouton barré. En « après », plus de bascule : la rangée laisse la place à « levure au repos : glisse l’ajout avant J6 pour qu’elle compte ».
   2. **La réponse en une ligne** : un verdict de 12 à 20 mots (« Faisable, mais Idaho 7 reste 2 j sans gain mesuré, hop creep possible, ~ tropicaux hors de la 16D »). Les explications passent derrière le « ? », le défi et la preuve.
@@ -36,7 +37,6 @@ x3b · Ma cuve, jour après jour : seconde passe de x3, retenue par le critique.
     - Diamond n'existe que pour Citra puis Idaho 7 ;
     - la dose d'un houblon seul reste à 4 g/L, et celle de deux houblons à 2 + 2 g/L.
   - « Tenir » au-delà du plateau ne montre plus rien (« ~ presque rien ne bouge ») : c'est la leçon, mais le geste perd son intérêt.
-  - Le citronellol d'US-05 en fermentation active s'affiche « ~0–1004 µg/L, non publié » : la borne haute du moteur (87 % de conversion) peut impressionner.
   - Le végétal compte « hors de la 16D 12 fois sur 20 » dans « Tire une bière » : sa plage du moteur est large sans être marquée partielle.
   - Sur la frise à 17 jours (17 px par jour), les repères 1, 2, 3 sont serrés.
 - **Contrôles** (sur `etat.html`) :

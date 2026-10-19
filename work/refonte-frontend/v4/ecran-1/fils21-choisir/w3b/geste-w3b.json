@@ -11,7 +11,7 @@
   },
   "verdict": "~ ça tient",
   "phrase": "Mets Citra 2 g/L actif 1 j seul avec US-05",
-  "cibleTexte": "floral ~ 1,2 pour 1 cran",
+  "cibleTexte": "floral ~1,2 cran (visé 1)",
   "crans": {
    "floral": "1,2",
    "herbal": "0",
@@ -42,7 +42,7 @@
   "plans": {
    "sage": "Citra 1 g/L actif US-05",
    "franc": "Citra 2 g/L actif US-05",
-   "ose": "Idaho 7 Motueka 4 g/L actif US-05"
+   "ose": "Citra 2 g/L actif US-05"
   },
   "tirages": 0,
   "tirTexte": "",
@@ -60,7 +60,7 @@
   },
   "verdict": "~ ne marchera pas",
   "phrase": "Mets Idaho 7 4 g/L actif 1 j seul avec US-05",
-  "cibleTexte": "floral ~ 1,3 pour 2,5 crans",
+  "cibleTexte": "floral ~1,3 cran (visé 2,5)",
   "crans": {
    "floral": "1,3",
    "herbal": "0,3",
@@ -91,7 +91,7 @@
   "plans": {
    "sage": "Citra 2 g/L actif US-05",
    "franc": "Idaho 7 4 g/L actif US-05",
-   "ose": "Citra 8 g/L actif US-05"
+   "ose": "Idaho 7 8 g/L actif US-05"
   },
   "tirages": 0,
   "tirTexte": "",
@@ -102,8 +102,8 @@
   "texte": "Floral · cible 2,5 crans",
   "pasLoupe": 54,
   "pasPiste": 18,
-  "haut": 331,
-  "doigt": 401,
+  "haut": 231,
+  "doigt": 301,
   "grossissement": 3
  },
  "apres": {
@@ -118,7 +118,7 @@
   },
   "verdict": "~ ne marchera pas",
   "phrase": "Mets Idaho 7 4 g/L actif 1 j seul avec US-05",
-  "cibleTexte": "floral ~ 1,3 pour 2,5 crans",
+  "cibleTexte": "floral ~1,3 cran (visé 2,5)",
   "crans": {
    "floral": "1,3",
    "herbal": "0,3",
@@ -149,7 +149,7 @@
   "plans": {
    "sage": "Citra 2 g/L actif US-05",
    "franc": "Idaho 7 4 g/L actif US-05",
-   "ose": "Citra 8 g/L actif US-05"
+   "ose": "Idaho 7 8 g/L actif US-05"
   },
   "tirages": 0,
   "tirTexte": "",
@@ -167,7 +167,7 @@
   },
   "verdict": "~ ne marchera pas",
   "phrase": "Mets Idaho 7 4 g/L actif 1 j seul avec Pomona",
-  "cibleTexte": "floral ~ 1,5 pour 2,5 crans",
+  "cibleTexte": "floral ~1,5 cran (visé 2,5)",
   "crans": {
    "floral": "1,5",
    "herbal": "0,5",
@@ -198,7 +198,7 @@
   "plans": {
    "sage": "Citra 2 g/L actif Pomona",
    "franc": "Idaho 7 4 g/L actif Pomona",
-   "ose": "Citra 8 g/L actif Pomona"
+   "ose": "Idaho 7 8 g/L actif Pomona"
   },
   "tirages": 0,
   "tirTexte": "",
@@ -216,7 +216,7 @@
   },
   "verdict": "~ ne marchera pas",
   "phrase": "Mets Citra 2 g/L après 2 j seul avec Pomona",
-  "cibleTexte": "floral ~ 1,3 pour 2,5 crans",
+  "cibleTexte": "floral ~1,3 cran (visé 2,5)",
   "crans": {
    "floral": "1,3",
    "herbal": "0",
@@ -265,7 +265,7 @@
   },
   "verdict": "~ ça tient, sort de ta 16D",
   "phrase": "Mets Citra 8 g/L après 1 j seul avec Pomona",
-  "cibleTexte": "floral ~ 2,4 pour 2,5 crans",
+  "cibleTexte": "floral ~2,4 crans (visé 2,5)",
   "crans": {
    "floral": "2,4",
    "herbal": "0",
@@ -312,40 +312,40 @@
    "assemblage": "ensemble",
    "plan": "ose"
   },
-  "verdict": "~ ne marchera pas, sort de ta 16D",
-  "phrase": "Mets Citra 2 + 2 g/L après 3 j + Idaho 7 ensemble avec Pomona",
-  "cibleTexte": "floral ~ 1,6 pour 2,5 crans",
+  "verdict": "~ ne marchera pas",
+  "phrase": "Mets Citra 2 + 2 g/L après 3 j ensemble + Motueka avec Pomona",
+  "cibleTexte": "floral ~1,4 cran (visé 2,5)",
   "crans": {
-   "floral": "1,6",
-   "herbal": "0,2",
-   "earthy": "0,3",
-   "citrus": "2,9",
-   "tropical": "3,2",
-   "stoneFruit": "1,7",
+   "floral": "1,4",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "3",
+   "tropical": "3",
+   "stoneFruit": "1,4",
    "pomeFruit": "0",
-   "berries": "2,8",
+   "berries": "2,1",
    "melon": "1,4",
-   "resin": "10",
-   "spice": "0,4",
-   "green": "1,1"
+   "resin": "9,4",
+   "spice": "0,2",
+   "green": "0,9"
   },
   "largeurs": {
-   "floral": 58,
-   "herbal": 8,
-   "earthy": 10,
-   "citrus": 106,
-   "tropical": 115,
-   "stoneFruit": 62,
+   "floral": 52,
+   "herbal": 1,
+   "earthy": 1,
+   "citrus": 108,
+   "tropical": 107,
+   "stoneFruit": 51,
    "pomeFruit": 0,
-   "berries": 101,
+   "berries": 77,
    "melon": 51,
-   "spice": 13,
-   "green": 39
+   "spice": 8,
+   "green": 33
   },
   "plans": {
    "sage": "Citra Motueka 4 g/L après Pomona",
    "franc": "Citra Motueka 4 g/L après Pomona",
-   "ose": "Citra Idaho 7 4 g/L après Pomona"
+   "ose": "Citra Motueka 4 g/L après Pomona"
   },
   "tirages": 0,
   "tirTexte": "",
@@ -361,43 +361,43 @@
    "assemblage": "ensemble",
    "plan": "ose"
   },
-  "verdict": "~ ne marchera pas, sort de ta 16D",
-  "phrase": "Mets Citra 2 + 2 g/L après 3 j + Idaho 7 ensemble avec Pomona",
-  "cibleTexte": "floral ~ 1,6 pour 2,5 crans",
+  "verdict": "~ ne marchera pas",
+  "phrase": "Mets Citra 2 + 2 g/L après 3 j ensemble + Motueka avec Pomona",
+  "cibleTexte": "floral ~1,4 cran (visé 2,5)",
   "crans": {
-   "floral": "1,6",
-   "herbal": "0,2",
-   "earthy": "0,3",
-   "citrus": "2,9",
-   "tropical": "3,2",
-   "stoneFruit": "1,7",
+   "floral": "1,4",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "3",
+   "tropical": "3",
+   "stoneFruit": "1,4",
    "pomeFruit": "0",
-   "berries": "2,8",
+   "berries": "2,1",
    "melon": "1,4",
-   "resin": "10",
-   "spice": "0,4",
-   "green": "1,1"
+   "resin": "9,4",
+   "spice": "0,2",
+   "green": "0,9"
   },
   "largeurs": {
-   "floral": 58,
-   "herbal": 8,
-   "earthy": 10,
-   "citrus": 106,
-   "tropical": 115,
-   "stoneFruit": 62,
+   "floral": 52,
+   "herbal": 1,
+   "earthy": 1,
+   "citrus": 108,
+   "tropical": 107,
+   "stoneFruit": 51,
    "pomeFruit": 0,
-   "berries": 101,
+   "berries": 77,
    "melon": 51,
-   "spice": 13,
-   "green": 39
+   "spice": 8,
+   "green": 33
   },
   "plans": {
    "sage": "Citra Motueka 4 g/L après Pomona",
    "franc": "Citra Motueka 4 g/L après Pomona",
-   "ose": "Citra Idaho 7 4 g/L après Pomona"
+   "ose": "Citra Motueka 4 g/L après Pomona"
   },
   "tirages": 3,
-  "tirTexte": "3 bières tirées dans la plage ~ simulée hors de ta 16D : melon 3 sur 3, floral 1 sur 3, fruits à noyau 1 sur 3 l’étendue du possible, pas une probabilité mesurée",
+  "tirTexte": "3 bières tirées dans la plage ~ simulée hors de ta 16D : tropical 2 sur 3, épicé 2 sur 3, végétal 2 sur 3 l’étendue du possible, pas une probabilité mesurée",
   "ibu": 60
  },
  "tirageStable": true,

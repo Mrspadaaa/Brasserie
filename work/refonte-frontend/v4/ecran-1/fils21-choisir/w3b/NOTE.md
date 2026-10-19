@@ -41,4 +41,16 @@ w3b · Dessine ta bière, seconde passe. w3 reste intacte pour comparer.
   - MOTS OK avec `--sans-donnees --max=70` : 69 mots hors données ; sans l'option, 132 ;
   - LISIBLE OK (14 pictos, 2 mesurées, 29 simulées, 0 faute) ; SIMULATION OK (30 réglages, le simulé bouge) ; CUMUL OK (5 choix de levure, biotransformation visible, la levure fait bouger le simulé) ; ALPHA OK (5 voies sur 5) ; FICHE-BASELINE OK (Citra, 12 familles, 17 pictos, 0 faute).
 - **Pire contraste** : 4,96:1, « Agrumes » (ton texte de la famille sur blanc).
+- **Troisième passe (20.10)** :
+  - les trois rangées de réglages sont fondues dans la phrase : « actif ⌄ », « seul ⌄ », « US-05 ⌄ » sont des mots-réglages ; un toucher passe au choix suivant et ouvre la liste, chaque choix avec ses crans et son verdict (« non simulé · on ne sait pas » pour Verdant ou Diamond seul) ;
+  - la cible se lit « floral ~1,2 cran (visé 1) » ;
+  - Osé, c'est le même houblon et le même assemblage que Franc, sans limite. Au départ, il dit « rien de plus » (plus de paire Idaho 7 + Motueka) ; après le geste, Idaho 7 8 g/L, « sort » ;
+  - « Les plus proches » est replié derrière un bouton.
+  - Contrôles :
+    - COMMUN OK (`--sans=mots`) ;
+    - MOTS OK : 64 mots hors données ; 121 au total ;
+    - LISIBLE, SIMULATION, CUMUL, ALPHA et FICHE-BASELINE OK.
+  - Geste rejoué (`geste-w3b.json`, aucune erreur), avec ces différences :
+    - les touchers suivants passent par les mots : levure → Pomona, moment → après, seul → ensemble ;
+    - « ensemble » trouve Citra + Motueka (floral ~1,4).
 - Généré par `w3b/generer-w3b.mjs`, avec le socle `w1/socle-w.mjs` et `w1/donnees-w.mjs`. Captures d'états : `w1/captures-w.mjs w3b`.
