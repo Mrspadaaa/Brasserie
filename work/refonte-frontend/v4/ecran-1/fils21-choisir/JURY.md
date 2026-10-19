@@ -28,7 +28,7 @@ Le jury filtre, le brasseur décide. Les 30 lui sont montrées, et les 5 retenue
 ## Rendu
 
 `fils21-choisir/JURY-VERDICT.md`, avec :
-- une table des 30 : une note de 1 à 5 par critère et une ligne de raison ;
+- une table des 35 : une note de 1 à 5 par critère et une ligne de raison ;
 - les 5 retenues, chacune avec ce qui la fait gagner et les trois améliorations les plus utiles, concrètes et vérifiables ;
 - les idées à greffer, prises chez les écartées.
 

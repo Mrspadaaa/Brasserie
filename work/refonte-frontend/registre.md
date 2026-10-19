@@ -149,7 +149,7 @@ Voir `decisions.md` (D1 à D12).
   - ladder e1 à e3 (af4ed4521b57e6e1c) et exploration x1 à x5 (a358d8d7f2bd5f6e9 : 2 tièdes, 2 chaudes,
     1 froide, règle D22), à la demande « Fait plus de lot de mini maquettes avec un vrai ladder et des
     vrai exploration ». Ils attendent aussi les deux JSON.
-  - ajout cumulé, biotransformation et levure, a1 à a3 (a93f9f90f8f30e5bb), à la demande « Aussi
+  - ajout cumulé, biotransformation et levure, a1 à a6 (a93f9f90f8f30e5bb, a4–a6 ajoutés ; D96 : à intégrer partout), à la demande « Aussi
     explore la voie de l'ajout cumulé. 2 houblons en dry hopping. Et la bio Transfo et la levure ».
     Cas K5 ajouté au brief ; le moteur ajoute K5 et une table « paires ».
   - « la réponse d'abord », w1 à w5 (a571104d251dfed19), et « au doigt », y1 à y5 (a302d1517de87c0a0),

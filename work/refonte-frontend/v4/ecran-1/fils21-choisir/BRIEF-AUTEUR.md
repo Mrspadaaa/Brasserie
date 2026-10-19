@@ -112,9 +112,14 @@ Leurs règles, toutes contrôlées :
    - au moins un réglage visible, `data-role="reglage"` (bouton, curseur, liste, carte), qui fait bouger le simulé ;
    - une vraie valeur visible à côté.
    Une variante qui s'en passe le justifie dans sa NOTE. Témoin : le lot 20 y échoue.
-4. `node O/controle-alpha.mjs D <v> --page=etat.html` → ALPHA OK.
-5. `node O/controle-fiche-baseline.mjs D <v> --page=etat.html` → FICHE-BASELINE OK, si la page nomme un houblon.
-6. Les captures, prises avec `node O/capture-page.mjs <page.html> D/captures/<v>-390.png 1688` : la page entière, le premier écran, et chaque état qui compte (curseur bougé, détail ouvert). **Regarde chaque capture toi-même** : une capture non regardée ne valide rien.
+4. `node O/controle-cumul-levure.mjs D <v> --page=etat.html` → CUMUL OK (D96 ; « Fait en plus, c'est normalement à intégré dans les autres aussi ») :
+   - un ajout cumulé, avec deux houblons dans un même `data-role="ajout"` ou un réglage `data-reglage="ajout-cumule"` ;
+   - un choix de levure, `data-reglage="levure"`, qui fait bouger le simulé ;
+   - la biotransformation visible, `data-role="biotransformation"`.
+   Une exception se justifie dans la NOTE.
+5. `node O/controle-alpha.mjs D <v> --page=etat.html` → ALPHA OK.
+6. `node O/controle-fiche-baseline.mjs D <v> --page=etat.html` → FICHE-BASELINE OK, si la page nomme un houblon.
+7. Les captures, prises avec `node O/capture-page.mjs <page.html> D/captures/<v>-390.png 1688` : la page entière, le premier écran, et chaque état qui compte (curseur bougé, détail ouvert). **Regarde chaque capture toi-même** : une capture non regardée ne valide rien.
 
 ## Rendu, par variante
 
