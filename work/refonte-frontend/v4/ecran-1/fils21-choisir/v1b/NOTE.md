@@ -1,0 +1,69 @@
+v1b · Le duel à dose égale, seconde passe de v1 (retenue par le critique ; v1 reste intacte pour comparer).
+
+- **Ce qui a changé** :
+  - **Départ en dry hop actif, avec US-05** (K4). Au premier toucher, chaque réglage visible fait bouger quelque chose :
+    - une carte de houblon change le duel ;
+    - la pastille « actif, US-05, 3 j » mène aux réglages, posés avec le profil ;
+    - Pomona change les agrumes de Citra (~+3,4 → ~+3,8 crans) ;
+    - « après » met la levure au repos, et c'est écrit (« le moteur ne la compte pas ») : ses boutons disparaissent, aucun ne reste mort.
+    - « Verdant, Diamond : pas encore simulées pour un houblon seul » est dit une fois. Verdant apparaît au milieu du mélange, où les paires la simulent. Seul, la page lit US-05 et le dit.
+  - **La réponse tient en une ligne** : « Mêmes mots, pas le même cône : Citra ×7,7 en 4MMP, Cascade ×10 en farnésène », avec les pictos des familles.
+  - **Dessous, le verdict dans ta 16D** : « ~ Citra sort en agrumes ~+3,4, tropicaux ~+3,8, baies ~+3,2 crans ; Cascade reste ».
+  - **Puis l'équivalence (y3)**, recalculée sur la courbe du moteur (P × x ÷ (x + K), PROFIL-SIMULE.md §3) :
+    - en dry hop actif : « Cascade ~11,5 g/L (prolongée) en agrumes, ~16 g/L (prolongée) en tropicaux » ;
+    - après fermentation : « ~10,7 g/L en agrumes, ~jamais en tropicaux », le résultat de y3 ;
+    - « prolongée » se lit au-delà de 8 g/L, la dernière dose de la grille.
+  - **L'escalier papier → cône (x2), dans le duel** :
+    - les fiches (« pareil ») ;
+    - le houblon frotté (panel YCH, agrumes 92 contre 85 : « ≈ pareil » ; Galaxy « inconnu ») ;
+    - puis les teneurs par gramme : « 4MMP, même méthode : Citra devant ×2,6–16 » (e2) ;
+    - linalol, myrcène et huile : « non départagés », en bande rayée (e2) ; farnésène : « Cascade devant ×3–85 ».
+  - **« Notre outil : 75 % proches, mots 69, parts d'huile 92 »** (u1) : le score de substitution v1 du pack, en sous-titre du duel.
+  - **Le mélange au doigt (u6)** : on glisse de Citra 4 g/L à « ensemble, 2 + 2 g/L », puis à Cascade 4 g/L. Les trois positions sont simulées (la grille et les paires) ; le profil suit le doigt pendant le geste, et la saturation partagée s'écrit (~78 % des agrumes des deux seuls).
+  - **Les barres de l5b** :
+    - le centre en plein, la plage du bas au haut en pâle ;
+    - une seule marque « + » par barre quand le haut publié est incomplet ;
+    - « inconnu » hachuré quand rien n'est simulé (Cascade : noyau, melon) ;
+    - un toucher montre les bornes sans rognure.
+  - **Le résineux de ta dégustation**, une fois et hors de la figure : « ta dégustation (« ma stout est trop résineuses ») le met déjà au-delà de la 16D ; ce dry hop ~+0,8 cran ».
+  - **Aucun code sans mot** : les carrés A et B sont retirés ; chaque valeur a son unité (« ~+3,4 crans ») ; « ~ » ne veut dire que simulé.
+  - **Les cartes** : la plage des fiches n'apparaît que pour Citra, qui n'a pas de lot ; un liseré de la couleur du houblon ; le stock en icône grise, qui ne bloque rien.
+  - **En bière** : la dose connue d'abord (Cascade 2 g/L, les cinq tchèques, Idaho 7 « à vérifier »), puis « E06, dose non publiée » écrit une seule fois. L'explication est à un toucher.
+  - **Les trois blocs, à un toucher** :
+    - le défi de ta dégustation (x5) : plus floral atteint ~+1,7 cran ; moins résineux hors houblon ; amertume de 50 à 70 IBU, dans la zone, et dry hop « inconnu » ; dans la 16D : 3 débordent ;
+    - « Tire une bière » (y5) : un point par famille et par bière, tiré dans la plage du moteur. Le tirage est fixé par les réglages, il ne change pas tant qu'ils ne changent pas, et les bières hors de la 16D sont comptées ;
+    - la feuille « Preuves » (u5) : le mur des mesures en bière (avec « à vérifier »), la simulation rejouée sur les quatre mesures de Cascade (3MH « calcul sous la mesure »), Lafontaine 2018 dans la lecture H et « vérifié K » (agrumes 1,9 → 7,0, ils plafonnent ; herbacé 2,5 → 10,4, il monte), les trous.
+  - **Les données** : profils-simules.json à 4,75 % vol. et comparatifs-dryhop.json corrigé (E04 relu) ; la page est régénérée sur les deux.
+  - **La baseline, gardée** : lentille au style / absolu, α du lot puis des fiches (≠, pellets), usage en mot, stock en icône, « ? », appui long vers la fiche g1 de l8g, pictos au trait.
+- **La preuve du geste** (`jouer-v1b.mjs`, `geste-v1b.json`, joués au doigt) :
+  - le mélange : la barre des agrumes mesure 39 px avant (Citra 4 g/L, ~+3,4 crans), 33 px pendant, doigt gardé (ensemble, ~+2,9), et 23 px après (Cascade 4 g/L, ~+2) ; celle des tropicaux, 43, 35 puis 20 px ;
+  - un toucher sur Galaxy : « Citra ou Galaxy », « Galaxy sort en tropicaux ~+3,7 crans », « Galaxy ~6,4 à ~6,9 g/L en agrumes » ;
+  - Pomona : les agrumes de Citra passent de ~+3,4 à ~+3,8 crans ;
+  - « après » : ~+3,5 crans, levure au repos ;
+  - aucune erreur.
+- **Ce qui casse** :
+  - Le premier écran compte 153 mots en tout (110 visés) et 70 hors données, juste à la limite. Les données restent (valeurs du duel, verdict, équivalence) ; un mot d'explication de plus fait échouer MOTS.
+  - En dry hop actif, l'équivalence en tropicaux tombe à ~16 g/L, et non plus « jamais » : c'est la courbe du moteur prolongée deux fois au-delà de la grille (marqué « prolongée »).
+  - Le mélange n'a que trois positions simulées. 3 + 1 g/L n'existe pas dans le moteur, et la page ne l'invente pas.
+  - Les plages simulées dépassent presque toutes la piste : un « + » par barre, c'est encore beaucoup.
+  - Le profil commence au bas du premier écran ; pour voir l'effet du mélange, il faut le remonter, et la preuve du geste le fait.
+  - Dans Chrome mobile émulé, le toucher qui suit un glissé ne recevait pas son clic. La page le lui donne, sauf après un appui long (la fiche) ou un doigt qui a bougé.
+  - Le rapport au seuil du moteur reste celui de K2 (après fermentation, 4 g/L chacun), et c'est écrit.
+- **Contrôles** (joués le 20.10 sur `etat.html`) :
+  - COMMUN OK, avec `--sans=mots` (MOTS se joue à part, ci-dessous) : COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE et PARLANT OK ;
+  - MOTS OK : 70 mots hors données (`--sans-donnees --max=70`), 153 sans l'option ;
+  - LISIBLE OK (27 pictos, 26 mesurées, 5 simulées, 0 faute) ;
+  - SIMULATION OK (9 réglages, le simulé bouge) ;
+  - CUMUL OK (2 choix de levure visibles, la levure fait bouger le simulé, biotransformation visible) ;
+  - ALPHA OK (4 voies sur 4) ;
+  - FICHE-BASELINE OK (fiche de Citra, 12 familles nommées, 17 pictos, 0 faute).
+- **Pire contraste** : 4,96:1, « agrumes » (#856e0c, ton texte de la famille, sur blanc), sur 213 textes mesurés.
+- **Fichiers** :
+  - `generer.mjs`, `client-v1b.js` et `v1b.css` ; `jouer-v1b.mjs` et `geste-v1b.json` ;
+  - le socle de v1 (`../v1/socle.mjs`), importé sans changement ;
+  - les états s'ouvrent par requête : `?b=Galaxy`, `?mix=1&lev=verdant`, `?mom=dryPost`, `?defi&tirage&tir=12`, `?preuves`, `?ouvert=thiols&famille=tropical`, `?fiche=Cascade`, `?legende`, `?abs`.
+- **Captures** (regardées) :
+  - les premiers écrans : `captures/v1b-premier-ecran.png`, `v1b-haut-390.png`, et la page entière `v1b-pleine-390.png` ;
+  - le geste du mélange : `v1b-avant.png`, `v1b-pendant.png`, `v1b-apres.png` ;
+  - les touchers : `v1b-galaxy-tap.png`, `v1b-pomona-tap.png`, `v1b-apres-tap.png` ;
+  - les états : `v1b-profil-390.png`, `v1b-ensemble-390.png`, `v1b-defi-tirage-390.png`, `v1b-preuves-390.png`, `v1b-detail-390.png`, `v1b-apres-390.png`, `v1b-galaxy-390.png`, `v1b-fiche-390.png`, `v1b-legende-390.png`.
