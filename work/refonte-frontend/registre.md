@@ -99,6 +99,38 @@ Voir `decisions.md` (D1 à D12).
 
 ## ÉTAT AU 19.10, FIN DE SOIRÉE : lire en premier
 
+- **Le vrai problème (19.10, ~19 h)** : « Comment choisir deux houblons ? La chose a été sur
+  simplifier. […] citra aura un effet extrêmement differents en dry hopping que cascade alors que
+  pourtant d'après Nos outils ils sont assez similaire. […] les données qui permettent à faire un
+  vrai choix éclairé semble manquantes » ; « Aussi ils nous faut un outil de dry hopping, bio
+  Transfo, levure, ça a été demandé, c'est toujours pas là ».
+  - Diagnostic dans `ecran-1/fils19-choix/DIAGNOSTIC.md` : V5.5 donne exactement les mêmes
+    agrumes à Citra et à Cascade, à dose et moment égaux. La variété n'entre que par « cité ou
+    non ». Citra n'a qu'une fiche, et ni linalol ni thiols.
+  - L'état de l'art est chez un agent de recherche : `recherche/H-choisir-deux-houblons.md`, avec une
+    section sur l'outil de dry hop, de biotransformation et de levure.
+  - Les baselines (lot 18) et le radar (lot 16) attendent : « Je vais checker ça après ».
+  - Sa proposition : « peut être aussi simuler un moteur à ce niveau en prenons en compte ces
+    facteurs avec des intervalles de confiance. Ça avait déjà été proposée. Mais peut être
+    simplifier pour avoir une estimation de pouvoir d'arome sur les 16d ». Cela rejoint le rapport E
+    (18.10), recommandations 2 et 3 : la charge par moment et la table de survie, jamais branchées.
+  - Ses cas de test : « voir ce que ça change si je fais du dryhop de citra, Galaxy, idao7. Et
+    combinaison de 3j dryhopping Citra, 7j dry hopping Galaxy ; 3j citra - 5j idao7 […] C'est
+    extrêmement complexe à voir ce qui est vraiment faisable ». Ajoutés à la recherche H
+    (section 7 : ce qui est prévisible, temps de contact, ajouts successifs, pouvoir aromatique,
+    table faisable / pas faisable).
+  - « D'autres choses à chercher pour mettre en place tout ça ? » La recherche H reçoit une
+    section 8 : seuils de perception (OAV), taux de transfert par moment et par forme, matrice stout
+    16D (BJCP, masquage par le torréfié), les quatre levures du dépôt (β-lyase, IRC7, glucosidase,
+    POF, hop creep), vieillissement et HSI. Plus tard : prix et pertes par absorption (€ par
+    pouvoir aromatique), disponibilité en Suisse. Ce qui ne peut venir que de lui : les certificats
+    de ses lots, ses dégustations (#139), ses réglages de dry hop.
+  - L'app réelle a déjà `src/domain/hopDecision/` (environ 14 000 lignes : `biotransformation.ts`,
+    la charge introduite dans `calculations.ts`, `coldContactEvidence.ts`, `coldIbuContact.ts`,
+    `measurements.ts`…). L'inventaire est en cours chez un agent de lecture. Le moteur « pouvoir
+    aromatique » sera conçu une fois cet inventaire et l'état de l'art rentrés : reprendre plutôt
+    qu'empiler.
+
 - **Base v4.9** : commit 4e3bae7 et page à jour v5 (fiche g1, roue et cases au nombre de fiches,
   D72, D73, D25 bis, D33 ter, D40 ter). Moteur : `familyWords`, commit 9c4cb3c.
 - **Lot 14, Suggestions en Barres** (`ecran-1/fils14-suggestions-barres/`, s1 à s9, trois auteurs) :
