@@ -134,6 +134,19 @@ Voir `decisions.md` (D1 à D12).
   cours. Fils de la page : tous répondus et résolus, sauf « Les bar de ce type… », non envoyé à
   Claude. À faire valider par lui : l8 (l8g ou l8h ; trait l8e ou l8f) contre l5 (l5e ou l5d) ; les
   conventions [H] du moteur ; les icônes Barres et Radar de l5e (D31).
+- **Mise à jour, ~0 h 40 (20.10)** :
+  - rendus et commités : s1–s3, r1–r3, v1–v3, x1–x5, u1–u6, e1–e3, w1–w5 et z1–z5 (33 variantes) ;
+    l5f publié (version 21 de la page des fils de fer) ;
+  - en cours : a1–a6 (a93f9f90f8f30e5bb) et y1–y5 (a302d1517de87c0a0) ;
+  - le critique (a88d33c5ab13f70aa) juge s, r, v, x, u, e, w et z, puis écrit
+    critique/SYNTHESE.md (5 candidates, relances, retouches communes) ;
+  - défauts communs vus par le pilote : de 130 à 287 mots au premier écran ; la levure sans effet à
+    l'état de départ (dry hop après) ;
+  - recherche K : tableau 3 de Lafontaine 2018 vérifié, H a raison. J se corrige
+    (ab952db6fe3db486e), et le moteur passe à 4,75 % vol. (aedb55bab5aac3251) ;
+  - prochaine action : à l'arrivée de la synthèse, renvoyer les retouches aux auteurs (seconde
+    passe), relancer ce qui doit l'être, choisir les 5 avec le jury, publier les variantes, puis les
+    5 améliorées.
 - **Mise à jour, ~22 h 15 : lot 21** (`ecran-1/fils21-choisir/`, brief commun `BRIEF-AUTEUR.md`). Le
   lot 20 est « très difficile à comprendre ». Le brasseur veut de vraies valeurs mieux présentées, des
   simulations, un simulateur et des représentations distinctes, avec plusieurs agents. Agents en
