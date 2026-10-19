@@ -201,7 +201,9 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   vraiment non plus idéal » ; « le seul procédé qui permet de fixer ça. Tu en as peut être un autre,
   ça serait le top, mais ça serait d'amener à ensuite l'onglet comparaison. on selectionne plusieurs
   houbon et ensuite on peut comparer » — 19.10, soir (D76 ; lot 15, s5 sur trois cas calculés et quatre
-  façons de montrer les extras).
+  façons de montrer les extras). Sur p4 du lot 15 : « vachement bien. manque peut être dry hop, bio
+  transfo, levure. et la panier, à la place plutôt un + qui ajoute le houblon à la comparaison »
+  (D78 ; p4b).
 - **Le radar de Comparer, base v4.9 (page à jour)** : « très compliqué à voir les différence avec les
   cileur sur le spider graph » ; à la question « surtout dans Comparer ? » : « surtout genant là » —
   19.10, soir (D77 ; lot 16, cinq rendus du radar). Et, dans les tickets : « "normaliser"

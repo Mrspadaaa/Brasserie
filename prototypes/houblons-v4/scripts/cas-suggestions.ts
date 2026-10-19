@@ -7,7 +7,7 @@
 // Usage : vite-node scripts/cas-suggestions.ts <dossier de sortie>
 import fs from 'node:fs';
 import path from 'node:path';
-import { applyVoie, describeFamilies, getStyleScale, hopRef, offModelLeads, proposeVoies, recipeIbu, yeastSignals, FAMILIES, FAMILY_NAMES,
+import { applyVoie, describeFamilies, getStyleScale, hopRef, hopRole, offModelLeads, proposeVoies, recipeIbu, yeastSignals, FAMILIES, FAMILY_NAMES,
   type FamilyId, type Gouts, type Recipe, type Voie } from '../src/engine';
 import { S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
@@ -58,13 +58,16 @@ for (const c of CAS) {
       // voie fait bouger (apport établi), visées ou non : ma bière avant, après, bande du style.
       tout: FAMILIES.filter((f) => v.effect[f]?.established && v.effect[f].central !== null && Math.abs(v.effect[f].central!) >= 0.05).map((f) => {
         const avant = r.before.profile[f].central, e = v.effect[f].central!;
-        return { ...famille(f), effet: r1(e), avant: r1(avant ?? null), apres: avant === undefined ? null : r1(avant + e) };
+        // Intensité au style (19.10 : « mieux afficher l'intensité des saveur comme sur p5 s4 ») : crans du style.
+        return { ...famille(f), effet: r1(e), crans: style.families[f].cran ? r1(e / style.families[f].cran) : null, avant: r1(avant ?? null), apres: avant === undefined ? null : r1(avant + e) };
       }),
       // Le modèle donne la même amplitude à toute famille citée : seules les fiches disent « un peu »
       // (cité, 1 fiche) ou « surtout » (marqué : ≥ 2 fiches ou nommé en premier). Par houblon ajouté.
       fiches: [...new Set(v.actions.filter((a) => a.op !== 'retirer' && !(a.previousGrams !== undefined && a.grams < a.previousGrams && !a.previousHopKey)).map((a) => a.hopKey))].map((k) => {
         const id = hopRef(k)?.varietyId ?? k, d = describeFamilies(id);
-        return { houblon: hopRef(k)?.name ?? k, familles: FAMILIES.filter((f) => d[f].level !== 'non décrit')
+        const role = hopRole(k);
+        // Usage du houblon (19.10 : « le type de houbon pour son usage, mixte, amérisant, aromatique ») : rôle du fournisseur, sinon règle rôle-α (prototype), sinon inconnu.
+        return { houblon: hopRef(k)?.name ?? k, role: role.value, roleSource: role.source, roleRaison: role.raison ?? null, familles: FAMILIES.filter((f) => d[f].level !== 'non décrit')
           .map((f) => ({ famille: f, nom: FAMILY_NAMES[f], niveau: d[f].level, n: d[f].sources, sur: d[f].of, premier: d[f].first })) };
       }),
       bio: bio(v),

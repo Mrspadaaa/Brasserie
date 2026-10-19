@@ -1,0 +1,36 @@
+{
+ "ticket": 138,
+ "ancre": "t138-lot15b",
+ "court": "Suggestions, q2b",
+ "titre": "Suggestions : q2 retenu, repris avec tes remarques (lot 15 bis, 19.10 soir)",
+ "etat": "à valider",
+ "puces": [
+  "q2b, c’est q2 avec tes remarques. Les gros fonds sont retirés : une flèche fine dit le sens, et le tableau des voies au même effet prend la place. Un « + » à la place du panier ajoute la voie à Comparer, puis devient ✓.",
+  "Chaque saveur a son intensité, en crans du style. Dans la liste de q2b, c’est une petite jauge de traits sous chaque picto ; le chiffre exact est écrit dans Comparer (+0,9, +1,6). Dans p4b, il est écrit partout (+2), comme dans p5.",
+  "L’usage du houblon est un mini picto : goutte (amérisant), arôme, ou les deux. Il est plein si un fournisseur l’atteste (East Kent Goldings, Columbus, Citra cryo), pâle s’il est déduit de l’α.",
+  "Les moments et la biotransformation se lisent sans survol : « 10′ ×11 », « levure ×2 », floral → agrumes, « hop creep ». L’épicé est en grains de poivre, et l’en-tête « ma bière » a disparu.",
+  "Contrôles rejoués : FIL6, mots ≤ 70, COULEURS, AU-STYLE, AUTRES, et D78 à D82 (moments, « ma bière », intensité et usage, survol, gros blocs). Tous passent sur q2b ; p4b passe aussi. p1b échoue à D82, car il garde les fonds de p1."
+ ],
+ "images": [
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "q2b ta variante, reprise"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-comparer-390.png",
+   "q2b puis Comparer (1, 15, ensemble)"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/p4b-b-390.png",
+   "p4b les quatre moments, « + », intensité"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/p4b-comparer-390.png",
+   "p4b Comparer"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/p1b-b-390.png",
+   "p1b sans « ma bière », « + »"
+  ]
+ ]
+}

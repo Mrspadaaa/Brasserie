@@ -164,6 +164,25 @@ Voir `decisions.md` (D1 à D12).
     `donnees/`.
   - Remarques de l'auteur q : la liste de q1 seule ne montre pas les extras, il faut cocher ; q3 est
     la plus haute ; dans q4, au style, un même +15,9 paraît de longueur différente selon les bandes.
+- **Lot 15, son choix (19.10, 14 h 34)** : **q2** (« cella là »). Ses retours, devenus contrôles :
+  - p4 : « vachement bien », puis « + » vers Comparer à la place du panier, dry hop, biotransformation
+    et levure visibles (D78) ; l'intensité comme dans p5 et l'usage du houblon en mini picto (D80) ;
+    « c'est quoi ce double boul violette ? » (D81, sens au survol seulement) ;
+  - p1 : « le "ma bière" en haut sert é rien » (D79) ;
+  - q2 : « c'est quoi ces gors bloque ? » (D82, les moitiés teintées) ;
+  - le picto épicé : « plutôt vanille, canelle ? » → grains de poivre ;
+  - données : `tout[].crans` et `fiches[].role` (hopRole : 3 houblons attestés par un
+    fournisseur, 6 déduits par la règle rôle-α, à valider).
+  - **q2b livré, à valider**. Les contrôles ont été rejoués par le pilote : FIL6, MOTS (54),
+    COULEURS, AU-STYLE (etat-b et comparer), AUTRES, D78 à D82, tout OK.
+    - Dans la liste, l'intensité est une jauge de traits ; le chiffre exact n'est écrit que dans
+      Comparer. C'est à juger par lui (« comme sur p5 »).
+    - p4b passe tout. p1b échoue à D82, car il garde les fonds de p1.
+    - Publication : page des fils de fer, version 12, section `t138-lot15b`. Les six fils traités
+      sont résolus.
+    - Générateurs : `q2b/generateur-q2b.mjs` et `p1/generateur-serie-p.mjs`.
+  - **Prochaine action** : sur son OK, intégrer q2b dans la base (Suggestions, `suggestions.js`),
+    avec ses contrôles (D76, D78–D82 sur la base).
 - **Lot 15, série p** : remarques de son auteur :
   - le résineux de c1 : ma bière est au repère du modèle (6,5), ce qui donnerait « atteint » sans
     rien faire ; il a gardé la dégustation de S1 (66–100). À trancher dans le moteur ;

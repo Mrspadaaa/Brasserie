@@ -57,7 +57,7 @@ function modele(id) {
     v.extras = v.tout.filter((t) => !visees.has(t.famille) && Math.abs(t.effet) >= 0.5).sort((a, b) => ORDRE.indexOf(a.famille) - ORDRE.indexOf(b.famille)).map((t) => {
       const niv = v.fiches.flatMap((h) => h.familles).filter((x) => x.famille === t.famille).map((x) => x.niveau);
       const hs = v.horsStyle.some((h) => h.family === t.famille) || (tast && t.famille === 'resin' && t.effet > 0);
-      return { f: t.famille, e: t.effet, niv: t.effet < 0 ? 'baisse' : niv.includes('marqué') ? 'marqué' : niv.includes('cité') ? 'cité' : 'sans fiche', hs };
+      return { f: t.famille, e: t.effet, c: t.crans, w: t.bande[1] - t.bande[0], niv: t.effet < 0 ? 'baisse' : niv.includes('marqué') ? 'marqué' : niv.includes('cité') ? 'cité' : 'sans fiche', hs };
     });
     v.ecarte = (v.conflits || []).some((c) => /exclu par tes goûts/.test(c));
     v.ibuHors = (v.conflits || []).some((c) => /IBU/.test(c));
@@ -104,7 +104,7 @@ const MOMICO = {
   wp: '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 7 m-5 0 a5 5 0 1 0 10 0 a3.5 3.5 0 1 0 -7 0 a2 2 0 1 0 4 0" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>',
   dryActive: '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="3" y="2" width="8" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="9" r="1.2" fill="currentColor"/><circle cx="8.5" cy="6.5" r="1" fill="currentColor"/><circle cx="6.5" cy="5" r=".8" fill="currentColor"/></svg>',
   dryPost: '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="3" y="2" width="8" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 9 H9" stroke="currentColor" stroke-width="1.5"/></svg>',
-  levure: '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="6" cy="7" r="4" fill="currentColor"/><circle cx="10.5" cy="4.5" r="2.2" fill="currentColor"/></svg>',
+  levure: '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><ellipse cx="5.8" cy="8.4" rx="4.6" ry="4.2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="5.4" cy="8.6" r="1.5" fill="currentColor"/><path d="M9 5.2 C9.6 4.2 10.4 3.4 11.4 3.1" stroke="currentColor" stroke-width="1.3" fill="none"/><circle cx="11.3" cy="2.9" r="2" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
 };
 const picto = (f, size = 18, cls = '', extra = '') => `<svg class="pi ${cls}" width="${size}" height="${size}" viewBox="0 0 24 24" ${extra} aria-label="${F[f][0]}"><use href="#p-${f}"/></svg>`;
 function extraHtml(x) {
@@ -120,9 +120,9 @@ function bioHtml(v) {
   if (!s.length) return '';
   const pos = (id) => s.find((x) => x.id === id && x.statut === 'possible');
   const parts = [];
-  if (pos('geraniol-citronellol')) parts.push(`<span class="bio-s" title="${esc(pos('geraniol-citronellol').titre)} (possible)">${picto('floral', 15)}<svg width="12" height="10" viewBox="0 0 12 10" aria-hidden="true"><path d="M1 5 H9 M6 2 L9 5 L6 8" fill="none" stroke="#5b5b66" stroke-width="1.6" stroke-dasharray="2 1.5"/></svg>${picto('citrus', 15)}</span>`);
-  if (pos('thiols')) parts.push(`<span class="bio-s" title="${esc(pos('thiols').titre)} (possible)">${picto('tropical', 15)}${picto('berries', 15)}</span>`);
-  if (pos('hop-creep')) parts.push(`<span class="bio-s" title="${esc(pos('hop-creep').titre)} (possible)"><svg width="16" height="16" viewBox="0 0 16 16" aria-label="Hop creep possible"><circle cx="5" cy="11" r="2.2" fill="none" stroke="#16161a" stroke-width="1.4"/><circle cx="10" cy="8" r="1.8" fill="none" stroke="#16161a" stroke-width="1.4"/><circle cx="7" cy="4" r="1.4" fill="none" stroke="#16161a" stroke-width="1.4"/><path d="M13 13 V3 M11 5 L13 3 L15 5" stroke="#16161a" stroke-width="1.4" fill="none"/></svg></span>`);
+  if (pos('geraniol-citronellol')) parts.push(`<span class="bio-s" title="${esc(pos('geraniol-citronellol').titre)} (possible)">${picto('floral', 15, '', 'data-famille="floral"')}<svg width="12" height="10" viewBox="0 0 12 10" aria-hidden="true"><path d="M1 5 H9 M6 2 L9 5 L6 8" fill="none" stroke="#5b5b66" stroke-width="1.6" stroke-dasharray="2 1.5"/></svg>${picto('citrus', 15, '', 'data-famille="citrus"')}</span>`);
+  if (pos('thiols')) parts.push(`<span class="bio-s" title="${esc(pos('thiols').titre)} (possible)">${picto('tropical', 15, '', 'data-famille="tropical"')}${picto('berries', 15, '', 'data-famille="berries"')}</span>`);
+  if (pos('hop-creep')) parts.push(`<span class="bio-s" title="${esc(pos('hop-creep').titre)} (possible)"><svg width="16" height="16" viewBox="0 0 16 16" aria-label="Hop creep possible"><circle cx="5" cy="11" r="2.2" fill="none" stroke="#16161a" stroke-width="1.4"/><circle cx="10" cy="8" r="1.8" fill="none" stroke="#16161a" stroke-width="1.4"/><circle cx="7" cy="4" r="1.4" fill="none" stroke="#16161a" stroke-width="1.4"/><path d="M13 13 V3 M11 5 L13 3 L15 5" stroke="#16161a" stroke-width="1.4" fill="none"/></svg><span class="hc">hop creep</span></span>`);
   const nonEv = s.filter((x) => x.statut !== 'possible').length;
   return `<span class="bio" data-role="bio" aria-label="Biotransformation : ${s.filter((x) => x.statut === 'possible').map((x) => esc(x.titre)).join(' ; ')}${nonEv ? ' ; ' + nonEv + ' signal(s) non évaluable(s)' : ''}">${parts.join('')}${nonEv ? '<span class="bio-s ne" title="non évaluable">?</span>' : ''}</span>`;
 }
@@ -309,6 +309,39 @@ function plis(m) {
   return h;
 }
 
+// Intensité au style d'après le moteur (tout[].crans) ; usage du houblon (fiches[].role).
+const cransAttr = (v, f) => { const t = v.tout.find((x) => x.famille === f); return t && t.crans != null ? ` data-crans="${t.crans}"` : ''; };
+const cransTxt = (x) => { if (Math.abs(x.e) < 0.25 * x.w) return '≈'; const n = Math.round(x.c); return n === 0 ? '≈' : (n > 0 ? '+' : '−') + Math.abs(n); };
+function extraPill(x) {
+  const desc = F[x.f][0] + ' ' + (x.e > 0 ? '+' : '−') + fr(Math.abs(x.c)).replace('−', '') + ' cran' + (x.niv === 'marqué' ? ', marqué dans les fiches' : x.niv === 'cité' ? ', cité par une fiche' : '') + (x.hs ? ', hors du style' : '');
+  return `<span class="xp ${x.niv === 'marqué' ? 'm' : x.niv === 'cité' ? 'c' : x.niv === 'baisse' ? 'b' : 's'}${x.hs ? ' hs' : ''}" data-famille="${x.f}" data-crans="${x.c}" title="${esc(desc)}" style="--c:${F[x.f][2]};--cf:${F[x.f][3]}"><svg data-role="extra" data-famille="${x.f}" width="16" height="16" viewBox="0 0 24 24" aria-label="${esc(desc)}"><use href="#p-${x.f}"/></svg><em>${cransTxt(x)}</em></span>`;
+}
+const USAGE_ICO = {
+  amer: (plein) => `<svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.2 C9 5, 12 7, 12 9.5 A5 5 0 0 1 2 9.5 C2 7, 5 5, 7 1.2 Z" fill="${plein ? '#16161a' : '#fff'}" stroke="#16161a" stroke-width="1.4"/></svg>`,
+  arome: (plein) => `<svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 9 C4 4, 10 4, 12 9" fill="none" stroke="#16161a" stroke-width="2" ${plein ? '' : 'stroke-dasharray="2 1.6"'}/><circle cx="7" cy="10.5" r="2" fill="${plein ? '#16161a' : '#fff'}" stroke="#16161a" stroke-width="1.3"/></svg>`,
+};
+function usageHtml(v) {
+  return v.fiches.map((h) => {
+    const u = h.role || 'inconnu', src = /^fournisseur/.test(h.roleSource || '') ? 'fournisseur' : 'règle', plein = src === 'fournisseur';
+    const ico = u === 'amérisant' ? USAGE_ICO.amer(plein) : u === 'aromatique' ? USAGE_ICO.arome(plein) : u === 'double' ? USAGE_ICO.amer(plein) + USAGE_ICO.arome(plein) : '<svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="#8a8f99" stroke-width="1.4" stroke-dasharray="2 1.5"/></svg>';
+    const t = h.houblon + ' : ' + (u === 'double' ? 'double usage' : u) + (plein ? ' (fournisseur)' : u === 'inconnu' ? '' : ' (déduit de l’α, règle à valider)');
+    return `<span class="usage${plein ? '' : ' regle'}" data-role="usage" data-usage="${u}" data-source="${src}" data-houblon="${esc(h.houblon)}" title="${esc(t)}" aria-label="${esc(t)}">${ico}</span>`;
+  }).join('');
+}
+const CSS_INT = `
+  .usage { display: inline-flex; align-items: center; gap: 0; padding: 1px 3px; border-radius: 8px; background: #fff; box-shadow: inset 0 0 0 1px #c9c9d3; flex: none; }
+  .usage.regle { opacity: .55; box-shadow: inset 0 0 0 1px #d9d9e0; }
+  .ext { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .xp { display: inline-flex; align-items: center; gap: 2px; height: 22px; padding: 0 6px 0 3px; border-radius: 11px; background: color-mix(in srgb, var(--c) 18%, #fff); }
+  .xp em { font-style: normal; font-size: 12px; font-weight: 800; color: var(--cf); }
+  .xp.c { background: color-mix(in srgb, var(--c) 8%, #fff); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 30%, #fff); }
+  .xp.c svg use { opacity: .45; } .xp.c em { opacity: .7; }
+  .xp.b { background: #fff; box-shadow: inset 0 0 0 1.2px #b5b5c0; }
+  .xp.b em { color: var(--gris); }
+  .xp.hs { box-shadow: inset 0 0 0 2px var(--acc); }
+  .xp.hs em { color: var(--acc); }
+`;
+
 // ---------- s5 sur un cas (p1, p2, p3, p6) ----------
 // Une ligne par voie ; au centre ma bière ; une voie par objectif ; ce qui monte à droite, ce qui baisse à gauche ;
 // plein dans le sens voulu, creux à contre-sens ; non établi hachuré.
@@ -324,7 +357,7 @@ function s5(m, opt) {
     const sc = cote === 'd' ? R : L, asc = cote === 'd' ? AR : AL;
     const w = clamp(Math.abs(ef.u) / sc * 100, 0.8, 100), wa = clamp(Math.abs(ef.e) / asc * 100, 0.8, 100);
     const deb = Math.abs(ef.u) > sc;
-    return `<i class="ln"><b class="bar${c !== voulu ? ' contre' : ''}${deb ? ' deb' : ''}${ef.hs ? ' hs' : ''}" data-role="effet" data-famille="${o.f}" data-ecart-avant="${ef.ea}" data-ecart-apres="${ef.ep}" style="--c:${F[o.f][2]};--s:${pct(w)};--a:${pct(wa)}"></b>${v.__lab ? `<em class="val" style="--s:${pct(w)};--a:${pct(wa)};--cf:${F[o.f][3]}"><span class="sty-only">${ef.court}</span><span class="abs-only">${sg(ef.e)}</span></em>` : ''}</i>`;
+    return `<i class="ln"><b class="bar${c !== voulu ? ' contre' : ''}${deb ? ' deb' : ''}${ef.hs ? ' hs' : ''}" data-role="effet" data-famille="${o.f}"${cransAttr(v, o.f)} data-ecart-avant="${ef.ea}" data-ecart-apres="${ef.ep}" style="--c:${F[o.f][2]};--s:${pct(w)};--a:${pct(wa)}"></b>${v.__lab ? `<em class="val" style="--s:${pct(w)};--a:${pct(wa)};--cf:${F[o.f][3]}"><span class="sty-only">${ef.court}</span><span class="abs-only">${sg(ef.e)}</span></em>` : ''}</i>`;
   };
   const rang = (v) => {
     const extrasG = opt.extrasGauche ? `<span class="xg">${m.slots.map((f) => { const x = v.extras.find((y) => y.f === f); return x ? extraHtml(x) : '<span class="x vide"></span>'; }).join('')}</span>` : '';
@@ -332,8 +365,8 @@ function s5(m, opt) {
       : v.ibuHors ? `<svg class="conf" width="16" height="16" viewBox="0 0 16 16" aria-label="${esc(v.conflits.join(' '))}"><path d="M8 1.5 L15 14 H1 Z" fill="#c2410c"/><path d="M8 6 V9.5" stroke="#fff" stroke-width="1.8"/><circle cx="8" cy="11.8" r="1" fill="#fff"/></svg>`
       : (v.conflits || []).length ? `<svg class="conf" width="16" height="16" viewBox="0 0 16 16" aria-label="${esc(v.conflits.join(' '))}"><path d="M8 1.5 L15 14 H1 Z" fill="#8a8f99"/><path d="M8 6 V9.5" stroke="#fff" stroke-width="1.8"/><circle cx="8" cy="11.8" r="1" fill="#fff"/></svg>` : '';
     return `<div class="rang${v.ecarte ? ' ecarte' : ''}" data-voie="${v.n}" style="--mc:${MOM[v.mom].c}">
-      <div class="lbl">${pastilles(v)}<b>${nomVoie(v)}</b>${conf}${bioHtml(v)}${opt.extrasGauche ? '<span class="xs"></span>' : extrasSlots(m, v)}${stockIco(v.stock)}</div>
-      <div class="bars" style="--n:${N}">${extrasG}<div class="m g">${m.objs.map((o) => lane(o, v, 'g')).join('')}</div><div class="gt"></div><div class="m d">${m.objs.map((o) => lane(o, v, 'd')).join('')}</div></div>
+      <div class="lbl">${pastilles(v)}<b>${nomVoie(v)}</b>${opt.plus ? usageHtml(v) + (STKM[v.stock] && v.actions.length ? STKM[v.stock] : '') : ''}${conf}${opt.plus ? '' : bioHtml(v)}${opt.extrasGauche || opt.plus ? '<span class="xs"></span>' : extrasSlots(m, v)}${opt.plus ? `<button class="add2" data-role="ajouter-comparer" aria-pressed="${AJOUTEES.includes(v.n)}" aria-label="${AJOUTEES.includes(v.n) ? 'Retirer de' : 'Ajouter à'} Comparer : ${esc(nomVoie(v))}">${PLUS}${COCHE}</button>` : stockIco(v.stock)}</div>
+      <div class="bars" style="--n:${N}">${extrasG}<div class="m g">${m.objs.map((o) => lane(o, v, 'g')).join('')}</div><div class="gt"></div><div class="m d">${m.objs.map((o) => lane(o, v, 'd')).join('')}</div></div>${opt.plus && (v.extras.length || (v.bio || []).length) ? `<div class="ext">${v.extras.map(extraPill).join('')}${bioHtml(v)}</div>` : ''}
     </div>`;
   };
   // Fonds : zone du style, visées, colonne de ma bière.
@@ -351,7 +384,7 @@ function s5(m, opt) {
       : `<span class="t" style="--mc:${MOM[G.mom].c}">${MOMICO[G.mom]}${G.t}${G.voies.some((v) => v.estime) ? ' <span class="est">estimé</span>' : ''}</span>`;
     return `<div class="groupe">${t}</div>${G.voies.map(rang).join('')}`;
   }).join('');
-  const tete = `<div class="tete"><div class="m g">${m.objs.filter((o) => o.sens < 0).map((o) => picto(o.f, 18)).join('')}${opt.extrasGauche ? '<span class="autres">autres</span>' : ''}<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M9 2 L4 6 L9 10" fill="none" stroke="#16161a" stroke-width="2"/></svg></div><div class="gt"><span class="biere-l">${m.d.situee ? 'ma bière' : 'ma bière ?'}</span></div><div class="m d"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2 L8 6 L3 10" fill="none" stroke="#16161a" stroke-width="2"/></svg>${m.objs.filter((o) => o.sens > 0).map((o) => picto(o.f, 18)).join('')}</div></div>`;
+  const tete = `<div class="tete"><div class="m g">${m.objs.filter((o) => o.sens < 0).map((o) => picto(o.f, 18)).join('')}${opt.extrasGauche ? '<span class="autres">autres</span>' : ''}<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M9 2 L4 6 L9 10" fill="none" stroke="#16161a" stroke-width="2"/></svg></div><div class="gt">${opt.sansBiere ? '' : `<span class="biere-l">${m.d.situee ? 'ma bière' : 'ma bière ?'}</span>`}</div><div class="m d"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 2 L8 6 L3 10" fill="none" stroke="#16161a" stroke-width="2"/></svg>${m.objs.filter((o) => o.sens > 0).map((o) => picto(o.f, 18)).join('')}</div></div>`;
   return `<div class="graph${m.d.situee ? '' : ' ns'}">
     <div class="fonds"><div class="moitie g" ${opt.pisteG ? `data-role="piste" data-famille="${opt.pisteG}"` : ''}>${zoneG}${viseeLines.split('</div>').filter((x) => x.includes('vl g')).map((x) => x + '</div>').join('')}</div><div class="gt"></div><div class="moitie d">${zoneD}${viseeLines.split('</div>').filter((x) => x.includes('vl d')).map((x) => x + '</div>').join('')}</div></div>
     ${tete}${corps}<div style="height:6px"></div></div>`;
@@ -403,7 +436,7 @@ const CSS_S5 = `
 
 // ---------- Les pages ----------
 const out = (n, html) => { fs.mkdirSync(DIR + '/' + n, { recursive: true }); fs.writeFileSync(DIR + '/' + n + '/etat-b.html', html); console.log('ÉCRIT ' + n); };
-const cleS5 = (m) => `<div class="cle"><span>${extraHtml({ f: m.slots[0] || 'tropical', e: 1, niv: 'marqué', hs: false }).replace(/data-role="extra" data-famille="[^"]+" /, '')}marqué</span><span>${extraHtml({ f: m.slots[0] || 'tropical', e: 1, niv: 'cité', hs: false }).replace(/data-role="extra" data-famille="[^"]+" /, '')}cité</span></div>`;
+const cleS5 = (m) => `<div class="cle"><span>${extraHtml({ f: m.slots[0] || 'tropical', e: 1, niv: 'marqué', hs: false }).replace(/data-role="extra" /, '')}marqué</span><span>${extraHtml({ f: m.slots[0] || 'tropical', e: 1, niv: 'cité', hs: false }).replace(/data-role="extra" /, '')}cité</span></div>`;
 
 const PAGES = {
   p1() {
@@ -438,6 +471,8 @@ const CSS_P4 = `
   .frise { display: flex; gap: 6px; align-items: center; }
   .frise .mo { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 9px; border-radius: 14px; background: #fff; box-shadow: inset 0 0 0 1.5px var(--mc); color: var(--mc); font-size: 13px; font-weight: 800; }
   .frise .mo b { color: var(--encre); }
+  .frise .mo .ml { color: var(--encre); font-weight: 750; }
+  .bio .hc { font-size: 12px; font-weight: 750; color: var(--encre); margin-left: 2px; white-space: nowrap; }
   .carte { position: relative; border-radius: 18px; background: #fff; box-shadow: inset 0 0 0 1.5px var(--trait), 0 6px 14px -12px rgba(0,0,0,.35); padding: 12px 10px 10px 14px; overflow: hidden; }
   .carte::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--mc); }
   .carte .lbl { margin-bottom: 4px; }
@@ -471,7 +506,7 @@ function laneP4(m, o, v) {
   if (!ef) bar = `<i class="inc ${o.sens > 0 ? 'd' : 'g'}" data-role="effet" data-famille="${o.f}" data-ecart-avant="${o.tast ? TAST.e : 0}" data-ecart-apres=""></i>`;
   else {
     const a = X(ef.u), aa = XA(ef.e);
-    bar = `<i class="bar${Math.sign(ef.e) !== o.sens ? ' contre' : ''}${ef.hs ? ' hs' : ''}" data-role="effet" data-famille="${o.f}" data-ecart-avant="${ef.ea}" data-ecart-apres="${ef.ep}" style="--s0:${pct(Math.min(50, a))};--s1:${pct(Math.max(Math.abs(a - 50), 0.8))};--a0:${pct(Math.min(50, aa))};--a1:${pct(Math.max(Math.abs(aa - 50), 0.8))}"></i>`;
+    bar = `<i class="bar${Math.sign(ef.e) !== o.sens ? ' contre' : ''}${ef.hs ? ' hs' : ''}" data-role="effet" data-famille="${o.f}"${cransAttr(v, o.f)} data-ecart-avant="${ef.ea}" data-ecart-apres="${ef.ep}" style="--s0:${pct(Math.min(50, a))};--s1:${pct(Math.max(Math.abs(a - 50), 0.8))};--a0:${pct(Math.min(50, aa))};--a1:${pct(Math.max(Math.abs(aa - 50), 0.8))}"></i>`;
   }
   const val = ef ? `<span class="sty-only">${ef.txt}</span><span class="abs-only">${sg(ef.e)}</span>` : '';
   return `<div class="lane" style="--c:${F[o.f][2]};--cf:${F[o.f][3]}">${picto(o.f, 16)}<div class="tr" data-role="piste" data-famille="${o.f}"><i class="zone" data-role="zone" style="--s0:${pct(z0)};--s1:${pct(z1 - z0)};--a0:${pct(za0)};--a1:${pct(za1 - za0)}"></i><i class="vt" style="--s:${pct(vt)};--a:${pct(vta)}"></i>${bar}</div><span class="v">${val}</span></div>`;
@@ -596,4 +631,182 @@ PAGES.p5 = function () {
   const corps = chips + m.objs.map((o, i) => cascade(o, i === 0)).join('') + autres + `<div class="groupe"><span class="t" style="--mc:#16161a">Autres voies à cocher</span></div>` + liste + `<details><summary>Autres ensembles</summary><ul>${ensPlus}</ul></details>` + plis(m);
   out('p5', page(m, 's4 à trois objectifs', c, CSS_S5 + CSS_P4 + CSS_P5, corps));
 };
+// ---------- p4b · p4 d'après le brasseur : les moments sans toucher, un « + » vers Comparer ----------
+const STKM = {
+  suffisant: '<svg class="stk-m" width="12" height="12" viewBox="0 0 18 18" aria-label="en stock"><rect x="2" y="5" width="14" height="11" rx="2" fill="#6e6e78"/><path d="M5 10.5 L8 13 L13 8" stroke="#fff" stroke-width="2.4" fill="none"/></svg>',
+  'à acheter': '<svg class="stk-m" width="12" height="12" viewBox="0 0 18 18" aria-label="à acheter"><path d="M1 3 H4 L6 12 H14 L16 5 H5" fill="none" stroke="#6e6e78" stroke-width="2.4"/><circle cx="7" cy="15" r="1.8" fill="#6e6e78"/><circle cx="13" cy="15" r="1.8" fill="#6e6e78"/></svg>',
+  manque: '<svg class="stk-m" width="12" height="12" viewBox="0 0 18 18" aria-label="stock insuffisant"><rect x="2" y="5" width="14" height="11" rx="2" fill="none" stroke="#6e6e78" stroke-width="2.4"/><rect x="2" y="11" width="14" height="5" rx="1" fill="#6e6e78"/></svg>',
+};
+const PLUS = '<svg class="ic-p" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2 V14 M2 8 H14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
+const COCHE = '<svg class="ic-c" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 L6.5 12 L13 4.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const AJOUTEES = [1, 15];
+const MOMLAB = { b10: '10′', b60: '60′', wp: 'whirlpool', dryActive: 'à cru, fermentation active', dryPost: 'à cru, après fermentation', levure: 'levure' };
+const CSS_P4B = `
+  .ecran { padding-bottom: 76px; }
+  .frise a { text-decoration: none; }
+  .sec { display: flex; flex-direction: column; gap: 8px; scroll-margin-top: 8px; }
+  .sec-t { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+  .sec-t .t { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px 0 8px; border-radius: 13px; background: var(--mc); color: #fff; font-size: 13px; font-weight: 800; }
+  .sec-t .t svg { color: #fff; }
+  .carte .lbl { padding-right: 40px; }
+  .carte .q { display: inline-flex; align-items: center; gap: 3px; }
+  .stk-m { flex: none; opacity: .9; }
+  .add { position: absolute; right: 8px; top: 8px; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: var(--encre); box-shadow: inset 0 0 0 2px var(--encre); z-index: 3; }
+  .add .ic-c { display: none; }
+  .add[aria-pressed="true"] { background: var(--encre); color: #fff; }
+  .add[aria-pressed="true"] .ic-c { display: block; } .add[aria-pressed="true"] .ic-p { display: none; }
+  .carte.choisie { box-shadow: inset 0 0 0 2px var(--encre), 0 6px 14px -12px rgba(0,0,0,.35); }
+  .encore { align-self: flex-start; display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 12px 0 9px; border-radius: 15px; background: color-mix(in srgb, var(--mc) 14%, #fff); color: var(--mc); font-size: 13px; font-weight: 800; box-shadow: inset 0 0 0 1.5px var(--mc); }
+  .encore b { color: var(--encre); }
+  .cmp { position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px; width: min(358px, calc(100% - 32px)); height: 48px; border-radius: 24px; background: var(--encre); color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; font-weight: 800; text-decoration: none; box-shadow: 0 10px 24px -10px rgba(0,0,0,.55); z-index: 10; }
+  .cmp .pas { box-shadow: 0 0 0 2px var(--encre); }
+`;
+function carteP4b(m, v) {
+  const on = AJOUTEES.includes(v.n);
+  const g = v.actions.map((a) => fr(a.grammes)).join(' + ');
+  const dose = v.actions.length && v.type !== 'remplacer à IBU égal' && v.type !== 'diminuer' ? `<span class="q">${g} g${STKM[v.stock] || ''}</span>` : v.actions.length ? `<span class="q">${STKM[v.stock] || ''}</span>` : '';
+  return `<article class="carte${on ? ' choisie' : ''}" data-voie="${v.n}" style="--mc:${MOM[v.mom].c}">
+    <button class="add" data-role="ajouter-comparer" aria-pressed="${on}" aria-label="${on ? 'Retirer de' : 'Ajouter à'} Comparer : ${esc(nomVoie(v))}">${PLUS}${COCHE}</button>
+    <div class="lbl"><span style="color:${MOM[v.mom].c};display:inline-flex" aria-hidden="true">${MOMICO[v.mom]}</span>${pastilles(v)}<b>${nomVoie(v)}</b>${usageHtml(v)}${dose}</div>
+    ${m.objs.map((o) => laneP4(m, o, v)).join('')}${v.extras.length || (v.bio || []).length ? `<div class="ext">${v.extras.map(extraPill).join('')}${bioHtml(v)}</div>` : ''}</article>`;
+}
+const SCRIPT_P4B = `<script>
+  const majCmp = () => { const n = document.querySelectorAll('[data-role="ajouter-comparer"][aria-pressed="true"]').length; document.querySelector('.cmp b').textContent = '(' + n + ')'; };
+  document.querySelectorAll('[data-role="ajouter-comparer"]').forEach((b) => b.addEventListener('click', () => {
+    const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(on)); b.closest('.carte').classList.toggle('choisie', on); majCmp();
+  }));
+</script>`;
+PAGES.p4b = function () {
+  const m = modele('c1');
+  const ordreMom = ['b10', 'b60', 'wp', 'dryActive', 'dryPost', 'levure'];
+  const parMom = ordreMom.map((k) => ({ k, vs: m.voies.filter((v) => v.mom === k) })).filter((x) => x.vs.length);
+  const frise = `<div class="frise">${parMom.map((x) => `<a class="mo" href="#m-${x.k}" style="--mc:${MOM[x.k].c}" title="${MOM[x.k].t}">${MOMICO[x.k]}<span class="ml">${x.k === 'dryActive' || x.k === 'dryPost' ? 'à cru' : MOMLAB[x.k]}</span><b>×${x.vs.length}</b></a>`).join('')}</div>`;
+  const sections = parMom.map((x) => {
+    const [best, ...reste] = x.vs; // la première du moteur dans ce moment
+    const lab = x.k === 'dryActive' ? 'dry hop' : MOMLAB[x.k];
+    return `<section class="sec" id="m-${x.k}" style="--mc:${MOM[x.k].c}"><div class="sec-t"><span class="t">${MOMICO[x.k]}${lab}</span></div>${carteP4b(m, best)}
+      ${reste.length ? `<button class="encore" data-ouvre="plus-${x.k}" aria-expanded="false">${PLUS}<b>${reste.length}</b> autre${reste.length > 1 ? 's' : ''}</button><div id="plus-${x.k}" class="cartes" hidden>${reste.map((v) => carteP4b(m, v)).join('')}</div>` : ''}</section>`;
+  }).join('');
+  const choisies = AJOUTEES.map((n) => m.voies[n - 1]);
+  const barre = `<a class="cmp" data-role="comparer" href="comparer.html">${choisies.map(pastilles).join('')}Comparer <b>(${choisies.length})</b></a>`;
+  const c = 'p4 d’après le brasseur (« manque peut être dry hop, bio transfo, levure. et la panier, à la place plutôt un + qui ajoute le houblon à la comparaison ») : au premier niveau, la première voie du moteur de chaque moment de c1 (10′ : voie 1 ; 60′ : 12 ; dry hop en fermentation active : 15, avec sa biotransformation hachurée ; levure : 16), le reste rangé par moment à un toucher ; la frise mène aux moments. À droite de chaque carte, un « + » ajoute la voie à Comparer (✓ une fois ajoutée ; voies 1 et 15 déjà ajoutées) ; le stock n’est plus qu’une marque passive près des grammes ; la barre « Comparer (n) » mène à comparer.html.';
+  const html = page(m, 'Voies par moment', c, CSS_S5 + CSS_P4 + CSS_P4B + CSS_INT + `.lbl .q { font-size: 13px; color: var(--gris); white-space: nowrap; } .lbl b { white-space: normal; }`, reponses(m) + frise + sections + plis(m) + barre).replace('</body>', SCRIPT_P4B + '\n</body>');
+  out('p4b', html);
+  fs.writeFileSync(DIR + '/p4b/comparer.html', comparerP4b(m, choisies));
+  console.log('ÉCRIT p4b/comparer.html');
+};
+
+// ---------- p1b · p1 d'après le brasseur : sans l'en-tête « ma bière », un « + » vers Comparer ----------
+PAGES.p1b = function () {
+  const m = modele('c1');
+  const choisies = AJOUTEES.map((n) => m.voies[n - 1]);
+  const c = 'p1 d’après le brasseur (« bien aussi, mais manque assi quelque bouton et le "ma bière" en haut sert é rien ») : plus d’en-tête « ma bière » au-dessus des voies (le rail de ma bière reste dans le graphique) ; à droite de chaque voie, un « + » ajoute la voie à Comparer (✓ une fois ajoutée ; voies 1 et 15 déjà ajoutées), le stock n’est plus qu’une marque passive près du nom ; la barre « Comparer (n) » mène à comparer.html. Tous les moments restent visibles en défilant (10′, 60′, dry hop en fermentation active avec sa biotransformation, levure).';
+  const css = `.ecran { padding-bottom: 76px; }
+    .add2 { flex: none; width: 28px; height: 28px; margin-left: 4px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: var(--encre); box-shadow: inset 0 0 0 2px var(--encre); }
+    .add2 .ic-c { display: none; }
+    .add2[aria-pressed="true"] { background: var(--encre); color: #fff; }
+    .add2[aria-pressed="true"] .ic-c { display: block; } .add2[aria-pressed="true"] .ic-p { display: none; }
+    .lbl .stk-m { margin-left: 2px; flex: none; }
+    .lbl b { white-space: normal; min-width: 0; line-height: 1.15; }
+    .lbl .xs { flex-shrink: 0; }
+    .cmp { position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px; width: min(358px, calc(100% - 32px)); height: 48px; border-radius: 24px; background: var(--encre); color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; font-weight: 800; text-decoration: none; box-shadow: 0 10px 24px -10px rgba(0,0,0,.55); z-index: 10; }
+    .cmp .pas { box-shadow: 0 0 0 2px var(--encre); }
+    .tete { height: 24px; }`;
+  const script = `<script>
+  const majCmp = () => { const n = document.querySelectorAll('[data-role="ajouter-comparer"][aria-pressed="true"]').length; document.querySelector('.cmp b').textContent = '(' + n + ')'; };
+  document.querySelectorAll('[data-role="ajouter-comparer"]').forEach((b) => b.addEventListener('click', () => { b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true')); majCmp(); }));
+</script>`;
+  const barre = `<a class="cmp" data-role="comparer" href="comparer.html">${choisies.map(pastilles).join('')}Comparer <b>(${choisies.length})</b></a>`;
+  const html = page(m, 's5 avec boutons', c, CSS_S5 + CSS_MP_ABS + css + CSS_INT + `.rang .ext { padding-left: 4px; }`, reponses(m) + cleS5(m) + s5(m, { R: 2.2, L: 8, AR: 30, AL: 60, plus: true, sansBiere: true }) + plis(m) + barre).replace('</body>', script + '\n</body>');
+  out('p1b', html);
+  fs.writeFileSync(DIR + '/p1b/comparer.html', comparerP4b(m, choisies));
+  console.log('ÉCRIT p1b/comparer.html');
+};
+
+// Comparer : les voies ajoutées côte à côte, au style, et « ensemble » [1, 15].
+function comparerP4b(m, choisies) {
+  const E = m.d.ensemble.find((e) => e.voies.join() === AJOUTEES.join());
+  const visees = new Set(m.objs.map((o) => o.f));
+  const fams = [...m.objs.map((o) => o.f), ...ORDRE.filter((f) => !visees.has(f) && (choisies.some((v) => v.extras.some((x) => x.f === f)) || E.tout.some((t) => t.famille === f && Math.abs(t.effet) >= 0.5)))];
+  const objDe = (f) => m.objs.find((o) => o.f === f) || { f, sens: 0, cran: 10, largeur: 30, bande: [0, 30], avant: (m.voies[0].tout.find((t) => t.famille === f) || {}).avant ?? null };
+  // Position au style : bande du style 0–70 %, au-dessus 70–100 % (30 points) ; absolu : valeur en %.
+  const sx = (o, v) => { const [lo, hi] = o.bande; return v <= hi ? 70 * Math.max(0, v - lo) / (hi - lo) : 70 + Math.min(v - hi, 30); };
+  const crans = (o, e) => { const n = Math.round(e / o.cran); return Math.abs(e) < 0.25 * o.largeur || n === 0 ? '≈' : (n > 0 ? '+' : '−') + Math.abs(n) + ' cran' + (Math.abs(n) > 1 ? 's' : ''); };
+  const cell = (f, e, niv) => {
+    const o = objDe(f);
+    const zone = `<i class="zone" data-role="zone" style="--s0:0%;--s1:70%;--a0:${pct(o.bande[0])};--a1:${pct(o.bande[1] - o.bande[0])}"></i>`;
+    if (o.tast) {
+      const moi = `<i class="moi hs" style="--s:96%;--a:${pct(TAST.v)}"></i>`;
+      return `<div class="cel" style="--c:${F[f][2]};--cf:${F[f][3]}"><div class="tk">${zone}${moi}${e == null ? '<i class="inc"></i>' : ''}</div><span class="v">${e == null ? 'non établi' : sg(e)}</span></div>`;
+    }
+    if (e == null) return `<div class="cel" style="--c:${F[f][2]};--cf:${F[f][3]}"><div class="tk">${zone}${o.avant != null ? `<i class="moi" style="--s:${pct(sx(o, o.avant))};--a:${pct(o.avant)}"></i>` : ''}<i class="inc"></i></div><span class="v">non établi</span></div>`;
+    const av = o.avant, ap = av != null ? av + e : null, hs = ap != null && ap > o.bande[1];
+    const a = av != null ? sx(o, av) : 0, b = ap != null ? sx(o, ap) : 0;
+    return `<div class="cel" style="--c:${F[f][2]};--cf:${F[f][3]}"><div class="tk">${zone}${av != null ? `<i class="bar ${niv || ''}${hs ? ' hs' : ''}" style="--s0:${pct(Math.min(a, b))};--s1:${pct(Math.max(Math.abs(b - a), 1))};--a0:${pct(Math.min(av, ap))};--a1:${pct(Math.max(Math.abs(e), 1))}"></i><i class="moi" style="--s:${pct(a)};--a:${pct(av)}"></i>` : ''}</div><span class="v${hs ? ' alerte' : ''}"><span class="sty-only">${crans(o, e)}</span><span class="abs-only">${sg(e)}</span></span></div>`;
+  };
+  const niveau = (v, f) => { const n = v.fiches.flatMap((h) => h.familles).filter((x) => x.famille === f).map((x) => x.niveau); return n.includes('marqué') ? 'm' : n.includes('cité') ? 'c' : 's'; };
+  const colonne = (v) => {
+    const vals = fams.map((f) => { const t = v.tout.find((x) => x.famille === f); const etab = visees.has(f) ? (v.effet[f] && v.effet[f].etabli ? v.effet[f].central : null) : (t ? t.effet : undefined); return etab === undefined ? '<div class="cel vide"></div>' : cell(f, etab, niveau(v, f)); }).join('');
+    return `<section class="col" data-voie="${v.n}" style="--mc:${MOM[v.mom].c}"><div class="ct">${pastilles(v)}<b>${nomVoie(v)}</b><span class="mch">${MOMICO[v.mom]}<span>${MOM[v.mom].t.replace('à cru, fermentation active', 'à cru actif')}</span></span><span class="ibu">IBU ${fr(v.ibu.after)}</span></div>
+      <div class="xs">${v.extras.map(extraHtml).join('')}${bioHtml(v)}</div>${vals}</section>`;
+  };
+  const colE = `<section class="col ens"><div class="ct"><b>Ensemble</b>${choisies.map(pastilles).join('')}${choisies.map((v) => `<span style="color:${MOM[v.mom].c};display:inline-flex">${MOMICO[v.mom]}</span>`).join('')}<span class="ibu">IBU ${fr(E.ibu)}</span></div><div class="xs">${E.tout.filter((t) => !visees.has(t.famille) && Math.abs(t.effet) >= 0.5).map((t) => extraHtml({ f: t.famille, e: t.effet, niv: t.effet < 0 ? 'baisse' : 's', hs: t.apres > 30 }).replace(/data-role="extra" /, '')).join('')}</div>
+    ${fams.map((f) => { const t = E.tout.find((x) => x.famille === f); return t ? cell(f, t.effet, 's') : cell(f, null); }).join('')}</section>`;
+  const lignes = `<div class="rangs">${fams.map((f) => `<div class="rl">${picto(f, 20)}${visees.has(f) ? `<i class="sens">${objDe(f).sens > 0 ? '▲' : '▼'}</i>` : ''}</div>`).join('')}</div>`;
+  const css = `
+    .grille { display: grid; grid-template-columns: 30px repeat(3, 1fr); gap: 6px; align-items: start; }
+    .rangs { padding-top: 152px; display: flex; flex-direction: column; }
+    .rl { height: 44px; display: flex; align-items: center; gap: 1px; }
+    .rl .sens { font-style: normal; font-size: 12px; color: var(--gris); }
+    .col { border-radius: 16px; background: #f6f6f9; padding: 8px 6px 4px; position: relative; }
+    .col::before { content: ''; position: absolute; left: 10px; right: 10px; top: 0; height: 4px; border-radius: 0 0 3px 3px; background: var(--mc); }
+    .col.ens { background: #fff; box-shadow: inset 0 0 0 2px var(--encre); }
+    .ct { height: 78px; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 3px; align-items: center; }
+    .ct b { font-size: 14px; font-weight: 800; width: 100%; line-height: 1.1; }
+    .ct .pas { order: -1; }
+    .mch { display: inline-flex; align-items: center; gap: 3px; height: 20px; padding: 0 6px; border-radius: 10px; background: color-mix(in srgb, var(--mc) 16%, #fff); color: var(--mc); font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .mch span { color: var(--encre); }
+    .ibu { font-size: 12px; color: var(--gris2); white-space: nowrap; }
+    .col .xs { height: 66px; margin: 0; display: flex; flex-wrap: wrap; gap: 3px; align-content: flex-start; align-items: center; }
+    .col .bio { flex-wrap: wrap; row-gap: 2px; }
+    .col .bio { margin-left: 0; }
+    .cel { height: 44px; display: flex; flex-direction: column; justify-content: center; gap: 3px; }
+    .tk { position: relative; height: 14px; border-radius: 7px; background: #fff; }
+    .tk .zone { position: absolute; top: 0; bottom: 0; left: var(--s0); width: var(--s1); border-radius: 7px 0 0 7px; background: color-mix(in srgb, var(--c) 30%, #fff); }
+    .tk .bar { position: absolute; top: 2px; height: 10px; left: var(--s0); width: var(--s1); border-radius: 5px; background: var(--c); }
+    .tk .bar.c { background: color-mix(in srgb, var(--c) 45%, #fff); box-shadow: inset 0 0 0 1.2px var(--c); }
+    .tk .bar.hs::after { content: ''; position: absolute; right: -1px; top: -2px; bottom: -2px; width: 4px; border-radius: 2px; background: var(--acc); }
+    .tk .moi { position: absolute; top: 1px; width: 12px; height: 12px; margin-left: -6px; left: var(--s); border-radius: 50%; background: var(--encre); box-shadow: 0 0 0 2px #fff; z-index: 2; }
+    .tk .moi.hs { background: var(--acc); }
+    .tk .inc { position: absolute; top: 2px; height: 10px; left: 30%; width: 40%; border-radius: 4px; background: repeating-linear-gradient(135deg, #fff 0 2px, #b8bec8 2px 4px); }
+    .cel .v { font-size: 12px; font-weight: 750; color: var(--cf); white-space: nowrap; }
+    .cel .v.alerte { color: var(--acc); }
+    .cel.vide { height: 44px; }
+    body.abs .tk .zone, body.abs .tk .bar { left: var(--a0); width: var(--a1); }
+    body.abs .tk .moi { left: var(--a); }
+    .note-e { font-size: 12px; color: var(--gris2); }
+  `;
+  const commentaire = 'Comparer (p4b) : les voies ajoutées depuis Suggestions (1 : Motueka 10 g à 10′ ; 15 : Motueka 20 g à cru en fermentation active) côte à côte, puis « ensemble » [1, 15] de c1 (IBU ' + fr(E.ibu) + '). Une ligne par famille qui bouge, avec son picto (objectifs en tête, ▲ ▼ pour le sens voulu) ; au style : la zone du style à 70 % de chaque piste, ma bière (point), la voie (barre pleine si les fiches disent « marqué », pâle si « cité »), orangé si elle sort du style ; absolu à un toucher. Le résineux, situé par la dégustation (66–100), n’a d’effet établi dans aucune des trois.';
+  const corps = `<div class="grille">${lignes}${choisies.map(colonne).join('')}${colE}</div>
+    <p class="note-e">Ensemble : convention du moteur (apports additionnés, moments différents).</p>`;
+  const chromeC = chrome().replace('<button role="radio" aria-checked="true">Suggestions</button><button role="radio" aria-checked="false">Comparer</button>', '<a role="radio" aria-checked="false" href="etat-b.html" style="flex:1;display:grid;place-items:center;height:28px;border-radius:14px;font-size:13px;color:var(--gris);text-decoration:none">Suggestions</a><button role="radio" aria-checked="true">Comparer</button>');
+  return `<!doctype html>
+<html lang="fr" data-cas="${m.id}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparer les voies</title>
+<!-- ${commentaire} -->
+<style>${CSS_BASE}${css}</style>
+</head>
+<body>
+${PICTOS}
+<main class="ecran">${chromeC}
+${corps}
+</main>
+${SCRIPT}
+</body>
+</html>
+`;
+}
 for (const n of (process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(PAGES))) if (PAGES[n]) PAGES[n]();
