@@ -241,7 +241,9 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
     levure » (K5 ; a1–a3) ; « Plus de mini maquettes que juste 11, fait en qqch comme 30 et prends
     les 5 meilleures version et améliore les » (w1–w5, y1–y5, jury) ; « J'ai dis de réutiliser la
     Baseline mais il faudrait évidemment d'enrichir et pas de limiter à ça !!! » (la baseline est un
-    plancher).
+    plancher) ; « Il y a pas de limitation, pas de plafond de verre, il faut être créatif, disrutif,
+    trouver des solutions et des options. Un agent créatif à fond peut aider quelques mini maquettes »
+    (z1–z5).
   - Leçon : « les barres de l5b » voulait dire aussi ses pistes d'objectif, pas seulement ses barres
     de voie. Quand une demande désigne un élément d'une autre variante, reprendre tous ses éléments du
     même genre sur l'écran, ou demander lequel.

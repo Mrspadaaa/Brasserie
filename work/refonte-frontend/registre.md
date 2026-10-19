@@ -154,6 +154,9 @@ Voir `decisions.md` (D1 à D12).
     Cas K5 ajouté au brief ; le moteur ajoute K5 et une table « paires ».
   - « la réponse d'abord », w1 à w5 (a571104d251dfed19), et « au doigt », y1 à y5 (a302d1517de87c0a0),
     pour atteindre 30 (« fait en qqch comme 30 et prends les 5 meilleures version et améliore les »).
+  - créatif à fond, z1 à z5 (Fable, a79739052fabfea4b) : « Il y a pas de limitation, pas de plafond de
+    verre, il faut être créatif, disrutif ». Seules limites : honnêteté des données et usage au doigt.
+    Total visé : 35 variantes.
   Ensuite :
   - les 30 rendues, le pilote rejoue COMMUN, LISIBLE, ALPHA et FICHE-BASELINE, et regarde les
     captures ;

@@ -22,7 +22,7 @@ Le jury filtre, le brasseur décide. Les 30 lui sont montrées, et les 5 retenue
    - ce qu'elle ajoute d'utile ;
    - une simple copie de la baseline perd des points.
 7. **Au doigt, sur 390 px** : peu de texte, un geste qui se voit, rien de trop petit.
-8. **L'originalité utile** : une idée qui apprend quelque chose, même osée.
+8. **L'originalité utile** : une idée qui apprend quelque chose, même osée (« Il y a pas de limitation, pas de plafond de verre, il faut être créatif, disrutif, trouver des solutions et des options »). Une variante z, créative à fond, peut entrer dans les 5 même hors baseline, si elle aide mieux à comprendre ou à choisir.
 
 ## Rendu
 
