@@ -7,7 +7,7 @@ Le jury filtre, le brasseur décide. Les 30 lui sont montrées, et les 5 retenue
 ## Ce qu'il lit
 
 - Pour chaque variante : sa capture du premier écran (`captures/<v>-haut-390.png` ou `<v>-390.png`), la page entière, les captures de ses états (geste, avant / après) et sa `NOTE.md`.
-- Les sorties de contrôle, rejouées par le pilote. Une variante sans LISIBLE OK ni COMMUN OK est éliminée, sauf si sa NOTE justifie l'exception.
+- Les sorties de contrôle, rejouées par le pilote. En exploration (v0), elles sont **indicatives** : « Soit pas trop contraignante pour les contrôles sur les v0, c'est de l'exportation [exploration] pour le moment ». Seule une **faute d'honnêteté** pèse lourd : une vraie valeur sans source, un simulé non marqué, une incertitude effacée, un inconnu montré comme zéro. Les cinq retenues passeront tous les contrôles à l'amélioration.
 - Les mots du brasseur, dans `BRIEF-AUTEUR.md`.
 
 ## Critères, dans l'ordre
@@ -28,8 +28,10 @@ Le jury filtre, le brasseur décide. Les 30 lui sont montrées, et les 5 retenue
 ## Rendu
 
 `fils21-choisir/JURY-VERDICT.md`, avec :
-- une table des 35 : une note de 1 à 5 par critère et une ligne de raison ;
+- une table de toutes les variantes rendues (une quarantaine, séries a à z et u comprises) : une note de 1 à 5 par critère et une ligne de raison ;
 - les 5 retenues, chacune avec ce qui la fait gagner et les trois améliorations les plus utiles, concrètes et vérifiables ;
 - les idées à greffer, prises chez les écartées.
+
+Le jury dit aussi, pour le pilote, si un lot de relance s'impose : rien n'est concluant, un concept n'est pas allé assez loin, ou un concept a du potentiel mais doit mûrir. Le brasseur l'autorise : « Je t' autorisé à relancé des nouveaux lot du rien n'est vraiment concluant ou au un a pas poussé assez loin le concepte ou si le concept a du potentiel mais doit être amélioré ».
 
 Le jury choisit pour **la diversité utile**. Si deux maquettes disent la même chose, il garde la meilleure et prend la place libérée pour une autre approche.

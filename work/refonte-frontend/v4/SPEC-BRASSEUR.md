@@ -245,7 +245,11 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
     trouver des solutions et des options. Un agent créatif à fond peut aider quelques mini maquettes »
     (z1–z5) ; « y compris s'écarter de la baseline si l'idée le vaut. Extact » ; « Tu peux peut être
     même en faire 35 » ; sur s1–s3 : « Simulation et simulateur mais c'est normalement dans
-    quasiment chaque variante le simu » (D95) ; sur a1–a3 : « Fait en plus, c'est normalement à intégré dans les autres aussi » (D96 ; a4–a6).
+    quasiment chaque variante le simu » (D95) ; sur a1–a3 : « Fait en plus, c'est normalement à intégré dans les autres aussi » (D96 ; a4–a6) ; « Soit pas trop contraignante pour les contrôles sur les v0, c'est de
+    l'exportation pour le moment » ; « Je t' autorisé à relancé des nouveaux lot du rien n'est
+    vraiment concluant ou au un a pas poussé assez loin le concepte ou si le concept a du potentiel
+    mais doit être amélioré » ; « J'ai l'impression que tu as peut être même trop limité certain
+    agent » (contrôles indicatifs en v0, auteurs libérés, agent libre u*).
   - Leçon : « les barres de l5b » voulait dire aussi ses pistes d'objectif, pas seulement ses barres
     de voie. Quand une demande désigne un élément d'une autre variante, reprendre tous ses éléments du
     même genre sur l'écran, ou demander lequel.

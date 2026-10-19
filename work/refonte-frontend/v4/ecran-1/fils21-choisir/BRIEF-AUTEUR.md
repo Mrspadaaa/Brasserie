@@ -1,5 +1,24 @@
 # Lot 21 · Mieux comprendre, mieux choisir : vraies valeurs, simulation, simulateur
 
+## À lire en premier : ce qui est obligatoire, et ce qui ne l'est pas
+
+Le brasseur, ce soir :
+- « Il y a pas de limitation, pas de plafond de verre, il faut être créatif, disrutif, trouver des solutions et des options » ;
+- « Soit pas trop contraignante pour les contrôles sur les v0, c'est de l'exportation [exploration] pour le moment » ;
+- « J'ai l'impression que tu as peut être même trop limité certain agent ».
+
+**Obligatoire, et rien d'autre :**
+- **L'honnêteté des données.** Les vraies valeurs portent leur source. Le simulé est marqué. Une incertitude énorme se voit, elle ne s'efface pas. « Inconnu » n'est jamais zéro.
+- **Une page qui marche au doigt** sur 390 px, avec un effet qui se voit tout de suite.
+- **Les interdits techniques** de la liste ci-dessous : fichiers réservés, `src/`, git, Gemini.
+
+**Indicatif, à prendre ou à laisser :**
+- tout le reste de ce brief : la baseline, les 70 mots, les balises, la liste des contrôles, les cas K1 à K5 ;
+- les exemples de variantes donnés par le pilote ;
+- le nombre de variantes : tu peux en faire plus, fusionner des thèmes ou changer d'angle.
+
+Joue les contrôles une fois et recopie leurs sorties dans ta NOTE, sans chercher à tout prix à les faire passer. Les cinq variantes retenues passeront ensuite tous les contrôles.
+
 Maquettes statiques en français (fil de fer fidèle), hors de l'app. Dépôt : C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie (chemins absolus).
 
 **Interdits** :

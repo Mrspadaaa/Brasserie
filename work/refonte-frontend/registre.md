@@ -156,7 +156,7 @@ Voir `decisions.md` (D1 à D12).
     pour atteindre 30 (« fait en qqch comme 30 et prends les 5 meilleures version et améliore les »).
   - créatif à fond, z1 à z5 (Fable, a79739052fabfea4b) : « Il y a pas de limitation, pas de plafond de
     verre, il faut être créatif, disrutif ». Seules limites : honnêteté des données et usage au doigt.
-    Total visé : 35 variantes.
+    Total visé : 35 variantes, plus a4–a6 et l'agent libre u1–u6 (ac599f994c33b7437, brief minimal). v0 : contrôles indicatifs, honnêteté et doigt seuls obligatoires ; relance de lots autorisée par le brasseur.
   Ensuite :
   - les 30 rendues, le pilote rejoue COMMUN, LISIBLE, ALPHA et FICHE-BASELINE, et regarde les
     captures ;
