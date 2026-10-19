@@ -144,6 +144,10 @@ Voir `decisions.md` (D1 à D12).
   - vraies valeurs v1 à v3 (a5467c9663a0794ae) ;
   - simulation et simulateur s1 à s3 (a9fbb2a0a36de6b55), qui attend le JSON ;
   - représentations distinctes r1 à r3 (adda9af009048910c), qui attend le JSON et la recherche.
+  - recherche J, comparatifs dry hop × variétés (Haiku, ab952db6fe3db486e) :
+    `recherche/J-comparatifs-dryhop-varietes.md` et `fils21-choisir/donnees/comparatifs-dryhop.json`.
+  Règle L3 de D94 corrigée (« il faut que ça se voit pas que ce soit effacé ») : une plage énorme se
+  montre en bande. Les quatre agents en ont été prévenus.
   À l'arrivée du JSON : prévenir s et r (SendMessage). À l'arrivée de la recherche : transmettre ses
   conclusions à r et s. Contrôle D94 LISIBLE (le lot 20 y échoue).
 - **Agents (état à ~21 h, tous rendus depuis)** :

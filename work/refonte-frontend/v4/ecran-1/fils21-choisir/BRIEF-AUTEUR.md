@@ -67,7 +67,8 @@ Leurs règles, toutes contrôlées :
   - `prototypes/houblons-v4/data/composes-houblon.json` : huile, composés, sources ;
   - l'α des lots en stock : `fils15-s5-complexe/donnees/` (cas c1 : `voies[].fiches[].alpha`) ;
   - les sorties du moteur « pouvoir aromatique » : `fils19-choix/donnees/*.json` et `fils20-dryhop/d4/moteur-lot20.json` ;
-  - les mesures en bière : `fils20-dryhop/d6`.
+  - les mesures en bière : `fils20-dryhop/d6` ;
+  - les comparaisons publiées de variétés en dry hop, mesurées en bière et goûtées par des panels (« Aussi trouve plus de comparatif entre dryhop et variété de houblons ») : `fils21-choisir/donnees/comparatifs-dryhop.json`, en cours de recherche.
 - **Simulé** : `fils21-choisir/donnees/profils-simules.json`, produit par le moteur `profil-simule` (en cours). Contrat :
   - `familles` (les 12 clés) ;
   - `echelle` : celle de `prototypes/houblons-v4/data/style-bands.json`, avec les crans de `src/engine/levels.ts` ;
@@ -92,7 +93,7 @@ Leurs règles, toutes contrôlées :
 2. `node O/controle-lisible.mjs D <v> --page=etat.html` → LISIBLE OK (D94) :
    - au moins 3 pictos de famille au premier écran ;
    - chaque composé visible porte le picto de sa famille dans sa ligne ;
-   - aucun facteur plus large que ×100 ;
+   - une plage plus large que ×100 ne s'efface pas : elle se voit, avec une bande `data-role="incertitude"` de 120 px au moins, sur une échelle qui rend sa largeur perceptible, et ses bornes (« Si il y a des écart x100 justement il faut que ça se voit pas que ce soit effacé ») ;
    - au moins une vraie valeur `data-nature="mesure"` au premier écran ;
    - le simulé est marqué.
    Témoin : `fils20-dryhop` d1 à d6 y échouent.

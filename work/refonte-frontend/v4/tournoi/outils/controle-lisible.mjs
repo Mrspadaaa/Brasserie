@@ -8,8 +8,11 @@
 //   L1 au moins trois pictos de famille visibles (svg[data-famille]) : on lit d'abord en familles ;
 //   L2 chaque nom de composé visible (linalol, géraniol, myrcène, 4MMP, 3MH…) a le picto de sa famille
 //      dans sa ligne (le plus petit ancêtre de 60 px de haut au plus) : pas de chimie orpheline ;
-//   L3 aucun facteur en plage plus large que ×100 (« ×0,27–2303 ») : il dit « on ne sait pas », écrit
-//      comme tel (« très incertain »), pas en chiffres ;
+//   L3 une plage très large (facteur de plus de ×100, « ×0,27–2303 ») ne s'efface pas et ne reste pas
+//      en texte brut : le brasseur, 19.10 soir : « Si il y a des écart x100 justement il faut que ça se
+//      voit pas que ce soit effacé ». Elle se VOIT : dans sa ligne, une bande visible
+//      [data-role="incertitude"] d'au moins 120 px, sur une échelle qui rend sa largeur perceptible
+//      (logarithmique par exemple), avec ses bornes ;
 //   L4 au moins une vraie valeur visible, marquée [data-nature="mesure"] (α, huile, dose, mesure en
 //      bière…) avec data-source ;
 //   L5 chaque valeur simulée visible, marquée [data-nature="simule"], porte un signe visible de
@@ -53,7 +56,14 @@ for (const id of ids) {
       }
       for (const f of t.matchAll(/×\s*(\d+(?:[,.]\d+)?)\s*[–-]\s*(\d+(?:[,.]\d+)?)/g)) {
         const a = parseFloat(f[1].replace(',', '.')), b = parseFloat(f[2].replace(',', '.'));
-        if (a > 0 && b / a > 100) facteursLarges.push(f[0]);
+        if (!(a > 0 && b / a > 100)) continue;
+        // La ligne de la plage : le plus petit ancêtre qui contient une bande d'incertitude, borné à 140 px.
+        let ligne = el, bande = null;
+        for (; ligne && ligne !== document.body && ligne.getBoundingClientRect().height <= 140; ligne = ligne.parentElement) {
+          bande = [...ligne.querySelectorAll('[data-role="incertitude"]')].find((x) => vis(x) && x.getBoundingClientRect().width >= 120);
+          if (bande) break;
+        }
+        if (!bande) facteursLarges.push(f[0]);
       }
     }
     const pictos = [...document.querySelectorAll('svg[data-famille]')].filter(vis).length;
@@ -66,7 +76,7 @@ for (const id of ids) {
   const f = [];
   if (r.pictos < 3) f.push('L1 ' + r.pictos + ' picto(s) de famille au premier écran (3 au moins)');
   if (r.orphelins.length) f.push('L2 composés sans le picto de leur famille dans leur ligne : ' + r.orphelins.join(', '));
-  if (r.facteursLarges.length) f.push('L3 facteurs en plage de plus de ×100 : ' + r.facteursLarges.join(' ; '));
+  if (r.facteursLarges.length) f.push('L3 plages de plus de ×100 en texte seul, sans bande d\'incertitude visible (data-role="incertitude", 120 px au moins) : ' + r.facteursLarges.join(' ; '));
   if (!r.mesures) f.push('L4 aucune vraie valeur marquée data-nature="mesure" au premier écran');
   else if (r.sansSource) f.push('L4 ' + r.sansSource + ' vraie(s) valeur(s) sans data-source');
   if (r.muets) f.push('L5 ' + r.muets + ' valeur(s) simulée(s) sans signe « ~ », « ≈ », « simulé » ou « estimé »');
