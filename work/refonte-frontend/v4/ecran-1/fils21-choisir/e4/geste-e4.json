@@ -1,0 +1,284 @@
+{
+ "geste": "ta dose glissée au doigt : 4 → 2 g/L (posé), puis → 8 g/L (relâché) ; puis la levure touchée en agrumes",
+ "avant": {
+  "dose": "4 g/L",
+  "reglages": [
+   "actif",
+   "US-05"
+  ],
+  "reponse": "À 4 g/L, actif : Citra, Galaxy sortent de la 16D ; Cascade, Idaho 7, Motueka, Nelson Sauvin restent.",
+  "ligneHaut": 446,
+  "ligneAuPremierEcran": true,
+  "echelons": [
+   {
+    "dose": "≤ 1 g/L",
+    "hors": false,
+    "houblons": [],
+    "nonDepartages": false
+   },
+   {
+    "dose": "1–2 g/L",
+    "hors": false,
+    "houblons": [],
+    "nonDepartages": false
+   },
+   {
+    "dose": "2–4 g/L",
+    "hors": true,
+    "houblons": [
+     "Citra ~+4 crans~39 pts",
+     "Galaxy ~+4 crans~37 pts"
+    ],
+    "nonDepartages": true
+   },
+   {
+    "dose": "4–8 g/L",
+    "hors": false,
+    "houblons": [],
+    "nonDepartages": false
+   },
+   {
+    "dose": "reste",
+    "hors": false,
+    "houblons": [
+     "Cascade ~+2 crans~18 pts",
+     "Idaho 7 ~+2 crans~17 pts",
+     "Motueka ≈ sans écart~6 pts",
+     "Nelson Sauvin ≈ sans écart~1 pts"
+    ],
+    "nonDepartages": true
+   }
+  ],
+  "animations": 0,
+  "curseurAuPremierEcran": true
+ },
+ "pendant": {
+  "dose": "2 g/L",
+  "reglages": [
+   "actif",
+   "US-05"
+  ],
+  "reponse": "À 2 g/L, actif : tous restent dans la 16D.",
+  "ligneHaut": 320,
+  "ligneAuPremierEcran": true,
+  "echelons": [
+   {
+    "dose": "≤ 1 g/L",
+    "hors": false,
+    "houblons": [],
+    "nonDepartages": false
+   },
+   {
+    "dose": "1–2 g/L",
+    "hors": false,
+    "houblons": [],
+    "nonDepartages": false
+   },
+   {
+    "dose": "2–4 g/L",
+    "hors": false,
+    "houblons": [
+     "Citra ~+3 crans~28 pts",
+     "Galaxy ~+3 crans~26 pts"
+    ],
+    "nonDepartages": true
+   },
+   {
+    "dose": "4–8 g/L",
+    "hors": false,
+    "houblons": [],
+    "nonDepartages": false
+   },
+   {
+    "dose": "reste",
+    "hors": false,
+    "houblons": [
+     "Cascade ~+1 cran~11 pts",
+     "Idaho 7 ~+1 cran~10 pts",
+     "Motueka ≈ sans écart~3 pts",
+     "Nelson Sauvin ≈ sans écart~1 pts"
+    ],
+    "nonDepartages": true
+   }
+  ],
+  "animations": 0,
+  "curseurAuPremierEcran": true,
+  "animationsPendantLeGlisse": 5
+ },
+ "apres": {
+  "dose": "8 g/L",
+  "reglages": [
+   "actif",
+   "US-05"
+  ],
+  "reponse": "À 8 g/L, actif : Citra, Galaxy sortent de la 16D ; Cascade, Idaho 7, Motueka, Nelson Sauvin restent.",
+  "ligneHaut": 477,
+  "ligneAuPremierEcran": true,
+  "echelons": [
+   {
+    "dose": "≤ 1 g/L",
+    "hors": false,
+    "houblons": [],
+    "nonDepartages": false
+   },
+   {
+    "dose": "1–2 g/L",
+    "hors": false,
+    "houblons": [],
+    "nonDepartages": false
+   },
+   {
+    "dose": "2–4 g/L",
+    "hors": true,
+    "houblons": [
+     "Citra ~+5 crans~48 pts",
+     "Galaxy ~+5 crans~47 pts"
+    ],
+    "nonDepartages": true
+   },
+   {
+    "dose": "4–8 g/L",
+    "hors": false,
+    "houblons": [],
+    "nonDepartages": false
+   },
+   {
+    "dose": "reste",
+    "hors": false,
+    "houblons": [
+     "Cascade ~+3 crans~28 pts",
+     "Idaho 7 ~+3 crans~26 pts",
+     "Motueka ~+1 cran~11 pts",
+     "Nelson Sauvin ≈ sans écart~1 pts"
+    ],
+    "nonDepartages": true
+   }
+  ],
+  "animations": 0,
+  "curseurAuPremierEcran": true,
+  "animationsJusteApres": 2
+ },
+ "levure": {
+  "US-05": {
+   "dose": "4 g/L",
+   "reglages": [
+    "actif",
+    "US-05"
+   ],
+   "reponse": "À 4 g/L, actif : Citra sort de la 16D ; Cascade, Galaxy, Idaho 7, Motueka, Nelson Sauvin restent.",
+   "ligneHaut": 396,
+   "ligneAuPremierEcran": true,
+   "echelons": [
+    {
+     "dose": "≤ 1 g/L",
+     "hors": false,
+     "houblons": [],
+     "nonDepartages": false
+    },
+    {
+     "dose": "1–2 g/L",
+     "hors": false,
+     "houblons": [],
+     "nonDepartages": false
+    },
+    {
+     "dose": "2–4 g/L",
+     "hors": true,
+     "houblons": [
+      "Citra ~+3 crans~35 pts"
+     ],
+     "nonDepartages": false
+    },
+    {
+     "dose": "4–8 g/L",
+     "hors": false,
+     "houblons": [
+      "Cascade ~+2 crans~21 pts",
+      "Galaxy ~+3 crans~28 pts"
+     ],
+     "nonDepartages": true
+    },
+    {
+     "dose": "reste",
+     "hors": false,
+     "houblons": [
+      "Idaho 7 ~+1 cran~14 pts",
+      "Motueka ~+1 cran~15 pts",
+      "Nelson Sauvin ~+1 cran~12 pts"
+     ],
+     "nonDepartages": true
+    }
+   ],
+   "animations": 0,
+   "curseurAuPremierEcran": true
+  },
+  "Pomona": {
+   "dose": "4 g/L",
+   "reglages": [
+    "actif",
+    "Pomona"
+   ],
+   "reponse": "À 4 g/L, actif : Citra sort de la 16D ; Cascade, Galaxy, Idaho 7, Motueka, Nelson Sauvin restent.",
+   "ligneHaut": 396,
+   "ligneAuPremierEcran": true,
+   "echelons": [
+    {
+     "dose": "≤ 1 g/L",
+     "hors": false,
+     "houblons": [],
+     "nonDepartages": false
+    },
+    {
+     "dose": "1–2 g/L",
+     "hors": false,
+     "houblons": [],
+     "nonDepartages": false
+    },
+    {
+     "dose": "2–4 g/L",
+     "hors": true,
+     "houblons": [
+      "Citra ~+4 crans~39 pts"
+     ],
+     "nonDepartages": false
+    },
+    {
+     "dose": "4–8 g/L",
+     "hors": false,
+     "houblons": [
+      "Cascade ~+2 crans~25 pts",
+      "Galaxy ~+3 crans~28 pts",
+      "Idaho 7 ~+3 crans~27 pts"
+     ],
+     "nonDepartages": true
+    },
+    {
+     "dose": "reste",
+     "hors": false,
+     "houblons": [
+      "Motueka ~+1 cran~15 pts",
+      "Nelson Sauvin ~+1 cran~12 pts"
+     ],
+     "nonDepartages": true
+    }
+   ],
+   "animations": 0,
+   "curseurAuPremierEcran": true
+  }
+ },
+ "constat": {
+  "sortentA4": [
+   "Citra",
+   "Galaxy"
+  ],
+  "sortentA2": [],
+  "sortentA8": [
+   "Citra",
+   "Galaxy"
+  ],
+  "ligneBouge": true,
+  "reclasseAvecLaLevure": true,
+  "gesteAuPremierEcran": true
+ },
+ "erreurs": []
+}
