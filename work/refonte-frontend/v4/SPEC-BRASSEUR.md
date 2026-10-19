@@ -220,7 +220,10 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
     - « Les icône sont pas parlant du tout » (la goutte, le souffle : l'usage en mot, D90) ;
     - « Ça c'est inutile » (la bande « ‹ visée | visée », D91) ;
     - sur la petite jauge d'objectif : « La barre là, c'est mieux mais il y avait mieux.... C'est pas
-      exactement ce que j'ai demandé » (les pistes de l5b sous chaque objectif, D92).
+      exactement ce que j'ai demandé » (les pistes de l5b sous chaque objectif, D92) ;
+    - sur la fiche ouverte par l'appui long : « Pourquoi la fiche est pareil ??? C'est pas du tout la
+      bonne, ça suit pas la Baseline, ça suit rien du tout ??? » (D93) ;
+    - sur la légende ouverte : « Quoi ouvre ça ??? » (la capture doit montrer le doigt sur le « ? »).
   - Leçon : « les barres de l5b » voulait dire aussi ses pistes d'objectif, pas seulement ses barres
     de voie. Quand une demande désigne un élément d'une autre variante, reprendre tous ses éléments du
     même genre sur l'écran, ou demander lequel.
