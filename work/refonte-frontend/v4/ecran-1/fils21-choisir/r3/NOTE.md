@@ -1,0 +1,53 @@
+r3 · La carte : « jusqu'où je peux aller sans sortir de ma 16D ? »
+
+- **Ce qui tient** :
+  - **Une carte du goût au style**. À droite, le fruité : la plus forte des familles fruitées, en multiple de sa limite 16D. En haut, le floral, l'herbacé, le terreux, l'épicé et le vert, de la même façon. Les axes sont nommés, avec leurs pictos au trait.
+    - Le carré pâle en bas à gauche est la 16D.
+    - En absolu, la carte est sur 0–100, et le carré devient 30 × 55.
+    - Le résineux de ma bière (dégustation) est déjà hors du style : il n'entre pas dans la carte, et la phrase le dit.
+  - **Chaque houblon trace son chemin de dose** : de ma bière vers 1, 2, 4, puis 8 g/L (grille du moteur, ~ simulé). Un trait orangé marque l'endroit où il sort du carré. On lit d'un coup, à moment égal, que :
+    - tous sortent entre 1 et 4 g/L ;
+    - Citra sort vers ~2 g/L ;
+    - Galaxy va le plus loin.
+  - **20 brassins simulés du houblon choisi**, en points tirés aux quantiles de sa plage :
+    - chacun à la couleur de sa famille la plus forte ;
+    - cerclé d'orangé quand il sort du style ;
+    - en flèche quand il dépasse la carte (« 7 brassins plus haut que la carte ↑ »).
+    - L'incertitude se compte : « Citra 2 g/L : ~ reste dans la 16D ; 7 brassins sur 20 dans le carré. »
+  - **Le classement par critère** : « Dans la 16D, sur 20 brassins simulés ».
+    - Un tableau de 20 cases par houblon, avec ses chances, la dose où il sort (~) et la confiance du moteur.
+    - Motueka et Nelson Sauvin y entrent avec « composés inconnus : force de Cascade ».
+    - Ce n'est pas un « meilleur » : un toucher choisit le houblon dont on veut les brassins.
+  - **Réglages** :
+    - dose 1 / 2 / 4 / 8 g/L ;
+    - moment 60′ → après : à 60′ les chemins restent collés à ma bière, avec « Pourquoi ? » ;
+    - levure US-05 ou Pomona (en fermentation, la flèche de biotransformation est expliquée) ;
+    - ajout cumulé Citra + Cascade, + Galaxy ou + Idaho 7 (2 + 2 g/L) : un losange relié à chaque houblon seul à 4 g/L (même dose totale).
+  - **« Pourquoi si large ? L'incertitude réelle »**, sous le classement :
+    - le rapport au seuil de chaque composé du houblon choisi, sur échelle log de ×0,001 à ×10 000. La largeur est écrite (Cascade linalol ×0,006 à ×537, « largeur ×92 586 ») : énorme, et visible ;
+    - pour chaque composé, le calculé en bière, puis la mesure ailleurs, avec sa dose ou « dose non dite », et « à vérifier » quand la source le dit (Citra géraniol 86,4 µg/L, E06) ;
+    - les 29 lots de Cascade 2015 en points (panel, 4,2–6,6 sur 15 à dose égale) : un lot n'est pas l'autre ;
+    - le linalol mesuré en bière (E06) ;
+    - les quatre trous, en « inconnu ».
+  - Repris de la baseline : pictos au trait, α du lot (≠ pour Galaxy et Nelson Sauvin), lentille au style, légende « ? », fiche à l'appui long.
+- **Ce qui casse** :
+  - **S'écarter de la baseline** : ni barres ni piste. Deux dimensions au lieu de douze familles, pour répondre à « jusqu'où » (la dose où l'on sort) : c'est « tricher un peu », regrouper. Les familles exactes restent dans les points (couleur) et dans r1.
+  - **La carte écrase les familles** : une famille non fruitée forte et une faible au même maximum ont la même hauteur. Le carré 16D n'est exact que parce que chaque axe est un multiple de la limite de chaque famille.
+  - **Les points se chevauchent** près de ma bière (1 et 2 g/L), et les noms Cascade et Idaho 7 se touchent.
+  - **Les tirages ne sont pas des lots** : 20 quantiles d'une plage, avec un facteur commun. Ils montrent l'incertitude du moteur, pas la variabilité d'un lot. Celle-ci est dans les 29 lots, mesurés pour Cascade seulement.
+  - **Hauts sans bord** : beaucoup de hauts du moteur dépassent 100 (bornes non publiées). Une bonne part des tirages sort donc par le haut : honnête, mais cela fait peur.
+  - **Levure** : la grille ne simule que US-05 et Pomona, et après fermentation la levure ne change rien (CUMUL C2 en échec, honnête).
+  - **COULEURS** : 2 teintes franches seulement au premier écran (les points de Citra, tropical et agrumes). La carte est surtout en encre.
+  - **165 mots au premier écran** pour 70 (indicatif).
+- **Contrôles** (indicatifs en v0, joués une fois sur `etat.html`) :
+  - COMMUN ECHEC 2 contrôles :
+    - MOTS ECHEC (165 > 70) ;
+    - COULEURS ECHEC (« 2 teinte(s) franche(s) au premier écran hors alerte (34°, 93°), 3 au moins ») ;
+    - AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE et PARLANT sont OK ;
+  - LISIBLE OK ;
+  - SIMULATION OK ;
+  - CUMUL ECHEC 1 problème : « C2 le choix de levure ne fait bouger aucune valeur simulée » (après fermentation) ;
+  - ALPHA OK ;
+  - FICHE-BASELINE OK (fiche de Nugget, 12 familles nommées, 19 pictos, 0 faute).
+- **Pire contraste** : 5,69:1, « Absolu » (gris sur #ececf1). 153 textes mesurés ; 1 sur fond d'image, non mesurable.
+- Générée par `generateur-r3.mjs` avec `../r1/socle-r.mjs`. Captures : `captures/r3-390.png` (page), `r3-haut`, `r3-60` (60′, 8 g/L), `r3-ensemble` (Citra + Cascade 2 + 2, Cascade choisi), `r3-incertitude` (Cascade), `r3-incertitude-citra`. États par l'URL : `?m=b60&d=8`, `?p=Citra,Cascade&d=4&h=Cascade`, `?h=Cascade`.

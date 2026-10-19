@@ -1,0 +1,47 @@
+r2 · La frise : « quand, et combien de temps ? », le dry hop jour par jour
+
+- **Ce qui tient** :
+  - **Une frise des jours depuis l'ajout**. Une courbe par famille (les 4 plus fortes, ~ simulé), tirée du `parJour` du moteur pour les cas K1 à K5, ou de sa grille jour par jour (1, 2, 3, 5, 7 j) pour un houblon seul.
+    - Au style, la ligne 16D est la même pour toutes les familles : la limite de chacune. Au-dessus, la zone hachurée orangée.
+    - En absolu, l'échelle va de 0 à 100 (faible, moyen).
+    - L'échelle monte jusqu'au plus haut centre : le résineux de la dégustation (~83) n'est pas rogné.
+  - **La plage des deux familles que l'ajout apporte le plus**, en bande pâle bordée de tirets. Une bande qui sort par le haut le dit : flèche et « plage plus haute ↑ ».
+  - **Les repères mesurés posés sur le temps**, en traits pointillés (24 h, 2 j, 3 j depuis l'ajout) et en liste sourcée au toucher :
+    - 24 h : l'essentiel est extrait (H73) ;
+    - 2 j : les thiols (Eureka!, E08) ;
+    - 3 j : plus rien de mesuré (H73) ;
+    - 1 h ≈ 96 h au panel (Cascade, E10) ;
+    - 6 h : linalol extrait à 43 % au repos, 89 % agité (E05, thèse) ;
+    - au-delà de 3 j : hop creep +0,92 % vol. à 10 g/L en 7 j (H68).
+  - **Au-delà de 3 j de contact**, une zone hachurée « hop creep ? » couvre la frise. On voit Cascade 7 j plafonner dès 24 h, puis 6 jours sans rien de plus.
+  - **Sous la frise, la durée de contact de chaque houblon** : barre pleine pour le premier, en contour pour le second, avec nom (appui long : la fiche), α du lot, dose et jours. Les durées sont à l'échelle des jours.
+  - **Un houblon seul** : réglage « Contact 1 / 2 / 3 / 5 / 7 j ».
+  - **Deux houblons** :
+    - « Citra 3 j → Galaxy » ou « → Idaho 7 », enchaînés (K3, K4). La seconde marche de la courbe à J3 montre la saturation partagée.
+    - « ensemble 2 + 2 », cumulés (K5). Un seul bloc porte les deux houblons.
+  - **Le curseur Jour** (réglage) donne le nez à ce jour : les trois familles en tailles décroissantes, le verdict, « ~ simulé ».
+  - **La levure active** se voit. En fermentation, une barre « levure active » couvre J0 à J3, avec sa biotransformation (Pomona : géraniol → citronellol, picto floral → agrumes, source). Après fermentation, elle est « hors du cas », mais le hop creep reste possible.
+  - Inconnus écrits : ordre, synergie et masquage, le végétal selon le temps, et l'absence de mesure croisant variété, levure et dry hop.
+  - Repris de la baseline : pictos au trait, α du lot (≠ pour Galaxy), lentille au style, légende « ? », fiche à l'appui long.
+- **Ce qui casse** :
+  - **S'écarter de la baseline** : pas de barres. Le temps est le sujet, et une courbe le montre mieux qu'un instantané.
+  - **Le moteur extrait très vite** (97 % en 24 h, τ pris à 18–20 °C) : les courbes sont presque des marches. E10 (1 h ≈ 96 h) va dans le même sens ; E08 (2 j) est plus lent.
+  - **Les points entre deux jours sont reliés en ligne droite** : ce n'est pas une cinétique mesurée. Le « ~ » et « estimé » le disent, mais la ligne peut tromper.
+  - **Combinaisons non simulées** :
+    - les enchaînements n'existent que pour Citra → Galaxy et Citra → Idaho 7 ;
+    - avec Galaxy, seule US-05 après fermentation est simulée ;
+    - les ajouts ensemble n'ont de frise que pour les paires avec Citra ;
+    - ailleurs, « inconnu : pas simulé ».
+  - **Après fermentation, la levure ne change rien au profil du moteur** : CUMUL C2 en échec, honnête. Il faut passer « en fermentation » pour voir Pomona agir.
+  - **155 mots au premier écran** pour 70 (indicatif).
+  - Les étiquettes « hors 16D » et le résineux se touchent en haut à gauche.
+  - La frise ne couvre pas le côté chaud (60′, 10′, whirlpool) : r1 et r3 le font.
+- **Contrôles** (indicatifs en v0, joués une fois sur `etat.html`) :
+  - COMMUN ECHEC 1 contrôle : MOTS ECHEC (155 > 70). COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE et PARLANT sont OK ;
+  - LISIBLE OK ;
+  - SIMULATION OK ;
+  - CUMUL ECHEC 1 problème : « C2 le choix de levure ne fait bouger aucune valeur simulée » (après fermentation) ;
+  - ALPHA OK (3 voies sur 3 avec leur α) ;
+  - FICHE-BASELINE OK (fiche de Nugget, 12 familles nommées, 19 pictos, 0 faute).
+- **Pire contraste** : 5,18:1, « Résineux » (ton texte, 12 px). 85 textes mesurés ; 1 sur fond hachuré, non mesurable.
+- Générée par `generateur-r2.mjs` avec `../r1/socle-r.mjs`. Captures : `captures/r2-390.png` (page), `r2-haut` (Citra 3 j → Galaxy 7 j), `r2-cascade7j`, `r2-ensemble-pomona` (Citra + Idaho 7 ensemble, Pomona en fermentation, curseur à J+1). États par l'URL : `?h=Cascade&j=7`, `?h=Citra,Idaho%207&mode=ensemble&dh=dryActive&l=Pomona&t=1`.

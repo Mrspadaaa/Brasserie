@@ -1,0 +1,61 @@
+r1 · Le verre : « qu'est-ce que je vais sentir, et est-ce que ça reste dans ma 16D ? »
+
+- **Ce qui tient** :
+  - **Un verre dessiné**. Chaque famille y flotte :
+    - à la hauteur de son niveau au style : le bord du verre est la limite 16D de cette famille ;
+    - à une taille qui dit sa force (~ simulé).
+    - Ce qui passe le bord déborde, dans la zone hachurée orangée « hors 16D ». La règle est stricte : une famille dans le style reste sous le bord, une famille hors du style au-dessus.
+    - Un trait vertical par famille montre sa plage bas–haut. Quand la plage dépasse le cadre, une flèche dit « plus haut ». Une borne haute non publiée finit en tirets. Rien n'est rogné.
+    - En absolu, le même verre est gradué de 0 à 100 (faible, moyen, marqué), sans le bord du style.
+  - **Ma bière à côté**, dans un petit verre :
+    - Nugget à 60′ ne donne presque rien ;
+    - le résineux est marqué par ta dégustation (« ma stout est trop résineuse »), donc déjà hors 16D. Le verre et la phrase le séparent de ce que fait l'ajout (« Résineux · ta bière »).
+  - **On compose son ajout** :
+    - un houblon, ou deux ensemble (« + un 2ᵉ houblon, ensemble (2 + 2 g/L) ») ;
+    - la dose en quatre plans nommés par leur audace (sage 1, franc 2, osé 4, saturé 8 g/L), chacun avec son petit verre et son verdict ;
+    - le moment (60′ → après) et la levure.
+    - Les quatre boutons de houblon comparent à dose égale : chacun dit ce que l'ajout apporte le plus (« ~Tropicaux », « ~Baies »…).
+  - **Deux houblons ensemble** (grillePaires du moteur) : trois petits verres côte à côte, chaque houblon seul à 4 g/L et les deux ensemble à 2 + 2 g/L (même dose totale). Exemple : Citra seul déborde, Cascade seul reste dans la 16D, l'ensemble déborde.
+  - **La réponse, en mots** : verdict (déborde, au bord, reste), analogie BJCP (« ≈ pale ale US », bandes du prototype), les trois familles fortes, « ce que ça change » face à ma bière.
+    - À 60′, le verre est vide (« presque rien au nez »), avec « Pourquoi ? À 60′, presque tout part : l'amertume reste » (source au toucher) et « ≈ 100 IBU (80–120), estimé de l'α ».
+  - **La biotransformation dessinée**. Pomona en fermentation active trace une flèche dans le verre, du floral vers les agrumes, avec le fait sourcé (H50-pomona). Après fermentation, elle est « hors du cas ».
+  - **Les vraies valeurs, sourcées au toucher** :
+    - α du lot (Citra cryo 24,8 %, Galaxy 17,2 % ≠) et plage des fiches (« 10–15 % pellets ») ;
+    - huile totale, et celle du cryo du lot (2–6 mL/100 g) ;
+    - 4MMP (Hopsteiner 2024 : Citra 10–38 µg/kg, « le plus haut des 97 ») ;
+    - linalol en bière, mesuré en dry hop (E06 : Citra 144 µg/L, Centennial 78,4, Nelson Sauvin 70,2, sans houblon 46,8) ;
+    - la dose de Cascade au panel (E04) ;
+    - les 29 lots de Cascade, en points ;
+    - les trous, écrits « inconnu » : aucune étude Citra contre Cascade à dose égale, rien sur Galaxy…
+  - **Le détail** (« Toutes les familles, plages et sources › ») :
+    - les 12 familles en **barres de l5b** (crans du style, zone pâle, orangé au-delà, plage en trait) ;
+    - le rapport au seuil de chaque composé sur échelle log de ×0,001 à ×10 000 (linalol ×0,06 à ×2 060), avec le central ;
+    - pour chacun, le calculé en bière et, à côté, la mesure publiée (Citra linalol : ~460 calculé, 144 mesuré). « À vérifier » et « dose non dite » se voient.
+  - Repris de la baseline :
+    - pictos au trait de l8g ;
+    - α du lot puis fiches, ≠, « pellets » ;
+    - usage en mot ;
+    - lentille au style par défaut ;
+    - légende derrière « ? » ;
+    - appui long ou survol long sur un nom souligné de points, qui ouvre la vraie fiche g1 au langage de la page.
+  - Données : `fils21-choisir/donnees/profils-simules.json` (moteur profil-simule), branché. Le stub a été retiré.
+- **Ce qui casse** :
+  - **S'écarter de la baseline** : les barres verticales de l5b ne sont plus au premier plan, mais dans le détail. Le verre donne d'un coup « quoi » (les familles nommées, grandes ou petites) et « dans le style ou pas » (sous ou sur le bord), ce que les barres demandent de lire colonne par colonne.
+  - **197 mots au premier écran** pour 70 (indicatif en v0). La phrase, l'écart et les mentions du résineux pèsent.
+  - **Le verre est chargé** :
+    - les plages verticales se superposent quand plusieurs familles tombent au centre ;
+    - la zone au-dessus du bord est comprimée (niveaux 1 à 2,6 sur 95 px) ;
+    - le résineux de la dégustation, à 83, prend beaucoup de place en haut.
+  - **La levure ne fait rien au repos**. Après fermentation (l'état par défaut, K2), le moteur ne simule aucun effet de levure : un toucher sur Pomona ne bouge rien (CUMUL C2 en échec, honnête). Il faut passer en « actif » pour voir la biotransformation.
+  - **Levures non simulées** : la grille du moteur ne simule que US-05 et Pomona pour un houblon seul. Verdant et Diamond sont désactivés et dits « non simulés ». Pour deux houblons ensemble, Verdant existe, Diamond non.
+  - Pas d'enchaînement (Citra 3 j puis Galaxy 7 j) dans le verre : c'est le sujet de r2.
+  - L'IBU à 60′ est un estimé du moteur, pas une mesure.
+- **Contrôles** (indicatifs en v0, joués une fois sur `etat.html`) :
+  - COMMUN ECHEC 1 contrôle : MOTS ECHEC (197 > 70). COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE et PARLANT sont OK ;
+  - LISIBLE OK ;
+  - SIMULATION OK ;
+  - CUMUL ECHEC 1 problème : « C2 le choix de levure ne fait bouger aucune valeur simulée » (après fermentation, voir plus haut) ;
+  - ALPHA OK ;
+  - FICHE-BASELINE OK (fiche de Nugget, 12 familles nommées, 19 pictos, 0 faute).
+- **Pire contraste** : 4,8:1, « ~ déborde » (#c2410c, 12 px, sur #f6f6f9). 126 textes mesurés ; 3 sur fond d'image ou de dégradé, non mesurables (les plans hachurés).
+- Générée par `generateur-r1.mjs` avec `socle-r.mjs`, partagé avec r2 et r3. Captures : `captures/r1-390.png` (page), `r1-haut`, `r1-60`, `r1-ensemble`, `r1-pomona`, `r1-absolu`, `r1-detail`, `r1-fiche`. États par l'URL : `?h=Citra,Cascade`, `?m=b60`, `?h=Idaho%207&m=dryActive&l=Pomona`, `?abs`, `?detail`, `?fiche=Citra%20cryo`.
