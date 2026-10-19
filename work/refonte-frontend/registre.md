@@ -134,6 +134,18 @@ Voir `decisions.md` (D1 à D12).
   cours. Fils de la page : tous répondus et résolus, sauf « Les bar de ce type… », non envoyé à
   Claude. À faire valider par lui : l8 (l8g ou l8h ; trait l8e ou l8f) contre l5 (l5e ou l5d) ; les
   conventions [H] du moteur ; les icônes Barres et Radar de l5e (D31).
+- **Mise à jour, ~2 h 30 (20.10)** :
+  - page des fils de fer : version 22 (41 premiers écrans du lot 21 v0) et version 23 (les cinq
+    améliorées et trois relances, dans l'ordre du critique : y1b, s3b, x3b, v1b, w3b ; puis r3b, a2b,
+    e4) ;
+  - contrôle D97 BRUTES ajouté à controle-commun ; MOTS --sans-donnees ;
+  - troisième passe légère en cours sur les cinq, sur place (critique/seconde-passe.md) ;
+  - prochaine action : à leur retour, rejouer COMMUN, MOTS hors données et le geste, regarder,
+    republier la section t119-lot21b, committer ;
+  - à faire valider par le brasseur :
+    - laquelle des cinq (ou quelle combinaison) devient l'outil ;
+    - les conventions du moteur (PROFIL-SIMULE.md) ;
+    - toujours : l8 ou l5, et la porte B.
 - **Mise à jour, ~0 h 40 (20.10)** :
   - rendus et commités : s1–s3, r1–r3, v1–v3, x1–x5, u1–u6, e1–e3, w1–w5 et z1–z5 (33 variantes) ;
     l5f publié (version 21 de la page des fils de fer) ;
