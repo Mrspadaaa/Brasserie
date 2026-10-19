@@ -1,0 +1,54 @@
+- **Ce qui tient** : l5b, avec tous les retours de ce soir sur la baseline (D87 à D93). Les pistes d'objectif de l5b sont gardées telles quelles : rail, zone du style, barre de la meilleure voie, visée écrite sur la piste (D92). Les widgets « même effet », les gestes, les barres d'intensité et la typographie restent aussi.
+  - **Pictos d'arôme au trait de l2 Carnet** (D88) :
+    - un seul `<symbol>` par famille : le dessin v3 au ton texte de la famille (de 4,96:1 pour agrumes à 7,05:1 pour épicé, sur blanc) ;
+    - un trait de 1,6 px rendu à toute taille et le crayon léger de l8e (déplacement 0,8, sans flou) ;
+    - le disque pâle du duo (`.pi.duo`) disparaît, comme la pastille blanche derrière le picto des objectifs.
+  - **L'α de chaque houblon, sur chaque voie** (D87, c1 : `voies[].fiches[].alpha`) :
+    - après le nom et l'usage, l'α du lot en stock d'abord (« α 8,1% », en mono), puis la plage des fiches, plus discrète, après un petit livre (« 5–8,5% ») ;
+    - un houblon à acheter montre la plage seule ;
+    - ≠ en gris pour Nelson Sauvin et Galaxy, dont le lot sort des fiches ;
+    - pour Citra cryo, « 10–15% pellets », sans ≠ ;
+    - balisage : `data-role="alpha"`, `data-source="lot"` ou `"fiches"`.
+  - **L'usage en mot** (D90) : « amérisant », « aromatique », « mixte », dans une pastille.
+    - Attesté par un fournisseur : la pastille est pleine (encre sur #ececf1).
+    - Déduit de l'α : pâle, en gris sur blanc avec un pointillé, et le `data-source="règle"` est gardé. Pas d'opacité, pour rester à 4,5:1.
+    - La goutte et le souffle ont disparu, même des titres des gestes.
+  - **Pas de bande d'axe** (D91) : aucune étiquette « visée » hors des pistes.
+  - **La légende derrière un « ? »** (D89) :
+    - le bouton fait 28 px et n'a pas de fond au repos (`legende-bouton`, aria-expanded) ;
+    - ouverte, elle descend du « ? » : un bec le désigne, et le « ? » reste au-dessus du voile, blanc et cerclé, avec la trace du doigt de b1 (un rond de 38 px). Cela répond à « Quoi ouvre ça ??? » ;
+    - elle nomme les 12 familles, la piste (ma bière, zone du style, meilleure voie, visée), l'usage et sa pâleur, l'α du lot et des fiches, ≠, pellets, le stock, les moments, les barres et les gestes ;
+    - Échap, le voile ou × la ferment.
+  - **La fiche dans le langage de la page** (D93) : c'est toujours la vraie fiche de la base (`fichesH`, D25), ouverte par l'appui long, composée avec les briques de la page :
+    - l'α comme sur les voies, le lot d'abord, puis chaque source (« 5–8,5% · 6,5–8,5% ») et la réglette ;
+    - l'usage en mot dans l'en-tête ;
+    - à la place des 12 cases, les barres de la page : une par famille, haute de la part des fiches qui la citent, pleine à 2 fiches et plus, pâle à une seule. Une famille non décrite a une amorce hachurée, la marque « non établi » de la page, et son picto à moitié éteint ;
+    - chaque ligne de famille commence par le même picto au trait ;
+    - la typographie de la page (titre à 16 px), et le radar aux gris de la page.
+  - **En plus** : chaque voie est une tuile large (le widget « moyen » de l5b). Le nom, l'usage, l'α, le stock et le « + » tiennent sur une ligne, et les barres sont en dessous, plus lisibles au doigt (10 px de large au lieu de 7, picto de 16 px ; toujours 6 px par cran). En deux colonnes, une tuile de 167 px passait sur trois à cinq lignes, et le premier écran montrait les 7 voies du premier groupe et l'en-tête du second : 79 mots au moins.
+  - **En moins, pour tenir 70 mots** : « voie houblon » sous « Aucune » (le bouton « Hors houblon » le dit, comme dans l8e) et « sur tes objectifs » après « même effet » (la barre s5 du widget montre les objectifs).
+- **Ce qui casse** :
+  - **Premier écran** : 66 mots, mais 5 voies entières seulement, le minimum de D84. La 6ᵉ, Motueka + Citra cryo, est coupée par le dock. Les voies font 84 px en médiane.
+  - **Tuiles larges** : à droite des barres, la tuile reste vide. On perd aussi l'allure « deux widgets par rangée » de l5b.
+  - **Plage des fiches de c1** : c'est celle de Beer Maverick seule. La fiche montre aussi Hopsteiner : pour East Kent Goldings, la voie dit 4–6,5 % et la fiche « 4–6,5% · 4–7% » ; pour Nelson Sauvin, 10–13 % sur la voie, « 10–13% · 12–14% » dans la fiche.
+  - **Celeia n'a pas de fiche dans la base** : un appui long sur Celeia n'ouvre rien, comme dans l5b.
+  - **Redites de la fiche** : elle garde la ligne « N non décrites » de g1, que disent aussi les amorces hachurées. Elle compte de 62 à 83 mots, pour 100 au plus.
+  - **Légende ouverte** : elle couvre presque tout l'écran (108 mots).
+  - **Crayon** : il se voit à peine à 14–16 px.
+  - **Commandes inertes** : Barres / Radar ne fait rien, et « Comparer (3) » ne mène nulle part.
+  - **Polices** : elles viennent de Google Fonts.
+- **Contrôles** (tous sur `etat-b.html`, `data-cas="c1"`) :
+  - COMMUN OK : MOTS 66, COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT (50 pictos, 0 faute), LEGENDE (bouton de 28 × 28 px, légende de 108 mots) et PARLANT (17 usages, tous en mot ; aucune étiquette « visée » hors des pistes) ;
+  - PISTE OK : 3 pistes de 350 px ;
+  - ALPHA OK : 15 voies sur 15 avec un houblon ;
+  - PLACE OK : 5 voies, 84 px ;
+  - FICHE-BASELINE OK : fiche de Motueka, 12 familles nommées, 15 pictos, 0 faute ;
+  - les contrôles du point 8 du brief (FIL6, AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE, BLOCS) sont OK ;
+  - témoin : l5b échoue bien à TRAIT (4 pictos à disque), ALPHA (15 voies sans α), LEGENDE (ni bouton ni légende), PARLANT (17 usages sans mot) et FICHE-BASELINE (B1 carrés, B3 sans α balisé).
+- **Pire contraste** : 4,65:1, « Plus agrumes » (#856e0c, 14 px, sur sa bande #fcf8e3), comme dans l5b.
+  - Mesuré au rendu sur 2 556 textes, dans 11 états : la page, la légende ouverte, et les 9 fiches avec chacune leurs 4 replis.
+  - Pour les textes posés sur le fond en dégradé, j'ai pris la pire des quatre couleurs du dégradé.
+  - Aucun texte sous 4,5:1.
+- Générée par `generateur-l5d.mjs`, avec `tuiles-l5d.mjs`, copie modifiée de `../l5b/tuiles-compactes.mjs`, et les données de `../l5/donnees-l5-l6.mjs`. l5b, l5c et leurs modules ne sont pas modifiés.
+  - `vue-legende.html` et `vue-fiche.html` encadrent la page à 390 × 844, dans l'état `?legende` ou `?fiche=Motueka`, parce que `capture-page.mjs` n'accepte pas de paramètre d'adresse.
+  - J'ai vérifié qu'un vrai appui long de 650 ms sur Motueka donne la même fiche que la capture.
