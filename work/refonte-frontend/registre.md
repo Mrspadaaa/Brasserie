@@ -157,9 +157,14 @@ Voir `decisions.md` (D1 à D12).
   - créatif à fond, z1 à z5 (Fable, a79739052fabfea4b) : « Il y a pas de limitation, pas de plafond de
     verre, il faut être créatif, disrutif ». Seules limites : honnêteté des données et usage au doigt.
     Total visé : 35 variantes, plus a4–a6 et l'agent libre u1–u6 (ac599f994c33b7437, brief minimal). v0 : contrôles indicatifs, honnêteté et doigt seuls obligatoires ; relance de lots autorisée par le brasseur.
+  - critique (Fable, a88d33c5ab13f70aa), qui juge comme le brasseur (`fils21-choisir/CRITIQUE.md`) :
+    étape 1, se calibrer sur ses verdicts réels (test à l'aveugle, `critique/PORTRAIT.md`). Ensuite,
+    le relancer par SendMessage sur chaque série rendue (`critique/<série>.md`). Ses retours
+    repartent aux auteurs pour une seconde passe, ou font relancer un lot. « SI rien de va, il le dit
+    et on relance tout ».
   Ensuite :
-  - les 30 rendues, le pilote rejoue COMMUN, LISIBLE, ALPHA et FICHE-BASELINE, et regarde les
-    captures ;
+  - les séries rendues, le pilote rejoue les contrôles (indicatifs en v0), regarde les captures, puis
+    passe la main au critique ;
   - un jury neuf (Fable) lit `fils21-choisir/JURY.md` et écrit `JURY-VERDICT.md` ;
   - les 5 retenues sont reprises par leurs auteurs (SendMessage) ;
   - le pilote publie les 30 puis les 5 améliorées sur la page des fils de fer.

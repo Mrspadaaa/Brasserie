@@ -249,7 +249,9 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
     l'exportation pour le moment » ; « Je t' autorisé à relancé des nouveaux lot du rien n'est
     vraiment concluant ou au un a pas poussé assez loin le concepte ou si le concept a du potentiel
     mais doit être amélioré » ; « J'ai l'impression que tu as peut être même trop limité certain
-    agent » (contrôles indicatifs en v0, auteurs libérés, agent libre u*).
+    agent » (contrôles indicatifs en v0, auteurs libérés, agent libre u*) ; « Créé aussi un agent
+    "critique" qui pourrait être moi et donne des feedback pour relancer des lot, voir ce qui va pas.
+    Critiquer constructive. SI rien de va, il le dit et on relance tout » (`fils21-choisir/CRITIQUE.md`).
   - Leçon : « les barres de l5b » voulait dire aussi ses pistes d'objectif, pas seulement ses barres
     de voie. Quand une demande désigne un élément d'une autre variante, reprendre tous ses éléments du
     même genre sur l'écran, ou demander lequel.
