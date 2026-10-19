@@ -1,0 +1,123 @@
+{
+  "version": "correspondance-familles-v1",
+  "date": "2026-10-19",
+  "statut": "simulé : couche de lecture du moteur « profil simulé », à valider par le brasseur",
+  "lecture": "Table du profil simulé (src/engine/profil-simule.ts). Les clés de source sont celles de data/composes-houblon.json : « Hn » = la source [n] de work/refonte-frontend/v4/recherche/H-choisir-deux-houblons.md, « H » = H lui-même, « spec » = fils19-choix/MOTEUR-POUVOIR.md §6. Un lien (le sens composé → famille) porte sa source ; un chiffre sans source porte « [convention] » : ni mesure, ni panel, à valider par le brasseur.",
+  "liens": {
+    "note": "Poids d'un composé vers les familles : la part de son rapport au seuil (simulé) que chaque famille reçoit. La somme des poids d'un composé vaut 1 : l'activité totale est conservée, seule sa répartition change. Le sens vient des sources ; les poids sont des conventions.",
+    "composes": {
+      "linalol": { "sens": "floral, agrumes", "lien": ["spec", "H"], "familles": { "floral": { "poids": 0.6, "chiffre": "[convention]" }, "citrus": { "poids": 0.4, "chiffre": "[convention]" } } },
+      "geraniol": { "sens": "floral (rose)", "lien": ["spec"], "familles": { "floral": { "poids": 1, "chiffre": "[convention] : la part agrumes passe par le citronellol, voir « citronellol »" } } },
+      "citronellol": { "sens": "agrumes, floral : produit du géraniol par la levure (OYE2)", "lien": ["H93", "H41", "H"], "familles": { "citrus": { "poids": 0.6, "chiffre": "[convention] : H §6.5, « glissement possible vers agrumes »" }, "floral": { "poids": 0.4, "chiffre": "[convention]" } } },
+      "myrcene": { "sens": "vert, résineux", "lien": ["spec"], "familles": { "green": { "poids": 0.5, "chiffre": "[convention]" }, "resin": { "poids": 0.5, "chiffre": "[convention]" } } },
+      "humulene": { "sens": "boisé, épicé", "lien": ["pilote-19-10"], "familles": { "resin": { "poids": 0.5, "chiffre": "[convention]" }, "spice": { "poids": 0.5, "chiffre": "[convention]" } } },
+      "caryophyllene": { "sens": "boisé, épicé", "lien": ["pilote-19-10"], "familles": { "spice": { "poids": 0.5, "chiffre": "[convention]" }, "resin": { "poids": 0.5, "chiffre": "[convention]" } } },
+      "4MMP": { "sens": "cassis, fruit de la passion", "lien": ["H11", "spec"], "familles": { "tropical": { "poids": 0.5, "chiffre": "[convention]" }, "berries": { "poids": 0.5, "chiffre": "[convention]" } } },
+      "3MH": { "sens": "pamplemousse, fruit de la passion", "lien": ["spec", "H11"], "familles": { "citrus": { "poids": 0.5, "chiffre": "[convention]" }, "tropical": { "poids": 0.5, "chiffre": "[convention]" } } },
+      "3M4MP": { "sens": "pamplemousse, rhubarbe", "lien": ["H11"], "familles": { "citrus": { "poids": 1, "chiffre": "[convention] : la rhubarbe n'a pas de famille" } } }
+    },
+    "nonUtilises": {
+      "farnesene": { "sens": "boisé, vert, herbacé", "lien": ["pilote-19-10", "H22"], "raison": "aucun seuil publié (H §8.1) : pas de rapport au seuil, pas d'activité simulée ; le fond vert de Cascade passe par ses fiches (herbacé cité), pas par ce composé" }
+    }
+  },
+  "forme": {
+    "note": "La forme vient des fiches (describeFamilies, D25) : une famille marquée (deux fiches ou premier descripteur), citée (une fiche) ou non décrite.",
+    "poids": { "marqué": 1, "cité": 0.5, "non décrit": 0 },
+    "chiffre": "[convention]",
+    "lambda": { "valeur": 0.5, "texte": "Activité d'une famille = (1 − λ) × activité totale répartie selon les fiches + λ × activité de ses composés reliés.", "chiffre": "[convention] : forme et nuances à parts égales" }
+  },
+  "partsRetrouvees": {
+    "note": "Part de la charge introduite retrouvée en bière, en %, pour le profil simulé : { bas, centre, haut }. Les bornes viennent de H §8.2 (via le moteur) ; un centre absent des sources est une convention. bas null = non publié (0 dans le calcul de la borne basse du profil, jamais affiché comme une valeur).",
+    "linalol": {
+      "b60": { "bas": null, "centre": 6.3, "haut": 63, "sources": ["H30"], "chiffre": "haut : au plus la part d'un ajout tardif (H30) ; centre [convention] : un dixième de la borne haute, à l'image du 4MMP qui perd 91 % en 60′ (H13)" },
+      "b10": { "bas": 60, "centre": 61.5, "haut": 63, "sources": ["H30"] },
+      "wp": { "bas": 60, "centre": 61.5, "haut": 63, "sources": ["H30"] },
+      "dryActive": { "bas": 7, "centre": 53.5, "haut": 100, "sources": ["H22", "H30", "H31", "H32"], "chiffre": "enveloppe des bases du moteur ; linalol stable entre souches (H44)" },
+      "dryPost": { "bas": 7, "centre": 53.5, "haut": 100, "sources": ["H22", "H30", "H31", "H32"], "chiffre": "enveloppe des bases du moteur" }
+    },
+    "geraniol": {
+      "b60": { "bas": null, "centre": 1, "haut": 10, "sources": ["H30"], "chiffre": "haut : −90 % entre moût et bière (H30) ; centre [convention] : un dixième" },
+      "b10": { "bas": null, "centre": 5, "haut": 10, "sources": ["H30"], "chiffre": "centre [convention] : moitié de la borne haute" },
+      "wp": { "bas": null, "centre": 5, "haut": 10, "sources": ["H30"], "chiffre": "centre [convention] : moitié de la borne haute" },
+      "dryActive": { "bas": null, "centre": 61.5, "haut": 120, "sources": ["H30", "H31"], "chiffre": "centre [convention] : la part après fermentation, avant la biotransformation simulée ; bas non chiffré (moteur)" },
+      "dryPost": { "bas": 3, "centre": 61.5, "haut": 120, "sources": ["H22", "H30", "H31"] }
+    },
+    "hydrocarbures": {
+      "composes": ["myrcene", "humulene", "caryophyllene"],
+      "b60": { "bas": null, "centre": 0.1, "haut": 1, "sources": ["H30"], "chiffre": "centre [convention] : un dixième de la borne haute" },
+      "b10": { "bas": null, "centre": 0.5, "haut": 1, "sources": ["H30"], "chiffre": "centre [convention] : moitié de la borne haute" },
+      "wp": { "bas": null, "centre": 0.5, "haut": 1, "sources": ["H30"], "chiffre": "centre [convention] : moitié de la borne haute" },
+      "dryActive": { "bas": null, "centre": 1, "haut": 3.4, "sources": ["H31", "H33"], "chiffre": "centre [convention] : moitié de la part après fermentation ; le CO₂ et la levure emportent le myrcène (H33), perte non chiffrée" },
+      "dryPost": { "bas": 0.6, "centre": 2, "haut": 3.4, "sources": ["H30", "H31", "H32", "H22"] }
+    },
+    "4MMP": {
+      "b60": { "bas": null, "centre": 4.5, "haut": 9, "sources": ["H13"], "chiffre": "haut : −91 % en 60′ à 100 °C (H13) ; centre [convention] : moitié" },
+      "b10": { "bas": null, "centre": 33.5, "haut": 67, "sources": ["H13"], "chiffre": "haut [convention] : perte d'ordre 1 passant par −91 % en 60′ (H13), soit 67 % après 10′ ; non mesuré ; centre [convention] : moitié" },
+      "wp": { "bas": null, "centre": 38.5, "haut": 77, "sources": ["H13"], "chiffre": "haut : −23 % à 90 °C (H13) ; centre [convention] : moitié" },
+      "dryActive": { "bas": 70, "centre": 70, "haut": 70, "sources": ["H11"], "chiffre": "taux du dry hop statique transposé à la fermentation active (moteur, [H])" },
+      "dryPost": { "bas": 70, "centre": 70, "haut": 70, "sources": ["H11"] }
+    },
+    "3MH": {
+      "chaud": { "raison": "le 3MH augmente à l'ébullition (H13) ; aucun taux : pas d'activité simulée à chaud, inconnu", "sources": ["H13"] },
+      "dryActive": { "bas": 70, "centre": 70, "haut": 70, "sources": ["H11"], "chiffre": "70 % supposé par Hopsteiner (H11)" },
+      "dryPost": { "bas": 70, "centre": 70, "haut": 70, "sources": ["H11"], "chiffre": "70 % supposé par Hopsteiner (H11)" }
+    },
+    "3M4MP": { "commeLe4MMP": true, "chiffre": "[convention] : aucun taux propre dans H §8.2 ; celui du 4MMP, thiol libre lui aussi" }
+  },
+  "demiBornes": {
+    "note": "Teneur ou charge publiée d'un seul côté (« < X », « > X ») : centre du profil simulé.",
+    "seulementHaut": { "facteur": 0.5, "chiffre": "[convention] : moitié de la borne haute" },
+    "seulementBas": { "facteur": 1, "chiffre": "[convention] : « au moins » la borne basse ; la borne haute du profil reste inconnue" }
+  },
+  "extraction": {
+    "note": "Durée de contact d'un dry hop : part extraite = 1 − e^(−t/τ), t plafonné à 3 j.",
+    "tauHeures": { "bas": 12, "centre": 7, "haut": 2 },
+    "plafondJours": 3,
+    "sources": ["H73", "H20", "H92"],
+    "chiffre": "τ = 2–12 h : modèle V5.5, cohérent avec H §7.2 (l'essentiel en 24 h) ; centre 7 h [convention] ; au-delà de 3 j aucun gain mesuré (H73), pas de baisse simulée (aucune donnée)"
+  },
+  "courbes": {
+    "note": "Activité d'une famille → points de l'échelle 0–100 (style-bands.json), en dose équivalente Cascade : x = 3,86 g/L × activité ÷ activité agrumes de l'ancre ; points = 26 × [x ÷ (x + K)] ÷ [3,86 ÷ (3,86 + K)]. Hyperbole : la saturation (H §7.4).",
+    "ancre": {
+      "houblon": "beermaverick-cascade", "doseGL": 3.86, "moment": "dryPost", "jours": 1, "abv": 5, "famille": "citrus", "points": 26,
+      "sources": ["H22"],
+      "chiffre": "Lafontaine 2018 (H22), Cascade 3,86 g/L, 24 h : agrumes 5,8 contre 1,9 au témoin, sur 15 ; (5,8 − 1,9) ÷ 15 × 100 = 26. [convention] : 15 points du panel = 100 points de l'axe ; bière de l'essai supposée à 5 % vol."
+    },
+    "agrumes": { "K": 4.5, "familles": ["citrus"], "sources": ["H22", "H"], "chiffre": "demi-dose ≈ 4,5 g/L des agrumes (H §7.4, hyperbole ajustée sur H22) ; les agrumes plafonnent dès 8 g/L" },
+    "intensite": { "K": 5.6, "familles": ["tropical", "stoneFruit", "pomeFruit", "berries", "melon", "floral", "resin", "spice", "earthy"], "sources": ["H22", "H"], "chiffre": "demi-dose ≈ 5,6 g/L de l'intensité globale (H §7.4) ; [convention] : appliquée aux familles sans courbe propre" },
+    "herbace": { "K": 16, "familles": ["herbal", "green"], "sources": ["H22"], "chiffre": "[convention] : hyperbole ajustée par le pilote sur l'herbacé/thé de H22 (Δ 1,8 ; 3,2 ; 4,9 ; 7,9 sur 15 à 2 ; 3,86 ; 8 ; 16 g/L), qui ne plafonne pas" }
+  },
+  "biotransformation": {
+    "moments": ["dryActive"],
+    "note": "Seulement en dry hop pendant la fermentation active (H §6.2) ; après fermentation : non simulée, « peu documenté ».",
+    "geraniolCitronellol": {
+      "texte": "Part du géraniol en bière convertie en citronellol : { bas, centre, haut }.",
+      "parLevure": {
+        "lalbrew-pomona": { "bas": 0, "centre": 0.5, "haut": 0.87, "sources": ["H50-pomona", "H51", "H41"], "chiffre": "Pomona : biotransformation des terpènes « medium », mesurée comme citronellol depuis le géraniol (H50-pomona, H51) ; centre [convention] : 50 %, la souche témoin de H41 ; haut : 87 %, la souche surexprimant OYE2 (H41) ; aucun taux publié en bière" }
+      },
+      "autres": { "bas": 0, "centre": 0, "haut": 0.87, "sources": ["H41", "H93"], "chiffre": "non documenté pour la souche : centre 0 ; le haut garde la possibilité (H41) [convention]" }
+    },
+    "thiolsLiberes": {
+      "texte": "3MH libéré des précurseurs = précurseurs (mg/kg, équivalents 3SH) × dose × rendement.",
+      "rendementPct": {
+        "lalbrew-verdant-ipa": { "bas": 0.01, "centre": 0.1, "haut": 0.35, "sources": ["H42", "H41", "H49"], "chiffre": "β-lyase qualitative (H49) ; rendement 0,01–0,35 % sur précurseur synthétique (H42) ; centre [convention] : 0,1 %, bas de la plage en moût 0,1–0,5 % (H41)" },
+        "lalbrew-diamond": { "bas": 0.01, "centre": 0.1, "haut": 0.35, "sources": ["H42", "H41", "samia2026"], "chiffre": "Samia : plus de thiols mesurés, mais le fruité perçu le plus faible ; centre [convention] : 0,1 %" },
+        "autres": { "bas": 0, "centre": 0, "haut": 0.35, "sources": ["H42"], "chiffre": "β-lyase non publiée : centre 0 ; le haut garde la possibilité [convention]" }
+      },
+      "precurseurs": {
+        "beermaverick-citra": { "bas": 23.6, "centre": 23.6, "haut": 23.6, "unite": "mg/kg (équivalents 3SH)", "sources": ["H16"], "chiffre": "3SH glutathionylés ≈ 23 mg/kg + cystéinylés 0,6 mg/kg (H16)" },
+        "beermaverick-cascade": { "bas": 1.64, "centre": 8.11, "haut": 20, "unite": "mg/kg (équivalents 3SH)", "sources": ["H17", "samia2026", "H18"], "chiffre": "bas : cystéinylés libérables 1,64 (H17) ; centre : lot Samia 2026, 7,92 + 0,19 (un lot) ; haut : conjugués jusqu'à 20 (H18, relayé)" }
+      },
+      "sansPrecurseurs": "précurseurs non publiés dans H : aucune libération simulée, « inconnu »"
+    }
+  },
+  "sansComposes": {
+    "texte": "Houblon absent de composes-houblon.json : la forme vient des fiches seules ; la force est celle de Cascade au même moment et à la même dose ; aucune nuance ; confiance faible.",
+    "sources": ["H21"],
+    "chiffre": "[convention] : Cascade est « au centre, avec Nugget et Chinook » du panel OSU de 12 variétés à 4 g/L (H21)"
+  },
+  "degustation": {
+    "texte": "Une famille dégustée par le brasseur prime (LEVEL_RULE) : milieu de sa classe V5.5 (faible 16,5 ; moyen 49,5 ; marqué 83), bas et haut de la classe ; après un ajout, la même valeur décalée par l'effet simulé.",
+    "regle": "prototypes/houblons-v4/src/engine/levels.ts : LEVEL_RULE et CRANS_RULE"
+  }
+}

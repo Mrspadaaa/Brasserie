@@ -35,3 +35,11 @@ export {
   type SignalFamille, type LecturePouvoir, type PouvoirAjout, type PouvoirComposeRecette, type PouvoirRecette, type AjoutPouvoir, type RecettePouvoir, type Sens, type ComparaisonFamille,
   type ProfilMoment, type Verification,
 } from './pouvoir';
+export { cransOf, classeDegustee } from './levels';
+export {
+  simulerCas, profilAvant, echelleSimulee, styleSimule, points as pointsSimules, activiteAncre, partExtraite, biotransfoLevure, formeDe, courbeDe, ajoutPouvoirDe,
+  sourceSimulee, arrondi as arrondiSimule, largeur as largeurSimulee,
+  MOMENTS_SIMULES, MENTION_SIMULE, PROFIL_RULE, CORRESPONDANCE, MESURES_COMPOSES,
+  type MomentSimule, type CompSim, type Confiance, type ValeurFamille, type ProfilFamilles, type DeltaFamille, type AjoutSimule, type DrapeauSimule,
+  type MesureReelle, type ApportHoublon, type CasSimule, type CasEntree,
+} from './profil-simule';

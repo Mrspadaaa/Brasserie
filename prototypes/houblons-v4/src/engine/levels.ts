@@ -102,6 +102,17 @@ function position(f: FamilyId, value: number | null, scale: StyleScale, source: 
   const approx = frac >= 0.4 && frac <= 0.6;
   return { family: f, crans, exact, approx, display: approx ? `≈ ${crans}` : String(crans), source };
 }
+/** Position en crans du style d'une valeur 0–100 quelconque (même règle que la bière : CRANS_RULE).
+ * Sert au profil simulé (profil-simule.ts), qui n'est pas une BeerLevel. */
+export function cransOf(f: FamilyId, value: number | null, scale: StyleScale): CransPosition {
+  return position(f, value, scale, 'modèle');
+}
+/** Milieu et bornes d'une classe perçue V5.5 (faible, moyen, marqué) sur 0–100 : la dégustation prime. */
+export function classeDegustee(f: FamilyId, level: 'faible' | 'moyen' | 'marqué'): { bas: number; centre: number; haut: number } {
+  const a = axis(f);
+  const [bas, haut] = level === 'faible' ? [a.scale.min, a.lowMax] : level === 'moyen' ? [a.lowMax, a.mediumMax] : [a.mediumMax, a.scale.max];
+  return { bas, centre: midClass(f, level), haut };
+}
 /** Valeur 0–100 qui situe la bière sur une famille : dégustation (milieu de classe) d'abord, puis repère central. */
 function beerValue(b: BeerLevel): number | null {
   if (b.source === 'dégustation' && b.basis?.perceived) return midClass(b.family, b.basis.perceived);
