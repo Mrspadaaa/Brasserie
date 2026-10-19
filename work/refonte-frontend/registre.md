@@ -181,7 +181,38 @@ Voir `decisions.md` (D1 à D12).
     - Publication : page des fils de fer, version 12, section `t138-lot15b`. Les six fils traités
       sont résolus.
     - Générateurs : `q2b/generateur-q2b.mjs` et `p1/generateur-serie-p.mjs`.
-  - **Lot 17 livré, à choisir** : v1–v3 (STANDARD et SURVOL OK, pire contraste 4,64:1) et b1–b6
+  - **Ses choix (19.10, soir)** :
+    - « C'est effectivement qb2 reprise le mieux » : q2b retenu, à intégrer dans la base ;
+    - « je vais choisir la variante 3 même si les 3 change très, trop peu. Regarde pour faire une
+      vrai baseline avec mini maquettes. Soit créatif » : v3 duo retenu, lot 18 lancé ;
+    - « Un appui long montre une vrai fiche de houblons... » : D25 réparé. Il ne dit plus « OK 0/0 »
+      sur un dossier non nommé pNN ; q2b et b5 échouent, la base passe. b5b reprend la vraie fiche.
+  - « Applique les variante sur qb2 reprise, chacune des 11 nouvelles baseline. Tu peux avoir des
+    Baseline avec des choses en plus et en mois ». Le lot 18 est recentré sur q2b (`lN/etat-b.html`
+    obligatoire ; Ma bière, Comparer et fiche facultatifs), avec 11 langages. Ajoutés : l7 Néon,
+    l8 Typographique, l9 Atlas, l10 En moins, l11 En plus, chez deux auteurs de plus.
+    `donnees/s1.json` est ajouté (le cas de la base, même ordre de voies que le pack S1, vérifié) pour
+    l'intégration de q2b dans la base, qui attend la fin de b5b.
+  - **b5b livré** : la vraie fiche de la base, sortie par `b5b/extraire-fiches.mjs`, s'ouvre à
+    l'appui long (FICHE OK 1/1) ; dix contrôles OK. Défauts vus sur la fiche de Nelson Sauvin, à
+    corriger (#140) :
+    - les mots sans famille sont en double, français et anglais (« fruité … Fruité, fruity,
+      grape ») ;
+    - « Ajouter à 10′ » est encore fixe, alors qu'il doit venir des voies du modèle (demande du
+      19.10, toujours ouverte) ;
+    - Celeia n'a pas de fiche dans le pack.
+  - **Lot 18 livré, à choisir** : onze baselines sur q2b. Les contrôles, rejoués par le pilote, sont
+    tous OK (FIL6 11/11, MOTS, COULEURS 11/11, AU-STYLE, AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE,
+    SURVOL, BLOCS, FICHE 11/11, STANDARD ×11). Publication : page des fils de fer, version 14,
+    section `t142-lot18` ; #142 commenté (6272136992). Générateurs dans chaque `lN/`.
+  - **Intégration de q2b dans la base, v4.10, en cours** : `base/BRIEF-INTEGRATION-Q2B.md`, chez un
+    auteur dédié. Il possède suggestions.js et .css, l'acheminement dans build.mjs et buildPack.ts
+    (S1 enrichi).
+  - **Lot 18, baseline** (`ecran-1/fils18-baseline/`, `BRIEF-AUTEUR.md`) : l1 Cave (l'identité
+    sombre réelle), l2 Carnet, l3 Étiquette, l4 Instrument, l5 Tuiles, l6 Jour de brassage, chez
+    trois auteurs. Chacun fait quatre écrans (Ma bière, Suggestions q2b, Comparer, fiche) ;
+    l'appui long y ouvre la vraie fiche (D25).
+  - **Lot 17 livré** : v1–v3 (STANDARD et SURVOL OK, pire contraste 4,64:1) et b1–b6
     (dix contrôles de q2b OK), rejoués par le pilote. Publication : page des fils de fer, version
     13, section `t142` ; #142 commenté (6270949338). Générateurs : `b1/generateur-boosters.mjs`.
     Limites : en v1, « cité » (40 %) efface les familles claires ; en v2 et v3, le trait des

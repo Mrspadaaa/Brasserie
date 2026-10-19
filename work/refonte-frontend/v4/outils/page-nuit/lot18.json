@@ -1,0 +1,72 @@
+{
+ "ticket": 142,
+ "ancre": "t142-lot18",
+ "court": "11 baselines",
+ "titre": "Onze baselines sur q2b repris (lot 18, 19.10 soir)",
+ "etat": "à choisir",
+ "puces": [
+  "« Applique les variante sur qb2 reprise, chacune des 11 nouvelles baseline. Tu peux avoir des Baseline avec des choses en plus et en mois ». Chaque baseline est q2b dans un autre langage, sur les icônes v3 duo que tu as retenues.",
+  "l1 Cave, l’identité sombre de l’app ; l2 Carnet ; l3 Étiquette ; l4 Instrument (des cadrans) ; l5 Tuiles ; l6 Jour de brassage (rangé le long du brassin) ; l7 Néon ; l8 Typographique ; l9 Atlas (une carte du goût, où les voies sont des routes) ; l10 En moins (6 voies sur 17 visibles, le reste à un toucher) ; l11 En plus (IBU de chaque voie, crans exacts, sources).",
+  "En plus ou en moins, selon les langages : dans l7, toucher une enseigne allume sa famille ; dans l8, toucher une colonne trie les voies ; dans l9, la carte remplace les barres ; l10 retire les cases d’objectifs de chaque ligne ; l11 ajoute β et huiles dans la fiche.",
+  "Partout, l’appui long ouvre la vraie fiche g1, dans le langage. Contrôles rejoués sur les onze : FIL6, mots ≤ 70, COULEURS, AU-STYLE, AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE, SURVOL, BLOCS, FICHE (11/11) et STANDARD.",
+  "Limites : Celeia n’a pas de fiche dans le pack ; « Comparer » mène encore au Comparer de q2b ; dans l1, la forme reste celle de q2b, seul le noir change ; dans l6, les voies les plus faibles (60′) arrivent avant les réponses (10′)."
+ ],
+ "images": [
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/planche-etat-b-390.png",
+   "les onze sur q2b repris"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l1-etat-b-390.png",
+   "l1 Cave (l’identité sombre de l’app)"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l2-etat-b-390.png",
+   "l2 Carnet de brasseur"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l3-etat-b-390.png",
+   "l3 Étiquette"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l4-etat-b-390.png",
+   "l4 Instrument"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l5-etat-b-390.png",
+   "l5 Tuiles"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l6-etat-b-390.png",
+   "l6 Jour de brassage"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l7-etat-b-390.png",
+   "l7 Néon"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l8-etat-b-390.png",
+   "l8 Typographique"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l9-etat-b-390.png",
+   "l9 Atlas"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l10-etat-b-390.png",
+   "l10 En moins"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l11-etat-b-390.png",
+   "l11 En plus"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l1-fiche-390.png",
+   "l1, la vraie fiche à l’appui long"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l7-fiche-390.png",
+   "l7, la vraie fiche à l’appui long"
+  ]
+ ]
+}

@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { applyVoie, describeFamilies, getStyleScale, hopRef, hopRole, offModelLeads, proposeVoies, recipeIbu, yeastSignals, FAMILIES, FAMILY_NAMES,
   type FamilyId, type Gouts, type Recipe, type Voie } from '../src/engine';
-import { S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
+import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
 const out = path.resolve(process.argv[2] || '.');
 fs.mkdirSync(out, { recursive: true });
@@ -24,6 +24,8 @@ const BANNIS: Gouts = { aime: [], exclut: [
   { type: 'variété', id: citra, source: 'exemple du lot 15 : « le cryo citra est ultra aromatique »' },
 ] };
 const CAS = [
+  // s1 : le cas de la base (pack S1, même appel que buildPack) ; ses voies sont celles de la base, dans le même ordre.
+  { id: 's1', titre: 'Stout 16D de la base (S1) : plus floral, moins résineux', recipe: s1Recipe(), direction: S1_DIRECTION, tasting: S1_TASTING, gouts: undefined, ensemble: [] },
   { id: 'c1', titre: 'Stout 16D, trois objectifs : plus floral, moins résineux, plus agrumes', recipe: s1Recipe(), direction: { floral: 1, resin: -1, citrus: 1 }, tasting: S1_TASTING, gouts: undefined, ensemble: [[1, 12], [1, 15], [7, 12]] },
   { id: 'c1b', titre: 'c1, avec l’épicé et Citra bannis', recipe: s1Recipe(), direction: { floral: 1, resin: -1, citrus: 1 }, tasting: S1_TASTING, gouts: BANNIS, ensemble: [] },
   { id: 'c2', titre: 'Stout 16D, deux objectifs dans le même sens : plus floral, plus tropical', recipe: s1Recipe(), direction: { floral: 1, tropical: 1 }, tasting: S1_TASTING, gouts: undefined, ensemble: [[3, 12]] },

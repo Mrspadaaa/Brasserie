@@ -1,0 +1,36 @@
+- **Ce qui tient** : q2b repris en étiquette de bière. Le fond est un papier crème (#fbf6ea), l'encre est franche, et les titres sont en Bahnschrift condensé capitales.
+  - Les trois objectifs sont des aplats pleins de leur famille, avec un sceau rond, le verdict en gros (24 px) et la cible en barre épaisse.
+  - Les groupes portent des rubans d'encre (« = même effet », dose, moment), et les crans sont des badges noirs (« +2 crans »).
+  - Une famille marquée est un rond plein à sa couleur, son picto en encre ou en blanc selon le contraste ; une famille citée a un anneau.
+  - Le « + » est un sceau rond. L'action principale, « Comparer (2) », est une pilule paille avec une ombre d'impression.
+  - Un appui long de 500 ms (ou un survol de 750 ms) sur un nom ou sur la carte d'une voie ouvre la fiche g1 en feuille. On y trouve :
+    - un bandeau d'encre au nom du houblon, le gros α, la réglette et le rôle ;
+    - les carrés de famille et leurs lignes, la roue « N/M » avec les inconnues hachurées et « ? », et la demande en trois puces ;
+    - aimer et exclure, « Ajouter à 10′ » en paille, Comparer, puis les quatre replis.
+  - Les fiches font de 65 à 88 mots.
+  - 54 mots au premier écran. Les 12 contrôles sont OK sur etat-b.html, dont FICHE et STANDARD (un seul trait d'icône, 2 px rendu).
+- **Ajouté ou retiré par rapport à q2b** :
+  - Ajouté : un cartouche d'étiquette (« Stout export », « 16D », 59,7 IBU sur sa jauge dans la bande 50–70, booster L4). Une étiquette dit la bière ; ce sont 5 mots, tirés de c1.json.
+  - Ajouté : le jeu v3 pour l'usage. Attesté, c'est une pilule d'encre ; déduit de l'α, c'est le trait seul suivi de « α ».
+  - Ajouté : les noms qui ont une fiche sont soulignés en pointillé, et ils se remplissent de paille pendant l'appui (X3). Le geste se voit (capture `l3-fiche-1-pendant.png`).
+  - Retiré : les dégradés des tuiles, remplacés par des aplats de base, aux tons des jetons (S2).
+  - Les données sont celles de c1.json et de pack-fiches.json, sans légende écrite.
+- **Ce qui casse** :
+  - Le noir est partout (rubans, badges de crans, pilules d'usage, sceaux « + ») et aplatit un peu la hiérarchie sous les tuiles.
+  - Les tuiles floral et agrumes ont un vide entre le titre et le verdict.
+  - Bahnschrift est une police Windows. Sur téléphone, le repli (DIN Alternate, Arial Narrow) n'a pas été vérifié, et « APPROCHE » pourrait déborder.
+  - Le rail central coupe encore les cases des voies seules, comme dans q2b.
+  - Celeia n'a pas de fiche dans pack-fiches.json : son nom n'ouvre rien (rien d'inventé).
+  - Le texte de la fiche est limité : les mots sans famille au-delà de 4 deviennent « +6 », et la liste complète reste dans Sources.
+  - Ma bière, Comparer et fiche.html ne sont pas faits (facultatifs depuis la mise à jour du brief).
+  - Thème clair : aucun ton de texte n'a été recalculé pour le sombre.
+- **Pire contraste** : 4,6:1, « Agrumes » au ton texte #856e0c sur le papier #fbf6ea, dans la fiche.
+  - Mesuré au rendu, sur le fond réel sous chaque texte (couches et opacités cumulées, dégradés au pire), pour 540 textes : la page, les plis ouverts et les 8 fiches.
+  - En absolu, le pire est 6,2:1.
+  - Aucun texte sous 4,5:1.
+
+Fichiers :
+- `generateur-baseline.mjs` (génère l3 et l4) ;
+- `peaux.mjs` ;
+- `etat-b.html` (`?fiche=Nelson%20Sauvin` ouvre une fiche, `?abs` la lecture absolue) ;
+- `planche.html`.

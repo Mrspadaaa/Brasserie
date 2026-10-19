@@ -1,0 +1,23 @@
+l2 · Carnet de brasseur : q2b (c1) écrit dans un carnet. Pages : `etat-b.html` et `planche.html`, générées par `generateur-l2.mjs`, avec le socle commun `../l1/donnees-q2b.mjs`. Les écrans facultatifs (Ma bière, Comparer, fiche.html) ne sont pas faits.
+
+- **Ce qui tient** :
+  - Le support : un papier ligné à marge rouge, l'encre pour le texte, Fraunces et Source Serif 4 en serif.
+  - Le stylo bleu (Caveat) porte les notes du brasseur : le moment et la dose de chaque groupe dans la marge, les crans, « visée », et les mots des fiches.
+  - Les pictos v3 sont dessinés : le trait au ton texte de la famille, un lavis au ton base à 32 %, tremblé par un filtre de crayon.
+  - Les barres sont hachurées au crayon de couleur : serré pour marqué, lâche pour cité, contour seul sans fiche. L'intensité se lit en bâtons, un par cran.
+  - Le « + » devient une case à cocher, la lentille se lit au mot entouré, et Comparer est un tampon bleu.
+  - L'appui long (500 ms, ou 750 ms de survol) ouvre la fiche g1 sur une fiche bristol lignée, avec un filet rouge sous le nom et la roue « N/M » au crayon.
+  - Contrôles du brief sur `etat-b.html`, tous OK : MOTS 57, COULEURS (6 teintes), AU-STYLE, STANDARD, SURVOL, FICHE, FIL6, AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE, BLOCS.
+- **Ce qui casse** :
+  - La marge prend 50 px : les barres ont moins de largeur.
+  - Dans la marge, « dry hop actif » s'écrit « actif » : le titre du groupe dit déjà « Dry hop », et l'aria-label garde le moment complet.
+  - Sur ce papier, les jetons texte des familles vont de 4,64 à 6,59:1. Ils ne portent donc aucun mot : l'encre écrit, la couleur dessine.
+  - Il faut Caveat à 17–19 px pour une lecture équivalente à 13–14 px.
+  - Les lignes du papier passent sous le texte.
+  - Le filtre de crayon s'applique à une centaine de pictos.
+  - Celeia a une fiche de catalogue, comme dans l1.
+- **Ajouté, retiré, par rapport à q2b** :
+  - Retiré : les pastilles de moment et de dose des en-têtes de groupe (devenues des notes de marge) et le fond blanc des tableaux (remplacé par des filets d'encre).
+  - Ajouté : la case cochée et les choix entourés.
+  - Corrigé, comme dans l1 : « visée » et « estimé » au-dessus des tirets ; la bulle de biotransformation n'est plus recouverte.
+- **Pire contraste** : 5,03:1, « +1 cran » au stylo bleu #1f3c88 sur le papier, là où passe une ligne. Dans la fiche, le pire est 5,63:1, encre secondaire sur bristol. Mesuré au rendu, sur le fond peint sans le texte (2ᵉ centile des pixels), pour la page, les replis ouverts et la fiche.

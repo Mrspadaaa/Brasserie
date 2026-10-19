@@ -1,0 +1,28 @@
+l11 · En plus : q2b pour le brasseur expert (c1). Page générée par `generateur-l11.mjs`, qui reprend `../l10/commun-l10-l11.mjs` et `../l10/fiche-geste.js`. Tout est lu dans c1, pack-fiches ou proto-data ; aucun chiffre n'est inventé.
+
+- **Ce qui tient** : un carnet de labo sur papier millimétré (quadrillage de 8 px), des cellules blanches à filets, les rayons à 2 et 4 px, les chiffres en chasse fixe. Chaque groupe a une tête en bandeau d'encre, comme l'en-tête d'un tableau. Les 17 voies restent visibles, comme dans q2b. Le premier écran compte 67 mots, chiffres compris (le contrôle les compte). Appui long ou survol long : la fiche g1, enrichie.
+- **En plus, et pourquoi** (le brasseur expert veut les chiffres derrière chaque marque) :
+  - **La fiche technique de la recette** : 16D, IBU 59,7 sur sa jauge de bande 50–70 (L4), US-05.
+  - **Chaque réponse a sa mini-piste chiffrée** : la bande du style, la plage de ma bière, ma bière → l'après de la meilleure voie (6,5→22,4 ; 7,4→23,1), la visée (24,8 ; 17,4). Pour le résineux, ma dégustation 66–100 face à la visée 30.
+  - **L'IBU de chaque voie** (`ibu.after`) s'écrit sur sa jauge, dans la bande du style ; la tête de groupe donne sa plage (61,4–68,7).
+  - **Les crans exacts** s'écrivent au bout des barres (+0,9, +1,6, −0,3) et se dessinent en barres continues graduées par cran dans les cases, au lieu de la jauge arrondie.
+  - **« Hors du style » est chiffré** : 33,7/30, 43,9/30.
+  - **« Estimé »** déplie sa raison (`estimePourquoi`).
+  - **La biotransformation est détaillée** pour le dry hop actif : géraniol → citronellol, thiols, hop creep, chacun avec son statut et son nombre de sources ; pourquoi et références à un toucher.
+  - **Remplacer Nugget** dit ses 46 g d'origine ; un changement de levure dit US-05 → la souche.
+  - **Sous la liste** :
+    - les trois combinaisons du moteur (`ensemble`), dont [1, 15] hors du style à 49,4 ;
+    - l'IBU des 17 voies en un graphe à points ;
+    - les 4 pistes hors houblon avec leur niveau de preuve ;
+    - les deux notes du moteur.
+  - **La fiche** ajoute l'origine, β et huile par source sur mini-plages, la note « Mon lot 9,6 % : hors des plages de ses fiches » (Nelson Sauvin) ou « α de Citra en pellets », et les mots des fiches visibles, avec 30 mots au plus pour rester sous 100.
+- **Ce qui casse** :
+  - Le premier écran est plein : 67 mots sur 70, avec la place pour seulement 7 voies.
+  - Le « α » d'usage et les IBU se répètent sur chaque ligne.
+  - La chasse fixe système (Consolas sous Windows) élargit les chiffres, et « 6,5→22,4 » se lit serré.
+  - Le graphe d'IBU empile six voies à 59,5–59,9 sans les nommer.
+  - La mini-plage β est petite (échelle 0–15 %).
+  - Celeia n'a pas de fiche dans pack-fiches : sa fiche vient du catalogue du moteur (Beer Maverick, Hopsteiner) et des familles lues par le moteur dans c1, sans mots.
+  - Comparer n'est pas fait (facultatif).
+  - Contrôles : MOTS 67, COULEURS, AU-STYLE, STANDARD, SURVOL, FICHE, FIL6, AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE et BLOCS sont tous OK.
+- **Pire contraste** : 4,64:1, « hors du style » et ses chiffres (#c2410c sur #fdf0ea, 12 px). Mesuré au rendu sur 627 textes, page et neuf fiches, quadrillage compris ; aucun texte sous 4,5:1, au style comme en absolu.

@@ -22,8 +22,11 @@ const args = process.argv.slice(2);
 const dir = path.resolve(args.find((a) => !a.startsWith('--')) || '.');
 const only = args.filter((a) => !a.startsWith('--')).slice(1);
 const pages = ((args.find((a) => a.startsWith('--pages=')) || '').slice(8) || 'index.html,comparer.html').split(',');
-const ids = fs.readdirSync(dir).filter((d) => /^p\d+$|^consolide$|^version-/.test(d) && fs.existsSync(path.join(dir, d, 'index.html')))
-  .filter((d) => !only.length || only.includes(d)).sort();
+// 19.10, soir (b5 du lot 17 : « Un appui long montre une vrai fiche de houblons... ») : un dossier
+// nommé est contrôlé quel que soit son nom (q2b, b5…) ; sans nom, les dossiers pNN, consolide et
+// version-… qui ont la première page. Aucun dossier contrôlé = échec, jamais « OK 0/0 ».
+const ids = (only.length ? only.filter((d) => fs.existsSync(path.join(dir, d)))
+  : fs.readdirSync(dir).filter((d) => /^p\d+$|^consolide$|^version-/.test(d) && fs.existsSync(path.join(dir, d, pages[0])))).sort();
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const problems = [];
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -132,5 +135,6 @@ for (const id of ids) {
   console.log(id + ' · fiche contrôlée sur ' + pages.join(', '));
 }
 await browser.close();
-if (problems.length === 0) console.log('FICHE OK ' + ids.length + '/' + ids.length);
+if (!ids.length) { console.log('FICHE ECHEC aucun dossier contrôlé dans ' + dir); process.exitCode = 1; }
+else if (problems.length === 0) console.log('FICHE OK ' + ids.length + '/' + ids.length);
 else { console.log('FICHE ECHEC ' + problems.length + ' problème(s)'); for (const x of problems) console.log('  ' + x); process.exitCode = 1; }

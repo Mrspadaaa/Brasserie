@@ -1,0 +1,21 @@
+- **Ce qui tient** : une colonne sombre, celle du brassin, descend de haut en bas. Elle porte d'abord la visée, puis 60′ et 10′ (le feu de l'ébullition), WP, DH (dry hop en fermentation active, ligne pointillée du froid) et la levure, chacun avec son icône v3. Chaque voie pend à son moment : 12 à 14 à 60′ ; 1 à 11 et 8 à 10′ ; 15 en DH ; 16 et 17 à la levure.
+  - La recette actuelle, Nugget 46 g à 60′ (`c1.ajouts`), est posée à sa place, en repère. Son appui long ouvre sa fiche.
+  - Chaque objectif garde sa piste au style. Le moment de la meilleure voie est écrit au bout de sa barre : 10′, 10′ et 60′.
+  - L'intensité est une jauge à crans : 6 px par cran du style, un segment par cran, à la longueur exacte des crans du moteur. Elle se lit face à la zone du style, pâle, bordée de son plafond ; l'orangé marque la sortie du style ; sous un demi-cran, un point.
+  - Le chrome est celui d'une feuille de brassage : onglets soulignés, angles de 2 à 4 px, chiffres en mono.
+  - La fiche g1 reprend la colonne sombre pour α, mon lot et le rôle.
+  - Le premier écran compte 58 mots, les fiches 62 à 84. Tous les contrôles sont OK.
+- **Ce qui casse** :
+  - L'ordre du temps met 60′ en premier : les voies les plus faibles (≈ 0 cran) passent avant les réponses à 10′, et rien ne mène encore au moment cité sur la barre.
+  - La station WP est vide (c1 n'a pas de voie au whirlpool) et prend de la place pour un repère.
+  - Les jauges sont petites, et les points sous un demi-cran se ressemblent.
+  - La colonne prend 62 px de large : les pistes font 296 px.
+  - Dans la fiche, la colonne de 80 px coupe « lot 24,8 % ».
+  - Les abréviations « WP », « DH » et « Lev. » ne sont écrites en entier que dans les noms accessibles.
+  - Celeia n'a pas de fiche dans le pack.
+  - Ni Radar, ni Ma bière, ni Comparer, ni `fiche.html` séparés (facultatifs).
+- **Pire contraste** : 4,84:1, « Plus agrumes » et « Agrumes » de la fiche (#856e0c sur #fdfcfa, 14 px), mesuré au rendu sur 89 textes, puis sur 166 avec la fiche et les replis ouverts. Le crème de la colonne sur #1c1917 atteint au moins 6,9:1 (« WP » en #a8a29e) ; aucun ton de famille n'est posé sur le sombre, donc aucun n'est recalculé.
+- **Ajouté ou retiré par rapport à q2b** :
+  - Ajouté : la colonne du brassin et ses stations ; la ligne de la recette à 60′ ; le moment de la meilleure voie sur chaque objectif ; la jauge à crans exacte, à la place des traits arrondis ; la sélection 1, 9 et 12 (le Comparer du brief), avec le carré de couleur du houblon.
+  - Retiré : les pastilles de moment dans les titres de groupe (la colonne les dit, sauf « actif » gardé au titre du dry hop) ; les demi-pistes de fond communes. L'ordre de q2b (même effet d'abord) cède à l'ordre du brassin.
+- Générée par `generateur-l6.mjs`, qui lit `../l5/donnees-l5-l6.mjs` : c1.json, le pack, les fiches de la base et le jeu v3 duo.
