@@ -1,0 +1,34 @@
+x5 · Le verre et le défi. **Froide** : un jeu, une métaphore, une rupture avec les barres.
+
+- **L'idée** : ta stout dans un verre, et son nez qui en sort.
+  - Douze volutes en éventail, une par famille, hautes de leur intensité simulée. Le nom de chaque famille est écrit sous le dessin, dans l'ordre.
+  - Le dôme en tirets, c'est ce que la 16D permet (« arôme de houblon faible et facultatif »). Une volute qui le perce rougit d'orangé.
+  - La moustache en pointillé va jusqu'à la borne haute, avec une flèche si elle sort du dessin.
+  - **Le défi est celui de ta dégustation** du 18.10 (« trop résineuse, je la veux plus florale »), en quatre cartes :
+    - plus floral : « atteint, ~ +1,5 cran » ;
+    - moins résineux : « hors houblon, ~ +11 pts : le houblon en ajoute » ;
+    - amertume 50–70 : l’IBU de la stout, vraie valeur (calcul de l’app), « trop amer » au-delà ;
+    - sous le dôme : « 2 débordent : Agrumes, Tropicaux ».
+  - On joue avec des jetons de houblon, chacun avec son α et son usage ; l'appui long ouvre la fiche. Un jeton est un houblon seul ; deux jetons, un ajout cumulé (2 + 2 g/L, à sec). On choisit aussi l'endroit (chaudron 60′ ou 10′, whirlpool, cuve active, cuve au repos), la dose et la levure.
+  - Les vraies valeurs : l'huile apportée, l'IBU de la stout à chaud, les mesures publiées en bière (ou le trou), la saturation 4–8 g/L, et la biotransformation en cuve active.
+- **Ce qui tient** :
+  - Le jeu dit ce que l'outil sait : **aucun houblon ne retire du résineux**, le moteur en ajoute (myrcène). Le brasseur le voit au premier jeton, au lieu de le lire.
+  - Le défi n'est pas un « meilleur » : c'est sa propre cible, lue dans sa dégustation, carte par carte.
+  - Cascade 2 g/L en cuve au repos tient le dôme et atteint « plus floral » ; Citra + Galaxy en cuve active atteint le floral mais déborde sur deux familles.
+  - « Pourquoi à 10′ pas à 60′ ? » se joue : Citra 4 g/L à 60′ ne fait presque rien au nez, mais le verre affiche « 60 → 160 IBU, trop amer ».
+- **Ce qui casse** :
+  - L'éventail serre douze volutes sur 132 px de bord de verre. Les pictos au bout des volutes se chevauchent quand elles sont hautes.
+  - Une volute est une barre déguisée : sa hauteur se lit moins bien que dans l5b.
+  - À deux jetons, seul Citra + un second existe dans le moteur (« à deux, le moteur a Citra et un second »).
+  - La métaphore du « nez qui sort du verre » laisse penser à une intensité perçue, alors que c'est un profil simulé (c'est marqué, mais l'image est forte).
+  - Les volutes n'ont pas de `title` lisible au doigt : les noms sont sous le dessin.
+- **Ce qu'elle apprend, même rejetée** : formuler l'objectif du brasseur en défi (sa dégustation devient quatre cartes) aide plus que toute barre à voir ce qui est atteignable. « Moins résineux » est hors houblon : c'est la vraie réponse, et le jeu la donne sans phrase.
+- **Contrôles** (indicatifs en v0, joués une fois sur `etat.html`, profil du moteur) :
+  - COMMUN : `COMMUN ECHEC 1 contrôle(s)` (mots ECHEC, 146 mots au premier écran pour 70 ; couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende, parlant OK)
+  - LISIBLE : `x5 · 14 pictos · 6 mesurées · 11 simulées · 0 faute(s)` → `LISIBLE OK`
+  - SIMULATION : `x5 · 1 simulation(s) · 16 réglage(s) · 9 mesurée(s) · le simulé bouge` → `SIMULATION OK`
+  - CUMUL : `x5 · 1 ajout(s) cumulé(s) · 3 choix de levure · biotransformation visible · la levure fait bouger le simulé` → `CUMUL OK`
+  - ALPHA : `x5 · 4 voies · 4 avec leur α` → `ALPHA OK`
+  - FICHE-BASELINE : `x5 · fiche de Citra · 12 familles nommées, 17 pictos · 0 faute(s)` → `FICHE-BASELINE OK`
+- **Pire contraste** : 4,96:1, « Agrumes » (#856e0c sur blanc) ; aucun texte sous 4,5:1.
+- Générée par `node generateur-x5.mjs`, avec le socle de `../x1/socle-x.mjs`.

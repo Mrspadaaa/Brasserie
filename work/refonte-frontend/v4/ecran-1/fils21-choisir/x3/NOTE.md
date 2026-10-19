@@ -1,0 +1,40 @@
+x3 · Ma cuve, jour après jour. **Chaude** : on s'écarte de la baseline pour montrer le temps.
+
+- **L'idée** : répondre à « combinaison de 3j dryhopping Citra, 7j dry hopping Galaxy ; 3j citra - 5j idao7 […] C'est extrêmement complexe à voir ce qui est vraiment faisable ». C'est une frise de la fermentation, de J0 à J18, sur toute la largeur :
+  - le couloir de la levure, écrit : « active » de J0 à J5, puis « au repos » ;
+  - la biotransformation dans son couloir, quand le dry hop tombe en fermentation active (« ~55 µg/L citronellol », du moteur) ;
+  - les ajouts en blocs à la couleur du houblon, écrits (« 2 g/L · 5 j »), avec le repère 24 h en tirets et un hachuré au-delà de 3 j de contact : rien de plus mesuré ;
+  - cinq rubans de familles (agrumes, tropicaux, baies, floral, végétal), le profil simulé jour par jour (`parJour` du moteur) :
+    - le plafond de la 16D en filet, l'orangé au-dessus ;
+    - la borne basse en tirets ;
+  - **un curseur à glisser** (le jour). Sous la frise, ce que la cuve sent ce jour-là :
+    - les 12 barres de l5b ;
+    - le contact de chaque houblon (« Citra retiré après 3 j · Idaho 7 2 j de contact ») ;
+    - « ce que ça change » en crans ;
+    - les vraies valeurs de ce moment : « l'essentiel en 2 j » (E08, mesuré) et « 1 h = 96 h au nez » (E10, panel) dans les deux premiers jours ; « au-delà de 3 j : pas d'arôme mesuré en plus » [73] ; le hop creep (+0,92 % vol. à 10 g/L, 7 j [68]) ; l'huile apportée.
+  - Les plans sont les cas du moteur qui ont un jour par jour :
+    - seul, 4 g/L (Citra, Cascade, Galaxy, Idaho 7) ;
+    - à deux, 2 + 2 g/L : Citra 3 j puis Galaxy 7 j, Citra 3 j puis Idaho 7 5 j (avec les quatre levures, cas K4), Citra + Galaxy, Idaho 7 ou Cascade ensemble (cas K5) ;
+    - en fermentation active ou après, et la levure.
+- **Ce qui tient** :
+  - On voit ce qui est faisable et ce qui ne sert à rien. Galaxy 7 j : son ruban est plat dès le 3ᵉ jour, et le hachuré le dit.
+  - La saturation partagée est écrite (« agrumes 82 % de la somme des deux seuls »), avec l'ordre, la synergie et le masquage inconnus.
+  - Le geste se voit : le curseur bouge, et les barres et les vraies valeurs suivent.
+  - L'ajout cumulé prend toute la largeur, chaque houblon avec son α, son usage et son stock ; l'appui long ouvre la fiche.
+- **Ce qui casse** :
+  - Les rubans sont lisses parce que le moteur plafonne à 3 j : ils montent dans les 24 premières heures, puis plus rien. C'est fidèle au moteur, mais une courbe lissée peut faire croire à une cinétique mesurée. E10 dit même que l'extraction perçue est plus rapide que la courbe.
+  - Les plans sont figés aux cas du moteur : on ne déplace pas un bloc à la main, puisque la donnée n'existe pas hors de ces cas.
+  - Diamond n'existe que pour la suite Citra puis Idaho 7.
+  - Cinq familles seulement ont leur ruban.
+  - Choisir une levure passe en fermentation active, et le dit.
+  - La biotransformation n'est chiffrée que par le citronellol du moteur (conventions à valider).
+- **Ce qu'elle apprend, même rejetée** : le temps de contact est presque une non-question (tout se joue en 24 à 48 h). En revanche, le jour d'entrée, actif ou au repos, change la levure, le hop creep et la biotransformation. La frise rend visible ce que les jours n'apportent pas.
+- **Contrôles** (indicatifs en v0, joués une fois sur `etat.html`, profil du moteur) :
+  - COMMUN : `COMMUN ECHEC 1 contrôle(s)` (mots ECHEC, 140 mots au premier écran pour 70 ; couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende, parlant OK)
+  - LISIBLE : `x3 · 22 pictos · 1 mesurées · 16 simulées · 0 faute(s)` → `LISIBLE OK`
+  - SIMULATION : `x3 · 2 simulation(s) · 16 réglage(s) · 9 mesurée(s) · le simulé bouge` → `SIMULATION OK`
+  - CUMUL : `x3 · 1 ajout(s) cumulé(s) · 4 choix de levure · biotransformation visible · la levure fait bouger le simulé` → `CUMUL OK`
+  - ALPHA : `x3 · 2 voies · 2 avec leur α` → `ALPHA OK`
+  - FICHE-BASELINE : `x3 · fiche de Citra · 12 familles nommées, 17 pictos · 0 faute(s)` → `FICHE-BASELINE OK`
+- **Pire contraste** : 4,64:1, « hors du style : Agrumes, … » (#c2410c sur #fdf0ea) ; aucun texte sous 4,5:1.
+- Générée par `node generateur-x3.mjs`, avec le socle de `../x1/socle-x.mjs`.
