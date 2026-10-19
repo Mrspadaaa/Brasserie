@@ -197,8 +197,11 @@
     // une option choisie referme sa rangée : la carte remonte
     if (['houblon', 'second', 'jours'].includes(r)) { $$('[data-pil]').forEach((x) => x.setAttribute('aria-expanded', 'false')); $$('[data-ops]').forEach((x) => { x.hidden = true; }); }
   });
-  // Glisser le doigt sur la carte : la case sous le doigt se choisit, se lit en grand (loupe) et le détail suit.
+  // Lire la carte au doigt : « appui court, puis glissé ». Un doigt qui part d'une case et file fait défiler la
+  // page (rien n'est pris) ; un appui de 250 ms sans bouger ouvre la lecture : la loupe se pose, puis le glissé
+  // choisit la case sous le doigt et le détail suit. À la souris : appuyer et glisser, tout de suite.
   const CARTE = $('[data-carte]'), LOUPE = $('[data-loupe]');
+  const APPUI = 250, BOUGE = 8;
   let G = null;
   const loupe = (c, x, y) => {
     LOUPE.hidden = false; LOUPE.style.left = Math.max(70, Math.min(innerWidth - 70, x)) + 'px'; LOUPE.style.top = (y - 34) + 'px';
@@ -206,27 +209,50 @@
     const hs = hors(prof(c.dataset.m, +c.dataset.d));
     $('[data-loupe-h]').innerHTML = hs.length ? 'hors ' + hs.map((f) => pic(f, 13)).join('') : '<span style="color:#2f5f2a">au style</span>';
   };
-  CARTE.addEventListener('pointerdown', (e) => {
-    const c = e.target.closest('.cs'); if (!c) return;
-    G = { id: e.pointerId, m0: E.m, d0: E.d, p0: courant };
-    try { CARTE.setPointerCapture(e.pointerId); } catch (x) {}
-    c.classList.add('sous'); loupe(c, e.clientX, e.clientY - 30);
-    if (c.dataset.m !== E.m || +c.dataset.d !== E.d) { E.m = c.dataset.m; E.d = +c.dataset.d; courant = dessiner(); }
-  });
-  CARTE.addEventListener('pointermove', (e) => {
-    if (!G || e.pointerId !== G.id) return;
-    const el = document.elementFromPoint(e.clientX, e.clientY), c = el && el.closest('.cs');
-    if (!c) { loupe($('.cs[aria-pressed="true"]'), e.clientX, e.clientY - 30); return; }
-    $$('.cs.sous').forEach((x) => x.classList.remove('sous')); c.classList.add('sous');
-    loupe(c, e.clientX, e.clientY - 30);
-    if (c.dataset.m !== E.m || +c.dataset.d !== E.d) { E.m = c.dataset.m; E.d = +c.dataset.d; courant = dessiner({ flash: true }); $$('.cs.sous').forEach((x) => x.classList.remove('sous')); const cc = $(`.cs[data-m="${E.m}"][data-d="${E.d}"]`); if (cc) cc.classList.add('sous'); }
-  });
-  const fin = (e) => {
-    if (!G || e.pointerId !== G.id) return;
-    const g = G; G = null; LOUPE.hidden = true; $$('.cs.sous').forEach((x) => x.classList.remove('sous'));
+  const sous = (c) => { $$('.cs.sous').forEach((x) => x.classList.remove('sous')); if (c) c.classList.add('sous'); };
+  const lire = (x, y) => {
+    const el = document.elementFromPoint(x, y), c = el && el.closest('.cs');
+    if (!c) { loupe($('.cs[aria-pressed="true"]'), x, y - 30); return; }
+    loupe(c, x, y - 30);
+    if (c.dataset.m !== E.m || +c.dataset.d !== E.d) { E.m = c.dataset.m; E.d = +c.dataset.d; courant = dessiner({ flash: true }); }
+    sous($(`.cs[data-m="${E.m}"][data-d="${E.d}"]`));
+  };
+  const ouvrir = (g, c) => { g.lecture = true; CARTE.classList.add('lecture'); sous(c); try { if (navigator.vibrate) navigator.vibrate(8); } catch (x) {} lire(g.x, g.y); };
+  const fermer = () => {
+    const g = G; G = null; clearTimeout(g && g.timer); CARTE.classList.remove('lecture');
+    if (!g || !g.lecture) return;
+    LOUPE.hidden = true; sous(null); g.avale = performance.now() + 400; AVALE_CARTE = g.avale;
     if (g.m0 !== E.m || g.d0 !== E.d) { prec = { m: g.m0, d: g.d0, p: g.p0 }; courant = dessiner({ geste: `${NOMM[g.m0]} ${nb(g.d0)} g/L → ${NOMM[E.m]} ${nb(E.d)} g/L` }); }
   };
-  CARTE.addEventListener('pointerup', fin); CARTE.addEventListener('pointercancel', fin);
+  let AVALE_CARTE = 0;
+  // le toucher : l'appui court ouvre la lecture ; un glissé avant l'appui laisse défiler la page
+  CARTE.addEventListener('touchstart', (e) => {
+    const c = e.target.closest('.cs'); if (!c || e.touches.length > 1) { if (G) fermer(); return; }
+    const t = e.touches[0];
+    G = { x: t.clientX, y: t.clientY, lecture: false, m0: E.m, d0: E.d, p0: courant };
+    G.timer = setTimeout(() => { if (G && !G.lecture) ouvrir(G, c); }, APPUI);
+  }, { passive: true });
+  CARTE.addEventListener('touchmove', (e) => {
+    if (!G) return;
+    const t = e.touches[0];
+    if (!G.lecture) { if (Math.hypot(t.clientX - G.x, t.clientY - G.y) > BOUGE) { clearTimeout(G.timer); G = null; } return; }
+    if (e.cancelable) e.preventDefault();
+    G.x = t.clientX; G.y = t.clientY; lire(t.clientX, t.clientY);
+  }, { passive: false });
+  CARTE.addEventListener('touchend', () => { if (G) fermer(); });
+  CARTE.addEventListener('touchcancel', () => { if (G) fermer(); });
+  CARTE.addEventListener('contextmenu', (e) => { if (G && G.lecture) e.preventDefault(); });
+  // après une lecture, le clic de fin ne rechoisit pas une autre case
+  CARTE.addEventListener('click', (e) => { if (performance.now() < AVALE_CARTE) { e.stopPropagation(); e.preventDefault(); } }, true);
+  // la souris : appuyer et glisser, sans attente
+  CARTE.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    const c = e.target.closest('.cs'); if (!c) return;
+    G = { x: e.clientX, y: e.clientY, lecture: false, m0: E.m, d0: E.d, p0: courant, souris: true };
+    ouvrir(G, c);
+  });
+  addEventListener('pointermove', (e) => { if (G && G.souris && G.lecture) lire(e.clientX, e.clientY); });
+  addEventListener('pointerup', (e) => { if (G && G.souris) fermer(); });
   // La pente : un curseur continu, aimanté sur la grille ; la bulle écrit la dose du doigt et la dose simulée.
   const RG = $('.pe-r'), BUL = $('[data-pe-bulle]');
   RG.addEventListener('input', () => {

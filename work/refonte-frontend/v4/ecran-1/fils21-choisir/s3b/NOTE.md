@@ -9,7 +9,10 @@ s3b · La carte des possibles, seconde passe (critique/SYNTHESE.md §3 et §4, c
     - le plafond 16D en tirets et l'orangé au-delà ;
     - sous le mot « hors », les pictos des familles qui sortent du style, à la place du nombre ;
     - « mesuré » sur les cases qui ont une étude (Cascade, 1 j, après fermentation).
-  - **Le geste.** On glisse le doigt sur la carte : la case sous le doigt est cerclée et se lit en grand dans une loupe (« 10′ · 2 g/L, au style », ×3 la taille des étiquettes). Le détail et la réponse suivent pendant le geste. Au relâché, l'écart s'écrit, par exemple « ~ dry hop actif 4 g/L → 60′ 4 g/L : Tropicaux −3 crans, Baies −3 crans, Agrumes −3 crans ». Un toucher simple choisit aussi la case.
+  - **Le geste, « appui court, puis glissé »** (troisième passe, critique/seconde-passe.md) :
+    - un doigt qui part d'une case et file vers le haut ou le bas fait défiler la page ; rien n'est choisi et la loupe ne s'ouvre pas ;
+    - un appui de 250 ms sans bouger ouvre la lecture : la case sous le doigt est cerclée et se lit en grand dans une loupe (« 10′ · 2 g/L, au style », ×3 la taille des étiquettes) ;
+    - à la souris, on appuie et on glisse tout de suite. Le détail et la réponse suivent pendant le geste. Au relâché, l'écart s'écrit, par exemple « ~ dry hop actif 4 g/L → 60′ 4 g/L : Tropicaux −3 crans, Baies −3 crans, Agrumes −3 crans ». Un toucher simple choisit aussi la case.
   - **La vue « pente »** (greffe de a4 et de y3) : ce que rapporte le gramme suivant, sur les mêmes quatre familles, avec le plafond 16D.
     - Le curseur est continu, mais aimanté sur la grille : la bulle ×3 écrit « ≈ 2,8 → 2 g/L », et la ligne en dessous « entre deux doses de la grille : simulé à 2 g/L ».
     - La réponse : « ~ Tropicaux, de 2 à 4 g/L : 0,5 cran par g/L, contre 1,8 pour le premier ».
@@ -31,21 +34,23 @@ s3b · La carte des possibles, seconde passe (critique/SYNTHESE.md §3 et §4, c
   - **Les acquis de la baseline** : lentille au style / absolu, α du lot puis des fiches (≠, pellets dans la fiche), usage en mot, stock en icône, « ? », appui long et « fiche › » vers la vraie fiche, pictos au trait.
   - **Les données régénérées** : `profils-simules.json` à 4,75 % vol. (Citra à 10′ 4 g/L reste au style en agrumes), et `comparatifs-dryhop.json` avec E04 relu.
 - **Ce qui casse** :
-  - Le glissé sur la carte bloque le défilement quand le doigt part d'une case (`touch-action: none` sur la carte) : on fait défiler la page depuis les réglages ou le détail.
+  - La lecture demande un appui de 250 ms : un toucher simple choisit toujours la case, mais pour glisser d'une case à l'autre il faut d'abord tenir.
   - Les quatre familles des cases changent avec le houblon (Citra : Agrumes, Tropicaux, Noyau, Baies) : on compare les cases entre elles, pas deux houblons case à case.
   - Avec un second houblon, il est fixé à 2 g/L en dry hop, avec les mêmes jours ; en colonne chaude, il est posé après fermentation.
   - « + Galaxy » rend presque toute la carte « hors » : c'est le Galaxy 2 g/L lui-même qui sort en tropical.
   - Verdant et Diamond ne sont pas proposés seuls (pas dans la grille du moteur).
   - L'IBU d'un ajout à chaud n'existe que pour Citra et Cascade (cas K1, 4 g/L) ; pour les autres doses, il est mis au prorata (≈).
   - Le contrôle CUMUL compte « 0 ajout cumulé » au repos : le second houblon s'ouvre depuis la pastille « seul » (data-reglage="ajout-cumule").
-- **Contrôles** (20.10, sur `etat.html`) :
-  - `controle-commun.mjs D s3b --page=etat.html --sans=mots` → COMMUN OK (couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende, parlant) ;
+- **Contrôles** (20.10, sur `etat.html`, rejoués après la troisième passe pour COMMUN et MOTS) :
+  - `controle-commun.mjs D s3b --page=etat.html --sans=mots` → COMMUN OK (couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende, parlant, brutes) ;
   - `mots-premier-ecran.mjs D s3b --page=etat.html --sans-donnees --max=70` → « s3b 49 mots (hors données) », MOTS OK ; sans l'option : « s3b 107 mots », MOTS OK (110 au plus) ;
   - LISIBLE OK : « s3b · 38 pictos · 1 mesurées · 101 simulées · 0 faute(s) » ;
   - SIMULATION OK : « 2 simulation(s) · 25 réglage(s) · 9 mesurée(s) · le simulé bouge » ;
   - CUMUL OK : « 2 choix de levure · biotransformation visible · la levure fait bouger le simulé » ;
   - ALPHA OK (1 voie, 1 avec son α) ; FICHE-BASELINE OK (fiche de Citra, 12 familles nommées, 17 pictos, 0 faute).
 - **Preuve du geste** (`jouer-s3b.mjs` → `geste-s3b.json`, joué au toucher par puppeteer-core, 390 × 844) :
+  - **le défilement marche depuis la carte** : un doigt posé sur la case « whirlpool, 8 g/L » file vers le haut, sans appui ; la page défile de 442 px, la case choisie ne change pas et la loupe reste fermée (`s3b-defile.png`) ;
+  - l'appui de 350 ms sur « actif, 4 g/L » ouvre la loupe « actif · 4 g/L — hors Agrumes, Fruits tropicaux, Petits fruits » (`s3b-appui.png`), puis le glissé :
 
   | état | titre du détail | Tropicaux | barre | Agrumes |
   |---|---|---|---|---|
@@ -59,7 +64,7 @@ s3b · La carte des possibles, seconde passe (critique/SYNTHESE.md §3 et §4, c
   - Aucune erreur de page.
 - **Pire contraste** : 4,96:1, « Agrumes » (#856e0c sur blanc), sur 128 textes mesurés ; aucun sous 4,5:1.
 - Captures (`../captures/`) :
-  - geste : `s3b-avant.png`, `s3b-pendant.png`, `s3b-apres.png` ;
+  - geste : `s3b-defile.png`, `s3b-avant.png`, `s3b-appui.png`, `s3b-pendant.png`, `s3b-apres.png` ;
   - réglages : `s3b-pomona-actif.png`, `s3b-ensemble.png` ;
   - pente : `s3b-pente.png`, `s3b-pente-curseur.png` ;
   - page et blocs : `s3b-390.png` (page, 1688), `s3b-premier-ecran-390.png`, `s3b-bas.png`, `s3b-defi.png`, `s3b-tire.png`, `s3b-preuve.png` ;

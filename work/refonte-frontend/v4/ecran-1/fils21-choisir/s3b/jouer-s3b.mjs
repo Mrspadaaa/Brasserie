@@ -1,6 +1,8 @@
 // s3b · preuve du geste, jouée au doigt (puppeteer-core, Chrome, 390 × 844, écran tactile) :
-//   1. le doigt se pose sur la case « dry hop actif, 4 g/L », glisse sur la carte jusqu'à « 10′, 2 g/L »
-//      (doigt gardé : la loupe), puis jusqu'à « 60′, 4 g/L », et se lève ;
+//   0. le défilement depuis la carte : un doigt part d'une case et file vers le haut, sans appui ; la page
+//      défile, rien n'est choisi, pas de loupe ;
+//   1. « appui court, puis glissé » : le doigt se pose sur « dry hop actif, 4 g/L », tient 350 ms (la loupe
+//      s'ouvre), glisse jusqu'à « 10′, 2 g/L » (doigt gardé), puis jusqu'à « 60′, 4 g/L », et se lève ;
 //   2. Pomona, puis « + Galaxy », au toucher (les pastilles de réglage) ;
 //   3. la vue « pente » : le curseur glissé entre deux doses de la grille (la bulle, l'aimant).
 // Valeurs lues à l'écran avant, pendant et après ; captures dans ../captures/ ; sortie : geste-s3b.json.
@@ -40,11 +42,24 @@ const releve = () => p.evaluate(() => {
 const centre = async (sel) => { const e = await p.$(sel); const r = await e.boundingBox(); return [r.x + r.width / 2, r.y + r.height / 2]; };
 const toucher = async (sel) => { const [x, y] = await centre(sel); await p.touchscreen.tap(x, y); await attendre(500); };
 
+// 0. le défilement depuis la carte
+const caseSel = () => p.evaluate(() => (document.querySelector('.cs[aria-pressed="true"]') || {}).getAttribute?.('aria-label') || null);
+const d0 = await p.evaluate(() => ({ y: scrollY, sel: document.querySelector('.cs[aria-pressed="true"]').getAttribute('aria-label') }));
+const S0 = await centre('.cs[data-m="whirlpool"][data-d="8"]'.replace('whirlpool', 'wp'));
+await p.touchscreen.touchStart(S0[0], S0[1]);
+for (let k = 1; k <= 12; k++) { await p.touchscreen.touchMove(S0[0], S0[1] - 22 * k); await attendre(16); }
+await p.touchscreen.touchEnd(); await attendre(700);
+const d1 = await p.evaluate(() => ({ y: Math.round(scrollY), sel: document.querySelector('.cs[aria-pressed="true"]').getAttribute('aria-label'), loupe: !document.querySelector('[data-loupe]').hidden, titre: document.querySelector('[data-case-titre]').innerText }));
+const defilement = { avant: d0, apres: d1, defile: d1.y - d0.y, caseInchangee: d1.sel === d0.sel, loupe: d1.loupe };
+await p.screenshot({ path: path.join(CAP, 's3b-defile.png') });
+await p.evaluate(() => scrollTo(0, 0)); await attendre(400);
 const avant = await releve();
 await p.screenshot({ path: path.join(CAP, 's3b-avant.png') });
 // 1. glisser le doigt sur la carte
 const A = await centre('.cs[data-m="dryActive"][data-d="4"]'), B = await centre('.cs[data-m="wp"][data-d="4"]'), C = await centre('.cs[data-m="b10"][data-d="2"]'), Dd = await centre('.cs[data-m="b60"][data-d="4"]');
-await p.touchscreen.touchStart(A[0], A[1]); await attendre(120);
+await p.touchscreen.touchStart(A[0], A[1]); await attendre(350);
+const appui = await p.evaluate(() => ({ loupe: !document.querySelector('[data-loupe]').hidden, texte: [...document.querySelector('[data-loupe]').children].map((c) => c.textContent.trim() + ([...c.querySelectorAll('svg[aria-label]')].map((s) => ' ' + s.getAttribute('aria-label')).join(','))).join(' — ') }));
+await p.screenshot({ path: path.join(CAP, 's3b-appui.png') });
 const glisse = async (de, a, n = 10) => { for (let k = 1; k <= n; k++) { await p.touchscreen.touchMove(de[0] + (a[0] - de[0]) * k / n, de[1] + (a[1] - de[1]) * k / n); await attendre(25); } };
 await glisse(A, B); await glisse(B, C);
 await attendre(250);
@@ -75,8 +90,10 @@ await p.screenshot({ path: path.join(CAP, 's3b-pente-curseur.png') });
 await p.touchscreen.touchEnd(); await attendre(500);
 const penteApres = await releve();
 await b.close();
-const out = { page: 's3b/etat.html', date: new Date().toISOString(), geste: 'glisser le doigt sur la carte : actif 4 g/L → whirlpool 4 g/L → 10′ 2 g/L (gardé) → 60′ 4 g/L', avant, pendant, apres, pomona, pomonaActif, ensemble, pente: { bulle, apres: penteApres }, grossissementLoupe: pendant.loupe ? Math.round(pendant.loupe.police / pendant.loupe.policeCase * 10) / 10 : null, grossissementBulle: Math.round(bulle.police / bulle.policeAxe * 10) / 10, erreurs };
+const out = { page: 's3b/etat.html', date: new Date().toISOString(), defilement, geste: 'appui court (350 ms) sur actif 4 g/L, puis glissé : → whirlpool 4 g/L → 10′ 2 g/L (gardé) → 60′ 4 g/L', appui, avant, pendant, apres, pomona, pomonaActif, ensemble, pente: { bulle, apres: penteApres }, grossissementLoupe: pendant.loupe ? Math.round(pendant.loupe.police / pendant.loupe.policeCase * 10) / 10 : null, grossissementBulle: Math.round(bulle.police / bulle.policeAxe * 10) / 10, erreurs };
 fs.writeFileSync(path.join(ICI, 'geste-s3b.json'), JSON.stringify(out, null, 1));
+console.log('défilement depuis la carte : la page a défilé de ' + defilement.defile + ' px · case inchangée : ' + defilement.caseInchangee + ' · loupe : ' + defilement.loupe);
+console.log('appui 350 ms : loupe ' + appui.loupe + ' « ' + appui.texte + ' »');
 const L = (n, v) => console.log(n.padEnd(13), '|', (v.titre || '').padEnd(42), '| tropical', v.tropical && v.tropical.ecart, v.tropical && v.tropical.barre + ' px', '| agrumes', v.citrus && v.citrus.ecart, '|', v.loupe ? 'loupe « ' + v.loupe.texte + ' »' : '');
 L('avant', avant); L('pendant', pendant); L('après', apres); L('Pomona', pomona); L('Pomona actif', pomonaActif); L('+ Galaxy', ensemble);
 console.log('actif 4 g/L, US-05 → Pomona :', JSON.stringify(avant.actif4.barres), '→', JSON.stringify(pomona.actif4.barres));

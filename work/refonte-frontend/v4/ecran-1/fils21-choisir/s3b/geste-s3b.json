@@ -1,7 +1,26 @@
 {
  "page": "s3b/etat.html",
- "date": "2026-10-19T22:00:36.685Z",
- "geste": "glisser le doigt sur la carte : actif 4 g/L → whirlpool 4 g/L → 10′ 2 g/L (gardé) → 60′ 4 g/L",
+ "date": "2026-10-19T22:17:58.042Z",
+ "defilement": {
+  "avant": {
+   "y": 0,
+   "sel": "dry hop actif, 4 g/L : ~ hors du style 16D : Agrumes, Tropicaux, Baies"
+  },
+  "apres": {
+   "y": 442,
+   "sel": "dry hop actif, 4 g/L : ~ hors du style 16D : Agrumes, Tropicaux, Baies",
+   "loupe": false,
+   "titre": "Citra 4 g/L · dry hop actif · 3 j · US-05"
+  },
+  "defile": 442,
+  "caseInchangee": true,
+  "loupe": false
+ },
+ "geste": "appui court (350 ms) sur actif 4 g/L, puis glissé : → whirlpool 4 g/L → 10′ 2 g/L (gardé) → 60′ 4 g/L",
+ "appui": {
+  "loupe": true,
+  "texte": "actif · 4 g/L — hors Agrumes, Fruits tropicaux, Petits fruits"
+ },
  "avant": {
   "case": "dry hop actif, 4 g/L : ~ hors du style 16D : Agrumes, Tropicaux, Baies",
   "titre": "Citra 4 g/L · dry hop actif · 3 j · US-05",

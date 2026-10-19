@@ -114,7 +114,7 @@ const corps = `${S.barre('Carte des possibles <small>16D</small>')}
     <div class="vr-h"><span class="mot m-mes">vraies valeurs</span></div>
     ${HB.map((h, k) => `<div data-vr="${esc(h)}" hidden>${S.vraies(h, MES[h], { n: k + 1 })}<div class="ets">${h === 'Citra' ? '<div class="me trou"' + S.etudes(h).split('<div class="me trou"')[1] : S.etudes(h)}</div></div>`).join('')}
   </section>
-  ${S.legende(`<div class="leg-s"><h3>La carte</h3><div class="leg-g l2"><span class="leg-i"><span class="leg-c"><i class="cp-pl"></i></span><span>plafond du style 16D dans chaque case</span></span><span class="leg-i"><span class="leg-c"><i class="lx-x"></i></span><span>orangé : au-delà du style</span></span><span class="leg-i"><span class="leg-c">${picto('tropical', 12)}</span><span>sous « hors » : les familles qui sortent du style</span></span><span class="leg-i"><span class="leg-c"><span class="leg-doigt" aria-hidden="true"></span></span><span>glisse le doigt sur la carte : la case se lit en grand</span></span></div></div>`)}`;
+  ${S.legende(`<div class="leg-s"><h3>La carte</h3><div class="leg-g l2"><span class="leg-i"><span class="leg-c"><i class="cp-pl"></i></span><span>plafond du style 16D dans chaque case</span></span><span class="leg-i"><span class="leg-c"><i class="lx-x"></i></span><span>orangé : au-delà du style</span></span><span class="leg-i"><span class="leg-c">${picto('tropical', 12)}</span><span>sous « hors » : les familles qui sortent du style</span></span><span class="leg-i"><span class="leg-c"><span class="leg-doigt" aria-hidden="true"></span></span><span>appuie sur une case, puis glisse : la case se lit en grand ; un glissé direct fait défiler</span></span></div></div>`)}`;
 
 const CSS = `
   .outils { align-items: center; }
@@ -143,7 +143,9 @@ const CSS = `
   .cp-f4 span { display: inline-flex; align-items: center; gap: 2px; font-weight: 600; color: var(--t); }
   .cp-lg { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; color: var(--gris); }
   .cp-pl { display: inline-block; width: 14px; height: 0; border-top: 1.5px dashed var(--encre); }
-  .cp { display: grid; grid-template-columns: 30px repeat(5, 1fr); gap: 3px; align-items: stretch; touch-action: none; -webkit-user-select: none; user-select: none; }
+  .cp { display: grid; grid-template-columns: 30px repeat(5, 1fr); gap: 3px; align-items: stretch; touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .cp.lecture { touch-action: none; }
+  .cp.lecture .cs { transition: none; }
   .cp-ch { display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: 12px; font-weight: 600; color: var(--gris); }
   .cp-rh { display: flex; flex-direction: column; justify-content: center; font-size: 12px; color: var(--gris); line-height: 1.1; }
   .cp-rh b { font: 600 13px var(--mono); color: var(--encre); }
