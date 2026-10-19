@@ -152,6 +152,14 @@ Voir `decisions.md` (D1 à D12).
   - ajout cumulé, biotransformation et levure, a1 à a3 (a93f9f90f8f30e5bb), à la demande « Aussi
     explore la voie de l'ajout cumulé. 2 houblons en dry hopping. Et la bio Transfo et la levure ».
     Cas K5 ajouté au brief ; le moteur ajoute K5 et une table « paires ».
+  - « la réponse d'abord », w1 à w5 (a571104d251dfed19), et « au doigt », y1 à y5 (a302d1517de87c0a0),
+    pour atteindre 30 (« fait en qqch comme 30 et prends les 5 meilleures version et améliore les »).
+  Ensuite :
+  - les 30 rendues, le pilote rejoue COMMUN, LISIBLE, ALPHA et FICHE-BASELINE, et regarde les
+    captures ;
+  - un jury neuf (Fable) lit `fils21-choisir/JURY.md` et écrit `JURY-VERDICT.md` ;
+  - les 5 retenues sont reprises par leurs auteurs (SendMessage) ;
+  - le pilote publie les 30 puis les 5 améliorées sur la page des fils de fer.
   Règle L3 de D94 corrigée (« il faut que ça se voit pas que ce soit effacé ») : une plage énorme se
   montre en bande. Les quatre agents en ont été prévenus.
   À l'arrivée du JSON : prévenir s et r (SendMessage). À l'arrivée de la recherche : transmettre ses
