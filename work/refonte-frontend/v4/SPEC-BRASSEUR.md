@@ -236,7 +236,9 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
     valeur » (D94 ; lot 21, `fils21-choisir/`) ; sur la règle qui effaçait les plages énormes :
     « Si il y a des écart x100 justement il faut que ça se voit pas que ce soit effacé » (D94 L3
     corrigée) ; « Aussi trouve plus de comparatif entre dryhop et variété de houblons » (recherche J) ;
-    « Fait plus de lot de mini maquettes avec un vrai ladder et des vrai exploration » (e1–e3, x1–x5).
+    « Fait plus de lot de mini maquettes avec un vrai ladder et des vrai exploration » (e1–e3, x1–x5) ;
+    « Aussi explore la voie de l'ajout cumulé. 2 houblons en dry hopping. Et la bio Transfo et la
+    levure » (K5 ; a1–a3).
   - Leçon : « les barres de l5b » voulait dire aussi ses pistes d'objectif, pas seulement ses barres
     de voie. Quand une demande désigne un élément d'une autre variante, reprendre tous ses éléments du
     même genre sur l'écran, ou demander lequel.

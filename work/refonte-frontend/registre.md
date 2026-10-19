@@ -149,6 +149,9 @@ Voir `decisions.md` (D1 à D12).
   - ladder e1 à e3 (af4ed4521b57e6e1c) et exploration x1 à x5 (a358d8d7f2bd5f6e9 : 2 tièdes, 2 chaudes,
     1 froide, règle D22), à la demande « Fait plus de lot de mini maquettes avec un vrai ladder et des
     vrai exploration ». Ils attendent aussi les deux JSON.
+  - ajout cumulé, biotransformation et levure, a1 à a3 (a93f9f90f8f30e5bb), à la demande « Aussi
+    explore la voie de l'ajout cumulé. 2 houblons en dry hopping. Et la bio Transfo et la levure ».
+    Cas K5 ajouté au brief ; le moteur ajoute K5 et une table « paires ».
   Règle L3 de D94 corrigée (« il faut que ça se voit pas que ce soit effacé ») : une plage énorme se
   montre en bande. Les quatre agents en ont été prévenus.
   À l'arrivée du JSON : prévenir s et r (SendMessage). À l'arrivée de la recherche : transmettre ses

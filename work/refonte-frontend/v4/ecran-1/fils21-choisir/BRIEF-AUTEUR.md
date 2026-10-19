@@ -58,6 +58,7 @@ Leurs règles, toutes contrôlées :
 - **K2, un dry hop seul** : Citra, Galaxy, Idaho 7, 4 g/L, 3 j après fermentation.
 - **K3, deux dry hops** : Citra 3 j puis Galaxy 7 j ; Citra 3 j puis Idaho 7 5 j ; 2 g/L chacun.
 - **K4, la levure** : US-05, Verdant, Pomona, Diamond, avec un dry hop actif ou après.
+- **K5, l'ajout cumulé** (« Aussi explore la voie de l'ajout cumulé. 2 houblons en dry hopping. Et la bio Transfo et la levure ») : deux houblons ENSEMBLE dans le même dry hop (Citra + Galaxy, Citra + Idaho 7, Citra + Cascade ; 2 + 2 g/L, 3 j), en dry hop actif ou après, avec US-05, Pomona ou Verdant. Ce que chacun apporte, la saturation partagée (la dose totale compte), la synergie et le masquage marqués inconnus, la biotransformation de la levure.
 - **La bière** : celle du lot 20, une 16D (arôme de houblon « faible et facultatif »), avec Nugget à 60′. Le style dit si Citra en dry hop sort du style : c'est un enseignement, à montrer.
 
 ## Les données
