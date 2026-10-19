@@ -1,0 +1,54 @@
+{
+ "ticket": 138,
+ "court": "Suggestions",
+ "titre": "Suggestions en Barres, sans retenue (lot 14, 19.10 soir)",
+ "etat": "à choisir",
+ "puces": [
+  "« Tu t'es trop limité, même au niveau des couleurs et tout » : couleurs des familles et des houblons, vraie hiérarchie, formes libres ; l'orangé seulement pour « ma bière hors du style ».",
+  "Au style par défaut, l'absolu à un toucher (D75) ; la réponse d'abord par objectif : floral « approche » (22,4 pour une visée de 24,8), résineux « aucune voie houblon » (au mieux 6,1 → 5,8 T), hors houblon à un toucher.",
+  "s1 la base en couleur ; s2 une jauge par objectif ; s3 haltères ; s4 cascade vers la visée ; s5 barres divergentes ; s6 cartes de voies ; s7 cadran à anneaux ; s8 plan du goût floral × résineux ; s9 frise du brassin (60′, 10′, levure).",
+  "Contrôles : FIL6 OK 9/9, mots ≤ 70, COULEURS OK 9/9 (D74 : la base et le lot 6 y échouent), AU-STYLE OK. À valider : la voie levure (dry hop, floral +27) dépasse la visée mais sort agrumes et tropicaux du style."
+ ],
+ "images": [
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils14-suggestions-barres/captures/planche-b-390.png",
+   "planche, les 9"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils14-suggestions-barres/captures/s1-b-390.png",
+   "s1 la base, en couleur"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils14-suggestions-barres/captures/s2-b-390.png",
+   "s2 une jauge par objectif"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils14-suggestions-barres/captures/s3-b-390.png",
+   "s3 haltères avant → après"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils14-suggestions-barres/captures/s4-b-390.png",
+   "s4 cascade vers la visée"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils14-suggestions-barres/captures/s5-b-390.png",
+   "s5 barres divergentes"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils14-suggestions-barres/captures/s6-b-390.png",
+   "s6 cartes de voies"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils14-suggestions-barres/captures/s7-b-390.png",
+   "s7 cadran à anneaux"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils14-suggestions-barres/captures/s8-b-390.png",
+   "s8 plan du goût"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils14-suggestions-barres/captures/s9-b-390.png",
+   "s9 frise du brassin"
+  ]
+ ]
+}

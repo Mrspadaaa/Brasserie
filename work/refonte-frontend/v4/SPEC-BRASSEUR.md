@@ -133,6 +133,9 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   meilleur que le site original » ; sur la planche des radars : « Je pense que c'est aussi la 3
   même si ils sont tous un peu semblable » — 18.10, soir (D57 à D59 ; p03 retenu pour Barres et
   Radar).
+- **Suggestions en Barres, à refaire** : « refait les mini maquette file de fer pour barre suggestion.
+  Tu t'es trop limité, m'eme au niveau des couleurs et tout... » — 19.10, soir (D74 ; lot 14, couleurs
+  et formes libres, l'orangé gardé pour l'alerte).
 - **Suggestions, lot 5b** (planche des radars) : « C'est vraiment difficile à lire, pour moi il
   faut revoir, mais si il faut vraiment en choisir un ça serait la 6 » — 18.10, soir (D60).
 - **Le trait noir** (Comparer p03) : « Pourquoi il y a parfois le truc noir pas toujours ?? » —

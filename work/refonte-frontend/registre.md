@@ -97,7 +97,29 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
-## ÉTAT AU 19.10, SOIR : lire en premier (puis la fin d'après-midi ci-dessous)
+## ÉTAT AU 19.10, FIN DE SOIRÉE : lire en premier
+
+- **Base v4.9** : commit 4e3bae7 et page à jour v5 (fiche g1, roue et cases au nombre de fiches,
+  D72, D73, D25 bis, D33 ter, D40 ter). Moteur : `familyWords`, commit 9c4cb3c.
+- **Lot 14, Suggestions en Barres** (`ecran-1/fils14-suggestions-barres/`, s1 à s9, trois auteurs) :
+  - sa demande : « Tu t'es trop limité, m'eme au niveau des couleurs et tout... » ;
+  - contrôle D74 `controle-couleurs.mjs` (3 teintes franches hors alerte au premier écran ; la base
+    et le lot 6 → 0) ;
+  - `FIL6 OK 9/9`, mots ≤ 70, `COULEURS OK 9/9`, `AU-STYLE OK` ;
+  - planche sur la page des fils de fer, version 8 (section #138, à la place du lot 6) ; commentaire
+    #138 (6267823868).
+- **Au style partout** (#141) : « le "au style" donc normaliser au style les données semble être que
+  ici ? C'est pas ce que j'avais demandé... » ; « commen ça a pu être oublié ? ». Contrôle D75
+  `controle-au-style.mjs` (lentille au style par défaut et zone du style, sur chaque écran) ; base v4.9
+  → Ma bière OK, Suggestions, Comparer, fiche et substitution en échec. Réponse dans le fil de la page
+  à jour. Mémoire `affinee-exigence-transversale`. Reste : mini maquettes de la fiche et de Comparer
+  au style, sur la stout 16D et la lager 3B (S2).
+- **En attente de lui** : son choix dans le lot 14 ; le fil « refaire des mini maquette pour cette
+  partie » (de0e8403), pris pour Suggestions ; les commentaires de la planche (« aucun actionnable ? »,
+  « très dur à comprendre ces graph », la vignette qui ouvre toute la page, « plus tard clicker ici
+  renvoie vers la page ») ; le bouton « Ajouter à 10′ » à tirer des voies du modèle.
+
+## ÉTAT AU 19.10, SOIR (puis la fin d'après-midi ci-dessous)
 
 - **Son retour** (deux captures au téléphone, page partagée, base v4.7) : « On arrive pas à aller de
   l'extrême haut, à l'extrême bas ». Mesuré : la page jouable y fait environ 390 × 620 ; Nugget glissé
