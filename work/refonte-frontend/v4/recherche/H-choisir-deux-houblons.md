@@ -258,7 +258,7 @@ ni ne porte la variabilité de lot. [H, recherche non exhaustive]
 
 | Calcul | Formule | Preuve | Sortie |
 |---|---|---|---|
-| **Charge d'huile par ajout** | huile (mL/100 g) × dose (g/L) ÷ 10 = mL/hL | [F] plages, ou COA du lot | chiffre en plage |
+| **Charge d'huile par ajout** | huile (mL/100 g) × dose (g/L) = mL/hL (erratum du 19.10 : le « ÷ 10 » de la première version était faux ; exemple : 2 mL/100 g × 4 g/L = 8 mL/hL, cohérent avec §7.4) | [F] plages, ou COA du lot | chiffre en plage |
 | **Charge d'un composé** | charge d'huile × % du composé ; mL → mg par la densité (linalol ≈ 0,86 g/mL) | [F] ; conversion [H] (le % d'huile est une aire GC, pas un volume exact) | plage |
 | **Charge de thiols libres** | µg/kg × g/L = ng/L | [P] Hopsteiner, Reglitz | plage ou classe |
 | **Part transférée par moment** | charge × taux de transfert (§8.2) | [P] | plage |

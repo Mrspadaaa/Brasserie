@@ -28,3 +28,10 @@ export { proposeVoies, compareVoies, compareRankKeys, applyVoie, RANKING, type D
 export { getStyleScale, documentedStyleCodes, SCALE_PARAMETERS, type StyleScale, type FamilyScale, type FamilyStatus } from '../style/scale';
 export { valueVerdict, gapVerdict, trackPosition, trackShare, type ValueVerdict, type GapVerdict, type EstimateLike } from '../style/verdict';
 export { toleranceScale, styleMasking, ecartTolerances, TOLERANCE_RULE, type Apriori, type FamilyTolerance, type ToleranceScale, type Masking } from './tolerance';
+export {
+  pouvoirAjout, pouvoirRecette, profilParMoment, signauxFamilles, comparerFamilles, comparerComposes, sensPlages, verifications, lire as lirePouvoirSeuil, texte as textePlage, source as sourcePouvoir,
+  COMPOSES, TERPENES, THIOLS, MOMENTS_POUVOIR, FACTEUR_ELEVE, MENTION_RAPPORT, MENTION_SIGNAL, BASE_COMMUNE, POUVOIR_RULE, DONNEES_POUVOIR,
+  type ComposeId, type Niveau, type Plage, type Grandeur, type SourceRef, type SeuilApplique, type Lecture, type Drapeau, type BaseCommune, type PouvoirCompose, type MarqueurFamille,
+  type SignalFamille, type LecturePouvoir, type PouvoirAjout, type PouvoirComposeRecette, type PouvoirRecette, type AjoutPouvoir, type RecettePouvoir, type Sens, type ComparaisonFamille,
+  type ProfilMoment, type Verification,
+} from './pouvoir';
