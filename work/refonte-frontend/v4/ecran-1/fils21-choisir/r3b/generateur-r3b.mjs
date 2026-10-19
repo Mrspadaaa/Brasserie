@@ -31,6 +31,7 @@ const CSS_R3B = `
   .rep { font-size: 13px; line-height: 1.3; min-height: 34px; }
   .regs { display: flex; flex-direction: column; gap: 6px; }
   .pas.m button { font-size: 12px; }
+  #paires button { font-size: 12px; padding: 0 2px; }
   .dose-z { display: flex; align-items: center; gap: 8px; }
   .dose-z .lab { font-size: 12px; color: var(--gris); width: 52px; flex: none; }
   .dose-z input { flex: 1; height: 32px; accent-color: #16161a; }
@@ -47,6 +48,9 @@ const CSS_R3B = `
   .lg .lim .mono { font-size: 14px; }
   .lg .lim.hors { color: var(--acc); }
   .lg .l3 { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; font-size: 12px; color: #4a4a55; }
+  .cols { display: grid !important; grid-template-columns: 1fr 1.2fr 0.8fr; gap: 6px; align-items: center; font-size: 12px; }
+  .cols .c1 { display: inline-flex; align-items: center; gap: 3px; } .cols .c2 { font: 600 13px var(--mono); color: var(--encre); text-align: center; } .cols .c3 { text-align: right; }
+  .tete-cols { color: var(--gris); padding: 0 6px 0 8px; } .tete-cols .c2 { font: 400 12px var(--sans); color: var(--gris); }
   .lg .l3 .pi { width: 14px; height: 14px; }
   .lg .l4 { display: flex; gap: 2px 10px; flex-wrap: wrap; font-size: 12px; color: #4a4a55; padding-top: 2px; border-top: 1px dashed var(--trait); }
   .lg .l4 b { font: 600 12px var(--mono); color: var(--encre); }
@@ -68,13 +72,13 @@ const CSS_R3B = `
 
 const corps = () => `
   ${tete(ic)}
-  <p class="deg" data-nature="mesure" data-source="dégustation" data-src="degust" data-src-texte="« ma stout est trop résineuses, je la veux plus floral », 18.10">${picto('resin', 14)}Ma bière : résineux marqué, ta dégustation, déjà hors 16D</p>
+  <p class="deg" data-nature="mesure" data-source="dégustation" data-src="degust" data-src-texte="« ma stout est trop résineuses, je la veux plus floral », 18.10">${picto('resin', 14)}Résineux marqué, ta dégustation, hors 16D</p>
   <p class="q">Jusqu’où chaque houblon reste dans ma 16D ?</p>
   <p class="rep" id="rep" data-role="simulation"></p>
   <div class="regs">
     <div class="regl"><span class="lab">Moment</span><div class="pas m" role="group" aria-label="Moment de l’ajout" id="moments"></div></div>
     <div class="regl"><span class="lab">Levure</span><div class="pas" role="group" aria-label="Levure" id="levures"></div></div>
-    <p class="nonsim" id="nonsim">Verdant, Diamond : pas encore simulées.</p>
+    <p class="nonsim" id="nonsim">Verdant, Diamond pas encore simulées.</p>
     <div class="regl"><span class="lab">Ensemble</span><div class="pas" role="group" aria-label="Deux houblons ensemble, 2 + 2 g/L" id="paires"></div></div>
     <div class="dose-z"><span class="lab">Dose</span><input type="range" id="dose" min="0.5" max="8" step="0.5" value="2" data-role="reglage" data-reglage="dose" aria-label="Dose de chaque houblon, g/L"><span class="val" id="dose-v"></span></div>
   </div>
@@ -133,7 +137,9 @@ const dTxt = (L) => (L.deja ? 'déjà hors' : L.plus ? '> 8 g/L' : '≈' + fr(L.
 const dansA = (L, d) => L.plus || (!L.deja && L.d > d);
 const brAccord = (n) => n + (n > 1 ? ' brassins' : ' brassin');
 /* ---------- la barre de dose : 0 à 8 g/L, la 16D en pâle, hors en hachures, 20 brassins à leur dose limite ---------- */
-function barre(hop, R, dose) {
+/* « 16D » et « hors » nommés une fois : sur la première barre qui a la place */
+const DIT = { zone: false, hors: false };
+function barre(hop, R, dose, premier) {
   const W = 336, H = 50, x0 = 6, x1 = W - 22, X = (d) => x0 + Math.min(d, 8) / 8 * (x1 - x0), yb = 24;
   const v = s('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'data-nature': 'simule', 'data-role': 'incertitude', 'aria-label': '~ ' + hop + ' : dose limite ' + dTxt(R.centre) + ', 20 brassins simulés' });
   const defs = s('defs', {}, v), po = s('pattern', { id: 'h-' + hop.replace(' ', ''), width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, defs);
@@ -141,8 +147,8 @@ function barre(hop, R, dose) {
   const L = R.centre, xl = L.deja ? X(0) : L.plus ? X(8) : X(L.d);
   s('rect', { x: x0, y: yb - 9, width: xl - x0, height: 18, fill: '#f1f1f4', 'data-role': 'zone' }, v);
   if (!L.plus) s('rect', { x: xl, y: yb - 9, width: x1 - xl, height: 18, fill: 'url(#h-' + hop.replace(' ', '') + ')' }, v);
-  if (xl - x0 > 34) { const t = s('text', { x: x0 + 4, y: yb - 12, 'font-size': 12, fill: '#4a4a55' }, v); t.textContent = '16D'; }
-  if (!L.plus && x1 - xl > 34) { const t = s('text', { x: x1 - 2, y: yb - 12, 'text-anchor': 'end', 'font-size': 12, fill: '#c2410c', 'font-weight': 600 }, v); t.textContent = 'hors'; }
+  if (!DIT.zone && xl - x0 > 34) { DIT.zone = true; const t = s('text', { x: x0 + 4, y: yb - 12, 'font-size': 12, fill: '#4a4a55' }, v); t.textContent = '16D'; }
+  if (!DIT.hors && !L.plus && x1 - xl > 34) { DIT.hors = true; const t = s('text', { x: x1 - 2, y: yb - 12, 'text-anchor': 'end', 'font-size': 12, fill: '#c2410c', 'font-weight': 600 }, v); t.textContent = 'hors'; }
   /* les 20 brassins, empilés par pas de 0,25 g/L */
   const pile = {};
   for (const b of R.brassins.slice().sort((a, c) => (a.plus ? 9 : a.d) - (c.plus ? 9 : c.d))) { const d = b.deja ? 0 : b.plus ? 8.6 : b.d, k = Math.round(d * 4); pile[k] = (pile[k] || 0) + 1;
@@ -157,7 +163,7 @@ function barre(hop, R, dose) {
 }
 /* ---------- la liste ---------- */
 const STK = { suffisant: ['stock', 'en stock'], 'à acheter': ['achat', 'à acheter'], manque: ['manque', 'stock insuffisant'] };
-function ligne(hop, R) {
+function ligne(hop, R, premier) {
   const V = D.V[hop], on = ST.choisi === hop, dose = aimant(ST.dose);
   const nIn = R ? R.brassins.filter((b) => dansA(b, dose)).length : 0;
   const st = STK[V.stock] || STK['à acheter'];
@@ -166,9 +172,9 @@ function ligne(hop, R) {
       h('span', { class: 'stk', role: 'img', 'aria-label': st[1] }, icone(st[0], 14)),
       R ? h('span', { class: 'lim' + (R.centre.deja ? ' hors' : ''), 'data-nature': 'simule' }, ABS() ? '' : '~ jusqu’à ', h('span', { class: 'mono' }, ABS() ? absTxt(hop) : dTxt(R.centre))) : h('span', { class: 'lim' }, 'inconnu')));
   if (!R) return art;
-  art.append(barre(hop, R, dose));
-  art.append(h('div', { class: 'l3' }, R.centre.f ? h('span', {}, 'sort par ') : null, R.centre.f ? pic(R.centre.f, 14) : null, R.centre.f ? h('span', {}, D.COURT[R.centre.f].toLowerCase() + ' ·') : null,
-    h('span', { 'data-nature': 'simule' }, '~' + nIn + ' sur 20 ' + (nIn > 1 ? 'restent' : 'reste') + ' à ' + fr(dose, 0) + ' g/L'), R.cf ? h('span', {}, '· confiance ' + R.cf) : null));
+  art.append(barre(hop, R, dose, premier));
+  art.append(h('div', { class: 'l3 cols' }, h('span', { class: 'c1', 'aria-label': R.centre.f ? 'sort par ' + D.NOM[R.centre.f] : 'ne sort pas avant 8 g/L' }, R.centre.f ? pic(R.centre.f, 14) : null, R.centre.f ? D.COURT[R.centre.f].toLowerCase() : '—'),
+    h('span', { class: 'c2', 'data-nature': 'simule', 'aria-label': '~' + nIn + ' brassins sur 20 restent dans la 16D à ' + fr(dose, 0) + ' g/L' }, '~' + nIn), h('span', { class: 'c3', 'aria-label': 'confiance ' + (R.cf || 'inconnue') }, R.cf || 'inconnue')));
   if (on) { const l4 = h('div', { class: 'l4', 'data-nature': 'simule', 'aria-label': 'dose limite à chaque moment, ~ simulé' });
     for (const [m, t] of MOMS) { const r = lecture(hop, m); l4.append(h('span', { class: m === ST.moment ? 'on' : '' }, t + ' ', h('b', {}, r ? dTxt(r.centre) : 'inconnu'))); }
     art.append(l4); }
@@ -181,18 +187,20 @@ function rendreListe() {
   const rows = HOPS.map((hp) => [hp, lecture(hp)]).sort((a, b) => { const v = (r) => (!r ? -1 : r.centre.plus ? 99 : r.centre.deja ? 0 : r.centre.d); return v(b[1]) - v(a[1]); });
   const r0 = rows.find((r) => r[1]); const ni = r0 ? r0[1].brassins.filter((b) => b.incertaine).length : 0;
   const hpTous = rows.some((r) => r[1] && r[1].hp);
-  Z.append(h('p', { class: 'src', 'data-nature': 'simule' }, '~ 20 brassins simulés par houblon, comptés dans la 16D' + (hpTous ? ' · haut partiel' : '') + (ni ? ' · ma bière incertaine sur ' + ni : '')));
+  Z.append(h('div', { class: 'cols tete-cols', 'data-nature': 'simule', 'aria-label': '~ simulé : par houblon, la famille par laquelle il sort, ses 20 brassins simulés encore dans la 16D, la confiance du moteur' }, h('span', { class: 'c1' }, 'sort par'), h('span', { class: 'c2' }, '~ restent sur 20 à ' + fr(aimant(ST.dose), 0) + ' g/L'), h('span', { class: 'c3' }, 'confiance')));
+  if (hpTous || ni) Z.append(h('p', { class: 'src', 'data-nature': 'simule' }, (hpTous ? '~ haut partiel' : '~') + (ni ? ', ma bière incertaine sur ' + ni : '')));
   if (ST.paire) { const [a, b] = ST.paire, pp = DH(ST.moment) ? GP(a, b, ST.moment, ST.lev) : null;
     const nIn = pp ? tirages(pp).filter(dansStyle).length : 0, hs = pp ? horsStyle(pp) : [];
     Z.append(h('div', { class: 'lg', 'data-role': 'ajout', 'data-voie': a + '+' + b }, h('div', { class: 'l1' }, h('i', { class: 'sw', style: 'background:' + COUL[a] }), nomH(a), alphaEl(a), h('span', {}, '+'), h('i', { class: 'sw', style: 'background:' + COUL[b] }), nomH(b), alphaEl(b),
       h('span', { class: 'lim' + (hs.length ? ' hors' : ''), 'data-nature': 'simule' }, pp ? (hs.length ? '~ déborde' : '~ dans la 16D') + ' à 2 + 2 g/L' : 'inconnu : pas simulé à chaud')),
       pp ? h('div', { class: 'l3' }, h('span', { 'data-nature': 'simule' }, '~' + nIn + ' sur 20 dans la 16D' + (hs.length ? ' · sort par ' + hs.map((f) => D.COURT[f].toLowerCase()).join(', ') : '')), h('span', {}, '· dose limite non simulée (une seule dose)')) : null)); }
-  for (const [hp, R] of rows) Z.append(ligne(hp, R));
+  DIT.zone = false; DIT.hors = false;
+  rows.forEach(([hp, R], i) => Z.append(ligne(hp, R, i === 0)));
   const E = document.getElementById('empruntes'); E.replaceChildren(h('div', { class: 'emp' }, ...EMPR.flatMap((hp) => [nomH(hp), alphaEl(hp)]), conf('inconnu', 'inconnu'), h('span', {}, 'composés non publiés : hors classement')));
   /* la réponse en une ligne : l'étendue des doses limites, au moment réglé */
   const ok = rows.filter((r) => r[1]), R = document.getElementById('rep'); R.replaceChildren();
   if (ok.length) { const hi = ok[0], lo = ok[ok.length - 1];
-    R.append(h('span', { 'data-nature': 'simule' }, '~ ' + MLONG[ST.moment].charAt(0).toUpperCase() + MLONG[ST.moment].slice(1) + (DH(ST.moment) ? ', ' + ST.lev : '') + ' : ' + lo[0] + ' ' + dTxt(lo[1].centre) + ', ' + hi[0] + ' ' + dTxt(hi[1].centre) + '.')); }
+    R.append(h('span', { 'data-nature': 'simule' }, '~ ' + MLONG[ST.moment].charAt(0).toUpperCase() + MLONG[ST.moment].slice(1) + (DH(ST.moment) ? ', ' + ST.lev : '') + ', ' + lo[0] + ' ' + dTxt(lo[1].centre) + ', ' + hi[0] + ' ' + dTxt(hi[1].centre) + '.')); }
 }
 /* ---------- les réglages (créés une fois, mis à jour ensuite) ---------- */
 function reglages() {
@@ -202,9 +210,9 @@ function reglages() {
   for (const b of M.children) b.setAttribute('aria-pressed', String(b.dataset.valeur === ST.moment));
   for (const b of L.children) { b.setAttribute('aria-pressed', String(b.dataset.valeur === ST.lev)); b.setAttribute('aria-label', b.dataset.valeur + (DH(ST.moment) ? '' : ' : sans effet sur un ajout à chaud')); }
   const P = document.getElementById('paires');
-  if (!P.children.length) for (const pr of [['Citra', 'Cascade'], ['Citra', 'Galaxy'], ['Citra', 'Idaho 7']]) P.append(h('button', { 'data-role': 'reglage', 'data-reglage': 'ajout-cumule', 'data-valeur': pr.join('+'), onclick: () => { ST.paire = ST.paire && ST.paire.join('+') === pr.join('+') ? null : pr; rendre(); } }, pr[0] + ' + ' + pr[1].replace('Idaho 7', 'Id. 7')));
+  if (!P.children.length) for (const pr of [['Citra', 'Cascade'], ['Citra', 'Galaxy'], ['Citra', 'Idaho 7']]) P.append(h('button', { 'data-role': 'reglage', 'data-reglage': 'ajout-cumule', 'data-valeur': pr.join('+'), onclick: () => { ST.paire = ST.paire && ST.paire.join('+') === pr.join('+') ? null : pr; rendre(); } }, pr[0] + ' + ' + pr[1]));
   for (const b of P.children) b.setAttribute('aria-pressed', String(!!ST.paire && ST.paire.join('+') === b.dataset.valeur));
-  const N = document.getElementById('nonsim'); N.replaceChildren(...['Verdant, Diamond : pas encore simulées.', ST.moment === 'dryActive' && ST.lev === 'Pomona' ? h('span', { 'data-role': 'biotransformation' }, ' Pomona : géraniol → citronellol, du floral vers les agrumes ', srcB('H50-pomona', 'géraniol → citronellol « medium » (fiche Lallemand) ; conversion 50 % au centre (convention du moteur)')) : null].filter(Boolean));
+  const N = document.getElementById('nonsim'); N.replaceChildren(...['Verdant, Diamond pas encore simulées.', ST.moment === 'dryActive' && ST.lev === 'Pomona' ? h('span', { 'data-role': 'biotransformation' }, ' Pomona : géraniol → citronellol, du floral vers les agrumes ', srcB('H50-pomona', 'géraniol → citronellol « medium » (fiche Lallemand) ; conversion 50 % au centre (convention du moteur)')) : null].filter(Boolean));
   L.parentElement.style.opacity = DH(ST.moment) ? '1' : '0.6';
   const dv = document.getElementById('dose-v'), a = aimant(ST.dose);
   dv.replaceChildren(...[h('span', {}, fr(ST.dose, 1) + ' g/L'), a !== ST.dose ? h('span', { class: 'src' }, ' · simulé à ' + a) : null].filter(Boolean));

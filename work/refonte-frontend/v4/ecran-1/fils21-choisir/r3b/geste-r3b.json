@@ -4,30 +4,30 @@
   "dose": "2 g/L (2 g/L)",
   "moment": "en ferm.",
   "levure": "US-05",
-  "reponse": "~ En fermentation, US-05 : Citra ≈2,4 g/L, Idaho 7 ≈7,4 g/L.",
+  "reponse": "~ En fermentation, US-05, Citra ≈2,4 g/L, Idaho 7 ≈7,4 g/L.",
   "houblons": [
    {
     "houblon": "Idaho 7",
     "limite": "~ jusqu’à ≈7,4 g/L",
-    "brassins": "~10 sur 20 restent à 2 g/L",
+    "brassins": "~10",
     "traitDoseX": "83.0"
    },
    {
     "houblon": "Cascade",
     "limite": "~ jusqu’à ≈6,8 g/L",
-    "brassins": "~12 sur 20 restent à 2 g/L",
+    "brassins": "~12",
     "traitDoseX": "83.0"
    },
    {
     "houblon": "Galaxy",
     "limite": "~ jusqu’à ≈2,7 g/L",
-    "brassins": "~10 sur 20 restent à 2 g/L",
+    "brassins": "~10",
     "traitDoseX": "83.0"
    },
    {
     "houblon": "Citra",
     "limite": "~ jusqu’à ≈2,4 g/L",
-    "brassins": "~8 sur 20 restent à 2 g/L",
+    "brassins": "~8",
     "traitDoseX": "83.0"
    }
   ]
@@ -36,30 +36,30 @@
   "dose": "6 g/L (6 g/L · simulé à 4)",
   "moment": "en ferm.",
   "levure": "US-05",
-  "reponse": "~ En fermentation, US-05 : Citra ≈2,4 g/L, Idaho 7 ≈7,4 g/L.",
+  "reponse": "~ En fermentation, US-05, Citra ≈2,4 g/L, Idaho 7 ≈7,4 g/L.",
   "houblons": [
    {
     "houblon": "Idaho 7",
     "limite": "~ jusqu’à ≈7,4 g/L",
-    "brassins": "~10 sur 20 restent à 4 g/L",
+    "brassins": "~10",
     "traitDoseX": "160.0"
    },
    {
     "houblon": "Cascade",
     "limite": "~ jusqu’à ≈6,8 g/L",
-    "brassins": "~10 sur 20 restent à 4 g/L",
+    "brassins": "~10",
     "traitDoseX": "160.0"
    },
    {
     "houblon": "Galaxy",
     "limite": "~ jusqu’à ≈2,7 g/L",
-    "brassins": "~4 sur 20 restent à 4 g/L",
+    "brassins": "~4",
     "traitDoseX": "160.0"
    },
    {
     "houblon": "Citra",
     "limite": "~ jusqu’à ≈2,4 g/L",
-    "brassins": "~4 sur 20 restent à 4 g/L",
+    "brassins": "~4",
     "traitDoseX": "160.0"
    }
   ]
@@ -68,30 +68,30 @@
   "dose": "8 g/L (8 g/L)",
   "moment": "en ferm.",
   "levure": "US-05",
-  "reponse": "~ En fermentation, US-05 : Citra ≈2,4 g/L, Idaho 7 ≈7,4 g/L.",
+  "reponse": "~ En fermentation, US-05, Citra ≈2,4 g/L, Idaho 7 ≈7,4 g/L.",
   "houblons": [
    {
     "houblon": "Idaho 7",
     "limite": "~ jusqu’à ≈7,4 g/L",
-    "brassins": "~6 sur 20 restent à 8 g/L",
+    "brassins": "~6",
     "traitDoseX": "314.0"
    },
    {
     "houblon": "Cascade",
     "limite": "~ jusqu’à ≈6,8 g/L",
-    "brassins": "~6 sur 20 restent à 8 g/L",
+    "brassins": "~6",
     "traitDoseX": "314.0"
    },
    {
     "houblon": "Galaxy",
     "limite": "~ jusqu’à ≈2,7 g/L",
-    "brassins": "~1 sur 20 reste à 8 g/L",
+    "brassins": "~1",
     "traitDoseX": "314.0"
    },
    {
     "houblon": "Citra",
     "limite": "~ jusqu’à ≈2,4 g/L",
-    "brassins": "~1 sur 20 reste à 8 g/L",
+    "brassins": "~1",
     "traitDoseX": "314.0"
    }
   ]
@@ -100,30 +100,30 @@
   "dose": "8 g/L (8 g/L)",
   "moment": "après",
   "levure": "US-05",
-  "reponse": "~ Après fermentation, US-05 : Galaxy ≈2,2 g/L, Idaho 7 ≈6,7 g/L.",
+  "reponse": "~ Après fermentation, US-05, Galaxy ≈2,2 g/L, Idaho 7 ≈6,7 g/L.",
   "houblons": [
    {
     "houblon": "Idaho 7",
     "limite": "~ jusqu’à ≈6,7 g/L",
-    "brassins": "~6 sur 20 restent à 8 g/L",
+    "brassins": "~6",
     "traitDoseX": "314.0"
    },
    {
     "houblon": "Cascade",
     "limite": "~ jusqu’à ≈6,4 g/L",
-    "brassins": "~6 sur 20 restent à 8 g/L",
+    "brassins": "~6",
     "traitDoseX": "314.0"
    },
    {
     "houblon": "Citra",
     "limite": "~ jusqu’à ≈2,3 g/L",
-    "brassins": "~1 sur 20 reste à 8 g/L",
+    "brassins": "~1",
     "traitDoseX": "314.0"
    },
    {
     "houblon": "Galaxy",
     "limite": "~ jusqu’à ≈2,2 g/L",
-    "brassins": "~1 sur 20 reste à 8 g/L",
+    "brassins": "~1",
     "traitDoseX": "314.0"
    }
   ]
@@ -132,30 +132,30 @@
   "dose": "8 g/L (8 g/L)",
   "moment": "en ferm.",
   "levure": "Pomona",
-  "reponse": "~ En fermentation, Pomona : Citra ≈2,1 g/L, Cascade ≈6,1 g/L.",
+  "reponse": "~ En fermentation, Pomona, Citra ≈2,1 g/L, Cascade ≈6,1 g/L.",
   "houblons": [
    {
     "houblon": "Cascade",
     "limite": "~ jusqu’à ≈6,1 g/L",
-    "brassins": "~6 sur 20 restent à 8 g/L",
+    "brassins": "~6",
     "traitDoseX": "314.0"
    },
    {
     "houblon": "Idaho 7",
     "limite": "~ jusqu’à ≈5,3 g/L",
-    "brassins": "~6 sur 20 restent à 8 g/L",
+    "brassins": "~6",
     "traitDoseX": "314.0"
    },
    {
     "houblon": "Galaxy",
     "limite": "~ jusqu’à ≈2,7 g/L",
-    "brassins": "~1 sur 20 reste à 8 g/L",
+    "brassins": "~1",
     "traitDoseX": "314.0"
    },
    {
     "houblon": "Citra",
     "limite": "~ jusqu’à ≈2,1 g/L",
-    "brassins": "~1 sur 20 reste à 8 g/L",
+    "brassins": "~1",
     "traitDoseX": "314.0"
    }
   ]
