@@ -1,0 +1,26 @@
+{
+  "ticket": 140,
+  "court": "Descriptions",
+  "titre": "Descriptions de houblons : ce que valent les carrés d'arômes, au long appui (lot 12, 19.10 soir)",
+  "etat": "à choisir",
+  "puces": [
+    "Les carrés : une case par famille (12, ordre du 16D) ; pleine = marqué (2 fiches, ou donnée en premier), claire = citée par 1 fiche, grise = non décrit. Des citations des fiches, pas une intensité.",
+    "d1 bulle au-dessus de la carte ; d2 loupe sur les carrés, les mots des fiches menant à leur case ; d3 les mots des fiches au premier plan.",
+    "d4 feuille du bas : α par source, rôle, 12 familles × fiches ; d5 carrés qui se lisent seuls (cadre 16D, initiales, forme) ; d6 une case par fiche dans chaque carré.",
+    "Contrôles : APPUI OK 6/6 (au long appui, chaque case citée dit sa famille, son niveau et ses fiches ; « non décrit », jamais zéro ; rien au repos), FIL6 OK 6/6, mots au repos ≤ 90.",
+    "« mojito » ne fait naître aucune famille : il n'est dans aucune liste de termes du moteur (d2, d3 le montrent tel quel)."
+  ],
+  "images": [
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12-descriptions/captures/planche-vue-390.png", "planche, au repos"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12-descriptions/captures/planche-appui-390.png", "planche, au long appui"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12-descriptions/captures/d1-appui-390.png", "d1 bulle, appui"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12-descriptions/captures/d2-appui-390.png", "d2 loupe, appui"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12-descriptions/captures/d3-vue-390.png", "d3 mots, repos"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12-descriptions/captures/d3-appui-390.png", "d3 mots, appui"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12-descriptions/captures/d4-appui-390.png", "d4 feuille, appui"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12-descriptions/captures/d5-vue-390.png", "d5 carrés lisibles, repos"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12-descriptions/captures/d5-appui-390.png", "d5 carrés lisibles, appui"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12-descriptions/captures/d6-vue-390.png", "d6 case par fiche, repos"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12-descriptions/captures/d6-appui-390.png", "d6 case par fiche, appui"]
+  ]
+}

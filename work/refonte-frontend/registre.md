@@ -123,6 +123,15 @@ Voir `decisions.md` (D1 à D12).
 - **Sa demande suivante** (19.10, soir, capture : les petits carrés de profil des ajouts proposés
   entourés) : refaire un lot de descriptions de houblons, et montrer au long appui sur un houblon à
   quoi correspondent ces valeurs ; fils de fer d'abord, dans la file des tickets.
+- **Fait** : ticket #140 ; lot 12 `ecran-1/fils12-descriptions/` (brief, d1 à d6, chacune `vue.html`
+  et `appui.html`, trois auteurs) ; contrôle `tournoi/outils/controle-appui.mjs` (A1 à A5 ; témoin :
+  la base v4.8 → 8 échecs) ; `APPUI OK 6/6`, `FIL6 OK 6/6`, mots ≤ 90. Planches publiées en tête de
+  la page des fils de fer https://claude.ai/artifact/2VTRQP7nLXhX5GqDaAGAyU (version 4) par
+  `v4/outils/page-nuit/ajouter-lot.mjs` (repart de la page publiée, lue avec l'outil Artifact).
+  Commentaire #140 (6264842384). Trouvé : « mojito » n'est dans aucune liste de termes du moteur.
+- **Page à jour, version 4** : la page jouable en pleine largeur (fils « 1/4 mais full ? »,
+  « 2/4 mais full ? », résolus).
+- **En attente de lui** : son choix dans le lot 12 ; puis la variante choisie entre dans la base.
 
 ## ÉTAT AU 19.10, FIN D'APRÈS-MIDI (avant la reprise du matin ci-dessous)
 
