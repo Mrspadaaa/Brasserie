@@ -37,6 +37,12 @@ const j2 = await J.boite('[data-jt="h2"]'), f2 = await J.boite('#fr');
 await J.glisser([[j2.cx, j2.cy], [f2.x + 0.965 * f2.w, j2.cy]], { pas: 12, delai: 18 });
 const puis = await J.releve();
 await J.capture('y1b-puis');
+// la pastille de famille de l'échelle : un toucher ouvre la liste, un choix la referme
+await centre(J, '#crit');
+const critOuvert = await J.p.evaluate(() => ({ ouvert: document.getElementById('crit').getAttribute('aria-expanded'), liste: document.getElementById('crit-l').innerText.replace(/\s+/g, ' ').trim(), echelle: document.getElementById('ech-l').innerText.replace(/\s+/g, ' ').trim() }));
+await J.capture('y1b-critere');
+await centre(J, '[data-critv="citrus"]');
+const critChoisi = await J.p.evaluate(() => ({ ouvert: document.getElementById('crit').getAttribute('aria-expanded'), pastille: document.getElementById('crit').innerText.trim(), echelle: document.getElementById('ech-l').innerText.replace(/\s+/g, ' ').trim() }));
 // les blocs à un toucher
 await centre(J, '#b-defi');
 await J.capture('y1b-defi', { pleine: true });
@@ -49,10 +55,11 @@ await centre(J, '#b-tire'); await centre(J, '#b-tire');
 const tire2 = await J.p.evaluate(() => document.getElementById('tire').innerText.replace(/\s+/g, ' ').trim());
 await centre(J, '#b-preuve');
 await J.capture('y1b-preuve');
-preuve('y1b', 'geste-y1b', { avant, pendant, loupe, apres, actifUS05, pomona, ensemble, puis, defi, tire: tire1[0], points: tire1[1], memeTirage: tire1[0] === tire2, erreurs: J.erreurs });
+preuve('y1b', 'geste-y1b', { avant, pendant, loupe, apres, actifUS05, pomona, ensemble, puis, critOuvert, critChoisi, defi, tire: tire1[0], points: tire1[1], memeTirage: tire1[0] === tire2, erreurs: J.erreurs });
 const L = (n, v) => console.log(n.padEnd(10), v.plan.slice(0, 44).padEnd(45), '| agrumes', String(v.crans.citrus).padEnd(4), 'tropical', String(v.crans.tropical).padEnd(4), 'barre agr.', String(v.largeurs.citrus).padStart(3) + ' px', '|', v.ibu, '|', v.reponse.slice(0, 90));
 L('avant', avant); L('pendant', pendant); L('après', apres); L('actif', actifUS05); L('Pomona', pomona); L('ensemble', ensemble); L('puis', puis);
 console.log('loupe', JSON.stringify(loupe), 'grossissement ×' + (loupe.pasLoupe / loupe.pasFrise).toFixed(1));
+console.log('critère ouvert :', JSON.stringify(critOuvert)); console.log('critère choisi :', JSON.stringify(critChoisi));
 console.log('défi :', defi.slice(0, 200));
 console.log('tirage :', tire1[0].slice(0, 200), '| points', tire1[1], '| même tirage au second toucher :', tire1[0] === tire2);
 console.log('erreurs', J.erreurs.length ? J.erreurs : 'aucune');

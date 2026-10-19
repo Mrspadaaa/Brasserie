@@ -106,7 +106,8 @@ const corps = `
     <button class="pq-b" id="pq-b" aria-expanded="false" aria-controls="pq">pourquoi ?</button>
     <p class="pq" id="pq" hidden></p>
     <div class="ech" aria-label="Échelle : rester dans la 16D">
-      <div class="ech-t"><span>dans la 16D, par</span><button class="crit-b" id="crit" aria-label="Critère de classement : toucher pour changer (floral, agrumes, tropicaux)"></button></div>
+      <div class="ech-t"><span>dans la 16D, par</span><button class="crit-b" id="crit" aria-expanded="false" aria-controls="crit-l" aria-label="Critère de classement : ouvrir la liste"></button></div>
+      <div class="crit-l" id="crit-l" role="group" aria-label="Choisir le critère" hidden></div>
       <div class="ech-l" id="ech-l"></div>
     </div>
     <div class="ser" id="ser"></div>
@@ -159,6 +160,11 @@ const css = `
   .pq { font-size: 13px; line-height: 1.35; } .pq[hidden] { display: none; }
   .ech { display: flex; flex-direction: column; gap: 2px; }
   .ech-t { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gris); }
+  .crit-l { display: flex; gap: 4px; flex-wrap: wrap; padding: 4px; border-radius: 8px; background: #f6f6f9; } .crit-l[hidden] { display: none; }
+  .crit-l button { height: 28px; padding: 0 10px; border-radius: 14px; background: #fff; box-shadow: inset 0 0 0 1px #c9cad2; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+  .crit-l button[aria-pressed="true"] { background: var(--encre); color: #fff; box-shadow: none; }
+  .crit-b[aria-expanded="true"] { box-shadow: inset 0 0 0 2px var(--encre); }
+  .rp .l1, .rp .l2 { display: block; } .rp .l2 { font-size: 13px; font-weight: 400; margin-top: 3px; } .rp .l2 .kl { margin-right: 5px; vertical-align: middle; }
   .crit-b { height: 24px; padding: 0 8px; border-radius: 12px; box-shadow: inset 0 0 0 1px #c9cad2; background: #fff; font-size: 12px; font-weight: 600; color: var(--encre); display: inline-flex; align-items: center; gap: 4px; }
   .ech-l { display: flex; flex-direction: column; gap: 2px; min-height: 70px; }
   .ech-r { display: flex; align-items: center; gap: 6px; height: 22px; padding: 0 6px; border-radius: 4px; font-size: 13px; text-align: left; box-shadow: inset 0 0 0 1px #e3e5eb; }
@@ -244,7 +250,8 @@ ARRETS.push({ id: 'wp', x: 0.555, t: 'whirlpool', court: 'whirlpool' }, { id: 'd
 const K = (id) => ARRETS.findIndex((a) => a.id === id);
 const sec = (a) => a.id === 'dryActive' || a.id === 'dryPost';
 // L'état : un ou deux houblons, chacun à son lieu ; état de départ : Citra 4 g/L en dry hop actif, US-05.
-const ETAT = { h1: { h: 'Citra', k: K('dryActive') }, h2: null, d: 4, j: 3, lev: 'US-05', actif: 'h1', crit: 'floral', ouvert: null, defi: false, tire: false };
+const CRITS = ['floral', 'citrus', 'tropical'];
+const ETAT = { h1: { h: 'Citra', k: K('dryActive') }, h2: null, d: 4, j: 3, lev: 'US-05', actif: 'h1', crit: 'floral', critOuvert: false, ouvert: null, defi: false, tire: false };
 let AVANT_PLAN = null; // le plan d'avant (a3) : l'état d'avant le dernier réglage
 const copie = (e) => JSON.parse(JSON.stringify(e));
 const clePlan = (e) => [e.h1.h, e.h1.k, e.h2 ? e.h2.h + ':' + e.h2.k : '-', e.d, e.j, e.lev].join('|');
@@ -295,9 +302,13 @@ function echelle() {
   }
   L.sort((a, b) => b.g - a.g || a.d - b.d);
   const cur = !ETAT.h2 && ETAT.j === 3;
-  document.getElementById('ech-l').innerHTML = L.slice(0, 3).map((x) => '<button class="ech-r" data-role="reglage" data-eh="' + x.h + '" data-em="' + x.m + '" data-ed="' + x.d + '" aria-current="' + (cur && x.h === ETAT.h1.h && ARRETS[ETAT.h1.k].id === x.m && x.d === ETAT.d) + '"><i class="hpt" style="--h:' + D.couleurs[x.h] + '"></i><span class="sp2">' + x.h + '</span><span class="sp2">' + x.mo + '</span><span>' + x.d + ' g/L</span><span class="g" data-nature="simule">~+' + frn(x.g, 1) + ' cran</span></button>').join('') || '<span class="cq-0">aucun réglage ne reste dans la 16D</span>';
+  document.getElementById('ech-l').innerHTML = L.slice(0, 3).map((x) => '<button class="ech-r" data-role="reglage" data-eh="' + x.h + '" data-em="' + x.m + '" data-ed="' + x.d + '" aria-current="' + (cur && x.h === ETAT.h1.h && ARRETS[ETAT.h1.k].id === x.m && x.d === ETAT.d) + '"><i class="hpt" style="--h:' + D.couleurs[x.h] + '"></i><span class="sp2">' + x.h + '</span><span class="sp2">' + x.mo + '</span><span>' + x.d + ' g/L</span><span class="g" data-nature="simule">~+' + frn(x.g, 1) + (x.g >= 1.5 ? ' crans' : ' cran') + '</span></button>').join('') || '<span class="cq-0">aucun réglage ne reste dans la 16D</span>';
   document.querySelectorAll('[data-eh]').forEach((b) => b.addEventListener('click', () => { retenir(); ETAT.h1 = { h: b.dataset.eh, k: K(b.dataset.em) }; ETAT.h2 = null; ETAT.d = +b.dataset.ed; ETAT.j = 3; rendre(); }));
-  document.getElementById('crit').innerHTML = pictoH(ETAT.crit) + NOMF[ETAT.crit] + PICTO_CYCLE;
+  // La pastille de famille ouvre la liste des critères ; un choix la referme.
+  const cb = document.getElementById('crit');
+  cb.innerHTML = pictoH(ETAT.crit) + NOMF[ETAT.crit] + PICTO_OUVRE; cb.setAttribute('aria-expanded', String(!!ETAT.critOuvert));
+  const cl = document.getElementById('crit-l'); cl.hidden = !ETAT.critOuvert;
+  cl.innerHTML = ETAT.critOuvert ? CRITS.map((f) => '<button data-critv="' + f + '" aria-pressed="' + (f === ETAT.crit) + '">' + pictoH(f) + NOMF[f] + '</button>').join('') : '';
 }
 // ---------- un tirage fixe tant que les réglages ne changent pas (graine = le plan) ----------
 function graine(s) { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h += 0x6D2B79F5; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
@@ -317,11 +328,13 @@ function rendre() {
   document.getElementById('plan').innerHTML = D.voie[ETAT.h1.h] + (ETAT.h2 ? (ARRETS[ETAT.h2.k].id === 'puis' ? ' puis ' : ' + ') + D.voie[ETAT.h2.h] : '') + '<span class="sp2">' + (ETAT.h2 ? ETAT.d + ' + ' + ETAT.d : ETAT.d) + ' g/L</span><span' + (sec(a1) ? ' class="sp2"' : '') + '>' + lieu(ETAT) + '</span>' + (sec(a1) ? '<span class="sp2">' + ETAT.j + ' j</span><span>' + ETAT.lev + '</span>' : '') + (P.approx ? '<span class="src-l">≈ ' + P.approx + '</span>' : '');
   // la réponse en une ligne : face au plan d'avant, ou à ta stout ; l'amertume
   // les deux familles qui bougent le plus, au dixième de cran sous 1,5 (un petit effet ne s'arrondit pas à rien)
-  const ref = av ? av.p : AVANT;
-  const e = FAM.map((f, i) => ({ f, d: f === 'resin' || inconnuP(P.p[i]) || inconnuP(ref[i]) ? 0 : crans(i, P.p[i][1]) - crans(i, ref[i][1]), hors: f !== 'resin' && !inconnuP(P.p[i]) && P.p[i][1] > ZONE[f][1] })).filter((x) => Math.abs(x.d) >= 0.25).sort((a, b) => Math.abs(b.d) - Math.abs(a.d)).slice(0, 2);
+  // Deux lignes courtes : face à ta stout d'abord (toujours), puis contre ton plan d'avant (en pointillé,
+  // seulement après un geste). Les deux familles qui bougent le plus, au dixième de cran sous 1,5.
+  const ecartsDe = (ref) => FAM.map((f, i) => ({ f, d: f === 'resin' || inconnuP(P.p[i]) || inconnuP(ref[i]) ? 0 : crans(i, P.p[i][1]) - crans(i, ref[i][1]), hors: f !== 'resin' && !inconnuP(P.p[i]) && P.p[i][1] > ZONE[f][1] })).filter((x) => Math.abs(x.d) >= 0.25).sort((a, b) => Math.abs(b.d) - Math.abs(a.d)).slice(0, 2);
+  const items = (e) => (e.length ? e.map((x) => '<span class="it' + (x.hors ? ' ho' : '') + '">' + pictoH(x.f) + NOMF[x.f] + ' <b data-nature="simule">~' + (x.d > 0 ? '+' : '−') + frn(Math.abs(x.d), Math.abs(x.d) < 1.5 ? 1 : 0) + '</b>' + (Math.abs(x.d) >= 1.5 ? ' crans' : ' cran') + '</span>').join(' ') : '<span data-nature="simule">~ presque rien</span>');
   const hs = sp.hors(), ibH = ib.base + ib.lo > D.ibuStyle[1];
-  const qui = av ? 'Contre ton plan d’avant' : 'Face à ta stout';
-  document.getElementById('rep').innerHTML = '<span class="qui">' + qui + '</span>' + (e.length ? e.map((x) => '<span class="it' + (x.hors ? ' ho' : '') + '">' + pictoH(x.f) + NOMF[x.f] + ' <b data-nature="simule">~' + (x.d > 0 ? '+' : '−') + frn(Math.abs(x.d), Math.abs(x.d) < 1.5 ? 1 : 0) + '</b>' + (Math.abs(x.d) >= 1.5 ? ' crans' : ' cran') + '</span>').join(' ') : '<span data-nature="simule">~ presque rien</span>') + '<span class="sp1">' + (hs.length ? '<span class="ho">' + hs.length + ' hors du style</span>' : 'dans la 16D') + '</span><span class="sp1">' + (ibH ? '<span class="ho">trop amer</span>' : 'amertume tenue') + '</span>';
+  document.getElementById('rep').innerHTML = '<span class="l1"><span class="qui">Face à ta stout</span>' + items(ecartsDe(AVANT)) + '<span class="sp1">' + (hs.length ? '<span class="ho">' + hs.length + ' hors du style</span>' : 'dans la 16D') + '</span><span class="sp1">' + (ibH ? '<span class="ho">trop amer</span>' : 'amertume tenue') + '</span></span>'
+    + (av ? '<span class="l2"><i class="kl kl-g"></i><span class="qui">contre ton plan d’avant</span>' + items(ecartsDe(av.p)) + '</span>' : '');
   const id = a1.min === undefined ? a1.id : a1.min === 60 ? 'b60' : a1.min === 10 ? 'b10' : a1.min > 10 ? 'bmid' : 'bfin';
   document.getElementById('pq').innerHTML = (ETAT.h2 && ARRETS[ETAT.h2.k].id === 'puis' ? PQ.puis + ' ' : '') + PQ[id];
   // ce que montrent les deux dessins, en mots
@@ -445,8 +458,8 @@ document.getElementById('arrets').addEventListener('click', (e) => { const b = e
 // ---------- les réglages ----------
 document.querySelectorAll('[data-dose]').forEach((b) => b.addEventListener('click', () => { retenir(); ETAT.d = +b.dataset.dose; rendre(); }));
 document.querySelectorAll('[data-lev]').forEach((b) => b.addEventListener('click', () => { retenir(); ETAT.lev = b.dataset.lev; rendre(); }));
-const CRITS = ['floral', 'citrus', 'tropical'];
-document.getElementById('crit').addEventListener('click', () => { ETAT.crit = CRITS[(CRITS.indexOf(ETAT.crit) + 1) % CRITS.length]; echelle(); });
+document.getElementById('crit').addEventListener('click', () => { ETAT.critOuvert = !ETAT.critOuvert; echelle(); });
+document.getElementById('crit-l').addEventListener('click', (e) => { const b = e.target.closest('[data-critv]'); if (!b) return; ETAT.crit = b.dataset.critv; ETAT.critOuvert = false; echelle(); });
 document.querySelector('.regl').addEventListener('click', (e) => {
   if (e.target.closest('[data-k="sans-h2"]')) { retenir(); ETAT.h2 = null; ETAT.actif = 'h1'; ETAT.ouvert = null; if (ETAT.d === 2) ETAT.d = 4; rendre(); return; }
   const pa = e.target.closest('[data-pa]');

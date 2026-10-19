@@ -34,7 +34,7 @@
  },
  "pendant": {
   "plan": "Citra arôme 10–15% 4 g/L 10′",
-  "reponse": "Contre ton plan d’avant baies ~−1,1 cran tropicaux ~−1,1 crandans la 16Dtrop amer",
+  "reponse": "Face à ta stout agrumes ~+3 crans tropicaux ~+3 cransdans la 16Dtrop amer contre ton plan d’avant baies ~−1,1 cran tropicaux ~−1,1 cran",
   "ibu": "≈ 89–103 IBU trop amer",
   "crans": {
    "floral": "1,5",
@@ -76,7 +76,7 @@
  },
  "apres": {
   "plan": "Citra arôme 10–15% 4 g/L 60′",
-  "reponse": "Contre ton plan d’avant tropicaux ~−3 crans baies ~−3 cransdans la 16Dtrop amer",
+  "reponse": "Face à ta stout agrumes ~+0,6 cran tropicaux ~+0,6 crandans la 16Dtrop amer contre ton plan d’avant tropicaux ~−3 crans baies ~−3 crans",
   "ibu": "≈ 140–180 IBU trop amer",
   "crans": {
    "floral": "0,3",
@@ -109,7 +109,7 @@
  },
  "actifUS05": {
   "plan": "Citra arôme 10–15% 4 g/L dry hop actif 3 j US-05",
-  "reponse": "Contre ton plan d’avant tropicaux ~+3 crans baies ~+3 crans3 hors du styleamertume tenue",
+  "reponse": "Face à ta stout tropicaux ~+4 crans agrumes ~+3 crans3 hors du styleamertume tenue contre ton plan d’avant tropicaux ~+3 crans baies ~+3 crans",
   "ibu": "≈ 60 IBU tenue",
   "crans": {
    "floral": "1,8",
@@ -142,7 +142,7 @@
  },
  "pomona": {
   "plan": "Citra arôme 10–15% 4 g/L dry hop actif 3 j Pomona",
-  "reponse": "Contre ton plan d’avant agrumes ~+0,3 cran3 hors du styleamertume tenue",
+  "reponse": "Face à ta stout tropicaux ~+4 crans agrumes ~+4 crans3 hors du styleamertume tenue contre ton plan d’avant agrumes ~+0,3 cran",
   "ibu": "≈ 60 IBU tenue",
   "crans": {
    "floral": "1,9",
@@ -175,7 +175,7 @@
  },
  "ensemble": {
   "plan": "Citra arôme 10–15% + Galaxy mixte 17,2% 2 + 2 g/L dry hop actif 3 j Pomona",
-  "reponse": "Contre ton plan d’avant melon ~−0,9 cran baies ~−0,5 cran2 hors du styleamertume tenue",
+  "reponse": "Face à ta stout tropicaux ~+4 crans agrumes ~+3 crans2 hors du styleamertume tenue contre ton plan d’avant melon ~−0,9 cran baies ~−0,5 cran",
   "ibu": "≈ 60 IBU tenue",
   "crans": {
    "floral": "1,5",
@@ -208,7 +208,7 @@
  },
  "puis": {
   "plan": "Citra arôme 10–15% puis Galaxy mixte 17,2% 2 + 2 g/L dry hop actif 3 j Pomona ≈ calculé",
-  "reponse": "Contre ton plan d’avant~ presque rien2 hors du styleamertume tenue",
+  "reponse": "Face à ta stout tropicaux ~+4 crans agrumes ~+3 crans2 hors du styleamertume tenue contre ton plan d’avant~ presque rien",
   "ibu": "≈ 60 IBU tenue",
   "crans": {
    "floral": "1,5",
@@ -238,6 +238,16 @@
   },
   "defi": "Défi 2 sur 4",
   "echelle": "Idaho 7 actif 4 g/L ~+1,5 cran Citra actif 2 g/L ~+1,2 cran Idaho 7 après 4 g/L ~+1,2 cran"
+ },
+ "critOuvert": {
+  "ouvert": "true",
+  "liste": "floral agrumes tropicaux",
+  "echelle": "Idaho 7 actif 4 g/L ~+1,5 cran Citra actif 2 g/L ~+1,2 cran Idaho 7 après 4 g/L ~+1,2 cran"
+ },
+ "critChoisi": {
+  "ouvert": "false",
+  "pastille": "agrumes",
+  "echelle": "Citra actif 2 g/L ~+2,8 crans Citra après 2 g/L ~+2,6 crans Idaho 7 actif 4 g/L ~+2,6 crans"
  },
  "defi": "ta dégustation, 18.10 : « trop résineuse, je la veux plus florale » plus floral atteint ~+1,5 cran moins résineux hors houblon le houblon en ajoute ~+10 points amertume 50–70 tenue ≈ 60 IBU dans la 16D 2 débordent agrumes, tropicaux",
  "tire": "20 bières tirées dans la plage du moteur, hors du style : végétal 16 sur 20 plage ouverte, au moins : noyau 15 sur 20 tropicaux 14 sur 20 agrumes 10 sur 20 (borne haute non publiée) ce qui tranche en vrai : 4MMP de Citra ×4–70,9 le seuil, même base l’étendue du possible, pas une probabilité mesurée ; même tirage tant que rien ne change",
