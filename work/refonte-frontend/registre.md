@@ -99,6 +99,13 @@ Voir `decisions.md` (D1 à D12).
 
 ## ÉTAT AU 19.10, FIN DE SOIRÉE : lire en premier
 
+- **Porte B : toujours fermée.** Il l'a ouverte (« Je donne mon plein accord »), puis l'a
+  refermée aussitôt : « Ah non pardon, attends encore pour la porte b ». Aucun code de l'app
+  (`src/`) n'a été touché ; la note de mémoire ajoutée entre-temps a été retirée.
+- **Mini maquettes de l'outil de dry hop** demandées : « Enrichit les des mini maquettes pour
+  mettre en valeur tout ça ». Lot 20 (`ecran-1/fils20-dryhop/`), chiffres pris dans les tables de
+  H en attendant la sortie du moteur.
+
 - **Le vrai problème (19.10, ~19 h)** : « Comment choisir deux houblons ? La chose a été sur
   simplifier. […] citra aura un effet extrêmement differents en dry hopping que cascade alors que
   pourtant d'après Nos outils ils sont assez similaire. […] les données qui permettent à faire un
