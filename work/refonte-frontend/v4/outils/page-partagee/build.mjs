@@ -1,7 +1,7 @@
 // Page partagée de la base (19.10 : « supprime tout ce qui n'est pas à jour ») : la base courante
 // seule, ses pages jouables et leurs captures, plus les captures du geste du rail.
 // Usage : node build.mjs --src=<ecran-1>/base:consolide [--version=v4.5]
-// Sortie : site/ (index.html, consolide/<page>.html, img/<capture>.png) et files.json pour Artifact
+// Sortie : a-jour/ (index.html, consolide/<page>.html, img/<capture>.png) et files.json pour Artifact
 // (chemin publié → fichier ; les chemins de l'ancienne page absents d'ici sont à passer en null).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -12,7 +12,8 @@ const [srcDir, id] = arg('src', '').split(/:(?=[^\\/]*$)/);
 if (!srcDir || !id) { console.error('usage : node build.mjs --src=<ecran-1>/base:consolide [--version=v4.5]'); process.exit(1); }
 const SRC = path.resolve(srcDir);
 const VERSION = arg('version', 'v4.5');
-const site = path.join(here, 'site');
+// Dossier publié : a-jour/ → https://claude.ai/artifact/MoohEoyjPGAWqpMQZZCq5T (page neuve du 19.10, seulement la base à jour).
+const site = path.join(here, 'a-jour');
 fs.rmSync(site, { recursive: true, force: true });
 fs.mkdirSync(path.join(site, 'img'), { recursive: true });
 fs.mkdirSync(path.join(site, id), { recursive: true });
@@ -30,6 +31,7 @@ const VUES = [
   ['comparer', 'Comparer', 'Barres'],
   ['comparer-radar', 'Comparer', 'Radar'],
   ['fiche', 'Fiche', 'Nugget'],
+  ['substitution', 'Substitution', 'Nugget'],
   ['cas-ebu45', 'Ébullition', '45′'],
   ['cas-ebu120', 'Ébullition', '120′'],
   ['cas-ebu200', 'Ébullition', '200′'],

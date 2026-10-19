@@ -238,8 +238,9 @@ function sousDoigt(G, yF) {
    grand qui tient : le bas, grossissement compris (surplus du plateau), dans la hauteur du repos + 120 px,
    et la tête dans le rail (longue ébullition : jusqu'en haut de l'écran). La graduation de la ligne
    tenue reste sous le doigt à la prise. La place en trop va aux écarts de structure.
-   compact (D67, le doigt passé dans un autre segment) : le rail se refait autour du doigt sans remplir
-   de vide la place au-dessus ; sa tête descend, le segment sous le doigt devient la loupe. */
+   compact (D67, le doigt passé dans un autre segment) : le rail se refait autour du doigt, le segment
+   sous le doigt devient la loupe ; la place au-dessus va d'abord aux segments au-dessus (jamais plus
+   grands que lui), le reste aux écarts de structure : la tête du rail reste en haut. */
 function disposerDock(vA, yA, H0, frTop, compact) {
   const segA = segDe(vA);
   const ecarts = (lam) => Object.fromEntries(SEGMENTS.map((s) => [s, s === segA
@@ -266,12 +267,21 @@ function disposerDock(vA, yA, H0, frTop, compact) {
       if (iA > 0) e.ebullition = Math.max(LOUPE.plancher, Math.min(e.ebullition, (yA - 10 - haut - STRUCT[0]) / (iA * (1 + KG / 2))));
     }
   }
+  // Compact (D67) sans vide au-dessus (19.10, au téléphone, Nugget glissé à J+2 : « Toujours un petit
+  // soucis... », la tête du rail descendue de 220 px) : la place libre au-dessus de la tête revient
+  // aux segments au-dessus du segment tenu, sans dépasser son échelle de base ; la loupe reste sous le
+  // doigt, la tête du rail remonte sous la barre d'IBU.
+  if (compact) {
+    const avant = SEGMENTS.slice(0, SEGMENTS.indexOf(segA)), N = avant.reduce((t, s) => t + nIntervalles(s), 0);
+    const G1 = plan(e, []), vide = G1.O + G1.haut;
+    if (N && vide > 0) for (const s of avant) e[s] = Math.min(e[segA], e[s] + vide / N);
+  }
   const x = [];
   const k = structAvant(vA);
   const G0 = plan(e, x);
   const reste = H0 - bas(G0);
   if (reste > 0) { const n = STRUCT.length - 1 - k; for (let i = k; i < STRUCT.length - 1; i++) x[i] = reste / n; }
-  if (segA !== 'ebullition' && !compact) { const libre = G0.O + G0.haut - 10; if (libre > 0) for (let i = 0; i < k; i++) x[i] = (x[i] || 0) + libre / k; }
+  if (segA !== 'ebullition') { const libre = G0.O + G0.haut - 10; if (libre > 0) for (let i = 0; i < k; i++) x[i] = (x[i] || 0) + libre / k; }
   return plan(e, x);
 }
 

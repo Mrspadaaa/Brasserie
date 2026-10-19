@@ -18,7 +18,7 @@ const COMPARER = (() => {
   const F = (nom) => D.fichesH[cleDe(nom)] || null;
   const lesNoms = () => ETAT.comp.filter((n) => F(n)).slice(0, 4);
   // Nom court (« East Kent ») ; le nom entier reste dans la fiche et l'aide.
-  const bref = (nom) => { const n = nom.replace(/\s*\(.*\)\s*$/, ''); const m = n.split(' '); return n.length > 12 && m.length > 2 ? m.slice(0, 2).join(' ') : n; };
+  const bref = (nom) => { const n = nom.replace(/\s*\(.*\)\s*$/, ''); const m = n.split(' '); return n.length > 12 ? (m.length > 2 ? m.slice(0, 2).join(' ') : m[0]) : n; };
   const nb = (v) => virgule(v, Math.abs(v) < 1 ? 2 : 1);
   const pl = (a, b) => (Math.abs(a - b) < 1e-9 ? nb(a) : nb(a) + '–' + nb(b));
   const ent = (a, b) => (Math.round(a) === Math.round(b) ? String(Math.round(a)) : Math.round(a) + '–' + Math.round(b));
@@ -295,7 +295,9 @@ const COMPARER = (() => {
   }
 
   function partie(part) {
-    const ns = lesNoms(); ns.forEach(couleur);
+    const ns = lesNoms();
+    for (const k of Object.keys(COUL)) if (!ns.includes(k)) delete COUL[k];
+    ns.forEach(couleur);
     const r = ref(), radar = ETAT.lentille === 'radar';
     part.classList.add('cmp', 'cmp-l6', 'l-' + ETAT.lentille);
     part.setAttribute('data-composant', 'comparer');

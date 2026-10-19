@@ -53,6 +53,41 @@ const SUBST = (() => {
     st.marques = m.includes(nom) ? m.filter((x) => x !== nom) : [...m, nom].slice(-2);
     rendre(false);
   }
+  /* Le face-à-face en bref (u4 : « même IBU ») : l'original et les marqués, chacun dans la couleur qu'il
+     aura dans Comparer ; la dose pour le même IBU (une plage quand l'α dépend du lot, sans lot ni
+     article), son α, son rôle, ses arômes en couleur. */
+  const nbF = (v) => virgule(v, Math.abs(v) < 10 ? 1 : 0);
+  function bref(s, rs) {
+    const noms = [s.nom, ...st.marques];
+    for (const n of noms) COMPARER.couleur(n);
+    // La plage d'α de chaque houblon sur une piste commune : réunion des sources, centre, mon lot (▼) ou l'article (▽).
+    const uDe = (n) => { const a = D.fichesH[cleDe(n)].alpha; return a.length ? [Math.min(...a.map((x) => x.min)), Math.max(...a.map((x) => x.max))] : null; };
+    const echA = Math.ceil(Math.max(5, ...noms.map(uDe).filter(Boolean).map((u) => u[1])) / 5) * 5, pa = (v) => Math.max(0, Math.min(100, (v / echA) * 100)).toFixed(2) + '%';
+    const pisteA = (nom) => {
+      const F = D.fichesH[cleDe(nom)], u = uDe(nom), c = COMPARER.couleur(nom);
+      if (!u) return h('span', { class: 'sb-at vide' });
+      const cen = F.alpha.reduce((t, x) => t + (x.min + x.max) / 2, 0) / F.alpha.length;
+      return h('span', { class: 'sb-at', 'data-plage': '', 'data-mesure': 'alpha', 'data-houblon': nom, 'data-min': u[0], 'data-max': u[1], 'data-echelle-max': echA, 'aria-hidden': 'true' },
+        h('i', { class: 'pl-pale', style: 'width:' + pa(u[0]) + ';background:' + c }),
+        h('i', { class: 'pl-seg', style: 'left:' + pa(u[0]) + ';width:calc(' + pa(u[1]) + ' - ' + pa(u[0]) + ');background:' + c }),
+        h('i', { class: 'pl-cen', style: 'left:' + pa(cen) }),
+        F.lot != null ? h('i', { class: 'pl-lot', 'data-origine': F.lotOrigine || 'stock', style: 'left:' + pa(F.lot) }) : null);
+    };
+    const ligneF = (nom) => {
+      const F = D.fichesH[cleDe(nom)], c = rs.find((x) => x.nom === nom), orig = nom === s.nom;
+      const u = F.alpha.length ? [Math.min(...F.alpha.map((x) => x.min)), Math.max(...F.alpha.map((x) => x.max))] : null;
+      const dose = orig ? grammes(s.ref.g) : c && c.dose ? (F.lot == null && c.dose.max > c.dose.min ? Math.round(c.dose.min) + '–' + Math.round(c.dose.max) + ' g' : Math.round(c.dose.g) + ' g') : '?';
+      const alpha = F.lot != null ? nbF(F.lot) : u ? nbF(u[0]) + '–' + nbF(u[1]) : '?';
+      return h('div', { class: 'sb-fl', style: '--c:' + COMPARER.couleur(nom), 'data-houblon-compare': nom, 'data-couleur': COMPARER.couleur(nom) },
+        h('b', { 'data-houblon': cleDe(nom) }, nom), h('span', { class: 'sb-fd', 'data-role': 'dose-equivalente' }, dose),
+        h('span', { class: 'sb-fa', 'data-role': 'alpha' }, h('span', { class: 'c-grec' }, 'α'), alpha),
+        h('span', { class: 'sb-fr', 'data-role': 'role' }, F.role ? (F.role.v === 'double' ? 'double' : ROLE_MOT[F.role.v] || F.role.v) : ''),
+        // Ses arômes en couleur (le code de l'étape) : ce qu'il garde ou perd de l'original, sans un mot.
+        miniProfil({ niv: D.ordre.map((f) => ((F.aromes || []).find((a) => a.f === f) || { lv: 0 }).lv) }, nom),
+        pisteA(nom));
+    };
+    return h('div', { class: 'sb-ff', role: 'group', 'aria-label': 'À IBU égal : ' + noms.join(', ') }, noms.map(ligneF));
+  }
   function faceAFace(s) {
     ETAT.comp = [s.nom, ...st.marques].filter((n, k, a) => a.indexOf(n) === k);
     ETAT.focusSerie = null; ETAT.cOuvert = null;
@@ -73,9 +108,10 @@ const SUBST = (() => {
         h('div', { class: 'sb-ech', 'aria-hidden': 'true' }, h('span'), h('span', { class: 'sb-pals' }, seuils.map((p, k) => h('span', { style: 'left:' + pc(p.min) + ';width:calc(' + pc(k + 1 < seuils.length ? seuils[k + 1].min : X1) + ' - ' + pc(p.min) + ')' }, p.label)))),
         h('ul', { class: 'sb-ls', 'aria-label': 'Remplaçants de ' + s.nom + ', rangés par le pire cas' }, rs.map((c, n) => ligne(c, n, st.marques.includes(c.nom), s))),
         h('div', { class: 'sb-ax', 'aria-hidden': 'true' }, h('span'), h('span', { class: 'sb-axt' }, [X0, ...seuils.map((p) => p.min).filter((v) => v > X0), X1].map((v) => h('span', { style: 'left:' + pc(v) }, String(v))))),
+        bref(s, rs),
         h('button', { class: 'sb-face', 'data-action': 'face-a-face', 'data-k': 'sbf', 'data-booster': 'face à face', disabled: !st.marques.length || null,
           'aria-label': 'Comparer ' + s.nom + ' à ' + st.marques.join(' et ') + ', à IBU égal', onclick: () => faceAFace(s) }, 'Face à face'),
-        h('p', { class: 'sb-hon' }, 'Calculés depuis nos fiches ; ni prix ni rareté.')));
+        h('p', { class: 'sb-hon' }, 'Calculés sur nos fiches ; prix inconnu.')));
   }
   return { vue, plage };
 })();

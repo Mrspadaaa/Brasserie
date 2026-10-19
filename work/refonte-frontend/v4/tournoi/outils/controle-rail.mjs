@@ -458,6 +458,23 @@ for (const id of ids) {
   // alors que celle où l'on est, Whirlpool, est toute petite ». Le doigt passé dans un autre segment,
   // ce segment devient la loupe : une tranche sous le doigt (deux graduations voisines du doigt) fait
   // au moins 2 fois une tranche du segment quitté (sa descente ÷ ses intervalles) et 12 px au moins.
+  // D68 (19.10, au téléphone, base v4.6 : Nugget glissé à J+2, la tête du rail descendue de 220 px
+  // sous la barre d'IBU) : « Toujours un petit soucis... ». Le rail ne se détache pas du haut : quand la
+  // loupe passe dans un segment plus bas, la tête de l'ébullition reste à 40 px au plus de sa place au repos.
+  {
+    const q = await ouvrir(index);
+    const tete = () => q.evaluate(() => { const e = document.querySelector('[data-rang="T-ebu"]'); if (!e) return null; const r = e.getBoundingClientRect(); return r.top + r.height / 2; });
+    const t0 = await tete();
+    const g = await poser(q, 'doigt');
+    for (const [code, lib] of [['wp75', '75 °C'], ['f2', 'J+2']]) {
+      if (!g || !(await g.vers(code))) { p('D68 : index, le doigt n\'atteint pas ' + lib); break; }
+      await wait(250);
+      const t = await tete();
+      if (t0 !== null && t !== null && Math.abs(t - t0) > 40) p('D68 : index, Nugget glissé à ' + lib + ' : la tête du rail bouge de ' + Math.round(t - t0) + ' px (40 au plus) : un vide s\'ouvre au-dessus du rail');
+    }
+    if (g) await g.lacher();
+    await q.close();
+  }
   {
     const q = await ouvrir(index);
     const g = await poser(q, 'doigt');

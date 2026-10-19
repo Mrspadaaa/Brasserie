@@ -7,7 +7,7 @@ const require = createRequire(path.resolve('C:/Users/mrspa/.codex/worktrees/open
 const puppeteer = require('puppeteer-core');
 
 const here = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
-const url = pathToFileURL(path.join(here, 'site', 'index.html')).href;
+const url = pathToFileURL(path.join(here, 'a-jour', 'index.html')).href;
 const out = (n) => path.join(here, 'shot-' + n + '.png');
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--allow-file-access-from-files'] });
 const errs = [];

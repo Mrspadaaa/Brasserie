@@ -160,9 +160,34 @@ regardées), on publie sur la page partagée, on commente le ticket.
   en attente comprises) : 163/163.
 - Preuves : `LOT OK 1/1` avec `--comparer`, `RAIL OK`, `SPEC OK`, captures regardées. Commentaires
   #134, #138.
-- **En cours : u4 (6)** : `subst.js`, `subst.css`, données `subst` et `ficheCatalogue` dans
-  `build.mjs`, bouton « Substituts » de la fiche ; page `substitution.html` pas encore dans
-  `consolide` ni contrôlée.
+### Fait le 19.10, après-midi : base v4.7, page neuve
+
+- **Page à jour, neuve** (sa demande : « Créé une nouvelle page avec les artefacts up to date
+  alors ») : **https://claude.ai/artifact/MoohEoyjPGAWqpMQZZCq5T**, « Houblons, base v4.7 ». Le
+  générateur écrit dans `v4/outils/page-partagee/a-jour/` ; publier `a-jour/index.html` (même chemin
+  = même adresse). L'ancienne page WSzBr4… (v4.6, 11 versions) n'est plus mise à jour.
+- **Suppressions demandées, impossibles d'ici** (l'outil exige une confirmation que la séance ne
+  reçoit pas ; lui dit ne pas pouvoir supprimer non plus) : WSzBr4fBJerouWVtWqFiMJ (v4.6),
+  V657sqy2X8DoCkxW7r8ttV (lot 4), FxHJbe7oaam8TeYTvvbxBW (fils de fer), UrdkDumB4m95s1iHr4ye27
+  (prototype v2). Gardée : 2VTRQP7nLXhX5GqDaAGAyU (nuit ; Barres de Suggestions à choisir).
+- **Rail, D68** (« Toujours un petit soucis... », Nugget à J+2, tête du rail descendue de 215 px) :
+  en mode compact, la place au-dessus du doigt va aux segments du dessus (jamais plus grands que le
+  segment tenu), le reste aux écarts de structure ; tête à 112 px (108 au repos). Contrôle D68
+  (témoin v4.6 → 129 et 215 px).
+- **u4 (6)** : `subst.js`, `subst.css` ; vue `substitution` depuis le repli « Substituts » de la
+  fiche ; réponse écrite, 8 candidats du pack en points ou plages hachurées (pire cas), marquer,
+  à IBU égal (dose, α en plage, rôle, arômes en couleur), « Face à face » → Comparer.
+  `ficheCatalogue` (proto-data) pour Magnat, Yeoman, Altus… ; `data-couleur` déclarées (D33 bis).
+  Parcours joué sans erreur. La plage de score est le seul calcul de la page (à valider).
+- Preuves : `LOT OK 1/1` avec `--comparer` (15 pages), `RAIL OK`, `SPEC OK` (D67, D68 cités),
+  captures regardées. Commentaires #134, #137, #119.
+
+### Prochaine action
+
+- Attendre ses jugements au doigt (rail v4.7, Comparer, Suggestions, u4).
+- Ses choix encore ouverts : Barres de Suggestions (#138 ; lot 6 p03, p05, p11 sur la page de la
+  nuit) ; #137 « le moins de grammes d'abord » ; #131 licences ; #139 après la porte B.
+- Garde-fous inchangés : pas de push, pas de code de l'app avant la porte B.
 
 ### À faire, dans l'ordre
 

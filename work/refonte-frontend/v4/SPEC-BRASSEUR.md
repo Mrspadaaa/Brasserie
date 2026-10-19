@@ -167,6 +167,11 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   l'appui)** : « L'échelle ne s'adapte pas ne de focus, homme pas là où je suis. L'échelle ébullition
   est très grande alors que celles où l'on est Whirlpool est toute petite » — 19.10 (D67 : le doigt
   passé dans un autre segment, ce segment devient la loupe).
+- **La loupe suit le doigt, base v4.6 au téléphone (Nugget glissé à J+2, la tête du rail descendue
+  sous la barre d'IBU, capture à l'appui)** : « Toujours un petit soucis... » — 19.10 (D68 : le rail ne
+  se détache pas du haut).
+- **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
+  trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce
   qui n'est pas un to date » — 19.10 : n'y garder que la base à jour.
 - **Les radars** : « Les spidergraph/radar graph resemble a rien, c'est une vrai régression... » ;
