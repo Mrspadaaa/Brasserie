@@ -1,0 +1,33 @@
+a6 · Ensemble ou à la suite ? Deux dry hops sur le calendrier du brassin (K3, K5), puis combien de jours.
+
+- **Ce qui tient** :
+  - La question du brasseur, « 3j Citra, 7j Galaxy ; 3j citra - 5j idao7 […] ce qui est vraiment faisable » : les deux façons de faire, en barres de contact sur le calendrier (J+7 à J+17). On choisit le partenaire (+ Galaxy, + Idaho 7) et la famille suivie (tropical, agrumes, floral, noyau).
+  - Le calendrier jour par jour (parJour du moteur) :
+    - « à la suite » en trait plein, « ensemble » en tirets, les plages en bandes, la zone du style 16D ;
+    - les études à leur jour : 24 h (l'essentiel, H73), 2 j (E08), 3 j (plus rien de mesuré, H73).
+  - La réponse en une ligne, par exemple « Même niveau à la fin ~41 ; à la suite, atteint ~J+11 au lieu de ~J+8, et Galaxy reste 7 j au contact ». Pour le moteur, l'ajout à la suite ne donne pas plus d'arôme : il le donne plus tard, avec plus de jours de contact.
+  - Le tableau final par famille (à la suite contre ensemble), la saturation partagée (~68 % de la somme pour le tropical) et les inconnus écrits : ordre, synergie, masquage, « au-delà de 3 j : végétal, hop creep ? ».
+  - Les études à côté :
+    - deux ajouts contre un (H76) : plus d'intensité en pilote, presque rien à l'échelle industrielle ;
+    - l'ordre : aucune étude ;
+    - Eureka! : l'essentiel en 2 jours (E08) ;
+    - Cascade 1,43 g/L : 1 h ≈ 96 h au panel (E10).
+  - « Combien de jours de contact ? » : Citra, Galaxy ou Idaho 7 à 4 g/L, un curseur 1 à 7 j sur la grille, et la levure en dry hop actif (US-05, Pomona). Quatre petites courbes presque plates : le moteur plafonne à 3 j, et au-delà il lève les drapeaux sans chiffre.
+- **Ce qui casse** :
+  - **Trop de mots** : 206 au premier écran (70 au plus).
+  - Les cas K3 n'existent qu'avec US-05, après fermentation ; la levure ne se règle que dans « Combien de jours ? ».
+  - Les jours de contact suivent τ = 2–12 h (centre 7 h). E10 suggère une extraction perçue encore plus rapide (le moteur ne donne que 13 % à 1 h) ; la page ne le chiffre pas.
+  - « Jour de l'ajout de J0 à J7 » (piste proposée) : le moteur n'a que J+2 et J+7, l'idée est donc remplacée par « ensemble ou à la suite » et par les jours de contact.
+- **S'écarte de la baseline** : un calendrier (courbes jour par jour) au lieu des barres, parce que la question porte sur le temps. Les barres de contact disent qui est dans la cuve, et quand.
+- **Données** : `profils-simules.json` (cas K3, K5 Citra + Galaxy et Citra + Idaho 7 après US-05 ; grille à 4 g/L, jours 1 à 7), `comparatifs-dryhop.json` (E08, E10), `a1/reel.mjs` (H73, H76). Le stub est retiré.
+- **Contrôles** (19.10, ~23 h 59, sur etat.html) :
+  - COMMUN ECHEC 1 contrôle : MOTS 206 (> 70). Les dix autres sont OK (contraste de « 3 j » sur barre noire corrigé, zone balisée).
+  - LISIBLE OK : 12 pictos, 8 mesurées, 19 simulées, 0 faute.
+  - SIMULATION OK.
+  - CUMUL OK.
+  - ALPHA OK : 2 voies, 2 avec leur α.
+  - FICHE-BASELINE OK.
+  - HONNETE OK, DOIGT OK.
+- **Pire contraste** : 4,96:1, « Agrumes » (#856e0c sur blanc).
+- **Captures** : `captures/a6-390.png`, `a6-haut-390.png`, `a6-idaho7-agrumes-390.png` (Idaho 7, agrumes), `a6-jours-390.png` (1 j, Pomona). Toutes regardées.
+- **Générée par** `a6/generer-a6.mjs` (socle `../a1/`).

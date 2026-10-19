@@ -1,0 +1,28 @@
+a5 · Le duel : deux plans de dry hop face à face, en papillon.
+
+- **Ce qui tient** :
+  - Deux côtés, A et B. Chacun se règle : le plan (15 paires à 2 + 2 g/L ou 6 houblons seuls à 4 g/L), le moment (actif, après) et la levure (US-05, Pomona, Verdant). Un bouton « échanger » inverse les côtés.
+  - Par défaut, un duel de levures sur la même paire : Citra + Idaho 7 en dry hop actif, US-05 contre Pomona.
+  - Le papillon : la famille au milieu, A vers la gauche, B vers la droite, la zone du style 16D et l'orangé de chaque côté, la plage simulée en trait fin.
+  - Au milieu, l'écart écrit vers le côté le plus fort (« ~+6 B ▸ », « ≈ », ou « inconnu » si une famille n'a rien de simulé). La barre du côté le plus fort est cerclée.
+  - En tête, la réponse en une ligne, par exemple « B, avec Pomona au lieu de US-05 : agrumes ~+6 · floral ~+3 · noyau ~+2 · 5 autre(s) ». La page ne désigne aucun gagnant : le brasseur choisit.
+  - Vraies valeurs : l'α de chaque houblon de chaque côté, et les fiches des deux levures (esters, atténuation et température, biotransformation) marquées « fournisseur ».
+  - La biotransformation de chaque côté est écrite (« géraniol → citronellol « medium » », « biotransformation à 0 au centre, non documentée »). La ligne « inconnu » dit qu'aucune mesure ne croise variété × levure × dry hop.
+- **Ce qui casse** :
+  - **Trop de mots** : 149 au premier écran (70 au plus).
+  - Les écarts de levure sont petits (1 à 6 points) devant des plages simulées très larges : c'est honnête, mais l'écart peut se lire comme sûr. La plage reste visible en trait fin.
+  - Verdant n'existe qu'en paire : désactivé pour un houblon seul.
+  - Le nom du plan est tronqué (« Citra + Idaho 7 · 2 + 2… ») dans les deux sélecteurs.
+- **S'écarte de la baseline** : un papillon horizontal au lieu des barres, pour comparer deux options d'un regard et écrire l'écart.
+- **Données** : `profils-simules.json` (90 paires, grille à 4 g/L, 3 j, actif et après), fiches des levures dans `a1/reel.mjs`. Le stub est retiré.
+- **Contrôles** (19.10, ~23 h 59, sur etat.html) :
+  - COMMUN ECHEC 1 contrôle : MOTS 149 (> 70). Les dix autres sont OK.
+  - LISIBLE OK : 19 pictos, 4 mesurées, 13 simulées, 0 faute.
+  - SIMULATION OK.
+  - CUMUL OK : 2 ajouts cumulés, 6 choix de levure.
+  - ALPHA OK : 4 voies, 4 avec leur α.
+  - FICHE-BASELINE OK.
+  - HONNETE OK, DOIGT OK.
+- **Pire contraste** : 4,96:1, « Agrumes » (#856e0c sur blanc).
+- **Captures** : `captures/a5-390.png`, `a5-haut-390.png`, `a5-verdant-apres-390.png` (A après, B Verdant). Toutes regardées.
+- **Générée par** `a5/generer-a5.mjs` (socle `../a1/`).

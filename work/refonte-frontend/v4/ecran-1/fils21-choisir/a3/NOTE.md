@@ -1,0 +1,34 @@
+a3 · Mon plan de houblonnage : le plan complet sur le déroulé du brassin.
+
+- **Ce qui tient** :
+  - Le déroulé en cinq cases : 60′, 10′ et whirlpool au brassage ; dry hop actif J+2 et après J+7 en fermentation, sur un axe J0 à J+10.
+  - On choisit le houblon (parmi six), un second houblon ou « aucun », la dose (1, 2, 4, 8 g/L), les jours de contact (1, 2, 3, 5, 7) et la levure (US-05, Pomona, Verdant).
+  - Ce que la grille du moteur ne couvre pas se hachure et se dit (« hors grille ») :
+    - deux houblons, seulement en dry hop, à 2 + 2 g/L et 3 j ;
+    - à chaud, ni jours ni levure ;
+    - Verdant, seulement en paire.
+  - Trois plans tout faits, nommés par leur audace et non par une note :
+    - « sage » : Cascade + Idaho 7 après, reste dans la 16D ;
+    - « franc » : Citra 2 g/L après, au bord ;
+    - « osé » : Citra + Galaxy actif avec Verdant, sort du style.
+  - Le profil : les 12 barres de l5b, au style, avec le plan d'avant en pointillé et les valeurs qui changent éclairées. Au-dessus, « Contre ton plan d'avant : tropicaux ~+10 · noyau ~+8… » ; dessous, les drapeaux en mots (hors du style, saturation, hop creep, ordre, synergie…) et la biotransformation de la levure.
+  - « Pourquoi à 10′ et pas à 60′ ? » : les cinq moments pour le même houblon et la même dose, chiffrés par la grille du moteur. Citra 4 g/L : ~8 à 60′ (≈ 100 IBU), ~31 à 10′ (36 IBU), ~32 au whirlpool (15 IBU), ~37 en dry hop.
+  - Vraies valeurs : α, huile, total en g/L, charge d'huile en mL/hL (dose × huile publiée), zone de saturation 4–8 g/L, IBU des cas K1.
+  - **Preuve que le profil bouge** (`a3/preuve-profil.mjs`, plan « osé ») : sept familles changent, par exemple tropical 29,9 → 40,1 et agrumes 28,2 → 34,5. La page l'écrit (« Contre ton plan d'avant : tropicaux ~+10 · noyau ~+8 · agrumes ~+6 · baies ~+5 »). Sortie : PROFIL BOUGE OK, 7 familles ; détail dans `a3/preuve-profil.json`.
+- **Ce qui casse** :
+  - **Trop de mots** : 156 au premier écran (70 au plus).
+  - Les IBU n'existent que pour Citra et Cascade à 4 g/L (cas K1) ; ailleurs, la page le dit.
+  - Le second houblon, quand il est « aucun », se choisit par un petit « ▾ » : il est peu visible.
+  - Page lourde (1,2 Mo) : toute la grille du moteur est embarquée.
+- **Données** : `profils-simules.json` (grille entière, 90 paires, cas K1), `a1/reel.mjs`. Le stub est retiré.
+- **Contrôles** (19.10, ~23 h 59, sur etat.html) :
+  - COMMUN ECHEC 1 contrôle : MOTS 156 (> 70). Les dix autres sont OK (contraste de « Verdant » désactivé corrigé, rayons ramenés à l'échelle).
+  - LISIBLE OK : 18 pictos, 5 mesurées, 20 simulées, 0 faute.
+  - SIMULATION OK.
+  - CUMUL OK : choix de levure, biotransformation visible.
+  - ALPHA OK.
+  - FICHE-BASELINE OK.
+  - HONNETE OK, DOIGT OK.
+- **Pire contraste** : 7,37:1, « brassage » (gris sur blanc).
+- **Captures** : `captures/a3-390.png`, `a3-haut-390.png`, `a3-avant-390.png` et `a3-apres-390.png` (avant et après le plan « osé »), `a3-moments-390.png` (Citra 4 g/L, les cinq moments et leurs IBU). Toutes regardées.
+- **Générée par** `a3/generer-a3.mjs` (socle `../a1/`).

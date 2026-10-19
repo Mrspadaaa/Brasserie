@@ -1,0 +1,40 @@
+a1 · Deux houblons, un dry hop : qui apporte quoi, et pourquoi le total n'est pas la somme (K5).
+
+- **Ce qui tient** :
+  - On choisit les deux houblons parmi six (Citra, Galaxy, Idaho 7, Cascade, Motueka, Nelson Sauvin, petit « ▾ » à côté du nom), le moment (actif, après) et la levure (US-05, Pomona, Verdant). Le profil bouge au toucher ; le centre d'avant reste en pointillé gris et la valeur qui change s'éclaire.
+  - Une ligne par famille, le nom écrit. Sur chaque ligne :
+    - la part de chaque houblon en motif (plein, rayé), la part de la levure en hachures ;
+    - « chacun seul » en pointillé : l'écart avec la barre est la saturation partagée ;
+    - l'orangé au-delà de la zone 16D, la plage simulée en trait fin, à droite le centre « ~ » et la plage (« 21–63+ »), jamais rognée.
+  - Une famille sans donnée est écrite « rien de simulé », pas zéro. Le résineux part de ta dégustation (« marqué », hachuré gris), déjà au-dessus du style.
+  - « Chacun seul à 4 g/L » ajoute les deux repères et un tableau ensemble / chacun seul, à même dose totale.
+  - Vraies valeurs à côté :
+    - α du lot ou des fiches, huile en mL/100 g, 2 + 2 g/L, 3 j, zone de saturation 4–8 g/L ;
+    - la courbe **mesurée** de l'intensité globale de Cascade (E04), avec « seul » à 2 g/L et « ensemble » à 4 g/L posés dessus : « ×1,5, pas ×2 » ;
+    - la part de linalol extraite, 23 % puis 7 % ;
+    - le facteur de saturation du moteur pour la paire (par exemple 68–71 % de la somme) ;
+    - le rapport au seuil des cas K5 en bandes log sur un axe commun (linalol ×0,3–2300, 4MMP ×4–?, myrcène ×0,3–396) ;
+    - le linalol publié en bière à côté du centre du moteur : 144 µg/L (E06) et 72–178 (E01), contre ~534 au centre.
+  - Inconnus écrits : synergie, masquage, aucune étude Citra contre Cascade à dose égale, rien pour Galaxy, une seule pour Idaho 7, aucune croisant variété × levure × dry hop.
+  - Appui long sur un houblon : sa vraie fiche, dans le langage de la page (base v4.9, α du lot d'abord, section « En dry hop » avec le panel OSU).
+- **Ce qui casse** :
+  - **Trop de mots** : 154 au premier écran, contre 70 au plus. À reprendre en seconde passe : les lignes « ≈ inchangé » et « rien de simulé » peuvent passer sous un pli.
+  - Doses figées à 2 + 2 g/L et 3 j : les paires du moteur n'ont que cette dose. La page le dit (« moteur : grillePaires »).
+  - Verdant n'a pas de houblon seul dans la grille : la comparaison « chacun seul » écrit « hors grille ».
+  - Le rapport au seuil n'existe que pour les trois paires K5. Pour les autres, la page écrit « inconnu : pas pour cette paire ».
+  - Citra du stock est en cryo (α 24,8 %) ; le profil lit le T-90, comme les moteurs. La tuile montre donc l'α des fiches et « à acheter », et la fiche le dit.
+  - **E04 se lit de deux façons** dans le dépôt (agrumes qui plafonnent selon H, herbacé qui plafonne selon J). Seules l'intensité globale et la part de linalol, qui concordent, sont montrées. Le désaccord est écrit « à trancher ».
+  - Moment par défaut : actif (après fermentation, le moteur ne simule aucune biotransformation, et la levure ne change rien).
+- **S'écarte de la baseline** : des lignes horizontales au lieu des barres verticales de l5b, pour lire le nom de chaque famille et empiler deux houblons sur la même ligne (recherche I, idées 1 et 3). Les pictos au trait, la zone du style, l'orangé, l'α, l'usage en mot, la légende et la fiche restent ceux de l5e.
+- **Données** : `fils21-choisir/donnees/profils-simules.json` (moteur profil-simule : grillePaires, grille à 4 g/L, cas K5) et `comparatifs-dryhop.json` (E01, E04, E06). Vraies valeurs : `a1/reel.mjs`, avec ses sources. Le stub est retiré.
+- **Contrôles** (19.10, ~23 h 59, sur etat.html) :
+  - COMMUN ECHEC 1 contrôle : MOTS 154 (> 70). COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE et PARLANT sont OK.
+  - LISIBLE OK : 17 pictos, 10 mesurées, 18 simulées, 0 faute.
+  - SIMULATION OK : 1 simulation, 8 réglages, 17 mesurées, le simulé bouge.
+  - CUMUL OK : 1 ajout cumulé, 3 choix de levure, biotransformation visible, la levure fait bouger le simulé.
+  - ALPHA OK : 2 voies, 2 avec leur α.
+  - FICHE-BASELINE OK : fiche de Citra, 12 familles nommées, 17 pictos, 0 faute.
+  - Les deux exigences obligatoires (`a1/controle-a.mjs`, sur toute la page) : HONNETE OK, DOIGT OK (largeur 390 px).
+- **Pire contraste** : 4,96:1, « Agrumes » (#856e0c sur blanc).
+- **Captures** : `captures/a1-390.png`, `a1-haut-390.png`, `a1-actif-pomona-390.png` (Pomona et « chacun seul »), `a1-bas-390.png`, `a1-legende-390.png`, `a1-fiche-390.png` (appui long sur Galaxy). Toutes regardées.
+- **Générée par** `a1/generer-a1.mjs`. Le socle de la série (`socle.mjs`, `reel.mjs`, `donnees.mjs`, `vue.js`) sert a1 à a6. `controle-a.mjs` contrôle l'honnêteté et l'usage au doigt.

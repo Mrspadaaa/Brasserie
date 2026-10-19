@@ -1,0 +1,31 @@
+a4 · Le gramme suivant : combien rapporte un gramme de plus ?
+
+- **Ce qui tient** :
+  - Un houblon (parmi six), un curseur de dose aimanté sur la grille du moteur (1, 2, 4, 8 g/L), le moment (actif, après) et la levure (US-05, Pomona).
+  - Une petite courbe par famille qui bouge (12 au plus) : la dose en abscisse, la zone du style 16D en fond, la plage simulée en bande, les points hors du style en orangé.
+  - Le curseur traverse toutes les courbes à la fois. Sous chacune, ce que la dose suivante ajoute (« à 4 g/L ~+11 (~5,4 par g/L) »). Une famille sans donnée a une case hachurée « rien de simulé : pas une absence ».
+  - En tête, la réponse en une ligne, par exemple « De 2 à 4 g/L, chaque gramme rapporte ~4,2 point par famille, contre ~11,5 pour le tout premier gramme » ; à 8 g/L, le dernier pas, ~2,3.
+  - Vraies valeurs :
+    - charge d'huile en mL/hL (dose × huile publiée), zone de saturation 4–8 g/L ;
+    - la courbe **mesurée** de l'intensité globale de Cascade (E04 : 3 · 6,3 · 8,1 · 10,4 · 12,3), avec le même curseur ;
+    - la part de linalol extraite, de 23 % à 7 %, pour montrer que la saturation est mesurée et pas une idée du moteur.
+  - La même dose totale à deux (Citra + Galaxy 2 + 2 g/L contre Citra seul à 4 g/L) : la saturation se partage.
+- **Ce qui casse** :
+  - **Trop de mots** : 172 au premier écran (70 au plus).
+  - La grille n'a que quatre doses ; entre deux, rien n'est simulé, et le curseur saute de l'une à l'autre.
+  - Trois houblons ensemble : le moteur ne les simule pas. L'idée « fond de cuve à trois » est abandonnée ici plutôt que d'inventer.
+  - « À trancher » : la lecture contradictoire de E04 (agrumes ou herbacé qui plafonne).
+  - Moment par défaut : actif (après fermentation, la levure ne change rien dans le moteur).
+- **S'écarte de la baseline** : des courbes dose → famille (petits multiples) au lieu des barres, parce que la question est une pente : ce que rapporte le gramme suivant.
+- **Données** : `profils-simules.json` (grille, 3 j, actif et après, US-05 et Pomona ; paires), `comparatifs-dryhop.json` (E04). Le stub est retiré.
+- **Contrôles** (19.10, ~23 h 59, sur etat.html) :
+  - COMMUN ECHEC 1 contrôle : MOTS 172 (> 70). Les dix autres sont OK (zone du style balisée dans les courbes).
+  - LISIBLE OK : 8 pictos, 5 mesurées, 25 simulées, 0 faute.
+  - SIMULATION OK.
+  - CUMUL OK : la paire à 2 + 2 g/L dans l'ajout, la levure fait bouger le simulé.
+  - ALPHA OK.
+  - FICHE-BASELINE OK.
+  - HONNETE OK, DOIGT OK.
+- **Pire contraste** : 4,8:1, « Agrumes ~27 » (titre de courbe sur #fbfbfc).
+- **Captures** : `captures/a4-390.png`, `a4-haut-390.png`, `a4-dose8-390.png` (curseur à 8 g/L). Toutes regardées.
+- **Générée par** `a4/generer-a4.mjs` (socle `../a1/`).
