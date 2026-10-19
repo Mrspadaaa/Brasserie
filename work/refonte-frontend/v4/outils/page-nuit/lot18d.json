@@ -1,0 +1,33 @@
+{
+ "ticket": 142,
+ "ancre": "t142-lot18d",
+ "court": "l8g, l8h : usage en mot",
+ "titre": "l8e repris : usage en mot, pistes de l5b, fiche dans la baseline (l8g, l8h, 19.10 soir)",
+ "etat": "à choisir : l8g ou l8h",
+ "puces": [
+  "Tes mots sur l8e : « Les icône sont pas parlant du tout » ; « Ça c'est inutile » (la bande « visée ») ; « La barre là, c'est mieux mais il y avait mieux.... C'est pas exactement ce que j'ai demandé » ; sur sa fiche : « ça suit pas la Baseline, ça suit rien du tout ??? ».",
+  "L’usage en mot : l8g écrit « amérisant », « aromatique », « mixte » après l’α ; l8h, une pastille « amer », « arôme », « mixte ». En gris pâle quand il est déduit de l’α, en encre quand un fournisseur l’atteste. Plus de goutte ni de souffle seuls.",
+  "Sous chaque objectif, la piste de l5b sur toute la largeur : ma bière (trait noir), la zone du style en pâle, la meilleure voie, la visée en tirets. La bande « ‹ visée | visée » est retirée.",
+  "La fiche (appui long) parle la langue de la page : pictos au trait, α du lot d’abord puis les fiches, usage en mot, barres à la place des carrés, pictos sur la roue. Sur la capture de la légende, le doigt est sur le « ? » en haut à droite.",
+  "Contrôles : COMMUN OK, PISTE, ALPHA, FICHE-BASELINE et PLACE (7 voies, 61 px). l8e y échoue (usage sans mot, bande « visée », pas de piste, fiche hors baseline). À la limite : 70 mots au premier écran.",
+  "Ce qui casse : un assemblage de deux houblons prend trois lignes ; dans l8h, « amer » et « arôme » se ressemblent à 12 px ; Barres / Radar ne fait rien encore."
+ ],
+ "images": [
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l8g-etat-b-390.png",
+   "l8g usage en mot entier"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l8h-etat-b-390.png",
+   "l8h usage en pastille"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l8g-fiche-390.png",
+   "la fiche, dans la baseline"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l8h-legende-390.png",
+   "le ? ouvre la légende"
+  ]
+ ]
+}

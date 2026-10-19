@@ -3,6 +3,8 @@
 // Règle : chaque voie visible ([data-voie]) qui ajoute ou change un houblon montre, pour chacun,
 // un élément visible [data-role="alpha"] dont le texte contient une valeur en % (« 9,6 % » ou
 // « 10–14 % ») ; data-source dit « lot » (l'α du lot en stock, qui fait la dose) ou « fiches ».
+// Une page sans voies (outil de dry hop, lot 20) : chaque houblon nommé ([data-houblon]) montre son α
+// au moins une fois, près de son nom.
 // Usage : node controle-alpha.mjs <dossier> [ids…] [--page=etat-b.html] ; imprime ALPHA OK, ou ALPHA
 // ECHEC et la liste.
 import fs from 'node:fs';
@@ -25,6 +27,24 @@ for (const id of ids) {
   const r = await page.evaluate(() => {
     const vis = (e) => { const b = e.getBoundingClientRect(); const cs = getComputedStyle(e); return b.width > 0 && b.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none'; };
     const voies = [...document.querySelectorAll('[data-voie]')].filter((e) => vis(e) && !e.parentElement.closest('[data-voie="' + e.dataset.voie + '"]'));
+    // Page sans voies (outil de dry hop, lot 20) : chaque houblon nommé montre son α au moins une fois,
+    // près de son nom (le plus petit ancêtre de l'α qui contient un houblon n'en contient qu'un).
+    if (!voies.length) {
+      const horsF = (e) => vis(e) && !e.closest('[hidden], [data-role="legende"], [data-role="fiche"]');
+      const noms = [...new Set([...document.querySelectorAll('[data-houblon]')].filter(horsF).map((h) => h.dataset.houblon))];
+      const vus = new Set();
+      for (const a of [...document.querySelectorAll('[data-role="alpha"]')].filter(horsF)) {
+        if (!/\d+([,.]\d+)?(\s*[–-]\s*\d+([,.]\d+)?)?\s*%/.test(a.textContent)) continue;
+        if (a.dataset.houblon) { vus.add(a.dataset.houblon); continue; }
+        for (let p = a.parentElement; p && p !== document.body; p = p.parentElement) {
+          const dedans = new Set([...p.querySelectorAll('[data-houblon]')].map((h) => h.dataset.houblon));
+          if (!dedans.size) continue;
+          if (dedans.size === 1) vus.add([...dedans][0]);
+          break;
+        }
+      }
+      return noms.map((n) => ({ n: 'houblon ' + n, houblons: 1, ok: vus.has(n) ? 1 : 0, sources: [] }));
+    }
     return voies.map((v) => {
       const houblons = [...v.querySelectorAll('[data-houblon]')].filter(vis).length;
       const alphas = [...v.querySelectorAll('[data-role="alpha"]')].filter(vis);
