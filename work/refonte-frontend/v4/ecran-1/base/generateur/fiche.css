@@ -50,6 +50,9 @@
   /* La roue chiffrée et sa légende (p01, p02) */
   .f-arome { display: flex; flex-direction: column; align-items: center; gap: 0; }
   .f-leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gris); min-height: 18px; }
+  /* h4 : la réponse de ses fiches à ma demande, sous la roue. */
+  .f-dem { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 2px 0 0; font-size: 13px; color: var(--gris); }
+  .f-dem-i b { color: var(--encre); font-weight: 650; }
   .f-leg .pt-c, .f-leg .pt-m { width: 9px; height: 9px; border-radius: 5px; border: 1.4px solid var(--encre); background: #fff; margin-left: 6px; }
   .f-leg .pt-m { background: var(--encre); }
   .f-leg { flex-wrap: wrap; }

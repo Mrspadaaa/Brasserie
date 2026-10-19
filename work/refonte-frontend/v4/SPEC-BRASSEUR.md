@@ -158,7 +158,13 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   comparaisons (lot 10) Mettre de côté pour le moment » ; « Substitution, ça serait plus du u4 »
   (#137 : le jury mettait u3 devant) ; « Comparé : radar p2 mais avec ajoute d'intervalle de
   confiance » ; « Comparé: p06 » (#138 : Comparer du lot 6, p06 en barres, le radar de p02 avec un
-  intervalle de confiance ; le jury mettait p05 et p09 devant).
+  intervalle de confiance ; le jury mettait p05 et p09 devant) ; « Radar suggestions: p10, p5,
+  p3-> mais radar beaucoup plus grand » (#138, Suggestions du lot 6).
+- **Le Dock p02 à l'essai sur la page partagée (version 9)** : « L'échelle ne s'adapte toujours pas
+  à l'endroit où on est ??? » — 19.10. Mesuré : 19–20 px par 5′ sous le doigt contre 8–13 au loin ;
+  le grossissement doit se voir à l'œil (piste : un Dock à plateau ×3, registre).
+- **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce
+  qui n'est pas un to date » — 19.10 : n'y garder que la base à jour.
 - **Les radars** : « Les spidergraph/radar graph resemble a rien, c'est une vrai régression... » ;
   sur celui de Ma bière : « Celui-ci est encore pire ??? » ; « Comment c'est possible d'avoir autant
   de problèmes avec ces Spider graph. Fait moi des fils de fere avec de lib, third party, custom, ou

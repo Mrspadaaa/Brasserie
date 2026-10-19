@@ -97,6 +97,127 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
+## REPRISE — session neuve (19.10, fin de matinée) : lire en premier
+
+Le brasseur ouvre une session neuve. Mission #119 : maquette houblons v4, hors de l'app, dans
+`work/refonte-frontend/v4/ecran-1/base/` (générateur `base/generateur/`, `node build.mjs` →
+`base/consolide/`, 14 pages). Branche `claude/refonte-houblons-v4`, commits locaux, rien de poussé.
+Il choisit, on intègre en fidélité la seule variante choisie, on prouve (contrôles + captures
+regardées), on publie sur la page partagée, on commente le ticket.
+
+### Ses choix du 19.10 (SPEC-BRASSEUR §1, citations vérifiées par `v4/outils/check-spec.mjs`)
+
+| Ticket | Choix | État |
+|---|---|---|
+| #134 rail | p02 Dock | intégré (base v4.4, b74432d), **mais il le juge trop faible** (voir 1) |
+| #135 radars | m4 (Ma bière) et h4 (fiche), **sans légende écrite**, peu de texte | codé, **batterie en échec** (voir 3) |
+| #136 échelles, classements | mis de côté | rien à faire |
+| #137 substitution | **u4** (le jury mettait u3) | à intégrer (voir 6) |
+| #138 Comparer | **p06** en barres ; **radar de p02 + intervalle de confiance** | à intégrer (voir 4) |
+| #138 Suggestions | radar **p10, p5, p3 → « mais radar beaucoup plus grand »** | à intégrer (voir 5) |
+| #139 grille | m4 en est la saisie ; le code de l'app manque « non goûté » (commentaire du ticket) | après la porte B |
+
+### À faire, dans l'ordre
+
+1. **Rail : « L'échelle ne s'adapte toujours pas à l'endroit où on est ??? »** (19.10, sur la
+   version 9 de la page partagée).
+   - Mesuré (`v4/tournoi/outils/sonde-dock.mjs <dossier consolide>`) : sous le doigt 19–20 px par
+     5′, au loin 8–13 px. Le grossissement ne se voit pas : le rail d'ébullition de `index` ne fait
+     que ~145 px.
+   - Les contrôles qui bornent le Dock :
+     - D45 : les 5 graduations voisines du doigt doivent être régulières (écart-type / moyenne ≤ 0,25) ;
+     - D61 : hauteur = temps, à 12 % de la descente près ;
+     - D34 : chaque 5′ doit être atteignable ;
+     - D55 : vide ≤ 80 px, ajouts proposés qui descendent de 120 px au plus.
+   - Un Dock en pointe plus fort (×3 à ×4) échoue à D45 et D34. Dans un Dock sans état, la précision
+     du doigt est celle du rail de base ; grossir à longueur fixe resserre ce rail.
+   - **Piste retenue, non codée : un Dock à plateau.**
+     - Grossissement constant ×3 sur ±5′ autour du doigt (D45 régulier), rampe linéaire sur 2
+       graduations de chaque côté, le reste à l'échelle du repos (e ≈ 12 px par 5′ : la précision
+       du doigt reste).
+     - Le rail s'allonge pendant le geste (LOUPE.marge 80 → ~120 px).
+     - Surplus ≈ (G−1)(2P+Rampe)·e = 2·4·12 ≈ 96 px. D61 estimé ≈ 10 % au pire : à mesurer.
+   - Code à changer dans `base/generateur/etape-consolide.js` :
+     - `Stente` et `Yd` → intégrale M(x) du plateau et de la rampe : x si x ≤ P ;
+       P + (x−P) − (x−P)²/(2·Rampe) jusqu'à P+Rampe ; puis P + Rampe/2 ;
+     - `grossi` → 1 + KG·m(z−c) ;
+     - `tient` → surplus `KG*(2P+Rampe)` au lieu de `KG*G.W` ;
+     - `LOUPE` : gros 3, plateau 1 graduation, rampe 2, marge ~120.
+   - Puis :
+     - `controle-rail.mjs work/refonte-frontend/v4/ecran-1/base consolide` ;
+     - la sonde ;
+     - les captures du geste (`v4/tournoi/outils/gestes-base.mjs consolide` → `base/captures/`, 5 cas) ;
+     - **regarder** : le zoom doit se voir à l'œil, les minutes écrites autour du doigt.
+     Si un contrôle se révèle contraire à sa demande, le dire, et ne pas l'affaiblir en silence.
+   - Les minutes écrites sur les graduations grossies (`texteGrad`, classe `ecrit`) sont déjà là.
+2. **Page partagée : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce qui
+   n'est pas à jour »** (https://claude.ai/artifact/WSzBr4fBJerouWVtWqFiMJ, version 9, titre
+   « Houblons lot 3 »).
+   - N'y garder que la base à jour : les 14 pages `consolide` jouables et leurs captures.
+   - Retirer p02, p03 et p08 du lot 3, et toute note périmée.
+   - Générateur versé : `v4/outils/page-partagee/build.mjs`, à appeler avec
+     `--src=<E>/base:consolide --sans-radar` ; test : `test.mjs`.
+   - Publier au même `url` (Artifact read d'abord), en passant `null` pour chaque fichier retiré
+     (`files.json` de l'ancien build : `consolide/*`, `p02/*`, `p03/*`, `p08/*`, `img/*`).
+   - Un titre à jour, par exemple « Houblons, base v4.4 ».
+3. **m4 et h4 dans la base : codés, non committés comme finis.** Batterie : `LOT ECHEC 4`.
+   - Fichiers : `radar.js` (`biere` = m4, `roue` = h4 avec flèches de ma demande, `RC` : inconnu
+     dans le disque du centre pour tous les radars), `commun.js` (`grilleDegustation`, `ETAT.notes`,
+     `rangee.hidden` dans la lentille radar), `fiche.js` (`.f-dem` au lieu de la légende `.f-leg`),
+     `build.mjs` (`D.degustation.notes`, `D.direction`), `radar.css`, `fiche.css`.
+   - Les 4 échecs :
+     - `biere-radar` fait plus d'un écran à 390 (1,2) ;
+     - 4 tailles de texte au lieu de 3 au plus (effet cockpit) sur `biere-radar` et sur `fiche` ;
+     - 95 mots sur `biere-radar`, pour 80 au plus.
+   - Piste : la grille écrit 48 mots (« pas senti, faible, moyen, marqué » × 12). Mettre les quatre
+     mots une seule fois en tête de colonne, et des pastilles 0–3 par rangée.
+   - Pour tenir dans un écran : des rangées de 26 px, ou la grille sur deux colonnes.
+   - Les tailles de texte : 12/13 dans la grille, 12 dans le radar, `.f-dem` 13 → s'aligner sur
+     l'échelle de la page.
+   - Captures `base/captures/v44-biere-radar-390.png` et `v44-fiche-390.png` regardées : le fond
+     est bon (résineux marqué en orangé, 11 familles « ? » hachurées au centre ; Nugget : flèche −
+     résineux, + floral, « + Floral marqué 2/4 · − Résineux marqué 2/4 »).
+4. **Comparer (lot 6)** : barres = `ecran-1/fils6-comparer/p06` (« tout l'arôme d'un seul regard » ;
+   défaut du jury : N/M en points de 5 px, libellés verticaux).
+   - Radar : la composition de `fils6-comparer/p02/comparer-radar.html`, dessinée avec le radar D3
+     commun (`RADAR.houblons`), **plus un intervalle de confiance par famille**.
+   - L'intervalle : la plage entre les fiches (N/M, niveau par source). À expliciter, sans chiffre
+     inventé ; les sources sont dans `pack-fiches.json` (`aromes[].sources`, `of`).
+   - Sans légende écrite si possible (son retour sur m4 et h4) ; la couleur de chaque houblon peut
+     se lire sur les puces de Comparer.
+5. **Suggestions, radar** : les variantes `fils6-suggestions/p10`, `p05` et `p03`, dans cet ordre de
+   sa phrase, « mais radar beaucoup plus grand ».
+   - Les pages Barres de Suggestions ne sont pas encore choisies (le jury : p03, p05, p11 ★★★).
+6. **Substitution u4** (`ecran-1/fils11-substitution/u4/vue.html`) : le score en plage quand une
+   composante manque, puis le face-à-face.
+   - Moteur `prototypes/houblons-v4/src/engine/substitution.ts`, pack `substitutsCalcules`.
+   - À brancher depuis la fiche (bouton « Substituts › ») en fidélité.
+   - Question ouverte dans #137 : à l'amertume, le moins de grammes d'abord entre scores proches.
+
+### Garde-fous et méthode
+
+- **Contrôle de la base** :
+  `node work/refonte-frontend/v4/tournoi/outils/controle-lot.mjs work/refonte-frontend/v4/ecran-1/base --mots=80 --fill=0.8 --boosters=4 --recette --rail --detail --palette --radar --fiche --coherence --objets`
+  doit donner `LOT OK 1/1`.
+- **Rail seul** : `controle-rail.mjs <dossier> consolide`. **Spec** : `check-spec.mjs` doit donner
+  `SPEC OK`.
+- **Captures** : `capture-page.mjs <page> <png> <hauteur>`, à 390 px. Une capture non regardée ne
+  valide rien.
+- **Méthode** : `docs/qualite/methode-conception-frontend.md` ; `v4/DEFAUTS-RECURRENTS.md`, où chaque
+  plainte devient un contrôle avec un témoin négatif ; `v4/SPEC-BRASSEUR.md`.
+- **Ses habitudes** : il choisit souvent autrement que le jury (les étoiles filtrent, il décide). Il
+  veut peu de texte et pas de légende, et il juge au doigt sur son téléphone, sur la page partagée.
+- **Règles** :
+  - pas de push ;
+  - jamais `.codex/hooks.json`, `source4-portable-bundle-manifest-01.json` ni `functions/.env` ;
+  - texte avec barres obliques inverses ou accents graves : Write/Edit, pas Bash ;
+  - committer avec `-- chemins` et la ligne Co-Authored-By ;
+  - pas de code de l'app avant la porte B ;
+  - pas d'écriture sur les données réelles.
+- **Pages** :
+  - page de la nuit : https://claude.ai/artifact/2VTRQP7nLXhX5GqDaAGAyU (version 3) ;
+  - tickets #131, #135 à #139 ouverts, #134 fermé (à rouvrir si le Dock à plateau change le rail).
+
 ## 19.10, matin — ses choix arrivent ; base v4.4 (loupe p02)
 
 Ses choix (SPEC-BRASSEUR §1) :

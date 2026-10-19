@@ -90,6 +90,8 @@ const ETAT = {
   echelle: B.echelle || 'style', clavier: false,
   // Radars (radar.js) : la voie montrée dans Suggestions, le houblon agrandi dans Comparer.
   voieRadar: null, compGrand: null,
+  // Ma dégustation (m4) : une note par famille, dans l'écran seulement (la maquette n'enregistre rien).
+  notes: D.degustation && D.degustation.notes ? D.degustation.notes.slice() : D.ordre.map(() => null),
 };
 for (const f of (B.dirs ? B.dirs.split(',') : [])) ETAT.visee[f] = D.cible[fi(f)].visee;
 /* Une recette dont l'ébullition est plus courte qu'un ajout (60′ dans une ébullition de 45′) : l'ajout
@@ -525,6 +527,25 @@ function echelleSeg() {
   });
   return seg;
 }
+/* La grille de dégustation (m4, choix du brasseur du 19.10 ; #139) : une note par famille d'un toucher
+   (pas senti, faible, moyen, marqué) ; retoucher la note revient à « pas goûté » (inconnu, D65). Le
+   radar au-dessus se redessine. Peu de mots : la note au-dessus du style passe à l'orangé, rien
+   d'autre ne s'écrit. */
+const NIV_DEG = ['pas senti', 'faible', 'moyen', 'marqué'];
+function grilleDegustation(redessiner) {
+  return h('div', { class: 'deg-grille', role: 'group', 'data-role': 'degustation', 'aria-label': 'Ma dégustation : une note par famille' },
+    D.roue.map((r) => r.f).map((f) => {
+      const i = fi(f), v = ETAT.notes[i], haut = D.continu.cible[i].haut;
+      return h('div', { class: 'deg-rang', 'data-role': 'note', 'data-famille': f },
+        h('span', { class: 'deg-nom' + (D.attendues.includes(f) ? ' attendue' : '') }, D.court[f]),
+        h('span', { class: 'deg-seg', role: 'radiogroup', 'aria-label': D.long[f] },
+          NIV_DEG.map((mot, n) => h('button', {
+            type: 'button', role: 'radio', 'aria-checked': String(v === n), class: v === n && n > haut + 0.05 ? 'trop' : null, 'data-k': 'deg-' + f + '-' + n,
+            'aria-label': D.long[f] + ' : ' + mot + (v === n ? ' (retoucher : pas goûté)' : ''),
+            onclick: (e) => { e.stopPropagation(); ETAT.notes[i] = ETAT.notes[i] === n ? null : n; redessiner(); },
+          }, mot))));
+    }));
+}
 function partieBiere(part) {
   const { exc, cpts } = phraseParts();
   part.append(h('div', { class: 'titre' }, h('span', {}, exc.map((t) => h('span', { class: 'exc' }, t + ' ')), cpts.length && !exc.length ? cpts.join(' · ') : null), lentille()));
@@ -537,12 +558,16 @@ function partieBiere(part) {
     bloc.innerHTML = '';
     if (ETAT.lentille === 'radar') {
       const ancien = rangee.querySelector('.seg'); if (ancien) ancien.remove();
-      // Radar (radar.js, intensité 0–3) : la zone en fond, ma bière pleine, la part au-dessus en accent.
+      // Radar (radar.js, m4) : ce que j'ai goûté face à la zone du style, la grille dessous.
       bloc.setAttribute('data-composant', 'radar');
-      RADAR.biere(bloc, dessiner);
+      // Les comptes de la prévision (au style, non situées) ne disent rien de la dégustation : cachés.
+      rangee.hidden = true;
+      RADAR.biere(bloc);
+      bloc.append(grilleDegustation(dessiner));
       return;
     }
     bloc.removeAttribute('data-composant');
+    rangee.hidden = false;
     const ancien = rangee.querySelector('.seg'); if (ancien) ancien.remove();
     const seg = echelleSeg(); seg.style.marginLeft = 'auto'; rangee.append(seg);
     bloc.append(h('div', { class: 'legende-f', 'aria-label': 'Sources de ma bière' },

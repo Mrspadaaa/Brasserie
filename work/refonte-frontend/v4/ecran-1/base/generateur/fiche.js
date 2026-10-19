@@ -94,10 +94,14 @@ function tableMoments(F, cle) {
 function blocArome(F) {
   const z = h('div', { class: 'f-arome', 'data-role': 'fiche-arome' });
   RADAR.roue(z, F, { W: FICHE.mode === 'bulle' ? 326 : 358, H: 246 });
-  const of = (F.aromes[0] || {}).of || 0;
-  z.append(h('p', { class: 'f-leg' }, h('span', {}, of + ' fiches'), h('i', { class: 'pt-c', 'aria-hidden': 'true' }), h('span', {}, 'cité'), h('i', { class: 'pt-m', 'aria-hidden': 'true' }), h('span', {}, 'marqué'),
-    // D65 : une famille que ses fiches ne décrivent pas est inconnue (au centre, libellé « ? »), pas à zéro.
-    F.aromes.filter((a) => a.lv).length < D.roue.length ? [h('i', { class: 'pt-i', 'aria-hidden': 'true' }), h('span', {}, 'inconnu, ce n’est pas zéro')] : null));
+  // h4 : sans légende (19.10) ; sous la roue, la réponse de ses fiches à ma demande, une famille visée
+  // par puce (le signe de la flèche, la famille, ce que disent ses fiches).
+  const lv = Object.fromEntries(F.aromes.map((a) => [a.f, a]));
+  const NIV = ['non décrit', 'cité', 'marqué'];
+  if ((D.direction || []).length) z.append(h('p', { class: 'f-dem', 'data-role': 'demande' }, D.direction.map((d) => {
+    const a = lv[d.f];
+    return h('span', { class: 'f-dem-i' }, h('b', {}, (d.sens > 0 ? '+ ' : '− ') + D.court[d.f]), ' ' + (a && a.lv ? NIV[a.lv] + ' ' + a.n + '/' + a.of : 'inconnu'));
+  })));
   return z;
 }
 /* Mon goût (aimer, exclure ; retoucher revient à neutre) et les actions d'un toucher (p02). */

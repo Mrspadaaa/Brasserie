@@ -11,7 +11,9 @@
    les traitements comme connue mais valeur à 0 ») : une famille sans donnée (non située dans ma
    bière ; décrite par aucune fiche dans Comparer et la fiche) se pose au centre, jamais sur
    l'anneau du zéro ; son libellé est gris et suivi de « ? », une marque creuse sur son axe, un
-   secteur hachuré (data-inconnu), et la légende dit « inconnu, ce n'est pas zéro ».
+   secteur hachuré (data-inconnu), et la bulle au toucher dit « inconnu, ce n'est pas zéro ». Ma bière
+   et la fiche n'ont plus de légende écrite (19.10 : « Pas besoin d'écrire la légende sur la version
+   finale ») ; Suggestions et Comparer gardent la leur jusqu'à leur intégration.
    D66 (« Pourquoi il y a cité ? ») : aucun nom d'échelle dans le dessin, où il se lisait comme la
    valeur du libellé voisin ; l'échelle est une clé de la légende, sous le radar.
    Silhouettes pleines translucides et points aux sommets ; aucune série en tirets ni en
@@ -63,7 +65,7 @@ const RADAR = (() => {
       const compte = l.compte ? { t: l.compte, gras: false, fill: GRIS } : null;
       // Sur les côtés, le compte des fiches passe sous le nom ; en haut et en bas, à sa suite.
       const lignes = !compte ? [[nom]] : Math.abs(Math.sin(ang(k))) > 0.45 ? [[nom], [compte]] : [[nom, { ...compte, t: ' ' + compte.t }]];
-      return { lignes, larg: Math.max(...lignes.map((li) => li.reduce((s, x) => s + largeur(x.t, x.gras), 0))) };
+      return { lignes, larg: Math.max(...lignes.map((li) => li.reduce((s, x) => s + largeur(x.t, x.gras), 0))), ecart: l.ecart || 0 };
     });
     // Légende, dans le SVG (ses couleurs restent celles du radar). Un élément : une pastille et
     // ses mots, ou une clé (plusieurs pastilles, chacune suivie de son mot). En colonne : une
@@ -103,9 +105,9 @@ const RADAR = (() => {
     // puis la hauteur maximale s'il y en a une.
     const demi = W / 2 + (o.deborde ?? 0);
     let R = o.Rmax || 150;
-    lib.forEach((l, k) => { const s = Math.abs(Math.sin(ang(k))); if (s > 0.1) R = Math.min(R, (demi - 2 - l.larg) / s - GAP); });
+    lib.forEach((l, k) => { const s = Math.abs(Math.sin(ang(k))); if (s > 0.1) R = Math.min(R, (demi - 2 - l.larg) / s - GAP - l.ecart); });
     const poser = (RR) => lib.map((l, k) => {
-      const a = ang(k), s = Math.sin(a), c = Math.cos(a), [x, y] = xy(a, RR + GAP), nl = l.lignes.length;
+      const a = ang(k), s = Math.sin(a), c = Math.cos(a), [x, y] = xy(a, RR + GAP + l.ecart), nl = l.lignes.length;
       const y0 = c > 0.9 ? y - (nl - 1) * LH - 3 : c < -0.9 ? y + 12 : y - ((nl - 1) * LH) / 2 + 4;
       const ancre = Math.abs(s) < 0.1 ? 'middle' : s > 0 ? 'start' : 'end';
       return { x, y0, ancre, y1: y0 - 10, y2: y0 + (nl - 1) * LH + 3 };
@@ -122,9 +124,13 @@ const RADAR = (() => {
     const reste = H - (bas - haut + 2 * PAD + legH);
     const cx = W / 2, cy = PAD - haut + reste / 2;
     const r = D3.scaleLinear().domain([o.min, o.max]).range([0, R]).clamp(true);
-    // Polygone fermé sur les 12 axes : une valeur vide se pose au centre, jamais un axe sauté.
-    const ligne = D3.lineRadial().angle((d, k) => ang(k)).radius((v) => (v == null ? 0 : r(v))).curve(D3.curveLinearClosed);
-    const P = (k, v) => xy(ang(k), v == null ? 0 : r(v));
+    // Polygone fermé sur les 12 axes : une valeur vide se pose dans le disque du centre (RC, à mi-chemin
+    // entre le centre et l'anneau du zéro), trait et marque ensemble ; jamais un axe sauté, jamais sur
+    // l'anneau du zéro, où elle se lirait « pas senti » (19.10 : le défaut relevé par le jury sur m4
+    // était aussi celui de la base).
+    const RC = o.min < 0 ? r(o.min / 2) : 0;
+    const ligne = D3.lineRadial().angle((d, k) => ang(k)).radius((v) => (v == null ? RC : r(v))).curve(D3.curveLinearClosed);
+    const P = (k, v) => xy(ang(k), v == null ? RC : r(v));
 
     const boite = h('div', { class: 'rdr-boite' });
     cont.append(boite);
@@ -236,7 +242,7 @@ const RADAR = (() => {
     for (const f of fams) {
       const k = g.axes.indexOf(f), a = k * g.pas;
       sv('path', { d: 'M0,0L' + pt(a - g.pas / 2, rb) + 'L' + pt(a, g.R) + 'L' + pt(a + g.pas / 2, rb) + 'Z', fill: 'url(#' + pid + ')', 'data-inconnu': f }, g.C.inconnu);
-      g.marque(g.P(k, 0), { ...creux(LEG, 3.5), 'stroke-width': 1.5, 'data-inconnu': f }, [h('b', {}, nomF(f)), ' : ' + mots + ', inconnu (ce n\'est pas zéro), posé au centre']);
+      g.marque(g.P(k, null), { ...creux(LEG, 3.5), 'stroke-width': 1.5, 'data-inconnu': f }, [h('b', {}, nomF(f)), ' : ' + mots + ', inconnu (ce n\'est pas zéro), posé au centre']);
     }
   }
   /* Une série : polygone fermé, plein translucide (sujet) ou en contour (repère). */
@@ -272,24 +278,31 @@ const RADAR = (() => {
     if (v > b.haut[k] + 0.05) { const e = D.continu.ecart[fi(b.axes[k])]; return 'au-dessus du style' + (e ? ' (' + e + ')' : ''); }
     return v < b.bas[k] - 0.05 ? 'sous le style' : 'dans le style';
   };
+  /* Ma bière, base v4.4 (choix du brasseur, 19.10 : « Radar: m4 h4 très bien, attention à pas surchargé
+     en texte ni en légende. Pas besoin d'écrire la légende sur la version finale ») : ce que j'ai goûté
+     (ETAT.notes, grille dessous) face à la zone du style. Pas senti = 0, sur l'anneau clair du zéro ;
+     pas goûté = inconnu (D65) : libellé gris « ? », secteur hachuré, trait et marque creuse dans le
+     disque du centre. L'orangé sur une note au-dessus du style. Sans légende : les niveaux se nomment
+     dans la grille, la bulle au toucher dit le reste. */
+  const NIVEAUX = ['pas senti', 'faible', 'moyen', 'marqué'];
   function biere(cont) {
-    const b = donneesBiere();
+    const axes = ROUE;
+    const val = axes.map((f) => ETAT.notes[fi(f)]);
+    const bas = axes.map((f) => D.continu.cible[fi(f)].bas), haut = axes.map((f) => D.continu.cible[fi(f)].haut);
+    const dessus = axes.map((f, k) => val[k] != null && val[k] > haut[k] + 0.05);
+    const pasGoute = axes.filter((f, k) => val[k] == null);
     const g = radar(cont, {
-      objet: 'biere-cible', min: -1, max: 3, anneaux: ANNEAUX_I, deborde: 12, colonne: true, Hmin: 515,
-      libelle: (f, k) => ({ gras: D.attendues.includes(f), inconnu: b.val[k] == null }),
-      legende: [{ t: 'zone', texte: 'zone du style' }, { t: 'plein', c: MOI, texte: 'ma bière' },
-        b.dessus.some(Boolean) ? { t: 'point', c: ACC, texte: 'au-dessus du style' } : null, CLE_I,
-        b.hors.length ? { t: 'centre', texte: 'au centre : non situé, ' + INCONNU } : null],
-      label: 'Radar de ma bière face à la zone du style, intensité de 0 à 3 ; ' + (b.dessus.some(Boolean) ? 'au-dessus du style : ' + b.axes.filter((f, k) => b.dessus[k]).map((f) => nomF(f).toLowerCase()).join(', ') + ' ; ' : '') + 'au centre, les familles non situées : inconnues, pas à zéro',
+      objet: 'biere-cible', min: -1, max: 3, anneaux: ANNEAUX_I, deborde: 12,
+      libelle: (f, k) => ({ gras: D.attendues.includes(f), inconnu: val[k] == null }),
+      label: 'Ma dégustation face à la zone du style, de pas senti à marqué' + (dessus.some(Boolean) ? ' ; au-dessus du style : ' + axes.filter((f, k) => dessus[k]).map((f) => nomF(f).toLowerCase()).join(', ') : '') + (pasGoute.length ? ' ; pas goûté, inconnu : ' + pasGoute.map((f) => nomF(f).toLowerCase()).join(', ') : ''),
     });
-    zone(g, b.bas, b.haut);
-    inconnus(g, b.hors, 'non situé');
-    serie(g, { nom: 'ma bière', valeurs: b.val, couleur: MOI, plein: true });
-    const src = (k) => (b.deg[k] ? 'dégusté' + (D.degustation ? ' le ' + D.degustation.date : '') : 'prévu');
-    visees(g);
-    b.val.forEach((v, k) => {
+    zone(g, bas, haut);
+    inconnus(g, pasGoute, 'pas goûté');
+    serie(g, { nom: 'ma dégustation', valeurs: val, couleur: MOI, plein: true });
+    val.forEach((v, k) => {
       if (v == null) return;
-      g.marque(g.P(k, v), b.dessus[k] ? plein(ACC, 5) : plein(MOI, 4), [h('b', {}, nomF(b.axes[k])), ' : ' + motsNiveau(v) + ', ' + position(b, k, v) + ' · ' + src(k)]);
+      const ou = dessus[k] ? 'au-dessus du style' : v < bas[k] - 0.05 ? 'sous le style' : 'dans le style';
+      g.marque(g.P(k, v), dessus[k] ? plein(ACC, 5) : plein(MOI, v === 0 ? 3 : 4), [h('b', {}, nomF(axes[k])), ' : ' + NIVEAUX[v] + ', ' + ou]);
     });
   }
 
@@ -434,9 +447,12 @@ const RADAR = (() => {
   function roue(cont, F, o) {
     const lv = Object.fromEntries(F.aromes.map((a) => [a.f, a]));
     const vals = ROUE.map((f) => (lv[f] && lv[f].lv ? lv[f].lv : null));
+    // h4 (choix du brasseur, 19.10) : ma demande (D.direction : plus de floral, moins de résineux) fléchée
+    // au bord du radar, vers l'extérieur = plus, vers le centre = moins ; ces familles en gras, écartées.
+    const dem = Object.fromEntries((D.direction || []).map((d) => [d.f, d.sens]));
     const g = radar(cont, {
       objet: 'fiche', W: o.W, Hmin: o.H, Hmax: o.H, min: -0.5, max: 2, anneaux: ANNEAUX_C,
-      libelle: (f, k) => ({ gras: D.attendues.includes(f), inconnu: vals[k] == null, compte: vals[k] ? lv[f].n + '/' + lv[f].of : null }),
+      libelle: (f, k) => ({ gras: !!dem[f], ecart: dem[f] ? 20 : 0, inconnu: vals[k] == null, compte: vals[k] ? lv[f].n + '/' + lv[f].of : null }),
       label: 'Silhouette de ' + F.nom + ' selon ses fiches : ' + (ROUE.filter((f, k) => vals[k]).map((f) => nomF(f).toLowerCase() + ' ' + lv[f].n + ' sur ' + lv[f].of).join(', ') || 'aucun arôme décrit') + ' ; les autres familles sont inconnues, pas à zéro',
     });
     inconnus(g, ROUE.filter((f, k) => vals[k] == null), 'ses fiches ne le décrivent pas');
@@ -444,6 +460,21 @@ const RADAR = (() => {
     ROUE.forEach((f, k) => {
       const v = vals[k];
       if (v != null) g.marque(g.P(k, v), marqueCitation(ENC, v), [h('b', {}, nomF(f)), ' : ' + CLASSES_C[v] + ' (' + lv[f].n + '/' + lv[f].of + ' fiches)']);
+    });
+    // Les flèches de ma demande, hors du radar (aucune valeur), en encre (jamais l'orangé d'alerte).
+    ROUE.forEach((f, k) => {
+      const s = dem[f];
+      if (!s) return;
+      const R = g.R, fl = sv('g', { transform: 'rotate(' + f1((k * 360) / g.n) + ')', 'data-demande': f, 'data-sens': s > 0 ? 'plus' : 'moins' }, g.C.visees);
+      if (s > 0) {
+        sv('line', { x1: 0, y1: -(R + 5), x2: 0, y2: -(R + 13), stroke: ENC, 'stroke-width': 2.5 }, fl);
+        sv('path', { d: 'M0,' + -(R + 21) + 'L-5,' + -(R + 12) + 'L5,' + -(R + 12) + 'Z', fill: ENC }, fl);
+      } else {
+        sv('line', { x1: 0, y1: -(R + 21), x2: 0, y2: -(R + 13), stroke: ENC, 'stroke-width': 2.5 }, fl);
+        sv('path', { d: 'M0,' + -(R + 5) + 'L-5,' + -(R + 14) + 'L5,' + -(R + 14) + 'Z', fill: ENC }, fl);
+      }
+      const p = [Math.sin(k * g.pas) * (R + 13), -Math.cos(k * g.pas) * (R + 13)];
+      g.cibles.push({ x: p[0], y: p[1], mots: [h('b', {}, nomF(f)), ' : tu en veux ' + (s > 0 ? 'plus' : 'moins') + ' ; ' + F.nom + ' : ' + (vals[k] ? CLASSES_C[vals[k]] + ' (' + lv[f].n + '/' + lv[f].of + ' fiches)' : 'inconnu, ses fiches n\'en parlent pas')] });
     });
     return g.svg;
   }

@@ -207,7 +207,14 @@ function scenario(id) {
       const viseeDir = Object.fromEntries((S.direction || []).map((d) => [d.family, Math.round((d.targetAbsolute / 33.33) * 10) / 10]));
       return { biere, cible, ecart, viseeDir };
     })(),
-    degustation: S.tasting ? { date: S.tasting.date.slice(8, 10) + '.' + S.tasting.date.slice(5, 7) } : null,
+    // Ma dégustation (m4, #139) : la note perçue par famille (0 pas senti, 1 faible, 2 moyen, 3 marqué),
+    // null = pas goûté ; lue dans S.tasting.axes (le 18.10 : seul le résineux, marqué).
+    degustation: S.tasting ? { date: S.tasting.date.slice(8, 10) + '.' + S.tasting.date.slice(5, 7), notes: (() => {
+      const ax = parFam(S.tasting.axes || []), N = { 'pas senti': 0, absent: 0, faible: 1, moyen: 2, 'marqué': 3 };
+      return ORDRE.map((f) => (ax[f] && ax[f].perceived != null && N[ax[f].perceived] != null ? N[ax[f].perceived] : null));
+    })() } : null,
+    // Ma demande (h4) : plus (+1) ou moins (−1) par famille, depuis la direction du pack.
+    direction: (S.direction || []).map((d) => ({ f: d.family, sens: Math.sign(d.crans) })),
     phrase, voiesResume: ((S.readingSummary && S.readingSummary.voies) || []).map((v) => ({ fam: v.family, texte: v.text })),
     lignes, rapides, rapidesMoment: (tousRapides[0] || {}).moment || 'b10', tousRapidesNoms: tousRapides.map((r) => r.nom),
     voies, sansHoublon, fiches: { ...FICHES_TOUTES, ...Object.fromEntries(tousRapides.map((r) => [r.nom, FICHES_TOUTES[r.nom] || r.fiche])) },
