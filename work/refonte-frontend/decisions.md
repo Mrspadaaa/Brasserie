@@ -460,3 +460,16 @@ Choix du pilote, sans question bloquante : les quatre coupes de l'auteur.
 La coupe des icônes est la plus risquée après « Les icône sont pas parlant du tout » : elle est
 signalée sur la page, et réversible si les deux icônes ne lui parlent pas. l5d reste publié à
 côté : c'est lui qui choisit.
+
+## D32 — l5f : les coupes de D31 défaites sur l'avis du critique (19.10.2026, nuit)
+
+Le critique, calibré sur les verdicts du brasseur (`fils21-choisir/critique/l5e.md`), a jugé l5e :
+- Barres et Radar en icônes muettes : la plainte « Les icône sont pas parlant du tout » reviendrait ;
+- les ronds de Comparer sont sans mot ;
+- « +1 » est sans unité ;
+- la grille se troue ;
+- la piste du résineux n'a pas de trait noir.
+Le brasseur a dit, entre-temps, « Soit pas trop contraignante pour les contrôles sur les v0 » : les
+70 mots deviennent indicatifs. Choix du pilote : l5f rend les mots, répare la grille et met le trait
+noir sur les trois pistes. l5e reste intact pour comparer. D31 est donc révisée : une icône que la
+légende doit expliquer est un défaut, pas une économie.
