@@ -25,6 +25,9 @@ Object.assign(ETATS, {
 Object.assign(ETATS, {
   w5: [['390', '', 1688], ['haut-390', '', 844], ['pousse-390', '?i=i1&pas=0', 1688], ['i4-390', '?i=i4', 1688], ['i5-390', '?i=i5', 1688], ['i6-390', '?i=i6&pas=1', 1688], ['i8-390', '?i=i8', 1688], ['fiche-390', '', 844, [['appui', '.w5-i.ouvert [data-houblon]']]]],
 });
+Object.assign(ETATS, {
+  w3b: [['390', '', 1688], ['haut-390', '', 844], ['ose-390', '?plan=ose', 1688], ['apres-390', '?m=dryPost', 1688], ['ensemble-390', '?a=ensemble', 1688], ['agrumes-390', '?cible=citrus:2,floral:1', 1688], ['mot-390', '', 844, [['clic', '[data-tok="h"]']]], ['defi-390', '?detail=defi', 1688], ['preuve-390', '?detail=preuve', 1688], ['fiche-390', '', 844, [['appui', '#phrase [data-houblon]']]], ['legende-390', '?legende', 844], ['absolu-390', '?abs', 844]],
+});
 const ids = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(ETATS);
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 for (const id of ids) for (const [suf, q, h, gestes = []] of ETATS[id] || []) {
