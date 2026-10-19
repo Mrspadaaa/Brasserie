@@ -1,0 +1,33 @@
+- **Ce qui tient** : l5e (la grille de l5b et tous les retours de l5d), avec les trois retouches de la critique (`fils21-choisir/critique/l5e.md`). l5e reste intact.
+  - **Les mots rendus** (les 70 mots sont indicatifs en exploration) :
+    - « Barres » et « Radar » sont de nouveau écrits à côté de leur icône ;
+    - le bouton dit « Comparer (3) », et le dock perd ses trois ronds de couleur, qui n'avaient pas de mot ; une voie ajoutée garde son point devant le nom du houblon ;
+    - le premier widget écrit « +1 cran », « +2 crans » ;
+    - le second widget garde « même effet » et « +2 », sans répéter « 10 g 10′ ».
+  - **La grille réparée** : les six tuiles à un houblon d'abord, deux par rangée, puis la tuile double (Motueka + Citra cryo) en pleine largeur, à la fin de son groupe.
+    - Chaque houblon y porte sa pastille et son α juste après son nom.
+    - Toutes les petites tuiles font 87 px. Plus de trou sous Celeia, plus de Citra cryo seul sur sa ligne.
+  - **Le trait noir de « ma bière »** est le même sur les trois pistes, résineux compris : plus haut que la piste et détaché de la barre par un liseré blanc. Il est nommé une fois, « ma bière », sur Moins résineux, en face de « ‹ visée ».
+  - **La fiche allégée** :
+    - les familles non décrites deviennent un simple compte (« 9 non décrites ») ; les amorces hachurées des barres disent lesquelles ;
+    - les mots anglais de la base sont traduits par un petit glossaire (« fresh lime » donne citron vert, « lemon zest » zeste de citron, « White wine » vin blanc, « gooseberry » groseille à maquereau…) ;
+    - les doublons partent (« mojito » une fois, « citrus » après « agrumes »), comme le nom de la famille répété (« Floral · floral ») ;
+    - « dank », mot du métier sans équivalent, reste en italique, marqué anglais.
+    - Les fiches passent de 62–83 mots à 50–73.
+- **Ce qui casse** :
+  - **MOTS 77** au premier écran, pour information (70 indicatifs) : +2 pour Barres et Radar, +1 pour « (3) », +2 pour « cran(s) », +2 pour « ma bière ». La rangée Nelson Sauvin / Galaxy est désormais entière au premier écran : 9 voies.
+  - **Contraste de « ma bière »** : l'étiquette était d'abord enfant du trait noir, et CONTRASTE la mesurait sur ce noir (1:1). Elle est maintenant posée à côté, sur la bande, comme « visée ».
+  - **Le point orangé du résineux** (hors du style) reste un rond sans mot.
+  - **Hallertau Blanc** reste seul sur sa rangée dans le second groupe, comme dans l5b.
+  - **Glossaire** : il traduit des mots de source ; les mots d'origine ne sont plus visibles dans la fiche.
+  - **Celeia n'a pas de fiche dans la base** : l'appui long sur elle n'ouvre rien.
+  - **Barres / Radar** ne fait rien.
+- **Contrôles** (sur `etat-b.html`, `data-cas="c1"`) :
+  - COMMUN : MOTS 77 (au-dessus de 70, pour information) ; COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE (123 mots) et PARLANT sont OK ;
+  - PISTE OK : 3 pistes de 350 px ;
+  - ALPHA OK : 15 voies sur 15 ;
+  - PLACE OK : 9 voies, 87 px ;
+  - FICHE-BASELINE OK : Motueka, 12 familles, 15 pictos, 0 faute ;
+  - les contrôles du point 8 du brief (FIL6, AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE, BLOCS) sont OK.
+- **Pire contraste** : 4,65:1, « Plus agrumes » (#856e0c, 14 px, sur #fcf8e3). Mesuré sur 2 518 textes : la page, la légende et les 9 fiches avec leurs replis. Aucun texte sous 4,5:1.
+- Générée par `generateur-l5f.mjs`, avec `tuiles-l5f.mjs`, une copie adaptée de `../l5e/tuiles-l5e.mjs`, et les données de `../l5/donnees-l5-l6.mjs`.
