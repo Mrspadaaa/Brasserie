@@ -35,7 +35,7 @@ Le brasseur, 19.10 au soir : « On peut aussi simuler un 'faux' profil aromatiqu
 
    points = 26 × [x ÷ (x + K)] ÷ [3,86 ÷ (3,86 + K)]
 
-   - L'ancre : Cascade à 3,86 g/L, 24 h, dans une bière à 5 % vol., donne 26 points d'agrumes. C'est la ligne agrumes de Lafontaine 2018 dans la lecture de H : (5,8 − 1,9) ÷ 15 × 100.
+   - L'ancre : Cascade à 3,86 g/L, 24 h, dans la bière pâle de l'essai à 4,75 % vol., donne 26 points d'agrumes. C'est la ligne agrumes du tableau 3 de Lafontaine 2018 : (5,8 − 1,9) ÷ 15 × 100. La lecture de H et le degré sont vérifiés dans `recherche/K-lafontaine-2018-verif.md`.
    - K = 4,5 pour les agrumes et 5,6 pour l'intensité globale (H §7.4).
    - K = 16 pour l'herbacé et le vert [convention].
    - L'hyperbole porte la saturation.
@@ -50,7 +50,7 @@ Le brasseur, 19.10 au soir : « On peut aussi simuler un 'faux' profil aromatiqu
    - un ajout décale cette valeur de son effet simulé.
 7. **Les crans** suivent CRANS_RULE (`levels.ts`, nouvelle fonction `cransOf`) et se lisent sur le centre.
 8. **Aucune plage n'est rognée.**
-   - Un haut au-delà de 100 reste tel quel : 1 888 familles sur 9 060 dans le fichier.
+   - Un haut au-delà de 100 reste tel quel : 1 985 familles sur 9 060 dans le fichier.
    - `largeur` = haut ÷ bas, ou `inconnu` quand le bas est nul.
    - `hautPartiel` nomme les composés sans borne haute publiée. Le vrai haut peut être plus haut, et la largeur est alors un minimum.
 
@@ -73,7 +73,7 @@ Les liens (le sens) sont sourcés. **Tous les poids chiffrés sont des [conventi
 
 ## Conventions à valider par le brasseur
 
-1. L'ancre : 15 points du panel valent 100 points de l'axe, et la bière de Lafontaine est supposée à 5 % vol.
+1. L'ancre : 15 points du panel valent 100 points de l'axe. Le degré de la bière (4,75 % vol.) n'est plus une convention : il vient de l'article (K).
 2. λ = 0,5 : forme et nuances à parts égales.
 3. Le poids des fiches : marqué 1, cité 0,5, non décrit 0.
 4. Les poids composé → famille (table ci-dessus).
@@ -107,7 +107,7 @@ Les liens (le sens) sont sourcés. **Tous les poids chiffrés sont des [conventi
   - Idaho 7 : 3MH et 3M4MP connus en somme seulement ;
   - Galaxy : 4MMP sans borne haute.
 
-  Idaho 7 sort donc probablement trop bas : agrumes 16, tropical 19 à 4 g/L. YCH lui donne pourtant le profil le plus fruité des trois (H §7.1). Sa confiance est moyenne.
+  Idaho 7 sort donc probablement trop bas : agrumes 15, tropical 18 à 4 g/L. YCH lui donne pourtant le profil le plus fruité des trois (H §7.1). Sa confiance est moyenne.
 - Verdant et Diamond donnent le même résultat (même convention). Pour Diamond, Samia mesure plus de thiols mais un fruité perçu plus faible : c'est écrit dans le drapeau, pas simulé.
 - Le cryo n'est pas simulé (composés inconnus).
 
@@ -119,9 +119,9 @@ Valeurs simulées, bande 16D 0–30 pour les familles neutres :
 
 | Famille | Citra | Cascade |
 |---|---|---|
-| Agrumes | ~37 [14–56+], cran 4 (au-dessus) | ~24 [3,9–56+], cran 2 |
-| Tropical | ~41 [18–63+], cran 4 | ~19 [2–59+], cran 2 |
-| Floral (bande 0–55) | ~35, cran 2 | ~19, cran 1 |
+| Agrumes | ~36 [13–56+], cran 4 (au-dessus) | ~23 [3,6–56+], cran 2 |
+| Tropical | ~39 [17–63+], cran 4 | ~18 [1,8–59+], cran 2 |
+| Floral (bande 0–55) | ~34, cran 2 | ~18, cran 1 |
 
 - Drapeau « Sort du style 16D » pour Citra seulement : agrumes, tropical, petits fruits.
 - Confiance bonne pour les deux.
@@ -136,16 +136,16 @@ Vraies valeurs :
 
 ### Citra 4 g/L à 60′
 
-- Écarts : agrumes +6,9, tropical +6,4, floral +4,9. Toutes les familles restent « ≈ », sous le seuil d'écart du style.
+- Écarts : agrumes +6,4, tropical +5,9, floral +4,6. Toutes les familles restent « ≈ », sous le seuil d'écart du style.
 - Bas à 0, largeur inconnue.
 - IBU ≈ 100 (80–120), avec le drapeau « Surtout de l'amertume à ce moment ». Confiance faible.
-- Pour comparer, le même ajout donne +30 aux agrumes à 10′ et au whirlpool, +36 en dry hop.
+- Pour comparer, le même ajout donne +29 aux agrumes à 10′ et au whirlpool, +35 en dry hop.
 
 ### Citra 2 g/L 3 j (J+7), puis Galaxy 2 g/L 7 j (J+10)
 
-- Agrumes ~35 [14–56+], tropical ~41 [21–63+] : cran 4 tous les deux.
-- Saturation partagée : l'ensemble vaut 71 % (agrumes) et 68 % (tropical) de la somme des deux ajouts seuls. Seuls, Citra donne +27 / +29 et Galaxy +20 / +30.
-- Tropical par jour : 0,6, 29, 30, 30 (J0 à J3), 40,5 à J4, puis 40,75 dès J6. Plus rien ensuite.
+- Agrumes ~33 [13–56+], tropical ~39 [20–63+] : cran 4 tous les deux.
+- Saturation partagée : l'ensemble vaut 72 % (agrumes) et 69 % (tropical) de la somme des deux ajouts seuls. Seuls, Citra donne +26 / +28 et Galaxy +19 / +28.
+- Tropical par jour : 0,5, 28, 28,5, 28,5 (J0 à J3), 39,1 à J4, puis 39,4 dès J6. Plus rien ensuite.
 - Drapeaux :
   - au-delà de 3 j (Galaxy) ;
   - ordre, synergie et masquage inconnus ;
@@ -157,13 +157,10 @@ Vraies valeurs :
 
 Rien n'a été recalé sur ces mesures. Elles sont ajoutées dans `mesures[]` (`type: "publiee"`), la mesure la plus proche par variété.
 
-1. **E04 (Lafontaine 2018), lecture contradictoire du tableau 3.**
-   - J lit agrumes 2,5 / 4,3 / 5,7 / 7,4 / 10,4 et herbacé/thé 1,9 / 4,4 / 5,8 / 7,1 / 7,0.
-   - H, et `docs/hop-solver.md` (« établi »), lisent l'inverse : les agrumes plafonnent, l'herbacé monte.
-   - Mon ancre (26 points) et les courbes suivent H. Si J a raison :
-     - l'ancre tombe à 21 points ;
-     - les agrumes ne plafonnent plus, c'est l'herbacé qui plafonne.
-   - **À trancher en relisant le tableau.**
+1. **E04 (Lafontaine 2018), tableau 3 : tranché par K** (`recherche/K-lafontaine-2018-verif.md`, copie OSU lue en entier).
+   - H a raison : les agrumes plafonnent (1,9 à 7,0) et l'herbacé/thé monte (2,5 à 10,4). J avait inversé les deux lignes.
+   - L'ancre de 26 points et les courbes tiennent.
+   - Seule correction : la bière de l'essai est à 4,75 % vol., pas 5 %. Le moteur écarte alors les seuils mesurés à 9,3 % ; l'activité de l'ancre passe de 2,46 à 2,70, et les points baissent d'environ 4 % partout.
 2. **E04 : part de linalol extraite de 23 % à 2 g/L, puis 7 % à 16 g/L.** Ma part retrouvée en dry hop a son centre à 53,5 % (milieu de l'enveloppe 7–100 %), quelle que soit la dose. La saturation passe par la courbe, pas par la part.
 3. **E06, dose et durée inconnues.**
    - Citra : linalol 144 µg/L (témoin 46,8), myrcène 131, géraniol 86. Moteur, à 4 g/L : 460, 690 et 219 µg/L au centre, soit ×2–5 au-dessus. Les plages du moteur (12–2 064 ; 59–2 542 ; 2–1 025) encadrent les mesures.
@@ -178,4 +175,4 @@ Rien n'a été recalé sur ces mesures. Elles sont ajoutées dans `mesures[]` (`
 
 - `npm test` du prototype : 8 fichiers, tous verts, dont 16 tests pour `profil-simule`.
 - `npm run typecheck` : vert.
-- Fichier : 1 802 550 octets. Les 9 060 familles ont leurs bornes ordonnées (bas ≤ centre ≤ haut), sans NaN.
+- Fichier : 1 800 628 octets, régénéré après la correction du degré (K). Les 9 060 familles ont leurs bornes ordonnées (bas ≤ centre ≤ haut), sans NaN.

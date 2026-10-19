@@ -177,10 +177,10 @@ describe('Houblon sans données, dégustation, déterminisme, table', () => {
     const run = () => JSON.stringify(simulerCas({ id: 'd', titre: 'd', ajouts: [aj(CITRA, 2, 'dryActive', 3, 2, 'c'), aj(GALAXY, 2, 'dryActive', 3, 2, 'g')], levure: POMONA, recette: s1Recipe(), degustation: S1_TASTING }));
     expect(run()).toBe(run());
   });
-  it('l’ancre tient : Cascade 3,86 g/L, 24 h, 5 % vol. = 26 points d’agrumes (H22)', () => {
+  it('l’ancre tient : Cascade 3,86 g/L, 24 h, 4,75 % vol. = 26 points d’agrumes (H22, vérifié par K)', () => {
     expect(pointsSimules(1e-9, 'citrus')).toBeGreaterThan(0);
     const c = simulerCas({ id: 'a', titre: 'a', ajouts: [{ houblon: CASCADE, dose_gL: 3.86, moment: 'dryPost', jours: 1 }], levure: US05,
-      recette: { name: 'ancre', styleCode: '', volumeL: 20, og: 1.05, boilMin: 60, yeastId: US05, abv: 5, additions: [] }, complet: false });
+      recette: { name: 'ancre', styleCode: '', volumeL: 20, og: 1.05, boilMin: 60, yeastId: US05, abv: 4.75, additions: [] }, complet: false });
     expect(c.apres.citrus.centre).toBeCloseTo(26, 1);
   });
   it('chaque poids de la table porte sa source ou « [convention] », et chaque source existe', () => {

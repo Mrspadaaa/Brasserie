@@ -32,7 +32,7 @@ export const MENTION_SIMULE = 'Profil simulé : couche de lecture, pas une mesur
 export const PROFIL_RULE = [
   'Rapport au seuil simulé d’un composé : R = charge (moteur) × part retrouvée simulée (moment) × part extraite (jours) ÷ seuil (moteur), en { bas, centre, haut }.',
   'Activité d’une famille : A = (1 − λ) × ΣR × forme des fiches + λ × Σ poids × R des composés reliés (correspondance-familles.json) ; λ = 0,5 [convention].',
-  'Points 0–100 : x = 3,86 g/L × A ÷ A(agrumes de Cascade 3,86 g/L, 24 h, 5 % vol.) ; points = 26 × [x ÷ (x + K)] ÷ [3,86 ÷ (3,86 + K)] ; K = 4,5 (agrumes), 5,6 (intensité), 16 (herbacé) (H22, H §7.4).',
+  'Points 0–100 : x = 3,86 g/L × A ÷ A(agrumes de Cascade 3,86 g/L, 24 h, 4,75 % vol.) ; points = 26 × [x ÷ (x + K)] ÷ [3,86 ÷ (3,86 + K)] ; K = 4,5 (agrumes), 5,6 (intensité), 16 (herbacé) (H22, H §7.4).',
   'Plusieurs ajouts : activités additionnées avant la courbe : la saturation est partagée ; ordre, synergie et masquage inconnus.',
   'Levure, dry hop actif seulement : géraniol → citronellol (Pomona, centre 50 %) ; thiols libérés des précurseurs (Verdant, Diamond, centre 0,1 %) [convention].',
   'Dégustation du brasseur : elle prime (milieu de sa classe) ; l’ajout la décale de son effet simulé.',
@@ -161,7 +161,7 @@ export function courbeDe(f: FamilyId): { K: number; id: 'agrumes' | 'intensite' 
   return { K: C.courbes.intensite.K, id: 'intensite' };
 }
 let aRefCache: number | null = null;
-/** Activité agrumes de l'ancre : Cascade 3,86 g/L, dry hop après fermentation, 24 h, bière à 5 % vol. (H22). */
+/** Activité agrumes de l'ancre : Cascade 3,86 g/L, dry hop après fermentation, 24 h, bière à 4,75 % vol. (H22, vérifié par K). */
 export function activiteAncre(): number {
   if (aRefCache != null) return aRefCache;
   const r: RecettePouvoir = { name: 'ancre H22', styleCode: '', volumeL: 20, og: 1.05, boilMin: 60, yeastId: 'fermentis-us05', abv: ANCRE.abv, additions: [] };

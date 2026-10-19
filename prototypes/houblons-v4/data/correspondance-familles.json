@@ -79,9 +79,9 @@
   "courbes": {
     "note": "Activité d'une famille → points de l'échelle 0–100 (style-bands.json), en dose équivalente Cascade : x = 3,86 g/L × activité ÷ activité agrumes de l'ancre ; points = 26 × [x ÷ (x + K)] ÷ [3,86 ÷ (3,86 + K)]. Hyperbole : la saturation (H §7.4).",
     "ancre": {
-      "houblon": "beermaverick-cascade", "doseGL": 3.86, "moment": "dryPost", "jours": 1, "abv": 5, "famille": "citrus", "points": 26,
+      "houblon": "beermaverick-cascade", "doseGL": 3.86, "moment": "dryPost", "jours": 1, "abv": 4.75, "famille": "citrus", "points": 26,
       "sources": ["H22"],
-      "chiffre": "Lafontaine 2018 (H22), Cascade 3,86 g/L, 24 h : agrumes 5,8 contre 1,9 au témoin, sur 15 ; (5,8 − 1,9) ÷ 15 × 100 = 26. [convention] : 15 points du panel = 100 points de l'axe ; bière de l'essai supposée à 5 % vol."
+      "chiffre": "Lafontaine 2018 (H22), Cascade 3,86 g/L, 24 h : agrumes 5,8 contre 1,9 au témoin, sur 15 ; (5,8 − 1,9) ÷ 15 × 100 = 26. [convention] : 15 points du panel = 100 points de l'axe. Bière de l'essai : pâle non houblonnée à 4,75 % vol. (méthodes de l'article, vérifié dans recherche/K-lafontaine-2018-verif.md, qui confirme aussi la lecture du tableau 3 par H)."
     },
     "agrumes": { "K": 4.5, "familles": ["citrus"], "sources": ["H22", "H"], "chiffre": "demi-dose ≈ 4,5 g/L des agrumes (H §7.4, hyperbole ajustée sur H22) ; les agrumes plafonnent dès 8 g/L" },
     "intensite": { "K": 5.6, "familles": ["tropical", "stoneFruit", "pomeFruit", "berries", "melon", "floral", "resin", "spice", "earthy"], "sources": ["H22", "H"], "chiffre": "demi-dose ≈ 5,6 g/L de l'intensité globale (H §7.4) ; [convention] : appliquée aux familles sans courbe propre" },
