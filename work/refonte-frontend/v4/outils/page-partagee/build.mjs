@@ -97,10 +97,10 @@ figcaption{font-size:12px;padding:5px 2px 0;display:flex;gap:6px;min-width:0}
 figcaption b{font-weight:600;flex:none}
 figcaption span{color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .viewer{position:fixed;inset:0;background:var(--shade);display:flex;flex-direction:column;align-items:center;z-index:5}
-.bar{width:100%;max-width:430px;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));background:var(--panel);color:var(--ink)}
+.bar{width:100%;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));background:var(--panel);color:var(--ink)}
 .bar b{flex:1;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar button{border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14px;border-radius:8px;min-width:36px;min-height:34px;cursor:pointer}
-.frame{flex:1;width:100%;max-width:430px;background:#fff;border:0;padding-bottom:env(safe-area-inset-bottom,0px)}
+.frame{flex:1;width:100%;background:#fff;border:0;padding-bottom:env(safe-area-inset-bottom,0px)}
 </style>
 <div class="wrap">
   <h1>Houblons, base ${VERSION}</h1>
