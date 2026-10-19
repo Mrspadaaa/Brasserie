@@ -146,6 +146,9 @@ Voir `decisions.md` (D1 à D12).
   - représentations distinctes r1 à r3 (adda9af009048910c), qui attend le JSON et la recherche.
   - recherche J, comparatifs dry hop × variétés (Haiku, ab952db6fe3db486e) :
     `recherche/J-comparatifs-dryhop-varietes.md` et `fils21-choisir/donnees/comparatifs-dryhop.json`.
+  - ladder e1 à e3 (af4ed4521b57e6e1c) et exploration x1 à x5 (a358d8d7f2bd5f6e9 : 2 tièdes, 2 chaudes,
+    1 froide, règle D22), à la demande « Fait plus de lot de mini maquettes avec un vrai ladder et des
+    vrai exploration ». Ils attendent aussi les deux JSON.
   Règle L3 de D94 corrigée (« il faut que ça se voit pas que ce soit effacé ») : une plage énorme se
   montre en bande. Les quatre agents en ont été prévenus.
   À l'arrivée du JSON : prévenir s et r (SendMessage). À l'arrivée de la recherche : transmettre ses

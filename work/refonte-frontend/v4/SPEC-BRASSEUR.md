@@ -235,7 +235,8 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
     sur la chimie et le langage du brasseur : « Les deux se complément » ; « Je veux aussi des vrais
     valeur » (D94 ; lot 21, `fils21-choisir/`) ; sur la règle qui effaçait les plages énormes :
     « Si il y a des écart x100 justement il faut que ça se voit pas que ce soit effacé » (D94 L3
-    corrigée) ; « Aussi trouve plus de comparatif entre dryhop et variété de houblons » (recherche J).
+    corrigée) ; « Aussi trouve plus de comparatif entre dryhop et variété de houblons » (recherche J) ;
+    « Fait plus de lot de mini maquettes avec un vrai ladder et des vrai exploration » (e1–e3, x1–x5).
   - Leçon : « les barres de l5b » voulait dire aussi ses pistes d'objectif, pas seulement ses barres
     de voie. Quand une demande désigne un élément d'une autre variante, reprendre tous ses éléments du
     même genre sur l'écran, ou demander lequel.
