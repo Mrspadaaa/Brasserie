@@ -1,0 +1,343 @@
+{
+ "u1": [
+  {
+   "nom": "loupes",
+   "etapes": [
+    [
+     "shot",
+     "avant-mots"
+    ],
+    [
+     "tap",
+     "#loupes button[data-mode=main]"
+    ],
+    [
+     "shot",
+     "apres-main"
+    ],
+    [
+     "tap",
+     "#loupes button[data-mode=verre]"
+    ],
+    [
+     "shot",
+     "apres-verre"
+    ],
+    [
+     "tap",
+     "#plus"
+    ],
+    [
+     "shot",
+     "apres-dose8"
+    ],
+    [
+     "tap",
+     ".rang[data-fam=floral]"
+    ],
+    [
+     "shot",
+     "feuille-floral"
+    ]
+   ]
+  },
+  {
+   "nom": "galaxy",
+   "etapes": [
+    [
+     "tap",
+     "#paires .puce[data-i='1']"
+    ],
+    [
+     "tap",
+     "#loupes button[data-mode=verre]"
+    ],
+    [
+     "shot",
+     "citra-galaxy-verre"
+    ],
+    [
+     "tap",
+     ".pq[data-pq='4MMP']"
+    ],
+    [
+     "shot",
+     "feuille-4mmp"
+    ]
+   ]
+  }
+ ],
+ "u2": [
+  {
+   "nom": "galaxy7",
+   "etapes": [
+    [
+     "shot",
+     "avant-citra3-galaxy7"
+    ],
+    [
+     "drag",
+     ".poignee[data-i=\"1\"]",
+     -70,
+     0
+    ],
+    [
+     "shot",
+     "apres-galaxy3j"
+    ],
+    [
+     "drag",
+     ".froid-p",
+     -70,
+     0
+    ],
+    [
+     "shot",
+     "apres-froid-J10"
+    ]
+   ]
+  },
+  {
+   "nom": "idaho",
+   "query": "?preset=2",
+   "etapes": [
+    [
+     "shot",
+     "avant-idaho7-stock"
+    ],
+    [
+     "tap",
+     "#dm"
+    ],
+    [
+     "shot",
+     "apres-1gL"
+    ]
+   ]
+  },
+  {
+   "nom": "ensemble",
+   "query": "?preset=3",
+   "etapes": [
+    [
+     "shot",
+     "avant-us05"
+    ],
+    [
+     "tap",
+     "#levures button[data-l=lalbrew-pomona]"
+    ],
+    [
+     "shot",
+     "apres-pomona"
+    ],
+    [
+     "tap",
+     ".dr[data-dr=bio]"
+    ],
+    [
+     "shot",
+     "feuille-bio"
+    ]
+   ]
+  }
+ ],
+ "u3": [
+  {
+   "nom": "moment",
+   "etapes": [
+    [
+     "shot",
+     "avant-10min"
+    ],
+    [
+     "drag",
+     "#gA",
+     -229,
+     0
+    ],
+    [
+     "shot",
+     "apres-60min"
+    ],
+    [
+     "drag",
+     "#gA",
+     343,
+     0
+    ],
+    [
+     "shot",
+     "apres-dryhop"
+    ],
+    [
+     "tap",
+     "#deux"
+    ],
+    [
+     "shot",
+     "apres-dryhop-plus-60"
+    ],
+    [
+     "tap",
+     ".vase[data-c=linalol]"
+    ],
+    [
+     "shot",
+     "feuille-linalol"
+    ]
+   ]
+  },
+  {
+   "nom": "ekg",
+   "etapes": [
+    [
+     "tap",
+     "#houblons .puce[data-h=ekg]"
+    ],
+    [
+     "shot",
+     "ekg-10min"
+    ]
+   ]
+  }
+ ],
+ "u4": [
+  {
+   "nom": "nuage",
+   "etapes": [
+    [
+     "shot",
+     "avant-citra-cascade"
+    ],
+    [
+     "tap",
+     "#verrous .puce[data-k=seuil]"
+    ],
+    [
+     "shot",
+     "apres-seuil-fixe"
+    ],
+    [
+     "tap",
+     "#verrous .puce[data-k=transfert]"
+    ],
+    [
+     "shot",
+     "apres-seuil-et-part-fixes"
+    ],
+    [
+     "tap",
+     ".rg .val[data-c=linalol]"
+    ],
+    [
+     "shot",
+     "feuille-linalol"
+    ]
+   ]
+  },
+  {
+   "nom": "galaxy",
+   "etapes": [
+    [
+     "tap",
+     "#paires .puce[data-i=\"3\"]"
+    ],
+    [
+     "shot",
+     "galaxy-idaho7"
+    ],
+    [
+     "tap",
+     "#moments button[data-m=wp]"
+    ],
+    [
+     "shot",
+     "galaxy-idaho7-whirlpool"
+    ]
+   ]
+  }
+ ],
+ "u5": [
+  {
+   "nom": "mur",
+   "etapes": [
+    [
+     "shot",
+     "avant-premier-ecran"
+    ],
+    [
+     "tap",
+     ".case[data-v=Cascade][data-c=\"4MMP\"]"
+    ],
+    [
+     "shot",
+     "feuille-cascade-4mmp"
+    ],
+    [
+     "tap",
+     ".feuille .fermer"
+    ],
+    [
+     "scroll",
+     560
+    ],
+    [
+     "shot",
+     "apres-strip-cascade-4mmp"
+    ],
+    [
+     "tap",
+     "#dp"
+    ],
+    [
+     "shot",
+     "apres-8gL"
+    ],
+    [
+     "scroll",
+     1100
+    ],
+    [
+     "shot",
+     "verifs-lectures-trous"
+    ]
+   ]
+  }
+ ],
+ "u6": [
+  {
+   "nom": "carte",
+   "etapes": [
+    [
+     "shot",
+     "avant-au-nez-citra-cascade"
+    ],
+    [
+     "tap",
+     "#vues button[data-v=thiol]"
+    ],
+    [
+     "shot",
+     "apres-chimie-4mmp"
+    ],
+    [
+     "tap",
+     "#carte .h[data-k=idaho7]"
+    ],
+    [
+     "shot",
+     "apres-citra-idaho7"
+    ],
+    [
+     "tap",
+     "#vues button[data-v=ger]"
+    ],
+    [
+     "shot",
+     "apres-chimie-geraniol"
+    ]
+   ]
+  }
+ ]
+}
