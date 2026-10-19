@@ -14,7 +14,7 @@ Jusqu'ici, rien n'était consigné en un seul endroit. Cet index réunit ce qui 
 | `docs/research/fermentation/` (= `functions/reports/fermentation-2026.md`) | Synthèse fermentation ; registre de 40 sources et 4 lacunes déclarées |
 | `docs/research/yeast-*.md`, `yeast-enrichment/`, `nolo-*.md` | Levures : fenêtres des fabricants, catalogue (1 733 fiches), dosage, sans alcool |
 | `work/refonte-frontend/v4/recherche/A–G` (18.10) | Conception UX (A–D, F, G) ; **E-donnees-houblon** : données houblon et recommandations pour le moteur |
-| `work/refonte-frontend/v4/recherche/H-choisir-deux-houblons.md` (19.10) | État de l'art « choisir deux houblons », dry hop, biotransformation, levure (en cours) |
+| `work/refonte-frontend/v4/recherche/H-choisir-deux-houblons.md` (19.10) | État de l’art « choisir deux houblons » : Citra contre Cascade chiffrés, dry hop (dose, durée, ajouts successifs), seuils de perception, taux de transfert, stout 16D, levures, vieillissement ; table « faisable / pas faisable » ; 93 sources, chaque constat marqué établi, nouveau ou contredit |
 | `work/refonte-frontend/v4/ecran-1/fils19-choix/` | `DIAGNOSTIC.md` (Citra = Cascade dans V5.5) et `INVENTAIRE.md` (ce que le code fait déjà) |
 | `src/data/*Bootstrap.json`, `tests/fixtures/hopScientific/`, `tests/scientific/` | Ce qui est réellement installé et vérifié : 34 notes de recherche, lots publics (6 références, 88 mesures), courbe de dose de Lafontaine, lots Cascade 2015, DM303, Samia 2024 |
 | Issues #119, #122, #124–#128, #131, #132, #137, #139, #140 | Besoins du brasseur et critères ; pas de science |

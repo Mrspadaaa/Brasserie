@@ -233,6 +233,10 @@ Voir `decisions.md` (D1 à D12).
     - « Ajouter à 10′ » est encore fixe, alors qu'il doit venir des voies du modèle (demande du
       19.10, toujours ouverte) ;
     - Celeia n'a pas de fiche dans le pack.
+  - **Sur l8** : « Visuellement horrible, mais la manière dont sont disposés les choses j'aime
+    beaucoup !! ». Décision du pilote : garder la disposition (matrice famille × voie, moments en
+    titre, tri par colonne) et refaire l'habillage en trois versions, l8b (q2b et v3), l8c (Cave)
+    et l8d (Tuiles), chez l'auteur de l7–l9.
   - **Lot 18 livré, à choisir** : onze baselines sur q2b. Les contrôles, rejoués par le pilote, sont
     tous OK (FIL6 11/11, MOTS, COULEURS 11/11, AU-STYLE, AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE,
     SURVOL, BLOCS, FICHE 11/11, STANDARD ×11). Publication : page des fils de fer, version 14,
