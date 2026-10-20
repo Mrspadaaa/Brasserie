@@ -134,6 +134,26 @@ Voir `decisions.md` (D1 à D12).
   cours. Fils de la page : tous répondus et résolus, sauf « Les bar de ce type… », non envoyé à
   Claude. À faire valider par lui : l8 (l8g ou l8h ; trait l8e ou l8f) contre l5 (l5e ou l5d) ; les
   conventions [H] du moteur ; les icônes Barres et Radar de l5e (D31).
+- **PAUSE, ~3 h (20.10) : lire en premier à la reprise.** Le brasseur : « on va continuer une autre
+  fois quand le quota serà up. push tout ça pour avoir une sauvegar ».
+  - Branche `claude/refonte-houblons-v4` poussée sur origin, à sa demande, pour la sauvegarde. Pas
+    de PR ni de merge.
+  - Tout est commité. Hors commit, et volontairement : `.codex/hooks.json`,
+    `source4-portable-bundle-manifest-01.json` (interdits), et `pistes-l5f.png` à la racine (capture
+    laissée par un auteur, à ranger ou à supprimer avec son accord).
+  - Les pages `etat.html` ne sont pas versionnées : les générateurs (`generer*.mjs`,
+    `generateur-*.mjs`) les refont à partir de `donnees/profils-simules.json` et de
+    `comparatifs-dryhop.json`, eux versionnés.
+  - Page des fils de fer : version 24 (les cinq améliorées y1b, s3b, x3b, v1b, w3b, les relances
+    r3b, a2b, e4, puis les 41 v0).
+  - Aucun agent en cours.
+  - En attente du brasseur :
+    - laquelle des cinq devient l'outil, seule ou combinée ;
+    - les conventions du moteur (`fils21-choisir/donnees/PROFIL-SIMULE.md`) ;
+    - l8 ou l5 ;
+    - la porte B.
+  - Cartes de session proposées : `task_f715d650` (traduire les descripteurs anglais des fiches) et
+    `task_8db44248` (fiche houblon : mots dédoublonnés).
 - **Mise à jour, ~2 h 30 (20.10)** :
   - page des fils de fer : version 22 (41 premiers écrans du lot 21 v0) et version 23 (les cinq
     améliorées et trois relances, dans l'ordre du critique : y1b, s3b, x3b, v1b, w3b ; puis r3b, a2b,
