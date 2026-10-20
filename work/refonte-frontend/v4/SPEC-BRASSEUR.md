@@ -256,6 +256,30 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
     de voie. Quand une demande désigne un élément d'une autre variante, reprendre tous ses éléments du
     même genre sur l'écran, ou demander lequel.
   — 19.10, soir.
+- **Le lot 21, son retour (20.10, après la pause)**, mot pour mot :
+  - « y1b est de mon point de vue semble meilleur. »
+  - « Parcontre problème gloabal, pas de comparaison de houbon 1:1 donc ça nous aide pas à choisir si
+    cascade, idaoh7, galaxy est mieux dans ntore cas. Manque aussi la partie chimie. »
+  - « pas de radar grpah ? »
+  - « regarde aussi ce que ça va coûter en compute, à quell point en backend une variante est plus
+    problèmatique. on peut aussi se dire que on force la comparaison dry hopping biotransfo seulement
+    si c'est trop lourd. »
+  - « j'aime bien aussi la y3 même si la molette prends trop de place, mais la panel osu j'aime
+    assez » ; « la version w2 est pas trop mal dans la manière de comparé » ; « la v1 donne une
+    meilleur vu de comparaison sur des vrai valeur mais de manière un peu trop ostère ».
+  - « La x3b est aussi interessant mais dur à lire. mais ça peut être interessant de l'utiliser jsute
+    pour de la comparaison entre ma bière de base -> 1 dry hop, 2 dry hop: levure ».
+  - « a2b est interessant mais peut être pas en main. voir ce que la levure change reset vraiment
+    interessant ».
+  - « pour l5f très bien mais manque des info, là on a l'impression que motueka est ultra fruité.
+    nelson sauvin est un houbon ordinaire alors que c'est un un houbon incroyable ».
+  - « épicé l'icone est toujours pas bon.. »
+  - « d1, tout ouvert était aussi interessant mais trop bordélique. »
+  - « aussi problème global, on a plusieur confusion entre timing, comparaison, houbons side by side,
+    on aurais suggestions, comparer, substituer, dryhopper ect ect.. il faudrait voir ce que l'on peut
+    faire. »
+  - « met le registre à jour avec ces feedback pour être prêt à reprendre ».
+  — 20.10.
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce

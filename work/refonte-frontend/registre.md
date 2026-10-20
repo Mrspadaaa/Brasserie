@@ -134,6 +134,58 @@ Voir `decisions.md` (D1 à D12).
   cours. Fils de la page : tous répondus et résolus, sauf « Les bar de ce type… », non envoyé à
   Claude. À faire valider par lui : l8 (l8g ou l8h ; trait l8e ou l8f) contre l5 (l5e ou l5d) ; les
   conventions [H] du moteur ; les icônes Barres et Radar de l5e (D31).
+- **RETOUR DU BRASSEUR SUR LE LOT 21 (20.10, après la pause) : c'est le point de départ de la
+  reprise.** Ses mots exacts sont dans SPEC-BRASSEUR.md (« Le lot 21, son retour ») ; les plaintes à
+  transformer en contrôles sont dans DEFAUTS-RECURRENTS.md (« À contrôler, lot 21 »).
+  - **Son choix** : « y1b est de mon point de vue semble meilleur » (le brassin au doigt).
+  - **Ce qu'il garde ailleurs** :
+    - y3, « même si la molette prends trop de place », pour son panel OSU ;
+    - w2, pour « la manière de comparé » ;
+    - v1 : « une meilleur vu de comparaison sur des vrai valeur mais de manière un peu trop ostère » ;
+    - x3b, « interessant mais dur à lire », à réserver à « ma bière de base -> 1 dry hop, 2 dry hop:
+      levure » ;
+    - a2b, « peut être pas en main », mais « voir ce que la levure change reset vraiment interessant » ;
+    - l5f, « très bien mais manque des info » ;
+    - d1 « tout ouvert », intéressant mais « trop bordélique ».
+  - **Problèmes globaux, à traiter en premier** :
+    1. **Pas de comparaison 1:1 de houblons** : « ça nous aide pas à choisir si cascade, idaoh7,
+       galaxy est mieux dans ntore cas ». Et « Manque aussi la partie chimie ».
+    2. **« pas de radar grpah ? »** Le radar a disparu du lot 21. À remettre, au moins dans la
+       comparaison : base radar D3 (lot 7, p04) et radar de Comparer (lot 16, r2 ou r3, choix encore
+       en attente).
+    3. **Les écrans se confondent** : « plusieur confusion entre timing, comparaison, houbons side by
+       side, on aurais suggestions, comparer, substituer, dryhopper ect ect.. il faudrait voir ce que
+       l'on peut faire ». Il faut une architecture : une question = un outil, et des passages
+       clairs entre eux.
+    4. **Le coût de calcul** : « regarde aussi ce que ça va coûter en compute, à quell point en
+       backend une variante est plus problèmatique ». Repli qu'il accepte : « on force la comparaison
+       dry hopping biotransfo seulement si c'est trop lourd ».
+    5. **Les données trompent sur certains houblons** : avec l5f, « on a l'impression que motueka est
+       ultra fruité. nelson sauvin est un houbon ordinaire alors que c'est un un houbon incroyable ».
+       Constat du pilote : la fiche de Nelson Sauvin
+       (`fils18-baseline/captures/l8g-fiche-390.png`) ne montre qu'agrumes 1/2 et épicé 1/2, puis
+       « sans famille : vin blanc, fruité, groseille à maquereau +6 » et « 10 non décrites ». Les mots
+       qui font Nelson Sauvin sortent donc des 12 familles, et il paraît ordinaire. La cause reste à
+       confirmer dans le pack (structure de pack-fiches.json non relue). Revoir le rattachement des mots aux familles, ou leur donner une place
+       visible.
+    6. **« épicé l'icone est toujours pas bon.. »**, deuxième plainte sur ce picto, après « pico épice
+       très étrange, plutôt vanille, canelle ? » (lot 15). Les grains de poivre ne passent pas non plus.
+  - **Prochaines actions proposées**, dans l'ordre :
+    1. Architecture des outils houblons : lister ses questions, puis Suggestions, Comparer (1:1),
+       Substituer, Dry hop (timing), Levure. Une entrée par question et les ponts entre elles, en fil
+       de fer, à lui montrer avant tout lot.
+    2. Un comparateur 1:1 pour notre cas (stout 16D) : Cascade, Idaho 7 ou Galaxy, côte à côte, avec
+       la chimie (huile, thiols, linalol, rattachés à leurs familles), le radar, les vraies valeurs
+       sobres de v1 rendues moins austères, la manière de w2 et le panel OSU de y3.
+    3. y1b comme outil du « quand », et x3b réduit à « ma bière → +1 dry hop → +2 dry hops →
+       levure ».
+    4. Étude de coût : où tourne le moteur (dans le navigateur ou sur un serveur), le poids de la
+       grille (1,8 Mo), le temps de calcul par variante ; ce qui oblige à précalculer ou à limiter ;
+       le repli « dry hop et biotransformation seulement si trop lourd ».
+    5. Nelson Sauvin et Motueka : relire leurs fiches et le rattachement des descripteurs
+       (describeFamilies, correspondance-familles.json), et corriger la représentation.
+    6. Un nouveau picto « épicé », en variantes, que le brasseur choisit.
+  - Rien n'est lancé : il reprendra « quand le quota serà up ».
 - **PAUSE, ~3 h (20.10) : lire en premier à la reprise.** Le brasseur : « on va continuer une autre
   fois quand le quota serà up. push tout ça pour avoir une sauvegar ».
   - Branche `claude/refonte-houblons-v4` poussée sur origin, à sa demande, pour la sauvegarde. Pas
