@@ -255,11 +255,13 @@ for (const h of Object.values(HOPS)) {
     ${P.sections.map(([id, t, corps]) => `<div class="w fi-sec" data-sec-corps="${id}" hidden aria-label="${t}">${corps}</div>`).join('')}
   </section>`;
 }
-export const FICHE_JS = `
-const FICHES = ${JSON.stringify(FICHES)};
+// Les fiches embarquées : toutes (e1–e3), ou seulement celles des houblons que la page nomme (e4, page allégée).
+export const ficheJS = (noms) => `
+const FICHES = ${JSON.stringify(noms ? Object.fromEntries(noms.map((n) => [n, FICHES[n]])) : FICHES)};
 const VOIES = {};
 function rendFiche(nom, mode) { RACINE.className = 'mode-' + mode; const html = FICHES[nom]; RACINE.innerHTML = mode === 'bulle' ? html.replace(/<div class="fi-voile"[^>]*><\\/div>/, '') : html; }
 ${K.GESTE_JS}`;
+export const FICHE_JS = ficheJS(null);
 
 // ---------- la légende (derrière le « ? ») ----------
 const li = (c, m) => `<span class="leg-i"><span class="leg-c">${c}</span><span>${m}</span></span>`;
@@ -396,7 +398,7 @@ export const CSS = T.CSS + `
 `;
 
 // ---------- le gabarit ----------
-export const page = ({ titre, commentaire, css = '', corps, donnees, script }) => `<!doctype html>
+export const page = ({ titre, commentaire, css = '', corps, donnees, script, fiches = null }) => `<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -414,7 +416,7 @@ ${T.SPRITE}
 <section class="preuves" data-role="preuves" role="dialog" aria-label="Les preuves" hidden></section>
 <div id="fiche-racine"></div>
 <script>const DONNEES = ${JSON.stringify(donnees)};</script>
-<script>${K.LENTILLE_JS}${T.LEGENDE_JS}${FICHE_JS}</script>
+<script>${K.LENTILLE_JS}${T.LEGENDE_JS}${fiches ? ficheJS(fiches) : FICHE_JS}</script>
 <script>${script}</script>
 </body>
 </html>
