@@ -139,9 +139,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `systeme.mjs mission` refuse une voie d'interface hors Opus ou Fable, et une relecture d'interface sans critique
 
 ### L26 — Une variante qui reprend un socle préfixe ses classes et assemble son code sans remplacement de chaîne
-- Erreur : 22.10, lot 22, cinq variantes sur douze cassées en silence par le socle importé (l8g, fiche g1). `.rep`, `.lg-v`, `.vl`, `.lg-z` ont déplacé ou masqué des rendus ; `.r-bord` a effacé les hachures « inconnu » de la fiche ; un `$$` passé par `String.replace` est devenu `$` et a cassé l'appui long. Tous les contrôles étaient verts.
+- Erreur : 22.10, lot 22, cinq variantes sur douze cassées en silence par le socle importé (l8g, fiche g1) : classes partagées (`.rep`, `.r-bord`…), un `$$` devenu `$` par `String.replace`. Tous les contrôles étaient verts. Le pilote l'a refait le 22.10 dans un script de LECONS.md.
 - Cause : les classes de la variante partageaient l'espace de noms du socle, et le code client était assemblé par remplacement de chaînes.
-- Faire : préfixer ses classes (`r6x-…`) ; assembler le code client par `split/join` ou une fonction de remplacement ; capturer aussi l'état ouvert et la fiche, et les ouvrir (L12).
+- Faire : préfixer ses classes (`r6x-…`), un nom par rôle, et ses globales JS (script dans une fonction immédiate) ; assembler le code par `split/join` ou des indices ; capturer aussi l'état ouvert et la fiche, et les ouvrir (L12).
 - Rôles : concepteur, auteur
 - Contrôle : aucun ; seules les captures ouvertes l'ont montré
 
@@ -154,9 +154,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 
 ## Mécanisées
 
-- M07 (L08) — Vérifier les entrées avant l'éventail : le 20.10, 33 variantes sur un moteur à un mauvais taux d'alcool ; le 22.10, le contrôle des entrées comptait les groupes `{ source, mots[] }` au lieu des mots (lire une entrée réelle avant d'écrire une formule). `npm run check:engine` et `controle-entrees-lot22.mjs` (D102 : régénération comparée, recalcul, témoin `--temoin`). Au-delà du JSON, tracer une fois la représentation obligatoire sur les vraies données (22.10 : des « haut » hors domaine ont saturé le radar des douze variantes, D103).
+- M07 (L08) — Vérifier les entrées avant l'éventail : le 20.10, 33 variantes sur un moteur à un mauvais taux d'alcool ; le 22.10, le contrôle des entrées comptait les groupes `{ source, mots[] }` au lieu des mots (lire une entrée réelle avant d'écrire une formule). `npm run check:engine` et `controle-entrees-lot22.mjs` (D102). Tracer une fois la représentation obligatoire sur les vraies données (des « haut » hors domaine ont saturé le radar, D103), et calculer l'écart qu'un aperçu montrera avant de le dessiner (r6n2 : Pomona ≈ 0).
 - M08 (L09) — Chaque chemin cité existe : le 22.10, un brief citait `scripts/profil-simule-cas.ts` au lieu de `prototypes/houblons-v4/scripts/`. `systeme.mjs mission` vérifie les sources de MISSION.md ; passer les chemins des VOIE.md par Glob.
-- M09 — Planche de picto : le 22.10, sept épices refusées d'un bloc, puis six genres dont cinq rejetés par le critique. `controle-planche-picto.mjs` (D101) : `--refuses` (idées et dessins refusés), `--genres=N`, `--voisins=` (les familles de même silhouette : un risque nommé dans la NOTE se montre), rien sous 12 px.
+- M09 — Planche de picto : quatre refus du picto « épicé » au 22.10. `controle-planche-picto.mjs` (D101) : `--refuses`, `--genres=N`, `--voisins=` (familles de même silhouette), `--ter`, `--epices=N`, rien sous 12 px. La lisibilité n'est pas mesurée : nommer chaque picto sur une loupe en vrais pixels ([[pictos-familles]]).
 - M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle : le 22.10, les deux `\b` de D98 étaient des 0x08 (table `NOMME` morte, vue par la voie r6i), comme le `—` du pilote devenu un tiret. `systeme.mjs cablage` refuse tout caractère de contrôle dans les scripts de contrôle (témoin « échappement devenu caractère de contrôle »).
 - M11 (L16) — Tout livrable d'agent est un fichier du dépôt : `JURY-VERDICT.md` annoncé, jamais produit. `systeme.mjs voies` rejoue les critères de chaque voie au lieu de croire son rapport.
 - M12 — Une variante rejetée est relancée ou écartée, et des écrans ne sont finis qu'une fois publiés : le 22.10, 6 rejets du lot 22 laissés en plan et aucun lien. `systeme.mjs voies` échoue sinon.

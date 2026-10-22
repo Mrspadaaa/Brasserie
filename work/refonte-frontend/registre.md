@@ -13,7 +13,9 @@ l'app, puis dans l'app après la porte B (fermée tant qu'il ne l'ouvre pas). Is
 ## Où est l'état (22.10)
 
 - **Reprise du lot 21** (lot 22 Comparer et sa reprise r6n, picto « épicé » r4d, lot 23 Dryhopper r7) :
-  `work/missions/2026-10-22-reprise-lot21/MISSION.md`. Session « En attente ».
+  `work/missions/2026-10-22-reprise-lot21/MISSION.md`. Au 23.10, 0 h 30 : r6n1 et r6n2 publiées (page v3), les 48
+  propositions « épicé » publiées (v4), Dryhopper 56 concepts v0 et leur tri faits (5 candidates). Prochaine action,
+  à la fenêtre suivante : passes 2 de Dryhopper, tri et passes des épices, correction de r6n1 et r6n2.
 - **Système d'agents** (cerveau, voies, conseil, entonnoir, élagage) : `work/missions/2026-10-22-systeme-agents/ETAT.md`.
 - **Page de lot en vigueur** : https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv. Pour la republier :
   `v4/outils/page-lot/PUBLIER.md`.

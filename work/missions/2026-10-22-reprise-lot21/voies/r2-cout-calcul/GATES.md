@@ -12,7 +12,7 @@ Scope: le temps de simulerCas, léger et complet, sur le cas stout et sur tout l
 - [x] G2: la note est au format du cerveau et ses liens sont résolus
   CHECK: node scripts/agents/systeme.mjs cerveau --voie --min-notes 3 --min-lecons 12 --fichiers cerveau/metier/cout-calcul-moteur.md
   EXPECT: CERVEAU OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=ad65970f6d9af0d0cb819c66037e14798f5b82d91dd8f98cc05163ba107d4b02; exit=0; EXPECT=matched; output-sha256=9a57d0c6e84109a21a6415ff8a98f4964385f8708aed322766d5fb9131a1743d; output-bytes=34; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=ad65970f6d9af0d0cb819c66037e14798f5b82d91dd8f98cc05163ba107d4b02; exit=0; EXPECT=matched; output-sha256=f3d8b670355d5764819774f728755e860cc1293dc50df0794597c22c6743142d; output-bytes=34; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G3: l'annexe garde le script et les mesures brutes
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-22-reprise-lot21/voies/r2-cout-calcul/ANNEXE.md --contient "simulerCas,performance.now,complet: false,médiane,p95,MOMENTS_SIMULES,CATALOGUE"
@@ -27,4 +27,4 @@ Scope: le temps de simulerCas, léger et complet, sur le cas stout et sur tout l
 - [x] G5: le moteur passe toujours ses tests
   CHECK: npm --prefix prototypes/houblons-v4 run check:engine
   EXPECT: ENGINE-V4 OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=5118c9bec4d2119c17e042e72d8185734715b79cf97b8a96f216cf300ab36ce4; exit=0; EXPECT=matched; output-sha256=da5561cd4b52bf1c9dd8da2213e684841a3c5753ec62694b6a78c05a81b52c00; output-bytes=545; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=5118c9bec4d2119c17e042e72d8185734715b79cf97b8a96f216cf300ab36ce4; exit=0; EXPECT=matched; output-sha256=366ee2d897c5cc058c7499aa5d458740261fe7963ab972efe35f56ac535d25c6; output-bytes=545; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries

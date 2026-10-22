@@ -72,6 +72,8 @@ firestore.rules
 !/work/refonte-frontend/v4/outils/page-lot/*.html
 # Pages témoins des contrôles (22.10.2026, leçon L13) : un critère se rejoue depuis un clone neuf.
 !/work/refonte-frontend/v4/tournoi/outils/temoins/**/*.html
+# Inventaire de ce que le brasseur a noté bon ou intéressant (22.10.2026, D104) : lu par controle-reprise.mjs.
+!/work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/elements-notes.json
 /work/refonte-frontend/**/_ecartes/
 /work/refonte-frontend/**/_v[0-9]*/
 /work/refonte-frontend/**/captures/

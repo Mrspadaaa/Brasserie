@@ -7,7 +7,7 @@ Scope: moteur et profils vérifiés (L08), données du lot 22 extraites au contr
 - [x] G1: le moteur passe ses tests
   CHECK: npm --prefix prototypes/houblons-v4 run check:engine
   EXPECT: ENGINE-V4 OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=5118c9bec4d2119c17e042e72d8185734715b79cf97b8a96f216cf300ab36ce4; exit=0; EXPECT=matched; output-sha256=d75deb9c1d534c2fdaced3d9ec54af33be25109a175a9c8d56bc94e6d42abdd7; output-bytes=545; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=5118c9bec4d2119c17e042e72d8185734715b79cf97b8a96f216cf300ab36ce4; exit=0; EXPECT=matched; output-sha256=50b9553eeaec5ed7b47a7df3034033e2984578f13d6b4ee535972430f8d2b7e7; output-bytes=544; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G2: les données du lot 22 se recalculent à l'identique, sur des profils identiques à une régénération fraîche
   CHECK: cd prototypes\houblons-v4 && node_modules\.bin\vite-node scripts/profil-simule-cas.ts ../../work/missions/2026-10-22-reprise-lot21/voies/r6e-entrees/profils-regeneres.json.tmp > NUL && cd ..\.. && node work/refonte-frontend/v4/tournoi/outils/controle-entrees-lot22.mjs work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/comparer-stout.json --regenere=work/missions/2026-10-22-reprise-lot21/voies/r6e-entrees/profils-regeneres.json.tmp

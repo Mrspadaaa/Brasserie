@@ -83,128 +83,108 @@ footer { border-top: 1px solid var(--trait); padding-top: 18px; display: grid; g
 .fermer { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); font: 600 1rem var(--texte); background: #eef2ea; color: #1c2019; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
 .nav { display: flex; gap: 10px; }
 .nav button { font: 600 0.95rem var(--texte); background: #2d3328; color: #eef2ea; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.reprise { background: var(--carte); border: 1px solid var(--trait); border-radius: 12px; padding: 12px 14px; }
+.reprise summary { cursor: pointer; font-weight: 700; }
+.reprise .note { margin-top: 8px; }
+.reprise table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+.reprise th, .reprise td { text-align: left; vertical-align: top; padding: 6px 6px; border-bottom: 1px solid var(--trait); overflow-wrap: anywhere; }
+.reprise th { font-family: var(--titre); }
 </style>
 
 <div class="page">
   <header>
-    <p class="sur-titre">L'Affinée · outil houblons · lot 22 · 22.10</p>
-    <h1>Lot 22 : à toi de choisir</h1>
-    <p>Trois choses à choisir en regardant. Un mélange est possible : dis ce que tu gardes de chacune. Touche une capture pour l'agrandir.</p>
-    <nav class="choix" aria-label="Les trois choix">
-      <a href="#comparer"><b>1. Comparer</b><span>12 façons de répondre à « lequel pour ma stout ? »</span></a>
-      <a href="#epice"><b>2. Le picto « épicé »</b><span>après ton « Aucun me convient… »</span></a>
-      <a href="#carte"><b>3. La carte des outils</b><span>un écran par question, depuis Ma bière</span></a>
+    <p class="sur-titre">L'Affinée · outil houblons · lot 22 bis · 22.10, nuit</p>
+    <h1>r6a, avec ce que tu avais noté</h1>
+    <p>Tu as choisi r6a, mais elle reprenait trop peu de ce que tu avais noté bon ou intéressant, à commencer par y1b. Voici r6a avec les 37 éléments que tu avais notés, sous deux formes. Touche une capture pour l'agrandir.</p>
+    <nav class="choix" aria-label="Ce qu'il reste à choisir">
+      <a href="#comparer"><b>1. Comparer : r6n1 ou r6n2</b><span>tout au premier écran, ou le premier écran de r6a et le reste à un toucher</span></a>
+      <a href="#carte"><b>2. La carte des outils</b><span>Substituer et Levure : une porte, ou un outil propre</span></a>
+      <a href="#epice"><b>3. Le picto « épicé »</b><span>48 propositions, dont 32 épices réelles</span></a>
+      <a href="#suite"><b>4. En cours</b><span>Dryhopper : 56 concepts à classer</span></a>
     </nav>
-    <p class="avertissement">L'avis du critique sous chaque variante est indicatif. Il n'est pas encore calibré sur tes choix : ne t'y fie pas, c'est ton œil qui compte.</p>
+    <p class="avertissement">L'avis du critique sous chaque maquette est indicatif. Il n'est pas encore calibré sur tes choix : c'est ton œil qui compte.</p>
   </header>
 
   <section id="comparer" aria-labelledby="t-comparer">
-    <h2 id="t-comparer">1. Comparer</h2>
-    <p class="question">« Lequel pour ma stout : Cascade, Idaho 7 ou Galaxy ? »</p>
-    <p>Seul le houblon change. Le reste est fixé sur la ligne de contexte. Les variantes portent tes choix encore ouverts :</p>
-    <div class="lexique">
-      <p><b>Radar r2</b> : un seul radar, un houblon plein et les autres en contour. <b>Radar r3</b> : un petit radar par houblon.</p>
-      <p><b>Dose égale</b> : même grammage. <b>Effet égal</b> : la dose qui donne le même arôme visé. <b>IBU égal</b> : la dose qui donne la même amertume.</p>
-      <p><b>Porte Nelson Sauvin</b> : l'entrée « Je n'ai pas Nelson Sauvin », qui épingle ce houblon comme cible.</p>
-      <p><b>A</b> : la groseille à maquereau rangée dans les petits fruits. <b>B</b> : une part « autres » grise. Pour B, je propose d'écarter fruité, noble, doux et sucré, avec un seuil de 25 % et un plafond de 33 % ; à corriger par toi.</p>
-    </div>
+    <h2 id="t-comparer">1. Comparer : r6a reprise</h2>
+    <p class="question">« Cascade, Idaho 7 ou Galaxy pour ma stout ? »</p>
+    <p>Seul le houblon change. Les deux gardent les choix de r6a : radar r2, dose égale, sans porte, descripteurs A. Le radar ne sature plus : une valeur au-delà de l'échelle est marquée d'une flèche au bout de l'axe, au lieu de pousser la bande au bord.</p>
     <div class="grille">
       <article class="variante">
-        <button class="ecran" type="button" data-img="img/r6a.png" data-legende="r6a · Trois colonnes"><img src="img/r6a.png" width="780" height="1688" alt="Premier écran de r6a, trois colonnes"></button>
-        <div class="nom"><span class="code">r6a</span><h3>Trois colonnes</h3></div>
-        <ul class="puces"><li>radar r2</li><li>dose égale</li><li>sans porte</li><li>descripteurs A</li></ul>
-        <p class="critique non">Critique (indicatif) : rejeté, radar en tête ; les colonnes sont à garder</p>
+        <button class="ecran" type="button" data-img="img/r6a.png" data-legende="r6a · ta base, pour mémoire"><img src="img/r6a.png" width="780" height="1688" alt="Premier écran de r6a, la variante choisie"></button>
+        <div class="nom"><span class="code">r6a</span><h3>Ta base, pour mémoire</h3></div>
+        <ul class="puces"><li>choisie le 22.10</li><li>79 mots</li></ul>
       </article>
       <article class="variante">
-        <button class="ecran" type="button" data-img="img/r6b.png" data-legende="r6b · Un radar par houblon"><img src="img/r6b.png" width="780" height="1688" alt="Premier écran de r6b, un radar par houblon"></button>
-        <div class="nom"><span class="code">r6b</span><h3>Un radar par houblon</h3></div>
-        <ul class="puces"><li>radar r3</li><li>dose égale</li><li>sans porte</li><li>descripteurs B</li></ul>
-        <p class="critique reserve">Critique (indicatif) : accepté avec réserve, les rayons roses</p>
+        <button class="ecran" type="button" data-img="img/r6n1.png" data-legende="r6n1 · tout au premier écran"><img src="img/r6n1.png" width="780" height="1688" alt="Premier écran de r6n1, tout au premier écran"></button>
+        <div class="nom"><span class="code">r6n1</span><h3>Tout au premier écran</h3></div>
+        <ul class="puces"><li>70 mots</li><li>27 repris</li><li>2 en contexte</li><li>8 en pont</li><li>0 écarté</li></ul>
+        <button class="plus" type="button" data-img="img/r6n1-toucher.png" data-legende="r6n1 : le défi ouvert et les 20 tirages">Voir un toucher : le défi et les 20 tirages</button>
+        <button class="plus" type="button" data-img="img/r6n1-preuve.png" data-legende="r6n1 : la preuve, chimie et vraies valeurs">Voir la preuve : chimie et vraies valeurs</button>
+        <p class="critique reserve" id="critique-r6n1">Critique (indicatif) : montrable. À corriger : le « 10′ » qui sort de nulle part, les chevrons roses du radar qui ressemblent à tes flèches, « Tire 20 » posé sur les barres, le pont Levure sans un mot, des signes neufs sans mot.</p>
       </article>
       <article class="variante">
-        <button class="ecran" type="button" data-img="img/r6c.png" data-legende="r6c · Le podium des agrumes"><img src="img/r6c.png" width="780" height="1688" alt="Premier écran de r6c, le podium des agrumes"></button>
-        <div class="nom"><span class="code">r6c</span><h3>Le podium des agrumes</h3></div>
-        <ul class="puces"><li>radar r2</li><li>effet égal (agrumes)</li><li>sans porte</li><li>descripteurs A</li></ul>
-        <p class="critique non">Critique (indicatif) : rejeté, Galaxy premier alors qu'il sort du style</p>
-      </article>
-      <article class="variante">
-        <button class="ecran" type="button" data-img="img/r6d.png" data-legende="r6d · Le même tropical"><img src="img/r6d.png" width="780" height="1688" alt="Premier écran de r6d, le même tropical"></button>
-        <div class="nom"><span class="code">r6d</span><h3>Le même tropical</h3></div>
-        <ul class="puces"><li>radar r3</li><li>effet égal (tropical)</li><li>sans porte</li><li>descripteurs B</li></ul>
-        <p class="critique non">Critique (indicatif) : rejeté, la référence est Galaxy lui-même</p>
-      </article>
-      <article class="variante">
-        <button class="ecran" type="button" data-img="img/r6f.png" data-legende="r6f · Même amertume"><img src="img/r6f.png" width="780" height="1688" alt="Premier écran de r6f, même amertume"></button>
-        <div class="nom"><span class="code">r6f</span><h3>Même amertume</h3></div>
-        <ul class="puces"><li>radar r2</li><li>IBU égal</li><li>sans porte</li><li>descripteurs B</li></ul>
-        <p class="critique non">Critique (indicatif) : rejeté, radar muet, écran à moitié vide ; les cartes sont à garder</p>
-      </article>
-      <article class="variante">
-        <button class="ecran" type="button" data-img="img/r6g.png" data-legende="r6g · Trois verres"><img src="img/r6g.png" width="780" height="1688" alt="Premier écran de r6g, trois verres"></button>
-        <div class="nom"><span class="code">r6g</span><h3>Trois verres</h3></div>
-        <ul class="puces"><li>radar r3</li><li>IBU égal</li><li>sans porte</li><li>descripteurs A</li></ul>
-        <p class="critique non">Critique (indicatif) : rejeté, trois verres pareils, radars minuscules</p>
-      </article>
-      <article class="variante">
-        <button class="ecran" type="button" data-img="img/r6h.png" data-legende="r6h · Je n'ai pas Nelson Sauvin"><img src="img/r6h.png" width="780" height="1688" alt="Premier écran de r6h, je n'ai pas Nelson Sauvin"></button>
-        <div class="nom"><span class="code">r6h</span><h3>Je n'ai pas Nelson Sauvin</h3></div>
-        <ul class="puces"><li>radar r2</li><li>dose égale</li><li>porte Nelson Sauvin</li><li>descripteurs B</li></ul>
-        <p class="critique reserve">Critique (indicatif) : accepté avec réserve, radar chargé</p>
-      </article>
-      <article class="variante">
-        <button class="ecran" type="button" data-img="img/r6i.png" data-legende="r6i · Remplacer Nelson Sauvin à effet égal"><img src="img/r6i.png" width="780" height="1688" alt="Premier écran de r6i, remplacer Nelson Sauvin à effet égal"></button>
-        <div class="nom"><span class="code">r6i</span><h3>Remplacer Nelson Sauvin à effet égal</h3></div>
-        <ul class="puces"><li>radar r3</li><li>effet égal (agrumes)</li><li>porte Nelson Sauvin</li><li>descripteurs A</li></ul>
-        <p class="critique ok">Critique (indicatif) : accepté</p>
-      </article>
-      <article class="variante">
-        <button class="ecran" type="button" data-img="img/r6j.png" data-legende="r6j · Les vraies valeurs d'abord"><img src="img/r6j.png" width="780" height="1688" alt="Premier écran de r6j, les vraies valeurs d'abord"></button>
-        <div class="nom"><span class="code">r6j</span><h3>Les vraies valeurs d'abord</h3></div>
-        <ul class="puces"><li>radar r2</li><li>effet égal (agrumes)</li><li>sans porte</li><li>descripteurs B</li></ul>
-        <p class="critique ok">Critique (indicatif) : accepté</p>
-      </article>
-      <article class="variante">
-        <button class="ecran" type="button" data-img="img/r6k.png" data-legende="r6k · Le panel d'abord"><img src="img/r6k.png" width="780" height="1688" alt="Premier écran de r6k, le panel d'abord"></button>
-        <div class="nom"><span class="code">r6k</span><h3>Le panel d'abord</h3></div>
-        <ul class="puces"><li>radar r3</li><li>dose égale</li><li>sans porte</li><li>descripteurs A</li></ul>
-        <p class="critique non">Critique (indicatif) : rejeté, la réponse est tout en bas</p>
-      </article>
-      <article class="variante">
-        <button class="ecran" type="button" data-img="img/r6l.png" data-legende="r6l · Des cartes à glisser"><img src="img/r6l.png" width="780" height="1688" alt="Premier écran de r6l, des cartes à glisser"></button>
-        <div class="nom"><span class="code">r6l</span><h3>Des cartes à glisser</h3></div>
-        <ul class="puces"><li>radar r2</li><li>IBU égal</li><li>porte Nelson Sauvin</li><li>descripteurs A</li></ul>
-        <button class="plus" type="button" data-img="img/r6l-geste.png" data-legende="r6l : la carte suit le doigt">Voir le geste</button>
-        <p class="critique ok">Critique (indicatif) : accepté</p>
-      </article>
-      <article class="variante">
-        <button class="ecran" type="button" data-img="img/r6m.png" data-legende="r6m · La phrase et le radar"><img src="img/r6m.png" width="780" height="1688" alt="Premier écran de r6m, la phrase et le radar"></button>
-        <div class="nom"><span class="code">r6m</span><h3>La phrase et le radar</h3></div>
-        <ul class="puces"><li>radar r3</li><li>IBU égal</li><li>sans porte</li><li>descripteurs B</li></ul>
-        <p class="critique ok">Critique (indicatif) : accepté</p>
+        <button class="ecran" type="button" data-img="img/r6n2.png" data-legende="r6n2 · le premier écran de r6a, le reste à un toucher"><img src="img/r6n2.png" width="780" height="1688" alt="Premier écran de r6n2, celui de r6a avec un dock sous le pouce"></button>
+        <div class="nom"><span class="code">r6n2</span><h3>Le premier écran de r6a, le reste à un toucher</h3></div>
+        <ul class="puces"><li>79 mots</li><li>27 repris</li><li>2 en contexte</li><li>8 en pont</li><li>0 écarté</li></ul>
+        <button class="plus" type="button" data-img="img/r6n2-toucher.png" data-legende="r6n2 : le dock ouvert sur ton défi">Voir le dock ouvert : ton défi</button>
+        <button class="plus" type="button" data-img="img/r6n2-valeurs.png" data-legende="r6n2 : les vraies valeurs">Voir les vraies valeurs</button>
+        <button class="plus" type="button" data-img="img/r6n2-frise.png" data-legende="r6n2 : la frise, le pont vers Dryhopper">Voir la frise : le pont vers Dryhopper</button>
+        <p class="critique reserve" id="critique-r6n2">Critique (indicatif) : montrable, c'est bien le premier écran de r6a. À corriger : la 4<sup>e</sup> colonne qui coupe les noms, la feuille Souche (Pomona ≈ 0 partout), la frise des jours, plate.</p>
       </article>
     </div>
-    <p class="note">Défaut vu sur presque toutes : les bandes d'intervalle saturent les radars. Il sera corrigé sur la variante que tu retiens.</p>
-  </section>
-
-  <section id="epice" aria-labelledby="t-epice">
-    <h2 id="t-epice">2. Le picto « épicé »</h2>
-    <p>Après ton « Aucun me convient… », troisième refus de ce picto : trois dessins de piment, et le mot « épicé » en repli. D'abord la planche, à 12, 16 et 24 px, à côté de la feuille d'Herbacé et des brins de Végétal ; puis les mêmes sur de vraies cartes (Columbus, Cascade, Saaz). Chaque cadre défile.</p>
-    <div class="picto">
-      <figure class="variante" style="margin:0">
-        <div class="defile"><img src="img/epice-planche.png" width="780" height="3088" alt="Planche : trois pictos piment et le mot épicé, à trois tailles"></div>
-        <figcaption><h3>La planche</h3></figcaption>
-      </figure>
-      <figure class="variante" style="margin:0">
-        <div class="defile"><img src="img/epice-contexte.png" width="1170" height="3516" alt="Les pictos sur les cartes Columbus, Cascade et Saaz"></div>
-        <figcaption><h3>Sur de vraies cartes</h3></figcaption>
-      </figure>
-    </div>
-    <p class="note">Réserve : un piment dit « piquant », ce n'est pas tout à fait l'épicé d'un houblon.</p>
+    <details class="reprise">
+      <summary>Les 37 éléments que tu avais notés, et où ils sont</summary>
+      <p class="note">« Repris » : sur l'écran. « En contexte » : dans la ligne du haut, sans réglage. « Pont » : un lien vers l'outil où il vit (Dryhopper, Levure, Suggérer, la fiche), car Comparer ne fait varier que le houblon.</p>
+      <table>
+        <thead><tr><th scope="col">Ce que tu avais noté</th><th scope="col">r6n1</th><th scope="col">r6n2</th></tr></thead>
+        <tbody>
+          <tr><td>y1b, « face à ta stout »</td><td>réponse en tête</td><td>ligne de réponse, au repos</td></tr>
+          <tr><td>y1b, la pastille de famille</td><td>« par floral ⌄ », range les colonnes</td><td>« par floral ⌄ », au repos</td></tr>
+          <tr><td>y1b, la jauge d'amertume</td><td>IBU à 10′ du houblon en avant</td><td>Défi : « Amertume tenue »</td></tr>
+          <tr><td>y1b, le dock sous le pouce</td><td>pont vers Dryhopper</td><td>pont vers Dryhopper ; il range aussi les touchers</td></tr>
+          <tr><td>y1b, le trait de ta stout</td><td>dans chaque barre et piste</td><td>dans les barres et au radar</td></tr>
+          <tr><td>y1b, les bandes du style</td><td>barres au style</td><td>rangées au repos</td></tr>
+          <tr><td>y1b, la ligne de contexte</td><td>en contexte</td><td>en contexte</td></tr>
+          <tr><td>y1b, le défi</td><td>« Défi 2/4 »</td><td>dock : « Défi 2/4 »</td></tr>
+          <tr><td>y1b, le tirage et la preuve</td><td>« Tire 20 » et « Preuve »</td><td>Preuve : 20 bières tirées</td></tr>
+          <tr><td>y1b, la levure en pastilles</td><td>pont vers Levure</td><td>pont vers Levure</td></tr>
+          <tr><td>y1b, le second houblon « puis »</td><td>pont vers Dryhopper</td><td>pont vers Dryhopper</td></tr>
+          <tr><td>y3, le panel OSU</td><td>à côté du radar</td><td>Preuve</td></tr>
+          <tr><td>y3, « pour égaler »</td><td>dose d'effet égal sous agrumes et tropicaux</td><td>dock : « Égaler »</td></tr>
+          <tr><td>v1, les vraies valeurs</td><td>trait mesuré sous chaque barre ; Preuve</td><td>dock : « Valeurs »</td></tr>
+          <tr><td>v1, « qui en a le plus »</td><td>couleur du trait mesuré</td><td>Valeurs, en duel</td></tr>
+          <tr><td>v1, le linalol en bière</td><td>vignette à côté du radar</td><td>Valeurs</td></tr>
+          <tr><td>w2, la piste commune</td><td>pistes d'objectif</td><td>Défi</td></tr>
+          <tr><td>w2, le verdict en tête</td><td>✓ dans, ⚠ sort</td><td>têtes de colonne</td></tr>
+          <tr><td>x3b, la cuve jour après jour</td><td>pont vers Dryhopper</td><td>pont vers Dryhopper</td></tr>
+          <tr><td>a2b, ce que la levure change</td><td>pont vers Levure</td><td>pont vers Levure</td></tr>
+          <tr><td>d1, tout ouvert</td><td>chimie ouverte, rangée par famille</td><td>Valeurs, chimie rangée par famille</td></tr>
+          <tr><td>l5b, les barres</td><td>dans chaque cellule</td><td>au repos</td></tr>
+          <tr><td>l5b, les pistes d'objectif</td><td>Floral ↑ et Résineux ↓, en tête</td><td>Défi</td></tr>
+          <tr><td>l8, la disposition</td><td>objectifs en tête, puis les colonnes</td><td>familles en rangées, houblons en colonnes</td></tr>
+          <tr><td>l8b, les verdicts et pictos au trait</td><td>Atteint, Approche, Aucune</td><td>Défi : Atteint, Approche, Aucune</td></tr>
+          <tr><td>l8b, la légende cachée</td><td>« ? » en haut</td><td>« ? » en haut</td></tr>
+          <tr><td>l5f, la carte : rôle et α</td><td>tête de colonne</td><td>tête de colonne</td></tr>
+          <tr><td>m4, le radar de dégustation</td><td>« trop / plus », en contexte</td><td>« Ta stout : trop / plus »</td></tr>
+          <tr><td>h4, le radar face à ta demande</td><td>flèches Floral et Résineux</td><td>flèches au radar</td></tr>
+          <tr><td>Comparer, variante 3 : les plages par source</td><td>α en tête, plages dans Preuve</td><td>Valeurs</td></tr>
+          <tr><td>Comparer, variante 3 : le radar superposé</td><td>radar r2</td><td>radar r2</td></tr>
+          <tr><td>p06, la grille des familles</td><td>familles en tête de colonne</td><td>Valeurs</td></tr>
+          <tr><td>p2, le radar avec intervalle</td><td>intervalle en trait sur chaque axe</td><td>intervalle en moustache</td></tr>
+          <tr><td>s5, les deux objectifs</td><td>pont vers Suggérer</td><td>pont vers Suggérer</td></tr>
+          <tr><td>p4, le « + » vers la comparaison</td><td>« + » : Nelson Sauvin en 4<sup>e</sup> colonne</td><td>« + » : 4<sup>e</sup> colonne</td></tr>
+          <tr><td>g1, la fiche</td><td>ⓘ ou appui long</td><td>appui long</td></tr>
+          <tr><td>La fiche courte Citra cryo</td><td>ⓘ, fiche courte</td><td>appui long</td></tr>
+        </tbody>
+      </table>
+    </details>
+    <p class="note">Une passe de correction de ces défauts suivra ; la page sera mise à jour. À corriger par toi : la visée des objectifs (« un cran au-delà du style ») vient de nous, pas de tes données ; c'est elle qui fait « Atteint » pour Idaho 7. La couleur de Nelson Sauvin (bleu) est provisoire.</p>
   </section>
 
   <section id="carte" aria-labelledby="t-carte">
-    <h2 id="t-carte">3. La carte des outils</h2>
-    <p>Ma bière, puis Suggérer, Comparer, Dryhopper et Levure. Chaque écran pose une seule question, avec un seul réglage libre. La carte entière défile dans son cadre.</p>
+    <h2 id="t-carte">2. La carte des outils</h2>
+    <p>Toujours à choisir : Substituer et Levure, chacun en porte ou en outil propre. Chaque écran pose une seule question, avec un seul réglage libre. La carte entière défile dans son cadre.</p>
     <div class="paire">
       <figure class="variante" style="margin:0">
         <div class="defile"><img src="img/carte.png" width="780" height="6266" alt="La carte des outils, de Ma bière à Levure"></div>
@@ -229,9 +209,47 @@ footer { border-top: 1px solid var(--trait); padding-top: 18px; display: grid; g
     </div>
   </section>
 
+  <section id="epice" aria-labelledby="t-epice">
+    <h2 id="t-epice">3. Le picto « épicé » : 48 propositions</h2>
+    <p>Après ton « Je veux un forme qui représente vraiment ce que c'est, genre canellle vanille, ou clou de girofle ect... » : six séries de huit, dont quatre en épices réelles. Chaque proposition est montrée à 12, 16 et 24 px, à côté de la feuille d'Herbacé et des brins de Végétal. Chaque cadre défile.</p>
+    <p class="note">Vu à la loupe par les dessinateurs : à 12 px, le clou de girofle et la badiane se nomment sans hésiter ; la cannelle et la vanille demandent encore du travail. Les meilleures seront améliorées, puis montrées en tête de cette page. Les séries B et C ont été dessinées avant ta précision : elles restent montrées.</p>
+    <div class="picto">
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-a.png" width="780" height="2060" alt="Série A, huit épices douces à trois tailles"></div>
+        <figcaption><h3>A · L'épice douce, vue autrement</h3><p class="note">cannelle vue de bout, gousse de vanille fendue, pain d'épices, gingembre, clou de girofle, sachet de cuve, cardamome tranchée, bâtons de cannelle</p></figcaption>
+      </figure>
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-d.png" width="1170" height="2532" alt="Série D, huit épices réelles cadrées autrement"></div>
+        <figcaption><h3>D · Huit épices réelles, cadrées autrement</h3><p class="note">cannelle en rouleau, clou de girofle, badiane, gousse de vanille, muscade coupée, réglisse, épices de Noël, pain d'épices</p></figcaption>
+      </figure>
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-e.png" width="780" height="2410" alt="Série E, huit épices entières"></div>
+        <figcaption><h3>E · L'épice entière</h3><p class="note">badiane, muscade, anis vert, réglisse, genièvre, carvi, coriandre, fève tonka</p></figcaption>
+      </figure>
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-f.png" width="780" height="2154" alt="Série F, cannelle, vanille et girofle cadrés librement"></div>
+        <figcaption><h3>F · Cannelle, vanille et girofle, cadrés librement</h3><p class="note">cannelle et girofle croisés, clous croisés, poignée de clous, clou au-dessus du moût, cannelle en gros plan, vanille et sa crosse, vanille fendue, vanille et girofle côte à côte</p></figcaption>
+      </figure>
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-b.png" width="1170" height="2598" alt="Série B, huit sensations"></div>
+        <figcaption><h3>B · La sensation (pas une épice)</h3><p class="note">la langue qui picote, ça monte au nez, la grimace, la forme du piquant, la poussière qui jaillit, du doux au piquant, le cactus, les étincelles</p></figcaption>
+      </figure>
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-c.png" width="1170" height="2691" alt="Série C, huit signes"></div>
+        <figcaption><h3>C · Le signe (pas une épice)</h3><p class="note">É, dièse, pique, cycle moléculaire, fumet vif, éclat, 辛 (« épicé » en chinois), méandre</p></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="suite" aria-labelledby="t-suite">
+    <h2 id="t-suite">4. En cours</h2>
+    <p><b>Dryhopper</b> (« Quand ajouter Idaho 7 ? »), sur la base de y1b : 56 petits concepts en sept séries sont faits ; leur classement est en cours, puis les cinq meilleurs seront améliorés et montrés ici.</p>
+    <p><b>Le picto « épicé »</b> : le classement des 48 et l'amélioration des meilleures suivront.</p>
+  </section>
+
   <footer>
-    <p>Données : stout export 16 °P à 4,75 % vol. Le simulé est marqué « ~ ». L'α de Galaxy et celui de Nelson Sauvin viennent de leurs fiches (≠ du lot).</p>
-    <p>Pour répondre : commente directement sur la page, ou dis-le dans la conversation. Exemple : « r6l pour l'en-tête, les barres de r6j, Substituer en porte, piment 1 ».</p>
+    <p>Données : stout export 16 °P à 4,75 % vol., 4 g/L de chaque houblon, après fermentation, 3 jours, US-05. Le simulé est marqué « ~ ». L'α de Galaxy vient de sa fiche (≠ du lot).</p>
+    <p>Pour répondre : commente directement sur la page, ou dis-le dans la conversation. Exemple : « r6n2, mais le défi au premier écran ; Substituer en porte ».</p>
   </footer>
 </div>
 
