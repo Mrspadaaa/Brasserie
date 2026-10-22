@@ -60,7 +60,11 @@ L'approbation des commandes (écrites par le pilote lui-même) se fait au premie
 À chaque retour, une ligne arrive. Puis :
 `node scripts/agents/systeme.mjs voies work/missions/<id> --approuver` (première fois), ensuite sans
 `--approuver`. Le script rejoue les critères de chaque voie et ne croit pas son rapport (L16). Puis :
-`git status --short` contre les « Possède » (L17). Pour une interface, la voie `relecteur` a dit OK.
+`git status --short` contre les « Possède » (L17). Pour une interface, le critique a rendu un
+verdict par variante. **Chaque variante rejetée est relancée** (même agent, avec la correction du
+critique, 2 fois au plus) **ou écartée** (une ligne « <id> écartée : raison » dans MISSION.md). Le
+rejeu échoue tant qu'un rejet reste en plan (M12). Tant que le critique n'est pas étalonné (L27),
+son avis est indicatif : on ne cache rien au brasseur sur sa seule foi.
 
 ## 5. Corriger : trois boucles
 1. **Courte, dans la voie** : critère en échec → l'agent corrige et relance, 3 essais au plus.
@@ -74,7 +78,12 @@ L'approbation des commandes (écrites par le pilote lui-même) se fait au premie
 Les lignes `LEÇON PROPOSÉE` et `CONNAISSANCE` des RESULTAT.md sont traitées par le pilote à la
 signature, jamais laissées en plan.
 
-## 6. Signer
+## 6. Publier, puis signer
+Des écrans ne sont finis qu'une fois montrés (M12) : le pilote publie lui-même la page du lot
+(artefact privé, à jour seulement ; si l'ancienne page est inaccessible, en publier une nouvelle et
+la noter dans `cerveau/produit/page-partagee.md`) et écrit son lien dans MISSION.md. Sans lien, le
+rejeu échoue. Le lien est donné à l'utilisateur dans le rapport final.
+
 Dans MISSION.md, section « Signature » : la sortie de `systeme.mjs voies` (une ligne par voie),
 les décisions prises et leur décideur, les leçons et notes ajoutées, ce qui reste ouvert. Commit
 local. Push, PR, déploiement, données réelles, Gemini facturé, suppressions : groupés pour

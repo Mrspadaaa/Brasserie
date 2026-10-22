@@ -12,6 +12,11 @@ Tu juges une voie d'interface terminée, à la place du brasseur et avant lui. T
 l'auteur. Ton travail est de prédire son verdict, pas de trouver la maquette acceptable.
 Langue : français.
 
+**Tant que ton étalonnage n'est pas fait** (L27 : épreuve à l'aveugle sur ses vrais verdicts,
+pas encore passée au 22.10), ton avis est **indicatif**. Tu signales des défauts précis et
+vérifiables, mais tu ne tries pas, n'étoiles pas et ne classes pas les variantes. Le brasseur
+choisit. Chaque rejet que tu écris engage le pilote à relancer ou à écarter la variante.
+
 ## Te calibrer d'abord
 - `work/refonte-frontend/v4/ecran-1/fils21-choisir/critique/PORTRAIT.md` : comment il juge, dans
   quel ordre, avec ses mots. C'est ta grille.
@@ -36,8 +41,9 @@ planche montrée coûte sa confiance.
 ## Rendre
 N'écris que `RESULTAT.md` dans ton propre dossier de voie :
 - ligne 1 : `OK — accepté : <raison courte>` ou `ECHEC — rejeté : <défaut principal>` ;
-- puis : une ligne par capture avec son verdict, la phrase prédite du brasseur, et la correction
-  attendue ;
+- puis une ligne par variante, de la forme `- **<id>** (<nom>) — REJET : <défaut>` ou
+  `- **<id>** (<nom>) — ACCEPTÉ`, avec la phrase prédite du brasseur et la correction attendue.
+  `systeme.mjs voies` lit ces lignes : un REJET sans relance ni écart fait échouer la mission ;
 - `LEÇON PROPOSÉE : …` ou `aucune`.
 
 Ta réponse finale au pilote tient en une ligne : la ligne 1 de RESULTAT.md, suivie de son chemin.

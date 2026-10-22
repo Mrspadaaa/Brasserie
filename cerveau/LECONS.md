@@ -94,13 +94,6 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 
 ## Agents et outils
 
-### L16 — Tout livrable d'agent est un fichier du dépôt, relu par le pilote
-- Erreur : 22.10 (inventaire), `JURY-VERDICT.md` était annoncé au registre mais n'a jamais été produit. Des agents relancés par SendMessage n'ont laissé aucune trace dans le dépôt.
-- Cause : on se fiait au message de fin de l'agent.
-- Faire : chaque voie écrit RESULTAT.md. Le pilote rejoue ses critères (`systeme.mjs voies`) avant d'y croire.
-- Rôles : pilote, exécutant, auteur
-- Contrôle : `node scripts/agents/systeme.mjs voies <mission>`
-
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
 - Erreur : lot 21, un auteur a laissé `pistes-l5f.png` à la racine du dépôt. 22.10, la voie r4c a écrit `loupe.html` et `loupe.png` à la racine en croyant écrire dans « son scratchpad » (un sous-agent n'a pas le dossier temporaire du pilote).
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
@@ -152,12 +145,21 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Rôles : concepteur, auteur
 - Contrôle : aucun ; seules les captures ouvertes l'ont montré
 
+### L27 — Un juge qui parle pour le brasseur s'étalonne sur ses vrais verdicts
+- Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré ». Son portrait (PORTRAIT.md) avait été écrit par un modèle et jamais confronté aux verdicts du brasseur.
+- Cause : aucune étape n'éprouvait le juge à l'aveugle, et les verdicts du brasseur ne revenaient jamais le corriger (boucle ouverte).
+- Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts mais ne trie pas. Idem pour le regard Brasseur du conseil.
+- Rôles : pilote, critique, conseil
+- Contrôle : à écrire (épreuve à l'aveugle, `systeme.mjs etalonnage`)
+
 ## Mécanisées
 
 - M07 (L08) — Vérifier les entrées avant l'éventail : le 20.10, 33 variantes sur un moteur à un mauvais taux d'alcool ; le 22.10, le contrôle des entrées comptait les groupes `{ source, mots[] }` au lieu des mots (lire une entrée réelle avant d'écrire une formule). `npm run check:engine` et `controle-entrees-lot22.mjs` (D102 : régénération comparée, recalcul, témoin `--temoin`). Au-delà du JSON, tracer une fois la représentation obligatoire sur les vraies données (22.10 : des « haut » hors domaine ont saturé le radar des douze variantes, D103).
 - M08 (L09) — Chaque chemin cité existe : le 22.10, un brief citait `scripts/profil-simule-cas.ts` au lieu de `prototypes/houblons-v4/scripts/`. `systeme.mjs mission` vérifie les sources de MISSION.md ; passer les chemins des VOIE.md par Glob.
 - M09 — Planche de picto : le 22.10, sept épices refusées d'un bloc, puis six genres dont cinq rejetés par le critique. `controle-planche-picto.mjs` (D101) : `--refuses` (idées et dessins refusés), `--genres=N`, `--voisins=` (les familles de même silhouette : un risque nommé dans la NOTE se montre), rien sous 12 px.
 - M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle : le 22.10, les deux `\b` de D98 étaient des 0x08 (table `NOMME` morte, vue par la voie r6i), comme le `—` du pilote devenu un tiret. `systeme.mjs cablage` refuse tout caractère de contrôle dans les scripts de contrôle (témoin « échappement devenu caractère de contrôle »).
+- M11 (L16) — Tout livrable d'agent est un fichier du dépôt : `JURY-VERDICT.md` annoncé, jamais produit. `systeme.mjs voies` rejoue les critères de chaque voie au lieu de croire son rapport.
+- M12 — Une variante rejetée est relancée ou écartée, et des écrans ne sont finis qu'une fois publiés : le 22.10, 6 rejets du lot 22 laissés en plan et aucun lien. `systeme.mjs voies` échoue sinon.
 - M06 (L06) — Les acquis validés passent d'un lot au suivant : le radar a disparu du lot 21. Liste dans [[acquis-valides]], recopiée dans chaque brief ; `controle-acquis.mjs` (D99).
 - M01 — Valeurs brutes à l'écran (low, medium, null…), revenues trois fois : `controle-valeurs-brutes.mjs` (D97, dans controle-commun).
 - M02 (L21) — Un hook s'essaie sur les vraies entrées de l'app : le 22.10, le hook de correction a réagi à la notification d'un conseiller. Témoin « notification d'agent » dans `systeme.mjs temoins`.

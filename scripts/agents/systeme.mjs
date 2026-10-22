@@ -276,6 +276,35 @@ function gateCheck(args, cwd) {
   return { code: r.status, sortie: `${r.stdout ?? ''}${r.stderr ?? ''}` };
 }
 
+// Leçon L27 (22.10) : une variante rejetée par le critique est relancée ou écartée, jamais laissée en
+// plan ; et une mission qui produit des écrans n'est finie qu'une fois publiée (lien d'artefact).
+export function suitesDeMission(mission, dossiersVoies) {
+  const erreurs = [];
+  const fMission = path.join(mission, 'MISSION.md');
+  const texteMission = existe(fMission) ? lire(fMission) : '';
+  const section = (t, titre) => (t.split(new RegExp(`^## ${titre}`, 'm'))[1] ?? '').split(/\n## /)[0];
+  const interface_ = dossiersVoies.some((d) => {
+    const f = path.join(d, 'VOIE.md');
+    return existe(f) && section(lire(f), 'Possède').split('\n').some((l) => /ecran-1\//.test(l) && !/\/donnees\//.test(l));
+  });
+  if (interface_ && !/claude\.ai\/(code\/)?artifact\//.test(texteMission)) erreurs.push('ECHEC mission — voies d\'interface sans lien d\'artefact publié dans MISSION.md : fini = montré au brasseur (L27)');
+  const acceptes = new Set();
+  const rejetes = new Set();
+  for (const d of dossiersVoies) {
+    const v = path.join(d, 'VOIE.md');
+    const r = path.join(d, 'RESULTAT.md');
+    if (!existe(v) || !existe(r) || !(/^- Agent : critique/m.test(lire(v)) || /critique/.test(path.basename(d)))) continue;
+    for (const m of lire(r).matchAll(/^- (?:★\s*)?\*\*(r?[\w-]+)\*\*[^\n]*?—\s*(REJET|ACCEPT)/gim)) (/^REJET/i.test(m[2]) ? rejetes : acceptes).add(m[1]);
+  }
+  for (const id of rejetes) {
+    if (acceptes.has(id)) continue;
+    // Forme stricte « r6a écartée : raison » : une phrase qui parle d'écarter ne vaut pas un écart.
+    if (new RegExp(`\\b${id}\\b[^\\S\\n]+écartée[^\\S\\n]*:[^\\S\\n]*\\S`, 'i').test(texteMission)) continue;
+    erreurs.push(`ECHEC ${id} — rejeté par le critique, ni relancé ni écarté dans MISSION.md (boucle moyenne, L27)`);
+  }
+  return erreurs;
+}
+
 export function verifierVoies(mission, { modeles = [], approuver = false, racine = RACINE } = {}) {
   const lignes = [];
   const dirVoies = path.join(mission, 'voies');
@@ -305,7 +334,9 @@ export function verifierVoies(mission, { modeles = [], approuver = false, racine
     lignes.push(`OK ${v} (${modele ?? '?'}) — ${premiere.replace(/^OK\s*[—-]?\s*/, '').slice(0, 90)}`);
   }
   for (const m of modeles) if (!vus.has(m)) lignes.push(`ECHEC mission — aucune voie ${m}`);
-  const ok = voies.length >= 2 && bonnes === voies.length && modeles.every((m) => vus.has(m));
+  const suites = suitesDeMission(mission, voies.map((v) => path.join(dirVoies, v)));
+  lignes.push(...suites);
+  const ok = voies.length >= 2 && bonnes === voies.length && modeles.every((m) => vus.has(m)) && !suites.length;
   lignes.push(ok ? `VOIES OK ${bonnes}/${voies.length}` : `VOIES ECHEC ${bonnes}/${voies.length}`);
   return { ok, lignes };
 }
@@ -473,12 +504,24 @@ function construireConseil(dir, { sansPremierGeste = false } = {}) {
   return f;
 }
 
-function construireMission(dir, { critereFaux = false, critereIgnore = false } = {}) {
+function construireMission(dir, { critereFaux = false, critereIgnore = false, critiqueRejette = false, ecarte = false, interfaceLien = null } = {}) {
   const m = path.join(dir, 'mission');
+  fs.mkdirSync(m, { recursive: true });
+  const lien = interfaceLien === true ? '\nPage : https://claude.ai/artifact/TEMOIN\n' : '';
+  const ecart = ecarte === true ? '\n- v1 écartée : rejetée deux fois.\n' : ecarte === 'phrase' ? '\n- Rejets en plan : v1, à relancer ou à écarter.\n' : '';
+  fs.writeFileSync(path.join(m, 'MISSION.md'), `# Mission témoin\n${ecart}${lien}`);
+  if (critiqueRejette) {
+    const d = path.join(m, 'voies', 'v3-critique');
+    fs.mkdirSync(d, { recursive: true });
+    fs.writeFileSync(path.join(d, 'VOIE.md'), '# Voie v3\n- Agent : critique\n- Modèle : fable\n');
+    fs.writeFileSync(path.join(d, 'RESULTAT.md'), 'OK — accepté : le lot\n\n- **v1** (témoin) — REJET, illisible.\n- ★ **v2** (témoin) — ACCEPTÉ.\n');
+    fs.writeFileSync(path.join(d, 'GATES.md'), '# Gates: témoin v3\n\nOWNS: rien\n\nScope: témoin.\n\n- [ ] G1: le témoin passe\n  CHECK: node -e "console.log(\'TEMOIN TENU\')"\n  EXPECT: TEMOIN TENU\n  EVIDENCE: pending\n');
+  }
   for (const [v, modele, ok] of [['v1', 'haiku', true], ['v2', 'sonnet', !critereFaux]]) {
     const d = path.join(m, 'voies', v);
     fs.mkdirSync(d, { recursive: true });
-    fs.writeFileSync(path.join(d, 'VOIE.md'), `# Voie ${v}\n- Modèle : ${modele}\n`);
+    const possede = interfaceLien !== null && v === 'v1' ? '\n## Possède\n- `work/x/ecran-1/lot/**`\n' : '';
+    fs.writeFileSync(path.join(d, 'VOIE.md'), `# Voie ${v}\n- Modèle : ${modele}\n${possede}`);
     fs.writeFileSync(path.join(d, 'RESULTAT.md'), `OK — la voie ${v} se dit finie\n`);
     // Témoin « critère ignoré » : un script de critère rangé dans work/missions/, que git ne suit pas.
     const cmd = critereIgnore && v === 'v2' ? 'node work/missions/m/voies/v2/critere.mjs'
@@ -523,6 +566,16 @@ function temoins() {
   attendu('voie qui se dit OK mais rate', verifierVoies(construireMission(m2, { critereFaux: true }), { approuver: true, racine: m2 }).ok, false);
   const m3 = sous('m3');
   attendu('critère ignoré par git', verifierVoies(construireMission(m3, { critereIgnore: true }), { approuver: true, racine: m3 }).ok, false);
+  const m4 = sous('m4');
+  attendu('variante rejetée laissée en plan', verifierVoies(construireMission(m4, { critiqueRejette: true }), { approuver: true, racine: m4 }).ok, false);
+  const m5 = sous('m5');
+  attendu('variante rejetée puis écartée', verifierVoies(construireMission(m5, { critiqueRejette: true, ecarte: true }), { approuver: true, racine: m5 }).ok, true);
+  const m8 = sous('m8');
+  attendu('rejet seulement mentionné, pas écarté', verifierVoies(construireMission(m8, { critiqueRejette: true, ecarte: 'phrase' }), { approuver: true, racine: m8 }).ok, false);
+  const m6 = sous('m6');
+  attendu('écrans non publiés', verifierVoies(construireMission(m6, { interfaceLien: false }), { approuver: true, racine: m6 }).ok, false);
+  const m7 = sous('m7');
+  attendu('écrans publiés', verifierVoies(construireMission(m7, { interfaceLien: true }), { approuver: true, racine: m7 }).ok, true);
   const propre = path.join(tmp, 'propre.mjs'), sale = path.join(tmp, 'sale.mjs');
   fs.writeFileSync(propre, "const r = /^moment/i;\n");
   fs.writeFileSync(sale, 'const r = /^moment' + String.fromCharCode(8) + '/i;\n');

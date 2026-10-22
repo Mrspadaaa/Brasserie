@@ -15,4 +15,11 @@ sources: mémoire locale affinee-page-partagee-a-jour.md ; work/refonte-frontend
 - Sur la version finale, pas de légende écrite : la valeur inconnue se dit par le « ? » gris, les hachures et la bulle au toucher.
 - Garder les fils de fer et les lots sur leurs propres pages, par exemple la page de la nuit.
 
+**22.10 : les deux anciennes pages sont inaccessibles.** La page des fils de fer
+(`2VTRQP7nLXhX5GqDaAGAyU`) et la page partagée (`MoohEoyj…`) répondent « artifact not found » depuis
+le compte des sessions actuelles (publiées depuis un autre compte, semble-t-il). Le lot 22 n'était
+donc visible nulle part. Page de lot en vigueur : **https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv**
+(« Lot 22 houblons »). On la met à jour à la même adresse pour chaque lot, et son lien entre dans
+MISSION.md : sans lien, le rejeu échoue (M12).
+
 Voir [[fil-de-fer-d-abord]] et [[pas-de-cockpit]].

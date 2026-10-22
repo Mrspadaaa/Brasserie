@@ -194,6 +194,12 @@ Rejeu du pilote, `node scripts/agents/systeme.mjs voies work/missions/2026-10-22
 - **Publication** : la section « lot 22 » est prête en local (`outils/page-nuit/site/`). Elle n'est
   **pas publiée** : la page des fils de fer est introuvable depuis le compte connecté à la session du
   pilote. Ce geste revient à l'utilisateur ou à une session connectée au bon compte.
+- **Publication (22.10, par la session de supervision)** : l'ancienne page étant inaccessible, le
+  lot 22 est publié sur une page neuve, https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv. Elle montre
+  les 12 variantes dans un ordre neutre, la carte avec les deux formes de Substituer et de Levure,
+  et la planche « épicé » r4c.
+- **Rejets du critique en plan** : r6a, r6c, r6d, r6f, r6g et r6k, à relancer ou à écarter (M12).
+  L'avis du critique est indicatif tant qu'il n'est pas étalonné (L27).
 - **Reste** :
   - le choix du brasseur ;
   - r3, après A ou B ;
