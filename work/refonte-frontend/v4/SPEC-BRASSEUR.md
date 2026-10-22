@@ -434,3 +434,10 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   mini maquettes dry hopping de base avec les 44 variante puis les 5 meilleures était vraiment plus
   qualitatif. Regarde pour améliorer ça » — 22.10, soir. Méthode : `.claude/skills/voies/references/entonnoir.md`
   (M13).
+  - « Un des bon fort des anciens version était le niveau de chaleur, la diversité mais toujours suivre la
+    Baseline. C'est bien intégré ça ? Et multiplié les mini Proto fils de fer » ;
+  - « Et plus de diversité et de nombre de mini proto » ;
+  - « Aussi faire un vaste panel et ensuite ranking puis améliorer et aussi prendre et coller les bonnes idées même
+    les plus extravagantes pour des v2 puis V3 ect jusqu'à un résultat satisfaisant » ;
+  - « Peut être, plus minimaliste des les concepts de base mais plus nombreux et diverse puis améliorer et
+    itérer » — 22.10, soir.

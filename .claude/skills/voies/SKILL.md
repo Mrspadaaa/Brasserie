@@ -34,7 +34,8 @@ Référence complète : `docs/agents/systeme.md`. Ce skill est la marche à suiv
    premier quand moteur, JSON ou constantes sont en jeu.
 5 bis. **Ce que le brasseur verra (lot de maquettes, planche de pictos) suit l'entonnoir** :
    `references/entonnoir.md`. Il comprend :
-   - des séries v0 libres, de 3 à 8 variantes, un concepteur par série, 30 variantes au moins ;
+   - des séries v0 de concepts minimalistes, de 4 à 12 par série, un concepteur par série, 48 au moins en
+     6 séries au moins, avec trois chaleurs (froide, tiède, chaude) et la baseline suivie partout ;
    - un tri par le critique, qui garde 5 candidates pour leur diversité, avec leurs greffes ;
    - une passe 2 par les mêmes agents, avec tous les contrôles ;
    - puis tout est montré.
@@ -68,8 +69,9 @@ L'approbation des commandes (écrites par le pilote lui-même) se fait au premie
 À chaque retour, une ligne arrive. Puis :
 `node scripts/agents/systeme.mjs voies work/missions/<id> --approuver` (première fois), ensuite sans
 `--approuver`. Le script rejoue les critères de chaque voie et ne croit pas son rapport (L16). Puis :
-`git status --short` contre les « Possède » (L17). Après les séries v0, le critique trie, sans
-rejet (SYNTHESE : candidates, greffes, retouches communes). La passe 2 repart chez les mêmes agents, par
+`git status --short` contre les « Possède » (L17). Après les séries v0, le critique classe tout le panel, sans
+rejet (SYNTHESE : classement, candidates, greffes « même les plus extravagantes »). Les passes 2, 3… repartent
+chez les mêmes agents jusqu'au satisfaisant (`references/entonnoir.md` § 3), par
 `SendMessage`. Après une passe 2 ou une reprise, le critique a rendu un verdict par variante. **Chaque variante rejetée est relancée** (même agent, avec la correction du
 critique, 2 fois au plus) **ou écartée** (une ligne « <id> écartée : raison » dans MISSION.md). Le
 rejeu échoue tant qu'un rejet reste en plan (M12). Tant que le critique n'est pas étalonné (L27),

@@ -440,22 +440,39 @@ export function verifierMission(fichier, { minVoies = 2 } = {}) {
   const dependances = (v) => (v['depend de'] ?? '').split(/[,;]\s*/).map((s) => s.trim()).filter(Boolean);
   for (const v of voies) {
     if (!interface_.has(v.voie) || v.decideur !== 'brasseur' || finie(v.voie)) continue;
-    if (!/^(v0|passe [23]|reprise)\b/.test(etape(v))) erreurs.push(`${v.voie} : étape « ${v.etape ?? ''} » ; ce qu'on montre au brasseur passe par l'entonnoir (v0 ×N, tri, passe 2) ou reprend une variante choisie (M13)`);
+    if (!/^(v0|passe \d+|reprise)\b/.test(etape(v))) erreurs.push(`${v.voie} : étape « ${v.etape ?? ''} » ; ce qu'on montre au brasseur passe par l'entonnoir (v0 ×N, tri, passe 2) ou reprend une variante choisie (M13)`);
   }
   const series = new Map(voies.filter((v) => /^v0\b/.test(etape(v))).map((v) => [v.voie, Number((etape(v).match(/^v0\s*[×x(]\s*(\d+)/) ?? [])[1] ?? 0)]));
-  for (const [id, n] of series) if (n < 3 || n > 8) erreurs.push(`${id} : ${n || 'nombre de'} variantes ; une série porte 3 à 8 variantes, un agent par série et non par variante (M13)`);
+  // « plus minimaliste des les concepts de base mais plus nombreux et diverse » : un concept minimal coûte
+  // environ 5 tours, une série en porte 4 à 12.
+  for (const [id, n] of series) if (n < 4 || n > 12) erreurs.push(`${id} : ${n || 'nombre de'} variantes ; une série porte 4 à 12 concepts minimalistes, un agent par série et non par variante (M13)`);
+  // Ce qui faisait la force des anciens lots (22.10, l'utilisateur) : « le niveau de chaleur, la diversité mais
+  // toujours suivre la Baseline ». Chaleur (D22) : froide = idées retenues affinées, tiède = forme imposée,
+  // chaude = forme libre ; « 4 tiède, 5 chaude, 2 froide ». La baseline est un plancher même en v0 (D26, D93).
+  const NIVEAUX_CHALEUR = ['froide', 'tiede', 'chaude'];
+  const chaleurs = new Map();
+  for (const v of voies.filter((x) => series.has(x.voie))) {
+    const c = Object.fromEntries(NIVEAUX_CHALEUR.map((k) => [k, Number((etape(v).match(new RegExp(`(\\d+)\\s*${k}`)) ?? [])[1] ?? 0)]));
+    chaleurs.set(v.voie, c);
+    const somme = NIVEAUX_CHALEUR.reduce((s, k) => s + c[k], 0);
+    if (somme !== series.get(v.voie)) erreurs.push(`${v.voie} : chaleur ${somme ? `déclarée pour ${somme} variantes sur ${series.get(v.voie)}` : 'absente'} ; « v0 ×N (a tiède, b chaude, c froide) » (D22, M13)`);
+    if (!/baseline/i.test(v.controles ?? '')) erreurs.push(`${v.voie} : la baseline n'est pas dans ses contrôles ; elle est un plancher même en v0 (« ça suit pas la Baseline, ça suit rien du tout ??? », M13)`);
+  }
   const tris = voies.filter((v) => etape(v) === 'tri');
   for (const t of tris) {
     if (t.agent !== 'critique') erreurs.push(`${t.voie} : tri confié à ${t.agent} ; critique attendu (M13)`);
     const siennes = dependances(t).filter((d) => series.has(d));
     const total = siennes.reduce((s, d) => s + series.get(d), 0);
-    if (total < 30) erreurs.push(`${t.voie} : éventail de ${total} variantes en ${siennes.length} séries ; 30 au moins (« fait en qqch comme 30 et prends les 5 meilleures version et améliore les ») (M13)`);
+    // 22.10 : « Et plus de diversité et de nombre de mini proto » ; le lot 21 en avait 44, en 10 séries.
+    if (total < 48 || siennes.length < 6) erreurs.push(`${t.voie} : éventail de ${total} variantes en ${siennes.length} séries ; 48 au moins, en 6 séries au moins (« Et plus de diversité et de nombre de mini proto ») (M13)`);
     // Les deux contrepoids du lot 21 : une série Fable (z, « créatif à fond ») et une série libre au brief
     // minimal (u : « La série libre a produit de meilleurs gestes et de meilleures questions »).
     const sesVoies = voies.filter((v) => siennes.includes(v.voie));
     if (!sesVoies.some((v) => v.modele === 'fable')) erreurs.push(`${t.voie} : aucune série en Fable (contrepoids « créatif à fond ») (M13)`);
     // « brief minimal » et pas « libre » seul : « un seul facteur libre » figure dans bien des objectifs.
     if (!sesVoies.some((v) => /brief minimal/i.test(v.objectif ?? ''))) erreurs.push(`${t.voie} : aucune série libre au brief minimal (contrepoids du lot 21) (M13)`);
+    const chaleur = Object.fromEntries(NIVEAUX_CHALEUR.map((k) => [k, siennes.reduce((s, d) => s + (chaleurs.get(d)?.[k] ?? 0), 0)]));
+    if (total && (chaleur.chaude < 0.3 * total || !chaleur.tiede || !chaleur.froide)) erreurs.push(`${t.voie} : chaleur ${chaleur.tiede} tiède, ${chaleur.chaude} chaude, ${chaleur.froide} froide ; les trois, et 30 % de chaudes au moins (« 4 tiède, 5 chaude, 2 froide », D22) (M13)`);
     if (!voies.some((v) => etape(v) === 'passe 2' && dependances(v).includes(t.voie))) erreurs.push(`${t.voie} : aucune passe 2 n'en dépend ; les candidates s'améliorent avant d'être montrées (M13)`);
   }
   for (const id of series.keys()) if (!tris.some((t) => dependances(t).includes(id))) erreurs.push(`${id} : série v0 sans voie de tri qui en dépende (M13)`);
@@ -627,10 +644,13 @@ function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = fal
 }
 
 // Un lot en entonnoir : des séries v0, un tri par le critique, une passe 2 qui en dépend (M13).
-function construireEntonnoir(dir, { series = 6, parSerie = 5, sansTri = false, sansPasse = false, sansLibre = false } = {}) {
+function construireEntonnoir(dir, { series = 7, parSerie = 8, sansTri = false, sansPasse = false, sansLibre = false, chaleur = null, sansBaseline = false } = {}) {
   const f = path.join(dir, 'MISSION.md');
   const ids = Array.from({ length: series }, (_, i) => `s${i + 1}`);
-  const voies = ids.map((id, i) => `| ${id} | série ${id}${i === 1 && !sansLibre ? ', libre au brief minimal' : ''} | conception | concepteur | ${i === 0 ? 'fable' : 'opus'} | 120 | ecran-1/lot/${id}/** | — | c | brasseur | v0 ×${parSerie} |`);
+  // Par défaut, chaque série porte les trois chaleurs : 1 froide, 1 tiède, le reste en chaude.
+  const temp = chaleur ?? (parSerie >= 3 ? ` (1 froide, 1 tiède, ${parSerie - 2} chaude)` : '');
+  const ctl = sansBaseline ? 'controle-commun' : 'baseline : controle-commun --sans=mots';
+  const voies = ids.map((id, i) => `| ${id} | série ${id}${i === 1 && !sansLibre ? ', libre au brief minimal' : ''} | conception | concepteur | ${i === 0 ? 'fable' : 'opus'} | 120 | ecran-1/lot/${id}/** | — | ${ctl} | brasseur | v0 ×${parSerie}${temp} |`);
   if (!sansTri) voies.push(`| t | tri des séries | jugement | critique | fable | 30 | t/RESULTAT.md | ${ids.join(', ')} | c | pilote | tri |`);
   if (!sansPasse) voies.push('| p2 | les cinq améliorées | conception | concepteur | opus | 80 | ecran-1/lot/p2/** | t | c | brasseur | passe 2 |');
   fs.writeFileSync(f, planMission(voies));
@@ -664,6 +684,10 @@ function temoins() {
   attendu('éventail sans tri', verifierMission(construireEntonnoir(sous('e4'), { sansTri: true })).length === 0, false);
   attendu('éventail sans passe 2', verifierMission(construireEntonnoir(sous('e5'), { sansPasse: true })).length === 0, false);
   attendu('éventail sans série libre', verifierMission(construireEntonnoir(sous('e6'), { sansLibre: true })).length === 0, false);
+  attendu('éventail sans chaleur déclarée', verifierMission(construireEntonnoir(sous('e7'), { chaleur: '' })).length === 0, false);
+  attendu('éventail tout en tiède', verifierMission(construireEntonnoir(sous('e8'), { chaleur: ' (8 tiède)' })).length === 0, false);
+  attendu('cinq séries seulement, trop peu d’approches',verifierMission(construireEntonnoir(sous('e10'), { series: 5, parSerie: 8 })).length === 0, false);
+  attendu('série qui ne suit pas la baseline', verifierMission(construireEntonnoir(sous('e9'), { sansBaseline: true })).length === 0, false);
   const m1 = sous('m1');
   attendu('voies tenues', verifierVoies(construireMission(m1), { approuver: true, racine: m1 }).ok, true);
   const m2 = sous('m2');

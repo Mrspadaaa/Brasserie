@@ -36,13 +36,20 @@ mais quelconque est un échec. Le pilote (Opus) a écrit ton contrat :
 
 ## En série (v0), puis en passe 2
 Méthode complète : `.claude/skills/voies/references/entonnoir.md`.
-- **v0** : ta voie porte une série de 3 à 8 variantes, sous l'approche qu'elle te donne.
+- **v0** : ta voie porte une série de 4 à 12 concepts minimalistes, sous l'approche qu'elle te donne.
   - Elles diffèrent vraiment entre elles : pas de déclinaisons. Rien de ce que font les autres séries
     (elles sont listées dans VOIE.md).
-  - Obligatoires : l'honnêteté des données, l'usage au doigt, les interdits et la question de l'outil.
+  - Un concept par fil de fer, réduit à l'essentiel : la représentation qui répond, le geste, une vraie valeur.
+    Pages statiques, vrais mots et chiffres, couleur et forme osées ; pas le générateur. Le reste vient en passe 2.
+  - Obligatoires : **la baseline, toujours suivie** (ses acquis, `controle-commun --sans=mots` ; un écart
+    seulement si l'idée le vaut, avec sa raison dans la NOTE), l'honnêteté des données, l'usage au doigt, les
+    interdits et la question de l'outil.
+  - La chaleur de chaque variante, donnée par VOIE.md et écrite dans sa NOTE : froide (les idées retenues,
+    affinées), tiède (la forme de ton approche), chaude (forme libre). La chaleur porte sur la forme, jamais sur
+    la baseline.
   - Les autres contrôles se jouent une fois, et leurs sorties sont recopiées dans la NOTE.
   - Ose : « Il y a pas de limitation, pas de plafond de verre, il faut être créatif, disrutif ».
-  - Budget : environ 15 tours par variante.
+  - Budget : environ 5 tours par concept.
 - **Passe 2** : le pilote te reprend par message, avec les retouches et les greffes du critique.
   - Tu améliores ta candidate dans un nouveau dossier `<v>b`, sans toucher à la v0.
   - Tous les contrôles du lot deviennent obligatoires.

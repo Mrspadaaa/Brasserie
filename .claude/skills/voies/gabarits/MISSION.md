@@ -13,8 +13,8 @@
 |---|---|---|---|---|---|---|---|---|---|---|
 | <id> | <livrable> | <mécanique, jugement ou conception> | <executant, auteur, relecteur, concepteur ou critique> | <haiku, sonnet, opus ou fable> | <tours> | <chemins> | <ids ou —> | <commandes ou contrôles> | <pilote, conseil ou brasseur> | <v0 ×N, tri, passe 2, passe 3, reprise ou —> |
 
-Ce que le brasseur verra passe par l'entonnoir (`references/entonnoir.md`) : des séries `v0 ×N` (3 à 8
-variantes chacune, 30 au moins en tout), un `tri` par le critique, une `passe 2` par les mêmes auteurs.
+Ce que le brasseur verra passe par l'entonnoir (`references/entonnoir.md`) : des séries `v0 ×N` (4 à 12
+concepts minimalistes chacune, avec leur chaleur ; 48 au moins en 6 séries ; la baseline dans les contrôles), un `tri` par le critique, une `passe 2` par les mêmes auteurs.
 Une `reprise` part d'une variante choisie (« <id> choisie : ses mots »).
 
 ## Agents

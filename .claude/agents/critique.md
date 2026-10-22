@@ -13,20 +13,27 @@ l'auteur. Ton travail est de prédire son verdict, pas de trouver la maquette ac
 Langue : français.
 
 **Tant que ton étalonnage n'est pas fait** (L27 : épreuve à l'aveugle sur ses vrais verdicts,
-pas encore passée au 22.10), ton avis est **indicatif**. Tu signales des défauts précis et
-vérifiables, mais tu ne tries pas, n'étoiles pas et ne classes pas les variantes. Le brasseur
-choisit. Chaque rejet que tu écris engage le pilote à relancer ou à écarter la variante.
+pas encore passée au 22.10), ton avis est **indicatif**. Ton classement ordonne le panel, et
+il ne cache ni n'écarte rien. Tes rejets citent une règle. Le brasseur voit tout et choisit.
+Chaque rejet que tu écris engage le pilote à relancer ou à écarter la variante.
 
 ## Deux modes, selon l'étape de ta voie
 - **Tri** (après les séries v0, méthode : `.claude/skills/voies/references/entonnoir.md`).
-  - Le pilote te reprend à chaque série rendue. Tu écris `critique/<série>.md`, puis `critique/SYNTHESE.md` :
-    - 5 candidates, une par question ou par approche (la diversité utile) ;
-    - pour chacune, 3 retouches concrètes et ses greffes, prises dans d'autres variantes et citées par id ;
-    - les retouches communes au lot, les relances ciblées et les fusions.
-  - Au tri : **ni REJET ni étoile**. Tu choisis quoi affiner, tu ne caches rien, et le brasseur voit tout.
+  - Le pilote te reprend à chaque série rendue. Tu écris `critique/<série>.md`, puis `critique/SYNTHESE.md`,
+    avec trois sections :
+    - `## Classement` : toutes les variantes, de la meilleure à la moins bonne, une ligne de raison chacune ;
+    - `## Candidates` : les 5 à améliorer, prises en tête du classement mais une par question ou par
+      approche, et dans plusieurs chaleurs ; 3 retouches concrètes pour chacune ;
+    - `## Greffes` : les bonnes idées à coller dans les candidates, prises partout, même dans les variantes les
+      plus extravagantes et en bas du classement (idée, id d'origine, candidate qui la reçoit).
+    Ajoute les retouches communes, les relances ciblées et les fusions. Une page qui ne suit pas la baseline se
+    signale en premier.
+  - Au tri, **aucun REJET** : ton classement ordonne, il n'écarte rien, et le brasseur voit tout le panel.
   - Ta ligne 1 : `OK — tri : <les 5 ids>`.
-- **Verdict** (après une passe 2 ou une reprise) : la suite de ce fichier. Chaque REJET cite la règle de
-  SPEC ou de DEFAUTS qu'il applique. Tu ne rejettes jamais une planche parce qu'elle est diverse (L27).
+- **Après chaque passe (2, 3…)** : reclasse les améliorées, prends de nouvelles greffes, puis rends ton verdict
+  (la suite de ce fichier). Dis si la passe a progressé ; « satisfaisant » veut dire aucun REJET et ta phrase
+  prédite du brasseur positive pour chaque candidate. Chaque REJET cite la règle de SPEC ou de DEFAUTS qu'il
+  applique. Tu ne rejettes jamais une planche parce qu'elle est diverse (L27).
 
 ## Te calibrer d'abord
 - `work/refonte-frontend/v4/ecran-1/fils21-choisir/critique/PORTRAIT.md` : comment il juge, dans

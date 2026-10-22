@@ -174,15 +174,22 @@ Méthode : `.claude/skills/voies/references/entonnoir.md`. Contrôle : `systeme.
 - Elle reprend la méthode du lot 21 : 44 variantes v0 en 10 séries, puis 5 candidates améliorées. L'utilisateur l'a
   jugée « vraiment plus qualitatif » que celle du lot 22 (12 variantes, une par agent, contraintes dès la v0, sans
   amélioration).
-- **v0** : des séries de 3 à 8 variantes, un concepteur par série, 30 variantes au moins.
+- **v0** : des concepts minimalistes, en séries de 4 à 12, un concepteur par série, 48 au moins en 6 séries
+  au moins (« Et plus de diversité et de nombre de mini proto »). La chaleur varie dans chaque série : froide, tiède
+  ou chaude (D22).
   - Une série Fable « créative à fond », et une série libre au brief minimal.
-  - Seuls l'honnêteté, le doigt, les interdits et la question sont obligatoires.
-- **Tri** : un seul critique, repris à chaque série. Il rend une SYNTHESE : 5 candidates, une par approche, leurs
-  greffes, les retouches communes. Ni rejet ni étoile.
-- **Passe 2** : les mêmes agents, repris par `SendMessage`. Tous les contrôles s'appliquent, puis le critique rend
-  son verdict.
-- **Montrer** : les améliorées, puis toutes les v0. Le brasseur choisit ; ensuite, `reprise` de la variante choisie
-  avec les éléments qu'il a notés (D104).
+  - Obligatoires : la baseline (toujours suivie, `controle-commun --sans=mots`), l'honnêteté, le doigt, les interdits
+    et la question.
+- **Tri** : un seul critique, repris à chaque série. Il rend une SYNTHESE en trois parties :
+  - le classement de tout le panel (« vaste panel et ensuite ranking »), qui est une proposition ;
+  - 5 candidates, une par approche ;
+  - les greffes, prises partout, « même les plus extravagantes ».
+  Aucun rejet au tri.
+- **Passes 2, 3…** : les mêmes agents, repris par `SendMessage`. Tous les contrôles s'appliquent. Après chaque passe,
+  le critique reclasse, regreffe et rend son verdict. On s'arrête dès que l'une de ces conditions est atteinte : c'est
+  satisfaisant, il n'y a plus de gain, ou quatre passes ont été faites.
+- **Montrer** : la dernière passe, puis toutes les v0 dans l'ordre du classement. Le brasseur choisit ; ensuite,
+  `reprise` de la variante choisie avec les éléments qu'il a notés (D104).
 - Le coût est voisin de celui du lot 22, pour trois fois plus de choix. Le plafond (L18) porte sur les agents et les
   tours, pas sur les variantes.
 
