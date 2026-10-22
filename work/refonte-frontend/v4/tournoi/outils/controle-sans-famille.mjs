@@ -1,5 +1,5 @@
-// D100 (22.10, reprise du lot 21 ; leçon L14) : un houblon dont plus de la moitié des mots n'a
-// pas de famille montre une part « autres » dessinée. Les mots du brasseur, sur l5f : « nelson
+// D100 (22.10, reprise du lot 21 ; leçon L14) : un houblon dont plus de la moitié des mots (seuil
+// réglable, voir --seuil) n'a pas de famille montre une part « autres » dessinée. Les mots du brasseur, sur l5f : « nelson
 // sauvin est un houbon ordinaire alors que c'est un un houbon incroyable » ; « motueka est ultra
 // fruité ». Cause chiffrée (cerveau/metier/descripteurs-hors-familles.md) : 10 des 12 mots de
 // Nelson Sauvin (83 %) tombent hors des 12 familles (vin blanc, groseille à maquereau, raisin,
@@ -12,7 +12,9 @@
 //   - les houblons MONTRÉS sont ceux dont le nom figure dans le texte visible de la page (au repos,
 //     ou après la requête de --page=etat-b.html?fiche=Nelson%20Sauvin) ou qui portent
 //     [data-houblon="<nom>"] ;
-//   - pour chaque houblon montré à PLUS de 50 % sans famille, une part « autres » visible :
+//   - pour chaque houblon montré à PLUS du seuil sans famille (0,5 par défaut ; --seuil=<0..1>, par
+//     exemple --seuil=0.25, le seuil que le pilote propose pour l'option B, à corriger par le
+//     brasseur ; « plus de » est strict : 3 mots sur 12 = 25 % ne dépasse pas 0,25), une part « autres » visible :
 //     un élément [data-role="autres"] dans son [data-houblon="<nom>"] (ou portant lui-même
 //     data-houblon="<nom>"), qui est une FORME dessinée : 24 × 6 px au moins, un fond (ou un
 //     remplissage svg) opaque, NEUTRE (gris : écart entre canaux ≤ 30), ni hachuré (le hachuré
@@ -24,11 +26,13 @@
 // d'un houblon ; data-role="autres" sur la forme de la part sans famille ; data-part="0,83" (point
 // ou virgule) facultatif ; la liste des mots (concepts dédoublonnés, sans mots génériques) à côté.
 // Un houblon absent de pack-fiches.json n'a pas de part calculable : il n'est pas jugé.
-// Usage : node controle-sans-famille.mjs <dossier> [ids…] [--page=etat-b.html[?requête]] ; une ligne
-// par page, puis « SANS-FAMILLE OK (<n> houblon(s) au-dessus de 50 %, part « autres » visible) »
-// (code 0), ou « SANS-FAMILLE ECHEC n problème(s) » et la liste (code 1).
-// Témoins : négatif l5f (fils18-baseline, etat-b.html : Nelson Sauvin 83 %, Hallertau Blanc 67 %,
-// sans forme) ; positif temoins/sans-famille-ok.
+// Usage : node controle-sans-famille.mjs <dossier> [ids…] [--page=etat-b.html[?requête]]
+// [--seuil=<0..1>] ; une ligne par page, puis « SANS-FAMILLE OK (<n> houblon(s) au-dessus de
+// <seuil en %> %, part « autres » visible) » (code 0), ou « SANS-FAMILLE ECHEC n problème(s) » et la
+// liste (code 1). Un seuil hors de [0 ; 1] est refusé (code 2). La ligne OK dit le seuil employé.
+// Témoins : négatifs l5f (fils18-baseline, etat-b.html : Nelson Sauvin 83 %, Hallertau Blanc 67 %,
+// sans forme) et temoins/sans-famille-seuil-ko (Galaxy 40 % sans part « autres », seuil 0,25) ;
+// positifs temoins/sans-famille-ok (50 %) et temoins/sans-famille-seuil-ok (Galaxy 40 %, seuil 0,25).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -39,6 +43,10 @@ const dir = path.resolve(args.find((a) => !a.startsWith('--')) || '.');
 const only = args.filter((a) => !a.startsWith('--')).slice(1);
 const pgArg = (args.find((a) => a.startsWith('--page=')) || '--page=etat.html').slice(7);
 const [pg, requete = ''] = pgArg.split('?');
+const seuilArg = (args.find((a) => a.startsWith('--seuil=')) || '--seuil=0.5').slice(8).trim().replace(',', '.');
+const SEUIL = /^[0-9]*[.]?[0-9]+$/.test(seuilArg) ? Number(seuilArg) : NaN;
+if (!(SEUIL >= 0 && SEUIL <= 1)) { console.error('SANS-FAMILLE : --seuil=' + seuilArg + ' refusé (un nombre de 0 à 1, par exemple 0.25)'); process.exit(2); }
+const SEUIL_TXT = String(+(SEUIL * 100).toFixed(1)).replace('.', ',');
 const ids = (only.length ? only : fs.readdirSync(dir).filter((d) => fs.existsSync(path.join(dir, d, pg)))).sort();
 const packPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../../prototypes/houblons-v4/data/pack-fiches.json');
 const fiches = JSON.parse(fs.readFileSync(packPath, 'utf8')).fichesHoublons;
@@ -54,7 +62,8 @@ const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Googl
 const problems = [];
 const summary = [];
 
-const analyser = ({ PARTS, CODE }) => {
+const analyser = ({ PARTS, CODE, SEUIL }) => {
+  const depasse = (p) => p.part > SEUIL + 1e-9;
   const vis = (e) => !!e && e.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }) && e.getBoundingClientRect().width > 0 && e.getBoundingClientRect().height > 0;
   const texte = document.body.innerText;
   const balises = [...document.querySelectorAll('[data-houblon]')].filter(vis).map((e) => e.getAttribute('data-houblon'));
@@ -88,7 +97,7 @@ const analyser = ({ PARTS, CODE }) => {
     const vus = autres.filter(vis);
     const fautes = [];
     let ok = false;
-    if (p.part > 0.5) {
+    if (depasse(p)) {
       if (!vus.length) fautes.push('« ' + p.nom + ' » (' + Math.round(100 * p.part) + ' % sans famille, ' + p.sans + ' mots sur ' + p.total + ') : aucune part « autres » visible' + (autres.length ? ' (balisée mais invisible)' : '') + ' ; ses mots sans famille ne sont qu\'une ligne de texte, ou rien');
       else {
         const e = vus[0];
@@ -101,7 +110,7 @@ const analyser = ({ PARTS, CODE }) => {
         ok = f.length === 0;
       }
     }
-    return { nom: p.nom, part: p.part, haut: p.part > 0.5, ok, fautes };
+    return { nom: p.nom, part: p.part, haut: depasse(p), ok, fautes };
   });
   return { rapport, nBalises: balises.length };
 };
@@ -114,13 +123,13 @@ for (const id of ids) {
   await page.goto(pathToFileURL(file).href + (requete ? '?' + requete : ''), { waitUntil: 'networkidle0', timeout: 30000 });
   await new Promise((r) => setTimeout(r, 300));
   await page.evaluate(() => document.querySelectorAll('details').forEach((d) => { d.open = true; }));
-  const a = await page.evaluate(analyser, { PARTS: parts.map(({ nom, cherche, total, sans, part }) => ({ nom, cherche, total, sans, part })), CODE });
+  const a = await page.evaluate(analyser, { PARTS: parts.map(({ nom, cherche, total, sans, part }) => ({ nom, cherche, total, sans, part })), CODE, SEUIL });
   await page.close();
   const hauts = a.rapport.filter((r) => r.haut);
-  console.log(id + ' · ' + a.rapport.length + ' houblon(s) repéré(s) · ' + hauts.length + ' au-dessus de 50 % (' + (hauts.map((r) => r.nom + ' ' + Math.round(100 * r.part) + ' %' + (r.ok ? ' ✓' : ' ✗')).join(', ') || 'aucun') + ')');
+  console.log(id + ' · ' + a.rapport.length + ' houblon(s) repéré(s) · ' + hauts.length + ' au-dessus de ' + SEUIL_TXT + ' % (' + (hauts.map((r) => r.nom + ' ' + Math.round(100 * r.part) + ' %' + (r.ok ? ' ✓' : ' ✗')).join(', ') || 'aucun') + ')');
   for (const r of hauts) for (const x of r.fautes) problems.push(id + ' ' + pg + ' : ' + x);
   for (const r of hauts) if (r.ok) summary.push(r.nom);
 }
 await browser.close();
 if (problems.length) { console.log('SANS-FAMILLE ECHEC ' + problems.length + ' problème(s)'); for (const x of problems) console.log('  ' + x); process.exit(1); }
-console.log('SANS-FAMILLE OK (' + summary.length + ' houblon(s) au-dessus de 50 %, ' + (summary.length ? 'part « autres » visible' : 'rien à montrer') + ')');
+console.log('SANS-FAMILLE OK (' + summary.length + ' houblon(s) au-dessus de ' + SEUIL_TXT + ' %, ' + (summary.length ? 'part « autres » visible' : 'rien à montrer') + ')');

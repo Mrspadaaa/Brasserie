@@ -134,7 +134,38 @@ Voir `decisions.md` (D1 à D12).
   cours. Fils de la page : tous répondus et résolus, sauf « Les bar de ce type… », non envoyé à
   Claude. À faire valider par lui : l8 (l8g ou l8h ; trait l8e ou l8f) contre l5 (l5e ou l5d) ; les
   conventions [H] du moteur ; les icônes Barres et Radar de l5e (D31).
-- **VAGUE 1 FAITE (22.10, deuxième session du système d'agents) : lire en premier.**
+- **VAGUE 2 FAITE (22.10, soir) : lire en premier.** Le but : produire les mini maquettes et les
+  montrer.
+  - Entrées vérifiées (r6e, D102, L08) ; D99 « à un toucher » et radar r3 ; D100 `--seuil` (r0b).
+    D98 réparé : deux « b » échappés étaient des 0x08, la table `NOMME` était morte ; `cablage` le
+    refuse désormais (M10).
+  - **L25** (session voisine, commit 6f1a964) : l'interface est conçue en Opus (`concepteur`) et jugée
+    par le critique Fable (`critique`). Les 14 voies d'interface ont tourné en Opus.
+  - **Lot 22, Comparer** : 12 variantes, `v4/ecran-1/fils22-comparer/` (brief commun
+    `BRIEF-AUTEUR.md`, données `donnees/comparer-stout.json`). Critique Fable :
+    - accepté, ★ r6l, r6j, r6i, r6m ;
+    - r6b et r6h avec réserve ;
+    - r6a et r6f à garder pour leur structure ;
+    - r6c, r6d, r6g et r6k rejetées ;
+    - défaut commun : les bandes d'intervalle saturent les radars (D103, prédit).
+  - **Carte des outils** (r1, `fils22-carte/`) : acceptée par le critique à la deuxième passe.
+  - **Picto « épicé »** : la planche r4 a été refusée par le brasseur (« Aucun me convient... »).
+    La nouvelle planche r4c (`fils22-picto-epice-2/`) propose le piment en trois dessins et le mot en
+    repli. Le critique l'a acceptée à la deuxième passe ; en tête, p1 « calice et crochet ».
+  - **Page des fils de fer** :
+    - section « lot 22 » préparée en local (`outils/page-nuit/site/`, `lot22.json`) ;
+    - **non publiée** : depuis le compte connecté à la session, ni `2VTRQP7nLXhX5GqDaAGAyU` ni
+      `MoohEoyjPGAWqpMQZZCq5T` ne sont accessibles (« artifact not found ») ;
+    - à publier par une session connectée au bon compte, sans créer de page :
+      `Artifact publish url=…2VTRQP7nLXhX5GqDaAGAyU`, `file_path=site/index.html`, `files` = les 16
+      nouvelles `img/`.
+  - **Prochaine action : les choix du brasseur.** Il choisit une variante de Comparer, la carte
+    (Substituer et Levure, porte ou outil) et le picto, et répond à A ou B, avec les génériques, le
+    seuil et le plafond. Ensuite :
+    - r3-descripteurs ;
+    - D103 et la correction du radar sur la variante choisie ;
+    - r7-dryhopper (lot 23).
+- **VAGUE 1 FAITE (22.10, deuxième session du système d'agents)** :
   - Le système est vérifié dans une session neuve :
     - leçons en contexte sans lecture (pilote et sous-agent Haiku) ;
     - types d'agents réels, sans repli ;

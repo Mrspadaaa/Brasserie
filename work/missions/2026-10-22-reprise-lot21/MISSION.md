@@ -44,15 +44,37 @@ de lui montrer.
 | Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur |
 |---|---|---|---|---|---|---|---|---|---|
 | r0-controles | contrôles L10 (un seul groupe de sélecteurs libres, éléments admis par outil), L06 (radar, chimie, panel OSU, vraies valeurs présents) et L14 (part sans famille visible et plafonnée), chacun avec témoin négatif | jugement | auteur | sonnet | 80 | work/refonte-frontend/v4/tournoi/outils/controle-une-question.mjs, controle-acquis.mjs, controle-sans-famille.mjs, temoins/{une-question-ok,acquis-ok,sans-famille-ok}/etat.html | — | chaque contrôle échoue sur y1b et y3 (L10, L06) et sur l5f (L14), passe sur un témoin positif (`systeme.mjs echoue`) | pilote |
-| r1-carte | page en fil de fer : la stout de l'étape Houblons à Dryhopper, un écran par outil, ligne de contexte et facteur libre marqués ; les choix ouverts montrés côte à côte, sans question fermée | conception | auteur | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-carte/** | r0-controles | controle-commun (COMMUN OK), controle-une-question, captures 390 ouvertes | brasseur |
+| r6e-entrees | vérifier moteur et profils (L08) ; extraire `fils22-comparer/donnees/comparer-stout.json` (stout 16D, Cascade, Idaho 7, Galaxy, Nelson Sauvin ; dose égale, effet égal, IBU égal ; options A et B) | mécanique | executant | haiku | 40 | work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/{extraire-comparer.mjs,comparer-stout.json,ENTREES.md}, voies/r6e-entrees/profils-regeneres.json.tmp | — | check:engine ; controle-entrees-lot22 (D102, recalcule tout, témoin --temoin) ; prototypes intact | pilote |
+| r0b-controles-ajustes | D99 : acquis à un toucher et radar r3 en petits multiples ; D100 : `--seuil` (0,25 proposé pour B) ; témoins positifs et négatifs | jugement | auteur | sonnet | 60 | controle-acquis.mjs, controle-sans-famille.mjs, temoins/{acquis-toucher-ok,acquis-deux-touchers,sans-famille-seuil-ok,sans-famille-seuil-ko}/etat.html | r0-controles | témoins neufs, et G1 à G8 de r0 rejoués | pilote |
+| r1-carte | page en fil de fer : la stout de l'étape Houblons à Dryhopper, un écran par outil, ligne de contexte et facteur libre marqués ; les choix ouverts montrés côte à côte, sans question fermée | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-carte/** | r0-controles, r0b-controles-ajustes, r6e-entrees | controle-une-question par écran (facteur de la carte du conseil), controle-commun (sans fiche ni légende), captures 390 ouvertes | brasseur |
+| r6a-colonnes | lot 22, Comparer : trois colonnes côte à côte (w2) ; radar r2, dose égale, sans porte, descripteurs A | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/** | r6e-entrees, r0b-controles-ajustes | COMMUN (sans MOTS), MOTS ≤ 80, UNE-QUESTION (houblon), ACQUIS 4/4, ALPHA, captures, NOTE « Choix portés » | brasseur |
+| r6b-trois-radars | lot 22 : un radar par houblon ; r3, dose égale, B | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/r6b/** | r6e-entrees, r0b-controles-ajustes | idem r6a, plus SANS-FAMILLE --seuil=0.25 | brasseur |
+| r6c-podium-agrumes | lot 22 : le podium des agrumes ; r2, effet égal (agrumes), A | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/r6c/** | r6e-entrees, r0b-controles-ajustes | idem r6a | brasseur |
+| r6d-meme-tropical | lot 22 : le même tropical ; r3, effet égal (tropical), B | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/r6d/** | r6e-entrees, r0b-controles-ajustes | idem r6b | brasseur |
+| r6f-meme-amertume | lot 22 : même amertume, quel arôme ; r2, IBU égal, B | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/r6f/** | r6e-entrees, r0b-controles-ajustes | idem r6b | brasseur |
+| r6g-trois-verres | lot 22 : trois verres à même amertume ; r3, IBU égal, A | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/r6g/** | r6e-entrees, r0b-controles-ajustes | idem r6a | brasseur |
+| r6h-sans-nelson-dose | lot 22 : je n'ai pas Nelson Sauvin ; r2, dose égale, porte, B | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/r6h/** | r6e-entrees, r0b-controles-ajustes | idem r6b | brasseur |
+| r6i-sans-nelson-effet | lot 22 : remplacer Nelson Sauvin à effet égal ; r3, effet égal (agrumes), porte, A | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/r6i/** | r6e-entrees, r0b-controles-ajustes | idem r6a | brasseur |
+| r6j-vraies-valeurs | lot 22 : les vraies valeurs d'abord ; r2, effet égal (agrumes), B | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/r6j/** | r6e-entrees, r0b-controles-ajustes | idem r6b | brasseur |
+| r6k-panel-d-abord | lot 22 : le panel d'abord ; r3, dose égale, A | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/r6k/** | r6e-entrees, r0b-controles-ajustes | idem r6a | brasseur |
+| r6l-cartes-glisser | lot 22 : des cartes à glisser ; r2, IBU égal, porte, A | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/r6l/** | r6e-entrees, r0b-controles-ajustes | idem r6a | brasseur |
+| r6m-la-phrase | lot 22 : la phrase et le radar ; r3, IBU égal, B | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/r6m/** | r6e-entrees, r0b-controles-ajustes | idem r6b | brasseur |
+| r4c-picto-epice-2 | nouvelle planche « épicé » après « Aucun me convient... » (22.10) : 6 à 8 propositions de cinq genres au moins, aucune idée ni aucun dessin déjà refusés | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-picto-epice-2/** | — | controle-planche-picto --refuses --genres=5 (témoin : planche-r4-refusee), controle-pictos-trait, captures ouvertes | brasseur |
+| r5-critique-carte | critique calibré de r1 : verdict prédit du brasseur | jugement | critique | fable | 30 | voies/r5-critique-carte/RESULTAT.md | r1-carte | captures ouvertes, phrase prédite par écran | pilote |
+| r6r-critique-lot22 | critique calibré des 12 variantes : verdict prédit par variante, ★ sur trois ou quatre | jugement | critique | fable | 30 | voies/r6r-critique-lot22/RESULTAT.md | r6a-colonnes, r6b-trois-radars, r6c-podium-agrumes, r6d-meme-tropical, r6f-meme-amertume, r6g-trois-verres, r6h-sans-nelson-dose, r6i-sans-nelson-effet, r6j-vraies-valeurs, r6k-panel-d-abord, r6l-cartes-glisser, r6m-la-phrase | captures ouvertes, une ligne par variante | pilote |
+| r4cr-critique-picto | critique calibré de r4c : la planche est-elle montrable après trois refus ? | jugement | critique | fable | 30 | voies/r4cr-critique-picto/RESULTAT.md | r4c-picto-epice-2 | captures ouvertes, chaque picto nommé à voix haute | pilote |
 | r2-cout-calcul | chronométrer simulerCas léger et complet sur le cas stout et sur tout le catalogue, sans écrire dans le moteur ; note du cerveau | mécanique | executant | haiku | 40 | cerveau/metier/cout-calcul-moteur.md, voies/r2-cout-calcul/ANNEXE.md | — | note --exiger "Mesures,Conditions,Conclusion" ; npm run check:engine | pilote |
-| r4-picto-epice | planche de 6 à 8 pictos « épicé » (poivre exclu : deux plaintes), au code couleur des arômes, à 390 px | jugement | auteur | sonnet | 60 | work/refonte-frontend/v4/ecran-1/fils22-picto-epice/** | — | controle-planche-picto (D101, témoin négatif planche-poivre), controle-pictos-trait (D88), captures ouvertes | brasseur |
-| r4r-relecture | relecture indépendante de r4 contre SPEC, acquis et leçons | jugement | relecteur | sonnet | 30 | voies/r4r-relecture/RESULTAT.md | r4-picto-epice | questions fermées du relecteur, captures ouvertes | pilote |
-| r5-relecture | relecture indépendante de r1 contre SPEC, acquis et leçons | jugement | relecteur | sonnet | 30 | voies/r5-relecture/RESULTAT.md | r1-carte | questions fermées du relecteur, captures ouvertes | pilote |
-| r8-publication | captures et section lot 22 pour la page des fils de fer : carte, variantes de Comparer, planche « épicé » ; le pilote met ensuite l'artefact à jour lui-même | mécanique | executant | haiku | 40 | work/refonte-frontend/v4/outils/page-nuit/lot22.json | r5-relecture, r6-lot22-comparer | ajouter-lot.mjs sans erreur, chaque image existe | pilote |
+| r8-publication | captures et section lot 22 pour la page des fils de fer : carte, variantes de Comparer, planche « épicé » ; le pilote met ensuite l'artefact à jour lui-même | mécanique | executant | haiku | 40 | work/refonte-frontend/v4/outils/page-nuit/{faire-lot22.mjs,lot22.json,site/index.html,site/img/**} | r5-critique-carte, r6r-critique-lot22, r4cr-critique-picto | lot22.json (7 puces, 16 images existantes), section t119-lot22 en tête de la copie locale | pilote |
 | r3-descripteurs | appliquer dans le prototype les options choisies par le brasseur (A table complémentaire mot → famille, B part « autres ») ; confronter Cascade, Idaho 7, Galaxy, Nelson Sauvin, Motueka à leur réputation | jugement | auteur | sonnet | 80 | prototypes/houblons-v4/data/descripteurs-complementaires.json, prototypes/houblons-v4/src/engine/hops.ts, prototypes/houblons-v4/tests/ (la table mot → famille d'origine vit dans hopExtrapolationBootstrap.json, ne pas la modifier) | brasseur (option choisie) | npm test et check:engine (prototypes/houblons-v4) ; controle-sans-famille | pilote |
-| r6-lot22-comparer | lot 22 : Comparer seul, stout 16 °P, Cascade, Idaho 7, Galaxy ; environ 12 mini maquettes à partir de la base v4.9 (p06), chimie rattachée aux familles, vraies valeurs de v1 sous un toucher, manière de w2, panel OSU ; les variantes couvrent les choix ouverts (radar r2 ou r3 ; dose égale, effet égal ou IBU égal ; porte « Je n'ai pas X » ; descripteurs A ou B sur la fiche), et chaque NOTE dit lesquels elle porte | jugement | auteur | sonnet | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/** | r0-controles | controle-commun, controle-une-question, controle-acquis, controle-sans-famille (variantes B), relecteur | brasseur |
-| r7-dryhopper | lot 23 : Dryhopper, y1b sans sélecteur de houblon, moment par 5′, x3b réduit en fin de frise ; la levure en variantes (dernière étape ou outil propre) | jugement | auteur | sonnet | 80 | work/refonte-frontend/v4/ecran-1/fils23-dryhopper/** | r6-lot22-comparer | controle-commun, controle-une-question, relecteur | brasseur |
+| r7-dryhopper | lot 23 : Dryhopper, y1b sans sélecteur de houblon, moment par 5′, x3b réduit en fin de frise ; la levure en variantes (dernière étape ou outil propre) | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils23-dryhopper/** | r6r-critique-lot22 | controle-commun, controle-une-question (D98 b : bouton d'édition en contexte), critique | brasseur |
+
+## Historique : voies d'interface terminées avant L25 (vague 1)
+Conçues et relues avant la leçon L25 (22.10, soir) ; gardées ici pour la trace, hors du contrôle du plan.
+
+| Voie | Objectif | Agent et modèle | État |
+|---|---|---|---|
+| r4-picto-epice | planche de 7 pictos « épicé » | auteur, sonnet | faite, relue (r4r, relecteur sonnet), puis **refusée par le brasseur** le 22.10 : « Aucun me convient... » |
+| r4r-relecture | relecture de r4 | relecteur, sonnet | faite : « accepté », à tort (L25) |
 
 ## Ordre
 - **Vague 1**, en parallèle et tout de suite : r0-controles, r2-cout-calcul, r4-picto-epice ; puis
@@ -132,3 +154,48 @@ VOIES OK 4/4
   - au pilote : ajuster D99 (« à un toucher ») avant r6, et D98 (b) avant r7 ;
   - mesurer sur un vrai téléphone ;
   - prochaine voie : **r1-carte**.
+
+### Vague 2 (22.10, soir) : les mini maquettes
+Rejeu du pilote, `node scripts/agents/systeme.mjs voies work/missions/2026-10-22-reprise-lot21 --approuver` :
+`VOIES OK 24/24`. Toutes les lignes sont OK, de r0 à r8, y compris les voies de la vague 1.
+- **Entrées** :
+  - r6e (Haiku) : moteur, 4,75 % vol., grille identique à une régénération, et `comparer-stout.json`
+    recalculé par D102. Le contrôle D102 du pilote comptait les groupes `{ source, mots[] }` au lieu
+    des mots : erreur relevée par la voie, corrigée (M07) ;
+  - r0b : D99 « à un toucher » et radar r3 ; D100 `--seuil`.
+- **L25** (session voisine, commit 6f1a964, en cours de vague) : l'interface en Opus, la critique en
+  Fable. Le type `concepteur` n'était pas chargé dans la session du pilote. Les 14 voies d'interface
+  ont donc tourné en type `auteur`, forcé sur `opus`, avec la consigne « suis
+  .claude/agents/concepteur.md ». Les trois critiques ont tourné dans le vrai type `critique`
+  (Fable), chargé entre-temps. Aucun repli `general-purpose`.
+- **Critiques et boucles moyennes** :
+  - r4c rejetée, puis acceptée après relance 1 (contrat de G2 réécrit par le pilote) ;
+  - r1 rejetée, puis acceptée après relance 1 ;
+  - lot 22 accepté : ★ r6l, r6j, r6i, r6m ; r6b et r6h avec réserve ; r6a et r6f pour leur
+    structure ; r6c, r6d, r6g et r6k rejetées.
+- **Brasseur** : « Aucun me convient... » sur la planche r4. Ses mots sont dans SPEC ; D101 bis
+  (`--refuses`, `--genres`, `--voisins`, rien sous 12 px), avec le témoin `planche-r4-refusee.html`.
+- **Pilote** :
+  - D98 réparé : ses deux `\b` étaient des 0x08 (relevé par r6i). `cablage` refuse désormais les
+    caractères de contrôle (M10, 26 témoins) ;
+  - D102 et D103 (prédit) versés dans DEFAUTS ;
+  - `loupe.html` et `loupe.png`, écrits par r4c à la racine (L17), rangés dans
+    `fils22-picto-epice-2/captures/travail/`.
+- **Leçons** :
+  - L26 : préfixer ses classes quand on reprend un socle (cinq variantes cassées en silence) ;
+  - L08 devient M07, et L09 devient M08 ;
+  - M09 : la planche de picto ;
+  - M10 : les caractères de contrôle ;
+  - L13, L14 et L17 enrichies ;
+  - leçons proposées par les voies : traitées ou fusionnées ; les faits techniques (compteur de mots,
+    iframes) vont dans la note `poste-windows-msix`.
+- **Budget** : la fenêtre de 5 h est passée de 4 % à environ 80 %. Les 14 voies Opus ont consommé
+  chacune 260 à 400 k jetons.
+- **Publication** : la section « lot 22 » est prête en local (`outils/page-nuit/site/`). Elle n'est
+  **pas publiée** : la page des fils de fer est introuvable depuis le compte connecté à la session du
+  pilote. Ce geste revient à l'utilisateur ou à une session connectée au bon compte.
+- **Reste** :
+  - le choix du brasseur ;
+  - r3, après A ou B ;
+  - la correction du radar (D103) sur la variante choisie ;
+  - r7 (lot 23).

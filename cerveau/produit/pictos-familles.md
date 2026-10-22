@@ -23,6 +23,15 @@ famille, c'est le code couleur des arômes, un acquis ([[acquis-valides]]).
 - lot 21 : « épicé l'icone est toujours pas bon.. ». Le poivre est donc refusé deux fois ;
 - 22.10, planche r4 (`fils22-picto-epice/`) : 7 propositions au trait, cannelle, vanille, badiane,
   girofle, mortier, coriandre et saupoudreur. La planche couvre les deux lectures de la phrase du
-  lot 15. Recommandation de l'auteur : badiane, la plus nette à 12 px. Relue et acceptée. **Choix
-  du brasseur en attente** ;
-- contrôle de la planche : D101 (`controle-planche-picto.mjs`, témoin `temoins/planche-poivre.html`).
+  lot 15. Relue et acceptée par un relecteur Sonnet, **puis refusée par le brasseur : « Aucun me
+  convient... »** (croix rouge sur les sept). Toutes étaient du même genre : une épice en petit objet
+  brun ;
+- 22.10, planche r4c (concepteur Opus, `fils22-picto-epice-2/`) :
+  - première passe, six genres (lettre, mot, piment, volutes, zigzag, couronne) : rejetée par le
+    critique Fable ;
+  - planche resserrée : trois dessins de piment et le mot « épicé » en repli, montrés à côté d'Herbacé
+    et de Végétal, à 12 et 16 px. Acceptée par le critique, avec en tête p1 « calice et crochet ».
+    Réserve à dire au brasseur : piquant n'est pas l'épicé du houblon. **Choix du brasseur en
+    attente** ;
+- contrôle : D101 et D101 bis (`controle-planche-picto.mjs`, `--refuses --genres --voisins`, témoins
+  `planche-poivre.html` et `planche-r4-refusee.html`).

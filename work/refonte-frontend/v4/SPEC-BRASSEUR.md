@@ -280,6 +280,10 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
     faire. »
   - « met le registre à jour avec ces feedback pour être prêt à reprendre ».
   — 20.10.
+- **La planche du picto « épicé » (r4, sept pictos)** : « Aucun me convient... ». Il a renvoyé la
+  capture `planche-390.png` barrée d'une grande croix rouge sur les sept : cannelle, vanille,
+  badiane, girofle, mortier et pilon, coriandre, saupoudreur. C'est le troisième refus de ce picto,
+  après « plutôt vanille, canelle ? » (lot 15) puis les grains de poivre (lot 21). — 22.10.
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce

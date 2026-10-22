@@ -55,20 +55,6 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Rôles : pilote, relecteur
 - Contrôle : aucun
 
-### L08 — Vérifier les entrées avant de lancer des voies en parallèle
-- Erreur : 20.10, le moteur était à un mauvais taux d'alcool. La correction à 4,75 % vol. est arrivée après 33 variantes ; 15 cas ont changé de drapeau, et toutes les pages étaient à régénérer.
-- Cause : les constantes et les données d'entrée n'ont été vérifiées qu'après l'éventail des voies.
-- Faire : une voie Haiku vérifie les entrées partagées (moteur, JSON, constantes) avant l'éventail. Tout le reste dépend d'elle.
-- Rôles : pilote, exécutant
-- Contrôle : `npm run check:engine` (prototypes/houblons-v4)
-
-### L09 — Vérifier chaque chemin cité dans un brief
-- Erreur : 22.10, le brief Haiku sur la chaîne des maquettes citait `scripts/profil-simule-cas.ts`, qui est dans `prototypes/houblons-v4/scripts/`. L'agent a dû corriger le brief.
-- Cause : le chemin a été recopié d'un message de commit sans être vérifié.
-- Faire : passer chaque chemin cité par Glob avant d'envoyer le brief.
-- Rôles : pilote
-- Contrôle : `node scripts/agents/systeme.mjs mission` vérifie les chemins des VOIE.md
-
 ### L10 — Un outil = un seul facteur libre, et la carte avant les variantes
 - Erreur : 20.10, 41 variantes v0 au lot 21 sans carte des outils. « plusieur confusion entre timing, comparaison, houbons side by side, […] suggestions, comparer, substituer, dryhopper ». 22.10, le conseil a montré que « Quand ? » (y1b) et « Quelle dose ? » (y3) laissaient libres houblon, dose et levure.
 - Cause : chaque écran faisait varier plusieurs facteurs. Un titre en forme de question ne suffisait pas à l'empêcher.
@@ -95,14 +81,14 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L13 — Une plainte devient un contrôle qui échoue sur la version rejetée, avant toute correction
 - Erreur : 18.10, les mêmes défauts revenaient de v2 à v4 (trop de texte, cockpit). 20.10 : le picto « épicé » est critiqué pour la deuxième fois (lot 15, puis lot 21), car la première plainte n'était pas devenue un contrôle.
 - Cause : les corrections étaient des règles écrites, lues par des agents, et non des contrôles bloquants.
-- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK.
+- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet (22.10 : sept épices dessinées, refusées d'un bloc).
 - Rôles : pilote, auteur
 - Contrôle : `controle-lot.mjs` (LOT OK)
 
 ### L14 — Confronter les données au savoir du brasseur sur les houblons phares
 - Erreur : 20.10, avec l5f, Nelson Sauvin paraît « un houbon ordinaire alors que c'est un un houbon incroyable », et Motueka « ultra fruité ».
 - Cause : 83 % de ses mots (vin blanc, groseille à maquereau, raisin) sont hors du lexique fermé des 12 familles, et sortent du dessin. Personne n'a confronté le rendu à la réputation du houblon (diagnostic du 22.10 : [[descripteurs-hors-familles]]).
-- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra, Motueka, Saaz, Galaxy), et confronter le rendu à leur réputation.
+- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra, Motueka, Saaz, Galaxy), et confronter le rendu à leur réputation. Dans une étude à plusieurs variétés, filtrer la ligne de la variété et comparer chaque nombre de la capture à la source (22.10 : le linalol d'Azacca, E03, affiché pour Idaho 7 dans deux variantes, vu sur capture seulement).
 - Rôles : relecteur, conseil, auteur
 - Contrôle : `controle-sans-famille.mjs` (D100) : échec au-delà de 50 % de mots sans famille si aucune part « autres » n'est visible ; l5f en échec ; il s'applique si le brasseur retient l'option B
 
@@ -116,10 +102,10 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `node scripts/agents/systeme.mjs voies <mission>`
 
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
-- Erreur : lot 21, un auteur a laissé `pistes-l5f.png` à la racine du dépôt.
+- Erreur : lot 21, un auteur a laissé `pistes-l5f.png` à la racine du dépôt. 22.10, la voie r4c a écrit `loupe.html` et `loupe.png` à la racine en croyant écrire dans « son scratchpad » (un sous-agent n'a pas le dossier temporaire du pilote).
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
-- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie.
-- Rôles : pilote, auteur, exécutant
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine.
+- Rôles : pilote, auteur, exécutant, concepteur
 - Contrôle : aucun
 
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
@@ -159,8 +145,19 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Rôles : pilote
 - Contrôle : `systeme.mjs mission` refuse une voie d'interface hors Opus ou Fable, et une relecture d'interface sans critique
 
+### L26 — Une variante qui reprend un socle préfixe ses classes et assemble son code sans remplacement de chaîne
+- Erreur : 22.10, lot 22, cinq variantes sur douze cassées en silence par le socle importé (l8g, fiche g1). `.rep`, `.lg-v`, `.vl`, `.lg-z` ont déplacé ou masqué des rendus ; `.r-bord` a effacé les hachures « inconnu » de la fiche ; un `$$` passé par `String.replace` est devenu `$` et a cassé l'appui long. Tous les contrôles étaient verts.
+- Cause : les classes de la variante partageaient l'espace de noms du socle, et le code client était assemblé par remplacement de chaînes.
+- Faire : préfixer ses classes (`r6x-…`) ; assembler le code client par `split/join` ou une fonction de remplacement ; capturer aussi l'état ouvert et la fiche, et les ouvrir (L12).
+- Rôles : concepteur, auteur
+- Contrôle : aucun ; seules les captures ouvertes l'ont montré
+
 ## Mécanisées
 
+- M07 (L08) — Vérifier les entrées avant l'éventail : le 20.10, 33 variantes sur un moteur à un mauvais taux d'alcool ; le 22.10, le contrôle des entrées comptait les groupes `{ source, mots[] }` au lieu des mots (lire une entrée réelle avant d'écrire une formule). `npm run check:engine` et `controle-entrees-lot22.mjs` (D102 : régénération comparée, recalcul, témoin `--temoin`). Au-delà du JSON, tracer une fois la représentation obligatoire sur les vraies données (22.10 : des « haut » hors domaine ont saturé le radar des douze variantes, D103).
+- M08 (L09) — Chaque chemin cité existe : le 22.10, un brief citait `scripts/profil-simule-cas.ts` au lieu de `prototypes/houblons-v4/scripts/`. `systeme.mjs mission` vérifie les sources de MISSION.md ; passer les chemins des VOIE.md par Glob.
+- M09 — Planche de picto : le 22.10, sept épices refusées d'un bloc, puis six genres dont cinq rejetés par le critique. `controle-planche-picto.mjs` (D101) : `--refuses` (idées et dessins refusés), `--genres=N`, `--voisins=` (les familles de même silhouette : un risque nommé dans la NOTE se montre), rien sous 12 px.
+- M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle : le 22.10, les deux `\b` de D98 étaient des 0x08 (table `NOMME` morte, vue par la voie r6i), comme le `—` du pilote devenu un tiret. `systeme.mjs cablage` refuse tout caractère de contrôle dans les scripts de contrôle (témoin « échappement devenu caractère de contrôle »).
 - M06 (L06) — Les acquis validés passent d'un lot au suivant : le radar a disparu du lot 21. Liste dans [[acquis-valides]], recopiée dans chaque brief ; `controle-acquis.mjs` (D99).
 - M01 — Valeurs brutes à l'écran (low, medium, null…), revenues trois fois : `controle-valeurs-brutes.mjs` (D97, dans controle-commun).
 - M02 (L21) — Un hook s'essaie sur les vraies entrées de l'app : le 22.10, le hook de correction a réagi à la notification d'un conseiller. Témoin « notification d'agent » dans `systeme.mjs temoins`.

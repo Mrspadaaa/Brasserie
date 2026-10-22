@@ -32,7 +32,7 @@ Scope: trois contrôles au rendu (L10, L06, L14), en échec sur leurs témoins n
 - [x] G6: L06 passe sur son témoin positif, avec les quatre acquis
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-acquis.mjs work/refonte-frontend/v4/tournoi/outils/temoins acquis-ok --page=etat.html
   EXPECT: ACQUIS OK (4/4
-  EVIDENCE: automatic-evidence=v1; definition-sha256=6e9ba44fdee689d0714d6dcdccc0ba104f297284088d0a6b2d9c2a8953ed146b; exit=0; EXPECT=matched; output-sha256=9783bdd2e9d8d95dccae622c99d5f63a4cb0d05dee3ced5243077c49fbb96f7c; output-bytes=93; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=6e9ba44fdee689d0714d6dcdccc0ba104f297284088d0a6b2d9c2a8953ed146b; exit=0; EXPECT=matched; output-sha256=4fc267b4df72cbfcaafc2846244145310870bdc809bbe854deb7279c274760f7; output-bytes=137; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G7: L14 échoue sur l5f (Nelson Sauvin à 83 % sans part « autres »)
   CHECK: node scripts/agents/systeme.mjs echoue "SANS-FAMILLE ECHEC" -- node work/refonte-frontend/v4/tournoi/outils/controle-sans-famille.mjs work/refonte-frontend/v4/ecran-1/fils18-baseline l5f --page=etat-b.html

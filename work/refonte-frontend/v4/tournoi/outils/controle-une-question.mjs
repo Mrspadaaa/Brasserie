@@ -63,7 +63,7 @@ const analyser = (NOMS) => {
   const reNom = new RegExp('(^|[^\\p{L}])(' + NOMS.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')(?![\\p{L}])', 'u');
   // Un libellé qui ouvre sur le nom du facteur (« Moment de Citra », « Dose par houblon ») ne porte que ce
   // facteur : le houblon cité y est l'objet du réglage, pas un second facteur.
-  const NOMME = [[/^(moment|jours?|dur[ée]e)/i, 'moment'], [/^dose/i, 'dose'], [/^levure/i, 'levure'], [/^(houblons?|vari[ée]t[ée]s?)/i, 'houblon']];
+  const NOMME = [[/^(moment|jours?|dur[ée]e)\b/i, 'moment'], [/^dose/i, 'dose'], [/^levure/i, 'levure'], [/^(houblons?|vari[ée]t[ée]s?)\b/i, 'houblon']];
   const facteursDe = (s, etiquette) => {
     const f = new Set();
     if (!s) return f;

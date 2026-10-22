@@ -4,12 +4,17 @@
 // assez » ; « une meilleur vu de comparaison sur des vrai valeur » (v1). Le radar validé aux lots 7
 // et 16 avait disparu du lot 21 sans que rien ne le signale (cerveau/produit/acquis-valides.md).
 //
-// Les quatre acquis, vérifiés sur le rendu (390 px, tactile, éléments visibles au repos ;
-// les <details> sont ouverts) :
-//   radar   : un radar svg[data-radar] visible, large d'au moins 150 px, d'au moins 5 axes
-//             (data-axes), de 2 séries au moins hors zone (g[data-serie] ou [data-serie]), dont les
-//             valeurs (data-valeurs) sont alignées sur les axes, pas toutes identiques, et dont
-//             chacune dessine un polygone d'au moins 5 sommets (contrat de controle-radar.mjs) ;
+// Les quatre acquis, vérifiés sur le rendu (390 px, tactile) :
+//   radar   : deux rendus admis, tous deux dans [data-acquis="radar"] et visibles :
+//             r2 (un seul radar, tous les houblons superposés) : un svg[data-radar] large d'au moins
+//               150 px, d'au moins 5 axes (data-axes), de 2 séries au moins hors zone (g[data-serie]
+//               ou [data-serie]), dont les valeurs (data-valeurs) sont alignées sur les axes, pas
+//               toutes identiques, et dont chacune dessine un polygone d'au moins 5 sommets
+//               (contrat de controle-radar.mjs) ;
+//             r3 (petits multiples du lot 16, un petit radar par houblon, deux par rangée) : au moins
+//               2 svg[data-radar] larges d'au moins 120 px, aux MÊMES axes (data-axes identiques, 5
+//               au moins), chacun avec au moins une série dessinée (polygone de 5 sommets au moins,
+//               data-valeurs alignées sur les axes), les séries n'étant pas toutes identiques ;
 //   chimie  : au moins 3 composés [data-compose] ; chacun montre un nombre ; tous, sauf « huile »,
 //             portent le picto de leur famille (svg[data-famille], visible), au moins 2 rattachés ;
 //   osu     : un panel OSU : texte « OSU », un graphique svg d'au moins 3 formes (cercles, polylignes,
@@ -19,6 +24,14 @@
 //             avec un nombre et une unité (µg/L, mL/100 g, %, ×, ppm…) lisibles dans sa ligne, et
 //             une source citée visible (auteur + année, ou référence E…/H…). Une valeur inconnue
 //             n'est jamais « 0 » (une valeur mesurée rendue « 0 » ou vide est une faute).
+// ACQUIS « À UN TOUCHER » (décision du pilote, 22.10 : on ouvre avant de mesurer) : un acquis caché
+// au repos compte s'il apparaît après UN SEUL toucher sur un déclencheur visible au repos : un
+// <button>, un <summary> ou un [role="button"] qui porte aria-controls="<id>" vers le conteneur (ou
+// vers un élément qui le contient), ou data-ouvre-acquis="<acquis>[ <acquis>…]". Le contrôle joue ce
+// toucher pour de vrai (page rechargée, un seul tap, rien d'autre), puis mesure : un déclencheur qui
+// ne montre rien, un second toucher nécessaire, ou aucun déclencheur déclaré, c'est « absent ». Les
+// <details> ne sont plus ouverts d'office : leur <summary> doit être déclaré comme ci-dessus. La
+// ligne de chaque page dit, par acquis, « au repos » ou « à un toucher ».
 // BALISAGE IMPOSÉ aux lots suivants (convention) : data-acquis="radar|chimie|osu|valeurs" sur le
 // conteneur de chaque acquis, et data-compose="<composé>" sur chaque ligne de chimie. Un acquis
 // présent au rendu mais sans balise est une faute (« non balisé ») : on ne le devine pas, on le
@@ -26,7 +39,9 @@
 // Usage : node controle-acquis.mjs <dossier> [ids…] [--page=etat.html[?requête]] ; une ligne par
 // page, puis « ACQUIS OK (4/4 : radar, chimie, osu, valeurs) » (code 0), ou « ACQUIS ECHEC n
 // problème(s) » et la liste (code 1).
-// Témoins : négatifs y3 (panel OSU, pas de radar) et y1b ; positif temoins/acquis-ok.
+// Témoins : négatifs y3 (panel OSU, pas de radar), y1b, temoins/acquis-deux-touchers (valeurs
+// derrière deux touchers) ; positifs temoins/acquis-ok (tout au repos, radar r2) et
+// temoins/acquis-toucher-ok (chimie et valeurs à un toucher, radar r3).
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -41,14 +56,28 @@ const ids = (only.length ? only : fs.readdirSync(dir).filter((d) => fs.existsSyn
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const problems = [];
 const ACQUIS = ['radar', 'chimie', 'osu', 'valeurs'];
+const DECLENCHEURS = 'button, summary, [role="button"]';
 
-const analyser = () => {
+const analyser = ({ ACQUIS, DECLENCHEURS }) => {
   const vis = (e) => !!e && e.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }) && e.getBoundingClientRect().width > 0 && e.getBoundingClientRect().height > 0;
   const txt = (e) => (e.innerText || e.textContent || '').replace(/\s+/g, ' ').trim();
   const UNITE = /(µg\s*\/\s*[Lk]g?|ug\/L|mg\s*\/\s*(L|kg|100 ?g)|mL\s*\/\s*(100 ?g|hL)|g\s*\/\s*L|ppm|ppb|ng\s*\/\s*L|%|×|\bEBC\b|\bIBU\b|mL\/100)/i;
   const SOURCE = /\b[A-ZÉ][\p{L}'’.-]+(?:\s+(?:et al\.?|[A-Z]{1,3}))?[ ,·(]+(?:19|20)\d{2}\b|\b[EH]\d{1,3}\b|Beer Maverick|Hopsteiner|COA|certificat|fiche/u;
-  const out = { balises: {}, presents: {} };
+  const out = { balises: {}, presents: {}, caches: {}, fautes: {}, radarMode: 'r2' };
   const conteneurs = (k) => [...document.querySelectorAll('[data-acquis="' + k + '"]')].filter(vis);
+  for (const k of ACQUIS) out.caches[k] = [...document.querySelectorAll('[data-acquis="' + k + '"]')].some((e) => !vis(e));
+
+  // --- déclencheurs visibles au repos : quels acquis chacun déclare-t-il ouvrir ? ---
+  out.declencheurs = [...document.querySelectorAll(DECLENCHEURS)].map((t, i) => {
+    if (!vis(t)) return null;
+    const claims = new Set((t.getAttribute('data-ouvre-acquis') || '').split(/[\s,;]+/).filter((k) => ACQUIS.includes(k)));
+    for (const id of (t.getAttribute('aria-controls') || '').split(/\s+/).filter(Boolean)) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      for (const k of ACQUIS) if (el.matches('[data-acquis="' + k + '"]') || el.querySelector('[data-acquis="' + k + '"]')) claims.add(k);
+    }
+    return claims.size ? { i, claims: [...claims] } : null;
+  }).filter(Boolean);
 
   // --- radar ---
   {
@@ -56,25 +85,48 @@ const analyser = () => {
     const svgs = [...document.querySelectorAll('svg[data-radar]')].filter(vis);
     out.presents.radar = svgs.length > 0;
     out.balises.radar = cs.length > 0;
-    const svg = cs.map((c) => (c.matches('svg[data-radar]') ? c : c.querySelector('svg[data-radar]'))).find(Boolean);
+    const dedans = svgs.filter((s) => cs.some((c) => c === s || c.contains(s)));
+    const axesDe = (svg) => (svg.getAttribute('data-axes') || '').split(',').filter(Boolean);
+    const seriesDe = (svg) => [...svg.querySelectorAll('[data-serie]')].filter((s) => s.getAttribute('data-serie') !== 'zone' && !s.hasAttribute('data-noyau'));
+    const valsDe = (s) => (s.getAttribute('data-valeurs') || '').split(',').map(Number);
+    const sommetsDe = (s) => (s.querySelector('polygon') ? s.querySelector('polygon').getAttribute('points').trim().split(/\s+/).length : 0) || ((s.querySelector('path') && s.querySelector('path').getAttribute('d').match(/[LM]/g) || []).length);
     const f = [];
-    if (cs.length && !svg) f.push('conteneur data-acquis="radar" sans svg[data-radar] visible');
-    if (svg) {
-      const axes = (svg.getAttribute('data-axes') || '').split(',').filter(Boolean);
-      const series = [...svg.querySelectorAll('[data-serie]')].filter((s) => s.getAttribute('data-serie') !== 'zone' && !s.hasAttribute('data-noyau'));
-      const vals = series.map((s) => (s.getAttribute('data-valeurs') || '').split(',').map(Number));
+    if (cs.length && !dedans.length) f.push('conteneur data-acquis="radar" sans svg[data-radar] visible');
+    if (dedans.length === 1) {
+      // r2 : un radar, tous les houblons superposés
+      const svg = dedans[0];
+      const axes = axesDe(svg), series = seriesDe(svg), vals = series.map(valsDe);
       const w = svg.getBoundingClientRect().width;
       if (w < 150) f.push('radar de ' + Math.round(w) + ' px de large (150 au moins)');
       if (axes.length < 5) f.push('radar à ' + axes.length + ' axe(s) (5 au moins)');
-      if (series.length < 2) f.push('radar à ' + series.length + ' série(s) de houblon (2 au moins)');
+      if (series.length < 2) f.push('radar à ' + series.length + ' série(s) de houblon (2 au moins ; ou des petits multiples r3 : un radar par houblon, 2 au moins)');
       if (vals.some((v) => v.length !== axes.length || v.some((x) => Number.isNaN(x)))) f.push('data-valeurs non alignées sur data-axes');
       if (vals.length >= 2 && vals.every((v) => v.join() === vals[0].join())) f.push('séries toutes identiques : pas de silhouette');
-      for (const s of series) {
-        const sommets = (s.querySelector('polygon') ? s.querySelector('polygon').getAttribute('points').trim().split(/\s+/).length : 0) || ((s.querySelector('path') && s.querySelector('path').getAttribute('d').match(/[LM]/g) || []).length);
-        if (sommets < 5) f.push('la série « ' + s.getAttribute('data-serie') + ' » dessine ' + sommets + ' sommet(s) (5 au moins)');
-      }
+      for (const s of series) { const n = sommetsDe(s); if (n < 5) f.push('la série « ' + s.getAttribute('data-serie') + ' » dessine ' + n + ' sommet(s) (5 au moins)'); }
+    } else if (dedans.length >= 2) {
+      // r3 : petits multiples, un radar par houblon
+      out.radarMode = 'r3';
+      const axes0 = axesDe(dedans[0]).join();
+      const toutes = [];
+      dedans.forEach((svg, k) => {
+        const nom = 'radar ' + (k + 1);
+        const axes = axesDe(svg), series = seriesDe(svg);
+        const w = svg.getBoundingClientRect().width;
+        if (w < 120) f.push(nom + ' : ' + Math.round(w) + ' px de large (120 au moins)');
+        if (axes.length < 5) f.push(nom + ' : ' + axes.length + ' axe(s) (5 au moins)');
+        if (axes.join() !== axes0) f.push(nom + ' : axes différents des autres (data-axes identiques exigés)');
+        if (series.length < 1) f.push(nom + ' : aucune série dessinée');
+        for (const s of series) {
+          const v = valsDe(s);
+          if (v.length !== axes.length || v.some((x) => Number.isNaN(x))) f.push(nom + ' : data-valeurs non alignées sur data-axes');
+          const n = sommetsDe(s);
+          if (n < 5) f.push(nom + ' : la série « ' + s.getAttribute('data-serie') + ' » dessine ' + n + ' sommet(s) (5 au moins)');
+          toutes.push(v.join());
+        }
+      });
+      if (toutes.length >= 2 && toutes.every((v) => v === toutes[0])) f.push('petits multiples : séries toutes identiques, pas de silhouette');
     }
-    out.fautes = { radar: f };
+    out.fautes.radar = f;
   }
   // --- chimie ---
   {
@@ -148,22 +200,51 @@ const analyser = () => {
   return out;
 };
 
+const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
+const charger = async (page, file) => {
+  await page.goto(pathToFileURL(file).href + (requete ? '?' + requete : ''), { waitUntil: 'networkidle0', timeout: 30000 });
+  await attendre(300);
+};
+
 for (const id of ids) {
   const file = path.join(dir, id, pg);
   if (!fs.existsSync(file)) { problems.push(id + ' ' + pg + ' : page absente'); console.log(id + ' · page absente'); continue; }
   const page = await browser.newPage();
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-  await page.goto(pathToFileURL(file).href + (requete ? '?' + requete : ''), { waitUntil: 'networkidle0', timeout: 30000 });
-  await new Promise((r) => setTimeout(r, 300));
-  await page.evaluate(() => document.querySelectorAll('details').forEach((d) => { d.open = true; }));
-  const a = await page.evaluate(analyser);
+  await charger(page, file);
+  const a = await page.evaluate(analyser, { ACQUIS, DECLENCHEURS });
+
+  // Un toucher, pour de vrai : page rechargée, un seul tap sur chaque déclencheur déclaré, mesure.
+  const apres = {}; // acquis -> { ok, fautes }
+  const touches = new Set(); // acquis dont un déclencheur déclaré a été touché
+  for (const t of a.declencheurs) {
+    const aOuvrir = t.claims.filter((k) => !a.balises[k]);
+    if (!aOuvrir.length) continue;
+    await charger(page, file);
+    const hs = await page.$$(DECLENCHEURS);
+    if (!hs[t.i]) continue;
+    await hs[t.i].tap();
+    await attendre(450);
+    const b = await page.evaluate(analyser, { ACQUIS, DECLENCHEURS });
+    for (const k of aOuvrir) {
+      touches.add(k);
+      const ok = b.balises[k] && !b.fautes[k].length;
+      if (!apres[k] || (ok && !apres[k].ok)) apres[k] = { ok, visible: b.balises[k], fautes: b.fautes[k], mode: b.radarMode };
+    }
+  }
   await page.close();
+
   const f = [];
   const tenus = [];
   for (const k of ACQUIS) {
     const fautes = a.fautes[k];
-    if (a.balises[k] && !fautes.length) tenus.push(k);
+    const nomK = k === 'radar' && a.radarMode === 'r3' ? 'radar r3' : k;
+    if (a.balises[k] && !fautes.length) tenus.push(nomK + ' (au repos)');
     else if (a.balises[k]) for (const x of fautes) f.push(x);
+    else if (apres[k] && apres[k].ok) tenus.push((k === 'radar' && apres[k].mode === 'r3' ? 'radar r3' : k) + ' (à un toucher)');
+    else if (apres[k] && apres[k].visible) for (const x of apres[k].fautes) f.push(x + ' (après un toucher)');
+    else if (touches.has(k)) f.push(k + ' : un seul toucher sur son déclencheur ne le fait pas apparaître (deux touchers ou plus : absent)');
+    else if (a.caches[k]) f.push(k + ' : caché au repos, sans déclencheur à un toucher (button, summary ou [role="button"] visible avec aria-controls vers le conteneur, ou data-ouvre-acquis="' + k + '") : absent');
     else if (a.presents[k]) f.push(k + ' : présent au rendu mais non balisé (data-acquis="' + k + '")');
     else f.push(k + ' : absent' + (k === 'radar' ? ' (aucun svg[data-radar] visible : « pas de radar grpah ? »)' : k === 'chimie' ? ' (moins de 3 composés lisibles : « Manque aussi la partie chimie »)' : k === 'osu' ? ' (pas de panel OSU)' : ' (moins de 3 vraies valeurs sourcées)'));
   }

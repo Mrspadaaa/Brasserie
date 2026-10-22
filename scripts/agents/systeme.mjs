@@ -398,8 +398,23 @@ function verifierHooks() {
   return erreurs;
 }
 
+// Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle (22.10 : les deux
+// « b » échappés de D98 étaient des 0x08, sa table NOMME morte). Aucun script de contrôle n'en porte.
+// La classe est construite par codes : écrite en clair, elle subirait le même sort.
+const CONTROLE = new RegExp('[' + String.fromCharCode(0) + '-' + String.fromCharCode(8, 11, 12, 14) + '-' + String.fromCharCode(31) + ']');
+export function caracteresDeControle(fichiers) {
+  return fichiers.filter((f) => existe(f) && CONTROLE.test(lire(f))).map(rel);
+}
+const scriptsDeControle = () => [
+  ...['work/refonte-frontend/v4/tournoi/outils', 'scripts/agents', '.claude/hooks'].flatMap((d) => {
+    const dir = path.join(RACINE, d);
+    return existe(dir) ? fs.readdirSync(dir).filter((n) => n.endsWith('.mjs')).map((n) => path.join(dir, n)) : [];
+  }),
+];
+
 function verifierCablage() {
   const erreurs = [];
+  for (const f of caracteresDeControle(scriptsDeControle())) erreurs.push(`caractère de contrôle dans ${f} (un échappement mal écrit)`);
   const claude = lire(path.join(RACINE, 'CLAUDE.md'));
   for (const imp of ['@cerveau/INDEX.md', '@cerveau/LECONS.md']) if (!claude.includes(imp)) erreurs.push(`CLAUDE.md n'importe pas ${imp}`);
   if (!claude.includes('docs/agents/systeme.md')) erreurs.push('CLAUDE.md ne pointe pas docs/agents/systeme.md');
@@ -508,6 +523,11 @@ function temoins() {
   attendu('voie qui se dit OK mais rate', verifierVoies(construireMission(m2, { critereFaux: true }), { approuver: true, racine: m2 }).ok, false);
   const m3 = sous('m3');
   attendu('critère ignoré par git', verifierVoies(construireMission(m3, { critereIgnore: true }), { approuver: true, racine: m3 }).ok, false);
+  const propre = path.join(tmp, 'propre.mjs'), sale = path.join(tmp, 'sale.mjs');
+  fs.writeFileSync(propre, "const r = /^moment/i;\n");
+  fs.writeFileSync(sale, 'const r = /^moment' + String.fromCharCode(8) + '/i;\n');
+  attendu('contrôle sans caractère de contrôle', caracteresDeControle([propre]).length === 0, true);
+  attendu('échappement devenu caractère de contrôle', caracteresDeControle([sale]).length === 0, false);
   attendu('correction reconnue', estCorrection("c'est toujours pas bon, j'avais dit de garder le radar"), true);
   attendu('phrase neutre', estCorrection('Lance le lot 22 sur la carte des outils.'), false);
   const source = 'Il a dit « trop centré\n  sur le ibu » le 18.10, pour 126 g.';

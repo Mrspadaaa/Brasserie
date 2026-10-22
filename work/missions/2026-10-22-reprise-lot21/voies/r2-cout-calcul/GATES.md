@@ -27,4 +27,4 @@ Scope: le temps de simulerCas, léger et complet, sur le cas stout et sur tout l
 - [x] G5: le moteur passe toujours ses tests
   CHECK: npm --prefix prototypes/houblons-v4 run check:engine
   EXPECT: ENGINE-V4 OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=5118c9bec4d2119c17e042e72d8185734715b79cf97b8a96f216cf300ab36ce4; exit=0; EXPECT=matched; output-sha256=b48bb02c96d21f66505ea2ac1be94490928025053480ca2b84135ac9dd6cf9ec; output-bytes=544; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=5118c9bec4d2119c17e042e72d8185734715b79cf97b8a96f216cf300ab36ce4; exit=0; EXPECT=matched; output-sha256=da5561cd4b52bf1c9dd8da2213e684841a3c5753ec62694b6a78c05a81b52c00; output-bytes=545; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
