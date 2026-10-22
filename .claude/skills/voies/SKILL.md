@@ -27,7 +27,9 @@ Référence complète : `docs/agents/systeme.md`. Ce skill est la marche à suiv
    `systeme.mjs mission` refuse une voie d'interface hors Opus ou Fable, et une relecture d'interface
    sans critique.
 4. Router chaque décision connue d'avance avec la grille de `docs/agents/systeme.md` § Décider
-   (voie, pilote, conseil, brasseur, utilisateur).
+   (voie, pilote, conseil, brasseur, utilisateur). Si le lot fixe une direction que les suivants
+   suivront (carte, nouvel outil, convention du moteur), réunir le conseil complet **avant**
+   d'écrire les voies. Sinon, pas de conseil (§ « Quand le conseil intervient »).
 5. Vérifier les entrées partagées avant l'éventail (L08) : une voie Haiku « entrées » passe en
    premier quand moteur, JSON ou constantes sont en jeu.
 6. Vérifier : `node scripts/agents/systeme.mjs mission work/missions/<id>/MISSION.md` → MISSION OK.
@@ -64,7 +66,8 @@ L'approbation des commandes (écrites par le pilote lui-même) se fait au premie
 1. **Courte, dans la voie** : critère en échec → l'agent corrige et relance, 3 essais au plus.
 2. **Moyenne, pilote** : rejeu en échec ou relecteur qui rejette → `SendMessage` au même agent
    avec le défaut précis (2 relances au plus). Au-delà, le contrat est en cause : le pilote le
-   réécrit, ou soumet la question au conseil (skill `conseil`), ou la pose au brasseur.
+   réécrit, au besoin après un avis croisé (skill `conseil`, 2 appels). Un choix de goût devient
+   une variante montrée au brasseur (L24).
 3. **Longue, brasseur** : sa plainte → SPEC-BRASSEUR (mot pour mot) → DEFAUTS-RECURRENTS (contrôle
    qui échoue sur la version rejetée) → ce contrôle entre dans les GATES des voies suivantes. Une
    erreur de méthode → leçon (`cerveau/LECONS.md`). Un savoir durable → note du cerveau.

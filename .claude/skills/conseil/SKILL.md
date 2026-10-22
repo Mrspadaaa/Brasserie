@@ -74,10 +74,24 @@ les trois revues. Il rend le verdict en cinq parties :
    l'ajouter au groupe d'accords en attente.
 4. Une erreur de méthode révélée → `cerveau/LECONS.md`. Un savoir durable → note du cerveau.
 
-## Coût
-Six avis, trois revues et un président : dix appels, presque tous en Opus ou Fable. C'est rare et ça
-décide d'un lot entier : la qualité passe avant l'économie. Mode **rapide** pour une décision
-moyenne : les six avis (en sonnet, le Brasseur reste en fable) et le président (opus), sans revue,
-soit sept appels. Écrire « rapide » dans le type de décision.
+## Trois niveaux, du moins cher au plus cher
+Choisir le plus léger qui suffit. Quand `docs/agents/systeme.md` § « Quand le conseil intervient »
+ne demande rien, le pilote décide seul.
+
+| Niveau | Appels | Modèles | Pour |
+|---|---|---|---|
+| **Avis croisé** | 2 | Brasseur (fable) et Contradicteur (opus) ; le pilote tranche | décision moyenne : un seuil de contrôle, un choix entre deux réalisations, une voie à relancer ou à réécrire. Trace : une ligne D-n dans `decisions.md`, pas de transcription |
+| **Conseil rapide** | 7 | six regards (sonnet, sauf le Brasseur en fable) et président (opus), sans revue | décision qui touche plusieurs voies, sans engager un lot entier |
+| **Conseil complet** | 10 | regards en opus, Brasseur en fable, revues sur trois modèles, président en fable pour le produit | seulement ce qui engage un lot entier ou plus : carte des outils, nouvel outil, convention du moteur, cap de la porte B |
+
+**Le dossier de conseil** : c'est le principal levier de coût. Au premier conseil complet, chaque
+regard relisait lui-même la SPEC, le registre et les captures (1,04 million de jetons en tout).
+Désormais, le pilote écrit un seul dossier, `work/missions/<mission>/conseil-<sujet>/question.md` :
+- la question cadrée ;
+- les extraits utiles, mot pour mot avec leur chemin, en 4 000 mots au plus ;
+- 4 captures au plus.
+Les regards et les revues lisent ce dossier. Ils n'ouvrent une source que pour vérifier un point
+précis, pas pour tout relire. Cible : environ trois fois moins de jetons pour la même qualité.
+Relever `get_usage` avant et après, et l'écrire dans la transcription (`## Suite`).
 Ne jamais réunir le conseil deux fois sur la même question sans fait nouveau : relire la
 transcription d'abord (`systeme.mjs chercher`).

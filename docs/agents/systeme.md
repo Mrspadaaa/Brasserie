@@ -104,6 +104,21 @@ correction ou de plainte et rappelle d'en tirer un contrôle ou une leçon avant
 Sans réponse, on applique la lecture étroite et réversible (L01) et on continue. On ne pose aucune
 question bloquante.
 
+### Quand le conseil intervient
+Il n'est jamais réuni par habitude. Le pilote décide seul tout le reste. Le niveau (avis croisé,
+rapide, complet) et le dossier de conseil sont décrits dans le skill `conseil`.
+
+| Moment du déroulé | Déclencheur | Niveau |
+|---|---|---|
+| Planification d'une mission ou d'un lot (skill `voies`, étape 1) | le lot fixe une direction que les suivants suivront : carte des outils, nouvel outil, convention du moteur | complet |
+| Pendant les voies | une voie rend `DÉCISION À PRENDRE`, qui dépasse le pilote et n'est pas un goût | avis croisé ou rapide |
+| Boucle moyenne (voies, étape 5) | deux relances d'une voie ont échoué : le contrat est en cause | avis croisé |
+| Retour du brasseur | sa remarque remet en cause l'architecture, pas un détail | complet ; un détail va directement en contrôle (boucle longue) |
+| Jamais | un goût (le brasseur choisit sur variantes), un fait vérifiable (un test le tranche), un geste irréversible (l'utilisateur décide) | — |
+
+Ordre de grandeur : un conseil complet par lot qui change de direction, zéro à deux avis croisés par
+lot. Le critique Fable, lui, passe après chaque voie d'interface. Ce n'est pas le conseil.
+
 ## Les voies (skill `voies`)
 1. **Planifier une fois** : `work/missions/<date>-<sujet>/MISSION.md`, une voie par livrable qui se
    vérifie seul, des périmètres d'écriture disjoints, chaque décision routée.
