@@ -18,6 +18,19 @@
 - 5c15433 : `scripts/agents/verifier-page.mjs` (Chrome à 390 px) avant toute publication de page.
 - e9b78bd : retour du brasseur sur le lot 22 (SPEC, D101 ter, D104), vague 3 bis planifiée, source de
   la page dans `work/refonte-frontend/v4/outils/page-lot/` (voir PUBLIER.md).
+- 6eb92d5 et 2e51591 : M13, l'entonnoir du lot 21.
+  - Méthode : `.claude/skills/voies/references/entonnoir.md`, avec des séries v0 de 3 à 8 variantes et 30
+    variantes au moins, un tri par le critique (sans rejet), une passe 2 par les mêmes agents, puis tout est montré.
+  - `systeme.mjs mission` exige la colonne Étape et les deux contrepoids : une série Fable et une série au
+    brief minimal.
+  - Origine, mot pour mot : « la manière de faire […] avec les 44 variante puis les 5 meilleures était
+    vraiment plus qualitatif ».
+  - L'autre session a refait r4d (4 séries de 8) et r7 (lot 23, 6 séries et plus) en entonnoir.
+- f924eee : élagage.
+  - `systeme.mjs remplaces` (registre `cerveau/REMPLACES.md`) et `systeme.mjs charge` (30 000 caractères au
+    plus pour ce qui est chargé partout).
+  - LECONS est limité à 8 lignes mécanisées.
+  - Cinq contre-indications ont été corrigées, et l'index de la mémoire locale est réduit à un renvoi.
 
 ## Page de lot en vigueur
 https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv, « Lot 22 houblons », version 2. Les anciennes pages
@@ -34,6 +47,14 @@ Ne pas écrire dans ses fichiers pendant qu'elle tourne. Commiter seulement ses 
 (`git commit -- <chemins>`).
 
 ## Ouvert, par priorité
+0. **Élaguer les gros documents**, après la vague 3 bis : la session « En attente » s'en sert. Ils sont
+   lus en entier et pèsent environ 60 000 jetons.
+   - SPEC : un § 0 « Ce qui vaut aujourd'hui », de 40 lignes au plus ; les verdicts remplacés y sont marqués.
+   - DEFAUTS (16 000 jetons) : une ligne par défaut, et l'histoire dans DEFAUTS-HISTOIRE.md.
+   - Le registre (29 000 jetons) : l'état en cours seulement, le reste archivé par mois.
+   - decisions.md.
+   Chaque réduction est vérifiée par `systeme.mjs fidelite`, et les briefs des critiques pointent les
+   versions courtes.
 1. **Étalonnage du critique (L27)**, mission à créer :
    - jeu « capture et verdict mot pour mot » tiré de SPEC-BRASSEUR (y1b préférée, d1 « bordélique »,
      l8 « horrible mais la disposition », r4 « Aucun me convient », r4c « quasiment identique »,
