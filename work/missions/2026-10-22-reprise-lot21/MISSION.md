@@ -67,6 +67,10 @@ de lui montrer.
 | r8-publication | captures et section lot 22 pour la page des fils de fer : carte, variantes de Comparer, planche « épicé » ; le pilote met ensuite l'artefact à jour lui-même | mécanique | executant | haiku | 40 | work/refonte-frontend/v4/outils/page-nuit/{faire-lot22.mjs,lot22.json,site/index.html,site/img/**} | r5-critique-carte, r6r-critique-lot22, r4cr-critique-picto | lot22.json (7 puces, 16 images existantes), section t119-lot22 en tête de la copie locale | pilote |
 | r3-descripteurs | appliquer dans le prototype les options choisies par le brasseur (A table complémentaire mot → famille, B part « autres ») ; confronter Cascade, Idaho 7, Galaxy, Nelson Sauvin, Motueka à leur réputation | jugement | auteur | sonnet | 80 | prototypes/houblons-v4/data/descripteurs-complementaires.json, prototypes/houblons-v4/src/engine/hops.ts, prototypes/houblons-v4/tests/ (la table mot → famille d'origine vit dans hopExtrapolationBootstrap.json, ne pas la modifier) | brasseur (option choisie) | npm test et check:engine (prototypes/houblons-v4) ; controle-sans-famille | pilote |
 | r7-dryhopper | lot 23 : Dryhopper, y1b sans sélecteur de houblon, moment par 5′, x3b réduit en fin de frise ; la levure en variantes (dernière étape ou outil propre) | conception | concepteur (type auteur, modèle opus, consignes de concepteur.md : type non chargé dans la session du pilote) | opus | 80 | work/refonte-frontend/v4/ecran-1/fils23-dryhopper/** | r6r-critique-lot22 | controle-commun, controle-une-question (D98 b : bouton d'édition en contexte), critique | brasseur |
+| r0c-inventaire-controles | (1) `elements-notes.json` : chaque élément que le brasseur a noté bon ou intéressant, depuis le lot 18 (ses mots et leur date, la variante, la capture, le marqueur `data-element` attendu), y1b d'abord ; (2) D104 `controle-reprise.mjs` ; (3) D101 ter dans `controle-planche-picto.mjs` ; témoins : r6a actuelle et r4c en échec | conception | auteur | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/elements-notes.json, work/refonte-frontend/v4/tournoi/outils/controle-reprise.mjs, controle-planche-picto.mjs, temoins/reprise-*/ | — | chaque élément cité mot pour mot et retrouvé dans SPEC-BRASSEUR (check-spec) ; témoins r6a et r4c → ECHEC | pilote |
+| r6n-reprise | lot 22 bis : r6a gardée telle qu'il l'aime, plus chaque élément de l'inventaire. Deux mini maquettes : r6n1, tout au premier écran ; r6n2, le premier écran de r6a et le reste à un toucher (d1, « tout ouvert », était « trop bordélique »). La NOTE classe chaque élément : repris, en contexte, en pont, ou écarté avec sa raison | conception | concepteur | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n1/**, work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/** | r0c-inventaire-controles | controle-commun, controle-une-question, controle-acquis, controle-reprise (D104), verifier-page | brasseur |
+| r4d-picto-epice-3 | au moins 8 vraies propositions « épicé », au moins 6 genres, ni piment ni poivre, dans la grammaire des autres pictos (trait, ton Épicé), chacune à 12, 16 et 24 px et sur de vraies cartes ; sa piste « plutôt vanille, canelle ? » redessinée pour de bon (bâton roulé vu de bout, gousse fendue) parmi les autres | conception | concepteur | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-picto-epice-3/** | r0c-inventaire-controles | controle-planche-picto (D101 ter), verifier-page | brasseur |
+| r6nc-critique | défauts vérifiables de r6n et r4d, sans trier ni écarter la diversité (L27 : critique non étalonné) | jugement | critique | fable | 30 | voies/r6nc-critique/RESULTAT.md | r6n-reprise, r4d-picto-epice-3 | captures ouvertes ; un REJET doit citer une règle de SPEC ou un défaut de DEFAUTS | pilote |
 
 ## Historique : voies d'interface terminées avant L25 (vague 1)
 Conçues et relues avant la leçon L25 (22.10, soir) ; gardées ici pour la trace, hors du contrôle du plan.
@@ -88,8 +92,24 @@ Conçues et relues avant la leçon L25 (22.10, soir) ; gardées ici pour la trac
 - **Vague 3** : un relecteur pour r1 (r5) et un pour r6 ; puis r8-publication. Le pilote met
   l'artefact privé à jour lui-même, avec la planche « épicé » de la vague 1. Le brasseur choisit
   en regardant.
+- **Vague 3 bis, retour du lot 22 (22.10, soir)** :
+  - d'abord r0c-inventaire-controles ;
+  - puis, en parallèle, r6n-reprise et r4d-picto-epice-3 ;
+  - puis r6nc-critique, qui signale sans trier ;
+  - puis la publication par le pilote : page « Lot 22 houblons », même adresse, version 3. Source de
+    la page : `work/refonte-frontend/v4/outils/page-lot/index.html`. Elle passe `verifier-page.mjs`
+    avant publication (PAGE OK), et ne montre en tête que r6n1, r6n2 et la nouvelle planche.
 - **Vague 4**, après ses choix : r3-descripteurs applique l'option retenue, puis r7-dryhopper
   (lot 23, la levure en variantes).
+
+## Retour du brasseur sur le lot 22 (22.10, soir)
+- r6a choisie : « r6a est le meilleur mais reprendre trop peu d'éléments que j'avais noté bon ou intéressant des autres variante, notamment la meilleure » ; reprise en r6n (D104).
+- r6c écartée : non retenue par le brasseur, qui a choisi r6a.
+- r6d écartée : non retenue par le brasseur, qui a choisi r6a.
+- r6f écartée : non retenue par le brasseur, qui a choisi r6a ; ses cartes sont à reprendre si l'inventaire les liste.
+- r6g écartée : non retenue par le brasseur, qui a choisi r6a.
+- r6k écartée : non retenue par le brasseur, qui a choisi r6a.
+- Picto r4c refusé : « Les icônes épices ??? Il y a que 3 variante, qui sont toutes quasiment identique ??? » ; « Des vrais proposition surtout que un piment n'a rien à voir la dedans... » (D101 ter) ; refait en r4d.
 
 ## Boucle de retour
 - **Courte** : chaque voie rejoue ses critères, avec 3 essais par critère.

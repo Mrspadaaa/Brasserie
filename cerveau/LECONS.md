@@ -146,9 +146,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun ; seules les captures ouvertes l'ont montré
 
 ### L27 — Un juge qui parle pour le brasseur s'étalonne sur ses vrais verdicts
-- Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré ». Son portrait (PORTRAIT.md) avait été écrit par un modèle et jamais confronté aux verdicts du brasseur.
+- Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré », et rejeté r6a, que le brasseur a choisie. Pire : il a rejeté la première planche « épicé » à six genres, et la voie s'est resserrée sur le seul piment (« quasiment identique », D101 ter). Son portrait (PORTRAIT.md) avait été écrit par un modèle et jamais confronté aux verdicts du brasseur.
 - Cause : aucune étape n'éprouvait le juge à l'aveugle, et les verdicts du brasseur ne revenaient jamais le corriger (boucle ouverte).
-- Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts mais ne trie pas. Idem pour le regard Brasseur du conseil.
+- Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts mais ne trie pas et ne rejette jamais la diversité : on montre d'abord au brasseur. Idem pour le regard Brasseur du conseil.
 - Rôles : pilote, critique, conseil
 - Contrôle : à écrire (épreuve à l'aveugle, `systeme.mjs etalonnage`)
 

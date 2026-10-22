@@ -1,0 +1,285 @@
+<title>Lot 22 houblons</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Mise en page : une colonne de lecture au téléphone, une grille de « téléphones » pour comparer. Tout le contenu est écrit dans la page ; le script ne sert qu'à agrandir. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5f665a;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --houblon-doux: #e6efdc;
+  --ambre: #b97a12;
+  --refus: #a8473a;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 6px 20px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+    --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f; --refus: #e0806f;
+    --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+  --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f; --refus: #e0806f;
+  --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.5 var(--texte);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 64px;
+}
+.page { max-width: 1180px; margin: 0 auto; display: grid; gap: 48px; }
+h1, h2, h3 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.45rem, 4vw, 2rem); font-weight: 800; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+p { margin: 0; max-width: 65ch; }
+.sur-titre { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--discret); }
+header { display: grid; gap: 14px; }
+.choix { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); margin-top: 8px; }
+.choix a { display: grid; gap: 2px; padding: 14px 16px; border-radius: 12px; text-decoration: none; color: inherit; background: var(--carte); border: 1px solid var(--trait); }
+.choix a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+.choix b { font-family: var(--titre); font-size: 1.1rem; }
+.choix span { color: var(--discret); font-size: 0.92rem; }
+.avertissement { border-left: 4px solid var(--ambre); padding: 10px 14px; background: var(--carte); border-radius: 0 10px 10px 0; font-size: 0.95rem; max-width: 70ch; }
+section { display: grid; gap: 18px; scroll-margin-top: 16px; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.2rem; color: var(--houblon); }
+.lexique { display: grid; gap: 6px; font-size: 0.93rem; color: var(--discret); max-width: 75ch; }
+.lexique b { color: var(--encre); }
+.grille { display: grid; gap: 28px 22px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+.variante { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 18px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.defile { max-height: 78vh; overflow-y: auto; border: 1px solid var(--trait); border-radius: 18px; background: var(--carte); box-shadow: var(--ombre); }
+.defile img { display: block; width: 100%; height: auto; }
+.nom { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.code { font: 600 0.8rem/1 ui-monospace, "Cascadia Mono", monospace; color: var(--discret); }
+.puces { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.puces li { font-size: 0.8rem; padding: 3px 9px; border-radius: 999px; background: var(--houblon-doux); color: var(--encre); }
+.critique { font-size: 0.85rem; color: var(--discret); display: flex; gap: 8px; align-items: baseline; }
+.critique::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--discret); transform: translateY(-1px); }
+.critique.ok::before { background: var(--houblon); }
+.critique.reserve::before { background: var(--ambre); }
+.critique.non::before { background: var(--refus); }
+.plus { font: inherit; font-size: 0.85rem; color: var(--houblon); background: none; border: 0; padding: 0; cursor: pointer; text-align: left; text-decoration: underline; justify-self: start; }
+.paire { display: grid; gap: 28px 22px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+.picto { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); align-items: start; }
+.note { font-size: 0.9rem; color: var(--discret); max-width: 75ch; }
+footer { border-top: 1px solid var(--trait); padding-top: 18px; display: grid; gap: 8px; font-size: 0.9rem; color: var(--discret); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: rgb(10 12 9 / 90%); display: grid; place-items: start center; overflow-y: auto; padding: calc(60px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.visionneuse figure { margin: 0; display: grid; gap: 10px; justify-items: center; }
+.visionneuse img { width: min(430px, 100%); height: auto; border-radius: 16px; display: block; }
+.visionneuse figcaption { color: #eef2ea; font-size: 0.95rem; text-align: center; max-width: 430px; }
+.fermer { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); font: 600 1rem var(--texte); background: #eef2ea; color: #1c2019; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.nav { display: flex; gap: 10px; }
+.nav button { font: 600 0.95rem var(--texte); background: #2d3328; color: #eef2ea; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · outil houblons · lot 22 · 22.10</p>
+    <h1>Lot 22 : à toi de choisir</h1>
+    <p>Trois choses à choisir en regardant. Un mélange est possible : dis ce que tu gardes de chacune. Touche une capture pour l'agrandir.</p>
+    <nav class="choix" aria-label="Les trois choix">
+      <a href="#comparer"><b>1. Comparer</b><span>12 façons de répondre à « lequel pour ma stout ? »</span></a>
+      <a href="#epice"><b>2. Le picto « épicé »</b><span>après ton « Aucun me convient… »</span></a>
+      <a href="#carte"><b>3. La carte des outils</b><span>un écran par question, depuis Ma bière</span></a>
+    </nav>
+    <p class="avertissement">L'avis du critique sous chaque variante est indicatif. Il n'est pas encore calibré sur tes choix : ne t'y fie pas, c'est ton œil qui compte.</p>
+  </header>
+
+  <section id="comparer" aria-labelledby="t-comparer">
+    <h2 id="t-comparer">1. Comparer</h2>
+    <p class="question">« Lequel pour ma stout : Cascade, Idaho 7 ou Galaxy ? »</p>
+    <p>Seul le houblon change. Le reste est fixé sur la ligne de contexte. Les variantes portent tes choix encore ouverts :</p>
+    <div class="lexique">
+      <p><b>Radar r2</b> : un seul radar, un houblon plein et les autres en contour. <b>Radar r3</b> : un petit radar par houblon.</p>
+      <p><b>Dose égale</b> : même grammage. <b>Effet égal</b> : la dose qui donne le même arôme visé. <b>IBU égal</b> : la dose qui donne la même amertume.</p>
+      <p><b>Porte Nelson Sauvin</b> : l'entrée « Je n'ai pas Nelson Sauvin », qui épingle ce houblon comme cible.</p>
+      <p><b>A</b> : la groseille à maquereau rangée dans les petits fruits. <b>B</b> : une part « autres » grise. Pour B, je propose d'écarter fruité, noble, doux et sucré, avec un seuil de 25 % et un plafond de 33 % ; à corriger par toi.</p>
+    </div>
+    <div class="grille">
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6a.png" data-legende="r6a · Trois colonnes"><img src="img/r6a.png" width="780" height="1688" alt="Premier écran de r6a, trois colonnes"></button>
+        <div class="nom"><span class="code">r6a</span><h3>Trois colonnes</h3></div>
+        <ul class="puces"><li>radar r2</li><li>dose égale</li><li>sans porte</li><li>descripteurs A</li></ul>
+        <p class="critique non">Critique (indicatif) : rejeté, radar en tête ; les colonnes sont à garder</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6b.png" data-legende="r6b · Un radar par houblon"><img src="img/r6b.png" width="780" height="1688" alt="Premier écran de r6b, un radar par houblon"></button>
+        <div class="nom"><span class="code">r6b</span><h3>Un radar par houblon</h3></div>
+        <ul class="puces"><li>radar r3</li><li>dose égale</li><li>sans porte</li><li>descripteurs B</li></ul>
+        <p class="critique reserve">Critique (indicatif) : accepté avec réserve, les rayons roses</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6c.png" data-legende="r6c · Le podium des agrumes"><img src="img/r6c.png" width="780" height="1688" alt="Premier écran de r6c, le podium des agrumes"></button>
+        <div class="nom"><span class="code">r6c</span><h3>Le podium des agrumes</h3></div>
+        <ul class="puces"><li>radar r2</li><li>effet égal (agrumes)</li><li>sans porte</li><li>descripteurs A</li></ul>
+        <p class="critique non">Critique (indicatif) : rejeté, Galaxy premier alors qu'il sort du style</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6d.png" data-legende="r6d · Le même tropical"><img src="img/r6d.png" width="780" height="1688" alt="Premier écran de r6d, le même tropical"></button>
+        <div class="nom"><span class="code">r6d</span><h3>Le même tropical</h3></div>
+        <ul class="puces"><li>radar r3</li><li>effet égal (tropical)</li><li>sans porte</li><li>descripteurs B</li></ul>
+        <p class="critique non">Critique (indicatif) : rejeté, la référence est Galaxy lui-même</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6f.png" data-legende="r6f · Même amertume"><img src="img/r6f.png" width="780" height="1688" alt="Premier écran de r6f, même amertume"></button>
+        <div class="nom"><span class="code">r6f</span><h3>Même amertume</h3></div>
+        <ul class="puces"><li>radar r2</li><li>IBU égal</li><li>sans porte</li><li>descripteurs B</li></ul>
+        <p class="critique non">Critique (indicatif) : rejeté, radar muet, écran à moitié vide ; les cartes sont à garder</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6g.png" data-legende="r6g · Trois verres"><img src="img/r6g.png" width="780" height="1688" alt="Premier écran de r6g, trois verres"></button>
+        <div class="nom"><span class="code">r6g</span><h3>Trois verres</h3></div>
+        <ul class="puces"><li>radar r3</li><li>IBU égal</li><li>sans porte</li><li>descripteurs A</li></ul>
+        <p class="critique non">Critique (indicatif) : rejeté, trois verres pareils, radars minuscules</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6h.png" data-legende="r6h · Je n'ai pas Nelson Sauvin"><img src="img/r6h.png" width="780" height="1688" alt="Premier écran de r6h, je n'ai pas Nelson Sauvin"></button>
+        <div class="nom"><span class="code">r6h</span><h3>Je n'ai pas Nelson Sauvin</h3></div>
+        <ul class="puces"><li>radar r2</li><li>dose égale</li><li>porte Nelson Sauvin</li><li>descripteurs B</li></ul>
+        <p class="critique reserve">Critique (indicatif) : accepté avec réserve, radar chargé</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6i.png" data-legende="r6i · Remplacer Nelson Sauvin à effet égal"><img src="img/r6i.png" width="780" height="1688" alt="Premier écran de r6i, remplacer Nelson Sauvin à effet égal"></button>
+        <div class="nom"><span class="code">r6i</span><h3>Remplacer Nelson Sauvin à effet égal</h3></div>
+        <ul class="puces"><li>radar r3</li><li>effet égal (agrumes)</li><li>porte Nelson Sauvin</li><li>descripteurs A</li></ul>
+        <p class="critique ok">Critique (indicatif) : accepté</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6j.png" data-legende="r6j · Les vraies valeurs d'abord"><img src="img/r6j.png" width="780" height="1688" alt="Premier écran de r6j, les vraies valeurs d'abord"></button>
+        <div class="nom"><span class="code">r6j</span><h3>Les vraies valeurs d'abord</h3></div>
+        <ul class="puces"><li>radar r2</li><li>effet égal (agrumes)</li><li>sans porte</li><li>descripteurs B</li></ul>
+        <p class="critique ok">Critique (indicatif) : accepté</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6k.png" data-legende="r6k · Le panel d'abord"><img src="img/r6k.png" width="780" height="1688" alt="Premier écran de r6k, le panel d'abord"></button>
+        <div class="nom"><span class="code">r6k</span><h3>Le panel d'abord</h3></div>
+        <ul class="puces"><li>radar r3</li><li>dose égale</li><li>sans porte</li><li>descripteurs A</li></ul>
+        <p class="critique non">Critique (indicatif) : rejeté, la réponse est tout en bas</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6l.png" data-legende="r6l · Des cartes à glisser"><img src="img/r6l.png" width="780" height="1688" alt="Premier écran de r6l, des cartes à glisser"></button>
+        <div class="nom"><span class="code">r6l</span><h3>Des cartes à glisser</h3></div>
+        <ul class="puces"><li>radar r2</li><li>IBU égal</li><li>porte Nelson Sauvin</li><li>descripteurs A</li></ul>
+        <button class="plus" type="button" data-img="img/r6l-geste.png" data-legende="r6l : la carte suit le doigt">Voir le geste</button>
+        <p class="critique ok">Critique (indicatif) : accepté</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6m.png" data-legende="r6m · La phrase et le radar"><img src="img/r6m.png" width="780" height="1688" alt="Premier écran de r6m, la phrase et le radar"></button>
+        <div class="nom"><span class="code">r6m</span><h3>La phrase et le radar</h3></div>
+        <ul class="puces"><li>radar r3</li><li>IBU égal</li><li>sans porte</li><li>descripteurs B</li></ul>
+        <p class="critique ok">Critique (indicatif) : accepté</p>
+      </article>
+    </div>
+    <p class="note">Défaut vu sur presque toutes : les bandes d'intervalle saturent les radars. Il sera corrigé sur la variante que tu retiens.</p>
+  </section>
+
+  <section id="epice" aria-labelledby="t-epice">
+    <h2 id="t-epice">2. Le picto « épicé »</h2>
+    <p>Après ton « Aucun me convient… », troisième refus de ce picto : trois dessins de piment, et le mot « épicé » en repli. D'abord la planche, à 12, 16 et 24 px, à côté de la feuille d'Herbacé et des brins de Végétal ; puis les mêmes sur de vraies cartes (Columbus, Cascade, Saaz). Chaque cadre défile.</p>
+    <div class="picto">
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-planche.png" width="780" height="3088" alt="Planche : trois pictos piment et le mot épicé, à trois tailles"></div>
+        <figcaption><h3>La planche</h3></figcaption>
+      </figure>
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-contexte.png" width="1170" height="3516" alt="Les pictos sur les cartes Columbus, Cascade et Saaz"></div>
+        <figcaption><h3>Sur de vraies cartes</h3></figcaption>
+      </figure>
+    </div>
+    <p class="note">Réserve : un piment dit « piquant », ce n'est pas tout à fait l'épicé d'un houblon.</p>
+  </section>
+
+  <section id="carte" aria-labelledby="t-carte">
+    <h2 id="t-carte">3. La carte des outils</h2>
+    <p>Ma bière, puis Suggérer, Comparer, Dryhopper et Levure. Chaque écran pose une seule question, avec un seul réglage libre. La carte entière défile dans son cadre.</p>
+    <div class="paire">
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/carte.png" width="780" height="6266" alt="La carte des outils, de Ma bière à Levure"></div>
+        <figcaption><h3>La carte entière</h3></figcaption>
+      </figure>
+      <div class="variante">
+        <button class="ecran" type="button" data-img="img/substituer-porte.png" data-legende="Substituer, en porte vers Comparer"><img src="img/substituer-porte.png" width="780" height="1688" alt="Substituer en porte"></button>
+        <h3>Substituer : une porte vers Comparer</h3>
+      </div>
+      <div class="variante">
+        <button class="ecran" type="button" data-img="img/substituer-outil.png" data-legende="Substituer, en outil propre"><img src="img/substituer-outil.png" width="780" height="1688" alt="Substituer en outil propre"></button>
+        <h3>Substituer : un outil propre</h3>
+      </div>
+      <div class="variante">
+        <button class="ecran" type="button" data-img="img/levure-etape.png" data-legende="Levure, dernière étape de Dryhopper"><img src="img/levure-etape.png" width="780" height="1688" alt="Levure en dernière étape de Dryhopper"></button>
+        <h3>Levure : la dernière étape de Dryhopper</h3>
+      </div>
+      <div class="variante">
+        <button class="ecran" type="button" data-img="img/levure-outil.png" data-legende="Levure, en outil propre"><img src="img/levure-outil.png" width="780" height="1688" alt="Levure en outil propre"></button>
+        <h3>Levure : un outil propre</h3>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Données : stout export 16 °P à 4,75 % vol. Le simulé est marqué « ~ ». L'α de Galaxy et celui de Nelson Sauvin viennent de leurs fiches (≠ du lot).</p>
+    <p>Pour répondre : commente directement sur la page, ou dis-le dans la conversation. Exemple : « r6l pour l'en-tête, les barres de r6j, Substituer en porte, piment 1 ».</p>
+  </footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-label="Capture agrandie">
+  <button class="fermer" id="fermer" type="button">Fermer</button>
+  <figure>
+    <img id="vis-img" alt="">
+    <figcaption id="vis-legende"></figcaption>
+    <div class="nav" id="vis-nav" hidden>
+      <button type="button" id="vis-prec">◀ Précédente</button>
+      <button type="button" id="vis-suiv">Suivante ▶</button>
+    </div>
+  </figure>
+</div>
+
+<script>
+// Agrandir au toucher ; passer d'une variante de Comparer à l'autre. Le contenu ne dépend pas de ce script.
+(function () {
+  const vis = document.getElementById('visionneuse');
+  const visImg = document.getElementById('vis-img');
+  const visLeg = document.getElementById('vis-legende');
+  const visNav = document.getElementById('vis-nav');
+  const ordre = Array.from(document.querySelectorAll('.grille .ecran')).map((b) => ({ img: b.dataset.img, legende: b.dataset.legende }));
+  let rang = -1;
+  let retour = null;
+  function ouvrir(img, legende, depuis) {
+    retour = depuis || retour;
+    visImg.src = img; visImg.alt = legende; visLeg.textContent = legende;
+    rang = ordre.findIndex((o) => o.img === img);
+    visNav.hidden = rang < 0;
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('fermer').focus();
+  }
+  function fermer() { vis.hidden = true; visImg.removeAttribute('src'); if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang < 0) return; rang = (rang + pas + ordre.length) % ordre.length; ouvrir(ordre[rang].img, ordre[rang].legende); }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-img]');
+    if (b) ouvrir(b.dataset.img, b.dataset.legende, b);
+  });
+  document.getElementById('fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', () => aller(-1));
+  document.getElementById('vis-suiv').addEventListener('click', () => aller(1));
+  vis.addEventListener('click', (e) => { if (e.target === vis) fermer(); });
+  document.addEventListener('keydown', (e) => {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

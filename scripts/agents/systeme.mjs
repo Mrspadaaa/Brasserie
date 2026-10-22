@@ -298,8 +298,9 @@ export function suitesDeMission(mission, dossiersVoies) {
   }
   for (const id of rejetes) {
     if (acceptes.has(id)) continue;
-    // Forme stricte « r6a écartée : raison » : une phrase qui parle d'écarter ne vaut pas un écart.
-    if (new RegExp(`\\b${id}\\b[^\\S\\n]+écartée[^\\S\\n]*:[^\\S\\n]*\\S`, 'i').test(texteMission)) continue;
+    // Forme stricte « r6a écartée : raison » ou « r6a choisie : ses mots » (le brasseur prime sur le
+    // critique) : une phrase qui parle d'écarter ne vaut pas un écart.
+    if (new RegExp(`\\b${id}\\b[^\\S\\n]+(écartée|choisie)[^\\S\\n]*:[^\\S\\n]*\\S`, 'i').test(texteMission)) continue;
     erreurs.push(`ECHEC ${id} — rejeté par le critique, ni relancé ni écarté dans MISSION.md (boucle moyenne, L27)`);
   }
   return erreurs;

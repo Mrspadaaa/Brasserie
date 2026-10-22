@@ -284,6 +284,13 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   capture `planche-390.png` barrée d'une grande croix rouge sur les sept : cannelle, vanille,
   badiane, girofle, mortier et pilon, coriandre, saupoudreur. C'est le troisième refus de ce picto,
   après « plutôt vanille, canelle ? » (lot 15) puis les grains de poivre (lot 21). — 22.10.
+- **Le lot 22, son retour** (page « Lot 22 houblons », version 2), mot pour mot :
+  - « r6a est le meilleur mais reprendre trop peu d'éléments que j'avais noté bon ou intéressant des
+    autres variante, notamment la meilleure. »
+  - Sur la planche « épicé » r4c (trois piments et le mot) : « Les icônes épices ??? Il y a que 3
+    variante, qui sont toutes quasiment identique ??? » ; « Des vrais proposition surtout que un
+    piment n'a rien à voir la dedans... ». C'est le quatrième refus de ce picto.
+  — 22.10.
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce
