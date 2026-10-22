@@ -70,6 +70,17 @@ jusqu'à l'accord de l'utilisateur pour les archiver.
   `node scripts/agents/systeme.mjs cerveau`. Le hook le relance après chaque écriture dans `cerveau/`.
 - La mémoire locale de Claude (`~/.claude/projects/…/memory/`) reste en place. Le cerveau en est la
   copie partagée et versionnée. En cas d'écart, le cerveau prime pour les agents.
+- **Miroir NotebookLM, en lecture pour le brasseur** (22.10) : le carnet est
+  https://notebook.google.com/notebook/4908c56c-371e-42c9-a8af-e2ab7fb597ac, compte de l'utilisateur.
+  - Le miroir va dans un seul sens : `node scripts/agents/systeme.mjs exporter [--avec-spec]` écrit
+    `work/export-notebook/cerveau-affinee.md`, un fichier local ignoré par git.
+  - L'utilisateur l'ajoute comme source du carnet. Le dépôt chez Google reste son geste : c'est un
+    envoi externe.
+  - Pas d'API grand public : l'API officielle est réservée à l'offre Enterprise, sur Google Cloud.
+    Pour automatiser, il faut Google Drive pour ordinateur et un script Apps Script qui recopie le
+    fichier dans un Google Doc ; NotebookLM resynchronise seul une source Google Docs.
+  - Ce que le brasseur conclut dans le carnet revient par la conversation : SPEC, contrôle, leçon.
+    Le carnet n'est jamais une source pour les agents.
 
 ## Les leçons (`cerveau/LECONS.md`)
 L'équivalent d'AGENT_LEARNINGS.md : erreur, cause, règle, rôles, contrôle. On en écrit une après une

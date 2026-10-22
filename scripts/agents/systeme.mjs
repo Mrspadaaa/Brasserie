@@ -6,6 +6,7 @@
 //   note <fichier> --exiger "A,B" [--contient "x,y"]               une note de voie a ses parties
 //   existent <fichier…>                                            les livrables d'une voie existent
 //   fidelite <source> <note…>                                      condenser sans perdre citations ni nombres
+//   exporter [--vers fichier] [--avec-spec]                         un fichier consolidé pour NotebookLM
 //   agents [--dir D]                                               agents des voies et du conseil
 //   conseil <transcription>|--dernier [--dir D]                    transcription complète du conseil
 //   voies <mission> [--modeles haiku,sonnet] [--approuver]         rejoue les critères de chaque voie
@@ -151,6 +152,33 @@ export function verifierNote(fichier, exiger = []) {
     if (!re.test(texte)) erreurs.push(`partie « ${partie} » absente`);
   }
   return erreurs;
+}
+
+export function exporterCerveau(dir, { avecSpec = false } = {}) {
+  const titres = { brasseur: 'Le brasseur', metier: 'Métier', produit: 'Produit', agents: 'Façon de travailler', sources: 'Sources', decisions: 'Décisions du conseil' };
+  const commit = spawnSync('git', ['log', '-1', '--format=%h %cs'], { cwd: RACINE, encoding: 'utf8' }).stdout.trim();
+  const sansLiens = (t) => t.replace(/\[\[([^\]]+)\]\]/g, '« $1 »');
+  const morceaux = [
+    `# Second cerveau de L'Affinée — export pour NotebookLM`,
+    `Exporté le ${new Date().toISOString().slice(0, 10)} depuis le dépôt (commit ${commit}). Copie en lecture : la source de vérité est le dossier cerveau/ du dépôt. Une note dit ce qui était vrai à sa date ; les paroles exactes du brasseur sont dans SPEC-BRASSEUR.`,
+    `## Leçons des agents\n\n${sansLiens(lire(path.join(dir, 'LECONS.md')).replace(/^# .*\n/, '').replace(/^(#{2,3}) /gm, (_, h) => `${h}# `))}`,
+  ];
+  const notes = notesDu(dir);
+  for (const type of TYPES) {
+    const duType = notes.filter((n) => n.type === type);
+    if (!duType.length) continue;
+    morceaux.push(`## ${titres[type]}`);
+    for (const { fichier } of duType) {
+      const e = enTete(lire(fichier));
+      const c = e?.champs ?? {};
+      // Les titres internes descendent de deux crans pour rester sous la note.
+      const corps = (e?.corps ?? lire(fichier)).replace(/^(#{1,4}) /gm, (_, h) => `${'#'.repeat(Math.min(h.length + 2, 6))} `);
+      morceaux.push(`### ${c.name ?? path.basename(fichier, '.md')}\n\n*${c.description ?? ''}* (mise à jour : ${c.maj ?? '?'} ; sources : ${c.sources ?? '?'})\n\n${sansLiens(corps.trim())}`);
+    }
+  }
+  if (avecSpec) morceaux.push(`## Paroles du brasseur (SPEC-BRASSEUR)\n\n${lire(path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'SPEC-BRASSEUR.md')).replace(/^(#{1,4}) /gm, '### ')}`);
+  const texte = `${morceaux.join('\n\n')}\n`;
+  return { texte, notes: notes.length, mots: texte.split(/\s+/).filter(Boolean).length };
 }
 
 export function verifierFidelite(srcBrute, cibleBrute) {
@@ -481,6 +509,15 @@ function main(argv) {
       const r = verifierFidelite(lire(source), notes.map(lire).join('\n'));
       return finir(!r.perdus.length, `FIDELITE OK (${r.citations} citations, ${r.nombres} nombres)`, 'FIDELITE ECHEC', r.perdus.slice(0, 40));
     }
+    case 'exporter': {
+      // Miroir à sens unique pour NotebookLM (lecture du brasseur) : un seul fichier consolidé.
+      // Le cerveau du dépôt reste la source de vérité ; rien n'est envoyé d'ici.
+      const vers = path.resolve(option(args, '--vers', path.join(RACINE, 'work', 'export-notebook', 'cerveau-affinee.md')));
+      const r = exporterCerveau(dirCerveau, { avecSpec: args.includes('--avec-spec') });
+      fs.mkdirSync(path.dirname(vers), { recursive: true });
+      fs.writeFileSync(vers, r.texte);
+      return finir(true, `EXPORT OK ${rel(vers)} (${r.notes} notes, ${r.mots} mots)`, '');
+    }
     case 'existent': {
       const manque = args.filter((a) => !existe(path.resolve(a)));
       return finir(args.length > 0 && !manque.length, `EXISTENT OK ${args.length}`, 'EXISTENT ECHEC', manque.map((m) => `absent : ${m}`));
@@ -508,7 +545,7 @@ function main(argv) {
     case 'cablage': { const e = verifierCablage(); return finir(!e.length, 'CABLAGE OK', 'CABLAGE ECHEC', e); }
     case 'temoins': return finir(temoins(), 'TEMOINS OK', 'TEMOINS ECHEC');
     default:
-      console.log(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(1, 15).map((l) => l.replace(/^\/\/ ?/, '')).join('\n'));
+      console.log(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(1, 16).map((l) => l.replace(/^\/\/ ?/, '')).join('\n'));
       return commande ? 2 : 0;
   }
 }
