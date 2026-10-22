@@ -79,7 +79,9 @@ Les lignes `LEÇON PROPOSÉE` et `CONNAISSANCE` des RESULTAT.md sont traitées p
 signature, jamais laissées en plan.
 
 ## 6. Publier, puis signer
-Des écrans ne sont finis qu'une fois montrés (M12) : le pilote publie lui-même la page du lot
+Des écrans ne sont finis qu'une fois montrés (M12). Avant de publier, `node scripts/agents/verifier-page.mjs
+<page.html> --captures <préfixe>` doit rendre PAGE OK, et ses captures sont ouvertes (L12). Le contenu
+de la page (variantes, images) est écrit en HTML, et non construit par un script. Le pilote publie lui-même la page du lot
 (artefact privé, à jour seulement ; si l'ancienne page est inaccessible, en publier une nouvelle et
 la noter dans `cerveau/produit/page-partagee.md`) et écrit son lien dans MISSION.md. Sans lien, le
 rejeu échoue. Le lien est donné à l'utilisateur dans le rapport final.

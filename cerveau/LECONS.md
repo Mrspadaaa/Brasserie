@@ -74,7 +74,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
 - Erreur : 19.10, loupe p02 avec RAIL OK et LOT OK, mais 19 à 20 px sous le doigt contre 8 à 13 au loin. « L'échelle ne s'adapte toujours pas ». Avant cela, seules 24 à 44 % des captures avaient été regardées.
 - Cause : les contrôles bornaient le geste sans exiger de force minimale, et les captures n'étaient pas ouvertes.
-- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK.
+- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK. Une page de lot passe `scripts/agents/verifier-page.mjs` (PAGE OK) avant publication : le 22.10, la page du lot 22 est sortie avec un script cassé, sans variantes visibles.
 - Rôles : relecteur, auteur, exécutant
 - Contrôle : aucun
 

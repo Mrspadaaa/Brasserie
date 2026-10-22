@@ -161,6 +161,7 @@ de revenir.
 | `node scripts/agents/systeme.mjs fidelite <source> <notes…>` | condenser sans perdre citations ni nombres |
 | `node scripts/agents/systeme.mjs note <f> --exiger … --contient …` / `existent <f…>` | critères usuels des voies |
 | `node scripts/agents/systeme.mjs temoins` | chaque contrôle échoue sur son témoin négatif |
+| `node scripts/agents/verifier-page.mjs <page.html> --captures <préfixe>` | une page de lot avant publication : rendu Chrome à 390 px, sans erreur de script, images chargées |
 | `node scripts/agents/systeme.mjs echoue "<JETON> ECHEC" -- node <contrôle> <args…>` | témoin négatif dans un GATES : tient si le contrôle échoue (code non nul) en imprimant son jeton ; un plantage ne compte pas |
 
 Les contrôles d'interface vivent dans `work/refonte-frontend/v4/tournoi/outils/` (les `.mjs` y sont
