@@ -75,7 +75,9 @@ options des descripteurs, et il a répondu aux questions fermées. Ensuite seule
 
 ## Budget
 Usage au lancement de la vague 1 (22.10, ~11 h) : fenêtre de 5 h à 16 % (remise à 16 h), semaine
-à 3 % ; contexte du pilote 238 k sur 1 M.
+à 3 % ; contexte du pilote 238 k sur 1 M. Après la vague 1 (~13 h 20) : 5 h à 20 %, semaine à
+4 %, contexte 324 k. Coût des quatre voies : environ 4 points de la fenêtre de 5 h (agents : r0
+220 k, r4 96 k, r2 86 k, r4r 50 k jetons).
 Plafonds par voie dans la table. Arrêt vers 95 % de la fenêtre de 5 h. Le lot 22 compte environ
 12 variantes, pas 40 (L18).
 
