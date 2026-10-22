@@ -53,14 +53,15 @@ Ne pas écrire dans ses fichiers pendant qu'elle tourne. Commiter seulement ses 
 (`git commit -- <chemins>`).
 
 ## Ouvert, par priorité
-0. **Élaguer les gros documents**, après la vague 3 bis : la session « En attente » s'en sert. Ils sont
-   lus en entier et pèsent environ 60 000 jetons.
-   - SPEC : un § 0 « Ce qui vaut aujourd'hui », de 40 lignes au plus ; les verdicts remplacés y sont marqués.
-   - DEFAUTS (16 000 jetons) : une ligne par défaut, et l'histoire dans DEFAUTS-HISTOIRE.md.
-   - Le registre (29 000 jetons) : l'état en cours seulement, le reste archivé par mois.
-   - decisions.md.
-   Chaque réduction est vérifiée par `systeme.mjs fidelite`, et les briefs des critiques pointent les
-   versions courtes.
+0. **Les gros documents sont élagués** (22.10, a470821 et le commit suivant) :
+   - SPEC a un § 0 ;
+   - DEFAUTS-COURT.md est générée et suit sa source par le hook ;
+   - le registre passe de 117 000 à 2 500 caractères, et l'historique est archivé tel quel (renommé, identique à
+     100 %).
+   Restent :
+   - decisions.md, qu'aucun agent ne lit en entier ;
+   - 4 citations de SPEC que `check-spec` ne retrouve pas, antérieures au 22.10 : des mots écrits sur des captures
+     du 19.10, et une question du pilote.
 1. **Étalonnage du critique (L27)**, mission à créer :
    - jeu « capture et verdict mot pour mot » tiré de SPEC-BRASSEUR (y1b préférée, d1 « bordélique »,
      l8 « horrible mais la disposition », r4 « Aucun me convient », r4c « quasiment identique »,

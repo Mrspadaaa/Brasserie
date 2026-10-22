@@ -25,7 +25,7 @@ brasseur (le cerveau la donne), ou un geste irréversible (il va à l'utilisateu
 
 ## 2. Cadrer (pilote, 5 minutes au plus)
 Chercher le contexte : `node scripts/agents/systeme.mjs chercher <mots>`, les mots du brasseur dans
-SPEC-BRASSEUR.md (§ 0, puis la section du sujet), les défauts liés dans DEFAUTS-COURT.md, l'état dans le registre, deux ou
+SPEC-BRASSEUR.md (§ 0, puis la section du sujet), les défauts liés dans DEFAUTS-COURT.md, l'état dans la mission en cours (le registre la pointe), deux ou
 trois captures si la question touche un écran. Écrire la **question cadrée** : la décision, les
 options connues, le contexte chiffré, l'enjeu, les contraintes (hors ligne, téléphone, quota,
 honnêteté des données), et la liste des sources. Pas d'avis du pilote dedans.

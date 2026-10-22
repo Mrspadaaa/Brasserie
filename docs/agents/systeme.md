@@ -116,12 +116,12 @@ lisait environ 29 000 jetons avant de juger. Des copies restées en arrière con
   Le hook rejoue ces plafonds à chaque écriture dans `cerveau/`.
 - **À la signature** de chaque mission, `charge` et `remplaces` passent. Toute règle changée pendant la
   mission est inscrite dans REMPLACES.md.
-- **À faire** (après la vague en cours) : réduire les gros documents lus en entier, sans rien perdre
-  (vérifié par `systeme.mjs fidelite`) :
-  - SPEC, avec un § 0 « Ce qui vaut aujourd'hui » ;
-  - DEFAUTS, une ligne par défaut ;
-  - le registre, réduit à l'état en cours, le reste archivé par mois ;
-  - decisions.md.
+- **Les gros documents** (fait le 22.10) :
+  - SPEC a un § 0 « Ce qui vaut aujourd'hui », lu d'abord ;
+  - DEFAUTS a sa vue courte générée, `DEFAUTS-COURT.md` (27 000 caractères contre 63 000) ;
+  - le registre ne garde que l'état en cours, et l'historique est archivé tel quel dans
+    `registre-archive-2026-10-17-au-20.md`.
+  Reste decisions.md (486 lignes), qu'aucun agent ne lit en entier par défaut.
 
 ## Décider : la grille
 
