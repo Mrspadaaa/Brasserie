@@ -68,6 +68,8 @@ firestore.rules
 !/work/refonte-frontend/v4/ecran-1/base/generateur/*
 # Sources des loupes candidates de la base v4.4 (#134), reconstruites par candidats-v44/preparer.mjs.
 !/work/refonte-frontend/v4/ecran-1/candidats-v44/sources/*/*
+# Pages témoins des contrôles (22.10.2026, leçon L13) : un critère se rejoue depuis un clone neuf.
+!/work/refonte-frontend/v4/tournoi/outils/temoins/**/*.html
 /work/refonte-frontend/**/_ecartes/
 /work/refonte-frontend/**/_v[0-9]*/
 /work/refonte-frontend/**/captures/

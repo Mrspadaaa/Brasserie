@@ -25,5 +25,7 @@ Plancher à enrichir, pas plafond ([[le-brasseur-choisit]]).
 | Manière de comparer de w2 | « pas trop mal dans la manière de comparé » (20.10) | comparateur 1:1 |
 | Vraies valeurs de v1, moins austères | « meilleur vu de comparaison sur des vrai valeur » (20.10) | comparateur 1:1 |
 
-Contrôle de présence : à écrire (DEFAUTS-RECURRENTS, « À contrôler, lot 21 », point 2, pour le radar).
+Contrôle de présence, écrit le 22.10 : `controle-acquis.mjs` (D99). Sur un écran Comparer, il exige
+le radar, la chimie, le panel OSU et les vraies valeurs, balisés `data-acquis`. À ajuster avant le
+lot 22 pour accepter un acquis « à un toucher ».
 Voir [[outils-houblons]].

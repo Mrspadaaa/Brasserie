@@ -14,6 +14,7 @@
 //   hooks                                                          hooks branchés et réactifs
 //   cablage                                                        CLAUDE.md, skills, doc, git
 //   temoins                                                        chaque contrôle échoue sur son témoin
+//   echoue <JETON> -- <commande> <args…>                           témoin négatif d'un GATES (leçon L13)
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -258,6 +259,18 @@ function dernierConseil(dir) {
   return f ? path.join(d, f) : null;
 }
 
+// Un critère se rejoue depuis un clone neuf : un script appelé par un CHECK ne doit pas être ignoré par
+// git (22.10 : un contrôle posé dans work/missions/ l'était, seuls les .md et .json y sont suivis).
+export function criteresNonVersionnes(gates) {
+  const scripts = new Set();
+  for (const l of lire(gates).split('\n')) {
+    const m = l.match(/^\s*CHECK:\s*(.*)$/);
+    if (!m) continue;
+    for (const t of m[1].split(/[\s"'`()]+/)) if (t.includes('/') && /^[\w.\-/]+\.(mjs|cjs|js|ts)$/.test(t)) scripts.add(t);
+  }
+  return [...scripts].filter((s) => spawnSync('git', ['check-ignore', '-q', s], { cwd: RACINE }).status === 0);
+}
+
 function gateCheck(args, cwd) {
   const r = spawnSync(process.execPath, [GATE_CHECK, ...args], { cwd, encoding: 'utf8', timeout: 900_000 });
   return { code: r.status, sortie: `${r.stdout ?? ''}${r.stderr ?? ''}` };
@@ -279,6 +292,8 @@ export function verifierVoies(mission, { modeles = [], approuver = false, racine
     if (modele) vus.add(modele);
     const premiere = lire(path.join(d, 'RESULTAT.md')).split('\n').find((l) => l.trim()) ?? '';
     if (!/^OK\b/.test(premiere)) { lignes.push(`ECHEC ${v} — RESULTAT : ${premiere.slice(0, 90)}`); continue; }
+    const ignores = criteresNonVersionnes(path.join(d, 'GATES.md'));
+    if (ignores.length) { lignes.push(`ECHEC ${v} — critère non versionné (ignoré par git) : ${ignores.join(', ')}`); continue; }
     if (approuver) gateCheck(['--approve', '--cwd', racine, path.join(d, 'GATES.md')], racine);
     const g = gateCheck(['--reverify', '--cwd', racine, path.join(d, 'GATES.md')], racine);
     if (g.code !== 0) {
@@ -387,6 +402,18 @@ function verifierCablage() {
   return erreurs;
 }
 
+// Témoin négatif dans un GATES : le critère tient si le contrôle échoue (code non nul) ET imprime son
+// jeton d'échec. Un plantage (jeton absent) ou un contrôle qui passe ne prouvent rien (leçon L13).
+export function echoueAvec(commande, args, jeton) {
+  const exe = commande === 'node' ? process.execPath : commande;
+  const r = spawnSync(exe, args, { cwd: RACINE, encoding: 'utf8', timeout: 300000 });
+  const sortie = `${r.stdout ?? ''}${r.stderr ?? ''}`;
+  if (r.error) return { ok: false, raison: `lancement impossible : ${r.error.message}` };
+  if (r.status === 0) return { ok: false, raison: 'la commande passe (code 0) : le témoin négatif ne tient pas' };
+  if (!sortie.includes(jeton)) return { ok: false, raison: `code ${r.status} sans « ${jeton} » : plantage, pas un échec du contrôle` };
+  return { ok: true, raison: `code ${r.status}` };
+}
+
 // Témoins : petits dossiers jetables, un défaut à la fois.
 function construireCerveau(dir, d = {}) {
   const c = path.join(dir, 'cerveau');
@@ -418,14 +445,16 @@ function construireConseil(dir, { sansPremierGeste = false } = {}) {
   return f;
 }
 
-function construireMission(dir, { critereFaux = false } = {}) {
+function construireMission(dir, { critereFaux = false, critereIgnore = false } = {}) {
   const m = path.join(dir, 'mission');
   for (const [v, modele, ok] of [['v1', 'haiku', true], ['v2', 'sonnet', !critereFaux]]) {
     const d = path.join(m, 'voies', v);
     fs.mkdirSync(d, { recursive: true });
     fs.writeFileSync(path.join(d, 'VOIE.md'), `# Voie ${v}\n- Modèle : ${modele}\n`);
     fs.writeFileSync(path.join(d, 'RESULTAT.md'), `OK — la voie ${v} se dit finie\n`);
-    const cmd = ok ? 'node -e "console.log(\'TEMOIN TENU\')"' : 'node -e "console.log(\'TEMOIN RATE\'); process.exit(1)"';
+    // Témoin « critère ignoré » : un script de critère rangé dans work/missions/, que git ne suit pas.
+    const cmd = critereIgnore && v === 'v2' ? 'node work/missions/m/voies/v2/critere.mjs'
+      : ok ? 'node -e "console.log(\'TEMOIN TENU\')"' : 'node -e "console.log(\'TEMOIN RATE\'); process.exit(1)"';
     fs.writeFileSync(path.join(d, 'GATES.md'), `# Gates: témoin ${v}\n\nOWNS: rien\n\nScope: témoin.\n\n- [ ] G1: le témoin passe\n  CHECK: ${cmd}\n  EXPECT: TEMOIN TENU\n  EVIDENCE: pending\n`);
   }
   return m;
@@ -458,12 +487,17 @@ function temoins() {
   attendu('voies tenues', verifierVoies(construireMission(m1), { approuver: true, racine: m1 }).ok, true);
   const m2 = sous('m2');
   attendu('voie qui se dit OK mais rate', verifierVoies(construireMission(m2, { critereFaux: true }), { approuver: true, racine: m2 }).ok, false);
+  const m3 = sous('m3');
+  attendu('critère ignoré par git', verifierVoies(construireMission(m3, { critereIgnore: true }), { approuver: true, racine: m3 }).ok, false);
   attendu('correction reconnue', estCorrection("c'est toujours pas bon, j'avais dit de garder le radar"), true);
   attendu('phrase neutre', estCorrection('Lance le lot 22 sur la carte des outils.'), false);
   const source = 'Il a dit « trop centré\n  sur le ibu » le 18.10, pour 126 g.';
   attendu('condensé fidèle', verifierFidelite(source, '« trop centré sur le ibu » (18.10), 126 g').perdus.length === 0, true);
   attendu('condensé qui perd un nombre', verifierFidelite(source, '« trop centré sur le ibu » (18.10)').perdus.length === 0, false);
   attendu('notification d\'agent', estCorrection('<task-notification>\n<summary>Agent fini</summary><result>Défaut fatal ??? toujours pas</result></task-notification>'), false);
+  attendu('contrôle qui échoue avec son jeton', echoueAvec('node', ['-e', "console.log('X ECHEC'); process.exit(1)"], 'X ECHEC').ok, true);
+  attendu('contrôle qui passe', echoueAvec('node', ['-e', "console.log('X OK')"], 'X ECHEC').ok, false);
+  attendu('contrôle qui plante', echoueAvec('node', ['-e', "throw new Error('boum')"], 'X ECHEC').ok, false);
   fs.rmSync(tmp, { recursive: true, force: true });
   for (const c of cas) console.log(`${c.ok ? 'tenu ' : 'RATÉ '} ${c.nom} (attendu : ${c.voulu ? 'OK' : 'ECHEC'})`);
   return cas.every((c) => c.ok);
@@ -544,8 +578,15 @@ function main(argv) {
     case 'hooks': { const e = verifierHooks(); return finir(!e.length, 'HOOKS OK', 'HOOKS ECHEC', e); }
     case 'cablage': { const e = verifierCablage(); return finir(!e.length, 'CABLAGE OK', 'CABLAGE ECHEC', e); }
     case 'temoins': return finir(temoins(), 'TEMOINS OK', 'TEMOINS ECHEC');
+    case 'echoue': {
+      const sep = args.indexOf('--');
+      const [jeton] = args;
+      if (!jeton || sep !== 1 || args.length < 3) return finir(false, '', 'ECHOUE ECHEC', ['usage : echoue <JETON> -- <commande> <args…>']);
+      const r = echoueAvec(args[2], args.slice(3), jeton);
+      return finir(r.ok, `ECHOUE OK (${jeton}, ${r.raison})`, 'ECHOUE ECHEC', r.ok ? [] : [r.raison]);
+    }
     default:
-      console.log(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(1, 16).map((l) => l.replace(/^\/\/ ?/, '')).join('\n'));
+      console.log(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(1, 17).map((l) => l.replace(/^\/\/ ?/, '')).join('\n'));
       return commande ? 2 : 0;
   }
 }

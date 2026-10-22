@@ -54,7 +54,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Cause : aucun brief ni contrôle ne listait ce qui était déjà acquis.
 - Faire : tenir la liste des acquis dans [[acquis-valides]] et la recopier dans chaque brief, avec un contrôle de présence.
 - Rôles : pilote, auteur
-- Contrôle : à écrire (DEFAUTS, « À contrôler, lot 21 », point 2)
+- Contrôle : `controle-acquis.mjs` (D99, écran Comparer : radar, chimie, panel OSU, vraies valeurs)
 
 ### L07 — Une baseline est un plancher à enrichir
 - Erreur : 19.10, un brief disait « à reprendre, pas à réinventer » et a bridé les auteurs. « il faudrait évidemment d'enrichir et pas de limiter à ça !!! »
@@ -82,7 +82,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Cause : chaque écran faisait varier plusieurs facteurs. Un titre en forme de question ne suffisait pas à l'empêcher.
 - Faire : définir chaque outil par le seul facteur qui y varie, afficher les autres sur une ligne de contexte, et lister ses éléments admis. Montrer la carte en fil de fer avant tout lot. Voir [[outils-houblons]] et [[2026-10-22-carte-outils-houblons]].
 - Rôles : pilote, conseil, auteur, relecteur
-- Contrôle : à écrire, au rendu : un seul groupe de sélecteurs libres par écran ; témoins y1b et y3 en échec (DEFAUTS, « À contrôler, lot 21 », point 5)
+- Contrôle : `controle-une-question.mjs` (D98) : un seul groupe de sélecteurs libres par écran d'outil ; y1b et y3 en échec
 
 ## Prouver
 
@@ -112,7 +112,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Cause : 83 % de ses mots (vin blanc, groseille à maquereau, raisin) sont hors du lexique fermé des 12 familles, et sortent du dessin. Personne n'a confronté le rendu à la réputation du houblon (diagnostic du 22.10 : [[descripteurs-hors-familles]]).
 - Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra, Motueka, Saaz, Galaxy), et confronter le rendu à leur réputation.
 - Rôles : relecteur, conseil, auteur
-- Contrôle : à écrire (voie r0 de la reprise) : échec au-delà de 50 % de mots sans famille si aucune part « autres » n'est visible ; témoin négatif l5f
+- Contrôle : `controle-sans-famille.mjs` (D100) : échec au-delà de 50 % de mots sans famille si aucune part « autres » n'est visible ; l5f en échec ; il s'applique si le brasseur retient l'option B
 
 ## Agents et outils
 
@@ -149,9 +149,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
 - Erreur : 20.10 et 22.10, la « grille 1,8 Mo » (fichier de maquette) a été lue comme un coût de calcul. Un conseiller a ensuite proposé d'abandonner le repli « dry hop et biotransformation seulement si c'est trop lourd » sans rien chronométrer.
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
-- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure.
-- Rôles : pilote, conseil, auteur
-- Contrôle : à écrire (voie de mesure de la reprise du lot 21)
+- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Une entrée répétée mesure le cache (`cacheBase` : 0,17 ms contre 1,42 ms sans cache, voie r2 du 22.10) : mesurer aussi une entrée qui change à chaque appel, et le premier passage à froid.
+- Rôles : pilote, conseil, auteur, exécutant
+- Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
 ## Mécanisées
 
@@ -159,3 +159,4 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - M02 (L21) — Un hook s'essaie sur les vraies entrées de l'app : le 22.10, le hook de correction a réagi à la notification d'un conseiller. Témoin « notification d'agent » dans `systeme.mjs temoins`.
 - M03 (L15) — Un monkey test voit les champs (`value`) et la console (`console.error`) : `tests/integration/monkey.test.tsx`, détail dans [[monkey-testing]].
 - M04 (L22) — Condenser une source sans perdre : le 22.10, 51 citations et nombres perdus à la première condensation de deux sources de 330 à 350 lignes (voie Haiku). Lancer `systeme.mjs fidelite <source> <notes…>` ; au-delà de 150 lignes, prévoir plusieurs notes.
+- M05 (L23) — Un critère et ses témoins vivent dans des fichiers versionnés : le 22.10, le contrôle de la planche r4 et son témoin, écrits d'abord dans `work/missions/…/voies/`, étaient ignorés par git (seuls .md et .json y sont suivis), comme les pages HTML sous `work/refonte-frontend/`. Contrôles dans `tournoi/outils/`, pages témoins dans `tournoi/outils/temoins/` ; `systeme.mjs voies` refuse un script de CHECK ignoré (témoin « critère ignoré par git »).

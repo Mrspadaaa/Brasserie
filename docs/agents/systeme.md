@@ -144,6 +144,12 @@ de revenir.
 | `node scripts/agents/systeme.mjs fidelite <source> <notes…>` | condenser sans perdre citations ni nombres |
 | `node scripts/agents/systeme.mjs note <f> --exiger … --contient …` / `existent <f…>` | critères usuels des voies |
 | `node scripts/agents/systeme.mjs temoins` | chaque contrôle échoue sur son témoin négatif |
+| `node scripts/agents/systeme.mjs echoue "<JETON> ECHEC" -- node <contrôle> <args…>` | témoin négatif dans un GATES : tient si le contrôle échoue (code non nul) en imprimant son jeton ; un plantage ne compte pas |
+
+Les contrôles d'interface vivent dans `work/refonte-frontend/v4/tournoi/outils/` (les `.mjs` y sont
+versionnés), leurs pages témoins dans `tournoi/outils/temoins/` (versionnées par exception dans
+`.gitignore`). Un script de critère posé dans `work/missions/` serait ignoré par git : seuls les
+`.md` et `.json` des missions sont suivis.
 
 ## Limites connues
 - Les types d'agents (`executant`, `auteur`, `relecteur`, `conseiller`) peuvent n'apparaître qu'au

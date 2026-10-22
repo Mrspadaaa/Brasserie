@@ -134,6 +134,37 @@ Voir `decisions.md` (D1 à D12).
   cours. Fils de la page : tous répondus et résolus, sauf « Les bar de ce type… », non envoyé à
   Claude. À faire valider par lui : l8 (l8g ou l8h ; trait l8e ou l8f) contre l5 (l5e ou l5d) ; les
   conventions [H] du moteur ; les icônes Barres et Radar de l5e (D31).
+- **VAGUE 1 FAITE (22.10, deuxième session du système d'agents) : lire en premier.**
+  - Le système est vérifié dans une session neuve :
+    - leçons en contexte sans lecture (pilote et sous-agent Haiku) ;
+    - types d'agents réels, sans repli ;
+    - témoins, cerveau, agents, hooks, câblage, mission et voies OK ;
+    - gate-check ALL MET ;
+    - hook PostToolUse en échec sur une note fausse.
+  - Vague 1 de `work/missions/2026-10-22-reprise-lot21/` : rejeu VOIES OK 4/4 (r0, r2, r4 et la
+    relecture r4r). Signature et décisions dans MISSION.md.
+  - Contrôles nés du lot 21 :
+    - D98 une question par écran ;
+    - D99 acquis de Comparer ;
+    - D100 part « autres », seulement si l'option B est retenue ;
+    - D101 planche du picto.
+
+    Ils sont dans `tournoi/outils/`, leurs témoins dans `tournoi/outils/temoins/` (versionnés).
+  - Coût de calcul (`cerveau/metier/cout-calcul-moteur.md`) : 1,4 ms par cas en léger sans cache,
+    4 à 6 ms en complet. Le repli « dry hop et biotransformation seulement si trop lourd » est levé
+    pour les écrans (décision du pilote). Le catalogue complet (8 s) reste hors du direct.
+  - Picto « épicé » : planche de 7 variantes (`v4/ecran-1/fils22-picto-epice/`), relue et acceptée.
+    **À montrer au brasseur, qui choisit.**
+  - Attendent le brasseur, sans bloquer r1 :
+    - le picto ;
+    - les quatre questions fermées du conseil ;
+    - A ou B pour Nelson Sauvin, avec les mots génériques et le plafond.
+  - Attendent l'utilisateur : push de la branche, PR, publication de la planche sur la page des fils
+    de fer.
+  - **Prochaine action : r1-carte** (auteur, Opus, conception). Ses GATES incluent `controle-commun`
+    et `controle-une-question` (D98, strict). Ensuite r5-relecture.
+  - Avant r6 : ajuster D99 pour un acquis « à un toucher ». Avant r7 : D98 admet un bouton d'édition
+    en contexte.
 - **REPRISE DU 22.10 : lire en premier.** L'utilisateur a demandé un système d'agents « adapté à
   notre usage ». Il est en place : `docs/agents/systeme.md`, le second cerveau `cerveau/` avec les
   leçons, les skills `voies` et `conseil`, et les agents `executant`, `auteur`, `relecteur` et
@@ -149,8 +180,8 @@ Voir `decisions.md` (D1 à D12).
   - Nelson Sauvin a 83 % de mots sans famille. Diagnostic et options A, B, C :
     `cerveau/metier/descripteurs-hors-familles.md`.
   - La reprise est planifiée en voies : `work/missions/2026-10-22-reprise-lot21/MISSION.md`.
-  - **Prochaine action : lancer la vague 1** (r0-controles, r2-cout-calcul, r4-picto-epice),
-    puis r1-carte.
+  - Vague 1 (r0-controles, r2-cout-calcul, r4-picto-epice) : faite, voir ci-dessus ; prochaine
+    action : r1-carte.
 - **RETOUR DU BRASSEUR SUR LE LOT 21 (20.10, après la pause) : c'est le point de départ de la
   reprise.** Ses mots exacts sont dans SPEC-BRASSEUR.md (« Le lot 21, son retour ») ; les plaintes à
   transformer en contrôles sont dans DEFAUTS-RECURRENTS.md (« À contrôler, lot 21 »).

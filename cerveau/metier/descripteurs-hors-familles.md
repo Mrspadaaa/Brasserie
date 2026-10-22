@@ -23,6 +23,7 @@ Retour du brasseur sur l5f : « nelson sauvin est un houbon ordinaire alors que 
 - Captures relues : l8g-fiche-390.png (Nelson Sauvin) et l5f-fiche-390.png (Motueka) montrent exactement les sorties du moteur mesurées ici.
 - Mots / rattachés / sans famille : Nelson Sauvin 12 / 2 / 10 ; Motueka 12 / 9 / 3 (25 %) ; Citra 9 / 8 / 1 (11 %) ; Saaz (CZ) 8 / 6 / 2 ; Galaxy 7 / 5 / 2.
 - Familles montrées : Citra 5, Saaz 6, Galaxy 3, Motueka 3, Nelson Sauvin 2. Moteur V5.5 : toutes les plages font 0–100, centre 51 (citée) contre 40 (non décrite) : seul le vocabulaire départage.
+- Pas que Nelson Sauvin (voie r0, 22.10) : part sans famille = mots de `motsSansFamille` / (mots de `aromes[].mots` + sans famille), dans pack-fiches.json. Au-dessus de 50 % : Nelson Sauvin 83 %, Hallertau Blanc, Marco Polo et Ultra 67 %, Pahto 60 %. Le contrôle D100 (`controle-sans-famille.mjs`) les vise tous.
 - Catalogue : 2105 mots, 472 sans famille ; « fruité » générique dans 77 variétés, noble 27, dank 18, gooseberry 12, white wine 7 (Hallertau Blanc, 2e à 67 %).
 - Réputation : vin blanc et groseille confirmés par 2 fiches chacun ; le fruit de la passion n'est dans aucune fiche de Nelson Sauvin du dépôt (autres sources non lues : « tropical » seulement).
 

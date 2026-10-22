@@ -45,6 +45,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[descripteurs-hors-familles]] — pourquoi Nelson Sauvin paraît ordinaire et Motueka ultra fruité
 - [[modele-brassage]] — moments de houblon typés, levure structurée, recette figée dans le brassin
 - [[chimie-eau]] — AR en ppm d'ion, solveur plafonné, alcalinité à l'empâtage, chaux
+- [[cout-calcul-moteur]] — simulerCas : 1,4 ms léger, 4 à 6 ms complet par cas ; une variante en direct, sans serveur
 
 ### produit/ — outils, écrans, état fini ou inachevé
 - [[outils-houblons]] — une question = un outil : la carte à poser avant tout lot
@@ -54,6 +55,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[import-recette]] — le procédé vit dans le déroulé ; fiche de brassage éditable
 - [[export-et-ia]] — fiches IA sur le stock, export texte avec l'eau, relecture consultative
 - [[design-system-historique]] — historique et pièges UI ; règles actuelles dans DESIGN.md
+- [[pictos-familles]] — pictos d'arômes au trait ; symboles pris ; « épicé » refusé deux fois, planche r4 à choisir
 - [[socle-v01]] — socle Dexie et Firestore de la v0.1 (historique)
 
 ### agents/ — façon de travailler, outils, environnement

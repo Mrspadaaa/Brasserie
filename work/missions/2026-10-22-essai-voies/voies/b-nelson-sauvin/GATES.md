@@ -12,7 +12,7 @@ Scope: une note du cerveau qui prouve la cause et chiffre deux ou trois correcti
 - [x] G2: la note est au format du cerveau et ses liens sont résolus
   CHECK: node scripts/agents/systeme.mjs cerveau --voie --min-notes 3 --min-lecons 12 --fichiers cerveau/metier/descripteurs-hors-familles.md
   EXPECT: CERVEAU OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=a124b340a693bc205d365623d9a82eb2abdaa1e23a8facfb882edf9bb8d51182; exit=0; EXPECT=matched; output-sha256=1112ef12d1af23fdc6610bab9d717a713d249e70aeb86a666bcfa141bad8052d; output-bytes=34; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=a124b340a693bc205d365623d9a82eb2abdaa1e23a8facfb882edf9bb8d51182; exit=0; EXPECT=matched; output-sha256=9a57d0c6e84109a21a6415ff8a98f4964385f8708aed322766d5fb9131a1743d; output-bytes=34; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G3: l'annexe garde les mesures complètes
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-22-essai-voies/voies/b-nelson-sauvin/ANNEXE.md --contient "Nelson Sauvin,Motueka,sans famille"

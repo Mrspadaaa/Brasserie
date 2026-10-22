@@ -12,7 +12,7 @@ Scope: les 24 notes de destination existent, au format du cerveau, liens résolu
 - [x] G2: chaque note versée a son en-tête complet, 50 lignes au plus, et des liens résolus
   CHECK: node scripts/agents/systeme.mjs cerveau --voie --min-notes 26 --min-lecons 12 --fichiers cerveau/brasseur/,cerveau/agents/,cerveau/sources/,cerveau/metier/modele-brassage.md,cerveau/metier/chimie-eau.md,cerveau/produit/saisie-mobile.md,cerveau/produit/import-recette.md,cerveau/produit/export-et-ia.md,cerveau/produit/design-system-historique.md,cerveau/produit/socle-v01.md,cerveau/produit/page-partagee.md
   EXPECT: CERVEAU OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=27d3e17bd8e9701cdc555839969a401cd69db29ecf51ca1fd85706342114d2ab; exit=0; EXPECT=matched; output-sha256=1112ef12d1af23fdc6610bab9d717a713d249e70aeb86a666bcfa141bad8052d; output-bytes=34; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=27d3e17bd8e9701cdc555839969a401cd69db29ecf51ca1fd85706342114d2ab; exit=0; EXPECT=matched; output-sha256=9a57d0c6e84109a21a6415ff8a98f4964385f8708aed322766d5fb9131a1743d; output-bytes=34; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G3: la note du brasseur garde ses mots exacts
   CHECK: node scripts/agents/systeme.mjs note cerveau/brasseur/penser-brasseur.md --contient "trop centré sur le ibu,Toujours pensé comme un brasseur"
