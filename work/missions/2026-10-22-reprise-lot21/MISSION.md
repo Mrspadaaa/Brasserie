@@ -11,19 +11,25 @@ registre deviennent des voies, ordonnées par le verdict du conseil du 22.10
 5. Nelson Sauvin et Motueka ;
 6. le picto « épicé ».
 
-« Fini » pour cette mission : le brasseur a vu la page de la carte, la planche du picto et les
-options des descripteurs, et il a répondu aux questions fermées. Ensuite seulement le lot 22
-(Comparer seul) part, avec les contrôles écrits avant lui. Aucun code de l'app avant la porte B (#119).
+« Fini » pour cette mission : le brasseur a vu, sur la page des fils de fer, la carte des outils, le
+lot 22 (Comparer seul) et la planche du picto. Les choix ouverts y sont montrés en variantes, et il
+choisit en regardant. Les contrôles sont écrits avant le lot. Aucun code de l'app avant la porte B
+(#119).
+
+Correction du 22.10, après « Pourquoi ça n'a pas produit les mini maquettes ? » : le premier plan
+faisait attendre le lot 22 sur quatre questions fermées. C'était contraire à [[le-brasseur-choisit]]
+(leçon L24). Les questions deviennent des axes de variantes ; plus rien n'attend le brasseur avant
+de lui montrer.
 
 ## Décisions
 | Décision | Options | Décideur | État |
 |---|---|---|---|
-| Carte des outils | verdict du conseil : un facteur libre par écran ; Suggérer, Comparer, Dryhopper, Levure depuis Ma bière | brasseur | ouverte : page de r1 à lui montrer |
-| Radar de Comparer | r2 ; r3 (lot 16) | brasseur | ouverte, bloque r6 |
-| Base de comparaison | dose égale ; effet égal sur l'arôme visé ; IBU égal | brasseur | ouverte, bloque r6 |
-| Substituer | porte vers Comparer avec X épinglé ; outil propre (u4) | brasseur | ouverte |
-| Levure | dernière étape de Dryhopper ; outil propre | brasseur | ouverte, bloque r7 |
-| Descripteurs hors familles, présentation | A : gooseberry et « groseille à maquereau » rangés dans Petits fruits ; B : part « autres » visible, plafonnée, mots génériques écartés (recommandé : A puis B ; [[descripteurs-hors-familles]]) | brasseur | ouverte, bloque r3 ; à lui demander aussi la liste des mots génériques, le seuil et le plafond |
+| Carte des outils | verdict du conseil : un facteur libre par écran ; Suggérer, Comparer, Dryhopper, Levure depuis Ma bière | brasseur | ouverte : page de r1, montrée avec le lot 22 |
+| Radar de Comparer | r2 ; r3 (lot 16) | brasseur | ouverte : les deux montrés en variantes au lot 22, sans le bloquer |
+| Base de comparaison | dose égale ; effet égal sur l'arôme visé ; IBU égal | brasseur | ouverte : les trois montrées en variantes au lot 22 |
+| Substituer | porte vers Comparer avec X épinglé ; outil propre (u4) | brasseur | ouverte : la porte « Je n'ai pas X » montrée dans des variantes du lot 22, à côté de u4 |
+| Levure | dernière étape de Dryhopper ; outil propre | brasseur | ouverte : les deux montrées en variantes au lot 23 (Dryhopper) |
+| Descripteurs hors familles, présentation | A : gooseberry et « groseille à maquereau » rangés dans Petits fruits ; B : part « autres » visible, plafonnée, mots génériques écartés (recommandé : A puis B ; [[descripteurs-hors-familles]]) | brasseur | ouverte : A et B montrés sur la fiche dans des variantes du lot 22. Pour B, liste de mots génériques, seuil et plafond proposés par le pilote et marqués « à corriger par le brasseur » ; r3 applique son choix ensuite |
 | Descripteurs hors familles, moteur | C : partager la force avec « autres » (profil-simule.ts:283), seulement avec B | conseil | ouverte, après B vu sur la fiche du lot 22 (mode rapide) |
 | Picto « épicé » | planche de r4 | brasseur | ouverte |
 | Repli de calcul (dry hop et biotransformation seulement si trop lourd) | garder ; lever | pilote | **tranchée le 22.10 après r2 : levé pour les écrans** (une variante = 2 à 30 ms sur PC, en direct dans le navigateur, sans serveur) ; le balayage complet du catalogue (8 s) reste hors du direct (Suggestions en léger ou grille précalculée) ; à revoir si un vrai téléphone dépasse 100 ms par geste ([[cout-calcul-moteur]]) |
@@ -38,27 +44,30 @@ options des descripteurs, et il a répondu aux questions fermées. Ensuite seule
 | Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur |
 |---|---|---|---|---|---|---|---|---|---|
 | r0-controles | contrôles L10 (un seul groupe de sélecteurs libres, éléments admis par outil), L06 (radar, chimie, panel OSU, vraies valeurs présents) et L14 (part sans famille visible et plafonnée), chacun avec témoin négatif | jugement | auteur | sonnet | 80 | work/refonte-frontend/v4/tournoi/outils/controle-une-question.mjs, controle-acquis.mjs, controle-sans-famille.mjs, temoins/{une-question-ok,acquis-ok,sans-famille-ok}/etat.html | — | chaque contrôle échoue sur y1b et y3 (L10, L06) et sur l5f (L14), passe sur un témoin positif (`systeme.mjs echoue`) | pilote |
-| r1-carte | page en fil de fer : la stout de l'étape Houblons à Dryhopper, un écran par outil, ligne de contexte et facteur libre marqués, quatre questions fermées en tête | conception | auteur | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-carte/** | r0-controles | controle-commun (COMMUN OK), controle-une-question, captures 390 ouvertes | brasseur |
+| r1-carte | page en fil de fer : la stout de l'étape Houblons à Dryhopper, un écran par outil, ligne de contexte et facteur libre marqués ; les choix ouverts montrés côte à côte, sans question fermée | conception | auteur | opus | 80 | work/refonte-frontend/v4/ecran-1/fils22-carte/** | r0-controles | controle-commun (COMMUN OK), controle-une-question, captures 390 ouvertes | brasseur |
 | r2-cout-calcul | chronométrer simulerCas léger et complet sur le cas stout et sur tout le catalogue, sans écrire dans le moteur ; note du cerveau | mécanique | executant | haiku | 40 | cerveau/metier/cout-calcul-moteur.md, voies/r2-cout-calcul/ANNEXE.md | — | note --exiger "Mesures,Conditions,Conclusion" ; npm run check:engine | pilote |
 | r4-picto-epice | planche de 6 à 8 pictos « épicé » (poivre exclu : deux plaintes), au code couleur des arômes, à 390 px | jugement | auteur | sonnet | 60 | work/refonte-frontend/v4/ecran-1/fils22-picto-epice/** | — | controle-planche-picto (D101, témoin négatif planche-poivre), controle-pictos-trait (D88), captures ouvertes | brasseur |
 | r4r-relecture | relecture indépendante de r4 contre SPEC, acquis et leçons | jugement | relecteur | sonnet | 30 | voies/r4r-relecture/RESULTAT.md | r4-picto-epice | questions fermées du relecteur, captures ouvertes | pilote |
 | r5-relecture | relecture indépendante de r1 contre SPEC, acquis et leçons | jugement | relecteur | sonnet | 30 | voies/r5-relecture/RESULTAT.md | r1-carte | questions fermées du relecteur, captures ouvertes | pilote |
-| r8-publication | captures, section lot 22a pour la page des fils de fer (carte, picto, options des descripteurs) | mécanique | executant | haiku | 40 | work/refonte-frontend/v4/outils/page-nuit/lot22a.json | r5-relecture | ajouter-lot.mjs sans erreur, chaque image existe | pilote |
-| r3-descripteurs | appliquer dans le prototype les options choisies par le brasseur (A table complémentaire mot → famille, B part « autres ») ; confronter Cascade, Idaho 7, Galaxy, Nelson Sauvin, Motueka à leur réputation | jugement | auteur | sonnet | 80 | prototypes/houblons-v4/data/descripteurs-complementaires.json, prototypes/houblons-v4/src/engine/hops.ts, prototypes/houblons-v4/tests/ (la table mot → famille d'origine vit dans hopExtrapolationBootstrap.json, ne pas la modifier) | brasseur (option choisie) | npm test et check:engine (prototypes/houblons-v4) ; controle-sans-famille | brasseur |
-| r6-lot22-comparer | lot 22 : Comparer seul, stout 16 °P, Cascade, Idaho 7, Galaxy ; environ 12 variantes à partir de la base v4.9 (p06, radar choisi), chimie rattachée aux familles, vraies valeurs de v1 sous un toucher, manière de w2, panel OSU | jugement | auteur | sonnet | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/** | r0-controles, r3-descripteurs, brasseur (radar, base de comparaison) | controle-commun, controle-une-question, controle-acquis, controle-sans-famille, relecteur | brasseur |
-| r7-dryhopper | Dryhopper : y1b sans sélecteur de houblon ni levure, moment par 5′, x3b réduit en fin de frise | jugement | auteur | sonnet | 80 | work/refonte-frontend/v4/ecran-1/fils23-dryhopper/** | r6-lot22-comparer, brasseur (levure) | controle-commun, controle-une-question, relecteur | brasseur |
+| r8-publication | captures et section lot 22 pour la page des fils de fer : carte, variantes de Comparer, planche « épicé » ; le pilote met ensuite l'artefact à jour lui-même | mécanique | executant | haiku | 40 | work/refonte-frontend/v4/outils/page-nuit/lot22.json | r5-relecture, r6-lot22-comparer | ajouter-lot.mjs sans erreur, chaque image existe | pilote |
+| r3-descripteurs | appliquer dans le prototype les options choisies par le brasseur (A table complémentaire mot → famille, B part « autres ») ; confronter Cascade, Idaho 7, Galaxy, Nelson Sauvin, Motueka à leur réputation | jugement | auteur | sonnet | 80 | prototypes/houblons-v4/data/descripteurs-complementaires.json, prototypes/houblons-v4/src/engine/hops.ts, prototypes/houblons-v4/tests/ (la table mot → famille d'origine vit dans hopExtrapolationBootstrap.json, ne pas la modifier) | brasseur (option choisie) | npm test et check:engine (prototypes/houblons-v4) ; controle-sans-famille | pilote |
+| r6-lot22-comparer | lot 22 : Comparer seul, stout 16 °P, Cascade, Idaho 7, Galaxy ; environ 12 mini maquettes à partir de la base v4.9 (p06), chimie rattachée aux familles, vraies valeurs de v1 sous un toucher, manière de w2, panel OSU ; les variantes couvrent les choix ouverts (radar r2 ou r3 ; dose égale, effet égal ou IBU égal ; porte « Je n'ai pas X » ; descripteurs A ou B sur la fiche), et chaque NOTE dit lesquels elle porte | jugement | auteur | sonnet | 80 | work/refonte-frontend/v4/ecran-1/fils22-comparer/** | r0-controles | controle-commun, controle-une-question, controle-acquis, controle-sans-famille (variantes B), relecteur | brasseur |
+| r7-dryhopper | lot 23 : Dryhopper, y1b sans sélecteur de houblon, moment par 5′, x3b réduit en fin de frise ; la levure en variantes (dernière étape ou outil propre) | jugement | auteur | sonnet | 80 | work/refonte-frontend/v4/ecran-1/fils23-dryhopper/** | r6-lot22-comparer | controle-commun, controle-une-question, relecteur | brasseur |
 
 ## Ordre
 - **Vague 1**, en parallèle et tout de suite : r0-controles, r2-cout-calcul, r4-picto-epice ; puis
   r4r-relecture au retour de r4 (décision du pilote, 22.10 : la planche ne doit pas attendre r1 pour
   être relue, r5 ne relit plus que r1).
-- **Vague 2** : r1-carte, dès que r0 est vérifié.
-- **Vague 3** : r5-relecture, puis r8-publication. Le pilote met la page à jour et pose au brasseur
-  les questions fermées.
-- **Vague 4**, après ses réponses : r3-descripteurs, puis r6-lot22-comparer (sous-voies
-  r6a… r6l, une variante chacune, en parallèle), puis r7-dryhopper.
-- Une voie Haiku « entrées » précède r6. Elle vérifie le moteur, profils-simules.json et les
-  constantes (L08).
+- **Vague 2, tout de suite (corrigée le 22.10)** :
+  - d'abord une voie Haiku « entrées », qui vérifie le moteur, profils-simules.json et les
+    constantes (L08), et l'ajustement de `controle-acquis.mjs` pour un acquis « à un toucher » ;
+  - puis, en parallèle, r1-carte et r6-lot22-comparer (sous-voies r6a… r6l, une mini maquette
+    chacune).
+- **Vague 3** : un relecteur pour r1 (r5) et un pour r6 ; puis r8-publication. Le pilote met
+  l'artefact privé à jour lui-même, avec la planche « épicé » de la vague 1. Le brasseur choisit
+  en regardant.
+- **Vague 4**, après ses choix : r3-descripteurs applique l'option retenue, puis r7-dryhopper
+  (lot 23, la levure en variantes).
 
 ## Boucle de retour
 - **Courte** : chaque voie rejoue ses critères, avec 3 essais par critère.

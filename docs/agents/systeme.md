@@ -96,7 +96,7 @@ correction ou de plainte et rappelle d'en tirer un contrôle ou une leçon avant
 | Vérifiable | un chemin, un format, un test, une valeur mesurable | la **voie** (son critère) | GATES.md |
 | Technique réversible | structure d'un fichier, ordre des voies, choix d'outil | le **pilote** | MISSION.md ; `decisions.md` si structurant |
 | Lourde, déléguée, réversible | architecture d'un outil, conventions du moteur, rattachement des données, coût de calcul, priorités | le **conseil** puis le pilote applique | `cerveau/decisions/…`, ligne D-n |
-| Goût et choix | quelle variante, quel picto, l8 ou l5, ce qu'il voit au doigt | le **brasseur** (le conseil prépare et filtre) | SPEC-BRASSEUR, mot pour mot |
+| Goût et choix | quelle variante, quel picto, l8 ou l5, ce qu'il voit au doigt | le **brasseur**, sur des variantes montrées (le conseil prépare et filtre). Un choix ouvert devient un axe de variantes du lot suivant, jamais une question qui bloque le lot (L24) | SPEC-BRASSEUR, mot pour mot |
 | Irréversible ou externe | push, PR, merge, déploiement, données réelles, Gemini facturé, suppression, comptes, réglages | l'**utilisateur**, groupé, sans bloquer le reste | registre, « en attente » |
 
 Sans réponse, on applique la lecture étroite et réversible (L01) et on continue. On ne pose aucune

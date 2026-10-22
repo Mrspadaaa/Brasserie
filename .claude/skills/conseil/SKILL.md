@@ -64,8 +64,9 @@ reçoit la question, les six avis nommés et les trois revues. Il rend le verdic
    `## Verdict`. Ajouter la note à la carte de `cerveau/INDEX.md`.
 2. Contrôle : `node scripts/agents/systeme.mjs conseil <fichier>` → CONSEIL OK.
 3. Décision déléguée : l'appliquer, puis une ligne D-n dans le `decisions.md` du chantier, qui
-   pointe la transcription. Décision du brasseur : lui montrer le verdict court (recommandation,
-   désaccord principal, premier geste), et lui laisser le choix. Décision de l'utilisateur :
+   pointe la transcription. Décision du brasseur : les options ouvertes deviennent des axes de variantes du
+   prochain lot, qu'on lui montre ; il choisit en regardant. Jamais une question fermée qui
+   bloque le lot (L24). Décision de l'utilisateur :
    l'ajouter au groupe d'accords en attente.
 4. Une erreur de méthode révélée → `cerveau/LECONS.md`. Un savoir durable → note du cerveau.
 

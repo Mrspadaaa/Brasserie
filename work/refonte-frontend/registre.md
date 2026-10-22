@@ -161,10 +161,16 @@ Voir `decisions.md` (D1 à D12).
     - A ou B pour Nelson Sauvin, avec les mots génériques et le plafond.
   - Attendent l'utilisateur : push de la branche, PR, publication de la planche sur la page des fils
     de fer.
-  - **Prochaine action : r1-carte** (auteur, Opus, conception). Ses GATES incluent `controle-commun`
-    et `controle-une-question` (D98, strict). Ensuite r5-relecture.
-  - Avant r6 : ajuster D99 pour un acquis « à un toucher ». Avant r7 : D98 admet un bouton d'édition
-    en contexte.
+  - **Correction du plan (22.10, après « Pourquoi ça n'a pas produit les mini maquettes ? »)** : le
+    lot 22 n'attend plus les réponses du brasseur. Ses quatre questions et le choix A ou B deviennent
+    des variantes à lui montrer (leçon L24, contrôlée par `systeme.mjs mission`). Le pilote publie
+    lui-même la page des fils de fer, planche « épicé » comprise.
+  - **Prochaine action, vague 2 :**
+    1. la voie « entrées » (L08) et l'ajustement de D99 pour un acquis « à un toucher » ;
+    2. puis, en parallèle, r1-carte (auteur, Opus) et r6-lot22-comparer (environ 12 mini maquettes,
+       sous-voies Sonnet) ;
+    3. puis les relecteurs, r8-publication et la mise à jour de l'artefact.
+    Avant r7 : D98 admet un bouton d'édition en contexte.
 - **REPRISE DU 22.10 : lire en premier.** L'utilisateur a demandé un système d'agents « adapté à
   notre usage ». Il est en place : `docs/agents/systeme.md`, le second cerveau `cerveau/` avec les
   leçons, les skills `voies` et `conseil`, et les agents `executant`, `auteur`, `relecteur` et

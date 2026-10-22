@@ -334,6 +334,8 @@ export function verifierMission(fichier, { minVoies = 2 } = {}) {
     if (!DECIDEURS.includes(v.decideur)) erreurs.push(`${id} : décideur « ${v.decideur} » (${DECIDEURS.join(', ')})`);
     if (!v.controles) erreurs.push(`${id} : contrôles absents`);
     if (!v.possede) erreurs.push(`${id} : périmètre d'écriture absent`);
+    // Leçon L24 : ce qu'on montre au brasseur porte ses choix ouverts en variantes ; ça n'attend pas sa réponse.
+    if (v.decideur === 'brasseur' && /brasseur/i.test(v['depend de'] ?? '')) erreurs.push(`${id} : voie montrée au brasseur qui attend son choix ; montrer les options en variantes (L24)`);
   }
   for (const d of table('Décisions')) if (!DECIDEURS.includes(d.decideur)) erreurs.push(`décision « ${d.decision ?? '?'} » : décideur « ${d.decideur} »`);
   const sources = (texte.split(/^## Sources/m)[1] ?? '').split(/\n## /)[0];
@@ -460,10 +462,11 @@ function construireMission(dir, { critereFaux = false, critereIgnore = false } =
   return m;
 }
 
-function construireMissionPlan(dir, { sansDecideur = false } = {}) {
+function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = false } = {}) {
   const f = path.join(dir, 'MISSION.md');
   const dec = sansDecideur ? '' : 'pilote';
-  fs.writeFileSync(f, `# Mission\n\n## Objectif\no\n\n## Décisions\n| Décision | Décideur |\n|---|---|\n| d | pilote |\n\n## Voies\n| Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur |\n|---|---|---|---|---|---|---|---|---|---|\n| v1 | o | mécanique | executant | haiku | 30 | x/** | — | c | ${dec} |\n| v2 | o | jugement | auteur | sonnet | 60 | y/** | v1 | c | pilote |\n\n## Boucle de retour\nb\n\n## Sources\n- \`package.json\`\n`);
+  const v2 = attendBrasseur ? '| v2 | lot | jugement | auteur | sonnet | 60 | y/** | v1, brasseur (radar) | c | brasseur |' : '| v2 | o | jugement | auteur | sonnet | 60 | y/** | v1 | c | brasseur |';
+  fs.writeFileSync(f, `# Mission\n\n## Objectif\no\n\n## Décisions\n| Décision | Décideur |\n|---|---|\n| d | pilote |\n\n## Voies\n| Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur |\n|---|---|---|---|---|---|---|---|---|---|\n| v1 | o | mécanique | executant | haiku | 30 | x/** | — | c | ${dec} |\n${v2}\n\n## Boucle de retour\nb\n\n## Sources\n- \`package.json\`\n`);
   return f;
 }
 
@@ -483,6 +486,7 @@ function temoins() {
   attendu('conseil sans premier geste', verifierConseil(construireConseil(sous('k2'), { sansPremierGeste: true })).length === 0, false);
   attendu('plan routé', verifierMission(construireMissionPlan(sous('p1'))).length === 0, true);
   attendu('plan sans décideur', verifierMission(construireMissionPlan(sous('p2'), { sansDecideur: true })).length === 0, false);
+  attendu('lot montré qui attend le brasseur', verifierMission(construireMissionPlan(sous('p3'), { attendBrasseur: true })).length === 0, false);
   const m1 = sous('m1');
   attendu('voies tenues', verifierVoies(construireMission(m1), { approuver: true, racine: m1 }).ok, true);
   const m2 = sous('m2');
