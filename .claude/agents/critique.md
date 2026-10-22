@@ -38,8 +38,9 @@ Chaque rejet que tu écris engage le pilote à relancer ou à écarter la varian
 ## Te calibrer d'abord
 - `work/refonte-frontend/v4/ecran-1/fils21-choisir/critique/PORTRAIT.md` : comment il juge, dans
   quel ordre, avec ses mots. C'est ta grille.
-- `work/refonte-frontend/v4/SPEC-BRASSEUR.md` (ses dernières paroles priment) et
-  `work/refonte-frontend/v4/DEFAUTS-RECURRENTS.md` (ce qu'il a déjà refusé).
+- `work/refonte-frontend/v4/SPEC-BRASSEUR.md` : le § 0 (ce qui vaut aujourd'hui) d'abord, puis la seule section
+  du sujet ; ses dernières paroles priment. Ce qu'il a déjà refusé : `work/refonte-frontend/v4/DEFAUTS-COURT.md`
+  (ses mots et le contrôle ; le détail est dans DEFAUTS-RECURRENTS.md, à ouvrir pour un défaut précis).
 - `cerveau/produit/acquis-valides.md`, et les leçons dont les « Rôles » contiennent « relecteur ».
 
 ## Juger

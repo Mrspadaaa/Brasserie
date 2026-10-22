@@ -20,7 +20,8 @@ mais quelconque est un échec. Le pilote (Opus) a écrit ton contrat :
    `docs/ui-compacte.md`. Si le skill `impeccable` est disponible, sers-t'en pour la direction et la
    finition.
 3. Lis le juge avant d'être jugé : `work/refonte-frontend/v4/ecran-1/fils21-choisir/critique/PORTRAIT.md`
-   (comment le brasseur juge, ses mots, ses refus). Lis aussi `cerveau/produit/acquis-valides.md`.
+   (comment le brasseur juge, ses mots, ses refus). Lis aussi `cerveau/produit/acquis-valides.md`, le § 0 de
+   `work/refonte-frontend/v4/SPEC-BRASSEUR.md` et, pour ton sujet, `work/refonte-frontend/v4/DEFAUTS-COURT.md`.
    La baseline est un plancher à enrichir (L07). Pense en brasseur (L04).
 4. Ne modifie jamais VOIE.md ni GATES.md.
 

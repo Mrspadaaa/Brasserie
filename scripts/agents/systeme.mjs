@@ -17,6 +17,7 @@
 //   echoue <JETON> -- <commande> <args…>                           témoin négatif d'un GATES (leçon L13)
 //   charge                                                         budget du savoir chargé partout (CLAUDE.md et imports)
 //   remplaces                                                      aucune consigne remplacée ne survit (cerveau/REMPLACES.md)
+//   defauts                                                        régénère la vue courte DEFAUTS-COURT.md
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -137,6 +138,25 @@ export function verifierCharge(racine = RACINE, budget = BUDGET_CHARGE) {
   const fichiers = [claude, ...[...texte.matchAll(/^@(\S+)$/gm)].map((m) => path.join(racine, m[1])).filter(existe)];
   const total = fichiers.reduce((s, f) => s + lire(f).length, 0);
   return total > budget ? [`savoir chargé partout : ${total} caractères (${fichiers.map((f) => path.basename(f)).join(' + ')}), ${budget} au plus : retirer ou fusionner avant d'ajouter`] : [];
+}
+
+// Les agents qui jugent lisaient DEFAUTS-RECURRENTS en entier : 64 000 caractères, dont 26 000 de détail des
+// contrôles et 9 000 de témoins (22.10). La vue courte, générée, garde ses mots et le nom du contrôle.
+const DEFAUTS = path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'DEFAUTS-RECURRENTS.md');
+export const DEFAUTS_COURT = path.join(path.dirname(DEFAUTS), 'DEFAUTS-COURT.md');
+export function defautsCourt(source = DEFAUTS) {
+  const rangs = lire(source).split('\n').filter((l) => /^\| D\d/.test(l)).map((l) => {
+    const c = l.split(/(?<!\\)\|/).slice(1, -1).map((x) => x.trim());
+    const outils = [...new Set([...(c[2] ?? '').matchAll(/[\w-]+\.mjs|check:[\w-]+/g)].map((m) => m[0]))];
+    // Sans script nommé, le début de la description du contrôle (« mots visibles au premier écran… »).
+    const court = (s) => (s.length <= 90 ? s : `${s.slice(0, 90).replace(/\s+\S*$/, '')} …`);
+    const controle = outils.length ? outils.map((o) => `\`${o}\``).join(', ') : court(c[2] ?? '—');
+    return `| ${c[0]} | ${c[1]} | ${controle} | ${court(c[3] ?? '')} |`;
+  });
+  return `# Défauts récurrents, vue courte\n\nGénérée par \`node scripts/agents/systeme.mjs defauts\` depuis \`DEFAUTS-RECURRENTS.md\` (le hook la régénère à chaque écriture) : ne pas éditer. Ses mots, mot pour mot, ce qui les contrôle et le seuil. Témoins et contexte sont dans la source.\n\n| # | Ses mots | Contrôle | Seuil |\n|---|---|---|---|\n${rangs.join('\n')}\n`;
+}
+export function ecrireDefautsCourt() {
+  if (existe(DEFAUTS)) fs.writeFileSync(DEFAUTS_COURT, defautsCourt());
 }
 
 // Une consigne remplacée ne doit survivre nulle part dans ce que lisent les agents (22.10 : la description
@@ -556,6 +576,7 @@ function verifierCablage() {
   const ignore = (p) => spawnSync('git', ['check-ignore', '-q', p], { cwd: RACINE }).status === 0;
   if (ignore('work/missions/m/voies/v/RESULTAT.md')) erreurs.push('git ignore les textes des missions');
   if (!ignore('work/missions/m/voies/v/captures/a.png')) erreurs.push('git suit les captures des missions');
+  if (existe(DEFAUTS) && (!existe(DEFAUTS_COURT) || lire(DEFAUTS_COURT) !== defautsCourt())) erreurs.push('DEFAUTS-COURT.md en retard sur DEFAUTS-RECURRENTS.md : node scripts/agents/systeme.mjs defauts');
   return erreurs;
 }
 
@@ -820,6 +841,11 @@ function main(argv) {
       const erreurs = [...new Set(memoires.flatMap((m) => remplaces(RACINE, { memoire: m }).erreurs))];
       const { motifs } = remplaces();
       return finir(!erreurs.length, `REMPLACES OK (${motifs} consignes remplacées, aucune survivante)`, 'REMPLACES ECHEC', erreurs);
+    }
+    case 'defauts': {
+      ecrireDefautsCourt();
+      const avant = lire(DEFAUTS).length, apres = lire(DEFAUTS_COURT).length;
+      return finir(true, `DEFAUTS-COURT OK (${rel(DEFAUTS_COURT)} : ${apres} caractères, contre ${avant} pour la source)`, '');
     }
     case 'charge': {
       const e = verifierCharge();

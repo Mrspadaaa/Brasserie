@@ -2,12 +2,13 @@
 // Hook du second cerveau (docs/agents/systeme.md, boucle de retour).
 // UserPromptSubmit : une phrase de correction ou de plainte rappelle d'en tirer un contrôle ou une leçon.
 // PostToolUse (Edit|Write) : une écriture dans cerveau/ est contrôlée ; ses erreurs reviennent à l'agent (code 2).
-// Ne bloque jamais une demande ; ne lit ni n'écrit rien d'autre.
+// Une écriture dans DEFAUTS-RECURRENTS.md régénère sa vue courte, DEFAUTS-COURT.md.
+// Ne bloque jamais une demande ; n'écrit rien d'autre.
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const RACINE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const { estCorrection, verifierCerveau } = await import(pathToFileURL(path.join(RACINE, 'scripts', 'agents', 'systeme.mjs')).href);
+const { estCorrection, verifierCerveau, ecrireDefautsCourt } = await import(pathToFileURL(path.join(RACINE, 'scripts', 'agents', 'systeme.mjs')).href);
 
 const RAPPEL = [
   'Rappel du système (hook cerveau) : ce message ressemble à une correction ou à une plainte.',
@@ -33,10 +34,14 @@ if (entree.hook_event_name === 'PostToolUse') {
   const dir = path.resolve(process.env.CERVEAU_DIR || path.join(RACINE, 'cerveau'));
   if (!fichier) process.exit(0);
   const cible = path.resolve(fichier);
+  // La vue courte des défauts suit sa source à chaque écriture (élagage du 22.10).
+  if (path.basename(cible) === 'DEFAUTS-RECURRENTS.md') { ecrireDefautsCourt(); process.exit(0); }
   if (!cible.toLowerCase().startsWith(dir.toLowerCase() + path.sep)) process.exit(0);
   // Seules les erreurs du fichier écrit reviennent : une écriture en plusieurs temps n'est pas punie pour le reste.
+  // Le budget du savoir chargé partout revient aussi quand on écrit INDEX.md ou LECONS.md, qui en font partie.
   const memeFichier = (f) => path.resolve(f).toLowerCase() === cible.toLowerCase();
-  const erreurs = verifierCerveau({ dir, voie: true, minNotes: 0, minLecons: 0 }).erreurs.filter((e) => memeFichier(e.fichier));
+  const charge = (e) => /^savoir chargé partout/.test(e.msg) && /^(INDEX|LECONS)\.md$/i.test(path.basename(cible));
+  const erreurs = verifierCerveau({ dir, voie: true, minNotes: 0, minLecons: 0 }).erreurs.filter((e) => memeFichier(e.fichier) || charge(e));
   if (erreurs.length) {
     process.stderr.write(`CERVEAU ECHEC (${path.basename(cible)}) :\n${erreurs.map((e) => `- ${e.msg}`).join('\n')}\nFormat : cerveau/INDEX.md ; leçons : en-tête de cerveau/LECONS.md.\n`);
     process.exit(2);

@@ -4,7 +4,55 @@ Créé le 18.10.2026 après D23. **Tout brief, consigne, grille ou contrat de l'
 part de ce document et le cite.** Ses mots sont recopiés tels quels, avec leur source ; une
 reformulation d'agent n'y entre pas. Le détail fonctionnel (61 exigences, R01 à R61) reste
 dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-demandes.md`
-(identifiants Cxxx). À compléter à chaque nouvelle parole du brasseur.
+(identifiants Cxxx). À compléter à chaque nouvelle parole du brasseur. Seul le § 0 reformule : c'est une
+carte datée, écrite par le pilote, qui renvoie aux mots exacts. Ces mots priment toujours sur elle.
+
+## 0. Ce qui vaut aujourd'hui (carte du pilote, 22.10 ; lire d'abord, puis la seule section du sujet)
+
+Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerveau/produit/acquis-valides.md`.
+
+**L'outil**
+- Penser en brasseur : sur un houblon, le nom, l'α (celui du lot, puis la plage des fiches), le rôle en mot, les arômes
+  en couleur, le moment et la dose, puis l'IBU. Le stock en petit badge. (§ 1 « Penser en brasseur », « Le stock,
+  discret » ; D29, D87, D90)
+- Un outil, une question, un seul facteur libre. La carte du 22.10 : Comparer fait varier la variété, Dryhopper le
+  moment, la dose, les jours et la levure. (§ 1, retour sur le lot 21 ; `cerveau/decisions/`)
+- Échelles au style par défaut, l'absolu à un toucher. La tolérance dépend du style et de son a priori. (§ 1 « Absolu
+  et style », « L'échelle dépend du style » ; § 2 ; D31, D54, D75)
+- Rien de figé : le moment est libre par tranches de 5′, l'ébullition a une durée variable, dry hop et whirlpool se
+  règlent. (§ 1 « Le moment, libre », « Rien de figé » ; D34 à D37)
+- Le geste : glisser l'ajout sur le rail, avec une loupe façon Apple qui suit le doigt, de l'ébullition à J+14 d'un seul
+  geste. (§ 1, rail ; D47, D55, D61 à D69)
+- L'appui long sur un houblon ouvre sa vraie fiche, dans le langage de la page. (D25, D49, D70 à D73, D93)
+- Vraies valeurs et simulation marquée, ensemble : « Les deux se complément ». Une incertitude énorme se voit, et
+  l'inconnu n'est jamais 0. (§ 1, lot 20 ; D65, D94, D95)
+- Levure, biotransformation et ajout cumulé font partie de l'outil. (D96)
+- Comparer : du 1:1 sur vraies valeurs, la chimie, le radar avec intervalles ; Beer Maverick est le plancher. Le
+  rendu de Nelson Sauvin et de Motueka doit tenir leur réputation. (§ 1 ; D51 à D53, D100)
+
+**L'écran**
+- Dense mais pas surchargé : au premier plan seulement l'utile et l'actionnable, le reste à un toucher, 80 mots au plus.
+  Pas d'écran de cockpit. (§ 3 ; D1 à D5)
+- Moderne et visuel : des UX boosters (curseurs, bascule barres et radar) et des couleurs pour se repérer. (§ 4 ; D6,
+  D7, D74)
+- Pictos d'arômes au trait, sans halo ; la légende derrière un petit « ? » ; l'usage en mot. (D88 à D90)
+- Pour « épicé » : une épice réelle et reconnaissable (cannelle, vanille, clou de girofle…), ni piment, ni signe, ni
+  sensation. (§ 1, fin ; D101 à D101 quater)
+- Ses choix : y1b pour le « quand » ; r6a pour Comparer, avec les éléments qu'il a notés ailleurs (D104). Le reste des
+  acquis est dans `acquis-valides.md`.
+
+**La méthode**
+- Les mini maquettes passent par l'entonnoir : un vaste panel de concepts minimalistes sur la baseline, en trois
+  chaleurs, puis un classement, des greffes et des passes v2, v3… Tout lui est montré, et il choisit. (§ 7 ; D50, M13)
+- La baseline est un plancher à enrichir, toujours suivi ; on ne s'en écarte que si l'idée le vaut. (D26, D93)
+- Une page partagée ne montre que l'état à jour. Pas de question bloquante : ses choix de goût deviennent des
+  variantes. (§ 1, pages partagées ; § 7 ; L24)
+
+**Remplacé, ne plus appliquer**
+- La planche de fils de fer gris (§ 7, 18.10), remplacée le 19.10 : « Tu t'es trop limité, m'eme au niveau des
+  couleurs » (D74).
+- « bio Transfo, dry hopping, levure […] c'est pas pour tout de suite » (§ 1, 18.10), remplacé : lots 20 et 21, D96.
+- « Pour 136 Comparer […] Mettre de côté pour le moment » (§ 1, 19.10), remplacé : Comparer est le lot 22.
 
 ## 1. Le travail à faire avec l'outil
 
@@ -284,13 +332,17 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   capture `planche-390.png` barrée d'une grande croix rouge sur les sept : cannelle, vanille,
   badiane, girofle, mortier et pilon, coriandre, saupoudreur. C'est le troisième refus de ce picto,
   après « plutôt vanille, canelle ? » (lot 15) puis les grains de poivre (lot 21). — 22.10.
-- **Le lot 22, son retour** (page « Lot 22 houblons », version 2), mot pour mot :
+- **Le lot 22, son retour** (page *Lot 22 houblons*, version 2), mot pour mot :
   - « r6a est le meilleur mais reprendre trop peu d'éléments que j'avais noté bon ou intéressant des
     autres variante, notamment la meilleure. »
   - Sur la planche « épicé » r4c (trois piments et le mot) : « Les icônes épices ??? Il y a que 3
     variante, qui sont toutes quasiment identique ??? » ; « Des vrais proposition surtout que un
     piment n'a rien à voir la dedans... ». C'est le quatrième refus de ce picto.
   — 22.10.
+- **Le picto « épicé », ce qu'il veut** (22.10, nuit, pendant la planche r4d), mot pour mot : « Je veux un forme qui
+  représente vraiment ce que c'est, genre canellle vanille, ou clou de girofle ect... Ce que ça représente
+  vraiment épicier sur un houblon... ». Une épice réelle et reconnaissable, celle qu'on sent dans un houblon
+  épicé ; pas un signe ni une sensation (D101 quater).
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce

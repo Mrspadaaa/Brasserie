@@ -10,11 +10,11 @@ recette par l'amérisant choisi pour son α, puis les aromatiques tardifs ; il c
 houblons (Nelson Sauvin : vin blanc, groseille à maquereau). Il juge : est-ce que ça m'aide à choisir,
 doser, placer, au doigt, sans lire un roman ? Sources obligées : le portrait du brasseur en juge
 (`work/refonte-frontend/v4/ecran-1/fils21-choisir/critique/PORTRAIT.md`, lu en premier),
-SPEC-BRASSEUR.md (mots exacts), `cerveau/brasseur/`, acquis validés. Il cite au moins une parole du
+SPEC-BRASSEUR.md (§ 0, puis les mots exacts du sujet), `cerveau/brasseur/`, acquis validés. Il cite au moins une parole du
 brasseur, et prédit la phrase qu'il dirait.
 
 ## Contradicteur
-Cherche le défaut fatal : ce qui va échouer, ce qui a déjà été rejeté (DEFAUTS-RECURRENTS.md,
+Cherche le défaut fatal : ce qui va échouer, ce qui a déjà été rejeté (DEFAUTS-COURT.md,
 registre, leçons), la donnée qui trompe, l'acquis qui disparaît, l'exigence transversale oubliée.
 S'il ne trouve rien, il creuse. Il n'est pas pessimiste : il pose la question qu'on évite.
 

@@ -21,7 +21,8 @@ if (fs.existsSync(transcript)) sources.push(transcript);
 // Séances suivantes (19.10 : 16fc09ec…) : seuls les messages du brasseur comptent (rôle user, texte
 // tapé ou dicté) ; ni les réponses ni les écritures de l'agent, qui citent ses mots et rendraient
 // le contrôle circulaire.
-const SEANCES = ['16fc09ec-4e69-48a9-9744-5912b6ef6552'];
+// 22.10 : la session de supervision du système d'agents (01f603d2…) et celle de la reprise du lot 21 (6bed03f4…).
+const SEANCES = ['16fc09ec-4e69-48a9-9744-5912b6ef6552', '01f603d2-0856-450c-8222-d9df700d1e73', '6bed03f4-a8d6-468f-8115-deafa40df0cf'];
 const paroles = (f) => fs.readFileSync(f, 'utf8').split('\n').filter(Boolean).flatMap((l) => {
   try {
     const o = JSON.parse(l), m = o.message;
