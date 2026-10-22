@@ -1,6 +1,6 @@
 ---
 name: conseil
-description: Soumettre une décision lourde de L'Affinée à un conseil de six regards (Brasseur, Contradicteur, Audacieux, Premiers principes, Bâtisseur, Regard neuf), revus anonymement puis tranchés par un président. Adapté du LLM Council de Karpathy. À utiliser pour une décision coûteuse si elle est fausse (architecture d'un outil, convention du moteur, données, coût de calcul, priorités), quand l'utilisateur dit « conseil », « passe au conseil », « council », ou à la place d'une session arbitre. Pas pour une question factuelle ni pour ce qu'un test peut trancher.
+description: Soumettre une décision lourde de L'Affinée à un conseil de six regards (Brasseur, Contradicteur, Audacieux, Premiers principes, Bâtisseur, Regard neuf), revus anonymement puis tranchés par un président. Adapté du LLM Council de Karpathy. À utiliser pour une décision coûteuse si elle est fausse (architecture d'un outil, convention du moteur, données, coût de calcul, priorités), quand l'utilisateur dit « conseil », « passe au conseil », « council ». Pas pour une question factuelle ni pour ce qu'un test peut trancher.
 ---
 
 # Le conseil

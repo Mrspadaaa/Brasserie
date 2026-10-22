@@ -56,9 +56,9 @@ Système complet : `docs/agents/systeme.md`.
   tout ce que le brasseur verra se conçoit en Opus (agent `concepteur`) et se juge
   par Fable calibré sur lui (agent `critique`). Le travail en
   plusieurs parties passe par le skill `voies` : planifier une fois, une ligne par
-  voie, critères rejoués par le pilote. Le pont Claude/Sol (`scripts/claude-expert.mjs`,
-  skill `sol-orchestrator`, `.claude/roles/expert.md`, `docs/claude-expert.md`)
-  est caduc ; `node scripts/claude-account.mjs team` reste le lanceur Team.
+  voie, critères rejoués par le pilote. Le pont Claude/Sol (skill `sol-orchestrator`
+  et ses fichiers, voir `docs/agents/systeme.md`) est caduc ; `node scripts/claude-account.mjs
+  team` reste le lanceur Team.
 - Le moins d'intervention humaine possible : ne pas bloquer sur des questions
   à l'utilisateur. Trancher selon les documents, le code et ses choix connus
   (option prudente et réversible par défaut), ou soumettre une décision lourde

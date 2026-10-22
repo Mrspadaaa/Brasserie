@@ -5,18 +5,14 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 
 ## S'en servir
 
-- **Avant une tâche** : les leçons sont déjà en contexte. Chercher ce qu'on sait du sujet avec
-  `node scripts/agents/systeme.mjs chercher <mots>`, puis ouvrir les notes utiles, pas toutes.
-- **Capturer** : un fait durable (préférence du brasseur, résultat de recherche, convention du
-  moteur, état d'un outil, décision du conseil) devient une note atomique. Si un document canonique
-  existe, la note le résume en quelques lignes et pointe dessus, sans le recopier.
-- **Qui écrit** : le pilote. Une voie propose par `CONNAISSANCE : …` dans son RESULTAT.md, et
-  une erreur de méthode par `LEÇON PROPOSÉE : …`.
-- **Format d'une note** : en-tête `name` (= nom du fichier), `description`, `type` (= dossier),
-  `maj` (AAAA-MM-JJ), `sources`. Corps de 50 lignes au plus. Liens par le nom de la note entre
-  doubles crochets. Chaque note est listée ci-dessous.
-- **Contrôle** : `node scripts/agents/systeme.mjs cerveau`. Le hook le relance après chaque
-  écriture dans `cerveau/`.
+- **Avant une tâche** : les leçons sont en contexte. `node scripts/agents/systeme.mjs chercher <mots>`,
+  puis ouvrir les notes utiles, pas toutes.
+- **Une maison par fait** : un fait durable devient une note atomique, écrite par le pilote (une voie
+  propose par `CONNAISSANCE : …`, une erreur de méthode par `LEÇON PROPOSÉE : …`). Ailleurs, un lien,
+  jamais une copie : la copie vieillit et contredit l'original. Une règle remplacée va dans `REMPLACES.md`.
+- **Élaguer** : au plafond, une entrée impose une sortie (fusion, ou note lue à la demande). Contrôles :
+  `systeme.mjs cerveau`, `charge`, `remplaces` ; le hook rejoue `cerveau` après chaque écriture ici.
+  Note : en-tête `name`, `description`, `type` (= dossier), `maj`, `sources` ; 50 lignes au plus.
 - **Daté** : une note dit ce qui était vrai à sa date `maj`. Pour une décision actuelle, le code,
   PRODUCT.md, DESIGN.md et les dernières paroles du brasseur priment.
 
@@ -60,6 +56,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 
 ### agents/ — façon de travailler, outils, environnement
 - [[agents-sans-openai]] — plus d'agent OpenAI depuis le 08.10
+- [[controles-mecanises]] — leçons devenues contrôles, sorties de LECONS (plafond de 8 lignes)
 - [[autonomie-decisions]] — pas de question bloquante ; l'irréversible attend l'utilisateur
 - [[fermeture-et-quota]] — fermer sans bloquant ; paliers de quota ; session neuve au-delà de 450 k
 - [[verification-locale]] — ?dev-local, scripts de contrôle locaux

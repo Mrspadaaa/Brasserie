@@ -1,6 +1,6 @@
 ---
 name: voies
-description: Découper une mission de L'Affinée en voies parallèles. Opus planifie une fois, Haiku exécute le mécanique, Sonnet le jugement ; chaque voie se contrôle, réessaie dans sa voie et rend une ligne ; le pilote rejoue les critères puis signe. À utiliser pour tout travail de plusieurs parties indépendantes (lot de maquettes, étude, chantier de code), ou quand l'utilisateur dit « en voies », « lance les agents », « répartis ».
+description: Découper une mission de L'Affinée en voies parallèles. Opus planifie une fois et conçoit ce que le brasseur verra (en entonnoir), Haiku exécute le mécanique, Sonnet analyse et code ; chaque voie se contrôle, réessaie dans sa voie et rend une ligne ; le pilote rejoue les critères puis signe. À utiliser pour tout travail de plusieurs parties indépendantes (lot de maquettes, étude, chantier de code), ou quand l'utilisateur dit « en voies », « lance les agents », « répartis ».
 ---
 
 # Voies — séparer les tâches, décider, corriger
@@ -95,6 +95,11 @@ de la page (variantes, images) est écrit en HTML, et non construit par un scrip
 la noter dans `cerveau/produit/page-partagee.md`) et écrit son lien dans MISSION.md. Sans lien, le
 rejeu échoue. Le lien est donné à l'utilisateur dans le rapport final.
 
+Avant de signer, élaguer (`docs/agents/systeme.md` § Élaguer) :
+- une règle changée pendant la mission va dans `cerveau/REMPLACES.md`, et chaque copie de l'ancienne est
+  corrigée ;
+- `systeme.mjs charge` et `systeme.mjs remplaces` passent ;
+- une leçon ou une note ajoutée au plafond impose une fusion ou une sortie.
 Dans MISSION.md, section « Signature » : la sortie de `systeme.mjs voies` (une ligne par voie),
 les décisions prises et leur décideur, les leçons et notes ajoutées, ce qui reste ouvert. Commit
 local. Push, PR, déploiement, données réelles, Gemini facturé, suppressions : groupés pour

@@ -7,7 +7,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
   fausse, un travail refait. Avant de clore le tour.
 - **Qui** : le pilote seul ; les agents proposent par `LEÇON PROPOSÉE : …`.
 - **Format** : `### Lnn — règle`, puis Erreur (date, fait), Cause, Faire, Rôles, Contrôle.
-- **Taille** : 170 lignes et 30 leçons actives au plus ; fusionner, ou passer en une ligne sous « Mécanisées » une leçon devenue contrôle. Vérifier : `systeme.mjs cerveau`.
+- **Taille** : 170 lignes, 30 leçons actives et 8 lignes mécanisées au plus ; fusionner, passer en une ligne « Mécanisées » une leçon devenue contrôle, et sortir les plus anciennes vers [[controles-mecanises]]. Une entrée au plafond impose une sortie (`systeme.mjs cerveau`, `charge`, `remplaces`).
 
 ## Comprendre la demande
 
@@ -162,8 +162,3 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - M12 — Une variante rejetée est relancée ou écartée, et des écrans ne sont finis qu'une fois publiés : le 22.10, 6 rejets du lot 22 laissés en plan et aucun lien. `systeme.mjs voies` échoue sinon.
 - M13 — Ce que le brasseur verra passe par l'entonnoir. Le 22.10, l'utilisateur a jugé la méthode du lot 21 (44 variantes v0 en séries, puis 5 améliorées) « vraiment plus qualitatif » que celle du lot 22 (12 variantes, une par agent, contraintes dès la v0, sans passe d'amélioration). Le brasseur sur le lot 22 : « reprendre trop peu d'éléments ». Méthode : `.claude/skills/voies/references/entonnoir.md`. `systeme.mjs mission` exige une colonne Étape, au moins 30 variantes v0 en séries de 3 à 8, un tri par le critique et une passe 2.
 - M06 (L06) — Les acquis validés passent d'un lot au suivant : le radar a disparu du lot 21. Liste dans [[acquis-valides]], recopiée dans chaque brief ; `controle-acquis.mjs` (D99).
-- M01 — Valeurs brutes à l'écran (low, medium, null…), revenues trois fois : `controle-valeurs-brutes.mjs` (D97, dans controle-commun).
-- M02 (L21) — Un hook s'essaie sur les vraies entrées de l'app : le 22.10, le hook de correction a réagi à la notification d'un conseiller. Témoin « notification d'agent » dans `systeme.mjs temoins`.
-- M03 (L15) — Un monkey test voit les champs (`value`) et la console (`console.error`) : `tests/integration/monkey.test.tsx`, détail dans [[monkey-testing]].
-- M04 (L22) — Condenser une source sans perdre : le 22.10, 51 citations et nombres perdus à la première condensation de deux sources de 330 à 350 lignes (voie Haiku). Lancer `systeme.mjs fidelite <source> <notes…>` ; au-delà de 150 lignes, prévoir plusieurs notes.
-- M05 (L23) — Un critère et ses témoins vivent dans des fichiers versionnés : le 22.10, le contrôle de la planche r4 et son témoin, écrits d'abord dans `work/missions/…/voies/`, étaient ignorés par git (seuls .md et .json y sont suivis), comme les pages HTML sous `work/refonte-frontend/`. Contrôles dans `tournoi/outils/`, pages témoins dans `tournoi/outils/temoins/` ; `systeme.mjs voies` refuse un script de CHECK ignoré (témoin « critère ignoré par git »).

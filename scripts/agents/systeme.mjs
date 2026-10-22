@@ -15,6 +15,8 @@
 //   cablage                                                        CLAUDE.md, skills, doc, git
 //   temoins                                                        chaque contrôle échoue sur son témoin
 //   echoue <JETON> -- <commande> <args…>                           témoin négatif d'un GATES (leçon L13)
+//   charge                                                         budget du savoir chargé partout (CLAUDE.md et imports)
+//   remplaces                                                      aucune consigne remplacée ne survit (cerveau/REMPLACES.md)
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -82,6 +84,10 @@ export function verifierLecons(fichier, { min = 12 } = {}) {
     }
   }
   if (actives > 30) erreurs.push({ fichier, msg: `${actives} leçons actives (30 au plus)` });
+  // Une ligne mécanisée est tenue par son contrôle : au-delà de 8, les plus anciennes sortent vers la note
+  // controles-mecanises (lue à la demande), pour que le savoir chargé partout ne fasse que grossir.
+  const mecanisees = (texte.split(/^## Mécanisées/m)[1] ?? '').split(/\n## /)[0].split('\n').filter((l) => /^- M\d+/.test(l)).length;
+  if (mecanisees > 8) erreurs.push({ fichier, msg: `${mecanisees} lignes mécanisées (8 au plus) : sortir les plus anciennes vers cerveau/agents/controles-mecanises.md` });
   if (actives < min) erreurs.push({ fichier, msg: `${actives} leçons (${min} au moins)` });
   return erreurs.length ? erreurs : { actives };
 }
@@ -117,7 +123,49 @@ export function verifierCerveau({ dir = path.join(RACINE, 'cerveau'), voie = fal
     for (const cible of liens(lire(fichier))) if (!noms.has(cible)) erreurs.push({ fichier, msg: `lien [[${cible}]] sans note` });
   }
   if (notes.length < minNotes) erreurs.push({ fichier: dir, msg: `${notes.length} notes (${minNotes} au moins)` });
+  if (path.resolve(dir) === path.join(RACINE, 'cerveau')) erreurs.push(...verifierCharge().map((msg) => ({ fichier: path.join(RACINE, 'CLAUDE.md'), msg })));
   return { erreurs, avert, notes: notes.length, lecons: Array.isArray(resLecons) ? 0 : resLecons.actives };
+}
+
+// Ce que chaque session et chaque sous-agent chargent avant toute tâche : CLAUDE.md et ses imports.
+// 22.10 : 32 000 caractères (~8 000 jetons) sans aucun retrait ; une entrée de plus impose une sortie.
+export const BUDGET_CHARGE = 30000;
+export function verifierCharge(racine = RACINE, budget = BUDGET_CHARGE) {
+  const claude = path.join(racine, 'CLAUDE.md');
+  if (!existe(claude)) return [];
+  const texte = lire(claude);
+  const fichiers = [claude, ...[...texte.matchAll(/^@(\S+)$/gm)].map((m) => path.join(racine, m[1])).filter(existe)];
+  const total = fichiers.reduce((s, f) => s + lire(f).length, 0);
+  return total > budget ? [`savoir chargé partout : ${total} caractères (${fichiers.map((f) => path.basename(f)).join(' + ')}), ${budget} au plus : retirer ou fusionner avant d'ajouter`] : [];
+}
+
+// Une consigne remplacée ne doit survivre nulle part dans ce que lisent les agents (22.10 : la description
+// du relecteur disait encore « Obligatoire pour toute voie d'interface » après L25). Registre :
+// cerveau/REMPLACES.md, un motif par ligne. Une ligne qui cite l'ancienne consigne comme erreur
+// (« - Erreur : », « remplacé ») n'est pas une consigne.
+export function remplaces(racine = RACINE, { memoire = null } = {}) {
+  const registre = path.join(racine, 'cerveau', 'REMPLACES.md');
+  if (!existe(registre)) return { erreurs: [`${rel(registre)} absent`], motifs: 0 };
+  const motifs = lire(registre).split('\n').filter((l) => l.startsWith('| `'))
+    // « \| » est une barre verticale du motif, pas une colonne du tableau.
+    .map((l) => { const c = l.split(/(?<!\\)\|/).map((x) => x.trim()); return { motif: new RegExp(c[1].replace(/^`|`$/g, '').replace(/\\\|/g, '|'), 'i'), nouveau: c[2] }; });
+  const sous = (d, filtre = () => true) => (existe(d) ? fs.readdirSync(d, { recursive: true }).map((n) => path.join(d, String(n))).filter((f) => f.endsWith('.md') && filtre(f)) : []);
+  const fichiers = [
+    path.join(racine, 'CLAUDE.md'),
+    ...sous(path.join(racine, 'cerveau'), (f) => !f.endsWith('REMPLACES.md')),
+    ...['executant', 'auteur', 'relecteur', 'concepteur', 'critique', 'conseiller'].map((a) => path.join(racine, '.claude', 'agents', `${a}.md`)),
+    ...sous(path.join(racine, '.claude', 'skills', 'voies')), ...sous(path.join(racine, '.claude', 'skills', 'conseil')),
+    ...sous(path.join(racine, '.claude', 'rules')), ...sous(path.join(racine, 'docs', 'agents')),
+    ...(memoire ? [memoire] : []),
+  ].filter(existe);
+  const erreurs = [];
+  for (const f of fichiers) {
+    lire(f).split('\n').forEach((ligne, i) => {
+      if (/^\s*- Erreur :|remplac/i.test(ligne)) return;
+      for (const { motif, nouveau } of motifs) if (motif.test(ligne)) erreurs.push(`${f === memoire ? 'mémoire locale' : rel(f)}:${i + 1} — consigne remplacée (${nouveau}) : ${ligne.trim().slice(0, 90)}`);
+    });
+  }
+  return { erreurs, motifs: motifs.length };
 }
 
 export function chercher(mots, dir = path.join(RACINE, 'cerveau')) {
@@ -646,6 +694,21 @@ function temoins() {
   attendu('contrôle qui échoue avec son jeton', echoueAvec('node', ['-e', "console.log('X ECHEC'); process.exit(1)"], 'X ECHEC').ok, true);
   attendu('contrôle qui passe', echoueAvec('node', ['-e', "console.log('X OK')"], 'X ECHEC').ok, false);
   attendu('contrôle qui plante', echoueAvec('node', ['-e', "throw new Error('boum')"], 'X ECHEC').ok, false);
+  const lecons = (n) => { const f = path.join(sous(`l${n}`), 'LECONS.md'); fs.writeFileSync(f, `# Leçons\n\n## Mécanisées\n${Array.from({ length: n }, (_, i) => `- M${i + 1} — tenue par son contrôle.`).join('\n')}\n`); return verifierLecons(f, { min: 0 }); };
+  attendu('huit lignes mécanisées', !Array.isArray(lecons(8)), true);
+  attendu('neuf lignes mécanisées, rien de retiré', !Array.isArray(lecons(9)), false);
+  const racineTemoin = (n, claude, extra = {}) => {
+    const r = sous(n);
+    fs.mkdirSync(path.join(r, 'cerveau'));
+    fs.writeFileSync(path.join(r, 'CLAUDE.md'), claude);
+    fs.writeFileSync(path.join(r, 'cerveau', 'REMPLACES.md'), '| Motif | Remplacée par | Depuis |\n|---|---|---|\n| `relecteur obligatoire` | le critique (L25) | 2026-10-22 |\n');
+    for (const [f, t] of Object.entries(extra)) fs.writeFileSync(path.join(r, f), t);
+    return r;
+  };
+  attendu('consigne remplacée encore écrite', remplaces(racineTemoin('r1', '- Le relecteur obligatoire après une maquette.\n')).erreurs.length === 0, false);
+  attendu('consigne remplacée citée comme erreur', remplaces(racineTemoin('r2', '- Erreur : le relecteur obligatoire a accepté la planche.\n')).erreurs.length === 0, true);
+  attendu('savoir chargé dans le budget', verifierCharge(racineTemoin('b1', '@petit.md\n', { 'petit.md': 'x'.repeat(100) }), 1000).length === 0, true);
+  attendu('savoir chargé au-delà du budget', verifierCharge(racineTemoin('b2', '@gros.md\n', { 'gros.md': 'x'.repeat(2000) }), 1000).length === 0, false);
   fs.rmSync(tmp, { recursive: true, force: true });
   for (const c of cas) console.log(`${c.ok ? 'tenu ' : 'RATÉ '} ${c.nom} (attendu : ${c.voulu ? 'OK' : 'ECHEC'})`);
   return cas.every((c) => c.ok);
@@ -726,6 +789,18 @@ function main(argv) {
     case 'hooks': { const e = verifierHooks(); return finir(!e.length, 'HOOKS OK', 'HOOKS ECHEC', e); }
     case 'cablage': { const e = verifierCablage(); return finir(!e.length, 'CABLAGE OK', 'CABLAGE ECHEC', e); }
     case 'temoins': return finir(temoins(), 'TEMOINS OK', 'TEMOINS ECHEC');
+    case 'remplaces': {
+      // La mémoire locale de la machine (hors dépôt) est lue aussi : ses copies vieillissent les premières.
+      const projets = path.join(os.homedir(), '.claude', 'projects');
+      const memoires = existe(projets) ? fs.readdirSync(projets).filter((d) => /Brasserie/i.test(d)).map((d) => path.join(projets, d, 'memory', 'MEMORY.md')).filter(existe) : [];
+      const erreurs = [...new Set(memoires.flatMap((m) => remplaces(RACINE, { memoire: m }).erreurs))];
+      const { motifs } = remplaces();
+      return finir(!erreurs.length, `REMPLACES OK (${motifs} consignes remplacées, aucune survivante)`, 'REMPLACES ECHEC', erreurs);
+    }
+    case 'charge': {
+      const e = verifierCharge();
+      return finir(!e.length, `CHARGE OK (${BUDGET_CHARGE} caractères au plus)`, 'CHARGE ECHEC', e);
+    }
     case 'echoue': {
       const sep = args.indexOf('--');
       const [jeton] = args;

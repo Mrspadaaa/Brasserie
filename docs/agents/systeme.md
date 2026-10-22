@@ -70,8 +70,9 @@ jusqu'à l'accord de l'utilisateur pour les archiver.
   (SPEC-BRASSEUR, DEFAUTS-RECURRENTS, decisions.md, registre, PRODUCT.md, DESIGN.md).
 - Retrouver une note : `node scripts/agents/systeme.mjs chercher <mots>`. Contrôler le cerveau :
   `node scripts/agents/systeme.mjs cerveau`. Le hook le relance après chaque écriture dans `cerveau/`.
-- La mémoire locale de Claude (`~/.claude/projects/…/memory/`) reste en place. Le cerveau en est la
-  copie partagée et versionnée. En cas d'écart, le cerveau prime pour les agents.
+- La mémoire locale de Claude (`~/.claude/projects/…/memory/`) ne garde que ce qui est propre à la
+  machine et un renvoi au cerveau. Son ancien index recopiait le cerveau, et une copie restée en arrière
+  le contredisait (22.10).
 - **Miroir NotebookLM, en lecture pour le brasseur** (22.10) : le carnet est
   https://notebook.google.com/notebook/4908c56c-371e-42c9-a8af-e2ab7fb597ac, compte de l'utilisateur.
   - Le miroir va dans un seul sens : `node scripts/agents/systeme.mjs exporter [--avec-spec]` écrit
@@ -90,6 +91,37 @@ correction, une voie rejetée, une hypothèse fausse ou un travail refait. Le pi
 agents proposent par `LEÇON PROPOSÉE`. 30 leçons actives au plus. Une leçon devenue contrôle
 automatique passe en une ligne sous « Mécanisées ». Le hook `UserPromptSubmit` repère les phrases de
 correction ou de plainte et rappelle d'en tirer un contrôle ou une leçon avant de clore le tour.
+
+## Élaguer : une maison par fait, une sortie pour chaque entrée
+Au 22.10, rien ne sortait jamais. Ce qui est chargé partout pesait environ 9 600 jetons, et un critique
+lisait environ 29 000 jetons avant de juger. Des copies restées en arrière contredisaient l'original :
+- la description du relecteur, antérieure à L25 ;
+- l'arbitre de la mémoire locale ;
+- la consigne de rejet par défaut du critique, contraire à L27.
+- **Une maison par fait** :
+  - les paroles du brasseur vont dans SPEC ;
+  - un défaut et son contrôle, dans DEFAUTS ;
+  - une erreur de méthode, dans LECONS ;
+  - un savoir durable, dans une note ;
+  - l'état en cours, dans le registre ou MISSION.md.
+  Ailleurs, on met un lien et jamais une copie, car la copie vieillit.
+- **Une règle remplacée** s'inscrit dans `cerveau/REMPLACES.md`, avec le motif de l'ancienne formulation.
+  `systeme.mjs remplaces` échoue tant qu'une copie survit dans CLAUDE.md, le cerveau, les agents, les
+  skills `voies` et `conseil`, les règles, `docs/agents/` ou la mémoire locale.
+- **Des plafonds qui imposent une sortie** :
+  - `systeme.mjs charge` : CLAUDE.md et ses imports, 30 000 caractères au plus ;
+  - LECONS.md : 170 lignes, 30 leçons et 8 lignes mécanisées au plus ; les plus anciennes passent dans
+    `controles-mecanises` ;
+  - une note : 50 lignes au plus.
+  Le hook rejoue ces plafonds à chaque écriture dans `cerveau/`.
+- **À la signature** de chaque mission, `charge` et `remplaces` passent. Toute règle changée pendant la
+  mission est inscrite dans REMPLACES.md.
+- **À faire** (après la vague en cours) : réduire les gros documents lus en entier, sans rien perdre
+  (vérifié par `systeme.mjs fidelite`) :
+  - SPEC, avec un § 0 « Ce qui vaut aujourd'hui » ;
+  - DEFAUTS, une ligne par défaut ;
+  - le registre, réduit à l'état en cours, le reste archivé par mois ;
+  - decisions.md.
 
 ## Décider : la grille
 
