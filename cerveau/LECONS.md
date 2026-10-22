@@ -1,0 +1,161 @@
+# Leçons des agents
+
+Erreurs de méthode déjà commises, leur cause, et ce qu'il faut faire à la place. Chargé à chaque
+session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défauts du produit vont dans
+`DEFAUTS-RECURRENTS.md`, les goûts du brasseur dans `SPEC-BRASSEUR.md` et `cerveau/brasseur/`.
+- **Quand** : après une correction, une voie rejetée, un contrôle raté par notre faute, une hypothèse
+  fausse, un travail refait. Avant de clore le tour.
+- **Qui** : le pilote seul ; les agents proposent par `LEÇON PROPOSÉE : …`.
+- **Format** : `### Lnn — règle`, puis Erreur (date, fait), Cause, Faire, Rôles, Contrôle.
+- **Taille** : 170 lignes, 30 leçons actives au plus. Fusionner ; une leçon devenue contrôle
+  automatique passe en une ligne sous « Mécanisées ». Vérifier : `systeme.mjs cerveau`.
+
+## Comprendre la demande
+
+### L01 — Reformuler la portée d'une décision avant de la propager
+- Erreur : 12.10, « seul 3.8 peut être utilisé », dit pour des tests, a été appliqué à toute l'app. Le lot G38 (#93) a été perdu, puis IA-B a servi à revenir en arrière.
+- Cause : la portée (tests seuls, un usage, toute l'app) n'a pas été écrite avant d'agir.
+- Faire : écrire la portée en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler.
+- Rôles : pilote, conseil
+- Contrôle : aucun
+
+### L02 — Expliquer une chose qui marche, ce n'est pas la refaire
+- Erreur : 19.10, lots 12 et 12b. Il voulait une explication à l'appui long ; les lots ont refait la carte. « Tu as pas du tout bien compris le besoin ».
+- Cause : le comportement actuel n'a pas été lu (l'appui long ouvrait déjà la fiche).
+- Faire : lire ce que la base fait déjà à cet endroit, garder l'actuel au repos et n'ajouter qu'un petit élément. Quand il demande de challenger, rendre l'analyse avant de construire.
+- Rôles : pilote, auteur
+- Contrôle : `controle-appui.mjs` A6 à A8 (D70)
+
+### L03 — Reprendre tout l'élément désigné, pas une partie
+- Erreur : 19.10, « Meilleures bar » de l5b. Seules les barres de voie ont été reprises, pas les pistes d'objectif. « C'est pas exactement ce que j'ai demandé ».
+- Cause : « X de la variante Y » a été lu au sens étroit.
+- Faire : lister dans Y tout ce qui relève de X sur l'écran avant de reprendre. En cas de doute, demander lequel.
+- Rôles : pilote, auteur
+- Contrôle : D92 PISTE (`controle-piste-objectif.mjs`)
+
+### L04 — Prioriser comme un brasseur, pas comme un tableur
+- Erreur : 18.10, recette vide « trop centré sur le ibu, pas d'info sur les AA », et un stock trop mis en avant.
+- Cause : les données étaient justes, mais pas dans l'ordre de la décision du brasseur.
+- Faire : sur une carte de houblon, dans cet ordre : nom, α, rôle, arômes en couleur, moment et dose, puis l'IBU. Le stock en icône seulement. Voir [[penser-brasseur]].
+- Rôles : auteur, relecteur, conseil
+- Contrôle : D87 (`controle-alpha.mjs`)
+
+## Préparer : briefs, données, architecture
+
+### L05 — Contrôler une exigence transversale sur tous les écrans, et la répéter dans chaque brief
+- Erreur : 19.10, « au style » n'a été contrôlé que sur Ma bière ; Comparer, Suggestions, la fiche et la substitution l'ont perdu. « commen ça a pu être oublié ? »
+- Cause : le contrôle ne couvrait que l'écran d'origine, et les briefs suivants ne reprenaient pas l'exigence.
+- Faire : écrire le contrôle pour tous les écrans dès l'arrivée de l'exigence. Recopier la liste des exigences transversales dans chaque VOIE.md.
+- Rôles : pilote
+- Contrôle : `controle-au-style.mjs` (D75)
+
+### L06 — Porter les acquis validés d'un lot au suivant
+- Erreur : 20.10, le radar validé (lots 7 et 16) a disparu du lot 21. « pas de radar grpah ? »
+- Cause : aucun brief ni contrôle ne listait ce qui était déjà acquis.
+- Faire : tenir la liste des acquis dans [[acquis-valides]] et la recopier dans chaque brief, avec un contrôle de présence.
+- Rôles : pilote, auteur
+- Contrôle : à écrire (DEFAUTS, « À contrôler, lot 21 », point 2)
+
+### L07 — Une baseline est un plancher à enrichir
+- Erreur : 19.10, un brief disait « à reprendre, pas à réinventer » et a bridé les auteurs. « il faudrait évidemment d'enrichir et pas de limiter à ça !!! »
+- Cause : le brief protégeait l'acquis au lieu de demander mieux.
+- Faire : écrire « plancher à enrichir » dans chaque brief. Une simple copie perd des points chez le relecteur.
+- Rôles : pilote, relecteur
+- Contrôle : aucun
+
+### L08 — Vérifier les entrées avant de lancer des voies en parallèle
+- Erreur : 20.10, le moteur était à un mauvais taux d'alcool. La correction à 4,75 % vol. est arrivée après 33 variantes ; 15 cas ont changé de drapeau, et toutes les pages étaient à régénérer.
+- Cause : les constantes et les données d'entrée n'ont été vérifiées qu'après l'éventail des voies.
+- Faire : une voie Haiku vérifie les entrées partagées (moteur, JSON, constantes) avant l'éventail. Tout le reste dépend d'elle.
+- Rôles : pilote, exécutant
+- Contrôle : `npm run check:engine` (prototypes/houblons-v4)
+
+### L09 — Vérifier chaque chemin cité dans un brief
+- Erreur : 22.10, le brief Haiku sur la chaîne des maquettes citait `scripts/profil-simule-cas.ts`, qui est dans `prototypes/houblons-v4/scripts/`. L'agent a dû corriger le brief.
+- Cause : le chemin a été recopié d'un message de commit sans être vérifié.
+- Faire : passer chaque chemin cité par Glob avant d'envoyer le brief.
+- Rôles : pilote
+- Contrôle : `node scripts/agents/systeme.mjs mission` vérifie les chemins des VOIE.md
+
+### L10 — Un outil = un seul facteur libre, et la carte avant les variantes
+- Erreur : 20.10, 41 variantes v0 au lot 21 sans carte des outils. « plusieur confusion entre timing, comparaison, houbons side by side, […] suggestions, comparer, substituer, dryhopper ». 22.10, le conseil a montré que « Quand ? » (y1b) et « Quelle dose ? » (y3) laissaient libres houblon, dose et levure.
+- Cause : chaque écran faisait varier plusieurs facteurs. Un titre en forme de question ne suffisait pas à l'empêcher.
+- Faire : définir chaque outil par le seul facteur qui y varie, afficher les autres sur une ligne de contexte, et lister ses éléments admis. Montrer la carte en fil de fer avant tout lot. Voir [[outils-houblons]] et [[2026-10-22-carte-outils-houblons]].
+- Rôles : pilote, conseil, auteur, relecteur
+- Contrôle : à écrire, au rendu : un seul groupe de sélecteurs libres par écran ; témoins y1b et y3 en échec (DEFAUTS, « À contrôler, lot 21 », point 5)
+
+## Prouver
+
+### L11 — Fini veut dire utilisable, pas un reçu
+- Erreur : 08.10, des reçus, des registres « qualifiés » et des couches V3/V4/V5.5 donnaient l'impression d'avancer, sans fonction utilisable.
+- Cause : on comptait des preuves déclarées au lieu de parcours réels.
+- Faire : une chose est finie si elle est branchée, atteinte par un vrai parcours dans Chrome, typée, testée, avec un build vert. Classer l'existant : fini, inachevé récupérable, inutilisable.
+- Rôles : pilote, relecteur, exécutant
+- Contrôle : aucun
+
+### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
+- Erreur : 19.10, loupe p02 avec RAIL OK et LOT OK, mais 19 à 20 px sous le doigt contre 8 à 13 au loin. « L'échelle ne s'adapte toujours pas ». Avant cela, seules 24 à 44 % des captures avaient été regardées.
+- Cause : les contrôles bornaient le geste sans exiger de force minimale, et les captures n'étaient pas ouvertes.
+- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK.
+- Rôles : relecteur, auteur, exécutant
+- Contrôle : aucun
+
+### L13 — Une plainte devient un contrôle qui échoue sur la version rejetée, avant toute correction
+- Erreur : 18.10, les mêmes défauts revenaient de v2 à v4 (trop de texte, cockpit). 20.10 : le picto « épicé » est critiqué pour la deuxième fois (lot 15, puis lot 21), car la première plainte n'était pas devenue un contrôle.
+- Cause : les corrections étaient des règles écrites, lues par des agents, et non des contrôles bloquants.
+- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK.
+- Rôles : pilote, auteur
+- Contrôle : `controle-lot.mjs` (LOT OK)
+
+### L14 — Confronter les données au savoir du brasseur sur les houblons phares
+- Erreur : 20.10, avec l5f, Nelson Sauvin paraît « un houbon ordinaire alors que c'est un un houbon incroyable », et Motueka « ultra fruité ».
+- Cause : 83 % de ses mots (vin blanc, groseille à maquereau, raisin) sont hors du lexique fermé des 12 familles, et sortent du dessin. Personne n'a confronté le rendu à la réputation du houblon (diagnostic du 22.10 : [[descripteurs-hors-familles]]).
+- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra, Motueka, Saaz, Galaxy), et confronter le rendu à leur réputation.
+- Rôles : relecteur, conseil, auteur
+- Contrôle : à écrire (voie r0 de la reprise) : échec au-delà de 50 % de mots sans famille si aucune part « autres » n'est visible ; témoin négatif l5f
+
+## Agents et outils
+
+### L16 — Tout livrable d'agent est un fichier du dépôt, relu par le pilote
+- Erreur : 22.10 (inventaire), `JURY-VERDICT.md` était annoncé au registre mais n'a jamais été produit. Des agents relancés par SendMessage n'ont laissé aucune trace dans le dépôt.
+- Cause : on se fiait au message de fin de l'agent.
+- Faire : chaque voie écrit RESULTAT.md. Le pilote rejoue ses critères (`systeme.mjs voies`) avant d'y croire.
+- Rôles : pilote, exécutant, auteur
+- Contrôle : `node scripts/agents/systeme.mjs voies <mission>`
+
+### L17 — Une voie n'écrit que dans ce qu'elle possède
+- Erreur : lot 21, un auteur a laissé `pistes-l5f.png` à la racine du dépôt.
+- Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie.
+- Rôles : pilote, auteur, exécutant
+- Contrôle : aucun
+
+### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
+- Erreur : lots 5 à 21, 8 à 12 auteurs en vol alors que `prompt-session.md` §7 en prévoyait 3. Chaque auteur coûtait 130 à 350 k jetons. Le pilote lisait les sorties brutes.
+- Cause : pas de plafond par voie, tout passait par le modèle le plus cher, et le retour n'avait pas de format.
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique, Sonnet pour le jugement, Opus pour planifier et signer. Retour en une ligne.
+- Rôles : pilote
+- Contrôle : `node scripts/agents/systeme.mjs agents`
+
+## Décider
+
+### L19 — Cadrer une décision sur l'acquis et les choix en attente, et lire la plainte comme une proposition
+- Erreur : 22.10, le pilote a cadré le conseil sur « A, B ou C, combien d'outils ». Il ignorait que Comparer était déjà intégré (base v4.6), que le radar r2 ou r3 attendait son choix, et que la plainte « suggestions, comparer, substituer, dryhopper » contenait déjà une carte.
+- Cause : le cadrage partait de la carte candidate du registre, sans relire les acquis, les décisions en attente ni les mots exacts.
+- Faire : avant de cadrer, relire [[acquis-valides]], les choix en attente du registre et les mots du brasseur. Poser la cause observée (captures) avant les options.
+- Rôles : pilote, conseil
+- Contrôle : aucun
+
+### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
+- Erreur : 20.10 et 22.10, la « grille 1,8 Mo » (fichier de maquette) a été lue comme un coût de calcul. Un conseiller a ensuite proposé d'abandonner le repli « dry hop et biotransformation seulement si c'est trop lourd » sans rien chronométrer.
+- Cause : la taille des fichiers de maquette a servi de mesure du moteur.
+- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure.
+- Rôles : pilote, conseil, auteur
+- Contrôle : à écrire (voie de mesure de la reprise du lot 21)
+
+## Mécanisées
+
+- M01 — Valeurs brutes à l'écran (low, medium, null…), revenues trois fois : `controle-valeurs-brutes.mjs` (D97, dans controle-commun).
+- M02 (L21) — Un hook s'essaie sur les vraies entrées de l'app : le 22.10, le hook de correction a réagi à la notification d'un conseiller. Témoin « notification d'agent » dans `systeme.mjs temoins`.
+- M03 (L15) — Un monkey test voit les champs (`value`) et la console (`console.error`) : `tests/integration/monkey.test.tsx`, détail dans [[monkey-testing]].
+- M04 (L22) — Condenser une source sans perdre : le 22.10, 51 citations et nombres perdus à la première condensation de deux sources de 330 à 350 lignes (voie Haiku). Lancer `systeme.mjs fidelite <source> <notes…>` ; au-delà de 150 lignes, prévoir plusieurs notes.

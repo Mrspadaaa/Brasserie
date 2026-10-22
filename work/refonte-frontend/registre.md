@@ -134,6 +134,23 @@ Voir `decisions.md` (D1 à D12).
   cours. Fils de la page : tous répondus et résolus, sauf « Les bar de ce type… », non envoyé à
   Claude. À faire valider par lui : l8 (l8g ou l8h ; trait l8e ou l8f) contre l5 (l5e ou l5d) ; les
   conventions [H] du moteur ; les icônes Barres et Radar de l5e (D31).
+- **REPRISE DU 22.10 : lire en premier.** L'utilisateur a demandé un système d'agents « adapté à
+  notre usage ». Il est en place : `docs/agents/systeme.md`, le second cerveau `cerveau/` avec les
+  leçons, les skills `voies` et `conseil`, et les agents `executant`, `auteur`, `relecteur` et
+  `conseiller`.
+  - Conseil sur la carte des outils : `cerveau/decisions/2026-10-22-carte-outils-houblons.md`.
+    Verdict : un seul facteur libre par écran ; Suggérer, Comparer, Dryhopper et Levure s'ouvrent
+    depuis Ma bière ; le lot 22 est Comparer seul.
+  - Quatre questions fermées pour le brasseur :
+    - le radar de Comparer, r2 ou r3 ;
+    - comparer à dose égale, à effet égal ou à IBU égal ;
+    - Substituer, porte ou outil propre ;
+    - la levure, dans Dryhopper ou outil propre.
+  - Nelson Sauvin a 83 % de mots sans famille. Diagnostic et options A, B, C :
+    `cerveau/metier/descripteurs-hors-familles.md`.
+  - La reprise est planifiée en voies : `work/missions/2026-10-22-reprise-lot21/MISSION.md`.
+  - **Prochaine action : lancer la vague 1** (r0-controles, r2-cout-calcul, r4-picto-epice),
+    puis r1-carte.
 - **RETOUR DU BRASSEUR SUR LE LOT 21 (20.10, après la pause) : c'est le point de départ de la
   reprise.** Ses mots exacts sont dans SPEC-BRASSEUR.md (« Le lot 21, son retour ») ; les plaintes à
   transformer en contrôles sont dans DEFAUTS-RECURRENTS.md (« À contrôler, lot 21 »).

@@ -19,6 +19,15 @@ preuves ou qualité du code. Conserver incertitudes, négations, nombres et unit
 - AGENTS.md, .agents/ et .codex/ appartiennent à OpenAI : ne pas les charger comme
   instructions Claude. Les consulter seulement pour travailler explicitement dessus.
 
+## Second cerveau et leçons
+
+Chargés à chaque session et pour chaque sous-agent. Relire les leçons avant de
+planifier, briefer ou livrer ; en écrire une après une correction (pilote seul).
+Système complet : `docs/agents/systeme.md`.
+
+@cerveau/INDEX.md
+@cerveau/LECONS.md
+
 ## Skills à la demande
 
 - Sélectionner depuis les descriptions disponibles le skill qui aide réellement
@@ -42,14 +51,16 @@ preuves ou qualité du code. Conserver incertitudes, négations, nombres et unit
 
 - Depuis le 2026-10-08, aucun agent OpenAI (Codex, Sol, Astra, Luna, Root) :
   rien ne leur est transmis. Opus pilote, conçoit, intègre et qualifie ; Haiku
-  (`claude-haiku-5-5`) exécute lectures, recherches, tests, fixtures et captures,
-  et Opus relit ce qu'il produit. Le pont Claude/Sol (`scripts/claude-expert.mjs`,
+  (`claude-haiku-5-5`) exécute lectures, recherches, tests, fixtures et captures ;
+  Sonnet tient les voies de jugement (agents `auteur`, `relecteur`). Le travail en
+  plusieurs parties passe par le skill `voies` : planifier une fois, une ligne par
+  voie, critères rejoués par le pilote. Le pont Claude/Sol (`scripts/claude-expert.mjs`,
   skill `sol-orchestrator`, `.claude/roles/expert.md`, `docs/claude-expert.md`)
   est caduc ; `node scripts/claude-account.mjs team` reste le lanceur Team.
 - Le moins d'intervention humaine possible : ne pas bloquer sur des questions
   à l'utilisateur. Trancher selon les documents, le code et ses choix connus
-  (option prudente et réversible par défaut), ou faire trancher par une
-  session arbitre neuve (Opus, ou Fable pour les choix lourds), puis journaliser.
+  (option prudente et réversible par défaut), ou soumettre une décision lourde
+  au conseil (skill `conseil` ; le brasseur garde les choix de goût), puis journaliser.
   Seuls les gestes irréversibles ou externes attendent son accord, regroupés
   sans bloquer : déploiement, push/PR/merge, données réelles, Gemini facturé
   en production, suppression, comptes et réglages.

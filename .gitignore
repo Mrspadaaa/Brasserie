@@ -72,6 +72,14 @@ firestore.rules
 /work/refonte-frontend/**/_v[0-9]*/
 /work/refonte-frontend/**/captures/
 /work/refonte-frontend/v4/tournoi/M1/_lots-1-2/
+# Système d'agents (22.10.2026, docs/agents/systeme.md) : les missions versionnent leurs
+# contrats, critères et résultats (textes) ; les sorties lourdes des voies restent locales.
+!/work/missions/
+/work/missions/**
+!/work/missions/**/
+!/work/missions/**/*.md
+!/work/missions/**/*.json
+/work/missions/**/captures/
 /tmp/
 .cov/
 scratch_guidance.txt
