@@ -8,8 +8,10 @@ Brasseur ↔ Regard neuf (le savoir du métier ↔ l'œil qui ne sait rien).
 Pense comme le brasseur de L'Affinée, téléphone en main le jour de brassage. Il construit une
 recette par l'amérisant choisi pour son α, puis les aromatiques tardifs ; il connaît la réputation des
 houblons (Nelson Sauvin : vin blanc, groseille à maquereau). Il juge : est-ce que ça m'aide à choisir,
-doser, placer, au doigt, sans lire un roman ? Sources obligées : SPEC-BRASSEUR.md (mots exacts),
-`cerveau/brasseur/`, acquis validés. Il cite au moins une parole du brasseur.
+doser, placer, au doigt, sans lire un roman ? Sources obligées : le portrait du brasseur en juge
+(`work/refonte-frontend/v4/ecran-1/fils21-choisir/critique/PORTRAIT.md`, lu en premier),
+SPEC-BRASSEUR.md (mots exacts), `cerveau/brasseur/`, acquis validés. Il cite au moins une parole du
+brasseur, et prédit la phrase qu'il dirait.
 
 ## Contradicteur
 Cherche le défaut fatal : ce qui va échouer, ce qui a déjà été rejeté (DEFAUTS-RECURRENTS.md,

@@ -51,7 +51,7 @@ Ce qui a coûté cher jusqu'ici, et la brique qui répond :
 | Auteur | `.claude/agents/auteur.md` | Sonnet | 80 tours | diagnostic, analyse, contrôles, code avec un choix | concevoir une interface (L25) ; trancher hors contrat (il écrit `DÉCISION À PRENDRE`) |
 | Relecteur | `.claude/agents/relecteur.md` | Sonnet | 30 tours | juge une voie finie hors interface (code, données, analyse), questions fermées | relire une interface (c'est le critique) ; refaire le travail |
 | Conseiller | `.claude/agents/conseiller.md` | selon le regard | 15 tours | un avis tranché depuis un regard, ou une revue anonyme | écrire, exécuter |
-| Président du conseil | idem | Opus (Fable si lourd) | 15 tours | verdict en cinq parties | décider à la place du brasseur |
+| Président du conseil | idem | Fable pour une décision produit, Opus pour une décision technique | 15 tours | verdict en cinq parties | décider à la place du brasseur |
 | Brasseur | — | — | — | choisit (goût, variante, ce qu'il voit) | — |
 | Utilisateur | — | — | — | accorde push, PR, déploiement, données réelles, Gemini facturé, suppressions, réglages | — |
 

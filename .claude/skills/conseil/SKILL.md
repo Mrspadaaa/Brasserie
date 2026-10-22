@@ -36,24 +36,28 @@ Un seul message, six `Agent` en arrière-plan, `subagent_type: "conseiller"` (re
 
 | Regard | Modèle | Pourquoi |
 |---|---|---|
-| Brasseur | opus | savoir du métier, usage réel le jour de brassage |
-| Contradicteur | sonnet | défaut fatal, déjà rejeté, données trompeuses |
-| Audacieux | sonnet | potentiel manqué, plancher à enrichir |
-| Premiers principes | opus | la vraie question, une question = un outil, la science |
-| Bâtisseur | sonnet | faisable dans l'app, coût de calcul et de quota, premier geste |
-| Regard neuf | haiku | aucun contexte : voit la confusion qu'on ne voit plus |
+| Brasseur | fable | le juge qui compte : calibré sur `fils21-choisir/critique/PORTRAIT.md`, comme le critique |
+| Contradicteur | opus | défaut fatal, déjà rejeté, données trompeuses |
+| Audacieux | opus | potentiel manqué, plancher à enrichir |
+| Premiers principes | opus | la vraie question, un facteur libre par écran, la science |
+| Bâtisseur | opus | faisable dans l'app, coût mesuré (L20), premier geste |
+| Regard neuf | sonnet | aucun contexte : la naïveté vient des entrées limitées, pas d'un modèle faible |
 
-Le Regard neuf ne reçoit que la question cadrée et, s'il y en a, les captures, sans le reste des
-sources. Gabarit d'appel : `references/regards.md`.
+Répartition révisée le 22.10 (L25). Au premier conseil, les deux avis les plus faibles venaient du
+Bâtisseur (Sonnet), qui écartait un repli sans le mesurer, et du Regard neuf (Haiku), resté en
+surface. Le Regard neuf ne reçoit que la question cadrée et, s'il y en a, les captures, sans le
+reste des sources. Gabarit d'appel : `references/regards.md`.
 
 ## 4. Revue anonyme
 Mélanger les six avis sous les lettres A à F (ordre tiré au hasard, noté). Trois relecteurs
-`conseiller` (sonnet) en parallèle reçoivent la question et les six réponses anonymes. Chacun répond
+`conseiller` en parallèle, chacun sur un modèle différent (opus, fable, sonnet), pour une vraie
+diversité à la Karpathy. Ils reçoivent la question et les six réponses anonymes. Chacun répond
 à trois questions : la plus solide, le plus gros angle mort, ce que toutes ont manqué.
 
 ## 5. Président
-Un agent `conseiller` neuf, modèle **opus** (ou **fable** pour une décision lourde du produit),
-reçoit la question, les six avis nommés et les trois revues. Il rend le verdict en cinq parties :
+Un agent `conseiller` neuf, modèle **fable** pour une décision du produit (ce que le brasseur verra
+ou utilisera), **opus** pour une décision technique. Il reçoit la question, les six avis nommés et
+les trois revues. Il rend le verdict en cinq parties :
 `### Où le conseil s'accorde`, `### Où il se divise`, `### Angles morts`, `### Recommandation`,
 `### Premier geste`. Il peut donner raison à la minorité. Pas de « ça dépend ».
 
@@ -71,7 +75,9 @@ reçoit la question, les six avis nommés et les trois revues. Il rend le verdic
 4. Une erreur de méthode révélée → `cerveau/LECONS.md`. Un savoir durable → note du cerveau.
 
 ## Coût
-Six avis, trois revues et un président : dix appels. Mode **rapide** pour une décision moyenne : les
-six avis et le président, sans revue (sept appels), écrit « rapide » dans le type de décision.
+Six avis, trois revues et un président : dix appels, presque tous en Opus ou Fable. C'est rare et ça
+décide d'un lot entier : la qualité passe avant l'économie. Mode **rapide** pour une décision
+moyenne : les six avis (en sonnet, le Brasseur reste en fable) et le président (opus), sans revue,
+soit sept appels. Écrire « rapide » dans le type de décision.
 Ne jamais réunir le conseil deux fois sur la même question sans fait nouveau : relire la
 transcription d'abord (`systeme.mjs chercher`).

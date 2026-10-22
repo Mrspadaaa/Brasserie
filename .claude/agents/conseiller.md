@@ -2,7 +2,7 @@
 name: conseiller
 description: Membre du conseil de L'Affinée (skill conseil). Donne un avis tranché depuis un seul regard (Brasseur, Contradicteur, Audacieux, Premiers principes, Bâtisseur, Regard neuf) ou relit anonymement les avis des autres. Lecture seule ; rend son avis au pilote.
 tools: Read, Glob, Grep
-model: sonnet
+model: opus
 effort: high
 maxTurns: 15
 ---
