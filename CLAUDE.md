@@ -52,7 +52,9 @@ Système complet : `docs/agents/systeme.md`.
 - Depuis le 2026-10-08, aucun agent OpenAI (Codex, Sol, Astra, Luna, Root) :
   rien ne leur est transmis. Opus pilote, conçoit, intègre et qualifie ; Haiku
   (`claude-haiku-5-5`) exécute lectures, recherches, tests, fixtures et captures ;
-  Sonnet tient les voies de jugement (agents `auteur`, `relecteur`). Le travail en
+  Sonnet tient diagnostics, analyses, contrôles et code (agents `auteur`, `relecteur`) ;
+  tout ce que le brasseur verra se conçoit en Opus (agent `concepteur`) et se juge
+  par Fable calibré sur lui (agent `critique`). Le travail en
   plusieurs parties passe par le skill `voies` : planifier une fois, une ligne par
   voie, critères rejoués par le pilote. Le pont Claude/Sol (`scripts/claude-expert.mjs`,
   skill `sol-orchestrator`, `.claude/roles/expert.md`, `docs/claude-expert.md`)

@@ -196,7 +196,7 @@ export function verifierFidelite(srcBrute, cibleBrute) {
 }
 
 export function verifierAgents(dir = path.join(RACINE, '.claude', 'agents')) {
-  const attendus = { executant: 'haiku', auteur: 'sonnet', relecteur: 'sonnet', conseiller: null };
+  const attendus = { executant: 'haiku', auteur: 'sonnet', relecteur: 'sonnet', concepteur: 'opus', critique: 'fable', conseiller: null };
   const erreurs = [];
   for (const [nom, modele] of Object.entries(attendus)) {
     const fichier = path.join(dir, `${nom}.md`);
@@ -337,6 +337,17 @@ export function verifierMission(fichier, { minVoies = 2 } = {}) {
     // Leçon L24 : ce qu'on montre au brasseur porte ses choix ouverts en variantes ; ça n'attend pas sa réponse.
     if (v.decideur === 'brasseur' && /brasseur/i.test(v['depend de'] ?? '')) erreurs.push(`${id} : voie montrée au brasseur qui attend son choix ; montrer les options en variantes (L24)`);
   }
+  // Leçon L25 : ce que le brasseur verra (maquettes sous ecran-1/) se conçoit avec Opus et se relit par
+  // le critique calibré (Fable), pas par un relecteur générique (22.10 : planche « épicé » Sonnet acceptée à tort).
+  // Une extraction de données (dossier donnees/) n'est pas une interface.
+  const estInterface = (possede) => (possede ?? '').split(/,\s*/).some((p) => /ecran-1\//.test(p) && !/\/donnees\//.test(p));
+  const interface_ = new Set(voies.filter((v) => estInterface(v.possede)).map((v) => v.voie));
+  for (const v of voies) {
+    const id = v.voie || '?';
+    if (interface_.has(v.voie) && !['opus', 'fable'].includes(v.modele)) erreurs.push(`${id} : voie d'interface confiée à ${v.agent}/${v.modele} ; concepteur Opus attendu (L25)`);
+    const relit = (v['depend de'] ?? '').split(/[,;]\s*/).map((s) => s.trim()).some((d) => interface_.has(d));
+    if (relit && ['relecteur', 'auteur'].includes(v.agent) && /relect|relu|critique/i.test(`${v.voie} ${v.objectif}`)) erreurs.push(`${id} : relecture d'interface confiée à ${v.agent} ; critique calibré attendu (L25)`);
+  }
   for (const d of table('Décisions')) if (!DECIDEURS.includes(d.decideur)) erreurs.push(`décision « ${d.decision ?? '?'} » : décideur « ${d.decideur} »`);
   const sources = (texte.split(/^## Sources/m)[1] ?? '').split(/\n## /)[0];
   for (const m of sources.matchAll(/`([^`\s]+\/[^`\s]+)`/g)) if (!existe(path.join(RACINE, m[1]))) erreurs.push(`source introuvable : ${m[1]} (leçon L09)`);
@@ -432,7 +443,7 @@ function construireCerveau(dir, d = {}) {
 function construireAgents(dir, { sansPlafond = false } = {}) {
   const a = path.join(dir, 'agents');
   fs.mkdirSync(a, { recursive: true });
-  for (const [nom, modele] of [['executant', 'haiku'], ['auteur', 'sonnet'], ['relecteur', 'sonnet'], ['conseiller', 'sonnet']]) {
+  for (const [nom, modele] of [['executant', 'haiku'], ['auteur', 'sonnet'], ['relecteur', 'sonnet'], ['concepteur', 'opus'], ['critique', 'fable'], ['conseiller', 'sonnet']]) {
     const plafond = sansPlafond && nom === 'auteur' ? '' : 'maxTurns: 20\n';
     fs.writeFileSync(path.join(a, `${nom}.md`), `---\nname: ${nom}\ndescription: témoin\ntools: Read\nmodel: ${modele}\n${plafond}---\nÉcris RESULTAT.md, rends une ligne. LEÇON PROPOSÉE : aucune.\n`);
   }
@@ -462,11 +473,13 @@ function construireMission(dir, { critereFaux = false, critereIgnore = false } =
   return m;
 }
 
-function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = false } = {}) {
+function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = false, interfaceSonnet = false, relectureGenerique = false } = {}) {
   const f = path.join(dir, 'MISSION.md');
   const dec = sansDecideur ? '' : 'pilote';
   const v2 = attendBrasseur ? '| v2 | lot | jugement | auteur | sonnet | 60 | y/** | v1, brasseur (radar) | c | brasseur |' : '| v2 | o | jugement | auteur | sonnet | 60 | y/** | v1 | c | brasseur |';
-  fs.writeFileSync(f, `# Mission\n\n## Objectif\no\n\n## Décisions\n| Décision | Décideur |\n|---|---|\n| d | pilote |\n\n## Voies\n| Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur |\n|---|---|---|---|---|---|---|---|---|---|\n| v1 | o | mécanique | executant | haiku | 30 | x/** | — | c | ${dec} |\n${v2}\n\n## Boucle de retour\nb\n\n## Sources\n- \`package.json\`\n`);
+  const v3 = interfaceSonnet ? '| v3 | maquette | jugement | auteur | sonnet | 60 | ecran-1/lot/** | — | c | brasseur |' : '| v3 | maquette | conception | concepteur | opus | 80 | ecran-1/lot/** | — | c | brasseur |';
+  const v4 = relectureGenerique ? '| v4 | relecture de v3 | jugement | relecteur | sonnet | 30 | r/RESULTAT.md | v3 | c | pilote |' : '| v4 | relecture de v3 | jugement | critique | fable | 30 | r/RESULTAT.md | v3 | c | pilote |';
+  fs.writeFileSync(f, `# Mission\n\n## Objectif\no\n\n## Décisions\n| Décision | Décideur |\n|---|---|\n| d | pilote |\n\n## Voies\n| Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur |\n|---|---|---|---|---|---|---|---|---|---|\n| v1 | o | mécanique | executant | haiku | 30 | x/** | — | c | ${dec} |\n${v2}\n${v3}\n${v4}\n\n## Boucle de retour\nb\n\n## Sources\n- \`package.json\`\n`);
   return f;
 }
 
@@ -487,6 +500,8 @@ function temoins() {
   attendu('plan routé', verifierMission(construireMissionPlan(sous('p1'))).length === 0, true);
   attendu('plan sans décideur', verifierMission(construireMissionPlan(sous('p2'), { sansDecideur: true })).length === 0, false);
   attendu('lot montré qui attend le brasseur', verifierMission(construireMissionPlan(sous('p3'), { attendBrasseur: true })).length === 0, false);
+  attendu('maquette confiée à Sonnet', verifierMission(construireMissionPlan(sous('p4'), { interfaceSonnet: true })).length === 0, false);
+  attendu('maquette relue par un relecteur générique', verifierMission(construireMissionPlan(sous('p5'), { relectureGenerique: true })).length === 0, false);
   const m1 = sous('m1');
   attendu('voies tenues', verifierVoies(construireMission(m1), { approuver: true, racine: m1 }).ok, true);
   const m2 = sous('m2');

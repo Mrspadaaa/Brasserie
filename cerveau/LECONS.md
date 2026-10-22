@@ -7,8 +7,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
   fausse, un travail refait. Avant de clore le tour.
 - **Qui** : le pilote seul ; les agents proposent par `LEÇON PROPOSÉE : …`.
 - **Format** : `### Lnn — règle`, puis Erreur (date, fait), Cause, Faire, Rôles, Contrôle.
-- **Taille** : 170 lignes, 30 leçons actives au plus. Fusionner ; une leçon devenue contrôle
-  automatique passe en une ligne sous « Mécanisées ». Vérifier : `systeme.mjs cerveau`.
+- **Taille** : 170 lignes et 30 leçons actives au plus ; fusionner, ou passer en une ligne sous « Mécanisées » une leçon devenue contrôle. Vérifier : `systeme.mjs cerveau`.
 
 ## Comprendre la demande
 
@@ -48,13 +47,6 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Faire : écrire le contrôle pour tous les écrans dès l'arrivée de l'exigence. Recopier la liste des exigences transversales dans chaque VOIE.md.
 - Rôles : pilote
 - Contrôle : `controle-au-style.mjs` (D75)
-
-### L06 — Porter les acquis validés d'un lot au suivant
-- Erreur : 20.10, le radar validé (lots 7 et 16) a disparu du lot 21. « pas de radar grpah ? »
-- Cause : aucun brief ni contrôle ne listait ce qui était déjà acquis.
-- Faire : tenir la liste des acquis dans [[acquis-valides]] et la recopier dans chaque brief, avec un contrôle de présence.
-- Rôles : pilote, auteur
-- Contrôle : `controle-acquis.mjs` (D99, écran Comparer : radar, chimie, panel OSU, vraies valeurs)
 
 ### L07 — Une baseline est un plancher à enrichir
 - Erreur : 19.10, un brief disait « à reprendre, pas à réinventer » et a bridé les auteurs. « il faudrait évidemment d'enrichir et pas de limiter à ça !!! »
@@ -133,7 +125,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
 - Erreur : lots 5 à 21, 8 à 12 auteurs en vol alors que `prompt-session.md` §7 en prévoyait 3. Chaque auteur coûtait 130 à 350 k jetons. Le pilote lisait les sorties brutes.
 - Cause : pas de plafond par voie, tout passait par le modèle le plus cher, et le retour n'avait pas de format.
-- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique, Sonnet pour le jugement, Opus pour planifier et signer. Retour en une ligne.
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique, Sonnet pour l'analyse et le code, Opus pour l'interface, la planification et la signature (L25). Retour en une ligne.
 - Rôles : pilote
 - Contrôle : `node scripts/agents/systeme.mjs agents`
 
@@ -160,8 +152,16 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Rôles : pilote, conseil
 - Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur (décideur brasseur) qui dépend de son choix
 
+### L25 — Ce que le brasseur verra se conçoit avec Opus et se juge par le critique calibré
+- Erreur : 22.10, la planche « épicé » de Sonnet a été acceptée par le relecteur Sonnet et par le pilote. Le brasseur : « Aucun me convient... », troisième refus. L'utilisateur : « pas très qualitatif... trop d'usage de sonnet et hiku sur des tâches complexes ».
+- Cause : les modèles étaient répartis par coût, et le critique Fable calibré du lot 21 (`fils21-choisir/critique/PORTRAIT.md`) avait été remplacé par un relecteur générique.
+- Faire : maquettes, pictos et cartes à l'agent `concepteur` (Opus), montrés dans une vraie carte de la base. Relecture d'interface à l'agent `critique` (Fable). Sonnet pour les diagnostics, les contrôles et le code ; Haiku pour le mécanique.
+- Rôles : pilote
+- Contrôle : `systeme.mjs mission` refuse une voie d'interface hors Opus ou Fable, et une relecture d'interface sans critique
+
 ## Mécanisées
 
+- M06 (L06) — Les acquis validés passent d'un lot au suivant : le radar a disparu du lot 21. Liste dans [[acquis-valides]], recopiée dans chaque brief ; `controle-acquis.mjs` (D99).
 - M01 — Valeurs brutes à l'écran (low, medium, null…), revenues trois fois : `controle-valeurs-brutes.mjs` (D97, dans controle-commun).
 - M02 (L21) — Un hook s'essaie sur les vraies entrées de l'app : le 22.10, le hook de correction a réagi à la notification d'un conseiller. Témoin « notification d'agent » dans `systeme.mjs temoins`.
 - M03 (L15) — Un monkey test voit les champs (`value`) et la console (`console.error`) : `tests/integration/monkey.test.tsx`, détail dans [[monkey-testing]].

@@ -15,12 +15,17 @@ Référence complète : `docs/agents/systeme.md`. Ce skill est la marche à suiv
 3. Choisir le niveau de chaque voie :
    - **mécanique → `executant` (Haiku)** : lire, extraire, convertir au gabarit, lancer contrôles,
      tests, captures, régénérer ;
-   - **jugement → `auteur` (Sonnet)** : concevoir une variante, diagnostiquer, écrire une analyse,
-     coder avec un choix ;
-   - **conception → `auteur` avec le modèle `opus`** : seulement si la voie fixe une architecture
-     ou une direction que les autres suivront ;
-   - **relecture → `relecteur` (Sonnet)** : obligatoire après toute voie d'interface (validation
-     indépendante de l'auteur).
+   - **interface → `concepteur` (Opus)** : tout ce que le brasseur verra (maquette, variante,
+     fil de fer, picto, carte), montré dans une vraie carte de la base (L25) ;
+   - **jugement → `auteur` (Sonnet)** : diagnostiquer, écrire une analyse, des contrôles, du code
+     avec un choix ;
+   - **conception d'architecture → `auteur` avec le modèle `opus`** : quand la voie fixe une
+     direction que les autres suivront ;
+   - **critique d'interface → `critique` (Fable, calibré sur PORTRAIT.md)** : obligatoire après
+     toute voie d'interface, avant de montrer quoi que ce soit au brasseur ;
+   - **relecture hors interface → `relecteur` (Sonnet)**.
+   `systeme.mjs mission` refuse une voie d'interface hors Opus ou Fable, et une relecture d'interface
+   sans critique.
 4. Router chaque décision connue d'avance avec la grille de `docs/agents/systeme.md` § Décider
    (voie, pilote, conseil, brasseur, utilisateur).
 5. Vérifier les entrées partagées avant l'éventail (L08) : une voie Haiku « entrées » passe en

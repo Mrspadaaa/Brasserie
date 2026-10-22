@@ -46,8 +46,10 @@ Ce qui a coûté cher jusqu'ici, et la brique qui répond :
 |---|---|---|---|---|---|
 | Pilote | CLAUDE.md, skill `voies` | Opus | session | planifie, route les décisions, vérifie, signe, écrit le cerveau et les leçons | lire les sorties brutes, exécuter le mécanique |
 | Exécutant | `.claude/agents/executant.md` | Haiku | 40 tours | lectures, extractions, conversions, contrôles, tests, captures, régénérations | décider, écrire hors de « Possède » |
-| Auteur | `.claude/agents/auteur.md` | Sonnet (Opus si conception) | 80 tours | variante, diagnostic, analyse, code avec un choix | trancher hors contrat (il écrit `DÉCISION À PRENDRE`) |
-| Relecteur | `.claude/agents/relecteur.md` | Sonnet | 30 tours | juge une voie finie, ouvre les captures, questions fermées | refaire le travail |
+| Concepteur | `.claude/agents/concepteur.md` | Opus | 80 tours | tout ce que le brasseur verra : maquettes, fils de fer, pictos, cartes ; dans une vraie carte de la base ; se juge sur ses captures avec PORTRAIT.md | déléguer le goût à un modèle plus faible (L25) |
+| Critique | `.claude/agents/critique.md` | Fable | 30 tours | juge une voie d'interface comme le brasseur (calibré sur `fils21-choisir/critique/PORTRAIT.md`) ; refuse par défaut | accepter par politesse : un rejet coûte une passe, une mauvaise planche coûte sa confiance |
+| Auteur | `.claude/agents/auteur.md` | Sonnet | 80 tours | diagnostic, analyse, contrôles, code avec un choix | concevoir une interface (L25) ; trancher hors contrat (il écrit `DÉCISION À PRENDRE`) |
+| Relecteur | `.claude/agents/relecteur.md` | Sonnet | 30 tours | juge une voie finie hors interface (code, données, analyse), questions fermées | relire une interface (c'est le critique) ; refaire le travail |
 | Conseiller | `.claude/agents/conseiller.md` | selon le regard | 15 tours | un avis tranché depuis un regard, ou une revue anonyme | écrire, exécuter |
 | Président du conseil | idem | Opus (Fable si lourd) | 15 tours | verdict en cinq parties | décider à la place du brasseur |
 | Brasseur | — | — | — | choisit (goût, variante, ce qu'il voit) | — |
