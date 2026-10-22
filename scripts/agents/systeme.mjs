@@ -402,6 +402,12 @@ export function verifierMission(fichier, { minVoies = 2 } = {}) {
     const siennes = dependances(t).filter((d) => series.has(d));
     const total = siennes.reduce((s, d) => s + series.get(d), 0);
     if (total < 30) erreurs.push(`${t.voie} : éventail de ${total} variantes en ${siennes.length} séries ; 30 au moins (« fait en qqch comme 30 et prends les 5 meilleures version et améliore les ») (M13)`);
+    // Les deux contrepoids du lot 21 : une série Fable (z, « créatif à fond ») et une série libre au brief
+    // minimal (u : « La série libre a produit de meilleurs gestes et de meilleures questions »).
+    const sesVoies = voies.filter((v) => siennes.includes(v.voie));
+    if (!sesVoies.some((v) => v.modele === 'fable')) erreurs.push(`${t.voie} : aucune série en Fable (contrepoids « créatif à fond ») (M13)`);
+    // « brief minimal » et pas « libre » seul : « un seul facteur libre » figure dans bien des objectifs.
+    if (!sesVoies.some((v) => /brief minimal/i.test(v.objectif ?? ''))) erreurs.push(`${t.voie} : aucune série libre au brief minimal (contrepoids du lot 21) (M13)`);
     if (!voies.some((v) => etape(v) === 'passe 2' && dependances(v).includes(t.voie))) erreurs.push(`${t.voie} : aucune passe 2 n'en dépend ; les candidates s'améliorent avant d'être montrées (M13)`);
   }
   for (const id of series.keys()) if (!tris.some((t) => dependances(t).includes(id))) erreurs.push(`${id} : série v0 sans voie de tri qui en dépende (M13)`);
@@ -573,10 +579,10 @@ function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = fal
 }
 
 // Un lot en entonnoir : des séries v0, un tri par le critique, une passe 2 qui en dépend (M13).
-function construireEntonnoir(dir, { series = 6, parSerie = 5, sansTri = false, sansPasse = false } = {}) {
+function construireEntonnoir(dir, { series = 6, parSerie = 5, sansTri = false, sansPasse = false, sansLibre = false } = {}) {
   const f = path.join(dir, 'MISSION.md');
   const ids = Array.from({ length: series }, (_, i) => `s${i + 1}`);
-  const voies = ids.map((id, i) => `| ${id} | série ${id} | conception | concepteur | ${i === 0 ? 'fable' : 'opus'} | 120 | ecran-1/lot/${id}/** | — | c | brasseur | v0 ×${parSerie} |`);
+  const voies = ids.map((id, i) => `| ${id} | série ${id}${i === 1 && !sansLibre ? ', libre au brief minimal' : ''} | conception | concepteur | ${i === 0 ? 'fable' : 'opus'} | 120 | ecran-1/lot/${id}/** | — | c | brasseur | v0 ×${parSerie} |`);
   if (!sansTri) voies.push(`| t | tri des séries | jugement | critique | fable | 30 | t/RESULTAT.md | ${ids.join(', ')} | c | pilote | tri |`);
   if (!sansPasse) voies.push('| p2 | les cinq améliorées | conception | concepteur | opus | 80 | ecran-1/lot/p2/** | t | c | brasseur | passe 2 |');
   fs.writeFileSync(f, planMission(voies));
@@ -609,6 +615,7 @@ function temoins() {
   attendu('éventail trop étroit', verifierMission(construireEntonnoir(sous('e3'), { series: 3, parSerie: 4 })).length === 0, false);
   attendu('éventail sans tri', verifierMission(construireEntonnoir(sous('e4'), { sansTri: true })).length === 0, false);
   attendu('éventail sans passe 2', verifierMission(construireEntonnoir(sous('e5'), { sansPasse: true })).length === 0, false);
+  attendu('éventail sans série libre', verifierMission(construireEntonnoir(sous('e6'), { sansLibre: true })).length === 0, false);
   const m1 = sous('m1');
   attendu('voies tenues', verifierVoies(construireMission(m1), { approuver: true, racine: m1 }).ok, true);
   const m2 = sous('m2');
