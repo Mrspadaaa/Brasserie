@@ -26,6 +26,12 @@
   - Origine, mot pour mot : « la manière de faire […] avec les 44 variante puis les 5 meilleures était
     vraiment plus qualitatif ».
   - L'autre session a refait r4d (4 séries de 8) et r7 (lot 23, 6 séries et plus) en entonnoir.
+- c0e5769 : l'entonnoir précisé par l'utilisateur.
+  - Un vaste panel de concepts minimalistes : 48 au moins en 6 séries de 4 à 12.
+  - La chaleur D22 dans chaque série, et la baseline obligatoire même en v0.
+  - Puis un classement, des greffes « même les plus extravagantes », et des passes 2, 3… jusqu'au satisfaisant
+    (au plus 4).
+  - L'autre session a été prévenue : r7 à 56 concepts, r4d à 6 séries.
 - f924eee : élagage.
   - `systeme.mjs remplaces` (registre `cerveau/REMPLACES.md`) et `systeme.mjs charge` (30 000 caractères au
     plus pour ce qui est chargé partout).
