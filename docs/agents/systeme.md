@@ -134,8 +134,25 @@ lot. Le critique Fable, lui, passe après chaque voie d'interface. Ce n'est pas 
    `DÉCISION À PRENDRE`). La réponse au pilote tient en une ligne.
 6. **Vérification** : `systeme.mjs voies <mission>` rejoue les critères de chaque voie avec le
    `gate-check` d'unlazy et ne croit pas le rapport. Ensuite `git status --short` contre « Possède ».
-   Une voie d'interface passe par un relecteur.
+   Une voie d'interface passe par le critique.
 7. **Signature** : la section « Signature » de MISSION.md, puis un commit local.
+
+### Ce que le brasseur verra : l'entonnoir
+Méthode : `.claude/skills/voies/references/entonnoir.md`. Contrôle : `systeme.mjs mission` (M13).
+- Elle reprend la méthode du lot 21 : 44 variantes v0 en 10 séries, puis 5 candidates améliorées. L'utilisateur l'a
+  jugée « vraiment plus qualitatif » que celle du lot 22 (12 variantes, une par agent, contraintes dès la v0, sans
+  amélioration).
+- **v0** : des séries de 3 à 8 variantes, un concepteur par série, 30 variantes au moins.
+  - Une série Fable « créative à fond », et une série libre au brief minimal.
+  - Seuls l'honnêteté, le doigt, les interdits et la question sont obligatoires.
+- **Tri** : un seul critique, repris à chaque série. Il rend une SYNTHESE : 5 candidates, une par approche, leurs
+  greffes, les retouches communes. Ni rejet ni étoile.
+- **Passe 2** : les mêmes agents, repris par `SendMessage`. Tous les contrôles s'appliquent, puis le critique rend
+  son verdict.
+- **Montrer** : les améliorées, puis toutes les v0. Le brasseur choisit ; ensuite, `reprise` de la variante choisie
+  avec les éléments qu'il a notés (D104).
+- Le coût est voisin de celui du lot 22, pour trois fois plus de choix. Le plafond (L18) porte sur les agents et les
+  tours, pas sur les variantes.
 
 ## Corriger : trois boucles
 

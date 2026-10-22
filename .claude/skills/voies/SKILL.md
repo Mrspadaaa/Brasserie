@@ -32,6 +32,14 @@ Référence complète : `docs/agents/systeme.md`. Ce skill est la marche à suiv
    d'écrire les voies. Sinon, pas de conseil (§ « Quand le conseil intervient »).
 5. Vérifier les entrées partagées avant l'éventail (L08) : une voie Haiku « entrées » passe en
    premier quand moteur, JSON ou constantes sont en jeu.
+5 bis. **Ce que le brasseur verra (lot de maquettes, planche de pictos) suit l'entonnoir** :
+   `references/entonnoir.md`. Il comprend :
+   - des séries v0 libres, de 3 à 8 variantes, un concepteur par série, 30 variantes au moins ;
+   - un tri par le critique, qui garde 5 candidates pour leur diversité, avec leurs greffes ;
+   - une passe 2 par les mêmes agents, avec tous les contrôles ;
+   - puis tout est montré.
+   Le plafond (L18) porte sur les agents et les tours, jamais sur le nombre de variantes. Colonne « Étape »
+   de MISSION.md ; M13.
 6. Vérifier : `node scripts/agents/systeme.mjs mission work/missions/<id>/MISSION.md` → MISSION OK.
 
 ## 2. Écrire les contrats
@@ -60,8 +68,9 @@ L'approbation des commandes (écrites par le pilote lui-même) se fait au premie
 À chaque retour, une ligne arrive. Puis :
 `node scripts/agents/systeme.mjs voies work/missions/<id> --approuver` (première fois), ensuite sans
 `--approuver`. Le script rejoue les critères de chaque voie et ne croit pas son rapport (L16). Puis :
-`git status --short` contre les « Possède » (L17). Pour une interface, le critique a rendu un
-verdict par variante. **Chaque variante rejetée est relancée** (même agent, avec la correction du
+`git status --short` contre les « Possède » (L17). Après les séries v0, le critique trie, sans
+rejet (SYNTHESE : candidates, greffes, retouches communes). La passe 2 repart chez les mêmes agents, par
+`SendMessage`. Après une passe 2 ou une reprise, le critique a rendu un verdict par variante. **Chaque variante rejetée est relancée** (même agent, avec la correction du
 critique, 2 fois au plus) **ou écartée** (une ligne « <id> écartée : raison » dans MISSION.md). Le
 rejeu échoue tant qu'un rejet reste en plan (M12). Tant que le critique n'est pas étalonné (L27),
 son avis est indicatif : on ne cache rien au brasseur sur sa seule foi.

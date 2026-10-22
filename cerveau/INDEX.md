@@ -37,7 +37,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[rien-de-fige]] — ébullition, dose, whirlpool, dry hop réglables ; minutes par 5′
 - [[le-brasseur-choisit]] — chaque lot lui est montré ; le jury filtre, il ne choisit pas
 - [[fil-de-fer-d-abord]] — exploration en fils de fer en planche ; fidélité pour la retenue
-- [[exploration-v0-libre]] — v0 libres ; honnêteté et usage au doigt seuls obligatoires
+- [[exploration-v0-libre]] — v0 libres ; l'entonnoir du lot 21 : environ 40 variantes en séries, puis 5 améliorées (M13)
 - [[methode-ui-v3]] — tous les écrans, un ticket par sujet (#133)
 - [[micro-correctifs]] — aller-retour rapide, capture si l'apparence est ambiguë
 

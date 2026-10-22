@@ -430,3 +430,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - « faire une recherche approfondie sur comment mettre en place un workflow qui intègre ça
   et comment utiliser les bon pratique frontend actuel » ; « Regarde notamment les bonnes
   pratiques, bon outil à utiliser sur internet. Le bon workflow » — D23.
+- **L'entonnoir du lot 21 plutôt que le lot 22** : « J'ai l'impression que la manière de faire pour les
+  mini maquettes dry hopping de base avec les 44 variante puis les 5 meilleures était vraiment plus
+  qualitatif. Regarde pour améliorer ça » — 22.10, soir. Méthode : `.claude/skills/voies/references/entonnoir.md`
+  (M13).

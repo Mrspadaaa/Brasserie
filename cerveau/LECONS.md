@@ -104,7 +104,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
 - Erreur : lots 5 à 21, 8 à 12 auteurs en vol alors que `prompt-session.md` §7 en prévoyait 3. Chaque auteur coûtait 130 à 350 k jetons. Le pilote lisait les sorties brutes.
 - Cause : pas de plafond par voie, tout passait par le modèle le plus cher, et le retour n'avait pas de format.
-- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique, Sonnet pour l'analyse et le code, Opus pour l'interface, la planification et la signature (L25). Retour en une ligne.
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique, Sonnet pour l'analyse et le code, Opus pour l'interface, la planification et la signature (L25). Retour en une ligne. Le plafond porte sur les agents et les tours, jamais sur les variantes : le 22.10, le lot 22 a été réduit à 12 variantes, une par agent, « au nom de L18 » (M13).
 - Rôles : pilote
 - Contrôle : `node scripts/agents/systeme.mjs agents`
 
@@ -148,7 +148,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L27 — Un juge qui parle pour le brasseur s'étalonne sur ses vrais verdicts
 - Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré », et rejeté r6a, que le brasseur a choisie. Pire : il a rejeté la première planche « épicé » à six genres, et la voie s'est resserrée sur le seul piment (« quasiment identique », D101 ter). Son portrait (PORTRAIT.md) avait été écrit par un modèle et jamais confronté aux verdicts du brasseur.
 - Cause : aucune étape n'éprouvait le juge à l'aveugle, et les verdicts du brasseur ne revenaient jamais le corriger (boucle ouverte).
-- Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts mais ne trie pas et ne rejette jamais la diversité : on montre d'abord au brasseur. Idem pour le regard Brasseur du conseil.
+- Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts mais ne classe pas et ne rejette jamais la diversité : on montre d'abord au brasseur. À l'entonnoir, il désigne les 5 à affiner, une par approche, sans rien cacher (M13). Idem pour le regard Brasseur du conseil.
 - Rôles : pilote, critique, conseil
 - Contrôle : à écrire (épreuve à l'aveugle, `systeme.mjs etalonnage`)
 
@@ -160,6 +160,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle : le 22.10, les deux `\b` de D98 étaient des 0x08 (table `NOMME` morte, vue par la voie r6i), comme le `—` du pilote devenu un tiret. `systeme.mjs cablage` refuse tout caractère de contrôle dans les scripts de contrôle (témoin « échappement devenu caractère de contrôle »).
 - M11 (L16) — Tout livrable d'agent est un fichier du dépôt : `JURY-VERDICT.md` annoncé, jamais produit. `systeme.mjs voies` rejoue les critères de chaque voie au lieu de croire son rapport.
 - M12 — Une variante rejetée est relancée ou écartée, et des écrans ne sont finis qu'une fois publiés : le 22.10, 6 rejets du lot 22 laissés en plan et aucun lien. `systeme.mjs voies` échoue sinon.
+- M13 — Ce que le brasseur verra passe par l'entonnoir. Le 22.10, l'utilisateur a jugé la méthode du lot 21 (44 variantes v0 en séries, puis 5 améliorées) « vraiment plus qualitatif » que celle du lot 22 (12 variantes, une par agent, contraintes dès la v0, sans passe d'amélioration). Le brasseur sur le lot 22 : « reprendre trop peu d'éléments ». Méthode : `.claude/skills/voies/references/entonnoir.md`. `systeme.mjs mission` exige une colonne Étape, au moins 30 variantes v0 en séries de 3 à 8, un tri par le critique et une passe 2.
 - M06 (L06) — Les acquis validés passent d'un lot au suivant : le radar a disparu du lot 21. Liste dans [[acquis-valides]], recopiée dans chaque brief ; `controle-acquis.mjs` (D99).
 - M01 — Valeurs brutes à l'écran (low, medium, null…), revenues trois fois : `controle-valeurs-brutes.mjs` (D97, dans controle-commun).
 - M02 (L21) — Un hook s'essaie sur les vraies entrées de l'app : le 22.10, le hook de correction a réagi à la notification d'un conseiller. Témoin « notification d'agent » dans `systeme.mjs temoins`.

@@ -380,6 +380,32 @@ export function verifierMission(fichier, { minVoies = 2 } = {}) {
     const relit = (v['depend de'] ?? '').split(/[,;]\s*/).map((s) => s.trim()).some((d) => interface_.has(d));
     if (relit && ['relecteur', 'auteur'].includes(v.agent) && /relect|relu|critique/i.test(`${v.voie} ${v.objectif}`)) erreurs.push(`${id} : relecture d'interface confiée à ${v.agent} ; critique calibré attendu (L25)`);
   }
+  // M13 (22.10) : ce qu'on montre au brasseur s'ouvre large, puis se resserre. Le lot 21 (41 v0 en séries,
+  // 5 améliorées) a été jugé « vraiment plus qualitatif » que le lot 22 (12 variantes, une par agent, sans
+  // passe d'amélioration). Les voies déjà finies ne sont pas rejugées.
+  const dirMission = path.dirname(fichier);
+  const finie = (id) => {
+    const r = path.join(dirMission, 'voies', id, 'RESULTAT.md');
+    return existe(r) && /^OK\b/.test(lire(r).split('\n').find((l) => l.trim()) ?? '');
+  };
+  const etape = (v) => sansAccents(v.etape ?? '').trim();
+  const dependances = (v) => (v['depend de'] ?? '').split(/[,;]\s*/).map((s) => s.trim()).filter(Boolean);
+  for (const v of voies) {
+    if (!interface_.has(v.voie) || v.decideur !== 'brasseur' || finie(v.voie)) continue;
+    if (!/^(v0|passe [23]|reprise)\b/.test(etape(v))) erreurs.push(`${v.voie} : étape « ${v.etape ?? ''} » ; ce qu'on montre au brasseur passe par l'entonnoir (v0 ×N, tri, passe 2) ou reprend une variante choisie (M13)`);
+  }
+  const series = new Map(voies.filter((v) => /^v0\b/.test(etape(v))).map((v) => [v.voie, Number((etape(v).match(/^v0\s*[×x(]\s*(\d+)/) ?? [])[1] ?? 0)]));
+  for (const [id, n] of series) if (n < 3 || n > 8) erreurs.push(`${id} : ${n || 'nombre de'} variantes ; une série porte 3 à 8 variantes, un agent par série et non par variante (M13)`);
+  const tris = voies.filter((v) => etape(v) === 'tri');
+  for (const t of tris) {
+    if (t.agent !== 'critique') erreurs.push(`${t.voie} : tri confié à ${t.agent} ; critique attendu (M13)`);
+    const siennes = dependances(t).filter((d) => series.has(d));
+    const total = siennes.reduce((s, d) => s + series.get(d), 0);
+    if (total < 30) erreurs.push(`${t.voie} : éventail de ${total} variantes en ${siennes.length} séries ; 30 au moins (« fait en qqch comme 30 et prends les 5 meilleures version et améliore les ») (M13)`);
+    if (!voies.some((v) => etape(v) === 'passe 2' && dependances(v).includes(t.voie))) erreurs.push(`${t.voie} : aucune passe 2 n'en dépend ; les candidates s'améliorent avant d'être montrées (M13)`);
+  }
+  for (const id of series.keys()) if (!tris.some((t) => dependances(t).includes(id))) erreurs.push(`${id} : série v0 sans voie de tri qui en dépende (M13)`);
+  if (voies.some((v) => etape(v) === 'reprise' && !finie(v.voie)) && !/\b[\w-]+[^\S\n]+choisie[^\S\n]*:[^\S\n]*\S/i.test(texte)) erreurs.push('reprise sans variante choisie par le brasseur (« <id> choisie : ses mots » dans MISSION.md) (M13)');
   for (const d of table('Décisions')) if (!DECIDEURS.includes(d.decideur)) erreurs.push(`décision « ${d.decision ?? '?'} » : décideur « ${d.decideur} »`);
   const sources = (texte.split(/^## Sources/m)[1] ?? '').split(/\n## /)[0];
   for (const m of sources.matchAll(/`([^`\s]+\/[^`\s]+)`/g)) if (!existe(path.join(RACINE, m[1]))) erreurs.push(`source introuvable : ${m[1]} (leçon L09)`);
@@ -532,13 +558,28 @@ function construireMission(dir, { critereFaux = false, critereIgnore = false, cr
   return m;
 }
 
-function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = false, interfaceSonnet = false, relectureGenerique = false } = {}) {
+const TETE_VOIES = '| Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur | Étape |\n|---|---|---|---|---|---|---|---|---|---|---|';
+const planMission = (voies, avant = '') => `# Mission\n\n## Objectif\no\n${avant}\n## Décisions\n| Décision | Décideur |\n|---|---|\n| d | pilote |\n\n## Voies\n${TETE_VOIES}\n${voies.join('\n')}\n\n## Boucle de retour\nb\n\n## Sources\n- \`package.json\`\n`;
+
+function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = false, interfaceSonnet = false, relectureGenerique = false, sansChoix = false, sansEtape = false } = {}) {
   const f = path.join(dir, 'MISSION.md');
   const dec = sansDecideur ? '' : 'pilote';
-  const v2 = attendBrasseur ? '| v2 | lot | jugement | auteur | sonnet | 60 | y/** | v1, brasseur (radar) | c | brasseur |' : '| v2 | o | jugement | auteur | sonnet | 60 | y/** | v1 | c | brasseur |';
-  const v3 = interfaceSonnet ? '| v3 | maquette | jugement | auteur | sonnet | 60 | ecran-1/lot/** | — | c | brasseur |' : '| v3 | maquette | conception | concepteur | opus | 80 | ecran-1/lot/** | — | c | brasseur |';
-  const v4 = relectureGenerique ? '| v4 | relecture de v3 | jugement | relecteur | sonnet | 30 | r/RESULTAT.md | v3 | c | pilote |' : '| v4 | relecture de v3 | jugement | critique | fable | 30 | r/RESULTAT.md | v3 | c | pilote |';
-  fs.writeFileSync(f, `# Mission\n\n## Objectif\no\n\n## Décisions\n| Décision | Décideur |\n|---|---|\n| d | pilote |\n\n## Voies\n| Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur |\n|---|---|---|---|---|---|---|---|---|---|\n| v1 | o | mécanique | executant | haiku | 30 | x/** | — | c | ${dec} |\n${v2}\n${v3}\n${v4}\n\n## Boucle de retour\nb\n\n## Sources\n- \`package.json\`\n`);
+  const etape = sansEtape ? '—' : 'reprise';
+  const v2 = attendBrasseur ? '| v2 | lot | jugement | auteur | sonnet | 60 | y/** | v1, brasseur (radar) | c | brasseur | — |' : '| v2 | o | jugement | auteur | sonnet | 60 | y/** | v1 | c | brasseur | — |';
+  const v3 = interfaceSonnet ? `| v3 | maquette | jugement | auteur | sonnet | 60 | ecran-1/lot/** | — | c | brasseur | ${etape} |` : `| v3 | maquette | conception | concepteur | opus | 80 | ecran-1/lot/** | — | c | brasseur | ${etape} |`;
+  const v4 = relectureGenerique ? '| v4 | relecture de v3 | jugement | relecteur | sonnet | 30 | r/RESULTAT.md | v3 | c | pilote | — |' : '| v4 | relecture de v3 | jugement | critique | fable | 30 | r/RESULTAT.md | v3 | c | pilote | — |';
+  fs.writeFileSync(f, planMission([`| v1 | o | mécanique | executant | haiku | 30 | x/** | — | c | ${dec} | — |`, v2, v3, v4], sansChoix ? '' : '\n- x1 choisie : « le meilleur »\n'));
+  return f;
+}
+
+// Un lot en entonnoir : des séries v0, un tri par le critique, une passe 2 qui en dépend (M13).
+function construireEntonnoir(dir, { series = 6, parSerie = 5, sansTri = false, sansPasse = false } = {}) {
+  const f = path.join(dir, 'MISSION.md');
+  const ids = Array.from({ length: series }, (_, i) => `s${i + 1}`);
+  const voies = ids.map((id, i) => `| ${id} | série ${id} | conception | concepteur | ${i === 0 ? 'fable' : 'opus'} | 120 | ecran-1/lot/${id}/** | — | c | brasseur | v0 ×${parSerie} |`);
+  if (!sansTri) voies.push(`| t | tri des séries | jugement | critique | fable | 30 | t/RESULTAT.md | ${ids.join(', ')} | c | pilote | tri |`);
+  if (!sansPasse) voies.push('| p2 | les cinq améliorées | conception | concepteur | opus | 80 | ecran-1/lot/p2/** | t | c | brasseur | passe 2 |');
+  fs.writeFileSync(f, planMission(voies));
   return f;
 }
 
@@ -561,6 +602,13 @@ function temoins() {
   attendu('lot montré qui attend le brasseur', verifierMission(construireMissionPlan(sous('p3'), { attendBrasseur: true })).length === 0, false);
   attendu('maquette confiée à Sonnet', verifierMission(construireMissionPlan(sous('p4'), { interfaceSonnet: true })).length === 0, false);
   attendu('maquette relue par un relecteur générique', verifierMission(construireMissionPlan(sous('p5'), { relectureGenerique: true })).length === 0, false);
+  attendu('maquette montrée sans étape', verifierMission(construireMissionPlan(sous('p6'), { sansEtape: true })).length === 0, false);
+  attendu('reprise sans variante choisie', verifierMission(construireMissionPlan(sous('p7'), { sansChoix: true })).length === 0, false);
+  attendu('lot en entonnoir', verifierMission(construireEntonnoir(sous('e1'))).length === 0, true);
+  attendu('lot de 12, une variante par agent', verifierMission(construireEntonnoir(sous('e2'), { series: 12, parSerie: 1 })).length === 0, false);
+  attendu('éventail trop étroit', verifierMission(construireEntonnoir(sous('e3'), { series: 3, parSerie: 4 })).length === 0, false);
+  attendu('éventail sans tri', verifierMission(construireEntonnoir(sous('e4'), { sansTri: true })).length === 0, false);
+  attendu('éventail sans passe 2', verifierMission(construireEntonnoir(sous('e5'), { sansPasse: true })).length === 0, false);
   const m1 = sous('m1');
   attendu('voies tenues', verifierVoies(construireMission(m1), { approuver: true, racine: m1 }).ok, true);
   const m2 = sous('m2');

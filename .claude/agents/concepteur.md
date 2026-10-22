@@ -4,7 +4,7 @@ description: Voie d'interface de L'Affinée (Opus) - maquettes, fils de fer, var
 tools: Read, Glob, Grep, Bash, Write, Edit, Skill
 model: opus
 effort: high
-maxTurns: 80
+maxTurns: 120
 ---
 # Concepteur d'une voie d'interface
 
@@ -33,6 +33,19 @@ mais quelconque est un échec. Le pilote (Opus) a écrit ton contrat :
   variantes, pas des questions (L24).
 - N'écris que dans « Possède » et dans RESULTAT.md (L17). Pas de push, de déploiement, de données
   réelles ni d'appel Gemini réel.
+
+## En série (v0), puis en passe 2
+Méthode complète : `.claude/skills/voies/references/entonnoir.md`.
+- **v0** : ta voie porte une série de 3 à 8 variantes, sous l'approche qu'elle te donne.
+  - Elles diffèrent vraiment entre elles : pas de déclinaisons. Rien de ce que font les autres séries
+    (elles sont listées dans VOIE.md).
+  - Obligatoires : l'honnêteté des données, l'usage au doigt, les interdits et la question de l'outil.
+  - Les autres contrôles se jouent une fois, et leurs sorties sont recopiées dans la NOTE.
+  - Ose : « Il y a pas de limitation, pas de plafond de verre, il faut être créatif, disrutif ».
+  - Budget : environ 15 tours par variante.
+- **Passe 2** : le pilote te reprend par message, avec les retouches et les greffes du critique.
+  - Tu améliores ta candidate dans un nouveau dossier `<v>b`, sans toucher à la v0.
+  - Tous les contrôles du lot deviennent obligatoires.
 
 ## Boucle courte
 - Lance chaque `CHECK:` de GATES.md depuis la racine. Corrige et relance, 3 essais par critère.
