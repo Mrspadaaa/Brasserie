@@ -1,4 +1,4 @@
-# Voie t1-theme — Le thème clair des maquettes dans toute l'app
+# Voie t1-theme — Les couleurs de ses maquettes choisies dans toute l'app
 
 - Mission : 2026-10-23-theme-performance (lire `../../MISSION.md` d'abord)
 - Agent : concepteur
@@ -9,13 +9,19 @@
 - Décideur en cas de doute : pilote (option prudente, écrite dans la NOTE ; aucune question bloquante)
 
 ## Objectif
-Toute l'app s'affiche par défaut dans le thème clair des maquettes que le brasseur a choisies, et dans le « cave » actuel
+Toute l'app s'affiche par défaut dans les couleurs des maquettes que le brasseur a choisies, et dans le « cave » actuel
 au choix. Ses mots : « Le thème de l'app principal doit être revu. On garde celle des maquettes » (23.10).
+- Ses maquettes choisies ont une page blanche, des gris neutres et un texte presque noir. Valeurs mesurées en tête de
+  DESIGN.md : page `#FFFFFF`, surfaces `#F5F5F5` et `#EBEBEB`, texte `#111111`, secondaire `#6B6B6B`.
+- **Pas** le « clair » à papier chaud du prototype (`#F2ECE4`). Il a été rejeté le jour même : « Pourquoi c'est en
+  thème pastel horrible ??? C'est pas ce que j'ai demandé ??? » (D106).
 
 ## Entrées
-- `prototypes/houblons-v4/ecran/THEMES.md`, `…/ecran/src/themes.css`, `…/ecran/tailwind.config.js` : le mécanisme du
-  prototype (mêmes noms de jetons, valeurs en canaux RGB par thème sous `[data-theme]`) et les valeurs du clair, avec
-  leurs contrastes mesurés. C'est la référence : on le porte, on ne le réinvente pas.
+- Les valeurs de la maquette jouable corrigée : `prototypes/houblons-v4/parcours/src/theme-maquettes.css`, qui
+  redéfinit `data-theme="clair"` avec ses couleurs. C'est la référence des valeurs.
+- `prototypes/houblons-v4/ecran/THEMES.md`, `…/ecran/src/themes.css`, `…/ecran/tailwind.config.js` : le MÉCANISME
+  seulement (mêmes noms de jetons, valeurs en canaux RGB par thème sous `[data-theme]`). On le porte, on ne le réinvente
+  pas. Ses valeurs « clair » sont rejetées.
 - `tailwind.config.js`, `src/index.css`, `src/main.tsx` : le thème actuel de l'app.
 - `DESIGN.md` (la décision du 23.10 est en tête), `PRODUCT.md`, `docs/ui-compacte.md`, `.claude/rules/affinee-frontend.md`.
 - Les captures des maquettes choisies, pour l'allure du clair : `work/refonte-frontend/v4/ecran-1/base/consolide/`

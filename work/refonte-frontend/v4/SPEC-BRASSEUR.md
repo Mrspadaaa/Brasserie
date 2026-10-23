@@ -39,7 +39,8 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
 **L'écran**
 - Dense mais pas surchargé : au premier plan seulement l'utile et l'actionnable, le reste à un toucher, 80 mots au plus.
   Pas d'écran de cockpit. (§ 3 ; D1 à D5)
-- Le thème des maquettes (clair par défaut, « cave » en sombre) devient celui de toute l'app (23.10, § 5).
+- Le thème de ses maquettes choisies (page blanche, gris neutres, texte presque noir), et non le « clair » pastel du
+  prototype (D106), devient celui de toute l'app ; « cave » en sombre (23.10, § 5 ; valeurs dans DESIGN.md).
 - Moderne et visuel : des UX boosters (curseurs, bascule barres et radar) et des couleurs pour se repérer. (§ 4 ; D6,
   D7, D74)
 - Pictos d'arômes au trait, sans halo ; la légende derrière un petit « ? » ; l'usage en mot. (D88 à D90)
@@ -479,8 +480,10 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 - « Une UI ux toujours pas très moderne dans les normes et bon usage actuelle. » — 18.10.
 - **Le thème des maquettes pour toute l'app** : « Le thème de l'app principal doit être revu. On garde celle des
   maquettes » — 23.10, après le rapport sur l'intégration (B7 : ses maquettes choisies sont claires, l'app n'a que
-  « cave »). Le clair des maquettes devient le thème par défaut de l'app, le « cave » son thème sombre
-  (`prototypes/houblons-v4/ecran/THEMES.md`) ; décision inscrite en tête de DESIGN.md.
+  « cave »). Ses maquettes, ce sont celles qu'il a choisies, à page blanche et gris neutres (mesure dans DESIGN.md) ;
+  le « cave » devient le thème sombre. Puis, sur la maquette jouable passée au « clair » à papier chaud de
+  `prototypes/houblons-v4/ecran/THEMES.md` : « Pourquoi c'est en thème pastel horrible ??? C'est pas ce que j'ai
+  demandé ??? » — 23.10, soir (D106). Le pilote avait pris ce « clair » pour ses maquettes sans les mesurer.
 
 ## 6. Ses verdicts sur les versions passées (calibration de tout jugement)
 

@@ -58,3 +58,8 @@ Scope: toute l'app en clair par défaut et en cave au choix, contrastes mesurés
   CHECK: node prototypes/houblons-v4/parcours/outils/parcours-complet.mjs --dossier=prototypes/houblons-v4/maquettes/parcours-theme --captures prototypes/houblons-v4/maquettes/parcours-theme/captures-parcours
   EXPECT: /PARCOURS OK/
   EVIDENCE: pending
+
+- [ ] G12: la maquette reconstruite sur le thème de l'app garde les couleurs de ses maquettes choisies (D106)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-teinte.mjs prototypes/houblons-v4/maquettes/parcours-theme
+  EXPECT: /TEINTE OK/
+  EVIDENCE: pending

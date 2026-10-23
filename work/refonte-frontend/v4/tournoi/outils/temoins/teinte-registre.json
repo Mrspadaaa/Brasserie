@@ -1,0 +1,6 @@
+{
+ "regle": "Témoin de controle-teinte.mjs (D106) : un écran choisi, comparé à sa capture réelle.",
+ "ecrans": [
+  { "ecran": "etape-houblons", "route": "ma-biere", "statut": "choisi", "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-390.png" }
+ ]
+}

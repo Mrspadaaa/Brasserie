@@ -9,7 +9,7 @@
 - Décideur en cas de doute : pilote
 
 ## Objectif
-Juger l'app passée au thème clair, écran par écran, comme le brasseur la jugerait : est-ce le clair des maquettes qu'il a
+Juger l'app passée aux couleurs de ses maquettes choisies (page blanche, gris neutres ; pas le « clair » pastel du prototype, D106), écran par écran, comme le brasseur la jugerait : est-ce le blanc neutre des maquettes qu'il a
 choisies, lisible et net, sans rien perdre de la densité utile ?
 
 ## Entrées

@@ -1509,6 +1509,18 @@
    "resultat": "registre : REGISTRE OK (8 écrans) ; maquette jouable du 23.10 avant reprise : CHOIX ECHEC (étape Houblons, Ma bière, Suggérer)",
    "verdict": "garde",
    "script": "controle-choix.mjs"
+  },
+  {
+   "id": "D106",
+   "mots": "« Pourquoi c'est en thème pastel horrible ??? C'est pas ce que j'ai demandé ??? » (23.10)",
+   "controle": "controle-teinte.mjs <dossier construit> [--ecran=<écran>]",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "oui",
+   "resultat": "maquette jouable de 18 h 22 : TEINTE ECHEC 1/5 ; témoins teinte-blanc OK, teinte-pastel échec",
+   "verdict": "garde",
+   "script": "controle-teinte.mjs"
   }
  ]
 }

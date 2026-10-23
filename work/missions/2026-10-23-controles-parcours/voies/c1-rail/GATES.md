@@ -63,3 +63,38 @@ Scope: un mode --parcours de controle-rail.mjs, ses témoins, joué sur le parco
   CHECK: node scripts/agents/systeme.mjs cablage
   EXPECT: CABLAGE OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=5713fcbe8de744cefb76370244175b1a2dda328c030386acddcf0e090d0c4911; exit=0; EXPECT=matched; output-sha256=5ec18eb46548cd9619d98ce192a9c22635986ec66e4b705f9f65c00c6d173416; output-bytes=11; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+
+- [ ] G13: une frise verticale à plusieurs houblons (étape Houblons de la base v4.10, son choix) passe en mode parcours
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-rail.mjs work/refonte-frontend/v4/tournoi/outils/temoins rail-parcours-ok-vertical --page=etat.html --parcours
+  EXPECT: RAIL OK 1/1
+  EVIDENCE: pending
+
+- [ ] G14: un houblon déjà posé qui saute de côté pendant le geste d'un autre échoue par D64
+  CHECK: node scripts/agents/systeme.mjs echoue D64 -- node work/refonte-frontend/v4/tournoi/outils/controle-rail.mjs work/refonte-frontend/v4/tournoi/outils/temoins rail-parcours-saute --page=etat.html --parcours
+  EXPECT: ECHOUE OK
+  EVIDENCE: pending
+
+- [ ] G15: deux textes du rail l'un sur l'autre, à deux houblons, échouent par D56
+  CHECK: node scripts/agents/systeme.mjs echoue D56 -- node work/refonte-frontend/v4/tournoi/outils/controle-rail.mjs work/refonte-frontend/v4/tournoi/outils/temoins rail-parcours-deux-chevauchent --page=etat.html --parcours
+  EXPECT: ECHOUE OK
+  EVIDENCE: pending
+
+- [ ] G16: un moment tenu qui remonte en descendant l'ébullition échoue par D61 bis
+  CHECK: node scripts/agents/systeme.mjs echoue "D61 bis" -- node work/refonte-frontend/v4/tournoi/outils/controle-rail.mjs work/refonte-frontend/v4/tournoi/outils/temoins rail-parcours-remonte --page=etat.html --parcours
+  EXPECT: ECHOUE OK
+  EVIDENCE: pending
+
+- [ ] G17: des graduations d'ébullition irrégulières échouent par D45
+  CHECK: node scripts/agents/systeme.mjs echoue D45 -- node work/refonte-frontend/v4/tournoi/outils/controle-rail.mjs work/refonte-frontend/v4/tournoi/outils/temoins rail-parcours-irregulier --page=etat.html --parcours
+  EXPECT: ECHOUE OK
+  EVIDENCE: pending
+
+- [ ] G18: la NOTE reclasse D45, D56, D61 bis et D64 pour un rail à plusieurs houblons
+  CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-controles-parcours/voies/c1-rail/NOTE.md --exiger "Règles" --contient "plusieurs houblons,aria-orientation,rail-parcours-ok-vertical"
+  EXPECT: NOTE OK
+  EVIDENCE: pending
+
+- [ ] G19: un vide de plus de 80 px dans la frise verticale, au repos ou pendant le geste, échoue par D55
+  CHECK: node scripts/agents/systeme.mjs echoue D55 -- node work/refonte-frontend/v4/tournoi/outils/controle-rail.mjs work/refonte-frontend/v4/tournoi/outils/temoins rail-parcours-vide --page=etat.html --parcours
+  EXPECT: ECHOUE OK
+  EVIDENCE: pending
