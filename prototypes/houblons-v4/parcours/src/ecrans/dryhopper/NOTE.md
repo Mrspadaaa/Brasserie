@@ -26,9 +26,14 @@ choix remplacera l'écran dans le même socle.
   Melon, Épicé repliés.
 - x3b réduit : les jours de contact au bout de la frise.
 - La loupe est une vraie loupe : le profil floral et les crans du rail s'écartent sous le doigt (distorsion de Sarkar et
-  Brown centrée sur le cran touché, m = 6), et la bande du haut chiffre le floral des 5 crans voisins. Mesuré doigt
-  posé, sur cinq positions : ×9,8 à ×41,8 entre l'écart sous le doigt et l'écart au loin (L12). Aucune transition sur
-  le geste : une transition héritée de l'app faisait lire des positions en retard (×2,7 au contrôle, 23.10).
+  Brown centrée sur le cran touché, m = 6, bornée à l'étape sous le doigt), et la bande du haut chiffre le floral des 5
+  crans voisins. Mesuré doigt posé, sur onze positions : ×6,8 à ×27,7 entre l'écart sous le doigt et l'écart au loin
+  (L12). Aucune transition sur le geste : une transition héritée de l'app faisait lire des positions en retard (×2,7
+  au contrôle, 23.10).
+- Le rail tient ses plaintes (`controle-rail --parcours`, RAIL OK, y compris à 45′ et 120′ d'ébullition) :
+  - D35 : les cinq cases de la loupe gardent leur pas ; au bord, la rangée entière se décale ;
+  - D46 : le pouce suit le doigt en continu, seule la valeur s'accroche au cran ;
+  - D47 : pendant le geste, seuls les crans de l'étape sous le doigt s'affichent, et seule cette étape se déforme.
 - Calcul en direct : la frise entière (28 crans) passe par `simulerMoment` → `simulerCas` à l'ouverture (30 `lireBiere`,
   40 ms) ; un cran neuf coûte 0,9 ms en médiane (1,6 ms au plus). Plus aucune grille.
 - D95 corrigé : le rail lui-même (`role="slider"`, `data-role="reglage"`) fait bouger le simulé ; la vraie valeur

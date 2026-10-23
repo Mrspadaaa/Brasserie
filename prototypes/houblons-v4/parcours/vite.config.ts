@@ -58,6 +58,11 @@ function pagesParRoute(): Plugin {
         const note = path.join(ici, 'src/ecrans', route, 'NOTE.md');
         if (fs.existsSync(note)) this.emitFile({ type: 'asset', fileName: `${route}/NOTE.md`, source: fs.readFileSync(note, 'utf8') });
       }
+      // Cas d'essai du rail (D36, D37) : la même recette, ébullition de 45′ et de 120′ (controle-rail.mjs).
+      for (const route of ['ma-biere', 'dryhopper']) for (const min of [45, 120]) {
+        const html = page(route, '../').split(`data-route="${route}"`).join(`data-route="${route}" data-ebullition="${min}"`);
+        this.emitFile({ type: 'asset', fileName: `${route}/cas-ebu${min}.html`, source: html });
+      }
     },
   };
 }

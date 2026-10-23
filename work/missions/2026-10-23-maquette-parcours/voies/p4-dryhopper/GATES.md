@@ -93,3 +93,8 @@ Scope: a1 portée en React dans le socle, le moment calculé en direct à chaque
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p4-dryhopper/RESULTAT.md --contient "390,1280,a1,levure,ms"
   EXPECT: NOTE OK
   EVIDENCE: pending
+
+- [ ] G19: le rail de Dryhopper tient ses plaintes (D35 loupe sans chevauchement, D46 pouce continu, D47 seuls les crans du segment sous le doigt), y compris à 45′ et 120′
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-rail.mjs prototypes/houblons-v4/maquettes/parcours-p4 dryhopper --page=etat.html --parcours
+  EXPECT: RAIL OK
+  EVIDENCE: pending

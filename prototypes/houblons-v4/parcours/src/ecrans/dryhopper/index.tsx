@@ -30,6 +30,8 @@ const Chevron = ({ ouvert = false }: { ouvert?: boolean }) => (
 /** Orangé « hors du style » / « trop amer » (le seul accent d'alerte du standard #142). */
 export const ACC = '#c2410c';
 const IBU_MAX = 170;
+/** Pas entre deux cases de la loupe, en px. */
+const PAS_LOUPE = 56;
 const JOURS = [1, 2, 3, 7];
 const POMONA = 'lalbrew-pomona';
 
@@ -116,7 +118,8 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
 
   // Le geste : un cran par position du doigt ; la loupe déforme le rail autour du doigt pendant qu'il est posé.
   // La loupe se centre sur le cran sous le doigt : ses voisins s'écartent de part et d'autre, à égale distance.
-  const X = (k: number) => (doigt == null ? x[k] : loupe(x[k], x[i]));
+  // Seule l'étape sous le doigt se déforme ; les autres gardent leur place.
+  const X = (k: number) => (doigt == null || points[k].seg !== p.seg ? x[k] : loupe(x[k], x[i], BORNES_SEG[p.seg][0], BORNES_SEG[p.seg][1]));
   const poser = (k: number) => { if (k !== i) gestes.moment('brouillon', ajoutId, points[k].q); };
   const depuis = (clientX: number) => {
     const r = railRef.current?.getBoundingClientRect();
@@ -238,8 +241,10 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
       </div>
       {doigt != null && (
         <div className="pq-dry-loupe" aria-hidden="true" data-role="loupe">
+          {/* D35 : cinq cases à pas fixe ; au bord, c'est la rangée entière qui se décale, jamais une case sur sa voisine. */}
           {points.filter((q) => Math.abs(q.k - i) <= 2).map((q) => (
-            <span key={q.k} className={q.k === i ? 'pq-dry-loupe-ici' : ''} style={{ left: `clamp(24px, calc(${X(i)}% + ${(q.k - i) * 56}px), calc(100% - 24px))` }}>
+            <span key={q.k} className={q.k === i ? 'pq-dry-loupe-ici' : ''}
+              style={{ left: `calc(clamp(${24 + Math.min(2, i) * PAS_LOUPE}px, ${X(i)}%, calc(100% - ${24 + Math.min(2, points.length - 1 - i) * PAS_LOUPE}px)) + ${(q.k - i) * PAS_LOUPE}px)` }}>
               <em>{q.court}</em>
               <small style={{ color: COULEURS.floral.texte }}>{q.ecart.floral == null ? '?' : `${q.interp ? '≈' : '~'}${signe(q.ecart.floral)}`}</small>
             </span>
@@ -274,9 +279,11 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
           }}
           className="pq-dry-rail">
           {BORNES_SEG.map(([a, z], s) => <span key={s} className={`pq-dry-zone pq-dry-zone-${s}`} style={{ left: `${a + 0.4}%`, width: `${z - a - 0.8}%` }} />)}
-          {doigt != null && points.map((q) => <i key={q.k} data-cran={q.k} className={`pq-dry-cran ${q.seg === p.seg ? '' : 'pq-dry-cran-loin'}`} style={{ left: `${X(q.k)}%` }} />)}
+          {/* D47 : « Juste les affiches quand on est à cette emplacement » : les crans du seul segment sous le doigt. */}
+          {doigt != null && points.filter((q) => q.seg === p.seg).map((q) => <i key={q.k} data-cran={q.k} className="pq-dry-cran" style={{ left: `${X(q.k)}%` }} />)}
           {best >= 0 && <span className="pq-dry-etoile" style={{ left: `${X(best)}%` }}><Etoile taille={10} /></span>}
-          <span className="pq-dry-pouce" style={{ left: `${X(i)}%` }} />
+          {/* D46 : le pouce suit le doigt en continu ; seule la valeur s'accroche au cran (comme les curseurs de l'app). */}
+          <span className="pq-dry-pouce" style={{ left: `${doigt ?? X(i)}%` }} />
         </div>
       </div>
     </div>

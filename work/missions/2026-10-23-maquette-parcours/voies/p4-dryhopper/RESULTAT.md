@@ -1,4 +1,4 @@
-OK — Dryhopper (a1) et l'étape Levure jouables, calculés en direct ; 17 critères verts
+OK — Dryhopper (a1) et Levure jouables, en direct ; rail D35, D46, D47 tenus ; 19 critères verts
 
 ## Fichiers écrits (tous dans « Possède »)
 - `prototypes/houblons-v4/parcours/src/ecrans/dryhopper/` :
@@ -14,7 +14,7 @@ OK — Dryhopper (a1) et l'étape Levure jouables, calculés en direct ; 17 crit
 ## Critères (rejoués depuis la racine, version finale)
 | critère | sortie |
 |---|---|
-| G1 | CONSTRUIT OK (8 pages) → prototypes/houblons-v4/maquettes/parcours-p4/ |
+| G1 | CONSTRUIT OK (9 pages) → prototypes/houblons-v4/maquettes/parcours-p4/ (avec `dryhopper/cas-ebu45.html` et `cas-ebu120.html`) |
 | G2 | TYPES OK |
 | G3 | COMMUN OK (couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende, parlant, brutes) |
 | G4 | dryhopper 80 mots · MOTS OK |
@@ -27,10 +27,48 @@ OK — Dryhopper (a1) et l'étape Levure jouables, calculés en direct ; 17 crit
 | G11 | CUMUL OK : ajout cumulé Nugget + Idaho 7, 4 levures, biotransformation visible, la levure fait bouger le simulé |
 | G12 | COMMUN OK (levure : 69 mots) |
 | G13 | ETAPE OK (levure), avec 14 gestes Dryhopper et 5 gestes Levure ; rejoué 4 fois de suite, vert les 4 fois |
-| G14 | PONTS OK (19 gestes, recalcul médian 1,0 ms) ; gestes qui recalculent : médiane 5,5 ms, max 21,3 ms |
+| G14 | PONTS OK (19 gestes, recalcul médian 1,0 ms) ; gestes qui recalculent : médiane 4,8 ms, max 22,2 ms |
 | G15 | Test Files 1 passed (19 tests) |
 | G16 | APP INTACTE OK |
 | G17 | NOTE OK |
+| G18 | NOTE OK (ce fichier) |
+| G19 | RAIL OK 1/1, 16 règles jouées ; non joué : D44 au whirlpool (un seul cran, rien à régler) |
+
+## Rail
+`controle-rail.mjs … dryhopper --page=etat.html --parcours` a d'abord relevé trois défauts. Les voici après
+correction ; seuls ces trois points changent, la forme de a1 reste celle de a1.
+
+- **D35, étiquettes de la loupe qui se chevauchent au bord** (« 45′ » sur « 40′ »). Avant, `clamp()` serrait chaque
+  case contre le bord. Maintenant, les cinq cases gardent leur pas de 56 px, et c'est la rangée entière qui se décale
+  au bord. Aucun chevauchement, à 35′, en actif 3 j ni après 3 j.
+- **D46, poignée saccadée** (5 mouvements sur 10 pas, jusqu'à 6,1 px d'écart au doigt). Pendant le geste, le pouce
+  suit maintenant le doigt en continu ; seule la valeur (`aria-valuenow`) s'accroche au cran, comme les curseurs de
+  l'app. Au repos, il revient se poser sur le cran.
+- **D47, crans des autres étapes visibles pendant le geste** (15 à 21 `pq-dry-cran-loin`). Seuls les crans de l'étape
+  sous le doigt s'affichent (« Juste les affiches quand on est à cette emplacement »). La loupe est aussi bornée à
+  cette étape : elle s'y déforme, et les autres étapes gardent leur place.
+
+| doigt sur | ×    |
+|-----------|------|
+| 60′       | 27,7 |
+| 55′       | 9,3  |
+| 35′       | 17,6 |
+| 20′       | 16,6 |
+| 0′        | 27,7 |
+| actif 1 j | 19,4 |
+| actif 3 j | 9,4  |
+| actif 7 j | 19,4 |
+| après 2 j | 6,8  |
+| après 5 j | 9,4  |
+| après 7 j | 19,4 |
+
+- **La loupe reste ×3 au moins** : de ×6,8 à ×27,7 sur onze positions du doigt (tableau ci-dessus). `jeu.mjs` mesure
+  toujours de la même façon ; il repère seulement le cran tenu parmi les graduations montrées, qui ne sont plus que
+  celles de l'étape. G13 est vert.
+- **Cas d'ébullition de 45′ et de 120′** (`cas-ebu45.html`, `cas-ebu120.html`) : D36 et D37 sont joués et passent. Le
+  rail commence à la durée de la recette, et une ligne se pose au cran visé.
+- **Captures du geste en cours** (ouvertes) : `captures/dryhopper-loupe-390.png`, doigt à 55′, rangée décalée au bord
+  et crans de l'ébullition seuls ; `captures/dryhopper-loupe-actif-390.png`, doigt en actif 3 j.
 
 ## Ce que jouent les `jeu.mjs`
 - **Dryhopper** :
@@ -53,18 +91,9 @@ OK — Dryhopper (a1) et l'étape Levure jouables, calculés en direct ; 17 crit
 ## Demandes du pilote (23.10)
 1. **G13 et la loupe ×2,71** : la cause n'était pas la force de la loupe, mais une transition héritée de l'app sur
    `left`. La mesure lisait des positions en retard : le cran 8 était rendu à 83 px alors que son style le plaçait à
-   106 px. Corrigé : aucune transition sur le geste (`.pq-dry-geste *`). La loupe est aussi agrandie : m de 4 à 6.
-   Mesuré doigt posé sur cinq positions :
-
-   | doigt sur | ×    |
-   |-----------|------|
-   | 55′       | 9,8  |
-   | 20′       | 24,7 |
-   | whirlpool | 41,8 |
-   | actif 3 j | 30,8 |
-   | après 5 j | 14,1 |
-
-   y1b et a1 étaient à ×5,8. La mesure de `jeu.mjs` n'a pas changé.
+   106 px. Corrigé : aucune transition sur le geste (`.pq-dry-geste *`). La loupe est aussi agrandie : m passe de 4
+   à 6. Depuis la section « ## Rail », elle est en plus bornée à l'étape sous le doigt : de ×6,8 à ×27,7 sur onze
+   positions (y1b et a1 étaient à ×5,8). La mesure de `jeu.mjs` n'a pas changé.
 2. **La vraie valeur** est toujours celle du houblon en brouillon, au moment qu'elle documente (`mesures.ts`). Elle vient
    des mesures en bière du moteur (`verifications()`), puis des comparatifs E01 à E10, ligne de la variété.
 

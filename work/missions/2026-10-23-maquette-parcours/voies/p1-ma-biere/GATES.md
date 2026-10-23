@@ -113,3 +113,8 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours-p1 --ecran=ma-biere
   EXPECT: CHOIX OK
   EVIDENCE: pending
+
+- [ ] G23: le rail de l'étape Houblons tient ses plaintes (D27, D35, D36, D37, D46, D47, D69), y compris à 45′ et 120′
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-rail.mjs prototypes/houblons-v4/maquettes/parcours-p1 ma-biere --page=etat.html --parcours
+  EXPECT: RAIL OK
+  EVIDENCE: pending

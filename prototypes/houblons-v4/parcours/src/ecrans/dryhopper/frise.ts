@@ -101,11 +101,12 @@ export function positions(points: Point[]): number[] {
 }
 export const BORNES_SEG = SEG;
 
-/** Loupe sous le doigt (y1b, D47, L12) : distorsion « œil de poisson » de Sarkar et Brown autour du doigt `f` (en %).
- * Près du doigt, l'écart entre deux crans est multiplié par m + 1 ; au bord, divisé par m + 1. Les bornes restent. */
-export function loupe(x: number, f: number, m = 6): number {
+/** Loupe sous le doigt (y1b, D47, L12) : distorsion « œil de poisson » de Sarkar et Brown autour du cran tenu `f`
+ * (en %), dans les bornes [lo, hi] de son étape : « quand on focus sur un type on affiche mieux l'échelle ».
+ * Près du doigt, l'écart entre deux crans est multiplié par m + 1 ; au bord de l'étape, divisé par m + 1. */
+export function loupe(x: number, f: number, lo = 0, hi = 100, m = 6): number {
   const d = x - f;
-  const D = d >= 0 ? 100 - f : f;
+  const D = d >= 0 ? hi - f : f - lo;
   if (D <= 0) return x;
   const t = Math.abs(d) / D;
   return f + Math.sign(d) * D * (((m + 1) * t) / (m * t + 1));

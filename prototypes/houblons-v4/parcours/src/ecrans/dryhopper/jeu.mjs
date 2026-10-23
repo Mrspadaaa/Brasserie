@@ -31,9 +31,12 @@ export default {
         const i = Number(ec.querySelector('[role="slider"]').getAttribute('aria-valuenow'));
         const xs = [...ec.querySelectorAll('[data-cran]')].map((e) => { const b = e.getBoundingClientRect(); return { k: Number(e.dataset.cran), x: b.left + b.width / 2 }; }).sort((a, b) => a.k - b.k);
         if (xs.length < 5) return 'graduations absentes sous le doigt (' + xs.length + ')';
-        const g = (k) => Math.abs(xs[k + 1].x - xs[k].x);
-        const pres = Math.min(i > 0 ? g(i - 1) : Infinity, i < xs.length - 1 ? g(i) : Infinity);
-        const loin = i < xs.length / 2 ? g(xs.length - 2) : g(0);
+        // Les crans montrés sont ceux du segment sous le doigt (D47) : on repère le cran tenu dans la liste.
+        const a = xs.findIndex((x) => x.k === i);
+        if (a < 0) return 'le cran tenu (' + i + ') n’est pas parmi les graduations';
+        const g = (n) => Math.abs(xs[n + 1].x - xs[n].x);
+        const pres = Math.min(a > 0 ? g(a - 1) : Infinity, a < xs.length - 1 ? g(a) : Infinity);
+        const loin = a < xs.length / 2 ? g(xs.length - 2) : g(0);
         const ratio = pres / loin;
         window.__pqDry.loupe = { i, pres, loin, ratio };
         return ratio >= 3 || ('loupe ×' + ratio.toFixed(2) + ' (sous le doigt ' + pres.toFixed(1) + ' px, au loin ' + loin.toFixed(1) + ' px)');
