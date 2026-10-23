@@ -101,6 +101,22 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
 - Non gardé : D80 (intensité, usage), le rail (controle-rail à adapter) ; jouer-parcours.mjs doit au moins les vérifier.
 - Verdict « r6a reste le meilleur » versé au jeu d'étalonnage (d0a26c14).
 
+## Fin de journée du 23.10
+- Règle n° 1 (D105) : registre des choix `work/refonte-frontend/v4/choix/ecrans.json`, `controle-choix.mjs` (autre
+  session) ; `systeme.mjs mission` exige controle-choix pour toute voie montrée au brasseur, `voies` rejoue le registre
+  (c14cafdc).
+- Mission `2026-10-23-controles-parcours` : c2-intensite finie (e887f57c) ; c1-rail passe 1 finie (ad4f1c6b), passe 2
+  en cours (D45, D56, D61 bis, D64, frise verticale à plusieurs houblons ; G13 à G18). À signer ensuite, et
+  `portee-defauts.json` à mettre à jour (verdicts du rail).
+- Mission `2026-10-23-theme-performance` (b808cee2) : t1-theme, t2-performance, t3-critique, PAS ENCORE LANCÉES ; à lancer
+  à la remise à zéro de la fenêtre de 5 h, en prévenant l'autre session (t1 touche `tailwind.config.js`).
+- Maquette jouable : publication par moi, dans un artefact neuf (enveloppe prête :
+  scratchpad `publication-maquette/`), quand l'autre session annonce CHOIX OK et PARCOURS OK ; route de départ à
+  vérifier (l'étape Houblons).
+- Tickets : #143 (architecture de base avant implémentation, phase 1 = p8-portabilite), #144 (thème clair) ; #119 et
+  #121 commentés. Branche poussée jusqu'à b808cee2.
+- Mode `--url` des contrôles pour l'app : après p8 (forme du crochet dans ARCHITECTURE.md « ## Crochet de test »).
+
 ## Ouvert, par priorité
 1. **Dette des défauts** (AUDIT.md, « À adapter »), urgente pour la voie p4 du parcours :
    - `controle-rail.mjs` (22 défauts du rail, essentiels pour Dryhopper ; effort grand) ;
