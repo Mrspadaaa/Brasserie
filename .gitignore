@@ -74,6 +74,8 @@ firestore.rules
 !/work/refonte-frontend/v4/tournoi/outils/temoins/**/*.html
 # Mesures figées des panels témoins (23.10, M14) : controle-panel.mjs --mesures=.
 !/work/refonte-frontend/v4/tournoi/outils/temoins/*.json
+# Portée des défauts (23.10, audit a1) : lue par systeme.mjs mission.
+!/work/refonte-frontend/v4/tournoi/outils/portee-defauts.json
 # Étalonnage du critique (23.10, L27) : jeu, clé et réponses ; les captures anonymisées restent locales.
 !/work/refonte-frontend/v4/etalonnage/*.json
 # Inventaire de ce que le brasseur a noté bon ou intéressant (22.10.2026, D104) : lu par controle-reprise.mjs.

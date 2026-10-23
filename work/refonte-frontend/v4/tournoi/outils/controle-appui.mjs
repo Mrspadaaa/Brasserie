@@ -113,5 +113,7 @@ for (const id of ids) {
   console.log(id + ' · appui contrôlé');
 }
 await browser.close();
+// Audit du 23.10 : un contrôle qui ne lit aucune page n'est pas un OK (« OK 0/0 »).
+if (ids.length === 0) problems.push('aucune maquette lue : 0 page au format attendu ; ce contrôle ne garde rien ici (voir portee-defauts.json)');
 if (problems.length) { console.log('APPUI ECHEC ' + problems.length + ' problème(s)'); for (const x of problems) console.log('  ' + x); }
 else console.log('APPUI OK ' + ids.length + '/' + ids.length);

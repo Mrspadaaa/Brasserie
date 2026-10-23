@@ -423,6 +423,30 @@ function gateCheck(args, cwd) {
 
 // Leçon L27 (22.10) : une variante rejetée par le critique est relancée ou écartée, jamais laissée en
 // plan ; et une mission qui produit des écrans n'est finie qu'une fois publiée (lien d'artefact).
+// La portée des défauts (audit a1 du 23.10) : pour un sujet d'écran, les contrôles qui le gardent, et la dette (les
+// contrôles à adapter, qui ne tournent plus sur le format actuel). controle-commun couvre les contrôles qu'il appelle.
+export const PORTEE = path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'tournoi', 'outils', 'portee-defauts.json');
+const SUJETS = { dryhopper: /dry ?hop|quand ajouter/i, comparer: /compar/i, fiche: /fiche/i, picto: /picto/i, suggestions: /sugg[eé]r/i, recette: /recette/i, 'ma-biere': /ma bi[eè]re/i, radar: /radar/i, rail: /\brail\b|loupe/i, levure: /levure/i };
+const COMMUN = ['controle-au-style', 'controle-contraste', 'controle-couleurs', 'controle-fiche', 'controle-gros-blocs', 'controle-legende', 'controle-pictos-trait', 'controle-sens-survol', 'controle-standard', 'controle-usage-parlant', 'controle-valeurs-brutes', 'mots-premier-ecran'];
+export function controlesDeLaPortee(texteVoie, controles, { portee = PORTEE } = {}) {
+  if (!existe(portee)) return { sujets: [], manquants: [], dette: [] };
+  const sujets = Object.entries(SUJETS).filter(([, re]) => re.test(texteVoie)).map(([s]) => s);
+  if (!(sujets.length === 1 && sujets[0] === 'picto')) sujets.push('tout-ecran');
+  const script = (d) => (d.controle.match(/[\w.-]+?(?=\.(?:mjs|test\.ts))/) ?? [])[0];
+  const defauts = JSON.parse(lire(portee)).defauts.filter((d) => d.portee.some((p) => sujets.includes(p)));
+  const couverts = new Set([...controles.matchAll(/[\w-]+/g)].map((m) => m[0]));
+  if (couverts.has('controle-commun')) for (const c of COMMUN) couverts.add(c);
+  const ecartes = new Set([...controles.matchAll(/sans\s+([\w-]+?)(?:\.mjs)?\b/g)].map((m) => m[1]));
+  const grouper = (verdict) => {
+    const parScript = new Map();
+    for (const d of defauts.filter((x) => x.verdict === verdict)) { const s = script(d); if (s) parScript.set(s, [...(parScript.get(s) ?? []), d.id]); }
+    return parScript;
+  };
+  const manquants = [...grouper('garde')].filter(([s]) => !couverts.has(s) && !ecartes.has(s)).map(([s, ids]) => `${s} (${ids.join(', ')})`);
+  const dette = [...grouper('a-adapter')].map(([s, ids]) => `${s} (${ids.join(', ')})`);
+  return { sujets, manquants, dette };
+}
+
 // Les lignes d'une table de MISSION.md (« ## Voies », « ## Décisions »), en objets par en-tête sans accents.
 export function lireTable(texte, titre) {
   const i = texte.search(new RegExp(`^## ${titre}`, 'm'));
@@ -594,6 +618,13 @@ export function verifierMission(fichier, { minVoies = 2 } = {}) {
     if (total && (chaleur.chaude < 0.3 * total || !chaleur.tiede || !chaleur.froide)) erreurs.push(`${t.voie} : chaleur ${chaleur.tiede} tiède, ${chaleur.chaude} chaude, ${chaleur.froide} froide ; les trois, et 30 % de chaudes au moins (« 4 tiède, 5 chaude, 2 froide », D22) (M13)`);
     if (!voies.some((v) => etape(v) === 'passe 2' && dependances(v).includes(t.voie))) erreurs.push(`${t.voie} : aucune passe 2 n'en dépend ; les candidates s'améliorent avant d'être montrées (M13)`);
   }
+  // L13 (23.10, audit a1) : une voie d'écran à contractualiser prévoit tous les contrôles qui gardent son sujet
+  // (portee-defauts.json, verdict « garde »), ou en écarte un avec sa raison (« sans controle-x : raison »).
+  // Une voie déjà contractée (GATES.md écrit) n'est pas rejugée : son contrat fait foi.
+  for (const v of voies) {
+    if (!interface_.has(v.voie) || v.decideur !== 'brasseur' || finie(v.voie) || existe(path.join(dirMission, 'voies', v.voie, 'GATES.md'))) continue;
+    for (const m of controlesDeLaPortee(`${v.objectif} ${v.possede}`, v.controles ?? '').manquants) erreurs.push(`${v.voie} : ${m} absent de ses contrôles ; il garde un défaut de son sujet (L13 ; « sans ${m.split(' ')[0]} : raison » pour l'écarter)`);
+  }
   for (const id of series.keys()) if (!tris.some((t) => dependances(t).includes(id))) erreurs.push(`${id} : série v0 sans voie de tri qui en dépende (M13)`);
   if (voies.some((v) => etape(v) === 'reprise' && !finie(v.voie)) && !/\b[\w-]+[^\S\n]+choisie[^\S\n]*:[^\S\n]*\S/i.test(texte)) erreurs.push('reprise sans variante choisie par le brasseur (« <id> choisie : ses mots » dans MISSION.md) (M13)');
   for (const d of table('Décisions')) if (!DECIDEURS.includes(d.decideur)) erreurs.push(`décision « ${d.decision ?? '?'} » : décideur « ${d.decideur} »`);
@@ -663,6 +694,11 @@ const scriptsDeControle = () => [
 function verifierCablage() {
   const erreurs = [];
   for (const f of caracteresDeControle(scriptsDeControle())) erreurs.push(`caractère de contrôle dans ${f} (un échappement mal écrit)`);
+  // Audit du 23.10 : neuf contrôles sortaient « OK 0/0 » sur les pages actuelles, sans en lire aucune.
+  for (const f of scriptsDeControle()) {
+    const t = lire(f);
+    if (/OK ' \+ ids\.length \+ '\/' \+ ids\.length/.test(t) && !/if \(ids\.length === 0\) problems\.push|if \(!ids\.length\)/.test(t)) erreurs.push(`${rel(f)} : un « OK 0/0 » reste possible quand aucune page n'est lue`);
+  }
   const claude = lire(path.join(RACINE, 'CLAUDE.md'));
   for (const imp of ['@cerveau/INDEX.md', '@cerveau/LECONS.md']) if (!claude.includes(imp)) erreurs.push(`CLAUDE.md n'importe pas ${imp}`);
   if (!claude.includes('docs/agents/systeme.md')) erreurs.push('CLAUDE.md ne pointe pas docs/agents/systeme.md');
@@ -764,7 +800,7 @@ function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = fal
   const dec = sansDecideur ? '' : 'pilote';
   const etape = sansEtape ? '—' : 'reprise';
   const v2 = attendBrasseur ? '| v2 | lot | jugement | auteur | sonnet | 60 | y/** | v1, brasseur (radar) | c | brasseur | — |' : '| v2 | o | jugement | auteur | sonnet | 60 | y/** | v1 | c | brasseur | — |';
-  const v3 = interfaceSonnet ? `| v3 | maquette | jugement | auteur | sonnet | 60 | ecran-1/lot/** | — | c | brasseur | ${etape} |` : `| v3 | maquette | conception | concepteur | opus | 80 | ecran-1/lot/** | — | c | brasseur | ${etape} |`;
+  const v3 = interfaceSonnet ? `| v3 | maquette | jugement | auteur | sonnet | 60 | ecran-1/lot/** | — | controle-commun | brasseur | ${etape} |` : `| v3 | maquette | conception | concepteur | opus | 80 | ecran-1/lot/** | — | controle-commun | brasseur | ${etape} |`;
   const v4 = relectureGenerique ? '| v4 | relecture de v3 | jugement | relecteur | sonnet | 30 | r/RESULTAT.md | v3 | c | pilote | — |' : '| v4 | relecture de v3 | jugement | critique | fable | 30 | r/RESULTAT.md | v3 | c | pilote | — |';
   fs.writeFileSync(f, planMission([`| v1 | o | mécanique | executant | haiku | 30 | x/** | — | c | ${dec} | — |`, v2, v3, v4], sansChoix ? '' : '\n- x1 choisie : « le meilleur »\n'));
   return f;
@@ -779,7 +815,7 @@ function construireEntonnoir(dir, { series = 7, parSerie = 8, sansTri = false, s
   const ctl = sansBaseline ? 'controle-commun' : 'baseline : controle-commun --sans=mots';
   const voies = ids.map((id, i) => `| ${id} | série ${id}${i === 1 && !sansLibre ? ', libre au brief minimal' : ''} | conception | concepteur | ${i === 0 ? 'fable' : 'opus'} | 120 | ecran-1/lot/${id}/** | — | ${ctl} | brasseur | v0 ×${parSerie}${temp} |`);
   if (!sansTri) voies.push(`| t | tri des séries | jugement | critique | fable | 30 | t/RESULTAT.md | ${ids.join(', ')} | ${triSansPanel ? 'captures ouvertes' : 'controle-panel, captures ouvertes'} | pilote | tri |`);
-  if (!sansPasse) voies.push('| p2 | les cinq améliorées | conception | concepteur | opus | 80 | ecran-1/lot/p2/** | t | c | brasseur | passe 2 |');
+  if (!sansPasse) voies.push('| p2 | les cinq améliorées | conception | concepteur | opus | 80 | ecran-1/lot/p2/** | t | controle-commun | brasseur | passe 2 |');
   fs.writeFileSync(f, planMission(voies));
   return f;
 }
@@ -814,6 +850,11 @@ function temoins() {
   attendu('éventail sans chaleur déclarée', verifierMission(construireEntonnoir(sous('e7'), { chaleur: '' })).length === 0, false);
   attendu('éventail tout en tiède', verifierMission(construireEntonnoir(sous('e8'), { chaleur: ' (8 tiède)' })).length === 0, false);
   attendu('cinq séries seulement, trop peu d’approches',verifierMission(construireEntonnoir(sous('e10'), { series: 5, parSerie: 8 })).length === 0, false);
+  // L13 (audit a1) : une voie d'écran prévoit les contrôles de son sujet, ou en écarte un avec sa raison.
+  const dh = (controles) => { const d = sous(`dh${controles.length}`); const f = path.join(d, 'MISSION.md'); fs.writeFileSync(f, planMission([`| v1 | Dryhopper, le moment | conception | concepteur | opus | 80 | ecran-1/lot/** | — | ${controles} | brasseur | reprise |`, '| v2 | relecture | jugement | critique | fable | 30 | r/RESULTAT.md | v1 | c | pilote | — |'], '\n- x1 choisie : « le meilleur »\n')); return verifierMission(f).length === 0; };
+  attendu('voie Dryhopper sans les contrôles de son sujet', dh('controle-commun'), false);
+  const tous = 'controle-commun, controle-moments, pouvoir.test.ts, controle-alpha, controle-lisible, controle-simulation, controle-une-question, controle-acquis';
+  attendu('voie Dryhopper avec ses contrôles, un écarté avec sa raison', dh(`${tous}, sans controle-cumul-levure : la levure est un autre outil`), true);
   attendu('tri sans mesure du panel', verifierMission(construireEntonnoir(sous('e11'), { triSansPanel: true })).length === 0, false);
   attendu('série qui ne suit pas la baseline', verifierMission(construireEntonnoir(sous('e9'), { sansBaseline: true })).length === 0, false);
   const m1 = sous('m1');
@@ -957,7 +998,14 @@ function main(argv) {
       return r.ok ? 0 : 1;
     }
     case 'mission': {
-      const e = verifierMission(path.resolve(args[0] ?? ''), { minVoies: Number(option(args, '--min-voies', 2)) });
+      const fichier = path.resolve(args[0] ?? '');
+      const e = verifierMission(fichier, { minVoies: Number(option(args, '--min-voies', 2)) });
+      // La dette se lit à chaque passage : les contrôles des sujets en cours qui ne tournent plus (L13, audit a1).
+      if (existe(fichier)) {
+        const sujets = lireTable(lire(fichier), 'Voies').filter((v) => /ecran-1\//.test(v.possede ?? '') && v.decideur === 'brasseur').map((v) => `${v.objectif} ${v.possede}`).join(' ');
+        const { dette } = sujets ? controlesDeLaPortee(sujets, '') : { dette: [] };
+        if (dette.length) console.log(`  · dette (défauts de ces sujets que plus aucun contrôle ne garde) : ${dette.join(' ; ')}`);
+      }
       return finir(!e.length, 'MISSION OK', 'MISSION ECHEC', e);
     }
     case 'hooks': { const e = verifierHooks(); return finir(!e.length, 'HOOKS OK', 'HOOKS ECHEC', e); }
@@ -972,12 +1020,14 @@ function main(argv) {
       return finir(!erreurs.length, `REMPLACES OK (${motifs} consignes remplacées, aucune survivante)`, 'REMPLACES ECHEC', erreurs);
     }
     case 'epreuve': {
-      const dossier = path.resolve(args[0] ?? path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'etalonnage'));
+      // Le dossier est le premier argument qui n'est ni une option ni sa valeur (« etalonnage --moitie A »).
+      const dossier = path.resolve(args.find((a, i) => !a.startsWith('--') && args[i - 1] !== '--moitie') ?? path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'etalonnage'));
       const n = preparerEpreuve(path.join(dossier, 'jeu.json'), dossier);
       return rognerPremiersEcrans(path.join(dossier, 'epreuve')).then((r) => finir(true, `EPREUVE PRETE (${n} items, ${r} captures ramenées au premier écran ; ${rel(path.join(dossier, 'epreuve'))} ; clé : ${rel(path.join(dossier, 'cle.json'))})`, ''));
     }
     case 'etalonnage': {
-      const dossier = path.resolve(args[0] ?? path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'etalonnage'));
+      // Le dossier est le premier argument qui n'est ni une option ni sa valeur (« etalonnage --moitie A »).
+      const dossier = path.resolve(args.find((a, i) => !a.startsWith('--') && args[i - 1] !== '--moitie') ?? path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'etalonnage'));
       const r = noterEpreuve(dossier, { moitie: option(args, '--moitie', null) });
       const pc = (k) => `${r.compte[k][0]}/${r.compte[k][1]} (${Math.round(100 * r.taux[k])} %)`;
       const details = [...r.manquantes.map((e) => `sans réponse : ${e}`), ...r.desaccords];

@@ -109,6 +109,8 @@ if (args.includes('--fiche') && !/FICHE OK/.test(fiche)) for (const l of fiche.s
 if (baseArg && !/BASELINE OK/.test(baseline)) for (const l of baseline.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D26 baseline)');
 if (needRadar && !/RADAR OK/.test(radar)) for (const l of radar.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D18 radar)');
 if (needRecette && !/RECETTE OK/.test(recette)) for (const l of recette.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D13 recette)');
+// Audit du 23.10 : un contrôle qui ne lit aucune page n'est pas un OK (« OK 0/0 »).
+if (ids.length === 0) problems.push('aucune maquette lue : 0 page au format attendu ; ce contrôle ne garde rien ici (voir portee-defauts.json)');
 if (problems.length === 0) console.log('LOT OK ' + ids.length + '/' + ids.length);
 else { console.log('LOT ECHEC ' + problems.length + ' problème(s)'); for (const x of problems) console.log('  ' + x); process.exitCode = 1; }
 if (cap.status !== 0) console.log('(capture : ' + cap.stdout.trim().split('\n').pop() + ')');

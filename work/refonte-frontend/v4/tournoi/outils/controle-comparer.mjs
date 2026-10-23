@@ -230,5 +230,7 @@ for (const id of ids) {
 }
 await browser.close();
 function mesure(m) { return { alpha: 'α', beta: 'β', ratio: 'α/β', huiles: 'huiles totales' }[m] || m; }
+// Audit du 23.10 (a1-audit-defauts) : sur une page au format actuel, ce contrôle ne lisait rien et sortait « COMPARER OK 0/0 ». Un contrôle qui ne lit rien n'est pas un OK.
+if (ids.length === 0) problems.push('aucune maquette lue : 0 page au format attendu ; ce contrôle ne garde rien ici (voir portee-defauts.json)');
 if (problems.length === 0) console.log('COMPARER OK ' + ids.length + '/' + ids.length);
 else { console.log('COMPARER ECHEC ' + problems.length + ' problème(s)'); for (const x of problems) console.log('  ' + x); process.exitCode = 1; }

@@ -119,5 +119,7 @@ for (const id of ids) {
   console.log(id + ' · détail de Ma bière contrôlé (' + rows.length + ' familles)');
 }
 await browser.close();
+// Audit du 23.10 (a1-audit-defauts) : sur une page au format actuel, ce contrôle ne lisait rien et sortait « DETAIL OK 0/0 ». Un contrôle qui ne lit rien n'est pas un OK.
+if (ids.length === 0) problems.push('aucune maquette lue : 0 page au format attendu ; ce contrôle ne garde rien ici (voir portee-defauts.json)');
 if (problems.length === 0) console.log('DETAIL OK ' + ids.length + '/' + ids.length);
 else { console.log('DETAIL ECHEC ' + problems.length + ' problème(s)'); for (const x of problems) console.log('  ' + x); process.exitCode = 1; }
