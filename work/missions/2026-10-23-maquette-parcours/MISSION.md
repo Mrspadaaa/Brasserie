@@ -1,3 +1,4 @@
+| Maquette jouable | parcours de bout en bout, construction d332792c ; 23.10 | https://claude.ai/artifact/52UBb4F7iME2k3ZzsAv4x1 | `work/refonte-frontend/v4/outils/pages/2026-10-23-maquette/index.html` |
 # Mission 2026-10-23-maquette-parcours
 
 ## Objectif

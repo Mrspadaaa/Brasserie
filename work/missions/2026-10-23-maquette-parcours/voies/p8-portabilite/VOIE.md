@@ -88,6 +88,12 @@ voit ne change : ses choix sont vérifiés par `controle-choix.mjs` (règle n° 
 8. **Rien ne bouge à l'écran** : les mêmes pages, les mêmes nombres. Rejouer `controle-choix`, le parcours et
    `check:engine`.
 
+9. **Performance** (mesurée par la supervision, t2) : à ×4, le toucher froid Ma bière → Suggérer prend 782 ms, dont
+   490 ms de moteur ; vers Substituer, 743 ms. Le glisser de Dryhopper : p95 121 ms. Le script : 1 518 Ko brut, 339 Ko
+   gzip. Prendre les optimisations classées dans `work/missions/2026-10-23-theme-performance/voies/t2-performance/RESULTAT.md`
+   (§ Optimisations) qui relèvent de ta voie : JSON en paresseux, calcul de Suggérer hors du fil principal ou précalculé
+   au repos. Écrire dans ARCHITECTURE.md ce qui part en worker dans l'app.
+
 ## Exigences transversales et acquis (recopiés, leçons L05 et L06)
 - Règle n° 1 : ses choix. Aucun écran ne change de forme ; `controle-choix.mjs` (CHOIX OK) le prouve.
 - Inconnu ≠ 0 ; simulé marqué « ~ » ; aucun fichier de l'app modifié ; Gemini jamais appelé.
