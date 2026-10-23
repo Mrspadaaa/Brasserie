@@ -13,14 +13,14 @@ export const sourceAlpha = (h: HoublonLu): 'lot' | 'fiches' | null =>
 
 /** α comme sur les voies : la valeur (lot d'abord), puis la plage des fiches ; « ≠ » si le lot en sort.
  * ligne : « α 13 % 9,5–16 » ; colonne : la plage dessous ; fiche : « α 13 % lot · fiches 9,5–16 % ». */
-export function AlphaLu({ h, mode = 'ligne', balise = h.cle }: { h: HoublonLu; mode?: 'ligne' | 'colonne' | 'fiche'; balise?: string }) {
+export function AlphaLu({ h, mode = 'ligne', balise = h.cle }: { h: HoublonLu; mode?: 'ligne' | 'colonne' | 'fiche' | 'court'; balise?: string }) {
   const src = sourceAlpha(h);
   if (!h.alpha || !src) {
     return <span data-role="alpha" data-houblon={balise} data-source="fiches" className="font-mono text-sm text-cave-400" title="α inconnu">α ?</span>;
   }
   const { valeur, plage: p, horsFiches } = h.alpha;
   const grand = mode === 'fiche';
-  const plageLot = src === 'lot' && p ? (
+  const plageLot = src === 'lot' && p && mode !== 'court' ? (
     <span className={`font-mono text-xs ${horsFiches ? 'text-attention' : 'text-cave-400'} ${mode === 'colonne' ? 'block' : ''}`}>
       {mode === 'fiche' && <span className="font-sans">fiches </span>}{horsFiches ? '≠ ' : ''}{plage(p[0], p[1])}{mode === 'fiche' ? ' %' : ''}
     </span>
@@ -44,7 +44,7 @@ export function Usage({ h }: { h: HoublonLu }) {
   const valeur = r.value ?? 'inconnu';
   const mot = r.value === 'double' ? 'mixte' : r.value ?? 'usage ?';
   return (
-    <span data-role="usage" data-usage={valeur} data-source={r.source} title={r.source}
+    <span data-role="usage" data-usage={valeur} data-source={/^fournisseur/.test(r.source) ? 'fournisseur' : 'règle'} title={r.source}
       className="inline-flex items-center h-5 px-1.5 rounded-full bg-cave-800 text-xs text-cave-200 whitespace-nowrap">{mot}</span>
   );
 }

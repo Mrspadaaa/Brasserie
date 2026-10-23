@@ -1,95 +1,143 @@
-OK — Suggérer (q2b, base v4.10) jouable, en direct, « Comparer les 3 » vers Comparer
+OK — Suggérer repris de q2b (D105) : voies du moteur groupées, Comparer (n), G1–G17 verts
 
-## Fait
+## Reprise D105
 
-Écran Suggérer, « Quel houblon ajouter à ma bière ? », porté de q2b dans le socle et calculé en direct par le moteur.
-- En tête : « Plus floral » (piste l5b, visée +1 cran, « atteinte par Idaho 7 ») et « Moins résineux » (barre orangée
-  au-delà du style, « aucun houblon ne le baisse »).
-- Puis 9 voies, une par houblon du stock. Chacune montre : le nom, l'α du lot (« ≠ » hors des fiches), l'usage en mot,
-  le stock en icône, et le gain floral (crans au style, points en absolu). Viennent ensuite sa barre sur la piste de
-  l'objectif, sous la ligne pointillée de la visée, puis le résineux et les extras en traits par cran, dans des cases
-  alignées.
-- Le « + » ajoute un houblon à la comparaison, quatre au plus. Il se marque en direct sur la piste de l'objectif.
-- « Comparer les N » ouvre Comparer avec les choisis.
-- L'appui long sur une voie, ou le survol long du nom à 1280 px, ouvre la fiche de p1. Le retour du téléphone la
-  ferme, et Suggérer garde ses choix.
+Suggérer redevient q2b, tel que le brasseur l'a choisi. Il est calculé en direct ; la carte (fils22) ne donne plus que
+les ponts.
 
-Fichiers (tous dans « Possède ») :
-- `prototypes/houblons-v4/parcours/src/ecrans/suggerer/` : `index.tsx`, `briques.tsx`, `suggerer.css`, `jeu.mjs`,
-  `NOTE.md`, `cas-direct.json` et `outils/instantane.mjs` ;
-- captures dans `prototypes/houblons-v4/maquettes/parcours-p2/captures-suggerer/`.
+### En tête
 
-## Critères (sortie décisive)
+- Les onglets du socle « Ma bière · Suggestions · Comparer (n) », dans un `nav`. Un seul « ‹ », celui de l'en-tête.
+- « ? » (légende), « Au style / Absolu » et « Barres / Radar ». La vue Radar est un vrai radar : ma bière, la zone du
+  style, les voies retenues, les familles inconnues marquées « ? ».
+- Les cartes d'objectif de la dégustation, teintées de leur famille, avec le verdict en un mot :
+  - « Moins résineux » : « Aucune voie houblon » et « Hors houblon › », qui ouvre les quatre pistes hors modèle du
+    moteur (`offModelLeads`) ;
+  - « Plus floral » : « Atteint », et le nom de la meilleure voie (Idaho 7).
+- Sous les cartes, la piste l5b de chaque objectif (D92). Le résineux passe à l'orangé au-delà du style.
+
+### Les voies
+
+Elles viennent de `proposer(recette, direction)` (14 voies, dont 13 montrées) et du dry hop de `suggerer`. Elles sont
+rangées comme dans q2b (`voies.ts`) :
+- « = même effet sur tes objectifs · 10 g · 10′ » : Golding, Motueka, Aurum, East Kent Goldings, Columbus,
+  Motueka + Citra cryo, Citra cryo. L'effet du groupe est dessiné une fois (~+0,9 cran).
+- « Assembler 5 + 5 g · 10′ · estimé » : Motueka + Nelson Sauvin.
+- « Remplacer Nugget · 60′ » : 5 remplaçants à IBU égal, avec leur dose (74 g, 24 g…).
+- « Dry hop · 4 g/L · après 3 j · estimé » : Idaho 7, Target, Cascade, Galaxy.
+
+Chaque ligne montre :
+- l'usage en mot court (amer, arôme, mixte) ;
+- le nom, l'α du lot (« ≠ » s'il sort des fiches), la dose ;
+- le stock en icône (coche, moins, chariot) ;
+- les familles en pictos, alignées, avec un trait par cran, orangées hors style ;
+- un « + » ou un ✓ à droite.
+
+Le « + » / ✓ est branché sur `useComparaison` / `basculerComparaison` ; un assemblage ajoute ses deux houblons. La
+barre « Comparer (n) » ouvre Comparer avec la liste.
+
+Deux voies sont proposées au départ, comme q2b avait une voie cochée : Motueka (meilleure du stock à 10′) et Idaho 7
+(meilleur dry hop).
+
+Gardés de la version précédente : l'appui long et le survol ouvrent la fiche (`useGestesFiche` de p1), et le retour la
+ferme.
+
+### Fichiers
+
+Dans `prototypes/houblons-v4/parcours/src/ecrans/suggerer/` :
+- `index.tsx` (réécrit) ;
+- `voies.ts` (nouveau, pur) ;
+- `radar.tsx` (nouveau) ;
+- `briques.tsx`, `suggerer.css`, `jeu.mjs` (réécrit), `NOTE.md` (avec « ## Reprise ») ;
+- `cas-direct.json` et `outils/instantane.mjs`.
+
+### Critères (rejoués après la dernière retouche)
 
 | Critère | Sortie |
 |---|---|
-| G1 | CONSTRUIT OK (8 pages) |
+| G1 | CONSTRUIT OK (9 pages) |
 | G2 | TYPES OK |
-| G3 | COMMUN OK (fiche, légende, standard, contraste compris) |
-| G4 | suggerer 77 mots, MOTS OK |
+| G3 | COMMUN OK |
+| G4 | suggerer 78 mots, MOTS OK |
 | G5 | UNE-QUESTION OK (1 groupe libre : houblon) |
-| G6 | AUTRES OK (9 voies, 8 avec extras) |
-| G7 | PISTE OK (2 objectifs, pistes de 308 px) |
-| G8 | PLACE OK (8 voies au premier écran, médiane 74 px) |
+| G6 | AUTRES OK (17 voies) |
+| G7 | PISTE OK (2 objectifs, pistes de 354 px) |
+| G8 | PLACE OK (6 voies au premier écran, médiane 81 px) |
 | G9 | MA-BIERE OK |
-| G10 | ALPHA OK (9 voies sur 9) |
-| G11 | ETAPE OK (suggerer) : 9 gestes, dont D80 et D76 en direct contre le moteur |
+| G10 | ALPHA OK (17 voies sur 17) |
+| G11 | ETAPE OK (suggerer) : 13 gestes |
 | G12 | PONTS OK (19 gestes, recalcul médian 1,1 ms) |
 | G13 | Test Files 1 passed |
 | G14 | APP INTACTE OK |
+| G15 | NOTE OK |
+| G16 | NOTE OK |
+| G17 | REPRISE OK (11 repris, 0 en contexte, 0 en pont, 1 écarté) |
 
-- G13 est rendu robuste par le pilote.
-- Hors critères : `controle-usage-intensite` donne USAGE-INTENSITE OK sur l'instantané.
-- Témoin (L13) pour la vérification D80/D76 de `jeu.mjs` : intacte, elle rend true. Elle échoue avec un data-crans
-  faussé (« citrus à 3.5 cran, le moteur dit 1.41 »), un extra retiré et un usage faussé.
+- Les 13 gestes de G11 sont : D80 et D76 contre le moteur, « + », ✓, assemblage, Hors houblon, Absolu, Radar, fiche,
+  retour, Comparer.
+- Hors critères : USAGE-INTENSITE OK sur l'instantané.
+- Témoin (L13) pour la vérification D80/D76 de `jeu.mjs` : intacte, elle rend true. Elle échoue sur un data-crans
+  faussé, un extra retiré et un usage faussé.
 
-## Captures ouvertes
+### Captures ouvertes, côte à côte avec q2b-b-390.png
 
-Captures regardées en image, dans `prototypes/houblons-v4/maquettes/parcours-p2/captures-suggerer/` :
-- `suggerer-390.png` : départ, 3 proposés ;
-- `suggerer-390-plus.png` : Galaxy ajouté, 4ᵉ, les autres « + » grisés ;
-- `suggerer-390-absolu.png` ;
-- `suggerer-390-legende.png` ;
-- `suggerer-fiche-390.png` : fiche d'Idaho 7 sur Suggérer ;
-- `suggerer-1280.png`.
+Dans `prototypes/houblons-v4/maquettes/parcours-p2/captures-suggerer/` :
+- `suggerer-d105-390.png` : premier écran ;
+- `suggerer-d105-390-legende.png` ;
+- `suggerer-d105-390-assembler-remplacer.png` ;
+- `suggerer-d105-390-dryhop.png` ;
+- `suggerer-d105-390-radar.png` ;
+- `suggerer-d105-390-hors-houblon.png` ;
+- `suggerer-d105-fiche-390.png` ;
+- `suggerer-d105-1280.png`.
 
-Aussi `suggerer-390-page.png` (page entière). Elles sont regardées à côté de q2b (`fils15-s5-complexe/captures/q2b-b-390.png`)
-et de la base v4.10 (`base/captures/consolide-b-390.png`).
+Comparées à `fils15-s5-complexe/captures/q2b-b-390.png` et `base/captures/consolide-b-390.png` : la même suite (onglets,
+réglages, cartes à verdict, groupe « = même effet », lignes à « + », Comparer (n)) et les mêmes voies de tête.
 
-## Écarts aux nombres de q2b
+### Écarts aux nombres et à la forme de q2b
 
-| | q2b (cas c1) | Ici (moteur v4, carte fils22) |
+| | q2b (cas c1, lot 15) | Ici (stout S1, moteur en direct) |
 |---|---|---|
-| Ajout | voies de 10 g à 10′ | 4 g/L, après 3 j, US-05 |
-| Floral | Motueka, Golding, Aurum… à « +1 cran » | Idaho 7 +23 points (+1,3 cran), Target, Cascade et Galaxy +16, Motueka +13, Nelson Sauvin +5 |
-| Résineux | « aucune voie houblon » | tous le montent, de +8 à +26 : « aucun houblon ne le baisse » |
+| Objectifs | trois | deux (dégustation du 18.10, comme la base v4.10) ; « Plus agrumes » était un objectif du seul cas c1 |
+| Groupe 10′ | Motueka, Aurum, East Kent Goldings, Columbus, Celeia… | Golding en tête (à acheter), Celeia absent : classement de `proposeVoies` |
+| Floral | « Approche » | « Atteint » : le dry hop d'Idaho 7 (+23 points, +1,3 cran) dépasse le cran voulu ; les voies à 10′ font ~+0,9 cran |
+| Résineux | « Aucune voie houblon » | pareil : le meilleur fait −2,6 points (remplacer Nugget), pour −10 voulus |
 
-- Le classement diffère donc de q2b, parce que les conditions ne sont plus les mêmes.
-- Citra cryo : le moteur rend 0 exact partout (« huile du cryo non relevée »). L'écran le montre inconnu (« ? »,
-  hachuré), pas « +0 ». Citra est réputé très fruité : c'est un cas L14 à confronter.
+Autres écarts, écrits dans la NOTE :
+- en plus de q2b : un titre en question et la ligne « fixé Stout 16D · US-05 », demandés par D98 ;
+- l'usage en mot, pas en picto (D90) ;
+- pas de ligne « Diminuer Nugget » (aucun houblon à comparer) ;
+- la levure passe par l'étape Levure ;
+- la bande « ‹ visée | visée » est écartée (« Ça c'est inutile », D91).
 
-## Besoins dans le socle (pilote)
+### Besoins dans le socle (pilote)
 
-1. Ma bière reste montée et visible sous un outil. Les contrôles du dépôt lisent la boîte, pas `inert` (premier h1,
-   premier `[data-houblon]`, premier `legende-bouton`). Je la retire du rendu dans ma feuille (`display: none` tant
-   que `.pq-outil-suggerer` est là). Il faudrait le faire une fois dans `CadreOutil` ou la coquille, pour tous les outils.
-2. L'adaptateur `suggerer` et `simulerAjout` devrait rendre `null` plutôt que 0 quand le simulateur n'a pas de données
-   d'huile (cryo). L'écran contourne par une règle « muet ».
-3. Un liseré jaune (focus de `main` de PageShell) entoure le contenu sur toutes les captures d'outil. Il vient du socle
-   ou de l'app.
-4. `controle-autres-ajouts` n'accepte qu'un cas figé. Je le nourris d'un instantané (`cas-direct.json`), désigné par un
-   `data-cas` relatif depuis le dossier de cas du lot 15. Un mode `--direct` (lecture de `window.__parcours`) serait
+1. Ma bière, montée sous l'outil, reste lue par les contrôles du dépôt. Je la retire du rendu dans ma feuille
+   (`display: none` tant que `.pq-outil-suggerer` est là). Il faudrait le faire une fois dans `CadreOutil` ou la
+   coquille.
+2. Le dry hop vient de `suggerer` (simulateur, dégustation comprise), pas de `proposer`. Un levier dry hop dans
+   `proposeVoies` donnerait une seule source.
+3. Les pistes hors houblon sont importées du moteur (`offModelLeads`). L'adaptateur devrait les exposer.
+4. L'adaptateur rend 0 au lieu de `null` quand le simulateur n'a pas de données d'huile (cryo). L'écran l'écarte du dry
+   hop (règle « muet »).
+5. `controle-autres-ajouts` lit encore un instantané (`cas-direct.json`, `data-cas` relatif). Un mode `--direct` serait
    plus propre.
 
-DÉCISION À PRENDRE : garder l'instantané `cas-direct.json` (à régénérer si le moteur change : G6 échoue alors), ou
-adapter `controle-autres-ajouts` au calcul en direct.
+DÉCISION À PRENDRE (brasseur) : deux cartes d'objectif (la dégustation de la stout) ou trois comme dans q2b (ajouter
+« Plus agrumes » serait inventer une visée).
 
-Prédiction : « Là je vois tout de suite qu'Idaho 7 fait le floral et qu'aucun houblon ne baisse le résineux ». Le
-risque : traits et cases jugés petits, et Citra cryo en « ? » questionné.
+Prédiction : « Oui, c'est mon q2b, avec les vraies voies ». Le risque : la liste est longue (17 voies) et les traits sont
+petits.
 
-CONNAISSANCE : `suggerer` (stout 16D, 4 g/L après 3 j) remonte le résineux pour les 9 houblons du stock (+8 à +26
-points). « Moins résineux » n'a pas de réponse houblon, sauf retrait ou substitution de Nugget.
-LEÇON PROPOSÉE : un écran posé sur un autre (inerte mais affiché) fausse les contrôles qui prennent le premier élément
-du DOM. Un socle d'écrans superposés doit retirer du rendu l'écran du dessous, ou ses contrôles doivent ignorer
-`[inert]`. Sur L17 : un script de contrôle temporaire a été écrit puis effacé dans `work/refonte-frontend/v4/tournoi/outils/`,
-hors de « Possède ». La prochaine fois, le mettre dans le dossier temporaire avec un import absolu.
+CONNAISSANCE : sur la stout S1, `proposeVoies` ({ floral: +1, resin: −1 }) prend 90 à 130 ms à froid. Il rend 7 ajouts
+ou assemblages au même effet floral (+15,9 points à 10′ pour 10 g) ; aucun ne baisse le résineux au-delà de −2,6
+points.
+
+LEÇON PROPOSÉE : avant de bâtir un écran de reprise, ouvrir la capture choisie et la poser à côté de la sienne dès le
+premier rendu. Un contrat qui cite une carte ou une règle ne remplace pas la capture qu'il a choisie (D105).
+
+## Version précédente (remplacée)
+
+La première version suivait la carte (`fils22-carte/suggerer`) : candidats en dry hop, un facteur libre. Le brasseur l'a
+refusée : « Je confirme que "Bière" et "Suggérer" divergent nettement du design choisi. Oui c'est quoi ce bordel ??? ».
+Ce qui en reste : la fiche à l'appui long (p1), la piste l5b, les traits par cran, la règle « muet » et le témoin D80.

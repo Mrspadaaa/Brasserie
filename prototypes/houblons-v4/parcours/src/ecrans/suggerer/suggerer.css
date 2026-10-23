@@ -43,3 +43,25 @@ html:has(.pq-outil-suggerer) [data-page-shell]:not(.pq-outil-suggerer) { display
 .pq-suggerer-barre-hors { background: #c2410c; }
 /* « ≠ » : l'α du lot sort de la plage des fiches (signe posé par la feuille, comme « α »). */
 .pq-suggerer-alpha-hors::after { content: "≠"; margin-left: 2px; font-weight: 600; color: #b45309; }
+
+/* Reprise D105 : q2b. */
+.pq-suggerer-onglets [data-role="onglets"] > button:first-child { display: none; } /* un seul « ‹ » : celui de l'en-tête */
+.pq-suggerer-onglets [data-role="onglets"] { padding-left: 0; padding-right: 0; }
+.pq-suggerer-carte { min-height: 6.25rem; }
+.pq-suggerer-verdict { font-size: 1.1875rem; font-weight: 800; letter-spacing: -0.015em; }
+.pq-suggerer-verdict-aucune { color: #475569; }
+.pq-suggerer-verdict-approche { color: #4338ca; }
+.pq-suggerer-verdict-atteint { color: #0e7490; }
+.pq-suggerer-alerte { position: absolute; right: -3px; bottom: -2px; width: 8px; height: 8px; border-radius: 9999px; background: #c2410c; box-shadow: 0 0 0 1.5px rgb(var(--cave-950)); }
+.pq-suggerer-hh { background: rgb(var(--cave-950)); color: rgb(var(--cave-50)); box-shadow: inset 0 0 0 1.5px rgb(var(--cave-600)); }
+.pq-suggerer-egal { font-weight: 800; }
+.pq-suggerer-moment { display: inline-flex; align-items: center; height: 1.375rem; padding: 0 0.5rem; border-radius: 9999px; border: 1.5px dashed rgb(var(--cave-600)); font-size: 0.75rem; font-weight: 600; color: rgb(var(--cave-50)); }
+.pq-suggerer-radar-grille { fill: none; stroke: rgb(var(--cave-700) / 0.6); stroke-width: 0.8; }
+.pq-suggerer-radar-zone { fill: rgb(var(--cave-700) / 0.35); stroke: none; }
+.pq-suggerer-radar-inconnu { fill: rgb(var(--cave-600) / 0.18); stroke: none; }
+.pq-suggerer-radar-biere { fill: none; stroke: rgb(var(--cave-50)); stroke-width: 2.2; }
+.pq-suggerer-radar-serie { fill: rgb(var(--cave-400) / 0.12); stroke: rgb(var(--cave-200)); stroke-width: 1.6; }
+.pq-suggerer-radar-nom { font-size: 10px; fill: rgb(var(--cave-200)); }
+/* « ≈ » (assemblage estimé) et « › » posés par la feuille : des signes, pas des mots. */
+.pq-suggerer-estime::after { content: " \2248"; }
+.pq-suggerer-hh::after { content: " \203A"; }

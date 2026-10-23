@@ -26,3 +26,16 @@
   100% { background: rgb(var(--cave-900)); }
 }
 @media (prefers-reduced-motion: reduce) { .pq-ma-biere-change { animation: none; } }
+
+/* Frise verticale du brassin (base v4.10) : la ligne du temps, à gauche, sous les nœuds et les repères. */
+.pq-ma-biere-frise::before {
+  content: ''; position: absolute; left: calc(1.625rem - 1px); top: 1rem; bottom: 1rem; width: 2px;
+  background: rgb(var(--cave-700)); border-radius: 2px;
+}
+.pq-ma-biere-ligne-frise { position: relative; z-index: 1; }
+.pq-ma-biere-repere-moment { touch-action: none; cursor: grab; }
+.pq-ma-biere-repere-moment:active { cursor: grabbing; }
+.pq-ma-biere-carte { background: rgb(var(--cave-800) / 0.45); }
+
+/* Onglet Ma bière : la famille touchée, ouverte sur sa visée. */
+.pq-biere-ouverte { background: rgb(var(--cave-800) / 0.45); }

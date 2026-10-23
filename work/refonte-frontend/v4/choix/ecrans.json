@@ -47,8 +47,10 @@
    "mots": "Pourquoi la fiche est pareil ??? C'est pas du tout la bonne, ça suit pas la Baseline, ça suit rien du tout ???",
    "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
    "controles": [
-    "work/refonte-frontend/v4/tournoi/outils/controle-fiche-baseline.mjs {dossier} fiche --page=etat.html"
-   ]
+    "work/refonte-frontend/v4/tournoi/outils/controle-fiche.mjs {dossier} ma-biere --pages=etat.html",
+    "work/refonte-frontend/v4/tournoi/outils/controle-fiche-baseline.mjs {dossier} ma-biere --page=etat.html"
+   ],
+   "note": "La fiche s'ouvre par l'appui long sur un houblon de l'étape Houblons : ses contrôles se jouent depuis cette page."
   },
   {
    "ecran": "dryhopper",

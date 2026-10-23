@@ -5,7 +5,7 @@
 //   orangée si elle sort du style), avec data-famille et data-crans (D80) ;
 // - l'usage en mot avec son mini picto (D80, D90), le stock en icône (D23 ter), l'α sourcé (D87).
 import { useLayoutEffect, useRef } from 'react';
-import { PackageCheck, PackageMinus } from 'lucide-react';
+import { PackageCheck, PackageMinus, ShoppingCart } from 'lucide-react';
 import { COULEURS, COURT, Picto, SegmentedControl, nombre, type Echelle } from '../../commun';
 import type { HoublonLu } from '../../moteur';
 import type { FamilyId, StyleScale } from '../../../../src/engine';
@@ -90,30 +90,33 @@ export function Traits({ f, crans, hors, role = 'extra' }: { f: FamilyId; crans:
 export const Calme = () => <span aria-hidden="true" className="pq-suggerer-case flex items-center justify-center"><i className="pq-suggerer-calme" /></span>;
 /** Famille dont l'écart est inconnu (rien de simulé) : hachuré, jamais 0. */
 export const CaseInconnue = ({ f }: { f: FamilyId }) => (
-  <span data-inconnu="" role="img" aria-label={`${COURT[f]} : inconnu`} className="pq-suggerer-case flex items-center justify-center">
-    <i className="pq-hachure block w-3.5 h-3.5 rounded-sm" />
+  <span data-inconnu="" role="img" aria-label={`${COURT[f]} : effet non établi`} className="pq-suggerer-case flex flex-col items-center gap-0.5">
+    <span className="pq-suggerer-inconnue inline-flex"><Picto famille={f} taille={15} nomme={false} /></span>
+    <i className="pq-hachure block w-3.5 h-1.5 rounded-sm" />
   </span>
 );
 
 // ---------- Usage, α, stock ----------
-/** L'usage du houblon en mot du brasseur, petit et discret (D80 « mini info… pas surchargé » ; D90 : le mot, car les
- * pictos d'usage de l8e n'étaient « pas parlant du tout »). data-usage comme hopRole (« double » pour mixte),
+/** L'usage du houblon en mot court du brasseur (amer, arôme, mixte) : la « mini info » de D80, en mot parce que les
+ * pictos d'usage de l8e n'étaient « pas parlant du tout » (D90). data-usage comme hopRole (« double » pour mixte),
  * data-source « fournisseur » ou « règle » (déduit de l'α : souligné en pointillé). */
+const COURT_USAGE = { amérisant: 'amer', aromatique: 'arôme', mixte: 'mixte' } as const;
 export function Usage({ h }: { h: HoublonLu }) {
   const mot = h.role.mot;
   const regle = !/^fournisseur/.test(h.role.source);
   const brut = mot === 'mixte' ? 'double' : mot ?? 'inconnu';
   return (
-    <span data-role="usage" data-usage={brut} data-source={regle ? 'règle' : 'fournisseur'}
-      className={`pq-suggerer-usage inline-flex items-center gap-0.5 shrink-0 text-xs leading-none ${regle ? 'pq-suggerer-usage-regle' : ''}`}>
-      {mot ?? 'usage ?'}
+    <span data-role="usage" data-usage={brut} data-source={regle ? 'règle' : 'fournisseur'} data-pour={h.cle}
+      aria-label={`usage : ${mot ?? 'inconnu'}${regle ? ', déduit de l’α' : ''}`}
+      className={`pq-suggerer-usage shrink-0 text-xs leading-none ${regle ? 'pq-suggerer-usage-regle' : ''}`}>
+      {mot ? COURT_USAGE[mot] : 'usage ?'}
     </span>
   );
 }
 
 /** « lot » quand l'α vient du lot (stock, article), « fiches » quand c'est le milieu de la plage variétale. */
 export const sourceAlpha = (h: HoublonLu): 'lot' | 'fiches' => (!h.alpha || /^plage/.test(h.alpha.source) ? 'fiches' : 'lot');
-/** α du lot, « ≠ » orangé s'il sort de la plage des fiches (la plage est dans la fiche, à l'appui long). */
+/** α du lot (« α » et « ≠ » posés par la feuille de style) ; « ≠ » : le lot sort de la plage des fiches. */
 export function AlphaCourt({ h }: { h: HoublonLu }) {
   if (!h.alpha) return <span data-role="alpha" data-source="fiches" className="font-mono text-xs text-cave-400">α ?</span>;
   return (
@@ -124,29 +127,26 @@ export function AlphaCourt({ h }: { h: HoublonLu }) {
   );
 }
 
-/** Le stock en icône seule : de quoi faire la dose (4 g/L), ou pas assez. Le détail est dans la légende et la fiche. */
-export function Stock({ stock, besoin }: { stock: number | null; besoin: number }) {
-  if (stock == null || stock <= 0) return null;
-  const assez = stock >= besoin;
-  const I = assez ? PackageCheck : PackageMinus;
-  return (
-    <I data-role="stock" data-stock={assez ? 'assez' : 'court'} role="img" aria-label={assez ? `en stock : ${nombre(stock)} g` : `en stock, pas assez : ${nombre(stock)} g sur ${nombre(besoin)} g`}
-      className={`w-3.5 h-3.5 shrink-0 ${assez ? 'text-cave-200' : 'text-cave-400'}`} />
-  );
+/** Le stock en icône seule (D23 ter, q2b) : assez pour la dose, en stock mais pas assez, ou à acheter. */
+export function Stock({ etat }: { etat: 'suffisant' | 'manque' | 'à acheter' }) {
+  const I = etat === 'suffisant' ? PackageCheck : etat === 'manque' ? PackageMinus : ShoppingCart;
+  const mot = etat === 'suffisant' ? 'en stock' : etat === 'manque' ? 'en stock, pas assez' : 'à acheter';
+  return <I data-role="stock" data-stock={etat} role="img" aria-label={mot} className={`w-3.5 h-3.5 shrink-0 ${etat === 'suffisant' ? 'text-cave-200' : 'text-cave-400'}`} />;
 }
 
-// ---------- Lentille au style / absolu ----------
-/** SegmentedControl de l'app ; chaque option porte data-e (style, absolu), comme la lentille des maquettes. */
-export function Lentille({ echelle, onChange }: { echelle: Echelle; onChange: (e: Echelle) => void }) {
+// ---------- Réglages de lecture (q2b) ----------
+/** SegmentedControl de l'app, en lecture seule de l'affichage (data-lecture) ; data-e sur chaque option si donné. */
+export function Lecture<T extends string>({ valeur, onChange, options, label, e }: {
+  valeur: T; onChange: (v: T) => void; options: { value: T; label: string }[]; label: string; e?: string[];
+}) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
-    const radios = ref.current?.querySelectorAll<HTMLElement>('[role="radio"]') ?? [];
-    radios.forEach((r, i) => { r.dataset.e = i === 0 ? 'style' : 'absolu'; });
+    if (!e) return;
+    ref.current?.querySelectorAll<HTMLElement>('[role="radio"]').forEach((r, i) => { r.dataset.e = e[i]; });
   });
   return (
-    <div ref={ref} data-lecture="" className="pq-suggerer-lentille w-[9.5rem] shrink-0 [&_span]:whitespace-nowrap">
-      <SegmentedControl<Echelle> label="Échelle des barres" value={echelle} onChange={onChange}
-        options={[{ value: 'style', label: 'Au style' }, { value: 'absolu', label: 'Absolu' }]} />
+    <div ref={ref} data-lecture="" className="pq-suggerer-lentille shrink-0 [&_span]:whitespace-nowrap [&_button]:px-2.5">
+      <SegmentedControl<T> label={label} value={valeur} onChange={onChange} options={options} />
     </div>
   );
 }

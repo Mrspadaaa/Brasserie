@@ -1,144 +1,176 @@
-// Gestes et attentes de Suggérer (q2b), rejoués par outils/jouer-parcours.mjs --etape=suggerer sur suggerer/etat.html.
+// Gestes et attentes de Suggérer (q2b, reprise D105), rejoués par outils/jouer-parcours.mjs --etape=suggerer.
 // verifier(p) se joue DANS la page, avec p = window.__parcours ; il rend true ou un message. Fonctions sérialisées :
 // aucune variable du module dedans (chaque vérification recalcule ce qu'il lui faut avec p.moteur et p.regles).
 //
-// Ce qui est vérifié en direct, contre le moteur (et non contre un cas figé) :
-// - D80 : chaque famille qu'un candidat fait bouger d'au moins 0,5 point montre son intensité (data-famille,
-//   data-crans) à 0,6 cran au plus de l'écart du moteur divisé par le cran du style ; l'usage (data-usage,
-//   data-source) est celui de hopRole ;
+// Vérifié en direct, contre le moteur (pas contre un cas figé) :
+// - les voies : celles de proposer(recette, direction) (ajouter, assembler, remplacer à IBU égal) et le dry hop du
+//   stock (suggerer) ; une ligne chacune ;
+// - D80 : chaque famille qu'une voie fait bouger d'au moins 0,5 point montre son intensité (data-famille, data-crans)
+//   à 0,6 cran au plus de l'effet du moteur divisé par le cran du style ; l'usage de chaque houblon est celui de hopRole ;
 // - D76 : les extras montrés (data-role="extra") sont exactement les familles hors objectifs qui bougent ;
-// - D87 : l'α de chaque voie est celui du moteur (hopAlpha) ;
-// - le « + » ajoute à la comparaison, « Comparer les N » ouvre Comparer avec les choisis.
+// - D78 : le « + » ajoute à la liste de comparaison du socle (etat.aComparer), le ✓ l'en retire ; « Comparer (n) »
+//   ouvre Comparer avec cette liste.
 export default {
   page: 'etat.html',
   gestes: [
     {
-      nom: 'départ : une voie par houblon du stock, dans l’ordre du moteur, trois proposés',
+      nom: 'départ : les voies du moteur, groupées, et deux proposées',
       faire: 'attendre',
       verifier: (p) => {
-        const cs = p.moteur.suggerer(p.etat.recette, 'floral');
-        const voies = [...document.querySelectorAll('[data-ecran="suggerer"] [data-voie]')];
-        if (voies.length !== cs.length) return `${voies.length} voies pour ${cs.length} candidats du moteur`;
-        for (let i = 0; i < cs.length; i++) if (voies[i].dataset.candidat !== cs[i].cle) return `voie ${i + 1} : ${voies[i].dataset.candidat} au lieu de ${cs[i].cle}`;
-        const choisis = voies.filter((v) => v.querySelector('[data-role="ajouter"]').getAttribute('aria-pressed') === 'true');
-        if (choisis.length !== 3) return `${choisis.length} proposés au départ (3 attendus)`;
-        if (!choisis.some((v) => v.dataset.candidat === 'beermaverick-idaho-7')) return 'Idaho 7, meilleur sur le floral, n’est pas proposé';
-        const pont = document.querySelector('[data-ecran="suggerer"] [data-role="pont-comparer"], [data-role="pont-comparer"]');
-        if (!pont || pont.disabled || !/Comparer les 3/.test(pont.textContent)) return `pont : ${pont && pont.textContent}`;
+        const r = p.etat.recette, b = p.moteur.lireBiere(r);
+        const dir = { floral: 1 };
+        for (const f of Object.keys(b.profil)) if (f !== 'floral' && b.profil[f].horsStyle === 'au-dessus') dir[f] = -1;
+        const vs = p.moteur.proposer(r, dir).voies.filter((v) => ['ajouter', 'assemblage', 'remplacer à IBU égal'].includes(v.type));
+        const manque = vs.filter((v) => !document.querySelector(`[data-ecran="suggerer"] [data-voie][data-id="${v.id}"]`)).map((v) => v.label);
+        if (manque.length) return `voies du moteur absentes : ${manque.join(' ; ')}`;
+        if (!document.querySelector('[data-groupe="meme-0"]')) return 'pas de groupe « même effet »';
+        if (!document.querySelector('[data-voie][data-id^="dryhop-beermaverick-idaho-7"]')) return 'Idaho 7 absent du geste Dry hop';
+        const a = p.etat.aComparer;
+        if (!a.includes('beermaverick-idaho-7')) return `proposés : ${a.join(', ')}`;
+        const pont = document.querySelector('[data-role="pont-comparer"]');
+        if (!pont || pont.disabled || pont.textContent.indexOf(`Comparer (${a.length})`) < 0) return `pont : ${pont && pont.textContent}`;
         return true;
       },
     },
     {
-      nom: 'D80 et D76 en direct : intensité en crans, usage, extras, α',
+      nom: 'D80 et D76 en direct : intensité en crans, extras, usage, α',
       faire: 'attendre',
       verifier: (p) => {
-        const r = p.etat.recette, sc = p.moteur.style(r.styleCode), b = p.moteur.lireBiere(r);
-        const objectifs = new Set(['floral', ...Object.keys(b.profil).filter((f) => b.profil[f].horsStyle === 'au-dessus')]);
-        const cs = p.moteur.suggerer(r, 'floral');
+        const r = p.etat.recette, b = p.moteur.lireBiere(r), sc = p.moteur.style(r.styleCode);
+        const dir = { floral: 1 };
+        for (const f of Object.keys(b.profil)) if (f !== 'floral' && b.profil[f].horsStyle === 'au-dessus') dir[f] = -1;
+        const vs = p.moteur.proposer(r, dir).voies, cs = p.moteur.suggerer(r, 'floral');
         const fautes = [];
         let familles = 0;
-        for (const [i, c] of cs.entries()) {
-          const v = document.querySelector(`[data-ecran="suggerer"] [data-voie="${i + 1}"]`);
-          const muet = v.hasAttribute('data-muet');
-          const bougent = Object.entries(c.lu.ecart).filter(([, e]) => e && Math.abs(e.centre) >= 0.5);
-          if (muet && bougent.length) fautes.push(`${c.houblon.nom} marqué muet alors que le moteur le fait bouger`);
+        for (const ligne of document.querySelectorAll('[data-ecran="suggerer"] [data-voie]')) {
+          const id = ligne.dataset.id;
+          let effets, cles;
+          if (id.startsWith('dryhop-')) {
+            const c = cs.find((x) => `dryhop-${x.cle}` === id);
+            if (!c) { fautes.push(`${id} inconnu du moteur`); continue; }
+            effets = Object.fromEntries(Object.entries(c.lu.ecart).map(([f, e]) => [f, e ? e.centre : null])); cles = [c.cle];
+          } else {
+            const v = vs.find((x) => x.id === id);
+            if (!v) { fautes.push(`${id} inconnu du moteur`); continue; }
+            effets = Object.fromEntries(Object.entries(v.effect).map(([f, e]) => [f, e.established && e.central != null ? e.central : null]));
+            cles = [...new Set(v.actions.map((a) => a.hopKey))];
+          }
+          const bougent = Object.entries(effets).filter(([, e]) => e != null && Math.abs(e) >= 0.5);
           for (const [f, e] of bougent) {
             familles++;
-            const attendu = e.centre / sc.families[f].cran;
-            const vus = [...v.querySelectorAll(`[data-famille="${f}"][data-crans]`)].map((x) => parseFloat(x.dataset.crans));
-            if (!vus.length) fautes.push(`${c.houblon.nom} : intensité de ${f} absente (${attendu.toFixed(2)} cran)`);
-            else if (!vus.some((x) => Math.abs(x - attendu) <= 0.6)) fautes.push(`${c.houblon.nom} : ${f} à ${vus.join('/')} cran, le moteur dit ${attendu.toFixed(2)}`);
+            const attendu = e / sc.families[f].cran;
+            const vus = [...ligne.querySelectorAll(`[data-famille="${f}"][data-crans]`)].map((x) => parseFloat(x.dataset.crans));
+            if (!vus.length) fautes.push(`${id} : intensité de ${f} absente (${attendu.toFixed(2)} cran)`);
+            else if (!vus.some((x) => Math.abs(x - attendu) <= 0.6)) fautes.push(`${id} : ${f} à ${vus.join('/')} cran, le moteur dit ${attendu.toFixed(2)}`);
           }
-          const extrasAttendus = bougent.map(([f]) => f).filter((f) => !objectifs.has(f)).sort().join(',');
-          const extrasVus = [...v.querySelectorAll('[data-role="extra"][data-famille]')].map((x) => x.dataset.famille).sort().join(',');
-          if (extrasAttendus !== extrasVus) fautes.push(`${c.houblon.nom} : extras ${extrasVus || '∅'}, le moteur ${extrasAttendus || '∅'}`);
-          const role = p.regles.hopRole(c.cle);
-          const u = v.querySelector('[data-role="usage"]');
-          const src = /^fournisseur/.test(role.source) ? 'fournisseur' : 'règle';
-          if (!u || u.dataset.usage !== (role.value ?? 'inconnu') || u.dataset.source !== src) fautes.push(`${c.houblon.nom} : usage ${u && u.dataset.usage}/${u && u.dataset.source}, hopRole ${role.value}/${src}`);
-          const a = p.regles.hopAlpha(c.cle);
-          const al = v.querySelector('[data-role="alpha"]');
-          const lu = al ? parseFloat(al.textContent.replace(',', '.')) : NaN;
-          if (a && Math.abs(lu - a.value) > 0.05) fautes.push(`${c.houblon.nom} : α ${lu}, moteur ${a.value}`);
+          const extrasAttendus = bougent.map(([f]) => f).filter((f) => !(f in dir)).sort().join(',');
+          const extrasVus = [...ligne.querySelectorAll('[data-role="extra"][data-famille]')].map((x) => x.dataset.famille).sort().join(',');
+          if (extrasAttendus !== extrasVus) fautes.push(`${id} : extras ${extrasVus || '∅'}, le moteur ${extrasAttendus || '∅'}`);
+          for (const cle of cles) {
+            const role = p.regles.hopRole(cle), src = /^fournisseur/.test(role.source) ? 'fournisseur' : 'règle';
+            const u = ligne.querySelector(`[data-role="usage"][data-pour="${cle}"]`);
+            if (!u || u.dataset.usage !== (role.value ?? 'inconnu') || u.dataset.source !== src) fautes.push(`${id} : usage de ${cle} ${u && u.dataset.usage}/${u && u.dataset.source}, hopRole ${role.value}/${src}`);
+            const al = p.regles.hopAlpha(cle);
+            const el = ligne.querySelector(`[data-houblon="${cle}"]`)?.parentElement?.querySelector('[data-role="alpha"]');
+            const lu = el ? parseFloat(el.textContent.replace(',', '.')) : NaN;
+            if (al && Math.abs(lu - al.value) > 0.05) fautes.push(`${id} : α de ${cle} ${lu}, moteur ${al.value}`);
+          }
         }
         if (!familles) return 'aucune famille ne bouge : vérification vide';
         return fautes.length ? fautes.slice(0, 6).join(' ; ') : true;
       },
     },
     {
-      nom: '« + » sur Galaxy : ajouté à la comparaison',
+      nom: '« + » sur Golding (à acheter) : ajouté à la comparaison',
       faire: 'toucher',
-      cible: '[data-voie][data-candidat="beermaverick-galaxy"] [data-role="ajouter"]',
+      cible: '[data-voie][data-id$="golding"] [data-role="ajouter"], [data-voie] [data-role="ajouter"][aria-label="Ajouter Golding à la comparaison"]',
       verifier: (p) => {
-        const b = document.querySelector('[data-voie][data-candidat="beermaverick-galaxy"] [data-role="ajouter"]');
-        if (b.getAttribute('aria-pressed') !== 'true') return 'Galaxy non ajouté';
+        const a = p.etat.aComparer;
+        if (!a.includes('beermaverick-golding')) return `Golding absent de la comparaison : ${a.join(', ')}`;
         const pont = document.querySelector('[data-role="pont-comparer"]');
-        if (!/Comparer les 4/.test(pont.textContent)) return `pont : ${pont.textContent}`;
-        const marque = document.querySelector('[data-objectif="floral"] [data-marque="beermaverick-galaxy"]');
-        if (!marque) return 'Galaxy ne se marque pas sur la piste de l’objectif';
-        return p.etat.recette.additions.some((a) => a.hopKey === 'beermaverick-galaxy') ? 'Suggérer a changé la recette' : true;
+        return pont.textContent.indexOf(`Comparer (${a.length})`) >= 0 ? true : `pont : ${pont.textContent}`;
       },
     },
     {
-      nom: '« ✓ » sur Target : retiré',
+      nom: '« ✓ » sur Golding : retiré',
       faire: 'toucher',
-      cible: '[data-voie][data-candidat="beermaverick-target"] [data-role="ajouter"]',
-      verifier: () => {
-        const b = document.querySelector('[data-voie][data-candidat="beermaverick-target"] [data-role="ajouter"]');
-        const pont = document.querySelector('[data-role="pont-comparer"]');
-        return b.getAttribute('aria-pressed') === 'false' && /Comparer les 3/.test(pont.textContent) ? true : `Target ${b.getAttribute('aria-pressed')}, pont ${pont.textContent}`;
+      cible: '[data-voie] [data-role="ajouter"][aria-label="Retirer Golding de la comparaison"]',
+      verifier: (p) => (p.etat.aComparer.includes('beermaverick-golding') ? 'Golding encore dans la comparaison' : true),
+    },
+    {
+      nom: '« + » sur l’assemblage Motueka + Nelson Sauvin : les deux houblons',
+      faire: 'toucher',
+      cible: '[data-groupe="assembler"] [data-role="ajouter"]',
+      verifier: (p) => {
+        const a = p.etat.aComparer;
+        return a.includes('beermaverick-motueka') && a.includes('beermaverick-nelson-sauvin') ? true : `comparaison : ${a.join(', ')}`;
       },
     },
     {
-      nom: 'lentille absolu : l’écart en points du moteur',
+      nom: 'Hors houblon › : les pistes hors modèle du résineux',
+      faire: 'toucher',
+      cible: '[data-role="hors-houblon"]',
+      attendre: '[data-role="pistes-hors-houblon"]',
+      verifier: () => (document.querySelectorAll('[data-role="pistes-hors-houblon"] li').length >= 3 ? true : 'moins de trois pistes'),
+    },
+    {
+      nom: 'fermer les pistes',
+      faire: 'toucher',
+      cible: '[role="dialog"] button[aria-label="Fermer"]',
+      verifier: () => (document.querySelector('[data-ecran="suggerer"]') && ![...document.querySelectorAll('[data-role="pistes-hors-houblon"]')].some((x) => x.getBoundingClientRect().height > 0) ? true : 'pistes encore ouvertes'),
+    },
+    {
+      nom: 'lentille absolu : l’effet du groupe en points',
       faire: 'toucher',
       cible: '[data-ecran="suggerer"] [data-e="absolu"]',
+      verifier: () => (/~\+\d+$/.test((document.querySelector('[data-groupe="meme-0"] .font-mono')?.textContent || '').trim()) ? true : 'effet du groupe pas en points'),
+    },
+    {
+      nom: 'vue Radar : ma bière et les voies retenues',
+      faire: 'toucher',
+      cible: '[data-ecran="suggerer"] [data-e="radar"]',
+      attendre: 'svg[data-radar][data-objet="suggerer"]',
       verifier: (p) => {
-        const cs = p.moteur.suggerer(p.etat.recette, 'floral');
-        const g = document.querySelector('[data-voie="1"] [data-role="gain"] [data-unite="points"]');
-        if (!g) return 'gain sans unité « points » en absolu';
-        const lu = parseFloat(g.textContent.replace('~', '').replace('−', '-').replace(',', '.'));
-        return Math.abs(lu - Math.round(cs[0].visee.centre)) <= 0.5 ? true : `gain ${g.textContent}, moteur ${cs[0].visee.centre}`;
+        const n = document.querySelectorAll('svg[data-radar] [data-serie]').length;
+        return n >= 2 ? true : `radar : ${n} série(s)`;
       },
     },
     {
-      nom: 'retour au style',
+      nom: 'retour aux barres',
       faire: 'toucher',
-      cible: '[data-ecran="suggerer"] [data-e="style"]',
-      verifier: () => { return document.querySelector('[data-voie="1"] [data-role="gain"] [data-unite="crans"]') ? true : 'gain pas en crans au style'; },
+      cible: '[data-ecran="suggerer"] [data-e="barres"]',
+      verifier: () => (document.querySelector('[data-objectif] [data-role="piste"]') && !document.querySelector('svg[data-radar][data-objet="suggerer"]') ? true : 'pistes absentes ou radar resté'),
     },
     {
-      nom: 'appui long sur Cascade : sa fiche, Suggérer dessous',
+      nom: 'appui long sur Motueka : sa fiche, Suggérer dessous',
       faire: 'appui-long',
-      cible: '[data-voie][data-candidat="beermaverick-cascade"] [data-role="ouvrir-fiche"]',
+      cible: '[data-voie] [data-role="ouvrir-fiche"][data-houblon="beermaverick-motueka"]',
       attendre: '[role="dialog"]',
       verifier: () => {
         const d = [...document.querySelectorAll('[role="dialog"]')].find((x) => x.getBoundingClientRect().height > 20);
-        if (!d || !/Cascade/.test(d.textContent)) return 'la fiche de Cascade ne s’ouvre pas';
+        if (!d || !/Motueka/.test(d.textContent)) return 'la fiche de Motueka ne s’ouvre pas';
         return location.hash === '#/suggerer' ? true : `route ${location.hash}`;
       },
     },
     {
-      nom: 'retour du téléphone : la fiche se ferme, les choix restent',
+      nom: 'retour du téléphone : la fiche se ferme, la comparaison reste',
       faire: 'retour',
-      verifier: () => {
+      verifier: (p) => {
         if ([...document.querySelectorAll('[role="dialog"]')].some((x) => x.getBoundingClientRect().height > 20)) return 'fiche encore ouverte';
         if (!document.querySelector('[data-ecran="suggerer"]')) return 'Suggérer fermé par le retour';
-        const choisis = [...document.querySelectorAll('[data-voie] [data-role="ajouter"][aria-pressed="true"]')].map((b) => b.closest('[data-voie]').dataset.candidat);
-        return choisis.join(',') === 'beermaverick-idaho-7,beermaverick-cascade,beermaverick-galaxy' ? true : `choisis : ${choisis.join(',')}`;
+        return p.etat.aComparer.includes('beermaverick-nelson-sauvin') ? true : `comparaison : ${p.etat.aComparer.join(', ')}`;
       },
     },
     {
-      nom: 'Comparer les 3 : Comparer avec Idaho 7, Cascade, Galaxy',
+      nom: 'Comparer (n) : Comparer avec la liste',
       faire: 'toucher',
       cible: '[data-role="pont-comparer"]',
       attendre: '[data-ecran="comparer"]',
       verifier: (p) => {
-        const h = location.hash;
-        const m = h.match(/^#\/comparer\?h=(.*)$/);
-        if (!m) return `route ${h}`;
-        const l = m[1].split(',');
-        return l.length === 3 && ['idaho-7', 'cascade', 'galaxy'].every((x) => l.includes(x)) && p.etat.brouillon === null ? true : `Comparer avec ${l.join(', ')}`;
+        const m = location.hash.match(/^#\/comparer\?h=([^&]*)/);
+        if (!m) return `route ${location.hash}`;
+        const l = m[1].split(',').map((x) => 'beermaverick-' + x).sort().join(',');
+        return l === [...p.etat.aComparer].sort().join(',') && p.etat.brouillon === null ? true : `Comparer avec ${m[1]}, liste ${p.etat.aComparer.join(',')}`;
       },
     },
   ],

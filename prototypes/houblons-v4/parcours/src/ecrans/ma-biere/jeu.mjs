@@ -31,7 +31,7 @@ const d80 = (p) => {
       else if (Math.abs(parseFloat(el.dataset.crans) - c) > 0.6) fautes.push(`${a.id} : ${f} à ${el.dataset.crans} cran, le moteur dit ${c}`);
     }
     const u = v.querySelector('[data-role="usage"]'), role = p.regles.hopRole(a.hopKey);
-    if (!u || u.dataset.usage !== (role.value ?? 'inconnu') || u.dataset.source !== role.source) fautes.push(`${a.id} : usage ${u?.dataset.usage} ≠ ${role.value}`);
+    if (!u || u.dataset.usage !== (role.value ?? 'inconnu') || u.dataset.source !== (/^fournisseur/.test(role.source) ? "fournisseur" : "règle")) fautes.push(`${a.id} : usage ${u?.dataset.usage} ≠ ${role.value}`);
     const al = v.querySelector('[data-role="alpha"]');
     if (!al || !/\d\s*%/.test(al.textContent) || !/^(lot|fiches)$/.test(al.dataset.source)) fautes.push(`${a.id} : α sans valeur ou sans source`);
     if (p.biere().nonSimules.some((s) => s.ajoutId === a.id) && !v.querySelector('[data-inconnu]')) fautes.push(`${a.id} : arôme non simulé sans « ? »`);
@@ -45,22 +45,57 @@ export default {
   gestes: [
     { nom: 'lectures au moteur', faire: 'attendre', verifier: ibuCoherent },
     { nom: 'intensite et usage (D80)', faire: 'attendre', verifier: d80 },
-    { nom: 'glisser le moment de Nugget', faire: 'glisser', cible: '[data-voie="a1"] [data-role="glisser-moment"]', de: 0.03, a: 0.26, pas: 14,
-      verifier: (p) => {
-        const a = p.etat.recette.additions.find((x) => x.id === 'a1');
-        if (!a.moment.startsWith('b') || a.minutes % 5 !== 0 || a.minutes >= 60) return `moment ${a.moment} ${a.minutes}′`;
-        const b = p.biere();
-        if (!(b.ibu.valeur < 59)) return `IBU total non recalculé : ${b.ibu.valeur}`;
-        const pouce = document.querySelector('[data-voie="a1"] [data-role="moment-pouce"]')?.textContent;
-        return pouce === `${a.minutes}′` || `pouce « ${pouce} » ≠ ${a.minutes}′`;
-      } },
-    { nom: 'IBU recalcules', faire: 'attendre', verifier: ibuCoherent },
+    { nom: 'glisser le moment de Nugget', faire: 'attendre',
+      // Le doigt glisse le repère du moment de haut en bas (frise verticale) : événements de pointeur joués dans la page,
+      // car jouer-parcours ne glisse qu'à l'horizontale. 14 px par cran.
+      verifier: (p) => new Promise((ok) => {
+        const b = document.querySelector('[data-ajout-repere="a1"]');
+        const r = b.getBoundingClientRect(), x = r.x + r.width / 2, y0 = r.y + r.height / 2;
+        const ev = (t, y) => b.dispatchEvent(new PointerEvent(t, { bubbles: true, cancelable: true, pointerId: 7, pointerType: 'touch', isPrimary: true, clientX: x, clientY: y, button: 0, buttons: t === 'pointerup' ? 0 : 1 }));
+        ev('pointerdown', y0);
+        let i = 0;
+        const pas = () => {
+          i += 1; ev('pointermove', y0 + (84 * i) / 12);
+          if (i < 12) { setTimeout(pas, 16); return; }
+          const loupe = !!document.querySelector('[data-role="loupe"]');
+          ev('pointerup', y0 + 84);
+          setTimeout(() => {
+            const a = window.__parcours.etat.recette.additions.find((z) => z.id === 'a1');
+            const pouce = document.querySelector('[data-ajout-repere="a1"] [data-role="moment-pouce"]')?.textContent;
+            if (!loupe) return ok('pas de loupe doigt posé');
+            if (a.minutes !== 30) return ok(`moment ${a.moment} ${a.minutes}′ (attendu 30′)`);
+            ok(pouce === `${a.minutes}′` || `repère « ${pouce} » ≠ ${a.minutes}′`);
+          }, 120);
+        };
+        setTimeout(pas, 16);
+      }) },
+    { nom: 'IBU recalcules', faire: 'attendre', verifier: (p) => p.biere().ibu.valeur < 59 || 'IBU total non recalculé' },
+    { nom: 'IBU au moteur', faire: 'attendre', verifier: ibuCoherent },
     { nom: 'arome hors simulateur marque', faire: 'attendre', verifier: d80 },
-    { nom: 'retour a 60', faire: 'glisser', cible: '[data-voie="a1"] [data-role="glisser-moment"]', de: 0.3, a: -0.6, pas: 16,
-      verifier: (p) => {
-        const a = p.etat.recette.additions.find((x) => x.id === 'a1');
-        return (a.minutes === 60 && Math.abs(p.biere().ibu.valeur - 60) < 0.5) || `retour : ${a.minutes}′, ${p.biere().ibu.valeur} IBU`;
-      } },
+    { nom: 'retour a 60', faire: 'attendre',
+      // Le doigt glisse le repère du moment de haut en bas (frise verticale) : événements de pointeur joués dans la page,
+      // car jouer-parcours ne glisse qu'à l'horizontale. 14 px par cran.
+      verifier: (p) => new Promise((ok) => {
+        const b = document.querySelector('[data-ajout-repere="a1"]');
+        const r = b.getBoundingClientRect(), x = r.x + r.width / 2, y0 = r.y + r.height / 2;
+        const ev = (t, y) => b.dispatchEvent(new PointerEvent(t, { bubbles: true, cancelable: true, pointerId: 7, pointerType: 'touch', isPrimary: true, clientX: x, clientY: y, button: 0, buttons: t === 'pointerup' ? 0 : 1 }));
+        ev('pointerdown', y0);
+        let i = 0;
+        const pas = () => {
+          i += 1; ev('pointermove', y0 + (-84 * i) / 12);
+          if (i < 12) { setTimeout(pas, 16); return; }
+          const loupe = !!document.querySelector('[data-role="loupe"]');
+          ev('pointerup', y0 + -84);
+          setTimeout(() => {
+            const a = window.__parcours.etat.recette.additions.find((z) => z.id === 'a1');
+            const pouce = document.querySelector('[data-ajout-repere="a1"] [data-role="moment-pouce"]')?.textContent;
+            if (!loupe) return ok('pas de loupe doigt posé');
+            if (a.minutes !== 60) return ok(`moment ${a.moment} ${a.minutes}′ (attendu 60′)`);
+            ok(pouce === `${a.minutes}′` || `repère « ${pouce} » ≠ ${a.minutes}′`);
+          }, 120);
+        };
+        setTimeout(pas, 16);
+      }) },
     { nom: 'dose plus', faire: 'toucher', cible: '[data-voie="a1"] [data-role="dose-plus"]',
       verifier: (p) => {
         const a = p.etat.recette.additions.find((x) => x.id === 'a1');
@@ -75,18 +110,27 @@ export default {
       verifier: (p) => (p.route === '#/fiche/nugget' && /Nugget/.test(document.querySelector('[data-role="fiche"]').textContent)) || `fiche : ${p.route}` },
     { nom: 'retour du telephone', faire: 'retour', attendre: '[data-ecran="ma-biere"]',
       verifier: (p) => (p.route === '#/ma-biere' && !document.querySelector('[data-role="fiche"]')) || `après retour : ${p.route}` },
-    { nom: 'radar', faire: 'toucher', cible: '[data-vue="radar"]', attendre: 'svg[data-radar][data-objet="biere"]',
-      verifier: () => document.querySelectorAll('svg[data-objet="biere"] use').length === 12 || 'radar sans ses 12 axes' },
     { nom: 'absolu', faire: 'toucher', cible: '[data-e="absolu"]',
-      verifier: () => document.querySelector('svg[data-objet="biere"]').dataset.echelle === 'absolu' || 'radar resté au style' },
-    { nom: 'barres au style', faire: 'toucher', cible: '[data-vue="barres"]', attendre: '[data-barre="resin"]' },
+      verifier: () => document.querySelector('[data-barre="resin"]').dataset.echelle === 'absolu' || 'barres restées au style' },
     { nom: 'style', faire: 'toucher', cible: '[data-e="style"]',
       verifier: () => document.querySelector('[data-barre="resin"]').dataset.echelle === 'style' || 'barres restées en absolu' },
+    { nom: 'ajout rapide', faire: 'toucher', cible: '[data-role="ajout-rapide-plus"]',
+      verifier: (p) => {
+        const n = p.etat.recette.additions.filter((a) => a.id !== 'a1');
+        if (n.length !== 1 || n[0].minutes !== 10 || n[0].grams !== 10) return `ajout rapide : ${JSON.stringify(n)}`;
+        return !!document.querySelector(`[data-ecran="ma-biere"] [data-voie="${n[0].id}"]`) || 'ajout absent de la frise';
+      } },
+    { nom: 'IBU apres ajout', faire: 'attendre', verifier: ibuCoherent },
+    { nom: 'retirer l ajout', faire: 'toucher', cible: '[data-role="ligne-houblon"]:not([data-voie="a1"]) [data-role="retirer"]',
+      verifier: (p) => p.etat.recette.additions.length === 1 || 'ajout non retiré' },
+    { nom: 'onglet Ma biere', faire: 'toucher', cible: '[data-role="pont-biere"]', attendre: '[data-ecran="biere"]',
+      verifier: (p) => p.route === '#/biere' || `route ${p.route}` },
+    { nom: 'retour a l etape', faire: 'retour', attendre: '[data-ecran="ma-biere"]' },
     { nom: 'Je n ai pas Nugget', faire: 'toucher', cible: '[data-role="pont-substituer"][data-houblon="beermaverick-nugget"]', attendre: '[data-ecran="substituer"]',
       verifier: (p) => (p.route === '#/substituer/nugget' && p.etat.brouillon?.outil === 'substituer') || `substituer : ${p.route}` },
     { nom: 'abandon', faire: 'fermer', attendre: '[data-ecran="ma-biere"]',
       verifier: (p) => (p.route === '#/ma-biere' && p.etat.brouillon === null && p.etat.recette.additions[0].hopKey === 'beermaverick-nugget') || 'abandon : recette ou brouillon changés' },
-    { nom: 'ligne vers Dryhopper', faire: 'toucher', cible: '[data-voie="a1"] [data-role="pont-dryhopper"]',
+    { nom: 'ligne vers Dryhopper', faire: 'toucher', cible: '[data-voie="a1"] [data-role="ibu-ajout"]',
       verifier: (p) => (p.route === '#/dryhopper/a1' && p.etat.brouillon?.ajoutId === 'a1') || `Dryhopper : ${p.route}` },
     { nom: 'retour de Dryhopper', faire: 'retour', attendre: '[data-ecran="ma-biere"]',
       verifier: (p) => (p.route === '#/ma-biere' && p.etat.brouillon === null) || `retour : ${p.route}` },
