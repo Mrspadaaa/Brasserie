@@ -1,0 +1,91 @@
+{
+ "maj": "2026-10-23",
+ "regle": "« C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10). Chaque écran repart de la maquette qu'il a choisie, telle qu'il l'a vue (CLAUDE.md, règle n° 1 ; D105).",
+ "usage": "controle-choix.mjs <dossier construit> : chaque écran « choisi » passe controle-reprise avec son inventaire (et ses contrôles) ; un écran « ouvert » est signalé avec ses options. À mettre à jour à chacun de ses choix, avec ses mots.",
+ "ecrans": [
+  {
+   "ecran": "etape-houblons",
+   "route": "ma-biere",
+   "statut": "choisi",
+   "choix": "base v4.10, étape Houblons",
+   "mots": "Comme pour les Malts j'ai besoin d'avoir des le premier coup d'œil, quel matière première j'ai",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-390.png",
+   "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-etape.json"
+  },
+  {
+   "ecran": "ma-biere",
+   "route": "biere",
+   "statut": "choisi",
+   "choix": "base v4.10, onglet Ma bière",
+   "mots": "Ça aussi",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-ma-biere.json"
+  },
+  {
+   "ecran": "suggerer",
+   "route": "suggerer",
+   "statut": "choisi",
+   "choix": "q2b",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "inventaire": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/donnees/inventaire-q2b.json"
+  },
+  {
+   "ecran": "comparer",
+   "route": "comparer",
+   "statut": "choisi",
+   "choix": "r6a, avec les petites améliorations des autres versions",
+   "mots": "r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6a-premier-ecran.png",
+   "inventaire": "work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/inventaire-comparer.json"
+  },
+  {
+   "ecran": "fiche",
+   "route": "fiche",
+   "statut": "choisi",
+   "choix": "g1, et la fiche courte de type Citra cryo",
+   "mots": "Pourquoi la fiche est pareil ??? C'est pas du tout la bonne, ça suit pas la Baseline, ça suit rien du tout ???",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-fiche-baseline.mjs {dossier} fiche --page=etat.html"
+   ]
+  },
+  {
+   "ecran": "dryhopper",
+   "route": "dryhopper",
+   "statut": "ouvert",
+   "options": [
+    "a1",
+    "b4",
+    "d8",
+    "e5",
+    "g1"
+   ],
+   "provisoire": "a1 (y1b affiné)",
+   "page": "https://claude.ai/artifact/HjWdF2rgUHDzY3QpgMWVV8",
+   "mots": "y1b est de mon point de vue semble meilleur."
+  },
+  {
+   "ecran": "substituer",
+   "route": "substituer",
+   "statut": "ouvert",
+   "options": [
+    "la porte vers Comparer",
+    "un outil propre (u4)"
+   ],
+   "provisoire": "la porte",
+   "page": "https://claude.ai/artifact/9FrNPBUDv7ABeo5CsSFW7g"
+  },
+  {
+   "ecran": "levure",
+   "route": "levure",
+   "statut": "ouvert",
+   "options": [
+    "étape de Dryhopper",
+    "un outil propre (a2b)"
+   ],
+   "provisoire": "étape de Dryhopper",
+   "page": "https://claude.ai/artifact/9FrNPBUDv7ABeo5CsSFW7g"
+  }
+ ]
+}

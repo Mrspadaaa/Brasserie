@@ -28,3 +28,8 @@ Scope: le parcours de la carte joué d'un bout à l'autre dans une seule session
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p5-parcours/RESULTAT.md --contient "390,1280,ma-biere,suggerer,comparer,dryhopper,levure,substituer,recalcul"
   EXPECT: NOTE OK
   EVIDENCE: pending
+
+- [ ] G6: chaque écran de la maquette intégrée est conforme à ses choix ; les choix ouverts sont nommés (règle n° 1)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours
+  EXPECT: CHOIX OK
+  EVIDENCE: pending

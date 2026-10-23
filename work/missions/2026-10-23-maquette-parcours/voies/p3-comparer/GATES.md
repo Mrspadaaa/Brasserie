@@ -59,8 +59,8 @@ Scope: r6a portée en React dans le socle, calculée en direct, avec les petites
   EXPECT: SANS-FAMILLE OK
   EVIDENCE: pending
 
-- [ ] G12: les 37 éléments notés sont classés et balisés (D104, rouge sur r6a)
-  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-reprise.mjs prototypes/houblons-v4/maquettes/parcours-p3 comparer --page=etat.html
+- [ ] G12: r6a elle-même (12 éléments) et les 37 éléments notés ailleurs sont classés et balisés (D104, D105, règle n° 1)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-reprise.mjs prototypes/houblons-v4/maquettes/parcours-p3 comparer --page=etat.html --inventaire=work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/inventaire-comparer.json
   EXPECT: REPRISE OK
   EVIDENCE: pending
 
@@ -82,4 +82,9 @@ Scope: r6a portée en React dans le socle, calculée en direct, avec les petites
 - [ ] G16: le rapport nomme les captures ouvertes, à côté de r6a, à 390 et à 1280 px, et les améliorations prises
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p3-comparer/RESULTAT.md --contient "390,1280,r6a,D95,r6n2,r6p"
   EXPECT: NOTE OK
+  EVIDENCE: pending
+
+- [ ] G17: Comparer est conforme à son choix (r6a) dans le registre de ses choix
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours-p3 --ecran=comparer
+  EXPECT: CHOIX OK
   EVIDENCE: pending

@@ -4,6 +4,11 @@ Gestion d'une micro-brasserie suisse : React, TypeScript, Vite, Firestore et Dex
 Répondre en français clair et concis (style Caveman lite), sans diminuer analyse,
 preuves ou qualité du code. Conserver incertitudes, négations, nombres et unités.
 
+## Règle n° 1 : ses choix
+
+« C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10). Sa maquette choisie est la base de l'écran, reprise telle quelle ; jamais une carte ni
+une règle à sa place. Registre `work/refonte-frontend/v4/choix/ecrans.json`, contrôle `controle-choix.mjs`.
+
 ## Mission et sources
 
 - Partir de la demande et du code actuel. Préserver les changements en cours,

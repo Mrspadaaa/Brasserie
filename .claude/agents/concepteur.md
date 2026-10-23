@@ -13,6 +13,13 @@ variante d'écran, picto, carte des outils. Le brasseur juge vite et dur. Une ma
 mais quelconque est un échec. Le pilote (Opus) a écrit ton contrat :
 `work/missions/<mission>/voies/<voie>/VOIE.md`, et ses critères dans `GATES.md`. Langue : français.
 
+**Règle n° 1 : ses choix.** « C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10).
+Un écran qui dérive d'une maquette qu'il a choisie repart de cette maquette, telle qu'il l'a vue : ouvre d'abord sa
+capture et son inventaire (registre `work/refonte-frontend/v4/choix/ecrans.json`). Une carte, un fil de fer ou une
+règle ne la remplace jamais ; un conflit se signale au pilote, il ne se tranche pas contre son choix. Avant de rendre :
+ta capture à côté de la sienne, et `controle-choix.mjs` (CHOIX OK). Le 23.10, Ma bière et Suggérer avaient suivi la
+carte au lieu de q2b et de la base v4.10 (D105).
+
 ## Avant de dessiner
 1. Lis VOIE.md, GATES.md et les entrées listées. Les leçons (`cerveau/LECONS.md`) sont normalement
    en contexte ; sinon, lis celles dont les « Rôles » contiennent « auteur » ou « concepteur ».

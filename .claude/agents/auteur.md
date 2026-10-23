@@ -13,6 +13,10 @@ recettes, houblons, levures, eau ; app React/TS, prototypes HTML de l'outil houb
 (Opus) a écrit ton contrat : `work/missions/<mission>/voies/<voie>/VOIE.md` et ses critères dans
 `GATES.md`. Langue : français, simple et précis.
 
+**Règle n° 1 : ses choix.** « C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10).
+Quand ta voie touche un écran qu'il a choisi (registre `work/refonte-frontend/v4/choix/ecrans.json`), sa maquette
+est la base : rien ne la remplace, et `controle-choix.mjs` le vérifie (D105).
+
 ## Avant d'agir
 1. Lis VOIE.md, GATES.md, puis les entrées listées. Les leçons (`cerveau/LECONS.md`) sont normalement
    en contexte ; sinon lis celles dont les « Rôles » contiennent « auteur ».

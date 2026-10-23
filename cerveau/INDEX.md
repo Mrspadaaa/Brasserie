@@ -33,7 +33,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[rien-de-fige]] — ébullition, dose, whirlpool, dry hop réglables ; minutes par 5′
 - [[le-brasseur-choisit]] — chaque lot lui est montré ; le jury filtre, il ne choisit pas
 - [[fil-de-fer-d-abord]] — exploration en fils de fer en planche ; fidélité pour la retenue
-- [[exploration-v0-libre]] — v0 libres sur la baseline ; l'entonnoir : vaste panel minimaliste, classement, greffes, passes (M13)
+- [[exploration-v0-libre]] — l'entonnoir : vaste panel sur la baseline, classement, greffes, passes (M13)
 - [[methode-ui-v3]] — tous les écrans, un ticket par sujet (#133)
 - [[micro-correctifs]] — aller-retour rapide, capture si l'apparence est ambiguë
 

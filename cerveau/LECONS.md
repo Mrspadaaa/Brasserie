@@ -7,7 +7,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
   fausse, un travail refait. Avant de clore le tour.
 - **Qui** : le pilote seul ; les agents proposent par `LEÇON PROPOSÉE : …`.
 - **Format** : `### Lnn — règle`, puis Erreur (date, fait), Cause, Faire, Rôles, Contrôle.
-- **Taille** : 170 lignes, 30 leçons actives et 8 lignes mécanisées au plus ; fusionner, passer en une ligne « Mécanisées » une leçon devenue contrôle, et sortir les plus anciennes vers [[controles-mecanises]]. Une entrée au plafond impose une sortie (`systeme.mjs cerveau`, `charge`, `remplaces`).
+- **Taille** : 170 lignes, 30 leçons et 8 mécanisées au plus. Au plafond, une entrée impose une sortie : fusion, ligne « Mécanisées », [[controles-mecanises]] (`systeme.mjs cerveau`, `charge`, `remplaces`).
 
 ## Comprendre la demande
 
@@ -25,12 +25,12 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Rôles : pilote, auteur
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
-### L03 — Reprendre tout l'élément désigné, et la maquette choisie telle quelle
+### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
 - Erreur : 19.10, « Meilleures bar » de l5b. Seules les barres de voie ont été reprises, pas les pistes d'objectif. « C'est pas exactement ce que j'ai demandé ». 23.10 : la maquette suivait la carte, pas ses choix (D105), et la supervision l'avait dite conforme sur ses contrats.
 - Cause : « X de la variante Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Une maquette choisie est la base ; une carte ne donne que les ponts. Inventaire, puis captures côte à côte, même pour une revue.
+- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte, même pour une revue.
 - Rôles : pilote, auteur, concepteur
-- Contrôle : D92 PISTE ; `controle-reprise.mjs --inventaire=` (D105)
+- Contrôle : D92 PISTE ; `controle-choix.mjs` (D105)
 
 ### L04 — Prioriser comme un brasseur, pas comme un tableur
 - Erreur : 18.10, recette vide « trop centré sur le ibu, pas d'info sur les AA », et un stock trop mis en avant.
@@ -81,7 +81,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L13 — Une plainte devient un contrôle qui échoue sur la version rejetée, avant toute correction
 - Erreur : 18.10, les mêmes défauts revenaient de v2 à v4 (trop de texte, cockpit). 20.10 : le picto « épicé » est critiqué pour la deuxième fois (lot 15, puis lot 21), car la première plainte n'était pas devenue un contrôle.
 - Cause : les corrections étaient des règles écrites, lues par des agents, et non des contrôles bloquants.
-- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet (22.10 : sept épices dessinées, refusées d'un bloc). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de la portée du lot (`portee-defauts.json`) entrent tous dans ses GATES, et un contrôle mort est adapté ou déclaré caduc (23.10 : D4 oublié ; 31 scripts sur 50 non rejoués).
+- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet. Un contrôle ne garde que s'il tourne sur le format actuel : ceux de la portée du lot (`portee-defauts.json`) entrent tous dans ses GATES, et un contrôle mort est adapté ou déclaré caduc (23.10 : D4 oublié ; 31 scripts sur 50 non rejoués).
 - Rôles : pilote, auteur
 - Contrôle : `systeme.mjs mission` (portée) ; cablage (« OK 0/0 »)
 
@@ -95,7 +95,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Agents et outils
 
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
-- Erreur : lot 21, un auteur a laissé `pistes-l5f.png` à la racine du dépôt. 22.10, la voie r4c a écrit `loupe.html` et `loupe.png` à la racine en croyant écrire dans « son scratchpad » (un sous-agent n'a pas le dossier temporaire du pilote).
+- Erreur : lot 21, un auteur a laissé `pistes-l5f.png` à la racine du dépôt. 22.10, la voie r4c a écrit `loupe.html` et `loupe.png` à la racine (un sous-agent n'a pas le dossier temporaire du pilote).
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
 - Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine.
 - Rôles : pilote, auteur, exécutant, concepteur
@@ -139,7 +139,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `systeme.mjs mission` refuse une voie d'interface hors Opus ou Fable, et une relecture d'interface sans critique
 
 ### L26 — Une variante qui reprend un socle préfixe ses classes et assemble son code sans remplacement de chaîne
-- Erreur : 22.10, lot 22, cinq variantes sur douze cassées en silence par le socle importé (l8g, fiche g1) : classes partagées (`.rep`, `.r-bord`…), un `$$` devenu `$` par `String.replace`. Tous les contrôles étaient verts. Le pilote l'a refait le 22.10 dans un script de LECONS.md.
+- Erreur : 22.10, lot 22, cinq variantes sur douze cassées en silence par le socle importé (l8g, fiche g1) : classes partagées (`.rep`, `.r-bord`…), un `$$` devenu `$` par `String.replace`. Tous les contrôles étaient verts.
 - Cause : les classes de la variante partageaient l'espace de noms du socle, et le code client était assemblé par remplacement de chaînes.
 - Faire : préfixer ses classes (`r6x-…`), un nom par rôle, et ses globales JS (script dans une fonction immédiate) ; assembler le code par `split/join` ou des indices ; capturer aussi l'état ouvert et la fiche, et les ouvrir (L12).
 - Rôles : concepteur, auteur

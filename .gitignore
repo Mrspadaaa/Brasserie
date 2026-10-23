@@ -83,6 +83,10 @@ firestore.rules
 /work/refonte-frontend/v4/etalonnage/epreuve/
 # Inventaire de ce que le brasseur a noté bon ou intéressant (22.10.2026, D104) : lu par controle-reprise.mjs.
 !/work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/elements-notes.json
+# Règle n° 1 (23.10, D105) : le registre de ses choix et les inventaires de ses maquettes, lus par controle-choix.mjs.
+!/work/refonte-frontend/v4/choix/
+!/work/refonte-frontend/v4/choix/*.json
+!/work/refonte-frontend/v4/ecran-1/*/donnees/inventaire-*.json
 /work/refonte-frontend/**/_ecartes/
 /work/refonte-frontend/**/_v[0-9]*/
 /work/refonte-frontend/**/captures/

@@ -88,3 +88,8 @@ Scope: l'écran Suggérer de q2b (base v4.10), « Quel houblon ajouter à ma bi�
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-reprise.mjs prototypes/houblons-v4/maquettes/parcours-p2 suggerer --page=etat.html --inventaire=work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/donnees/inventaire-q2b.json
   EXPECT: REPRISE OK
   EVIDENCE: pending
+
+- [ ] G18: Suggérer est conforme à son choix, q2b (règle n° 1)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours-p2 --ecran=suggerer
+  EXPECT: CHOIX OK
+  EVIDENCE: pending

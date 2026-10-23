@@ -103,3 +103,13 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
   CHECK: node prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs --dossier=prototypes/houblons-v4/maquettes/parcours-p1 --etape=biere
   EXPECT: ETAPE OK (biere)
   EVIDENCE: pending
+
+- [ ] G21: l'étape Houblons est conforme à son choix (règle n° 1)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours-p1 --ecran=etape-houblons
+  EXPECT: CHOIX OK
+  EVIDENCE: pending
+
+- [ ] G22: l'onglet Ma bière est conforme à son choix (règle n° 1)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours-p1 --ecran=ma-biere
+  EXPECT: CHOIX OK
+  EVIDENCE: pending

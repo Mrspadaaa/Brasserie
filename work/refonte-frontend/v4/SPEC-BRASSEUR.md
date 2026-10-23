@@ -9,6 +9,12 @@ carte datée, écrite par le pilote, qui renvoie aux mots exacts. Ces mots prime
 
 ## 0. Ce qui vaut aujourd'hui (carte du pilote, 22.10 ; lire d'abord, puis la seule section du sujet)
 
+**Règle n° 1 : ses choix.** « C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10, après « Je confirme que "Bière" et "Suggérer" divergent nettement du
+design choisi. Oui c'est quoi ce bordel ??? », D105), puis : « Met ça dès les informations et fait en sorte que ça
+m'arrive plus jamais ». Chaque écran repart de la maquette qu'il a choisie, telle qu'il l'a vue. Le registre
+`work/refonte-frontend/v4/choix/ecrans.json` dit, écran par écran, son choix, ses mots, la capture et
+l'inventaire ; `controle-choix.mjs` vérifie chaque écran contre lui.
+
 Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerveau/produit/acquis-valides.md`.
 
 **L'outil**
