@@ -362,7 +362,8 @@ export function suitesDeMission(mission, dossiersVoies, racine = RACINE) {
   const texteMission = existe(fMission) ? lire(fMission) : '';
   // M13 (23.10) : un panel v0 rendu se montre aussitôt, sans attendre le tri. Les 56 concepts de Dryhopper
   // étaient finis à 0 h 30 ; la page disait « classement en cours » : « Je les vois pas dans les artefacts ? ».
-  const source = (texteMission.match(/[Ss]ource de la page[^`\n]*`([^`]+\.html)`/) ?? [])[1];
+  // La phrase peut être coupée par un retour à la ligne (« Source de\n    la page : `…` »).
+  const source = (texteMission.match(/[Ss]ource\s+de\s+la\s+page[^`]{0,40}`([^`]+\.html)`/) ?? [])[1];
   const rendue = (id) => { const r = path.join(mission, 'voies', id, 'RESULTAT.md'); return existe(r) && /^OK\b/.test(lire(r).split('\n').find((l) => l.trim()) ?? ''); };
   const v0Rendues = lireTable(texteMission, 'Voies').filter((v) => /^v0\b/.test(sansAccents(v.etape ?? '')) && rendue(v.voie));
   if (v0Rendues.length) {
