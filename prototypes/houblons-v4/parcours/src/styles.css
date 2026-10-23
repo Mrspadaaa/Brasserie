@@ -2,6 +2,8 @@
    tels quels ; puis les quelques classes propres à la maquette, préfixées pq- (L26). */
 @import '../../../../src/index.css';
 @import '../../ecran/src/themes.css';
+/* Le thème de ses maquettes choisies, par défaut (règle n° 1, D106) : remplace le clair « papier chaud ». */
+@import './theme-maquettes.css';
 
 /* Inconnu : hachuré, jamais une barre à zéro. */
 .pq-hachure {
