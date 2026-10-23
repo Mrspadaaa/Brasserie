@@ -1,6 +1,6 @@
 # Gates: voie p3-comparer — Comparer (r6a, avec les petites améliorations des autres), jouable
 
-OWNS: prototypes/houblons-v4/parcours/src/ecrans/comparer/**, prototypes/houblons-v4/maquettes/parcours-p3/**, work/missions/2026-10-23-maquette-parcours/voies/p3-comparer/RESULTAT.md
+OWNS: prototypes/houblons-v4/parcours/src/ecrans/comparer/**, prototypes/houblons-v4/maquettes/parcours-p3/**, work/missions/2026-10-23-maquette-parcours/voies/p3-comparer/RESULTAT.md, prototypes/houblons-v4/parcours/outils/parcours-complet.mjs
 
 Scope: r6a portée en React dans le socle, calculée en direct, avec les petites améliorations des autres versions, D95 corrigé, avec ses gestes joués et le pont vers Dryhopper.
 
@@ -88,3 +88,18 @@ Scope: r6a portée en React dans le socle, calculée en direct, avec les petites
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours-p3 --ecran=comparer
   EXPECT: CHOIX OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=14652e9da1f754719d83dce411af61509eaaa2be8340c9f9b8e7cbf9ab6ce406; exit=0; EXPECT=matched; output-sha256=faa65b63173f33986f1ad3af01b780870adfd9ee989c03f90f26ec4a2865d201; output-bytes=62; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+
+- [ ] G18: chaque houblon comparé à 60′, 10′ et au dry hop, visibles ensemble, avec une référence (D107)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-comparer-etapes.mjs prototypes/houblons-v4/maquettes/parcours-p3
+  EXPECT: COMPARER-ETAPES OK
+  EVIDENCE: pending
+
+- [ ] G19: le parcours entier joue avec le nouveau Comparer
+  CHECK: node prototypes/houblons-v4/parcours/outils/parcours-complet.mjs --sans-construire --dossier=prototypes/houblons-v4/maquettes/parcours-p3
+  EXPECT: PARCOURS OK
+  EVIDENCE: pending
+
+- [ ] G20: le rapport de la reprise D107 nomme ses captures côte à côte avec r6a et x3b
+  CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p3-comparer/RESULTAT.md --contient "## Reprise D107,x3b,r6a,d107-etapes,d107-reference,390,1280"
+  EXPECT: NOTE OK
+  EVIDENCE: pending

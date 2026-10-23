@@ -1,6 +1,6 @@
 # Gates: voie p2-suggerer — Suggérer (q2b), jouable
 
-OWNS: prototypes/houblons-v4/parcours/src/ecrans/suggerer/**, prototypes/houblons-v4/maquettes/parcours-p2/**, work/missions/2026-10-23-maquette-parcours/voies/p2-suggerer/RESULTAT.md
+OWNS: prototypes/houblons-v4/parcours/src/ecrans/suggerer/**, prototypes/houblons-v4/maquettes/parcours-p2/**, work/missions/2026-10-23-maquette-parcours/voies/p2-suggerer/RESULTAT.md, prototypes/houblons-v4/parcours/src/commun/Cadres.tsx, prototypes/houblons-v4/parcours/src/commun/retour.css, prototypes/houblons-v4/parcours/src/coquille/navigation.tsx, prototypes/houblons-v4/parcours/src/commun/Onglets.tsx
 
 Scope: l'écran Suggérer de q2b (base v4.10), « Quel houblon ajouter à ma bière ? », avec D78 à D82, en React dans le socle, calculé en direct, qui ouvre Comparer avec les houblons cochés.
 
@@ -98,3 +98,33 @@ Scope: l'écran Suggérer de q2b (base v4.10), « Quel houblon ajouter à ma bi�
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-teinte.mjs prototypes/houblons-v4/maquettes/parcours-p2 --ecran=suggerer
   EXPECT: TEINTE OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=4bd8a00746b415972b5089153a7ec48addfb4616fd8e6fb966f9aeba64f1c901; exit=0; EXPECT=matched; output-sha256=00a96512e5308df6f250d4374b7cb4fe08ad8c41a51fa54b4641fbad36369575; output-bytes=113; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+
+- [ ] G20: les traits se lisent au toucher, près du picto, et rien de plus au repos (D110)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-traits.mjs prototypes/houblons-v4/maquettes/parcours-p2
+  EXPECT: TRAITS OK
+  EVIDENCE: pending
+
+- [ ] G21: le retour de chaque outil est grand, à l'encre, nommé, et quitte l'outil (D109)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-retour.mjs prototypes/houblons-v4/maquettes/parcours-p2
+  EXPECT: RETOUR OK
+  EVIDENCE: pending
+
+- [ ] G22: le parcours entier joue avec le nouveau retour
+  CHECK: node prototypes/houblons-v4/parcours/outils/parcours-complet.mjs --sans-construire --dossier=prototypes/houblons-v4/maquettes/parcours-p2
+  EXPECT: PARCOURS OK
+  EVIDENCE: pending
+
+- [ ] G23: le rapport de la reprise nomme ses captures côte à côte avec q2b, les textes au toucher et les mesures du retour
+  CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p2-suggerer/RESULTAT.md --contient "## Reprise D117, D110, D109, D118, D119,consolide-b-390,q2b,cran,44,390,1280"
+  EXPECT: NOTE OK
+  EVIDENCE: pending
+
+- [ ] G24: Suggérer reprend sa base v4.10 et q2b, élément par élément, inventaire complété (D117, règle n° 1)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours-p2 --ecran=suggerer
+  EXPECT: CHOIX OK
+  EVIDENCE: pending
+
+- [ ] G25: la croix est la même sur les trois onglets et ramène à l'étape Houblons (D109, D118, D119)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-retour.mjs prototypes/houblons-v4/maquettes/parcours-p2 --routes=biere,suggerer,comparer
+  EXPECT: RETOUR OK
+  EVIDENCE: pending

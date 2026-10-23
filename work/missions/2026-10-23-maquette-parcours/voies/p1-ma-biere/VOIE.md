@@ -127,3 +127,71 @@ Ce que tu reprends, tel qu'il l'a vu, avec le moteur en direct :
    - `Onglets` ;
    - la liste de comparaison (`useComparaison()`, gestes `basculerComparaison` et `fixerComparaison`).
 6. Te juger côte à côte : ta capture à 390 à côté de celle de la base. Il doit reconnaître son écran.
+
+## Reprise D108 (23.10, nuit) — la visée de sa base, telle quelle
+
+Agent : concepteur (Opus), plafond 120 tours. Dépend de : p10-controle-visee (le contrôle ; il s'écrit en même temps,
+contre le même contrat de marqueurs, recopié plus bas). Cette section prime sur les consignes ci-dessus là où elles
+diffèrent.
+
+### Ses mots, mot pour mot
+En commentaire sur la maquette publiée, posé sur « Tropicaux prévu » de Ma bière : « Aussi aucun impact sur je met plus,
+moins bannir ect.. » (SPEC-BRASSEUR § 1, « La visée sans effet » ; DEFAUTS-RECURRENTS, D108). Sur la visée « en trait
+creux » de sa base, le 18.10 : « Parfait » (SPEC, « Cible et visée »).
+
+### Constat (supervision, joué dans Chrome)
+Dans l'onglet Ma bière, « + » sur Tropicaux ne change rien sur la barre (HTML de la piste identique avant et après) ;
+seul le mot « plus » change, et une puce « + tropicaux » apparaît en bas, hors de l'écran à 390 px. Même chose pour
+« − » et « bannir ». Suggérer lit bien la visée (cartes « Plus tropicaux », « Sans agrumes »), mais « bannir agrumes »
+exclut tout houblon qui cite les agrumes (règle V5.5) : 17 voies sur 18 disparaissent. Dans la base, bannir n'exclut
+pas : c'est une visée à 0.
+
+### Ce qu'il veut : la visée de sa base v4.10, reprise telle quelle (règle n° 1)
+Source : `work/refonte-frontend/v4/ecran-1/base/consolide/biere.html`, fonctions `ligneFamille` et `viserAbs` (vers les
+lignes 1380 à 1445), CSS `.visee-f`, `.lien-visee`, `.fam.bannie` (lignes 172 à 182) ; capture
+`work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png`. Ouvrir la base dans Chrome et jouer « + », « − »,
+« × », « bannir » avant d'écrire.
+1. La visée est posée **sur la piste** : un losange blanc à son niveau, relié au point de la bière par un trait pointillé.
+2. « + » et « − » montent ou descendent **d'un palier**, sur l'échelle absolue 0 à 3 (faible 0,5 ; moyen 1,5 ;
+   marqué 2,5), comme `viserAbs`.
+3. Le palier est **nommé entre les boutons**, et « × » retire la visée.
+4. « bannir », c'est **la visée à 0**, « visée absente » : le nom de la famille est barré et grisé, ligne refermée.
+5. Les puces d'objectifs suivent les visées.
+6. **Suggérer lit le palier en crans**, comme la base (l'écart entre la bière et la visée, en crans du style).
+7. **Bannir suit la base** : une visée à 0, lue par Suggérer comme un objectif (faire baisser la famille), et non
+   l'exclusion V5.5 de tout houblon qui la cite. Si une exclusion reste quelque part, elle est déclarée dans la NOTE
+   (`## Écarts`) avec sa raison, et jamais 17 voies sur 18 écartées sans explication à l'écran.
+
+### Contrat de marqueurs (le même que la voie p10 ; ne pas l'élargir sans le dire au pilote)
+Page `<dossier>/biere/etat.html`, 390 × 844 tactile ; famille jouée Tropicaux (une famille « prévue ») :
+- la ligne `[data-famille-ligne="<famille>"]` s'ouvre par son bouton `[aria-expanded]` ;
+- gestes dans le groupe ouvert : `[data-visee="plus"]`, `[data-visee="moins"]`, `[data-visee="bannir"]`,
+  `[data-visee="retirer"]` (le « × ») ;
+- sur la piste : le point de la bière `[data-biere-point]`, le losange `[data-visee-marque]` avec `data-niveau` (0 à 3),
+  le trait pointillé `[data-visee-lien]` qui relie le point au losange ;
+- le palier nommé `[data-palier]`, entre les boutons ;
+- la famille bannie : `[data-bannie]` sur la ligne, nom barré (`text-decoration: line-through`), visible ligne refermée.
+Le contrôle vérifie : pas de losange au repos ; après « + », losange à droite du point, relié, palier nommé, « × »
+visible ; après « − », à gauche ; « + » deux fois, un palier de plus (3 au plus) ; « × » retire ; « bannir » puis ligne
+refermée, nom barré.
+
+### Possède en plus, pour cette reprise
+- `prototypes/houblons-v4/parcours/src/etat/**` : la visée seulement (son type, l'action, le geste). Changer le type en
+  **une seule étape**, avec tous ses lecteurs, pour que la construction reste verte : d'autres voies (p2, p3) construisent
+  en même temps depuis le même dossier.
+- Les lecteurs de la visée : `prototypes/houblons-v4/parcours/src/ecrans/suggerer/voies.ts` (`objectifsDe`, `bannisDe`,
+  `voiesDe` : la lecture de la visée et de bannir seulement ; le reste de `ecrans/suggerer/` est à la voie p2) ;
+  `prototypes/houblons-v4/parcours/src/coquille/Coquille.tsx` (les lignes qui lisent la visée) ; la fiche
+  (`ecrans/fiche/`, déjà à toi).
+- Ta sortie de construction reste `prototypes/houblons-v4/maquettes/parcours-p1/`.
+
+### Garder
+- Les marqueurs du parcours et des contrôles : `data-famille-ligne`, `data-element` (dont `biere-bannir`,
+  `biere-objectifs`), les `data-role="pont-…"` des puces d'objectifs (le parcours joue « + floral » → Suggérer).
+- L'inventaire `inventaire-ma-biere.json` (sa base v4.10), la teinte (D106), la frise (D55, RAIL OK).
+
+### Se juger
+Captures de l'onglet Ma bière au repos, après « + », après « − », après « bannir » (ligne refermée), à 390 puis 1280,
+ouvertes en image (L12), **côte à côte avec sa base v4.10 jouée dans Chrome** (règle n° 1). Puis Suggérer avec Tropicaux
+« + » et agrumes bannis : combien de voies, lesquelles. Dans RESULTAT.md, une section `## Reprise D108` : ce qui est
+fait, les captures ouvertes (nommées), le nombre de voies de Suggérer avec agrumes bannis avant et après.

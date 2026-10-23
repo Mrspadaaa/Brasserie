@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>stepper-ok</title><style>
+*{box-sizing:border-box}body{margin:0;font-family:"Source Sans 3",system-ui,sans-serif;background:#f6f1e7;color:#2a2118}
+.entete{padding:6px 8px 4px;background:#fffdf8;border-bottom:1px solid #e3d9c6}
+.rang{display:flex;align-items:center;gap:6px;min-height:28px}
+.rang button{width:28px;height:28px;border:0;background:none;border-radius:6px;color:#8a7a62}
+.nom{display:flex;min-width:0;flex:1;align-items:baseline;gap:6px;margin:0}
+.nom .t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:16px;font-weight:600;color:#2a2118}
+.nom .p{flex:none;font-family:"IBM Plex Mono",monospace;font-size:14px;color:#8a7a62}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.wizard-step-rail{display:flex;gap:4px;width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.wizard-step-rail button{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;flex:none;min-height:36px;padding:0 4px;border:0;background:none;border-radius:6px;font:inherit}
+.wizard-step-rail .l{font-size:12px;white-space:nowrap;color:#8a7a62}
+.wizard-step-rail [aria-current="step"] .l{color:#2a2118;font-weight:600}
+.wizard-step-rail .b{display:block;height:6px;width:100%;border-radius:999px;background:#e3d9c6}
+.wizard-step-rail .av .b{background:#8a7a62}
+.wizard-step-rail [aria-current="step"] .b{background:#2a2118}
+.maison{display:inline-flex;align-items:center;gap:6px;border:1px solid #cdbf9f;border-radius:999px;padding:2px 8px;font-size:14px}
+.maison i{font-style:normal;background:#e3d9c6;border-radius:999px;padding:0 8px;font-size:12px}
+main{padding:12px 8px;font-size:14px;color:#5b4d3a}
+</style></head>
+<body><div class="entete"><div class="rang"><button type="button" aria-label="Retour">‹</button><p class="nom"><span class="t">Houblons</span><span class="p">3/7</span><span class="sr-only" aria-live="polite">Houblons — étape 3 sur 7</span></p><button type="button" aria-label="Coller une recette">⎘</button></div><nav aria-label="Étapes" class="wizard-step-rail"><button type="button" aria-label="Identité" title="Identité" class="av"><span class="l">Identité</span><span class="b"></span></button><button type="button" aria-label="Fermentescibles" title="Fermentescibles" class="av"><span class="l">Malts/sucres</span><span class="b"></span></button><button type="button" aria-label="Houblons" title="Houblons" aria-current="step" class=""><span class="l">Houblons</span><span class="b"></span></button><button type="button" aria-label="Levure" title="Levure" class=""><span class="l">Levure</span><span class="b"></span></button><button type="button" aria-label="Paliers" title="Paliers" class=""><span class="l">Paliers</span><span class="b"></span></button><button type="button" aria-label="Eau et sels" title="Eau et sels" class=""><span class="l">Eau</span><span class="b"></span></button><button type="button" aria-label="Récapitulatif" title="Récapitulatif" class=""><span class="l">Récap.</span><span class="b"></span></button></nav></div><main><p>Étape Houblons : la frise des ajouts, puis le profil. (Témoin du contrôle D116, page statique.)</p></main></body></html>

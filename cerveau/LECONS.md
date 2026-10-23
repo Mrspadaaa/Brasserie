@@ -12,7 +12,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Comprendre la demande
 
 ### L01 — Reformuler la portée d'une décision avant de la propager
-- Erreur : 12.10, « seul 3.8 peut être utilisé », dit pour des tests, a été appliqué à toute l'app. Le lot G38 (#93) a été perdu, puis IA-B a servi à revenir en arrière.
+- Erreur : 12.10, « seul 3.8 peut être utilisé », dit pour des tests, a été appliqué à toute l'app ; le lot G38 (#93) perdu.
 - Cause : la portée (tests seuls, un usage, toute l'app) n'a pas été écrite avant d'agir.
 - Faire : écrire la portée en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler.
 - Rôles : pilote, conseil
@@ -26,9 +26,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, « Meilleures bar » de l5b. Seules les barres de voie ont été reprises, pas les pistes d'objectif. « C'est pas exactement ce que j'ai demandé ». 23.10 : la maquette suivait la carte et un thème proposé, pas ses choix (D105, D106), et la supervision l'avait dite conforme sur ses contrats.
+- Erreur : 19.10, « Meilleures bar » de l5b. Seules les barres de voie ont été reprises, pas les pistes d'objectif. « C'est pas exactement ce que j'ai demandé ». 23.10 : la maquette suivait la carte et un thème proposé, pas ses choix (D105, D106), pourtant dite conforme ; « comme la maquette de base » lu base v4.10, c'était x3b, notée pour cela (D107).
 - Cause : « X de la variante Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte, même pour une revue. Ses maquettes : ses captures, mesurées (D106).
+- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte, même pour une revue. Ses maquettes : ses captures, mesurées (D106). Désignée vaguement : ses mots dans SPEC et les inventaires.
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 
@@ -72,7 +72,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
-- Erreur : 19.10, loupe p02 avec RAIL OK et LOT OK, mais 19 à 20 px sous le doigt contre 8 à 13 au loin. « L'échelle ne s'adapte toujours pas ». Avant cela, seules 24 à 44 % des captures avaient été regardées.
+- Erreur : 19.10, loupe p02 avec RAIL OK et LOT OK, mais 19 à 20 px sous le doigt contre 8 à 13 au loin. « L'échelle ne s'adapte toujours pas » ; 24 à 44 % des captures regardées.
 - Cause : les contrôles bornaient le geste sans exiger de force minimale, et les captures n'étaient pas ouvertes.
 - Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK, dont celles de `verifier-page.mjs` (22.10 : script cassé).
 - Rôles : relecteur, auteur, exécutant
@@ -102,7 +102,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
-- Erreur : lots 5 à 21, 8 à 12 auteurs en vol (3 prévus), à 130 à 350 k jetons chacun ; le pilote lisait les sorties brutes.
+- Erreur : lots 5 à 21, 8 à 12 auteurs en vol (3 prévus), à 130 à 350 k jetons chacun ; le pilote lisait tout.
 - Cause : pas de plafond par voie, tout au modèle le plus cher, un retour sans format.
 - Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique, Sonnet pour l'analyse et le code, Opus pour l'interface, la planification et la signature (L25). Retour en une ligne. Le plafond porte sur les agents et les tours, jamais sur les variantes (lot 22 réduit à 12 « au nom de L18 », M13).
 - Rôles : pilote
@@ -146,7 +146,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun ; revenu 4 fois le 23.10 : à mécaniser
 
 ### L27 — Un juge qui parle pour le brasseur s'étalonne sur ses vrais verdicts
-- Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré », et rejeté r6a, que le brasseur a choisie. Pire : il a rejeté la première planche « épicé » à six genres, et la voie s'est resserrée sur le seul piment (« quasiment identique », D101 ter). Son portrait (PORTRAIT.md) avait été écrit par un modèle et jamais confronté aux verdicts du brasseur.
+- Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré », et rejeté r6a, que le brasseur a choisie. Pire : il a rejeté la première planche « épicé » à six genres, et la voie s'est resserrée sur le seul piment (« quasiment identique », D101 ter). Son portrait (PORTRAIT.md), écrit par un modèle, n'avait jamais été confronté à ses verdicts.
 - Cause : aucune étape n'éprouvait le juge à l'aveugle, et les verdicts du brasseur ne revenaient jamais le corriger (boucle ouverte).
 - Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts et ne rejette jamais la diversité. À l'entonnoir, son classement (demandé : « vaste panel et ensuite ranking ») est une proposition, et le brasseur voit tout (M13). Idem pour le regard Brasseur du conseil.
 - Rôles : pilote, critique, conseil

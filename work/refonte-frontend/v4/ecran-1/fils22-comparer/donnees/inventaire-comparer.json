@@ -1,6 +1,6 @@
 {
  "maj": "2026-10-23",
- "source": "r6a elle-même (12 éléments, son choix redit le 23.10) et les 37 éléments qu'il a notés ailleurs (elements-notes.json, D104).",
+ "source": "r6a elle-même (12 éléments, son choix redit le 23.10) et les 37 éléments qu'il a notés ailleurs (elements-notes.json, D104). D107 (23.10, soir) : les étapes, l'état au moment de l'ajout et la référence, à la manière de x3b (lot 21) : 3 éléments « d107- ».",
  "contrat": "Comparer reprend r6a telle qu'il l'a vue, et ce qu'il a noté ailleurs ; chaque élément repris (data-element), en contexte, en pont, ou écarté avec sa raison (un quart au plus). Règle n° 1, D104, D105.",
  "elements": [
   {
@@ -541,6 +541,39 @@
    "reserve": "",
    "capture": "work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g1-fiche-citra-390.png",
    "facteur": "outil : fiche"
+  },
+  {
+   "id": "d107-etapes",
+   "variante": "x3b",
+   "lot": "21",
+   "date": "2026-10-23",
+   "mots": "je voulais comparé au moins : les étapes 60' 10' dryhopping ect comme la maquette de base",
+   "quoi": "Chaque houblon comparé aux étapes, 60′, 10′ et dry hop au moins (le vocabulaire des moments : 60′ … 10′, whirlpool, dry hop actif, après), ses valeurs visibles ensemble, sans toucher. Les étapes se montrent ensemble ; ce n'est pas un second curseur : le houblon reste le seul facteur libre (L10).",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-plans-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "d107-etat-au-moment",
+   "variante": "x3b",
+   "lot": "21",
+   "date": "2026-10-23",
+   "mots": "Montrait vraiment l'état du moment de l'ajout facile, je l'avais juste fait noté !!",
+   "quoi": "La manière de x3b : l'état de la bière au moment de chaque ajout, lisible d'un coup d'œil ; la bière de base en pointillé, les familles qui montent à l'étape où le houblon entre (bandes de x3b, « J4 ~ dans la cuve »).",
+   "reserve": "dur à lire",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "d107-reference",
+   "variante": "x3b",
+   "lot": "21",
+   "date": "2026-10-23",
+   "mots": "Et aussi le houblon de base ou bière de base",
+   "quoi": "Une référence aux mêmes étapes : la bière de base (ta stout, le pointillé de x3b) ou le houblon de base de la recette (Nugget).",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-390.png",
+   "facteur": "variété"
   }
  ]
 }

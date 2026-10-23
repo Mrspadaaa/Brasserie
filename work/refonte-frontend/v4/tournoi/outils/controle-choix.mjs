@@ -7,7 +7,8 @@
 // LE REGISTRE (versionné) : work/refonte-frontend/v4/choix/ecrans.json, { maj, regle, usage, ecrans: [ … ] }.
 // Un écran : ecran, route (la page <dossier>/<route>/etat.html), statut (« choisi » ou « ouvert »), puis :
 //   - choisi : choix, mots (sa phrase mot pour mot, retrouvée dans SPEC-BRASSEUR.md), capture (qui existe), et
-//     inventaire (joué par controle-reprise.mjs) et/ou controles (commandes, « {dossier} » remplacé) ;
+//     inventaire (joué par controle-reprise.mjs) et/ou controles (commandes, « {dossier} » remplacé) ; complements
+//     (facultatif : ce qu'il a demandé en plus de sa maquette, { mots, capture, quoi }, gardé par un contrôle) ;
 //   - ouvert : options (deux au moins), provisoire, page (l'adresse où il choisit).
 //
 // Usage : node controle-choix.mjs <dossier construit> [--registre=chemin] [--ecran=<ecran>]
@@ -47,6 +48,13 @@ for (const e of registre.ecrans ?? []) {
     if (!e.mots || !spec.includes(norm(e.mots))) fautes.push(`${nom} : ses mots ne se retrouvent pas dans SPEC-BRASSEUR (« ${norm(e.mots ?? '').slice(0, 60)} »)`);
     if (!e.capture || !fs.existsSync(path.resolve(RACINE, e.capture))) fautes.push(`${nom} : capture absente (${e.capture})`);
     if (!e.inventaire && !(e.controles ?? []).length) fautes.push(`${nom} : ni inventaire ni contrôle : rien ne vérifie son choix`);
+    // Ce qu'il a demandé en plus de sa maquette (D107 : les étapes et la référence de la base dans r6a) : ses mots et
+    // la capture d'où cela vient, comme le choix lui-même ; un complément se vérifie par un contrôle.
+    for (const [i, k] of (e.complements ?? []).entries()) {
+      if (!k.mots || !spec.includes(norm(k.mots))) fautes.push(`${nom} : complément ${i + 1}, ses mots ne se retrouvent pas dans SPEC-BRASSEUR (« ${norm(k.mots ?? '').slice(0, 60)} »)`);
+      if (!k.capture || !fs.existsSync(path.resolve(RACINE, k.capture))) fautes.push(`${nom} : complément ${i + 1}, capture absente (${k.capture})`);
+    }
+    if ((e.complements ?? []).length && !(e.controles ?? []).length) fautes.push(`${nom} : compléments sans contrôle`);
     if (e.inventaire) {
       const r = spawnSync(process.execPath, [path.join(ici, 'controle-reprise.mjs'), '--inventaire', path.resolve(RACINE, e.inventaire)], { cwd: RACINE, encoding: 'utf8' });
       if (r.status !== 0) fautes.push(`${nom} : inventaire invalide (${(r.stdout + r.stderr).trim().split('\n').slice(-2).join(' ; ')})`);

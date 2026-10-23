@@ -1,6 +1,6 @@
 # Gates: voie p1-ma-biere — Ma bière, la fiche et Substituer, jouables
 
-OWNS: prototypes/houblons-v4/parcours/src/ecrans/ma-biere/**, prototypes/houblons-v4/parcours/src/ecrans/biere/**, prototypes/houblons-v4/parcours/src/ecrans/fiche/**, prototypes/houblons-v4/parcours/src/ecrans/substituer/**, prototypes/houblons-v4/maquettes/parcours-p1/**, work/missions/2026-10-23-maquette-parcours/voies/p1-ma-biere/RESULTAT.md
+OWNS: prototypes/houblons-v4/parcours/src/ecrans/ma-biere/**, prototypes/houblons-v4/parcours/src/ecrans/biere/**, prototypes/houblons-v4/parcours/src/ecrans/fiche/**, prototypes/houblons-v4/parcours/src/ecrans/substituer/**, prototypes/houblons-v4/maquettes/parcours-p1/**, work/missions/2026-10-23-maquette-parcours/voies/p1-ma-biere/RESULTAT.md, prototypes/houblons-v4/parcours/src/etat/**, prototypes/houblons-v4/parcours/src/ecrans/suggerer/voies.ts, prototypes/houblons-v4/parcours/src/coquille/Coquille.tsx
 
 Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en porte, en React dans le socle, calculés en direct, avec leurs gestes joués.
 
@@ -128,3 +128,23 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-teinte.mjs prototypes/houblons-v4/maquettes/parcours-p1 --ecran=fiche
   EXPECT: TEINTE OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=3955fc03117c6e201c5d14f3228b404ac175f0914279b6f5e2234cfcfda319aa; exit=0; EXPECT=matched; output-sha256=90ea0da53fc5332d471791aa81c3a2bce609370ab700fee5ee31502588382a31; output-bytes=110; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+
+- [ ] G26: la visée de Ma bière se dessine sur la piste, comme sa base (D108)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-visee.mjs prototypes/houblons-v4/maquettes/parcours-p1
+  EXPECT: VISEE OK (6/6
+  EVIDENCE: pending
+
+- [ ] G27: le parcours entier joue avec la nouvelle visée
+  CHECK: node prototypes/houblons-v4/parcours/outils/parcours-complet.mjs --sans-construire --dossier=prototypes/houblons-v4/maquettes/parcours-p1
+  EXPECT: PARCOURS OK
+  EVIDENCE: pending
+
+- [ ] G28: le dossier est typé sans erreur après le changement de la visée
+  CHECK: node prototypes/houblons-v4/parcours/outils/verifier-types.mjs
+  EXPECT: TYPES OK
+  EVIDENCE: pending
+
+- [ ] G29: le rapport de la reprise D108 nomme ses captures côte à côte avec la base et les voies avec agrumes bannis
+  CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p1-ma-biere/RESULTAT.md --contient "## Reprise D108,base v4.10,bannir,390,1280"
+  EXPECT: NOTE OK
+  EVIDENCE: pending

@@ -102,3 +102,77 @@ Dans `GATES.md`, même dossier. Ne pas le modifier. Lancer chaque `CHECK:` depui
 - `LEÇON PROPOSÉE : …` s'il y a lieu.
 
 Réponse finale au pilote : une ligne.
+
+## Reprise D107 (23.10, soir) — comparer aux étapes, à la manière de x3b, avec une référence
+
+Agent : concepteur (Opus), plafond 120 tours. Dépend de : p9-controle-etapes (le contrôle ; il s'écrit en même temps,
+contre le même contrat de marqueurs, recopié plus bas). Cette section prime sur les consignes ci-dessus là où elles
+diffèrent (le moment fixé « après, 3 j » de la consigne 1 tombe).
+
+### Ses mots, mot pour mot
+- Sur la maquette publiée : « Ah mais comparé est que le dryhopping ??? C'est pas ce que je voulais je voulais comparé
+  au moins : les étapes 60' 10' dryhopping ect comme la maquette de base. Et aussi le houblon de base ou bière de base.
+  Est-ce que cela est clair ? »
+- Puis, sur le Comparer de la base v4.10, barré : « Non pas cette version, une version du dryhopping, dans un des top.
+  Montrait vraiment l'état du moment de l'ajout facile, je l'avais juste fait noté !! »
+- Sa note du 20.10 sur cette version, **x3b** (lot 21, une des 5 meilleures) : « La x3b est aussi interessant mais dur à
+  lire. mais ça peut être interessant de l'utiliser jsute pour de la comparaison entre ma bière de base -> 1 dry hop,
+  2 dry hop: levure ».
+- SPEC-BRASSEUR § 1, « Comparer aux étapes, avec une référence » ; DEFAUTS-RECURRENTS, D107.
+
+### Ce qu'il veut
+1. **La forme reste r6a** (règle n° 1) : titre en question, ligne de contexte, radar r2, une colonne par houblon avec
+   ses têtes, la colonne « Ta stout », les rangées par famille, Chimie et vraies valeurs, panel OSU, « Placer ».
+2. **Les étapes, ensemble** : chaque houblon comparé à 60′, 10′ et au dry hop au moins (whirlpool, dry hop actif et
+   après si la place le permet), à dose égale (4 g/L, comme r6a), calculés en direct par le moteur :
+   `comparer(recette, cles, { quand })` de `src/moteur` accepte un moment (le moteur simule l'arôme à 60′, 10′,
+   whirlpool, dry hop actif et après ; l'IBU à toute minute par `ibuAjout`). Les étapes se montrent **ensemble, au
+   repos** ; ce n'est pas un second curseur ni un sélecteur : le houblon reste le seul facteur libre (L10,
+   `controle-une-question` doit rendre « 1 groupe libre : houblon »).
+3. **À la manière de x3b** : l'état de la bière au moment de chaque ajout, lisible d'un coup d'œil. Dans x3b, la bière
+   de base est en pointillé et chaque famille monte à l'étape où le houblon entre (bandes en marches, « J4 ~ dans la
+   cuve »). Ici l'axe va des étapes du brassin (60′ → 10′ → whirlpool → dry hop) au lieu des jours. Sa réserve sur x3b :
+   « dur à lire » : prendre l'idée (le pointillé de la bière de base, la marche à l'étape), pas sa densité.
+4. **Une référence aux mêmes étapes** : la bière de base (ta stout, le pointillé de x3b ; r6a a déjà sa colonne) ou
+   le houblon de base de la recette (Nugget). Elle porte ses valeurs aux mêmes étapes.
+5. Ce qui n'y entre pas : le Comparer de la base v4.10 (barré : « Non pas cette version »), la dose équivalente, le
+   remplacement (c'est Substituer), la levure comme facteur (c'est Levure ; « 2 dry hop: levure » se lit comme la suite
+   de la frise, pas comme un sélecteur ici).
+
+### Contrat de marqueurs (le même que la voie p9 ; ne pas l'élargir sans le dire au pilote)
+Page `<dossier>/comparer/etat.html`, au repos (aucun toucher), à 390 × 844 tactile et à 1280 × 800 :
+- chaque houblon comparé : `[data-houblon-compare="<clé>"]` (clé du moteur) ;
+- valeur à une étape : `[data-etape="<code>"][data-houblon="<clé>"]`, codes `b60`, `b10`, `b5`, `wp`, `dryActive`,
+  `dryPost` ; texte : un nombre (« ~ » devant s'il est simulé) ou « ? » ; un `[data-inconnu]` ne montre jamais « 0 » ;
+- exigé pour chaque houblon comparé et pour la référence : `b60`, `b10`, et `dryActive` ou `dryPost` ;
+- visibles ensemble : non cachées, non couvertes (le dock « Placer » ne les couvre pas), dans la largeur, et toutes
+  dans **un seul écran** (écart vertical entre la plus haute et la plus basse ≤ 844 au téléphone, ≤ 800 à l'ordinateur) ;
+- le texte visible nomme « 60′ », « 10′ » et « dry hop » (ou « à froid ») ;
+- la référence : `[data-reference="biere"]`, ou `[data-reference="houblon"][data-houblon="<clé d'un houblon de la
+  recette>"]`, visible au repos, avec ses `[data-etape]` aux mêmes étapes (dedans, ou `data-houblon` = sa clé).
+
+### Garder
+- Les marqueurs du parcours : `[role="radio"][data-col="<clé>"]` par colonne, `svg[data-radar] [data-serie]`,
+  `[data-role="pont-…"]`, `data-ecran="comparer"`, `data-element`, `data-acquis` ; « Placer <retenu> » ouvre Dryhopper.
+- L'inventaire `inventaire-comparer.json` a maintenant 52 éléments : trois nouveaux, `d107-etapes`,
+  `d107-etat-au-moment`, `d107-reference` (variante x3b). La NOTE (`## Reprise`) les classe ; ils sont **repris**, pas
+  écartés. Revoir aussi `x3b-cuve-jour-apres-jour` (classé « en pont » : son idée entre maintenant dans Comparer).
+- Les exigences transversales ci-dessus (au style, inconnu ≠ 0, « ~ », 80 mots au premier écran, légendes derrière « ? »).
+
+### Entrées en plus
+- x3b : `work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-390.png`, `x3b-plans-390.png`, `x3b-haut-390.png`,
+  `x3b-geste-1-tenir.png` ; son générateur `work/refonte-frontend/v4/ecran-1/fils21-choisir/x3b/generateur-x3b.mjs`.
+- r6a : `work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6a-premier-ecran.png`.
+- La version rejetée (construction d332792c, publiée) : `prototypes/houblons-v4/maquettes/parcours-d332792c/comparer/etat.html`.
+- Le registre : `work/refonte-frontend/v4/choix/ecrans.json` (écran comparer, ses « complements »).
+
+### Possède en plus
+- Dans `prototypes/houblons-v4/parcours/outils/parcours-complet.mjs`, les seules étapes de Comparer, si un marqueur
+  qu'elles lisent change (dire lequel dans RESULTAT.md). Rien d'autre hors de `src/ecrans/comparer/**`, de la sortie
+  `maquettes/parcours-p3/` et de RESULTAT.md. Un besoin dans `src/moteur` se demande au pilote.
+
+### Se juger
+Captures à 390 puis à 1280, ouvertes en image (L12), **côte à côte avec r6a et avec x3b** (règle n° 1) : il doit
+retrouver r6a, avec les étapes lisibles comme dans x3b. Dans RESULTAT.md, une section `## Reprise D107` : ce qui est
+fait, les captures ouvertes (nommées), les nombres aux étapes pour Idaho 7 et Cascade (floral et IBU à 60′, 10′, dry
+hop), ce qui reste au brasseur.

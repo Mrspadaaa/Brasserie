@@ -19,7 +19,10 @@
    "choix": "base v4.10, onglet Ma bière",
    "mots": "Ça aussi",
    "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
-   "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-ma-biere.json"
+   "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-ma-biere.json",
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-visee.mjs {dossier}"
+   ]
   },
   {
    "ecran": "suggerer",
@@ -28,16 +31,40 @@
    "choix": "q2b",
    "mots": "Ça oui, c'est effectivement l'un de mes choix",
    "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
-   "inventaire": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/donnees/inventaire-q2b.json"
+   "inventaire": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/donnees/inventaire-q2b.json",
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-traits.mjs {dossier}"
+   ]
   },
   {
    "ecran": "comparer",
    "route": "comparer",
    "statut": "choisi",
-   "choix": "r6a, avec les petites améliorations des autres versions",
+   "choix": "r6a pour la forme, avec les petites améliorations des autres versions ; les étapes, l'état au moment de l'ajout et la référence, à la manière de x3b (lot 21) (D107)",
    "mots": "r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions",
    "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6a-premier-ecran.png",
-   "inventaire": "work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/inventaire-comparer.json"
+   "inventaire": "work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/inventaire-comparer.json",
+   "complements": [
+    {
+     "mots": "je voulais comparé au moins : les étapes 60' 10' dryhopping ect comme la maquette de base",
+     "capture": "work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-plans-390.png",
+     "quoi": "60′, 10′ et dry hop au moins, visibles ensemble, pour chaque houblon comparé"
+    },
+    {
+     "mots": "Montrait vraiment l'état du moment de l'ajout facile, je l'avais juste fait noté !!",
+     "capture": "work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-390.png",
+     "quoi": "l'état de la bière au moment de chaque ajout, lisible d'un coup d'œil, à la manière de x3b"
+    },
+    {
+     "mots": "Et aussi le houblon de base ou bière de base",
+     "capture": "work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-390.png",
+     "quoi": "une référence aux mêmes étapes : la bière de base (ta stout) ou le houblon de base de la recette (Nugget)"
+    }
+   ],
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-comparer-etapes.mjs {dossier}"
+   ],
+   "note": "r6a donne la forme (inventaire) ; D107 y met les étapes, l'état au moment de l'ajout et la référence à la manière de x3b (lot 21, « Ma cuve, jour après jour », notée le 20.10 « pour de la comparaison entre ma bière de base -> 1 dry hop, 2 dry hop: levure ») : 3 éléments « d107- » de l'inventaire, et controle-comparer-etapes. Pas le Comparer de la base v4.10 (« Non pas cette version »)."
   },
   {
    "ecran": "fiche",

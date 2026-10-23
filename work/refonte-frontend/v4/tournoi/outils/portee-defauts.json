@@ -1521,6 +1521,109 @@
    "resultat": "maquette jouable de 18 h 22 : TEINTE ECHEC 1/5 ; témoins teinte-blanc OK, teinte-pastel échec",
    "verdict": "garde",
    "script": "controle-teinte.mjs"
+  },
+  {
+   "id": "D107",
+   "mots": "« Ah mais comparé est que le dryhopping ??? C'est pas ce que je voulais je voulais comparé au moins : les étapes 60' 10' dryhopping ect comme la maquette de base. Et aussi le houblon de base ou bière de base. » (23.10, soir)",
+   "controle": "controle-comparer-etapes.mjs <dossier construit> [--page=etat.html] [--largeur=390|1280]",
+   "portee": [
+    "comparer"
+   ],
+   "tourne": "oui",
+   "resultat": "maquette d332792c : COMPARER-ETAPES ECHEC (13 manques par largeur : 0 valeur d'étape, une seule : après, 3 j ; pas de référence ; 60′ et 10′ non nommés) ; témoins comparer-etapes-ok et -ok-houblon : OK (12 valeurs, écart vertical 110 px) ; -un-moment, -cache (dry hop sous <details> fermé), -sans-reference, -trop-haut (écart 1314 px) : ECHEC",
+   "verdict": "garde",
+   "script": "controle-comparer-etapes.mjs"
+  },
+  {
+   "id": "D109",
+   "mots": "D109 : « Bouton retour souvent assez petit et pas très intuitif » ; « UI pas terribles, toujours pas au point » ; « Juste une croix bien positionné, facile, dans le thème suffirait ». D118 : « Suivant où on est le bouton retour fait pas la même action. Je veux juste retour au \"menu\" pas principal ». D119 : « Header qui change ??? » (23.10, soir)",
+   "controle": "controle-retour.mjs <dossier construit> [--routes=biere,suggerer,comparer,dryhopper,levure,substituer] [--page=etat.html] [--parcours=oui|non]",
+   "portee": [
+    "suggerer",
+    "comparer",
+    "dryhopper",
+    "levure",
+    "substituer",
+    "biere"
+   ],
+   "tourne": "oui",
+   "resultat": "maquette d332792c : RETOUR ECHEC 0/12 (« ‹ » de 28 × 28 px, icône 16 px #333333, pas une croix ; en-tête 41 px sur biere, 33 px sur suggerer et comparer, croix à 4 px d'écart ; la croix mène à #/biere depuis l'onglet et à #/suggerer depuis Comparer au lieu de #/ma-biere) ; témoins retour-ok (croix de 48 px à l'encre, #/ma-biere, trois onglets à 56 px) : OK ; retour-petit, retour-ailleurs (croix menant à #/biere), retour-en-tete-saute (64 px contre 56 px) : ECHEC",
+   "verdict": "garde",
+   "script": "controle-retour.mjs"
+  },
+  {
+   "id": "D108",
+   "mots": "« Aussi aucun impact sur je met plus, moins bannir ect.. » (23.10, soir, commentaire sur « Tropicaux prévu », Ma bière, maquette publiée)",
+   "controle": "controle-visee.mjs <dossier> [--famille=tropical] [--page=chemin]",
+   "portee": [
+    "biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Sa base v4.10 balisée (temoins/visee-base) : VISEE OK (6/6, tropical). Maquette d332792c : VISEE ECHEC (1/6), « + » et « − » ne dessinent aucun losange (HTML de la piste identique avant et après), pas de [data-bannie], nom non barré. visee-sans-trace (le mot seul change) : ECHEC 1/6. visee-mauvais-cote (losange de « + » à gauche du point) : ECHEC 3/6. Jouée à 390 × 844 tactile, une page rechargée par scénario ; capture de la base après « + » regardée (losange, trait pointillé, « faible », « × »).",
+   "verdict": "garde",
+   "script": "controle-visee.mjs"
+  },
+  {
+   "id": "D110",
+   "mots": "« Un peu dur à comprendre ce système de petit bar » (23.10, soir, commentaire sur les pictos d'une voie de Suggérer, maquette publiée d332792c)",
+   "controle": "controle-traits.mjs <dossier construit> [--page=etat.html] [--largeur=390|1280]",
+   "portee": [
+    "suggerer"
+   ],
+   "tourne": "oui",
+   "resultat": "maquette d332792c : TRAITS ECHEC (6 manques, règle 3 : 0/3 pictos touchés montrent leur famille et leur valeur, à 390 et à 1280 ; règle 1 OK, 84 éléments de traits ; règle 2 OK ; règle 4 OK ; règle 5 sans objet) ; témoin traits-ok : TRAITS OK (6 touchés, 2 largeurs) ; traits-muets : ECHEC règle 3 ; traits-bavards : ECHEC règles 2 et 3 (17 textes sous les pictos) ; traits-feuille : ECHEC règle 4 (feuille de 844 px)",
+   "verdict": "garde",
+   "script": "controle-traits.mjs"
+  },
+  {
+   "id": "D114",
+   "mots": "« Beaucoup trop mis en avant » (23.10, soir, sur « Panel OSU, Cascade », Comparer)",
+   "controle": "controle-comparer-etapes.mjs <dossier construit> --largeur=390 (lignes « - D114 » : panel replié au repos, ouvert d'un toucher, sous le premier écran, titre pas plus fort que les autres)",
+   "portee": [
+    "comparer"
+   ],
+   "tourne": "oui",
+   "resultat": "maquette d332792c : ECHEC, « - D114 panel OSU ouvert au repos, seul bloc détaillé déplié » (graphique visible, panel à 912 px, titre 700/14 px) ; témoin comparer-etapes-panel-haut : ECHEC (4 lignes D114 : ouvert, premier écran à 224 px, titre 800 contre 600, 22 px contre 14 px) ; comparer-etapes-ok : OK (panel replié, s'ouvre d'un toucher, titre 600/14 px).",
+   "verdict": "garde",
+   "script": "controle-comparer-etapes.mjs"
+  },
+  {
+   "id": "D120",
+   "mots": "« Pas de bouton cancer » (23.10, soir, Substituer, pied « 10 g de Simcoe » : seul « Remplacer › »)",
+   "controle": "controle-annuler.mjs <dossier construit> [--routes=substituer,levure,dryhopper] [--page=etat.html]",
+   "portee": [
+    "substituer",
+    "levure",
+    "dryhopper"
+   ],
+   "tourne": "oui",
+   "resultat": "maquette d332792c : ANNULER ECHEC 0/6 (aucun « Annuler » sur Substituer et Levure, pied de 28 px ; Dryhopper sans action de recette dans le pied) ; témoins annuler-ok (Annuler 48 px à côté de Remplacer, recette intacte, brouillon abandonné, l'outil se quitte) : OK ; annuler-absent et annuler-qui-change (Annuler qui applique le remplaçant) : ECHEC",
+   "verdict": "garde",
+   "script": "controle-annuler.mjs"
+  },
+  {
+   "id": "D115",
+   "mots": "« Mettre le radargraph avant, cette vue est vraiment pas terribles. À revoir... » (23.10, soir, fiche de Cascade, sur « · nommé en premier »)",
+   "controle": "controle-fiche-radar.mjs <dossier construit> [--page=fiche/etat.html] (lignes « D115 »)",
+   "portee": [
+    "fiche"
+   ],
+   "tourne": "oui",
+   "resultat": "Maquette d332792c : FICHE-RADAR ECHEC (radar à 603–944 px sous la liste des familles qui commence à 208 px, et radar non entier dans les 844 px) ; témoin fiche-radar-ok (radar 102–444, liste dès 452) : OK ; fiche-radar-bas (liste d'abord) : ECHEC ; fiche-radar-hors-ecran (radar avant la liste mais finit à 1012 px) : ECHEC. Joué à 390 × 844, conteneurs remis en haut ; capture de fiche-radar-ok regardée.",
+   "verdict": "garde",
+   "script": "controle-fiche-radar.mjs"
+  },
+  {
+   "id": "D116",
+   "mots": "« Pourquoi ? Qu'est-ce que ce champs apporter ?? Il faudra remplacer tout ça par le vrai Stepper de la vrai app » (23.10, soir, sur « 16D hypothèse », étape Houblons)",
+   "controle": "controle-stepper.mjs <dossier construit> [--page=ma-biere/etat.html] (lignes « D116 »)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Maquette d332792c : STEPPER ECHEC (pas de <nav aria-label=\"Étapes\"> de 7 boutons, « hypothèse » visible, à 390 et à 1280 px) ; témoin stepper-ok (DOM de WizardStepName + WizardStepRail, 7 étapes, la 3e active) : STEPPER OK ; stepper-hypothese (en-tête maison) : ECHEC ; stepper-hypothese-avec-fil (fil de l'app + pastille « hypothèse ») : ECHEC sur « hypothèse » seule ; stepper-six-etapes : ECHEC (6 étapes) ; stepper-mauvaise-etape : ECHEC (2e active). Captures de stepper-ok et stepper-hypothese-avec-fil regardées.",
+   "verdict": "garde",
+   "script": "controle-stepper.mjs"
   }
  ]
 }

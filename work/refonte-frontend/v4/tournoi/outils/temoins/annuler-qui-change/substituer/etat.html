@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Témoin D120 annuler-qui-change</title>
+<style>
+  body { margin: 0; font: 16px/1.4 system-ui, sans-serif; background: #fff; color: #1a1a1a; }
+  h1 { font-size: 18px; margin: 16px; }
+  #dock { position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: #fff; border-top: 1px solid #ddd; }
+  #dock .dit { flex: 1; font-size: 14px; }
+  #dock button { min-height: 48px; padding: 0 16px; border-radius: 10px; font: 600 15px system-ui; cursor: pointer; }
+  #remplacer { background: #1a1a1a; color: #fff; border: 0; }
+  #annuler { background: #fff; color: #1a1a1a; border: 1px solid #1a1a1a; }
+</style></head>
+<body data-route="substituer">
+<h1>Lequel à la place de Idaho 7 ?</h1>
+<div id="dock">
+  <span class="dit">10 g de Simcoe</span>
+  <button id="annuler" data-role="annuler" type="button">Annuler</button>
+  <button id="remplacer" data-role="pont-remplacer" type="button">Remplacer ›</button>
+</div>
+<script>
+  // Crochet de test minimal : la recette (un houblon, Idaho 7) et le brouillon (Simcoe à sa place).
+  var recette = { additions: [{ id: 'a1', hopKey: 'idaho-7', grams: 10 }] };
+  var etat = { recette: recette, brouillon: { outil: 'substituer', ajoutId: 'a1', recette: { additions: [{ id: 'a1', hopKey: 'simcoe', grams: 10 }] } } };
+  window.__parcours = { etat: etat, route: 'substituer' };
+  location.hash = '#/substituer/idaho-7';
+  document.getElementById('remplacer').addEventListener('click', function () {
+    etat.recette = etat.brouillon.recette; etat.brouillon = null; location.hash = '#/ma-biere';
+  });
+  var a = document.getElementById('annuler');
+  if (a) a.addEventListener('click', function () {
+    etat.recette = etat.brouillon.recette; etat.brouillon = null; // applique quand même
+    location.hash = '#/ma-biere';
+  });
+</script>
+</body></html>

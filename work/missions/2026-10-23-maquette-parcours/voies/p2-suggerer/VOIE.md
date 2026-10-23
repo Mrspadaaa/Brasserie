@@ -122,3 +122,65 @@ pour la disposition l8 qu'il aime), avec le moteur en direct. Inventaire :
 - NOTE : une section « ## Reprise », une ligne par élément de l'inventaire, et le marqueur `data-element` à l'écran
   (en-tête de `controle-reprise.mjs`).
 - Te juger côte à côte : ta capture à 390 à côté de q2b-b-390.png. Il doit reconnaître son écran.
+
+## Reprise D110 et D109 (23.10, nuit) — les petits traits lisibles au toucher ; un retour d'outil grand et nommé
+
+Agent : concepteur (Opus), plafond 120 tours. Dépend de : p11-controle-retour et p12-controle-traits (les contrôles ;
+ils s'écrivent en même temps, contre les contrats recopiés plus bas). Cette section prime sur les consignes ci-dessus là
+où elles diffèrent.
+
+### Ses mots, mot pour mot
+- D110, en commentaire sur les pictos d'une voie de Suggérer (maquette publiée) : « Un peu dur à comprendre ce système de
+  petit bar ».
+- D109, en commentaire sur « Fermer » d'un outil : « Bouton retour souvent assez petit et pas très intuitif ».
+- SPEC-BRASSEUR § 1 (« Les petits traits de Suggérer », « Le bouton retour ») ; DEFAUTS-RECURRENTS, D109 et D110.
+
+### D110 : les traits de q2b restent, et se comprennent là où on les lit
+- Ce sont les traits de q2b, son choix : sous chaque picto, un trait par cran du style, un demi-trait pour un reste, des
+  hachures pour un effet non établi, un point pour une famille qui ne bouge pas. **Ils restent** (règle n° 1 :
+  `controle-choix`, inventaire q2b).
+- Aujourd'hui leur sens n'est dit que dans l'aide « ? », loin de la ligne, et toucher un picto ne montre rien.
+- À faire : **toucher un picto montre, près de lui, sa famille et sa valeur** (par exemple « Agrumes +1,6 cran »), et
+  rien de plus au repos (pas de cockpit : aucun mot sous les pictos). D'autres idées sont permises si elles tiennent le
+  contrat (une bulle qui dit aussi ce qu'est un trait la première fois, une ligne de lecture sous la voie touchée…) ;
+  juger sur captures, côte à côte avec q2b.
+- Le toucher n'a pas d'autre effet (ni route, ni comparaison, ni feuille), et se referme d'un toucher ailleurs ; à
+  l'ordinateur, le survol ou le clic.
+- Contrat de `controle-traits.mjs` (voie p12), page `<dossier>/suggerer/etat.html`, à 390 × 844 tactile et 1280 × 800 :
+  les traits `[data-famille][data-crans]` des lignes de voie ; au moins 3 visibles au repos, sans texte visible dedans ni
+  sous les pictos ; pour le premier picto de trois lignes de voie différentes, un toucher montre en moins de 400 ms un
+  élément visible, centré à 120 px au plus du picto, dont le texte contient le nom français de la famille (`COURT` de
+  `src/commun/familles.ts`) et la valeur `data-crans` arrondie au dixième, virgule décimale (« ? » ou « non établi »
+  pour un effet non établi) ; ni la route ni `window.__parcours.etat.aComparer` ne changent ; l'élément fait moins d'un
+  tiers de la hauteur de l'écran ; un toucher ailleurs le retire.
+
+### D109 : le retour des outils
+- Mesuré : le « ‹ » du `PageShell` de l'app (`src/pages/PageShell.tsx`, `w-7 h-7`, `ChevronLeft w-4`) fait 28 × 28 px,
+  icône 16 px, gris, sans mot, sur chaque outil. La base v4.10 avait le même. Ses mots priment, pour ce bouton
+  seulement, sur DESIGN.md (« 44 px n'est pas une obligation générale »). Portée : le retour des outils du parcours
+  (Suggérer, Comparer, Dryhopper, Levure, Substituer) ; pas la fiche (feuille à « × »), pas Ma bière.
+- Ne pas modifier `src/pages/PageShell.tsx` (porte B fermée) : une surcharge propre à la maquette, dans `CadreOutil`
+  (`src/commun/Cadres.tsx` : une en-tête à toi par la prop `mobileHeader`, ou une classe `pq-outil` et sa feuille de
+  style), décrite dans « Pour l'app » de la NOTE de Suggérer.
+- Forme : à toi, jugée par le critique. Le retour dit où il mène (« ‹ Ma bière », « ‹ Suggérer »…), ou au moins
+  « ‹ Retour ».
+- Contrat de `controle-retour.mjs` (voie p11), sur les cinq outils, à 390 et 1280, au repos : `[data-role="retour"]`
+  dans l'en-tête ; zone de 44 × 44 px au moins ; icône (`svg` ou « ‹ ») de 20 px au moins de haut ; à l'encre du texte
+  (à 24 au plus par canal de l'encre la plus fréquente de la page), pas le gris secondaire ; un texte visible d'au moins
+  un mot dans le bouton ou collé à lui ; un toucher quitte l'outil (la route change).
+- Attention aux autres écrans : Comparer (voie p3, en cours) et Dryhopper ont un premier écran compté (80 mots au plus,
+  `mots-premier-ecran`) ; un mot de plus dans l'en-tête compte. Le dire dans RESULTAT.md si un écran passe la limite.
+
+### Possède en plus, pour cette reprise
+- `prototypes/houblons-v4/parcours/src/commun/Cadres.tsx` (CadreOutil seulement) et une feuille neuve
+  `prototypes/houblons-v4/parcours/src/commun/retour.css` si besoin (importée par Cadres.tsx).
+- `prototypes/houblons-v4/parcours/src/coquille/navigation.tsx` : seulement ajouter une lecture de l'écran d'avant (son
+  nom), sans rien changer d'autre.
+- **Pas** `prototypes/houblons-v4/parcours/src/ecrans/suggerer/voies.ts` : il est à la voie p1 pendant cette reprise
+  (la visée, D108). Le reste de `ecrans/suggerer/` est à toi.
+- Ta sortie de construction reste `prototypes/houblons-v4/maquettes/parcours-p2/`.
+
+### Se juger
+Captures à 390 puis à 1280, ouvertes en image (L12) : Suggérer au repos et après un toucher sur un picto, côte à côte
+avec q2b ; l'en-tête de chaque outil avec son retour. Dans RESULTAT.md, une section `## Reprise D110 et D109` : ce qui est
+fait, les captures ouvertes (nommées), le texte montré au toucher de trois pictos, les mesures du retour.
