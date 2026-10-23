@@ -40,22 +40,30 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import puppeteer from 'puppeteer-core';
 
-// ===== Mode --parcours (voie c1-rail, mission controles-parcours, 23.10) =====
+// ===== Mode --parcours (voie c1-rail, mission controles-parcours, 23.10, passe 2 le même jour) =====
 // Rejoue les plaintes du brasseur sur le rail de la maquette jouable (ARCHITECTURE.md, « Contrat d'un écran ») :
 //   node controle-rail.mjs <dossier> <id…> --page=etat.html --parcours
-// Il ne lit que les marqueurs du contrat, jamais la mise en page : la poignée [data-role="glisser-moment"] de chaque
-// [data-role="ligne-houblon"], ou la frise [data-role="frise"] avec son [role="slider"] ; le moment se lit dans
-// aria-valuenow / aria-valuetext ; l'IBU dans [data-role="ibu-ajout"] ou [data-role="ibu-dry"] (data-valeur) ; le
-// pouce dans [data-role="moment-pouce"] ou .pq-dry-pouce ; les graduations sont des [data-cran], montrées seulement
-// pendant le geste (sur le rail, ou dans une bulle [data-role="loupe"]). L'axe du rail est horizontal, sauf
-// aria-orientation="vertical" (ou un rail plus haut que large) : toutes les mesures se font le long de cet axe.
+// Il ne lit que les marqueurs du contrat, jamais la mise en page :
+//   - la poignée [data-role="glisser-moment"][role="slider"] de chaque houblon (dans sa ligne
+//     [data-role="ligne-houblon"], ou sur un rail commun et rattachée à sa ligne par data-houblon), ou la frise
+//     [data-role="frise"] avec son [role="slider"] (Dryhopper) ;
+//   - le moment se lit dans aria-valuenow / aria-valuetext ; l'IBU dans [data-role="ibu-ajout"] ou
+//     [data-role="ibu-dry"] (data-valeur) ; le pouce dans [data-role="moment-pouce"] ou .pq-dry-pouce ;
+//   - les graduations sont des [data-cran], montrées seulement pendant le geste (sur le rail, ou dans une bulle
+//     [data-role="loupe"]) ;
+//   - l'axe du rail est horizontal, sauf aria-orientation="vertical" (sur la poignée ou son conteneur), ou un rail
+//     plus haut que large, ou, à défaut, l'axe où un essai du doigt change le cran : toutes les mesures se font le long
+//     de cet axe. Une poignée courte (moins du quart de l'écran) est un repère qui se déplace avec le moment : le
+//     doigt la prend au centre.
 // Règles jouées, avec leurs mots : work/missions/2026-10-23-controles-parcours/voies/c1-rail/NOTE.md.
-// Sans objet sur ce format : D28, D45, D55, D56, D64. Non joués faute de cas d'essai : D36, D37 (cas-ebu<N>.html).
+// Plusieurs houblons (au moins deux poignées, ou <route>/cas-k3.html) : D45, D56, D61 bis, D64. Sans objet sur ce
+// format : D28, D55. Non joués faute de cas d'essai : D36, D37 (cas-ebu<N>.html).
 const PARCOURS = process.argv.includes('--parcours');
 
 // Fonctions de lecture injectées dans chaque page (window.__rc) : positions rendues, jamais le code.
 function outilsDePage() {
   const R = (window.__rc = {});
+  const C = () => window.__rcCfg || {};
   R.vis = (e) => {
     if (!e || !e.isConnected || e.closest('[inert]')) return false;
     const r = e.getBoundingClientRect();
@@ -64,14 +72,37 @@ function outilsDePage() {
     if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) <= 0.15) return false;
     return !e.checkVisibility || e.checkVisibility({ opacityProperty: true, visibilityProperty: true });
   };
-  R.SEL = '[data-role="ligne-houblon"] [data-role="glisser-moment"][role="slider"], [data-role="frise"] [role="slider"]';
-  R.slider = () => [...document.querySelectorAll(R.SEL)].filter(R.vis).at(-1) || null;
-  R.axe = (s) => { const r = s.getBoundingClientRect(); return s.getAttribute('aria-orientation') === 'vertical' || r.height > 1.5 * r.width ? 'y' : 'x'; };
-  R.zone = (s) => s.closest('[data-role="ligne-houblon"]') || s.closest('[data-acquis="frise"]') || (s.closest('[data-role="frise"]') || {}).parentElement || s.parentElement;
+  R.SEL = '[data-role="glisser-moment"][role="slider"], [data-role="frise"] [role="slider"]';
+  R.cle = (s) => s.getAttribute('data-houblon') || s.getAttribute('data-ajout-repere') || s.getAttribute('data-ajout') || s.getAttribute('aria-label') || '';
+  R.sliders = () => [...document.querySelectorAll(R.SEL)].filter(R.vis);
+  R.slider = () => { const l = R.sliders(), c = C().cle; return (c && l.find((s) => R.cle(s) === c)) || l[0] || null; };
+  R.declare = (s) => { const e = s.closest('[aria-orientation]'); return e ? e.getAttribute('aria-orientation') : null; };
+  R.axe = (s) => {
+    if (C().axe) return C().axe;
+    const o = R.declare(s);
+    if (o === 'vertical') return 'y';
+    if (o === 'horizontal') return 'x';
+    const r = s.getBoundingClientRect();
+    return r.height > 1.5 * r.width ? 'y' : 'x';
+  };
+  R.ambigu = (s) => { if (C().axe || R.declare(s)) return false; const r = s.getBoundingClientRect(); return r.height <= 1.5 * r.width && r.width <= 1.5 * r.height; };
+  // La ligne de la poignée : celle qui porte le même data-houblon, sinon celle qui la contient.
+  R.ligneDe = (s) => {
+    const k = s.getAttribute('data-houblon');
+    if (k) { const l = [...document.querySelectorAll('[data-role="ligne-houblon"]')].find((x) => x.getAttribute('data-houblon') === k || x.querySelector('[data-houblon="' + k + '"]')); if (l) return l; }
+    return s.closest('[data-role="ligne-houblon"]');
+  };
+  // Les zones du rail de cette poignée : sa ligne et elle-même, ou, sans ligne, le bloc de la frise.
+  R.racines = (s) => {
+    const l = R.ligneDe(s);
+    if (l) return l.contains(s) ? [l] : [l, s];
+    const z = s.closest('[data-acquis="frise"]') || (s.closest('[data-role="frise"]') || {}).parentElement || s.parentElement;
+    return [z];
+  };
   R.pouce = (s) => s.querySelector('[data-role="moment-pouce"], .pq-dry-pouce, [data-pouce]');
   R.ibu = (s) => {
     const q = '[data-role="ibu-ajout"], [data-role="ibu-dry"]';
-    const e = [...R.zone(s).querySelectorAll(q)].find(R.vis) || [...document.querySelectorAll(q)].find(R.vis);
+    const e = R.racines(s).flatMap((z) => [...z.querySelectorAll(q)]).find(R.vis) || [...document.querySelectorAll(q)].find(R.vis);
     return e ? Number(e.getAttribute('data-valeur')) : null;
   };
   R.lecture = () => {
@@ -81,13 +112,36 @@ function outilsDePage() {
     const ax = R.axe(s) === 'x';
     const p = R.pouce(s);
     const pr = p && R.vis(p) ? p.getBoundingClientRect() : null;
+    const lon = ax ? r.width : r.height, ext = ax ? innerWidth : innerHeight;
+    const poignee = lon < 0.25 * ext;
+    const tete = poignee ? (document.querySelector('[data-rang="T-ebu"]') || s.closest('[data-role="frise"]') || document.querySelector('[data-role="frise-brassin"]')) : null;
+    const rr = tete ? tete.getBoundingClientRect() : r;
     return {
-      now: Number(s.getAttribute('aria-valuenow')), max: Number(s.getAttribute('aria-valuemax')), text: s.getAttribute('aria-valuetext') || '',
-      axe: ax ? 'x' : 'y', deb: ax ? r.left : r.top, lon: ax ? r.width : r.height, trans: ax ? r.top + r.height / 2 : r.left + r.width / 2, t: r.top, l: r.left,
-      ext: ax ? innerWidth : innerHeight,
+      cle: R.cle(s), now: Number(s.getAttribute('aria-valuenow')), max: Number(s.getAttribute('aria-valuemax')), text: s.getAttribute('aria-valuetext') || '',
+      axe: ax ? 'x' : 'y', ambigu: R.ambigu(s), poignee, deb: ax ? r.left : r.top, lon, trans: ax ? r.top + r.height / 2 : r.left + r.width / 2, ext,
+      ref: { t: rr.top, l: rr.left, connu: !poignee || !!tete },
       pouce: pr ? (ax ? pr.left + pr.width / 2 : pr.top + pr.height / 2) : null,
-      ibu: R.ibu(s), zoneTexte: R.zone(s).innerText || '',
+      ibu: R.ibu(s), zoneTexte: R.racines(s).map((z) => z.innerText || '').join(' '),
     };
+  };
+  // Toutes les poignées : leur place le long de l'axe et en travers, leur moment.
+  R.lignes = () => {
+    const l = R.sliders();
+    const ax = !l.length || R.axe(l[0]) === 'x';
+    return l.map((s) => { const r = s.getBoundingClientRect(); return { cle: R.cle(s), pos: ax ? r.left + r.width / 2 : r.top + r.height / 2, trans: ax ? r.top + r.height / 2 : r.left + r.width / 2, text: s.getAttribute('aria-valuetext') || '', now: Number(s.getAttribute('aria-valuenow')) }; });
+  };
+  // Les nœuds nommés de la frise (whirlpool, fermentation, post-fermentation), lus à leur texte.
+  R.noeuds = () => {
+    const s = R.slider(), ax = !s || R.axe(s) === 'x', out = {};
+    for (const e of document.querySelectorAll('body *')) {
+      if (e.children.length || !R.vis(e)) continue;
+      const t = (e.textContent || '').trim().toLowerCase();
+      const k = t === 'whirlpool' ? 'wp' : t === 'fermentation' ? 'ferm' : t === 'post-fermentation' ? 'post' : null;
+      if (!k) continue;
+      const r = e.getBoundingClientRect();
+      out[k] = ax ? r.left + r.width / 2 : r.top + r.height / 2;
+    }
+    return out;
   };
   R.grads = () => {
     const s = R.slider(), ax = !s || R.axe(s) === 'x';
@@ -97,7 +151,7 @@ function outilsDePage() {
     });
   };
   R.loupeVisible = () => [...document.querySelectorAll('[data-role="loupe"]')].some(R.vis);
-  R.textes = (racine) => {
+  R.textes = (racine, tout) => {
     const out = [];
     const w = document.createTreeWalker(racine, NodeFilter.SHOW_TEXT);
     for (let nd = w.nextNode(); nd; nd = w.nextNode()) {
@@ -106,27 +160,35 @@ function outilsDePage() {
       if (!t || !el || ['SCRIPT', 'STYLE', 'TITLE'].includes(el.tagName) || !R.vis(el)) continue;
       const rg = document.createRange();
       rg.selectNodeContents(nd);
-      for (const b of rg.getClientRects()) if (b.width > 1 && b.height > 1 && b.bottom > 0 && b.top < innerHeight && b.right > 0 && b.left < innerWidth) out.push({ t, el, x0: b.left, x1: b.right, y0: b.top, y1: b.bottom });
+      for (const b of rg.getClientRects()) if (b.width > 1 && b.height > 1 && (tout || (b.bottom > 0 && b.top < innerHeight && b.right > 0 && b.left < innerWidth))) out.push({ t, el, x0: b.left, x1: b.right, y0: b.top, y1: b.bottom });
     }
     return out;
   };
-  R.chevauchements = () => {
+  // Deux textes l'un sur l'autre. mode « geste » (D35) : au moins l'un est dans la zone de la poignée tenue (sa ligne,
+  // son pouce, sa loupe) ; mode « hors-carte » (D56) : aucun des deux n'est dans la carte ni sur le repère du houblon tenu,
+  // seuls à suivre le doigt (le rail, la loupe, les autres houblons restent à leur place).
+  R.chevauchements = (mode) => {
+    const s = R.slider(), rac = s ? R.racines(s) : [];
+    const dans = (el) => rac.some((z) => z.contains(el)) || !!el.closest('[data-role="loupe"]');
     const rects = R.textes(document.body), out = [];
     for (let i = 0; i < rects.length; i++) for (let j = i + 1; j < rects.length; j++) {
       const a = rects[i], b = rects[j];
       if (a.el === b.el) continue;
-      if (Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0) > 2 && Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0) > 2) out.push('« ' + a.t.slice(0, 12) + ' » sur « ' + b.t.slice(0, 12) + ' »');
+      if (!(Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0) > 2 && Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0) > 2)) continue;
+      const touche = dans(a.el) || dans(b.el);
+      if (mode === 'hors-carte' ? rac.some((z) => z.contains(a.el) || z.contains(b.el)) : !touche) continue;
+      out.push('« ' + a.t.slice(0, 12) + ' » sur « ' + b.t.slice(0, 12) + ' »');
     }
     return out;
   };
   R.minutes = (s) => {
     const out = [];
-    for (const x of R.textes(R.zone(s))) for (const m of x.t.matchAll(/(\d+)\s*[′']/g)) out.push(Number(m[1]));
+    for (const z of R.racines(s)) for (const x of R.textes(z)) for (const m of x.t.matchAll(/(\d+)\s*[′']/g)) out.push(Number(m[1]));
     return out;
   };
   R.ombres = (s) => {
-    const z = R.zone(s), out = [];
-    for (const e of [z, ...z.querySelectorAll('*')]) {
+    const out = [];
+    for (const z of R.racines(s)) for (const e of [z, ...z.querySelectorAll('*')]) {
       if (!R.vis(e)) continue;
       const bs = getComputedStyle(e).boxShadow;
       if (!bs || bs === 'none') continue;
@@ -138,9 +200,24 @@ function outilsDePage() {
     }
     return out;
   };
-  R.champs = (s) => [...R.zone(s).querySelectorAll('input, select, textarea, [data-action^="ebullition"]')].filter(R.vis).length;
+  R.champs = (s) => R.racines(s).flatMap((z) => [...z.querySelectorAll('input, select, textarea, [data-action^="ebullition"]')]).filter(R.vis).length;
+  // D55 : sur une frise verticale, le plus grand vide entre deux éléments du rail (textes et cartes des houblons).
+  R.vide = () => {
+    const s = R.slider();
+    if (!s || R.axe(s) !== 'y') return null;
+    const c = s.closest('[data-role="frise"]') || document.querySelector('[data-role="frise"], [data-role="frise-brassin"]');
+    if (!c) return null;
+    const items = R.textes(c, true).map((x) => [x.y0, x.y1]);
+    for (const e of c.querySelectorAll('[data-role="ligne-houblon"]')) if (R.vis(e)) { const r = e.getBoundingClientRect(); items.push([r.top, r.bottom]); }
+    items.sort((a, b) => a[0] - b[0]);
+    let fin = -Infinity, vide = 0, ou = null;
+    for (const [a, b] of items) { if (fin > -Infinity && a - fin > vide) { vide = a - fin; ou = [Math.round(fin), Math.round(a)]; } fin = Math.max(fin, b); }
+    return { vide, ou, n: items.length };
+  };
   R.joursBoutons = () => [...document.querySelectorAll('[data-jour]')].filter(R.vis).map((e) => { const r = e.getBoundingClientRect(); return { j: Number(e.getAttribute('data-jour')), x: r.left + r.width / 2, y: r.top + r.height / 2, off: e.getAttribute('aria-disabled') === 'true' }; });
-  R.mesureLoupe = () => {
+  // Loupe : l'écart de deux crans voisins sous le doigt contre l'écart au loin (D63, D67, L12). Crans dans une bulle :
+  // l'écart au loin est celui du repos (farRef, ou longueur du rail ÷ intervalles).
+  R.mesureLoupe = (farRef) => {
     const L = R.lecture();
     const g = R.grads().filter((x) => x.k !== null).sort((a, b) => a.k - b.k);
     if (g.length < 5) return { err: g.length + ' graduation(s) visible(s) sous le doigt (5 au moins)' };
@@ -149,8 +226,18 @@ function outilsDePage() {
     if (a < 0) g.forEach((x, i) => { const d = Math.abs(x.k - L.now); if (d < best) { best = d; a = i; } });
     const gap = (i) => Math.abs(g[i + 1].pos - g[i].pos);
     const near = Math.min(a > 0 ? gap(a - 1) : Infinity, a < g.length - 1 ? gap(a) : Infinity);
-    const far = bulle ? L.lon / Math.max(1, L.max) : a < g.length / 2 ? gap(g.length - 2) : gap(0);
+    const far = bulle ? (farRef || L.lon / Math.max(1, L.max)) : a < g.length / 2 ? gap(g.length - 2) : gap(0);
     return { near, far, ratio: near / far, bulle, n: g.length };
+  };
+  // D45 : les cinq crans les plus proches du doigt, dans la bulle, sont à intervalles réguliers (écart-type ÷ moyenne).
+  R.regularite = () => {
+    const L = R.lecture();
+    const g = R.grads().filter((x) => x.k !== null && x.bulle).sort((a, b) => Math.abs(a.k - L.now) - Math.abs(b.k - L.now)).slice(0, 5).sort((a, b) => a.k - b.k);
+    if (g.length < 4) return null;
+    const gaps = g.slice(1).map((x, i) => Math.abs(x.pos - g[i].pos));
+    const m = gaps.reduce((s, d) => s + d, 0) / gaps.length;
+    const sd = Math.sqrt(gaps.reduce((s, d) => s + (d - m) ** 2, 0) / gaps.length);
+    return { cv: m > 0 ? sd / m : 0, mini: Math.min(...gaps), maxi: Math.max(...gaps) };
   };
 }
 
@@ -166,11 +253,14 @@ async function modeParcours() {
   const probs = [];
   const total = ids.length;
   let sains = 0;
+  const ctx = { axe: null, cle: null, dernier: null };
+  const bloque = () => ' (le geste s\'arrête à « ' + (ctx.dernier ? ctx.dernier.text : '?') + ' » : le repère change de segment, pointeur perdu ?)';
   const nav = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 
-  const ouvrirP = async (f, { w = 390, H = 844, tactile = true } = {}) => {
+  const ouvrirP = async (f, { w = 390, H = 844, tactile = true, cle } = {}) => {
     const page = await nav.newPage();
     await page.evaluateOnNewDocument(outilsDePage);
+    await page.evaluateOnNewDocument((c) => { window.__rcCfg = c; }, { axe: ctx.axe, cle: cle === undefined ? ctx.cle : cle });
     await page.setViewport(tactile ? { width: w, height: H, deviceScaleFactor: 1, isMobile: true, hasTouch: true } : { width: w, height: H, deviceScaleFactor: 1 });
     await page.goto(pathToFileURL(f).href, { waitUntil: 'load', timeout: 30000 });
     for (let i = 0; i < 60; i++) { if (await page.evaluate(() => !!(window.__rc && window.__rc.slider()))) break; await attente(100); }
@@ -193,8 +283,8 @@ async function modeParcours() {
   };
   const classer = (t) => {
     let m;
-    if ((m = t.match(/apr[èe]s\D*(\d+)\s*j/i))) return { seg: 3, j: Number(m[1]) };
-    if ((m = t.match(/actif\D*(\d+)\s*j/i))) return { seg: 2, j: Number(m[1]) };
+    if (/apr[èe]s/i.test(t) && (m = t.match(/(\d+)\s*j/))) return { seg: 3, j: Number(m[1]) };
+    if (/actif|en fermentation/i.test(t) && (m = t.match(/(\d+)\s*j/))) return { seg: 2, j: Number(m[1]) };
     if (/whirlpool|\bWP\b/i.test(t)) return { seg: 1 };
     if ((m = t.match(/(\d+)\s*[′']/))) return { seg: 0, m: Number(m[1]) };
     return null;
@@ -204,6 +294,7 @@ async function modeParcours() {
     let pas = 4, sens = 0, fige = 0, derniere = null;
     for (let i = 0; i < 600; i++) {
       const L = await lec(page);
+      ctx.dernier = L;
       if (L.now === idx) return true;
       fige = L.now === derniere ? fige + 1 : 0;
       derniere = L.now;
@@ -220,15 +311,19 @@ async function modeParcours() {
   };
   // L'échelle du rail, lue au clavier (flèches) : un texte par cran. Ne sert qu'à connaître les crans.
   const echelle = async (page) => {
-    await page.evaluate(() => window.__rc.slider().focus());
-    for (let i = 0; i < 80; i++) { const L = await lec(page); if (L.now <= 0) break; await page.keyboard.press('ArrowLeft'); await attente(22); }
+    const ax = (await lec(page)).axe;
+    const [prev, next] = ax === 'x' ? ['ArrowLeft', 'ArrowRight'] : ['ArrowUp', 'ArrowDown'];
+    const garder = () => page.evaluate(() => window.__rc.slider().focus());
+    await garder();
+    for (let i = 0; i < 80; i++) { const L = await lec(page); if (L.now <= 0) break; await page.keyboard.press(prev); await attente(22); await garder(); }
     const out = [];
     for (let i = 0; i < 90; i++) {
       const L = await lec(page);
-      out.push({ now: L.now, text: L.text, ...(classer(L.text) || { seg: null }) });
+      out.push({ now: L.now, text: L.text, pos: L.pouce, ...(classer(L.text) || { seg: null }) });
       if (L.now >= L.max) break;
-      await page.keyboard.press('ArrowRight');
+      await page.keyboard.press(next);
       await attente(26);
+      await garder();
     }
     return out;
   };
@@ -243,21 +338,42 @@ async function modeParcours() {
     const infos = [];
     const jouee = (...d) => d.forEach((x) => defauts.add(x));
     const p = (d, msg) => { jouee(d); pb.push(d + ' : ' + id + ', ' + msg); };
+    ctx.axe = null;
+    ctx.cle = null;
     const f = path.join(racine, id, nomPage);
     if (!fs.existsSync(f)) { probs.push('D27 : ' + id + ', page absente (' + path.relative(process.cwd(), f) + ')'); console.log(id + ' · page absente'); continue; }
     try {
       // ---- 1. Au repos ----
       let page = await ouvrirP(f);
-      const L0 = await lec(page);
+      let L0 = await lec(page);
       if (!L0) { probs.push('D27 : ' + id + ', aucun rail repérable (poignée [data-role="glisser-moment"] d\'une ligne, ou [data-role="frise"] avec son [role="slider"])'); console.log(id + ' · aucun rail'); await page.close(); continue; }
-      const repos = await page.evaluate(() => { const s = window.__rc.slider(); return { grads: window.__rc.grads().length, loupe: window.__rc.loupeVisible(), ombres: window.__rc.ombres(s), minutes: window.__rc.minutes(s), champs: window.__rc.champs(s) }; });
+      if (L0.ambigu) {
+        // Poignée carrée, rien ne dit son axe : l'essai du doigt (le cran change le long de l'axe du rail).
+        const cx = L0.deb + L0.lon / 2, cy = L0.trans;
+        const t = await page.touchscreen.touchStart(cx, cy);
+        for (let i = 1; i <= 6; i++) { await t.move(cx + 6 * i, cy); await attente(24); }
+        const n1 = (await lec(page)).now;
+        await t.move(cx, cy); await attente(60);
+        const b1 = (await lec(page)).now;
+        for (let i = 1; i <= 6; i++) { await t.move(cx, cy + 6 * i); await attente(24); }
+        const n2 = (await lec(page)).now;
+        await t.end();
+        ctx.axe = Math.abs(n2 - b1) > Math.abs(n1 - L0.now) ? 'y' : 'x';
+        await page.close();
+        page = await ouvrirP(f);
+        L0 = await lec(page);
+      }
+      ctx.cle = L0.cle;
+      const nPoignees = await page.evaluate(() => window.__rc.sliders().length);
+      const repos = await page.evaluate(() => { const s = window.__rc.slider(); return { grads: window.__rc.grads().length, loupe: window.__rc.loupeVisible(), ombres: window.__rc.ombres(s), minutes: window.__rc.minutes(s), champs: window.__rc.champs(s), vide: window.__rc.vide() }; });
       jouee('D47');
       if (repos.grads || repos.loupe) p('D47', 'au repos, ' + repos.grads + ' graduation(s)' + (repos.loupe ? ' et une loupe' : '') + ' visibles : l\'échelle ne s\'ouvre que sous le doigt');
       jouee('D42');
       if (repos.ombres.length) p('D42', 'au repos, ' + repos.ombres.length + ' ombre(s) sur le rail (' + repos.ombres[0] + ')');
+      if (repos.vide) { jouee('D55'); if (repos.vide.vide > 80) p('D55', 'au repos, un vide de ' + Math.round(repos.vide.vide) + ' px dans la frise (entre ' + repos.vide.ou[0] + ' et ' + repos.vide.ou[1] + ' px, 80 au plus) : un rail à la Apple se resserre, il ne s\'étire pas'); }
       jouee('D37');
       if (repos.champs) p('D37', 'un champ ou des − / + règlent l\'ébullition sur le rail alors que sa durée se lit dans la recette');
-      const debut = (L) => L.deb + 14;
+      const debut = (L) => (L.poignee ? L.deb + L.lon / 2 : L.deb + 14);
       const ext = L0.ext;
       let L, d, dep2 = 0;
       // ---- 3. Un balayage d'un trait, pas de 10 px : le moment se glisse, ne remonte jamais ----
@@ -272,7 +388,7 @@ async function modeParcours() {
         await attente(24);
         const q = await lec(page);
         suite.push(q.now);
-        dep2 = Math.max(dep2, Math.abs(q.t - L0.t), Math.abs(q.l - L0.l));
+        dep2 = Math.max(dep2, Math.abs(q.ref.t - L0.ref.t), Math.abs(q.ref.l - L0.ref.l));
       }
       await d.lever();
       await page.close();
@@ -280,20 +396,26 @@ async function modeParcours() {
       const valeurs = new Set(suite);
       if (valeurs.size < 3) { p('D27', 'un glissé complet ne prend que ' + valeurs.size + ' valeur(s) : le moment ne se glisse pas comme un curseur (les autres règles du rail ne sont pas jouées)'); throw new Arret(); }
       {
-        jouee('D61');
+        jouee('D61 bis');
         let faute = null;
         for (let i = 1; i < suite.length && !faute; i++) {
           if (suite[i] < suite[i - 1]) faute = 'le cran passe de ' + suite[i - 1] + ' à ' + suite[i] + ' en avançant';
           else if (suite[i] - suite[i - 1] > 2) faute = 'le cran saute de ' + (suite[i] - suite[i - 1]) + ' crans en 10 px (' + suite[i - 1] + ' → ' + suite[i] + ')';
         }
-        if (faute) p('D61', 'en avançant par pas de 10 px, ' + faute + ' : l\'échelle ne tient pas sous le doigt');
+        if (faute) p('D61 bis', 'en avançant par pas de 10 px, ' + faute + ' : l\'échelle ne tient pas sous le doigt');
       }
-      if (dep2 > 40) p('D68', 'le rail se déplace de ' + Math.round(dep2) + ' px pendant le balayage (au plus 40)');
+      if (L0.ref.connu && dep2 > 40) p('D68', 'le rail se déplace de ' + Math.round(dep2) + ' px pendant le balayage (au plus 40)');
 
       page = await ouvrirP(f);
       const eche = await echelle(page);
       await page.close();
       const eb = eche.filter((c) => c.seg === 0);
+      // Écart de deux crans voisins au repos le long de l'axe (médiane, ébullition) : la référence de « l'écart au loin ».
+      const pasRepos = (() => {
+        const e = eb.filter((c) => c.pos !== null && c.pos !== undefined).slice(2, 10);
+        const d = e.slice(1).map((c, i) => Math.abs(c.pos - e[i].pos)).filter((x) => x > 0.5).sort((x, y) => x - y);
+        return d.length ? d[Math.floor(d.length / 2)] : null;
+      })();
       // D34 : tranches de 5′, sans repère imposé.
       jouee('D34');
       const mins = eb.map((c) => c.m);
@@ -319,17 +441,18 @@ async function modeParcours() {
       d = await doigtSur(page, L, debut(L));
       await attente(200);
       const maxDep = { v: 0, ou: '' };
-      const dep = async (ou) => { const a = await lec(page); const v = Math.max(Math.abs(a.t - L0.t), Math.abs(a.l - L0.l)); if (v > maxDep.v) { maxDep.v = v; maxDep.ou = ou; } };
+      const dep = async (ou) => { const a = await lec(page); const v = Math.max(Math.abs(a.ref.t - L0.ref.t), Math.abs(a.ref.l - L0.ref.l)); if (v > maxDep.v) { maxDep.v = v; maxDep.ou = ou; } };
       const cibles = [['ebullition', idxEb(35)], ['fermentation active', idxAct(3)], ['après fermentation', idxApr(3)]];
       let ok63 = true;
       for (const [nom, idx] of cibles) {
         if (idx === null) { infos.push('D63/D67 : pas de cran « ' + nom + ' » lu, loupe non mesurée là'); continue; }
         const atteint = await aller(page, d, idx, ext);
-        if (!atteint) { p(nom === 'ebullition' ? 'D63' : 'D67', 'le doigt n\'atteint pas le cran « ' + nom + ' » (cran ' + idx + ')'); continue; }
+        if (!atteint) { p(nom === 'ebullition' ? 'D63' : 'D67', 'le doigt n\'atteint pas le cran « ' + nom + ' » (cran ' + idx + ')' + bloque()); continue; }
         await attente(90);
-        const m = await page.evaluate(() => ({ loupe: window.__rc.mesureLoupe(), chev: window.__rc.chevauchements(), loin: window.__rc.grads().filter((x) => x.loin).length, text: window.__rc.lecture().text }));
+        const m = await page.evaluate((far) => ({ loupe: window.__rc.mesureLoupe(far), chev: window.__rc.chevauchements(), loin: window.__rc.grads().filter((x) => x.loin).length, vide: window.__rc.vide(), text: window.__rc.lecture().text }), L0.poignee ? pasRepos : null);
         await dep(nom);
         jouee('D35', 'D47', 'D68');
+        if (m.vide) { jouee('D55'); if (m.vide.vide > 80) p('D55', 'pendant le geste (' + nom + ', « ' + m.text + ' »), un vide de ' + Math.round(m.vide.vide) + ' px dans la frise (entre ' + m.vide.ou[0] + ' et ' + m.vide.ou[1] + ' px, 80 au plus)'); }
         if (m.chev.length) p('D35', 'pendant le geste (' + nom + ', « ' + m.text + ' »), ' + m.chev.length + ' chevauchement(s) de textes : ' + m.chev.slice(0, 2).join(' ; '));
         if (m.loin) p('D47', 'pendant le geste (' + nom + '), ' + m.loin + ' graduation(s) d\'autres segments restent visibles : seules celles du segment sous le doigt s\'ouvrent');
         const D = nom === 'ebullition' ? 'D63' : 'D67';
@@ -351,7 +474,7 @@ async function modeParcours() {
         }
       }
       jouee('D68');
-      if (maxDep.v > 40) p('D68', 'le rail se déplace de ' + Math.round(maxDep.v) + ' px pendant le geste (au plus 40), tenu à « ' + maxDep.ou + ' »');
+      if (L0.ref.connu && maxDep.v > 40) p('D68', 'le rail se déplace de ' + Math.round(maxDep.v) + ' px pendant le geste (au plus 40), tenu à « ' + maxDep.ou + ' »');
       await d.lever();
       await attente(450);
       const apres = await page.evaluate(() => { const s = window.__rc.slider(); return { grads: window.__rc.grads().length, loupe: window.__rc.loupeVisible(), ombres: window.__rc.ombres(s) }; });
@@ -377,7 +500,7 @@ async function modeParcours() {
         const lach = [];
         for (const c of cibles34) lach.push({ c, r: await lacher(c.now) });
         for (const { c, r } of lach) {
-          if (!r.ok) { p('D34', 'le doigt n\'atteint pas ' + c.m + '′'); continue; }
+          if (!r.ok) { p('D34', 'le doigt n\'atteint pas ' + c.m + '′' + bloque()); continue; }
           const cl = classer(r.text);
           if (!cl || cl.m !== c.m) p('D34', 'lâchée sur ' + c.m + '′, le rail dit « ' + r.text + ' »');
           else if (!new RegExp('(^|\\D)' + c.m + '\\s*[′\']').test(r.zoneTexte)) p('D34', 'lâchée sur ' + c.m + '′, le rail n\'écrit pas ce moment (« ' + r.zoneTexte.split(/\s+/).join(' ').slice(0, 40) + ' »)');
@@ -388,7 +511,8 @@ async function modeParcours() {
         } else infos.push('D27, D34 : l\'IBU de l\'ajout n\'est pas lisible ([data-role="ibu-ajout"] ou "ibu-dry", data-valeur) : comparaison non jouée');
         // D61 : la place dit le temps (45′, 25′, 5′ à intervalles égaux sur le rail au repos).
         const pts = lach.filter((x) => x.r.ok && x.r.pouce !== null);
-        if (pts.length === 3) {
+        if (nPoignees > 1) infos.push('D61 (place) : non joué à plusieurs houblons (les cartes des autres s\'intercalent entre deux minutes) : D61 bis et D64 les jouent');
+        else if (pts.length === 3) {
           jouee('D61');
           const [a, b, c] = pts;
           const att = (a.c.m - b.c.m) / (a.c.m - c.c.m), vu = (b.r.pouce - a.r.pouce) / (c.r.pouce - a.r.pouce);
@@ -402,7 +526,7 @@ async function modeParcours() {
         const pa = act[0], pz = act[act.length - 1];
         const r1 = await lacher(pa.now), r2 = await lacher(pz.now);
         const j1 = (classer(r1.text) || {}).j, j2 = (classer(r2.text) || {}).j;
-        if (!r1.ok || !r2.ok) p('D44', 'le doigt n\'atteint pas les crans de la fermentation (' + pa.text + ', ' + pz.text + ')');
+        if (!r1.ok || !r2.ok) p('D44', 'le doigt n\'atteint pas les crans de la fermentation (' + pa.text + ', ' + pz.text + ')' + bloque());
         else if (j1 === undefined || j2 === undefined) p('D44', 'lâchée en fermentation, le rail ne dit pas de jours (« ' + r1.text + ' », « ' + r2.text + ' »)');
         else if (j1 === j2) p('D44', 'deux lâchers en fermentation (premier et dernier cran) donnent le même jour (« ' + r1.text + ' ») : choix figé');
       } else p('D44', 'la fermentation n\'a pas deux crans de jours sur le rail (' + act.length + ')');
@@ -414,7 +538,7 @@ async function modeParcours() {
         if (jb.length) {
           jouee('D43');
           await pg.evaluate(() => window.__rc.slider().focus());
-          for (let i = 0; i < 40; i++) { const a = await lec(pg); const c = classer(a.text); if (c && c.seg >= 2) break; await pg.keyboard.press('ArrowRight'); await attente(24); }
+          for (let i = 0; i < 40; i++) { const a = await lec(pg); const c = classer(a.text); if (c && c.seg >= 2) break; await pg.keyboard.press(L0.axe === 'x' ? 'ArrowRight' : 'ArrowDown'); await attente(24); }
           const lus = [];
           const actifs = jb.filter((x) => !x.off).map((x) => x.j);
           const jours43 = actifs.length >= 2 ? [actifs[0], actifs[actifs.length - 1]] : [];
@@ -439,7 +563,7 @@ async function modeParcours() {
           const a = await lec(pg);
           const dg = await doigtSur(pg, a, debut(a));
           await attente(150);
-          const cible = a.deb + 14 + (a.lon - 28) * 0.3, dep0 = debut(a);
+          const dep0 = debut(a), cible = a.poignee ? dep0 + 70 : a.deb + 14 + (a.lon - 28) * 0.3;
           if (rapide) { for (let i = 1; i <= 3; i++) { await dg.vers(dep0 + ((cible - dep0) * i) / 3); await attente(16); } }
           else { while (dg.a < cible) { await dg.vers(Math.min(cible, dg.a + 5)); await attente(16); } }
           await attente(160);
@@ -477,6 +601,31 @@ async function modeParcours() {
         await attente(250);
         const a = await lec(pg);
         jouee('D69');
+        if (a.poignee) {
+          // Un repère qui se déplace avec le moment : posé au premier puis au dernier cran (clavier), le doigt le prend au centre.
+          await pg.close();
+          for (const sens of ['avant', 'arrière']) {
+            const q = await ouvrirP(f, { H });
+            const [prev, next] = a.axe === 'x' ? ['ArrowLeft', 'ArrowRight'] : ['ArrowUp', 'ArrowDown'];
+            const but = sens === 'avant' ? 0 : a.max;
+            for (let i = 0; i < 90; i++) { await q.evaluate(() => window.__rc.slider().focus()); const c = await lec(q); if (c.now === but) break; await q.keyboard.press(c.now > but ? prev : next); await attente(26); }
+            await q.evaluate(() => window.__rc.slider().scrollIntoView({ block: 'center' }));
+            await attente(250);
+            const b = await lec(q);
+            if (b.deb < -1 || b.deb + b.lon > b.ext + 1) { p('D69', 'écran de ' + H + ' px de haut : le repère du ' + (sens === 'avant' ? 'premier' : 'dernier') + ' cran est à ' + Math.round(b.deb) + ' px, hors de l\'écran même défilé'); await q.close(); continue; }
+            const dg = await doigtSur(q, b, b.deb + b.lon / 2);
+            await attente(120);
+            const fin = sens === 'avant' ? b.ext - 6 : 6;
+            while (Math.abs(fin - dg.a) > 0.5) { await dg.vers(dg.a + Math.sign(fin - dg.a) * Math.min(6, Math.abs(fin - dg.a))); await attente(14); }
+            await attente(200);
+            const r = await lec(q);
+            await dg.lever();
+            const vise = sens === 'avant' ? r.max : 0;
+            if (r.now !== vise) p('D69', 'écran de ' + H + ' px de haut : d\'un geste du ' + (sens === 'avant' ? 'premier' : 'dernier') + ' cran (repère à ' + Math.round(b.deb + b.lon / 2) + ' px) au bord de l\'écran, le doigt tient « ' + r.text + ' » (cran ' + r.now + ' sur ' + r.max + ', ' + vise + ' visé) : l\'autre bout n\'est pas atteint');
+            await q.close();
+          }
+          continue;
+        }
         const hautDeb = a.axe === 'x' ? a.t : a.deb, hautFin = a.axe === 'x' ? a.t + 10 : a.deb + a.lon;
         if (hautDeb < -1 || hautFin > H + 1) { p('D69', 'écran de ' + H + ' px de haut : le rail est à ' + Math.round(hautDeb) + '–' + Math.round(hautFin) + ' px, hors de l\'écran même défilé'); await pg.close(); continue; }
         for (const sens of ['avant', 'arrière']) {
@@ -492,7 +641,7 @@ async function modeParcours() {
           const vise = sens === 'avant' ? r.max : 0;
           if (r.now !== vise) p('D69', 'écran de ' + H + ' px de haut : d\'un geste du ' + (sens === 'avant' ? 'premier' : 'dernier') + ' cran au bord de l\'écran, le doigt tient « ' + r.text + ' » (cran ' + r.now + ' sur ' + r.max + ', ' + vise + ' visé) : l\'autre bout n\'est pas atteint');
           const fin2 = r.deb + r.lon;
-          if (r.deb < -1 || fin2 > r.ext + 1) p('D69', 'écran de ' + H + ' px de haut : pendant le geste, le rail sort de l\'écran (' + Math.round(r.deb) + ' à ' + Math.round(fin2) + ' px pour ' + Math.round(r.ext) + ')');
+          if (sens === 'avant' ? fin2 > r.ext + 1 : r.deb < -1) p('D69', 'écran de ' + H + ' px de haut : pendant le geste, le ' + (sens === 'avant' ? 'bas' : 'haut') + ' du rail sort de l\'écran (' + Math.round(r.deb) + ' à ' + Math.round(fin2) + ' px pour ' + Math.round(r.ext) + ')');
         }
         await pg.close();
       }
@@ -506,7 +655,7 @@ async function modeParcours() {
           const dg = await doigtSur(pg, a, debut(a), false);
           await attente(100);
           const vus = new Set([(await lec(pg)).now]);
-          const fin = a.deb + a.lon - 14;
+          const fin = a.poignee ? Math.min(a.ext - 6, debut(a) + 300) : a.deb + a.lon - 14;
           while (dg.a < fin) { await dg.vers(Math.min(fin, dg.a + 6)); await attente(16); vus.add((await lec(pg)).now); }
           await dg.lever();
           jouee('D27');
@@ -533,7 +682,64 @@ async function modeParcours() {
             if (!r.ok || (classer(r.text) || {}).m !== cible.m) p('D36', 'à ' + N + '′, la ligne ne se pose pas à ' + cible.m + '′ (« ' + r.text + ' »)');
           }
         }
-        if (absents.length) infos.push('D36, D37 : non joués, ' + absents.join(' et ') + ' absent(s) : la maquette n\'a qu\'une ébullition de 60′ (à demander : une route ou un état d\'essai à 45′ et 120′)');
+        if (absents.length) infos.push('D36, D37 : non joués, ' + absents.join(' et ') + ' absent(s) : la maquette n\'a qu\'une ébullition de 60′ (à demander : une route ou un état d\'essai à 45′ et 120′, body data-ebullition)');
+      }
+
+      // ---- 10. Plusieurs houblons sur le même rail : D45, D56, D61 bis, D64 ----
+      {
+        const k3 = path.join(racine, id, 'cas-k3.html');
+        const fm = fs.existsSync(k3) ? k3 : f;
+        let pg = await ouvrirP(fm, { cle: null });
+        const l0 = await pg.evaluate(() => window.__rc.lignes());
+        await pg.close();
+        if (l0.length < 2) infos.push('D45, D56, D61 bis, D64 : non joués, une seule poignée de houblon sur la page (à demander : un état d\'essai à plusieurs houblons, cas-k3.html)');
+        else {
+          const cleT = l0[0].cle;
+          pg = await ouvrirP(fm, { cle: cleT });
+          const a = await lec(pg);
+          const dg = await doigtSur(pg, a, debut(a));
+          await attente(150);
+          const rel = () => pg.evaluate(() => { const L = window.__rc.lecture(); return { lignes: window.__rc.lignes(), noeuds: window.__rc.noeuds(), autres: window.__rc.chevauchements('hors-carte'), reg: window.__rc.regularite(), text: L.text, now: L.now }; });
+          let prec = await rel();
+          const repos10 = prec;
+          jouee('D45', 'D56', 'D61 bis', 'D64');
+          const f10 = { bis: null, saut: null, cote: null, segment: null, chev: null };
+          let regPire = null, regVu = false;
+          for (let i = 0; i < 70; i++) {
+            const av = dg.a;
+            await dg.vers(Math.min(a.ext - 6, dg.a + 10));
+            if (dg.a === av) break;
+            await attente(30);
+            const cur = await rel();
+            const cT = classer(cur.text);
+            if (cur.now < prec.now) f10.bis = f10.bis || 'le moment tenu passe de « ' + prec.text + ' » à « ' + cur.text + ' » en avançant de 10 px';
+            else if (cur.now - prec.now > 2) f10.bis = f10.bis || 'le moment tenu saute de ' + (cur.now - prec.now) + ' crans en 10 px (« ' + prec.text + ' » → « ' + cur.text + ' »)';
+            for (const l of cur.lignes.filter((x) => x.cle !== cleT)) {
+              const avant = prec.lignes.find((x) => x.cle === l.cle), depart = repos10.lignes.find((x) => x.cle === l.cle);
+              if (avant && Math.abs(l.pos - avant.pos) > 24) f10.saut = f10.saut || l.cle + ' (« ' + l.text + ' ») bondit de ' + Math.round(l.pos - avant.pos) + ' px en un pas de 10 px, le moment tenu étant « ' + cur.text + ' »';
+              if (depart && Math.abs(l.trans - depart.trans) > 8) f10.cote = f10.cote || l.cle + ' (« ' + l.text + ' ») saute de côté de ' + Math.round(l.trans - depart.trans) + ' px quand le moment tenu passe à « ' + cur.text + ' »';
+              const c = classer(l.text), n = cur.noeuds;
+              const hors = !c ? null
+                : c.seg === 0 && n.wp !== undefined && l.pos > n.wp + 4 ? 'sous le whirlpool'
+                : c.seg === 1 && ((n.wp !== undefined && l.pos < n.wp - 4) || (n.ferm !== undefined && l.pos > n.ferm + 4)) ? 'hors du whirlpool'
+                : c.seg === 2 && ((n.ferm !== undefined && l.pos < n.ferm - 4) || (n.post !== undefined && l.pos > n.post + 4)) ? 'hors de la fermentation'
+                : c.seg === 3 && n.post !== undefined && l.pos < n.post - 4 ? 'au-dessus de la post-fermentation' : null;
+              if (hors) f10.segment = f10.segment || l.cle + ' (« ' + l.text + ' ») sort de son segment (' + hors + ') quand le moment tenu passe à « ' + cur.text + ' »';
+            }
+            if (cur.autres.length) f10.chev = f10.chev || cur.autres.length + ' chevauchement(s) de textes du rail hors de la carte tenue (« ' + cur.text + ' ») : ' + cur.autres.slice(0, 2).join(' ; ');
+            if (cT && cT.seg === 0 && cur.reg) { regVu = true; if (!regPire || cur.reg.cv > regPire.cv) regPire = { ...cur.reg, text: cur.text }; }
+            prec = cur;
+          }
+          await dg.lever();
+          await pg.close();
+          if (f10.bis) p('D61 bis', 'à plusieurs houblons, en descendant par pas de 10 px, ' + f10.bis);
+          if (f10.saut) p('D61 bis', 'à plusieurs houblons, ' + f10.saut + ' : l\'échelle ne tient pas quand on passe sur un autre houblon');
+          if (f10.cote) p('D64', f10.cote + ' : un houblon déjà posé reste à sa place');
+          if (f10.segment) p('D64', f10.segment);
+          if (f10.chev) p('D56', 'à plusieurs houblons, pendant le geste, ' + f10.chev);
+          if (regVu && regPire.cv > 0.25) p('D45', 'les crans de l\'ébullition voisins du doigt sont irréguliers (écarts de ' + Math.round(regPire.mini) + ' à ' + Math.round(regPire.maxi) + ' px, écart-type ÷ moyenne ' + regPire.cv.toFixed(2) + ', 0,25 au plus), tenu à « ' + regPire.text + ' »');
+          if (!regVu) infos.push('D45 : non joué, aucun cran [data-cran] en bulle autour du doigt dans l\'ébullition (graduations sur le rail : la loupe les déforme volontairement, D63)');
+        }
       }
     } catch (e) {
       if (e instanceof Arret) { /* rail inerte : déjà dit */ } else pb.push('D27 : ' + id + ', le contrôle n\'a pas pu jouer le rail (' + String(e && e.message ? e.message : e).slice(0, 120) + ')');

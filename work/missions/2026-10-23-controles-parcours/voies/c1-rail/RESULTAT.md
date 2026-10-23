@@ -1,4 +1,4 @@
-OK — controle-rail.mjs --parcours : 23 plaintes classées, 14 témoins, joué sur le parcours : 14 défauts à corriger
+OK — controle-rail.mjs --parcours : 23 plaintes, rail horizontal et frise verticale à plusieurs houblons, 20 témoins ; D55 vide, D45 D56 D61 bis D64 rejoués
 
 ## Fichiers écrits
 
@@ -39,6 +39,8 @@ repos manquante) → comparées au repos ; `ok-ligne` échouait par D35 (bulle s
 « 5 j » alors que Dryhopper propose 1, 2, 3 et 7 → premier et dernier jour proposés.
 
 ## Défauts du parcours
+
+(Passe 1, 23.10 en début de soirée : pages d'alors. Ma bière a été refaite depuis (D105), Dryhopper corrigé : voir « Passe 2 » pour l'état actuel.)
 
 Joué avec `systeme.mjs verdict -- node …/controle-rail.mjs prototypes/houblons-v4/maquettes/parcours ma-biere dryhopper
 --page=etat.html --parcours` : VERDICT ECHEC, 14 problèmes. Ils vont à la session de la maquette (elle possède les
@@ -93,4 +95,92 @@ CONNAISSANCE : sur la maquette, Ma bière (rail de ligne) fait 14 px de doigt pa
 plus que l'écran (390 px) : les deux bouts du rail ne se rejoignent pas d'un geste (cran 25 sur 27) ; Dryhopper, à
 loupe de Sarkar et Brown, les rejoint.
 
+LEÇON PROPOSÉE : aucune
+
+## Passe 2 (23.10, soir)
+
+Demande : la frise verticale de l'étape Houblons de la base v4.10 (le choix du brasseur) à plusieurs houblons ; D45,
+D56, D61 bis, D64 redeviennent actives ; D55 (vide) sur un rail vertical ; G13 à G19.
+
+### Fichiers
+
+- `controle-rail.mjs` (mode `--parcours`, le mode actuel intact : G1 `RAIL OK 1/1`) : lit l'axe (`aria-orientation`,
+  rail plus haut que large, sinon essai du doigt), accepte une poignée courte prise au centre, rattachée à sa ligne
+  par `data-houblon` porté par la ligne ou par un descendant (le nom), classe les crans « en fermentation » comme
+  « actif ». Règles ajoutées : D45, D56, D61 bis, D64 à plusieurs houblons ; D55 sur une frise verticale ; D61
+  « place » seulement à un houblon (à plusieurs, les cartes s'intercalent) ; D69 : seul le bout visé doit rester dans
+  l'écran. `cas-k3.html`, quand il est dans le dossier de la route, est joué en priorité pour les règles à plusieurs
+  houblons ; sinon la page elle-même si elle porte au moins deux poignées ; sinon « non joué » et la demande
+  (une session de la maquette qui l'a lu ainsi voit désormais la page jouée : ma-biere/cas-k3.html existe).
+- Témoins, `temoins/rail-parcours-…` : `ok-vertical` (positif : trois houblons sur une frise commune, poignée par
+  houblon, `data-houblon` sur le nom, loupe en bulle, nœuds écrits), `saute` (D64), `deux-chevauchent` (D56),
+  `remonte` (D61 bis), `irregulier` (D45), `vide` (D55). Fabriqués par `voies/c1-rail/fabrique-temoins.mjs` et
+  `page-vertical.mjs` (même dossier).
+- `NOTE.md` : section « Passe 2 », D45, D55, D56, D61 bis, D64 reclassées.
+
+### Critères
+
+| Critère | Sortie |
+|---|---|
+| G1 à G8 | `RAIL OK 1/1`, `RAIL OK 1/1`, `ECHOUE OK` ×6 (D47, D34, D63, D42, D69, D46) |
+| G9, G11, G12 | `NOTE OK`, `NOTE OK`, `CABLAGE OK` |
+| G10 | `ma-biere · 20 règles jouées`, `dryhopper · 17 règles jouées`, `VERDICT ECHEC (RAIL ECHEC 3 problème(s))` |
+| G13 | `rail-parcours-ok-vertical · 19 règles jouées`, `RAIL OK 1/1` |
+| G14 | `ECHOUE OK (D64, code 1)` |
+| G15 | `ECHOUE OK (D56, code 1)` |
+| G16 | `ECHOUE OK (D61 bis, code 1)` |
+| G17 | `ECHOUE OK (D45, code 1)` |
+| G18 | `NOTE OK` (« plusieurs houblons », « aria-orientation », « rail-parcours-ok-vertical ») |
+| G19 | `ECHOUE OK (D55, code 1)` |
+
+Chaque témoin de la passe 2 échoue par son seul défaut (relu : saute → D64 seul, deux-chevauchent → D56 seul, remonte →
+D61 bis seul (deux lignes : un houblon, puis plusieurs), irregulier → D45 seul, vide → D55 seul, au repos et pendant le
+geste). Les témoins de la passe 1 (14) sont rejoués : mêmes verdicts. Essais : un par critère sur la version finale ;
+en route, le témoin vertical a demandé six réglages (cartes qui se recouvrent sous le doigt, titre sous la loupe,
+frise trop étirée : un vide de 100 px que D55 a lui-même trouvé, `data-houblon` sur le nom).
+
+### Ce que le contrôle rend sur le parcours construit (rejoué à 18 h 40 environ)
+
+`ma-biere/etat.html` (une seule poignée : Nugget), 20 règles jouées, 3 problèmes, tous D55 :
+
+| Défaut | Mesure | Ce que l'écran doit changer |
+|---|---|---|
+| **D55** au repos | un vide de **182 px** dans la frise, entre 239 et 421 px (carte de Nugget → repère 0′) | frise proportionnelle aux minutes avec cartes hautes : la base consolidée n'a pas ce vide ; resserrer l'écart (échelle des minutes, ou carte repliée) jusqu'à 80 px au plus |
+| **D55** pendant le geste, à 35′ | vide de 93 px (entre 349 et 442 px) | idem : la loupe grossit autour du doigt, le reste du rail reste compact |
+| **D55** pendant le geste, après fermentation | vide de 169 px (entre 239 et 408 px) | idem |
+
+`ma-biere/cas-k3.html` (Nugget 60′, Cascade 10′, Galaxy 5′ : D45, D56, D61 bis, D64 jouées), 20 règles jouées,
+3 problèmes :
+
+| Défaut | Mesure | Ce que l'écran doit changer |
+|---|---|---|
+| **D55** au repos et après fermentation | vide de 148 px (entre 239 et 387 px) | idem |
+| **D35** après fermentation | « 1 j » (loupe) sur « 10′ » (repère de Cascade) | la loupe passe sur le repère d'un autre houblon : la décaler ou la tenir à droite des repères |
+
+Tiennent sur les deux : D61 bis, D64 (aucun houblon déjà posé ne saute de côté ni ne bondit de plus de 24 px, aucun ne
+sort de son segment), D56 (aucun texte du rail sur un autre hors de la carte tenue), D46, D47, D63, D67, D68, D69,
+D44 (jours de fermentation), D41, D42, D34. `dryhopper` : 17 règles jouées, aucun problème (les défauts D35, D46,
+D47 de la passe 1 ont été corrigés depuis par la session de la maquette) ; D45, D56, D61 bis, D64 : non joués, une
+seule poignée (ce qui est dit à la page).
+
+### Limites, dites
+
+- **D45 non jouée sur la maquette** : la frise de Ma bière affiche ses minutes en graduations sur le rail (60′ 55′ …
+  0′), pas en bulle ; la loupe les déforme volontairement (D63), la règle de régularité ne s'y applique pas. Elle ne
+  s'applique qu'à une bulle de crans (le témoin `irregulier` la prouve).
+- **La piste couvre toute la colonne** (limite annoncée par la voie de l'écran : chaque houblon a une piste de
+  406 px, un doigt hors des repères est pris par la piste du dessus) : le contrôle prend la poignée au repère
+  (`deb + 14`), donc il ne rend pas ce défaut. Un doigt posé entre deux repères n'est pas joué ; à brancher si le
+  brasseur le demande (règle nouvelle : « un doigt posé sur un repère tient le repère sous lui »).
+- **D61 « place »** n'est pas jouée à plusieurs houblons (les cartes des autres s'intercalent) : D61 bis et D64 la
+  remplacent, avec le seuil de 24 px de l'ancien mode.
+- La session de la maquette reconstruit ce dossier : les nombres ci-dessus datent d'une construction ; rejouer
+  `node scripts/agents/systeme.mjs verdict -- node work/refonte-frontend/v4/tournoi/outils/controle-rail.mjs
+  prototypes/houblons-v4/maquettes/parcours ma-biere dryhopper --page=etat.html --parcours` et, pour les règles à
+  plusieurs houblons, `ma-biere --page=cas-k3.html`.
+- Le rappel du système cite `systeme.mjs appels controle-rail.mjs --rejouer` : cette commande n'existe pas dans la
+  version du dépôt lue ici (l'aide ne la liste pas) ; les critères ont été rejoués un à un.
+
+CONNAISSANCE : une frise verticale qui garde la hauteur de ses cartes sur une échelle de minutes ouvre un vide de
+150 à 180 px dès qu'un houblon quitte le haut ; D55 le mesure en lisant les textes et les cartes de la frise.
 LEÇON PROPOSÉE : aucune
