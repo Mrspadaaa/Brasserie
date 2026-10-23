@@ -130,6 +130,7 @@ Une voie d'écran possède `src/ecrans/<écran>/**` et rien d'autre.
   rendues (loupe : écart sous le doigt contre écart au loin, ≥ ×3, L12), puis le doigt se relâche.
 - **`window.__parcours` :**
   - `etat`, `route`, `biere()`, `brouillonLu()` ;
+  - `envoyer` : les actions de l'état (par exemple `{ type: 'visee/fixer', famille, valeur }`), pour poser un état sans passer par un autre écran ;
   - `moteur` : l'adaptateur entier, pour comparer `data-crans` au moteur à 0,6 cran près (D80) ;
   - `regles` : `cransOf`, `getStyleScale`, `hopRole` (pour `data-usage`, D90), `hopAlpha` ;
   - `mesures`, `medianeRecalcul`.

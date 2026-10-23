@@ -9,7 +9,7 @@
  "voies": [
   {
    "rang": 1,
-   "libelle": "même effet sur tes objectifs : Golding",
+   "libelle": "Ajouter Golding · 10′ · 10 g",
    "tout": [
     {
      "famille": "floral",
@@ -51,7 +51,7 @@
   },
   {
    "rang": 2,
-   "libelle": "même effet sur tes objectifs : Motueka",
+   "libelle": "Ajouter Motueka · 10′ · 10 g",
    "tout": [
     {
      "famille": "citrus",
@@ -86,7 +86,7 @@
   },
   {
    "rang": 3,
-   "libelle": "même effet sur tes objectifs : Aurum",
+   "libelle": "Ajouter Aurum · 10′ · 10 g",
    "tout": [
     {
      "famille": "citrus",
@@ -135,7 +135,7 @@
   },
   {
    "rang": 4,
-   "libelle": "même effet sur tes objectifs : East Kent Goldings",
+   "libelle": "Ajouter East Kent Goldings · 10′ · 10 g",
    "tout": [
     {
      "famille": "citrus",
@@ -184,7 +184,7 @@
   },
   {
    "rang": 5,
-   "libelle": "même effet sur tes objectifs : Columbus",
+   "libelle": "Ajouter Columbus · 10′ · 10 g",
    "tout": [
     {
      "famille": "citrus",
@@ -233,7 +233,7 @@
   },
   {
    "rang": 6,
-   "libelle": "même effet sur tes objectifs : Motueka + Citra cryo",
+   "libelle": "Assembler Motueka + Citra cryo · 10′ · 5 g + 5 g",
    "tout": [
     {
      "famille": "citrus",
@@ -250,15 +250,15 @@
      "crans": 1.59
     },
     {
-     "famille": "melon",
-     "nom": "melon",
+     "famille": "stoneFruit",
+     "nom": "stoneFruit",
      "visee": false,
      "effet": 7.9,
      "crans": 0.79
     },
     {
-     "famille": "stoneFruit",
-     "nom": "stoneFruit",
+     "famille": "melon",
+     "nom": "melon",
      "visee": false,
      "effet": 7.9,
      "crans": 0.79
@@ -288,7 +288,7 @@
   },
   {
    "rang": 7,
-   "libelle": "même effet sur tes objectifs : Citra cryo",
+   "libelle": "Ajouter Citra cryo · 10′ · 10 g",
    "tout": [
     {
      "famille": "citrus",
@@ -305,15 +305,15 @@
      "crans": 1.59
     },
     {
-     "famille": "melon",
-     "nom": "melon",
+     "famille": "stoneFruit",
+     "nom": "stoneFruit",
      "visee": false,
      "effet": 15.9,
      "crans": 1.59
     },
     {
-     "famille": "stoneFruit",
-     "nom": "stoneFruit",
+     "famille": "melon",
+     "nom": "melon",
      "visee": false,
      "effet": 15.9,
      "crans": 1.59
@@ -337,7 +337,7 @@
   },
   {
    "rang": 8,
-   "libelle": "Assembler 5 + 5 g : Motueka + Nelson Sauvin",
+   "libelle": "Assembler Motueka + Nelson Sauvin · 10′ · 5 g + 5 g",
    "tout": [
     {
      "famille": "citrus",
@@ -385,7 +385,7 @@
   },
   {
    "rang": 9,
-   "libelle": "Remplacer Nugget : Motueka",
+   "libelle": "Remplacer Nugget par Motueka · 60′ · 74 g",
    "tout": [
     {
      "famille": "citrus",
@@ -416,6 +416,13 @@
      "crans": -0.1
     },
     {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": -2.6,
+     "crans": -0.26
+    },
+    {
      "famille": "spice",
      "nom": "spice",
      "visee": false,
@@ -428,13 +435,6 @@
      "visee": false,
      "effet": -2.6,
      "crans": -0.14
-    },
-    {
-     "famille": "resin",
-     "nom": "resin",
-     "visee": true,
-     "effet": -2.6,
-     "crans": -0.26
     }
    ],
    "fiches": [
@@ -448,7 +448,7 @@
   },
   {
    "rang": 10,
-   "libelle": "Remplacer Nugget : Citra cryo",
+   "libelle": "Remplacer Nugget par Citra cryo · 60′ · 24 g",
    "tout": [
     {
      "famille": "citrus",
@@ -465,15 +465,15 @@
      "crans": -0.08
     },
     {
-     "famille": "melon",
-     "nom": "melon",
+     "famille": "stoneFruit",
+     "nom": "stoneFruit",
      "visee": false,
      "effet": 1.8,
      "crans": 0.18
     },
     {
-     "famille": "stoneFruit",
-     "nom": "stoneFruit",
+     "famille": "melon",
+     "nom": "melon",
      "visee": false,
      "effet": 1.8,
      "crans": 0.18
@@ -493,6 +493,13 @@
      "crans": -0.1
     },
     {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": -2.6,
+     "crans": -0.26
+    },
+    {
      "famille": "spice",
      "nom": "spice",
      "visee": false,
@@ -505,13 +512,6 @@
      "visee": false,
      "effet": -2.6,
      "crans": -0.14
-    },
-    {
-     "famille": "resin",
-     "nom": "resin",
-     "visee": true,
-     "effet": -2.6,
-     "crans": -0.26
     }
    ],
    "fiches": [
@@ -525,7 +525,7 @@
   },
   {
    "rang": 11,
-   "libelle": "Remplacer Nugget : Nelson Sauvin",
+   "libelle": "Remplacer Nugget par Nelson Sauvin · 60′ · 62 g",
    "tout": [
     {
      "famille": "citrus",
@@ -556,6 +556,13 @@
      "crans": -0.1
     },
     {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": -2.6,
+     "crans": -0.26
+    },
+    {
      "famille": "spice",
      "nom": "spice",
      "visee": false,
@@ -568,13 +575,6 @@
      "visee": false,
      "effet": -2.6,
      "crans": -0.14
-    },
-    {
-     "famille": "resin",
-     "nom": "resin",
-     "visee": true,
-     "effet": -2.6,
-     "crans": -0.26
     }
    ],
    "fiches": [
@@ -588,7 +588,7 @@
   },
   {
    "rang": 12,
-   "libelle": "Remplacer Nugget : Galaxy",
+   "libelle": "Remplacer Nugget par Galaxy · 60′ · 35 g",
    "tout": [
     {
      "famille": "citrus",
@@ -626,6 +626,13 @@
      "crans": -0.1
     },
     {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": -2.6,
+     "crans": -0.26
+    },
+    {
      "famille": "spice",
      "nom": "spice",
      "visee": false,
@@ -638,13 +645,6 @@
      "visee": false,
      "effet": -2.6,
      "crans": -0.14
-    },
-    {
-     "famille": "resin",
-     "nom": "resin",
-     "visee": true,
-     "effet": -2.6,
-     "crans": -0.26
     }
    ],
    "fiches": [
@@ -658,7 +658,7 @@
   },
   {
    "rang": 13,
-   "libelle": "Remplacer Nugget : Hallertau Blanc",
+   "libelle": "Remplacer Nugget par Hallertau Blanc · 60′ · 63 g",
    "tout": [
     {
      "famille": "citrus",
@@ -696,6 +696,13 @@
      "crans": -0.1
     },
     {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": -2.6,
+     "crans": -0.26
+    },
+    {
      "famille": "spice",
      "nom": "spice",
      "visee": false,
@@ -708,13 +715,6 @@
      "visee": false,
      "effet": -2.6,
      "crans": -0.14
-    },
-    {
-     "famille": "resin",
-     "nom": "resin",
-     "visee": true,
-     "effet": -2.6,
-     "crans": -0.26
     }
    ],
    "fiches": [
@@ -752,18 +752,18 @@
      "crans": 1.25
     },
     {
-     "famille": "green",
-     "nom": "green",
-     "visee": false,
-     "effet": 10.15,
-     "crans": 1.02
-    },
-    {
      "famille": "herbal",
      "nom": "herbal",
      "visee": false,
      "effet": 7.56,
      "crans": 0.41
+    },
+    {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": 19.72,
+     "crans": 1.97
     },
     {
      "famille": "spice",
@@ -773,18 +773,18 @@
      "crans": 0.36
     },
     {
+     "famille": "green",
+     "nom": "green",
+     "visee": false,
+     "effet": 10.15,
+     "crans": 1.02
+    },
+    {
      "famille": "earthy",
      "nom": "earthy",
      "visee": false,
      "effet": 9.29,
      "crans": 0.51
-    },
-    {
-     "famille": "resin",
-     "nom": "resin",
-     "visee": true,
-     "effet": 19.72,
-     "crans": 1.97
     }
    ],
    "fiches": [
@@ -822,18 +822,18 @@
      "crans": 0.9
     },
     {
-     "famille": "green",
-     "nom": "green",
-     "visee": false,
-     "effet": 0,
-     "crans": 0
-    },
-    {
      "famille": "herbal",
      "nom": "herbal",
      "visee": false,
      "effet": 27.39,
      "crans": 1.49
+    },
+    {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": 26.34,
+     "crans": 2.63
     },
     {
      "famille": "spice",
@@ -843,18 +843,18 @@
      "crans": 1.69
     },
     {
-     "famille": "earthy",
-     "nom": "earthy",
+     "famille": "green",
+     "nom": "green",
      "visee": false,
      "effet": 0,
      "crans": 0
     },
     {
-     "famille": "resin",
-     "nom": "resin",
-     "visee": true,
-     "effet": 26.34,
-     "crans": 2.63
+     "famille": "earthy",
+     "nom": "earthy",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
     }
    ],
    "fiches": [
@@ -892,18 +892,18 @@
      "crans": 0.89
     },
     {
-     "famille": "green",
-     "nom": "green",
-     "visee": false,
-     "effet": 8.4,
-     "crans": 0.84
-    },
-    {
      "famille": "herbal",
      "nom": "herbal",
      "visee": false,
      "effet": 9.17,
      "crans": 0.5
+    },
+    {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": 19.09,
+     "crans": 1.91
     },
     {
      "famille": "spice",
@@ -913,18 +913,18 @@
      "crans": 1.27
     },
     {
+     "famille": "green",
+     "nom": "green",
+     "visee": false,
+     "effet": 8.4,
+     "crans": 0.84
+    },
+    {
      "famille": "earthy",
      "nom": "earthy",
      "visee": false,
      "effet": 0,
      "crans": 0
-    },
-    {
-     "famille": "resin",
-     "nom": "resin",
-     "visee": true,
-     "effet": 19.09,
-     "crans": 1.91
     }
    ],
    "fiches": [
@@ -962,29 +962,8 @@
      "crans": 0.85
     },
     {
-     "famille": "green",
-     "nom": "green",
-     "visee": false,
-     "effet": 17.29,
-     "crans": 1.73
-    },
-    {
      "famille": "herbal",
      "nom": "herbal",
-     "visee": false,
-     "effet": 0,
-     "crans": 0
-    },
-    {
-     "famille": "spice",
-     "nom": "spice",
-     "visee": false,
-     "effet": 2.45,
-     "crans": 0.25
-    },
-    {
-     "famille": "earthy",
-     "nom": "earthy",
      "visee": false,
      "effet": 0,
      "crans": 0
@@ -995,6 +974,27 @@
      "visee": true,
      "effet": 19.69,
      "crans": 1.97
+    },
+    {
+     "famille": "spice",
+     "nom": "spice",
+     "visee": false,
+     "effet": 2.45,
+     "crans": 0.25
+    },
+    {
+     "famille": "green",
+     "nom": "green",
+     "visee": false,
+     "effet": 17.29,
+     "crans": 1.73
+    },
+    {
+     "famille": "earthy",
+     "nom": "earthy",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
     }
    ],
    "fiches": [

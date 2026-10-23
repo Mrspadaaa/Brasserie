@@ -18,6 +18,8 @@ export interface VueParcours {
   mesures: typeof moteur.mesures;
   medianeRecalcul: typeof moteur.medianeRecalcul;
   viderMesures: typeof moteur.viderMesures;
+  /** Les actions de l'état, pour qu'un jeu.mjs pose un état sans passer par un autre écran (visée, comparaison…). */
+  envoyer: Dispatch<Action>;
   /** L'adaptateur entier : un jeu.mjs compare ce que l'écran rend (data-crans, data-usage…) au moteur. */
   moteur: typeof moteur;
   /** Règles du moteur v4 utiles aux contrôles (crans du style à 0,6 près, D80 ; rôle, D90 ; α, D87). */
@@ -34,6 +36,7 @@ export function EtatParcoursProvider({ initial, children }: { initial: EtatParco
       brouillonLu: () => (etat.brouillon ? moteur.lireBiere(etat.brouillon.recette) : null),
       mesures: moteur.mesures, medianeRecalcul: moteur.medianeRecalcul, viderMesures: moteur.viderMesures,
       moteur, regles: { cransOf, getStyleScale, hopRole, hopAlpha },
+      envoyer: dispatch,
     };
   });
   const valeur = useMemo(() => ({ etat, dispatch }), [etat]);

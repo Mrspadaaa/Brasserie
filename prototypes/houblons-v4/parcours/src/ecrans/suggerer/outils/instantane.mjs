@@ -1,6 +1,6 @@
 // Instantané du moteur pour Suggérer, au format des cas du lot 15 (donnees/c1.json : voies[].tout, voies[].fiches),
 // pour que controle-autres-ajouts (D76) et controle-usage-intensite (D80) se jouent sur l'écran calculé en direct.
-// Reprise D105 : les voies sont celles que l'écran range (voies.ts : proposer + dry hop), lues de window.__suggerer.
+// Reprise D105 : les voies dans l'ordre de l'écran (data-voie, data-id), leurs effets lus du moteur (proposer, suggerer).
 // La page porte <body data-cas="…/cas-direct"> ; les contrôles lisent ce fichier depuis leur dossier de cas.
 // Ce n'est PAS une donnée de l'écran : l'écran calcule en direct ; ce fichier fige ce que le moteur dit à l'état de
 // départ de suggerer/etat.html, et jeu.mjs vérifie en direct le même accord (D80, D76) après chaque geste.
@@ -22,22 +22,30 @@ if (!fs.existsSync(page)) { console.log(`INSTANTANE ECHEC : ${page} absente (con
 const nav = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const p = await nav.newPage();
 await p.goto(pathToFileURL(page).href, { waitUntil: 'networkidle0' });
-await p.waitForFunction(() => !!window.__parcours && !!window.__suggerer);
+await p.waitForFunction(() => !!window.__parcours && document.querySelectorAll('[data-ecran="suggerer"] [data-voie]').length > 0);
 const cas = await p.evaluate(() => {
   const P = window.__parcours, m = P.moteur, r = P.etat.recette, sc = m.style(r.styleCode);
-  // Les voies telles que l'écran les range (window.__suggerer, calculé par voies.ts depuis le moteur), dans l'ordre data-voie.
-  const { groupes, objectifs } = window.__suggerer;
-  const cibles = new Set(objectifs.map((o) => o.f));
+  // Les voies dans l'ordre de l'écran (data-voie, data-id) ; leurs effets lus du moteur, comme jeu.mjs.
+  const dir = Object.fromEntries(Object.entries(P.etat.visee).filter(([, v]) => typeof v === 'number' && v !== 0));
+  const vs = m.proposer(r, dir).voies, cs = m.suggerer(r, Object.keys(dir).find((f) => dir[f] > 0) ?? 'floral');
+  const lignes = [...document.querySelectorAll('[data-ecran="suggerer"] [data-voie]')].sort((x, y) => +x.dataset.voie - +y.dataset.voie);
   return {
     cas: 'cas-direct', titre: 'Suggérer en direct (D105) : stout 16D, plus florale, moins résineuse (moteur v4, état de départ)',
-    genere: 'outils/instantane.mjs', objectifs: [...cibles],
-    voies: groupes.flatMap((g) => g.lignes).map((l) => ({
-      rang: l.n, libelle: `${g0(groupes, l)} : ${l.houblons.map((h) => h.nom).join(' + ')}`,
-      tout: Object.entries(l.effets).filter(([, e]) => e != null).map(([f, e]) => ({ famille: f, nom: f, visee: cibles.has(f), effet: e, crans: Math.round((e / sc.families[f].cran) * 100) / 100 })),
-      fiches: l.houblons.map((h) => ({ houblon: h.nom, cle: h.cle, role: P.regles.hopRole(h.cle).value, roleSource: P.regles.hopRole(h.cle).source })),
-    })),
+    genere: 'outils/instantane.mjs', objectifs: Object.keys(dir),
+    voies: lignes.map((l) => {
+      const id = l.dataset.id;
+      const c = id.startsWith('dryhop-') ? cs.find((x) => 'dryhop-' + x.cle === id) : null;
+      const v = c ? null : vs.find((x) => x.id === id);
+      const effets = c ? Object.fromEntries(Object.entries(c.lu.ecart).map(([f, e]) => [f, e ? e.centre : null]))
+        : Object.fromEntries(Object.entries(v.effect).map(([f, e]) => [f, e.established && e.central != null ? e.central : null]));
+      const cles = c ? [c.cle] : [...new Set(v.actions.map((x) => x.hopKey))];
+      return {
+        rang: +l.dataset.voie, libelle: c ? 'Dry hop : ' + c.houblon.nom : v.label,
+        tout: Object.entries(effets).filter(([, e]) => e != null).map(([f, e]) => ({ famille: f, nom: f, visee: f in dir, effet: e, crans: Math.round((e / sc.families[f].cran) * 100) / 100 })),
+        fiches: cles.map((k) => ({ houblon: m.houblon(k).nom, cle: k, role: P.regles.hopRole(k).value, roleSource: P.regles.hopRole(k).source })),
+      };
+    }),
   };
-  function g0(gs, l) { return gs.find((g) => g.lignes.includes(l)).titre; }
 });
 await nav.close();
 const sortie = path.resolve(ici, '..', 'cas-direct.json');

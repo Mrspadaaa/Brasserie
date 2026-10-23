@@ -35,22 +35,32 @@ export interface Objectif { f: FamilyId; sens: 1 | -1; nom: string; cran: number
 
 const fam = <T>(fams: readonly FamilyId[], fn: (f: FamilyId) => T) => Object.fromEntries(fams.map((f) => [f, fn(f)])) as Record<FamilyId, T>;
 
-/** Objectifs de la dégustation : la visée du brasseur (+1 cran) et les familles au-dessus du style (−1 cran).
- * Situés sur Ma bière lue (la dégustation prime). */
-export function objectifsDe(recette: RecetteParcours, biere: BiereLue, visee: FamilyId): Objectif[] {
+export type Visee = Partial<Record<FamilyId, number | 'banni'>>;
+/** Objectifs de la visée commune (état du parcours, réglée dans l'onglet Ma bière : + floral, − résineux au départ),
+ * en crans du style. Visées « plus » d'abord. Situés sur Ma bière lue (la dégustation prime). */
+export function objectifsDe(recette: RecetteParcours, biere: BiereLue, visee: Visee): Objectif[] {
   const sc = style(recette.styleCode);
-  const trop = (Object.keys(biere.profil) as FamilyId[]).filter((f) => f !== visee && biere.profil[f].horsStyle === 'au-dessus');
-  return [{ f: visee, sens: 1 as const }, ...trop.map((f) => ({ f, sens: -1 as const }))].map(({ f, sens }) => {
-    const cran = sc.families[f].cran, avant = biere.profil[f].valeur?.centre ?? null;
-    return { f, sens, nom: biere.profil[f].nom, cran, requis: sens * cran, avant, visee: avant == null ? null : Math.max(0, avant + sens * cran) };
-  });
+  return (Object.entries(visee) as [FamilyId, number | 'banni'][])
+    .filter((e): e is [FamilyId, number] => typeof e[1] === 'number' && e[1] !== 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([f, k]) => {
+      const sens = (k > 0 ? 1 : -1) as 1 | -1;
+      const cran = sc.families[f].cran, avant = biere.profil[f].valeur?.centre ?? null;
+      return { f, sens, nom: biere.profil[f].nom, cran, requis: k * cran, avant, visee: avant == null ? null : Math.max(0, avant + k * cran) };
+    });
 }
+/** Familles bannies de la visée commune. */
+export const bannisDe = (visee: Visee): FamilyId[] => (Object.entries(visee) as [FamilyId, number | 'banni'][]).filter(([, v]) => v === 'banni').map(([f]) => f);
+/** Règle V5.5 des exclusions (« famille citée par le houblon ajouté ») : une voie dont un houblon cite une famille
+ * bannie n'est pas proposée. */
+export const exclue = (houblons: HoublonLu[], bannis: FamilyId[]) => houblons.some((h) => bannis.some((f) => h.familles[f].niveau !== 'non décrit'));
 
 /** Les voies du moteur, rangées en groupes comme q2b. `familles` : l'ordre des familles du moteur. */
-export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], familles: readonly FamilyId[], dryhopMax = 4): Groupe[] {
-  const direction = Object.fromEntries(objectifs.map((o) => [o.f, o.sens]));
+export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], familles: readonly FamilyId[], bannis: FamilyId[] = [], dryhopMax = 4): Groupe[] {
+  const direction = Object.fromEntries(objectifs.map((o) => [o.f, o.requis / o.cran]));
   const res = proposer(recette, direction);
-  const lignes = res.voies.filter((v) => v.type === 'ajouter' || v.type === 'assemblage' || v.type === 'remplacer à IBU égal').map((v) => {
+  const lignes = res.voies.filter((v) => v.type === 'ajouter' || v.type === 'assemblage' || v.type === 'remplacer à IBU égal')
+    .filter((v) => !exclue([...new Set(v.actions.map((a) => a.hopKey))].map((c) => houblon(c)), bannis)).map((v) => {
     const cles = [...new Set(v.actions.filter((a) => a.op !== 'retirer').map((a) => a.hopKey))];
     const geste: Geste = v.type === 'assemblage' ? 'assembler' : v.type === 'ajouter' ? 'meme' : 'remplacer';
     return {
@@ -83,15 +93,15 @@ export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], famille
   const assembler = seuls.filter((x) => x.ligne.geste === 'assembler');
   const ajoutSeul = seuls.filter((x) => x.ligne.geste !== 'assembler');
   if (ajoutSeul.length) groupes.push({ id: 'ajouter', geste: 'meme', titre: 'Ajouter', dose: null, moment: ajoutSeul[0].moment, estime: false, lignes: ajoutSeul.map((x) => ({ ...x.ligne, dose: `${x.grams} g` })) });
-  if (assembler.length) groupes.push({ id: 'assembler', geste: 'assembler', titre: 'Assembler 5 + 5 g', dose: null, moment: assembler[0].moment, estime: true, lignes: assembler.map((x) => x.ligne) });
+  if (assembler.length) groupes.push({ id: 'assembler', geste: 'assembler', titre: 'Assembler 5+5 g', dose: null, moment: assembler[0].moment, estime: true, lignes: assembler.map((x) => x.ligne) });
   const remp = lignes.filter((x) => x.ligne.geste === 'remplacer');
   if (remp.length) {
     const avant = remp[0].v.actions[0].previousHopKey;
     groupes.push({ id: 'remplacer', geste: 'remplacer', titre: `Remplacer ${avant ? houblon(avant).nom : ''}`.trim(), dose: null, moment: remp[0].moment, estime: false, lignes: remp.map((x) => x.ligne) });
   }
   // Dry hop (q2b : le geste « Dry hop ») : les meilleurs du stock sur la visée, au simulateur.
-  const fv = objectifs[0].f;
-  const dh = suggerer(recette, fv).filter((c) => !estMuet(c) && (c.visee?.centre ?? 0) > 0).slice(0, dryhopMax);
+  const fv = objectifs.find((o) => o.sens > 0)?.f ?? objectifs[0]?.f;
+  const dh = fv ? suggerer(recette, fv).filter((c) => !estMuet(c) && !exclue([c.houblon], bannis) && (c.visee?.centre ?? 0) > 0).slice(0, dryhopMax) : [];
   if (dh.length) groupes.push({ id: 'dryhop', geste: 'dryhop', titre: 'Dry hop', dose: `${CONDITIONS.doseGL} g/L`, moment: `après ${CONDITIONS.jours} j`, estime: true,
     lignes: dh.map((c) => ({
       n: 0, id: `dryhop-${c.cle}`, geste: 'dryhop', houblons: [c.houblon], dose: null,

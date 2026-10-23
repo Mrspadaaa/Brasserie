@@ -17,10 +17,12 @@ export default {
       nom: 'départ : les voies du moteur, groupées, et deux proposées',
       faire: 'attendre',
       verifier: (p) => {
-        const r = p.etat.recette, b = p.moteur.lireBiere(r);
-        const dir = { floral: 1 };
-        for (const f of Object.keys(b.profil)) if (f !== 'floral' && b.profil[f].horsStyle === 'au-dessus') dir[f] = -1;
-        const vs = p.moteur.proposer(r, dir).voies.filter((v) => ['ajouter', 'assemblage', 'remplacer à IBU égal'].includes(v.type));
+        const r = p.etat.recette;
+        // La visée commune de l'état (onglet Ma bière) : crans par famille ; « banni » exclut les houblons qui la citent.
+        const dir = Object.fromEntries(Object.entries(p.etat.visee).filter(([, v]) => typeof v === 'number' && v !== 0));
+        const bannis = Object.entries(p.etat.visee).filter(([, v]) => v === 'banni').map(([f]) => f);
+        const cite = (cle) => bannis.some((f) => p.moteur.houblon(cle).familles[f].niveau !== 'non décrit');
+        const vs = p.moteur.proposer(r, dir).voies.filter((v) => ['ajouter', 'assemblage', 'remplacer à IBU égal'].includes(v.type) && !v.actions.some((a) => cite(a.hopKey)));
         const manque = vs.filter((v) => !document.querySelector(`[data-ecran="suggerer"] [data-voie][data-id="${v.id}"]`)).map((v) => v.label);
         if (manque.length) return `voies du moteur absentes : ${manque.join(' ; ')}`;
         if (!document.querySelector('[data-groupe="meme-0"]')) return 'pas de groupe « même effet »';
@@ -36,9 +38,11 @@ export default {
       nom: 'D80 et D76 en direct : intensité en crans, extras, usage, α',
       faire: 'attendre',
       verifier: (p) => {
-        const r = p.etat.recette, b = p.moteur.lireBiere(r), sc = p.moteur.style(r.styleCode);
-        const dir = { floral: 1 };
-        for (const f of Object.keys(b.profil)) if (f !== 'floral' && b.profil[f].horsStyle === 'au-dessus') dir[f] = -1;
+        const r = p.etat.recette, sc = p.moteur.style(r.styleCode);
+        // La visée commune de l'état (onglet Ma bière) : crans par famille ; « banni » exclut les houblons qui la citent.
+        const dir = Object.fromEntries(Object.entries(p.etat.visee).filter(([, v]) => typeof v === 'number' && v !== 0));
+        const bannis = Object.entries(p.etat.visee).filter(([, v]) => v === 'banni').map(([f]) => f);
+        const cite = (cle) => bannis.some((f) => p.moteur.houblon(cle).familles[f].niveau !== 'non décrit');
         const vs = p.moteur.proposer(r, dir).voies, cs = p.moteur.suggerer(r, 'floral');
         const fautes = [];
         let familles = 0;
@@ -64,6 +68,7 @@ export default {
             else if (!vus.some((x) => Math.abs(x - attendu) <= 0.6)) fautes.push(`${id} : ${f} à ${vus.join('/')} cran, le moteur dit ${attendu.toFixed(2)}`);
           }
           const extrasAttendus = bougent.map(([f]) => f).filter((f) => !(f in dir)).sort().join(',');
+          if (cles.some(cite)) fautes.push(`${id} : un houblon cite une famille bannie`);
           const extrasVus = [...ligne.querySelectorAll('[data-role="extra"][data-famille]')].map((x) => x.dataset.famille).sort().join(',');
           if (extrasAttendus !== extrasVus) fautes.push(`${id} : extras ${extrasVus || '∅'}, le moteur ${extrasAttendus || '∅'}`);
           for (const cle of cles) {
@@ -140,6 +145,40 @@ export default {
       faire: 'toucher',
       cible: '[data-ecran="suggerer"] [data-e="barres"]',
       verifier: () => (document.querySelector('[data-objectif] [data-role="piste"]') && !document.querySelector('svg[data-radar][data-objet="suggerer"]') ? true : 'pistes absentes ou radar resté'),
+    },
+    {
+      // L'action de l'état commun, comme l'onglet Ma bière : le crochet de test du socle (window.__parcours.envoyer).
+      nom: 'bannir l’épicé dans l’état commun (fixerVisee)',
+      faire: 'attendre',
+      verifier: (p) => { p.envoyer({ type: 'visee/fixer', famille: 'spice', valeur: 'banni' }); return true; },
+    },
+    {
+      nom: 'les voies citant l’épicé sont écartées, la carte « Sans épicé » le dit',
+      faire: 'attendre',
+      attendre: '[data-ecran="suggerer"] [data-banni="spice"]',
+      verifier: (p) => {
+        const cite = (cle) => p.moteur.houblon(cle).familles.spice.niveau !== 'non décrit';
+        const lignes = [...document.querySelectorAll('[data-ecran="suggerer"] [data-voie]')];
+        const fautif = lignes.filter((l) => [...l.querySelectorAll('[data-role="ouvrir-fiche"]')].some((h) => cite(h.dataset.houblon)));
+        if (fautif.length) return `voies citant l’épicé encore là : ${fautif.map((l) => l.dataset.id).join(', ')}`;
+        const tous = p.moteur.proposer(p.etat.recette, { floral: 1, resin: -1 }).voies.filter((v) => ['ajouter', 'assemblage', 'remplacer à IBU égal'].includes(v.type));
+        const ecartees = tous.filter((v) => v.actions.some((a) => cite(a.hopKey))).length;
+        if (!ecartees) return 'le bannissement n’écarte aucune voie : geste sans effet';
+        const n = parseInt(document.querySelector('[data-banni="spice"] [data-role="ecartees"]').textContent, 10);
+        if (p.etat.visee.spice !== 'banni') return 'la visée commune n’a pas l’épicé banni';
+        return n >= ecartees ? true : `carte : ${n} écartées, le moteur en écarte au moins ${ecartees}`;
+      },
+    },
+    {
+      nom: 'lever le bannissement',
+      faire: 'attendre',
+      verifier: (p) => { p.envoyer({ type: 'visee/fixer', famille: 'spice', valeur: null }); return true; },
+    },
+    {
+      nom: 'les voies reviennent (Golding, Aurum)',
+      faire: 'attendre',
+      attendre: '[data-ecran="suggerer"] [data-voie] [data-houblon="beermaverick-golding"]',
+      verifier: (p) => (!document.querySelector('[data-banni]') && !('spice' in p.etat.visee) ? true : 'bannissement resté'),
     },
     {
       nom: 'appui long sur Motueka : sa fiche, Suggérer dessous',

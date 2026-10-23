@@ -31,6 +31,19 @@
 - q2b-comparer-n : repris — la barre « Comparer (n) » en bas, qui ouvre Comparer avec la liste
 - q2b-bande-visee : écarté — le brasseur l'a jugée « Ça c'est inutile » (D91) ; la visée se lit sur les pistes
 
+## Retouches D106 et visée commune (23.10, soir)
+
+- D106 : thème des maquettes (page blanche, gris neutres, action noire). Les cartes d'objectif sont ramenées à la
+  hauteur de q2b, trois par rang au plus, verdict sur une ligne. Leur teinte de famille est adoucie vers la page
+  (`color-mix` à 45 %) ; controle-teinte : teinte 4, comme q2b. L'onglet inactif du socle est foncé à 4,5:1 dans ma
+  feuille.
+- Visée commune : les objectifs et la direction de `proposer` viennent de `useVisee()` (départ { floral: 1,
+  resin: −1 }), réglée dans l'onglet Ma bière. Une famille « banni » écarte toute voie dont un houblon la cite (règle
+  V5.5 des exclusions, dry hop compris). Elle a sa carte : « Sans épicé · Bannie · 8 voies écartées ».
+- `jeu.mjs` bannit l'épicé dans l'état commun par le crochet de test du socle (`window.__parcours.envoyer`, action
+  `visee/fixer`). Il vérifie que les voies qui citent l'épicé disparaissent et que la
+  carte le dit, puis lève le bannissement.
+
 ## Idées reprises
 
 - Les voies viennent du moteur, groupées comme dans q2b :
@@ -72,7 +85,8 @@
   extra ou usage faussés).
 - `controle-cumul-levure` : Suggérer ne règle pas la levure (L10) ; elle est contrôlée dans son étape (p4).
 - `controle-autres-ajouts` (gardé, G6) se joue sur `cas-direct.json`. C'est l'instantané des voies de l'écran à l'état
-  de départ, écrit par `outils/instantane.mjs` depuis `window.__suggerer` (calculé par `voies.ts` depuis le moteur).
+  de départ, écrit par `outils/instantane.mjs` : les voies dans l'ordre de l'écran (`data-voie`, `data-id`), leurs effets lus du
+  moteur (`proposer`, `suggerer`).
   `jeu.mjs` vérifie la même règle en direct, contre `proposer` et `suggerer`.
 
 ## Pour l'app

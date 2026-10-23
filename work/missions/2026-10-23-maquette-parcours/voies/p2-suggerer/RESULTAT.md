@@ -1,4 +1,55 @@
-OK — Suggérer repris de q2b (D105) : voies du moteur groupées, Comparer (n), G1–G17 verts
+OK — Suggérer q2b : teinte de q2b (D106), visée commune et bannir branchés, G1–G19 verts
+
+- Crochet de test unique (23.10, soir) : `window.__suggerer` est retiré de l'écran et de `outils/instantane.mjs`.
+  - `jeu.mjs` bannit puis rétablit l'épicé par `window.__parcours.envoyer({ type: 'visee/fixer', … })`.
+  - L'instantané lit l'ordre des voies à l'écran (`data-voie`, `data-id`) et prend leurs effets dans le moteur.
+  - Rejoué : G1 CONSTRUIT OK (9 pages), G11 ETAPE OK (suggerer), G12 PONTS OK (19 gestes), G17 REPRISE OK (11 repris,
+    1 écarté), G19 TEINTE OK 1/1, G6 AUTRES OK.
+
+## Retouches D106 et visée commune (23.10, soir)
+
+- **Teinte (D106).** Les cartes d'objectif sont ramenées à la hauteur de q2b : verdict sur une ligne, plus de nom sous
+  « Atteint », trois cartes par rang au plus. Leur teinte est adoucie vers la page.
+  - Le thème des maquettes vient du socle.
+  - controle-teinte : fond #FCFCFC, encre #101010, teinte 4 (q2b : 4). Sortie : TEINTE OK 1/1.
+  - L'onglet inactif du socle passait sous 4,5:1 sur ce thème (« Ma bière » à 4,47:1). Je le fonce dans ma feuille ;
+    à reprendre dans `Onglets`.
+- **Visée commune.** Les objectifs et la direction de `proposer` viennent de `useVisee()`. Une famille « banni »
+  écarte toute voie dont un houblon la cite, dry hop compris (règle V5.5 des exclusions). Elle se voit sur sa carte :
+  « Sans épicé · Bannie · 8 voies écartées » (capture `suggerer-d106-banni-epice-390.png`).
+- **Geste ajouté à `jeu.mjs`** : bannir l'épicé dans l'état commun. Les voies qui citent l'épicé (Golding, Aurum, East
+  Kent Goldings, Columbus…) disparaissent, la carte le dit, puis le bannissement est levé et elles reviennent.
+  - Besoin socle ou p1 : l'onglet Ma bière (écran `biere`) garde encore sa visée en état local, sans
+    `fixerVisee`, et `window.__parcours` n'expose pas les gestes.
+  - Le geste passe donc par `fixerVisee`, exposé par mon écran dans `window.__suggerer` (maquette seulement).
+- Mots au premier écran : 75 (une ligne de voie un peu plus haute, « = » et « Assembler 5+5 g » écrits plus court).
+
+| Critère | Sortie (rejouée après la dernière retouche) |
+|---|---|
+| G1 | CONSTRUIT OK (9 pages) |
+| G2 | TYPES OK |
+| G3 | COMMUN OK |
+| G4 | suggerer 75 mots, MOTS OK |
+| G5 | UNE-QUESTION OK (1 groupe libre : houblon) |
+| G6 | AUTRES OK |
+| G7 | PISTE OK |
+| G8 | PLACE OK (7 voies au premier écran, médiane 85 px) |
+| G9 | MA-BIERE OK |
+| G10 | ALPHA OK |
+| G11 | ETAPE OK (suggerer), avec le bannissement |
+| G12 | PONTS OK (19 gestes) |
+| G13 | Test Files 1 passed |
+| G14 | APP INTACTE OK |
+| G15 | NOTE OK |
+| G16 | NOTE OK |
+| G17 | REPRISE OK (11 repris, 1 écarté) |
+| G18 | CHOIX OK (1 écran conforme à son choix) |
+| G19 | TEINTE OK 1/1 |
+
+Captures ouvertes (même dossier `captures-suggerer/`) :
+- `suggerer-d106-390.png`, à côté de q2b-b-390.png ;
+- `suggerer-d106-banni-epice-390.png` ;
+- `suggerer-d106-1280.png`.
 
 ## Reprise D105
 
