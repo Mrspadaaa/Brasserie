@@ -361,6 +361,12 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   versions ». Avant, sur la page cumulée : « Je les vois pas dans les artefacts.. ». Et pour la maquette : « fait une
   maquette fonctionne de bout en bout » ; « Continue ensuite avec le tout interactif comme si c'était sur la vrai app.
   Afin de préparer sa vrai implemtation ». Mission : `work/missions/2026-10-23-maquette-parcours/`.
+- **Comparer aux étapes, avec une référence** (23.10, soir, sur la maquette publiée), mot pour mot : « Ah mais comparé
+  est que le dryhopping ??? C'est pas ce que je voulais je voulais comparé au moins : les étapes 60' 10' dryhopping ect
+  comme la maquette de base. Et aussi le houblon de base ou bière de base. Est-ce que cela est clair ? ». Comparer (r6a)
+  ne comparait qu'un moment fixé (l'étiquette `après, 3 j`). La maquette de base v4.10 (`ecran-1/base/consolide/comparer.html`)
+  compare aux étapes 60′, 10′, 5′, whirlpool, dry hop actif et après, avec Nugget, le houblon de base, en référence.
+  À garder de r6a : sa forme ; à y mettre : les étapes côte à côte et la référence (houblon de base ou bière de base). D107.
 - **La maquette jouable ne suit pas ses choix** (23.10, soir, sur la maquette de bout en bout), mot pour mot : « Mais
   ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? ». Sur la capture de q2b (lot 15,
   Suggestions) : « Ça oui, c'est effectivement l'un de mes choix ». Sur celle de Ma bière de la base v4.10 : « Ça
