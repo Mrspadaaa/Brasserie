@@ -36,8 +36,7 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
 - Moderne et visuel : des UX boosters (curseurs, bascule barres et radar) et des couleurs pour se repérer. (§ 4 ; D6,
   D7, D74)
 - Pictos d'arômes au trait, sans halo ; la légende derrière un petit « ? » ; l'usage en mot. (D88 à D90)
-- Pour « épicé » : une épice réelle et reconnaissable (cannelle, vanille, clou de girofle…), ni piment, ni signe, ni
-  sensation. (§ 1, fin ; D101 à D101 quater)
+- « Épicé » : cannelle et clou croisés, choisi le 23.10 et dans la baseline. (§ 1, fin ; D101 à D101 quater)
 - Ses choix : y1b pour le « quand » ; r6a pour Comparer, avec les éléments qu'il a notés ailleurs (D104). Le reste des
   acquis est dans `acquis-valides.md`.
 
@@ -343,6 +342,9 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   représente vraiment ce que c'est, genre canellle vanille, ou clou de girofle ect... Ce que ça représente
   vraiment épicier sur un houblon... ». Une épice réelle et reconnaissable, celle qu'on sent dans un houblon
   épicé ; pas un signe ni une sensation (D101 quater).
+- **Le picto « épicé », son choix** (23.10, sur la planche des 48), mot pour mot : « Mon Picto préféré est
+  cannelley clou croisé. Ça doit être changé dans la baseline ». C'est f1, cannelle et girofle croisés (série F de
+  r4d), devenu le symbole `p-spice` de la planche standard.
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce

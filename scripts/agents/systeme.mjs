@@ -346,10 +346,29 @@ function gateCheck(args, cwd) {
 
 // Leçon L27 (22.10) : une variante rejetée par le critique est relancée ou écartée, jamais laissée en
 // plan ; et une mission qui produit des écrans n'est finie qu'une fois publiée (lien d'artefact).
-export function suitesDeMission(mission, dossiersVoies) {
+// Les lignes d'une table de MISSION.md (« ## Voies », « ## Décisions »), en objets par en-tête sans accents.
+export function lireTable(texte, titre) {
+  const i = texte.search(new RegExp(`^## ${titre}`, 'm'));
+  if (i < 0) return [];
+  const rangs = texte.slice(i).split(/\n## /)[0].split('\n').filter((l) => l.startsWith('|')).map((l) => l.split('|').slice(1, -1).map((c) => c.trim()));
+  if (rangs.length < 3) return [];
+  const tete = rangs[0].map(sansAccents);
+  return rangs.slice(2).map((r) => Object.fromEntries(tete.map((h, i) => [h, r[i] ?? ''])));
+}
+
+export function suitesDeMission(mission, dossiersVoies, racine = RACINE) {
   const erreurs = [];
   const fMission = path.join(mission, 'MISSION.md');
   const texteMission = existe(fMission) ? lire(fMission) : '';
+  // M13 (23.10) : un panel v0 rendu se montre aussitôt, sans attendre le tri. Les 56 concepts de Dryhopper
+  // étaient finis à 0 h 30 ; la page disait « classement en cours » : « Je les vois pas dans les artefacts ? ».
+  const source = (texteMission.match(/[Ss]ource de la page[^`\n]*`([^`]+\.html)`/) ?? [])[1];
+  const rendue = (id) => { const r = path.join(mission, 'voies', id, 'RESULTAT.md'); return existe(r) && /^OK\b/.test(lire(r).split('\n').find((l) => l.trim()) ?? ''); };
+  const v0Rendues = lireTable(texteMission, 'Voies').filter((v) => /^v0\b/.test(sansAccents(v.etape ?? '')) && rendue(v.voie));
+  if (v0Rendues.length) {
+    const page = source && existe(path.join(racine, source)) ? lire(path.join(racine, source)) : '';
+    for (const v of v0Rendues) if (!page.includes(v.voie)) erreurs.push(`ECHEC ${v.voie} — série v0 rendue, absente de la page (${source ?? 'source de la page non déclarée dans MISSION.md'}) : le panel se publie dès qu'il est fait, sans attendre le tri (M13)`);
+  }
   const section = (t, titre) => (t.split(new RegExp(`^## ${titre}`, 'm'))[1] ?? '').split(/\n## /)[0];
   const interface_ = dossiersVoies.some((d) => {
     const f = path.join(d, 'VOIE.md');
@@ -403,7 +422,7 @@ export function verifierVoies(mission, { modeles = [], approuver = false, racine
     lignes.push(`OK ${v} (${modele ?? '?'}) — ${premiere.replace(/^OK\s*[—-]?\s*/, '').slice(0, 90)}`);
   }
   for (const m of modeles) if (!vus.has(m)) lignes.push(`ECHEC mission — aucune voie ${m}`);
-  const suites = suitesDeMission(mission, voies.map((v) => path.join(dirVoies, v)));
+  const suites = suitesDeMission(mission, voies.map((v) => path.join(dirVoies, v)), racine);
   lignes.push(...suites);
   const ok = voies.length >= 2 && bonnes === voies.length && modeles.every((m) => vus.has(m)) && !suites.length;
   lignes.push(ok ? `VOIES OK ${bonnes}/${voies.length}` : `VOIES ECHEC ${bonnes}/${voies.length}`);
@@ -623,12 +642,19 @@ function construireConseil(dir, { sansPremierGeste = false } = {}) {
   return f;
 }
 
-function construireMission(dir, { critereFaux = false, critereIgnore = false, critiqueRejette = false, ecarte = false, interfaceLien = null } = {}) {
+function construireMission(dir, { critereFaux = false, critereIgnore = false, critiqueRejette = false, ecarte = false, interfaceLien = null, panelV0 = null } = {}) {
   const m = path.join(dir, 'mission');
   fs.mkdirSync(m, { recursive: true });
   const lien = interfaceLien === true ? '\nPage : https://claude.ai/artifact/TEMOIN\n' : '';
   const ecart = ecarte === true ? '\n- v1 écartée : rejetée deux fois.\n' : ecarte === 'phrase' ? '\n- Rejets en plan : v1, à relancer ou à écarter.\n' : '';
-  fs.writeFileSync(path.join(m, 'MISSION.md'), `# Mission témoin\n${ecart}${lien}`);
+  // Témoin « panel v0 » : v1 est une série v0 rendue ; la page la montre (« publie ») ou annonce un tri en cours (« cache »).
+  let panel = '';
+  if (panelV0) {
+    fs.mkdirSync(path.join(dir, 'page'), { recursive: true });
+    fs.writeFileSync(path.join(dir, 'page', 'index.html'), panelV0 === 'publie' ? '<section data-voies="v1"><img src="img/a1.png"></section>' : '<p>8 concepts faits, classement en cours.</p>');
+    panel = `\nSource de la page : \`page/index.html\`\n\n## Voies\n| Voie | Étape |\n|---|---|\n| v1 | v0 ×8 (2 froide, 2 tiède, 4 chaude) |\n`;
+  }
+  fs.writeFileSync(path.join(m, 'MISSION.md'), `# Mission témoin\n${ecart}${lien}${panel}`);
   if (critiqueRejette) {
     const d = path.join(m, 'voies', 'v3-critique');
     fs.mkdirSync(d, { recursive: true });
@@ -725,6 +751,10 @@ function temoins() {
   attendu('écrans non publiés', verifierVoies(construireMission(m6, { interfaceLien: false }), { approuver: true, racine: m6 }).ok, false);
   const m7 = sous('m7');
   attendu('écrans publiés', verifierVoies(construireMission(m7, { interfaceLien: true }), { approuver: true, racine: m7 }).ok, true);
+  const m9 = sous('m9');
+  attendu('panel v0 rendu mais pas montré', verifierVoies(construireMission(m9, { panelV0: 'cache' }), { approuver: true, racine: m9 }).ok, false);
+  const m10 = sous('m10');
+  attendu('panel v0 montré dès qu\'il est fait', verifierVoies(construireMission(m10, { panelV0: 'publie' }), { approuver: true, racine: m10 }).ok, true);
   const propre = path.join(tmp, 'propre.mjs'), sale = path.join(tmp, 'sale.mjs');
   fs.writeFileSync(propre, "const r = /^moment/i;\n");
   fs.writeFileSync(sale, 'const r = /^moment' + String.fromCharCode(8) + '/i;\n');

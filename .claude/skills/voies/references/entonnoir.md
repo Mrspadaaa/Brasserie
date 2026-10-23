@@ -82,6 +82,12 @@ Contrôlé par `systeme.mjs mission` (M13).
   - `geste-<v>.json` si elle a un geste (valeurs avant, pendant et après le geste).
 - Le pilote note dans MISSION.md, section « Agents », l'identifiant de l'agent de chaque série : c'est lui qui fera
   la passe 2.
+- **Le panel se publie dès qu'il est fait**, sans attendre le tri : chaque série rendue va sur la page du lot,
+  capture par capture, et le classement la réordonne ensuite. Une ligne « classement en cours » ne compte pas comme
+  une publication : le 23.10, les 56 concepts de Dryhopper étaient finis depuis la nuit, et l'utilisateur a demandé
+  « Je les vois pas dans les artefacts ? ». La section de la page porte `data-voies="<ids des séries>"` ;
+  `systeme.mjs voies` échoue tant qu'une série v0 rendue n'y figure pas. La source de la page est déclarée dans
+  MISSION.md (« Source de la page : `…` »).
 
 ## 2. Tri — un critique, repris à chaque série
 - Le critique est un agent Fable unique. Le pilote le relance par `SendMessage` à chaque série rendue, si bien qu'il

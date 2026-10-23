@@ -24,6 +24,8 @@ Plancher à enrichir, pas plafond ([[le-brasseur-choisit]]).
 | Panel OSU de y3 (sans la molette encombrante) | « la panel osu j'aime assez » (20.10) | comparateur 1:1 |
 | Manière de comparer de w2 | « pas trop mal dans la manière de comparé » (20.10) | comparateur 1:1 |
 | Vraies valeurs de v1, moins austères | « meilleur vu de comparaison sur des vrai valeur » (20.10) | comparateur 1:1 |
+| r6a, avec les éléments qu'il a notés ailleurs | « r6a est le meilleur mais reprendre trop peu d'éléments que j'avais noté bon ou intéressant des autres variante » (22.10) | Comparer (reprise r6n1, r6n2) |
+| Picto « épicé » : cannelle et clou croisés (f1 de la série F, r4d) | « Mon Picto préféré est cannelley clou croisé. Ça doit être changé dans la baseline » (23.10) | symbole `p-spice` de `fils17-standard/v3/planche.html` |
 
 Contrôle de présence, écrit le 22.10 : `controle-acquis.mjs` (D99). Sur un écran Comparer, il exige
 le radar, la chimie, le panel OSU et les vraies valeurs, balisés `data-acquis`. À ajuster avant le

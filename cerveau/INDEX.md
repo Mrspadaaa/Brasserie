@@ -52,7 +52,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[import-recette]] — le procédé vit dans le déroulé ; fiche de brassage éditable
 - [[export-et-ia]] — fiches IA sur le stock, export texte avec l'eau, relecture consultative
 - [[design-system-historique]] — historique et pièges UI ; règles actuelles dans DESIGN.md
-- [[pictos-familles]] — pictos, lecture à 12 px ; « épicé » en épices réelles
+- [[pictos-familles]] — pictos, lecture à 12 px ; « épicé » : cannelle et clou croisés (23.10)
 - [[socle-v01]] — socle Dexie et Firestore de la v0.1 (historique)
 
 ### agents/ — façon de travailler, outils, environnement

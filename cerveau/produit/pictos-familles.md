@@ -1,6 +1,6 @@
 ---
 name: pictos-familles
-description: Pictos des 12 familles d'arômes : où ils vivent, leurs règles (au trait, ton de la famille), les symboles déjà pris, ce qui se lit à 12 px, et l'histoire du picto « épicé » (quatre refus ; épices réelles demandées, entonnoir r4d).
+description: Pictos des 12 familles d'arômes : où ils vivent, leurs règles (au trait, ton de la famille), les symboles déjà pris, ce qui se lit à 12 px, et le picto « épicé » (quatre refus, puis cannelle et clou croisés, choisi le 23.10).
 type: produit
 maj: 2026-10-23
 sources: work/refonte-frontend/v4/ecran-1/fils17-standard/v3/planche.html ; work/refonte-frontend/v4/ecran-1/fils17-standard/jetons-familles.json ; work/refonte-frontend/v4/ecran-1/fils18-baseline/l8g/noyau.mjs ; work/refonte-frontend/v4/SPEC-BRASSEUR.md ; work/missions/2026-10-22-reprise-lot21/voies/r4-picto-epice/RESULTAT.md ; work/missions/2026-10-22-reprise-lot21/voies/r4d-a-douce/RESULTAT.md (et r4d-b à r4d-f)
@@ -40,7 +40,10 @@ picto : dans l'app, le hachuré veut dire « inconnu ».
 - 22.10, nuit, il précise : « Je veux un forme qui représente vraiment ce que c'est, genre canellle
   vanille, ou clou de girofle ect... » (D101 quater) : une épice réelle, pas un signe ni une sensation ;
 - r4d en entonnoir (`fils22-picto-epice-3/`) : 48 propositions en six séries, dont 32 épices réelles
-  (A, D, E, F) ; B (sensation) et C (signe) classées et montrées sans passe 2. Tri, passes et choix du
-  brasseur en attente.
+  (A, D, E, F) ; B (sensation) et C (signe) classées et montrées sans passe 2.
+- **23.10, son choix** : « Mon Picto préféré est cannelley clou croisé. Ça doit être changé dans la
+  baseline ». C'est f1 de la série F (`serie-f/v0/dessins.mjs`), désormais le symbole `p-spice` de la
+  planche standard. Il est découpé là où le clou passe devant, sans masque : la baseline l8g rend les
+  traits à épaisseur fixe, et un masque y deviendrait trop large. Le rendu reste identique de 12 à 48 px.
 - Contrôles : D101 à D101 quater (`controle-planche-picto.mjs` : `--refuses`, `--genres`, `--voisins`,
   `--ter`, `--epices=N`), témoins dans `tournoi/outils/temoins/`.
