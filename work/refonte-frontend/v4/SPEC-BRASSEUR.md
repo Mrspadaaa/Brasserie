@@ -426,6 +426,19 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   droite au lieu de la barre pleine largeur, la liste sans son cadre à bord noir. Seuls l'usage en mot (D90), la bande
   « ‹ visée | visée › » retirée (D91) et les pistes l5b (D92) ont ses mots. CHOIX OK ne l'a pas vu : l'inventaire de
   q2b ne nommait pas ces éléments, et la supervision a publié sans captures côte à côte (L03). D117.
+- **La croix** (23.10, soir, sur la pastille « ‹ Retour »), mot pour mot : « UI pas terribles, toujours pas au point » ; puis
+  sa solution : « Juste une croix bien positionné, facile, dans le thème suffirait ». Le retour des outils devient une
+  croix « × » : à sa place habituelle, facile à toucher, à l'encre du thème. D109.
+- **Le même retour partout** (23.10, soir), mot pour mot : « Suivant où on est le bouton retour fait pas la même action.
+  Je veux juste retour au "menu" pas principal ». Vérifié : Suggérer ouvert depuis l'étape revient à l'étape, ouvert
+  depuis l'onglet Ma bière revient à l'onglet. Lecture retenue (étroite, réversible, dite dans le fil) : la croix de
+  chaque outil (Ma bière, Suggestions, Comparer, Dryhopper, Substituer, Levure) ramène toujours à l'étape Houblons, le
+  menu des outils, jamais à l'accueil de l'app ; une fiche se ferme sur l'écran qu'elle couvre. D118.
+- **L'en-tête qui change** (23.10, soir, sur « Quel houblon ajouter à ma bière ? »), mot pour mot : « Header qui change
+  ??? ». Ma bière porte ses onglets en tête (41 px) ; Suggestions et Comparer, une question en titre (33 px), les onglets
+  dessous. Passer d'un onglet à l'autre change l'en-tête. D119.
+- **Annuler** (23.10, soir, sur le pied de « Lequel à la place de Idaho 7 ? »), mot pour mot : « Pas de bouton cancer ».
+  Substituer n'a que « Remplacer › » en pied. D120.
 - **La maquette jouable ne suit pas ses choix** (23.10, soir, sur la maquette de bout en bout), mot pour mot : « Mais
   ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? ». Sur la capture de q2b (lot 15,
   Suggestions) : « Ça oui, c'est effectivement l'un de mes choix ». Sur celle de Ma bière de la base v4.10 : « Ça
