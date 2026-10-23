@@ -364,9 +364,14 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
 - **Comparer aux étapes, avec une référence** (23.10, soir, sur la maquette publiée), mot pour mot : « Ah mais comparé
   est que le dryhopping ??? C'est pas ce que je voulais je voulais comparé au moins : les étapes 60' 10' dryhopping ect
   comme la maquette de base. Et aussi le houblon de base ou bière de base. Est-ce que cela est clair ? ». Comparer (r6a)
-  ne comparait qu'un moment fixé (l'étiquette `après, 3 j`). La maquette de base v4.10 (`ecran-1/base/consolide/comparer.html`)
-  compare aux étapes 60′, 10′, 5′, whirlpool, dry hop actif et après, avec Nugget, le houblon de base, en référence.
-  À garder de r6a : sa forme ; à y mettre : les étapes côte à côte et la référence (houblon de base ou bière de base). D107.
+  ne comparait qu'un moment fixé (l'étiquette `après, 3 j`). À garder de r6a : sa forme ; à y mettre : les étapes côte à
+  côte et la référence (houblon de base ou bière de base). D107.
+  - Le pilote avait pris « la maquette de base » pour le Comparer de la base v4.10 (`base/consolide/comparer.html`). Sur sa
+    capture barrée, mot pour mot : « Non pas cette version, une version du dryhopping, dans un des top. Montrait vraiment
+    l'état du moment de l'ajout facile, je l'avais juste fait noté !! ». C'est **x3b** (lot 21, une des 5 meilleures des
+    « mini maquettes dry hopping de base », « Ma cuve, jour après jour ») : la bière de base en pointillé, les familles qui
+    montent au moment de chaque ajout, « J4 ~ dans la cuve ». Il l'avait notée le 20.10 : « ça peut être interessant de
+    l'utiliser jsute pour de la comparaison entre ma bière de base -> 1 dry hop, 2 dry hop: levure ».
 - **La visée sans effet** (23.10, soir, commentaire sur la maquette publiée, posé sur « Tropicaux prévu » de Ma bière),
   mot pour mot : « Aussi aucun impact sur je met plus, moins bannir ect.. ». Dans Ma bière, « bannir · − · + » ne
   dessine rien sur la barre : seul le mot « plus » change, et une puce « + tropicaux » apparaît en bas, hors de l'écran.
@@ -375,6 +380,17 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   nommé entre les boutons, avec « × » pour retirer la visée ; une famille bannie a son nom barré. C'est la visée « en
   trait creux » qu'il avait dite « Parfait » (18.10). Suggérer lit bien la visée (cartes « Plus tropicaux »,
   « Sans agrumes »), mais bannir agrumes écarte 17 voies sur 18. D108.
+- **Le bouton retour** (23.10, soir, commentaire sur la maquette publiée, posé sur « Fermer » d'un outil), mot pour mot :
+  « Bouton retour souvent assez petit et pas très intuitif ». C'est le « ‹ » du `PageShell` de l'app : 28 px de zone,
+  icône de 16 px, gris, sans mot, sur chaque outil (Suggérer, Comparer, Dryhopper…). La base v4.10 avait le même
+  (28 px). Ses mots priment sur DESIGN.md (« 44 px n'est pas une obligation générale », décision du 12.09) pour ce
+  bouton : portée étroite, le retour des outils ; l'app suivra à la porte B. D109.
+- **Les petits traits de Suggérer** (23.10, soir, commentaire sur la maquette publiée, posé sur les pictos d'une voie),
+  mot pour mot : « Un peu dur à comprendre ce système de petit bar ». Ce sont les traits de q2b, son choix : sous chaque
+  picto, un trait par cran, un demi-trait pour un reste, des hachures pour un effet non établi, un point pour une
+  famille qui ne bouge pas. Leur sens n'est dit que dans l'aide « ? » (« un trait par cran du style… »), loin de la ligne,
+  et toucher un picto ne montre rien. À garder (q2b), mais à rendre lisible là où on les lit ; pas de texte sous chaque
+  picto (pas de cockpit). D110.
 - **La maquette jouable ne suit pas ses choix** (23.10, soir, sur la maquette de bout en bout), mot pour mot : « Mais
   ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? ». Sur la capture de q2b (lot 15,
   Suggestions) : « Ça oui, c'est effectivement l'un de mes choix ». Sur celle de Ma bière de la base v4.10 : « Ça
