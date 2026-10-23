@@ -101,7 +101,7 @@ le moment sont fixés, montrés dans Souche et Frise, réglables ailleurs (ponts
 Ce que les feuilles apprennent : les trois ajoutent ~+2 crans de résineux (aucune voie houblon, d'où le pont vers
 Suggérer) ; à cru, l'amertume n'est pas modélisée ; pour égaler les agrumes de Cascade 4 g/L, il faut ~7,5 g/L
 d'Idaho 7 mais ~2,5 g/L de Galaxy ; les tropicaux de Galaxy, les deux autres ne les atteignent jamais à 8 g/L ;
-Pomona change peu le simulé à 4 g/L après fermentation.
+après fermentation, Pomona ne change rien au simulé ; en dry hop actif, elle réveille les agrumes d'Idaho 7.
 
 ## Ce qui tient
 
@@ -118,8 +118,30 @@ Pomona change peu le simulé à 4 g/L après fermentation.
   familles sortent souvent : la bande est large, c'est ce qu'elle enseigne.
 - L'α de Galaxy (17,2 %) est au-dessus de ses fiches (≠) ; le rôle « mixte » d'Idaho 7, de Galaxy et de Nelson
   Sauvin est déduit de l'α (pâle).
-- La quatrième colonne serre les cellules (62 px de libellé) ; Nelson Sauvin passe sur deux lignes.
+- À quatre colonnes, les rangées n'ont plus que leur picto : il faut connaître le code couleur (la légende le donne).
 - Le dock cache 56 px du bas de l'écran ; le tableau finit juste au-dessus à 390 × 844.
+
+## Passe 2
+
+Défauts relevés par le critique (r6nc), corrigés le 23.10 :
+1. **Quatre colonnes** : « Casca », « Galax », « Tropicau » coupés ; la plage d'α débordait. Après : les libellés
+   de famille passent en picto seul (colonne de 34 px) ; « Ta stout » garde le trait, ses deux pictos et le « + » ;
+   les noms passent à la ligne entre les mots, jamais au milieu, et sans point de couleur (le liseré du haut le
+   porte) ; l'α des fiches s'écrit « 9,5–15% ». À trois colonnes, rien ne change.
+2. **Souche** : « Pomona change ≈ 0 » partout. Calculé avant de dessiner (M07) : après fermentation, Pomona −
+   US-05 = 0 exactement, pour les quatre houblons ; en dry hop actif, Idaho 7 agrumes ~+1,3 cran, Cascade ~+0,4,
+   Galaxy et Nelson Sauvin rien. La feuille le dit en une phrase, puis montre l'aperçu en actif houblon par
+   houblon ; le tableau de la souche compare « la cuve apporte, ici » à « Pomona, en actif ». Le générateur
+   échoue si les données cessent de dire « surtout Idaho 7 ».
+3. **Frise** : la courbe « jour après jour » était plate. Après : « à 4 g/L, le moteur ne distingue que le premier
+   jour ; de 2 à 7 j, même profil », avec le floral à 1 j puis de 2 à 7 j. Le générateur échoue si le floral bouge
+   entre 2 et 7 j. Ce qui bouge vraiment dans Dryhopper passe en tête : le même ajout en actif, où le résineux
+   baisse de ~0,5 à ~0,8 cran (ta demande).
+4. **Le cadre suit la réponse** : choisir un critère met en avant le premier du classement (par tropicaux, le
+   cadre passe sur Galaxy). Toucher ensuite une autre colonne reste possible.
+
+Aussi : « ~2,2 crans » au pluriel ; la page est régénérée avec la planche à jour (« épicé » : cannelle et clou
+croisés, `p-spice`), sur le radar, les rangées, les cartes et la fiche.
 
 ## Contrôles (depuis la racine)
 

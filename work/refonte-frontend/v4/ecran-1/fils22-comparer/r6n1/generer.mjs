@@ -139,7 +139,7 @@ function cellule(n, f) {
   const st = ['z', 'gb', 'xo', 'w0', 'w1', 'av'].map((k) => `--${k}:${P(g[k])};--${k}a:${P(a[k])}`).join(';') + `;--xb:${P(g.gb)};--xba:${P(a.gb)}`;
   const d = dCran(n, f);
   return `<span class="r6n1-cel${hs ? ' hs' : ''}${g.dep ? ' dep' : ''}${a.dep ? ' depa' : ''}${sel}" data-col="${esc(n)}" data-tir="${[g.w0, g.w1, g.z, a.w0, a.w1, a.z].map((x) => Math.round(x * 1000) / 1000).join(',')}" style="${st}" role="img" aria-label="${NOM[f]}, ${esc(n)} 4 g/L : ~ ${fr(v.centre, 0)} sur 100 (bande ${fr(v.bas, 0)}–${fr(v.haut, 0)}), ${sg(d)} cran${Math.abs(d) >= 2 ? 's' : ''} face à ta stout ; ta 16D jusqu’à ${BANDE[f]}${hs ? ' : au-dessus' : ''}">
-    <span class="r6n1-pis"><i class="r6n1-zo" data-role="zone" data-famille="${f}"></i><i class="r6n1-ba" data-famille="${f}"></i><i class="r6n1-xo"></i><i class="r6n1-wh"></i><i class="r6n1-av"></i><span class="r6n1-tir" aria-hidden="true"></span></span>${fil}${eg}</span>`;
+    <span class="r6n1-pis"><i class="r6n1-zo" data-role="zone" data-famille="${f}"></i><i class="r6n1-ba" data-famille="${f}"></i><i class="r6n1-xo"></i><i class="r6n1-wh"></i><i class="r6n1-av"></i></span><span class="r6n1-tir" hidden></span>${fil}${eg}</span>`;
 }
 function filet(n, f) {
   const [k, nom, u] = FILET[f], F = FIL[f], c = F.cells[n];
@@ -155,7 +155,7 @@ function egal(n, f) {
   return `<span class="r6n1-eg${d == null ? ' jamais' : ''}${ref ? ' ref' : ''}" data-element="y3-pour-egaler" data-nature="${ref ? 'base' : 'simule'}" aria-label="${al}">${t}</span>`;
 }
 function rangee(f) {
-  const lab = `<span class="r6n1-rn" style="color:${JET[f].texte}">${pic(f, 16)}${FILET[f] ? `<span class="r6n1-lab" role="img" aria-label="trait fin : ${FILET[f][1]}, mesuré">${ic('labo', 12)}</span>` : ''}${EGAL[f] ? `<span class="r6n1-lab" role="img" aria-label="dessous : la dose pour égaler">${ic('egal', 12)}</span>` : ''}</span>`;
+  const lab = `<span class="r6n1-rn"><span class="r6n1-rn1">${pic(f, 14)}</span>${FILET[f] ? `<span class="r6n1-rnl" aria-label="trait fin dessous : ${FILET[f][1]}, mesuré (% de l’huile ou µg/kg), à la couleur de qui en a le plus">${FILET[f][1]}</span>` : ''}${EGAL[f] ? `<span class="r6n1-rnl" aria-label="dessous : la dose de chacun pour égaler ${EGAL[f].reference.nom} à ${EGAL[f].reference.dose_gL} g/L">égaler</span>` : ''}</span>`;
   return `<div class="r6n1-g r6n1-rg${FILET[f] ? ' fil' : ''}${EGAL[f] ? ' egl' : ''}" data-famille-ligne="${f}">${lab}${TOUS.map((n) => cellule(n, f)).join('')}</div>`;
 }
 
@@ -199,7 +199,7 @@ const RD = {
   h: TOUS.map((n) => ({ n, c: COUL[n], ce: ORDRE.map((f) => val(n, f).centre), ba: ORDRE.map((f) => val(n, f).bas), ha: ORDRE.map((f) => val(n, f).haut), inc: ORDRE.map((f) => inconnu(n, f)) })),
 };
 function radarSvg(R, sel, abs, actifs) {
-  const W = 190, H = 184, cx = 95, cy = 92, RR = 62, n = R.axes.length, pas = 2 * Math.PI / n, MAX = 1.1;
+  const W = 190, H = 170, cx = 95, cy = 85, RR = 57, n = R.axes.length, pas = 2 * Math.PI / n, MAX = 1.1;
   const k = (i, v) => Math.min(MAX, Math.max(0, v / (abs ? R.abs : R.dom[i])));
   const kr = (i, v) => Math.max(0, v / (abs ? R.abs : R.dom[i]));
   const pt = (i, r) => [cx + Math.sin(i * pas) * RR * r, cy - Math.cos(i * pas) * RR * r];
@@ -223,7 +223,7 @@ function radarSvg(R, sel, abs, actifs) {
         const r0 = kr(i, b), r1 = kr(i, h.ha[i]), fin = r1 > 1 ? 0.9 : r1;
         const a = pt(i, Math.min(r0, fin)), e = pt(i, fin);
         s += `<line x1="${rd(a[0])}" y1="${rd(a[1])}" x2="${rd(e[0])}" y2="${rd(e[1])}" stroke="${h.c}" stroke-opacity=".24" stroke-width="2.5" stroke-linecap="round"/>`;
-        if (r1 > 1) { const ang = i * pas, t = pt(i, 1.02), q = (dx, dy) => [t[0] + Math.cos(ang) * dx + Math.sin(ang) * dy, t[1] + Math.sin(ang) * dx - Math.cos(ang) * dy]; const p1 = q(-2.6, -2.6), p2 = q(0, 0.4), p3 = q(2.6, -2.6); s += `<path d="M${rd(p1[0])},${rd(p1[1])}L${rd(p2[0])},${rd(p2[1])}L${rd(p3[0])},${rd(p3[1])}" fill="none" stroke="${h.c}" stroke-opacity=".7" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>`; }
+        if (r1 > 1) { const ux = Math.sin(i * pas), uy = -Math.cos(i * pas); for (const rr of [0.95, 1.02]) { const c = pt(i, rr); s += `<line x1="${rd(c[0] + uy * 3.2 - ux * 1.8)}" y1="${rd(c[1] - ux * 3.2 - uy * 1.8)}" x2="${rd(c[0] - uy * 3.2 + ux * 1.8)}" y2="${rd(c[1] + ux * 3.2 + uy * 1.8)}" stroke="${h.c}" stroke-opacity=".8" stroke-width="1.4" stroke-linecap="round"/>`; } }
       });
     }
     s += `<polygon points="${pts(ce)}" fill="${plein ? h.c : 'none'}" fill-opacity="${plein ? 0.2 : 0}" stroke="${h.c}" stroke-width="${plein ? 2.5 : 1.5}" stroke-linejoin="round"/>`;
@@ -236,9 +236,8 @@ function radarSvg(R, sel, abs, actifs) {
   R.axes.forEach((f, i) => {
     const off = i === R.veut || i === R.trop ? 1.32 : 1.24, q = pt(i, off);
     s += `<use href="#p-${f}" x="${rd(q[0] - 7)}" y="${rd(q[1] - 7)}" width="14" height="14"${R.incTous[i] ? ' opacity=".45"' : ''}/>`;
-    if (R.incTous[i]) s += `<text x="${rd(q[0] + (q[0] >= cx ? 9 : -9))}" y="${rd(q[1] + 4)}" text-anchor="${q[0] >= cx ? 'start' : 'end'}" class="r6n1-rq">?</text>`;
   });
-  s += fl(R.veut, true, '#16161a') + fl(R.trop, false, R.acc);
+  s += fl(R.veut, true, '#1f7a45') + fl(R.trop, false, R.acc);
   return s + '</svg>';
 }
 const radarSrc = radarSvg.toString();
@@ -278,8 +277,9 @@ const linHtml = `<div class="r6n1-lin" data-element="v1-linalol-en-biere" aria-l
 // ---------- la jauge d'amertume (y1b), adaptée : à cru, rien de modélisé ; à 10′, ce que l'α ferait ----------
 const IBU10 = Object.fromEntries(TOUS.map((n) => { const m = HB[n].ibuParGramme.moments.find((x) => x.code === 'b10'); return [n, m && m.ibuPerGram ? m.ibuPerGram.value * EG.dose_gL * D.biere.recette.volumeL : null]; }));
 const IBUMAX = Math.max(...Object.values(IBU10)) * 1.1;
-const jauge = `<span class="r6n1-ibu" data-element="y1b-jauge-amertume" role="img" aria-label="Amertume ajoutée : à cru, non modélisée (inconnue, jamais 0) ; si le même houblon passait à 10′, ≈ IBU selon son α">
-  ${ic('goutte', 14)}<span>IBU</span><span class="r6n1-ibu-q">?</span><i class="r6n1-ibu-h"></i><span class="r6n1-ibu-d">10′</span>${TOUS.map((n) => `<b class="r6n1-ibu-n" data-col="${esc(n)}" data-nature="calcule">≈${fr(IBU10[n], 0)}</b>`).join('')}<span class="r6n1-ibu-g">${TOUS.map((n) => `<i class="r6n1-ibu-f" data-col="${esc(n)}" style="width:${((IBU10[n] / IBUMAX) * 100).toFixed(1)}%;--c:${COUL[n]}"></i>`).join('')}</span></span>`;
+const NUG = D.biere.recette.ajouts[0], NUGG = NUG.dose_gL * D.biere.recette.volumeL, NUGM = (NUG.moment.match(/^b(\d+)$/) || [])[1] + '′';
+const jauge = `<span class="r6n1-ibu" data-element="y1b-jauge-amertume" role="img" aria-label="Amertume de ta stout : ${NUG.nom} à ${NUGM}, ${fr(NUGG, 0)} g (recette) ; le dry hop à cru en ajoute un IBU non modélisé : inconnu, jamais 0">
+  ${ic('goutte', 14)}<b>${NUG.nom}</b><span>${NUGM}</span><span class="r6n1-ibu-g">${fr(NUGG, 0)} g</span><span class="r6n1-ibu-q">+?</span><i class="r6n1-ibu-h"></i><span>à cru</span></span>`;
 
 // ---------- la réponse en tête (y1b), recalculée au toucher ----------
 function reponse(n) {
@@ -317,7 +317,7 @@ const frise = `<svg class="r6n1-frise" width="86" height="22" viewBox="0 0 86 22
   ${[40, 52, 64, 78].map((x) => `<line x1="${x}" y1="10" x2="${x}" y2="20" stroke="#8a909b" stroke-width="1.5"/>`).join('')}
   <circle id="r6n1-jeton" cx="64" cy="7" r="5.5" fill="${COUL[DEPART]}" stroke="#fff" stroke-width="1.5"/>
   <circle cx="78" cy="7" r="4.5" fill="#fff" stroke="#8a909b" stroke-width="1.2" stroke-dasharray="2 2"/></svg>`;
-const levApercu = `<span class="r6n1-lev" aria-hidden="true"><i class="r6n1-lev-u" id="r6n1-lev-u"></i><i class="r6n1-lev-p" id="r6n1-lev-p"></i></span>`;
+const levTxt = (n) => (Math.abs(LEV[n].d) < 0.05 ? '≈0' : '~' + sg(LEV[n].d));
 
 // ---------- les vraies valeurs et la chimie, entières, sous « Preuve » (un toucher) ----------
 function vrangee({ cle, f, nom, unite, cells, compose = true, note = '', icone = 'huile' }) {
@@ -378,8 +378,7 @@ const ctx = `<p class="r6n1-ctx" data-role="contexte" data-element="y1b-ligne-co
   <span class="r6n1-cx" data-contexte="biere">${ic('biere', 14)}16D</span>
   <span class="r6n1-cx fort" data-contexte="base" aria-label="dose égale ${fr(EG.dose_gL)} g/L">${ic('egal', 14)}${fr(EG.dose_gL)} g/L</span>
   <span class="r6n1-cx" data-contexte="moment">${ic('cuveP', 14)}après ${EG.jours} j</span>
-  <span class="r6n1-cx" data-contexte="levure">${ic('levure', 14)}US-05</span>
-  <span class="r6n1-cx r6n1-deg" data-contexte="degustation" data-element="m4-radar-degustation" aria-label="ta dégustation du 18.10 : trop résineuse, tu la veux plus florale">${pic(TROP, 14)}<span>trop</span>${pic(VEUT, 14)}<span>plus</span></span></p>`;
+  <span class="r6n1-cx" data-contexte="levure">${ic('levure', 14)}US-05</span></p>`;
 
 const critPop = `<div class="r6n1-pop" id="r6n1-crit" role="radiogroup" aria-label="Critère de classement" hidden>${CRITERES.map((f) => `<button type="button" role="radio" class="r6n1-crit-o" data-crit="${f}" aria-checked="${f === 'floral'}">${pic(f, 16)}<span>${COURT[f]}</span></button>`).join('')}</div>`;
 const pqPop = `<div class="r6n1-pop r6n1-pq" id="r6n1-pq" hidden><p>~ simulé à ${fr(EG.dose_gL)} g/L, après fermentation, ${EG.jours} j, US-05. Un cran = l’écart d’une classe du style ; ta stout est le trait noir.</p><p>Classés dans ta 16D d’abord, puis par la famille choisie. Résineux : ta stout est déjà au-dessus, et chaque houblon en ajoute.</p></div>`;
@@ -406,14 +405,14 @@ const corps = `
       <div class="r6n1-osu" data-acquis="osu" data-element="y3-panel-osu" data-nature="mesure" data-source="${esc(O.sources[0] + ' : ' + h22)}" aria-label="Panel OSU, Cascade, mesuré">
         <span class="r6n1-osu-t">${ic('panel', 14)}<b>OSU</b><i class="w-pt" style="background:${COUL.Cascade}" aria-hidden="true"></i><span>Cascade</span></span>
         ${osuSvg()}
-        <span class="r6n1-osu-n" role="img" aria-label="Idaho 7 et Galaxy : pas de panel publié"><i class="w-pt" style="background:${COUL['Idaho 7']}" aria-hidden="true"></i><i class="w-pt" style="background:${COUL.Galaxy}" aria-hidden="true"></i><i class="r6n1-hach p"></i><b>?</b></span>
+        <span class="r6n1-osu-n" role="img" aria-label="Idaho 7 et Galaxy : pas de panel publié"><i class="w-pt" style="background:${COUL['Idaho 7']}" aria-hidden="true"></i><i class="w-pt" style="background:${COUL.Galaxy}" aria-hidden="true"></i><i class="r6n1-hach p"></i></span>
       </div>
       ${linHtml}
     </div>
   </section>
   <section class="r6n1-tab" aria-label="Les houblons, côte à côte">
     <div class="r6n1-g r6n1-tetes" role="radiogroup" aria-label="Houblon mis en avant" data-libre="houblon" data-element="l5f-carte-role-alpha p06-grille-familles w2-cartes-verdict p03-plages-sources">
-      <span class="r6n1-plus-c"><button type="button" class="r6n1-plus" data-element="p4-plus-comparaison" aria-expanded="false" aria-controls="r6n1-ajout" aria-label="Ajouter un houblon à la comparaison">${ic('plus', 16)}</button>${ajoutPop}</span>
+      <div class="r6n1-st" data-element="m4-radar-degustation" aria-label="Ta stout : trop résineuse, tu la veux plus florale (dégustation du 18.10)"><span class="r6n1-st-n"><i class="r6n1-trait" aria-hidden="true"></i><b>Ta stout</b></span><span class="r6n1-st-l">${pic(TROP, 14)}<span>trop</span></span><span class="r6n1-st-l">${pic(VEUT, 14)}<span>plus</span></span><span class="r6n1-plus-c"><button type="button" class="r6n1-plus" data-element="p4-plus-comparaison" aria-expanded="false" aria-controls="r6n1-ajout" aria-label="Ajouter un houblon à la comparaison">${ic('plus', 16)}</button>${ajoutPop}</span></div>
       ${TOUS.map(tete).join('')}
     </div>
     <div class="r6n1-rgs" data-element="l8-disposition l5b-barres-voie y1b-bandes-style y1b-plan-d-avant">${LIGNES.map(rangee).join('')}
@@ -428,7 +427,7 @@ const corps = `
   ${defiPop}
   <nav class="r6n1-ponts" aria-label="Autres outils">
     <a href="#" data-role="pont" data-outil="Dryhopper" data-element="y1b-dock-pouce y1b-second-houblon-puis x3b-cuve-jour-apres-jour" id="r6n1-pont-d" aria-label="Doser ${esc(DEPART)} dans Dryhopper : le moment au doigt, un second houblon, jour après jour">${ic('cuveP', 14)}<span>Dryhopper</span>${frise}${ic('chev-r', 14)}</a>
-    <a href="#" data-role="pont" data-outil="Levure" data-element="y1b-levure-pastilles a2b-ce-que-la-levure-change" id="r6n1-pont-l" aria-label="Levure : ce que Pomona change pour ${esc(DEPART)} en dry hop actif">${ic('levure', 14)}<span>Levure</span>${levApercu}${ic('chev-r', 14)}</a>
+    <a href="#" data-role="pont" data-outil="Levure" data-element="y1b-levure-pastilles a2b-ce-que-la-levure-change" id="r6n1-pont-l" aria-label="Levure : ce que Pomona change pour ${esc(DEPART)} en dry hop actif">${ic('levure', 14)}<b>Pomona</b><span class="r6n1-lev-f" id="r6n1-lev-f">${pic(LEV[DEPART].f, 14)}</span><span class="r6n1-lev-d mono" id="r6n1-lev-d">${levTxt(DEPART)}</span>${ic('chev-r', 14)}</a>
   </nav>
   <section id="r6n1-vraies" class="r6n1-vraies" hidden aria-label="Preuve : vraies valeurs et chimie">
     <div class="r6n1-vals" data-acquis="valeurs">
@@ -437,7 +436,7 @@ const corps = `
       <div class="r6n1-chim" data-acquis="chimie" aria-label="Composés de l’huile, rangés par famille">${huileRow}${CHIMIE.join('')}</div>
       ${enBiere}
       <div class="r6n1-vg" aria-label="IBU à cru : non modélisé"><span class="r6n1-vn">${ic('goutte', 16)}<span><b>IBU</b><span class="r6n1-vu">à cru</span></span></span>${TOUS.map((n) => `<span class="r6n1-vc inc" data-col="${esc(n)}"><i class="r6n1-hach"></i><span class="r6n1-vi">non modélisé</span></span>`).join('')}</div>
-      <div class="r6n1-vg" aria-label="IBU si le même houblon passait à 10 minutes"><span class="r6n1-vn">${ic('goutte', 16)}<span><b>IBU à 10′</b><span class="r6n1-vu">${fr(EG.dose_gL)} g/L</span></span></span>${TOUS.map((n) => `<span class="r6n1-vc" data-col="${esc(n)}" style="--c:${COUL[n]}"><span class="r6n1-vv mono" data-nature="calcule">≈ ${fr(IBU10[n], 0)}</span><span class="r6n1-vr">calculé</span></span>`).join('')}</div>
+      <div class="r6n1-vg" aria-label="IBU si le même houblon passait à 10 minutes"><span class="r6n1-vn">${ic('goutte', 16)}<span><b>IBU, si tu le passais à 10′</b><span class="r6n1-vu">${fr(EG.dose_gL)} g/L</span></span></span>${TOUS.map((n) => `<span class="r6n1-vc" data-col="${esc(n)}" style="--c:${COUL[n]}"><span class="r6n1-vv mono" data-nature="calcule">≈ ${fr(IBU10[n], 0)}</span><span class="r6n1-vr">calculé</span></span>`).join('')}</div>
       <p class="r6n1-vsrc">${S.conf('mesure')}<span>fiches et études ; plage = du plus bas au plus haut des sources.</span></p>
       <p class="r6n1-vrefs">${sourcesTxt()}</p>
       <p class="r6n1-vsrc">${S.conf('panel')}<span>${O.sources[0]} ${esc(h22)} · ${O.complement.sources[0]} ${esc(h77)} : ${esc(O.complement.texte)}</span></p>
@@ -457,27 +456,27 @@ const legende = `<div class="w-voile" data-role="legende-voile" hidden></div><se
   <div class="w-leg-s"><h3>Une barre, par houblon</h3><div class="w-leg-g l2">
     <span class="w-leg-i"><i class="r6n1-lg-z"></i>zone pâle : ce que ta 16D permet</span><span class="w-leg-i"><i class="r6n1-lg-b"></i>barre : ~ simulé à 4 g/L</span>
     <span class="w-leg-i"><i class="r6n1-lg-w"></i>trait gris : sa bande</span><span class="w-leg-i"><i class="r6n1-lg-x"></i>orangé : au-dessus de ta 16D</span>
-    <span class="w-leg-i"><i class="r6n1-lg-f"></i>${ic('labo', 12)}trait fin : le composé mesuré, à la couleur de qui en a le plus</span><span class="w-leg-i"><i class="r6n1-hach"></i>hachuré : inconnu, jamais zéro</span>
-    <span class="w-leg-i">${ic('egal', 12)}<b class="mono">~7,5g/L</b>dose pour égaler la référence ; >8 : jamais dans la grille</span><span class="w-leg-i">${ic('melange', 14)}Tire 20 : vingt bières tirées dans la bande (uniforme, convention)</span></div></div>
-  <div class="w-leg-s"><h3>Le radar</h3><p>Le houblon touché est plein ; son intervalle est un trait sur chaque axe ; un chevron au bout : la bande dépasse l’axe. Les autres en contour. Flèches : ta demande. Rond creux, hachuré : inconnu.</p></div>
+    <span class="w-leg-i"><i class="r6n1-lg-f"></i>trait fin, nommé à gauche (humulène, 4MMP, caryophyllène) : le composé mesuré ; en couleur, qui en a le plus</span><span class="w-leg-i"><i class="r6n1-hach"></i>hachuré : inconnu, jamais zéro</span>
+    <span class="w-leg-i"><b class="mono">~7,5g/L</b>« égaler » : la dose pour le même effet que la référence ; >8 : jamais dans la grille</span><span class="w-leg-i">${ic('melange', 14)}Tire 20 : vingt bières tirées dans la bande (uniforme, convention), sous la barre ; « 4 sur 20 » : hors de ta 16D</span></div></div>
+  <div class="w-leg-s"><h3>Le radar</h3><p>Le houblon touché est plein ; son intervalle est un trait sur chaque axe ; « // » au bout : la bande dépasse l’axe, coupée. Les autres en contour. Flèches : ta demande, vers l’extérieur en vert pour plus, vers le centre en orangé pour moins. Rond creux, hachuré : inconnu.</p></div>
   <div class="w-leg-s"><h3>Un houblon</h3><div class="w-leg-g l2">
     <span class="w-leg-i"><span class="al lot">17,2%${ic('diff', 12)}</span>α du lot ; ≠ hors des fiches</span><span class="w-leg-i"><span class="al fi">${ic('livre', 12)}9,5–14,9%</span>α des fiches</span>
     <span class="w-leg-i"><span class="us us-mot deduit"><span class="us-m">mixte</span></span>pâle : déduit de l’α</span><span class="w-leg-i">${ic('ok', 14)}${ic('risque', 14)}dans ou hors de ta 16D</span>
-    <span class="w-leg-i">${ic('info', 14)}sa fiche ; ou appui long sur le nom</span><span class="w-leg-i">${ic('plus', 14)}ajouter un houblon</span></div></div>
-  <div class="w-leg-s"><h3>À côté du radar</h3><p>OSU : le panel mesuré de Cascade (agrumes, herbacé, intensité sur 15, de 0 à 16 g/L ; trait : ta dose). Linalol en bière : µg/L, échelle 10–1000 ; ≠ : doses et bières différentes. IBU : à cru, non modélisé ; la barre fine dit ce que ce houblon donnerait à 10′.</p></div>
+    <span class="w-leg-i">${ic('info', 14)}sa fiche ; ou appui long sur le nom</span><span class="w-leg-i">${ic('plus', 14)}ajouter un houblon</span><span class="w-leg-i">${ic('stock', 14)}en stock</span><span class="w-leg-i">${ic('achat', 14)}à acheter</span></div></div>
+  <div class="w-leg-s"><h3>À côté du radar</h3><p>OSU : le panel mesuré de Cascade (agrumes, herbacé, intensité sur 15, de 0 à 16 g/L ; trait : ta dose). Linalol en bière : µg/L, échelle 10–1000 ; ≠ : doses et bières différentes. Amertume : celle de ta stout vient du Nugget à 60′ ; le dry hop à cru en ajoute, non modélisé (« +? »). Sous Preuve : ce que chaque houblon donnerait si tu le passais à 10′.</p></div>
   <div class="w-leg-s"><h3>Base : dose égale</h3><p>Tous à ${fr(EG.dose_gL)} g/L, après fermentation, ${EG.jours} j, US-05. Fiche : « groseille à maquereau » rangée dans Petits fruits (option A) ; seul Nelson Sauvin a ce mot.</p></div>
 </section>`;
 
 const css = `
-  .ecran { gap: 6px; padding-top: 2px; }
+  .ecran { gap: 4px; padding-top: 2px; }
+  .leg-b { position: relative; }
   .r6n1-tete { display: flex; align-items: center; gap: 6px; min-height: 36px; }
   .r6n1-tete h1 { flex: 1; font-size: 17px; line-height: 1.15; font-weight: 700; }
   .r6n1-ctx { display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: 12px; color: var(--gris); }
   .r6n1-cx { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
   .r6n1-cx.fort { color: var(--encre); font-weight: 700; }
-  .r6n1-deg { color: var(--encre); font-weight: 600; }
   /* la réponse */
-  .r6n1-rep-b { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 6px 8px; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--trait2); }
+  .r6n1-rep-b { position: relative; display: flex; flex-direction: column; gap: 2px; padding: 4px 8px; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--trait2); }
   .r6n1-rep-l { display: flex; align-items: flex-start; gap: 4px; }
   .r6n1-rep { flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; font-size: 14px; }
   .r6n1-rep[hidden] { display: none; }
@@ -493,11 +492,7 @@ const css = `
   .r6n1-ibu { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; color: var(--gris); font-size: 12px; }
   .r6n1-ibu-q { font: 700 12px var(--mono); color: var(--encre); }
   .r6n1-ibu-h { display: inline-block; width: 16px; height: 10px; border-radius: 2px; background: repeating-linear-gradient(135deg, #fff 0 2px, #8a909b 2px 3.5px); box-shadow: inset 0 0 0 1px #8a909b; }
-  .r6n1-ibu-d { margin-left: 4px; }
-  .r6n1-ibu-n { display: none; font: 600 12px var(--mono); color: var(--encre); } .r6n1-ibu-n.on { display: inline; }
-  .r6n1-ibu-g { position: relative; display: block; width: 52px; height: 6px; border-radius: 2px; background: #f1f1f4; }
-  .r6n1-ibu-f { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; background: var(--c); display: none; }
-  .r6n1-ibu-f.on { display: block; }
+  .r6n1-ibu b { color: var(--encre); font-weight: 600; } .r6n1-ibu-g { font-family: var(--mono); color: var(--encre); }
   .r6n1-pop { position: absolute; z-index: 20; left: 8px; right: 8px; top: 100%; margin-top: 4px; padding: 8px; border-radius: 8px; background: #fff; box-shadow: 0 6px 20px rgba(0,0,0,.16), inset 0 0 0 1px var(--trait2); display: flex; gap: 6px; flex-wrap: wrap; font-size: 12px; }
   .r6n1-pop[hidden] { display: none; }
   .r6n1-pq { flex-direction: column; color: var(--encre); line-height: 1.3; }
@@ -505,14 +500,14 @@ const css = `
   .r6n1-crit-o[aria-checked="true"] { background: var(--encre); color: #fff; }
   /* les pistes d'objectif */
   .r6n1-piste { display: flex; flex-direction: column; gap: 2px; }
-  .r6n1-pi-h { display: flex; align-items: center; gap: 4px; font-size: 14px; min-height: 22px; }
+  .r6n1-pi-h { display: flex; align-items: center; gap: 4px; font-size: 14px; min-height: 20px; }
   .r6n1-pi-h b { font-weight: 700; }
-  .r6n1-dem { display: inline-flex; color: var(--encre); } .r6n1-dem.trop { color: var(--acc); }
+  .r6n1-dem { display: inline-flex; color: #1f7a45; } .r6n1-dem.trop { color: var(--acc); }
   .r6n1-abs { display: inline-flex; color: var(--gris); }
   .r6n1-vb { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 14px; }
   .r6n1-vb.atteint { color: #2f6b4f; } .r6n1-vb.aucune { color: var(--gris); }
   .r6n1-sug a { display: inline-flex; align-items: center; gap: 2px; height: 24px; padding: 0 4px 0 9px; border-radius: 999px; box-shadow: inset 0 0 0 1.5px var(--encre); font-size: 12px; font-weight: 700; }
-  .r6n1-pi-t { position: relative; height: 22px; border-radius: 2px; background: #f6f6f9; }
+  .r6n1-pi-t { position: relative; height: 20px; border-radius: 2px; background: #f6f6f9; }
   .r6n1-pi-t > i, .r6n1-wk { position: absolute; display: block; }
   .r6n1-pz { left: 0; top: 0; bottom: 0; width: var(--z); background: var(--f); box-shadow: inset -1.5px 0 0 var(--t); }
   .r6n1-pa { left: calc(var(--av) - 1px); top: -3px; bottom: -3px; width: 2px; background: var(--encre); border-radius: 2px; }
@@ -546,37 +541,46 @@ const css = `
   .r6n1-lin-b { position: absolute; top: 6px; height: 2px; background: var(--c); opacity: .5; }
   .r6n1-lin-x { position: absolute; right: 2px; top: 2px; width: 16px; height: 10px; border-radius: 2px; background: repeating-linear-gradient(135deg, #fff 0 2px, var(--c) 2px 3.5px); box-shadow: inset 0 0 0 1px var(--c); }
   /* le tableau : une colonne de pictos, une colonne par houblon */
-  .r6n1-g { display: grid; grid-template-columns: 22px repeat(3, minmax(0, 1fr)); column-gap: 4px; }
-  body.r6n1-n4 .r6n1-g { grid-template-columns: 22px repeat(4, minmax(0, 1fr)); }
+  .r6n1-g { display: grid; grid-template-columns: 66px repeat(3, minmax(0, 1fr)); column-gap: 4px; }
+  body.r6n1-n4 .r6n1-g { grid-template-columns: 66px repeat(4, minmax(0, 1fr)); }
+  .r6n1-st { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding-top: 6px; }
+  .r6n1-st-n { display: flex; align-items: center; gap: 3px; font-size: 14px; white-space: nowrap; }
+  .r6n1-trait { width: 10px; height: 2px; background: var(--encre); flex: none; border-radius: 2px; }
+  .r6n1-st-l { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; }
   .r6n1-tab { display: flex; flex-direction: column; }
-  .r6n1-plus-c { position: relative; display: flex; justify-content: center; padding-top: 6px; }
+  .r6n1-plus-c { position: relative; display: flex; padding-top: 2px; }
   .r6n1-plus { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--encre); }
   .r6n1-plus[disabled] { opacity: .35; }
   .r6n1-aj { left: 0; right: auto; width: 250px; }
   .r6n1-aj-o { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--trait2); font-size: 14px; }
   .r6n1-tc { position: relative; min-width: 0; border-radius: 8px 8px 0 0; box-shadow: inset 0 3px 0 var(--h); }
   .r6n1-tc.sel { background: #f3f3f6; box-shadow: inset 0 3px 0 var(--h), inset 2px 0 0 var(--h), inset -2px 0 0 var(--h); }
-  .r6n1-tcb { width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 6px 4px 4px 5px; min-width: 0; }
-  .r6n1-tn { display: flex; align-items: center; gap: 3px; font-size: 14px; max-width: 100%; padding-right: 18px; }
+  .r6n1-tcb { width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 6px 2px 4px 4px; min-width: 0; }
+  .r6n1-tn { display: flex; align-items: center; gap: 3px; font-size: 14px; max-width: 100%; }
   .r6n1-tn .hn { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .r6n1-tn { min-width: 0; } .r6n1-tn .w-stk, .r6n1-tn .w-pt { flex: none; }
   body.r6n1-n4 .r6n1-tn { font-size: 12px; padding-right: 16px; } body.r6n1-n4 .r6n1-ta .al { font-size: 12px; letter-spacing: -.04em; }
-  body.r6n1-n4 .r6n1-tn .w-stk { display: none; } body.r6n1-n4 .r6n1-fi { right: -2px; }
+  body.r6n1-n4 .r6n1-tn .w-stk, body.r6n1-n4 .r6n1-fi, body.r6n1-n4 .r6n1-ta .al.fi .ic { display: none; }
+  body.r6n1-n4 .r6n1-tn { align-items: flex-start; padding-right: 0; } body.r6n1-n4 .r6n1-tn .w-pt { margin-top: 4px; }
+  body.r6n1-n4 .r6n1-tn .hn { white-space: normal; overflow: visible; line-height: 1.1; }
+  body.r6n1-n4 .r6n1-tfp svg:nth-child(n+4) { display: none; }
+  body.r6n1-n4 .r6n1-tc:has(.r6n1-ret) .r6n1-tn { padding-right: 16px; }
   .r6n1-ta .al { font-size: 12px; }
   .r6n1-tf { display: flex; align-items: center; gap: 3px; min-height: 16px; }
   .r6n1-tfp { display: inline-flex; align-items: flex-end; gap: 1px; }
   .r6n1-vd { display: inline-flex; } .r6n1-vd.dans { color: #2f6b4f; } .r6n1-vd.hors { color: var(--acc); }
-  .r6n1-fi { position: absolute; right: 1px; top: 4px; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; color: var(--gris); border-radius: 50%; }
-  .r6n1-ret { position: absolute; right: -2px; top: 44px; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; color: var(--gris); border-radius: 50%; }
+  .r6n1-fi { position: absolute; right: 0; top: 40px; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; color: var(--gris); border-radius: 50%; }
+  .r6n1-ret { position: absolute; right: -2px; top: 2px; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; color: var(--gris); border-radius: 50%; }
   .r6n1-rgs { display: flex; flex-direction: column; }
   .r6n1-rg { align-items: center; min-height: 19px; }
-  .r6n1-rg.fil { min-height: 23px; } .r6n1-rg.egl { min-height: 30px; } .r6n1-rg.fil.egl { min-height: 34px; }
-  .r6n1-rn { display: flex; flex-direction: column; align-items: center; gap: 1px; }
-  .r6n1-lab { display: inline-flex; color: var(--gris); }
-  .r6n1-cel { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 2px; height: 100%; min-height: 19px; padding: 0 4px; min-width: 0; }
+  .r6n1-rg { padding: 0; }
+  .r6n1-rn { display: flex; flex-direction: column; justify-content: center; gap: 2px; align-self: stretch; }
+  .r6n1-rn1 { display: flex; height: 14px; align-items: center; }
+  .r6n1-rnl { display: block; height: 14px; font: 400 12px/14px var(--sans); color: var(--gris); white-space: nowrap; letter-spacing: -.02em; }
+  .r6n1-cel { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 2px; height: 100%; min-height: 19px; padding: 1px 4px; min-width: 0; }
   .r6n1-cel.sel { background: #f3f3f6; box-shadow: inset 2px 0 0 var(--hs, transparent), inset -2px 0 0 var(--hs, transparent); }
   .r6n1-rgs > .r6n1-rg:nth-last-child(2) .r6n1-cel.sel { border-radius: 0 0 8px 8px; box-shadow: inset 2px 0 0 var(--hs, transparent), inset -2px 0 0 var(--hs, transparent), inset 0 -2px 0 var(--hs, transparent); }
-  .r6n1-pis { position: relative; display: block; height: 12px; background: #f6f6f9; border-radius: 2px; }
+  .r6n1-pis { position: relative; display: block; height: 12px; margin: 1px 0; background: #f6f6f9; border-radius: 2px; }
   .r6n1-pis > i { position: absolute; top: 0; bottom: 0; display: block; }
   .r6n1-zo { left: 0; width: var(--z); background: var(--f); box-shadow: inset -1.5px 0 0 var(--t); }
   .r6n1-pis > .r6n1-ba { left: 0; top: 2px; bottom: 2px; width: var(--gb); background: var(--b); border-radius: 2px; }
@@ -587,13 +591,16 @@ const css = `
   body.abs .r6n1-zo { width: var(--za); } body.abs .r6n1-pis > .r6n1-ba { width: var(--gba); } body.abs .r6n1-pis > .r6n1-xo { left: var(--xba); width: var(--xoa); }
   body.abs .r6n1-pis > .r6n1-wh { left: var(--w0a); width: calc(var(--w1a) - var(--w0a)); } body.abs .r6n1-pis > .r6n1-av { left: calc(var(--ava) - 1px); }
   body.abs .r6n1-cel.dep .r6n1-pis::after { display: none; } body.abs .r6n1-cel.depa .r6n1-pis::after { display: block; }
-  .r6n1-tir { position: absolute; inset: 0; display: block; pointer-events: none; }
-  .r6n1-tir i { position: absolute; top: 3px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: var(--encre); box-shadow: 0 0 0 1px #fff; }
-  .r6n1-tir i.hs { background: ${ACC}; }
+  .r6n1-tir { display: flex; flex-direction: column; gap: 1px; }
+  .r6n1-tir[hidden] { display: none; }
+  .r6n1-tird { position: relative; display: block; height: 5px; }
+  .r6n1-tird i { position: absolute; top: 0; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: #5b5b66; }
+  .r6n1-tird i.hs { background: ${ACC}; }
+  .r6n1-tirn { font: 600 12px/14px var(--mono); color: var(--gris); } .r6n1-tirn.hs { color: var(--acc); }
   .r6n1-hach { display: inline-block; width: 22px; height: 10px; border-radius: 2px; flex: none; background: repeating-linear-gradient(135deg, #fff 0 2px, #8a909b 2px 3.5px); box-shadow: inset 0 0 0 1px #8a909b; }
   .r6n1-cel.inc .r6n1-pis { background: none; }
   .r6n1-cel.inc .r6n1-pis .r6n1-hach { position: absolute; left: 0; top: 1px; }
-  .r6n1-fil { position: relative; display: block; height: 4px; border-radius: 2px; background: #f1f1f4; }
+  .r6n1-fil { position: relative; display: block; height: 4px; margin: 5px 0; border-radius: 2px; background: #f1f1f4; }
   .r6n1-fil > i { position: absolute; top: 0; bottom: 0; border-radius: 2px; background: #9aa0ab; }
   body:not(.r6n1-n4) .r6n1-fil[data-haut3="true"] > i, body.r6n1-n4 .r6n1-fil[data-haut4="true"] > i { background: var(--c); }
   .r6n1-fil.ouvert > i { -webkit-mask: linear-gradient(90deg, #000 55%, transparent); mask: linear-gradient(90deg, #000 55%, transparent); }
@@ -618,13 +625,12 @@ const css = `
   .r6n1-df-v { width: 100%; font-weight: 700; } .r6n1-df-c.ok .r6n1-df-v { color: #2f6b4f; } .r6n1-df-c.non .r6n1-df-v { color: var(--acc); }
   .r6n1-df-d { width: 100%; color: var(--gris); }
   .r6n1-ponts { display: flex; gap: 6px; }
-  .r6n1-ponts a { flex: 1; display: flex; align-items: center; gap: 4px; min-height: 40px; padding: 0 8px 0 10px; border-radius: 999px; background: var(--encre); color: #fff; font-size: 14px; font-weight: 700; }
+  .r6n1-ponts a { flex: 1; display: flex; align-items: center; gap: 3px; min-height: 40px; padding: 0 6px 0 9px; border-radius: 999px; background: var(--encre); color: #fff; font-size: 14px; font-weight: 700; }
   .r6n1-ponts a:first-child { flex: 1.35; }
-  .r6n1-frise { margin-left: auto; }
+  .r6n1-frise { margin-left: auto; width: 60px; height: 16px; }
   .r6n1-frise line { stroke: rgba(255,255,255,.55); }
-  .r6n1-lev { margin-left: auto; display: flex; flex-direction: column; gap: 3px; width: 46px; }
-  .r6n1-lev i { display: block; height: 5px; border-radius: 2px; background: ${JET.citrus.base}; }
-  .r6n1-lev-u { opacity: .55; }
+  .r6n1-lev-f { margin-left: auto; display: inline-flex; padding: 1px; border-radius: 4px; background: #fff; }
+  .r6n1-lev-d { font-size: 12px; font-weight: 600; }
   /* la preuve */
   .r6n1-vraies { display: flex; flex-direction: column; gap: 6px; padding: 6px 0 4px; border-top: 1px solid var(--trait); }
   .r6n1-vals { display: flex; flex-direction: column; gap: 6px; }
@@ -649,7 +655,7 @@ const css = `
   .r6n1-vsrc { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gris); }
   .r6n1-vrefs { display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: 12px; color: var(--gris); }
   .r6n1-vrefs b { color: var(--encre); }
-  .r6n1-pied { display: flex; align-items: flex-start; gap: 6px; font-size: 12px; color: var(--gris); }
+  .r6n1-pied { margin-top: 34px; display: flex; align-items: flex-start; gap: 6px; font-size: 12px; color: var(--gris); }
   .w-leg p { font-size: 12px; line-height: 1.3; }
   .r6n1-lg-z, .r6n1-lg-b, .r6n1-lg-w, .r6n1-lg-av, .r6n1-lg-x, .r6n1-lg-vi, .r6n1-lg-wk, .r6n1-lg-f { display: inline-block; flex: none; width: 22px; height: 10px; border-radius: 2px; }
   .r6n1-lg-z { background: ${JET.floral.fond}; box-shadow: inset -1.5px 0 0 ${JET.floral.texte}; } .r6n1-lg-b { background: ${JET.floral.base}; } .r6n1-lg-w { height: 2px; background: rgba(22,22,26,.55); border-radius: 0; }
@@ -662,6 +668,8 @@ const RD = ${JSON.stringify(RD)};
 const radarSvg = ${radarSrc};
 const TOUS = ${JSON.stringify(TOUS)}, NOMS = ${JSON.stringify(NOMS)}, N4 = ${JSON.stringify(NS4)}, COUL = ${JSON.stringify(COUL)};
 const RANGS = ${JSON.stringify(RANGS)}, LEV = ${JSON.stringify(LEV)}, DEFIN = ${JSON.stringify(Object.fromEntries(TOUS.map((n) => [n, DEFI[n].n])))};
+const LEVPIC = ${JSON.stringify(Object.fromEntries([...new Set(TOUS.map((n) => LEV[n].f))].map((f) => [f, pic(f, 14)])))};
+const NOMF2 = ${JSON.stringify(Object.fromEntries(ORDRE.map((f) => [f, NOM[f].toLowerCase()])))};
 const PIC = ${JSON.stringify(Object.fromEntries(CRITERES.map((f) => [f, pic(f, 16)])))};
 const NOMF = ${JSON.stringify(Object.fromEntries(CRITERES.map((f) => [f, NOM[f].toLowerCase()])))};
 let SEL = TOUS.indexOf(${JSON.stringify(DEPART)}), CRIT = 'floral', TIRE = false;
@@ -671,15 +679,18 @@ const actifs = () => TOUS.map((n) => n !== N4 || n4());
 const dessiner = () => { $('#r6n1-radar').innerHTML = radarSvg(RD, SEL, document.body.classList.contains('abs'), actifs()); tirer(); };
 // Tire 20 : vingt bières tirées uniformément dans la bande du moteur, graine fixe (convention de lecture).
 function tirer() {
-  $$('.r6n1-tir').forEach((t) => { t.innerHTML = ''; });
+  $$('.r6n1-tir').forEach((t) => { t.innerHTML = ''; t.hidden = true; });
   if (!TIRE) return;
   const abs = document.body.classList.contains('abs');
   let g = 20261022;
   const u = () => { g = (g * 1103515245 + 12345) % 2147483648; return g / 2147483648; };
   $$('.r6n1-cel[data-col="' + TOUS[SEL] + '"][data-tir]').forEach((c) => {
     const [w0, w1, z, w0a, w1a, za] = c.dataset.tir.split(',').map(Number), a = abs ? w0a : w0, b = abs ? w1a : w1, zz = abs ? za : z;
-    const t = c.querySelector('.r6n1-tir');
-    for (let i = 0; i < 20; i++) { const x = a + (b - a) * u(), d = document.createElement('i'); d.style.left = (Math.min(1, x) * 100).toFixed(1) + '%'; if (x > zz) d.className = 'hs'; t.append(d); }
+    const t = c.querySelector('.r6n1-tir'), pts = document.createElement('span'), cpt = document.createElement('span');
+    pts.className = 'r6n1-tird'; cpt.className = 'r6n1-tirn'; let k = 0;
+    for (let i = 0; i < 20; i++) { const x = a + (b - a) * u(), d = document.createElement('i'); d.style.left = (Math.min(1, x) * 100).toFixed(1) + '%'; if (x > zz) { d.className = 'hs'; k++; } pts.append(d); }
+    cpt.textContent = k + ' sur 20'; if (k) cpt.classList.add('hs'); cpt.setAttribute('aria-label', k + ' bières sur 20 hors de ta 16D');
+    t.append(pts, cpt); t.hidden = false;
   });
 }
 function choisir(i) {
@@ -689,13 +700,12 @@ function choisir(i) {
   $$('.r6n1-wk').forEach((w) => w.classList.toggle('sel', w.dataset.col === n));
   $$('.r6n1-rep').forEach((r) => { r.hidden = r.dataset.pour !== n; });
   $$('.r6n1-df-g').forEach((r) => { r.hidden = r.dataset.pour !== n; });
-  $$('.r6n1-ibu-f, .r6n1-ibu-n').forEach((f) => f.classList.toggle('on', f.dataset.col === n));
   $('#r6n1-defi-n').textContent = DEFIN[n] + '/4';
   $('#r6n1-jeton').setAttribute('fill', COUL[n]);
   $('#r6n1-pont-d').setAttribute('aria-label', 'Doser ' + n + ' dans Dryhopper : le moment au doigt, un second houblon, jour après jour');
-  const L = LEV[n], mx = Math.max(L.u, L.p) * 1.1 || 1;
-  $('#r6n1-lev-u').style.width = (L.u / mx * 100).toFixed(1) + '%'; $('#r6n1-lev-p').style.width = (L.p / mx * 100).toFixed(1) + '%';
-  $('#r6n1-pont-l').setAttribute('aria-label', 'Levure : ce que Pomona change pour ' + n + ' en dry hop actif (~' + (L.d >= 0 ? '+' : '−') + Math.abs(L.d).toFixed(1).replace('.', ',') + ' cran)');
+  const L = LEV[n]; $('#r6n1-lev-d').textContent = Math.abs(L.d) < 0.05 ? '≈0' : '~' + (L.d >= 0 ? '+' : '−') + Math.abs(L.d).toFixed(1).replace('.', ',');
+  $('#r6n1-lev-f').innerHTML = LEVPIC[L.f];
+  $('#r6n1-pont-l').setAttribute('aria-label', 'Levure : ce que Pomona change pour ' + n + ' en dry hop actif, ' + NOMF2[L.f] + ' (~' + (L.d >= 0 ? '+' : '−') + Math.abs(L.d).toFixed(1).replace('.', ',') + ' cran)');
   dessiner();
 }
 function ranger() {

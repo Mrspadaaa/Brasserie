@@ -377,7 +377,8 @@ function blocLabels(F) {
   });
   return h('div', { class: 'f-labels', 'data-role': 'fiche-labels' },
     h('div', { class: 'f-bande', role: 'img', 'aria-label': 'Les familles citées par les fiches de ' + F.nom + ' : une hauteur par fiche qui la cite' }, ORDRE.map(col),
-      F.of === 1 ? h('span', { class: 'f-seule' }, '1 seule fiche') : null),
+      // D71 : jamais « 1 seule fiche » sans nommer sa source (fiche Citra cryo approuvée : « 1 seule fiche : Beer Maverick »).
+      F.of === 1 ? h('span', { class: 'f-seule' }, '1 seule fiche : ' + ([...new Set(F.aromes.flatMap((a) => a.auteurs))][0] || (F.catalogue ? 'fiches du moteur (c1)' : 'source non renseignée'))) : null),
     ...lignes,
     F.sans.length ? h('p', { class: 'f-lab-sans', title: F.sans.join(', ') }, 'sans famille : ' + coupe(F.sans, MAXM)) : null,
     nd.length ? h('p', { class: 'f-lab-nd' }, nd.length + ' non décrite' + (nd.length > 1 ? 's' : '')) : null);

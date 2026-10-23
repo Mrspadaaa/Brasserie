@@ -77,7 +77,7 @@ const pct = (x) => fr(x, 1) + '%';
 function alphaHtml(n) {
   const A = ALPHA[n], pl = fr(A.fiches[0]) + '–' + pct(A.fiches[1]);
   if (A.lot != null) return `<span class="al lot" data-role="alpha" data-source="lot" data-nature="mesure" aria-label="α du lot en stock : ${fr(A.lot)} %${A.hors ? ' ; hors des plages de ses fiches (' + pl + ', ' + esc(A.srcs) + ')' : ''}">${pct(A.lot)}${A.hors ? ic('diff', 12) : ''}</span>`;
-  return `<span class="al fi" data-role="alpha" data-source="fiches" data-nature="mesure" aria-label="α des fiches : ${pl} (${esc(A.srcs)})${A.article ? ' ; ' + fr(A.article) + ' % lu sur un article' : ''}">${ic('livre', 12)}${pl}</span>`;
+  return `<span class="al fi" data-role="alpha" data-source="fiches" data-nature="mesure" aria-label="α des fiches : ${pl} (${esc(A.srcs)})${A.article ? ' ; ' + fr(A.article) + ' % lu sur un article' : ''}">${ic('livre', 12)}<span class="r6n2-a3">${pl}</span><span class="r6n2-a4">${fr(A.fiches[0]) + '–' + fr(A.fiches[1], 0)}%</span></span>`;
 }
 const roleHtml = (n) => { const R = ROLE[n]; return `<span class="us us-mot${R.regle ? ' deduit' : ''}" data-role="usage" data-usage="${R.v}" data-source="${R.regle ? 'règle' : 'fournisseur'}" aria-label="Usage : ${MOT_ROLE[R.v]}${R.regle ? ', déduit de l’α, à valider' : ', attesté par le fournisseur'}"><span class="us-m">${MOT_ROLE[R.v]}</span></span>`; };
 const stockHtml = (n) => (ALPHA[n].lot != null ? `<span class="w-stk" role="img" aria-label="lot en stock (α de sa fiche de stock)">${ic('stock', 14)}</span>` : '');
@@ -351,22 +351,45 @@ function friseSvg() {
   s += `<circle cx="${X.puis}" cy="${y - 14}" r="7" fill="#fff" stroke="#8a909b" stroke-width="1.5" stroke-dasharray="2 2"/><text x="${X.puis}" y="${y - 10}" text-anchor="middle" class="r6n2-ft">+</text>`;
   return s + '</svg>';
 }
-const frise = `<div class="r6n2-fc-c" data-element="y1b-dock-pouce y1b-second-houblon-puis x3b-cuve-jour-apres-jour">
-  ${friseSvg()}
-  <p class="r6n2-sub">Ici, le moment est fixé : les trois après fermentation, 3 j. La frise se glisse au doigt dans Dryhopper ; « + » enchaîne un second houblon (puis).</p>
-  <div class="r6n2-jr"><div class="r6n2-osu-t">${ic('sablier', 16)}<b>Jour après jour</b><span id="r6n2-jr-c" class="r6n2-jr-c"></span>${S.conf('simule')}</div><div id="r6n2-jr-g"></div></div>
-  <a href="#dryhopper" class="r6n2-lien" data-outil="Dryhopper">${ic('cuveP', 16)}<span>Glisser le moment, enchaîner Citra puis Galaxy : <b>Dryhopper</b></span>${ic('fleche', 16)}</a></div>`;
-
 // ---------- souche (pont Levure) : ce que la cuve apporte, ce que Pomona change (a2b) ----------
+// M07 (calculé avant de dessiner) : après fermentation, Pomona − US-05 = 0 exactement sur les douze familles,
+// pour les quatre houblons ; en dry hop actif, Idaho 7 agrumes ~+1,3 cran, Cascade ~+0,4, Galaxy et Nelson rien.
 const POM = Object.fromEntries(TOUS.map((n) => [n, point(n, { levure: 'lalbrew-pomona' })]));
-const soucheTable = (n) => `<div class="r6n2-so" data-col="${esc(n)}"><div class="r6n2-soh"><span></span><span>la cuve apporte</span><span>Pomona change</span></div>
-  ${LIGNES.filter((f) => !inconnu(n, f)).map((f) => { const c = dCran(n, f), pm = (valP(POM[n], f).centre - val(n, f).centre) / CRAN[f], mx = 3;
+const ACT = Object.fromEntries(TOUS.map((n) => [n, point(n, { moment: 'dryActive' })]));
+const ACTP = Object.fromEntries(TOUS.map((n) => [n, point(n, { moment: 'dryActive', levure: 'lalbrew-pomona' })]));
+const POST_POM_NUL = TOUS.every((n) => ORDRE.every((f) => valP(POM[n], f).centre === val(n, f).centre));
+const dPom = (n, f) => (valP(ACTP[n], f).centre - valP(ACT[n], f).centre) / CRAN[f];
+const puces = (n, d, seuil = 0.1, k = 3) => { const l = LIGNES.filter((f) => !inconnu(n, f)).map((f) => ({ f, d: d(n, f) })).filter((x) => Math.abs(x.d) >= seuil).sort((a, b) => Math.abs(b.d) - Math.abs(a.d)).slice(0, k);
+  return l.length ? l.map((x) => `<span class="r6n2-pu${x.d < 0 ? ' r6n2-pu-m' : ''}" style="color:${JET[x.f].texte}">${pic(x.f, 14)}<b class="mono">~${dt(x.d)}</b></span>`).join('') : '<span class="r6n2-pu r6n2-rien">≈ rien</span>'; };
+const ligneH = (n, corps) => `<div class="r6n2-lh" data-col="${esc(n)}"><span class="r6n2-lhn"><i class="r6n2-pt" style="background:${COUL[n]}"></i>${esc(n)}</span><span class="r6n2-lhp">${corps}</span></div>`;
+const actifLigne = (n) => ligneH(n, puces(n, (m, f) => (valP(ACT[m], f).centre - val(m, f).centre) / CRAN[f]));
+const joursLigne = (n) => { const f = VEUT, j1 = valP(point(n, { jours: 1 }), f).centre, j2 = valP(point(n, { jours: 2 }), f).centre, j7 = valP(point(n, { jours: 7 }), f).centre;
+  if (Math.abs(j7 - j2) > 0.05) throw new Error('Frise : de 2 à 7 j le floral bouge pour ' + n);
+  return ligneH(n, `<span class="r6n2-pu" style="color:${JET[f].texte}">${pic(f, 14)}<span class="mono">1 j ~${fr(j1, 1)}</span>${ic('fleche', 12)}<span class="mono">2 à 7 j ~${fr(j2, 1)}</span></span>`); };
+const pomLigne = (n) => ligneH(n, puces(n, dPom));
+const pomMax = TOUS.map((n) => ({ n, m: Math.max(...LIGNES.map((f) => Math.abs(dPom(n, f)))) })).sort((a, b) => b.m - a.m)[0].n;
+if (pomMax !== 'Idaho 7') throw new Error('Souche : la phrase dit Idaho 7, les données disent ' + pomMax);
+const soucheTable = (n) => `<div class="r6n2-so" data-col="${esc(n)}"><div class="r6n2-soh"><span></span><span>la cuve apporte, ici</span><span>Pomona, en actif</span></div>
+  ${LIGNES.filter((f) => !inconnu(n, f)).map((f) => { const c = dCran(n, f), pm = dPom(n, f), mx = 3;
     const bar = (d, cls) => `<span class="r6n2-sob"><i class="${cls}" style="width:${(Math.min(1, Math.abs(d) / mx) * 100).toFixed(1)}%" data-famille="${f}"></i><b class="mono">${Math.abs(d) < 0.05 ? '≈ 0' : '~' + dt(d)}</b></span>`;
     return `<div class="r6n2-sor"><span class="r6n2-fn" style="color:${JET[f].texte}">${pic(f, 14)}<span>${COURT[f]}</span></span>${bar(c, 'r6n2-sob-c')}${bar(pm, 'r6n2-sob-p')}</div>`; }).join('')}</div>`;
 const souche = `<div class="r6n2-fc-c" data-element="y1b-levure-pastilles a2b-ce-que-la-levure-change">
-  <p class="r6n2-sub">Ici, la souche est fixée : <span class="r6n2-pas-r r6n2-on">US-05</span><span class="r6n2-pas-r">Pomona</span> En crans du style, ${S.conf('simule')}</p>
+  <p class="r6n2-sub">Ici, la souche est fixée : <span class="r6n2-pas-r r6n2-on">US-05</span><span class="r6n2-pas-r">Pomona</span> ${S.conf('simule')}</p>
+  <p class="r6n2-dit">${POST_POM_NUL ? 'Après fermentation, la levure est au repos : Pomona ne change rien, pour aucun des houblons.' : 'Après fermentation, Pomona change peu.'} En dry hop actif, elle réveille surtout Idaho 7 :</p>
+  <div class="r6n2-jr">${TOUS.map(pomLigne).join('')}<p class="r6n2-sub">Pomona au lieu d’US-05, ajout pendant la fermentation active, 4 g/L, 3 j ; en crans du style.</p></div>
   ${TOUS.map(soucheTable).join('')}
   <a href="#levure" class="r6n2-lien" data-outil="Levure">${ic('levure', 16)}<span>Changer de souche, voir ce qu’elle fait : <b>Levure</b></span>${ic('fleche', 16)}</a></div>`;
+
+const frise = `<div class="r6n2-fc-c" data-element="y1b-dock-pouce y1b-second-houblon-puis x3b-cuve-jour-apres-jour">
+  ${friseSvg()}
+  <p class="r6n2-sub">Ici, le moment est fixé : les trois après fermentation, 3 j. La frise se glisse au doigt dans Dryhopper ; « + » enchaîne un second houblon (puis).</p>
+  <div class="r6n2-jr"><div class="r6n2-osu-t">${ic('cuveA', 16)}<b>Ce qui bouge là-bas : en actif</b>${S.conf('simule')}</div>
+    <p class="r6n2-sub">Le même ajout pendant la fermentation active au lieu d’après, en crans du style. Le résineux baisse : ta demande se joue aussi là.</p>
+    ${TOUS.map(actifLigne).join('')}</div>
+  <div class="r6n2-jr"><div class="r6n2-osu-t">${ic('sablier', 16)}<b>Jour après jour</b>${S.conf('simule')}</div>
+    <p class="r6n2-sub">À 4 g/L, le moteur ne distingue que le premier jour : de 2 à 7 j, même profil. Le floral, sur 100 :</p>
+    ${TOUS.map(joursLigne).join('')}</div>
+  <a href="#dryhopper" class="r6n2-lien" data-outil="Dryhopper">${ic('cuveP', 16)}<span>Glisser le moment, enchaîner Citra puis Galaxy : <b>Dryhopper</b></span>${ic('fleche', 16)}</a></div>`;
 
 // ---------- ajouter (p4, carte l5f) : Nelson Sauvin, le seul autre houblon des données ----------
 const partA = D.descripteurs.A.effets[AJOUT].partSansFamilleA;
@@ -524,7 +547,14 @@ const css = `
   .r6n2-tab { display: flex; flex-direction: column; }
   .r6n2-tetes, .r6n2-rg, .r6n2-vg, .r6n2-vh, .r6n2-fr, .r6n2-obh, .r6n2-score { display: grid; grid-template-columns: var(--lc, 76px) repeat(var(--n, 3), minmax(0, 1fr)); column-gap: 4px; }
   .r6n2-obh, .r6n2-score { grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); }
-  body.r6n2-n4 { --n: 4; --lc: 62px; }
+  body.r6n2-n4 { --n: 4; --lc: 34px; }
+  body.r6n2-n4 .r6n2-fe { --lc: 58px; }
+  .r6n2-a4 { display: none; } body.r6n2-n4 .r6n2-a3 { display: none; } body.r6n2-n4 .r6n2-a4 { display: inline; }
+  body.r6n2-n4 .r6n2-rgs .r6n2-rn > span:not(.r6n2-dem), body.r6n2-n4 .r6n2-tas b, body.r6n2-n4 .r6n2-tas-l > span { display: none; }
+  body.r6n2-n4 .r6n2-tc { padding: 5px 3px; }
+  body.r6n2-n4 .r6n2-tn { font-size: 13px; align-items: flex-start; flex-wrap: wrap; gap: 2px 4px; }
+  body.r6n2-n4 .r6n2-tc .r6n2-tn > .r6n2-pt { display: none; }
+  body.r6n2-n4 .r6n2-tn .hn { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.1; }
   body:not(.r6n2-n4) [data-col="Nelson Sauvin"] { display: none !important; }
   .r6n2-tc { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 5px 4px 5px; border-radius: 8px 8px 0 0; min-width: 0; box-shadow: inset 0 3px 0 var(--h, transparent); transition: background .2s; }
   .r6n2-tc.r6n2-sel { background: #f3f3f6; box-shadow: inset 0 3px 0 var(--h), inset 2px 0 0 var(--h), inset -2px 0 0 var(--h); }
@@ -532,7 +562,6 @@ const css = `
   .r6n2-tas-c { display: flex; flex-direction: column; gap: 3px; }
   .r6n2-tn { display: flex; align-items: center; gap: 4px; font-size: 14px; max-width: 100%; }
   .r6n2-tn .hn { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: underline dotted #9a9aa6; text-underline-offset: 3px; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
-  body.r6n2-n4 .r6n2-tn .hn { white-space: normal; line-height: 1.1; }
   .r6n2-pt { width: 8px; height: 8px; border-radius: 50%; flex: none; display: inline-block; }
   .r6n2-trait { width: 10px; height: 2px; background: var(--encre); flex: none; border-radius: 2px; }
   .r6n2-tas b { font-size: 14px; }
@@ -663,6 +692,12 @@ const css = `
   /* frise */
   .r6n2-ft { font: 400 12px var(--sans); fill: #5b5b66; } .r6n2-ft-on { font-weight: 700; fill: #16161a; }
   .r6n2-jr { padding-top: 8px; border-top: 1px solid var(--trait); }
+  .r6n2-lh { display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 6px; min-height: 24px; font-size: 12px; }
+  .r6n2-lhn { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }
+  .r6n2-lhp { display: flex; flex-wrap: wrap; gap: 2px 10px; }
+  .r6n2-pu { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; } .r6n2-pu b { font-weight: 700; }
+  .r6n2-rien { color: var(--gris); }
+  .r6n2-dit { font-size: 14px; font-weight: 600; line-height: 1.3; }
   .r6n2-jr-c { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; color: var(--gris); }
   /* souche */
   .r6n2-pas-r { display: inline-flex; align-items: center; min-height: 22px; padding: 0 8px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--trait); font-size: 12px; color: var(--encre); }
@@ -743,7 +778,6 @@ const DATA = {
   V: Object.fromEntries(TOUS.map((n) => [n, Object.fromEntries(ORDRE.map((f) => { const v = val(n, f); return [f, [R2(v.bas), R2(v.centre), R2(v.haut)]]; }))])),
   HORS: Object.fromEntries(TOUS.map((n) => [n, hors(n)])),
   SCORE, AV: Object.fromEntries(ORDRE.map((f) => [f, R2(AV[f].centre)])), BANDE, DOM, LIGNES,
-  JOURS, JV: Object.fromEntries(TOUS.map((n) => [n, Object.fromEntries(CRIT.map((c) => [c.f, JOURS.map((j) => R2(valP(point(n, { jours: j }), c.f).centre))]))])),
   DUEL, ACC,
 };
 // Dans une fonction : le runtime de la fiche (second script) déclare aussi ouvrir() et fermer() au niveau global.
@@ -766,7 +800,7 @@ function dessiner() { $('#r6n2-radar').innerHTML = radarSvg(RD, X.TOUS.indexOf(S
 function reponse() {
   const c = X.CRIT[CI], r = rang(), a = r[0], b = r[1], d = Math.abs(note(a, c) - note(b, c));
   let h = PT(a) + '<b>' + a + '</b>' + (d < 0.05 ? ' à égalité avec ' : ' devant ') + PT(b) + '<b>' + b + '</b>';
-  if (d >= 0.05) h += '<span><b class="mono">~' + frn(d, 1) + '</b> cran</span>';
+  if (d >= 0.05) h += '<span><b class="mono">~' + frn(d, 1) + '</b> ' + (d >= 1.95 ? 'crans' : 'cran') + '</span>';
   if (X.HORS[a].length) h += '<span class="r6n2-hz" role="img" aria-label="~ ' + a + ' sort de ta 16D">' + ICO('risque', 14) + X.HORS[a].map((f) => PIC(f, 13)).join('') + '</span>';
   $('#r6n2-rep-2').innerHTML = h;
   $('#r6n2-pas-t').textContent = c.mot; $('#r6n2-pas-i').innerHTML = PIC(c.f, 14);
@@ -779,18 +813,6 @@ function pourquoi() {
   r.forEach((n, i) => { const v = X.V[n][f]; h += '<div class="r6n2-pqr"><span class="r6n2-rk">' + (i + 1) + '</span><span>' + PT(n) + '<b>' + n + '</b><small>~' + frn(v[1], 0) + ' sur 100, bande ' + frn(v[0], 0) + '–' + frn(v[2], 0) + (X.HORS[n].length ? ' · sort de ta 16D : ' + X.HORS[n].map((g) => X.COURT_F[g].toLowerCase()).join(', ') : ' · dans ta 16D') + '</small></span><b class="mono">' + (X.INC[n][f] ? '?' : '~' + dtn(X.DC[n][f])) + '</b></div>'; });
   h += '<p class="r6n2-sub">Les bandes se recouvrent toutes : un écart de moins d’un cran est un indice, pas une preuve. Le moteur ne connaît pas ta bière noire (seuil non mesuré).</p>';
   $('#r6n2-pq-c').innerHTML = h;
-}
-function jours() {
-  const c = X.CRIT[CI], f = c.f, W = 330, H = 104, x0 = 28, x1 = W - 8, y0 = 8, y1 = H - 22, js = X.JOURS, mx = Math.max.apply(null, actifs().map((n) => Math.max.apply(null, X.JV[n][f]))) * 1.1 || 1;
-  const xx = (j) => x0 + (x1 - x0) * (j - 1) / 6, yy = (v) => y1 - (y1 - y0) * v / mx, rd = (v) => Math.round(v * 10) / 10;
-  let s = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Jour après jour, ' + c.mot + ', centre simulé à 4 g/L">';
-  s += '<line x1="' + x0 + '" x2="' + x1 + '" y1="' + y1 + '" y2="' + y1 + '" stroke="#dcdce3"/>';
-  js.forEach((j) => { s += '<text x="' + rd(xx(j)) + '" y="' + (H - 6) + '" text-anchor="middle" class="r6n2-ot">' + j + ' j</text>'; });
-  s += '<line x1="' + rd(xx(3)) + '" x2="' + rd(xx(3)) + '" y1="' + y0 + '" y2="' + y1 + '" stroke="#16161a" stroke-width="2"/>';
-  actifs().forEach((n) => { const v = X.JV[n][f]; s += '<polyline points="' + js.map((j, i) => rd(xx(j)) + ',' + rd(yy(v[i]))).join(' ') + '" fill="none" stroke="' + X.COUL[n] + '" stroke-width="' + (n === SEL ? 3 : 1.5) + '" stroke-linejoin="round"/>'; });
-  s += '<text x="' + (x0 - 6) + '" y="' + (y0 + 8) + '" text-anchor="end" class="r6n2-ot">' + frn(mx, 0) + '</text><text x="' + (x0 - 6) + '" y="' + y1 + '" text-anchor="end" class="r6n2-ot">0</text>';
-  $('#r6n2-jr-g').innerHTML = s + '</svg>';
-  $('#r6n2-jr-c').innerHTML = PIC(f, 14) + c.mot + ', sur 100';
 }
 function mulberry(a) { return function () { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 function tirer() {
@@ -829,9 +851,9 @@ function choisir(n) {
   $$('.r6n2-tetes [role="radio"]').forEach((b) => { const on = b.dataset.col === n; b.setAttribute('aria-checked', String(on)); });
   $$('[data-col]').forEach((c) => { const on = c.dataset.col === n; c.classList.toggle('r6n2-sel', on); if (c.classList.contains('r6n2-cel')) c.style.setProperty('--hs', on ? X.COUL[n] : 'transparent'); });
   $('#r6n2-pont').setAttribute('aria-label', 'Doser ' + n + ' dans Dryhopper'); $('#r6n2-dk-sc').textContent = X.SCORE[n] + '/4';
-  dessiner(); duel(); jours();
+  dessiner(); duel();
 }
-function critere(i) { CI = i; ordonner(); reponse(); pourquoi(); jours(); }
+function critere(i, suivre) { CI = i; ordonner(); reponse(); pourquoi(); if (suivre) choisir(rang()[0]); }
 function quatre(on) {
   N4 = on; document.body.classList.toggle('r6n2-n4', on);
   const b = $('#r6n2-ajb'); b.querySelector('span').textContent = on ? 'Retirer ' + X.AJOUT + ' de la comparaison' : 'Ajouter ' + X.AJOUT + ' à la comparaison';
@@ -844,7 +866,7 @@ $$('.lentille [data-e]').forEach((b) => b.addEventListener('click', () => setTim
 const PAS = $('.r6n2-pas'), LST = $('#r6n2-crit');
 const liste = (on) => { LST.hidden = !on; PAS.setAttribute('aria-expanded', String(on)); };
 PAS.addEventListener('click', (e) => { e.stopPropagation(); liste(LST.hidden); });
-$$('#r6n2-crit [data-crit]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); critere(+b.dataset.crit); liste(false); }));
+$$('#r6n2-crit [data-crit]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); critere(+b.dataset.crit, true); liste(false); }));
 document.addEventListener('click', (e) => { if (!LST.hidden && !LST.contains(e.target)) liste(false); });
 // Les feuilles : un déclencheur, une feuille, une à la fois ; le voile, la croix, Échap ou le même toucher referment.
 const VOILE = $('#r6n2-voile'); let OUV = null;
@@ -866,7 +888,7 @@ critere(0); choisir(SEL); tirer();
 // États pour les captures : ?sel=Galaxy, ?crit=2, ?n4, ?ouvre=defi, ?legende, ?liste.
 const Q = new URLSearchParams(location.search);
 if (Q.has('n4')) quatre(true);
-if (Q.get('crit')) critere(+Q.get('crit'));
+if (Q.get('crit')) critere(+Q.get('crit'), true);
 if (Q.get('sel') && actifs().includes(Q.get('sel'))) choisir(Q.get('sel'));
 if (Q.has('legende')) legende(true);
 if (Q.has('liste')) liste(true);

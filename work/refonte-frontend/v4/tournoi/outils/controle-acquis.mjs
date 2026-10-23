@@ -42,9 +42,40 @@
 // Témoins : négatifs y3 (panel OSU, pas de radar), y1b, temoins/acquis-deux-touchers (valeurs
 // derrière deux touchers) ; positifs temoins/acquis-ok (tout au repos, radar r2) et
 // temoins/acquis-toucher-ok (chimie et valeurs à un toucher, radar r3).
+//
+// OPTION --outil=dryhopper (voie r0d, 22.10) : D99 vise Comparer ; Dryhopper a ses propres acquis,
+// balisés data-acquis, avec la même convention « au repos ou à un seul toucher » (déclencheur
+// <button>, <summary> ou [role="button"] avec aria-controls, ou data-ouvre-acquis). Sans --outil,
+// rien ne change (Comparer : radar, chimie, osu, valeurs). Sortie : « ACQUIS OK (4/4 : geste,
+// frise, valeurs, levure) ». Les quatre acquis de Dryhopper :
+//   geste   : « pouvoir glisser comme un slider le moment de l'ajout » (18.10 ; y1b). Dans
+//             [data-acquis="geste"] (ou sur le curseur lui-même), un [role="slider"] ou
+//             input[type=range] visible, large d'au moins 120 px. Le contrôle le JOUE : au doigt
+//             (touchscreen, glissé sur toute la largeur) la valeur doit prendre au moins 3 états ;
+//             le pas de l'ébullition (D34 : « des tranches de 5′ ») est soit déclaré
+//             (data-pas="5" sur le curseur ou son conteneur), soit mesuré : au clavier (flèches,
+//             de bout en bout) deux valeurs d'ébullition voisines (aria-valuetext « 60′ », « 55′ »)
+//             diffèrent de 5, sur 3 valeurs au moins ; au doigt à défaut du clavier, toutes les
+//             minutes vues sont des multiples de 5 et l'écart voisin le plus petit est 5. Un pas
+//             déclaré 5 mais mesuré autrement est une faute (on ne se fie pas à la balise seule) ;
+//   frise   : [data-acquis="frise"] : la frise du brassin, au moins 3 étapes [data-etape] visibles
+//             (ébullition, whirlpool, dry hop…), et à son bout les jours de contact : un groupe
+//             [data-jours] avec au moins 2 [data-jour] au texte « <n> j », placé après la dernière
+//             étape sur l'axe de la frise (x3b réduit en fin de frise) ;
+//   valeurs : [data-acquis="valeurs"] : au moins UNE valeur [data-nature="mesure"] avec data-source,
+//             un nombre et une unité, jamais « 0 » pour un inconnu, et une source citée visible
+//             (la règle de D99, minimum 1 au lieu de 3) ;
+//   levure  : [data-acquis="levure"] : soit un PONT (lien <a href> ou bouton qui nomme la levure ;
+//             un href relatif doit désigner un fichier existant), soit la DERNIÈRE ÉTAPE
+//             (data-forme="etape") : le bloc suit toutes les [data-etape], nomme la levure et porte
+//             un nombre. data-forme est facultatif : un lien ou bouton qui nomme la levure fait le pont.
+// Témoins de --outil=dryhopper : positifs temoins/dryhopper-acquis-ok (tout au repos, pont) et
+// dryhopper-acquis-toucher-ok (frise et valeurs à un toucher, levure en dernière étape) ; négatifs
+// dryhopper-acquis-sans-frise, -sans-levure, -sans-valeurs, -pas-1 (curseur par 1′ non déclaré),
+// -pas-declare-faux (data-pas="5" mais 1′ mesuré), -jours-au-debut (jours hors du bout).
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import puppeteer from 'puppeteer-core';
 
 const args = process.argv.slice(2);
@@ -53,12 +84,15 @@ const only = args.filter((a) => !a.startsWith('--')).slice(1);
 const pgArg = (args.find((a) => a.startsWith('--page=')) || '--page=etat.html').slice(7);
 const [pg, requete = ''] = pgArg.split('?');
 const ids = (only.length ? only : fs.readdirSync(dir).filter((d) => fs.existsSync(path.join(dir, d, pg)))).sort();
+const outilArg = (args.find((a) => a.startsWith('--outil=')) || '').slice(8);
+if (outilArg && outilArg !== 'dryhopper') { console.log('ACQUIS ECHEC : --outil=' + outilArg + ' inconnu (dryhopper)'); process.exit(1); }
+const dry = outilArg === 'dryhopper';
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const problems = [];
-const ACQUIS = ['radar', 'chimie', 'osu', 'valeurs'];
+const ACQUIS = dry ? ['geste', 'frise', 'valeurs', 'levure'] : ['radar', 'chimie', 'osu', 'valeurs'];
 const DECLENCHEURS = 'button, summary, [role="button"]';
 
-const analyser = ({ ACQUIS, DECLENCHEURS }) => {
+const analyser = ({ ACQUIS, DECLENCHEURS, dry }) => {
   const vis = (e) => !!e && e.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }) && e.getBoundingClientRect().width > 0 && e.getBoundingClientRect().height > 0;
   const txt = (e) => (e.innerText || e.textContent || '').replace(/\s+/g, ' ').trim();
   const UNITE = /(µg\s*\/\s*[Lk]g?|ug\/L|mg\s*\/\s*(L|kg|100 ?g)|mL\s*\/\s*(100 ?g|hL)|g\s*\/\s*L|ppm|ppb|ng\s*\/\s*L|%|×|\bEBC\b|\bIBU\b|mL\/100)/i;
@@ -80,7 +114,7 @@ const analyser = ({ ACQUIS, DECLENCHEURS }) => {
   }).filter(Boolean);
 
   // --- radar ---
-  {
+  if (!dry) {
     const cs = conteneurs('radar');
     const svgs = [...document.querySelectorAll('svg[data-radar]')].filter(vis);
     out.presents.radar = svgs.length > 0;
@@ -129,7 +163,7 @@ const analyser = ({ ACQUIS, DECLENCHEURS }) => {
     out.fautes.radar = f;
   }
   // --- chimie ---
-  {
+  if (!dry) {
     const cs = conteneurs('chimie');
     const lignes = [...document.querySelectorAll('[data-compose]')].filter(vis);
     const LEX = /(huile|thiols?|4MMP|3MH|linalol|g[ée]raniol|citronellol|myrc[èe]ne|humul[èe]ne|caryophyll[èe]ne|farn[ée]s[èe]ne)/gi;
@@ -152,7 +186,7 @@ const analyser = ({ ACQUIS, DECLENCHEURS }) => {
     out.fautes.chimie = f;
   }
   // --- osu ---
-  {
+  if (!dry) {
     const cs = conteneurs('osu');
     const texte = document.body.innerText;
     out.presents.osu = /panel\s+OSU/i.test(texte) || [...document.querySelectorAll('svg[aria-label]')].some((s) => /OSU/i.test(s.getAttribute('aria-label')) && vis(s));
@@ -176,14 +210,15 @@ const analyser = ({ ACQUIS, DECLENCHEURS }) => {
   {
     const cs = conteneurs('valeurs');
     const toutes = [...document.querySelectorAll('[data-nature="mesure"]')].filter((e) => vis(e) && (e.getAttribute('data-source') || '').trim());
-    out.presents.valeurs = toutes.length >= 3;
+    out.presents.valeurs = toutes.length >= (dry ? 1 : 3);
     out.balises.valeurs = cs.length > 0;
     const f = [];
     if (cs.length) {
       const c = cs[0];
       const mes = [...c.querySelectorAll('[data-nature="mesure"]')].filter(vis);
       const avecSource = mes.filter((e) => (e.getAttribute('data-source') || '').trim());
-      if (avecSource.length < 3) f.push('valeurs : ' + avecSource.length + ' valeur(s) mesurée(s) avec data-source (3 au moins)');
+      const mini = dry ? 1 : 3;
+      if (avecSource.length < mini) f.push('valeurs : ' + avecSource.length + ' valeur(s) mesurée(s) avec data-source (' + mini + ' au moins)');
       let sansUnite = 0;
       for (const e of avecSource) {
         const ligne = e.closest('[data-compose],tr,li,.ligne,.ro,div') || e;
@@ -197,7 +232,174 @@ const analyser = ({ ACQUIS, DECLENCHEURS }) => {
     }
     out.fautes.valeurs = f;
   }
+
+  // --- Dryhopper : geste, frise, levure (--outil=dryhopper) ---
+  if (dry) {
+    const LEV = /levure|US-?05|Pomona|Verdant|Diamond|Kveik|Voss|Nottingham|Safale|London|Hornindal|Lallemand|Fermentis/i;
+    // geste : le curseur du moment (la mesure au doigt et au clavier se joue côté Node)
+    {
+      const SLID = '[role="slider"],input[type="range"]';
+      const cs = conteneurs('geste');
+      out.presents.geste = [...document.querySelectorAll(SLID)].some(vis);
+      out.balises.geste = cs.length > 0;
+      out.geste = null;
+      const f = [];
+      if (cs.length) {
+        const tous = cs.flatMap((c) => [...(c.matches(SLID) ? [c] : []), ...c.querySelectorAll(SLID)]).filter(vis);
+        const el = tous.find((e) => /moment|ajout|minute|[′']/i.test(e.getAttribute('aria-label') || '')) || tous[0];
+        if (!el) f.push('geste : aucun curseur ([role="slider"] ou input range) visible dans le bloc data-acquis="geste"');
+        else {
+          const w = el.getBoundingClientRect().width;
+          if (w < 120) f.push('geste : curseur de ' + Math.round(w) + ' px de large (120 au moins)');
+          el.setAttribute('data-r0d-curseur', '1');
+          const porteur = el.closest('[data-pas]');
+          let pasDeclare = porteur ? porteur.getAttribute('data-pas') : null;
+          if (pasDeclare == null && el.matches('input[type="range"]') && el.getAttribute('step')) pasDeclare = el.getAttribute('step');
+          if (pasDeclare != null && parseFloat(pasDeclare) !== 5) f.push('geste : pas déclaré « ' + pasDeclare + ' » (tranches de 5′ attendues : data-pas="5")');
+          out.geste = { pasDeclare: pasDeclare != null ? parseFloat(pasDeclare) : null, range: el.matches('input[type="range"]') };
+        }
+      }
+      out.fautes.geste = f;
+    }
+    // frise : les étapes du brassin, les jours de contact à son bout
+    {
+      const cs = conteneurs('frise');
+      out.presents.frise = [...document.querySelectorAll('[data-etape],[data-jours]')].some(vis);
+      out.balises.frise = cs.length > 0;
+      const f = [];
+      if (cs.length) {
+        const c = cs[0];
+        const etapes = [...c.querySelectorAll('[data-etape]')].filter(vis);
+        const jours = [...c.querySelectorAll('[data-jours]')].filter(vis);
+        if (etapes.length < 3) f.push('frise : ' + etapes.length + ' étape(s) [data-etape] visible(s) dans la frise (3 au moins : ébullition, whirlpool, dry hop…)');
+        if (!jours.length) f.push('frise : pas de jours de contact (groupe [data-jours] visible dans la frise)');
+        else {
+          const j = jours[0];
+          const bons = [...j.querySelectorAll('[data-jour]')].filter((e) => vis(e) && /\d+\s*j\b/i.test(txt(e)));
+          if (bons.length < 2) f.push('frise : ' + bons.length + ' jour(s) de contact lisible(s) (« <n> j » dans [data-jour], 2 au moins)');
+          if (etapes.length) {
+            const ce = etapes.map((e) => { const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+            const ec = (k) => Math.max(...ce.map((p) => p[k])) - Math.min(...ce.map((p) => p[k]));
+            const k = ec('x') >= ec('y') ? 'x' : 'y';
+            const rj = j.getBoundingClientRect();
+            const cj = k === 'x' ? rj.left + rj.width / 2 : rj.top + rj.height / 2;
+            if (!(cj > Math.max(...ce.map((p) => p[k])))) f.push('frise : les jours de contact ne sont pas au bout de la frise (après la dernière étape sur l\'axe ' + (k === 'x' ? 'horizontal' : 'vertical') + ')');
+          }
+        }
+      }
+      out.fautes.frise = f;
+    }
+    // levure : un pont (lien ou bouton qui la nomme) ou la dernière étape
+    {
+      const cs = conteneurs('levure');
+      out.presents.levure = [...document.querySelectorAll('a[href],button,[role="button"]')].some((e) => vis(e) && LEV.test((e.getAttribute('aria-label') || '') + ' ' + txt(e)));
+      out.balises.levure = cs.length > 0;
+      out.liensLevure = [];
+      const f = [];
+      if (cs.length) {
+        const c = cs[0];
+        const forme = c.getAttribute('data-forme') || '';
+        const liens = [...(c.matches('a[href],button,[role="button"]') ? [c] : []), ...c.querySelectorAll('a[href],button,[role="button"]')].filter((e) => vis(e) && LEV.test((e.getAttribute('aria-label') || '') + ' ' + txt(e)));
+        const valides = liens.filter((e) => { const h = e.getAttribute('href'); return h === null || !/^\s*(#|javascript:)?\s*$/.test(h); });
+        out.liensLevure = valides.filter((e) => e.tagName === 'A').map((e) => e.href);
+        if (forme === 'pont' && !valides.length) f.push(liens.length ? 'levure : le lien qui nomme la levure ne mène nulle part (href vide ou « # »)' : 'levure : data-forme="pont" sans lien ni bouton qui nomme la levure');
+        else if (forme === 'etape' || !valides.length) {
+          if (!LEV.test(txt(c))) f.push('levure : ni pont (lien ou bouton qui nomme la levure) ni dernière étape qui la nomme');
+          else {
+            if (!/\d/.test(txt(c))) f.push('levure : la dernière étape nomme la levure sans aucun nombre (jours, température…)');
+            const etapes = [...document.querySelectorAll('[data-etape]')];
+            if (etapes.some((e) => !(e.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING))) f.push('levure : le bloc n\'est pas la dernière étape (il doit suivre toutes les [data-etape])');
+          }
+        }
+      }
+      out.fautes.levure = f;
+    }
+  }
   return out;
+};
+
+// Dryhopper : le geste se joue, il ne se devine pas. Clavier de bout en bout (flèches), puis le doigt
+// sur toute la largeur ; l'état lu est aria-valuetext (ou la valeur d'un input range).
+const lireCurseur = (page) => page.evaluate(() => {
+  const e = document.querySelector('[data-r0d-curseur]');
+  return e ? { t: e.getAttribute('aria-valuetext') || '', n: e.getAttribute('aria-valuenow') || '', v: e.matches('input') ? String(e.value) : '' } : null;
+});
+const signe = (s) => (s ? s.t + '|' + s.n + '|' + s.v : '');
+const minutesDe = (s, range) => {
+  if (!s) return null;
+  if (s.t) {
+    if (/\bj\b|jours?|actif|apr[èe]s|whirlpool|dry/i.test(s.t)) return null;
+    const m = s.t.match(/(\d+(?:[.,]\d+)?)\s*(?:′|'|’|min\b)/);
+    return m ? parseFloat(m[1].replace(',', '.')) : null;
+  }
+  return range && s.v !== '' && !Number.isNaN(Number(s.v)) ? Number(s.v) : null;
+};
+const mesurerGeste = async (page, g) => {
+  const f = [];
+  const el = await page.$('[data-r0d-curseur]');
+  if (!el) return f;
+  await el.evaluate((e) => e.scrollIntoView({ block: 'center' }));
+  await attendre(100);
+  // 1. clavier : de bout en bout, dans les deux sens
+  const diffs = [];
+  let clavier = false;
+  await el.focus();
+  for (const touche of ['ArrowLeft', 'ArrowRight']) {
+    let prec = await lireCurseur(page);
+    for (let n = 0; n < 140; n++) {
+      await page.keyboard.press(touche);
+      await attendre(12);
+      const cur = await lireCurseur(page);
+      if (signe(cur) === signe(prec)) break;
+      clavier = true;
+      const a = minutesDe(prec, g.range), b = minutesDe(cur, g.range);
+      if (a != null && b != null) diffs.push(Math.abs(a - b));
+      prec = cur;
+    }
+  }
+  // 2. le doigt : un glissé sur toute la largeur, la valeur lue à chaque pas
+  const box = await el.boundingBox();
+  const vus = new Map();
+  const minutes = new Set();
+  if (box && box.width > 0) {
+    const y = box.y + box.height / 2, x0 = box.x + 4, x1 = box.x + box.width - 4;
+    const t = await page.touchscreen.touchStart(x0, y);
+    const note = async () => { const s = await lireCurseur(page); vus.set(signe(s), s); const m = minutesDe(s, g.range); if (m != null) minutes.add(m); };
+    await attendre(60); await note();
+    for (let k = 1; k <= 60; k++) { await t.move(x0 + (x1 - x0) * k / 60, y); await attendre(20); await note(); }
+    await t.end();
+    await attendre(100);
+  }
+  if (vus.size < 3) f.push('geste : au doigt, le curseur n\'a pris que ' + vus.size + ' valeur(s) sur un glissé complet (« pouvoir glisser comme un slider le moment de l\'ajout » : 3 valeurs au moins)');
+  // 3. le pas : déclaré (et vérifié) ou mesuré
+  const inconnus = [...new Set(diffs)].sort((a, b) => a - b);
+  const triees = [...minutes].sort((a, b) => a - b);
+  const ecartMin = triees.length > 1 ? Math.min(...triees.slice(1).map((m, i) => m - triees[i])) : null;
+  const pasAuDoigtFaux = triees.filter((m) => m % 5 !== 0);
+  if (g.pasDeclare === 5) {
+    if (inconnus.some((d) => d !== 5)) f.push('geste : data-pas="5" déclaré, mais le clavier mesure des écarts de ' + inconnus.join(', ') + '′ entre deux crans d\'ébullition (5′ attendus)');
+    else if (pasAuDoigtFaux.length) f.push('geste : data-pas="5" déclaré, mais le doigt s\'arrête sur ' + pasAuDoigtFaux.slice(0, 4).join(', ') + '′ (pas un multiple de 5)');
+  } else if (g.pasDeclare == null) {
+    if (diffs.length >= 2) {
+      if (inconnus.some((d) => d !== 5)) f.push('geste : pas mesuré de ' + inconnus.join(', ') + '′ entre deux crans d\'ébullition (5′ attendus ; déclare-le par data-pas="5" si c\'est le cas)');
+    } else if (!clavier && triees.length >= 3 && !pasAuDoigtFaux.length && ecartMin === 5) {
+      // mesuré au doigt seul : accepté
+    } else f.push('geste : le pas de l\'ébullition n\'est ni déclaré (data-pas="5") ni mesurable sur trois valeurs (clavier : ' + diffs.length + ' écart(s) voisin(s) lu(s) ; doigt : ' + triees.length + ' minute(s) vue(s))');
+  }
+  return f;
+};
+// Dryhopper : ce que seul Node peut vérifier après l'analyse de la page.
+const completer = async (page, a) => {
+  if (!dry) return a;
+  if (a.balises.geste && a.geste) a.fautes.geste.push(...(await mesurerGeste(page, a.geste)));
+  if (a.balises.levure) {
+    for (const href of a.liensLevure) {
+      if (!href.startsWith('file:')) continue;
+      const chemin = fileURLToPath(href.split('#')[0].split('?')[0]);
+      if (!fs.existsSync(chemin)) a.fautes.levure.push('levure : le pont mène à un fichier absent (' + path.basename(chemin) + ')');
+    }
+  }
+  return a;
 };
 
 const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -212,7 +414,7 @@ for (const id of ids) {
   const page = await browser.newPage();
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
   await charger(page, file);
-  const a = await page.evaluate(analyser, { ACQUIS, DECLENCHEURS });
+  const a = await completer(page, await page.evaluate(analyser, { ACQUIS, DECLENCHEURS, dry }));
 
   // Un toucher, pour de vrai : page rechargée, un seul tap sur chaque déclencheur déclaré, mesure.
   const apres = {}; // acquis -> { ok, fautes }
@@ -225,7 +427,7 @@ for (const id of ids) {
     if (!hs[t.i]) continue;
     await hs[t.i].tap();
     await attendre(450);
-    const b = await page.evaluate(analyser, { ACQUIS, DECLENCHEURS });
+    const b = await completer(page, await page.evaluate(analyser, { ACQUIS, DECLENCHEURS, dry }));
     for (const k of aOuvrir) {
       touches.add(k);
       const ok = b.balises[k] && !b.fautes[k].length;
@@ -246,11 +448,12 @@ for (const id of ids) {
     else if (touches.has(k)) f.push(k + ' : un seul toucher sur son déclencheur ne le fait pas apparaître (deux touchers ou plus : absent)');
     else if (a.caches[k]) f.push(k + ' : caché au repos, sans déclencheur à un toucher (button, summary ou [role="button"] visible avec aria-controls vers le conteneur, ou data-ouvre-acquis="' + k + '") : absent');
     else if (a.presents[k]) f.push(k + ' : présent au rendu mais non balisé (data-acquis="' + k + '")');
-    else f.push(k + ' : absent' + (k === 'radar' ? ' (aucun svg[data-radar] visible : « pas de radar grpah ? »)' : k === 'chimie' ? ' (moins de 3 composés lisibles : « Manque aussi la partie chimie »)' : k === 'osu' ? ' (pas de panel OSU)' : ' (moins de 3 vraies valeurs sourcées)'));
+    else if (dry) f.push(k + ' : absent' + (k === 'geste' ? ' (aucun curseur du moment : « pouvoir glisser comme un slider le moment de l\'ajout »)' : k === 'frise' ? ' (pas de frise du brassin avec les jours de contact en bout)' : k === 'levure' ? ' (ni dernière étape ni pont vers Levure qui nomme la levure)' : ' (aucune vraie valeur mesurée sourcée)'));
+    else f.push(k + ' : absent' + (k === 'radar' ?' (aucun svg[data-radar] visible : « pas de radar grpah ? »)' : k === 'chimie' ? ' (moins de 3 composés lisibles : « Manque aussi la partie chimie »)' : k === 'osu' ? ' (pas de panel OSU)' : ' (moins de 3 vraies valeurs sourcées)'));
   }
   console.log(id + ' · ' + tenus.length + '/4 : ' + (tenus.join(', ') || 'aucun') + (f.length ? ' · ' + f.length + ' faute(s)' : ''));
   for (const x of f) problems.push(id + ' ' + pg + ' : ' + x);
 }
 await browser.close();
 if (problems.length) { console.log('ACQUIS ECHEC ' + problems.length + ' problème(s)'); for (const x of problems) console.log('  ' + x); process.exit(1); }
-console.log('ACQUIS OK (4/4 : radar, chimie, osu, valeurs)');
+console.log('ACQUIS OK (4/4 : ' + ACQUIS.join(', ') + ')');

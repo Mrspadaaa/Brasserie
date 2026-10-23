@@ -12,12 +12,12 @@ Scope: une mini maquette de reprise de r6a (lot 22 bis) qui ne laisse libre que 
 - [x] G2: 80 mots au plus au premier écran
   CHECK: node work/refonte-frontend/v4/tournoi/outils/mots-premier-ecran.mjs work/refonte-frontend/v4/ecran-1/fils22-comparer r6n1 --max=80 --page=etat.html
   EXPECT: MOTS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=583b080eb47d1bab8e34de154b13ff99094abe4fe6143e1c254eb6b68c05afc4; exit=0; EXPECT=matched; output-sha256=058abd274e01d594c1cb64fa8ed3459c348c8ce4cb16fd24c7d6669b4654d9a8; output-bytes=21; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=583b080eb47d1bab8e34de154b13ff99094abe4fe6143e1c254eb6b68c05afc4; exit=0; EXPECT=matched; output-sha256=ed6adb8f57a205b7c163dcab1a348003fc4d6c821e8bc3bd19f56841db4b16e2; output-bytes=21; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G3: un seul facteur libre, la variété (D98)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-une-question.mjs work/refonte-frontend/v4/ecran-1/fils22-comparer r6n1 --page=etat.html
   EXPECT: /UNE-QUESTION OK \(1 groupe libre : houblon\)/
-  EVIDENCE: automatic-evidence=v1; definition-sha256=961bfe926aa060fcb1eca245a2bcab08fdb541c2623c9b060d8e9c9867e119a6; exit=0; EXPECT=matched; output-sha256=7906ff504f0eb3bba0961560cc3e50faf16aa2a127a2c8bd6662f81bba67fdde; output-bytes=179; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=961bfe926aa060fcb1eca245a2bcab08fdb541c2623c9b060d8e9c9867e119a6; exit=0; EXPECT=matched; output-sha256=93910d862d01fe01d791e974c4bbe6bf12703df835bc9912306a4beae923ca4d; output-bytes=166; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G4: les quatre acquis sont là (D99)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-acquis.mjs work/refonte-frontend/v4/ecran-1/fils22-comparer r6n1 --page=etat.html
@@ -32,7 +32,7 @@ Scope: une mini maquette de reprise de r6a (lot 22 bis) qui ne laisse libre que 
 - [x] G6: chaque élément de l'inventaire est classé et balisé (D104), au premier écran
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-reprise.mjs work/refonte-frontend/v4/ecran-1/fils22-comparer r6n1 --page=etat.html --premier-ecran
   EXPECT: REPRISE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=ba1891b06854beec8c506edd85f65ce3945f97bf1575a28e267d0466b8958d73; exit=0; EXPECT=matched; output-sha256=bd884ea99443ccceb8150ba9ab4a200f76a1bdb13c3ca0dd9a71a66a12f5bf14; output-bytes=1575; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=ba1891b06854beec8c506edd85f65ce3945f97bf1575a28e267d0466b8958d73; exit=0; EXPECT=matched; output-sha256=6f01cc666b8b0e7476bd961098f4e3ca419d58009997aa5e2e0550f940073910; output-bytes=1570; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G7: la page se rend sans erreur de script ni défilement horizontal
   CHECK: node scripts/agents/verifier-page.mjs work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n1/etat.html --min-images 0
