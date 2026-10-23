@@ -12,7 +12,9 @@ import { nouvelId } from '../../etat/operations';
 import { style } from '../../moteur';
 import { STOCK, hopRef, type FamilyId } from '../../../../src/engine';
 import Fiche from '../fiche';
-import { ABSOLU, ORANGE, couleurHoublon, depart, egaler, lireColonnes, reponse, type CelluleLue, type ColonneLue } from './calcul';
+import { ABSOLU, ORANGE, couleurHoublon, depart, egaler, houblonDeBase, lireColonnes, lireEtapes, reponse, type CelluleLue, type ColonneLue } from './calcul';
+import { AuxEtapes } from './Etapes';
+import { ETAPES, type Etapes } from './calcul';
 import { Radar } from './Radar';
 import { CHIMIE, acides, compose, huile, linalolEnBiere, panelOSU, titreRef, type ValeurReelle } from './valeurs';
 import './comparer.css';
@@ -38,12 +40,15 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   }, [houblons, ajoutes, pin]);
   // En direct : le moteur simule chaque houblon à chaque changement de la recette ou des colonnes (mémoïsé).
   const cols = useMemo(() => lireColonnes(recette, cles), [recette, cles]);
+  // Aux étapes (D107) : chaque houblon et la référence (le houblon de base de ta recette) à 60′, 10′ et au dry hop.
+  const reference = useMemo(() => houblonDeBase(recette, cles), [recette, cles]);
+  const etapes = useMemo(() => lireEtapes(recette, reference ? [...cles, reference] : cles), [recette, cles, reference]);
   const [retenu, setRetenu] = useState<string | null>(null);
   const cleRetenue = retenu && cols.some((c) => c.cle === retenu) ? retenu : depart(cols, VISEE.famille) ?? cols[0]?.cle ?? '';
   const sel = cols.find((c) => c.cle === cleRetenue) ?? null;
   const rep = useMemo(() => reponse(cols, cleRetenue, VISEE.famille), [cols, cleRetenue]);
   const [absolu, setAbsolu] = useState(false);
-  const [ouvert, setOuvert] = useState<null | 'vraies' | 'egaler'>(null);
+  const [ouvert, setOuvert] = useState<null | 'vraies' | 'egaler' | 'osu'>(null);
   const [fiche, setFiche] = useState<string | null>(null);
 
   // La fiche (composant de la voie p1) pousse une entrée d'historique : le retour du téléphone et sa fermeture
@@ -83,9 +88,10 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   const noms = cols.map((c) => c.houblon.nom);
   const question = `${noms.slice(0, -1).join(', ')}${noms.length > 1 ? ' ou ' : ''}${noms.at(-1) ?? ''} pour ma stout ?`;
   const quatre = cols.length >= 4;
-  // Le titre en question est le h1 du cadre (PageShell) de cet écran : il porte la marque r6a-question (D104).
+  // La question de r6a est le titre de l'écran : le h1 que le cadre (CadreOutil du socle) pose sous l'en-tête commun
+  // (D119, onglets et croix), en tête du contenu ; il porte la marque r6a-question (D104).
   useEffect(() => {
-    document.querySelectorAll('.pq-outil-comparer h1').forEach((h) => h.setAttribute('data-element', 'r6a-question'));
+    document.querySelectorAll('.pq-outil-comparer h1').forEach((h) => { if (h.textContent?.trim() === question) h.setAttribute('data-element', 'r6a-question'); });
   }, [question]);
 
   return (
@@ -94,15 +100,14 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
         <div className="pq-comparer-tete">
           <LigneContexte items={[
             { cle: 'base', contenu: <span data-element="y1b-ligne-contexte r6a-contexte">Stout {sc.code}</span> },
-            { cle: 'dose', contenu: <>{nombre(CONDITIONS.doseGL)} g/L chacun</> },
-            { cle: 'moment', contenu: <>après, {CONDITIONS.jours} j</> },
+            { cle: 'dose', contenu: <span className="pq-comparer-dose" aria-label={`dose égale : ${nombre(CONDITIONS.doseGL)} g/L chacun`}><IconeEgal />{nombre(CONDITIONS.doseGL)} g/L</span> },
             { cle: 'levure', contenu: <span data-element="y1b-levure-pastilles a2b-ce-que-la-levure-change">{nomLevure(recette.yeastId)}</span> },
           ]} />
           <span data-element="l8b-legende-cachee"><Legende><ContenuLegende /></Legende></span>
         </div>
       }
       dock={sel && (
-        <nav className="pq-comparer-dock" aria-label="Suite" data-element="y1b-dock-pouce y1b-second-houblon-puis x3b-cuve-jour-apres-jour">
+        <nav className="pq-comparer-dock" aria-label="Suite" data-element="y1b-dock-pouce y1b-second-houblon-puis">
           <Pont nom="placer" onClick={() => ouvrir({ ecran: 'dryhopper', ajout: nouvelId(recette, sel.cle) })}>
             Placer {sel.houblon.nom}<span className="pq-comparer-lu"> dans Dryhopper</span>
           </Pont>
@@ -135,6 +140,8 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
                 onRetirer={() => { setAjoutes((a) => a.filter((x) => x !== c.cle)); if (retenu === c.cle) setRetenu(null); }} />
             ))}
           </div>
+          <AuxEtapes cols={cols} etapes={etapes} reference={reference} nomReference={reference ? hopRef(reference)?.name ?? reference : null} retenu={cleRetenue} />
+          <p className="pq-comparer-rg-t">Toutes les familles <b>au dry hop, après {CONDITIONS.jours} j</b>, comme le radar</p>
           <div className="pq-comparer-rgs" data-element="r6a-rangees">
             {lignes.map((f, i) => (
               <div key={f} className={cx('pq-comparer-grille-tab pq-comparer-rg', (f === VISEE.famille || f === TROP) && 'pq-comparer-demande', i === lignes.length - 1 && 'pq-comparer-derniere')} data-famille-ligne={f}
@@ -165,16 +172,22 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
             onClick={() => setOuvert((o) => (o === 'egaler' ? null : 'egaler'))}>
             <span aria-hidden="true" className="pq-comparer-egal">=</span><span>Égaler</span><Chevron ouvert={ouvert === 'egaler'} />
           </button>
+          {/* D114 : « Beaucoup trop mis en avant » : le panel OSU (un acquis) passe derrière un toucher, au même rang que
+              les autres blocs. */}
+          <button type="button" className="pq-comparer-tch" aria-expanded={ouvert === 'osu'} aria-controls="pq-comparer-osu"
+            data-ouvre-acquis="osu" data-ouvre-element="r6a-osu y3-panel-osu" onClick={() => setOuvert((o) => (o === 'osu' ? null : 'osu'))}>
+            <IconePanel /><span>Panel OSU</span><Chevron ouvert={ouvert === 'osu'} />
+          </button>
         </div>
         <section id="pq-comparer-vraies" className="pq-comparer-vraies" data-acquis="valeurs" hidden={ouvert !== 'vraies'} aria-label="Vraies valeurs et chimie"
           data-element="v1-vraies-valeurs v1-en-a-plus v1-linalol-en-biere d1-tout-ouvert p03-plages-sources">
-          {ouvert === 'vraies' && <VraiesValeurs cols={cols} quatre={quatre} />}
+          {ouvert === 'vraies' && <VraiesValeurs cols={cols} quatre={quatre} etapes={etapes} />}
         </section>
         <section id="pq-comparer-egaler" className="pq-comparer-egaler" data-role="simulation" hidden={ouvert !== 'egaler'} aria-label="Égaler" data-element="y3-pour-egaler">
           {ouvert === 'egaler' && sel && <Egaler cols={cols} sel={sel} />}
         </section>
 
-        <PanelOSU noms={noms} />
+        <div id="pq-comparer-osu" hidden={ouvert !== 'osu'}><PanelOSU noms={noms} /></div>
       </div>
       {fiche && <Fiche houblon={fiche} />}
     </CadreOutil>
@@ -272,7 +285,7 @@ function TeteColonne({ c, retenu, quatre, epinglee, retirable, onRetenir, onFich
         onPointerEnter={surEntree} onPointerLeave={(e) => { finSurvol(); appui.onPointerLeave(); void e; }}>
         <span className="pq-comparer-tc-n">
           {epinglee && <span className="pq-comparer-pin" aria-label="épinglé : le houblon à remplacer">⌖</span>}
-          <span className="pq-comparer-hn" data-houblon={c.cle} data-houblon-compare={h.nom} data-couleur={c.couleur}>{h.nom}</span>
+          <span className="pq-comparer-hn" data-houblon={c.cle} data-houblon-compare={c.cle}>{h.nom}</span>
           {h.stock != null && h.stock > 0 && <IconeStock />}
         </span>
         <span className="pq-comparer-tc-a">
@@ -374,7 +387,7 @@ function LigneValeurs({ cle, nom, unite, famille, icone, cols, cellules, note, q
     </div>
   );
 }
-function VraiesValeurs({ cols, quatre }: { cols: ColonneLue[]; quatre: boolean }) {
+function VraiesValeurs({ cols, quatre, etapes }: { cols: ColonneLue[]; quatre: boolean; etapes: Etapes }) {
   const refs = new Set<string>();
   const garder = (v: ValeurReelle | null) => { v?.refs.forEach((r) => refs.add(r)); return v; };
   const alpha = cols.map((c) => garder(acides(c.cle, 'alpha')));
@@ -393,9 +406,25 @@ function VraiesValeurs({ cols, quatre }: { cols: ColonneLue[]; quatre: boolean }
       </div>
       {lin.some(Boolean) && <LigneValeurs cle="linalol-biere" nom="linalol en bière" unite="µg/L" famille="floral" cols={cols} cellules={lin} quatre={quatre}
         note="Pas comparables entre eux : doses, moments et bières diffèrent." />}
-      <div className="pq-comparer-grille-tab pq-comparer-vg" aria-label="IBU à cru : non modélisé">
-        <span className="pq-comparer-vn"><IconeGoutte />{!quatre && <span><b>IBU</b><span className="pq-comparer-vu">à cru</span></span>}</span>
-        {cols.map((c) => <span key={c.cle} className="pq-comparer-vc pq-comparer-vc-inc"><i className="pq-comparer-hach" /><span className="pq-comparer-vi">non modélisé</span></span>)}
+      {/* L'IBU aux étapes (D107) : calculé (BrewingMath de l'app, α du lot ou milieu de la plage des fiches), à 4 g/L ;
+          à froid, non modélisé (jamais 0). */}
+      <div className="pq-comparer-grille-tab pq-comparer-vg" data-role="ibu-etapes" aria-label="IBU selon l’étape, à 4 g/L">
+        <span className="pq-comparer-vn"><IconeGoutte />{!quatre && <span><b>IBU</b><span className="pq-comparer-vu">calculé, 4 g/L</span></span>}</span>
+        {cols.map((c) => (
+          <span key={c.cle} className="pq-comparer-vc pq-comparer-vc-ibu">
+            {ETAPES.map((e) => {
+              const v = etapes[c.cle]?.[e.code];
+              return (
+                <span key={e.code} className="pq-comparer-vi-l">
+                  <span className="pq-comparer-vu-in">{e.nom}</span>{' '}
+                  {v?.ibu
+                    ? <span className="pq-comparer-vv" data-nature="simule" data-ibu={e.code} title={`calculé, ${nombre(v.ibu.min, 0)}–${nombre(v.ibu.max, 0)} par la plage d’α`}>~{nombre(v.ibu.valeur, 0)}</span>
+                    : <span className="pq-comparer-vi" data-inconnu="">{v?.raisonIbu?.startsWith('à froid') ? 'à froid : ?' : '?'}</span>}
+                </span>
+              );
+            })}
+          </span>
+        ))}
       </div>
       <p className="pq-comparer-vsrc">mesuré : fiches et études ; plage = du plus bas au plus haut des sources ; la plus haute de chaque rangée à la couleur de son houblon.</p>
       <p className="pq-comparer-vrefs">{[...refs].sort((a, b) => a.localeCompare(b, 'fr', { numeric: true })).map((r) => <span key={r}><b>{r}</b> {titreRef(r)}</span>)}</p>
@@ -452,7 +481,7 @@ function PanelOSU({ noms }: { noms: string[] }) {
   const sans = noms.filter((n) => n !== 'Cascade');
   return (
     <section className="pq-comparer-osu" data-acquis="osu" data-element="r6a-osu y3-panel-osu" data-nature="mesure" data-source="H22 Lafontaine 2018 (E04)" aria-label="Panel OSU">
-      <p className="pq-comparer-osu-t"><IconePanel /><b>Panel OSU, Cascade</b><span className="pq-comparer-puce">panel</span><span className="pq-comparer-osu-u">sur 15, g/L</span></p>
+      <p className="pq-comparer-osu-t"><IconePanel /><span className="pq-comparer-osu-nom">Panel OSU, Cascade</span><span className="pq-comparer-puce">panel</span><span className="pq-comparer-osu-u">sur 15, g/L</span></p>
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Panel OSU, Cascade : intensité, herbacé et agrumes selon la dose, sur 15">
         {iz0 >= 0 && iz1 >= 0 && <rect x={xs[iz0]} y={y0} width={xs[iz1] - xs[iz0]} height={y1 - y0} className="pq-comparer-osu-z" />}
         {[0, 5, 10, 15].map((v) => <g key={v}><line x1={x0} x2={x1} y1={rd(y(v))} y2={rd(y(v))} className="pq-comparer-grille" /><text x={x0 - 6} y={rd(y(v) + 4)} textAnchor="end" className="pq-comparer-osu-ax">{v}</text></g>)}
@@ -475,6 +504,7 @@ function ContenuLegende() {
     <div className="pq-comparer-leg">
       <p><b>Une barre, par houblon</b> : zone pâle, ce que ta 16D permet ; barre, ~ simulé à 4 g/L ; trait fin, sa bande d’incertitude ; trait noir, ta stout aujourd’hui ; orangé, au-dessus de ta 16D ; hachuré, inconnu, jamais zéro.</p>
       <p><b>~+1,3</b> : crans du style gagnés. ↑ ↓ : ta demande du 18.10.</p>
+      <p><b>Aux étapes</b> (60′, 10′, dry hop) : chaque houblon posé à ce moment, à 4 g/L. Le nombre : crans de floral gagnés sur ta stout ; bande violette, le floral ; bande orangée, le résineux gagné ; pointillé noir, ta stout sans rien ; pointillé gris, ton Nugget (houblon de base de ta recette) au même moment ; en gras, le plus floral de l’étape. Whirlpool ≈ 10′ pour l’arôme ; l’IBU de chaque étape est dans « Chimie et vraies valeurs ». Le radar et les rangées : au dry hop, après 3 j.</p>
       <p><b>Le radar</b> : le houblon retenu plein, avec son intervalle en trait fin (// : il continue au-delà) ; les autres en contour. Flèche orangée au bout d’un axe : au-delà de l’échelle. Flèche verte : ta demande.</p>
       <p><b>★</b> : le plus floral qui reste dans ta 16D. Toucher une colonne la retient ; appui long sur un nom : sa fiche ; « + » : un 4ᵉ houblon de ton stock.</p>
       <p><b>α</b> : du lot en stock (≠ hors de ses fiches) ou des fiches (livre). Rôle pâle : déduit de l’α. ~✓ dans ta 16D ; ~⚠ en sort.</p>
@@ -498,3 +528,5 @@ const IconeFiole = () => <Ic taille={16}><path d="M9 3h6M10 3v6L4 20h16L14 9V3" 
 const IconeGoutte = () => <Ic taille={16}><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z" /></Ic>;
 const IconePanel = () => <Ic taille={16}><circle cx="9" cy="8" r="3" /><path d="M3 20c0-3 3-5 6-5s6 2 6 5M16 5a3 3 0 0 1 0 6M18 15c2 .5 3 2 3 5" /></Ic>;
 const Chevron = ({ ouvert }: { ouvert: boolean }) => <Ic taille={14}><path d={ouvert ? 'm6 15 6-6 6 6' : 'm6 9 6 6 6-6'} /></Ic>;
+/** « = » de r6a (« dose égale 4 g/L ») : la même dose pour chaque houblon, dit sans mot. */
+const IconeEgal = () => <Ic taille={12} label="dose égale"><path d="M5 9h14M5 15h14" /></Ic>;

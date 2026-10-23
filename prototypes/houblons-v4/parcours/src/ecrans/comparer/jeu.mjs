@@ -7,7 +7,7 @@
 export default {
   page: 'etat.html',
   gestes: [
-    { nom: 'Fiche de Galaxy', faire: 'appui-long', cible: '[data-ecran="comparer"] [data-houblon="beermaverick-galaxy"]', attendre: '[data-ecran="fiche"]',
+    { nom: 'Fiche de Galaxy', faire: 'appui-long', cible: '[data-ecran="comparer"] [data-houblon-compare="beermaverick-galaxy"]', attendre: '[data-ecran="fiche"]',
       verifier: () => document.querySelector('[data-ecran="fiche"]')?.getAttribute('data-houblon-ouvert') === 'beermaverick-galaxy' || 'la fiche ouverte n’est pas celle de Galaxy' },
     { nom: 'Retour ferme la fiche', faire: 'retour', attendre: '[data-ecran="comparer"]',
       verifier: (p) => (!document.querySelector('[data-ecran="fiche"]') && p.route.startsWith('#/comparer')) || `fiche encore ouverte ou route ${p.route}` },
@@ -24,6 +24,27 @@ export default {
         const attendu = Math.round((d(c) - d(i)) * 10) / 10;
         const lu = Number((document.querySelector('[data-role="reponse"] [data-nature="simule"]')?.textContent ?? '').replace('~', '').replace('−', '-').replace(',', '.'));
         return Math.abs(lu - attendu) < 0.051 || `réponse ${lu} ≠ moteur ${attendu}`;
+      } },
+    // D107 : aux étapes, au repos, chaque case = le moteur maintenant (comparer avec un moment), référence comprise.
+    { nom: 'Etapes = moteur', faire: 'toucher', cible: '[role="radio"][data-col="beermaverick-idaho-7"]',
+      verifier: (p) => {
+        const r = p.etat.recette, sc = p.moteur.style(r.styleCode);
+        const Q = { b60: { type: 'ebullition', minutes: 60 }, b10: { type: 'ebullition', minutes: 10 }, dryPost: { type: 'dryhop', phase: 'apres', jours: 3 } };
+        const ref = document.querySelector('[data-reference="houblon"]')?.getAttribute('data-houblon');
+        if (ref !== 'beermaverick-nugget') return `référence ${ref} au lieu du Nugget de la recette`;
+        const cles = [...document.querySelectorAll('[data-houblon-compare]')].map((e) => e.getAttribute('data-houblon-compare')).concat(ref);
+        let n = 0;
+        for (const code of Object.keys(Q)) {
+          for (const c of p.moteur.comparer(r, cles, { quand: Q[code] })) {
+            const el = document.querySelector(`[data-etape="${code}"][data-houblon="${c.cle}"]`);
+            if (!el) return `pas de case ${code} pour ${c.cle}`;
+            const attendu = Math.round((c.lu.ecart.floral.centre / sc.families.floral.cran) * 10) / 10;
+            const lu = Number(el.textContent.replace('~', '').replace(',', '.'));
+            if (Math.abs(lu - attendu) > 0.051) return `${c.cle} à ${code} : ${lu} ≠ moteur ${attendu}`;
+            n++;
+          }
+        }
+        return n === 12 || `${n} cases au lieu de 12`;
       } },
     { nom: 'Egaler', faire: 'toucher', cible: '[aria-controls="pq-comparer-egaler"]', attendre: '#pq-comparer-egaler:not([hidden]) [data-nature="simule"]',
       verifier: () => {

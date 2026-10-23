@@ -143,7 +143,8 @@ async function jouer(format) {
     await calme(); void c;
   };
   const retourTelephone = async () => { await ev(() => history.back()); await pause(150); await calme(); };
-  const fermerOutil = () => toucher('[data-page-shell] [data-page-titlebar] button[aria-label="Fermer"]');
+  // La croix des outils (D109) ramène toujours à l'étape Houblons (D118), quel que soit le chemin.
+  const fermerOutil = () => toucher('[data-role="retour"]');
   const debordement = () => ev(() => {
     const d = document.documentElement;
     return [d, ...document.querySelectorAll('[data-page-shell] main')].filter((z) => z.scrollWidth > z.clientWidth + 1).map((z) => `${z.tagName.toLowerCase()} ${z.scrollWidth}>${z.clientWidth}`);
@@ -479,7 +480,7 @@ async function jouer(format) {
     notes.push(`${L} : Nugget → ${nom}, IBU ${ibuAvant.toFixed(2)} → ${ibu.toFixed(2)}`);
   });
 
-  // 7. « ‹ » dans un outil abandonne son brouillon ; la recette ne change pas.
+  // 7. La croix d'un outil abandonne son brouillon et ramène à l'étape Houblons (D118) ; la recette ne change pas.
   const avantAbandon = JSON.stringify((await etat()).recette);
   await geste('abandon-suggerer', 'suggerer', async () => { await toucher('[data-role="pont-floral"]'); });
   await geste('abandon-comparer', 'comparer', async () => { await toucher('[data-role="pont-comparer"]'); });
@@ -491,16 +492,12 @@ async function jouer(format) {
     verifier(e.brouillon !== null, 'le brouillon a disparu pendant le geste');
     verifier(JSON.stringify(e.recette) === avantAbandon, 'glisser dans l’outil a changé la recette');
   });
-  await geste('abandon-fermer', 'comparer', async () => { await fermerOutil(); await pause(120); }, async () => {
+  await geste('abandon-fermer', 'ma-biere', async () => { await fermerOutil(); await pause(200); }, async () => {
     const e = await etat();
-    verifier(e.brouillon === null, '« ‹ » n’a pas abandonné le brouillon');
-    verifier(JSON.stringify(e.recette) === avantAbandon, '« ‹ » a changé la recette');
-  });
-  await geste('abandon-fermer-suggerer', 'suggerer', async () => { await fermerOutil(); await pause(120); });
-  await geste('abandon-ma-biere', 'ma-biere', async () => { await fermerOutil(); await pause(200); }, async () => {
-    verifier((await hash()) === '#/ma-biere', `« ‹ » ne revient pas à Ma bière : ${await hash()}`);
-    verifier(JSON.stringify((await etat()).recette) === avantAbandon, 'la recette a changé pendant l’abandon');
-    verifier(await ev(() => document.querySelectorAll('[data-ecran="ma-biere"] [data-ajout]').length) === (await etat()).recette.additions.length, 'Ma bière montre un autre nombre de houblons que la recette');
+    verifier(e.brouillon === null, 'la croix n’a pas abandonné le brouillon');
+    verifier((await hash()) === '#/ma-biere', `la croix ne ramène pas à l’étape Houblons (D118) : ${await hash()}`);
+    verifier(JSON.stringify(e.recette) === avantAbandon, 'la croix a changé la recette');
+    verifier(await ev(() => document.querySelectorAll('[data-ecran="ma-biere"] [data-ajout]').length) === e.recette.additions.length, 'Ma bière montre un autre nombre de houblons que la recette');
     await lectureCoherente('après l’abandon');
   });
 

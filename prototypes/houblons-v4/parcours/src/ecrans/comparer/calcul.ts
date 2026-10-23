@@ -9,7 +9,8 @@
 //  - mis en avant au départ : le plus floral qui reste dans ta 16D.
 import type { FamilyId } from '../../../../src/engine';
 import { comparer, style, type Colonne, type HoublonLu } from '../../moteur';
-import type { RecetteParcours } from '../../etat/types';
+import { CONDITIONS } from '../../donnees/cas';
+import type { Quand, RecetteParcours } from '../../etat/types';
 
 export const ABSOLU = 125;
 /** Orangé « au-dessus du style » (D83 : la seule couleur hors famille admise sur un élément de famille). */
@@ -89,6 +90,49 @@ export function lireColonnes(recette: RecetteParcours, cles: string[], doseGL?: 
     }
     return { cle: c.cle, houblon: c.houblon, couleur: couleurHoublon(c.cle), colonne: c, cellules, sorties: sc.order.filter((f) => cellules[f].hors) };
   });
+}
+
+// ---------- Aux étapes (D107, à la manière de x3b) ----------
+// « je voulais comparé au moins : les étapes 60' 10' dryhopping ect […] Et aussi le houblon de base ou bière de
+// base » (23.10). Chaque houblon, à la même dose (4 g/L), posé à 60′, à 10′ et au dry hop (après, 3 j : le moment du
+// radar et des rangées), simulé par le moteur à chaque changement de houblons ou de recette. Le moteur simule l'arôme
+// à 60′, 10′, whirlpool et dry hop ; l'IBU à toute minute (ibuAjout) et pas à froid.
+export type CodeEtape = 'b60' | 'b10' | 'dryPost';
+export const ETAPES: { code: CodeEtape; nom: string; quand: Quand }[] = [
+  { code: 'b60', nom: '60′', quand: { type: 'ebullition', minutes: 60 } },
+  { code: 'b10', nom: '10′', quand: { type: 'ebullition', minutes: 10 } },
+  { code: 'dryPost', nom: 'dry hop', quand: { type: 'dryhop', phase: 'apres', jours: CONDITIONS.jours } },
+];
+export interface ValeurEtape {
+  /** Crans du style gagnés sur ta stout (floral, résineux) ; null : inconnu (rien de simulé), jamais 0. */
+  floral: number | null;
+  resineux: number | null;
+  /** IBU de l'ajout à ce moment (valeur, min, max par la plage d'α) ; null à froid ou α inconnu, avec la raison. */
+  ibu: { valeur: number; min: number; max: number } | null;
+  raisonIbu: string | null;
+  raison: string | null;
+}
+export type Etapes = Record<string, Record<CodeEtape, ValeurEtape>>;
+
+export function lireEtapes(recette: RecetteParcours, cles: string[]): Etapes {
+  const sc = style(recette.styleCode);
+  const out: Etapes = {};
+  for (const cle of cles) out[cle] = {} as Record<CodeEtape, ValeurEtape>;
+  for (const e of ETAPES) {
+    for (const c of comparer(recette, cles, { quand: e.quand })) {
+      const cr = (f: FamilyId) => { const x = c.lu.ecart[f]; return x ? r2(x.centre / sc.families[f].cran) : null; };
+      out[c.cle][e.code] = { floral: cr('floral'), resineux: cr('resin'), ibu: c.lu.ibu.ibu, raisonIbu: c.lu.ibu.raison, raison: c.lu.raison };
+    }
+  }
+  return out;
+}
+
+/** La référence aux mêmes étapes : le houblon de base de ta recette (le premier ajout à chaud, sinon le premier
+ * ajout), s'il n'est pas déjà comparé ; à défaut, la bière de base (ta stout seule). */
+export function houblonDeBase(recette: RecetteParcours, compares: string[]): string | null {
+  const chaud = recette.additions.find((a) => /^(fwh|b\d+)$/.test(a.moment)) ?? recette.additions[0];
+  const cle = chaud?.hopKey ?? null;
+  return cle && !compares.includes(cle) ? cle : null;
 }
 
 /** Mis en avant au départ (règle de r6a, écrite dans la légende) : le plus de la famille visée sans sortir de ta

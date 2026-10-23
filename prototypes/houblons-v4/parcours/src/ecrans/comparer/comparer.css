@@ -17,8 +17,9 @@
 
 /* radar */
 .pq-comparer-rad { position: relative; }
-.pq-comparer-rad-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.pq-comparer-radar { display: block; margin: -6px auto 0; max-width: 100%; height: auto; }
+.pq-comparer-rad-h { position: absolute; z-index: 1; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; }
+.pq-comparer-rad-h > * { pointer-events: auto; }
+.pq-comparer-radar { display: block; margin: 0 auto; max-width: 100%; height: auto; }
 .pq-comparer-grille { stroke: rgb(var(--cave-800)); }
 .pq-comparer-hach-trait { stroke: rgb(var(--cave-600)); }
 .pq-comparer-encre-trait { stroke: rgb(var(--cave-50)); }
@@ -36,7 +37,7 @@
 .pq-comparer[data-colonnes="2"] .pq-comparer-grille-tab { --pq-n: 2; }
 .pq-comparer[data-colonnes="4"] .pq-comparer-grille-tab { --pq-n: 4; grid-template-columns: 30px repeat(4, minmax(0, 1fr)); column-gap: 3px; }
 .pq-comparer-tetes { align-items: stretch; }
-.pq-comparer-ta { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 6px 0; }
+.pq-comparer-ta { position: relative; display: flex; flex-direction: column; gap: 2px; padding: 5px 0 2px; }
 .pq-comparer-ta-n { display: flex; align-items: center; gap: 4px; font-size: 14px; }
 .pq-comparer-trait { display: inline-block; width: 10px; height: 2px; border-radius: 2px; background: rgb(var(--cave-50)); flex: none; }
 .pq-comparer-ta-l { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; }
@@ -150,9 +151,58 @@
 .pq-comparer-dock { display: inline-flex; }
 
 @media (min-width: 640px) {
-  .pq-comparer-radar { width: 420px; }
+  .pq-comparer-radar { width: 300px; }
+  .pq-comparer-et-l, .pq-comparer-et-c { padding-top: 5px; padding-bottom: 7px; }
 }
 .pq-comparer-lu { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
 .pq-comparer-sym { display: inline-block; min-width: 14px; font-size: 14px; font-weight: 700; text-align: center; }
 /* la légende du socle (Legende) s'ouvre vers la gauche : son « ? » est au bord droit de l'écran */
 .pq-comparer-tete [data-role="legende"] { left: auto; right: 0; max-width: calc(100vw - 24px); }
+
+/* panel OSU derrière un toucher (D114) : son titre au rang des autres blocs */
+.pq-comparer-osu-nom { font-weight: 600; }
+.pq-comparer-osu-t { font-size: 12px; }
+
+/* aux étapes (D107, à la manière de x3b) : une rangée par étape, les colonnes du tableau ; à gauche l'étape et la
+   référence (le houblon de base de ta recette, gris) ; dans chaque case, le floral gagné (nombre, bande au-dessus du
+   pointillé de ta stout, trait de la référence) et le résineux gagné (bande orangée) */
+.pq-comparer-et { display: flex; flex-direction: column; }
+.pq-comparer-et-h { align-items: stretch; min-height: 24px; }
+.pq-comparer-et-ref { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 0; padding-top: 2px; font-size: 12px; font-weight: 600; color: rgb(var(--cave-texte-400)); white-space: nowrap; }
+.pq-comparer-et-tiret { display: inline-block; width: 12px; height: 0; border-top: 2px dashed rgb(var(--cave-400)); flex: none; }
+.pq-comparer-et-hc.pq-comparer-sel { background: rgb(var(--cave-900)); box-shadow: inset 2px 0 0 var(--pq-h), inset -2px 0 0 var(--pq-h); }
+.pq-comparer-et-r { align-items: stretch; }
+.pq-comparer-et-l { display: flex; padding: 5px 6px 8px 0; min-width: 0; border-top: 1px solid rgb(var(--cave-800)); }
+.pq-comparer-et-c { position: relative; display: flex; padding: 5px 5px 8px; min-width: 0; border-top: 1px solid rgb(var(--cave-800)); }
+.pq-comparer-et-c.pq-comparer-sel { background: rgb(var(--cave-900)); box-shadow: inset 2px 0 0 var(--pq-h), inset -2px 0 0 var(--pq-h); }
+.pq-comparer-derniere .pq-comparer-et-c.pq-comparer-sel { border-radius: 0 0 8px 8px; box-shadow: inset 2px 0 0 var(--pq-h), inset -2px 0 0 var(--pq-h), inset 0 -2px 0 var(--pq-h); }
+.pq-comparer-et-b { display: flex; flex-direction: column; gap: 3px; width: 100%; min-width: 0; }
+.pq-comparer-et-n { display: flex; align-items: baseline; justify-content: space-between; gap: 4px; min-height: 20px; }
+.pq-comparer-et-nom { font-size: 17px; font-weight: 800; line-height: 20px; letter-spacing: -.02em; color: rgb(var(--cave-50)); white-space: nowrap; }
+.pq-comparer-et-v { font: 600 14px/20px 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; color: #7a3fa0; white-space: nowrap; }
+.pq-comparer-et-top .pq-comparer-et-v { font-weight: 800; }
+.pq-comparer-et-gris .pq-comparer-et-v { color: rgb(var(--cave-texte-400)); font-weight: 500; font-size: 12px; }
+.pq-comparer-et-pis { position: relative; display: block; height: 18px; border-left: 2px dashed rgb(var(--cave-50)); background: #f3eaf9; border-radius: 0 2px 2px 0; }
+.pq-comparer-et-pis > i { position: absolute; top: 0; bottom: 0; left: 0; display: block; border-radius: 0 2px 2px 0; }
+.pq-comparer-et-pis > .pq-comparer-et-rt { width: 0; top: -3px; bottom: -3px; border-left: 2px dashed rgb(var(--cave-400)); border-radius: 0; margin-left: -1px; }
+.pq-comparer-et-gris .pq-comparer-et-pis { background: rgb(var(--cave-800) / .45); }
+.pq-comparer-et-pr { position: relative; display: block; height: 7px; border-left: 2px dashed rgb(var(--cave-50)); background: rgb(var(--cave-800) / .3); }
+.pq-comparer-et-pr > i { position: absolute; top: 0; bottom: 0; left: 0; display: block; border-radius: 0 2px 2px 0; }
+.pq-comparer-rg-t { margin-top: 30px; padding-top: 10px; border-top: 1px solid rgb(var(--cave-800)); font-size: 12px; color: rgb(var(--cave-texte-400)); }
+.pq-comparer-rg-t b { color: rgb(var(--cave-50)); font-weight: 600; }
+.pq-comparer[data-colonnes="4"] .pq-comparer-et-n { flex-direction: column; align-items: flex-start; gap: 0; }
+.pq-comparer[data-colonnes="4"] .pq-comparer-et-nom { font-size: 12px; white-space: normal; line-height: 14px; }
+.pq-comparer[data-colonnes="4"] .pq-comparer-et-v { font-size: 12px; }
+.pq-comparer[data-colonnes="4"] .pq-comparer-et-ref-n > span { display: none; }
+.pq-comparer-vc-ibu { gap: 0; }
+.pq-comparer-vi-l { font-size: 12px; white-space: nowrap; }
+.pq-comparer-et-ba { display: flex; align-items: center; gap: 3px; }
+.pq-comparer-et-ba > .pq-comparer-et-pis, .pq-comparer-et-ba > .pq-comparer-et-pr { flex: 1; min-width: 0; }
+.pq-comparer-et-gris .pq-comparer-et-pis > i, .pq-comparer-et-gris .pq-comparer-et-pr > i { opacity: .7; }
+.pq-comparer[data-colonnes="4"] .pq-comparer-et-ba > svg { display: none; }
+/* la lentille, posée dans le coin haut droit du radar, plus étroite : elle ne couvre aucun picto d'axe */
+.pq-comparer-lentille button { min-height: 32px; padding: 0 8px; font-size: 13px; }
+.pq-comparer-et-ref-n { display: inline-flex; align-items: center; gap: 4px; }
+.pq-comparer-et-al { font: 500 12px/14px 'IBM Plex Mono', ui-monospace, monospace; color: rgb(var(--cave-texte-400)); padding-left: 16px; }
+.pq-comparer[data-colonnes="4"] .pq-comparer-et-al { display: none; }
+.pq-comparer-dose { display: inline-flex; align-items: center; gap: 4px; }

@@ -1,4 +1,4 @@
-OK — Comparer r6a en direct, petites améliorations, D95 corrigé, Placer vers Dryhopper
+ECHEC — G14, G19 : la croix D118 (p2) ramène à Ma bière ; Comparer D107 vert (18/20)
 
 ## Ce qui est fait
 
@@ -147,3 +147,137 @@ l'écart depuis 0 quand la bière est inconnue, sinon la cellule passe à tort e
 LEÇON PROPOSÉE : un contrôle de page lit tout le DOM : une coquille qui garde l'écran du dessous monté (inerte)
 fausse les mots, le titre et les marqueurs de l'écran du dessus. Le socle ne monte qu'un écran par route, ou les
 contrôles ignorent `[inert]` ; à vérifier sur la première page d'outil construite, avant de lancer les voies.
+
+## Reprise D107
+
+Comparer aux étapes, à la manière de x3b, avec une référence (23.10, nuit). La forme reste r6a (règle n° 1). Cette
+section prime sur les consignes d'avant là où elles diffèrent : le moment fixé « après, 3 j » sort de la ligne de
+contexte.
+
+### Ce qui est fait
+- **Aux étapes** (`src/ecrans/comparer/Etapes.tsx` ; `lireEtapes` et `houblonDeBase` dans `calcul.ts`). Sous les têtes de
+  r6a, dans les mêmes colonnes, une rangée par étape : **60′, 10′, dry hop** (après 3 j, le moment du radar et des
+  rangées). Chaque case montre :
+  - le floral gagné en crans (« ~0,7 » ; le plus floral de l'étape en gras) ;
+  - sa bande violette, qui part du **pointillé noir de ta stout** (la bière de base de x3b) et monte à l'étape de
+    l'ajout ;
+  - le **trait pointillé gris de ton Nugget** au même moment ;
+  - la bande orangée du résineux gagné.
+  Les étapes se lisent au repos, ensemble, sans curseur ni sélecteur. Le houblon reste le seul facteur libre
+  (UNE-QUESTION OK, 1 groupe libre : houblon).
+- **Référence : ton Nugget**, le houblon de base de la recette (son premier ajout à chaud). Il est pris aux mêmes étapes
+  et à la même dose (4 g/L), en gris dans la colonne de gauche, avec son α (13 %, L04). Marqueur :
+  `data-reference="houblon"`. Si Nugget est lui-même comparé (Substituer l'épingle), la référence devient la bière de
+  base (`data-reference="biere"`).
+- **Calcul en direct** : `comparer(recette, cles, { quand })` à 60′, 10′ et au dry hop, à chaque changement de houblons ou
+  de recette (3 × 4 simulations, ~17 ms). Dans `jeu.mjs`, le geste « Etapes = moteur » vérifie les 12 cases contre le
+  moteur.
+- **IBU de chaque étape** : calculé par BrewingMath, l'outil de l'app. Il est dans l'aria-label de chaque case et dans
+  « Chimie et vraies valeurs » : rangée IBU, avec 60′, 10′ et « dry hop à froid : ? » (jamais 0). Il n'est pas au
+  premier écran, faute de place sous les 80 mots.
+- **Ligne de contexte** : Stout 16D · « = 4 g/L » (le « = » de r6a, sans mot) · US-05. Le moment n'y est plus.
+  Au-dessus des rangées : « Toutes les familles au dry hop, après 3 j, comme le radar ».
+- **Marqueurs** (contrat D107, inchangé) :
+  - `[data-houblon-compare]` porte maintenant la **clé** du moteur (avant : le nom) ;
+  - `[data-etape][data-houblon]` est posé sur chaque nombre ;
+  - `data-couleur` est retiré du nom de colonne (S1 de controle-standard). La couleur reste sur la série du radar,
+    nommée ;
+  - le jeu de Comparer vise la fiche par `[data-houblon-compare="beermaverick-galaxy"]`, car le `[data-houblon]` de
+    Galaxy est aussi sur ses cases d'étape.
+  **parcours-complet.mjs n'est pas modifié** : ses étapes de Comparer lisent `[role="radio"][data-col]`,
+  `svg[data-radar] [data-serie]` et les ponts, qui n'ont pas changé.
+- **Inventaire** (NOTE.md, `## Reprise`) :
+  - `d107-etapes`, `d107-etat-au-moment` et `d107-reference` sont **repris** ;
+  - `x3b-cuve-jour-apres-jour` passe d'« en pont » à **repris** : sa manière est dans « aux étapes », et ses jours de
+    contact restent à Dryhopper.
+  REPRISE OK (39 repris, 3 en contexte, 4 en pont, 6 écartés).
+- **Place** :
+  - la ligne « ~ simulé / Au style · Absolu » est posée sur les coins vides du radar ; la lentille, plus étroite, ne
+    couvre plus le picto herbacé ;
+  - le radar fait 300 px de large à l'ordinateur ;
+  - à 390 px, les trois étapes tiennent au-dessus du dock (valeurs de 600 à 770 px) ; à 1280 px aussi.
+- **D114** (« Beaucoup trop mis en avant ») : le panel OSU n'est plus au premier écran ni ouvert au repos.
+  - Il s'ouvre d'**un toucher, « Panel OSU »** : troisième bouton sous le tableau, au rang de « Chimie et vraies
+    valeurs » et d'« Égaler ».
+  - Son titre intérieur passe de 14 px gras à 12 px demi-gras.
+  - **Position du panel** : sous le tableau, après les rangées (vers 1 300 px du haut à 390), fermé.
+  - Contrôles : ACQUIS OK (osu à un toucher) ; controle-comparer-etapes : « panel OSU : derrière un déclencheur, un
+    toucher ».
+- **D119** : je n'ai touché ni `Cadres.tsx` ni `Onglets.tsx`. Le CadreOutil de p2 pose déjà la question en h1, en tête
+  du contenu, sous les onglets. Comparer ne la répète pas ; il pose la marque `r6a-question` sur le h1 dont le texte est
+  la question. Le premier écran a perdu environ 40 px : les étapes restent visibles ensemble (ci-dessous).
+
+### Sorties décisives (rejouées depuis la racine, 23.10, nuit)
+- G1 CONSTRUIT OK (9 pages) · G2 TYPES OK · G3 COMMUN OK · G4 comparer 80 mots, MOTS OK
+- G5 UNE-QUESTION OK (1 groupe libre : houblon) · G6 ACQUIS OK (4/4 : radar au repos ; chimie, osu, valeurs à un toucher)
+- G7 ALPHA OK (4 voies, 4 avec leur α) · G8 RADAR-SERIES OK · G9 LISIBLE OK (17 simulées, 0 faute) · G10 SIMULATION OK
+- G11 SANS-FAMILLE OK · G12 REPRISE OK (39 repris, 3 en contexte, 4 en pont, 6 écartés) · G13 ETAPE OK (comparer)
+- G15 APP INTACTE OK · G17 CHOIX OK (1 écran conforme)
+- **G18 COMPARER-ETAPES OK (3 houblons + référence beermaverick-nugget, étapes b10 b60 dryPost)**.
+  - 390 × 844 : 12 valeurs visibles ensemble, écart vertical 163 / 844 px.
+  - 1280 × 800 : 12 valeurs, 163 / 800 px.
+- **G14 et G19 échouent**, pour une cause hors de Comparer :
+  - G14 : « PONTS ECHEC : cible introuvable : [data-ecran="comparer"] » ;
+  - G19 : « PARCOURS ECHEC (2) : geste 28 « abandon-fermer » : cible introuvable : [data-ecran="comparer"] (route
+    #/ma-biere) ».
+  - Cause : D118 (voie p2, `src/commun/Cadres.tsx`, en cours). La croix d'un outil ramène désormais à Ma bière, alors
+    que `jouer-parcours.mjs --ponts` (« abandon-retour » : Dryhopper → croix → attend Comparer) et
+    `parcours-complet.mjs` (geste 28) attendent encore le retour d'un écran.
+  - Tous les gestes de Comparer passent avant (parcours-complet jusqu'au geste 27).
+  - Ces deux scripts sont au socle (p0, p5) : à aligner sur D118 par leur voie, pas par moi.
+
+### Captures ouvertes (regardées en image), côte à côte avec r6a et x3b
+- `prototypes/houblons-v4/maquettes/parcours-p3/captures-d107/comparer-d107-390.png` (390 × 844, au repos).
+  - À côté de `fils22-comparer/captures/r6a-premier-ecran.png`, on retrouve r6a : question, contexte, réponse ★,
+    radar r2, têtes, Ta stout, « + », colonne retenue cerclée.
+  - À côté de `fils21-choisir/captures/x3b-390.png` et `x3b-plans-390.png`, on retrouve le pointillé de la bière de
+    base et la bande qui monte à l'étape. L'axe est tourné d'un quart (il va de 60′ au dry hop), sans les jours, le
+    curseur ni la levure (« dur à lire »).
+- `…/captures-d107/comparer-d107-1280.png` (1280 × 800) : les trois étapes entières au-dessus du dock.
+- `…/captures-d107/comparer-d107-vraies-ibu.png` : « Chimie et vraies valeurs » ouvert, rangée IBU aux étapes.
+- `…/captures-d107/comparer-d107-osu.png` : « Panel OSU » ouvert d'un toucher (D114).
+- `…/captures-d107/comparer-d107-quatre.png` : 4 colonnes (Nelson Sauvin ajouté par « + »), étapes recalculées
+  (~0 / ~0,3 / ~0,3).
+
+### Nombres aux étapes
+Moteur en direct ; 4 g/L, US-05 ; floral en crans gagnés sur ta stout ; IBU calculé.
+
+| | floral 60′ | floral 10′ | floral dry hop | IBU 60′ | IBU 10′ | IBU dry hop |
+|---|---|---|---|---|---|---|
+| Idaho 7 | ~0,11 | ~0,73 | ~1,25 | ~102 (α plage 9,5–14,9) | ~37 | non modélisé (« ? ») |
+| Cascade | ~0,07 | ~0,51 | ~0,89 | ~52 (α lot 6,5) | ~19 | non modélisé |
+| Galaxy | ~0,13 | ~0,94 | ~0,85 | ~137 | ~50 | non modélisé |
+| ton Nugget (réf.) | ~0,14 | ~0,96 | ~1,02 | ~104 | ~38 | non modélisé |
+
+- Résineux gagné : de ~1,9 à ~2,2 au dry hop, contre ~0,6 à ~1,0 à 10′.
+- Les valeurs au dry hop reprennent les nombres de r6a.
+- Lecture : Galaxy est le plus floral à 10′, Idaho 7 au dry hop.
+- Ton Nugget, à 4 g/L, ferait autant de floral que les autres à 10′. C'est le calcul du moteur, d'après le géraniol et
+  le linalol de ses fiches ; à confronter à ce que le brasseur sait du Nugget (L14).
+
+### Ce qui reste au brasseur
+- Les étapes montrées sont 60′, 10′ et dry hop après 3 j. Le whirlpool et le dry hop actif sont simulés mais pas
+  montrés, faute de place sous les 80 mots ; ici, whirlpool ≈ 10′ et actif ≈ après (écart < 0,05 cran). À lui de dire
+  s'il les veut au premier écran, au prix d'une rangée.
+- La référence est son Nugget (houblon de base) ; la bière de base est le pointillé. S'il préfère la bière de base en
+  rangée, il suffit d'échanger la référence.
+
+### Besoins hors de ma voie
+- G14, G19 : `jouer-parcours.mjs --ponts` et `parcours-complet.mjs` sont à aligner sur D118 (croix → Ma bière).
+- S4 de controle-standard (épaisseur de trait d'icône) : la croix de p2 (`pq-croix-icone`, 22 px) est la seule icône
+  dont le trait diffère des autres. controle-commun reste OK sur Comparer ; à surveiller sur l'ensemble.
+- Le contrat D107 refuse « ~+0,7 » (regex `^(~\s*)?-?\d`). Les cases d'étape disent donc « ~0,7 », sans « + », alors
+  que les rangées disent « ~+0,9 ». La légende précise « crans gagnés ». Si le pilote veut le signe, il faut élargir la
+  regex.
+
+### Prédiction
+« Là je vois 60′, 10′ et le dry hop d'un coup, avec mon Nugget à côté : c'est ce que je voulais. »
+
+DÉCISION À PRENDRE : montrer le whirlpool et le dry hop actif au premier écran (une rangée de plus, au-delà de
+80 mots) ou derrière un toucher. À poser au brasseur en variantes.
+CONNAISSANCE : au moteur, pour la stout 16D à 4 g/L, le floral gagné est le même à 10′ et au whirlpool (écart
+< 0,05 cran) ; seul l'IBU les sépare (~37 contre ~15 pour Idaho 7). Galaxy est plus floral à 10′ (~0,94) qu'au dry hop
+(~0,85).
+LEÇON PROPOSÉE : le dossier temporaire de session est partagé entre agents. Un script de capture au nom commun
+(`cap.mjs`) y a été réécrit par un autre agent, puis a écrasé le `etat.html` d'une sortie de voie avec une capture PNG.
+Chaque agent range ses fichiers temporaires dans un sous-dossier au nom de sa voie.

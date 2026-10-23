@@ -3,7 +3,7 @@
 Voie p3-comparer (mission 2026-10-23-maquette-parcours). r6a, son choix redit le 23.10 (« r6a reste le meilleur, tu
 peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions »), portée en
 React dans le socle et calculée en direct. Fichiers : `index.tsx` (l'écran), `calcul.ts` (ce qu'il lit du moteur),
-`Radar.tsx` (radar r2), `valeurs.ts` (vraies valeurs, chimie, panel OSU), `comparer.css` (classes `pq-comparer-…`),
+`Etapes.tsx` (aux étapes, D107), `Radar.tsx` (radar r2), `valeurs.ts` (vraies valeurs, chimie, panel OSU), `comparer.css` (classes `pq-comparer-…`),
 `jeu.mjs` (gestes joués).
 
 ## Base
@@ -13,11 +13,15 @@ ligne de contexte, radar r2 au style (lentille Absolu), puis le tableau : la col
 une colonne par houblon (nom, α, rôle en mot, familles de ses fiches, verdict face à la 16D, stock en icône), une
 rangée par famille avec la barre l5b de chaque houblon face à la zone de ta 16D, son intervalle et le trait de ta
 stout ; les écarts chiffrés sur Floral ↑ et Résineux ↓ ; les familles inconnues pour tous en une rangée hachurée.
-Sous le tableau, « Chimie et vraies valeurs » à un toucher, puis le panel OSU au repos.
+Sous les têtes, **aux étapes** (D107, à la manière de x3b) : chaque houblon posé à 60′, à 10′ et au dry hop, avec ton
+Nugget en référence ; puis les rangées de toutes les familles au dry hop, après 3 j (le moment du radar). Sous le
+tableau, trois touchers : « Chimie et vraies valeurs », « Égaler », « Panel OSU » (D114).
 
 Un seul facteur libre : le houblon. Un toucher sur une colonne la retient (le radar la remplit, la réponse et le
-pont la suivent) ; le « + » en ajoute une 4ᵉ de ton stock ; × la retire. Dose (4 g/L chacun), moment (après, 3 j) et
-levure (celle de la recette, US-05) sont fixés sur la ligne de contexte. Départ : le plus floral qui reste dans ta
+pont la suivent) ; le « + » en ajoute une 4ᵉ de ton stock ; × la retire. Dose (4 g/L chacun) et levure (celle de la
+recette, US-05) sont fixées sur la ligne de contexte. Le moment n'y est plus (D107) : les étapes se lisent ensemble,
+au repos, dans « aux étapes » (ni curseur ni sélecteur) ; le radar et les rangées restent au dry hop, après 3 j, et
+le disent. Départ : le plus floral qui reste dans ta
 16D (règle de r6a), ici Idaho 7.
 
 Calcul en direct : chaque colonne est `comparer(recette, houblons)` de l'adaptateur (simulerCas, 4 g/L, dry hop
@@ -31,6 +35,31 @@ Comparer, avec une entrée d'historique : le retour du téléphone la referme. S
 épinglé : `#/comparer?h=…&pin=<houblon>` le met en colonne 1, marqué ⌖ (lu dans la route du socle, `route.pin`).
 
 ## Idées reprises
+
+D107 (23.10, soir), « je voulais comparé au moins : les étapes 60' 10' dryhopping ect comme la maquette de base. Et
+aussi le houblon de base ou bière de base » ; sa maquette de base est **x3b** (lot 21) : « Montrait vraiment l'état du
+moment de l'ajout facile ». Pris de x3b, sans sa densité (« dur à lire ») :
+- **Les étapes, ensemble** : une rangée par étape (60′, 10′, dry hop après 3 j) dans les colonnes du tableau, sous
+  les têtes ; chaque case dit le floral gagné en crans (« ~0,7 »), sa bande, et le résineux gagné (bande orangée :
+  ta stout est déjà trop résineuse). Calculé en direct : `comparer(recette, cles, { quand })` pour chaque étape.
+- **La bière de base en pointillé** : le pointillé au départ de chaque bande, c'est ta stout sans rien ; la bande
+  monte à l'étape où le houblon entre (la marche de x3b, tournée d'un quart : l'axe va de 60′ au dry hop).
+- **Le houblon de base en référence** : ton Nugget (le premier ajout à chaud de ta recette), aux mêmes étapes et à la
+  même dose, dans la colonne de gauche, en gris, et en trait pointillé gris dans chaque bande.
+- Le plus floral de chaque étape en gras.
+- L'IBU de chaque étape (calculé, BrewingMath) : dans l'aria-label de chaque case et dans « Chimie et vraies
+  valeurs » (rangée IBU, 60′ / 10′ / dry hop), pas au premier écran (80 mots).
+- Laissés de x3b : les jours (J4), le curseur « tenir », la levure active ou au repos, la biotransfo : ils sont à
+  Dryhopper et à Levure (« 2 dry hop: levure » se lit comme la suite de la frise, après « Placer »). Le whirlpool et
+  le dry hop actif : le moteur les simule, mais au premier écran ils coûtent 10 mots ; whirlpool ≈ 10′ et actif ≈
+  après pour le floral dans ce cas (écarts < 0,05 cran).
+
+D114 (« Beaucoup trop mis en avant ») : le panel OSU (un acquis, « la panel osu j'aime assez ») passe derrière un
+toucher, « Panel OSU », au rang de « Chimie et vraies valeurs » et d'« Égaler » ; son titre n'est plus en gras.
+D119 : la question de r6a devient le titre de l'écran, en tête du contenu (h2, `r6a-question`), quand l'en-tête
+commun (voie p2) ne la porte plus ; tant qu'il la porte, elle n'est pas répétée.
+
+Avant D107 :
 
 Prises (peu, et sans changer la forme de r6a) :
 - **La réponse face à ta stout**, de r6n2 (y1b) : une ligne sous le contexte, « ★ Idaho 7 devant Cascade ~+0,4
@@ -69,6 +98,26 @@ Laissées de côté, et pourquoi :
 
 ## Écarts
 
+Aux étapes (D107, moteur en direct, 23.10, nuit ; 4 g/L, US-05, dry hop après 3 j), crans gagnés sur ta stout :
+
+| | floral 60′ | 10′ | dry hop | résineux 60′ | 10′ | dry hop | IBU 60′ | 10′ |
+|---|---|---|---|---|---|---|---|---|
+| Cascade | ~0,07 | ~0,51 | ~0,89 | ~0,15 | ~0,80 | ~1,91 | ~52 | ~19 |
+| Idaho 7 | ~0,11 | ~0,73 | ~1,25 | ~0,15 | ~0,80 | ~1,97 | ~102 | ~37 |
+| Galaxy | ~0,13 | ~0,94 | ~0,85 | ~0,14 | ~0,64 | ~1,97 | ~137 | ~50 |
+| ton Nugget (réf.) | ~0,14 | ~0,96 | ~1,02 | ~0,19 | ~1,02 | ~2,17 | ~104 | ~38 |
+
+- Le dry hop reprend les nombres de r6a (même moment) ; 60′ et 10′ n'existaient pas dans r6a.
+- Ce que les étapes montrent : Galaxy est le plus floral à 10′ (et au whirlpool, ~0,94), Idaho 7 au dry hop ; le
+  résineux double du 10′ au dry hop. Ton Nugget, à 4 g/L, ferait autant de floral que les autres à 10′ : c'est le
+  moteur (géraniol et linalol de ses fiches) ; à confronter à ta connaissance du Nugget (L14).
+- Whirlpool et dry hop actif, simulés mais non montrés : whirlpool ≈ 10′ (écart < 0,05 cran, IBU ~40 % de celui du
+  10′), actif ≈ après (Idaho 7 : ~1,21 contre ~1,25).
+- IBU : calculé (BrewingMath de l'app) à l'α du lot ou au milieu de la plage des fiches ; à froid, non modélisé
+  (écrit « ? », jamais 0).
+
+Avant D107 :
+
 Aux nombres de r6a (moteur en direct, 23.10, contre la grille `comparer-stout.json` du 22.10) :
 - floral, en crans : Cascade ~+0,9, Idaho 7 ~+1,3 (1,25), Galaxy ~+0,9 (0,85) : identiques aux arrondis ;
 - résineux : ~+1,9 / ~+2 / ~+2 : identiques ;
@@ -86,6 +135,9 @@ Aux nombres de r6a (moteur en direct, 23.10, contre la grille `comparer-stout.js
 
 ## Pour l'app
 
+- Aux étapes (D107) : `Etapes.tsx` → `src/ui/hops/HopCompareStages.tsx` ; `lireEtapes`, `houblonDeBase` (calcul.ts) →
+  `src/domain/hopTools/compare.ts` ; 3 étapes × (n + 1) simulations par changement de houblons (~12 × 1,4 ms).
+
 - `index.tsx` → `src/ui/hops/HopCompare.tsx` ; `calcul.ts` → `src/domain/hopTools/compare.ts` (types `ColonneLue`,
   `CelluleLue`, `Reponse` à créer) ; `Radar.tsx` → `src/ui/hops/CompareRadar.tsx` ; `valeurs.ts` →
   `src/domain/hops/realValues.ts`, sur le catalogue de production (#120) au lieu de `composes-houblon.json`.
@@ -97,8 +149,8 @@ Aux nombres de r6a (moteur en direct, 23.10, contre la grille `comparer-stout.js
 
 ## Reprise
 
-- r6a-question : repris — le titre en question du cadre, « Cascade, Idaho 7 ou Galaxy pour ma stout ? », avec « ‹ » et le « ? »
-- r6a-contexte : repris — la ligne de contexte : Stout 16D, 4 g/L chacun, après 3 j, US-05
+- r6a-question : repris — le titre en question, « Cascade, Idaho 7 ou Galaxy pour ma stout ? », en tête de l'écran (D119)
+- r6a-contexte : repris — la ligne de contexte : Stout 16D, 4 g/L chacun, US-05 ; le moment en sort, il est dans « aux étapes » (D107)
 - r6a-simule : repris — la pastille « ~ simulé » au-dessus du radar
 - r6a-lentille : repris — « Au style / Absolu », au style par défaut
 - r6a-radar : repris — le radar r2 à 12 axes : zone de ta 16D, un trait par houblon, pictos aux axes, secteurs inconnus hachurés
@@ -108,26 +160,26 @@ Aux nombres de r6a (moteur en direct, 23.10, contre la grille `comparer-stout.js
 - r6a-ecarts : repris — Floral ↑ et Résineux ↓ : la flèche et l'écart chiffré par houblon
 - r6a-inconnus : repris — les cases hachurées et la rangée « inconnus »
 - r6a-chimie : repris — « Chimie et vraies valeurs » à un toucher sous le tableau
-- r6a-osu : repris — « Panel OSU, Cascade » (panel, sur 15, g/L) au repos
+- r6a-osu : repris — « Panel OSU, Cascade » (panel, sur 15, g/L), à un toucher « Panel OSU » sous le tableau (D114)
 - y1b-face-a-ta-stout : repris — la ligne de réponse sous le contexte, recalculée par le moteur à chaque colonne retenue ou ajoutée
 - y1b-pastille-critere : écarté — la visée est fixée par ta demande, floral ; r6a gardée sobre, son choix du 23.10
 - y1b-jauge-amertume : écarté — à cru l'IBU n'est pas modélisé ; la jauge vit dans Ma bière, pas dans Comparer
 - y1b-dock-pouce : en pont — Dryhopper ; le dock sous le pouce porte « Placer <retenu> », qui ouvre Dryhopper
 - y1b-plan-d-avant : repris — le trait noir de ta stout dans chaque barre, son polygone au radar, la colonne Ta stout
 - y1b-bandes-style : repris — les rangées : zone de ta 16D pâle, orangé au-dessus, inconnu hachuré, trait de l'intervalle
-- y1b-ligne-contexte : en contexte — Stout 16D, 4 g/L chacun, après 3 j, US-05
+- y1b-ligne-contexte : en contexte — Stout 16D, 4 g/L chacun, US-05
 - y1b-defi : écarté — le défi derrière un toucher alourdit r6a ; la demande est dans les rangées ↑ ↓
 - y1b-tirage-preuve : écarté — vingt bières tirées, une hypothèse de plus, hors de la question de Comparer
 - y1b-levure-pastilles : en contexte — la levure est fixée dans la ligne de contexte (US-05) ; elle se règle dans Levure
 - y1b-second-houblon-puis : en pont — Dryhopper ; « Placer » ouvre Dryhopper, où se règle la suite des ajouts
-- y3-panel-osu : repris — le panel OSU au repos sous le tableau, sans molette, « pas de panel publié » pour les autres
+- y3-panel-osu : repris — le panel OSU à un toucher sous le tableau (D114), sans molette, « pas de panel publié » pour les autres
 - y3-pour-egaler : repris — « Égaler » à un toucher : la dose de chaque autre houblon qui donne le floral du retenu, par le moteur
 - v1-vraies-valeurs : repris — « Chimie et vraies valeurs » : α, β, huile dans les colonnes des houblons, sourcés
 - v1-en-a-plus : repris — dans les vraies valeurs, la plus haute de chaque rangée prend la couleur de son houblon
 - v1-linalol-en-biere : repris — linalol mesuré en bière (H12, E03 à confirmer), « pas comparables entre eux »
 - w2-piste-commune : écarté — r6a garde une barre par houblon ; la piste commune lettrée est r6p3, non retenue
 - w2-cartes-verdict : repris — les têtes de colonne : verdict face à la 16D en signe, familles qui sortent
-- x3b-cuve-jour-apres-jour : en pont — Dryhopper ; les jours de contact se règlent après « Placer »
+- x3b-cuve-jour-apres-jour : repris — sa manière dans « aux étapes » : la bière de base en pointillé, la bande qui monte à l'étape de l'ajout ; les jours de contact restent à Dryhopper, après « Placer »
 - a2b-ce-que-la-levure-change : en contexte — la levure est fixée (US-05) dans la ligne de contexte
 - d1-tout-ouvert : repris — la chimie rangée par famille, une ligne par composé avec son picto, rien d'ouvert d'office
 - l5b-barres-voie : repris — les barres des rangées, face au trait de ta stout
@@ -146,3 +198,6 @@ Aux nombres de r6a (moteur en direct, 23.10, contre la grille `comparer-stout.js
 - p4-plus-comparaison : repris — le « + » sous Ta stout : un 4ᵉ houblon de ton stock, simulé en direct
 - g1-fiche : en pont — fiche ; appui long sur un nom de houblon, survol long à l'ordinateur
 - fiche-citra-cryo : en pont — fiche ; la même fiche courte, à l'appui long sur le nom
+- d107-etapes : repris — « aux étapes » sous les têtes : chaque houblon à 60′, 10′ et dry hop, ensemble, au repos, calculés par le moteur
+- d107-etat-au-moment : repris — la bande de chaque case part du pointillé de ta stout et monte à l'étape de l'ajout (x3b), floral et résineux
+- d107-reference : repris — ton Nugget (houblon de base de la recette) aux mêmes étapes, à la même dose, en gris dans la colonne de gauche

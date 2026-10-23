@@ -94,7 +94,8 @@ async function glisser(sel, de, a, { pas = 12, pendant } = {}) {
   return mesure;
 }
 async function retourTelephone() { await lire(() => history.back()); await pause(120); await calme(); }
-async function retourOutil() { await toucher('[data-page-shell] [data-page-titlebar] button[aria-label="Fermer"]'); await pause(120); await calme(); }
+// La croix des outils (D109) ; elle ramène toujours à l'étape Houblons (D118).
+async function retourOutil() { await toucher('[data-role="retour"]'); await pause(120); await calme(); }
 async function debordement() {
   return lire(() => {
     const d = document.documentElement;
@@ -207,20 +208,18 @@ async function ponts() {
   const ibuApres = await coherent('après Remplacer');
   verifier(Math.abs(ibuApres - ibuAvant) <= 1.5, `remplacement hors IBU égal : ${ibuAvant.toFixed(1)} → ${ibuApres.toFixed(1)}`);
 
-  // « ‹ » abandonne un brouillon : Placer → Dryhopper → glisser → ‹ ; la recette reste intacte.
+  // La croix abandonne un brouillon : Placer → Dryhopper → glisser → croix → étape Houblons (D118) ; la recette reste intacte.
   const avantAbandon = JSON.stringify(e.recette);
   await geste('abandon-suggerer', async () => { await toucher('[data-role="pont-floral"]'); await attendreEcran('suggerer'); });
   await geste('abandon-comparer', async () => { await toucher('[data-role="pont-comparer"]'); await attendreEcran('comparer'); });
   await geste('abandon-dryhopper', async () => { await toucher('[data-role="pont-placer"]'); await attendreEcran('dryhopper'); });
   await geste('abandon-glisser', async () => { await glisser('[data-role="frise"]', 0.6, 0.3); });
   verifier((await etat()).brouillon !== null, 'pas de brouillon dans Dryhopper');
-  await geste('abandon-retour', async () => { await retourOutil(); await attendreEcran('comparer'); });
+  await geste('abandon-retour', async () => { await retourOutil(); await attendreEcran('ma-biere'); });
   e = await etat();
   verifier(e.brouillon === null, '« ‹ » n’a pas abandonné le brouillon');
   verifier(JSON.stringify(e.recette) === avantAbandon, '« ‹ » a changé la recette');
-  await geste('abandon-retour-2', async () => { await retourOutil(); await attendreEcran('suggerer'); });
-  await geste('abandon-retour-3', async () => { await retourOutil(); });
-  verifier((await hash()) === '#/ma-biere', `« ‹ » ne revient pas à Ma bière : ${await hash()}`);
+  verifier((await hash()) === '#/ma-biere', `la croix ne ramène pas à l’étape Houblons (D118) : ${await hash()}`);
 
   // Un recalcul = Ma bière recalculée par le moteur pour un état neuf de la recette (lireBiere, cache manqué).
   const med = await lire(() => window.__parcours.medianeRecalcul('lireBiere'));
