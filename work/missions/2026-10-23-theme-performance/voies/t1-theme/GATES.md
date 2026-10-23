@@ -48,3 +48,13 @@ Scope: toute l'app en clair par défaut et en cave au choix, contrastes mesurés
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-theme-performance/voies/t1-theme/RESULTAT.md --exiger "Captures regardées" --contient "390,1280,clair,cave"
   EXPECT: NOTE OK
   EVIDENCE: pending
+
+- [ ] G10: la règle n° 1 reste verte sur la maquette reconstruite avec le nouveau thème (ses choix, écran par écran)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours-theme
+  EXPECT: /CHOIX OK/
+  EVIDENCE: pending
+
+- [ ] G11: le parcours complet de la maquette passe encore avec le nouveau thème
+  CHECK: node prototypes/houblons-v4/parcours/outils/parcours-complet.mjs --dossier=prototypes/houblons-v4/maquettes/parcours-theme --captures prototypes/houblons-v4/maquettes/parcours-theme/captures-parcours
+  EXPECT: /PARCOURS OK/
+  EVIDENCE: pending

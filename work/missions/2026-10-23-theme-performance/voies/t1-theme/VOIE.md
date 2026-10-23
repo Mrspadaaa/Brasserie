@@ -60,6 +60,12 @@ au choix. Ses mots : « Le thème de l'app principal doit être revu. On garde c
    - La maquette jouable, reconstruite dans `maquettes/parcours-theme/` : ses routes s'ouvrent et elle reste identique
      en clair.
 6. Skills à employer : `ui-design-system` (jetons), `a11y-audit` (contrastes), `impeccable` (critique du rendu).
+6 bis. **La maquette jouable de l'autre session étend `tailwind.config.js` et importe `src/index.css`.**
+   - Après ton changement, reconstruis-la dans `prototypes/houblons-v4/maquettes/parcours-theme/` :
+     `node prototypes/houblons-v4/parcours/outils/construire.mjs --sortie=prototypes/houblons-v4/maquettes/parcours-theme`.
+   - Ses choix doivent rester tenus (`controle-choix.mjs`, règle n° 1) et son parcours complet doit passer (G10, G11).
+   - Tes modifications de `src/` font virer au rouge le critère « APP INTACTE » de l'autre session tant qu'elles ne
+     sont pas commitées. Le pilote les commitera d'un bloc à ton retour : ne laisse rien à moitié fait dans `src/`.
 7. `NOTE.md` : `## Mécanisme`, `## Couleurs en dur`, `## Réglage`, `## Écrans vérifiés` (écran × format × thème, et
    capture), `## Restes`.
 
