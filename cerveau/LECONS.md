@@ -25,12 +25,12 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Rôles : pilote, auteur
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
-### L03 — Reprendre tout l'élément désigné, pas une partie
-- Erreur : 19.10, « Meilleures bar » de l5b. Seules les barres de voie ont été reprises, pas les pistes d'objectif. « C'est pas exactement ce que j'ai demandé ».
-- Cause : « X de la variante Y » a été lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X sur l'écran avant de reprendre. En cas de doute, demander lequel.
-- Rôles : pilote, auteur
-- Contrôle : D92 PISTE (`controle-piste-objectif.mjs`)
+### L03 — Reprendre tout l'élément désigné, et la maquette choisie telle quelle
+- Erreur : 19.10, « Meilleures bar » de l5b. Seules les barres de voie ont été reprises, pas les pistes d'objectif. « C'est pas exactement ce que j'ai demandé ». 23.10 : la maquette suivait la carte, pas ses choix (D105).
+- Cause : « X de la variante Y » lu au sens étroit.
+- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Une maquette choisie est la base ; une carte ne donne que les ponts. Inventaire, puis captures côte à côte.
+- Rôles : pilote, auteur, concepteur
+- Contrôle : D92 PISTE ; `controle-reprise.mjs --inventaire=` (D105)
 
 ### L04 — Prioriser comme un brasseur, pas comme un tableur
 - Erreur : 18.10, recette vide « trop centré sur le ibu, pas d'info sur les AA », et un stock trop mis en avant.
@@ -74,7 +74,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
 - Erreur : 19.10, loupe p02 avec RAIL OK et LOT OK, mais 19 à 20 px sous le doigt contre 8 à 13 au loin. « L'échelle ne s'adapte toujours pas ». Avant cela, seules 24 à 44 % des captures avaient été regardées.
 - Cause : les contrôles bornaient le geste sans exiger de force minimale, et les captures n'étaient pas ouvertes.
-- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK, dont celles de `verifier-page.mjs` (22.10 : page publiée avec un script cassé, sans variantes).
+- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK, dont celles de `verifier-page.mjs` (22.10 : script cassé).
 - Rôles : relecteur, auteur, exécutant
 - Contrôle : aucun
 
@@ -88,7 +88,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L14 — Confronter les données au savoir du brasseur sur les houblons phares
 - Erreur : 20.10, avec l5f, Nelson Sauvin paraît « un houbon ordinaire alors que c'est un un houbon incroyable », et Motueka « ultra fruité ».
 - Cause : 83 % de ses mots (vin blanc, groseille à maquereau, raisin) sont hors du lexique fermé des 12 familles, et sortent du dessin. Personne n'a confronté le rendu à la réputation du houblon (diagnostic du 22.10 : [[descripteurs-hors-familles]]).
-- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra, Motueka, Saaz, Galaxy), et confronter le rendu à leur réputation. Dans une étude à plusieurs variétés, filtrer la ligne de la variété et comparer chaque nombre de la capture à la source (22.10 : le linalol d'Azacca, E03, affiché pour Idaho 7 dans deux variantes, vu sur capture seulement).
+- Faire : avant publication, mesurer la part de mots sans famille des houblons de référence (Nelson Sauvin, Citra, Motueka, Saaz, Galaxy), et confronter le rendu à leur réputation. À plusieurs variétés, comparer chaque nombre de la capture à la ligne de sa variété (22.10 et 23.10 : le linalol d'un houblon affiché pour un autre).
 - Rôles : relecteur, conseil, auteur
 - Contrôle : `controle-sans-famille.mjs` (D100) : échec au-delà de 50 % de mots sans famille si aucune part « autres » n'est visible ; l5f en échec ; il s'applique si le brasseur retient l'option B
 
@@ -120,7 +120,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
 - Erreur : 20.10 et 22.10, la « grille 1,8 Mo » (fichier de maquette) a été lue comme un coût de calcul. Un conseiller a ensuite proposé d'abandonner le repli « dry hop et biotransformation seulement si c'est trop lourd » sans rien chronométrer.
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
-- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Une entrée répétée mesure le cache (`cacheBase` : 0,17 ms contre 1,42 ms sans cache, voie r2 du 22.10) : mesurer aussi une entrée qui change à chaque appel, et le premier passage à froid.
+- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel et le premier passage à froid (le cache trompe : 0,17 contre 1,42 ms).
 - Rôles : pilote, conseil, auteur, exécutant
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 

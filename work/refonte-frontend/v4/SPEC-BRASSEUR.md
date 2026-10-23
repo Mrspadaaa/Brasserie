@@ -353,6 +353,12 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   versions ». Avant, sur la page cumulée : « Je les vois pas dans les artefacts.. ». Et pour la maquette : « fait une
   maquette fonctionne de bout en bout » ; « Continue ensuite avec le tout interactif comme si c'était sur la vrai app.
   Afin de préparer sa vrai implemtation ». Mission : `work/missions/2026-10-23-maquette-parcours/`.
+- **La maquette jouable ne suit pas ses choix** (23.10, soir, sur la maquette de bout en bout), mot pour mot : « Mais
+  ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? ». Sur la capture de q2b (lot 15,
+  Suggestions) : « Ça oui, c'est effectivement l'un de mes choix ». Sur celle de Ma bière de la base v4.10 : « Ça
+  aussi ». Puis : « Je confirme que "Bière" et "Suggérer" divergent nettement du design choisi. Oui c'est quoi ce
+  bordel ??? ». Comparer (r6a) et Dryhopper (a1) suivaient leur base ; Ma bière et Suggérer suivaient la carte en fil
+  de fer (D105).
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce

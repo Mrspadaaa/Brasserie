@@ -4,9 +4,22 @@
     {
       "name": "affinee-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3000,
       "autoPort": true
+    },
+    {
+      "name": "maquette-houblons",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "prototypes/houblons-v4/parcours/outils/servir.mjs",
+        "--dossier=prototypes/houblons-v4/maquettes/parcours-pilote",
+        "--port=5191"
+      ],
+      "port": 5191
     }
   ]
 }

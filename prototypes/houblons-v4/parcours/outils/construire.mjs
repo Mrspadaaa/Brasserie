@@ -26,7 +26,7 @@ try {
   console.log(`CONSTRUIT ECHEC : ${e.message}`);
   process.exit(1);
 }
-const ROUTES = ['ma-biere', 'fiche', 'suggerer', 'comparer', 'dryhopper', 'levure', 'substituer'];
+import { ROUTES } from './routes-pages.mjs';
 const pages = ['index.html', ...ROUTES.map((r) => `${r}/etat.html`)];
 const manques = [];
 for (const p of pages) {

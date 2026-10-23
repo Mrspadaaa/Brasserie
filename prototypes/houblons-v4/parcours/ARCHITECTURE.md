@@ -7,7 +7,12 @@ Construire : `node prototypes/houblons-v4/parcours/outils/construire.mjs` ; joue
 
 ## Fichiers et leur place dans l'app
 
-| Fichier (sous `parcours/`) | Place future dans `src/` | Note |
+Les dossiers cibles ci-dessous sont des **propositions** : `src/domain/hops/`, `src/domain/hopTools/`, `src/ui/hops/`,
+`src/pages/HopToolsRoute.tsx` et `src/pages/useRecipeDraft.ts` n'existent pas encore. L'app a déjà `src/ui/hopIndex/`
+(dont `HopRecipePanel`), `src/ui/hopV55/`, `src/domain/hopIndex/`, `src/domain/hopDecision/` et la route `hopV55`.
+Décider d'abord si les outils remplacent l'atelier V5.5 ou s'y ajoutent (relecture p7, B6).
+
+| Fichier (sous `parcours/`) | Place future dans `src/` (proposée) | Note |
 |---|---|---|
 | `src/main.tsx`, `index.html`, `vite.config.ts` | aucune | propres à la maquette (pages par route, file://) |
 | `src/coquille/Coquille.tsx` | `src/pages/HopToolsRoute.tsx` | rendu de la route d'outil au-dessus de `RecipePage` |
@@ -28,7 +33,11 @@ Construire : `node prototypes/houblons-v4/parcours/outils/construire.mjs` ; joue
 - La recette : `Recipe` du moteur v4 (`src/engine/recipe.ts`), étendue par `RecetteParcours` et `AjoutParcours`
   (`minutes` d'ébullition par 5′, `jours` de contact ; `day` = jour de début). Dans l'app, il faudra relier ce
   type au type `Recipe` de `src/types/` (houblons, levure, OG, ébullition) : un adaptateur `toHopRecipe(recipe)`
-  à créer, car le type de l'app n'a ni `minutes` libres ni jours de contact.
+  à créer, avec son inverse. Correction (p7) : l'app a déjà `HopIngredient.timeMin` (minutes libres),
+  `aromaTiming` (fermentation ou post-fermentation), `aromaContactHours` (contact) et `dayOffset` (jour de début) ;
+  il manque un `id` stable par ajout. L'écriture passe par un patch de `hops` et `yeast` seulement
+  (`saveRecipeConfirmed`), jamais par le `Recipe` du moteur. L'α vient de `HopIngredient.alpha` du lot, sinon Ma
+  bière et la page recette donneraient deux IBU (B5).
 - `Quand` (premier moût, ébullition en minutes, whirlpool, dry hop actif ou après en jours) : à créer dans l'app.
 - `Brouillon`, `EtatParcours`, `Action` : à créer (`useRecipeDraft`).
 - Rendus du moteur : `BiereLue`, `FamilleLue`, `HoublonLu`, `AjoutLu`, `Candidat`, `Colonne`, `EffetLevure`,
@@ -46,8 +55,9 @@ Construire : `node prototypes/houblons-v4/parcours/outils/construire.mjs` ; joue
 | `#/levure/<ajout>` | `{ view: 'hopTiming', recipeId, additionId, step: 'yeast' }` |
 | `#/substituer/<houblon>` | `{ view: 'hopSubstitute', recipeId, hopKey }` |
 
-La navigation suit `useFullScreenRoute` : une entrée d'historique par ouverture, le retour du téléphone et « ‹ »
-(bouton « Fermer » de `PageShell`) reviennent à l'écran d'avant ; seules les entrées poussées sont dépilées.
+La maquette tient sa propre pile d'historique (`navigation.tsx`) : une entrée par ouverture, le retour du téléphone
+et « ‹ » reviennent à l'écran d'avant. **`useFullScreenRoute` de l'app ne le sait pas encore** : tout `popstate` y
+repose `tabs` (`useFullScreenRoute.ts:63-70`). Porter les outils demande une pile de routes dans ce crochet (B1).
 Page ouverte directement sur une route : « ‹ » va à l'écran parent (`routes.ts`, `parent`).
 Sous un outil plein écran, Ma bière n'est pas montée (`Coquille.tsx`) : ses titres, ses mots et ses houblons ne
 se lisent pas avec l'outil (contrôles du dépôt, lecteurs d'écran). Elle se remonte au retour, recalculée ; son état
@@ -132,6 +142,9 @@ Une voie d'écran possède `src/ecrans/<écran>/**` et rien d'autre.
     `<dossier> <id> --page=etat.html` ;
   - `src/ecrans/<route>/NOTE.md` est copiée vers `<dossier>/<route>/NOTE.md` (lue par `controle-reprise`, par
     exemple) ; la tenir à jour, avec sa section `## Base`.
+- **Ajouts du 23.10 au soir (D105) :** route `biere` (l'onglet Ma bière de la base v4.10), composant `Onglets`
+  (« Ma bière · Suggestions · Comparer »), liste de comparaison (`useComparaison`, `basculerComparaison`,
+  `fixerComparaison`), fonction `proposer(recette, direction)` de l'adaptateur (voies du moteur, pour Suggérer).
 - **Elle ne touche pas :**
   - `src/commun`, `src/etat`, `src/moteur`, `src/coquille` et `outils/` (une demande passe par le pilote) ;
   - le moteur et l'app (`app-intacte.mjs`) ;
@@ -141,3 +154,27 @@ Une voie d'écran possède `src/ecrans/<écran>/**` et rien d'autre.
   - préfixer ses classes propres (`pq-<écran>-…`, L26) ;
   - aucun `String.replace` avec `$` ;
   - le simulé se marque par `Simule` (« ~ »), l'inconnu par `Inconnu` ou une piste hachurée.
+
+## Vérifié contre l'app (relecture p7, 23.10)
+
+Verdict : **prêt avec réserves**. Détail, fichiers et lignes : `work/missions/2026-10-23-maquette-parcours/voies/p7-implementation/RESULTAT.md`.
+- **Se porte bien** : l'état et ses opérations pures, les communs, les écrans (classes préfixées), l'adaptateur.
+- **Quatre chantiers transversaux**, avant les écrans :
+  1. **Décisions** (B6, B7) : les outils remplacent-ils l'atelier V5.5 ? Le thème clair entre-t-il dans l'app ?
+  2. **Moteur portable** :
+     - `process.env.V4_TEMOIN_NEGATIF` à retirer (B3) ;
+     - alias `@app` et `@functions`, ou imports relatifs (B4) ;
+     - JSON chargés en paresseux (B9) ;
+     - `work/…` copié sous `src/` avec sa source (B8).
+  3. **Conversion de recette** `toHopRecipe` et son inverse, en tests Vitest (B5).
+  4. **Navigation en pile** dans `useFullScreenRoute` (B1).
+  Puis : moteur nourri par les données réelles (catalogue, stock, dégustation), aujourd'hui en singletons de fixture
+  (B2). Enfin les écrans, un par un, derrière un drapeau.
+- **Maquette seulement** : à ne pas porter, ou à isoler derrière `import.meta.env.DEV` :
+  - `window.__parcours` ;
+  - les marqueurs `data-*` des contrôles ;
+  - les ponts provisoires de la fiche ;
+  - la coquille de démonstration (thème, Recommencer, pages par route).
+- **Performance** : un geste, de 1 à 6 ms, reste sur le fil principal. Passent dans un worker : Suggérer
+  (`proposer` : 128 ms à froid sur PC), la frise de Dryhopper et le chargement des JSON. Précédent :
+  `src/ui/hopIndex/hopSolver.worker.ts`.

@@ -1,6 +1,6 @@
 # Gates: voie p1-ma-biere — Ma bière, la fiche et Substituer, jouables
 
-OWNS: prototypes/houblons-v4/parcours/src/ecrans/ma-biere/**, prototypes/houblons-v4/parcours/src/ecrans/fiche/**, prototypes/houblons-v4/parcours/src/ecrans/substituer/**, prototypes/houblons-v4/maquettes/parcours-p1/**, work/missions/2026-10-23-maquette-parcours/voies/p1-ma-biere/RESULTAT.md
+OWNS: prototypes/houblons-v4/parcours/src/ecrans/ma-biere/**, prototypes/houblons-v4/parcours/src/ecrans/biere/**, prototypes/houblons-v4/parcours/src/ecrans/fiche/**, prototypes/houblons-v4/parcours/src/ecrans/substituer/**, prototypes/houblons-v4/maquettes/parcours-p1/**, work/missions/2026-10-23-maquette-parcours/voies/p1-ma-biere/RESULTAT.md
 
 Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en porte, en React dans le socle, calculés en direct, avec leurs gestes joués.
 
@@ -82,4 +82,24 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
 - [ ] G16: le rapport nomme les captures ouvertes, à 390 et à 1280 px
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p1-ma-biere/RESULTAT.md --contient "390,1280,fiche,substituer"
   EXPECT: NOTE OK
+  EVIDENCE: pending
+
+- [ ] G17: l'étape Houblons reprend la base v4.10, élément par élément (D105)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-reprise.mjs prototypes/houblons-v4/maquettes/parcours-p1 ma-biere --page=etat.html --inventaire=work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-etape.json
+  EXPECT: REPRISE OK
+  EVIDENCE: pending
+
+- [ ] G18: l'onglet Ma bière reprend la base v4.10, élément par élément (D105)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-reprise.mjs prototypes/houblons-v4/maquettes/parcours-p1 biere --page=etat.html --inventaire=work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-ma-biere.json
+  EXPECT: REPRISE OK
+  EVIDENCE: pending
+
+- [ ] G19: l'onglet Ma bière garde les exigences de toute l'app
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-commun.mjs prototypes/houblons-v4/maquettes/parcours-p1 biere --page=etat.html --sans=mots
+  EXPECT: COMMUN OK
+  EVIDENCE: pending
+
+- [ ] G20: les gestes de l'onglet Ma bière jouent (bannir, objectifs vers Suggérer)
+  CHECK: node prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs --dossier=prototypes/houblons-v4/maquettes/parcours-p1 --etape=biere
+  EXPECT: ETAPE OK (biere)
   EVIDENCE: pending

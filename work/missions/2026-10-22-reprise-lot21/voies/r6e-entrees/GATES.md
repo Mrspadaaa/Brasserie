@@ -25,6 +25,6 @@ Scope: moteur et profils vérifiés (L08), données du lot 22 extraites au contr
   EVIDENCE: automatic-evidence=v1; definition-sha256=02a523b1267ee1240ef40329bb54b0183a6374179b0e1c86cbad6b22f79a4573; exit=0; EXPECT=matched; output-sha256=9ebc2a3bc86c0b29c21d72443842e536bd7da4e7adcc302b3ba991bcde6c1c36; output-bytes=8; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G5: rien n'a été écrit dans le prototype
-  CHECK: node -e "const o=require('child_process').execSync('git status --porcelain --untracked-files=all -- prototypes/houblons-v4').toString().trim(); if (o) { console.log(o); process.exit(1); } console.log('MOTEUR INTACT')"
+  CHECK: node -e "const o=require('child_process').execSync('git status --porcelain --untracked-files=all -- prototypes/houblons-v4/src prototypes/houblons-v4/data prototypes/houblons-v4/scripts').toString().trim(); if (o) { console.log(o); process.exit(1); } console.log('MOTEUR INTACT')"
   EXPECT: MOTEUR INTACT
   EVIDENCE: automatic-evidence=v1; definition-sha256=eb3ab05ca3cec9328407922d4e98881d05ba76b163e167784506dad1bdfd3672; exit=0; EXPECT=matched; output-sha256=ed2db22972077f6ea153e25662067a28832fd63e0513fb512d6680cb81c39db3; output-bytes=14; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries

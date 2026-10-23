@@ -38,6 +38,8 @@ export interface EtatParcours {
   brouillon: Brouillon | null;
   /** Compteur des gestes qui ont changé la recette ou le brouillon (vérifications du script de parcours). */
   gestes: number;
+  /** Houblons retenus pour la comparaison : le « + » de Suggérer (q2b), « Comparer (n) », l'onglet Comparer. */
+  aComparer: string[];
 }
 
 export type Cible = 'recette' | 'brouillon';
@@ -51,6 +53,8 @@ export type Action =
   | { type: 'brouillon/ouvrir'; brouillon: Brouillon }
   | { type: 'brouillon/inscrire' }
   | { type: 'brouillon/abandonner' }
+  | { type: 'comparaison/basculer'; hopKey: string }
+  | { type: 'comparaison/fixer'; houblons: string[] }
   | { type: 'recommencer' }
   | { type: 'etat/poser'; etat: EtatParcours };
 

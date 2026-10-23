@@ -83,3 +83,8 @@ Scope: l'écran Suggérer de q2b (base v4.10), « Quel houblon ajouter à ma bi�
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p2-suggerer/RESULTAT.md --contient "390,1280,suggerer,q2b"
   EXPECT: NOTE OK
   EVIDENCE: pending
+
+- [ ] G17: Suggérer reprend q2b, élément par élément (D105)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-reprise.mjs prototypes/houblons-v4/maquettes/parcours-p2 suggerer --page=etat.html --inventaire=work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/donnees/inventaire-q2b.json
+  EXPECT: REPRISE OK
+  EVIDENCE: pending

@@ -44,6 +44,7 @@ export function etatDeDepart(route: Route): EtatParcours {
 /** Route de départ de chaque page <route>/etat.html. */
 export function routeDePage(page: string): Route {
   switch (page) {
+    case 'biere': return { ecran: 'biere' };
     case 'fiche': return { ecran: 'fiche', houblon: H.nugget };
     case 'suggerer': return { ecran: 'suggerer' };
     case 'comparer': return { ecran: 'comparer', houblons: COMPARER_CARTE };

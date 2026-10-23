@@ -90,3 +90,35 @@ Dans `GATES.md`, même dossier. Ne pas le modifier. Lancer chaque `CHECK:` depui
 - `LEÇON PROPOSÉE : …` s'il y a lieu.
 
 Réponse finale au pilote : une ligne.
+
+## Reprise D105 (23.10, soir) : q2b tel qu'il l'a choisi
+
+Le brasseur : « Je confirme que "Bière" et "Suggérer" divergent nettement du design choisi. Oui c'est quoi ce
+bordel ??? ». Sur la capture de q2b : « Ça oui, c'est effectivement l'un de mes choix ». La faute est au pilote : la
+carte (`fils22-carte/suggerer`) et la règle « un facteur libre » ont pris le pas sur q2b. **La carte n'est pas une
+base** : elle ne donne que les ponts.
+
+Ce que tu reprends, tel qu'il l'a vu (`fils15-s5-complexe/captures/q2b-b-390.png`, et `fils18-baseline/captures/l8b-haut-390.png`
+pour la disposition l8 qu'il aime), avec le moteur en direct. Inventaire :
+`work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/donnees/inventaire-q2b.json` (12 éléments).
+- En tête : les onglets (`Onglets` commun, actif="suggerer"), puis Au style / Absolu et Barres / Radar.
+- Les trois cartes d'objectif de la dégustation, avec leur verdict en un mot : « Aucune voie houblon · Hors houblon › »,
+  « Approche », « Atteint ». La piste l5b est dans la carte (D92).
+- **Les voies du moteur, groupées par effet** (« = même effet sur tes objectifs · 10 g · 10′ ») :
+  - ajouter ;
+  - **assembler 5 + 5 g** ;
+  - **remplacer Nugget à 60′** (dose à IBU égal).
+  Elles viennent de `proposer(recette, direction)`, nouvelle fonction de l'adaptateur (`src/moteur/index.ts`), qui
+  appelle `proposeVoies` du moteur. Mesuré sur le cas : 14 voies, 128 ms à froid, mémoïsé. Ce sont déjà celles de
+  q2b : Golding, Motueka, Aurum, East Kent Goldings, Columbus, Motueka + Citra cryo, Citra cryo, Motueka + Nelson
+  Sauvin.
+- Chaque voie a sa ligne : nom, usage en mot (D90), stock en icône, familles en pictos avec l'intensité (D80). Elle a
+  son « + » ou son ✓ (D78), branché sur la liste de comparaison du socle (`useComparaison`, `basculerComparaison`).
+- En bas, la barre « Comparer (n) » ouvre Comparer avec la liste.
+- La bande « ‹ visée | visée » est écartée : sa raison est son mot « Ça c'est inutile » (D91).
+- La règle « un facteur libre » (L10) vaut pour les réglages de l'écran. Les voies proposées par le moteur (moment et
+  dose compris) sont des propositions, pas des réglages libres. `controle-une-question` doit rester vert (un groupe
+  libre : le choix du houblon).
+- NOTE : une section « ## Reprise », une ligne par élément de l'inventaire, et le marqueur `data-element` à l'écran
+  (en-tête de `controle-reprise.mjs`).
+- Te juger côte à côte : ta capture à 390 à côté de q2b-b-390.png. Il doit reconnaître son écran.

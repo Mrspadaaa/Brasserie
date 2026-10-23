@@ -5,7 +5,8 @@
 // Inconnu ≠ 0 : une valeur qu'on ne sait pas est `null` avec sa raison, jamais un zéro.
 import {
   FAMILIES, FAMILY_NAMES, MOMENTS, STOCK, cransOf, describeFamilies, familyWords, getStyleScale, hopAlpha, hopRef, hopRole,
-  simulerCas, substitutes,
+  simulerCas, substitutes, proposeVoies,
+  type Direction, type VoieResult,
   type AjoutSimule, type CasSimule, type FamilyId, type FamilyStatus, type MomentSimule, type ProfilFamilles, type Recipe, type StyleScale,
 } from '../../../src/engine';
 import { ibuPerGram, ibuPerGramAt } from '../../../src/engine/recipe';
@@ -228,6 +229,14 @@ export function cransFrise(recette: RecetteParcours, joursMax = 7): Quand[] {
 }
 /** Un ajout placé à un cran de la frise, simulé (calcul à chaque geste, mémoïsé). */
 export const simulerMoment = (recette: RecetteParcours, ajout: AjoutParcours, q: Quand) => simulerAjout(recette, placer(ajout, q, recette));
+
+// ---------- Voies du moteur (Suggérer de q2b, D105) ----------
+/** Les voies du moteur pour une direction tirée de la dégustation (« + floral », « − résineux » : crans signés) :
+ * ajouter (10′, whirlpool, dry hop), augmenter, diminuer, retirer, remplacer à IBU égal, assembler deux houblons du
+ * stock ; classées par le moteur (RANKING) avec les achats possibles. C'est la source des voies de q2b, groupées par
+ * effet à l'écran. Mémoïsé par recette et direction. */
+export const proposer = memo<[RecetteParcours, Direction], VoieResult>('proposer', (r, d) => cleRecette(r) + JSON.stringify(d),
+  (recette, direction) => proposeVoies(recette, direction, { tasting: DEGUSTATION, assemblages: true }));
 
 // ---------- Suggérer ----------
 export interface Candidat { cle: string; houblon: HoublonLu; ajout: AjoutParcours; lu: AjoutLu; visee: Ecart; besoin: number; stockSuffisant: boolean | null }

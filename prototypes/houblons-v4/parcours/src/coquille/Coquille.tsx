@@ -6,6 +6,7 @@ import { JeuPictos } from '../commun/Pictos';
 import { useParcours } from '../etat/EtatParcours';
 import { brouillonPour } from '../etat/etapes';
 import MaBiere from '../ecrans/ma-biere';
+import Biere from '../ecrans/biere';
 import Fiche from '../ecrans/fiche';
 import Suggerer from '../ecrans/suggerer';
 import Comparer from '../ecrans/comparer';
@@ -30,6 +31,7 @@ export function Coquille() {
 
   const outil = (() => {
     switch (route.ecran) {
+      case 'biere': return <Biere />;
       case 'suggerer': return <Suggerer />;
       case 'comparer': return <Comparer houblons={route.houblons} />;
       case 'dryhopper': return etat.brouillon ? <Dryhopper ajoutId={route.ajout} /> : null;

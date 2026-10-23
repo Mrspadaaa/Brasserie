@@ -88,3 +88,42 @@ Dans `GATES.md`, même dossier. Ne pas le modifier. Lancer chaque `CHECK:` depui
 ## Rendre
 `RESULTAT.md` : ce qui est fait, les captures ouvertes (nommées), les écarts et leur raison, les besoins dans le
 socle, `LEÇON PROPOSÉE : …` s'il y a lieu. Réponse finale au pilote : une ligne.
+
+## Reprise D105 (23.10, soir) : ses maquettes, pas la carte
+
+Le brasseur, sur la maquette jouable : « Mais ça semble pas du tout correspondre aux choix que j'ai fait de maquette
+de base ??? » ; « Je confirme que "Bière" et "Suggérer" divergent nettement du design choisi. Oui c'est quoi ce
+bordel ??? ». Sur la capture de l'onglet Ma bière de la base v4.10 : « Ça aussi » (c'est son choix). La faute est au
+pilote : la carte en fil de fer (`fils22-carte/ma-biere`) était dans tes entrées ; **elle n'est pas une base**. Elle
+ne donne que les ponts.
+
+Ce que tu reprends, tel qu'il l'a vu, avec le moteur en direct :
+1. **Étape Houblons** (route `ma-biere`, `src/ecrans/ma-biere/`) = `base/consolide/index.html`, capture
+   `base/captures/consolide-390.png`. Inventaire : `work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-etape.json`
+   (7 éléments) :
+   - « Houblons 3/7 » ;
+   - la frise verticale du brassin (ébullition 60′ à post-fermentation), avec chaque ajout posé dessus et glissé
+     par 5′ ;
+   - la carte de l'ajout ;
+   - la levure dans la frise ;
+   - « Ajouter — houblon… » et les ajouts rapides ;
+   - « Boisé et résineux trop marqué › » et les familles en deux colonnes.
+2. **Onglet Ma bière** (route `biere`, nouveau dossier `src/ecrans/biere/`, ébauche posée par le pilote) =
+   `base/consolide/biere.html`, capture `base/captures/consolide-biere-390.png`. Inventaire :
+   `work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-ma-biere.json` (11 éléments) :
+   - les onglets : le composant commun `Onglets` (`src/commun/Onglets.tsx`, actif="biere") ;
+   - la légende « dégusté · prévu · non situé » ;
+   - « 6 au style · 5 non situées » ;
+   - les barres au style avec « prévu » ;
+   - « bannir · − · sans visée · + » sous la famille touchée ;
+   - « + floral », « − résineux », « + … » (vers Suggérer) ;
+   - « Prévu avec SafAle US-05 ».
+3. Fiche et Substituer : inchangés.
+4. NOTE de `ma-biere` et de `biere` : une section « ## Reprise » ; une ligne par élément de leur inventaire
+   (repris, en contexte, en pont, ou écarté avec sa raison ; un quart au plus) ; et le marqueur `data-element` à
+   l'écran (en-tête de `work/refonte-frontend/v4/tournoi/outils/controle-reprise.mjs`).
+5. Socle du pilote, à employer :
+   - la route `biere` et `aller({ ecran: 'biere' })` ;
+   - `Onglets` ;
+   - la liste de comparaison (`useComparaison()`, gestes `basculerComparaison` et `fixerComparaison`).
+6. Te juger côte à côte : ta capture à 390 à côté de celle de la base. Il doit reconnaître son écran.

@@ -53,6 +53,8 @@ export function useRecetteDeTravail(): { recette: RecetteParcours; sur: Cible } 
   const { etat } = useParcours();
   return etat.brouillon ? { recette: etat.brouillon.recette, sur: 'brouillon' } : { recette: etat.recette, sur: 'recette' };
 }
+/** Les houblons retenus pour la comparaison. */
+export const useComparaison = (): string[] => useParcours().etat.aComparer;
 /** Ma bière lue par le moteur (recalculée à chaque changement de la recette). */
 export function useBiere(recette?: RecetteParcours): moteur.BiereLue {
   const r = useRecette();
@@ -73,6 +75,8 @@ export function useGestes() {
     ouvrirBrouillon: (brouillon: Brouillon) => dispatch({ type: 'brouillon/ouvrir', brouillon }),
     inscrire: () => dispatch({ type: 'brouillon/inscrire' }),
     abandonner: () => dispatch({ type: 'brouillon/abandonner' }),
+    basculerComparaison: (hopKey: string) => dispatch({ type: 'comparaison/basculer', hopKey }),
+    fixerComparaison: (houblons: string[]) => dispatch({ type: 'comparaison/fixer', houblons }),
     recommencer: () => dispatch({ type: 'recommencer' }),
   }), [dispatch]);
 }

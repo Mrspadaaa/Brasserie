@@ -4,6 +4,7 @@ import type { RoutePage } from './pages';
 
 export type Route =
   | { ecran: 'ma-biere' }
+  | { ecran: 'biere' }
   | { ecran: 'fiche'; houblon: string }
   | { ecran: 'suggerer' }
   | { ecran: 'comparer'; houblons: string[]; pin?: string }
@@ -24,6 +25,7 @@ export function lireRoute(hash: string): Route | null {
   const h = new URLSearchParams(requete).get('h');
   switch (ecran as RoutePage | '') {
     case 'ma-biere': return { ecran: 'ma-biere' };
+    case 'biere': return { ecran: 'biere' };
     case 'suggerer': return { ecran: 'suggerer' };
     case 'comparer': {
       const pin = new URLSearchParams(requete).get('pin');
@@ -39,7 +41,7 @@ export function lireRoute(hash: string): Route | null {
 
 export function ecrireRoute(r: Route): string {
   switch (r.ecran) {
-    case 'ma-biere': case 'suggerer': return `#/${r.ecran}`;
+    case 'ma-biere': case 'biere': case 'suggerer': return `#/${r.ecran}`;
     case 'comparer': {
       const q = [r.houblons.length ? `h=${r.houblons.map(segmentDe).join(',')}` : '', r.pin ? `pin=${segmentDe(r.pin)}` : ''].filter(Boolean).join('&');
       return `#/comparer${q ? `?${q}` : ''}`;
@@ -52,7 +54,7 @@ export function ecrireRoute(r: Route): string {
 /** Écran d'avant, quand l'historique n'en a pas (page ouverte directement sur une route). */
 export function parent(r: Route, comparerDefaut: string[]): Route {
   switch (r.ecran) {
-    case 'ma-biere': case 'fiche': case 'suggerer': case 'substituer': return { ecran: 'ma-biere' };
+    case 'ma-biere': case 'biere': case 'fiche': case 'suggerer': case 'substituer': return { ecran: 'ma-biere' };
     case 'comparer': return { ecran: 'suggerer' };
     case 'dryhopper': return { ecran: 'comparer', houblons: comparerDefaut };
     case 'levure': return { ecran: 'dryhopper', ajout: r.ajout };

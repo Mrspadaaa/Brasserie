@@ -18,7 +18,7 @@ const depot = path.resolve(parcours, '..', '..', '..');
 const require = createRequire(path.join(depot, 'package.json'));
 const puppeteer = require('puppeteer-core');
 const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const ROUTES = ['ma-biere', 'fiche', 'suggerer', 'comparer', 'dryhopper', 'levure', 'substituer'];
+import { ROUTES } from './routes-pages.mjs';
 
 const argv = process.argv.slice(2);
 const opt = (nom) => {

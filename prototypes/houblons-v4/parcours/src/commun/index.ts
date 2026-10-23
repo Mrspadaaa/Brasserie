@@ -6,6 +6,7 @@ export { useAppuiLong, DUREE_APPUI_LONG } from './gestes';
 export { Alpha, JetonHoublon } from './JetonHoublon';
 export { Legende } from './Legende';
 export { LigneContexte } from './LigneContexte';
+export { Onglets, type Onglet } from './Onglets';
 export { Inconnu, Simule } from './Marques';
 export { nombre, plage, signe } from './nombres';
 export { JeuPictos, Picto } from './Pictos';

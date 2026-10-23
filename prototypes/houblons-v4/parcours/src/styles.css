@@ -11,4 +11,10 @@
 /* PageShell (app) donne le focus à son conteneur de défilement (tabindex="-1") à l'ouverture d'une page : c'est une
    cible de programme, jamais de tabulation. Sans ce réglage, l'anneau de focus paille encadrait tout l'outil sur les
    captures (relevé par les voies p2 et p3, 23.10). Les commandes gardent leur anneau. */
-[tabindex="-1"]:focus-visible { outline: none; }
+main[tabindex="-1"]:focus-visible, div[tabindex="-1"]:focus-visible { outline: none; }
+/* Spécificité (0,2,1) : la classe utilitaire de PageShell (focus-visible:outline, 0,2,0) gagnait à égalité, car
+   elle vient après (vu en jouant la maquette, 23.10). Dans l'app, la même question se pose sur PageShell. */
+
+/* Ma bière est la racine de la maquette : le « Fermer » de PageShell n'y mène nulle part (dans l'app, RecipePage
+   revient à la liste des recettes). Masqué pour la maquette seulement. */
+.pq-recette [data-page-titlebar] > button[aria-label="Fermer"] { display: none; }

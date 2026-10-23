@@ -4,7 +4,7 @@ import { recetteDegustee } from '../donnees/cas';
 import { ajouter, changerDose, changerMoment, choisirLevure, remplacer, retirer } from './operations';
 import type { Action, EtatParcours, RecetteParcours } from './types';
 
-export const etatInitial = (): EtatParcours => ({ recette: recetteDegustee(), brouillon: null, gestes: 0 });
+export const etatInitial = (): EtatParcours => ({ recette: recetteDegustee(), brouillon: null, gestes: 0, aComparer: [] });
 
 function appliquer(r: RecetteParcours, a: Action): RecetteParcours {
   switch (a.type) {
@@ -28,7 +28,9 @@ export function reducteur(etat: EtatParcours, a: Action): EtatParcours {
       }
       return geste({ ...etat, recette: appliquer(etat.recette, a) });
     case 'brouillon/ouvrir': return geste({ ...etat, brouillon: a.brouillon });
-    case 'brouillon/inscrire': return etat.brouillon ? geste({ recette: etat.brouillon.recette, brouillon: null }) : etat;
+    case 'brouillon/inscrire': return etat.brouillon ? geste({ ...etat, recette: etat.brouillon.recette, brouillon: null }) : etat;
+    case 'comparaison/basculer': return geste({ ...etat, aComparer: etat.aComparer.includes(a.hopKey) ? etat.aComparer.filter((k) => k !== a.hopKey) : [...etat.aComparer, a.hopKey] });
+    case 'comparaison/fixer': return geste({ ...etat, aComparer: [...a.houblons] });
     case 'brouillon/abandonner': return etat.brouillon ? geste({ ...etat, brouillon: null }) : etat;
     case 'recommencer': return { ...etatInitial(), gestes: etat.gestes + 1 };
     case 'etat/poser': return a.etat;
