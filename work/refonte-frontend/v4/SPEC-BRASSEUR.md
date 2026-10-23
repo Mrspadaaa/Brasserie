@@ -39,6 +39,7 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
 **L'écran**
 - Dense mais pas surchargé : au premier plan seulement l'utile et l'actionnable, le reste à un toucher, 80 mots au plus.
   Pas d'écran de cockpit. (§ 3 ; D1 à D5)
+- Le thème des maquettes (clair par défaut, « cave » en sombre) devient celui de toute l'app (23.10, § 5).
 - Moderne et visuel : des UX boosters (curseurs, bascule barres et radar) et des couleurs pour se repérer. (§ 4 ; D6,
   D7, D74)
 - Pictos d'arômes au trait, sans halo ; la légende derrière un petit « ? » ; l'usage en mot. (D88 à D90)
@@ -476,6 +477,10 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   aide le processus » — 18.10. DESIGN.md peut donc évoluer si la recherche le justifie ;
   le changement est écrit et argumenté, pas glissé.
 - « Une UI ux toujours pas très moderne dans les normes et bon usage actuelle. » — 18.10.
+- **Le thème des maquettes pour toute l'app** : « Le thème de l'app principal doit être revu. On garde celle des
+  maquettes » — 23.10, après le rapport sur l'intégration (B7 : ses maquettes choisies sont claires, l'app n'a que
+  « cave »). Le clair des maquettes devient le thème par défaut de l'app, le « cave » son thème sombre
+  (`prototypes/houblons-v4/ecran/THEMES.md`) ; décision inscrite en tête de DESIGN.md.
 
 ## 6. Ses verdicts sur les versions passées (calibration de tout jugement)
 

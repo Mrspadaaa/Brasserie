@@ -88,6 +88,13 @@ components:
     typography: "{typography.reading}"
 ---
 
+> **Décision du brasseur, 23.10.2026 : le thème de l'app est revu, on garde celui des maquettes.**
+> Ses mots : « Le thème de l'app principal doit être revu. On garde celle des maquettes ». Le thème clair des
+> maquettes devient celui de l'app, par défaut ; le « cave » décrit ci-dessous devient le thème sombre. Mécanisme et
+> valeurs mesurées : `prototypes/houblons-v4/ecran/THEMES.md` (mêmes noms de jetons, valeurs par thème en
+> variables). Tant que le portage n'est pas fait, les couleurs ci-dessous restent celles du code ; un nouvel écran se
+> conçoit déjà en clair.
+
 ## Overview
 
 **Instrument de brasserie compact.** La priorité est de maximiser l'espace utile
