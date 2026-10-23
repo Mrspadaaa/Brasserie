@@ -33,3 +33,8 @@ Scope: le parcours de la carte joué d'un bout à l'autre dans une seule session
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours
   EXPECT: CHOIX OK
   EVIDENCE: pending
+
+- [ ] G7: chaque écran choisi a la teinte de sa maquette (fond, aplats, encre ; D106)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-teinte.mjs prototypes/houblons-v4/maquettes/parcours
+  EXPECT: TEINTE OK 5/5
+  EVIDENCE: pending

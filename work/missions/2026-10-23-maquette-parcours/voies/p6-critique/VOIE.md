@@ -26,7 +26,7 @@ classement ni d'étoile (L27 : indicatif tant que tu n'es pas étalonné sur ces
 - `work/missions/2026-10-23-maquette-parcours/voies/p6-critique/RESULTAT.md`
 
 ## Consignes
-1. Pour chaque écran (ma-biere, fiche, suggerer, comparer, dryhopper, levure, substituer), une ligne :
+1. Pour chaque écran (ma-biere pour l'étape Houblons, biere pour l'onglet Ma bière, fiche, suggerer, comparer, dryhopper, levure, substituer), une ligne :
    « <écran> : ACCEPTÉ » ou « <écran> : REJET ». Suivent ses défauts : capture, endroit, ce qui est faux.
 2. Un REJET cite SPEC-BRASSEUR ou DEFAUTS (le numéro D…), sinon c'est une réserve.
 3. Pour chaque écran choisi, mets d'abord sa capture du parcours à côté de celle de son choix (registre). Il doit
