@@ -158,7 +158,8 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
 - D109 tranché par lui : une croix (« Juste une croix bien positionné, facile, dans le thème suffirait »). D118 (la croix
   ramène toujours à l'étape Houblons ; lecture dite dans le fil 0d919b2f), D119 (l'en-tête change d'un onglet à l'autre),
   D120 (Annuler en pied). SPEC 31a752af ; fils 0a142451, 0d919b2f, a3e4332b, c7854856 et 5410d51d.
-- **À faire quand « En attente » annonce la version D107 à D120** :
+- D121 (seul le « › » ouvre l'analyse ; le bloc du profil entier, en variantes), SPEC 7db53cb1, fil a0f0b6ef.
+- **À faire quand « En attente » annonce la version D107 à D121** :
   1. rejouer CHOIX, TEINTE, controle-comparer-etapes, controle-visee, controle-retour,
      controle-traits, controle-geste-etape, controle-appui (A9),
      controle-legende, controle-fiche, controle-stepper ; page côte à côte par écran ;
@@ -167,7 +168,7 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
      une nouvelle date) ;
   4. répondre dans les fils 4204d431, 48b1d3c4, 824a18bd, 12fdbdc0, 98024210, 2f687ce7, 2ef8663d,
      00fbdef5, 535c5505, 0a142451, 0d919b2f,
-     a3e4332b, c7854856 et 5410d51d avec le lien, puis les résoudre.
+     a3e4332b, c7854856, 5410d51d et a0f0b6ef avec le lien, puis les résoudre.
 
 ## Ouvert, par priorité
 1. **Dette des défauts** (AUDIT.md, « À adapter »), urgente pour la voie p4 du parcours :
