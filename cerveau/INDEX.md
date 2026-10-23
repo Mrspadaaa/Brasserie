@@ -47,7 +47,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 ### produit/ — outils, écrans, état fini ou inachevé
 - [[outils-houblons]] — une question = un outil : la carte à poser avant tout lot
 - [[acquis-valides]] — ce que le brasseur a validé et qui doit survivre d'un lot à l'autre
-- [[page-partagee]] — la page partagée ne montre que l'état à jour
+- [[page-partagee]] — une version, un artefact neuf et daté
 - [[saisie-mobile]] — jamais type="number", densité pilotée par le clavier
 - [[import-recette]] — le procédé vit dans le déroulé ; fiche de brassage éditable
 - [[export-et-ia]] — fiches IA sur le stock, export texte avec l'eau, relecture consultative

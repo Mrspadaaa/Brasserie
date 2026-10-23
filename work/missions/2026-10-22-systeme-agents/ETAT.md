@@ -58,9 +58,23 @@
 - 2353e356 : son choix, « cannelle et clou croisés » (f1 de la série F), est le symbole `p-spice` de
   `fils17-standard/v3/planche.html`, découpé sans masque.
 
-## Page de lot en vigueur
-https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv. La source est `work/refonte-frontend/v4/outils/page-lot/index.html`.
-L'autre session la met à jour : versions 7 à 9 et suivantes, avec Dryhopper, r6n2 et les épices.
+**Une version, un artefact** (23.10, après-midi : « Problème avec les artefacts, c'est assez dur à lire et chaque
+version devrait en créé des nouveaux »)
+- `verifier-page.mjs` contrôle la lisibilité à 390 et 1280 px : date au titre, `#a-choisir` au premier écran, captures
+  ≥ 340 px, texte ≥ 14 px, blocs ≤ 45 mots. L'ancienne page échoue (74 captures à 277 px, texte à 12,8 px).
+- `systeme.mjs voies` : table « ## Pages » de MISSION.md (Sujet, Version, Adresse, Source) ; deux versions sur une
+  même adresse ou une même source échouent ; une mission d'écrans sans cette table aussi (témoins : 60, OK).
+- Mode d'emploi : `work/refonte-frontend/v4/outils/pages/PUBLIER.md` ; consigne remplacée dans REMPLACES.md ;
+  page-partagee.md, entonnoir.md § 4, skill voies § 6, gabarit MISSION, SPEC § 0 et § 7, M12.
+
+## Pages en vigueur
+- L'ancienne page « Lot 22 houblons » (https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv, versions 1 à 9) reste en
+  l'état, comme archive. Sa source `page-lot/index.html` n'est plus republiée.
+- L'autre session publie les pages datées « Comparer · 23.10 » et « Dryhopper · 23.10 », sources
+  `work/refonte-frontend/v4/outils/pages/2026-10-23-*/index.html`, et les inscrit dans « ## Pages » de sa MISSION.
+  La carte des outils (Substituer, Levure) doit aussi avoir sa page : demandé à l'autre session.
+- `page-lot/PUBLIER.md` dit encore « garder le même lien » : à remplacer par un renvoi vers `pages/PUBLIER.md`
+  quand l'autre session n'y travaille plus (hors du champ de `remplaces`).
 
 ## En cours ailleurs
 La session « En attente » (local_6a42bfeb-1927-4a94-959c-c50362db1c88) travaille sur la mission

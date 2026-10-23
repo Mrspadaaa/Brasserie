@@ -461,26 +461,47 @@ export function lireTable(texte, titre) {
   return rangs.slice(2).map((r) => Object.fromEntries(tete.map((h, i) => [h, r[i] ?? ''])));
 }
 
+// Une version = un nouvel artefact (23.10 : « Problème avec les artefacts, c'est assez dur à lire et chaque version
+// devrait en créé des nouveaux ») : la table « ## Pages » de MISSION.md, une ligne par version publiée.
+export function pagesDeMission(texteMission) {
+  return lireTable(texteMission, 'Pages').map((p) => ({
+    sujet: p.sujet ?? '', version: p.version ?? '',
+    adresse: ((p.adresse ?? '').match(/claude\.ai\/(?:code\/)?artifact\/[\w-]+/) ?? [''])[0],
+    source: ((p.source ?? '').match(/`([^`]+)`/) ?? [])[1] ?? (p.source ?? '').trim(),
+  }));
+}
+
 export function suitesDeMission(mission, dossiersVoies, racine = RACINE) {
   const erreurs = [];
   const fMission = path.join(mission, 'MISSION.md');
   const texteMission = existe(fMission) ? lire(fMission) : '';
+  const pages = pagesDeMission(texteMission);
+  for (const [cle, quoi] of [['adresse', 'la même adresse'], ['source', 'la même source']]) {
+    const vues = new Map();
+    for (const p of pages.filter((x) => x[cle])) vues.set(p[cle], [...(vues.get(p[cle]) ?? []), `${p.sujet} ${p.version}`.trim()]);
+    for (const [val, qui] of vues) if (qui.length > 1) erreurs.push(`ECHEC mission — ${qui.length} versions sur ${quoi} (${val} : ${qui.join(' ; ')}) : une version = un nouvel artefact, daté, et sa propre source (23.10)`);
+  }
+  for (const p of pages) {
+    if (!p.adresse) erreurs.push(`ECHEC mission — page « ${p.sujet} ${p.version} » sans adresse d'artefact dans « ## Pages »`);
+    if (!p.source || !existe(path.join(racine, p.source))) erreurs.push(`ECHEC mission — page « ${p.sujet} ${p.version} » : source ${p.source || 'non déclarée'} introuvable`);
+  }
   // M13 (23.10) : un panel v0 rendu se montre aussitôt, sans attendre le tri. Les 56 concepts de Dryhopper
   // étaient finis à 0 h 30 ; la page disait « classement en cours » : « Je les vois pas dans les artefacts ? ».
-  // La phrase peut être coupée par un retour à la ligne (« Source de\n    la page : `…` »).
-  const source = (texteMission.match(/[Ss]ource\s+de\s+la\s+page[^`]{0,40}`([^`]+\.html)`/) ?? [])[1];
+  // Ancien format, une seule page : « Source de la page : `…` », coupée parfois par un retour à la ligne.
+  const ancienne = (texteMission.match(/[Ss]ource\s+de\s+la\s+page[^`]{0,40}`([^`]+\.html)`/) ?? [])[1];
+  const sources = [...new Set([ancienne, ...pages.map((p) => p.source)].filter((s) => s && existe(path.join(racine, s))))];
   const rendue = (id) => { const r = path.join(mission, 'voies', id, 'RESULTAT.md'); return existe(r) && /^OK\b/.test(lire(r).split('\n').find((l) => l.trim()) ?? ''); };
   const v0Rendues = lireTable(texteMission, 'Voies').filter((v) => /^v0\b/.test(sansAccents(v.etape ?? '')) && rendue(v.voie));
   if (v0Rendues.length) {
-    const page = source && existe(path.join(racine, source)) ? lire(path.join(racine, source)) : '';
-    for (const v of v0Rendues) if (!page.includes(v.voie)) erreurs.push(`ECHEC ${v.voie} — série v0 rendue, absente de la page (${source ?? 'source de la page non déclarée dans MISSION.md'}) : le panel se publie dès qu'il est fait, sans attendre le tri (M13)`);
+    const texte = sources.map((s) => lire(path.join(racine, s))).join('\n');
+    for (const v of v0Rendues) if (!texte.includes(v.voie)) erreurs.push(`ECHEC ${v.voie} — série v0 rendue, absente des pages (${sources.join(', ') || 'aucune source déclarée dans « ## Pages » de MISSION.md'}) : le panel se publie dès qu'il est fait, sans attendre le tri (M13)`);
   }
   const section = (t, titre) => (t.split(new RegExp(`^## ${titre}`, 'm'))[1] ?? '').split(/\n## /)[0];
   const interface_ = dossiersVoies.some((d) => {
     const f = path.join(d, 'VOIE.md');
     return existe(f) && section(lire(f), 'Possède').split('\n').some((l) => /ecran-1\//.test(l) && !/\/donnees\//.test(l));
   });
-  if (interface_ && !/claude\.ai\/(code\/)?artifact\//.test(texteMission)) erreurs.push('ECHEC mission — voies d\'interface sans lien d\'artefact publié dans MISSION.md : fini = montré au brasseur (L27)');
+  if (interface_ && !pages.some((p) => p.adresse)) erreurs.push('ECHEC mission — voies d\'interface sans table « ## Pages » (Sujet, Version, Adresse, Source ; une ligne par version publiée) : fini = montré au brasseur (L27), une version = un nouvel artefact (23.10)');
   const acceptes = new Set();
   const rejetes = new Set();
   for (const d of dossiersVoies) {
@@ -765,14 +786,23 @@ function construireConseil(dir, { sansPremierGeste = false } = {}) {
 function construireMission(dir, { critereFaux = false, critereIgnore = false, critiqueRejette = false, ecarte = false, interfaceLien = null, panelV0 = null } = {}) {
   const m = path.join(dir, 'mission');
   fs.mkdirSync(m, { recursive: true });
-  const lien = interfaceLien === true ? '\nPage : https://claude.ai/artifact/TEMOIN\n' : '';
+  // Écrans publiés : une ligne par version dans « ## Pages » ; « lien-seul » est l'ancien format (un lien, une page
+  // republiée) ; « meme-adresse », deux versions republiées sur un seul artefact.
+  let lien = interfaceLien === 'lien-seul' ? '\nPage : https://claude.ai/artifact/TEMOIN\n' : '';
+  if (interfaceLien === true || interfaceLien === 'meme-adresse') {
+    fs.mkdirSync(path.join(dir, 'pages', 'v1'), { recursive: true });
+    fs.mkdirSync(path.join(dir, 'pages', 'v2'), { recursive: true });
+    for (const v of ['v1', 'v2']) fs.writeFileSync(path.join(dir, 'pages', v, 'index.html'), `<title>Témoin · ${v} · 23.10</title>`);
+    const deuxieme = interfaceLien === 'meme-adresse' ? 'TEMOIN1' : 'TEMOIN2';
+    lien = `\n## Pages\n| Sujet | Version | Adresse | Source |\n|---|---|---|---|\n| Témoin | v0, 23.10 | https://claude.ai/artifact/TEMOIN1 | \`pages/v1/index.html\` |\n| Témoin | passe 2, 23.10 | https://claude.ai/artifact/${deuxieme} | \`pages/v2/index.html\` |\n`;
+  }
   const ecart = ecarte === true ? '\n- v1 écartée : rejetée deux fois.\n' : ecarte === 'phrase' ? '\n- Rejets en plan : v1, à relancer ou à écarter.\n' : '';
   // Témoin « panel v0 » : v1 est une série v0 rendue ; la page la montre (« publie ») ou annonce un tri en cours (« cache »).
   let panel = '';
   if (panelV0) {
     fs.mkdirSync(path.join(dir, 'page'), { recursive: true });
     fs.writeFileSync(path.join(dir, 'page', 'index.html'), panelV0 === 'publie' ? '<section data-voies="v1"><img src="img/a1.png"></section>' : '<p>8 concepts faits, classement en cours.</p>');
-    panel = `\nSource de la page : \`page/index.html\`\n\n## Voies\n| Voie | Étape |\n|---|---|\n| v1 | v0 ×8 (2 froide, 2 tiède, 4 chaude) |\n`;
+    panel = `\n## Pages\n| Sujet | Version | Adresse | Source |\n|---|---|---|---|\n| Témoin | v0, 23.10 | https://claude.ai/artifact/PANEL | \`page/index.html\` |\n\n## Voies\n| Voie | Étape |\n|---|---|\n| v1 | v0 ×8 (2 froide, 2 tiède, 4 chaude) |\n`;
   }
   fs.writeFileSync(path.join(m, 'MISSION.md'), `# Mission témoin\n${ecart}${lien}${panel}`);
   if (critiqueRejette) {
@@ -876,7 +906,11 @@ function temoins() {
   const m6 = sous('m6');
   attendu('écrans non publiés', verifierVoies(construireMission(m6, { interfaceLien: false }), { approuver: true, racine: m6 }).ok, false);
   const m7 = sous('m7');
-  attendu('écrans publiés', verifierVoies(construireMission(m7, { interfaceLien: true }), { approuver: true, racine: m7 }).ok, true);
+  attendu('écrans publiés, une page par version', verifierVoies(construireMission(m7, { interfaceLien: true }), { approuver: true, racine: m7 }).ok, true);
+  const m11 = sous('m11');
+  attendu('deux versions republiées sur la même adresse', verifierVoies(construireMission(m11, { interfaceLien: 'meme-adresse' }), { approuver: true, racine: m11 }).ok, false);
+  const m12 = sous('m12');
+  attendu('écrans publiés sans table des pages (un lien seul)', verifierVoies(construireMission(m12, { interfaceLien: 'lien-seul' }), { approuver: true, racine: m12 }).ok, false);
   const m9 = sous('m9');
   attendu('panel v0 rendu mais pas montré', verifierVoies(construireMission(m9, { panelV0: 'cache' }), { approuver: true, racine: m9 }).ok, false);
   const m10 = sous('m10');

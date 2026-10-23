@@ -90,12 +90,12 @@ Contrôlé par `systeme.mjs mission` (M13).
   - `geste-<v>.json` si elle a un geste (valeurs avant, pendant et après le geste).
 - Le pilote note dans MISSION.md, section « Agents », l'identifiant de l'agent de chaque série : c'est lui qui fera
   la passe 2.
-- **Le panel se publie dès qu'il est fait**, sans attendre le tri : chaque série rendue va sur la page du lot,
-  capture par capture, et le classement la réordonne ensuite. Une ligne « classement en cours » ne compte pas comme
-  une publication : le 23.10, les 56 concepts de Dryhopper étaient finis depuis la nuit, et l'utilisateur a demandé
-  « Je les vois pas dans les artefacts ? ». La section de la page porte `data-voies="<ids des séries>"` ;
-  `systeme.mjs voies` échoue tant qu'une série v0 rendue n'y figure pas. La source de la page est déclarée dans
-  MISSION.md (« Source de la page : `…` »).
+- **Le panel se publie dès qu'il est fait**, sans attendre le tri : chaque série rendue va sur la page du panel v0,
+  capture par capture, et le classement y est ajouté ensuite (même version, même adresse). Une ligne « classement en
+  cours » ne compte pas comme une publication : le 23.10, les 56 concepts de Dryhopper étaient finis depuis la nuit, et
+  l'utilisateur a demandé « Je les vois pas dans les artefacts ? ». La section de la page porte
+  `data-voies="<ids des séries>"` ; `systeme.mjs voies` échoue tant qu'une série v0 rendue n'y figure pas. Chaque page
+  est une ligne de la table « ## Pages » de MISSION.md (§ 4).
 
 ## 2. Tri — un critique, repris à chaque série
 - **D'abord, le niveau du panel** : `node work/refonte-frontend/v4/tournoi/outils/controle-panel.mjs <captures…>`
@@ -137,13 +137,22 @@ Contrôlé par `systeme.mjs mission` (M13).
     pour chaque candidate ;
   - **plus de gain** : le critique ne voit plus de progrès d'une passe à la suivante ;
   - **plafond de coût** : quatre passes, puis on montre et on attend son retour.
-  Chaque passe est publiée sur la page du lot, sans attendre (L24). Le retour du brasseur relance la boucle
+  Chaque passe est publiée dans un artefact neuf, sans attendre (L24). Le retour du brasseur relance la boucle
   (`reprise`, puis v suivante).
 
 ## 4. Montrer, sans attendre
-- La page du lot montre la dernière passe d'abord, dans l'ordre des questions, puis **toutes les v0**, dans l'ordre
-  du classement. Le brasseur choisit : « pourquoi j'ai pas eu mes variations ? ».
-- La page passe `verifier-page.mjs` (PAGE OK) et son lien est écrit dans MISSION.md (M12).
+- **Une version = un nouvel artefact** : « Problème avec les artefacts, c'est assez dur à lire et chaque version devrait
+  en créé des nouveaux » (23.10). La page du lot 22 cumulait quatre sujets et ~100 captures de 277 px, où le texte de
+  l'écran tombait à 7 px. Une page par sujet et par version (« Dryhopper · passe 3 · 23.10 »), avec seulement cette
+  version ; elle renvoie à la page de la version d'avant. On ne republie une adresse que pour compléter ou corriger
+  la même version.
+- La page d'une passe montre ses candidates ; la page du panel v0 garde **toutes les v0**, dans l'ordre du classement.
+  Le brasseur choisit : « pourquoi j'ai pas eu mes variations ? ».
+- Avant publication, `verifier-page.mjs` rend PAGE OK : la date dans le titre, ce qu'il choisit en tête (`#a-choisir`,
+  au premier écran du téléphone), des captures à 340 px au moins (à 390 et à 1280 px de large), aucun texte sous
+  14 px, aucun bloc de plus de 45 mots. Sa ligne entre dans la table « ## Pages » de MISSION.md : Sujet, Version,
+  Adresse, Source. Deux lignes ne partagent ni adresse ni source (`systeme.mjs voies`, M12). Mode d'emploi :
+  `work/refonte-frontend/v4/outils/pages/PUBLIER.md`.
 - Le lot suivant peut se préparer sans attendre la réponse (L24).
 
 ## 5. Après son choix — la reprise

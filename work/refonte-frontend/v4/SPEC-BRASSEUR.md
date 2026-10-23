@@ -44,8 +44,8 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
 - Les mini maquettes passent par l'entonnoir : un vaste panel de concepts minimalistes sur la baseline, en trois
   chaleurs, puis un classement, des greffes et des passes v2, v3… Tout lui est montré, et il choisit. (§ 7 ; D50, M13)
 - La baseline est un plancher à enrichir, toujours suivi ; on ne s'en écarte que si l'idée le vaut. (D26, D93)
-- Une page partagée ne montre que l'état à jour. Pas de question bloquante : ses choix de goût deviennent des
-  variantes. (§ 1, pages partagées ; § 7 ; L24)
+- Une version, un artefact neuf et daté, qui ne montre que cette version et se lit au téléphone (23.10). Pas de
+  question bloquante : ses choix de goût deviennent des variantes. (§ 1, pages partagées ; § 7 ; L24, M12)
 
 **Remplacé, ne plus appliquer**
 - La planche de fils de fer gris (§ 7, 18.10), remplacée le 19.10 : « Tu t'es trop limité, m'eme au niveau des
@@ -502,3 +502,8 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   pas de prise de risque et trop focus sur mes exemple. Même si on a réussi à trouver le bon au final ». Mesuré : les
   56 concepts de Dryhopper sont à moitié vides et sur un même squelette ; 32 pictos sur 48 sont restés sur ses
   exemples (M14, `controle-panel.mjs`).
+- **Une version, un artefact** (23.10) : « Problème avec les artefacts, c'est assez dur à lire et chaque version devrait
+  en créé des nouveaux ». La page « Lot 22 houblons », republiée à la même adresse depuis le 22.10, cumulait quatre
+  sujets et ~100 captures de 277 px. Le même jour, à la session du lot : « Je les vois pas dans les artefacts.. ».
+  Remplace « publier à la même adresse » (19.10). Mode d'emploi : `outils/pages/PUBLIER.md` ; contrôles :
+  `verifier-page.mjs`, `systeme.mjs voies` (M12).

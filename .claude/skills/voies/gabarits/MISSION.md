@@ -20,6 +20,13 @@ Une `reprise` part d'une variante choisie (« <id> choisie : ses mots »).
 ## Agents
 <Pour un lot en entonnoir : l'identifiant de l'agent de chaque série, repris par SendMessage pour la passe 2.>
 
+## Pages
+<Une ligne par version montrée au brasseur, chacune dans un artefact neuf (`systeme.mjs voies` refuse deux versions
+sur une même adresse) ; mode d'emploi : `work/refonte-frontend/v4/outils/pages/PUBLIER.md`.>
+| Sujet | Version | Adresse | Source |
+|---|---|---|---|
+| <outil> | <v0, passe 2… ; date> | https://claude.ai/artifact/<id> | `work/refonte-frontend/v4/outils/pages/<date>-<sujet>/index.html` |
+
 ## Boucle de retour
 <Ce qui se passe si une voie échoue, si le relecteur rejette, si le brasseur se plaint : contrôles à
 ajouter, leçons possibles, qui relance.>

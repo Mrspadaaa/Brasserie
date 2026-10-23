@@ -70,6 +70,8 @@ firestore.rules
 !/work/refonte-frontend/v4/ecran-1/candidats-v44/sources/*/*
 # Source de la page de lot publiée (22.10.2026, M12) : https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv
 !/work/refonte-frontend/v4/outils/page-lot/*.html
+# Une page par version montrée au brasseur (23.10), chacune dans un artefact neuf ; les images restent locales.
+!/work/refonte-frontend/v4/outils/pages/*/index.html
 # Pages témoins des contrôles (22.10.2026, leçon L13) : un critère se rejoue depuis un clone neuf.
 !/work/refonte-frontend/v4/tournoi/outils/temoins/**/*.html
 # Mesures figées des panels témoins (23.10, M14) : controle-panel.mjs --mesures=.
