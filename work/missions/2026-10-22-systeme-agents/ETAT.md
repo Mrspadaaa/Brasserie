@@ -159,6 +159,8 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
   ramène toujours à l'étape Houblons ; lecture dite dans le fil 0d919b2f), D119 (l'en-tête change d'un onglet à l'autre),
   D120 (Annuler en pied). SPEC 31a752af ; fils 0a142451, 0d919b2f, a3e4332b, c7854856 et 5410d51d.
 - D121 (seul le « › » ouvre l'analyse ; le bloc du profil entier, en variantes), SPEC 7db53cb1, fil a0f0b6ef.
+- Ticket #145 (« Ajouter, vue -> substituer à faire dans le git ») : la vue Substituer, son choix (la porte ou u4)
+  puis la reprise ; lié à #126, #137, #119 et #143.
 - **À faire quand « En attente » annonce la version D107 à D121** :
   1. rejouer CHOIX, TEINTE, controle-comparer-etapes, controle-visee, controle-retour,
      controle-traits, controle-geste-etape, controle-appui (A9),
