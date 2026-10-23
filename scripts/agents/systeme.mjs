@@ -191,6 +191,30 @@ export function preparerEpreuve(jeu, dossier, { hasard = Math.random, racine = R
   return cle.length;
 }
 
+// Une capture d'écran plus haute qu'un premier écran est ramenée au premier écran (390 × 844) : le format ne doit
+// pas peser dans l'épreuve (le 23.10, y1b en premier écran face à x3b en page entière).
+export async function rognerPremiersEcrans(dossier) {
+  const { default: puppeteer } = await import('puppeteer-core');
+  const navigateur = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+  const page = await navigateur.newPage();
+  let n = 0;
+  for (const nom of fs.readdirSync(dossier).filter((x) => x.endsWith('.png'))) {
+    const f = path.join(dossier, nom);
+    const sortie = await page.evaluate(async (url) => {
+      const img = new Image();
+      await new Promise((ok, ko) => { img.onload = ok; img.onerror = ko; img.src = url; });
+      const L = img.naturalWidth, H = Math.round((L * 844) / 390);
+      if (img.naturalHeight <= H * 1.02) return null;
+      const c = document.createElement('canvas'); c.width = L; c.height = H;
+      c.getContext('2d').drawImage(img, 0, 0);
+      return c.toDataURL('image/png');
+    }, `data:image/png;base64,${fs.readFileSync(f).toString('base64')}`).catch(() => null);
+    if (sortie) { fs.writeFileSync(f, Buffer.from(sortie.split(',')[1], 'base64')); n += 1; }
+  }
+  await navigateur.close();
+  return n;
+}
+
 export function noterEpreuve(dossier, { moitie = null, seuilPaires = 0.8, seuilClasses = 0.7 } = {}) {
   const cle = JSON.parse(lire(path.join(dossier, 'cle.json'))).items.filter((i) => !moitie || i.moitie === moitie);
   const rep = new Map(JSON.parse(lire(path.join(dossier, 'reponses.json'))).reponses.map((r) => [r.eid, r]));
@@ -950,7 +974,7 @@ function main(argv) {
     case 'epreuve': {
       const dossier = path.resolve(args[0] ?? path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'etalonnage'));
       const n = preparerEpreuve(path.join(dossier, 'jeu.json'), dossier);
-      return finir(true, `EPREUVE PRETE (${n} items, ${rel(path.join(dossier, 'epreuve'))} ; clé : ${rel(path.join(dossier, 'cle.json'))})`, '');
+      return rognerPremiersEcrans(path.join(dossier, 'epreuve')).then((r) => finir(true, `EPREUVE PRETE (${n} items, ${r} captures ramenées au premier écran ; ${rel(path.join(dossier, 'epreuve'))} ; clé : ${rel(path.join(dossier, 'cle.json'))})`, ''));
     }
     case 'etalonnage': {
       const dossier = path.resolve(args[0] ?? path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'etalonnage'));
@@ -981,4 +1005,4 @@ function main(argv) {
   }
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) process.exitCode = main(process.argv.slice(2));
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) Promise.resolve(main(process.argv.slice(2))).then((code) => { process.exitCode = code; });
