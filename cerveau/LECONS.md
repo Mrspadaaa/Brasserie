@@ -81,9 +81,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L13 — Une plainte devient un contrôle qui échoue sur la version rejetée, avant toute correction
 - Erreur : 18.10, les mêmes défauts revenaient de v2 à v4 (trop de texte, cockpit). 20.10 : le picto « épicé » est critiqué pour la deuxième fois (lot 15, puis lot 21), car la première plainte n'était pas devenue un contrôle.
 - Cause : les corrections étaient des règles écrites, lues par des agents, et non des contrôles bloquants.
-- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet (22.10 : sept épices dessinées, refusées d'un bloc). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de la portée du lot (`tournoi/outils/portee-defauts.json`) entrent tous dans ses GATES, et un contrôle mort est adapté ou déclaré caduc (23.10 : D4 oublié ; 31 scripts du registre sur 50 jamais rejoués).
+- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet (22.10 : sept épices dessinées, refusées d'un bloc). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de la portée du lot (`portee-defauts.json`) entrent tous dans ses GATES, et un contrôle mort est adapté ou déclaré caduc (23.10 : D4 oublié ; 31 scripts sur 50 non rejoués).
 - Rôles : pilote, auteur
-- Contrôle : `controle-lot.mjs` (LOT OK)
+- Contrôle : `systeme.mjs mission` (portée) ; cablage (« OK 0/0 »)
 
 ### L14 — Confronter les données au savoir du brasseur sur les houblons phares
 - Erreur : 20.10, avec l5f, Nelson Sauvin paraît « un houbon ordinaire alors que c'est un un houbon incroyable », et Motueka « ultra fruité ».
