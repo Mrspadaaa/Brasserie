@@ -210,8 +210,13 @@ export function simulerAjout(recette: RecetteParcours, ajout: AjoutParcours): Aj
   const apres = lireBiere(apresR);
   const s = versSimule(ajout, apresR);
   // Arôme de l'ajout non simulé (ébullition hors 60′ et 10′, premier moût) : l'écart est INCONNU, jamais 0.
-  const simule = !('raison' in s);
-  return { avant, apres, ecart: simule ? ecart(avant.profil, apres.profil) : fam(() => null), ibu: ibuAjout(ajout, apresR), quand: quandDe(ajout, apresR), simule, raison: 'raison' in s ? s.raison : null };
+  const e = 'raison' in s ? null : ecart(avant.profil, apres.profil);
+  // Un ajout dosé qui ne bouge aucune famille (Citra cryo : huiles du cryo non relevées) n'a pas d'effet nul : le
+  // moteur n'a pas de donnée. L'écart est inconnu, jamais 0.
+  const sansDonnee = !!e && ajout.grams > 0 && FAMILIES.every((f) => !e[f] || (e[f]!.centre === 0 && e[f]!.bas === 0 && e[f]!.haut === 0));
+  const simule = !!e && !sansDonnee;
+  const raison = 'raison' in s ? s.raison : sansDonnee ? 'aucune donnée d’huile pour ce houblon dans le moteur' : null;
+  return { avant, apres, ecart: simule ? e! : fam(() => null), ibu: ibuAjout(ajout, apresR), quand: quandDe(ajout, apresR), simule, raison };
 }
 
 /** Crans de la frise de Dryhopper : ébullition par 5′ (durée → 0), whirlpool, dry hop actif et après, en jours. */

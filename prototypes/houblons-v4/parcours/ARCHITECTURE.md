@@ -41,7 +41,7 @@ Construire : `node prototypes/houblons-v4/parcours/outils/construire.mjs` ; joue
 | `#/ma-biere` | `{ view: 'recipe', recipeId }` (existe) |
 | `#/fiche/<houblon>` | aucune route : `Sheet` posée sur la page ouverte |
 | `#/suggerer` | `{ view: 'hopSuggest', recipeId }` |
-| `#/comparer?h=a,b,c` | `{ view: 'hopCompare', recipeId, hops: string[] }` |
+| `#/comparer?h=a,b,c&pin=x` | `{ view: 'hopCompare', recipeId, hops: string[], pinned?: string }` (`pin` : le houblon de Substituer, en colonne 1) |
 | `#/dryhopper/<ajout>` | `{ view: 'hopTiming', recipeId, additionId }` |
 | `#/levure/<ajout>` | `{ view: 'hopTiming', recipeId, additionId, step: 'yeast' }` |
 | `#/substituer/<houblon>` | `{ view: 'hopSubstitute', recipeId, hopKey }` |
@@ -49,6 +49,10 @@ Construire : `node prototypes/houblons-v4/parcours/outils/construire.mjs` ; joue
 La navigation suit `useFullScreenRoute` : une entrée d'historique par ouverture, le retour du téléphone et « ‹ »
 (bouton « Fermer » de `PageShell`) reviennent à l'écran d'avant ; seules les entrées poussées sont dépilées.
 Page ouverte directement sur une route : « ‹ » va à l'écran parent (`routes.ts`, `parent`).
+Sous un outil plein écran, Ma bière n'est pas montée (`Coquille.tsx`) : ses titres, ses mots et ses houblons ne
+se lisent pas avec l'outil (contrôles du dépôt, lecteurs d'écran). Elle se remonte au retour, recalculée ; son état
+local (lentille) repart du défaut. Dans l'app, `RecipePage` reste montée sous la route, cachée par `inert` et
+`aria-hidden` (à vérifier contre les contrôles).
 
 ## Moteur en direct
 
@@ -60,7 +64,8 @@ Une fonction par besoin d'écran (`src/moteur/index.ts`), mémoïsée et chronom
   nouveaux (`simulerCas`). Un ajout dégusté retiré ou changé retranche sa part simulée, calculée sans dégustation.
 - IBU : `BrewingMath.hopIbu` à la minute près (`ibuPerGramAt`) ; à froid : non modélisé (`null`).
 - Arôme : le simulateur ne connaît que 60′, 10′, le whirlpool et le dry hop (en jours). Ailleurs, l'écart est
-  inconnu (« ? »), et Ma bière liste l'ajout dans `nonSimules`.
+  inconnu (« ? »), et Ma bière liste l'ajout dans `nonSimules`. Un ajout dosé qui ne bouge aucune famille
+  (Citra cryo : huiles du cryo non relevées) rend aussi un écart inconnu, raison « aucune donnée d'huile ».
 - Temps mesurés dans Chrome (23.10, `jouer-parcours.mjs --ponts`, 19 gestes) : un recalcul de Ma bière
   (`lireBiere`, cache manqué) prend 1,1 ms en médiane (48 recalculs). Un geste qui recalcule prend 3,7 ms en
   médiane et 24 ms au plus (Suggérer : 9 candidats simulés d'un coup). Concorde avec [[cout-calcul-moteur]].

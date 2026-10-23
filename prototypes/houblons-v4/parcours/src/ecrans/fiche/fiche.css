@@ -1,0 +1,3 @@
+/* Classes propres à la fiche (L26 : préfixe pq-fiche-). */
+/* Part « autres » (D100) : une forme pleine, neutre (gris), ni hachurée ni à une couleur d'arôme. */
+.pq-fiche-autres { background: #8f8f8f; }

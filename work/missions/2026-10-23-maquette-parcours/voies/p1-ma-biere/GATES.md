@@ -65,8 +65,8 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
   EVIDENCE: pending
 
 - [ ] G13: les tolérances du moteur tiennent (D54)
-  CHECK: cd prototypes/houblons-v4 && npx vitest run tests/tolerance.test.ts
-  EXPECT: /Test Files\s+1 passed/
+  CHECK: cd prototypes/houblons-v4 && npx vitest run tests/tolerance.test.ts && echo TOLERANCE OK
+  EXPECT: TOLERANCE OK
   EVIDENCE: pending
 
 - [ ] G14: aucun fichier de l'app n'a changé

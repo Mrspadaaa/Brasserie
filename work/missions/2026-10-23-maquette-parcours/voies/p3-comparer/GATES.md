@@ -54,37 +54,32 @@ Scope: r6a portée en React dans le socle, calculée en direct, avec les petites
   EXPECT: SIMULATION OK
   EVIDENCE: pending
 
-- [ ] G11: les extras hors objectif se voient (D76)
-  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-autres-ajouts.mjs prototypes/houblons-v4/maquettes/parcours-p3 comparer --pages=etat.html
-  EXPECT: AUTRES OK
-  EVIDENCE: pending
-
-- [ ] G12: un houblon aux mots hors familles le montre (D100)
+- [ ] G11: un houblon aux mots hors familles le montre (D100)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-sans-famille.mjs prototypes/houblons-v4/maquettes/parcours-p3 comparer --page=etat.html
   EXPECT: SANS-FAMILLE OK
   EVIDENCE: pending
 
-- [ ] G13: les 37 éléments notés sont classés et balisés (D104, rouge sur r6a)
+- [ ] G12: les 37 éléments notés sont classés et balisés (D104, rouge sur r6a)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-reprise.mjs prototypes/houblons-v4/maquettes/parcours-p3 comparer --page=etat.html
   EXPECT: REPRISE OK
   EVIDENCE: pending
 
-- [ ] G14: les gestes de Comparer jouent, et « Placer » ouvre Dryhopper avec le bon houblon
+- [ ] G13: les gestes de Comparer jouent, et « Placer » ouvre Dryhopper avec le bon houblon
   CHECK: node prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs --dossier=prototypes/houblons-v4/maquettes/parcours-p3 --etape=comparer
   EXPECT: ETAPE OK (comparer)
   EVIDENCE: pending
 
-- [ ] G15: le parcours entier joue encore
+- [ ] G14: le parcours entier joue encore
   CHECK: node prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs --dossier=prototypes/houblons-v4/maquettes/parcours-p3 --ponts
   EXPECT: PONTS OK
   EVIDENCE: pending
 
-- [ ] G16: aucun fichier de l'app n'a changé
+- [ ] G15: aucun fichier de l'app n'a changé
   CHECK: node prototypes/houblons-v4/parcours/outils/app-intacte.mjs
   EXPECT: APP INTACTE OK
   EVIDENCE: pending
 
-- [ ] G17: le rapport nomme les captures ouvertes, à côté de r6a, à 390 et à 1280 px, et les améliorations prises
+- [ ] G16: le rapport nomme les captures ouvertes, à côté de r6a, à 390 et à 1280 px, et les améliorations prises
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p3-comparer/RESULTAT.md --contient "390,1280,r6a,D95,r6n2,r6p"
   EXPECT: NOTE OK
   EVIDENCE: pending

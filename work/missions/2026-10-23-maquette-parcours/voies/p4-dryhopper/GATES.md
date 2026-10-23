@@ -75,8 +75,8 @@ Scope: a1 portée en React dans le socle, le moment calculé en direct à chaque
   EVIDENCE: pending
 
 - [ ] G15: le pouvoir des composés tient (D85)
-  CHECK: cd prototypes/houblons-v4 && npx vitest run tests/pouvoir.test.ts
-  EXPECT: /Test Files\s+1 passed/
+  CHECK: cd prototypes/houblons-v4 && npx vitest run tests/pouvoir.test.ts && echo POUVOIR OK
+  EXPECT: POUVOIR OK
   EVIDENCE: pending
 
 - [ ] G16: aucun fichier de l'app n'a changé

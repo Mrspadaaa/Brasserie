@@ -13,6 +13,7 @@ import Dryhopper from '../ecrans/dryhopper';
 import Levure from '../ecrans/levure';
 import Substituer from '../ecrans/substituer';
 import { useNavigation } from './navigation';
+import { estOutil } from './routes';
 
 export function Coquille() {
   const { route } = useNavigation();
@@ -40,7 +41,9 @@ export function Coquille() {
   return (
     <>
       <JeuPictos />
-      <MaBiere />
+      {/* Sous un outil plein écran, Ma bière n'est pas montée : ses titres, ses mots et ses houblons ne doivent pas
+          se lire avec l'outil (contrôles du dépôt, lecteurs d'écran). Elle se remonte au retour, recalculée. */}
+      {!estOutil(route) && <MaBiere />}
       {route.ecran === 'fiche' && <Fiche houblon={route.houblon} />}
       {outil}
     </>

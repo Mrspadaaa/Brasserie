@@ -6,7 +6,7 @@ export type Route =
   | { ecran: 'ma-biere' }
   | { ecran: 'fiche'; houblon: string }
   | { ecran: 'suggerer' }
-  | { ecran: 'comparer'; houblons: string[] }
+  | { ecran: 'comparer'; houblons: string[]; pin?: string }
   | { ecran: 'dryhopper'; ajout: string }
   | { ecran: 'levure'; ajout: string }
   | { ecran: 'substituer'; houblon: string };
@@ -25,7 +25,10 @@ export function lireRoute(hash: string): Route | null {
   switch (ecran as RoutePage | '') {
     case 'ma-biere': return { ecran: 'ma-biere' };
     case 'suggerer': return { ecran: 'suggerer' };
-    case 'comparer': return { ecran: 'comparer', houblons: h ? h.split(',').filter(Boolean).map(cleDe) : [] };
+    case 'comparer': {
+      const pin = new URLSearchParams(requete).get('pin');
+      return { ecran: 'comparer', houblons: h ? h.split(',').filter(Boolean).map(cleDe) : [], ...(pin ? { pin: cleDe(pin) } : {}) };
+    }
     case 'fiche': return arg ? { ecran: 'fiche', houblon: cleDe(arg) } : null;
     case 'substituer': return arg ? { ecran: 'substituer', houblon: cleDe(arg) } : null;
     case 'dryhopper': return arg ? { ecran: 'dryhopper', ajout: arg } : null;
@@ -37,7 +40,10 @@ export function lireRoute(hash: string): Route | null {
 export function ecrireRoute(r: Route): string {
   switch (r.ecran) {
     case 'ma-biere': case 'suggerer': return `#/${r.ecran}`;
-    case 'comparer': return `#/comparer${r.houblons.length ? `?h=${r.houblons.map(segmentDe).join(',')}` : ''}`;
+    case 'comparer': {
+      const q = [r.houblons.length ? `h=${r.houblons.map(segmentDe).join(',')}` : '', r.pin ? `pin=${segmentDe(r.pin)}` : ''].filter(Boolean).join('&');
+      return `#/comparer${q ? `?${q}` : ''}`;
+    }
     case 'fiche': case 'substituer': return `#/${r.ecran}/${encodeURIComponent(segmentDe(r.houblon))}`;
     case 'dryhopper': case 'levure': return `#/${r.ecran}/${encodeURIComponent(r.ajout)}`;
   }

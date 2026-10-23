@@ -1,0 +1,28 @@
+/* Classes propres à Ma bière (L26 : préfixe pq-ma-biere-). */
+
+/* Rail du moment : segments ébullition (cuivre), whirlpool, dry hop actif (houblon) et après (eau). */
+.pq-ma-biere-rail { touch-action: pan-y; }
+.pq-ma-biere-seg-eb { background: rgb(200 122 44 / 0.55); }
+.pq-ma-biere-seg-wp { background: rgb(var(--cave-600)); }
+.pq-ma-biere-seg-ac { background: rgb(var(--hop) / 0.55); }
+.pq-ma-biere-seg-ap { background: rgb(var(--water) / 0.5); }
+.pq-ma-biere-pouce { background: rgb(var(--cave-850)); border-color: rgb(var(--cave-50)); color: rgb(var(--cave-texte-50)); transition: left 60ms linear; }
+.pq-ma-biere-pouce-actif { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
+.pq-ma-biere-loupe {
+  background: rgb(var(--cave-850)); border: 1px solid rgb(var(--cave-700));
+  box-shadow: 0 6px 18px -8px rgb(0 0 0 / 0.35); z-index: 5; pointer-events: none;
+}
+
+/* Les lentilles : le SegmentedControl de l'app, en pilule et compact (rayons de l'échelle, D83 S3). */
+.pq-ma-biere-lentille [role='radiogroup'] { border-radius: 9999px; padding: 2px; }
+.pq-ma-biere-lentille [role='radio'] { border-radius: 9999px; min-height: 2rem; padding: 0 .6rem; font-size: .875rem; white-space: nowrap; flex: none; }
+.pq-ma-biere-lentille [role='radio'] > span { white-space: nowrap; }
+
+/* Repère discret de ce qui vient de changer : un liseré paille qui s'éteint, et le mot. */
+.pq-ma-biere-repere { color: rgb(var(--ebc-straw-texte)); font-weight: 600; }
+.pq-ma-biere-change { animation: pq-ma-biere-pulse 1.6s ease-out 1; box-shadow: inset 3px 0 0 rgb(var(--ebc-straw-bord)); }
+@keyframes pq-ma-biere-pulse {
+  0% { background: rgb(var(--ebc-straw) / 0.35); }
+  100% { background: rgb(var(--cave-900)); }
+}
+@media (prefers-reduced-motion: reduce) { .pq-ma-biere-change { animation: none; } }

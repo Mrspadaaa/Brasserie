@@ -1,0 +1,641 @@
+{
+ "cas": "cas-direct",
+ "titre": "Suggérer en direct : stout 16D, plus florale (moteur v4, état de départ)",
+ "genere": "outils/instantane.mjs",
+ "objectifs": [
+  "floral",
+  "resin"
+ ],
+ "voies": [
+  {
+   "rang": 1,
+   "libelle": "Ajouter Idaho 7 · après 3 j · 80 g",
+   "tout": [
+    {
+     "famille": "citrus",
+     "nom": "citrus",
+     "visee": false,
+     "effet": 14.09,
+     "crans": 1.41
+    },
+    {
+     "famille": "tropical",
+     "nom": "tropical",
+     "visee": false,
+     "effet": 17.37,
+     "crans": 1.74
+    },
+    {
+     "famille": "floral",
+     "nom": "floral",
+     "visee": true,
+     "effet": 22.96,
+     "crans": 1.25
+    },
+    {
+     "famille": "herbal",
+     "nom": "herbal",
+     "visee": false,
+     "effet": 7.56,
+     "crans": 0.41
+    },
+    {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": 19.72,
+     "crans": 1.97
+    },
+    {
+     "famille": "spice",
+     "nom": "spice",
+     "visee": false,
+     "effet": 3.55,
+     "crans": 0.36
+    },
+    {
+     "famille": "green",
+     "nom": "green",
+     "visee": false,
+     "effet": 10.15,
+     "crans": 1.02
+    },
+    {
+     "famille": "earthy",
+     "nom": "earthy",
+     "visee": false,
+     "effet": 9.29,
+     "crans": 0.51
+    }
+   ],
+   "fiches": [
+    {
+     "houblon": "Idaho 7",
+     "cle": "beermaverick-idaho-7",
+     "role": "double",
+     "roleSource": "règle : règle rôle-α v1 (prototype, à valider)"
+    }
+   ]
+  },
+  {
+   "rang": 2,
+   "libelle": "Ajouter Target · après 3 j · 80 g",
+   "tout": [
+    {
+     "famille": "citrus",
+     "nom": "citrus",
+     "visee": false,
+     "effet": 26.22,
+     "crans": 2.62
+    },
+    {
+     "famille": "tropical",
+     "nom": "tropical",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "floral",
+     "nom": "floral",
+     "visee": true,
+     "effet": 16.48,
+     "crans": 0.9
+    },
+    {
+     "famille": "herbal",
+     "nom": "herbal",
+     "visee": false,
+     "effet": 27.39,
+     "crans": 1.49
+    },
+    {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": 26.34,
+     "crans": 2.63
+    },
+    {
+     "famille": "spice",
+     "nom": "spice",
+     "visee": false,
+     "effet": 16.91,
+     "crans": 1.69
+    },
+    {
+     "famille": "green",
+     "nom": "green",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "earthy",
+     "nom": "earthy",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    }
+   ],
+   "fiches": [
+    {
+     "houblon": "Target",
+     "cle": "beermaverick-target",
+     "role": "aromatique",
+     "roleSource": "fournisseur : Alter Ego Brewing, Target — Alter Ego Brewing"
+    }
+   ]
+  },
+  {
+   "rang": 3,
+   "libelle": "Ajouter Cascade · après 3 j · 80 g",
+   "tout": [
+    {
+     "famille": "citrus",
+     "nom": "citrus",
+     "visee": false,
+     "effet": 21.49,
+     "crans": 2.15
+    },
+    {
+     "famille": "tropical",
+     "nom": "tropical",
+     "visee": false,
+     "effet": 17.47,
+     "crans": 1.75
+    },
+    {
+     "famille": "floral",
+     "nom": "floral",
+     "visee": true,
+     "effet": 16.39,
+     "crans": 0.89
+    },
+    {
+     "famille": "herbal",
+     "nom": "herbal",
+     "visee": false,
+     "effet": 9.17,
+     "crans": 0.5
+    },
+    {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": 19.09,
+     "crans": 1.91
+    },
+    {
+     "famille": "spice",
+     "nom": "spice",
+     "visee": false,
+     "effet": 12.69,
+     "crans": 1.27
+    },
+    {
+     "famille": "green",
+     "nom": "green",
+     "visee": false,
+     "effet": 8.4,
+     "crans": 0.84
+    },
+    {
+     "famille": "earthy",
+     "nom": "earthy",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    }
+   ],
+   "fiches": [
+    {
+     "houblon": "Cascade",
+     "cle": "beermaverick-cascade",
+     "role": "aromatique",
+     "roleSource": "fournisseur : Crosby Hops, Cascade — Crosby Hops"
+    }
+   ]
+  },
+  {
+   "rang": 4,
+   "libelle": "Ajouter Galaxy · après 3 j · 80 g",
+   "tout": [
+    {
+     "famille": "citrus",
+     "nom": "citrus",
+     "visee": false,
+     "effet": 28.62,
+     "crans": 2.86
+    },
+    {
+     "famille": "tropical",
+     "nom": "tropical",
+     "visee": false,
+     "effet": 38.96,
+     "crans": 3.9
+    },
+    {
+     "famille": "floral",
+     "nom": "floral",
+     "visee": true,
+     "effet": 15.63,
+     "crans": 0.85
+    },
+    {
+     "famille": "herbal",
+     "nom": "herbal",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": 19.69,
+     "crans": 1.97
+    },
+    {
+     "famille": "spice",
+     "nom": "spice",
+     "visee": false,
+     "effet": 2.45,
+     "crans": 0.25
+    },
+    {
+     "famille": "green",
+     "nom": "green",
+     "visee": false,
+     "effet": 17.29,
+     "crans": 1.73
+    },
+    {
+     "famille": "earthy",
+     "nom": "earthy",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    }
+   ],
+   "fiches": [
+    {
+     "houblon": "Galaxy",
+     "cle": "beermaverick-galaxy",
+     "role": "double",
+     "roleSource": "règle : règle rôle-α v1 (prototype, à valider)"
+    }
+   ]
+  },
+  {
+   "rang": 5,
+   "libelle": "Ajouter Motueka · après 3 j · 80 g",
+   "tout": [
+    {
+     "famille": "citrus",
+     "nom": "citrus",
+     "visee": false,
+     "effet": 16.88,
+     "crans": 1.69
+    },
+    {
+     "famille": "tropical",
+     "nom": "tropical",
+     "visee": false,
+     "effet": 7.52,
+     "crans": 0.75
+    },
+    {
+     "famille": "floral",
+     "nom": "floral",
+     "visee": true,
+     "effet": 12.88,
+     "crans": 0.7
+    },
+    {
+     "famille": "herbal",
+     "nom": "herbal",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": 8.63,
+     "crans": 0.86
+    },
+    {
+     "famille": "spice",
+     "nom": "spice",
+     "visee": false,
+     "effet": 0.58,
+     "crans": 0.06
+    },
+    {
+     "famille": "green",
+     "nom": "green",
+     "visee": false,
+     "effet": 6.78,
+     "crans": 0.68
+    },
+    {
+     "famille": "earthy",
+     "nom": "earthy",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    }
+   ],
+   "fiches": [
+    {
+     "houblon": "Motueka",
+     "cle": "beermaverick-motueka",
+     "role": "double",
+     "roleSource": "règle : règle rôle-α v1 (prototype, à valider)"
+    }
+   ]
+  },
+  {
+   "rang": 6,
+   "libelle": "Ajouter Nelson Sauvin · après 3 j · 80 g",
+   "tout": [
+    {
+     "famille": "citrus",
+     "nom": "citrus",
+     "visee": false,
+     "effet": 14.28,
+     "crans": 1.43
+    },
+    {
+     "famille": "tropical",
+     "nom": "tropical",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "floral",
+     "nom": "floral",
+     "visee": true,
+     "effet": 4.78,
+     "crans": 0.26
+    },
+    {
+     "famille": "herbal",
+     "nom": "herbal",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": 8.38,
+     "crans": 0.84
+    },
+    {
+     "famille": "spice",
+     "nom": "spice",
+     "visee": false,
+     "effet": 14.18,
+     "crans": 1.42
+    },
+    {
+     "famille": "green",
+     "nom": "green",
+     "visee": false,
+     "effet": 4.19,
+     "crans": 0.42
+    },
+    {
+     "famille": "earthy",
+     "nom": "earthy",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    }
+   ],
+   "fiches": [
+    {
+     "houblon": "Nelson Sauvin",
+     "cle": "beermaverick-nelson-sauvin",
+     "role": "double",
+     "roleSource": "règle : règle rôle-α v1 (prototype, à valider)"
+    }
+   ]
+  },
+  {
+   "rang": 7,
+   "libelle": "Ajouter Citra cryo · après 3 j · 80 g",
+   "tout": [
+    {
+     "famille": "citrus",
+     "nom": "citrus",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "tropical",
+     "nom": "tropical",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "floral",
+     "nom": "floral",
+     "visee": true,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "herbal",
+     "nom": "herbal",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "spice",
+     "nom": "spice",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "green",
+     "nom": "green",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "earthy",
+     "nom": "earthy",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    }
+   ],
+   "fiches": [
+    {
+     "houblon": "Citra cryo",
+     "cle": "beermaverick-citra:cryo",
+     "role": "aromatique",
+     "roleSource": "fournisseur : Crosby Hops, Citra — Crosby Hops"
+    }
+   ]
+  },
+  {
+   "rang": 8,
+   "libelle": "Ajouter Hallertau Blanc · après 3 j · 80 g",
+   "tout": [
+    {
+     "famille": "citrus",
+     "nom": "citrus",
+     "visee": false,
+     "effet": 23.18,
+     "crans": 2.32
+    },
+    {
+     "famille": "tropical",
+     "nom": "tropical",
+     "visee": false,
+     "effet": 34.14,
+     "crans": 3.41
+    },
+    {
+     "famille": "floral",
+     "nom": "floral",
+     "visee": true,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "herbal",
+     "nom": "herbal",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "spice",
+     "nom": "spice",
+     "visee": false,
+     "effet": 23.3,
+     "crans": 2.33
+    },
+    {
+     "famille": "green",
+     "nom": "green",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "earthy",
+     "nom": "earthy",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    }
+   ],
+   "fiches": [
+    {
+     "houblon": "Hallertau Blanc",
+     "cle": "beermaverick-hallertau-blanc",
+     "role": "double",
+     "roleSource": "règle : règle rôle-α v1 (prototype, à valider)"
+    }
+   ]
+  },
+  {
+   "rang": 9,
+   "libelle": "Ajouter Sabro · après 3 j · 80 g",
+   "tout": [
+    {
+     "famille": "citrus",
+     "nom": "citrus",
+     "visee": false,
+     "effet": 30.19,
+     "crans": 3.02
+    },
+    {
+     "famille": "tropical",
+     "nom": "tropical",
+     "visee": false,
+     "effet": 20.77,
+     "crans": 2.08
+    },
+    {
+     "famille": "floral",
+     "nom": "floral",
+     "visee": true,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "herbal",
+     "nom": "herbal",
+     "visee": false,
+     "effet": 19.6,
+     "crans": 1.07
+    },
+    {
+     "famille": "resin",
+     "nom": "resin",
+     "visee": true,
+     "effet": 20.43,
+     "crans": 2.04
+    },
+    {
+     "famille": "spice",
+     "nom": "spice",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "green",
+     "nom": "green",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    },
+    {
+     "famille": "earthy",
+     "nom": "earthy",
+     "visee": false,
+     "effet": 0,
+     "crans": 0
+    }
+   ],
+   "fiches": [
+    {
+     "houblon": "Sabro",
+     "cle": "beermaverick-sabro",
+     "role": "double",
+     "roleSource": "règle : règle rôle-α v1 (prototype, à valider)"
+    }
+   ]
+  }
+ ]
+}

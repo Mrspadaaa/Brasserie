@@ -1,0 +1,45 @@
+/* Suggérer (q2b) : classes propres, préfixées pq-suggerer- (L26). Jetons de l'app (variables --cave-*). */
+
+/* Ma bière reste montée sous l'outil (inerte, PageShell), mais retirée du rendu tant que Suggérer la couvre : les
+   contrôles du dépôt lisent la boîte, pas `inert`. Demande au socle dans RESULTAT.md (le faire dans CadreOutil pour tous). */
+html:has(.pq-outil-suggerer) [data-page-shell]:not(.pq-outil-suggerer) { display: none; }
+
+.pq-suggerer-zone { background: rgb(var(--cave-700) / 0.45); }
+.pq-suggerer-cran { background: rgb(var(--cave-950) / 0.9); }
+.pq-suggerer-visee { width: 0; border-left: 2px dashed rgb(var(--cave-50)); }
+.pq-suggerer-ligne-visee { width: 0; border-left: 1.5px dashed rgb(var(--cave-400) / 0.9); }
+.pq-suggerer-marque { box-shadow: 0 0 0 1px rgb(var(--cave-950)); }
+
+.pq-suggerer-voie { touch-action: manipulation; -webkit-touch-callout: none; }
+.pq-suggerer-voie-choisie { box-shadow: inset 3px 0 0 rgb(var(--cave-50)); }
+
+/* Cases alignées (q2b) : une par famille, au même endroit d'une voie à l'autre. */
+.pq-suggerer-case { width: 1.375rem; height: 1.5rem; flex: none; }
+.pq-suggerer-calme { display: block; width: 3px; height: 3px; border-radius: 9999px; background: rgb(var(--cave-600)); }
+.pq-suggerer-separe { width: 1px; background: rgb(var(--cave-800)); }
+.pq-suggerer-trait { display: block; width: 4px; height: 6px; border-radius: 2px; background: rgb(var(--cave-200)); }
+.pq-suggerer-trait-demi { height: 3px; }
+.pq-suggerer-trait-baisse { background: transparent; box-shadow: inset 0 0 0 1px rgb(var(--cave-200)); }
+.pq-suggerer-trait-hors { background: #c2410c; }
+.pq-suggerer-trait-hors.pq-suggerer-trait-baisse { background: transparent; box-shadow: inset 0 0 0 1px #c2410c; }
+.pq-suggerer-hors { color: #9a3412; }
+
+.pq-suggerer-usage { color: rgb(var(--cave-200)); }
+.pq-suggerer-usage-regle { text-decoration: underline dotted rgb(var(--cave-400)); text-underline-offset: 3px; }
+.pq-suggerer-choisi { background: rgb(var(--cave-50)); border-color: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
+
+/* Lentille : SegmentedControl de l'app, aux rayons de l'échelle D83 (8 px ; rounded-control vaut 10 px). */
+.pq-suggerer-lentille [role="radiogroup"], .pq-suggerer-lentille [role="radio"] { border-radius: 8px; }
+
+/* « + » et coche dessinés au trait CSS (épais, nets à 36 px), sans icône SVG d'une autre épaisseur (D83 S4). */
+.pq-suggerer-plus, .pq-suggerer-coche { position: relative; display: block; width: 16px; height: 16px; }
+.pq-suggerer-plus::before, .pq-suggerer-plus::after { content: ''; position: absolute; left: 50%; top: 50%; background: currentColor; border-radius: 2px; transform: translate(-50%, -50%); }
+.pq-suggerer-plus::before { width: 16px; height: 2.5px; }
+.pq-suggerer-plus::after { width: 2.5px; height: 16px; }
+.pq-suggerer-coche::before { content: ''; position: absolute; left: 3px; top: 0; width: 7px; height: 12px; border: solid currentColor; border-width: 0 2.5px 2.5px 0; transform: rotate(40deg); transform-origin: center; }
+.pq-suggerer-inconnue { opacity: 0.45; }
+/* « α » posé par la feuille (un signe, pas un mot) : « 12,7% » reste un seul nombre à lire. */
+.pq-suggerer-alpha::before { content: "\03B1\202F"; color: rgb(var(--cave-400)); }
+.pq-suggerer-barre-hors { background: #c2410c; }
+/* « ≠ » : l'α du lot sort de la plage des fiches (signe posé par la feuille, comme « α »). */
+.pq-suggerer-alpha-hors::after { content: "≠"; margin-left: 2px; font-weight: 600; color: #b45309; }

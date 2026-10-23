@@ -1,0 +1,152 @@
+// Briques de Suggérer (q2b, base v4.10), propres à l'écran et préfixées pq-suggerer- (L26) :
+// - la piste l5b (zone du style, repère de ma bière, barre, visée), sur une échelle commune à l'objectif et aux voies
+//   pour que la ligne pointillée de la visée traverse toute la liste (q2b) ;
+// - la jauge en traits d'une famille (un trait par cran du style, demi-trait sous le cran ; contour si elle baisse,
+//   orangée si elle sort du style), avec data-famille et data-crans (D80) ;
+// - l'usage en mot avec son mini picto (D80, D90), le stock en icône (D23 ter), l'α sourcé (D87).
+import { useLayoutEffect, useRef } from 'react';
+import { PackageCheck, PackageMinus } from 'lucide-react';
+import { COULEURS, COURT, Picto, SegmentedControl, nombre, type Echelle } from '../../commun';
+import type { HoublonLu } from '../../moteur';
+import type { FamilyId, StyleScale } from '../../../../src/engine';
+
+// ---------- Échelle d'une famille ----------
+export interface Domaine { max: number; zone: [number, number] | null; cran: number; crans: number[] }
+/** Au style : la piste va de 0 à deux fois le haut de la bande (zone du style sur la moitié gauche, crans marqués),
+ * élargie si une valeur montrée la dépasse (le résineux de la stout est déjà à 83). Absolu : 0 → 110 (axes V5.5). */
+export function domaine(f: FamilyId, sc: StyleScale, echelle: Echelle, valeurs: number[]): Domaine {
+  const fs = sc.families[f];
+  const haut = fs.band?.[1] ?? null;
+  const plafond = Math.max(...valeurs.filter(Number.isFinite), 0) * 1.06;
+  if (echelle === 'style' && haut) {
+    const crans = [1, 2].map((i) => fs.band![0] + (i * (haut - fs.band![0])) / 3);
+    return { max: Math.max(2 * haut, plafond), zone: fs.band, cran: fs.cran, crans };
+  }
+  return { max: Math.max(110, plafond), zone: fs.band, cran: fs.cran, crans: [] };
+}
+const pc = (x: number, d: Domaine) => `${Math.max(0, Math.min(100, (x / d.max) * 100)).toFixed(2)}%`;
+export const position = pc;
+
+/** La piste l5b. `barre` : la valeur montrée (aplat à la couleur de la famille) ; `avant` : ma bière (rond) ;
+ * `visee` : trait pointillé ; `marques` : petites encoches (les houblons choisis, sur la piste de l'objectif). */
+export function Piste({ f, d, barre, avant, visee, marques = [], inconnu = null, epaisse = false }: {
+  f: FamilyId; d: Domaine; barre: number | null; avant: number | null; visee?: number | null;
+  marques?: { cle: string; x: number }[]; inconnu?: string | null; epaisse?: boolean;
+}) {
+  return (
+    <span data-role="piste" data-famille-piste={f}
+      className={`pq-suggerer-piste relative block ${epaisse ? 'h-2.5' : 'h-2'} rounded-full bg-cave-800/50 ${inconnu ? 'pq-hachure' : ''}`}
+      {...(inconnu ? { 'data-inconnu': '', 'aria-label': `inconnu : ${inconnu}` } : {})}>
+      {d.zone && (
+        <i data-role="zone" className="pq-suggerer-zone absolute inset-y-0 rounded-full"
+          style={{ left: pc(d.zone[0], d), width: `calc(${pc(d.zone[1], d)} - ${pc(d.zone[0], d)})` }} />
+      )}
+      {barre != null && !inconnu && (
+        <i data-role="barre" className="absolute inset-y-0 left-0 rounded-full" style={{ width: pc(barre, d), background: COULEURS[f].base }} />
+      )}
+      {/* Au-delà du style, la barre passe à l'orangé « hors style » (q2b) : la stout « trop résineuse » se voit. */}
+      {barre != null && !inconnu && d.zone && barre > d.zone[1] && (
+        <i data-role="hors-style" aria-hidden="true" className="pq-suggerer-barre-hors absolute inset-y-0 rounded-r-full"
+          style={{ left: pc(d.zone[1], d), width: `calc(${pc(barre, d)} - ${pc(d.zone[1], d)})` }} />
+      )}
+      {/* Les crans du style par-dessus la barre : on les compte dans la barre (« +1 cran »). */}
+      {d.crans.map((c) => <i key={c} aria-hidden="true" className="pq-suggerer-cran absolute inset-y-0 w-px" style={{ left: pc(c, d) }} />)}
+      {marques.map((m) => (
+        <i key={m.cle} data-role="marque" data-marque={m.cle} aria-hidden="true"
+          className="pq-suggerer-marque absolute -top-1 -bottom-1 w-0.5 -translate-x-1/2 rounded-sm" style={{ left: pc(m.x, d), background: COULEURS[f].texte }} />
+      ))}
+      {avant != null && (
+        <i data-role="avant" aria-hidden="true"
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full border-2 border-cave-50 bg-cave-950" style={{ left: pc(avant, d) }} />
+      )}
+      {visee != null && <i data-role="visee" aria-hidden="true" className="pq-suggerer-visee absolute -top-1.5 -bottom-1.5 -translate-x-1/2" style={{ left: pc(visee, d) }} />}
+    </span>
+  );
+}
+
+// ---------- Intensité en traits (D80) ----------
+/** Une famille qu'un houblon fait bouger : son picto, puis un trait par cran (demi-trait pour un reste ≥ ¼). */
+export function Traits({ f, crans, hors, role = 'extra' }: { f: FamilyId; crans: number; hors: boolean; role?: 'extra' | 'cible' }) {
+  const n = Math.min(4, Math.abs(crans));
+  const pleins = Math.floor(n + 0.25);
+  // Sous le cran (ou un reste d'au moins ¼), un demi-trait : jamais un trait plein pour un petit apport.
+  const demi = pleins < 4 && (pleins === 0 || n - pleins >= 0.25);
+  const baisse = crans < 0;
+  const ton = hors ? 'pq-suggerer-trait-hors' : '';
+  const traits = Array.from({ length: pleins }, (_, i) => i);
+  return (
+    <span data-role={role} data-famille={f} data-crans={crans.toFixed(2)} {...(hors ? { 'data-hors-style': '' } : {})}
+      aria-label={`${COURT[f]} ${baisse ? '−' : '+'}${nombre(Math.abs(crans), 1)} cran${hors ? ', hors style' : ''}`} role="img"
+      className="pq-suggerer-case flex flex-col items-center gap-0.5">
+      <Picto famille={f} taille={15} nomme={false} />
+      <span className="flex items-end gap-px h-1.5" aria-hidden="true">
+        {traits.map((i) => <i key={i} className={`pq-suggerer-trait ${baisse ? 'pq-suggerer-trait-baisse' : ''} ${ton}`} />)}
+        {demi && <i className={`pq-suggerer-trait pq-suggerer-trait-demi ${baisse ? 'pq-suggerer-trait-baisse' : ''} ${ton}`} />}
+      </span>
+    </span>
+  );
+}
+/** Famille que le houblon ne fait pas bouger (moins de 0,5 point) : un point, à sa place dans l'alignement. */
+export const Calme = () => <span aria-hidden="true" className="pq-suggerer-case flex items-center justify-center"><i className="pq-suggerer-calme" /></span>;
+/** Famille dont l'écart est inconnu (rien de simulé) : hachuré, jamais 0. */
+export const CaseInconnue = ({ f }: { f: FamilyId }) => (
+  <span data-inconnu="" role="img" aria-label={`${COURT[f]} : inconnu`} className="pq-suggerer-case flex items-center justify-center">
+    <i className="pq-hachure block w-3.5 h-3.5 rounded-sm" />
+  </span>
+);
+
+// ---------- Usage, α, stock ----------
+/** L'usage du houblon en mot du brasseur, petit et discret (D80 « mini info… pas surchargé » ; D90 : le mot, car les
+ * pictos d'usage de l8e n'étaient « pas parlant du tout »). data-usage comme hopRole (« double » pour mixte),
+ * data-source « fournisseur » ou « règle » (déduit de l'α : souligné en pointillé). */
+export function Usage({ h }: { h: HoublonLu }) {
+  const mot = h.role.mot;
+  const regle = !/^fournisseur/.test(h.role.source);
+  const brut = mot === 'mixte' ? 'double' : mot ?? 'inconnu';
+  return (
+    <span data-role="usage" data-usage={brut} data-source={regle ? 'règle' : 'fournisseur'}
+      className={`pq-suggerer-usage inline-flex items-center gap-0.5 shrink-0 text-xs leading-none ${regle ? 'pq-suggerer-usage-regle' : ''}`}>
+      {mot ?? 'usage ?'}
+    </span>
+  );
+}
+
+/** « lot » quand l'α vient du lot (stock, article), « fiches » quand c'est le milieu de la plage variétale. */
+export const sourceAlpha = (h: HoublonLu): 'lot' | 'fiches' => (!h.alpha || /^plage/.test(h.alpha.source) ? 'fiches' : 'lot');
+/** α du lot, « ≠ » orangé s'il sort de la plage des fiches (la plage est dans la fiche, à l'appui long). */
+export function AlphaCourt({ h }: { h: HoublonLu }) {
+  if (!h.alpha) return <span data-role="alpha" data-source="fiches" className="font-mono text-xs text-cave-400">α ?</span>;
+  return (
+    <span data-role="alpha" data-source={sourceAlpha(h)} {...(h.alpha.horsFiches ? { 'data-hors-fiches': '', 'aria-label': `α ${nombre(h.alpha.valeur, 1)} %, hors de la plage des fiches` } : {})}
+      className={`pq-suggerer-alpha font-mono text-xs text-cave-200 whitespace-nowrap ${h.alpha.horsFiches ? 'pq-suggerer-alpha-hors' : ''}`}>
+      {`${nombre(h.alpha.valeur, 1)}%`}
+    </span>
+  );
+}
+
+/** Le stock en icône seule : de quoi faire la dose (4 g/L), ou pas assez. Le détail est dans la légende et la fiche. */
+export function Stock({ stock, besoin }: { stock: number | null; besoin: number }) {
+  if (stock == null || stock <= 0) return null;
+  const assez = stock >= besoin;
+  const I = assez ? PackageCheck : PackageMinus;
+  return (
+    <I data-role="stock" data-stock={assez ? 'assez' : 'court'} role="img" aria-label={assez ? `en stock : ${nombre(stock)} g` : `en stock, pas assez : ${nombre(stock)} g sur ${nombre(besoin)} g`}
+      className={`w-3.5 h-3.5 shrink-0 ${assez ? 'text-cave-200' : 'text-cave-400'}`} />
+  );
+}
+
+// ---------- Lentille au style / absolu ----------
+/** SegmentedControl de l'app ; chaque option porte data-e (style, absolu), comme la lentille des maquettes. */
+export function Lentille({ echelle, onChange }: { echelle: Echelle; onChange: (e: Echelle) => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const radios = ref.current?.querySelectorAll<HTMLElement>('[role="radio"]') ?? [];
+    radios.forEach((r, i) => { r.dataset.e = i === 0 ? 'style' : 'absolu'; });
+  });
+  return (
+    <div ref={ref} data-lecture="" className="pq-suggerer-lentille w-[9.5rem] shrink-0 [&_span]:whitespace-nowrap">
+      <SegmentedControl<Echelle> label="Échelle des barres" value={echelle} onChange={onChange}
+        options={[{ value: 'style', label: 'Au style' }, { value: 'absolu', label: 'Absolu' }]} />
+    </div>
+  );
+}
