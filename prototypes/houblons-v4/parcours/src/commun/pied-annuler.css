@@ -17,5 +17,3 @@
 @media (min-width: 768px) {
   .pq-annuler-pied { flex: 0 1 26rem; margin-left: auto; }
 }
-/* Hôte du pied sous un dock déjà plein (le rail de Dryhopper) : une rangée de plus, sous le geste. */
-.pq-annuler-hote { display: flex; margin-top: 6px; }

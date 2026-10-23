@@ -43,3 +43,8 @@ Scope: le radar avant la liste dans la fiche g1, et « Annuler » sans effet à 
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p17-fiche-annuler/RESULTAT.md --contient "D115,D120,consolide-fiche-390,Annuler,390,1280"
   EXPECT: NOTE OK
   EVIDENCE: pending
+
+- [ ] G9: le geste de Dryhopper tient son rail avec le nouveau pied (D35, D27, D46, D47, D55, D69)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-rail.mjs prototypes/houblons-v4/maquettes/parcours-p17 dryhopper --page=etat.html --parcours
+  EXPECT: RAIL OK
+  EVIDENCE: pending

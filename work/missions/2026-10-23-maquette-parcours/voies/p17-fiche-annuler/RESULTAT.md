@@ -1,4 +1,4 @@
-ECHEC — G4 : controle-annuler ne reconnaît pas « Puis la levure » comme action ; 7/8 OK
+OK — fiche g1 radar d'abord (D115) ; « Annuler » 48 px sur Substituer, Levure, Dryhopper (D120) ; G1–G9 verts
 
 ## Fichiers écrits (dans « Possède » et dans le besoin socle accordé)
 - `prototypes/houblons-v4/parcours/src/ecrans/fiche/FicheHoublon.tsx` : le radar et sa demande (« + Floral 2/4 − Résineux
@@ -35,39 +35,68 @@ familles, « nommé en premier », sans famille, non décrites), puis le pied �
   C'est le pont d'a1, déplacé du corps dans le dock, avec le même `data-role="pont-levure"` et le même
   `data-acquis="levure"`.
 - L'« Ajouter à ma bière › » (`pont-inscrire`) que j'avais ajouté est retiré : l'inscription vit dans Levure.
-- Le pont est de nouveau visible au repos : 784 à 832 px à 390 × 844, dans le dock, sous le pouce. Avant cette décision,
-  il était caché à 669 px.
+- Le pont est de nouveau visible au repos : 666 à 714 px à 390 × 844, en tête du dock, juste au-dessus des étapes, là où
+  a1 le posait. Avant cette décision, il était caché à 669 px.
 - Le corps d'a1 ne change pas, sauf le retrait du pont : la ligne « mesuré linalol 38 µg/L (McCabe 2023) » reste seule.
   L'écart est écrit dans `dryhopper/NOTE.md`.
 - Capture du pied à 390, ouverte : `prototypes/houblons-v4/maquettes/parcours-p17/captures/dryhopper-390.png`.
-  - On y voit le rail, puis « Annuler » (contour) et « Puis la levure Pomona ⊛ ~+13 › » (fond clair, contour), côte à côte,
-    à 48 px.
+  - On y voit « Annuler » (contour) et « Puis la levure Pomona ⊛ ~+13 › » (fond clair, contour), côte à côte, à 48 px.
+    Dessous viennent les étapes, les jours et le rail.
   - Le pont garde l'habillage d'a1 (fond cave-900) : c'est ce qui le distingue d'Annuler, qui est transparent.
-- **Conséquence sur G4** : `controle-annuler.mjs` cherche une action par les rôles `pont-(remplacer|ajouter|placer|
-  inscrire|valider|appliquer)` ou par son texte (« Remplacer », « Ajouter à ma bière », « Placer »…). « Puis la levure »
-  (`pont-levure`) n'y est pas, d'où ses deux lignes Dryhopper en échec.
-  - Ces lignes sont « aucune action du pied qui change la recette trouvée ».
-  - Tout le reste passe sur Dryhopper : Annuler mesure 96,8 × 48 px, il est dans l'écran, rien ne le recouvre. Après un
-    toucher, la recette est identique, le brouillon est abandonné et l'adresse passe de `#/dryhopper/idaho-7-1` à
-    `#/ma-biere`.
-  - Je ne possède pas le contrôle. Le corriger revient au pilote ou à p15 : ajouter `levure` à `roleAction`, ou le texte
-    « Puis la levure » à `texteAction`. p15 l'avait prévu dans son RESULTAT.
+- G4 : le pilote a étendu `controle-annuler.mjs` à « Puis la levure ». Dryhopper passe à 390 et à 1280.
 
-## Critères (rejoués après la décision, depuis la racine)
+## Rail (G9, D35)
+- La régression : avec le pied sous le rail, `controle-rail --parcours` donnait RAIL ECHEC 3. C'étaient trois
+  chevauchements D35 pendant le geste, par exemple « jamais mesuré » sur « ≈+5 » à 35′, « 38 µg/L » sur « 1 j » et
+  « Idaho 7 » sur « ~+22 ».
+- La cause : la frise ne se serre pas, sa hauteur est inchangée. C'est le corps d'a1 qui dépasse de 40 px sous le dock
+  (642 px de contenu pour 602 px de place, mesurés).
+  - Sa dernière ligne, « mesuré linalol 38 µg/L (McCabe 2023) », de 669 à 697 px, est coupée par le défilement.
+  - Elle reste pourtant dans l'écran, derrière le haut du dock, qui commence à 658 px.
+  - Avec un pied de 54 px de plus, la loupe (en haut de la zone du geste, de 666 à 700 px) se posait exactement sur elle.
+  - Le contrôle mesure les boîtes de texte sans tenir compte de la coupe du défilement. À l'œil, on ne voit rien ; à la
+    mesure, deux textes sont l'un sur l'autre.
+- Premier essai : le pied seul en tête du dock. La loupe repasse sous le bas du corps, mais Annuler et « Puis la levure »
+  se retrouvent sur la ligne cachée (« jamais mesuré » sur « Annuler »).
+- La correction retenue, sans changer la décision de pied ni le corps d'a1 :
+  - le pied « Annuler · Puis la levure » passe en tête du dock (`.pq-dry-pied`) ;
+  - la zone du geste (étapes, loupe, rail) vient dessous, dans `.pq-dry-geste-zone`, qui sert de repère à la loupe ;
+  - la loupe et les étapes restent au bas de l'écran, sous le bas du corps ;
+  - pendant le geste, le pied s'efface (`visibility: hidden`, sa place reste), comme a1 le fait déjà pour les étapes :
+    le doigt est sur le rail, la loupe parle, rien ne saute.
+- Résultat : `RAIL OK 1/1` (17 règles jouées ; non jouées comme avant : D44, et D45, D56, D61 bis, D64, faute d'un état à
+  plusieurs houblons).
+- Capture du geste tenu à 35′, ouverte : `prototypes/houblons-v4/maquettes/parcours-p17/captures/dryhopper-geste-35-390.png`.
+  - La loupe montre 45′ ≈+5, 40′ ≈+7, **35′ ≈+8**, 30′ ≈+9 et 25′ ≈+10, nettes, et les crans du seul segment de
+    l'ébullition.
+  - La place du pied est vide pendant le geste ; aucun texte ne se superpose.
+- `jouer-parcours.mjs --ponts` (batterie du pilote) : PONTS ECHEC, « cible introuvable : [data-ecran="levure"] ».
+  - Mesure : juste après le lâcher, le pied est `visible`, mais ses enfants (« Puis la levure » compris) restent `hidden`.
+    Ils redeviennent visibles 300 ms plus tard.
+  - Cause : une transition globale (`transition: all 1e-05s`) porte aussi sur la visibilité qu'ils héritent du pied.
+    Le clic immédiat tombait donc sur `.pq-annuler-pied`.
+  - Ce n'était ni un `pointerup` manqué ni un doublon : il n'y a qu'un seul `pont-levure`.
+  - Correction : `.pq-dry-pied, .pq-dry-pied * { transition: none !important; }` dans `dryhopper.css`.
+  - Résultat : `PONTS OK (17 gestes, recalcul médian 0,3 ms)`, trois fois de suite sur `maquettes/parcours` (sortie par
+    défaut, reconstruite) et une fois sur `parcours-p17`. G1 à G9 sont rejoués et tous verts : G6 `PARCOURS OK (29 + 29)`,
+    G9 `RAIL OK 1/1`.
+
+## Critères (rejoués après la correction du rail, depuis la racine)
 - G1 : `CONSTRUIT OK (9 pages) → prototypes/houblons-v4/maquettes/parcours-p17/`
 - G2 : `TYPES OK`
 - G3 : `fiche fiche/etat.html à 390 × 844 · radar 169–510 px · liste des familles dès 597 px` et `FICHE-RADAR OK`. Avant
   la reprise, la fiche échouait : radar à 603–944 px, liste dès 208 px.
-- G4 : `ANNULER ECHEC (4/6 conformes)`.
-  - Substituer et Levure sont conformes à 390 et à 1280. Annuler y mesure 96,8 × 48 px, à côté de l'action (269 × 48 à
-    390, 311 × 48 à 1280), avec « recette identique, brouillon abandonné, → #/ma-biere ».
-  - Dryhopper donne « action introuvable » (voir ci-dessus).
-  - Avant la décision du pilote, le résultat était `ANNULER OK (3 routes × 2 largeurs)` avec `pont-inscrire`.
+- G4 : `ANNULER OK (3 routes × 2 largeurs)`. Sur chaque route, Annuler mesure 96,8 × 48 px, à côté de l'action, avec
+  « recette identique, brouillon abandonné, → #/ma-biere ».
+  - Substituer : à côté de « Remplacer › ».
+  - Levure : à côté de « Ajouter à ma bière › ».
+  - Dryhopper : à côté de « Puis la levure Pomona ~+13 », 269 × 48 à 390.
 - G5 : `CHOIX OK (1 écran(s) conforme(s) à son choix ; 0 ouvert(s))`
 - G6 : `PARCOURS OK (29 gestes à 390, 29 à 1280, recalcul médian 0,3 ms)`. Les gestes d'abandon passent ; aucun échec ne
   vient de la croix D118.
 - G7 : `APP INTACTE OK`
-- G8 : NOTE OK (rejoué sur ce fichier).
+- G8 : `NOTE OK` (rejoué sur ce fichier).
+- G9 : `RAIL OK 1/1`.
 - En plus :
   - `jouer-parcours.mjs --etape=` fiche, substituer, levure et dryhopper : `ETAPE OK` pour chacun, avec les gestes
     « Annuler » ;
@@ -75,7 +104,7 @@ familles, « nommé en premier », sans famille, non décrites), puis le pied �
   - Levure : Verdant essayée, puis Annuler ; la recette reste en Pomona ;
   - Dryhopper : Galaxy posé à 7 j, puis Annuler ; Galaxy n'est pas inscrit ;
   - `controle-acquis --outil=dryhopper` : `ACQUIS OK (4/4 : geste, frise, valeurs, levure)`.
-- Non lancés : controle-commun, teinte, rail et retour. C'est la batterie du pilote, sur la construction commune.
+- Non lancés : controle-commun, teinte et retour. C'est la batterie du pilote, sur la construction commune.
 
 ## Captures (ouvertes en image)
 Dans `prototypes/houblons-v4/maquettes/parcours-p17/captures/` :
@@ -83,15 +112,16 @@ Dans `prototypes/houblons-v4/maquettes/parcours-p17/captures/` :
   sont les mêmes ; le radar est monté sous l'α, et le début de la liste reste visible en bas du premier écran.
 - `fiche-390.png`, `fiche-1280.png` (feuille dans le cadre de 768 px).
 - `substituer-390.png`, `substituer-1280.png`, `levure-390.png`, `levure-1280.png`, `dryhopper-390.png`,
-  `dryhopper-1280.png` : le pied au repos.
+  `dryhopper-1280.png` : le pied au repos ; `dryhopper-geste-35-390.png` : le geste tenu à 35′.
 
 ## Prédiction
 « Ok, le radar d'abord, c'est mieux », puis, devant le pied : « Annuler, enfin ».
 
-DÉCISION À PRENDRE : étendre `controle-annuler.mjs` à `pont-levure`, l'action de Dryhopper selon la décision du pilote.
-Sans cela, G4 reste à 4/6.
+DÉCISION À PRENDRE : aucune
 
 CONNAISSANCE : `controle-annuler.mjs` lit comme un bouton tout conteneur qui porte un `data-role` (sélecteur
 `button, a, [role="button"], [data-role]`). Une enveloppe dont le texte commence par « Annuler » ne doit pas porter de
 `data-role` : le pied porte donc `data-pied`.
-LEÇON PROPOSÉE : aucune
+LEÇON PROPOSÉE : un contrôle qui mesure des boîtes de texte sans tenir compte de la coupe par défilement accuse ce qui
+est caché sous un pied fixe. Le 24.10, Dryhopper a fait RAIL ECHEC D35 par la ligne coupée d'a1 sous le dock. Quand on
+agrandit un pied fixe, mesurer le dépassement du corps sous lui (scrollHeight contre clientHeight) et rejouer le rail.

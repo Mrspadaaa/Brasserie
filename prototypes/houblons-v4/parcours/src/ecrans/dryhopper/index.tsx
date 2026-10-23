@@ -216,6 +216,22 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
 
   const dock = (
     <div className="pq-dry-dock" data-libre="moment" data-acquis="frise" data-pas="5">
+      {/* D120 : en tête du dock, « Annuler » à côté de l'action de Dryhopper, « Puis la levure » (le pont d'a1, déplacé du corps dans le pied, décision du pilote). Au-dessus du geste : la loupe et les étapes restent au bas de l'écran, au-delà du bas du corps (le corps d'a1 dépasse de 40 px sous le dock, ses textes cachés y restent dans l'écran, D35). */}
+      {/* Pendant le geste, le pied s'efface comme les étapes (sa place reste) : le doigt est sur le rail, la loupe parle. */}
+      <div className="pq-dry-pied" style={doigt != null ? { visibility: 'hidden' } : undefined}>
+        <PiedAnnuler>
+            <nav aria-label="Étape suivante" data-acquis="levure" data-forme="pont" className="shrink-0">
+              <button type="button" data-role="pont-levure" onClick={() => aller({ ecran: 'levure', ajout: ajoutId })}
+                className="inline-flex items-center gap-1.5 min-h-touch px-3 rounded-full border border-cave-700 bg-cave-900 text-sm text-cave-50 whitespace-nowrap">
+                <b className="font-semibold">Puis la levure</b>
+                {apercu === 'rien' ? <span className="text-xs text-cave-200">rien ne change ici</span>
+                  : apercu ? <span className="inline-flex items-center gap-1 text-xs text-cave-200">Pomona <Picto famille={apercu.f} taille={14} /><span style={{ color: COULEURS[apercu.f].texte }}><Ecart v={apercu.v} interp={false} /></span></span> : null}
+                <Chevron />
+              </button>
+            </nav>
+        </PiedAnnuler>
+      </div>
+      <div className="pq-dry-geste-zone">
       <div className="pq-dry-haut" style={doigt != null ? { visibility: 'hidden' } : undefined}>
         <div className="grid grid-cols-4 gap-1">
           {etapes.map((e) => (
@@ -286,19 +302,6 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
           <span className="pq-dry-pouce" style={{ left: `${doigt ?? X(i)}%` }} />
         </div>
       </div>
-      {/* D120 : sous le rail, « Annuler » à côté de l'action de Dryhopper, « Puis la levure » (le pont d'a1, déplacé du corps dans le pied, décision du pilote). */}
-      <div className="pq-annuler-hote">
-        <PiedAnnuler>
-            <nav aria-label="Étape suivante" data-acquis="levure" data-forme="pont" className="shrink-0">
-              <button type="button" data-role="pont-levure" onClick={() => aller({ ecran: 'levure', ajout: ajoutId })}
-                className="inline-flex items-center gap-1.5 min-h-touch px-3 rounded-full border border-cave-700 bg-cave-900 text-sm text-cave-50 whitespace-nowrap">
-                <b className="font-semibold">Puis la levure</b>
-                {apercu === 'rien' ? <span className="text-xs text-cave-200">rien ne change ici</span>
-                  : apercu ? <span className="inline-flex items-center gap-1 text-xs text-cave-200">Pomona <Picto famille={apercu.f} taille={14} /><span style={{ color: COULEURS[apercu.f].texte }}><Ecart v={apercu.v} interp={false} /></span></span> : null}
-                <Chevron />
-              </button>
-            </nav>
-        </PiedAnnuler>
       </div>
     </div>
   );

@@ -14,6 +14,13 @@
 
 /* Le dock sous le pouce : étapes et jours en tête, puis le geste (voie, profil, rail). */
 .pq-dry-dock { position: relative; width: 100%; padding: 2px 0 4px; }
+/* D120 (p17) : le pied « Annuler · Puis la levure » en tête du dock ; la zone du geste (étapes, loupe, rail) dessous,
+   repère de la loupe, au bas de l'écran. */
+.pq-dry-pied { display: flex; margin-bottom: 6px; }
+/* Le pied revient d'un coup au lâcher : la visibilité héritée ne passe par aucune transition (sinon « Puis la levure »
+   reste caché une image de plus après un glisser, et un toucher immédiat tombe à côté). */
+.pq-dry-pied, .pq-dry-pied * { transition: none !important; }
+.pq-dry-geste-zone { position: relative; }
 .pq-dry-haut { display: grid; grid-template-columns: 1fr 5.25rem; gap: 4px; }
 .pq-dry-etape { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 2.1rem; border-radius: 4px; background: rgb(var(--cave-900)); border: 1px solid rgb(var(--cave-800)); color: rgb(var(--cave-50)); font-size: 12px; line-height: 1.1; overflow: hidden; }
 .pq-dry-etape b { font-weight: 600; font-size: 12px; }

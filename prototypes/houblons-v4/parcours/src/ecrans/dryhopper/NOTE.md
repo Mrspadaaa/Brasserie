@@ -84,13 +84,18 @@ Contrôles écartés, avec leur raison :
 
 ## Pied « Annuler » (D120, voie p17, 23.10 ; décision du pilote)
 
-- L'action de Dryhopper est « Puis la levure » : D120 veut « Annuler » à côté. Sous le rail, une rangée de plus,
+- L'action de Dryhopper est « Puis la levure » : D120 veut « Annuler » à côté. En tête du dock, au-dessus des étapes,
   « Annuler » (contour) et « Puis la levure · Pomona ~+13 › » (le pont d'a1, même `data-role="pont-levure"`, même
   `data-acquis="levure"`), 48 px tous deux : le pied commun `commun/PiedAnnuler.tsx`, même forme que Substituer et
   Levure. Annuler jette le brouillon et ramène à l'étape Houblons (`#/ma-biere`, D118). Joué par `jeu.mjs` (Galaxy
   posé à 7 j, Annuler, recette inchangée).
-- `controle-annuler.mjs` ne reconnaît pas encore « Puis la levure » comme action (rôles `pont-remplacer|ajouter|placer|
-  inscrire|valider|appliquer`) : ses deux lignes Dryhopper restent en échec jusqu'à son extension (pilote).
+- Pourquoi en tête et pas sous le rail (G9, D35) : le corps d'a1 dépasse de 40 px sous le dock (642 px de contenu pour
+  602 de place). Sa dernière ligne, « mesuré linalol 38 µg/L (McCabe 2023) », coupée par le défilement, reste dans
+  l'écran, derrière le haut du dock. Avec le pied sous le rail, la loupe montait sur elle (« jamais mesuré » sur
+  « ≈+5 »). La frise ne se serre pas. Le pied en tête garde la loupe et les étapes au bas, sous le bas du corps ; pendant
+  le geste, le pied s'efface (`visibility: hidden`, sa place reste, comme les étapes) : le doigt est sur le rail.
+- Le dock : `.pq-dry-pied`, puis `.pq-dry-geste-zone` (repère de la loupe : étapes, loupe, rail). Le pied et ses enfants
+  sont sans transition : la visibilité héritée revient au lâcher, sans un temps de retard (PONTS, 24.10).
 - **Écart** : le pont « Puis la levure » quitte le corps d'a1 (la ligne « mesuré … » garde sa place, seule) pour le
-  pied ; il redevient visible au repos (784–832 px à 390 × 844). Rien d'autre ne change dans le corps. Aucune action
+  pied ; il redevient visible au repos (666–714 px à 390 × 844, juste au-dessus des étapes, là où a1 le posait). Rien d'autre ne change dans le corps. Aucune action
   « Ajouter à ma bière » sur Dryhopper : elle vit dans Levure.
