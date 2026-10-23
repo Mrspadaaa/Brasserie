@@ -36,5 +36,17 @@ export default {
       if (a.grams !== 80) return 'dose ' + a.grams + ' g (80 g attendus)';
       return p.etat.recette.yeastId === 'lalbrew-pomona' || ('levure de la recette : ' + p.etat.recette.yeastId);
     } },
+    // D120 : « Annuler », à côté de « Ajouter à ma bière », jette le brouillon sans toucher la recette et ramène à l'étape Houblons.
+    { nom: 'rouvrir Levure', faire: 'attendre', verifier: () => { location.hash = '#/levure/idaho-7-1'; return true; } },
+    { nom: 'Verdant dans le brouillon', faire: 'toucher', attendre: '[data-ecran="levure"]', cible: '[data-ecran="levure"] [data-levure="lalbrew-verdant-ipa"]', verifier: (p) => {
+      if (!p.etat.brouillon || p.etat.brouillon.recette.yeastId !== 'lalbrew-verdant-ipa') return 'Verdant non choisie dans le brouillon';
+      window.__pqLevAvant = JSON.stringify(p.etat.recette);
+      return p.etat.recette.yeastId === 'lalbrew-pomona' || ('levure de la recette : ' + p.etat.recette.yeastId);
+    } },
+    { nom: 'Annuler', faire: 'toucher', cible: '[data-role="annuler"]', attendre: '[data-ecran="ma-biere"]', verifier: (p) => {
+      if (p.etat.brouillon !== null) return 'brouillon resté ouvert après « Annuler »';
+      if (location.hash !== '#/ma-biere') return 'route ' + location.hash;
+      return JSON.stringify(p.etat.recette) === window.__pqLevAvant || '« Annuler » a changé la recette';
+    } },
   ],
 };

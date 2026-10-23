@@ -38,3 +38,27 @@ aucune bloquante. Recommandation : au portage, retirer `aria-label="Fermer"` hé
 
 CONNAISSANCE : le « header » de la maquette n'est pas le même bloc d'un onglet à l'autre : sur d332792c, biere a ses onglets dans le `<header>` (41 px), suggerer les a dessous (header 33 px + onglets = bloc de 81 px) ; mesurer l'en-tête demande les deux.
 LEÇON PROPOSÉE : un contrôle qui rend une portée dryhopper déclenche la fixture de systeme.mjs (« voie Dryhopper avec ses contrôles ») ; écrire la ligne de portée et la fixture dans le même tour, sinon TEMOINS ECHEC.
+
+## Correction : l'encre
+Demande du pilote : sur Substituer le texte le plus fréquent est #666, une croix #222 y échouait à tort (G21 de p2).
+- Choix : la référence est la plus sombre des couleurs de texte visibles qui comptent au moins 5 % des caractères (hors bouton), repli sur la plus fréquente. Plus robuste que la couleur de `body` (souvent claire ou teintée par le thème, et non le texte) ou du titre (peut être grisé) : elle suit l'encre réellement posée sur la page et ignore les gris secondaires et les mentions rares. Écrite dans l'en-tête du script (règle D109 encre). Seuil inchangé : 24 par canal.
+- Rejoué : d332792c ECHOUE OK (substituer : encre #111111 au lieu de #666666 ; icône #333333 reste hors des 24 et ce n'est de toute façon pas une croix) ; retour-ok RETOUR OK (suggerer seul, puis biere, suggerer, comparer) ; retour-petit ECHOUE OK (icône #9CA3AF contre encre #1A1A1A, écart 149) ; retour-ailleurs et retour-en-tete-saute ECHOUE OK ; `systeme.mjs temoins` : TEMOINS OK.
+- Sortie de `node work/refonte-frontend/v4/tournoi/outils/controle-retour.mjs prototypes/houblons-v4/maquettes/parcours-p2` (code 0) :
+```
+biere 390 · croix 44×44 · icône 22 px #222222 (encre #111111) · forme croix · en-tête 53 px (bloc 53) · centre (30, 26) · mène à #/ma-biere
+biere 1280 · croix 44×44 · icône 22 px #222222 (encre #111111) · forme croix · en-tête 53 px (bloc 53) · centre (286, 26) · mène à #/ma-biere
+suggerer 390 · croix 44×44 · icône 22 px #222222 (encre #111111) · forme croix · en-tête 53 px (bloc 53) · centre (30, 26) · mène à #/ma-biere
+suggerer 1280 · croix 44×44 · icône 22 px #222222 (encre #111111) · forme croix · en-tête 53 px (bloc 53) · centre (286, 26) · mène à #/ma-biere
+comparer 390 · croix 44×44 · icône 22 px #222222 (encre #111111) · forme croix · en-tête 53 px (bloc 53) · centre (30, 26) · mène à #/ma-biere
+comparer 1280 · croix 44×44 · icône 22 px #222222 (encre #111111) · forme croix · en-tête 53 px (bloc 53) · centre (286, 26) · mène à #/ma-biere
+dryhopper 390 · croix 44×44 · icône 22 px #222222 (encre #111111) · forme croix · en-tête 53 px (bloc 53) · centre (30, 26) · mène à #/ma-biere
+dryhopper 1280 · croix 44×44 · icône 22 px #222222 (encre #111111) · forme croix · en-tête 53 px (bloc 53) · centre (286, 26) · mène à #/ma-biere
+levure 390 · croix 44×44 · icône 22 px #222222 (encre #111111) · forme croix · en-tête 53 px (bloc 53) · centre (30, 26) · mène à #/ma-biere
+levure 1280 · croix 44×44 · icône 22 px #222222 (encre #111111) · forme croix · en-tête 53 px (bloc 53) · centre (286, 26) · mène à #/ma-biere
+substituer 390 · croix 44×44 · icône 22 px #222222 (encre #111111) · forme croix · en-tête 53 px (bloc 53) · centre (30, 26) · mène à #/ma-biere
+substituer 1280 · croix 44×44 · icône 22 px #222222 (encre #111111) · forme croix · en-tête 53 px (bloc 53) · centre (286, 26) · mène à #/ma-biere
+parcours Suggérer ouvert depuis l'étape · croix 44×44 · mène à #/ma-biere
+parcours Suggérer ouvert depuis l'onglet · croix 44×44 · mène à #/ma-biere
+parcours Comparer ouvert depuis Suggérer · croix 44×44 · mène à #/ma-biere
+RETOUR OK (6 routes × 2 largeurs, 3 parcours)
+```

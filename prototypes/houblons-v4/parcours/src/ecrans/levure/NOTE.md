@@ -47,3 +47,10 @@ Choix encore ouvert du brasseur : étape (ici) ou outil propre (a2b).
 - `index.tsx` → `src/ui/hops/HopTiming.tsx`, étape `step: 'yeast'`.
 - `biotransfoLevure` est lu dans le moteur : l'adaptateur devrait l'exposer (besoin socle).
 - La levure de la recette s'écrit avec l'ajout (Dexie puis Firestore) ; le catalogue des levures vient de l'app.
+
+## Pied « Annuler » (D120, voie p17, 23.10)
+
+- « Pas de bouton cancer » : le pied porte « Annuler » à gauche de « Ajouter à ma bière », 48 px tous deux (pied commun
+  `commun/PiedAnnuler.tsx`, même forme sur Substituer, Levure, Dryhopper). Annuler jette le brouillon (la levure
+  essayée ne s'inscrit pas) et ramène à l'étape Houblons (`#/ma-biere`, D118). Joué par `jeu.mjs` (Verdant essayée,
+  Annuler, recette inchangée) et `controle-annuler.mjs`.

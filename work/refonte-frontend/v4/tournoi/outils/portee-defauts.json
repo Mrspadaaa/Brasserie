@@ -1597,7 +1597,7 @@
     "dryhopper"
    ],
    "tourne": "oui",
-   "resultat": "maquette d332792c : ANNULER ECHEC 0/6 (aucun « Annuler » sur Substituer et Levure, pied de 28 px ; Dryhopper sans action de recette dans le pied) ; témoins annuler-ok (Annuler 48 px à côté de Remplacer, recette intacte, brouillon abandonné, l'outil se quitte) : OK ; annuler-absent et annuler-qui-change (Annuler qui applique le remplaçant) : ECHEC",
+   "resultat": "maquette d332792c : ANNULER ECHEC 0/6 (aucun « Annuler » sur Substituer, Levure ni Dryhopper, pied de 28 px) ; p17 : ANNULER OK (3 routes × 2 largeurs) ; témoins annuler-ok et annuler-ok-pont (Annuler à côté de « Puis la levure › ») (Annuler 48 px à côté de Remplacer, recette intacte, brouillon abandonné, l'outil se quitte) : OK ; annuler-absent et annuler-qui-change (Annuler qui applique le remplaçant) : ECHEC",
    "verdict": "garde",
    "script": "controle-annuler.mjs"
   },

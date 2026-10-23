@@ -16,8 +16,10 @@
 //                  agrandie, masque d'encre : encre aux quatre coins, au centre, nulle au milieu des bords, symétrique).
 //                  Aucun mot exigé ; un texte collé à la croix n'est pas une faute.
 //   D109 taille  : zone touchable (boîte du bouton) de 44 × 44 px au moins ; icône de 20 px au moins de haut.
-//   D109 encre   : couleur calculée de l'icône à 24 au plus par canal de la couleur la plus fréquente du texte de la
-//                  page (au nombre de caractères visibles, hors le bouton), et non le gris secondaire.
+//   D109 encre   : couleur calculée de l'icône à 24 au plus par canal de l'encre du thème, et non le gris secondaire.
+//                  Référence d'encre : la plus sombre des couleurs de texte visibles qui comptent au moins 5 % des
+//                  caractères de la page (hors le bouton) ; pas la plus fréquente, qui peut être le gris secondaire
+//                  (Substituer : #666). Plus robuste que body ou le titre, que le thème peut teinter ou griser.
 //   D109 lieu    : la boîte du bouton est dans l'écran et dans l'en-tête ; son centre reçoit le toucher.
 //   D118 retour  : un toucher sur la croix mène à #/ma-biere (l'étape Houblons), l'outil ouvert seul (etat.html).
 //   D118 chemins : si le dossier a une page ma-biere et biere, on joue (390 px) Suggérer ouvert depuis l'étape (pont
@@ -131,8 +133,13 @@ function mesurer() {
     const c = effective(getComputedStyle(el).color, el);
     if (c) compte.set(c.join(','), (compte.get(c.join(',')) ?? 0) + t.length);
   }
-  const top = [...compte].sort((a, b) => b[1] - a[1])[0];
-  const encre = top ? top[0].split(',').map(Number) : null;
+  // Référence d'encre : la plus sombre des couleurs de texte qui comptent au moins 5 % des caractères visibles (la plus
+  // fréquente peut être le gris secondaire : sur Substituer, #666). Repli : la plus fréquente.
+  const total = [...compte.values()].reduce((x, y) => x + y, 0);
+  const lum = (rgb) => 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+  const poids = [...compte].map(([k, n]) => ({ rgb: k.split(',').map(Number), n })).sort((x, y) => y.n - x.n);
+  const retenues = poids.filter((c) => c.n >= 0.05 * total).sort((x, y) => lum(x.rgb) - lum(y.rgb));
+  const encre = (retenues[0] ?? poids[0])?.rgb ?? null;
 
   const haut = document.elementFromPoint(rb.left + rb.width / 2, rb.top + rb.height / 2);
   const er = entete ? entete.getBoundingClientRect() : null;

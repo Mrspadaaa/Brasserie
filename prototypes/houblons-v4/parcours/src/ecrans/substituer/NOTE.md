@@ -27,3 +27,12 @@
 - `src/ui/hops/HopSubstitute.tsx`, route `{ view: 'hopSubstitute', recipeId, hopKey }`.
 - « Remplacer » écrit la recette dans Dexie ; `doseExacte` va dans `src/domain/hops/recipeHops.ts`.
 - Le stock et l'α des lots viennent de la fixture : à brancher sur le vrai stock.
+
+## Pied « Annuler » (D120, voie p17, 23.10)
+
+- « Pas de bouton cancer » : `commun/PiedAnnuler.tsx` (classes `pq-annuler-`, `commun/pied-annuler.css`), le pied commun des trois
+  outils qui changent la recette. Une ligne de résumé, « 46 g de Nugget → **62,5 g de Nelson Sauvin** » (le
+  `choix-dock`), puis « Annuler » (contour, à gauche) et « Remplacer › » (plein, le reste de la largeur), 48 px tous
+  deux, sous le pouce. À l'ordinateur, le pied se range à droite sur 26 rem.
+- Annuler : `abandonner()` puis `revenirMaBiere()` ; la recette ne bouge pas, retour à l'étape Houblons (D118).
+- Pour l'app : `PiedAnnuler` va dans `src/ui/hops/` (pied commun des outils, à côté du Dock).

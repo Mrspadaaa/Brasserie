@@ -4,11 +4,12 @@
 // qui défilent sous l'original. Chaque colonne dit, dans l'ordre du brasseur : α (lot d'abord), usage, dose à
 // IBU égal (et sa plage par l'α), les arômes, ce qu'on perd et ce qu'on gagne en familles, puis ma bière après
 // le remplacement, au style, sur les familles qui comptent pour ce style, et la proximité calculée.
-// Toucher une colonne la choisit ; « Remplacer » l'inscrit et revient à Ma bière ; « ‹ » abandonne.
+// Toucher une colonne la choisit ; « Remplacer » l'inscrit et revient à Ma bière ; « Annuler », à côté (D120), et la
+// croix abandonnent.
 // Classes propres préfixées pq-substituer- (L26).
 import { useMemo, useState } from 'react';
 import { Pin } from 'lucide-react';
-import { CadreOutil, COULEURS, COURT, FAMILIES, Inconnu, Legende, LigneContexte, Picto, Pont, Simule, nombre, plage, type Echelle } from '../../commun';
+import { CadreOutil, COULEURS, COURT, FAMILIES, Inconnu, Legende, LigneContexte, PiedAnnuler, Picto, Pont, Simule, nombre, plage, type Echelle } from '../../commun';
 import { useNavigation } from '../../coquille/navigation';
 import { useBrouillon, useGestes, useRecette } from '../../etat/EtatParcours';
 import { quandDe, remplacer, trouver } from '../../etat/operations';
@@ -119,10 +120,13 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
         { cle: 'moment', contenu: `à ${nomMoment(q)}` },
         { cle: 'dose', contenu: ibu0 ? `${nombre(ibu0.valeur)} IBU égal` : 'masse égale' },
       ]} />}
-      dock={<>
-        {choisi && <span data-role="choix-dock" className="mr-auto text-sm text-cave-200 truncate">{choisi.dose ? `${nombre(choisi.dose.grams, 1)} g de ${choisi.h.nom}` : ''}</span>}
-        <Pont nom="remplacer" disabled={!choix} onClick={remplacerPar}>Remplacer</Pont>
-      </>}>
+      dock={
+        <PiedAnnuler resume={choisi && choisi.dose ? (
+          <span data-role="choix-dock">{nombre(ajout.grams, 1)} g de {h.nom} <span aria-hidden="true">→</span><span className="sr-only">remplacés par</span> <b className="font-semibold text-cave-50">{nombre(choisi.dose.grams, 1)} g de {choisi.h.nom}</b></span>
+        ) : undefined}>
+          <Pont nom="remplacer" disabled={!choix} onClick={remplacerPar}>Remplacer</Pont>
+        </PiedAnnuler>
+      }>
       <div className="flex items-center gap-2">
         <Legende>
           <p><b>Colonne 1</b> : {h.nom}, épinglé ; les remplaçants suivent, classés par le moteur.</p>

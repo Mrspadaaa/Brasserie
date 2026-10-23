@@ -1,16 +1,18 @@
 // La fiche d'un houblon, reprise de g1, la fiche de la base qu'il a choisie (« la v1 est la meilleure » ; capture
 // base/captures/consolide-fiche-390.png ; inventaire base/donnees/inventaire-fiche.json) : une feuille presque pleine,
 // le nom et son repère ⊙ (α d'un lot), l'α en plage des fiches en gros, le lot à côté et sa jauge, l'usage en mots ;
-// le bloc gris des familles : la bande des 12, puis chaque famille citée avec son picto au trait (D93), « 2/4 », ses
-// mots, « nommé en premier » ; « sans famille : … » (et sa part dessinée, D100) ; « n non décrites : … » ; le grand
-// radar légendé et ses flèches sur sa demande ; « + Floral 2/4  − Résineux 2/4 » ; en pied, ♡ ⊘ et « Comparer ».
+// puis, avant la liste (D115, « Mettre le radargraph avant »), le grand radar légendé et ses flèches sur sa demande,
+// et « + Floral 2/4  − Résineux 2/4 » ; ensuite le bloc gris des familles : la bande des 12, chaque famille citée avec
+// son picto au trait (D93), « 2/4 », ses mots, « nommé en premier » ; « sans famille : … » (et sa part dessinée,
+// D100) ; « n non décrites : … » ; en pied, ♡ ⊘ et « Comparer ».
 // Fermée par « × » (Sheet), Échap et « ‹ ». Emploi depuis un autre écran : export par défaut de index.tsx
 // (<Fiche houblon={cle} />, fermée par le retour), ou useFiche() (état local).
 import { useCallback, useEffect, useState } from 'react';
 import { Ban, ChevronLeft, Heart } from 'lucide-react';
 import { COULEURS, COURT, FAMILIES, Feuille, Picto, nombre, plage } from '../../commun';
 import { useNavigation } from '../../coquille/navigation';
-import { useComparaison, useGestes, useRecette, useVisee } from '../../etat/EtatParcours';
+import { useBiere, useComparaison, useGestes, useRecette, useVisee } from '../../etat/EtatParcours';
+import { sensDe, type Sens } from '../../etat/visee';
 import { houblon, style, type HoublonLu } from '../../moteur';
 import { familyWords, hopRef, type FamilyId } from '../../../../src/engine';
 import { Autres, sourceAlpha, Usage } from './briques';
@@ -57,6 +59,7 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
   const h = houblon(cle);
   const recette = useRecette();
   const visee = useVisee();
+  const biere = useBiere();
   const sc = style(recette.styleCode);
   const aComparer = useComparaison();
   const gestes = useGestes();
@@ -101,7 +104,9 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
   const src = sourceAlpha(h);
   const p = h.alpha?.plage ?? null;
   const lot = src === 'lot' && h.alpha ? h.alpha.valeur : null;
-  const demande = (Object.entries(visee) as [FamilyId, number | 'banni'][]).filter(([, v]) => v === 1 || v === -1 || v === 'banni');
+  // Sa demande : la visée posée dans Ma bière face à ma bière, ou, sans visée, la demande dégustée (etat/visee.ts, D108).
+  const sens = sensDe(visee, (f) => biere.profil[f].valeur?.centre ?? null);
+  const demande = Object.entries(sens) as [FamilyId, Sens][];
   const comparer = () => {
     const liste = aComparer.includes(cle) ? aComparer : [...aComparer, cle];
     if (!aComparer.includes(cle)) gestes.basculerComparaison(cle);
@@ -139,6 +144,20 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
           <span data-element="g1-usage" className="ml-auto shrink-0"><Usage h={h} long /></span>
         </div>
 
+        {/* D115 : « Mettre le radargraph avant » : le radar et sa demande ouvrent la fiche, la liste des familles suit. */}
+        <div data-element="g1-radar"><RadarFiche h={h} demande={sens} /></div>
+
+        {demande.length > 0 && (
+          <p data-element="g1-demande" className="flex items-center justify-center gap-5 text-base text-cave-50">
+            {demande.map(([f, v]) => (
+              <span key={f} className="whitespace-nowrap">
+                <b>{v === 'banni' ? 'banni' : v > 0 ? '+' : '−'} {COURT[f]}</b>{' '}
+                <span className="text-cave-200">{h.familles[f].niveau === 'non décrit' ? '?' : `${h.familles[f].fiches}/${h.familles[f].sur}`}</span>
+              </span>
+            ))}
+          </p>
+        )}
+
         <div data-element="g1-familles" className="rounded-lg bg-cave-900 border border-cave-800 p-2.5 space-y-2">
           <div data-element="g1-bande" role="img" aria-label="Les 12 familles" className="flex gap-0.5">
             {sc.order.map((f) => {
@@ -171,19 +190,6 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
             </p>
           )}
         </div>
-
-        <div data-element="g1-radar"><RadarFiche h={h} demande={visee} /></div>
-
-        {demande.length > 0 && (
-          <p data-element="g1-demande" className="flex items-center justify-center gap-5 text-base text-cave-50">
-            {demande.map(([f, v]) => (
-              <span key={f} className="whitespace-nowrap">
-                <b>{v === 'banni' ? 'banni' : v > 0 ? '+' : '−'} {COURT[f]}</b>{' '}
-                <span className="text-cave-200">{h.familles[f].niveau === 'non décrit' ? '?' : `${h.familles[f].fiches}/${h.familles[f].sur}`}</span>
-              </span>
-            ))}
-          </p>
-        )}
       </div>
     </Feuille>
   );

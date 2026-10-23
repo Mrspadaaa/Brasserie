@@ -42,6 +42,11 @@ export default {
     { nom: 'abandon', faire: 'fermer', attendre: '[data-ecran="ma-biere"]',
       verifier: (p) => (p.etat.brouillon === null && p.etat.recette.additions.find((a) => a.id === 'a1').hopKey === 'beermaverick-nugget') || '« ‹ » a changé la recette' },
     { nom: 'rouvrir', faire: 'toucher', cible: '[data-role="pont-substituer"][data-houblon="beermaverick-nugget"]', attendre: '[data-ecran="substituer"]' },
+    // D120 : « Annuler », à côté de « Remplacer », jette le brouillon sans toucher la recette et ramène à l'étape Houblons.
+    { nom: 'choisir avant Annuler', faire: 'toucher', cible: '[data-ecran="substituer"] [data-remplacant]', verifier: (p) => { window.__pqSubAvant = JSON.stringify(p.etat.recette); return true; } },
+    { nom: 'Annuler', faire: 'toucher', cible: '[data-role="annuler"]', attendre: '[data-ecran="ma-biere"]',
+      verifier: (p) => (p.etat.brouillon === null && JSON.stringify(p.etat.recette) === window.__pqSubAvant && location.hash === '#/ma-biere') || '« Annuler » : brouillon ' + (p.etat.brouillon ? 'ouvert' : 'nul') + ', route ' + location.hash + (JSON.stringify(p.etat.recette) === window.__pqSubAvant ? '' : ', recette changée') },
+    { nom: 'rouvrir', faire: 'toucher', cible: '[data-role="pont-substituer"][data-houblon="beermaverick-nugget"]', attendre: '[data-ecran="substituer"]' },
     { nom: 'Remplacer', faire: 'toucher', cible: '[data-role="pont-remplacer"]', attendre: '[data-ecran="ma-biere"]',
       verifier: (p) => {
         const a = p.etat.recette.additions.find((x) => x.id === 'a1');

@@ -6,7 +6,7 @@
 // Classes propres préfixées pq-dry- (L26). Place future : src/ui/hops/HopTiming.tsx.
 import { useMemo, useRef, useState } from 'react';
 import {
-  BarreStyle, CadreOutil, COULEURS, COURT, Inconnu, JetonHoublon, Legende, LigneContexte, Picto, nombre, signe, type Echelle,
+  BarreStyle, CadreOutil, COULEURS, COURT, Inconnu, JetonHoublon, Legende, LigneContexte, PiedAnnuler, Picto, nombre, signe, type Echelle,
 } from '../../commun';
 import { useNavigation } from '../../coquille/navigation';
 import { nomLevure } from '../../donnees/cas';
@@ -286,6 +286,20 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
           <span className="pq-dry-pouce" style={{ left: `${doigt ?? X(i)}%` }} />
         </div>
       </div>
+      {/* D120 : sous le rail, « Annuler » à côté de l'action de Dryhopper, « Puis la levure » (le pont d'a1, déplacé du corps dans le pied, décision du pilote). */}
+      <div className="pq-annuler-hote">
+        <PiedAnnuler>
+            <nav aria-label="Étape suivante" data-acquis="levure" data-forme="pont" className="shrink-0">
+              <button type="button" data-role="pont-levure" onClick={() => aller({ ecran: 'levure', ajout: ajoutId })}
+                className="inline-flex items-center gap-1.5 min-h-touch px-3 rounded-full border border-cave-700 bg-cave-900 text-sm text-cave-50 whitespace-nowrap">
+                <b className="font-semibold">Puis la levure</b>
+                {apercu === 'rien' ? <span className="text-xs text-cave-200">rien ne change ici</span>
+                  : apercu ? <span className="inline-flex items-center gap-1 text-xs text-cave-200">Pomona <Picto famille={apercu.f} taille={14} /><span style={{ color: COULEURS[apercu.f].texte }}><Ecart v={apercu.v} interp={false} /></span></span> : null}
+                <Chevron />
+              </button>
+            </nav>
+        </PiedAnnuler>
+      </div>
     </div>
   );
 
@@ -334,15 +348,6 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
       </section>
       <div className="flex items-center justify-between gap-2">
         <p className="flex items-center gap-1 text-xs text-cave-400 min-w-0" data-acquis="valeurs">{mesure}</p>
-        <nav aria-label="Étape suivante" data-acquis="levure" data-forme="pont" className="shrink-0">
-          <button type="button" data-role="pont-levure" onClick={() => aller({ ecran: 'levure', ajout: ajoutId })}
-            className="inline-flex items-center gap-1.5 min-h-touch px-3 rounded-full border border-cave-700 bg-cave-900 text-sm text-cave-50 whitespace-nowrap">
-            <b className="font-semibold">Puis la levure</b>
-            {apercu === 'rien' ? <span className="text-xs text-cave-200">rien ne change ici</span>
-              : apercu ? <span className="inline-flex items-center gap-1 text-xs text-cave-200">Pomona <Picto famille={apercu.f} taille={14} /><span style={{ color: COULEURS[apercu.f].texte }}><Ecart v={apercu.v} interp={false} /></span></span> : null}
-            <Chevron />
-          </button>
-        </nav>
       </div>
       {fiche.feuille}
     </CadreOutil>

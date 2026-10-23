@@ -81,3 +81,16 @@ Contrôles écartés, avec leur raison :
 - À brancher : l'α du lot réel (Dexie), le stock réel, la persistance de « Ajouter à ma bière » (Dexie puis
   Firestore). Le type `Quand` et les minutes libres sont à créer dans `src/types/` (ARCHITECTURE.md).
 - La vraie valeur (E03, McCabe 2023) vient de `comparatifs-dryhop.json` ; dans l'app, une table de mesures sourcées.
+
+## Pied « Annuler » (D120, voie p17, 23.10 ; décision du pilote)
+
+- L'action de Dryhopper est « Puis la levure » : D120 veut « Annuler » à côté. Sous le rail, une rangée de plus,
+  « Annuler » (contour) et « Puis la levure · Pomona ~+13 › » (le pont d'a1, même `data-role="pont-levure"`, même
+  `data-acquis="levure"`), 48 px tous deux : le pied commun `commun/PiedAnnuler.tsx`, même forme que Substituer et
+  Levure. Annuler jette le brouillon et ramène à l'étape Houblons (`#/ma-biere`, D118). Joué par `jeu.mjs` (Galaxy
+  posé à 7 j, Annuler, recette inchangée).
+- `controle-annuler.mjs` ne reconnaît pas encore « Puis la levure » comme action (rôles `pont-remplacer|ajouter|placer|
+  inscrire|valider|appliquer`) : ses deux lignes Dryhopper restent en échec jusqu'à son extension (pilote).
+- **Écart** : le pont « Puis la levure » quitte le corps d'a1 (la ligne « mesuré … » garde sa place, seule) pour le
+  pied ; il redevient visible au repos (784–832 px à 390 × 844). Rien d'autre ne change dans le corps. Aucune action
+  « Ajouter à ma bière » sur Dryhopper : elle vit dans Levure.

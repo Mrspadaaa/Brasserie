@@ -6,7 +6,7 @@
 // à Dryhopper. Classes propres préfixées pq-lev- (L26). Place future : src/ui/hops/HopTiming.tsx (étape levure).
 import { useState } from 'react';
 import {
-  BarreStyle, CadreOutil, COULEURS, COURT, Inconnu, JetonHoublon, Legende, LigneContexte, Pont, Picto, nombre, signe, type Echelle,
+  BarreStyle, CadreOutil, COULEURS, COURT, Inconnu, JetonHoublon, Legende, LigneContexte, PiedAnnuler, Pont, Picto, nombre, signe, type Echelle,
 } from '../../commun';
 import { useNavigation } from '../../coquille/navigation';
 import { CONDITIONS, LEVURES, nomLevure } from '../../donnees/cas';
@@ -103,7 +103,7 @@ export default function Levure({ ajoutId }: { ajoutId: string }) {
           { cle: 'base', contenu: `Stout ${sc.code}` },
         ]} />
       </>}
-      dock={<Pont nom="ajouter" onClick={() => { gestes.inscrire(); revenirMaBiere(); }}>Ajouter à ma bière</Pont>}>
+      dock={<PiedAnnuler><Pont nom="ajouter" onClick={() => { gestes.inscrire(); revenirMaBiere(); }}>Ajouter à ma bière</Pont></PiedAnnuler>}>
       <div role="radiogroup" aria-label="Levure" data-libre="levure" data-role="levures" className="grid grid-cols-4 gap-1">
         {LEVURES.map((l) => tuile(l.id, l.nom))}
       </div>

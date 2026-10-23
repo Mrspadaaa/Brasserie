@@ -7,7 +7,9 @@
 // Règle, pour chaque outil qui propose de changer la recette (substituer, levure, dryhopper), au repos, à 390 × 844
 // tactile puis à 1280 × 800. L'action est le bouton du pied qui écrit dans la recette : `[data-role]` en pont-remplacer,
 // pont-ajouter, pont-placer, pont-inscrire, pont-valider, ou un bouton dont le texte commence par « Remplacer »,
-// « Ajouter à ma bière », « Placer », « Inscrire », « Valider », « Appliquer ». Annuler est `[data-role="annuler"]`, ou
+// « Ajouter à ma bière », « Placer », « Inscrire », « Valider », « Appliquer » ; ou, pour un outil qui n'écrit pas
+// lui-même (Dryhopper), le pont du pied vers l'outil suivant : « Puis la levure › » ou tout `[data-role^="pont-"]` dans
+// la moitié basse de l'écran. Annuler est `[data-role="annuler"]`, ou
 // un bouton dont le nom accessible (aria-label, sinon texte) commence par « Annuler » (pas la croix « Fermer » de l'en-tête).
 //   D120 présence : un « Annuler » visible au repos, entier dans l'écran, que rien ne recouvre au centre ;
 //   D120 place    : à côté de l'action (moins de 48 px entre les deux boîtes) ; sans action trouvée, dans le tiers bas ;
@@ -45,7 +47,11 @@ function mesurer() {
   const boutons = [...document.querySelectorAll('button, a, [role="button"], [data-role]')].filter(visible);
   const roleAction = /^pont-(remplacer|ajouter|placer|inscrire|valider|appliquer)/;
   const texteAction = /^(remplacer|ajouter à ma bière|placer|inscrire|valider|appliquer)/i;
-  const actions = boutons.filter((b) => roleAction.test(b.dataset.role ?? '') || texteAction.test(nom(b)));
+  // Un outil qui n'écrit pas lui-même (Dryhopper) mène à l'outil suivant : « Puis la levure › » ou un pont du pied.
+  const texteSuite = /^puis/i;
+  const dansPied = (el) => el.getBoundingClientRect().top >= innerHeight / 2;
+  const estPont = (b) => /^pont-/.test(b.dataset.role ?? '') && dansPied(b);
+  const actions = boutons.filter((b) => roleAction.test(b.dataset.role ?? '') || texteAction.test(nom(b)) || texteSuite.test(nom(b)) || estPont(b));
   const action = actions.sort((a, b) => b.getBoundingClientRect().top - a.getBoundingClientRect().top)[0] ?? null;
   const annulers = boutons.filter((b) => b.dataset.role === 'annuler' || /^annuler\b/i.test(nom(b)));
   const annuler = annulers.sort((a, b) => b.getBoundingClientRect().top - a.getBoundingClientRect().top)[0] ?? null;

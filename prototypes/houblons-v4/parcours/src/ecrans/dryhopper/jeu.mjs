@@ -99,5 +99,17 @@ export default {
       if (ec.querySelector('[data-acquis="valeurs"] [data-nature="mesure"]')) return 'Galaxy affiche une mesure : ' + ec.querySelector('[data-acquis="valeurs"] [data-nature="mesure"]').textContent;
       return !!ec.querySelector('[data-role="mesure-absente"] [data-inconnu]') || 'Galaxy : pas de « ? » à la place de la mesure';
     } },
+    // D120 : « Annuler », à côté de « Ajouter à ma bière », jette le brouillon (Galaxy à 7 j) sans toucher la recette.
+    { nom: 'Galaxy à 7 j, puis Annuler', faire: 'toucher', cible: '.pq-outil-dryhopper [data-jour="7"]', verifier: (p) => {
+      window.__pqDryAvant = JSON.stringify(p.etat.recette);
+      const b = p.etat.brouillon, a = b && b.recette.additions.find((x) => x.id === b.ajoutId);
+      return (a && a.jours === 7) || 'Galaxy non posé à 7 j dans le brouillon';
+    } },
+    { nom: 'Annuler', faire: 'toucher', cible: '[data-role="annuler"]', attendre: '[data-ecran="ma-biere"]', verifier: (p) => {
+      if (p.etat.brouillon !== null) return 'brouillon resté ouvert après « Annuler »';
+      if (location.hash !== '#/ma-biere') return 'route ' + location.hash;
+      if (p.etat.recette.additions.some((x) => x.hopKey === 'beermaverick-galaxy')) return 'Galaxy inscrit par « Annuler »';
+      return JSON.stringify(p.etat.recette) === window.__pqDryAvant || '« Annuler » a changé la recette';
+    } },
   ],
 };

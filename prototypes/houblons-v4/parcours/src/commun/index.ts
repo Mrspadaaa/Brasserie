@@ -11,6 +11,7 @@ export { Inconnu, Simule } from './Marques';
 export { nombre, plage, signe } from './nombres';
 export { JeuPictos, Picto } from './Pictos';
 export { Dock, Pont } from './Pont';
+export { PiedAnnuler } from './PiedAnnuler';
 // Composants de l'app, à employer quand ils conviennent (importés, jamais recopiés).
 export { SegmentedControl } from '@app/ui/SegmentedControl';
 export { RecipeDisclosure } from '@app/ui/RecipeDisclosure';

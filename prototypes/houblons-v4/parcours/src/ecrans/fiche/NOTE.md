@@ -30,6 +30,11 @@
 
 ## Écarts
 
+- D115 (23.10, soir, « Mettre le radargraph avant, cette vue est vraiment pas terribles. À revoir... ») : le radar
+  et sa demande (« + Floral 2/4 − Résineux 2/4 ») passent avant le bloc des familles, entiers dans le premier écran
+  à 390 × 844 (radar 169–510 px, liste dès 597 px). Rien d'autre ne bouge ; la liste elle-même (« nommé en
+  premier », mots anglais) est à revoir plus tard, en variantes sur une page à part (pilote).
+
 - Les familles portent leur picto au trait au lieu du carré de couleur de g1 : D93 (« ça suit pas la Baseline »).
 - « ‹ » ajouté à gauche de l'α (fermeture demandée par le contrat de la voie), en plus de « × » et Échap.
 - La table des IBU par moment n'y est pas (« Inutile »), ni « Ajouter à 10′ » (« palace holder ? »).
