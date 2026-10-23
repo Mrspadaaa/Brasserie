@@ -439,6 +439,10 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   dessous. Passer d'un onglet à l'autre change l'en-tête. D119.
 - **Annuler** (23.10, soir, sur le pied de « Lequel à la place de Idaho 7 ? »), mot pour mot : « Pas de bouton cancer ».
   Substituer n'a que « Remplacer › » en pied. D120.
+- **L'entrée de l'analyse** (23.10, soir, sur le « › » noir à côté de « Résineux trop marqué », étape Houblons), mot pour
+  mot : « Seul bouton qui ouvre vraiment l'analyse. Peut, être amélioré ». Vérifié : le « › » (44 × 36 px, sans mot) est
+  la seule entrée ; l'alerte, les lignes des familles et le bandeau IBU ne font rien au toucher. La base v4.10 avait le
+  même « › » : plancher à enrichir (L07), en 2 ou 3 variantes montrées (L24). D121.
 - **La maquette jouable ne suit pas ses choix** (23.10, soir, sur la maquette de bout en bout), mot pour mot : « Mais
   ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? ». Sur la capture de q2b (lot 15,
   Suggestions) : « Ça oui, c'est effectivement l'un de mes choix ». Sur celle de Ma bière de la base v4.10 : « Ça
