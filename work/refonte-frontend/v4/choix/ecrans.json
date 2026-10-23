@@ -44,13 +44,14 @@
    "route": "fiche",
    "statut": "choisi",
    "choix": "g1, et la fiche courte de type Citra cryo",
-   "mots": "Pourquoi la fiche est pareil ??? C'est pas du tout la bonne, ça suit pas la Baseline, ça suit rien du tout ???",
+   "mots": "la v1 est la meilleure",
    "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
    "controles": [
     "work/refonte-frontend/v4/tournoi/outils/controle-fiche.mjs {dossier} ma-biere --pages=etat.html",
     "work/refonte-frontend/v4/tournoi/outils/controle-fiche-baseline.mjs {dossier} ma-biere --page=etat.html"
    ],
-   "note": "La fiche s'ouvre par l'appui long sur un houblon de l'étape Houblons : ses contrôles se jouent depuis cette page."
+   "note": "La forme de la fiche se vérifie sur sa page (fiche/etat.html, ouverte) par l'inventaire g1 ; le geste (appui long, survol à l'ordinateur) par controle-fiche et controle-fiche-baseline depuis l'étape Houblons.",
+   "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-fiche.json"
   },
   {
    "ecran": "dryhopper",

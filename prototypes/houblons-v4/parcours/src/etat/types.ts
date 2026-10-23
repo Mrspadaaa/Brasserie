@@ -1,6 +1,6 @@
 // Types de l'état du parcours. La recette EST le type Recipe du moteur v4 ; un ajout est un Addition du moteur
 // complété de ce que le parcours règle librement (minutes d'ébullition par 5′, jours de contact du dry hop).
-import type { Addition, MomentId, Recipe } from '../../../src/engine';
+import type { Addition, FamilyId, MomentId, Recipe } from '../../../src/engine';
 
 /** Un ajout de houblon. `moment` reste l'identifiant du moteur ; pour l'ébullition, `minutes` fait foi
  * (pas de 5′, de la durée d'ébullition à 0) et `moment` n'en est que la classe la plus proche. Pour un dry
@@ -40,6 +40,9 @@ export interface EtatParcours {
   gestes: number;
   /** Houblons retenus pour la comparaison : le « + » de Suggérer (q2b), « Comparer (n) », l'onglet Comparer. */
   aComparer: string[];
+  /** La visée par famille, en crans du style (+1 plus, −1 moins), ou « banni » (aucun houblon qui la cite). Départ : sa
+   * dégustation du 18.10 (plus floral, moins résineux). Réglée sur l'onglet Ma bière ; lue par Suggérer (D32). */
+  visee: Partial<Record<FamilyId, number | 'banni'>>;
 }
 
 export type Cible = 'recette' | 'brouillon';
@@ -55,6 +58,7 @@ export type Action =
   | { type: 'brouillon/abandonner' }
   | { type: 'comparaison/basculer'; hopKey: string }
   | { type: 'comparaison/fixer'; houblons: string[] }
+  | { type: 'visee/fixer'; famille: FamilyId; valeur: number | 'banni' | null }
   | { type: 'recommencer' }
   | { type: 'etat/poser'; etat: EtatParcours };
 

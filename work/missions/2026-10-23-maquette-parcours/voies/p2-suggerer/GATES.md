@@ -93,3 +93,8 @@ Scope: l'écran Suggérer de q2b (base v4.10), « Quel houblon ajouter à ma bi�
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours-p2 --ecran=suggerer
   EXPECT: CHOIX OK
   EVIDENCE: pending
+
+- [ ] G19: Suggérer a la teinte de q2b : cartes d'objectif à sa hauteur (D106)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-teinte.mjs prototypes/houblons-v4/maquettes/parcours-p2 --ecran=suggerer
+  EXPECT: TEINTE OK
+  EVIDENCE: pending

@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type Dispatch, type ReactNode } from 'react';
 import * as moteur from '../moteur';
 import { cransOf, getStyleScale, hopAlpha, hopRole } from '../../../src/engine';
+import type { FamilyId } from '../../../src/engine';
 import { reducteur } from './reducteur';
 import type { Action, AjoutParcours, Brouillon, Cible, EtatParcours, Quand, RecetteParcours } from './types';
 
@@ -53,6 +54,8 @@ export function useRecetteDeTravail(): { recette: RecetteParcours; sur: Cible } 
   const { etat } = useParcours();
   return etat.brouillon ? { recette: etat.brouillon.recette, sur: 'brouillon' } : { recette: etat.recette, sur: 'recette' };
 }
+/** La visée par famille (crans du style, ou « banni ») : réglée sur l'onglet Ma bière, lue par Suggérer (D32). */
+export const useVisee = (): EtatParcours['visee'] => useParcours().etat.visee;
 /** Les houblons retenus pour la comparaison. */
 export const useComparaison = (): string[] => useParcours().etat.aComparer;
 /** Ma bière lue par le moteur (recalculée à chaque changement de la recette). */
@@ -77,6 +80,7 @@ export function useGestes() {
     abandonner: () => dispatch({ type: 'brouillon/abandonner' }),
     basculerComparaison: (hopKey: string) => dispatch({ type: 'comparaison/basculer', hopKey }),
     fixerComparaison: (houblons: string[]) => dispatch({ type: 'comparaison/fixer', houblons }),
+    fixerVisee: (famille: FamilyId, valeur: number | 'banni' | null) => dispatch({ type: 'visee/fixer', famille, valeur }),
     recommencer: () => dispatch({ type: 'recommencer' }),
   }), [dispatch]);
 }

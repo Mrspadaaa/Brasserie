@@ -118,3 +118,13 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-rail.mjs prototypes/houblons-v4/maquettes/parcours-p1 ma-biere --page=etat.html --parcours
   EXPECT: RAIL OK
   EVIDENCE: pending
+
+- [ ] G24: la fiche reprend g1, élément par élément (règle n° 1)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours-p1 --ecran=fiche
+  EXPECT: CHOIX OK
+  EVIDENCE: pending
+
+- [ ] G25: l'étape Houblons, l'onglet Ma bière et la fiche ont la teinte de ses maquettes (D106)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-teinte.mjs prototypes/houblons-v4/maquettes/parcours-p1 --ecran=fiche
+  EXPECT: TEINTE OK
+  EVIDENCE: pending
