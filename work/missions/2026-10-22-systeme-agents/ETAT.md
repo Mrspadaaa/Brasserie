@@ -140,12 +140,18 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
   voies sur 18 dans Suggérer. Transmis à « En attente » (message 4d794a6c) ; `controle-visee.mjs` d'abord.
 - D109 (bouton retour : 28 px, 16 px, gris) et D110 (traits de q2b non expliqués là où on les lit), c0039406, fils
   48b1d3c4 et 824a18bd ouverts ; transmis (message e69f7c3e) ; `controle-retour.mjs`, `controle-traits.mjs` d'abord.
-- **À faire quand « En attente » annonce la version D107 à D110** :
-  1. rejouer CHOIX, TEINTE, controle-comparer-etapes, controle-visee, controle-retour et controle-traits ;
+- D111 (le geste de l'étape Houblons n'est pas celui de la base), D112 (appui long : pas de retour, texte sélectionnable ;
+  effet attendu demandé dans le fil 12fdbdc0), D113 (pas de « ? » près de la carte de l'ajout ; fil 98024210).
+- Piège (23.10) : `git commit -- SPEC` emporte les modifications non commitées de l'autre session dans ce fichier.
+  c0039406 a emporté sa correction D107 (x3b, pas le Comparer v4.10). Avant de commiter un fichier partagé,
+  lire `git diff -- <fichier>`.
+- **À faire quand « En attente » annonce la version D107 à D113** :
+  1. rejouer CHOIX, TEINTE, controle-comparer-etapes, controle-visee, controle-retour,
+     controle-traits, controle-geste-etape, controle-appui (A9) et controle-legende ;
   2. regarder les captures côte à côte avec la base v4.10 ;
   3. publier la nouvelle version dans un artefact neuf (enveloppe `outils/pages/2026-10-23-maquette/` à copier sous
      une nouvelle date) ;
-  4. répondre dans les fils 4204d431, 48b1d3c4 et 824a18bd avec le lien, puis les résoudre.
+  4. répondre dans les fils 4204d431, 48b1d3c4, 824a18bd, 12fdbdc0 et 98024210 avec le lien, puis les résoudre.
 
 ## Ouvert, par priorité
 1. **Dette des défauts** (AUDIT.md, « À adapter »), urgente pour la voie p4 du parcours :

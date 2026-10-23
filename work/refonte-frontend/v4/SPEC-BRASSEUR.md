@@ -391,6 +391,20 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   famille qui ne bouge pas. Leur sens n'est dit que dans l'aide « ? » (« un trait par cran du style… »), loin de la ligne,
   et toucher un picto ne montre rien. À garder (q2b), mais à rendre lisible là où on les lit ; pas de texte sous chaque
   picto (pas de cockpit). D110.
+- **Le geste de l'étape Houblons** (23.10, soir, commentaires sur la carte de Nugget, maquette publiée), mot pour mot :
+  « Le slider est pas dans la version que je veux... » ; « L'appui prolonger fait pas l'effet escompté ». Le geste de
+  sa base v4.10 (captures `base/captures/consolide-nugget-35-pendant.png`, `consolide-glisser-60-2-pendant.png`) : pendant
+  le glisser, la carte se replie en une puce « Nugget » à côté de la bulle « 35′ », la frise s'ouvre autour du doigt
+  avec des graduations lisibles (45′, 30′, 25′, petits traits), rien ne se chevauche. La maquette garde la carte entière,
+  serre les graduations de 60′ à 5′ dans la frise, par-dessus les repères 0′, whirlpool et levure, et sélectionne le
+  texte de la bulle. D111. L'appui long ouvre bien la fiche g1 dans Chrome (souris et doigt simulé), sur le nom, les
+  carrés ou la carte ; mais rien ne se voit pendant l'appui (la base remplit le nom en 500 ms) et le texte de la carte
+  reste sélectionnable (sur iPhone, l'appui long sélectionne et ouvre le menu du système). L'effet attendu n'est pas
+  encore dit : question posée dans le fil. D112.
+- **La légende** (23.10, soir, commentaire sur « inconnu : ébullition 45′ : le moteur si… », carte de Nugget), mot pour
+  mot : « J'aime bien les petits icône et tout. Mais il manque à un endroit un bouton légende ». Les icônes restent. Le
+  seul « ? » de l'étape est au-dessus des familles, en bas ; la carte de l'ajout (carrés, traits sous les carrés, ⟳,
+  « résine 2/4 », « ? arôme » hachuré) n'en a pas près d'elle. D113.
 - **La maquette jouable ne suit pas ses choix** (23.10, soir, sur la maquette de bout en bout), mot pour mot : « Mais
   ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? ». Sur la capture de q2b (lot 15,
   Suggestions) : « Ça oui, c'est effectivement l'un de mes choix ». Sur celle de Ma bière de la base v4.10 : « Ça
