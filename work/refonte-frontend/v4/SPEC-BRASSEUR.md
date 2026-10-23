@@ -367,6 +367,14 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   ne comparait qu'un moment fixé (l'étiquette `après, 3 j`). La maquette de base v4.10 (`ecran-1/base/consolide/comparer.html`)
   compare aux étapes 60′, 10′, 5′, whirlpool, dry hop actif et après, avec Nugget, le houblon de base, en référence.
   À garder de r6a : sa forme ; à y mettre : les étapes côte à côte et la référence (houblon de base ou bière de base). D107.
+- **La visée sans effet** (23.10, soir, commentaire sur la maquette publiée, posé sur « Tropicaux prévu » de Ma bière),
+  mot pour mot : « Aussi aucun impact sur je met plus, moins bannir ect.. ». Dans Ma bière, « bannir · − · + » ne
+  dessine rien sur la barre : seul le mot « plus » change, et une puce « + tropicaux » apparaît en bas, hors de l'écran.
+  Sa base v4.10 (`ecran-1/base/consolide/biere.html`) pose la visée sur la piste : un losange blanc à son niveau, relié
+  au point de la bière par un trait pointillé ; « + » et « − » montent ou descendent d'un palier (faible, moyen, marqué),
+  nommé entre les boutons, avec « × » pour retirer la visée ; une famille bannie a son nom barré. C'est la visée « en
+  trait creux » qu'il avait dite « Parfait » (18.10). Suggérer lit bien la visée (cartes « Plus tropicaux »,
+  « Sans agrumes »), mais bannir agrumes écarte 17 voies sur 18. D108.
 - **La maquette jouable ne suit pas ses choix** (23.10, soir, sur la maquette de bout en bout), mot pour mot : « Mais
   ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? ». Sur la capture de q2b (lot 15,
   Suggestions) : « Ça oui, c'est effectivement l'un de mes choix ». Sur celle de Ma bière de la base v4.10 : « Ça
