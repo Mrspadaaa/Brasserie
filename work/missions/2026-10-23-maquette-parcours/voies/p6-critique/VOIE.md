@@ -40,3 +40,31 @@ Dans `GATES.md`, même dossier. Ne pas le modifier.
 
 ## Rendre
 `RESULTAT.md` au format de l'agent critique. Réponse finale au pilote : une ligne (nombre d'ACCEPTÉ et de REJET).
+
+## Version D107 à D121 (24.10, nuit) — un nouvel avis, côte à côte
+
+Le brasseur a commenté la version publiée (d332792c) : quinze défauts, D107 à D121 (SPEC-BRASSEUR § 1 ;
+DEFAUTS-RECURRENTS, lignes D107 à D121, à lire en entier). La nouvelle version les reprend. Ton avis précédent avait
+accepté les huit écrans de d332792c ; la supervision l'a dit (« j'ai publié d332792c sur CHOIX OK et critique ACCEPTÉ,
+sans cette comparaison », L03). Cette fois, tu juges **sur la page côte à côte**.
+
+### Entrées
+- La page « sa base | la maquette », mêmes états, 390 px : `work/refonte-frontend/v4/outils/pages/2026-10-24-cote-a-cote/
+  index.html` et ses images `img/<état>-base.png`, `img/<état>-maquette.png` (et `-plein`), refaites par le pilote sur
+  la construction finale (`prototypes/houblons-v4/maquettes/parcours/`). Ouvre chaque paire en image.
+- Les variantes D121 (le bloc du profil de l'étape qui ouvre l'analyse) : voir `prototypes/houblons-v4/parcours/src/
+  ecrans/ma-biere/NOTE.md` (section de la reprise de l'étape) et ses captures ; la version en porte une.
+- Les NOTE des écrans (`## Écarts` : chaque écart à sa base doit avoir ses mots).
+- La batterie du pilote : `node prototypes/houblons-v4/parcours/outils/batterie.mjs --sans-construire` (sa sortie est
+  dans MISSION.md, « État de reprise »).
+
+### Consignes
+1. Un avis par écran, sous le titre `## Version D107 à D121`, au même format : « <écran> : ACCEPTÉ » ou « <écran> :
+   REJET », suivi des défauts (capture, endroit, ce qui est faux), pour ma-biere (étape), biere, fiche, suggerer,
+   comparer, dryhopper, levure, substituer.
+2. Pour chacun des quinze défauts, une ligne « D1xx : levé » ou « D1xx : pas levé — pourquoi », en regardant la capture
+   qui le montre.
+3. D121 : dis laquelle des variantes tu montrerais en premier, et ce que le brasseur dira des autres (indicatif, L27).
+4. Un écart à sa base sans ses mots est un REJET (règle n° 1, D105, D117). Un REJET cite SPEC ou DEFAUTS ; sinon c'est
+   une réserve. Ce que tu préfères n'est pas un défaut.
+5. Prédis sa réaction, en une phrase par écran, avec ses mots habituels.
