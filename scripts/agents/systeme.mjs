@@ -19,7 +19,7 @@
 //   remplaces                                                      aucune consigne remplacée ne survit (cerveau/REMPLACES.md)
 //   defauts                                                        régénère la vue courte DEFAUTS-COURT.md
 //   epreuve [dossier]                                              épreuve à l'aveugle du critique depuis jeu.json (L27)
-//   etalonnage [dossier] [--moitie A|B]                            note reponses.json contre cle.json (80 % / 70 %)
+//   etalonnage [dossier] [--moitie A|B] [--reponses f.json]        note les réponses contre cle.json (80 % / 70 %)
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -215,9 +215,13 @@ export async function rognerPremiersEcrans(dossier) {
   return n;
 }
 
-export function noterEpreuve(dossier, { moitie = null, seuilPaires = 0.8, seuilClasses = 0.7 } = {}) {
-  const cle = JSON.parse(lire(path.join(dossier, 'cle.json'))).items.filter((i) => !moitie || i.moitie === moitie);
-  const rep = new Map(JSON.parse(lire(path.join(dossier, 'reponses.json'))).reponses.map((r) => [r.eid, r]));
+export function noterEpreuve(dossier, { moitie = null, seuilPaires = 0.8, seuilClasses = 0.7, reponses = 'reponses.json' } = {}) {
+  // Un item « hors_image » (geste, comparaison à une version d'avant, besoin) reste au jeu mais sort du score :
+  // une capture fixe ne peut pas le départager (première épreuve, 23.10).
+  const jeu = path.join(dossier, 'jeu.json');
+  const horsImage = new Set(existe(jeu) ? JSON.parse(lire(jeu)).items.filter((i) => i.hors_image).map((i) => i.id) : []);
+  const cle = JSON.parse(lire(path.join(dossier, 'cle.json'))).items.filter((i) => (!moitie || i.moitie === moitie) && !horsImage.has(i.item));
+  const rep = new Map(JSON.parse(lire(path.join(dossier, reponses))).reponses.map((r) => [r.eid, r]));
   const compte = { paire: [0, 0], classe: [0, 0] };
   const desaccords = [];
   const manquantes = [];
@@ -1027,8 +1031,8 @@ function main(argv) {
     }
     case 'etalonnage': {
       // Le dossier est le premier argument qui n'est ni une option ni sa valeur (« etalonnage --moitie A »).
-      const dossier = path.resolve(args.find((a, i) => !a.startsWith('--') && args[i - 1] !== '--moitie') ?? path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'etalonnage'));
-      const r = noterEpreuve(dossier, { moitie: option(args, '--moitie', null) });
+      const dossier = path.resolve(args.find((a, i) => !a.startsWith('--') && !['--moitie', '--reponses'].includes(args[i - 1])) ?? path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'etalonnage'));
+      const r = noterEpreuve(dossier, { moitie: option(args, '--moitie', null), reponses: option(args, '--reponses', 'reponses.json') });
       const pc = (k) => `${r.compte[k][0]}/${r.compte[k][1]} (${Math.round(100 * r.taux[k])} %)`;
       const details = [...r.manquantes.map((e) => `sans réponse : ${e}`), ...r.desaccords];
       return finir(r.ok, `ETALONNAGE OK — paires ${pc('paire')}, classes ${pc('classe')}`, `ETALONNAGE ECHEC — paires ${pc('paire')}, classes ${pc('classe')} (seuils 80 % et 70 %)`, details);

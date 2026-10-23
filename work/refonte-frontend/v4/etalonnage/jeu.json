@@ -197,7 +197,8 @@
    "prefere": "a",
    "mots": "« Rial: P2 le grossissement suit le doigt. »",
    "date": "2026-10-19",
-   "source": "SPEC-BRASSEUR.md, § 1 « Le rail, son choix dans le lot 8 » (le jury mettait p01 devant et p02 au fond)"
+   "source": "SPEC-BRASSEUR.md, § 1 « Le rail, son choix dans le lot 8 » (le jury mettait p01 devant et p02 au fond)",
+   "hors_image": "geste : « le grossissement suit le doigt » se voit en glissant, pas sur une capture ; puis « L'échelle ne s'adapte toujours pas… » sur la même idée (version 9)"
   },
   {
    "id": "p-l8-rail-p02-p03",
@@ -215,7 +216,8 @@
    "prefere": "a",
    "mots": "« Rial: P2 le grossissement suit le doigt. »",
    "date": "2026-10-19",
-   "source": "SPEC-BRASSEUR.md, § 1 « Le rail, son choix dans le lot 8 » (le jury mettait p01 devant et p02 au fond)"
+   "source": "SPEC-BRASSEUR.md, § 1 « Le rail, son choix dans le lot 8 » (le jury mettait p01 devant et p02 au fond)",
+   "hors_image": "geste (voir p-l8-rail-p02-p01)"
   },
   {
    "id": "p-l8-rail-p02-p04",
@@ -233,7 +235,8 @@
    "prefere": "a",
    "mots": "« Rial: P2 le grossissement suit le doigt. »",
    "date": "2026-10-19",
-   "source": "SPEC-BRASSEUR.md, § 1 « Le rail, son choix dans le lot 8 » (le jury mettait p01 devant et p02 au fond)"
+   "source": "SPEC-BRASSEUR.md, § 1 « Le rail, son choix dans le lot 8 » (le jury mettait p01 devant et p02 au fond)",
+   "hors_image": "geste (voir p-l8-rail-p02-p01)"
   },
   {
    "id": "p-l9-biere-m4-m1",
@@ -749,7 +752,8 @@
    "classe": "rejette",
    "mots": "« Pourquoi la fiche est pareil ??? C'est pas du tout la bonne, ça suit pas la Baseline, ça suit rien du tout ??? »",
    "date": "2026-10-19",
-   "source": "SPEC-BRASSEUR.md, § 1 « La baseline l8 (lot 18) », sur l8e"
+   "source": "SPEC-BRASSEUR.md, § 1 « La baseline l8 (lot 18) », sur l8e",
+   "hors_image": "comparaison : « la fiche est pareil » se juge contre la version d'avant, pas seule"
   },
   {
    "id": "c-l5b",
@@ -797,7 +801,8 @@
    "classe": "aime",
    "mots": "« Rial: P2 le grossissement suit le doigt. »",
    "date": "2026-10-19",
-   "source": "SPEC-BRASSEUR.md, § 1 « Le rail, son choix dans le lot 8 »"
+   "source": "SPEC-BRASSEUR.md, § 1 « Le rail, son choix dans le lot 8 »",
+   "hors_image": "geste, et verdict contraire plus tard sur la même idée"
   },
   {
    "id": "c-l12",
@@ -809,7 +814,8 @@
    "classe": "rejette",
    "mots": "« Non c'est très mauvais. Tu as pas du tout bien compris le besoin »",
    "date": "2026-10-19",
-   "source": "SPEC-BRASSEUR.md, § 1 « Les carrés d'arômes, au long appui » (lot 12)"
+   "source": "SPEC-BRASSEUR.md, § 1 « Les carrés d'arômes, au long appui » (lot 12)",
+   "hors_image": "besoin : « Tu as pas du tout bien compris le besoin » porte sur la demande, pas sur l'image"
   },
   {
    "id": "c-l12b",
@@ -821,7 +827,8 @@
    "classe": "rejette",
    "mots": "« Non... Un appuie long ouvre sa fiche. »",
    "date": "2026-10-19",
-   "source": "SPEC-BRASSEUR.md, § 1 « Les carrés d'arômes, au long appui » (lot 12b)"
+   "source": "SPEC-BRASSEUR.md, § 1 « Les carrés d'arômes, au long appui » (lot 12b)",
+   "hors_image": "comportement : « Un appuie long ouvre sa fiche » porte sur le geste, pas sur l'image"
   },
   {
    "id": "c-l16-radar",
@@ -947,6 +954,7 @@
  "amendements": [
   "23.10, pilote : les paires du picto et c-l23-f1 montraient des planches entières ; remplacées par la seule proposition, découpée de sa planche, texte masqué (etalonnage/captures/<id>.png).",
   "23.10, pilote : c-l22-r4 montrait sa capture barrée de sa croix rouge (le verdict sur l'image) ; remplacée par la planche d'origine.",
-  "23.10, pilote : à l'épreuve, toute capture d'écran plus haute qu'un premier écran est ramenée au premier écran (390 × 844), pour que le format ne pèse pas."
+  "23.10, pilote : à l'épreuve, toute capture d'écran plus haute qu'un premier écran est ramenée au premier écran (390 × 844), pour que le format ne pèse pas.",
+  "23.10, pilote, après la première épreuve : 7 items marqués hors_image (geste, comparaison, besoin) : une capture fixe ne peut pas les départager ; ils restent au jeu, hors du score."
  ]
 }
