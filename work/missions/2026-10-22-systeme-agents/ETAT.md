@@ -161,6 +161,10 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
 - D121 (seul le « › » ouvre l'analyse ; le bloc du profil entier, en variantes), SPEC 7db53cb1, fil a0f0b6ef.
 - Ticket #145 (« Ajouter, vue -> substituer à faire dans le git ») : la vue Substituer, son choix (la porte ou u4)
   puis la reprise ; lié à #126, #137, #119 et #143.
+- Ticket #146 (« Ajouter que cette vue là est à revoir, j'aime bien mais il y a des améliorations à faire ») : la vue
+  Dryhopper, ses améliorations à recueillir, puis son choix et la reprise ; fil 87303327.
+- « En attente » publie elle-même l'artefact neuf de D107 à D121 et m'envoie le lien ; avant, elle me donne la page
+  côte à côte, que je regarde. D115 : le radar avant la liste dans cette version, les variantes de la liste plus tard.
 - **À faire quand « En attente » annonce la version D107 à D121** :
   1. rejouer CHOIX, TEINTE, controle-comparer-etapes, controle-visee, controle-retour,
      controle-traits, controle-geste-etape, controle-appui (A9),
@@ -170,7 +174,7 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
      une nouvelle date) ;
   4. répondre dans les fils 4204d431, 48b1d3c4, 824a18bd, 12fdbdc0, 98024210, 2f687ce7, 2ef8663d,
      00fbdef5, 535c5505, 0a142451, 0d919b2f,
-     a3e4332b, c7854856, 5410d51d et a0f0b6ef avec le lien, puis les résoudre.
+     a3e4332b, c7854856, 5410d51d, a0f0b6ef et 87303327 avec le lien, puis les résoudre.
 
 ## Ouvert, par priorité
 1. **Dette des défauts** (AUDIT.md, « À adapter »), urgente pour la voie p4 du parcours :
