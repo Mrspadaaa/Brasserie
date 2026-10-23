@@ -155,7 +155,10 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
   version. L03 est à compléter dans LECONS.md après le commit de l'autre session (L03 y est en cours).
 - DEFAUTS-RECURRENTS et DEFAUTS-COURT : mes lignes D114 à D117 ne sont pas commitées, à côté de la correction D107 de
   l'autre session ; elle les commite toutes, avec mon accord.
-- **À faire quand « En attente » annonce la version D107 à D117** :
+- D109 tranché par lui : une croix (« Juste une croix bien positionné, facile, dans le thème suffirait »). D118 (la croix
+  ramène toujours à l'étape Houblons ; lecture dite dans le fil 0d919b2f), D119 (l'en-tête change d'un onglet à l'autre),
+  D120 (Annuler en pied). SPEC 31a752af ; fils 0a142451, 0d919b2f, a3e4332b, c7854856 et 5410d51d.
+- **À faire quand « En attente » annonce la version D107 à D120** :
   1. rejouer CHOIX, TEINTE, controle-comparer-etapes, controle-visee, controle-retour,
      controle-traits, controle-geste-etape, controle-appui (A9),
      controle-legende, controle-fiche, controle-stepper ; page côte à côte par écran ;
@@ -163,7 +166,8 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
   3. publier la nouvelle version dans un artefact neuf (enveloppe `outils/pages/2026-10-23-maquette/` à copier sous
      une nouvelle date) ;
   4. répondre dans les fils 4204d431, 48b1d3c4, 824a18bd, 12fdbdc0, 98024210, 2f687ce7, 2ef8663d,
-     00fbdef5 et 535c5505 avec le lien, puis les résoudre.
+     00fbdef5, 535c5505, 0a142451, 0d919b2f,
+     a3e4332b, c7854856 et 5410d51d avec le lien, puis les résoudre.
 
 ## Ouvert, par priorité
 1. **Dette des défauts** (AUDIT.md, « À adapter »), urgente pour la voie p4 du parcours :
