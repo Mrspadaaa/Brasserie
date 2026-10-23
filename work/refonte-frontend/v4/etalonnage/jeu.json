@@ -949,6 +949,98 @@
    "mots": "« mais que r6n2 donne vraiment bien »",
    "date": "2026-10-23",
    "source": "SPEC-BRASSEUR.md, § 7 « Ce que l'entonnoir a donné »"
+  },
+  {
+   "id": "p-l23-r6a-r6n2",
+   "type": "paire",
+   "lot": "23",
+   "sujet": "comparer",
+   "a": {
+    "variante": "r6a",
+    "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6a-premier-ecran.png"
+   },
+   "b": {
+    "variante": "r6n2",
+    "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6n2-premier-ecran.png"
+   },
+   "prefere": "a",
+   "mots": "« r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions »",
+   "date": "2026-10-23",
+   "source": "SPEC-BRASSEUR.md, § 1 « Comparer, r6a reste » (après les pages datées de r6n2 et r6p1 à r6p4)",
+   "hors_image": "premier écran quasi identique à celui de r6a (r6n2 : « le premier écran de r6a, le reste à un toucher » ; r6p1 : r6n2 finie) : la préférence porte sur ce qui suit un toucher"
+  },
+  {
+   "id": "p-l23-r6a-r6p1",
+   "type": "paire",
+   "lot": "23",
+   "sujet": "comparer",
+   "a": {
+    "variante": "r6a",
+    "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6a-premier-ecran.png"
+   },
+   "b": {
+    "variante": "r6p1",
+    "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6p1-premier-ecran.png"
+   },
+   "prefere": "a",
+   "mots": "« r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions »",
+   "date": "2026-10-23",
+   "source": "SPEC-BRASSEUR.md, § 1 « Comparer, r6a reste » (après les pages datées de r6n2 et r6p1 à r6p4)",
+   "hors_image": "premier écran quasi identique à celui de r6a (r6n2 : « le premier écran de r6a, le reste à un toucher » ; r6p1 : r6n2 finie) : la préférence porte sur ce qui suit un toucher"
+  },
+  {
+   "id": "p-l23-r6a-r6p2",
+   "type": "paire",
+   "lot": "23",
+   "sujet": "comparer",
+   "a": {
+    "variante": "r6a",
+    "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6a-premier-ecran.png"
+   },
+   "b": {
+    "variante": "r6p2",
+    "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6p2-premier-ecran.png"
+   },
+   "prefere": "a",
+   "mots": "« r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions »",
+   "date": "2026-10-23",
+   "source": "SPEC-BRASSEUR.md, § 1 « Comparer, r6a reste » (après les pages datées de r6n2 et r6p1 à r6p4)"
+  },
+  {
+   "id": "p-l23-r6a-r6p3",
+   "type": "paire",
+   "lot": "23",
+   "sujet": "comparer",
+   "a": {
+    "variante": "r6a",
+    "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6a-premier-ecran.png"
+   },
+   "b": {
+    "variante": "r6p3",
+    "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6p3-premier-ecran.png"
+   },
+   "prefere": "a",
+   "mots": "« r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions »",
+   "date": "2026-10-23",
+   "source": "SPEC-BRASSEUR.md, § 1 « Comparer, r6a reste » (après les pages datées de r6n2 et r6p1 à r6p4)"
+  },
+  {
+   "id": "p-l23-r6a-r6p4",
+   "type": "paire",
+   "lot": "23",
+   "sujet": "comparer",
+   "a": {
+    "variante": "r6a",
+    "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6a-premier-ecran.png"
+   },
+   "b": {
+    "variante": "r6p4",
+    "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6p4-premier-ecran.png"
+   },
+   "prefere": "a",
+   "mots": "« r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions »",
+   "date": "2026-10-23",
+   "source": "SPEC-BRASSEUR.md, § 1 « Comparer, r6a reste » (après les pages datées de r6n2 et r6p1 à r6p4)"
   }
  ],
  "amendements": [
