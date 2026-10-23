@@ -78,6 +78,7 @@ Variantes choisies, dont repartent les écrans :
 | p14-controles-fiche-fil | les contrôles D115 (le radar avant la liste dans la fiche) et D116 (le fil d'étapes de l'app en tête de l'étape) ; en échec sur d332792c | jugement | auteur | sonnet | 70 | `…/controle-fiche.mjs` ou `…/controle-fiche-radar.mjs`, `…/controle-stepper.mjs`, `…/temoins/{fiche-radar,stepper}-*/**`, les lignes D115 et D116 de `…/portee-defauts.json`, `voies/p14-controles-fiche-fil/RESULTAT.md` | — | systeme.mjs echoue sur d332792c et les témoins ; appels rejoués (M15) ; systeme.mjs temoins | pilote | — |
 | p15-controle-annuler | le contrôle D120 (« Annuler » à côté de l'action qui change la recette, sans effet sur elle : Substituer, Levure, Dryhopper) ; en échec sur d332792c | jugement | auteur | sonnet | 50 | `…/controle-annuler.mjs`, `…/temoins/annuler-*/**`, la ligne D120 de `…/portee-defauts.json`, `voies/p15-controle-annuler/RESULTAT.md` | — | systeme.mjs echoue sur d332792c et deux témoins ; un témoin OK ; systeme.mjs temoins | pilote | — |
 | p17-fiche-annuler | la fiche g1, le radar avant la liste (D115) ; « Annuler » sans effet à côté de l'action sur Substituer, Levure, Dryhopper (D120) | conception | concepteur | opus | 100 | `prototypes/houblons-v4/parcours/src/ecrans/fiche/**`, `…/ecrans/substituer/**`, le pied de `…/ecrans/levure/` et `…/ecrans/dryhopper/`, `prototypes/houblons-v4/maquettes/parcours-p17/`, `voies/p17-fiche-annuler/RESULTAT.md` | p1-ma-biere, p14-controles-fiche-fil, p15-controle-annuler | controle-fiche-radar (D115) ; controle-annuler (D120) ; controle-choix ; parcours-complet.mjs ; app-intacte ; controle-commun, controle-teinte, controle-rail, controle-retour : batterie du pilote sur la construction commune | brasseur | reprise |
+| p18-cote-a-cote | l'outil qui capture sa base et la maquette aux mêmes états (douze, 390 px), et la page « sa base, la maquette » demandée par la supervision avant toute publication | jugement | auteur | sonnet | 90 | `prototypes/houblons-v4/parcours/outils/captures-cote-a-cote.mjs`, `work/refonte-frontend/v4/outils/pages/2026-10-24-cote-a-cote/**`, `voies/p18-cote-a-cote/RESULTAT.md` | — | captures des douze états ; verifier-page.mjs --page-lot (PAGE OK) | pilote | — |
 
 Chemins de « Possède » : relatifs à la racine du dépôt ; `voies/…` est relatif au dossier de cette mission.
 
@@ -134,6 +135,22 @@ Publication suspendue (supervision), jusqu'à : D55 corrigé, batterie verte ave
   Comparer, et un artefact neuf (`outils/pages/2026-10-24-maquette/`).
 - D108 à D110 confiés par la supervision pour la même version (un seul artefact neuf) : p10 à p12 écrivent les contrôles ;
   p1 reprend la visée (D108), p2 les traits de Suggérer (D110) et le retour des outils (D109).
+- État au 23.10, 23 h 15 (version D107 à D121, un seul artefact neuf) :
+  - contrôles écrits et rejoués par le pilote, tous en échec sur d332792c : p9 (D107, D114) 11/11, p10 (D108), p11 (D109,
+    D118, D119) 8/8, p12 (D110) 8/8, p13 (D111, D112 A9, D113, D121) 7/7, p14 (D115, D116) 6/6, p15 (D120) 7/7 ;
+    commits 2c2d58cc, 6c220537 ;
+  - reprises : p3 Comparer fini (x3b, Nugget en référence, panel OSU replié ; commit 0da46e5b) ; p1 D108 fini (visée de la
+    base ; 16 voies au lieu de 1), puis l'étape Houblons en cours (D111 à D113, D116, D121 en variantes) ; p2 Suggérer
+    (D117 sur consolide-b, D110, en-tête commun et croix D109, D118, D119) en cours ; p17 fiche (D115) et Annuler (D120)
+    en cours ; p18 la page côte à côte (outil captures-cote-a-cote.mjs) en cours ;
+  - scripts du parcours alignés sur D118 (la croix ramène à l'étape) : PONTS OK, PARCOURS OK sur parcours-p3 ;
+  - décisions du pilote : D114 = panel replié au repos ; D112 = contrôle sur le nom (la base), carte entière non
+    sélectionnable dans la maquette ; D115 = radar d'abord, variantes de la liste plus tard (accord supervision) ;
+  - reste : batterie sur la construction commune (construire, CHOIX, TEINTE, COMMUN, RAIL, ROUTES, PONTS, PARCOURS et les
+    contrôles D107 à D121), p6 critique côte à côte, page côte à côte envoyée à la supervision (son OK avant
+    publication), artefact neuf, version figée dans outils/pages/2026-10-24-maquette/ (publie.html et assets), note
+    cerveau/produit/maquette-jouable.md, portées à normaliser (suggerer → suggestions, biere → ma-biere, sujet
+    substituer dans systeme.mjs, puis les G5 des voies p10 à p12 et p15).
 
 ## Budget
 Avant (23.10, après-midi) : 5 h à 11 %, semaine à 52 %, Fable à 29 %. Plafond visé : 5 h sous 80 %.
