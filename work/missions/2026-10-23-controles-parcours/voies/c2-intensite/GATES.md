@@ -37,7 +37,7 @@ Scope: un mode --parcours de controle-usage-intensite.mjs contre le moteur en di
 - [x] G7: joué sur Ma bière, Suggérer et Comparer du parcours, il rend un verdict sans planter
   CHECK: node scripts/agents/systeme.mjs verdict -- node work/refonte-frontend/v4/tournoi/outils/controle-usage-intensite.mjs prototypes/houblons-v4/maquettes/parcours ma-biere suggerer comparer --page=etat.html --parcours
   EXPECT: /ma-biere · [\s\S]*suggerer · [\s\S]*comparer · [\s\S]*VERDICT (OK|ECHEC)/
-  EVIDENCE: automatic-evidence=v1; definition-sha256=fbec1ac2551ce719a69888b7f08ac1909a79f997e1f235e79913bb0b8f7a8589; exit=0; EXPECT=matched; output-sha256=2372c235badb29cc822fb8496a778a010dcdf202776ee56a1f65ba1efb11fcb7; output-bytes=481; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=fbec1ac2551ce719a69888b7f08ac1909a79f997e1f235e79913bb0b8f7a8589; exit=0; EXPECT=matched; output-sha256=c3579e8ba8da57162d0e7d3cc83dc47ef3ec333486ca97e7b3028394274c8499; output-bytes=4644; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G8: la NOTE décrit la table des routes et ce qui reste hors du contrôle
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-controles-parcours/voies/c2-intensite/NOTE.md --contient "ma-biere,suggerer,comparer,hopRole,cransOf"

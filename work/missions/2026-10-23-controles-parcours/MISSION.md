@@ -28,6 +28,9 @@ Fini veut dire :
 | Règles du rail sans objet dans la maquette (D28 la levure dans le rail ; D43 les −/+ de jours ; D45, D56, D61, D61 bis, D64 plusieurs houblons sur un même rail) | appliquer ; sans objet, avec sa raison | voie | ouverte : la voie classe chaque défaut dans sa NOTE, le pilote relit à la signature |
 | D36 et D37 révisé (ébullition de durée variable) : la maquette n'a qu'une recette, à 60′ | tester par l'état ; déclarer le manque | pilote | tranchée : tester si `window.__parcours` le permet ; sinon, manque nommé et demandé à la session de la maquette (une route ou un état d'essai) |
 | Forme de `data-source` de l'usage | « fournisseur » ou « règle » (D80) ; la forme longue (« règle : règle rôle-α v1… ») | pilote | tranchée : D80 dit « fournisseur » ou « règle » ; la forme longue est un défaut de l'écran |
+| D47 sur Dryhopper : crans courts des autres segments pendant le geste (a1, passe 3) | les retirer ; les garder et déclarer l'écart | pilote | tranchée : les retirer, selon ses mots (« Juste les affiches quand on est à cette emplacement ») ; réversible s'il dit les avoir aimés |
+| D46 sur un rail à crans | pouce continu, valeur accrochée au cran ; assouplir le seuil | pilote | tranchée : pouce continu, valeur accrochée, comme les curseurs de l'app ; seuil inchangé (« le slider est clancky pas fluide du tout ») |
+| D45, D56, D61 bis, D64 (plusieurs houblons sur un rail) | sans objet ; joués | pilote | tranchée : joués ; l'étape Houblons de la base v4.10, son choix (« Ça c'est le bon »), porte plusieurs houblons sur une frise verticale. Passe 2 de c1-rail (G13 à G18) |
 | Jouer un contrôle sur les écrans de l'autre mission | critère qui exige OK ; critère qui exige un verdict rendu | pilote | tranchée : un verdict rendu (`systeme.mjs verdict`) ; les échecs vont à la session de la maquette, qui possède ses écrans |
 
 ## Voies
@@ -61,3 +64,29 @@ Avant (23.10, ~15 h 15) : 5 h à 47 %, semaine à 58 %, Fable à 29 %. Plafond v
 - `prototypes/houblons-v4/parcours/src/ecrans/suggerer/jeu.mjs`
 
 ## Signature
+23.10, soir, pilote.
+
+**Voies** (`node scripts/agents/systeme.mjs voies work/missions/2026-10-23-controles-parcours`) : VOIES OK 2/2.
+- c1-rail (sonnet) : `controle-rail.mjs --parcours`, 23 plaintes classées (22 jouées, D28 sans objet), rail horizontal
+  et frise verticale à plusieurs houblons, 20 témoins ; ALL MET 19/19 rejoué par le pilote.
+- c2-intensite (sonnet) : `controle-usage-intensite.mjs --parcours` (U1 usage et source, I1 intensité contre le moteur
+  en direct), 11 témoins ; ALL MET 10/10.
+
+**Sur la maquette** : défauts transmis à la session de la maquette et corrigés par elle (D35, D46, D47 sur Dryhopper ;
+D55, le vide de la frise ; la source longue de l'usage). Construction d332792c : RAIL OK 2/2, publiée
+(https://claude.ai/artifact/52UBb4F7iME2k3ZzsAv4x1).
+
+**Décisions** (pilote) : D47, retirer les crans des autres segments ; D46, pouce continu et valeur accrochée ; D45,
+D56, D61 bis, D64 joués (frise verticale de son choix) ; jouer les écrans d'autrui par `systeme.mjs verdict`.
+
+**Ajouts au système** : `systeme.mjs verdict`, `systeme.mjs appels` (EXPECT `/…/` lu comme gate-check) ; le hook rappelle
+les appels d'un script de contrôle et les témoins après `portee-defauts.json` ; `portee-defauts.json` : 21 plaintes
+du rail à « garde ».
+
+**Ouvert**
+- D28 reste « à adapter » : sans objet dans la maquette.
+- G15 (D56) a échoué une fois sous la charge d'une autre mesure dans Chrome : sous un processeur occupé, le geste peut
+  ne pas atteindre la position.
+- Non détecté : « la piste de chaque houblon couvre toute la colonne » (le contrôle prend le repère, pas un doigt
+  entre deux repères).
+- D45 n'est joué que sur un rail à crans en bulle, pas sur des minutes en graduations.
