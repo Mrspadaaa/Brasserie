@@ -1,4 +1,4 @@
-OK — D55 frise compacte, D32 visée commune, fiche g1 reprise ; G1 à G25 verts
+ECHEC — G4 : 96 mots pour 80, fil d'étapes de l'app (D116) ; D111, D112, D113, D116, D121 verts
 
 ## Fichiers écrits (dans « Possède » seulement)
 - `prototypes/houblons-v4/parcours/src/ecrans/ma-biere/` : `index.tsx`, `Rail.tsx` (moment par 5′, loupe),
@@ -239,3 +239,205 @@ Prédiction : « Là le curseur glisse vraiment comme avant, avec le zoom sous l
   G24 CHOIX OK (fiche) ; G25 TEINTE OK 1/1 ; D98 UNE-QUESTION OK.
 
 Prédiction : « La fiche, on est bon, c'est la v1 ; et la frise ressemble enfin à la base. »
+
+## Reprise D108 (23.10, nuit) : la visée de sa base, telle quelle
+
+Ses mots, posés sur « Tropicaux prévu » : « Aussi aucun impact sur je met plus, moins bannir ect.. ». J'ai d'abord joué
+sa base v4.10 (`base/consolide/biere.html`) dans Chrome, sur Tropicaux. « + » donne faible (losange relié au point), « + »
+encore donne moyen ; « − » deux fois donne bannie, puis la ligne refermée montre le nom barré. Son code (`viserAbs`,
+`ligneFamille`, `.visee-f`, `.lien-visee`, `.fam.bannie`) est repris tel quel.
+
+### Fait
+- **Le type, en une seule étape, avec ses lecteurs** (TYPES OK pendant que p2 et p3 construisaient) :
+  - `etat/visee.ts` (nouveau, pur) : `Visee` = un palier par famille sur 0 à 3 (0 bannie, 0,5 faible, 1,5 moyen,
+    2,5 marqué) ; on y trouve aussi `monter`, `descendre`, `nomPalier`, `enPoints` (× 33,33), `DEMANDE_DEGUSTEE`
+    (+1 floral, −1 résineux) et `sensDe` ;
+  - `etat/types.ts` (`visee: Visee` ; action `visee/fixer` avec `valeur: number | null`) ;
+  - `reducteur.ts` : 0 est désormais une visée, seul null la retire. Au départ, aucune visée, comme sa base (`data-dirs`
+    vide), ce qui retire `VISEE_DEPART` ;
+  - `EtatParcours.tsx` (`fixerVisee(f, palier | null)`).
+- **Lecteurs** :
+  - `suggerer/voies.ts`, `objectifsDe` : l'écart entre ma bière et le palier, en crans entiers du style (un au
+    moins). Sans visée, c'est la demande dégustée. `Objectif` gagne `palier` et `bannie` ;
+  - `bannisDe` rend toujours `[]` : bannir n'exclut plus aucun houblon et devient un objectif « faire baisser »
+    (visée 0) ;
+  - la fiche lit `sensDe` (sa demande effective) ;
+  - `Coquille.tsx` est inchangé : ses appels gardent la même signature.
+- **Onglet Ma bière** (`biere/index.tsx`, `ma-biere/Base.tsx`, `ma-biere.css`) :
+  - sur la piste : un losange blanc cerné d'encre `[data-visee-marque][data-niveau]`, et un trait pointillé
+    `[data-visee-lien]` jusqu'au point `[data-biere-point]` ;
+  - « bannir · − · [palier] · + · × » : le mot entre les boutons est `[data-palier]`, et « × » n'apparaît que
+    lorsqu'une visée est posée ;
+  - une famille bannie porte `[data-bannie]`, son nom est barré et grisé, ligne refermée comprise ;
+  - les puces suivent les visées : pleine pour une visée posée, au trait pour la demande dégustée ;
+  - `pont-floral` et `data-element` sont gardés.
+- `biere/jeu.mjs` : 5 gestes de plus sur Tropicaux (repos sans losange, « + » faible relié, « + » moyen, puce
+  « + tropicaux », « × »), et bannir et « + » sur Floral au nouveau format (0, puis 0,5). `biere/NOTE.md` reçoit la
+  section « Reprise D108 » et ses écarts.
+
+### Critères (rejoués après la dernière construction, avec les fichiers de p2 et p3 en l'état)
+- G26 : `VISEE OK (6/6, tropical)`, avec `controle-visee.mjs` de p10. Avant qu'il n'existe, ma vérification locale
+  sur le même contrat donnait 6/6 à 390 et à 1280.
+- G28 et G2 : `TYPES OK`. G1 : `CONSTRUIT OK (9 pages)`.
+- G20 : `ETAPE OK (biere)`. G11 : `ETAPE OK (substituer)`.
+- G3, G19 et G10 : `COMMUN OK`. G10 a d'abord échoué sur S4 (une icône à 2,2 px : la croix `pq-croix-icone` de p2),
+  puis il est passé au rejeu.
+- G4 `MOTS OK` · G5 `MA-BIERE OK` · G6 `ALPHA OK` · G7 `FICHE OK 1/1` · G8 `FICHE-BASELINE OK` · G9 `SANS-FAMILLE OK`.
+- G13 `TOLERANCE OK` · G14 `APP INTACTE OK`.
+- G17 `REPRISE OK (7 repris)` · G18 `REPRISE OK (10 repris, 1 en pont)`.
+- G21, G22 et G24 : `CHOIX OK`. G23 `RAIL OK 1/1` · G25 `TEINTE OK 1/1`.
+- **G12 `PONTS ECHEC`** et **G27 `PARCOURS ECHEC (2)`**, au même geste : `abandon-fermer` / `abandon-retour`
+  (« cible introuvable : [data-ecran="comparer"] (route #/ma-biere) »). La fermeture de Dryhopper mène à
+  `#/ma-biere`, alors que les scripts attendent Comparer : c'est la croix de p2 (D118, `commun/Onglets.tsx` : « elle
+  ramène toujours à l'étape Houblons »).
+  - Hors de la visée : en instrumentant le geste, Comparer s'ouvre bien et Suggérer donne les mêmes proposés
+    qu'avant (Motueka, Idaho 7).
+  - Tous les gestes de la visée passent dans `parcours-complet` : bannir floral, « + » floral et le pont vers
+    Suggérer, avec les voies du moteur pour {floral : 1, résineux : −1}.
+  - À trancher entre p2 et p5 (scripts), voir plus bas.
+
+### Suggérer, avec « + » sur Tropicaux et les agrumes bannis
+- **Avant** (construction d332792c : exclusion V5.5, « + tropicaux » à 1 cran) : **1 voie sur 18** (Styrian Kolibri
+  seul), comme le constat de la supervision.
+- **Après** : **16 voies**, lues dans Chrome sur la page construite ; aucune carte « Bannie », aucune voie écartée.
+  - Les objectifs sont : Plus tropicaux (2 crans, de 0,5 point au palier faible), Plus floral (+1, demande
+    dégustée), Moins résineux (−1), Moins agrumes (−1, visée 0).
+  - Les voies : Ajouter à 10′ (Petoskey, Relax, Southern Passion, Styrian Kolibri, Motueka, Citra cryo, Galaxy,
+    Hallertau Blanc) ; Remplacer Nugget (Motueka, Citra cryo, Galaxy, Hallertau Blanc) ; Dry hop (Galaxy,
+    Hallertau Blanc, Sabro, Cascade).
+
+### Captures ouvertes et regardées (`prototypes/houblons-v4/maquettes/parcours-p1/captures-d108/`, hors git)
+- Sa base v4.10, jouée dans Chrome : `base-tropical-ouvert.png`, `base-tropical-plus.png`, `base-tropical-plus2.png`,
+  `base-tropical-moins.png`, `base-tropical-bannir.png`, `base-tropical-bannie-fermee.png`.
+- La maquette à 390 : `biere-repos-390.png`, `biere-plus-390.png`, `biere-plus2-390.png`, `biere-moins-390.png`,
+  `biere-bannir-ouverte-390.png`, `biere-bannir-390.png` (ligne refermée), `biere-tropical-plus-agrumes-bannis-390.png`
+  et `suggerer-tropical-plus-agrumes-bannis-390.png`.
+- La maquette à 1280 : `biere-repos-1280.png`, `biere-plus-1280.png`, `biere-plus2-1280.png`, `biere-moins-1280.png`,
+  `biere-bannir-1280.png`.
+- Côte à côte avec sa base v4.10 (`base-tropical-plus` contre `biere-plus-390` ; `base-tropical-bannie-fermee` contre
+  `biere-bannir-390`), on retrouve la même grammaire : losange blanc, trait pointillé, « faible » entre « − » et « + »,
+  « × », nom barré, puce pleine en bas. Deux différences, propres au moteur en direct :
+  - Tropicaux vaut ici 0,5 point (0,19 sur 3 dans sa base) : le losange à 0 de la famille bannie est caché sous le
+    point, et seuls le nom barré et la puce le disent ;
+  - « moyen » sur Tropicaux dépasse le haut du style (30 points) : le losange va dans la zone « au-dessus », ce qui est
+    exact.
+- Sa réaction prévue : « Là oui, je vois ma visée » ; il pourrait ajouter qu'« − » sur Tropicaux bannit d'un coup, ce
+  que sa base faisait déjà.
+
+### Écarts (déclarés dans `biere/NOTE.md`)
+- Le bouton du sens posé (+, − ou bannir) a l'encre pleine (`aria-pressed`), alors que la base n'en marquait aucun.
+- La puce suit le sens réel : la base écrivait « − tropicaux » après « + » (crans arrondis vers le bas), et ce défaut
+  n'est pas repris.
+- Sans visée, Suggérer emploie la demande dégustée (+1 floral, −1 résineux) : ce sont les puces « + floral · −
+  résineux » de sa base, au repos.
+
+DÉCISION À PRENDRE :
+- G12 et G27 : la croix D118 (p2) ferme Dryhopper vers l'étape Houblons, alors que `jouer-parcours.mjs --ponts` et
+  `parcours-complet.mjs` (geste 28, `abandon-fermer`) attendent un retour à Comparer. Il faut adapter les scripts
+  (p5/p0) ou le retour (p2/p11). Hors de mon contrat.
+- p2 doit reprendre `suggerer/jeu.mjs` : ses gestes lisent encore `etat.visee` en crans et `'banni'`.
+  - La direction de `proposer` se lit ainsi : pour chaque famille de `{floral: 1, resin: -1}` sans visée, ±1 ; pour une
+    visée `v`, `d = v × 33,33 − profil[f].valeur.centre`, puis `sign(d) × max(1, round(|d| / cran))`.
+  - Le geste « bannir l'épicé » doit poser `valeur: 0` et attendre un objectif « Moins épicé », plus de `[data-banni]`.
+  - La carte d'une visée 0 pourrait s'intituler « Sans agrumes » (`Objectif.bannie`) ; aujourd'hui elle dit « Moins
+    agrumes », et son bouton « Hors houblon » dit « pour le résineux ».
+  - Mêmes lectures dans `suggerer/outils/instantane.mjs` et dans la ligne `départ { floral: 1, …}` de sa NOTE.
+
+CONNAISSANCE : avec la visée en palier absolu, l'ensemble des voies de `proposeVoies` dépend de l'ampleur demandée.
+Pour {floral : 0,57 ; résineux : −1}, il manque 5 des 13 voies de {floral : 1 ; résineux : −1}. Lire la visée en
+crans entiers garde le parcours stable et rejoint l'unité de la base.
+
+LEÇON PROPOSÉE : aucune.
+
+## Reprise de l'étape (D111 à D113, D116, D121)
+
+J'ai d'abord ouvert sa base v4.10 (`consolide-390.png`, `consolide-nugget-35-pendant.png`), puis lu le geste de la base
+dans `consolide/index.html` (`ouvrirLoupe`, `disposerDock`, `.appui`, `@keyframes remplit`). Je n'ai touché ni
+`src/commun`, ni la fiche, ni Substituer (p17).
+
+### Fait (tout dans `prototypes/houblons-v4/parcours/src/ecrans/ma-biere/`)
+- **D111, le geste de sa base** (`Frise.tsx`, `ma-biere.css`) :
+  - doigt posé, la ligne tenue s'ouvre à 14 px par 5′ jusqu'à 0′, et les étapes d'après descendent d'autant ;
+  - la carte se replie en puce « Nugget » à côté de la bulle « 35′ » ;
+  - chaque cran est un trait sur la ligne du temps. Les minutes s'écrivent à droite du trait, à 22 px du doigt au
+    moins et 24 px entre deux, comme la base (« 50′ 40′ » au-dessus, « 30′ 20′ » au-dessous) ;
+  - aucune graduation ne sort de la tranche ouverte, ni ne s'écrit sur le repère d'un autre houblon ;
+  - rien ne se sélectionne (`user-select` et `-webkit-touch-callout` à `none`) ;
+  - hors du segment de départ (dry hop), la ligne se referme au pas du doigt et la carte revient : aucun houblon ne
+    saute (D61 bis), et la frise n'a pas de vide (D55).
+- **D112** (`Carte.tsx`) :
+  - le nom se remplit dès le doigt posé (500 ms, comme la base), puis la fiche g1 s'ouvre (gestes de la fiche
+    inchangés) ;
+  - **toute la carte** est non sélectionnable, selon la décision du pilote ; c'est noté en écart dans la NOTE.
+- **D113** (`LegendeGroupe.tsx`, neuf ; `Carte.tsx`, `Ajouter.tsx`) :
+  - un petit « ? » au coin de la carte, et un autre à côté de « Ajouter — houblon… » ; les familles gardent la
+    légende du socle ;
+  - chaque légende s'ouvre sous son groupe, dans le flux, et se referme par Échap ;
+  - elle nomme les 12 couleurs de la bande (dans son ordre), les traits sous les carrés, ⟳, − g +, ×,
+    « résine 2/4 », α et ≠, l'usage, le cube et l'inconnu hachuré ;
+  - les icônes restent.
+- **D116** (`index.tsx`) :
+  - `WizardStepName` et `WizardStepRail` sont importés tels quels de `src/ui/WizardStepBar.tsx` (alias `@app/`), et
+    posés comme BrewWizard ;
+  - au téléphone : le nom et « 3/7 » dans la rangée du titre, avec le thème et « Recommencer », puis le fil sur son
+    rang (`showLabels`, `compactLabels`, 7 étapes, Houblons la 3ᵉ) ;
+  - à l'ordinateur : le fil en `progress`, le titre « Modifier « Stout export » » ;
+  - le badge « 16D hypothèse » est retiré, et `src/` n'est pas modifié.
+- **D121** (`index.tsx`) : tout le bloc du profil (l'alerte, chaque famille) ouvre `#/biere` d'un toucher. Ses
+  commandes (« ? », « + floral », Au style / Absolu) gardent leur geste.
+  - **Variante retenue dans la version : A.** Le « › » noir de sa base garde sa place et dit où il mène :
+    « analyse › ». C'est la plus proche de sa base (même place, même pastille noire), enrichie d'un mot (L07), et
+    elle ne coûte aucune ligne.
+  - Les autres variantes, sur la planche `variantes-d121/planche.html` (captures à 390 et 1280) :
+    - **B** : une barre pleine sous les familles, « Ouvrir l'analyse de ma bière › » ;
+    - **C** : l'alerte elle-même est l'entrée, « Résineux trop marqué · détail › ».
+  - Le drapeau `?d121=b|c` sur `ma-biere/etat.html` les rejoue ; les trois ouvrent `#/biere` (vérifié dans Chrome à
+    390 et 1280).
+
+### Critères (dernière construction, avec les fichiers de p2, p3 et p17 en l'état ; G12 et G27 hors de la suite, à la demande du pilote)
+- G30 `GESTE-ETAPE OK` (carte de 36 px, 7 graduations, 0 chevauchement à 45′ et à 35′) · G31 `STEPPER OK 2/2 largeurs`.
+- G33 `APPUI-ETAPE OK` (retour à 3 ms, fiche à 504 ms ; `user-select` à none, touch-callout à none) ·
+  G34 `LEGENDE OK` (carte : 143 mots, 12/12 ; ajouts rapides : 98 mots, 12/12) · G35 `PROFIL OK`.
+- G23 `RAIL OK 1/1`. En plus, avec `--parcours` sur `cas-k3`, `cas-ebu45` et `cas-ebu120` : `RAIL OK` ×3 ; la
+  construction publiée d332792c échouait sur `cas-k3`.
+- G1 `CONSTRUIT OK` · G2 `TYPES OK` · G3, G10 et G19 `COMMUN OK` · G5 `MA-BIERE OK` · G6 `ALPHA OK` ·
+  G7 `FICHE OK 1/1` · G8 `FICHE-BASELINE OK` · G9 `SANS-FAMILLE OK` · G11 `ETAPE OK (substituer)` ·
+  G13 `TOLERANCE OK` · G14 `APP INTACTE OK` · G15 `NOTE OK` · G17 `REPRISE OK (7 repris)` · G18 `REPRISE OK` ·
+  G20 `ETAPE OK (biere)` · G21, G22 et G24 `CHOIX OK` · G25 `TEINTE OK 1/1` · G26 `VISEE OK (6/6, tropical)`.
+- **G4 `MOTS ECHEC` : 96 mots pour 80** ; la construction publiée en avait 80.
+  - L'écart vient du fil de l'app : ses 7 étiquettes, « 3/7 », et les 5 mots de l'annonce invisible de
+    `WizardStepName` (« Houblons — étape 3 sur 7 », sr-only, que le compteur mesure).
+  - Les deux nouveaux « ? » et « analyse » en ajoutent 3, et le profil remonte d'autant dans le premier écran.
+  - Sans l'en-tête de l'app, le contenu reste à 80. Voir la décision plus bas.
+
+### Captures ouvertes et regardées (`prototypes/houblons-v4/maquettes/parcours-p1/captures-etape/`, hors git)
+- Sa base v4.10 : `base-consolide-390.png`, `base-nugget-35-pendant.png`.
+- Captures à 390 et 1280 (suffixes `-390` et `-1280`) :
+  - `etape-repos` et `etape-repos-pleine` ;
+  - `etape-glisser-35` ;
+  - `etape-appui-250` (le nom rempli pendant l'appui) ;
+  - `etape-fiche` (`#/fiche/nugget`) ;
+  - `etape-legende-carte` ;
+  - `d121-a`, `d121-b`, `d121-c`.
+- Côte à côte avec sa base (`etape-glisser-35-390` et `base-nugget-35-pendant`), il retrouve son geste : bulle
+  « 35′ » noire, puce « Nugget », « 50′ 40′ » et « 30′ 20′ » lisibles, puis 0′, whirlpool, la levure,
+  fermentation et post-fermentation, sans rien de chevauché.
+  - Au-dessus, le fil de l'app remplace « 16D hypothèse ».
+  - Différence : l'IBU se recalcule pendant le geste (49), là où la base attend le lâcher.
+- À 1280, l'en-tête montre à la fois le titre de l'app (« Modifier « Stout export » », sous-titre « Houblons ») et
+  « Houblons 3/7 » à côté. C'est un peu redondant, mais `controle-stepper` exige le nom et la position dans l'en-tête
+  à cette largeur.
+- Sa réaction prévue : « Là c'est mon slider » ; sur l'en-tête : « enfin le vrai stepper ».
+
+DÉCISION À PRENDRE :
+- G4 (80 mots) et D116 se contredisent : le fil de l'app ajoute 12 mots visibles, plus 5 mots d'annonce pour lecteur
+  d'écran que le compteur prend pour du texte.
+  - Option A : compter le contenu sous l'en-tête de l'app, ce qui donne 80 ;
+  - Option B : relever le plafond de l'étape à 96 ;
+  - Option C : retirer `showLabels` au téléphone, ce qui s'écarte de BrewWizard.
+  - Recommandation : A ; et le compteur devrait ignorer `.sr-only`.
+- Planche D121 (A, B, C) à lui montrer à côté de la version.
+
+CONNAISSANCE : le texte d'un élément `sr-only` (rogné à 1 px) se mesure à pleine largeur par `Range.getBoundingClientRect`. Les contrôles de chevauchement (D56) et de mots le prennent pour du texte visible. Mettre sa police à 1 px suffit pour D56, sans rien retirer aux lecteurs d'écran.
+
+LEÇON PROPOSÉE : un patch passé par `node -e "…"` dans Bash perd chaque gabarit `${…}` et chaque accent grave (substitution du shell), 4 fois dans cette voie : écrire ces patchs avec Edit, ou dans un fichier `.mjs` sous heredoc à guillemets simples.

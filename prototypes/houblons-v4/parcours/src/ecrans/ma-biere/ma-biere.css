@@ -41,7 +41,13 @@
 .pq-biere-ouverte { background: rgb(var(--cave-800) / 0.45); }
 
 /* Graduations du segment sous le doigt, pendant le geste seulement (D47). */
-.pq-ma-biere-graduation { background: rgb(var(--cave-950)); pointer-events: none; }
+/* D111, le geste de la base v4.10 : chaque cran un trait sur la ligne du temps, certaines minutes écrites à droite du
+   trait ; la carte tenue repliée en puce à côté de la bulle ; rien ne se sélectionne pendant le geste. */
+.pq-ma-biere-graduation { width: 12px; height: 2px; border-radius: 1px; background: rgb(var(--cave-400)); pointer-events: none; }
+.pq-ma-biere-graduation[data-ecrit] { width: 16px; background: rgb(var(--cave-50)); }
+.pq-ma-biere-graduation-mot { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); line-height: 14px; color: rgb(var(--cave-texte-50)); }
+.pq-ma-biere-puce { left: calc(100% + 8px); background: rgb(var(--cave-950)); color: rgb(var(--cave-texte-50)); box-shadow: 0 0 0 1px rgb(var(--cave-700)), 0 6px 16px -6px rgb(0 0 0 / 0.25); }
+.pq-ma-biere-piste, .pq-ma-biere-frise[data-geste], .pq-ma-biere-frise[data-geste] * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 
 /* La piste verticale du repère (le rail du contrôle) : transparente, sur la ligne du temps ; le doigt y glisse. */
 .pq-ma-biere-piste { touch-action: none; cursor: grab; }
@@ -52,3 +58,37 @@
 
 /* Onglet Ma bière : les onglets du socle, à une encre lisible sur leur fond gris (contraste 4,5:1, D86). */
 .pq-outil-biere [data-role="onglets"] [role="tab"][aria-selected="false"] { color: rgb(var(--cave-200)); }
+
+/* La visée de la base v4.10 sur la piste (D108 ; biere.html, .visee-f et .lien-visee) : un losange blanc cerné d'encre à
+   son palier, relié au point de ma bière par un trait pointillé. Le point reste dessus. */
+.pq-ma-biere-visee { width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; transform: rotate(45deg); border: 2px solid rgb(var(--cave-50)); background: rgb(var(--cave-950)); }
+.pq-ma-biere-lien { height: 0; border-top: 1.5px dashed rgb(var(--cave-50)); }
+/* Onglet Ma bière (préfixe pq-biere-) : le bouton du sens posé à l'encre ; la puce d'une visée posée, pleine (la puce
+   noire de la base). */
+.pq-biere-sens { border: 2px solid rgb(var(--cave-50)); color: rgb(var(--cave-50)); font-weight: 700; }
+.pq-biere-puce-posee { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); border-color: rgb(var(--cave-50)); }
+/* Hors du segment de départ (dry hop, whirlpool), la minute s'écrit sur son trait, sur la ligne du temps : elle ne touche
+   pas les cartes posées à droite. */
+.pq-ma-biere-graduation[data-hors-tranche] .pq-ma-biere-graduation-mot { left: 50%; transform: translate(-50%, -50%); padding: 0 3px; border-radius: 3px; background: rgb(var(--cave-950)); }
+
+/* D112 : la carte entière ne se sélectionne pas et n'ouvre pas le menu du système (iPhone) ; pendant l'appui, le nom se
+   remplit en 500 ms, comme la base (.appui, @keyframes remplit). */
+.pq-ma-biere-sans-selection, .pq-ma-biere-sans-selection * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.pq-ma-biere-appui { background: linear-gradient(rgb(var(--cave-700)), rgb(var(--cave-700))) no-repeat left center / 0% 100%; border-radius: 4px; animation: pq-ma-biere-remplit 500ms linear forwards; }
+@keyframes pq-ma-biere-remplit { to { background-size: 100% 100%; } }
+@media (prefers-reduced-motion: reduce) { .pq-ma-biere-appui { animation: none; background-size: 100% 100%; } }
+
+/* D113 : le « ? » d'un groupe d'icônes, petit, au coin du groupe ; sa légende s'ouvre dans le flux, sous le groupe. */
+.pq-ma-biere-legende-bouton > span { display: inline-flex; align-items: center; justify-content: center; width: 1.75rem; height: 1.75rem; border-radius: 9999px; border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-850)); font-weight: 600; font-size: .875rem; color: rgb(var(--cave-texte-200)); }
+.pq-ma-biere-legende-bouton[aria-expanded='true'] > span { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); border-color: rgb(var(--cave-50)); }
+.pq-ma-biere-legende { background: rgb(var(--cave-950)); border: 1px solid rgb(var(--cave-700)); }
+
+/* D121 : le bloc du profil s'ouvre d'un toucher ; il se fonce sous le doigt. L'entrée dit où elle mène (« analyse »). */
+.pq-ma-biere-profil { border-top: 1px solid rgb(var(--cave-700)); padding: .5rem .25rem .375rem; margin: 0 -.25rem; border-radius: 0 0 .75rem .75rem; cursor: pointer; transition: background-color 120ms; -webkit-tap-highlight-color: transparent; }
+.pq-ma-biere-profil:active { background: rgb(var(--cave-800) / 0.45); }
+.pq-ma-biere-pont-analyse { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
+.pq-ma-biere-profil-mot { font-size: .875rem; font-weight: 600; color: rgb(var(--cave-texte-200)); }
+
+/* D116 : l'annonce de WizardStepName (« Houblons — étape 3 sur 7 », sr-only, pour les lecteurs d'écran) garde son texte,
+   à 1 px : sans cela ses glyphes, rognés mais mesurés pleine largeur, passent pour un texte posé sur le nom de l'étape. */
+.pq-ma-biere-tete .sr-only, .pq-recette .page-title-actions .sr-only { font-size: 1px; line-height: 1px; }

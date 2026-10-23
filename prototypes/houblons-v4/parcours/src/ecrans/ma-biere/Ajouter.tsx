@@ -15,6 +15,7 @@ import { houblon, ibuAjout, style } from '../../moteur';
 import { STOCK } from '../../../../src/engine';
 import { AlphaLu, Usage } from '../fiche/briques';
 import { useGestesFiche } from '../fiche/gestes';
+import { BoutonLegende, CleFamilles, PanneauLegende, useLegende } from './LegendeGroupe';
 
 const DOSE = 10, MINUTES = 10;
 const AIMES = new Set<string>();
@@ -25,6 +26,7 @@ export function Ajouter({ recette, onGeste }: { recette: RecetteParcours; onGest
   const { route } = useNavigation();
   const fiche = useGestesFiche((cle) => { if (route.ecran !== 'fiche') ouvrir({ ecran: 'fiche', houblon: cle }); });
   const [cherche, setCherche] = useState('');
+  const [legende, basculerLegende] = useLegende();
   const [, maj] = useState(0);
   const sc = style(recette.styleCode);
   const liste = useMemo(() => {
@@ -43,9 +45,12 @@ export function Ajouter({ recette, onGeste }: { recette: RecetteParcours; onGest
   }, [recette, cherche]);
   return (
     <section data-element="etape-ajouter" aria-label="Ajouter un houblon" className="space-y-1.5">
-      <input type="text" inputMode="search" value={cherche} onChange={(e) => setCherche(e.target.value)} placeholder="Ajouter — houblon…"
-        aria-label="Ajouter un houblon : chercher dans le stock"
-        className="w-full h-11 px-4 rounded-full border border-cave-700 bg-cave-900 text-base text-cave-50 placeholder:text-cave-400" />
+      <div className="flex items-center gap-1">
+        <input type="text" inputMode="search" value={cherche} onChange={(e) => setCherche(e.target.value)} placeholder="Ajouter — houblon…"
+          aria-label="Ajouter un houblon : chercher dans le stock"
+          className="flex-1 min-w-0 h-11 px-4 rounded-full border border-cave-700 bg-cave-900 text-base text-cave-50 placeholder:text-cave-400" />
+        {liste.length > 0 && <BoutonLegende ouverte={legende} onBasculer={basculerLegende} groupe="les icônes des ajouts rapides" controle="pq-ma-biere-legende-rapides" />}
+      </div>
       <ul className="space-y-1.5">
         {liste.map(({ h, ajout, ibu }) => (
           <li key={h.cle} data-role="ajout-rapide" {...fiche.appui(h.cle)}
@@ -81,6 +86,13 @@ export function Ajouter({ recette, onGeste }: { recette: RecetteParcours; onGest
         ))}
         {!liste.length && <li className="px-2 text-sm text-cave-400">aucun houblon du stock à ce nom</li>}
       </ul>
+      <PanneauLegende id="pq-ma-biere-legende-rapides" ouverte={legende && liste.length > 0}>
+        <p><b>Ajouts rapides</b> : deux houblons du stock qui portent le plus le floral, prêts à poser à {MINUTES}′.</p>
+        <p><b>+</b> : ajouter {DOSE} g à {MINUTES}′ ; <b>+n IBU</b> : ce qu'il ajoute à ma bière. <b>{MINUTES}′ en pointillé</b> : le moment proposé, réglable ensuite sur la frise. <b>♡</b> : le garder en tête.</p>
+        <p><b>Bande</b> : les 12 familles d'arômes du houblon ; vive, marquée ; pâle, citée ; grise, non décrite.</p>
+        <CleFamilles ordre={sc.order} />
+        <p><b>α</b> : l'acide alpha ; le mot suivant, l'usage (amer, aromatique, mixte).</p>
+      </PanneauLegende>
     </section>
   );
 }

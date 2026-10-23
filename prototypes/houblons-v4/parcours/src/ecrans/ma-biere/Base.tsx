@@ -70,8 +70,9 @@ export function positions(x: FamilleLue, echelle: Echelle) {
 }
 const pc = (v: number) => `${Math.max(0, Math.min(100, v)).toFixed(1)}%`;
 
-/** La barre de famille de la base : piste, zone du style, zone « au-dessus » en pointillé, point. */
-export function PisteBase({ x, avant, echelle, fine = false }: { x: FamilleLue; avant?: FamilleLue | null; echelle: Echelle; fine?: boolean }) {
+/** La barre de famille de la base : piste, zone du style, zone « au-dessus » en pointillé, point. `visee` : ma visée, en
+ * points (palier × 33,33), posée sur la piste comme la base (losange blanc relié au point par un trait pointillé, D108). */
+export function PisteBase({ x, avant, echelle, fine = false, visee = null }: { x: FamilleLue; avant?: FamilleLue | null; echelle: Echelle; fine?: boolean; visee?: number | null }) {
   const f = x.famille;
   const { pos, zone, dessus } = positions(x, echelle);
   const inconnu = !x.valeur;
@@ -87,8 +88,16 @@ export function PisteBase({ x, avant, echelle, fine = false }: { x: FamilleLue; 
       {avant?.valeur && x.valeur && Math.abs(avant.valeur.centre - x.valeur.centre) >= 0.5 && (
         <i data-role="avant" className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-cave-400" style={{ left: pc(pos(avant.valeur.centre)) }} />
       )}
+      {visee != null && x.valeur && (() => {
+        const a = pos(x.valeur.centre), b = pos(visee);
+        return <i data-visee-lien="" aria-hidden="true" className="pq-ma-biere-lien absolute top-1/2" style={{ left: pc(Math.min(a, b)), width: `${Math.abs(Math.max(0, Math.min(100, b)) - Math.max(0, Math.min(100, a))).toFixed(1)}%` }} />;
+      })()}
+      {visee != null && (
+        <i data-visee-marque="" data-niveau={String(Math.round((visee / (100 / 3)) * 10) / 10)} aria-hidden="true"
+          className="pq-ma-biere-visee absolute top-1/2" style={{ left: pc(pos(visee)) }} />
+      )}
       {x.valeur && (
-        <i data-role="point" data-source={deguste ? 'dégustation' : 'simulé'}
+        <i data-role="point" data-biere-point="" data-source={deguste ? 'dégustation' : 'simulé'}
           className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full ${fine ? 'w-3.5 h-3.5' : 'w-4 h-4'} ${hors ? 'border-0' : deguste ? 'border-0 bg-cave-50' : 'border-[3px] border-cave-50 bg-cave-900'}`}
           style={{ left: pc(pos(x.valeur.centre)), ...(hors ? { background: '#c2410c' } : !deguste ? { borderColor: COULEURS[f].texte } : {}) }} />
       )}
@@ -97,12 +106,12 @@ export function PisteBase({ x, avant, echelle, fine = false }: { x: FamilleLue; 
 }
 
 /** Nom de la famille, au trait de la page : picto, gras si le style l'attend, rouge si hors du style. */
-export function NomFamille({ x, petit = false }: { x: FamilleLue; petit?: boolean }) {
+export function NomFamille({ x, petit = false, bannie = false }: { x: FamilleLue; petit?: boolean; bannie?: boolean }) {
   const hors = x.horsStyle === 'au-dessus';
   return (
     <span className={`flex items-center gap-1 min-w-0 ${petit ? 'text-sm' : 'text-base'}`}>
       <Picto famille={x.famille} taille={petit ? 13 : 15} />
-      <span className={`truncate ${hors ? 'text-alert' : x.statut === 'attendue' ? 'font-semibold text-cave-50' : 'text-cave-200'}`}>{COURT[x.famille]}</span>
+      <span data-role="nom-famille" className={`truncate ${bannie ? 'line-through text-cave-400' : hors ? 'text-alert' : x.statut === 'attendue' ? 'font-semibold text-cave-50' : 'text-cave-200'}`}>{COURT[x.famille]}</span>
     </span>
   );
 }

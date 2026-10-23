@@ -17,6 +17,10 @@ const pageFile = (args.find((a) => a.startsWith('--page=')) || '--page=index.htm
 // de houblons et de levures ; restent les mots qui expliquent. La règle des 70 mots sur ce compte a
 // empêché l5e de couper des mots utiles (icônes muettes, D90) tout en laissant passer les explications.
 const sansDonnees = args.includes('--sans-donnees');
+// --sans-coquille (24.10, D116) : ne compte pas l'en-tête de l'app (le <header> de PageShell : fil d'étapes, onglets,
+// croix), qui est son cadre et non le contenu de l'écran ; le brasseur a demandé « le vrai Stepper de la vrai app ».
+// Dans tous les cas, un texte réservé aux lecteurs d'écran (sr-only, boîte de 1 px ou moins) n'est pas lu.
+const sansCoquille = args.includes('--sans-coquille');
 const rest = args.filter((a) => !a.startsWith('--'));
 const dir = path.resolve(rest[0] || '.');
 const only = rest.slice(1);
@@ -32,7 +36,7 @@ for (const id of ids) {
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
   await page.goto(pathToFileURL(path.join(dir, id, pageFile)).href, { waitUntil: 'networkidle0', timeout: 30000 });
   await new Promise((r) => setTimeout(r, 300));
-  const n = await page.evaluate((sansDonnees) => {
+  const n = await page.evaluate((sansDonnees, sansCoquille) => {
     const H = innerHeight;
     const DONNEE = /^(floral|herbacé|terreux|agrumes|tropicaux|tropical|noyau|pépins|baies|melon|résineux|épicé|végétal|citra|cascade|galaxy|idaho|motueka|nelson|sauvin|cryo|nugget|aurum|celeia|columbus|hallertau|blanc|east|kent|goldings|us-05|verdant|pomona|diamond|lalbrew|g\/l|g|ml\/100|%|ibu|ebc|j|h|°c|crans?|α|[≈~±×+−–\-=<>≤≥]+)$/i;
     const estDonnee = (w) => DONNEE.test(w) || /^[~≈±×+−–\-]?\d+([,.]\d+)?([–\-]\d+([,.]\d+)?)?[%′″]?$/.test(w) || /^\d+([,.]\d+)?(g|j|h|%|′)$/.test(w) || /^[\d,.\s–\-×%′+−~≈]+$/.test(w);
@@ -45,6 +49,9 @@ for (const id of ids) {
       const el = node.parentElement;
       const cs = getComputedStyle(el);
       if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) === 0) continue;
+      const boite = el.getBoundingClientRect();
+      if (boite.width <= 1 && boite.height <= 1) continue;
+      if (sansCoquille && el.closest('[data-page-shell] header')) continue;
       range.selectNodeContents(node);
       const r = range.getBoundingClientRect();
       if (r.width === 0 || r.height === 0 || r.bottom <= 0 || r.top >= H) continue;
@@ -53,7 +60,7 @@ for (const id of ids) {
     }
     // Textes SVG dessinés aussi comptés par le parcours ci-dessus (nœuds texte).
     return words;
-  }, sansDonnees);
+  }, sansDonnees, sansCoquille);
   await page.close();
   const bad = max && n > max;
   if (bad) over++;

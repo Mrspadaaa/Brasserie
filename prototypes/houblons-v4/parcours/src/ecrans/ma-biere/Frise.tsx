@@ -13,7 +13,7 @@ import { useOuvrir } from '../../coquille/ouvrir';
 import { useGestes } from '../../etat/EtatParcours';
 import { quandDe } from '../../etat/operations';
 import type { AjoutParcours, Quand, RecetteParcours } from '../../etat/types';
-import { cransFrise, type BiereLue } from '../../moteur';
+import { cransFrise, houblon, type BiereLue } from '../../moteur';
 import { Carte } from './Carte';
 import { nomLevureBase } from './Base';
 
@@ -34,7 +34,7 @@ const loupe = (d: number) => Math.sign(d) * (Math.abs(d) <= 1 ? 48 * Math.abs(d)
 /** Le repère du moment (« 60′ ») : la poignée de l'ajout sur la ligne de la frise (role=slider, vertical). Le doigt la
  * prend et la glisse : elle suit le doigt en continu (D46), la valeur avance d'un cran par min(14 px, hauteur de la
  * zone qui défile ÷ crans) de doigt (D69) et s'accroche au cran ; la frise garde sa place jusqu'au lâcher (D68). */
-function Repere({ a, recette, onGeste, onGel }: { a: AjoutParcours; recette: RecetteParcours; onGeste: () => void; onGel: (actif: boolean) => void }) {
+function Repere({ a, recette, onGeste, onGel }: { a: AjoutParcours; recette: RecetteParcours; onGeste: () => void; onGel: (hauteur: number | null) => void }) {
   const gestes = useGestes();
   const crans = cransFrise(recette);
   const n = crans.length;
@@ -43,21 +43,41 @@ function Repere({ a, recette, onGeste, onGel }: { a: AjoutParcours; recette: Rec
   const exact = crans.findIndex((x) => meme(x, q));
   const i = exact >= 0 ? exact : q.type === 'ebullition' ? crans.reduce((m, x, k) => (x.type === 'ebullition' && Math.abs(x.minutes - q.minutes) < Math.abs((crans[m] as { minutes: number }).minutes - q.minutes) ? k : m), 0) : 0;
   const ref = useRef<HTMLSpanElement>(null);
-  const [geste, setGeste] = useState<{ y0: number; k0: number; dy: number; k: number; pas: number; h0: number; h1: number; c0: number } | null>(null);
+  // rTop, rBas : la tranche de la frise ouverte pour le geste (la ligne tenue, agrandie à l'échelle de son segment) ;
+  // les graduations n'en sortent pas, pour ne jamais toucher une étape de la frise (D111).
+  const [geste, setGeste] = useState<{ y0: number; k0: number; dy: number; k: number; pas: number; h0: number; h1: number; c0: number; rTop: number; rBas: number; haut: number; repos: number; hc: number; prec: number } | null>(null);
   const zone = () => {
     const z = ref.current?.closest('main')?.getBoundingClientRect();
     return { h0: Math.max(0, z?.top ?? 0) + 6, h1: Math.min(window.innerHeight, z?.bottom ?? window.innerHeight) - 6 };
   };
   const viser = (k: number) => { if (!meme(crans[k], quandDe(a, recette))) { onGeste(); gestes.moment('recette', a.id, crans[k]); } };
-  const fin = () => { setGeste(null); onGel(false); };
+  const fin = () => { setGeste(null); onGel(null); };
   const kVu = geste ? geste.k : i;
   const seg = segment(crans[kVu]);
-  // Graduations du segment sous le doigt, dans la zone qui défile (rien sous l'en-tête de la page).
+  // La tranche ouverte ne vaut que dans le segment de départ : ailleurs, la carte reprend sa place (sans puce), et les
+  // graduations suivent le doigt sur toute la frise, comme avant D111.
+  const ouvert = !!geste && seg === segment(crans[geste.k0]);
+  // Graduations du segment sous le doigt, dans la zone qui défile (rien sous l'en-tête de la page) et dans la tranche
+  // ouverte de la frise (aucune sur une étape : « 0′ », whirlpool, levure).
   const voisins = geste ? crans.map((_, k) => k).filter((k) => {
-    if (segment(crans[k]) !== seg || Math.abs(k - kVu) > 6) return false;
+    if (segment(crans[k]) !== seg) return false;
     const y = geste.c0 + geste.dy + loupe(k - kVu);
-    return y > geste.h0 + 8 && y < geste.h1 - 8;
+    return y > geste.h0 + 8 && y < geste.h1 - 8 && (!ouvert || (y > geste.rTop + 4 && y < geste.rBas - 4));
   }) : [];
+  // Les minutes écrites, comme la base : à 22 px du doigt au moins, et 24 px entre deux, en partant du doigt ; les
+  // autres crans ne sont qu'un trait.
+  // Une minute ne s'écrit pas sur le repère d'un autre houblon posé sur la ligne (D35, plusieurs houblons).
+  const autres = geste ? [...(ref.current?.closest('[data-role="frise"]')?.querySelectorAll('[data-role="glisser-moment"]') ?? [])]
+    .filter((x) => x !== ref.current).map((x) => { const b = x.getBoundingClientRect(); return [b.top - 8, b.bottom + 8]; }) : [];
+  const ecrits = new Set<number>();
+  for (const sens of [1, -1]) {
+    let dernier = 0;
+    for (const k of voisins.filter((x) => Math.sign(x - kVu) === sens).sort((x, y) => Math.abs(x - kVu) - Math.abs(y - kVu))) {
+      const o = Math.abs(loupe(k - kVu));
+      const y = geste!.c0 + geste!.dy + loupe(k - kVu);
+      if (o >= 22 && o - dernier >= 24 && !autres.some(([t, b]) => y > t && y < b)) { ecrits.add(k); dernier = o; }
+    }
+  }
   return (
     <span className="relative block w-[3.25rem] h-9">
       <span ref={ref} data-role="glisser-moment" data-houblon={a.hopKey} data-ajout-repere={a.id} role="slider" tabIndex={0} aria-orientation="vertical"
@@ -71,11 +91,17 @@ function Repere({ a, recette, onGeste, onGel }: { a: AjoutParcours; recette: Rec
           try { ref.current!.setPointerCapture(e.pointerId); } catch { /* pointeur synthétique */ }
           const { h0, h1 } = zone();
           const r = ref.current!.getBoundingClientRect();
-          onGel(true);
           // Le pas tient la course dans l'écran : d'ici au haut pour les crans d'avant, d'ici au bas pour ceux d'après (D69).
           const c0 = r.top + r.height / 2, H = window.innerHeight;
           const pas = Math.max(4, Math.min(PX_CRAN, i > 0 ? (c0 - 12) / i : Infinity, n - 1 - i > 0 ? (H - 12 - c0) / (n - 1 - i) : Infinity));
-          setGeste({ y0: e.clientY, k0: i, dy: 0, k: i, pas, h0, h1, c0 });
+          // La frise s'ouvre autour du doigt (base v4.10, D111) : la ligne tenue prend la hauteur des crans de son segment
+          // qui la suivent, la carte se replie en puce ; les étapes d'après descendent d'autant.
+          const ligneFrise = ref.current!.closest('.pq-ma-biere-ligne-frise')?.getBoundingClientRect();
+          const apres = crans.slice(i + 1).filter((x) => segment(x) === segment(crans[i] ?? q)).length;
+          const haut = Math.max(ligneFrise?.height ?? 0, apres * pas + 24);
+          const rTop = ligneFrise?.top ?? r.top;
+          onGel(haut);
+          setGeste({ y0: e.clientY, k0: i, dy: 0, k: i, pas, h0, h1, c0, rTop, rBas: rTop + haut, haut, repos: ligneFrise?.height ?? 0, hc: haut, prec: 0 });
         }}
         onPointerMove={(e) => {
           if (!geste) return;
@@ -83,7 +109,14 @@ function Repere({ a, recette, onGeste, onGel }: { a: AjoutParcours; recette: Rec
           // Le repère suit le doigt sans sortir de la zone qui défile.
           const dy = Math.max(geste.h0 + 18 - geste.c0, Math.min(geste.h1 - 18 - geste.c0, brut));
           const k = Math.max(0, Math.min(n - 1, geste.k0 + Math.round(brut / geste.pas)));
-          setGeste({ ...geste, dy, k });
+          // Hors du segment de départ, la ligne ouverte se referme vers sa hauteur de repos, au plus deux fois plus vite que le doigt
+          // avance (aucun houblon ne saute d'un bond, D61 bis ; pas de vide dans la frise, D55) ; elle se rouvre au retour.
+          const dans = segment(crans[k]) === segment(crans[geste.k0]);
+          const vise = dans ? geste.haut : Math.min(geste.haut, geste.repos);
+          const pasH = 2 * Math.abs(brut - geste.prec);
+          const hc = geste.hc < vise ? Math.min(vise, geste.hc + pasH) : Math.max(vise, geste.hc - pasH);
+          setGeste({ ...geste, dy, k, hc, prec: brut });
+          if (hc !== geste.hc || dans !== (segment(crans[geste.k]) === segment(crans[geste.k0]))) onGel(dans ? hc : -hc);
           if (k !== geste.k) viser(k);
         }}
         onPointerUp={fin}
@@ -97,10 +130,19 @@ function Repere({ a, recette, onGeste, onGel }: { a: AjoutParcours; recette: Rec
           if (k !== i) { onGeste(); gestes.moment('recette', a.id, crans[k]); }
         }}>
         <span data-role="moment-pouce">{etiquette(crans[kVu] ?? q)}</span>
+        {/* La carte tenue, repliée en puce à côté de la bulle (base v4.10 : « Nugget » près de « 35′ »). */}
+        {ouvert && (
+          <span data-role="ligne-houblon" data-puce-tenue="" aria-hidden="true"
+            className="pq-ma-biere-puce absolute top-1/2 -translate-y-1/2 inline-flex items-center h-9 px-3.5 rounded-full font-sans text-base font-semibold whitespace-nowrap">
+            <span className="underline decoration-dotted decoration-cave-600 underline-offset-4">{houblon(a.hopKey).nom}</span>
+          </span>
+        )}
         {voisins.map((k) => (
-          <span key={k} aria-hidden="true" data-cran={k}
-            className={`pq-ma-biere-graduation ${k === kVu ? 'w-2 h-3 -z-10' : ''} absolute left-1/2 -translate-x-1/2 -translate-y-1/2 px-1 rounded font-mono text-[10px] leading-[12px] font-normal text-cave-400 whitespace-nowrap`}
-            style={{ top: `calc(50% + ${loupe(k - kVu)}px)` }}>{k === kVu ? null : etiquette(crans[k])}</span>
+          <span key={k} aria-hidden="true" data-cran={k} {...(ecrits.has(k) ? { 'data-ecrit': '' } : {})} {...(ouvert ? {} : { 'data-hors-tranche': '' })}
+            className={`pq-ma-biere-graduation absolute left-1/2 -translate-x-1/2 -translate-y-1/2 ${k === kVu ? '-z-10' : ''}`}
+            style={{ top: `calc(50% + ${loupe(k - kVu)}px)` }}>
+            {ecrits.has(k) && <span className="pq-ma-biere-graduation-mot font-mono text-xs font-semibold whitespace-nowrap">{etiquette(crans[k])}</span>}
+          </span>
         ))}
       </span>
     </span>
@@ -125,6 +167,8 @@ export function Frise({ recette, biere, reperes, onGeste }: {
   const ouvrir = useOuvrir();
   // Pendant un geste, la frise garde la place d'avant (la piste ne bouge pas, D68) ; les valeurs restent en direct.
   const [gel, setGel] = useState<RecetteParcours | null>(null);
+  // L'ajout tenu et la hauteur de sa ligne ouverte pendant le geste (D111).
+  const [tenu, setTenu] = useState<{ id: string; haut: number } | null>(null);
   const place = gel ?? recette;
   const avecQuand = recette.additions.map((a) => ({ a, q: quandDe(place.additions.find((x) => x.id === a.id) ?? a, place) }));
   const minutesDe = (q: Quand) => (q.type === 'ebullition' ? q.minutes : recette.boilMin);
@@ -138,12 +182,18 @@ export function Frise({ recette, biere, reperes, onGeste }: {
   const pxMinute = 1;
   // Une seule liste à clés stables : un ajout qui change de segment est déplacé, pas remonté (le geste continue).
   // La carte vient d'abord dans le document (le nom avant la poignée), la poignée s'affiche à gauche.
-  const ligne = ({ a }: { a: AjoutParcours }) => (
-    <div key={a.id} className="pq-ma-biere-ligne-frise flex items-start gap-3">
-      <div className="flex-1 min-w-0 order-2"><Carte a={a} recette={recette} biere={biere} repere={reperes[a.id] ?? null} onGeste={onGeste} /></div>
-      <span className="w-[3.25rem] flex justify-center shrink-0 pt-1.5 order-1"><Repere a={a} recette={recette} onGeste={onGeste} onGel={(v) => setGel(v ? recette : null)} /></span>
-    </div>
-  );
+  const ligne = ({ a }: { a: AjoutParcours }) => {
+    // haut < 0 : le doigt a quitté le segment de départ ; la carte revient, la ligne se referme au pas du doigt.
+    const t = tenu?.id === a.id;
+    const replie = t && tenu.haut > 0;
+    return (
+      <div key={a.id} className="pq-ma-biere-ligne-frise flex items-start gap-3" style={t ? { minHeight: Math.abs(tenu.haut) } : undefined}>
+        <div className={`flex-1 min-w-0 order-2 ${replie ? 'invisible' : ''}`}><Carte a={a} recette={recette} biere={biere} repere={reperes[a.id] ?? null} onGeste={onGeste} /></div>
+        <span className="w-[3.25rem] flex justify-center shrink-0 pt-1.5 order-1"><Repere a={a} recette={recette} onGeste={onGeste}
+          onGel={(h) => { if (h == null) { setGel(null); setTenu(null); } else { setGel((g) => g ?? recette); setTenu({ id: a.id, haut: h }); } }} /></span>
+      </div>
+    );
+  };
   const ecart = (cle: string, h: number) => (h >= 2 ? <div key={cle} aria-hidden="true" style={{ height: h }} className="pq-ma-biere-ligne-frise" /> : null);
   const lignes: React.ReactNode[] = [<Noeud key="n-eb" nom={<>Ébullition <b className="font-mono text-cave-50">{recette.boilMin}′</b></>} />];
   let minutes = recette.boilMin;
@@ -172,7 +222,7 @@ export function Frise({ recette, biere, reperes, onGeste }: {
     <Noeud key="n-post" nom="post-fermentation" petit={!apres.length} />, ...apres.map(ligne),
   );
   return (
-    <div data-role="frise" data-acquis="frise" aria-orientation="vertical" data-element="etape-frise" className="pq-ma-biere-frise relative space-y-1">
+    <div data-role="frise" data-acquis="frise" aria-orientation="vertical" data-element="etape-frise" {...(tenu ? { 'data-geste': '' } : {})} className="pq-ma-biere-frise relative space-y-1">
       {lignes}
     </div>
   );

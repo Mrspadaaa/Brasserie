@@ -19,8 +19,8 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
   EXPECT: COMMUN OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=3112bd8347e34aa63925da680c1fbd368cf3e97d966b6d86162cdda91c49e2c9; exit=0; EXPECT=matched; output-sha256=17c208fcc8bcaece23f4c60d9cb18741b72129c670bc157e4fe6eff6b3b9ac33; output-bytes=191; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [x] G4: 80 mots au plus au premier écran
-  CHECK: node work/refonte-frontend/v4/tournoi/outils/mots-premier-ecran.mjs prototypes/houblons-v4/maquettes/parcours-p1 ma-biere --max=80 --page=etat.html
+- [x] G4: 80 mots au plus au premier écran, hors en-tête de l'app (son fil d'étapes, D116)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/mots-premier-ecran.mjs prototypes/houblons-v4/maquettes/parcours-p1 ma-biere --max=80 --page=etat.html --sans-coquille
   EXPECT: MOTS OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=e9447a8e339ac1694f11949de7ed1296d34ca361e5e9385ad9d5a64f7955063f; exit=0; EXPECT=matched; output-sha256=6d489ea8cb6e9b6485c5b59d56fd9e588b08167a6148c5a7002cba9430a670f4; output-bytes=25; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 

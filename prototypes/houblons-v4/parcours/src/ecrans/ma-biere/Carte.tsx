@@ -3,7 +3,7 @@
 // (« résine 2/4 »), IBU de l'ajout recalculé en direct ; bande des 12 familles en couleur, avec, sous chaque
 // famille que l'ajout fait bouger d'au moins 0,5 point, un trait de son intensité en crans du style (D80).
 // Toucher court : Dryhopper (carte des outils) ; « Je n'ai pas Nugget » : Substituer.
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Minus, Plus, RotateCw, X } from 'lucide-react';
 import { COULEURS, COURT, Inconnu, nombre } from '../../commun';
 import { useOuvrir } from '../../coquille/ouvrir';
@@ -15,6 +15,7 @@ import { houblon, lireBiere, style, type BiereLue } from '../../moteur';
 import type { FamilyId } from '../../../../src/engine';
 import { AlphaLu, Autres, StockIcone, Usage } from '../fiche/briques';
 import { useGestesFiche } from '../fiche/gestes';
+import { BoutonLegende, CleFamilles, PanneauLegende, useLegende } from './LegendeGroupe';
 
 const SEUIL = 0.5;
 const COURT_SIGNAL: Partial<Record<FamilyId, string>> = { resin: 'résine', herbal: 'herbe', earthy: 'terre', spice: 'épice', stoneFruit: 'noyau', pomeFruit: 'pépins', tropical: 'tropical', citrus: 'agrumes' };
@@ -54,15 +55,30 @@ export function Carte({ a, recette, biere, repere, onGeste }: {
   // Seules les commandes (boutons) gardent leur geste ; le reste de la carte garde l'appui long (D49).
   const surBouton = (e: React.SyntheticEvent) => !!(e.target as Element).closest('button');
   const stop = { onPointerDown: (e: React.PointerEvent) => { if (surBouton(e)) e.stopPropagation(); }, onClick: (e: React.MouseEvent) => { if (surBouton(e)) e.stopPropagation(); } };
+  // D112 (« L'appui prolonger fait pas l'effet escompté ») : comme la base, le nom se remplit pendant l'appui (500 ms),
+  // retour visible dès le doigt posé ; la fiche s'ouvre ensuite (gestes de la fiche, inchangés).
+  const [presse, setPresse] = useState(false);
+  const appui = fiche.appui(a.hopKey, () => ouvrir({ ecran: 'dryhopper', ajout: a.id })) as Record<string, (e: never) => void>;
+  const relache = () => setPresse(false);
+  const gesteCarte = {
+    ...appui,
+    onPointerDown: (e: React.PointerEvent) => { appui.onPointerDown?.(e as never); if (e.button <= 0 && !surBouton(e)) setPresse(true); },
+    onPointerMove: (e: React.PointerEvent) => { appui.onPointerMove?.(e as never); },
+    onPointerUp: (e: React.PointerEvent) => { appui.onPointerUp?.(e as never); relache(); },
+    onPointerCancel: (e: React.PointerEvent) => { appui.onPointerCancel?.(e as never); relache(); },
+    onPointerLeave: relache,
+  };
+  const [legende, basculerLegende] = useLegende();
+  const idLegende = `pq-ma-biere-legende-${a.id}`;
   const bouton = 'w-7 h-7 inline-flex items-center justify-center rounded-full border border-cave-700 text-cave-200';
   return (
     <div data-role="ligne-houblon" data-voie={a.id} data-ajout={a.id} data-element="etape-carte-ajout" data-houblon-ligne={a.hopKey}
-      {...fiche.appui(a.hopKey, () => ouvrir({ ecran: 'dryhopper', ajout: a.id }))}
-      className={`pq-ma-biere-carte relative px-2.5 pt-1.5 pb-2 space-y-1 rounded-lg ${repere ? 'pq-ma-biere-change' : ''}`}>
+      {...gesteCarte}
+      className={`pq-ma-biere-carte pq-ma-biere-sans-selection relative px-2.5 pt-1.5 pb-2 space-y-1 rounded-lg ${repere ? 'pq-ma-biere-change' : ''}`}>
       {repere && <p data-role="vient-de-changer" className="pq-ma-biere-repere text-xs leading-none">{repere}</p>}
       <div className="flex items-center gap-x-1.5 gap-y-1 flex-wrap">
         <span data-role="ouvrir-fiche" data-houblon={a.hopKey} {...fiche.nom(a.hopKey)}
-          className="shrink-0 font-semibold text-base text-cave-50 underline decoration-dotted decoration-cave-600 underline-offset-4">{h.nom}</span>
+          className={`shrink-0 font-semibold text-base text-cave-50 underline decoration-dotted decoration-cave-600 underline-offset-4 ${presse ? 'pq-ma-biere-appui' : ''}`}>{h.nom}</span>
         <span {...stop}>
           <button type="button" data-role="type-ajout" aria-label={`Type d'ajout : ${typeDe(q)}, toucher pour changer`}
             onClick={() => { onGeste(); gestes.moment('recette', a.id, typeSuivant(q, recette)); }}
@@ -113,13 +129,22 @@ export function Carte({ a, recette, biere, repere, onGeste }: {
         </span>
         {nonSimule && <span className="inline-flex items-center gap-1 text-xs text-cave-400"><Inconnu raison={nonSimule.raison} />arôme</span>}
         {h.partSansFamille != null && h.partSansFamille >= 0.25 && <Autres h={h} largeur={48} petit />}
-        <span className="ml-auto" {...stop}>
+        <span className="ml-auto inline-flex items-center gap-1" {...stop}>
+          <BoutonLegende ouverte={legende} onBasculer={basculerLegende} groupe={`les icônes de la carte de ${h.nom}`} controle={idLegende} />
           <button type="button" data-role="pont-substituer" data-houblon={a.hopKey} onClick={() => ouvrir({ ecran: 'substituer', houblon: a.hopKey })}
             className="h-7 px-2 rounded-full text-xs font-semibold text-cave-200 underline decoration-dotted underline-offset-4 whitespace-nowrap">
             Sans {h.nom} <span aria-hidden="true">›</span>
           </button>
         </span>
       </div>
+      <PanneauLegende id={idLegende} ouverte={legende}>
+        <p><b>Bande</b> : les 12 familles d'arômes de {h.nom}, d'après ses fiches ; vive, marquée ; pâle, citée ; grise, non décrite.</p>
+        <CleFamilles ordre={sc.order} />
+        <p><b>Trait sous un carré</b> : ce que l'ajout fait bouger dans ma bière, plus long à chaque cran du style ; orangé, la famille sort du style.</p>
+        <p><b>⟳</b> à côté du type : toucher pour passer d'ébullition à whirlpool, puis à dry hop. <b>− g +</b> : la dose ; <b>×</b> : retirer.</p>
+        <p><b>{COURT_SIGNAL[signal ?? 'resin'] ?? 'résine'} 2/4</b> : la famille la plus citée, par 2 fiches sur 4 ; cerclée de rouge, elle est déjà trop marquée dans ma bière.</p>
+        <p><b>α</b> : l'acide alpha, celui du lot d'abord (≠ : hors des fiches) ; le mot suivant, l'usage (amer, aromatique, mixte). <b>Cube</b> : en stock. <b>? hachuré</b> : inconnu, jamais zéro.</p>
+      </PanneauLegende>
     </div>
   );
 }
