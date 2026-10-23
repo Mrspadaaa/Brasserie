@@ -21,6 +21,7 @@
 //   epreuve [dossier]                                              épreuve à l'aveugle du critique depuis jeu.json (L27)
 //   etalonnage [dossier] [--moitie A|B] [--reponses f.json]        note les réponses contre cle.json (80 % / 70 %)
 //   appels <script> [--rejouer]                                    critères des GATES qui appellent un contrôle, rejoués
+//   verdict -- <commande> <args…>                                  un contrôle rend OK ou ECHEC sans planter (écrans d'autrui)
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -784,6 +785,17 @@ export function echoueAvec(commande, args, jeton) {
   return { ok: true, raison: `code ${r.status}` };
 }
 
+// Jouer un contrôle sur des écrans qu'une voie ne possède pas : son verdict, OK ou ECHEC, est le livrable ; seul un
+// plantage (code 2 et plus, ou aucune ligne finale OK / ECHEC) échoue (23.10, contrôles du parcours).
+export function verdictDe(commande, args, { cwd = RACINE } = {}) {
+  const exe = commande === 'node' ? process.execPath : commande;
+  const r = spawnSync(exe, args, { cwd, encoding: 'utf8', timeout: 600000 });
+  const sortie = `${r.stdout ?? ''}${r.stderr ?? ''}`;
+  const fin = sortie.trim().split('\n').reverse().find((l) => /\b(OK|ECHEC)\b/.test(l)) ?? '';
+  const rendu = !r.error && (r.status === 0 || r.status === 1) && Boolean(fin);
+  return { rendu, sortie, verdict: /\bECHEC\b/.test(fin) ? 'ECHEC' : 'OK', fin: fin.trim(), code: r.status };
+}
+
 // Témoins : petits dossiers jetables, un défaut à la fois.
 function construireCerveau(dir, d = {}) {
   const c = path.join(dir, 'cerveau');
@@ -1003,6 +1015,8 @@ function temoins() {
   const appels = appelsDansGates('controle-x.mjs', { racine: ra });
   attendu('appels d\'un contrôle retrouvés, voie écartée exclue', appels.length === 2, true);
   attendu('contrôle durci qui casse un appel', rejouerAppels(appels, { racine: ra }).every((a) => a.ok), false);
+  attendu('contrôle qui rend ECHEC sur un écran d\'autrui (verdict rendu)', verdictDe('node', ['-e', 'console.log("RAIL ECHEC 1/2"); process.exit(1)']).rendu, true);
+  attendu('contrôle qui plante (verdict absent)', verdictDe('node', ['-e', 'throw new Error("x")']).rendu, false);
   fs.rmSync(tmp, { recursive: true, force: true });
   for (const c of cas) console.log(`${c.ok ? 'tenu ' : 'RATÉ '} ${c.nom} (attendu : ${c.voulu ? 'OK' : 'ECHEC'})`);
   return cas.every((c) => c.ok);
@@ -1131,6 +1145,13 @@ function main(argv) {
       }
       const ko = rejouerAppels(appels).filter((a) => !a.ok);
       return finir(!ko.length, `APPELS OK (${appels.length} critères rejoués)`, 'APPELS ECHEC', ko.map((a) => `${a.gates} : ${a.commande} (attendu « ${a.attendu} »)`));
+    }
+    case 'verdict': {
+      const sep = args.indexOf('--');
+      if (sep !== 0 || args.length < 2) return finir(false, '', 'VERDICT ABSENT', ['usage : verdict -- <commande> <args…>']);
+      const v = verdictDe(args[1], args.slice(2));
+      process.stdout.write(v.sortie.endsWith('\n') ? v.sortie : `${v.sortie}\n`);
+      return finir(v.rendu, `VERDICT ${v.verdict} (${v.fin})`, 'VERDICT ABSENT', v.rendu ? [] : [`code ${v.code}, sans ligne finale OK ni ECHEC : le contrôle a planté`]);
     }
     case 'echoue': {
       const sep = args.indexOf('--');
