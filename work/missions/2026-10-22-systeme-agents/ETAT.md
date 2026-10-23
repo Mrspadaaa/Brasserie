@@ -132,6 +132,19 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
   #121 commentés. Branche poussée jusqu'à b808cee2.
 - Mode `--url` des contrôles pour l'app : après p8 (forme du crochet dans ARCHITECTURE.md « ## Crochet de test »).
 
+## Soirée du 23.10, après la maquette publiée (https://claude.ai/artifact/52UBb4F7iME2k3ZzsAv4x1)
+- D107 (08e21447) : Comparer doit comparer aux étapes (60′, 10′, dry hop…) avec une référence (Nugget ou ta stout).
+  L'utilisateur donne le prompt à « En attente » ; `controle-comparer-etapes.mjs` est à écrire avant la reprise.
+- D108 (67a8b6a7), donné en commentaire sur l'artefact (fil 4204d431, ouvert) : la visée de Ma bière (bannir, −, +) ne
+  dessine rien sur la barre. Dans la base v4.10 : losange, pointillé, paliers, ×, nom barré. Bannir agrumes écarte 17
+  voies sur 18 dans Suggérer. Transmis à « En attente » (message 4d794a6c) ; `controle-visee.mjs` d'abord.
+- **À faire quand « En attente » annonce la version D107 et D108** :
+  1. rejouer CHOIX, TEINTE, controle-comparer-etapes et controle-visee ;
+  2. regarder les captures côte à côte avec la base v4.10 ;
+  3. publier la nouvelle version dans un artefact neuf (enveloppe `outils/pages/2026-10-23-maquette/` à copier sous
+     une nouvelle date) ;
+  4. répondre dans le fil 4204d431 avec le lien, puis le résoudre.
+
 ## Ouvert, par priorité
 1. **Dette des défauts** (AUDIT.md, « À adapter »), urgente pour la voie p4 du parcours :
    - `controle-rail.mjs` (22 défauts du rail, essentiels pour Dryhopper ; effort grand) ;
