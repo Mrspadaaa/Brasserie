@@ -18,6 +18,8 @@
 //   charge                                                         budget du savoir chargé partout (CLAUDE.md et imports)
 //   remplaces                                                      aucune consigne remplacée ne survit (cerveau/REMPLACES.md)
 //   defauts                                                        régénère la vue courte DEFAUTS-COURT.md
+//   epreuve [dossier]                                              épreuve à l'aveugle du critique depuis jeu.json (L27)
+//   etalonnage [dossier] [--moitie A|B]                            note reponses.json contre cle.json (80 % / 70 %)
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -155,6 +157,57 @@ export function defautsCourt(source = DEFAUTS) {
   });
   return `# Défauts récurrents, vue courte\n\nGénérée par \`node scripts/agents/systeme.mjs defauts\` depuis \`DEFAUTS-RECURRENTS.md\` (le hook la régénère à chaque écriture) : ne pas éditer. Ses mots, mot pour mot, ce qui les contrôle et le seuil. Témoins et contexte sont dans la source.\n\n| # | Ses mots | Contrôle | Seuil |\n|---|---|---|---|\n${rangs.join('\n')}\n`;
 }
+// L27 (23.10) : un juge qui parle pour le brasseur s'étalonne à l'aveugle sur ses vrais verdicts.
+// epreuve : du jeu (work/refonte-frontend/v4/etalonnage/jeu.json) à un dossier anonyme (captures renommées, ordre
+// A/B tiré au sort, moitiés A et B) et à une clé gardée à part (cle.json). etalonnage : note reponses.json contre la
+// clé ; seuils 80 % sur les paires, 70 % sur les classes.
+export function preparerEpreuve(jeu, dossier, { hasard = Math.random, racine = RACINE } = {}) {
+  const items = JSON.parse(lire(jeu)).items;
+  const ordre = items.map((i) => ({ i, r: hasard() })).sort((a, b) => a.r - b.r).map((x) => x.i);
+  const ep = path.join(dossier, 'epreuve');
+  fs.rmSync(ep, { recursive: true, force: true });
+  fs.mkdirSync(ep, { recursive: true });
+  const cle = [];
+  const lignes = [];
+  ordre.forEach((it, n) => {
+    const eid = `e${String(n + 1).padStart(2, '0')}`;
+    const moitie = n % 2 ? 'B' : 'A';
+    if (it.type === 'paire') {
+      const inverse = hasard() < 0.5;
+      const [gauche, droite] = inverse ? [it.b, it.a] : [it.a, it.b];
+      fs.copyFileSync(path.join(racine, gauche.capture), path.join(ep, `${eid}-A.png`));
+      fs.copyFileSync(path.join(racine, droite.capture), path.join(ep, `${eid}-B.png`));
+      const attendu = (it.prefere === 'a') !== inverse ? 'A' : 'B';
+      cle.push({ eid, item: it.id, type: 'paire', attendu, moitie });
+      lignes.push(`- **${eid}** (paire, ${it.sujet}) : \`${eid}-A.png\` ou \`${eid}-B.png\` ; laquelle préférerait-il ?`);
+    } else {
+      fs.copyFileSync(path.join(racine, it.capture), path.join(ep, `${eid}.png`));
+      cle.push({ eid, item: it.id, type: 'classe', attendu: it.classe, moitie });
+      lignes.push(`- **${eid}** (capture, ${it.sujet}) : \`${eid}.png\` ; aime, mitige ou rejette ?`);
+    }
+  });
+  fs.writeFileSync(path.join(ep, 'EPREUVE.md'), `# Épreuve à l'aveugle\n\nPour chaque item, prédis le verdict du brasseur, comme il le donnerait au téléphone. Réponds dans \`../reponses.json\` :\n\`{ "reponses": [ { "eid": "e01", "reponse": "A" | "B" | "aime" | "mitige" | "rejette", "phrase": "<ce qu'il dirait>" } ] }\`.\nNe lis que ce dossier : ni \`../cle.json\`, ni \`../jeu.json\`, ni les dossiers des lots.\n\n${lignes.join('\n')}\n`);
+  fs.writeFileSync(path.join(dossier, 'cle.json'), `${JSON.stringify({ maj: new Date().toISOString().slice(0, 10), items: cle }, null, 1)}\n`);
+  return cle.length;
+}
+
+export function noterEpreuve(dossier, { moitie = null, seuilPaires = 0.8, seuilClasses = 0.7 } = {}) {
+  const cle = JSON.parse(lire(path.join(dossier, 'cle.json'))).items.filter((i) => !moitie || i.moitie === moitie);
+  const rep = new Map(JSON.parse(lire(path.join(dossier, 'reponses.json'))).reponses.map((r) => [r.eid, r]));
+  const compte = { paire: [0, 0], classe: [0, 0] };
+  const desaccords = [];
+  const manquantes = [];
+  for (const i of cle) {
+    const r = rep.get(i.eid);
+    if (!r) { manquantes.push(i.eid); continue; }
+    compte[i.type][1] += 1;
+    if (sansAccents(String(r.reponse)) === sansAccents(String(i.attendu))) compte[i.type][0] += 1;
+    else desaccords.push(`${i.eid} ${i.item} : attendu ${i.attendu}, répondu ${r.reponse}${r.phrase ? ` (« ${r.phrase} »)` : ''}`);
+  }
+  const taux = (k) => (compte[k][1] ? compte[k][0] / compte[k][1] : 0);
+  return { compte, taux: { paire: taux('paire'), classe: taux('classe') }, desaccords, manquantes, ok: !manquantes.length && taux('paire') >= seuilPaires && taux('classe') >= seuilClasses };
+}
+
 export function ecrireDefautsCourt() {
   if (existe(DEFAUTS)) fs.writeFileSync(DEFAUTS_COURT, defautsCourt());
 }
@@ -788,6 +841,24 @@ function temoins() {
   attendu('consigne remplacée citée comme erreur', remplaces(racineTemoin('r2', '- Erreur : le relecteur obligatoire a accepté la planche.\n')).erreurs.length === 0, true);
   attendu('savoir chargé dans le budget', verifierCharge(racineTemoin('b1', '@petit.md\n', { 'petit.md': 'x'.repeat(100) }), 1000).length === 0, true);
   attendu('savoir chargé au-delà du budget', verifierCharge(racineTemoin('b2', '@gros.md\n', { 'gros.md': 'x'.repeat(2000) }), 1000).length === 0, false);
+  // L27 : l'épreuve est anonyme, et la note suit la clé.
+  const et = sous('et');
+  for (const n of ['y1b', 'x3b', 'l8']) fs.writeFileSync(path.join(et, `${n}.png`), n);
+  fs.writeFileSync(path.join(et, 'jeu.json'), JSON.stringify({ items: [
+    { id: 'p1', type: 'paire', sujet: 'dryhopper', a: { variante: 'y1b', capture: 'y1b.png' }, b: { variante: 'x3b', capture: 'x3b.png' }, prefere: 'a', mots: '« y1b est meilleur »' },
+    { id: 'c1', type: 'classe', sujet: 'disposition', variante: 'l8', capture: 'l8.png', classe: 'mitige', mots: '« horrible, mais »' },
+  ] }));
+  preparerEpreuve(path.join(et, 'jeu.json'), et, { racine: et });
+  const anonyme = !/y1b|x3b|l8|meilleur|horrible/.test(fs.readFileSync(path.join(et, 'epreuve', 'EPREUVE.md'), 'utf8') + fs.readdirSync(path.join(et, 'epreuve')).join(' '));
+  attendu('épreuve anonyme', anonyme, true);
+  const cle = JSON.parse(fs.readFileSync(path.join(et, 'cle.json'), 'utf8')).items;
+  const repondre = (f) => fs.writeFileSync(path.join(et, 'reponses.json'), JSON.stringify({ reponses: cle.map(f).filter(Boolean) }));
+  repondre((i) => ({ eid: i.eid, reponse: i.attendu }));
+  attendu('critique qui retrouve ses verdicts', noterEpreuve(et).ok, true);
+  repondre((i) => ({ eid: i.eid, reponse: i.type === 'paire' ? (i.attendu === 'A' ? 'B' : 'A') : 'aime' }));
+  attendu('critique qui les manque', noterEpreuve(et).ok, false);
+  repondre((i) => (i.type === 'paire' ? { eid: i.eid, reponse: i.attendu } : null));
+  attendu('critique qui laisse un item sans réponse', noterEpreuve(et).ok, false);
   fs.rmSync(tmp, { recursive: true, force: true });
   for (const c of cas) console.log(`${c.ok ? 'tenu ' : 'RATÉ '} ${c.nom} (attendu : ${c.voulu ? 'OK' : 'ECHEC'})`);
   return cas.every((c) => c.ok);
@@ -875,6 +946,18 @@ function main(argv) {
       const erreurs = [...new Set(memoires.flatMap((m) => remplaces(RACINE, { memoire: m }).erreurs))];
       const { motifs } = remplaces();
       return finir(!erreurs.length, `REMPLACES OK (${motifs} consignes remplacées, aucune survivante)`, 'REMPLACES ECHEC', erreurs);
+    }
+    case 'epreuve': {
+      const dossier = path.resolve(args[0] ?? path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'etalonnage'));
+      const n = preparerEpreuve(path.join(dossier, 'jeu.json'), dossier);
+      return finir(true, `EPREUVE PRETE (${n} items, ${rel(path.join(dossier, 'epreuve'))} ; clé : ${rel(path.join(dossier, 'cle.json'))})`, '');
+    }
+    case 'etalonnage': {
+      const dossier = path.resolve(args[0] ?? path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'etalonnage'));
+      const r = noterEpreuve(dossier, { moitie: option(args, '--moitie', null) });
+      const pc = (k) => `${r.compte[k][0]}/${r.compte[k][1]} (${Math.round(100 * r.taux[k])} %)`;
+      const details = [...r.manquantes.map((e) => `sans réponse : ${e}`), ...r.desaccords];
+      return finir(r.ok, `ETALONNAGE OK — paires ${pc('paire')}, classes ${pc('classe')}`, `ETALONNAGE ECHEC — paires ${pc('paire')}, classes ${pc('classe')} (seuils 80 % et 70 %)`, details);
     }
     case 'defauts': {
       ecrireDefautsCourt();
