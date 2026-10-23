@@ -26,9 +26,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et la maquette choisie telle quelle
-- Erreur : 19.10, « Meilleures bar » de l5b. Seules les barres de voie ont été reprises, pas les pistes d'objectif. « C'est pas exactement ce que j'ai demandé ». 23.10 : la maquette suivait la carte, pas ses choix (D105).
+- Erreur : 19.10, « Meilleures bar » de l5b. Seules les barres de voie ont été reprises, pas les pistes d'objectif. « C'est pas exactement ce que j'ai demandé ». 23.10 : la maquette suivait la carte, pas ses choix (D105), et la supervision l'avait dite conforme sur ses contrats.
 - Cause : « X de la variante Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Une maquette choisie est la base ; une carte ne donne que les ponts. Inventaire, puis captures côte à côte.
+- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Une maquette choisie est la base ; une carte ne donne que les ponts. Inventaire, puis captures côte à côte, même pour une revue.
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-reprise.mjs --inventaire=` (D105)
 
@@ -102,8 +102,8 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
-- Erreur : lots 5 à 21, 8 à 12 auteurs en vol alors que `prompt-session.md` §7 en prévoyait 3. Chaque auteur coûtait 130 à 350 k jetons. Le pilote lisait les sorties brutes.
-- Cause : pas de plafond par voie, tout passait par le modèle le plus cher, et le retour n'avait pas de format.
+- Erreur : lots 5 à 21, 8 à 12 auteurs en vol (3 prévus), à 130 à 350 k jetons chacun ; le pilote lisait les sorties brutes.
+- Cause : pas de plafond par voie, tout au modèle le plus cher, un retour sans format.
 - Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique, Sonnet pour l'analyse et le code, Opus pour l'interface, la planification et la signature (L25). Retour en une ligne. Le plafond porte sur les agents et les tours, jamais sur les variantes : le 22.10, le lot 22 a été réduit à 12 variantes, une par agent, « au nom de L18 » (M13).
 - Rôles : pilote
 - Contrôle : `node scripts/agents/systeme.mjs agents`

@@ -477,10 +477,14 @@ export function appelsDansGates(script, { racine = RACINE } = {}) {
   return appels;
 }
 
+// Comme gate-check : un EXPECT entouré de /…/ est une expression régulière, sinon une sous-chaîne ; et le code 0.
 export function rejouerAppels(appels, { racine = RACINE } = {}) {
   return appels.map((a) => {
     const r = spawnSync(a.commande, { cwd: racine, shell: true, encoding: 'utf8', timeout: 300_000 });
-    return { ...a, ok: Boolean(a.attendu) && `${r.stdout ?? ''}${r.stderr ?? ''}`.includes(a.attendu) };
+    const sortie = `${r.stdout ?? ''}${r.stderr ?? ''}`;
+    const re = a.attendu.match(/^\/([\s\S]*)\/([a-z]*)$/);
+    const trouve = re ? new RegExp(re[1], re[2]).test(sortie) : sortie.includes(a.attendu);
+    return { ...a, ok: Boolean(a.attendu) && r.status === 0 && trouve };
   });
 }
 
@@ -1015,6 +1019,7 @@ function temoins() {
   const appels = appelsDansGates('controle-x.mjs', { racine: ra });
   attendu('appels d\'un contrôle retrouvés, voie écartée exclue', appels.length === 2, true);
   attendu('contrôle durci qui casse un appel', rejouerAppels(appels, { racine: ra }).every((a) => a.ok), false);
+  attendu('appel dont l\'EXPECT est une expression /…/', rejouerAppels([{ gates: 'g', commande: 'node -e "console.log(\'a · b VERDICT ECHEC\')"', attendu: '/a · [\\s\\S]*VERDICT (OK|ECHEC)/' }], { racine: ra })[0].ok, true);
   attendu('contrôle qui rend ECHEC sur un écran d\'autrui (verdict rendu)', verdictDe('node', ['-e', 'console.log("RAIL ECHEC 1/2"); process.exit(1)']).rendu, true);
   attendu('contrôle qui plante (verdict absent)', verdictDe('node', ['-e', 'throw new Error("x")']).rendu, false);
   fs.rmSync(tmp, { recursive: true, force: true });
