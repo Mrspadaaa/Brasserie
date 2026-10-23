@@ -7,7 +7,7 @@
 export default {
   page: 'etat.html',
   gestes: [
-    { nom: 'Fiche de Galaxy', faire: 'appui-long', cible: '[data-ecran="comparer"] [data-houblon="Galaxy"]', attendre: '[data-ecran="fiche"]',
+    { nom: 'Fiche de Galaxy', faire: 'appui-long', cible: '[data-ecran="comparer"] [data-houblon="beermaverick-galaxy"]', attendre: '[data-ecran="fiche"]',
       verifier: () => document.querySelector('[data-ecran="fiche"]')?.getAttribute('data-houblon-ouvert') === 'beermaverick-galaxy' || 'la fiche ouverte n’est pas celle de Galaxy' },
     { nom: 'Retour ferme la fiche', faire: 'retour', attendre: '[data-ecran="comparer"]',
       verifier: (p) => (!document.querySelector('[data-ecran="fiche"]') && p.route.startsWith('#/comparer')) || `fiche encore ouverte ou route ${p.route}` },

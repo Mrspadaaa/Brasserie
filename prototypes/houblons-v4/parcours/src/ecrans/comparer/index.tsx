@@ -83,13 +83,17 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   const noms = cols.map((c) => c.houblon.nom);
   const question = `${noms.slice(0, -1).join(', ')}${noms.length > 1 ? ' ou ' : ''}${noms.at(-1) ?? ''} pour ma stout ?`;
   const quatre = cols.length >= 4;
+  // Le titre en question est le h1 du cadre (PageShell) de cet écran : il porte la marque r6a-question (D104).
+  useEffect(() => {
+    document.querySelectorAll('.pq-outil-comparer h1').forEach((h) => h.setAttribute('data-element', 'r6a-question'));
+  }, [question]);
 
   return (
     <CadreOutil ecran="comparer" question={question}
       contexte={
         <div className="pq-comparer-tete">
           <LigneContexte items={[
-            { cle: 'base', contenu: <span data-element="y1b-ligne-contexte">Stout {sc.code}</span> },
+            { cle: 'base', contenu: <span data-element="y1b-ligne-contexte r6a-contexte">Stout {sc.code}</span> },
             { cle: 'dose', contenu: <>{nombre(CONDITIONS.doseGL)} g/L chacun</> },
             { cle: 'moment', contenu: <>après, {CONDITIONS.jours} j</> },
             { cle: 'levure', contenu: <span data-element="y1b-levure-pastilles a2b-ce-que-la-levure-change">{nomLevure(recette.yeastId)}</span> },
@@ -107,10 +111,10 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
       <div className="pq-comparer" data-colonnes={cols.length}>
         {rep && <LigneReponse rep={rep} />}
 
-        <section className="pq-comparer-rad" data-acquis="radar" data-element="p03-radar-superpose p02-radar-intervalle h4-radar-demande" aria-label="Radar r2">
+        <section className="pq-comparer-rad" data-acquis="radar" data-element="r6a-radar p03-radar-superpose p02-radar-intervalle h4-radar-demande" aria-label="Radar r2">
           <div className="pq-comparer-rad-h">
-            <span className="pq-comparer-puce" data-nature="simule" title="profil simulé par le moteur">~ simulé</span>
-            <span className="pq-comparer-lentille" role="radiogroup" aria-label="Lecture" data-lecture="">
+            <span className="pq-comparer-puce" data-nature="simule" data-element="r6a-simule" title="profil simulé par le moteur">~ simulé</span>
+            <span className="pq-comparer-lentille" role="radiogroup" aria-label="Lecture" data-lecture="" data-element="r6a-lentille">
               <button type="button" role="radio" data-e="style" aria-checked={!absolu} onClick={() => setAbsolu(false)}>Au style</button>
               <button type="button" role="radio" data-e="absolu" aria-checked={absolu} onClick={() => setAbsolu(true)}>Absolu</button>
             </span>
@@ -121,7 +125,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
         <section className="pq-comparer-tab" data-role="simulation" aria-label="Les houblons, côte à côte"
           data-element="l8-disposition y1b-plan-d-avant y1b-bandes-style l5b-barres-voie l5b-pistes-objectif">
           <div className="pq-comparer-grille-tab pq-comparer-tetes" role="radiogroup" aria-label="Houblon retenu" data-libre="houblon"
-            data-element="l5f-carte-role-alpha w2-cartes-verdict p06-grille-familles g1-fiche fiche-citra-cryo l8b-verdicts-pictos-trait">
+            data-element="r6a-tetes l5f-carte-role-alpha w2-cartes-verdict p06-grille-familles g1-fiche fiche-citra-cryo l8b-verdicts-pictos-trait">
             <TaStout quatre={quatre} disponibles={STOCK.filter((s) => s.grams > 0 && !cles.includes(s.key)).map((s) => s.key)}
               plein={cols.length >= MAX_COLONNES} onAjouter={(cle) => { setAjoutes((a) => [...a, cle]); setRetenu(cle); }} />
             {cols.map((c) => (
@@ -131,9 +135,10 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
                 onRetirer={() => { setAjoutes((a) => a.filter((x) => x !== c.cle)); if (retenu === c.cle) setRetenu(null); }} />
             ))}
           </div>
-          <div className="pq-comparer-rgs">
+          <div className="pq-comparer-rgs" data-element="r6a-rangees">
             {lignes.map((f, i) => (
-              <div key={f} className={cx('pq-comparer-grille-tab pq-comparer-rg', (f === VISEE.famille || f === TROP) && 'pq-comparer-demande', i === lignes.length - 1 && 'pq-comparer-derniere')} data-famille-ligne={f}>
+              <div key={f} className={cx('pq-comparer-grille-tab pq-comparer-rg', (f === VISEE.famille || f === TROP) && 'pq-comparer-demande', i === lignes.length - 1 && 'pq-comparer-derniere')} data-famille-ligne={f}
+                {...(f === VISEE.famille || f === TROP ? { 'data-element': 'r6a-ecarts' } : {})}>
                 <span className="pq-comparer-rn" style={{ color: COULEURS[f].texte }}>
                   <Picto famille={f} />{!quatre && <span>{COURT[f]}</span>}
                   {f === VISEE.famille && <span className="pq-comparer-dem" aria-label="ta demande : plus de floral">↑</span>}
@@ -143,7 +148,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
               </div>
             ))}
             {tousInconnus.length > 0 && (
-              <div className="pq-comparer-grille-tab pq-comparer-rg pq-comparer-inc-t">
+              <div className="pq-comparer-grille-tab pq-comparer-rg pq-comparer-inc-t" data-element="r6a-inconnus">
                 <span className="pq-comparer-rn">{tousInconnus.map((f) => <Picto key={f} famille={f} />)}</span>
                 <span className="pq-comparer-inc-l"><i className="pq-comparer-hach" aria-hidden="true" />inconnus</span>
               </div>
@@ -153,7 +158,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
 
         <div className="pq-comparer-touchers">
           <button type="button" className="pq-comparer-tch" aria-expanded={ouvert === 'vraies'} aria-controls="pq-comparer-vraies"
-            data-ouvre-acquis="valeurs chimie" onClick={() => setOuvert((o) => (o === 'vraies' ? null : 'vraies'))}>
+            data-ouvre-acquis="valeurs chimie" data-element="r6a-chimie" onClick={() => setOuvert((o) => (o === 'vraies' ? null : 'vraies'))}>
             <IconeFiole /><span>Chimie et vraies valeurs</span><Chevron ouvert={ouvert === 'vraies'} />
           </button>
           <button type="button" className="pq-comparer-tch" aria-expanded={ouvert === 'egaler'} aria-controls="pq-comparer-egaler"
@@ -215,7 +220,7 @@ function TaStout({ quatre, disponibles, plein, onAjouter }: { quatre: boolean; d
     return () => { document.removeEventListener('keydown', k); document.removeEventListener('pointerdown', hors); };
   }, [menu]);
   return (
-    <div ref={ref} className="pq-comparer-ta" data-element="m4-radar-degustation" aria-label="Ta stout : trop résineuse, tu la veux plus florale (dégustation du 18.10)">
+    <div ref={ref} className="pq-comparer-ta" data-element="r6a-ta-stout m4-radar-degustation" aria-label="Ta stout : trop résineuse, tu la veux plus florale (dégustation du 18.10)">
       <span className="pq-comparer-ta-n"><i className="pq-comparer-trait" aria-hidden="true" />{!quatre && <b>Ta stout</b>}</span>
       <span className="pq-comparer-ta-l"><Picto famille={TROP} taille={14} />{!quatre ? <span>trop</span> : <span aria-hidden="true">↓</span>}</span>
       <span className="pq-comparer-ta-l"><Picto famille={VISEE.famille} taille={14} />{!quatre ? <span>plus</span> : <span aria-hidden="true">↑</span>}</span>
@@ -267,7 +272,7 @@ function TeteColonne({ c, retenu, quatre, epinglee, retirable, onRetenir, onFich
         onPointerEnter={surEntree} onPointerLeave={(e) => { finSurvol(); appui.onPointerLeave(); void e; }}>
         <span className="pq-comparer-tc-n">
           {epinglee && <span className="pq-comparer-pin" aria-label="épinglé : le houblon à remplacer">⌖</span>}
-          <span className="pq-comparer-hn" data-houblon={h.nom} data-couleur={c.couleur}>{h.nom}</span>
+          <span className="pq-comparer-hn" data-houblon={c.cle} data-houblon-compare={h.nom} data-couleur={c.couleur}>{h.nom}</span>
           {h.stock != null && h.stock > 0 && <IconeStock />}
         </span>
         <span className="pq-comparer-tc-a">
@@ -446,7 +451,7 @@ function PanelOSU({ noms }: { noms: string[] }) {
   );
   const sans = noms.filter((n) => n !== 'Cascade');
   return (
-    <section className="pq-comparer-osu" data-acquis="osu" data-element="y3-panel-osu" data-nature="mesure" data-source="H22 Lafontaine 2018 (E04)" aria-label="Panel OSU">
+    <section className="pq-comparer-osu" data-acquis="osu" data-element="r6a-osu y3-panel-osu" data-nature="mesure" data-source="H22 Lafontaine 2018 (E04)" aria-label="Panel OSU">
       <p className="pq-comparer-osu-t"><IconePanel /><b>Panel OSU, Cascade</b><span className="pq-comparer-puce">panel</span><span className="pq-comparer-osu-u">sur 15, g/L</span></p>
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Panel OSU, Cascade : intensité, herbacé et agrumes selon la dose, sur 15">
         {iz0 >= 0 && iz1 >= 0 && <rect x={xs[iz0]} y={y0} width={xs[iz1] - xs[iz0]} height={y1 - y0} className="pq-comparer-osu-z" />}

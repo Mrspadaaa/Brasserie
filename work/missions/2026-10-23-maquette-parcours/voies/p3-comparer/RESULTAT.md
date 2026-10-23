@@ -116,6 +116,20 @@ Sorties rejouées le 23.10, sur `prototypes/houblons-v4/maquettes/parcours-p3` r
 - G13 : ETAPE OK (comparer) ; G14 : PONTS OK (19 gestes, recalcul médian 1,0 ms).
 - Épinglé : `#/comparer?h=cascade,idaho-7,galaxy&pin=nugget` met Nugget en colonne 1, marqué ⌖ ; appui long sur Cascade puis retour : la fiche se ferme, la route garde `pin=nugget`. Capture ouverte : `captures/p3-pin-390.png` (sans liseré de focus).
 - Les sections plus haut (G4, G5, G11 rouges) datent d'avant la correction du socle.
+- Correction de la supervision (contrôle D80 adapté au parcours) : le nom en tête de colonne porte désormais
+  `data-houblon` = clé du moteur (`beermaverick-…`), comme Ma bière et Suggérer. Le nom reste le texte affiché.
+  Deux exceptions, chacune pour un contrôle :
+  - `data-houblon-compare="<nom>"`, sinon STANDARD S1 confondrait la clé de la tête et le nom de la série du
+    radar ;
+  - la barre « autres » garde `data-houblon="<nom>"`, la convention de D100.
+
+  `jeu.mjs` vise Galaxy par sa clé. Sorties rejouées : G1 CONSTRUIT OK (9 pages), G2 TYPES OK, G3 COMMUN OK
+  (fiche OK, standard OK), G4 MOTS OK, G5 UNE-QUESTION OK, G7 ALPHA OK, G12 REPRISE OK, G13 ETAPE OK (comparer),
+  G14 PONTS OK (19 gestes, recalcul médian 1,0 ms).
+
+## Règle n° 1
+
+Les 12 éléments de r6a (inventaire-comparer.json) portent leur data-element, posé sur ce qui était déjà à l'écran. Le dessin ne change pas : le titre du cadre est marqué par un effet de l'écran, sur son propre h1. Leurs 12 lignes « repris — où » sont dans « ## Reprise » de la NOTE. Sorties, après reconstruction dans la sortie : G1 CONSTRUIT OK (9 pages) ; G2 TYPES OK ; G3 COMMUN OK ; G4 MOTS OK ; G12 REPRISE OK (35 repris, 3 en contexte, 5 en pont, 6 écartés) avec --inventaire=inventaire-comparer.json ; G13 ETAPE OK (comparer) ; G14 PONTS OK (19 gestes, recalcul médian 1,0 ms) ; G17 CHOIX OK (1 écran(s) conforme(s) à son choix ; 0 ouvert(s)).
 
 ## Prédiction
 

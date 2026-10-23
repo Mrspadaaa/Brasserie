@@ -97,6 +97,18 @@ Aux nombres de r6a (moteur en direct, 23.10, contre la grille `comparer-stout.js
 
 ## Reprise
 
+- r6a-question : repris — le titre en question du cadre, « Cascade, Idaho 7 ou Galaxy pour ma stout ? », avec « ‹ » et le « ? »
+- r6a-contexte : repris — la ligne de contexte : Stout 16D, 4 g/L chacun, après 3 j, US-05
+- r6a-simule : repris — la pastille « ~ simulé » au-dessus du radar
+- r6a-lentille : repris — « Au style / Absolu », au style par défaut
+- r6a-radar : repris — le radar r2 à 12 axes : zone de ta 16D, un trait par houblon, pictos aux axes, secteurs inconnus hachurés
+- r6a-ta-stout : repris — la colonne Ta stout (trop ♣, plus ❀) et son trait noir dans chaque barre
+- r6a-tetes : repris — les têtes de colonne : nom, α (lot ou plage, ≠), rôle, familles en pictos, verdict ~✓ ou ~⚠
+- r6a-rangees : repris — une rangée par famille, une barre l5b par houblon : zone, barre simulée, orangé, bande d'incertitude
+- r6a-ecarts : repris — Floral ↑ et Résineux ↓ : la flèche et l'écart chiffré par houblon
+- r6a-inconnus : repris — les cases hachurées et la rangée « inconnus »
+- r6a-chimie : repris — « Chimie et vraies valeurs » à un toucher sous le tableau
+- r6a-osu : repris — « Panel OSU, Cascade » (panel, sur 15, g/L) au repos
 - y1b-face-a-ta-stout : repris — la ligne de réponse sous le contexte, recalculée par le moteur à chaque colonne retenue ou ajoutée
 - y1b-pastille-critere : écarté — la visée est fixée par ta demande, floral ; r6a gardée sobre, son choix du 23.10
 - y1b-jauge-amertume : écarté — à cru l'IBU n'est pas modélisé ; la jauge vit dans Ma bière, pas dans Comparer
