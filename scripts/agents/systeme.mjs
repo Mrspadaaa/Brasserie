@@ -899,7 +899,7 @@ function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = fal
   const dec = sansDecideur ? '' : 'pilote';
   const etape = sansEtape ? '—' : 'reprise';
   const v2 = attendBrasseur ? '| v2 | lot | jugement | auteur | sonnet | 60 | y/** | v1, brasseur (radar) | c | brasseur | — |' : '| v2 | o | jugement | auteur | sonnet | 60 | y/** | v1 | c | brasseur | — |';
-  const v3 = interfaceSonnet ? `| v3 | maquette | jugement | auteur | sonnet | 60 | ecran-1/lot/** | — | controle-commun | brasseur | ${etape} |` : `| v3 | maquette | conception | concepteur | opus | 80 | ecran-1/lot/** | — | ${sansControleChoix ? 'controle-commun' : 'controle-commun, controle-choix'} | brasseur | ${etape} |`;
+  const v3 = interfaceSonnet ? `| v3 | maquette | jugement | auteur | sonnet | 60 | ecran-1/lot/** | — | controle-commun | brasseur | ${etape} |` : `| v3 | maquette | conception | concepteur | opus | 80 | ecran-1/lot/** | — | ${sansControleChoix ? 'controle-commun, controle-teinte' : 'controle-commun, controle-choix, controle-teinte'} | brasseur | ${etape} |`;
   const v4 = relectureGenerique ? '| v4 | relecture de v3 | jugement | relecteur | sonnet | 30 | r/RESULTAT.md | v3 | c | pilote | — |' : '| v4 | relecture de v3 | jugement | critique | fable | 30 | r/RESULTAT.md | v3 | c | pilote | — |';
   fs.writeFileSync(f, planMission([`| v1 | o | mécanique | executant | haiku | 30 | x/** | — | c | ${dec} | — |`, v2, v3, v4], sansChoix ? '' : '\n- x1 choisie : « le meilleur »\n'));
   return f;
@@ -911,10 +911,10 @@ function construireEntonnoir(dir, { series = 7, parSerie = 8, sansTri = false, s
   const ids = Array.from({ length: series }, (_, i) => `s${i + 1}`);
   // Par défaut, chaque série porte les trois chaleurs : 1 froide, 1 tiède, le reste en chaude.
   const temp = chaleur ?? (parSerie >= 3 ? ` (1 froide, 1 tiède, ${parSerie - 2} chaude)` : '');
-  const ctl = sansBaseline ? 'controle-commun, controle-choix' : 'baseline : controle-commun --sans=mots, controle-choix';
+  const ctl = sansBaseline ? 'controle-commun, controle-choix, controle-teinte' : 'baseline : controle-commun --sans=mots, controle-choix, controle-teinte';
   const voies = ids.map((id, i) => `| ${id} | série ${id}${i === 1 && !sansLibre ? ', libre au brief minimal' : ''} | conception | concepteur | ${i === 0 ? 'fable' : 'opus'} | 120 | ecran-1/lot/${id}/** | — | ${ctl} | brasseur | v0 ×${parSerie}${temp} |`);
   if (!sansTri) voies.push(`| t | tri des séries | jugement | critique | fable | 30 | t/RESULTAT.md | ${ids.join(', ')} | ${triSansPanel ? 'captures ouvertes' : 'controle-panel, captures ouvertes'} | pilote | tri |`);
-  if (!sansPasse) voies.push('| p2 | les cinq améliorées | conception | concepteur | opus | 80 | ecran-1/lot/p2/** | t | controle-commun, controle-choix | brasseur | passe 2 |');
+  if (!sansPasse) voies.push('| p2 | les cinq améliorées | conception | concepteur | opus | 80 | ecran-1/lot/p2/** | t | controle-commun, controle-choix, controle-teinte | brasseur | passe 2 |');
   fs.writeFileSync(f, planMission(voies));
   return f;
 }
@@ -954,7 +954,7 @@ function temoins() {
   // L13 (audit a1) : une voie d'écran prévoit les contrôles de son sujet, ou en écarte un avec sa raison.
   const dh = (controles) => { const d = sous(`dh${controles.length}`); const f = path.join(d, 'MISSION.md'); fs.writeFileSync(f, planMission([`| v1 | Dryhopper, le moment | conception | concepteur | opus | 80 | ecran-1/lot/** | — | ${controles} | brasseur | reprise |`, '| v2 | relecture | jugement | critique | fable | 30 | r/RESULTAT.md | v1 | c | pilote | — |'], '\n- x1 choisie : « le meilleur »\n')); return verifierMission(f).length === 0; };
   attendu('voie Dryhopper sans les contrôles de son sujet', dh('controle-commun'), false);
-  const tous = 'controle-commun, controle-choix, controle-moments, pouvoir.test.ts, controle-alpha, controle-lisible, controle-simulation, controle-une-question, controle-acquis';
+  const tous = 'controle-commun, controle-choix, controle-teinte, controle-moments, pouvoir.test.ts, controle-alpha, controle-lisible, controle-simulation, controle-une-question, controle-acquis';
   attendu('voie Dryhopper avec ses contrôles, un écarté avec sa raison', dh(`${tous}, sans controle-cumul-levure : la levure est un autre outil`), true);
   attendu('tri sans mesure du panel', verifierMission(construireEntonnoir(sous('e11'), { triSansPanel: true })).length === 0, false);
   attendu('série qui ne suit pas la baseline', verifierMission(construireEntonnoir(sous('e9'), { sansBaseline: true })).length === 0, false);
@@ -1185,7 +1185,10 @@ function main(argv) {
       return finir(r.ok, `ECHOUE OK (${jeton}, ${r.raison})`, 'ECHOUE ECHEC', r.ok ? [] : [r.raison]);
     }
     default:
-      console.log(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(1, 17).map((l) => l.replace(/^\/\/ ?/, '')).join('\n'));
+      // Toute l'aide : les lignes de commentaire d'en-tête, jusqu'à la première ligne de code (23.10 : `appels` et
+      // `verdict`, au-delà de la 17e ligne, restaient invisibles).
+      const lignes = fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split(/\r?\n/).slice(1);
+      console.log(lignes.slice(0, lignes.findIndex((l) => !l.startsWith('//'))).map((l) => l.replace(/^\/\/ ?/, '')).join('\n'));
       return commande ? 2 : 0;
   }
 }

@@ -37,6 +37,14 @@ if (entree.hook_event_name === 'PostToolUse') {
   const cible = path.resolve(fichier);
   // La vue courte des défauts suit sa source à chaque écriture (élagage du 22.10).
   if (path.basename(cible) === 'DEFAUTS-RECURRENTS.md') { ecrireDefautsCourt(); process.exit(0); }
+  // La portée des défauts est lue par systeme.mjs mission : un défaut « garde » ajouté rend son contrôle obligatoire
+  // pour les voies d'écran (23.10 : D106 ajouté, trois témoins positifs cassés sans que rien ne le dise).
+  if (path.basename(cible) === 'portee-defauts.json') {
+    const rappel = 'Rappel du système (hook cerveau) : portee-defauts.json est lu par systeme.mjs mission. Avant de commiter, '
+      + 'node scripts/agents/systeme.mjs temoins, puis systeme.mjs mission sur les missions en cours.';
+    process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'PostToolUse', additionalContext: rappel } }));
+    process.exit(0);
+  }
   if (/\.mjs$/i.test(cible) && /[\\/](scripts[\\/]agents|tournoi[\\/]outils)[\\/]/i.test(cible)) {
     const n = appelsDansGates(cible).length;
     const nom = path.basename(cible);
