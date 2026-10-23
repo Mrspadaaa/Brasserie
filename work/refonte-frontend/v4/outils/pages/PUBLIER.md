@@ -25,8 +25,9 @@ texte de l'écran tombait à 7 px. Elle reste en l'état, comme archive de ses v
    un script : le 22.10, une apostrophe a cassé un script et caché les 12 variantes). Partir de la page la plus
    récente de ce dossier pour la feuille de style et la visionneuse.
 2. Images à côté, dans un dossier de travail (`img/…`, non versionnées) ; puis
-   `node scripts/agents/verifier-page.mjs <dossier>/index.html --captures <préfixe>` → PAGE OK, et ouvrir les trois
-   captures (haut, page, ordinateur) avant de publier (L12).
+   `node scripts/agents/verifier-page.mjs <dossier>/index.html --page-lot --captures <préfixe>` → PAGE OK, et ouvrir
+   les trois captures (haut, page, ordinateur) avant de publier (L12). Sans `--page-lot` (ni source sous
+   `outils/pages/`), le script ne fait que rendre une maquette, comme dans les GATES des voies.
 3. Publier sans `url` : c'est un artefact neuf. Les images déjà publiées se copient côté serveur
    (`files: { "img/x.png": { "artifact": "<adresse>", "path": "img/x.png" } }`).
 4. Ajouter sa ligne à la table « ## Pages » de MISSION.md (Sujet, Version, Adresse, Source). `systeme.mjs voies`

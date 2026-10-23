@@ -91,7 +91,8 @@ signature, jamais laissées en plan.
 
 ## 6. Publier, puis signer
 Des écrans ne sont finis qu'une fois montrés (M12). Avant de publier, `node scripts/agents/verifier-page.mjs
-<page.html> --captures <préfixe>` doit rendre PAGE OK, et ses captures sont ouvertes (L12). Le contenu
+<page.html> --page-lot --captures <préfixe>` doit rendre PAGE OK, et ses captures sont ouvertes (L12). Sans
+`--page-lot`, le script ne fait que rendre une maquette (`etat.html`), sans les règles de lisibilité d'une page. Le contenu
 de la page (variantes, images) est écrit en HTML, et non construit par un script. Le pilote publie lui-même
 chaque version dans un artefact privé neuf (une page par sujet et par version, datée ; 23.10) et l'inscrit dans la
 table « ## Pages » de MISSION.md (Sujet, Version, Adresse, Source). Sans cette table, ou avec deux versions sur

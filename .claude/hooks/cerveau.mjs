@@ -3,12 +3,13 @@
 // UserPromptSubmit : une phrase de correction ou de plainte rappelle d'en tirer un contrôle ou une leçon.
 // PostToolUse (Edit|Write) : une écriture dans cerveau/ est contrôlée ; ses erreurs reviennent à l'agent (code 2).
 // Une écriture dans DEFAUTS-RECURRENTS.md régénère sa vue courte, DEFAUTS-COURT.md.
+// Une écriture dans un script de contrôle que des GATES appellent rappelle de les rejouer (23.10 : verifier-page).
 // Ne bloque jamais une demande ; n'écrit rien d'autre.
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const RACINE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const { estCorrection, verifierCerveau, ecrireDefautsCourt } = await import(pathToFileURL(path.join(RACINE, 'scripts', 'agents', 'systeme.mjs')).href);
+const { estCorrection, verifierCerveau, ecrireDefautsCourt, appelsDansGates } = await import(pathToFileURL(path.join(RACINE, 'scripts', 'agents', 'systeme.mjs')).href);
 
 const RAPPEL = [
   'Rappel du système (hook cerveau) : ce message ressemble à une correction ou à une plainte.',
@@ -36,6 +37,14 @@ if (entree.hook_event_name === 'PostToolUse') {
   const cible = path.resolve(fichier);
   // La vue courte des défauts suit sa source à chaque écriture (élagage du 22.10).
   if (path.basename(cible) === 'DEFAUTS-RECURRENTS.md') { ecrireDefautsCourt(); process.exit(0); }
+  if (/\.mjs$/i.test(cible) && /[\\/](scripts[\\/]agents|tournoi[\\/]outils)[\\/]/i.test(cible)) {
+    const n = appelsDansGates(cible).length;
+    const nom = path.basename(cible);
+    const rappel = `Rappel du système (hook cerveau) : ${nom} est appelé par ${n} critères de GATES. Avant de commiter, `
+      + `node scripts/agents/systeme.mjs appels ${nom} --rejouer (23.10 : verifier-page durci a fait échouer 23 voies).`;
+    if (n) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'PostToolUse', additionalContext: rappel } }));
+    process.exit(0);
+  }
   if (!cible.toLowerCase().startsWith(dir.toLowerCase() + path.sep)) process.exit(0);
   // Seules les erreurs du fichier écrit reviennent : une écriture en plusieurs temps n'est pas punie pour le reste.
   // Le budget du savoir chargé partout revient aussi quand on écrit INDEX.md ou LECONS.md, qui en font partie.

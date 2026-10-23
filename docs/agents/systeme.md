@@ -218,7 +218,8 @@ de revenir.
 | `node scripts/agents/systeme.mjs fidelite <source> <notes…>` | condenser sans perdre citations ni nombres |
 | `node scripts/agents/systeme.mjs note <f> --exiger … --contient …` / `existent <f…>` | critères usuels des voies |
 | `node scripts/agents/systeme.mjs temoins` | chaque contrôle échoue sur son témoin négatif |
-| `node scripts/agents/verifier-page.mjs <page.html> --captures <préfixe>` | une page de version avant publication (une version = un artefact neuf, 23.10) : rendu Chrome à 390 et 1280 px, sans erreur de script, images chargées, lisible (date au titre, `#a-choisir` au premier écran, captures ≥ 340 px, texte ≥ 14 px, blocs ≤ 45 mots) |
+| `node scripts/agents/systeme.mjs appels <script> [--rejouer]` | avant de commiter un contrôle partagé : les critères des GATES qui l'appellent, rejoués (le hook cerveau le rappelle ; M15) |
+| `node scripts/agents/verifier-page.mjs <page.html> [--page-lot] --captures <préfixe>` | une maquette (`etat.html`, GATES des voies) : rendu Chrome à 390 px, sans erreur de script ni défilement, images chargées. Avec `--page-lot` (ou une source sous `outils/pages/`), une page de version avant publication (un artefact neuf, 23.10) : en plus, lisible à 390 et 1280 px (date au titre, `#a-choisir` au premier écran, captures ≥ 340 px, texte ≥ 14 px, blocs ≤ 45 mots) |
 | `node scripts/agents/systeme.mjs echoue "<JETON> ECHEC" -- node <contrôle> <args…>` | témoin négatif dans un GATES : tient si le contrôle échoue (code non nul) en imprimant son jeton ; un plantage ne compte pas |
 
 Les contrôles d'interface vivent dans `work/refonte-frontend/v4/tournoi/outils/` (les `.mjs` y sont

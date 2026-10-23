@@ -20,6 +20,7 @@
 //   defauts                                                        régénère la vue courte DEFAUTS-COURT.md
 //   epreuve [dossier]                                              épreuve à l'aveugle du critique depuis jeu.json (L27)
 //   etalonnage [dossier] [--moitie A|B] [--reponses f.json]        note les réponses contre cle.json (80 % / 70 %)
+//   appels <script> [--rejouer]                                    critères des GATES qui appellent un contrôle, rejoués
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -449,6 +450,37 @@ export function controlesDeLaPortee(texteVoie, controles, { portee = PORTEE } = 
   const manquants = [...grouper('garde')].filter(([s]) => !couverts.has(s) && !ecartes.has(s)).map(([s, ids]) => `${s} (${ids.join(', ')})`);
   const dette = [...grouper('a-adapter')].map(([s, ids]) => `${s} (${ids.join(', ')})`);
   return { sujets, manquants, dette };
+}
+
+// Un contrôle partagé ne se durcit qu'en rejouant les critères qui l'appellent : le 23.10, verifier-page durci pour
+// les pages de lot a fait échouer 23 voies de maquettes (40 sur 63 au rejeu du lot 21). Les voies écartées ne comptent pas.
+export function appelsDansGates(script, { racine = RACINE } = {}) {
+  const nom = path.basename(script);
+  const appels = [];
+  const parcourir = (d) => {
+    for (const n of fs.readdirSync(d, { withFileTypes: true })) {
+      const p = path.join(d, n.name);
+      if (n.isDirectory()) { if (n.name !== 'voies-ecartees') parcourir(p); continue; }
+      if (n.name !== 'GATES.md') continue;
+      const lignes = lire(p).split('\n');
+      lignes.forEach((l, i) => {
+        const m = l.match(/^\s*CHECK:\s*(.+)$/);
+        if (!m || !m[1].includes(nom)) return;
+        const attendu = ((lignes[i + 1] ?? '').match(/^\s*EXPECT:\s*(.+)$/) ?? [])[1] ?? '';
+        appels.push({ gates: path.relative(racine, p).split(path.sep).join('/'), commande: m[1].trim(), attendu: attendu.trim() });
+      });
+    }
+  };
+  const dir = path.join(racine, 'work', 'missions');
+  if (existe(dir)) parcourir(dir);
+  return appels;
+}
+
+export function rejouerAppels(appels, { racine = RACINE } = {}) {
+  return appels.map((a) => {
+    const r = spawnSync(a.commande, { cwd: racine, shell: true, encoding: 'utf8', timeout: 300_000 });
+    return { ...a, ok: Boolean(a.attendu) && `${r.stdout ?? ''}${r.stderr ?? ''}`.includes(a.attendu) };
+  });
 }
 
 // Les lignes d'une table de MISSION.md (« ## Voies », « ## Décisions »), en objets par en-tête sans accents.
@@ -962,6 +994,15 @@ function temoins() {
   attendu('critique qui les manque', noterEpreuve(et).ok, false);
   repondre((i) => (i.type === 'paire' ? { eid: i.eid, reponse: i.attendu } : null));
   attendu('critique qui laisse un item sans réponse', noterEpreuve(et).ok, false);
+  // Un contrôle partagé et ses appels : la voie écartée ne compte pas ; un appel qui ne rend plus son EXPECT casse.
+  const ra = sous('appels');
+  for (const [d, sortie] of [['work/missions/m/voies/v1', 'OUI'], ['work/missions/m/voies/v2', 'NON'], ['work/missions/m/voies-ecartees/v3', 'OUI']]) {
+    fs.mkdirSync(path.join(ra, d), { recursive: true });
+    fs.writeFileSync(path.join(ra, d, 'GATES.md'), `- [ ] G1: témoin\n  CHECK: node -e "console.log('${sortie}')" controle-x.mjs\n  EXPECT: OUI\n  EVIDENCE: pending\n`);
+  }
+  const appels = appelsDansGates('controle-x.mjs', { racine: ra });
+  attendu('appels d\'un contrôle retrouvés, voie écartée exclue', appels.length === 2, true);
+  attendu('contrôle durci qui casse un appel', rejouerAppels(appels, { racine: ra }).every((a) => a.ok), false);
   fs.rmSync(tmp, { recursive: true, force: true });
   for (const c of cas) console.log(`${c.ok ? 'tenu ' : 'RATÉ '} ${c.nom} (attendu : ${c.voulu ? 'OK' : 'ECHEC'})`);
   return cas.every((c) => c.ok);
@@ -1079,6 +1120,17 @@ function main(argv) {
     case 'charge': {
       const e = verifierCharge();
       return finir(!e.length, `CHARGE OK (${BUDGET_CHARGE} caractères au plus)`, 'CHARGE ECHEC', e);
+    }
+    case 'appels': {
+      const [script] = args.filter((a) => !a.startsWith('--'));
+      if (!script) return finir(false, '', 'APPELS ECHEC', ['usage : appels <script> [--rejouer]']);
+      const appels = appelsDansGates(script);
+      if (!args.includes('--rejouer')) {
+        for (const a of appels) console.log(`  - ${a.gates} : ${a.commande}`);
+        return finir(true, `APPELS ${appels.length} (${path.basename(script)} ; --rejouer pour les rejouer)`, '');
+      }
+      const ko = rejouerAppels(appels).filter((a) => !a.ok);
+      return finir(!ko.length, `APPELS OK (${appels.length} critères rejoués)`, 'APPELS ECHEC', ko.map((a) => `${a.gates} : ${a.commande} (attendu « ${a.attendu} »)`));
     }
     case 'echoue': {
       const sep = args.indexOf('--');

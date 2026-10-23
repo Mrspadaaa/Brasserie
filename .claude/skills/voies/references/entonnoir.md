@@ -148,7 +148,7 @@ Contrôlé par `systeme.mjs mission` (M13).
   la même version.
 - La page d'une passe montre ses candidates ; la page du panel v0 garde **toutes les v0**, dans l'ordre du classement.
   Le brasseur choisit : « pourquoi j'ai pas eu mes variations ? ».
-- Avant publication, `verifier-page.mjs` rend PAGE OK : la date dans le titre, ce qu'il choisit en tête (`#a-choisir`,
+- Avant publication, `verifier-page.mjs --page-lot` rend PAGE OK : la date dans le titre, ce qu'il choisit en tête (`#a-choisir`,
   au premier écran du téléphone), des captures à 340 px au moins (à 390 et à 1280 px de large), aucun texte sous
   14 px, aucun bloc de plus de 45 mots. Sa ligne entre dans la table « ## Pages » de MISSION.md : Sujet, Version,
   Adresse, Source. Deux lignes ne partagent ni adresse ni source (`systeme.mjs voies`, M12). Mode d'emploi :
