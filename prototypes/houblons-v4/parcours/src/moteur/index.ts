@@ -1,0 +1,308 @@
+// Adaptateur du moteur v4 (qui importe le moteur V5.5 de l'app), calculé en direct dans le navigateur, sans
+// grille précalculée. Une fonction par besoin d'écran, typée, mémoïsée et chronométrée (mesure.ts).
+// Unités : IBU en IBU (BrewingMath.hopIbu) ; profil en points 0–100 de l'échelle des axes V5.5 (style-bands.json),
+// toujours SIMULÉ (couche de lecture profil-simule.ts, « ~ ») sauf la famille dégustée ; α en % m/m ; doses en g.
+// Inconnu ≠ 0 : une valeur qu'on ne sait pas est `null` avec sa raison, jamais un zéro.
+import {
+  FAMILIES, FAMILY_NAMES, MOMENTS, STOCK, cransOf, describeFamilies, familyWords, getStyleScale, hopAlpha, hopRef, hopRole,
+  simulerCas, substitutes,
+  type AjoutSimule, type CasSimule, type FamilyId, type FamilyStatus, type MomentSimule, type ProfilFamilles, type Recipe, type StyleScale,
+} from '../../../src/engine';
+import { ibuPerGram, ibuPerGramAt } from '../../../src/engine/recipe';
+import type { AjoutPouvoir, RecettePouvoir } from '../../../src/engine/pouvoir';
+import { CONDITIONS, DEGUSTATION, recetteDegustee, stockLibre } from '../donnees/cas';
+import { placer, quandDe } from '../etat/quand';
+import type { AjoutParcours, Quand, RecetteParcours } from '../etat/types';
+import { memo } from './mesure';
+
+export { mesures, medianeRecalcul, viderMesures } from './mesure';
+export const UNITES = { ibu: 'IBU', profil: 'points 0–100 (axes V5.5), simulé', alpha: '% m/m', dose: 'g', doseGL: 'g/L', jours: 'jours de contact' } as const;
+
+// ---------- Types rendus aux écrans ----------
+export interface Plage { valeur: number; min: number; max: number }
+/** IBU d'un ajout : plage par l'α (lot, sinon plage variétale) ; null à froid (non modélisé) ou α inconnu. */
+export interface IbuLu { ibu: Plage | null; raison: string | null }
+export interface FamilleLue {
+  famille: FamilyId; nom: string; statut: FamilyStatus;
+  /** Bande du style 16D sur 0–100, null hors style documenté. */
+  bande: [number, number] | null;
+  /** null = inconnu (rien de simulé, pas une preuve d'absence). */
+  valeur: { bas: number; centre: number; haut: number } | null;
+  /** Crans du style sur le centre : 0–3 dans la bande, 4 au-dessus, −1 en dessous (CRANS_RULE). */
+  crans: number | null;
+  source: 'simulé' | 'dégustation';
+  horsStyle: 'au-dessus' | 'en dessous' | null;
+  /** Borne haute partielle (composés sans borne publiée) : le vrai haut peut être plus haut. */
+  hautPartiel: boolean;
+  raison: string | null;
+}
+export type ProfilLu = Record<FamilyId, FamilleLue>;
+export interface BiereLue {
+  ibu: Plage & { inconnus: string[] };
+  ibuParAjout: Record<string, IbuLu>;
+  bandeIbu: [number, number] | null;
+  og: number; ebc: number | null;
+  profil: ProfilLu;
+  /** Ajouts dont l'arôme n'est pas simulé (moment hors du simulateur) : le profil les ignore. */
+  nonSimules: { ajoutId: string; raison: string }[];
+  /** Un ajout dégusté a été retiré ou changé : sa part simulée est retranchée du profil dégusté. */
+  retraits: string[];
+  confiance: CasSimule['confiance'];
+  drapeaux: string[];
+}
+export type Ecart = { centre: number; bas: number; haut: number } | null;
+export type EcartProfil = Record<FamilyId, Ecart>;
+
+// ---------- Style et outils ----------
+const STYLES = new Map<string, StyleScale>();
+export function style(code: string): StyleScale {
+  if (!STYLES.has(code)) STYLES.set(code, getStyleScale(code));
+  return STYLES.get(code)!;
+}
+const fam = <T>(fn: (f: FamilyId) => T) => Object.fromEntries(FAMILIES.map((f) => [f, fn(f)])) as Record<FamilyId, T>;
+const r2 = (x: number) => Math.round(x * 100) / 100;
+const cleRecette = (r: Recipe) => JSON.stringify([r.styleCode, r.volumeL, r.og, r.boilMin, r.yeastId, r.additions]);
+
+// ---------- IBU (BrewingMath.hopIbu, via le moteur v4) ----------
+function ibuParGrammeA(alpha: number, q: Quand, recette: Recipe): number | null {
+  switch (q.type) {
+    case 'premierMout': return ibuPerGram(alpha, 'fwh', recette);
+    case 'ebullition': return ibuPerGramAt(alpha, 'boil', q.minutes, undefined, recette);
+    // Whirlpool : le préréglage du moteur v4 (80 °C, 20 min), comme ibuPerGram('wp').
+    case 'whirlpool': return ibuPerGram(alpha, 'wp', recette);
+    case 'dryhop': return null;
+  }
+}
+/** IBU d'un ajout à sa dose et à son moment (minutes libres par 5′). */
+export function ibuAjout(a: AjoutParcours, recette: RecetteParcours): IbuLu {
+  const q = quandDe(a, recette);
+  if (q.type === 'dryhop') return { ibu: null, raison: 'à froid : IBU non modélisé' };
+  const al = hopRef(a.hopKey)?.alpha;
+  if (!al) return { ibu: null, raison: 'α inconnu : IBU incalculable' };
+  const k = (x: number) => a.grams * (ibuParGrammeA(x, q, recette) ?? 0);
+  return { ibu: { valeur: k(al.value), min: k(al.min), max: k(al.max) }, raison: null };
+}
+
+// ---------- Profil simulé de la bière ----------
+const ARÔME_EBULLITION: Record<number, MomentSimule> = { 60: 'b60', 10: 'b10' };
+/** Un ajout du parcours dans le simulateur, ou la raison pour laquelle il n'y entre pas. */
+export function versSimule(a: AjoutParcours, recette: RecetteParcours): AjoutSimule | { raison: string } {
+  const q = quandDe(a, recette);
+  const base = { id: a.id, houblon: a.hopKey, dose_gL: a.grams / recette.volumeL };
+  if (q.type === 'premierMout') return { raison: 'premier moût : arôme non simulé par le moteur' };
+  if (q.type === 'whirlpool') return { ...base, moment: 'wp' };
+  if (q.type === 'ebullition') {
+    const m = ARÔME_EBULLITION[q.minutes];
+    return m ? { ...base, moment: m } : { raison: `ébullition ${q.minutes}′ : le moteur simule l'arôme à 60′ et 10′ seulement` };
+  }
+  const moment: MomentSimule = q.phase === 'actif' ? 'dryActive' : 'dryPost';
+  return { ...base, moment, jourDebut: a.day ?? CONDITIONS.jourDebut[moment], jours: q.jours };
+}
+const versPouvoir = (a: AjoutParcours): AjoutPouvoir => ({ ...a, ...(a.moment === 'dryActive' || a.moment === 'dryPost' ? { dureeJours: a.jours ?? CONDITIONS.jours } : {}) });
+const recettePouvoir = (r: RecetteParcours, additions: AjoutParcours[]): RecettePouvoir => ({ ...r, additions: additions.map(versPouvoir) });
+
+const memeAjout = (a: AjoutParcours, b: AjoutParcours) =>
+  a.hopKey === b.hopKey && a.grams === b.grams && a.moment === b.moment && (a.minutes ?? null) === (b.minutes ?? null) && (a.jours ?? null) === (b.jours ?? null) && (a.day ?? null) === (b.day ?? null);
+
+const profilSansDegustation = memo('profilSansDegustation', (r: RecettePouvoir, levure: string) => cleRecette(r) + levure,
+  (r: RecettePouvoir, levure: string): ProfilFamilles => simulerCas({ id: 'sans', titre: 'sans dégustation', ajouts: [], levure, recette: r, degustation: null, complet: false }).avant);
+
+function lu(f: FamilyId, v: { bas: number; centre: number; haut: number; source: 'simulé' | 'dégustation'; inconnu?: string; hautPartiel?: string[] }, sc: StyleScale): FamilleLue {
+  const fs = sc.families[f];
+  const inconnu = !!v.inconnu && v.haut === 0;
+  const crans = inconnu ? null : cransOf(f, v.centre, sc).crans;
+  return {
+    famille: f, nom: FAMILY_NAMES[f], statut: fs.status, bande: fs.band,
+    valeur: inconnu ? null : { bas: r2(v.bas), centre: r2(v.centre), haut: r2(v.haut) },
+    crans, source: v.source,
+    horsStyle: crans == null ? null : crans >= 4 ? 'au-dessus' : crans < 0 && fs.status === 'attendue' ? 'en dessous' : null,
+    hautPartiel: !!v.hautPartiel?.length, raison: inconnu ? v.inconnu! : null,
+  };
+}
+
+/** Ma bière lue : IBU (total, par ajout, bande du style), OG, EBC et profil au style des 12 familles.
+ * Le profil part de la bière dégustée le 18.10 (la dégustation prime), décalée par l'effet simulé des ajouts
+ * nouveaux ; un ajout dégusté retiré ou changé retranche sa part simulée (sans dégustation). */
+export const lireBiere = memo('lireBiere', (r: RecetteParcours) => cleRecette(r), (recette: RecetteParcours): BiereLue => {
+  const sc = style(recette.styleCode);
+  const levure = recette.yeastId ?? CONDITIONS.levure;
+  const base = recetteDegustee();
+  const gardes = base.additions.filter((b) => recette.additions.some((a) => a.id === b.id && memeAjout(a, b)));
+  const retires = base.additions.filter((b) => !gardes.includes(b));
+  const nouveaux = recette.additions.filter((a) => !gardes.some((b) => b.id === a.id));
+  const nonSimules: BiereLue['nonSimules'] = [];
+  const ajouts: AjoutSimule[] = [];
+  for (const a of nouveaux) {
+    const s = versSimule(a, recette);
+    if ('raison' in s) nonSimules.push({ ajoutId: a.id, raison: s.raison }); else ajouts.push(s);
+  }
+  const rBase = recettePouvoir(recette, base.additions);
+  const cas = simulerCas({ id: 'ma-biere', titre: recette.name, ajouts, levure, recette: rBase, degustation: DEGUSTATION, complet: false });
+  let p: ProfilFamilles = cas.apres;
+  if (retires.length) {
+    const avec_ = profilSansDegustation(rBase, levure);
+    const sans = profilSansDegustation(recettePouvoir(recette, gardes), levure);
+    p = fam((f) => {
+      const d = sans[f].centre - avec_[f].centre, x = p[f];
+      return { ...x, bas: Math.max(0, x.bas + d), centre: Math.max(0, x.centre + d), haut: Math.max(0, x.haut + d) };
+    }) as ProfilFamilles;
+  }
+  const ibuParAjout = Object.fromEntries(recette.additions.map((a) => [a.id, ibuAjout(a, recette)]));
+  const valeurs = Object.values(ibuParAjout);
+  const somme = (k: keyof Plage) => valeurs.reduce((s, x) => s + (x.ibu ? x.ibu[k] : 0), 0);
+  return {
+    ibu: { valeur: somme('valeur'), min: somme('min'), max: somme('max'), inconnus: recette.additions.filter((a) => ibuParAjout[a.id].raison?.startsWith('α')).map((a) => a.id) },
+    ibuParAjout, bandeIbu: sc.ibu, og: recette.og, ebc: recette.ebc ?? null,
+    profil: fam((f) => lu(f, p[f], sc)), nonSimules, retraits: retires.map((b) => b.id), confiance: cas.confiance, drapeaux: cas.drapeauxIds,
+  };
+});
+
+/** Écart simulé entre deux profils, famille par famille ; null si l'un des deux est inconnu. */
+export function ecart(avant: ProfilLu, apres: ProfilLu): EcartProfil {
+  return fam((f) => {
+    const a = avant[f].valeur, b = apres[f].valeur;
+    return a && b ? { centre: r2(b.centre - a.centre), bas: r2(b.bas - a.bas), haut: r2(b.haut - a.haut) } : null;
+  });
+}
+
+// ---------- Un houblon ----------
+export interface HoublonLu {
+  cle: string; nom: string;
+  /** α du lot (stock ou article), sinon milieu de la plage variétale ; plage des fiches ; « ≠ » si le lot en sort. */
+  alpha: { valeur: number; source: string; plage: [number, number] | null; horsFiches: boolean } | null;
+  /** Rôle en mot du brasseur : « mixte » pour le « double » de la règle rôle-α v1 (D90). */
+  role: { mot: 'amérisant' | 'aromatique' | 'mixte' | null; source: string };
+  familles: Record<FamilyId, { niveau: 'non décrit' | 'cité' | 'marqué'; fiches: number; sur: number }>;
+  /** Part des mots des fiches qui n'entrent dans aucune des 12 familles (L14), null sans aucun mot. */
+  partSansFamille: number | null;
+  motsSansFamille: string[];
+  /** Stock libre en g ; null : pas au stock (catalogue). */
+  stock: number | null;
+  origine: string | null;
+}
+export const houblon = memo('houblon', (cle: string) => cle, (cle: string): HoublonLu => {
+  const h = hopRef(cle);
+  if (!h) throw new Error(`Houblon inconnu du moteur : ${cle}`);
+  const a = hopAlpha(cle), plage = h.catalogue.alpha;
+  const role = hopRole(cle);
+  const d = describeFamilies(h.varietyId);
+  const w = familyWords(h.varietyId, h.catalogue);
+  const rattaches = new Set(FAMILIES.flatMap((f) => w.mots[f].flatMap((x) => x.mots.map((m) => m.toLowerCase()))));
+  const total = rattaches.size + w.sansFamille.length;
+  return {
+    cle, nom: h.name,
+    alpha: a ? { valeur: a.value, source: a.source, plage: plage ? [plage[0], plage[1]] : null, horsFiches: !!plage && (a.value < plage[0] || a.value > plage[1]) } : null,
+    role: { mot: role.value === 'double' ? 'mixte' : role.value, source: role.source },
+    familles: fam((f) => ({ niveau: d[f].level, fiches: d[f].sources, sur: d[f].of })),
+    partSansFamille: total ? r2(w.sansFamille.length / total) : null,
+    motsSansFamille: w.sansFamille.map((x) => x.mot),
+    stock: stockLibre(cle), origine: h.catalogue.origin,
+  };
+});
+
+// ---------- Un ajout simulé ----------
+/** `apres` ignore un ajout non simulé (voir apres.nonSimules) ; son `ecart` est alors null partout (inconnu). */
+export interface AjoutLu { avant: BiereLue; apres: BiereLue; ecart: EcartProfil; ibu: IbuLu; quand: Quand; simule: boolean; raison: string | null }
+/** Ma bière avant et après un ajout (ou un ajout changé), et l'écart simulé. */
+export function simulerAjout(recette: RecetteParcours, ajout: AjoutParcours): AjoutLu {
+  const avant = lireBiere(recette);
+  const apresR = { ...recette, additions: [...recette.additions.filter((a) => a.id !== ajout.id), ajout] };
+  const apres = lireBiere(apresR);
+  const s = versSimule(ajout, apresR);
+  // Arôme de l'ajout non simulé (ébullition hors 60′ et 10′, premier moût) : l'écart est INCONNU, jamais 0.
+  const simule = !('raison' in s);
+  return { avant, apres, ecart: simule ? ecart(avant.profil, apres.profil) : fam(() => null), ibu: ibuAjout(ajout, apresR), quand: quandDe(ajout, apresR), simule, raison: 'raison' in s ? s.raison : null };
+}
+
+/** Crans de la frise de Dryhopper : ébullition par 5′ (durée → 0), whirlpool, dry hop actif et après, en jours. */
+export function cransFrise(recette: RecetteParcours, joursMax = 7): Quand[] {
+  const eb: Quand[] = [];
+  for (let m = recette.boilMin; m >= 0; m -= 5) eb.push({ type: 'ebullition', minutes: m });
+  const jours = Array.from({ length: joursMax }, (_, i) => i + 1);
+  return [...eb, { type: 'whirlpool' }, ...jours.map((j): Quand => ({ type: 'dryhop', phase: 'actif', jours: j })), ...jours.map((j): Quand => ({ type: 'dryhop', phase: 'apres', jours: j }))];
+}
+/** Un ajout placé à un cran de la frise, simulé (calcul à chaque geste, mémoïsé). */
+export const simulerMoment = (recette: RecetteParcours, ajout: AjoutParcours, q: Quand) => simulerAjout(recette, placer(ajout, q, recette));
+
+// ---------- Suggérer ----------
+export interface Candidat { cle: string; houblon: HoublonLu; ajout: AjoutParcours; lu: AjoutLu; visee: Ecart; besoin: number; stockSuffisant: boolean | null }
+/** Les houblons du stock (stock libre > 0) ajoutés aux conditions fixées (4 g/L, après fermentation, 3 j,
+ * levure de la recette), classés par l'écart simulé sur la famille visée (puis par nom). */
+export function suggerer(recette: RecetteParcours, visee: FamilyId, cond: { doseGL?: number; phase?: 'actif' | 'apres'; jours?: number } = {}): Candidat[] {
+  const doseGL = cond.doseGL ?? CONDITIONS.doseGL;
+  const q: Quand = { type: 'dryhop', phase: cond.phase ?? 'apres', jours: cond.jours ?? CONDITIONS.jours };
+  const cles = [...new Set(STOCK.filter((s) => s.grams > 0).map((s) => s.key))];
+  return cles.map((cle) => {
+    const ajout = placer({ id: `essai-${cle}`, hopKey: cle, grams: doseGL * recette.volumeL, moment: 'dryPost' }, q, recette);
+    const lu_ = simulerAjout(recette, ajout);
+    const st = stockLibre(cle);
+    return { cle, houblon: houblon(cle), ajout, lu: lu_, visee: lu_.ecart[visee], besoin: ajout.grams, stockSuffisant: st == null ? null : st >= ajout.grams };
+  }).sort((a, b) => (b.visee?.centre ?? -Infinity) - (a.visee?.centre ?? -Infinity) || a.houblon.nom.localeCompare(b.houblon.nom, 'fr'));
+}
+
+// ---------- Comparer ----------
+export interface Colonne { cle: string; houblon: HoublonLu; ajout: AjoutParcours; lu: AjoutLu }
+/** N houblons à dose, moment et levure fixés (simulerCas pour chacun). */
+export function comparer(recette: RecetteParcours, cles: string[], cond: { doseGL?: number; quand?: Quand } = {}): Colonne[] {
+  const q = cond.quand ?? { type: 'dryhop', phase: 'apres', jours: CONDITIONS.jours };
+  return cles.map((cle) => {
+    const ajout = placer({ id: `comparer-${cle}`, hopKey: cle, grams: (cond.doseGL ?? CONDITIONS.doseGL) * recette.volumeL, moment: 'dryPost' }, q, recette);
+    return { cle, houblon: houblon(cle), ajout, lu: simulerAjout(recette, ajout) };
+  });
+}
+
+// ---------- Levure ----------
+export interface EffetLevure { levure: string; lu: BiereLue; ecart: EcartProfil; reference: string }
+/** Effet de chaque levure sur la bière avec l'ajout, face à la levure de la recette (référence). Le moteur ne
+ * fait varier la levure qu'en dry hop actif (biotransformation) : ailleurs, l'écart simulé est nul ou inconnu. */
+export function effetLevure(recette: RecetteParcours, ajout: AjoutParcours, levures: string[]): EffetLevure[] {
+  const ref = recette.yeastId ?? CONDITIONS.levure;
+  const avec_ = { ...recette, additions: [...recette.additions.filter((a) => a.id !== ajout.id), ajout] };
+  const base = lireBiere(avec_);
+  return levures.map((l) => {
+    const lu_ = l === ref ? base : lireBiere({ ...avec_, yeastId: l });
+    return { levure: l, lu: lu_, ecart: ecart(base.profil, lu_.profil), reference: ref };
+  });
+}
+
+// ---------- Substituer ----------
+export interface Remplacant {
+  cle: string; houblon: HoublonLu; score: number; palier: string; raison: string;
+  dose: { grams: number; min: number; max: number; regle: 'même IBU' | 'masse égale' };
+  familles: { gagne: FamilyId[]; perd: FamilyId[] };
+  composantes: { arome: number | null; huiles: number | null; amertume: number | null };
+  stock: { etat: 'en stock' | 'épuisé' | 'à acheter'; libre: number | null; suffisant: boolean | null };
+}
+/** Remplaçants d'un ajout, au même moment (substitution calculée du moteur, « en stock d'abord », style de la recette). */
+export const remplacants = memo<[RecetteParcours, string, number?], Remplacant[]>('remplacants', (r, id, limite = 8) => cleRecette(r) + id + limite,
+  (recette, ajoutId, limite = 8) => {
+    const a = recette.additions.find((x) => x.id === ajoutId);
+    if (!a) return [];
+    const res = substitutes(a.hopKey, { moment: a.moment, grams: a.grams, recipe: recette, style: style(recette.styleCode), stockFirst: true, limit: limite });
+    return res.remplacants.map((s) => {
+      const d = doseRemplacement(recette, a, s.key);
+      return {
+        cle: s.key, houblon: houblon(s.key), score: s.score, palier: s.palier, raison: s.raison,
+        dose: { grams: d.grams, min: d.min, max: d.max, regle: d.regle },
+        familles: { gagne: s.familles.gagne.map((m) => m.family), perd: s.familles.perd.map((m) => m.family) },
+        composantes: s.composantes, stock: s.stock,
+      };
+    });
+  });
+
+/** Dose du remplaçant au même moment : même IBU à chaud, masse égale à froid (règle de substitution.ts),
+ * arrondie au gramme ; plage par la plage d'α du remplaçant. α inconnu : masse égale, avec la raison. */
+export function doseRemplacement(recette: RecetteParcours, a: AjoutParcours, cle: string): { grams: number; min: number; max: number; regle: 'même IBU' | 'masse égale'; raison: string | null } {
+  const q = quandDe(a, recette);
+  const meme = (raison: string | null) => ({ grams: a.grams, min: a.grams, max: a.grams, regle: 'masse égale' as const, raison });
+  if (q.type === 'dryhop') return meme('à froid : pas d’IBU, à masse égale');
+  const ibu = ibuAjout(a, recette).ibu;
+  const al = hopRef(cle)?.alpha;
+  if (!ibu || !al) return meme(!ibu ? 'IBU de l’original inconnu : masse égale' : 'α du remplaçant inconnu : masse égale');
+  const g = (x: number) => ibu.valeur / (ibuParGrammeA(x, q, recette) ?? Infinity);
+  return { grams: Math.round(g(al.value)), min: Math.round(g(al.max)), max: Math.round(g(al.min)), regle: 'même IBU', raison: null };
+}
+
+export const nomMoment = (q: Quand) =>
+  q.type === 'premierMout' ? 'premier moût' : q.type === 'ebullition' ? `${q.minutes}′` : q.type === 'whirlpool' ? 'whirlpool' : `${q.phase} · ${q.jours} j`;
+export { MOMENTS };

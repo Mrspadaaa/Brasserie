@@ -37,8 +37,9 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   D7, D74)
 - Pictos d'arômes au trait, sans halo ; la légende derrière un petit « ? » ; l'usage en mot. (D88 à D90)
 - « Épicé » : cannelle et clou croisés, choisi le 23.10 et dans la baseline. (§ 1, fin ; D101 à D101 quater)
-- Ses choix : y1b pour le « quand » ; r6a pour Comparer, avec les éléments qu'il a notés ailleurs (D104), puis r6n2
-  (23.10), à décliner en quelques variantes avec les meilleures idées retenues. Le reste des acquis est dans `acquis-valides.md`.
+- Ses choix : y1b pour le « quand » ; q2b pour Suggérer (« C'est effectivement qb2 reprise le mieux », 19.10), intégré
+  dans la base v4.10 ; pour Comparer, r6a, redite le 23.10 après r6n2 et ses variantes (« r6a reste le meilleur »), avec
+  les petites améliorations des autres versions. Le reste des acquis est dans `acquis-valides.md`.
 
 **La méthode**
 - Les mini maquettes passent par l'entonnoir : un vaste panel de concepts minimalistes sur la baseline, en trois
@@ -347,6 +348,11 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   r4d), devenu le symbole `p-spice` de la planche standard.
 - **r6n2, la suite** (23.10, après la page à neuf versions), mot pour mot : « Fais mois quelques variantes de r6n2,
   avec les meilleures idées retenu. Et ensuite on sera bon ». r6n2 : le premier écran de r6a, le reste à un toucher.
+- **Comparer, r6a reste** (23.10, après les pages datées de r6n2, r6p1 à r6p4 et de Dryhopper), mot pour mot : « r6a
+  reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres
+  versions ». Avant, sur la page cumulée : « Je les vois pas dans les artefacts.. ». Et pour la maquette : « fait une
+  maquette fonctionne de bout en bout » ; « Continue ensuite avec le tout interactif comme si c'était sur la vrai app.
+  Afin de préparer sa vrai implemtation ». Mission : `work/missions/2026-10-23-maquette-parcours/`.
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce

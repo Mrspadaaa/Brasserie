@@ -1,0 +1,99 @@
+# Mission 2026-10-23-maquette-parcours
+
+## Objectif
+L'utilisateur, le 23.10 : « fait une maquette fonctionne de bout en bout », puis « Continue ensuite avec le tout
+interactif comme si c'était sur la vrai app. Afin de préparer sa vrai implemtation ».
+
+Une maquette jouable, publiée dans un artefact neuf, où le brasseur suit sa stout export 16D (« trop résineuse,
+je la veux plus florale ») dans l'ordre de la carte des outils (`fils22-carte`) :
+1. Ma bière, étape Houblons. L'appui long sur un houblon ouvre sa fiche.
+2. « + floral » → Suggérer → cocher → « Comparer les 3 » → Comparer (r6a) → « Placer Idaho 7 ».
+3. Dryhopper : le moment glissé par 5′, jusqu'aux jours de contact. « Puis la levure » → Levure → « Ajouter à ma
+   bière ».
+4. Retour à Ma bière, recalculée : IBU, barres au style, la ligne Idaho 7 ajoutée.
+5. Nugget → Substituer (la porte) → « Remplacer » → Ma bière recalculée.
+
+« Comme sur la vraie app » veut dire :
+- les composants, les jetons de style et le thème de l'app (`src/ui`, `tailwind.config.js`), importés et jamais
+  recopiés ;
+- le moteur v4, qui importe le moteur V5.5 de l'app, calculé en direct dans le navigateur (`simulerCas` : 1,4 ms
+  par geste, [[cout-calcul-moteur]]), sans grille précalculée ;
+- un seul état de recette partagé par tous les écrans : un geste dans un outil change Ma bière ;
+- retour arrière, appui long, glisser, toucher, comme au téléphone.
+
+« Préparer la vraie implémentation » veut dire : le code est rangé comme il le sera dans l'app, et
+`ARCHITECTURE.md` donne, pour chaque fichier, sa place future dans `src/`, le type de l'app qu'il emploie ou
+qu'il faudra créer, et ce qui manque (persistance Dexie, Firestore, catalogue réel).
+
+Aucun fichier de l'app n'est modifié : la porte B reste fermée ([[le-brasseur-choisit]]). Le code vit dans
+`prototypes/houblons-v4/parcours/`.
+
+**Fini** veut dire :
+- les sept écrans passent leurs contrôles ;
+- `jouer-parcours.mjs` joue le parcours entier dans Chrome au format téléphone, et vérifie l'état après chaque
+  geste (PARCOURS OK) ;
+- les captures de chaque étape ont été regardées ;
+- le critique a rendu son avis ;
+- l'artefact est publié et son lien est dans la table « Pages ».
+
+## Décisions
+| Décision | Options | Décideur | État |
+|---|---|---|---|
+| Où vit le code | dans `src/` ; à côté, dans `prototypes/houblons-v4/parcours/` | pilote | tranchée : à côté. Porte B fermée, et rien dans l'app sans son essai |
+| Comparer | r6a ; r6n2 ; r6p1 à r6p4 | brasseur | tranchée le 23.10 : r6a, « avec les quelques petites améliorations des autres versions » |
+| Dryhopper | a1, b4, d8, e5, g1 | brasseur | ouverte. Base a1 : c'est y1b affiné, et y1b est un acquis (« y1b est de mon point de vue semble meilleur »). Son choix remplacera l'écran |
+| Substituer | la porte vers Comparer ; un outil propre (u4) | brasseur | ouverte. La porte, recommandée par le conseil (houblon manquant épinglé dans Comparer) |
+| Levure | étape de Dryhopper ; outil propre (a2b) | brasseur | ouverte. L'étape (carte : « Puis la levure ») |
+| Thème | clair ; cave (le thème actuel de l'app) | brasseur | ouverte. Clair par défaut, comme les maquettes qu'il a jugées. La cave se choisit d'un toucher dans la coquille |
+| Persistance | Dexie, comme l'app ; en mémoire | pilote | tranchée : en mémoire, avec un bouton « Recommencer ». La persistance est décrite dans ARCHITECTURE.md |
+
+Variantes choisies, dont repartent les écrans :
+- r6a choisie : « r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions » (23.10)
+- y1b choisie : « y1b est de mon point de vue semble meilleur. » (20.10)
+- q2b choisie : « C'est effectivement qb2 reprise le mieux » (19.10, soir ; après q2, « cella là », 14 h 34) ; base v4.10 (`work/refonte-frontend/v4/ecran-1/base/consolide/`)
+- f1 choisie : « Mon Picto préféré est cannelley clou croisé. Ça doit être changé dans la baseline » (23.10)
+
+## Voies
+| Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur | Étape |
+|---|---|---|---|---|---|---|---|---|---|---|
+| p0-socle | socle de la maquette : coquille de l'app, routes, état partagé, adaptateur du moteur en direct, données du cas, construction en pages par route, script de parcours, ARCHITECTURE.md | conception | auteur | opus | 150 | `prototypes/houblons-v4/parcours/**` (hors `src/ecrans/`), `prototypes/houblons-v4/package.json`, `voies/p0-socle/RESULTAT.md` | — | typecheck ; construire.mjs (CONSTRUIT OK) ; app-intacte.mjs ; jouer-parcours.mjs --routes ; verifier-page.mjs | pilote | — |
+| p1-ma-biere | Ma bière, étape Houblons (l8, barres l5b au style, α, rôle, moment, dose, IBU), sa fiche au long appui (g1, fiche courte), et Substituer en porte | conception | concepteur | opus | 120 | `prototypes/houblons-v4/parcours/src/ecrans/ma-biere/**`, `…/ecrans/fiche/**`, `…/ecrans/substituer/**`, `voies/p1-ma-biere/RESULTAT.md` | p0-socle | controle-commun ; controle-ma-biere ; controle-fiche ; controle-fiche-baseline ; controle-alpha ; controle-sans-famille ; tolerance (vitest) ; jouer-parcours.mjs --etape=ma-biere --etape=fiche --etape=substituer ; sans controle-usage-intensite : liés aux cas figés du lot 15 (data-cas, donnees/<cas>.json), le moteur calcule ici en direct ; D80 (intensité en crans, usage) vérifié en direct par jeu.mjs | brasseur | reprise |
+| p2-suggerer | Suggérer, « Quel houblon ajouter à ma bière ? », de q2b (base v4.10) : candidats, visée « Plus floral », intensité et usage, extras hors objectif, « + » vers Comparer, « Comparer les 3 » | conception | concepteur | opus | 100 | `prototypes/houblons-v4/parcours/src/ecrans/suggerer/**`, `voies/p2-suggerer/RESULTAT.md` | p0-socle | controle-commun ; controle-autres-ajouts ; controle-ma-biere ; controle-alpha ; controle-piste-objectif ; controle-place-voies ; controle-une-question ; tolerance (vitest) ; jouer-parcours.mjs --etape=suggerer ; sans controle-moments : liés aux cas figés du lot 15 (data-cas, donnees/<cas>.json), le moteur calcule ici en direct ; le « + » vers Comparer est vérifié par jeu.mjs ; sans controle-usage-intensite : idem, D80 (intensité en crans, usage) vérifié en direct par jeu.mjs ; sans controle-cumul-levure : Suggérer ne fait varier que le houblon (L10), la levure est contrôlée dans son étape (p4) | brasseur | reprise |
+| p3-comparer | Comparer de r6a, en direct, avec les petites améliorations des autres versions (r6n1, r6n2, r6p1 à r6p4) : colonnes au toucher, « + » pour une 4ᵉ, « Placer <gagnant> » | conception | concepteur | opus | 120 | `prototypes/houblons-v4/parcours/src/ecrans/comparer/**`, `voies/p3-comparer/RESULTAT.md` | p0-socle | controle-commun ; controle-autres-ajouts ; controle-radar-series ; controle-alpha ; controle-lisible ; controle-simulation ; controle-une-question ; controle-acquis ; controle-sans-famille ; controle-reprise ; jouer-parcours.mjs --etape=comparer | brasseur | reprise |
+| p4-dryhopper | Dryhopper de a1 (y1b affiné) : le moment glissé par 5′ jusqu'aux jours de contact, calculé à chaque geste ; puis l'étape Levure et « Ajouter à ma bière » | conception | concepteur | opus | 120 | `prototypes/houblons-v4/parcours/src/ecrans/dryhopper/**`, `…/ecrans/levure/**`, `voies/p4-dryhopper/RESULTAT.md` | p0-socle | controle-commun ; controle-alpha ; controle-lisible ; controle-simulation ; controle-une-question ; controle-acquis --outil=dryhopper ; controle-cumul-levure (étape Levure) ; pouvoir (vitest) ; jouer-parcours.mjs --etape=dryhopper --etape=levure ; sans controle-moments : liés aux cas figés du lot 15 (data-cas, donnees/<cas>.json), le moteur calcule ici en direct ; le rail est vérifié par controle-acquis --outil=dryhopper (geste, frise) et par jeu.mjs (loupe ×3 sous le doigt, L12) ; controle-rail est « à adapter » (audit a1) | brasseur | reprise |
+| p5-parcours | le parcours entier joué au téléphone, l'état vérifié après chaque geste, les captures de chaque étape | jugement | auteur | sonnet | 80 | `prototypes/houblons-v4/parcours/outils/parcours-complet.mjs`, `voies/p5-parcours/**` | p1-ma-biere, p2-suggerer, p3-comparer, p4-dryhopper | parcours-complet.mjs (PARCOURS OK) ; verifier-page.mjs | pilote | — |
+| p6-critique | avis du critique sur le parcours, écran par écran, en défauts vérifiables | jugement | critique | fable | 40 | `voies/p6-critique/RESULTAT.md` | p5-parcours | note RESULTAT (un avis par écran) | pilote | — |
+
+Chemins de « Possède » : relatifs à la racine du dépôt ; `voies/…` est relatif au dossier de cette mission.
+
+## Pages
+Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`).
+
+| Sujet | Version | Adresse | Source |
+|---|---|---|---|
+
+## Boucle de retour
+- Un critère rouge : l'agent corrige dans sa voie, 3 essais. Au-delà, SendMessage au même agent avec le défaut
+  précis (2 relances), puis le pilote réécrit le contrat.
+- Un écran rejeté par le critique : relancé (même agent) ou écarté, jamais laissé en plan (M12).
+- Son choix sur Dryhopper (b4, d8, e5 ou g1 au lieu de a1) : une `reprise` de l'écran concerné par le même
+  concepteur, dans le socle inchangé.
+- Sa plainte : SPEC-BRASSEUR mot pour mot, une ligne dans DEFAUTS-RECURRENTS, et un contrôle qui échoue sur la
+  version rejetée, ajouté au parcours.
+
+## Budget
+Avant (23.10, après-midi) : 5 h à 11 %, semaine à 52 %, Fable à 29 %. Plafond visé : 5 h sous 80 %.
+
+## Sources
+- `work/refonte-frontend/v4/ecran-1/fils22-carte/NOTE.md` — la carte : écrans, questions, facteur libre, ponts
+- `work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html` — Comparer choisi (« r6a reste le meilleur »)
+- `work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/passe3/a1/etat.html` — Dryhopper, base a1
+- `work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/NOTE.md` — Suggérer choisi (q2b), intégré dans `work/refonte-frontend/v4/ecran-1/base/consolide/` (v4.10)
+- `work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html` — fiche g1
+- `work/refonte-frontend/v4/ecran-1/fils18-baseline/l8g/noyau.mjs` — la baseline l8g
+- `prototypes/houblons-v4/ENGINE.md` — le moteur v4 et son API
+- `prototypes/houblons-v4/ecran/vite.config.ts` — la construction qui importe l'app sans la modifier
+- `cerveau/produit/acquis-valides.md` — les acquis à garder
+- `DESIGN.md`, `docs/ui-compacte.md`, `PRODUCT.md`, `.claude/rules/affinee-frontend.md`
+
+## Signature

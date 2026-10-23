@@ -1,0 +1,184 @@
+<title>Comparer · 23.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Une page = un choix. Captures à 340 px au moins, texte à 14 px au moins (verifier-page.mjs). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --houblon-doux: #e6efdc;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 6px 20px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+    --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f;
+    --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+  --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f;
+  --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.5 var(--texte);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 64px;
+}
+.page { max-width: 1180px; margin: 0 auto; display: grid; gap: 36px; }
+h1, h2, h3 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.3rem, 4vw, 1.7rem); font-weight: 800; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+p { margin: 0; max-width: 65ch; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+header { display: grid; gap: 10px; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.15rem; color: var(--houblon); }
+section { display: grid; gap: 16px; }
+.grille { display: grid; gap: 32px 24px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+.variante { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 18px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ecran:focus-visible, .plus:focus-visible, a:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+.nom { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.code { font: 700 0.875rem/1 ui-monospace, "Cascadia Mono", monospace; color: var(--houblon); }
+.puces { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.puces li { font-size: 0.875rem; padding: 3px 10px; border-radius: 999px; background: var(--houblon-doux); }
+.critique { font-size: 0.9rem; color: var(--discret); }
+.plus { font: inherit; font-size: 0.95rem; color: var(--houblon); background: none; border: 0; padding: 4px 0; cursor: pointer; text-align: left; text-decoration: underline; justify-self: start; }
+.note { font-size: 0.95rem; color: var(--discret); max-width: 70ch; }
+.encart { border-left: 4px solid var(--ambre); padding: 10px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 75ch; }
+footer { border-top: 1px solid var(--trait); padding-top: 18px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+footer a { color: var(--houblon); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: rgb(10 12 9 / 92%); display: grid; place-items: start center; overflow-y: auto; padding: calc(60px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.visionneuse figure { margin: 0; display: grid; gap: 10px; justify-items: center; }
+.visionneuse img { width: min(430px, 100%); height: auto; border-radius: 16px; display: block; }
+.visionneuse figcaption { color: #eef2ea; font-size: 1rem; text-align: center; max-width: 430px; }
+.fermer { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); font: 600 1rem var(--texte); background: #eef2ea; color: #1c2019; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.nav { display: flex; gap: 10px; }
+.nav button { font: 600 1rem var(--texte); background: #2d3328; color: #eef2ea; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · houblons · Comparer · 23.10</p>
+    <h1>Comparer : laquelle tu gardes ?</h1>
+    <p class="question">« Cascade, Idaho 7 ou Galaxy pour ma stout ? »</p>
+    <p>Seul le houblon change. D'abord r6n2, ton choix, puis quatre variantes avec une idée de plus chacune. Touche une capture pour l'agrandir.</p>
+  </header>
+
+  <section id="a-choisir" aria-label="À choisir" data-voies="r6p1-nettoyee r6p2-reponse r6p3-defi r6p4-gagne-paie">
+    <div class="grille">
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6n2.png" data-legende="r6n2 · ton choix"><img src="img/r6n2.png" width="780" height="1688" alt="Premier écran de r6n2"></button>
+        <div class="nom"><span class="code">r6n2</span><h3>Ton choix</h3></div>
+        <ul class="puces"><li>79 mots</li><li>le reste à un toucher</li></ul>
+        <button class="plus" type="button" data-img="img/r6n2-toucher.png" data-legende="r6n2 : le dock ouvert sur ton défi">Voir le dock ouvert</button>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6p1.png" data-legende="r6p1 · r6n2 finie"><img src="img/r6p1.png" width="780" height="1688" alt="Premier écran de r6p1"></button>
+        <div class="nom"><span class="code">r6p1</span><h3>r6n2 finie</h3></div>
+        <ul class="puces"><li>premier écran de r6n2</li><li>restes des critiques corrigés</li></ul>
+        <button class="plus" type="button" data-img="img/r6p1-toucher.png" data-legende="r6p1 : le dock ouvert">Voir le dock ouvert</button>
+        <p class="critique">Critique (indicatif) : tout ce qui restait à corriger l'est ; la fiche gagne une vraie valeur sourcée. Le radar reste le plus rose des quatre.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6p2.png" data-legende="r6p2 · la réponse d'abord"><img src="img/r6p2.png" width="780" height="1688" alt="Premier écran de r6p2"></button>
+        <div class="nom"><span class="code">r6p2</span><h3>La réponse d'abord</h3></div>
+        <ul class="puces"><li>« contre ★ » chiffré</li></ul>
+        <button class="plus" type="button" data-img="img/r6p2-toucher.png" data-legende="r6p2 : après un toucher">Voir après un toucher</button>
+        <p class="critique">Critique (indicatif) : qui est devant, de combien, qui sort du style, en trois secondes.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6p3.png" data-legende="r6p3 · ton défi au premier écran"><img src="img/r6p3.png" width="780" height="1688" alt="Premier écran de r6p3"></button>
+        <div class="nom"><span class="code">r6p3</span><h3>Ton défi au premier écran</h3></div>
+        <ul class="puces"><li>Floral ↑ · Résineux ↓</li></ul>
+        <button class="plus" type="button" data-img="img/r6p3-toucher.png" data-legende="r6p3 : après un toucher">Voir après un toucher</button>
+        <p class="critique">Critique (indicatif) : tes deux pistes montrent la leçon de l'écran. Le houblon règle le floral ; aucun ne baisse le résineux.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6p4.png" data-legende="r6p4 · on gagne, on paie"><img src="img/r6p4.png" width="780" height="1688" alt="Premier écran de r6p4"></button>
+        <div class="nom"><span class="code">r6p4</span><h3>On gagne, on paie</h3></div>
+        <ul class="puces"><li>ce que chaque houblon apporte et coûte</li></ul>
+        <button class="plus" type="button" data-img="img/r6p4-toucher.png" data-legende="r6p4 : après un toucher">Voir après un toucher</button>
+        <p class="critique">Critique (indicatif) : les trois paient le même résineux ; la différence est dans ce qu'on gagne.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-savoir">
+    <h2 id="t-savoir">À savoir avant de choisir</h2>
+    <div class="encart">
+      <p>La visée des objectifs, « un cran au-delà du style », vient de nous et pas de tes données. C'est elle qui fait « Atteint » pour Idaho 7 : dis-nous si elle te va.</p>
+      <p>La couleur de Nelson Sauvin (bleu) est provisoire.</p>
+      <p>L'avis du critique est indicatif : c'est ton œil qui compte.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Données : stout export 16 °P à 4,75 % vol., 4 g/L de chaque houblon, après fermentation, 3 jours, US-05. Le simulé est marqué « ~ ».</p>
+    <p>Pour répondre, dis-le dans la conversation. Exemple : « r6p3 ».</p>
+    <p>D'où elles viennent (r6a, r6n1, les 37 éléments que tu avais notés) : <a href="https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv">la page du lot 22</a>.</p>
+  </footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-label="Capture agrandie">
+  <button class="fermer" id="fermer" type="button">Fermer</button>
+  <figure>
+    <img id="vis-img" alt="">
+    <figcaption id="vis-legende"></figcaption>
+    <div class="nav" id="vis-nav" hidden>
+      <button type="button" id="vis-prec">◀ Précédente</button>
+      <button type="button" id="vis-suiv">Suivante ▶</button>
+    </div>
+  </figure>
+</div>
+
+<script>
+// Agrandir au toucher, passer d'une variante à l'autre. Le contenu ne dépend pas de ce script.
+(function () {
+  const vis = document.getElementById('visionneuse');
+  const visImg = document.getElementById('vis-img');
+  const visLeg = document.getElementById('vis-legende');
+  const visNav = document.getElementById('vis-nav');
+  const ordre = Array.from(document.querySelectorAll('.grille .ecran')).map((b) => ({ img: b.dataset.img, legende: b.dataset.legende }));
+  let rang = -1;
+  let retour = null;
+  function ouvrir(img, legende, depuis) {
+    retour = depuis || retour;
+    visImg.src = img; visImg.alt = legende; visLeg.textContent = legende;
+    rang = ordre.findIndex((o) => o.img === img);
+    visNav.hidden = rang < 0;
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('fermer').focus();
+  }
+  function fermer() { vis.hidden = true; visImg.removeAttribute('src'); if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang < 0) return; rang = (rang + pas + ordre.length) % ordre.length; ouvrir(ordre[rang].img, ordre[rang].legende); }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-img]');
+    if (b) ouvrir(b.dataset.img, b.dataset.legende, b);
+  });
+  document.getElementById('fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', () => aller(-1));
+  document.getElementById('vis-suiv').addEventListener('click', () => aller(1));
+  vis.addEventListener('click', (e) => { if (e.target === vis) fermer(); });
+  document.addEventListener('keydown', (e) => {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

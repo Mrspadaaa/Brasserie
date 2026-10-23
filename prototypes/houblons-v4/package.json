@@ -8,11 +8,15 @@
     "data": "node scripts/build-data.mjs && node scripts/build-bands.mjs",
     "pack": "node scripts/build-data.mjs && node scripts/build-bands.mjs && vite-node scripts/build-pack.ts",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p ecran/tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p ecran/tsconfig.json && tsc --noEmit -p parcours/tsconfig.json",
     "check:engine": "node scripts/check-engine.mjs",
     "ecran:dev": "vite --config ecran/vite.config.ts",
     "ecran:build": "node ecran/build.mjs",
-    "ecran:contraste": "node ecran/outils/check-contraste.mjs"
+    "ecran:contraste": "node ecran/outils/check-contraste.mjs",
+    "parcours:dev": "vite --config parcours/vite.config.ts",
+    "parcours:build": "node parcours/outils/construire.mjs",
+    "parcours:types": "node parcours/outils/verifier-types.mjs",
+    "parcours:jouer": "node parcours/outils/jouer-parcours.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.13.9",

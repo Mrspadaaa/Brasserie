@@ -190,6 +190,22 @@ Conçues et relues avant la leçon L25 (22.10, soir) ; gardées ici pour la trac
 ## Retour du brasseur, 23.10 (fin de matinée)
 - r6n2 choisie : « Fais mois quelques variantes de r6n2, avec les meilleures idées retenu. Et ensuite on sera bon ». Quatre variantes (r6p1 à r6p4), une chaleur chacune, puis le critique r6pc ; dernière ronde de Comparer.
 
+## Retour du brasseur, 23.10 (après-midi)
+- r6a choisie : « r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions ». Les variantes r6n2 et r6p1 à r6p4 ne sont pas retenues ; leurs petites améliorations entrent dans r6a, dans la maquette jouable (`work/missions/2026-10-23-maquette-parcours/`, voie p3-comparer).
+
+## Pages
+Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`). L'ancienne page « Lot 22 houblons » (versions 1 à 11) reste l'archive.
+
+| Sujet | Version | Adresse | Source |
+|---|---|---|---|
+| Lot 22 (archive) | versions 1 à 11 ; 22-23.10 | https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv | `work/refonte-frontend/v4/outils/page-lot/index.html` |
+| Comparer | r6n2 et r6p1 à r6p4 ; 23.10 | https://claude.ai/artifact/BRA2ufdNe3DshNfzBxB3g4 | `work/refonte-frontend/v4/outils/pages/2026-10-23-comparer/index.html` |
+| Dryhopper | passes 2 et 3 (a1, b4, d8, e5, g1) ; 23.10 | https://claude.ai/artifact/HjWdF2rgUHDzY3QpgMWVV8 | `work/refonte-frontend/v4/outils/pages/2026-10-23-dryhopper/index.html` |
+| Carte des outils | Substituer et Levure, choix ouverts ; 22.10 | https://claude.ai/artifact/9FrNPBUDv7ABeo5CsSFW7g | `work/refonte-frontend/v4/outils/pages/2026-10-22-carte/index.html` |
+| Dryhopper | 56 concepts v0, classés ; 23.10 | https://claude.ai/artifact/HexW2XmnU4iUbJaRcPJNzW | `work/refonte-frontend/v4/outils/pages/2026-10-23-dryhopper-v0/index.html` |
+
+Le 23.10, après-midi : « Je les vois pas dans les artefacts.. ». Les variantes étaient en ligne, mais au milieu de la page cumulée, sous un en-tête resté à « r6n1 ou r6n2 ». Elles ont chacune leur page datée.
+
 ## Boucle de retour
 - **Courte** : chaque voie rejoue ses critères, avec 3 essais par critère.
 - **Moyenne** : le pilote rejoue (`systeme.mjs voies work/missions/2026-10-22-reprise-lot21`). Un

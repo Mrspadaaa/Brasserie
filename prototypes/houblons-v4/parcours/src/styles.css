@@ -1,0 +1,9 @@
+/* Jetons et couches de l'app (src/index.css), puis les thèmes du prototype (../ecran/src/themes.css), importés
+   tels quels ; puis les quelques classes propres à la maquette, préfixées pq- (L26). */
+@import '../../../../src/index.css';
+@import '../../ecran/src/themes.css';
+
+/* Inconnu : hachuré, jamais une barre à zéro. */
+.pq-hachure {
+  background-image: repeating-linear-gradient(135deg, rgb(var(--cave-700) / 0.55) 0 3px, transparent 3px 7px);
+}
