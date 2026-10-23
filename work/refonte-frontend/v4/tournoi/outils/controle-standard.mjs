@@ -10,7 +10,8 @@
 //   S2 un élément de famille (data-famille) porte un ton de sa famille (base, texte ou fond de
 //      fils17-standard/jetons-familles.json) ou l'orangé « hors du style » (#c2410c), rien d'autre ;
 //   S3 les rayons d'angle suivent l'échelle : 2, 4 ou 8 px, une pilule (rayon ≥ moitié de la hauteur)
-//      ou un rond (50 %) ;
+//      ou un rond (50 %) ; une feuille ([role="dialog"] ou son enfant direct) peut prendre rounded-sheet, 24 px
+//      (DESIGN.md, « feuilles et modales » ; la fiche g1 de la maquette jouable, 23.10) ;
 //   S4 les icônes dessinées (svg de 32 px au plus, hors pictos de famille) ont une seule épaisseur
 //      de trait rendue (à 0,3 px près) ; les icônes pleines n'en ont pas.
 // Usage : node controle-standard.mjs <page.html> [page2.html…] ; imprime STANDARD OK, ou STANDARD
@@ -43,8 +44,8 @@ for (const f of pages) {
     const familles = [...document.querySelectorAll('[data-famille]')].filter(vis).map((e) => ({ f: e.dataset.famille, tons: tons(e) }));
     const houblons = [...document.querySelectorAll('[data-couleur]')].filter(vis).map((e) => ({ n: e.dataset.houblonCompare || e.dataset.serie || e.dataset.houblon || '?', c: norm(e.dataset.couleur) }));
     const rayons = [...document.querySelectorAll('body *')].filter(vis).map((e) => { const cs = getComputedStyle(e), b = e.getBoundingClientRect();
-      return { r: cs.borderTopLeftRadius, h: b.height, w: b.width, peint: cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || cs.borderTopWidth !== '0px' }; })
-      .filter((x) => x.r !== '0px' && x.peint).map((x) => (x.r.endsWith('%') ? (parseFloat(x.r) >= 50 ? 'rond' : x.r) : parseFloat(x.r) >= Math.min(x.h, x.w) / 2 - 0.5 ? 'pilule' : parseFloat(x.r) + 'px'));
+      return { r: cs.borderTopLeftRadius, h: b.height, w: b.width, feuille: e.matches('[role="dialog"]') || !!e.parentElement?.matches('[role="dialog"]'), peint: cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || cs.borderTopWidth !== '0px' }; })
+      .filter((x) => x.r !== '0px' && x.peint).map((x) => (x.feuille && x.r === '24px' ? 'feuille 24px' : x.r.endsWith('%') ? (parseFloat(x.r) >= 50 ? 'rond' : x.r) : parseFloat(x.r) >= Math.min(x.h, x.w) / 2 - 0.5 ? 'pilule' : parseFloat(x.r) + 'px'));
     const traits = [...document.querySelectorAll('svg')].filter((s) => vis(s) && s.getBoundingClientRect().width <= 32 && !s.closest('[data-famille]') && !s.querySelector('[data-famille]'))
       .map((s) => { const u = s.querySelector('use'), src = u ? document.querySelector(u.getAttribute('href') || u.getAttribute('xlink:href')) : s; if (!src) return null;
         const vb = (src.getAttribute('viewBox') || s.getAttribute('viewBox') || '0 0 24 24').split(/[\s,]+/).map(Number), k = s.getBoundingClientRect().width / (vb[2] || 24);
@@ -69,7 +70,7 @@ for (const f of pages) {
   }
   for (const [k, n] of horsTon) p('S2, famille ' + k + ' (' + n + ' élément(s)) hors de ses tons');
   // S3
-  const hors = {}; for (const x of r.rayons) if (!['2px', '4px', '8px', 'pilule', 'rond'].includes(x)) hors[x] = (hors[x] || 0) + 1;
+  const hors = {}; for (const x of r.rayons) if (!['2px', '4px', '8px', 'pilule', 'rond', 'feuille 24px'].includes(x)) hors[x] = (hors[x] || 0) + 1;
   if (Object.keys(hors).length) p('S3, rayons hors échelle : ' + Object.entries(hors).map(([x, n]) => x + '×' + n).join(' '));
   // S4 (cumulé sur toutes les pages)
   for (const t of r.traits) for (const w of t.traits) traits.set(w, [...(traits.get(w) || []), pg + ' ' + t.nom]);
