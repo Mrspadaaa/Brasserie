@@ -60,8 +60,10 @@
 
 **Une version, un artefact** (23.10, après-midi : « Problème avec les artefacts, c'est assez dur à lire et chaque
 version devrait en créé des nouveaux »)
-- `verifier-page.mjs` contrôle la lisibilité à 390 et 1280 px : date au titre, `#a-choisir` au premier écran, captures
-  ≥ 340 px, texte ≥ 14 px, blocs ≤ 45 mots. L'ancienne page échoue (74 captures à 277 px, texte à 12,8 px).
+- `verifier-page.mjs --page-lot` contrôle la lisibilité à 390 et 1280 px : date au titre, `#a-choisir` au premier
+  écran, captures ≥ 340 px, texte ≥ 14 px, blocs ≤ 45 mots. L'ancienne page échoue (74 captures à 277 px, texte à
+  12,8 px). Sans l'option, rendu seul, comme l'appellent 23 GATES de maquettes : le premier durcissement les avait
+  cassés (rejeu du lot 21 à 40/63) ; corrigé en 73ab9aa7, avec `systeme.mjs appels <script> --rejouer` et M15.
 - `systeme.mjs voies` : table « ## Pages » de MISSION.md (Sujet, Version, Adresse, Source) ; deux versions sur une
   même adresse ou une même source échouent ; une mission d'écrans sans cette table aussi (témoins : 60, OK).
 - Mode d'emploi : `work/refonte-frontend/v4/outils/pages/PUBLIER.md` ; consigne remplacée dans REMPLACES.md ;
