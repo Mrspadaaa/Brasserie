@@ -1,5 +1,5 @@
 {
- "maj": "2026-10-23",
+ "maj": "2026-10-24",
  "source": "Onglet Ma bière de la base v4.10 (consolide/biere.html), capture consolide-biere-390.png ; « Ça aussi » (23.10, sur la capture).",
  "contrat": "Une reprise de la maquette choisie reprend chacun de ces éléments à l'écran (marqueur data-element), ou l'écarte avec sa raison écrite dans la NOTE (un quart au plus) : D105, controle-reprise.mjs --inventaire=<ce fichier>.",
  "elements": [
@@ -120,6 +120,17 @@
    "date": "2026-10-19",
    "mots": "Ça aussi",
    "quoi": "« Prévu avec SafAle US-05, caractérisée » au pied de l'écran.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "biere-crans-style",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Je trouve cette vue des barre super car très compact et facile",
+   "quoi": "Sur les barres des familles non attendues du style (Agrumes, Tropicaux, Résineux, Épicé…), la zone du style découpée en crans : deux petits traits dans la zone (relevé par la supervision le 24.10, à côté de sa base).",
    "reserve": "",
    "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
    "facteur": "contexte"

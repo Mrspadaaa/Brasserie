@@ -18,6 +18,7 @@
 - biere-hors-style : repris — la famille hors du style en rouge, son facteur à droite (« ×2,8 », centre ÷ haut de la bande)
 - biere-bannir : repris — la famille touchée s'ouvre sous sa barre : « bannir · − · sans visée · + », et « × » quand une visée est posée (résineux ouvert au repos) ; la visée se dessine sur la piste (D108)
 - biere-objectifs : en pont — Suggérer : « + floral », « − résineux », « + … » ouvrent Suggestions ; « + floral » est le pont-floral
+- biere-crans-style : repris — au style, la zone des familles que le style n'attend pas (Agrumes, Tropicaux, Résineux, Épicé…) découpée en trois crans par deux traits fins, couleur de la page ; rien sur les attendues ni en absolu, comme la base
 - biere-levure : repris — « Prévu avec SafAle US-05, caractérisée » au pied de l'écran
 
 ## Idées reprises
@@ -28,6 +29,9 @@
 
 ## Écarts
 
+- Retirés (critique p6, 24.10 ; règle n° 1, D105, D117) : la ligne « surtout Nugget, 46 g à 60′ » sous l'alerte et, au pied,
+  « et Nugget 46 g à 60′ » après la levure. Ce n'était pas dans sa base, ni dans ses mots ; le pied redit « Prévu avec
+  SafAle US-05, caractérisée », comme elle. La fiche ne s'ouvre donc plus depuis cet onglet (aucun nom de houblon).
 - Un picto de famille devant chaque nom : le code couleur des arômes est un acquis, et l'écran passe COULEURS (D74).
 - Les puces ouvrent toutes Suggérer ; Suggérer lit la visée commune dans l'état (pas de paramètre de route).
 - Le bouton du sens posé (« + », « − » ou « bannir ») a l'encre pleine (`aria-pressed`) ; la base n'en marquait aucun. Le

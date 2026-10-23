@@ -28,8 +28,16 @@
 //   D119 en-tête : sur biere, suggerer et comparer (ceux présents dans --routes), la croix est au même endroit à
 //                  ±2 px (x et y du centre), l'en-tête (l'élément <header>) a la même hauteur à ±2 px, et le bloc
 //                  qui l'étend jusqu'aux onglets (data-role="onglets") aussi.
-// La fiche n'est pas concernée : feuille, elle se ferme sur l'écran qu'elle couvre.
-// Usage : node controle-retour.mjs <dossier> [--routes=biere,suggerer,…] [--page=etat.html] [--parcours=oui|non]
+// La fiche (feuille) n'entre pas dans les routes ci-dessus : elle se ferme sur l'écran qu'elle couvre. Son retour se
+// contrôle à part, par --fiche (D109, critique p6 : « Mais le bouton retour toujours pas au point ??? », le Sheet de
+// l'app gardait un « × » gris de 16 px et un « ‹ » de plus). Sur <dossier>/fiche/etat.html, à 390 puis 1280 :
+//   - une seule commande de fermeture dans la feuille ([role="dialog"]) : [data-role="retour"], ou tout bouton nommé
+//     « Fermer », « Retour… », ou réduit à un glyphe × ‹ (ou svg lucide x / chevron-left). Deux ou plus (× et ‹) = ECHEC ;
+//   - elle est dans l'en-tête de la feuille (<header> de la feuille, à défaut ses 64 px du haut) ;
+//   - boîte de 44 × 44 px au moins, icône de 20 px au moins, une croix, à l'encre (même référence d'encre) ;
+//   - un toucher ferme la feuille : le dialogue disparaît, ou la route quitte #/fiche.
+// Les autres modes ne changent pas.
+// Usage : node controle-retour.mjs <dossier> [--routes=biere,suggerer,…] [--page=etat.html] [--parcours=oui|non] | [--fiche]
 // Imprime une ligne par route et largeur, puis RETOUR OK (n routes × 2 largeurs) (code 0), ou RETOUR ECHEC et une
 // ligne « - D109|D118|D119 <route> <largeur> : … » par manque (code 1) ; code 2 si une page manque.
 import fs from 'node:fs';
@@ -44,7 +52,8 @@ const puppeteer = require('puppeteer-core');
 const args = process.argv.slice(2);
 const opt = (nom, defaut) => { const a = args.find((x) => x.startsWith(`--${nom}=`)); return a ? a.slice(nom.length + 3) : defaut; };
 const dossier = path.resolve(RACINE, args.find((a) => !a.startsWith('--')) ?? '.');
-const routes = opt('routes', 'biere,suggerer,comparer,dryhopper,levure,substituer').split(',').map((r) => r.trim()).filter(Boolean);
+const modeFiche = args.includes('--fiche');
+const routes = modeFiche ? ['fiche'] : opt('routes', 'biere,suggerer,comparer,dryhopper,levure,substituer').split(',').map((r) => r.trim()).filter(Boolean);
 const page = opt('page', 'etat.html');
 const parcoursVoulus = opt('parcours', 'oui') !== 'non';
 const LARGEURS = [{ l: 390, h: 844, tactile: true }, { l: 1280, h: 800, tactile: false }];
@@ -238,6 +247,158 @@ async function apresToucher(p, tactile, m) {
   await pause(300);
   return p.evaluate(() => location.hash);
 }
+
+// Mode --fiche. Dans la page : les commandes de fermeture de la feuille, et la mesure de la seule présente.
+function mesurerFiche() {
+  const visible = (el) => {
+    const r = el.getBoundingClientRect(), s = getComputedStyle(el);
+    return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none';
+  };
+  const arrondi = (v) => Math.round(v * 10) / 10;
+  const feuille = [...document.querySelectorAll('[role="dialog"]')].find(visible) ?? null;
+  if (!feuille) return { feuille: false, hash: location.hash };
+  const enteteEl = feuille.querySelector('header');
+  const fr = feuille.getBoundingClientRect();
+  const bande = enteteEl ? enteteEl.getBoundingClientRect() : { left: fr.left, top: fr.top, right: fr.right, bottom: fr.top + 64 };
+  const nom = (el) => (el.getAttribute('aria-label') || el.innerText || el.textContent || '').trim();
+  const estCommande = (el) => {
+    if (el.matches('[data-role="retour"]')) return true;
+    const n = nom(el);
+    if (/^(fermer|retour|close|back)/i.test(n)) return true;
+    if (/^[×✕✖✗✘╳‹›«»←]$/.test(n)) return true;
+    return !n && !!el.querySelector('svg.lucide-x, svg.lucide-chevron-left, svg.lucide-arrow-left, svg.lucide-x-circle');
+  };
+  const commandes = [...feuille.querySelectorAll('button, a, [role="button"], [data-role="retour"]')].filter((e) => visible(e) && estCommande(e));
+  const decrire = (e) => {
+    const r = e.getBoundingClientRect();
+    return { nom: nom(e).slice(0, 20) || '(sans nom)', w: arrondi(r.width), h: arrondi(r.height), x: Math.round(r.left), y: Math.round(r.top), svg: (e.querySelector('svg')?.getAttribute('class') || '').split(' ').find((c) => c.startsWith('lucide-')) ?? '' };
+  };
+  const liste = commandes.map(decrire);
+  if (commandes.length !== 1) return { feuille: true, nb: commandes.length, liste, hash: location.hash };
+
+  // Une seule : mesures comme pour les outils (encre : la plus sombre des textes à 5 % ou plus, hors le bouton).
+  const retour = commandes[0];
+  const fondPage = (() => {
+    for (const el of [document.body, document.documentElement]) {
+      const m = getComputedStyle(el).backgroundColor.match(/[\d.]+/g);
+      if (m && (m.length < 4 || Number(m[3]) > 0.99)) return m.slice(0, 3).map(Number);
+    }
+    return [255, 255, 255];
+  })();
+  const parse = (c) => { const m = c && c.match(/[\d.]+/g); return m && m.length >= 3 ? { rgb: m.slice(0, 3).map(Number), a: m.length > 3 ? Number(m[3]) : 1 } : null; };
+  const opacite = (el) => { let o = 1; for (let n = el; n && n.nodeType === 1; n = n.parentElement) o *= Number(getComputedStyle(n).opacity); return o; };
+  const effective = (c, el) => { const p = parse(c); if (!p) return null; const a = p.a * opacite(el); return p.rgb.map((v, i) => Math.round(v * a + fondPage[i] * (1 - a))); };
+  const rb = retour.getBoundingClientRect();
+  let icone = null;
+  const svg = retour.querySelector('svg');
+  if (svg && visible(svg)) {
+    const s = getComputedStyle(svg), r = svg.getBoundingClientRect();
+    const peint = (e) => { const c = getComputedStyle(e); return c.stroke && c.stroke !== 'none' ? c.stroke : (c.fill && c.fill !== 'none' ? c.fill : null); };
+    const enfant = [...svg.querySelectorAll('path, line, polyline, polygon, circle, rect, ellipse')].find((e) => peint(e));
+    icone = { genre: 'svg', h: arrondi(r.height), rgb: effective((enfant && peint(enfant)) ?? peint(svg) ?? s.color, svg), rect: { x: r.left, y: r.top, w: r.width, h: r.height } };
+  } else {
+    const w = document.createTreeWalker(retour, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n && !icone; n = w.nextNode()) {
+      const i = n.textContent.search(/[×✕✖✗✘╳‹›<>«»←→]/);
+      if (i < 0) continue;
+      const el = n.parentElement, s = getComputedStyle(el);
+      const range = document.createRange(); range.setStart(n, i); range.setEnd(n, i + 1);
+      const r = range.getBoundingClientRect();
+      icone = { genre: 'glyphe', h: parseFloat(s.fontSize), rgb: effective(s.color, el), rect: { x: r.left, y: r.top, w: r.width, h: r.height } };
+    }
+  }
+  const compte = new Map();
+  const marche = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  for (let n = marche.nextNode(); n; n = marche.nextNode()) {
+    const t = n.textContent.replace(/\s+/g, '');
+    if (!t || retour.contains(n)) continue;
+    const el = n.parentElement;
+    if (!el || ['SCRIPT', 'STYLE', 'NOSCRIPT'].includes(el.tagName) || el.closest('svg, [aria-hidden="true"]')) continue;
+    if (!visible(el) || opacite(el) < 0.5) continue;
+    const c = effective(getComputedStyle(el).color, el);
+    if (c) compte.set(c.join(','), (compte.get(c.join(',')) ?? 0) + t.length);
+  }
+  const total = [...compte.values()].reduce((x, y) => x + y, 0);
+  const lum = (rgb) => 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+  const poids = [...compte].map(([k, n]) => ({ rgb: k.split(',').map(Number), n })).sort((x, y) => y.n - x.n);
+  const retenues = poids.filter((c) => c.n >= 0.05 * total).sort((x, y) => lum(x.rgb) - lum(y.rgb));
+  const encre = (retenues[0] ?? poids[0])?.rgb ?? null;
+  const haut = document.elementFromPoint(rb.left + rb.width / 2, rb.top + rb.height / 2);
+  return {
+    feuille: true, nb: 1, liste, zone: { w: arrondi(rb.width), h: arrondi(rb.height), cx: arrondi(rb.left + rb.width / 2), cy: arrondi(rb.top + rb.height / 2) },
+    icone, encre, recouvert: !(haut && (haut === retour || retour.contains(haut))),
+    dansEntete: rb.left >= bande.left - 1 && rb.top >= bande.top - 1 && rb.right <= bande.right + 1 && rb.bottom <= bande.bottom + 1,
+    enteteDit: enteteEl ? '<header> de la feuille' : 'les 64 px du haut de la feuille', hash: location.hash,
+  };
+}
+
+async function controleFiche() {
+  const nav = await puppeteer.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new' });
+  const problemes = [];
+  let bons = 0;
+  try {
+    for (const v of LARGEURS) {
+      const p = await nav.newPage();
+      const etiq = `fiche ${v.l}`;
+      const fautes = [];
+      try {
+        await poser(p, v, 'fiche');
+        const m = await p.evaluate(mesurerFiche);
+        if (!m.feuille) {
+          fautes.push(`D109 ${etiq} : aucune feuille ([role="dialog"]) visible sur la page de la fiche`);
+          console.log(`${etiq} · pas de feuille`);
+        } else if (m.nb !== 1) {
+          const dit = m.liste.map((c) => `« ${c.nom} » ${c.w}×${c.h} en (${c.x}, ${c.y})${c.svg ? ` ${c.svg}` : ''}`).join(' ; ');
+          fautes.push(`D109 ${etiq} : ${m.nb} commandes de fermeture dans la feuille, une seule attendue : ${dit || 'aucune'}`);
+          console.log(`${etiq} · ${m.nb} commandes de fermeture : ${dit || 'aucune'}`);
+        } else {
+          let forme = { croix: false, vide: true };
+          if (m.icone && m.icone.rect.w > 0 && m.icone.rect.h > 0) {
+            const r = m.icone.rect, rem = 2;
+            const clip = { x: Math.max(0, r.x - rem), y: Math.max(0, r.y - rem), width: r.w + 2 * rem, height: r.h + 2 * rem, scale: 4 };
+            const png = await p.screenshot({ clip, encoding: 'base64' });
+            forme = await p.evaluate(lireForme, `data:image/png;base64,${png}`);
+          }
+          if (m.zone.w < MIN_ZONE - 0.5 || m.zone.h < MIN_ZONE - 0.5) fautes.push(`D109 ${etiq} : zone touchable ${m.zone.w} × ${m.zone.h} px, 44 × 44 au moins`);
+          if (!m.icone) fautes.push(`D109 ${etiq} : aucune icône dans la commande de fermeture`);
+          else {
+            if (m.icone.h < MIN_ICONE - 0.5) fautes.push(`D109 ${etiq} : icône de ${m.icone.h} px de haut (${m.icone.genre}), 20 au moins`);
+            if (!forme.croix) fautes.push(`D109 ${etiq} : l'icône n'est pas une croix « × »`);
+          }
+          if (m.icone?.rgb && m.encre) {
+            const e = ecart(m.icone.rgb, m.encre);
+            if (e > MAX_ECART) fautes.push(`D109 ${etiq} : icône ${hex(m.icone.rgb)}, encre du texte ${hex(m.encre)} (écart ${e}, 24 au plus) : pas à l'encre`);
+          }
+          if (!m.dansEntete) fautes.push(`D109 ${etiq} : la commande est hors de ${m.enteteDit}`);
+          let ferme = 'non testé';
+          if (m.recouvert) {
+            fautes.push(`D109 ${etiq} : le centre de la commande est recouvert par un autre élément`);
+            ferme = 'recouvert';
+          } else {
+            await toucher(p, v.tactile, m.zone.cx, m.zone.cy);
+            let parti = false;
+            for (let i = 0; i < 20 && !parti; i += 1) {
+              await pause(100);
+              parti = await p.evaluate(() => ![...document.querySelectorAll('[role="dialog"]')].some((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== 'hidden' && r.top < innerHeight - 4; }) || !location.hash.startsWith('#/fiche'));
+            }
+            ferme = parti ? 'oui' : 'non';
+            if (!parti) fautes.push(`D109 ${etiq} : un toucher sur la commande ne ferme pas la feuille (route ${await p.evaluate(() => location.hash)})`);
+          }
+          console.log(`${etiq} · 1 commande « ${m.liste[0].nom} » ${m.zone.w}×${m.zone.h} · icône ${m.icone ? `${m.icone.h} px ${hex(m.icone.rgb)}` : 'aucune'} (encre ${hex(m.encre)}) · forme ${forme.croix ? 'croix' : 'pas une croix'} · dans ${m.enteteDit} : ${m.dansEntete ? 'oui' : 'non'} · ferme la feuille : ${ferme}`);
+        }
+      } finally {
+        await p.close();
+      }
+      if (fautes.length) problemes.push(...fautes); else bons += 1;
+    }
+  } finally {
+    await nav.close();
+  }
+  for (const p of problemes) console.log(`  - ${p}`);
+  console.log(problemes.length ? `RETOUR ECHEC (${bons}/${LARGEURS.length} conformes, ${problemes.length} manques, fiche)` : `RETOUR OK (fiche × ${LARGEURS.length} largeurs)`);
+  process.exit(problemes.length ? 1 : 0);
+}
+if (modeFiche) await controleFiche();
 
 const nav = await puppeteer.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new' });
 const problemes = [];

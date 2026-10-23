@@ -15,7 +15,11 @@ const lot = [
   n(`node ${T}/controle-choix.mjs ${D}`, 'CHOIX OK'),
   n(`node ${T}/controle-teinte.mjs ${D}`, 'TEINTE OK'),
   // Les exigences de toute l'app, écran par écran (les mots se comptent à part, MOTS OK des voies).
-  ...['ma-biere', 'biere', 'suggerer', 'comparer', 'dryhopper', 'levure', 'substituer'].map((r) => n(`node ${T}/controle-commun.mjs ${D} ${r} --page=etat.html --sans=mots`, 'COMMUN OK')),
+  // L'onglet Ma bière de sa base ne nomme aucun houblon : pas d'appui long à y vérifier (fiche).
+  ...['ma-biere', 'biere', 'suggerer', 'comparer', 'dryhopper', 'levure', 'substituer'].map((r) => n(`node ${T}/controle-commun.mjs ${D} ${r} --page=etat.html --sans=${r === 'biere' ? 'mots,fiche' : 'mots'}`, 'COMMUN OK')),
+  n(`node ${T}/mots-premier-ecran.mjs ${D} ma-biere --max=30 --page=etat.html --sans-coquille --sans-donnees`, 'MOTS OK'),
+  n(`node ${T}/controle-hauteur.mjs ${D} ma-biere --max=1.05`, 'HAUTEUR OK'),
+  n(`node ${T}/controle-retour.mjs ${D} --fiche`, 'RETOUR OK'),
   // Le rail (D27, D35 à D37, D46, D47, D55, D69).
   n(`node ${T}/controle-rail.mjs ${D} ma-biere dryhopper --page=etat.html --parcours`, 'RAIL OK'),
   // D107 à D121.

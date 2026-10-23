@@ -1,4 +1,4 @@
-ECHEC — G4 : 96 mots pour 80, fil d'étapes de l'app (D116) ; D111, D112, D113, D116, D121 verts
+ECHEC — G4 (95 mots, --sans-coquille, base 77) et G19 (fiche, contredit G37) ; G36 HAUTEUR OK 1,04, G37 OK
 
 ## Fichiers écrits (dans « Possède » seulement)
 - `prototypes/houblons-v4/parcours/src/ecrans/ma-biere/` : `index.tsx`, `Rail.tsx` (moment par 5′, loupe),
@@ -441,3 +441,74 @@ DÉCISION À PRENDRE :
 CONNAISSANCE : le texte d'un élément `sr-only` (rogné à 1 px) se mesure à pleine largeur par `Range.getBoundingClientRect`. Les contrôles de chevauchement (D56) et de mots le prennent pour du texte visible. Mettre sa police à 1 px suffit pour D56, sans rien retirer aux lecteurs d'écran.
 
 LEÇON PROPOSÉE : un patch passé par `node -e "…"` dans Bash perd chaque gabarit `${…}` et chaque accent grave (substitution du shell), 4 fois dans cette voie : écrire ces patchs avec Edit, ou dans un fichier `.mjs` sous heredoc à guillemets simples.
+
+## Crans du style (biere-crans-style, 24.10)
+- Repris de la base v4.10 (`.zone-f.crans`) : au style, deux traits de 1 px découpent la zone en trois crans sur les familles non attendues ; rien sur les attendues, rien en absolu. Marqueur `data-element~="biere-crans-style"` ; ligne ajoutée à `biere/NOTE.md`. Rejoués sur `maquettes/parcours` (la sortie par défaut) puis sur `parcours-p1` : `CHOIX OK (5 conformes, 3 ouverts)`, `VISEE OK (6/6, tropical)`, `TEINTE OK 1/1`. Capture ouverte, à 390 : `prototypes/houblons-v4/maquettes/parcours-p1/captures-d108/biere-crans-style-390.png`. Côte à côte avec `consolide-biere-390.png`, les traits tombent sur Agrumes, Tropicaux, Résineux et Épicé, comme dans la base.
+
+## Corrections de la critique (p6, « Version D107 à D121 », 24.10)
+
+### Fait
+1. **Onglet Ma bière, REJET (règle n° 1)** : retirés, avec la `useFiche` devenue sans objet (`biere/index.tsx`) :
+   - la ligne « surtout Nugget, 46 g à 60′ » (`data-role="cause"`) ;
+   - au pied, « et Nugget 46 g à 60′ ».
+
+   Le pied redit « Prévu avec SafAle US-05, caractérisée », comme sa base. La NOTE de biere, section « ## Écarts »,
+   donne la raison : ce n'était pas dans sa base, ni dans ses mots.
+2. **Étape, D5** : 1,14 écran → **1,04 écran (881 px pour 844)**, avec **trois ajouts rapides comme sa base**
+   (consigne corrigée). Rien n'est retiré : ni le fil D116, ni les « ? » D113, ni « analyse » D121, ni rien de sa
+   base. La place vient des rangs :
+   - les nœuds sans ajout de la frise passent de 32 à 24 px, la levure de 44 à 40 px, et les espaces de la frise
+     de 4 à 2 px ;
+   - les familles du profil passent de 28 à 24 px ;
+   - le champ « Ajouter » passe de 44 à 40 px, les ajouts rapides ont un padding vertical de 4 px, l'écran des
+     espaces de 4 px, et la pastille « analyse » fait 32 px ;
+   - le « ? » du profil devient celui des groupes : 28 px dessinés, 44 px au doigt par une zone qui déborde sans
+     prendre de place. Le rang des réglages perd 8 px ; la légende s'ouvre dans le flux et se referme par Échap.
+
+   Avec deux ajouts rapides, l'écran ferait environ 57 px de moins. Le troisième est Idaho 7 : les ajouts sont tirés
+   du stock de la maquette, triés par le floral, alors que sa base montrait Saaz Late. C'est noté dans la NOTE de
+   l'étape (« ## Écarts »).
+3. **NOTE de l'étape** : « trois ajouts rapides » est vrai de nouveau, et l'écart D5 y est déclaré avec ses mesures.
+- En plus, pour garder RAIL sur `cas-k3` après le resserrement :
+  - le repère d'un autre houblon que la bulle tenue recouvre s'efface le temps du passage, comme les « fondus » de
+    sa base ;
+  - une minute ne s'écrit pas à moins de 16 px d'un autre repère.
+
+Construit dans la sortie par défaut (`maquettes/parcours`) et dans `parcours-p1`. Je n'ai touché ni la fiche, ni
+`src/commun`.
+
+### Critères rejoués (G1 à G37, sauf G12 et G27, retirés par le pilote)
+- **Verts** :
+  - G1 `CONSTRUIT OK` · G2 et G28 `TYPES OK` · G3 et G10 `COMMUN OK` · G5 `MA-BIERE OK` · G6 `ALPHA OK` ·
+    G7 `FICHE OK 1/1` · G8 `FICHE-BASELINE OK` · G9 `SANS-FAMILLE OK` · G11 `ETAPE OK (substituer)` ;
+  - G13 `TOLERANCE OK` · G14 `APP INTACTE OK` · G15, G16 et G29 `NOTE OK` · G17 `REPRISE OK (7)` ·
+    G18 `REPRISE OK (11 repris, 1 en pont)` · G20 `ETAPE OK (biere)` ;
+  - G21, G22 et G24 `CHOIX OK` ; `controle-choix` sur `maquettes/parcours` : `CHOIX OK (5 conformes, 3 ouverts)` ;
+  - G23 `RAIL OK 1/1` ; RAIL `--parcours` aussi OK sur `cas-k3`, `cas-ebu45` et `cas-ebu120` ;
+  - G25 `TEINTE OK 1/1` (fiche ; ma-biere aussi) · G26 `VISEE OK (6/6, tropical)` · G30 `GESTE-ETAPE OK` ·
+    G31 `STEPPER OK 2/2` · G33 `APPUI-ETAPE OK` · G34 `LEGENDE OK` · G35 `PROFIL OK` ;
+  - G36 `HAUTEUR OK (1,04 écran)` · G37 `SANS-AJOUT-OK`.
+- **G4 `MOTS ECHEC` : 95 mots, `--sans-coquille`, pour 80.** Sa base en compte **77** au premier écran, et elle y
+  tient tout entière. Les 18 mots de plus viennent tous d'une demande :
+  - « ? » ×3 (D113), « analyse » (D121) ;
+  - « + floral › » (pont de la carte des outils), « Au style / Absolu » (exigence de toute l'app) ;
+  - « Sans Nugget › » (pont Substituer) ;
+  - « % » et la plage d'α (`AlphaLu` de la fiche, D87).
+
+  D5 (≤ 1,05 écran) fait tenir toute l'étape dans le premier écran : on ne peut plus repousser de mots plus bas.
+- **G19 `COMMUN ECHEC` (fiche)** : « aucun houblon marqué `data-houblon` visible » sur `biere/etat.html`. C'est la
+  conséquence directe de la correction 1 : le seul nom de houblon de l'onglet était la ligne retirée. Sa base
+  (`consolide/biere.html`) n'a aucun nom de houblon non plus. G19 et G37 se contredisent.
+
+### Captures ouvertes à 390 (`prototypes/houblons-v4/maquettes/parcours-p1/captures-etape/`)
+- `critique-ma-biere-390.png` et `critique-ma-biere-390-bas.png` : l'étape tient presque en un écran, avec trois
+  ajouts rapides, le fil, les « ? » et « analyse ».
+- `critique-biere-390.png` et `critique-biere-390-bas.png` : l'onglet Ma bière, sans « surtout Nugget ». Le pied dit
+  « Prévu avec SafAle US-05, caractérisée », comme `consolide-biere-390.png`.
+
+DÉCISION À PRENDRE :
+- G4 : 80 mots au premier écran, ou bien D5 (tout l'écran en 1,05) et les ajouts demandés (18 mots) ?
+  Recommandation : comparer à sa base (77) en excluant les mots qu'il a demandés, ou relever le plafond de l'étape
+  à 95.
+- G19 : lancer `controle-commun … biere --sans=mots,fiche` pour l'onglet Ma bière. Comme sa base, il n'y a plus de
+  nom de houblon à presser (G37).

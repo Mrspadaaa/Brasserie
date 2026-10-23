@@ -5,10 +5,10 @@
 // et « + Floral 2/4  − Résineux 2/4 » ; ensuite le bloc gris des familles : la bande des 12, chaque famille citée avec
 // son picto au trait (D93), « 2/4 », ses mots, « nommé en premier » ; « sans famille : … » (et sa part dessinée,
 // D100) ; « n non décrites : … » ; en pied, ♡ ⊘ et « Comparer ».
-// Fermée par « × » (Sheet), Échap et « ‹ ». Emploi depuis un autre écran : export par défaut de index.tsx
+// Fermée par une seule croix ronde en haut à droite (Feuille, la tête de g1 et D109), Échap et le retour du téléphone. Emploi depuis un autre écran : export par défaut de index.tsx
 // (<Fiche houblon={cle} />, fermée par le retour), ou useFiche() (état local).
 import { useCallback, useEffect, useState } from 'react';
-import { Ban, ChevronLeft, Heart } from 'lucide-react';
+import { Ban, Heart } from 'lucide-react';
 import { COULEURS, COURT, FAMILIES, Feuille, Picto, nombre, plage } from '../../commun';
 import { useNavigation } from '../../coquille/navigation';
 import { useBiere, useComparaison, useGestes, useRecette, useVisee } from '../../etat/EtatParcours';
@@ -123,10 +123,6 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
     <Feuille ouverte titre={`${h.nom}${lot != null ? ' ⊙' : ''}`} onFermer={onFermer} pied={pied}>
       <div ref={refRacine} tabIndex={-1} data-ecran="fiche" data-houblon-ouvert={cle} className="pq-fiche space-y-3 outline-none">
         <div className="flex items-center gap-2">
-          <button type="button" data-role="fermer-fiche" aria-label="Retour" onClick={onFermer}
-            className="touch-target -ml-1 w-8 h-8 inline-flex items-center justify-center rounded-full text-cave-200">
-            <ChevronLeft className="w-4 h-4" aria-hidden="true" />
-          </button>
           <span data-element="g1-alpha" className="inline-flex items-baseline gap-2 min-w-0 flex-wrap">
             <span data-role="fiche-alpha" className="font-mono text-2xl font-semibold text-cave-50 whitespace-nowrap">
               <span {...(lot == null ? { 'data-role': 'alpha', 'data-houblon': cle, 'data-source': 'fiches' } : {})}>α{' '}{p ? plage(p[0], p[1]) : h.alpha ? nombre(h.alpha.valeur, 1) : '?'}{' '}%</span>

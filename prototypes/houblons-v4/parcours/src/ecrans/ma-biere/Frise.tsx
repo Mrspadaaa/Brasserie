@@ -7,7 +7,7 @@
 // ouvre l'échelle du temps sous le doigt seulement ; au repos les cartes s'enchaînent (D55). Au clavier : ↑ ↓.
 // Contrat (controle-rail --parcours) : [data-role="frise"] aria-orientation="vertical" ; une poignée par ajout
 // [data-role="glisser-moment"][role="slider"][aria-orientation="vertical"][data-houblon] ; [data-cran] au geste.
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { useOuvrir } from '../../coquille/ouvrir';
 import { useGestes } from '../../etat/EtatParcours';
@@ -52,6 +52,26 @@ function Repere({ a, recette, onGeste, onGel }: { a: AjoutParcours; recette: Rec
   };
   const viser = (k: number) => { if (!meme(crans[k], quandDe(a, recette))) { onGeste(); gestes.moment('recette', a.id, crans[k]); } };
   const fin = () => { setGeste(null); onGel(null); };
+  // Comme la base (« sous la carte tenue, ils s'effacent ») : le repère d'un autre houblon que la bulle tenue recouvre
+  // s'efface le temps du passage, puis revient (D35, plusieurs houblons).
+  const tenuActif = !!geste;
+  useEffect(() => {
+    if (!tenuActif) return;
+    const frise = ref.current?.closest('[data-role="frise"]');
+    const autres = () => [...(frise?.querySelectorAll<HTMLElement>('[data-role="glisser-moment"]') ?? [])].filter((x) => x !== ref.current);
+    return () => { for (const x of autres()) x.classList.remove('pq-ma-biere-fondu'); };
+  }, [tenuActif]);
+  useEffect(() => {
+    if (!geste) return;
+    const frise = ref.current?.closest('[data-role="frise"]');
+    if (!frise) return;
+    const autres = [...frise.querySelectorAll<HTMLElement>('[data-role="glisser-moment"]')].filter((x) => x !== ref.current);
+    const t = ref.current!.getBoundingClientRect();
+    for (const x of autres) {
+      const b = x.getBoundingClientRect();
+      x.classList.toggle('pq-ma-biere-fondu', b.top < t.bottom + 4 && b.bottom > t.top - 4);
+    }
+  });
   const kVu = geste ? geste.k : i;
   const seg = segment(crans[kVu]);
   // La tranche ouverte ne vaut que dans le segment de départ : ailleurs, la carte reprend sa place (sans puce), et les
@@ -68,7 +88,7 @@ function Repere({ a, recette, onGeste, onGel }: { a: AjoutParcours; recette: Rec
   // autres crans ne sont qu'un trait.
   // Une minute ne s'écrit pas sur le repère d'un autre houblon posé sur la ligne (D35, plusieurs houblons).
   const autres = geste ? [...(ref.current?.closest('[data-role="frise"]')?.querySelectorAll('[data-role="glisser-moment"]') ?? [])]
-    .filter((x) => x !== ref.current).map((x) => { const b = x.getBoundingClientRect(); return [b.top - 8, b.bottom + 8]; }) : [];
+    .filter((x) => x !== ref.current).map((x) => { const b = x.getBoundingClientRect(); return [b.top - 16, b.bottom + 16]; }) : [];
   const ecrits = new Set<number>();
   for (const sens of [1, -1]) {
     let dernier = 0;
@@ -152,7 +172,7 @@ function Repere({ a, recette, onGeste, onGel }: { a: AjoutParcours; recette: Rec
 
 function Noeud({ nom, plein = false, petit = false }: { nom: React.ReactNode; plein?: boolean; petit?: boolean }) {
   return (
-    <div className="pq-ma-biere-ligne-frise flex items-center gap-3 min-h-[2rem]">
+    <div className={`pq-ma-biere-ligne-frise flex items-center gap-3 ${petit ? 'min-h-[1.5rem]' : 'min-h-[2rem]'}`}>
       <span className="w-[3.25rem] flex justify-center shrink-0">
         <i aria-hidden="true" className={`block rounded-full border-2 border-cave-50 ${plein ? 'w-5 h-5 bg-cave-50' : petit ? 'w-3 h-3 border-cave-400 bg-cave-950' : 'w-5 h-5 bg-cave-950'}`} />
       </span>
@@ -210,7 +230,7 @@ export function Frise({ recette, biere, reperes, onGeste }: {
       <span className="w-[3.25rem] flex justify-center shrink-0"><i aria-hidden="true" className="block w-6 h-6 rounded-full bg-cave-50" /></span>
       <button type="button" data-role="pont-etape-levure" data-element="etape-levure" disabled={!ajoutLevure}
         onClick={() => ajoutLevure && ouvrir({ ecran: 'levure', ajout: ajoutLevure })}
-        className={`flex-1 min-w-0 flex items-center gap-2 min-h-[2.75rem] px-3 rounded-lg border bg-cave-900 text-left ${levureChangee ? 'pq-ma-biere-change border-cave-600' : 'border-cave-700'}`}>
+        className={`flex-1 min-w-0 flex items-center gap-2 min-h-[2.5rem] px-3 rounded-lg border bg-cave-900 text-left ${levureChangee ? 'pq-ma-biere-change border-cave-600' : 'border-cave-700'}`}>
         <i aria-hidden="true" className="block w-4 h-4 rounded-full border-2 border-cave-400 relative after:absolute after:inset-1 after:rounded-full after:bg-cave-400" />
         <span className="text-base text-cave-50 truncate">{nomLevureBase(recette.yeastId)}</span>
         <span className="text-sm text-cave-400">caractérisée</span>
@@ -222,7 +242,7 @@ export function Frise({ recette, biere, reperes, onGeste }: {
     <Noeud key="n-post" nom="post-fermentation" petit={!apres.length} />, ...apres.map(ligne),
   );
   return (
-    <div data-role="frise" data-acquis="frise" aria-orientation="vertical" data-element="etape-frise" {...(tenu ? { 'data-geste': '' } : {})} className="pq-ma-biere-frise relative space-y-1">
+    <div data-role="frise" data-acquis="frise" aria-orientation="vertical" data-element="etape-frise" {...(tenu ? { 'data-geste': '' } : {})} className="pq-ma-biere-frise relative space-y-0.5">
       {lignes}
     </div>
   );

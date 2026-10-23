@@ -44,6 +44,10 @@
   (deux fois sa vitesse) et la carte revient : aucun houblon ne saute (D61 bis), pas de vide (D55).
 - L'annonce de WizardStepName (sr-only) est à 1 px de police : ses glyphes, mesurés pleine largeur, passaient pour un
   texte posé sur le nom de l'étape (D56).
+- D5 (critique p6, 24.10 : 1,14 écran depuis le fil de l'app) : les rangs sont resserrés, sans rien retirer. Nœuds
+  sans ajout de la frise à 24 px, familles du profil à 24 px, ajouts rapides, champ, levure et espacements plus serrés,
+  « ? » du profil à zone tactile débordante (44 px sans prendre de place). Trois ajouts rapides comme sa base : 881 px
+  pour 844, soit 1,04 écran (`controle-hauteur`) ; avec deux, l'écran ferait environ 57 px de moins.
 - Toucher une autre étape du fil ne fait rien : seule l'étape Houblons existe dans la maquette.
 - L'ébullition est à l'échelle du temps : 14 px par 5′, l'endroit où le doigt lâche le repère (D61) ; le reste de la frise
   est en étapes. Le repère est une piste verticale (role=slider, aria-orientation=vertical) qui ne bouge pas pendant le

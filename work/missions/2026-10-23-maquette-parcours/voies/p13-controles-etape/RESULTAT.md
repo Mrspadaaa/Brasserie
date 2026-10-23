@@ -44,6 +44,15 @@ Page rechargée avant chaque toucher : alerte, puis deux familles tirées au has
 - Appels rejoués : `systeme.mjs appels controle-profil-ouvre.mjs --rejouer` → `APPELS OK (1 critères rejoués)`.
 - Base v4.10 : non rejouée (D121 dit qu'elle a le même « › » ; elle n'a pas la page `ma-biere/etat.html`).
 
+## D5 — `controle-hauteur.mjs <dossier> <route> [--max=1.05] [--page=etat.html]` (demandé après la critique)
+Mesure à 390 × 844 tactile, au repos : (844 − hauteur visible du conteneur défilant) + son scrollHeight (le main de [data-page-shell], sinon le plus haut conteneur à overflow auto), ou la hauteur du document si elle est plus grande. Page lue : `<dossier>/<route>/<page>`, sinon `<dossier>/<page>` (la base : `--page=index.html`). Sortie `HAUTEUR OK (1,0x écran)` ou `HAUTEUR ECHEC (1,xx écran > 1,05)` et les lignes « - D5 … ».
+- Les trois nombres (24.10) : construction actuelle `maquettes/parcours` : 958 px = **1,14 écran**, ECHEC (57 px fixes + 901 défilants) ; d332792c : 936 px = **1,11 écran**, ECHEC (41 + 895) ; base v4.10 (`base/consolide/index.html`) : 844 px = **1,00 écran**, OK (aucun conteneur défilant, le document tient dans l'écran).
+- Témoins : `hauteur-trop` (960 px, coque [data-page-shell] avec main défilant) : ECHEC 1,14 ; `hauteur-ok` (840 px) : OK 1,00. G8 `ECHOUE OK`, G9 `HAUTEUR OK`.
+- `portee-defauts.json` : ligne D5 passée à verdict `garde`, `tourne` oui, script `controle-hauteur.mjs`, portée `["ma-biere"]`, les trois nombres dans `resultat` (relu juste avant, écrit en une commande ; D111, D112, D113, D121 conservées).
+- Appels rejoués : `systeme.mjs appels controle-hauteur.mjs --rejouer` → `APPELS ECHEC` sur un seul appel, attendu : `p1-ma-biere/GATES.md` (`parcours-p1`, attendu HAUTEUR OK) échoue car la page de p1 fait elle aussi 958 px (1,14 écran). C'est la correction de la voie p1 qui doit le faire passer.
+- Remarque : `systeme.mjs cablage` est en ECHEC à cause d'un caractère de contrôle dans `controle-annuler.mjs` (autre voie, pas touché) ; mes scripts n'en ont pas (CABLAGE OK avant l'arrivée de ce fichier).
+- Limite : la hauteur de D5 est mesurée au repos ; D84 admet une liste longue, donc les pages-listes (Suggérer, Comparer) restent à réconcilier avant d'étendre la portée au-delà de `ma-biere`.
+
 ## Critères
 - G1 `ECHOUE OK` · G2 `GESTE-ETAPE OK` · G3 `ECHOUE OK` · G5 `PORTEE OK` · G6 `TEMOINS OK` · G7 `ECHOUE OK` · G4 : ce rapport.
 - `systeme.mjs appels controle-geste-etape.mjs --rejouer` : `APPELS OK (4 critères rejoués)`. `systeme.mjs cablage` : `CABLAGE OK`.

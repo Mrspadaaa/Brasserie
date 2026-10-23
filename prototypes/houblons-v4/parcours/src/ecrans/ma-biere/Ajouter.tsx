@@ -37,24 +37,24 @@ export function Ajouter({ recette, onGeste }: { recette: RecetteParcours; onGest
     return cles.map((k) => houblon(k))
       .filter((h) => !q || h.nom.toLowerCase().includes(q))
       .sort((x, y) => poids(y.cle) - poids(x.cle) || x.nom.localeCompare(y.nom, 'fr'))
-      .slice(0, 2)
+      .slice(0, 3)
       .map((h) => {
         const ajout = placer({ id: nouvelId(recette, h.cle), hopKey: h.cle, grams: DOSE, moment: 'b10' }, { type: 'ebullition', minutes: MINUTES }, recette);
         return { h, ajout, ibu: ibuAjout(ajout, { ...recette, additions: [...recette.additions, ajout] }).ibu };
       });
   }, [recette, cherche]);
   return (
-    <section data-element="etape-ajouter" aria-label="Ajouter un houblon" className="space-y-1.5">
+    <section data-element="etape-ajouter" aria-label="Ajouter un houblon" className="space-y-1">
       <div className="flex items-center gap-1">
         <input type="text" inputMode="search" value={cherche} onChange={(e) => setCherche(e.target.value)} placeholder="Ajouter — houblon…"
           aria-label="Ajouter un houblon : chercher dans le stock"
-          className="flex-1 min-w-0 h-11 px-4 rounded-full border border-cave-700 bg-cave-900 text-base text-cave-50 placeholder:text-cave-400" />
+          className="flex-1 min-w-0 h-10 px-4 rounded-full border border-cave-700 bg-cave-900 text-base text-cave-50 placeholder:text-cave-400" />
         {liste.length > 0 && <BoutonLegende ouverte={legende} onBasculer={basculerLegende} groupe="les icônes des ajouts rapides" controle="pq-ma-biere-legende-rapides" />}
       </div>
-      <ul className="space-y-1.5">
+      <ul className="space-y-1">
         {liste.map(({ h, ajout, ibu }) => (
           <li key={h.cle} data-role="ajout-rapide" {...fiche.appui(h.cle)}
-            className="flex items-center gap-2 pl-1.5 pr-1 py-1.5 rounded-lg bg-cave-900 border border-cave-800">
+            className="flex items-center gap-2 pl-1.5 pr-1 py-1 rounded-lg bg-cave-900 border border-cave-800">
             <span onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
               <button type="button" data-role="ajout-rapide-plus" aria-label={`Ajouter ${h.nom}, ${DOSE} g à ${MINUTES}′`}
                 onClick={() => { onGeste(); gestes.ajouter('recette', ajout); }}

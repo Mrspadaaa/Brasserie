@@ -48,7 +48,7 @@ function mesurer() {
   const roleAction = /^pont-(remplacer|ajouter|placer|inscrire|valider|appliquer)/;
   const texteAction = /^(remplacer|ajouter à ma bière|placer|inscrire|valider|appliquer)/i;
   // Un outil qui n'écrit pas lui-même (Dryhopper) mène à l'outil suivant : « Puis la levure › » ou un pont du pied.
-  const texteSuite = /^puis/i;
+  const texteSuite = /^puis\b/i;
   const dansPied = (el) => el.getBoundingClientRect().top >= innerHeight / 2;
   const estPont = (b) => /^pont-/.test(b.dataset.role ?? '') && dansPied(b);
   const actions = boutons.filter((b) => roleAction.test(b.dataset.role ?? '') || texteAction.test(nom(b)) || texteSuite.test(nom(b)) || estPont(b));

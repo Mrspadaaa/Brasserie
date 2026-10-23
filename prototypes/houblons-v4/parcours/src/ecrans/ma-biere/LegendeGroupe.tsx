@@ -19,12 +19,12 @@ export function useLegende(): [boolean, () => void] {
   return [ouverte, () => setOuverte((o) => !o)];
 }
 
-/** Le « ? » d'un groupe : 28 px dessinés, 44 px au doigt (touch-target). */
+/** Le « ? » d'un groupe : 28 px dessinés, 44 px au doigt (une zone de 8 px tout autour, sans prendre de place). */
 export function BoutonLegende({ ouverte, onBasculer, groupe, controle }: { ouverte: boolean; onBasculer: () => void; groupe: string; controle: string }) {
   return (
     <button type="button" data-role="legende-bouton" aria-expanded={ouverte} aria-controls={controle} aria-label={`Légende : ${groupe}`}
       onClick={(e) => { e.stopPropagation(); onBasculer(); }} onPointerDown={(e) => e.stopPropagation()}
-      className="pq-ma-biere-legende-bouton touch-target shrink-0">
+      className="pq-ma-biere-legende-bouton relative inline-flex shrink-0">
       <span aria-hidden="true">?</span>
     </button>
   );

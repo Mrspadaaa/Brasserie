@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Témoin D5 · hauteur trop</title>
+<!-- Témoin statique de controle-hauteur.mjs (D5, voie p13). Étape de 960 px : ECHEC attendu (1,14 écran, comme l'étape Houblons du 23.10). En-tête fixe de 41 px et main défilant de la coque [data-page-shell] ; classes préfixées th-. -->
+<style>
+  body { margin: 0; font: 14px/18px system-ui, sans-serif; background: #fff; color: #111; }
+  .th-coque { position: fixed; inset: 0; display: flex; flex-direction: column; }
+  .th-entete { height: 41px; flex: none; padding: 0 12px; display: flex; align-items: center; font-weight: 700; border-bottom: 1px solid #ddd; box-sizing: border-box; }
+  .th-main { flex: 1; min-height: 0; overflow-y: auto; }
+  .th-contenu { height: 919px; padding: 12px; box-sizing: border-box; background: linear-gradient(#f4f4f4, #e4e4e4); }
+</style>
+</head>
+<body>
+<div class="th-coque" data-page-shell>
+  <header class="th-entete">Houblons 3/7</header>
+  <main class="th-main"><div class="th-contenu">Contenu de l'étape : 919 px, avec l'en-tête 960 ou 840 px au total.</div></main>
+</div>
+</body>
+</html>

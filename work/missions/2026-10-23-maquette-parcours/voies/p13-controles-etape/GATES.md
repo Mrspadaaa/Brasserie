@@ -1,6 +1,6 @@
 # Gates: voie p13-controles-etape — D111, D112, D113 et leurs témoins
 
-OWNS: work/refonte-frontend/v4/tournoi/outils/controle-geste-etape.mjs, work/refonte-frontend/v4/tournoi/outils/controle-appui.mjs, work/refonte-frontend/v4/tournoi/outils/controle-legende.mjs, work/refonte-frontend/v4/tournoi/outils/temoins/geste-etape-*/**, work/refonte-frontend/v4/tournoi/outils/temoins/appui-etape-*/**, work/refonte-frontend/v4/tournoi/outils/temoins/legende-etape-*/**, work/missions/2026-10-23-maquette-parcours/voies/p13-controles-etape/RESULTAT.md, work/refonte-frontend/v4/tournoi/outils/controle-profil-ouvre.mjs, work/refonte-frontend/v4/tournoi/outils/temoins/profil-*/**
+OWNS: work/refonte-frontend/v4/tournoi/outils/controle-geste-etape.mjs, work/refonte-frontend/v4/tournoi/outils/controle-appui.mjs, work/refonte-frontend/v4/tournoi/outils/controle-legende.mjs, work/refonte-frontend/v4/tournoi/outils/temoins/geste-etape-*/**, work/refonte-frontend/v4/tournoi/outils/temoins/appui-etape-*/**, work/refonte-frontend/v4/tournoi/outils/temoins/legende-etape-*/**, work/missions/2026-10-23-maquette-parcours/voies/p13-controles-etape/RESULTAT.md, work/refonte-frontend/v4/tournoi/outils/controle-profil-ouvre.mjs, work/refonte-frontend/v4/tournoi/outils/temoins/profil-*/**, work/refonte-frontend/v4/tournoi/outils/controle-hauteur.mjs, work/refonte-frontend/v4/tournoi/outils/temoins/hauteur-*/**
 
 Scope: trois contrôles de l'étape Houblons (le glisser replié et lisible, un retour pendant l'appui long, un « ? » près de chaque groupe d'icônes), chacun en échec sur la version publiée d332792c.
 
@@ -37,4 +37,14 @@ Scope: trois contrôles de l'étape Houblons (le glisser replié et lisible, un 
 - [ ] G7: le bloc du profil qui ne s'ouvre que par son « › » échoue (D121)
   CHECK: node -e "const fs=require('fs');const s=fs.existsSync('work/refonte-frontend/v4/tournoi/outils/controle-profil-ouvre.mjs')?'controle-profil-ouvre.mjs':'controle-geste-etape.mjs';const r=require('child_process').spawnSync(process.execPath,['scripts/agents/systeme.mjs','echoue','PROFIL ECHEC','--','node','work/refonte-frontend/v4/tournoi/outils/'+s,'work/refonte-frontend/v4/tournoi/outils/temoins/profil-chevron-seul'],{encoding:'utf8'});process.stdout.write(r.stdout+r.stderr)"
   EXPECT: ECHOUE OK
+  EVIDENCE: pending
+
+- [ ] G8: une étape plus haute que 1,05 écran à 390 échoue (D5)
+  CHECK: node scripts/agents/systeme.mjs echoue "HAUTEUR ECHEC" -- node work/refonte-frontend/v4/tournoi/outils/controle-hauteur.mjs work/refonte-frontend/v4/tournoi/outils/temoins/hauteur-trop ma-biere --max=1.05
+  EXPECT: ECHOUE OK
+  EVIDENCE: pending
+
+- [ ] G9: une étape tenue dans un écran passe (D5)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-hauteur.mjs work/refonte-frontend/v4/tournoi/outils/temoins/hauteur-ok ma-biere --max=1.05
+  EXPECT: HAUTEUR OK
   EVIDENCE: pending

@@ -1,6 +1,6 @@
 # Gates: voie p11-controle-retour — le contrôle D109 et ses témoins
 
-OWNS: work/refonte-frontend/v4/tournoi/outils/controle-retour.mjs, work/refonte-frontend/v4/tournoi/outils/temoins/retour-*/**, work/missions/2026-10-23-maquette-parcours/voies/p11-controle-retour/RESULTAT.md
+OWNS: work/refonte-frontend/v4/tournoi/outils/controle-retour.mjs, work/refonte-frontend/v4/tournoi/outils/temoins/retour-*/**, work/missions/2026-10-23-maquette-parcours/voies/p11-controle-retour/RESULTAT.md, work/refonte-frontend/v4/tournoi/outils/temoins/retour-fiche-*/**
 
 Scope: un contrôle qui exige, sur chaque outil, une croix de 44 px au moins, icône de 20 px à l'encre, à la même place et dans un en-tête de même hauteur d'un onglet à l'autre (D119), qui ramène toujours à l'étape Houblons (D118) ; il échoue sur la version publiée (d332792c).
 
@@ -42,4 +42,14 @@ Scope: un contrôle qui exige, sur chaque outil, une croix de 44 px au moins, ic
 - [ ] G7: le rapport donne les sorties et les mesures sur d332792c et les témoins
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p11-controle-retour/RESULTAT.md --contient "d332792c,retour-ok,retour-petit,retour-ailleurs,retour-en-tete-saute,28"
   EXPECT: NOTE OK
+  EVIDENCE: pending
+
+- [ ] G8: la fiche de la version publiée échoue : « × » gris de 16 px et « ‹ » en plus (D109, critique p6)
+  CHECK: node scripts/agents/systeme.mjs echoue "RETOUR ECHEC" -- node work/refonte-frontend/v4/tournoi/outils/controle-retour.mjs prototypes/houblons-v4/maquettes/parcours-d332792c --fiche
+  EXPECT: ECHOUE OK
+  EVIDENCE: pending
+
+- [ ] G9: une fiche à une seule croix ronde de 44 px à l'encre passe
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-retour.mjs work/refonte-frontend/v4/tournoi/outils/temoins/retour-fiche-ok --fiche
+  EXPECT: RETOUR OK
   EVIDENCE: pending

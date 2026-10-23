@@ -146,7 +146,12 @@ Publication suspendue (supervision), jusqu'à : D55 corrigé, batterie verte ave
   - scripts du parcours alignés sur D118 (la croix ramène à l'étape) : PONTS OK, PARCOURS OK sur parcours-p3 ;
   - décisions du pilote : D114 = panel replié au repos ; D112 = contrôle sur le nom (la base), carte entière non
     sélectionnable dans la maquette ; D115 = radar d'abord, variantes de la liste plus tard (accord supervision) ;
-  - reste : batterie sur la construction commune (construire, CHOIX, TEINTE, COMMUN, RAIL, ROUTES, PONTS, PARCOURS et les
+  - 24.10, nuit : toutes les reprises rendues (p1 étape, p2, p3, p17) ; batterie sur maquettes/parcours :
+    **BATTERIE OK 28/28** (`node prototypes/houblons-v4/parcours/outils/batterie.mjs` : CONSTRUIT, TYPES, APP INTACTE,
+    CHOIX OK 5 + 3 ouverts, TEINTE OK 5/5, COMMUN ×7, RAIL OK 2/2, COMPARER-ETAPES, VISEE, RETOUR ×2, TRAITS, GESTE-ETAPE,
+    APPUI-ETAPE, LEGENDE, FICHE-RADAR, STEPPER, ANNULER, PROFIL, ROUTES 8/8, PONTS, PARCOURS 29 + 29) ; page côte à côte
+    recapturée (12 états, PAGE OK) ; p6 critique lancé ;
+  - reste (avant) : batterie sur la construction commune (construire, CHOIX, TEINTE, COMMUN, RAIL, ROUTES, PONTS, PARCOURS et les
     contrôles D107 à D121), p6 critique côte à côte, page côte à côte envoyée à la supervision (son OK avant
     publication), artefact neuf, version figée dans outils/pages/2026-10-24-maquette/ (publie.html et assets), note
     cerveau/produit/maquette-jouable.md, portées à normaliser (suggerer → suggestions, biere → ma-biere, sujet

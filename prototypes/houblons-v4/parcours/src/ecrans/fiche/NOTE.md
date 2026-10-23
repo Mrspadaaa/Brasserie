@@ -30,16 +30,29 @@
 
 ## Écarts
 
+- Fermeture (p6, D109, 24.10) : une seule croix ronde de 44 px, icône de 20 px à l'encre, en haut à droite de la
+  feuille (`data-role="retour"`, comme g1-feuille « × rond en haut à droite ») ; le nom en titre, en gras, comme g1. Le
+  « ‹ » de la voie p1 est retiré : il refermait la fiche comme « × » (`onFermer`), sans revenir d'une fiche à une
+  précédente (une fiche s'ouvre sur l'écran qu'elle couvre, jamais sur une autre fiche). Si un jour une fiche en ouvre
+  une autre (un remplaçant cité), le retour se garderait sans second bouton : le retour du téléphone et Échap
+  dépileraient la fiche (une entrée d'historique par fiche), la croix fermerait tout.
+
 - D115 (23.10, soir, « Mettre le radargraph avant, cette vue est vraiment pas terribles. À revoir... ») : le radar
   et sa demande (« + Floral 2/4 − Résineux 2/4 ») passent avant le bloc des familles, entiers dans le premier écran
-  à 390 × 844 (radar 169–510 px, liste dès 597 px). Rien d'autre ne bouge ; la liste elle-même (« nommé en
+  à 390 × 844 (radar 189–530 px, liste dès 617 px). Rien d'autre ne bouge ; la liste elle-même (« nommé en
   premier », mots anglais) est à revoir plus tard, en variantes sur une page à part (pilote).
 
 - Les familles portent leur picto au trait au lieu du carré de couleur de g1 : D93 (« ça suit pas la Baseline »).
-- « ‹ » ajouté à gauche de l'α (fermeture demandée par le contrat de la voie), en plus de « × » et Échap.
 - La table des IBU par moment n'y est pas (« Inutile »), ni « Ajouter à 10′ » (« palace holder ? »).
 
 ## Pour l'app
+
+- La tête de la fiche est une surcharge de la maquette, dans `Feuille` (`src/commun/Cadres.tsx`) et `src/commun/feuille.css` :
+  `Sheet` (src/ui/Sheet.tsx, non modifié) reçoit `className="pq-feuille"` ; le CSS restyle son « × » (44 px rond, icône
+  20 px à l'encre, fond cave-900) et son titre (22 px gras), sans filet sous la tête ; `Feuille` marque le bouton
+  `data-role="retour"` et son icône `data-role="fermer-fiche"` une fois la feuille montée dans son portail. À
+  l'intégration : une option de `Sheet` (`closeVariant="round"`, ou la croix commune des outils) et un titre de feuille
+  plus grand, au lieu du CSS et des attributs posés après coup.
 
 - Emploi depuis un autre écran : `<Fiche houblon={cle} />` (export par défaut de `index.tsx`, fermée par le retour),
   ou `useFiche()` : `<span {...f.appui(cle, onCourt)} {...f.nom(cle)}>` puis `{f.rendu}`.

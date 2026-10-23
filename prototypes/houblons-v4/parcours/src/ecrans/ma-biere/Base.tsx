@@ -72,7 +72,7 @@ const pc = (v: number) => `${Math.max(0, Math.min(100, v)).toFixed(1)}%`;
 
 /** La barre de famille de la base : piste, zone du style, zone « au-dessus » en pointillé, point. `visee` : ma visée, en
  * points (palier × 33,33), posée sur la piste comme la base (losange blanc relié au point par un trait pointillé, D108). */
-export function PisteBase({ x, avant, echelle, fine = false, visee = null }: { x: FamilleLue; avant?: FamilleLue | null; echelle: Echelle; fine?: boolean; visee?: number | null }) {
+export function PisteBase({ x, avant, echelle, fine = false, visee = null, crans = false }: { x: FamilleLue; avant?: FamilleLue | null; echelle: Echelle; fine?: boolean; visee?: number | null; crans?: boolean }) {
   const f = x.famille;
   const { pos, zone, dessus } = positions(x, echelle);
   const inconnu = !x.valeur;
@@ -83,6 +83,12 @@ export function PisteBase({ x, avant, echelle, fine = false, visee = null }: { x
     <span data-barre={f} data-echelle={echelle} className={`relative block ${h} min-w-0`} title={inconnu ? x.raison ?? 'non situé' : undefined}>
       <i className={`absolute inset-y-0 left-0 rounded-full ${inconnu ? 'pq-hachure' : 'bg-cave-800/60'}`} style={{ width: dessus ? '80%' : '100%' }} />
       {zone && !inconnu && <i data-role="zone" className="absolute inset-y-0 rounded-full bg-cave-700/70" style={{ left: pc(zone.de), width: pc(zone.a - zone.de) }} />}
+      {/* La zone du style en trois crans, comme la base (biere.html, .zone-f.crans) : deux traits fins, au style seulement,
+          sur les familles que le style n'attend pas (la base les efface sur les attendues). */}
+      {crans && zone && !inconnu && echelle === 'style' && x.statut !== 'attendue' && [1, 2].map((k) => (
+        <i key={k} aria-hidden="true" {...(k === 1 ? { 'data-element': 'biere-crans-style' } : {})} data-role="cran-style"
+          className="pq-ma-biere-cran-style absolute inset-y-0" style={{ left: pc(zone.de + ((zone.a - zone.de) * k) / 3) }} />
+      ))}
       {dessus && <i aria-hidden="true" className={`absolute inset-y-0 rounded-full border border-dashed border-cave-600 ${inconnu ? 'pq-hachure' : ''}`} style={{ left: '81%', width: '19%' }} />}
       {inconnu && zone && <i data-role="zone" className="absolute inset-y-0 rounded-full border border-dashed border-cave-600" style={{ left: pc(zone.de), width: pc(zone.a - zone.de) }} />}
       {avant?.valeur && x.valeur && Math.abs(avant.valeur.centre - x.valeur.centre) >= 0.5 && (

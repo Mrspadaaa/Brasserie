@@ -10,11 +10,7 @@ import { PageShell } from '@app/pages/PageShell';
 import { COURT, Legende, Onglets, nombre, type Echelle } from '../../commun';
 import { useNavigation } from '../../coquille/navigation';
 import { useBiere, useGestes, useRecette, useVisee } from '../../etat/EtatParcours';
-import { houblon, nomMoment, style } from '../../moteur';
-import { quandDe } from '../../etat/operations';
-import { useFiche } from '../fiche/FicheHoublon';
-import { effetDe } from '../ma-biere/Carte';
-import { tropMarquees } from '../ma-biere/Base';
+import { style } from '../../moteur';
 import type { FamilyId } from '../../../../src/engine';
 import { Alerte, Bandeau, NomFamille, PisteBase, nomLevureBase } from '../ma-biere/Base';
 import { Lentille } from '../ma-biere/Lentille';
@@ -34,10 +30,6 @@ export default function Biere() {
   const [echelle, setEchelle] = useState<Echelle>('style');
   const visee = useVisee();
   const gestes = useGestes();
-  const fiche = useFiche();
-  // Le houblon qui porte le plus la famille trop marquée (effet simulé de l'ajout sur ma bière).
-  const trop = tropMarquees(biere, sc.order)[0];
-  const cause = trop ? recette.additions.map((a) => ({ a, e: effetDe(recette, a, biere)[trop]?.e ?? 0 })).filter((x) => x.e > 0).sort((x, y) => y.e - x.e)[0]?.a ?? null : null;
   // La famille hors du style est ouverte au repos (comme la base) ; toucher une autre famille l'ouvre.
   const [ouverte, setOuverte] = useState<FamilyId | null>(() => sc.order.find((f) => biere.profil[f].horsStyle === 'au-dessus') ?? null);
   // La visée de la base v4.10 (viserAbs, D108) : un palier sur 0 à 3 ; « + » et « − » partent de la visée, ou de ma bière.
@@ -67,10 +59,6 @@ export default function Biere() {
           <span className="min-w-0 flex-1" data-element="biere-alerte"><Alerte biere={biere} ordre={sc.order} /></span>
           <Lentille label="Vue" marques="vue" value={vue} onChange={setVue} options={[{ value: 'barres', label: 'Barres' }, { value: 'radar', label: 'Radar' }]} />
         </div>
-        {cause && (
-          <p data-role="cause" className="-mt-1 pl-4 text-sm text-cave-400">surtout <span data-houblon={cause.hopKey} {...fiche.appui(cause.hopKey)} {...fiche.nom(cause.hopKey)}
-            className="font-semibold text-cave-200 underline decoration-dotted decoration-cave-600 underline-offset-4">{houblon(cause.hopKey).nom}</span>, {nombre(cause.grams, 1)}{' '}g à {nomMoment(quandDe(cause, recette))}</p>
-        )}
         <div className="flex items-center gap-2">
           <p data-element="biere-decompte" className="text-base text-cave-200">{auStyle} au style · {nonSituees} non située{nonSituees > 1 ? 's' : ''}</p>
           <span className="ml-auto" />
@@ -115,7 +103,7 @@ export default function Biere() {
                       className="w-full grid grid-cols-[6.5rem_1fr_3rem] items-center gap-2 min-h-[2.5rem] px-1 text-left"
                       {...(hors ? { 'data-element': 'biere-hors-style' } : {})}>
                       <NomFamille x={x} bannie={bannie} />
-                      <PisteBase x={x} echelle={echelle} visee={posee ? enPoints(vi) : null} />
+                      <PisteBase x={x} echelle={echelle} visee={posee ? enPoints(vi) : null} crans />
                       <span className="text-right text-sm whitespace-nowrap">
                         {facteur != null ? <b className="font-mono text-alert">×{nombre(facteur, 1)}</b>
                           : !x.valeur ? <i aria-label="non situé" role="img" className="inline-block w-4 h-4 rounded-full border border-dashed border-cave-400" />
@@ -158,13 +146,8 @@ export default function Biere() {
             className="h-11 px-4 rounded-full border border-cave-700 text-base font-semibold text-cave-50">+ …</button>
         </div>
         <p data-element="biere-levure" className="text-base text-cave-400">
-          Prévu avec {nomLevureBase(recette.yeastId)}, caractérisée{recette.additions.length ? ', et ' : ''}
-          {recette.additions.map((a, k) => (
-            <span key={a.id}>{k ? ', ' : ''}<span data-houblon={a.hopKey} {...fiche.appui(a.hopKey)} {...fiche.nom(a.hopKey)}
-              className="text-cave-200 underline decoration-dotted decoration-cave-600 underline-offset-4">{houblon(a.hopKey).nom}</span> {nombre(a.grams, 1)}{' '}g à {nomMoment(quandDe(a, recette))}</span>
-          ))}
+          Prévu avec {nomLevureBase(recette.yeastId)}, caractérisée
         </p>
-        {fiche.rendu}
       </div>
     </PageShell>
   );

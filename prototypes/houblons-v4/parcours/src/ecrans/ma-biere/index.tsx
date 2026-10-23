@@ -8,7 +8,8 @@ import { useMemo, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { PageShell } from '@app/pages/PageShell';
 import { WizardStepName, WizardStepRail } from '@app/ui/WizardStepBar';
-import { Legende, Pont, type Echelle } from '../../commun';
+import { Pont, type Echelle } from '../../commun';
+import { BoutonLegende, PanneauLegende, useLegende } from './LegendeGroupe';
 import { ActionsCoquille, useOuvrir } from '../../coquille/ouvrir';
 import { useNavigation } from '../../coquille/navigation';
 import { useBiere, useRecette } from '../../etat/EtatParcours';
@@ -57,6 +58,7 @@ export default function MaBiere() {
   const { route, aller } = useNavigation();
   const sc = style(recette.styleCode);
   const [echelle, setEchelle] = useState<Echelle>('style');
+  const [legende, basculerLegende] = useLegende();
   // Ma bière est à l'écran sur sa route et sous la fiche ; la coquille ne la monte pas sous un outil plein écran.
   const { avant, effacer } = useRepere(recette, route.ecran === 'ma-biere' || route.ecran === 'fiche');
   const biereAvant = useMemo(() => (avant ? lireBiere(avant) : null), [avant]);
@@ -85,7 +87,7 @@ export default function MaBiere() {
       mobileHeader={tete} className="pq-recette"
       actions={<span data-element="etape-titre" className="flex items-center gap-2"><WizardStepName steps={ETAPES} currentIndex={ETAPE_HOUBLONS} /><ActionsCoquille /></span>}
       progress={<WizardStepRail steps={ETAPES} currentIndex={ETAPE_HOUBLONS} onSelect={surEtape} showLabels />}>
-      <div data-ecran="ma-biere" className="pq-ma-biere space-y-2 pb-4">
+      <div data-ecran="ma-biere" className="pq-ma-biere space-y-1">
         <Bandeau biere={biere} avant={biereAvant} element="etape-bandeau" />
 
         <Frise recette={recette} biere={biere} reperes={reperes} onGeste={effacer} />
@@ -99,7 +101,7 @@ export default function MaBiere() {
         <section data-element="etape-profil" data-role="profil" data-variante-d121={D121}
           aria-label={`Profil de ma bière, ${echelle === 'style' ? `au style ${sc.code}` : 'absolu'} ; toucher pour ouvrir l'analyse`}
           onClick={(e) => { if (!(e.target as Element).closest('button, a, input, [role="radiogroup"], [role="radio"], [data-role="legende"]')) aller({ ecran: 'biere' }); }}
-          className={`pq-ma-biere-profil pq-ma-biere-profil-${D121} space-y-1.5`}>
+          className={`pq-ma-biere-profil pq-ma-biere-profil-${D121} space-y-1`}>
           <div className="flex items-center gap-2">
             {D121 === 'c'
               ? <button type="button" data-role="pont-biere" onClick={() => aller({ ecran: 'biere' })} className="min-w-0 flex items-center gap-1.5 text-left">
@@ -108,27 +110,28 @@ export default function MaBiere() {
               : <Alerte biere={biere} ordre={sc.order} />}
             {D121 === 'a' && (
               <button type="button" data-role="pont-biere" aria-label="Ouvrir l'analyse : l'onglet Ma bière" onClick={() => aller({ ecran: 'biere' })}
-                className="pq-ma-biere-pont-analyse ml-auto shrink-0 inline-flex items-center gap-0.5 h-9 pl-3.5 pr-2 rounded-full text-sm font-semibold">
+                className="pq-ma-biere-pont-analyse ml-auto shrink-0 inline-flex items-center gap-0.5 h-8 pl-3.5 pr-2 rounded-full text-sm font-semibold">
                 analyse<ChevronRight className="w-4 h-4" aria-hidden="true" />
               </button>
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Legende>
-              <p><b>Barre</b> : la zone grise est le style {sc.code} ; le pointillé, au-dessus du style.</p>
-              <p><b>Point plein</b> : dégusté le 18.10. <b>Rond</b> : prévu, simulé (~). <b>Hachuré</b> : non situé, jamais zéro.</p>
-              <p><b>Toucher le profil</b> : l'analyse dans l'onglet Ma bière (barres au style, visées, radar).</p>
-              <p><b>Frise</b> : glisser le repère d’un ajout (« 60′ ») vers le bas, par 5′, jusqu’au dry hop en jours.</p>
-            </Legende>
+            <BoutonLegende ouverte={legende} onBasculer={basculerLegende} groupe="le profil de ma bière" controle="pq-ma-biere-legende-profil" />
             <Pont nom="floral" principal={false} onClick={() => ouvrir({ ecran: 'suggerer' })}>+ floral</Pont>
             <span className="ml-auto" />
             <Lentille label="Échelle" marques="e" value={echelle} onChange={setEchelle} options={[{ value: 'style', label: 'Au style' }, { value: 'absolu', label: 'Absolu' }]} />
           </div>
+          <PanneauLegende id="pq-ma-biere-legende-profil" ouverte={legende}>
+            <p><b>Barre</b> : la zone grise est le style {sc.code} ; le pointillé, au-dessus du style.</p>
+            <p><b>Point plein</b> : dégusté le 18.10. <b>Rond</b> : prévu, simulé (~). <b>Hachuré</b> : non situé, jamais zéro.</p>
+            <p><b>Toucher le profil</b> : l'analyse dans l'onglet Ma bière (barres au style, visées, radar).</p>
+            <p><b>Frise</b> : glisser le repère d’un ajout (« 60′ ») vers le bas, par 5′, jusqu’au dry hop en jours.</p>
+          </PanneauLegende>
           <div className="grid grid-cols-2 gap-x-4">
             {colonnes.map((c, k) => (
-              <div key={k} className="space-y-1">
+              <div key={k} className="space-y-0.5">
                 {c.map((f) => (
-                  <div key={f} data-famille-profil={f} className="grid grid-cols-[minmax(0,5.5rem)_1fr] items-center gap-1.5 min-h-[1.75rem]">
+                  <div key={f} data-famille-profil={f} className="grid grid-cols-[minmax(0,5.5rem)_1fr] items-center gap-1.5 min-h-[1.5rem]">
                     <NomFamille x={biere.profil[f]} petit />
                     <PisteBase x={biere.profil[f]} avant={biereAvant?.profil[f]} echelle={echelle} fine />
                   </div>

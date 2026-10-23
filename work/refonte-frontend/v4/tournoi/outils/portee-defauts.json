@@ -52,14 +52,14 @@
   {
    "id": "D5",
    "mots": "« mais ça doit pas être surchargé » (18.10)",
-   "controle": "controle-lot.mjs (un écran à 390)",
+   "controle": "controle-hauteur.mjs <dossier> <route> [--max=1.05] [--page=etat.html] (lignes « D5 »)",
    "portee": [
-    "tout-ecran"
+    "ma-biere"
    ],
-   "tourne": "non",
-   "resultat": "sans pNN/index.html + etat-b.html le dossier actuel n'est pas lu (capture.mjs crée même captures/ dans le dossier avant de refuser) ; sur copie p01/index.html (scratchpad) : écrans à 390 : Comparer 1,0 OK, Dryhopper 1,0 OK, baseline l8g 2,6 écrans (17 voies) ECHEC ; D84 admet une liste longue, D5 est à réconcilier pour les pages-listes.",
-   "verdict": "a-adapter",
-   "script": "controle-lot.mjs"
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 à 390 × 844 tactile, au repos : construction actuelle (parcours) 958 px = 1,14 écran HAUTEUR ECHEC ; d332792c 936 px = 1,11 écran ECHEC ; base v4.10 (index.html) 844 px = 1,00 écran OK ; témoin hauteur-trop (960 px) ECHEC ; hauteur-ok (840 px) OK. Seuil 1,05 écran. Remplace controle-lot.mjs (« a-adapter », sans pNN/index.html + etat-b.html) pour l'étape ; D84 admet une liste longue, les pages-listes restent à réconcilier.",
+   "verdict": "garde",
+   "script": "controle-hauteur.mjs"
   },
   {
    "id": "D6",

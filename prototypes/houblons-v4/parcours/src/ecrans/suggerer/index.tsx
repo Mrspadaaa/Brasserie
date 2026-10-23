@@ -56,8 +56,9 @@ export default function Suggerer() {
   const colonnes = Math.max(1, Math.min(2, objectifs.length));
   const rangsCartes = Math.ceil(objectifs.length / colonnes);
   const place = (k: number) => ({ gridRow: Math.floor(k / colonnes) + 1, gridColumn: (k % colonnes) + 1 });
-  // Teinte de la famille, adoucie vers la page (D106 : aplats aussi neutres que ceux de q2b).
-  const teinte = (f: FamilyId) => `color-mix(in srgb, ${COULEURS[f].fond} 45%, rgb(var(--cave-950)))`;
+  // Teinte de la carte, celle de q2b et de sa base (q-tuile : dégradé du blanc vers --fd, #e6d2f2 floral, #cfe5de
+  // résineux) : le fond pâle de la famille, relevé de 18 % de sa couleur (D74, « trop limité au niveau des couleurs »).
+  const teinte = (f: FamilyId) => `linear-gradient(160deg, rgb(var(--cave-950)), color-mix(in srgb, ${COULEURS[f].base} 18%, ${COULEURS[f].fond}))`;
   const domaines = useMemo(() => Object.fromEntries(objectifs.map((o) => [o.f, domaine(o.f, sc, echelle,
     [o.avant ?? 0, o.visee ?? 0, ...lignes.map((l) => (o.avant ?? 0) + (l.effets[o.f] ?? 0))])])) as Record<FamilyId, Domaine>, [objectifs, lignes, sc, echelle]);
 

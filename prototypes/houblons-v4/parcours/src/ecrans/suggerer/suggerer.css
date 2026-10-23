@@ -45,7 +45,7 @@ html:has(.pq-outil-suggerer) [data-page-shell]:not(.pq-outil-suggerer) { display
 /* Reprise D105 : q2b. */
 .pq-suggerer-carte { min-height: 0; }
 .pq-suggerer-verdict-aucune { color: #475569; }
-.pq-suggerer-verdict-approche { color: #4338ca; }
+.pq-suggerer-verdict-approche { color: #4f46e5; }
 .pq-suggerer-verdict-atteint { color: #0e7490; }
 .pq-suggerer-alerte { position: absolute; right: -3px; bottom: -2px; width: 8px; height: 8px; border-radius: 9999px; background: #c2410c; box-shadow: 0 0 0 1.5px rgb(var(--cave-950)); }
 .pq-suggerer-egal::before { content: "="; font-weight: 800; }

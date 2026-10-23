@@ -1,6 +1,6 @@
 # Gates: voie p17-fiche-annuler — la fiche (D115) et Annuler (D120)
 
-OWNS: prototypes/houblons-v4/parcours/src/ecrans/fiche/**, prototypes/houblons-v4/parcours/src/ecrans/substituer/**, prototypes/houblons-v4/parcours/src/ecrans/levure/**, prototypes/houblons-v4/parcours/src/ecrans/dryhopper/**, prototypes/houblons-v4/maquettes/parcours-p17/**, work/missions/2026-10-23-maquette-parcours/voies/p17-fiche-annuler/RESULTAT.md
+OWNS: prototypes/houblons-v4/parcours/src/ecrans/fiche/**, prototypes/houblons-v4/parcours/src/ecrans/substituer/**, prototypes/houblons-v4/parcours/src/ecrans/levure/**, prototypes/houblons-v4/parcours/src/ecrans/dryhopper/**, prototypes/houblons-v4/maquettes/parcours-p17/**, work/missions/2026-10-23-maquette-parcours/voies/p17-fiche-annuler/RESULTAT.md, prototypes/houblons-v4/parcours/src/commun/Cadres.tsx
 
 Scope: le radar avant la liste dans la fiche g1, et « Annuler » sans effet à côté de l'action sur Substituer, Levure et Dryhopper ; rien d'autre ne change à l'écran.
 
@@ -47,4 +47,9 @@ Scope: le radar avant la liste dans la fiche g1, et « Annuler » sans effet à 
 - [ ] G9: le geste de Dryhopper tient son rail avec le nouveau pied (D35, D27, D46, D47, D55, D69)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-rail.mjs prototypes/houblons-v4/maquettes/parcours-p17 dryhopper --page=etat.html --parcours
   EXPECT: RAIL OK
+  EVIDENCE: pending
+
+- [ ] G10: la fiche n'a qu'une croix ronde de 44 px à l'encre, sans « ‹ » (D109, critique p6)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-retour.mjs prototypes/houblons-v4/maquettes/parcours-p17 --fiche
+  EXPECT: RETOUR OK
   EVIDENCE: pending

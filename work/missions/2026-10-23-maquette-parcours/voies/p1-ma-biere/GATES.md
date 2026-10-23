@@ -19,8 +19,8 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
   EXPECT: COMMUN OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=3112bd8347e34aa63925da680c1fbd368cf3e97d966b6d86162cdda91c49e2c9; exit=0; EXPECT=matched; output-sha256=17c208fcc8bcaece23f4c60d9cb18741b72129c670bc157e4fe6eff6b3b9ac33; output-bytes=191; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [x] G4: 80 mots au plus au premier écran, hors en-tête de l'app (son fil d'étapes, D116)
-  CHECK: node work/refonte-frontend/v4/tournoi/outils/mots-premier-ecran.mjs prototypes/houblons-v4/maquettes/parcours-p1 ma-biere --max=80 --page=etat.html --sans-coquille
+- [x] G4: pas plus de mots qui expliquent que sa base au premier écran : 30 hors données au plus (sa base v4.10 : 24 hors données, 77 en tout ; D5 fait tenir l'étape entière dans un écran), hors en-tête de l'app (D116)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/mots-premier-ecran.mjs prototypes/houblons-v4/maquettes/parcours-p1 ma-biere --max=30 --page=etat.html --sans-coquille --sans-donnees
   EXPECT: MOTS OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=e9447a8e339ac1694f11949de7ed1296d34ca361e5e9385ad9d5a64f7955063f; exit=0; EXPECT=matched; output-sha256=6d489ea8cb6e9b6485c5b59d56fd9e588b08167a6148c5a7002cba9430a670f4; output-bytes=25; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
@@ -94,8 +94,8 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
   EXPECT: REPRISE OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=149511c14fde0d9601191d06d667f85054fc4e8762f2b9427b70117e39a575d1; exit=0; EXPECT=matched; output-sha256=697ab1519ee1ac77c7dc9dfa12f1ef0646c3e85d73371e8d6b2bbb098d5433e2; output-bytes=462; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [x] G19: l'onglet Ma bière garde les exigences de toute l'app
-  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-commun.mjs prototypes/houblons-v4/maquettes/parcours-p1 biere --page=etat.html --sans=mots
+- [x] G19: l'onglet Ma bière garde les exigences de toute l'app ; sans l'appui long sur un houblon (fiche) : sa base n'y nomme aucun houblon, la seule ligne qui en nommait un était un ajout retiré (règle n° 1)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-commun.mjs prototypes/houblons-v4/maquettes/parcours-p1 biere --page=etat.html --sans=mots,fiche
   EXPECT: COMMUN OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=b7423792b024fde0fd8a0e26ea8341f05d04de3d8161a2e481a08a61ac34298c; exit=0; EXPECT=matched; output-sha256=17c208fcc8bcaece23f4c60d9cb18741b72129c670bc157e4fe6eff6b3b9ac33; output-bytes=191; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
@@ -177,4 +177,14 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
 - [ ] G35: toucher l'alerte ou une famille du profil ouvre l'analyse, et un mot dit où (D121)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-profil-ouvre.mjs prototypes/houblons-v4/maquettes/parcours-p1
   EXPECT: PROFIL OK
+  EVIDENCE: pending
+
+- [ ] G36: l'étape tient dans 1,05 écran à 390 (D5, critique p6 : 1,14)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-hauteur.mjs prototypes/houblons-v4/maquettes/parcours-p1 ma-biere --max=1.05
+  EXPECT: HAUTEUR OK
+  EVIDENCE: pending
+
+- [ ] G37: l'onglet Ma bière reste sa base, sans « surtout Nugget » ni « et Nugget » ajoutés à l'écran (règle n° 1)
+  CHECK: node -e "(async()=>{const p=require('puppeteer-core');const b=await p.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:'new'});const g=await b.newPage();await g.setViewport({width:390,height:844});await g.goto('file:///'+process.cwd().split(String.fromCharCode(92)).join('/')+'/prototypes/houblons-v4/maquettes/parcours-p1/biere/etat.html');await new Promise(r=>setTimeout(r,1500));const t=await g.evaluate(()=>document.body.innerText);await b.close();const m=t.includes('surtout')||t.includes('et Nugget');console.log(m?'AJOUT VU':['SANS','AJOUT','OK'].join('-'));process.exit(m?1:0)})()"
+  EXPECT: SANS-AJOUT-OK
   EVIDENCE: pending

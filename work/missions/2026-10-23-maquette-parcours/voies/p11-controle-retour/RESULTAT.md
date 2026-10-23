@@ -62,3 +62,13 @@ parcours Suggérer ouvert depuis l'onglet · croix 44×44 · mène à #/ma-biere
 parcours Comparer ouvert depuis Suggérer · croix 44×44 · mène à #/ma-biere
 RETOUR OK (6 routes × 2 largeurs, 3 parcours)
 ```
+
+## Extension : --fiche (G8, G9)
+- Mode `--fiche` : lit `<dossier>/fiche/etat.html` à 390 puis 1280 ; les autres modes sont inchangés (rejeu `systeme.mjs appels controle-retour.mjs --rejouer` : APPELS OK, 11 critères rejoués).
+- Règles : une seule commande de fermeture dans le `[role="dialog"]` (`[data-role="retour"]`, ou bouton nommé « Fermer » / « Retour… », ou réduit à un glyphe × ‹, ou svg lucide x / chevron-left) ; deux ou plus = ECHEC ; elle est dans le `<header>` de la feuille (à défaut ses 64 px du haut) ; 44 × 44 px au moins, icône de 20 px au moins, une croix, à l'encre (même référence corrigée) ; un toucher ferme la feuille (dialogue disparu, ou route hors `#/fiche`).
+- Note : le « ‹ » de la fiche publiée n'est pas dans le `<header>` de la feuille mais sur la première ligne du contenu ; les commandes sont donc comptées dans toute la feuille.
+- G8, d332792c `--fiche` : ECHOUE OK. 390 : 2 commandes, « Fermer » 24×24 en (358, 67) lucide-x et « Retour » 28×32 en (4, 115) lucide-chevron-left ; 1280 : « Fermer » 24×24, « Retour » 32×32.
+- G9, retour-fiche-ok `--fiche` : RETOUR OK (fiche × 2 largeurs) : « Fermer » 48×48 ronde, icône 22 px #1A1A1A = encre, croix, dans le header, ferme la feuille.
+- Témoins ponctuels (hors dépôt) : une seule croix de 24 px, 16 px, #999 : ECHEC (taille, icône, encre) ; une croix qui ne ferme rien : ECHEC. parcours-p2 `--fiche` : RETOUR OK (« Fermer » 44×44, icône 20 px #222222 contre encre #111111, ferme la feuille).
+- Autres critères rejoués après l'extension : G1, G3, G4, G4b ECHOUE OK ; G2 RETOUR OK ; G6 TEMOINS OK.
+- Limite : « croix ronde » n'est pas exigée (rondeur du bouton non mesurée) ; le témoin la fournit.

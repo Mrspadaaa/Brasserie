@@ -40,8 +40,19 @@ export default {
       } },
     { nom: 'gout j aime', faire: 'toucher', cible: '[data-role="gout"] [data-gout="aime"]',
       verifier: () => document.querySelector('[data-role="gout"] [data-gout="aime"]').getAttribute('aria-pressed') === 'true' || 'goût non retenu' },
-    { nom: 'chevron ferme', faire: 'toucher', cible: '[data-role="fermer-fiche"]', attendre: '[data-ecran="ma-biere"]',
-      verifier: (p) => (p.route === '#/ma-biere' && !document.querySelector('[data-role="fiche"]')) || `‹ : ${p.route}` },
+    // Une seule croix (D109, g1) : ronde, 44 px, en haut à droite ; le « ‹ » n'existe plus.
+    { nom: 'une seule croix', faire: 'attendre', verifier: () => {
+      const f = document.querySelector('[data-role="fiche"]');
+      const croix = [...f.querySelectorAll('[data-role="retour"]')];
+      if (croix.length !== 1) return croix.length + ' croix dans la fiche';
+      const r = croix[0].getBoundingClientRect(), fr = f.getBoundingClientRect();
+      if (r.width < 43.5 || r.height < 43.5) return 'croix de ' + r.width + ' × ' + r.height + ' px';
+      if (r.right < fr.right - 24 || r.top > fr.top + 40) return 'croix hors du coin haut droit';
+      const autres = [...f.querySelectorAll('button')].filter((b) => /retour|fermer|‹/i.test((b.getAttribute('aria-label') || '') + b.textContent) && b !== croix[0]);
+      return !autres.length || 'deuxième bouton de fermeture : ' + autres.map((b) => b.getAttribute('aria-label') || b.textContent).join(', ');
+    } },
+    { nom: 'croix ferme (fermer-fiche)', faire: 'toucher', cible: '[data-role="fermer-fiche"]', attendre: '[data-ecran="ma-biere"]',
+      verifier: (p) => (p.route === '#/ma-biere' && !document.querySelector('[data-role="fiche"]')) || `× : ${p.route}` },
     { nom: 'appui long rouvre', faire: 'appui-long', cible: '[data-role="ouvrir-fiche"][data-houblon="beermaverick-nugget"]', attendre: '[data-role="fiche"]',
       verifier: () => document.querySelector('[data-role="gout"] [data-gout="aime"]')?.getAttribute('aria-pressed') === 'true' || 'le goût est perdu' },
     { nom: 'Echap ferme', faire: 'attendre',

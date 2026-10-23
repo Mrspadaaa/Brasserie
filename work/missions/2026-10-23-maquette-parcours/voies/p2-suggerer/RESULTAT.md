@@ -92,6 +92,14 @@ Dossier : `prototypes/houblons-v4/maquettes/parcours-p2/captures-p2/`.
 - Le repli « IBU après chaque voie » de la base est absent : l'adaptateur ne donne pas l'IBU d'une voie.
 - α sur chaque voie (D87), rayons de 8 px (D83), pictos au trait du socle (D88, D93).
 
+## Teinte des cartes (24.10)
+- Reprise en couleurs seulement (D74) : la carte prend le dégradé de la base (`q-tuile`), du blanc vers le fond de sa
+  famille relevé de 18 % de sa couleur (#e6d2f2 et #cfe5de dans la base). « Approche » passe en #4f46e5, comme dans la
+  base ; « Aucune » (#475569) et « Atteint » (#0e7490) y étaient déjà.
+- Les pictos restent au trait du socle (D88, D93) et les rayons à 8 px (D83).
+- Contrôles : TEINTE OK 1/1 (teinte 0, q2b 4), CHOIX OK, COMMUN OK. Capture ouverte, côte à côte avec
+  consolide-b-390.png et q2b-b-390.png : `captures-p2/cote-a-cote-teinte-390.png`.
+
 ## Reprise D110 et D109
 Remplacée par la section précédente : D109 est devenue la croix (son second mot), et D118 et D119 s'y ajoutent. Les
 textes au toucher (en crans) et les mesures de la croix (44 px, à 390 et à 1280) y sont, côte à côte avec q2b.

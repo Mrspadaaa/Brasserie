@@ -1,4 +1,4 @@
-OK — fiche g1 radar d'abord (D115) ; « Annuler » 48 px sur Substituer, Levure, Dryhopper (D120) ; G1–G9 verts
+OK — fiche g1 radar d'abord, une croix 44 px (D115, D109) ; « Annuler » 48 px (D120) ; G1–G10 verts
 
 ## Fichiers écrits (dans « Possède » et dans le besoin socle accordé)
 - `prototypes/houblons-v4/parcours/src/ecrans/fiche/FicheHoublon.tsx` : le radar et sa demande (« + Floral 2/4 − Résineux
@@ -6,6 +6,7 @@ OK — fiche g1 radar d'abord (D115) ; « Annuler » 48 px sur Substituer, Levur
 - `…/src/commun/PiedAnnuler.tsx` et `…/src/commun/pied-annuler.css` (classes `pq-annuler-`, L26) : le pied commun, exporté
   depuis `…/src/commun/index.ts` (une ligne). Le pilote a accordé ce déplacement ; le pied vivait d'abord dans
   `ecrans/substituer/`.
+- `…/src/commun/Cadres.tsx` (`Feuille` seulement) et `…/src/commun/feuille.css` (neuf) : la tête de g1 et une seule croix (accordé par le pilote).
 - `…/ecrans/substituer/index.tsx` (pied), `jeu.mjs` (gestes « Annuler »), `NOTE.md`.
 - `…/ecrans/levure/index.tsx` (pied seulement), `jeu.mjs`, `NOTE.md`.
 - `…/ecrans/dryhopper/index.tsx` : le dock, plus le retrait du pont du corps (décision du pilote). Aussi `jeu.mjs` et
@@ -15,8 +16,26 @@ OK — fiche g1 radar d'abord (D115) ; « Annuler » 48 px sur Substituer, Levur
 
 ## D115 : le radar avant la liste
 Dans la fiche g1, l'ordre devient : α et usage, le grand radar légendé, la demande, puis le bloc gris (bande des 12,
-familles, « nommé en premier », sans famille, non décrites), puis le pied ♡ ⊘ et Comparer. À 390 × 844, le radar va de 169
-à 510 px et la liste commence à 597 px. La liste elle-même n'est pas touchée : elle est à revoir plus tard, en variantes.
+familles, « nommé en premier », sans famille, non décrites), puis le pied ♡ ⊘ et Comparer. À 390 × 844, avec la tête de g1, le radar va de
+189 à 530 px et la liste commence à 617 px. La liste elle-même n'est pas touchée : elle est à revoir plus tard, en variantes.
+
+## La fermeture de la fiche (rejet de p6, D109)
+- p6 relevait deux fermetures : le « × » gris de 16 px du Sheet et un « ‹ ». g1, elle, a une seule croix ronde en haut à
+  droite.
+- Il n'y a plus qu'une croix ronde de 44 × 44 px, icône de 20 px à l'encre (#222), en haut à droite de la feuille,
+  `data-role="retour"`. Le nom est en titre, en gras, et la tête n'a plus de filet, comme dans g1. Le « ‹ » est retiré :
+  il fermait la fiche comme la croix. Comment garder un retour de fiche en fiche sans second bouton : voir `fiche/NOTE.md`.
+- C'est une surcharge du Sheet de l'app, sans y toucher (porte B) : `Feuille` dans `src/commun/Cadres.tsx` et
+  `src/commun/feuille.css`, décrits dans « Pour l'app » de la NOTE de la fiche.
+- L'icône de la croix porte `data-role="fermer-fiche"`, le contrat de `parcours-complet` et de controle-fiche (D25) : un
+  seul bouton, deux marques.
+- G10 : `RETOUR OK (fiche × 2 largeurs)`. À 390 comme à 1280 : « 1 commande « Fermer » 44×44 · icône 20 px #222222 ·
+  forme croix · dans <header> de la feuille : oui · ferme la feuille : oui ».
+- `fiche/jeu.mjs` : un geste « une seule croix » (une croix de 44 px au coin haut droit, aucun autre bouton de fermeture)
+  et la fermeture par `fermer-fiche`, dans `ETAPE OK (fiche)`.
+- Capture ouverte : `prototypes/houblons-v4/maquettes/parcours-p17/captures/fiche-cote-a-cote-g1.png`, avec
+  `consolide-fiche-390.png` à gauche et la fiche à 390 à droite. On y voit « Nugget ⊙ » en gras et la croix ronde à
+  droite, puis l'α, le radar et la liste.
 
 ## D120 : la forme d'Annuler, et pourquoi
 - Même forme sur les trois outils : une rangée sous le pouce. « Annuler » est à gauche, en pilule à contour de 97 × 48 px.
@@ -81,10 +100,10 @@ familles, « nommé en premier », sans famille, non décrites), puis le pied �
     défaut, reconstruite) et une fois sur `parcours-p17`. G1 à G9 sont rejoués et tous verts : G6 `PARCOURS OK (29 + 29)`,
     G9 `RAIL OK 1/1`.
 
-## Critères (rejoués après la correction du rail, depuis la racine)
+## Critères (rejoués après la croix de la fiche, depuis la racine)
 - G1 : `CONSTRUIT OK (9 pages) → prototypes/houblons-v4/maquettes/parcours-p17/`
 - G2 : `TYPES OK`
-- G3 : `fiche fiche/etat.html à 390 × 844 · radar 169–510 px · liste des familles dès 597 px` et `FICHE-RADAR OK`. Avant
+- G3 : `fiche fiche/etat.html à 390 × 844 · radar 189–530 px · liste des familles dès 617 px` et `FICHE-RADAR OK`. Avant
   la reprise, la fiche échouait : radar à 603–944 px, liste dès 208 px.
 - G4 : `ANNULER OK (3 routes × 2 largeurs)`. Sur chaque route, Annuler mesure 96,8 × 48 px, à côté de l'action, avec
   « recette identique, brouillon abandonné, → #/ma-biere ».
@@ -97,6 +116,8 @@ familles, « nommé en premier », sans famille, non décrites), puis le pied �
 - G7 : `APP INTACTE OK`
 - G8 : `NOTE OK` (rejoué sur ce fichier).
 - G9 : `RAIL OK 1/1`.
+- G10 : `RETOUR OK (fiche × 2 largeurs)`.
+- La sortie par défaut est reconstruite (`maquettes/parcours`) : `PONTS OK (17 gestes)`.
 - En plus :
   - `jouer-parcours.mjs --etape=` fiche, substituer, levure et dryhopper : `ETAPE OK` pour chacun, avec les gestes
     « Annuler » ;
