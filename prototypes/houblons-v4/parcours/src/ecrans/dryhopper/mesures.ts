@@ -7,7 +7,7 @@
 // houblon n'en a pas : null, et l'écran dit « ? », jamais une valeur d'un autre houblon.
 // Place future : une table de mesures sourcées de l'app (src/domain/hops/), servie par l'adaptateur (besoin socle).
 import { verifications } from '../../../../src/engine';
-import comparatifs from '../../../../../../work/refonte-frontend/v4/ecran-1/fils21-choisir/donnees/comparatifs-dryhop.json';
+import comparatifs from '../../../../data/comparatifs-dryhop.json'; // copie de work/…/fils21-choisir/donnees (data/copies-de-work.mjs)
 import type { FamilyId } from '../../../../src/engine';
 import type { Seg } from './frise';
 

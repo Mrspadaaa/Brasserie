@@ -1,6 +1,6 @@
 // Pack de données commun aux mini-prototypes : tous les chiffres sortent du moteur (V5.5 importé
 // + ajouts v4). JSON simple, déterministe (aucune horloge), relu par tests/pack.test.ts.
-import { HOP_RECIPE_ENGINE_VERSION } from '@functions/hopRecipePrediction';
+import { HOP_RECIPE_ENGINE_VERSION } from '../../../../functions/src/hopRecipePrediction';
 import {
   CATALOGUE, FAMILIES, FAMILY_NAMES, REFERENCE, SCALE_PARAMETERS, STOCK, STOCK_SOURCE, gapVerdict, getStyleScale, hopProfile, hopRef, valueVerdict,
   proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,

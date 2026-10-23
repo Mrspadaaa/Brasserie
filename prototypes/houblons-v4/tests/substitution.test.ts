@@ -1,3 +1,4 @@
+import './temoin'; // témoin négatif de check:engine (B3)
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';

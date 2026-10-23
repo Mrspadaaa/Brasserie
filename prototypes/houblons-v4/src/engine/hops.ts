@@ -1,5 +1,5 @@
-import { createHopExtrapolationCache, hopDescriptorEvidence } from '@functions/hopExtrapolationCore';
-import { suggestedHopVarieties } from '@app/domain/hopIndex/styleSelection';
+import { createHopExtrapolationCache, hopDescriptorEvidence } from '../../../../functions/src/hopExtrapolationCore';
+import { suggestedHopVarieties } from '../../../../src/domain/hopIndex/styleSelection';
 import { ENGINE_DATA, EXTRAPOLATION, POLICY, STOCK, VARIETY_BY_ID, hopRef, type HopRef } from './data';
 import { FAMILIES, type FamilyId } from './families';
 import { MOMENTS, predictTriplet, profileOf, tripletOf, yeastInfo, type FamilyEstimate, type MomentId, type Recipe, type YeastInfo } from './recipe';

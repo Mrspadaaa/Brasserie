@@ -1,3 +1,4 @@
+import './temoin'; // témoin négatif de check:engine (B3)
 import { describe, expect, it } from 'vitest';
 import bandsFile from '../data/style-bands.json';
 import { deriveStyle } from '../scripts/build-bands.mjs';

@@ -1,6 +1,7 @@
-// Les 12 familles d'arômes : couleurs (une seule table, #142 : fils17-standard/jetons-familles.json, importée),
-// noms courts du brasseur et ordres d'affichage. Les pictos sont dans Pictos.tsx.
-import jetons from '../../../../../work/refonte-frontend/v4/ecran-1/fils17-standard/jetons-familles.json';
+// Les 12 familles d'arômes : couleurs (une seule table, #142 : fils17-standard/jetons-familles.json, copiée sans
+// retouche dans data/ par data/copies-de-work.mjs, B8), noms courts du brasseur et ordres d'affichage. Les pictos
+// sont dans Pictos.tsx. Place future : src/ui/hopIndex/familyTokens.ts (ARCHITECTURE.md).
+import jetons from '../../../data/jetons-familles.json';
 import { FAMILIES, type FamilyId } from '../../../src/engine';
 
 export interface JetonFamille { base: string; texte: string; fond: string }

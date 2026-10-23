@@ -189,7 +189,12 @@ const pl = (min: Borne, max: Borne): Plage => ({ min, max, central: min != null 
 const nom = (c: ComposeId) => D.composes[c].nom;
 const uniteTeneur = (c: ComposeId) => (D.composes[c].type === 'thiol' ? 'µg/kg' : '% de l’huile');
 const uniteConc = (c: ComposeId) => (D.composes[c].type === 'thiol' ? 'ng/L' : 'µg/L');
-const fr = (x: number, n = 2) => (Math.abs(x) >= 100 ? Math.round(x).toLocaleString('fr-CH') : x.toLocaleString('fr-CH', { maximumSignificantDigits: n }));
+// Formateurs mis en cache (t2, optimisation 3 : un toLocaleString par appel pesait 21 % du glisser de Dryhopper).
+// Même texte : Number.prototype.toLocaleString(l, o) est défini comme new Intl.NumberFormat(l, o).format (ECMA-402).
+const FR_ENTIER = new Intl.NumberFormat('fr-CH');
+const FR_SIGNIF = new Map<number, Intl.NumberFormat>();
+const frSignif = (n: number) => { let f = FR_SIGNIF.get(n); if (!f) { f = new Intl.NumberFormat('fr-CH', { maximumSignificantDigits: n }); FR_SIGNIF.set(n, f); } return f; };
+const fr = (x: number, n = 2) => (Math.abs(x) >= 100 ? FR_ENTIER.format(Math.round(x)) : frSignif(n).format(x));
 export function texte(p: Plage | null, unite = ''): string {
   if (!p) return 'inconnu';
   const u = unite ? ` ${unite}` : '';

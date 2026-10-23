@@ -1,3 +1,4 @@
+import './temoin'; // témoin négatif de check:engine (B3)
 import { describe, expect, it } from 'vitest';
 import { ecartTolerances, styleMasking, toleranceScale } from '../src/engine/tolerance';
 

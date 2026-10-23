@@ -1,5 +1,6 @@
 import protoData from '../../data/proto-data.json';
 import { FAMILIES, type FamilyId } from './families';
+import { temoinNegatif } from './temoin';
 import { getStyleScale, SCALE_PARAMETERS, type FamilyStatus, type StyleScale } from '../style/scale';
 
 /**
@@ -41,7 +42,7 @@ export function styleMasking(code: string): Masking {
   const amertume = ibu ? clamp01((mid(ibu)! - 15) / 45) : null;
   const known = [couleur, densite, amertume].filter((x): x is number => x !== null);
   // Témoin négatif : V4_TEMOIN_NEGATIF=tolerance rend l'ancien comportement (aucun masquage, f = 1).
-  const m = process.env.V4_TEMOIN_NEGATIF === 'tolerance' ? null : known.length ? r2(known.reduce((a, b) => a + b, 0) / known.length) : null;
+  const m = temoinNegatif() === 'tolerance' ? null : known.length ? r2(known.reduce((a, b) => a + b, 0) / known.length) : null;
   return { m, facteur: m === null ? 1 : r2(0.35 + 0.65 * m), indices: { couleur: couleur === null ? null : r2(couleur), densite: densite === null ? null : r2(densite), amertume: amertume === null ? null : r2(amertume) }, stats: { srm, og, ibu } };
 }
 

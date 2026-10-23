@@ -1,44 +1,20 @@
 // Contexte de l'état du parcours et ses crochets. Un seul état de recette, partagé par tous les écrans.
 // En mémoire (décision du pilote) ; la persistance de l'app est décrite dans ARCHITECTURE.md.
-import { createContext, useContext, useEffect, useMemo, useReducer, type Dispatch, type ReactNode } from 'react';
+import { createContext, useContext, useMemo, useReducer, type Dispatch, type ReactNode } from 'react';
 import * as moteur from '../moteur';
-import { cransOf, getStyleScale, hopAlpha, hopRole } from '../../../src/engine';
 import type { FamilyId } from '../../../src/engine';
+import { useCrochetTest } from '../integration/crochetTest';
 import { reducteur } from './reducteur';
 import type { Action, AjoutParcours, Brouillon, Cible, EtatParcours, Quand, RecetteParcours } from './types';
 
 const Ctx = createContext<{ etat: EtatParcours; dispatch: Dispatch<Action> } | null>(null);
 
-/** Vue de l'état pour les vérifications du script de parcours (maquette seulement, jamais dans l'app). */
-export interface VueParcours {
-  etat: EtatParcours;
-  route: string;
-  biere: () => moteur.BiereLue;
-  brouillonLu: () => moteur.BiereLue | null;
-  mesures: typeof moteur.mesures;
-  medianeRecalcul: typeof moteur.medianeRecalcul;
-  viderMesures: typeof moteur.viderMesures;
-  /** Les actions de l'état, pour qu'un jeu.mjs pose un état sans passer par un autre écran (visée, comparaison…). */
-  envoyer: Dispatch<Action>;
-  /** L'adaptateur entier : un jeu.mjs compare ce que l'écran rend (data-crans, data-usage…) au moteur. */
-  moteur: typeof moteur;
-  /** Règles du moteur v4 utiles aux contrôles (crans du style à 0,6 près, D80 ; rôle, D90 ; α, D87). */
-  regles: { cransOf: typeof cransOf; getStyleScale: typeof getStyleScale; hopRole: typeof hopRole; hopAlpha: typeof hopAlpha };
-}
-declare global { interface Window { __parcours?: VueParcours } }
+export type { VueParcours } from '../integration/crochetTest';
 
 export function EtatParcoursProvider({ initial, children }: { initial: EtatParcours; children: ReactNode }) {
   const [etat, dispatch] = useReducer(reducteur, initial);
-  useEffect(() => {
-    window.__parcours = {
-      etat, get route() { return location.hash; },
-      biere: () => moteur.lireBiere(etat.recette),
-      brouillonLu: () => (etat.brouillon ? moteur.lireBiere(etat.brouillon.recette) : null),
-      mesures: moteur.mesures, medianeRecalcul: moteur.medianeRecalcul, viderMesures: moteur.viderMesures,
-      moteur, regles: { cransOf, getStyleScale, hopRole, hopAlpha },
-      envoyer: dispatch,
-    };
-  });
+  // Le crochet de test des contrôles (window.__parcours) : un seul module, integration/crochetTest.ts.
+  useCrochetTest(etat, dispatch);
   const valeur = useMemo(() => ({ etat, dispatch }), [etat]);
   return <Ctx.Provider value={valeur}>{children}</Ctx.Provider>;
 }

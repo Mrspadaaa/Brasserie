@@ -13,6 +13,10 @@ import Comparer from '../ecrans/comparer';
 import Dryhopper from '../ecrans/dryhopper';
 import Levure from '../ecrans/levure';
 import Substituer from '../ecrans/substituer';
+import { bannisDe, objectifsDe, voiesDe } from '../ecrans/suggerer/voies';
+import { ROUE } from '../commun/familles';
+import { lireBiere, remplacants } from '../moteur';
+import { prechauffer } from '../moteur/prechauffage';
 import { useNavigation } from './navigation';
 import { estOutil } from './routes';
 
@@ -28,6 +32,18 @@ export function Coquille() {
     if (b) dispatch({ type: 'brouillon/ouvrir', brouillon: b });
     else if (e.brouillon) dispatch({ type: 'brouillon/abandonner' });
   }, [route, dispatch]);
+
+  // Au repos sur Ma bière : préchauffer Suggérer et Substituer (performance, t2 n° 1 et 8). Mêmes appels que ces
+  // écrans à leur ouverture (voies de Suggérer sur la recette et la visée ; remplaçants de chaque ajout, 6 au plus).
+  const surMaBiere = route.ecran === 'ma-biere' || route.ecran === 'biere';
+  useEffect(() => {
+    if (!surMaBiere) return;
+    const { recette, visee } = etat;
+    return prechauffer([
+      () => voiesDe(recette, objectifsDe(recette, lireBiere(recette), visee), ROUE, bannisDe(visee)),
+      ...recette.additions.map((a) => () => remplacants(recette, a.id, 6)),
+    ]);
+  }, [surMaBiere, etat.recette, etat.visee]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const outil = (() => {
     switch (route.ecran) {

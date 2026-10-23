@@ -48,6 +48,7 @@ Aucun fichier de l'app n'est modifié : la porte B reste fermée ([[le-brasseur-
 | Thème | clair ; cave (le thème actuel de l'app) | brasseur | ouverte. Clair par défaut, comme les maquettes qu'il a jugées. La cave se choisit d'un toucher dans la coquille |
 | Persistance | Dexie, comme l'app ; en mémoire | pilote | tranchée : en mémoire, avec un bouton « Recommencer ». La persistance est décrite dans ARCHITECTURE.md |
 | Ma bière et Suggérer (D105, 23.10 soir) | la carte en fil de fer ; ses maquettes choisies | brasseur | tranchée : ses maquettes. « Mais ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? ». Étape Houblons et onglet Ma bière de la base v4.10 (« Ça aussi »), q2b (« Ça oui, c'est effectivement l'un de mes choix »). La carte ne donne que les ponts. Contrôle : controle-reprise avec les inventaires de ses maquettes |
+| α inconnu d'un houblon écrit dans la recette de l'app (p8) | écrire 0, la convention actuelle de l'app ; rendre `HopIngredient.alpha` facultatif | pilote | tranchée : facultatif à l'intégration (inconnu ≠ 0) ; d'ici là, la conversion n'est employée que dans les tests ; inscrit dans #143 |
 
 Variantes choisies, dont repartent les écrans :
 - r6a choisie : « r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions » (23.10)

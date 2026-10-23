@@ -1,5 +1,5 @@
-import { checkHopExclusions } from '@app/domain/hopIndex/solver';
-import { suggestedHopVarieties } from '@app/domain/hopIndex/styleSelection';
+import { checkHopExclusions } from '../../../../src/domain/hopIndex/solver';
+import { suggestedHopVarieties } from '../../../../src/domain/hopIndex/styleSelection';
 import { AXES, CATALOGUE, STOCK, VARIETY_BY_ID, YEASTS, hopRef } from './data';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { cites } from './hops';

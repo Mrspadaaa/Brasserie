@@ -1,3 +1,4 @@
+import './temoin'; // témoin négatif de check:engine (B3)
 // Moteur « pouvoir aromatique » : contrôles de « Ce qui doit en sortir » (fils19-choix/MOTEUR-POUVOIR.md),
 // plus la sortie par famille et tous les moments (consignes du pilote, 19.10, soir). Recette 16D S1
 // (Nugget 46 g à 60′, US-05, 20 L) ; 4 g/L ; dry hop après fermentation sauf mention.

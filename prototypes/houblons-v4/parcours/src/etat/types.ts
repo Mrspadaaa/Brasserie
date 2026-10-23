@@ -6,11 +6,23 @@ import type { Addition, FamilyId, MomentId, Recipe } from '../../../src/engine';
  * (pas de 5′, de la durée d'ébullition à 0) et `moment` n'en est que la classe la plus proche. Pour un dry
  * hop, `day` (moteur) est le jour de début et `jours` la durée de contact. */
 export interface AjoutParcours extends Addition {
+  /** Ébullition : minute d'ajout (fait foi). Whirlpool : durée de contact (minutes), venue de la recette de l'app. */
   minutes?: number;
   jours?: number;
+  /** α du lot de la recette (HopIngredient.alpha), en % m/m : null = inconnu ; absent = l'α du stock ou de la plage
+   * variétale (moteur/donnees.ts). Posé par la conversion de la recette de l'app ; effacé quand le houblon change. */
+  alphaLot?: number | null;
+  /** Whirlpool : température de contact (°C) de la recette de l'app ; absente = le préréglage du moteur (80 °C). */
+  tempC?: number;
+  /** Raison pour laquelle le moment de la recette de l'app est incomplet (durée de contact inconnue…) : l'IBU de
+   * l'ajout est alors inconnu, jamais calculé sur une durée supposée. Effacée quand l'ajout est placé (placer). */
+  momentInconnu?: string;
 }
 export interface RecetteParcours extends Recipe {
   additions: AjoutParcours[];
+  /** Raison pour laquelle l'IBU à chaud est incalculable pour toute la recette (densité initiale inconnue), posée
+   * par la conversion de la recette de l'app ; absente dans la maquette. */
+  ibuInconnu?: string;
 }
 
 /** Où un ajout se place : la frise de Dryhopper en donne un par cran. */

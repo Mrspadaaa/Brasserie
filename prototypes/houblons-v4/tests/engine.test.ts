@@ -1,3 +1,4 @@
+import './temoin'; // témoin négatif de check:engine (B3)
 import { describe, expect, it } from 'vitest';
 import {
   FAMILIES, additionIbu, applyVoie, compareRankKeys, gramsForIbu, hopProfile, hopRef, matrixContext, proposeVoies, recipeIbu, recipeProfile, styleFit, getStyleScale, yeastInfo, STOCK, CATALOGUE,

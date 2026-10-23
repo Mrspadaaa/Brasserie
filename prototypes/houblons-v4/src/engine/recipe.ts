@@ -1,7 +1,7 @@
-import { BrewingMath } from '@app/services/brewingMath';
-import { predictHopRecipe, type HopRecipeInput } from '@functions/hopRecipePrediction';
-import { createHopPredictor } from '@functions/hopPredictionCore';
-import type { HopEstimate, HopPrediction, HopTiming, HopTriplet } from '@functions/hopPredictionSchema';
+import { BrewingMath } from '../../../../src/services/brewingMath';
+import { predictHopRecipe, type HopRecipeInput } from '../../../../functions/src/hopRecipePrediction';
+import { createHopPredictor } from '../../../../functions/src/hopPredictionCore';
+import type { HopEstimate, HopPrediction, HopTiming, HopTriplet } from '../../../../functions/src/hopPredictionSchema';
 import { ENGINE_DATA, EXTRAPOLATION, POLICY, YEASTS, hopRef, type HopRef } from './data';
 import { FAMILIES, type FamilyId } from './families';
 

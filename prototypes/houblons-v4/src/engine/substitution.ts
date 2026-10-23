@@ -9,6 +9,7 @@ import { REFERENCE, describeFamilies } from './hops';
 import { MOMENTS, ibuPerGram, type MomentId, type Recipe } from './recipe';
 import { hopRole, roleFromAlpha, type HopRoleValue } from './roles';
 import type { StyleScale } from '../style/scale';
+import { temoinNegatif } from './temoin';
 
 export const SUBSTITUTION_METHOD = {
   nom: 'substitution calculée v1',
@@ -249,7 +250,7 @@ export function substitutes(key: string, options: SubstitutionOptions = {}): Sub
   const moment = options.moment ?? 'b60', grams = options.grams ?? 1, recipe = options.recipe ?? defaultRecipe();
   const context: SubstitutionContext = options.context ?? (options.moment ? (MOMENTS[options.moment].kind === 'amertume' ? 'amertume' : 'arôme') : 'défaut');
   // Témoin négatif : V4_TEMOIN_NEGATIF=substitution met tous les poids à zéro (scores nuls, ordre alphabétique).
-  const w = process.env.V4_TEMOIN_NEGATIF === 'substitution' ? ZERO : options.weights ?? WEIGHTS[context];
+  const w = temoinNegatif() === 'substitution' ? ZERO : options.weights ?? WEIGHTS[context];
   const style = options.style?.documented ? options.style : undefined;
   const pool = options.pool ?? [...CATALOGUE.map((c) => c.id), ...STOCK.map((s) => s.key).filter((k) => !CATALOGUE.some((c) => c.id === k))];
   const used = (k: string) => (recipe.additions ?? []).filter((a) => a.hopKey === k).reduce((t, a) => t + a.grams, 0);

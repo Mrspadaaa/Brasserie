@@ -20,7 +20,8 @@ export function quandDe(a: AjoutParcours, recette: RecetteParcours): Quand {
 
 /** Pose un ajout à un moment : champs du moteur (moment, day) et du parcours (minutes, jours). */
 export function placer(a: AjoutParcours, q: Quand, recette: RecetteParcours): AjoutParcours {
-  const { minutes: _m, jours: _j, day: _d, ...reste } = a;
+  // Le moment change : minutes, jours, jour de début, température de whirlpool et moment incomplet sont reposés.
+  const { minutes: _m, jours: _j, day: _d, tempC: _t, momentInconnu: _i, ...reste } = a;
   switch (q.type) {
     case 'premierMout': return { ...reste, moment: 'fwh' };
     case 'whirlpool': return { ...reste, moment: 'wp' };

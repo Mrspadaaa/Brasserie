@@ -23,7 +23,12 @@ export function remplacer(r: RecetteParcours, id: string, hopKey: string): Recet
   const a = trouver(r, id);
   if (!a) return r;
   const d = doseRemplacement(r, a, hopKey);
-  return avec(r, r.additions.map((x) => (x.id === id ? { ...x, hopKey, grams: d.grams } : x)));
+  // Un autre houblon : l'α du lot d'origine ne vaut plus (son α est celui du stock, ou de la plage variétale).
+  return avec(r, r.additions.map((x) => {
+    if (x.id !== id) return x;
+    const { alphaLot: _a, ...reste } = x;
+    return { ...reste, hopKey, grams: d.grams };
+  }));
 }
 
 /** Identifiant neuf d'un ajout (stable pour les routes #/dryhopper/<ajout>). */

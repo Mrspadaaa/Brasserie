@@ -1,3 +1,4 @@
+import './temoin'; // témoin négatif de check:engine (B3)
 // Moteur « profil aromatique simulé » (lot 21) : les contrôles demandés par le pilote (19.10, soir), sur la
 // stout 16D S1 du lot 20 (Nugget 46 g à 60′, 20 L, dégustation « trop résineuse »).
 import { describe, expect, it } from 'vitest';

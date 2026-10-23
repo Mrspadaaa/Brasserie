@@ -6,7 +6,7 @@
 //  - panel OSU : l'étude E04 (Lafontaine 2018, H22), Cascade seul.
 // Une valeur absente reste absente (« inconnu »), jamais 0. Plage = du plus bas au plus haut des sources.
 import composes from '../../../../data/composes-houblon.json';
-import comparatifs from '../../../../../../work/refonte-frontend/v4/ecran-1/fils21-choisir/donnees/comparatifs-dryhop.json';
+import comparatifs from '../../../../data/comparatifs-dryhop.json'; // copie de work/…/fils21-choisir/donnees (data/copies-de-work.mjs)
 import { hopRef, type FamilyId } from '../../../../src/engine';
 
 export interface ValeurReelle {

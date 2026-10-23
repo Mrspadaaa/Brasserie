@@ -1,3 +1,4 @@
+import './temoin'; // témoin négatif de check:engine (B3)
 import { describe, expect, it } from 'vitest';
 import facts from '../data/faits-cites.json';
 import { NO_GOUTS, afterCrans, beerCrans, citations, hopRef, shoppingList, targetCrans } from '../src/engine';

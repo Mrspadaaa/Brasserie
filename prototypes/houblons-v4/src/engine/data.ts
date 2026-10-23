@@ -1,13 +1,13 @@
-import type { HopLot, HopVariety } from '@functions/hopIndexSchema';
-import type { HopEngineData } from '@functions/hopPredictionCore';
-import type { HopAxis, HopKnowledge, HopYeast } from '@functions/hopPredictionSchema';
-import type { HopExtrapolation } from '@functions/hopExtrapolationSchema';
-import type { HopSolverPolicy } from '@functions/hopSolverSchema';
-import knowledgeBootstrap from '@app/data/hopKnowledgeBootstrap.json';
-import extrapolationBootstrap from '@app/data/hopExtrapolationBootstrap.json';
-import yeastBootstrap from '@app/data/hopYeastBootstrap.json';
-import solverBootstrap from '@app/data/hopSolverBootstrap.json';
-import trialBootstrap from '@app/data/hopTrialBootstrap.json';
+import type { HopLot, HopVariety } from '../../../../functions/src/hopIndexSchema';
+import type { HopEngineData } from '../../../../functions/src/hopPredictionCore';
+import type { HopAxis, HopKnowledge, HopYeast } from '../../../../functions/src/hopPredictionSchema';
+import type { HopExtrapolation } from '../../../../functions/src/hopExtrapolationSchema';
+import type { HopSolverPolicy } from '../../../../functions/src/hopSolverSchema';
+import knowledgeBootstrap from '../../../../src/data/hopKnowledgeBootstrap.json';
+import extrapolationBootstrap from '../../../../src/data/hopExtrapolationBootstrap.json';
+import yeastBootstrap from '../../../../src/data/hopYeastBootstrap.json';
+import solverBootstrap from '../../../../src/data/hopSolverBootstrap.json';
+import trialBootstrap from '../../../../src/data/hopTrialBootstrap.json';
 import protoData from '../../data/proto-data.json';
 
 /** Données du prototype : produites par scripts/build-data.mjs depuis le dépôt et le fixture

@@ -1,6 +1,7 @@
 import bandsFile from '../../data/style-bands.json';
 import protoData from '../../data/proto-data.json';
 import { FAMILIES, type FamilyId } from '../engine/families';
+import { temoinNegatif } from '../engine/temoin';
 
 /** [H] Table et seuils « à valider par le brasseur » : data/style-bands.json. */
 export type FamilyStatus = 'attendue' | 'neutre' | 'indésirable';
@@ -64,9 +65,9 @@ function orderOf(families: Record<FamilyId, FamilyScale>): FamilyId[] {
   return [...FAMILIES].sort((a, b) => rank[families[a].status] - rank[families[b].status] || FAMILIES.indexOf(a) - FAMILIES.indexOf(b));
 }
 
-/** Témoin négatif de check:engine : V4_TEMOIN_NEGATIF=bande élargit la bande floral de 3A à 0–100. */
+/** Témoin négatif de check:engine : V4_TEMOIN_NEGATIF=bande (posé par tests/temoin.ts) élargit la bande floral de 3A à 0–100. */
 function negativeControl(code: string, f: FamilyId, band: [number, number]): [number, number] {
-  return process.env.V4_TEMOIN_NEGATIF === 'bande' && code === '3A' && f === 'floral' ? [0, 100] : band;
+  return temoinNegatif() === 'bande' && code === '3A' && f === 'floral' ? [0, 100] : band;
 }
 
 const STATS = protoData.styles as unknown as { id: string; code: string; name: string; ibu: [number, number] | null; url: string | null }[];

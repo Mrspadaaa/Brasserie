@@ -14,7 +14,13 @@ Sortie principale : `data/pack-mini-protos.json`, le jeu de données commun des 
 | `npm run typecheck` | `tsc --noEmit` (mode non strict, comme l'app) |
 
 Témoin négatif : `V4_TEMOIN_NEGATIF=bande npm run check:engine` élargit la bande floral de
-3A à 0–100 et doit imprimer `ENGINE-V4 FAIL`.
+3A à 0–100 et doit imprimer `ENGINE-V4 FAIL` (aussi `substitution` et `tolerance`).
+
+Portabilité (voie p8, 23.10) : le moteur ne lit plus l'environnement du processus. Le témoin est une variable
+de module (`src/engine/temoin.ts`, `poserTemoinNegatif`), posée par `tests/temoin.ts` depuis `V4_TEMOIN_NEGATIF`
+(chaque fichier de test l'importe). Le moteur importe l'app par des chemins relatifs (`../../../../src/…`,
+`../../../../functions/src/…`), comme l'app elle-même : plus d'alias `@app` ni `@functions`, ni `define` à poser
+dans la construction qui l'embarque. Contrôles : `parcours/outils/portabilite.mjs --process` et `--alias`.
 
 ## Ce qui vient de V5.5 et ce que la v4 ajoute
 
@@ -128,7 +134,7 @@ règle `SUBSTITUTION_RANKING` (exportée `RANKING` par le module), testée dans 
   avec 62 g), sinon le milieu de la plage variétale ; le score, lui, compare les plages variétales (19.10).
 - Pack : `fichesHoublons[].substitutsCalcules` (top 5 et 3 meilleurs du stock), règle dans
   `pack-fiches.json` → `meta.substitution`.
-- Témoin négatif : `V4_TEMOIN_NEGATIF=substitution` met les poids à zéro ; les témoins de bon sens et la
+- Témoin négatif : `V4_TEMOIN_NEGATIF=substitution` (posé par `tests/temoin.ts`) met les poids à zéro ; les témoins de bon sens et la
   cohérence du pack échouent.
 
 ## Ajout en un toucher (`quickAdds`, `S1.ajoutsRapides`, `S2.ajoutsRapides`)
