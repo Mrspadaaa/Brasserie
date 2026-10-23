@@ -70,9 +70,13 @@ version devrait en créé des nouveaux »)
 ## Pages en vigueur
 - L'ancienne page « Lot 22 houblons » (https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv, versions 1 à 9) reste en
   l'état, comme archive. Sa source `page-lot/index.html` n'est plus republiée.
-- L'autre session publie les pages datées « Comparer · 23.10 » et « Dryhopper · 23.10 », sources
-  `work/refonte-frontend/v4/outils/pages/2026-10-23-*/index.html`, et les inscrit dans « ## Pages » de sa MISSION.
-  La carte des outils (Substituer, Levure) doit aussi avoir sa page : demandé à l'autre session.
+- Pages datées, une par version (sources `work/refonte-frontend/v4/outils/pages/<date>-<sujet>/index.html`) :
+  - « Comparer · 23.10 » (r6n2, r6p1 à r6p4), autre session : https://claude.ai/artifact/BRA2ufdNe3DshNfzBxB3g4 ;
+  - « Dryhopper · 23.10 » (passes 2 et 3), autre session : https://claude.ai/artifact/HjWdF2rgUHDzY3QpgMWVV8 ;
+  - « Dryhopper · 56 concepts · 23.10 » (v0 classés), ici : https://claude.ai/artifact/HexW2XmnU4iUbJaRcPJNzW ;
+  - « Carte des outils · 22.10 » (Substituer, Levure), ici : https://claude.ai/artifact/9FrNPBUDv7ABeo5CsSFW7g.
+  Les quatre passent `verifier-page.mjs` ; les deux dernières lignes sont envoyées à l'autre session pour sa table
+  « ## Pages », avec le lien #suite de sa page Dryhopper à remplacer par le panel v0.
 - `page-lot/PUBLIER.md` dit encore « garder le même lien » : à remplacer par un renvoi vers `pages/PUBLIER.md`
   quand l'autre session n'y travaille plus (hors du champ de `remplaces`).
 
