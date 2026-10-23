@@ -405,6 +405,27 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   mot : « J'aime bien les petits icône et tout. Mais il manque à un endroit un bouton légende ». Les icônes restent. Le
   seul « ? » de l'étape est au-dessus des familles, en bas ; la carte de l'ajout (carrés, traits sous les carrés, ⟳,
   « résine 2/4 », « ? arôme » hachuré) n'en a pas près d'elle. D113.
+- **Le retour, encore** (23.10, soir, sur la pastille « ‹ Retour » qu'une réponse automatique avait posée dans l'artefact
+  publié, sans concepteur ni critique), mot pour mot : « Bouton retour toujours pas vraiment au point, UI pas terribles ».
+  Deuxième refus du même élément (D109) : changer de genre de solution, et lui montrer des variantes (L13, L24). D109.
+- **L'en-tête de l'étape** (23.10, soir, sur « hypothèse » de « 16D hypothèse »), mot pour mot : « Pourquoi ? Qu'est-ce
+  que ce champs apporter ?? Il faudra remplacer tout ça par le vrai Stepper de la vrai app ». Le badge venait de la base
+  v4.10 : « échelles hypothétiques à valider », une note de concepteur. Le vrai fil d'étapes de l'app :
+  `WizardStepName` et `WizardStepRail` (`src/ui/WizardStepBar.tsx`), dans l'en-tête de `BrewWizard` (7 étapes, Houblons
+  la 3ᵉ). D116.
+- **Le panel OSU** (23.10, soir, sur « Panel OSU, Cascade » dans Comparer), mot pour mot : « Beaucoup trop mis en avant ».
+  Le panel reste un acquis (« la panel osu j'aime assez », 20.10), mais pas au premier plan. D114.
+- **La fiche** (23.10, soir, sur « · nommé en premier » dans la fiche de Cascade), mot pour mot : « Mettre le radargraph
+  avant, cette vue est vraiment pas terribles. À revoir... ». Le radar passe avant la liste des familles ; la liste
+  (familles, « nommé en premier », mots anglais « woody, resinous ») est à revoir, en variantes montrées. D115.
+- **Suggestions, pas la bonne** (23.10, soir, sur l'onglet Suggestions), mot pour mot : « J'ai l'impression que cette vue
+  suggestions et pas la bonne que j'ai vraiment choisir ?? ». Côte à côte avec sa base v4.10
+  (`base/captures/consolide-b-390.png`) et q2b (`fils15-s5-complexe/captures/q2b-b-390.png`), la maquette s'en écarte :
+  une question en titre au lieu des onglets dans l'en-tête, pas de bandeau IBU · OG · EBC, un « ? » et une ligne
+  « fixé Stout 16D US-05 » en plus, les pictos d'objectif sans leur cercle, pas de ♡, « Comparer (n) » en pastille à
+  droite au lieu de la barre pleine largeur, la liste sans son cadre à bord noir. Seuls l'usage en mot (D90), la bande
+  « ‹ visée | visée › » retirée (D91) et les pistes l5b (D92) ont ses mots. CHOIX OK ne l'a pas vu : l'inventaire de
+  q2b ne nommait pas ces éléments, et la supervision a publié sans captures côte à côte (L03). D117.
 - **La maquette jouable ne suit pas ses choix** (23.10, soir, sur la maquette de bout en bout), mot pour mot : « Mais
   ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? ». Sur la capture de q2b (lot 15,
   Suggestions) : « Ça oui, c'est effectivement l'un de mes choix ». Sur celle de Ma bière de la base v4.10 : « Ça

@@ -145,13 +145,25 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
 - Piège (23.10) : `git commit -- SPEC` emporte les modifications non commitées de l'autre session dans ce fichier.
   c0039406 a emporté sa correction D107 (x3b, pas le Comparer v4.10). Avant de commiter un fichier partagé,
   lire `git diff -- <fichier>`.
-- **À faire quand « En attente » annonce la version D107 à D113** :
+- D109 bis (la pastille « ‹ Retour » refusée), D114 (panel OSU trop en avant), D115 (fiche : le radar d'abord, la liste à
+  revoir), D116 (le vrai fil d'étapes de l'app : `src/ui/WizardStepBar.tsx`), D117 (Suggestions ne suit pas q2b ni la base
+  v4.10 ; CHOIX OK aveugle, inventaire de q2b à compléter). Fils 2f687ce7, 2ef8663d, 00fbdef5 et 535c5505.
+- L'artefact 52UB… a été republié par une réponse automatique (pastille « ‹ Retour » posée dans le fichier construit,
+  hors des sources) : la version en ligne n'est plus d332792c. La prochaine version va dans un artefact neuf.
+- Mon manque (L03) : publié sur CHOIX OK et critique ACCEPTÉ, sans captures côte à côte base | maquette pour chaque
+  écran. Désormais, avant toute publication, une page côte à côte par écran, regardée par moi et publiée avec la
+  version. L03 est à compléter dans LECONS.md après le commit de l'autre session (L03 y est en cours).
+- DEFAUTS-RECURRENTS et DEFAUTS-COURT : mes lignes D114 à D117 ne sont pas commitées, à côté de la correction D107 de
+  l'autre session ; elle les commite toutes, avec mon accord.
+- **À faire quand « En attente » annonce la version D107 à D117** :
   1. rejouer CHOIX, TEINTE, controle-comparer-etapes, controle-visee, controle-retour,
-     controle-traits, controle-geste-etape, controle-appui (A9) et controle-legende ;
+     controle-traits, controle-geste-etape, controle-appui (A9),
+     controle-legende, controle-fiche, controle-stepper ; page côte à côte par écran ;
   2. regarder les captures côte à côte avec la base v4.10 ;
   3. publier la nouvelle version dans un artefact neuf (enveloppe `outils/pages/2026-10-23-maquette/` à copier sous
      une nouvelle date) ;
-  4. répondre dans les fils 4204d431, 48b1d3c4, 824a18bd, 12fdbdc0 et 98024210 avec le lien, puis les résoudre.
+  4. répondre dans les fils 4204d431, 48b1d3c4, 824a18bd, 12fdbdc0, 98024210, 2f687ce7, 2ef8663d,
+     00fbdef5 et 535c5505 avec le lien, puis les résoudre.
 
 ## Ouvert, par priorité
 1. **Dette des défauts** (AUDIT.md, « À adapter »), urgente pour la voie p4 du parcours :
