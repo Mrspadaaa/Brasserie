@@ -66,6 +66,7 @@ Variantes choisies, dont repartent les écrans :
 | p5-parcours | le parcours entier joué au téléphone, l'état vérifié après chaque geste, les captures de chaque étape | jugement | auteur | sonnet | 80 | `prototypes/houblons-v4/parcours/outils/parcours-complet.mjs`, `voies/p5-parcours/**` | p1-ma-biere, p2-suggerer, p3-comparer, p4-dryhopper | parcours-complet.mjs (PARCOURS OK) ; verifier-page.mjs ; controle-choix.mjs (règle n° 1) | pilote | — |
 | p6-critique | avis du critique sur le parcours, écran par écran, en défauts vérifiables | jugement | critique | fable | 40 | `voies/p6-critique/RESULTAT.md` | p5-parcours | note RESULTAT (un avis par écran) | pilote | — |
 | p7-implementation | relecture indépendante : la maquette est-elle prête à porter dans l'app (architecture, types, état, moteur, conventions, ce qui manque), à la demande « que c'est facile après pour l'implémentation » | jugement | relecteur | sonnet | 60 | `voies/p7-implementation/RESULTAT.md` | p1-ma-biere, p2-suggerer, p3-comparer, p4-dryhopper | note RESULTAT (verdict par zone, bloquants, effort) | pilote | — |
+| p8-portabilite | lever dans la maquette les bloquants d'intégration prouvés par p7 : moteur portable (B3, B4), données injectables (B2), conversion de la recette de l'app testée (B5), navigation en pile sur l'API de useFullScreenRoute (B1), données hors de work/ (B8), crochet de test ; rien ne change à l'écran | conception | auteur | opus | 150 | `prototypes/houblons-v4/src/**`, `…/data/**`, `…/tests/**`, `…/parcours/src/{moteur,etat,coquille,commun,integration}/**`, deux lignes d'import de deux outils (VOIE.md), `…/parcours/ARCHITECTURE.md`, `voies/p8-portabilite/RESULTAT.md` | p1-ma-biere, p5-parcours | portabilite.mjs (--process, --alias, --work) ; check:engine ; conversion-recette.test.ts ; construire ; jouer-parcours --ponts ; controle-choix.mjs (règle n° 1) ; app-intacte | pilote | — |
 
 Chemins de « Possède » : relatifs à la racine du dépôt ; `voies/…` est relatif au dossier de cette mission.
 
@@ -83,6 +84,20 @@ Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`).
   concepteur, dans le socle inchangé.
 - Sa plainte : SPEC-BRASSEUR mot pour mot, une ligne dans DEFAUTS-RECURRENTS, et un contrôle qui échoue sur la
   version rejetée, ajouté au parcours.
+
+## État de reprise (23.10, soir)
+- Fait et vérifié : p0 socle ; p1 étape Houblons et onglet Ma bière de la base v4.10, fiche, Substituer, rail de la
+  frise (RAIL OK) ; p2 Suggérer de q2b ; p3 Comparer de r6a (CHOIX OK, 35 repris) ; p4 Dryhopper a1 et Levure (RAIL OK
+  à 60′, 45′, 120′) ; p5 parcours complet (31 gestes, PARCOURS OK) ; p7 relecture d'implémentation (prêt avec
+  réserves). Règle n° 1 (CLAUDE.md, SPEC § 0, agents), registre `v4/choix/ecrans.json`, `controle-choix.mjs` (D105).
+- En cours : batterie finale sur `maquettes/parcours` (CHOIX, RAIL avec cas-ebu45, cas-ebu120 et cas-k3, ROUTES,
+  PONTS, PARCOURS) ; puis p6 critique (Fable) sur les captures de p5, côte à côte avec ses maquettes.
+- Publication : par la supervision, dans un artefact neuf, seulement après CHOIX OK et PARCOURS OK ; son adresse
+  entre dans « ## Pages ».
+- Ensuite : p8-portabilite (phase 1 de #143), lancée à la remise à zéro de la fenêtre de 5 h (85 % à 16 h 18 UTC).
+  Puis la vraie intégration, au feu vert du brasseur (porte B).
+- Choix encore ouverts (registre) : Dryhopper (a1, b4, d8, e5, g1), Substituer (porte ou outil), Levure (étape ou
+  outil). Thème : tranché par lui (#144, le clair des maquettes pour toute l'app ; mission de la supervision).
 
 ## Budget
 Avant (23.10, après-midi) : 5 h à 11 %, semaine à 52 %, Fable à 29 %. Plafond visé : 5 h sous 80 %.

@@ -15,8 +15,10 @@ classement ni d'étoile (L27 : indicatif tant que tu n'es pas étalonné sur ces
 ## Entrées
 - Les captures du parcours : `work/missions/2026-10-23-maquette-parcours/voies/p5-parcours/captures/` (à 390 puis à
   1280 px), et son RESULTAT.md.
-- Les bases qu'il a choisies, pour comparer : `work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6a-*.png`,
-  `work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/passe3/captures/`, `work/refonte-frontend/v4/ecran-1/fils22-carte/captures/`.
+- **Règle n° 1** : « C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » Le registre de ses
+  choix, écran par écran, avec la capture de chacun : `work/refonte-frontend/v4/choix/ecrans.json`. C'est **la** référence de
+  chaque écran ; la carte en fil de fer n'en est pas une (D105). Pour Dryhopper, encore ouvert : a1,
+  `work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/passe3/captures/`.
 - `work/refonte-frontend/v4/SPEC-BRASSEUR.md` (§ 0 d'abord) et `work/refonte-frontend/v4/DEFAUTS-COURT.md`.
 - Les NOTE des écrans : `prototypes/houblons-v4/parcours/src/ecrans/*/NOTE.md`.
 
@@ -27,9 +29,11 @@ classement ni d'étoile (L27 : indicatif tant que tu n'es pas étalonné sur ces
 1. Pour chaque écran (ma-biere, fiche, suggerer, comparer, dryhopper, levure, substituer), une ligne :
    « <écran> : ACCEPTÉ » ou « <écran> : REJET ». Suivent ses défauts : capture, endroit, ce qui est faux.
 2. Un REJET cite SPEC-BRASSEUR ou DEFAUTS (le numéro D…), sinon c'est une réserve.
-3. Juge aussi le parcours : retrouve-t-il, d'un écran à l'autre, sa stout, son houblon, ses couleurs ? Un geste
+3. Pour chaque écran choisi, mets d'abord sa capture du parcours à côté de celle de son choix (registre). Il doit
+   reconnaître son écran ; un écart qu'il ne reconnaîtrait pas est un REJET (D105), même si le reste est juste.
+4. Juge aussi le parcours : retrouve-t-il, d'un écran à l'autre, sa stout, son houblon, ses couleurs ? Un geste
    fait-il ce qu'il attend ? Comparer est-il bien r6a, à peine amélioré ?
-4. Pas de reformulation de goût en défaut : ce que tu préfères n'est pas un défaut.
+5. Pas de reformulation de goût en défaut : ce que tu préfères n'est pas un défaut.
 
 ## Critères
 Dans `GATES.md`, même dossier. Ne pas le modifier.

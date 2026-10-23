@@ -50,19 +50,19 @@ export default {
       // car jouer-parcours ne glisse qu'à l'horizontale. 14 px par cran.
       verifier: (p) => new Promise((ok) => {
         const b = document.querySelector('[data-ajout-repere="a1"]');
-        const r = b.getBoundingClientRect(), x = r.x + r.width / 2, y0 = r.y + r.height / 2;
+        const r = b.querySelector('[data-role="moment-pouce"]').getBoundingClientRect(), x = r.x + r.width / 2, y0 = r.y + r.height / 2;
         const ev = (t, y) => b.dispatchEvent(new PointerEvent(t, { bubbles: true, cancelable: true, pointerId: 7, pointerType: 'touch', isPrimary: true, clientX: x, clientY: y, button: 0, buttons: t === 'pointerup' ? 0 : 1 }));
         ev('pointerdown', y0);
         let i = 0;
         const pas = () => {
           i += 1; ev('pointermove', y0 + (84 * i) / 12);
           if (i < 12) { setTimeout(pas, 16); return; }
-          const loupe = !!document.querySelector('[data-role="loupe"]');
+          const loupe = document.querySelectorAll('[data-ajout-repere="a1"] [data-cran]').length > 0;
           ev('pointerup', y0 + 84);
           setTimeout(() => {
             const a = window.__parcours.etat.recette.additions.find((z) => z.id === 'a1');
             const pouce = document.querySelector('[data-ajout-repere="a1"] [data-role="moment-pouce"]')?.textContent;
-            if (!loupe) return ok('pas de loupe doigt posé');
+            if (!loupe) return ok('pas de graduations doigt posé');
             if (a.minutes !== 30) return ok(`moment ${a.moment} ${a.minutes}′ (attendu 30′)`);
             ok(pouce === `${a.minutes}′` || `repère « ${pouce} » ≠ ${a.minutes}′`);
           }, 120);
@@ -77,19 +77,19 @@ export default {
       // car jouer-parcours ne glisse qu'à l'horizontale. 14 px par cran.
       verifier: (p) => new Promise((ok) => {
         const b = document.querySelector('[data-ajout-repere="a1"]');
-        const r = b.getBoundingClientRect(), x = r.x + r.width / 2, y0 = r.y + r.height / 2;
+        const r = b.querySelector('[data-role="moment-pouce"]').getBoundingClientRect(), x = r.x + r.width / 2, y0 = r.y + r.height / 2;
         const ev = (t, y) => b.dispatchEvent(new PointerEvent(t, { bubbles: true, cancelable: true, pointerId: 7, pointerType: 'touch', isPrimary: true, clientX: x, clientY: y, button: 0, buttons: t === 'pointerup' ? 0 : 1 }));
         ev('pointerdown', y0);
         let i = 0;
         const pas = () => {
           i += 1; ev('pointermove', y0 + (-84 * i) / 12);
           if (i < 12) { setTimeout(pas, 16); return; }
-          const loupe = !!document.querySelector('[data-role="loupe"]');
+          const loupe = document.querySelectorAll('[data-ajout-repere="a1"] [data-cran]').length > 0;
           ev('pointerup', y0 + -84);
           setTimeout(() => {
             const a = window.__parcours.etat.recette.additions.find((z) => z.id === 'a1');
             const pouce = document.querySelector('[data-ajout-repere="a1"] [data-role="moment-pouce"]')?.textContent;
-            if (!loupe) return ok('pas de loupe doigt posé');
+            if (!loupe) return ok('pas de graduations doigt posé');
             if (a.minutes !== 60) return ok(`moment ${a.moment} ${a.minutes}′ (attendu 60′)`);
             ok(pouce === `${a.minutes}′` || `repère « ${pouce} » ≠ ${a.minutes}′`);
           }, 120);

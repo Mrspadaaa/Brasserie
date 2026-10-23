@@ -34,7 +34,10 @@
   l'étape ; la base le met dans l'onglet Ma bière, où il est aussi.
 - « Je n'ai pas Nugget › » sous la carte : le pont vers Substituer (la porte), absent de la base.
 - Un « ? » de légende et « Au style / Absolu » au-dessus des familles : exigences de toute l'app (D75, D89).
-- L'ébullition est à l'échelle du temps (0,6 px par minute entre deux ajouts) ; le reste de la frise est en étapes.
+- L'ébullition est à l'échelle du temps : 14 px par 5′, l'endroit où le doigt lâche le repère (D61) ; le reste de la frise
+  est en étapes. Le repère est une piste verticale (role=slider, aria-orientation=vertical) qui ne bouge pas pendant le
+  geste : la frise garde sa place jusqu'au lâcher (D68), le repère suit le doigt en continu (D46), un cran = min(14 px,
+  place à l'écran ÷ crans) (D69), et seules les graduations du segment sous le doigt s'ouvrent, en loupe (D47, D63).
 
 ## Pour l'app
 

@@ -1,4 +1,4 @@
-OK — reprise D105 : étape Houblons et onglet Ma bière de la base v4.10, G1 à G20 verts
+OK — rail de la frise conforme (RAIL OK) ; reprise D105 gardée, G1 à G23 verts
 
 ## Fichiers écrits (dans « Possède » seulement)
 - `prototypes/houblons-v4/parcours/src/ecrans/ma-biere/` : `index.tsx`, `Rail.tsx` (moment par 5′, loupe),
@@ -128,3 +128,53 @@ Sauvin est un peu haute. »
 LEÇON PROPOSÉE : une entrée « carte » ou « fil de fer » n'est jamais une base d'écran. Un brief de reprise cite la
 capture de la maquette qu'il a choisie et son inventaire, et le concepteur pose les deux captures côte à côte avant
 le premier contrôle.
+
+## Rail (D27 à D69, controle-rail --parcours)
+
+Sortie : `RAIL OK 1/1` (16 règles jouées). Non joués, faute de cas d'essai :
+- D44 (whirlpool) : un seul cran au whirlpool ;
+- D45, D56, D61 bis, D64 : une seule poignée de houblon sur la page (cas-k3.html à demander).
+
+Ce qui a changé dans l'étape Houblons (la forme de la base v4.10 est gardée) :
+- la frise porte `data-role="frise"`, `aria-orientation="vertical"` et `data-acquis="frise"` (zone du rail : le champ
+  « Ajouter — houblon… » reste dehors, D37) ;
+- une poignée par ajout : `[data-role="glisser-moment"][role="slider"]`, avec `aria-orientation="vertical"`,
+  `data-houblon` (clé du moteur), `aria-valuenow` et `aria-valuetext` (« 60′ », « whirlpool », « actif · 3 j »,
+  « après · 3 j »). C'est une piste verticale transparente sur la ligne du temps, posée pour qu'au repos le repère « 60′ »
+  soit à côté de sa carte ;
+- la ligne `[data-role="ligne-houblon"]` contient le nom balisé `data-houblon` : le contrôle l'accepte par descendant.
+  Sur la ligne elle-même, l'attribut casserait D49 (controle-fiche exclut toute zone sous un `[data-houblon]`, donc
+  toute la carte) ;
+- D46 : le repère suit le doigt en continu ; seule la valeur s'accroche au cran ;
+- D69 : un cran = min(14 px, place à l'écran ÷ crans), réglé au repos (montage, défilement, taille) ;
+- D68 : la frise garde sa place pendant le geste. L'ajout change de segment au lâcher, et les valeurs (IBU, barres)
+  restent en direct ;
+- D47 et D63 : doigt posé, seules les graduations `[data-cran]` du segment sous le doigt s'ouvrent, à 48 px du cran
+  visé puis 14 px plus loin (×3,4) ; rien au repos ;
+- D61 : l'ébullition est à l'échelle du temps, 14 px par 5′ : le repère se pose où le doigt l'a lâché ;
+- D36 et D37 : les pages cas-ebu45 et cas-ebu120 sont lues. Un ajout plus long que l'ébullition se lit au cran le plus
+  proche (Nugget à 60′ dans une ébullition de 45′).
+- La liste de la frise a des clés stables : un ajout qui change de segment est déplacé sans être remonté, et le geste
+  continue.
+
+Rejeu après le rail :
+- G2 TYPES OK, G3 COMMUN OK, G4 MOTS OK (64 mots), G5 MA-BIERE OK, G6 ALPHA OK, G7 FICHE OK 1/1,
+  G8 FICHE-BASELINE OK, G9 SANS-FAMILLE OK ;
+- G10 COMMUN OK, G11 ETAPE OK (substituer), G12 PONTS OK (19 gestes), G13 1 passed, G14 APP INTACTE OK, G15 NOTE OK ;
+- G17 REPRISE OK (7 repris), G18 REPRISE OK (10 repris, 1 en pont), G19 COMMUN OK, G20 ETAPE OK (biere) ;
+- G21 et G22 CHOIX OK ; G23 RAIL OK 1/1 ; D98 UNE-QUESTION OK.
+
+Captures regardées (390 px) :
+- p1/cap/ma-biere-390.png (repos, face à base/captures/consolide-390.png) ;
+- p1/cap/frise-pendant-390.png : doigt posé, « 35′ » sous le doigt, graduations 60′ à 5′ du seul segment
+  d'ébullition, IBU 49 en direct ;
+- p1/cap/frise-apres-390.png : la carte se pose à 35′, à l'échelle du temps ;
+- p1/ponts/13-remplacer.png.
+
+Besoins dans le socle :
+- `main.tsx`, `avecEbullition` : un ajout sans champ `minutes` (Nugget, `b60`) n'est pas ramené à l'ébullition de 45′.
+  La frise le lit au cran le plus proche ; la recette d'essai garde 60′.
+- Les multi-houblons (D45, D56, D61 bis, D64) demandent une page cas-k3.html. La piste de chaque houblon couvre la
+  colonne de la frise : avec plusieurs houblons, c'est la piste du dessus qui prend le doigt hors des repères.
+
+Prédiction : « Là le curseur glisse vraiment comme avant, avec le zoom sous le doigt. »

@@ -54,7 +54,7 @@ export function Carte({ a, recette, biere, repere, onGeste }: {
   // Seules les commandes (boutons) gardent leur geste ; le reste de la carte garde l'appui long (D49).
   const surBouton = (e: React.SyntheticEvent) => !!(e.target as Element).closest('button');
   const stop = { onPointerDown: (e: React.PointerEvent) => { if (surBouton(e)) e.stopPropagation(); }, onClick: (e: React.MouseEvent) => { if (surBouton(e)) e.stopPropagation(); } };
-  const bouton = 'w-8 h-8 inline-flex items-center justify-center rounded-full border border-cave-700 text-cave-200';
+  const bouton = 'w-7 h-7 inline-flex items-center justify-center rounded-full border border-cave-700 text-cave-200';
   return (
     <div data-role="ligne-houblon" data-voie={a.id} data-ajout={a.id} data-element="etape-carte-ajout" data-houblon-ligne={a.hopKey}
       {...fiche.appui(a.hopKey, () => ouvrir({ ecran: 'dryhopper', ajout: a.id }))}
@@ -73,11 +73,11 @@ export function Carte({ a, recette, biere, repere, onGeste }: {
         <span className="ml-auto inline-flex items-center gap-1 shrink-0" {...stop}>
           <button type="button" data-role="dose-moins" aria-label={`${h.nom} : 1 g de moins`} onClick={() => { onGeste(); gestes.dose('recette', a.id, a.grams - 1); }} className={bouton}>
             <Minus className="w-4 h-4" aria-hidden="true" /></button>
-          <output data-role="dose" className="min-w-[3rem] text-center font-mono font-semibold text-base text-cave-50 tabular-nums">{nombre(a.grams, 1)}<span className="font-sans font-normal text-sm text-cave-400">{' '}g</span></output>
+          <output data-role="dose" className="min-w-[2.5rem] text-center font-mono font-semibold text-base text-cave-50 tabular-nums">{nombre(a.grams, 1)}<span className="font-sans font-normal text-sm text-cave-400">{' '}g</span></output>
           <button type="button" data-role="dose-plus" aria-label={`${h.nom} : 1 g de plus`} onClick={() => { onGeste(); gestes.dose('recette', a.id, a.grams + 1); }} className={bouton}>
             <Plus className="w-4 h-4" aria-hidden="true" /></button>
           <button type="button" data-role="retirer" aria-label={`Retirer ${h.nom}`} onClick={() => { onGeste(); gestes.retirer('recette', a.id); }}
-            className="w-7 h-8 inline-flex items-center justify-center text-cave-400"><X className="w-4 h-4" aria-hidden="true" /></button>
+            className="w-6 h-7 inline-flex items-center justify-center text-cave-400"><X className="w-4 h-4" aria-hidden="true" /></button>
         </span>
       </div>
       <div className="flex items-center gap-x-1.5 gap-y-1 flex-wrap min-w-0">

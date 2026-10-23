@@ -39,3 +39,10 @@
 
 /* Onglet Ma bière : la famille touchée, ouverte sur sa visée. */
 .pq-biere-ouverte { background: rgb(var(--cave-800) / 0.45); }
+
+/* Graduations du segment sous le doigt, pendant le geste seulement (D47). */
+.pq-ma-biere-graduation { background: rgb(var(--cave-950)); pointer-events: none; }
+
+/* La piste verticale du repère (le rail du contrôle) : transparente, sur la ligne du temps ; le doigt y glisse. */
+.pq-ma-biere-piste { touch-action: none; cursor: grab; }
+.pq-ma-biere-piste[data-glisse] { cursor: grabbing; z-index: 20; }

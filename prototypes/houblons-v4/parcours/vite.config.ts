@@ -63,6 +63,8 @@ function pagesParRoute(): Plugin {
         const html = page(route, '../').split(`data-route="${route}"`).join(`data-route="${route}" data-ebullition="${min}"`);
         this.emitFile({ type: 'asset', fileName: `${route}/cas-ebu${min}.html`, source: html });
       }
+      // Cas d'essai à trois houblons proches sur la frise de l'étape (lignes qui s'écartent : D45, D56, D61 bis, D64).
+      this.emitFile({ type: 'asset', fileName: 'ma-biere/cas-k3.html', source: page('ma-biere', '../').split('data-route="ma-biere"').join('data-route="ma-biere" data-cas="k3"') });
     },
   };
 }
