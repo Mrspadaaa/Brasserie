@@ -90,8 +90,17 @@ La session « En attente » (local_6a42bfeb-1927-4a94-959c-c50362db1c88) travail
 Elle est prévenue de l'audit, des faux verts, du portrait v2 et de la boucle d'étalonnage. Ne pas écrire dans ses
 fichiers : commiter seulement mes propres chemins (`git commit -- <chemins>`).
 
+## Revue de la maquette de bout en bout (23.10, fin d'après-midi)
+Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React jouable, `prototypes/houblons-v4/parcours/`).
+- Suit ses choix : r6a d'abord pour Comparer ; a1 (y1b) pour Dryhopper, choix encore ouvert ; base consolidée (l8,
+  l5b, m4), fiche g1, f1.
+- Écart signalé : p2 Suggérer partait de s5 et de p1 à p5 du lot 15, pas de q2b, son choix du 19.10. La ligne manquait
+  à acquis-valides (ajoutée, bb6c8cd0). Aussi : « r6n2 choisie » et sa source à remplacer par r6a.
+- Non gardé : D80 (intensité, usage), le rail (controle-rail à adapter) ; jouer-parcours.mjs doit au moins les vérifier.
+- Verdict « r6a reste le meilleur » versé au jeu d'étalonnage (d0a26c14).
+
 ## Ouvert, par priorité
-1. **Dette des défauts** (AUDIT.md, « À adapter ») :
+1. **Dette des défauts** (AUDIT.md, « À adapter »), urgente pour la voie p4 du parcours :
    - `controle-rail.mjs` (22 défauts du rail, essentiels pour Dryhopper ; effort grand) ;
    - le contrat de Comparer (`controle-radar`, `controle-comparer`, `controle-fil6`) ;
    - D4 : l'ancien remplissage est trop clément, controle-panel le remplace mieux.
