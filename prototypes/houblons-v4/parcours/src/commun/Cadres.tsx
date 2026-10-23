@@ -5,17 +5,30 @@ import { PageShell } from '@app/pages/PageShell';
 import { Sheet } from '@app/ui/Sheet';
 import { useNavigation } from '../coquille/navigation';
 import type { RoutePage } from '../coquille/pages';
+import { Onglets, TeteOutil } from './Onglets';
 import { Dock } from './Pont';
+import './retour.css';
 
-/** Un outil plein écran : en-tête « ‹ » suivi de sa question, puis sa ligne de contexte et son contenu ; le dock
- * (ponts, commandes) sous le pouce. « ‹ » et le retour du téléphone reviennent à l'écran d'avant. */
-export function CadreOutil({ ecran, question, contexte, dock, children }: {
-  ecran: RoutePage; question: string; contexte?: ReactNode; dock?: ReactNode; children: ReactNode;
+/** Un outil plein écran (D109, D118, D119). Sa tête remplace, pour les outils de la maquette seulement, celle du
+ * PageShell de l'app (src/pages/PageShell.tsx, non modifié ; son « ‹ » de 28 px, gris et muet) : elle passe par
+ * `mobileHeader`, montrée à toutes les largeurs par retour.css.
+ * - Suggérer et Comparer sont des onglets (base v4.10, q2b) : la tête est celle de l'onglet Ma bière, les onglets et la
+ *   croix (D119). La question de l'outil reste le titre du cadre ; Comparer la montre en tête de son contenu (D104),
+ *   Suggérer non (`questionVisible={false}` : la base v4.10 n'en a pas, D117).
+ * - Les autres outils : la croix au même endroit, puis la question.
+ * La croix ramène à l'étape Houblons (D118) ; le retour du téléphone et Échap reviennent d'un écran. Le dock (ponts,
+ * commandes) sous le pouce. */
+export function CadreOutil({ ecran, question, questionVisible = true, elementTete, contexte, dock, children }: {
+  ecran: RoutePage; question: string; questionVisible?: boolean; elementTete?: string; contexte?: ReactNode; dock?: ReactNode; children: ReactNode;
 }) {
   const { retour } = useNavigation();
+  const onglet = ecran === 'suggerer' || ecran === 'comparer' ? ecran : null;
   return (
-    <PageShell title={question} onClose={retour} footer={dock ? <Dock>{dock}</Dock> : undefined} className={`pq-outil pq-outil-${ecran}`}>
+    <PageShell title={question} onClose={retour} footer={dock ? <Dock>{dock}</Dock> : undefined}
+      mobileHeader={<div {...(elementTete ? { 'data-element': elementTete } : {})}>{onglet ? <Onglets actif={onglet} /> : <TeteOutil question={question} />}</div>}
+      className={`pq-outil pq-outil-${ecran} pq-cadre-retour`}>
       <div data-ecran={ecran} className="space-y-2">
+        {onglet && questionVisible && <h1 className="text-[0.9375rem] font-semibold text-cave-50 leading-tight px-1">{question}</h1>}
         {contexte}
         {children}
       </div>

@@ -18,18 +18,35 @@
 
 ## Reprise
 
-- q2b-onglets : repris — onglets du socle « Ma bière · Suggestions · Comparer (n) », Suggestions active, dans un `nav` ; un seul « ‹ » (celui de l'en-tête)
-- q2b-reglages : repris — « Au style / Absolu » (data-e) et « Barres / Radar » sous les onglets, en lecture seule (data-lecture)
-- q2b-cartes-objectifs : repris — une carte par objectif de la dégustation, teintée de sa famille, picto, pastille orangée si hors style, verdict en un mot
-- q2b-hors-houblon : repris — « Aucune voie houblon » et « Hors houblon › », qui ouvre les pistes hors modèle (offModelLeads)
-- q2b-piste-objectif : repris — sous les cartes, la piste l5b de chaque objectif : zone du style, ma bière, meilleure voie, visée, houblons retenus
+Base : `base/captures/consolide-b-390.png` (base v4.10, onglet Suggestions) et `fils15-s5-complexe/captures/q2b-b-390.png`,
+côte à côte avec la mienne (reprise D117, 23.10, nuit : « J'ai l'impression que cette vue suggestions et pas la bonne que
+j'ai vraiment choisir ?? »). Inventaire : `fils15-s5-complexe/donnees/inventaire-q2b.json` (16 éléments).
+
+- q2b-onglets : repris — la tête des trois onglets dans l'en-tête (`Onglets` du socle, posé par `CadreOutil` en `mobileHeader`), la croix à la place du « ‹ » (D109) ; plus de question en titre ni de ligne « fixé » (D117)
+- q2b-reglages : repris — « Au style / Absolu » et « Barres / Radar » sous le bandeau, en lecture seule (data-lecture)
+- q2b-bandeau-ibu : repris — le `Bandeau` de Ma bière (importé de `ecrans/ma-biere/Base`), IBU et sa jauge face au style, OG, EBC ; collé sous la tête quand la liste défile, comme la base
+- q2b-cartes-objectifs : repris — une carte par objectif, la visée « plus » d'abord comme la base, teintée de sa famille, picto, pastille orangée si hors style, verdict en un mot
+- q2b-hors-houblon : repris — « Aucune voie houblon » et « Hors houblon › », qui déplie « Hors houblon · résineux (n pistes) » en bas, comme la base (offModelLeads)
+- q2b-piste-objectif : repris — sous les cartes, la piste l5b de chaque objectif (D92 : « Les bar de ce type sont plus informative donc meilleur »)
 - q2b-groupes-effet : repris — « = même effet sur tes objectifs · 10 g · 10′ », et l'effet du groupe dessiné une fois (« ~+0,9 » cran)
-- q2b-ligne-voie : repris — une ligne par voie : usage en mot, nom, α, dose, stock en icône, familles en pictos avec traits par cran
+- q2b-cadre-liste : repris — les voies d'un même effet dans un cadre blanc arrondi (8 px, D83) à bord gauche noir de 6 px
+- q2b-ligne-voie : repris — une voie en deux lignes : usage en mot (D90), nom souligné en pointillé (appui long : la fiche), α, stock en icône ; puis les familles
+- q2b-cercle-objectif : repris — les familles des objectifs d'abord, chacune dans son cercle (à l'encre si les fiches la marquent), un trait vertical, puis les autres ; picto pâle si les fiches ne font que citer
+- q2b-coeur : repris — ♡ à gauche du « + » : j'aime ce houblon (en mémoire ; au portage, la table des goûts de la fiche)
 - q2b-plus-coche : repris — « + » / ✓ à droite de chaque voie, branché sur la liste de comparaison du socle
 - q2b-assembler : repris — « Assembler 5 + 5 g · 10′ · estimé » (Motueka + Nelson Sauvin, du moteur)
-- q2b-remplacer : repris — « Remplacer Nugget · 60′ », une ligne par remplaçant à IBU égal avec sa dose (74 g…)
-- q2b-comparer-n : repris — la barre « Comparer (n) » en bas, qui ouvre Comparer avec la liste
+- q2b-remplacer : repris — « Remplacer Nugget · 60′ », une ligne par remplaçant à IBU égal avec sa dose
+- q2b-comparer-n : repris — la barre noire « Comparer (n) » pleine largeur, posée sur la liste sous le pouce
 - q2b-bande-visee : écarté — le brasseur l'a jugée « Ça c'est inutile » (D91) ; la visée se lit sur les pistes
+
+## D110 : les traits lisibles au toucher
+
+- Les traits de q2b restent (un trait par cran du style, demi-trait, contour si la famille baisse, orangé hors style,
+  hachures pour l'inconnu, point pour une famille qui ne bouge pas). Rien de plus au repos.
+- Toucher une case (`bulle.tsx`) montre au-dessus d'elle une bulle à l'encre : « Floral +0,9 cran », puis la clé du
+  signe touché (« 1 trait = 1 cran du style », « · creux : baisse », « · hors style » ; « ? non établi » et « rien de
+  simulé, jamais 0 » ; « ne bouge pas » et « moins d'un demi-point »). Un toucher ailleurs ou Échap la ferme ; elle suit
+  sa case au défilement. Ni route, ni comparaison, ni fiche. À l'ordinateur : survol, clic pour la fixer.
 
 ## Retouches D106 et visée commune (23.10, soir)
 
@@ -37,12 +54,10 @@
   hauteur de q2b, trois par rang au plus, verdict sur une ligne. Leur teinte de famille est adoucie vers la page
   (`color-mix` à 45 %) ; controle-teinte : teinte 4, comme q2b. L'onglet inactif du socle est foncé à 4,5:1 dans ma
   feuille.
-- Visée commune : les objectifs et la direction de `proposer` viennent de `useVisee()` (départ { floral: 1,
-  resin: −1 }), réglée dans l'onglet Ma bière. Une famille « banni » écarte toute voie dont un houblon la cite (règle
-  V5.5 des exclusions, dry hop compris). Elle a sa carte : « Sans épicé · Bannie · 8 voies écartées ».
-- `jeu.mjs` bannit l'épicé dans l'état commun par le crochet de test du socle (`window.__parcours.envoyer`, action
-  `visee/fixer`). Il vérifie que les voies qui citent l'épicé disparaissent et que la
-  carte le dit, puis lève le bannissement.
+- Visée commune : les objectifs et la direction de `proposer` viennent de `useVisee()` (sans visée, la demande dégustée :
+  + floral, − résineux), réglée dans l'onglet Ma bière. Depuis D108 (voie p1), bannir est une visée à 0 : une carte
+  « Sans épicé » et une direction en baisse, sans exclure de houblon. L'écran écrit sa direction (`data-direction`) ;
+  `jeu.mjs` la relit et vérifie les voies du moteur pour elle, au départ puis après « bannir l'épicé ».
 
 ## Idées reprises
 
@@ -64,8 +79,11 @@
 
 - **Deux cartes, pas trois.** q2b (cas c1 du lot 15) avait « Plus agrumes ». La stout S1 du parcours n'a que deux
   objectifs dans sa dégustation du 18.10 (plus floral, moins résineux), comme la base v4.10.
-- Titre en question en tête (en-tête de `CadreOutil`) et ligne de contexte « fixé Stout 16D · US-05 » : demandés par
-  `controle-une-question` (D98). q2b n'en avait pas.
+- **Pas de question en titre, pas de ligne de contexte** (D117, sa base) : `controle-une-question` (G5) les exige ; il échoue
+  sur ces deux points. Conflit signalé au pilote (RESULTAT.md) ; son choix prime (règle n° 1).
+- **Le « ? » de la légende reste**, discret, entre les deux lentilles : ses mots D89 (« il faut un bouton légende un peu
+  caché pour pas que ça gêne ») et `controle-legende` (G3). L'inventaire D117 le dit « en plus » : à trancher par le pilote.
+- « IBU après chaque voie » (repli du bas de la base) : absent ; l'adaptateur ne rend pas l'IBU d'une voie.
 - Groupe « Dry hop · 4 g/L · après 3 j » : il vient de `suggerer` (simulateur, dégustation comprise), pas de
   `proposer`, qui ne propose pas de dry hop ici. Idaho 7 n'est que là. Les verdicts comparent l'effet de la meilleure
   voie au cran voulu : Atteint, le cran entier ; Approche, la moitié au moins.
@@ -75,6 +93,9 @@
 - « α », « ≠ », « ≈ » et « › » sont posés par la feuille de style (signes) : le premier écran tient à 80 mots.
 - Rayons ramenés à 8 px (D83) : cartes et lentilles (`rounded-control` de l'app vaut 10 px).
 - Ma bière, montée sous l'outil, est retirée du rendu tant que Suggérer est ouvert (les contrôles lisent la boîte).
+- Les verdicts viennent du moteur en direct : « Plus floral : Atteint » (la base disait « Approche » sur ses nombres figés).
+- Cartes : rayons de 8 px (D83), non 16 ; pictos au trait du socle (D88, D93), sans disque : le cercle d'objectif est une
+  bordure sur fond blanc neutre.
 
 ### Contrôles écartés, et pourquoi
 
@@ -100,3 +121,9 @@
 - La liste de comparaison (`aComparer`) vit dans le brouillon d'outil, en mémoire, et ne s'écrit pas dans Dexie.
 - Pistes hors houblon : `offModelLeads` est importé du moteur. L'adaptateur devrait l'exposer.
 - `jeu.mjs` et `outils/instantane.mjs` → `scripts/` (contrôles de parcours).
+- **Tête et croix (D109, D118, D119)** : `CadreOutil` passe `Onglets` (Suggérer, Comparer) ou `TeteOutil` (les autres) en
+  `mobileHeader` de PageShell, et `commun/retour.css` la montre à toutes les largeurs en masquant le titre par défaut. Dans
+  l'app : une prop `header` de PageShell (au lieu de `mobileHeader` + CSS), et la croix 44 × 44 px, icône de 22 px à
+  l'encre, qui appelle `closeTo(r => r.view === 'recipe')` (étape Houblons) ; le retour du téléphone garde `close`.
+  `aria-label="Fermer"` reste pour les scripts du parcours.
+- Bulle des traits (`bulle.tsx`) → `src/ui/hops/TraitBubble.tsx`, réutilisable dans Comparer et la fiche.

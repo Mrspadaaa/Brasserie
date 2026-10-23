@@ -11,6 +11,7 @@ import { CONDITIONS } from '../../donnees/cas';
 import type { BiereLue, Candidat, HoublonLu } from '../../moteur';
 import { houblon, proposer, style, suggerer } from '../../moteur';
 import type { RecetteParcours } from '../../etat/types';
+import { DEMANDE_DEGUSTEE, enPoints, type Visee } from '../../etat/visee';
 
 export type Geste = 'meme' | 'assembler' | 'remplacer' | 'dryhop';
 export interface Ligne {
@@ -31,28 +32,47 @@ export interface Ligne {
   muet: string | null;
 }
 export interface Groupe { id: string; geste: Geste; titre: string; dose: string | null; moment: string; estime: boolean; lignes: Ligne[] }
-export interface Objectif { f: FamilyId; sens: 1 | -1; nom: string; cran: number; requis: number; avant: number | null; visee: number | null }
+export interface Objectif {
+  f: FamilyId; sens: 1 | -1; nom: string; cran: number;
+  /** L'écart demandé, en points (crans entiers × cran). */
+  requis: number;
+  avant: number | null;
+  /** La cible sur la piste, en points : le palier visé, ou ma bière ± un cran (demande dégustée). */
+  visee: number | null;
+  /** Le palier posé dans Ma bière (0 à 3), null pour la demande dégustée. */
+  palier: number | null;
+  /** Visée à 0 (« bannir ») : faire baisser la famille, sans exclure de houblon. */
+  bannie: boolean;
+}
 
 const fam = <T>(fams: readonly FamilyId[], fn: (f: FamilyId) => T) => Object.fromEntries(fams.map((f) => [f, fn(f)])) as Record<FamilyId, T>;
 
-export type Visee = Partial<Record<FamilyId, number | 'banni'>>;
-/** Objectifs de la visée commune (état du parcours, réglée dans l'onglet Ma bière : + floral, − résineux au départ),
- * en crans du style. Visées « plus » d'abord. Situés sur Ma bière lue (la dégustation prime). */
+export type { Visee } from '../../etat/visee';
+/** Objectifs de la visée commune (onglet Ma bière, D108), en crans du style, visées « plus » d'abord. Comme la base, la
+ * visée est un palier absolu (0 à 3) : Suggérer lit l'écart entre ma bière (lue, la dégustation prime) et ce palier, en
+ * crans entiers du style (un au moins). Sans visée, la demande dégustée vaut (+1 floral, −1 résineux). Bannir est une
+ * visée à 0 : un objectif « faire baisser » (`bannie`), et non l'exclusion V5.5 des houblons qui la citent. */
 export function objectifsDe(recette: RecetteParcours, biere: BiereLue, visee: Visee): Objectif[] {
   const sc = style(recette.styleCode);
-  return (Object.entries(visee) as [FamilyId, number | 'banni'][])
-    .filter((e): e is [FamilyId, number] => typeof e[1] === 'number' && e[1] !== 0)
-    .sort((a, b) => b[1] - a[1])
-    .map(([f, k]) => {
-      const sens = (k > 0 ? 1 : -1) as 1 | -1;
-      const cran = sc.families[f].cran, avant = biere.profil[f].valeur?.centre ?? null;
-      return { f, sens, nom: biere.profil[f].nom, cran, requis: k * cran, avant, visee: avant == null ? null : Math.max(0, avant + k * cran) };
-    });
+  const fams = [...new Set([...(Object.keys(DEMANDE_DEGUSTEE) as FamilyId[]).filter((f) => visee[f] == null), ...(Object.keys(visee) as FamilyId[])])];
+  return fams.flatMap((f): Objectif[] => {
+    const cran = sc.families[f].cran, avant = biere.profil[f].valeur?.centre ?? null, v = visee[f];
+    if (v == null) {
+      const k = DEMANDE_DEGUSTEE[f]!;
+      return [{ f, sens: k, nom: biere.profil[f].nom, cran, requis: k * cran, avant, visee: avant == null ? null : Math.max(0, avant + k * cran), palier: null, bannie: false }];
+    }
+    const cible = enPoints(v), d = cible - (avant ?? 0);
+    if (Math.abs(d) < 0.05) return [];
+    const sens = (d > 0 ? 1 : -1) as 1 | -1;
+    const k = sens * Math.max(1, Math.round(Math.abs(d) / cran));
+    return [{ f, sens, nom: biere.profil[f].nom, cran, requis: k * cran, avant, visee: cible, palier: v, bannie: v === 0 }];
+  }).sort((a, b) => b.requis / b.cran - a.requis / a.cran);
 }
-/** Familles bannies de la visée commune. */
-export const bannisDe = (visee: Visee): FamilyId[] => (Object.entries(visee) as [FamilyId, number | 'banni'][]).filter(([, v]) => v === 'banni').map(([f]) => f);
+/** Plus aucune exclusion depuis D108 : bannir suit la base (une visée à 0, lue comme objectif par objectifsDe). Gardé pour
+ * ses appelants ; rend toujours une liste vide. */
+export const bannisDe = (_visee: Visee): FamilyId[] => [];
 /** Règle V5.5 des exclusions (« famille citée par le houblon ajouté ») : une voie dont un houblon cite une famille
- * bannie n'est pas proposée. */
+ * exclue n'est pas proposée. Seulement sur une liste explicite (voiesDe, `bannis`) ; bannir dans Ma bière n'exclut plus. */
 export const exclue = (houblons: HoublonLu[], bannis: FamilyId[]) => houblons.some((h) => bannis.some((f) => h.familles[f].niveau !== 'non décrit'));
 
 /** Les voies du moteur, rangées en groupes comme q2b. `familles` : l'ordre des familles du moteur. */

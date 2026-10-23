@@ -33,7 +33,7 @@ export function useRecetteDeTravail(): { recette: RecetteParcours; sur: Cible } 
   const { etat } = useParcours();
   return etat.brouillon ? { recette: etat.brouillon.recette, sur: 'brouillon' } : { recette: etat.recette, sur: 'recette' };
 }
-/** La visée par famille (crans du style, ou « banni ») : réglée sur l'onglet Ma bière, lue par Suggérer (D32). */
+/** La visée par famille (palier 0 à 3, 0 bannie ; etat/visee.ts) : réglée sur l'onglet Ma bière, lue par Suggérer (D32, D108). */
 export const useVisee = (): EtatParcours['visee'] => useParcours().etat.visee;
 /** Les houblons retenus pour la comparaison. */
 export const useComparaison = (): string[] => useParcours().etat.aComparer;
@@ -59,7 +59,8 @@ export function useGestes() {
     abandonner: () => dispatch({ type: 'brouillon/abandonner' }),
     basculerComparaison: (hopKey: string) => dispatch({ type: 'comparaison/basculer', hopKey }),
     fixerComparaison: (houblons: string[]) => dispatch({ type: 'comparaison/fixer', houblons }),
-    fixerVisee: (famille: FamilyId, valeur: number | 'banni' | null) => dispatch({ type: 'visee/fixer', famille, valeur }),
+    /** Palier visé (0 à 3, 0 bannie) ; null retire la visée. */
+    fixerVisee: (famille: FamilyId, valeur: number | null) => dispatch({ type: 'visee/fixer', famille, valeur }),
     recommencer: () => dispatch({ type: 'recommencer' }),
   }), [dispatch]);
 }

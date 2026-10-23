@@ -1,0 +1,27 @@
+/* La tête des outils de la maquette (D109, D118, D119). PageShell (src/pages/PageShell.tsx, non modifié) ne montre
+   `mobileHeader` que sous 640 px. Pour un outil (.pq-cadre-retour, posée par CadreOutil) et pour toute page dont la tête
+   porte les onglets (l'onglet Ma bière), cette tête vaut à toutes les largeurs, et le titre par défaut du cadre (« ‹ » de
+   28 px, gris, muet) n'est plus rendu. Ma bière racine (l'étape Houblons) et la fiche ne sont pas touchées. */
+:is(.pq-cadre-retour, [data-page-shell]:has(> header [data-role="onglets"])) > header > div > div > .sm\:hidden { display: block; }
+:is(.pq-cadre-retour, [data-page-shell]:has(> header [data-role="onglets"])) > header > div > div > .hidden.sm\:block { display: none; }
+/* L'onglet Ma bière double ses onglets dans son contenu à l'ordinateur : la tête les porte déjà (D119). */
+[data-page-shell]:has(> header [data-role="onglets"]) > main [data-role="onglets"] { display: none; }
+
+/* Une tête, une hauteur : 44 px de croix (ou d'onglets) et 4 px au-dessus et au-dessous, dans le cadre de 48 rem. */
+.pq-tete { max-width: 48rem; margin: 0 auto; padding: 4px 8px; min-height: 52px; }
+
+/* La croix (D109) : 44 × 44 px, icône de 22 px à l'encre, un rond gris clair qui dit « bouton » sans peser. */
+.pq-croix {
+  display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 9999px;
+  /* #222 (--cave-texte-800) : l'encre, entre le noir des titres (#111) et celui du texte courant (#333). */
+  color: rgb(var(--cave-texte-800, var(--cave-50))); background: rgb(var(--cave-900)); box-shadow: inset 0 0 0 1px rgb(var(--cave-800));
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: background-color 120ms ease-out;
+}
+.pq-croix-icone { width: 22px; height: 22px; }
+.pq-croix:hover { background: rgb(var(--cave-850)); }
+.pq-croix:active { background: rgb(var(--cave-800)); }
+.pq-croix:focus-visible { outline: 2px solid rgb(var(--cave-50)); outline-offset: 1px; }
+
+/* Les onglets de la base v4.10 : une pastille de 44 px, l'onglet actif en blanc. */
+.pq-onglets { height: 44px; }
+.pq-onglet { font-size: 0.9375rem; line-height: 1; }

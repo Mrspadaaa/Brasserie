@@ -4,8 +4,8 @@ import { recetteDegustee } from '../donnees/cas';
 import { ajouter, changerDose, changerMoment, choisirLevure, remplacer, retirer } from './operations';
 import type { Action, EtatParcours, RecetteParcours } from './types';
 
-export const VISEE_DEPART = { floral: 1, resin: -1 } as const;
-export const etatInitial = (): EtatParcours => ({ recette: recetteDegustee(), brouillon: null, gestes: 0, aComparer: [], visee: { ...VISEE_DEPART } });
+// Au départ, aucune visée, comme sa base v4.10 (data-dirs vide) : la demande dégustée vaut (etat/visee.ts).
+export const etatInitial = (): EtatParcours => ({ recette: recetteDegustee(), brouillon: null, gestes: 0, aComparer: [], visee: {} });
 
 function appliquer(r: RecetteParcours, a: Action): RecetteParcours {
   switch (a.type) {
@@ -34,7 +34,8 @@ export function reducteur(etat: EtatParcours, a: Action): EtatParcours {
     case 'comparaison/fixer': return geste({ ...etat, aComparer: [...a.houblons] });
     case 'visee/fixer': {
       const visee = { ...etat.visee };
-      if (a.valeur === null || a.valeur === 0) delete visee[a.famille]; else visee[a.famille] = a.valeur;
+      // 0 est une visée (bannie) ; seul null la retire (« × »).
+      if (a.valeur === null) delete visee[a.famille]; else visee[a.famille] = Math.max(0, Math.min(3, a.valeur));
       return geste({ ...etat, visee });
     }
     case 'brouillon/abandonner': return etat.brouillon ? geste({ ...etat, brouillon: null }) : etat;

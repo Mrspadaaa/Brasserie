@@ -1,4 +1,136 @@
-OK — Suggérer q2b : teinte de q2b (D106), visée commune et bannir branchés, G1–G19 verts
+ECHEC — G5 (question et contexte exigés, contraires à sa base, D117) ; G21 (Substituer, encre #666 de p1) ; reste vert
+
+## Reprise D117, D110, D109, D118, D119 (23.10, nuit)
+
+Ses mots : D117 « J'ai l'impression que cette vue suggestions et pas la bonne que j'ai vraiment choisir ?? » ; D110 « Un peu
+dur à comprendre ce système de petit bar » ; D109 « Juste une croix bien positionné, facile, dans le thème suffirait » ;
+D118 « Je veux juste retour au "menu" pas principal » ; D119 « Header qui change ??? ».
+
+### Ce qui est fait
+- **D117 : Suggérer refait sur consolide-b-390.png et q2b-b-390.png**, élément par élément. Les 16 éléments de
+  l'inventaire q2b complété sont là : 15 repris, 1 écarté (la bande visée, D91).
+  - Les onglets sont dans l'en-tête ; il n'y a plus de question en titre ni de ligne « fixé ».
+  - Le bandeau IBU · OG · EBC est le `Bandeau` de Ma bière, importé ; il reste collé sous la tête quand la liste défile.
+  - Les cartes d'objectif suivent l'ordre de la base : Plus floral, puis Moins résineux. « Hors houblon › » déplie en bas
+    « Hors houblon · résineux (4 pistes) », comme dans la base.
+  - Chaque voie a ses objectifs cerclés (cercle à l'encre si les fiches marquent la famille, picto pâle si elles ne font
+    que la citer), son ♡ et un « + » de 40 px.
+  - Les voies d'un même effet sont dans un cadre blanc à bord gauche noir de 6 px. La barre noire « Comparer (n) » fait
+    toute la largeur et reste posée sur la liste.
+  - Gardés, parce qu'il les a dits : l'usage en mot (D90), sans la bande visée (D91), les pistes l5b (D92).
+- **D110 : les traits lisibles au toucher** (`ecrans/suggerer/bulle.tsx`). Toucher une case montre au-dessus d'elle une
+  bulle à l'encre : la famille, sa valeur, puis la clé du signe touché. Rien n'est ajouté au repos. Un toucher ailleurs
+  ou Échap la ferme, et elle suit sa case au défilement. À 1280, le survol la montre et le clic la fixe.
+- **D109, D118, D119 : une tête, une croix.**
+  - Dans `commun/Onglets.tsx` (`Croix`, `TeteOutil`), la croix remplace le « ‹ » : 44 × 44 px, icône de 22 px dessinée
+    pleine (une seule épaisseur de trait, D83 S4), encre #222. Elle appelle `revenirMaBiere` et ramène donc toujours à
+    #/ma-biere. Le retour du téléphone et Échap reviennent toujours d'un seul écran.
+  - `CadreOutil` (`commun/Cadres.tsx`) passe en `mobileHeader` les `Onglets` pour Suggérer et Comparer, et `TeteOutil`
+    (la croix, puis la question) pour Dryhopper, Levure et Substituer.
+  - `commun/retour.css` montre cette tête à toutes les largeurs et masque le titre par défaut du PageShell, qui n'est pas
+    modifié. La règle vaut aussi pour toute page dont la tête porte les onglets : l'onglet Ma bière en hérite sans que
+    `ecrans/biere` soit touché, et son double des onglets à l'ordinateur est masqué.
+  - `navigation.tsx` n'est pas modifié : `revenirMaBiere` suffisait.
+
+### Textes montrés au toucher (390, première voie Golding, puis l'assemblage)
+- picto floral : « Floral +0,9 cran · 1 trait = 1 cran du style » ;
+- picto épicé (extra) : « Épicé +1,6 cran · 1 trait = 1 cran du style » ;
+- picto résineux (inconnu) : « Résineux ? non établi · rien de simulé, jamais 0 » ;
+- floral de Motueka + Citra cryo : « Floral +0,4 cran » ; à 1280, au clic sur Aurum : « Floral +0,9 cran ».
+- Bulle : 52 px de haut, centrée à environ 50 px du picto. Ni la route ni `aComparer` ne bougent.
+
+### Mesures de la croix (controle-retour)
+Croix 44 × 44 px, icône de 22 px #222222, en-tête de 53 px (bloc 53).
+- Centre (30, 26) à 390 et (286, 26) à 1280, le même sur les huit écrans à onglets ou outils.
+- Elle mène à #/ma-biere depuis l'étape, depuis l'onglet et depuis Comparer ouvert par Suggérer.
+- L'encre mesurée de la page vaut #333 sur biere et suggerer, #111 sur comparer, dryhopper et levure, #666 sur substituer.
+
+### Critères (rejoués après la dernière retouche, construction parcours-p2)
+| Critère | Sortie |
+|---|---|
+| G1 | CONSTRUIT OK (9 pages) |
+| G2 | TYPES OK |
+| G3 | COMMUN OK (`--sans=mots` ; LEGENDE OK, TRAIT OK, STANDARD OK) |
+| G4 | MOTS OK (70) |
+| G5 | **UNE-QUESTION ECHEC 2** : aucun titre visible ; pas de ligne `[data-role="contexte"]`. Le facteur libre reste le houblon |
+| G6 | AUTRES OK (17 voies, 17 avec extras) |
+| G7 | PISTE OK (2 pistes de 354 px) |
+| G8 | PLACE OK (6 voies au premier écran, médiane 85 px) |
+| G9 | MA-BIERE OK |
+| G10 | ALPHA OK (17/17) |
+| G11 | ETAPE OK (suggerer), avec 2 gestes D110 ajoutés au `jeu.mjs` (bulle, puis fermeture au toucher ailleurs) |
+| G12 | PONTS OK (17 gestes), avec les scripts mis à jour par le pilote pour D118 |
+| G13 | TOLERANCE OK (6 tests) |
+| G14 | APP INTACTE OK |
+| G15 | NOTE OK |
+| G17 | REPRISE OK (15 repris, 1 écarté) |
+| G18 | CHOIX OK (1 écran conforme) |
+| G19 | TEINTE OK 1/1 (teinte 4) |
+| G20 | TRAITS OK (6 touchés, 2 largeurs ; règles 1 à 5 OK à 390 et 1280) |
+| G21 | **RETOUR ECHEC 10/12** : substituer 390 et 1280, « icône #222222, encre du texte #666666 (écart 68) » |
+| G22 | PARCOURS OK (29 gestes à 390, 29 à 1280) |
+| G24 | CHOIX OK (inventaire complété) |
+| G25 | RETOUR OK (biere, suggerer, comparer × 2 largeurs, 3 parcours) |
+
+### Captures ouvertes (en image, L12)
+Dossier : `prototypes/houblons-v4/maquettes/parcours-p2/captures-p2/`.
+- `cote-a-cote-390.png` : la maquette à côté de consolide-b-390.png et de q2b-b-390.png.
+- `cote-a-cote-toucher-390.png` : les trois bulles (floral, épicé, inconnu).
+- `tetes-390.png` : les onglets Ma bière, Suggestions et Comparer, avec la même tête et la même croix.
+- `tetes-outils-390.png` : Dryhopper, Levure et Substituer, avec la croix au même endroit.
+- `suggerer-repos-390.png`, `suggerer-repos-1280.png`, `suggerer-clic-aurum-1280.png`, `suggerer-bas-390.png`.
+- `suggerer-toucher-golding-390.png`, `suggerer-toucher-epice-390.png`, `suggerer-toucher-inconnu-390.png`,
+  `suggerer-toucher-assembler-390.png`.
+- `tete-*-390.png`, `tete-comparer-1280.png`, `tete-biere-1280.png`.
+- Mon jugement, côte à côte : il reconnaît la base. Restent deux différences : chaque voie est plus haute (environ
+  69 px contre 60, à cause de l'α et du mot d'usage), et la piste remplace la barre de groupe sur l'axe central (D92).
+
+### Écarts à sa base, avec leur raison
+- Le « ? » de la légende reste, discret, entre les deux lentilles. Ce sont ses mots, D89 (« il faut un bouton légende un
+  peu caché pour pas que ça gêne »), et `controle-legende` dans G3 l'exige. L'inventaire D117 le dit pourtant « en plus ».
+- Le verdict floral est « Atteint », calculé par le moteur en direct ; la base disait « Approche ».
+- Le repli « IBU après chaque voie » de la base est absent : l'adaptateur ne donne pas l'IBU d'une voie.
+- α sur chaque voie (D87), rayons de 8 px (D83), pictos au trait du socle (D88, D93).
+
+## Reprise D110 et D109
+Remplacée par la section précédente : D109 est devenue la croix (son second mot), et D118 et D119 s'y ajoutent. Les
+textes au toucher (en crans) et les mesures de la croix (44 px, à 390 et à 1280) y sont, côte à côte avec q2b.
+
+DÉCISION À PRENDRE :
+- G5 contre la règle n° 1 : sa base v4.10 n'a ni question en titre ni ligne de contexte, et D117 les compte comme des
+  ajouts. Je propose de jouer `controle-une-question` sur Suggérer avec un titre lu sur la tête (`aria-label` des
+  onglets, ou `data-role="titre"` porté par l'onglet actif) et sans ligne de contexte. Le contrôle du facteur libre
+  (houblon seul) reste vert.
+- Le « ? » de la légende : D89 (ses mots, garde dans G3) contre l'inventaire D117 (« aucun « ? » »). Il est gardé ;
+  à trancher.
+- G21 sur Substituer (voie p1) : la couleur la plus fréquente de sa page est le gris #666, donc une croix à l'encre
+  échoue. Soit Substituer met son texte courant à l'encre, soit `controle-retour` prend l'encre des titres.
+
+Besoins dans les autres voies (sans écriture de ma part) :
+- p3 (Comparer) : `CadreOutil` lui donne maintenant la tête à onglets (D119). Sa question reste visible en tête du
+  contenu, en h1 (marque r6a-question, D104), et Comparer reste à 80 mots au plus. Elle peut passer
+  `questionVisible={false}` si sa base n'en a pas.
+- p1 (onglet Ma bière) : retirer son double `hidden sm:block` des onglets, que `retour.css` masque déjà. Les onglets
+  inactifs y passent en cave-200 (contraste 4,5:1), comme sur Suggérer.
+- p1 : exporter la table des goûts de la fiche (`GOUTS`), pour que le ♡ de Suggérer et celui de la fiche ne fassent qu'un.
+
+Fichiers écrits :
+- `parcours/src/ecrans/suggerer/` : `index.tsx`, `briques.tsx`, `bulle.tsx` (neuf), `suggerer.css`, `jeu.mjs`, `NOTE.md` ;
+- `parcours/src/commun/` : `Cadres.tsx` (CadreOutil), `Onglets.tsx`, `retour.css` (neuf) ;
+- captures dans `maquettes/parcours-p2/captures-p2/`.
+
+Pas touchés : `voies.ts` (à p1), `navigation.tsx`, `ecrans/biere`, `ecrans/comparer`, les scripts d'`outils/`.
+
+Prédiction : « Là oui, c'est ma vue Suggestions » ; il touchera un picto et lira « Floral +0,9 cran » sans chercher le
+« ? ».
+
+CONNAISSANCE : la tête d'un outil de la maquette passe par `mobileHeader` de PageShell, que `commun/retour.css` montre à
+toutes les largeurs. Dans l'app, il faudra une prop `header` de PageShell.
+LEÇON PROPOSÉE : un contrôle de forme (une-question, légende) écrit avant le choix du brasseur se rejoue contre sa
+maquette choisie avant d'entrer dans les GATES d'une reprise. Sinon, il exige ce que la règle n° 1 interdit (G5 ici).
+
+## Version précédente (Retouches D106, reprise D105)
+
 
 - Crochet de test unique (23.10, soir) : `window.__suggerer` est retiré de l'écran et de `outils/instantane.mjs`.
   - `jeu.mjs` bannit puis rétablit l'épicé par `window.__parcours.envoyer({ type: 'visee/fixer', … })`.

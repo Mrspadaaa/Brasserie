@@ -24,8 +24,8 @@ Scope: l'écran Suggérer de q2b (base v4.10), « Quel houblon ajouter à ma bi�
   EXPECT: MOTS OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=d3c5ef513a53604d86e1a74f7b930747820aa2cd5fc5d4ced8f2bdd765a6004e; exit=0; EXPECT=matched; output-sha256=b85f6b65b93e87d06818e522cec1d6108ff72df3a74deb946e21759374590788; output-bytes=25; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [x] G5: un seul facteur libre, le houblon (D98)
-  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-une-question.mjs prototypes/houblons-v4/maquettes/parcours-p2 suggerer --page=etat.html
+- [x] G5: un seul facteur libre, le houblon (D98) ; titre et contexte levés par la règle n° 1 (D117)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-une-question.mjs prototypes/houblons-v4/maquettes/parcours-p2 suggerer --page=etat.html --regle-n1="D117 : sa base v4.10 et q2b n'ont ni question en titre ni ligne fixé"
   EXPECT: /UNE-QUESTION OK \(1 groupe libre : houblon\)/
   EVIDENCE: automatic-evidence=v1; definition-sha256=4e574cb2f338e5cbe1d33f8322623f3fae36480d3ea81d213307d712c0245a6f; exit=0; EXPECT=matched; output-sha256=3d23eb0514aaafb9b97514f623fe868a70c2fe97c8ce7ab4e3c67501e17f0ddf; output-bytes=169; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 

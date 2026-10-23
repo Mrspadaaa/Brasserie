@@ -8,6 +8,7 @@ import { useLayoutEffect, useRef } from 'react';
 import { PackageCheck, PackageMinus, ShoppingCart } from 'lucide-react';
 import { COULEURS, COURT, Picto, SegmentedControl, nombre, type Echelle } from '../../commun';
 import type { HoublonLu } from '../../moteur';
+import { useCase, valeurCrans } from './bulle';
 import type { FamilyId, StyleScale } from '../../../../src/engine';
 
 // ---------- Échelle d'une famille ----------
@@ -64,9 +65,18 @@ export function Piste({ f, d, barre, avant, visee, marques = [], inconnu = null,
   );
 }
 
-// ---------- Intensité en traits (D80) ----------
-/** Une famille qu'un houblon fait bouger : son picto, puis un trait par cran (demi-trait pour un reste ≥ ¼). */
-export function Traits({ f, crans, hors, role = 'extra' }: { f: FamilyId; crans: number; hors: boolean; role?: 'extra' | 'cible' }) {
+// ---------- Intensité en traits (D80), lisible au toucher (D110) ----------
+/** Niveau des fiches pour une famille (q2b) : picto plein si une fiche la marque, pâle si elle n'est que citée. */
+export type NiveauFiches = 'marqué' | 'cité' | 'non décrit';
+/** Objectif (q2b, base v4.10) : la case est cerclée ; le cercle est à l'encre quand les fiches marquent la famille. */
+const classesCase = (cible: boolean, niveau: NiveauFiches) =>
+  `pq-suggerer-case flex flex-col items-center gap-0.5 ${cible ? 'pq-suggerer-case-objectif' : ''} ${cible && niveau === 'marqué' ? 'pq-suggerer-case-marquee' : ''} ${niveau !== 'marqué' ? 'pq-suggerer-case-pale' : ''}`;
+
+/** Une famille qu'un houblon fait bouger : son picto, puis un trait par cran (demi-trait pour un reste ≥ ¼). Toucher la
+ * case montre sa bulle (« Floral +0,9 cran », D110) ; rien de plus au repos. */
+export function Traits({ f, crans, hors, role = 'extra', niveau = 'marqué', cle }: {
+  f: FamilyId; crans: number; hors: boolean; role?: 'extra' | 'cible'; niveau?: NiveauFiches; cle: string;
+}) {
   const n = Math.min(4, Math.abs(crans));
   const pleins = Math.floor(n + 0.25);
   // Sous le cran (ou un reste d'au moins ¼), un demi-trait : jamais un trait plein pour un petit apport.
@@ -74,11 +84,13 @@ export function Traits({ f, crans, hors, role = 'extra' }: { f: FamilyId; crans:
   const baisse = crans < 0;
   const ton = hors ? 'pq-suggerer-trait-hors' : '';
   const traits = Array.from({ length: pleins }, (_, i) => i);
+  const valeur = crans.toFixed(2);
+  const gestes = useCase(cle, { genre: 'traits', f, crans: valeur, hors });
   return (
-    <span data-role={role} data-famille={f} data-crans={crans.toFixed(2)} {...(hors ? { 'data-hors-style': '' } : {})}
-      aria-label={`${COURT[f]} ${baisse ? '−' : '+'}${nombre(Math.abs(crans), 1)} cran${hors ? ', hors style' : ''}`} role="img"
-      className="pq-suggerer-case flex flex-col items-center gap-0.5">
-      <Picto famille={f} taille={15} nomme={false} />
+    <span data-role={role} data-famille={f} data-crans={valeur} {...(hors ? { 'data-hors-style': '' } : {})} {...gestes}
+      aria-label={`${COURT[f]} ${valeurCrans(valeur)} cran${hors ? ', hors style' : ''}`} role="img"
+      className={classesCase(role === 'cible', niveau)}>
+      <span className="pq-suggerer-picto"><Picto famille={f} taille={role === 'cible' ? 14 : 15} nomme={false} /></span>
       <span className="flex items-end gap-px h-1.5" aria-hidden="true">
         {traits.map((i) => <i key={i} className={`pq-suggerer-trait ${baisse ? 'pq-suggerer-trait-baisse' : ''} ${ton}`} />)}
         {demi && <i className={`pq-suggerer-trait pq-suggerer-trait-demi ${baisse ? 'pq-suggerer-trait-baisse' : ''} ${ton}`} />}
@@ -86,15 +98,30 @@ export function Traits({ f, crans, hors, role = 'extra' }: { f: FamilyId; crans:
     </span>
   );
 }
-/** Famille que le houblon ne fait pas bouger (moins de 0,5 point) : un point, à sa place dans l'alignement. */
-export const Calme = () => <span aria-hidden="true" className="pq-suggerer-case flex items-center justify-center"><i className="pq-suggerer-calme" /></span>;
-/** Famille dont l'écart est inconnu (rien de simulé) : hachuré, jamais 0. */
-export const CaseInconnue = ({ f }: { f: FamilyId }) => (
-  <span data-inconnu="" role="img" aria-label={`${COURT[f]} : effet non établi`} className="pq-suggerer-case flex flex-col items-center gap-0.5">
-    <span className="pq-suggerer-inconnue inline-flex"><Picto famille={f} taille={15} nomme={false} /></span>
-    <i className="pq-hachure block w-3.5 h-1.5 rounded-sm" />
-  </span>
-);
+/** Famille que le houblon ne fait pas bouger (moins de 0,5 point) : un point, à sa place dans l'alignement ; cerclée si
+ * c'est un objectif. Au toucher : « ne bouge pas ». */
+export function Calme({ f, cle, cible = false }: { f: FamilyId; cle: string; cible?: boolean }) {
+  const gestes = useCase(cle, { genre: 'calme', f });
+  if (cible) {
+    return (
+      <span role="img" aria-label={`${COURT[f]} : ne bouge pas`} {...gestes} className={classesCase(true, 'cité')}>
+        <span className="pq-suggerer-picto"><Picto famille={f} taille={14} nomme={false} /></span>
+        <i aria-hidden="true" className="pq-suggerer-calme" />
+      </span>
+    );
+  }
+  return <span role="img" aria-label={`${COURT[f]} : ne bouge pas`} {...gestes} className="pq-suggerer-case flex items-center justify-center"><i aria-hidden="true" className="pq-suggerer-calme" /></span>;
+}
+/** Famille dont l'écart est inconnu (rien de simulé) : hachuré, jamais 0. Au toucher : « non établi ». */
+export function CaseInconnue({ f, cle, cible = true }: { f: FamilyId; cle: string; cible?: boolean }) {
+  const gestes = useCase(cle, { genre: 'inconnu', f });
+  return (
+    <span data-inconnu="" role="img" aria-label={`${COURT[f]} : effet non établi`} {...gestes} className={classesCase(cible, 'cité')}>
+      <span className="pq-suggerer-picto"><Picto famille={f} taille={14} nomme={false} /></span>
+      <i aria-hidden="true" className="pq-hachure block w-3.5 h-1.5 rounded-sm" />
+    </span>
+  );
+}
 
 // ---------- Usage, α, stock ----------
 /** L'usage du houblon en mot court du brasseur (amer, arôme, mixte) : la « mini info » de D80, en mot parce que les

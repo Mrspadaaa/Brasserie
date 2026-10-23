@@ -25,12 +25,33 @@ export default {
         if (!ligne.querySelector('[data-element~="biere-bannir"]') || ligne.querySelector('[hidden]')) return 'résineux non ouvert';
         return ligne.textContent.includes(`×${f}`) || `facteur ×${f} absent`;
       } },
+    // D108 : la visée de la base, posée sur la piste (losange relié au point), d'un palier ; « × » la retire.
+    { nom: 'toucher Tropicaux', faire: 'toucher', cible: '[data-famille-ligne="tropical"] > button',
+      verifier: () => !document.querySelector('[data-famille-ligne="tropical"] [data-visee-marque]') || 'losange au repos' },
+    { nom: 'plus tropicaux : losange à droite, faible', faire: 'toucher', cible: '#pq-biere-visee-tropical [data-visee="plus"]',
+      verifier: (p) => {
+        const l = document.querySelector('[data-famille-ligne="tropical"]');
+        const m = l.querySelector('[data-visee-marque]'), pt = l.querySelector('[data-biere-point]'), lien = l.querySelector('[data-visee-lien]');
+        if (!m || !pt || !lien) return 'losange, point ou trait absent';
+        const c = (e) => { const r = e.getBoundingClientRect(); return r.left + r.width / 2; };
+        if (!(c(m) > c(pt) + 2)) return 'losange pas à droite du point';
+        const r = lien.getBoundingClientRect();
+        if (Math.abs(r.left - c(pt)) > 4 || Math.abs(r.right - c(m)) > 4) return 'le trait ne relie pas le point au losange';
+        if (p.etat.visee.tropical !== 0.5 || m.dataset.niveau !== '0.5') return `visée ${p.etat.visee.tropical}, niveau ${m.dataset.niveau}`;
+        return l.querySelector('[data-palier]').textContent === 'faible' || 'palier non nommé';
+      } },
+    { nom: 'plus tropicaux encore : moyen', faire: 'toucher', cible: '#pq-biere-visee-tropical [data-visee="plus"]',
+      verifier: (p) => (p.etat.visee.tropical === 1.5 && document.querySelector('#pq-biere-visee-tropical [data-palier]').textContent === 'moyen') || `visée ${p.etat.visee.tropical}` },
+    { nom: 'la puce suit la visée', faire: 'attendre',
+      verifier: () => /^\+ tropicaux/.test(document.querySelector('[data-role="pont-objectif-tropical"]')?.textContent ?? '') || 'puce « + tropicaux » absente' },
+    { nom: 'retirer la visée', faire: 'toucher', cible: '#pq-biere-visee-tropical [data-visee="retirer"]',
+      verifier: (p) => (!('tropical' in p.etat.visee) && !document.querySelector('[data-famille-ligne="tropical"] [data-visee-marque]') && !document.querySelector('[data-role="pont-objectif-tropical"]')) || 'visée restée' },
     { nom: 'toucher Floral', faire: 'toucher', cible: '[data-famille-ligne="floral"] > button',
       verifier: () => document.querySelector('[data-famille-ligne="floral"] > button').getAttribute('aria-expanded') === 'true' || 'Floral ne s’ouvre pas' },
     { nom: 'bannir floral', faire: 'toucher', cible: '#pq-biere-visee-floral [data-visee="bannir"]',
-      verifier: () => (window.__parcours.etat.visee.floral === 'banni' && !document.querySelector('[data-role="pont-floral"]') && /bannir floral/.test(document.querySelector('[data-element~="biere-objectifs"]').textContent)) || 'visée « bannir » non posée ou objectif absent' },
+      verifier: () => (window.__parcours.etat.visee.floral === 0 && document.querySelector('[data-famille-ligne="floral"][data-bannie]') && !document.querySelector('[data-role="pont-floral"]') && /bannir floral/.test(document.querySelector('[data-element~="biere-objectifs"]').textContent)) || 'visée « bannir » non posée ou objectif absent' },
     { nom: 'plus floral', faire: 'toucher', cible: '#pq-biere-visee-floral [data-visee="plus"]',
-      verifier: () => window.__parcours.etat.visee.floral === 1 && /\+ floral/.test(document.querySelector('[data-role="pont-floral"]')?.textContent ?? '') || 'objectif « + floral » absent' },
+      verifier: () => window.__parcours.etat.visee.floral === 0.5 && document.querySelector('#pq-biere-visee-floral [data-palier]')?.textContent === 'faible' && /\+ floral/.test(document.querySelector('[data-role="pont-floral"]')?.textContent ?? '') || 'objectif « + floral » absent' },
     { nom: 'radar', faire: 'toucher', cible: '[data-vue="radar"]', attendre: 'svg[data-radar][data-objet="biere"]' },
     { nom: 'barres', faire: 'toucher', cible: '[data-vue="barres"]', attendre: '[data-barre="resin"]' },
     { nom: 'plus floral vers Suggestions', faire: 'toucher', cible: '[data-role="pont-floral"]', attendre: '[data-ecran="suggerer"]',

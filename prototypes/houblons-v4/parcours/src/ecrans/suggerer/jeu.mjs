@@ -18,11 +18,10 @@ export default {
       faire: 'attendre',
       verifier: (p) => {
         const r = p.etat.recette;
-        // La visée commune de l'état (onglet Ma bière) : crans par famille ; « banni » exclut les houblons qui la citent.
-        const dir = Object.fromEntries(Object.entries(p.etat.visee).filter(([, v]) => typeof v === 'number' && v !== 0));
-        const bannis = Object.entries(p.etat.visee).filter(([, v]) => v === 'banni').map(([f]) => f);
-        const cite = (cle) => bannis.some((f) => p.moteur.houblon(cle).familles[f].niveau !== 'non décrit');
-        const vs = p.moteur.proposer(r, dir).voies.filter((v) => ['ajouter', 'assemblage', 'remplacer à IBU égal'].includes(v.type) && !v.actions.some((a) => cite(a.hopKey)));
+        // La direction de l'écran (objectifs de la visée commune, en crans) ; au départ, sans visée, la demande dégustée.
+        const dir = JSON.parse(document.querySelector('[data-libre="houblon"]').dataset.direction);
+        if (!Object.keys(p.etat.visee).length && JSON.stringify(dir) !== JSON.stringify({ floral: 1, resin: -1 })) return `direction ${JSON.stringify(dir)} ; la dégustation demande + floral, − résineux`;
+        const vs = p.moteur.proposer(r, dir).voies.filter((v) => ['ajouter', 'assemblage', 'remplacer à IBU égal'].includes(v.type));
         const manque = vs.filter((v) => !document.querySelector(`[data-ecran="suggerer"] [data-voie][data-id="${v.id}"]`)).map((v) => v.label);
         if (manque.length) return `voies du moteur absentes : ${manque.join(' ; ')}`;
         if (!document.querySelector('[data-groupe="meme-0"]')) return 'pas de groupe « même effet »';
@@ -39,10 +38,7 @@ export default {
       faire: 'attendre',
       verifier: (p) => {
         const r = p.etat.recette, sc = p.moteur.style(r.styleCode);
-        // La visée commune de l'état (onglet Ma bière) : crans par famille ; « banni » exclut les houblons qui la citent.
-        const dir = Object.fromEntries(Object.entries(p.etat.visee).filter(([, v]) => typeof v === 'number' && v !== 0));
-        const bannis = Object.entries(p.etat.visee).filter(([, v]) => v === 'banni').map(([f]) => f);
-        const cite = (cle) => bannis.some((f) => p.moteur.houblon(cle).familles[f].niveau !== 'non décrit');
+        const dir = JSON.parse(document.querySelector('[data-libre="houblon"]').dataset.direction);
         const vs = p.moteur.proposer(r, dir).voies, cs = p.moteur.suggerer(r, 'floral');
         const fautes = [];
         let familles = 0;
@@ -68,7 +64,6 @@ export default {
             else if (!vus.some((x) => Math.abs(x - attendu) <= 0.6)) fautes.push(`${id} : ${f} à ${vus.join('/')} cran, le moteur dit ${attendu.toFixed(2)}`);
           }
           const extrasAttendus = bougent.map(([f]) => f).filter((f) => !(f in dir)).sort().join(',');
-          if (cles.some(cite)) fautes.push(`${id} : un houblon cite une famille bannie`);
           const extrasVus = [...ligne.querySelectorAll('[data-role="extra"][data-famille]')].map((x) => x.dataset.famille).sort().join(',');
           if (extrasAttendus !== extrasVus) fautes.push(`${id} : extras ${extrasVus || '∅'}, le moteur ${extrasAttendus || '∅'}`);
           for (const cle of cles) {
@@ -112,6 +107,30 @@ export default {
       },
     },
     {
+      // D110 : « Un peu dur à comprendre ce système de petit bar ». Toucher un picto dit sa famille et sa valeur, près de lui.
+      nom: 'toucher le picto floral de la première voie : « Floral +0,9 cran » dans une bulle, rien d’autre ne bouge',
+      faire: 'toucher',
+      cible: '[data-voie="1"] [data-role="cible"][data-famille="floral"][data-crans]',
+      attendre: '[data-role="bulle-traits"]',
+      verifier: (p) => {
+        const c = document.querySelector('[data-voie="1"] [data-role="cible"][data-famille="floral"][data-crans]');
+        const b = document.querySelector('[data-role="bulle-traits"]');
+        const v = Number(Number(c.dataset.crans).toFixed(1));
+        const attendu = `Floral ${v < 0 ? '−' : '+'}${Math.abs(v).toFixed(1).replace('.', ',')} cran`;
+        if (!b.textContent.includes(attendu)) return `bulle « ${b.textContent} », attendu « ${attendu} »`;
+        const rc = c.getBoundingClientRect(), rb = b.getBoundingClientRect();
+        const d = Math.hypot(rc.left + rc.width / 2 - (rb.left + rb.width / 2), rc.top + rc.height / 2 - (rb.top + rb.height / 2));
+        if (d > 120) return `bulle à ${Math.round(d)} px du picto`;
+        return location.hash === '#/suggerer' ? true : `route ${location.hash}`;
+      },
+    },
+    {
+      nom: 'toucher ailleurs (le bandeau) : la bulle se ferme',
+      faire: 'toucher',
+      cible: '[data-element="q2b-bandeau-ibu"]',
+      verifier: () => (document.querySelector('[data-role="bulle-traits"]') ? 'bulle encore ouverte' : true),
+    },
+    {
       nom: 'Hors houblon › : les pistes hors modèle du résineux',
       faire: 'toucher',
       cible: '[data-role="hors-houblon"]',
@@ -119,10 +138,10 @@ export default {
       verifier: () => (document.querySelectorAll('[data-role="pistes-hors-houblon"] li').length >= 3 ? true : 'moins de trois pistes'),
     },
     {
-      nom: 'fermer les pistes',
+      nom: 'replier les pistes (Hors houblon, en bas comme la base)',
       faire: 'toucher',
-      cible: '[role="dialog"] button[aria-label="Fermer"]',
-      verifier: () => (document.querySelector('[data-ecran="suggerer"]') && ![...document.querySelectorAll('[data-role="pistes-hors-houblon"]')].some((x) => x.getBoundingClientRect().height > 0) ? true : 'pistes encore ouvertes'),
+      cible: '#pq-suggerer-hors-houblon > summary',
+      verifier: () => (document.querySelector('[data-ecran="suggerer"]') && !document.querySelector('#pq-suggerer-hors-houblon').open && document.querySelector('[data-role="hors-houblon"]').getAttribute('aria-expanded') === 'false' ? true : 'pistes encore ouvertes'),
     },
     {
       nom: 'lentille absolu : l’effet du groupe en points',
@@ -147,38 +166,35 @@ export default {
       verifier: () => (document.querySelector('[data-objectif] [data-role="piste"]') && !document.querySelector('svg[data-radar][data-objet="suggerer"]') ? true : 'pistes absentes ou radar resté'),
     },
     {
-      // L'action de l'état commun, comme l'onglet Ma bière : le crochet de test du socle (window.__parcours.envoyer).
-      nom: 'bannir l’épicé dans l’état commun (fixerVisee)',
+      // L'action de l'état commun, comme l'onglet Ma bière (D108 : bannir = visée à 0) : le crochet de test du socle.
+      nom: 'bannir l’épicé dans l’état commun (visée à 0)',
       faire: 'attendre',
-      verifier: (p) => { p.envoyer({ type: 'visee/fixer', famille: 'spice', valeur: 'banni' }); return true; },
+      verifier: (p) => { p.envoyer({ type: 'visee/fixer', famille: 'spice', valeur: 0 }); return true; },
     },
     {
-      nom: 'les voies citant l’épicé sont écartées, la carte « Sans épicé » le dit',
+      nom: 'une carte « Sans épicé », et les voies du moteur pour la nouvelle direction',
       faire: 'attendre',
-      attendre: '[data-ecran="suggerer"] [data-banni="spice"]',
+      attendre: '[data-ecran="suggerer"] [data-objectif="spice"] .pq-suggerer-carte',
       verifier: (p) => {
-        const cite = (cle) => p.moteur.houblon(cle).familles.spice.niveau !== 'non décrit';
-        const lignes = [...document.querySelectorAll('[data-ecran="suggerer"] [data-voie]')];
-        const fautif = lignes.filter((l) => [...l.querySelectorAll('[data-role="ouvrir-fiche"]')].some((h) => cite(h.dataset.houblon)));
-        if (fautif.length) return `voies citant l’épicé encore là : ${fautif.map((l) => l.dataset.id).join(', ')}`;
-        const tous = p.moteur.proposer(p.etat.recette, { floral: 1, resin: -1 }).voies.filter((v) => ['ajouter', 'assemblage', 'remplacer à IBU égal'].includes(v.type));
-        const ecartees = tous.filter((v) => v.actions.some((a) => cite(a.hopKey))).length;
-        if (!ecartees) return 'le bannissement n’écarte aucune voie : geste sans effet';
-        const n = parseInt(document.querySelector('[data-banni="spice"] [data-role="ecartees"]').textContent, 10);
-        if (p.etat.visee.spice !== 'banni') return 'la visée commune n’a pas l’épicé banni';
-        return n >= ecartees ? true : `carte : ${n} écartées, le moteur en écarte au moins ${ecartees}`;
+        const dir = JSON.parse(document.querySelector('[data-libre="houblon"]').dataset.direction);
+        if (!(dir.spice < 0)) return `direction ${JSON.stringify(dir)} : l'épicé banni n'est pas demandé en baisse`;
+        const carte = document.querySelector('[data-objectif="spice"] .pq-suggerer-carte');
+        if (!carte || !/Sans épicé/.test(carte.textContent)) return `carte : ${carte && carte.textContent}`;
+        const vs = p.moteur.proposer(p.etat.recette, dir).voies.filter((v) => ['ajouter', 'assemblage', 'remplacer à IBU égal'].includes(v.type));
+        const manque = vs.filter((v) => !document.querySelector(`[data-voie][data-id="${v.id}"]`)).map((v) => v.label);
+        return manque.length ? `voies absentes : ${manque.join(' ; ')}` : true;
       },
     },
     {
-      nom: 'lever le bannissement',
+      nom: 'lever la visée',
       faire: 'attendre',
       verifier: (p) => { p.envoyer({ type: 'visee/fixer', famille: 'spice', valeur: null }); return true; },
     },
     {
-      nom: 'les voies reviennent (Golding, Aurum)',
+      nom: 'la demande dégustée revient (Golding)',
       faire: 'attendre',
       attendre: '[data-ecran="suggerer"] [data-voie] [data-houblon="beermaverick-golding"]',
-      verifier: (p) => (!document.querySelector('[data-banni]') && !('spice' in p.etat.visee) ? true : 'bannissement resté'),
+      verifier: (p) => (!document.querySelector('[data-objectif="spice"]') && !('spice' in p.etat.visee) ? true : 'visée de l’épicé restée'),
     },
     {
       nom: 'appui long sur Motueka : sa fiche, Suggérer dessous',

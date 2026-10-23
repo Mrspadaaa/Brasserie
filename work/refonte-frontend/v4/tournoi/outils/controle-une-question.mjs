@@ -70,6 +70,11 @@ const only = args.filter((a) => !a.startsWith('--')).slice(1);
 const pgArg = (args.find((a) => a.startsWith('--page=')) || '--page=etat.html').slice(7);
 const [pg, requete = ''] = pgArg.split('?');
 const edition = args.includes('--edition');
+// Règle n° 1 (D117, 23.10) : quand sa maquette choisie n'a ni titre en question ni ligne de contexte (Suggestions de la
+// base v4.10 et de q2b : les onglets en tête), les règles 1 et 4 sont levées ; la règle 2 (un seul facteur libre, L10)
+// et le balisage restent. La raison est obligatoire et imprimée.
+const regleN1 = (args.find((a) => a.startsWith('--regle-n1=')) || '').slice(11);
+if (args.some((a) => a === '--regle-n1' || a === '--regle-n1=')) { console.log('UNE-QUESTION ECHEC 1 problème(s)\n  - --regle-n1 sans raison'); process.exit(1); }
 const ids = (only.length ? only : fs.readdirSync(dir).filter((d) => fs.existsSync(path.join(dir, d, pg)))).sort();
 const packPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../../prototypes/houblons-v4/data/pack-fiches.json');
 const noms = JSON.parse(fs.readFileSync(packPath, 'utf8')).fichesHoublons.map((h) => h.name.replace(/\s*\(.*\)\s*$/, ''));
@@ -264,8 +269,9 @@ for (const id of ids) {
     }
   }
   await page.close();
-  // 1. titre
-  if (!a.titre) f.push('aucun titre visible (h1, h2 ou [data-role="titre"])');
+  // 1. titre (sauf --regle-n1 : sa maquette choisie n'en a pas)
+  if (regleN1) { /* règles 1 et 4 levées, raison imprimée au résumé */ }
+  else if (!a.titre) f.push('aucun titre visible (h1, h2 ou [data-role="titre"])');
   else if (!/\?\s*$/.test(a.titre)) f.push('le titre « ' + a.titre.slice(0, 50) + ' » ne pose pas une question (« … ? »)');
   // 2. un seul facteur libre
   if (a.facteurs.length > 1) f.push(a.facteurs.length + ' facteurs libres : ' + a.facteurs.map((k) => k + ' (' + a.exemples[k].slice(0, 3).join(', ') + ')').join(' ; '));
@@ -277,8 +283,9 @@ for (const id of ids) {
   if (a.discordants.length) f.push('balisage discordant : ' + a.discordants.slice(0, 3).join(' ; '));
   if (a.facteurs.length === 1 && a.decl.length === 1 && a.decl[0] !== a.facteurs[0] && !a.discordants.length) f.push('facteur déclaré « ' + a.decl[0] + ' », facteur détecté « ' + a.facteurs[0] + ' »');
   for (const o of a.options) if (!o.cont && o.n < 2) f.push('groupe libre « ' + o.facteur + ' » : ' + o.n + ' option (deux au moins)');
-  // 4. contexte
-  if (!a.ctx) f.push('pas de ligne de contexte visible [data-role="contexte"]');
+  // 4. contexte (sauf --regle-n1)
+  if (regleN1) { /* levée */ }
+  else if (!a.ctx) f.push('pas de ligne de contexte visible [data-role="contexte"]');
   else {
     const ks = [...new Set(a.items.map((i) => i.k))];
     if (ks.length < 2) f.push('contexte : ' + ks.length + ' facteur fixé déclaré (deux au moins, [data-contexte])');
@@ -305,4 +312,5 @@ for (const id of ids) {
 }
 await browser.close();
 if (problems.length) { console.log('UNE-QUESTION ECHEC ' + problems.length + ' problème(s)'); for (const x of problems) console.log('  ' + x); process.exit(1); }
+if (regleN1) console.log('  règles 1 (titre) et 4 (contexte) levées, règle n° 1 : ' + regleN1);
 console.log('UNE-QUESTION OK (1 groupe libre : ' + [...new Set(resume)].join(', ') + ')');
