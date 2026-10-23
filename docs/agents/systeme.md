@@ -169,6 +169,17 @@ lot. Le critique Fable, lui, passe après chaque voie d'interface. Ce n'est pas 
    Une voie d'interface passe par le critique.
 7. **Signature** : la section « Signature » de MISSION.md, puis un commit local.
 
+### Règle n° 1 : ses choix
+« C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10, D105 : la maquette jouable
+reprenait la carte en fil de fer au lieu de ses maquettes choisies, tous contrôles verts.)
+- Ses choix vivent dans un seul registre : `work/refonte-frontend/v4/choix/ecrans.json`. Chaque écran y a sa maquette
+  choisie, ses mots, sa capture et son inventaire, ou ses options ouvertes.
+- `controle-choix.mjs <dossier>` compare chaque écran construit à son choix. `systeme.mjs mission` refuse une voie
+  montrée au brasseur (interface, concepteur, étape v0, passe ou reprise) qui ne le nomme pas dans ses contrôles.
+  `systeme.mjs voies` rejoue `controle-choix.mjs --registre` à chaque rejeu.
+- Une revue de conformité se fait sur les captures, côte à côte avec la maquette choisie, jamais sur les seuls contrats
+  (L03).
+
 ### Ce que le brasseur verra : l'entonnoir
 Méthode : `.claude/skills/voies/references/entonnoir.md`. Contrôle : `systeme.mjs mission` (M13).
 - Elle reprend la méthode du lot 21 : 44 variantes v0 en 10 séries, puis 5 candidates améliorées. L'utilisateur l'a

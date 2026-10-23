@@ -1497,6 +1497,18 @@
    "resultat": "Pages actuelles : « PALETTE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : OK sur la baseline, ECHEC sur Comparer et Dryhopper (6 teintes saturées dans index.html, fiche.html… : « une seule couleur d'alerte »), cause non élucidée (teintes d'arômes ou de houblons hors data-famille/data-couleur ?). Base consolide : PALETTE OK 1/1 en 143 s. r6n2 déclare 8 data-couleur : la copie échoue pourtant, la tolérance de 6° n'a pas suffi.",
    "verdict": "a-adapter",
    "script": "controle-palette.mjs"
+  },
+  {
+   "id": "D105",
+   "mots": "« Mais ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? » ; « C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10)",
+   "controle": "controle-choix.mjs <dossier> [--ecran=<écran>] ; --registre",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "oui",
+   "resultat": "registre : REGISTRE OK (8 écrans) ; maquette jouable du 23.10 avant reprise : CHOIX ECHEC (étape Houblons, Ma bière, Suggérer)",
+   "verdict": "garde",
+   "script": "controle-choix.mjs"
   }
  ]
 }

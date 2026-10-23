@@ -6,6 +6,11 @@ maj: 2026-10-23
 sources: work/refonte-frontend/v4/SPEC-BRASSEUR.md ; work/refonte-frontend/registre.md (retour du lot 21, 20.10) ; registre-archive-2026-10-17-au-20.md (lot 15, q2b)
 ---
 
+**Les écrans choisis, en entier, vivent dans le registre `work/refonte-frontend/v4/choix/ecrans.json`** (règle
+n° 1, D105) : pour chaque écran, sa maquette choisie, ses mots, sa capture, son inventaire. Cette note ne garde que
+des éléments. Le 23.10, elle ne nommait pas l'étape Houblons ni Ma bière de la base v4.10 ; la maquette jouable a
+suivi la carte en fil de fer à leur place.
+
 Ce qui a été gagné ne doit pas disparaître au lot suivant. Le radar l'a fait au lot 21
 (« pas de radar grpah ? »). Chaque ligne cite sa preuve dans SPEC-BRASSEUR.md.
 Plancher à enrichir, pas plafond ([[le-brasseur-choisit]]).

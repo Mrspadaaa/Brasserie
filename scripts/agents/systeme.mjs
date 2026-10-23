@@ -512,6 +512,14 @@ export function suitesDeMission(mission, dossiersVoies, racine = RACINE) {
   const erreurs = [];
   const fMission = path.join(mission, 'MISSION.md');
   const texteMission = existe(fMission) ? lire(fMission) : '';
+  // Règle n° 1 (23.10, D105) : le registre de ses choix est rejoué à chaque rejeu (mots retrouvés dans SPEC, captures,
+  // inventaires valides) : un choix mal écrit dans le registre ne garde rien.
+  const choix = path.join(racine, 'work', 'refonte-frontend', 'v4', 'tournoi', 'outils', 'controle-choix.mjs');
+  if (existe(choix)) {
+    const r = spawnSync(process.execPath, [choix, '--registre'], { cwd: racine, encoding: 'utf8', timeout: 120000 });
+    const sortie = `${r.stdout ?? ''}${r.stderr ?? ''}`.trim();
+    if (r.status !== 0 || !/REGISTRE OK/.test(sortie)) erreurs.push(`ECHEC registre des choix — ${sortie.split('\n').pop()?.slice(0, 120) ?? 'aucune sortie'} (règle n° 1, controle-choix.mjs --registre)`);
+  }
   const pages = pagesDeMission(texteMission);
   for (const [cle, quoi] of [['adresse', 'la même adresse'], ['source', 'la même source']]) {
     const vues = new Map();
@@ -644,6 +652,15 @@ export function verifierMission(fichier, { minVoies = 2 } = {}) {
   for (const v of voies) {
     if (!interface_.has(v.voie) || v.decideur !== 'brasseur' || finie(v.voie)) continue;
     if (!/^(v0|passe \d+|reprise)\b/.test(etape(v))) erreurs.push(`${v.voie} : étape « ${v.etape ?? ''} » ; ce qu'on montre au brasseur passe par l'entonnoir (v0 ×N, tri, passe 2) ou reprend une variante choisie (M13)`);
+  }
+  // Règle n° 1 (23.10, D105) : « C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » La maquette
+  // jouable reprenait la carte en fil de fer au lieu de ses choix, tous contrôles verts. Toute voie montrée au brasseur
+  // (une interface, un concepteur, une étape v0, passe ou reprise, y compris hors d'ecran-1/) joue controle-choix.mjs.
+  const ecartee = (id) => new RegExp(`\\b${id}\\b[^\\S\\n]+écartée[^\\S\\n]*:`, 'i').test(texte);
+  const montree = (v) => v.decideur === 'brasseur' && (interface_.has(v.voie) || /concepteur/.test(v.agent ?? '') || /^(v0|passe \d+|reprise)\b/.test(etape(v)));
+  for (const v of voies) {
+    if (!montree(v) || finie(v.voie) || ecartee(v.voie)) continue;
+    if (!/controle-choix/.test(v.controles ?? '')) erreurs.push(`${v.voie} : controle-choix.mjs absent de ses contrôles ; ce qu'on lui montre suit ses choix (règle n° 1, D105 : « C'est critique que mes choix soient respectés »)`);
   }
   const series = new Map(voies.filter((v) => /^v0\b/.test(etape(v))).map((v) => [v.voie, Number((etape(v).match(/^v0\s*[×x(]\s*(\d+)/) ?? [])[1] ?? 0)]));
   // « plus minimaliste des les concepts de base mais plus nombreux et diverse » : un concept minimal coûte
@@ -877,12 +894,12 @@ function construireMission(dir, { critereFaux = false, critereIgnore = false, cr
 const TETE_VOIES = '| Voie | Objectif | Niveau | Agent | Modèle | Plafond | Possède | Dépend de | Contrôles | Décideur | Étape |\n|---|---|---|---|---|---|---|---|---|---|---|';
 const planMission = (voies, avant = '') => `# Mission\n\n## Objectif\no\n${avant}\n## Décisions\n| Décision | Décideur |\n|---|---|\n| d | pilote |\n\n## Voies\n${TETE_VOIES}\n${voies.join('\n')}\n\n## Boucle de retour\nb\n\n## Sources\n- \`package.json\`\n`;
 
-function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = false, interfaceSonnet = false, relectureGenerique = false, sansChoix = false, sansEtape = false } = {}) {
+function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = false, interfaceSonnet = false, relectureGenerique = false, sansChoix = false, sansEtape = false, sansControleChoix = false } = {}) {
   const f = path.join(dir, 'MISSION.md');
   const dec = sansDecideur ? '' : 'pilote';
   const etape = sansEtape ? '—' : 'reprise';
   const v2 = attendBrasseur ? '| v2 | lot | jugement | auteur | sonnet | 60 | y/** | v1, brasseur (radar) | c | brasseur | — |' : '| v2 | o | jugement | auteur | sonnet | 60 | y/** | v1 | c | brasseur | — |';
-  const v3 = interfaceSonnet ? `| v3 | maquette | jugement | auteur | sonnet | 60 | ecran-1/lot/** | — | controle-commun | brasseur | ${etape} |` : `| v3 | maquette | conception | concepteur | opus | 80 | ecran-1/lot/** | — | controle-commun | brasseur | ${etape} |`;
+  const v3 = interfaceSonnet ? `| v3 | maquette | jugement | auteur | sonnet | 60 | ecran-1/lot/** | — | controle-commun | brasseur | ${etape} |` : `| v3 | maquette | conception | concepteur | opus | 80 | ecran-1/lot/** | — | ${sansControleChoix ? 'controle-commun' : 'controle-commun, controle-choix'} | brasseur | ${etape} |`;
   const v4 = relectureGenerique ? '| v4 | relecture de v3 | jugement | relecteur | sonnet | 30 | r/RESULTAT.md | v3 | c | pilote | — |' : '| v4 | relecture de v3 | jugement | critique | fable | 30 | r/RESULTAT.md | v3 | c | pilote | — |';
   fs.writeFileSync(f, planMission([`| v1 | o | mécanique | executant | haiku | 30 | x/** | — | c | ${dec} | — |`, v2, v3, v4], sansChoix ? '' : '\n- x1 choisie : « le meilleur »\n'));
   return f;
@@ -894,10 +911,10 @@ function construireEntonnoir(dir, { series = 7, parSerie = 8, sansTri = false, s
   const ids = Array.from({ length: series }, (_, i) => `s${i + 1}`);
   // Par défaut, chaque série porte les trois chaleurs : 1 froide, 1 tiède, le reste en chaude.
   const temp = chaleur ?? (parSerie >= 3 ? ` (1 froide, 1 tiède, ${parSerie - 2} chaude)` : '');
-  const ctl = sansBaseline ? 'controle-commun' : 'baseline : controle-commun --sans=mots';
+  const ctl = sansBaseline ? 'controle-commun, controle-choix' : 'baseline : controle-commun --sans=mots, controle-choix';
   const voies = ids.map((id, i) => `| ${id} | série ${id}${i === 1 && !sansLibre ? ', libre au brief minimal' : ''} | conception | concepteur | ${i === 0 ? 'fable' : 'opus'} | 120 | ecran-1/lot/${id}/** | — | ${ctl} | brasseur | v0 ×${parSerie}${temp} |`);
   if (!sansTri) voies.push(`| t | tri des séries | jugement | critique | fable | 30 | t/RESULTAT.md | ${ids.join(', ')} | ${triSansPanel ? 'captures ouvertes' : 'controle-panel, captures ouvertes'} | pilote | tri |`);
-  if (!sansPasse) voies.push('| p2 | les cinq améliorées | conception | concepteur | opus | 80 | ecran-1/lot/p2/** | t | controle-commun | brasseur | passe 2 |');
+  if (!sansPasse) voies.push('| p2 | les cinq améliorées | conception | concepteur | opus | 80 | ecran-1/lot/p2/** | t | controle-commun, controle-choix | brasseur | passe 2 |');
   fs.writeFileSync(f, planMission(voies));
   return f;
 }
@@ -923,6 +940,8 @@ function temoins() {
   attendu('maquette relue par un relecteur générique', verifierMission(construireMissionPlan(sous('p5'), { relectureGenerique: true })).length === 0, false);
   attendu('maquette montrée sans étape', verifierMission(construireMissionPlan(sous('p6'), { sansEtape: true })).length === 0, false);
   attendu('reprise sans variante choisie', verifierMission(construireMissionPlan(sous('p7'), { sansChoix: true })).length === 0, false);
+  // Règle n° 1 (D105) : la maquette jouable du 23.10 suivait la carte au lieu de ses choix, tous contrôles verts.
+  attendu('maquette montrée sans controle-choix (règle n° 1)', verifierMission(construireMissionPlan(sous('p8'), { sansControleChoix: true })).length === 0, false);
   attendu('lot en entonnoir', verifierMission(construireEntonnoir(sous('e1'))).length === 0, true);
   attendu('lot de 12, une variante par agent', verifierMission(construireEntonnoir(sous('e2'), { series: 12, parSerie: 1 })).length === 0, false);
   attendu('éventail trop étroit', verifierMission(construireEntonnoir(sous('e3'), { series: 3, parSerie: 4 })).length === 0, false);
@@ -935,7 +954,7 @@ function temoins() {
   // L13 (audit a1) : une voie d'écran prévoit les contrôles de son sujet, ou en écarte un avec sa raison.
   const dh = (controles) => { const d = sous(`dh${controles.length}`); const f = path.join(d, 'MISSION.md'); fs.writeFileSync(f, planMission([`| v1 | Dryhopper, le moment | conception | concepteur | opus | 80 | ecran-1/lot/** | — | ${controles} | brasseur | reprise |`, '| v2 | relecture | jugement | critique | fable | 30 | r/RESULTAT.md | v1 | c | pilote | — |'], '\n- x1 choisie : « le meilleur »\n')); return verifierMission(f).length === 0; };
   attendu('voie Dryhopper sans les contrôles de son sujet', dh('controle-commun'), false);
-  const tous = 'controle-commun, controle-moments, pouvoir.test.ts, controle-alpha, controle-lisible, controle-simulation, controle-une-question, controle-acquis';
+  const tous = 'controle-commun, controle-choix, controle-moments, pouvoir.test.ts, controle-alpha, controle-lisible, controle-simulation, controle-une-question, controle-acquis';
   attendu('voie Dryhopper avec ses contrôles, un écarté avec sa raison', dh(`${tous}, sans controle-cumul-levure : la levure est un autre outil`), true);
   attendu('tri sans mesure du panel', verifierMission(construireEntonnoir(sous('e11'), { triSansPanel: true })).length === 0, false);
   attendu('série qui ne suit pas la baseline', verifierMission(construireEntonnoir(sous('e9'), { sansBaseline: true })).length === 0, false);
