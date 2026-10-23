@@ -101,6 +101,21 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
 - Non gardé : D80 (intensité, usage), le rail (controle-rail à adapter) ; jouer-parcours.mjs doit au moins les vérifier.
 - Verdict « r6a reste le meilleur » versé au jeu d'étalonnage (d0a26c14).
 
+## Soir du 23.10, après la remise à zéro de la fenêtre de 5 h (~20 h, heure de Zurich)
+- D106 (« thème pastel horrible ») : ses maquettes = page blanche `#FFFFFF`, surfaces `#F5F5F5`/`#EBEBEB`, texte
+  `#111111` (mesure) ; le « clair » de `ecran/THEMES.md` est rejeté. `controle-teinte.mjs` (f615f314) le garde ;
+  DESIGN.md, SPEC, #144 corrigés et poussés. La maquette a `parcours/src/theme-maquettes.css` (autre session).
+- Publication de la maquette jouable : par moi, artefact neuf « Maquette houblons · 23.10 », enveloppe
+  `scratchpad/publication-maquette/` (copier `maquettes/parcours/assets/*` à jour ; route de départ `ma-biere` = étape
+  Houblons ; essai : `scratchpad/essai-maquette.mjs`). Conditions : D55 corrigé, batterie verte avec TEINTE OK 5/5 et
+  CHOIX OK, verdict du critique p6 sans REJET. Dernier p6 : 4 REJET (étape D55 ; Ma bière « bannir » D32 ; fiche hors
+  cadre à 1280 D10 ; Levure à moitié vide D4) ; fiche à refaire sur g1 (inventaire). L'autre session corrige, puis
+  me prévient. Donner l'adresse à l'autre session pour sa table « ## Pages ».
+- c1-rail passe 2 relancée (G13 à G19 : frise verticale, D64, D56, D61 bis, D45, D55). Puis : rejouer, signer
+  `controles-parcours`, mettre à jour `portee-defauts.json` (verdicts du rail).
+- theme-performance : t2-performance lancée ; t1-theme et t3-critique APRÈS la publication de la maquette (t1 touche
+  `tailwind.config.js` et `src/index.css`, que la maquette étend ; commiter `src/` d'un bloc ; prévenir l'autre session).
+
 ## Fin de journée du 23.10
 - Règle n° 1 (D105) : registre des choix `work/refonte-frontend/v4/choix/ecrans.json`, `controle-choix.mjs` (autre
   session) ; `systeme.mjs mission` exige controle-choix pour toute voie montrée au brasseur, `voies` rejoue le registre
