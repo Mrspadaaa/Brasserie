@@ -954,7 +954,7 @@ function temoins() {
   // L13 (audit a1) : une voie d'écran prévoit les contrôles de son sujet, ou en écarte un avec sa raison.
   const dh = (controles) => { const d = sous(`dh${controles.length}`); const f = path.join(d, 'MISSION.md'); fs.writeFileSync(f, planMission([`| v1 | Dryhopper, le moment | conception | concepteur | opus | 80 | ecran-1/lot/** | — | ${controles} | brasseur | reprise |`, '| v2 | relecture | jugement | critique | fable | 30 | r/RESULTAT.md | v1 | c | pilote | — |'], '\n- x1 choisie : « le meilleur »\n')); return verifierMission(f).length === 0; };
   attendu('voie Dryhopper sans les contrôles de son sujet', dh('controle-commun'), false);
-  const tous = 'controle-commun, controle-choix, controle-teinte, controle-moments, pouvoir.test.ts, controle-alpha, controle-lisible, controle-simulation, controle-une-question, controle-acquis';
+  const tous = 'controle-commun, controle-choix, controle-teinte, controle-rail, controle-moments, pouvoir.test.ts, controle-alpha, controle-lisible, controle-simulation, controle-une-question, controle-acquis';
   attendu('voie Dryhopper avec ses contrôles, un écarté avec sa raison', dh(`${tous}, sans controle-cumul-levure : la levure est un autre outil`), true);
   attendu('tri sans mesure du panel', verifierMission(construireEntonnoir(sous('e11'), { triSansPanel: true })).length === 0, false);
   attendu('série qui ne suit pas la baseline', verifierMission(construireEntonnoir(sous('e9'), { sansBaseline: true })).length === 0, false);

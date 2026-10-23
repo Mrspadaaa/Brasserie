@@ -356,15 +356,15 @@
   {
    "id": "D27",
    "mots": "« j'aimerais aussi pouvoir une fois mon houblons sélectionner pouvoir glisser comme un slider le moment de …",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail",
     "dryhopper",
     "recette"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
@@ -457,37 +457,37 @@
   {
    "id": "D34",
    "mots": "« Je veux choisir pas de 10' défini, pas de timing imposé hein » ; « Soit pas supide, c'est des tranche de …",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D35",
    "mots": "« Ça semble un peu bancale, c'est l'idée mais pas hyper bien réalisé » (18.10, soir, capture pendant le geste)",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D36",
    "mots": "« Parcontre prendre en compte que le boil peut durer 120' ou d'autres timing que 60 » (18.10, soir)",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
@@ -546,97 +546,97 @@
   {
    "id": "D37 révisé",
    "mots": "« C'est defini ailleur dans l'application... » (18.10, soir, sur le réglage −/+ de l'ébullition de la base v2)",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D41",
    "mots": "« On a un 10' qui sort de null part. C'est pas encore ça, les possible ajoute d'houblon sont vraiment à la …",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D42",
    "mots": "« Pourquoi celui choisi à de l'ombre ? » (18.10, soir)",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D43",
    "mots": "« Que de j+3 » (commentaire sur la page partagée, 18.10, soir)",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D44",
    "mots": "« Que du j+3 SI on est en dehors du boil » ; « Le slider fonctionne pour le boil mais pas pour les autres é…",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D45",
    "mots": "« le passage entre 10' et 5' de fait très mal car on doit passe au dessus des houblons... »",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D46",
    "mots": "« Et le slider est clancky pas fluide du tout » ; « Probablement lié au recalcule de l'ibu pas forcément ut…",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D47",
    "mots": "« Pas besoin d'afficher une échelle linéaire avec tout les gradient du raille, ça doit rester cohérent. Jus…",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
@@ -730,25 +730,25 @@
   {
    "id": "D55",
    "mots": "« Ça semble un peu étrange d'avoir autant d'espace, j'avais dit à la apple en mode zoom loop » (18.10, soir…",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D56",
    "mots": "« Avec deux houblons ça marche aussi un peu moins bien » (18.10, soir, « 0′ » et « Nugget » l'un sur l'autre)",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
@@ -804,49 +804,49 @@
   {
    "id": "D61",
    "mots": "« on est à 35' et on a l'impression d'être quasiment à 60' » ; « Aussi les deux sont à 25' mais on dirait q…",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D63",
    "mots": "« Ça fait pas zoom focus sur l'emplacement. […] C'est moins bien qu'avant... » (18.10, soir, base v4.2 au t…",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D64",
    "mots": "« Les ajouter déjà présent saute à droite » (18.10, soir, base v4.2)",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D61 bis",
    "mots": "« L'échelle est plus du tout respecter quand on passe dessus... » (18.10, soir)",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
@@ -927,38 +927,38 @@
   {
    "id": "D67",
    "mots": "« L'échelle ne s'adapte pas ne de focus, homme pas là où je suis. L'échelle ébullition est très grande alor…",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D68",
    "mots": "« Toujours un petit soucis... » (19.10, au téléphone, base v4.6 : Nugget glissé à J+2, la tête du rail desc…",
-   "controle": "controle-rail.mjs",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
    "id": "D69",
    "mots": "« On arrive pas à aller de l'extrême haut, à l'extrême bas » (19.10, au téléphone, base v4.7 dans la page p…",
-   "controle": "controle-rail.mjs (cas-k3, écrans de 620 et 844 px)",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
    "portee": [
     "rail",
     "dryhopper"
    ],
-   "tourne": "non",
-   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). Aucun contrôle ne joue « de l'extrême haut à l'extrême bas sans défiler » sur un écran d'outil.",
-   "verdict": "a-adapter",
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). Aucun contrôle ne joue « de l'extrême haut à l'extrême bas sans défiler » sur un écran d'outil. — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
    "script": "controle-rail.mjs"
   },
   {
