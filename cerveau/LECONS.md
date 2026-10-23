@@ -150,7 +150,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Cause : aucune étape n'éprouvait le juge à l'aveugle, et les verdicts du brasseur ne revenaient jamais le corriger (boucle ouverte).
 - Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts et ne rejette jamais la diversité. À l'entonnoir, son classement (demandé : « vaste panel et ensuite ranking ») est une proposition, et le brasseur voit tout (M13). Idem pour le regard Brasseur du conseil.
 - Rôles : pilote, critique, conseil
-- Contrôle : à écrire (épreuve à l'aveugle, `systeme.mjs etalonnage`)
+- Contrôle : `systeme.mjs etalonnage` (portrait v2 : 88 % et 75 %)
 
 ## Mécanisées
 

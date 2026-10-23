@@ -48,4 +48,36 @@ Usage au lancement (23.10, ~11 h) : fenêtre de 5 h à 2 % ce matin, semaine à 
 - `cerveau/LECONS.md`
 
 ## Signature
-À écrire.
+23.10, pilote.
+
+**Voies**
+- e1-jeu : ALL MET. 37 paires et 23 classes, prises dans SPEC.
+- Amendements du pilote, notés dans `jeu.json` :
+  - pictos découpés de leur planche, texte masqué ;
+  - r4 sur la planche d'origine (la croix rouge donnait le verdict) ;
+  - premiers écrans seulement ;
+  - 7 items `hors_image` (geste, comparaison à une version d'avant, besoin), gardés au jeu mais hors du score.
+- e2-epreuve : `systeme.mjs epreuve`, 60 items anonymes ; aucun nom de variante ni verdict dans `epreuve/`.
+- e3-aveugle (portrait v1) : paires 23/34 (68 %), classes 13/19 (68 %). ECHEC. Sur la moitié B : 71 % et 75 %.
+- e4-aveugle-v2 (critique neuf, portrait v2, moitié B seulement) : ALL MET. **ETALONNAGE OK : paires 15/17 (88 %),
+  classes 6/8 (75 %).**
+
+**Décisions**
+- Le portrait v2 remplace le v1, archivé sous `PORTRAIT-v1-non-etalonne.md` (pilote, réversible).
+- Le critique est déclaré étalonné, avec son score, dans `.claude/agents/critique.md`.
+
+**Limites**
+- 25 items inédits seulement.
+- Des items de la moitié B partagent un verdict avec la moitié A (y1b, r6a, le picto) : le portrait n'en nomme aucun,
+  mais ses principes en viennent.
+- Erreurs restantes :
+  - trop clément devant un radar à plusieurs couleurs (lot 16) ;
+  - r6a vue comme mitigée ;
+  - le picto choisi jugé « pas parlant » ;
+  - une paire de Comparer du lot 6.
+
+**Ouvert**
+- Chaque nouveau verdict du brasseur entre dans `jeu.json`, et l'épreuve se rejoue : `systeme.mjs epreuve` puis
+  `systeme.mjs etalonnage --reponses <fichier>`.
+- La prochaine vraie épreuve, c'est son verdict sur le prochain lot, comparé à la prédiction du critique.
+- Le regard Brasserie du conseil lit le même portrait ; il passera la même épreuve.

@@ -12,10 +12,12 @@ Tu juges une voie d'interface terminée, à la place du brasseur et avant lui. T
 l'auteur. Ton travail est de prédire son verdict, pas de trouver la maquette acceptable.
 Langue : français.
 
-**Tant que ton étalonnage n'est pas fait** (L27 : épreuve à l'aveugle sur ses vrais verdicts,
-pas encore passée au 22.10), ton avis est **indicatif**. Ton classement ordonne le panel, et
-il ne cache ni n'écarte rien. Tes rejets citent une règle. Le brasseur voit tout et choisit.
-Chaque rejet que tu écris engage le pilote à relancer ou à écarter la variante.
+**Ton étalonnage** (L27) : le 23.10, sur une épreuve à l'aveugle faite de ses vrais verdicts, le portrait
+version 2 retrouve 88 % de ses choix entre deux écrans et 75 % de ses avis sur un écran seul. Le
+portrait version 1 était à 68 %. Les seuils sont de 80 % et 70 %. L'échantillon est petit (25 items
+inédits) : ton classement compte, mais le brasseur voit tout et choisit. Tes rejets citent une règle.
+Chaque rejet que tu écris engage le pilote à relancer ou à écarter la variante. Tes erreurs restantes : trop
+clément devant un radar à plusieurs couleurs, et un picto composé jugé « pas parlant » alors qu'il l'a choisi.
 
 ## Deux modes, selon l'étape de ta voie
 - **Tri** (après les séries v0, méthode : `.claude/skills/voies/references/entonnoir.md`).
