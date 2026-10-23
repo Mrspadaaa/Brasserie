@@ -1,4 +1,4 @@
-ECHEC — rejeté : deux écarts à ses choix sans ses mots — Ma bière ajoute une ligne « surtout Nugget, 46 g à 60′ » absente de sa base et de la NOTE (règle n° 1, D105) ; la fiche ferme par le « × » gris de 16 px du Sheet là où sa g1 a la croix cerclée de 44 px (D109). Les quinze défauts D107 à D121 sont levés sur capture ou par contrôle ; les six autres écrans sont acceptés, et les deux corrections tiennent en quelques lignes.
+OK — accepté : après les corrections du commit 420cd61e (BATTERIE OK 31/31), les huit écrans sont ceux de ses choix : Ma bière sans ses deux lignes hors base (règle n° 1, D105), la fiche à une seule croix ronde de 44 px (D109), l'étape à 1,04 écran avec ses trois ajouts rapides (D5), les cartes de Suggérer aux teintes de q2b ; les quinze défauts D107 à D121 sont levés sur capture ou par contrôle. Au premier jugement de cette version : 6 ACCEPTÉ, 2 REJET (biere, fiche), levés au rejugement ci-dessous. Restent des réserves, aucune ne cite un refus.
 
 ## Version D107 à D121
 
@@ -35,12 +35,12 @@ Critique Fable, 24.10, nuit, sur la page côte à côte `work/refonte-frontend/v
   - Réserve forte, mesurée : `etape-maquette-plein.png` fait 960 px pour 844 (1,14 écran ; D5 : ≤ 1,05) ; sa base tient en 1,00 avec trois ajouts rapides. Neuf familles sur douze passent sous le pli (`etape-maquette.png` coupe après Terreux / Melon) là où sa base montrait les douze. Avant publication : regagner ~120 px (le rang « ? · + floral · Au style / Absolu » replié sur la ligne de l'alerte, ou la pilule du bandeau moins haute). Je ne rejette pas : les éléments ajoutés sont ses demandes, et aucun refus ne rejoue.
   - Réserves : deux ajouts rapides (`Ajouter.tsx` : « deux houblons du stock ») alors que la NOTE écrit « trois » et que sa base en a trois ; « mixte » où sa base écrit « double » (la fiche dit « double usage ») ; chiffres à chasse fixe (« 46 g », « 1,066 ») où sa capture est en chiffres proportionnels.
 
-- biere : REJET — `biere-maquette.png` face à `biere-base.png` : l'écran est le sien (onglets, bandeau, alerte, « Barres / Radar », décompte, légende, 11 barres, Résineux ouvert « bannir · − · sans visée · + », « ×2,8 », puces et levure au pied dans `biere-maquette-plein.png`), et D108, D109, D119 sont levés. Mais deux lignes n'existent ni dans sa base ni dans `ecrans/biere/NOTE.md` (`## Écarts`) : « surtout Nugget, 46 g à 60′ » sous l'alerte (`biere/index.tsx` : `data-role="cause"`) et « , et Nugget 46 g à 60′ » ajouté à « Prévu avec SafAle US-05, caractérisée » au pied. Règle n° 1 (D105) et la consigne de cette passe : un écart à sa base sans ses mots est un rejet.
+- biere : ACCEPTÉ après correction (420cd61e, voir « Rejugement ») ; au premier jugement de cette version, REJET — `biere-maquette.png` face à `biere-base.png` : l'écran est le sien (onglets, bandeau, alerte, « Barres / Radar », décompte, légende, 11 barres, Résineux ouvert « bannir · − · sans visée · + », « ×2,8 », puces et levure au pied dans `biere-maquette-plein.png`), et D108, D109, D119 sont levés. Mais deux lignes n'existent ni dans sa base ni dans `ecrans/biere/NOTE.md` (`## Écarts`) : « surtout Nugget, 46 g à 60′ » sous l'alerte (`biere/index.tsx` : `data-role="cause"`) et « , et Nugget 46 g à 60′ » ajouté à « Prévu avec SafAle US-05, caractérisée » au pied. Règle n° 1 (D105) et la consigne de cette passe : un écart à sa base sans ses mots est un rejet.
   - Phrase prédite : « Ça aussi c'est bon. » — il reconnaîtrait l'écran ; la ligne « surtout Nugget » l'aiderait plutôt (elle dit d'où vient l'alerte et ouvre la fiche). Le rejet est de règle, pas de goût.
   - Correction attendue : écrire ces deux écarts dans `## Écarts` avec leur raison (la cause de l'alerte, penser brasseur ; lien vers la fiche), ou les retirer. Rien d'autre à toucher.
   - Réserve : « 7 au style · 4 non situées » contre « 6 · 5 » dans sa base (Végétal devenu « prévu ») : le moteur en direct, à dire dans la NOTE.
 
-- fiche : REJET — `fiche-maquette.png` face à `fiche-base.png` et `fiche-base-ref.png` : c'est g1, radar d'abord comme il l'a demandé (D115), α en plage avec le lot et sa jauge, « double usage », « + Floral 2/4 − Résineux 2/4 », bande des familles, liste avec pictos, « sans famille … autres 14 % », « 5 non décrites » (`fiche-maquette-plein.png`), ♡ ⊘ et « Comparer » au pied. Mais la fermeture : sa g1 a une croix noire cerclée de 44 px en haut à droite ; la maquette a le « × » du `Sheet` de l'app, 16 px, gris, zone `touch-sm`, et un second « ‹ » gris à gauche de l'α. « Bouton retour souvent assez petit et pas très intuitif » ; « Juste une croix bien positionné, facile, dans le thème suffirait » (D109) ; et sa capture choisie montre la bonne (règle n° 1).
+- fiche : ACCEPTÉ après correction (420cd61e, voir « Rejugement ») ; au premier jugement de cette version, REJET — `fiche-maquette.png` face à `fiche-base.png` et `fiche-base-ref.png` : c'est g1, radar d'abord comme il l'a demandé (D115), α en plage avec le lot et sa jauge, « double usage », « + Floral 2/4 − Résineux 2/4 », bande des familles, liste avec pictos, « sans famille … autres 14 % », « 5 non décrites » (`fiche-maquette-plein.png`), ♡ ⊘ et « Comparer » au pied. Mais la fermeture : sa g1 a une croix noire cerclée de 44 px en haut à droite ; la maquette a le « × » du `Sheet` de l'app, 16 px, gris, zone `touch-sm`, et un second « ‹ » gris à gauche de l'α. « Bouton retour souvent assez petit et pas très intuitif » ; « Juste une croix bien positionné, facile, dans le thème suffirait » (D109) ; et sa capture choisie montre la bonne (règle n° 1).
   - Phrase prédite : « Pour la fiche, on est bon avec le radar devant. Mais le bouton retour toujours pas au point ??? »
   - Correction attendue : la même croix cerclée de 44 px que les outils (icône 20 px, encre du texte), une seule ; retirer le « ‹ » ou le fondre dans la croix.
   - Réserves : « nommé en premier » quatre fois sur sept lignes (D73, à compter sur `fiche/etat.html`) ; α « 9,5–16 % » où sa capture dit « 11–14 % » (enveloppe des fiches, à nommer d'un mot si l'écart reste).
@@ -70,15 +70,31 @@ Critique Fable, 24.10, nuit, sur la page côte à côte `work/refonte-frontend/v
 - Il retrouve sa stout (16D, IBU 60, US-05), son Nugget et son Idaho 7 d'un écran à l'autre, ses pictos (« épicé » cannelle et clou), la page blanche et l'action noire (TEINTE OK 5/5). Le même en-tête sur les trois onglets et la même croix sur six outils : c'est ce qu'il a demandé le 23.10.
 - Les trois croix de la fiche et de Ma bière mises à part, chaque écart à ses bases a ses mots dans les NOTE.
 
+### Rejugement après corrections (24.10)
+
+Commit 420cd61e, BATTERIE OK 31/31, page côte à côte refaite sur la construction finale ; chaque capture rouverte en image.
+
+1. biere : ACCEPTÉ — `biere-maquette.png`, `biere-maquette-plein.png`, `biere-visee-maquette.png` face à `biere-base.png` : la ligne « surtout Nugget, 46 g à 60′ » a disparu sous l'alerte, le pied redit « Prévu avec SafAle US-05, caractérisée » sans « et Nugget » ; `ecrans/biere/NOTE.md` (lignes 32–33) dit le retrait et sa raison, et `index.tsx` n'a plus de `data-role="cause"`. Les crans de la zone du style sur les familles non attendues (Agrumes, Tropicaux, Résineux, Épicé, Végétal : deux traits fins couleur de la page) sont ceux de sa base (`biere-base.png`), écrits dans la NOTE (biere-crans-style) ; la visée sur Tropicaux garde losange, pointillé, « faible » et « × » par-dessus les crans. Plus aucun écart sans ses mots. Phrase prédite : « Ça aussi c'est bon. »
+2. fiche : ACCEPTÉ — `fiche-maquette.png` face à `fiche-base.png` : une seule croix « × » noire dans un cercle de 44 px en haut à droite, à la place de celle de sa g1 ; plus de « ‹ » à gauche de l'α (`FicheHoublon.tsx` n'a plus `fermer-fiche`) ; RETOUR OK (`--fiche`). Radar d'abord, « + Floral 2/4 − Résineux 2/4 », liste ensuite : D115 et D109 tenus ensemble. Phrase prédite : « Pour la fiche, on est bon. »
+3. ma-biere (étape) : ACCEPTÉ — `etape-maquette.png`, `etape-maquette-plein.png` : trois ajouts rapides (Cascade, Citra cryo, Idaho 7 « α 12,7 % · mixte · 10 g · +5 IBU »), page entière de 875 px pour 844 (1,04 écran ; HAUTEUR OK ; D5 ≤ 1,05), dix familles sur douze dans le premier écran, Noyau et Végétal juste sous le pli. Mots : 26 hors données contre 24 pour sa base, l'écart vient des données (D1 tenu). Réserve : la légende « ? » des ajouts rapides écrit encore « deux houblons du stock » (`Ajouter.tsx`, ligne 90) alors qu'il y en a trois.
+4. suggerer : ACCEPTÉ — `suggerer-maquette.png` face à `suggerer-q2b.png` : mesuré au pixel (fast-png), la carte « Plus floral » de q2b est à (234, 218, 244), celle de sa base v4.10 à (234, 217, 244), celle de la maquette à (238, 222, 244) au plus teinté, en dégradé vers (242, 231, 247) ; la carte « Moins résineux » à (229, 239, 237). Ce sont les teintes de q2b, à 4 près au point le plus teinté ; le dégradé éclaircit le bord droit, ce qu'il peut remarquer sans que ce soit un écart (q2b a des aplats). Réserve D74 levée.
+
+Compte final de la version D107 à D121 : 8 ACCEPTÉ, 0 REJET.
+
 ### Résumé pour `systeme.mjs voies`
 
-ma-biere : ACCEPTÉ · biere : REJET · fiche : REJET · suggerer : ACCEPTÉ · comparer : ACCEPTÉ · dryhopper : ACCEPTÉ · levure : ACCEPTÉ · substituer : ACCEPTÉ
+ma-biere : ACCEPTÉ · biere : ACCEPTÉ · fiche : ACCEPTÉ · suggerer : ACCEPTÉ · comparer : ACCEPTÉ · dryhopper : ACCEPTÉ · levure : ACCEPTÉ · substituer : ACCEPTÉ
 
-- **biere** (Ma bière) — REJET : deux lignes hors de sa base et de la NOTE (« surtout Nugget, 46 g à 60′ » ; « , et Nugget 46 g à 60′ ») ; règle n° 1, D105. Correction : leurs mots dans `## Écarts`, ou les retirer.
-- **fiche** (g1) — REJET : fermeture par le « × » 16 px gris du Sheet et un « ‹ » en plus, contre la croix cerclée de 44 px de sa g1 ; D109. Correction : la croix des outils, une seule.
-- **ma-biere**, **suggerer**, **comparer**, **dryhopper**, **levure**, **substituer** — ACCEPTÉ.
+- **ma-biere** (étape Houblons) — ACCEPTÉ
+- **biere** (Ma bière) — ACCEPTÉ (après 420cd61e : lignes hors base retirées et dites en écart)
+- **fiche** (g1) — ACCEPTÉ (après 420cd61e : une seule croix ronde de 44 px)
+- **suggerer** (q2b) — ACCEPTÉ
+- **comparer** (r6a + étapes) — ACCEPTÉ
+- **dryhopper** (a1, ouvert) — ACCEPTÉ
+- **levure** (ouvert) — ACCEPTÉ
+- **substituer** (ouvert) — ACCEPTÉ
 
-Avant publication, en plus des deux corrections : l'étape ramenée à 1,05 écran au plus (D5 ; 1,14 aujourd'hui), la NOTE de l'étape mise à « deux » ajouts rapides ou l'écran à trois.
+Avant publication (réserve, pas de rejet) : le texte de la légende « ? » des ajouts rapides (`Ajouter.tsx`, ligne 90 : « deux houblons du stock ») à mettre à « trois ».
 
 LEÇON PROPOSÉE : un composant de l'app réemployé dans la maquette (ici le `Sheet` et son « × » de 16 px) apporte ses propres boutons, qui échappent au contrôle écrit pour les routes (`controle-retour.mjs`) ; quand une plainte vise un genre d'élément (« bouton retour »), le contrôle inventorie tous les éléments de ce genre dans la construction, feuilles et fiches comprises, pas seulement ceux des routes.
 

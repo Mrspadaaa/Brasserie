@@ -1,4 +1,4 @@
-// « Ajouter — houblon… » et les ajouts rapides (base v4.10) : un champ texte qui filtre le stock, puis deux
+// « Ajouter — houblon… » et les ajouts rapides (base v4.10) : un champ texte qui filtre le stock, puis trois
 // houblons du stock prêts à poser d'un toucher (« + ») à 10 g et 10′ : nom, α, usage, dose, IBU ajouté (moteur),
 // bande des familles, moment, ♡. Sans recherche, ceux du stock qui portent le plus la famille visée par la
 // dégustation (« plus floral »). Un houblon ajouté se pose sur la frise, où son moment se glisse.
@@ -87,7 +87,7 @@ export function Ajouter({ recette, onGeste }: { recette: RecetteParcours; onGest
         {!liste.length && <li className="px-2 text-sm text-cave-400">aucun houblon du stock à ce nom</li>}
       </ul>
       <PanneauLegende id="pq-ma-biere-legende-rapides" ouverte={legende && liste.length > 0}>
-        <p><b>Ajouts rapides</b> : deux houblons du stock qui portent le plus le floral, prêts à poser à {MINUTES}′.</p>
+        <p><b>Ajouts rapides</b> : trois houblons du stock qui portent le plus le floral, prêts à poser à {MINUTES}′.</p>
         <p><b>+</b> : ajouter {DOSE} g à {MINUTES}′ ; <b>+n IBU</b> : ce qu'il ajoute à ma bière. <b>{MINUTES}′ en pointillé</b> : le moment proposé, réglable ensuite sur la frise. <b>♡</b> : le garder en tête.</p>
         <p><b>Bande</b> : les 12 familles d'arômes du houblon ; vive, marquée ; pâle, citée ; grise, non décrite.</p>
         <CleFamilles ordre={sc.order} />
