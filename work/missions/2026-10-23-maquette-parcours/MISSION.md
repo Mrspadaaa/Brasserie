@@ -130,3 +130,31 @@ Avant (23.10, après-midi) : 5 h à 11 %, semaine à 52 %, Fable à 29 %. Plafon
 - `DESIGN.md`, `docs/ui-compacte.md`, `PRODUCT.md`, `.claude/rules/affinee-frontend.md`
 
 ## Signature
+
+Rejeu du pilote (23.10, nuit), `node scripts/agents/systeme.mjs voies work/missions/2026-10-23-maquette-parcours --approuver` :
+**VOIES OK 9/9** (p0 à p8).
+
+- **Livré** : la maquette jouable de bout en bout, publiée à https://claude.ai/artifact/52UBb4F7iME2k3ZzsAv4x1 (construction
+  d332792c). Ses écrans sont ceux qu'il a choisis : l'étape Houblons et l'onglet Ma bière de la base v4.10, q2b, r6a, a1,
+  la fiche g1 et Substituer en porte.
+  - Contrôles : CHOIX OK (5 conformes, 3 ouverts), TEINTE OK 5/5, RAIL OK, PARCOURS OK 31+31.
+  - Critique : 8 ACCEPTÉ.
+  - Puis la maquette rendue portable (p8, phase 1 de #143), sans que rien ne change à l'écran.
+- **Ses mots, et ce qu'ils ont produit** :
+  - « Mais ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? » : D105 ;
+  - « C'est critique que mes choix soient respectés. SI non, rien n'a de valeur » : la règle n° 1 (CLAUDE.md, SPEC § 0,
+    agents), le registre `v4/choix/ecrans.json` et `controle-choix.mjs`. `systeme.mjs mission` refuse désormais un
+    écran montré sans ce contrôle (supervision) ;
+  - « Pourquoi c'est en thème pastel horrible ??? » : D106, `theme-maquettes.css` et `controle-teinte.mjs` (supervision) ;
+  - D55 revenu au rail : controle-rail le garde désormais (supervision).
+- **Décisions** :
+  - pilote : le code à côté de l'app ; la persistance en mémoire ; `controle-autres-ajouts` écarté pour Comparer ;
+    l'α inconnu, facultatif à l'intégration ;
+  - brasseur : r6a, q2b, base v4.10 (D105) ; le thème de ses maquettes (D106, #144).
+- **Leçons** : L03 enrichie (une maquette choisie est la base ; D105, D106). Les leçons proposées par les voies sont
+  traitées : l'écran du dessous lu par les contrôles l'est dans le socle (Ma bière démontée sous un outil) ; un document
+  d'implémentation se confronte au code de l'app, ce que p7 a fait et p8 corrigé.
+- **Reste** :
+  - à lui : Dryhopper (a1, b4, d8, e5, g1), Substituer (porte ou outil), Levure (étape ou outil), puis la porte B ;
+  - à faire : #143, B6 (atelier V5.5 remplacé ou gardé) et B9 à B11 ; rendu d'écran 93 à 118 ms contre 100 ms ;
+  - à l'utilisateur : le push des commits locaux.

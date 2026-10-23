@@ -1,4 +1,6 @@
-PRÊT AVEC RÉSERVES — le rangement, l'état et les écrans se portent ; le moteur v4 et la navigation de l'app, eux, ne se déplacent pas tels quels (données en singleton, `process.env`, alias absents, retour d'historique qui ferme tout), et ARCHITECTURE.md se trompe sur la navigation et sur les dossiers cibles.
+OK — relecture rendue. Son verdict : PRÊT AVEC RÉSERVES — le rangement, l'état et les écrans se portent ; le moteur v4 et la navigation de l'app, eux, ne se déplacent pas tels quels (données en singleton, `process.env`, alias absents, retour d'historique qui ferme tout), et ARCHITECTURE.md se trompe sur la navigation et sur les dossiers cibles.
+
+(Première ligne réécrite par le pilote, 23.10 : le statut de la voie d'abord, son verdict ensuite, mot pour mot. Ses réserves B1 à B5 et B8 sont levées par la voie p8-portabilite ; B6, B7 et B9 à B11 restent dans #143.)
 
 Limites de cette relecture : lecture seule. Rejoués : `verifier-types.mjs` (TYPES OK) et `app-intacte.mjs` (APP INTACTE OK). Non rejoués : `construire.mjs`, `jouer-parcours.mjs`, `parcours-complet.mjs` (ils écrivent dans `maquettes/`, hors de mon périmètre), les `controle-*.mjs`, les captures (interface : voie p6). Les temps viennent des RESULTAT p0 à p4, non remesurés. `App.tsx` (lignes 930-960) et `StorageService` n'ont été lus que par recherche ciblée : ce qui en dépend est dit « non vérifié ».
 
