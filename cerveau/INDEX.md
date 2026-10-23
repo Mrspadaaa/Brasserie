@@ -20,9 +20,9 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 
 - Paroles du brasseur, mot pour mot : `work/refonte-frontend/v4/SPEC-BRASSEUR.md`
 - Défauts devenus contrôles : `work/refonte-frontend/v4/DEFAUTS-RECURRENTS.md`
-- Décisions numérotées : `work/refonte-frontend/decisions.md` ; état : `work/refonte-frontend/registre.md`
+- Décisions : `work/refonte-frontend/decisions.md` ; état : `work/refonte-frontend/registre.md`
 - Produit et design : `PRODUCT.md`, `DESIGN.md`, `docs/ui-compacte.md`, `docs/specs/houblons.md`
-- Système d'agents (rôles, décisions, boucles) : `docs/agents/systeme.md` ; missions : `work/missions/`
+- Système d'agents : `docs/agents/systeme.md` ; missions : `work/missions/`
 - Tickets : issues GitHub `Mrspadaaa/Brasserie`
 
 ## Carte
@@ -33,7 +33,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[rien-de-fige]] — ébullition, dose, whirlpool, dry hop réglables ; minutes par 5′
 - [[le-brasseur-choisit]] — chaque lot lui est montré ; le jury filtre, il ne choisit pas
 - [[fil-de-fer-d-abord]] — exploration en fils de fer en planche ; fidélité pour la retenue
-- [[exploration-v0-libre]] — l'entonnoir : vaste panel sur la baseline, classement, greffes, passes (M13)
+- [[exploration-v0-libre]] — l'entonnoir : panel v0, classement, greffes, passes (M13)
 - [[methode-ui-v3]] — tous les écrans, un ticket par sujet (#133)
 - [[micro-correctifs]] — aller-retour rapide, capture si l'apparence est ambiguë
 
@@ -41,13 +41,14 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[descripteurs-hors-familles]] — pourquoi Nelson Sauvin paraît ordinaire et Motueka ultra fruité
 - [[modele-brassage]] — moments de houblon typés, levure structurée, recette figée dans le brassin
 - [[chimie-eau]] — AR en ppm d'ion, solveur plafonné, alcalinité à l'empâtage, chaux
-- [[cout-calcul-moteur]] — simulerCas : 1,4 ms léger, 4 à 6 ms complet par cas ; une variante en direct, sans serveur
+- [[cout-calcul-moteur]] — simulerCas : 1,4 ms léger, 4 à 6 ms complet ; en direct, sans serveur
 - [[dryhop-moment]] — Idaho 7 : le dry hop actif d'abord
 
 ### produit/ — outils, écrans, état fini ou inachevé
 - [[outils-houblons]] — une question = un outil : la carte à poser avant tout lot
 - [[acquis-valides]] — ce que le brasseur a validé et qui doit survivre d'un lot à l'autre
 - [[page-partagee]] — une version, un artefact neuf et daté
+- [[maquette-jouable]] — la maquette jouable, son point de départ (23.10)
 - [[saisie-mobile]] — jamais type="number", densité pilotée par le clavier
 - [[import-recette]] — le procédé vit dans le déroulé ; fiche de brassage éditable
 - [[export-et-ia]] — fiches IA sur le stock, export texte avec l'eau, relecture consultative

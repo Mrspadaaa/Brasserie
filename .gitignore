@@ -72,6 +72,10 @@ firestore.rules
 !/work/refonte-frontend/v4/outils/page-lot/*.html
 # Une page par version montrée au brasseur (23.10), chacune dans un artefact neuf ; les images restent locales.
 !/work/refonte-frontend/v4/outils/pages/*/index.html
+# La maquette jouable publiée, figée telle que servie, son point de départ (23.10) : la construction
+# (prototypes/houblons-v4/maquettes/) reste locale, et l'artefact peut être republié par d'autres.
+!/work/refonte-frontend/v4/outils/pages/*-maquette/publie.html
+!/work/refonte-frontend/v4/outils/pages/*-maquette/assets/*
 # Pages témoins des contrôles (22.10.2026, leçon L13) : un critère se rejoue depuis un clone neuf.
 !/work/refonte-frontend/v4/tournoi/outils/temoins/**/*.html
 # Mesures figées des panels témoins (23.10, M14) : controle-panel.mjs --mesures=.

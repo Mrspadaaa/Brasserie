@@ -33,6 +33,7 @@ Plancher à enrichir, pas plafond ([[le-brasseur-choisit]]).
 | r6a, avec les éléments qu'il a notés ailleurs | « r6a est le meilleur mais reprendre trop peu d'éléments que j'avais noté bon ou intéressant des autres variante » (22.10) | Comparer (reprise r6n1, r6n2) |
 | r6n2 : le premier écran de r6a, le reste à un toucher sous un dock ; la référence de densité | « r6n2 donne vraiment bien » (23.10) | Comparer ; niveau attendu d'un panel (M14) |
 | Picto « épicé » : cannelle et clou croisés (f1 de la série F, r4d) | « Mon Picto préféré est cannelley clou croisé. Ça doit être changé dans la baseline » (23.10) | symbole `p-spice` de `fils17-standard/v3/planche.html` |
+| La maquette jouable de bout en bout (construction d332792c) | « La nouvelle maquette (artefacts) est un vrai bon point de départ » (23.10, soir) | base du travail suivant : [[maquette-jouable]] |
 
 Contrôle de présence, écrit le 22.10 : `controle-acquis.mjs` (D99). Sur un écran Comparer, il exige
 le radar, la chimie, le panel OSU et les vraies valeurs, balisés `data-acquis`. À ajuster avant le

@@ -133,6 +133,12 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
 - Mode `--url` des contrôles pour l'app : après p8 (forme du crochet dans ARCHITECTURE.md « ## Crochet de test »).
 
 ## Soirée du 23.10, après la maquette publiée (https://claude.ai/artifact/52UBb4F7iME2k3ZzsAv4x1)
+- **Son verdict** : « La nouvelle maquette (artefacts) est un vrai bon point de départ. Bien la rendre disponible pour
+  les prochaines sessions. Bien consigné son état aussi ». Le travail suivant part de la maquette, pas d'un lot.
+  - État : `cerveau/produit/maquette-jouable.md` (INDEX, acquis-valides).
+  - Copie figée : `work/refonte-frontend/v4/outils/pages/2026-10-23-maquette/` (LISEZ-MOI ; `publie.html` s'ouvre en
+    `file://` ; assets d332792c ; exception dans .gitignore).
+  - Charge du savoir à 30 000 caractères, au ras : la prochaine entrée dans INDEX ou LECONS impose une sortie.
 - D107 (08e21447) : Comparer doit comparer aux étapes (60′, 10′, dry hop…) avec une référence (Nugget ou ta stout).
   L'utilisateur donne le prompt à « En attente » ; `controle-comparer-etapes.mjs` est à écrire avant la reprise.
 - D108 (67a8b6a7), donné en commentaire sur l'artefact (fil 4204d431, ouvert) : la visée de Ma bière (bannir, −, +) ne

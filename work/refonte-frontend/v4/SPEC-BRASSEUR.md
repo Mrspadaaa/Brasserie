@@ -447,6 +447,9 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
 - **Dryhopper, à revoir** (23.10, soir, sur la figure « Ta stout avec Idaho 7, au moment choisi »), mot pour mot :
   « Ajouter que cette vue là est à revoir, j'aime bien mais il y a des améliorations à faire ». L'écran reste « ouvert »
   au registre (a1 provisoire). Ticket #146.
+- **Un vrai bon point de départ** (23.10, soir, après ses 17 fils de commentaires), mot pour mot : « La nouvelle maquette
+  (artefacts) est un vrai bon point de départ. Bien la rendre disponible pour les prochaines sessions. Bien consigné son
+  état aussi ». Copie figée : `outils/pages/2026-10-23-maquette/` ; état : `cerveau/produit/maquette-jouable.md`.
 - **La maquette jouable ne suit pas ses choix** (23.10, soir, sur la maquette de bout en bout), mot pour mot : « Mais
   ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? ». Sur la capture de q2b (lot 15,
   Suggestions) : « Ça oui, c'est effectivement l'un de mes choix ». Sur celle de Ma bière de la base v4.10 : « Ça
