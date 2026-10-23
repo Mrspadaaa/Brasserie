@@ -1,92 +1,103 @@
-# État de reprise : système d'agents (session de supervision, 22.10 au soir)
+# État de reprise : système d'agents (session de supervision, 23.10)
 
-À lire en premier après une compaction ou dans une nouvelle session. Le système est décrit dans
-`docs/agents/systeme.md` ; les critères de montage (11/11 tenus) sont dans `GATES.md`.
+À lire en premier après une compaction ou dans une nouvelle session.
+- Le système est décrit dans `docs/agents/systeme.md`.
+- La méthode des lots est dans `.claude/skills/voies/references/entonnoir.md`.
+- Rien n'est poussé : les commits sont locaux, sur la branche `claude/refonte-houblons-v4`.
 
-## Ce qui est en place (commits locaux, rien n'est poussé)
-- c768f2c, 1e7525c : cerveau/ (INDEX et LECONS importés par CLAUDE.md), hook `.claude/hooks/cerveau.mjs`,
-  skills `voies` et `conseil`, agents executant, auteur, relecteur et conseiller, `scripts/agents/systeme.mjs`,
-  export NotebookLM.
-- 8f1f8f1 : L24, un choix du brasseur se montre en variantes et ne bloque pas le lot (contrôlé par `mission`).
-- 6f1a964 : L25, agent `concepteur` (Opus) pour tout ce que le brasseur voit, agent `critique` (Fable) ;
-  `mission` refuse une voie d'interface hors Opus ou Fable.
-- 7803060, f8db284 : conseil en trois niveaux (avis croisé à 2 appels, rapide à 7, complet à 10), dossier
-  de conseil unique, moments où il intervient (doc § « Quand le conseil intervient »).
-- 5895412 : M12, une variante rejetée doit être relancée ou porter « <id> écartée : » ou « <id> choisie : »
-  dans MISSION.md, et des écrans ne sont finis qu'une fois publiés. L27 : critique non étalonné, donc
-  indicatif.
-- 5c15433 : `scripts/agents/verifier-page.mjs` (Chrome à 390 px) avant toute publication de page.
-- e9b78bd : retour du brasseur sur le lot 22 (SPEC, D101 ter, D104), vague 3 bis planifiée, source de
-  la page dans `work/refonte-frontend/v4/outils/page-lot/` (voir PUBLIER.md).
-- 6eb92d5 et 2e51591 : M13, l'entonnoir du lot 21.
-  - Méthode : `.claude/skills/voies/references/entonnoir.md`, avec des séries v0 de 3 à 8 variantes et 30
-    variantes au moins, un tri par le critique (sans rejet), une passe 2 par les mêmes agents, puis tout est montré.
-  - `systeme.mjs mission` exige la colonne Étape et les deux contrepoids : une série Fable et une série au
-    brief minimal.
-  - Origine, mot pour mot : « la manière de faire […] avec les 44 variante puis les 5 meilleures était
-    vraiment plus qualitatif ».
-  - L'autre session a refait r4d (4 séries de 8) et r7 (lot 23, 6 séries et plus) en entonnoir.
-- c0e5769 : l'entonnoir précisé par l'utilisateur.
-  - Un vaste panel de concepts minimalistes : 48 au moins en 6 séries de 4 à 12.
-  - La chaleur D22 dans chaque série, et la baseline obligatoire même en v0.
-  - Puis un classement, des greffes « même les plus extravagantes », et des passes 2, 3… jusqu'au satisfaisant
-    (au plus 4).
-  - L'autre session a été prévenue : r7 à 56 concepts, r4d à 6 séries.
-- f924eee : élagage.
-  - `systeme.mjs remplaces` (registre `cerveau/REMPLACES.md`) et `systeme.mjs charge` (30 000 caractères au
-    plus pour ce qui est chargé partout).
-  - LECONS est limité à 8 lignes mécanisées.
-  - Cinq contre-indications ont été corrigées, et l'index de la mémoire locale est réduit à un renvoi.
+## En place (commits du 22 au 23.10)
+
+**Système** (du 22.10)
+- c768f2c à e9b78bd :
+  - le cerveau ;
+  - les leçons, le conseil et les voies ;
+  - les agents concepteur (Opus) et critique (Fable) ;
+  - M12 (relance ou écart d'une variante rejetée, et publication) ;
+  - `verifier-page.mjs`.
+
+**Entonnoir (M13 et M14)**
+- 6eb92d5 à c0e5769 :
+  - au moins 48 concepts v0 minimalistes, en 6 séries ou plus de 4 à 12, un concepteur par série ;
+  - trois chaleurs (D22), avec la baseline obligatoire ;
+  - un tri par le critique : classement, 5 candidates, greffes « même les plus extravagantes » ;
+  - des passes v2, v3… jusqu'au satisfaisant (4 au plus).
+- 2353e356, fba0009c : un panel v0 se publie dès qu'il est fait (`data-voies` sur la page, vérifié par
+  `systeme.mjs voies`).
+- 4a6fd47b (M14) : `tournoi/outils/controle-panel.mjs`, qui mesure le remplissage et la diversité.
+  - Étalonnage : le lot 21 v0 passe (PANEL OK, médiane 0,62, ressemblance 0,88). Le lot 23 v0 échoue (0,41 et
+    0,92). r6n2 est à 0,72.
+  - Minimaliste veut dire une idée sur un écran plein. La baseline est un vocabulaire, pas un gabarit. Ses
+    exemples occupent un tiers du panel au plus.
+  - Chaque tri mesure le panel, ce que vérifie `systeme.mjs mission`.
+
+**Élagage**
+- f924eee, a470821, 70b9e4c :
+  - `systeme.mjs remplaces` : le registre `cerveau/REMPLACES.md` compte 9 consignes remplacées ;
+  - `systeme.mjs charge` : 30 000 caractères au plus pour ce qui est chargé partout, rempli à ras ;
+  - LECONS : 8 lignes mécanisées au plus, les plus anciennes passées dans `cerveau/agents/controles-mecanises.md` ;
+  - SPEC : un § 0 « Ce qui vaut aujourd'hui » ;
+  - `DEFAUTS-COURT.md`, générée par le hook ;
+  - le registre est réduit, avec son archive.
+
+**Défauts (L13)**
+- 01e197bd, 28d10316, 596c211e : l'audit a1 (`voies/a1-audit-defauts/AUDIT.md`, `tournoi/outils/portee-defauts.json`)
+  sur 119 défauts : 39 gardés, 69 à adapter, 6 caducs, 5 au jury.
+- Seize scripts sortaient « OK 0/0 » : ils ont maintenant une garde, et `cablage` refuse que ça revienne.
+- `systeme.mjs mission` : une voie d'écran pas encore contractée prévoit les contrôles « garde » de son sujet, ou
+  « sans controle-x : raison ». La dette s'affiche à chaque passage.
+
+**Étalonnage du critique (L27)**
+- f5c6b258 à 2cdfa108, mission `work/missions/2026-10-23-etalonnage-critique/` :
+  - un jeu de 60 verdicts mot pour mot (`work/refonte-frontend/v4/etalonnage/jeu.json`) ;
+  - les commandes `systeme.mjs epreuve` et `systeme.mjs etalonnage [--moitie] [--reponses]`.
+- Le portrait v1 était à 68 % et 68 %.
+- **Le portrait v2** (`fils21-choisir/critique/PORTRAIT.md`, tiré de la moitié A) fait **88 % des paires et 75 % des
+  classes sur la moitié B**. Le critique est déclaré étalonné, avec ses limites, dans `critique.md`.
+
+**Picto « épicé »**
+- 2353e356 : son choix, « cannelle et clou croisés » (f1 de la série F), est le symbole `p-spice` de
+  `fils17-standard/v3/planche.html`, découpé sans masque.
 
 ## Page de lot en vigueur
-https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv, « Lot 22 houblons », version 2. Les anciennes pages
-(`2VTRQP7nLXhX5GqDaAGAyU`, `MoohEoyj…`) sont inaccessibles depuis ce compte.
+https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv. La source est `work/refonte-frontend/v4/outils/page-lot/index.html`.
+L'autre session la met à jour : versions 7 à 9 et suivantes, avec Dryhopper, r6n2 et les épices.
 
 ## En cours ailleurs
-La session « En attente » (local_6a42bfeb-1927-4a94-959c-c50362db1c88) exécute la vague 3 bis de
+La session « En attente » (local_6a42bfeb-1927-4a94-959c-c50362db1c88) travaille sur la mission
 `work/missions/2026-10-22-reprise-lot21/MISSION.md` :
-- r0c, inventaire et contrôles ;
-- r6n1 et r6n2, reprise de r6a avec les éléments notés ;
-- r4d, au moins 8 vraies propositions « épicé », sans piment ;
-- critique sans tri, puis publication de la version 3.
-Ne pas écrire dans ses fichiers pendant qu'elle tourne. Commiter seulement ses propres chemins
-(`git commit -- <chemins>`).
+- les passes 3 de Dryhopper (b4, e5, a1, d8), dont les GATES exigent `controle-panel --plancher=0.55` ;
+- les variantes r6p1 à r6p4 de r6n2, demandées par le brasseur (« Fais mois quelques variantes de r6n2… Et ensuite on
+  sera bon »).
+
+Elle est prévenue de l'audit, des faux verts, du portrait v2 et de la boucle d'étalonnage. Ne pas écrire dans ses
+fichiers : commiter seulement mes propres chemins (`git commit -- <chemins>`).
 
 ## Ouvert, par priorité
-0. **Les gros documents sont élagués** (22.10, a470821 et le commit suivant) :
-   - SPEC a un § 0 ;
-   - DEFAUTS-COURT.md est générée et suit sa source par le hook ;
-   - le registre passe de 117 000 à 2 500 caractères, et l'historique est archivé tel quel (renommé, identique à
-     100 %).
-   Restent :
-   - decisions.md, qu'aucun agent ne lit en entier ;
-   - 4 citations de SPEC que `check-spec` ne retrouve pas, antérieures au 22.10 : des mots écrits sur des captures
-     du 19.10, et une question du pilote.
-1. **Étalonnage du critique (L27)**, mission à créer :
-   - jeu « capture et verdict mot pour mot » tiré de SPEC-BRASSEUR (y1b préférée, d1 « bordélique »,
-     l8 « horrible mais la disposition », r4 « Aucun me convient », r4c « quasiment identique »,
-     r6a « le meilleur »…) ;
-   - épreuve à l'aveugle du critique Fable, avec un score d'accord et un seuil ;
-   - commande `systeme.mjs etalonnage` ;
-   - jeu nourri à chaque retour, et même étalonnage pour le regard Brasseur du conseil.
-   Tant que ce n'est pas fait, le critique signale sans trier.
-2. **Question laissée à l'utilisateur** : « qu'est-ce qui manque encore pour que le système colle à ce
-   que tu veux ? ». Il a seulement répondu par des retours sur le lot 22. Ses attentes connues : voir
-   les maquettes à chaque lot sans rien demander ; refaire automatiquement ce qui est mauvais ; un juge
-   qui lui ressemble ; un coût raisonnable.
-3. **Supervision** de la vague 3 bis, si l'utilisateur la demande (cron arrêté le 22.10).
-4. **Accords en attente de l'utilisateur** :
-   - push de la branche et PR ;
-   - archivage du pont Sol caduc (skill sol-orchestrator, `.claude/roles/expert.md`,
-     `scripts/claude-expert.mjs`, `docs/claude-expert.md`) ;
+1. **Dette des défauts** (AUDIT.md, « À adapter ») :
+   - `controle-rail.mjs` (22 défauts du rail, essentiels pour Dryhopper ; effort grand) ;
+   - le contrat de Comparer (`controle-radar`, `controle-comparer`, `controle-fil6`) ;
+   - D4 : l'ancien remplissage est trop clément, controle-panel le remplace mieux.
+   Une mission de voies est à proposer à l'utilisateur.
+2. **Défauts qui échouent sur les pages actuelles** : D94, D95 et D96 sur Dryhopper g1, D94 sur r6n2, D2 (5 tailles
+   de texte sur g1). Le seuil de mots est incohérent : 70 dans controle-commun, 80 dans la SPEC. L'autre session est
+   prévenue.
+3. **La boucle d'étalonnage** : chaque nouveau verdict entre dans `jeu.json`, puis on rejoue l'épreuve. Il faut
+   comparer la prédiction du critique au verdict sur r6p et Dryhopper. Le regard Brasserie du conseil passera la même
+   épreuve.
+4. **Petits restes** :
+   - 4 citations de SPEC introuvables par `check-spec`, antérieures au 22.10 ;
+   - decisions.md, non élagué ;
+   - D26, jugé caduc par l'audit, à confirmer.
+5. **Accords de l'utilisateur en attente** :
+   - le push et la PR ;
+   - l'archivage du pont Sol caduc ;
    - `pistes-l5f.png` à la racine.
-5. **Export NotebookLM** : `node scripts/agents/systeme.mjs exporter --avec-spec --vers "C:/Users/mrspa/Documents/Nouveau dossier/cerveau-affinee-avec-paroles-du-brasseur.md"`,
-   déposé à la main par l'utilisateur (pas d'API grand public).
 
-## Pièges vus aujourd'hui
-- Un sous-agent d'une session ouverte avant une modification de CLAUDE.md ne voit pas le nouveau
-  contenu. Les types d'agents apparaissent en cours de session après un délai.
-- Bash mange les barres obliques inverses dans les heredocs : écrire les scripts avec Write.
-- `git commit -- <chemin>` refuse un fichier jamais suivi : faire d'abord `git add` de ce fichier.
-- Le rejeu `systeme.mjs voies` réécrit les preuves d'un critère dont la sortie varie (durées de r2) :
-  annuler ce changement s'il ne vient que du rejeu.
+## Pièges
+- **Bash mange les barres obliques inverses**, dans les heredocs comme dans les chaînes `node -e` : passer par
+  Edit ou Write.
+- **Le rejeu `systeme.mjs voies` réécrit des empreintes de preuve** (r2, r6e) : annuler ces changements s'ils ne
+  viennent que du rejeu.
+- **Budget du savoir chargé partout** : toute ligne ajoutée à LECONS ou à INDEX impose d'en retirer une.
+- **Épreuve d'étalonnage** : les items d'une moitié partagent des verdicts avec l'autre. Aucun portrait ne doit
+  nommer une variante choisie.
