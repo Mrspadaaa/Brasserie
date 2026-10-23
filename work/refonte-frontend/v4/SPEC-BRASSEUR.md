@@ -43,9 +43,9 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   D7, D74)
 - Pictos d'arômes au trait, sans halo ; la légende derrière un petit « ? » ; l'usage en mot. (D88 à D90)
 - « Épicé » : cannelle et clou croisés, choisi le 23.10 et dans la baseline. (§ 1, fin ; D101 à D101 quater)
-- Ses choix : y1b pour le « quand » ; q2b pour Suggérer (« C'est effectivement qb2 reprise le mieux », 19.10), intégré
-  dans la base v4.10 ; pour Comparer, r6a, redite le 23.10 après r6n2 et ses variantes (« r6a reste le meilleur »), avec
-  les petites améliorations des autres versions. Le reste des acquis est dans `acquis-valides.md`.
+- Ses choix, écran par écran : le registre `work/refonte-frontend/v4/choix/ecrans.json` (règle n° 1), vérifié par
+  `controle-choix.mjs`. Aucune liste ici : elle en oublierait un. Celle qui était là citait y1b, q2b et r6a, et
+  oubliait l'étape Houblons et Ma bière de la base v4.10 : c'est ainsi que l'information s'est perdue (D105).
 
 **La méthode**
 - Les mini maquettes passent par l'entonnoir : un vaste panel de concepts minimalistes sur la baseline, en trois
@@ -365,6 +365,9 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   aussi ». Puis : « Je confirme que "Bière" et "Suggérer" divergent nettement du design choisi. Oui c'est quoi ce
   bordel ??? ». Comparer (r6a) et Dryhopper (a1) suivaient leur base ; Ma bière et Suggérer suivaient la carte en fil
   de fer (D105).
+- **L'étape Houblons de la base v4.10** (23.10, soir, sur sa capture cochée), mot pour mot : « Ça c'est le bon. Comment
+  cette info a été perdu ??? ». Elle est perdue parce que la liste « Ses choix » du § 0 l'oubliait ; le registre
+  `choix/ecrans.json` la remplace.
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce
