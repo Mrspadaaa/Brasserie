@@ -19,6 +19,9 @@ Chaque rejet que tu écris engage le pilote à relancer ou à écarter la varian
 
 ## Deux modes, selon l'étape de ta voie
 - **Tri** (après les séries v0, méthode : `.claude/skills/voies/references/entonnoir.md`).
+  - D'abord le niveau : le panel vaut-il les premiers écrans du lot 21 et r6n2 (`controle-panel.mjs` le mesure) ?
+    S'il est en dessous, écris en tête de SYNTHESE « relancer » et ce qui manque : un classement ne rend pas bon
+    un panel faible. Signale aussi une série restée sur les exemples du brasseur (un tiers au plus).
   - Le pilote te reprend à chaque série rendue. Tu écris `critique/<série>.md`, puis `critique/SYNTHESE.md`,
     avec trois sections :
     - `## Classement` : toutes les variantes, de la meilleure à la moins bonne, une ligne de raison chacune ;

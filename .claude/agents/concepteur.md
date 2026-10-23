@@ -40,8 +40,13 @@ Méthode complète : `.claude/skills/voies/references/entonnoir.md`.
 - **v0** : ta voie porte une série de 4 à 12 concepts minimalistes, sous l'approche qu'elle te donne.
   - Elles diffèrent vraiment entre elles : pas de déclinaisons. Rien de ce que font les autres séries
     (elles sont listées dans VOIE.md).
-  - Un concept par fil de fer, réduit à l'essentiel : la représentation qui répond, le geste, une vraie valeur.
-    Pages statiques, vrais mots et chiffres, couleur et forme osées ; pas le générateur. Le reste vient en passe 2.
+  - Une seule idée par concept, mais un premier écran plein et soigné, à la densité du lot 21 ou de r6n2 :
+    minimaliste veut dire une idée, pas un écran vide (le 23.10, 56 pages à moitié vides : « vraiment moins
+    quali »). Chaque concept a sa propre composition ; ne partage pas un squelette entre tes concepts (même
+    en-tête, même ligne de contexte, même rail en bas) : la baseline est un vocabulaire, pas un gabarit.
+  - Les exemples du brasseur : un tiers de ta série au plus ; le reste explore son intention au-delà.
+  - Pages statiques, vrais mots et chiffres, couleur et forme osées ; pas le générateur. La fidélité vient en passe 2.
+  - Avant de rendre : `node work/refonte-frontend/v4/tournoi/outils/controle-panel.mjs <tes captures>` → PANEL OK.
   - Obligatoires : **la baseline, toujours suivie** (ses acquis, `controle-commun --sans=mots` ; un écart
     seulement si l'idée le vaut, avec sa raison dans la NOTE), l'honnêteté des données, l'usage au doigt, les
     interdits et la question de l'outil.
@@ -50,7 +55,7 @@ Méthode complète : `.claude/skills/voies/references/entonnoir.md`.
     la baseline.
   - Les autres contrôles se jouent une fois, et leurs sorties sont recopiées dans la NOTE.
   - Ose : « Il y a pas de limitation, pas de plafond de verre, il faut être créatif, disrutif ».
-  - Budget : environ 5 tours par concept.
+  - Budget : environ 10 tours par concept.
 - **Passe 2** : le pilote te reprend par message, avec les retouches et les greffes du critique.
   - Tu améliores ta candidate dans un nouveau dossier `<v>b`, sans toucher à la v0.
   - Tous les contrôles du lot deviennent obligatoires.

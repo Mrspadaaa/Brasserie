@@ -174,7 +174,8 @@ Méthode : `.claude/skills/voies/references/entonnoir.md`. Contrôle : `systeme.
 - Elle reprend la méthode du lot 21 : 44 variantes v0 en 10 séries, puis 5 candidates améliorées. L'utilisateur l'a
   jugée « vraiment plus qualitatif » que celle du lot 22 (12 variantes, une par agent, contraintes dès la v0, sans
   amélioration).
-- **v0** : des concepts minimalistes, en séries de 4 à 12, un concepteur par série, 48 au moins en 6 séries
+- **v0** : des concepts minimalistes (une idée sur un écran plein, sa propre composition ; M14), en séries de 4 à 12,
+  un concepteur par série, 48 au moins en 6 séries
   au moins (« Et plus de diversité et de nombre de mini proto »). La chaleur varie dans chaque série : froide, tiède
   ou chaude (D22).
   - Une série Fable « créative à fond », et une série libre au brief minimal.

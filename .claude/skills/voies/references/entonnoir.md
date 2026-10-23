@@ -44,15 +44,23 @@ Contrôlé par `systeme.mjs mission` (M13).
 
 ## 1. v0 — l'éventail : 60 concepts minimalistes visés, 48 au moins, en 6 séries au moins, un concepteur par série
 - **Des concepts minimalistes** (« plus minimaliste des les concepts de base mais plus nombreux et diverse ») :
-  - un concept par mini fil de fer, réduit à l'essentiel : la représentation qui répond à la question, le geste,
-    une vraie valeur ;
-  - des pages statiques, avec les vrais mots et les vrais chiffres, dans le vocabulaire de la baseline ;
-  - on ose la couleur et la forme (pas de gris à un seul accent), sans le générateur complet ;
-  - environ 5 tours par concept, ce qui permet d'en multiplier le nombre ([[fil-de-fer-d-abord]]).
-  Le reste (fidélité, blocs secondaires, tous les acquis) vient en passes 2, 3…
-- **4 à 12 concepts par série**, 8 à 10 en moyenne, toutes différentes entre elles et pas déclinées les unes des autres.
-  Une série par approche. Chaque VOIE.md liste les approches des autres séries : au lot 21, quatre idées (duel, trois
-  plans, frise, phrase) ont été faites dix fois.
+  - **minimaliste veut dire une seule idée, pas un écran vide.** Le 23.10, « réduit à l'essentiel, environ 5 tours » a
+    donné 56 pages à moitié vides, toutes sur le même squelette (remplissage médian 0,41 contre 0,62 au lot 21 ;
+    ressemblance 0,92 contre 0,88) : « vraiment moins quali ». Chaque concept remplit son premier écran comme au
+    lot 21, avec son idée et ce qui la sert ;
+  - **sa propre composition** : la baseline est un vocabulaire (pictos au trait, couleurs des familles, barres l5b,
+    au style, α, usage en mot), pas un gabarit. Pas de squelette commun à une série, ni au lot : ni le titre-question
+    en tête de chaque page, ni la ligne de contexte, ni le rail en bas imposés partout. La question et le facteur
+    libre de l'outil se lisent, chacun à sa façon ;
+  - des pages statiques, avec les vrais mots et les vrais chiffres ; on ose la couleur et la forme, sans le générateur ;
+  - environ 10 tours par concept ([[fil-de-fer-d-abord]]). La fidélité et tous les acquis viennent en passes 2, 3…
+- **Les exemples du brasseur sont une direction, pas un catalogue.** Le 23.10 : « Les icônes aussi était un peu cata,
+  dans le sens, pas vraiment diversifié, pas de prise de risque et trop focus sur mes exemple ». Après son « genre
+  canellle vanille, ou clou de girofle ect... », 32 des 48 propositions « épicé » sont restées sur ses exemples. Ses
+  exemples occupent un tiers du panel au plus ; le reste explore son intention au-delà (le « ect... »).
+- **4 à 12 concepts par série**, 6 en moyenne, toutes différentes entre elles et pas déclinées les unes des autres.
+  Une série par approche, 8 séries ou plus. Chaque VOIE.md liste les approches des autres séries : au lot 21, quatre
+  idées (duel, trois plans, frise, phrase) ont été faites dix fois.
 - **Deux axes de diversité : l'approche, qui change d'une série à l'autre, et la chaleur, qui change à l'intérieur
   d'une série** (D22 : « 4 tiède, 5 chaude, 2 froide ») :
   - une variante **froide** reprend les idées déjà retenues (acquis, choix du brasseur) et les affine ;
@@ -90,6 +98,11 @@ Contrôlé par `systeme.mjs mission` (M13).
   MISSION.md (« Source de la page : `…` »).
 
 ## 2. Tri — un critique, repris à chaque série
+- **D'abord, le niveau du panel** : `node work/refonte-frontend/v4/tournoi/outils/controle-panel.mjs <captures…>`
+  mesure le remplissage et la diversité, étalonnés sur le lot 21 (PANEL OK) et le lot 23 (PANEL ECHEC). Le critique
+  compare aussi à l'œil le panel aux premiers écrans du lot 21 et à r6n2 (« r6n2 donne vraiment bien »). En dessous :
+  les séries sont relancées par leurs agents, avec la correction, avant le tri ; un classement ne rend pas bon un
+  panel faible.
 - Le critique est un agent Fable unique. Le pilote le relance par `SendMessage` à chaque série rendue, si bien qu'il
   garde tout le lot en tête.
 - Il écrit `critique/<série>.md` : il joue un geste par page, ouvre les captures et lit les NOTE.

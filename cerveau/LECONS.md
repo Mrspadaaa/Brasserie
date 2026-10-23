@@ -143,7 +143,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Cause : les classes de la variante partageaient l'espace de noms du socle, et le code client était assemblé par remplacement de chaînes.
 - Faire : préfixer ses classes (`r6x-…`), un nom par rôle, et ses globales JS (script dans une fonction immédiate) ; assembler le code par `split/join` ou des indices ; capturer aussi l'état ouvert et la fiche, et les ouvrir (L12).
 - Rôles : concepteur, auteur
-- Contrôle : aucun ; seules les captures ouvertes l'ont montré
+- Contrôle : aucun ; revenu 4 fois le 23.10 : à mécaniser
 
 ### L27 — Un juge qui parle pour le brasseur s'étalonne sur ses vrais verdicts
 - Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré », et rejeté r6a, que le brasseur a choisie. Pire : il a rejeté la première planche « épicé » à six genres, et la voie s'est resserrée sur le seul piment (« quasiment identique », D101 ter). Son portrait (PORTRAIT.md) avait été écrit par un modèle et jamais confronté aux verdicts du brasseur.
@@ -154,11 +154,11 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 
 ## Mécanisées
 
-- M07 (L08) — Vérifier les entrées avant l'éventail : le 20.10, 33 variantes sur un moteur à un mauvais taux d'alcool ; le 22.10, le contrôle des entrées comptait les groupes `{ source, mots[] }` au lieu des mots (lire une entrée réelle avant d'écrire une formule). `npm run check:engine` et `controle-entrees-lot22.mjs` (D102). Tracer une fois la représentation obligatoire sur les vraies données (des « haut » hors domaine ont saturé le radar, D103), et calculer l'écart qu'un aperçu montrera avant de le dessiner (r6n2 : Pomona ≈ 0).
 - M08 (L09) — Chaque chemin cité existe : le 22.10, un brief citait `scripts/profil-simule-cas.ts` au lieu de `prototypes/houblons-v4/scripts/`. `systeme.mjs mission` vérifie les sources de MISSION.md ; passer les chemins des VOIE.md par Glob.
 - M09 — Planche de picto : quatre refus du picto « épicé » au 22.10. `controle-planche-picto.mjs` (D101) : `--refuses`, `--genres=N`, `--voisins=` (familles de même silhouette), `--ter`, `--epices=N`, rien sous 12 px. La lisibilité n'est pas mesurée : nommer chaque picto sur une loupe en vrais pixels ([[pictos-familles]]).
 - M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle : le 22.10, les deux `\b` de D98 étaient des 0x08 (table `NOMME` morte, vue par la voie r6i), comme le `—` du pilote devenu un tiret. `systeme.mjs cablage` refuse tout caractère de contrôle dans les scripts de contrôle (témoin « échappement devenu caractère de contrôle »).
 - M11 (L16) — Tout livrable d'agent est un fichier du dépôt : `JURY-VERDICT.md` annoncé, jamais produit. `systeme.mjs voies` rejoue les critères de chaque voie au lieu de croire son rapport.
 - M12 — Une variante rejetée est relancée ou écartée, et des écrans ne sont finis qu'une fois publiés : le 22.10, 6 rejets du lot 22 laissés en plan et aucun lien. `systeme.mjs voies` échoue sinon.
 - M13 — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes, nombreux et divers, sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 22 (12 variantes, une par agent, sans amélioration) a perdu face au lot 21 (44 v0, 5 améliorées : « vraiment plus qualitatif »). `systeme.mjs mission` : 48 v0 au moins en 6 séries, chaleurs (D22), baseline, tri, passe 2.
+- M14 — Un panel v0 vaut le lot 21 avant d'être trié : le 23.10, 56 concepts « minimalistes » (5 tours chacun, un squelette commun) étaient « vraiment moins quali » (remplissage médian 0,41 contre 0,62, ressemblance 0,92 contre 0,88), et 32 pictos sur 48 restaient sur ses exemples. Minimaliste = une idée, pas un écran vide ; la baseline est un vocabulaire, pas un gabarit ; ses exemples, un tiers du panel au plus. `controle-panel.mjs` (PANEL OK), exigé par `systeme.mjs mission` dans chaque tri.
 - M06 (L06) — Les acquis validés passent d'un lot au suivant : le radar a disparu du lot 21. Liste dans [[acquis-valides]], recopiée dans chaque brief ; `controle-acquis.mjs` (D99).

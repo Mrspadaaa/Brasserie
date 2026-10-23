@@ -37,8 +37,8 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   D7, D74)
 - Pictos d'arômes au trait, sans halo ; la légende derrière un petit « ? » ; l'usage en mot. (D88 à D90)
 - « Épicé » : cannelle et clou croisés, choisi le 23.10 et dans la baseline. (§ 1, fin ; D101 à D101 quater)
-- Ses choix : y1b pour le « quand » ; r6a pour Comparer, avec les éléments qu'il a notés ailleurs (D104). Le reste des
-  acquis est dans `acquis-valides.md`.
+- Ses choix : y1b pour le « quand » ; r6a pour Comparer, avec les éléments qu'il a notés ailleurs (D104), puis r6n2
+  (23.10), à décliner en quelques variantes avec les meilleures idées retenues. Le reste des acquis est dans `acquis-valides.md`.
 
 **La méthode**
 - Les mini maquettes passent par l'entonnoir : un vaste panel de concepts minimalistes sur la baseline, en trois
@@ -345,6 +345,8 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
 - **Le picto « épicé », son choix** (23.10, sur la planche des 48), mot pour mot : « Mon Picto préféré est
   cannelley clou croisé. Ça doit être changé dans la baseline ». C'est f1, cannelle et girofle croisés (série F de
   r4d), devenu le symbole `p-spice` de la planche standard.
+- **r6n2, la suite** (23.10, après la page à neuf versions), mot pour mot : « Fais mois quelques variantes de r6n2,
+  avec les meilleures idées retenu. Et ensuite on sera bon ». r6n2 : le premier écran de r6a, le reste à un toucher.
 - **Les pages partagées** : « Met à jour avec les artefacts, seulement ce qui est up to date, il y a
   trop de version inutile » — 19.10.
 - **La page partagée** : « Houblon lot 3 partage beaucoup trop de choses inutiles, supprime tout ce
@@ -495,3 +497,8 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
     les plus extravagantes pour des v2 puis V3 ect jusqu'à un résultat satisfaisant » ;
   - « Peut être, plus minimaliste des les concepts de base mais plus nombreux et diverse puis améliorer et
     itérer » — 22.10, soir.
+- **Ce que l'entonnoir a donné** (23.10), mot pour mot : « J'ai l'impression que les mini maquettes sont vraiment moins
+  quali mais que r6n2 donne vraiment bien... Les icônes aussi était un peu cata, dans le sens, pas vraiment diversifié,
+  pas de prise de risque et trop focus sur mes exemple. Même si on a réussi à trouver le bon au final ». Mesuré : les
+  56 concepts de Dryhopper sont à moitié vides et sur un même squelette ; 32 pictos sur 48 sont restés sur ses
+  exemples (M14, `controle-panel.mjs`).

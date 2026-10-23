@@ -501,6 +501,8 @@ export function verifierMission(fichier, { minVoies = 2 } = {}) {
   const tris = voies.filter((v) => etape(v) === 'tri');
   for (const t of tris) {
     if (t.agent !== 'critique') erreurs.push(`${t.voie} : tri confié à ${t.agent} ; critique attendu (M13)`);
+    // M14 (23.10) : le panel est d'abord mesuré (remplissage, diversité) contre le lot 21 ; « vraiment moins quali ».
+    if (!finie(t.voie) && !/controle-panel|controle-planche-picto/.test(t.controles ?? '')) erreurs.push(`${t.voie} : le tri ne mesure pas le panel ; controle-panel.mjs (écrans) ou controle-planche-picto.mjs (pictos) dans ses contrôles (M14)`);
     const siennes = dependances(t).filter((d) => series.has(d));
     const total = siennes.reduce((s, d) => s + series.get(d), 0);
     // 22.10 : « Et plus de diversité et de nombre de mini proto » ; le lot 21 en avait 44, en 10 séries.
@@ -692,14 +694,14 @@ function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = fal
 }
 
 // Un lot en entonnoir : des séries v0, un tri par le critique, une passe 2 qui en dépend (M13).
-function construireEntonnoir(dir, { series = 7, parSerie = 8, sansTri = false, sansPasse = false, sansLibre = false, chaleur = null, sansBaseline = false } = {}) {
+function construireEntonnoir(dir, { series = 7, parSerie = 8, sansTri = false, sansPasse = false, sansLibre = false, chaleur = null, sansBaseline = false, triSansPanel = false } = {}) {
   const f = path.join(dir, 'MISSION.md');
   const ids = Array.from({ length: series }, (_, i) => `s${i + 1}`);
   // Par défaut, chaque série porte les trois chaleurs : 1 froide, 1 tiède, le reste en chaude.
   const temp = chaleur ?? (parSerie >= 3 ? ` (1 froide, 1 tiède, ${parSerie - 2} chaude)` : '');
   const ctl = sansBaseline ? 'controle-commun' : 'baseline : controle-commun --sans=mots';
   const voies = ids.map((id, i) => `| ${id} | série ${id}${i === 1 && !sansLibre ? ', libre au brief minimal' : ''} | conception | concepteur | ${i === 0 ? 'fable' : 'opus'} | 120 | ecran-1/lot/${id}/** | — | ${ctl} | brasseur | v0 ×${parSerie}${temp} |`);
-  if (!sansTri) voies.push(`| t | tri des séries | jugement | critique | fable | 30 | t/RESULTAT.md | ${ids.join(', ')} | c | pilote | tri |`);
+  if (!sansTri) voies.push(`| t | tri des séries | jugement | critique | fable | 30 | t/RESULTAT.md | ${ids.join(', ')} | ${triSansPanel ? 'captures ouvertes' : 'controle-panel, captures ouvertes'} | pilote | tri |`);
   if (!sansPasse) voies.push('| p2 | les cinq améliorées | conception | concepteur | opus | 80 | ecran-1/lot/p2/** | t | c | brasseur | passe 2 |');
   fs.writeFileSync(f, planMission(voies));
   return f;
@@ -735,6 +737,7 @@ function temoins() {
   attendu('éventail sans chaleur déclarée', verifierMission(construireEntonnoir(sous('e7'), { chaleur: '' })).length === 0, false);
   attendu('éventail tout en tiède', verifierMission(construireEntonnoir(sous('e8'), { chaleur: ' (8 tiède)' })).length === 0, false);
   attendu('cinq séries seulement, trop peu d’approches',verifierMission(construireEntonnoir(sous('e10'), { series: 5, parSerie: 8 })).length === 0, false);
+  attendu('tri sans mesure du panel', verifierMission(construireEntonnoir(sous('e11'), { triSansPanel: true })).length === 0, false);
   attendu('série qui ne suit pas la baseline', verifierMission(construireEntonnoir(sous('e9'), { sansBaseline: true })).length === 0, false);
   const m1 = sous('m1');
   attendu('voies tenues', verifierVoies(construireMission(m1), { approuver: true, racine: m1 }).ok, true);
