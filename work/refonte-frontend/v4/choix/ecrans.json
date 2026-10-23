@@ -10,7 +10,14 @@
    "choix": "base v4.10, étape Houblons",
    "mots": "Ça c'est le bon. Comment cette info a été perdu ???",
    "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-390.png",
-   "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-etape.json"
+   "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-etape.json",
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-stepper.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-geste-etape.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-appui.mjs {dossier} --etape",
+    "work/refonte-frontend/v4/tournoi/outils/controle-legende.mjs {dossier} --etape",
+    "work/refonte-frontend/v4/tournoi/outils/controle-profil-ouvre.mjs {dossier}"
+   ]
   },
   {
    "ecran": "ma-biere",
@@ -75,7 +82,8 @@
    "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
    "controles": [
     "work/refonte-frontend/v4/tournoi/outils/controle-fiche.mjs {dossier} ma-biere --pages=etat.html",
-    "work/refonte-frontend/v4/tournoi/outils/controle-fiche-baseline.mjs {dossier} ma-biere --page=etat.html"
+    "work/refonte-frontend/v4/tournoi/outils/controle-fiche-baseline.mjs {dossier} ma-biere --page=etat.html",
+    "work/refonte-frontend/v4/tournoi/outils/controle-fiche-radar.mjs {dossier}"
    ],
    "note": "La forme de la fiche se vérifie sur sa page (fiche/etat.html, ouverte) par l'inventaire g1 ; le geste (appui long, survol à l'ordinateur) par controle-fiche et controle-fiche-baseline depuis l'étape Houblons.",
    "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-fiche.json"

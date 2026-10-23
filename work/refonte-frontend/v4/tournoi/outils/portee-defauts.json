@@ -1624,6 +1624,54 @@
    "resultat": "Maquette d332792c : STEPPER ECHEC (pas de <nav aria-label=\"Étapes\"> de 7 boutons, « hypothèse » visible, à 390 et à 1280 px) ; témoin stepper-ok (DOM de WizardStepName + WizardStepRail, 7 étapes, la 3e active) : STEPPER OK ; stepper-hypothese (en-tête maison) : ECHEC ; stepper-hypothese-avec-fil (fil de l'app + pastille « hypothèse ») : ECHEC sur « hypothèse » seule ; stepper-six-etapes : ECHEC (6 étapes) ; stepper-mauvaise-etape : ECHEC (2e active). Captures de stepper-ok et stepper-hypothese-avec-fil regardées.",
    "verdict": "garde",
    "script": "controle-stepper.mjs"
+  },
+  {
+   "id": "D111",
+   "mots": "« Le slider est pas dans la version que je veux... » (23.10, soir, sur la carte de Nugget, étape Houblons)",
+   "controle": "controle-geste-etape.mjs <dossier construit> [--page=…] (lignes « D111 »)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Maquette d332792c : GESTE-ETAPE ECHEC (carte tenue à 123 px au lieu d'une puce de 48 px au plus, 4 graduations sous les puces de la frise dont 60′ sur la puce d'ébullition, texte de la bulle user-select auto) ; base v4.10 : GESTE-ETAPE OK (puce « Nugget » de 31 px, 0 chevauchement à 45′ et 35′, user-select none) ; témoin geste-etape-chevauche (puce repliée, graduations serrées) : ECHEC ; geste-etape-ok : OK. Captures des deux témoins regardées. RAIL reste OK sur d332792c (RAIL OK 1/1).",
+   "verdict": "garde",
+   "script": "controle-geste-etape.mjs"
+  },
+  {
+   "id": "D112",
+   "mots": "« L'appui prolonger fait pas l'effet escompté » (23.10, soir, même fil, étape Houblons)",
+   "controle": "controle-appui.mjs <dossier construit> --etape [--page=…] (critère A9, lignes « A9 »)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Maquette d332792c : APPUI-ETAPE ECHEC (aucun retour en 1,6 s de doigt posé, user-select auto, pas de -webkit-touch-callout none sur le nom ; la fiche s'ouvre à 515 ms) ; base v4.10 : APPUI-ETAPE OK (retour à 2 ms, fiche à 511 ms, nom en user-select none et touch-callout none) ; témoin appui-etape-muet : ECHEC ; appui-etape-ok : OK. Le mode par défaut (A1 à A8) est inchangé.",
+   "verdict": "garde",
+   "script": "controle-appui.mjs --etape"
+  },
+  {
+   "id": "D113",
+   "mots": "« J'aime bien les petits icône et tout. Mais il manque à un endroit un bouton légende » (23.10, soir, sur la carte de Nugget, étape Houblons)",
+   "controle": "controle-legende.mjs <dossier construit> --etape [--page=…] (lignes « D113 »)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Maquette d332792c : LEGENDE ECHEC (la carte de l'ajout et les ajouts rapides n'ont pas de « ? » ; seul celui des familles, qui explique le profil) ; base v4.10 : LEGENDE ECHEC (aucun « ? », le manque est aussi celui de la base) ; témoin legende-etape-loin (« ? » de la carte à 1 300 px) : ECHEC ; legende-etape-ok (un « ? » par groupe, les 12 familles nommées) : OK. Le mode par défaut (D89) est inchangé.",
+   "verdict": "garde",
+   "script": "controle-legende.mjs --etape"
+  },
+  {
+   "id": "D121",
+   "mots": "« Seul bouton qui ouvre vraiment l'analyse. Peut, être amélioré » (23.10, soir, sur le « › » noir à côté de « Résineux trop marqué », étape Houblons)",
+   "controle": "controle-profil-ouvre.mjs <dossier construit> [--page=…] [--seed=N] (lignes « D121 »)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Maquette d332792c : PROFIL ECHEC (alerte et deux familles tirées au hasard : #/ma-biere inchangé ; aucun mot « analyse », « Ma bière » ou « détail » près du bloc) ; témoin profil-chevron-seul : ECHEC ; profil-ouvre-ok (bloc entier cliquable vers #/biere, « Analyse complète ») : OK. Le « › » ouvre bien #/biere (vérifié).",
+   "verdict": "garde",
+   "script": "controle-profil-ouvre.mjs"
   }
  ]
 }

@@ -195,3 +195,72 @@ Captures de l'onglet Ma bière au repos, après « + », après « − », aprè
 ouvertes en image (L12), **côte à côte avec sa base v4.10 jouée dans Chrome** (règle n° 1). Puis Suggérer avec Tropicaux
 « + » et agrumes bannis : combien de voies, lesquelles. Dans RESULTAT.md, une section `## Reprise D108` : ce qui est
 fait, les captures ouvertes (nommées), le nombre de voies de Suggérer avec agrumes bannis avant et après.
+
+## Reprise de l'étape Houblons (23.10, nuit) — D111, D112, D113, D116, D121
+
+Agent : concepteur (Opus), le même que la reprise D108 (repris par le pilote). Dépend de : p13-controles-etape et
+p14-controles-fiche-fil (les contrôles, écrits et rejoués). Cette section prime sur le reste là où elle diffère.
+
+### Ses mots, mot pour mot (SPEC-BRASSEUR § 1 ; DEFAUTS-RECURRENTS D111 à D113, D116, D121 : à lire en entier)
+- D111, sur la carte de Nugget : « Le slider est pas dans la version que je veux... ».
+- D112, même fil : « L'appui prolonger fait pas l'effet escompté ».
+- D113, sur la carte de Nugget : « J'aime bien les petits icône et tout. Mais il manque à un endroit un bouton légende ».
+- D116, sur « 16D hypothèse » : « Pourquoi ? Qu'est-ce que ce champs apporter ?? Il faudra remplacer tout ça par le
+  vrai Stepper de la vrai app ».
+- D121, sur le « › » noir à côté de « Résineux trop marqué » : « Seul bouton qui ouvre vraiment l'analyse. Peut, être
+  amélioré ».
+
+### Ce qu'il veut
+1. **D111, le geste de sa base, tel quel** (règle n° 1). Captures de la base à ouvrir d'abord :
+   `work/refonte-frontend/v4/ecran-1/base/captures/consolide-nugget-35-pendant.png`, `consolide-glisser-60-2-pendant.png` ;
+   la base jouable : `work/refonte-frontend/v4/ecran-1/base/consolide/index.html` (glisser Nugget de 60′ à 35′ dans
+   Chrome). Pendant le glisser, la carte se replie en une puce « Nugget » à côté de la bulle « 35′ » ; la frise s'ouvre
+   autour du doigt, graduations lisibles (45′, 30′, 25′, petits traits), sans aucun chevauchement ; rien n'est
+   sélectionné. La base passe RAIL OK 1/1 : RAIL reste OK.
+2. **D112, l'appui long** : il ouvre bien la fiche g1 ; corriger les deux écarts avec la base : un retour visible
+   pendant l'appui, avant 300 ms (la base remplit le nom en 500 ms : CSS `.appui`, `@keyframes remplit`) ; la carte
+   n'est pas sélectionnable (`user-select: none`, `-webkit-touch-callout: none` sur la carte et son texte). L'effet qu'il
+   attend au-delà est demandé dans le fil (12fdbdc0) : ne rien inventer de plus.
+3. **D113, un « ? » près de chaque groupe d'icônes** : la carte de l'ajout (carrés, traits sous les carrés, ⟳,
+   « résine 2/4 », « ? arôme » hachuré), les ajouts rapides, les familles : un « ? » à un geste de chaque groupe, dans le
+   même écran, qui nomme chacune de ses icônes. Les icônes restent. Pas de cockpit : le « ? » est petit, au coin du
+   groupe.
+4. **D116, le vrai fil d'étapes de l'app** : retirer le badge « 16D hypothèse » (une note de concepteur de la base :
+   « échelles hypothétiques à valider ») ; l'en-tête de l'étape Houblons devient `WizardStepName` et `WizardStepRail` de
+   `src/ui/WizardStepBar.tsx`, **importés tels quels** (comme PageShell, alias `@app/`), posés comme dans
+   `src/pages/BrewWizard.tsx` (lignes 2026 à 2070 : le nom de l'étape en en-tête mobile, le rail sur son rang, 7 étapes,
+   Houblons la 3ᵉ, `showLabels`, `compactLabels`). Rien dans `src/` n'est modifié (porte B fermée).
+5. **D121, le profil qui ouvre l'analyse** : le bloc du profil (l'alerte « … trop marqué » et les 12 familles) s'ouvre
+   sur l'onglet Ma bière (`#/biere`) d'un toucher n'importe où, et l'entrée dit où elle mène (un mot : « analyse »,
+   « Ma bière » ou « détail »). Le « › » de la base est un plancher à enrichir (L07). **Deux ou trois variantes** (L24) :
+   la version en porte une ; les autres sont rendues sur une planche (`prototypes/houblons-v4/parcours/src/ecrans/ma-biere/
+   variantes-d121/` : une page HTML statique par variante, ou des captures de la maquette avec un drapeau), montrées au
+   brasseur à côté de la version. Dis dans RESULTAT.md laquelle est dans la version, et pourquoi.
+
+### Contrats des contrôles (voies p13 et p14 ; lire leur en-tête)
+- `controle-geste-etape.mjs <dossier>` : pendant le glisser 60′ → 35′, aucune étiquette n'en chevauche une autre,
+  la carte tenue fait 48 px au plus et garde son nom, sélection vide → `GESTE-ETAPE OK`.
+- `controle-appui.mjs` (A9, mode étape) ou `controle-appui-etape.mjs` : retour visible avant 300 ms, puis la fiche ;
+  carte non sélectionnable.
+- `controle-legende.mjs` (étape) ou son équivalent neuf : un « ? » par groupe d'icônes, à portée de vue, qui nomme ses
+  icônes → `LEGENDE OK`.
+- `controle-stepper.mjs <dossier>` : le fil de l'app, 7 étapes, la 3ᵉ active ; aucun « hypothèse » → `STEPPER OK`.
+- `controle-profil-ouvre.mjs <dossier>` (ou un mode de controle-geste-etape) : toucher l'alerte ou une famille ouvre
+  `#/biere`, un mot dit où → `PROFIL OK`.
+Les noms exacts et les options sont dans les RESULTAT.md des voies p13 et p14 (`work/missions/2026-10-23-maquette-parcours/
+voies/p13-controles-etape/RESULTAT.md`, `…/p14-controles-fiche-fil/RESULTAT.md`).
+
+### Possède, pour cette reprise
+`prototypes/houblons-v4/parcours/src/ecrans/ma-biere/**` ; ta sortie `prototypes/houblons-v4/maquettes/parcours-p1/` ;
+RESULTAT.md. **Plus** la fiche ni Substituer : ils passent à la voie p17 (D115, D120). Ne pas toucher `src/commun/`
+(la voie p2 y fait l'en-tête des onglets et la croix) ; un besoin s'y demande au pilote.
+
+### Garder
+- RAIL OK (`controle-rail.mjs --parcours`, D27, D35 à D37, D46, D47, D69, D55) ; l'inventaire `inventaire-etape.json` ;
+  la teinte (D106) ; les marqueurs du parcours (`pont-floral`, l'appui long qui ouvre la fiche).
+
+### Se juger
+Captures à 390 puis 1280, ouvertes en image (L12), **côte à côte avec sa base v4.10** : l'étape au repos, pendant le
+glisser à 35′, pendant l'appui long (à 250 ms), la fiche ouverte, le « ? » de la carte ouvert, chaque variante D121.
+Dans RESULTAT.md, une section `## Reprise de l'étape (D111 à D113, D116, D121)` : ce qui est fait, les captures ouvertes,
+la variante D121 retenue et les autres.

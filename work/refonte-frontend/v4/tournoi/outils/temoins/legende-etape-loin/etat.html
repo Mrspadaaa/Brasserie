@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Témoin D113 · légende de la carte trop loin</title>
+<!-- Témoin statique de controle-legende.mjs --etape (D113, voie p13). ÉCHEC attendu : les ajouts rapides et les familles ont leur « ? » ; celui de la carte de l'ajout est 1 300 px plus bas (hors de l'écran). Classes préfixées tl-. -->
+<style>
+  body { margin: 0; font: 14px/18px system-ui, sans-serif; background: #fff; color: #111; }
+  .tl-groupe { margin: 12px; padding: 10px 12px; background: #f0f0f0; border-radius: 10px; position: relative; }
+  .tl-titre { font-weight: 700; margin-bottom: 6px; }
+  .tl-bande { display: inline-flex; gap: 2px; vertical-align: middle; }
+  .tl-bande i { display: block; width: 10px; height: 12px; border-radius: 2px; }
+  .tl-q { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #aaa; background: #fff; font: 700 14px/26px system-ui, sans-serif; padding: 0; margin-left: 8px; vertical-align: middle; }
+  .tl-legende { margin-top: 8px; padding: 8px 10px; background: #fff; border: 1px solid #ccc; border-radius: 8px; font-size: 13px; line-height: 17px; }
+  .tl-legende[hidden] { display: none; }
+  .tl-legende i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 3px; }
+  .tl-espace { height: 1300px; }
+  .tl-famille { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+  .tl-picto { width: 13px; height: 13px; border-radius: 50%; }
+</style>
+</head>
+<body>
+<section class="tl-groupe" data-role="ligne-houblon" data-houblon-ligne="beermaverick-nugget">
+  <div class="tl-titre">Nugget · 46 g · α 13 %</div>
+  <span class="tl-bande" role="img" aria-label="Arômes de Nugget"><i style="background:#c58be0" data-famille="Floral"></i><i style="background:#3f9a62" data-famille="Herbacé"></i><i style="background:#b8a888" data-famille="Terreux"></i><i style="background:#e4c94f" data-famille="Agrumes"></i><i style="background:#f09a2a" data-famille="Tropicaux"></i><i style="background:#e08a6a" data-famille="Noyau"></i><i style="background:#9ec45a" data-famille="Pépins"></i><i style="background:#a04a8a" data-famille="Baies"></i><i style="background:#6cc4a0" data-famille="Melon"></i><i style="background:#2f6f60" data-famille="Résineux"></i><i style="background:#7a4a38" data-famille="Épicé"></i><i style="background:#7aa04a" data-famille="Végétal"></i></span>
+</section>
+<div class="tl-espace"></div>
+<section class="tl-groupe" id="tl-carte-q"><button type="button" class="tl-q" style="margin:0" data-role="legende-bouton" aria-label="Lire la légende de la carte" aria-expanded="false" aria-controls="tl-leg-carte" onclick="var l=document.getElementById('tl-leg-carte');var o=l.hidden;l.hidden=!o;this.setAttribute('aria-expanded',String(o));">?</button><div class="tl-legende" id="tl-leg-carte" data-role="legende" hidden>Les petits carrés sont les familles d'arômes : <span><i style="background:#c58be0"></i>Floral</span> · <span><i style="background:#3f9a62"></i>Herbacé</span> · <span><i style="background:#b8a888"></i>Terreux</span> · <span><i style="background:#e4c94f"></i>Agrumes</span> · <span><i style="background:#f09a2a"></i>Tropicaux</span> · <span><i style="background:#e08a6a"></i>Noyau</span> · <span><i style="background:#9ec45a"></i>Pépins</span> · <span><i style="background:#a04a8a"></i>Baies</span> · <span><i style="background:#6cc4a0"></i>Melon</span> · <span><i style="background:#2f6f60"></i>Résineux</span> · <span><i style="background:#7a4a38"></i>Épicé</span> · <span><i style="background:#7aa04a"></i>Végétal</span>.</div></section>
+<section class="tl-groupe" data-role="ajouts-proposes">
+  <div class="tl-titre">Ajouter un houblon</div>
+  <div data-role="ajout-rapide">Cascade · 10 g · <span class="tl-bande" role="img" aria-label="Arômes de Cascade"><i style="background:#c58be0" data-famille="Floral"></i><i style="background:#3f9a62" data-famille="Herbacé"></i><i style="background:#b8a888" data-famille="Terreux"></i><i style="background:#e4c94f" data-famille="Agrumes"></i><i style="background:#f09a2a" data-famille="Tropicaux"></i><i style="background:#e08a6a" data-famille="Noyau"></i><i style="background:#9ec45a" data-famille="Pépins"></i><i style="background:#a04a8a" data-famille="Baies"></i><i style="background:#6cc4a0" data-famille="Melon"></i><i style="background:#2f6f60" data-famille="Résineux"></i><i style="background:#7a4a38" data-famille="Épicé"></i><i style="background:#7aa04a" data-famille="Végétal"></i></span></div>
+  <div data-role="ajout-rapide" style="margin-top:6px">Citra cryo · 10 g · <span class="tl-bande" role="img" aria-label="Arômes de Citra cryo"><i style="background:#c58be0" data-famille="Floral"></i><i style="background:#3f9a62" data-famille="Herbacé"></i><i style="background:#b8a888" data-famille="Terreux"></i><i style="background:#e4c94f" data-famille="Agrumes"></i><i style="background:#f09a2a" data-famille="Tropicaux"></i><i style="background:#e08a6a" data-famille="Noyau"></i><i style="background:#9ec45a" data-famille="Pépins"></i><i style="background:#a04a8a" data-famille="Baies"></i><i style="background:#6cc4a0" data-famille="Melon"></i><i style="background:#2f6f60" data-famille="Résineux"></i><i style="background:#7a4a38" data-famille="Épicé"></i><i style="background:#7aa04a" data-famille="Végétal"></i></span></div>
+  <button type="button" class="tl-q" data-role="legende-bouton" aria-label="Lire la légende" aria-expanded="false" aria-controls="tl-leg-rapides" onclick="var l=document.getElementById('tl-leg-rapides');var o=l.hidden;l.hidden=!o;this.setAttribute('aria-expanded',String(o));">?</button><div class="tl-legende" id="tl-leg-rapides" data-role="legende" hidden>Les petits carrés sont les familles d'arômes, de gauche à droite : <span><i style="background:#c58be0"></i>Floral</span> · <span><i style="background:#3f9a62"></i>Herbacé</span> · <span><i style="background:#b8a888"></i>Terreux</span> · <span><i style="background:#e4c94f"></i>Agrumes</span> · <span><i style="background:#f09a2a"></i>Tropicaux</span> · <span><i style="background:#e08a6a"></i>Noyau</span> · <span><i style="background:#9ec45a"></i>Pépins</span> · <span><i style="background:#a04a8a"></i>Baies</span> · <span><i style="background:#6cc4a0"></i>Melon</span> · <span><i style="background:#2f6f60"></i>Résineux</span> · <span><i style="background:#7a4a38"></i>Épicé</span> · <span><i style="background:#7aa04a"></i>Végétal</span>. Plein : marqué ; clair : cité par les fiches.</div>
+</section>
+<section class="tl-groupe" data-role="profil">
+  <div class="tl-titre">Résineux trop marqué</div>
+  <div class="tl-famille"><span class="tl-picto" role="img" aria-label="Floral" style="background:#c58be0"></span>Floral</div>
+  <div class="tl-famille"><span class="tl-picto" role="img" aria-label="Herbacé" style="background:#3f9a62"></span>Herbacé</div>
+  <div class="tl-famille"><span class="tl-picto" role="img" aria-label="Terreux" style="background:#b8a888"></span>Terreux</div>
+  <div class="tl-famille"><span class="tl-picto" role="img" aria-label="Agrumes" style="background:#e4c94f"></span>Agrumes</div>
+  <button type="button" class="tl-q" data-role="legende-bouton" aria-label="Lire la légende du profil" aria-expanded="false" aria-controls="tl-leg-profil" onclick="var l=document.getElementById('tl-leg-profil');var o=l.hidden;l.hidden=!o;this.setAttribute('aria-expanded',String(o));">?</button><div class="tl-legende" id="tl-leg-profil" data-role="legende" hidden>La zone grise est le style 16D ; la barre pleine est le prévu ; le trait pointillé, la cible ; le hachuré, une famille non décrite par les fiches.</div>
+</section>
+</body>
+</html>

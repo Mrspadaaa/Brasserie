@@ -148,3 +148,33 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p1-ma-biere/RESULTAT.md --contient "## Reprise D108,base v4.10,bannir,390,1280"
   EXPECT: NOTE OK
   EVIDENCE: pending
+
+- [ ] G30: le glisser de l'étape suit sa base : carte repliée en puce, aucune étiquette chevauchée, rien de sélectionné (D111)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-geste-etape.mjs prototypes/houblons-v4/maquettes/parcours-p1
+  EXPECT: GESTE-ETAPE OK
+  EVIDENCE: pending
+
+- [ ] G31: l'en-tête de l'étape est le fil d'étapes de l'app, sans « hypothèse » (D116)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-stepper.mjs prototypes/houblons-v4/maquettes/parcours-p1
+  EXPECT: STEPPER OK
+  EVIDENCE: pending
+
+- [ ] G32: le rapport de la reprise de l'étape nomme ses captures côte à côte avec la base et la variante D121 retenue
+  CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p1-ma-biere/RESULTAT.md --contient "## Reprise de l'étape (D111 à D113, D116, D121),base v4.10,D121,variante,390,1280"
+  EXPECT: NOTE OK
+  EVIDENCE: pending
+
+- [ ] G33: pendant l'appui long, un retour visible avant 300 ms, puis la fiche ; le nom non sélectionnable (D112)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-appui.mjs prototypes/houblons-v4/maquettes/parcours-p1 --etape
+  EXPECT: APPUI-ETAPE OK
+  EVIDENCE: pending
+
+- [ ] G34: un « ? » près de chaque groupe d'icônes de l'étape, qui nomme ses icônes (D113)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-legende.mjs prototypes/houblons-v4/maquettes/parcours-p1 --etape
+  EXPECT: LEGENDE OK
+  EVIDENCE: pending
+
+- [ ] G35: toucher l'alerte ou une famille du profil ouvre l'analyse, et un mot dit où (D121)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-profil-ouvre.mjs prototypes/houblons-v4/maquettes/parcours-p1
+  EXPECT: PROFIL OK
+  EVIDENCE: pending

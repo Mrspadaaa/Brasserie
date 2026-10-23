@@ -36,6 +36,122 @@ const only = process.argv.slice(3).filter((a) => !a.startsWith('--'));
 const ids = (only.length ? only : fs.readdirSync(dir).filter((d) => /^[a-z]+\d+$/.test(d) && fs.existsSync(path.join(dir, d, 'vue.html')))).sort();
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const problems = [];
+// ===== Mode --etape : critère A9 (D112, voie p13-controles-etape, 23.10, soir) =====
+// Les mots du brasseur, sur l'étape Houblons de la maquette publiée : « L'appui prolonger fait pas l'effet
+// escompté ». Dans Chrome l'appui long ouvre bien la fiche g1 (SPEC), mais aucun retour ne se voit pendant l'appui
+// (sa base v4.10 remplit le nom en 500 ms) et le texte de la carte reste sélectionnable (menu du système sur
+// iPhone).
+//   A9 sur la carte de Nugget de l'étape (<dossier>/ma-biere/etat.html, ou <dossier>/etat.html, ou --page=…) :
+//      a) pendant l'appui, le rendu de la carte ou du nom change avant 300 ms (classe, style, couleurs, ombre,
+//         fond, transformation, texte, boîte : le doigt tenu, rien d'autre ne bouge) ;
+//      b) la fiche s'ouvre ensuite (hash qui change, [role="dialog"], [data-role="fiche"], ou un calque qui couvre
+//         la moitié de l'écran) avant 1,5 s ;
+//      c) le nom qui porte l'appui (le texte le plus bas de la carte qui dit « Nugget ») n'est pas sélectionnable :
+//         user-select calculé à none, et -webkit-touch-callout à none (Chrome ne le calcule pas : lu dans les
+//         feuilles de style locales, <style> et <link> de la page, et dans l'attribut style). La base ne garde que ce
+//         nom ([data-houblon] : user-select none, touch-callout none) : c'est la référence.
+// Usage : node controle-appui.mjs <dossier> --etape [--page=index.html] [--houblon=Nugget]
+// Sortie : « A9 … » et APPUI-ETAPE OK, ou APPUI-ETAPE ECHEC et les lignes « - A9 … ».
+// Appels existants (M15) : le mode par défaut (lot 12, A1 à A8) n'est pas touché.
+if (process.argv.includes('--etape')) {
+  const ARGS = process.argv.slice(2);
+  const opt = (n, d) => ((ARGS.find((a) => a.startsWith('--' + n + '=')) || '').slice(n.length + 3)) || d;
+  const houblon = opt('houblon', 'Nugget');
+  const pageArg = opt('page', '');
+  const fichier = pageArg ? path.join(dir, pageArg) : fs.existsSync(path.join(dir, 'ma-biere', 'etat.html')) ? path.join(dir, 'ma-biere', 'etat.html') : path.join(dir, 'etat.html');
+  const attente = (ms) => new Promise((r) => setTimeout(r, ms));
+  const infos = [];
+  const sortir = async () => {
+    await browser.close();
+    for (const x of infos) console.log(x);
+    if (problems.length) { console.log('APPUI-ETAPE ECHEC ' + problems.length + ' problème(s)'); for (const x of problems) console.log('- A9 ' + x); process.exit(1); }
+    console.log('APPUI-ETAPE OK');
+    process.exit(0);
+  };
+  if (!fs.existsSync(fichier)) { problems.push('page absente : ' + fichier); await sortir(); }
+  const page = await browser.newPage();
+  await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+  await page.goto(pathToFileURL(fichier).href, { waitUntil: 'load', timeout: 30000 });
+  await attente(1200);
+  // Le nom qui porte l'appui, dans la carte de Nugget.
+  const cible = () => page.evaluate((nom) => {
+    const vis = (e) => { for (let x = e; x && x !== document.documentElement; x = x.parentElement) { const cs = getComputedStyle(x); if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) <= 0.15) return false; } const b = e.getBoundingClientRect(); return b.width > 0 && b.height > 0; };
+    const cartes = [...document.querySelectorAll('[data-role="ligne-houblon"]')].filter((l) => vis(l) && l.innerText.toLowerCase().includes(nom.toLowerCase()));
+    const carte = cartes[0];
+    if (!carte) return null;
+    const noms = [...carte.querySelectorAll('*')].filter((e) => !e.children.length && vis(e) && e.textContent.trim().toLowerCase() === nom.toLowerCase());
+    const e = noms[0];
+    if (!e) return { carte: true, nom: false };
+    const b = e.getBoundingClientRect();
+    document.querySelectorAll('[data-a9]').forEach((x) => x.removeAttribute('data-a9'));
+    carte.setAttribute('data-a9', 'carte'); e.setAttribute('data-a9', 'nom');
+    return { carte: true, nom: true, x: b.left + b.width / 2, y: b.top + b.height / 2 };
+  }, houblon);
+  const instantane = () => page.evaluate(() => {
+    const carte = document.querySelector('[data-a9="carte"]'), nom = document.querySelector('[data-a9="nom"]');
+    if (!carte || !nom) return null;
+    const P = ['backgroundColor', 'backgroundImage', 'backgroundSize', 'backgroundPosition', 'boxShadow', 'transform', 'opacity', 'color', 'outlineColor', 'outlineWidth', 'borderColor', 'borderWidth', 'textDecorationLine', 'textDecorationColor', 'filter', 'scale'];
+    const css = (e, ps) => P.map((p) => { const cs = getComputedStyle(e, ps); return cs[p]; }).join('|');
+    const r = (e) => { const b = e.getBoundingClientRect(); return [b.left, b.top, b.width, b.height].map((v) => Math.round(v * 2)).join(','); };
+    return JSON.stringify([carte.className, carte.getAttribute('style'), nom.className, nom.getAttribute('style'), carte.innerText, css(carte), css(nom), css(carte, '::before'), css(carte, '::after'), css(nom, '::before'), css(nom, '::after'), r(carte), r(nom),
+      [...carte.querySelectorAll('[class]')].map((x) => x.className).join(' ')]);
+  });
+  const calque = () => page.evaluate(() => {
+    const vis = (e) => { for (let x = e; x && x !== document.documentElement; x = x.parentElement) { const cs = getComputedStyle(x); if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) <= 0.15) return false; } const b = e.getBoundingClientRect(); return b.width > 0 && b.height > 0; };
+    const grands = [...document.querySelectorAll('body *')].filter((e) => { const cs = getComputedStyle(e); if (cs.position !== 'fixed' && cs.position !== 'absolute') return false; const b = e.getBoundingClientRect(); return vis(e) && b.width * b.height >= 0.5 * innerWidth * innerHeight; }).length;
+    const dialogues = [...document.querySelectorAll('[role="dialog"], [data-role="fiche"], [data-fiche]')].filter(vis).length;
+    return { hash: location.hash, grands, dialogues };
+  });
+  let t = null;
+  for (let i = 0; i < 40 && !t; i++) { t = await cible(); if (!t) await attente(100); }
+  if (!t) problems.push('la carte de ' + houblon + ' ([data-role="ligne-houblon"]) est introuvable');
+  else if (!t.nom) problems.push('aucun texte « ' + houblon + ' » dans la carte : rien à presser');
+  else {
+    // Le rendu doit être stable au repos : un fond animé en continu ne prouverait rien.
+    const r1 = await instantane(); await attente(120); const r2 = await instantane();
+    if (r1 !== r2) problems.push('le rendu de la carte change tout seul au repos (animation continue) : un retour ne se distingue plus');
+    const avant = await calque();
+    const doigt = await page.touchscreen.touchStart(t.x, t.y);
+    const t0 = Date.now();
+    let premier = null, fiche = null, dernier = Date.now();
+    while (Date.now() - t0 < 1600 && (premier === null || fiche === null)) {
+      const s = await instantane(), c = await calque(), dt = Date.now() - t0;
+      if (premier === null && s !== r1) premier = dt;
+      if (fiche === null && (c.hash !== avant.hash || c.dialogues > avant.dialogues || c.grands > avant.grands)) fiche = dt;
+      dernier = dt;
+      await attente(15);
+    }
+    await doigt.end();
+    infos.push('retour pendant l\'appui : ' + (premier === null ? 'aucun en ' + dernier + ' ms' : premier + ' ms') + ' · fiche : ' + (fiche === null ? 'jamais ouverte' : fiche + ' ms'));
+    if (premier === null) problems.push('aucun retour visible pendant l\'appui : le rendu de la carte et du nom ne bouge pas (' + dernier + ' ms de doigt posé)');
+    else if (premier >= 300) problems.push('le retour vient trop tard : ' + premier + ' ms (moins de 300 ms)');
+    if (fiche === null) problems.push('la fiche ne s\'ouvre pas à l\'appui long (hash, dialogue ou calque)');
+    // Sélection : user-select calculé, touch-callout lu dans les feuilles locales.
+    const sources = await page.evaluate(() => [...document.styleSheets].map((s) => (s.ownerNode && s.ownerNode.tagName === 'LINK' ? { href: s.href } : { texte: s.ownerNode ? s.ownerNode.textContent : '' })));
+    let css = '';
+    for (const s of sources) {
+      if (s.texte) css += '\n' + s.texte;
+      else if (s.href && s.href.startsWith('file:')) { try { css += '\n' + fs.readFileSync(new URL(s.href), 'utf8'); } catch { /* feuille absente */ } }
+    }
+    const selecteurs = [];
+    for (const m of css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)) if (/-webkit-touch-callout\s*:\s*none/.test(m[2])) for (const s of m[1].split(',')) selecteurs.push(s.trim());
+    const sel = await page.evaluate((selecteurs) => {
+      const e = document.querySelector('[data-a9="nom"]');
+      const cs = getComputedStyle(e);
+      let callout = false;
+      for (let x = e; x && !callout; x = x.parentElement) {
+        if (/-webkit-touch-callout\s*:\s*none/.test(x.getAttribute('style') || '')) callout = true;
+        for (const s of selecteurs) { try { if (x.matches(s)) { callout = true; break; } } catch { /* sélecteur étranger */ } }
+      }
+      return { us: cs.userSelect, callout, selection: String(getSelection()) };
+    }, selecteurs);
+    infos.push('nom pressé : user-select ' + sel.us + ' · touch-callout none ' + (sel.callout ? 'oui' : 'non') + ' (' + selecteurs.length + ' règle(s) de touch-callout dans les feuilles)');
+    if (sel.us !== 'none') problems.push('le texte « ' + houblon + ' » de la carte reste sélectionnable : user-select ' + sel.us + ' (none attendu)');
+    if (!sel.callout) problems.push('le menu du système n\'est pas coupé sur le texte de la carte : -webkit-touch-callout none est absent (sur iPhone, l\'appui tenu ouvre le menu)');
+    if (sel.selection) problems.push('du texte est sélectionné après l\'appui (« ' + sel.selection.slice(0, 30) + ' »)');
+  }
+  await sortir();
+}
 const lire = async (f) => {
   const page = await browser.newPage();
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
