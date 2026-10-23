@@ -1,8 +1,8 @@
 /* Classes propres à Substituer (L26 : préfixe pq-substituer-). */
 /* L'étiquette et l'original restent épinglés à gauche pendant que les remplaçants défilent. */
 .pq-substituer-etiquette { position: sticky; left: 0; z-index: 2; background: rgb(var(--cave-900)); }
-.pq-substituer-epingle { position: sticky; left: 4.5rem; z-index: 2; background: rgb(var(--cave-850)); box-shadow: 1px 0 0 rgb(var(--cave-800)); }
-.pq-substituer-choisi { background: rgb(var(--ebc-straw) / 0.14); }
+.pq-substituer-epingle { position: sticky; left: 4.5rem; z-index: 2; background: rgb(var(--cave-900)); box-shadow: 1px 0 0 rgb(var(--cave-800)); }
+.pq-substituer-choisi { background: rgb(var(--cave-950)); box-shadow: inset 2px 0 0 rgb(var(--cave-50)), inset -2px 0 0 rgb(var(--cave-50)); }
 .pq-substituer-cellule, .pq-substituer-tete { border-top: 1px solid rgb(var(--cave-800) / 0.6); }
 .pq-substituer-tete { border-top: 0; }
 .pq-substituer-section { border-top: 1px solid rgb(var(--cave-700)); }

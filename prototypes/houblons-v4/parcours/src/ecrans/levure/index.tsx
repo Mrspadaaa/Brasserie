@@ -12,7 +12,7 @@ import { useNavigation } from '../../coquille/navigation';
 import { CONDITIONS, LEVURES, nomLevure } from '../../donnees/cas';
 import { useBrouillon, useGestes } from '../../etat/EtatParcours';
 import { quandDe, trouver } from '../../etat/operations';
-import { effetLevure, houblon, lireBiere, style, type EffetLevure } from '../../moteur';
+import { ecart, effetLevure, houblon, lireBiere, style, type EffetLevure } from '../../moteur';
 import { biotransfoLevure, type FamilyId } from '../../../../src/engine';
 import { libMoment } from '../dryhopper/frise';
 import { useFicheSurOutil } from '../dryhopper/fiche-sur-outil';
@@ -64,15 +64,19 @@ export default function Levure({ ajoutId }: { ajoutId: string }) {
   const confiance = effet.lu.confiance;
   // x3b réduit : ma bière (Nugget seul), puis + Idaho 7 avec US-05, puis la levure choisie.
   const maBiere = lireBiere(base);
-  const etapes = [maBiere, refLu, effet.lu];
+  const etapes = choisie === ref ? [maBiere, refLu] : [maBiere, refLu, effet.lu];
   const FX: FamilyId[] = ['floral', 'citrus', 'resin'];
   const nugget = base.additions[0] ? houblon(base.additions[0].hopKey) : null;
+  // a2b : ce que le houblon apporte (Idaho 7 avec US-05, face à ta stout) et ce que la levure ajoute ; le total.
+  const parHoublon = Object.fromEntries(Object.entries(ecart(maBiere.profil, refLu.profil)).map(([f, e]) => [f, e ? e.centre : null])) as Record<FamilyId, number | null>;
+  const total = Object.fromEntries(Object.entries(ecart(maBiere.profil, effet.lu.profil)).map(([f, e]) => [f, e ? e.centre : null])) as Record<FamilyId, number | null>;
+  const cinq = sc.order.filter((f) => total[f] != null).sort((a, z) => Math.abs(total[z]!) - Math.abs(total[a]!)).slice(0, 5);
 
   const tuile = (id: string, nom: string) => {
     const e = effets.find((x) => x.levure === id)!;
     const f = principale(e, sc.order);
     const doc = biotransfoLevure(id, 'dryActive').conv.centre > 0;
-    const effetTxt = id === ref ? <span className="text-cave-400">réf.</span>
+    const effetTxt = id === ref ? <span className="text-cave-400" aria-label="référence">=</span>
       : !actif ? <span className="text-cave-400">rien ici</span>
         : f ? <span style={{ color: COULEURS[f].texte }}><Val v={e.ecart[f]!.centre} /> {COURT[f].toLowerCase()}</span>
           : <Inconnu raison={`${nom} : biotransformation non documentée pour Idaho 7 (centre 0, convention)`}>{doc ? '~0' : '?'}</Inconnu>;
@@ -106,7 +110,8 @@ export default function Levure({ ajoutId }: { ajoutId: string }) {
       <div className="flex items-center justify-between gap-2">
         <Legende>
           <p>La levure n’agit sur Idaho 7 qu’en dry hop pendant la fermentation active : elle convertit une part du géraniol (floral) en citronellol (agrumes).</p>
-          <p>Barre : ta stout avec Idaho 7 et la levure choisie ; rond : avec US-05. ~ simulé · ? non documenté, jamais 0.</p>
+          <p>Barre : ta stout avec Idaho 7 et la levure choisie ; rond : ta stout avant Idaho 7. Dessous, en plein : ce qu’apporte Idaho 7 ; rayé : ce qu’ajoute la levure.</p>
+          <p>~ simulé · ? non documenté, jamais 0.</p>
           <p>Taux de conversion : convention du moteur (H41, H50, H51) ; aucun taux publié en bière.</p>
         </Legende>
         <div role="radiogroup" aria-label="Lecture" data-lecture="" className="inline-flex gap-0.5 p-0.5 rounded-full bg-cave-850 border border-cave-800">
@@ -118,10 +123,10 @@ export default function Levure({ ajoutId }: { ajoutId: string }) {
         </div>
       </div>
 
-      <section data-role="simulation" aria-label={`Ta stout avec Idaho 7 et ${nomLevure(choisie)}`} className="space-y-2">
+      <section data-role="simulation" aria-label={`Ta stout avec Idaho 7 et ${nomLevure(choisie)}`} className="space-y-2 rounded-lg bg-cave-900 border border-cave-800 px-2 py-1.5">
         <p className="flex flex-wrap items-baseline gap-x-2 text-cave-50" aria-live="polite">
           <b className="font-semibold">{nomLevure(choisie)}</b>
-          {choisie === ref ? <span className="text-sm text-cave-200">réf.</span>
+          {choisie === ref ? null
             : !actif ? <span className="text-sm text-cave-400">rien ne change {q.type === 'dryhop' ? 'après fermentation' : 'à chaud'}</span>
               : top ? <span className="text-sm">{bougent.slice(0, 2).map((f, n) => <span key={f}>{n ? ' · ' : ''}{COURT[f].toLowerCase()} <Val v={effet.ecart[f]!.centre} couleur={COULEURS[f].texte} /></span>)}</span>
                 : <span className="text-sm text-cave-400">effet non documenté pour Idaho 7</span>}
@@ -147,16 +152,35 @@ export default function Levure({ ajoutId }: { ajoutId: string }) {
           </span>
         </div>
 
-        <div className="space-y-0.5">
-          {(bougent.length ? bougent : ((['floral', 'citrus'] as FamilyId[]))).map((f) => {
-            const e = effet.ecart[f];
-            return <BarreStyle key={f} apres={effet.lu.profil[f]} avant={refLu.profil[f]} echelle={echelle}
-              valeur={e && Math.abs(e.centre) >= 0.5 ? <Val v={e.centre} couleur={effet.lu.profil[f].horsStyle ? ACC : COULEURS[f].texte} /> : <span className="text-cave-400">=</span>} />;
+        {/* Les 5 familles qui bougent (carte), au style ; sous chacune, d'où ça vient (a2b) : plein, ce que le houblon
+            apporte (avec US-05) ; rayé, ce que la levure choisie ajoute ou retire. Rond : ta stout avant Idaho 7. */}
+        <div className="pq-lev-familles" data-role="apports">
+          {cinq.map((f) => {
+            const tot = total[f], ph = parHoublon[f], pl = effet.ecart[f]?.centre ?? 0;
+            const av = maBiere.profil[f].valeur!.centre;
+            const pos = (v: number) => {
+              const bd = maBiere.profil[f].bande;
+              return Math.max(0, Math.min(100, echelle === 'style' && bd ? (v / bd[1]) * 50 : (v / 110) * 100));
+            };
+            const a = pos(av), b = pos(av + (ph ?? 0)), c = pos(av + (ph ?? 0) + pl);
+            return (
+              <div key={f} className="pq-lev-famille">
+                <BarreStyle apres={effet.lu.profil[f]} avant={maBiere.profil[f]} echelle={echelle}
+                  valeur={tot == null ? <Inconnu raison="ta stout avant n’est pas décrite pour cette famille" /> : <Val v={tot} couleur={effet.lu.profil[f].horsStyle ? ACC : COULEURS[f].texte} />} />
+                <div className="pq-lev-sous" aria-hidden="true">
+                  <span className="pq-lev-split" title={`${h.nom} : ${ph == null ? '?' : signe(ph)} ; ${nomLevure(choisie)} : ${signe(pl)}`}>
+                    <i style={{ left: `${Math.min(a, b)}%`, width: `${Math.abs(b - a)}%`, background: COULEURS[f].base }} />
+                    {Math.abs(c - b) > 0.2 && <i className="pq-lev-raye" style={{ left: `${Math.min(b, c)}%`, width: `${Math.abs(c - b)}%`, color: COULEURS[f].base }} />}
+                  </span>
+                </div>
+              </div>
+            );
           })}
-          {!bougent.length && !actif && <p className="text-xs text-cave-200">Après fermentation, rien ne change.</p>}
+          {!actif && <p className="text-xs text-cave-200">Après fermentation, rien ne change.</p>}
         </div>
 
-        <div data-role="ajout" className="pq-lev-pas">
+        {/* x3b réduit : la troisième colonne (la levure) n'apparaît que si elle diffère de US-05 (sinon, la même). */}
+        <div data-role="ajout" className="pq-lev-pas" style={{ gridTemplateColumns: `6rem repeat(${etapes.length}, 1fr)` }}>
           <span />
           <span className="pq-lev-col">
             {nugget && <span data-houblon={nugget.cle} className="font-semibold">{nugget.nom}</span>}
@@ -164,9 +188,11 @@ export default function Levure({ ajoutId }: { ajoutId: string }) {
           <span className="pq-lev-col">
             <span data-houblon={h.cle} className="font-semibold">{`+${h.nom}`}</span>
           </span>
-          <span className="pq-lev-col">
-            <span className="font-semibold">{`+${nomLevure(choisie)}`}</span>
-          </span>
+          {etapes.length > 2 && (
+            <span className="pq-lev-col">
+              <span className="font-semibold">{`+${nomLevure(choisie)}`}</span>
+            </span>
+          )}
           {FX.map((f) => (
             <div key={f} className="contents">
               <span className="inline-flex items-center gap-1 text-sm"><Picto famille={f} taille={14} />{COURT[f]}</span>

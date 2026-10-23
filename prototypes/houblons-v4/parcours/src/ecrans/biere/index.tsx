@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { PageShell } from '@app/pages/PageShell';
 import { COURT, Legende, Onglets, nombre, type Echelle } from '../../commun';
 import { useNavigation } from '../../coquille/navigation';
-import { useBiere, useRecette } from '../../etat/EtatParcours';
+import { useBiere, useGestes, useRecette, useVisee } from '../../etat/EtatParcours';
 import { houblon, nomMoment, style } from '../../moteur';
 import { quandDe } from '../../etat/operations';
 import { useFiche } from '../fiche/FicheHoublon';
@@ -21,12 +21,9 @@ import { Lentille } from '../ma-biere/Lentille';
 import { RadarBiere } from '../ma-biere/RadarBiere';
 import '../ma-biere/ma-biere.css';
 
+/** Une visée par famille, dans l'état commun du parcours (useVisee) : bannir, moins, plus ; sans visée = absente. Au départ,
+ * sa dégustation : plus florale, moins résineuse. Suggérer la lit, la fiche aussi (sa demande). */
 export type Visee = 'bannir' | -1 | 0 | 1;
-/** Visées du brasseur par famille, en mémoire (maquette) : la dégustation dit « trop résineuse, je la veux plus
- * florale » (S1_DIRECTION : floral +1, résineux −1). */
-const VISEES = new Map<FamilyId, Visee>([['floral', 1], ['resin', -1]]);
-export const viseesDuBrasseur = () => new Map(VISEES);
-
 const motVisee = (v: Visee, f: FamilyId) => (v === 'bannir' ? `bannir ${COURT[f].toLowerCase()}` : `${v > 0 ? '+' : '−'} ${COURT[f].toLowerCase()}`);
 
 export default function Biere() {
@@ -36,19 +33,17 @@ export default function Biere() {
   const sc = style(recette.styleCode);
   const [vue, setVue] = useState<'barres' | 'radar'>('barres');
   const [echelle, setEchelle] = useState<Echelle>('style');
-  const [visees, setVisees] = useState(() => viseesDuBrasseur());
+  const visee = useVisee();
+  const gestes = useGestes();
+  const visees = new Map((Object.entries(visee) as [FamilyId, number | 'banni'][]).map(([f, v]) => [f, (v === 'banni' ? 'bannir' : v > 0 ? 1 : -1) as Visee]));
   const fiche = useFiche();
   // Le houblon qui porte le plus la famille trop marquée (effet simulé de l'ajout sur ma bière).
   const trop = tropMarquees(biere, sc.order)[0];
   const cause = trop ? recette.additions.map((a) => ({ a, e: effetDe(recette, a, biere)[trop]?.e ?? 0 })).filter((x) => x.e > 0).sort((x, y) => y.e - x.e)[0]?.a ?? null : null;
   // La famille hors du style est ouverte au repos (comme la base) ; toucher une autre famille l'ouvre.
   const [ouverte, setOuverte] = useState<FamilyId | null>(() => sc.order.find((f) => biere.profil[f].horsStyle === 'au-dessus') ?? null);
-  const poser = (f: FamilyId, v: Visee) => {
-    const n = new Map(visees);
-    if (v === 0) n.delete(f); else n.set(f, v);
-    VISEES.clear(); n.forEach((x, k) => VISEES.set(k, x));
-    setVisees(n);
-  };
+  const poser = (f: FamilyId, v: Visee) => gestes.fixerVisee(f, v === 0 ? null : v === 'bannir' ? 'banni' : v);
+
   const auStyle = sc.order.filter((f) => biere.profil[f].valeur && !biere.profil[f].horsStyle).length;
   const nonSituees = sc.order.filter((f) => !biere.profil[f].valeur).length;
   const deguste = sc.order.some((f) => biere.profil[f].source === 'dégustation');

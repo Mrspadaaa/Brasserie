@@ -46,3 +46,9 @@
 /* La piste verticale du repère (le rail du contrôle) : transparente, sur la ligne du temps ; le doigt y glisse. */
 .pq-ma-biere-piste { touch-action: none; cursor: grab; }
 .pq-ma-biere-piste[data-glisse] { cursor: grabbing; z-index: 20; }
+
+/* Pas d'ancrage du défilement : quand un ajout change de segment au lâcher, la page ne saute pas (D68, D69). */
+.pq-ma-biere, .pq-ma-biere * { overflow-anchor: none; }
+
+/* Onglet Ma bière : les onglets du socle, à une encre lisible sur leur fond gris (contraste 4,5:1, D86). */
+.pq-outil-biere [data-role="onglets"] [role="tab"][aria-selected="false"] { color: rgb(var(--cave-200)); }

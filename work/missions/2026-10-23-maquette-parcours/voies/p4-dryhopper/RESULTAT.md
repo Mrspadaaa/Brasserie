@@ -34,6 +34,50 @@ OK — Dryhopper (a1) et Levure jouables, en direct ; rail D35, D46, D47 tenus ;
 | G18 | NOTE OK (ce fichier) |
 | G19 | RAIL OK 1/1, 16 règles jouées ; non joué : D44 au whirlpool (un seul cran, rien à régler) |
 
+## D4 Levure
+Le critique (p6) avait rejeté Levure : avec US-05 à l'arrivée, le contenu s'arrêtait à 57 % de la hauteur. D4 :
+« pas assez dense », « voir un Max d'info au même endroit ». La forme ne change pas, et aucun facteur libre n'est
+ajouté.
+
+Ce que la carte prévoyait, repris :
+- les 5 familles qui bougent, en barres l5b au style, visibles dès l'arrivée ; le rond est ta stout avant Idaho 7,
+  la valeur l'écart total ;
+- la confiance ;
+- « Après fermentation, rien ne change » hors du dry hop actif.
+
+Ce que montrait a2b, repris :
+- sous chaque famille, d'où ça vient : en plein, ce que le houblon apporte (Idaho 7 avec US-05) ; en rayé, ce que la
+  levure ajoute ;
+- avec Pomona, les agrumes passent de ~+13 à ~+26, dont ~+13 en rayé.
+
+Autres changements :
+- toute la simulation est posée sur une carte, comme Dryhopper ;
+- la chaîne x3b ne montre la colonne de la levure que si elle diffère de US-05 (sinon, elle répète la deuxième) ;
+- « réf. » est remplacé par « = » pour tenir 70 mots.
+
+Mesures (thème par défaut, blanc neutre, 390 × 844) :
+
+| mesure | valeur | seuil |
+|---|---|---|
+| bas du contenu (`[data-ecran="levure"]`), US-05 et Pomona | 712 px sur 844, soit **0,843** du premier écran | ≥ 0,80 : tenu |
+| `controle-panel` sur `levure-390.png` et `dryhopper-390.png` | remplissage médian 0,61 | ≥ 0,55 |
+| `controle-panel` sur `levure-390.png` seul | 0,48 : le fond gris très clair de la carte (#f5f5f5 sur blanc) n'est pas compté comme contenu | |
+| mots, Levure | 70 | 70 (G12) |
+
+Le critère tenu est celui de la hauteur (0,843).
+
+Captures ouvertes, dans ce thème :
+- `captures/levure-390.png` (US-05) ;
+- `captures/levure-pomona-390.png` (Pomona, plein et rayé visibles) ;
+- `captures/levure-pomona-1280.png`.
+
+Thème des maquettes : les cartes, les pastilles et le pont passent du fond `cave-850` au fond de panneau `cave-900`,
+car `cave-850` est devenu gris foncé et faisait tomber les contrastes.
+
+BESOIN SOCLE : la plage d'α de la ligne de contexte (`Alpha`, `text-cave-400` sur la pastille `cave-800`) tombe à
+3,9:1 dans ce thème, sur tous les écrans. `dryhopper.css` la rattrape pour Dryhopper et Levure seulement ; à corriger
+dans le thème ou dans `JetonHoublon`.
+
 ## Rail
 `controle-rail.mjs … dryhopper --page=etat.html --parcours` a d'abord relevé trois défauts. Les voici après
 correction ; seuls ces trois points changent, la forme de a1 reste celle de a1.

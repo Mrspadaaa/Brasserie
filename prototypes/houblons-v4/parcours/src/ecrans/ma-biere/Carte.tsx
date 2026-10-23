@@ -116,7 +116,7 @@ export function Carte({ a, recette, biere, repere, onGeste }: {
         <span className="ml-auto" {...stop}>
           <button type="button" data-role="pont-substituer" data-houblon={a.hopKey} onClick={() => ouvrir({ ecran: 'substituer', houblon: a.hopKey })}
             className="h-7 px-2 rounded-full text-xs font-semibold text-cave-200 underline decoration-dotted underline-offset-4 whitespace-nowrap">
-            Je n’ai pas {h.nom} <span aria-hidden="true">›</span>
+            Sans {h.nom} <span aria-hidden="true">›</span>
           </button>
         </span>
       </div>

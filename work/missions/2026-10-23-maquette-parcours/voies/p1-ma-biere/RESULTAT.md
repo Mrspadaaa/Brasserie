@@ -1,4 +1,4 @@
-OK — rail de la frise conforme (RAIL OK) ; reprise D105 gardée, G1 à G23 verts
+OK — D55 frise compacte, D32 visée commune, fiche g1 reprise ; G1 à G25 verts
 
 ## Fichiers écrits (dans « Possède » seulement)
 - `prototypes/houblons-v4/parcours/src/ecrans/ma-biere/` : `index.tsx`, `Rail.tsx` (moment par 5′, loupe),
@@ -178,3 +178,64 @@ Besoins dans le socle :
   colonne de la frise : avec plusieurs houblons, c'est la piste du dessus qui prend le doigt hors des repères.
 
 Prédiction : « Là le curseur glisse vraiment comme avant, avec le zoom sous le doigt. »
+
+## D55 (frise compacte au repos)
+
+- Au repos, la frise s'enchaîne comme consolide-390.png : 0′ suit la carte de Nugget aussitôt, puis whirlpool, la
+  levure, fermentation et post-fermentation, sans le vide de ~190 px.
+- Il reste un léger retrait de 1 px par minute au-dessus d'une carte d'ébullition. Il garde la place du repère fidèle à
+  son moment (D61, tolérance 0,12) : à 60′ il vaut 0.
+- L'échelle du temps et la loupe ne s'ouvrent que sous le doigt. Le repère suit le doigt, avec 14 px par cran au plus
+  et la course réglée jusqu'au bord de l'écran (D69). Les graduations du seul segment touché s'écartent en loupe
+  (×3,4, D63), et la frise garde sa place pendant le geste (D68) puis se referme au lâcher.
+- Pour passer RAIL OK, le repère est redevenu la poignée de l'ajout : [data-role="glisser-moment"][role="slider"],
+  aria-orientation="vertical", data-houblon. Le contrôle lit maintenant les poignées : une seule par houblon, cas-k3
+  compris (D56, D61 bis, D64 joués), et la poignée est relue chaque fois. La recherche de place d'une piste fixe ne
+  passait pas D64.
+- Plus d'ancrage du défilement : overflow-anchor: none. Quand un ajout change de segment au lâcher, la page ne saute
+  plus.
+- Captures côte à côte : p1/cap/ma-biere-390.png (repos), face à base/captures/consolide-390.png ; p1/cap/frise-pendant-390.png
+  et p1/cap/frise-apres-390.png (le geste).
+
+## D32 (bannir, −, + agissent)
+
+- L'onglet Ma bière lit et règle la visée de l'état commun du socle. Il lit useVisee() et pose fixerVisee(famille,
+  1 | -1 | 'banni' | null). Le départ est sa dégustation : plus florale, moins résineuse.
+- « bannir · − · sans visée · + » changent l'état. Les objectifs suivent : « bannir floral » remplace « + floral »,
+  puis « + floral » revient (pont-floral). La fiche lit la même visée pour « + Floral 2/4 − Résineux 2/4 » et ses
+  flèches, et Suggérer la lira (p2).
+- biere/jeu.mjs vérifie l'état (window.__parcours.etat.visee.floral === 'banni', puis 1) et l'écran : ETAPE OK (biere).
+- Contraste sur le thème des maquettes (D106) :
+  - Substituer : la colonne choisie est blanche et cerclée de noir, l'épinglée est grise. CONTRASTE OK.
+  - L'onglet Ma bière : les onglets non actifs du socle passent à l'encre cave-200. C'est fait dans ma CSS, sous
+    .pq-outil-biere, car 4,47:1 ne suffisait pas sur le fond des onglets.
+- MOTS (≤ 80) : « Je n'ai pas Nugget › » devient « Sans Nugget › » (80 mots au premier écran, au plafond).
+
+## Fiche g1
+
+- La fiche reprend g1, élément par élément : controle-choix --ecran=fiche rend CHOIX OK. L'inventaire inventaire-fiche
+  est joué (12 repris), et la NOTE de la fiche a sa section « ## Reprise ».
+- Ce qu'elle reprend :
+  - la feuille presque pleine, « Nugget ⊙ » et « × » ;
+  - « α 9,5–16 % » en gros, « lot 13 % » et sa jauge, « double usage » ;
+  - le bloc gris : la bande des 12 familles, chaque famille avec son picto au trait (D93), « 2/4 », ses mots et
+    « nommé en premier » ;
+  - « sans famille : gingembre, resiny », avec sa part dessinée, et « 5 non décrites : … » ;
+  - le grand radar légendé (« Résineux 2/4 », « Melon? » hachuré), avec les flèches de la demande ;
+  - « + Floral 2/4 − Résineux 2/4 » ; en pied, ♡ ⊘ et « Comparer » (ajoute à la comparaison et l'ouvre).
+- D10 à 1280 : la feuille est bornée au cadre de 768 px de la page (p1/cap/fiche-1280.png). Le focus va sur la fiche,
+  pas sur « × » : plus d'anneau sans clavier à 390 (p1/cap/fiche-390.png). À 1280, un fin cercle paraît encore
+  autour de « × » sur la capture : à revoir si la supervision le relève.
+- D93 B3 : le premier α de la fiche est celui du lot (data-source="lot") ; la plage en gros est data-role="fiche-alpha".
+- L'API ne change pas pour Comparer, Dryhopper et Suggérer : export par défaut <Fiche houblon={cle} />, et useFiche().
+
+### Sorties (dernier rejeu)
+- G2 TYPES OK ; G3 COMMUN OK ; G4 MOTS OK (80) ; G5 MA-BIERE OK ; G6 ALPHA OK ; G7 FICHE OK 1/1 ;
+  G8 FICHE-BASELINE OK ; G9 SANS-FAMILLE OK ;
+- G10 COMMUN OK ; G11 ETAPE OK (substituer, après ma-biere et fiche) ; G12 PONTS OK (19 gestes) ;
+  G13 1 passed ; G14 APP INTACTE OK ; G15 NOTE OK ;
+- G17 REPRISE OK (7 repris) ; G18 REPRISE OK (10 repris, 1 en pont) ; G19 COMMUN OK ; G20 ETAPE OK (biere) ;
+- G21 et G22 CHOIX OK ; G23 RAIL OK 1/1 (20 règles ; non joués : D44 au whirlpool, D45 sans bulle) ;
+  G24 CHOIX OK (fiche) ; G25 TEINTE OK 1/1 ; D98 UNE-QUESTION OK.
+
+Prédiction : « La fiche, on est bon, c'est la v1 ; et la frise ressemble enfin à la base. »

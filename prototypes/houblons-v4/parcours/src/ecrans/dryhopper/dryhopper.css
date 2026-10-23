@@ -15,12 +15,12 @@
 /* Le dock sous le pouce : étapes et jours en tête, puis le geste (voie, profil, rail). */
 .pq-dry-dock { position: relative; width: 100%; padding: 2px 0 4px; }
 .pq-dry-haut { display: grid; grid-template-columns: 1fr 5.25rem; gap: 4px; }
-.pq-dry-etape { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 2.1rem; border-radius: 4px; background: rgb(var(--cave-850)); border: 1px solid rgb(var(--cave-800)); color: rgb(var(--cave-50)); font-size: 12px; line-height: 1.1; overflow: hidden; }
+.pq-dry-etape { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 2.1rem; border-radius: 4px; background: rgb(var(--cave-900)); border: 1px solid rgb(var(--cave-800)); color: rgb(var(--cave-50)); font-size: 12px; line-height: 1.1; overflow: hidden; }
 .pq-dry-etape b { font-weight: 600; font-size: 12px; }
 .pq-dry-etape.pq-dry-amer::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #c2410c; }
 .pq-dry-etape[aria-current="true"] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
 .pq-dry-etape[aria-current="true"] [data-nature] { color: rgb(var(--cave-950)); }
-.pq-dry-jour { min-height: 1rem; border-radius: 4px; background: rgb(var(--cave-850)); border: 1px solid rgb(var(--cave-800)); color: rgb(var(--cave-50)); font-size: 12px; font-weight: 600; }
+.pq-dry-jour { min-height: 1rem; border-radius: 4px; background: rgb(var(--cave-900)); border: 1px solid rgb(var(--cave-800)); color: rgb(var(--cave-50)); font-size: 12px; font-weight: 600; }
 .pq-dry-jour.pq-dry-sansgain { background: transparent; color: rgb(var(--cave-200)); font-weight: 400; border: 1px dashed rgb(var(--cave-700)); }
 .pq-dry-jour[aria-pressed="true"] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); font-weight: 700; border: 0; }
 .pq-dry-jour[aria-disabled="true"] { opacity: .4; }
@@ -48,3 +48,8 @@
 
 /* Le geste suit le doigt sans retard : aucune transition héritée (la mesure de la loupe, L12, lit les positions rendues). */
 .pq-dry-geste *, .pq-dry-loupe * { transition: none !important; animation: none !important; }
+
+/* BESOIN SOCLE (thème des maquettes, 23.10) : la plage d’α de la ligne de contexte (Alpha, text-cave-400 sur la
+   pastille cave-800) tombe à 3,9:1. Rattrapé ici pour Dryhopper et Levure seulement, en attendant le thème. */
+.pq-outil-dryhopper [data-role="contexte"] [data-role="alpha"] .text-cave-400,
+.pq-outil-levure [data-role="contexte"] [data-role="alpha"] .text-cave-400 { color: rgb(var(--cave-200)); }

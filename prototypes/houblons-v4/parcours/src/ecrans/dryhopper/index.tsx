@@ -202,7 +202,7 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
   // La vraie valeur du houblon EN BROUILLON, au moment choisi (L14) ; « ? » s'il n'en a pas, jamais celle d'un autre.
   const vraie = mesureDe(h.nom, p.seg);
   const mesure = p.seg < 2
-    ? <span className="px-1.5 rounded bg-cave-850">jamais mesuré à ce moment</span>
+    ? <span className="px-1.5 rounded bg-cave-900">jamais mesuré à ce moment</span>
     : vraie
       ? <>{vraie.famille && <Picto famille={vraie.famille} taille={14} />}<span><b className="font-semibold text-cave-50">mesuré</b> {vraie.compose} <span data-nature="mesure" data-source={vraie.cle}>{vraie.texte}</span> ({vraie.source})</span></>
       : <span data-role="mesure-absente"><Inconnu raison={`aucune mesure publiée pour ${h.nom} à ce moment`}>?</Inconnu> pas de mesure pour {h.nom}</span>;
@@ -308,7 +308,7 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
         </Legende>
         <Lentille echelle={echelle} choisir={setEchelle} />
       </div>
-      <section data-role="simulation" aria-label="Ta stout avec Idaho 7, au moment choisi" className="space-y-1 rounded-lg bg-cave-850 border border-cave-800 px-2 py-1.5">
+      <section data-role="simulation" aria-label="Ta stout avec Idaho 7, au moment choisi" className="space-y-1 rounded-lg bg-cave-900 border border-cave-800 px-2 py-1.5">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5" aria-live="polite">
           <span className="font-semibold text-cave-50">Face à ta stout</span>
           <span className="inline-flex items-center gap-1 font-bold" style={{ color: COULEURS.floral.texte }}>
@@ -336,7 +336,7 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
         <p className="flex items-center gap-1 text-xs text-cave-400 min-w-0" data-acquis="valeurs">{mesure}</p>
         <nav aria-label="Étape suivante" data-acquis="levure" data-forme="pont" className="shrink-0">
           <button type="button" data-role="pont-levure" onClick={() => aller({ ecran: 'levure', ajout: ajoutId })}
-            className="inline-flex items-center gap-1.5 min-h-touch px-3 rounded-full border border-cave-700 bg-cave-850 text-sm text-cave-50 whitespace-nowrap">
+            className="inline-flex items-center gap-1.5 min-h-touch px-3 rounded-full border border-cave-700 bg-cave-900 text-sm text-cave-50 whitespace-nowrap">
             <b className="font-semibold">Puis la levure</b>
             {apercu === 'rien' ? <span className="text-xs text-cave-200">rien ne change ici</span>
               : apercu ? <span className="inline-flex items-center gap-1 text-xs text-cave-200">Pomona <Picto famille={apercu.f} taille={14} /><span style={{ color: COULEURS[apercu.f].texte }}><Ecart v={apercu.v} interp={false} /></span></span> : null}

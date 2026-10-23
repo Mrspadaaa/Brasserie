@@ -1,33 +1,44 @@
-# Fiche d'un houblon, au long appui (voie p1-ma-biere, 23.10)
+# Fiche d'un houblon, au long appui (voie p1-ma-biere ; reprise g1, 23.10)
 
 ## Base
 
-- Fiche g1 (« la v1 est la meilleure ») et fiche courte type Citra cryo (« Ça c'est très bien ») :
-  `base/consolide/fiche.html`, captures `base/captures/consolide-fiche-390.png` et
+- g1, la fiche de la base v4.10 qu'il a choisie (« la v1 est la meilleure ») : `base/consolide/fiche.html`, capture
+  `base/captures/consolide-fiche-390.png` ; la fiche courte type Citra cryo (« Ça c'est très bien ») :
   `fils13-carte-fiche/captures/g1-fiche-citra-390.png`.
+- Inventaire : `work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-fiche.json` (12 éléments).
+
+## Reprise
+
+- g1-feuille : repris — la feuille de l'app (Sheet), presque pleine, le haut de la page assombri, « × » rond en haut à droite
+- g1-titre : repris — le nom du houblon en titre de la feuille, avec ⊙ quand son α vient d'un lot
+- g1-alpha : repris — « α 9,5–16 % » en gros (plage des fiches), « lot 13 % » à côté et sa jauge dans la plage
+- g1-usage : repris — l'usage en mots dans une pastille (« double usage »)
+- g1-bande : repris — la bande des 12 familles en couleur, en tête du bloc gris
+- g1-familles : repris — le bloc gris : picto au trait (D93), nom, « 2/4 », et les mots des fiches dessous
+- g1-premier : repris — « nommé en premier » sur la famille que les fiches citent en premier
+- g1-sans-famille : repris — « sans famille : gingembre, resiny », avec la part « autres » dessinée au-delà de 25 % (D100)
+- g1-non-decrites : repris — « 5 non décrites : Noyau, Pépins, Baies, Melon, Végétal »
+- g1-radar : repris — le grand radar légendé : chaque axe nommé avec « 2/4 », les inconnus « ? » hachurés, les flèches de sa demande
+- g1-demande : repris — « + Floral 2/4 − Résineux 2/4 » sous le radar, lu dans la visée de l'onglet Ma bière (état commun)
+- g1-actions : repris — en pied, ♡ et ⊘ (son goût), et « Comparer » (ajoute le houblon à la comparaison et l'ouvre)
 
 ## Idées reprises
 
-- α écrit comme sur les lignes : la valeur du lot d'abord (« α 13 % lot · fiches 9,5–16 % », D93 B3), l'usage en
-  mot, le stock en grammes (le détail du stock va dans la fiche, pas sur la ligne).
-- Familles citées avec les pictos de la page, « 2/4 » (fiches qui la citent), et les mots des fiches (3 au plus).
-- Silhouette h4 à 12 axes, sans légende écrite : rayon au nombre de fiches (D72), secteurs hachurés pour les
-  familles non décrites (D65).
-- Part « autres » dessinée (forme grise) avec les mots sans famille (D100, L14).
-- Geste « goût » : « j'aime » / « pas pour moi » (D20), gardé en mémoire pendant la session.
-- « ma bière » : la dose, le moment et l'IBU de ce houblon dans la recette, s'il y est.
+- α du lot balisé `data-role="alpha" data-source="lot"` : c'est le premier α de la fiche (D93 B3) ; la plage est la
+  lecture en gros, comme g1.
+- La demande et les flèches suivent la visée posée dans l'onglet Ma bière (bannir, −, +).
 
 ## Écarts
 
-- Pas de table des IBU par moment (barrée par le brasseur : « Inutile ») ; pas de bouton « Ajouter à 10′ »
-  (« palace holder ? ») : la fiche n'agit pas sur la recette.
-- Fermeture par « × » (Sheet de l'app), par Échap et par « ‹ » (bouton ajouté dans la feuille).
+- Les familles portent leur picto au trait au lieu du carré de couleur de g1 : D93 (« ça suit pas la Baseline »).
+- « ‹ » ajouté à gauche de l'α (fermeture demandée par le contrat de la voie), en plus de « × » et Échap.
+- La table des IBU par moment n'y est pas (« Inutile »), ni « Ajouter à 10′ » (« palace holder ? »).
 
 ## Pour l'app
 
-- Emploi depuis un autre écran : `const f = useFiche();` puis `<span {...f.appui(cle, onCourt)} {...f.nom(cle)}>` sur
-  la carte (appui long) et sur le nom (survol), et `{f.rendu}` dans l'écran. Ma bière passe par la route
-  `#/fiche/<houblon>` (export par défaut de `index.tsx`).
-- `data-role="fiche"` est posé sur la feuille après son ouverture (portail) : dans l'app, `Sheet` devrait accepter
-  des attributs `data-*`. Le « click » qui suit un appui long est avalé (350 ms) pour ne pas refermer la feuille.
-- Les goûts s'écriront dans Dexie (préférences du brasseur), et les mots des fiches viendront du catalogue réel.
+- Emploi depuis un autre écran : `<Fiche houblon={cle} />` (export par défaut de `index.tsx`, fermée par le retour),
+  ou `useFiche()` : `<span {...f.appui(cle, onCourt)} {...f.nom(cle)}>` puis `{f.rendu}`.
+- `Sheet` devrait accepter des attributs `data-*`, une largeur maximale et une cible de focus initiale. La maquette
+  les pose sur la feuille après son ouverture : `data-role="fiche"`, cadre de 768 px à l'ordinateur (D10), focus sur la
+  fiche et non sur « × ». Le « click » qui suit un appui long est avalé (350 ms) pour ne pas refermer la feuille.
+- Les goûts s'écriront dans Dexie (préférences du brasseur) ; les mots des fiches viendront du catalogue réel.

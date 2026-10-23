@@ -12,7 +12,7 @@ export default {
     { nom: 'alpha du lot d abord', faire: 'attendre',
       verifier: (p) => {
         const h = p.moteur.houblon('beermaverick-nugget');
-        const a = document.querySelector('[data-role="fiche"] [data-role="fiche-alpha"] [data-role="alpha"]');
+        const a = document.querySelector('[data-role="fiche"] [data-role="alpha"]');
         const src = /^plage/.test(h.alpha.source) ? 'fiches' : 'lot';
         const v = h.alpha.valeur.toLocaleString('fr-CH', { maximumFractionDigits: 1 });
         return (a && a.dataset.source === src && a.textContent.includes(v)) || `α de la fiche : ${a?.dataset.source} « ${a?.textContent} », moteur ${src} ${v}`;
@@ -33,7 +33,7 @@ export default {
     { nom: 'silhouette et autres', faire: 'attendre',
       verifier: (p) => {
         const h = p.moteur.houblon('beermaverick-nugget');
-        if (document.querySelectorAll('[data-role="fiche"] svg[data-radar][data-objet="fiche"] use').length !== 12) return 'silhouette sans ses 12 axes';
+        if (document.querySelectorAll('[data-role="fiche"] svg[data-radar][data-objet="fiche"] text').length !== 12) return 'radar sans ses 12 axes nommés';
         const au = document.querySelector('[data-role="fiche"] [data-role="autres"]');
         if (h.partSansFamille > 0 && (!au || Math.abs(parseFloat(au.dataset.part) - h.partSansFamille) > 0.01)) return 'part « autres » absente ou fausse';
         return true;

@@ -39,10 +39,10 @@ export function AlphaLu({ h, mode = 'ligne', balise = h.cle }: { h: HoublonLu; m
 }
 
 /** Usage en mot, jamais en picto seul (D90) : data-usage et data-source comme hopRole. */
-export function Usage({ h }: { h: HoublonLu }) {
+export function Usage({ h, long = false }: { h: HoublonLu; long?: boolean }) {
   const r = hopRole(h.cle);
   const valeur = r.value ?? 'inconnu';
-  const mot = r.value === 'double' ? 'mixte' : r.value ?? 'usage ?';
+  const mot = r.value === 'double' ? (long ? 'double usage' : 'mixte') : r.value ?? 'usage ?';
   return (
     <span data-role="usage" data-usage={valeur} data-source={/^fournisseur/.test(r.source) ? 'fournisseur' : 'règle'} title={r.source}
       className="inline-flex items-center h-5 px-1.5 rounded-full bg-cave-800 text-xs text-cave-200 whitespace-nowrap">{mot}</span>
