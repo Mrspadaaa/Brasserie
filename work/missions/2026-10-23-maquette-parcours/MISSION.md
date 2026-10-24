@@ -302,3 +302,16 @@ Rejeu du pilote, `node scripts/agents/systeme.mjs voies work/missions/2026-10-23
   - enveloppe : `data-theme="clair"` posé toujours ; vérifié au rejeu en émulant `prefers-color-scheme: dark` ;
   - D123 reprend sa base : pas de mini maquettes (ce n'est pas un nouveau choix). Ordre : D123, puis D122 et D115.
   - La supervision rejouera elle-même le glisser côté froid avant son OK.
+
+### D124 (24.10, 8 h) : fonctions et choix perdus
+- Ses mots : « Ça a bien avancé mais le rail par exemple à perdu en fonctionnalités et certaines de mes choix ont été
+  perdue » ; puis « Aide toi de sous agent. Je peux aussi lancé une autre session si il faut » (SPEC § 1, D124 ; commit
+  40fab88d). Cause : les inventaires de ses maquettes ne relèvent que l'état au repos ; CHOIX OK et RAIL OK aveugles aux
+  gestes et aux états.
+- Lancées en même temps (auteurs Sonnet, 08 h 10) : p19 (D123, contrôle du côté froid), p20 (inventaire joué du rail de
+  sa base, `controle-fonctions-rail.mjs`), p21a (états de l'étape hors rail, de Ma bière, de la fiche), p21b (états de
+  Suggérer, de Comparer, de ses acquis). Version rejetée : `prototypes/houblons-v4/maquettes/parcours-5345f6ad/`.
+- Ensuite (pilote) : relire les relevés et les captures côte à côte ; reporter les sorties de p19 dans la ligne D123 de
+  la portée ; `controle-choix.mjs` rejoue les relevés `choix/etats/*.json` (contrôle d'abord, L13) ; reprise de l'étape et
+  des écrans touchés par le concepteur (Opus), depuis sa base ; critique (Fable) côte à côte ; page côte à côte de tous
+  les états ; artefact neuf (enveloppe toujours en clair). D122 et D115 après.
