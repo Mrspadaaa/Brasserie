@@ -47,6 +47,7 @@ const rangees = [
   ['Fiche', [
     { t: 'g1', s: 'choix', m: '« la v1 est la meilleure »', i: E + 'base/captures/consolide-fiche-390.png' },
     { t: 'fiche courte, Citra cryo', s: 'bien', m: '« Ça c\'est très bien »', i: E + 'fils13-carte-fiche/captures/g1-fiche-citra-390.png' },
+    { t: 'flb5b, la matrice nettoyée', s: 'choix', m: '« Partie sur celle ci » ; les types hors 16D, « très important surtout dans la comparaison »', i: E + 'fils24-fiche-liste/captures/flb5b-premier-ecran.png' },
     { t: 'flb5, par contraste', s: 'reserve', m: '« Ça j\'aime beaucoup »', r: 'encore un peu fouillis, pas 100 % clean', i: E + 'fils24-fiche-liste/captures/flb5-premier-ecran.png' },
   ]],
   ['Substituer', [
@@ -55,6 +56,7 @@ const rangees = [
     { t: 'u4 enrichi, ce soir', s: 'ajout', m: '« moins focus sur l\'ibu, substitution en fonction de l\'étape »', i: 'prototypes/houblons-v4/maquettes/parcours-substituer/captures-d127/d127-dryhop.png' },
   ]],
   ['Dryhopper', [
+    { t: 'p4b2f, l\'aire du floral', s: 'choix', m: '« Partir sur cette version »', i: E + 'fils23-dryhopper/passe4/captures/p4b2f-premier-ecran.png' },
     { t: 'y1b', s: 'bien', m: '« y1b est de mon point de vue semble meilleur »', i: E + 'fils21-choisir/captures/y1b-premier-ecran.png' },
     { t: 'y1b, le critère', s: 'bien', m: '(y1b)', i: E + 'fils21-choisir/captures/y1b-critere.png' },
     { t: 'y1b, le défi', s: 'bien', m: '(y1b)', i: E + 'fils21-choisir/captures/y1b-defi.png' },
@@ -62,7 +64,7 @@ const rangees = [
     { t: 'a2b, la levure', s: 'reserve', m: '« voir ce que la levure change […] vraiment intéressant »', r: 'peut-être pas en main', i: E + 'fils21-choisir/captures/a2b-390.png' },
     { t: 'd1, tout ouvert', s: 'reserve', m: '« d1, tout ouvert était aussi intéressant »', r: 'trop bordélique', i: E + 'fils20-dryhop/captures/d1-ouvert-390.png' },
     { t: 'p4b2, le brassin en courbes', s: 'reserve', m: '« Ça j\'aime beaucoup »', r: 'encore assez peu lisible', i: E + 'fils23-dryhopper/passe4/captures/p4b2-premier-ecran.png' },
-    { t: 'a1, plancher', s: 'ouvert', m: 'passe 4 à choisir (11 mini maquettes)', i: E + 'fils23-dryhopper/serie-a/passe2/captures/a1-premier-ecran.png' },
+    { t: 'a1, l\'ancien plancher', s: 'bien', m: 'remplacé par p4b2f (24.10, soir)', i: E + 'fils23-dryhopper/serie-a/passe2/captures/a1-premier-ecran.png' },
   ]],
   ['Levure', [
     { t: 'pas encore choisi', s: 'ouvert', m: 'écran au choix ouvert (a2b ci-dessus)', i: null },

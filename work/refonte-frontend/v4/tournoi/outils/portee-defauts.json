@@ -1779,6 +1779,16 @@
    "resultat": "Mesuré le 24.10 au soir : maquettes/parcours CONTINUITE ECHEC (4 : titres des outils 20 et 15 px ; pied de Dryhopper au-dessus du rail).",
    "verdict": "garde",
    "script": "controle-continuite.mjs"
+  },
+  {
+   "id": "D130",
+   "mots": "« Les type spéciaux des houblons hors 16d ! C'est très important surtout dans la comparaison !!!! » (24.10, soir, sur flb5b)",
+   "controle": "controle-hors-16d.mjs <page.html> [--min=N] [--premier-ecran] (contrat data-role=hors-16d)",
+   "portee": ["comparer","substituer","fiche"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquettes/parcours, Comparer (--min=3 --premier-ecran) et Substituer (--min=2) HORS-16D ECHEC (0 élément).",
+   "verdict": "garde",
+   "script": "controle-hors-16d.mjs"
   }
  ]
 }

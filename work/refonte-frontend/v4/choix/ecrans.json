@@ -83,7 +83,7 @@
    "ecran": "fiche",
    "route": "fiche",
    "statut": "choisi",
-   "choix": "g1, et la fiche courte de type Citra cryo",
+   "choix": "g1, et la fiche courte de type Citra cryo ; la liste sous le radar : flb5b (« La matrice nettoyée », 24.10, soir)",
    "mots": "la v1 est la meilleure",
    "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
    "controles": [
@@ -93,7 +93,13 @@
     "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=fiche"
    ],
    "note": "La forme de la fiche se vérifie sur sa page (fiche/etat.html, ouverte) par l'inventaire g1 ; le geste (appui long, survol à l'ordinateur) par controle-fiche et controle-fiche-baseline depuis l'étape Houblons.",
-   "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-fiche.json"
+   "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-fiche.json",
+   "complements": [
+    {
+     "mots": "Partie sur celle ci, elle met parcontre en avant qqch qu'il faut ajouter à plusieurs endroits. Les type spéciaux des houblons hors 16d ! C'est très important surtout dans la comparaison !!!!",
+     "capture": "work/refonte-frontend/v4/ecran-1/fils24-fiche-liste/captures/flb5b-premier-ecran.png"
+    }
+   ]
   },
   {
    "ecran": "dryhopper",

@@ -516,6 +516,11 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
 - **Dryhopper choisi : p4b2f** (24.10, soir, sur p4b2f, « L'aire du floral », retouche de p4b2, dans « Planches · 24.10 »), mot
   pour mot : « Partir sur cette version ». Son choix ferme l'écran ouvert depuis le 23.10 (a1 provisoire) ; registre
   `choix/ecrans.json` ; reprise r13-dryhopper. D43.
+- **La liste de la fiche choisie : flb5b ; les types hors 16D partout** (24.10, soir, sur flb5b, « La matrice nettoyée »), mot
+  pour mot : « Partie sur celle ci, elle met parcontre en avant qqch qu'il faut ajouter à plusieurs endroits. Les type spéciaux
+  des houblons hors 16d ! C'est très important surtout dans la comparaison !!!! ». Chaque houblon montré dit ses mots hors des
+  familles de la 16D (« Lui seul : vin blanc, raisin… »), tirés de ses fiches : dans la fiche (flb5b), au premier écran de
+  Comparer, dans Substituer. D130.
 - **Les mots au premier écran** (24.10, soir, sur Substituer au-dessus de 70 mots), mot pour mot : « dépasse les 70 mots au
   premier écran c'est pas ultra grave. Il faut être modéré avec les mots ». Le seuil devient une alerte ; l'échec seulement
   au-delà de 40 % de plus (`mots-premier-ecran.mjs --modere`, dans controle-commun). Être modéré reste la règle.
