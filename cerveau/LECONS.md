@@ -108,6 +108,13 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Rôles : pilote
 - Contrôle : `node scripts/agents/systeme.mjs agents`
 
+### L28 — Charger les skills de méthode avant de planifier, surtout après une reprise
+- Erreur : 24.10, reprise sur un résumé du 20.10 : six voies lancées sans `voies` ni `conseil`, un lot de création prévu sans chaleurs. « Pourquoi tu n'as pas utiliser de base les bon outils ? »
+- Cause : le résumé précédait le système.
+- Faire : avant le premier VOIE.md ou Agent, invoquer `voies` (et `conseil` si le lot fixe une direction).
+- Rôles : pilote
+- Contrôle : aucun ; hook proposé
+
 ## Décider
 
 ### L19 — Cadrer une décision sur l'acquis et les choix en attente, et lire la plainte comme une proposition
@@ -154,8 +161,6 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 
 ## Mécanisées
 
-- M08 (L09) — Chaque chemin cité existe : le 22.10, un brief citait `scripts/profil-simule-cas.ts` au lieu de `prototypes/houblons-v4/scripts/`. `systeme.mjs mission` vérifie les sources de MISSION.md ; passer les chemins des VOIE.md par Glob.
-- M09 — Planche de picto : quatre refus du picto « épicé » au 22.10. `controle-planche-picto.mjs` (D101), rien sous 12 px. La lisibilité n'est pas mesurée : nommer chaque picto sur une loupe en vrais pixels ([[pictos-familles]]).
 - M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle : le 22.10, les deux `\b` de D98 étaient des 0x08 (table `NOMME` morte, vue par la voie r6i), comme le `—` du pilote devenu un tiret. `systeme.mjs cablage` refuse tout caractère de contrôle dans les scripts de contrôle ; une voie qui en écrit un le rejoue (oublié deux fois le 24.10). Un critère n'imprime jamais son jeton sans condition : le jeton dans la commande donne un faux vert.
 - M11 (L16) — Tout livrable d'agent est un fichier du dépôt : `JURY-VERDICT.md` annoncé, jamais produit. `systeme.mjs voies` rejoue les critères de chaque voie au lieu de croire son rapport.
 - M12 — Une variante rejetée est relancée ou écartée ; des écrans ne sont finis qu'une fois publiés, chaque version dans un artefact neuf et lisible (22.10 : 6 rejets en plan ; 23.10 : « chaque version devrait en créé des nouveaux »). `systeme.mjs voies` (« ## Pages »), `verifier-page.mjs`.
