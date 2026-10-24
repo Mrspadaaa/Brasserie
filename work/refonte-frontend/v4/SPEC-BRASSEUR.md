@@ -483,6 +483,13 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   bas, et les jeux courts n'avaient que trois variantes. Une page par choix : toutes ses mini maquettes à la fois, côte à
   côte avec sa référence. Puis, mot pour mot : « Pas besoin d'autant, représente moi aussi les mini maquettes déjà
   faites pour ces vues. Je dirais 11 par vue ». Onze par vue, celles déjà faites comprises. D126.
+- **u4, Substituer** (24.10, soir, sur « u4 · ton choix »), mot pour mot : « bien mais trop centré ibu, il faudrait aussi pas
+  que à 60' mais aussi en dry hop. SI non plutôt bien. Attention à toujours utilisé la baseline. Aussi ajouter à comparé doit
+  être facile. Et le remplacement aussi. Ainsi que ferme la vue ». u4 reste son choix ; les remplaçants se lisent aussi au
+  dry hop (pas seulement à 60′, où le score pèse l'amertume), sur la baseline, et ajouter à Comparer, remplacer et fermer se
+  font d'un toucher. D127. Puis, sur la capture entière de u4, une coche rouge au tableau « Arômes 16D » (familles au style
+  et hors style, une barre par houblon, pointillé = non décrit, « aucune des trois fiches ne les décrit, ce n'est pas
+  zéro ») : « Ça c'est vraiment bien » (acquis).
 - **À quoi a servi le quota** (24.10, soir), mot pour mot : « En quoi tout ces quota ont été utile ??? ». Le 24.10, la
   plus grande part est allée à l'outillage (contrôles, cerveau, un délai de test débogué) et à des panels de 48, quand rien
   ou presque ne lui avait été montré. Le quota sert d'abord ce qu'il verra : montrer tôt ce qui est fait (L11).

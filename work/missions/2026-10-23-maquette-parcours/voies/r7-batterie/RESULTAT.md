@@ -1,4 +1,80 @@
-ECHEC — G2 seul : ETATS 113/117 (2 acquis expliqués, 2 doses en délai) ; BATTERIE OK 33/33
+OK — passe 3 finie : BATTERIE OK 32/32, ETATS OK 116/116, Comparer 80 mots, cas-k2 « 1 au style »
+
+## Passe 3, D40 bis (fin)
+Critères finaux, rejoués après la dernière construction : `batterie.mjs --sans-construire` → `BATTERIE OK 32/32` ;
+`controle-etats.mjs prototypes/houblons-v4/maquettes/parcours` → `ETATS OK (116/116) ; 11 voulu(s) non rejoué(s) ; 1 en attente de son
+choix : etat-acquis-y1b-brassin-au-doigt (dryhopper)` ; `controle-comparer-etapes` → `COMPARER-ETAPES OK`. Captures regardées :
+`%TEMP%7p3etat-acquis-premier-plan-80-mots-construite.png`, `…etat-etape-cas-k2-vide-construite.png` (« 1 au style · 11 non situées »).
+La DÉCISION À PRENDRE de la passe 3 (plafond de 80, cas-k2) est tranchée par D40 bis.
+1. Comparer, premier écran : 86 → 80 mots (compte de `controle-etats`, relevé `%TEMP%7mots2.mjs`). Les mots de sa
+   capture r6a restent (« dose égale 4 g/L », « ~ dans », « ~ hors »). Passés à un toucher (avant → après, chemin d'accès) :
+   - « fixé » devant la ligne de contexte → dans le libellé de la ligne (« Fixé pour les trois : … », attendu de
+     `etat-comp-repos`) ; `LigneContexte sansMot` ;
+   - « pourquoi ? » (r6n2), lien au bout de la réponse → toute la ligne de réponse l'ouvre (« pourquoi ce classement ? ») ;
+   - « cran » après « ~+0,4 » (r6n2) → dans le libellé du nombre (« ~+0,4 cran »), le picto floral suit le nombre ;
+   - « α 13 » de la référence Nugget (x3b) → un toucher sur « Nugget » l'écrit, et il reste dans le libellé de la colonne
+     (« Référence : Nugget, α 13 % … ») ; `Etapes.tsx` ;
+   - « chacun » : retiré de la ligne écrite, sa capture r6a dit « dose égale 4 g/L » (règle n° 1) ; il reste dans le libellé
+     (« dose égale : 4 g/L chacun »).
+   Essai écarté : cacher les nombres de la colonne de référence (−3) faisait échouer `controle-comparer-etapes.mjs` (D107 :
+   « référence beermaverick-nugget : valeur à 60′ texte vide ») ; ils restent écrits. → `COMPARER-ETAPES OK`.
+2. cas-k2 : sa page est une bière sans houblon et sans dégustation (pack S4 : « sans houblon, le modèle ne voit que le
+   fond de levure US-05 ») : `main.tsx` pose `configurerDonnees({ degustation: null })` pour `data-cas="k2"`. Sans houblon ni
+   dégustation, `lireBiere` lit le fond de levure par `recipeProfile` (le modèle de son pack ; `simulerCas` ne simule rien sans
+   houblon) : Agrumes placé (~4,9, source la levure), le reste non situé : « 1 au style · 11 non situées », comme sa page.
+   Avec des houblons, une famille simulée reste placée si une fiche d'un houblon ou la levure seule (`levureSeule`) la décrit :
+   Végétal pour Nugget reste non situé.
+
+## Passe 3 (24.10, soir) : les écarts des critiques r8a, r8b, r8c (PASSE3.md, D40)
+Captures après correction : `%TEMP%\r7\p3\<id>-construite.png` (controle-etats `--id=… --captures=`), ouvertes à côté des
+siennes (`work/refonte-frontend/v4/choix/etats/captures/<id>-choisie.png`).
+1. Ajouts rapides (REJET de l'étape) : `quickAdd.ts` gagne l'option `aromatique` (défaut false, inchangé ; `npm run
+   check:engine` → `ENGINE-V4 OK (127 tests)`). `Ajouter.tsx` la passe toujours : 10 g (ou le stock libre) à 10′, jamais de
+   compensation à 60′. `buildFromEmpty` seulement pour une recette vide à l'ouverture (cas-k2). Vidée par « retirer » : les
+   cinq de sa base (Motueka, Citra cryo, Cascade, Target 5 g, Saaz Late, à 10′), sans la jauge de cas-k2 : même écran que
+   `etat-etape-retirer-choisie.png`. Type whirlpool et à froid : Motueka, Citra cryo, Saaz Late à 10 g, 10′ (+3, +9, +2 IBU).
+2. Ajout rapide posé : l'effet vient de `additionEffect` du moteur sur la recette sans l'ajout, en crans arrondis, comme
+   `build.mjs` de sa base : Motueka à 10′ dit « floral +1 » (`Carte.tsx`).
+3. « Substituts › » de la fiche : `lireRemplacants` de u4 (Substituer) : Magnat 99, Yeoman 99, Idaho 7 93, Sabro 93, Nelson
+   Sauvin 86, Altus 79–99, Trident 79–99, Zenia 78–98, rangés par le pire cas, plage hachurée (`Replis.tsx`, `fiche/jeu.mjs`).
+4. Survol à 1280 : la fiche flotte à droite (380 px), sans voile ni flou, la carte survolée encadrée (`data-fiche-survol`,
+   `gestes.ts`, `fiche.css`).
+5. « Pour égaler » (r6n2) : une section par famille (le critère, puis la signature de chaque houblon : sa famille la plus
+   citée), barre à la couleur de la famille sur 0–8 g/L, trait à 4 g/L, la référence « 4 g/L · réf. », « ~jamais, même à
+   8 g/L » ; les agrumes de Cascade : Idaho 7 ~7,5 g/L, Galaxy ~2,5 g/L, comme sa capture. La même amertume : 10 IBU à 10′ et
+   5 IBU au whirlpool (`Feuilles.tsx`, `calcul.ts egaler(max)`).
+6. Végétal : une famille simulée n'est placée que si une fiche d'un houblon de la recette la décrit (`moteur/index.ts`, `lu`) :
+   « 6 au style · 5 non situées », Végétal hachuré, sur l'étape et sur Ma bière.
+7. Ma bière : « Boisé et résineux trop marqué » (`Alerte long`).
+8. cas-k2 : le décompte remplace l'alerte. DÉCISION : seulement pour la recette vide à l'ouverture ; après « retirer », sa capture
+   (`etat-etape-retirer-choisie.png`) garde « Boisé et résineux trop marqué » et le profil : je suis sa capture (REPRISE § 6).
+   Mesure : la maquette dit « 0 au style · 11 non situées » ; sa page « 1 au style · 11 non situées ». Écart restant : sa
+   page cas-k2 n'a pas la dégustation (résineux non situé, agrumes placé) ; la maquette garde la dégustation de la recette
+   (résineux hors style) et, par la règle du point 6, ne place pas l'agrumes que seule la levure apporte. À trancher.
+9. ♡ de l'étape : la bulle « aimer · neutre · exclure » s'ouvre sur la carte, à gauche du ♡.
+10. Visée à 0 : le losange se décale de 14 px du point qu'il couvrirait, relié par le pointillé (« ◇---○ ») (`Base.tsx`).
+11. Fiche : écran derrière assombri (noir 16 %), sans flou ni voile blanc ; « α 11–14 % » en chiffres proportionnels ;
+    ♡ et ⊘ actifs : glyphe rempli ou trait épais, sans disque.
+12. Comparer : « dose égale 4 g/L chacun » en mots ; « ~ ✓ dans », « ~ ⚠ hors » ; la ligne α des vraies valeurs dit sa
+    convention (« % masse · toutes fiches ») à côté des nombres de la fiche (fiche la plus récente).
+13. Déclencheurs : `etat-acquis-panel-osu` passe sur le rappel du panel dans « Valeurs » (avec `etat-comp-osu`) ; la fiche
+    g1 garde le sien sur la feuille ; avec le cadrage du pilote (repos amené dans le cadre), les trois captures montrent
+    leur état.
+Laissés (une ligne chacun) : le fil d'étapes de l'app ne mène nulle part (pas d'autre écran dans la maquette) ; Citra cryo
+« 1 seule fiche » (plus honnête, montré avec sa raison) ; les nombres de Nelson Sauvin (mesure L14) ; le groupe « Changer de
+levure » (D35) ; « Sans Nugget › » (#145, demandé par lui).
+Critères passe 3, rejoués après la dernière construction (`construire.mjs` → `CONSTRUIT OK (9 pages)`) :
+- `batterie.mjs --sans-construire` → `BATTERIE OK 32/32`.
+- `controle-etats.mjs prototypes/houblons-v4/maquettes/parcours` → `ETATS ECHEC (1/116) ; 11 voulu(s) non rejoué(s) ; 1 en attente
+  de son choix : etat-acquis-y1b-brassin-au-doigt (dryhopper)`. Le seul échec : `etat-acquis-premier-plan-80-mots` →
+  « 86 mots au premier écran (au plus 80) ». Il était à 80 tout juste ; le point 12 ajoute « dose égale … chacun » (+3) et
+  « dans » / « hors » sous les trois colonnes (+3), tous deux demandés (D40, D88) et présents sur sa capture r6a (« dose égale
+  4 g/L », « ~ dans », « ~ hors »). Le plafond de 80 a été mesuré sur r6a seule ; l'écran porte aussi les ajouts voulus de x3b
+  et r6n2 (D107 : « Face à ta stout, par floral », « Placer Idaho 7 › », rangées 60′ / 10′ / dry hop). Sans « dans » : 84 ;
+  sans « chacun » ni « fixé » : 84 au mieux. Je garde ses mots.
+- `npm run check:engine` (prototypes/houblons-v4) → `ENGINE-V4 OK (127 tests)` ; `verifier-types.mjs` → `TYPES OK`.
+DÉCISION À PRENDRE (passe 3) : (a) relever `max_mots` de `etat-acquis-premier-plan-80-mots` à la mesure de l'écran D107
+(86), ou (b) retirer « chacun » et « dans » (84, toujours au-dessus) ; (c) le décompte de cas-k2 (point 8).
 
 ## Passe 2 : décisions du pilote (24.10)
 1. RETOUR : le pilote a appliqué le chemin en deux pas à `controle-retour.mjs` (commit e73ce890) → `RETOUR OK`.

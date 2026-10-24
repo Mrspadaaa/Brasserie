@@ -1749,6 +1749,16 @@
    "resultat": "Mesuré le 24.10 : 2026-10-24-choix-vues PAGE-CHOIX ECHEC (9/9 : bandes qui défilent, 3 à 11 variantes, aucune référence marquée) ; 2026-10-23-dryhopper-v0 ECHEC (une par rangée à 390, pas de référence marquée).",
    "verdict": "garde",
    "script": "controle-page-choix.mjs"
+  },
+  {
+   "id": "D127",
+   "mots": "« bien mais trop centré ibu, il faudrait aussi pas que à 60' mais aussi en dry hop. SI non plutôt bien. Attention à toujours utilisé la baseline. Aussi ajouter à comparé doit être facile. Et le remplacement aussi. Ainsi que ferme la vue » (24.10, soir, sur u4)",
+   "controle": "controle-substituer-gestes.mjs <dossier construit> (S1 dry hop, S2 ajouter à Comparer, S3 remplacer, S4 fermer)",
+   "portee": ["substituer"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 : maquettes/parcours SUBSTITUER-GESTES ECHEC (2/4 : pas de dry hop, aucun bouton Comparer).",
+   "verdict": "garde",
+   "script": "controle-substituer-gestes.mjs"
   }
  ]
 }

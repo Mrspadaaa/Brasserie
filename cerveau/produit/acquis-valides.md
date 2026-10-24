@@ -2,7 +2,7 @@
 name: acquis-valides
 description: Éléments de l'outil houblons que le brasseur a validés. Chaque brief de lot les reprend et un contrôle vérifie leur présence (leçon L06).
 type: produit
-maj: 2026-10-23
+maj: 2026-10-24
 sources: work/refonte-frontend/v4/SPEC-BRASSEUR.md ; work/refonte-frontend/registre.md (retour du lot 21, 20.10) ; registre-archive-2026-10-17-au-20.md (lot 15, q2b)
 ---
 
@@ -34,6 +34,7 @@ Plancher à enrichir, pas plafond ([[le-brasseur-choisit]]).
 | r6n2 : le premier écran de r6a, le reste à un toucher sous un dock ; la référence de densité | « r6n2 donne vraiment bien » (23.10) | Comparer ; niveau attendu d'un panel (M14) |
 | Picto « épicé » : cannelle et clou croisés (f1 de la série F, r4d) | « Mon Picto préféré est cannelley clou croisé. Ça doit être changé dans la baseline » (23.10) | symbole `p-spice` de `fils17-standard/v3/planche.html` |
 | La maquette jouable de bout en bout (construction d332792c) | « La nouvelle maquette (artefacts) est un vrai bon point de départ » (23.10, soir) | base du travail suivant : [[maquette-jouable]] |
+| Le tableau « Arômes 16D » de u4 (familles au style et hors style, une barre par houblon, pointillé = non décrit) | « Ça c'est vraiment bien » (24.10, soir, coche sur la capture de u4) ; mais l'ensemble « Trop centré ibu quand même » | Substituer, à tous les moments |
 
 Contrôle de présence, écrit le 22.10 : `controle-acquis.mjs` (D99). Sur un écran Comparer, il exige
 le radar, la chimie, le panel OSU et les vraies valeurs, balisés `data-acquis`. À ajuster avant le
