@@ -4,7 +4,7 @@
 // « Ajouter — houblon… » et les ajouts rapides ; « Résineux trop marqué › » et les 12 familles en deux colonnes,
 // « › » ouvrant l'onglet Ma bière. Moteur en direct ; ce qui vient de changer porte un repère discret au retour
 // d'un outil. Classes propres préfixées pq-ma-biere- (L26).
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { PageShell } from '@app/pages/PageShell';
 import { WizardStepName, WizardStepRail } from '@app/ui/WizardStepBar';
@@ -21,6 +21,7 @@ import { Frise } from './Frise';
 import { Lentille } from './Lentille';
 import { useRepere } from './repere';
 import './ma-biere.css';
+import './rail.css';
 
 /** Les sept étapes de BrewWizard (src/pages/BrewWizard.tsx, STEPS), Houblons la 3e. */
 const ETAPES = [
@@ -51,6 +52,9 @@ function reperesDe(avant: RecetteParcours | null, recette: RecetteParcours): Rec
   return r;
 }
 
+/** Les ajouts entrés depuis cette étape (base : l.nouveau) : leur carte dit ce qu'ils font bouger (« floral +1 »). */
+const NOUVEAUX = new Set<string>();
+
 export default function MaBiere() {
   const recette = useRecette();
   const biere = useBiere();
@@ -63,6 +67,25 @@ export default function MaBiere() {
   const { avant, effacer } = useRepere(recette, route.ecran === 'ma-biere' || route.ecran === 'fiche');
   const biereAvant = useMemo(() => (avant ? lireBiere(avant) : null), [avant]);
   const reperes = useMemo(() => reperesDe(avant, recette), [avant, recette]);
+  // Ce qui vient de changer sur l'étape (base : majIbu, apercu) : la recette d'avant le dernier geste, pour les points
+  // « avant » des barres du profil ; l'écart du total d'IBU écrit au-dessus de l'IBU pendant 2 s (« +2 », « −60 »).
+  const recetteRef = useRef(recette); recetteRef.current = recette;
+  const [avantLocal, setAvantLocal] = useState<RecetteParcours | null>(null);
+  const biereAvantLocal = useMemo(() => (avantLocal ? lireBiere(avantLocal) : null), [avantLocal]);
+  const geste = () => { effacer(); setAvantLocal(recetteRef.current); };
+  const ibuArrondi = Math.round(biere.ibu.valeur);
+  const ibuPrec = useRef(ibuArrondi);
+  const [ecart, setEcart] = useState<number | null>(null);
+  useEffect(() => {
+    const d = ibuArrondi - ibuPrec.current;
+    ibuPrec.current = ibuArrondi;
+    if (!d) return;
+    setEcart(d);
+    const t = window.setTimeout(() => setEcart(null), 2000);
+    return () => window.clearTimeout(t);
+  }, [ibuArrondi]);
+  const champ = useRef<HTMLInputElement>(null);
+  const [, majNouveaux] = useState(0);
   // Les deux colonnes de la base : familles attendues et fruitées à gauche, le reste à droite.
   const moitie = Math.ceil(sc.order.length / 2);
   const colonnes = [sc.order.slice(0, moitie), sc.order.slice(moitie)];
@@ -87,18 +110,21 @@ export default function MaBiere() {
       mobileHeader={tete} className="pq-recette"
       actions={<span data-element="etape-titre" className="flex items-center gap-2"><WizardStepName steps={ETAPES} currentIndex={ETAPE_HOUBLONS} /><ActionsCoquille /></span>}
       progress={<WizardStepRail steps={ETAPES} currentIndex={ETAPE_HOUBLONS} onSelect={surEtape} showLabels />}>
-      <div data-ecran="ma-biere" className="pq-ma-biere space-y-1">
-        <Bandeau biere={biere} avant={biereAvant} element="etape-bandeau" />
+      <div data-ecran="ma-biere" data-etat="etat-etape-repos-1280" className="pq-ma-biere space-y-1">
+        <div data-etat={document.body.dataset.cas === 'k3' ? 'etat-etape-cas-k3' : undefined}>
+          <Bandeau biere={biere} avant={biereAvant} element="etape-bandeau" ecart={ecart} />
+        </div>
 
-        <Frise recette={recette} biere={biere} reperes={reperes} onGeste={effacer} />
+        <Frise recette={recette} biere={biere} reperes={reperes} nouveaux={NOUVEAUX} onGeste={geste}
+          ouvrirChamp={() => champ.current?.focus({ preventScroll: true })} />
 
-        <Ajouter recette={recette} onGeste={effacer} />
+        <Ajouter recette={recette} onGeste={geste} champRef={champ} onAjout={(id) => { NOUVEAUX.add(id); majNouveaux((x) => x + 1); }} />
 
         {/* D121 (« Seul bouton qui ouvre vraiment l'analyse. Peut, être amélioré ») : tout le bloc du profil ouvre l'onglet
             Ma bière d'un toucher (l'alerte, une famille, une barre), et l'entrée dit où elle mène. Les commandes du bloc
             (« ? », « + floral », Au style / Absolu) gardent leur geste. Variante de la version : A ; B et C sur la planche
             variantes-d121/ (drapeau ?d121=b|c). */}
-        <section data-element="etape-profil" data-role="profil" data-variante-d121={D121}
+        <section data-element="etape-profil" data-role="profil" data-etat="etat-etape-pied-profil" data-variante-d121={D121}
           aria-label={`Profil de ma bière, ${echelle === 'style' ? `au style ${sc.code}` : 'absolu'} ; toucher pour ouvrir l'analyse`}
           onClick={(e) => { if (!(e.target as Element).closest('button, a, input, [role="radiogroup"], [role="radio"], [data-role="legende"]')) aller({ ecran: 'biere' }); }}
           className={`pq-ma-biere-profil pq-ma-biere-profil-${D121} space-y-1`}>
@@ -107,9 +133,9 @@ export default function MaBiere() {
               ? <button type="button" data-role="pont-biere" onClick={() => aller({ ecran: 'biere' })} className="min-w-0 flex items-center gap-1.5 text-left">
                   <Alerte biere={biere} ordre={sc.order} /><span className="pq-ma-biere-profil-mot shrink-0">· détail</span><ChevronRight className="w-4 h-4 shrink-0" aria-hidden="true" />
                 </button>
-              : <Alerte biere={biere} ordre={sc.order} />}
+              : <Alerte biere={biere} ordre={sc.order} long />}
             {D121 === 'a' && (
-              <button type="button" data-role="pont-biere" aria-label="Ouvrir l'analyse : l'onglet Ma bière" onClick={() => aller({ ecran: 'biere' })}
+              <button type="button" data-role="pont-biere" data-etat="etat-etape-analyse" aria-label="Ouvrir l'analyse : l'onglet Ma bière" onClick={() => aller({ ecran: 'biere' })}
                 className="pq-ma-biere-pont-analyse ml-auto shrink-0 inline-flex items-center gap-0.5 h-8 pl-3.5 pr-2 rounded-full text-sm font-semibold">
                 analyse<ChevronRight className="w-4 h-4" aria-hidden="true" />
               </button>
@@ -125,7 +151,7 @@ export default function MaBiere() {
             <p><b>Barre</b> : la zone grise est le style {sc.code} ; le pointillé, au-dessus du style.</p>
             <p><b>Point plein</b> : dégusté le 18.10. <b>Rond</b> : prévu, simulé (~). <b>Hachuré</b> : non situé, jamais zéro.</p>
             <p><b>Toucher le profil</b> : l'analyse dans l'onglet Ma bière (barres au style, visées, radar).</p>
-            <p><b>Frise</b> : glisser le repère d’un ajout (« 60′ ») vers le bas, par 5′, jusqu’au dry hop en jours.</p>
+            <p><b>Rail</b> : glisser la pastille d’un ajout (« 60′ ») : ébullition par 5′, whirlpool en °C, à froid de J+0 à J+14.</p>
           </PanneauLegende>
           <div className="grid grid-cols-2 gap-x-4">
             {colonnes.map((c, k) => (
@@ -133,7 +159,7 @@ export default function MaBiere() {
                 {c.map((f) => (
                   <div key={f} data-famille-profil={f} className="grid grid-cols-[minmax(0,5.5rem)_1fr] items-center gap-1.5 min-h-[1.5rem]">
                     <NomFamille x={biere.profil[f]} petit />
-                    <PisteBase x={biere.profil[f]} avant={biereAvant?.profil[f]} echelle={echelle} fine />
+                    <PisteBase x={biere.profil[f]} avant={(biereAvantLocal ?? biereAvant)?.profil[f]} echelle={echelle} fine />
                   </div>
                 ))}
               </div>

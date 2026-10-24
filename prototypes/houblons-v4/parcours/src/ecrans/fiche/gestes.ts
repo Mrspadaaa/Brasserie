@@ -36,9 +36,24 @@ export function useGestesFiche(ouvrir: (cle: string) => void) {
   const stopSurvol = () => { if (survol.current != null) window.clearTimeout(survol.current); survol.current = null; };
   const lancer = (cle: string) => { partage.derniere = cle; ouvrirRef.current(cle); };
 
-  /** Sur toute la carte du houblon : appui long → fiche ; toucher court → onCourt. */
+  // D49 (« La zone de trigger est que le nom alors que ça devrait être la fiche entière ») : à l'ordinateur, le survol
+  // long de toute la carte ouvre la fiche, comme sa base (fiche.js, zoneHoublon : la carte hors de ses commandes).
+  const commande = (e: React.PointerEvent) => !!(e.target as Element).closest?.('button, input, a, select, textarea, [role="slider"]');
+  const armerSurvol = (cle: string) => {
+    if (survol.current != null) return;
+    if (!partage.sortiDepuis && partage.derniere === cle) return;
+    if (performance.now() - partage.fermeeA < 400) return;
+    survol.current = window.setTimeout(() => { survol.current = null; lancer(cle); }, DUREE_SURVOL);
+  };
+
+  /** Sur toute la carte du houblon : appui long → fiche ; toucher court → onCourt ; survol long à la souris → fiche. */
   const appui = useCallback((cle: string, onCourt?: () => void): Props => ({
     'data-appui-long': '',
+    onPointerEnter: (e: React.PointerEvent) => {
+      if (e.pointerType !== 'mouse' || e.buttons || commande(e)) return;
+      armerSurvol(cle);
+    },
+    onPointerLeave: (e: React.PointerEvent) => { if (e.pointerType === 'mouse') { stopSurvol(); partage.sortiDepuis = true; } },
     onPointerDown: (e: React.PointerEvent) => {
       if (e.button > 0) return;
       stopSurvol();
@@ -49,6 +64,8 @@ export function useGestesFiche(ouvrir: (cle: string) => void) {
     },
     onPointerMove: (e: React.PointerEvent) => {
       if (depart.current && Math.hypot(e.clientX - depart.current.x, e.clientY - depart.current.y) > 10) stopLong();
+      // À la souris : sur une commande de la carte (dose, ×, type…), le survol attend ; hors d'elle, il reprend.
+      if (e.pointerType === 'mouse' && !e.buttons) { if (commande(e)) stopSurvol(); else armerSurvol(cle); }
     },
     onPointerUp: () => { stopLong(); depart.current = null; },
     onPointerCancel: () => { stopLong(); depart.current = null; },

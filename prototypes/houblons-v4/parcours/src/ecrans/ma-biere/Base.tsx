@@ -4,7 +4,7 @@
 // et les mots de la levure. Classes propres préfixées pq-ma-biere- (L26).
 import { COULEURS, COURT, Inconnu, Picto, nombre, type Echelle } from '../../commun';
 import type { BiereLue, FamilleLue } from '../../moteur';
-import type { FamilyId } from '../../../../src/engine';
+import { FAMILY_NAMES, type FamilyId } from '../../../../src/engine';
 
 /** Noms de levure de la base (« SafAle US-05 ») ; toutes celles-ci sont caractérisées par le moteur (biotransformation). */
 const LEVURES: Record<string, string> = {
@@ -18,7 +18,8 @@ export function tropMarquees(biere: BiereLue, ordre: FamilyId[]) {
     .sort((a, b) => (biere.profil[a].source === 'dégustation' ? -1 : 0) - (biere.profil[b].source === 'dégustation' ? -1 : 0));
 }
 
-export function Alerte({ biere, ordre, element }: { biere: BiereLue; ordre: FamilyId[]; element?: string }) {
+/** `long` (facultatif, étape Houblons) : les noms longs de sa base (« Boisé et résineux trop marqué »). */
+export function Alerte({ biere, ordre, element, long = false }: { biere: BiereLue; ordre: FamilyId[]; element?: string; long?: boolean }) {
   const trop = tropMarquees(biere, ordre);
   if (!trop.length) {
     return <p data-role="alerte" data-element={element} className="flex items-center gap-1.5 text-sm font-semibold text-hop"><span aria-hidden="true" className="w-2 h-2 rounded-full bg-hop" />Au style</p>;
@@ -26,22 +27,24 @@ export function Alerte({ biere, ordre, element }: { biere: BiereLue; ordre: Fami
   return (
     <p data-role="alerte" data-element={element} className="flex items-center gap-1.5 min-w-0 text-base font-semibold text-alert">
       <span aria-hidden="true" className="w-2.5 h-2.5 rounded-full bg-alert shrink-0" />
-      <span className="truncate">{trop.map((f) => COURT[f]).join(' et ')} trop marqué{trop.length > 1 ? 's' : ''}</span>
+      <span className="truncate">{`${trop.map((f, i) => (long ? (i ? FAMILY_NAMES[f].toLowerCase() : FAMILY_NAMES[f]) : COURT[f])).join(' et ')} trop marqué${trop.length > 1 ? 's' : ''}`}</span>
     </p>
   );
 }
 
-/** Bandeau IBU · OG · EBC, en pilule, avec la jauge de l'IBU face à la bande du style. */
-export function Bandeau({ biere, avant, element }: { biere: BiereLue; avant?: BiereLue | null; element: string }) {
+/** Bandeau IBU · OG · EBC, en pilule, avec la jauge de l'IBU face à la bande du style. `ecart` (facultatif, étape
+ * Houblons) : l'écart du total qui vient de changer, écrit au-dessus de l'IBU (« +2 », « −60 ») comme sa base (majIbu). */
+export function Bandeau({ biere, avant, element, ecart = null }: { biere: BiereLue; avant?: BiereLue | null; element: string; ecart?: number | null }) {
   const ibu = biere.ibu.valeur;
   const b = biere.bandeIbu;
   const max = b ? Math.max(b[1] * 1.4, ibu * 1.1) : Math.max(1, ibu * 1.5);
   const pc = (x: number) => `${Math.max(0, Math.min(100, (x / max) * 100)).toFixed(1)}%`;
   const ibuAvant = avant && Math.abs(avant.ibu.valeur - ibu) >= 0.5 ? avant.ibu.valeur : null;
   return (
-    <div data-role="lectures" data-element={element} className="flex items-center justify-between gap-2 px-4 py-1.5 rounded-full border border-cave-700 bg-cave-900">
-      <span className="inline-flex items-baseline gap-1.5">
+    <div data-role="lectures" data-element={element} className="pq-mb-lectures flex items-center justify-between gap-2 px-4 py-1.5 rounded-full border border-cave-700 bg-cave-900">
+      <span className="relative inline-flex items-baseline gap-1.5">
         <span className="text-sm text-cave-400">IBU</span>
+        {ecart ? <span data-role="ibu-ecart" aria-live="polite" className="pq-mb-ecart absolute left-8 -top-3.5 font-mono text-xs font-semibold leading-none">{`${ecart > 0 ? '+' : '−'}${Math.abs(ecart)}`}</span> : null}
         <output data-role="ibu" data-valeur={ibu.toFixed(2)} className="reading text-xl">{nombre(ibu)}</output>
         {ibuAvant != null && <s data-role="vient-de-changer" className="font-mono text-xs text-cave-400">{nombre(ibuAvant)}</s>}
         {b && (
@@ -91,9 +94,16 @@ export function PisteBase({ x, avant, echelle, fine = false, visee = null, crans
       ))}
       {dessus && <i aria-hidden="true" className={`absolute inset-y-0 rounded-full border border-dashed border-cave-600 ${inconnu ? 'pq-hachure' : ''}`} style={{ left: '81%', width: '19%' }} />}
       {inconnu && zone && <i data-role="zone" className="absolute inset-y-0 rounded-full border border-dashed border-cave-600" style={{ left: pc(zone.de), width: pc(zone.a - zone.de) }} />}
-      {avant?.valeur && x.valeur && Math.abs(avant.valeur.centre - x.valeur.centre) >= 0.5 && (
-        <i data-role="avant" className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-cave-400" style={{ left: pc(pos(avant.valeur.centre)) }} />
-      )}
+      {avant?.valeur && x.valeur && Math.abs(avant.valeur.centre - x.valeur.centre) >= 0.5 && (() => {
+        // Comme sa base (apercu, l'effet de l'ajout) : un point « avant » grisé, relié au point « après ».
+        const a = Math.max(0, Math.min(100, pos(avant.valeur.centre))), n = Math.max(0, Math.min(100, pos(x.valeur.centre)));
+        return (
+          <>
+            <i data-role="avant-lien" aria-hidden="true" className="absolute top-1/2 border-t-2 border-cave-400" style={{ left: pc(Math.min(a, n)), width: `${Math.abs(n - a).toFixed(1)}%`, marginTop: -1 }} />
+            <i data-role="avant" className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-cave-400" style={{ left: pc(a) }} />
+          </>
+        );
+      })()}
       {visee != null && x.valeur && (() => {
         const a = pos(x.valeur.centre), b = pos(visee);
         return <i data-visee-lien="" aria-hidden="true" className="pq-ma-biere-lien absolute top-1/2" style={{ left: pc(Math.min(a, b)), width: `${Math.abs(Math.max(0, Math.min(100, b)) - Math.max(0, Math.min(100, a))).toFixed(1)}%` }} />;

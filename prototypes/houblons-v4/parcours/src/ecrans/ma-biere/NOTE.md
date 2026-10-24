@@ -75,3 +75,28 @@
 - Les ajouts rapides viennent du vrai stock (Dexie) ; ♡ et les goûts, des préférences du brasseur.
 - `jouer-parcours.mjs` ne glisse qu'à l'horizontale : le geste vertical est joué dans la page (événements de pointeur).
   Une option `axe: 'y'` dans le socle le jouerait au vrai doigt.
+
+## Reprise D124 (voie r1-etape, 24.10) : le rail de sa base tel quel, et tous ses états
+
+« Ça a bien avancé mais le rail par exemple à perdu en fonctionnalités et certaines de mes choix ont été perdue » (D124).
+Ce qui précède sur le geste (ligne ouverte à 14 px par 5′, dry hop en jours) est REMPLACÉ par le rail de sa base :
+
+- `rail.ts` porte ligne à ligne `generateur/etape-consolide.js` : valeurs du rail (ébullition par 5′ de sa durée à 0′,
+  whirlpool 100 → 60 °C par 5, fermentation et post-fermentation J+0 → J+14), Dock à plateau ×3 qui suit le doigt et
+  passe au segment où il est (D47, D63, D67), échelle du geste qui va de la durée d'ébullition à J+14 dans l'écran (D69),
+  carte repliée en puce, jetons des autres houblons, minutes écrites, IBU recalculé au lâcher seulement (D46), geste
+  interrompu qui rend tout (D42). `Frise.tsx` rend les rangées de la base (data-rang) ; le lâcher pose la valeur dans
+  l'état du parcours (moment, température du whirlpool `tempC`, jour à froid `day`), le moteur recalcule.
+- Carte : « ébullition ⟳ » → whirlpool → à froid → premier moût ; dose au pas de 2 g ; « − 20 min + » au whirlpool,
+  « − J+3 + » à froid, « aucun IBU », « biotransformation possible, non quantifiée » et ses signaux (yeastSignals) ;
+  « floral +1 » sur un ajout entré depuis l'étape ; « double usage ».
+- Ajouts proposés du moteur, comme sa base : `quickAdds` (stock d'abord, un houblon à acheter), `buildFromEmpty` pour une
+  recette vide (deux amérisants à 60′ « ou », trois aromatiques) ; ♡ à trois choix (aimer · neutre · exclure) ; le
+  champ cherche dans tout le catalogue (D21).
+- Repères de ce qui vient de changer : écart du total au-dessus de l'IBU (« +2 », « −60 ») ; points « avant » reliés
+  sur les barres du profil.
+- Pages de cas de sa base : cas-ebu45, cas-ebu120, cas-ebu200, cas-k3 (Nugget, Motueka, Cascade au whirlpool, Citra cryo
+  à froid), cas-k2 (sans houblon).
+- Aucun mot de Dryhopper sur l'étape (« dry hop », « ? IBU », « n j ») : Dryhopper est un écran au choix ouvert.
+- Mouvement réduit : le fondu des autres houblons sous la carte tenue (120 ms d'opacité, sans mouvement) est gardé,
+  comme dans sa base ; l'app abrège toutes les transitions.

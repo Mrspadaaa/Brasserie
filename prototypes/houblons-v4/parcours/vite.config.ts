@@ -58,13 +58,15 @@ function pagesParRoute(): Plugin {
         const note = path.join(ici, 'src/ecrans', route, 'NOTE.md');
         if (fs.existsSync(note)) this.emitFile({ type: 'asset', fileName: `${route}/NOTE.md`, source: fs.readFileSync(note, 'utf8') });
       }
-      // Cas d'essai du rail (D36, D37) : la même recette, ébullition de 45′ et de 120′ (controle-rail.mjs).
-      for (const route of ['ma-biere', 'dryhopper']) for (const min of [45, 120]) {
+      // Cas d'essai du rail (D36, D37) : la même recette, ébullition de 45′ et de 120′ (controle-rail.mjs) ; 200′ pour
+      // l'étape Houblons, comme sa base (« Je peux me dire tiens 200' c'est mieux », cas-ebu200).
+      for (const route of ['ma-biere', 'dryhopper']) for (const min of route === 'ma-biere' ? [45, 120, 200] : [45, 120]) {
         const html = page(route, '../').split(`data-route="${route}"`).join(`data-route="${route}" data-ebullition="${min}"`);
         this.emitFile({ type: 'asset', fileName: `${route}/cas-ebu${min}.html`, source: html });
       }
-      // Cas d'essai à trois houblons proches sur la frise de l'étape (lignes qui s'écartent : D45, D56, D61 bis, D64).
-      this.emitFile({ type: 'asset', fileName: 'ma-biere/cas-k3.html', source: page('ma-biere', '../').split('data-route="ma-biere"').join('data-route="ma-biere" data-cas="k3"') });
+      // Cas d'essai de sa base : k3, quatre houblons (ébullition, 10′, whirlpool, à froid ; D45, D56, D61 bis, D64) ;
+      // k2, la recette sans houblon (emplacement « + », amérisants à 60′ au choix).
+      for (const k of ['k3', 'k2']) this.emitFile({ type: 'asset', fileName: `ma-biere/cas-${k}.html`, source: page('ma-biere', '../').split('data-route="ma-biere"').join(`data-route="ma-biere" data-cas="${k}"`) });
     },
   };
 }

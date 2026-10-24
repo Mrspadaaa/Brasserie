@@ -14,7 +14,7 @@ import { MOMENTS } from '../../src/engine';
 import { classeEbullition } from './etat/quand';
 import { H } from './donnees/cas';
 
-/** Cas d'essai du rail (pages cas-ebu45.html, cas-ebu120.html) : la même recette, ébullition de n minutes ; un
+/** Cas d'essai du rail (pages cas-ebu45.html, cas-ebu120.html ; cas-ebu200.html pour l'étape) : la même recette, ébullition de n minutes ; un
  * ajout d'ébullition plus long que l'ébullition passe à son début. */
 function avecEbullition(e: EtatParcours, min: number): EtatParcours {
   const duree = (a: RecetteParcours['additions'][number]) => a.minutes ?? MOMENTS[a.moment]?.minutes ?? null;
@@ -27,20 +27,26 @@ if (theme === 'clair' || theme === 'cave') document.documentElement.dataset.them
 
 const depart = lireRoute(location.hash) ?? routeDePage(document.body.dataset.route ?? 'ma-biere');
 const ebullition = Number(document.body.dataset.ebullition) || null;
-/** Cas d'essai k3 : Nugget à 60′, puis Cascade à 10′ et Galaxy à 5′ (20 g chacun), proches sur la frise. */
-function avecTroisHoublons(e: EtatParcours): EtatParcours {
-  const ajouts = [
-    { id: 'k3-cascade', hopKey: H.cascade, moment: 'b10' as const, minutes: 10, grams: 20 },
-    { id: 'k3-galaxy', hopKey: H.galaxy, moment: 'b5' as const, minutes: 5, grams: 20 },
+/** Cas d'essai k3, celui de sa base v4.10 (consolide/cas-k3.html) : Nugget 42,5 g à 60′, Motueka 10 g à 10′,
+ * Cascade 20 g au whirlpool (80 °C, 20 min), Citra cryo 40 g à froid en fermentation (J+3, 3 j de contact). */
+function casK3(e: EtatParcours): EtatParcours {
+  const ajouts: RecetteParcours['additions'] = [
+    { id: 'k3-motueka', hopKey: 'beermaverick-motueka', moment: 'b10', minutes: 10, grams: 10 },
+    { id: 'k3-cascade', hopKey: H.cascade, moment: 'wp', tempC: 80, minutes: 20, grams: 20 },
+    { id: 'k3-citra-cryo', hopKey: 'beermaverick-citra:cryo', moment: 'dryActive', day: 3, jours: 3, grams: 40 },
   ];
-  return { ...e, recette: { ...e.recette, additions: [...e.recette.additions, ...ajouts] } };
+  const nugget = e.recette.additions.map((a) => (a.hopKey === H.nugget ? { ...a, grams: 42.5 } : a));
+  return { ...e, recette: { ...e.recette, additions: [...nugget, ...ajouts] } };
 }
+/** Cas d'essai k2, celui de sa base (consolide/cas-k2.html) : la même recette, sans houblon. */
+const casK2 = (e: EtatParcours): EtatParcours => ({ ...e, recette: { ...e.recette, additions: [] } });
 const cas = document.body.dataset.cas;
+const depart0 = etatDeDepart(depart);
 const racine = document.getElementById('parcours')!;
 createRoot(racine).render(
   <StrictMode>
     <MotionConfig reducedMotion="user">
-      <EtatParcoursProvider initial={cas === 'k3' ? avecTroisHoublons(etatDeDepart(depart)) : ebullition ? avecEbullition(etatDeDepart(depart), ebullition) : etatDeDepart(depart)}>
+      <EtatParcoursProvider initial={cas === 'k3' ? casK3(depart0) : cas === 'k2' ? casK2(depart0) : ebullition ? avecEbullition(depart0, ebullition) : depart0}>
         <NavigationParcours depart={depart} comparerDefaut={COMPARER_CARTE}>
           <Coquille />
         </NavigationParcours>
