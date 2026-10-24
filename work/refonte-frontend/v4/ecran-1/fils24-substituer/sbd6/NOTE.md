@@ -26,9 +26,9 @@ Générer : `node sbd1/serie/generer.mjs sbd6` ; captures : `node sbd1/serie/cap
 ## Contrôles (joués une fois, sorties recopiées)
 - Baseline, `controle-commun.mjs … --page=etat.html --sans=mots` (série entière) : COMMUN OK
 - `controle-une-question.mjs` : sbd6 · titre « Lequel à la place de Nugget ? » · libres : inconnu, houblon · 6 contrôle(s) · contexte : moment, dose, base · 2 faute(s) / sbd6 etat.html : 2 facteurs libres : inconnu (Altus 99? · 36 g mixte α 15–18,5, Magnat 99 · 44 g amérisant α 11–16, Trident 99? · 48 g mixte α 11–14) ; houblon (Nelson Sauvin 86 · 62 g mixte α 9,6, Galaxy 85 · 35 g mixte α 17,2) / sbd6 etat.html : balisage discordant : Altus 99? · 36 g mixte α 15–18,5 : balisé houblon, porte inconnu ; Magnat 99 · 44 g amérisant α 11–16 : balisé houblon, porte inconnu ; Trident 99? · 48 g mixte α 11–14 : balisé houblon, porte inconnu (le détecteur ne reconnaît pas les variétés du seul catalogue, Magnat, Altus… : « inconnu »)
-- `controle-sans-famille.mjs` : sbd6 · 3 houblon(s) repéré(s) · 1 au-dessus de 50 % (Nelson Sauvin 83 % ✓) ; série : SANS-FAMILLE OK (7 houblon(s) au-dessus de 50 %, part « autres » visible)
-- `mots-premier-ecran.mjs --sans-donnees --max=80` : sbd6 61 mots (hors données)
-- `controle-panel.mjs` (huit premiers écrans) : 8 captures · remplissage médian 0,45, 5 sous 0,50 · ressemblance moyenne 0,89 · paires presque identiques 0/28 (0 %) ;   - REMPLISSAGE : médiane 0,45 < 0,55 (lot 21 : 0,62) ; les plus vides : sbd4-premier-ecran 0,39, sbd1-premier-ecran 0,42, sbd2-premier-ecran 0,43, sbd7-premier-ecran 0,45, sbd5-premier-ecran 0,45 ; PANEL ECHEC
+- `controle-sans-famille.mjs` : sbd6 · 6 houblon(s) repéré(s) · 1 au-dessus de 50 % (Nelson Sauvin 83 % ✓) ; série : SANS-FAMILLE OK (10 houblon(s) au-dessus de 50 %, part « autres » visible)
+- `mots-premier-ecran.mjs --sans-donnees --max=80` : sbd6 76 mots (hors données)
+- `controle-panel.mjs` (huit premiers écrans) : 8 captures · remplissage médian 0,57, 0 sous 0,50 · ressemblance moyenne 0,85 · paires presque identiques 0/28 (0 %) ; PANEL OK
 
 ## Captures
 `captures/sbd6-premier-ecran.png`, `sbd6-page.png`, `sbd6-wp.png` (le même Nugget en whirlpool), `sbd6-choix.png` (un autre remplaçant

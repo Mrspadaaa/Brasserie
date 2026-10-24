@@ -26,9 +26,9 @@ Générer : `node sbd1/serie/generer.mjs sbd4` ; captures : `node sbd1/serie/cap
 ## Contrôles (joués une fois, sorties recopiées)
 - Baseline, `controle-commun.mjs … --page=etat.html --sans=mots` (série entière) : COMMUN OK
 - `controle-une-question.mjs` : sbd4 · titre « Lequel à la place de Nugget ? » · libres : inconnu, houblon · 6 contrôle(s) · contexte : moment, dose, base · 2 faute(s) / sbd4 etat.html : 2 facteurs libres : inconnu (Altus mixte α 15–18,5 99? 36 g 60 IBU ~3, Magnat amérisant α 11–16 99 44 g 60 IBU , Trident mixte α 11–14 99? 48 g 60 IBU ~7) ; houblon (Nelson Sauvin mixte α 9,6 86 62 g 60 IBU, Galaxy mixte α 17,2 85 35 g 60 IBU ~7) / sbd4 etat.html : balisage discordant : Altus mixte α 15–18,5 99? 36 g 60 IBU ~3 : balisé houblon, porte inconnu ; Magnat amérisant α 11–16 99 44 g 60 IBU  : balisé houblon, porte inconnu ; Trident mixte α 11–14 99? 48 g 60 IBU ~7 : balisé houblon, porte inconnu (le détecteur ne reconnaît pas les variétés du seul catalogue, Magnat, Altus… : « inconnu »)
-- `controle-sans-famille.mjs` : sbd4 · 3 houblon(s) repéré(s) · 1 au-dessus de 50 % (Nelson Sauvin 83 % ✓) ; série : SANS-FAMILLE OK (7 houblon(s) au-dessus de 50 %, part « autres » visible)
-- `mots-premier-ecran.mjs --sans-donnees --max=80` : sbd4 46 mots (hors données)
-- `controle-panel.mjs` (huit premiers écrans) : 8 captures · remplissage médian 0,45, 5 sous 0,50 · ressemblance moyenne 0,89 · paires presque identiques 0/28 (0 %) ;   - REMPLISSAGE : médiane 0,45 < 0,55 (lot 21 : 0,62) ; les plus vides : sbd4-premier-ecran 0,39, sbd1-premier-ecran 0,42, sbd2-premier-ecran 0,43, sbd7-premier-ecran 0,45, sbd5-premier-ecran 0,45 ; PANEL ECHEC
+- `controle-sans-famille.mjs` : sbd4 · 6 houblon(s) repéré(s) · 1 au-dessus de 50 % (Nelson Sauvin 83 % ✓) ; série : SANS-FAMILLE OK (10 houblon(s) au-dessus de 50 %, part « autres » visible)
+- `mots-premier-ecran.mjs --sans-donnees --max=80` : sbd4 61 mots (hors données)
+- `controle-panel.mjs` (huit premiers écrans) : 8 captures · remplissage médian 0,57, 0 sous 0,50 · ressemblance moyenne 0,85 · paires presque identiques 0/28 (0 %) ; PANEL OK
 
 ## Captures
 `captures/sbd4-premier-ecran.png`, `sbd4-page.png`, `sbd4-wp.png` (le même Nugget en whirlpool), `sbd4-choix.png` (un autre remplaçant

@@ -34,7 +34,7 @@ const C = {
     casse: 'Trois cartes de même gabarit : répétitif ; les critères « moins de matière » et « le plus proche » sont des tris de cette page sur les données du moteur ; Idaho 7 et Sabro (93, stock court) n’y figurent pas.' },
   sbb6: { ch: 'chaude', idee: 'Le ticket : le remplacement comme un reçu, « − Nugget 46 g », « + Nelson Sauvin 62 g », puis ligne à ligne amertume, matière, usage, huiles, stock 100 → 38 g, arôme ~±1, inconnus, ma bière ; total « proximité 86 » et tampon EN STOCK.',
     tient: 'Une forme que tout le monde lit : ce qu’on retire, ce qu’on met, ce que ça coûte ; les onglets du ticket et la pile des autres tickets choisissent le remplaçant ; le tampon dit le stock d’un coup.',
-    casse: 'Typographie à chasse fixe dense ; le ticket déborde un peu de l’écran (880 px) et la pile passe sous le pied ; deux sélecteurs du même facteur (onglets et pile).' },
+    casse: 'Typographie à chasse fixe dense ; le ticket déborde un peu de l’écran (911 px) et la pile passe sous le pied ; deux sélecteurs du même facteur (onglets et pile).' },
   sbb7: { ch: 'chaude', idee: 'La cible : Nugget au centre, chaque remplaçant à la distance de son score ; à gauche ton stock, à droite l’achat ; la réponse est le point cerclé de gauche, le plus près qui suffit.',
     tient: 'Le compromis proximité / disponibilité se voit sans chiffre : les houblons à acheter collent à Nugget (98–99), ceux du stock sont plus loin ; rayons hachurés pour les huiles inconnues ; étiquettes en colonnes, assez grandes pour le doigt.',
     casse: 'Le placement angulaire est arbitraire (seule la distance compte) ; les quatre points de droite se serrent ; la carte de dessous répète le reste de la série.' },
