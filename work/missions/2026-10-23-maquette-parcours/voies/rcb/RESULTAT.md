@@ -54,3 +54,9 @@ pictos `<use>` : une page à pictos seuls compte 0 teinte.
 LEÇON PROPOSÉE : `controle-panel` lit un gris clair (#e3e5eb) comme du fond (seuil 60 sur un fond estimé à 248) :
 les hairlines et fonds de la baseline doivent être au --trait de la planche v3 (#dcdce3), sinon une page dense
 mesure vide.
+
+## Passe 2 (retour du critique, rcb3 et rcb4 refaits en place à la demande du pilote)
+- rcb3 : « Disent ses mots » en premier (Hallertau Blanc 4/4, 30 g), puis le stock et les calculés nommés « 12 familles seulement » ; bandeau « Lui seul » intact ; rôle du fournisseur d'abord, α du lot.
+- rcb4 : « sucre », « doux » traduits ; Strata aromatique (fournisseur) ; colonnes rayées en un trait ; noms en entier (130 px) ; α du lot.
+- Données (`donnees-rcb.mjs`) : rôle du fournisseur avant la règle de l'α (rcb1 et rcb2 en héritent : Strata aromatique sur rcb2).
+- Rejoués : `concepts.mjs` → CONCEPTS-BIEN-4 ; `controle-pictos-trait` → TRAIT OK ; `controle-commun rcb3 rcb4 --sans=mots` → COMMUN OK ; `controle-panel` (4 captures) → PANEL OK (0,69). Captures `rcb3.png`, `rcb4.png` rouvertes.
