@@ -35,6 +35,9 @@ OK — cinq chaudes p4b1 à p4b5 sur a1, retouches du conseil dh4 appliquées et
   « finie · forme type » sous la bande.
 - **p4b3, courbe « forme type »** : pointillé 4 · 3 et nommée ainsi.
 - **p4b3, rubans d'a1 remis** : 24 cases sous chaque barre et sous l'amertume, case cerclée au moment.
+- **p4b2, dernière retouche du critique (« Après le conseil »)** : la valeur « ? → ~+8 » passait sur deux lignes et la page
+  faisait 855 px ; colonne de valeur élastique (`auto`, `nowrap`), forme compacte « ?→~+21 », lignes de barres à 19 px :
+  **0 valeur sur deux lignes, page à 844 px** (DOM, à actif · 2 j, 20′ et après · 7 j), loupe toujours à 0 px² (3/3).
 - Aucune greffe croisée entre variantes ; p4b4 et p4b5 inchangés hors des deux retouches communes.
 
 ## Une ligne par variante (toutes chaudes, toutes sur a1)
@@ -42,8 +45,8 @@ OK — cinq chaudes p4b1 à p4b5 sur a1, retouches du conseil dh4 appliquées et
   montre ce que le moment garde et ce que la chaleur (flamme, hachure) ou le CO₂ (bulles, pointillé) emporte ; loupe gain
   puis emporté. Casse : résineux hors style, queue ~−6 dans le chiffre seul ; loupe de 74 px sur les pastilles.
 - **p4b2 « Le brassin en courbes »** — chaude ; améliorations 1, 3, 4 ; greffes g1, f5/g6, c7, e2, jours d'a1. Tient :
-  courbes de gain, interpolation en pointillé, IBU en colonnes, bosse hachurée, rail sous l'axe, loupe ×5,9 en flux.
-  Casse : 1,04 écran ; la page descend de 66 px pendant le geste ; floral et baies voisines en tracé.
+  courbes de gain, interpolation en pointillé, IBU en colonnes, bosse hachurée, rail sous l'axe, loupe ×5,9 en flux ;
+  page à 844 px. Casse : la page descend de 66 px pendant le geste ; floral et baies voisines en tracé.
 - **p4b3 « L'agenda du brassin »** — chaude ; améliorations 3, 5, 1 ; greffes f5, g6, e2, g4, rubans d'a1. Tient :
   calendrier 122 px à 12 px, densité en forme type, bande de contact tirée par le pouce, rubans. Casse : titres de l'agenda
   sous la loupe pendant le geste ; figure dense (13 lignes à deux rangées).
@@ -58,13 +61,13 @@ OK — cinq chaudes p4b1 à p4b5 sur a1, retouches du conseil dh4 appliquées et
 - G1 : `PASSE-BIEN-5`.
 - G2 : `COMMUN OK` sur p4b1 à p4b5 (`--sans=mots`).
 - G3 : `UNE-QUESTION OK (1 groupe libre : moment)` sur les cinq.
-- G4 : `MOTS OK` : 33, 42, 45, 50, 45 mots hors données (a1 : 77).
+- G4 : `MOTS OK` : 33, 40, 45, 50, 45 mots hors données (a1 : 77).
 - G5 : `NOTE OK` (ce rapport).
 
 ## Captures (toutes ouvertes, L12, à côté d'`a1-premier-ecran.png` et `a1-toucher-390.png`)
 `passe4/captures/p4b{1..5}-{premier-ecran,pendant,apres}.png`, refaites après les retouches. Geste joué au doigt dans
 Chrome d'actif · 2 j à 20′ : loupe ×5,6 / ×5,9 / ×5,6 / ×5,6 / ×5,6, aucune erreur de page, 390 px sans défilement
-horizontal, 1,0 écran (p4b2 : 1,04).
+horizontal, 1,0 écran chacune (p4b2 : 844 px après la dernière retouche).
 
 ## Prédiction
 « p4b2 donne vraiment bien, p4b3 c'est comme ça que je pense ; le ? → +21 sur Baies c'est honnête. Mais p4b2 qui bouge

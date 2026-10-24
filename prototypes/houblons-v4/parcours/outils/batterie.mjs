@@ -21,7 +21,12 @@ const lot = [
   n(`node ${T}/controle-hauteur.mjs ${D} ma-biere --max=1.05`, 'HAUTEUR OK'),
   n(`node ${T}/controle-retour.mjs ${D} --fiche`, 'RETOUR OK'),
   // Le rail (D27, D35 à D37, D46, D47, D55, D69).
-  n(`node ${T}/controle-rail.mjs ${D} ma-biere dryhopper --page=etat.html --parcours`, 'RAIL OK'),
+  // 24.10 (r7, décision du pilote, option b) : le contrat --parcours de controle-rail décrit le rail D111 que sa base a
+  // remplacé (D124) ; il ne joue plus que Dryhopper. L'étape est gardée par le rail de sa base, rejoué fonction par fonction
+  // (controle-fonctions-rail) et au froid (controle-geste-etape --froid). Mesures D61 bis et D56 : voies/r7-batterie/RESULTAT.md.
+  n(`node ${T}/controle-rail.mjs ${D} dryhopper --page=etat.html --parcours`, 'RAIL OK'),
+  n(`node ${T}/controle-fonctions-rail.mjs ${D}`, 'FONCTIONS-RAIL OK'),
+  n(`node ${T}/controle-geste-etape.mjs ${D} --froid`, 'GESTE-ETAPE OK (froid'),
   // D107 à D121.
   n(`node ${T}/controle-comparer-etapes.mjs ${D}`, 'COMPARER-ETAPES OK'),
   n(`node ${T}/controle-visee.mjs ${D}`, 'VISEE OK'),

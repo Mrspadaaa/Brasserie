@@ -325,7 +325,7 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
         </Legende>
         <Lentille echelle={echelle} choisir={setEchelle} />
       </div>
-      <section data-role="simulation" aria-label="Ta stout avec Idaho 7, au moment choisi" className="space-y-1 rounded-lg bg-cave-900 border border-cave-800 px-2 py-1.5">
+      <section data-role="simulation" data-etat="etat-acquis-y1b-brassin-au-doigt" aria-label="Ta stout avec Idaho 7, au moment choisi" className="space-y-1 rounded-lg bg-cave-900 border border-cave-800 px-2 py-1.5">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5" aria-live="polite">
           <span className="font-semibold text-cave-50">Face à ta stout</span>
           <span className="inline-flex items-center gap-1 font-bold" style={{ color: COULEURS.floral.texte }}>

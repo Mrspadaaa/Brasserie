@@ -145,9 +145,9 @@
    "voulu": "",
    "verif": {
     "route": "biere",
-    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere-radar.html",
-    "selecteur_choisie": "[data-role=\"degustation\"]",
-    "geste": "repos",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+    "selecteur_choisie": "texte=Radar",
+    "geste": "toucher",
     "attendu": [
      "Ma dégustation",
      "pas senti",
@@ -155,7 +155,8 @@
      "moyen",
      "marqué"
     ],
-    "interdit": []
+    "interdit": [],
+    "note": "Joué depuis les barres, comme sa base (biere.html ouvre en Barres ; biere-radar.html est la même page déjà en Radar) : décision du pilote, 24.10 (r7)."
    }
   },
   {
@@ -336,8 +337,10 @@
      "Pomona",
      "Tire 20 bières"
     ],
-    "interdit": []
-   }
+    "interdit": [],
+    "note": "Mots de y1b sur Dryhopper, écran au choix ouvert (a1 en attendant, passe 4 montrée le 24.10) : rien d'un écran au choix ouvert (D123). Rejoué quand il aura choisi. Décision du pilote, 24.10 (r7)."
+   },
+   "attend_choix": "dryhopper"
   },
   {
    "id": "etat-acquis-panel-osu",

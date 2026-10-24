@@ -79,3 +79,17 @@ COMMUN OK
 flu6b 70 mots (hors données)
 MOTS OK
 ```
+
+## Comment la fiche s'ouvre (pages inchangées)
+- **La fiche g1 est montrée ouverte, et dite telle.** La page est l'état « fiche de <houblon> ouverte » : la feuille est déjà posée sur l'étape Houblons assombrie au chargement, sans geste joué pour y arriver. Le ✕ rond (44 px) la représente ; dans ces pages statiques, il ne ferme rien.
+- **L'appui long est réel, mais il vise le nom du houblon dans la fiche.**
+  - Un appui long sur le titre (Nugget ou Nelson Sauvin, `data-houblon`) ouvre la fiche courte, du type Citra cryo.
+  - Le doigt doit rester **500 ms**. Le nom se souligne dès le contact, en retour immédiat (D112).
+  - Un toucher court ne fait rien (`touchend` avant 500 ms annule). Le texte n'est pas sélectionnable et le menu contextuel est bloqué.
+  - À l'ordinateur, un survol de la souris de **600 ms** ouvre la même fiche courte.
+  - La fiche courte se ferme par son ✕ ou par Échap.
+- **Ce que joue `controle-fiche.mjs`** (dans COMMUN, vert) :
+  - un toucher de 80 ms : la fiche reste fermée ;
+  - un appui de 650 ms : la fiche courte s'ouvre et nomme le houblon (α, arômes N/M, mini radar, ♡ ⊘) ;
+  - la fermeture, puis un survol de 900 ms à 1280 px : la fiche s'ouvre.
+- Capture du geste : `captures/flu1-appui-long.png` (même socle, v0). Il n'y a pas de capture dédiée pour flu2b ni pour flu6b.

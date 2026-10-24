@@ -52,6 +52,12 @@ const montre = args.includes('--montre');
 const repli = args.includes('--repli');
 const seulEcran = opt('ecran');
 const seulId = opt('id');
+// --captures=<dossier> : une capture de l'écran (390 × 844) après chaque geste, `<id>-construite.png` (ou `-choisie`
+// avec --choisie), pour poser chaque état à côté de sa maquette choisie. --avec-voulus : les états voulus sont joués
+// aussi, pour leur capture seulement ; leur verdict ne compte pas.
+const dossierCaptures = opt('captures') ? path.resolve(RACINE, opt('captures')) : null;
+const avecVoulus = args.includes('--avec-voulus');
+if (dossierCaptures) fs.mkdirSync(dossierCaptures, { recursive: true });
 const dossierEtats = path.resolve(RACINE, opt('etats') ?? 'work/refonte-frontend/v4/choix/etats');
 const pos = args.filter((a) => !a.startsWith('--'));
 if (!choisie && !pos[0]) {
@@ -70,6 +76,7 @@ const fichiers = (seulEcran ? [seulEcran] : FICHIERS);
 const parFichier = {};
 const aJouer = [];
 let voulus = 0;
+const enAttente = [];
 for (const f of fichiers) {
   const chemin = path.join(dossierEtats, `${f}.json`);
   if (!fs.existsSync(chemin)) { console.log(`ETATS ECHEC : ${path.relative(RACINE, chemin)} absent`); process.exit(1); }
@@ -77,11 +84,14 @@ for (const f of fichiers) {
   parFichier[f] = new Map(j.etats.map((s) => [s.id, s]));
   for (const s of j.etats) {
     if (seulId && s.id !== seulId) continue;
-    if (s.voulu) { voulus++; continue; }
+    // attend_choix : un acquis d'un écran au choix encore ouvert (D123 : rien d'un écran au choix ouvert) ; rejoué quand
+    // il aura choisi, compté à part.
+    if (s.attend_choix) { enAttente.push(`${s.id} (${s.attend_choix})`); continue; }
+    if (s.voulu) { voulus++; if (avecVoulus) aJouer.push({ fichier: f, etat: s, voulu: true }); continue; }
     aJouer.push({ fichier: f, etat: s });
   }
 }
-if (!aJouer.length) { console.log(`ETATS ECHEC (0/0) : aucun état à rejouer${seulId ? ` (id ${seulId})` : ''}`); process.exit(1); }
+if (!aJouer.length) { console.log(`ETATS ECHEC (0/0) : aucun état à rejouer${seulId ? ` (id ${seulId})` : ''}${enAttente.length ? ` ; en attente de son choix : ${enAttente.join(', ')}` : ''}`); process.exit(1); }
 
 // 2. Le lecteur de page : texte visible + libellés accessibles des éléments affichés.
 const LIRE = () => {
@@ -174,14 +184,21 @@ const trouver = async (page, e, mode) => {
 const toucher = async (page, h, v) => {
   await h.evaluate((e) => e.scrollIntoView({ block: 'center' }));
   await attente(120);
-  if (!v.point) { await h.tap(); return; }
+  // Le centre de sa boîte, déjà au centre de l'écran : `h.tap()` attendait un IntersectionObserver, qui ne répond qu'à une
+  // image peinte (24.10 : les doses de l'étape bloquaient plus de 180 s dans le rejeu complet).
+  if (!v.point) {
+    const b = await h.boundingBox();
+    if (!b) throw new Error('élément sans boîte (caché)');
+    await page.touchscreen.tap(b.x + b.width / 2, b.y + b.height / 2);
+    return;
+  }
   // Un point précis de la page (le fond d'une feuille) : l'élément marqué doit être celui qui s'y trouve.
   const [x, y] = v.point;
   const bon = await h.evaluate((e, px, py) => { const c = document.elementFromPoint(px, py); return !!c && (e === c || e.contains(c)); }, x, y);
   if (!bon) throw new Error(`l'élément marqué n'est pas celui qui se trouve au point (${x}, ${y})`);
   await page.touchscreen.tap(x, y);
 };
-const geste = async (page, h, v, retrouver) => {
+const geste = async (page, h, v, retrouver, capturer) => {
   const g = v.geste;
   if (g === 'repos') return;
   if (g === 'toucher' || g === 'onglet' || g === 'reglage') {
@@ -197,7 +214,7 @@ const geste = async (page, h, v, retrouver) => {
     await attente(120);
     const t = await h.touchStart(); await attente(v.appui_ms ?? 700);
     // « tenu » : l'effet se lit PENDANT l'appui, doigt encore posé (D112 : « L'appui prolonger fait pas l'effet escompté »).
-    if (v.tenu) { const tenu = { apres: await empreinte(page), texte: await lire(page) }; await t.end(); await attente(300); return tenu; }
+    if (v.tenu) { const tenu = { apres: await empreinte(page), texte: await lire(page) }; if (capturer) await capturer(); await t.end(); await attente(300); return tenu; }
     await t.end();
   } else if (g === 'survol') {
     await h.evaluate((e) => e.scrollIntoView({ block: 'center' }));
@@ -207,7 +224,25 @@ const geste = async (page, h, v, retrouver) => {
 };
 
 // 4. Un état.
-const navigateur = await puppeteer.launch({ executablePath: CHROME, headless: true });
+// Quatre onglets à la fois : sans ces drapeaux, Chrome suspend le rendu des onglets d'arrière-plan, et un toucher y attend
+// que les autres se ferment (24.10 : les doses de l'étape attendaient 24 s seules, plus de 180 s dans le rejeu complet).
+const navigateur = await puppeteer.launch({
+  executablePath: CHROME, headless: true,
+  args: ['--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows', '--disable-renderer-backgrounding'],
+});
+// ETATS_TRACE=1 : chaque étape d'un état, horodatée, sur la sortie d'erreur (diagnostic d'un délai dépassé).
+const T0 = Date.now();
+// Seul l'onglet au premier plan reçoit vite un toucher : un onglet d'arrière-plan l'attend jusqu'à passer devant (24.10 : les
+// doses de l'étape, 108 ms seules, 24 s à quatre onglets, plus de 180 s dans le rejeu complet). Les pages se chargent à
+// quatre ; les gestes et leurs lectures passent un par un, au premier plan. Un onglet neuf prend le premier plan : sa
+// création passe par le même verrou (page = null), pour ne jamais tomber pendant un geste.
+let verrou = Promise.resolve();
+const auPremierPlan = (page, f) => {
+  const tour = verrou.then(async () => { if (page) await page.bringToFront(); return f(); });
+  verrou = tour.catch(() => {});
+  return tour;
+};
+const trace = process.env.ETATS_TRACE ? (id, quoi) => process.stderr.write(`[${((Date.now() - T0) / 1000).toFixed(1)} s] ${id} ${quoi}\n`) : () => {};
 const jouerEtat = async (fichier, e) => {
   const v = e.verif ?? {};
   const mode = choisie ? 'choisie' : 'construite';
@@ -225,12 +260,16 @@ const jouerEtat = async (fichier, e) => {
     adresse = pathToFileURL(f).href;
   }
   const [lw, lh] = (v.viewport ?? '390x844').split('x').map(Number);
-  const page = await navigateur.newPage();
+  const page = await auPremierPlan(null, () => navigateur.newPage());
   try {
     const hover = v.geste === 'survol';
     await page.setViewport({ width: lw, height: lh, deviceScaleFactor: 1, isMobile: !hover && lw < 800, hasTouch: !hover && lw < 800 });
+    trace(e.id, 'goto');
     await page.goto(adresse, { waitUntil: 'networkidle0', timeout: 30000 });
+    trace(e.id, 'chargée');
     await attente(350);
+    return await auPremierPlan(page, async () => {
+    trace(e.id, 'au premier plan');
     const trouve = async (s) => {
       const h = await trouver(page, s, mode);
       if (!h) manques.push(mode === 'construite' ? `[data-etat="${s.id}"] absent de ${path.relative(RACINE, path.join(dossier, v.route, v.page_construite ?? 'etat.html'))} (le déclencheur de l'état n'est pas posé)` : `sélecteur « ${s.verif.selecteur_choisie} »${s.verif.rang ? ` (rang ${s.verif.rang})` : ''} absent de sa maquette choisie`);
@@ -256,11 +295,19 @@ const jouerEtat = async (fichier, e) => {
     if (manques.length) return { ko: manques };
     const h = await trouve(e);
     if (!h) return { ko: manques };
+    trace(e.id, 'trouvé');
     const avant = await empreinte(page);
     const texteAvant = await lire(page);
-    const tenu = await geste(page, h, v, () => trouver(page, e, mode));
+    trace(e.id, 'lu avant le geste');
+    const capturer = dossierCaptures
+      ? () => page.screenshot({ path: path.join(dossierCaptures, `${e.id}-${mode}.png`) }).catch(() => {})
+      : null;
+    const tenu = await geste(page, h, v, () => trouver(page, e, mode), capturer);
+    trace(e.id, 'geste fait');
+    if (capturer && !tenu) await capturer();
     const apres = tenu?.apres ?? await empreinte(page);
     const texte = tenu?.texte ?? await lire(page);
+    trace(e.id, 'lu après le geste');
     if (v.geste !== 'repos' && apres === avant) manques.push(`geste « ${v.geste}${v.fois > 1 ? ' ×' + v.fois : ''} » sans effet (la page n'a pas changé)`);
     if (v.url && !page.url().includes(v.url)) manques.push(`adresse « ${decodeURI(page.url()).split('/').slice(-2).join('/')} » ne contient pas « ${v.url} »`);
     const t = norm(texte);
@@ -286,6 +333,7 @@ const jouerEtat = async (fichier, e) => {
       nouveau = texte.split('\n').map((l) => l.trim()).filter((l) => l && !vieux.has(norm(l)));
     }
     return { ko: manques, nouveau };
+    });
   } catch (err) {
     return { ko: [`erreur : ${String(err.message ?? err).split('\n')[0]}`] };
   } finally {
@@ -305,14 +353,17 @@ const ouvrier = async () => {
   }
 };
 await Promise.all(Array.from({ length: Math.min(4, aJouer.length) }, ouvrier));
-for (const [i, { etat }] of aJouer.entries()) {
+let n = 0;
+for (const [i, { etat, voulu }] of aJouer.entries()) {
   const r = resultats[i];
+  if (voulu) { console.log(`${etat.id} voulu (${etat.voulu}) : joué pour sa capture${r.ko.length ? ` ; ${r.ko.join(' ; ')}` : ''}`); continue; }
+  n++;
   if (!r.ko.length) { ok++; console.log(`${etat.id} OK`); }
   else { echecs.push(etat.id); console.log(`${etat.id} ECHEC : ${r.ko.join(' ; ')}`); }
   if (montre && r.nouveau) console.log('    + ' + (r.nouveau.slice(0, 10).map((l) => l.replace(/\s+/g, ' ').slice(0, 100)).join(' | ') || '(rien de nouveau)'));
 }
 await navigateur.close();
-const n = aJouer.length;
-const suite = voulus ? ` ; ${voulus} voulu(s) non rejoué(s)` : '';
+const suite = (voulus ? ` ; ${voulus} voulu(s) ${avecVoulus ? 'joué(s) pour leur capture, hors verdict' : 'non rejoué(s)'}` : '')
+  + (enAttente.length ? ` ; ${enAttente.length} en attente de son choix : ${enAttente.join(', ')}` : '');
 if (echecs.length) { console.log(`ETATS ECHEC (${echecs.length}/${n})${suite}`); process.exit(1); }
 console.log(`ETATS OK (${ok}/${n})${suite}${choisie ? ' sur ses maquettes choisies' : ''}`);

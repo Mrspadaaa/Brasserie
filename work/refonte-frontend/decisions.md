@@ -525,3 +525,16 @@ Conseil rapide (`work/missions/2026-10-23-maquette-parcours/conseil-dh4/verdict.
 montrer, par les agents de leurs séries : la loupe hors de la figure, les rubans et boutons de jours d'a1 gardés, la bosse de
 levure et la densité hachurées, les chevauchements supprimés ; pas de greffe croisée avant son choix. Noyau et Baies (pilote) :
 l'avant est inconnu (les fiches de Nugget ne les décrivent pas), le gain d'Idaho 7 est connu : « ? → ~+21 » partout (D65).
+## D39 — La construction commune après r7 (24.10.2026, après-midi)
+Décideur : pilote, réversible. r7 rend BATTERIE OK 33/33 et ETATS 113/117 ; les quatre restes :
+- `etat-acquis-radars-m4-h4` (« Radar: m4 h4 très bien ») : la grille m4 est rendue, mais relevée sur `biere-radar.html`, la
+  même page déjà en Radar. L'acquis se joue désormais comme sa base l'ouvre, depuis les barres, par le toucher de « Radar » ;
+  le bouton porte les deux jetons (`etat-biere-radar etat-acquis-radars-m4-h4`).
+- `etat-acquis-y1b-brassin-au-doigt` : mots de y1b sur Dryhopper, écran au choix ouvert. Rien d'un écran au choix ouvert
+  (D123) : `attend_choix: dryhopper`, compté à part par `controle-etats.mjs`, rejoué quand il aura choisi.
+- `etat-etape-dose-plus` et `-moins` : délai de 180 s à quatre pages en parallèle seulement ; seuls, ils passent. Rejeu à
+  machine calme avant de conclure.
+- Les traits de la jauge de q2b (« en contour si la famille baisse, orangée hors du style », NOTE q2b) étaient annulés par
+  une règle CSS placée plus bas (relevé de jc-levure) : choix perdu, rendu (deux classes par modificateur).
+Signature : les « LEÇON PROPOSÉE » et « CONNAISSANCE » des voies triées par s1-lecons, appliquées par le pilote (M16 ; M11,
+M12, M14 passés dans [[controles-mecanises]] pour tenir la charge ; trois notes neuves, sept complétées).

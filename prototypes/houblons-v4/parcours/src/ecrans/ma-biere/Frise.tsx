@@ -89,7 +89,7 @@ function Poignee({ a, v, rail, recette, frise, onGeste }: {
   const libelle = libelleDe(v);
   return (
     <span ref={ref} data-role="glisser-moment" data-ajout-repere={a.id} role="slider" tabIndex={0} aria-orientation="vertical"
-      aria-label={`Moment de ${houblon(a.hopKey).nom} : ${momentLong(v, recette.boilMin, a.minutes ?? 20)} ; glisser le long du rail pour le changer, ou flèches haut et bas`}
+      aria-label={`Moment : ${momentLong(v, recette.boilMin, a.minutes ?? 20)}, ${houblon(a.hopKey).nom} ; glisser le long du rail pour le changer, ou flèches haut et bas`}
       aria-valuemin={0} aria-valuemax={toutes.length - 1} aria-valuenow={Math.max(0, k)} aria-valuetext={libelle}
       className="pq-mb-poignee"
       onClick={(e) => e.stopPropagation()}
@@ -132,7 +132,7 @@ export function Frise({ recette, biere, reperes, nouveaux, onGeste, ouvrirChamp 
       </i>
     ))), [rail]);
   return (
-    <section ref={frise} data-role="frise" data-acquis="frise" data-element="etape-frise" data-etat="etat-etape-repos" aria-orientation="vertical"
+    <section ref={frise} data-role="frise" data-acquis="frise" data-element="etape-frise" data-etat="etat-etape-repos etat-acquis-glisser-moment etat-acquis-maquette-jouable" aria-orientation="vertical"
       aria-label="Houblons de la recette, posés sur le rail du brassage" className="pq-mb-frise">
       <i aria-hidden="true" className="pq-mb-axe" />
       {/* D37 révisé : la durée se lit ici et se règle dans la fiche de brassage (renvoi, comme un réglage d'iPhone). */}

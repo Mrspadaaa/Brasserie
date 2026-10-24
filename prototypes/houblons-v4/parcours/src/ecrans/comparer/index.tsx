@@ -115,7 +115,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   return (
     <CadreOutil ecran="comparer" question={question}
       contexte={
-        <div className="pq-comparer-tete" role="group" data-etat="etat-comp-repos" data-element="etat-acquis-comparer-v3"
+        <div className="pq-comparer-tete" role="group" data-etat="etat-comp-repos etat-acquis-comparer-v3 etat-acquis-premier-plan-80-mots etat-acquis-simule-marque etat-acquis-au-style-absolu"
           aria-label={`Fixé pour ${nombreMot(cols.length)} : Stout ${sc.code}, dose égale ${nombre(CONDITIONS.doseGL)} g/L chacun, ${nomLevure(recette.yeastId)}`}>
           <LigneContexte items={[
             { cle: 'base', contenu: <span data-element="y1b-ligne-contexte r6a-contexte">Stout {sc.code}</span> },
@@ -126,11 +126,11 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
         </div>
       }
       dock={sel && (
-        <nav className="pq-comparer-dock" aria-label="Le reste, à un toucher" data-element="etat-acquis-r6n2-dock">
+        <nav className="pq-comparer-dock" aria-label="Le reste, à un toucher" data-etat="etat-acquis-r6n2-dock etat-acquis-r6a-elements-notes">
           <BoutonDock nom="defi" actif={feuille === 'defi'} etat="etat-comp-defi" ouvre="y1b-defi y1b-jauge-amertume w2-piste-commune s5-deux-objectifs" onClick={() => basculer('defi')} icone={<IconeCible taille={18} />}
             label={<>Défi <b className="pq-comparer-nb">{`${score!.points}/${score!.sur}`}</b></>} aria={`Défi : ${sel.houblon.nom} tient ${score!.points} critères sur ${score!.sur}`} />
           <BoutonDock nom="egaler" actif={feuille === 'egaler'} etat="etat-comp-egaler" ouvre="y3-pour-egaler" controle="pq-comparer-egaler" onClick={() => basculer('egaler')} icone={<IconeEgal taille={18} label="" />} label="Égaler" />
-          <BoutonDock nom="valeurs" actif={feuille === 'valeurs'} etat="etat-comp-chimie" ouvre="r6a-chimie v1-vraies-valeurs v1-en-a-plus v1-linalol-en-biere d1-tout-ouvert p03-plages-sources" onClick={() => basculer('valeurs')} icone={<IconeFiole taille={18} />} label="Valeurs" aria="Valeurs : chimie et vraies valeurs" />
+          <BoutonDock nom="valeurs" actif={feuille === 'valeurs'} etat="etat-comp-chimie etat-acquis-vraies-valeurs-v1" ouvre="r6a-chimie v1-vraies-valeurs v1-en-a-plus v1-linalol-en-biere d1-tout-ouvert p03-plages-sources" onClick={() => basculer('valeurs')} icone={<IconeFiole taille={18} />} label="Valeurs" aria="Valeurs : chimie et vraies valeurs" />
           <BoutonDock nom="preuve" actif={feuille === 'preuve'} etat="etat-comp-preuve" ouvre="r6a-osu y3-panel-osu y1b-tirage-preuve" onClick={() => basculer('preuve')} icone={<IconePanel taille={18} />} label="Preuve" aria="Preuve : panel OSU et 20 bières tirées" />
           <BoutonDock nom="frise" actif={feuille === 'frise'} etat="etat-comp-frise-levure" onClick={() => basculer('frise')} icone={<IconeFrise taille={18} />} label="Frise" />
           <BoutonDock nom="souche" actif={feuille === 'souche'} onClick={() => basculer('souche')} icone={<IconeSouche taille={18} />} label="Souche" />
@@ -195,7 +195,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
         </section>
         {/* D114 : le panel OSU (un acquis) reste replié, au rang d'une note, sous le tableau comme dans r6a ; un toucher ouvre
             Preuve, sa feuille dans le dock de r6n2. */}
-        <section className="pq-comparer-osu-ligne" aria-label="Panel OSU">
+        <section className="pq-comparer-osu-ligne" aria-label="Panel OSU" data-etat="etat-acquis-panel-osu">
           <button type="button" className="pq-comparer-lien pq-comparer-osu-tch" data-ouvre-element="y3-panel-osu r6a-osu" onClick={() => setFeuille('preuve')}>Panel OSU, Cascade : la courbe mesurée, dans Preuve ›</button>
         </section>
         <p className="pq-comparer-vsrc">~ simulé par le moteur à {nombre(CONDITIONS.doseGL)} g/L chacun : centre conventionnel, bande = incertitude. Le reste, à un toucher sous le pouce.</p>

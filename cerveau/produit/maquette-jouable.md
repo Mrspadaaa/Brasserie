@@ -28,6 +28,9 @@ sources: work/refonte-frontend/v4/outils/pages/2026-10-24-maquette/LISEZ-MOI.md 
 **Pièges**
 - CHOIX OK ne prouve pas la ressemblance : Suggérer est passé alors qu'il s'écartait de q2b (D117). Avant toute publication, la page côte à côte, regardée par le critique et par la supervision (L03).
 - Un composant de l'app réemployé apporte ses propres boutons (le « × » de 16 px du Sheet) : les contrôles écrits pour les routes ne les voient pas.
+- Échap sans feuille ouverte fait reculer d'un écran : tout élément ajouté qui s'ouvre au toucher intercepte Échap en capture (`keydown`).
+- Figer le DOM rendu (outerHTML et `style.css` copiée) donne une copie exacte d'un écran choisi, en renommant `data-houblon`, `ligne-houblon`, `legende` et les id de React (jeux courts du 24.10).
+- Le radar de Ma bière de la base v4.10 (choix m4) trace la dégustation notée de la grille (−1 à 3, « pas senti » sur l'anneau du zéro, « pas goûté » au centre), pas le profil simulé. Pièges des contrôles : [[pieges-controles-maquette]].
 - Les réponses automatiques aux commentaires peuvent republier l'artefact. Une version corrigée va toujours dans un artefact neuf ([[page-partagee]]).
 
 **Vers l'app.** L'architecture de base vient d'abord (#143, faite par p8-portabilite) ; la porte B n'ouvre que sur son feu vert. Chaque fichier a sa place dans l'app : voir ARCHITECTURE.md. Voir aussi [[acquis-valides]] et [[outils-houblons]].

@@ -104,11 +104,12 @@ export default function Biere() {
   const changerVue = (v: 'barres' | 'radar') => { setSommet(null); setVue(v); };
 
   // Le contrat de controle-etats.mjs sur les commandes de l'app (SegmentedControl, croix des onglets) : data-etat posé
-  // après le rendu, comme Lentille pose data-vue. « Radar » déclenche le radar, ou le radar en absolu si l'absolu est pris.
+  // après le rendu, comme Lentille pose data-vue. « Radar » déclenche le radar, ou le radar en absolu si l'absolu est pris ;
+  // il ouvre aussi la grille de dégustation m4 (acquis « Radar: m4 h4 très bien », joué depuis les barres, comme sa base).
   const reglages = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const r = reglages.current;
-    r?.querySelector('[data-vue="radar"]')?.setAttribute('data-etat', echelle === 'absolu' ? 'etat-biere-radar-absolu' : 'etat-biere-radar');
+    r?.querySelector('[data-vue="radar"]')?.setAttribute('data-etat', echelle === 'absolu' ? 'etat-biere-radar-absolu' : 'etat-biere-radar etat-acquis-radars-m4-h4');
     r?.querySelector('[data-e="absolu"]')?.setAttribute('data-etat', 'etat-biere-absolu');
     const croix = [...document.querySelectorAll('[data-role="retour"]')].find((e) => e.getClientRects().length > 0);
     croix?.setAttribute('data-etat', 'etat-biere-retour');

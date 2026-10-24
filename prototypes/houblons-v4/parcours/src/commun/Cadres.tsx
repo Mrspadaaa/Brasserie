@@ -19,8 +19,10 @@ import './feuille.css';
  * - Les autres outils : la croix au même endroit, puis la question.
  * La croix ramène à l'étape Houblons (D118) ; le retour du téléphone et Échap reviennent d'un écran. Le dock (ponts,
  * commandes) sous le pouce. */
-export function CadreOutil({ ecran, question, questionVisible = true, elementTete, contexte, dock, children }: {
-  ecran: RoutePage; question: string; questionVisible?: boolean; elementTete?: string; contexte?: ReactNode; dock?: ReactNode; children: ReactNode;
+export function CadreOutil({ ecran, question, questionVisible = true, elementTete, contexte, dock, etat, children }: {
+  ecran: RoutePage; question: string; questionVisible?: boolean; elementTete?: string; contexte?: ReactNode; dock?: ReactNode;
+  /** data-etat de l'écran entier (contrat de controle-etats.mjs : un état « au repos » que tout l'écran montre). */
+  etat?: string; children: ReactNode;
 }) {
   const { retour } = useNavigation();
   const onglet = ecran === 'suggerer' || ecran === 'comparer' ? ecran : null;
@@ -28,7 +30,7 @@ export function CadreOutil({ ecran, question, questionVisible = true, elementTet
     <PageShell title={question} onClose={retour} footer={dock ? <Dock>{dock}</Dock> : undefined}
       mobileHeader={<div {...(elementTete ? { 'data-element': elementTete } : {})}>{onglet ? <Onglets actif={onglet} /> : <TeteOutil question={question} />}</div>}
       className={`pq-outil pq-outil-${ecran} pq-cadre-retour`}>
-      <div data-ecran={ecran} className="space-y-2">
+      <div data-ecran={ecran} {...(etat ? { 'data-etat': etat } : {})} className="space-y-2">
         {onglet && questionVisible && <h1 className="text-[0.9375rem] font-semibold text-cave-50 leading-tight px-1">{question}</h1>}
         {contexte}
         {children}

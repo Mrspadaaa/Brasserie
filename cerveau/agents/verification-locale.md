@@ -2,7 +2,7 @@
 name: verification-locale
 description: Comment vérifier localement l'app Brasserie L'Affinée — contournement auth en dev sous ?dev-local, et scripts de contrôle.
 type: agents
-maj: 2026-10-22
+maj: 2026-10-24
 sources: mémoire locale affinee-verification-locale.md ; src/App.tsx ; scripts/check-no-dev-auth.mjs ; scripts/check-water.mjs ; vite.config.ts ; firebase.json ; firestore.rules ; src/ui/useViewport.ts ; src/data/seedData.ts
 ---
 
@@ -27,7 +27,7 @@ npx firebase deploy --only hosting -m "…"
 ```
 Contrôle post-déploiement : chercher `dev-local`, `devLocalUser`, `preview=` dans le bundle servi ; ouvrir l'URL de production avec `?dev-local`, qui doit montrer la vraie page de connexion. Règle d'or de Gaëtan : tout se développe et se valide en local avant tout déploiement, et on ne touche jamais `firebase.json`, `.firebaserc`, `firestore.rules`, `firestore.indexes.json`.
 
-**Mesurer dans le navigateur : recharger DUR d'abord.** Deux pièges font mesurer l'ancienne mise en page et conclure à tort qu'un changement « n'a rien fait » : 1) Vite sert parfois une transformation périmée après une modification de classes Tailwind : un `location.reload()` complet, et attendre 2 s, avant chaque campagne de mesure. 2) `useCoarsePointer()` (`src/ui/useViewport.ts`) est lu au MONTAGE : redimensionner en mobile après le chargement laisse l'app en densité `comfortable` (paddings de 16 px au lieu de 12, `space-y-4` au lieu de `space-y-2.5`). Redimensionner PUIS recharger. Sur téléphone, la barre d'onglets « 1. Eau / 2. Sels » est `sticky` : le budget vertical réel est `main.clientHeight` moins sa hauteur, pas `main.clientHeight`.
+**Mesurer dans le navigateur : recharger DUR d'abord.** Deux pièges font mesurer l'ancienne mise en page et conclure à tort qu'un changement « n'a rien fait » : 1) Vite sert parfois une transformation périmée après une modification de classes Tailwind : un `location.reload()` complet, et attendre 2 s, avant chaque campagne de mesure. 2) `useCoarsePointer()` (`src/ui/useViewport.ts`) est lu au MONTAGE : redimensionner en mobile après le chargement laisse l'app en densité `comfortable` (paddings de 16 px au lieu de 12, `space-y-4` au lieu de `space-y-2.5`). Redimensionner PUIS recharger. Sur téléphone, la barre d'onglets « 1. Eau / 2. Sels » est `sticky` : le budget vertical réel est `main.clientHeight` moins sa hauteur, pas `main.clientHeight`. 3) La règle globale `prefers-reduced-motion` de l'app (`src/index.css`) supprime aussi les fondus d'opacité, et Chrome sans écran se déclare en mouvement réduit (r1, 24.10).
 
 **Worktree `.claude/worktrees/*`** (constaté le 13 septembre 2026). Trois fichiers manquent, tous ignorés par Git : `src/data/seedData.ts` (copier `seedData.example.ts`), `.env` (copier celui de `C:/Users/mrspa/Documents/Brasserie`) et `functions/node_modules`. Sans les deux premiers, `npm run dev` sert une page blanche (`auth/invalid-api-key`). `functions/node_modules` absent fait échouer environ 25 fichiers de tests à la collecte (`Cannot find package 'firebase-functions/v2/https'`) : ce ne sont pas des régressions. Le `node_modules` racine, lui, se résout depuis le dépôt principal.
 

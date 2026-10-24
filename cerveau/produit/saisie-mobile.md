@@ -2,7 +2,7 @@
 name: saisie-mobile
 description: Règles de saisie mobile L'Affinée (livrées le 04.09.2026) — jamais type="number", densité pilotée par le clavier, sélection tactile au relâchement.
 type: produit
-maj: 2026-10-22
+maj: 2026-10-24
 sources: mémoire locale affinee-saisie-mobile.md ; src/ui/numericInput.ts ; src/ui/useViewport.ts
 ---
 
@@ -19,5 +19,6 @@ Refonte de la prise de données mobile livrée le 04.09.2026, à la demande de G
 - **`?keyboard=330`** simule un clavier en développement, comme les `?preview=` ; éliminé du paquet de production (vérifié dans `dist/`).
 - **Code mort repéré, non touché** : `AddStockItemModal`, `EditStockItemModal` et `components/ui/Stepper` ne sont importés par aucun écran.
 - Vérification : `npm test` (320 tests), `npx tsc --noEmit`, `npm run build`.
+- Un voile de fermeture sous le doigt reçoit le `click` synthétisé à la fin d'un appui long et referme la feuille à peine ouverte : un appui long qui ouvre une feuille ignore le click suivant (600 ms ; fl-z, 24.10).
 
 Voir [[socle-v01]] et [[modele-brassage]].

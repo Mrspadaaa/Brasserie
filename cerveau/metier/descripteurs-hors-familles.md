@@ -2,7 +2,7 @@
 name: descripteurs-hors-familles
 description: Pourquoi l'outil houblons fait paraître Nelson Sauvin ordinaire et Motueka ultra fruité : 83 % des mots de Nelson Sauvin tombent hors des 12 familles. Cause chiffrée, preuves, trois corrections.
 type: metier
-maj: 2026-10-22
+maj: 2026-10-24
 sources: work/refonte-frontend/v4/SPEC-BRASSEUR.md (lot 21, 20.10) ; work/refonte-frontend/registre.md (retour du lot 21, point 5) ; prototypes/houblons-v4/data/pack-fiches.json ; prototypes/houblons-v4/data/correspondance-familles.json ; prototypes/houblons-v4/src/engine/hops.ts ; prototypes/houblons-v4/src/engine/fiches.ts ; prototypes/houblons-v4/src/engine/profil-simule.ts ; functions/src/hopExtrapolationCore.ts ; src/data/hopExtrapolationBootstrap.json ; work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l8g-fiche-390.png ; mesures et scripts : work/missions/2026-10-22-essai-voies/voies/b-nelson-sauvin/ANNEXE.md
 ---
 Retour du brasseur sur l5f : « nelson sauvin est un houbon ordinaire alors que c'est un un houbon incroyable » ; « motueka est ultra fruité ». Leçon L14. Carte des outils : [[outils-houblons]]. À garder : [[acquis-valides]].
@@ -11,6 +11,8 @@ Retour du brasseur sur l5f : « nelson sauvin est un houbon ordinaire alors que 
 - Nelson Sauvin : 12 mots, 2 rattachés à une famille, 10 sans famille (83 %). La fiche montre Agrumes 1/2, Épicé 1/2 et « 10 non décrites » (capture l8g-fiche-390.png). C'est le rang 1 sur 180 houblons de 6 mots ou plus ; le catalogue moyen est à 22 %.
 - Ses 9 vrais descripteurs (5 idées : vin blanc, fruité, groseille à maquereau, raisin, sauvignon blanc ; 4 citées par les 2 fiches) ne sont rattachés à rien. Les 2 mots rattachés sont des noms de catégories de Hopsteiner (« Familles déclarées : Fruité, Agrumes, Épicé »).
 - Motueka : 12 mots, 9 rattachés (75 %), Agrumes 2/2 (7 mots), Tropicaux 1/2, Floral 1/2. Sa barre d'agrumes est deux fois plus haute que toute barre de Nelson Sauvin.
+- (24.10, lot de la liste de la fiche) La ligne Hopsteiner « Familles déclarées sur houblon brut » est un classement, pas des mots sentis : elle fournit seule l'Agrumes et l'Épicé de Nelson Sauvin, l'Herbacé de Cascade, l'Épicé de Nugget, le Fruité de Motueka et de Cascade. Une liste « les mots d'abord » dit « classé ».
+- « Vin blanc » est le premier mot des deux fiches de Nelson Sauvin (7 houblons sur 318) ; ses remplaçants calculés (Boomerang, Herkules, Phoenix, Pacific Jade) ne disent ni vin blanc, ni raisin, ni groseille. Nugget : 16 mots, 6 précis, tous de Beer Maverick sauf « pineapple ».
 
 **Cause** (le mot→famille n'est pas dans correspondance-familles.json, qui porte composé→famille, poids de forme 1 / 0,5 / 0 et λ = 0,5)
 1. Lexique fermé : hops.ts:10 lit les 12 listes `axes[].terms` de hopExtrapolationBootstrap.json. `hopDescriptorEvidence` (hopExtrapolationCore.ts:49-59) cherche le mot entier, sans synonyme ni pluriel, dans le texte anglais d'origine (hops.ts:77). gooseberry (la liste dit groseille), grape, wine, sauvignon blanc, fruity : dans aucune liste.

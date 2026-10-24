@@ -1,4 +1,31 @@
-ECHEC — G1 et G2 : RETOUR et RAIL hors de mon Possède ; 24 états « acquis » sans déclencheur
+ECHEC — G2 seul : ETATS 113/117 (2 acquis expliqués, 2 doses en délai) ; BATTERIE OK 33/33
+
+## Passe 2 : décisions du pilote (24.10)
+1. RETOUR : le pilote a appliqué le chemin en deux pas à `controle-retour.mjs` (commit e73ce890) → `RETOUR OK`.
+2. RAIL, option (b), appliquée par moi dans `outils/batterie.mjs` : `controle-rail … --parcours` ne joue plus que `dryhopper` ;
+   deux lignes nouvelles gardent l'étape : `controle-fonctions-rail.mjs <construction>` (`FONCTIONS-RAIL OK`) et
+   `controle-geste-etape.mjs <construction> --froid` (`GESTE-ETAPE OK (froid`). La batterie passe ainsi de 31 à 33 lignes.
+   D61 bis et D56 sur `cas-k3.html`, le même geste joué sur sa base (`base/consolide/cas-k3.html`) et sur la maquette (sonde
+   `%TEMP%\r7\k3e.mjs`, pas de 10 px, 24 ms ; jetons = top des autres houblons, chevauchements de textes visibles hors de la
+   carte tenue) :
+   - D61 bis, au passage de 0′ à 100 °C (le Dock se refait sur le segment du doigt, D67) : Citra cryo passe de 475 à 518 px
+     sur sa base (+43 px), de 482 à 514 px sur la maquette (+32 px). Le bond est celui de sa base ; la maquette ne fait pas
+     pire. Pas de correction.
+   - D56, tenu à 75 °C : Cascade (80 °C) s'efface sous la carte tenue sur les deux pages (« fondu »), 0 chevauchement à
+     250 ms. Le « 80 °C sur 80 °C » de controle-rail est lu pendant le fondu (120 ms, comme sa base). Tenu à 85 °C, avant
+     ma correction de la mesure des hauteurs, Cascade disparaissait sur la maquette et pas sur sa base : corrigé (voir RAIL, suite).
+3. ETATS : les 24 déclencheurs `etat-acquis-*` posés (`data-etat`, plusieurs jetons par élément quand un même élément
+   porte plusieurs états) : Suggérer (objectifs, voies, « + » d'Aurum, « Radar », écran entier via `CadreOutil etat`),
+   Comparer (contexte, dock, « Valeurs », ligne Panel OSU ; r5 les avait mis en `data-element`), étape (frise, Citra cryo),
+   fiche, Dryhopper, grille de dégustation. `Moment : 60 minutes d'ébullition, Nugget` : le libellé de la poignée commence
+   comme celui de sa base. Les `different` : barres l5b, suite s5 de q2b, dock r6n2, notes r6a, thème blanc gris noir,
+   biotransformation (« creep ») passent désormais : les reprises r4 et r5 les rendent.
+   Deux restent, écrits ici :
+   - `etat-acquis-radars-m4-h4` : la grille m4 est rendue (Ma bière en Radar, `data-role="degustation"`, état
+     `etat-biere-radar` OK avec « pas senti … marqué »), mais l'acquis se joue « au repos » sur `biere/etat.html`, que sa base
+     ouvre en Barres (`etat-biere-repos`). Il faudrait `page_construite` ou un geste « Radar » dans `acquis.json` (pas à moi).
+   - `etat-acquis-y1b-brassin-au-doigt` : « Quand ? », « Citra », « Tire 20 bières » sont les mots de y1b ; Dryhopper est un
+     choix ouvert (a1 en attendant ; REPRISE § 5 : rien d'un écran au choix ouvert). Non rendu.
 
 ## Fichiers écrits
 - `prototypes/houblons-v4/parcours/src/ecrans/fiche/FicheHoublon.tsx` (fiche-arome sur le bloc des familles)
@@ -9,20 +36,27 @@ ECHEC — G1 et G2 : RETOUR et RAIL hors de mon Possède ; 24 états « acquis �
 - `prototypes/houblons-v4/parcours/src/ecrans/suggerer/reprise.css` (étiquette « +n crans » dans sa colonne)
 - `prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs`, `parcours-complet.mjs`
 - `prototypes/houblons-v4/maquettes/parcours/**` (construction commune) ; ce RESULTAT.md
-- `batterie.mjs` : non modifié (le seuil de 30 mots est juste, voir MOTS).
+- `batterie.mjs` : le seuil de 30 mots est juste (voir MOTS) ; passe 2 : option (b) du pilote pour le rail.
+- Passe 2 : `commun/Cadres.tsx` (prop `etat`), `suggerer/index.tsx`, `comparer/index.tsx`, `biere/Degustation.tsx`,
+  `dryhopper/index.tsx`, `fiche/FicheHoublon.tsx`, `ma-biere/Frise.tsx`, `ma-biere/Ajouter.tsx` (déclencheurs des acquis).
 - Scripts de travail : `%TEMP%\r7\` (sondes, captures, copie corrigée de controle-retour).
 
-## Critères (rejoués sur la construction commune après les corrections)
-- G1 `batterie.mjs` : voir « Batterie finale » plus bas.
-- G2 `controle-etats.mjs prototypes/houblons-v4/maquettes/parcours` → `ETATS ECHEC (24/117) ; 11 voulu(s) non rejoué(s)`.
-  Les 24 échecs sont tous `etat-acquis-*` (`choix/etats/acquis.json`, relevé p21b) : « [data-etat=…] absent … (le déclencheur
-  de l'état n'est pas posé) ». Les états des six écrans repris (étape, Ma bière, fiche, Suggérer, Comparer, Substituer)
-  passent tous. Aucune reprise r1 à r6 n'avait les acquis dans son contrat ; plusieurs sont `different` (barres l5b,
-  radars m4-h4, suite s5 de q2b) et demandent un rendu, pas seulement un marqueur. Hors du budget de cette voie.
+## Critères (rejoués sur la construction commune, passe 2)
+- G1 `batterie.mjs` → **`BATTERIE OK 33/33`** (journal `%TEMP%7at-fin2.txt`).
+- G2 `controle-etats.mjs prototypes/houblons-v4/maquettes/parcours` → `ETATS ECHEC (4/117) ; 11 voulu(s) non rejoué(s)`
+  (trois rejeux complets, même résultat) :
+  - `etat-acquis-radars-m4-h4` et `etat-acquis-y1b-brassin-au-doigt` : expliqués plus haut (Passe 2, point 3).
+  - `etat-etape-dose-plus` et `etat-etape-dose-moins` : `erreur : Runtime.callFunctionOn timed out` (délai de 180 s de
+    puppeteer), seulement dans le rejeu complet à quatre pages. Seuls (`--id=`) et avec leur écran (`--ecran=etape` →
+    `ETATS OK (15/15)`, deux fois), ils passent ; ils passaient aussi dans le rejeu complet avant la passe 2. Cause non
+    trouvée : à faire élucider (la page de l'étape se bloque-t-elle quand quatre pages tournent ensemble ?). Pendant ces rejeux,
+    `controle-etats.mjs` a été modifié par un autre agent (options `--captures`, `--avec-voulus`, non commitées), et les
+    voies r8a à r8c jouaient Chrome en parallèle : un rejeu à machine calme est à refaire avant de conclure.
 - G3 `controle-fonctions-rail.mjs` → `FONCTIONS-RAIL OK (37/37)`.
 - G4 `controle-geste-etape.mjs --froid` → `GESTE-ETAPE OK (froid, 3 segments)`.
-- Aussi : `CHOIX OK`, `TEINTE OK 6/6`, `TYPES OK`, `PONTS OK (18 gestes)`, `PARCOURS OK (29 gestes à 390, 29 à 1280)`,
-  `MOTS OK` (30), `COMMUN OK` sur dryhopper, levure, ma-biere, substituer.
+- G5 `systeme.mjs note … --contient …` → `NOTE OK`.
+- Aussi (dans la batterie) : `CHOIX OK`, `TEINTE OK 6/6`, `TYPES OK`, `RETOUR OK`, `RAIL OK` (dryhopper), `PONTS OK`,
+  `PARCOURS OK`, `MOTS OK` (30), `COMMUN OK` sur les sept routes.
 
 ## Captures
 - `%TEMP%\r7\etape-avant.png` (étape avant ; à côté de `work/refonte-frontend/v4/ecran-1/base/captures/consolide-390.png`)
@@ -140,7 +174,7 @@ work/refonte-frontend/v4/ecran-1/base consolide` → `RAIL OK 1/1`) et que le po
 3. ETATS : confier les 24 états `etat-acquis-*` à une voie (déclencheurs `data-etat` et, pour les `different`, le rendu de
    sa maquette), ou les sortir de G2 tant qu'aucune reprise ne les porte.
 
-## Batterie finale
+## Batterie finale (passe 1)
 `node prototypes/houblons-v4/parcours/outils/batterie.mjs` → **`BATTERIE ECHEC 28/31`** (départ : 23/31 ; journal `%TEMP%7at-fin.txt`).
 Ratés : `controle-rail … ma-biere dryhopper --parcours` → `RAIL ECHEC 7 problème(s)` ; `controle-retour` → `RETOUR ECHEC (12/12 conformes, 1 manques)` ;
 `controle-retour --routes=biere,suggerer,comparer` → `RETOUR ECHEC (6/6 conformes, 1 manques)`. Tenus, dont les autres échecs du départ :

@@ -139,7 +139,7 @@ export default function Suggerer() {
   const groupe2 =groupes.filter((g) => g.id.startsWith('meme-'))[1] ?? groupes.find((g) => g.id.startsWith('meme-'));
 
   return (
-    <CadreOutil ecran="suggerer" question="Quel houblon ajouter à ma bière ?" questionVisible={false} elementTete="q2b-onglets">
+    <CadreOutil ecran="suggerer" question="Quel houblon ajouter à ma bière ?" questionVisible={false} elementTete="q2b-onglets" etat="etat-acquis-couleur-aromes etat-acquis-picto-epice">
       <BulleTraitsProvider>
         <div className="pq-suggerer-haut" data-etat="etat-sugg-bandeau-ibu">
           <Bandeau biere={biere} element="q2b-bandeau-ibu" />
@@ -155,7 +155,7 @@ export default function Suggerer() {
             <p><b>Usage</b> : amer, arôme ou mixte ; souligné en pointillé, déduit de l’α. Appui long sur une voie : sa fiche.</p>
           </Legende>
           <span className="flex-1" aria-hidden="true" />
-          <Lecture<'barres' | 'radar'> label="Vue" valeur={vue} onChange={setVue} e={['barres', 'radar']} etats={[undefined, 'etat-sugg-radar']}
+          <Lecture<'barres' | 'radar'> label="Vue" valeur={vue} onChange={setVue} e={['barres', 'radar']} etats={[undefined, 'etat-sugg-radar etat-acquis-bascule-barres-radar']}
             options={[{ value: 'barres', label: 'Barres' }, { value: 'radar', label: 'Radar' }]} />
         </div>
 
@@ -163,13 +163,13 @@ export default function Suggerer() {
           <VueRadar biere={biere} sc={sc} echelle={echelle} objectifs={objectifs} groupes={groupes} onHorsHoublon={montrerHorsHoublon} famHors={famHors} pistesHors={pistesHors.length} />
         ) : (
           <>
-            <section aria-label="Objectifs" data-element="q2b-cartes-objectifs q2b-piste-objectif" data-etat="etat-sugg-repos" className="grid gap-2"
+            <section aria-label="Objectifs" data-element="q2b-cartes-objectifs q2b-piste-objectif" data-etat="etat-sugg-repos etat-acquis-disposition-l8 etat-acquis-theme-blanc-gris-noir" className="grid gap-2"
               style={{ gridTemplateColumns: `repeat(${colonnes}, minmax(0, 1fr))` }}>
               {[...objectifs].sort((x, y) => x.sens - y.sens).map((o) => <Carte key={o.f} o={o} groupes={groupes} biere={biere} teinte={teinte(o.f)} famHors={famHors} pistesHors={pistesHors.length}
                 horsHoublon={horsHoublon} onHorsHoublon={montrerHorsHoublon} etatPiste={o.f === fPiste} />)}
             </section>
 
-            <div data-libre="houblon" aria-label="Voies du moteur"
+            <div data-libre="houblon" aria-label="Voies du moteur" data-etat="etat-acquis-barres-l5b etat-acquis-q2b-suite-s5 etat-acquis-levure-bio-cumul etat-acquis-stock-icone"
               data-direction={JSON.stringify(Object.fromEntries(objectifs.map((o) => [o.f, o.requis / o.cran])))}>
               {exclus.length > 0 && (
                 <p className="flex flex-wrap items-center gap-1.5 px-1 pb-1 text-sm text-cave-200">
@@ -387,7 +387,7 @@ function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestes
               ))}
             </span>
           )}
-          <button type="button" data-role="ajouter" data-element="q2b-plus-coche" {...(plus ? { 'data-etat': 'etat-sugg-plus' } : {})} aria-pressed={choisie}
+          <button type="button" data-role="ajouter" data-element="q2b-plus-coche" {...(plus || noms === 'Aurum' ? { 'data-etat': [plus && 'etat-sugg-plus', noms === 'Aurum' && 'etat-acquis-plus-comparer'].filter(Boolean).join(' ') } : {})} aria-pressed={choisie}
             aria-label={choisie ? `Retirer ${noms} de la comparaison` : `Ajouter ${noms} à la comparaison`}
             onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); basculer(); }}
             className="touch-target pq-sg-sur-axe w-11 h-11 rounded-full flex items-start justify-center">

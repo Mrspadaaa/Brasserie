@@ -43,6 +43,8 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[chimie-eau]] — AR en ppm d'ion, solveur plafonné, alcalinité à l'empâtage, chaux
 - [[cout-calcul-moteur]] — simulerCas : 1,4 ms léger, 4 à 6 ms complet ; en direct, sans serveur
 - [[dryhop-moment]] — Idaho 7 : le dry hop actif d'abord
+- [[moteur-parcours-limites]] — moments simulés, levure, visée en palier
+- [[substitution-moteur]] — le score de substitutes() selon le moment
 
 ### produit/ — outils, écrans, état fini ou inachevé
 - [[outils-houblons]] — une question = un outil : la carte à poser avant tout lot
@@ -63,6 +65,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[fermeture-et-quota]] — fermer sans bloquant ; paliers de quota ; session neuve au-delà de 450 k
 - [[verification-locale]] — ?dev-local, scripts de contrôle locaux
 - [[monkey-testing]] — trois règles, deux angles morts, le cumul de stock
+- [[pieges-controles-maquette]] — pièges des contrôles Chrome de la maquette
 - [[gemini-tests-reels]] — Gemini réel en test seulement, journalisé, jamais dans npm test
 - [[poste-windows-msix]] — pièges Windows : MSIX, tâches planifiées, Bash et barres inverses
 

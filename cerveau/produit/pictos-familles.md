@@ -2,7 +2,7 @@
 name: pictos-familles
 description: Pictos des 12 familles d'arômes : où ils vivent, leurs règles (au trait, ton de la famille), les symboles déjà pris, ce qui se lit à 12 px, et le picto « épicé » (quatre refus, puis cannelle et clou croisés, choisi le 23.10).
 type: produit
-maj: 2026-10-23
+maj: 2026-10-24
 sources: work/refonte-frontend/v4/ecran-1/fils17-standard/v3/planche.html ; work/refonte-frontend/v4/ecran-1/fils17-standard/jetons-familles.json ; work/refonte-frontend/v4/ecran-1/fils18-baseline/l8g/noyau.mjs ; work/refonte-frontend/v4/SPEC-BRASSEUR.md ; work/missions/2026-10-22-reprise-lot21/voies/r4-picto-epice/RESULTAT.md ; work/missions/2026-10-22-reprise-lot21/voies/r4d-a-douce/RESULTAT.md (et r4d-b à r4d-f)
 ---
 
@@ -46,4 +46,5 @@ picto : dans l'app, le hachuré veut dire « inconnu ».
   planche standard. Il est découpé là où le clou passe devant, sans masque : la baseline l8g rend les
   traits à épaisseur fixe, et un masque y deviendrait trop large. Le rendu reste identique de 12 à 48 px.
 - Contrôles : D101 à D101 quater (`controle-planche-picto.mjs` : `--refuses`, `--genres`, `--voisins`,
-  `--ter`, `--epices=N`), témoins dans `tournoi/outils/temoins/`.
+  `--ter`, `--epices=N`), témoins dans `tournoi/outils/temoins/`. STANDARD S4 mesure le trait affiché (attribut × taille)
+  sans `vector-effect` : un picto réutilisé à plusieurs tailles porte un trait calé sur la plus grande (dh4a, 24.10).

@@ -2,7 +2,7 @@
 name: cout-calcul-moteur
 description: Temps mesuré de simulerCas (léger et complet) sur le cas stout, sur un ajout, et sur tout le catalogue (318 houblons) — base du choix de calcul dans le navigateur.
 type: metier
-maj: 2026-10-22
+maj: 2026-10-24
 sources: prototypes/houblons-v4/src/engine/profil-simule.ts (simulerCas, l. 471-477) ; prototypes/houblons-v4/scripts/profil-simule-cas.ts ; prototypes/houblons-v4/src/pack/buildPack.ts (s1Recipe, S1_TASTING) ; prototypes/houblons-v4/src/engine/index.ts ; work/refonte-frontend/v4/ecran-1/fils21-choisir/donnees/PROFIL-SIMULE.md ; work/refonte-frontend/v4/ecran-1/fils21-choisir/donnees/profils-simules.json ; annexe work/missions/2026-10-22-reprise-lot21/voies/r2-cout-calcul/ANNEXE.md (script bench.ts, sortie brute)
 ---
 
@@ -30,3 +30,9 @@ Mesure du moteur de simulation, sans modifier le moteur ni les données. Léger 
 - Hypothèse, non mesurée : un téléphone est 4 à 6 fois plus lent que ce PC. Alors : une variante complète ≈ 100 à 150 ms ; le catalogue complet ≈ 32 à 48 s ; le léger 4 levures ≈ 2,6 à 3,9 s.
 - Reste à mesurer sur un vrai téléphone (navigateur, cache froid, batterie) : le facteur de vitesse réel, le coût de la grille, et le coût de chargement de `profils-simules.json`.
 - Décision du pilote (22.10, réversible, MISSION 2026-10-22-reprise-lot21) : le repli « dry hop et biotransformation seulement si trop lourd » est levé pour les écrans. Une variante se calcule en direct dans le navigateur, sans serveur. Seul le balayage complet du catalogue (8 s) reste hors du direct : Suggestions classe en léger ou lit la grille précalculée. À revoir si un vrai téléphone dépasse 100 ms par geste.
+
+**Mesures dans la maquette jouable** (Chrome, 24.10 ; voies p0, p2, p4, p8)
+- Recalcul de Ma bière : 1,1 ms médian ; un geste 3,7 ms (24 ms au plus pour Suggérer et ses 9 candidats).
+- `proposeVoies` à froid : 90 à 130 ms ; frise de Dryhopper : 40 ms à l'ouverture (30 `lireBiere`), puis 0,9 ms par cran.
+- Préchauffer au repos fait passer les premiers touchers de Suggérer et de Substituer de 798 et 728 ms à 288 et 184 ms.
+- Limites de ce que le moteur simule : [[moteur-parcours-limites]].

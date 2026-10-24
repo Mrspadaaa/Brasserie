@@ -1,8 +1,8 @@
 ---
 name: controles-mecanises
-description: Leçons devenues contrôles et sorties de LECONS.md (plafond de 8 lignes) ; leur contrôle bloque seul, la ligne garde le pourquoi.
+description: Leçons devenues contrôles et sorties de LECONS.md (plafond de 8 lignes, M11, M12, M14 sortis le 24.10) ; leur contrôle bloque seul, la ligne garde le pourquoi.
 type: agents
-maj: 2026-10-23
+maj: 2026-10-24
 sources: cerveau/LECONS.md (section Mécanisées, avant l'élagage du 22.10)
 ---
 
@@ -21,3 +21,7 @@ LECONS.md en leçon active.
 - M09 — Planche de picto : quatre refus du picto « épicé » au 22.10. `controle-planche-picto.mjs` (D101), rien sous 12 px. La lisibilité n'est pas mesurée : nommer chaque picto sur une loupe en vrais pixels ([[pictos-familles]]).
 - M06 (L06) — Les acquis validés passent d'un lot au suivant : le radar a disparu du lot 21. Liste dans [[acquis-valides]], recopiée dans chaque brief ; `controle-acquis.mjs` (D99).
 - M15 — Un contrôle partagé ne se durcit qu'en rejouant ses appels : le 23.10, `verifier-page.mjs` a reçu les règles de lisibilité des pages de lot ; 23 voies du lot 21 l'appelaient sur leurs maquettes (`etat.html --min-images 0`), et le rejeu est tombé à 40 voies en échec sur 63. Le pilote n'avait pas cherché qui l'appelait. Les règles passent sous `--page-lot` ; `systeme.mjs appels <script> --rejouer` rejoue tous les critères qui appellent un script, et le hook cerveau le rappelle à chaque écriture d'un script de contrôle appelé (témoins « appels… », « contrôle durci qui casse un appel »).
+- M11 (L16) — Tout livrable d'agent est un fichier du dépôt : `JURY-VERDICT.md` annoncé, jamais produit. `systeme.mjs voies` rejoue les critères de chaque voie au lieu de croire son rapport.
+- M12 — Une variante rejetée est relancée ou écartée ; des écrans ne sont finis qu'une fois publiés, chaque version dans un artefact neuf et lisible (22.10 : 6 rejets en plan ; 23.10 : « chaque version devrait en créé des nouveaux »). `systeme.mjs voies` (« ## Pages »), `verifier-page.mjs`.
+- M14 — Un panel v0 vaut le lot 21 avant d'être trié : le 23.10, 56 concepts « minimalistes » (5 tours chacun, un squelette commun) étaient « vraiment moins quali », et 32 pictos sur 48 restaient sur ses exemples. Minimaliste = une idée, pas un écran vide ; la baseline est un vocabulaire, pas un gabarit ; ses exemples, un tiers du panel au plus. `controle-panel.mjs` (PANEL OK), exigé par `systeme.mjs mission` dans chaque tri. Le 24.10 (sept voies) : il ne voit ni les écarts sous 60 au fond ni un bloc commun à une série ; dire le seuil au brief, une masse propre par concept, et le jouer dès le premier concept.
+- M01 (complément, 24.10, fl-tri) — Le brief d'une série v0 cite D97 : `controle-valeurs-brutes` entre dans ses GATES et se rejoue sur le texte rendu, pas sur la NOTE.

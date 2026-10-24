@@ -102,7 +102,7 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
         d.setAttribute('data-role', 'fiche');
         d.setAttribute('data-houblon-fiche', cle);
         d.setAttribute('data-element', 'g1-feuille');
-        d.setAttribute('data-etat', 'etat-fiche-ouverte');
+        d.setAttribute('data-etat', 'etat-fiche-ouverte etat-acquis-fiche-g1');
         d.style.maxWidth = '48rem';
         d.style.marginInline = 'auto';
         d.querySelector('h2')?.setAttribute('data-element', 'g1-titre');

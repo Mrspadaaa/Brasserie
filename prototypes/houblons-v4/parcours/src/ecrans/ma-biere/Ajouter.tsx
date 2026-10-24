@@ -104,7 +104,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
           const gout = GOUTS.get(p.cle) ?? 'neutre';
           const ouvert = goutOuvert === p.cle;
           const li = (
-            <li key={p.cle} data-role="ajout-rapide" data-houblon-ajout={p.cle} data-etat={p.cle === 'beermaverick-citra:cryo' ? 'etat-fiche-appui-long-citra' : undefined} {...fiche.appui(p.cle)}
+            <li key={p.cle} data-role="ajout-rapide" data-houblon-ajout={p.cle} data-etat={p.cle === 'beermaverick-citra:cryo' ? 'etat-fiche-appui-long-citra etat-acquis-fiche-citra-cryo' : undefined} {...fiche.appui(p.cle)}
               className="relative flex items-center gap-2 pl-1.5 pr-1 py-1 rounded-lg bg-cave-900 border border-cave-800">
               <span onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
                 <button type="button" data-role="ajout-rapide-plus" data-etat={k === 0 ? 'etat-etape-ajout-rapide' : undefined}
