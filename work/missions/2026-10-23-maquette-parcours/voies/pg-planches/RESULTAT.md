@@ -1,4 +1,15 @@
-OK — quatre planches (Dryhopper, Substituer, fiche, graphes), référence et onze côte à côte, contrôles verts
+OK — « Planches · 24.10 » : quatre rangées dans sa disposition, plus les quatre planches séparées
+
+## La page « Planches · 24.10 » (suite du pilote, disposition qu'il aime)
+- Source : `work/refonte-frontend/v4/outils/pages/2026-10-24-planches/index.html`, avec `img/` (93 images copiées des quatre planches).
+- Une rangée par vue : Dryhopper, Substituer, la liste de la fiche, les graphes. Le nom, la question, la note et le chemin de la capture de référence sont à gauche (au téléphone : au-dessus). Viennent ensuite la référence, cerclée, et ses onze mini maquettes, six les graphes, en vignettes serrées : 6 par rangée à 1280 px, 3 à 390 px, avec retour à la ligne, sans bande. Sous chacune : la pastille (ta référence, froide, tiède ou chaude ; pour les graphes, le verdict du critique), le nom, l'identifiant, une ligne en italique.
+- La même visionneuse ouvre chaque vignette en grand, à côté de sa référence : en paires pour Dryhopper, en rangée pour les autres, et pour chaque graphe a, b, c puis sa capture choisie.
+- Trois rangées « à venir », sans data-choix : la pastille, le levier levure, l'entrée de l'analyse.
+- Critère 1 : `verifier-page.mjs … --page-lot --captures …/2026-10-24-planches/verif` → `PAGE OK (43 images chargées, lisible à 390 et 1280 px, sans erreur)`.
+- Critère 2 : `controle-page-choix.mjs … --min=5` → dryhopper, substituer et fiche : `OK (11 variantes, 6 par rangée à 1280, 3 à 390)` ; graphes : `OK (6 variantes, 6 par rangée à 1280, 3 à 390)` ; `PAGE-CHOIX OK (4 choix)`.
+- Captures ouvertes : `…/2026-10-24-planches/verif-haut.png`, `verif-page.png`, `verif-ordinateur.png`. Visionneuse jouée (sbc1b à 1280 px, gr4 à 390 px) : 0 erreur, 3 et 4 panneaux.
+
+## Les quatre planches séparées (première demande)
 
 ## Fichiers écrits
 - `work/refonte-frontend/v4/outils/pages/2026-10-24-planche-dryhopper/index.html` + `img/` (24) : a1, puis p4a4, p4b2, p4a3, p4b3, p4a2 | p4b1, p4a6, p4a1, p4a5, p4b4, p4b5 (ordre du conseil dh4).

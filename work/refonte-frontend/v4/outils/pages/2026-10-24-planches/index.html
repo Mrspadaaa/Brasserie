@@ -1,0 +1,435 @@
+<title>Planches · 24.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* La disposition qu'il aime (24.10, soir) : « J'aime beaucoup cette disposition. Utilise là pour les artefacts comme ça je
+   peux voir rapidement plusieurs versions d'un coup ». Une rangée par vue, le nom à gauche (au téléphone : au-dessus) ;
+   sa référence puis ses onze mini maquettes en vignettes serrées, six par rangée à l'ordinateur, trois au téléphone.
+   Rien ne défile en largeur (D126). Chaque vignette s'ouvre en grand, à côté de sa référence. Page claire (D106). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 4px 14px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 var(--texte); margin: 0;
+  padding-left: max(14px, env(safe-area-inset-left, 0px));
+  padding-right: max(14px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 64px;
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.25rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--houblon); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+nav[data-autres-vues] { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.95rem; }
+nav[data-autres-vues]:empty { display: none; }
+nav[data-autres-vues] a { padding: 4px 12px; border-radius: 999px; background: var(--carte); border: 1px solid var(--trait); text-decoration: none; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 84ch; }
+.encart .canal { font-weight: 700; }
+.sommaire { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+
+/* Pastilles : ta référence, puis la chaleur (ou le verdict du critique pour les graphes). */
+.pastille { justify-self: start; display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.5; padding: 0 9px; border-radius: 999px; color: #fff; white-space: nowrap; }
+.p-ref { background: #2f6b1f; }
+.p-froide { background: #2a6fb0; }
+.p-tiede { background: #85600a; }
+.p-chaude { background: #a8431a; }
+.p-accepte { background: #2f6b1f; }
+.p-corrige { background: #9b2f2f; }
+.legende-pastilles { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 0.875rem; color: var(--discret); align-items: center; }
+
+/* Une rangée par vue : le nom à gauche, la planche à droite. */
+.rangee { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.nom { display: grid; gap: 4px; align-content: start; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.05rem; color: var(--houblon); }
+.note { font-size: 0.875rem; color: var(--discret); }
+.chemin { font-size: 0.875rem; color: var(--discret); font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 8px; align-items: start; }
+@media (min-width: 900px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 20px; }
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px 14px; }
+}
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ecran.rogne { aspect-ratio: 780 / 1688; }
+.ecran.rogne img { height: 100%; object-fit: cover; object-position: top; }
+.vue[data-reference] .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--ambre), var(--ombre); }
+.vue figcaption { display: grid; gap: 3px; }
+.vue figcaption b { font-family: var(--titre); font-size: 0.95rem; line-height: 1.2; }
+.id { font-size: 0.875rem; color: var(--discret); font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
+.ligne { font-size: 0.875rem; font-style: italic; color: var(--encre); line-height: 1.35; }
+.vide { display: grid; gap: 6px; }
+.a-venir { border: 1px dashed #b9c0b2; border-radius: 10px; padding: 14px; color: var(--discret); font-size: 0.95rem; background: rgb(255 255 255 / 50%); }
+footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+
+/* En grand : chaque état de la mini maquette à côté de sa référence. Ordinateur côte à côte ; téléphone d'un glissement. */
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: calc(64px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)); background: #0e100c; }
+.vis-titre { font: 800 1.05rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-corps { display: grid; gap: 28px; max-width: 1240px; margin: 0 auto; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.vis-panneau { flex: 0 0 86%; scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau img { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.vis-panneau.ref img { box-shadow: 0 0 0 3px var(--ambre); }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #f6d38f; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; }
+  .vis-panneau { flex: 0 1 400px; min-width: 290px; }
+  .vis-glisse { display: none; }
+}
+</style>
+
+<div class="page">
+  <nav data-autres-vues aria-label="Les autres vues"></nav>
+
+  <header>
+    <p class="sur-titre">L'Affinée · houblons · quatre vues · 24.10</p>
+    <h1>Planches</h1>
+  </header>
+
+  <section id="a-choisir" aria-label="À choisir">
+    <div class="encart">
+      <p><b>À choisir, par rangée :</b> ta référence d'abord (cerclée), puis onze vues. Pour les graphes : lequel te bloque, et quelle lecture au doigt t'aide.</p>
+      <p class="canal">Commente la mini maquette que tu choisis (commentaire de l'artefact) : je lis les commentaires.</p>
+      <p>Touche une vignette : elle s'ouvre en grand, à côté de ta référence.</p>
+      <p class="legende-pastilles"><span class="pastille p-ref">ta référence</span><span class="pastille p-froide">froide</span> ta base affinée <span class="pastille p-tiede">tiède</span> forme de la série <span class="pastille p-chaude">chaude</span> forme libre</p>
+      <p class="sommaire"><a href="#r-dryhopper">Dryhopper</a><a href="#r-substituer">Substituer</a><a href="#r-fiche">La liste de la fiche</a><a href="#r-graphes">Les graphes</a></p>
+    </div>
+  </section>
+
+  <!-- DRYHOPPER -->
+  <section class="rangee" id="r-dryhopper" data-choix="dryhopper" aria-labelledby="t-dh" data-mode="paires" data-ref-nom="a1" data-ref-imgs="img/a1-premier-ecran.png|img/a1-pendant.png" data-ref-etats="premier écran|pendant le geste">
+    <div class="nom">
+      <h2 id="t-dh">Dryhopper</h2>
+      <p class="question">« Quand ajouter Idaho 7&nbsp;?&nbsp;»</p>
+      <p class="note">a1 provisoire : ton choix reste ouvert (a1, b4, d8, e5, g1). Ordre du conseil dh4.</p>
+      <p class="chemin">ecran-1/fils23-dryhopper/serie-a/passe3/captures/a1-premier-ecran.png</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="a1 · ton plancher provisoire" data-imgs="img/a1-premier-ecran.png|img/a1-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/a1-premier-ecran.png" width="780" height="1688" alt="a1, premier écran de Dryhopper"></button>
+        <figcaption><span class="pastille p-ref">ta référence</span><b>Ton plancher</b><span class="id">a1</span><span class="ligne">Rubans, loupe chiffrée, « contre ★ ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="1 · La réponse, puis les quatre étapes · p4a4" data-imgs="img/p4a4-premier-ecran.png|img/p4a4-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4a4-premier-ecran.png" width="780" height="1688" alt="p4a4, premier écran"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>La réponse, puis les étapes</b><span class="id">p4a4 · 1</span><span class="ligne">« ★ actif · 2 j » en une ligne, puis quatre étapes.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="2 · Le brassin en courbes · p4b2" data-imgs="img/p4b2-premier-ecran.png|img/p4b2-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4b2-premier-ecran.png" width="780" height="1688" alt="p4b2, premier écran"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>Le brassin en courbes</b><span class="id">p4b2 · 2</span><span class="ligne">Trois courbes de gain, l'amertume dessous.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="3 · La colonne du brassin sous le pouce · p4a3" data-imgs="img/p4a3-premier-ecran.png|img/p4a3-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4a3-premier-ecran.png" width="780" height="1688" alt="p4a3, premier écran"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>La colonne sous le pouce</b><span class="id">p4a3 · 3</span><span class="ligne">Le rail debout sous le pouce droit.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="4 · L'agenda du brassin · p4b3" data-imgs="img/p4b3-premier-ecran.png|img/p4b3-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4b3-premier-ecran.png" width="780" height="1688" alt="p4b3, premier écran"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>L'agenda du brassin</b><span class="id">p4b3 · 4</span><span class="ligne">Le dock devient le calendrier, J+1 à J+14.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="5 · a1 enrichi : chaleur ou CO₂, levure · p4a2" data-imgs="img/p4a2-premier-ecran.png|img/p4a2-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4a2-premier-ecran.png" width="780" height="1688" alt="p4a2, premier écran"></button>
+        <figcaption><span class="pastille p-froide">froide</span><b>a1 enrichi</b><span class="id">p4a2 · 5</span><span class="ligne">Chaleur ou CO₂ au bout du contour, la levure.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="6 · Gardé · emporté · p4b1" data-imgs="img/p4b1-premier-ecran.png|img/p4b1-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4b1-premier-ecran.png" width="780" height="1688" alt="p4b1, premier écran"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>Gardé · emporté</b><span class="id">p4b1 · 6</span><span class="ligne">Ce que le moment garde, ce qu'il perd.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="7 · En chaîne : ma bière → Idaho 7 → levure · p4a6" data-imgs="img/p4a6-premier-ecran.png|img/p4a6-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4a6-premier-ecran.png" width="780" height="1688" alt="p4a6, premier écran"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>En chaîne</b><span class="id">p4a6 · 7</span><span class="ligne">Ma bière → Idaho 7 → Pomona.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="8 · L'inconnu, les jours au rail · p4a1" data-imgs="img/p4a1-premier-ecran.png|img/p4a1-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4a1-premier-ecran.png" width="780" height="1688" alt="p4a1, premier écran"></button>
+        <figcaption><span class="pastille p-froide">froide</span><b>L'inconnu, les jours au rail</b><span class="id">p4a1 · 8</span><span class="ligne">L'inconnu hachuré, jamais 0.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="9 · Sous ses preuves · p4a5" data-imgs="img/p4a5-premier-ecran.png|img/p4a5-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4a5-premier-ecran.png" width="780" height="1688" alt="p4a5, premier écran"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>Sous ses preuves</b><span class="id">p4a5 · 9</span><span class="ligne">Le mesuré à côté du simulé.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="10 · Le duel contre ★ · p4b4" data-imgs="img/p4b4-premier-ecran.png|img/p4b4-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4b4-premier-ecran.png" width="780" height="1688" alt="p4b4, premier écran"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>Le duel contre ★</b><span class="id">p4b4 · 10</span><span class="ligne">L'écart au centre, orangé s'il perd.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="11 · Trois moments sous le pouce · p4b5" data-imgs="img/p4b5-premier-ecran.png|img/p4b5-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4b5-premier-ecran.png" width="780" height="1688" alt="p4b5, premier écran"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>Trois moments</b><span class="id">p4b5 · 11</span><span class="ligne">Celui du pouce au milieu, 12 familles.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- SUBSTITUER -->
+  <section class="rangee" id="r-substituer" data-choix="substituer" aria-labelledby="t-sb" data-mode="rangee" data-ref-nom="u4" data-ref-imgs="img/u4.png" data-ref-etats="l'écran entier">
+    <div class="nom">
+      <h2 id="t-sb">Substituer</h2>
+      <p class="question">« Lequel à la place de Nugget&nbsp;?&nbsp;»</p>
+      <p class="note">Tu gardes u4 ; dis ce que tu veux y greffer. Les cinq retravaillées (passe 3), puis six du panel.</p>
+      <p class="chemin">ecran-1/fils11-substitution/captures/u4-vue-390.png</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran rogne" type="button" data-nom="u4 · ton choix" data-imgs="img/u4.png" data-etats="ton écran de Substituer, en entier"><img src="img/u4.png" width="780" height="3376" alt="u4, le haut de l'écran de Substituer"></button>
+        <figcaption><span class="pastille p-ref">ta référence</span><b>Ton choix</b><span class="id">u4</span><span class="ligne">L'échelle 50–100, le face-à-face, le radar.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="1 · Ton u4, enrichi · sbc1b" data-imgs="img/sbc1b-60.png|img/sbc1b-whirlpool.png" data-etats="à 60′|au whirlpool"><img src="img/sbc1b-60.png" width="780" height="1688" alt="sbc1b à 60′"></button>
+        <figcaption><span class="pastille p-froide">froide</span><b>Ton u4, enrichi</b><span class="id">sbc1b · passe 3</span><span class="ligne">α et dose sur chaque ligne.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="2 · La cible · sbb7c" data-imgs="img/sbb7c-60.png|img/sbb7c-whirlpool.png" data-etats="à 60′|au whirlpool"><img src="img/sbb7c-60.png" width="780" height="1688" alt="sbb7c à 60′"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>La cible</b><span class="id">sbb7c · passe 3</span><span class="ligne">Chaque remplaçant à la distance de son score.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="3 · Gramme pour gramme · sbz7c" data-imgs="img/sbz7c-60.png|img/sbz7c-whirlpool.png" data-etats="à 60′|au whirlpool"><img src="img/sbz7c-60.png" width="780" height="1688" alt="sbz7c à 60′"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>Gramme pour gramme</b><span class="id">sbz7c · passe 3</span><span class="ligne">46 g d'un autre n'est pas le même IBU.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="4 · La file des 318 · sbz6c" data-imgs="img/sbz6c-60.png|img/sbz6c-whirlpool.png" data-etats="à 60′|au whirlpool"><img src="img/sbz6c-60.png" width="780" height="1688" alt="sbz6c à 60′"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>La file des 318</b><span class="id">sbz6c · passe 3</span><span class="ligne">Ton stock dans la file, renversée au whirlpool.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="5 · Trois raisons · sbb5b" data-imgs="img/sbb5b-60.png|img/sbb5b-whirlpool.png" data-etats="à 60′|au whirlpool"><img src="img/sbb5b-60.png" width="780" height="1688" alt="sbb5b à 60′"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>Trois raisons</b><span class="id">sbb5b · passe 3</span><span class="ligne">Sans acheter, le moins de matière, si tu achètes.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="6 · La règle α · sbc3" data-imgs="img/sbc3-premier-ecran.png|img/sbc3-choix-galaxy.png" data-etats="premier écran|Galaxy touché"><img src="img/sbc3-premier-ecran.png" width="780" height="1688" alt="sbc3, la règle α"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>La règle α</b><span class="id">sbc3 · panel 1ᵉʳ</span><span class="ligne">α plus bas, plus de grammes.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="7 · Le nuancier · sbu7" data-imgs="img/sbu7-premier-ecran.png|img/sbu7-choix.png" data-etats="premier écran|un remplaçant touché"><img src="img/sbu7-premier-ecran.png" width="780" height="1688" alt="sbu7, le nuancier"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>Le nuancier</b><span class="id">sbu7 · panel 4ᵉ</span><span class="ligne">Famille par famille, le liseré de Nugget.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="8 · Cinq onglets · sbb4" data-imgs="img/sbb4-premier-ecran.png|img/sbb4-geste.png" data-etats="premier écran|l'onglet Galaxy"><img src="img/sbb4-premier-ecran.png" width="780" height="1688" alt="sbb4, cinq onglets"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>Cinq onglets</b><span class="id">sbb4 · panel 6ᵉ</span><span class="ligne">Un onglet par remplaçant, 12 familles.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="9 · Les éprouvettes de grammes · sbc4" data-imgs="img/sbc4-premier-ecran.png|img/sbc4-choix-sabro.png" data-etats="premier écran|Sabro touché"><img src="img/sbc4-premier-ecran.png" width="780" height="1688" alt="sbc4, les éprouvettes de grammes"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>Les éprouvettes</b><span class="id">sbc4 · panel 7ᵉ</span><span class="ligne">Les grammes contre ton stock.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="10 · u4 au propre · sbu1" data-imgs="img/sbu1-premier-ecran.png|img/sbu1-choix.png" data-etats="premier écran|Magnat touché"><img src="img/sbu1-premier-ecran.png" width="780" height="1688" alt="sbu1, u4 au propre"></button>
+        <figcaption><span class="pastille p-froide">froide</span><b>u4 au propre</b><span class="id">sbu1 · panel 9ᵉ</span><span class="ligne">α et dose sous chaque nom.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="11 · La réponse en tête · sbb1" data-imgs="img/sbb1-premier-ecran.png|img/sbb1-geste.png" data-etats="premier écran|Galaxy ouvert"><img src="img/sbb1-premier-ecran.png" width="780" height="1688" alt="sbb1, la réponse en tête"></button>
+        <figcaption><span class="pastille p-froide">froide</span><b>La réponse en tête</b><span class="id">sbb1 · panel 10ᵉ</span><span class="ligne">« Si tu achètes : Magnat ».</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- LA LISTE DE LA FICHE -->
+  <section class="rangee" id="r-fiche" data-choix="fiche" aria-labelledby="t-fl" data-mode="rangee" data-ref-nom="g1" data-ref-imgs="img/g1.png" data-ref-etats="Nugget">
+    <div class="nom">
+      <h2 id="t-fl">La liste de la fiche</h2>
+      <p class="question">« Que sent ce houblon&nbsp;?&nbsp;»</p>
+      <p class="note">Ton choix g1. Les six retravaillées, sur Nugget puis Nelson Sauvin ; puis cinq du panel.</p>
+      <p class="chemin">ecran-1/base/captures/consolide-fiche-390.png</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="g1 · ta fiche" data-imgs="img/g1.png" data-etats="ta fiche de Nugget"><img src="img/g1.png" width="780" height="1688" alt="g1, ta fiche de Nugget"></button>
+        <figcaption><span class="pastille p-ref">ta référence</span><b>Ta fiche</b><span class="id">g1 · Nugget</span><span class="ligne">Radar étiqueté, « + Floral · − Résineux ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="1 · Les mots tamponnés · flc8b" data-imgs="img/flc8b-nugget.png|img/flc8b-nelson.png" data-etats="Nugget|Nelson Sauvin"><img src="img/flc8b-nugget.png" width="780" height="1688" alt="flc8b sur Nugget"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>Les mots tamponnés</b><span class="id">flc8b · passe</span><span class="ligne">Ses mots en grosses tuiles.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="2 · La signature en une phrase · flb3c" data-imgs="img/flb3c-nugget.png|img/flb3c-nelson.png" data-etats="Nugget|Nelson Sauvin"><img src="img/flb3c-nugget.png" width="780" height="1688" alt="flb3c sur Nugget"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>La signature</b><span class="id">flb3c · passe</span><span class="ligne">« Vin blanc, raisin, groseille… » en une phrase.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="3 · Au style, en mots · fla5c" data-imgs="img/fla5c-nugget.png|img/fla5c-nelson.png" data-etats="Nugget|Nelson Sauvin"><img src="img/fla5c-nugget.png" width="780" height="1688" alt="fla5c sur Nugget"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>Au style, en mots</b><span class="id">fla5c · passe</span><span class="ligne">Les mots que ta stout attend.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="4 · Les cartes de famille · flu2b" data-imgs="img/flu2b-nugget.png|img/flu2b-nelson.png" data-etats="Nugget|Nelson Sauvin"><img src="img/flu2b-nugget.png" width="780" height="1688" alt="flu2b sur Nugget"></button>
+        <figcaption><span class="pastille p-froide">froide</span><b>Les cartes de famille</b><span class="id">flu2b · passe</span><span class="ligne">Une carte pleine par famille.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="5 · L'iceberg · fld8b" data-imgs="img/fld8b-nugget.png|img/fld8b-nelson.png" data-etats="Nugget|Nelson Sauvin"><img src="img/fld8b-nugget.png" width="780" height="1688" alt="fld8b sur Nugget"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>L'iceberg</b><span class="id">fld8b · passe</span><span class="ligne">Dessous, les mots que le radar ne dessine pas.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="6 · Les mots au bout des rayons · flu6b" data-imgs="img/flu6b-nugget.png|img/flu6b-nelson.png" data-etats="Nugget|Nelson Sauvin"><img src="img/flu6b-nugget.png" width="780" height="1688" alt="flu6b sur Nugget"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>Au bout des rayons</b><span class="id">flu6b · passe</span><span class="ligne">Les mots au bout du radar g1.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="7 · Les rubans des mots · fla4" data-imgs="img/fla4-premier-ecran.png|img/fla4-nelson-sauvin.png" data-etats="Nugget|Nelson Sauvin"><img src="img/fla4-premier-ecran.png" width="780" height="1688" alt="fla4 sur Nugget"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>Les rubans des mots</b><span class="id">fla4 · panel 7ᵉ</span><span class="ligne">Chaque mot relié à sa famille.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="8 · Le mot en tête · fla1" data-imgs="img/fla1-premier-ecran.png|img/fla1-nelson-sauvin.png" data-etats="Nugget|Nelson Sauvin"><img src="img/fla1-premier-ecran.png" width="780" height="1688" alt="fla1 sur Nugget"></button>
+        <figcaption><span class="pastille p-froide">froide</span><b>Le mot en tête</b><span class="id">fla1 · panel 8ᵉ</span><span class="ligne">Le mot d'abord, la famille après.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="9 · La preuve par contraste · flb5" data-imgs="img/flb5-premier-ecran.png|img/flb5-motueka.png" data-etats="Nelson Sauvin|Motueka"><img src="img/flb5-premier-ecran.png" width="780" height="1688" alt="flb5 sur Nelson Sauvin"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>Par contraste</b><span class="id">flb5 · panel 9ᵉ · Nelson</span><span class="ligne">« Lui seul dit vin blanc… »</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="10 · Situer un mot · flz4" data-imgs="img/flz4-premier-ecran.png|img/flz4-fiche-courte.png" data-etats="Cascade|un cousin touché : Citra cryo"><img src="img/flz4-premier-ecran.png" width="780" height="1688" alt="flz4 sur Cascade"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>Situer un mot</b><span class="id">flz4 · panel 10ᵉ · Cascade</span><span class="ligne">« citron vert · rare · 3 sur 32 ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="11 · À sa place dans ta 16D · flz5" data-imgs="img/flz5-premier-ecran.png" data-etats="Nugget"><img src="img/flz5-premier-ecran.png" width="780" height="1688" alt="flz5 sur Nugget"></button>
+        <figcaption><span class="pastille p-chaude">chaude</span><b>À sa place dans ta 16D</b><span class="id">flz5 · panel 11ᵉ</span><span class="ligne">À sa place, ressort, sans famille.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- LES GRAPHES -->
+  <section class="rangee" id="r-graphes" data-choix="graphes" aria-labelledby="t-gr">
+    <div class="nom">
+      <h2 id="t-gr">Les graphes</h2>
+      <p class="question">« Lequel te bloque&nbsp;?&nbsp;»</p>
+      <p class="note">Chacun tel qu'il est dans la maquette jouable ; en grand, ses lectures b et c au doigt, puis la capture de ton écran choisi.</p>
+      <p class="note">Capturés avant la correction de ce soir : la maquette dit de nouveau « Boisé et résineux trop marqué · 6 au style », comme ta base.</p>
+      <p class="chemin">ecran-1/base/captures/consolide-biere-390.png</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Ta base v4.10 · onglet Ma bière" data-imgs="img/ref-biere.png|img/ref-biere-absolu.png|img/ref-biere-radar.png" data-etats="ta base v4.10 · barres au style|ta base v4.10 · absolu|ta base v4.10 · radar"><img src="img/ref-biere.png" width="780" height="1688" alt="Ta base v4.10, l'onglet Ma bière en barres"></button>
+        <figcaption><span class="pastille p-ref">ta référence</span><b>Ta base, Ma bière</b><span class="id">base v4.10</span><span class="ligne">Le graphe que tu connais.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="gr1 · Les barres de Ma bière" data-ref-nom="ta base v4.10" data-ref-imgs="img/ref-biere.png" data-ref-etats="Ma bière en barres" data-imgs="img/gr1-repos.png|img/gr1-toucher.png|img/gr1-toucher-c.png" data-etats="a · tel qu'il est, dans la maquette jouable|b · le mot sous le doigt|c · le haut du style, un trait"><img src="img/gr1-repos.png" width="390" height="844" alt="gr1, les barres de Ma bière"></button>
+        <figcaption><span class="pastille p-corrige">rejeté, corrigé</span><b>Les barres de Ma bière</b><span class="id">gr1 · l5b</span><span class="ligne">b : le mot ; c : le haut du style.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="gr2 · Les barres en absolu" data-ref-nom="ta base v4.10" data-ref-imgs="img/ref-biere-absolu.png" data-ref-etats="Ma bière en absolu" data-imgs="img/gr2-repos.png|img/gr2-toucher.png|img/gr2-toucher-c.png" data-etats="a · tel qu'il est, dans la maquette jouable|b · le mot et le repère|c · l'absolu sous le doigt"><img src="img/gr2-repos.png" width="390" height="844" alt="gr2, les barres en absolu"></button>
+        <figcaption><span class="pastille p-accepte">accepté</span><b>Les barres en absolu</b><span class="id">gr2</span><span class="ligne">b : mot et repère ; c : l'absolu au doigt.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="gr3 · Le radar de Ma bière" data-ref-nom="ta base v4.10" data-ref-imgs="img/ref-biere-radar.png" data-ref-etats="Ma bière en radar" data-imgs="img/gr3-repos.png|img/gr3-toucher.png|img/gr3-toucher-c.png" data-etats="a · tel qu'il est, dans la maquette jouable|b · le sommet au doigt|c · la grille au doigt"><img src="img/gr3-repos.png" width="390" height="844" alt="gr3, le radar de Ma bière"></button>
+        <figcaption><span class="pastille p-corrige">rejeté, corrigé</span><b>Le radar de Ma bière</b><span class="id">gr3 · m4</span><span class="ligne">b : le sommet ; c : la grille.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="gr4 · Le radar de la fiche" data-ref-nom="g1" data-ref-imgs="img/ref-fiche-g1.png" data-ref-etats="ta fiche de Nugget" data-imgs="img/gr4-repos.png|img/gr4-toucher.png|img/gr4-toucher-c.png" data-etats="a · tel qu'il est, dans la maquette jouable|b · les mots des fiches|c · face à ma bière"><img src="img/gr4-repos.png" width="390" height="844" alt="gr4, le radar de la fiche"></button>
+        <figcaption><span class="pastille p-accepte">accepté</span><b>Le radar de la fiche</b><span class="id">gr4 · h4</span><span class="ligne">b : les mots ; c : face à ta bière.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="gr5 · Les petits traits de Suggérer" data-ref-nom="q2b" data-ref-imgs="img/ref-q2b.png" data-ref-etats="Suggestions" data-imgs="img/gr5-repos.png|img/gr5-toucher.png|img/gr5-toucher-c.png" data-etats="a · tel qu'il est, dans la maquette jouable|b · le cran au doigt|c · les crans comptés"><img src="img/gr5-repos.png" width="390" height="844" alt="gr5, les traits de Suggérer"></button>
+        <figcaption><span class="pastille p-accepte">accepté</span><b>Les traits de Suggérer</b><span class="id">gr5 · q2b</span><span class="ligne">b : le cran ; c : les crans comptés.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="gr6 · Le radar de Comparer" data-ref-nom="r6a" data-ref-imgs="img/ref-r6a.png" data-ref-etats="Comparer, premier écran" data-imgs="img/gr6-repos.png|img/gr6-toucher.png|img/gr6-toucher-c.png" data-etats="a · tel qu'il est, dans la maquette jouable|b · un houblon à la fois|c · l'axe au doigt"><img src="img/gr6-repos.png" width="390" height="844" alt="gr6, le radar de Comparer"></button>
+        <figcaption><span class="pastille p-corrige">rejeté, corrigé</span><b>Le radar de Comparer</b><span class="id">gr6 · r2</span><span class="ligne">b : un houblon ; c : l'axe.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- À VENIR : séries d126 et leur critique -->
+  <div class="rangee vide" id="r-pastille">
+    <div class="nom"><h2>La pastille « ~ simulé »</h2><p class="question">de Comparer, contre ton r6a</p></div>
+    <p class="a-venir">À venir : les trois déjà faites et huit neuves, quand leur critique aura rendu.</p>
+  </div>
+  <div class="rangee vide" id="r-levure">
+    <div class="nom"><h2>Le levier levure</h2><p class="question">dans Suggérer, contre ton q2b</p></div>
+    <p class="a-venir">À venir : les trois déjà faites et huit neuves, quand leur critique aura rendu.</p>
+  </div>
+  <div class="rangee vide" id="r-analyse">
+    <div class="nom"><h2>L'entrée de l'analyse</h2><p class="question">depuis l'étape Houblons, contre ta base v4.10</p></div>
+    <p class="a-venir">À venir : les trois déjà faites et huit neuves, quand leur critique aura rendu.</p>
+  </div>
+
+  <footer>
+    <p>Mini maquettes : captures des maquettes jouables, sans retouche. Ordres : le conseil dh4 pour Dryhopper, le critique ailleurs ; une proposition, le choix est le tien.</p>
+    <p>Rejeté, corrigé : refusé par le critique, puis corrigé et rejugé accepté.</p>
+    <p>Page d'avant : <a href="https://claude.ai/artifact/5nrApsrrY7yhnqK1gU7wYp">Choix de vues · 24.10</a>.</p>
+  </footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+  <div class="vis-tete">
+    <p class="vis-titre" id="vis-titre"></p>
+    <div class="vis-boutons">
+      <button type="button" id="vis-prec" aria-label="Vue précédente">◀</button>
+      <button type="button" id="vis-suiv" aria-label="Vue suivante">▶</button>
+      <button type="button" class="fermer" id="vis-fermer">Fermer</button>
+    </div>
+  </div>
+  <div class="vis-corps" id="vis-corps"></div>
+</div>
+
+<script>
+// En grand : chaque état de la mini maquette à côté de sa référence. Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var corps = document.getElementById('vis-corps');
+  var titre = document.getElementById('vis-titre');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function liste(b, cle) { return (b.getAttribute(cle) || '').split('|').filter(Boolean); }
+  function rangees(b) {
+    var sec = b.closest('[data-choix]');
+    var etats = liste(b, 'data-etats');
+    var v = liste(b, 'data-imgs').map(function (s, i) { return { src: s, leg: (etats[i] || '') }; });
+    var src = b.getAttribute('data-ref-imgs') ? b : sec;
+    if (b.closest('[data-reference]') || !src.getAttribute('data-ref-imgs')) return [v];
+    var refEtats = liste(src, 'data-ref-etats'), nomRef = src.getAttribute('data-ref-nom');
+    var r = liste(src, 'data-ref-imgs').map(function (s, i) { return { src: s, leg: 'ta référence ' + nomRef + ' · ' + (refEtats[i] || ''), ref: true }; });
+    if (sec.getAttribute('data-mode') === 'paires') return v.map(function (x, i) { return r[i] ? [x, r[i]] : [x]; });
+    return [v.concat(r)];
+  }
+  function panneau(p) {
+    var f = document.createElement('figure');
+    f.className = 'vis-panneau' + (p.ref ? ' ref' : '');
+    var i = document.createElement('img'); i.src = p.src; i.alt = p.leg;
+    var c = document.createElement('figcaption'); c.textContent = p.leg;
+    f.appendChild(c); f.appendChild(i);
+    return f;
+  }
+  function ouvrir(n, depuis) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    corps.textContent = '';
+    rangees(b).forEach(function (r) {
+      var d = document.createElement('div'); d.className = 'vis-rangee';
+      r.forEach(function (p) { d.appendChild(panneau(p)); });
+      if (r.length > 1) { var g = document.createElement('p'); g.className = 'vis-glisse'; g.textContent = 'Glisse : ' + r.slice(1).map(function (p) { return p.leg; }).join(', ') + ' →'; corps.appendChild(g); }
+      corps.appendChild(d);
+    });
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; corps.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.planche .ecran');
+    if (b) ouvrir(boutons.indexOf(b), b);
+  });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>
