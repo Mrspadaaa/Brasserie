@@ -265,3 +265,25 @@ Rejeu du pilote, `node scripts/agents/systeme.mjs voies work/missions/2026-10-23
       « ma-biere », et le sujet « substituer » s'ajoute à `systeme.mjs`. Les critères G5 de p10 à p12 et p15 suivront ;
     - les réserves reportées (`cerveau/produit/maquette-jouable.md`) ;
   - à l'utilisateur : le push des commits locaux.
+
+### Suite (24.10, matin) : état de reprise
+
+- **D123, le rail côté froid** (son message, SPEC § 1, DEFAUTS ; commit 8576066f). Cause trouvée :   (l. 4-5, « dry hop en jours, comme Dryhopper ») et  (l. 34, « dry hop ») ont pris l'échelle et les mots de
+  Dryhopper (choix ouvert) depuis c62ad129 (23.10, 18 h 23). Reproduit sur la version publiée (glisser Nugget vers la
+  post-fermentation) : pendant, carte entière en haut, jours « 3 j, 4 j, 5 j, 7 j » qui débordent sur « Ajouter » et Cascade ;
+  après, « dry hop », « ? IBU », « 4 j ». Sa base : ,
+  , BRIEF-RAIL () : carte en puce, J+0 à J+14 réguliers dans la
+  hauteur du repos, « à froid », « aucun IBU », J+n et −/+, « biotransformation possible, non quantifiée ».
+  - À faire : contrôle d'abord (auteur) :  en mode froid (whirlpool, fermentation,
+    post-fermentation), qui passe sur la base et échoue sur la construction 5345f6ad ; inventaire-etape.json complété du
+    côté froid ; puis reprise de l'étape (concepteur), côte à côte avec la base, et RAIL, GESTE-ETAPE, CHOIX.
+- **Thème sombre** sur son téléphone : l'enveloppe () ne pose « clair » que si
+  rien n'est posé ; l'hôte pose son thème. À corriger dans la prochaine enveloppe : toujours « clair » (D106).
+- **D122** (la pastille « ~ simulé », confié par la supervision) et **D115** (2 ou 3 variantes de la liste de la fiche,
+  page à part) : à faire, protocole habituel (contrôle d'abord, concepteur, critique).
+- **Règle** (son message, SPEC § 1, CLAUDE.md règle n° 1) : un choix qu'on lui demande se montre en mini maquettes dans
+  un artefact neuf. D121 publié ainsi : https://claude.ai/artifact/6V21JEc5CqsjpLWrp184be (commit 8cbfa708).
+- Pas de publication de la maquette avant ses réponses et l'OK de la supervision (même protocole que le 24.10, nuit).
+- Construction rejetée pour D123 : rassembler  depuis les assets figés
+  de  et les pages de route de  (comme parcours-d332792c).
+- Budget au 24.10, 08 h : 5 h à 7 %, semaine à 86 % (remise le 29.10) ; contexte du pilote à 89 %.
