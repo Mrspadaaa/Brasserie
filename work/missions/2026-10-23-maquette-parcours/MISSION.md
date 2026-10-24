@@ -291,3 +291,11 @@ Rejeu du pilote, `node scripts/agents/systeme.mjs voies work/missions/2026-10-23
   de `work/refonte-frontend/v4/outils/pages/2026-10-24-maquette/` et les pages de route de `prototypes/houblons-v4/maquettes/parcours/`
   (comme parcours-d332792c).
 - Budget au 24.10, 08 h : 5 h à 7 %, semaine à 86 % (remise le 29.10) ; contexte du pilote à 89 %.
+- Exigences de la supervision pour la prochaine version (10d09c27) :
+  - page côte à côte : tous les états de geste que sa base montre en captures, pris par `captures-cote-a-cote.mjs`
+    depuis `work/refonte-frontend/v4/ecran-1/base/captures/` (ébullition : `consolide-nugget-*-pendant`, `consolide-glisser-60-*`,
+    `consolide-glisser-120-*` ; whirlpool : `consolide-nugget-wp75-pendant` ; froid : `v4-geste-fermentation-*`), pour ne plus
+    en oublier ;
+  - enveloppe : `data-theme="clair"` posé toujours ; vérifié au rejeu en émulant `prefers-color-scheme: dark` ;
+  - D123 reprend sa base : pas de mini maquettes (ce n'est pas un nouveau choix). Ordre : D123, puis D122 et D115.
+  - La supervision rejouera elle-même le glisser côté froid avant son OK.
