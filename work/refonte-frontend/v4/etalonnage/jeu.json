@@ -1,5 +1,5 @@
 {
- "maj": "2026-10-23",
+ "maj": "2026-10-24",
  "items": [
   {
    "id": "p-l5a-comparer-p03-p01",
@@ -1041,12 +1041,86 @@
    "mots": "« r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions »",
    "date": "2026-10-23",
    "source": "SPEC-BRASSEUR.md, § 1 « Comparer, r6a reste » (après les pages datées de r6n2 et r6p1 à r6p4)"
+  },
+  {
+   "id": "c-l23-etape-v410",
+   "type": "classe",
+   "lot": "23",
+   "sujet": "etape",
+   "variante": "base v4.10, étape Houblons",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-390.png",
+   "classe": "aime",
+   "mots": "« Ça c'est le bon. Comment cette info a été perdu ??? »",
+   "date": "2026-10-23",
+   "source": "SPEC-BRASSEUR.md, § 1 « L'étape Houblons de la base v4.10 » (sur sa capture cochée) ; ecrans.json, écran etape-houblons"
+  },
+  {
+   "id": "c-l23-biere-v410",
+   "type": "classe",
+   "lot": "23",
+   "sujet": "biere",
+   "variante": "base v4.10, onglet Ma bière",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "classe": "aime",
+   "mots": "« Ça aussi »",
+   "date": "2026-10-23",
+   "source": "SPEC-BRASSEUR.md, § 1 « La maquette jouable ne suit pas ses choix » (sur la capture de Ma bière de la base v4.10) ; ecrans.json, écran ma-biere"
+  },
+  {
+   "id": "c-l23-q2b",
+   "type": "classe",
+   "lot": "15",
+   "sujet": "suggerer",
+   "variante": "q2b",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "classe": "aime",
+   "mots": "« Ça oui, c'est effectivement l'un de mes choix »",
+   "date": "2026-10-23",
+   "source": "SPEC-BRASSEUR.md, § 1 « La maquette jouable ne suit pas ses choix » (sur la capture de q2b, lot 15) ; ecrans.json, écran suggerer"
+  },
+  {
+   "id": "p-l23-x3b-comparer-v410",
+   "type": "paire",
+   "lot": "23",
+   "sujet": "comparer",
+   "a": {
+    "variante": "x3b",
+    "capture": "work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-390.png"
+   },
+   "b": {
+    "variante": "comparer de la base v4.10",
+    "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-comparer-390.png"
+   },
+   "prefere": "a",
+   "mots": "« Non pas cette version, une version du dryhopping, dans un des top. Montrait vraiment l'état du moment de l'ajout facile, je l'avais juste fait noté !! »",
+   "date": "2026-10-23",
+   "source": "SPEC-BRASSEUR.md, § 1 « Comparer aux étapes, avec une référence » (sur la capture barrée du Comparer de la base v4.10) ; ecrans.json, écran comparer, compléments"
+  },
+  {
+   "id": "p-l24-rail-froid-base-maquette",
+   "type": "paire",
+   "lot": "24",
+   "sujet": "rail",
+   "a": {
+    "variante": "rail de la base v4.10 (J+0 à J+14, puce Nugget)",
+    "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-nugget-p14-620-pendant.png"
+   },
+   "b": {
+    "variante": "rail de la maquette 24.10 (5345f6ad), côté froid",
+    "capture": "work/refonte-frontend/v4/choix/commentaires/captures/p22-etape-froid-pendant-post.png"
+   },
+   "prefere": "a",
+   "mots": "« Le rail c'est toujours n'importe quoi. Il y a un vrai historique dessus, pourquoi tu es revenu sur un choix que je n'ai pas fait ? »",
+   "date": "2026-10-24",
+   "source": "SPEC-BRASSEUR.md, § 1 « Le rail, côté froid » (D123). Sa capture de téléphone n'est pas archivée : la capture b est le rejeu de la voie p22 sur la maquette 5345f6ad, Nugget glissé vers la post-fermentation",
+   "hors_image": "geste : le rail se juge en glissant ; la capture b est un rejeu, pas la sienne. Hors du score, comme les autres items de geste."
   }
  ],
  "amendements": [
   "23.10, pilote : les paires du picto et c-l23-f1 montraient des planches entières ; remplacées par la seule proposition, découpée de sa planche, texte masqué (etalonnage/captures/<id>.png).",
   "23.10, pilote : c-l22-r4 montrait sa capture barrée de sa croix rouge (le verdict sur l'image) ; remplacée par la planche d'origine.",
   "23.10, pilote : à l'épreuve, toute capture d'écran plus haute qu'un premier écran est ramenée au premier écran (390 × 844), pour que le format ne pèse pas.",
-  "23.10, pilote, après la première épreuve : 7 items marqués hors_image (geste, comparaison, besoin) : une capture fixe ne peut pas les départager ; ils restent au jeu, hors du score."
+  "23.10, pilote, après la première épreuve : 7 items marqués hors_image (geste, comparaison, besoin) : une capture fixe ne peut pas les départager ; ils restent au jeu, hors du score.",
+  "24.10, e1 : 5 verdicts du 23 et 24.10 versés (c-l23-etape-v410, c-l23-biere-v410, c-l23-q2b, p-l23-x3b-comparer-v410, p-l24-rail-froid-base-maquette), chacun avec une capture existante de ce qu'il a jugé ; les autres verdicts du 23.10 soir portent sur la maquette d332792c, dont aucune capture n'est archivée (non pris)."
  ]
 }
