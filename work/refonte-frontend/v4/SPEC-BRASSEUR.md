@@ -455,6 +455,18 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   le moteur (fiches, dose, moment, levure), pas mesurés. Son sens n'est que dans un `title`, invisible au doigt ; la
   toucher ne montre rien (vérifié). Elle reste (r6a), mais doit se comprendre là où on la lit, sans un mot de plus au
   repos, comme les traits (D110). D122.
+- **Le rail, côté froid** (24.10, matin, capture de la maquette 24.10 sur son téléphone : Nugget glissé vers la
+  post-fermentation), mot pour mot : « Le rail c'est toujours n'importe quoi. Il y a un vrai historique dessus, pourquoi tu
+  es revenu sur un choix que je n'ai pas fait ? ». Le rail de l'étape avait pris, côté froid, l'échelle et les mots de
+  Dryhopper (`Frise.tsx` : « dry hop en jours, comme Dryhopper » ; jours 1, 2, 3, 5, 7 ; « dry hop » ; « ? IBU »), un écran
+  dont le choix est ouvert, au lieu du rail de sa base v4.10 (BRIEF-RAIL, `v4-geste-fermentation-*`,
+  `consolide-nugget-p14-620-pendant.png`) : carte repliée en puce pendant le geste, J+0 à J+14 réguliers, « à froid »,
+  « aucun IBU », J+n et son réglage. Pendant le geste, la carte restait entière et les jours débordaient sur les ajouts.
+  Les contrôles du rail ne jouaient que l'ébullition. D123.
+- **Des mini maquettes pour choisir** (24.10, matin, après « ton choix pour D121 (A, B ou C) »), mot pour mot : « Il me
+  faut des mini maquettes avec un nouvel artefacts comme pour les mini maquettes côté à côté.... Pour les autres gros
+  changement aussi au non je peux pas choisir. Met ca dans tes règles aussi ». Tout choix qu'on lui demande se montre en
+  mini maquettes, dans un artefact neuf ; jamais une question en mots seuls (CLAUDE.md, règle n° 1).
 - **La maquette jouable ne suit pas ses choix** (23.10, soir, sur la maquette de bout en bout), mot pour mot : « Mais
   ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? ». Sur la capture de q2b (lot 15,
   Suggestions) : « Ça oui, c'est effectivement l'un de mes choix ». Sur celle de Ma bière de la base v4.10 : « Ça

@@ -8,6 +8,8 @@ preuves ou qualité du code. Conserver incertitudes, négations, nombres et unit
 
 « C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10). Sa maquette choisie est la base de l'écran, reprise telle quelle ; jamais une carte ni
 une règle à sa place. Registre `work/refonte-frontend/v4/choix/ecrans.json`, contrôle `controle-choix.mjs`.
+Rien n'y vient d'un écran dont le choix est ouvert (D123). Un choix qu'on lui demande se montre en mini maquettes, dans
+un artefact neuf, jamais en mots seuls (24.10).
 
 ## Mission et sources
 
@@ -43,8 +45,7 @@ Système complet : `docs/agents/systeme.md`.
 - Annoncer brièvement le premier usage. Lire seulement les références nécessaires
   et ne pas recharger les instructions déjà lues et inchangées. Les demandes
   explicites de l'utilisateur priment ; un skill ne crée pas une nouvelle mission.
-- Le style lite ci-dessus suffit par défaut : ne pas charger Caveman à chaque
-  session. Garder le skill `caveman` disponible pour une demande de mode explicite.
+- Le style lite suffit : le skill `caveman` seulement sur demande explicite.
 - Utiliser `code-simplifier` pour une simplification ou une passe ciblée après
   un ensemble cohérent de changements, avec le modèle courant, sans agent
   supplémentaire automatique. Préserver comportement et lisibilité.
