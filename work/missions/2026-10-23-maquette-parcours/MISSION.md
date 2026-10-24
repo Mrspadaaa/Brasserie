@@ -119,7 +119,9 @@ Variantes choisies, dont repartent les écrans :
 fl-a a8c5f7e0d32261f36 ; fl-b a4ead6849b2b323a5 ; fl-c a0704f0045129d1c8 ; fl-d a3013a7e47611d7e3 ; fl-z afc100b2d937e62ba ;
 fl-u ae528f8f496d0dd59 ; sb-a a044770567ed230d2 ; sb-b a8ccd7c02df1405fb ; sb-c a91947513ec3ec00f ; sb-d aa8295f7fe8bc2428 ;
 sb-z a25c1b996e40ec8b1 ; sb-u a4daa06f45d93aa5b ; e1 a7c108234cb9656c8 ; dh4a a013463c187a07a34 ; dh4b aa2bba31019b7a234 ;
-p24 a893b35e28274ce36.
+p24 a893b35e28274ce36 ; r1 a91adcd1f7bd093c6 ; r2 a55a6a31ce25fd388 ; r3 a3747e39a4b6451ce ; r4 a566c86b70c15b04b ;
+r5 ab3ea7c3209d1f1e7 ; épreuve du critique a791dcdd88b387f6f. r6 à lancer dès qu'une place se libère (20 agents au plus en même
+temps).
 
 Chemins de « Possède » : relatifs à la racine du dépôt ; `voies/…` est relatif au dossier de cette mission.
 
