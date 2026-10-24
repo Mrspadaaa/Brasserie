@@ -20,7 +20,8 @@ import { houblon, lireBiere, style, type BiereLue } from '../../moteur';
 import { additionEffect, FAMILY_NAMES, yeastSignals, type FamilyId } from '../../../../src/engine';
 import { AlphaLu, Autres, StockIcone, Usage } from '../fiche/briques';
 import { useGestesFiche } from '../fiche/gestes';
-import { BoutonLegende, CleFamilles, PanneauLegende, useLegende } from './LegendeGroupe';
+import { BoutonLegende, useLegende } from './LegendeGroupe';
+import { BandeOuverte, CleBande, SpeciauxRepli } from './legende-bande';
 import { nomLevureBase } from './Base';
 import { WP_MINUTES, J_MAX } from './rail';
 import { useModifier } from './Frise';
@@ -166,7 +167,11 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
         </span>
       </div>
       <div className="pq-mb-l3 flex items-center gap-x-2 gap-y-1 flex-wrap min-w-0">
-        <span role="img" aria-label={`Arômes de ${h.nom}`} className="inline-flex items-start gap-0.5 shrink-0">
+        {/* Légende choisie (leg3-v2f, 24.10 soir) : toucher la bande l'ouvre case à case, juste sous les pastilles. */}
+        {legende && <BandeOuverte h={h} ordre={sc.order} onFermer={basculerLegende}
+          effet={Object.fromEntries(Object.entries(effet).map(([f, e]) => [f, { crans: e!.crans, hors: biere.profil[f as FamilyId].horsStyle }]))} />}
+        {!legende && <span role="img" aria-label={`Arômes de ${h.nom}`} data-role="bande" className="inline-flex items-start gap-0.5 shrink-0 cursor-pointer"
+          onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); basculerLegende(); }}>
           {sc.order.map((f) => {
             const n = h.familles[f].niveau;
             const e = effet[f];
@@ -180,7 +185,7 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
               </span>
             );
           })}
-        </span>
+        </span>}
         {nonSimule && q.type !== 'dryhop' && <span className="inline-flex items-center gap-1 text-xs text-cave-400"><Inconnu raison={nonSimule.raison} />arôme</span>}
         {h.partSansFamille != null && h.partSansFamille >= 0.25 && <Autres h={h} largeur={48} petit />}
         <span className="ml-auto inline-flex items-center gap-1" {...stop}>
@@ -226,15 +231,22 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
           </button>
         </div>
       )}
-      <PanneauLegende id={idLegende} ouverte={legende}>
-        <p><b>Bande</b> : les 12 familles d'arômes de {h.nom}, d'après ses fiches ; vive, marquée ; pâle, citée ; grise, non décrite.</p>
-        <CleFamilles ordre={sc.order} />
-        <p><b>Trait sous un carré</b> : ce que l'ajout fait bouger dans ma bière, plus long à chaque cran du style ; orangé, la famille sort du style.</p>
-        <p><b>⟳</b> à côté du type : toucher pour passer d'ébullition à whirlpool, à froid, puis premier moût. <b>− g +</b> : la dose, par 2 g ; <b>×</b> : retirer.</p>
-        <p><b>{COURT_SIGNAL[signal ?? 'resin'] ?? 'résine'} 2/4</b> : la famille la plus citée, par 2 fiches sur 4 ; cerclée de rouge, elle est déjà trop marquée dans ma bière.</p>
-        <p><b>α</b> : l'acide alpha, celui du lot d'abord ; le mot suivant, l'usage (amérisant, aromatique, double usage). <b>Cube</b> : en stock. <b>? hachuré</b> : inconnu, jamais zéro.</p>
-        <p><b>Pastille du rail</b> (« 60′ », « 80 °C », « J+3 ») : la glisser le long du rail pour changer le moment.</p>
-      </PanneauLegende>
+      {/* La légende ouverte (« ? » ou toucher la bande) : les spéciaux repliés, la clé en icônes, le reste des icônes de la carte. */}
+      <div id={idLegende} data-role="legende" hidden={!legende} onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} className="pq-mb-lg-legende">
+        <SpeciauxRepli h={h} />
+        <CleBande />
+        <p className="pq-mb-lg-reste">
+          <span><RotateCw className="w-3.5 h-3.5" aria-hidden="true" /> type suivant</span>
+          <span><b>− g +</b> par {PAS_DOSE} g</span>
+          <span><b>×</b> retirer</span>
+          <span><b className="pq-mb-lg-pill">{COURT_SIGNAL[signal ?? 'resin'] ?? 'résine'} n/N</b> la plus citée ; rouge : trop marquée</span>
+          <span><i className="pq-mb-lg-tr pq-mb-lg-tr-cle" /> bouge dans ma bière ; orangé : hors style</span>
+          <span><b>α</b> du lot d'abord, puis l'usage</span>
+          <span>cube : en stock</span>
+          <span><b className="pq-mb-lg-inc">?</b> inconnu, jamais 0</span>
+          <span><b className="pq-mb-lg-rail">60′</b> à glisser sur le rail</span>
+        </p>
+      </div>
     </div>
   );
 }

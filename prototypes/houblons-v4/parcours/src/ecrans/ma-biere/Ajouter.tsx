@@ -19,7 +19,8 @@ import { donnees, houblon, ibuAjout, style } from '../../moteur';
 import { buildFromEmpty, hopRole, quickAdds, type QuickAdd } from '../../../../src/engine';
 import { AlphaLu, StockIcone } from '../fiche/briques';
 import { useGestesFiche } from '../fiche/gestes';
-import { BoutonLegende, CleFamilles, PanneauLegende, useLegende } from './LegendeGroupe';
+import { BoutonLegende, useLegende } from './LegendeGroupe';
+import { BandeOuverte, CleBande, SpeciauxRepli } from './legende-bande';
 import { libelleDe, momentLong, valeurDe } from './Frise';
 
 type Gout = 'aimer' | 'neutre' | 'exclure';
@@ -50,6 +51,9 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
   const fiche = useGestesFiche((cle) => { if (route.ecran !== 'fiche') ouvrir({ ecran: 'fiche', houblon: cle }); });
   const [cherche, setCherche] = useState('');
   const [legende, basculerLegende] = useLegende();
+  // La légende choisie (leg3-v2f) : la bande d'une ligne s'ouvre case à case sous ses pastilles (toucher la bande, ou le « ? »
+  // pour la première ligne) ; une seule ouverte à la fois.
+  const [bandeOuverte, setBandeOuverte] = useState<string | null>(null);
   const [goutOuvert, setGoutOuvert] = useState<string | null>(null);
   const [, maj] = useState(0);
   // D40 point 1 : une recette vide à l'ouverture (sa page cas-k2) se construit (buildFromEmpty) ; vidée par « retirer », elle
@@ -107,7 +111,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
         <input ref={champRef} type="text" inputMode="search" value={cherche} onChange={(e) => setCherche(e.target.value)} placeholder="Ajouter — houblon…"
           data-etat="etat-etape-champ-ajouter" aria-label="Ajouter un houblon : stock ou catalogue"
           className="flex-1 min-w-0 h-10 px-4 rounded-full border border-cave-700 bg-cave-900 text-base text-cave-50 placeholder:text-cave-400" />
-        {liste.length > 0 && <BoutonLegende ouverte={legende} onBasculer={basculerLegende} groupe="les icônes des ajouts proposés" controle="pq-ma-biere-legende-rapides" />}
+        {liste.length > 0 && <BoutonLegende ouverte={legende} onBasculer={() => { setBandeOuverte(legende ? null : liste[0]?.cle ?? null); basculerLegende(); }} groupe="les icônes des ajouts proposés" controle="pq-ma-biere-legende-rapides" />}
       </div>
       <ul className="space-y-1" aria-label="Ajouts proposés par le moteur, chacun à son moment suggéré">
         {liste.flatMap((p, k) => {
@@ -117,9 +121,10 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
           const ibuTxt = ibu ? `+${nombre(ibu.valeur)} IBU` : 'IBU inconnu';
           const gout = GOUTS.get(p.cle) ?? 'neutre';
           const ouvert = goutOuvert === p.cle;
+          const ouvreBande = bandeOuverte === p.cle;
           const li = (
             <li key={p.cle} data-role="ajout-rapide" data-houblon-ajout={p.cle} data-etat={p.cle === 'beermaverick-citra:cryo' ? 'etat-fiche-appui-long-citra etat-acquis-fiche-citra-cryo' : undefined} {...fiche.appui(p.cle)}
-              className="relative flex items-center gap-2 pl-1.5 pr-1 py-1 rounded-lg bg-cave-900 border border-cave-800">
+              className={`relative flex items-center gap-2 pl-1.5 pr-1 py-1 rounded-lg bg-cave-900 border border-cave-800 ${ouvreBande ? 'flex-wrap' : ''}`}>
               <span onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
                 <button type="button" data-role="ajout-rapide-plus" data-etat={k === 0 ? 'etat-etape-ajout-rapide' : undefined}
                   aria-label={`Ajouter ${h.nom}, ${nombre(p.ajout.grams, p.ajout.grams % 1 ? 1 : 0)} g, suggéré à ${momentLong(v, ebu)} : ${ibuTxt}`}
@@ -135,15 +140,16 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="font-mono text-sm text-cave-200">{nombre(p.ajout.grams, p.ajout.grams % 1 ? 1 : 0)}<span className="font-sans text-cave-400">{' '}g</span> {ibu ? `+${nombre(ibu.valeur)}` : '?'}<span className="font-sans text-cave-400">{' '}IBU</span></span>
-                  <span role="img" aria-label={`Arômes de ${h.nom}`} className="ml-auto inline-flex gap-px">
+                  {!ouvreBande && <span role="img" aria-label={`Arômes de ${h.nom}`} data-role="bande" className="ml-auto inline-flex items-center gap-px cursor-pointer"
+                    onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); setBandeOuverte(p.cle); }}>
                     {sc.order.map((f) => {
                       const n = h.familles[f].niveau;
                       return <i key={f} className="block w-2 h-2.5 rounded-sm" style={{ background: n === 'non décrit' ? 'rgb(var(--cave-800))' : COULEURS[f].base, opacity: n === 'cité' ? 0.55 : 1 }} />;
                     })}
-                  </span>
+                  </span>}
                   {/* « Plus utilisé les icône hors 16d » (24.10, soir) : le ◇ des mots hors des 12 familles, en treizième case
                       de la bande (dessin, pas texte : la ligne ne grandit pas, D5, D41) ; ses mots au toucher. */}
-                  {h.motsSansFamille.length > 0 && (
+                  {!ouvreBande && h.motsSansFamille.length > 0 && (
                     <svg role="img" data-houblon-hors={h.cle} aria-label={`hors des 12 familles : ${h.motsSansFamille.join(', ')}`} viewBox="0 0 10 10" width="10" height="10" className="shrink-0 -ml-1 text-cave-300">
                       <title>{h.motsSansFamille.join(', ')}</title>
                       <path d="M5 0.8 L9.2 5 L5 9.2 L0.8 5 Z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
@@ -175,6 +181,25 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
                   </span>
                 )}
               </span>
+              {ouvreBande && (
+                <div className="pq-mb-lg-li" onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+                  <BandeOuverte h={h} ordre={sc.order} onFermer={() => { setBandeOuverte(null); if (legende) basculerLegende(); }} />
+                  <SpeciauxRepli h={h} />
+                  {legende && (
+                    <div id="pq-ma-biere-legende-rapides" data-role="legende" className="pq-mb-lg-legende">
+                      <CleBande />
+                      <p className="pq-mb-lg-reste">
+                        <span><b className="pq-mb-lg-plus">+</b> l'ajouter</span>
+                        <span><b className="pq-mb-lg-quand">10′</b> moment proposé</span>
+                        <span><b>+n IBU</b> ce qu'il ajoute</span>
+                        <span>cube : en stock ; chariot : à acheter</span>
+                        <span>♡ mon goût</span>
+                        <span><b>◇</b> hors des 12 familles</span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </li>
           );
           const ou = p.alternative && liste[k + 1]?.alternative ? <li key={p.cle + '-ou'} aria-hidden="true" className="pl-11 -my-0.5 text-sm text-cave-400">ou</li> : null;
@@ -190,13 +215,6 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
           ))}
         </p>
       )}
-      <PanneauLegende id="pq-ma-biere-legende-rapides" ouverte={legende && liste.length > 0}>
-        <p><b>Ajouts proposés</b> : les houblons que le moteur propose, du stock d'abord, chacun à son moment suggéré.</p>
-        <p><b>+</b> : l'ajouter à ce moment ; <b>+n IBU</b> : ce qu'il ajoute à ma bière. <b>Moment en pointillé</b> : où il se posera sur le rail. <b>♡</b> : mon goût, aimer, neutre ou exclure.</p>
-        <p><b>Bande</b> : les 12 familles d'arômes du houblon ; vive, marquée ; pâle, citée ; grise, non décrite. <b>◇</b> au bout : hors des 12 familles, ses mots au toucher.</p>
-        <CleFamilles ordre={sc.order} />
-        <p><b>α</b> : l'acide alpha ; le mot suivant, l'usage. <b>Cube</b> : en stock ; <b>chariot</b> : à acheter.</p>
-      </PanneauLegende>
     </section>
   );
 }

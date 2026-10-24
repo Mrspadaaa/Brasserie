@@ -618,3 +618,6 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - D60 (le brasseur, 24.10 soir : « Faire en Todo la recherche avancée, mettre dans le git. Pas si utile pour le moment. Ajoute
   les mini maquettes ») : #151 passe en P3 et `status:deferred` ; les douze mini maquettes, leurs captures et les verdicts sont
   commités (7f9cac8c), la branche poussée, les images posées dans l'issue.
+- D61 (le brasseur, 24.10 soir : « Tu peux intégrer légende type leg3-v2a · Les barres n/N mais barre leg3-v2e · Les spéciaux
+  repliés ») : la légende des pastilles devient leg3-v2f, intégrée sous les pastilles des cartes du rail et des ajouts
+  proposés ; registre `choix/ecrans.json` (complément de l'étape) à mettre à jour après la reprise.

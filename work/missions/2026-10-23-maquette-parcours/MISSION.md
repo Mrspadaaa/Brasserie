@@ -172,6 +172,8 @@ Dérogation M13 : dg-critique : « Faire des mini maquettes du dryhopping avec m
 
 Dérogation M13 : rp-critique : « Faire des version r6a ++ avec tout les commentaires du dryhopping » (24.10, soir ; avec « Je dirais 11 par vue » du même soir : douze variantes en trois séries sur sa r6a, ni éventail de 48 ni passe 2 d'office ; le critique juge chaque variante).
 
+dga4 écartée : des jours de cuve chiffrés qui ne viennent pas du moteur (honnêteté) ; montrée marquée sur la planche.
+
 ## Agents (24.10) — l'agent de chaque série fait sa passe 2 (SendMessage)
 fl-a a8c5f7e0d32261f36 ; fl-b a4ead6849b2b323a5 ; fl-c a0704f0045129d1c8 ; fl-d a3013a7e47611d7e3 ; fl-z afc100b2d937e62ba ;
 fl-u ae528f8f496d0dd59 ; sb-a a044770567ed230d2 ; sb-b a8ccd7c02df1405fb ; sb-c a91947513ec3ec00f ; sb-d aa8295f7fe8bc2428 ;
@@ -474,12 +476,14 @@ sur un autre compte).
   des écrans touchés par le concepteur (Opus), depuis sa base ; critique (Fable) côte à côte ; page côte à côte de tous
   les états ; artefact neuf (enveloppe toujours en clair). D122 et D115 après.
 
-## Reprise (24.10, soir, 21 h)
 
-- En cours : batterie complète et 141 états sur `maquettes/parcours` (log scratchpad batterie7) ; ensuite republier la maquette au même lien (https://claude.ai/artifact/2QTyTCmFC6kRg9xkfVNefN, enveloppe `outils/pages/2026-10-24-maquette-reprise/`, recopier `assets/` depuis la construction), répondre aux fils de commentaires (15 sur la maquette, dont 97f07b80 à corriger : « Plus utilisé les icône hors 16d » lu « utilise plus »), fermer ceux traités, le radar r2 (0e56c43c) reste ouvert ; puis figer (étiquette git locale `maquette-2026-10-24-soir`, note `cerveau/produit/maquette-jouable.md`).
-- Lots en vol : Dryhopper avec ses retours (dga, dgb, dgz → dg-critique ; brief `ecran-1/fils24-dryhopper-greffes/`) ; légendes v2 (leg : leg1, leg2, leg4 en v2, leg3 en cinq versions v2a à v2e → critique, puis planche neuve) ; r6a++ (Comparer, tous ses retours sur le dry hop ; à lancer).
-- Publiés ce soir : pictos hors 16D, maquette, galerie, Dryhopper tout, recherche avancée (#151 en P3 deferred), légendes v1. Issues : 20 commentaires, 4 fermées, #148 à #158 créées.
-- Points suivants (ses mots) : réactivité D138 (#148), choix reportés partout D139 (#149).
+## Reprise (24.10, nuit)
+
+- Maquette de référence figée : https://claude.ai/artifact/2QTyTCmFC6kRg9xkfVNefN (version 2), étiquette `maquette-2026-10-24-soir`.
+- Légende des pastilles leg3-v2f (D61, son choix) intégrée dans `src/ecrans/ma-biere/Carte.tsx` et `Ajouter.tsx` (voie leg), registre `choix/ecrans.json` à jour. Batterie et états en cours sur `maquettes/parcours` (log scratchpad batterie8). Ensuite : enveloppe neuve `outils/pages/2026-10-24-maquette-nuit/` (copie de `2026-10-24-maquette-reprise`, titre « Maquette houblons · 24.10, nuit », `assets/` recopiés), publier dans un **nouvel** artefact, l'inscrire dans « ## Pages ».
+- Dryhopper avec ses retours : 12 variantes, critique dg : 11 acceptées, en tête dga2, dgz2, dgz3 ; dga4 écartée (jours de cuve chiffrés hors moteur). Planche à faire (`outils/pages/2026-10-24-dryhopper-retours/`, modèle de `2026-10-24-recherche-avancee`, référence = capture de `maquettes/parcours/dryhopper/etat.html`).
+- r6a++ : rpb et rpz rendus, rpa en vol ; puis voie rp-critique, puis planche (`outils/pages/2026-10-24-r6a-plus/`).
+- Fils ouverts : radar r2 (maquette) ; galerie y1b et w2 (à fermer quand la planche Dryhopper est publiée) ; r6a (galerie, à fermer avec la planche r6a++) ; légendes v2 (deux fils, à fermer avec la maquette nuit).
 
 ## Signature (24.10, soir)
 

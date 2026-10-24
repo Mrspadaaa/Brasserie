@@ -26,6 +26,11 @@
      "mots": "La meilleure",
      "capture": "work/refonte-frontend/v4/outils/pages/2026-10-24-d121/img/d121-b.png",
      "contexte": "24.10, soir, sur B, la barre pleine « Ouvrir l'analyse de ma bière › » (D121, D45)"
+    },
+    {
+     "mots": "Tu peux intégrer légende type leg3-v2a · Les barres n/N mais barre leg3-v2e · Les spéciaux repliés",
+     "capture": "work/refonte-frontend/v4/ecran-1/fils24-legendes/captures/leg3-v2f.png",
+     "contexte": "24.10, soir, sur la planche des légendes v2 : la légende des pastilles (D61) ; et « Légende vraiment bien, avec icône sans full text, bonne infos ciblé mais barre comme leg3-v2e »"
     }
    ]
   },

@@ -539,6 +539,12 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   les mots précis et ce que les fiches disent en propre.
   Puis, sur la même vue : « Fait moi 5 version un peu modifié améliorer de cette version » : cinq versions de leg3 (en tête du
   critique ; la vue ne dit pas laquelle il regardait).
+  Sur leg3-v2e : « J'aime beaucoup le petit barre comme ça mais il faudrait légende comme une autre » : la barre de v2e avec
+  la légende de v2a (v2f) et celle de v2c (v2g).
+  Puis son choix, mot pour mot : « Tu peux intégrer légende type leg3-v2a · Les barres n/N mais barre leg3-v2e · Les
+  spéciaux repliés » : leg3-v2f, intégrée dans la maquette (cartes du rail, ajouts proposés). D61.
+  Et sur v2a : « Légende vraiment bien, avec icône sans full text, bonne infos ciblé mais barre comme leg3-v2e » : des icônes
+  sans texte complet, la petite barre de v2e.
 - **Dryhopper, ses retours** (24.10, soir, sur la galerie de toutes ses mini maquettes), mot pour mot : sur la frise de y1b
   (« Le brassin au doigt », lot 21) : « Une frise de ce type est vraiment intéressant aussi, un peu à retravailler » ; sur w2
   (« Trois plans », lot 21) : « Ça c'est vraiment très intéressant ». Puis : « Faire des mini maquettes du dryhopping avec mes
