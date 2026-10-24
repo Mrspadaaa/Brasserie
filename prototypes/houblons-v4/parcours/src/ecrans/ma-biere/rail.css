@@ -61,7 +61,7 @@
 .pq-mb-grad.pq-mb-maj .pq-mb-grad-v { left: 17px; color: rgb(var(--cave-50)); font-weight: 600; }
 .pq-mb-grad.pq-mb-ecrit .pq-mb-grad-v { display: block; }
 /* Loin du doigt, l'échelle se resserre : graduations courtes et claires (comme le Dock). */
-.pq-mb-grad.pq-mb-vue.pq-mb-loin { left: 19.5px; width: 5px; height: 1.5px; background: rgb(var(--cave-600)); opacity: .45; }
+.pq-mb-grad.pq-mb-vue.pq-mb-courte { left: 19.5px; width: 5px; height: 1.5px; background: rgb(var(--cave-600)); opacity: .45; }
 /* Le segment sous le doigt se nomme en encre ; les autres restent gris. */
 .pq-mb-frise[data-geste] > .pq-mb-focus .pq-mb-nom, .pq-mb-frise[data-geste] > .pq-mb-focus .pq-mb-cle { color: rgb(var(--cave-50)); font-weight: 650; }
 .pq-mb-frise[data-geste] > .pq-mb-focus .pq-mb-pt-etape { border-color: rgb(var(--cave-50)); }
@@ -96,3 +96,6 @@
 @media (prefers-reduced-motion: reduce) { .pq-mb-grad { transition: none; } }
 /* L'écart du total d'IBU qui vient de changer (« +2 », « −60 »), au-dessus de l'IBU, comme sa base (.delta). */
 .pq-mb-ecart { color: rgb(var(--cave-50)); white-space: nowrap; }
+
+/* r7 : la mesure des hauteurs au début du geste, sans transition (rail.ts). */
+.pq-mb-mesure, .pq-mb-mesure * { transition: none !important; }

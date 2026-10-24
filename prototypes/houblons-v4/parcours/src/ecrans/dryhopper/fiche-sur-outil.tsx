@@ -31,7 +31,8 @@ export function useFicheSurOutil(cle: string) {
   const appui = useAppuiLong(ouvrir);
   const declencheur = {
     ...appui,
-    onPointerEnter: (e: React.PointerEvent) => { if (e.pointerType === 'mouse') { annuler(); minuterie.current = window.setTimeout(ouvrir, SURVOL_MS); } },
+    // r7 : armé au mouvement de la souris, pas à l'entrée seule (un écran ouvert sous une souris immobile n'ouvre rien).
+    onPointerMove: (e: React.PointerEvent) => { appui.onPointerMove?.(e); if (e.pointerType === 'mouse' && !e.buttons && minuterie.current == null) minuterie.current = window.setTimeout(() => { minuterie.current = null; ouvrir(); }, SURVOL_MS); },
     onPointerLeave: () => { annuler(); appui.onPointerLeave(); },
     'data-role': 'ouvrir-fiche',
     'data-houblon': cle,

@@ -49,10 +49,8 @@ export function useGestesFiche(ouvrir: (cle: string) => void) {
   /** Sur toute la carte du houblon : appui long → fiche ; toucher court → onCourt ; survol long à la souris → fiche. */
   const appui = useCallback((cle: string, onCourt?: () => void): Props => ({
     'data-appui-long': '',
-    onPointerEnter: (e: React.PointerEvent) => {
-      if (e.pointerType !== 'mouse' || e.buttons || commande(e)) return;
-      armerSurvol(cle);
-    },
+    // r7 : le survol s'arme au mouvement de la souris (onPointerMove), jamais à l'entrée seule : un écran qui s'ouvre sous
+    // une souris immobile (après un toucher sur un pont) ne doit pas ouvrir une fiche que personne n'a survolée.
     onPointerLeave: (e: React.PointerEvent) => { if (e.pointerType === 'mouse') { stopSurvol(); partage.sortiDepuis = true; } },
     onPointerDown: (e: React.PointerEvent) => {
       if (e.button > 0) return;
@@ -78,12 +76,9 @@ export function useGestesFiche(ouvrir: (cle: string) => void) {
 
   /** Sur le nom : survol long à la souris → fiche. */
   const nom = useCallback((cle: string): Props => ({
-    onPointerEnter: (e: React.PointerEvent) => {
+    onPointerMove: (e: React.PointerEvent) => {
       if (e.pointerType !== 'mouse' || e.buttons) return;
-      if (!partage.sortiDepuis && partage.derniere === cle) return;
-      if (performance.now() - partage.fermeeA < 400) return;
-      stopSurvol();
-      survol.current = window.setTimeout(() => { survol.current = null; lancer(cle); }, DUREE_SURVOL);
+      armerSurvol(cle);
     },
     onPointerLeave: () => { stopSurvol(); stopLong(); partage.sortiDepuis = true; },
   }), []);

@@ -1,6 +1,6 @@
 // La carte d'un ajout posée sur le rail (base v4.10, consolide/index.html ; etape-consolide.js, blocRail) : nom (appui
 // long → fiche), type (« ébullition ⟳ », « whirlpool ⟳ », « à froid ⟳ », « premier moût ⟳ »), dose « − 46 g + » au pas
-// de 2 g, × ; α (lot d'abord), usage (« double usage »), stock en icône, signal de la famille marquée (« résine 2/4 »),
+// de 2 g, × ; α (lot d'abord), usage (« double », le mot de sa base, r7), stock en icône, signal de la famille marquée (« résine 2/4 »),
 // ce que l'ajout fait bouger s'il vient d'être ajouté (« floral +1 »), IBU de l'ajout recalculé en direct (« aucun
 // IBU » à froid) ; bande des 12 familles en couleur, avec, sous chaque famille que l'ajout fait bouger d'au moins
 // 0,5 point, un trait de son intensité en crans du style (D80) ; les réglages qui restent sur la carte : la durée du
@@ -142,7 +142,7 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
       </div>
       <div className="pq-mb-l2 flex items-center gap-x-1.5 gap-y-1 flex-wrap min-w-0">
         <AlphaLu h={h} mode="court" />
-        <Usage h={h} long />
+        <Usage h={h} mot />
         <StockIcone h={h} />
         {signal && (
           <span data-role="signal" className={`inline-flex items-center h-6 px-2 rounded-full border-2 text-sm whitespace-nowrap ${biere.profil[signal].horsStyle ? 'border-alert text-alert' : 'border-cave-700 text-cave-200'}`}>

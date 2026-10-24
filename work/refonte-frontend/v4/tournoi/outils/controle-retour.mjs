@@ -480,7 +480,7 @@ try {
     const floral = { roles: ['pont-floral'], attendre: '[data-ecran="suggerer"]', nom: 'pont floral' };
     const chemins = [
       { nom: 'Suggérer ouvert depuis l\'étape', depart: 'ma-biere', pas: [floral] },
-      { nom: 'Suggérer ouvert depuis l\'onglet', depart: 'biere', pas: [{ roles: ['pont-floral', 'pont-objectif-autre', 'pont-objectif-resin'], attendre: '[data-ecran="suggerer"]', nom: 'pont d\'objectif' }] },
+      { nom: 'Suggérer ouvert depuis l\'onglet', depart: 'biere', pas: [{ roles: ['pont-objectif-floral'], attendre: '[data-role="pont-floral"]', nom: 'puce « + floral » (pose la visée, D124)' }, { roles: ['pont-floral'], attendre: '[data-ecran="suggerer"]', nom: 'ligne « Plus floral › »' }] },
       { nom: 'Comparer ouvert depuis Suggérer', depart: 'ma-biere', pas: [floral, { roles: ['pont-comparer'], attendre: '[data-ecran="comparer"]', nom: 'pont Comparer' }] },
     ];
     for (const c of chemins) {

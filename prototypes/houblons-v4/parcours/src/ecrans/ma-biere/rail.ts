@@ -261,6 +261,8 @@ function ouvrirLoupe(o: OptionsGeste, ev: { clientY: number; pointerId: number }
   const qTexte = q.querySelector<HTMLElement>('[data-role="moment-pouce"]')!;
   const qNoeud = qTexte.firstChild as Text | null;
   const qAvant = qNoeud?.nodeValue ?? '';
+  const nAvant = q.getAttribute('aria-valuenow');
+  const rangs = rail.toutesValeurs();
   const pq = q.getBoundingClientRect();
   const yA = pq.top + pq.height / 2 - R0.top;
   const topCarte = repos.get(carte)!;
@@ -278,7 +280,11 @@ function ouvrirLoupe(o: OptionsGeste, ev: { clientY: number; pointerId: number }
   for (const r of lignes) if (r !== carte && /^L/.test(r.dataset.rang!)) r.classList.add('pq-mb-jeton');
   const avecDe = (el: HTMLElement) => el.querySelector<HTMLElement>('.pq-mb-avec');
   const avecTenu = avecDe(carte);
+  // r7 : les hauteurs se lisent sans transition (les boutons de l'app animent leur hauteur) : sinon la carte tenue est
+  // mesurée encore dépliée (41 px au lieu de 32) et efface le houblon d'à côté (Cascade à 80 °C, D56 ; sa base le montre).
+  fr.classList.add('pq-mb-mesure');
   const hauteur = new Map(lignes.map((r) => [r, r.getBoundingClientRect().height]));
+  fr.classList.remove('pq-mb-mesure');
   const hCarte = hauteur.get(carte)!;
   const zone = o.zone();
   const ech = D.echelleGeste(vA, yA, zone.haut - R0.top + 8, zone.bas - R0.top);
@@ -327,7 +333,7 @@ function ouvrirLoupe(o: OptionsGeste, ev: { clientY: number; pointerId: number }
       const z = G.P[tk.v], y = D.Yd(G, z, c);
       if (tk.y !== y) { tk.y = y; tk.el.style.transform = 'translateY(' + (y - 1).toFixed(1) + 'px)'; }
       const etat = tk.s !== g.seg ? '' : D.grossi(G, z, c) >= 1.6 ? 'vue' : 'vue loin';
-      if (etat !== tk.etat) { tk.etat = etat; tk.el.classList.toggle('pq-mb-vue', etat !== ''); tk.el.classList.toggle('pq-mb-loin', etat === 'vue loin'); }
+      if (etat !== tk.etat) { tk.etat = etat; tk.el.classList.toggle('pq-mb-vue', etat !== ''); tk.el.classList.toggle('pq-mb-courte', etat === 'vue loin'); }
     }
     // Le Dock écrit ses minutes : sur les graduations grossies, à droite du trait, hors de la pastille tenue (20 px au
     // moins du doigt), sans toucher une carte, une étape ni la minute écrite au-dessus.
@@ -364,6 +370,8 @@ function ouvrirLoupe(o: OptionsGeste, ev: { clientY: number; pointerId: number }
     const t = o.libelle(v);
     if (qNoeud) qNoeud.nodeValue = t;
     q.setAttribute('aria-valuetext', t);
+    // r7 : le curseur dit son rang pendant le geste (aria-valuenow), pas seulement son libellé (controle-rail, D27).
+    q.setAttribute('aria-valuenow', String(Math.max(0, rangs.indexOf(v))));
   };
   const suivre = (cy: number) => {
     const dy = cy - y0;
@@ -390,10 +398,11 @@ function ouvrirLoupe(o: OptionsGeste, ev: { clientY: number; pointerId: number }
     for (const r of lignes) { r.style.transform = ''; (r as HTMLElement & { _t?: string })._t = undefined; r.classList.remove('pq-mb-jeton', 'pq-mb-fondu', 'pq-mb-leve', 'pq-mb-focus'); }
     carte.removeAttribute('data-glisse');
     for (const el of fr.querySelectorAll<HTMLElement>('.pq-mb-avec')) el.textContent = '';
-    for (const tk of ticks) { tk.el.style.transform = ''; tk.el.classList.remove('pq-mb-vue', 'pq-mb-loin', 'pq-mb-ecrit'); }
+    for (const tk of ticks) { tk.el.style.transform = ''; tk.el.classList.remove('pq-mb-vue', 'pq-mb-courte', 'pq-mb-ecrit'); }
     if (axe) { axe.style.top = ''; axe.style.height = ''; axe.style.bottom = ''; }
     if (qNoeud) qNoeud.nodeValue = qAvant;
     q.setAttribute('aria-valuetext', qAvant);
+    if (nAvant != null) q.setAttribute('aria-valuenow', nAvant);
     o.fin(v);
     if (reduit) return;
     requestAnimationFrame(() => {

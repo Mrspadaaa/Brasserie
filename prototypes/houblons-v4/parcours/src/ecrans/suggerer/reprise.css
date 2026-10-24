@@ -40,8 +40,10 @@
 .pq-sg-hs { height: 10px; background: #c2410c; z-index: 2; }
 .pq-sg-m-d .pq-sg-hs { left: var(--pq-d); border-radius: 0 4px 4px 0; }
 .pq-sg-m-g .pq-sg-hs { right: var(--pq-d); border-radius: 4px 0 0 4px; }
-.pq-sg-lab { position: absolute; left: calc(var(--pq-k) + 5px); z-index: 3; padding: 0 4px; border-radius: 8px; background: rgb(var(--cave-950)); font-size: 0.75rem; font-weight: 750; line-height: 16px; white-space: nowrap; }
-.pq-sg-m-g .pq-sg-lab { left: auto; right: calc(var(--pq-k) + 5px); }
+/* r7 : une barre qui touche le bord (« +3 crans » après un dry hop d'Idaho 7) garde son étiquette dans la colonne, posée sur
+   le bout de la barre, au lieu de déborder de l'écran (défilement horizontal, parcours-complet). */
+.pq-sg-lab { position: absolute; left: min(calc(var(--pq-k) + 5px), calc(100% - 4rem)); z-index: 3; padding: 0 4px; border-radius: 8px; background: rgb(var(--cave-950)); font-size: 0.75rem; font-weight: 750; line-height: 16px; white-space: nowrap; }
+.pq-sg-m-g .pq-sg-lab { left: auto; right: min(calc(var(--pq-k) + 5px), calc(100% - 4rem)); }
 
 .pq-sg-noms { min-width: 0; }
 

@@ -147,7 +147,13 @@ async function jouer(format) {
   const fermerOutil = () => toucher('[data-role="retour"]');
   const debordement = () => ev(() => {
     const d = document.documentElement;
-    return [d, ...document.querySelectorAll('[data-page-shell] main')].filter((z) => z.scrollWidth > z.clientWidth + 1).map((z) => `${z.tagName.toLowerCase()} ${z.scrollWidth}>${z.clientWidth}`);
+    // L'élément qui déborde le plus loin est nommé (rôle, élément ou classe, et son texte) : la cause se lit dans le message.
+    const qui = (z) => {
+      const R = z.getBoundingClientRect().right;
+      const t = [...z.querySelectorAll('*')].filter((e) => e.getBoundingClientRect().right > R + 1).sort((a, b) => b.getBoundingClientRect().right - a.getBoundingClientRect().right)[0];
+      return t ? ` (${t.getAttribute('data-role') || t.getAttribute('data-element') || t.tagName.toLowerCase() + '.' + String(t.className).split(' ')[0]} « ${(t.textContent || '').trim().slice(0, 40)} »)` : '';
+    };
+    return [d, ...document.querySelectorAll('[data-page-shell] main')].filter((z) => z.scrollWidth > z.clientWidth + 1).map((z) => `${z.tagName.toLowerCase()} ${z.scrollWidth}>${z.clientWidth}${qui(z)}`);
   });
   // Ma bière défile dans son cadre (le `main` de PageShell) : une seconde capture, « -bas », montre le bas de la page
   // (la ligne ajoutée, la levure), puis la page revient en haut.
@@ -279,10 +285,15 @@ async function jouer(format) {
     verifier(lu.texte.startsWith(lu.attendu), `décompte « ${lu.texte} », moteur « ${lu.attendu} »`);
     verifier(JSON.stringify((await etat()).recette) === departJson, 'l’onglet a changé la recette');
   });
-  // Au départ, l'onglet porte déjà les visées de la dégustation (« + floral », « − résineux ») : on bannit le floral,
-  // puis on le vise en plus, pour que le pont « + floral » soit gagné par un geste et non hérité.
+  // Au départ, l'onglet porte les demandes de la dégustation en puces au trait (« + floral », « − résineux », « + … ») :
+  // comme dans sa base (r2, etat-biere-objectif-floral), une puce pose la visée sans quitter l'onglet, et c'est la ligne
+  // « Plus floral : n voies › » écrite dessous (pont-floral) qui ouvre Suggestions. On bannit le floral, puis on le vise
+  // en plus, pour que la ligne soit gagnée par un geste et non héritée.
+  const puceFloral = () => ev(() => { const b = document.querySelector('[data-role="pont-objectif-floral"]'); return b ? { texte: b.textContent.trim(), posee: b.getAttribute('aria-pressed') === 'true' } : null; });
   const pontFloral = () => ev(() => document.querySelector('[data-role="pont-floral"]')?.textContent.trim() ?? null);
-  verifier(/\+ floral/.test((await pontFloral()) ?? ''), 'l’onglet Ma bière n’arrive pas avec l’objectif « + floral »');
+  const p0 = await puceFloral();
+  verifier(p0 && /\+ floral/.test(p0.texte) && !p0.posee, `l’onglet Ma bière n’arrive pas avec l’objectif « + floral » au trait (${JSON.stringify(p0)})`);
+  verifier((await pontFloral()) === null, 'la ligne « Plus floral › » est là avant toute visée');
   await geste('biere-floral-bannir', 'biere', async () => {
     await toucher('[data-famille-ligne="floral"] > button');
     await toucher('#pq-biere-visee-floral [data-visee="bannir"]');
@@ -296,40 +307,44 @@ async function jouer(format) {
     await toucher('#pq-biere-visee-floral [data-visee="plus"]');
   }, async () => {
     verifier(await ev(() => document.querySelector('#pq-biere-visee-floral [data-visee="plus"]')?.getAttribute('aria-pressed') === 'true'), 'la visée « plus » sur Floral n’est pas posée');
-    verifier(/\+ floral/.test((await pontFloral()) ?? ''), 'l’objectif « + floral » n’est pas revenu');
+    verifier(/Plus floral/.test((await pontFloral()) ?? ''), `la ligne « Plus floral › » n’apparaît pas (${await pontFloral()})`);
+    verifier((await puceFloral())?.posee, 'la puce « + floral » n’est pas pleine (visée posée)');
     verifier(JSON.stringify((await etat()).recette) === departJson, 'viser le floral a changé la recette');
   });
 
-  // 3. Suggérer (q2b) : voies du moteur, deux proposés, deux « + » de plus → « Comparer (n) ».
+  // 3. Suggérer (q2b) : voies du moteur, deux proposés (Motueka, Nelson Sauvin), « + » sur Galaxy → « Comparer (3) ».
+  // DÉCISION r7 (voies/r7-batterie/RESULTAT.md) : q2b et r6a ne changent pas ; sa question de Comparer (« Lequel pour ma
+  // stout : Cascade, Idaho 7 ou Galaxy ? », 20.10) entre par Galaxy, coché dans Suggérer, et par Idaho 7, ajouté au « + »
+  // de Comparer (colonne +), puis « Placer Idaho 7 › ».
   let propose = [];
   await geste('suggerer', 'suggerer', async () => { await toucher('[data-role="pont-floral"]'); }, async () => {
     verifier((await hash()) === '#/suggerer', `route : ${await hash()}`);
     const lu = await ev(() => {
-      const P = window.__parcours, r = P.etat.recette, b = P.moteur.lireBiere(r), dir = { floral: 1 };
-      for (const f of Object.keys(b.profil)) if (f !== 'floral' && b.profil[f].horsStyle === 'au-dessus') dir[f] = -1;
+      // La direction de l'écran (q2b : les objectifs de la visée commune, en crans ; jeu.mjs de Suggérer).
+      const P = window.__parcours, r = P.etat.recette, dir = JSON.parse(document.querySelector('[data-libre="houblon"]')?.dataset.direction ?? '{}');
       const vs = P.moteur.proposer(r, dir).voies.filter((v) => ['ajouter', 'assemblage', 'remplacer à IBU égal'].includes(v.type));
-      const manque = vs.filter((v) => !document.querySelector(`[data-ecran="suggerer"] [data-voie][data-id="${v.id}"]`)).map((v) => v.label);
+      const manque = vs.filter((v) => !document.querySelector(`[data-ecran="suggerer"] [data-voie][data-id="${CSS.escape(v.id)}"]`)).map((v) => v.label);
       const nVoies = document.querySelectorAll('[data-ecran="suggerer"] [data-voie]').length;
-      return { manque, nVoies, nMoteur: vs.length, idaho: !!document.querySelector('[data-voie][data-id^="dryhop-beermaverick-idaho-7"]'), groupe: !!document.querySelector('[data-groupe="meme-0"]') };
+      return { manque, nVoies, nMoteur: vs.length };
     });
-    verifier(!lu.manque.length, `voies du moteur absentes : ${lu.manque.join(' ; ')}`);
-    verifier(lu.nVoies > lu.nMoteur && lu.idaho && lu.groupe, `voies : ${lu.nVoies} lignes pour ${lu.nMoteur} du moteur, Idaho 7 ${lu.idaho}, groupe « même effet » ${lu.groupe}`);
+    verifier(!lu.manque.length, `voies du moteur absentes : ${lu.manque.join(" ; ")}`);
+    verifier(lu.nMoteur > 0 && lu.nVoies >= Math.min(lu.nMoteur, 6), `voies : ${lu.nVoies} lignes pour ${lu.nMoteur} du moteur`);
     propose = (await etat()).aComparer;
-    verifier(propose.length === 2 && propose.includes('beermaverick-idaho-7'), `proposés au départ : ${propose.join(', ')} (deux attendus, avec Idaho 7)`);
+    verifier(propose.length === 2 && propose.includes('beermaverick-motueka') && propose.includes('beermaverick-nelson-sauvin'), `proposés au départ : ${propose.join(', ')} (q2b : Motueka et Nelson Sauvin)`);
     const pont = await ev(() => document.querySelector('[data-role="pont-comparer"]')?.textContent.trim() ?? null);
     verifier(pont && pont.includes('Comparer (2)'), `pont : « ${pont} »`);
     verifier(JSON.stringify((await etat()).recette) === departJson, 'Suggérer a changé la recette');
   });
-  for (const [cle, nom] of [['beermaverick-target', 'target'], ['beermaverick-cascade', 'cascade']]) {
-    await geste(`suggerer-plus-${nom}`, 'suggerer', async () => {
-      await toucher(`[data-ecran="suggerer"] [data-voie][data-id="dryhop-${cle}"] [data-role="ajouter"]`);
-    }, async () => {
+  {
+    const cle = 'beermaverick-galaxy';
+    const plus = `[data-ecran="suggerer"] [data-voie][data-id^="ajouter|${cle}@"] [data-role="ajouter"]`;
+    await geste('suggerer-plus-galaxy', 'suggerer', async () => { await toucher(plus); }, async () => {
       const e = await etat();
-      verifier(e.aComparer.includes(cle) && e.aComparer.length === propose.length + 1, `« + » sur ${nom} : liste ${e.aComparer.join(', ')}`);
+      verifier(e.aComparer.includes(cle) && e.aComparer.length === propose.length + 1, `« + » sur Galaxy : liste ${e.aComparer.join(', ')}`);
       propose = e.aComparer;
       const pont = await ev(() => document.querySelector('[data-role="pont-comparer"]')?.textContent.trim() ?? null);
       verifier(pont && pont.includes(`Comparer (${propose.length})`), `pont : « ${pont} »`);
-      verifier(await ev((c) => document.querySelector(`[data-voie][data-id="dryhop-${c}"] [data-role="ajouter"]`)?.getAttribute('aria-label')?.startsWith('Retirer'), cle), 'le « + » ne s’est pas changé en ✓');
+      verifier(await ev((s) => document.querySelector(s)?.getAttribute('aria-label')?.startsWith('Retirer'), plus), 'le « + » ne s’est pas changé en ✓');
       verifier(JSON.stringify(e.recette) === departJson, '« + » a changé la recette');
     });
   }
@@ -344,14 +359,24 @@ async function jouer(format) {
     const e = await etat();
     verifier(e.brouillon === null && JSON.stringify(e.recette) === departJson, 'Comparer a changé la recette ou ouvert un brouillon');
   });
+  // Le « + » de Comparer (colonne +, p4) : Idaho 7, de son stock, en 4ᵉ colonne ; il est retenu à l'ajout.
+  await geste('comparer-plus-idaho-7', 'comparer', async () => {
+    await toucher('[data-role="ajouter-colonne"]');
+    await toucher('[data-ajouter="beermaverick-idaho-7"]');
+  }, async () => {
+    const lu = await ev(() => ({ cols: [...document.querySelectorAll('[data-ecran="comparer"] [role="radio"][data-col]')].map((c) => c.dataset.col), series: document.querySelectorAll('[data-ecran="comparer"] svg[data-radar] [data-serie]').length }));
+    verifier(lu.cols.length === propose.length + 1 && lu.cols.includes('beermaverick-idaho-7') && lu.series === lu.cols.length, `après « + » : colonnes ${lu.cols.join(', ')}, ${lu.series} séries`);
+    verifier(await ev(() => document.querySelector('[role="radio"][data-col="beermaverick-idaho-7"]')?.getAttribute('aria-checked') === 'true'), 'Idaho 7 ajouté mais non retenu');
+    verifier(JSON.stringify((await etat()).recette) === departJson, 'le « + » de Comparer a changé la recette');
+  });
 
   // 4. Comparer : retenir Idaho 7, « Placer Idaho 7 ».
-  // Un houblon est retenu à l'arrivée : on en retient un autre d'abord, pour que « retenir Idaho 7 » soit un vrai geste.
-  await geste('comparer-target-retenu', 'comparer', async () => { await toucher('[role="radio"][data-col="beermaverick-target"]'); }, async () => {
-    verifier(await ev(() => document.querySelector('[role="radio"][data-col="beermaverick-target"]')?.getAttribute('aria-checked') === 'true'), 'Target non retenu');
-    verifier(await ev(() => document.querySelector('[role="radio"][data-col="beermaverick-idaho-7"]')?.getAttribute('aria-checked') !== 'true'), 'Idaho 7 reste retenu avec Target');
+  // Idaho 7 est retenu à l'ajout : on en retient un autre d'abord (Galaxy), pour que « retenir Idaho 7 » soit un vrai geste.
+  await geste('comparer-galaxy-retenu', 'comparer', async () => { await toucher('[role="radio"][data-col="beermaverick-galaxy"]'); }, async () => {
+    verifier(await ev(() => document.querySelector('[role="radio"][data-col="beermaverick-galaxy"]')?.getAttribute('aria-checked') === 'true'), 'Galaxy non retenu');
+    verifier(await ev(() => document.querySelector('[role="radio"][data-col="beermaverick-idaho-7"]')?.getAttribute('aria-checked') !== 'true'), 'Idaho 7 reste retenu avec Galaxy');
     const pont = await ev(() => document.querySelector('[data-role="pont-placer"]')?.textContent.trim() ?? null);
-    verifier(pont && /Placer Target/.test(pont), `le dock devrait dire « Placer Target » : « ${pont} »`);
+    verifier(pont && /Placer Galaxy/.test(pont), `le dock devrait dire « Placer Galaxy » : « ${pont} »`);
   });
   await geste('comparer-idaho-retenu', 'comparer', async () => { await toucher('[role="radio"][data-col="beermaverick-idaho-7"]'); }, async () => {
     verifier(await ev(() => document.querySelector('[role="radio"][data-col="beermaverick-idaho-7"]')?.getAttribute('aria-checked') === 'true'), 'Idaho 7 non retenu');
@@ -447,21 +472,28 @@ async function jouer(format) {
     await toucher('[data-ecran="ma-biere"] [data-role="pont-substituer"][data-houblon="beermaverick-nugget"]');
   }, async () => {
     verifier(await ev(() => /Nugget/.test(document.querySelector('[data-ecran="substituer"] [data-role="epingle"]')?.textContent ?? '')), 'Nugget non épinglé en colonne 1');
+    // u4 (r6) : huit remplaçants (les cinq premiers du catalogue, les trois premiers du stock), tous tirés du moteur
+    // (substitutes), rangés par le pire cas (bas de plage, data-min) ; plus l'ordre seul du moteur.
     const lu = await ev(() => {
-      const montre = [...document.querySelectorAll('[data-ecran="substituer"] [data-remplacant]')].map((e) => e.dataset.remplacant);
-      const moteur = window.__parcours.moteur.remplacants(window.__parcours.etat.brouillon.recette, 'a1', 6).map((r) => r.cle);
+      const montre = [...document.querySelectorAll('[data-ecran="substituer"] [data-remplacant]')].map((e) => ({ cle: e.dataset.remplacant, min: Number(e.dataset.min) }));
+      const moteur = window.__parcours.moteur.remplacants(window.__parcours.etat.brouillon.recette, 'a1', 400).map((r) => r.cle);
       return { montre, moteur };
     });
-    verifier(JSON.stringify(lu.montre) === JSON.stringify(lu.moteur), `remplaçants ${lu.montre.join(',')} ≠ moteur ${lu.moteur.join(',')}`);
+    const hors = lu.montre.filter((x) => !lu.moteur.includes(x.cle)).map((x) => x.cle);
+    verifier(lu.montre.length >= 4 && lu.montre.length <= 8 && !hors.length, `remplaçants ${lu.montre.map((x) => x.cle).join(',')} (hors moteur : ${hors.join(',') || 'aucun'})`);
+    verifier(lu.montre.every((x, i, t) => i === 0 || x.min <= t[i - 1].min), `remplaçants pas rangés par le pire cas : ${lu.montre.map((x) => x.min).join(',')}`);
   });
   let remplacant = null;
   await geste('substituer-choix', 'substituer', async () => {
-    // Le premier remplaçant du moteur est déjà coché à l'ouverture : on choisit le deuxième pour que le geste change quelque chose.
-    remplacant = await ev(() => document.querySelectorAll('[data-ecran="substituer"] [data-remplacant]')[1].dataset.remplacant);
+    // Un remplaçant est déjà choisi à l'ouverture (la bande cochée) : on en touche un autre de l'échelle, pour que le geste change quelque chose.
+    remplacant = await ev(() => {
+      const choix = document.querySelector('[data-ecran="substituer"] [role="radio"][data-col][aria-checked="true"]')?.dataset.col;
+      return [...document.querySelectorAll('[data-ecran="substituer"] [data-remplacant]')].map((e) => e.dataset.remplacant).find((c) => c !== choix);
+    });
     await toucher(`[data-ecran="substituer"] [data-remplacant="${remplacant}"]`);
   }, async () => {
-    const lu = await ev((c) => ({ coche: document.querySelector(`[data-remplacant="${c}"]`)?.getAttribute('aria-checked'), dock: document.querySelector('[data-role="choix-dock"]')?.textContent ?? '', nom: document.querySelector(`[data-remplacant="${c}"] [data-houblon]`)?.textContent ?? '' }), remplacant);
-    verifier(lu.coche === 'true' && lu.dock.includes(lu.nom), `choix non pris (${lu.nom} / ${lu.dock})`);
+    const lu = await ev((c) => ({ coche: document.querySelector(`[data-ecran="substituer"] [role="radio"][data-col="${c}"]`)?.getAttribute('aria-checked'), dock: document.querySelector('[data-role="choix-dock"]')?.textContent ?? '', nom: document.querySelector(`[data-remplacant="${c}"]`)?.dataset.houblonRang ?? '' }), remplacant);
+    verifier(lu.coche === 'true' && lu.nom && lu.dock.includes(lu.nom), `choix non pris (${lu.nom} / ${lu.dock})`);
     verifier(JSON.stringify((await etat()).recette) === avantSubstituer, 'choisir un remplaçant a changé la recette avant « Remplacer »');
   });
   await geste('ma-biere-remplacee', 'ma-biere', async () => { await toucher('[data-role="pont-remplacer"]'); await pause(200); }, async () => {

@@ -152,11 +152,16 @@ async function ponts() {
   await geste('fiche-retour', async () => { await retourTelephone(); });
   verifier((await hash()) === '#/ma-biere', `après retour : ${await hash()}`);
 
-  // 2. + floral → Suggérer → Comparer les 3 → Comparer → Placer Idaho 7.
+  // 2. + floral → Suggérer (q2b : Motueka et Nelson Sauvin proposés) → « Comparer (2) » → Comparer (r6a) → « + » :
+  // Idaho 7, un houblon de sa question (« Lequel pour ma stout : Cascade, Idaho 7 ou Galaxy ? », 20.10) → Placer Idaho 7.
+  // DÉCISION r7 : ni q2b ni r6a ne changent ; Idaho 7 entre par la colonne « + » de Comparer (voies/r7-batterie/RESULTAT.md).
   await geste('suggerer', async () => { await toucher('[data-role="pont-floral"]'); await attendreEcran('suggerer'); });
   await geste('comparer', async () => { await toucher('[data-role="pont-comparer"]'); await attendreEcran('comparer'); });
   const h = await hash();
-  verifier(/^#\/comparer\?h=/.test(h) && h.includes('idaho-7'), `Comparer sans Idaho 7 : ${h}`);
+  verifier(/^#\/comparer\?h=/.test(h) && h.includes('motueka') && h.includes('nelson-sauvin'), `Comparer sans les houblons cochés dans Suggérer : ${h}`);
+  await geste('comparer-plus-idaho-7', async () => { await toucher('[data-role="ajouter-colonne"]'); await toucher('[data-ajouter="beermaverick-idaho-7"]'); });
+  verifier(await lire(() => document.querySelector('[role="radio"][data-col="beermaverick-idaho-7"]')?.getAttribute('aria-checked') === 'true'), 'Comparer sans Idaho 7 retenu après « + »');
+  verifier(/Placer Idaho 7/.test(await lire(() => document.querySelector('[data-role="pont-placer"]')?.textContent ?? '')), 'le dock ne dit pas « Placer Idaho 7 »');
   await geste('dryhopper', async () => { await toucher('[data-role="pont-placer"]'); await attendreEcran('dryhopper'); });
   let e = await etat();
   verifier(e.brouillon && e.brouillon.outil === 'dryhopper', 'Dryhopper sans brouillon');

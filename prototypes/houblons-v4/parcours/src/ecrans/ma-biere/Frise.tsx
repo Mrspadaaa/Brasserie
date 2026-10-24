@@ -123,9 +123,11 @@ export function Frise({ recette, biere, reperes, nouveaux, onGeste, ouvrirChamp 
     ));
   const levureChangee = reperes.__levure;
   const ajoutLevure = (lignes.find((l) => rail.segDe(l.v) === 'fermentation') ?? lignes.find((l) => rail.segDe(l.v) === 'post') ?? lignes[0])?.a.id ?? null;
+  // r7 : data-cran = le rang de la graduation dans le rail, celui de aria-valuenow (contrat de controle-rail, D63).
+  const rangs = rail.toutesValeurs();
   const graduations = useMemo(() => (['ebullition', 'whirlpool', 'fermentation', 'post'] as Segment[]).flatMap((s) =>
     rail.valeursSeg(s).map((v) => (
-      <i key={v} className={`pq-mb-grad${rail.majeure(s, v) ? ' pq-mb-maj' : ''}`} data-etape={v} data-graduation={s}>
+      <i key={v} className={`pq-mb-grad${rail.majeure(s, v) ? ' pq-mb-maj' : ''}`} data-etape={v} data-graduation={s} data-cran={rangs.indexOf(v)}>
         <b className="pq-mb-grad-v">{rail.texteGrad(v)}</b>
       </i>
     ))), [rail]);

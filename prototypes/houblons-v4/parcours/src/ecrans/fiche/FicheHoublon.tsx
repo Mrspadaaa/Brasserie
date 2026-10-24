@@ -212,7 +212,7 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
           </p>
         )}
 
-        <div data-element="g1-familles" className="rounded-lg bg-cave-900 border border-cave-800 p-2.5 space-y-2">
+        <div data-element="g1-familles" data-role="fiche-arome" aria-label="Arômes et sources" className="rounded-lg bg-cave-900 border border-cave-800 p-2.5 space-y-2">
           <div className="flex items-center gap-2">
             <div data-element="g1-bande" role="img" aria-label={`Les familles citées par les fiches de ${h.nom}`} className="flex items-center gap-[3px]">
               {sc.order.map((f, i) => {
@@ -223,7 +223,9 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
             </div>
             {s?.seuleFiche && <span data-role="fiche-seule" className="ml-auto text-xs text-cave-400 text-right whitespace-nowrap">1 seule fiche : {s.seuleFiche}</span>}
           </div>
-          <ul data-role="fiche-arome" aria-label="Arômes et sources" className="space-y-1.5">
+          {/* r7 : data-role="fiche-arome" porte tout le bloc (bande, « 1 seule fiche : Beer Maverick », liste) : un houblon
+              d'une seule fiche (Idaho 7) n'a pas de « 2/4 » dans sa liste, sa source est dite dans la bande. */}
+          <ul data-element="g1-liste" className="space-y-1.5">
             {citees.map((f) => {
               const c = compte(f);
               const prem = h.familles[f].fiches === 1 && premier.has(f);

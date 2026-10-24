@@ -39,9 +39,12 @@ export function AlphaLu({ h, mode = 'ligne', balise = h.cle }: { h: HoublonLu; m
 }
 
 /** Usage en mot, jamais en picto seul (D90) : data-usage et data-source comme hopRole. */
-export function Usage({ h, long = false }: { h: HoublonLu; long?: boolean }) {
+/** `mot` : le mot court en gris, sans pilule, comme la carte de l'étape de sa base (« α 13 double ⊙ », consolide-390.png). */
+export function Usage({ h, long = false, mot: nu = false }: { h: HoublonLu; long?: boolean; mot?: boolean }) {
   const r = hopRole(h.cle);
   const valeur = r.value ?? 'inconnu';
+  if (nu) return <span data-role="usage" data-usage={valeur} data-source={/^fournisseur/.test(r.source) ? 'fournisseur' : 'règle'} title={r.source}
+    className="text-sm text-cave-400 whitespace-nowrap">{r.value ?? 'usage ?'}</span>;
   const mot = r.value === 'double' ? (long ? 'double usage' : 'mixte') : r.value ?? 'usage ?';
   return (
     <span data-role="usage" data-usage={valeur} data-source={/^fournisseur/.test(r.source) ? 'fournisseur' : 'règle'} title={r.source}
