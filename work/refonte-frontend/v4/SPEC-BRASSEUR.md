@@ -525,6 +525,10 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   Sur sa q2b, dans la rangée du levier levure : « Celle ci aussi est toujours meilleures. Mais aussi ajouter les spec en plus
   type comme matrice nettoyée flb5b · de flb5 » (le groupe « Changer de levure » de q2b revient tel quel, son choix l'emporte
   sur D35 ; les houblons et les levures de Suggérer disent ce qui leur est propre). D44.
+- **Des icônes pour les types hors 16D** (24.10, soir, après avoir vérifié qu'ils étaient ajoutés), mot pour mot : « le profil
+  extra 16d sont bien ajouter ? Peut être mettre dans la baseline aussi des icône en plus, pour avoir une version courte juste
+  icône, et une version plus textuel ». Les mots hors familles les plus fréquents reçoivent un picto au trait (baseline) ; deux
+  lectures : courte (les icônes seules) et textuelle (icône et mot). D131.
 - **L'entrée de l'analyse : B** (24.10, soir, sur B, la barre pleine « Ouvrir l'analyse de ma bière › », dans la planche),
   mot pour mot : « La meilleure ». D121 tranché : B dans l'étape, à la place de A.
 - **Les mots au premier écran** (24.10, soir, sur Substituer au-dessus de 70 mots), mot pour mot : « dépasse les 70 mots au

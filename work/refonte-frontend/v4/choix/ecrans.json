@@ -23,8 +23,9 @@
    ],
    "complements": [
     {
-     "mots": "La meilleure (24.10, soir, sur B, la barre pleine « Ouvrir l'analyse de ma bière › », D121)",
-     "capture": "work/refonte-frontend/v4/outils/pages/2026-10-24-d121/img/d121-b.png"
+     "mots": "La meilleure",
+     "capture": "work/refonte-frontend/v4/outils/pages/2026-10-24-d121/img/d121-b.png",
+     "contexte": "24.10, soir, sur B, la barre pleine « Ouvrir l'analyse de ma bière › » (D121, D45)"
     }
    ]
   },
@@ -112,13 +113,14 @@
    "route": "dryhopper",
    "statut": "choisi",
    "choix": "p4b2f (passe 5, retouche de p4b2, « L'aire du floral »)",
-   "mots": "Partir sur cette version (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "mots": "Partir sur cette version",
    "capture": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/captures/p4b2f-premier-ecran.png",
    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
    "controles": [
     "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=dryhopper"
    ],
-   "note": "Choisi le 24.10 au soir, à la place d'a1 (provisoire) ; reprise r13-dryhopper : ses états relevés sur p4b2f (choix/etats/dryhopper.json), puis rendus dans la maquette."
+   "note": "Choisi le 24.10 au soir, à la place d'a1 (provisoire) ; reprise r13-dryhopper : ses états relevés sur p4b2f (choix/etats/dryhopper.json), puis rendus dans la maquette.",
+   "contexte": "24.10, soir, sur p4b2f dans « Planches · 24.10 » ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »"
   },
   {
    "ecran": "substituer",
