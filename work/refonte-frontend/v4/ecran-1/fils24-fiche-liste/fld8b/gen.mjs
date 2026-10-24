@@ -9,6 +9,10 @@ import path from 'node:path';
 import { HOPS, NOMS, slug, ici as ICI1, SYMBOLES, CSS as CSS0, JS as JS0, titre, jauge, radar, demande, lentille, ficheCourte, actions, T, esc, COURT, ROUE, STYLE, fr1 } from '../fld1/socle.mjs';
 
 const ID = 'fld8b', DEFAUT = 'Nelson Sauvin';
+// Icônes dessinées à 1,5 px de trait rendu (décision du pilote, S4), au lieu de 1,8 dans le socle.
+// Décision du pilote (passe 2, STANDARD S1 sur les cinq candidates) : Nelson Sauvin = #a0081f, comme flc8b.
+const COUL = { 'Nelson Sauvin': '#a0081f' };
+const H8 = Object.fromEntries(NOMS.map((n) => [n, { ...HOPS[n], couleur: COUL[n] || HOPS[n].couleur }]));
 const dir = path.join(ICI1, '..', ID);
 const PACK = JSON.parse(fs.readFileSync(path.join(ICI1, '../../../../../../prototypes/houblons-v4/data/pack-fiches.json'), 'utf8')).fichesHoublons;
 
@@ -23,7 +27,7 @@ const alpha = (h) => `<div class="fd-alpha fld8b-al"><span class="fld8b-ag"><spa
 // L'étape derrière la feuille : le houblon se choisit ici (seul facteur libre), la bière est fixée.
 const etape = (h) => `<div class="fld8b-et">
 <p class="fld8b-ctx" data-role="contexte"><span class="fld8b-ret">‹ Houblons</span><span data-contexte="base">Stout export · 20 L</span><span data-contexte="style">16D Foreign Extra Stout</span></p>
-<div class="fld8b-tabs" role="radiogroup" aria-label="Houblon de la fiche" data-libre="houblon">${NOMS.map((n) => `<button type="button" role="radio" aria-checked="${n === h.nom}" data-aller="${n === DEFAUT ? 'etat.html' : 'h-' + slug(n) + '.html'}"><i style="background:${HOPS[n].couleur}"></i>${esc(n)}</button>`).join('')}</div>
+<div class="fld8b-tabs" role="radiogroup" aria-label="Houblon de la fiche" data-libre="houblon">${NOMS.map((n) => `<button type="button" role="radio" aria-checked="${n === h.nom}" data-aller="${n === DEFAUT ? 'etat.html' : 'h-' + slug(n) + '.html'}"><i style="background:${H8[n].couleur}"></i>${esc(n)}</button>`).join('')}</div>
 </div>`;
 
 // La pointe : le radar de g1, ses mots au bout de chaque rayon (greffe flu6), un picto par famille citée.
@@ -146,5 +150,5 @@ const CSS = `
 .fld8b-part { font-size:13px; color:#3a3a42; padding:6px 12px 0; text-align:center; } .fld8b-part b { color:var(--encre); }
 `;
 fs.mkdirSync(dir, { recursive: true });
-for (const n of NOMS) fs.writeFileSync(path.join(dir, n === DEFAUT ? 'etat.html' : 'h-' + slug(n) + '.html'), rendu(HOPS[n]));
+for (const n of NOMS) fs.writeFileSync(path.join(dir, n === DEFAUT ? 'etat.html' : 'h-' + slug(n) + '.html'), rendu(H8[n]).split('stroke-width="1.8"').join('stroke-width="1.5"'));
 console.log('fld8b écrit');

@@ -18,6 +18,8 @@
 
 Autres changements : le houblon se choisit dans l'étape (onglets à la couleur de chaque houblon), hors de la fiche g1, qui reste entière (nom ⊙, α, usage, stock, radar d'abord, « + Floral / − Résineux », ♡ ⊘ Comparer, croix). La ligne `data-role="contexte"` (Stout export · 20 L ; 16D Foreign Extra Stout) est dans l'étape. La ligne de surface de fld8 est retirée : ses mots sont maintenant sur les rayons. Radar réduit (rayon 80 px) pour loger les mots autour, comme flu6 : seul écart à g1, voulu par la greffe.
 
+Décision du pilote (STANDARD S1 et S4 sur les cinq candidates) : Nelson Sauvin en #a0081f, comme flc8b, au lieu de #0b6e63 ; les icônes dessinées (croix, ♡, ⊘, repère ⊙) à 1,5 px de trait rendu. Contrôle commun des cinq (flb3b flc8b fld8b flu2b fla5b) : STANDARD OK, COMMUN OK.
+
 ## Ce qui tient
 Nelson Sauvin : deux rayons, chacun marqué « catégorie », puis sous l'eau vin blanc, groseille à maquereau, raisin, fruité, sauvignon blanc, avec leurs fiches : on voit en trois secondes que le radar ne dessine pas ce houblon. Nugget et Cascade : un radar bien rempli et une petite coque qui dit « presque tout se dessine ».
 
