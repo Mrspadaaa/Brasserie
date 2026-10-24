@@ -109,11 +109,11 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `node scripts/agents/systeme.mjs agents`
 
 ### L28 — Charger les skills de méthode avant de planifier, surtout après une reprise
-- Erreur : 24.10, reprise sur un résumé du 20.10 : six voies lancées sans `voies` ni `conseil`, un lot de création prévu sans chaleurs. « Pourquoi tu n'as pas utiliser de base les bon outils ? »
+- Erreur : 24.10, après une reprise, six voies lancées sans `voies` ni `conseil`. « Pourquoi tu n'as pas utiliser de base les bon outils ? »
 - Cause : le résumé précédait le système.
 - Faire : avant le premier VOIE.md ou Agent, invoquer `voies` (et `conseil` si le lot fixe une direction).
 - Rôles : pilote
-- Contrôle : aucun ; hook proposé
+- Contrôle : aucun
 
 ## Décider
 

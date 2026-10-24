@@ -484,3 +484,13 @@ de verdict de jury. JURY.md reste la grille de lecture. Les cinq passent en seco
 auteurs (y1b, x3b, v1b, s3b, w3b), et trois relances ciblées partent : r3b, a2b et e4. MOTS se compte
 hors données (`--sans-donnees`, 70 au plus), avec 110 au total comme cible indicative. Le brasseur voit
 les 44 variantes et les cinq améliorées, et c'est lui qui choisit.
+
+## D34 — Le lot D125 et Substituer, après le conseil complet (24.10.2026, matin)
+
+Conseil complet (`cerveau/decisions/2026-10-24-lot-d125-vues.md`). Substituer : « Substitution, ça serait plus du u4 »
+(19.10) est son choix ; le registre le marquait « ouvert » avec la porte du conseil du 22.10 en provisoire. Il passe à
+« choisi u4 », avec ses mots, et u4 est rendu par une reprise (r6), comme les écrans de D124. Dryhopper : passe 4 sur
+a1 (8 à 12 greffes en trois chaleurs), pas de nouveau panel v0. La liste de la fiche : le seul entonnoir complet, après
+la reprise de la fiche (r3). La pastille « ~ simulé » : 3 mini maquettes, avec la reprise de Comparer (r5). Les graphes :
+une planche où il désigne celui qui le bloque. Rien n'est publié avant la lecture de ses commentaires d'après 07 h 53
+(autre compte : accès demandé à l'utilisateur) ; le critique est réétalonné sur les 56 fils avant le tri.
