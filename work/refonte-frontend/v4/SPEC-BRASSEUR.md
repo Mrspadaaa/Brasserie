@@ -468,6 +468,11 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   agent. Je peux aussi lancé une autre session si il faut ». Les inventaires de ses maquettes ne relèvent que l'état au
   repos ; les gestes et les états (loupe, segments, whirlpool, levure, J+n, ébullition 45′ à 200′, plusieurs houblons)
   n'y sont pas, et CHOIX OK, RAIL OK restent verts. D124.
+- **Ses commentaires** (24.10, 8 h 30), mot pour mot : « J'avais mis des commentaires, j'ai la nette impression que ils
+  ont pas tous été pris en compte aussi ». Puis : « Il faudra aussi refaire des mini maquettes fils de fer sur les vue
+  dont je suis pas convaincu ». Chaque fil de ses artefacts est relevé, avec ce qu'il est devenu (SPEC, défaut,
+  contrôle, maquette 24.10) ; les vues dont il n'est pas convaincu passent en fils de fer, en mini maquettes, dans un
+  artefact neuf (règle n° 1). D125.
 - **Des mini maquettes pour choisir** (24.10, matin, après « ton choix pour D121 (A, B ou C) »), mot pour mot : « Il me
   faut des mini maquettes avec un nouvel artefacts comme pour les mini maquettes côté à côté.... Pour les autres gros
   changement aussi au non je peux pas choisir. Met ca dans tes règles aussi ». Tout choix qu'on lui demande se montre en
