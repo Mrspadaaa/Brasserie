@@ -1,0 +1,297 @@
+{
+ "ecran": "etape-houblons",
+ "choix": "base v4.10, étape Houblons",
+ "source": "Relevé joué (Chrome, puppeteer-core, 390 × 844 tactile) de work/refonte-frontend/v4/ecran-1/base/consolide/index.html contre prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html ; voie p21a ; le glisser du moment (rail) est relevé par p20.",
+ "maj": "2026-10-24",
+ "etats": [
+  {
+   "id": "etat-etape-repos",
+   "mots": "Ça c'est le bon. Comment cette info a été perdu ??? (base v4.10, étape Houblons)",
+   "etat": "ouvrir l'étape, rien touché",
+   "quoi": "Base : ‹ + « Houblons 3/7 » + pastille « 16D hypothèse », bandeau IBU 60 / OG 1,066 / EBC 70, « Ébullition 60′ › », carte de Nugget (« − 46 g + », ×, « α 13 double », « résine 2/4 », 60 IBU, bande des 12 familles), 0′, whirlpool, SafAle US-05, fermentation, post-fermentation, champ « Ajouter — houblon… », 3 ajouts rapides (Motueka, Citra cryo, Saaz Late à 10 g et 10′, ♡), alerte « Boisé et résineux trop marqué » + « › », 12 familles en 2 colonnes sans picto.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-repos-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "(aucun)",
+    "selecteur_5345f6ad": "(aucun)",
+    "geste": "aucun"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Voulus (ses mots) : fil d'étapes de l'app à la place de ‹ et de la pastille « 16D hypothèse » (D116) ; « ? » de légende ×3 (D113) ; « analyse › » (D121) ; pictos de famille (D74). Non demandés, mesurés : le chevron « › » de « Ébullition 60′ » est absent ; α affiché « 13 % 9,5–16 » au lieu de « 13 » ; rôle « mixte » au lieu de « double » ; ajouts rapides Cascade, Citra cryo, Idaho 7 au lieu de Motueka, Citra cryo, Saaz Late ; Végétal placé (point) alors que la base le garde « non situé » hachuré ; « Sans Nugget › » ajouté (pont Substituer, choix ouvert).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-repos-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-dose-plus",
+   "mots": "Comme pour les Malts j'ai besoin d'avoir des le premier coup d'œil, quel matière première j'ai (carte de l'ajout, dose)",
+   "etat": "toucher « + » de la dose de Nugget",
+   "quoi": "Base : 46 g → 48 g (pas de 2 g), IBU 60 → 62, repère « +2 » au-dessus de l'IBU du bandeau, IBU de la carte 62.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-dose-plus-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[aria-label^=\"Ajouter 2 g\"]",
+    "selecteur_5345f6ad": "[data-role=\"dose-plus\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Pas de 1 g au lieu de 2 g (46 → 47 g, IBU 61) ; repère « +2 » du bandeau absent (texte du bandeau : « IBU 61 » seul).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-dose-plus-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-dose-moins",
+   "mots": "Comme pour les Malts j'ai besoin d'avoir des le premier coup d'œil, quel matière première j'ai",
+   "etat": "toucher « − » de la dose de Nugget",
+   "quoi": "Base : 46 g → 44 g, IBU 57, repère « −3 » au-dessus de l'IBU.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-dose-moins-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[aria-label^=\"Retirer 2 g\"]",
+    "selecteur_5345f6ad": "[data-role=\"dose-moins\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Pas de 1 g (45 g, IBU 58) ; repère « −3 » absent.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-dose-moins-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-retirer",
+   "mots": "Comme pour les Malts j'ai besoin d'avoir des le premier coup d'œil, quel matière première j'ai",
+   "etat": "toucher × sur la carte de Nugget",
+   "quoi": "Base : la carte disparaît, un emplacement pointillé « + » prend sa place sous « Ébullition 60′ », IBU 0 avec repère « −60 », le stock proposé passe à 5 ajouts (Motueka, Citra cryo, Cascade, Target 5 g, Saaz Late).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-retirer-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[aria-label=\"Retirer Nugget de la recette\"]",
+    "selecteur_5345f6ad": "[data-role=\"retirer\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Emplacement « + » pointillé absent ; repère « −60 » absent ; 3 ajouts proposés (Cascade, Citra cryo, Idaho 7) au lieu de 5.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-retirer-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-ajout-rapide",
+   "mots": "je peux ajouter en un click ultra facilement",
+   "etat": "toucher le « + » du premier ajout rapide",
+   "quoi": "Base : l'ajout (Motueka) entre dans la frise à 10′ avec « floral +1 » (ce qu'il fait bouger), IBU 60 → 63 avec repère « +3 », sur les barres du profil un point « avant » grisé et un point « après » relié (Floral, Agrumes, Tropicaux), le stock proposé perd Motueka.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-ajout-rapide-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[data-role=\"ajout-rapide\"]",
+    "selecteur_5345f6ad": "[data-role=\"ajout-rapide-plus\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Ajout bien posé à 10′ (Cascade, IBU 62) mais : repère « +2 » absent ; aucun point « avant » ni liaison « après » sur les barres du profil (une capture en bas de page prise : seul un point de Baies bouge) ; carte « résine 1/2 » au lieu du signal de ce que l'ajout fait bouger (« floral +1 »).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-ajout-rapide-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-type-whirlpool",
+   "mots": "Rien de figé : dry hop et whirlpool se règlent (SPEC § 1) ; rail relevé par p20",
+   "etat": "toucher la pastille « ébullition ⟳ » de Nugget (1 fois)",
+   "quoi": "Base : « whirlpool ⟳ », bulle « 80 °C », réglage « − 20 min + », IBU 60 → 9 avec repère « −51 ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-type-whirlpool-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[data-role=\"type-ajout\"]",
+    "selecteur_5345f6ad": "[data-role=\"type-ajout\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Bulle « WP » au lieu de « 80 °C » ; « − 20 min + » absent ; IBU 9 correct mais repère « −51 » absent.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-type-whirlpool-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-type-froid",
+   "mots": "Rien de figé : dry hop (SPEC § 1) ; D123 : « Le rail c'est toujours n'importe quoi » ; rail relevé par p20",
+   "etat": "toucher la pastille de type 2 fois (ébullition → whirlpool → à froid)",
+   "quoi": "Base : « à froid ⟳ », bulle « J+3 », « − J+3 + », « aucun IBU », pastille « biotransformation possible, non quantifiée », IBU 60 → 0.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-type-froid-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[data-role=\"type-ajout\"]",
+    "selecteur_5345f6ad": "[data-role=\"type-ajout\"]",
+    "geste": "toucher ×2"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Bulle « 3 j », « dry hop » au lieu de « à froid », « ? IBU » au lieu de « aucun IBU », « − J+n + » absent, pastille « biotransformation possible, non quantifiée » absente (mots de Dryhopper, choix ouvert : D123).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-type-froid-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-gout-coeur",
+   "mots": "je peux ajouter en un click ultra facilement (♡ de l'ajout rapide)",
+   "etat": "toucher le ♡ du premier ajout rapide",
+   "quoi": "Base : une bulle à trois choix « aimer · neutre · exclure » (neutre actif) s'ouvre sur la carte.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-gout-coeur-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[data-role=\"gout\"]",
+    "selecteur_5345f6ad": "[aria-label^=\"J'aime\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Le ♡ devient plein rouge d'un toucher (2 états) ; « exclure » n'est plus offert sur la carte (il reste en ⊘ dans la fiche).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-gout-coeur-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-champ-ajouter",
+   "mots": "je peux ajouter en un click ultra facilement",
+   "etat": "toucher « Ajouter — houblon… » et taper « cit »",
+   "quoi": "Base : le champ prend le focus (liseré noir), « cit » écrit ; les 3 propositions restent inchangées au jeu.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-champ-ajouter-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "input",
+    "selecteur_5345f6ad": "input",
+    "geste": "toucher puis saisie « cit »"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Le champ filtre : seul Citra cryo reste (amélioration, ne contredit pas sa base).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-champ-ajouter-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-levure",
+   "mots": "J'aime beaucoup l'intégration de la levure directement dans la p8",
+   "etat": "toucher la ligne « SafAle US-05 caractérisée »",
+   "quoi": "Base : la levure est posée dans la frise ; au toucher, rien ne s'ouvre dans la maquette de base.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-levure-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[data-role=\"levure\"]",
+    "selecteur_5345f6ad": "[data-role=\"pont-etape-levure\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "La ligne ouvre l'outil Levure (#/levure/a1 : « Et avec quelle levure ? », US-05, Pomona, Verdant, Diamond). Levure est un écran au choix ouvert (provisoire : étape de Dryhopper) ; la base n'ouvrait rien. Pas une perte.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-levure-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-analyse",
+   "mots": "Seul bouton qui ouvre vraiment l'analyse. Peut, être amélioré (D121)",
+   "etat": "toucher le bloc du profil (« Boisé et résineux trop marqué › »)",
+   "quoi": "Base : ouvre l'onglet Ma bière (« 6 au style · 5 non situées », barres, Résineux ouvert « bannir − sans visée + »).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-analyse-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[data-role=\"panneau\"]",
+    "selecteur_5345f6ad": "[data-role=\"pont-biere\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Même destination (onglet Ma bière). Décompte « 7 au style · 4 non situées » au lieu de « 6 · 5 » (Végétal placé en maquette, « non situé » en base).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-analyse-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-ebullition-lien",
+   "mots": "Rien de figé : l'ébullition a une durée variable (SPEC § 1)",
+   "etat": "toucher « Ébullition 60′ › » en tête de frise",
+   "quoi": "Base : lien <a href=\"#fiche-brassage\" aria-label=\"Ébullition 60 minutes, réglée dans la fiche de brassage\"> avec chevron « › » ; mène à la fiche de brassage (aucun effet visible dans la maquette de base).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-ebullition-lien-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[data-role=\"ebullition\"] a",
+    "selecteur_5345f6ad": "(aucun lien : <div>)",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Aucun <a> dans la frise, pas de chevron : la durée d'ébullition n'a plus de renvoi à son réglage (le titre « Ébullition 60′ » est un div).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-ebullition-lien-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-entete",
+   "mots": "Pourquoi ? Qu'est-ce que ce champs apporter ?? Il faudra remplacer tout ça par le vrai Stepper de la vrai app (D116)",
+   "etat": "toucher « 16D hypothèse » (base) / une autre étape du fil (maquette)",
+   "quoi": "Base : ‹ « Retour à l'étape Malts », « Houblons 3/7 », « Style 16D, échelles hypothétiques à valider » (aucun effet visible).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-entete-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "button[aria-label^=\"Style 16D\"]",
+    "selecteur_5345f6ad": "button « Levure » du fil",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Voulu (D116) : fil de 7 étapes (WizardStepRail), thème et « Recommencer » ajoutés ; toucher une autre étape ne fait rien (NOTE). Le « ‹ » de retour vers l'étape Malts n'a plus d'équivalent.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-entete-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-cas-k3",
+   "mots": "Ça c'est le bon. Comment cette info a été perdu ??? (base v4.10, étape Houblons) ; cas-k3 de la base",
+   "etat": "ouvrir cas-k3 (recette à 4 houblons)",
+   "quoi": "Base : Nugget 42,5 g à 60′ (55 IBU), Motueka 10 g à 10′, Cascade 20 g en whirlpool (80 °C, « − 20 min + »), Citra cryo 40 g à froid (J+3, « aucun IBU », « biotransformation possible, non quantifiée », puces « géraniol · thiols · hop creep »), « 12 non situées ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-cas-k3-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "(page cas-k3)",
+    "selecteur_5345f6ad": "(page cas-k3)",
+    "geste": "ouvrir"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "La maquette ne joue pas ce cas : son cas-k3 est Nugget 46 g, Cascade 20 g, Galaxy 20 g, tous en ébullition (IBU 71). Whirlpool 80 °C avec minutes, J+n et biotransformation (géraniol, thiols, hop creep) n'y sont ni montrés ni atteignables (voir type-froid).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-cas-k3-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-cas-k2-vide",
+   "mots": "Ça c'est le bon. Comment cette info a été perdu ??? (base v4.10, étape Houblons) ; cas-k2 de la base (recette sans houblon)",
+   "etat": "recette sans houblon (cas-k2 ; maquette : × sur Nugget)",
+   "quoi": "Base : emplacement « + » pointillé, jauge IBU 0 avec repère orange, propositions d'amérisant à 60′ (Pahto 32,5 g +60 IBU, « ou », Marco Polo 48,1 g +60 IBU), puis aromatiques à 10′, profil replié « 1 au style · 11 non situées ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-cas-k2-vide-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "(page cas-k2)",
+    "selecteur_5345f6ad": "[data-role=\"retirer\"]",
+    "geste": "ouvrir / toucher ×"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Sans houblon, la maquette propose seulement Cascade, Citra cryo, Idaho 7 à 10′ : aucun amérisant à 60′, pas de « ou », pas d'emplacement « + », pas de jauge IBU à vide.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-cas-k2-vide-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-pied-profil",
+   "mots": "Comme pour les Malts j'ai besoin d'avoir des le premier coup d'œil, quel matière première j'ai (profil)",
+   "etat": "défiler jusqu'au pied de l'étape",
+   "quoi": "Base : alerte « Boisé et résineux trop marqué » + « › », 12 familles en 2 colonnes (noms seuls, barres, Résineux point rouge).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-pied-profil-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "(défilement)",
+    "selecteur_5345f6ad": "(défilement)",
+    "geste": "défiler"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Voulus : pictos (D74), « ? », « + floral › », Au style / Absolu sur le profil. Mesuré : Végétal et Noyau n'ont pas le même statut qu'en base (Végétal placé).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-pied-profil-5345f6ad.png"
+  },
+  {
+   "id": "etat-etape-repos-1280",
+   "mots": "Ça c'est le bon. Comment cette info a été perdu ??? (base v4.10, étape Houblons) (captures consolide-1280.png)",
+   "etat": "ouvrir à 1280 × 800, souris",
+   "quoi": "Base : même colonne, centrée sur 1280 px (390 px de large utile).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-repos-1280-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "(aucun)",
+    "selecteur_5345f6ad": "(aucun)",
+    "geste": "aucun (capture 1280 × 800)"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Capture 1280 × 800 (hors consigne 390). Maquette : barre « Modifier « Stout export » » ajoutée en tête, colonne pleine largeur ; même contenu qu'au repos 390.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-repos-1280-5345f6ad.png"
+  }
+ ]
+}

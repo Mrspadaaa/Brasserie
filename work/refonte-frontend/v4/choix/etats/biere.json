@@ -1,0 +1,297 @@
+{
+ "ecran": "ma-biere",
+ "choix": "base v4.10, onglet Ma bière",
+ "source": "Relevé joué de work/refonte-frontend/v4/ecran-1/base/consolide/biere.html contre prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html ; voie p21a.",
+ "maj": "2026-10-24",
+ "etats": [
+  {
+   "id": "etat-biere-repos",
+   "mots": "Ça aussi (base v4.10, onglet Ma bière) ; « Je trouve cette vue des barre super car très compact et facile »",
+   "etat": "ouvrir l'onglet Ma bière",
+   "quoi": "Base : ‹ + onglets Ma bière · Suggestions · Comparer, bandeau IBU/OG/EBC, alerte, Barres/Radar, « 6 au style · 5 non situées », Au style/Absolu, 3 pastilles de légende, « zone du style · au-dessus », 12 barres (Floral, Herbacé, Terreux, Agrumes, Tropicaux, Épicé placés ; Noyau, Pépins, Baies, Melon, Végétal hachurés), Résineux ouvert « ×2,8 », puces « + floral · − résineux · + … », « Prévu avec SafAle US-05, caractérisée ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-repos-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "(aucun)",
+    "selecteur_5345f6ad": "(aucun)",
+    "geste": "aucun"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Voulus : ✕ à la place de ‹ (D109), pictos de famille (D74), « ? » (D113). Mesuré : décompte « 7 au style · 4 non situées » (Végétal placé, base : non situé) ; Résineux ouvert au repos et crans du style présents comme en base.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-repos-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-radar",
+   "mots": "Ça aussi (base v4.10, onglet Ma bière) ; radar m4 (consolide-biere-radar-390.png)",
+   "etat": "toucher « Radar »",
+   "quoi": "Base : grand radar pleine largeur (358 × 332 px), zone du style grisée, ma bière pleine en bleu, sommet de Résineux orangé, puis un tableau de 12 lignes × 4 colonnes (pas senti · faible · moyen · marqué) avec le palier de chaque famille ; le décompte et la légende sont repliés.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-radar-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "button « Radar »",
+    "selecteur_5345f6ad": "button « Radar »",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Radar plus petit (≈ 310 px de haut), ma bière en trait noir (pas de remplissage bleu), tableau pas senti / faible / moyen / marqué absent ; décompte, légende et Au style/Absolu restent au-dessus.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-radar-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-absolu",
+   "mots": "Ça aussi (base v4.10, onglet Ma bière) ; « Échelles au style par défaut, l'absolu à un toucher » (SPEC)",
+   "etat": "toucher « Absolu »",
+   "quoi": "Base : barres sur l'échelle absolue 0 à 3, en-têtes « faible · moyen · marqué » à la place de « zone du style · au-dessus », plus de zone ni de crans.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-absolu-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "button « Absolu »",
+    "selecteur_5345f6ad": "button « Absolu »",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Barres en échelle absolue, mais l'en-tête « zone du style · au-dessus » reste et « faible · moyen · marqué » est absent.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-absolu-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-radar-absolu",
+   "mots": "Ça aussi (base v4.10, onglet Ma bière)",
+   "etat": "toucher « Absolu » puis « Radar »",
+   "quoi": "Base : radar en absolu avec son tableau pas senti → marqué.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-radar-absolu-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "button « Absolu », « Radar »",
+    "selecteur_5345f6ad": "button « Absolu », « Radar »",
+    "geste": "toucher ×2"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Même écart que le radar : petit radar noir, aucun tableau de paliers.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-radar-absolu-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-famille-ouverte",
+   "mots": "je sais pas comment bannir une contraintes ou réduire une autre",
+   "etat": "toucher la barre Tropicaux",
+   "quoi": "Base : la ligne s'ouvre sous sa barre : « bannir · − · sans visée · + » ; Résineux se referme.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-famille-ouverte-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "[aria-label^=\"Fruits tropicaux\"]",
+    "selecteur_5345f6ad": "[aria-label^=\"Tropicaux\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Même ligne « bannir · − · sans visée · + » ; boutons plus grands (44 px).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-famille-ouverte-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-visee-plus",
+   "mots": "Aussi aucun impact sur je met plus, moins bannir ect.. (D108)",
+   "etat": "ouvrir Tropicaux puis « + »",
+   "quoi": "Base : losange à « faible » relié au point par un pointillé, « × » apparaît, puce « − tropicaux » (erreur de la base).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-visee-plus-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "[aria-label^=\"Augmenter ma visée de Fruits tropicaux\"]",
+    "selecteur_5345f6ad": "[data-famille-ligne=\"tropical\"] [data-visee=\"plus\"]",
+    "geste": "toucher ×2"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Losange, pointillé, palier « faible », « × » et puce « + tropicaux » : tout y est (la puce de la base disait « − », corrigée).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-visee-plus-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-visee-moins",
+   "mots": "Aussi aucun impact sur je met plus, moins bannir ect.. (D108)",
+   "etat": "ouvrir Tropicaux puis « − »",
+   "quoi": "Base : visée à 0, nom barré, « bannie », « × », losange à gauche du point.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-visee-moins-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "[aria-label^=\"Réduire ma visée de Fruits tropicaux\"]",
+    "selecteur_5345f6ad": "[data-famille-ligne=\"tropical\"] [data-visee=\"moins\"]",
+    "geste": "toucher ×2"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Même résultat (nom barré, bannie, ×, losange à 0).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-visee-moins-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-visee-retirer",
+   "mots": "Aussi aucun impact sur je met plus, moins bannir ect.. (D108)",
+   "etat": "« + » puis « × »",
+   "quoi": "Base : la visée disparaît, retour à « sans visée ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-visee-retirer-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "button « × »",
+    "selecteur_5345f6ad": "[data-visee=\"retirer\"]",
+    "geste": "toucher ×3"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Même retour à « sans visée », sans losange.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-visee-retirer-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-bannir",
+   "mots": "je sais pas comment bannir une contraintes ou réduire une autre",
+   "etat": "ouvrir Tropicaux puis « bannir »",
+   "quoi": "Base : nom barré, « bannie », puce noire « − tropicaux ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-bannir-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "[aria-label^=\"Bannir Fruits tropicaux\"]",
+    "selecteur_5345f6ad": "[data-visee=\"bannir\"]",
+    "geste": "toucher ×2"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Nom barré, « bannie » ; puce « bannir tropicaux » au lieu de « − tropicaux » (mot plus juste).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-bannir-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-visee-refermee",
+   "mots": "Aussi aucun impact sur je met plus, moins bannir ect.. (D108)",
+   "etat": "« + » puis refermer la ligne",
+   "quoi": "Base : ligne fermée, losange et pointillé restent sur la barre, puce « − tropicaux ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-visee-refermee-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "[aria-label^=\"Fruits tropicaux\"]",
+    "selecteur_5345f6ad": "[aria-label^=\"Tropicaux\"]",
+    "geste": "toucher ×3"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Même : losange et pointillé gardés, puce « + tropicaux ».",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-visee-refermee-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-objectif-floral",
+   "mots": "Ça aussi (base v4.10, onglet Ma bière) ; objectifs « + floral · − résineux · + … »",
+   "etat": "toucher la puce « + floral »",
+   "quoi": "Base : reste sur Ma bière ; la visée « + » est posée sur Floral (losange relié au point), la puce devient noire et une ligne « Plus floral : 8 voies, 2 faibles › » s'écrit dessous (le « › » ouvre Suggestions).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-objectif-floral-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "[aria-label=\"Plus floral\"]",
+    "selecteur_5345f6ad": "[data-role=\"pont-floral\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Ouvre directement Suggestions (#/suggerer) : la visée n'est pas posée sur la barre Floral, la ligne « 8 voies, 2 faibles › » est absente (NOTE : « Les puces ouvrent toutes Suggérer »).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-objectif-floral-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-objectif-autre",
+   "mots": "Ça aussi (base v4.10, onglet Ma bière) ; « + … »",
+   "etat": "toucher la puce « + … »",
+   "quoi": "Base : ouvre la ligne de la famille suivante à viser (Tropicaux : « bannir · − · sans visée · + »).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-objectif-autre-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "[aria-label^=\"Autres directions\"]",
+    "selecteur_5345f6ad": "[data-role=\"pont-objectif-autre\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Ouvre Suggestions (« Comparer (2) » déjà affiché), pas une ligne de visée.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-objectif-autre-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-onglet-suggestions",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix (q2b, Suggérer)",
+   "etat": "toucher l'onglet « Suggestions »",
+   "quoi": "Base : onglet Suggestions vide (« Une direction ouvre les voies du moteur. ») ; Au style/Absolu, Barres/Radar.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-onglet-suggestions-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "button « Suggestions »",
+    "selecteur_5345f6ad": "button « Suggestions »",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Écran q2b choisi (voies, « Atteint », « Hors houblon », « Comparer (2) ») ; relevé de ses états : voie p21b.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-onglet-suggestions-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-onglet-comparer",
+   "mots": "r6a reste le meilleur… (D107) ; « Non pas cette version »",
+   "etat": "toucher l'onglet « Comparer »",
+   "quoi": "Base : le Comparer v4.10 (Nugget, East Kent, Fuggle, grille de familles, α/β/huiles).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-onglet-comparer-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "button « Comparer »",
+    "selecteur_5345f6ad": "button « Comparer »",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Comparer r6a + étapes (D107) : choisi à la place de celui de la base ; relevé de ses états : voie p21b.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-onglet-comparer-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-retour",
+   "mots": "Juste une croix bien positionné, facile, dans le thème suffirait (D109) ; je veux juste retour au \"menu\" (D118)",
+   "etat": "toucher « ‹ » (base) / « ✕ » (maquette)",
+   "quoi": "Base : « Revenir à l'étape Houblons » (‹ de 28 px) ramène à l'étape.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-retour-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "[aria-label^=\"Revenir à l'étape\"]",
+    "selecteur_5345f6ad": "[data-role=\"retour\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Même retour à l'étape ; ✕ de 44 px à la place du ‹ de 28 px (voulu : D109).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-retour-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-pied",
+   "mots": "Ça aussi (base v4.10, onglet Ma bière)",
+   "etat": "défiler au pied de l'onglet",
+   "quoi": "Base : puces d'objectifs puis « Prévu avec SafAle US-05, caractérisée ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-pied-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "(défilement)",
+    "selecteur_5345f6ad": "(défilement)",
+    "geste": "défiler"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Puces et « Prévu avec SafAle US-05, caractérisée » identiques.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-pied-5345f6ad.png"
+  },
+  {
+   "id": "etat-biere-radar-sommet",
+   "mots": "au toucher d'un sommet, la famille et la valeur en mots (consolide NOTE § 3)",
+   "etat": "Radar, toucher le sommet orangé de Résineux",
+   "quoi": "Base : bulle « Résineux : marqué, au-dessus du style ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-radar-sommet-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/biere/etat.html",
+    "selecteur_choisie": "svg radar, sommet Résineux (125, 176)",
+    "selecteur_5345f6ad": "cercle Résineux (137, 310)",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Aucune bulle au toucher du sommet (capture identique à radar).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-biere-radar-sommet-5345f6ad.png"
+  }
+ ]
+}
