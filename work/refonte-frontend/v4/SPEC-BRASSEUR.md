@@ -490,6 +490,11 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   font d'un toucher. D127. Puis, sur la capture entière de u4, une coche rouge au tableau « Arômes 16D » (familles au style
   et hors style, une barre par houblon, pointillé = non décrit, « aucune des trois fiches ne les décrit, ce n'est pas
   zéro ») : « Ça c'est vraiment bien » (acquis).
+- **Comparer n'est plus r6a** (24.10, soir, commentaire sur « Choix de vues · 24.10 », à la référence de la pastille, qui
+  montrait le premier écran de la Comparer du jour sous le nom « r6a »), mot pour mot : « C'est pas du tout cette vue là
+  réf ??? ». Sa r6a montre au premier écran le radar, les colonnes et ses rangées de familles (une barre par houblon, « ~
+  dans » / « ~ hors ») ; la maquette avait mis les rangées 60′ / 10′ / dry hop de x3b à leur place et repoussé les familles
+  sous le premier écran, contre D107 (« r6a garde la forme »). Les étapes deviennent un sélecteur sur les rangées. D128.
 - **À quoi a servi le quota** (24.10, soir), mot pour mot : « En quoi tout ces quota ont été utile ??? ». Le 24.10, la
   plus grande part est allée à l'outillage (contrôles, cerveau, un délai de test débogué) et à des panels de 48, quand rien
   ou presque ne lui avait été montré. Le quota sert d'abord ce qu'il verra : montrer tôt ce qui est fait (L11).

@@ -1759,6 +1759,16 @@
    "resultat": "Mesuré le 24.10 : maquettes/parcours SUBSTITUER-GESTES ECHEC (2/4 : pas de dry hop, aucun bouton Comparer).",
    "verdict": "garde",
    "script": "controle-substituer-gestes.mjs"
+  },
+  {
+   "id": "D128",
+   "mots": "« C'est pas du tout cette vue là réf ??? » (24.10, soir, sur la référence « r6a » de la pastille)",
+   "controle": "controle-comparer-familles.mjs <page.html> [--min=9] (rangées de familles de r6a au premier écran)",
+   "portee": ["comparer"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 : sa r6a FAMILLES OK (10 au premier écran) ; maquettes/parcours/comparer FAMILLES ECHEC (0 au premier écran, 9 à partir de 872 px).",
+   "verdict": "garde",
+   "script": "controle-comparer-familles.mjs"
   }
  ]
 }

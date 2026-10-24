@@ -12,7 +12,7 @@ critique avant de lui montrer ; tout lui est montré, sur une page par question,
   moteur (fiches, dose, moment, levure), pas mesurée dans une bière, et où sont les vraies valeurs. Facteur libre : la façon de
   le dire au toucher ; Comparer, ses houblons et sa stout sont en contexte.
 - **Ses mots** : « ????? » (24.10, matin, sur la pastille, D122). Au repos, pas un mot de plus ; la pastille de r6a reste.
-- **Plancher** : Comparer rendu (`prototypes/houblons-v4/maquettes/parcours/comparer/etat.html`, joue-le) ; les trois jeux courts
+- **Plancher** : SA r6a (`work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html`, capture `…/fils22-comparer/captures/r6a-premier-ecran.png` ; pas la Comparer du jour, qui a perdu ses rangées de familles au premier écran, D128) ; les trois jeux courts
   déjà faits : `work/refonte-frontend/v4/ecran-1/fils24-pastille/{psa,psb,psc}/` et leurs captures (ne les refais pas).
 
 ## Question L — le levier levure dans Suggérer (séries lsa, lsz)
