@@ -10,7 +10,7 @@ const n = (cmd, attendu) => ({ cmd, attendu });
 const lot = [
   ...(process.argv.includes('--sans-construire') ? [] : [n(`node ${O}/construire.mjs`, 'CONSTRUIT OK')]),
   n(`node ${O}/verifier-types.mjs`, 'TYPES OK'),
-  n(`node ${O}/app-intacte.mjs`, 'APP INTACTE OK'),
+  n(`node ${O}/app-intacte.mjs`, 'FONCTIONS INTACTES OK'),
   // Règle n° 1 : ses choix, sa teinte.
   n(`node ${T}/controle-choix.mjs ${D}`, 'CHOIX OK'),
   n(`node ${T}/controle-teinte.mjs ${D}`, 'TEINTE OK'),
@@ -59,6 +59,8 @@ const lot = [
   n(`node ${T}/controle-fiche-pied.mjs ${D}`, 'FICHE-PIED OK'),
   // D137 : Comparer retire, remplace à sa place et cherche le catalogue.
   n(`node ${T}/controle-comparer-choix.mjs ${D}`, 'COMPARER-CHOIX OK'),
+  // D140 : la légende sous les pastilles est leg3-v2a telle quelle, avec la barre de v2e (« Je veux qqch comme ça moi ???? »).
+  n(`node ${T}/controle-legende-v2a.mjs ${D}`, 'LEGENDE-V2A OK'),
   // Le parcours joué au téléphone et à l'ordinateur.
   n(`node ${O}/jouer-parcours.mjs --dossier=${D} --routes`, 'ROUTES OK'),
   n(`node ${O}/jouer-parcours.mjs --dossier=${D} --ponts`, 'PONTS OK'),

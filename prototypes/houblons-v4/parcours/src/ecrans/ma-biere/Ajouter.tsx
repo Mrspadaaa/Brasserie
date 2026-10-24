@@ -20,7 +20,7 @@ import { buildFromEmpty, hopRole, quickAdds, type QuickAdd } from '../../../../s
 import { AlphaLu, StockIcone } from '../fiche/briques';
 import { useGestesFiche } from '../fiche/gestes';
 import { BoutonLegende, useLegende } from './LegendeGroupe';
-import { BandeOuverte, CleBande, SpeciauxRepli } from './legende-bande';
+import { BandeOuverte, effetSiAjoute, LignesV2a, TonsV2a } from './legende-bande';
 import { libelleDe, momentLong, valeurDe } from './Frise';
 
 type Gout = 'aimer' | 'neutre' | 'exclure';
@@ -51,9 +51,11 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
   const fiche = useGestesFiche((cle) => { if (route.ecran !== 'fiche') ouvrir({ ecran: 'fiche', houblon: cle }); });
   const [cherche, setCherche] = useState('');
   const [legende, basculerLegende] = useLegende();
-  // La légende choisie (leg3-v2f) : la bande d'une ligne s'ouvre case à case sous ses pastilles (toucher la bande, ou le « ? »
+  // La légende leg3-v2a (D140) : la bande d'une ligne s'ouvre case à case sous ses pastilles (toucher la bande, ou le « ? »
   // pour la première ligne) ; une seule ouverte à la fois.
   const [bandeOuverte, setBandeOuverte] = useState<string | null>(null);
+  // L'appui long sur les carrés ouvre toujours la fiche : seul un toucher court ouvre la bande.
+  const appuiBande = useRef(0);
   const [goutOuvert, setGoutOuvert] = useState<string | null>(null);
   const [, maj] = useState(0);
   // D40 point 1 : une recette vide à l'ouverture (sa page cas-k2) se construit (buildFromEmpty) ; vidée par « retirer », elle
@@ -141,7 +143,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
                 <span className="flex items-center gap-2">
                   <span className="font-mono text-sm text-cave-200">{nombre(p.ajout.grams, p.ajout.grams % 1 ? 1 : 0)}<span className="font-sans text-cave-400">{' '}g</span> {ibu ? `+${nombre(ibu.valeur)}` : '?'}<span className="font-sans text-cave-400">{' '}IBU</span></span>
                   {!ouvreBande && <span role="img" aria-label={`Arômes de ${h.nom}`} data-role="bande" className="ml-auto inline-flex items-center gap-px cursor-pointer"
-                    onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); setBandeOuverte(p.cle); }}>
+                    onPointerDown={() => { appuiBande.current = Date.now(); }} onClick={(e) => { e.stopPropagation(); if (Date.now() - appuiBande.current < 450) setBandeOuverte(p.cle); }}>
                     {sc.order.map((f) => {
                       const n = h.familles[f].niveau;
                       return <i key={f} className="block w-2 h-2.5 rounded-sm" style={{ background: n === 'non décrit' ? 'rgb(var(--cave-800))' : COULEURS[f].base, opacity: n === 'cité' ? 0.55 : 1 }} />;
@@ -184,16 +186,15 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
               {ouvreBande && (
                 <div className="pq-mb-lg-li" onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
                   <BandeOuverte h={h} ordre={sc.order} onFermer={() => { setBandeOuverte(null); if (legende) basculerLegende(); }} />
-                  <SpeciauxRepli h={h} />
+                  <LignesV2a h={h} siAjoute={{ moment: libelleDe(v), effet: effetSiAjoute(p.ajout, recette) }} />
+                  <TonsV2a />
                   {legende && (
                     <div id="pq-ma-biere-legende-rapides" data-role="legende" className="pq-mb-lg-legende">
-                      <CleBande />
                       <p className="pq-mb-lg-reste">
-                        <span><b className="pq-mb-lg-plus">+</b> l'ajouter</span>
-                        <span><b className="pq-mb-lg-quand">10′</b> moment proposé</span>
-                        <span><b>+n IBU</b> ce qu'il ajoute</span>
-                        <span>cube : en stock ; chariot : à acheter</span>
-                        <span>♡ mon goût</span>
+                        <span><b className="pq-mb-lg-plus">+</b> ajouter</span>
+                        <span><b className="pq-mb-lg-quand">{libelleDe(v)}</b> proposé</span>
+                        <span>en stock, à acheter</span>
+                        <span>♡ goût</span>
                         <span><b>◇</b> hors des 12 familles</span>
                       </p>
                     </div>

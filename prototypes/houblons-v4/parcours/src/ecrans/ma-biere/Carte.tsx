@@ -8,7 +8,7 @@
 // possible et ses signaux (géraniol, thiols, hop creep : yeastSignals du moteur). La ligne entière (poignée + carte)
 // est [data-role="ligne-houblon"] dans Frise.tsx ; ici, le corps de la carte. Pendant le geste, le corps se réduit à
 // son nom (classes pq-mb-leve et pq-mb-jeton de la ligne, ma-biere.css).
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Minus, Plus, RotateCw, X } from 'lucide-react';
 import { COULEURS, COURT, Inconnu, nombre } from '../../commun';
 import { useOuvrir } from '../../coquille/ouvrir';
@@ -21,7 +21,7 @@ import { additionEffect, FAMILY_NAMES, yeastSignals, type FamilyId } from '../..
 import { AlphaLu, Autres, StockIcone, Usage } from '../fiche/briques';
 import { useGestesFiche } from '../fiche/gestes';
 import { BoutonLegende, useLegende } from './LegendeGroupe';
-import { BandeOuverte, CleBande, SpeciauxRepli } from './legende-bande';
+import { BandeOuverte, LignesV2a, TonsV2a } from './legende-bande';
 import { nomLevureBase } from './Base';
 import { WP_MINUTES, J_MAX } from './rail';
 import { useModifier } from './Frise';
@@ -112,6 +112,13 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
     onPointerLeave: (e: React.PointerEvent) => { appui.onPointerLeave?.(e as never); relache(); },
   };
   const [legende, basculerLegende] = useLegende();
+  // D140 : leg3-v2a telle quelle. Toucher la bande l'ouvre (bande, lignes, tons) ; le « ? » l'ouvre aussi, avec la ligne des
+  // autres icônes en plus (v2a.html).
+  const [bandeTouchee, setBandeTouchee] = useState(false);
+  // L'appui long sur les carrés ouvre toujours la fiche (D111) : seul un toucher court ouvre la bande.
+  const appuiBande = useRef(0);
+  const ouverte = bandeTouchee || legende;
+  const fermer = () => { setBandeTouchee(false); if (legende) basculerLegende(); };
   const idLegende = `pq-ma-biere-legende-${a.id}`;
   const bouton = 'w-7 h-7 inline-flex items-center justify-center rounded-full border border-cave-700 text-cave-200';
   const doser = (d: number) => { onGeste(); gestes.dose('recette', a.id, Math.max(0, Math.round((a.grams + d) * 10) / 10)); };
@@ -167,11 +174,14 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
         </span>
       </div>
       <div className="pq-mb-l3 flex items-center gap-x-2 gap-y-1 flex-wrap min-w-0">
-        {/* Légende choisie (leg3-v2f, 24.10 soir) : toucher la bande l'ouvre case à case, juste sous les pastilles. */}
-        {legende && <BandeOuverte h={h} ordre={sc.order} onFermer={basculerLegende}
+        {/* Légende leg3-v2a (D140) : toucher la bande l'ouvre case à case ; dessous, les lignes de v2a, puis la rangée des tons
+            avec « ? » et « Sans X › ». */}
+        {ouverte && <BandeOuverte h={h} ordre={sc.order} onFermer={fermer}
           effet={Object.fromEntries(Object.entries(effet).map(([f, e]) => [f, { crans: e!.crans, hors: biere.profil[f as FamilyId].horsStyle }]))} />}
-        {!legende && <span role="img" aria-label={`Arômes de ${h.nom}`} data-role="bande" className="inline-flex items-start gap-0.5 shrink-0 cursor-pointer"
-          onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); basculerLegende(); }}>
+        {ouverte && <LignesV2a h={h} />}
+        {ouverte && <TonsV2a />}
+        {!ouverte && <span role="img" aria-label={`Arômes de ${h.nom}`} data-role="bande" className="inline-flex items-start gap-0.5 shrink-0 cursor-pointer"
+          onPointerDown={() => { appuiBande.current = Date.now(); }} onClick={(e) => { e.stopPropagation(); if (Date.now() - appuiBande.current < 450) setBandeTouchee(true); }}>
           {sc.order.map((f) => {
             const n = h.familles[f].niveau;
             const e = effet[f];
@@ -231,20 +241,16 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
           </button>
         </div>
       )}
-      {/* La légende ouverte (« ? » ou toucher la bande) : les spéciaux repliés, la clé en icônes, le reste des icônes de la carte. */}
+      {/* Le « ? » : la ligne des autres icônes de la carte, sous la rangée (v2a.html). */}
       <div id={idLegende} data-role="legende" hidden={!legende} onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()} className="pq-mb-lg-legende">
-        <SpeciauxRepli h={h} />
-        <CleBande />
         <p className="pq-mb-lg-reste">
-          <span><RotateCw className="w-3.5 h-3.5" aria-hidden="true" /> type suivant</span>
-          <span><b>− g +</b> par {PAS_DOSE} g</span>
+          <span><RotateCw className="w-3.5 h-3.5" aria-hidden="true" /> type</span>
+          <span><b>− g +</b> {PAS_DOSE} g</span>
           <span><b>×</b> retirer</span>
-          <span><b className="pq-mb-lg-pill">{COURT_SIGNAL[signal ?? 'resin'] ?? 'résine'} n/N</b> la plus citée ; rouge : trop marquée</span>
-          <span><i className="pq-mb-lg-tr pq-mb-lg-tr-cle" /> bouge dans ma bière ; orangé : hors style</span>
-          <span><b>α</b> du lot d'abord, puis l'usage</span>
-          <span>cube : en stock</span>
-          <span><b className="pq-mb-lg-inc">?</b> inconnu, jamais 0</span>
-          <span><b className="pq-mb-lg-rail">60′</b> à glisser sur le rail</span>
+          <span><b className="pq-mb-lg-pill">{COURT_SIGNAL[signal ?? 'resin'] ?? 'résine'} {signal ? `${h.familles[signal].fiches}/${h.familles[signal].sur}` : ''}</b> la plus citée</span>
+          <span><b>α</b> du lot</span>
+          <span>en stock</span>
+          <span><b className="pq-mb-lg-inc">?</b> inconnu</span>
         </p>
       </div>
     </div>

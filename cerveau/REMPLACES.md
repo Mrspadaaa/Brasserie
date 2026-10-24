@@ -23,3 +23,4 @@ Corriger chaque copie, ne pas la contourner.
 | `réduit à l'essentiel : la représentation qui répond\|environ 5 tours par concept` | un concept minimaliste = une idée sur un écran plein, environ 10 tours (M14) | 2026-10-23 |
 | `publier à la même adresse\|à jour à la même adresse\|artefact privé, à jour seulement\|Source de la page :` | une version = un nouvel artefact daté, inscrit dans « ## Pages » de MISSION.md (« chaque version devrait en créé des nouveaux ») | 2026-10-23 |
 | `nom de l'étape et sa position .* manquent dans l'en-tête` | le fil d'étapes seul dans l'en-tête de l'étape ; « Text header inutile » (D58, sur « Houblons 3/7 ») | 2026-10-24 |
+| `APP INTACTE OK` | depuis D64 (porte B ouverte), l'intégration écrit dans src/ ; `app-intacte.mjs` ne garde plus que functions/ (FONCTIONS INTACTES OK) | 2026-10-25 |
