@@ -522,6 +522,9 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   familles de la 16D (« Lui seul : vin blanc, raisin… »), tirés de ses fiches : dans la fiche (flb5b), au premier écran de
   Comparer, dans Substituer. D130. Sur u4e5 (au dry hop, « Arômes 16D » au premier écran) : « Très bien+ ajouter des La matrice
   nettoyée flb5b · de flb5 sur les arômes hors 16d + les huiles. » (Substituer prend u4e5, la matrice de flb5b et celle des huiles.)
+  Sur sa q2b, dans la rangée du levier levure : « Celle ci aussi est toujours meilleures. Mais aussi ajouter les spec en plus
+  type comme matrice nettoyée flb5b · de flb5 » (le groupe « Changer de levure » de q2b revient tel quel, son choix l'emporte
+  sur D35 ; les houblons et les levures de Suggérer disent ce qui leur est propre). D44.
 - **Les mots au premier écran** (24.10, soir, sur Substituer au-dessus de 70 mots), mot pour mot : « dépasse les 70 mots au
   premier écran c'est pas ultra grave. Il faut être modéré avec les mots ». Le seuil devient une alerte ; l'échec seulement
   au-delà de 40 % de plus (`mots-premier-ecran.mjs --modere`, dans controle-commun). Être modéré reste la règle.

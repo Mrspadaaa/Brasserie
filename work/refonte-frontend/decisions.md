@@ -563,3 +563,6 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   bas comme les autres ; reprise r12-continuite après r9.
 - D43 (le brasseur, 24.10 soir, sur p4b2f : « Partir sur cette version ») : Dryhopper choisi = p4b2f ; registre mis à jour,
   reprise r13-dryhopper (relevé de ses états, rendu dans la maquette, continuité D129, acquis y1b réévalué) ; r12 laisse Dryhopper.
+- D44 (le brasseur, 24.10 soir, sur sa q2b : « Celle ci aussi est toujours meilleures. Mais aussi ajouter les spec en plus type
+  comme matrice nettoyée flb5b ») : le groupe « Changer de levure » de q2b revient tel quel dans Suggérer (remplace la partie
+  levure de D35) ; houblons et levures de Suggérer disent ce qui leur est propre (D130) ; r11.
