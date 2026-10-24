@@ -32,3 +32,18 @@ une phrase) · fld8 (d, chaude, l'iceberg). Fusion : flz5 → fla5. Relance cibl
 - **flu1** (une ligne par famille) — ACCEPTÉ (aime) · **flu2** (cartes de famille) — ACCEPTÉ (aime, candidate) · **flu3** (face à ta stout) — ACCEPTÉ (rejette prédit) · **flu4** (quatre tuiles) — ACCEPTÉ (mitigé-aime) · **flu5** (précis ou vague) — ACCEPTÉ (mitigé) · **flu6** (mots au bout des rayons) — ACCEPTÉ (aime, relance) · **flu7** (mouillettes) — ACCEPTÉ (mitigé-aime) · **flu8** (dictionnaire) — ACCEPTÉ (rejette prédit)
 
 LEÇON PROPOSÉE : un brief de série qui exige « tout en français » n'est pas un contrôle ; la série u (8 pages) a rendu woody, resinous, pineapple au premier plan avec COMMUN OK. `controle-valeurs-brutes.mjs` (D97) devrait entrer dans les GATES de chaque série v0 d'un lot dont le brief cite D97, et être rejoué sur le texte rendu, pas sur la NOTE.
+
+## Passe 2 (24.10) — `work/refonte-frontend/v4/ecran-1/fils24-fiche-liste/critique/PASSE2.md`
+Classement sur Nelson Sauvin : flc8b, flb3b, flu2b, fla5b, fld8b, flu6. Passe non satisfaisante : passe 3 légère.
+- **flc8b** (tuiles tamponnées) — ACCEPTÉ : « Ça c'est bien, on voit direct ce que les deux fiches disent » ; retouches : sources et phrase 16D derrière le « ? » (D89, D3), ⊙ de g1.
+- **flb3b** (la signature en une phrase) — REJET : second en-tête empilé au-dessus de « ‹ Houblons 3/7 » (D119, D116) ; flèches du radar coupées (Nugget, Cascade) ; la bulle « ? » recouvre Comparer (D113). Correction : l'en-tête de l'étape tel quel, le houblon choisi dans l'étape comme flc8b.
+- **flu2b** (cartes de famille) — ACCEPTÉ : « Bien, dense, en français maintenant. Le radar est devenu tout petit » ; retouches : radar à sa taille (D115), textes de droite derrière le « ? » (D1).
+- **fla5b** (au style, en mots) — REJET : le titre de l'étape remplacé par « Que sent ce houblon ? » (D119, D116). Correction : rendre « Houblons 3/7 » ; la question reste dans la fiche ; « 1er » sur vin blanc.
+- **fld8b** (l'iceberg) — ACCEPTÉ : « Ah ouais, là on comprend pourquoi le radar le rate » ; retouches : en-tête d'étape de l'app (D116), bande vide sur Nelson (D4), « agrumes (catég.) » sans redire la famille (D115), étiquettes serrées sur Nugget (D56).
+- **flu6** (mots au bout des rayons, v0 sur Nelson) — REJET : anglais au repos et dix mots pour cinq idées dans « hors des 12 » (D97, D115, L14). Correction : table de traduction de flu2b, une idée par mot, recapturer.
+
+## Passe 3 (24.10) — section « ## Passe 3 » de `critique/PASSE2.md`
+Lot satisfaisant : aucun REJET. Classement final sur Nelson Sauvin : flc8b, flb3c, fla5c, flu2b, fld8b, flu6b. Appui long joué (850 ms) : réel sur flb3c, flc8b, fld8b ; fla5c montrée ouverte et dite telle ; flu2b et flu6b à documenter ; 0 marqueur de contrôle sur les six.
+- **flb3c** (la signature en une phrase) — ACCEPTÉ : « Vin blanc, raisin, groseille : très très bien. Là c'est propre » ; retouche : rangée de houblons sur deux lignes (coupée à droite).
+- **fla5c** (au style, en mots) — ACCEPTÉ : « Là c'est bon, vin blanc en premier, et ma stout en face » ; retouche : le nom du houblon en titre de la feuille, la question dessous (règle n° 1).
+- **flu6b** (mots au bout des rayons) — ACCEPTÉ : « Radar et mots d'un coup, et en français » ; retouche : étiquettes serrées à gauche sur Nugget (D56).

@@ -42,3 +42,24 @@ a progressé : sur la v0, aucune candidate ne tenait sur Nelson Sauvin ; ici les
 comme flc8b ; flb3b répare les flèches du radar et la bulle du « ? » ; flc8b, flu2b, fld8b appliquent leurs retouches (légendes derrière « ? »,
 radar à sa taille, bande vide) ; flu6 traduit et recompte, ou reste v0 sur la page du panel avec la mention. Puis les cinq se montrent, Nelson
 Sauvin puis Nugget, dans un artefact neuf.
+
+## Passe 3
+Jugé sur `flb3c-nelson/-nugget`, `fla5c-nelson/-nugget`, `flu6b-nelson/-nugget`, `flb3c-legende`, NOTE lues. Gestes joués dans Chrome à 390 px
+(scripts `appui-fl-p3.mjs`, `appui-fl-p3b.mjs`, scratchpad) sur les six pages : fiche visible au chargement sur les six, **aucun marqueur de
+contrôle** (`data-fiche-ouverte`, `data-appui-long`, `data-controle`, `data-ouvert` : 0 sur les six) ; un vrai appui long de 850 ms sur un nom
+de houblon : **flb3c** ouvre sa fiche courte (DOM + 6 509 caractères, `flb3c-fiche-courte.png`), **flc8b** ouvre la fiche g1 (+ 15 748,
+`flc8b-fiche-g1.png`), **fld8b** ouvre sa fiche courte au pointeur (+ 2 133, `fld8b-fiche.png`) ; **flu2b** et **flu6b** ne changent que 9
+caractères (un état, pas une feuille) et n'en ont ni capture ni phrase dans la NOTE ; **fla5c** ne fait rien et le dit dans sa NOTE (« la fiche est
+montrée ouverte, le geste d'appui long n'est pas le sujet de ce fil de fer », marqueur retiré) : conforme à la règle du pilote.
+
+Verdicts :
+- **flb3c** (la signature en une phrase) — ACCEPTÉ. Les trois défauts du REJET sont levés et vérifiés : un seul en-tête (« ‹ Houblons 3/7 », IBU · OG · EBC), le houblon choisi dans l'étape, la fiche avec son en-tête g1 (nom ⊙, croix, α, usage) ; flèches « + Floral / − Résineux » rendues sur Nugget ; la légende se déplie dans le flux et ne recouvre plus Comparer (`flb3c-legende.png`). Reste, sans bloquer : la rangée de houblons est coupée à droite (« Motueka » tronqué, Cascade hors écran, comme flc8b) : la passer sur deux lignes comme fla5c ; « ses 2 fiches le disent toutes · « vin blanc » d'abord dans toutes » reste une explication de deux lignes au repos (D3, tolérée). Perd de g1 : rien. Sa phrase : « Vin blanc, raisin, groseille : très très bien, on comprend direct. Là c'est propre. »
+- **fla5c** (au style, en mots) — ACCEPTÉ. L'en-tête de l'étape est rendu tel quel ; les pastilles de houblons sur deux lignes, à leur couleur, rien de caché ; « 1er » sur vin blanc (Nelson) et sur boisé (Nugget) ; le marqueur de contrôle est parti. Reste, sans bloquer : le titre de la feuille est « Que sent Nelson Sauvin ? ⊙ » à la place du nom seul (g1 : « Nelson Sauvin ⊙ ») : garder le nom en titre et la question en dessous, pour que la fiche ressemble à la sienne (règle n° 1, D105) ; sur Nugget, gingembre sous le pli. Perd de g1 : le nom en titre, la bande des 12. Sa phrase : « Là c'est bon : vin blanc en premier, et ma stout en face. Pourquoi le titre c'est la question et pas le houblon ? »
+- **flu6b** (mots au bout des rayons, en français) — ACCEPTÉ. Plus d'anglais au repos, cinq mots pour cinq idées (recompté : vin blanc 1er 2/2, fruité 2/2, groseille à maquereau 2/2, raisin 2/2, sauvignon blanc 1/2 ; Nugget : boisé ×2, ananas ×2, gingembre 1/4), « 1er » une fois, sources derrière le « ? », cadre g1 entier (étape, pied Styles › Huiles › Sources › Substituts). Reste : Nugget, Résineux / Terreux / Épicé serrés à gauche (D56) ; l'appui long non documenté. Sa phrase : « Ça c'est bien, radar et mots d'un coup, et en français. »
+- **flc8b**, **fld8b**, **flu2b** — ACCEPTÉ (passe 2), l'appui long vérifié ci-dessus ; leurs retouches de la passe 2 restent à faire à l'intégration (sources derrière le « ? » ; en-tête d'étape de l'app et bande vide sur Nelson ; radar à sa taille). Pour flu2b : documenter l'appui long ou le déclarer « montrée ouverte » comme fla5c.
+
+Classement final, sur Nelson Sauvin d'abord : **1. flc8b** (quatre tuiles tamponnées, cadre g1 entier) · **2. flb3c** (la phrase, lue en trois secondes, un seul en-tête) · **3. fla5c** (ma stout en face, Nelson rempli) · **4. flu2b** (cartes, français, 0,98 écran ; radar réduit) · **5. fld8b** (l'iceberg, disruptif ; en-tête d'étape remplacé) · **6. flu6b** (à côté des cinq, « radar qui parle »).
+
+**Le lot est satisfaisant** : aucun REJET, tous les contrôles du lot passés par le pilote, et une phrase prédite positive pour chacune des cinq
+candidates et flu6b. On s'arrête là (entonnoir § 3) : les retouches restantes sont des micro-correctifs d'intégration, pas une passe. À montrer
+dans un artefact neuf et daté, Nelson Sauvin puis Nugget pour chacune, les 48 v0 derrière dans l'ordre du classement, et il choisit.
