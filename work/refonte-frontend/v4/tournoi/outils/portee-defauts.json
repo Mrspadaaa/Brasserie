@@ -1672,6 +1672,49 @@
    "resultat": "Maquette d332792c : PROFIL ECHEC (alerte et deux familles tirées au hasard : #/ma-biere inchangé ; aucun mot « analyse », « Ma bière » ou « détail » près du bloc) ; témoin profil-chevron-seul : ECHEC ; profil-ouvre-ok (bloc entier cliquable vers #/biere, « Analyse complète ») : OK. Le « › » ouvre bien #/biere (vérifié).",
    "verdict": "garde",
    "script": "controle-profil-ouvre.mjs"
+  },
+  {
+   "id": "D117",
+   "mots": "« J'ai l'impression que cette vue suggestions et pas la bonne que j'ai vraiment choisir ?? » (23.10, soir)",
+   "controle": "controle-choix.mjs <dossier construit> (inventaire de q2b, fils15-s5-complexe/donnees/inventaire-q2b.json, 16 éléments)",
+   "portee": [
+    "suggestions"
+   ],
+   "tourne": "oui",
+   "resultat": "24.10 : maquette d332792c → CHOIX ECHEC (inventaire complété) ; construction 5345f6ad → CHOIX OK (BATTERIE OK 31/31)",
+   "verdict": "garde",
+   "script": "controle-choix.mjs"
+  },
+  {
+   "id": "D118",
+   "mots": "« Suivant où on est le bouton retour fait pas la même action. Je veux juste retour au \"menu\" pas principal » (23.10, soir)",
+   "controle": "controle-retour.mjs <dossier construit> [--routes=biere,suggerer,comparer,dryhopper,levure,substituer] [--page=etat.html] [--parcours=oui|non]",
+   "portee": [
+    "suggestions",
+    "comparer",
+    "dryhopper",
+    "levure",
+    "substituer",
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "24.10 : RETOUR OK sur 5345f6ad (6 routes × 2 largeurs, 3 parcours) ; même contrôle que D109",
+   "verdict": "garde",
+   "script": "controle-retour.mjs"
+  },
+  {
+   "id": "D119",
+   "mots": "« Header qui change ??? » (23.10, soir)",
+   "controle": "controle-retour.mjs <dossier construit> [--routes=biere,suggerer,comparer,dryhopper,levure,substituer] [--page=etat.html] [--parcours=oui|non]",
+   "portee": [
+    "ma-biere",
+    "suggestions",
+    "comparer"
+   ],
+   "tourne": "oui",
+   "resultat": "24.10 : RETOUR OK sur 5345f6ad (en-tête de 53 px et croix au même x sur les trois onglets) ; même contrôle que D109",
+   "verdict": "garde",
+   "script": "controle-retour.mjs"
   }
  ]
 }

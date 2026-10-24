@@ -10,7 +10,7 @@ Scope: audit, défaut par défaut, des contrôles du registre sur les pages au f
   EVIDENCE: pending
 
 - [ ] G2: chaque entrée a ses champs, des valeurs du vocabulaire, et une sortie quand le script tourne
-  CHECK: node -e "const j=JSON.parse(require('fs').readFileSync('work/refonte-frontend/v4/tournoi/outils/portee-defauts.json','utf8'));const P=['tout-ecran','rail','radar','comparer','fiche','carte-houblon','suggestions','recette','ma-biere','dryhopper','levure','picto','donnees','page-lot'];const bad=j.defauts.filter(d=>!d.controle||!Array.isArray(d.portee)||!d.portee.length||d.portee.some(p=>!P.includes(p))||!['oui','non','sans-script','jury'].includes(d.tourne)||!['garde','a-adapter','caduc','jury'].includes(d.verdict)||(d.tourne==='oui'&&!d.resultat)||(d.verdict==='caduc'&&!d.remplace_par));console.log(bad.length?'CHAMPS ECHEC '+bad.map(d=>d.id).join(' '):'CHAMPS OK '+j.defauts.length);process.exit(bad.length?1:0)"
+  CHECK: node -e "const j=JSON.parse(require('fs').readFileSync('work/refonte-frontend/v4/tournoi/outils/portee-defauts.json','utf8'));const P=['tout-ecran','rail','radar','comparer','fiche','carte-houblon','suggestions','recette','ma-biere','dryhopper','levure','picto','donnees','page-lot','substituer'];const bad=j.defauts.filter(d=>!d.controle||!Array.isArray(d.portee)||!d.portee.length||d.portee.some(p=>!P.includes(p))||!['oui','non','sans-script','jury'].includes(d.tourne)||!['garde','a-adapter','caduc','jury'].includes(d.verdict)||(d.tourne==='oui'&&!d.resultat)||(d.verdict==='caduc'&&!d.remplace_par));console.log(bad.length?'CHAMPS ECHEC '+bad.map(d=>d.id).join(' '):'CHAMPS OK '+j.defauts.length);process.exit(bad.length?1:0)"
   EXPECT: CHAMPS OK
   EVIDENCE: pending
 

@@ -39,10 +39,20 @@ if (entree.hook_event_name === 'PostToolUse') {
   if (path.basename(cible) === 'DEFAUTS-RECURRENTS.md') { ecrireDefautsCourt(); process.exit(0); }
   // La portée des défauts est lue par systeme.mjs mission : un défaut « garde » ajouté rend son contrôle obligatoire
   // pour les voies d'écran (23.10 : D106 ajouté, trois témoins positifs cassés sans que rien ne le dise).
+  // Des critères de GATES lisent aussi ce fichier en direct, par node -e (24.10 : p10 à p12 cherchaient encore « biere »).
   if (path.basename(cible) === 'portee-defauts.json') {
+    const n = appelsDansGates(cible).length;
     const rappel = 'Rappel du système (hook cerveau) : portee-defauts.json est lu par systeme.mjs mission. Avant de commiter, '
-      + 'node scripts/agents/systeme.mjs temoins, puis systeme.mjs mission sur les missions en cours.';
+      + 'node scripts/agents/systeme.mjs temoins, puis systeme.mjs mission sur les missions en cours'
+      + (n ? `, et systeme.mjs appels portee-defauts.json --rejouer (${n} critères le lisent).` : '.');
     process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'PostToolUse', additionalContext: rappel } }));
+    process.exit(0);
+  }
+  // Une donnée partagée (registre des choix, inventaire, jetons) lue par des critères : les rejouer avant de commiter.
+  if (/\.json$/i.test(cible) && /[\\/]work[\\/]refonte-frontend[\\/]/i.test(cible)) {
+    const n = appelsDansGates(cible).length;
+    const nom = path.basename(cible);
+    if (n) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'PostToolUse', additionalContext: `Rappel du système (hook cerveau) : ${nom} est lu par ${n} critères de GATES. Avant de commiter, node scripts/agents/systeme.mjs appels ${nom} --rejouer.` } }));
     process.exit(0);
   }
   if (/\.mjs$/i.test(cible) && /[\\/](scripts[\\/]agents|tournoi[\\/]outils)[\\/]/i.test(cible)) {
