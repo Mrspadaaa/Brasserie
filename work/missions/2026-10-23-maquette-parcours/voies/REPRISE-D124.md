@@ -28,6 +28,14 @@ RESULTAT.md (`voies/p21a-etats-etape-biere-fiche/`, `voies/p21b-etats-suggerer-c
    contenait elle-même un élément de ces sujets (le groupe « Changer de levure » de q2b, la biotransformation de la carte
    froide de la base v4.10), c'est un élément de **sa** maquette : rends-le.
 6. Un doute entre deux lectures de sa maquette : la plus proche de sa capture, écrite dans RESULTAT.md (`DÉCISION :`).
+7. **Ses refus plus récents l'emportent** (avis croisé du 24.10, D35) : avant de rendre un élément de sa maquette
+   choisie, cherche-le dans `work/refonte-frontend/v4/DEFAUTS-COURT.md` ; un élément visé par un défaut postérieur à la date
+   du choix ne revient pas (par exemple la règle « ‹ visée | visée › » de q2b : « Ça c'est inutile », D91). Écris chaque
+   retrait dans RESULTAT.md avec sa ligne D.
+8. **Mêmes données que sa maquette** : un écart de nombre ou de mot entre sa maquette et la tienne (une famille placée
+   ou « non située », un rôle « mixte » ou « double ») se règle à la source : une famille n'est placée que si une source
+   du houblon la décrit, sinon « non située » (l'inconnu n'est jamais 0, D65 ; on n'invente pas, D14) ; les mots de sa
+   maquette font foi.
 
 ## Règles de la maquette jouable (inchangées)
 - Code dans `prototypes/houblons-v4/parcours/src/`, composants et jetons de l'app importés (`src/ui`,

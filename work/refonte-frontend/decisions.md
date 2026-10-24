@@ -494,3 +494,13 @@ a1 (8 à 12 greffes en trois chaleurs), pas de nouveau panel v0. La liste de la 
 la reprise de la fiche (r3). La pastille « ~ simulé » : 3 mini maquettes, avec la reprise de Comparer (r5). Les graphes :
 une planche où il désigne celui qui le bloque. Rien n'est publié avant la lecture de ses commentaires d'après 07 h 53
 (autre compte : accès demandé à l'utilisateur) ; le critique est réétalonné sur les 56 fils avant le tri.
+## D35 — Les décisions des voies d'audit D124, après avis croisé (24.10.2026, matin)
+
+Avis croisé (Brasserie en Fable, Contradicteur en Opus ; `work/missions/2026-10-23-maquette-parcours/conseil-decisions-voies/`).
+Fiche : les quatre boutons du pied de g1 reviennent, avec le titre « α 11–14 % » et les notes de Citra cryo ; la liste des
+substituts sort du même calcul que u4. Dose : pas de 2 g, comme sa base ; le filtre du champ « Ajouter » porte sur tout le
+catalogue (« souvent pas présent », D21). Végétal : placé seulement si une source le décrit, sinon « non situé » ; les mots
+de sa maquette font foi (« double usage »). Suggérer et Comparer : tout ce que ses maquettes montraient revient, sauf ses
+refus postérieurs (la règle « ‹ visée | visée › », D91) et le groupe « Changer de levure » (L10 ; Levure ouvert), qui passera
+en variantes. Quantité : la base v4.10 et le stock en petit badge ; la mise à jour des tickets #122 et #123 attend l'accord
+de l'utilisateur.

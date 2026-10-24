@@ -39,7 +39,10 @@ dans la maquette React, avec le moteur en direct.
   biotransformation et ses puces (géraniol, thiols, hop creep) à froid ; le cas-k3 de sa base (Nugget, Motueka, Cascade au
   whirlpool, Citra cryo à froid), pas un autre jeu.
 - Le ♡ de l'ajout rapide à trois choix : aimer · neutre · exclure (`gout-coeur`).
-- Le pas de dose de sa base (2 g).
+- Le pas de dose de sa base (2 g), avec son repère « +2 » au-dessus de l'IBU.
+- Le filtre du champ « Ajouter » (amélioration gardée) cherche dans **tout le catalogue**, pas seulement le stock : « je
+  fais une recette puis ensuite j'achète les ingrédients, souvent pas présent » (D21) ; le stock reste un petit badge.
+- Le rôle se dit comme sa base (« double usage », pas « mixte »).
 - Le survol long à l'ordinateur (1280 px) sur toute la carte, pas seulement le nom (D49, `etat-fiche-survol-1280`).
 Voulus et gardés : le fil d'étapes de l'app (D116), le « ? » par groupe (D113), « analyse › » (D121), la croix (D109),
 les pictos de famille (D74), le filtre du champ « Ajouter ».

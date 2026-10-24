@@ -22,7 +22,9 @@ pas terribles. À revoir... ») et la croix de 44 px (D109).
   11–14 %, α mon lot 13 %…), d'où vient chaque valeur. Le titre « α » reprend la plage de g1 (11–14 % et le lot), pas la
   seule source la plus large.
 - « Substituts › » ouvrait les remplaçants à 60′ dans g1 ; rends le bouton et sa liste telle que g1 la montrait (le
-  geste « Remplacer » vers l'outil Substituer reste un pont, sans rien changer à cet outil).
+  geste « Remplacer » vers l'outil Substituer, u4 depuis D34, reste un pont, sans rien changer à cet outil). La liste
+  sort **du même calcul** que Substituer (le moteur, `prototypes/houblons-v4/parcours/src/moteur/`), pour que la fiche et
+  u4 ne classent jamais autrement les mêmes remplaçants (avis croisé, D35).
 - La fiche courte de Citra cryo : ses notes d'honnêteté (« α : plages de Citra en pellets ; la fiche du cryo manque. »,
   « 1 seule fiche : Beer Maverick », « − Résineux inconnu ») et sa longueur (103 mots, contre 187) (`-appui-long-citra`).
 - Le toucher d'un sommet du radar : la bulle (« Melon : ses fiches ne le décrivent pas, inconnu (ce n'est pas zéro),

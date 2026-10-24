@@ -20,8 +20,11 @@ q2b : « Ça oui, c'est effectivement l'un de mes choix » ; « C'est effectivem
 - La **barre l5b à droite d'un axe central** dans chaque ligne (« Les bar de ce type sont plus informative ») : la
   maquette l'a remplacée par un rail sous la ligne (`etat-sugg-assembler`, `-piste-objectif`, acquis l5b).
 - Les **groupes par effet** (+1 cran / +2 crans…, cadres à bord noir), et les trois cartes d'objectif de q2b (dont
-  « Plus agrumes »), la règle « ‹ visée | visée › » (`-groupes-effet`, `-repos`).
-- Le groupe **« Changer de levure »** (LalBrew Verdant IPA, Pomona, chacune avec sa barre) : il est dans q2b (`-levure`).
+  « Plus agrumes ») (`-groupes-effet`, `-repos`).
+- Le groupe **« Changer de levure »** de q2b (`-levure`) : **pas dans la reprise** (avis croisé, D35 : Suggérer ne fait
+  varier que le houblon, L10 ; Levure est un écran au choix ouvert). Il passera en variantes à lui montrer ; écris-le
+  dans RESULTAT.md comme retrait, avec D35.
+- La règle « ‹ visée | visée › » de q2b ne revient pas : « Ça c'est inutile » (D91).
 - Le volet **« IBU après chaque voie (ma bière 59,7 ; style 50–70) »** (`-ibu-details`).
 - **Dry hop · actif** : Motueka 20 g, pastilles floral → agrumes, thiols, « creep » (`-dry-hop`).
 - **Remplacer** : trois remplaçants avec deux barres chacun, pas un chiffre (`-remplacer`).
