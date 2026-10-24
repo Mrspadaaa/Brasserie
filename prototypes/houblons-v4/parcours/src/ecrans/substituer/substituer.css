@@ -7,7 +7,7 @@
 .pq-substituer-ico { width: 16px; height: 16px; flex: none; display: inline-block; vertical-align: -3px; }
 
 /* Le contexte de la tête de u4 (« remplaçants / à 60′ »), rangé à droite du nom, dans la tête du cadre ; le nom en 20 px gras. */
-.pq-outil-substituer .pq-tete h1 { font-size: 20px; font-weight: 700; }
+/* L’en-tête est celui des autres outils (croix, titre 15 px semi-gras, D127 bis : « Fait attention aux header, footer, sur la continuité de l’app ») ; le contexte de u4 reste à droite. */
 .pq-substituer-ctx { margin: 0 0 0 auto; padding-right: 4px; font-size: 13px; color: #555; text-align: right; line-height: 1.2; white-space: nowrap; }
 .pq-substituer-ctx b { color: #111; }
 
@@ -26,7 +26,7 @@
 .pq-substituer-rangs { position: relative; display: flex; flex-direction: column; }
 .pq-substituer-fondp { position: absolute; top: 0; bottom: 0; pointer-events: none; }
 .pq-substituer-l { position: relative; display: grid; grid-template-columns: 1fr 40px; gap: 6px; align-items: center; }
-.pq-substituer-r { position: relative; display: grid; grid-template-columns: var(--pq-n) 1fr; align-items: center; height: 38px; cursor: pointer; border-radius: 8px; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+.pq-substituer-r { position: relative; display: grid; grid-template-columns: var(--pq-n) 1fr; align-items: center; height: 44px; cursor: pointer; border-radius: 8px; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
 .pq-substituer-nb { display: flex; flex-direction: column; gap: 3px; min-width: 0; padding-left: 2px; }
 .pq-substituer-nom { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; }
 .pq-substituer-nom > span:last-child { overflow: hidden; text-overflow: ellipsis; }
@@ -201,3 +201,12 @@
 .pq-substituer-tf .pq-substituer-r[aria-pressed="true"] { background: #f5f5f5; }
 [data-u4e="u4e2"] .pq-substituer-mc-tete { visibility: hidden; }
 @media (min-width: 768px) { .pq-substituer-dock-pile { flex: 0 1 26rem; margin-left: auto; } .pq-substituer-dock-pile .pq-annuler-pied { flex: 1 1 auto; margin-left: 0; } }
+
+/* « + » et « ✓ » dessinés (pas des mots) ; le chevron de « Comparer › » aussi. */
+.pq-substituer-plus svg { width: 16px; height: 16px; }
+.pq-substituer-plus .pq-substituer-ico-ok, .pq-substituer-plus[aria-pressed="true"] .pq-substituer-ico-plus { display: none; }
+.pq-substituer-plus[aria-pressed="true"] .pq-substituer-ico-ok { display: inline; }
+.pq-substituer-chevron { width: 14px; height: 14px; display: inline-block; vertical-align: -2px; margin-left: 3px; }
+.pq-substituer-moment-r::before { content: "· "; }
+.pq-substituer-cle-seule { justify-content: flex-end; }
+.pq-substituer-fleche { width: 14px; height: 14px; display: inline-block; vertical-align: -2px; margin: 0 2px; }

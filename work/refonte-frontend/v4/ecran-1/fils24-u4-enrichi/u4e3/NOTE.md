@@ -1,16 +1,18 @@
 # u4e3 · Substituer · u4 enrichi, une petite variante
 
 - Chaleur : froide (l’idée retenue, affinée : u4 enrichi, un seul point touché).
-- **Le point touché** : l’IBU encore moins présent : l’arôme en titre.
+- **Le point touché** : l’IBU encore moins présent : l’arôme en titre (passe 2 : une seule réponse).
 
 ## Ce qui change
-La réponse commence par l’arôme : « Idaho 7 garde le plus de ta 16D : floral, herbacé et terreux. », puis, en gris, « Magnat et Yeoman, 99 sans inconnue… ». Au face à face, la dose et l’IBU passent dans une ligne discrète (« 46 g · 59,7 IBU ») et la droite de chaque bande prend les crans de sa stout ; le titre devient « Face à face · doses à IBU égal ».
+La réponse nomme la tête de l’échelle, au moment choisi, par l’arôme d’abord : à 60′ « Magnat garde floral et résineux de ta stout ; Yeoman, aucune. », puis, en gris, « Magnat et Yeoman, 99 sans inconnue. Altus, Trident, Zenia vont de 78 à 99. » ; au dry hop « Target garde floral, herbacé et résineux de ta stout, perd terreux. », puis « Target, 86 sans inconnue. ». Au face à face, la dose et l’IBU passent dans une ligne discrète (« 46 g · 59,7 IBU ») et la droite de chaque bande prend les crans de sa stout ; le titre devient « Face à face · doses à IBU égal ».
+
+Passe 2 (rejet du critique : D98, D94, deux réponses à « lequel me remplace ? ») : la v0 titrait « Idaho 7 garde le plus de ta 16D » quand l’échelle mettait Magnat 99 en tête (Idaho 7 troisième, 93). Le titre lit maintenant les premiers rangs de l’échelle (les meilleurs sans inconnue, sinon le premier, rangés par le pire cas) : titre et échelle disent le même gagnant, à chaque moment.
 
 ## Ce qui tient
-Le premier mot lu est une famille, plus un nombre d’IBU ; la dose reste exacte, et entière dans le pied (« 46 g de Nugget → 62,5 g de Nelson Sauvin »).
+Le premier mot lu reste l’arôme du gagnant, plus un nombre d’IBU, et c’est le gagnant de l’échelle. La dose reste exacte, et entière dans le pied (« 46 g de Nugget → 62,5 g de Nelson Sauvin »).
 
 ## Ce qui casse
-Le titre nomme le meilleur en arôme, pas le meilleur score : Idaho 7 (93) passe avant Magnat (99) dans la phrase, alors que l’échelle reste rangée par le pire cas du score. À 60′, l’amertume pèse encore 0,6 dans ce score.
+À 60′ le gagnant est choisi par un score où l’amertume pèse 0,6 : le titre dit honnêtement que Yeoman ne garde aucune famille de sa stout, mais il ne propose pas celui qui en garde le plus (Idaho 7) ; pour classer sur l’arôme, il faudrait changer le classement (une autre question).
 
 ## Commun aux cinq
 - Base : u4 enrichi (voie r9, D127), lui-même u4 (« Substitution, ça serait plus du u4 », D34). Tout le reste est identique à

@@ -69,3 +69,15 @@ ferme la vue » ; coche sur le tableau « Arômes 16D » : « Ça c'est vraiment
 - Limites : au whirlpool et au dry hop, `substitutes()` a les mêmes poids (contexte « arôme ») : le classement est le même,
   seuls la dose et le stock changent. Aller à Comparer quitte le brouillon (la Coquille l'abandonne hors d'un outil) :
   revenir rouvre Substituer à 60′.
+
+## Reprise D129 (24.10, soir : « Il faut être modéré avec les mots » ; « Fait attention aux header, footer, sur la continuité de l'app »)
+
+- En-tête : celui des autres outils (croix 44 px, titre 15 px semi-gras, même place que Levure et Dryhopper). Le contexte
+  « remplaçants / à 60′ » de u4, redit par la puce, passe dans le libellé de la puce (« Moment des remplaçants de Nugget :
+  à 60′ ») ; le titre 20 px gras de u4 n'est plus repris.
+- Pied : « Annuler » et « Remplacer › » à la place et à la taille de Levure (8,788 et 113,788 ; 48 px) ; le résumé reste au-dessus (D120).
+- Premier écran 118 → 85 mots, sans rien retirer d'utile : « + », « ✓ », « › » de Comparer et « → » du pied sont dessinés
+  (plus des mots) ; « l'original, 46 g à 60′ » devient « l'original » (la dose est dans la bande et le pied) ; « à la place
+  de Nugget » dans la bande choisie (redit du pied) est retiré ; la clé « tout connu · plage, une composante inconnue »
+  (redite de « ? ») passe au toucher : chaque point et chaque plage portent leur mot (aria-label). Lignes de l'échelle à
+  44 px (cible du doigt). Restent au-dessus de 80 : la réponse de u4 et ses nombres, le face à face qui commence à l'écran.

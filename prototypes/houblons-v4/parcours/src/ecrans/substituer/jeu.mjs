@@ -71,7 +71,7 @@ export default {
         const moteur = p.moteur.remplacants(p.etat.brouillon.recette, 'a1', 400).map((r) => r.cle);
         const rangs = [...document.querySelectorAll('[data-ecran="substituer"] [data-remplacant]')].map((e) => e.dataset.remplacant);
         if (!rangs.length || rangs.some((k) => !moteur.includes(k))) return 'remplaçants hors du moteur au dry hop';
-        if (!/au dry hop/.test(document.querySelector('[data-role="contexte"]')?.textContent ?? '')) return 'tête sans « au dry hop »';
+        if (!/au dry hop/.test(document.querySelector('[data-role="puce-moment"]')?.getAttribute('aria-label') ?? '')) return 'puce sans « au dry hop »';
         return /au dry hop/.test(document.querySelector('[data-role="choix-dock"]')?.textContent ?? '') || 'le pied ne dit pas « au dry hop »';
       } },
     { nom: '+ Comparer', faire: 'toucher', cible: '[data-ecran="substituer"] [data-role="ajout-comparer"]',

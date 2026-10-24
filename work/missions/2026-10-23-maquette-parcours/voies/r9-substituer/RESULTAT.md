@@ -1,4 +1,4 @@
-OK — u4 enrichi (G1 à G5 verts) et cinq petites variantes u4e1 à u4e5, COMMUN OK
+OK — u4 enrichi (85 mots, en-tête et pied des outils), cinq variantes u4e1 à u4e5, COMMUN OK
 
 ## Fichiers écrits (Possède seul)
 - `prototypes/houblons-v4/parcours/src/ecrans/substituer/index.tsx` : puce de moment, crans d'arômes par ligne avec Nugget
@@ -59,9 +59,14 @@ Cinq pages figées, un seul point touché chacune, le reste identique à u4 enri
 - **u4e2** les arômes à côté du score en pictos cerclés à leur valeur : marqué = cercle épais à la couleur de la famille,
   cité = picto seul, non décrit = cercle pointillé vide ; sans en-tête de colonnes. Le premier essai, avec un disque pâle
   derrière le picto, avait échoué à TRAIT (D88, « glowing ») ; le cercle est maintenant blanc.
-- **u4e3** l'IBU encore moins présent : la réponse a l'arôme en titre (« Idaho 7 garde le plus de ta 16D : floral, herbacé
-  et terreux. »), puis le score en gris ; au face à face, la dose et l'IBU passent dans une ligne discrète (« 46 g · 59,7 IBU »)
-  et les crans de sa stout prennent la droite ; « Face à face · doses à IBU égal ».
+- **u4e3** (passe 2) l'IBU encore moins présent, une seule réponse : le titre lit la tête de l'échelle au moment choisi,
+  l'arôme d'abord (60′ : « Magnat garde floral et résineux de ta stout ; Yeoman, aucune. », puis en gris « Magnat et Yeoman,
+  99 sans inconnue… » ; dry hop : « Target garde floral, herbacé et résineux de ta stout, perd terreux. », puis « Target, 86
+  sans inconnue. ») ; la dose et l'IBU en ligne discrète au face à face (« 46 g · 59,7 IBU »), « Face à face · doses à IBU
+  égal ». La v0 (« Idaho 7 garde le plus de ta 16D » au-dessus de Magnat 99) a été rejetée par le critique (D98, D94 : deux
+  réponses à « lequel me remplace ? ») ; refaite dans le même dossier, captures `u4e3-premier-ecran.png`, `u4e3-dryhop.png`,
+  côte à côte avec u4 enrichi : `captures/cote-u4e3.png` (ouverte). Limite écrite dans sa NOTE : à 60′ le gagnant reste
+  celui du score (amertume 0,6), donc le titre ne propose pas Idaho 7, qui garde le plus de familles.
 - **u4e4** « + Comparer » plus évident : une case à cocher par ligne (en-tête « comparer ») et un dock noir
   « Comparer Nugget et Magnat (2) › » au-dessus de « Annuler · Remplacer ».
 - **u4e5** au dry hop, le tableau « Arômes 16D » couché à côté des scores : une ligne par remplaçant, une colonne par
@@ -86,6 +91,25 @@ CHOIX OK, TEINTE OK 6/6, TYPES OK, ETAPE OK, ANNULER OK. Un premier passage de C
 Captures (390 × 844, ×2, ouvertes) : `fils24-u4-enrichi/captures/<id>-premier-ecran.png`, `<id>-dryhop.png`, `u4e4-coche.png` ;
 côte à côte avec u4 enrichi : `captures/cote-premier-ecran.png`, `captures/cote-dryhop.png`.
 Prédiction : il gardera u4e5 au dry hop et u4e4 pour Comparer ; u4e2 se lit tout de suite, mais il la trouvera chargée.
+
+## Reprise D129 (mots modérés, en-tête et pied comme les autres outils)
+- Premier écran de u4 enrichi (sans paramètre) : 118 → **85 mots** (`mots-premier-ecran --max=70` : 85 > 70, dans l'alerte
+  de 40 % ; `controle-commun … substituer --page=etat.html`, sans `--sans` : **COMMUN OK**, mots OK). Rien d'utile n'est retiré :
+  « + », « ✓ », « › » et « → » sont dessinés ; « l'original, 46 g à 60′ » devient « l'original » ; « à la place de Nugget »
+  (redit du pied) est retiré ; la clé point / plage (redite de « ? ») passe au toucher, et chaque point et chaque plage gardent
+  leur mot en aria-label ; le contexte « remplaçants / à 60′ » (redit de la puce) passe dans le libellé de la puce.
+- En-tête : croix 44 × 44 en (8, 4), titre 15 px 600 en (58, 17), en-tête de 53 px, comme Levure et Dryhopper (le titre 20 px
+  gras de u4 est abandonné). Pied : « Annuler » 97 × 48 en (8, 788), action 269 × 48 en (113, 788), comme Levure ; le résumé
+  reste au-dessus (D120).
+- Rejoués : SUBSTITUER-GESTES OK, ETATS OK (14/14), ANNULER OK (3 routes × 2 largeurs), CHOIX OK, TEINTE OK 6/6, TYPES OK,
+  ETAPE OK (jeu.mjs : la puce porte « au dry hop » dans son libellé). Un premier passage de COMMUN avait échoué à STANDARD
+  S4 (traits d'icône de 1,6 à 1,8 px sur les nouveaux signes) ; ils sont ramenés à 1,4 px.
+- Captures : `prototypes/houblons-v4/maquettes/parcours-substituer/captures-d127/d129-60.png`, `d129-dryhop.png`,
+  `cote-d129.png` (avant | après à 60′ | après au dry hop | Levure), ouvertes.
+- DÉCISION À PRENDRE : 85 mots, pas 80. Le seul texte redondant qui reste est la phrase de u4 « Altus, Trident, Zenia vont de
+  78 à 99. » (8 mots : les mêmes plages que les lignes juste dessous). Elle fait partie de son choix (état `etat-subst-repos`),
+  je ne l'ai donc pas retirée. Les pages figées u4e1 à u4e5 gardent l'en-tête de u4 enrichi d'avant D129 : relancer
+  `outils/figer.mjs` les met à jour.
 
 ## Prédiction
 « Là c'est bien : je vois l'arôme de chacun et je peux passer au dry hop ; par contre whirlpool et dry hop donnent la même liste ? »
