@@ -1,0 +1,183 @@
+{
+ "maj": "2026-10-23",
+ "source": "q2b (lot 15), capture q2b-b-390.png ; son choix : « C'est effectivement qb2 reprise le mieux » (19.10), redit le 23.10 sur la capture. D117 (23.10, soir) : complété de chaque élément visible de consolide-b-390.png et q2b-b-390.png qui manquait (bandeau IBU, cercle des objectifs, ♡, cadre de la liste ; onglets en tête et barre pleine largeur précisés).",
+ "contrat": "Une reprise de la maquette choisie reprend chacun de ces éléments à l'écran (marqueur data-element), ou l'écarte avec sa raison écrite dans la NOTE (un quart au plus) : D105, controle-reprise.mjs --inventaire=<ce fichier>.",
+ "elements": [
+  {
+   "id": "q2b-onglets",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-19",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "quoi": "Les onglets « Ma bière · Suggestions · Comparer » **dans l'en-tête**, Suggestions active, avec la croix à côté : aucune question en titre au-dessus ni ligne « fixé » ajoutées (D117). Le « ? » de la légende reste, petit : ses mots (D89 « un bouton légende un peu caché », D113).",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "q2b-reglages",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-19",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "quoi": "« Au style / Absolu » et « Barres / Radar » sous les onglets.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "q2b-cartes-objectifs",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-19",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "quoi": "Une carte par objectif de la dégustation (Moins résineux, Plus floral, Plus agrumes), teintée de sa famille, avec sa flèche, son picto et le verdict en un mot : Aucune, Approche, Atteint.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "q2b-hors-houblon",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-19",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "quoi": "Sur l'objectif sans réponse houblon : « Aucune voie houblon » et le bouton « Hors houblon › ».",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "q2b-piste-objectif",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-19",
+   "mots": "Les bar de ce type sont plus informative donc meilleur",
+   "quoi": "Dans chaque carte d'objectif, la piste : ce que la meilleure voie atteint et la visée en trait (D92, la piste de l5b).",
+   "reserve": "La barre là, c'est mieux mais il y avait mieux.... C'est pas exactement ce que j'ai demandé",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "q2b-groupes-effet",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-19",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "quoi": "Les voies groupées par effet commun : en-tête « = même effet sur tes objectifs · 10 g · 10′ », et l'effet du groupe en barres (« +1 cran », « +2 crans »).",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "q2b-ligne-voie",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-19",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "quoi": "Chaque voie en une ligne : le nom du houblon, son usage, le stock en icône (en stock, ou à acheter), et ses familles en petits pictos avec leur intensité en points (D80).",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "q2b-plus-coche",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-19",
+   "mots": "et la panier, à la place plutôt un + qui ajoute le houblon à la comparaison",
+   "quoi": "À droite de chaque voie, « + » pour l'ajouter à la comparaison, ✓ quand elle y est.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "q2b-assembler",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-19",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "quoi": "La voie « Assembler 5 + 5 g » à 10′ : deux houblons ensemble, effet estimé.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "q2b-remplacer",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-19",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "quoi": "La voie « Remplacer Nugget · 60′ » : un remplaçant à IBU égal, avec sa dose (74 g) et son effet.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "q2b-comparer-n",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-19",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "quoi": "La barre noire « Comparer (n) » **pleine largeur** en bas de l'écran (pas une pastille à droite) : elle ouvre Comparer avec les voies retenues.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "q2b-bande-visee",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-19",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "quoi": "La bande « ‹ visée | visée » au-dessus des voies.",
+   "reserve": "Ça c'est inutile",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "variété"
+  },
+  {
+   "id": "q2b-bandeau-ibu",
+   "variante": "base v4.10",
+   "lot": "base v4.10",
+   "date": "2026-10-23",
+   "mots": "J'ai l'impression que cette vue suggestions et pas la bonne que j'ai vraiment choisir ??",
+   "quoi": "Le bandeau de la bière sous les onglets, comme Ma bière : « IBU 60 » avec sa jauge face au style, « OG 1,066 », « EBC 70 ».",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-b-390.png",
+   "facteur": "outil : Suggérer"
+  },
+  {
+   "id": "q2b-cercle-objectif",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-23",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "quoi": "Dans chaque ligne de voie, les familles de tes objectifs d'abord, chacune dans son **cercle** (floral, résineux), puis un trait pointillé vertical, puis les autres familles.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "outil : Suggérer"
+  },
+  {
+   "id": "q2b-coeur",
+   "variante": "base v4.10",
+   "lot": "base v4.10",
+   "date": "2026-10-23",
+   "mots": "J'ai l'impression que cette vue suggestions et pas la bonne que j'ai vraiment choisir ??",
+   "quoi": "Un ♡ sur chaque voie, à gauche de « + » : aimer ce houblon (son goût).",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-b-390.png",
+   "facteur": "outil : Suggérer"
+  },
+  {
+   "id": "q2b-cadre-liste",
+   "variante": "q2b",
+   "lot": "15",
+   "date": "2026-10-23",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "quoi": "Les voies d'un même effet dans **un cadre** blanc arrondi, à bord gauche noir épais, sous l'en-tête du groupe.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "facteur": "outil : Suggérer"
+  }
+ ]
+}

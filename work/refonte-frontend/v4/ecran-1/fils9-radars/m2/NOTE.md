@@ -1,0 +1,3 @@
+Marche : le dessin ne porte qu'une série, la bande min–max du moteur ; « prévu / non goûté » est écrit au cœur blanc (centre élargi, 0 sur l'anneau à 39 px), libellés gris (non goûté) et « ? » (inconnu du moteur, marque creuse), jamais lus comme zéro (D65) ; échelle en ligne sous le radar (D66) ; la lecture dit « non goûté » famille par famille, et la dégustation reste en texte (réponse et ligne Goûté).
+Coince : le résineux goûté marqué n'apparaît pas dans le radar, seulement dans les phrases ; anneaux plus serrés (22 px) pour laisser place au cœur, et sans nom dans le dessin il faut lire la ligne d'échelle.
+Avis : bon état « avant dégustation » ou par défaut ; dès qu'une famille est goûtée, m1 dit mieux l'écart, m2 risque de faire croire que la bande est la bière.

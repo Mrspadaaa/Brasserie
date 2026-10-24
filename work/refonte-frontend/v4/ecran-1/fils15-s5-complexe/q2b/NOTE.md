@@ -1,0 +1,12 @@
+- **Ce qui tient** : q2, que le brasseur retient, sans les gros fonds. Les demi-pistes sont transparentes ; le sens se lit par une flèche fine en tête (← moins, plus →) et un rail fin pour ma bière ; l'en-tête « ma bière » a disparu. Le tableau des voies au même effet a la place.
+  - **Une ligne par voie** : l'usage du houblon (goutte, arôme, les deux ; pâle si déduit de l'α), le nom, le stock en petite marque près des grammes, et un « + » qui l'ajoute à Comparer (✓ une fois ajoutée).
+  - **Une case par famille** : les objectifs cerclés en tête, puis les extras alignés. Chaque case a son picto, plein si les fiches marquent la famille, pâle si une seule la cite. Dessous, une jauge d'un trait par cran du style (`tout[].crans`), en contour si la famille baisse, orangée hors du style.
+  - **La barre s5 de chaque groupe** est dessinée une fois, avec « +1 cran », « +2 crans ».
+  - **Les autres voies** ont la même ligne, puis leur barre. Chaque moment est écrit : 10′, 60′, actif, levure. La voie 15 montre ses trois signaux de biotransformation en pictos de famille, et « creep ».
+  - **Comparer** met côte à côte 1, 15 et « ensemble » [1, 15], avec les crans écrits, l'orangé et les tendances hachurées. Le premier écran compte 54 mots.
+- **Ce qui casse** :
+  - La jauge arrondit au cran (0,9 et 1,6 donnent 1 et 2 traits) ; le chiffre exact n'est écrit que dans Comparer. En liste, les « +2 » écrits sur chaque case dépasseraient 70 mots, d'où les traits.
+  - Les objectifs se répètent à l'identique sur chaque ligne d'un même groupe : c'est voulu (« même effet »), mais c'est chargé.
+  - Le picto d'arôme de l'usage est petit (13 px).
+  - Comparer est statique : les « + » changent le compteur, pas les colonnes.
+- **L'adaptation** : à partir de q2 (gardé intact), avec les JSON regénérés et le nouveau picto épicé (grains de poivre). Page générée par `generateur-q2b.mjs` depuis `donnees/c1.json` : intensités `tout[].crans`, usage `fiches[].role` et `roleSource`, `ensemble` [1, 15]. Les apports s'additionnent (convention du moteur) ; agrumes et tropical y sortent du style (49,4).

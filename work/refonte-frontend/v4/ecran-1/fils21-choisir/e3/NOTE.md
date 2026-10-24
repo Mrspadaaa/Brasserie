@@ -1,0 +1,45 @@
+e3 · Les plans, du sage à l'osé : le ladder des scénarios de dry hop, pas des variétés.
+
+- **Ce qui tient** :
+  - **L'idée** : sur une même échelle, pour une famille, les plans eux-mêmes, à dose totale égale (4 g/L) :
+    - les dry hops seuls (K2 : Citra, Galaxy, Idaho 7, avec Cascade en témoin) ;
+    - deux dry hops l'un après l'autre (K3, K4 : Citra 3 j puis Galaxy 7 j, Citra 3 j puis Idaho 7 5 j) ;
+    - deux houblons **ensemble** (K5 : Citra + Galaxy, Citra + Idaho 7, Citra + Cascade, 2 + 2 g/L).
+    - Le type est écrit (« seul », « puis », « ensemble »), jamais en picto seul.
+  - **Trois paliers nommés par leur audace face à la 16D**, jamais par une note (permis par le pilote) : **Osé** (sort de la 16D, crans 4), **Franc** (dans la 16D, en haut), **Sage** (reste dedans).
+    - En tropical, dry hop après, US-05 : Galaxy seul, Citra puis Galaxy, Citra + Galaxy ensemble et Citra seul sont osés (~+4 crans) ; Citra + Cascade, Citra puis Idaho 7 et Citra + Idaho 7 le sont aussi (~+3 crans) ; Cascade seul et Idaho 7 seul sont francs (~+2 crans).
+    - En floral, la famille que la 16D attend, tout redevient franc ou sage.
+  - **Chaque plan porte, dans l'ordre** :
+    - sa **chronologie** : les jours de contact en barres nommées, sur J0 à J17 de fermentation, avec la courbe simulée jour par jour (parJour[]). Citra puis Galaxy monte à J+8, puis de nouveau à J+11, puis plus rien ;
+    - l'**estimé ~** de la bière après, devant la zone de la 16D, l'orangé au-delà, avec ses crans ;
+    - le **calculé** du moteur pour la bière entière : rapport au seuil du marqueur, en bande sur une piste logarithmique (4MMP ×4 à « ? » quand la borne haute manque ; à 60′, Citra « ? à ×9,1 ») ; un inconnu reste hachuré, avec sa raison ;
+    - ses **puces** : la saturation partagée (« ~68 % de la somme » pour Citra puis Galaxy), la bio-transfo, « ordre, synergie : inconnus », « au-delà de 3 j : rien de mesuré en plus », la confiance.
+  - **Les réglages changent les plans et les reclassent** :
+    - moment (après, actif) et levure (US-05, Pomona, Verdant, Diamond) ;
+    - en actif avec Pomona, Citra seul passe devant, et la bio-transfo apparaît sur les plans au géraniol publié ;
+    - un plan que le profil simulé n'a pas calculé pour ces réglages est dit : « Non simulés pour ces réglages : puis Citra puis Galaxy ».
+  - **Le trou se voit** : « aucun plan mesuré en bière » en tête (recherche J : aucune mesure qui croise variété, levure et dry hop, aucune de deux houblons ensemble).
+  - **La vue « moments » (K1)** répond à « Pourquoi à 10′ pas à 60′ ? ». Sur une frise de cinq repères écrits (60′, 10′, whirlpool, actif, après), le sien en plein :
+    - Citra après et actif sont osés ;
+    - le whirlpool est osé, 10′ est franc ;
+    - à 60′, « ≈ sans écart », « surtout de l'amertume : IBU 80–120, calculé ».
+  - **Toucher un plan** ouvre son détail : l'estimé jour par jour en barres (~1, 29, 30, 30, 41… pts), l'estimé en grand avec tous ses drapeaux, la saturation, le calculé de chaque ajout, le trou en bière, les fiches. L'appui long sur un nom ouvre sa fiche.
+  - Les houblons des plans sont en tête, chacun avec son stock et son α (lot, ou fiches pour Citra T-90).
+  - **Écarts à la baseline** : ce sont les plans qui se classent, pas des tuiles de houblon. La chronologie et les paliers sont nouveaux (recherche I, idées 5 et 6, et « sage, franc, osé » du pilote).
+- **Ce qui casse** :
+  - 175 mots au premier écran, pour 70 visés (indicatif). Les cartes font environ 130 à 230 px : deux plans et demi tiennent au premier écran.
+  - Toutes les bandes estimées se recouvrent : chaque plan est « 1= ». Les paliers ordonnent, la donnée ne départage pas.
+  - Le calculé de K1 est celui de l'ajout seul, sans le Nugget de la recette ; celui des autres plans est la bière entière.
+  - Verdant et Diamond n'ont pas de dry hop seul simulé : leurs lignes manquent, et la page le dit.
+  - La courbe jour par jour des dry hops seuls est reconstruite depuis grille[] à 1, 2 et 3 j (parJour[] n'existe que pour les cas).
+  - Les étiquettes des barres de chronologie se coupent quand l'ajout est court.
+- **Contrôles** (indicatifs en v0, joués une fois) :
+  - `controle-commun` : COMMUN ECHEC 1 contrôle(s). Seul MOTS échoue (175 mots). STANDARD, d'abord en échec (rayon de 3 px), est corrigé ; COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE et PARLANT sont OK.
+  - `controle-lisible` : LISIBLE OK (16 pictos, 4 mesurées, 4 simulées, 0 faute).
+  - `controle-simulation` : SIMULATION OK (le simulé bouge).
+  - `controle-cumul-levure` : CUMUL OK (5 ajouts cumulés, la levure fait bouger le simulé, biotransformation visible).
+  - `controle-alpha` : ALPHA OK (4 voies, 4 avec leur α).
+  - `controle-fiche-baseline` : FICHE-BASELINE OK (fiche de Citra, 12 familles, 24 pictos, 0 faute).
+  - Parcours joué au doigt : famille, levure, plan → détail, Échap. Aucune erreur, aucun défilement horizontal, aucune cible sous 24 px.
+- **Pire contraste** : 4,76:1, « Tropicaux » (#9b5d0d sur #fdf1e3).
+- Générée par `generateur-e3.mjs` et `runtime-e3.js`, avec le socle de e1 (`../e1/socle-e.mjs`, `../e1/runtime-commun.js`). Le calculé des plans vient de `../e1/donnees/moteur-e.json`. Captures : `node ../e1/captures-etats.mjs e3`.

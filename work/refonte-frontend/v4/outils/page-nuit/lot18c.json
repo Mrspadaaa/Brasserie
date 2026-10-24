@@ -1,0 +1,33 @@
+{
+ "ticket": 142,
+ "ancre": "t142-lot18c",
+ "court": "l8b au trait, α, légende",
+ "titre": "l8b au trait, avec l’α et une légende cachée (lot 18 ter, 19.10 soir)",
+ "etat": "à choisir : l8e ou l8f",
+ "puces": [
+  "Tes mots sur l8b : « le glowing des icône de arôme c'est non, plutôt type Baseline 2 type fil » ; « Pas d'info sur les AA, j'en vrai valeur » ; « Tu peux même mettre un peu plus d'icone et autre, mais il faut un bouton légende un peu caché pour pas que ça gêne » ; et sur l5b : « Meilleures bar ».",
+  "l8e : pictos au trait de l2 Carnet, crayon léger, au ton foncé de chaque famille. l8f : trait net de v2, une seule épaisseur. Plus de disque pâle ni de halo. À la taille du téléphone, les deux se ressemblent beaucoup.",
+  "Chaque houblon montre l’α de son lot (« α 8,1% ») puis la plage de ses fiches (livre « 5–8,5% »). ≠ quand le lot sort des fiches ; « pellets » pour Citra cryo, dont seule la fiche pellets existe.",
+  "Sur chaque voie : usage (amérisant, aromatique, les deux), moment, dose et stock en petits pictos. Le « ? » en haut à droite ouvre la légende, fermée au repos.",
+  "Les barres de l5b remplacent les jauges : 8 px par cran, 13 px de large. Ce que ça coûte : voies à 61 px en médiane contre 50, et trois lignes pour un assemblage de deux houblons.",
+  "Deux contrôles de plus, tirés de tes mots : TRAIT (pas de halo ; l8b et l7 échouent) et LEGENDE (bouton discret, légende fermée ; l8b échoue). Ils passent avec ALPHA, PLACE et COMMUN sur l8e et l8f."
+ ],
+ "images": [
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l8e-etat-b-390.png",
+   "l8e trait crayon"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l8f-etat-b-390.png",
+   "l8f trait net"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l8e-legende-390.png",
+   "la légende, derrière le ?"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l8e-fiche-390.png",
+   "appui long : la vraie fiche"
+  ]
+ ]
+}

@@ -1,0 +1,43 @@
+v2 · Pourquoi 10′, pas 60′ ? (K1 : Citra contre Cascade, 4 g/L, à 60′, 10′, whirlpool, dry hop actif et après).
+
+- **Ce qui tient** :
+  - **Le parti** : le chemin du houblon. Une matrice moments × familles :
+    - en colonnes : 60′, 10′, whirlpool, actif, après ;
+    - en lignes : floral et agrumes (linalol), tropical et cassis (4MMP), vert et résineux (myrcène), floral (géraniol) ;
+    - chaque case est un verre rempli de la vraie part retrouvée en bière (le moteur, H §8.2) : plein jusqu'à la borne basse, pâle jusqu'à la borne haute, hachuré quand la borne basse n'est pas chiffrée. Quand rien n'est mesuré, la case dit « inconnu », jamais 0 (4MMP à 10′).
+    - On voit d'un coup :
+      - 4MMP : ≤ 9 % à 60′ (−91 % en 60 min à 100 °C, H13), ≤ 77 % au whirlpool, ≈ 70 % en dry hop ;
+      - myrcène : ≤ 1 % à chaud, de 0,6 à 3,4 % en dry hop.
+  - **L'amertume**, en double verre (Citra plein, Cascade en contour) :
+    - le gris est ta bière (59,7 IBU avec Nugget), la couleur est l'ajout, calculé par Tinseth comme le moteur (+100 IBU à 60′ pour Citra à 4 g/L) ;
+    - au style, la zone de la 16D (50–70 IBU) en pâle, l'orangé au-delà ;
+    - en dry hop, « inconnu » : les humulinones ne sont pas comptées.
+  - **La réponse en une phrase**, calculée : « À 60′, l'arôme part, l'amertume reste : Citra 4 g/L ajoute ~100 IBU et ~+0,7 cran d'agrumes. À 10′ : ~+3 crans d'agrumes pour 36 IBU. »
+  - **Rien de figé** :
+    - la dose : 1, 2, 4 ou 8 g/L ;
+    - les minutes d'ébullition, par 5′ de 15 à 90′ : l'IBU suit (Tinseth), et la colonne d'arôme passe à « inconnu » hors de 60′.
+  - **Un toucher sur un moment** :
+    - pourquoi, en une phrase et ses chiffres sourcés ;
+    - le profil simulé de Citra et Cascade à ce moment (barres de l5b, écart écrit en crans) ;
+    - en dry hop : l'ajout cumulé Citra + Cascade à 2 + 2 g/L, la levure (US-05, Pomona, Verdant, Diamond) et la biotransformation, dans les mots des fournisseurs ;
+    - « le même ajout à chaque moment » : la courbe simulée, en agrumes, tropical ou floral, montre le saut de 60′ à 10′.
+    - À l'ouverture, le moment touché est le dry hop actif : la levure y compte.
+  - **La baseline, gardée** : pictos au trait, α du lot puis des fiches, usage en mot, stock en icône, légende derrière « ? », appui long vers la fiche g1 de l8g, lentille au style / absolu.
+  - **S'écarter de la baseline** : le verre remplace la barre de l5b pour les parts retrouvées. Une part est un « combien il reste sur 100 », pas un cran du style. Les barres de l5b restent pour le profil simulé.
+- **Ce qui casse** :
+  - Le premier écran compte 169 mots (70 visés).
+  - Le moteur n'a pas de part retrouvée par variété : elle est la même pour Citra et Cascade. L'écart entre les deux ne se voit que dans l'IBU et dans le simulé.
+  - Les minutes changent l'IBU, pas le profil simulé du panneau : la grille ne simule que 60′, 10′ et le whirlpool. Le titre du panneau dit encore « 60′ ».
+  - Le géraniol monte de 3 à 120 % en dry hop, donc plus que présent (glycosides) : la flèche du verre le dit mal.
+  - Les libellés des verres sont serrés à 390 px (« 0,6–3,4 »).
+  - Seuls US-05 et Pomona sont simulés pour un houblon seul ; Verdant l'est en ajout cumulé, Diamond pas du tout (message « pas simulé »).
+- **Contrôles** (indicatifs en v0, joués le 19.10 sur `etat.html`) :
+  - COMMUN ECHEC 1 contrôle(s) : MOTS ECHEC (169 mots) ; COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE et PARLANT OK ;
+  - LISIBLE OK (7 pictos, 37 mesurées, 2 simulées) ;
+  - SIMULATION OK (45 réglages) ;
+  - CUMUL OK (la levure fait bouger le simulé) ;
+  - ALPHA OK (2 voies) ;
+  - FICHE-BASELINE OK (fiche de Citra, 0 faute).
+- **Pire contraste** : 5,18:1, « +100 » (#c2410c sur blanc), sur 154 textes mesurés.
+- **Fichiers** : `generer.mjs`, `client-moments.js`, et le socle commun `../v1/socle.mjs`. Les états s'ouvrent par requête : `?m=b60`, `?m=dryActive&lev=pomona&ens`, `?min=30&dose=2`, `?fiche=Cascade`, `?abs`.
+- **Captures** : `captures/v2-390.png`, `v2-haut-390.png`, `v2-pleine-390.png`, `v2-60-390.png`, `v2-actif-390.png`, `v2-minute-390.png`, `v2-bas-390.png`, `v2-fiche-390.png`, `v2-absolu-390.png`.

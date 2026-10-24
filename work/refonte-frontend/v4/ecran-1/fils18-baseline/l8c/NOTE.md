@@ -1,0 +1,24 @@
+- **Ce qui tient** : la disposition de l8 est gardée, l'habillage est celui de la Cave (DESIGN.md, comme l1).
+  - **La disposition** :
+    - les verdicts en tête ;
+    - le moment de chaque groupe en titre ;
+    - la matrice, une colonne par famille, avec la jauge debout ;
+    - le picto en tête de colonne fixe ;
+    - le tri au toucher.
+  - **La Cave** :
+    - le charbon chaud : cave-950 pour la page et la matrice, cave-900 pour les tuiles des objectifs, cave-850 pour la feuille ;
+    - trois tons de lecture : cave-50, cave-200, cave-400 ;
+    - la paille pour l'action principale (Comparer ; Ajouter dans la fiche), le cuivre de la production pour les moments ;
+    - Source Sans 3 et IBM Plex Mono, en 12, 14 et 16 px ; les moments en titres de 14 px, au cuivre et au poids.
+  - **Les familles sur le charbon** :
+    - les marques prennent le ton base, sauf petits fruits, épicé et résineux, sous 3:1 sur cave-950, qui prennent le ton fond (comme l1) ;
+    - le nom d'une famille garde la base si elle tient 4,6:1 sur cave-900, sinon le fond (herbacé, petits fruits, épicé, résineux) ;
+    - en tête de colonne, les pictos sont sur une pastille au ton base à 20 %.
+  - **Corrigé depuis l8** : le nom sur sa propre ligne, d'une seule ligne ; des jauges de 15 × 6 px ; un signe par verdict (cercle coché, flèche vers la ligne, cercle barré).
+- **Ce qui casse** :
+  - Au ton fond, l'épicé, les petits fruits et le résineux deviennent des traits presque blancs : leur teinte se perd sur le noir.
+  - L'orangé « hors du style » tient mal sur le charbon. Il ne porte aucun texte.
+  - Barres / Radar est inerte ; « Comparer (2) » mène au comparer clair de q2b.
+  - Dans la fiche, les mêmes limites que l8b.
+- **Contrôles** : les 12 contrôles du brief sont OK (MOTS 63, COULEURS 4 teintes, AU-STYLE, STANDARD, SURVOL, FICHE, FIL6, AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE, BLOCS). PLACE (D84) est OK : 7 voies au premier écran, 50 px en médiane. Les fiches comptent de 54 à 72 mots.
+- **Pire contraste** : 5,02:1, cave-400 #9A8A7E (doses, sources, 12 px) sur la page et la feuille.

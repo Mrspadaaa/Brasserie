@@ -1,0 +1,6 @@
+- Réponse A = Bâtisseur
+- Réponse B = Contradicteur
+- Réponse C = Regard neuf
+- Réponse D = Audacieux
+- Réponse E = Brasseur
+- Réponse F = Premiers principes

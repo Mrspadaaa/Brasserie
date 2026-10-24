@@ -1,0 +1,527 @@
+{
+ "ecran": "substituer",
+ "choix": "u4 (lot 11, fils11-substitution) : « Substitution, ça serait plus du u4 » (19.10) ; registre « choisi u4 » (D34, 24.10)",
+ "source": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html et NOTE.md ; captures/u4-vue-390.png",
+ "maj": "2026-10-24",
+ "construction": "5345f6ad",
+ "note": "u4 est une page statique : ses états sont ses blocs au repos, le toucher d’une rangée (marque) et « Lire ces scores » (ouvert, refermé). Joué à 390 × 844 tactile ; d3 chargé depuis jsdelivr. Données de u4 du 19.10 : Galaxy y était le 3e du stock ; le stock de la fixture actuelle met Idaho 7 (20 g, ne suffit pas) devant, Galaxy n’est donc pas dans un « attendu ».",
+ "etats": [
+  {
+   "id": "etat-subst-repos",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "ouvrir Substituer, au repos",
+   "quoi": "Tête « ‹ Nugget » et, à droite, « remplaçants / à 60′ » ; la réponse en gras « Magnat et Yeoman, 99 sans inconnue. », dessous « Altus, Trident, Zenia vont de 78 à 99. ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-repos-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": ".barre",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"contexte\"]",
+    "selecteur_5345f6ad": "[data-role=\"contexte\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : titre en question « Lequel à la place de Nugget ? », ligne « fixé Stout 16D · à 60′ · 60 IBU égal » ; aucune réponse en une phrase.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-repos-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": ".barre",
+    "geste": "repos",
+    "attendu": [
+     "Nugget",
+     "remplaçants",
+     "à 60′",
+     "Magnat et Yeoman, 99 sans inconnue.",
+     "Altus, Trident, Zenia vont de 78 à 99."
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-subst-echelle",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "l’échelle de ressemblance, au repos",
+   "quoi": "Échelle 50–100 à paliers (partiel, proche, très proche) ; huit remplaçants rangés par le pire cas, stock en icône (chariot, boîte pleine, boîte basse) ; Magnat (bleu) et Nelson Sauvin (vert) marqués.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-echelle-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": ".echelle",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"porte\"]",
+    "selecteur_5345f6ad": "[data-role=\"porte\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : pas d’échelle ; des colonnes (Nugget épinglé, Nelson Sauvin, Galaxy…) avec une barre « proche » par colonne, sans paliers ni pire cas.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-echelle-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": ".echelle",
+    "geste": "repos",
+    "attendu": [
+     "partiel",
+     "proche",
+     "très proche",
+     "Magnat",
+     "Yeoman",
+     "Sabro",
+     "Nelson Sauvin",
+     "Altus",
+     "Trident",
+     "Zenia",
+     "50",
+     "65",
+     "80",
+     "100",
+     "À acheter",
+     "En stock, suffisant",
+     "En stock, insuffisant"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-subst-plage",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "la plage d’une composante inconnue et sa clé",
+   "quoi": "Altus et Trident 79–99, Zenia 78–98 en plage hachurée ; clé « ● tout connu » et « plage, une composante inconnue ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-plage-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": ".cle",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"porte\"]",
+    "selecteur_5345f6ad": "[data-role=\"porte\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : le score du moteur seul (« proche 86 ») et « · huiles ? » ; aucune plage.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-plage-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": ".cle",
+    "geste": "repos",
+    "attendu": [
+     "tout connu",
+     "plage, une composante inconnue",
+     "79",
+     "99",
+     "78",
+     "98"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-subst-toucher-rang",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "toucher un remplaçant de l’échelle (Yeoman)",
+   "quoi": "La rangée touchée se marque (fond gris, nom en couleur) ; u4 note : « choix des deux comparés statique (le toucher marque seulement) ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-toucher-rang-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": ".r[data-houblon=\"Yeoman\"]",
+    "geste_5345f6ad": "toucher la dernière colonne",
+    "selecteur_5345f6ad": "[data-remplacant]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : toucher une colonne la choisit (radio) ; pas d’échelle à toucher.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-toucher-rang-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": ".r[data-houblon=\"Yeoman\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Yeoman"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-subst-face",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "le face à face, même IBU",
+   "quoi": "Trois bandes : Nugget (épuisé, 46 g), Magnat (à acheter, amérisant, 37–54 g), Nelson Sauvin (en stock, 62 g), bord à la couleur du houblon.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-face-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "h2",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"epingle\"]",
+    "selecteur_5345f6ad": "[data-role=\"epingle\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : colonnes « dose » 46 g, 62,5 g, 35 g ; pas de bandes ni de plage de dose pour un houblon à acheter.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-face-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "h2",
+    "geste": "repos",
+    "attendu": [
+     "Face à face, même IBU",
+     "Nugget",
+     "46 g",
+     "Magnat",
+     "37–54 g",
+     "Nelson Sauvin",
+     "62",
+     "amérisant",
+     "Épuisé"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-subst-alpha",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "α par source, lot et article nommés",
+   "quoi": "Rangées α : sources en traits fins, plage, milieu en noir ; « lot 13 » sur Nugget, « article 9,6 » (▽) sur Nelson Sauvin.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-alpha-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "#m-alpha",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"alpha\"]",
+    "selecteur_5345f6ad": "[data-role=\"alpha\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : « α 13 % 9,5–16 », « α 9,6 % ≠ 10–13 » en texte ; ni sources, ni milieu, ni piste.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-alpha-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "#m-alpha",
+    "geste": "repos",
+    "attendu": [
+     "9,5–16",
+     "11–16",
+     "10–14",
+     "lot 13",
+     "article 9,6"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-subst-aromes",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "arômes en barres face au 16D",
+   "quoi": "Tableau Nugget · Magnat · Nelson : attendues en gras sur fond gris (Floral, Herbacé, Terreux), puis « Hors 16D » ; 2 crans (cité, marqué), pointillé = non décrit ; « Noyau, Pépins, Baies, Melon, Végétal : aucune des trois fiches ne les décrit, ce n’est pas zéro » ; « Fiches lues : Nugget 4, Magnat 1, Nelson Sauvin 2 ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-aromes-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "#aro",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"remplacants\"]",
+    "selecteur_5345f6ad": "[data-role=\"remplacants\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : pictos des familles citées par colonne, « perd » et « gagne » en pictos ; pas d’attendues du style, pas de crans, pas de « non décrit ».",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-aromes-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "#aro",
+    "geste": "repos",
+    "attendu": [
+     "Arômes",
+     "16D",
+     "Floral",
+     "Herbacé",
+     "Terreux",
+     "Hors 16D",
+     "Agrumes",
+     "Tropicaux",
+     "Résineux",
+     "Épicé",
+     "Noyau, Pépins, Baies, Melon, Végétal",
+     "aucune des trois fiches ne les décrit, ce n’est pas zéro",
+     "Fiches lues",
+     "Nugget 4",
+     "Magnat 1",
+     "Nelson Sauvin 2",
+     "Pointillé"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-subst-radar",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "le radar D3 des trois",
+   "quoi": "Radar 12 axes : Nugget en contour seul, Magnat et Nelson Sauvin remplis ; secteurs hachurés et « Melon ? »… pour l’inconnu ; légende et « gras : attendu en 16D ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-radar-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "svg[data-radar]",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"porte\"]",
+    "selecteur_5345f6ad": "[data-role=\"porte\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : aucun radar.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-radar-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "svg[data-radar]",
+    "geste": "repos",
+    "attendu": [
+     "Radar des citations : Nugget, Magnat, Nelson Sauvin",
+     "Nugget (l’original, contour seul)",
+     "gras : attendu en 16D",
+     "Du centre vers le bord",
+     "non décrit, cité, marqué"
+    ],
+    "interdit": [],
+    "couleurs_min": 2
+   }
+  },
+  {
+   "id": "etat-subst-beta",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "β par source",
+   "quoi": "Rangées β : 3–6, 2,8–7, 4,5–8, mêmes traits que l’α ; note des sources (Beer Maverick, Hopsteiner).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-beta-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "#m-beta",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"porte\"]",
+    "selecteur_5345f6ad": "[data-role=\"porte\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : pas de β.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-beta-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "#m-beta",
+    "geste": "repos",
+    "attendu": [
+     "3–6",
+     "2,8–7",
+     "4,5–8",
+     "une source chacun (Beer Maverick, Hopsteiner)",
+     "milieu moyen des sources"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-subst-huiles",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "huiles, composants",
+   "quoi": "Myrcène, Humulène, Caryophyllène, Linalol par houblon (% de l’huile) ; « ? non renseigné » pour le linalol de Magnat ; farnésène non importé.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-huiles-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "#m-huiles",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"porte\"]",
+    "selecteur_5345f6ad": "[data-role=\"porte\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : « · huiles 72 » (composante du score) seulement.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-huiles-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "#m-huiles",
+    "geste": "repos",
+    "attendu": [
+     "Huiles, composants",
+     "% de l’huile",
+     "Myrcène",
+     "Humulène",
+     "Caryophyllène",
+     "Linalol",
+     "non renseigné",
+     "48–59",
+     "Farnésène publié par Beer Maverick, non importé"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-subst-style",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "relation au 16D",
+   "quoi": "« 16D Foreign Extra Stout attend floral, herbacé, terreux ; IBU 50–70, la recette est à 59,7 et chaque dose la garde. » ; par houblon : ce qu’il garde et perd, ses mots (Beer Maverick), ses styles d’emploi, « aucune stout citée ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-style-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "#style16",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-famille-ligne]",
+    "selecteur_5345f6ad": "[data-famille-ligne]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : « ma bière » au style en mini barres (familles attendues), sans phrase sur le style, les mots ni les styles d’emploi.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-style-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "#style16",
+    "geste": "repos",
+    "attendu": [
+     "16D Foreign Extra Stout",
+     "attend floral, herbacé, terreux",
+     "IBU 50–70",
+     "la recette est à 59,7 et chaque dose la garde",
+     "cite les trois",
+     "garde floral (cité), perd herbacé et terreux",
+     "ne cite aucune des trois",
+     "vin blanc, fruité, groseille à maquereau, raisin, sauvignon blanc",
+     "aucune stout citée",
+     "Aucun style d’emploi dans le dépôt"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-subst-actions",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "les deux actions",
+   "quoi": "« Ajouter Magnat aux achats » (contour) et « Remplacer par Nelson Sauvin » (plein, noir).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-actions-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": ".choisir",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"dock\"]",
+    "selecteur_5345f6ad": "[data-role=\"dock\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : « Annuler » et « Remplacer › » en pied, résumé « 46 g de Nugget → 62,5 g de Nelson Sauvin » ; pas d’« Ajouter … aux achats ».",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-actions-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": ".choisir",
+    "geste": "repos",
+    "attendu": [
+     "Ajouter Magnat aux achats",
+     "Remplacer",
+     "Nelson Sauvin"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-subst-lire",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "« Lire ces scores », ouvert",
+   "quoi": "Ouvert au repos, en bas : calculés depuis nos fiches (pas Beer Maverick), la plage expliquée (Altus 79 à 99), sans inconnue n’est pas sûr, le pire cas d’abord, huit des 318, pourquoi ces deux au face à face.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-lire-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "details",
+    "geste_5345f6ad": "toucher « ? »",
+    "selecteur_5345f6ad": "[data-role=\"legende-bouton\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : « ? » ouvre quatre lignes sur les colonnes ; rien sur l’origine des scores, la plage ni le pire cas.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-lire-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "details",
+    "geste": "repos",
+    "attendu": [
+     "Lire ces scores",
+     "Calculés depuis nos fiches",
+     "pas les scores de substitution de Beer Maverick",
+     "Prix, rareté et cohumulone",
+     "La plage",
+     "Altus vaut entre 79 et 99",
+     "Sans inconnue ne veut pas dire sûr",
+     "Le pire cas d’abord",
+     "premiers du catalogue",
+     "premier du stock qui suffit"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-subst-lire-fermer",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "toucher « Lire ces scores » (refermer)",
+   "quoi": "Le résumé se referme : il ne reste que « Lire ces scores ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-lire-fermer-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "summary",
+    "geste_5345f6ad": "toucher [data-role=\"legende-bouton\"]",
+    "selecteur_5345f6ad": "[data-role=\"legende-bouton\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : pas de « Lire ces scores ».",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-lire-fermer-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "summary",
+    "geste": "toucher",
+    "attendu": [
+     "Lire ces scores"
+    ],
+    "interdit": [
+     "Calculés depuis nos fiches"
+    ]
+   }
+  },
+  {
+   "id": "etat-subst-croix",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "toucher le retour",
+   "quoi": "Le « ‹ » de u4 (statique) ramène à la recette.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-croix-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": ".retour",
+    "geste_5345f6ad": "toucher [data-role=\"retour\"]",
+    "selecteur_5345f6ad": "[data-role=\"retour\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : ✕ qui ramène à l’étape Houblons (D118).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-croix-5345f6ad.png",
+   "voulu": "D109 : la croix ✕ remplace le ‹ de u4 (sa page est statique, le retour n’y est pas jouable)"
+  }
+ ]
+}

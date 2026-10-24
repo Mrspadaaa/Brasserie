@@ -1,0 +1,60 @@
+name: Interface (écran, geste, parcours)
+description: Tout ticket qui change ce que le brasseur voit ou touche. La clôture est refusée sans les champs obligatoires (scripts/check-issue-closure.mjs).
+title: "[UI] "
+labels: ["interface"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Les mots du brasseur priment sur tout texte d'agent. Copie-les depuis `docs/besoins/corpus-demandes.md`, sans les résumer.
+        Garde-fous : `docs/qualite/garde-fous.md`.
+  - type: textarea
+    id: mots
+    attributes:
+      label: Mots du brasseur
+      description: "Au moins une citation du corpus, avec son identifiant. Format : C002 « Et je veux que sur mobile en un click, sans scroll… »"
+    validations:
+      required: true
+  - type: textarea
+    id: questions
+    attributes:
+      label: Questions de la banque
+      description: "Identifiants de docs/besoins/banque-de-questions.md auxquels ce ticket répond (ex. Q01, Q03), avec ce qui doit être visible par défaut et ce qui s'ouvre à la demande."
+    validations:
+      required: true
+  - type: textarea
+    id: criteres
+    attributes:
+      label: Critères d'acceptation, en mots du brasseur
+      description: "Ce que le brasseur fait et voit, mesuré à 390 × 844 : nombre de touchers, ce qui est visible sans défiler, délai. Pas de vocabulaire interne."
+    validations:
+      required: true
+  - type: checkboxes
+    id: regles
+    attributes:
+      label: Règles d'utilisabilité tenues (docs/besoins/parcours-cles.md)
+      options:
+        - label: "U1 premier regard : la réponse ou l'action d'abord"
+        - label: "U2 seulement l'utile par défaut, le reste à la demande"
+        - label: "U3 une entrée par geste"
+        - label: "U4 mots du brasseur, aucun terme interne"
+        - label: "U5 un seul système visuel (DESIGN.md)"
+        - label: "U6 rien ne couvre une commande"
+        - label: "U7 tâche réussie sans aide par un relecteur à l'aveugle"
+  - type: textarea
+    id: controles
+    attributes:
+      label: Contrôles qui prouvent
+      description: "Commandes scripts/check-*.mjs jouées, avec leur sortie collée dans un bloc de code (ex. ONE-TAP OK, UX-RULES OK, BUDGET OK), et captures regardées. Un test qui affirme l'absence d'une fonction demandée par le brasseur exige son accord écrit."
+    validations:
+      required: true
+  - type: textarea
+    id: production
+    attributes:
+      label: Production
+      description: "Contrôle en lecture seule de l'app en ligne après déploiement : date, qui, résultat. Ou « Production : sans objet » avec la raison."
+  - type: textarea
+    id: bloquants
+    attributes:
+      label: Bloquants
+      description: "Une case par bloquant ; la clôture est refusée tant qu'une case reste vide. Exemple : - [ ] B1 contraste 1,01:1 sur Ajouter"

@@ -1,0 +1,3 @@
+Change : seulement ce que la voie change. Les 4 familles où l'effet de Golding est établi passent devant (secteur bleuté, libellé gras, « +16 »), avec une flèche du repère avant (`profilBiereContinu`) au repère après (`profilApresContinu`) ; la réponse est écrite au-dessus (Floral +16, objectif ; résineux : rien d'établi).
+Honnête : la plage prévue avant reste en fond (départ incertain) ; les 8 familles à effet non établi ont un libellé gris « ? » et une marque creuse, « inconnu, ce n'est pas zéro » ; le goûté résineux est posé au bord, au-delà de l'échelle.
+Limites : échelle resserrée de 0 à 66 sur 100 (écrite sous le radar) pour que des effets de +9 à +16 fassent une flèche visible ; Herbacé +9 reste court. FIL6 OK, capture `captures/s2-vue-390.png` regardée.

@@ -1,0 +1,21 @@
+- **Ce qui tient** : la carte matrice de l8b, un bloc par marqueur.
+  - Les blocs : 4MMP (tropical, cassis), linalol (floral, agrumes), myrcène (vert, résineux), puis l'amertume.
+  - Les lignes : une par moment (60′, 10′, whirlpool, dry hop actif, dry hop après), avec une longue piste l5b. Citra et Cascade y posent leur rapport au seuil en plage, avec leur repère central.
+  - En descendant, l'écart s'ouvre. À 60′, il n'y a que des bornes hautes, et « surtout de l'amertume » : IBU 99,9 contre 51,9. Ensuite, les plages se séparent.
+  - Pour le 4MMP, l'enveloppe des sources se recouvre, mais sur la base commune Hopsteiner 2024, Citra est au-dessus. Le marqueur « ↑ base commune » le dit en dry hop, et le détail l'écrit.
+  - Toucher un bloc trie ses moments par l'écart des repères centraux.
+  - Le témoin « modèle actuel : identiques » ouvre les valeurs V5.5 (39 = 39 … 78 = 78). Ce sont des intensités 0–100 de l'ancien modèle, citées comme témoin, pas comme sortie.
+  - Au style, la zone 16D va jusqu'à ×10, et l'orangé marque Citra en dry hop (« peut-être hors du style »).
+  - Les chiffres viennent de `citra-contre-cascade.json`. L'α est vrai (Citra : pas de lot en pellets, du cryo en stock). Fiches g1 et légende comme d1.
+- **Ce qui casse** :
+  - Le farnésène, le marqueur « boisé et vert » cité par le brief, n'a aucun seuil dans H. Le moteur lit donc le vert et le résineux par le myrcène, et le farnésène reste dans le détail, inconnu.
+  - Le linalol ne s'écarte pas plus en dry hop qu'à 10′ : les plages sont très larges. Seul le repère central (×4,6) montre l'écart.
+  - Le dry hop actif reprend les parts de l'après, faute de taux propres.
+  - Contrôles : COMMUN OK (MOTS 65 et les dix autres) et CHIFFRES OK (183 textes). Pire contraste : 5,69:1 au repos (« Absolu »), 4,96:1 tout ouvert, fiches comprises ; aucun texte sous 4,5:1.
+- **Ce qui reste inconnu** :
+  - le 4MMP à 10′ (perte mesurée à 60′ seulement) ;
+  - les bornes basses à chaud ;
+  - le seuil du farnésène ;
+  - les pertes par le CO₂ en fermentation active ;
+  - la perception en stout ;
+  - les conventions [H] du moteur (×10, densité des hydrocarbures, transfert des sesquiterpènes).

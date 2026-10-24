@@ -1,0 +1,19 @@
+- **Ce qui tient** : une carte matrice (l8b), sur les cas du moteur.
+  - Le contenu : quatre houblons à 4 g/L en dry hop après fermentation (Citra, Galaxy, Idaho 7, Cascade) et quatre composés (linalol, géraniol, 4MMP, myrcène).
+  - Chaque case montre la lecture ordinale du moteur : un signe pour au-dessus, autour ou sous le seuil, puis la piste l5b en plage avec le repère central.
+  - Face à la 16D, une ligne « faible et facultatif » porte les trois familles citées, et la zone de chaque piste va jusqu'à ×10 (convention [H] du moteur, à fixer par le brasseur).
+  - Seule l'exception est étiquetée : Citra, « peut-être hors du style », par le 4MMP (repère central ×16). Les autres houblons montrent leur composé dominant (Galaxy et Idaho 7 : myrcène ; Cascade : 4MMP, ×0,32–31).
+  - La mention « perception en bière noire non documentée ; pars de ta dégustation » est visible. La règle ×10 et les hypothèses [H] sont dans un repli.
+  - Toucher une colonne trie les houblons par le repère central.
+  - Les chiffres viennent de `cas-citra.json`, `cas-galaxy.json`, `cas-idaho7.json` et `cas-cascade.json`. L'α est vrai (lot en stock et plage des fiches ; Citra : pas de lot en pellets, du cryo en stock). Fiches g1 et légende comme d1.
+- **Ce qui casse** :
+  - Les pistes font 82 px, quatre par ligne : la position face au seuil se lit, l'écart fin non (il reste dans le détail).
+  - Le géraniol de Galaxy n'a pas de valeur publiée : sa case est hachurée et dit « inconnu ».
+  - Le myrcène domine Galaxy et Idaho 7 par une densité des hydrocarbures supposée [H].
+  - Contrôles : COMMUN OK (MOTS 69 et les dix autres) et CHIFFRES OK (131 textes). Pire contraste : 4,64:1 (« peut-être hors du style », #c2410c sur #fdf0ea, 12 px), au repos comme tout ouvert ; aucun texte sous 4,5:1.
+- **Ce qui reste inconnu** :
+  - la perception en stout : seuil en bière noire non mesuré, masquage non étudié ;
+  - si « au-dessus du seuil, < ×10 » reste « faible » : le moteur ne le dit pas ;
+  - le 3MH de Galaxy et d'Idaho 7 ;
+  - la borne basse du 4MMP d'Idaho 7 ;
+  - les conventions [H] du moteur.

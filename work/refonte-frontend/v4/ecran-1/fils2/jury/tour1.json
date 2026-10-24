@@ -1,0 +1,196 @@
+{
+  "tour": 1,
+  "lot": 2,
+  "date": "2026-10-18",
+  "sources": [
+    "ecran-1/PRIORITE.md (Ordre de l'écran, Lot 2)",
+    "SPEC-BRASSEUR.md §1, 3, 4, 6",
+    "capture de l'étape Malts du brasseur (uploads/290e929c-image.jpg)",
+    "reference/brasseur-2026-10-18/README.md, clyhealth-3.png",
+    "docs/ux-boosters.md, Écran houblons et Pièges",
+    "fils2/captures/planche-oeil.png (lue seule, d'abord ; agrandie par ses vignettes pNN-oeil, pNN-b-oeil)",
+    "fils2/captures/planche-390.png, pNN-390.png, pNN-b-390.png, pNN-radar-390.png",
+    "fils2/captures/boosters/ : toutes les paires avant / après listées dans pNN.json, regardées recadrées sur la zone qui change (montage hors dépôt)"
+  ],
+  "oeil": {
+    "p01": {
+      "A": "« Houblons », la ligne Nugget (60′ ⟳, − 46 g +) et quatre puces « + Motueka… » lisibles en tête ; puis le titre orange « Boisé et résineux trop marqué », tache la plus forte, sur une colonne grise commune d'où seule la résine sort.",
+      "B": "Feuille ouverte : « 7 voies » et « 6 voies » en gros chiffres de même poids, les pistes, puis deux puces orange pleines et trois voies à cocher.",
+      "houblons_dabord": { "A": true },
+      "reponse_dabord": { "B": true }
+    },
+    "p02": {
+      "A": "Cartes façon Malts : résumé, carte Nugget, quatre puces « + » ; puis le bandeau noir « Boisé et résineux trop marqué », plus sombre que tout, et quatre grandes tuiles grises dont Résineux en bleu.",
+      "B": "Bandeau noir en deux moitiés « 7 voies » | « 6 voies », puis les tuiles et les puces bleues pleines.",
+      "houblons_dabord": { "A": true },
+      "reponse_dabord": { "B": true }
+    },
+    "p03": {
+      "A": "Cinq disques noirs « + » alignés devant Idaho 7, Cascade, Target, Citra cryo, Motueka sous la ligne Nugget : on lit d'abord quoi ajouter ; puis un tableau fin de 12 rangées où seule la flèche rouge « trop » ressort.",
+      "B": "Ligne Nugget, puis deux lignes grasses « Plus floral : 7 voies, 2 faibles » / « Moins boisé et résineux : 6 voies, faibles », le tableau et deux puces noires.",
+      "houblons_dabord": { "A": true },
+      "reponse_dabord": { "B": true }
+    },
+    "p04": {
+      "A": "Carte noire « IBU 60 » en tête, puis la carte Nugget et cinq tuiles blanches à disque noir « + » ; la carte-réponse et le module de lecture viennent ensuite.",
+      "B": "Barre noire IBU, Nugget, carte-réponse aux deux lignes grasses avec deux puces noires ; plus bas, le curseur « Floral +1 » et « Hors houblon 4 pistes ».",
+      "houblons_dabord": { "A": true },
+      "reponse_dabord": { "B": true }
+    },
+    "p05": {
+      "A": "« Stout export », résumé à jauge, carte Nugget et trois tuiles « + » (Golding en pointillé, à acheter) ; dessous, douze pistes encadrées où les pastilles noires floues pèsent plus que les noms.",
+      "B": "Recette réduite à une ligne, deux onglets « Plus floral » / « Moins boisé et résineux », les pistes à poignées orange, puis les puces orange.",
+      "houblons_dabord": { "A": true },
+      "reponse_dabord": { "B": true }
+    },
+    "p06": {
+      "A": "Même tête que p05 (résumé, Nugget, trois tuiles « + ») ; puis une bulle à barre orange qui contient les douze pistes, les puces en contour tout en bas.",
+      "B": "Les pistes d'abord ; la bulle noire « + floral − résineux » et les onglets de réponse n'arrivent qu'en bas, avec les voies.",
+      "houblons_dabord": { "A": true },
+      "reponse_dabord": { "B": false }
+    },
+    "p07": {
+      "A": "Nugget en petit, puis une liste de neuf houblons du stock à signature de 12 cellules sur près de la moitié de l'écran ; la lecture n'est qu'un bloc de colonnes grises sans nom avec un point orange « trop ».",
+      "B": "Une console de douze colonnes grises encadrées de boutons + / −, noms couchés à la verticale ; la réponse est une ligne grise fine au-dessus.",
+      "houblons_dabord": { "A": true },
+      "reponse_dabord": { "B": false }
+    },
+    "p08": {
+      "A": "Pastille noire « 60′ » sur une frise, puis neuf tuiles du stock en damiers 3 × 4 qui font la masse de l'écran ; en bas, douze tuiles grises sans nom.",
+      "B": "Trois rangées pleines à − / +, une grille de petites tuiles, Résineux en accent ; la réponse reste en texte fin au-dessus.",
+      "houblons_dabord": { "A": true },
+      "reponse_dabord": { "B": false }
+    },
+    "p09": {
+      "A": "Une dalle de douze colonnes grises sur près de 60 % de l'écran, la colonne Résineux crevant le plafond en orange ; la recette et les puces d'ajout sont tassées au-dessus.",
+      "B": "Deux lignes de réponse en tête, puis la même dalle de colonnes avec deux traits de cible orange.",
+      "houblons_dabord": { "A": false },
+      "reponse_dabord": { "B": true }
+    },
+    "p10": {
+      "A": "Grosse barre noire IBU, puis la frise 60′ / 10′ / 0′ / DH où Nugget et quatre puces « + » occupent leur couloir ; dessous, un papillon dont l'aile droite répète la gauche.",
+      "B": "Deux lignes de réponse et les puces orange ; le papillon avec deux traits de cible, puis trois cartes de voies en tiroir à pages.",
+      "houblons_dabord": { "A": true },
+      "reponse_dabord": { "B": true }
+    },
+    "p11": {
+      "A": "Une palissade de douze noms couchés en haut, puis Nugget et quatre houblons en rangées de cellules grises ; le bloc orange « Boisé et résineux trop marqué » et les colonnes hachurées tirent l'œil en bas.",
+      "B": "Deux onglets de réponse, colonnes hachurées à badges +1 / −1, cinq voies en rangées de cellules, puces orange.",
+      "houblons_dabord": { "A": true },
+      "reponse_dabord": { "B": true }
+    }
+  },
+  "questions": {
+    "p01": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": true, "Q6": true,
+      "motifs": {
+        "Q4": "L'ajout rapide amène la ligne Motueka, fait rouler l'IBU (+3) et bouge la lecture en haltères (floral, agrumes, tropical) ; le moment 60′ → 10′ donne « 22 −38 peu » avec la jauge en accent hors bande ; « 6 voies, faibles » ouvre les voies résine et les pistes hors houblon.",
+        "remarque": "« manque » à côté de Nugget sans repère (mot de stock) ; « 50 70 » écrits sous la jauge IBU, chiffres que le dessin dit déjà (mineur). En B la recette disparaît sous la feuille."
+      }
+    },
+    "p02": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": true, "Q6": false,
+      "motifs": {
+        "Q6": "A : quatre grandes tuiles creuses (nom en haut, piste en bas, environ 60 % de vide chacune) : la même information que p01 sur environ deux fois la place ; la densité vient des cadres, pas de l'information.",
+        "remarque": "Mêmes boosters que p01, tous vivants ; accent bleu unique ; « 50 70 » sous la jauge (mineur)."
+      }
+    },
+    "p03": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": true, "Q6": true,
+      "motifs": {
+        "remarque": "Bogue visible : « null » s'affiche après l'ajout rapide (à la suite de « 5 non situées › ») et comme titre du panneau ouvert (paires index-03 et index-04). L'ajout rapide fait rouler l'IBU mais ne bouge pas la lecture. Pas de cible à glisser (J1/J2, élément 6 du lot 2) : la direction ne passe que par les puces. Cible « − résineux » posée à 0."
+      }
+    },
+    "p04": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": true, "Q6": true,
+      "motifs": {
+        "remarque": "L'ajout rapide ne bouge pas la lecture (IBU seul). Bon usage de A5 : module « Hors houblon 4 pistes » qui déplie les quatre causes. Cible « − résineux » posée à 0."
+      }
+    },
+    "p05": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": false, "Q6": true,
+      "motifs": {
+        "Q5": "Douze pistes encadrées à l'identique, cinq hachurées en règle graduée, et des pastilles noires floues plus grosses que le texte : effet jauge d'instrument. En A, deux marques par rangée sur Floral et Boisé et résineux (pastille de la bière et poignée de cible).",
+        "remarque": "« 50–70 » écrit sous la jauge (mineur). Les deux curseurs sous le radar sont des commandes (cible), pas un doublon."
+      }
+    },
+    "p06": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": true, "Q6": false,
+      "motifs": {
+        "Q6": "Radar : Floral et Boisé et résineux répétés en pistes sous le radar, sans commande (doublon). En B, la réponse n'arrive qu'après les 12 pistes et la bulle de demande.",
+        "remarque": "Pas de cible à glisser (NOTE : « pas de curseur à glisser dans cette structure »), alors que l'élément 6 du lot 2 la demande. En A, le parti dialogue ne se voit pas : l'écran est celui de p05 avec des anneaux à la place des pastilles."
+      }
+    },
+    "p07": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": false, "Q5": false, "Q6": false,
+      "motifs": {
+        "Q4": "Fantôme de voie (etat-b 13) : toucher Golding fait apparaître un fantôme dans la colonne Résineux, dans la bande (valeur « après » du modèle, environ 12), alors que la résine « trop » vient de la dégustation et que ses voies sont « faibles » : le dessin raconte que Golding remet la résine au style.",
+        "Q5": "B : console de douze colonnes grises identiques encadrées de + / −, noms couchés à la verticale sous les boutons. A : neuf rangées identiques à 12 cellules (108 cellules).",
+        "Q6": "A : tout le stock (neuf houblons, dont Galaxy et Sabro, non adaptés au style) prend près de la moitié de l'écran ; la lecture n'a ni noms ni réponse lisible."
+      }
+    },
+    "p08": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": false, "Q5": false, "Q6": false,
+      "motifs": {
+        "Q4": "Même fantôme trompeur que p07 sur la rangée Résineux (etat-b 13). Vignettes 3 × 4 sans légende : on ne sait pas quelle cellule est quelle famille (« une marque qui exige une légende au plan 1 est mal choisie »).",
+        "Q5": "A : neuf tuiles à damier et douze tuiles grises : un mur de cellules.",
+        "Q6": "A : le stock entier en tuiles fait la masse ; la lecture miniature n'a pas de noms."
+      }
+    },
+    "p09": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": false, "Q6": false,
+      "motifs": {
+        "Q5": "Douze colonnes grises identiques d'environ 950 px : la « console » du nom, la dalle déjà reprochée au lot 1.",
+        "Q6": "A : plus de la moitié de l'écran pour douze points ; la recette et les ajouts sont tassés dans le tiers haut.",
+        "remarque": "Boosters justes : l'ajout rapide montre l'effet en haltères sur les colonnes ; les cellules des houblons alignées sous les colonnes disent qui porte quoi."
+      }
+    },
+    "p10": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": true, "Q6": false,
+      "motifs": {
+        "Q6": "A : l'aile droite (« après ») répète l'aile gauche tant que rien n'est visé : la moitié du dessin est un doublon ; les trois familles attendues prennent chacune environ 125 px.",
+        "remarque": "La frise des moments est la meilleure traduction de « régler » : tourner le moment fait changer Nugget de couloir, l'ajout rapide tombe dans le couloir 10′. L'aile gauche se lit à l'envers (plus = vers la gauche)."
+      }
+    },
+    "p11": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": false, "Q6": false,
+      "motifs": {
+        "Q5": "Palissade de douze noms couchés, 60 cellules de profils, cinq colonnes hachurées (l'inconnu redevient la plus grosse texture, comme au lot 1), radar hachuré à secteurs : un instrument.",
+        "Q6": "Dense mais surchargé : chaque houblon porte 12 cellules alignées, les colonnes répètent la grille, la ligne de noms se lit de biais.",
+        "remarque": "Bonne idée à garder : le moment de l'ajout (10′ ⟳) recalcule l'IBU gagné de chaque puce (+5 → +0)."
+      }
+    }
+  },
+  "decompte_oui": {
+    "regle": "oui = houblons_dabord (A) + reponse_dabord (B) + Q1 à Q6, sur 8 ; à égalité, un seul fil par parti, puis Q1 (contenu intact) avant la présentation.",
+    "p01": 8, "p02": 7, "p03": 8, "p04": 8, "p05": 7, "p06": 6,
+    "p07": 4, "p08": 4, "p09": 5, "p10": 7, "p11": 6
+  },
+  "partis": {
+    "p01": "rail : une colonne de bande commune aux 12 familles, panneau en feuille",
+    "p02": "tuiles : 4 grandes (attendues + résine) et 8 petits multiples",
+    "p03": "tableau de biomarqueurs (ClyHealth) : rangée, piste bornée, pastille d'état",
+    "p04": "carte-réponse et modules (apps solaires, Météo)",
+    "p05": "curseurs entre deux pôles (Vivino), cible sur la piste",
+    "p06": "dialogue (Stardog) : bulles et puces",
+    "p07": "table de mixage : colonnes verticales à faders",
+    "p08": "bento : la même forme à trois échelles",
+    "p09": "console : tranches verticales et cellules alignées",
+    "p10": "frise d'ébullition et papillon (avant | après)",
+    "p11": "douze couloirs : grille de 12 colonnes sur tout l'écran"
+  },
+  "retenus": ["p01", "p03", "p04", "p02", "p05", "p10"],
+  "ecartes": [
+    { "id": "p06", "raison": "En A c'est l'écran de p05 (le dialogue ne se voit pas), sans cible à glisser ; en B la réponse passe sous les pistes ; pistes répétées sous le radar ; 6 oui, et p05 porte le même dessin avec la cible." },
+    { "id": "p11", "raison": "Parti original mais instrument : noms couchés, 60 cellules, colonnes hachurées où l'inconnu pèse le plus (Q5, Q6) ; 6 oui, sous les six retenus." },
+    { "id": "p09", "raison": "Dalle de colonnes sur 60 % de l'écran, défaut déjà reproché au lot 1 ; la recette est tassée au-dessus (houblons pas d'abord) ; 5 oui." },
+    { "id": "p07", "raison": "Console à faders (Q5), stock entier en catalogue (Q6) et fantôme qui fait rentrer la résine au style (Q4) ; 4 oui." },
+    { "id": "p08", "raison": "Damiers 3 × 4 sans légende, mur de tuiles, même fantôme trompeur que p07 ; 4 oui." }
+  ],
+  "defauts_communs": [
+    "Ajouter → voir : l'ajout rapide fait rouler l'IBU, mais la lecture ne bouge pas dans p03, p04, p07 et p11 ; p01, p02 et p09 montrent l'effet en haltères sur les familles. C'est pourtant le lien entre la recette et le panneau.",
+    "Cible « − résineux » incohérente d'un fil à l'autre : à 0 (bas de l'échelle) dans p03 à p06, comme le pack (cible 0 pour un cran −1) ; au bord de la bande dans p01, p02, p07, p08, p10 ; au-dessus de la bande dans p09. À trancher avant le tour 2, ou à garder comme différence connue.",
+    "Fantôme de voie : p07 et p08 dessinent la résine « après » du modèle (dans la bande) face à une résine « trop » qui vient de la dégustation ; les fils retenus ne le font pas, à vérifier quand même en tour 2.",
+    "Chiffres de la bande IBU écrits sous la jauge (« 50 70 » ou « 50–70 ») dans p01, p02, p05, p06 : le dessin les dit déjà (mineur)."
+  ]
+}

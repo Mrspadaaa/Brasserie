@@ -1,0 +1,40 @@
+x1 · Le simulateur au style. **Tiède** : la baseline l5b, enrichie, utilisable demain.
+
+- **L'idée** : une seule ligne de recette à régler, et la 16D qui répond tout de suite.
+  - Les réglages, au doigt : houblon (Citra, Cascade, Galaxy, Idaho 7), « + ensemble » (un second houblon dans le même dry hop), moment (60′, 10′, whirlpool, actif, après), dose (1, 2, 4, 8 g/L), jours (1 à 7), levure.
+  - La réponse : les 12 barres de l5b au style, avec trois ajouts :
+    - l'avant en pointillé ;
+    - la moustache bas–haut du simulé, qui s'ouvre d'une flèche quand la borne haute sort du dessin, avec « + » si elle est partielle ;
+    - « non simulé » hachuré quand le moteur ne dit rien, jamais 0.
+  - « Ce que ça change » écrit, avec ses unités (« Agrumes +4 crans »), et le compte des familles hors du style.
+  - La biotransformation de la levure, en mots et en pictos.
+  - Les vraies valeurs de ce réglage :
+    - l'huile apportée ;
+    - le rapport au seuil du linalol et du 4MMP, en bandes log sur un axe commun (seuil, ×10, ×1000) : l'écart ×35 000 du linalol se voit ;
+    - à chaud, l'IBU de la stout (60 → 160 IBU pour Citra 4 g/L à 60′, « trop amer ») ;
+    - ce qui reste à ce moment (4MMP −91 % à 60′, linalol 44–82 % en dry hop) ;
+    - la mesure publiée en bière (Citra 144 µg/L de linalol, E06), ou le trou (Galaxy : « aucune mesure »).
+  - **Pour choisir** : l'échelle. Les réglages d'un seul houblon (3 j) qui ne sortent d'aucune famille de la 16D, classés par un critère (plus floral, plus agrumes, plus tropical) ; toucher une ligne l'applique. C'est un classement par critère, pas un conseil.
+- **Ce qui tient** :
+  - Le profil vient du moteur profil-simule du pilote (`donnees/profils-simules.json`), lu par l'adaptateur de `socle-x.mjs` ; le stub de l'auteur est retiré.
+  - Les vraies valeurs viennent de `valeurs-reelles.json` (`reelles.mjs` : stock, fiches, moteur « pouvoir aromatique », H) et de `comparatifs-dryhop.json` (recherche J), chacune avec `data-source` et son mot : calcul, publié, mesuré, panel, fiche.
+  - « Pourquoi à 10′ pas à 60′ ? » se lit en deux touchers : à 60′, les barres ne bougent presque pas, et l'amertume passe de 60 à 160 IBU.
+  - Citra à 4 g/L après fermentation fait sortir trois familles de la 16D (agrumes, tropicaux, baies) ; Cascade, aucune. Ce sont les chiffres du moteur (agrumes ~37 contre ~24). Le résineux, déjà au-delà par la dégustation, est écrit à part (« déjà au-delà, ta dégustation »).
+  - Tout le reste de la baseline : la fiche à l'appui long, l'α du lot puis le livre et la plage (« cryo », « pellets », ≠), l'usage en mot, le stock en icône, la légende derrière « ? », la lentille au style et absolu.
+- **Ce qui casse** :
+  - 173 mots au premier écran : les cinq rangées de réglages et les vraies valeurs les portent.
+  - Le moteur n'a Verdant et Diamond que pour les ajouts cumulés et les suites. Sur un seul houblon, ils sont barrés, avec « non simulé ici ».
+  - Toucher une levure en « après » passe en dry hop actif, et le dit (« la levure agit en fermentation »). Le geste est commode, mais il change un second réglage.
+  - Un ajout cumulé se range à 2 + 2 g/L et 3 j, seules valeurs de `grillePaires`.
+  - Presque toutes les moustaches touchent le haut, car le moteur ne rogne aucune borne haute. C'est honnête, mais chargé.
+  - Les rapports au seuil du linalol et du 4MMP restent ceux du premier houblon, même dans un ajout cumulé (le nom du houblon est écrit).
+- **Ce qu'elle apprend, même rejetée** : une ligne de réglage suffit à tout montrer, mais les vraies valeurs du réglage, sous les barres, prennent autant de place que le simulé. L'échelle par critère est la seule aide au choix qui n'invente pas de « meilleur ».
+- **Contrôles** (indicatifs en v0, joués une fois sur `etat.html`, profil du moteur) :
+  - COMMUN : `COMMUN ECHEC 1 contrôle(s)` (mots ECHEC, 173 mots au premier écran pour 70 ; couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende, parlant OK)
+  - LISIBLE : `x1 · 23 pictos · 7 mesurées · 15 simulées · 0 faute(s)` → `LISIBLE OK`
+  - SIMULATION : `x1 · 1 simulation(s) · 26 réglage(s) · 7 mesurée(s) · le simulé bouge` → `SIMULATION OK`
+  - CUMUL : `x1 · 1 ajout(s) cumulé(s) · 4 choix de levure · biotransformation visible · la levure fait bouger le simulé` → `CUMUL OK`
+  - ALPHA : `x1 · 1 voies · 1 avec leur α` → `ALPHA OK`
+  - FICHE-BASELINE : `x1 · fiche de Citra · 12 familles nommées, 17 pictos · 0 faute(s)` → `FICHE-BASELINE OK`
+- **Pire contraste** : 4,64:1, « 3 familles hors du style » (#c2410c sur #fdf0ea, 12 px gras) ; aucun texte sous 4,5:1.
+- Générée par `node generateur-x1.mjs` (socle commun `socle-x.mjs`, `donnees-reelles.mjs`, `reelles.mjs` → `valeurs-reelles.json`). Captures : `node captures-x.mjs <page> <png> [hauteur] [--q=…] [--tap=…] [--appui=…] [--plein]`.

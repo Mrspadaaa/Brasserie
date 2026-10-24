@@ -1,0 +1,22 @@
+{
+ "ticket": 136,
+ "ancre": "t136-radar",
+ "court": "Radar de Comparer",
+ "titre": "Le radar de Comparer : voir chaque houblon (lot 16, 19.10 soir)",
+ "etat": "à choisir",
+ "puces": [
+  "« très compliqué à voir les différence avec les cileur sur le spider graph » ; « surtout genant là ». r0, l'actuel : les surfaces à 0,18 se mêlent (mauve, vert-gris) et les traits de 2 px s'y perdent.",
+  "r1 : contours seuls, épais. r2 : un seul houblon plein, celui que tu touches (sinon le premier), les autres en contour. r3 : un petit radar par houblon. r4 : contours à tirets différents.",
+  "Chaque variante à 3 houblons (comme la base) et à 4 (avec Motueka, en bleu ciel). Mêmes couleurs que les bandes au-dessus ; rien d'autre ne change dans Comparer.",
+  "Contrôle D77 : une seule surface pleine au plus, couleurs écartées, traits de 2,5 px au moins. r0 échoue (3 surfaces superposées) ; r1 à r4 passent. La base reste LOT OK."
+ ],
+ "images": [
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils16-radar-comparer/captures/planche-radar-4.png", "planche, 4 houblons"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils16-radar-comparer/captures/planche-radar-3.png", "planche, 3 houblons"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils16-radar-comparer/captures/r0-radar-4.png", "r0 l'actuel"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils16-radar-comparer/captures/r1-radar-4.png", "r1 contours seuls"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils16-radar-comparer/captures/r2-radar-4.png", "r2 un seul plein"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils16-radar-comparer/captures/r3-radar-4.png", "r3 un radar par houblon"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils16-radar-comparer/captures/r4-radar-4.png", "r4 tirets"]
+ ]
+}

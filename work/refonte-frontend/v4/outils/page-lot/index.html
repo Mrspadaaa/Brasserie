@@ -1,0 +1,721 @@
+<title>Lot 22 houblons</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Mise en page : une colonne de lecture au téléphone, une grille de « téléphones » pour comparer. Tout le contenu est écrit dans la page ; le script ne sert qu'à agrandir. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5f665a;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --houblon-doux: #e6efdc;
+  --ambre: #b97a12;
+  --refus: #a8473a;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 6px 20px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+    --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f; --refus: #e0806f;
+    --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+  --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f; --refus: #e0806f;
+  --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.5 var(--texte);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 64px;
+}
+.page { max-width: 1180px; margin: 0 auto; display: grid; gap: 48px; }
+h1, h2, h3 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.45rem, 4vw, 2rem); font-weight: 800; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+p { margin: 0; max-width: 65ch; }
+.sur-titre { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--discret); }
+header { display: grid; gap: 14px; }
+.choix { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); margin-top: 8px; }
+.choix a { display: grid; gap: 2px; padding: 14px 16px; border-radius: 12px; text-decoration: none; color: inherit; background: var(--carte); border: 1px solid var(--trait); }
+.choix a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+.choix b { font-family: var(--titre); font-size: 1.1rem; }
+.choix span { color: var(--discret); font-size: 0.92rem; }
+.avertissement { border-left: 4px solid var(--ambre); padding: 10px 14px; background: var(--carte); border-radius: 0 10px 10px 0; font-size: 0.95rem; max-width: 70ch; }
+section { display: grid; gap: 18px; scroll-margin-top: 16px; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.2rem; color: var(--houblon); }
+.lexique { display: grid; gap: 6px; font-size: 0.93rem; color: var(--discret); max-width: 75ch; }
+.lexique b { color: var(--encre); }
+.grille { display: grid; gap: 28px 22px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+.variante { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 18px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.defile { max-height: 78vh; overflow-y: auto; border: 1px solid var(--trait); border-radius: 18px; background: var(--carte); box-shadow: var(--ombre); }
+.defile img { display: block; width: 100%; height: auto; }
+.nom { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.code { font: 600 0.8rem/1 ui-monospace, "Cascadia Mono", monospace; color: var(--discret); }
+.puces { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.puces li { font-size: 0.8rem; padding: 3px 9px; border-radius: 999px; background: var(--houblon-doux); color: var(--encre); }
+.critique { font-size: 0.85rem; color: var(--discret); display: flex; gap: 8px; align-items: baseline; }
+.critique::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--discret); transform: translateY(-1px); }
+.critique.ok::before { background: var(--houblon); }
+.critique.reserve::before { background: var(--ambre); }
+.critique.non::before { background: var(--refus); }
+.plus { font: inherit; font-size: 0.85rem; color: var(--houblon); background: none; border: 0; padding: 0; cursor: pointer; text-align: left; text-decoration: underline; justify-self: start; }
+.paire { display: grid; gap: 28px 22px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+.picto { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); align-items: start; }
+.note { font-size: 0.9rem; color: var(--discret); max-width: 75ch; }
+footer { border-top: 1px solid var(--trait); padding-top: 18px; display: grid; gap: 8px; font-size: 0.9rem; color: var(--discret); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: rgb(10 12 9 / 90%); display: grid; place-items: start center; overflow-y: auto; padding: calc(60px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.visionneuse figure { margin: 0; display: grid; gap: 10px; justify-items: center; }
+.visionneuse img { width: min(430px, 100%); height: auto; border-radius: 16px; display: block; }
+.visionneuse figcaption { color: #eef2ea; font-size: 0.95rem; text-align: center; max-width: 430px; }
+.fermer { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); font: 600 1rem var(--texte); background: #eef2ea; color: #1c2019; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.nav { display: flex; gap: 10px; }
+.nav button { font: 600 0.95rem var(--texte); background: #2d3328; color: #eef2ea; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.reprise { background: var(--carte); border: 1px solid var(--trait); border-radius: 12px; padding: 12px 14px; }
+.reprise summary { cursor: pointer; font-weight: 700; }
+.reprise .note { margin-top: 8px; }
+.reprise table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+.reprise th, .reprise td { text-align: left; vertical-align: top; padding: 6px 6px; border-bottom: 1px solid var(--trait); overflow-wrap: anywhere; }
+.reprise th { font-family: var(--titre); }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · outil houblons · lot 22 bis · 22.10, nuit</p>
+    <h1>r6a, avec ce que tu avais noté</h1>
+    <p>Tu as choisi r6a, mais elle reprenait trop peu de ce que tu avais noté bon ou intéressant, à commencer par y1b. Voici r6a avec les 37 éléments que tu avais notés, sous deux formes. Touche une capture pour l'agrandir.</p>
+    <nav class="choix" aria-label="Ce qu'il reste à choisir">
+      <a href="#comparer"><b>1. Comparer : r6n1 ou r6n2</b><span>tout au premier écran, ou le premier écran de r6a et le reste à un toucher</span></a>
+      <a href="#carte"><b>2. La carte des outils</b><span>Substituer et Levure : une porte, ou un outil propre</span></a>
+      <a href="#epice"><b>3. Le picto « épicé »</b><span>ton choix : cannelle et clou croisés, dans la baseline</span></a>
+      <a href="#suite"><b>4. Dryhopper : 56 concepts</b><span>classés ; les 5 candidates s'améliorent</span></a>
+    </nav>
+    <p class="avertissement">L'avis du critique sous chaque maquette est indicatif. Il n'est pas encore calibré sur tes choix : c'est ton œil qui compte.</p>
+  </header>
+
+  <section id="comparer" aria-labelledby="t-comparer" data-voies="r6n1-reprise-tout r6n2-reprise-toucher r6n1-passe2 r6n2-passe2">
+    <h2 id="t-comparer">1. Comparer : r6a reprise</h2>
+    <p class="question">« Cascade, Idaho 7 ou Galaxy pour ma stout ? »</p>
+    <p>Seul le houblon change. Les deux gardent les choix de r6a : radar r2, dose égale, sans porte, descripteurs A. Le radar ne sature plus : une valeur au-delà de l'échelle est marquée d'une flèche au bout de l'axe, au lieu de pousser la bande au bord.</p>
+    <h3>Tes variantes de r6n2 (23.10)</h3>
+    <p class="note">Ta demande : « Fais mois quelques variantes de r6n2, avec les meilleures idées retenu. Et ensuite on sera bon ». Quatre variantes, chacune avec une idée de plus et la densité de r6n2 ; r6n2 d'abord, pour comparer.</p>
+    <div class="grille" data-voies="r6p1-nettoyee r6p2-reponse r6p3-defi r6p4-gagne-paie">
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6n2.png" data-legende="r6n2 · ton choix"><img src="img/r6n2.png" width="780" height="1688" alt="Premier écran de r6n2"></button>
+        <div class="nom"><span class="code">r6n2</span><h3>Ton choix</h3></div>
+        <ul class="puces"><li>79 mots</li><li>le reste à un toucher</li></ul>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6p1.png" data-legende="r6p1 · r6n2 finie"><img src="img/r6p1.png" width="780" height="1688" alt="Premier écran de r6p1"></button>
+        <div class="nom"><span class="code">r6p1</span><h3>r6n2 finie</h3></div>
+        <ul class="puces"><li>premier écran de r6n2</li><li>restes des critiques corrigés</li></ul>
+        <button class="plus" type="button" data-img="img/r6p1-toucher.png" data-legende="r6p1 : le dock ouvert">Voir le dock ouvert</button>
+        <p class="critique ok" id="critique-r6p1">Critique (indicatif) : montrable telle quelle : le premier écran de r6n2, tout ce qui restait à corriger l'est, et la fiche gagne une vraie valeur sourcée ; le radar reste le plus rose des quatre.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6p2.png" data-legende="r6p2 · la réponse d'abord"><img src="img/r6p2.png" width="780" height="1688" alt="Premier écran de r6p2"></button>
+        <div class="nom"><span class="code">r6p2</span><h3>La réponse d'abord</h3></div>
+        <ul class="puces"><li>« contre ★ » chiffré</li></ul>
+        <button class="plus" type="button" data-img="img/r6p2-toucher.png" data-legende="r6p2 : après un toucher">Voir après un toucher</button>
+        <p class="critique ok" id="critique-r6p2">Critique (indicatif) : montrable après une correction (un signe passait sous le mot « par ») : qui est devant, de combien, qui sort du style, en trois secondes.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6p3.png" data-legende="r6p3 · ton défi au premier écran"><img src="img/r6p3.png" width="780" height="1688" alt="Premier écran de r6p3"></button>
+        <div class="nom"><span class="code">r6p3</span><h3>Ton défi au premier écran</h3></div>
+        <ul class="puces"><li>Floral ↑ · Résineux ↓</li></ul>
+        <button class="plus" type="button" data-img="img/r6p3-toucher.png" data-legende="r6p3 : après un toucher">Voir après un toucher</button>
+        <p class="critique ok" id="critique-r6p3">Critique (indicatif) : montrable telle quelle : tes deux pistes montrent la leçon de l'écran (le houblon règle le floral, aucun ne baisse le résineux), r6n2 inchangée dessous.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6p4.png" data-legende="r6p4 · on gagne, on paie"><img src="img/r6p4.png" width="780" height="1688" alt="Premier écran de r6p4"></button>
+        <div class="nom"><span class="code">r6p4</span><h3>On gagne, on paie</h3></div>
+        <ul class="puces"><li>ce que chaque houblon apporte et coûte</li></ul>
+        <button class="plus" type="button" data-img="img/r6p4-toucher.png" data-legende="r6p4 : après un toucher">Voir après un toucher</button>
+        <p class="critique ok" id="critique-r6p4">Critique (indicatif) : montrable telle quelle : les trois paient le même résineux, la différence est dans ce qu'on gagne ; r6n2 intacte dessous.</p>
+      </article>
+    </div>
+    <h3>D'où elles viennent : r6a, puis r6n1 et r6n2</h3>
+    <div class="grille">
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6a.png" data-legende="r6a · ta base, pour mémoire"><img src="img/r6a.png" width="780" height="1688" alt="Premier écran de r6a, la variante choisie"></button>
+        <div class="nom"><span class="code">r6a</span><h3>Ta base, pour mémoire</h3></div>
+        <ul class="puces"><li>choisie le 22.10</li><li>79 mots</li></ul>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6n1.png" data-legende="r6n1 · tout au premier écran"><img src="img/r6n1.png" width="780" height="1688" alt="Premier écran de r6n1, tout au premier écran"></button>
+        <div class="nom"><span class="code">r6n1</span><h3>Tout au premier écran</h3></div>
+        <ul class="puces"><li>78 mots</li><li>28 repris</li><li>1 en contexte</li><li>8 en pont</li><li>0 écarté</li></ul>
+        <button class="plus" type="button" data-img="img/r6n1-toucher.png" data-legende="r6n1 : le défi ouvert et les 20 tirages">Voir un toucher : le défi et les 20 tirages</button>
+        <button class="plus" type="button" data-img="img/r6n1-preuve.png" data-legende="r6n1 : la preuve, chimie et vraies valeurs">Voir la preuve : chimie et vraies valeurs</button>
+        <p class="critique ok" id="critique-r6n1">Critique (indicatif), après la passe 2 : les cinq défauts sont corrigés, la colonne « Ta stout » de r6a est revenue ; reste un radar encore très rose.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/r6n2.png" data-legende="r6n2 · le premier écran de r6a, le reste à un toucher"><img src="img/r6n2.png" width="780" height="1688" alt="Premier écran de r6n2, celui de r6a avec un dock sous le pouce"></button>
+        <div class="nom"><span class="code">r6n2</span><h3>Le premier écran de r6a, le reste à un toucher</h3></div>
+        <ul class="puces"><li>79 mots</li><li>27 repris</li><li>2 en contexte</li><li>8 en pont</li><li>0 écarté</li></ul>
+        <button class="plus" type="button" data-img="img/r6n2-toucher.png" data-legende="r6n2 : le dock ouvert sur ton défi">Voir le dock ouvert : ton défi</button>
+        <button class="plus" type="button" data-img="img/r6n2-valeurs.png" data-legende="r6n2 : les vraies valeurs">Voir les vraies valeurs</button>
+        <button class="plus" type="button" data-img="img/r6n2-frise.png" data-legende="r6n2 : la frise, le pont vers Dryhopper">Voir la frise : le pont vers Dryhopper</button>
+        <p class="critique ok" id="critique-r6n2">Critique (indicatif), après la passe 2 : les quatre défauts sont corrigés (4ᵉ colonne, feuilles Souche et Frise) ; le premier écran est toujours celui de r6a.</p>
+      </article>
+    </div>
+    <details class="reprise">
+      <summary>Les 37 éléments que tu avais notés, et où ils sont</summary>
+      <p class="note">« Repris » : sur l'écran. « En contexte » : dans la ligne du haut, sans réglage. « Pont » : un lien vers l'outil où il vit (Dryhopper, Levure, Suggérer, la fiche), car Comparer ne fait varier que le houblon.</p>
+      <table>
+        <thead><tr><th scope="col">Ce que tu avais noté</th><th scope="col">r6n1</th><th scope="col">r6n2</th></tr></thead>
+        <tbody>
+          <tr><td>y1b, « face à ta stout »</td><td>réponse en tête</td><td>ligne de réponse, au repos</td></tr>
+          <tr><td>y1b, la pastille de famille</td><td>« par floral ⌄ », range les colonnes</td><td>« par floral ⌄ », au repos</td></tr>
+          <tr><td>y1b, la jauge d'amertume</td><td>IBU à 10′ du houblon en avant</td><td>Défi : « Amertume tenue »</td></tr>
+          <tr><td>y1b, le dock sous le pouce</td><td>pont vers Dryhopper</td><td>pont vers Dryhopper ; il range aussi les touchers</td></tr>
+          <tr><td>y1b, le trait de ta stout</td><td>dans chaque barre et piste</td><td>dans les barres et au radar</td></tr>
+          <tr><td>y1b, les bandes du style</td><td>barres au style</td><td>rangées au repos</td></tr>
+          <tr><td>y1b, la ligne de contexte</td><td>en contexte</td><td>en contexte</td></tr>
+          <tr><td>y1b, le défi</td><td>« Défi 2/4 »</td><td>dock : « Défi 2/4 »</td></tr>
+          <tr><td>y1b, le tirage et la preuve</td><td>« Tire 20 » et « Preuve »</td><td>Preuve : 20 bières tirées</td></tr>
+          <tr><td>y1b, la levure en pastilles</td><td>pont vers Levure</td><td>pont vers Levure</td></tr>
+          <tr><td>y1b, le second houblon « puis »</td><td>pont vers Dryhopper</td><td>pont vers Dryhopper</td></tr>
+          <tr><td>y3, le panel OSU</td><td>à côté du radar</td><td>Preuve</td></tr>
+          <tr><td>y3, « pour égaler »</td><td>dose d'effet égal sous agrumes et tropicaux</td><td>dock : « Égaler »</td></tr>
+          <tr><td>v1, les vraies valeurs</td><td>trait mesuré sous chaque barre ; Preuve</td><td>dock : « Valeurs »</td></tr>
+          <tr><td>v1, « qui en a le plus »</td><td>couleur du trait mesuré</td><td>Valeurs, en duel</td></tr>
+          <tr><td>v1, le linalol en bière</td><td>vignette à côté du radar</td><td>Valeurs</td></tr>
+          <tr><td>w2, la piste commune</td><td>pistes d'objectif</td><td>Défi</td></tr>
+          <tr><td>w2, le verdict en tête</td><td>✓ dans, ⚠ sort</td><td>têtes de colonne</td></tr>
+          <tr><td>x3b, la cuve jour après jour</td><td>pont vers Dryhopper</td><td>pont vers Dryhopper</td></tr>
+          <tr><td>a2b, ce que la levure change</td><td>pont vers Levure</td><td>pont vers Levure</td></tr>
+          <tr><td>d1, tout ouvert</td><td>chimie ouverte, rangée par famille</td><td>Valeurs, chimie rangée par famille</td></tr>
+          <tr><td>l5b, les barres</td><td>dans chaque cellule</td><td>au repos</td></tr>
+          <tr><td>l5b, les pistes d'objectif</td><td>Floral ↑ et Résineux ↓, en tête</td><td>Défi</td></tr>
+          <tr><td>l8, la disposition</td><td>objectifs en tête, puis les colonnes</td><td>familles en rangées, houblons en colonnes</td></tr>
+          <tr><td>l8b, les verdicts et pictos au trait</td><td>Atteint, Approche, Aucune</td><td>Défi : Atteint, Approche, Aucune</td></tr>
+          <tr><td>l8b, la légende cachée</td><td>« ? » en haut</td><td>« ? » en haut</td></tr>
+          <tr><td>l5f, la carte : rôle et α</td><td>tête de colonne</td><td>tête de colonne</td></tr>
+          <tr><td>m4, le radar de dégustation</td><td>« trop / plus », en contexte</td><td>« Ta stout : trop / plus »</td></tr>
+          <tr><td>h4, le radar face à ta demande</td><td>flèches Floral et Résineux</td><td>flèches au radar</td></tr>
+          <tr><td>Comparer, variante 3 : les plages par source</td><td>α en tête, plages dans Preuve</td><td>Valeurs</td></tr>
+          <tr><td>Comparer, variante 3 : le radar superposé</td><td>radar r2</td><td>radar r2</td></tr>
+          <tr><td>p06, la grille des familles</td><td>familles en tête de colonne</td><td>Valeurs</td></tr>
+          <tr><td>p2, le radar avec intervalle</td><td>intervalle en trait sur chaque axe</td><td>intervalle en moustache</td></tr>
+          <tr><td>s5, les deux objectifs</td><td>pont vers Suggérer</td><td>pont vers Suggérer</td></tr>
+          <tr><td>p4, le « + » vers la comparaison</td><td>« + » : Nelson Sauvin en 4<sup>e</sup> colonne</td><td>« + » : 4<sup>e</sup> colonne</td></tr>
+          <tr><td>g1, la fiche</td><td>ⓘ ou appui long</td><td>appui long</td></tr>
+          <tr><td>La fiche courte Citra cryo</td><td>ⓘ, fiche courte</td><td>appui long</td></tr>
+        </tbody>
+      </table>
+    </details>
+    <p class="note">Les deux ont eu une passe de correction (23.10) : ce sont elles que tu vois ici. À corriger par toi : la visée des objectifs (« un cran au-delà du style ») vient de nous, pas de tes données ; c'est elle qui fait « Atteint » pour Idaho 7. La couleur de Nelson Sauvin (bleu) est provisoire.</p>
+  </section>
+
+  <section id="carte" aria-labelledby="t-carte">
+    <h2 id="t-carte">2. La carte des outils</h2>
+    <p>Toujours à choisir : Substituer et Levure, chacun en porte ou en outil propre. Chaque écran pose une seule question, avec un seul réglage libre. La carte entière défile dans son cadre.</p>
+    <div class="paire">
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/carte.png" width="780" height="6266" alt="La carte des outils, de Ma bière à Levure"></div>
+        <figcaption><h3>La carte entière</h3></figcaption>
+      </figure>
+      <div class="variante">
+        <button class="ecran" type="button" data-img="img/substituer-porte.png" data-legende="Substituer, en porte vers Comparer"><img src="img/substituer-porte.png" width="780" height="1688" alt="Substituer en porte"></button>
+        <h3>Substituer : une porte vers Comparer</h3>
+      </div>
+      <div class="variante">
+        <button class="ecran" type="button" data-img="img/substituer-outil.png" data-legende="Substituer, en outil propre"><img src="img/substituer-outil.png" width="780" height="1688" alt="Substituer en outil propre"></button>
+        <h3>Substituer : un outil propre</h3>
+      </div>
+      <div class="variante">
+        <button class="ecran" type="button" data-img="img/levure-etape.png" data-legende="Levure, dernière étape de Dryhopper"><img src="img/levure-etape.png" width="780" height="1688" alt="Levure en dernière étape de Dryhopper"></button>
+        <h3>Levure : la dernière étape de Dryhopper</h3>
+      </div>
+      <div class="variante">
+        <button class="ecran" type="button" data-img="img/levure-outil.png" data-legende="Levure, en outil propre"><img src="img/levure-outil.png" width="780" height="1688" alt="Levure en outil propre"></button>
+        <h3>Levure : un outil propre</h3>
+      </div>
+    </div>
+  </section>
+
+  <section id="epice" aria-labelledby="t-epice" data-voies="r4d-a-douce r4d-b-sensation r4d-c-signe r4d-d-libre r4d-e-metaphore r4d-f-greffe">
+    <h2 id="t-epice">3. Le picto « épicé » : 48 propositions</h2>
+    <p class="question">Ton choix : cannelle et clou croisés (série F, la première). Il est maintenant dans la baseline, et chaque nouvelle maquette le reprend.</p>
+    <p>Après ton « Je veux un forme qui représente vraiment ce que c'est, genre canellle vanille, ou clou de girofle ect... » : six séries de huit, dont quatre en épices réelles. Chaque proposition est montrée à 12, 16 et 24 px, à côté de la feuille d'Herbacé et des brins de Végétal. Chaque cadre défile.</p>
+    <p class="note">Vu à la loupe par les dessinateurs : à 12 px, le clou de girofle et la badiane se nomment sans hésiter ; la cannelle et la vanille demandent encore du travail. Les meilleures seront améliorées, puis montrées en tête de cette page. Les séries B et C ont été dessinées avant ta précision : elles restent montrées.</p>
+    <div class="picto">
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-a.png" width="780" height="2060" alt="Série A, huit épices douces à trois tailles"></div>
+        <figcaption><h3>A · L'épice douce, vue autrement</h3><p class="note">cannelle vue de bout, gousse de vanille fendue, pain d'épices, gingembre, clou de girofle, sachet de cuve, cardamome tranchée, bâtons de cannelle</p></figcaption>
+      </figure>
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-d.png" width="1170" height="2532" alt="Série D, huit épices réelles cadrées autrement"></div>
+        <figcaption><h3>D · Huit épices réelles, cadrées autrement</h3><p class="note">cannelle en rouleau, clou de girofle, badiane, gousse de vanille, muscade coupée, réglisse, épices de Noël, pain d'épices</p></figcaption>
+      </figure>
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-e.png" width="780" height="2410" alt="Série E, huit épices entières"></div>
+        <figcaption><h3>E · L'épice entière</h3><p class="note">badiane, muscade, anis vert, réglisse, genièvre, carvi, coriandre, fève tonka</p></figcaption>
+      </figure>
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-f.png" width="780" height="2154" alt="Série F, cannelle, vanille et girofle cadrés librement"></div>
+        <figcaption><h3>F · Cannelle, vanille et girofle, cadrés librement</h3><p class="note">cannelle et girofle croisés, clous croisés, poignée de clous, clou au-dessus du moût, cannelle en gros plan, vanille et sa crosse, vanille fendue, vanille et girofle côte à côte</p></figcaption>
+      </figure>
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-b.png" width="1170" height="2598" alt="Série B, huit sensations"></div>
+        <figcaption><h3>B · La sensation (pas une épice)</h3><p class="note">la langue qui picote, ça monte au nez, la grimace, la forme du piquant, la poussière qui jaillit, du doux au piquant, le cactus, les étincelles</p></figcaption>
+      </figure>
+      <figure class="variante" style="margin:0">
+        <div class="defile"><img src="img/epice-c.png" width="1170" height="2691" alt="Série C, huit signes"></div>
+        <figcaption><h3>C · Le signe (pas une épice)</h3><p class="note">É, dièse, pique, cycle moléculaire, fumet vif, éclat, 辛 (« épicé » en chinois), méandre</p></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="suite" aria-labelledby="t-suite" data-voies="r7a-dryhopper r7b-dryhopper r7c-dryhopper r7d-dryhopper r7e-dryhopper r7f-dryhopper r7g-dryhopper">
+    <h2 id="t-suite">4. Dryhopper : les 56 concepts, classés</h2>
+    <p class="question">« Quand ajouter Idaho 7 ? »</p>
+    <p>Sur la base de y1b : sept séries de huit petits concepts, chacune avec son approche (le geste, la réponse, les vraies valeurs, le simulateur, la frise, créatif à fond, libre) et ses trois chaleurs (froide : tes idées retenues, affinées ; tiède : une forme imposée ; chaude : une forme libre). Ils sont rangés dans l'ordre du critique ; son classement est indicatif, et rien n'est écarté. Les cinq candidates (g1, e5, b4, a1, d8) vont être améliorées avec les meilleures idées des autres, puis montrées en tête de cette page.</p>
+    <p class="note">Ce que le lot apprend, d'après le critique : à chaud, Idaho 7 sort la stout de sa bande d'amertume (60′ ~162 IBU, 10′ ~97, whirlpool ~75, pour une 16D à 50–70) pour peu de nez ; le dry hop actif donne ~+22 de floral pour ~+14 de résineux, après ~+23 pour ~+20 ; au-delà de 2 jours, rien ne bouge.</p>
+    <h3>Les cinq retenues, améliorées (passes 2 et 3, 23.10)</h3>
+    <p class="note">Chacune a reçu ses greffes (les bonnes idées prises aux autres concepts), le picto « épicé » que tu as choisi, et tous les contrôles : un seul réglage libre (le moment), 80 mots au plus au premier écran, le geste par 5′, la frise jusqu'aux jours de contact, une vraie valeur sourcée, la levure en étape ou en lien.</p>
+    <div class="grille" data-voies="r7a2-passe2 r7b2-passe2 r7d2-passe2 r7e2-passe2 r7g2-passe2">
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh2-g1.png" data-legende="g1 amélioré · Libre"><img src="img/dh2-g1.png" width="780" height="1688" alt="Premier écran de g1 amélioré"></button>
+        <div class="nom"><span class="code">g1</span><h3>Libre, amélioré</h3></div>
+        <ul class="puces"><li>série G</li><li>77 mots</li></ul>
+        <button class="plus" type="button" data-img="img/dh2-g1-geste.png" data-legende="g1 amélioré : après un geste sur le moment">Voir après un geste</button>
+        <p class="critique ok" id="verdict-g1">Critique (indicatif), après la passe 2 : satisfaisant : on voit que l'ébullition n'apporte que de l'amer et que l'actif à 2 j est le meilleur ; reste à dire ce que veut dire la zone hachurée.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh2-e5.png" data-legende="e5 amélioré · La frise"><img src="img/dh2-e5.png" width="780" height="1688" alt="Premier écran de e5 amélioré"></button>
+        <div class="nom"><span class="code">e5</span><h3>La frise, améliorée</h3></div>
+        <ul class="puces"><li>série E</li><li>76 mots</li><li>passe 3, sans vide : 0,39 → 0,61</li></ul>
+        <button class="plus" type="button" data-img="img/dh2-e5-geste.png" data-legende="e5 amélioré : après un geste sur le moment">Voir après un geste</button>
+        <p class="critique ok" id="verdict-e5">Critique (indicatif), après la passe 3 : satisfaisant : la pile par famille remplit le haut de la figure ; on voit ce qu'on gagne et ce qu'on paie.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh2-b4.png" data-legende="b4 amélioré · La réponse d'abord"><img src="img/dh2-b4.png" width="780" height="1688" alt="Premier écran de b4 amélioré"></button>
+        <div class="nom"><span class="code">b4</span><h3>La réponse d'abord, améliorée</h3></div>
+        <ul class="puces"><li>série B</li><li>80 mots</li><li>passe 3, sans vide : 0,35 → 0,65</li></ul>
+        <button class="plus" type="button" data-img="img/dh2-b4-geste.png" data-legende="b4 amélioré : après un geste sur le moment">Voir après un geste</button>
+        <p class="critique ok" id="verdict-b4">Critique (indicatif), après la passe 3 : satisfaisant, au niveau de r6n2 : la réponse en gros, le tableau par moment, sans vide.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh2-a1.png" data-legende="a1 amélioré · Le geste d'abord"><img src="img/dh2-a1.png" width="780" height="1688" alt="Premier écran de a1 amélioré"></button>
+        <div class="nom"><span class="code">a1</span><h3>Le geste d'abord, amélioré</h3></div>
+        <ul class="puces"><li>série A</li><li>79 mots</li><li>passe 3, sans vide : 0,41 → 0,64</li></ul>
+        <button class="plus" type="button" data-img="img/dh2-a1-geste.png" data-legende="a1 amélioré : après un geste sur le moment">Voir après un geste</button>
+        <p class="critique ok" id="verdict-a1">Critique (indicatif), après la passe 3 : satisfaisant : le vide est comblé sans un mot de plus ; l'amertume devient une figure.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh2-d8.png" data-legende="d8 amélioré · Le simulateur"><img src="img/dh2-d8.png" width="780" height="1688" alt="Premier écran de d8 amélioré"></button>
+        <div class="nom"><span class="code">d8</span><h3>Le simulateur, amélioré</h3></div>
+        <ul class="puces"><li>série D</li><li>77 mots</li><li>passe 3, sans vide : 0,52 → 0,62</li></ul>
+        <button class="plus" type="button" data-img="img/dh2-d8-geste.png" data-legende="d8 amélioré : après un geste sur le moment">Voir après un geste</button>
+        <p class="critique ok" id="verdict-d8">Critique (indicatif), après la passe 3 : satisfaisant : la table d'IBU chiffrée par étape, sans vide.</p>
+      </article>
+    </div>
+    <h3>Les 56 concepts, classés (v0)</h3>
+    <div class="grille">
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-g1.png" data-legende="1. g1 · Libre · chaude · candidate"><img src="img/dh-g1.png" width="780" height="1688" alt="Premier écran du concept g1, série G"></button>
+        <div class="nom"><span class="code">1 · g1</span><h3>Libre</h3></div>
+        <ul class="puces"><li>série G</li><li>chaude</li><li>candidate</li></ul>
+        <p class="critique ok">courbes floral/baies/résineux + barres d'IBU orangées puis hachurées « à cru », « meilleur » : réponse et piège en trois secondes.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-e5.png" data-legende="2. e5 · La frise · tiède · candidate"><img src="img/dh-e5.png" width="780" height="1688" alt="Premier écran du concept e5, série E"></button>
+        <div class="nom"><span class="code">2 · e5</span><h3>La frise</h3></div>
+        <ul class="puces"><li>série E</li><li>tiède</li><li>candidate</li></ul>
+        <p class="critique ok">« on gagne / on paie » : la frise divergente dit le prix de chaque moment, la façon dont il pense.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-b4.png" data-legende="3. b4 · La réponse d'abord · tiède · candidate"><img src="img/dh-b4.png" width="780" height="1688" alt="Premier écran du concept b4, série B"></button>
+        <div class="nom"><span class="code">3 · b4</span><h3>La réponse d'abord</h3></div>
+        <ul class="puces"><li>série B</li><li>tiède</li><li>candidate</li></ul>
+        <p class="critique ok">le podium : la réponse, et pourquoi, en cinq lignes ; au geste, la perte chiffrée « contre ★ ».</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-a1.png" data-legende="4. a1 · Le geste d'abord · froide · candidate"><img src="img/dh-a1.png" width="780" height="1688" alt="Premier écran du concept a1, série A"></button>
+        <div class="nom"><span class="code">4 · a1</span><h3>Le geste d'abord</h3></div>
+        <ul class="puces"><li>série A</li><li>froide</li><li>candidate</li></ul>
+        <p class="critique ok">y1b affiné : relief du floral au-dessus du rail, loupe ×5,8, sauts, la vraie fiche ; le choix du brasseur, enrichi.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-d8.png" data-legende="5. d8 · Le simulateur · chaude · candidate"><img src="img/dh-d8.png" width="780" height="1688" alt="Premier écran du concept d8, série D"></button>
+        <div class="nom"><span class="code">5 · d8</span><h3>Le simulateur</h3></div>
+        <ul class="puces"><li>série D</li><li>chaude</li><li>candidate</li></ul>
+        <p class="critique ok">le ruban : la couleur qui arrive, avant/après, quatre mini-rubans par étape ; la part emportée en hachuré.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-e3.png" data-legende="6. e3 · La frise · tiède"><img src="img/dh-e3.png" width="780" height="1688" alt="Premier écran du concept e3, série E"></button>
+        <div class="nom"><span class="code">6 · e3</span><h3>La frise</h3></div>
+        <ul class="puces"><li>série E</li><li>tiède</li></ul>
+        <p class="critique">quatre cases comparées d'un coup, IBU orangé, la case touchée s'ouvre ; la plus naturelle des « dernière étape Levure ».</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-c7.png" data-legende="7. c7 · Les vraies valeurs d'abord · tiède"><img src="img/dh-c7.png" width="780" height="1688" alt="Premier écran du concept c7, série C"></button>
+        <div class="nom"><span class="code">7 · c7</span><h3>Les vraies valeurs d'abord</h3></div>
+        <ul class="puces"><li>série C</li><li>tiède</li></ul>
+        <p class="critique">la table des preuves : mesure en haut, simulé en bas, alignée sur le rail ; actif/après lisible d'un coup.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-g5.png" data-legende="8. g5 · Libre · chaude"><img src="img/dh-g5.png" width="780" height="1688" alt="Premier écran du concept g5, série G"></button>
+        <div class="nom"><span class="code">8 · g5</span><h3>Libre</h3></div>
+        <ul class="puces"><li>série G</li><li>chaude</li></ul>
+        <p class="critique">carte de chaleur 12 × 22 avec ligne IBU et colonne « meilleur » : tout le brassin sans glisser.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-a8.png" data-legende="9. a8 · Le geste d'abord · tiède"><img src="img/dh-a8.png" width="780" height="1688" alt="Premier écran du concept a8, série A"></button>
+        <div class="nom"><span class="code">9 · a8</span><h3>Le geste d'abord</h3></div>
+        <ul class="puces"><li>série A</li><li>tiède</li></ul>
+        <p class="critique">quatre postes en tuiles, « trop amer » en orangé : le non à la chaudière se lit sans rien d'autre.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-b1.png" data-legende="10. b1 · La réponse d'abord · froide"><img src="img/dh-b1.png" width="780" height="1688" alt="Premier écran du concept b1, série B"></button>
+        <div class="nom"><span class="code">10 · b1</span><h3>La réponse d'abord</h3></div>
+        <ul class="puces"><li>série B</li><li>froide</li></ul>
+        <p class="critique">réponse en tête, 12 barres l5b, dock collant avec loupe ×5,9 : la carte, propre.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-e1.png" data-legende="11. e1 · La frise · froide"><img src="img/dh-e1.png" width="780" height="1688" alt="Premier écran du concept e1, série E"></button>
+        <div class="nom"><span class="code">11 · e1</span><h3>La frise</h3></div>
+        <ul class="puces"><li>série E</li><li>froide</li></ul>
+        <p class="critique">y1b dont le dock est un profil du brassin (hauteur de floral par case, orangé dessous).</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-d6.png" data-legende="12. d6 · Le simulateur · chaude"><img src="img/dh-d6.png" width="780" height="1688" alt="Premier écran du concept d6, série D"></button>
+        <div class="nom"><span class="code">12 · d6</span><h3>Le simulateur</h3></div>
+        <ul class="puces"><li>série D</li><li>chaude</li></ul>
+        <p class="critique">trajectoire floral × IBU : tôt amer et pauvre, tard floral ; couloir « à cru » hachuré.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-a7.png" data-legende="13. a7 · Le geste d'abord · tiède"><img src="img/dh-a7.png" width="780" height="1688" alt="Premier écran du concept a7, série A"></button>
+        <div class="nom"><span class="code">13 · a7</span><h3>Le geste d'abord</h3></div>
+        <ul class="puces"><li>série A</li><li>tiède</li></ul>
+        <p class="critique">le graphe est la commande : recouvert par g1, plus net.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-g8.png" data-legende="14. g8 · Libre · chaude"><img src="img/dh-g8.png" width="780" height="1688" alt="Premier écran du concept g8, série G"></button>
+        <div class="nom"><span class="code">14 · g8</span><h3>Libre</h3></div>
+        <ul class="puces"><li>série G</li><li>chaude</li></ul>
+        <p class="critique">barres divergentes « contre après · 3 j » : ce que l'actif change pour qui dry hoppe après.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-b5.png" data-legende="15. b5 · La réponse d'abord · tiède"><img src="img/dh-b5.png" width="780" height="1688" alt="Premier écran du concept b5, série B"></button>
+        <div class="nom"><span class="code">15 · b5</span><h3>La réponse d'abord</h3></div>
+        <ul class="puces"><li>série B</li><li>tiède</li></ul>
+        <p class="critique">deux courbes alignées sur la frise, « le floral plafonne là », interpolé grisé.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-d2.png" data-legende="16. d2 · Le simulateur · tiède"><img src="img/dh-d2.png" width="780" height="1688" alt="Premier écran du concept d2, série D"></button>
+        <div class="nom"><span class="code">16 · d2</span><h3>Le simulateur</h3></div>
+        <ul class="puces"><li>série D</li><li>tiède</li></ul>
+        <p class="critique">les barres l5b de la carte avec la queue hachurée de ce que le CO₂ emporte.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-g4.png" data-legende="17. g4 · Libre · chaude"><img src="img/dh-g4.png" width="780" height="1688" alt="Premier écran du concept g4, série G"></button>
+        <div class="nom"><span class="code">17 · g4</span><h3>Libre</h3></div>
+        <ul class="puces"><li>série G</li><li>chaude</li></ul>
+        <p class="critique">la phrase qui se règle, départ à 10′ pour montrer le piège, « le meilleur » à un toucher.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-a4.png" data-legende="18. a4 · Le geste d'abord · tiède"><img src="img/dh-a4.png" width="780" height="1688" alt="Premier écran du concept a4, série A"></button>
+        <div class="nom"><span class="code">18 · a4</span><h3>Le geste d'abord</h3></div>
+        <ul class="puces"><li>série A</li><li>tiède</li></ul>
+        <p class="critique">quatre pastilles d'étape au-dessus de cartes ; 207 mots, les voisines polluent.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-e2.png" data-legende="19. e2 · La frise · froide"><img src="img/dh-e2.png" width="780" height="1688" alt="Premier écran du concept e2, série E"></button>
+        <div class="nom"><span class="code">19 · e2</span><h3>La frise</h3></div>
+        <ul class="puces"><li>série E</li><li>froide</li></ul>
+        <p class="critique">x3b réduit, « 1 j sans gain » hachuré : l'honnêteté dessinée.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-b2.png" data-legende="20. b2 · La réponse d'abord · froide"><img src="img/dh-b2.png" width="780" height="1688" alt="Premier écran du concept b2, série B"></button>
+        <div class="nom"><span class="code">20 · b2</span><h3>La réponse d'abord</h3></div>
+        <ul class="puces"><li>série B</li><li>froide</li></ul>
+        <p class="critique">la chaîne « Ma bière → + Idaho 7 → Levure › » en légende, 12 colonnes.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-a2.png" data-legende="21. a2 · Le geste d'abord · froide"><img src="img/dh-a2.png" width="780" height="1688" alt="Premier écran du concept a2, série A"></button>
+        <div class="nom"><span class="code">21 · a2</span><h3>Le geste d'abord</h3></div>
+        <ul class="puces"><li>série A</li><li>froide</li></ul>
+        <p class="critique">x3b réduit, bloc étirable ; le pincer à deux doigts ne se devine pas.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-f5.png" data-legende="22. f5 · Créatif à fond · chaude"><img src="img/dh-f5.png" width="780" height="1688" alt="Premier écran du concept f5, série F"></button>
+        <div class="nom"><span class="code">22 · f5</span><h3>Créatif à fond</h3></div>
+        <ul class="puces"><li>série F</li><li>chaude</li></ul>
+        <p class="critique">l'agenda avec la courbe d'activité de la levure, « à confirmer à la densité » : une vraie idée de brasseur, trop de texte dessous.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-g6.png" data-legende="23. g6 · Libre · chaude"><img src="img/dh-g6.png" width="780" height="1688" alt="Premier écran du concept g6, série G"></button>
+        <div class="nom"><span class="code">23 · g6</span><h3>Libre</h3></div>
+        <ul class="puces"><li>série G</li><li>chaude</li></ul>
+        <p class="critique">le houblon posé sur la courbe de densité, « la levure travaille ».</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-d4.png" data-legende="24. d4 · Le simulateur · tiède"><img src="img/dh-d4.png" width="780" height="1688" alt="Premier écran du concept d4, série D"></button>
+        <div class="nom"><span class="code">24 · d4</span><h3>Le simulateur</h3></div>
+        <ul class="puces"><li>série D</li><li>tiède</li></ul>
+        <p class="critique">les trois cadrans de ta demande (floral plus, résineux moins, amertume tenue).</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-g3.png" data-legende="25. g3 · Libre · chaude"><img src="img/dh-g3.png" width="780" height="1688" alt="Premier écran du concept g3, série G"></button>
+        <div class="nom"><span class="code">25 · g3</span><h3>Libre</h3></div>
+        <ul class="puces"><li>série G</li><li>chaude</li></ul>
+        <p class="critique">l'orgue des 12 colonnes et l'arc du pouce : deux bonnes idées qui ne se parlent pas encore.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-b8.png" data-legende="26. b8 · La réponse d'abord · tiède"><img src="img/dh-b8.png" width="780" height="1688" alt="Premier écran du concept b8, série B"></button>
+        <div class="nom"><span class="code">26 · b8</span><h3>La réponse d'abord</h3></div>
+        <ul class="puces"><li>série B</li><li>tiède</li></ul>
+        <p class="critique">carte de chaleur 12 × 24, colonne de la réponse cerclée ; interpolé pas assez pâle.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-f4.png" data-legende="27. f4 · Créatif à fond · chaude"><img src="img/dh-f4.png" width="780" height="1688" alt="Premier écran du concept f4, série F"></button>
+        <div class="nom"><span class="code">27 · f4</span><h3>Créatif à fond</h3></div>
+        <ul class="puces"><li>série F</li><li>chaude</li></ul>
+        <p class="critique">carte de chaleur avec les points 16D à droite ; unité « crans » hors du lot.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-c2.png" data-legende="28. c2 · Les vraies valeurs d'abord · froide"><img src="img/dh-c2.png" width="780" height="1688" alt="Premier écran du concept c2, série C"></button>
+        <div class="nom"><span class="code">28 · c2</span><h3>Les vraies valeurs d'abord</h3></div>
+        <ul class="puces"><li>série C</li><li>froide</li></ul>
+        <p class="critique">y1b avec la preuve sous le pouce ; jalons flacon/jury muets sur le rail (D90).</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-c6.png" data-legende="29. c6 · Les vraies valeurs d'abord · tiède"><img src="img/dh-c6.png" width="780" height="1688" alt="Premier écran du concept c6, série C"></button>
+        <div class="nom"><span class="code">29 · c6</span><h3>Les vraies valeurs d'abord</h3></div>
+        <ul class="puces"><li>série C</li><li>tiède</li></ul>
+        <p class="critique">le jury sur 15 en ronds creux puis pleins : la science en dégustation.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-c1.png" data-legende="30. c1 · Les vraies valeurs d'abord · froide"><img src="img/dh-c1.png" width="780" height="1688" alt="Premier écran du concept c1, série C"></button>
+        <div class="nom"><span class="code">30 · c1</span><h3>Les vraies valeurs d'abord</h3></div>
+        <ul class="puces"><li>série C</li><li>froide</li></ul>
+        <p class="critique">l'écran de la carte avec des µg/L en tête (D94) ; chaîne x3b en bas.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-a3.png" data-legende="31. a3 · Le geste d'abord · tiède"><img src="img/dh-a3.png" width="780" height="1688" alt="Premier écran du concept a3, série A"></button>
+        <div class="nom"><span class="code">31 · a3</span><h3>Le geste d'abord</h3></div>
+        <ul class="puces"><li>série A</li><li>tiède</li></ul>
+        <p class="critique">la brasserie en colonne, tirer vers le bas ; tout en longueur.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-g2.png" data-legende="32. g2 · Libre · chaude"><img src="img/dh-g2.png" width="780" height="1688" alt="Premier écran du concept g2, série G"></button>
+        <div class="nom"><span class="code">32 · g2</span><h3>Libre</h3></div>
+        <ul class="puces"><li>série G</li><li>chaude</li></ul>
+        <p class="critique">bascule nez/bouche un peu gadget ; le seul G avec dock et loupe.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-d1.png" data-legende="33. d1 · Le simulateur · tiède"><img src="img/dh-d1.png" width="780" height="1688" alt="Premier écran du concept d1, série D"></button>
+        <div class="nom"><span class="code">33 · d1</span><h3>Le simulateur</h3></div>
+        <ul class="puces"><li>série D</li><li>tiède</li></ul>
+        <p class="critique">le radar respire ; la pointe du résineux écrase le centre.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-b7.png" data-legende="34. b7 · La réponse d'abord · tiède"><img src="img/dh-b7.png" width="780" height="1688" alt="Premier écran du concept b7, série B"></button>
+        <div class="nom"><span class="code">34 · b7</span><h3>La réponse d'abord</h3></div>
+        <ul class="puces"><li>série B</li><li>tiède</li></ul>
+        <p class="critique">plan floral × résineux avec le chemin des moments ; il faut lire les axes ; Pomona intrus.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-e8.png" data-legende="35. e8 · La frise · chaude"><img src="img/dh-e8.png" width="780" height="1688" alt="Premier écran du concept e8, série E"></button>
+        <div class="nom"><span class="code">35 · e8</span><h3>La frise</h3></div>
+        <ul class="puces"><li>série E</li><li>chaude</li></ul>
+        <p class="critique">isotype : un picto = 5 points ; se lit comme un jeu, imprécis.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-a6.png" data-legende="36. a6 · Le geste d'abord · tiède"><img src="img/dh-a6.png" width="780" height="1688" alt="Premier écran du concept a6, série A"></button>
+        <div class="nom"><span class="code">36 · a6</span><h3>Le geste d'abord</h3></div>
+        <ul class="puces"><li>série A</li><li>tiède</li></ul>
+        <p class="critique">tirer le floral pose le moment : la question inversée, mais on ne voit pas où l'on est.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-a5.png" data-legende="37. a5 · Le geste d'abord · tiède"><img src="img/dh-a5.png" width="780" height="1688" alt="Premier écran du concept a5, série A"></button>
+        <div class="nom"><span class="code">37 · a5</span><h3>Le geste d'abord</h3></div>
+        <ul class="puces"><li>série A</li><li>tiède</li></ul>
+        <p class="critique">horloge « tenir » : jolie forme, geste qu'il ne découvrira pas.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-f1.png" data-legende="38. f1 · Créatif à fond · chaude"><img src="img/dh-f1.png" width="780" height="1688" alt="Premier écran du concept f1, série F"></button>
+        <div class="nom"><span class="code">38 · f1</span><h3>Créatif à fond</h3></div>
+        <ul class="puces"><li>série F</li><li>chaude</li></ul>
+        <p class="critique">la cuve en coupe ; valeurs « ~+0,3 » qui ne disent rien.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-c4.png" data-legende="39. c4 · Les vraies valeurs d'abord · tiède"><img src="img/dh-c4.png" width="780" height="1688" alt="Premier écran du concept c4, série C"></button>
+        <div class="nom"><span class="code">39 · c4</span><h3>Les vraies valeurs d'abord</h3></div>
+        <ul class="puces"><li>série C</li><li>tiède</li></ul>
+        <p class="critique">courbe de contact en % d'huile ; « 1 h = 4 j » est la seule chose qui reste.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-d3.png" data-legende="40. d3 · Le simulateur · chaude"><img src="img/dh-d3.png" width="780" height="1688" alt="Premier écran du concept d3, série D"></button>
+        <div class="nom"><span class="code">40 · d3</span><h3>Le simulateur</h3></div>
+        <ul class="puces"><li>série D</li><li>chaude</li></ul>
+        <p class="critique">le nez du verre en filets ondulés ; original, illisible en valeurs.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-d7.png" data-legende="41. d7 · Le simulateur · chaude"><img src="img/dh-d7.png" width="780" height="1688" alt="Premier écran du concept d7, série D"></button>
+        <div class="nom"><span class="code">41 · d7</span><h3>Le simulateur</h3></div>
+        <ul class="puces"><li>série D</li><li>chaude</li></ul>
+        <p class="critique">le bouton du brassin ; couronne belle, roue centrale illisible.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-e7.png" data-legende="42. e7 · La frise · chaude"><img src="img/dh-e7.png" width="780" height="1688" alt="Premier écran du concept e7, série E"></button>
+        <div class="nom"><span class="code">42 · e7</span><h3>La frise</h3></div>
+        <ul class="puces"><li>série E</li><li>chaude</li></ul>
+        <p class="critique">le cadran ; pouce dans l'anneau, rayons courts.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-f8.png" data-legende="43. f8 · Créatif à fond · chaude"><img src="img/dh-f8.png" width="780" height="1688" alt="Premier écran du concept f8, série F"></button>
+        <div class="nom"><span class="code">43 · f8</span><h3>Créatif à fond</h3></div>
+        <ul class="puces"><li>série F</li><li>chaude</li></ul>
+        <p class="critique">le compromis fruité × IBU ; abstrait, « 3 cr. ».</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-b3.png" data-legende="44. b3 · La réponse d'abord · tiède"><img src="img/dh-b3.png" width="780" height="1688" alt="Premier écran du concept b3, série B"></button>
+        <div class="nom"><span class="code">44 · b3</span><h3>La réponse d'abord</h3></div>
+        <ul class="puces"><li>série B</li><li>tiède</li></ul>
+        <p class="critique">la balance ; « solde ~+8 » est une convention qu'il ne demandera pas.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-f6.png" data-legende="45. f6 · Créatif à fond · chaude"><img src="img/dh-f6.png" width="780" height="1688" alt="Premier écran du concept f6, série F"></button>
+        <div class="nom"><span class="code">45 · f6</span><h3>Créatif à fond</h3></div>
+        <ul class="puces"><li>série F</li><li>chaude</li></ul>
+        <p class="critique">le barboteur ; le « ~17 % emporté » vaut une greffe, pas le dessin.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-f7.png" data-legende="46. f7 · Créatif à fond · chaude"><img src="img/dh-f7.png" width="780" height="1688" alt="Premier écran du concept f7, série F"></button>
+        <div class="nom"><span class="code">46 · f7</span><h3>Créatif à fond</h3></div>
+        <ul class="puces"><li>série F</li><li>chaude</li></ul>
+        <p class="critique">nez du verre en bulles ; ronds vides, icônes muettes.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-g7.png" data-legende="47. g7 · Libre · chaude"><img src="img/dh-g7.png" width="780" height="1688" alt="Premier écran du concept g7, série G"></button>
+        <div class="nom"><span class="code">47 · g7</span><h3>Libre</h3></div>
+        <ul class="puces"><li>série G</li><li>chaude</li></ul>
+        <p class="critique">radar + ascenseur ; l'ascenseur vaut une greffe, le radar ne se lit pas.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-f3.png" data-legende="48. f3 · Créatif à fond · chaude"><img src="img/dh-f3.png" width="780" height="1688" alt="Premier écran du concept f3, série F"></button>
+        <div class="nom"><span class="code">48 · f3</span><h3>Créatif à fond</h3></div>
+        <ul class="puces"><li>série F</li><li>chaude</li></ul>
+        <p class="critique">radar dans un anneau de moments.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-c3.png" data-legende="49. c3 · Les vraies valeurs d'abord · tiède"><img src="img/dh-c3.png" width="780" height="1688" alt="Premier écran du concept c3, série C"></button>
+        <div class="nom"><span class="code">49 · c3</span><h3>Les vraies valeurs d'abord</h3></div>
+        <ul class="puces"><li>série C</li><li>tiède</li></ul>
+        <p class="critique">brassin vertical à sept mesures ; une frise de papiers.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-e4.png" data-legende="50. e4 · La frise · tiède"><img src="img/dh-e4.png" width="780" height="1688" alt="Premier écran du concept e4, série E"></button>
+        <div class="nom"><span class="code">50 · e4</span><h3>La frise</h3></div>
+        <ul class="puces"><li>série E</li><li>tiède</li></ul>
+        <p class="critique">la frise debout : 24 lignes, un tableur (D2).</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-c5.png" data-legende="51. c5 · Les vraies valeurs d'abord · tiède"><img src="img/dh-c5.png" width="780" height="1688" alt="Premier écran du concept c5, série C"></button>
+        <div class="nom"><span class="code">51 · c5</span><h3>Les vraies valeurs d'abord</h3></div>
+        <ul class="puces"><li>série C</li><li>tiède</li></ul>
+        <p class="critique">quatre composés face au seuil + radar : le d1 du lot 20 en plus propre (D94).</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-c8.png" data-legende="52. c8 · Les vraies valeurs d'abord · tiède"><img src="img/dh-c8.png" width="780" height="1688" alt="Premier écran du concept c8, série C"></button>
+        <div class="nom"><span class="code">52 · c8</span><h3>Les vraies valeurs d'abord</h3></div>
+        <ul class="puces"><li>série C</li><li>tiède</li></ul>
+        <p class="critique">face au témoin en µg/L log : des tchèques et du Citra pour un Idaho 7.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-d5.png" data-legende="53. d5 · Le simulateur · chaude"><img src="img/dh-d5.png" width="780" height="1688" alt="Premier écran du concept d5, série D"></button>
+        <div class="nom"><span class="code">53 · d5</span><h3>Le simulateur</h3></div>
+        <ul class="puces"><li>série D</li><li>chaude</li></ul>
+        <p class="critique">les fioles : chimie au premier plan ; la teneur du lot (CoA) vaut une greffe.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-b6.png" data-legende="54. b6 · La réponse d'abord · tiède"><img src="img/dh-b6.png" width="780" height="1688" alt="Premier écran du concept b6, série B"></button>
+        <div class="nom"><span class="code">54 · b6</span><h3>La réponse d'abord</h3></div>
+        <ul class="puces"><li>série B</li><li>tiède</li></ul>
+        <p class="critique">radar écrasé par le résineux.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-e6.png" data-legende="55. e6 · La frise · tiède"><img src="img/dh-e6.png" width="780" height="1688" alt="Premier écran du concept e6, série E"></button>
+        <div class="nom"><span class="code">55 · e6</span><h3>La frise</h3></div>
+        <ul class="puces"><li>série E</li><li>tiède</li></ul>
+        <p class="critique">grand radar + cinq mini radars quasiment identiques (D38, D77).</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh-f2.png" data-legende="56. f2 · Créatif à fond · chaude"><img src="img/dh-f2.png" width="780" height="1688" alt="Premier écran du concept f2, série F"></button>
+        <div class="nom"><span class="code">56 · f2</span><h3>Créatif à fond</h3></div>
+        <ul class="puces"><li>série F</li><li>chaude</li></ul>
+        <p class="critique">un paragraphe de quatre lignes et une balance : trop de texte (D1).</p>
+      </article>
+    </div>
+  </section>
+
+  <footer>
+    <p>Données : stout export 16 °P à 4,75 % vol., 4 g/L de chaque houblon, après fermentation, 3 jours, US-05. Le simulé est marqué « ~ ». L'α de Galaxy vient de sa fiche (≠ du lot).</p>
+    <p>Pour répondre : commente directement sur la page, ou dis-le dans la conversation. Exemple : « r6n2, mais le défi au premier écran ; Substituer en porte ».</p>
+  </footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-label="Capture agrandie">
+  <button class="fermer" id="fermer" type="button">Fermer</button>
+  <figure>
+    <img id="vis-img" alt="">
+    <figcaption id="vis-legende"></figcaption>
+    <div class="nav" id="vis-nav" hidden>
+      <button type="button" id="vis-prec">◀ Précédente</button>
+      <button type="button" id="vis-suiv">Suivante ▶</button>
+    </div>
+  </figure>
+</div>
+
+<script>
+// Agrandir au toucher ; passer d'une variante de Comparer à l'autre. Le contenu ne dépend pas de ce script.
+(function () {
+  const vis = document.getElementById('visionneuse');
+  const visImg = document.getElementById('vis-img');
+  const visLeg = document.getElementById('vis-legende');
+  const visNav = document.getElementById('vis-nav');
+  const ordre = Array.from(document.querySelectorAll('.grille .ecran')).map((b) => ({ img: b.dataset.img, legende: b.dataset.legende }));
+  let rang = -1;
+  let retour = null;
+  function ouvrir(img, legende, depuis) {
+    retour = depuis || retour;
+    visImg.src = img; visImg.alt = legende; visLeg.textContent = legende;
+    rang = ordre.findIndex((o) => o.img === img);
+    visNav.hidden = rang < 0;
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('fermer').focus();
+  }
+  function fermer() { vis.hidden = true; visImg.removeAttribute('src'); if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang < 0) return; rang = (rang + pas + ordre.length) % ordre.length; ouvrir(ordre[rang].img, ordre[rang].legende); }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-img]');
+    if (b) ouvrir(b.dataset.img, b.dataset.legende, b);
+  });
+  document.getElementById('fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', () => aller(-1));
+  document.getElementById('vis-suiv').addEventListener('click', () => aller(1));
+  vis.addEventListener('click', (e) => { if (e.target === vis) fermer(); });
+  document.addEventListener('keydown', (e) => {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

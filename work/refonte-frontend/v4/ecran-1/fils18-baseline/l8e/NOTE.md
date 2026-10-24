@@ -1,0 +1,28 @@
+- **Ce qui tient** : l8b à l'identique (disposition, typographie, couleurs, verdicts, tri, fiche), avec quatre changements.
+  - **Pictos d'arôme au trait de l2 Carnet** :
+    - le dessin v3 au ton texte de chaque famille, comme l2 (de 4,96:1 pour agrumes à 7,05:1 pour épicé sur blanc) ;
+    - un crayon léger (déplacement 0,8 contre 1,4 dans l2, plus net sur l8b) et un trait de 1,6 px rendu à toute taille ;
+    - plus de lavis, de disque pâle ni de halo.
+  - **L'α de chaque houblon sur chaque voie** (c1 : `voies[].fiches[].alpha`) :
+    - après le nom, l'α du lot en stock, qui fait la dose (« α 8,1% », en mono), puis la plage des fiches, plus discrète, après un petit livre (« 5–8,5% ») ;
+    - pour un houblon à acheter, la plage seule ;
+    - un lot hors de ses fiches (Nelson Sauvin, Galaxy) porte ≠, en gris, sans orangé ;
+    - Citra cryo montre « 24,8% » puis « 10–15% pellets ». La fiche écrit « α : fiches du Citra en pellets ; celle du cryo manque. », et l'autre note de la base (« Mon lot … : hors des plages de ses fiches. ») revient aussi.
+  - **Plus de pictos par voie** (de q2b), sur la 2ᵉ ligne : l'usage (goutte, arôme, les deux ; plein si un fournisseur l'atteste, pâle s'il est déduit de l'α), la marque de moment (ébullition, dry hop actif, levure), la dose et le stock. La biotransformation de la voie dry hop reste sur sa ligne.
+  - **La légende** : un petit « ? » dans le coin de l'en-tête (`legende-bouton`) ouvre une feuille (`legende`). Elle nomme les 12 familles, les signes des réponses, l'usage, l'α du lot et des fiches, ≠, pellets, le stock, les moments et les barres. Fermée, elle ne compte ni ne gêne.
+  - **Les barres de l5b** remplacent les jauges :
+    - une par case, debout, devant la zone du style (pâle, son plafond en filet du ton texte), l'orangé au-delà du style, un trait noir pour une baisse ;
+    - 8 px par cran au lieu de 6, et 13 px de large au lieu de 7, plafonnées à 3 crans avec une flèche « dépasse » ;
+    - les hauteurs passent à l'absolu avec la lentille.
+  - **En moins, pour tenir 70 mots** : « voie houblon » sous « Aucune », le bouton « Hors houblon » le dit.
+- **Ce qui casse** :
+  - Les voies à deux houblons passent sur trois lignes (deux houblons et leurs α, puis les pictos), et les voies prennent 61 px en médiane contre 50.
+  - « pellets » est un mot de plus sur les deux voies de Citra cryo.
+  - Les baisses de remplacer Nugget font un pointillé noir sur la ligne.
+  - Le crayon se voit à peine à 18 px : l8e et l8f diffèrent surtout par le ton du trait.
+  - Barres / Radar est inerte ; « Comparer (2) » mène au comparer de q2b.
+- **Contrôles** :
+  - COMMUN OK (MOTS 67, COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD), ALPHA OK (15 voies sur 15 avec un houblon), PLACE OK (6 voies, 61 px) ;
+  - les 12 du brief sont OK ;
+  - les fiches comptent de 54 à 76 mots.
+- **Pire contraste** : 4,65:1, « Plus agrumes » (#856e0c, 12 px) sur sa tuile #fcf8e3, comme l8b.

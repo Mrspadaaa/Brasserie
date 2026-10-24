@@ -1,0 +1,49 @@
+e4 · Ce qui départage : le ladder qui classe seulement sur ce qui sépare (relance du critique, SYNTHESE §2).
+
+- **Ce qui tient** :
+  - **Les échelons de dose** où chaque houblon sort de la 16D, au repère simulé (`profils-simules.json`, corrigé à 4,75 % vol.).
+    - La grille du moteur donne les échelons : ≤ 1, 1–2, 2–4, 4–8 g/L, « reste à 8 g/L ».
+    - Deux houblons sur le même échelon ne se départagent pas : ils restent groupés sous « ≈ non départagés », par ordre alphabétique, sans rang.
+    - Entre deux échelons, l'ordre serait une interpolation : on ne l'écrit pas.
+    - Les bornes du moteur sont écrites une fois (« au repère · bornes ≤ 1 à > 8 g/L ») : la bande, elle, ne sépare personne.
+  - **Ce que la mesure prouve**, et seulement cela :
+    - en tropical et en petits fruits, le 4MMP mesuré par une même méthode (Hopsteiner 2024) met Citra devant Cascade (×2,6 à ×16), et Galaxy devant Cascade (×2,6 au moins) ;
+    - en floral, E06 met Citra devant Nelson Sauvin pour le linalol, ×4,2 au-dessus de la bière sans houblon ;
+    - en résineux, E06 met Citra devant Nelson Sauvin pour le myrcène ;
+    - toutes familles, l'huile par gramme met Galaxy devant Nelson Sauvin (×1,2 à ×6,3), dite « une force, pas un goût ».
+    - Chaque preuve dit si le repère simulé est d'accord. Une preuve qui joue dans un échelon ordonne ses deux houblons (Citra au-dessus de Nelson Sauvin, dans l'échelon « reste », en floral). Les autres sont dits « sans preuve pour ce goût ».
+  - **Ensemble, 2 + 2 g/L** : les 15 paires simulées, rangées en « sortent » et « restent », et « aucune étude ne mesure deux houblons ensemble ».
+  - **Le geste, au premier écran** : « ta dose », un curseur aimanté sur 1, 2, 4 et 8 g/L.
+    - La ligne glisse entre les échelons ; ceux au-dessus passent « hors », en orangé.
+    - La phrase-réponse suit : « À 4 g/L, actif : Citra, Galaxy sortent de la 16D ; Cascade, Idaho 7, Motueka, Nelson Sauvin restent. »
+    - Prouvé au doigt dans `geste-e4.json` (`jouer-e4.mjs`) :
+      - Citra et Galaxy sortent à 4 g/L, personne à 2 g/L, encore eux à 8 g/L ;
+      - la ligne se déplace (442 → 337 → 473 px) ;
+      - 5 animations pendant le glissé, rejoué sans « mouvement réduit » ;
+      - en agrumes, Pomona fait passer Idaho 7 de « reste » à « 4–8 g/L ».
+  - **Les retouches communes appliquées** :
+    - départ en dry hop actif avec US-05, « Verdant, Diamond : pas encore simulées » dit une fois ;
+    - un seul signe d'ex æquo, écrit ;
+    - la levure fait bouger le simulé dès le premier toucher ;
+    - les explications vont dans la légende (« Pourquoi des échelons ») ;
+    - aucun code sans mot (crans et points avec leur unité, « bio-transfo » écrit) ;
+    - le résineux est dit une fois : « ta dégustation : déjà au-dessus » ;
+    - seulement 6 fiches embarquées (1,1 Mo, contre 1,7 Mo pour e1).
+  - Restent de la baseline : au style et absolu, mini piste devant la zone de la 16D, α du lot puis des fiches, stock en icône, légende derrière « ? », fiche à l'appui long, preuves au toucher.
+- **Ce qui casse** :
+  - Six houblons seulement, ceux que le profil simulé couvre.
+  - Les échelons reposent sur le repère, pas sur la bande. Le repère est une convention à valider ; la page le dit (« au repère »).
+  - Peu de preuves mesurées, faute d'études. Idaho 7 et Motueka n'en ont aucune.
+  - En tropical, la couleur de la famille et l'orangé du « hors du style » se ressemblent sur les mini pistes.
+  - Le résineux n'a pas d'échelons : la dégustation est déjà au-dessus du style.
+- **Contrôles** :
+  - `controle-commun --sans=mots` : COMMUN OK (COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE et PARLANT sont OK).
+  - `mots-premier-ecran --sans-donnees --max=70` : 67 mots (hors données), MOTS OK.
+  - `controle-lisible` : LISIBLE OK (23 pictos, 6 mesurées, 6 simulées, 0 faute).
+  - `controle-simulation` : SIMULATION OK.
+  - `controle-cumul-levure` : CUMUL OK (15 ajouts cumulés, la levure fait bouger le simulé, biotransformation visible).
+  - `controle-alpha` : ALPHA OK (21 voies, 21 avec leur α).
+  - `controle-fiche-baseline` : FICHE-BASELINE OK (fiche de Citra, 12 familles, 24 pictos, 0 faute).
+  - Geste : `geste-e4.json`, sans erreur.
+- **Pire contraste** : 4,64:1, « ~+4 » (orangé sur le fond rosé d'une pastille « hors »).
+- Générée par `generateur-e4.mjs` et `runtime-e4.js`, avec le socle de e1. Captures : `node ../e1/captures-etats.mjs e4`, dans `../captures/e4-*.png`.

@@ -1,0 +1,24 @@
+- **Ce qui tient** : la disposition de l8 est gardée, l'habillage vient de q2b.
+  - **La disposition** :
+    - les verdicts en tête ;
+    - le moment de chaque groupe en titre ;
+    - la matrice, une colonne par famille, avec la jauge debout au ton de la famille ;
+    - le picto une seule fois, en tête de colonne fixe ;
+    - le tri au toucher d'une tête de colonne.
+  - **L'habillage q2b** :
+    - les surfaces blanches et grises (#ececf1), le tableau en carte blanche à ombre légère avec le filet noir des voies au même effet ;
+    - une tuile pâle par objectif, au ton fond de sa famille ;
+    - les pictos duo v3 en tête de colonne, les rayons 2, 4 et 8 px ou pilule.
+  - **La typographie de l'app** (DESIGN.md) : Source Sans 3 pour ce qui se dit, IBM Plex Mono pour les mesures (« 10′ », grammes, crans), en 12, 14 et 16 px seulement. Les moments sont des titres de groupe de 14 px, distingués par le poids, pas par la taille.
+  - **Corrigé depuis l8** :
+    - le nom de la voie a sa propre ligne sur toute la largeur, et « Motueka + Nelson Sauvin » tient sur une ligne ;
+    - les colonnes font 21 px et les traits de jauge 15 × 6 px (12 × 4 dans l8) ;
+    - chaque verdict a son signe lucide : cercle coché pour « Atteint », flèche vers la ligne pour « Approche », cercle barré pour « Aucune » ;
+    - le sens de la demande est une flèche dessinée, plus un caractère.
+- **Ce qui casse** :
+  - La dose et le stock passent sous le nom, à gauche des cases : la colonne de gauche ne porte plus le nom.
+  - La jauge d'une baisse (remplacer Nugget) reste un trait sur un point, peu lisible.
+  - Barres / Radar est inerte ; « Comparer (2) » mène au comparer de q2b.
+  - Dans la fiche : 3 mots par famille plus « +N », pas de liste des familles non décrites, Celeia tirée du catalogue.
+- **Contrôles** : les 12 contrôles du brief sont OK (MOTS 63, COULEURS 4 teintes, AU-STYLE, STANDARD, SURVOL, FICHE, FIL6, AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE, BLOCS). PLACE (D84) est OK : 7 voies au premier écran, 50 px en médiane. Les fiches comptent de 54 à 72 mots.
+- **Pire contraste** : 4,65:1, « Plus agrumes » (ton texte agrumes #856e0c, 12 px) sur sa tuile #fcf8e3.

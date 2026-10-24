@@ -1,0 +1,56 @@
+w3b · Dessine ta bière, seconde passe. w3 reste intacte pour comparer.
+
+- **Ce qui tient** :
+  - **Le geste au premier écran.** Le brasseur **glisse** sa cible sur la piste d'une famille. Au-dessus du doigt, une loupe ×3 (mesurée : 54 px pour un demi-cran, contre 18 sur la piste) dit « Floral · cible 2,5 crans », avec les crans et la zone de la 16D. La page cherche pendant le geste.
+    - Un toucher pose la cible ; un toucher à gauche de la piste l'efface ; les flèches du clavier la déplacent.
+    - Le résineux est grisé, « hors houblon (ta dégustation) », une seule fois et hors de la figure.
+  - **La réponse en une ligne, sous forme de phrase de recette (greffe de w1)** : « ~ ça tient · floral ~ 1,2 pour 1 cran · Mets Citra 2 g/L actif 1 j seul avec US-05 ».
+    - Houblon, dose et jours sont cherchés par la page. Les mots se touchent : « si tu t'en écartes » ouvre le même geste, un mot changé, avec ses crans et « tient / presque / loin / sort ». Choisir une case fixe le mot ; « tout libérer » le rend.
+    - Moment, assemblage et levure sont fixés par le brasseur, en trois rangées visibles.
+  - **Départ en dry hop actif avec US-05.** Chaque réglage visible bouge au premier toucher (preuve jouée) : Pomona fait passer le floral de 1,3 à 1,5, « après » change le geste.
+    - **Le mot d'assemblage « seul / ensemble / puis » (greffe de z4)** : les 90 paires, et les 9 cas K3 et K4 (un houblon puis l'autre, avec les quatre levures).
+    - Verdant et Diamond ne sont jamais barrés. Hors de leur cas, la page dit une fois « on ne sait pas : Verdant n'est simulée qu'à deux houblons » et propose « passer à ensemble » ou « passer à puis ». Rien ne bascule en silence.
+  - **Par défaut : dans ta 16D, un houblon, 4 g/L au plus.** Il n'y a plus d'Idaho 7 à 8 g/L en tête. La cible de départ est floral +1 cran (« je la veux plus floral »).
+  - **Trois façons d'y aller, sage / franc / osé (greffe de w2)** :
+    - Franc : le plus proche dans tes limites ;
+    - Sage : le plus léger presque aussi proche ;
+    - Osé : sans limite, à un toucher.
+    - Leurs repères S, F, O se lisent « sur la même piste », sous les cartes.
+  - **Le verdict en mots (greffe de w5)** : « ça tient », « presque », « ne marchera pas », « on ne sait pas », et « sort de ta 16D » en orangé.
+    - Si ça ne tient pas, la raison est donnée (« le plus proche dans ta 16D, à 4 g/L au plus ») avec « fais plutôt : Osé, ~ 2,4, sort de ta 16D » à toucher.
+  - **À un toucher, les trois blocs communs** :
+    - **Ton défi (x5)** : quatre cartes tirées de ta dégustation (plus floral atteint ou non, moins résineux « hors houblon, le houblon en ajoute », amertume 50–70 avec l'IBU de ta stout, calcul de l'app, et « dans ta 16D »).
+    - **Tire une bière (y5)** : chaque toucher tire une bière possible dans la plage ~ simulée, un point par famille, avec le compte de celles qui sortent de la 16D. Le tirage est stable tant que rien ne change ; la preuve le vérifie (`tirageStable: true`).
+    - **La preuve (u5)** : le mur des mesures en bière (4 houblons × 5 composés, trous hachurés, « à vérifier » écrit) ; « la simulation tombe-t-elle juste ? » en cinq lignes (juste, trop haut, plus rapide, plus lent, sous la mesure) ; Lafontaine 2018 en lecture H, « vérifiée sur l'article (K) » ; les bandes logarithmiques ; les trous ; la règle de recherche.
+  - **Les retouches communes** :
+    - la plage du simulé est un voile pâle, et la borne haute non publiée s'efface au bout (une seule marque par barre) ;
+    - aucun « +1 » sans unité ;
+    - le stock en icône grise, « à acheter », qui ne bloque jamais ;
+    - les acquis de la baseline : au style / absolu, α du lot puis des fiches avec ≠, usage en mot, « ? », appui long vers la fiche l8g, pictos au trait.
+  - Données régénérées sur `profils-simules.json` à 4,75 % vol. (Citra à 10′ ne sort plus en agrumes) et sur `comparatifs-dryhop.json` corrigé (E04 en lecture H).
+- **Ce qui casse** :
+  - 132 mots au premier écran au total (110 visés). Les rangées de réglages et les douze pistes nommées entrent en entier dans les 844 px.
+  - Les trois rangées de réglages prennent de la hauteur. Pendant le glissé, la loupe couvre la rangée des levures et la légende.
+  - Le floral de la 16D reste dur à atteindre : au-delà d'environ 1,5 cran, Franc dit « ne marchera pas ». C'est la réponse du moteur, qui sous-estime probablement Idaho 7 (note du moteur).
+  - Dans les cartes et dans « sur la même piste », les houblons sont nommés sans α ni appui long, pour ne pas répéter les plages. L'α et la fiche sont sur le geste choisi et dans « les plus proches ».
+  - Le critère d'écart (manque plein, dépassement moitié, 0,03 par g/L) est une convention, écrite dans la preuve et sous « les plus proches ».
+  - Le tirage est triangulaire autour du centre du moteur, borné à 100 : c'est une convention de la page, écrite sur la page.
+- **Preuve du geste** : `w3b/jouer-w3b.mjs` (puppeteer-core, écran tactile émulé) → `w3b/geste-w3b.json`, captures `w3b-avant`, `w3b-pendant`, `w3b-apres`, `w3b-pomona`, `w3b-ose`, `w3b-ensemble`, `w3b-tirage`. Floral : cible 1 → 2,5 crans, et « ~ ça tient » (Citra 2 g/L actif, floral 1,2, barre de 43 px) devient « ~ ne marchera pas » (Idaho 7 4 g/L, floral 1,3, 46 px). Loupe visible pendant le geste, « Floral · cible 2,5 crans », ×3. Aucune erreur de page.
+- **Contrôles** (joués sur `etat.html`) :
+  - COMMUN OK avec `--sans=mots` : couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende et parlant OK ;
+  - MOTS OK avec `--sans-donnees --max=70` : 69 mots hors données ; sans l'option, 132 ;
+  - LISIBLE OK (14 pictos, 2 mesurées, 29 simulées, 0 faute) ; SIMULATION OK (30 réglages, le simulé bouge) ; CUMUL OK (5 choix de levure, biotransformation visible, la levure fait bouger le simulé) ; ALPHA OK (5 voies sur 5) ; FICHE-BASELINE OK (Citra, 12 familles, 17 pictos, 0 faute).
+- **Pire contraste** : 4,96:1, « Agrumes » (ton texte de la famille sur blanc).
+- **Troisième passe (20.10)** :
+  - les trois rangées de réglages sont fondues dans la phrase : « actif ⌄ », « seul ⌄ », « US-05 ⌄ » sont des mots-réglages ; un toucher passe au choix suivant et ouvre la liste, chaque choix avec ses crans et son verdict (« non simulé · on ne sait pas » pour Verdant ou Diamond seul) ;
+  - la cible se lit « floral ~1,2 cran (visé 1) » ;
+  - Osé, c'est le même houblon et le même assemblage que Franc, sans limite. Au départ, il dit « rien de plus » (plus de paire Idaho 7 + Motueka) ; après le geste, Idaho 7 8 g/L, « sort » ;
+  - « Les plus proches » est replié derrière un bouton.
+  - Contrôles :
+    - COMMUN OK (`--sans=mots`) ;
+    - MOTS OK : 64 mots hors données ; 121 au total ;
+    - LISIBLE, SIMULATION, CUMUL, ALPHA et FICHE-BASELINE OK.
+  - Geste rejoué (`geste-w3b.json`, aucune erreur), avec ces différences :
+    - les touchers suivants passent par les mots : levure → Pomona, moment → après, seul → ensemble ;
+    - « ensemble » trouve Citra + Motueka (floral ~1,4).
+- Généré par `w3b/generer-w3b.mjs`, avec le socle `w1/socle-w.mjs` et `w1/donnees-w.mjs`. Captures d'états : `w1/captures-w.mjs w3b`.

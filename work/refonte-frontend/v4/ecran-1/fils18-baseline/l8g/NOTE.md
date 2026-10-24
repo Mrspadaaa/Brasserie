@@ -1,0 +1,39 @@
+- **Ce qui tient** : l8e, prolongé après les retours du brasseur sur son téléphone. Le reste de l8e est gardé : barres de voie de l5b, α, légende, pictos au trait (ton texte, crayon léger). l8e et l8f ne sont pas modifiés.
+  - **L'usage en mot**, avec les mots du brasseur, discret, après l'α de chaque houblon :
+    - « amérisant », « aromatique », « mixte » ;
+    - attesté par un fournisseur, le mot est en encre ; déduit de l'α, il reste pâle (gris, plus léger) et garde son `data-source` ;
+    - la goutte et le souffle ont disparu de la voie.
+  - **Sous chaque objectif, la piste de l5b**, sur toute la largeur (342 px) :
+    - le rail de ma bière, la zone du style en pâle avec son plafond, la barre de la meilleure voie et la visée en tirets ;
+    - le résineux est inversé : ma bière à droite, la visée hors de la piste avec « ‹ visée ».
+  - **Retirées** :
+    - la bande « ‹ visée | visée » et ses deux flèches d'axe ;
+    - les traits de visée sur toute la hauteur. Sur les barres de groupe, la visée n'est plus qu'un tiret sans mot sur la ligne de sa famille, et « +1 cran » se pose après le tiret au lieu de le croiser.
+  - **La fiche parle le langage de la page** (D93) :
+    - l'α des voies, le lot d'abord, puis le livre et la plage, ≠, « pellets » ;
+    - l'usage en mot ;
+    - les familles par leurs pictos au trait, le même symbole et le même ton ;
+    - l'intensité en barres, une hauteur par fiche qui cite la famille, à la place de la bande de carrés ;
+    - les pictos à côté des libellés de la roue ; Source Sans 3 et IBM Plex Mono seulement.
+  - **Corrigé ensuite, sur les barres de groupe** :
+    - les deux marques noires orphelines près de « +2 crans » étaient les bouts de la zone du style (`.zt::after`), seuls parce que la ligne de zone n'avait pas de couleur. Ils sont retirés, et la zone se lit par sa ligne pâle au ton de la famille, sous la barre ;
+    - le rail de ma bière ne court plus sur toute la liste : il reste dans le bloc de ses barres.
+  - **La légende ouverte** garde son « ? » visible au-dessus du voile, entouré, avec la trace du doigt de b1.
+  - **Pour tenir 70 mots, retiré** :
+    - la bande « visée » (2 mots) ;
+    - « sur tes objectifs » (3) : il reste « = même effet » ;
+    - le mot « visée » sur la piste des agrumes (un tiret seul, comme dans l5b qui l'écrit sur deux pistes sur trois) ;
+    - le « + » entre deux houblons et le « ≈ » de la dose « 5+5 g », devenus des signes dessinés ;
+    - les pistes gagnent 4 px, ce qui sort du premier écran le titre du second groupe.
+- **Ce qui casse** :
+  - Le premier écran est à 70 mots, juste à la limite.
+  - Les assemblages passent sur trois lignes.
+  - L'usage déduit, en gris plus léger, se distingue du mot attesté par la couleur et la graisse seulement.
+  - Les baisses de remplacer Nugget restent un pointillé noir.
+  - Barres / Radar est inerte ; « Comparer (2) » mène au comparer de q2b.
+- **Contrôles** :
+  - COMMUN OK : MOTS 70, COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE, PARLANT ;
+  - PISTE OK, ALPHA OK, FICHE-BASELINE OK, PLACE OK (7 voies, 61 px) et les 12 du brief ;
+  - le témoin l8e échoue à PARLANT (17 usages sans mot, 2 étiquettes « visée ») et à PISTE (3 objectifs sans piste) ;
+  - les fiches comptent de 53 à 75 mots.
+- **Pire contraste** : 4,65:1, « Plus agrumes » (#856e0c, 12 px) sur sa tuile #fcf8e3.

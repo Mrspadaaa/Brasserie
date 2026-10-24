@@ -1,0 +1,49 @@
+v3 · Le calendrier du dry hop (K2, K3, K4, K5 : « 3j Citra puis 7j Galaxy ; 3j citra - 5j idao7 […] C'est extrêmement complexe à voir ce qui est vraiment faisable »).
+
+- **Ce qui tient** :
+  - **Le parti** : un calendrier, jour par jour. Les scénarios :
+    - seul, à 4 g/L : Citra, Galaxy ou Idaho 7 ;
+    - l'un puis l'autre : Citra 3 j puis Galaxy 7 j, ou Citra 3 j puis Idaho 7 5 j ;
+    - ensemble, à 2 + 2 g/L : Citra + Galaxy, ou Citra + Idaho 7.
+  - **Chaque ajout est une barre** sur ses jours de contact, et les repères mesurés y sont posés :
+    - 24 h : l'essentiel (H73, H20) ;
+    - 2 j : le transfert majeur (E08) ;
+    - 3 j : rien de mesuré en plus (H73).
+    - Au-delà, la barre est hachurée : Galaxy 7 j montre quatre jours hachurés.
+  - **Le profil simulé jour après jour** (parJour de profils-simules.json) :
+    - en points, jour par jour ;
+    - un curseur de jour redessine les barres de l5b du jour choisi (J8 contre J17) ;
+    - on voit qu'il ne bouge plus après le premier jour de chaque ajout.
+    - La réponse, calculée : « Tout se joue dans les premiers jours de chaque ajout : tropicaux ~0,6 → ~41 sur 100, ~95 % atteints au J11 ; ensuite plus rien. Galaxy 7 j : les jours 4 à 7 n'ajoutent rien de mesuré. »
+  - **Ce que chacun apporte**, et la saturation partagée (K3, K5 : ~71 % de la somme des deux seuls, en agrumes).
+  - **La levure** :
+    - K4 avec ses quatre levures, pour Citra 3 j puis Idaho 7 5 j, en fermentation active ou après ;
+    - la biotransformation simulée (citronellol en µg/L, thiols en % des précurseurs, par conventions), à côté des mots des fournisseurs.
+  - **La dose, réelle** :
+    - le tableau 3 de Lafontaine 2018 (E04), de 0 à 16 g/L, en trois séries de barres, avec la zone de 4 à 8 g/L ;
+    - la lecture contestée est écrite (H contre J, « à vérifier ») ;
+    - la part extraite baisse, et c'est mesuré : linalol de 23 % à 2 g/L, puis 7 % à 16 g/L ;
+    - la dose du simulé se règle (1, 2, 4 ou 8 g/L) : « le double de 4 g/L : agrumes ~+0,7 cran de plus seulement ».
+  - **Le reste** :
+    - les trois houblons seuls dans ta 16D (moteur), en bandes log ;
+    - la durée mesurée : E10 (1 h = 96 h dans une bière jeune), E08 (2 jours), E05 (brasser compte plus que la durée) et H68 (hop creep) ;
+    - les inconnus, écrits.
+  - **La baseline, gardée** : pictos au trait, α du lot puis des fiches, usage en mot, stock en icône, familles des fiches sur chaque houblon, légende derrière « ? », appui long vers la fiche g1 de l8g, lentille au style / absolu.
+  - **S'écarter de la baseline** : la frise de jours n'existe pas dans la baseline. Elle répond à « combien de jours », que des barres par famille ne montrent pas. Les barres de l5b restent pour le profil du jour.
+- **Ce qui casse** :
+  - Le premier écran compte 187 mots (70 visés), avec trois rangées de scénarios avant le calendrier.
+  - Sur un ajout court, « 24 h » chevauche le trait de « 2 j » (un jour fait 25 px).
+  - Le curseur de jour ne bouge le profil qu'au premier jour de chaque ajout. C'est le message, mais le geste paraît mort ensuite.
+  - La succession Citra puis Galaxy n'est simulée qu'après fermentation, avec US-05 : les autres réglages affichent « pas simulé ».
+  - Les deux séries du panel portent un nom contesté : la page ne tranche pas.
+  - Pour un houblon seul hors de K2 (fermentation active, ou Pomona), les jours viennent de la grille (1, 2 et 3 j), pas d'un parJour.
+- **Contrôles** (indicatifs en v0, joués le 19.10 sur `etat.html`) :
+  - COMMUN ECHEC 1 contrôle(s) : MOTS ECHEC (187 mots) ; COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE et PARLANT OK ;
+  - LISIBLE OK (15 pictos, 11 mesurées, 24 simulées) ;
+  - SIMULATION OK (18 réglages) ;
+  - CUMUL OK (la levure fait bouger le simulé) ;
+  - ALPHA OK (3 voies) ;
+  - FICHE-BASELINE OK (fiche de Citra, 0 faute).
+- **Pire contraste** : 5,18:1, « ~+3,4 » (#c2410c sur blanc), sur 209 textes mesurés.
+- **Fichiers** : `generer.mjs`, `client-calendrier.js`, et le socle commun `../v1/socle.mjs`. Les états s'ouvrent par requête : `?sc=succ-Idaho%207&mom=dryActive&lev=pomona`, `?sc=ens-Galaxy`, `?jour=1`, `?dose=8`, `?fiche=Galaxy`, `?legende`.
+- **Captures** : `captures/v3-390.png`, `v3-haut-390.png`, `v3-pleine-390.png`, `v3-jour1-390.png`, `v3-idaho-pomona-390.png`, `v3-ensemble-390.png`, `v3-dose-390.png`, `v3-k2-390.png`, `v3-bas-390.png`, `v3-fiche-390.png`, `v3-legende-390.png`.

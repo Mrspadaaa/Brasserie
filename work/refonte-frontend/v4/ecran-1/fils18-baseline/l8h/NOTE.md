@@ -1,0 +1,23 @@
+- **Ce qui tient** : comme l8g, avec les mêmes modules copiés. On y retrouve :
+  - la piste de l5b sous chaque objectif ;
+  - la bande « visée » retirée, et la visée des barres de groupe en tiret sans mot ;
+  - la fiche dans le langage de la page, et la légende avec la trace du doigt ;
+  - les mêmes retraits pour tenir 70 mots ;
+  - les mêmes corrections des barres de groupe : plus de marques noires orphelines (les bouts de la zone du style), une ligne de zone pâle au ton de la famille, et le rail limité au bloc de ses barres.
+
+  **Seul l'usage change** : une courte pastille, « amer », « arôme » ou « mixte », la goutte et le souffle à côté du mot.
+  - Attestée par un fournisseur, la pastille est pleine (gris clair, mot en encre).
+  - Déduite de l'α, elle n'a qu'un contour et son mot reste pâle, avec son `data-source`.
+  - La fiche reprend la même pastille.
+- **Ce qui casse** :
+  - Les pastilles alourdissent la première ligne : un contour de plus par houblon.
+  - « amer » et « arôme » se ressemblent à 12 px ; la goutte et le souffle aident.
+  - La pastille déduite, en contour seul, peut se lire comme un bouton.
+  - Le premier écran est à 70 mots, juste à la limite.
+  - Les assemblages passent sur trois lignes.
+  - Barres / Radar est inerte ; « Comparer (2) » mène au comparer de q2b.
+- **Contrôles** :
+  - COMMUN OK : MOTS 70, COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE, PARLANT ;
+  - PISTE OK, ALPHA OK, FICHE-BASELINE OK, PLACE OK (7 voies, 61 px) et les 12 du brief ;
+  - les fiches comptent de 53 à 75 mots.
+- **Pire contraste** : 4,65:1, « Plus agrumes » (#856e0c, 12 px) sur sa tuile #fcf8e3.

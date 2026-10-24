@@ -1,0 +1,41 @@
+- **Ce qui tient** : la grille de l5b telle quelle.
+  - On y retrouve les objectifs en bandes avec leurs pistes, un widget « même effet » par groupe et ses voies en petites tuiles deux par rangée, puis les gestes en tuiles larges. Les barres sont celles de l5b : 7 px de large, 6 px par cran, picto de 14 px.
+  - Tous les retours de l5d sont repris :
+    - les pictos d'arôme au trait de l2 (D88) ;
+    - pas de bande d'axe, la visée écrite sur la piste (D91, D92) ;
+    - la légende derrière le « ? », avec le bec et la trace du doigt (D89) ;
+    - la fiche au langage de la page (D93, D25 : vraie fiche de la base, ouverte par l'appui long) ;
+    - les retraits de l5d : « voie houblon », « sur tes objectifs », la goutte et le souffle des titres de gestes.
+  - **Pour tenir en deux colonnes**, comme le pilote l'a demandé :
+    - **L'α sur la tuile** (D87) : le lot seul (« α 8,1% »), avec ≠ en gris pour Nelson Sauvin et Galaxy. Un houblon sans lot montre la plage seule après le petit livre (« 3,5–5,7% »). La plage, ses sources et « pellets » sont dans la fiche (« 5–8,5% · 6,5–8,5% », « 10–15% pellets »).
+    - **L'usage** (D90) : une pastille courte, « amer », « arôme » ou « mixte », comme l8h mais sans la goutte ni le souffle (la tuile fait 167 px). Pleine si un fournisseur l'atteste ; déduite de l'α, elle n'a qu'un contour et le mot est en gris. Elle garde son `data-source`, et la fiche reprend la même pastille.
+  - **La tuile** : le nom, puis la dose, le stock et la biotransformation sur la première ligne ; la pastille et l'α de chaque houblon passent ensemble à la ligne suivante. Elle fait 87 px en médiane, et 7 voies sont entières au premier écran. La page fait 1 835 px.
+- **Ce qui casse** :
+  - **Décision du pilote (19.10)** : les quatre coupes testées sont appliquées dans le code de l5e (`generateur-l5e.mjs`, `tuiles-l5e.mjs`). Avant, il y avait 79 mots au premier écran pour 70 permis : le haut, les objectifs, le premier widget et le dock (33), les 7 voies du premier groupe (32), le second widget (7) et la rangée Nelson Sauvin / Galaxy en partie visible (7).
+    1. Le second widget « même effet » ne répète pas « 10 g 10′ » quand la dose et le moment sont ceux du groupe au-dessus (−3).
+    2. Les étiquettes des barres de groupe disent « +1 » et « +2 », sans le mot « cran » (−3).
+    3. Barres et Radar passent en icônes seules, avec leur nom en aria-label (−2).
+    4. « Comparer » ne dit plus « (3) » : les trois pastilles du dock le montrent (−1).
+    - La légende dit maintenant que « +1 » est un cran du style (« +2, deux »). Une section « Vues » nomme les deux icônes : « Barres : les familles en barres », « Radar : la même chose en radar ».
+    - Résultat : **70 mots, juste à la limite**. Un mot de plus au premier écran fait échouer MOTS.
+  - **Assemblage** : la tuile Motueka + Citra cryo passe sur quatre lignes (121 px) et étire sa voisine, Celeia.
+  - **Écarts entre tuile et fiche** :
+    - la tuile ne montre que le lot : la plage, quand le lot est connu, demande l'appui long ;
+    - la plage de c1 vient de Beer Maverick seul, alors que la fiche ajoute Hopsteiner.
+  - **Pastilles** : « amer » et « arôme » se ressemblent à 12 px. La pastille déduite, en contour seul, peut se lire comme un bouton.
+  - **Celeia n'a pas de fiche dans la base** : l'appui long sur elle n'ouvre rien.
+  - **Coupes** : les icônes Barres et Radar seules et « +1 » sans unité ne se comprennent qu’avec la légende.
+  - **Commandes inertes** : Barres / Radar ne fait rien, et « Comparer » ne mène nulle part.
+- **Contrôles** (sur `etat-b.html`, `data-cas="c1"`) :
+  - COMMUN OK : MOTS 70, COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE (bouton 28 × 28 px, légende de 123 mots) et PARLANT ;
+  - PISTE OK : 3 pistes de 350 px ;
+  - ALPHA OK : 15 voies sur 15 ;
+  - PLACE OK : 7 voies, 87 px ;
+  - FICHE-BASELINE OK : Motueka, 12 familles, 15 pictos, 0 faute ;
+  - les contrôles du point 8 du brief (FIL6, AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE, BLOCS) sont OK ;
+  - les fiches comptent de 62 à 83 mots.
+- **Pire contraste** : 4,65:1, « Plus agrumes » (#856e0c, 14 px, sur #fcf8e3), comme dans l5b.
+  - Mesuré sur 2 709 textes : la page, la légende ouverte et les 9 fiches avec leurs replis.
+  - Sur le fond en dégradé, j'ai pris la pire couleur du dégradé.
+  - Aucun texte sous 4,5:1.
+- Générée par `generateur-l5e.mjs`, avec `tuiles-l5e.mjs`, une copie adaptée de `../l5d/tuiles-l5d.mjs`, et les données de `../l5/donnees-l5-l6.mjs`. l5b, l5c et l5d ne sont pas modifiés. Pour les captures, `vue-legende.html` et `vue-fiche.html` encadrent la page à 390 × 844.

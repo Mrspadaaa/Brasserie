@@ -1,0 +1,7 @@
+- **Parti (la fiche étiquetée, choisie par le brasseur)** : la base telle qu'elle s'affiche, prise sur son rendu. Dans la fiche, sous l'α, la bande de 12 carrés de la carte, agrandie, puis une ligne par famille décrite : sa couleur, son nom, « 2 fiches sur 4 », ses mots par fiche, et « nommé en premier par Hopsteiner » quand c'est le cas. Les axes de la roue prennent la couleur de leur famille. D72 : la roue, les cases de la carte et la bande suivent le nombre de fiches (claire = 1 fiche, anneau du milieu ; pleine = 2, bord). D73 : la table des moments est retirée de la fiche.
+- **Ce qu'elle corrige** :
+  - P1 : la couleur de la case se retrouve dans la ligne et sur l'axe ;
+  - P2 et F7 : une seule échelle, le compte, si bien qu'Épicé (1 sur 4) est à la même place et a la même case qu'Agrumes et Terreux ;
+  - P3 : les mots sont écrits sans rien déplier ;
+  - P4 : Citra cryo dit « 1 seule fiche : Beer Maverick », jamais « 1/1 », et l'α signale la plage en pellets (#131).
+- **Ce qui manque** : la carte et la bande ne distinguent plus le « premier nommé » ; seule l'étiquette le dit. Les mots de Beer Maverick sont ceux du pack, en français, et le moteur lit les tags anglais : « groseille à maquereau » reste donc sans famille (#gooseberry), comme « gingembre ». Aucune famille du pack n'est citée par plus de 2 fiches.

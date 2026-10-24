@@ -1,0 +1,27 @@
+{
+ "ticket": 142,
+ "ancre": "t142-lot18e",
+ "court": "l5d : l5b et tes retours",
+ "titre": "l5b avec tous tes retours de ce soir (l5d, 19.10 soir)",
+ "etat": "à choisir ; l5e, avec la grille de l5b, arrive",
+ "puces": [
+  "Tes mots sur l5b : « Il est très très bien celui-ci aussi ». l5d garde ses pistes d’objectif, ses barres et ses groupes, et prend tous tes retours sur la baseline : pictos au trait sans halo, α du lot puis les fiches, usage en mot (amérisant, aromatique, mixte), légende derrière le « ? », fiche dans le langage de la page.",
+  "Un écart à connaître : pour tenir 70 mots, l5d passe à une tuile large par voie au lieu de deux par rangée. Il ne montre que 5 voies au premier écran, la page s’allonge et un vide reste à droite des barres. l5e garde la grille de l5b (α du lot seul sur la tuile, plage des fiches dans la fiche, usage en pastille courte).",
+  "Contrôles rejoués : COMMUN OK, PISTE, ALPHA, FICHE-BASELINE et PLACE (5 voies, 84 px). l5b échoue à TRAIT, ALPHA, LEGENDE, PARLANT et FICHE-BASELINE.",
+  "Restent : des mots des fiches de la base en anglais (« fresh lime », « mojito ») ; Celeia sans fiche ; Barres / Radar inerte."
+ ],
+ "images": [
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l5d-etat-b-390.png",
+   "l5d, une tuile par voie"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l5d-fiche-390.png",
+   "l5d, la fiche"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l5d-legende-390.png",
+   "l5d, le ? ouvre la légende"
+  ]
+ ]
+}

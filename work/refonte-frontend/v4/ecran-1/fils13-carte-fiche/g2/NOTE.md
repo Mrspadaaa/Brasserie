@@ -1,0 +1,7 @@
+- **Parti (un seul code, le compte)** : c'est la base telle qu'elle s'affiche, prise sur son rendu. Chaque case de carte dit le nombre de fiches qui citent la famille, un cran par fiche : moitié pleine pour 1 fiche, pleine pour 2 ; le fond clair garde la couleur de la famille. La roue suit le même compte (Épicé de Nugget passe de 2 à 1 ; Agrumes de Citra aussi). Sous la roue, une ligne par famille décrite, rangée par compte : sa case avec le même cran, son nom, « 2 fiches sur 4 », ses mots par fiche. Suivent les mots sans famille et les non décrites. « marqué » et « cité » disparaissent de la fiche, la demande comprise.
+- **Ce qu'elle corrige** :
+  - P1 : la même case colorée sur la carte et dans la ligne ;
+  - P2 : un seul code, si bien qu'Agrumes et Épicé de Nugget (1 sur 4) ont la même case ;
+  - P3 : les mots sont écrits sans rien déplier ;
+  - P4 : une fiche unique ne remplit jamais une case. Citra cryo dit « 1 seule fiche : Beer Maverick », jamais « 1/1 », et l'α signale la plage en pellets (#131).
+- **Écart et manque** : le brief donnait l'exemple d'un remplissage proportionnel (1/4, 2/4). J'ai pris le compte absolu (un cran par fiche), parce qu'avec la proportion le 1/1 de Citra redevient une case pleine (P4). Aucune famille du pack n'est citée par plus de 2 fiches ; au-delà, il faudrait un troisième cran. La carte ne dit pas sur combien de fiches porte le compte (2 sur 2 ou 2 sur 4) ; c'est la fiche qui le dit.

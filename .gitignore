@@ -49,7 +49,62 @@ firestore.rules
 # Artefacts de travail : audits, brouillons, dumps, couverture.
 # Les preuves publiques nécessaires aux tests sont rangées sous tests/fixtures/.
 # Les archives brutes, conversations et copies de travail restent locales.
-/work/
+# Exception (#119, 18.10.2026) : la mission houblons v4 versionne ses textes (demandes du
+# brasseur, décisions, registre, contrôles, briefs) et les pages retenues ; ses captures,
+# images de référence et variantes écartées restent locales.
+/work/*
+!/work/refonte-frontend/
+/work/refonte-frontend/**
+!/work/refonte-frontend/**/
+!/work/refonte-frontend/*.md
+!/work/refonte-frontend/v4/**/*.md
+!/work/refonte-frontend/v4/**/*.mjs
+!/work/refonte-frontend/v4/**/jury/*.json
+!/work/refonte-frontend/v4/ecran-1/fils3/p02/*.html
+!/work/refonte-frontend/v4/ecran-1/fils3/p03/*.html
+!/work/refonte-frontend/v4/ecran-1/fils3/p08/*.html
+!/work/refonte-frontend/v4/ecran-1/fils3/generateur-*/*
+!/work/refonte-frontend/v4/ecran-1/base/consolide/*.html
+!/work/refonte-frontend/v4/ecran-1/base/generateur/*
+# Sources des loupes candidates de la base v4.4 (#134), reconstruites par candidats-v44/preparer.mjs.
+!/work/refonte-frontend/v4/ecran-1/candidats-v44/sources/*/*
+# Source de la page de lot publiée (22.10.2026, M12) : https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv
+!/work/refonte-frontend/v4/outils/page-lot/*.html
+# Une page par version montrée au brasseur (23.10), chacune dans un artefact neuf ; les images restent locales.
+!/work/refonte-frontend/v4/outils/pages/*/index.html
+# La maquette jouable publiée, figée telle que servie, son point de départ (23.10) : la construction
+# (prototypes/houblons-v4/maquettes/) reste locale, et l'artefact peut être republié par d'autres.
+!/work/refonte-frontend/v4/outils/pages/*-maquette/publie.html
+!/work/refonte-frontend/v4/outils/pages/*-maquette/assets/*
+# Pages témoins des contrôles (22.10.2026, leçon L13) : un critère se rejoue depuis un clone neuf.
+!/work/refonte-frontend/v4/tournoi/outils/temoins/**/*.html
+# Mesures figées des panels témoins (23.10, M14) : controle-panel.mjs --mesures=.
+!/work/refonte-frontend/v4/tournoi/outils/temoins/*.json
+# Portée des défauts (23.10, audit a1) : lue par systeme.mjs mission.
+!/work/refonte-frontend/v4/tournoi/outils/portee-defauts.json
+# Étalonnage du critique (23.10, L27) : jeu, clé et réponses ; les captures anonymisées restent locales.
+!/work/refonte-frontend/v4/etalonnage/*.json
+/work/refonte-frontend/v4/etalonnage/epreuve/
+# Inventaire de ce que le brasseur a noté bon ou intéressant (22.10.2026, D104) : lu par controle-reprise.mjs.
+!/work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/elements-notes.json
+# Règle n° 1 (23.10, D105) : le registre de ses choix et les inventaires de ses maquettes, lus par controle-choix.mjs.
+!/work/refonte-frontend/v4/choix/
+!/work/refonte-frontend/v4/choix/*.json
+!/work/refonte-frontend/v4/choix/etats/*.json
+!/work/refonte-frontend/v4/choix/commentaires/*.json
+!/work/refonte-frontend/v4/ecran-1/*/donnees/inventaire-*.json
+/work/refonte-frontend/**/_ecartes/
+/work/refonte-frontend/**/_v[0-9]*/
+/work/refonte-frontend/**/captures/
+/work/refonte-frontend/v4/tournoi/M1/_lots-1-2/
+# Système d'agents (22.10.2026, docs/agents/systeme.md) : les missions versionnent leurs
+# contrats, critères et résultats (textes) ; les sorties lourdes des voies restent locales.
+!/work/missions/
+/work/missions/**
+!/work/missions/**/
+!/work/missions/**/*.md
+!/work/missions/**/*.json
+/work/missions/**/captures/
 /tmp/
 .cov/
 scratch_guidance.txt
@@ -68,3 +123,6 @@ AUDIT-EAU-BRIEF*.md
 
 # Personal pilot dossier: deployed as a protected server asset, never exported to Git.
 functions/reports/nolo-scenarios-2026.md
+
+# Prototype houblons : données intermédiaires, reconstruites par prototypes/houblons/build-data.mjs
+prototypes/houblons/data.json

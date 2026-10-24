@@ -1,0 +1,22 @@
+/* Jetons et couches de l'app (src/index.css), puis les thèmes du prototype (../ecran/src/themes.css), importés
+   tels quels ; puis les quelques classes propres à la maquette, préfixées pq- (L26). */
+@import '../../../../src/index.css';
+@import '../../ecran/src/themes.css';
+/* Le thème de ses maquettes choisies, par défaut (règle n° 1, D106) : remplace le clair « papier chaud ». */
+@import './theme-maquettes.css';
+
+/* Inconnu : hachuré, jamais une barre à zéro. */
+.pq-hachure {
+  background-image: repeating-linear-gradient(135deg, rgb(var(--cave-700) / 0.55) 0 3px, transparent 3px 7px);
+}
+
+/* PageShell (app) donne le focus à son conteneur de défilement (tabindex="-1") à l'ouverture d'une page : c'est une
+   cible de programme, jamais de tabulation. Sans ce réglage, l'anneau de focus paille encadrait tout l'outil sur les
+   captures (relevé par les voies p2 et p3, 23.10). Les commandes gardent leur anneau. */
+main[tabindex="-1"]:focus-visible, div[tabindex="-1"]:focus-visible { outline: none; }
+/* Spécificité (0,2,1) : la classe utilitaire de PageShell (focus-visible:outline, 0,2,0) gagnait à égalité, car
+   elle vient après (vu en jouant la maquette, 23.10). Dans l'app, la même question se pose sur PageShell. */
+
+/* Ma bière est la racine de la maquette : le « Fermer » de PageShell n'y mène nulle part (dans l'app, RecipePage
+   revient à la liste des recettes). Masqué pour la maquette seulement. */
+.pq-recette [data-page-titlebar] > button[aria-label="Fermer"] { display: none; }

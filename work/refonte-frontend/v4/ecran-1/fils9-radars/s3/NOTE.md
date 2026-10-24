@@ -1,0 +1,3 @@
+s3 · Suggestions en petits multiples : « Aujourd'hui » puis un mini-radar par voie (17), même échelle 0–100 (noms d'anneaux hors du dessin, D66), avant gris et après bleu en bandes min–max de S1, goûté résineux à part en orange.
+D65 : famille non située (centre, hachures) ou effet de la voie non établi (bord bleu) = libellé gris « ? » + marque creuse, légende « inconnu, ce n'est pas zéro » ; à droite, les deux familles demandées en mots (plage ou goûté, effet estimé, « faible » sous le seuil du moteur, ou « non établi »).
+Limite : les voies 1 à 5 ont presque la même forme (le moteur ne les départage pas) et la page fait 4 670 px pour 18 radars ; données S1 de pack-mini-protos.json injectées telles quelles.

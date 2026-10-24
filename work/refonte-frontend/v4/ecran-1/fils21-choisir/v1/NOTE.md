@@ -1,0 +1,63 @@
+v1 · Le duel, à dose égale (« Des vrai donné, mieux présenté » ; Citra contre Cascade « assez similaires » par nos outils).
+
+- **Ce qui tient** :
+  - **Le parti** : deux houblons au choix parmi Citra, Cascade, Galaxy et Idaho 7, à la même dose (4 g/L). Un toucher sur une carte la met dans le duel ; sur le second, il passe premier ; ⇄ échange. Une seule échelle, « qui en a le plus », de ÷30 à ×30, centrée sur « pareil ».
+  - **Mêmes mots, autre cône** :
+    - les mots des fiches tombent au milieu : Citra et Cascade partagent floral et agrumes ;
+    - les vraies teneurs s'en écartent, chacune en bande d'incertitude (rapport des plages publiées) et écrite en clair :
+      - 4MMP : Citra ×7,7, bande de ×2,6 à ×16, un seul labo (Schmidt 2024, H11) ;
+      - linalol : Citra ×3,6 ? ;
+      - farnésène : Cascade ×10 ;
+      - myrcène : ≈ pareil ;
+      - huile : Citra ×1,3 ?.
+    - « ? » quand la bande passe par « pareil » ; « inconnu » quand une borne manque (Citra contre Galaxy en 4MMP).
+  - **La réponse en une phrase**, calculée et non écrite à la main : « Mêmes mots (floral, agrumes), pas le même cône : Citra ×7,7 en tropical, cassis (4MMP), Cascade ×10 en vert, herbacé (farnésène), à dose égale. »
+  - **Un toucher sur une ligne** : les sources, les unités et un point par lot mesuré. Pour Cascade, quatre COA : linalol de 0,02 à 0,3 %, huile de 1,1 à 1,7 mL/100 g.
+  - **En bière, mesuré** (comparatifs-dryhop.json et H12) : le linalol en µg/L, sur échelle log, chaque point avec ses conditions :
+    - Citra 144 ± 2,7 (E06, dose non publiée) ;
+    - Cascade 56,9 à 2 g/L (H12) ;
+    - cinq tchèques, de 83 à 323 (E02) ;
+    - Idaho 7 38, au pitch, avec « à vérifier » ;
+    - le témoin 46,8.
+    - Derrière, la bande des seuils publiés, de 1 à 205 µg/L. Le trou est écrit : « Citra contre Cascade, même dose, même bière : aucune étude lue ».
+  - **Dans ta 16D, calculé** (moteur « pouvoir aromatique ») :
+    - le rapport au seuil sur échelle log, la zone 16D jusqu'à ×10 (règle du moteur, à valider), hachurée au-delà ;
+    - les plages énormes se voient en bandes larges, bornes écrites (linalol de Citra : ×0,06 à ×2064) ;
+    - le verdict par houblon : Citra « peut-être hors de la 16D » en tropical.
+  - **Le profil simulé** (donnees/profils-simules.json, la maquette du début est retirée) :
+    - en barres de l5b : A pleine, B en contour, zone de la 16D, orangé au-delà ;
+    - le trait va de bas à haut, avec une flèche quand le haut dépasse ;
+    - l'écart est écrit en crans ;
+    - un toucher sur une famille montre ses bornes, sans rognure (tropical : Citra ~41 (18–63), Cascade ~19 (2–59)).
+    - Les réglages :
+      - chacun seul à 4 g/L, ou ensemble à 2 + 2 g/L (paires du moteur ; la saturation partagée garde ~74 % des agrumes) ;
+      - fermentation active ou après ;
+      - US-05, Pomona, Verdant ou Diamond, avec la biotransformation écrite dans les mots des fournisseurs.
+  - **Goûté** : le panel OSU à 4 g/L (H21, lu sur un biplot) ; Idaho 7 « inconnu ».
+  - **La baseline, gardée** :
+    - pictos au trait de l8g, au crayon ;
+    - α du lot puis des fiches (≠, pellets), usage en mot, stock en icône ;
+    - légende derrière « ? », lentille au style / absolu ;
+    - fiche g1 de l8g à l'appui long, nourrie des fiches de ces houblons. La « demande » y devient « La 16D attend, selon ses fiches ».
+  - **S'écarter de la baseline, et pourquoi** : ni colonnes par famille ni tuiles, mais une échelle d'écart. La question est « en quoi diffèrent-ils », et un rapport se lit sans unité : il évite le piège des unités mélangées (I, piège 3). Les barres de l5b restent pour le profil simulé.
+- **Ce qui casse** :
+  - Le premier écran compte 164 mots (70 visés) : la réponse, quatre cartes et six lignes de duel.
+  - Après fermentation (K2, le réglage d'ouverture), la levure ne change rien au simulé : le moteur ne compte la biotransformation qu'en fermentation active. C'est honnête, mais CUMUL C2 échoue. Verdant et Diamond ne sont pas simulés pour un houblon seul : « pas simulé ».
+  - Le rapport de deux plages cumule leurs incertitudes : la bande du linalol est large.
+  - Les points en bière ne se comparent pas entre eux (doses et bières différentes). C'est écrit, mais la colonne peut se lire comme un classement.
+  - Presque tous les « haut » simulés dépassent la piste : il y a des flèches partout.
+  - Citra T-90 n'est pas en stock (seul le cryo l'est) : il est marqué « à acheter ». Sa fiche est celle du pack « Citra cryo », qui est la fiche Beer Maverick de la variété.
+  - Le centre de linalol de Citra est, au moteur, de 2 à 5 fois au-dessus des mesures publiées. La page montre la mesure en bière, pas ce centre.
+- **Contrôles** (indicatifs en v0, joués le 19.10 sur `etat.html`) :
+  - COMMUN ECHEC 1 contrôle(s) : MOTS ECHEC (164 mots) ; COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE et PARLANT OK ;
+  - LISIBLE OK (25 pictos, 22 mesurées) ;
+  - SIMULATION OK (13 réglages, le simulé bouge) ;
+  - CUMUL ECHEC : « C2 le choix de levure ne fait bouger aucune valeur simulée », par l'honnêteté du moteur après fermentation (voir plus haut) ;
+  - ALPHA OK (4 voies, 4 avec leur α) ;
+  - FICHE-BASELINE OK (fiche de Citra, 12 familles nommées, 17 pictos, 0 faute).
+- **Pire contraste** : 5,18:1, « peut-être hors de la 16D » (#c2410c sur blanc), sur 209 textes mesurés.
+- **Fichiers** :
+  - `generer.mjs` et `client-duel.js` (cette page) ;
+  - `socle.mjs`, commun à v1, v2 et v3 : données, fiche, pistes log, barres ;
+  - `captures.mjs` : les états, par requête (`?b=Galaxy`, `?ens`, `?mom=dryActive&lev=pomona`, `?ouvert=linalol`, `?famille=tropical`, `?fiche=Citra`, `?legende`, `?abs`).
+- **Captures** : `captures/v1-390.png`, `v1-haut-390.png`, `v1-pleine-390.png`, `v1-galaxy-390.png`, `v1-lots-390.png`, `v1-profil-390.png`, `v1-ensemble-390.png`, `v1-absolu-390.png`, `v1-moteur-390.png`, `v1-fiche-390.png`, `v1-legende-390.png`.

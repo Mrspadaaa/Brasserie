@@ -1,0 +1,185 @@
+<title>Carte des outils · 22.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Une page = un choix. Captures à 340 px au moins, texte à 14 px au moins (verifier-page.mjs). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --houblon-doux: #e6efdc;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 6px 20px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+    --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f;
+    --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+  --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f;
+  --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.5 var(--texte);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 64px;
+}
+.page { max-width: 1180px; margin: 0 auto; display: grid; gap: 36px; }
+h1, h2, h3 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.3rem, 4vw, 1.7rem); font-weight: 800; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+p { margin: 0; max-width: 65ch; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+header { display: grid; gap: 10px; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.15rem; color: var(--houblon); }
+section { display: grid; gap: 16px; }
+.grille { display: grid; gap: 32px 24px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+.variante { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 18px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ecran:focus-visible, .plus:focus-visible, a:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+.nom { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.code { font: 700 0.875rem/1 ui-monospace, "Cascadia Mono", monospace; color: var(--houblon); }
+.puces { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.puces li { font-size: 0.875rem; padding: 3px 10px; border-radius: 999px; background: var(--houblon-doux); }
+.critique { font-size: 0.9rem; color: var(--discret); }
+.plus { font: inherit; font-size: 0.95rem; color: var(--houblon); background: none; border: 0; padding: 4px 0; cursor: pointer; text-align: left; text-decoration: underline; justify-self: start; }
+.note { font-size: 0.95rem; color: var(--discret); max-width: 70ch; }
+.encart { border-left: 4px solid var(--ambre); padding: 10px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 75ch; }
+footer { border-top: 1px solid var(--trait); padding-top: 18px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+footer a { color: var(--houblon); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: rgb(10 12 9 / 92%); display: grid; place-items: start center; overflow-y: auto; padding: calc(60px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.visionneuse figure { margin: 0; display: grid; gap: 10px; justify-items: center; }
+.visionneuse img { width: min(430px, 100%); height: auto; border-radius: 16px; display: block; }
+.visionneuse figcaption { color: #eef2ea; font-size: 1rem; text-align: center; max-width: 430px; }
+.fermer { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); font: 600 1rem var(--texte); background: #eef2ea; color: #1c2019; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.nav { display: flex; gap: 10px; }
+.nav button { font: 600 1rem var(--texte); background: #2d3328; color: #eef2ea; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.page, section { grid-template-columns: minmax(0, 1fr); }
+header a, .encart a { color: var(--houblon); }
+.sommaire { display: flex; flex-wrap: wrap; gap: 8px; }
+.sommaire a { font-size: 0.95rem; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--trait); background: var(--carte); color: var(--encre); text-decoration: none; }
+.series { display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); padding: 0; margin: 0; list-style: none; font-size: 0.95rem; }
+.series b { font-family: var(--titre); color: var(--houblon); }
+.defile { max-height: 80vh; overflow-y: auto; border: 1px solid var(--trait); border-radius: 18px; background: var(--carte); box-shadow: var(--ombre); max-width: 430px; }
+.defile img { display: block; width: 100%; height: auto; }
+.paire { display: grid; gap: 32px 24px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); max-width: 760px; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · houblons · carte des outils · 22.10</p>
+    <h1>Carte des outils : deux choix ouverts</h1>
+    <p>Chaque écran pose une seule question, avec un seul réglage libre ; le reste est fixé dans la ligne du haut.</p>
+  </header>
+
+  <div class="encart" id="a-choisir">
+    <p><b>À choisir :</b> Substituer, une porte vers Comparer ou un outil à part ; Levure, la dernière étape de Dryhopper ou un outil à part.</p>
+  </div>
+
+  <section aria-labelledby="t-substituer">
+    <h2 id="t-substituer">Substituer : « Je n'ai pas Nugget »</h2>
+    <div class="paire grille">
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/substituer-porte.png" data-legende="Substituer, une porte vers Comparer"><img src="img/substituer-porte.png" width="780" height="1688" alt="Substituer en porte vers Comparer"></button>
+        <h3>Une porte vers Comparer</h3>
+        <p class="note">Comparer s'ouvre avec Nugget épinglé, face à deux remplaçants, à IBU égal.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/substituer-outil.png" data-legende="Substituer, un outil à part"><img src="img/substituer-outil.png" width="780" height="1688" alt="Substituer en outil à part"></button>
+        <h3>Un outil à part</h3>
+        <p class="note">La liste des remplaçants : ce que chacun perd et gagne, sa dose. Tu en coches deux pour le face à face.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-levure">
+    <h2 id="t-levure">Levure : « Que change ma levure ? »</h2>
+    <div class="paire grille">
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/levure-etape.png" data-legende="Levure, dernière étape de Dryhopper"><img src="img/levure-etape.png" width="780" height="1688" alt="Levure en dernière étape de Dryhopper"></button>
+        <h3>La dernière étape de Dryhopper</h3>
+        <p class="note">Le moment choisi (étape 1), puis la levure (étape 2) : US-05 ou Pomona, famille par famille.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/levure-outil.png" data-legende="Levure, un outil à part"><img src="img/levure-outil.png" width="780" height="1688" alt="Levure en outil à part"></button>
+        <h3>Un outil à part</h3>
+        <p class="note">Ce qu'Idaho 7 apporte, et ce que Pomona ajoute, côte à côte.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-carte">
+    <h2 id="t-carte">La carte entière</h2>
+    <p class="note">De Ma bière à Levure ; elle défile dans son cadre.</p>
+    <div class="defile"><img src="img/carte.png" width="780" height="6266" alt="La carte des outils, de Ma bière à Levure"></div>
+  </section>
+
+  <footer>
+    <p>Pour répondre, dis-le dans la conversation. Exemple : « Substituer en porte, Levure en étape ».</p>
+    <p>Version d'avant : <a href="https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv">la page du lot 22</a>, section 2.</p>
+  </footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-label="Capture agrandie">
+  <button class="fermer" id="fermer" type="button">Fermer</button>
+  <figure>
+    <img id="vis-img" alt="">
+    <figcaption id="vis-legende"></figcaption>
+    <div class="nav" id="vis-nav" hidden>
+      <button type="button" id="vis-prec">◀ Précédente</button>
+      <button type="button" id="vis-suiv">Suivante ▶</button>
+    </div>
+  </figure>
+</div>
+
+<script>
+// Agrandir au toucher, passer d'une variante à l'autre. Le contenu ne dépend pas de ce script.
+(function () {
+  const vis = document.getElementById('visionneuse');
+  const visImg = document.getElementById('vis-img');
+  const visLeg = document.getElementById('vis-legende');
+  const visNav = document.getElementById('vis-nav');
+  const ordre = Array.from(document.querySelectorAll('.grille .ecran')).map((b) => ({ img: b.dataset.img, legende: b.dataset.legende }));
+  let rang = -1;
+  let retour = null;
+  function ouvrir(img, legende, depuis) {
+    retour = depuis || retour;
+    visImg.src = img; visImg.alt = legende; visLeg.textContent = legende;
+    rang = ordre.findIndex((o) => o.img === img);
+    visNav.hidden = rang < 0;
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('fermer').focus();
+  }
+  function fermer() { vis.hidden = true; visImg.removeAttribute('src'); if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang < 0) return; rang = (rang + pas + ordre.length) % ordre.length; ouvrir(ordre[rang].img, ordre[rang].legende); }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-img]');
+    if (b) ouvrir(b.dataset.img, b.dataset.legende, b);
+  });
+  document.getElementById('fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', () => aller(-1));
+  document.getElementById('vis-suiv').addEventListener('click', () => aller(1));
+  vis.addEventListener('click', (e) => { if (e.target === vis) fermer(); });
+  document.addEventListener('keydown', (e) => {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

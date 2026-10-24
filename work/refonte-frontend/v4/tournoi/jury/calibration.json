@@ -1,0 +1,48 @@
+{
+  "blind": true,
+  "reserve": "Lecture à l'aveugle partielle : l'outil Read a renvoyé REGLES.md en entier (section calibration comprise) et deux captures portent leur nom dans leur titre (R2 « Territoire », R4 « V5.5 »). R1 et R3 restent indistinguables entre v2 et v3. Les notes ci-dessous sont posées sur ce qui se voit, critère par critère, avant tout rapprochement.",
+  "refs": {
+    "R1": {
+      "creativite": 3,
+      "clarte": 5,
+      "verite": 6,
+      "densite": 8,
+      "faisabilite": 10,
+      "total": 5.4,
+      "reussit": "Jauge IBU face à 50–70, verdict par houblon (typique / compatible / hors style), « manque 13 g » sur chaque ligne et un bandeau honnête « Classement estimé : aucun usage documenté pour ce style ». Densité et monde charbon conformes.",
+      "rate": "Catalogue en liste, aucune lecture de la bière famille par famille : en 5 s on sait quels houblons sont compatibles, pas où la bière se tient ni quoi pousser. « 62,7 IBU » et « 60,1 IBU » : un dixième d'IBU sur une prédiction Tinseth est une fausse précision."
+    },
+    "R2": {
+      "creativite": 9,
+      "clarte": 7,
+      "verite": 5,
+      "densite": 6,
+      "faisabilite": 6,
+      "total": 7.0,
+      "reussit": "Une carte-territoire : étoile « ta bière », cible, zone exclue hachurée (résine), voies numérotées 1-2-3 vers la cible, intentions en langage naturel transformées en voies avec doses. En 5 s sur téléphone on voit où l'on est, où l'on va et par quel chemin : la seule des quatre qui montre une direction.",
+      "rate": "Le compas est absolu : pas de bande de style, donc « face au style » n'est pas lu, seulement « face à ma cible ». Scores prédits au dixième (Tropical 3,8 ; Juicy 4,6 → 5,6 ; Résine 2,1 → 2,3) plus fins que le moteur ne le permet. Étiquettes empilées (Galaxy / Galaxy Cryo / Citra / Citra Cryo / Mosaic) illisibles à 375. Fond bleu-noir hors monde cave."
+    },
+    "R3": {
+      "creativite": 5,
+      "clarte": 6,
+      "verite": 8,
+      "densite": 9,
+      "faisabilite": 9,
+      "total": 6.7,
+      "reussit": "Le plus dense et le plus honnête : 9 houblons avec ticks ▮▮▯ par descripteur, « manque 48 g », groupes « Typique du style / Hors style », et une proposition « Mon houblonnage » avec Appliquer qui donne le geste suivant. Le radar est légendé « nombre de descripteurs 0 à 3, pas une intensité mesurée » : rien d'inventé, entiers partout.",
+      "rate": "Il lit les houblons, pas la bière : hors IBU, aucune position de la recette face au style, famille par famille. Le radar reste le défaut de catégorie (absolu, familles du style seulement en gras) et la direction se devine depuis la liste au lieu d'être un geste."
+    },
+    "R4": {
+      "creativite": 4,
+      "clarte": 2,
+      "verite": 3,
+      "densite": 5,
+      "faisabilite": 7,
+      "total": 3.6,
+      "reussit": "Une vraie idée dessous : lentilles de lecture (dans ma bière, à froid, charge, souche, masquage) et seuils de perception « sous le fond » qui rendraient la lecture relative à la bière ; plages écrites (IBU 21,9, 19,1–24,7) et mentions « hyp. », « précision limitée ».",
+      "rate": "En 5 s sur téléphone on voit sept listes déroulantes, pas une bière ; la carte arrive dessous, les étiquettes se chevauchent, thème clair hors monde. Vérité : « IBU 0 chaud · 0 final » et « Amertume 0 » alors que Magnum 8 g à 60 min et Saaz 36 g sont au programme ; « ● 0 ≈ ▲ 0 » pour des nuances « sous le fond (hyp.) » : des zéros qui cachent des inconnues ou des non-calculs ; IBU au dixième."
+    }
+  },
+  "ranking": ["R2", "R3", "R1", "R4"],
+  "lecture_de_la_grille": "Je récompense une forme qui, en un coup d'œil sur téléphone, place la bière et montre une direction (étoile, cible, zone exclue, voie numérotée, proposition « Appliquer ») : la créativité compte seulement si elle sert ce geste. Je récompense l'honnêteté écrite à la granularité de la donnée : entiers, plages, « estimation », « inconnu », « aucun usage documenté ». Je punis le catalogue (une liste de houblons avec verdicts ne dit pas où se tient la bière), le radar ou compas absolu vendu comme lecture au style, les dixièmes sur une prédiction et tout zéro qui remplace une inconnue ou un non-calcul, surtout quand des houblons sont au programme. Je punis la configuration avant le contenu (listes déroulantes empilées) et je ne pénalise jamais la densité ni les 12–13 px en soi ; un monde hors cave (bleu, clair) coûte seulement en faisabilité. Constat : aucune des quatre ne lit la bière contre le style famille par famille avec des échelles relatives ; c'est le vide que le tournoi doit remplir."
+}

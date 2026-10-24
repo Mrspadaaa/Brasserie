@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>I1 vide : aucune famille ne bouge, rien à comparer</title>
+<style>body{font:16px sans-serif;margin:8px}li{list-style:none;padding:6px;border:1px solid #888;margin:4px 0}span,button{margin-right:8px}</style></head>
+<body data-route="ma-biere">
+<!-- Témoin du contrôle usage/intensité (mode --parcours) : I1 vide : aucune famille ne bouge, rien à comparer -->
+<ul><li data-role="ligne-houblon" data-voie="a1" data-ajout="a1" data-houblon-ligne="hop-a"><b data-houblon="hop-a">hop-a</b><span data-role="usage" data-usage="aromatique" data-source="fournisseur">aromatique</span></li></ul>
+<script>
+  window.__parcours = {
+    etat: { recette: { styleCode: 'x', additions: [{ id: 'a1', hopKey: 'hop-a' }] } },
+    moteur: { lireBiere: (r) => {
+      const avec = r.additions.some((a) => a.id === 'a1');
+      return { profil: { floral: { valeur: { centre: avec ? 20 : 20 }, crans: 2 }, resin: { valeur: { centre: 50 }, crans: 3 } } };
+    } },
+    regles: { hopRole: (k) => k === 'hop-a'
+        ? { value: 'aromatique', source: 'fournisseur : fiche fournisseur' }
+        : { value: 'double', source: 'règle : règle rôle-α v1 (prototype, à valider)' } },
+  };
+</script>
+</body>
+</html>

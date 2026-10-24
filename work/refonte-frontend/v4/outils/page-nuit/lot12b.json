@@ -1,0 +1,21 @@
+{
+  "ticket": 140,
+  "court": "Carrés d'arômes",
+  "titre": "Les carrés d'arômes au long appui, à mi-chemin (lot 12b, 19.10 soir)",
+  "etat": "à choisir",
+  "puces": [
+    "Au repos : ta carte d'aujourd'hui, inchangée, dans les 6 variantes.",
+    "Au long appui sur Motueka, un petit ajout collé aux carrés : b1 bulle sous la carte ; b2 carrés ×2, noms des cases décrites ; b3 mots des fiches puis familles ; b4 petite carte, un point par fiche ; b5 initiales dans les carrés, cadre 16D ; b6 une rangée par fiche.",
+    "Contrôles : APPUI OK 6/6 avec D70 (carte du repos identique ; au long appui 30 mots et 160 px au plus, collé à la carte, titre et champ libres), FIL6 OK 6/6. Le lot 12 y échouait 18 fois."
+  ],
+  "images": [
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12b-mi-chemin/captures/planche-appui-390.png", "planche, au long appui"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12b-mi-chemin/captures/b1-vue-390.png", "au repos, les 6"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12b-mi-chemin/captures/b1-appui-390.png", "b1 bulle"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12b-mi-chemin/captures/b2-appui-390.png", "b2 loupe"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12b-mi-chemin/captures/b3-appui-390.png", "b3 mots"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12b-mi-chemin/captures/b4-appui-390.png", "b4 petite carte"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12b-mi-chemin/captures/b5-appui-390.png", "b5 initiales"],
+    ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils12b-mi-chemin/captures/b6-appui-390.png", "b6 une rangée par fiche"]
+  ]
+}

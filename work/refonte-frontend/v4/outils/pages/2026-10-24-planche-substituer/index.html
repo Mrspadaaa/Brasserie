@@ -1,0 +1,258 @@
+<title>Planche Substituer · 24.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Une planche par vue (D126 : « J'ai pratiquement aucun choix ?? Et j'ai pas du coté à cote ») : sa référence en premier,
+   puis onze mini maquettes, toutes visibles ensemble. Ordinateur : trois par rangée (377 px). Téléphone : deux par rangée
+   en vignettes, qui s'ouvrent en grand à côté de la référence. Texte à 14 px au moins ; page claire (D106). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 6px 20px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.5 var(--texte); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 64px;
+}
+.page { max-width: 1180px; margin: 0 auto; display: grid; gap: 28px; }
+h1, h2 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(1.7rem, 6vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.15rem, 3.4vw, 1.4rem); font-weight: 800; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--houblon); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+nav[data-autres-vues] { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.95rem; }
+nav[data-autres-vues]:empty { display: none; }
+nav[data-autres-vues] a { padding: 4px 12px; border-radius: 999px; background: var(--carte); border: 1px solid var(--trait); text-decoration: none; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.sous-titre { font-size: 1.05rem; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 82ch; }
+.encart .canal { font-weight: 700; }
+.chaleurs { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.875rem; color: var(--discret); }
+.tag { display: inline-block; font-size: 0.875rem; line-height: 1.5; padding: 0 9px; border-radius: 999px; border: 1px solid var(--trait); background: var(--carte); white-space: nowrap; }
+.chaude { background: #fbe6d2; } .tiede { background: #fbf1c9; } .froide { background: #e0edf7; }
+.choix { background: #fbecc8; border-color: var(--ambre); font-weight: 700; }
+.chemin { overflow-wrap: anywhere; }
+.id { font-size: 0.875rem; color: var(--discret); font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+
+/* La planche : deux par rangée au téléphone, trois sur ordinateur. Rien ne défile en largeur. */
+.planche { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 12px; align-items: start; }
+@media (min-width: 900px) { .planche { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px 24px; } }
+.vue { margin: 0; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.ecran { position: relative; display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 16px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.vue[data-reference] .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--ambre), var(--ombre); }
+.rang { display: inline-block; min-width: 28px; height: 28px; padding: 0 7px; margin-right: 4px; border-radius: 999px; background: var(--encre); color: #fff; font: 800 0.9rem/28px var(--titre); text-align: center; vertical-align: 1px; }
+.vue[data-reference] .rang { background: var(--ambre); }
+.vue figcaption { display: grid; gap: 4px; }
+.vue figcaption b { font-family: var(--titre); font-size: 1.08rem; line-height: 1.2; }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.ligne { font-size: 0.9375rem; color: var(--encre); }
+.groupe { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; border-top: 1px solid var(--trait); padding-top: 12px; }
+.groupe span { font-size: 0.95rem; color: var(--discret); }
+footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+
+/* En grand : la mini maquette à côté de ta référence, état par état. Ordinateur côte à côte ; téléphone d'un glissement. */
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: calc(64px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)); background: #0e100c; }
+.vis-titre { font: 800 1.05rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-corps { display: grid; gap: 28px; max-width: 1240px; margin: 0 auto; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.vis-panneau { flex: 0 0 86%; scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau img { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.vis-panneau.ref img { box-shadow: 0 0 0 3px var(--ambre); }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #f6d38f; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; }
+  .vis-panneau { flex: 0 1 400px; min-width: 300px; }
+  .vis-glisse { display: none; }
+}
+.ecran.rogne { aspect-ratio: 780 / 1688; }
+.ecran.rogne img { height: 100%; object-fit: cover; object-position: top; }
+</style>
+
+<div class="page">
+  <nav data-autres-vues aria-label="Les autres vues"><a href="https://claude.ai/artifact/ULZkzFyvgc3Chv6hmYDWA7">Dryhopper</a><a href="https://claude.ai/artifact/2vUzuyzUpsShrYnkp1PUPZ">La liste de la fiche</a><a href="https://claude.ai/artifact/JSiBVNWUJqJD8zdkvpKN9t">Les graphes</a></nav>
+
+
+  <header>
+    <p class="sur-titre">L'Affinée · Substituer · planche · 24.10</p>
+    <h1>« Lequel à la place de Nugget ? »</h1>
+    <p class="sous-titre">Ton u4, puis onze vues : les cinq retravaillées, puis six concepts du panel.</p>
+  </header>
+
+  <section id="a-choisir" aria-label="À choisir">
+    <div class="encart">
+      <p><b>À choisir :</b> tu gardes ton u4 (« plutôt bien »). Dis ce que tu veux prendre des onze pour l'enrichir, en plus du dry hop, de Comparer et de l'arôme d'abord. Toutes remplacent Nugget, 46 g à 60′, dans ta stout 16D.</p>
+      <p class="canal">Commente la mini maquette que tu choisis (commentaire de l'artefact) : je lis les commentaires.</p>
+      <p>Touche une mini maquette : elle s'ouvre en grand, dans ses deux états, à côté de ton u4 en entier.</p>
+      <p class="chaleurs"><span><span class="tag froide">froide</span> ton u4 affiné</span><span><span class="tag tiede">tiède</span> la forme de sa série</span><span><span class="tag chaude">chaude</span> forme libre</span></p>
+    </div>
+  </section>
+
+  <section data-choix="substituer" aria-label="Les douze vues de Substituer" data-mode="rangee" data-ref-nom="u4" data-ref-imgs="img/u4.png" data-ref-etats="l'écran entier">
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran rogne" type="button" data-nom="u4 · ton choix" data-imgs="img/u4.png" data-etats="ton écran de Substituer, en entier"><img src="img/u4.png" width="780" height="3376" alt="u4, le haut de l'écran de Substituer"></button>
+        <figcaption><b><span class="rang">u4</span> Ton choix</b><span class="meta"><span class="tag choix">ta référence</span><span class="id">u4</span></span><span class="ligne">L'échelle 50–100, les plages hachurées, le face-à-face α et β, le radar.</span><span class="id chemin">ecran-1/fils11-substitution/captures/u4-vue-390.png</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="1 · Ton u4, enrichi · sbc1b" data-imgs="img/sbc1b-60.png|img/sbc1b-whirlpool.png" data-etats="à 60′|au whirlpool"><img src="img/sbc1b-60.png" width="780" height="1688" alt="sbc1b à 60′"></button>
+        <figcaption><b><span class="rang">1</span> Ton u4, enrichi</b><span class="meta"><span class="tag froide">froide</span><span class="id">sbc1b · passe 3</span></span><span class="ligne">u4 avec α et dose sur chaque ligne, le stock à part. Le radar manque.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="2 · La cible · sbb7c" data-imgs="img/sbb7c-60.png|img/sbb7c-whirlpool.png" data-etats="à 60′|au whirlpool"><img src="img/sbb7c-60.png" width="780" height="1688" alt="sbb7c à 60′"></button>
+        <figcaption><b><span class="rang">2</span> La cible</b><span class="meta"><span class="tag chaude">chaude</span><span class="id">sbb7c · passe 3</span></span><span class="ligne">Nugget au centre, chaque remplaçant à la distance de son score ; stock à gauche, achat à droite.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="3 · Gramme pour gramme · sbz7c" data-imgs="img/sbz7c-60.png|img/sbz7c-whirlpool.png" data-etats="à 60′|au whirlpool"><img src="img/sbz7c-60.png" width="780" height="1688" alt="sbz7c à 60′"></button>
+        <figcaption><b><span class="rang">3</span> Gramme pour gramme</b><span class="meta"><span class="tag chaude">chaude</span><span class="id">sbz7c · passe 3</span></span><span class="ligne">Le piège : 46 g d'un autre houblon n'est pas le même IBU. La dose juste est sur la ligne.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="4 · La file des 318 · sbz6c" data-imgs="img/sbz6c-60.png|img/sbz6c-whirlpool.png" data-etats="à 60′|au whirlpool"><img src="img/sbz6c-60.png" width="780" height="1688" alt="sbz6c à 60′"></button>
+        <figcaption><b><span class="rang">4</span> La file des 318</b><span class="meta"><span class="tag chaude">chaude</span><span class="id">sbz6c · passe 3</span></span><span class="ligne">Ton stock dans la file des 318 houblons, qui se renverse au whirlpool.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="5 · Trois raisons · sbb5b" data-imgs="img/sbb5b-60.png|img/sbb5b-whirlpool.png" data-etats="à 60′|au whirlpool"><img src="img/sbb5b-60.png" width="780" height="1688" alt="sbb5b à 60′"></button>
+        <figcaption><b><span class="rang">5</span> Trois raisons</b><span class="meta"><span class="tag tiede">tiède</span><span class="id">sbb5b · passe 3</span></span><span class="ligne">Trois cartes : sans rien acheter, le moins de matière, si tu achètes.</span></figcaption>
+      </figure>
+
+      <p class="groupe"><b>Six concepts du panel</b><span>les mieux classés des 48, pas encore retravaillés</span></p>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="6 · La règle α · sbc3" data-imgs="img/sbc3-premier-ecran.png|img/sbc3-choix-galaxy.png" data-etats="premier écran|Galaxy touché"><img src="img/sbc3-premier-ecran.png" width="780" height="1688" alt="sbc3, la règle α"></button>
+        <figcaption><b><span class="rang">6</span> La règle α</b><span class="meta"><span class="tag tiede">tiède</span><span class="id">sbc3 · 1ᵉʳ du panel</span></span><span class="ligne">« α plus bas, plus de grammes » d'un coup d'œil : lot en rond, fiches en traits, ~62 g.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="7 · Le nuancier · sbu7" data-imgs="img/sbu7-premier-ecran.png|img/sbu7-choix.png" data-etats="premier écran|un remplaçant touché"><img src="img/sbu7-premier-ecran.png" width="780" height="1688" alt="sbu7, le nuancier"></button>
+        <figcaption><b><span class="rang">7</span> Le nuancier</b><span class="meta"><span class="tag chaude">chaude</span><span class="id">sbu7 · 4ᵉ du panel</span></span><span class="ligne">Famille par famille, le liseré de Nugget sur chaque remplaçant ; des couleurs osées.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="8 · Cinq onglets · sbb4" data-imgs="img/sbb4-premier-ecran.png|img/sbb4-geste.png" data-etats="premier écran|l'onglet Galaxy"><img src="img/sbb4-premier-ecran.png" width="780" height="1688" alt="sbb4, cinq onglets"></button>
+        <figcaption><b><span class="rang">8</span> Cinq onglets</b><span class="meta"><span class="tag tiede">tiède</span><span class="id">sbb4 · 6ᵉ du panel</span></span><span class="ligne">Un onglet par remplaçant, les 12 familles face à Nugget : à 60′, rien ne bouge.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="9 · Les éprouvettes de grammes · sbc4" data-imgs="img/sbc4-premier-ecran.png|img/sbc4-choix-sabro.png" data-etats="premier écran|Sabro touché"><img src="img/sbc4-premier-ecran.png" width="780" height="1688" alt="sbc4, les éprouvettes de grammes"></button>
+        <figcaption><b><span class="rang">9</span> Les éprouvettes de grammes</b><span class="meta"><span class="tag tiede">tiède</span><span class="id">sbc4 · 7ᵉ du panel</span></span><span class="ligne">Les grammes en éprouvettes contre ton stock : « assez en stock : Nelson Sauvin et Galaxy ».</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="10 · u4 au propre · sbu1" data-imgs="img/sbu1-premier-ecran.png|img/sbu1-choix.png" data-etats="premier écran|Magnat touché"><img src="img/sbu1-premier-ecran.png" width="780" height="1688" alt="sbu1, u4 au propre"></button>
+        <figcaption><b><span class="rang">10</span> u4 au propre</b><span class="meta"><span class="tag froide">froide</span><span class="id">sbu1 · 9ᵉ du panel</span></span><span class="ligne">Ton u4, α et dose sous chaque nom, le face-à-face en tableau.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="11 · La réponse en tête · sbb1" data-imgs="img/sbb1-premier-ecran.png|img/sbb1-geste.png" data-etats="premier écran|Galaxy ouvert"><img src="img/sbb1-premier-ecran.png" width="780" height="1688" alt="sbb1, la réponse en tête"></button>
+        <figcaption><b><span class="rang">11</span> La réponse en tête</b><span class="meta"><span class="tag froide">froide</span><span class="id">sbb1 · 10ᵉ du panel</span></span><span class="ligne">u4 avec la réponse posée en tête et son pourquoi ; « Si tu achètes : Magnat ».</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <p>Mini maquettes : captures des maquettes jouables, sans retouche. Ordre : le classement du critique (passe 3, puis panel des 48) ; une proposition, le choix est le tien.</p>
+    <p>Page d'avant : <a href="https://claude.ai/artifact/5nrApsrrY7yhnqK1gU7wYp">Choix de vues · 24.10</a>.</p>
+  </footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+  <div class="vis-tete">
+    <p class="vis-titre" id="vis-titre"></p>
+    <div class="vis-boutons">
+      <button type="button" id="vis-prec" aria-label="Vue précédente">◀</button>
+      <button type="button" id="vis-suiv" aria-label="Vue suivante">▶</button>
+      <button type="button" class="fermer" id="vis-fermer">Fermer</button>
+    </div>
+  </div>
+  <div class="vis-corps" id="vis-corps"></div>
+</div>
+
+<script>
+// En grand : chaque état de la mini maquette à côté du même état de ta référence. Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var corps = document.getElementById('vis-corps');
+  var titre = document.getElementById('vis-titre');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function liste(b, cle) { return (b.getAttribute(cle) || '').split('|').filter(Boolean); }
+  function rangees(b) {
+    var sec = b.closest('[data-choix]');
+    var etats = liste(b, 'data-etats');
+    var v = liste(b, 'data-imgs').map(function (s, i) { return { src: s, leg: (etats[i] || '') }; });
+    var src = b.getAttribute('data-ref-imgs') ? b : sec;
+    if (b.closest('[data-reference]') || !src.getAttribute('data-ref-imgs')) return [v];
+    var refEtats = liste(src, 'data-ref-etats'), nomRef = src.getAttribute('data-ref-nom');
+    var r = liste(src, 'data-ref-imgs').map(function (s, i) { return { src: s, leg: 'ta référence ' + nomRef + ' · ' + (refEtats[i] || ''), ref: true }; });
+    if (sec.getAttribute('data-mode') === 'paires') return v.map(function (x, i) { return r[i] ? [x, r[i]] : [x]; });
+    return [v.concat(r)];
+  }
+  function panneau(p) {
+    var f = document.createElement('figure');
+    f.className = 'vis-panneau' + (p.ref ? ' ref' : '');
+    var i = document.createElement('img'); i.src = p.src; i.alt = p.leg;
+    var c = document.createElement('figcaption'); c.textContent = p.leg;
+    f.appendChild(c); f.appendChild(i);
+    return f;
+  }
+  function ouvrir(n, depuis, depart) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    corps.textContent = '';
+    rangees(b).forEach(function (r) {
+      var d = document.createElement('div'); d.className = 'vis-rangee';
+      r.forEach(function (p) { d.appendChild(panneau(p)); });
+      if (r.length > 1) { var g = document.createElement('p'); g.className = 'vis-glisse'; g.textContent = 'Glisse : ' + r.slice(1).map(function (p) { return p.leg; }).join(', ') + ' →'; corps.appendChild(g); }
+      corps.appendChild(d);
+    });
+    vis.hidden = false; vis.scrollTop = 0;
+    if (depart) { var cible = corps.querySelectorAll('.vis-panneau')[depart]; if (cible) cible.parentNode.scrollLeft = cible.offsetLeft - cible.parentNode.offsetLeft; }
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; corps.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.planche .ecran, .planche .lecture');
+    if (!b) return;
+    var principal = b.classList.contains('ecran') ? b : b.closest('.vue').querySelector('.ecran');
+    ouvrir(boutons.indexOf(principal), b, Number(b.getAttribute('data-depart') || 0));
+  });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

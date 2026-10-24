@@ -1,0 +1,118 @@
+/* Suggérer (q2b) : classes propres, préfixées pq-suggerer- (L26). Jetons de l'app (variables --cave-*). */
+
+/* Ma bière reste montée sous l'outil (inerte, PageShell), mais retirée du rendu tant que Suggérer la couvre : les
+   contrôles du dépôt lisent la boîte, pas `inert`. Demande au socle dans RESULTAT.md (le faire dans CadreOutil pour tous). */
+html:has(.pq-outil-suggerer) [data-page-shell]:not(.pq-outil-suggerer) { display: none; }
+
+.pq-suggerer-zone { background: rgb(var(--cave-700) / 0.45); }
+.pq-suggerer-cran { background: rgb(var(--cave-950) / 0.9); }
+.pq-suggerer-visee { width: 0; border-left: 2px dashed rgb(var(--cave-50)); }
+.pq-suggerer-ligne-visee { width: 0; border-left: 1.5px dashed rgb(var(--cave-400) / 0.9); }
+.pq-suggerer-marque { box-shadow: 0 0 0 1px rgb(var(--cave-950)); }
+
+.pq-suggerer-voie { touch-action: manipulation; -webkit-touch-callout: none; }
+.pq-suggerer-voie-choisie { box-shadow: inset 3px 0 0 rgb(var(--cave-50)); }
+
+/* Cases alignées (q2b) : une par famille, au même endroit d'une voie à l'autre. */
+.pq-suggerer-calme { display: block; width: 3px; height: 3px; border-radius: 9999px; background: rgb(var(--cave-600)); }
+.pq-suggerer-separe { width: 1px; background: rgb(var(--cave-800)); }
+/* Les modificateurs de la jauge de q2b (« en contour si la famille baisse, orangée hors du style ») : deux classes, pour
+   l'emporter sur .pq-suggerer-trait, plus bas (jc-levure, 24.10 : ils étaient annulés, traits hors style noirs). */
+.pq-suggerer-trait.pq-suggerer-trait-demi { height: 3px; }
+.pq-suggerer-trait.pq-suggerer-trait-baisse { background: transparent; box-shadow: inset 0 0 0 1px rgb(var(--cave-200)); }
+.pq-suggerer-trait.pq-suggerer-trait-hors { background: #c2410c; }
+.pq-suggerer-trait-hors.pq-suggerer-trait-baisse { background: transparent; box-shadow: inset 0 0 0 1px #c2410c; }
+.pq-suggerer-hors { color: #9a3412; }
+
+.pq-suggerer-usage { color: rgb(var(--cave-200)); }
+.pq-suggerer-usage-regle { text-decoration: underline dotted rgb(var(--cave-400)); text-underline-offset: 3px; }
+.pq-suggerer-choisi { background: rgb(var(--cave-50)); border-color: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
+
+/* Lentille : SegmentedControl de l'app, aux rayons de l'échelle D83 (8 px ; rounded-control vaut 10 px). */
+.pq-suggerer-lentille [role="radiogroup"], .pq-suggerer-lentille [role="radio"] { border-radius: 8px; }
+
+/* « + » et coche dessinés au trait CSS (épais, nets à 36 px), sans icône SVG d'une autre épaisseur (D83 S4). */
+.pq-suggerer-plus, .pq-suggerer-coche { position: relative; display: block; width: 16px; height: 16px; }
+.pq-suggerer-plus::before, .pq-suggerer-plus::after { content: ''; position: absolute; left: 50%; top: 50%; background: currentColor; border-radius: 2px; transform: translate(-50%, -50%); }
+.pq-suggerer-plus::before { width: 16px; height: 2.5px; }
+.pq-suggerer-plus::after { width: 2.5px; height: 16px; }
+.pq-suggerer-coche::before { content: ''; position: absolute; left: 3px; top: 0; width: 7px; height: 12px; border: solid currentColor; border-width: 0 2.5px 2.5px 0; transform: rotate(40deg); transform-origin: center; }
+.pq-suggerer-inconnue { opacity: 0.45; }
+/* « α » posé par la feuille (un signe, pas un mot) : « 12,7% » reste un seul nombre à lire. */
+.pq-suggerer-alpha::before { content: "\03B1\202F"; color: rgb(var(--cave-400)); }
+.pq-suggerer-barre-hors { background: #c2410c; }
+/* « ≠ » : l'α du lot sort de la plage des fiches (signe posé par la feuille, comme « α »). */
+.pq-suggerer-alpha-hors::after { content: "≠"; margin-left: 2px; font-weight: 600; color: #b45309; }
+
+/* Reprise D105 : q2b. */
+.pq-suggerer-carte { min-height: 0; }
+.pq-suggerer-verdict-aucune { color: #475569; }
+.pq-suggerer-verdict-approche { color: #4f46e5; }
+.pq-suggerer-verdict-atteint { color: #0e7490; }
+.pq-suggerer-alerte { position: absolute; right: -3px; bottom: -2px; width: 8px; height: 8px; border-radius: 9999px; background: #c2410c; box-shadow: 0 0 0 1.5px rgb(var(--cave-950)); }
+.pq-suggerer-egal::before { content: "="; font-weight: 800; }
+/* Onglets du socle : texte des onglets inactifs au contraste de 4,5:1 sur leur fond gris (thème des maquettes). */
+.pq-suggerer-moment { display: inline-flex; align-items: center; height: 1.375rem; padding: 0 0.5rem; border-radius: 9999px; border: 1.5px dashed rgb(var(--cave-600)); font-size: 0.75rem; font-weight: 600; color: rgb(var(--cave-50)); }
+.pq-suggerer-radar-grille { fill: none; stroke: rgb(var(--cave-700) / 0.6); stroke-width: 0.8; }
+.pq-suggerer-radar-zone { fill: rgb(var(--cave-700) / 0.35); stroke: none; }
+.pq-suggerer-radar-inconnu { fill: rgb(var(--cave-600) / 0.18); stroke: none; }
+.pq-suggerer-radar-biere { fill: none; stroke: rgb(var(--cave-50)); stroke-width: 2.2; }
+.pq-suggerer-radar-serie { fill: rgb(var(--cave-400) / 0.12); stroke: rgb(var(--cave-200)); stroke-width: 1.6; }
+.pq-suggerer-radar-nom { font-size: 10px; fill: rgb(var(--cave-200)); }
+/* « ≈ » (assemblage estimé) et « › » posés par la feuille : des signes, pas des mots. */
+.pq-suggerer-estime::after { content: " \2248"; }
+.pq-suggerer-hh::after { content: " \203A"; }
+
+/* Reprise D117 : l'onglet Suggestions de la base v4.10 (consolide-b-390.png), élément par élément. */
+/* Le bandeau reste sous la tête quand la liste défile, comme la base. */
+.pq-suggerer-haut { position: sticky; top: -0.5rem; z-index: 6; margin: -0.5rem -0.5rem 0; padding: 0.5rem 0.5rem 0.25rem; background: rgb(var(--cave-950)); }
+.pq-suggerer-verdict { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; }
+.pq-suggerer-verdict-suite { font-size: 0.875rem; font-weight: 700; letter-spacing: 0; }
+/* « Hors houblon › » : la pastille au trait de la famille (base). */
+.pq-suggerer-hh { background: rgb(var(--cave-950) / 0.7); border: 2px solid currentColor; }
+
+/* Cases alignées (q2b) : une par famille ; les objectifs en tête, cerclés ; picto pâle si les fiches ne font que citer. */
+.pq-suggerer-case { width: 1.5rem; min-height: 1.5rem; flex: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.pq-suggerer-case-objectif { width: 1.75rem; }
+.pq-suggerer-case-objectif > .pq-suggerer-picto { display: inline-flex; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; border-radius: 9999px; background: rgb(var(--cave-950)); border: 1.5px solid rgb(var(--cave-700)); }
+.pq-suggerer-case-marquee > .pq-suggerer-picto { border: 2px solid rgb(var(--cave-50)); }
+.pq-suggerer-case-pale > .pq-suggerer-picto > svg { opacity: 0.45; }
+.pq-suggerer-trait { display: block; width: 4px; height: 6px; border-radius: 2px; background: rgb(var(--cave-50)); }
+/* Les crans comptés (gr5 c) : après les traits, les crans vides jusqu'au plus grand du groupe, cerclés d'un pixel gris
+   comme sa page gr5 (#8a8a86) ; un trait de baisse garde son contour à l'encre (q2b), plus sombre. */
+.pq-suggerer-trait.pq-suggerer-trait-vide { background: transparent; box-shadow: inset 0 0 0 1px #8a8a86; }
+/* La case touchée (gr5 b) : cernée, carré arrondi à l'encre autour du picto et de ses traits ; la bulle dit le reste. */
+.pq-suggerer-case[data-bulle-ouverte] { box-shadow: inset 0 0 0 2px rgb(var(--cave-50)); border-radius: 8px; }
+
+/* Le cadre à bord noir épais des voies au même effet (base). */
+.pq-suggerer-cadre { margin-top: 0.25rem; border-radius: 8px; border-left: 6px solid rgb(var(--cave-50)); background: rgb(var(--cave-950)); box-shadow: 0 1px 4px rgb(0 0 0 / 0.14), inset 0 0 0 1px rgb(var(--cave-800)); overflow: hidden; }
+.pq-suggerer-cadre > li + li, .pq-suggerer-liste > li { border-top: 1px solid rgb(var(--cave-800)); }
+.pq-suggerer-liste { margin-top: 0.25rem; }
+.pq-suggerer-nom { text-decoration: underline dotted rgb(var(--cave-600)); text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+.pq-suggerer-voie-choisie { box-shadow: none; }
+.pq-suggerer-aime { color: rgb(var(--cave-400)); }
+.pq-suggerer-aime[aria-pressed="true"] { color: #b91c1c; }
+
+/* « Hors houblon » replié en bas (base). */
+.pq-suggerer-repli { background: rgb(var(--cave-900)); }
+.pq-suggerer-repli > summary { list-style: none; }
+.pq-suggerer-repli > summary::-webkit-details-marker { display: none; }
+.pq-suggerer-repli > summary::before { content: ""; width: 0; height: 0; border-style: solid; border-width: 6px 0 6px 9px; border-color: transparent transparent transparent rgb(var(--cave-50)); transition: transform 120ms ease-out; }
+.pq-suggerer-repli[open] > summary::before { transform: rotate(90deg); }
+
+/* La barre noire « Comparer (n) », pleine largeur, posée sur la liste sous le pouce (base). */
+.pq-suggerer-barre-bas { position: sticky; bottom: 0.5rem; z-index: 6; padding-top: 0.5rem; }
+.pq-suggerer-comparer { height: 3rem; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); box-shadow: 0 4px 14px rgb(0 0 0 / 0.22); letter-spacing: 0.01em; }
+.pq-suggerer-comparer-n { margin-left: 0.375rem; }
+
+/* La bulle d'une case (gr5 b) : blanche, bord à l'encre, une ligne qui se replie, au-dessus de la case touchée. */
+.pq-suggerer-bulle { position: fixed; z-index: 60; max-width: 240px; padding: 6px 10px; border-radius: 8px; background: rgb(var(--cave-950)); color: rgb(var(--cave-50)); border: 1.5px solid rgb(var(--cave-50)); box-shadow: 0 6px 18px rgb(0 0 0 / 0.18); font-size: 14px; line-height: 1.3; pointer-events: auto; }
+.pq-suggerer-bulle-nom { font-weight: 700; }
+.pq-suggerer-bulle-avec { color: rgb(var(--cave-200)); white-space: nowrap; }
+.pq-suggerer-bulle-bloc { white-space: nowrap; }
+.pq-suggerer-bulle-hors { color: #c2410c; font-weight: 700; }
+
+/* D130 : ses mots hors des familles de la 16D (« lui seul : … », flb5b), une ligne courte sous ses pictos ; la clé en gras
+   à l'encre, les mots en gris foncé. Une levure : « elle : … » (sa fiche technique), « ? » sans fiche. */
+.pq-sg-hors16d { display: block; flex-basis: 100%; margin: 0; font-size: 0.8125rem; line-height: 1.25; color: rgb(var(--cave-200)); overflow-wrap: anywhere; }
+.pq-sg-hors16d-cle { font-weight: 700; color: rgb(var(--cave-50)); }

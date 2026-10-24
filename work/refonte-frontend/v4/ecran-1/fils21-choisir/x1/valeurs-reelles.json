@@ -1,0 +1,1871 @@
+{
+ "_": "Vraies valeurs des pages x1–x5 (lot 21) : houblons, mesures du moteur « pouvoir aromatique », de H et du stock. Aucune valeur simulée.",
+ "houblons": {
+  "citra": {
+   "nom": "Citra",
+   "cle": "beermaverick-citra",
+   "couleur": "#184078",
+   "lotCle": "beermaverick-citra:cryo",
+   "huile": [
+    1,
+    3
+   ],
+   "huileSrc": "YCH, fiche Citra T-90 [1]",
+   "alphaFiches": [
+    10,
+    15
+   ],
+   "alphaFichesSrc": "Beer Maverick 2023",
+   "lot": {
+    "alpha": 24.8,
+    "forme": "cryo",
+    "grammes": 65,
+    "de": "lu sur l’article"
+   },
+   "horsFiches": false,
+   "usage": "aromatique",
+   "usageSource": "fournisseur",
+   "parGramme": {
+    "huile": {
+     "min": 1,
+     "max": 3,
+     "inf": null,
+     "sup": "≤",
+     "src": [
+      1,
+      7,
+      8
+     ]
+    },
+    "linalol": {
+     "min": 0.5,
+     "max": 2,
+     "inf": null,
+     "sup": null,
+     "src": [
+      1,
+      7,
+      8
+     ]
+    },
+    "farnesene": {
+     "min": 0.1,
+     "max": 1,
+     "inf": null,
+     "sup": "<",
+     "src": [
+      1,
+      7,
+      8
+     ]
+    },
+    "mmp4": {
+     "min": 10,
+     "max": 38,
+     "inf": ">",
+     "sup": null,
+     "src": [
+      11
+     ]
+    }
+   }
+  },
+  "cascade": {
+   "nom": "Cascade",
+   "cle": "beermaverick-cascade",
+   "couleur": "#781838",
+   "lotCle": "beermaverick-cascade",
+   "huile": [
+    0.5,
+    2
+   ],
+   "huileSrc": "YCH, fiche Cascade [2]",
+   "alphaFiches": [
+    4.5,
+    9
+   ],
+   "alphaFichesSrc": "Beer Maverick 2023, Hopsteiner 2025",
+   "lot": {
+    "alpha": 6.5,
+    "forme": null,
+    "grammes": 60,
+    "de": "fiche de stock"
+   },
+   "horsFiches": false,
+   "usage": "aromatique",
+   "usageSource": "fournisseur",
+   "parGramme": {
+    "huile": {
+     "min": 0.5,
+     "max": 2.6,
+     "inf": null,
+     "sup": null,
+     "src": [
+      2,
+      7,
+      10,
+      21
+     ]
+    },
+    "linalol": {
+     "min": 0.1,
+     "max": 0.6,
+     "inf": null,
+     "sup": null,
+     "src": [
+      2,
+      10
+     ]
+    },
+    "farnesene": {
+     "min": 3,
+     "max": 8.5,
+     "inf": null,
+     "sup": null,
+     "src": [
+      2,
+      7,
+      10,
+      9
+     ]
+    },
+    "mmp4": {
+     "min": 2.4,
+     "max": 3.8,
+     "inf": null,
+     "sup": null,
+     "src": [
+      11
+     ]
+    }
+   }
+  },
+  "galaxy": {
+   "nom": "Galaxy",
+   "cle": "beermaverick-galaxy",
+   "couleur": "#681878",
+   "lotCle": "beermaverick-galaxy",
+   "huile": [
+    2.6,
+    3.3
+   ],
+   "huileSrc": "Hop Products Australia, Galaxy [26]",
+   "alphaFiches": [
+    11,
+    16
+   ],
+   "alphaFichesSrc": "Beer Maverick 2023",
+   "lot": {
+    "alpha": 17.2,
+    "forme": null,
+    "grammes": 60,
+    "de": "fiche de stock"
+   },
+   "horsFiches": true,
+   "usage": "double",
+   "usageSource": "règle",
+   "parGramme": {
+    "huile": {
+     "min": 2.6,
+     "max": 3.3,
+     "inf": null,
+     "sup": null,
+     "src": [
+      26
+     ]
+    },
+    "linalol": {
+     "min": 0.5,
+     "max": 1,
+     "inf": null,
+     "sup": null,
+     "src": [
+      26
+     ]
+    },
+    "farnesene": {
+     "min": 2.8,
+     "max": 5.1,
+     "inf": null,
+     "sup": null,
+     "src": [
+      26
+     ]
+    },
+    "mmp4": {
+     "min": 10,
+     "max": null,
+     "inf": ">",
+     "sup": null,
+     "src": [
+      11
+     ]
+    }
+   }
+  },
+  "idaho7": {
+   "nom": "Idaho 7",
+   "cle": "beermaverick-idaho-7",
+   "couleur": "#e80030",
+   "lotCle": "beermaverick-idaho-7",
+   "huile": [
+    1,
+    3
+   ],
+   "huileSrc": "YCH, fiche Idaho 7 [3]",
+   "alphaFiches": [
+    9.5,
+    14.9
+   ],
+   "alphaFichesSrc": "Beer Maverick 2023",
+   "lot": {
+    "alpha": 12.7,
+    "forme": null,
+    "grammes": 20,
+    "de": "lu sur l’article"
+   },
+   "horsFiches": false,
+   "usage": "double",
+   "usageSource": "règle",
+   "parGramme": {
+    "huile": {
+     "min": 1,
+     "max": 3,
+     "inf": null,
+     "sup": null,
+     "src": [
+      3,
+      27
+     ]
+    },
+    "linalol": {
+     "min": 0.2,
+     "max": 1,
+     "inf": null,
+     "sup": null,
+     "src": [
+      3,
+      27
+     ]
+    },
+    "farnesene": {
+     "min": 0.1,
+     "max": 1,
+     "inf": null,
+     "sup": null,
+     "src": [
+      3
+     ]
+    },
+    "mmp4": {
+     "min": null,
+     "max": 10,
+     "inf": null,
+     "sup": "<",
+     "src": [
+      11
+     ]
+    }
+   }
+  },
+  "nugget": {
+   "nom": "Nugget",
+   "cle": "beermaverick-nugget",
+   "couleur": "#2b68da",
+   "lotCle": "beermaverick-nugget",
+   "huile": [
+    0.9,
+    3.3
+   ],
+   "huileSrc": "Beer Maverick 2023, Hopsteiner 2025",
+   "alphaFiches": [
+    9.5,
+    16
+   ],
+   "alphaFichesSrc": "Beer Maverick 2023, Hopsteiner 2025",
+   "lot": {
+    "alpha": 13,
+    "forme": null,
+    "grammes": 0,
+    "de": "fiche de stock"
+   },
+   "horsFiches": false,
+   "usage": "double",
+   "usageSource": "règle"
+  }
+ },
+ "moments": {
+  "b60": "60′",
+  "b10": "10′",
+  "wp": "whirlpool",
+  "dryActive": "dry hop actif",
+  "dryPost": "dry hop après"
+ },
+ "levures": {
+  "us05": "SafAle US-05",
+  "verdant": "LalBrew Verdant IPA",
+  "pomona": "LalBrew Pomona",
+  "diamond": "LalBrew Diamond"
+ },
+ "mesures": {
+  "k1-citra-b60": [
+   {
+    "id": "alpha-lot",
+    "houblon": "citra",
+    "quoi": "α du lot",
+    "valeur": 24.8,
+    "unite": "%",
+    "forme": "cryo",
+    "source": "stock du prototype (proto-data.json), lu sur l’article"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "citra",
+    "quoi": "α des fiches",
+    "plage": [
+     10,
+     15
+    ],
+    "unite": "%",
+    "note": "pellets",
+    "source": "Beer Maverick 2023"
+   },
+   {
+    "id": "huile",
+    "houblon": "citra",
+    "quoi": "huile totale",
+    "plage": [
+     1,
+     3
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Citra T-90 [1]"
+   },
+   {
+    "id": "charge",
+    "houblon": "citra",
+    "quoi": "huile apportée",
+    "plage": [
+     4,
+     12
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": null,
+     "max": 1300,
+     "central": null
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, 60′"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": null,
+     "max": 9.12,
+     "central": null
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, 60′"
+   },
+   {
+    "id": "ibu",
+    "quoi": "IBU apportés",
+    "valeur": 100,
+    "plage": [
+     80,
+     120
+    ],
+    "unite": "IBU",
+    "source": "moteur « pouvoir aromatique », amertume, α plage variétale (Beer Maverick)"
+   },
+   {
+    "id": "perte",
+    "quoi": "ce qui reste",
+    "texte": "4MMP −91 % en 60 min à 100 °C",
+    "source": "Kishimoto 2008 [13]",
+    "valeur": -91,
+    "unite": "%"
+   }
+  ],
+  "k1-citra-b10": [
+   {
+    "id": "alpha-lot",
+    "houblon": "citra",
+    "quoi": "α du lot",
+    "valeur": 24.8,
+    "unite": "%",
+    "forme": "cryo",
+    "source": "stock du prototype (proto-data.json), lu sur l’article"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "citra",
+    "quoi": "α des fiches",
+    "plage": [
+     10,
+     15
+    ],
+    "unite": "%",
+    "note": "pellets",
+    "source": "Beer Maverick 2023"
+   },
+   {
+    "id": "huile",
+    "houblon": "citra",
+    "quoi": "huile totale",
+    "plage": [
+     1,
+     3
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Citra T-90 [1]"
+   },
+   {
+    "id": "charge",
+    "houblon": "citra",
+    "quoi": "huile apportée",
+    "plage": [
+     4,
+     12
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.4973,
+     "max": 1300,
+     "central": 5.073
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, 10′"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "inconnu": true,
+    "raison": "aucun taux publié pour ce moment",
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json"
+   },
+   {
+    "id": "ibu",
+    "quoi": "IBU apportés",
+    "valeur": 36,
+    "plage": [
+     29,
+     43
+    ],
+    "unite": "IBU",
+    "source": "moteur « pouvoir aromatique », amertume, α plage variétale (Beer Maverick)"
+   },
+   {
+    "id": "perte",
+    "quoi": "ce qui reste",
+    "texte": "linalol 60–63 % retrouvé en ajout tardif",
+    "source": "Gahr 2019 [30]",
+    "plage": [
+     60,
+     63
+    ],
+    "unite": "%"
+   }
+  ],
+  "k1-citra-wp": [
+   {
+    "id": "alpha-lot",
+    "houblon": "citra",
+    "quoi": "α du lot",
+    "valeur": 24.8,
+    "unite": "%",
+    "forme": "cryo",
+    "source": "stock du prototype (proto-data.json), lu sur l’article"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "citra",
+    "quoi": "α des fiches",
+    "plage": [
+     10,
+     15
+    ],
+    "unite": "%",
+    "note": "pellets",
+    "source": "Beer Maverick 2023"
+   },
+   {
+    "id": "huile",
+    "houblon": "citra",
+    "quoi": "huile totale",
+    "plage": [
+     1,
+     3
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Citra T-90 [1]"
+   },
+   {
+    "id": "charge",
+    "houblon": "citra",
+    "quoi": "huile apportée",
+    "plage": [
+     4,
+     12
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.4973,
+     "max": 1300,
+     "central": 5.073
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, whirlpool"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": null,
+     "max": 78.03,
+     "central": null
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, whirlpool"
+   },
+   {
+    "id": "ibu",
+    "quoi": "IBU apportés",
+    "valeur": 15,
+    "plage": [
+     12,
+     18
+    ],
+    "unite": "IBU",
+    "source": "moteur « pouvoir aromatique », amertume, α plage variétale (Beer Maverick)"
+   },
+   {
+    "id": "perte",
+    "quoi": "ce qui reste",
+    "texte": "4MMP −23 % à 90 °C",
+    "source": "Kishimoto 2008 [13]",
+    "valeur": -23,
+    "unite": "%"
+   }
+  ],
+  "k1-citra-dryActive": [
+   {
+    "id": "alpha-lot",
+    "houblon": "citra",
+    "quoi": "α du lot",
+    "valeur": 24.8,
+    "unite": "%",
+    "forme": "cryo",
+    "source": "stock du prototype (proto-data.json), lu sur l’article"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "citra",
+    "quoi": "α des fiches",
+    "plage": [
+     10,
+     15
+    ],
+    "unite": "%",
+    "note": "pellets",
+    "source": "Beer Maverick 2023"
+   },
+   {
+    "id": "huile",
+    "houblon": "citra",
+    "quoi": "huile totale",
+    "plage": [
+     1,
+     3
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Citra T-90 [1]"
+   },
+   {
+    "id": "charge",
+    "houblon": "citra",
+    "quoi": "huile apportée",
+    "plage": [
+     4,
+     12
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.05802,
+     "max": 2064,
+     "central": 4.413
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, dry hop actif"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 4,
+     "max": 70.93,
+     "central": 15.81
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, dry hop actif"
+   },
+   {
+    "id": "perte",
+    "quoi": "ce qui reste",
+    "texte": "le CO₂ emporte le myrcène ; aucun % publié",
+    "source": "Haslbeck 2017 [33]"
+   }
+  ],
+  "k1-citra-dryPost": [
+   {
+    "id": "alpha-lot",
+    "houblon": "citra",
+    "quoi": "α du lot",
+    "valeur": 24.8,
+    "unite": "%",
+    "forme": "cryo",
+    "source": "stock du prototype (proto-data.json), lu sur l’article"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "citra",
+    "quoi": "α des fiches",
+    "plage": [
+     10,
+     15
+    ],
+    "unite": "%",
+    "note": "pellets",
+    "source": "Beer Maverick 2023"
+   },
+   {
+    "id": "huile",
+    "houblon": "citra",
+    "quoi": "huile totale",
+    "plage": [
+     1,
+     3
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Citra T-90 [1]"
+   },
+   {
+    "id": "charge",
+    "houblon": "citra",
+    "quoi": "huile apportée",
+    "plage": [
+     4,
+     12
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.05802,
+     "max": 2064,
+     "central": 4.413
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, dry hop après"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 4,
+     "max": 70.93,
+     "central": 15.81
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, dry hop après"
+   },
+   {
+    "id": "perte",
+    "quoi": "ce qui reste",
+    "texte": "linalol 44–82 % retrouvé en dry hop",
+    "source": "Gahr 2019 [30], Tusha 2022 [31]",
+    "plage": [
+     44,
+     82
+    ],
+    "unite": "%"
+   }
+  ],
+  "k1-cascade-b60": [
+   {
+    "id": "alpha-lot",
+    "houblon": "cascade",
+    "quoi": "α du lot",
+    "valeur": 6.5,
+    "unite": "%",
+    "forme": null,
+    "source": "stock du prototype (proto-data.json), fiche de stock"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "cascade",
+    "quoi": "α des fiches",
+    "plage": [
+     4.5,
+     9
+    ],
+    "unite": "%",
+    "note": null,
+    "source": "Beer Maverick 2023, Hopsteiner 2025"
+   },
+   {
+    "id": "huile",
+    "houblon": "cascade",
+    "quoi": "huile totale",
+    "plage": [
+     0.5,
+     2
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Cascade [2]"
+   },
+   {
+    "id": "charge",
+    "houblon": "cascade",
+    "quoi": "huile apportée",
+    "plage": [
+     2,
+     8
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": null,
+     "max": 338.1,
+     "central": null
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, 60′"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": null,
+     "max": 4.032,
+     "central": null
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, 60′"
+   },
+   {
+    "id": "ibu",
+    "quoi": "IBU apportés",
+    "valeur": 52,
+    "plage": [
+     52,
+     52
+    ],
+    "unite": "IBU",
+    "source": "moteur « pouvoir aromatique », amertume, α fiche de stock"
+   },
+   {
+    "id": "perte",
+    "quoi": "ce qui reste",
+    "texte": "4MMP −91 % en 60 min à 100 °C",
+    "source": "Kishimoto 2008 [13]",
+    "valeur": -91,
+    "unite": "%"
+   }
+  ],
+  "k1-cascade-b10": [
+   {
+    "id": "alpha-lot",
+    "houblon": "cascade",
+    "quoi": "α du lot",
+    "valeur": 6.5,
+    "unite": "%",
+    "forme": null,
+    "source": "stock du prototype (proto-data.json), fiche de stock"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "cascade",
+    "quoi": "α des fiches",
+    "plage": [
+     4.5,
+     9
+    ],
+    "unite": "%",
+    "note": null,
+    "source": "Beer Maverick 2023, Hopsteiner 2025"
+   },
+   {
+    "id": "huile",
+    "houblon": "cascade",
+    "quoi": "huile totale",
+    "plage": [
+     0.5,
+     2
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Cascade [2]"
+   },
+   {
+    "id": "charge",
+    "houblon": "cascade",
+    "quoi": "huile apportée",
+    "plage": [
+     2,
+     8
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.04973,
+     "max": 338.1,
+     "central": 1.101
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, 10′"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "inconnu": true,
+    "raison": "aucun taux publié pour ce moment",
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json"
+   },
+   {
+    "id": "ibu",
+    "quoi": "IBU apportés",
+    "valeur": 19,
+    "plage": [
+     19,
+     19
+    ],
+    "unite": "IBU",
+    "source": "moteur « pouvoir aromatique », amertume, α fiche de stock"
+   },
+   {
+    "id": "perte",
+    "quoi": "ce qui reste",
+    "texte": "linalol 60–63 % retrouvé en ajout tardif",
+    "source": "Gahr 2019 [30]",
+    "plage": [
+     60,
+     63
+    ],
+    "unite": "%"
+   }
+  ],
+  "k1-cascade-wp": [
+   {
+    "id": "alpha-lot",
+    "houblon": "cascade",
+    "quoi": "α du lot",
+    "valeur": 6.5,
+    "unite": "%",
+    "forme": null,
+    "source": "stock du prototype (proto-data.json), fiche de stock"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "cascade",
+    "quoi": "α des fiches",
+    "plage": [
+     4.5,
+     9
+    ],
+    "unite": "%",
+    "note": null,
+    "source": "Beer Maverick 2023, Hopsteiner 2025"
+   },
+   {
+    "id": "huile",
+    "houblon": "cascade",
+    "quoi": "huile totale",
+    "plage": [
+     0.5,
+     2
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Cascade [2]"
+   },
+   {
+    "id": "charge",
+    "houblon": "cascade",
+    "quoi": "huile apportée",
+    "plage": [
+     2,
+     8
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.04973,
+     "max": 338.1,
+     "central": 1.101
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, whirlpool"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": null,
+     "max": 34.5,
+     "central": null
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, whirlpool"
+   },
+   {
+    "id": "ibu",
+    "quoi": "IBU apportés",
+    "valeur": 8,
+    "plage": [
+     8,
+     8
+    ],
+    "unite": "IBU",
+    "source": "moteur « pouvoir aromatique », amertume, α fiche de stock"
+   },
+   {
+    "id": "perte",
+    "quoi": "ce qui reste",
+    "texte": "4MMP −23 % à 90 °C",
+    "source": "Kishimoto 2008 [13]",
+    "valeur": -23,
+    "unite": "%"
+   }
+  ],
+  "k1-cascade-dryActive": [
+   {
+    "id": "alpha-lot",
+    "houblon": "cascade",
+    "quoi": "α du lot",
+    "valeur": 6.5,
+    "unite": "%",
+    "forme": null,
+    "source": "stock du prototype (proto-data.json), fiche de stock"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "cascade",
+    "quoi": "α des fiches",
+    "plage": [
+     4.5,
+     9
+    ],
+    "unite": "%",
+    "note": null,
+    "source": "Beer Maverick 2023, Hopsteiner 2025"
+   },
+   {
+    "id": "huile",
+    "houblon": "cascade",
+    "quoi": "huile totale",
+    "plage": [
+     0.5,
+     2
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Cascade [2]"
+   },
+   {
+    "id": "charge",
+    "houblon": "cascade",
+    "quoi": "huile apportée",
+    "plage": [
+     2,
+     8
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.005802,
+     "max": 536.6,
+     "central": 0.9577
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, dry hop actif"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.32,
+     "max": 31.36,
+     "central": 5.798
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, dry hop actif"
+   },
+   {
+    "id": "perte",
+    "quoi": "ce qui reste",
+    "texte": "le CO₂ emporte le myrcène ; aucun % publié",
+    "source": "Haslbeck 2017 [33]"
+   },
+   {
+    "id": "biere-kishimoto-linalol",
+    "compose": "linalol",
+    "quoi": "mesuré en bière",
+    "texte": "Cascade à 2 g/L, ajouté après refroidissement du moût : 56,9 µg/L de linalol",
+    "plage": [
+     56.9,
+     56.9
+    ],
+    "unite": "µg/L",
+    "source": "Kishimoto 2008 [12]"
+   },
+   {
+    "id": "biere-kishimoto-geraniol",
+    "compose": "geraniol",
+    "quoi": "mesuré en bière",
+    "texte": "Cascade à 2 g/L : 82,8 µg/L de géraniol, le plus haut des 11 cultivars de Kishimoto",
+    "plage": [
+     82.8,
+     82.8
+    ],
+    "unite": "µg/L",
+    "source": "Kishimoto 2008 [12]"
+   },
+   {
+    "id": "biere-lafontaine-4mmp",
+    "compose": "4MMP",
+    "quoi": "mesuré en bière",
+    "texte": "3,86 g/L, 24 h, 13–15 °C : 4MMP 5,8–10,4 ng/L (récolte 2014) ; non détecté (récolte 2016)",
+    "plage": [
+     5.8,
+     10.4
+    ],
+    "unite": "ng/L",
+    "source": "Lafontaine 2019 [20]"
+   },
+   {
+    "id": "biere-lafontaine-3mh",
+    "compose": "3MH",
+    "quoi": "mesuré en bière",
+    "texte": "3,86 g/L, 24 h, 13–15 °C : 3MH 67–141 ng/L",
+    "plage": [
+     67,
+     141
+    ],
+    "unite": "ng/L",
+    "source": "Lafontaine 2019 [20]"
+   }
+  ],
+  "k1-cascade-dryPost": [
+   {
+    "id": "alpha-lot",
+    "houblon": "cascade",
+    "quoi": "α du lot",
+    "valeur": 6.5,
+    "unite": "%",
+    "forme": null,
+    "source": "stock du prototype (proto-data.json), fiche de stock"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "cascade",
+    "quoi": "α des fiches",
+    "plage": [
+     4.5,
+     9
+    ],
+    "unite": "%",
+    "note": null,
+    "source": "Beer Maverick 2023, Hopsteiner 2025"
+   },
+   {
+    "id": "huile",
+    "houblon": "cascade",
+    "quoi": "huile totale",
+    "plage": [
+     0.5,
+     2
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Cascade [2]"
+   },
+   {
+    "id": "charge",
+    "houblon": "cascade",
+    "quoi": "huile apportée",
+    "plage": [
+     2,
+     8
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.005802,
+     "max": 536.6,
+     "central": 0.9577
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, dry hop après"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.32,
+     "max": 31.36,
+     "central": 5.798
+    },
+    "source": "moteur « pouvoir aromatique », citra-contre-cascade.json, dry hop après"
+   },
+   {
+    "id": "perte",
+    "quoi": "ce qui reste",
+    "texte": "linalol 44–82 % retrouvé en dry hop",
+    "source": "Gahr 2019 [30], Tusha 2022 [31]",
+    "plage": [
+     44,
+     82
+    ],
+    "unite": "%"
+   },
+   {
+    "id": "biere-kishimoto-linalol",
+    "compose": "linalol",
+    "quoi": "mesuré en bière",
+    "texte": "Cascade à 2 g/L, ajouté après refroidissement du moût : 56,9 µg/L de linalol",
+    "plage": [
+     56.9,
+     56.9
+    ],
+    "unite": "µg/L",
+    "source": "Kishimoto 2008 [12]"
+   },
+   {
+    "id": "biere-kishimoto-geraniol",
+    "compose": "geraniol",
+    "quoi": "mesuré en bière",
+    "texte": "Cascade à 2 g/L : 82,8 µg/L de géraniol, le plus haut des 11 cultivars de Kishimoto",
+    "plage": [
+     82.8,
+     82.8
+    ],
+    "unite": "µg/L",
+    "source": "Kishimoto 2008 [12]"
+   },
+   {
+    "id": "biere-lafontaine-4mmp",
+    "compose": "4MMP",
+    "quoi": "mesuré en bière",
+    "texte": "3,86 g/L, 24 h, 13–15 °C : 4MMP 5,8–10,4 ng/L (récolte 2014) ; non détecté (récolte 2016)",
+    "plage": [
+     5.8,
+     10.4
+    ],
+    "unite": "ng/L",
+    "source": "Lafontaine 2019 [20]"
+   },
+   {
+    "id": "biere-lafontaine-3mh",
+    "compose": "3MH",
+    "quoi": "mesuré en bière",
+    "texte": "3,86 g/L, 24 h, 13–15 °C : 3MH 67–141 ng/L",
+    "plage": [
+     67,
+     141
+    ],
+    "unite": "ng/L",
+    "source": "Lafontaine 2019 [20]"
+   }
+  ],
+  "k2-citra": [
+   {
+    "id": "alpha-lot",
+    "houblon": "citra",
+    "quoi": "α du lot",
+    "valeur": 24.8,
+    "unite": "%",
+    "forme": "cryo",
+    "source": "stock du prototype (proto-data.json), lu sur l’article"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "citra",
+    "quoi": "α des fiches",
+    "plage": [
+     10,
+     15
+    ],
+    "unite": "%",
+    "note": "pellets",
+    "source": "Beer Maverick 2023"
+   },
+   {
+    "id": "huile",
+    "houblon": "citra",
+    "quoi": "huile totale",
+    "plage": [
+     1,
+     3
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Citra T-90 [1]"
+   },
+   {
+    "id": "charge",
+    "houblon": "citra",
+    "quoi": "huile apportée",
+    "plage": [
+     4,
+     12
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.05802,
+     "max": 2475,
+     "central": 4.413
+    },
+    "source": "moteur « pouvoir aromatique », Citra 4 g/L (fils19-choix/donnees/cas-citra.json)"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 4,
+     "max": null,
+     "central": 15.81
+    },
+    "source": "moteur « pouvoir aromatique », Citra 4 g/L (fils19-choix/donnees/cas-citra.json)"
+   }
+  ],
+  "k2-galaxy": [
+   {
+    "id": "alpha-lot",
+    "houblon": "galaxy",
+    "quoi": "α du lot",
+    "valeur": 17.2,
+    "unite": "%",
+    "forme": null,
+    "source": "stock du prototype (proto-data.json), fiche de stock"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "galaxy",
+    "quoi": "α des fiches",
+    "plage": [
+     11,
+     16
+    ],
+    "unite": "%",
+    "note": null,
+    "source": "Beer Maverick 2023"
+   },
+   {
+    "id": "huile",
+    "houblon": "galaxy",
+    "quoi": "huile totale",
+    "plage": [
+     2.6,
+     3.3
+    ],
+    "unite": "mL/100 g",
+    "source": "Hop Products Australia, Galaxy [26]"
+   },
+   {
+    "id": "charge",
+    "houblon": "galaxy",
+    "quoi": "huile apportée",
+    "plage": [
+     10.4,
+     13.2
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.1044,
+     "max": 2131,
+     "central": 4.502
+    },
+    "source": "moteur « pouvoir aromatique », Galaxy 4 g/L (fils19-choix/donnees/cas-galaxy.json)"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 4,
+     "max": null,
+     "central": null
+    },
+    "source": "moteur « pouvoir aromatique », Galaxy 4 g/L (fils19-choix/donnees/cas-galaxy.json)"
+   }
+  ],
+  "k2-idaho7": [
+   {
+    "id": "alpha-lot",
+    "houblon": "idaho7",
+    "quoi": "α du lot",
+    "valeur": 12.7,
+    "unite": "%",
+    "forme": null,
+    "source": "stock du prototype (proto-data.json), lu sur l’article"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "idaho7",
+    "quoi": "α des fiches",
+    "plage": [
+     9.5,
+     14.9
+    ],
+    "unite": "%",
+    "note": null,
+    "source": "Beer Maverick 2023"
+   },
+   {
+    "id": "huile",
+    "houblon": "idaho7",
+    "quoi": "huile totale",
+    "plage": [
+     1,
+     3
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Idaho 7 [3]"
+   },
+   {
+    "id": "charge",
+    "houblon": "idaho7",
+    "quoi": "huile apportée",
+    "plage": [
+     4,
+     12
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.02321,
+     "max": 1443,
+     "central": 2.118
+    },
+    "source": "moteur « pouvoir aromatique », Idaho 7 4 g/L (fils19-choix/donnees/cas-idaho7.json)"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "inconnu": true,
+    "raison": "rapport non calculable : teneur non publiée",
+    "source": "moteur « pouvoir aromatique » (cas-idaho7.json)"
+   }
+  ],
+  "k2-cascade": [
+   {
+    "id": "alpha-lot",
+    "houblon": "cascade",
+    "quoi": "α du lot",
+    "valeur": 6.5,
+    "unite": "%",
+    "forme": null,
+    "source": "stock du prototype (proto-data.json), fiche de stock"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "cascade",
+    "quoi": "α des fiches",
+    "plage": [
+     4.5,
+     9
+    ],
+    "unite": "%",
+    "note": null,
+    "source": "Beer Maverick 2023, Hopsteiner 2025"
+   },
+   {
+    "id": "huile",
+    "houblon": "cascade",
+    "quoi": "huile totale",
+    "plage": [
+     0.5,
+     2
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Cascade [2]"
+   },
+   {
+    "id": "charge",
+    "houblon": "cascade",
+    "quoi": "huile apportée",
+    "plage": [
+     2,
+     8
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.005802,
+     "max": 947.9,
+     "central": 0.9577
+    },
+    "source": "moteur « pouvoir aromatique », Cascade 4 g/L (fils19-choix/donnees/cas-cascade.json)"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.32,
+     "max": null,
+     "central": 5.798
+    },
+    "source": "moteur « pouvoir aromatique », Cascade 4 g/L (fils19-choix/donnees/cas-cascade.json)"
+   }
+  ],
+  "k3-citra-galaxy": [
+   {
+    "id": "alpha-lot",
+    "houblon": "citra",
+    "quoi": "α du lot",
+    "valeur": 24.8,
+    "unite": "%",
+    "forme": "cryo",
+    "source": "stock du prototype (proto-data.json), lu sur l’article"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "citra",
+    "quoi": "α des fiches",
+    "plage": [
+     10,
+     15
+    ],
+    "unite": "%",
+    "note": "pellets",
+    "source": "Beer Maverick 2023"
+   },
+   {
+    "id": "huile",
+    "houblon": "citra",
+    "quoi": "huile totale",
+    "plage": [
+     1,
+     3
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Citra T-90 [1]"
+   },
+   {
+    "id": "charge",
+    "houblon": "citra",
+    "quoi": "huile apportée",
+    "plage": [
+     2,
+     6
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "alpha-lot",
+    "houblon": "galaxy",
+    "quoi": "α du lot",
+    "valeur": 17.2,
+    "unite": "%",
+    "forme": null,
+    "source": "stock du prototype (proto-data.json), fiche de stock"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "galaxy",
+    "quoi": "α des fiches",
+    "plage": [
+     11,
+     16
+    ],
+    "unite": "%",
+    "note": null,
+    "source": "Beer Maverick 2023"
+   },
+   {
+    "id": "huile",
+    "houblon": "galaxy",
+    "quoi": "huile totale",
+    "plage": [
+     2.6,
+     3.3
+    ],
+    "unite": "mL/100 g",
+    "source": "Hop Products Australia, Galaxy [26]"
+   },
+   {
+    "id": "charge",
+    "houblon": "galaxy",
+    "quoi": "huile apportée",
+    "plage": [
+     5.2,
+     6.6
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.2669,
+     "max": 2303,
+     "central": 5.124
+    },
+    "source": "moteur « pouvoir aromatique », Citra 3 j puis Galaxy 7 j (fils19-choix/donnees/cas-citra3-galaxy7.json)"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 4,
+     "max": null,
+     "central": 7.906
+    },
+    "source": "moteur « pouvoir aromatique », Citra 3 j puis Galaxy 7 j (fils19-choix/donnees/cas-citra3-galaxy7.json)"
+   }
+  ],
+  "k3-citra-idaho7": [
+   {
+    "id": "alpha-lot",
+    "houblon": "citra",
+    "quoi": "α du lot",
+    "valeur": 24.8,
+    "unite": "%",
+    "forme": "cryo",
+    "source": "stock du prototype (proto-data.json), lu sur l’article"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "citra",
+    "quoi": "α des fiches",
+    "plage": [
+     10,
+     15
+    ],
+    "unite": "%",
+    "note": "pellets",
+    "source": "Beer Maverick 2023"
+   },
+   {
+    "id": "huile",
+    "houblon": "citra",
+    "quoi": "huile totale",
+    "plage": [
+     1,
+     3
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Citra T-90 [1]"
+   },
+   {
+    "id": "charge",
+    "houblon": "citra",
+    "quoi": "huile apportée",
+    "plage": [
+     2,
+     6
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "alpha-lot",
+    "houblon": "idaho7",
+    "quoi": "α du lot",
+    "valeur": 12.7,
+    "unite": "%",
+    "forme": null,
+    "source": "stock du prototype (proto-data.json), lu sur l’article"
+   },
+   {
+    "id": "alpha-fiches",
+    "houblon": "idaho7",
+    "quoi": "α des fiches",
+    "plage": [
+     9.5,
+     14.9
+    ],
+    "unite": "%",
+    "note": null,
+    "source": "Beer Maverick 2023"
+   },
+   {
+    "id": "huile",
+    "houblon": "idaho7",
+    "quoi": "huile totale",
+    "plage": [
+     1,
+     3
+    ],
+    "unite": "mL/100 g",
+    "source": "YCH, fiche Idaho 7 [3]"
+   },
+   {
+    "id": "charge",
+    "houblon": "idaho7",
+    "quoi": "huile apportée",
+    "plage": [
+     2,
+     6
+    ],
+    "unite": "mL/hL",
+    "source": "calcul : huile × dose (H §7.4)"
+   },
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.1335,
+     "max": 1959,
+     "central": 3.754
+    },
+    "source": "moteur « pouvoir aromatique », Citra 3 j puis Idaho 7 5 j (fils19-choix/donnees/cas-citra3-idaho7-5.json)"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 2,
+     "max": null,
+     "central": 7.906
+    },
+    "source": "moteur « pouvoir aromatique », Citra 3 j puis Idaho 7 5 j (fils19-choix/donnees/cas-citra3-idaho7-5.json)"
+   }
+  ],
+  "k5-pomona-actif": [
+   {
+    "id": "rapport-linalol",
+    "compose": "linalol",
+    "familles": [
+     "floral",
+     "citrus"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 0.1335,
+     "max": 1959,
+     "central": 3.754
+    },
+    "source": "moteur « pouvoir aromatique », Citra puis Idaho 7, Pomona, en fermentation active (fils19-choix/donnees/cas-citra3-idaho7-5-pomona-actif.json)"
+   },
+   {
+    "id": "rapport-4MMP",
+    "compose": "4MMP",
+    "familles": [
+     "tropical",
+     "berries"
+    ],
+    "quoi": "rapport au seuil",
+    "rapport": {
+     "min": 2,
+     "max": null,
+     "central": 7.906
+    },
+    "source": "moteur « pouvoir aromatique », Citra puis Idaho 7, Pomona, en fermentation active (fils19-choix/donnees/cas-citra3-idaho7-5-pomona-actif.json)"
+   }
+  ]
+ }
+}

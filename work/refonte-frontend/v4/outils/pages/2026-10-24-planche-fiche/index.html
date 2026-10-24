@@ -1,0 +1,258 @@
+<title>Planche de la fiche · 24.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Une planche par vue (D126 : « J'ai pratiquement aucun choix ?? Et j'ai pas du coté à cote ») : sa référence en premier,
+   puis onze mini maquettes, toutes visibles ensemble. Ordinateur : trois par rangée (377 px). Téléphone : deux par rangée
+   en vignettes, qui s'ouvrent en grand à côté de la référence. Texte à 14 px au moins ; page claire (D106). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 6px 20px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.5 var(--texte); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 64px;
+}
+.page { max-width: 1180px; margin: 0 auto; display: grid; gap: 28px; }
+h1, h2 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(1.7rem, 6vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.15rem, 3.4vw, 1.4rem); font-weight: 800; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--houblon); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+nav[data-autres-vues] { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.95rem; }
+nav[data-autres-vues]:empty { display: none; }
+nav[data-autres-vues] a { padding: 4px 12px; border-radius: 999px; background: var(--carte); border: 1px solid var(--trait); text-decoration: none; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.sous-titre { font-size: 1.05rem; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 82ch; }
+.encart .canal { font-weight: 700; }
+.chaleurs { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.875rem; color: var(--discret); }
+.tag { display: inline-block; font-size: 0.875rem; line-height: 1.5; padding: 0 9px; border-radius: 999px; border: 1px solid var(--trait); background: var(--carte); white-space: nowrap; }
+.chaude { background: #fbe6d2; } .tiede { background: #fbf1c9; } .froide { background: #e0edf7; }
+.choix { background: #fbecc8; border-color: var(--ambre); font-weight: 700; }
+.chemin { overflow-wrap: anywhere; }
+.id { font-size: 0.875rem; color: var(--discret); font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+
+/* La planche : deux par rangée au téléphone, trois sur ordinateur. Rien ne défile en largeur. */
+.planche { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 12px; align-items: start; }
+@media (min-width: 900px) { .planche { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px 24px; } }
+.vue { margin: 0; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.ecran { position: relative; display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 16px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.vue[data-reference] .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--ambre), var(--ombre); }
+.rang { display: inline-block; min-width: 28px; height: 28px; padding: 0 7px; margin-right: 4px; border-radius: 999px; background: var(--encre); color: #fff; font: 800 0.9rem/28px var(--titre); text-align: center; vertical-align: 1px; }
+.vue[data-reference] .rang { background: var(--ambre); }
+.vue figcaption { display: grid; gap: 4px; }
+.vue figcaption b { font-family: var(--titre); font-size: 1.08rem; line-height: 1.2; }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.ligne { font-size: 0.9375rem; color: var(--encre); }
+.groupe { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; border-top: 1px solid var(--trait); padding-top: 12px; }
+.groupe span { font-size: 0.95rem; color: var(--discret); }
+footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+
+/* En grand : la mini maquette à côté de ta référence, état par état. Ordinateur côte à côte ; téléphone d'un glissement. */
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: calc(64px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)); background: #0e100c; }
+.vis-titre { font: 800 1.05rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-corps { display: grid; gap: 28px; max-width: 1240px; margin: 0 auto; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.vis-panneau { flex: 0 0 86%; scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau img { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.vis-panneau.ref img { box-shadow: 0 0 0 3px var(--ambre); }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #f6d38f; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; }
+  .vis-panneau { flex: 0 1 400px; min-width: 300px; }
+  .vis-glisse { display: none; }
+}
+.ecran.rogne { aspect-ratio: 780 / 1688; }
+.ecran.rogne img { height: 100%; object-fit: cover; object-position: top; }
+</style>
+
+<div class="page">
+  <nav data-autres-vues aria-label="Les autres vues"><a href="https://claude.ai/artifact/ULZkzFyvgc3Chv6hmYDWA7">Dryhopper</a><a href="https://claude.ai/artifact/QVfyarrN8m68dTvnq2PF4X">Substituer</a><a href="https://claude.ai/artifact/JSiBVNWUJqJD8zdkvpKN9t">Les graphes</a></nav>
+
+
+  <header>
+    <p class="sur-titre">L'Affinée · la liste de la fiche · planche · 24.10</p>
+    <h1>« Que sent ce houblon ? »</h1>
+    <p class="sous-titre">Ta fiche g1, puis onze vues de sa liste : les six retravaillées, puis cinq concepts du panel.</p>
+  </header>
+
+  <section id="a-choisir" aria-label="À choisir">
+    <div class="encart">
+      <p><b>À choisir :</b> la liste de ta fiche de houblon, ta g1 ou l'une des onze. Les six retravaillées se montrent sur Nugget, comme ta g1, puis sur Nelson Sauvin.</p>
+      <p class="canal">Commente la mini maquette que tu choisis (commentaire de l'artefact) : je lis les commentaires.</p>
+      <p>Touche une mini maquette : elle s'ouvre en grand, sur ses deux houblons, à côté de ta fiche g1.</p>
+      <p class="chaleurs"><span><span class="tag froide">froide</span> ta g1 affinée</span><span><span class="tag tiede">tiède</span> la forme de sa série</span><span><span class="tag chaude">chaude</span> forme libre</span></p>
+    </div>
+  </section>
+
+  <section data-choix="fiche" aria-label="Les douze vues de la liste de la fiche" data-mode="rangee" data-ref-nom="g1" data-ref-imgs="img/g1.png" data-ref-etats="Nugget">
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="g1 · ta fiche" data-imgs="img/g1.png" data-etats="ta fiche de Nugget"><img src="img/g1.png" width="780" height="1688" alt="g1, ta fiche de Nugget"></button>
+        <figcaption><b><span class="rang">g1</span> Ta fiche</b><span class="meta"><span class="tag choix">ta référence</span><span class="id">g1 · Nugget</span></span><span class="ligne">Nom, α, usage, radar étiqueté, « + Floral · − Résineux », le pied Styles › Huiles › Sources.</span><span class="id chemin">ecran-1/base/captures/consolide-fiche-390.png</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="1 · Les mots tamponnés · flc8b" data-imgs="img/flc8b-nugget.png|img/flc8b-nelson.png" data-etats="Nugget|Nelson Sauvin"><img src="img/flc8b-nugget.png" width="780" height="1688" alt="flc8b sur Nugget"></button>
+        <figcaption><b><span class="rang">1</span> Les mots tamponnés</b><span class="meta"><span class="tag chaude">chaude</span><span class="id">flc8b · passe 3</span></span><span class="ligne">Chaque mot tamponné de ses fiches en grosses tuiles ; le cadre g1 entier autour.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="2 · La signature en une phrase · flb3c" data-imgs="img/flb3c-nugget.png|img/flb3c-nelson.png" data-etats="Nugget|Nelson Sauvin"><img src="img/flb3c-nugget.png" width="780" height="1688" alt="flb3c sur Nugget"></button>
+        <figcaption><b><span class="rang">2</span> La signature en une phrase</b><span class="meta"><span class="tag tiede">tiède</span><span class="id">flb3c · passe 3</span></span><span class="ligne">« Vin blanc, raisin, groseille à maquereau. » se lit en trois secondes, sous l'en-tête.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="3 · Au style, en mots · fla5c" data-imgs="img/fla5c-nugget.png|img/fla5c-nelson.png" data-etats="Nugget|Nelson Sauvin"><img src="img/fla5c-nugget.png" width="780" height="1688" alt="fla5c sur Nugget"></button>
+        <figcaption><b><span class="rang">3</span> Au style, en mots</b><span class="meta"><span class="tag tiede">tiède</span><span class="id">fla5c · passe 3</span></span><span class="ligne">Les mots que ta stout attend, face à ta dégustation ; « 1er » sur le premier mot.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="4 · Les cartes de famille · flu2b" data-imgs="img/flu2b-nugget.png|img/flu2b-nelson.png" data-etats="Nugget|Nelson Sauvin"><img src="img/flu2b-nugget.png" width="780" height="1688" alt="flu2b sur Nugget"></button>
+        <figcaption><b><span class="rang">4</span> Les cartes de famille</b><span class="meta"><span class="tag froide">froide</span><span class="id">flu2b · passe 3</span></span><span class="ligne">Une carte pleine par famille, à sa couleur, en français. Le radar est réduit.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="5 · L'iceberg · fld8b" data-imgs="img/fld8b-nugget.png|img/fld8b-nelson.png" data-etats="Nugget|Nelson Sauvin"><img src="img/fld8b-nugget.png" width="780" height="1688" alt="fld8b sur Nugget"></button>
+        <figcaption><b><span class="rang">5</span> L'iceberg</b><span class="meta"><span class="tag chaude">chaude</span><span class="id">fld8b · passe 3</span></span><span class="ligne">Le radar est la pointe ; dessous, les mots qu'il ne dessine pas. La plus disruptive.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="6 · Les mots au bout des rayons · flu6b" data-imgs="img/flu6b-nugget.png|img/flu6b-nelson.png" data-etats="Nugget|Nelson Sauvin"><img src="img/flu6b-nugget.png" width="780" height="1688" alt="flu6b sur Nugget"></button>
+        <figcaption><b><span class="rang">6</span> Les mots au bout des rayons</b><span class="meta"><span class="tag chaude">chaude</span><span class="id">flu6b · passe 3</span></span><span class="ligne">Ton radar g1 entier, les mots en français au bout des rayons ; la liste dessous disparaît.</span></figcaption>
+      </figure>
+
+      <p class="groupe"><b>Cinq concepts du panel</b><span>les mieux classés des 48, pas encore retravaillés ; chacun sur son houblon</span></p>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="7 · Les rubans des mots · fla4" data-imgs="img/fla4-premier-ecran.png|img/fla4-nelson-sauvin.png" data-etats="Nugget|Nelson Sauvin"><img src="img/fla4-premier-ecran.png" width="780" height="1688" alt="fla4 sur Nugget"></button>
+        <figcaption><b><span class="rang">7</span> Les rubans des mots</b><span class="meta"><span class="tag tiede">tiède</span><span class="id">fla4 · 7ᵉ du panel · Nugget</span></span><span class="ligne">Chaque mot de ses fiches relié par un ruban à sa famille ; le radar en vignette.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="8 · Le mot en tête · fla1" data-imgs="img/fla1-premier-ecran.png|img/fla1-nelson-sauvin.png" data-etats="Nugget|Nelson Sauvin"><img src="img/fla1-premier-ecran.png" width="780" height="1688" alt="fla1 sur Nugget"></button>
+        <figcaption><b><span class="rang">8</span> Le mot en tête</b><span class="meta"><span class="tag froide">froide</span><span class="id">fla1 · 8ᵉ du panel · Nugget</span></span><span class="ligne">Ta g1 avec le mot en tête, la famille après, l'accord des fiches en points.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="9 · La preuve par contraste · flb5" data-imgs="img/flb5-premier-ecran.png|img/flb5-motueka.png" data-etats="Nelson Sauvin|Motueka"><img src="img/flb5-premier-ecran.png" width="780" height="1688" alt="flb5 sur Nelson Sauvin"></button>
+        <figcaption><b><span class="rang">9</span> La preuve par contraste</b><span class="meta"><span class="tag tiede">tiède</span><span class="id">flb5 · 9ᵉ du panel · Nelson Sauvin</span></span><span class="ligne">« Lui seul dit vin blanc, raisin… » face à quatre remplaçants.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="10 · Situer un mot · flz4" data-imgs="img/flz4-premier-ecran.png|img/flz4-fiche-courte.png" data-etats="Cascade|un cousin touché : Citra cryo"><img src="img/flz4-premier-ecran.png" width="780" height="1688" alt="flz4 sur Cascade"></button>
+        <figcaption><b><span class="rang">10</span> Situer un mot</b><span class="meta"><span class="tag chaude">chaude</span><span class="id">flz4 · 10ᵉ du panel · Cascade</span></span><span class="ligne">« citron vert · rare · 3 sur 32 » : chaque mot situé par des houblons que tu connais.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="11 · À sa place dans ta 16D · flz5" data-imgs="img/flz5-premier-ecran.png" data-etats="Nugget"><img src="img/flz5-premier-ecran.png" width="780" height="1688" alt="flz5 sur Nugget"></button>
+        <figcaption><b><span class="rang">11</span> À sa place dans ta 16D</b><span class="meta"><span class="tag chaude">chaude</span><span class="id">flz5 · 11ᵉ du panel · Nugget</span></span><span class="ligne">Ses mots rangés en trois étagères : à sa place dans ta 16D, ressort, sans famille.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <p>Mini maquettes : captures des maquettes jouables, sans retouche. Ordre : le classement du critique (passe 3, puis panel des 48) ; une proposition, le choix est le tien.</p>
+    <p>Page d'avant : <a href="https://claude.ai/artifact/5nrApsrrY7yhnqK1gU7wYp">Choix de vues · 24.10</a>.</p>
+  </footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+  <div class="vis-tete">
+    <p class="vis-titre" id="vis-titre"></p>
+    <div class="vis-boutons">
+      <button type="button" id="vis-prec" aria-label="Vue précédente">◀</button>
+      <button type="button" id="vis-suiv" aria-label="Vue suivante">▶</button>
+      <button type="button" class="fermer" id="vis-fermer">Fermer</button>
+    </div>
+  </div>
+  <div class="vis-corps" id="vis-corps"></div>
+</div>
+
+<script>
+// En grand : chaque état de la mini maquette à côté du même état de ta référence. Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var corps = document.getElementById('vis-corps');
+  var titre = document.getElementById('vis-titre');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function liste(b, cle) { return (b.getAttribute(cle) || '').split('|').filter(Boolean); }
+  function rangees(b) {
+    var sec = b.closest('[data-choix]');
+    var etats = liste(b, 'data-etats');
+    var v = liste(b, 'data-imgs').map(function (s, i) { return { src: s, leg: (etats[i] || '') }; });
+    var src = b.getAttribute('data-ref-imgs') ? b : sec;
+    if (b.closest('[data-reference]') || !src.getAttribute('data-ref-imgs')) return [v];
+    var refEtats = liste(src, 'data-ref-etats'), nomRef = src.getAttribute('data-ref-nom');
+    var r = liste(src, 'data-ref-imgs').map(function (s, i) { return { src: s, leg: 'ta référence ' + nomRef + ' · ' + (refEtats[i] || ''), ref: true }; });
+    if (sec.getAttribute('data-mode') === 'paires') return v.map(function (x, i) { return r[i] ? [x, r[i]] : [x]; });
+    return [v.concat(r)];
+  }
+  function panneau(p) {
+    var f = document.createElement('figure');
+    f.className = 'vis-panneau' + (p.ref ? ' ref' : '');
+    var i = document.createElement('img'); i.src = p.src; i.alt = p.leg;
+    var c = document.createElement('figcaption'); c.textContent = p.leg;
+    f.appendChild(c); f.appendChild(i);
+    return f;
+  }
+  function ouvrir(n, depuis, depart) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    corps.textContent = '';
+    rangees(b).forEach(function (r) {
+      var d = document.createElement('div'); d.className = 'vis-rangee';
+      r.forEach(function (p) { d.appendChild(panneau(p)); });
+      if (r.length > 1) { var g = document.createElement('p'); g.className = 'vis-glisse'; g.textContent = 'Glisse : ' + r.slice(1).map(function (p) { return p.leg; }).join(', ') + ' →'; corps.appendChild(g); }
+      corps.appendChild(d);
+    });
+    vis.hidden = false; vis.scrollTop = 0;
+    if (depart) { var cible = corps.querySelectorAll('.vis-panneau')[depart]; if (cible) cible.parentNode.scrollLeft = cible.offsetLeft - cible.parentNode.offsetLeft; }
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; corps.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.planche .ecran, .planche .lecture');
+    if (!b) return;
+    var principal = b.classList.contains('ecran') ? b : b.closest('.vue').querySelector('.ecran');
+    ouvrir(boutons.indexOf(principal), b, Number(b.getAttribute('data-depart') || 0));
+  });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

@@ -1,0 +1,405 @@
+{
+ "avant": {
+  "cible": {
+   "floral": 1
+  },
+  "reglages": {
+   "moment": "dryActive",
+   "levure": "US-05",
+   "assemblage": "seul",
+   "plan": "franc"
+  },
+  "verdict": "~ ça tient",
+  "phrase": "Mets Citra 2 g/L actif 1 j seul avec US-05",
+  "cibleTexte": "floral ~1,2 cran (visé 1)",
+  "crans": {
+   "floral": "1,2",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "2,5",
+   "tropical": "2,7",
+   "stoneFruit": "1,3",
+   "pomeFruit": "0",
+   "berries": "2,1",
+   "melon": "1,3",
+   "resin": "8,7",
+   "spice": "0,1",
+   "green": "0,3"
+  },
+  "largeurs": {
+   "floral": 43,
+   "herbal": 1,
+   "earthy": 1,
+   "citrus": 92,
+   "tropical": 99,
+   "stoneFruit": 46,
+   "pomeFruit": 0,
+   "berries": 75,
+   "melon": 46,
+   "spice": 5,
+   "green": 11
+  },
+  "plans": {
+   "sage": "Citra 1 g/L actif US-05",
+   "franc": "Citra 2 g/L actif US-05",
+   "ose": "Citra 2 g/L actif US-05"
+  },
+  "tirages": 0,
+  "tirTexte": "",
+  "ibu": 60
+ },
+ "pendant": {
+  "cible": {
+   "floral": 2.5
+  },
+  "reglages": {
+   "moment": "dryActive",
+   "levure": "US-05",
+   "assemblage": "seul",
+   "plan": "franc"
+  },
+  "verdict": "~ ne marchera pas",
+  "phrase": "Mets Idaho 7 4 g/L actif 1 j seul avec US-05",
+  "cibleTexte": "floral ~1,3 cran (visé 2,5)",
+  "crans": {
+   "floral": "1,3",
+   "herbal": "0,3",
+   "earthy": "0,4",
+   "citrus": "1,4",
+   "tropical": "1,6",
+   "stoneFruit": "0,8",
+   "pomeFruit": "0",
+   "berries": "2",
+   "melon": "0",
+   "resin": "9,6",
+   "spice": "0,2",
+   "green": "0,5"
+  },
+  "largeurs": {
+   "floral": 46,
+   "herbal": 13,
+   "earthy": 15,
+   "citrus": 49,
+   "tropical": 59,
+   "stoneFruit": 27,
+   "pomeFruit": 0,
+   "berries": 74,
+   "melon": 0,
+   "spice": 9,
+   "green": 20
+  },
+  "plans": {
+   "sage": "Citra 2 g/L actif US-05",
+   "franc": "Idaho 7 4 g/L actif US-05",
+   "ose": "Idaho 7 8 g/L actif US-05"
+  },
+  "tirages": 0,
+  "tirTexte": "",
+  "ibu": 60
+ },
+ "loupe": {
+  "visible": true,
+  "texte": "Floral · cible 2,5 crans",
+  "pasLoupe": 54,
+  "pasPiste": 18,
+  "haut": 231,
+  "doigt": 301,
+  "grossissement": 3
+ },
+ "apres": {
+  "cible": {
+   "floral": 2.5
+  },
+  "reglages": {
+   "moment": "dryActive",
+   "levure": "US-05",
+   "assemblage": "seul",
+   "plan": "franc"
+  },
+  "verdict": "~ ne marchera pas",
+  "phrase": "Mets Idaho 7 4 g/L actif 1 j seul avec US-05",
+  "cibleTexte": "floral ~1,3 cran (visé 2,5)",
+  "crans": {
+   "floral": "1,3",
+   "herbal": "0,3",
+   "earthy": "0,4",
+   "citrus": "1,4",
+   "tropical": "1,6",
+   "stoneFruit": "0,8",
+   "pomeFruit": "0",
+   "berries": "2",
+   "melon": "0",
+   "resin": "9,6",
+   "spice": "0,2",
+   "green": "0,5"
+  },
+  "largeurs": {
+   "floral": 46,
+   "herbal": 13,
+   "earthy": 15,
+   "citrus": 49,
+   "tropical": 59,
+   "stoneFruit": 27,
+   "pomeFruit": 0,
+   "berries": 74,
+   "melon": 0,
+   "spice": 9,
+   "green": 20
+  },
+  "plans": {
+   "sage": "Citra 2 g/L actif US-05",
+   "franc": "Idaho 7 4 g/L actif US-05",
+   "ose": "Idaho 7 8 g/L actif US-05"
+  },
+  "tirages": 0,
+  "tirTexte": "",
+  "ibu": 60
+ },
+ "pomona": {
+  "cible": {
+   "floral": 2.5
+  },
+  "reglages": {
+   "moment": "dryActive",
+   "levure": "Pomona",
+   "assemblage": "seul",
+   "plan": "franc"
+  },
+  "verdict": "~ ne marchera pas",
+  "phrase": "Mets Idaho 7 4 g/L actif 1 j seul avec Pomona",
+  "cibleTexte": "floral ~1,5 cran (visé 2,5)",
+  "crans": {
+   "floral": "1,5",
+   "herbal": "0,5",
+   "earthy": "0,6",
+   "citrus": "2,6",
+   "tropical": "1,8",
+   "stoneFruit": "1",
+   "pomeFruit": "0",
+   "berries": "2,4",
+   "melon": "0",
+   "resin": "9,9",
+   "spice": "0,2",
+   "green": "0,5"
+  },
+  "largeurs": {
+   "floral": 54,
+   "herbal": 17,
+   "earthy": 21,
+   "citrus": 95,
+   "tropical": 66,
+   "stoneFruit": 37,
+   "pomeFruit": 0,
+   "berries": 85,
+   "melon": 0,
+   "spice": 9,
+   "green": 20
+  },
+  "plans": {
+   "sage": "Citra 2 g/L actif Pomona",
+   "franc": "Idaho 7 4 g/L actif Pomona",
+   "ose": "Idaho 7 8 g/L actif Pomona"
+  },
+  "tirages": 0,
+  "tirTexte": "",
+  "ibu": 60
+ },
+ "apresFerm": {
+  "cible": {
+   "floral": 2.5
+  },
+  "reglages": {
+   "moment": "dryPost",
+   "levure": "Pomona",
+   "assemblage": "seul",
+   "plan": "franc"
+  },
+  "verdict": "~ ne marchera pas",
+  "phrase": "Mets Citra 2 g/L après 2 j seul avec Pomona",
+  "cibleTexte": "floral ~1,3 cran (visé 2,5)",
+  "crans": {
+   "floral": "1,3",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "2,7",
+   "tropical": "2,8",
+   "stoneFruit": "1,4",
+   "pomeFruit": "0",
+   "berries": "2,1",
+   "melon": "1,4",
+   "resin": "9,1",
+   "spice": "0,2",
+   "green": "0,6"
+  },
+  "largeurs": {
+   "floral": 45,
+   "herbal": 1,
+   "earthy": 1,
+   "citrus": 97,
+   "tropical": 102,
+   "stoneFruit": 51,
+   "pomeFruit": 0,
+   "berries": 77,
+   "melon": 51,
+   "spice": 7,
+   "green": 21
+  },
+  "plans": {
+   "sage": "Citra 2 g/L après Pomona",
+   "franc": "Citra 2 g/L après Pomona",
+   "ose": "Citra 8 g/L après Pomona"
+  },
+  "tirages": 0,
+  "tirTexte": "",
+  "ibu": 60
+ },
+ "ose": {
+  "cible": {
+   "floral": 2.5
+  },
+  "reglages": {
+   "moment": "dryPost",
+   "levure": "Pomona",
+   "assemblage": "seul",
+   "plan": "ose"
+  },
+  "verdict": "~ ça tient, sort de ta 16D",
+  "phrase": "Mets Citra 8 g/L après 1 j seul avec Pomona",
+  "cibleTexte": "floral ~2,4 crans (visé 2,5)",
+  "crans": {
+   "floral": "2,4",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "4,4",
+   "tropical": "4,8",
+   "stoneFruit": "3,3",
+   "pomeFruit": "0",
+   "berries": "4,2",
+   "melon": "3,3",
+   "resin": "10,5",
+   "spice": "0,5",
+   "green": "1,9"
+  },
+  "largeurs": {
+   "floral": 85,
+   "herbal": 1,
+   "earthy": 1,
+   "citrus": 157,
+   "tropical": 173,
+   "stoneFruit": 120,
+   "pomeFruit": 0,
+   "berries": 152,
+   "melon": 120,
+   "spice": 20,
+   "green": 70
+  },
+  "plans": {
+   "sage": "Citra 2 g/L après Pomona",
+   "franc": "Citra 2 g/L après Pomona",
+   "ose": "Citra 8 g/L après Pomona"
+  },
+  "tirages": 0,
+  "tirTexte": "",
+  "ibu": 60
+ },
+ "ensemble": {
+  "cible": {
+   "floral": 2.5
+  },
+  "reglages": {
+   "moment": "dryPost",
+   "levure": "Pomona",
+   "assemblage": "ensemble",
+   "plan": "ose"
+  },
+  "verdict": "~ ne marchera pas",
+  "phrase": "Mets Citra 2 + 2 g/L après 3 j ensemble + Motueka avec Pomona",
+  "cibleTexte": "floral ~1,4 cran (visé 2,5)",
+  "crans": {
+   "floral": "1,4",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "3",
+   "tropical": "3",
+   "stoneFruit": "1,4",
+   "pomeFruit": "0",
+   "berries": "2,1",
+   "melon": "1,4",
+   "resin": "9,4",
+   "spice": "0,2",
+   "green": "0,9"
+  },
+  "largeurs": {
+   "floral": 52,
+   "herbal": 1,
+   "earthy": 1,
+   "citrus": 108,
+   "tropical": 107,
+   "stoneFruit": 51,
+   "pomeFruit": 0,
+   "berries": 77,
+   "melon": 51,
+   "spice": 8,
+   "green": 33
+  },
+  "plans": {
+   "sage": "Citra Motueka 4 g/L après Pomona",
+   "franc": "Citra Motueka 4 g/L après Pomona",
+   "ose": "Citra Motueka 4 g/L après Pomona"
+  },
+  "tirages": 0,
+  "tirTexte": "",
+  "ibu": 60
+ },
+ "tirage": {
+  "cible": {
+   "floral": 2.5
+  },
+  "reglages": {
+   "moment": "dryPost",
+   "levure": "Pomona",
+   "assemblage": "ensemble",
+   "plan": "ose"
+  },
+  "verdict": "~ ne marchera pas",
+  "phrase": "Mets Citra 2 + 2 g/L après 3 j ensemble + Motueka avec Pomona",
+  "cibleTexte": "floral ~1,4 cran (visé 2,5)",
+  "crans": {
+   "floral": "1,4",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "3",
+   "tropical": "3",
+   "stoneFruit": "1,4",
+   "pomeFruit": "0",
+   "berries": "2,1",
+   "melon": "1,4",
+   "resin": "9,4",
+   "spice": "0,2",
+   "green": "0,9"
+  },
+  "largeurs": {
+   "floral": 52,
+   "herbal": 1,
+   "earthy": 1,
+   "citrus": 108,
+   "tropical": 107,
+   "stoneFruit": 51,
+   "pomeFruit": 0,
+   "berries": 77,
+   "melon": 51,
+   "spice": 8,
+   "green": 33
+  },
+  "plans": {
+   "sage": "Citra Motueka 4 g/L après Pomona",
+   "franc": "Citra Motueka 4 g/L après Pomona",
+   "ose": "Citra Motueka 4 g/L après Pomona"
+  },
+  "tirages": 3,
+  "tirTexte": "3 bières tirées dans la plage ~ simulée hors de ta 16D : tropical 2 sur 3, épicé 2 sur 3, végétal 2 sur 3 l’étendue du possible, pas une probabilité mesurée",
+  "ibu": 60
+ },
+ "tirageStable": true,
+ "erreurs": []
+}

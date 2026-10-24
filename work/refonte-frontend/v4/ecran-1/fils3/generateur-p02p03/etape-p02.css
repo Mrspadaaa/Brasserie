@@ -1,0 +1,23 @@
+  /* p02 : frise d'ébullition (greffe de p10) */
+  .frise { position: relative; display: flex; flex-direction: column; gap: 5px; }
+  .axe { position: absolute; left: 21px; top: 8px; bottom: 8px; width: 2px; background: #cfcfcf; }
+  .couloir { display: flex; flex-direction: column; gap: 4px; }
+  .blk, .rap-zone, .vide-l { display: grid; grid-template-columns: 44px 1fr; align-items: start; column-gap: 2px; }
+  .quand, .rail-l.plein { justify-self: center; position: relative; z-index: 1; min-width: 40px; height: 26px; margin-top: 5px; padding: 0 5px; border-radius: 13px; background: #fff; border: 1.5px solid var(--encre); font-size: 12px; font-weight: 650; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; }
+  .quand::after { content: ''; position: absolute; right: -5px; top: 10px; border: 3px solid transparent; border-left-color: var(--encre); }
+  .rail-l { justify-self: center; position: relative; z-index: 1; width: 10px; height: 10px; margin-top: 10px; border-radius: 5px; background: #fff; border: 1.5px solid #9a9a9a; }
+  .corps-b { background: var(--fond); border-radius: 12px; padding: 5px 6px 6px 8px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .l1 { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .l1 .nom { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .drop { display: flex; align-items: center; gap: 8px; height: 30px; font-size: 12px; color: var(--gris2); }
+  .drop::after { content: ''; flex: 1; border-top: 1.5px dashed #c4c4c4; }
+  .rap-corps { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .rap-corps .champ { flex: 1; min-width: 0; }
+  .rap-corps .champ input { height: 30px; }
+  .l3 { display: flex; align-items: center; min-height: 16px; }
+  .l3 .mini .c { width: 9px; height: 10px; }
+  .l3 .mini { gap: 2px; }
+  .l3 .mini .c.sep { margin-left: 6px; }
+  .vide-l .drop { height: 40px; }
+  .corps-b { padding: 7px 6px 8px 8px; }
+  .corps-b .l2 { min-height: 24px; }

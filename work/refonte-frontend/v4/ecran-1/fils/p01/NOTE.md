@@ -1,0 +1,3 @@
+- Parti : carte-réponse sombre en tête (la réponse d'une ligne, seule en grand), puis une rangée par famille qui compte avec sa piste au style ; mot d'état à droite seulement pour une exception (« non situé » pour Résineux en B).
+- Plan 1 : en-tête (Stout export, 16D + « hypothèse », 60 IBU + mini-jauge), réponse, familles attendues (+ Résineux en B), « 9 autres » / « 8 autres », puces de direction (accent en A), en B les 3 premières voies en rangées (case, dose, stock, tag d'effet de bord) et « Comparer (2) » en bas, deux voies cochées pour le montrer.
+- Replié : les autres familles (chevron), le détail de chaque famille (rangée touchable), la liste des 14 voies et l'absence de voie résineuse (chaque moitié de la carte, « › »), le choix de la bière (pastille).

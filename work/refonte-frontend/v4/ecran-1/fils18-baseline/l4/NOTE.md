@@ -1,0 +1,33 @@
+- **Ce qui tient** : q2b repris en appareil de mesure. Une face gris clair (#f1f1ee) porte des cadrans blancs. Les filets font 1 px, les angles 2 px, et les chiffres sont en mono tabulaire (Consolas, IBM Plex Mono s'il est installé). Les commandes sont des sélecteurs à filet, soulignés quand ils sont actifs. L'encre sert à la structure, la couleur seulement aux données.
+  - **Chaque objectif est un cadran gradué en crans du style** : la zone du style au ton de la famille, au-delà un filet orangé, la visée en tirets, l'aiguille de la meilleure voie à la couleur de la famille, l'écart écrit (+0,9 pour le floral, +1,6 pour les agrumes).
+  - Le cadran du résineux montre ma bière dégustée entre 6,6 et 10 crans, en orangé, face à la zone 0–3. L'aiguille de la meilleure voie reste à 6,3 : « Aucune » se voit.
+  - La piste porte une graduation pointillée par cran : 3 à droite et 1 à gauche au style, une tous les 10 points en absolu. L'axe est gradué de même.
+  - Chaque case de famille a une jauge à 4 graduations, allumées à la couleur de la famille (orangé hors du style).
+  - Un appui long de 500 ms (ou un survol de 750 ms) sur un nom ou sur la carte d'une voie ouvre la fiche g1 comme une fiche technique, en feuille au téléphone et en bulle à l'ordinateur. Elle contient :
+    - α en mono, la réglette 0–25 % graduée tous les 5 % avec les sources et le lot, le rôle ;
+    - les carrés dans un cadre ;
+    - la roue « N/M » à anneaux fins, les inconnues hachurées et « ? » ;
+    - la demande, puis aimer et exclure, « Ajouter à 10′ », Comparer et les quatre replis.
+  - Les fiches font de 65 à 88 mots.
+  - 56 mots au premier écran. Les 12 contrôles sont OK sur etat-b.html, dont FICHE et STANDARD (un seul trait d'icône, 1,25 px rendu).
+- **Ajouté ou retiré par rapport à q2b** :
+  - Ajouté : les cadrans à la place de la cible en barre. La position est exacte (DESIGN.md : « un instrument ne ment pas sur sa position »), et l'écart en crans est écrit. Le résineux, sans jauge dans q2b, montre ma bière face au style.
+  - Ajouté : les graduations sur la piste, l'axe et les jauges.
+  - Ajouté : le jeu v3 pour l'usage (attesté sur une pastille grise, déduit au trait suivi de « α »).
+  - Ajouté : le soulignement des noms qui ont une fiche, et leur remplissage gris pendant l'appui (X3).
+  - Retiré : les dégradés des tuiles et les ombres.
+  - Le générateur est commun avec l3 : `../l3/generateur-baseline.mjs`, avec la peau dans `../l3/peaux.mjs`.
+- **Ce qui casse** :
+  - Les filets de 1 px (#c4c4be) et les graduations pointillées risquent de disparaître au soleil.
+  - Sous les voies, les graduations ajoutent du bruit.
+  - Le cadran du résineux (0–10 crans) n'a pas la même échelle que ceux du floral et des agrumes (0–3), alors qu'ils sont côte à côte.
+  - Les écarts écrits sont petits (12 px).
+  - La famille ne se lit qu'à l'aiguille et au picto de 15 px. Les cadrans prennent environ 25 px de plus que la cible de q2b.
+  - Consolas est une police Windows : le repli mono sur téléphone n'a pas été vérifié.
+  - Celeia n'a pas de fiche dans pack-fiches.json, donc pas d'appui long.
+  - Ma bière, Comparer et fiche.html ne sont pas faits (facultatifs).
+  - Thème clair : aucun ton de texte n'a été recalculé pour le sombre.
+- **Pire contraste** : 5,22:1, « Melon? » (famille non décrite, #6c6c72 sur blanc) dans la roue de la fiche.
+  - Mesuré au rendu, sur le fond réel sous chaque texte, pour 536 textes : la page, les plis ouverts et les 8 fiches.
+  - En absolu, le pire est 6,54:1.
+  - Aucun texte sous 4,5:1.

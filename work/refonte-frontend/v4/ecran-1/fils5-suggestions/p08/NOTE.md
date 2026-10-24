@@ -1,0 +1,6 @@
+# p08 · chaud · « Le radar qui bouge »
+
+- **Parti** : une voie à la fois, en grand : en Radar, ma bière avant (contour) et après la voie (pleine, grise) sur les 12 axes de la roue, zone du style en fond, mes objectifs en flèches sur leurs axes (↑ floral, ↓ résineux) ; en Barres, les 12 pistes (mes objectifs d'abord). Toucher une autre voie, ou balayer le radar, fait glisser la silhouette (ressort) ou les points (transition) jusqu'à elle.
+- **Effet en tolérances** : pistes 0–100, zone du style en gris, une graduation par tolérance au-delà (haut + n × T du pack) ; dans chaque carte, « ↑ floral » et « ↓ résineux » avec avant (anneau), après (point), plage (segment) et l'écart du pack (« +5,8 T », « ? » non établi) ; l'a priori de l'objectif (strict, normal, libre, bannir) déplace zone et graduations.
+- **Comparer deux voies** : les trois voies côte à côte sous le grand dessin (changement, effets, IBU, Appliquer), aux mêmes échelles ; la voie montrée est cadrée, la suivante est à un toucher.
+- **Limites** : le grand dessin ne montre qu'une voie (règle des 2 séries) ; secteurs non situés hachurés, l'après recopie l'avant là où le moteur ne dit rien (sommet creux) ; moment déplacé : effet « ? », IBU des tables du pack ou « IBU ? » ; écart non écrit sous un autre a priori (la règle le montre).

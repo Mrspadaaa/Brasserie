@@ -1,0 +1,3 @@
+- **Tient** : les deux objectifs vont dans le même sens (floral et tropical à droite, visée commune à +1 cran) et se lisent sans chevauchement. Les assemblages et les voies qui n'aident qu'un objectif se voient tout de suite : un côté hachuré, pas un zéro. 56 mots.
+- **Casse** : dans ce cas rien ne baisse, donc la moitié gauche de s5 n'a plus de sens. Le tropical prend la couleur ambre de la fiche, proche de l'orangé d'alerte. Les 17 voies tiennent sur deux écrans.
+- **Adaptation** : la moitié gauche reçoit ce que la voie ajoute d'autre, en pictos rangés depuis ma bière vers la gauche ; leur nombre se lit comme une longueur, et Idaho 7 « déborde » plus que Motueka. Le résineux ajouté est cerclé d'orangé : la dégustation de S1 le dit déjà trop marqué.

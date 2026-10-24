@@ -1,0 +1,405 @@
+{
+ "haut": {
+  "defilement": 0,
+  "curseur": 387,
+  "barres": 667,
+  "ecran": 844
+ },
+ "avant": {
+  "duel": "Citra contre Cascade",
+  "reglage": "actif, US-05, 3 j",
+  "melange": "Citra 4 g/L",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,4 crans, Cascade reste et l’égalerait à ~11,5 g/L (courbe prolongée). Le détail",
+  "detail": "(fermé)",
+  "barres": {
+   "floral": {
+    "valeur": "~+1,7 cran",
+    "hauteur": 20
+   },
+   "herbal": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "earthy": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "citrus": {
+    "valeur": "~+3,4 crans",
+    "hauteur": 39
+   },
+   "tropical": {
+    "valeur": "~+3,8 crans",
+    "hauteur": 43
+   },
+   "stoneFruit": {
+    "valeur": "~+2,2 crans",
+    "hauteur": 24
+   },
+   "berries": {
+    "valeur": "~+3,2 crans",
+    "hauteur": 35
+   },
+   "melon": {
+    "valeur": "~+2,2 crans",
+    "hauteur": 24
+   },
+   "spice": {
+    "valeur": "~+0,1 cran",
+    "hauteur": 2
+   },
+   "green": {
+    "valeur": "~+0,5 cran",
+    "hauteur": 6
+   }
+  },
+  "ajout": ""
+ },
+ "pendant": {
+  "duel": "Citra contre Cascade",
+  "reglage": "actif, US-05, 3 j",
+  "melange": "ensemble, 2 + 2 g/L",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,4 crans, Cascade reste et l’égalerait à ~11,5 g/L (courbe prolongée). Le détail",
+  "detail": "(fermé)",
+  "barres": {
+   "floral": {
+    "valeur": "~+1,4 cran",
+    "hauteur": 16
+   },
+   "herbal": {
+    "valeur": "~+0,2 cran",
+    "hauteur": 3
+   },
+   "earthy": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "citrus": {
+    "valeur": "~+2,9 crans",
+    "hauteur": 33
+   },
+   "tropical": {
+    "valeur": "~+3,1 crans",
+    "hauteur": 35
+   },
+   "stoneFruit": {
+    "valeur": "~+1,3 cran",
+    "hauteur": 15
+   },
+   "berries": {
+    "valeur": "~+2,8 crans",
+    "hauteur": 31
+   },
+   "melon": {
+    "valeur": "~+1,3 cran",
+    "hauteur": 15
+   },
+   "spice": {
+    "valeur": "~+0,6 cran",
+    "hauteur": 8
+   },
+   "green": {
+    "valeur": "~+0,5 cran",
+    "hauteur": 6
+   }
+  },
+  "ajout": "Citra + Cascade, même dry hop · la saturation partagée garde ~78 % des agrumes des deux seuls · synergie, masquage : inconnu"
+ },
+ "apres": {
+  "duel": "Citra contre Cascade",
+  "reglage": "actif, US-05, 3 j",
+  "melange": "Cascade 4 g/L",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,4 crans, Cascade reste et l’égalerait à ~11,5 g/L (courbe prolongée). Le détail",
+  "detail": "(fermé)",
+  "barres": {
+   "floral": {
+    "valeur": "~+0,8 cran",
+    "hauteur": 10
+   },
+   "herbal": {
+    "valeur": "~+0,4 cran",
+    "hauteur": 5
+   },
+   "earthy": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "citrus": {
+    "valeur": "~+2 crans",
+    "hauteur": 23
+   },
+   "tropical": {
+    "valeur": "~+1,7 cran",
+    "hauteur": 20
+   },
+   "stoneFruit": {
+    "valeur": "inconnu",
+    "hauteur": 0
+   },
+   "berries": {
+    "valeur": "~+2,3 crans",
+    "hauteur": 25
+   },
+   "melon": {
+    "valeur": "inconnu",
+    "hauteur": 0
+   },
+   "spice": {
+    "valeur": "~+1 cran",
+    "hauteur": 12
+   },
+   "green": {
+    "valeur": "~+0,4 cran",
+    "hauteur": 5
+   }
+  },
+  "ajout": ""
+ },
+ "galaxy": {
+  "duel": "Citra contre Galaxy",
+  "reglage": "actif, US-05, 3 j",
+  "melange": "Galaxy 4 g/L",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,4 crans, Galaxy sort en tropicaux ~+3,7 crans, et l’égalerait en agrumes à ~6,9 g/L. Le détail",
+  "detail": "(fermé)",
+  "barres": {
+   "floral": {
+    "valeur": "~+0,9 cran",
+    "hauteur": 10
+   },
+   "herbal": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "earthy": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "citrus": {
+    "valeur": "~+2,7 crans",
+    "hauteur": 31
+   },
+   "tropical": {
+    "valeur": "~+3,7 crans",
+    "hauteur": 41
+   },
+   "stoneFruit": {
+    "valeur": "~+2,1 crans",
+    "hauteur": 23
+   },
+   "berries": {
+    "valeur": "~+1,9 cran",
+    "hauteur": 21
+   },
+   "melon": {
+    "valeur": "inconnu",
+    "hauteur": 0
+   },
+   "green": {
+    "valeur": "~+0,9 cran",
+    "hauteur": 11
+   }
+  },
+  "ajout": ""
+ },
+ "avantPomona": {
+  "duel": "Citra contre Galaxy",
+  "reglage": "actif, US-05, 3 j",
+  "melange": "Galaxy 4 g/L",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,4 crans, Galaxy sort en tropicaux ~+3,7 crans, et l’égalerait en agrumes à ~6,9 g/L. Le détail",
+  "detail": "(fermé)",
+  "barres": {
+   "floral": {
+    "valeur": "~+0,9 cran",
+    "hauteur": 10
+   },
+   "herbal": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "earthy": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "citrus": {
+    "valeur": "~+2,7 crans",
+    "hauteur": 31
+   },
+   "tropical": {
+    "valeur": "~+3,7 crans",
+    "hauteur": 41
+   },
+   "stoneFruit": {
+    "valeur": "~+2,1 crans",
+    "hauteur": 23
+   },
+   "berries": {
+    "valeur": "~+1,9 cran",
+    "hauteur": 21
+   },
+   "melon": {
+    "valeur": "inconnu",
+    "hauteur": 0
+   },
+   "green": {
+    "valeur": "~+0,9 cran",
+    "hauteur": 11
+   }
+  },
+  "ajout": ""
+ },
+ "pomona": {
+  "duel": "Citra contre Galaxy",
+  "reglage": "actif, Pomona, 3 j",
+  "melange": "Galaxy 4 g/L",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,8 crans, Galaxy sort en tropicaux ~+3,7 crans, et l’égalerait en agrumes à ~8,8 g/L (courbe prolongée). Le détail",
+  "detail": "(fermé)",
+  "barres": {
+   "floral": {
+    "valeur": "~+0,9 cran",
+    "hauteur": 10
+   },
+   "herbal": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "earthy": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "citrus": {
+    "valeur": "~+2,7 crans",
+    "hauteur": 31
+   },
+   "tropical": {
+    "valeur": "~+3,7 crans",
+    "hauteur": 41
+   },
+   "stoneFruit": {
+    "valeur": "~+2,1 crans",
+    "hauteur": 23
+   },
+   "berries": {
+    "valeur": "~+1,9 cran",
+    "hauteur": 21
+   },
+   "melon": {
+    "valeur": "inconnu",
+    "hauteur": 0
+   },
+   "green": {
+    "valeur": "~+0,9 cran",
+    "hauteur": 11
+   }
+  },
+  "ajout": ""
+ },
+ "repos": {
+  "duel": "Citra contre Galaxy",
+  "reglage": "après, 3 j",
+  "melange": "Galaxy 4 g/L",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,5 crans, Galaxy sort en tropicaux ~+3,9 crans, et l’égalerait en agrumes à ~6,4 g/L. Le détail",
+  "detail": "(fermé)",
+  "barres": {
+   "floral": {
+    "valeur": "~+0,9 cran",
+    "hauteur": 10
+   },
+   "herbal": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "earthy": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "citrus": {
+    "valeur": "~+2,9 crans",
+    "hauteur": 33
+   },
+   "tropical": {
+    "valeur": "~+3,9 crans",
+    "hauteur": 44
+   },
+   "stoneFruit": {
+    "valeur": "~+2,4 crans",
+    "hauteur": 26
+   },
+   "berries": {
+    "valeur": "~+1,9 cran",
+    "hauteur": 21
+   },
+   "melon": {
+    "valeur": "inconnu",
+    "hauteur": 0
+   },
+   "spice": {
+    "valeur": "~+0,2 cran",
+    "hauteur": 3
+   },
+   "green": {
+    "valeur": "~+1,7 cran",
+    "hauteur": 20
+   }
+  },
+  "ajout": ""
+ },
+ "detail": {
+  "duel": "Citra contre Galaxy",
+  "reglage": "après, 3 j",
+  "melange": "Galaxy 4 g/L",
+  "reponse": "Mêmes mots, pas le même cône.",
+  "verdict": "~ Dans ta 16D, Citra sort en agrumes ~+3,5 crans, Galaxy sort en tropicaux ~+3,9 crans, et l’égalerait en agrumes à ~6,4 g/L. Le détail",
+  "detail": "Dans le cône, par gramme : Galaxy ×7,2 en farnésène. Citra sort aussi en tropicaux ~+3,9 crans, baies ~+3,2 crans. En baies, Galaxy l’égalerait à ~9,5 g/L (courbe prolongée). Équivalence : la courbe du moteur, de 1 à 8 g/L ; au-delà de 12 g/L, « ~jamais ».",
+  "barres": {
+   "floral": {
+    "valeur": "~+0,9 cran",
+    "hauteur": 10
+   },
+   "herbal": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "earthy": {
+    "valeur": "~0 cran",
+    "hauteur": 2
+   },
+   "citrus": {
+    "valeur": "~+2,9 crans",
+    "hauteur": 33
+   },
+   "tropical": {
+    "valeur": "~+3,9 crans",
+    "hauteur": 44
+   },
+   "stoneFruit": {
+    "valeur": "~+2,4 crans",
+    "hauteur": 26
+   },
+   "berries": {
+    "valeur": "~+1,9 cran",
+    "hauteur": 21
+   },
+   "melon": {
+    "valeur": "inconnu",
+    "hauteur": 0
+   },
+   "spice": {
+    "valeur": "~+0,2 cran",
+    "hauteur": 3
+   },
+   "green": {
+    "valeur": "~+1,7 cran",
+    "hauteur": 20
+   }
+  },
+  "ajout": ""
+ },
+ "erreurs": []
+}

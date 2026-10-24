@@ -1,0 +1,16 @@
+- **Ce qui tient** : q2b au bar, la nuit. Fond noir, chrome en tubes fins éteints, le choix courant allumé en blanc. Chaque objectif est une enseigne au ton de sa famille, et son éclat dit la réponse : « Atteint » brille, « Approche » brille à moitié, « Aucune » reste éteinte (le mot reste écrit). Les barres sont des tubes, les pictos marqués luisent, les cités restent pâles. La ligne de ma bière est un tube blanc. Comparer est une enseigne paille.
+  - **En plus** : toucher une enseigne allume sa famille dans toute la liste et éteint les autres (focus et contexte, C6). L'appui long (500 ms) ou le survol (750 ms) sur un houblon, ou n'importe où sur sa ligne hors « + » et biotransformation, ouvre la fiche g1 en feuille de nuit.
+  - **En moins** : rien. Les jauges prennent la couleur de la famille au lieu du noir, pour luire.
+  - **Ton sombre recalculé** : pictos et halos au « ton néon », c'est-à-dire la teinte de la famille éclaircie à L ≥ 0,64 et S ≥ 0,55. Valeurs : floral #c181db, herbacé #71d69c, terreux #d6b771, agrumes #f0d357, tropical #f1ad55, noyau #e88d68, pépins #c2d671, baies #d671ab, melon #71d6a8, résineux #71d6c1, épicé #d69071, végétal #9fd671. Un texte de famille garde le ton fond des jetons, le cœur du tube : 16,9:1 pour floral sur la nuit.
+- **Ce qui casse** :
+  - L'écart entre « Approche » et « Atteint » tient surtout au mot : le demi-éclat se voit mal en vignette.
+  - Cité (picto à 55 %) et sans fiche (30 %) se distinguent peu sur le noir.
+  - Le résineux et l'épicé restent sombres dans les barres, au ton base.
+  - Les halos ne sont pas mesurés comme du texte.
+  - Barres / Radar est inerte. « Comparer (2) » mène au comparer clair de q2b : pas de comparer.html dans ce langage.
+  - La fiche g1 :
+    - les mots de chaque famille sont limités à 3, plus « +N », le reste au survol ;
+    - la liste des familles non décrites est retirée (la roue les montre en « ? ») ;
+    - Celeia n'a pas de fiche dans le pack : α et origine viennent du catalogue Beer Maverick (proto-data), ses familles de c1.
+- **Contrôles** : MOTS (54), COULEURS (4 teintes), AU-STYLE, STANDARD, SURVOL, FICHE, FIL6, AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE et BLOCS sont tous OK. Les fiches comptent de 54 à 72 mots.
+- **Pire contraste** : 6,69:1, « Ma bière » (onglet éteint, #9d9dab, 13 px) sur le haut du dégradé de nuit, mesuré au rendu sur la pile réelle sous le texte. La fiche descend au plus bas à 7,61:1.

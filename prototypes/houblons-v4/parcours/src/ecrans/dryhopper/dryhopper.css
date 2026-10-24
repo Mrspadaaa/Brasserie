@@ -1,0 +1,130 @@
+/* Dryhopper, p4b2f (« L'aire du floral »), reprise r13 : classes propres, préfixées pq-dry- (L26).
+   Les mesures de sa maquette (passe4/p4b2f/generer.mjs) ; jetons de l'app (rgb(var(--cave-…))) pour l'encre et les
+   gris de la coquille, couleurs des familles par COULEURS. Page blanche des outils (D106, D129) : les deux blocs de
+   p4b2f (blancs sur sa page grise) gardent leur blanc et prennent un filet. */
+.pq-outil-dryhopper [data-ecran="dryhopper"] { --pq-dry-gris: rgb(var(--cave-400)); --pq-dry-acc: #c2410c; }
+
+/* L'écran : les blocs de p4b2f à 5 px l'un de l'autre. */
+.pq-dry-ecran { display: flex; flex-direction: column; gap: 2px; }
+/* À l’ordinateur, la colonne de p4b2f garde une largeur de téléphone : le dessin ne grossit pas au double, et le trait du
+   doigt reste aligné sur le rail (même largeur). */
+@media (min-width: 768px) { .pq-dry-ecran { max-width: 30rem; margin: 0 auto; } }
+/* Le contexte en ligne, « ? » à sa suite et la lecture à droite de sa dernière ligne (la ligne de p4b2f qui ne portait
+   qu'eux est rendue aux barres : tout l'écran tient au-dessus du pied, comme sa page de 844 px). */
+.pq-dry-ctx { line-height: 26px; }
+.pq-dry-ctx > [data-role="contexte"] { display: inline; }
+.pq-dry-ctx > [data-role="contexte"] > [data-contexte] { margin: 0 4px 0 0; vertical-align: middle; }
+.pq-dry-ctx > span { vertical-align: middle; }
+.pq-dry-ctx > .pq-dry-lent { float: right; margin-top: 1px; line-height: normal; }
+.pq-dry-ctx::after { content: ""; display: block; clear: both; }
+
+/* La lecture au style / absolu. */
+.pq-dry-lent { display: inline-flex; gap: 2px; padding: 2px; border-radius: 9999px; background: #e9eaee; }
+.pq-dry-lent-o { min-height: 26px; padding: 0 12px; border-radius: 9999px; font-size: 14px; color: var(--pq-dry-gris); }
+.pq-dry-lent-on { background: #fff; color: rgb(var(--cave-50)); font-weight: 600; box-shadow: 0 0 0 1px #d5d8df inset; }
+
+/* « Face à ta stout ~+22 », ★ du meilleur, la ligne « contre ★ ». */
+.pq-dry-rep { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; font-size: 16px; }
+.pq-dry-face { font-weight: 600; color: rgb(var(--cave-50)); }
+.pq-dry-fl { display: inline-flex; align-items: center; gap: 4px; color: #9840bc; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pq-dry-star { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 9px; border-radius: 12px; background: #fff; border: 1px solid #d5d8df; font-size: 13px; color: var(--pq-dry-gris); }
+.pq-dry-star b { color: #2f6b5f; font-weight: 600; }
+.pq-dry-star-ici { background: #edf7f3; border-color: #b7d8cf; }
+.pq-dry-contre { flex-basis: 100%; font-size: 13px; color: var(--pq-dry-gris); }
+.pq-dry-moins { color: var(--pq-dry-acc); font-weight: 600; }
+
+/* Les deux blocs. */
+.pq-dry-bloc { background: #fff; border: 1px solid rgb(var(--cave-800)); border-radius: 8px; }
+.pq-dry-fig { padding: 3px 10px 4px; }
+.pq-dry-seg { display: grid; grid-template-columns: 44fr 8fr 24fr 24fr; gap: 2px; }
+.pq-dry-seg button { height: 26px; border-radius: 4px; background: #f1f2f5; font-size: 13px; color: var(--pq-dry-gris); white-space: nowrap; overflow: hidden; }
+.pq-dry-seg button.pq-dry-amer { box-shadow: inset 0 -3px 0 var(--pq-dry-acc); }
+.pq-dry-seg button[aria-current="true"] { background: rgb(var(--cave-50)); color: #fff; font-weight: 600; }
+
+/* Le bandeau des quatre chiffres du moment, en gros, hors du dessin. */
+.pq-dry-call { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 6px 0 2px; }
+.pq-dry-call > span { display: inline-flex; align-items: center; justify-content: center; gap: 4px; height: 30px; border-radius: 4px; background: #f7f8fa;
+  font: 700 16px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; color: rgb(var(--cave-50)); white-space: nowrap; }
+.pq-dry-call > span.pq-dry-trop { color: var(--pq-dry-acc); background: #fff4ee; }
+.pq-dry-call > span small { font: 600 12px/1 system-ui, sans-serif; color: var(--pq-dry-gris); }
+
+/* Le dessin : courbes, aire du floral, cases d'amertume, bosse de levure, ★, trait du doigt. */
+.pq-dry-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.pq-dry-svg text { paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+.pq-dry-svg .pq-dry-lb { font: 400 13px system-ui, sans-serif; fill: var(--pq-dry-gris); }
+.pq-dry-svg .pq-dry-nom { font: 700 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.pq-dry-svg .pq-dry-etoile { font: 700 14px system-ui, sans-serif; fill: #2f6b5f; }
+.pq-dry-svg .pq-dry-ip { stroke-dasharray: 4 3; opacity: .6; }
+/* D106 (teinte) : .18 au lieu de .22 sur p4b2f ; sur la page blanche des outils, l'aire est un des quatre aplats clairs les
+   plus vastes, et à .22 elle sortait de la neutralité de ses aplats (teinte 16 contre 8). */
+.pq-dry-svg .pq-dry-aire { fill: #bf86d6; opacity: .18; }
+.pq-dry-svg .pq-dry-grid { stroke: #e3e5eb; }
+.pq-dry-svg .pq-dry-ibu { fill: #9a9fab; }
+.pq-dry-svg .pq-dry-ibu.pq-dry-trop { fill: var(--pq-dry-acc); }
+.pq-dry-svg .pq-dry-lev { fill: url(#pq-dry-hachb); stroke: #3b5f8a; stroke-width: 1.2; stroke-dasharray: 3 2; }
+
+/* Le rail sous l'axe (géométrie d'a1 : ébullition 0–44 %, whirlpool 44–52, actif 52–76, après 76–100). */
+.pq-dry-geste { position: relative; margin-top: 2px; touch-action: none; user-select: none; -webkit-user-select: none; }
+.pq-dry-rail { position: relative; height: 26px; cursor: pointer; outline-offset: 2px; }
+.pq-dry-zone { position: absolute; top: 10px; height: 6px; border-radius: 2px; background: #c9cdd6; }
+.pq-dry-zone-1, .pq-dry-zone-3 { background: #aeb4c1; }
+.pq-dry-calc { position: absolute; top: 11px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: rgb(var(--cave-50)); opacity: .55; }
+.pq-dry-cran { position: absolute; top: 6px; width: 1px; height: 14px; background: rgb(var(--cave-50)); }
+.pq-dry-pouce { position: absolute; top: 3px; width: 20px; height: 20px; margin-left: -10px; border-radius: 50%; background: rgb(var(--cave-50)); border: 3px solid #fff; box-shadow: 0 0 0 1px rgb(var(--cave-50)); z-index: 2; }
+.pq-dry-pl { position: absolute; top: 28px; left: 50%; transform: translateX(-50%); white-space: nowrap; display: inline-flex; align-items: center; gap: 5px;
+  background: rgb(var(--cave-50)); color: #fff; font: 600 13px/18px system-ui, sans-serif; padding: 1px 8px; border-radius: 10px; pointer-events: none; }
+.pq-dry-pt { display: inline-block; width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid #fff; }
+.pq-dry-touche .pq-dry-pl { visibility: hidden; }
+
+/* La loupe, sous le rail pendant le geste : cinq moments voisins, leur floral en barre et en chiffre. */
+.pq-dry-loupe { position: relative; height: 60px; margin-top: 6px; background: #fff; border: 1px solid #c9cad2; border-radius: 8px; overflow: hidden; }
+.pq-dry-loupe > span { position: absolute; top: 4px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font: 600 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--pq-dry-gris); }
+.pq-dry-loupe > span em { font-style: normal; padding: 0 5px; border-radius: 4px; white-space: nowrap; }
+.pq-dry-loupe > span.pq-dry-ici em { color: #fff; background: rgb(var(--cave-50)); }
+.pq-dry-loupe > span i { display: block; width: 34px; height: 6px; background: #f1f2f5; border-radius: 2px; position: relative; overflow: hidden; }
+.pq-dry-loupe > span i b { position: absolute; left: 0; top: 0; bottom: 0; background: #bf86d6; border-radius: 2px; }
+.pq-dry-loupe > span.pq-dry-lip i b { opacity: .5; }
+.pq-dry-loupe > span small { font: 600 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #9840bc; }
+.pq-dry-loupe > span small.pq-dry-sg { color: var(--pq-dry-gris); font-weight: 400; }
+
+/* Les jours de contact. */
+.pq-dry-jr { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; margin-top: 22px; }
+.pq-dry-touche + .pq-dry-jr { margin-top: 6px; }
+.pq-dry-jr button { height: 26px; border-radius: 4px; background: #f1f2f5; font: 600 13px system-ui, sans-serif; color: rgb(var(--cave-50)); }
+.pq-dry-jr button.pq-dry-sg { background: #f7f8fa; color: var(--pq-dry-gris); font-weight: 400; border: 1px dashed #c9cdd6; }
+.pq-dry-jr button[aria-pressed="true"] { background: rgb(var(--cave-50)); color: #fff; font-weight: 700; border: 0; }
+.pq-dry-jr button[aria-disabled="true"] { opacity: .45; }
+
+/* Les 12 barres l5b de p4b2f. */
+.pq-dry-bars { display: grid; grid-template-columns: 1fr; gap: 0; padding: 2px 10px; }
+.pq-dry-ba { display: grid; grid-template-columns: 92px 1fr auto; align-items: center; gap: 6px; font-size: 14px; line-height: 17px; min-height: 17px; }
+.pq-dry-n { display: flex; align-items: center; gap: 4px; white-space: nowrap; color: rgb(var(--cave-50)); }
+.pq-dry-n.pq-dry-att { font-weight: 700; }
+.pq-dry-v { text-align: right; font: 600 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: nowrap; min-width: 40px; }
+.pq-dry-p { position: relative; height: 16px; background: #f1f2f5; border-radius: 2px; overflow: hidden; }
+.pq-dry-p i { position: absolute; top: 0; bottom: 0; left: 0; display: block; }
+.pq-dry-p .pq-dry-z { background: #d9dce3; }
+.pq-dry-p .pq-dry-b { top: 3px; height: 10px; bottom: auto; border-radius: 2px; transition: width .18s cubic-bezier(.2, .8, .2, 1); }
+.pq-dry-ipr .pq-dry-p .pq-dry-b { opacity: .5; }
+.pq-dry-p .pq-dry-av { width: 14px; height: 14px; top: 1px; bottom: auto; border-radius: 50%; border: 2px solid rgb(var(--cave-50)); background: #fff; margin-left: -7px; }
+.pq-dry-p .pq-dry-h { right: 0; background: repeating-linear-gradient(135deg, #c9cdd6 0 2px, transparent 2px 6px); }
+.pq-dry-avinc::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 9px; z-index: 2; background: repeating-linear-gradient(135deg, #8a8f9c 0 1.5px, transparent 1.5px 4px); }
+
+/* La vraie valeur sourcée, sous les barres ; « jamais mesuré » en pastille grise. */
+.pq-dry-mes { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: var(--pq-dry-gris); min-width: 0; max-width: 100%; overflow: hidden; white-space: nowrap; }
+.pq-dry-mes b { color: rgb(var(--cave-50)); font-weight: 600; }
+.pq-dry-mes.pq-dry-jamais { padding: 1px 6px; border-radius: 4px; background: #e2e5eb; }
+
+/* Le pont Levure, dans le pied : l'aperçu de Pomona en clair à côté du mot. */
+.pq-dry-apercu { opacity: .85; font-weight: 400; font-size: 13px; }
+/* Le pied revient d'un coup : aucune transition héritée. */
+.pq-outil-dryhopper [data-pied="annuler"], .pq-outil-dryhopper [data-pied="annuler"] * { transition: none !important; }
+
+/* Le geste suit le doigt sans retard : aucune transition héritée sur le rail et la loupe. */
+.pq-dry-geste *, .pq-dry-loupe * { transition: none !important; animation: none !important; }
+
+/* BESOIN SOCLE (thème des maquettes, 23.10) : la plage d’α de la ligne de contexte (Alpha, text-cave-400 sur la
+   pastille cave-800) tombe à 3,9:1. Rattrapé ici pour Dryhopper et Levure seulement, en attendant le thème. */
+.pq-outil-dryhopper [data-role="contexte"] [data-role="alpha"] .text-cave-400,
+.pq-outil-levure [data-role="contexte"] [data-role="alpha"] .text-cave-400 { color: rgb(var(--cave-200)); }

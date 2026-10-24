@@ -1,0 +1,27 @@
+{
+ "ticket": 142,
+ "ancre": "t142-lot18g",
+ "court": "l5f : l5e retouché",
+ "titre": "l5e retouché d’après le critique (l5f, 19.10 nuit)",
+ "etat": "à choisir : l5f, l5e ou l5d",
+ "puces": [
+  "Le critique, un agent qui juge comme toi, calibré sur tes vrais verdicts, a vu l5e : « je comprends tout de suite les tuiles. Mais c'est quoi les deux icônes en haut à droite ? Et les trois ronds en bas, à côté de Comparer ? +1 quoi ? Pourquoi Celeia a un trou ? » Verdict : à garder, avec trois retouches.",
+  "l5f les fait. Barres et Radar sont écrits, « Comparer (3) », « +1 cran ». La tuile à deux houblons passe en pleine largeur, donc plus de trou dans la grille. Le trait noir de ta bière est sur les trois pistes. Dans la fiche, les mots anglais sont traduits.",
+  "Prix : 77 mots au premier écran au lieu de 70 (indicatif en exploration). 9 voies au premier écran.",
+  "Contrôles rejoués : PISTE, ALPHA, FICHE-BASELINE, PLACE, et tout COMMUN sauf les mots. Reste un point orangé sans mot sur le résineux."
+ ],
+ "images": [
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l5f-haut-390.png",
+   "l5f, le premier écran"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l5f-etat-b-390.png",
+   "l5f, la page entière"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/captures/l5f-fiche-390.png",
+   "l5f, la fiche"
+  ]
+ ]
+}

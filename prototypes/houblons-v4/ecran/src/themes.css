@@ -1,0 +1,141 @@
+/*
+ * Jetons de thème de l'écran houblons (prototype). Canaux RGB, lus par tailwind.config.js
+ * (rgb(var(--x) / <alpha-value>)), ce qui garde les opacités (`bg-water/50`).
+ * Noms de l'app conservés ; valeurs et seuils dans THEMES.md ; contrôle :
+ * `npm run ecran:contraste`.
+ */
+
+/* Thème « cave » : valeurs actuelles de tailwind.config.js, rendu de l'app à l'identique. */
+:root,
+[data-theme='cave'] {
+  --cave-950: 18 16 14;
+  --cave-900: 26 22 19;
+  --cave-850: 34 29 25;
+  --cave-800: 44 37 33;
+  --cave-700: 61 52 46;
+  --cave-600: 87 74 66;
+  --cave-400: 154 138 126;
+  --cave-200: 216 206 197;
+  --cave-50: 245 240 234;
+
+  --cave-texte-950: 18 16 14;
+  --cave-texte-900: 26 22 19;
+  --cave-texte-850: 34 29 25;
+  --cave-texte-800: 44 37 33;
+  --cave-texte-700: 61 52 46;
+  --cave-texte-600: 87 74 66;
+  --cave-texte-400: 154 138 126;
+  --cave-texte-200: 216 206 197;
+  --cave-texte-50: 245 240 234;
+
+  --ebc-straw: 242 193 78;
+  --ebc-straw-texte: 242 193 78;
+  --ebc-straw-bord: 242 193 78;
+
+  --area-production: 231 160 112;
+  --area-finances: 134 185 230;
+  --area-stocks: 163 201 122;
+  --area-agenda: 188 165 232;
+  --area-production-texte: 231 160 112;
+  --area-finances-texte: 134 185 230;
+  --area-stocks-texte: 163 201 122;
+  --area-agenda-texte: 188 165 232;
+
+  --attention: 227 181 93;
+  --attention-texte: 227 181 93;
+  --alert-strong: 242 146 137;
+  --alert-strong-texte: 242 146 137;
+  --alert: 214 69 61;
+  --alert-texte: 214 69 61;
+  --hop: 110 155 91;
+  --hop-texte: 110 155 91;
+  --water: 91 138 166;
+  --water-texte: 91 138 166;
+
+  /* Prototype : marque porteuse de sens (bande du style) et repère d'accent (cible). */
+  --marque: 154 138 126;
+  --repere: 242 193 78;
+  --repere-texte: 242 193 78;
+}
+
+/*
+ * Thème « clair » (proposition, recherche G) : papier chaud, encre charbon, ni #000 ni #fff.
+ * Surfaces : la page (950) est le papier le plus soutenu, le panneau (900) et la surface
+ * surélevée (850) s'éclaircissent, comme en sombre où la profondeur vient du fond.
+ * Les degrés 950 à 700 de texte restent des encres sombres : en app, ils ne portent que du
+ * texte posé sur un aplat clair (paille).
+ */
+[data-theme='clair'] {
+  color-scheme: light;
+
+  --cave-950: 242 236 228;
+  --cave-900: 250 246 240;
+  --cave-850: 255 252 247;
+  --cave-800: 221 211 199;
+  --cave-700: 191 178 163;
+  --cave-600: 163 149 134;
+  --cave-400: 138 123 110;
+  --cave-200: 58 48 42;
+  --cave-50: 26 22 19;
+
+  --cave-texte-950: 26 22 19;
+  --cave-texte-900: 26 22 19;
+  --cave-texte-850: 34 29 25;
+  --cave-texte-800: 44 37 33;
+  --cave-texte-700: 61 52 46;
+  --cave-texte-600: 138 123 110;
+  --cave-texte-400: 101 88 80;
+  --cave-texte-200: 58 48 42;
+  --cave-texte-50: 26 22 19;
+
+  --ebc-straw: 242 193 78;
+  --ebc-straw-texte: 122 90 18;
+  --ebc-straw-bord: 138 101 18;
+
+  --area-production: 154 79 30;
+  --area-finances: 31 100 163;
+  --area-stocks: 76 107 42;
+  --area-agenda: 106 79 176;
+  --area-production-texte: 154 79 30;
+  --area-finances-texte: 31 100 163;
+  --area-stocks-texte: 76 107 42;
+  --area-agenda-texte: 106 79 176;
+
+  --attention: 156 112 32;
+  --attention-texte: 127 91 16;
+  --alert-strong: 179 51 43;
+  --alert-strong-texte: 168 41 31;
+  --alert: 200 56 47;
+  --alert-texte: 168 41 31;
+  --hop: 86 127 69;
+  --hop-texte: 63 107 46;
+  --water: 79 126 155;
+  --water-texte: 47 95 125;
+
+  --marque: 138 123 110;
+  --repere: 138 101 18;
+  --repere-texte: 122 90 18;
+}
+
+/*
+ * Clair : la paille sur papier ne fait que 1,4:1. Un filet ambre foncé (4,5:1 sur la page)
+ * borde chaque aplat paille, composé avec l'anneau de focus de Tailwind au lieu de l'écraser.
+ */
+[data-theme='clair'] .bg-ebc-straw {
+  --tw-shadow: inset 0 0 0 1px rgb(var(--ebc-straw-bord));
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+/* Clair : le focus paille de l'app passe à l'ambre foncé (≥ 3:1 sur papier). */
+[data-theme='clair'] *:focus-visible {
+  --tw-ring-color: rgb(var(--ebc-straw-bord));
+  outline-color: rgb(var(--ebc-straw-bord));
+}
+
+/* Clair : le chevron dessiné en dur par src/index.css (#9A8A7E) passe à l'encre secondaire. */
+[data-theme='clair'] summary:not(:has([class*='chevron'])) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23655850' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+[data-theme='clair'] details[open] > summary:not(:has([class*='chevron'])) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23655850' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
+}

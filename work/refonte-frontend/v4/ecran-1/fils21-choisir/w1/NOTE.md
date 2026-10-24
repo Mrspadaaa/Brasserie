@@ -1,0 +1,24 @@
+w1 · La phrase qui répond (la réponse d'abord, le conseiller).
+
+- **Ce qui tient** :
+  - **La réponse est une phrase de recette** : « Mets Citra 1 g/L après 2 j avec US-05 [2e houblon] ». Chaque mot se touche et ouvre ses choix juste dessous : houblon, dose (curseur 1, 2, 4, 8 g/L), moment (60′, 10′, whirlpool, actif, après), jours, levure, un 2e houblon dans le même dry hop.
+  - **L'envie choisit la phrase** : plus d'agrumes, de tropical, de floral ou de fruits à noyau. La piste montrée suit une règle écrite, pas un score : le geste le plus léger qui donne au moins un cran et demi sans faire sortir une autre famille de la 16D. « Autres pistes » montre les autres houblons et la première qui sort du style ; chacune se prend d'un toucher.
+  - **Sous la phrase** : le verdict ~ (« reste dans ta 16D », « au bord », « sort de ta 16D » avec les familles), le hop creep chiffré si le dry hop est actif.
+  - **Le profil ~ simulé en 12 lignes nommées** (moteur profil-simule) : zone de la 16D en pâle, trait de ta bière avant, barre après, sa bande (pointillée quand la borne haute n'est pas publiée), orangé hors du style, écart écrit avec son unité (« +2 crans »).
+  - **Trois raisons avec leur vraie valeur** : huile (fiches), 4MMP (Schmidt 2024), contact (Wolfe 2012, Eureka!). Puis la biotransformation de la levure choisie, dite avec la convention du moteur.
+  - **« Si tu t'en écartes »** : la même réponse, une chose changée à la fois (dose, houblon, moment, jours, levure). Chaque case montre les crans gagnés et « dans / bord / hors », et se touche pour l'essayer. On y lit que les jours ne changent rien après 1 j, que 60′ ne donne presque rien, et que la levure ne compte qu'en dry hop actif.
+  - **Ajout cumulé (K5)** : un 2e houblon. La bande « ce que chacun apporte » prend toute la largeur : deux couleurs de houblon, les points de chacun, « 71 % » de la somme (saturation partagée). Dose totale et E04 mesurés ; synergie, masquage et ordre inconnus.
+  - **« Pourquoi ? »** ouvre la preuve du houblon : ses fiches ; des mesures en bière (Citra linalol 144 µg/L, E06, à côté du centre du moteur jugé 2 à 5 fois trop haut ; Cascade 56,9 µg/L, Kishimoto) ; les rapports au seuil en bandes logarithmiques (linalol ×0,06–2475 contre ×0,006–948, 4MMP ×4 au moins contre ×0,32 au moins) ; les trous de la recherche J.
+  - Baseline gardée : pictos au trait, α du lot puis des fiches avec ≠ et le livre, usage en mot, au style ou absolu, légende derrière « ? », fiche l8g à l'appui long.
+- **Écart à la baseline, et pourquoi** : le profil passe des 12 colonnes de l5b à 12 lignes nommées. Le critique : « une icône que la légende doit expliquer est un défaut » et « un nombre a son unité ». À 390 px, une ligne porte le nom de la famille et « +2 crans » ; une colonne de 28 px ne le peut pas. Les colonnes restent dans le socle (`colonne()`).
+- **Ce qui casse** :
+  - 130 mots au premier écran : la réponse tient en 25 mots, mais le profil, les raisons et le haut des bandes « Si tu t'en écartes » entrent aussi dans les 844 px.
+  - La phrase passe sur deux lignes.
+  - Les pointillés de bande traversent presque chaque ligne : le moteur publie peu de bornes hautes (1 888 hauts au-delà de 100, rien n'est rogné). C'est honnête, mais chargé.
+  - Verdant et Diamond ne sont simulés qu'avec deux houblons, Diamond pour Citra + Idaho 7 seulement (cas K4) : ailleurs, leurs boutons sont barrés.
+  - Floral : aucune piste ne donne un cran et demi dans la 16D ; la page montre la plus proche, au bord.
+- **Données** : profil simulé `fils21-choisir/donnees/profils-simules.json` (branché ; le stub est retiré). Vraies valeurs : pack-fiches, proto-data, composes-houblon, fils19 (moteur pouvoir, verifications), `comparatifs-dryhop.json` (E01, E03, E04, E06, E08, E10). Socle commun de w1–w5 : `w1/socle-w.mjs`, `w1/donnees-w.mjs` ; captures : `w1/captures-w.mjs`.
+- **Contrôles** (indicatifs en v0, joués une fois) :
+  - COMMUN ECHEC 1 : mots ECHEC (130 > 70) ; couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende et parlant OK ;
+  - LISIBLE OK, SIMULATION OK, CUMUL OK, ALPHA OK, FICHE-BASELINE OK.
+- **Pire contraste** : 4,8:1, « hors » (orangé) sur sa case pâle.

@@ -1,0 +1,34 @@
+a2 · Ce que la levure en fait : un flux, de la cuve à la bière (K4, K5).
+
+- **Ce qui tient** :
+  - Quatre cartes de levure (US-05, Verdant, Pomona, Diamond). Chacune porte ses esters de fiche en pictos de famille et un fait réel : « esters low », « β-lyase : qualitative », « géraniol → citronellol : medium », « lager, 10–15 °C ».
+  - On règle aussi le moment (actif, après) et le plan : Citra puis Idaho 7 « à la suite » (cas K4) ou « ensemble » (K5).
+  - Le flux, chiffré par le moteur :
+    - à gauche, ce que les houblons apportent après fermentation sans levure active ;
+    - le CO₂ de la fermentation active emporte (le moteur divise les hydrocarbures par deux) : ruban gris vers « CO₂ », « myrcène emporté » ;
+    - la levure ajoute : bloc hachuré, « géraniol → citronellol » pour Pomona, « précurseurs → thiols » pour Verdant ;
+    - à droite, ce que la bière garde, en « ~+N » sur 100.
+  - En tête, la réponse en une ligne, par exemple « Houblons ~197 · levure ~+19 · CO₂ ~−21 ». On y voit que la levure pèse peu face aux houblons, et que le CO₂ emporte plus qu'elle n'ajoute. Après fermentation : levure 0, et la page le dit.
+  - Sous le flux : citronellol de Citra ~55 µg/L au centre, jusqu'à ~446 ; thiols libérés jusqu'à ~165 ng/L ; « précurseurs de Idaho 7 non publiés : aucune libération simulée, inconnu ».
+  - « Dans la 16D » : les barres de l5b sur les 12 familles, au style.
+  - Vraies valeurs : géraniol dans l'huile (Idaho 7 0,5–1 %, Citra 0,2–0,8 %), citronellol au-dessus du seuil dans une bière au Citra (E01), précurseurs de Citra (≈ 23 mg/kg liés, 12 µg/kg libres), rendement 0,01–0,35 % sur précurseur de synthèse (H42), Diamond selon Samia, hop creep +0,92 % vol. (H68). La ligne « inconnu » dit qu'aucune mesure ne croise variété × levure × dry hop.
+- **Ce qui casse** :
+  - **Trop de mots** : 177 au premier écran (70 au plus).
+  - La paire est figée à Citra + Idaho 7 (seuls cas K4 à quatre levures).
+  - Diamond n'existe qu'« à la suite » (K4). En « ensemble », sa carte est hachurée et inactive : le moteur lui donne la convention de Verdant.
+  - Le moteur ne déplace pas le floral vers les agrumes : avec Pomona, le citronellol produit se répartit sur toutes les familles de la fiche, et le floral monte aussi. Le flux le montre tel quel, un bloc « levure » qui alimente, et pas un ruban floral → agrumes inventé.
+  - Le CO₂ est une convention du moteur (« hydrocarbures à la moitié »), marquée « convention ».
+  - Les familles faibles sont regroupées en « autres » ; les étiquettes de gauche se chevauchent parfois (« Noyau ~18 » sous le ruban).
+- **S'écarte de la baseline** : un diagramme de flux (Sankey) au lieu des barres, pour voir ce que la levure ajoute et ce que le CO₂ emporte entre la cuve et la bière. Les barres de l5b restent dessous pour la lecture au style.
+- **Données** : `profils-simules.json` (cas K4, et K5 Citra + Idaho 7) ; fiches des levures et composés dans `a1/reel.mjs` ; E01. Le stub est retiré.
+- **Contrôles** (19.10, ~23 h 59, sur etat.html) :
+  - COMMUN ECHEC 1 contrôle : MOTS 177 (> 70). Les dix autres sont OK.
+  - LISIBLE OK : 23 pictos, 10 mesurées, 31 simulées, 0 faute.
+  - SIMULATION OK.
+  - CUMUL OK : 1 ajout cumulé, 4 choix de levure, biotransformation visible, la levure fait bouger le simulé.
+  - ALPHA OK : 2 voies, 2 avec leur α.
+  - FICHE-BASELINE OK.
+  - HONNETE OK, DOIGT OK (`a1/controle-a.mjs`).
+- **Pire contraste** : 4,96:1, « Agrumes » (#856e0c sur blanc).
+- **Captures** : `captures/a2-390.png`, `a2-haut-390.png`, `a2-verdant-ensemble-390.png` (ensemble, Verdant, Diamond hachuré). Toutes regardées.
+- **Générée par** `a2/generer-a2.mjs` (socle `../a1/`).

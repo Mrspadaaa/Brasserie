@@ -1,0 +1,25 @@
+s3 · La carte des possibles (toute la grille du moteur d'un coup : voir ce qui est faisable avant de toucher ; vrai `donnees/profils-simules.json`).
+
+- **Ce qui tient** : pour un houblon, 20 cases d'un coup : 5 moments en colonnes (60′, 10′, whirlpool, dry hop actif, après) et 4 doses en lignes (1, 2, 4, 8 g/L, celles de la grille).
+  - **Une case, une empreinte** : les 12 petites barres de l5b (une par famille, à sa couleur), le plafond du style 16D en tirets, l'orangé au-delà ; **la part de ma bière en gris** et l'apport du houblon en couleur ; un mot : « 4 hors » quand l'ajout fait sortir des familles du style, rien quand la case reste au style. La ligne du dessous compte : « ~ Citra : 11 cases sur 20 restent au style 16D ».
+  - **Ce qu'on voit sans rien toucher** : la colonne 60′ reste plate à toutes les doses (« Pourquoi à 10′ pas à 60′ ? ») ; Citra sort du style dès 2 g/L après fermentation ; à 8 g/L, 6 familles sortent.
+  - **Un toucher sur une case** la détaille dessous : les 12 familles nommées, la bande entière, l'écart à ma bière avec son unité, et **l'écart à la case d'avant** écrit (« ~ dry hop après 4 g/L → 60′ 4 g/L : Tropicaux −3 crans, Agrumes −3 crans, Baies −3 crans ») ; la case d'avant reste cerclée.
+  - **Tout se règle au-dessus** : le houblon, un **second houblon** (2 g/L en dry hop, mêmes jours : chaque case devient « X + Galaxy »), les jours de contact (éteints pour les cases à chaud), la levure (en dry hop actif, Pomona change les cases ; la biotransformation est écrite sous le détail).
+  - **Vraies valeurs au premier écran** : sous le choix du houblon, son usage, son α (lot ou fiches), son huile et « fiche › » ; plus bas, les rapports au seuil en bande logarithmique et ce qui est mesuré en bière.
+  - **Le mesuré posé sur sa case** : Cascade, 1 j, après fermentation : les cases 2, 4 et 8 g/L portent « mesuré » ; le détail montre le panel de Lafontaine 2018 (E04 : intensité 8,1, agrumes 5,7, herbacé 5,8 sur 15 à 3,86 g/L, 24 h) à côté du simulé, avec « à vérifier » : J et H lisent le tableau 3 à l'inverse (note du moteur).
+  - Écart à la baseline, voulu : la vue est une carte d'options (petits multiples), une idée neuve ; la case garde la barre de l5b en miniature, et le détail nomme chaque famille.
+- **Ce qui casse** :
+  - **137 mots au premier écran** pour 70 : les réglages (≈ 30), les en-têtes de la carte et les mots des cases, le détail de la case touchée.
+  - Les cases sont petites (66 × 66 px, barres de 3 px) : une empreinte se lit en gros (sortie du style, forme), pas famille par famille ; le nom vient au toucher.
+  - Une famille déjà hors du style avant l'ajout (la résine, dégustée « marquée ») ne compte comme « hors » que si l'ajout la monte d'un demi-cran : règle de la page, à valider.
+  - Le second houblon est fixé à 2 g/L en dry hop ; ses jours suivent ceux du premier.
+  - Verdant et Diamond seuls en dry hop actif : hors de la grille du moteur, profil d'US-05 et « inconnu » écrit.
+- **Contrôles** (indicatifs en v0, joués le 19.10 sur `etat.html`) :
+  - COMMUN ECHEC 1 contrôle(s) : mots ECHEC (137 > 70) ; couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende, parlant OK ;
+  - LISIBLE OK : « s3 · 11 pictos · 2 mesurées · 261 simulées · 0 faute(s) » ;
+  - SIMULATION OK : « 2 simulation(s) · 39 réglage(s) · 12 mesurée(s) · le simulé bouge » ;
+  - CUMUL OK : « 1 ajout(s) cumulé(s) · 4 choix de levure · biotransformation visible · la levure fait bouger le simulé » ;
+  - ALPHA OK (1 voie, 1 avec son α) ; FICHE-BASELINE OK (fiche de Citra, 12 familles nommées, 17 pictos, 0 faute).
+- **Pire contraste** : 4,96:1, « Agrumes » (#856e0c sur blanc), sur 128 textes mesurés ; aucun sous 4,5:1.
+- Captures (`../captures/`) : `s3-390.png` (page), `s3-premier-ecran-390.png`, `s3-case-60.png` (case 60′ 4 g/L touchée, écart écrit), `s3-cascade-mesure.png` et `s3-cascade-bas.png` (Cascade 1 j, cases « mesuré », panel E04 à côté), `s3-legende.png`, `s3-absolu.png`, `s3-fiche.png`, `s3-page-390.png`.
+- Généré par `generateur-s3.mjs` avec `../s1/socle-s.mjs`, `../s1/sim-runtime.js` et `page-s3.js`. États par adresse : `?houblon=Cascade`, `?second=Galaxy`, `?jours=1`, `?case=b60,4`, `?abs`, `?legende`.

@@ -1,0 +1,304 @@
+{
+  "reponses": [
+    {
+      "eid": "e01",
+      "reponse": "A",
+      "phrase": "m4 très bien, je note ce que j'ai goûté et le radar se remplit. m3 avec les T et le disque, c'est compliqué à lire."
+    },
+    {
+      "eid": "e03",
+      "reponse": "A",
+      "phrase": "h4 très bien, les flèches plus floral moins résineux ça répond direct à ma demande. h1 c'est une fiche normale, avec le stock en plus."
+    },
+    {
+      "eid": "e05",
+      "reponse": "rejette",
+      "phrase": "Il y a pas 12 radar ? Trois radars gris les uns sous les autres, c'est n'importe quoi, Beer Maverick les superpose. Il manque les AA."
+    },
+    {
+      "eid": "e07",
+      "reponse": "B",
+      "phrase": "Le menu avec toute la liste des minutes c'est pas ce que j'ai demandé, je voulais un zoom focus type apple là où on est, comme la B."
+    },
+    {
+      "eid": "e09",
+      "reponse": "A",
+      "phrase": "La cannelle et le clou on comprend que c'est épicé. La langue ça représente rien, c'est quoi ce truc ?"
+    },
+    {
+      "eid": "e11",
+      "reponse": "B",
+      "phrase": "Attention, trop de texte sur la A. La B avec l'IBU par moment et le radar c'est pas mal, ça parle brasseur."
+    },
+    {
+      "eid": "e13",
+      "reponse": "B",
+      "phrase": "C'est quoi ces gros bloques 1 2 3 ? La B avec le radar et les barres par famille c'est mieux, mais le radar est encore difficile à lire avec les couleurs."
+    },
+    {
+      "eid": "e15",
+      "reponse": "A",
+      "phrase": "La B c'est très difficile à comprendre, linalol, 4MMP, OSU, énormément d'information pour rien. La A reste lisible."
+    },
+    {
+      "eid": "e17",
+      "reponse": "B",
+      "phrase": "Les barres sous chaque voie sont plus informatives, on voit ce que ça fait. Mais c'est toujours difficile à lire ces radar, tout au centre."
+    },
+    {
+      "eid": "e19",
+      "reponse": "mitige",
+      "phrase": "La disposition j'aime bien, le code couleur aussi. Mais pas d'info sur les AA, je veux la vraie valeur, et les icônes goutte souffle sont pas parlantes. La bande visée c'est inutile."
+    },
+    {
+      "eid": "e21",
+      "reponse": "B",
+      "phrase": "Les trois côte à côte c'est plus compact, comme Beer Maverick. Par contre très compliqué de voir les différences avec les couleurs sur le radar."
+    },
+    {
+      "eid": "e23",
+      "reponse": "mitige",
+      "phrase": "C'est mieux, les AA sont là et le type mixte amer. Mais Nelson Sauvin ressort comme un houblon ordinaire avec une seule barre, c'est un houblon incroyable. Et pas de radar graph ?"
+    },
+    {
+      "eid": "e25",
+      "reponse": "B",
+      "phrase": "La A avec les grandes colonnes et les hachures c'est difficile à lire. La B pas mal, les voies avec l'alpha et la partie du bas fait sens, mais c'est quoi ces gros bloques en haut ?"
+    },
+    {
+      "eid": "e27",
+      "reponse": "A",
+      "phrase": "La A est meilleure, on voit face à ma stout ce que ça change par famille et le rail en bas. Les trois plans Sage Franc Osé c'est pas ce que je demande."
+    },
+    {
+      "eid": "e29",
+      "reponse": "A",
+      "phrase": "La B est visuellement horrible, tout en noir, en majuscules. La A garde la même disposition avec le code couleur, c'est celle-là."
+    },
+    {
+      "eid": "e31",
+      "reponse": "A",
+      "phrase": "La A d'abord l'IBU par moment puis le radar, c'est pensé brasseur. La B attention, trop de texte avant d'arriver au radar."
+    },
+    {
+      "eid": "e33",
+      "reponse": "A",
+      "phrase": "Un seul radar superposé comme Beer Maverick avec les barres et intervalles, c'est mieux. Quatre petits radars et la chimie du cône dessous, c'est difficile à comprendre."
+    },
+    {
+      "eid": "e35",
+      "reponse": "aime",
+      "phrase": "Radar m4 très bien. Je note par famille, pas goûté reste inconnu, pas zéro. Manque peut-être la comparaison au style plus visible."
+    },
+    {
+      "eid": "e37",
+      "reponse": "A",
+      "phrase": "La A, on voit quand et combien, face à ma stout. La B c'est de la chimie, 4MMP, farnésène, difficile à comprendre même si les vraies valeurs sont bien."
+    },
+    {
+      "eid": "e39",
+      "reponse": "rejette",
+      "phrase": "Aucun me convient... Ils sont tous minuscules, on reconnaît rien à cette taille."
+    },
+    {
+      "eid": "e41",
+      "reponse": "aime",
+      "phrase": "C'est la meilleure, le radar avec le style, les trois côte à côte avec AA, type et barres. Mais reprends plus des éléments que j'avais noté bons sur les autres."
+    },
+    {
+      "eid": "e43",
+      "reponse": "rejette",
+      "phrase": "Il y a pas 12 radar ? Et le cône rouge sort de nulle part. Les radar graph c'est toujours n'importe quoi, il faut faire quelque chose."
+    },
+    {
+      "eid": "e45",
+      "reponse": "A",
+      "phrase": "La A je comprends tout de suite, Nelson Sauvin 62 g me remplace, ce que je garde et ce que je perds. La B les scores 99 86 ça me parle pas."
+    },
+    {
+      "eid": "e47",
+      "reponse": "mitige",
+      "phrase": "C'est déjà pas mal comme visuel de base, l'IBU par moment est bien. Mais il faut changer la carte et il y a quelques problèmes, le radar gris est pauvre, 1/4 2/4 pas clair."
+    },
+    {
+      "eid": "e49",
+      "reponse": "B",
+      "phrase": "La loupe avec 40' et 30' autour, là on voit le zoom focus. Sur la A l'échelle s'adapte à peine à l'endroit où on est."
+    },
+    {
+      "eid": "e51",
+      "reponse": "B",
+      "phrase": "La B avec les sources Beer Maverick Hopsteiner et les intervalles, c'est ça les vraies valeurs. Les gros bloques noirs de la A prennent trop de place. Mais pourquoi le trait du lot que sur alpha ?"
+    },
+    {
+      "eid": "e53",
+      "reponse": "rejette",
+      "phrase": "Il y a pas 12 radar ? Ce radar ressemble à rien, c'est une vraie régression. Et le stock à acheter est encore mis en avant."
+    },
+    {
+      "eid": "e55",
+      "reponse": "mitige",
+      "phrase": "Visuellement horrible, mais la manière dont sont disposées les choses j'aime beaucoup !! Les objectifs en haut, même effet, puis les voies."
+    },
+    {
+      "eid": "e57",
+      "reponse": "A",
+      "phrase": "La cannelle avec le clou c'est une vraie épice qu'on sent dans un houblon. La B c'est quoi cette capsule ? Ça représente rien."
+    },
+    {
+      "eid": "e59",
+      "reponse": "rejette",
+      "phrase": "Énormément de texte pour rien, des citations [73] [22], ça pollue. Je veux voir, pas lire une étude. Trouve des vraies solutions pour représenter."
+    },
+    {
+      "eid": "e02",
+      "reponse": "mitige",
+      "phrase": "Les intervalles sur alpha avec le lot et l article c est bien, les grammes avec la plage aussi. Mais très compliqué à voir les différences avec les couleurs sur le spider graph."
+    },
+    {
+      "eid": "e04",
+      "reponse": "B",
+      "phrase": "La B est meilleure, on voit quand, combien et face à ma stout. La molette de dose avec le panel OSU c est une seule question, et trop de chimie."
+    },
+    {
+      "eid": "e06",
+      "reponse": "B",
+      "phrase": "La B avec le radar et les trois côte à côte, alpha, type, barres. La A les points par famille c est difficile à lire et les radars sont tout en bas."
+    },
+    {
+      "eid": "e08",
+      "reponse": "B",
+      "phrase": "La B reste la meilleure. La cuve jour après jour c est intéressant pour Citra puis Idaho, mais c est à intégrer dans l autre, pas un écran à part."
+    },
+    {
+      "eid": "e10",
+      "reponse": "A",
+      "phrase": "p02 c est plus compact, on touche une famille et on a qui la cite. p06 il y a trop de vide autour."
+    },
+    {
+      "eid": "e12",
+      "reponse": "A",
+      "phrase": "Même disposition, mais la A est propre, la B est visuellement horrible avec tout ce noir."
+    },
+    {
+      "eid": "e14",
+      "reponse": "A",
+      "phrase": "La A on voit chaque voie par rapport à la visée et au style, la partie du bas fait sens. Mais c est quoi ces gros bloques en haut ? La B avec les hachures je comprends pas."
+    },
+    {
+      "eid": "e16",
+      "reponse": "mitige",
+      "phrase": "La levure c est demandé depuis longtemps, mais là c est un tableau de chiffres avec des 0 partout, difficile à comprendre. C est normalement à intégrer dans les autres aussi."
+    },
+    {
+      "eid": "e18",
+      "reponse": "A",
+      "phrase": "La A, radar plus barres par famille. La B avec les verres de bière c est joli mais tous sous 1 cran, ça différencie rien, et les radars sont minuscules."
+    },
+    {
+      "eid": "e20",
+      "reponse": "B",
+      "phrase": "La B est plus cohérente, ma bière en bleu dans la zone du style. p05 il y a un trou au milieu et énormément de vide."
+    },
+    {
+      "eid": "e22",
+      "reponse": "aime",
+      "phrase": "Pas mal, Citra 3 j puis Idaho 7, la levure, la biotransfo, et on voit ce que ça fait jour après jour avec le slider. Manque peut-être le vrai valeur à côté."
+    },
+    {
+      "eid": "e24",
+      "reponse": "aime",
+      "phrase": "Ça c est très bien. Alpha fiche et lot, les mots par famille courts, le radar avec les inconnus en ?."
+    },
+    {
+      "eid": "e26",
+      "reponse": "B",
+      "phrase": "Pas la liste des minutes dans une bulle, je veux un zoom focus sur le rail là où on est, comme la B."
+    },
+    {
+      "eid": "e28",
+      "reponse": "A",
+      "phrase": "m4 très bien. m1 attention trop de texte, le radar vient après trois paragraphes."
+    },
+    {
+      "eid": "e30",
+      "reponse": "aime",
+      "phrase": "C est la meilleure, radar face au style et trois houblons côte à côte avec alpha, type et barres. Mais reprends plus des éléments bons des autres."
+    },
+    {
+      "eid": "e32",
+      "reponse": "aime",
+      "phrase": "La cannelle et le clou, là on comprend épicé. Ça rentre bien dans la ligne avec les autres pictos."
+    },
+    {
+      "eid": "e34",
+      "reponse": "A",
+      "phrase": "La A, une vraie épice. La spirale ça représente rien."
+    },
+    {
+      "eid": "e36",
+      "reponse": "rejette",
+      "phrase": "Non c est très mauvais. Tu as pas du tout bien compris le besoin, l appui long ouvre la fiche, pas ces explications sous les carrés."
+    },
+    {
+      "eid": "e38",
+      "reponse": "aime",
+      "phrase": "Celle-là est de mon point de vue la meilleure, face à ma stout, par famille, et le rail en bas. Mais il y a trop de choses en même temps."
+    },
+    {
+      "eid": "e40",
+      "reponse": "B",
+      "phrase": "La B on voit l effet de chaque voie sur floral et résineux, et on applique. La A avec bannir et les flèches c est lourd, et les voies disent moins."
+    },
+    {
+      "eid": "e42",
+      "reponse": "A",
+      "phrase": "La A, compact, les deux objectifs avec les barres, et les trois voies. La B un seul houblon et un radar énorme pour rien."
+    },
+    {
+      "eid": "e44",
+      "reponse": "rejette",
+      "phrase": "Il y a que 3 variantes qui sont toutes quasiment identiques ??? Un piment n a rien à voir là-dedans. Des vraies propositions."
+    },
+    {
+      "eid": "e46",
+      "reponse": "B",
+      "phrase": "La cannelle avec le clou. La badiane je l avais déjà refusée."
+    },
+    {
+      "eid": "e48",
+      "reponse": "A",
+      "phrase": "Les trois côte à côte c est plus lisible, comme Beer Maverick, avec alpha, bêta et huiles dessous. Mais il manque les sources."
+    },
+    {
+      "eid": "e50",
+      "reponse": "rejette",
+      "phrase": "Non c est très mauvais. Tu as pas du tout bien compris le besoin, c est entre la version actuelle et une de ces versions, pas ces étiquettes partout."
+    },
+    {
+      "eid": "e52",
+      "reponse": "A",
+      "phrase": "La A avec la matrice des familles, on voit tout d un coup qui a quoi, et les plages sur IBU et grammes. La B que les trois familles du style."
+    },
+    {
+      "eid": "e54",
+      "reponse": "A",
+      "phrase": "La cannelle et le clou. La lettre É c est pas un picto, ça représente rien."
+    },
+    {
+      "eid": "e56",
+      "reponse": "mitige",
+      "phrase": "Pas mal, le cercle du style et les crans c est clair, et le non décrit au centre. Mais le p02 a un meilleur visuel, et il manque les intervalles."
+    },
+    {
+      "eid": "e58",
+      "reponse": "B",
+      "phrase": "La B, toutes les familles dans la matrice, pas que floral herbacé terreux. Pourquoi il y a pas la partie arôme complète dans la A ?"
+    },
+    {
+      "eid": "e60",
+      "reponse": "rejette",
+      "phrase": "L échelle ne s adapte toujours pas à l endroit où on est ??? On voit à peine le zoom autour de 35, j avais dit à la apple en mode zoom loupe."
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+ "ticket": 142,
+ "ancre": "t142-lot18b",
+ "court": "l8 et l5 repris",
+ "titre": "l8 et l5 repris, sans la typographie (lot 18 bis, 19.10 soir)",
+ "etat": "à choisir",
+ "puces": [
+  "Tes mots : « Visuellement horrible, mais la manière dont sont disposés les choses j’aime beaucoup !! » ; « Un poil gros et épaisy prends trop de place » ; « Faire un i5, i8 sans la typographie horrible. Fais quelques variantes ».",
+  "l8b, l8c et l8d gardent la disposition de l8 : une colonne par famille, le picto une seule fois en tête, les moments en titre, le tri en touchant une colonne. L’habillage change : le style de q2b, le sombre de l’app, ou des tuiles. Les jauges passent de 12 × 4 à 15 × 6 px. Chaque verdict a son signe : ✓ Atteint, flèche Approche, barré Aucune.",
+  "l5b : les tuiles de l5, en plus fin. l5c : une tuile par groupe, avec les voies en lignes. 7 ou 8 voies au premier écran, entre 50 et 79 px chacune, contre 4 voies à 121 px pour l5.",
+  "La typographie est celle de l’app (DESIGN.md), en 12, 14 et 16 px, sans capitales condensées. Contrôles rejoués sur les cinq : les douze du brief, FICHE (l’appui long ouvre la vraie fiche), STANDARD, et D84 (5 voies au moins, 90 px au plus), qui s’ajoute."
+ ],
+ "images": [
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/_v2/captures/planche-etat-b-390.png",
+   "les cinq, typographie de l’app"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/_v2/captures/l8b-etat-b-390.png",
+   "l8b la disposition l8, style q2b"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/_v2/captures/l8c-etat-b-390.png",
+   "l8c la disposition l8, sombre"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/_v2/captures/l8d-etat-b-390.png",
+   "l8d la disposition l8 en tuiles"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/_v2/captures/l5b-etat-b-390.png",
+   "l5b tuiles fines"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils18-baseline/_v2/captures/l5c-etat-b-390.png",
+   "l5c une tuile par groupe"
+  ]
+ ]
+}

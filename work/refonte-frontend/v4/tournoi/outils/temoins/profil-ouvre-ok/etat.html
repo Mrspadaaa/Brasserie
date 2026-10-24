@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Témoin D121 · le profil entier ouvre l'analyse</title>
+<!-- Témoin statique de controle-profil-ouvre.mjs (D121, voie p13). OK attendu : le bloc entier est cliquable vers #/biere et dit « Analyse complète » (un mot). Classes préfixées tp-. -->
+<style>
+  body { margin: 0; font: 14px/18px system-ui, sans-serif; background: #fff; color: #111; }
+  .tp-bloc { margin: 20px 8px; padding: 8px 0; border-top: 1px solid #ccc; position: relative; }
+  .tp-tete { display: flex; align-items: center; gap: 8px; min-height: 36px; }
+  .tp-alerte { display: flex; align-items: center; gap: 6px; color: #a33; font-weight: 700; margin: 0; }
+  .tp-point { width: 10px; height: 10px; border-radius: 50%; background: #c33; display: inline-block; }
+  .tp-chevron { margin-left: auto; width: 44px; height: 36px; border-radius: 18px; background: #111; color: #fff; border: 0; font: 700 18px/36px system-ui, sans-serif; padding: 0; }
+  .tp-mot { margin-left: auto; font-size: 13px; color: #555; }
+  .tp-ligne { display: flex; align-items: center; gap: 8px; height: 32px; }
+  .tp-picto { width: 13px; height: 13px; border-radius: 50%; display: inline-block; }
+  .tp-barre { margin-left: auto; width: 120px; height: 10px; background: #ddd; border-radius: 5px; }
+  .tp-lien { position: absolute; inset: 0; display: block; z-index: 2; }
+  .tp-bloc.tp-ouvre { cursor: pointer; }
+</style>
+</head>
+<body>
+<section class="tp-bloc tp-ouvre" data-role="profil" aria-label="Profil de ma bière, au style 16D">
+  <div class="tp-tete">
+    <p class="tp-alerte" data-role="alerte"><span class="tp-point"></span><span>Résineux trop marqué</span></p>
+    <span class="tp-mot">Analyse complète ›</span>
+  </div>
+  <div class="tp-ligne"><span class="tp-picto" style="background:#c58be0"></span><span>Floral</span><i class="tp-barre"></i></div>
+  <div class="tp-ligne"><span class="tp-picto" style="background:#3f9a62"></span><span>Herbacé</span><i class="tp-barre"></i></div>
+  <div class="tp-ligne"><span class="tp-picto" style="background:#b8a888"></span><span>Terreux</span><i class="tp-barre"></i></div>
+  <div class="tp-ligne"><span class="tp-picto" style="background:#e4c94f"></span><span>Agrumes</span><i class="tp-barre"></i></div>
+  <div class="tp-ligne"><span class="tp-picto" style="background:#f09a2a"></span><span>Tropicaux</span><i class="tp-barre"></i></div>
+  <div class="tp-ligne"><span class="tp-picto" style="background:#2f6f60"></span><span>Résineux</span><i class="tp-barre"></i></div>
+  <a class="tp-lien" href="#/biere" aria-label="Ouvrir l'analyse de ma bière"></a>
+</section>
+</body>
+</html>

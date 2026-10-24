@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quand ajouter Idaho 7 ?</title>
+<style>
+  :root { --encre:#16161a; --gris:#55555f; --trait:#e3e5eb; --mur:#e9ecf2; --acc:#c2410c; --sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace; }
+  [hidden] { display:none !important; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { background:var(--mur); }
+  body { color:var(--encre); font:400 14px/1.25 var(--sans); -webkit-tap-highlight-color:transparent; overflow-x:hidden; }
+  button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+  a { color:inherit; text-decoration:none; }
+  svg { display:block; flex:none; }
+  .ecran { max-width:390px; margin:0 auto; padding:4px 10px 24px; display:flex; flex-direction:column; gap:8px; }
+  h1.titre { font:600 17px/1.2 var(--sans); min-height:40px; display:flex; align-items:center; }
+  .bloc { background:#fff; border-radius:8px; padding:8px 10px; display:flex; flex-direction:column; gap:6px; }
+  .src { font-size:12px; color:var(--gris); }
+  .num { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+  .ctx { display:flex; flex-wrap:wrap; align-items:center; gap:4px 6px; font-size:13px; color:var(--gris); }
+  .ctx [data-contexte] { display:inline-flex; align-items:center; gap:4px; min-height:24px; padding:0 8px; border-radius:12px; background:#fff; box-shadow:inset 0 0 0 1px rgba(22,22,26,.1); color:var(--encre); }
+  .ctx [data-contexte] button { display:inline-flex; align-items:center; gap:4px; min-height:28px; padding:0 4px; font-size:13px; }
+  .pt { width:9px; height:9px; border-radius:50%; background:#e80030; display:inline-block; }
+  .rail { position:relative; height:30px; touch-action:none; cursor:pointer; background:#f1f2f5; border-radius:4px; }
+  .rail i { position:absolute; top:8px; width:1px; height:14px; background:#b4b8c4; }
+  .rail .pouce { position:absolute; top:3px; width:22px; height:24px; margin-left:-11px; border-radius:11px; background:var(--encre); border:3px solid #fff; box-shadow:0 0 0 1px var(--encre); }
+  .lect { font:600 15px var(--sans); display:flex; gap:8px; align-items:baseline; }
+  .frise { list-style:none; display:flex; align-items:stretch; gap:4px; }
+  .frise > li { flex:1 1 0; min-height:40px; padding:4px 6px; border-radius:6px; background:#dfe2e9; font-size:12px; display:flex; flex-direction:column; justify-content:center; }
+  .frise > li.jours { flex:2.2 1 0; background:#fff; box-shadow:inset 0 0 0 1px #c9cad2; flex-direction:row; align-items:center; justify-content:space-between; gap:4px; }
+  .frise [data-jour] { font:600 12px var(--mono); white-space:nowrap; }
+  .pont { display:inline-flex; align-items:center; min-height:32px; padding:0 14px; border-radius:16px; background:#fff; border:1px solid #c9cad2; font-weight:600; font-size:13px; }
+  .decl { min-height:32px; padding:0 12px; border-radius:16px; background:#fff; box-shadow:inset 0 0 0 1px #c9cad2; font-weight:600; font-size:13px; align-self:flex-start; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chips button { height:32px; padding:0 12px; border-radius:16px; background:#fff; box-shadow:inset 0 0 0 1px #c9cad2; font-weight:600; font-size:14px; }
+  .chips button[aria-checked="true"] { background:var(--encre); color:#fff; box-shadow:none; }
+  .feuille { position:fixed; left:0; right:0; bottom:0; max-width:390px; margin:0 auto; background:#fff; border-radius:12px 12px 0 0; box-shadow:0 -12px 40px -16px rgba(22,22,26,.5); padding:10px 12px 14px; display:flex; flex-direction:column; gap:8px; z-index:10; }
+  .feuille .chips { gap:6px; }
+</style></head>
+<body>
+<main class="ecran">
+<h1 class="titre">Quand ajouter Idaho 7 ?</h1>
+<p class="ctx" data-role="contexte"><span data-contexte="houblon"><i class="pt"></i>Idaho 7 <span class="num" data-role="alpha">α 12,7 %</span></span><span data-contexte="dose"><button type="button" aria-label="Dose moins">−</button><span class="num">4 g/L</span><button type="button" aria-label="Dose plus">+</button></span><span data-contexte="levure">US-05</span><span data-contexte="base">Stout 16D</span></p><div class="chips" role="radiogroup" aria-label="Moment de l'ajout" data-libre="moment"><button type="button" role="radio" aria-checked="false">60′</button><button type="button" role="radio" aria-checked="false">10′</button><button type="button" role="radio" aria-checked="false">whirlpool</button><button type="button" role="radio" aria-checked="true">actif · 3 j</button><button type="button" role="radio" aria-checked="false">après · 3 j</button></div><div id="feuille-dose" class="feuille" role="group" aria-label="Dose de houblon" hidden><div class="chips"><button type="button" role="radio" aria-checked="false">2 g/L</button><button type="button" role="radio" aria-checked="true">4 g/L</button><button type="button" role="radio" aria-checked="false">8 g/L</button></div><button type="button" class="decl" data-fermer>Fermer</button></div>
+<p class="src">Témoin négatif de --edition : « − » et « + » changent la dose directement dans la ligne.</p>
+</main>
+<script>
+
+document.querySelectorAll('button[aria-controls]').forEach(function (b) {
+  b.addEventListener('click', function () { var c = document.getElementById(b.getAttribute('aria-controls')); c.hidden = !c.hidden; b.setAttribute('aria-expanded', String(!c.hidden)); });
+});
+document.querySelectorAll('[data-fermer]').forEach(function (f) { f.addEventListener('click', function () { f.closest('.feuille').hidden = true; }); });
+document.querySelectorAll('.chips button[role=radio]').forEach(function (b) {
+  b.addEventListener('click', function () { b.parentNode.querySelectorAll('[role=radio]').forEach(function (x) { x.setAttribute('aria-checked', String(x === b)); }); });
+});
+
+</script>
+</body></html>

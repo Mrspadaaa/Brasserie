@@ -1,0 +1,6 @@
+# p09 · chaud · « L'échelle du style, tangible »
+
+- **Parti** : chaque objectif est une règle graduée en tolérances du style (la zone « style », puis 1, 2, 3 T, `S1.tolerance` : haut + n × T) ; le sélecteur strict / normal / libre (et bannir dans les gestes) la resserre ou l'élargit sous les yeux (×0,5, ×1, ×2, banni : zone 0 et T plancher, facteurs lus dans la règle du pack). Les trois voies (numérotées 1, 2, 3, changement en tête) se posent chacune sur son couloir sous la règle ; l'IBU tenu a la sienne, bande du style 50–70.
+- **Effet en tolérances** : ma bière avant sur la règle maîtresse (orange seulement hors du style, « +6,0 T ») ; dans chaque couloir, l'avant en anneau gris, l'après en point noir, sa plage en segment, l'écart du pack à droite (« +5,8 T ») ou « ? » (non établi, couloir hachuré).
+- **Comparer deux voies** : les couloirs d'une même règle sont superposés à la même échelle : on voit d'un coup d'œil laquelle approche la zone, et qu'aucune ne ramène le résineux dans le style (5,8 à 6,0 T).
+- **Limites** : sous un autre a priori, l'écart n'est plus écrit (la règle le montre) ; moment déplacé : effet « ? », IBU recalculé seulement avec une table du pack ; en Radar, la règle est compacte (sans sélecteur d'a priori, dans les gestes de l'objectif) et sans couloir IBU.

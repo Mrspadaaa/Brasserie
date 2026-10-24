@@ -1,0 +1,430 @@
+<title>Côte à côte · 24.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Une page = un choix. Captures à 340 px au moins, texte à 14 px au moins (verifier-page.mjs). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --houblon-doux: #e6efdc;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 6px 20px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+    --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f;
+    --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+  --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f;
+  --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.5 var(--texte);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 64px;
+}
+.page { max-width: 1180px; margin: 0 auto; display: grid; gap: 44px; }
+h1, h2, h3 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.3rem, 4vw, 1.7rem); font-weight: 800; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+p { margin: 0; max-width: 65ch; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+header { display: grid; gap: 10px; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.15rem; color: var(--houblon); }
+.sommaire { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.sommaire a { display: inline-block; font-size: 0.875rem; padding: 4px 12px; border-radius: 999px; background: var(--houblon-doux); color: var(--encre); text-decoration: none; }
+.sommaire a:focus-visible, .plus:focus-visible, .ecran:focus-visible, a:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+section { display: grid; gap: 14px; }
+.entete { display: grid; gap: 6px; }
+.nom { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.code { font: 700 0.875rem/1 ui-monospace, "Cascadia Mono", monospace; color: var(--houblon); }
+.defauts { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.defauts li { font-size: 0.875rem; padding: 3px 10px; border-radius: 999px; background: var(--houblon-doux); }
+.defauts b { font-family: ui-monospace, "Cascadia Mono", monospace; }
+.paire { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
+.paire.trois { grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
+.cote { display: grid; gap: 8px; align-content: start; min-width: 0; margin: 0; }
+.cote figcaption { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: 0.95rem; }
+.cote figcaption b { font-family: var(--titre); font-size: 1.05rem; }
+.cote figcaption span { color: var(--discret); font-size: 0.875rem; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 18px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.absent { border: 2px dashed var(--trait); border-radius: 18px; padding: 18px; display: grid; gap: 8px; align-content: start; background: var(--carte); }
+.absent p { font-size: 0.95rem; color: var(--discret); }
+.plus { font: inherit; font-size: 0.95rem; color: var(--houblon); background: none; border: 0; padding: 4px 0; cursor: pointer; text-align: left; text-decoration: underline; justify-self: start; }
+.liens { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.ecarts { font-size: 0.95rem; color: var(--discret); max-width: 75ch; border-left: 4px solid var(--ambre); padding: 8px 14px; background: var(--carte); border-radius: 0 10px 10px 0; }
+.ecarts b { color: var(--encre); }
+.note { font-size: 0.95rem; color: var(--discret); max-width: 70ch; }
+.encart { border-left: 4px solid var(--ambre); padding: 10px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 75ch; }
+footer { border-top: 1px solid var(--trait); padding-top: 18px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+footer a { color: var(--houblon); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: rgb(10 12 9 / 92%); display: grid; place-items: start center; overflow-y: auto; padding: calc(60px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.visionneuse figure { margin: 0; display: grid; gap: 10px; justify-items: center; }
+.visionneuse img { width: min(430px, 100%); height: auto; border-radius: 16px; display: block; }
+.visionneuse figcaption { color: #eef2ea; font-size: 1rem; text-align: center; max-width: 430px; }
+.fermer { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); font: 600 1rem var(--texte); background: #eef2ea; color: #1c2019; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.nav { display: flex; gap: 10px; }
+.nav button { font: 600 1rem var(--texte); background: #2d3328; color: #eef2ea; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · houblons · maquette jouable · 24.10</p>
+    <h1>Côte à côte : ta base, puis la maquette</h1>
+    <p class="question">Écran par écran, aux mêmes états, à 390 px.</p>
+    <p>À gauche, la base que tu as choisie. À droite, la nouvelle version. Dis-nous où elle s'éloigne de ce que tu as choisi. Touche une capture pour l'agrandir.</p>
+    <ul class="sommaire">
+      <li><a href="#d121">À choisir : D121</a></li>
+      <li><a href="#etape">Étape Houblons</a></li>
+      <li><a href="#etape-glisser">Glisser</a></li>
+      <li><a href="#etape-appui">Appui long</a></li>
+      <li><a href="#fiche">Fiche</a></li>
+      <li><a href="#biere">Ma bière</a></li>
+      <li><a href="#biere-visee">Visée</a></li>
+      <li><a href="#suggerer">Suggestions</a></li>
+      <li><a href="#suggerer-toucher">Picto</a></li>
+      <li><a href="#comparer">Comparer</a></li>
+      <li><a href="#dryhopper">Dryhopper</a></li>
+      <li><a href="#levure">Levure</a></li>
+      <li><a href="#substituer">Substituer</a></li>
+    </ul>
+  </header>
+
+  <section id="a-choisir" aria-label="À choisir">
+    <div class="encart">
+      <p><b>À choisir : comment entrer dans l'analyse depuis l'étape (D121).</b> Trois façons, plus bas. La version porte A.</p>
+      <p>Puis, écran par écran, dis-nous où la maquette s'éloigne de ta base.</p>
+    </div>
+  </section>
+
+  <section id="d121" aria-labelledby="t-d121">
+    <div class="entete">
+      <div class="nom"><span class="code">d121</span><h2 id="t-d121">Entrer dans l'analyse : A, B ou C ?</h2></div>
+      <p class="note">« Seul bouton qui ouvre vraiment l'analyse. Peut, être amélioré ». Dans les trois, toucher l'alerte ou une famille ouvre aussi l'analyse.</p>
+    </div>
+    <div class="paire trois">
+      <figure class="cote">
+        <figcaption><b>A</b><span>dans la version · « analyse › »</span></figcaption>
+        <button class="ecran" type="button" data-img="img/d121-a.png" data-legende="D121 · A : « analyse › » à la place du « › »"><img src="img/d121-a.png" width="780" height="1688" alt="Variante A : le bouton noir dit « analyse »"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>B</b><span>barre sous les familles</span></figcaption>
+        <button class="ecran" type="button" data-img="img/d121-b.png" data-legende="D121 · B : « Ouvrir l'analyse de ma bière › »"><img src="img/d121-b.png" width="780" height="1688" alt="Variante B : une barre pleine sous les familles"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>C</b><span>l'alerte est l'entrée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/d121-c.png" data-legende="D121 · C : « Résineux trop marqué · détail › »"><img src="img/d121-c.png" width="780" height="1688" alt="Variante C : l'alerte suivie de « détail »"></button>
+      </figure>
+    </div>
+  </section>
+
+  <section id="etape" aria-labelledby="t-etape">
+    <div class="entete">
+      <div class="nom"><span class="code">etape</span><h2 id="t-etape">L'étape Houblons</h2></div>
+      <ul class="defauts"><li><b>D116</b> le fil d'étapes</li><li><b>D113</b> le bouton légende</li><li><b>D121</b> entrer dans l'analyse</li><li><b>D109</b> la croix</li></ul>
+    </div>
+    <div class="paire">
+      <figure class="cote">
+        <figcaption><b>Ta base</b><span>jouée · base v4.10</span></figcaption>
+        <button class="ecran" type="button" data-img="img/etape-base.png" data-legende="L'étape Houblons · ta base"><img src="img/etape-base.png" width="780" height="1688" alt="L'étape Houblons, ta base, premier écran"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>La maquette</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/etape-maquette.png" data-legende="L'étape Houblons · la maquette"><img src="img/etape-maquette.png" width="780" height="1688" alt="L'étape Houblons, la maquette, premier écran"></button>
+      </figure>
+    </div>
+    <div class="liens"><button class="plus" type="button" data-img="img/etape-maquette-plein.png" data-legende="L'étape Houblons · la maquette, page entière">Voir la maquette en entier</button></div>
+    <p class="ecarts"><b>Écarts voulus.</b> « Il faudra remplacer tout ça par le vrai Stepper de la vrai app » (D116). « Il manque à un endroit un bouton légende » (D113). « Seul bouton qui ouvre vraiment l'analyse. Peut, être amélioré » (D121).</p>
+  </section>
+
+  <section id="etape-glisser" aria-labelledby="t-glisser">
+    <div class="entete">
+      <div class="nom"><span class="code">etape-glisser</span><h2 id="t-glisser">Glisser Nugget de 60′ à 35′</h2></div>
+      <ul class="defauts"><li><b>D111</b> le slider</li></ul>
+      <p class="note">Doigt tenu à 35′, capture pendant le geste.</p>
+    </div>
+    <div class="paire">
+      <figure class="cote">
+        <figcaption><b>Ta base</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/etape-glisser-base.png" data-legende="Glisser Nugget · ta base"><img src="img/etape-glisser-base.png" width="780" height="1688" alt="Nugget glissé à 35 minutes, ta base"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>La maquette</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/etape-glisser-maquette.png" data-legende="Glisser Nugget · la maquette"><img src="img/etape-glisser-maquette.png" width="780" height="1688" alt="Nugget glissé à 35 minutes, la maquette"></button>
+      </figure>
+    </div>
+    <div class="liens"><button class="plus" type="button" data-img="img/etape-glisser-base-ref.png" data-legende="Glisser Nugget · la capture de référence de ta base">Voir la capture de référence de ta base</button></div>
+    <p class="ecarts"><b>Écarts voulus.</b> « Le slider est pas dans la version que je veux... » (D111) : la carte se replie en puce près de la bulle, les graduations restent lisibles.</p>
+  </section>
+
+  <section id="etape-appui" aria-labelledby="t-appui">
+    <div class="entete">
+      <div class="nom"><span class="code">etape-appui</span><h2 id="t-appui">L'appui long sur Nugget</h2></div>
+      <ul class="defauts"><li><b>D112</b> l'effet de l'appui</li></ul>
+      <p class="note">Doigt tenu 250 ms sur le nom, capture pendant l'appui.</p>
+    </div>
+    <div class="paire">
+      <figure class="cote">
+        <figcaption><b>Ta base</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/etape-appui-base.png" data-legende="L'appui long · ta base"><img src="img/etape-appui-base.png" width="780" height="1688" alt="Appui long sur Nugget, ta base, à 250 ms"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>La maquette</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/etape-appui-maquette.png" data-legende="L'appui long · la maquette"><img src="img/etape-appui-maquette.png" width="780" height="1688" alt="Appui long sur Nugget, la maquette, à 250 ms"></button>
+      </figure>
+    </div>
+    <p class="ecarts"><b>Écarts voulus.</b> « L'appui prolonger fait pas l'effet escompté » (D112) : un retour visible avant 300 ms, puis la fiche. Ta base remplit le nom en 500 ms.</p>
+  </section>
+
+  <section id="fiche" aria-labelledby="t-fiche">
+    <div class="entete">
+      <div class="nom"><span class="code">fiche</span><h2 id="t-fiche">La fiche de Nugget</h2></div>
+      <ul class="defauts"><li><b>D115</b> le radar avant la liste</li><li><b>D109</b> la croix</li></ul>
+    </div>
+    <div class="paire">
+      <figure class="cote">
+        <figcaption><b>Ta base</b><span>jouée · fiche ouverte</span></figcaption>
+        <button class="ecran" type="button" data-img="img/fiche-base.png" data-legende="La fiche de Nugget · ta base"><img src="img/fiche-base.png" width="780" height="1688" alt="La fiche de Nugget, ta base"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>La maquette</b><span>jouée · fiche ouverte</span></figcaption>
+        <button class="ecran" type="button" data-img="img/fiche-maquette.png" data-legende="La fiche de Nugget · la maquette"><img src="img/fiche-maquette.png" width="780" height="1688" alt="La fiche de Nugget, la maquette"></button>
+      </figure>
+    </div>
+    <div class="liens">
+      <button class="plus" type="button" data-img="img/fiche-base-plein.png" data-legende="La fiche · ta base, page entière">Voir ta base en entier</button>
+      <button class="plus" type="button" data-img="img/fiche-maquette-plein.png" data-legende="La fiche · la maquette, page entière">Voir la maquette en entier</button>
+      <button class="plus" type="button" data-img="img/fiche-base-ref.png" data-legende="La fiche · la capture de référence de ta base">Voir la capture de référence de ta base</button>
+    </div>
+    <p class="ecarts"><b>Écarts voulus.</b> « Mettre le radargraph avant, cette vue est vraiment pas terribles. À revoir... » (D115) : le radar passe au-dessus de la liste des familles, dans le premier écran.</p>
+  </section>
+
+  <section id="biere" aria-labelledby="t-biere">
+    <div class="entete">
+      <div class="nom"><span class="code">biere</span><h2 id="t-biere">Ma bière</h2></div>
+      <ul class="defauts"><li><b>D119</b> l'en-tête qui change</li><li><b>D121</b> l'entrée dans l'analyse</li><li><b>D109</b> la croix</li></ul>
+    </div>
+    <div class="paire">
+      <figure class="cote">
+        <figcaption><b>Ta base</b><span>jouée · « Ça aussi »</span></figcaption>
+        <button class="ecran" type="button" data-img="img/biere-base.png" data-legende="Ma bière · ta base"><img src="img/biere-base.png" width="780" height="1688" alt="L'onglet Ma bière, ta base"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>La maquette</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/biere-maquette.png" data-legende="Ma bière · la maquette"><img src="img/biere-maquette.png" width="780" height="1688" alt="L'onglet Ma bière, la maquette"></button>
+      </figure>
+    </div>
+    <div class="liens"><button class="plus" type="button" data-img="img/biere-maquette-plein.png" data-legende="Ma bière · la maquette, page entière">Voir la maquette en entier</button></div>
+    <p class="ecarts"><b>Écarts voulus.</b> « Header qui change ??? » (D119) : même en-tête sur les trois onglets. « Juste une croix bien positionné, facile, dans le thème suffirait » (D109).</p>
+  </section>
+
+  <section id="biere-visee" aria-labelledby="t-visee">
+    <div class="entete">
+      <div class="nom"><span class="code">biere-visee</span><h2 id="t-visee">« + » sur Tropicaux</h2></div>
+      <ul class="defauts"><li><b>D108</b> la visée sans effet</li></ul>
+      <p class="note">La ligne Tropicaux ouverte, puis « + ».</p>
+    </div>
+    <div class="paire">
+      <figure class="cote">
+        <figcaption><b>Ta base</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/biere-visee-base.png" data-legende="« + » sur Tropicaux · ta base"><img src="img/biere-visee-base.png" width="780" height="1688" alt="Tropicaux, plus touché, ta base"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>La maquette</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/biere-visee-maquette.png" data-legende="« + » sur Tropicaux · la maquette"><img src="img/biere-visee-maquette.png" width="780" height="1688" alt="Tropicaux, plus touché, la maquette"></button>
+      </figure>
+    </div>
+    <div class="liens"><button class="plus" type="button" data-img="img/biere-visee-maquette-plein.png" data-legende="« + » sur Tropicaux · la maquette, page entière">Voir la maquette en entier</button></div>
+    <p class="ecarts"><b>Écarts voulus.</b> « Aussi aucun impact sur je met plus, moins bannir ect.. » (D108) : un losange sur la piste, relié au point, un palier nommé, « × » pour retirer.</p>
+  </section>
+
+  <section id="suggerer" aria-labelledby="t-suggerer">
+    <div class="entete">
+      <div class="nom"><span class="code">suggerer</span><h2 id="t-suggerer">Suggestions</h2></div>
+      <ul class="defauts"><li><b>D117</b> pas la vue choisie</li><li><b>D119</b> l'en-tête</li><li><b>D118</b> le retour</li><li><b>D109</b> la croix</li></ul>
+    </div>
+    <div class="paire trois">
+      <figure class="cote">
+        <figcaption><b>Ta base</b><span>capture · v4.10</span></figcaption>
+        <button class="ecran" type="button" data-img="img/suggerer-base.png" data-legende="Suggestions · ta base v4.10"><img src="img/suggerer-base.png" width="780" height="1688" alt="Suggestions, ta base v4.10"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>La maquette</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/suggerer-maquette.png" data-legende="Suggestions · la maquette"><img src="img/suggerer-maquette.png" width="780" height="1688" alt="Suggestions, la maquette"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>q2b</b><span>ton choix du 19.10</span></figcaption>
+        <button class="ecran" type="button" data-img="img/suggerer-q2b.png" data-legende="Suggestions · q2b, ton choix"><img src="img/suggerer-q2b.png" width="780" height="1688" alt="Suggestions, q2b, premier écran"></button>
+      </figure>
+    </div>
+    <div class="liens"><button class="plus" type="button" data-img="img/suggerer-maquette-plein.png" data-legende="Suggestions · la maquette, page entière">Voir la maquette en entier</button></div>
+    <p class="ecarts"><b>Écarts voulus.</b> « J'ai l'impression que cette vue suggestions et pas la bonne que j'ai vraiment choisir ?? » (D117) : les onglets en tête, le bandeau IBU, les pictos cerclés, ♡. « Header qui change ??? » (D119).</p>
+  </section>
+
+  <section id="suggerer-toucher" aria-labelledby="t-toucher">
+    <div class="entete">
+      <div class="nom"><span class="code">suggerer-toucher</span><h2 id="t-toucher">Toucher un picto d'une voie</h2></div>
+      <ul class="defauts"><li><b>D110</b> le système de petits traits</li></ul>
+      <p class="note">Un toucher sur le premier picto de la première voie.</p>
+    </div>
+    <div class="paire">
+      <div class="absent">
+        <h3>Ta base : pas de geste</h3>
+        <p>Dans ta base, toucher un picto de voie ne montrait rien. Rien à mettre ici : cette capture n'existe que pour la maquette.</p>
+      </div>
+      <figure class="cote">
+        <figcaption><b>La maquette</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/suggerer-toucher-maquette.png" data-legende="Un toucher sur un picto · la maquette"><img src="img/suggerer-toucher-maquette.png" width="780" height="1688" alt="Un picto de voie touché, la maquette"></button>
+      </figure>
+    </div>
+    <p class="ecarts"><b>Écarts voulus.</b> « Un peu dur à comprendre ce système de petit bar » (D110) : les traits de q2b restent, et un toucher dit la famille et la valeur près du picto.</p>
+  </section>
+
+  <section id="comparer" aria-labelledby="t-comparer">
+    <div class="entete">
+      <div class="nom"><span class="code">comparer</span><h2 id="t-comparer">Comparer</h2></div>
+      <ul class="defauts"><li><b>D107</b> comparer les étapes</li><li><b>D114</b> le panel OSU</li><li><b>D109</b> la croix</li></ul>
+    </div>
+    <div class="paire trois">
+      <figure class="cote">
+        <figcaption><b>Ta base</b><span>capture · r6a</span></figcaption>
+        <button class="ecran" type="button" data-img="img/comparer-base.png" data-legende="Comparer · ta base r6a"><img src="img/comparer-base.png" width="780" height="1688" alt="Comparer, ta base r6a"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>La maquette</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/comparer-maquette.png" data-legende="Comparer · la maquette"><img src="img/comparer-maquette.png" width="780" height="1688" alt="Comparer, la maquette"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>x3b</b><span>« dans un des top »</span></figcaption>
+        <button class="ecran" type="button" data-img="img/comparer-x3b.png" data-legende="Comparer aux étapes · x3b"><img src="img/comparer-x3b.png" width="780" height="1688" alt="Comparer aux étapes, x3b"></button>
+      </figure>
+    </div>
+    <div class="liens"><button class="plus" type="button" data-img="img/comparer-maquette-plein.png" data-legende="Comparer · la maquette, page entière">Voir la maquette en entier</button></div>
+    <p class="ecarts"><b>Écarts voulus.</b> « Non pas cette version, une version du dryhopping, dans un des top. Montrait vraiment l'état du moment de l'ajout facile… » (D107). « Beaucoup trop mis en avant » (D114) : le panel OSU hors du premier écran.</p>
+  </section>
+
+  <section id="dryhopper" aria-labelledby="t-dryhopper">
+    <div class="entete">
+      <div class="nom"><span class="code">dryhopper</span><h2 id="t-dryhopper">Quand ajouter Idaho 7 ?</h2></div>
+      <ul class="defauts"><li><b>D120</b> pas de bouton Annuler</li><li><b>D109</b> la croix</li></ul>
+    </div>
+    <div class="paire">
+      <figure class="cote">
+        <figcaption><b>Ta base</b><span>capture · a1, choix encore ouvert</span></figcaption>
+        <button class="ecran" type="button" data-img="img/dryhopper-base.png" data-legende="Dryhopper · ta base a1"><img src="img/dryhopper-base.png" width="780" height="1688" alt="Dryhopper, ta base a1"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>La maquette</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/dryhopper-maquette.png" data-legende="Dryhopper · la maquette"><img src="img/dryhopper-maquette.png" width="780" height="1688" alt="Dryhopper, la maquette"></button>
+      </figure>
+    </div>
+    <p class="ecarts"><b>Écarts voulus.</b> « Pas de bouton cancer » (D120) : un « Annuler » dans le pied, à côté de l'action. Le choix de la variante reste le tien.</p>
+  </section>
+
+  <section id="levure" aria-labelledby="t-levure">
+    <div class="entete">
+      <div class="nom"><span class="code">levure</span><h2 id="t-levure">Et avec quelle levure ?</h2></div>
+      <ul class="defauts"><li><b>D120</b> pas de bouton Annuler</li><li><b>D109</b> la croix</li></ul>
+    </div>
+    <div class="paire">
+      <figure class="cote">
+        <figcaption><b>Ta base</b><span>capture · carte des outils, choix ouvert</span></figcaption>
+        <button class="ecran" type="button" data-img="img/levure-base.png" data-legende="La levure · la carte des outils"><img src="img/levure-base.png" width="780" height="1688" alt="La levure, capture de la carte des outils"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>La maquette</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/levure-maquette.png" data-legende="La levure · la maquette"><img src="img/levure-maquette.png" width="780" height="1688" alt="La levure, la maquette"></button>
+      </figure>
+    </div>
+    <p class="ecarts"><b>Écarts voulus.</b> « Pas de bouton cancer » (D120) : « Annuler » dans le pied de la levure aussi. Ici ta base n'est pas une maquette que tu as choisie : le choix est encore ouvert.</p>
+  </section>
+
+  <section id="substituer" aria-labelledby="t-substituer">
+    <div class="entete">
+      <div class="nom"><span class="code">substituer</span><h2 id="t-substituer">Lequel à la place de Nugget ?</h2></div>
+      <ul class="defauts"><li><b>D120</b> pas de bouton Annuler</li><li><b>D109</b> la croix</li></ul>
+    </div>
+    <div class="paire">
+      <figure class="cote">
+        <figcaption><b>Ta base</b><span>capture · v4.10</span></figcaption>
+        <button class="ecran" type="button" data-img="img/substituer-base.png" data-legende="Substituer · ta base"><img src="img/substituer-base.png" width="780" height="1688" alt="Substituer, ta base v4.10"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>La maquette</b><span>jouée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/substituer-maquette.png" data-legende="Substituer · la maquette"><img src="img/substituer-maquette.png" width="780" height="1688" alt="Substituer, la maquette"></button>
+      </figure>
+    </div>
+    <p class="ecarts"><b>Écarts voulus.</b> « Pas de bouton cancer » (D120) : « Annuler » à côté de « Remplacer ». Le choix entre la porte vers Comparer et un outil propre (u4) reste ouvert.</p>
+  </section>
+
+  <footer>
+    <p>Images : le même outil joue les deux côtés à 390 × 844, tactile. Les bases sont jouées quand elles sont des pages ; sinon, ce sont leurs captures, recadrées au premier écran.</p>
+    <p>Pour répondre, dis-le dans la conversation. Exemple : « suggerer : pas la bonne ».</p>
+    <p>La maquette jouable de cette version : <a href="https://claude.ai/artifact/2BktuZzij8q2DAsrxQS5iX">Maquette houblons · 24.10</a>. Version d'avant : <a href="https://claude.ai/artifact/52UBb4F7iME2k3ZzsAv4x1">Maquette houblons · 23.10</a>.</p>
+  </footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-label="Capture agrandie">
+  <button class="fermer" id="fermer" type="button">Fermer</button>
+  <figure>
+    <img id="vis-img" alt="">
+    <figcaption id="vis-legende"></figcaption>
+    <div class="nav" id="vis-nav" hidden>
+      <button type="button" id="vis-prec">◀ Précédente</button>
+      <button type="button" id="vis-suiv">Suivante ▶</button>
+    </div>
+  </figure>
+</div>
+
+<script>
+// Agrandir au toucher, passer d'une capture à l'autre. Le contenu ne dépend pas de ce script.
+(function () {
+  const vis = document.getElementById('visionneuse');
+  const visImg = document.getElementById('vis-img');
+  const visLeg = document.getElementById('vis-legende');
+  const visNav = document.getElementById('vis-nav');
+  const ordre = Array.from(document.querySelectorAll('.paire .ecran')).map((b) => ({ img: b.dataset.img, legende: b.dataset.legende }));
+  let rang = -1;
+  let retour = null;
+  function ouvrir(img, legende, depuis) {
+    retour = depuis || retour;
+    visImg.src = img; visImg.alt = legende; visLeg.textContent = legende;
+    rang = ordre.findIndex((o) => o.img === img);
+    visNav.hidden = rang < 0;
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('fermer').focus();
+  }
+  function fermer() { vis.hidden = true; visImg.removeAttribute('src'); if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang < 0) return; rang = (rang + pas + ordre.length) % ordre.length; ouvrir(ordre[rang].img, ordre[rang].legende); }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-img]');
+    if (b) ouvrir(b.dataset.img, b.dataset.legende, b);
+  });
+  document.getElementById('fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', () => aller(-1));
+  document.getElementById('vis-suiv').addEventListener('click', () => aller(1));
+  vis.addEventListener('click', (e) => { if (e.target === vis) fermer(); });
+  document.addEventListener('keydown', (e) => {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

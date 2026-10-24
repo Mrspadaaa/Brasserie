@@ -1,0 +1,257 @@
+{
+ "avant": {
+  "plan": "Citra arôme 10–15% 4 g/L dry hop actif 3 j US-05",
+  "reponse": "Face à ta stout tropicaux ~+4 crans agrumes ~+3 crans3 hors du styleamertume tenue",
+  "ibu": "≈ 60 IBU tenue",
+  "crans": {
+   "floral": "1,8",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "3,5",
+   "tropical": "3,9",
+   "stoneFruit": "2,2",
+   "pomeFruit": "inconnu",
+   "berries": "3,2",
+   "melon": "2,2",
+   "spice": "0,2",
+   "green": "0,6"
+  },
+  "largeurs": {
+   "floral": 45,
+   "herbal": 1,
+   "earthy": 0,
+   "citrus": 89,
+   "tropical": 98,
+   "stoneFruit": 55,
+   "pomeFruit": 0,
+   "berries": 80,
+   "melon": 55,
+   "spice": 5,
+   "green": 15
+  },
+  "defi": "Défi 2 sur 4",
+  "echelle": "Idaho 7 après 4 g/L ~+1,2 cran Idaho 7 actif 4 g/L ~+1,2 cran Citra après 2 g/L ~+1,2 cran"
+ },
+ "pendant": {
+  "plan": "Citra arôme 10–15% 4 g/L 10′",
+  "reponse": "Face à ta stout agrumes ~+3 crans tropicaux ~+3 cransdans la 16Dtrop amer contre ton plan d’avant baies ~−1,1 cran tropicaux ~−1,1 cran",
+  "ibu": "≈ 89–103 IBU trop amer",
+  "crans": {
+   "floral": "1,5",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "3",
+   "tropical": "2,8",
+   "stoneFruit": "1,5",
+   "pomeFruit": "inconnu",
+   "berries": "2,1",
+   "melon": "1,5",
+   "spice": "0,1",
+   "green": "0,3"
+  },
+  "largeurs": {
+   "floral": 37,
+   "herbal": 1,
+   "earthy": 0,
+   "citrus": 75,
+   "tropical": 71,
+   "stoneFruit": 37,
+   "pomeFruit": 0,
+   "berries": 52,
+   "melon": 37,
+   "spice": 3,
+   "green": 8
+  },
+  "defi": "Défi 2 sur 4",
+  "echelle": "Idaho 7 après 4 g/L ~+1,2 cran Idaho 7 actif 4 g/L ~+1,2 cran Citra après 2 g/L ~+1,2 cran"
+ },
+ "loupe": {
+  "visible": true,
+  "texte": "10′",
+  "pasLoupe": 40.1875,
+  "pasFrise": 13.40625,
+  "basLoupe": 728,
+  "hautDock": 736,
+  "etiquettesSousLoupe": []
+ },
+ "apres": {
+  "plan": "Citra arôme 10–15% 4 g/L 60′",
+  "reponse": "Face à ta stout agrumes ~+0,6 cran tropicaux ~+0,6 crandans la 16Dtrop amer contre ton plan d’avant tropicaux ~−3 crans baies ~−3 crans",
+  "ibu": "≈ 140–180 IBU trop amer",
+  "crans": {
+   "floral": "0,3",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "0,7",
+   "tropical": "0,6",
+   "stoneFruit": "0,2",
+   "pomeFruit": "inconnu",
+   "berries": "0,4",
+   "melon": "0,2",
+   "spice": "0,1",
+   "green": "0,1"
+  },
+  "largeurs": {
+   "floral": 8,
+   "herbal": 1,
+   "earthy": 0,
+   "citrus": 19,
+   "tropical": 16,
+   "stoneFruit": 6,
+   "pomeFruit": 0,
+   "berries": 10,
+   "melon": 6,
+   "spice": 2,
+   "green": 2
+  },
+  "defi": "Défi 1 sur 4",
+  "echelle": "Idaho 7 après 4 g/L ~+1,2 cran Idaho 7 actif 4 g/L ~+1,2 cran Citra après 2 g/L ~+1,2 cran"
+ },
+ "actifUS05": {
+  "plan": "Citra arôme 10–15% 4 g/L dry hop actif 3 j US-05",
+  "reponse": "Face à ta stout tropicaux ~+4 crans agrumes ~+3 crans3 hors du styleamertume tenue contre ton plan d’avant tropicaux ~+3 crans baies ~+3 crans",
+  "ibu": "≈ 60 IBU tenue",
+  "crans": {
+   "floral": "1,8",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "3,5",
+   "tropical": "3,9",
+   "stoneFruit": "2,2",
+   "pomeFruit": "inconnu",
+   "berries": "3,2",
+   "melon": "2,2",
+   "spice": "0,2",
+   "green": "0,6"
+  },
+  "largeurs": {
+   "floral": 45,
+   "herbal": 1,
+   "earthy": 0,
+   "citrus": 89,
+   "tropical": 98,
+   "stoneFruit": 55,
+   "pomeFruit": 0,
+   "berries": 80,
+   "melon": 55,
+   "spice": 5,
+   "green": 15
+  },
+  "defi": "Défi 2 sur 4",
+  "echelle": "Idaho 7 après 4 g/L ~+1,2 cran Idaho 7 actif 4 g/L ~+1,2 cran Citra après 2 g/L ~+1,2 cran"
+ },
+ "pomona": {
+  "plan": "Citra arôme 10–15% 4 g/L dry hop actif 3 j Pomona",
+  "reponse": "Face à ta stout tropicaux ~+4 crans agrumes ~+4 crans3 hors du styleamertume tenue contre ton plan d’avant agrumes ~+0,3 cran",
+  "ibu": "≈ 60 IBU tenue",
+  "crans": {
+   "floral": "1,9",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "3,9",
+   "tropical": "3,9",
+   "stoneFruit": "2,4",
+   "pomeFruit": "inconnu",
+   "berries": "3,2",
+   "melon": "2,4",
+   "spice": "0,2",
+   "green": "0,6"
+  },
+  "largeurs": {
+   "floral": 48,
+   "herbal": 1,
+   "earthy": 0,
+   "citrus": 97,
+   "tropical": 99,
+   "stoneFruit": 59,
+   "pomeFruit": 0,
+   "berries": 80,
+   "melon": 59,
+   "spice": 5,
+   "green": 15
+  },
+  "defi": "Défi 2 sur 4",
+  "echelle": "Idaho 7 actif 4 g/L ~+1,5 cran Citra actif 2 g/L ~+1,2 cran Idaho 7 après 4 g/L ~+1,2 cran"
+ },
+ "ensemble": {
+  "plan": "Citra arôme 10–15% + Galaxy mixte 17,2% 2 + 2 g/L dry hop actif 3 j Pomona",
+  "reponse": "Face à ta stout tropicaux ~+4 crans agrumes ~+3 crans2 hors du styleamertume tenue contre ton plan d’avant melon ~−0,9 cran baies ~−0,5 cran",
+  "ibu": "≈ 60 IBU tenue",
+  "crans": {
+   "floral": "1,5",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "3,5",
+   "tropical": "3,8",
+   "stoneFruit": "2,2",
+   "pomeFruit": "inconnu",
+   "berries": "2,7",
+   "melon": "1,4",
+   "spice": "0,2",
+   "green": "0,8"
+  },
+  "largeurs": {
+   "floral": 39,
+   "herbal": 1,
+   "earthy": 0,
+   "citrus": 87,
+   "tropical": 96,
+   "stoneFruit": 56,
+   "pomeFruit": 0,
+   "berries": 67,
+   "melon": 36,
+   "spice": 5,
+   "green": 20
+  },
+  "defi": "Défi 2 sur 4",
+  "echelle": "Idaho 7 actif 4 g/L ~+1,5 cran Citra actif 2 g/L ~+1,2 cran Idaho 7 après 4 g/L ~+1,2 cran"
+ },
+ "puis": {
+  "plan": "Citra arôme 10–15% puis Galaxy mixte 17,2% 2 + 2 g/L dry hop actif 3 j Pomona ≈ calculé",
+  "reponse": "Face à ta stout tropicaux ~+4 crans agrumes ~+3 crans2 hors du styleamertume tenue contre ton plan d’avant~ presque rien",
+  "ibu": "≈ 60 IBU tenue",
+  "crans": {
+   "floral": "1,5",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "3,5",
+   "tropical": "3,8",
+   "stoneFruit": "2,2",
+   "pomeFruit": "inconnu",
+   "berries": "2,7",
+   "melon": "1,4",
+   "spice": "0,2",
+   "green": "0,8"
+  },
+  "largeurs": {
+   "floral": 39,
+   "herbal": 1,
+   "earthy": 0,
+   "citrus": 87,
+   "tropical": 97,
+   "stoneFruit": 56,
+   "pomeFruit": 0,
+   "berries": 67,
+   "melon": 36,
+   "spice": 5,
+   "green": 20
+  },
+  "defi": "Défi 2 sur 4",
+  "echelle": "Idaho 7 actif 4 g/L ~+1,5 cran Citra actif 2 g/L ~+1,2 cran Idaho 7 après 4 g/L ~+1,2 cran"
+ },
+ "critOuvert": {
+  "ouvert": "true",
+  "liste": "floral agrumes tropicaux",
+  "echelle": "Idaho 7 actif 4 g/L ~+1,5 cran Citra actif 2 g/L ~+1,2 cran Idaho 7 après 4 g/L ~+1,2 cran"
+ },
+ "critChoisi": {
+  "ouvert": "false",
+  "pastille": "agrumes",
+  "echelle": "Citra actif 2 g/L ~+2,8 crans Citra après 2 g/L ~+2,6 crans Idaho 7 actif 4 g/L ~+2,6 crans"
+ },
+ "defi": "ta dégustation, 18.10 : « trop résineuse, je la veux plus florale » plus floral atteint ~+1,5 cran moins résineux hors houblon le houblon en ajoute ~+10 points amertume 50–70 tenue ≈ 60 IBU dans la 16D 2 débordent agrumes, tropicaux",
+ "tire": "20 bières tirées dans la plage du moteur, hors du style : végétal 16 sur 20 plage ouverte, au moins : noyau 15 sur 20 tropicaux 14 sur 20 agrumes 10 sur 20 (borne haute non publiée) ce qui tranche en vrai : 4MMP de Citra ×4–70,9 le seuil, même base l’étendue du possible, pas une probabilité mesurée ; même tirage tant que rien ne change",
+ "points": 220,
+ "memeTirage": true,
+ "erreurs": []
+}

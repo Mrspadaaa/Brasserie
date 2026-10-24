@@ -1,0 +1,23 @@
+w2 · Trois plans : sage, franc, osé (la réponse d'abord, en trois audaces).
+
+- **Ce qui tient** :
+  - Pour « ta 16D, plus de » agrumes, tropical ou floral, la page répond par **trois recettes complètes côte à côte**, nommées par leur audace et jamais par une note :
+    - Sage : le geste le plus léger qui reste dans la 16D. Agrumes : Citra 1 g/L, 2 j.
+    - Franc : un autre houblon seul, jusqu'à 4 g/L, le plus d'effet sans sortir. Agrumes : Cascade 4 g/L.
+    - Osé : deux houblons ensemble, avec la levure qui donne le plus d'effet. Agrumes : Citra + Galaxy 2 + 2 g/L, actif, Pomona.
+  - Les règles sont écrites dans « Pourquoi ? ». Chaque carte montre houblons et α, dose, moment, jours, levure, verdict ~, crans gagnés, et ses risques en mots : hop creep, saturation, biotransfo, synergie ?
+  - **Le coup d'œil** : une piste par famille, et sur chaque piste les trois repères S, F et O, sur la même échelle et devant la zone de la 16D. On voit d'un coup qu'Osé sort de la 16D en agrumes et en tropical, et que Sage (Citra 1 g/L) vaut Franc (Cascade 4 g/L) en agrumes : Citra ≠ Cascade, au gramme.
+  - **Le plan touché s'ouvre et se règle** : dose, jours, moment, levure (« US-05 après », « US-05 actif », « Pomona actif »), 2e houblon. On y trouve le profil ~ simulé en lignes nommées, la confiance et les grammes pour 20 L, la biotransformation et les vraies valeurs (α, huile, 4MMP, hop creep).
+  - Le plan Osé porte l'**ajout cumulé (K5)** sur toute la largeur : ce que chacun apporte, et ce qu'il reste de la somme (68 à 83 %).
+  - **La preuve** : les règles des trois plans ; E04 (part du linalol extraite, intensité 6,3 / 10,4 / 12,3 sur 15) ; E06 ; E08 ; quatre bandes logarithmiques (linalol et 4MMP, Citra et Cascade) ; les inconnus.
+- **Écart à la baseline** : le profil du plan passe en lignes nommées, comme dans w1. Le coup d'œil est une nouvelle forme, un repère par plan sur une même piste.
+- **Ce qui casse** :
+  - 146 mots au premier écran, dont 21 lettres S, F, O dans les repères.
+  - Les cartes font 114 px : le verdict « ~ au bord » passe sur deux lignes, et Osé est plus haut que les deux autres.
+  - Floral : le plan Sage retombe sur Citra 1 g/L (rien ne donne un cran et demi dans la 16D) et ressemble au Sage des agrumes.
+  - Les repères proches se chevauchent (Herbacé, Floral).
+  - Les plans sont recalculés à chaque envie ; la levure n'agit qu'en actif, d'où les choix combinés levure et moment.
+- **Contrôles** (indicatifs en v0, joués une fois) :
+  - COMMUN ECHEC 1 : mots ECHEC (146 > 70) ; couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende et parlant OK ;
+  - LISIBLE OK, SIMULATION OK, CUMUL OK, ALPHA OK, FICHE-BASELINE OK.
+- **Pire contraste** : 4,96:1, « ~ +2 crans » (ton texte des agrumes sur blanc).

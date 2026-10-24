@@ -1,0 +1,567 @@
+{
+ "ecran": "comparer",
+ "choix": "r6a pour la forme, améliorations des autres versions, étapes/état/référence de x3b (D107)",
+ "source": "work/refonte-frontend/v4/ecran-1/fils22-comparer/ ; fils21-choisir/x3b/ ; inventaire-comparer.json",
+ "maj": "2026-10-24",
+ "construction": "5345f6ad",
+ "etats": [
+  {
+   "id": "etat-comp-repos",
+   "mots": "r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions (22.10)",
+   "etat": "ouvrir Comparer, au repos",
+   "quoi": "Titre en question, ligne de contexte (Stout 16D · dose égale 4 g/L chacun · après fermentation 3 j · US-05), pastille « ~ simulé », radar r2 au style, tableau « Ta stout » + 3 colonnes, rangées 60′ / 10′ / dry hop (Nugget en référence), familles au dry hop.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-repos-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "premier écran",
+    "geste_5345f6ad": "premier écran",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : même forme (radar, colonnes, 60′/10′/dry hop, Nugget). Écarts légers : « dose égale 4 g/L chacun » devient « 4 g/L » et « après fermentation 3 j » quitte la ligne de contexte (redit sous le tableau : « au dry hop, après 3 j ») ; ajout de la réponse « ★ Idaho 7 devant Cascade ~+0,4 cran ».",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-repos-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+    "selecteur_choisie": "p[data-role=\"contexte\"]",
+    "geste": "repos",
+    "attendu": [
+     "Fixé pour les trois",
+     "Cascade",
+     "Idaho 7",
+     "Galaxy",
+     "~ simulé",
+     "inconnus, pas zéro"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-croix",
+   "mots": "Croix à la place du « ‹ » (D109)",
+   "etat": "toucher la croix",
+   "quoi": "Retour vers l'étape.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-croix-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "bouton « Retour » (statique)",
+    "geste_5345f6ad": "[data-role=retour]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : ✕ qui ouvre #/ma-biere.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-croix-5345f6ad.png",
+   "voulu": "D109 : la croix ✕ remplace le ‹ (sa page r6a est statique, le retour n'y est pas jouable)"
+  },
+  {
+   "id": "etat-comp-absolu",
+   "mots": "r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions (22.10)",
+   "etat": "toucher « Absolu »",
+   "quoi": "Le radar et les rangées passent en échelle absolue.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-absolu-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "bouton « Absolu »",
+    "geste_5345f6ad": "bouton « Absolu »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : Absolu actif, radar redessiné, rangées en absolu.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-absolu-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+    "selecteur_choisie": "texte=Absolu",
+    "geste": "toucher",
+    "attendu": [
+     "Radar absolu"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-retenir",
+   "mots": "r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions (22.10)",
+   "etat": "toucher la colonne Cascade",
+   "quoi": "La colonne retenue passe en avant, le radar la remplit, la réponse la suit.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-retenir-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "« Mettre en avant Cascade »",
+    "geste_5345f6ad": "« Retenir Cascade »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : Cascade retenue, la réponse devient « Cascade ~−0,4 cran contre ★ Idaho 7 », le pont « Placer Cascade › ».",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-retenir-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+    "selecteur_choisie": "[aria-label=\"Mettre en avant Cascade\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Doser Cascade dans Dryhopper",
+     "Radar au style : Cascade plein"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-colonne-plus",
+   "mots": "r6n2 (p4) : « + » pour une 4ᵉ colonne (23.10)",
+   "etat": "toucher « + » sous Ta stout",
+   "quoi": "Feuille « Ajouter un houblon » : Nelson Sauvin avec α, 10–14 %, « 67 % de ses mots hors des 12 familles : vin blanc, fruité, raisin, white wine » et « Ajouter Nelson Sauvin à la comparaison ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-colonne-plus-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "« Ajouter un houblon à la comparaison » (r6n2)",
+    "geste_5345f6ad": "« Ajouter un houblon à comparer »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : liste de six houblons du stock (Hallertau Blanc, Target, Nelson Sauvin, Sabro, Motueka, Citra cryo) sans aperçu : l'α, le rôle et les mots hors familles de Nelson Sauvin avant de l'ajouter sont perdus (L14).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-colonne-plus-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+    "selecteur_choisie": "[aria-label=\"Ajouter un houblon à la comparaison\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Nelson Sauvin",
+     "hors des 12 familles",
+     "vin blanc"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-chimie",
+   "mots": "« Les deux se complètent » : vraies valeurs et simulation (D94)",
+   "etat": "toucher « Chimie et vraies valeurs »",
+   "quoi": "Tableau ouvert : α, β, huile, humulène, caryophyllène, 4MMP, linalol en bière, IBU, sources.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-chimie-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "« Chimie et vraies valeurs »",
+    "geste_5345f6ad": "« Chimie et vraies valeurs »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : même tableau ouvert (valeurs, plages, sources), bouton devenu actif.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-chimie-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+    "selecteur_choisie": "texte=Chimie et vraies valeurs",
+    "geste": "toucher",
+    "attendu": [
+     "% masse",
+     "BM"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-egaler",
+   "mots": "r6n1 et r6n2 (y3) : « Pour égaler » (22.10)",
+   "etat": "toucher « Égaler »",
+   "quoi": "Par famille, la dose d'un autre houblon qui donne le même effet (agrumes de Cascade 4 g/L : Idaho 7 ~7,5 g/L …).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-egaler-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "« Égaler » (r6n2)",
+    "geste_5345f6ad": "« Égaler »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : « Égaler » ouvre le même calcul en volet sous le tableau.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-egaler-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+    "selecteur_choisie": "texte=Égaler",
+    "geste": "toucher",
+    "attendu": [
+     "Pour égaler",
+     "il faudrait"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-osu",
+   "mots": "« la panel osu j'aime assez » (20.10) ; D114 : replié",
+   "etat": "toucher « Panel OSU »",
+   "quoi": "Panel OSU, Cascade : courbes herbacé et agrumes selon la dose, trait à 3,86 g/L, source.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-osu-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "« Chimie… » puis le panel (r6a l'a sous la chimie)",
+    "geste_5345f6ad": "« Panel OSU »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : « Panel OSU » à un toucher (D114), même courbe (intensité 12,3, herbacé 10,4, agrumes 7), mêmes sources.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-osu-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+    "selecteur_choisie": "contient=Panel OSU",
+    "geste": "repos",
+    "attendu": [
+     "Panel OSU",
+     "Brülosophy 2019",
+     "4–8 g/L : retenu par les auteurs"
+    ],
+    "interdit": [],
+    "avant": [
+     "etat-comp-chimie"
+    ]
+   }
+  },
+  {
+   "id": "etat-comp-placer",
+   "mots": "r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions (22.10)",
+   "etat": "toucher « Doser Idaho 7 dans Dryhopper »",
+   "quoi": "Pont vers Dryhopper avec le houblon retenu.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-placer-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "pont « Doser Idaho 7 dans Dryhopper » (statique : aucun effet)",
+    "geste_5345f6ad": "« Placer Idaho 7 dans Dryhopper »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : « Placer Idaho 7 › » ouvre #/dryhopper/idaho-7-1 (« Quand ajouter Idaho 7 ? »).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-placer-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+    "selecteur_choisie": "a[data-role=\"pont\"]",
+    "geste": "repos",
+    "attendu": [
+     "Idaho 7",
+     "Dryhopper"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-fiche",
+   "mots": "« L'appui long sur un houblon ouvre sa vraie fiche » (D25)",
+   "etat": "appui long sur la colonne Cascade",
+   "quoi": "Fiche g1 de Cascade en feuille.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-fiche-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "(page fiche de la base ; r6a statique n'a pas le geste)",
+    "geste_5345f6ad": "appui long « Retenir Cascade »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : l'appui long sur « Retenir Cascade » ouvre la fiche (α 4,5–9 %, radar, familles, Comparer). Tenu.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-fiche-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"ligne-houblon\"]",
+    "geste": "appui-long",
+    "attendu": [
+     "Nugget",
+     "Comparer",
+     "Floral"
+    ],
+    "interdit": [],
+    "note": "r6a est statique : le geste (appui long sur un houblon : sa fiche g1, D25) se mesure sur la page de la base v4.10 où la fiche g1 s'ouvre"
+   }
+  },
+  {
+   "id": "etat-comp-legende",
+   "mots": "Légende derrière un petit « ? » (D89)",
+   "etat": "toucher « ? » / « Légende »",
+   "quoi": "Légende en feuille : familles, une barre par houblon, le radar, aux étapes.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-legende-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "« Légende »",
+    "geste_5345f6ad": "« Lire la légende »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : « ? » ouvre une carte flottante (Une barre, Aux étapes 60′ / 10′ / dry hop, Le radar). Même contenu, autre forme.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-legende-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+    "selecteur_choisie": "[data-role=\"legende-bouton\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Les familles",
+     "zone pâle",
+     "hachuré : inconnu, jamais zéro"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-etapes",
+   "mots": "« je voulais comparé au moins : les étapes 60' 10' dryhopping ect comme la maquette de base » (D107)",
+   "etat": "regarder les rangées d'étapes",
+   "quoi": "Choisi : x3b, sélecteur de plans (Citra seul … Citra 3 j puis Idaho 7 5 j) ; D107 réduit à 60′, 10′, dry hop pour chaque houblon comparé.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils21-choisir/x3b/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-etapes-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "toucher le plan « Citra 3 j, puis Idaho 7 5 j »",
+    "geste_5345f6ad": "défiler à « 60′ »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : 60′ / 10′ / dry hop sous les têtes, chaque case dit le floral gagné en crans (~0,1 / ~0,7 / ~1,3) et le résineux. Le sélecteur de plans enchaînés de x3b n'y est pas (laissé à Dryhopper, écrit dans la NOTE).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-etapes-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils21-choisir/x3b/etat.html",
+    "selecteur_choisie": "texte=Citra 3 j, puis Idaho 7 5 j",
+    "geste": "toucher",
+    "attendu": [
+     "Citra seul",
+     "Citra + Galaxy ensemble",
+     "Citra 3 j, puis Idaho 7 5 j"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-etat-moment",
+   "mots": "« Montrait vraiment l'état du moment de l'ajout facile, je l'avais juste fait noté !! » (D107)",
+   "etat": "lire l'état à chaque ajout",
+   "quoi": "x3b : la cuve jour après jour, familles en bandes, curseur J4, barres « à ce jour ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils21-choisir/x3b/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-etat-moment-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "défiler à « dans la cuve »",
+    "geste_5345f6ad": "défiler à « dry hop »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : l'état à chaque ajout se lit en barres par étape (60′, 10′, dry hop) ; le curseur de jours (J4, « tenir ») n'y est pas, laissé à Dryhopper.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-etat-moment-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils21-choisir/x3b/etat.html",
+    "selecteur_choisie": "contient=dans la cuve",
+    "geste": "repos",
+    "attendu": [
+     "dans la cuve",
+     "de contact"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-reference",
+   "mots": "« Et aussi le houblon de base ou bière de base » (D107)",
+   "etat": "regarder la référence",
+   "quoi": "x3b : la bière de base en pointillé au départ de chaque bande.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils21-choisir/x3b/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-reference-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "défiler aux bandes de familles",
+    "geste_5345f6ad": "défiler à « Nugget »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : colonne grise « Nugget α 13 % » aux mêmes étapes et pointillé gris dans chaque bande.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-reference-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils21-choisir/x3b/etat.html",
+    "selecteur_choisie": "contient=Résineux déjà au-delà",
+    "geste": "repos",
+    "attendu": [
+     "Résineux déjà au-delà",
+     "ta dégustation"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-defi",
+   "mots": "y1b-defi (22.10)",
+   "etat": "toucher « Défi 2/4 »",
+   "quoi": "Les quatre critères de la dégustation du 18.10 avec chaque houblon : 2 sur 4, 1 sur 4, 0 sur 4.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-defi-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "« Défi 2/4 » (r6n2)",
+    "geste_5345f6ad": "(rien à toucher)",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Pas de bouton « Défi » dans la maquette ; les critères de la dégustation ne sont pas rejoués houblon par houblon.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-defi-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+    "selecteur_choisie": "texte=Défi 2/4",
+    "geste": "toucher",
+    "attendu": [
+     "Ton défi",
+     "ta dégustation du 18.10",
+     "Plus floral"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-critere",
+   "mots": "y1b-pastille-critere (22.10)",
+   "etat": "toucher « Face à ta stout, par floral ⌄ »",
+   "quoi": "Liste floral · agrumes · tropicaux · moins résineux qui change le critère de classement.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-critere-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "« Critère de classement : floral »",
+    "geste_5345f6ad": "(rien à toucher)",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Pas de pastille de critère : le classement reste floral (règle de départ).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-critere-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+    "selecteur_choisie": "[aria-label^=\"Critère de classement\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Critère de classement",
+     "moins résineux",
+     "floral"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-preuve",
+   "mots": "y1b-tirage-preuve (22.10)",
+   "etat": "toucher « Preuve »",
+   "quoi": "« La preuve : mesuré et tiré » : panel OSU, 20 bières tirées par famille (4 sur 20 …).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-preuve-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "« Preuve » (r6n2)",
+    "geste_5345f6ad": "(rien à toucher)",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Pas de tirage de 20 bières ; seul le panel OSU est conservé.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-preuve-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+    "selecteur_choisie": "texte=Preuve",
+    "geste": "toucher",
+    "attendu": [
+     "La preuve : mesuré et tiré",
+     "Panel OSU, Cascade"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-frise-levure",
+   "mots": "y1b-levure-pastilles et second houblon (22.10)",
+   "etat": "toucher « Frise »",
+   "quoi": "Le moment dans Dryhopper, « jour après jour », « enchaîne un second houblon ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-frise-levure-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "« Frise » (r6n2)",
+    "geste_5345f6ad": "(rien à toucher)",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Pas de frise ni de levure dans Comparer ; la levure est fixée à US-05 sur la ligne de contexte.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-frise-levure-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+    "selecteur_choisie": "texte=Frise",
+    "geste": "toucher",
+    "attendu": [
+     "Le moment, dans Dryhopper",
+     "60′",
+     "10′",
+     "whirlpool",
+     "actif"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-comp-biotransfo",
+   "mots": "D96 : levure, biotransformation, ajout cumulé",
+   "etat": "toucher « Biotransformation » (x3b)",
+   "quoi": "« La biotransformation de ce plan » : citronellol, géraniol → citronellol, thiols, mesure en bière.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils21-choisir/x3b/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-biotransfo-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/comparer/etat.html",
+    "selecteur_geste_choisie": "« Biotransformation » (x3b)",
+    "geste_5345f6ad": "(rien à toucher)",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Aucune ligne de biotransformation dans Comparer (laissée à Dryhopper et Levure).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-biotransfo-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils21-choisir/x3b/etat.html",
+    "selecteur_choisie": "[data-role=\"biotransformation\"]",
+    "geste": "toucher",
+    "attendu": [
+     "La biotransformation de ce plan",
+     "géraniol → citronellol",
+     "thiols libérés"
+    ],
+    "interdit": []
+   }
+  }
+ ]
+}

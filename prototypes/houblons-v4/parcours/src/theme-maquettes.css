@@ -1,0 +1,64 @@
+/*
+ * Le thème de ses maquettes choisies (règle n° 1 ; D106, 23.10) : « Pourquoi c'est en thème pastel horrible ??? C'est
+ * pas ce que j'ai demandé ??? ». Le « clair » de prototypes/houblons-v4/ecran/THEMES.md (papier chaud, beige, paille)
+ * n'était pas son choix. Mesuré dans Chrome sur ses maquettes (base v4.10, q2b, r6a) : page blanche #FFFFFF, surfaces
+ * gris neutre #F5F5F5 / #EBEBEB, texte #111111, secondaire #6B6B6B, action principale noire (« Au style » de r6a,
+ * « Comparer (2) » de q2b). Les couleurs des familles d'arômes ne changent pas. Ce fichier redéfinit le thème par
+ * défaut de la maquette (data-theme="clair") après ecran/src/themes.css ; « cave » reste au toucher.
+ */
+[data-theme='clair'] {
+  color-scheme: light;
+
+  --cave-950: 255 255 255;
+  --cave-900: 245 245 245;
+  --cave-850: 235 235 235;
+  --cave-800: 221 221 221;
+  --cave-700: 191 191 191;
+  --cave-600: 158 158 158;
+  --cave-400: 102 102 102; /* #666 : 4,8:1 sur #EBEBEB (onglets inactifs) ; #6B6B6B y faisait 4,47:1 */
+  --cave-200: 51 51 51;
+  --cave-50: 17 17 17;
+
+  --cave-texte-950: 17 17 17;
+  --cave-texte-900: 17 17 17;
+  --cave-texte-850: 26 26 26;
+  --cave-texte-800: 34 34 34;
+  --cave-texte-700: 51 51 51;
+  --cave-texte-600: 102 102 102;
+  --cave-texte-400: 102 102 102;
+  --cave-texte-200: 51 51 51;
+  --cave-texte-50: 17 17 17;
+
+  /* L'action principale de ses maquettes est noire, texte blanc. */
+  --ebc-straw: 17 17 17;
+  --ebc-straw-texte: 17 17 17;
+  --ebc-straw-bord: 17 17 17;
+
+  --marque: 158 158 158;
+  --repere: 17 17 17;
+  --repere-texte: 17 17 17;
+}
+
+/* Un aplat d'action noir porte un texte blanc (l'app y pose text-cave-950, une encre sombre). */
+[data-theme='clair'] .bg-ebc-straw,
+[data-theme='clair'] .bg-ebc-straw * {
+  color: rgb(255 255 255);
+}
+[data-theme='clair'] .bg-ebc-straw {
+  --tw-shadow: 0 0 #0000;
+}
+
+/* Les chevrons de src/index.css passent à l'encre secondaire neutre. */
+[data-theme='clair'] summary:not(:has([class*='chevron'])) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B6B6B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+[data-theme='clair'] details[open] > summary:not(:has([class*='chevron'])) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B6B6B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
+}
+
+/* Les outils ont la page blanche de ses maquettes (r6a, q2b, a1) : le conteneur de PageShell prend la page, pas le
+   panneau gris. */
+[data-theme='clair'] .pq-outil main,
+[data-theme='clair'] .pq-recette main {
+  background-color: rgb(var(--cave-950));
+}

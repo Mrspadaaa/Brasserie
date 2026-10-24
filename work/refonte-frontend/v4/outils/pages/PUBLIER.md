@@ -1,0 +1,43 @@
+# Pages montrées au brasseur : une version, un artefact
+
+Le 23.10, l'utilisateur : « Problème avec les artefacts, c'est assez dur à lire et chaque version devrait en créé des
+nouveaux ». La page « Lot 22 houblons » (`../page-lot/`, https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv) était
+republiée à la même adresse à chaque lot. Elle cumulait quatre sujets, l'historique et ~100 captures de 277 px, où le
+texte de l'écran tombait à 7 px. Elle reste en l'état, comme archive de ses versions 1 à 9.
+
+## La règle
+- **Une page par sujet et par version**, dans un artefact neuf : « Dryhopper · passe 3 · 23.10 ». Elle ne montre que
+  cette version, et renvoie par un lien à la page de la version d'avant.
+- On ne republie une adresse que pour compléter ou corriger la même version (une image manquante, le classement
+  ajouté au panel v0).
+- La même règle vaut pour la page de la base jouable (« Houblons, base v4.x ») : une nouvelle base, un nouvel artefact.
+
+## Lisible (contrôlé par `scripts/agents/verifier-page.mjs`)
+- La date dans le `<title>` : la galerie de claude.ai range les pages par date, et le titre les distingue.
+- `#a-choisir` en tête, dans le premier écran du téléphone : ce qu'il choisit, en une ou deux phrases.
+- **La disposition qu'il aime** (24.10, soir, sur l'image globale de ses mini maquettes, une grande coche) : « J'aime
+  beaucoup cette disposition. Utilise là pour les artefacts comme ça je peux voir rapidement plusieurs versions d'un
+  coup ». Une rangée par écran ou par question, le nom à gauche ; dans la rangée, sa référence d'abord puis toutes les
+  mini maquettes en vignettes serrées (six environ par rangée à l'ordinateur, trois au téléphone) ; sous chacune une
+  pastille de couleur (ton choix, « bien », avec réserve, à ajouter, à choisir), le nom, ses mots en italique. Modèle :
+  `work/refonte-frontend/v4/choix/global/mini-maquettes-choisies-2026-10-24.png` (outil `tournoi/outils/image-etat-global.mjs`).
+  Rien ne défile en largeur (D126).
+- Une vignette (`data-vignette`) s'ouvre en grand au toucher (lien, bouton ou `data-agrandir`) : c'est en grand qu'elle
+  est lisible, à 340 px au moins. Une capture qui ne s'ouvre pas en grand fait 340 px au moins, à 390 et à 1280 px (à
+  277 px, le texte de l'écran capturé est illisible, 23.10).
+- Aucun texte sous 14 px ; aucun paragraphe, puce ou légende de plus de 45 mots.
+- Des noms en mots du brasseur (« La réponse d'abord ») ; l'identifiant (`r6p2`) en petit à côté.
+
+## Faire
+1. Source : `work/refonte-frontend/v4/outils/pages/<date>-<sujet>/index.html`, écrite en HTML (jamais construite par
+   un script : le 22.10, une apostrophe a cassé un script et caché les 12 variantes). Partir de la page la plus
+   récente de ce dossier pour la feuille de style et la visionneuse.
+2. Images à côté, dans un dossier de travail (`img/…`, non versionnées) ; puis
+   `node scripts/agents/verifier-page.mjs <dossier>/index.html --page-lot --captures <préfixe>` → PAGE OK, et ouvrir
+   les trois captures (haut, page, ordinateur) avant de publier (L12). Sans `--page-lot` (ni source sous
+   `outils/pages/`), le script ne fait que rendre une maquette, comme dans les GATES des voies.
+3. Publier sans `url` : c'est un artefact neuf. Les images déjà publiées se copient côté serveur
+   (`files: { "img/x.png": { "artifact": "<adresse>", "path": "img/x.png" } }`).
+4. Ajouter sa ligne à la table « ## Pages » de MISSION.md (Sujet, Version, Adresse, Source). `systeme.mjs voies`
+   refuse deux versions sur la même adresse ou la même source, et une mission d'écrans sans cette table.
+5. Donner le lien à l'utilisateur.

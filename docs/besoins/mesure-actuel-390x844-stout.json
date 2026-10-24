@@ -1,0 +1,350 @@
+{
+  "tool": "measure-hop-paths.mjs",
+  "at": "2026-10-17T20:36:41.096Z",
+  "base": "banc QA local tests/qa/hop-recipe (vraie UI, données isolées)",
+  "style": {
+    "asked": "Stout",
+    "value": null
+  },
+  "stock": [
+    [
+      "Nugget",
+      250,
+      13
+    ],
+    [
+      "East Kent Golding",
+      500,
+      5.5
+    ],
+    [
+      "Fuggle",
+      300,
+      4.5
+    ],
+    [
+      "Magnum",
+      100,
+      12.5
+    ],
+    [
+      "Saaz",
+      400,
+      3.5
+    ],
+    [
+      "Citra",
+      200,
+      12
+    ],
+    [
+      "Cascade",
+      1000,
+      7
+    ],
+    [
+      "Styrian Golding",
+      150,
+      4.5
+    ]
+  ],
+  "states": [
+    {
+      "label": "aucun toucher",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "probes": {
+        "5": "header:",
+        "30": "header:",
+        "50": "nav:Étapes",
+        "70": "main:",
+        "90": "main:",
+        "784": "main:",
+        "814": "main:",
+        "839": "main:"
+      },
+      "sticky": [
+        {
+          "tag": "header",
+          "label": null,
+          "pos": "sticky",
+          "top": 0,
+          "bottom": 37,
+          "w": 390
+        },
+        {
+          "tag": "nav",
+          "label": "Navigation principale",
+          "pos": "fixed",
+          "top": 804,
+          "bottom": 844,
+          "w": 310
+        }
+      ],
+      "railBottomPx": 65,
+      "topEdgePx": 65,
+      "bottomEdgePx": 844,
+      "usefulHeightPx": 779,
+      "scroller": {
+        "cls": "flex-1 min-h-0 overflow-y-auto overscroll-contain focus-visi",
+        "clientHeight": 778,
+        "scrollHeight": 2786
+      },
+      "stockNamesVisibleWithoutScroll": [],
+      "stockQuantitiesVisible": [],
+      "dialogs": [],
+      "firstScreenText": "Brouillon conservé sur cet appareil. | Abandonner | Houblons | Amertume et répartition | American Stout | IBU à chaud · Tinseth | 0 | 0 | Repère du style : 35–75 IBU | 90 | Équilibrer la torréfaction et l’amertume. L’expression houblonnée dépend de la variante exacte. | Corriger les lignes de houblon · 0 | Atelier Houblons V5.5 · brouillon en cours | V5.5 | Dossiers locaux | 30 L · Avant brassage | Ma bière | Décider | Explorer | Historique | Ta question | Question au brasseur | Lire ma question | Demander au compagnon | Programme",
+      "numberInputs": 0,
+      "horizontalOverflow": false,
+      "clicked": true,
+      "msAfterTouch": 1515,
+      "pageErrors": [],
+      "capture": "actuel-390-stout-0-etape-houblons.png",
+      "touches": 0
+    },
+    {
+      "label": "Ouvrir la liste (lignes de houblon)",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "probes": {
+        "5": "header:",
+        "30": "header:",
+        "50": "nav:Étapes",
+        "70": "main:",
+        "90": "main:",
+        "784": "nav:Vues de l’atelier",
+        "814": "nav:Vues de l’atelier",
+        "839": "main:"
+      },
+      "sticky": [
+        {
+          "tag": "header",
+          "label": null,
+          "pos": "sticky",
+          "top": 0,
+          "bottom": 37,
+          "w": 390
+        },
+        {
+          "tag": "nav",
+          "label": "Navigation principale",
+          "pos": "fixed",
+          "top": 804,
+          "bottom": 844,
+          "w": 310
+        }
+      ],
+      "railBottomPx": 65,
+      "topEdgePx": 65,
+      "bottomEdgePx": 844,
+      "usefulHeightPx": 779,
+      "scroller": {
+        "cls": "flex-1 min-h-0 overflow-y-auto overscroll-contain focus-visi",
+        "clientHeight": 778,
+        "scrollHeight": 3044
+      },
+      "stockNamesVisibleWithoutScroll": [
+        "Nugget",
+        "East Kent Golding",
+        "Fuggle",
+        "Magnum",
+        "Saaz",
+        "Citra"
+      ],
+      "stockQuantitiesVisible": [
+        "250 g",
+        "500 g",
+        "300 g",
+        "100 g",
+        "400 g",
+        "200 g"
+      ],
+      "dialogs": [
+        {
+          "role": "listbox",
+          "label": null,
+          "options": 8,
+          "visibleOptions": 6
+        }
+      ],
+      "firstScreenText": "Brouillon conservé sur cet appareil. | Abandonner | Houblons | Amertume et répartition | American Stout | IBU à chaud · Tinseth | 0 | 0 | Repère du style : 35–75 IBU | 90 | Équilibrer la torréfaction et l’amertume. L’expression houblonnée dépend de la variante exacte. | Corriger les lignes de houblon · 0 | Mes ajouts de houblons | Premier moût | Ébullition | Whirlpool | À cru | Compté en minutes AVANT la fin de l’ébullition. | Mes articles | Nugget | qa-stock-nugget · Stock d’exemple (mesure) · 250 g en stock · 13 % AA | East Kent Golding | qa-stock-east-kent-golding · Stock d’exemple (mesure) · 500 g en stock · 5.5 % AA | Fuggle | qa-stock-fuggle · Stock d’exemple (mesure) · 300 g en stock · 4.5 % AA | Magnum | qa-stock-magnum · Stock d’exemple (mesure) · 100 g en stock · 12.5 % AA | Saaz | qa-stock-saaz · Stock d’exemple (mesure) · 400 g en stock · 3.5 % AA | Citra | qa-stock-citra · Stock d’exemple (mesure) · 200 g en stock · 12 % AA | Ma bière | Décider | Explorer | Historique",
+      "numberInputs": 0,
+      "horizontalOverflow": false,
+      "clicked": true,
+      "msAfterTouch": 1840,
+      "pageErrors": [],
+      "capture": "actuel-390-stout-2-liste-lignes.png",
+      "touches": 2
+    },
+    {
+      "label": "Chercher une matière",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "probes": {
+        "5": "header:",
+        "30": "header:",
+        "50": "nav:Étapes",
+        "70": "main:",
+        "90": "main:",
+        "784": "main:",
+        "814": "main:",
+        "839": "main:"
+      },
+      "sticky": [
+        {
+          "tag": "header",
+          "label": null,
+          "pos": "sticky",
+          "top": 0,
+          "bottom": 37,
+          "w": 390
+        },
+        {
+          "tag": "nav",
+          "label": "Navigation principale",
+          "pos": "fixed",
+          "top": 804,
+          "bottom": 844,
+          "w": 310
+        }
+      ],
+      "railBottomPx": 65,
+      "topEdgePx": 65,
+      "bottomEdgePx": 844,
+      "usefulHeightPx": 779,
+      "scroller": {
+        "cls": "flex-1 min-h-0 overflow-y-auto overscroll-contain focus-visi",
+        "clientHeight": 778,
+        "scrollHeight": 1050
+      },
+      "stockNamesVisibleWithoutScroll": [],
+      "stockQuantitiesVisible": [],
+      "dialogs": [],
+      "firstScreenText": "Brouillon conservé sur cet appareil. | Abandonner | Houblons | Amertume et répartition | American Stout | IBU à chaud · Tinseth | 0 | 0 | Repère du style : 35–75 IBU | 90 | Équilibrer la torréfaction et l’amertume. L’expression houblonnée dépend de la variante exacte. | Corriger les lignes de houblon · 0 | Atelier Houblons V5.5 · brouillon en cours | V5.5 | Dossiers locaux | 30 L · Avant brassage | Ma bière | Décider | Explorer | Historique | Explorer et composer | Références · recherche et conservation | Catalogues du brasseur | Recherche serveur · écriture contrôlée par le service | Houblons | Levures | Styles | Rechercher houblons | Chercher",
+      "numberInputs": 0,
+      "horizontalOverflow": false,
+      "clicked": true,
+      "msAfterTouch": 1600,
+      "pageErrors": [],
+      "capture": "actuel-390-stout-1-chercher-matiere.png",
+      "touches": 1
+    },
+    {
+      "label": "Explorer",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "probes": {
+        "5": "header:",
+        "30": "header:",
+        "50": "nav:Étapes",
+        "70": "main:",
+        "90": "main:",
+        "784": "header:",
+        "814": "header:",
+        "839": "header:"
+      },
+      "sticky": [
+        {
+          "tag": "header",
+          "label": null,
+          "pos": "sticky",
+          "top": 0,
+          "bottom": 37,
+          "w": 390
+        },
+        {
+          "tag": "nav",
+          "label": "Navigation principale",
+          "pos": "fixed",
+          "top": 804,
+          "bottom": 844,
+          "w": 310
+        }
+      ],
+      "railBottomPx": 65,
+      "topEdgePx": 65,
+      "bottomEdgePx": 844,
+      "usefulHeightPx": 779,
+      "scroller": {
+        "cls": "flex-1 min-h-0 overflow-y-auto overscroll-contain focus-visi",
+        "clientHeight": 778,
+        "scrollHeight": 7007
+      },
+      "stockNamesVisibleWithoutScroll": [],
+      "stockQuantitiesVisible": [],
+      "dialogs": [],
+      "firstScreenText": "Brouillon conservé sur cet appareil. | Abandonner | Houblons | Amertume et répartition | American Stout | IBU à chaud · Tinseth | 0 | 0 | Repère du style : 35–75 IBU | 90 | Équilibrer la torréfaction et l’amertume. L’expression houblonnée dépend de la variante exacte. | Corriger les lignes de houblon · 0 | Atelier Houblons V5.5 · brouillon en cours | V5.5 | Dossiers locaux | 30 L · Avant brassage | Ma bière | Décider | Explorer | Historique | Explorer et composer | Configurer les observations et leurs comparaisons | Un essai conserve son programme, sa source et son contexte dans un dossier local. | Créer un dossier local pour cette exploration | Explorer les houblons | Panorama documentaire et creuset",
+      "numberInputs": 0,
+      "horizontalOverflow": false,
+      "clicked": true,
+      "msAfterTouch": 1615,
+      "pageErrors": [],
+      "capture": "actuel-390-stout-1-explorer.png",
+      "touches": 1
+    },
+    {
+      "label": "Décider",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "probes": {
+        "5": "header:",
+        "30": "header:",
+        "50": "nav:Étapes",
+        "70": "main:",
+        "90": "main:",
+        "784": "main:",
+        "814": "main:",
+        "839": "main:"
+      },
+      "sticky": [
+        {
+          "tag": "header",
+          "label": null,
+          "pos": "sticky",
+          "top": 0,
+          "bottom": 37,
+          "w": 390
+        },
+        {
+          "tag": "nav",
+          "label": "Navigation principale",
+          "pos": "fixed",
+          "top": 804,
+          "bottom": 844,
+          "w": 310
+        }
+      ],
+      "railBottomPx": 65,
+      "topEdgePx": 65,
+      "bottomEdgePx": 844,
+      "usefulHeightPx": 779,
+      "scroller": {
+        "cls": "flex-1 min-h-0 overflow-y-auto overscroll-contain focus-visi",
+        "clientHeight": 778,
+        "scrollHeight": 3294
+      },
+      "stockNamesVisibleWithoutScroll": [],
+      "stockQuantitiesVisible": [],
+      "dialogs": [],
+      "firstScreenText": "Brouillon conservé sur cet appareil. | Abandonner | Houblons | Amertume et répartition | American Stout | IBU à chaud · Tinseth | 0 | 0 | Repère du style : 35–75 IBU | 90 | Équilibrer la torréfaction et l’amertume. L’expression houblonnée dépend de la variante exacte. | Corriger les lignes de houblon · 0 | Atelier Houblons V5.5 · brouillon en cours | V5.5 | Dossiers locaux | 30 L · Avant brassage | Ma bière | Décider | Explorer | Historique | Ta question | Question au brasseur | Lire ma question | Demander au compagnon | Répondre, puis arbitrer",
+      "numberInputs": 0,
+      "horizontalOverflow": false,
+      "clicked": true,
+      "msAfterTouch": 1584,
+      "pageErrors": [],
+      "capture": "actuel-390-stout-1-decider.png",
+      "touches": 1
+    }
+  ],
+  "script": "scripts/mesure-houblons-actuel.mjs"
+}

@@ -1,0 +1,18 @@
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { createRequire } from 'node:module';
+const require = createRequire('C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/package.json');
+const puppeteer = require('puppeteer-core');
+const BASE = 'C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/base';
+const b = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
+const p = await b.newPage();
+await p.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+await p.goto(pathToFileURL(path.join(BASE, 'consolide', 'biere-absolu.html')).href, { waitUntil: 'networkidle0' });
+const w = (ms) => new Promise((r) => setTimeout(r, ms));
+await (await p.$('[data-famille="resin"] [data-action="bannir"]')).tap(); await w(300);
+await (await p.$('[data-famille="floral"]')).tap(); await w(300);
+await (await p.$('[data-famille="floral"] [data-action="augmenter"]')).tap(); await w(300);
+await (await p.$('[data-famille="floral"] [data-action="augmenter"]')).tap(); await w(300);
+console.log(await p.$$eval('[data-visee]', (e) => e.map((x) => x.dataset.famille + '=' + x.dataset.visee).join(' ')), '| puces :', await p.$$eval('.chip[aria-pressed="true"]', (e) => e.map((x) => x.innerText).join(', ')));
+await p.screenshot({ path: path.join(BASE, 'captures', 'consolide-biere-gestes.png') });
+await b.close();

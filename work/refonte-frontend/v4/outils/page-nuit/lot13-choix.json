@@ -1,0 +1,26 @@
+{
+ "ticket": 140,
+ "court": "Carte et fiche",
+ "titre": "La carte et la fiche d'un houblon : g1, ton choix, corrigée (lot 13, 19.10 soir)",
+ "etat": "choisi : g1",
+ "puces": [
+  "Ton choix : g1 (« la v1 est la meilleure »). La table des IBU par moment est retirée de la fiche (« Inutile »).",
+  "« 1/4, 2/4 mais même valeur ??? » : la roue et les cases suivent maintenant le nombre de fiches (claire = 1 fiche, mi-rayon ; pleine = 2, au bord). Épicé 1/4 rejoint Agrumes et Terreux ; « nommé en premier par Hopsteiner » reste écrit.",
+  "Contrôles : CARTE-FICHE OK avec F7 (la place suit le nombre écrit ; la base et g1 avant correction y échouaient), FIL6 OK, mots ≤ 90.",
+  "Suite : g1 entre dans la base (carte, fiche, roue au compte, mots des fiches rattachés à leur famille par le moteur, pour les 32 houblons)."
+ ],
+ "images": [
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g1-fiche-nugget-390.png",
+   "g1, fiche de Nugget (4 fiches)"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g1-fiche-citra-390.png",
+   "g1, fiche de Citra cryo (1 seule fiche)"
+  ],
+  [
+   "C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils13-carte-fiche/captures/g1-vue-390.png",
+   "g1, les cartes au repos"
+  ]
+ ]
+}

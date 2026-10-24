@@ -1,0 +1,18 @@
+- **Ce qui tient** : q2b en carte du goût.
+  - **Les axes** : le floral en largeur, les agrumes en hauteur, un trait de graticule par cran du style. En absolu, les deux axes ont les mêmes points : le pays des agrumes s'écrase, et la lentille se voit.
+  - **Ma bière** est le point noir (6,5 ; 7,4).
+  - **Les routes** : chaque groupe de q2b est une route (A à F) qui part d'elle et s'arrête où la voie mène.
+  - **Les régions** des familles commencent à la visée, au ton fond. Le drapeau marque le coin des deux visées. La frontière du pays du style est en trait mixte ; au-delà, c'est l'orangé hachuré « hors du style ».
+  - **Ce que la carte montre d'un coup d'œil** : A s'arrête juste avant la région florale (approche) mais dans celle des agrumes (atteint). E, le dry hop, passe la frontière, en orangé. Un floral non établi (B et les levures F) passe par la bande hachurée de gauche.
+  - **Le résineux** est un altimètre : ma bière dégustée (66–100) tout en haut, en orangé hors du style, et aucune route ne descend.
+  - **Sous la carte**, le carnet de route reprend les lignes de q2b, chacune étape sur sa route.
+  - **En moins** : les barres s5 de chaque groupe et les jauges « cible » des réponses. La carte les porte, avec la position face à la visée et à la frontière.
+  - **En plus** : la carte, l'altimètre, et l'écusson de la meilleure route dans les réponses. Toucher une route ou un écusson mène à son groupe et l'allume. « Barres » devient « Carte ». Appui long ou survol : la fiche g1 en papier.
+- **Ce qui casse** :
+  - La carte fait 300 × 250 px pour 6 routes. D (remplacer Nugget, effets proches de zéro) n'est qu'un amas autour du point. Les trois voies au floral inconnu se serrent dans une bande de 20 px.
+  - Le fond agrumes (#fcf8e3) ne se détache pas du papier : la région se lit par les tirets de visée, pas par sa teinte.
+  - Une route vaut un groupe : à l'intérieur, les voies ont par construction le même effet, et leurs différences restent dans les cases.
+  - Radar est inerte. « Comparer (2) » mène au comparer de q2b.
+  - La fiche suit les mêmes limites que l7 et l8.
+- **Contrôles** : MOTS (53), COULEURS (3 teintes), AU-STYLE (zone : le pays du style et la bande de l'altimètre), STANDARD, SURVOL, FICHE, FIL6 (pistes : axe floral 300 px, axe agrumes et altimètre 250 px), AUTRES, MOMENTS, MA-BIERE, USAGE-INTENSITE et BLOCS sont tous OK. Les fiches comptent de 54 à 72 mots.
+- **Pire contraste** : 4,67:1, « Plus agrumes » (ton texte agrumes #856e0c, 12 px) sur le papier #fbf8f0. Le mesureur au rendu signale aussi 1,06:1 sur les lettres des écussons, mais c'est un artefact : il ne lit pas le remplissage SVG. Le vrai rapport est 8,48:1, du blanc sur #5b4a36.

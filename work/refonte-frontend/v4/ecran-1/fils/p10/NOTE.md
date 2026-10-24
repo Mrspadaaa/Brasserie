@@ -1,0 +1,3 @@
+Parti : la réponse en titre (p15), un rail de largeur fixe où la bande du style est la même colonne pour toutes les familles et où la plage déborde physiquement (p06), le repli des familles identiques en une pile (p19).
+Plan 1 : en-tête (Stout export, 16D + hypothèse, 60 IBU + mini-jauge), titre-réponse en deux lignes, Floral, Herbacé, Terreux (et Résineux en B) sur le rail, « 9 autres » / « 8 autres », puces de direction sous le pouce, 3 voies avec case (B), « Comparer (2) » qui n'apparaît qu'avec 2 cases.
+Replié : chiffres d'une famille (toucher la rangée), les 8 ou 9 autres (chevron), les 14 voies et « aucune voie » (chaque ligne du titre), choix de la bière (pastille), effet en fantôme (toucher une voie).

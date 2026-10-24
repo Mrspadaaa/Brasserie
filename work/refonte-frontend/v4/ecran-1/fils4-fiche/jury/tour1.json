@@ -1,0 +1,202 @@
+{
+  "lot": "fils4-fiche (lot 4 · fiche du houblon à l'appui long, écran houblons)",
+  "tour": 1,
+  "date": "2026-10-18",
+  "jury": "jury neuf (Opus), n'a rien conçu ; aucune maquette modifiée",
+  "lu": [
+    "work/refonte-frontend/v4/SPEC-BRASSEUR.md (La fiche du houblon, Penser en brasseur, Le stock discret, § 3, § 6)",
+    "work/refonte-frontend/v4/DEFAUTS-RECURRENTS.md (D11, D23 ter, D25, D29, D30)",
+    "v3/reference/beer-maverick : 10, 11, 12, 13 et constats.md",
+    "fils4-fiche/BRIEF-AUTEUR.md",
+    "captures/planche-fiche-390.png, puis pNN-fiche-390.png et pNN/NOTE.md pour p01 à p11"
+  ],
+  "methode": "Planche d'abord (3 s par vignette), puis chaque fiche à 390 px et sa NOTE. Ensuite, dans Chrome (puppeteer-core, 390×844, toucher) : appui long sur le premier nom de l'étape (index.html), capture à 300 ms pour voir le retour pendant l'appui, puis à l'ouverture ; dans fiche.html, toucher du déclencheur du repli (Valeurs, Huiles, Substituts, Sources…), capture et comptage des mots. Pour p02, toucher de la carte (aucun déclencheur visible). Captures et script dans le scratchpad du jury (jury4/), pas dans le dépôt.",
+
+  "oeil": {
+    "p01": "Feuille du bas sur l'étape assombrie. α en grand, la ligne de la recette, une roue chiffrée « 2/4 ». Propre, calme, se lit tout de suite.",
+    "p02": "Aperçu iOS : fond flouté, carte du houblon, ligne soulevée et menu d'actions. Geste natif, très moderne. La carte, c'est celle de p01.",
+    "p03": "Plein écran à onglets. Même en-tête que p01, puis les descripteurs, les sources et deux gros boutons. Plus lourd, on quitte l'étape.",
+    "p04": "La ligne s'ouvre sur place dans la liste. Le contexte reste, mais la roue est petite et tronquée (7 axes, forme presque pleine).",
+    "p05": "Carte à jouer : une roue géante dans un cercle, des puces noires. α perdu en haut, grand vide au-dessus de la roue.",
+    "p06": "Une orbite de 4 satellites autour de la roue. Original, mais décoratif ; α par source déjà ouvert, du vide en bas.",
+    "p07": "Les actions du moteur et « Ma bière » d'abord, le houblon ensuite. On ne sait plus si on lit Nugget ou sa bière.",
+    "p08": "Carte en pile, sur le modèle des réglages iOS : bloc α/β/rôle, la frise de la recette, la roue, puis des rangées « Huiles 1,5–3 mL/100 g › ». Dense mais rangé.",
+    "p09": "La même fiche que p08 (ordre un peu différent) ; seul le geste change (une loupe sous le doigt).",
+    "p10": "Beer Maverick compressé en un écran : tout est ouvert (huiles détaillées, styles, substituts). L'IBU en puce noire en haut, α sous la roue.",
+    "p11": "Feuille du bas avec la table des moments (60′, 10′, whirlpool, à froid : IBU de CETTE dose). C'est la plus « brasseur » ; la roue arrive dessous."
+  },
+
+  "questions": {
+    "Q1": {
+      "texte": "(D30, D29) Un brasseur qui hésite à utiliser ce houblon trouve-t-il au premier plan ce qui décide (α et lot, rôle, arômes avec leur poids, ce qu'il donne dans CETTE recette : moment, dose, IBU) avant les détails ?",
+      "reponses": {
+        "p01": "oui",
+        "p02": "oui",
+        "p03": "oui",
+        "p04": "non : rôle absent (replié dans « Substituts », « non renseigné »), alors que la règle rôle-α du pack donne « double usage » ailleurs",
+        "p05": "non : rôle absent ; α réduit à une puce en haut, la roue prend toute la carte",
+        "p06": "non : rôle absent ; « 60 IBU » en satellite de même poids que l'α",
+        "p07": "non : rôle absent ; l'α passe sous les actions du moteur et sous « Ma bière »",
+        "p08": "oui",
+        "p09": "oui",
+        "p10": "non : α sous les étiquettes et la roue ; l'IBU en puce noire domine en tête ; « rôle non renseigné »",
+        "p11": "non : rôle absent (seul manque : α, lot, poids des arômes et usage par moment sont là)"
+      }
+    },
+    "Q2": {
+      "texte": "(D11) Moderne et pas surchargée, face à la fiche Beer Maverick qu'il connaît (lourde : 7 écrans, une phrase par mesure) ?",
+      "reponses": {
+        "p01": "oui",
+        "p02": "oui",
+        "p03": "non : descripteurs et liste des fiches ouverts d'office, deux gros boutons en bas (C089), plein écran qui fait quitter l'étape",
+        "p04": "oui",
+        "p05": "non : grand vide au-dessus de la roue, et les familles dites deux fois (roue, puces noires)",
+        "p06": "non : β, huiles et α par source au premier plan, familles en double ; l'orbite décore sans rien expliquer",
+        "p07": "non : trois objets dans une seule fiche (actions du moteur, ma bière, le houblon) ; retour de la confusion D19",
+        "p08": "oui",
+        "p09": "oui",
+        "p10": "non : tout est ouvert (huiles détaillées, styles, substituts) : la fiche Beer Maverick compressée, pas triée",
+        "p11": "oui"
+      }
+    },
+    "Q3": {
+      "texte": "Le détail (huiles, sources, substituts) est-il à un geste, sans encombrer ?",
+      "reponses": {
+        "p01": "oui",
+        "p02": "non : rien n'indique que toucher la carte ouvre la fiche entière (seulement un aria-label)",
+        "p03": "non : les sources (« Fiches ») sont ouvertes au premier plan ; les substituts sont cachés sous l'onglet « Dans ma recette »",
+        "p04": "oui",
+        "p05": "oui",
+        "p06": "non : sources de l'α ouvertes d'office ; les substituts n'ont pas d'entrée visible (sous « Styles, sources »)",
+        "p07": "oui",
+        "p08": "oui",
+        "p09": "oui",
+        "p10": "non : huiles, styles et substituts déjà au premier plan ; ils encombrent au lieu d'être repliés",
+        "p11": "oui"
+      }
+    },
+    "Q4": {
+      "texte": "Le geste (appui long, survol) et sa découverte sont-ils crédibles sur téléphone, et la fermeture évidente ?",
+      "reponses": {
+        "p01": "oui",
+        "p02": "oui",
+        "p03": "oui",
+        "p04": "oui",
+        "p05": "oui",
+        "p06": "oui",
+        "p07": "oui",
+        "p08": "oui",
+        "p09": "non : appuyer puis glisser entre en concurrence avec le glissement du moment (D27) sur les mêmes lignes, et le défilement est bloqué ; jamais joué ailleurs qu'en simulation",
+        "p10": "oui",
+        "p11": "oui"
+      },
+      "constat": "À 300 ms d'appui, les 11 variantes donnent un retour (trait qui se remplit, anneau, soulèvement, lentille). L'indice de découverte est le même partout : un pointillé sous les noms."
+    },
+    "Q5": {
+      "texte": "(D23 ter) Le stock reste-t-il discret ?",
+      "reponses": { "p01": "oui", "p02": "oui", "p03": "oui", "p04": "oui", "p05": "oui", "p06": "oui", "p07": "oui", "p08": "oui", "p09": "oui", "p10": "oui", "p11": "oui" },
+      "constat": "Partout : l'exception « à racheter » seule, en petit gris, sans pastille. Le stock détaillé (0 g) n'apparaît que dans le repli."
+    },
+    "Q6": {
+      "texte": "La silhouette se lit-elle (lobe d'arôme visible) ?",
+      "reponses": {
+        "p01": "oui",
+        "p02": "oui",
+        "p03": "oui",
+        "p04": "non : roue réduite aux 7 familles citées, la forme remplit presque le polygone ; on ne voit plus ce que Nugget n'a pas (fruits)",
+        "p05": "oui",
+        "p06": "oui",
+        "p07": "oui",
+        "p08": "oui",
+        "p09": "oui",
+        "p10": "oui",
+        "p11": "oui"
+      }
+    },
+    "Q7": {
+      "texte": "(D38, ajoutée en cours de jury) Les variantes offrent-elles au moins 3 partis visiblement différents sur la fiche elle-même (structure, geste, ce qui est au premier plan), et pas seulement autour ? La silhouette commune est une qualité (cohérence), pas un défaut.",
+      "reponse_lot": "oui, mais 11 variantes ne donnent que 7 familles. Partis réellement distincts sur la fiche : (1) bloc α + ligne de la recette + roue chiffrée « 2/4 » (p01, p02, p03) ; (2) carte en rangées à valeur résumée et chevron (p08, p09) ; (3) table des moments de la recette (p11) ; (4) fiche ouverte sur place dans la liste (p04) ; (5) tout ouvert à la Beer Maverick (p10) ; (6) roue en vedette et puces noires (p05, p06) ; (7) action du moteur d'abord (p07).",
+      "quasi_doublons": [
+        { "groupe": ["p01", "p02", "p03"], "motif": "même bloc α (réglette, lot 13 %, double usage, 60′ · 46 g · 60 IBU), même roue « N/4 », même légende ; seul le contenant change (feuille, aperçu flouté, plein écran à onglets). La fiche entière de p02 est celle de p01, au pixel près." },
+        { "groupe": ["p08", "p09"], "motif": "même fiche (α/β/rôle, frise IBU/g, roue, puces, descripteurs, goût, quatre rangées) ; seuls changent l'ordre de deux blocs et le geste (pile ou loupe)." },
+        { "groupe": ["p05", "p06"], "motif": "roue en vedette dans un disque, puces noires « 2/4 » dessous, goût en bas ; p06 ajoute seulement les satellites. p07 reprend leur moitié basse sous ses actions." }
+      ],
+      "distincts_a_l_oeil": ["p04", "p07", "p10", "p11", "un de p01/p02/p03", "un de p08/p09", "un de p05/p06"]
+    }
+  },
+
+  "decompte_oui": {
+    "par_question": { "Q1": "5/11", "Q2": "6/11", "Q3": "7/11", "Q4": "10/11", "Q5": "11/11", "Q6": "10/11", "Q7": "oui (lot), 7 familles pour 11 variantes" },
+    "par_variante": { "p01": 6, "p02": 5, "p03": 4, "p04": 4, "p05": 4, "p06": 3, "p07": 4, "p08": 6, "p09": 5, "p10": 3, "p11": 5 }
+  },
+
+  "classement": [
+    { "rang": 1, "id": "p08", "oui": 6, "motif": "La fiche la plus complète sans surcharge : α/β/rôle avec la réglette des sources, l'usage dans la recette, la roue, et le détail en rangées à valeur (« Huiles 1,5–3 mL/100 g › »). On balaie d'un houblon de la recette à l'autre." },
+    { "rang": 2, "id": "p01", "oui": 6, "motif": "La plus nette (41 mots), et l'étape reste visible. Rôle et roue chiffrée sans redondance. Mais elle ne montre qu'une ligne de la recette, et sa fiche est celle de p02." },
+    { "rang": 3, "id": "p11", "oui": 5, "motif": "Pense en brasseur : ce que cette dose donne à chaque moment, et un toucher sur un moment place l'ajout. Seul manque, le rôle." },
+    { "rang": 4, "id": "p02", "oui": 5, "motif": "Geste natif d'appui long (aperçu et menu d'actions), avec la carte nette de p01. Le détail est introuvable sans le savoir." },
+    { "rang": 5, "id": "p09", "oui": 5, "motif": "Même fiche que p08, mais le geste de la loupe est risqué face au glissement du moment." },
+    { "rang": 6, "id": "p04", "oui": 4, "motif": "Sur place, garde tout le contexte. Mais la roue est tronquée et le rôle absent." },
+    { "rang": 7, "id": "p03", "oui": 4, "motif": "Des onglets propres pour le détail, mais trop ouverte au premier plan, avec de gros boutons." },
+    { "rang": 8, "id": "p07", "oui": 4, "motif": "Idée forte (agir depuis la fiche), mais mélange ma bière, le moteur et le houblon." },
+    { "rang": 9, "id": "p05", "oui": 4, "motif": "Roue en vedette, α relégué, grand vide." },
+    { "rang": 10, "id": "p06", "oui": 3, "motif": "Orbite décorative, détails ouverts d'office." },
+    { "rang": 11, "id": "p10", "oui": 3, "motif": "Beer Maverick compressé : rien n'est trié, l'IBU domine l'α." }
+  ],
+
+  "retenus": [
+    {
+      "id": "p08",
+      "parti": "carte plein écran en pile, rangées à valeur résumée",
+      "fait_de_mieux": "Le second plan à un geste, parfaitement lisible : chaque rangée dit déjà sa valeur (Huiles 1,5–3 mL/100 g, Amertume 60′ 1,3 IBU/g, Sources 4 fiches, Substituts non renseigné), et le verso est compact. Le bloc α/β/rôle a sa réglette des sources et le trait du lot. On passe d'un houblon de la recette au suivant d'un balayage.",
+      "defaut_prioritaire": "Les arômes sont dits trois fois (roue, puces « Tropical 2/4 », descripteurs). La roue porte en plus « Herbe » à côté de « Herbacé », avec des traits gris sans légende. La frise IBU/g est muette, et la carte couvre toute l'étape."
+    },
+    {
+      "id": "p11",
+      "parti": "feuille du bas, ce que ce houblon donne à chaque moment de CETTE recette",
+      "fait_de_mieux": "Elle répond à « ce qu'il donne dans cette recette » mieux que toutes les autres : 60′ 60 IBU, 10′ 22 IBU, whirlpool 9 IBU, à froid « non modélisé », à la dose de la recette. Un toucher sur un moment y place l'ajout, et le résumé IBU de l'étape, resté visible au-dessus, bouge.",
+      "defaut_prioritaire": "Le rôle est absent (« double usage » existe dans le pack, p01 et p08 l'affichent). La roue est repoussée en bas de la feuille."
+    },
+    {
+      "id": "p02",
+      "parti": "aperçu natif d'appui long (fond flouté, ligne soulevée, menu d'actions)",
+      "fait_de_mieux": "C'est le geste que le téléphone apprend à tous (menu contextuel iOS) : appui long, aperçu, actions. Le premier plan est celui de p01, le plus net du lot (α, lot, rôle, 60′ · 46 g · 60 IBU, roue « 2/4 »). On agit d'un toucher : Aimer, Exclure, Ajouter à 10′, Comparer.",
+      "defaut_prioritaire": "Rien ne montre que toucher la carte ouvre la fiche entière (valeurs, huiles, substituts). Il manque une entrée visible « Fiche entière › » dans le menu. « Neutre » n'est pas dans le menu non plus."
+    }
+  ],
+  "note_retenus": "Les trois retenues sont visiblement différentes (D38) : carte en pile à rangées, feuille à table des moments, aperçu avec menu d'actions. p01, deuxième au classement, n'est pas retenue seule : sa fiche est la carte de p02, et son contenant est celui de p11. Ses qualités entrent par p02 et par les greffes.",
+
+  "ecartes": [
+    { "id": "p01", "raison": "Quasi-doublon : sa fiche est la carte de p02 (et sa fiche entière, celle de p02 au pixel près) ; son contenant (feuille du bas) est celui de p11. Elle sert de référence pour le premier plan et en cas de repli si l'aperçu iOS ne tient pas à l'ordinateur." },
+    { "id": "p03", "raison": "Sources et descripteurs ouverts d'office, gros boutons, plein écran qui fait quitter l'étape ; substituts cachés sous « Dans ma recette »." },
+    { "id": "p04", "raison": "Roue tronquée aux familles citées (forme presque pleine, pas de lobe), rôle absent ; le parti sur place reste une option si la feuille gêne." },
+    { "id": "p05", "raison": "α relégué en puce, grand vide au-dessus de la roue, rôle absent, familles dites deux fois." },
+    { "id": "p06", "raison": "Orbite décorative ; β, huiles et α par source au premier plan ; substituts sans entrée visible ; rôle absent." },
+    { "id": "p07", "raison": "Trois objets dans une fiche (moteur, ma bière, houblon), α sous les actions, rôle absent ; contraire à D19." },
+    { "id": "p09", "raison": "Quasi-doublon de p08 sur la fiche ; seul son geste (loupe glissée) diffère, et il entre en concurrence avec le glissement du moment (D27)." },
+    { "id": "p10", "raison": "Tout est ouvert : c'est Beer Maverick compressé, pas trié ; l'IBU domine l'α ; « rôle non renseigné »." }
+  ],
+
+  "greffes": {
+    "sur": "p08",
+    "elements": [
+      { "de": "p01 / p02", "quoi": "La roue chiffrée : « 2/4 » sur chaque libellé, la légende cité/marqué et la famille trop marquée en accent. Supprimer alors les puces « Tropical 2/4 » pour une seule lecture des arômes, et aligner les libellés de la roue sur ceux des autres variantes (plus de « Herbe » à côté de « Herbacé »).", "pourquoi": "Supprime la redondance (C082), garde le poids des arômes (Q1) et la cohérence de silhouette que le brasseur a relevée." },
+      { "de": "p11", "quoi": "La table « Dans la recette, 46 g » (60′ 60 IBU, 10′ 22 IBU, whirlpool 9 IBU, à froid non modélisé), touchable pour placer l'ajout, à la place de la frise IBU/g muette.", "pourquoi": "D30 et D29 : ce qu'il donne dans CETTE recette, en IBU lisibles plutôt qu'en barres sans chiffres." },
+      { "de": "p01 / p11", "quoi": "Le contenant feuille du bas à mi-hauteur : la ligne appuyée et le résumé IBU / OG / EBC restent visibles au-dessus (la pile et le balayage peuvent vivre dans la feuille).", "pourquoi": "Garder le contexte de l'étape (D13) ; un réglage dans la fiche se voit dans la recette." },
+      { "de": "p02", "quoi": "Les actions d'un toucher (Ajouter à 10′, Comparer) dans une rangée sous le goût.", "pourquoi": "« Ce que tu caches c'est les infos pas les actionable » (C080)." },
+      { "de": "p10 / p04", "quoi": "Une rangée « Styles › West Coast IPA, NEIPA… », au même gabarit que Huiles et Sources.", "pourquoi": "La fiche Beer Maverick qu'il connaît a les styles. Ici, une rangée suffit." }
+    ]
+  },
+
+  "verifications": {
+    "faites": [
+      "Planche et 11 captures pNN-fiche-390.png regardées ; 11 NOTE.md lues.",
+      "Chrome (puppeteer-core, 390×844, toucher) : appui long sur index.html, capture à 300 ms (retour visible sur les 11) et à l'ouverture (même fiche que fiche.html).",
+      "Repli dans fiche.html : p01 et p02 donnent un plein écran de 274 mots qui défile de ~800 px (« Valeurs, huiles, substituts » pour p01, toucher de la carte pour p02, sans indice) ; p03, onglet Huiles, 66 mots ; p04, Huiles, Substituts, Sources sur place (49 à 86 mots) ; p05, verso de 102 mots ; p06, « Styles, sources », 76 mots ; p07, « Valeurs », 157 mots, défile de 565 px ; p08, verso de 225 mots, défile de 507 px ; p09, dépli en place, 85 à 170 mots ; p10, Composition 88 mots, Sources 115 mots ; p11, dépli sous les rangées (60 à 97 mots, sans défilement)."
+    ],
+    "non_faites": [
+      "Survol long à 1280 px non rejoué (le contrôle D25 du lot le couvre).",
+      "Aucun essai sur un vrai téléphone (gestes simulés dans Chrome)."
+    ]
+  }
+}

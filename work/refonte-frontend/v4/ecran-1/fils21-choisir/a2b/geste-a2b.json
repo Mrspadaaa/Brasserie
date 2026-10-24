@@ -1,0 +1,207 @@
+{
+ "page": "a2b/etat.html",
+ "vue": "390 × 844, toucher",
+ "etats": {
+  "repos": {
+   "levure": "US-05",
+   "moment": "actif",
+   "reponse": "La cuve apporte ~+16,9 crans, US-05 n’ajoute rien, le CO₂ emporte ~−1,9. confiance moyenne",
+   "enTout": {
+    "cuve": "~+16,9",
+    "levure": "0",
+    "co2": "~−1,9"
+   },
+   "familles": {
+    "tropical": {
+     "cuve": "+3,1",
+     "levure": "0",
+     "co2": "−0,1"
+    },
+    "citrus": {
+     "cuve": "+2,8",
+     "levure": "0",
+     "co2": "−0,1"
+    },
+    "berries": {
+     "cuve": "+2,8",
+     "levure": "0",
+     "co2": "−0,1"
+    },
+    "stoneFruit": {
+     "cuve": "+1,7",
+     "levure": "0",
+     "co2": "−0,1"
+    },
+    "resin": {
+     "cuve": "+1,7",
+     "levure": "0",
+     "co2": "−0,6"
+    },
+    "floral": {
+     "cuve": "+1,5",
+     "levure": "0",
+     "co2": "0"
+    },
+    "melon": {
+     "cuve": "+1,4",
+     "levure": "0",
+     "co2": "−0,1"
+    },
+    "green": {
+     "cuve": "+1",
+     "levure": "0",
+     "co2": "−0,5"
+    },
+    "spice": {
+     "cuve": "+0,3",
+     "levure": "0",
+     "co2": "−0,2"
+    }
+   },
+   "gestePremierEcran": true,
+   "cible": [
+    89,
+    34
+   ]
+  },
+  "pomona": {
+   "levure": "Pomona",
+   "moment": "actif",
+   "reponse": "La cuve apporte ~+16,9 crans, Pomona ajoute ~+1,6, le CO₂ emporte ~−1,9. confiance faible",
+   "enTout": {
+    "cuve": "~+16,9",
+    "levure": "~+1,6",
+    "co2": "~−1,9"
+   },
+   "familles": {
+    "tropical": {
+     "cuve": "+3,1",
+     "levure": "+0,1",
+     "co2": "−0,1"
+    },
+    "citrus": {
+     "cuve": "+2,8",
+     "levure": "+0,6",
+     "co2": "−0,1"
+    },
+    "berries": {
+     "cuve": "+2,8",
+     "levure": "+0,1",
+     "co2": "−0,1"
+    },
+    "stoneFruit": {
+     "cuve": "+1,7",
+     "levure": "+0,2",
+     "co2": "−0,1"
+    },
+    "resin": {
+     "cuve": "+1,7",
+     "levure": "+0,1",
+     "co2": "−0,6"
+    },
+    "floral": {
+     "cuve": "+1,5",
+     "levure": "+0,2",
+     "co2": "0"
+    },
+    "melon": {
+     "cuve": "+1,4",
+     "levure": "+0,1",
+     "co2": "−0,1"
+    },
+    "green": {
+     "cuve": "+1",
+     "levure": "0",
+     "co2": "−0,5"
+    },
+    "spice": {
+     "cuve": "+0,3",
+     "levure": "0",
+     "co2": "−0,2"
+    }
+   },
+   "gestePremierEcran": true,
+   "cible": [
+    89,
+    34
+   ]
+  },
+  "apres": {
+   "levure": "Pomona",
+   "moment": "après",
+   "reponse": "Après fermentation, ni levure ni CO₂ : tout vient de la cuve, ~+16,9 crans. confiance moyenne",
+   "enTout": {
+    "cuve": "~+16,9",
+    "levure": "0",
+    "co2": "0"
+   },
+   "familles": {
+    "tropical": {
+     "cuve": "+3,1",
+     "levure": "0",
+     "co2": "0"
+    },
+    "citrus": {
+     "cuve": "+2,8",
+     "levure": "0",
+     "co2": "0"
+    },
+    "berries": {
+     "cuve": "+2,8",
+     "levure": "0",
+     "co2": "0"
+    },
+    "stoneFruit": {
+     "cuve": "+1,7",
+     "levure": "0",
+     "co2": "0"
+    },
+    "resin": {
+     "cuve": "+1,7",
+     "levure": "0",
+     "co2": "0"
+    },
+    "floral": {
+     "cuve": "+1,5",
+     "levure": "0",
+     "co2": "0"
+    },
+    "melon": {
+     "cuve": "+1,4",
+     "levure": "0",
+     "co2": "0"
+    },
+    "green": {
+     "cuve": "+1",
+     "levure": "0",
+     "co2": "0"
+    },
+    "spice": {
+     "cuve": "+0,3",
+     "levure": "0",
+     "co2": "0"
+    }
+   },
+   "gestePremierEcran": true,
+   "cible": [
+    89,
+    34
+   ]
+  }
+ },
+ "levureBougeAuPremierToucher": [
+  "tropical",
+  "citrus",
+  "berries",
+  "stoneFruit",
+  "resin",
+  "floral",
+  "melon"
+ ],
+ "erreurs": [],
+ "captures": [
+  "captures/a2b-repos-390.png",
+  "captures/a2b-pomona-390.png",
+  "captures/a2b-apres-390.png"
+ ]
+}

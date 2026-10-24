@@ -1,0 +1,150 @@
+{
+ "maj": "2026-10-24",
+ "regle": "« C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10). Chaque écran repart de la maquette qu'il a choisie, telle qu'il l'a vue (CLAUDE.md, règle n° 1 ; D105).",
+ "usage": "controle-choix.mjs <dossier construit> : chaque écran « choisi » passe controle-reprise avec son inventaire (et ses contrôles) ; un écran « ouvert » est signalé avec ses options. À mettre à jour à chacun de ses choix, avec ses mots.",
+ "ecrans": [
+  {
+   "ecran": "etape-houblons",
+   "route": "ma-biere",
+   "statut": "choisi",
+   "choix": "base v4.10, étape Houblons",
+   "mots": "Ça c'est le bon. Comment cette info a été perdu ???",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-390.png",
+   "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-etape.json",
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-stepper.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-geste-etape.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-appui.mjs {dossier} --etape",
+    "work/refonte-frontend/v4/tournoi/outils/controle-legende.mjs {dossier} --etape",
+    "work/refonte-frontend/v4/tournoi/outils/controle-profil-ouvre.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=etape",
+    "work/refonte-frontend/v4/tournoi/outils/controle-fonctions-rail.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-geste-etape.mjs {dossier} --froid"
+   ],
+   "complements": [
+    {
+     "mots": "La meilleure",
+     "capture": "work/refonte-frontend/v4/outils/pages/2026-10-24-d121/img/d121-b.png",
+     "contexte": "24.10, soir, sur B, la barre pleine « Ouvrir l'analyse de ma bière › » (D121, D45)"
+    }
+   ]
+  },
+  {
+   "ecran": "ma-biere",
+   "route": "biere",
+   "statut": "choisi",
+   "choix": "base v4.10, onglet Ma bière",
+   "mots": "Ça aussi",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-ma-biere.json",
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-visee.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=biere"
+   ]
+  },
+  {
+   "ecran": "suggerer",
+   "route": "suggerer",
+   "statut": "choisi",
+   "choix": "q2b",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
+   "inventaire": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/donnees/inventaire-q2b.json",
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-traits.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=suggerer"
+   ]
+  },
+  {
+   "ecran": "comparer",
+   "route": "comparer",
+   "statut": "choisi",
+   "choix": "r6a pour la forme, avec les petites améliorations des autres versions ; les étapes, l'état au moment de l'ajout et la référence, à la manière de x3b (lot 21) (D107)",
+   "mots": "r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6a-premier-ecran.png",
+   "inventaire": "work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/inventaire-comparer.json",
+   "complements": [
+    {
+     "mots": "je voulais comparé au moins : les étapes 60' 10' dryhopping ect comme la maquette de base",
+     "capture": "work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-plans-390.png",
+     "quoi": "60′, 10′ et dry hop au moins, visibles ensemble, pour chaque houblon comparé"
+    },
+    {
+     "mots": "Montrait vraiment l'état du moment de l'ajout facile, je l'avais juste fait noté !!",
+     "capture": "work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-390.png",
+     "quoi": "l'état de la bière au moment de chaque ajout, lisible d'un coup d'œil, à la manière de x3b"
+    },
+    {
+     "mots": "Et aussi le houblon de base ou bière de base",
+     "capture": "work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-390.png",
+     "quoi": "une référence aux mêmes étapes : la bière de base (ta stout) ou le houblon de base de la recette (Nugget)"
+    }
+   ],
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-comparer-etapes.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=comparer"
+   ],
+   "note": "r6a donne la forme (inventaire) ; D107 y met les étapes, l'état au moment de l'ajout et la référence à la manière de x3b (lot 21, « Ma cuve, jour après jour », notée le 20.10 « pour de la comparaison entre ma bière de base -> 1 dry hop, 2 dry hop: levure ») : 3 éléments « d107- » de l'inventaire, et controle-comparer-etapes. Pas le Comparer de la base v4.10 (« Non pas cette version »)."
+  },
+  {
+   "ecran": "fiche",
+   "route": "fiche",
+   "statut": "choisi",
+   "choix": "g1, et la fiche courte de type Citra cryo ; la liste sous le radar : flb5b (« La matrice nettoyée », 24.10, soir)",
+   "mots": "la v1 est la meilleure",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-fiche.mjs {dossier} ma-biere --pages=etat.html",
+    "work/refonte-frontend/v4/tournoi/outils/controle-fiche-baseline.mjs {dossier} ma-biere --page=etat.html",
+    "work/refonte-frontend/v4/tournoi/outils/controle-fiche-radar.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=fiche"
+   ],
+   "note": "La forme de la fiche se vérifie sur sa page (fiche/etat.html, ouverte) par l'inventaire g1 ; le geste (appui long, survol à l'ordinateur) par controle-fiche et controle-fiche-baseline depuis l'étape Houblons.",
+   "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-fiche.json",
+   "complements": [
+    {
+     "mots": "Partie sur celle ci, elle met parcontre en avant qqch qu'il faut ajouter à plusieurs endroits. Les type spéciaux des houblons hors 16d ! C'est très important surtout dans la comparaison !!!!",
+     "capture": "work/refonte-frontend/v4/ecran-1/fils24-fiche-liste/captures/flb5b-premier-ecran.png"
+    }
+   ]
+  },
+  {
+   "ecran": "dryhopper",
+   "route": "dryhopper",
+   "statut": "choisi",
+   "choix": "p4b2f (passe 5, retouche de p4b2, « L'aire du floral »)",
+   "mots": "Partir sur cette version",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/captures/p4b2f-premier-ecran.png",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=dryhopper"
+   ],
+   "note": "Choisi le 24.10 au soir, à la place d'a1 (provisoire) ; reprise r13-dryhopper : ses états relevés sur p4b2f (choix/etats/dryhopper.json), puis rendus dans la maquette.",
+   "contexte": "24.10, soir, sur p4b2f dans « Planches · 24.10 » ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »"
+  },
+  {
+   "ecran": "substituer",
+   "route": "substituer",
+   "statut": "choisi",
+   "choix": "u4 (lot 11, fils11-substitution)",
+   "mots": "Substitution, ça serait plus du u4",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils11-substitution/captures/u4-vue-390.png",
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=substituer",
+    "work/refonte-frontend/v4/tournoi/outils/controle-annuler.mjs {dossier} --routes=substituer"
+   ],
+   "note": "Son choix du 19.10 (« Substitution, ça serait plus du u4 » ; le jury mettait u3 devant), confirmé par « Ajouter, vue -> substituer à faire dans le git » (23.10, #145). Le registre le marquait « ouvert » avec la « porte vers Comparer » du conseil du 22.10 en provisoire : une carte mise à la place de sa parole (règle n° 1). Rétabli par le pilote après le conseil complet du 24.10 (cerveau/decisions/2026-10-24-lot-d125-vues.md, D34). Les états de u4 : choix/etats/substituer.json (voie r6). Le lot D125 explore Substituer en fils de fer avec u4 en plancher ; il choisit sur les variantes."
+  },
+  {
+   "ecran": "levure",
+   "route": "levure",
+   "statut": "ouvert",
+   "options": [
+    "étape de Dryhopper",
+    "un outil propre (a2b)"
+   ],
+   "provisoire": "étape de Dryhopper",
+   "page": "https://claude.ai/artifact/9FrNPBUDv7ABeo5CsSFW7g"
+  }
+ ]
+}

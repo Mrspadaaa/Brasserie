@@ -1,0 +1,19 @@
+/* Pied « Annuler · action » des outils qui changent la recette (D120). Classes propres préfixées pq-annuler- (L26).
+   Jetons de l'app (rgb(var(--cave-…))) : la teinte suit le thème des maquettes (D106). */
+.pq-annuler-pied { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.pq-annuler-resume { min-width: 0; font-size: 14px; line-height: 1.25; color: rgb(var(--cave-200)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pq-annuler-rang { display: flex; align-items: stretch; gap: 8px; }
+.pq-annuler-bouton {
+  flex: 0 0 auto; min-height: 48px; padding: 0 22px; border-radius: 9999px;
+  border: 1.5px solid rgb(var(--cave-700)); background: transparent; color: rgb(var(--cave-50));
+  font-size: 15px; font-weight: 600; white-space: nowrap;
+}
+.pq-annuler-bouton:active { background: rgb(var(--cave-850)); }
+.pq-annuler-bouton:focus-visible { outline: 2px solid rgb(var(--cave-50)); outline-offset: 2px; }
+.pq-annuler-action { flex: 1 1 auto; min-width: 0; display: flex; }
+.pq-annuler-action > nav { flex: 1 1 auto; min-width: 0; display: flex; }
+.pq-annuler-action > button, .pq-annuler-action > nav > button { flex: 1 1 auto; min-height: 48px; justify-content: center; font-size: 15px; display: inline-flex; align-items: center; gap: 4px; }
+/* À l'ordinateur, le pied ne s'étire pas sur toute la page : il se range à droite, à la largeur d'un pouce. */
+@media (min-width: 768px) {
+  .pq-annuler-pied { flex: 0 1 26rem; margin-left: auto; }
+}

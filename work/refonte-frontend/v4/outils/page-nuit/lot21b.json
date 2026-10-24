@@ -1,0 +1,30 @@
+{
+ "ticket": 119,
+ "ancre": "t119-lot21b",
+ "court": "les 5 améliorées",
+ "titre": "Les cinq améliorées et trois relances (lot 21, seconde passe, 20.10 nuit)",
+ "etat": "à choisir",
+ "puces": [
+  "Tu avais demandé : « prends les 5 meilleures version et améliore les ». Le critique, calibré sur tes verdicts, a retenu une variante par question. Dans l'ordre où il te les présente : y1b (quand ?), s3b (jusqu'où, à quelle dose ?), x3b (combien de jours, actif ou au repos ?), v1b (Citra ou Cascade ?), w3b (je la veux plus florale : je mets quoi ?).",
+  "Commun aux cinq : départ en dry hop pendant la fermentation (la levure compte dès le premier toucher, Pomona fait monter les agrumes), le geste au premier écran, peu d'explications (moins de 70 mots hors données), le résineux de ta dégustation dit une seule fois, aucun code sans mot, les chiffres du moteur corrigé (4,75 % vol.). Chaque geste est prouvé en valeurs avant / pendant / après.",
+  "y1b : glisse Citra du dry hop à 60′, les agrumes tombent de 3,5 à 0,7 cran et l'amertume monte à 140–180 IBU, trop amer. s3b : la carte des possibles (« Citra, dry hop actif : au style jusqu'à 2 g/L ; à 60′, presque tout part »). x3b : « Faisable, mais Idaho 7 reste 2 j sans gain mesuré ». v1b : « Mêmes mots, pas le même cône » ; il faudrait ~11,5 g/L de Cascade pour l'agrume d'un Citra à 4 g/L. w3b : tu tires la cible, la page te répond en une phrase.",
+  "Trois relances, qui remplacent leur v0 : r3b (la dose limite de chaque houblon dans ta 16D), a2b (la cuve apporte ~+16,9 crans, Pomona ajoute ~+1,6, le CO₂ emporte ~−1,9), e4 (un classement qui ne départage que ce qui se départage vraiment).",
+  "Les dernières retouches du critique sont faites : y1b garde « face à ta stout » après le geste ; s3b laisse défiler la page depuis la carte (un appui court ouvre la loupe) ; x3b dit « floral → agrumes, estimé » au lieu d'une plage chimique ; v1b tient en une ligne et une phrase en haut (50 mots d'explication) ; w3b fait de chaque mot de la phrase un réglage. Tous les contrôles passent, dont un nouveau : aucune valeur brute en anglais (« low », « unknown »…) à l'écran.",
+  "Reste connu : quelques mots anglais dans les fiches de la base (« black currant » pour Cascade), à traduire à part."
+ ],
+ "images": [
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/y1b-premier-ecran.png", "1 · y1b le brassin au doigt"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/y1b-apres.png", "y1b, Citra glissé à 60′"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/s3b-premier-ecran-390.png", "2 · s3b la carte des possibles"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/s3b-pendant.png", "s3b, doigt sur la carte (loupe)"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-haut-390.png", "3 · x3b ma cuve, jour après jour"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-geste-2-glisser-apres.png", "x3b, Idaho 7 glissé « ensemble »"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/v1b-premier-ecran.png", "4 · v1b le duel à dose égale"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/v1b-avant.png", "v1b, le mélange au doigt"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/w3b-haut-390.png", "5 · w3b dessine ta bière"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/w3b-apres.png", "w3b, cible tirée : « ne marchera pas »"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/r3b-haut-390.png", "r3b la dose limite"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/a2b-pomona-390.png", "a2b levure et CO₂ (Pomona)"],
+  ["C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/e4-haut.png", "e4 ce qui départage"]
+ ]
+}

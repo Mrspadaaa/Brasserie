@@ -1,0 +1,484 @@
+{
+ "ecran": "fiche",
+ "choix": "g1, et la fiche courte de type Citra cryo",
+ "source": "Relevé joué de work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html (et de l'appui long depuis index.html) contre prototypes/houblons-v4/maquettes/parcours-5345f6ad/fiche/etat.html ; voie p21a.",
+ "maj": "2026-10-24",
+ "etats": [
+  {
+   "id": "etat-fiche-ouverte",
+   "mots": "la v1 est la meilleure (g1) ; « Ça c'est très bien » (fiche courte Citra cryo)",
+   "etat": "fiche de Nugget ouverte",
+   "quoi": "Base : feuille presque pleine, ✕ rond, « Nugget ⊙ », « α 11–14 % lot 13 % » + jauge, « double usage », bande des 12 familles puis 7 familles citées (« Épicé · nommé en premier » seul), « sans famille : gingembre, resiny », « 5 non décrites », puis le radar.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-ouverte-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/fiche/etat.html",
+    "selecteur_choisie": "(aucun)",
+    "selecteur_5345f6ad": "(aucun)",
+    "geste": "aucun"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Voulu : radar avant la liste (D115). Mesuré : α « 9,5–16 % » (Beer Maverick 2023) au lieu de « 11–14 % » (Hopsteiner 2025) en gros ; 8 familles citées au lieu de 7 (Terreux et Agrumes en bas) et « nommé en premier » sur 4 familles au lieu d'une ; part « autres 14 % » dessinée (D100).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-ouverte-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "fiche",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+    "selecteur_choisie": "[data-role=\"fiche\"]",
+    "geste": "repos",
+    "attendu": [
+     "Nugget",
+     "Hopsteiner 2025",
+     "lot 13 %"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-fiche-bas",
+   "mots": "la v1 est la meilleure (g1) ; « Ça c'est très bien » (fiche courte Citra cryo) ; « Ajouter à 10' est un palace holder? » (retiré)",
+   "etat": "fiche de Nugget, défilée au pied",
+   "quoi": "Base : ♡ et ⊘ à gauche, « Comparer » à droite, puis quatre boutons « Styles › · Huiles › · Sources › · Substituts › ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-bas-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/fiche/etat.html",
+    "selecteur_choisie": "(défilement)",
+    "selecteur_5345f6ad": "(défilement)",
+    "geste": "défiler"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Le pied porte ♡, ⊘, Comparer seulement : « Styles », « Huiles », « Sources », « Substituts » n'existent plus (aucun bouton, texte absent du DOM). « Ajouter à 10′ » est retiré, comme ses mots.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-bas-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "fiche",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+    "selecteur_choisie": "[aria-label=\"Déplier styles\"]",
+    "geste": "repos",
+    "attendu": [
+     "Styles",
+     "Huiles",
+     "Sources",
+     "Substituts",
+     "Comparer"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-fiche-appui-long-carte",
+   "mots": "Aussi je voudrais que quand je fasse un appuie long… je puisse voir sa fiche en détails ; « La zone de trigger… devrait être la fiche entière »",
+   "etat": "appui long (700 ms) sur la carte de Nugget",
+   "quoi": "Base : la fiche g1 s'ouvre sur l'étape, haut assombri visible.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-appui-long-carte-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[data-role=\"ligne-houblon\"]",
+    "selecteur_5345f6ad": "[data-role=\"ligne-houblon\"]",
+    "geste": "appui long 700 ms"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "La fiche s'ouvre (#/fiche/nugget), sur toute la carte.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-appui-long-carte-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"ligne-houblon\"]",
+    "geste": "appui-long",
+    "attendu": [
+     "Nugget",
+     "Comparer"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-fiche-appui-en-cours",
+   "mots": "L'appui prolonger fait pas l'effet escompté (D112)",
+   "etat": "doigt posé 420 ms sur la carte",
+   "quoi": "Base : à 420 ms la fiche est déjà ouverte.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-appui-en-cours-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[data-role=\"ligne-houblon\"]",
+    "selecteur_5345f6ad": "[data-role=\"ligne-houblon\"]",
+    "geste": "toucher tenu 420 ms"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Même : fiche ouverte à 420 ms.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-appui-en-cours-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"ligne-houblon\"]",
+    "geste": "appui-long",
+    "attendu": [
+     "Nugget",
+     "Comparer"
+    ],
+    "interdit": [],
+    "appui_ms": 800,
+    "tenu": true
+   }
+  },
+  {
+   "id": "etat-fiche-appui-long-citra",
+   "mots": "sur celle de Citra cryo : « Ça c'est très bien » (19.10, fiche courte)",
+   "etat": "appui long sur Citra cryo (ajout rapide)",
+   "quoi": "Base (103 mots) : « α 10–15 % lot 24,8 % », « α : plages de Citra en pellets ; la fiche du cryo manque. », « 1 seule fiche : Beer Maverick », familles sans note de comptage, « sans famille : groseille à maquereau », « 7 non décrites », « + Floral 1 seule fiche · − Résineux inconnu », puis Ajouter à 10′ (retiré depuis), Comparer, Styles / Huiles / Sources / Substituts.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-appui-long-citra-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[data-role=\"ajout-rapide\"] (2e)",
+    "selecteur_5345f6ad": "[data-role=\"ajout-rapide\"] (2e)",
+    "geste": "appui long 700 ms"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Texte de la fiche (187 mots) sans « pellets », « seule fiche », « Beer Maverick », « fiche du cryo manque » ni « inconnu » (0 occurrence) : la note qui dit que l'α vient des pellets et que la fiche du cryo manque, et la source unique, ont disparu ; « 1/1 » ajouté ; « autres 11 % » dessiné.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-appui-long-citra-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"ajout-rapide\"]",
+    "geste": "appui-long",
+    "attendu": [
+     "pellets",
+     "fiche du cryo manque",
+     "Beer Maverick",
+     "inconnu"
+    ],
+    "interdit": [],
+    "rang": 1
+   }
+  },
+  {
+   "id": "etat-fiche-aimer",
+   "mots": "la v1 est la meilleure (♡ et ⊘, son goût)",
+   "etat": "fiche de Nugget, toucher ♡",
+   "quoi": "Base : ♡ plein noir, ⊘ gris.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-aimer-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/fiche/etat.html",
+    "selecteur_choisie": "[aria-label=\"Aimer Nugget\"]",
+    "selecteur_5345f6ad": "button « J’aime »",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Même : ♡ plein noir.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-aimer-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "fiche",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+    "selecteur_choisie": "[aria-label=\"Aimer Nugget\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Remettre neutre : Aimer Nugget"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-fiche-exclure",
+   "mots": "la v1 est la meilleure (♡ et ⊘, son goût)",
+   "etat": "fiche de Nugget, toucher ⊘",
+   "quoi": "Base : ⊘ plein noir.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-exclure-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/fiche/etat.html",
+    "selecteur_choisie": "[aria-label=\"Exclure Nugget\"]",
+    "selecteur_5345f6ad": "button « Pas pour moi »",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Même : ⊘ plein noir.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-exclure-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "fiche",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+    "selecteur_choisie": "[aria-label=\"Exclure Nugget\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Remettre neutre : Exclure Nugget"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-fiche-comparer",
+   "mots": "r6a reste le meilleur… (D107) ; g1-actions « Comparer »",
+   "etat": "toucher « Comparer »",
+   "quoi": "Base : ouvre Comparer avec Nugget ajouté.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-comparer-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/fiche/etat.html",
+    "selecteur_choisie": "[aria-label^=\"Comparer Nugget\"]",
+    "selecteur_5345f6ad": "[data-role=\"pont-comparer-fiche\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Ouvre Comparer r6a avec Nugget (« Comparer (1) ») : destination voulue (D107).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-comparer-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "fiche",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+    "selecteur_choisie": "[aria-label^=\"Comparer Nugget\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Comparer"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-fiche-styles",
+   "mots": "D25, D49 : « Styles, Huiles, Sources, Substituts repliés » (consolide NOTE § 5)",
+   "etat": "toucher « Styles › »",
+   "quoi": "Base : se déplie : « West Coast IPA · NEIPA · Session IPA ; Crosby Hops, Nugget — Crosby Hops ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-styles-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/fiche/etat.html",
+    "selecteur_choisie": "[aria-label=\"Déplier styles\"]",
+    "selecteur_5345f6ad": "(bouton absent)",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Bouton absent : les styles où se range le houblon ne sont plus consultables.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-styles-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "fiche",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+    "selecteur_choisie": "[aria-label=\"Déplier styles\"]",
+    "geste": "toucher",
+    "attendu": [
+     "West Coast IPA",
+     "NEIPA",
+     "Crosby Hops"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-fiche-huiles",
+   "mots": "D25, D49 : « Styles, Huiles, Sources, Substituts repliés »",
+   "etat": "toucher « Huiles › »",
+   "quoi": "Base : table des huiles (totale 0,9–3,3 mL/100 g Beer Maverick 2023 ; myrcène 48–59 % ; humulène 12–22 % ; caryophyllène 7–10 % ; farnésène ; linalol 0,8–1 %).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-huiles-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/fiche/etat.html",
+    "selecteur_choisie": "[aria-label=\"Déplier huiles\"]",
+    "selecteur_5345f6ad": "(bouton absent)",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Bouton et table des huiles absents.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-huiles-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "fiche",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+    "selecteur_choisie": "[aria-label=\"Déplier huiles\"]",
+    "geste": "toucher",
+    "attendu": [
+     "myrcène",
+     "humulène"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-fiche-sources",
+   "mots": "D25, D49 : « Styles, Huiles, Sources, Substituts repliés »",
+   "etat": "toucher « Sources › »",
+   "quoi": "Base : table des sources : α Beer Maverick 2023 9,5–16 %, α Hopsteiner 2025 11–14 %, α mon lot 13 %, β des deux sources, origine (États-Unis, IBU 20 L, DI 1,066, ébullition 60 min), puis chaque famille avec ses sources (Résineux 2/4 : Hopsteiner (boutique US), Yakima Chief Hops).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-sources-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/fiche/etat.html",
+    "selecteur_choisie": "[aria-label=\"Déplier sources\"]",
+    "selecteur_5345f6ad": "(bouton absent)",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Bouton absent : d'où vient chaque valeur n'est plus consultable ; la fiche titre « α 9,5–16 % » (Beer Maverick 2023) sans que Hopsteiner 2025 (11–14 %) se voie nulle part.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-sources-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "fiche",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+    "selecteur_choisie": "[aria-label=\"Déplier sources\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Beer Maverick 2023",
+     "Hopsteiner 2025"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-fiche-substituts",
+   "mots": "D25, D49 : « Styles, Huiles, Sources, Substituts repliés »",
+   "etat": "toucher « Substituts › »",
+   "quoi": "Base : ouvre « remplaçants à 60′ » (Magnat 99, Yeoman 99, Sabro 93, Nelson Sauvin 86, Galaxy 85…).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-substituts-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/fiche/etat.html",
+    "selecteur_choisie": "[aria-label^=\"Ouvrir les remplaçants\"]",
+    "selecteur_5345f6ad": "(bouton absent)",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Bouton absent. Substituer est un écran au choix ouvert (provisoire : la porte vers Comparer) : la maquette offre « Sans Nugget › » sur la carte de l'étape à la place.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-substituts-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "fiche",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+    "selecteur_choisie": "[aria-label^=\"Ouvrir les remplaçants\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Magnat",
+     "Yeoman",
+     "Sabro"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-fiche-fermer-croix",
+   "mots": "Juste une croix bien positionné, facile, dans le thème suffirait (D109)",
+   "etat": "toucher ✕ de la fiche",
+   "quoi": "Base : ✕ rond (32 px) referme la fiche sur l'étape.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-fermer-croix-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/fiche/etat.html",
+    "selecteur_choisie": "[data-role=\"fermer-fiche\"]",
+    "selecteur_5345f6ad": "[data-role=\"retour\"]",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Referme sur l'étape ; ✕ de 44 px (voulu).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-fermer-croix-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "fiche",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+    "selecteur_choisie": "[data-role=\"fermer-fiche\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Ébullition 60′"
+    ],
+    "interdit": [],
+    "note": "D109 : ✕ de 44 px (voulu) ; le geste reste : la fiche se referme sur l'étape"
+   }
+  },
+  {
+   "id": "etat-fiche-fermer-fond",
+   "mots": "la v1 est la meilleure (haut de la page assombri)",
+   "etat": "toucher le fond assombri au-dessus de la feuille",
+   "quoi": "Base : la fiche se referme.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-fermer-fond-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/fiche/etat.html",
+    "selecteur_choisie": "(point 195, 40)",
+    "selecteur_5345f6ad": "(point 195, 20)",
+    "geste": "toucher le fond"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Se referme aussi.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-fermer-fond-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "fiche",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+    "selecteur_choisie": ".f-voile",
+    "geste": "toucher",
+    "attendu": [
+     "Ébullition 60′"
+    ],
+    "interdit": [],
+    "point": [
+     195,
+     40
+    ]
+   }
+  },
+  {
+   "id": "etat-fiche-radar-sommet",
+   "mots": "l'inconnu n'est jamais 0 (SPEC) ; g1-radar : les inconnus « ? » hachurés",
+   "etat": "toucher un sommet du radar de la fiche (Melon)",
+   "quoi": "Base : bulle « Melon : ses fiches ne le décrivent pas, inconnu (ce n'est pas zéro), posé au centre ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-radar-sommet-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/fiche/etat.html",
+    "selecteur_choisie": "[data-role=\"fiche-arome\"] circle",
+    "selecteur_5345f6ad": "[data-role=\"g1-radar\"] circle (11 cercles, aucun réactif)",
+    "geste": "toucher"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Aucune bulle : le toucher d'un sommet ne dit rien (capture identique à l'ouverte).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-radar-sommet-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "fiche",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+    "selecteur_choisie": "[data-role=\"fiche-arome\"] circle[data-inconnu=\"melon\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Melon",
+     "inconnu"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-fiche-survol-1280",
+   "mots": "appuie long, hover long super ordinateur, sur houblons, je puisse voir sa fiche (D49 : toute la carte)",
+   "etat": "souris posée 2,5 s au milieu de la carte de Nugget, 1280 × 800",
+   "quoi": "Base : une fiche flottante s'ouvre à droite de la carte, la carte est encadrée.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-survol-1280-choisie.png",
+   "jeu": {
+    "page_5345f6ad": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/ma-biere/etat.html",
+    "selecteur_choisie": "[data-role=\"ligne-houblon\"] (survol)",
+    "selecteur_5345f6ad": "[data-role=\"ligne-houblon\"] (survol)",
+    "geste": "survol 2,5 s (capture 1280 × 800)"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Sur la carte, rien ne s'ouvre (#/ma-biere) ; seule la zone du nom (data-role ouvrir-fiche) ouvre la fiche : la plainte D49 « La zone de trigger est que le nom » est revenue à l'ordinateur.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-survol-1280-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"ligne-houblon\"]",
+    "geste": "survol",
+    "attendu": [
+     "Nugget",
+     "Comparer"
+    ],
+    "interdit": [],
+    "viewport": "1280x800"
+   }
+  }
+ ]
+}

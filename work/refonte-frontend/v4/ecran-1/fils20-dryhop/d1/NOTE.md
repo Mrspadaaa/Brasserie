@@ -1,0 +1,21 @@
+- **Ce qui tient** : la frise des jours du moteur, Citra 2 g/L 3 j puis Galaxy 2 g/L 7 j (ou Idaho 7 5 j), sur la stout S1 et son Nugget à 60′. La frise va de J0 à J18, pas à J14 : le moteur pose le dry hop à J+7 et Galaxy sort à J17. Chaque barre montre ses premières 24 h, puis la suite jusqu'à 3 j, puis des hachures au-delà. Ce sont les drapeaux du moteur, chacun ouvre sa preuve :
+  - au-delà de 3 j : rien de plus à l'arôme, végétal inconnu, hop creep ;
+  - saturation à 4 g/L dans la zone 4–8 g/L, preuve Cascade seule ;
+  - ordre et synergie inconnus ;
+  - géraniol → citronellol pour Idaho 7, avec le cas Pomona.
+
+  Cinq composés lisent la recette entière : charge cumulée et rapport au seuil en plage, repère central, un filet par ajout. Au style, ils se lisent face à la zone 16D jusqu'à ×10 (convention [H] du moteur), sinon en absolu. L'α est vrai : le lot en stock, plus la plage des fiches en petit ; Citra n'a pas de lot en pellets, le stock est du cryo à 24,8 %. Les fiches g1 de l8b s'ouvrent à l'appui long. La légende est derrière « ? ». Tous les chiffres viennent de `fils19-choix/donnees/cas-citra3-*.json` ; `donnees-h.json` ne sert qu'à la zone 4–8 g/L.
+- **Ce qui casse** :
+  - 70 mots au premier écran, juste à la limite : la dose, l'α et les durées se disputent la place.
+  - Pour tenir ALPHA (D87) sans dépasser, le bouton du scénario caché montre l'α du lot de son houblon (Idaho 7 12,7 %). En échange, trois mots sont partis : « chacun » (2 g/L), les deux-points de « ordre, synergie » et « au-dessus » du repli 16D (le signe le dit).
+  - Le cumul compte le Nugget à 60′ (myrcène, linalol), d'où des bornes basses « au moins ».
+  - Le texte des preuves vient du moteur, long et dense, mais il ne s'ouvre qu'à la demande.
+  - Les filets par houblon font 2,5 px.
+  - Contrôles : COMMUN OK (MOTS 70, COULEURS, AU-STYLE, SURVOL, BLOCS, CONTRASTE, FICHE, STANDARD, TRAIT, LEGENDE, PARLANT) et CHIFFRES OK (`controle-chiffres.mjs`, 291 textes chiffrés). Pire contraste : 5,69:1 au repos (« chacun »), 4,96:1 tout ouvert, fiches comprises (« Agrumes », #856e0c sur blanc) ; aucun texte sous 4,5:1.
+- **Ce qui reste inconnu** :
+  - l'ordre des ajouts, la synergie et le masquage ;
+  - le végétal en fonction du temps ;
+  - le 3MH de la recette (Galaxy : non détecté ; Idaho 7 : non séparé) et le géraniol de Galaxy ;
+  - la borne haute du 4MMP de Galaxy ;
+  - la perception en bière noire ;
+  - les conventions [H] du moteur, à valider par le brasseur : ×10 pour « hors du style », densité des hydrocarbures, transfert des sesquiterpènes.

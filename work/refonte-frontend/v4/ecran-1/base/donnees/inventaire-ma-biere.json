@@ -1,0 +1,139 @@
+{
+ "maj": "2026-10-24",
+ "source": "Onglet Ma bière de la base v4.10 (consolide/biere.html), capture consolide-biere-390.png ; « Ça aussi » (23.10, sur la capture).",
+ "contrat": "Une reprise de la maquette choisie reprend chacun de ces éléments à l'écran (marqueur data-element), ou l'écarte avec sa raison écrite dans la NOTE (un quart au plus) : D105, controle-reprise.mjs --inventaire=<ce fichier>.",
+ "elements": [
+  {
+   "id": "biere-onglets",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Ça aussi",
+   "quoi": "Les onglets « Ma bière · Suggestions · Comparer » en tête, Ma bière active, avec « ‹ ».",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "biere-bandeau",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Ça aussi",
+   "quoi": "Le bandeau IBU (avec sa jauge au style), OG et EBC.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "biere-alerte",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Ça aussi",
+   "quoi": "L'alerte dégustée en tête, point rouge : « Boisé et résineux trop marqué ».",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "biere-reglages",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Ça aussi",
+   "quoi": "« Barres / Radar » et « Au style / Absolu ».",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "biere-decompte",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Ça aussi",
+   "quoi": "Le décompte « 6 au style · 5 non situées ».",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "biere-legende",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Ça aussi",
+   "quoi": "Les trois pastilles « dégusté 18.10 · prévu · non situé », puis « zone du style · au-dessus » au-dessus des barres.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "biere-barres",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Je trouve cette vue des barre super car très compact et facile",
+   "quoi": "Une barre par famille, au style : la zone du style, la zone « au-dessus » en pointillé, le point (dégusté plein, prévu creux) et « prévu » à droite ; l'inconnu hachuré et « non situé ».",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "biere-hors-style",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Ça aussi",
+   "quoi": "La famille hors du style en rouge, avec son facteur à droite (« ×2,8 »).",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "biere-bannir",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "je sais pas comment bannir une contraintes ou réduire une autre",
+   "quoi": "La famille touchée s'ouvre sous sa barre : « bannir · − · sans visée · + ».",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "biere-objectifs",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Ça aussi",
+   "quoi": "En bas, les objectifs : « + floral », « − résineux », « + … » ; ils ouvrent Suggestions.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "facteur": "outil : Suggérer"
+  },
+  {
+   "id": "biere-levure",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Ça aussi",
+   "quoi": "« Prévu avec SafAle US-05, caractérisée » au pied de l'écran.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "biere-crans-style",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Je trouve cette vue des barre super car très compact et facile",
+   "quoi": "Sur les barres des familles non attendues du style (Agrumes, Tropicaux, Résineux, Épicé…), la zone du style découpée en crans : deux petits traits dans la zone (relevé par la supervision le 24.10, à côté de sa base).",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
+   "facteur": "contexte"
+  }
+ ]
+}

@@ -1,0 +1,575 @@
+{
+ "avant": {
+  "plan": "Citra 3 j, puis Idaho 7 5 j (actif)",
+  "jour": "J4",
+  "verdict": "Faisable, mais Idaho 7 reste 2 j sans gain mesuré, hop creep possible, ~ tropicaux hors de la 16D",
+  "aimant": "",
+  "bulle": "",
+  "blocs": [
+   {
+    "houblon": "Citra",
+    "gauche": 117,
+    "largeur": 52,
+    "texte": "3 j"
+   },
+   {
+    "houblon": "Idaho 7",
+    "gauche": 169,
+    "largeur": 87,
+    "texte": "5 j"
+   }
+  ],
+  "source": "moteur, cas K4-us05-actif",
+  "levure": "us05",
+  "crans": {
+   "floral": "1,2",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "2,6",
+   "tropical": "2,8",
+   "stoneFruit": "1,3",
+   "pomeFruit": "inconnu",
+   "berries": "2,1",
+   "melon": "1,3",
+   "spice": "0,1",
+   "green": "0,3"
+  },
+  "hautBarres": {
+   "floral": 19,
+   "herbal": 0,
+   "earthy": 0,
+   "citrus": 39,
+   "tropical": 43,
+   "stoneFruit": 20,
+   "pomeFruit": 0,
+   "berries": 33,
+   "melon": 20,
+   "spice": 2,
+   "green": 5
+  }
+ },
+ "tenirPendant": {
+  "plan": "Citra 3 j, puis Idaho 7 5 j (actif)",
+  "jour": "J6",
+  "verdict": "Faisable, mais Idaho 7 reste 2 j sans gain mesuré, hop creep possible, ~ tropicaux hors de la 16D",
+  "aimant": "",
+  "bulle": "depuis hier : baies ~+0,6 cran, floral ~+0,3 cran, tropicaux ~+0,3 cran",
+  "blocs": [
+   {
+    "houblon": "Citra",
+    "gauche": 117,
+    "largeur": 52,
+    "texte": "3 j"
+   },
+   {
+    "houblon": "Idaho 7",
+    "gauche": 169,
+    "largeur": 87,
+    "texte": "5 j"
+   }
+  ],
+  "source": "moteur, cas K4-us05-actif",
+  "levure": "us05",
+  "crans": {
+   "floral": "1,6",
+   "herbal": "0,2",
+   "earthy": "0,2",
+   "citrus": "2,8",
+   "tropical": "3,1",
+   "stoneFruit": "1,6",
+   "pomeFruit": "inconnu",
+   "berries": "2,7",
+   "melon": "1,3",
+   "spice": "0,2",
+   "green": "0,6"
+  },
+  "hautBarres": {
+   "floral": 24,
+   "herbal": 3,
+   "earthy": 4,
+   "citrus": 43,
+   "tropical": 47,
+   "stoneFruit": 24,
+   "pomeFruit": 0,
+   "berries": 41,
+   "melon": 20,
+   "spice": 3,
+   "green": 9
+  }
+ },
+ "tenu": {
+  "plan": "Citra 3 j, puis Idaho 7 5 j (actif)",
+  "jour": "J8",
+  "verdict": "Faisable, mais Idaho 7 reste 2 j sans gain mesuré, hop creep possible, ~ tropicaux hors de la 16D",
+  "aimant": "",
+  "bulle": "depuis hier : ~ presque rien ne bouge",
+  "blocs": [
+   {
+    "houblon": "Citra",
+    "gauche": 117,
+    "largeur": 52,
+    "texte": "3 j"
+   },
+   {
+    "houblon": "Idaho 7",
+    "gauche": 169,
+    "largeur": 87,
+    "texte": "5 j"
+   }
+  ],
+  "source": "moteur, cas K4-us05-actif",
+  "levure": "us05",
+  "crans": {
+   "floral": "1,6",
+   "herbal": "0,2",
+   "earthy": "0,2",
+   "citrus": "2,8",
+   "tropical": "3,1",
+   "stoneFruit": "1,6",
+   "pomeFruit": "inconnu",
+   "berries": "2,7",
+   "melon": "1,3",
+   "spice": "0,2",
+   "green": "0,6"
+  },
+  "hautBarres": {
+   "floral": 24,
+   "herbal": 3,
+   "earthy": 4,
+   "citrus": 43,
+   "tropical": 47,
+   "stoneFruit": 24,
+   "pomeFruit": 0,
+   "berries": 42,
+   "melon": 20,
+   "spice": 3,
+   "green": 9
+  }
+ },
+ "tenuLache": {
+  "plan": "Citra 3 j, puis Idaho 7 5 j (actif)",
+  "jour": "J8",
+  "verdict": "Faisable, mais Idaho 7 reste 2 j sans gain mesuré, hop creep possible, ~ tropicaux hors de la 16D",
+  "aimant": "",
+  "bulle": "depuis hier : ~ presque rien ne bouge",
+  "blocs": [
+   {
+    "houblon": "Citra",
+    "gauche": 117,
+    "largeur": 52,
+    "texte": "3 j"
+   },
+   {
+    "houblon": "Idaho 7",
+    "gauche": 169,
+    "largeur": 87,
+    "texte": "5 j"
+   }
+  ],
+  "source": "moteur, cas K4-us05-actif",
+  "levure": "us05",
+  "crans": {
+   "floral": "1,6",
+   "herbal": "0,2",
+   "earthy": "0,2",
+   "citrus": "2,8",
+   "tropical": "3,1",
+   "stoneFruit": "1,6",
+   "pomeFruit": "inconnu",
+   "berries": "2,7",
+   "melon": "1,3",
+   "spice": "0,2",
+   "green": "0,6"
+  },
+  "hautBarres": {
+   "floral": 24,
+   "herbal": 3,
+   "earthy": 4,
+   "citrus": 43,
+   "tropical": 47,
+   "stoneFruit": 24,
+   "pomeFruit": 0,
+   "berries": 42,
+   "melon": 20,
+   "spice": 3,
+   "green": 9
+  }
+ },
+ "avantGlisser": {
+  "plan": "Citra 3 j, puis Idaho 7 5 j (actif)",
+  "jour": "J4",
+  "verdict": "Faisable, mais Idaho 7 reste 2 j sans gain mesuré, hop creep possible, ~ tropicaux hors de la 16D",
+  "aimant": "",
+  "bulle": "depuis hier : ~ presque rien ne bouge",
+  "blocs": [
+   {
+    "houblon": "Citra",
+    "gauche": 117,
+    "largeur": 52,
+    "texte": "3 j"
+   },
+   {
+    "houblon": "Idaho 7",
+    "gauche": 169,
+    "largeur": 87,
+    "texte": "5 j"
+   }
+  ],
+  "source": "moteur, cas K4-us05-actif",
+  "levure": "us05",
+  "crans": {
+   "floral": "1,2",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "2,6",
+   "tropical": "2,8",
+   "stoneFruit": "1,3",
+   "pomeFruit": "inconnu",
+   "berries": "2,1",
+   "melon": "1,3",
+   "spice": "0,1",
+   "green": "0,3"
+  },
+  "hautBarres": {
+   "floral": 19,
+   "herbal": 0,
+   "earthy": 0,
+   "citrus": 39,
+   "tropical": 43,
+   "stoneFruit": 20,
+   "pomeFruit": 0,
+   "berries": 33,
+   "melon": 20,
+   "spice": 2,
+   "green": 5
+  }
+ },
+ "pendant": {
+  "plan": "Citra 3 j, puis Idaho 7 5 j (actif)",
+  "jour": "J4",
+  "verdict": "Faisable, mais hop creep possible, ~ tropicaux hors de la 16D",
+  "aimant": "",
+  "bulle": "",
+  "blocs": [
+   {
+    "houblon": "Citra",
+    "gauche": 117,
+    "largeur": 52,
+    "texte": "3 j"
+   },
+   {
+    "houblon": "Idaho 7",
+    "gauche": 117,
+    "largeur": 87,
+    "texte": "5 j"
+   }
+  ],
+  "source": "moteur, cas K4-us05-actif",
+  "levure": "us05",
+  "crans": {
+   "floral": "1,2",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "2,6",
+   "tropical": "2,8",
+   "stoneFruit": "1,3",
+   "pomeFruit": "inconnu",
+   "berries": "2,1",
+   "melon": "1,3",
+   "spice": "0,1",
+   "green": "0,3"
+  },
+  "hautBarres": {
+   "floral": 24,
+   "herbal": 3,
+   "earthy": 4,
+   "citrus": 43,
+   "tropical": 47,
+   "stoneFruit": 24,
+   "pomeFruit": 0,
+   "berries": 42,
+   "melon": 20,
+   "spice": 3,
+   "green": 9
+  }
+ },
+ "apres": {
+  "plan": "Citra + Idaho 7 ensemble (actif)",
+  "jour": "J4",
+  "verdict": "Faisable, mais hop creep possible, ~ tropicaux hors de la 16D",
+  "aimant": "",
+  "bulle": "",
+  "blocs": [
+   {
+    "houblon": "Citra",
+    "gauche": 117,
+    "largeur": 52,
+    "texte": "3 j"
+   },
+   {
+    "houblon": "Idaho 7",
+    "gauche": 117,
+    "largeur": 52,
+    "texte": "3 j"
+   }
+  ],
+  "source": "moteur, cas K5-citra+idaho-7-actif-us05",
+  "levure": "us05",
+  "crans": {
+   "floral": "1,6",
+   "herbal": "0,2",
+   "earthy": "0,2",
+   "citrus": "2,8",
+   "tropical": "3,1",
+   "stoneFruit": "1,6",
+   "pomeFruit": "inconnu",
+   "berries": "2,7",
+   "melon": "1,3",
+   "spice": "0,2",
+   "green": "0,6"
+  },
+  "hautBarres": {
+   "floral": 24,
+   "herbal": 3,
+   "earthy": 4,
+   "citrus": 43,
+   "tropical": 47,
+   "stoneFruit": 24,
+   "pomeFruit": 0,
+   "berries": 42,
+   "melon": 20,
+   "spice": 3,
+   "green": 9
+  }
+ },
+ "ensemblePomonaActif": {
+  "plan": "Citra + Idaho 7 ensemble (actif)",
+  "jour": "J4",
+  "verdict": "Faisable, mais hop creep possible, ~ agrumes, tropicaux hors de la 16D",
+  "aimant": "",
+  "bulle": "",
+  "blocs": [
+   {
+    "houblon": "Citra",
+    "gauche": 117,
+    "largeur": 52,
+    "texte": "3 j"
+   },
+   {
+    "houblon": "Idaho 7",
+    "gauche": 117,
+    "largeur": 52,
+    "texte": "3 j"
+   }
+  ],
+  "source": "moteur, cas K5-citra+idaho-7-actif-pomona",
+  "levure": "pomona",
+  "crans": {
+   "floral": "1,7",
+   "herbal": "0,3",
+   "earthy": "0,3",
+   "citrus": "3,4",
+   "tropical": "3,2",
+   "stoneFruit": "1,8",
+   "pomeFruit": "inconnu",
+   "berries": "2,9",
+   "melon": "1,4",
+   "spice": "0,2",
+   "green": "0,6"
+  },
+  "hautBarres": {
+   "floral": 27,
+   "herbal": 4,
+   "earthy": 5,
+   "citrus": 52,
+   "tropical": 49,
+   "stoneFruit": 27,
+   "pomeFruit": 0,
+   "berries": 43,
+   "melon": 22,
+   "spice": 3,
+   "green": 9
+  },
+  "bio": "floral → agrumes, estimé"
+ },
+ "apresFermentation": {
+  "plan": "Citra + Idaho 7 ensemble (après)",
+  "jour": "J9",
+  "verdict": "Faisable, ~ tropicaux hors de la 16D",
+  "aimant": "aimanté : posé à J7, après fermentation : le jour simulé",
+  "bulle": "",
+  "blocs": [
+   {
+    "houblon": "Citra",
+    "gauche": 204,
+    "largeur": 52,
+    "texte": "3 j"
+   },
+   {
+    "houblon": "Idaho 7",
+    "gauche": 204,
+    "largeur": 52,
+    "texte": "3 j"
+   }
+  ],
+  "source": "moteur, cas K5-citra+idaho-7-apres-us05",
+  "levure": "us05",
+  "crans": {
+   "floral": "1,6",
+   "herbal": "0,2",
+   "earthy": "0,3",
+   "citrus": "2,9",
+   "tropical": "3,2",
+   "stoneFruit": "1,7",
+   "pomeFruit": "inconnu",
+   "berries": "2,8",
+   "melon": "1,4",
+   "spice": "0,4",
+   "green": "1,1"
+  },
+  "hautBarres": {
+   "floral": 25,
+   "herbal": 4,
+   "earthy": 4,
+   "citrus": 45,
+   "tropical": 48,
+   "stoneFruit": 26,
+   "pomeFruit": 0,
+   "berries": 43,
+   "melon": 22,
+   "spice": 6,
+   "green": 16
+  }
+ },
+ "citraSeul": {
+  "plan": "Citra seul (après)",
+  "jour": "J9",
+  "verdict": "Faisable, ~ agrumes, tropicaux, baies hors de la 16D",
+  "aimant": "",
+  "bulle": "",
+  "blocs": [
+   {
+    "houblon": "Citra",
+    "gauche": 204,
+    "largeur": 52,
+    "texte": "3 j"
+   }
+  ],
+  "source": "moteur, grille",
+  "levure": "us05",
+  "crans": {
+   "floral": "1,8",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "3,6",
+   "tropical": "3,9",
+   "stoneFruit": "2,3",
+   "pomeFruit": "inconnu",
+   "berries": "3,2",
+   "melon": "2,3",
+   "spice": "0,3",
+   "green": "1,1"
+  },
+  "hautBarres": {
+   "floral": 28,
+   "herbal": 0,
+   "earthy": 0,
+   "citrus": 55,
+   "tropical": 60,
+   "stoneFruit": 35,
+   "pomeFruit": 0,
+   "berries": 49,
+   "melon": 35,
+   "spice": 5,
+   "green": 17
+  }
+ },
+ "etirePendant": {
+  "plan": "Citra seul (après)",
+  "jour": "J9",
+  "verdict": "Faisable, mais Citra reste 4 j sans gain mesuré, ~ agrumes, tropicaux, baies hors de la 16D",
+  "aimant": "",
+  "bulle": "",
+  "blocs": [
+   {
+    "houblon": "Citra",
+    "gauche": 204,
+    "largeur": 122,
+    "texte": "3 j"
+   }
+  ],
+  "source": "moteur, grille",
+  "levure": "us05",
+  "crans": {
+   "floral": "1,8",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "3,6",
+   "tropical": "3,9",
+   "stoneFruit": "2,3",
+   "pomeFruit": "inconnu",
+   "berries": "3,2",
+   "melon": "2,3",
+   "spice": "0,3",
+   "green": "1,1"
+  },
+  "hautBarres": {
+   "floral": 28,
+   "herbal": 0,
+   "earthy": 0,
+   "citrus": 55,
+   "tropical": 60,
+   "stoneFruit": 35,
+   "pomeFruit": 0,
+   "berries": 49,
+   "melon": 35,
+   "spice": 5,
+   "green": 17
+  }
+ },
+ "etire": {
+  "plan": "Citra seul (après)",
+  "jour": "J9",
+  "verdict": "Faisable, mais Citra reste 4 j sans gain mesuré, ~ agrumes, tropicaux, baies hors de la 16D",
+  "aimant": "",
+  "bulle": "",
+  "blocs": [
+   {
+    "houblon": "Citra",
+    "gauche": 204,
+    "largeur": 122,
+    "texte": "7 j"
+   }
+  ],
+  "source": "moteur, grille",
+  "levure": "us05",
+  "crans": {
+   "floral": "1,8",
+   "herbal": "0",
+   "earthy": "0",
+   "citrus": "3,6",
+   "tropical": "3,9",
+   "stoneFruit": "2,3",
+   "pomeFruit": "inconnu",
+   "berries": "3,2",
+   "melon": "2,3",
+   "spice": "0,3",
+   "green": "1,1"
+  },
+  "hautBarres": {
+   "floral": 28,
+   "herbal": 0,
+   "earthy": 0,
+   "citrus": 55,
+   "tropical": 60,
+   "stoneFruit": 35,
+   "pomeFruit": 0,
+   "berries": 49,
+   "melon": 35,
+   "spice": 5,
+   "green": 17
+  }
+ },
+ "levureAuRepos": "levure au repos : glisse l’ajout avant J6 pour qu’elle compte",
+ "erreurs": []
+}

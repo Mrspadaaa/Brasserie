@@ -1,0 +1,91 @@
+  /* Fiche du houblon (fiche.js) : trois tailles, 19 (nom, α), 14, 12 ; aucune couleur d'alerte. */
+  [data-houblon] { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  /* Indice discret : un pointillé sous les noms (il y a une fiche derrière) ; pendant l'appui, le nom se remplit. */
+  span[data-houblon], b[data-houblon] { text-decoration: underline dotted #b9b9b9; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  [data-houblon].appui, [data-houblon].survol { background: linear-gradient(#dcdcdc, #dcdcdc) no-repeat left center / 0% 100%; border-radius: 4px; animation: remplit 500ms linear forwards; }
+  text[data-houblon].appui, tspan[data-houblon].appui { animation: none; fill: #6e6e6e; }
+  @keyframes remplit { to { background-size: 100% 100%; } }
+  @media (hover: hover) and (pointer: fine) { [data-houblon] { cursor: help; } }
+  .sous-fiche { visibility: hidden; }
+  .f-source { box-shadow: 0 0 0 1.5px var(--encre) !important; border-radius: 12px; }
+  #fiche-racine { position: relative; z-index: 50; }
+  .f-voile { position: fixed; inset: 0; z-index: 49; background: rgba(17,17,17,.14); }
+  .f-fiche { position: fixed; z-index: 50; background: #fff; overflow-y: auto; overscroll-behavior: contain; }
+  .f-fiche:focus { outline: none; }
+  .f-fiche.f-feuille { left: 0; right: 0; bottom: 0; width: 100%; max-width: 390px; margin: 0 auto; border-radius: 18px 18px 0 0; box-shadow: 0 -4px 18px rgba(0,0,0,.16); }
+  .f-fiche.f-bulle { width: 358px; max-height: calc(100vh - 16px); border-radius: 18px; box-shadow: 0 12px 40px rgba(0,0,0,.24); padding-top: 8px; }
+  .f-poignee { height: 14px; touch-action: none; cursor: grab; position: relative; }
+  .f-poignee::after { content: ''; position: absolute; left: 50%; top: 5px; width: 36px; height: 4px; margin-left: -18px; border-radius: 2px; background: #cfcfcf; }
+  .f-corps { display: flex; flex-direction: column; gap: 6px; padding: 0 16px 10px; }
+  .f-tete { display: flex; align-items: center; gap: 8px; min-height: 32px; }
+  .f-nom { font-size: 19px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .f-tete .f-fermer { margin-left: auto; }
+  .f-fermer { width: 32px; height: 32px; border-radius: 16px; background: var(--fond2); position: relative; flex: none; }
+  .f-fermer::before, .f-fermer::after { content: ''; position: absolute; left: 10px; top: 15px; width: 12px; height: 1.8px; background: var(--encre); transform: rotate(45deg); }
+  .f-fermer::after { transform: rotate(-45deg); }
+  /* α et rôle au premier plan */
+  .f-ab { display: flex; align-items: center; gap: 8px; min-height: 30px; white-space: nowrap; }
+  .f-alpha { display: inline-flex; align-items: baseline; gap: 6px; }
+  .f-grec { color: var(--gris); }
+  .f-aa { font-size: 19px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .f-lot { font-size: 12px; color: var(--gris2); }
+  .f-reglette { flex: none; }
+  .f-role { margin-left: auto; font-size: 12px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--gris2); color: var(--gris); }
+  .f-role.regle { border-color: var(--trait); }
+  /* g1 (lot 13, #140) : la bande de la carte, en grand, puis une ligne par famille décrite (sa case,
+     son nom, ses fiches, ses mots). Les couleurs des familles sont celles des cases de la carte. */
+  .f-fiche .f-citrus { --c: #d9b414; } .f-fiche .f-tropical { --c: #ee9b2f; } .f-fiche .f-melon { --c: #6fc09b; }
+  .f-fiche .f-stoneFruit { --c: #e88d68; } .f-fiche .f-pomeFruit { --c: #a3bd38; } .f-fiche .f-berries { --c: #9b3f74; }
+  .f-fiche .f-floral { --c: #bf86d6; } .f-fiche .f-green { --c: #6aa33a; } .f-fiche .f-herbal { --c: #3f8a5f; }
+  .f-fiche .f-spice { --c: #7a4e3a; } .f-fiche .f-earthy { --c: #9a8a66; } .f-fiche .f-resin { --c: #2f6b5f; }
+  .f-labels { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px 10px; border-radius: 12px; background: var(--fond); }
+  .f-labels .c { display: inline-block; width: 13px; height: 18px; border-radius: 2px; background: #e6e6e6; flex: none; }
+  .f-labels .c.ci { background: color-mix(in srgb, var(--c) 42%, #fff); }
+  .f-labels .c.m { background: var(--c); }
+  .f-bande { display: flex; align-items: center; gap: 3px; min-height: 22px; }
+  .f-bande .c.sep { margin-left: 6px; }
+  .f-seule { margin-left: auto; font-size: 12px; color: var(--gris); text-align: right; }
+  .f-lab { display: grid; grid-template-columns: 13px 1fr; column-gap: 10px; align-items: start; font-size: 12px; line-height: 1.35; color: var(--gris); }
+  .f-lab .c { margin-top: 1px; }
+  .f-lab-n { font-size: 14px; font-weight: 650; color: var(--encre); }
+  .f-lab-mots { grid-column: 2; }
+  .f-lab-mots b { font-weight: 400; color: var(--encre); }
+  .f-lab-sans, .f-lab-nd { padding-left: 23px; font-size: 12px; color: var(--gris); line-height: 1.35; }
+  .f-note { font-size: 12px; color: var(--gris); line-height: 1.3; margin: -2px 0 0; }
+  .f-fiche .rdr line.ax-f { stroke: var(--c); stroke-width: 1.5; }
+  /* La roue chiffrée et sa légende (p01, p02) */
+  .f-arome { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .f-leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gris); min-height: 18px; }
+  /* h4 : la réponse de ses fiches à ma demande, sous la roue. */
+  .f-dem { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 2px 0 0; font-size: 12px; color: var(--gris); }
+  .f-dem-i b { color: var(--encre); font-weight: 650; }
+  .f-leg .pt-c, .f-leg .pt-m { width: 9px; height: 9px; border-radius: 5px; border: 1.4px solid var(--encre); background: #fff; margin-left: 6px; }
+  .f-leg .pt-m { background: var(--encre); }
+  .f-leg { flex-wrap: wrap; }
+  .f-leg .pt-i { width: 9px; height: 9px; border-radius: 5px; border: 1.5px solid #555; background: #fff; margin-left: 6px; }
+  /* Goût et actions d'un toucher (p02) */
+  .f-actions { display: flex; align-items: center; gap: 6px; min-height: 34px; }
+  .f-gout { display: inline-flex; gap: 2px; padding: 2px; border-radius: 16px; background: var(--fond2); flex: none; }
+  .f-g { width: 32px; height: 28px; border-radius: 14px; color: var(--gris); position: relative; }
+  .f-g::before { font-size: 14px; line-height: 28px; }
+  .f-g-aimer::before { content: '♡'; }
+  .f-g-aimer[aria-pressed="true"]::before { content: '♥'; }
+  .f-g-exclure::before { content: '⊘'; }
+  .f-g[aria-pressed="true"] { background: #fff; color: var(--encre); box-shadow: 0 1px 2px rgba(0,0,0,.18); }
+  .f-act { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid var(--trait); background: #fff; font-weight: 600; white-space: nowrap; }
+  .f-act .plus-i { width: 18px; height: 18px; }
+  .f-act .plus-i::before, .f-act .plus-i::after { left: 4px; top: 8.2px; width: 10px; }
+  .f-actions .f-act:first-of-type { margin-left: auto; }
+  /* Replié : Styles, Huiles, Sources, Substituts */
+  .f-replis { display: flex; gap: 6px; border-top: 1px solid var(--trait); padding-top: 6px; }
+  .f-repli { flex: 1; height: 30px; border-radius: 15px; background: var(--fond); font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .f-repli::after { content: ' ›'; color: var(--gris2); }
+  .f-repli[aria-expanded="true"] { background: var(--encre); color: #fff; }
+  .f-repli[aria-expanded="true"]::after { content: ' ⌄'; color: #fff; }
+  .f-sec { display: flex; flex-direction: column; gap: 4px; padding: 2px 0 6px; }
+  .f-rg { display: grid; grid-template-columns: 1fr auto; gap: 8px; min-height: 22px; align-items: center; font-size: 12px; border-bottom: 1px solid #f0f0f0; }
+  .f-rg-n { color: var(--gris); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .f-rg-v { font-variant-numeric: tabular-nums; text-align: right; }
+  .f-txt { font-size: 12px; line-height: 1.3; }
+  .f-txt b { font-weight: 650; }
+  @media (prefers-reduced-motion: reduce) { [data-houblon].appui, [data-houblon].survol { animation: none; } }

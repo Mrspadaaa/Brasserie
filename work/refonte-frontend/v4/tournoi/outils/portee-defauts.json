@@ -1,0 +1,1814 @@
+{
+ "maj": "2026-10-24",
+ "defauts": [
+  {
+   "id": "D1",
+   "mots": "« énormément d'information pour rien, beaucoup de text inutile qui ne devrait pas être là en premier plan »…",
+   "controle": "mots-premier-ecran.mjs <dossier> <id> --page=<page> --max=80",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "oui",
+   "resultat": "MOTS OK ×3 : Comparer r6n2 79 mots, Dryhopper g1 77, baseline l8g 70 (états A et B : la page n'a qu'un état). controle-commun joue --max=70 : Comparer et Dryhopper y échouent (79, 77).",
+   "verdict": "garde",
+   "script": "mots-premier-ecran.mjs"
+  },
+  {
+   "id": "D2",
+   "mots": "« On dirait des écrans de central nucléaire ou cockpit d'avion » (18.10)",
+   "controle": "controle-lot.mjs --tailles=3",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "non",
+   "resultat": "sans pNN/index.html + etat-b.html le dossier actuel n'est pas lu (capture.mjs crée même captures/ dans le dossier avant de refuser) ; sur copie p01/index.html (scratchpad) : Comparer 3 tailles OK, baseline 3 OK, Dryhopper g1 5 tailles (12, 13, 14, 17, 20 px) ECHEC « effet cockpit » ; DESIGN.md dit toujours trois tailles au plus.",
+   "verdict": "a-adapter",
+   "script": "controle-lot.mjs"
+  },
+  {
+   "id": "D3",
+   "mots": "« les info sont des actionnable pas des […] explication » (C081)",
+   "controle": "controle-lot.mjs --paragraphe=2",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "non",
+   "resultat": "sans pNN/index.html + etat-b.html le dossier actuel n'est pas lu (capture.mjs crée même captures/ dans le dossier avant de refuser) ; sur copie p01/index.html (scratchpad) : plus long bloc : Comparer 2 lignes, Dryhopper 0, baseline 0 : OK (limite 2).",
+   "verdict": "a-adapter",
+   "script": "controle-lot.mjs"
+  },
+  {
+   "id": "D4",
+   "mots": "« pas assez dense » (18.10) ; « voir un Max d'info au même endroit »",
+   "controle": "controle-lot.mjs --fill=0.8 ; controle-panel.mjs <captures>",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "non",
+   "resultat": "sans pNN/index.html + etat-b.html le dossier actuel n'est pas lu (capture.mjs crée même captures/ dans le dossier avant de refuser) ; sur copie p01/index.html (scratchpad) : remplissage par boîtes d'éléments (A = B) : Comparer 0,91, Dryhopper g1 0,85, baseline 0,95 (tous ≥ 0,80). En pixels (controle-panel sur capture 390×844, joué sur les trois : PANEL OK, médiane 0,66) : Comparer 0,70, g1 0,57, baseline 0,66. La mesure du lot est ~0,3 plus généreuse (g1 : 0,85 contre 0,57) : un écran à moitié vide peut passer 0,80.",
+   "verdict": "a-adapter",
+   "script": "controle-lot.mjs"
+  },
+  {
+   "id": "D5",
+   "mots": "« mais ça doit pas être surchargé » (18.10)",
+   "controle": "controle-hauteur.mjs <dossier> <route> [--max=1.05] [--page=etat.html] (lignes « D5 »)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 à 390 × 844 tactile, au repos : construction actuelle (parcours) 958 px = 1,14 écran HAUTEUR ECHEC ; d332792c 936 px = 1,11 écran ECHEC ; base v4.10 (index.html) 844 px = 1,00 écran OK ; témoin hauteur-trop (960 px) ECHEC ; hauteur-ok (840 px) OK. Seuil 1,05 écran. Remplace controle-lot.mjs (« a-adapter », sans pNN/index.html + etat-b.html) pour l'étape ; D84 admet une liste longue, les pages-listes restent à réconcilier.",
+   "verdict": "garde",
+   "script": "controle-hauteur.mjs"
+  },
+  {
+   "id": "D6",
+   "mots": "« D'autres type de UX booster du genre doivent être mis en avant » (18.10) ; « Je vois aussi aucun slider o…",
+   "controle": "jouer-boosters.mjs ; controle-lot.mjs --boosters=4",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "non",
+   "resultat": "sans pNN/index.html + etat-b.html le dossier actuel n'est pas lu (capture.mjs crée même captures/ dans le dossier avant de refuser) ; sur copie p01/index.html (scratchpad) : 0 booster marqué data-booster sur les trois pages (jouer-boosters : « boosters marqués 0 ») ; LOT ECHEC « boosters qui marchent : 0 < 4 ». Les pages actuelles balisent autrement (role=slider, data-acquis, data-reglage).",
+   "verdict": "a-adapter",
+   "script": "jouer-boosters.mjs"
+  },
+  {
+   "id": "D7",
+   "mots": "« on peut aussi basculer d'un affichage à un autre, type bare graph à radar graph » (18.10)",
+   "controle": "controle-lot.mjs --radar (bascule radar)",
+   "portee": [
+    "radar",
+    "comparer"
+   ],
+   "tourne": "non",
+   "resultat": "sans pNN/index.html + etat-b.html le dossier actuel n'est pas lu (capture.mjs crée même captures/ dans le dossier avant de refuser) ; sur copie p01/index.html (scratchpad) : LOT ECHEC « pas de bascule radar qui marche » (aucun data-booster).",
+   "verdict": "a-adapter",
+   "script": "controle-lot.mjs"
+  },
+  {
+   "id": "D8",
+   "mots": "v3 : exigences perdues (D19)",
+   "controle": "work/refonte-frontend/v4/outils/check-spec.mjs",
+   "portee": [
+    "donnees"
+   ],
+   "tourne": "oui",
+   "resultat": "SPEC ECHEC : 260/264 citations retrouvées ; introuvables : « surtout dans Comparer ? », « Les bar de ce type sont plus informative donc meilleur », « Pourquoi la fiche est pareil ??? … », « Quoi ouvre ça ??? ». Il garde, mais il est rouge aujourd'hui.",
+   "verdict": "garde",
+   "script": "check-spec.mjs"
+  },
+  {
+   "id": "D9",
+   "mots": "« on doit pas non plus perde le modèle de calcul de la 5.5 » (18.10)",
+   "controle": "npm run check:engine (prototypes/houblons-v4)",
+   "portee": [
+    "donnees"
+   ],
+   "tourne": "oui",
+   "resultat": "ENGINE-V4 OK (113 tests).",
+   "verdict": "garde",
+   "script": "check:engine"
+  },
+  {
+   "id": "D10",
+   "mots": "pas d'erreur, pas de débordement (qualité de base)",
+   "controle": "capture.mjs (erreurs de page, débordement) via controle-lot.mjs",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "non",
+   "resultat": "sans pNN/index.html + etat-b.html le dossier actuel n'est pas lu (capture.mjs crée même captures/ dans le dossier avant de refuser) ; sur copie p01/index.html (scratchpad) : CAPTURE OK ×3 : 0 erreur de page, pas de débordement horizontal ; sur les pages actuelles capture.mjs refuse (« aucun p*/index.html »).",
+   "verdict": "a-adapter",
+   "script": "capture.mjs"
+  },
+  {
+   "id": "D11",
+   "mots": "« Une UI ux toujours pas très moderne dans les normes et bon usage actuelle » (18.10)",
+   "controle": "jury",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "jury",
+   "resultat": "Question fermée du jury par paires (lequel est le plus moderne et le moins surchargé ?), calibrée sur reference/brasseur-2026-10-18/.",
+   "verdict": "jury",
+   "script": "jury"
+  },
+  {
+   "id": "D12",
+   "mots": "« les échelles doivent être revu en fonction du style »",
+   "controle": "jury",
+   "portee": [
+    "ma-biere",
+    "suggestions",
+    "comparer",
+    "fiche"
+   ],
+   "tourne": "jury",
+   "resultat": "Question fermée du jury (position face au style lisible sans texte ; la bande change avec le style) ; controle-au-style (D75) ne garde que la présence de la lentille et des zones.",
+   "verdict": "jury",
+   "script": "jury"
+  },
+  {
+   "id": "D13",
+   "mots": "« Comme pour les Malts j'ai besoin d'avoir des le premier coup d'œil, quel matière première j'ai, et et je …",
+   "controle": "controle-recette.mjs",
+   "portee": [
+    "recette"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RECETTE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RECETTE ECHEC (bloc houblons-recette, panneau, cas-k3.html absents ; plante sur Dryhopper). Base consolide : RECETTE OK 1/1 en 9 s : il garde l'étape recette de la base.",
+   "verdict": "a-adapter",
+   "script": "controle-recette.mjs"
+  },
+  {
+   "id": "D14",
+   "mots": "(relevé par le jury du lot 2 : « null » affiché dans p03 après un ajout rapide) — la vérité des données du …",
+   "controle": "capture.mjs, jouer-boosters.mjs",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "non",
+   "resultat": "jouer-boosters ne touche aucun élément (0 data-booster) ; capture.mjs n'accepte que pNN/index.html. Le texte « null / undefined / NaN » est gardé au chargement par controle-valeurs-brutes (D97 : BRUTES OK ×3) et après chaque toucher par fuite-touchers (D14 bis).",
+   "verdict": "caduc",
+   "remplace_par": "D97 (controle-valeurs-brutes, joue sur les pages actuelles) et D14 bis (fuite-touchers, après chaque toucher)",
+   "script": "capture.mjs"
+  },
+  {
+   "id": "D15",
+   "mots": "(relevé par le jury du lot 2 : p07, p08) une voie « faible » dessinée comme si elle ramenait la famille dan…",
+   "controle": "jury",
+   "portee": [
+    "suggestions"
+   ],
+   "tourne": "jury",
+   "resultat": "Question fermée du jury (le fantôme d'une voie montre-t-il un effet plus fort que celui du moteur ?) ; défaut relevé sur p07, p08 du lot 2.",
+   "verdict": "jury",
+   "script": "jury"
+  },
+  {
+   "id": "D16",
+   "mots": "« il faudrait aussi ibu par houblon ( genre 5g -> 20ibu en plus) » (18.10)",
+   "controle": "controle-recette.mjs",
+   "portee": [
+    "recette"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RECETTE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RECETTE ECHEC (bloc houblons-recette, panneau, cas-k3.html absents ; plante sur Dryhopper). Base consolide : RECETTE OK 1/1 en 9 s : il garde l'étape recette de la base.",
+   "verdict": "a-adapter",
+   "script": "controle-recette.mjs"
+  },
+  {
+   "id": "D17",
+   "mots": "« Type d'ajouter (à froid, voilà, ect et quand) » (18.10)",
+   "controle": "controle-recette.mjs",
+   "portee": [
+    "recette"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RECETTE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RECETTE ECHEC (bloc houblons-recette, panneau, cas-k3.html absents ; plante sur Dryhopper). Base consolide : RECETTE OK 1/1 en 9 s : il garde l'étape recette de la base.",
+   "verdict": "a-adapter",
+   "script": "controle-recette.mjs"
+  },
+  {
+   "id": "D18",
+   "mots": "« C'est une catastrophe la vue radar ?? » (18.10) ; demande d'origine : « Les comparaisons avec un affichag…",
+   "controle": "controle-radar.mjs",
+   "portee": [
+    "radar",
+    "comparer"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RADAR OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RADAR ECHEC (Comparer r6n2 : séries « valeurs hors de 0 à 2 », axes hors de l'ordre de la roue ; Dryhopper et baseline : « aucun radar data-radar » dans biere-/suggestions-/comparer-radar.html). Base consolide : RADAR OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-radar.mjs"
+  },
+  {
+   "id": "D19",
+   "mots": "« Je pense qu'il y a confusion entre, ce que j'ai actuellement dans ma bière, son profil. Le style de la bi…",
+   "controle": "controle-radar.mjs",
+   "portee": [
+    "radar",
+    "ma-biere",
+    "suggestions",
+    "comparer"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RADAR OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RADAR ECHEC (Comparer r6n2 : séries « valeurs hors de 0 à 2 », axes hors de l'ordre de la roue ; Dryhopper et baseline : « aucun radar data-radar » dans biere-/suggestions-/comparer-radar.html). Base consolide : RADAR OK 1/1. Les « parties » biere/suggestions/comparer (data-partie) n'existent plus : chaque outil est un écran (D98).",
+   "verdict": "a-adapter",
+   "script": "controle-radar.mjs"
+  },
+  {
+   "id": "D20",
+   "mots": "« je peux goûté d'autres bière que les miennes et pas aimer un houblon en particulier ou autre » (18.10)",
+   "controle": "controle-recette.mjs",
+   "portee": [
+    "recette",
+    "suggestions"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RECETTE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RECETTE ECHEC (bloc houblons-recette, panneau, cas-k3.html absents ; plante sur Dryhopper). Base consolide : RECETTE OK 1/1 en 9 s : il garde l'étape recette de la base. Le geste data-role=\"gout\" existe sur les trois pages actuelles (1 occurrence chacune) mais le script ne les lit pas.",
+   "verdict": "a-adapter",
+   "script": "controle-recette.mjs"
+  },
+  {
+   "id": "D21",
+   "mots": "« je fais une recette puis ensuite j'achète les ingrédients, souvent pas présent » (18.10)",
+   "controle": "controle-recette.mjs",
+   "portee": [
+    "recette"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RECETTE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RECETTE ECHEC (bloc houblons-recette, panneau, cas-k3.html absents ; plante sur Dryhopper). Base consolide : RECETTE OK 1/1 en 9 s : il garde l'étape recette de la base.",
+   "verdict": "caduc",
+   "remplace_par": "D23 (« D21 révisé » : la liste d'achats n'est plus exigée, le stock est une icône)",
+   "script": "controle-recette.mjs"
+  },
+  {
+   "id": "D22",
+   "mots": "« Et tout ce qui est biotransformation avec levures, dry hopping et tout, comment ça d'intégre ? Ça a été o…",
+   "controle": "controle-recette.mjs",
+   "portee": [
+    "recette",
+    "levure",
+    "dryhopper"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RECETTE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RECETTE ECHEC (bloc houblons-recette, panneau, cas-k3.html absents ; plante sur Dryhopper). Base consolide : RECETTE OK 1/1 en 9 s : il garde l'étape recette de la base. Pour les outils, la levure et la biotransformation sont gardées par D96 (controle-cumul-levure : ECHEC ×3).",
+   "verdict": "a-adapter",
+   "script": "controle-recette.mjs"
+  },
+  {
+   "id": "D14 bis",
+   "mots": "(relevé par les auteurs p10 et p11 du lot 3, 18.10) « [object HTMLButtonElement] » après une exclusion de g…",
+   "controle": "fuite-touchers.mjs <dossier> [ids] [--max=30]",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "non",
+   "resultat": "sans pNN/index.html + etat-b.html le dossier actuel n'est pas lu (capture.mjs crée même captures/ dans le dossier avant de refuser) ; sur copie p01/index.html (scratchpad) : FUITE OK ×3 (30 touchers baseline, 17 Comparer, 9 Dryhopper) ; sur les pages actuelles le script ne trouve aucune page (pNN/index.html).",
+   "verdict": "a-adapter",
+   "script": "fuite-touchers.mjs"
+  },
+  {
+   "id": "D4, D5, D19 bis",
+   "mots": "(relevé par p10 et p11 du lot 3) les vues radar remplissaient 0,62 à 0,64 de l'écran et `cas-k3` débordait …",
+   "controle": "controle-lot.mjs (toutes les pages à 390)",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "non",
+   "resultat": "sans pNN/index.html + etat-b.html le dossier actuel n'est pas lu (capture.mjs crée même captures/ dans le dossier avant de refuser) ; sur copie p01/index.html (scratchpad) : voir D4 et D5 ; la même grille est jouée sur toutes les pages à 390.",
+   "verdict": "a-adapter",
+   "script": "controle-lot.mjs"
+  },
+  {
+   "id": "D23",
+   "mots": "« La stock sont beaucoup trop mis en avant surtout que dans l'app on voit dans le récap à la fin. Juste un …",
+   "controle": "controle-recette.mjs (stockDiscret)",
+   "portee": [
+    "recette",
+    "suggestions"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RECETTE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RECETTE ECHEC (bloc houblons-recette, panneau, cas-k3.html absents ; plante sur Dryhopper). Base consolide : RECETTE OK 1/1 en 9 s : il garde l'étape recette de la base.",
+   "verdict": "a-adapter",
+   "script": "controle-recette.mjs"
+  },
+  {
+   "id": "D24",
+   "mots": "« C'est toujours n'importe quoi les spidergraph Radar graph il faut faire qqch.... » (18.10, soir) ; étalon…",
+   "controle": "controle-radar.mjs",
+   "portee": [
+    "radar"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RADAR OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RADAR ECHEC (Comparer r6n2 : séries « valeurs hors de 0 à 2 », axes hors de l'ordre de la roue ; Dryhopper et baseline : « aucun radar data-radar » dans biere-/suggestions-/comparer-radar.html). Base consolide : RADAR OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-radar.mjs"
+  },
+  {
+   "id": "D25",
+   "mots": "« quand je fasse un appuie long, hover long super ordinateur, sur houblons, je puisse voir sa fiche en déta…",
+   "controle": "controle-fiche.mjs <dossier> <id> --pages=<page>",
+   "portee": [
+    "fiche",
+    "carte-houblon"
+   ],
+   "tourne": "oui",
+   "resultat": "FICHE OK 1/1 ×3 (Comparer etat.html, Dryhopper etat.html, baseline etat-b.html ; 8 à 9 s chacun).",
+   "verdict": "garde",
+   "script": "controle-fiche.mjs"
+  },
+  {
+   "id": "D26",
+   "mots": "« Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça différent complètement ? » (18.10,…",
+   "controle": "controle-baseline.mjs <dossier> <baseline>",
+   "portee": [
+    "page-lot"
+   ],
+   "tourne": "non",
+   "resultat": "Copie p01 face à l8g : BASELINE ECHEC (« etat-b.html diffère de la baseline hors composant, ligne 1 », « planche.html absente »). Le contrat « texte identique hors data-composant » ne vaut plus : la baseline est un plancher à enrichir (L07, SPEC-BRASSEUR § 0).",
+   "verdict": "caduc",
+   "remplace_par": "L07 et SPEC-BRASSEUR § 0 (« la baseline est un plancher à enrichir, toujours suivi ») ; son suivi se mesure par D93, D88 à D90 et l'exigence M13 « la baseline est dans les contrôles »",
+   "script": "controle-baseline.mjs"
+  },
+  {
+   "id": "D27",
+   "mots": "« j'aimerais aussi pouvoir une fois mon houblons sélectionner pouvoir glisser comme un slider le moment de …",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail",
+    "dryhopper",
+    "recette"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D28",
+   "mots": "« J'aime beaucoup l'intégration de la levure directement dans la p8 mais la p2 a un meilleur visuel » (18.1…",
+   "controle": "controle-rail.mjs",
+   "portee": [
+    "rail",
+    "levure"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
+   "verdict": "a-adapter",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D23 ter",
+   "mots": "« Le stock toujours trop mis en avant... » (18.10, soir, sur p2 à 1 à 3 mentions grises)",
+   "controle": "controle-recette.mjs",
+   "portee": [
+    "recette"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RECETTE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RECETTE ECHEC (bloc houblons-recette, panneau, cas-k3.html absents ; plante sur Dryhopper). Base consolide : RECETTE OK 1/1 en 9 s : il garde l'étape recette de la base.",
+   "verdict": "a-adapter",
+   "script": "controle-recette.mjs"
+  },
+  {
+   "id": "D29",
+   "mots": "« quand la recette est vide, je trouve que les info sur les houblons sont pas pertinent pour le brasseur, p…",
+   "controle": "controle-recette.mjs (pertinence) ; controle-alpha.mjs (α sur les voies)",
+   "portee": [
+    "recette",
+    "carte-houblon"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RECETTE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RECETTE ECHEC (bloc houblons-recette, panneau, cas-k3.html absents ; plante sur Dryhopper). Base consolide : RECETTE OK 1/1 en 9 s : il garde l'étape recette de la base. L'α sur les voies est repris et joué par D87 (ALPHA OK ×3).",
+   "verdict": "a-adapter",
+   "script": "controle-recette.mjs"
+  },
+  {
+   "id": "D30",
+   "mots": "« Toujours pensé comme un brasseur » (18.10, soir)",
+   "controle": "jury",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "jury",
+   "resultat": "Question fermée du jury posée pour chaque écran (un brasseur trouve-t-il α, rôle, arômes, moment, dose avant l'IBU et le stock ?).",
+   "verdict": "jury",
+   "script": "jury"
+  },
+  {
+   "id": "D31",
+   "mots": "« Tropicale 4/5 sur une ipa et 4/5 sur une Lager ça doit pas correspondre sur une Lager c'est très subtil a…",
+   "controle": "controle-detail.mjs",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « DETAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : DETAIL ECHEC sur la baseline (biere-absolu.html absente, bannir et augmenter introuvables) ; plante sur Comparer et Dryhopper (« Node is either not clickable »). Base consolide : DETAIL OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-detail.mjs"
+  },
+  {
+   "id": "D32",
+   "mots": "« je sais pas comment bannir une contraintes ou réduire une autre » (18.10, soir)",
+   "controle": "controle-detail.mjs",
+   "portee": [
+    "ma-biere",
+    "suggestions"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « DETAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : DETAIL ECHEC sur la baseline (biere-absolu.html absente, bannir et augmenter introuvables) ; plante sur Comparer et Dryhopper (« Node is either not clickable »). Base consolide : DETAIL OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-detail.mjs"
+  },
+  {
+   "id": "D33",
+   "mots": "« il y a des truc jaune ?? » (18.10, soir : le focus posé par script sur une ligne, entouré de jaune par la…",
+   "controle": "controle-palette.mjs",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « PALETTE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : OK sur la baseline, ECHEC sur Comparer et Dryhopper (6 teintes saturées dans index.html, fiche.html… : « une seule couleur d'alerte »), cause non élucidée (teintes d'arômes ou de houblons hors data-famille/data-couleur ?). Base consolide : PALETTE OK 1/1 en 143 s.",
+   "verdict": "a-adapter",
+   "script": "controle-palette.mjs"
+  },
+  {
+   "id": "D34",
+   "mots": "« Je veux choisir pas de 10' défini, pas de timing imposé hein » ; « Soit pas supide, c'est des tranche de …",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D35",
+   "mots": "« Ça semble un peu bancale, c'est l'idée mais pas hyper bien réalisé » (18.10, soir, capture pendant le geste)",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D36",
+   "mots": "« Parcontre prendre en compte que le boil peut durer 120' ou d'autres timing que 60 » (18.10, soir)",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D37",
+   "mots": "« attention toujours garder des variables dynamique car cela peut changer... Je peux me dire tiens 200' c'e…",
+   "controle": "controle-rail.mjs",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′).",
+   "verdict": "caduc",
+   "remplace_par": "D37 révisé (« C'est defini ailleur dans l'application » : la durée d'ébullition s'affiche avec un renvoi, sans champ ni −/+)",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D38",
+   "mots": "« Ce batch là semble être beaucoup plus cohérente en terme de UI sur le Spider graph (radar graph) mais ils…",
+   "controle": "jury",
+   "portee": [
+    "page-lot"
+   ],
+   "tourne": "jury",
+   "resultat": "Question fermée du jury pour chaque lot : au moins 3 partis visiblement différents sur le composant étudié (un écart de pixels a été essayé et retiré).",
+   "verdict": "jury",
+   "script": "jury"
+  },
+  {
+   "id": "D39",
+   "mots": "« Je m'attendais plus à qqch du genre mais plus cohérent. » (18.10, soir, planche Comparer du lot 4 radars)",
+   "controle": "controle-coherence.mjs",
+   "portee": [
+    "radar",
+    "fiche"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « COHERENCE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : COHERENCE OK 1/1 sur les trois (10 s) ; base consolide : OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-coherence.mjs"
+  },
+  {
+   "id": "D40",
+   "mots": "« Déjà dit mais attention au piège !! Je pense qu'il y a confusion entre, ce que j'ai actuellement dans ma …",
+   "controle": "controle-objets.mjs",
+   "portee": [
+    "ma-biere",
+    "suggestions",
+    "radar",
+    "fiche"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « OBJETS OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : OBJETS OK 1/1 sur les trois ; base consolide : OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-objets.mjs"
+  },
+  {
+   "id": "D37 révisé",
+   "mots": "« C'est defini ailleur dans l'application... » (18.10, soir, sur le réglage −/+ de l'ébullition de la base v2)",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D41",
+   "mots": "« On a un 10' qui sort de null part. C'est pas encore ça, les possible ajoute d'houblon sont vraiment à la …",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D42",
+   "mots": "« Pourquoi celui choisi à de l'ombre ? » (18.10, soir)",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D43",
+   "mots": "« Que de j+3 » (commentaire sur la page partagée, 18.10, soir)",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D44",
+   "mots": "« Que du j+3 SI on est en dehors du boil » ; « Le slider fonctionne pour le boil mais pas pour les autres é…",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D45",
+   "mots": "« le passage entre 10' et 5' de fait très mal car on doit passe au dessus des houblons... »",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D46",
+   "mots": "« Et le slider est clancky pas fluide du tout » ; « Probablement lié au recalcule de l'ibu pas forcément ut…",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D47",
+   "mots": "« Pas besoin d'afficher une échelle linéaire avec tout les gradient du raille, ça doit rester cohérent. Jus…",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D48",
+   "mots": "« Il y a pas 12 radar ? » ; « Ni là » (18.10, soir : Ma bière et Suggestions à 7 axes, Comparer à 9, la fic…",
+   "controle": "controle-radar.mjs (12 axes)",
+   "portee": [
+    "radar"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RADAR OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RADAR ECHEC (Comparer r6n2 : séries « valeurs hors de 0 à 2 », axes hors de l'ordre de la roue ; Dryhopper et baseline : « aucun radar data-radar » dans biere-/suggestions-/comparer-radar.html). Base consolide : RADAR OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-radar.mjs"
+  },
+  {
+   "id": "D49",
+   "mots": "« La zone de trigger est que le nom alors que ça devrait être la fiche entière... » (commentaire sur la pag…",
+   "controle": "controle-fiche.mjs",
+   "portee": [
+    "fiche",
+    "carte-houblon"
+   ],
+   "tourne": "oui",
+   "resultat": "FICHE OK 1/1 ×3 (appui long sur une zone libre de la carte, hors Comparer qui n'a pas de carte de houblon).",
+   "verdict": "garde",
+   "script": "controle-fiche.mjs"
+  },
+  {
+   "id": "D50",
+   "mots": "« C'est n'importe quoi ce radar, pareil pourquoi j'ai pas eu mes variations ? » ; « Pourquoi j'ai pas vu le…",
+   "controle": "aucun (règle de méthode : publication au brasseur, choix cité dans SPEC-BRASSEUR)",
+   "portee": [
+    "page-lot"
+   ],
+   "tourne": "sans-script",
+   "resultat": "Aucun script ne vérifie la publication ; systeme.mjs voies porte M12 (variante rejetée) et M13 (le panel v0 se publie dès qu'il est fait) mais n'a pas été joué ici. check-spec ne vérifie que les citations.",
+   "verdict": "a-adapter",
+   "script": "aucun"
+  },
+  {
+   "id": "D51",
+   "mots": "« J'ai d'ailleurs donné des exemples concrets... C'est pas possible de faire moins bien... » ; « Beer Maver…",
+   "controle": "controle-comparer.mjs",
+   "portee": [
+    "comparer"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « COMPARER OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : COMPARER ECHEC sur les trois (0 houblon comparé, pas de geste d'ajout, aucun radar superposé) ; r6n2 n'a ni data-plage ni data-central (contrat de D53). Base consolide : COMPARER OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-comparer.mjs"
+  },
+  {
+   "id": "D52",
+   "mots": "« Parcontre tout ce qui est suggestions et comparaison, c'est très mauvaise » ; « je sais pas comment banni…",
+   "controle": "controle-suggestions.mjs",
+   "portee": [
+    "suggestions"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « SUGGESTIONS OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Base consolide : SUGGESTIONS ECHEC 35 problèmes (pour mémoire, D52 bis).",
+   "verdict": "caduc",
+   "remplace_par": "D52 bis (contrat dépassé : levure, dry hop et biotransformation demandés ; la vue Suggestions se contrôle par FIL6, D76 et D78 à D82, et D25 pour la fiche)",
+   "script": "controle-suggestions.mjs"
+  },
+  {
+   "id": "D53",
+   "mots": "« D'ailleurs, il faut des intervalles de confiance » (18.10, soir) ; exigence R45 (« un par barre type inte…",
+   "controle": "controle-comparer.mjs",
+   "portee": [
+    "comparer"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « COMPARER OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : COMPARER ECHEC sur les trois (0 houblon comparé, pas de geste d'ajout, aucun radar superposé) ; r6n2 n'a ni data-plage ni data-central (contrat de D53). Base consolide : COMPARER OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-comparer.mjs"
+  },
+  {
+   "id": "D54",
+   "mots": "« Je pense que les échelles doivent notamment jouer, un peu plus résineux pour une stout est pas très probl…",
+   "controle": "prototypes/houblons-v4 : vitest run tests/tolerance.test.ts",
+   "portee": [
+    "donnees",
+    "ma-biere",
+    "suggestions"
+   ],
+   "tourne": "oui",
+   "resultat": "6 tests verts (tolerance.test.ts) ; avec pouvoir.test.ts 25 tests verts.",
+   "verdict": "garde",
+   "script": "tolerance.test.ts"
+  },
+  {
+   "id": "D55",
+   "mots": "« Ça semble un peu étrange d'avoir autant d'espace, j'avais dit à la apple en mode zoom loop » (18.10, soir…",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D56",
+   "mots": "« Avec deux houblons ça marche aussi un peu moins bien » (18.10, soir, « 0′ » et « Nugget » l'un sur l'autre)",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D57",
+   "mots": "« J'aime beaucoup la variante 3 mais ça manque d'intervalle de confiance » ; « Pourquoi il y a parfois le t…",
+   "controle": "controle-fil6.mjs",
+   "portee": [
+    "comparer"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : FIL6 ECHEC « aucune variante trouvée » (il cherche des dossiers [a-z]\\d+ ; r6n2, g1 et l8g n'en sont pas). Avec la copie p01 : ECHEC sur Comparer (style 16D non repéré, bande d'IBU absente, aucune barre-plage), « aucune variante » sur Dryhopper et baseline. Non joué sur la base.",
+   "verdict": "a-adapter",
+   "script": "controle-fil6.mjs"
+  },
+  {
+   "id": "D58",
+   "mots": "« pourquoi il y a pas la partie arôme saveur aussi en comparaison ? » (18.10, soir, la rangée d'arômes de p…",
+   "controle": "controle-fil6.mjs",
+   "portee": [
+    "comparer"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : FIL6 ECHEC « aucune variante trouvée » (il cherche des dossiers [a-z]\\d+ ; r6n2, g1 et l8g n'en sont pas). Avec la copie p01 : ECHEC sur Comparer (style 16D non repéré, bande d'IBU absente, aucune barre-plage), « aucune variante » sur Dryhopper et baseline. Non joué sur la base.",
+   "verdict": "a-adapter",
+   "script": "controle-fil6.mjs"
+  },
+  {
+   "id": "D59",
+   "mots": "« il manque quelque info, notamment la relation avec le style » ; « C'est mieux mais pas encore meilleur qu…",
+   "controle": "controle-fil6.mjs",
+   "portee": [
+    "comparer",
+    "suggestions"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : FIL6 ECHEC « aucune variante trouvée » (il cherche des dossiers [a-z]\\d+ ; r6n2, g1 et l8g n'en sont pas). Avec la copie p01 : ECHEC sur Comparer (style 16D non repéré, bande d'IBU absente, aucune barre-plage), « aucune variante » sur Dryhopper et baseline. Non joué sur la base.",
+   "verdict": "a-adapter",
+   "script": "controle-fil6.mjs"
+  },
+  {
+   "id": "D60",
+   "mots": "« C'est vraiment difficile à lire, pour moi il faut revoir, mais si il faut vraiment en choisir un ça serai…",
+   "controle": "controle-fil6.mjs",
+   "portee": [
+    "suggestions",
+    "radar"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : FIL6 ECHEC « aucune variante trouvée » (il cherche des dossiers [a-z]\\d+ ; r6n2, g1 et l8g n'en sont pas). Avec la copie p01 : ECHEC sur Comparer (style 16D non repéré, bande d'IBU absente, aucune barre-plage), « aucune variante » sur Dryhopper et baseline. Non joué sur la base.",
+   "verdict": "a-adapter",
+   "script": "controle-fil6.mjs"
+  },
+  {
+   "id": "D61",
+   "mots": "« on est à 35' et on a l'impression d'être quasiment à 60' » ; « Aussi les deux sont à 25' mais on dirait q…",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D63",
+   "mots": "« Ça fait pas zoom focus sur l'emplacement. […] C'est moins bien qu'avant... » (18.10, soir, base v4.2 au t…",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D64",
+   "mots": "« Les ajouter déjà présent saute à droite » (18.10, soir, base v4.2)",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D61 bis",
+   "mots": "« L'échelle est plus du tout respecter quand on passe dessus... » (18.10, soir)",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D65",
+   "mots": "« Aussi attention au piège, souvent les spidergraph ne montre pas que certaines données sont inconnus et du…",
+   "controle": "controle-fil6.mjs (radars : inconnu ≠ 0)",
+   "portee": [
+    "radar",
+    "donnees"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : FIL6 ECHEC « aucune variante trouvée » (il cherche des dossiers [a-z]\\d+ ; r6n2, g1 et l8g n'en sont pas). Avec la copie p01 : ECHEC sur Comparer (style 16D non repéré, bande d'IBU absente, aucune barre-plage), « aucune variante » sur Dryhopper et baseline. Non joué sur la base. r6n2 balise déjà ses inconnus (data-inconnu ×5) mais aucun script actuel ne vérifie que l'inconnu se distingue du 0.",
+   "verdict": "a-adapter",
+   "script": "controle-fil6.mjs"
+  },
+  {
+   "id": "D66",
+   "mots": "« Pourquoi il y a cité ? » (18.10, nuit, le mot « cité » entouré près de Melon sur le radar h2)",
+   "controle": "controle-fil6.mjs (radars : pas de nom d'échelle près d'une famille)",
+   "portee": [
+    "radar"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : FIL6 ECHEC « aucune variante trouvée » (il cherche des dossiers [a-z]\\d+ ; r6n2, g1 et l8g n'en sont pas). Avec la copie p01 : ECHEC sur Comparer (style 16D non repéré, bande d'IBU absente, aucune barre-plage), « aucune variante » sur Dryhopper et baseline. Non joué sur la base.",
+   "verdict": "a-adapter",
+   "script": "controle-fil6.mjs"
+  },
+  {
+   "id": "D62",
+   "mots": "« Les spidergraph/radar graph resemble a rien, c'est une vrai régression... » ; « Celui-ci est encore pire …",
+   "controle": "controle-radar.mjs, controle-fil6.mjs",
+   "portee": [
+    "radar"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RADAR OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RADAR ECHEC (Comparer r6n2 : séries « valeurs hors de 0 à 2 », axes hors de l'ordre de la roue ; Dryhopper et baseline : « aucun radar data-radar » dans biere-/suggestions-/comparer-radar.html). Base consolide : RADAR OK 1/1. Pages actuelles : FIL6 ECHEC « aucune variante trouvée » (il cherche des dossiers [a-z]\\d+ ; r6n2, g1 et l8g n'en sont pas). Avec la copie p01 : ECHEC sur Comparer (style 16D non repéré, bande d'IBU absente, aucune barre-plage), « aucune variante » sur Dryhopper et baseline. Non joué sur la base.",
+   "verdict": "a-adapter",
+   "script": "controle-radar.mjs"
+  },
+  {
+   "id": "D48 bis",
+   "mots": "Révision de D48 (18.10, soir) : une famille sans valeur ne laisse plus un vide dans la série (D62) ; elle r…",
+   "controle": "controle-radar.mjs",
+   "portee": [
+    "radar"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RADAR OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RADAR ECHEC (Comparer r6n2 : séries « valeurs hors de 0 à 2 », axes hors de l'ordre de la roue ; Dryhopper et baseline : « aucun radar data-radar » dans biere-/suggestions-/comparer-radar.html). Base consolide : RADAR OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-radar.mjs"
+  },
+  {
+   "id": "D24 bis",
+   "mots": "Révision de D24 (18.10, soir) : le radar de Beer Maverick superpose 3 houblons, et le brasseur le donne en …",
+   "controle": "controle-radar.mjs (jusqu'à 4 séries pour Comparer)",
+   "portee": [
+    "radar",
+    "comparer"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « RADAR OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : RADAR ECHEC (Comparer r6n2 : séries « valeurs hors de 0 à 2 », axes hors de l'ordre de la roue ; Dryhopper et baseline : « aucun radar data-radar » dans biere-/suggestions-/comparer-radar.html). Base consolide : RADAR OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-radar.mjs"
+  },
+  {
+   "id": "D40 bis",
+   "mots": "Révision de D40 (18.10, soir) : l'interdit vise la couleur d'alerte, pas toute couleur ; une couleur par ho…",
+   "controle": "controle-objets.mjs",
+   "portee": [
+    "radar",
+    "comparer"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « OBJETS OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : OBJETS OK 1/1 sur les trois ; base consolide : OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-objets.mjs"
+  },
+  {
+   "id": "D67",
+   "mots": "« L'échelle ne s'adapte pas ne de focus, homme pas là où je suis. L'échelle ébullition est très grande alor…",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D68",
+   "mots": "« Toujours un petit soucis... » (19.10, au téléphone, base v4.6 : Nugget glissé à J+2, la tête du rail desc…",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D69",
+   "mots": "« On arrive pas à aller de l'extrême haut, à l'extrême bas » (19.10, au téléphone, base v4.7 dans la page p…",
+   "controle": "controle-rail.mjs <dossier> <route> --page=etat.html --parcours (maquette jouable) ; sans option, la base consolidée",
+   "portee": [
+    "rail",
+    "dryhopper"
+   ],
+   "tourne": "oui",
+   "resultat": "Pages actuelles : « RAIL OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01/index.html : RAIL ECHEC « aucune ligne de houblon repérable (data-role=\"ligne-houblon\") » sur Comparer r6n2 et Dryhopper g1, « pas de poignée glisser-moment » sur la baseline. Base consolide v4.10 (ecran-1/base, id consolide) : RAIL OK 1/1 en 83 s : il garde la base, pas les écrans d'outil. Dryhopper g1 a un curseur role=slider gardé seulement par controle-acquis --outil=dryhopper (ACQUIS OK 4/4, pas de 5′). Aucun contrôle ne joue « de l'extrême haut à l'extrême bas sans défiler » sur un écran d'outil. — 23.10, voie c1-rail (controles-parcours) : jouée en mode --parcours, classement dans voies/c1-rail/NOTE.md ; RAIL OK 2/2 sur la maquette d332792c.",
+   "verdict": "garde",
+   "script": "controle-rail.mjs"
+  },
+  {
+   "id": "D70",
+   "mots": "« Non c'est très mauvais. Tu as pas du tout bien compris le besoin, c'est entre la version actuelle qui est…",
+   "controle": "controle-appui.mjs A6 à A8",
+   "portee": [
+    "fiche",
+    "carte-houblon"
+   ],
+   "tourne": "non",
+   "resultat": "APPUI ECHEC « pas de page appui.html » sur les trois pages (il attend vue.html et appui.html par variante) ; fils12b-mi-chemin (son lot) : APPUI OK 6/6.",
+   "verdict": "a-adapter",
+   "script": "controle-appui.mjs"
+  },
+  {
+   "id": "D71",
+   "mots": "« Un appuie long ouvre sa fiche. Comme avant, saufe que sa fiche est plus fourni avec les labels » ; « il f…",
+   "controle": "controle-carte-fiche.mjs F1 à F8",
+   "portee": [
+    "fiche",
+    "carte-houblon"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : CARTE-FICHE ECHEC « pas de page vue.html / fiche-nugget.html / fiche-citra.html » (il attend ces fichiers par variante). `--base` (base courante) : CARTE-FICHE OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-carte-fiche.mjs"
+  },
+  {
+   "id": "D72",
+   "mots": "« 1/4, 2/4 mais même valeur ??? » (19.10, soir, sur g1 du lot 13 : Épicé 1/4 et Tropicaux 2/4 entourés, au …",
+   "controle": "controle-carte-fiche.mjs F1 à F8",
+   "portee": [
+    "fiche",
+    "radar"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : CARTE-FICHE ECHEC « pas de page vue.html / fiche-nugget.html / fiche-citra.html » (il attend ces fichiers par variante). `--base` (base courante) : CARTE-FICHE OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-carte-fiche.mjs"
+  },
+  {
+   "id": "D73",
+   "mots": "« Attention, trop de texte » (19.10, soir, sur la fiche de Nugget de la base v4.9, le bloc des étiquettes e…",
+   "controle": "controle-carte-fiche.mjs F1 à F8",
+   "portee": [
+    "fiche"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : CARTE-FICHE ECHEC « pas de page vue.html / fiche-nugget.html / fiche-citra.html » (il attend ces fichiers par variante). `--base` (base courante) : CARTE-FICHE OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-carte-fiche.mjs"
+  },
+  {
+   "id": "D74",
+   "mots": "« refait les mini maquette file de fer pour barre suggestion. Tu t'es trop limité, m'eme au niveau des coul…",
+   "controle": "controle-couleurs.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "suggestions"
+   ],
+   "tourne": "oui",
+   "resultat": "COULEURS OK ×3 : 7 teintes (Comparer), 6 (Dryhopper), 5 (baseline).",
+   "verdict": "garde",
+   "script": "controle-couleurs.mjs"
+  },
+  {
+   "id": "D75",
+   "mots": "« le \"au style\" donc normaliser au style les données semble être que ici ? C'est pas ce que j'avais demandé…",
+   "controle": "controle-au-style.mjs <dossier> <id> --pages=<page>",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "oui",
+   "resultat": "AU-STYLE OK ×3 : lentille style + absolu, style par défaut ; zones 27 (Comparer), 1 (Dryhopper), 74 (baseline).",
+   "verdict": "garde",
+   "script": "controle-au-style.mjs"
+  },
+  {
+   "id": "D76",
+   "mots": "« l'autre limitation, c'est que on voit pas quels sont les autre ajouts, alors oui par nelson sauving agume…",
+   "controle": "controle-autres-ajouts.mjs <dossier> <id> --pages=<page> [--via-comparer]",
+   "portee": [
+    "suggestions",
+    "comparer"
+   ],
+   "tourne": "oui",
+   "resultat": "Baseline : AUTRES OK (cas c1, 17 voies, 17 avec extras). Comparer et Dryhopper : ECHEC « aucune voie visible ([data-voie]) » (hors portée : pas de voies de Suggestions).",
+   "verdict": "garde",
+   "script": "controle-autres-ajouts.mjs"
+  },
+  {
+   "id": "D77",
+   "mots": "« très compliqué à voir les différence avec les cileur sur le spider graph » ; « surtout genant là » (19.10…",
+   "controle": "controle-radar-series.mjs <page.html>",
+   "portee": [
+    "radar",
+    "comparer"
+   ],
+   "tourne": "oui",
+   "resultat": "RADAR-SERIES OK ×3 (« aucun radar à plusieurs séries » : r6n2 a trois svg[data-radar] mais pas de superposition ; Dryhopper et baseline idem).",
+   "verdict": "garde",
+   "script": "controle-radar-series.mjs"
+  },
+  {
+   "id": "D78",
+   "mots": "« vachement bien. manque peut être dry hop, bio transfo, levure. et la panier, à la place plutôt un + qui a…",
+   "controle": "controle-moments.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "suggestions",
+    "dryhopper"
+   ],
+   "tourne": "oui",
+   "resultat": "Baseline : MOMENTS OK (cas c1 : 10′, 60′, dry hop, levure visibles, 17 voies). Comparer et Dryhopper : ECHEC « pas de data-cas » (hors portée : pas de voies).",
+   "verdict": "garde",
+   "script": "controle-moments.mjs"
+  },
+  {
+   "id": "D79",
+   "mots": "« bien aussi, mais manque assi quelque bouton et le \"ma bière\" en haut sert é rien » (19.10, soir, sur p1 d…",
+   "controle": "controle-ma-biere.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "suggestions",
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "MA-BIERE OK ×3 (0 étiquette « ma bière » seule).",
+   "verdict": "garde",
+   "script": "controle-ma-biere.mjs"
+  },
+  {
+   "id": "D80",
+   "mots": "« mieux afficher l'intensité des saveur comme sur p5 s4, aussi le type de houbon pour son usage, mixte, amé…",
+   "controle": "controle-usage-intensite.mjs <dossier> <id> --page=<page> [--donnees=<dossier>]",
+   "portee": [
+    "suggestions",
+    "carte-houblon"
+   ],
+   "tourne": "oui",
+   "resultat": "Baseline : USAGE-INTENSITE OK (17 voies). Comparer et Dryhopper : ECHEC « pas de data-cas » (hors portée).",
+   "verdict": "garde",
+   "script": "controle-usage-intensite.mjs"
+  },
+  {
+   "id": "D81",
+   "mots": "« c'est quoi ce double boul violette ? » (19.10, soir, sur p4 du lot 15 : la pastille « levure » de la fris…",
+   "controle": "controle-sens-survol.mjs <dossier> <id> --pages=<page>",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "oui",
+   "resultat": "SURVOL OK ×3 (0 picto au sens caché).",
+   "verdict": "garde",
+   "script": "controle-sens-survol.mjs"
+  },
+  {
+   "id": "D82",
+   "mots": "« pas mal mais c'est quoi ces gors bloque ? la partie du bas fait cens » (19.10, soir, sur q2 du lot 15, qu…",
+   "controle": "controle-gros-blocs.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "suggestions"
+   ],
+   "tourne": "oui",
+   "resultat": "BLOCS OK ×3 (0 bloc).",
+   "verdict": "garde",
+   "script": "controle-gros-blocs.mjs"
+  },
+  {
+   "id": "D83",
+   "mots": "« \"normaliser\" l'affichage, les forme. couleur aromonisé ça coorectement » ; « regarde aussi pour la standa…",
+   "controle": "controle-standard.mjs <page.html> ; inventaire-forme.mjs (inventaire)",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "oui",
+   "resultat": "STANDARD OK ×3 (Comparer : 6 houblons, 81 familles, 89 rayons, 24 icônes ; Dryhopper : 1 houblon, 24 rayons ; baseline : 162 familles, 139 rayons, 86 icônes). inventaire-forme sort l'inventaire (Comparer : 6 variantes de l'icône « sous le pouce », 2 de « fixé pour les trois »), sans verdict.",
+   "verdict": "garde",
+   "script": "controle-standard.mjs"
+  },
+  {
+   "id": "D52 bis",
+   "mots": "Révision de D52 (19.10, soir, base v4.10 : q2b intégré). Le brasseur a demandé la levure, le dry hop et la …",
+   "controle": "controle-suggestions.mjs (pour mémoire) ; FIL6, D76, D78 à D82",
+   "portee": [
+    "suggestions"
+   ],
+   "tourne": "non",
+   "resultat": "D52 bis renvoie lui-même à FIL6, D76, D78 à D82 et FICHE ; D76 et D78 à D82 sont joués ci-dessous (oui), FIL6 est à adapter.",
+   "verdict": "caduc",
+   "remplace_par": "FIL6 (D57 à D60), D76, D78 à D82 et FICHE (D25) selon D52 bis lui-même",
+   "script": "controle-suggestions.mjs"
+  },
+  {
+   "id": "D84",
+   "mots": "« Un poil gros et épaisy prends trop de place » (19.10, soir, sur l5 Tuiles du lot 18)",
+   "controle": "controle-place-voies.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "suggestions"
+   ],
+   "tourne": "oui",
+   "resultat": "Baseline : PLACE OK (7 voies au premier écran, médiane 61 px). Comparer et Dryhopper : ECHEC « 0 voie » (hors portée).",
+   "verdict": "garde",
+   "script": "controle-place-voies.mjs"
+  },
+  {
+   "id": "D85",
+   "mots": "« citra aura un effet extrêmement differents en dry hopping que cascade alors que pourtant d'après Nos outi…",
+   "controle": "prototypes/houblons-v4 : vitest run tests/pouvoir.test.ts",
+   "portee": [
+    "donnees",
+    "dryhopper"
+   ],
+   "tourne": "oui",
+   "resultat": "19 tests verts (pouvoir.test.ts).",
+   "verdict": "garde",
+   "script": "pouvoir.test.ts"
+  },
+  {
+   "id": "D86",
+   "mots": "« Ça reprend les code de l'app avec la Baseline, ça utilise les bonne pratique, contraintes, retour ecttra …",
+   "controle": "controle-contraste.mjs ; controle-commun.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "oui",
+   "resultat": "CONTRASTE OK ×3 (pire 4,68:1 Comparer, 4,96 Dryhopper dont 3 textes sur fond d'image non mesurables, 4,65 baseline). controle-commun : OK sur la baseline, ECHEC sur Comparer et Dryhopper (seul MOTS : 79 et 77 mots pour un plafond de 70 ; les onze autres OK).",
+   "verdict": "garde",
+   "script": "controle-contraste.mjs"
+  },
+  {
+   "id": "D87",
+   "mots": "« Pas d'info sur les AA, j'en vrai valeur » (19.10, soir, sur l8b, la baseline retenue : un picto « α » seul)",
+   "controle": "controle-alpha.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "suggestions",
+    "carte-houblon",
+    "comparer",
+    "dryhopper"
+   ],
+   "tourne": "oui",
+   "resultat": "ALPHA OK ×3 (Comparer 3 voies sur 3 avec α, Dryhopper 1 sur 1, baseline 15 voies sur 17 avec α).",
+   "verdict": "garde",
+   "script": "controle-alpha.mjs"
+  },
+  {
+   "id": "D88",
+   "mots": "« le glowing des icône de arôme c'est non, plutôt type Baseline 2 type fil » (19.10, soir, sur l8b)",
+   "controle": "controle-pictos-trait.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "picto",
+    "tout-ecran"
+   ],
+   "tourne": "oui",
+   "resultat": "TRAIT OK ×3 (29 pictos de famille sur Comparer, 3 sur Dryhopper, 18 sur la baseline ; 0 faute).",
+   "verdict": "garde",
+   "script": "controle-pictos-trait.mjs"
+  },
+  {
+   "id": "D89",
+   "mots": "La légende derrière un bouton discret (voir « Légende bis »)",
+   "controle": "controle-legende.mjs",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "oui",
+   "resultat": "LEGENDE OK ×3 (voir Légende bis).",
+   "verdict": "garde",
+   "script": "controle-legende.mjs"
+  },
+  {
+   "id": "D90",
+   "mots": "« Les icône sont pas parlant du tout » (19.10, soir, sur la légende de l8e : la goutte pour amérisant, le s…",
+   "controle": "controle-usage-parlant.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "carte-houblon",
+    "suggestions"
+   ],
+   "tourne": "oui",
+   "resultat": "PARLANT OK ×3 (3 usages sur Comparer, 1 sur Dryhopper, 17 sur la baseline : 0 sans mot).",
+   "verdict": "garde",
+   "script": "controle-usage-parlant.mjs"
+  },
+  {
+   "id": "D91",
+   "mots": "« Ça c'est inutile » (19.10, soir, sur l8e : la bande « ‹ visée \\| visée » et ses deux flèches d'axe, au-de…",
+   "controle": "controle-usage-parlant.mjs",
+   "portee": [
+    "suggestions"
+   ],
+   "tourne": "oui",
+   "resultat": "PARLANT OK ×3 (0 étiquette « visée » seule).",
+   "verdict": "garde",
+   "script": "controle-usage-parlant.mjs"
+  },
+  {
+   "id": "D92",
+   "mots": "« La barre là, c'est mieux mais il y avait mieux.... C'est pas exactement ce que j'ai demandé » (19.10, soi…",
+   "controle": "controle-piste-objectif.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "suggestions"
+   ],
+   "tourne": "oui",
+   "resultat": "Baseline : PISTE OK (3 objectifs, pistes de 342 px). Comparer et Dryhopper : ECHEC « aucun objectif visible » (hors portée).",
+   "verdict": "garde",
+   "script": "controle-piste-objectif.mjs"
+  },
+  {
+   "id": "D93",
+   "mots": "« Pourquoi la fiche est pareil ??? C'est pas du tout la bonne, ça suit pas la Baseline, ça suit rien du tou…",
+   "controle": "controle-fiche-baseline.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "fiche"
+   ],
+   "tourne": "oui",
+   "resultat": "Baseline : FICHE-BASELINE OK (fiche de Motueka : 12 familles, 15 pictos, 0 faute). Comparer : ECHEC B4 (polices absentes des voies : Source Sans 3, IBM Plex Mono). Dryhopper : ECHEC B3 (α de la fiche d'Idaho 7 non balisé data-role=\"alpha\") et B4.",
+   "verdict": "garde",
+   "script": "controle-fiche-baseline.mjs"
+  },
+  {
+   "id": "D94",
+   "mots": "« C'est très difficile à comprendre. […] Trouves des solutions pour mieux représentées. Mieux comprendre, m…",
+   "controle": "controle-lisible.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "comparer",
+    "dryhopper",
+    "levure",
+    "donnees"
+   ],
+   "tourne": "oui",
+   "resultat": "LISIBLE ECHEC ×3 : Comparer r6n2 L5 (3 valeurs simulées sans « ~ », « ≈ », « simulé » ou « estimé ») ; Dryhopper g1 L2 (composé « linalol » sans le picto de sa famille) ; baseline l8g L4 (aucune vraie valeur data-nature=\"mesure\" au premier écran).",
+   "verdict": "garde",
+   "script": "controle-lisible.mjs"
+  },
+  {
+   "id": "D95",
+   "mots": "« Simulation et simulateur mais c'est normalement dans quasiment chaque variante le simu » (19.10, soir, su…",
+   "controle": "controle-simulation.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "dryhopper",
+    "levure",
+    "comparer"
+   ],
+   "tourne": "oui",
+   "resultat": "SIMULATION ECHEC ×3 : Comparer r6n2 S1+S2 (aucune simulation data-role=\"simulation\", aucun réglage data-role=\"reglage\") ; Dryhopper g1 S1+S2 ; baseline l8g S1+S2+S3.",
+   "verdict": "garde",
+   "script": "controle-simulation.mjs"
+  },
+  {
+   "id": "D96",
+   "mots": "Sur la série a1–a3 du lot 21 (« Ajout cumulé, levure, biotransformation ») : « Fait en plus, c'est normalem…",
+   "controle": "controle-cumul-levure.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "dryhopper",
+    "levure",
+    "suggestions"
+   ],
+   "tourne": "oui",
+   "resultat": "CUMUL ECHEC ×3, 3 problèmes chacun : C1 pas d'ajout cumulé, C2 « pas de choix de levure (data-reglage=\"levure\") », C3 « la biotransformation ne se voit pas » sur Comparer r6n2, Dryhopper g1 et la baseline l8g (aucun data-reglage dans r6n2 ni g1).",
+   "verdict": "garde",
+   "script": "controle-cumul-levure.mjs"
+  },
+  {
+   "id": "D97",
+   "mots": "Trouvé par le pilote, revenu trois fois : « low » sous la levure (d4, lot 20), « medium » pour Pomona, « Es…",
+   "controle": "controle-valeurs-brutes.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "oui",
+   "resultat": "BRUTES OK ×3 (0 valeur brute visible).",
+   "verdict": "garde",
+   "script": "controle-valeurs-brutes.mjs"
+  },
+  {
+   "id": "D98",
+   "mots": "« plusieur confusion entre timing, comparaison, houbons side by side, on aurais suggestions, comparer, subs…",
+   "controle": "controle-une-question.mjs <dossier> <id> --page=<page> [--edition]",
+   "portee": [
+    "comparer",
+    "dryhopper",
+    "levure",
+    "suggestions"
+   ],
+   "tourne": "oui",
+   "resultat": "Comparer : UNE-QUESTION OK (titre « Cascade, Idaho 7 ou Galaxy pour ma stout ? », 1 groupe libre : houblon, contexte biere, base, moment, levure). Dryhopper : OK (« Quand ajouter Idaho 7 ? », libre : moment, contexte houblon, dose, levure, base). Baseline : ECHEC (hors portée : écran d'ensemble, aucun [data-libre]).",
+   "verdict": "garde",
+   "script": "controle-une-question.mjs"
+  },
+  {
+   "id": "D99",
+   "mots": "« pas de radar grpah ? » (20.10) : un acquis validé perdu d'un lot à l'autre (L06)",
+   "controle": "controle-acquis.mjs <dossier> <id> --page=<page> [--outil=dryhopper]",
+   "portee": [
+    "comparer",
+    "dryhopper"
+   ],
+   "tourne": "oui",
+   "resultat": "Comparer : ACQUIS OK 4/4 (radar au repos ; chimie, osu, valeurs à un toucher). Dryhopper sans option : ECHEC (osu absent, 1 valeur sur 3) ; avec --outil=dryhopper : ACQUIS OK 4/4 (geste, frise, valeurs, levure). Baseline : ECHEC (hors portée).",
+   "verdict": "garde",
+   "script": "controle-acquis.mjs"
+  },
+  {
+   "id": "D100",
+   "mots": "« nelson sauvin est un houbon ordinaire alors que c'est un un houbon incroyable » (20.10, l5f) : 83 % de se…",
+   "controle": "controle-sans-famille.mjs <dossier> <id> --page=<page>",
+   "portee": [
+    "comparer",
+    "carte-houblon",
+    "donnees"
+   ],
+   "tourne": "oui",
+   "resultat": "Comparer : OK (3 houblons, aucun au-dessus de 50 %). Dryhopper : OK (1 houblon). Baseline : ECHEC (Hallertau Blanc 67 %, Nelson Sauvin 83 % sans part « autres » visible ; conditionnel à l'option B).",
+   "verdict": "garde",
+   "script": "controle-sans-famille.mjs"
+  },
+  {
+   "id": "D101",
+   "mots": "« pico épice très étrange, plutôt vanille, canelle ? » (lot 15) ; « épicé l'icone est toujours pas bon.. » …",
+   "controle": "controle-planche-picto.mjs <planche.html> [--refuses] [--ter] [--genres=N] [--epices=N]",
+   "portee": [
+    "picto"
+   ],
+   "tourne": "oui",
+   "resultat": "temoins/planche-poivre.html → PLANCHE ECHEC (poivre-b : 5 cercles, une seule taille, 0 picto en contexte) comme attendu (le picto a été choisi le 23.10 : cannelle et girofle croisés, dans la baseline).",
+   "verdict": "garde",
+   "script": "controle-planche-picto.mjs"
+  },
+  {
+   "id": "D101 bis",
+   "mots": "« Aucun me convient... » (22.10, croix rouge sur les sept pictos de r4 : cannelle, vanille, badiane, girofl…",
+   "controle": "controle-planche-picto.mjs <planche.html> [--refuses] [--ter] [--genres=N] [--epices=N]",
+   "portee": [
+    "picto"
+   ],
+   "tourne": "oui",
+   "resultat": "temoins/planche-r4-refusee.html --refuses → PLANCHE ECHEC (coriandre, saupoudreur : idée et dessin déjà refusés) comme attendu (le picto a été choisi le 23.10 : cannelle et girofle croisés, dans la baseline).",
+   "verdict": "garde",
+   "script": "controle-planche-picto.mjs"
+  },
+  {
+   "id": "D101 ter",
+   "mots": "« Les icônes épices ??? Il y a que 3 variante, qui sont toutes quasiment identique ??? » ; « Des vrais prop…",
+   "controle": "controle-planche-picto.mjs <planche.html> [--refuses] [--ter] [--genres=N] [--epices=N]",
+   "portee": [
+    "picto"
+   ],
+   "tourne": "oui",
+   "resultat": "fils22-picto-epice-2/planche --ter → PLANCHE ECHEC (p3-couche : dessin déjà refusé, sur aucune vraie carte) comme attendu (le picto a été choisi le 23.10 : cannelle et girofle croisés, dans la baseline).",
+   "verdict": "garde",
+   "script": "controle-planche-picto.mjs"
+  },
+  {
+   "id": "D101 quater",
+   "mots": "« Je veux un forme qui représente vraiment ce que c'est, genre canellle vanille, ou clou de girofle ect... …",
+   "controle": "controle-planche-picto.mjs <planche.html> [--refuses] [--ter] [--genres=N] [--epices=N]",
+   "portee": [
+    "picto"
+   ],
+   "tourne": "oui",
+   "resultat": "temoins/planche-ter-ok.html --ter --epices=1 → ECHEC (0 épice réelle) ; fils22-picto-epice-3/serie-f/v0 --ter --genres=2 --nombre=8-8 --voisins=herbal,green --epices=8 → PLANCHE OK (8 variantes, 8 épices réelles, 4 différentes) (le picto a été choisi le 23.10 : cannelle et girofle croisés, dans la baseline).",
+   "verdict": "garde",
+   "script": "controle-planche-picto.mjs"
+  },
+  {
+   "id": "D104",
+   "mots": "« r6a est le meilleur mais reprendre trop peu d'éléments que j'avais noté bon ou intéressant des autres var…",
+   "controle": "controle-reprise.mjs <dossier> <id> --page=<page> [--inventaire=…]",
+   "portee": [
+    "comparer",
+    "page-lot"
+   ],
+   "tourne": "oui",
+   "resultat": "Comparer r6n2 : REPRISE OK (27 repris, 2 en contexte, 8 en pont, 0 écartés) contre l'inventaire elements-notes.json. Dryhopper et baseline : ECHEC « pas de ligne dans ## Reprise » (pas de NOTE de reprise : hors portée).",
+   "verdict": "garde",
+   "script": "controle-reprise.mjs"
+  },
+  {
+   "id": "D102",
+   "mots": "Leçon L08 : au lot 21, 33 variantes ont été faites sur un moteur au mauvais taux d'alcool",
+   "controle": "controle-entrees-lot22.mjs <comparer-stout.json> --regenere=<profils>",
+   "portee": [
+    "donnees",
+    "page-lot"
+   ],
+   "tourne": "oui",
+   "resultat": "ENTREES OK avec la régénération de la voie r6e (profils-regeneres.json.tmp) ; --temoin → ENTREES ECHEC « effetEgal citrus : Galaxy 3.5 ≠ 2.47 » comme attendu.",
+   "verdict": "garde",
+   "script": "controle-entrees-lot22.mjs"
+  },
+  {
+   "id": "D103 (prédit)",
+   "mots": "Prédit par le critique Fable sur onze des douze variantes du lot 22, avec les mots du brasseur aux lots 7 e…",
+   "controle": "aucun (controle-radar : règle des bandes d'intervalle jamais écrite)",
+   "portee": [
+    "radar",
+    "comparer"
+   ],
+   "tourne": "sans-script",
+   "resultat": "controle-radar.mjs ne contient aucune règle sur les bandes d'intervalle (ni « D103 » ni test « bord ») : à écrire, et le script entier est à adapter (voir D18).",
+   "verdict": "a-adapter",
+   "script": "aucun"
+  },
+  {
+   "id": "D25 bis",
+   "mots": "Révision de la règle des 80 mots au premier écran (19.10, soir) : fiche.html montre la fiche ouverte par l'…",
+   "controle": "controle-lot.mjs (fiche.html hors des 80 mots)",
+   "portee": [
+    "fiche",
+    "page-lot"
+   ],
+   "tourne": "non",
+   "resultat": "sans pNN/index.html + etat-b.html le dossier actuel n'est pas lu (capture.mjs crée même captures/ dans le dossier avant de refuser) ; sur copie p01/index.html (scratchpad) : le plafond de 80 mots est lu sur index.html et etat-b.html ; D25 est gardé par controle-fiche (D25 : oui).",
+   "verdict": "a-adapter",
+   "script": "controle-lot.mjs"
+  },
+  {
+   "id": "D33 ter, D40 ter",
+   "mots": "Révisions de D33 et D40 (19.10, soir, base v4.9, fiche g1 choisie : « la v1 est la meilleure ») : une case …",
+   "controle": "controle-palette.mjs, controle-objets.mjs ([data-famille] exclu)",
+   "portee": [
+    "fiche",
+    "radar"
+   ],
+   "tourne": "non",
+   "resultat": "Voir D33 et D40 : Pages actuelles : « PALETTE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : OK sur la baseline, ECHEC sur Comparer et Dryhopper (6 teintes saturées dans index.html, fiche.html… : « une seule couleur d'alerte »), cause non élucidée (teintes d'arômes ou de houblons hors data-famille/data-couleur ?). Base consolide : PALETTE OK 1/1 en 143 s. Pages actuelles : « OBJETS OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : OBJETS OK 1/1 sur les trois ; base consolide : OK 1/1.",
+   "verdict": "a-adapter",
+   "script": "controle-palette.mjs"
+  },
+  {
+   "id": "D33 bis",
+   "mots": "Révision de D33 (19.10, base v4.6, Comparer p06 et p02 intégrés) : comme D40 bis, une couleur par houblon e…",
+   "controle": "controle-palette.mjs (data-couleur déclarées)",
+   "portee": [
+    "comparer"
+   ],
+   "tourne": "non",
+   "resultat": "Pages actuelles : « PALETTE OK 0/0 » (faux vert : le dossier actuel n'a aucune page pNN/index.html, le script imprime « OK 0/0 » (code 0) sans rien lire). Copie p01 : OK sur la baseline, ECHEC sur Comparer et Dryhopper (6 teintes saturées dans index.html, fiche.html… : « une seule couleur d'alerte »), cause non élucidée (teintes d'arômes ou de houblons hors data-famille/data-couleur ?). Base consolide : PALETTE OK 1/1 en 143 s. r6n2 déclare 8 data-couleur : la copie échoue pourtant, la tolérance de 6° n'a pas suffi.",
+   "verdict": "a-adapter",
+   "script": "controle-palette.mjs"
+  },
+  {
+   "id": "D105",
+   "mots": "« Mais ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? » ; « C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10)",
+   "controle": "controle-choix.mjs <dossier> [--ecran=<écran>] ; --registre",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "oui",
+   "resultat": "registre : REGISTRE OK (8 écrans) ; maquette jouable du 23.10 avant reprise : CHOIX ECHEC (étape Houblons, Ma bière, Suggérer)",
+   "verdict": "garde",
+   "script": "controle-choix.mjs"
+  },
+  {
+   "id": "D106",
+   "mots": "« Pourquoi c'est en thème pastel horrible ??? C'est pas ce que j'ai demandé ??? » (23.10)",
+   "controle": "controle-teinte.mjs <dossier construit> [--ecran=<écran>]",
+   "portee": [
+    "tout-ecran"
+   ],
+   "tourne": "oui",
+   "resultat": "maquette jouable de 18 h 22 : TEINTE ECHEC 1/5 ; témoins teinte-blanc OK, teinte-pastel échec",
+   "verdict": "garde",
+   "script": "controle-teinte.mjs"
+  },
+  {
+   "id": "D107",
+   "mots": "« Ah mais comparé est que le dryhopping ??? C'est pas ce que je voulais je voulais comparé au moins : les étapes 60' 10' dryhopping ect comme la maquette de base. Et aussi le houblon de base ou bière de base. » (23.10, soir)",
+   "controle": "controle-comparer-etapes.mjs <dossier construit> [--page=etat.html] [--largeur=390|1280]",
+   "portee": [
+    "comparer"
+   ],
+   "tourne": "oui",
+   "resultat": "maquette d332792c : COMPARER-ETAPES ECHEC (13 manques par largeur : 0 valeur d'étape, une seule : après, 3 j ; pas de référence ; 60′ et 10′ non nommés) ; témoins comparer-etapes-ok et -ok-houblon : OK (12 valeurs, écart vertical 110 px) ; -un-moment, -cache (dry hop sous <details> fermé), -sans-reference, -trop-haut (écart 1314 px) : ECHEC",
+   "verdict": "garde",
+   "script": "controle-comparer-etapes.mjs"
+  },
+  {
+   "id": "D109",
+   "mots": "D109 : « Bouton retour souvent assez petit et pas très intuitif » ; « UI pas terribles, toujours pas au point » ; « Juste une croix bien positionné, facile, dans le thème suffirait ». D118 : « Suivant où on est le bouton retour fait pas la même action. Je veux juste retour au \"menu\" pas principal ». D119 : « Header qui change ??? » (23.10, soir)",
+   "controle": "controle-retour.mjs <dossier construit> [--routes=biere,suggerer,comparer,dryhopper,levure,substituer] [--page=etat.html] [--parcours=oui|non]",
+   "portee": [
+    "suggestions",
+    "comparer",
+    "dryhopper",
+    "levure",
+    "substituer",
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "maquette d332792c : RETOUR ECHEC 0/12 (« ‹ » de 28 × 28 px, icône 16 px #333333, pas une croix ; en-tête 41 px sur biere, 33 px sur suggerer et comparer, croix à 4 px d'écart ; la croix mène à #/biere depuis l'onglet et à #/suggerer depuis Comparer au lieu de #/ma-biere) ; témoins retour-ok (croix de 48 px à l'encre, #/ma-biere, trois onglets à 56 px) : OK ; retour-petit, retour-ailleurs (croix menant à #/biere), retour-en-tete-saute (64 px contre 56 px) : ECHEC",
+   "verdict": "garde",
+   "script": "controle-retour.mjs"
+  },
+  {
+   "id": "D108",
+   "mots": "« Aussi aucun impact sur je met plus, moins bannir ect.. » (23.10, soir, commentaire sur « Tropicaux prévu », Ma bière, maquette publiée)",
+   "controle": "controle-visee.mjs <dossier> [--famille=tropical] [--page=chemin]",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Sa base v4.10 balisée (temoins/visee-base) : VISEE OK (6/6, tropical). Maquette d332792c : VISEE ECHEC (1/6), « + » et « − » ne dessinent aucun losange (HTML de la piste identique avant et après), pas de [data-bannie], nom non barré. visee-sans-trace (le mot seul change) : ECHEC 1/6. visee-mauvais-cote (losange de « + » à gauche du point) : ECHEC 3/6. Jouée à 390 × 844 tactile, une page rechargée par scénario ; capture de la base après « + » regardée (losange, trait pointillé, « faible », « × »).",
+   "verdict": "garde",
+   "script": "controle-visee.mjs"
+  },
+  {
+   "id": "D110",
+   "mots": "« Un peu dur à comprendre ce système de petit bar » (23.10, soir, commentaire sur les pictos d'une voie de Suggérer, maquette publiée d332792c)",
+   "controle": "controle-traits.mjs <dossier construit> [--page=etat.html] [--largeur=390|1280]",
+   "portee": [
+    "suggestions"
+   ],
+   "tourne": "oui",
+   "resultat": "maquette d332792c : TRAITS ECHEC (6 manques, règle 3 : 0/3 pictos touchés montrent leur famille et leur valeur, à 390 et à 1280 ; règle 1 OK, 84 éléments de traits ; règle 2 OK ; règle 4 OK ; règle 5 sans objet) ; témoin traits-ok : TRAITS OK (6 touchés, 2 largeurs) ; traits-muets : ECHEC règle 3 ; traits-bavards : ECHEC règles 2 et 3 (17 textes sous les pictos) ; traits-feuille : ECHEC règle 4 (feuille de 844 px)",
+   "verdict": "garde",
+   "script": "controle-traits.mjs"
+  },
+  {
+   "id": "D114",
+   "mots": "« Beaucoup trop mis en avant » (23.10, soir, sur « Panel OSU, Cascade », Comparer)",
+   "controle": "controle-comparer-etapes.mjs <dossier construit> --largeur=390 (lignes « - D114 » : panel replié au repos, ouvert d'un toucher, sous le premier écran, titre pas plus fort que les autres)",
+   "portee": [
+    "comparer"
+   ],
+   "tourne": "oui",
+   "resultat": "maquette d332792c : ECHEC, « - D114 panel OSU ouvert au repos, seul bloc détaillé déplié » (graphique visible, panel à 912 px, titre 700/14 px) ; témoin comparer-etapes-panel-haut : ECHEC (4 lignes D114 : ouvert, premier écran à 224 px, titre 800 contre 600, 22 px contre 14 px) ; comparer-etapes-ok : OK (panel replié, s'ouvre d'un toucher, titre 600/14 px).",
+   "verdict": "garde",
+   "script": "controle-comparer-etapes.mjs"
+  },
+  {
+   "id": "D120",
+   "mots": "« Pas de bouton cancer » (23.10, soir, Substituer, pied « 10 g de Simcoe » : seul « Remplacer › »)",
+   "controle": "controle-annuler.mjs <dossier construit> [--routes=substituer,levure,dryhopper] [--page=etat.html]",
+   "portee": [
+    "substituer",
+    "levure",
+    "dryhopper"
+   ],
+   "tourne": "oui",
+   "resultat": "maquette d332792c : ANNULER ECHEC 0/6 (aucun « Annuler » sur Substituer, Levure ni Dryhopper, pied de 28 px) ; p17 : ANNULER OK (3 routes × 2 largeurs) ; témoins annuler-ok et annuler-ok-pont (Annuler à côté de « Puis la levure › ») (Annuler 48 px à côté de Remplacer, recette intacte, brouillon abandonné, l'outil se quitte) : OK ; annuler-absent et annuler-qui-change (Annuler qui applique le remplaçant) : ECHEC",
+   "verdict": "garde",
+   "script": "controle-annuler.mjs"
+  },
+  {
+   "id": "D115",
+   "mots": "« Mettre le radargraph avant, cette vue est vraiment pas terribles. À revoir... » (23.10, soir, fiche de Cascade, sur « · nommé en premier »)",
+   "controle": "controle-fiche-radar.mjs <dossier construit> [--page=fiche/etat.html] (lignes « D115 »)",
+   "portee": [
+    "fiche"
+   ],
+   "tourne": "oui",
+   "resultat": "Maquette d332792c : FICHE-RADAR ECHEC (radar à 603–944 px sous la liste des familles qui commence à 208 px, et radar non entier dans les 844 px) ; témoin fiche-radar-ok (radar 102–444, liste dès 452) : OK ; fiche-radar-bas (liste d'abord) : ECHEC ; fiche-radar-hors-ecran (radar avant la liste mais finit à 1012 px) : ECHEC. Joué à 390 × 844, conteneurs remis en haut ; capture de fiche-radar-ok regardée.",
+   "verdict": "garde",
+   "script": "controle-fiche-radar.mjs"
+  },
+  {
+   "id": "D116",
+   "mots": "« Pourquoi ? Qu'est-ce que ce champs apporter ?? Il faudra remplacer tout ça par le vrai Stepper de la vrai app » (23.10, soir, sur « 16D hypothèse », étape Houblons)",
+   "controle": "controle-stepper.mjs <dossier construit> [--page=ma-biere/etat.html] (lignes « D116 »)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Maquette d332792c : STEPPER ECHEC (pas de <nav aria-label=\"Étapes\"> de 7 boutons, « hypothèse » visible, à 390 et à 1280 px) ; témoin stepper-ok (DOM de WizardStepName + WizardStepRail, 7 étapes, la 3e active) : STEPPER OK ; stepper-hypothese (en-tête maison) : ECHEC ; stepper-hypothese-avec-fil (fil de l'app + pastille « hypothèse ») : ECHEC sur « hypothèse » seule ; stepper-six-etapes : ECHEC (6 étapes) ; stepper-mauvaise-etape : ECHEC (2e active). Captures de stepper-ok et stepper-hypothese-avec-fil regardées.",
+   "verdict": "garde",
+   "script": "controle-stepper.mjs"
+  },
+  {
+   "id": "D111",
+   "mots": "« Le slider est pas dans la version que je veux... » (23.10, soir, sur la carte de Nugget, étape Houblons)",
+   "controle": "controle-geste-etape.mjs <dossier construit> [--page=…] (lignes « D111 »)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Maquette d332792c : GESTE-ETAPE ECHEC (carte tenue à 123 px au lieu d'une puce de 48 px au plus, 4 graduations sous les puces de la frise dont 60′ sur la puce d'ébullition, texte de la bulle user-select auto) ; base v4.10 : GESTE-ETAPE OK (puce « Nugget » de 31 px, 0 chevauchement à 45′ et 35′, user-select none) ; témoin geste-etape-chevauche (puce repliée, graduations serrées) : ECHEC ; geste-etape-ok : OK. Captures des deux témoins regardées. RAIL reste OK sur d332792c (RAIL OK 1/1).",
+   "verdict": "garde",
+   "script": "controle-geste-etape.mjs"
+  },
+  {
+   "id": "D112",
+   "mots": "« L'appui prolonger fait pas l'effet escompté » (23.10, soir, même fil, étape Houblons)",
+   "controle": "controle-appui.mjs <dossier construit> --etape [--page=…] (critère A9, lignes « A9 »)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Maquette d332792c : APPUI-ETAPE ECHEC (aucun retour en 1,6 s de doigt posé, user-select auto, pas de -webkit-touch-callout none sur le nom ; la fiche s'ouvre à 515 ms) ; base v4.10 : APPUI-ETAPE OK (retour à 2 ms, fiche à 511 ms, nom en user-select none et touch-callout none) ; témoin appui-etape-muet : ECHEC ; appui-etape-ok : OK. Le mode par défaut (A1 à A8) est inchangé.",
+   "verdict": "garde",
+   "script": "controle-appui.mjs --etape"
+  },
+  {
+   "id": "D113",
+   "mots": "« J'aime bien les petits icône et tout. Mais il manque à un endroit un bouton légende » (23.10, soir, sur la carte de Nugget, étape Houblons)",
+   "controle": "controle-legende.mjs <dossier construit> --etape [--page=…] (lignes « D113 »)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Maquette d332792c : LEGENDE ECHEC (la carte de l'ajout et les ajouts rapides n'ont pas de « ? » ; seul celui des familles, qui explique le profil) ; base v4.10 : LEGENDE ECHEC (aucun « ? », le manque est aussi celui de la base) ; témoin legende-etape-loin (« ? » de la carte à 1 300 px) : ECHEC ; legende-etape-ok (un « ? » par groupe, les 12 familles nommées) : OK. Le mode par défaut (D89) est inchangé.",
+   "verdict": "garde",
+   "script": "controle-legende.mjs --etape"
+  },
+  {
+   "id": "D121",
+   "mots": "« Seul bouton qui ouvre vraiment l'analyse. Peut, être amélioré » (23.10, soir, sur le « › » noir à côté de « Résineux trop marqué », étape Houblons)",
+   "controle": "controle-profil-ouvre.mjs <dossier construit> [--page=…] [--seed=N] (lignes « D121 »)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Maquette d332792c : PROFIL ECHEC (alerte et deux familles tirées au hasard : #/ma-biere inchangé ; aucun mot « analyse », « Ma bière » ou « détail » près du bloc) ; témoin profil-chevron-seul : ECHEC ; profil-ouvre-ok (bloc entier cliquable vers #/biere, « Analyse complète ») : OK. Le « › » ouvre bien #/biere (vérifié).",
+   "verdict": "garde",
+   "script": "controle-profil-ouvre.mjs"
+  },
+  {
+   "id": "D117",
+   "mots": "« J'ai l'impression que cette vue suggestions et pas la bonne que j'ai vraiment choisir ?? » (23.10, soir)",
+   "controle": "controle-choix.mjs <dossier construit> (inventaire de q2b, fils15-s5-complexe/donnees/inventaire-q2b.json, 16 éléments)",
+   "portee": [
+    "suggestions"
+   ],
+   "tourne": "oui",
+   "resultat": "24.10 : maquette d332792c → CHOIX ECHEC (inventaire complété) ; construction 5345f6ad → CHOIX OK (BATTERIE OK 31/31)",
+   "verdict": "garde",
+   "script": "controle-choix.mjs"
+  },
+  {
+   "id": "D118",
+   "mots": "« Suivant où on est le bouton retour fait pas la même action. Je veux juste retour au \"menu\" pas principal » (23.10, soir)",
+   "controle": "controle-retour.mjs <dossier construit> [--routes=biere,suggerer,comparer,dryhopper,levure,substituer] [--page=etat.html] [--parcours=oui|non]",
+   "portee": [
+    "suggestions",
+    "comparer",
+    "dryhopper",
+    "levure",
+    "substituer",
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "24.10 : RETOUR OK sur 5345f6ad (6 routes × 2 largeurs, 3 parcours) ; même contrôle que D109",
+   "verdict": "garde",
+   "script": "controle-retour.mjs"
+  },
+  {
+   "id": "D119",
+   "mots": "« Header qui change ??? » (23.10, soir)",
+   "controle": "controle-retour.mjs <dossier construit> [--routes=biere,suggerer,comparer,dryhopper,levure,substituer] [--page=etat.html] [--parcours=oui|non]",
+   "portee": [
+    "ma-biere",
+    "suggestions",
+    "comparer"
+   ],
+   "tourne": "oui",
+   "resultat": "24.10 : RETOUR OK sur 5345f6ad (en-tête de 53 px et croix au même x sur les trois onglets) ; même contrôle que D109",
+   "verdict": "garde",
+   "script": "controle-retour.mjs"
+  },
+  {
+   "id": "D123",
+   "mots": "« Le rail c'est toujours n'importe quoi. Il y a un vrai historique dessus, pourquoi tu es revenu sur un choix que je n'ai pas fait ? » (24.10, matin, maquette 24.10, Nugget glissé vers la post-fermentation)",
+   "controle": "controle-geste-etape.mjs <dossier construit> [--page=…] --froid (lignes « D123 »)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Base v4.10 (--page=index.html --froid) : GESTE-ETAPE OK (froid, 3 segments) ; carte repliée à 31 px, « 80 °C » au whirlpool, J+7 en fermentation, J+3 en post-fermentation, « à froid », « aucun IBU », « − J+n + ». Maquette 5345f6ad : GESTE-ETAPE ECHEC, 57 problèmes (carte tenue à 102 px, « 3 j » sur le champ « Ajouter », « 2 j » au lieu de « J+n », « dry hop », « ? IBU », whirlpool sans échelle en °C). Témoin geste-froid-deborde : ECHEC (18 débordements) ; geste-froid-ok : OK. Voie p19, 24.10.",
+   "verdict": "garde",
+   "script": "controle-geste-etape.mjs"
+  },
+  {
+   "id": "D124",
+   "mots": "« Ça a bien avancé mais le rail par exemple à perdu en fonctionnalités et certaines de mes choix ont été perdue » (24.10, 8 h, maquette 24.10)",
+   "controle": "controle-fonctions-rail.mjs <dossier construit> [--page=index.html] (une ligne par fonction de inventaire-rail.json)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10, 390 × 844 tactile, 37 fonctions du rail jouées au doigt (inventaire-rail.json : 39 fonctions, dont 2 côté froid jouées par controle-geste-etape --froid) : base v4.10 (consolide, --page=index.html) FONCTIONS-RAIL OK (37/37) ; maquette 5345f6ad FONCTIONS-RAIL ECHEC (21/37, 16 fonctions perdues ou changées : renvoi de l'ébullition, grossissement de la loupe, graduations régulières, IBU au lâcher et son écart, geste interrompu, tout le whirlpool en °C et sa durée, J+n et son réglage, \"aucun IBU\", J+14, cas-ebu200) ; témoin temoins/fonctions-rail-sans-loupe (loupe retirée) ECHEC (24/37, dont les 6 fonctions de la loupe).",
+   "verdict": "garde",
+   "script": "controle-fonctions-rail.mjs"
+  },
+  {
+   "id": "D126",
+   "mots": "« Mais il y a très peu de mini maquettes ??? J'ai pratiquement aucun choix ?? Et j'ai pas du coté à cote » (24.10, soir, sur « Choix de vues · 24.10 »)",
+   "controle": "controle-page-choix.mjs <page.html> [--min=11] (C1 aucune variante cachée dans une bande, C2 trois par rangée à 1280 et deux à 390, C3 onze variantes au moins par choix (« Je dirais 11 par vue »), C4 référence marquée, C5 agrandissement au toucher)",
+   "portee": ["page-lot"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 : 2026-10-24-choix-vues PAGE-CHOIX ECHEC (9/9 : bandes qui défilent, 3 à 11 variantes, aucune référence marquée) ; 2026-10-23-dryhopper-v0 ECHEC (une par rangée à 390, pas de référence marquée).",
+   "verdict": "garde",
+   "script": "controle-page-choix.mjs"
+  },
+  {
+   "id": "D127",
+   "mots": "« bien mais trop centré ibu, il faudrait aussi pas que à 60' mais aussi en dry hop. SI non plutôt bien. Attention à toujours utilisé la baseline. Aussi ajouter à comparé doit être facile. Et le remplacement aussi. Ainsi que ferme la vue » (24.10, soir, sur u4)",
+   "controle": "controle-substituer-gestes.mjs <dossier construit> (S1 dry hop, S2 ajouter à Comparer, S3 remplacer, S4 fermer)",
+   "portee": ["substituer"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 : maquettes/parcours SUBSTITUER-GESTES ECHEC (2/4 : pas de dry hop, aucun bouton Comparer).",
+   "verdict": "garde",
+   "script": "controle-substituer-gestes.mjs"
+  },
+  {
+   "id": "D128",
+   "mots": "« C'est pas du tout cette vue là réf ??? » (24.10, soir, sur la référence « r6a » de la pastille)",
+   "controle": "controle-comparer-familles.mjs <page.html> [--min=9] (rangées de familles de r6a au premier écran)",
+   "portee": ["comparer"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 : sa r6a FAMILLES OK (10 au premier écran) ; maquettes/parcours/comparer FAMILLES ECHEC (0 au premier écran, 9 à partir de 872 px).",
+   "verdict": "garde",
+   "script": "controle-comparer-familles.mjs"
+  },
+  {
+   "id": "D129",
+   "mots": "« Fait attention aux header, footer, sur la continuité de l'app ect... » (24.10, soir)",
+   "controle": "controle-continuite.mjs <dossier construit> (K1 croix, K2 en-tête, K3 titre des outils, K4 pied en bas)",
+   "portee": ["tout-ecran"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquettes/parcours CONTINUITE ECHEC (4 : titres des outils 20 et 15 px ; pied de Dryhopper au-dessus du rail).",
+   "verdict": "garde",
+   "script": "controle-continuite.mjs"
+  },
+  {
+   "id": "D130",
+   "mots": "« Les type spéciaux des houblons hors 16d ! C'est très important surtout dans la comparaison !!!! » (24.10, soir, sur flb5b)",
+   "controle": "controle-hors-16d.mjs <page.html> [--min=N] [--premier-ecran] (contrat data-role=hors-16d)",
+   "portee": ["comparer","substituer","fiche"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquettes/parcours, Comparer (--min=3 --premier-ecran) et Substituer (--min=2) HORS-16D ECHEC (0 élément).",
+   "verdict": "garde",
+   "script": "controle-hors-16d.mjs"
+  },
+  {
+   "id": "D132",
+   "mots": "« la carte du houblons doit bien contenir de façon exhaustive TOUTES ses informations » ; « Le footer est top » (flu2b) ; « C'est pas exhaustif sur les infos du houblons » (24.10, soir, sur flb5b)",
+   "controle": "controle-fiche-exhaustive.mjs <page.html> [--houblon=<nom>] (P1 pied de flu2b, P2 toute information du pack)",
+   "portee": ["fiche"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : flb5b EXHAUSTIVE ECHEC (P1, α, β, huiles, composés, origine, styles, sources, IBU/g) ; maquettes/parcours-fiche (r14 en cours) ECHEC (stock, IBU/g).",
+   "verdict": "garde",
+   "script": "controle-fiche-exhaustive.mjs"
+  },
+  {
+   "id": "D133",
+   "mots": "« le spidergraph doit être en pic pas juste des traits... Enfin comme sur les mini maquettes » (24.10, soir, radar de la fiche)",
+   "controle": "controle-radar-pics.mjs <page.html>… (R1 aucun sommet au centre, R2 un pic isolé garde une base)",
+   "portee": ["fiche"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquette PICS ECHEC (Nugget et Nelson Sauvin, 0 % du rayon) ; g1 PICS OK (10 %) ; après la reprise de l'échelle de g1, PICS OK (Nugget, Nelson Sauvin, Galaxy).",
+   "verdict": "garde",
+   "script": "controle-radar-pics.mjs"
+  }
+ ]
+}
