@@ -144,6 +144,8 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
   (D121 : A, B ou C).
 - Réserves reportées : Comparer ne montre que floral et résineux par étape ; dock de Dryhopper (#146, commenté) ;
   Substituer à deux colonnes (#145, commenté).
+- Mission maquette-parcours signée par l'autre session (c0d684ca, VOIES OK 18/18). Ses 4 leçons proposées sont fusionnées
+  (L13, L17, L26, M10), et la dette de portée réglée : sujets normalisés, portée inconnue refusée par cablage (56527630).
 - **Prochaine action** : son choix D121 et sa réponse sur D112 ; les variantes de la liste de la fiche (D115) ; puis les
   tickets #145 et #146, l'architecture (#143) et t1-theme, à relancer sur la nouvelle construction.
 
