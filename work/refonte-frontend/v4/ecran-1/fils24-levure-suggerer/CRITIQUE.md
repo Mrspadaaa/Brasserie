@@ -56,3 +56,19 @@ la voie. Rien ne contredit q2b ; D35 est respecté (la levure n'est pas une voie
 
 ## Ligne 1
 OK — accepté : lva et lvc tiennent ; lvb à relancer (barres l5b dans la feuille, Pomona hors style mis en avant) ou à écarter.
+
+## Après correction (24.10, 13 h 40)
+Captures rouvertes : `lvb-repos.png`, `lvb-toucher.png`. Toucher rejoué dans Chrome (390 × 844, tactile) : le pont est à
+y = 290, sous les trois cartes d'objectif, visible sans défiler ; sa ligne lit « 🌸 🌲 ▨ non établis | 🍋 ~+1,3 à ~+2,8 »,
+aucune souche nommée au repos ; la feuille s'ouvre au toucher avec 2 barres l5b (une par souche, sur l'axe noir et la visée
+en tirets), Verdant IPA avant Pomona, « agrumes hors style · estimé » en gris pour Pomona, « floral, résineux : non
+établis » avec son mot, 44 mots ; Échap ferme ; 0 erreur.
+
+- **lvb** — **ACCEPTÉ**. Les trois défauts rejetés sont levés : les barres l5b sont dans la feuille (acquis « Meilleures
+  bar »), Pomona n'est plus vantée hors style (l'objectif manquant passe en premier, non établi, jamais 0), le pont est sous
+  les cartes. Restes signalés, pas bloquants : le bloc pousse la liste de q2b de 72 px au repos (« même effet sur tes
+  objectifs » descend, CHOIX OK d'après la voie) ; deux gestes jusqu'à l'étape ; les traits « hors style » des cases
+  restent noirs (défaut de r4) ; 44 mots dans la feuille, le plus bavard des trois.
+  Phrase prédite : « Là c'est bien, on voit direct que la levure fait rien pour le floral, et les barres sont là. »
+
+Ligne 1 (après correction) : OK — accepté : lva, lvb, lvc, aucun REJET.

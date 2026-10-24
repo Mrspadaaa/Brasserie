@@ -93,3 +93,30 @@ Le graphe qui le bloque : les traits de Suggérer (gr5), seuls qu'il a nommés (
 ## Ligne 1
 ECHEC — rejeté : gr1 (1c), gr3 (3c) écrivent une légende au repos, gr3 ajoute une lentille à m4, gr6 remonte un paragraphe
 hors de l'ordre de r5 ; gr2, gr4, gr5 acceptés.
+
+## Après correction (24.10, 13 h 40)
+Captures rouvertes : `gr1-repos`, `gr1-toucher-c`, `gr3-repos`, `gr3-toucher`, `gr3-toucher-c`, `gr3-page`, `gr6-repos`,
+`gr6-toucher`, `gr6-toucher-c`. Toucher rejoué dans Chrome (390 × 844, tactile) sur 1c, 3b, 3c, 6c ; 0 erreur. Mesuré au
+repos : `.jg-hautlab` absent de gr1 ; aucun `<text>` « 16D » dans gr3 et aucune lentille « Au style · Absolu » dans ses
+trois radars (la seule est celle du profil de l'étape ajouté sous les trois, qui la porte dans sa maquette, D75) ; dans
+gr6, le paragraphe « ~ simulé par le moteur… » et la ligne « Panel OSU… › » sont retirés à l'ouverture (les trois
+`.pq-comparer-osu-ligne` restent dans le DOM, vides, 0 px de haut : rien à l'écran), le radar est suivi des colonnes comme
+dans r5.
+
+- **gr1** — **ACCEPTÉ**. 1c devient « le haut du style, un trait » : un trait noir au bout de la zone du style sur chaque
+  barre (un repère, pas un mot), la barre remplie au doigt, la bulle « Agrumes · ~4 % du haut du 16D » sur une ligne
+  (225 × 32 px, couvre Herbacé et Terreux, pas Agrumes). Reste signalé : la bulle de 1c ne dit plus « ~ prévu » ni la
+  source ; 1b les a.
+  Phrase prédite : « 1b et 1c ok, le trait c'est bien, sans écrire. »
+- **gr3** — **ACCEPTÉ**. 3c est « la grille au doigt » : la ligne touchée se cerne, le rayon de sa famille se trace sur
+  le radar (floral en violet), bulle « Floral · pas goûté : inconnu, pas zéro · le 16D va jusqu'à ~moyen ». m4 n'est plus
+  touché. Restes signalés : la bulle de 3c couvre Noyau et Pépins ; celle de 3b couvre « Agrumes ? » et le haut du radar,
+  pas le sommet touché ; la page gagne un quatrième bloc (« le même profil, à l'étape »), elle est longue.
+  Phrase prédite : « 3b très bien. 3c ok aussi, c'est la même chose depuis la grille. »
+- **gr6** — **ACCEPTÉ**. 6a est l'ordre de r5 (radar, puis Ta stout et les trois colonnes), sans texte sous le radar ; 6b
+  et 6c inchangés. Restes signalés : en 6b, la bulle couvre le nord du radar (axe floral, tracé d'Idaho 7) ; en 6c, elle
+  couvre « ~ simulé », « Au style » et « pourquoi ? » (des commandes, pas l'axe touché) ; à poser sous le radar quand le
+  doigt est au nord.
+  Phrase prédite : « 6b et 6c très bien, là c'est propre. »
+
+Ligne 1 (après correction) : OK — accepté : gr1 à gr6, aucun REJET ; planche satisfaisante.

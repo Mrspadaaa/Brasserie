@@ -46,3 +46,18 @@ pastille, sans mot). Rien ne contredit r6a.
 
 ## Ligne 1
 OK — accepté : psa et psb tiennent ; psc à relancer (étiquette sur la rangée dry hop) ou à écarter avec sa greffe.
+
+## Après correction (24.10, 13 h 40)
+Captures rouvertes : `psc-repos.png`, `psc-toucher.png`, `psc-suite.png`. Toucher rejoué dans Chrome (390 × 844, tactile) :
+`aria-expanded` false → true, 83 mots au repos (inchangé, aucun ajouté), aucune animation CSS active sur les éléments
+`psc-`, 0 erreur de page. Mesuré : l'étiquette « le mesuré ⚗ 👥 ↓ » occupe y 417 à 443, le tableau commence à y 452 :
+rien ne couvre plus la rangée « dry hop », « ~1,3 » d'Idaho 7 se lit. Le radar reste en couleur à 42 % sous le calque, le
+« ~ » ne bat plus, le flux ne boucle plus. Le dock garde le cerclage de Valeurs et Preuve.
+
+- **psc** — **ACCEPTÉ**. Le défaut rejeté est levé ; l'image tient en trois secondes (fiches + 4 g/L + dry hop, 3 j +
+  US-05 → le moteur calcule), 12 mots au toucher. Restes signalés, pas bloquants : « pas mesuré en bière » et « le
+  mesuré ↓ » se côtoient sur la même ligne, deux pastilles pour une idée (une seule suffirait : la hachure, puis le dock
+  cerclé) ; le radar à 42 % reste pâle pendant qu'on explique « simulé ».
+  Phrase prédite : « Ok, là on voit ce qui rentre dans le calcul. Le mesuré c'est en bas, compris. »
+
+Ligne 1 (après correction) : OK — accepté : psa, psb, psc, aucun REJET.
