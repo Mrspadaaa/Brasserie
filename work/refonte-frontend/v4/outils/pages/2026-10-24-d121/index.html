@@ -1,0 +1,168 @@
+<title>Entrer dans l'analyse · 24.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Une page = un choix (D121). Mini maquettes à 340 px au moins, texte à 14 px au moins (verifier-page.mjs).
+   Mise en page : sa base en tête, puis A, B, C côte à côte ; chaque mini maquette s'agrandit en écran entier. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --houblon-doux: #e6efdc;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 6px 20px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+    --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f;
+    --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+  --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f;
+  --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.5 var(--texte);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 64px;
+}
+.page { max-width: 1180px; margin: 0 auto; display: grid; gap: 40px; }
+h1, h2 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.3rem, 4vw, 1.7rem); font-weight: 800; }
+p { margin: 0; max-width: 65ch; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+header { display: grid; gap: 10px; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.15rem; color: var(--houblon); }
+section { display: grid; gap: 14px; }
+.encart { border-left: 4px solid var(--ambre); padding: 10px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 75ch; }
+.note { font-size: 0.95rem; color: var(--discret); max-width: 70ch; }
+.paire { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
+.cote { display: grid; gap: 8px; align-content: start; min-width: 0; margin: 0; }
+.cote figcaption { display: grid; gap: 2px; font-size: 0.95rem; }
+.cote figcaption b { font-family: var(--titre); font-size: 1.25rem; }
+.cote figcaption span { color: var(--discret); font-size: 0.95rem; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 18px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.base { max-width: 420px; }
+.a-choisir .ecran { box-shadow: 0 0 0 2px var(--houblon), var(--ombre); border-color: transparent; }
+.ecran:focus-visible, a:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+footer { border-top: 1px solid var(--trait); padding-top: 18px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+footer a { color: var(--houblon); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: rgb(10 12 9 / 92%); display: grid; place-items: start center; overflow-y: auto; padding: calc(60px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.visionneuse figure { margin: 0; display: grid; gap: 10px; justify-items: center; }
+.visionneuse img { width: min(430px, 100%); height: auto; border-radius: 16px; display: block; }
+.visionneuse figcaption { color: #eef2ea; font-size: 1rem; text-align: center; max-width: 430px; }
+.fermer { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); font: 600 1rem var(--texte); background: #eef2ea; color: #1c2019; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.nav { display: flex; gap: 10px; }
+.nav button { font: 600 1rem var(--texte); background: #2d3328; color: #eef2ea; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · houblons · étape Houblons · D121 · 24.10</p>
+    <h1>Entrer dans l'analyse de ta bière</h1>
+    <p class="question">Trois façons. Laquelle veux-tu ?</p>
+  </header>
+
+  <section id="a-choisir" aria-label="À choisir">
+    <div class="encart">
+      <p><b>À choisir : A, B ou C.</b> Le bas de l'étape Houblons, là où ta bière dit « Résineux trop marqué ». La version du 24.10 porte A.</p>
+      <p>Dans les trois, toucher l'alerte ou une famille ouvre aussi l'analyse. Touche une mini maquette pour voir l'écran entier.</p>
+    </div>
+  </section>
+
+  <section id="base" aria-labelledby="t-base">
+    <h2 id="t-base">Ta base v4.10</h2>
+    <p class="note">Ton mot sur ce bouton : « Seul bouton qui ouvre vraiment l'analyse. Peut, être amélioré ».</p>
+    <figure class="cote base">
+      <figcaption><b>Base</b><span>un « › » noir, sans mot ; seul lui ouvre l'analyse</span></figcaption>
+      <button class="ecran" type="button" data-img="img/base.png" data-legende="Ta base v4.10 : le « › » noir à côté de l'alerte"><img src="img/base-profil.png" width="780" height="588" alt="Ta base : l'alerte et le « › » noir au-dessus des familles"></button>
+    </figure>
+  </section>
+
+  <section id="variantes" class="a-choisir" aria-labelledby="t-variantes">
+    <h2 id="t-variantes">A, B ou C</h2>
+    <div class="paire">
+      <figure class="cote">
+        <figcaption><b>A · dans la version</b><span>le « › » garde sa place et dit « analyse »</span></figcaption>
+        <button class="ecran" type="button" data-img="img/d121-a.png" data-legende="A : « analyse › » à la place du « › »"><img src="img/d121-a-profil.png" width="780" height="700" alt="Variante A : le bouton noir « analyse › » à côté de l'alerte"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>B</b><span>une barre pleine sous les familles</span></figcaption>
+        <button class="ecran" type="button" data-img="img/d121-b.png" data-legende="B : « Ouvrir l'analyse de ma bière › » sous les familles"><img src="img/d121-b-profil.png" width="780" height="700" alt="Variante B : une barre noire « Ouvrir l'analyse de ma bière › » sous les familles"></button>
+      </figure>
+      <figure class="cote">
+        <figcaption><b>C</b><span>l'alerte elle-même est l'entrée</span></figcaption>
+        <button class="ecran" type="button" data-img="img/d121-c.png" data-legende="C : « Résineux trop marqué · détail › »"><img src="img/d121-c-profil.png" width="780" height="700" alt="Variante C : l'alerte suivie de « détail › », sans bouton noir"></button>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <p>Mini maquettes : captures de la maquette jouable à 390 px, recadrées sur le bas de l'étape, sans retouche. Ta base : sa capture du 19.10.</p>
+    <p>Pour répondre, dis-le dans la conversation : « A », « B », « C », ou ce qui te manque.</p>
+    <p>La maquette : <a href="https://claude.ai/artifact/2BktuZzij8q2DAsrxQS5iX">Maquette houblons · 24.10</a>. Côte à côte : <a href="https://claude.ai/artifact/Q8H8dx98NhqibJkJzv1isW">Côte à côte · 24.10</a>.</p>
+  </footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-label="Écran agrandi">
+  <button class="fermer" id="fermer" type="button">Fermer</button>
+  <figure>
+    <img id="vis-img" alt="">
+    <figcaption id="vis-legende"></figcaption>
+    <div class="nav" id="vis-nav" hidden>
+      <button type="button" id="vis-prec">◀ Précédente</button>
+      <button type="button" id="vis-suiv">Suivante ▶</button>
+    </div>
+  </figure>
+</div>
+
+<script>
+// Agrandir au toucher, passer d'un écran à l'autre. Le contenu ne dépend pas de ce script.
+(function () {
+  const vis = document.getElementById('visionneuse');
+  const visImg = document.getElementById('vis-img');
+  const visLeg = document.getElementById('vis-legende');
+  const visNav = document.getElementById('vis-nav');
+  const ordre = Array.from(document.querySelectorAll('.ecran')).map((b) => ({ img: b.dataset.img, legende: b.dataset.legende }));
+  let rang = -1;
+  let retour = null;
+  function ouvrir(img, legende, depuis) {
+    retour = depuis || retour;
+    visImg.src = img; visImg.alt = legende; visLeg.textContent = legende;
+    rang = ordre.findIndex((o) => o.img === img);
+    visNav.hidden = rang < 0;
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('fermer').focus();
+  }
+  function fermer() { vis.hidden = true; visImg.removeAttribute('src'); if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang < 0) return; rang = (rang + pas + ordre.length) % ordre.length; ouvrir(ordre[rang].img, ordre[rang].legende); }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-img]');
+    if (b) ouvrir(b.dataset.img, b.dataset.legende, b);
+  });
+  document.getElementById('fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', () => aller(-1));
+  document.getElementById('vis-suiv').addEventListener('click', () => aller(1));
+  vis.addEventListener('click', (e) => { if (e.target === vis) fermer(); });
+  document.addEventListener('keydown', (e) => {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

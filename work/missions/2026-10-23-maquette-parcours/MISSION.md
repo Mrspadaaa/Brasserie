@@ -90,6 +90,7 @@ Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`).
 | Maquette jouable | parcours de bout en bout, construction d332792c ; 23.10 | https://claude.ai/artifact/52UBb4F7iME2k3ZzsAv4x1 | `work/refonte-frontend/v4/outils/pages/2026-10-23-maquette/index.html` |
 | Maquette jouable | version D107 à D121, construction 5345f6ad ; 24.10 | https://claude.ai/artifact/2BktuZzij8q2DAsrxQS5iX | `work/refonte-frontend/v4/outils/pages/2026-10-24-maquette/index.html` |
 | Côte à côte | sa base et la maquette, 12 états à 390 px, et le choix D121 ; 24.10 | https://claude.ai/artifact/Q8H8dx98NhqibJkJzv1isW | `work/refonte-frontend/v4/outils/pages/2026-10-24-cote-a-cote/index.html` |
+| D121, entrer dans l'analyse | trois variantes en mini maquettes, à côté de sa base ; 24.10 | https://claude.ai/artifact/6V21JEc5CqsjpLWrp184be | `work/refonte-frontend/v4/outils/pages/2026-10-24-d121/index.html` |
 
 ## Boucle de retour
 - Un critère rouge : l'agent corrige dans sa voie, 3 essais. Au-delà, SendMessage au même agent avec le défaut
