@@ -33,3 +33,6 @@ Générer : `node sbd1/serie/generer.mjs sbd3` ; captures : `node sbd1/serie/cap
 ## Captures
 `captures/sbd3-premier-ecran.png`, `sbd3-page.png`, `sbd3-wp.png` (le même Nugget en whirlpool), `sbd3-choix.png` (un autre remplaçant
 touché), `sbd3-fiche.png` (appui long).
+
+## Reprise du remplissage (retour du pilote, M14)
+Le premier écran porte en plus le cas de la stout à trois moments : Nugget 46 g à 60′, puis le même Nugget déplacé en whirlpool et en dry hop. Pour chaque moment, la réponse du moteur (meilleur sans inconnue, dose, IBU, nombre de très proches, premier en stock qui suffit) et le poids des trois parts (bande grise et bleu-vert) ; la colonne foncée est le moment de ta ligne. Ce que le remplaçant perd et gagne face à Nugget (familles des fiches, « emportés à 60′ ») suit le remplaçant choisi. Le rythme est resserré (5 px entre blocs). Remplissage du premier écran (controle-panel) : voir la ligne du panel ci-dessus.
