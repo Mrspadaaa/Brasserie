@@ -1735,8 +1735,8 @@
    "portee": [
     "ma-biere"
    ],
-   "tourne": "non",
-   "resultat": "À écrire par la voie p20 : tourne passe à « oui » quand le contrôle existe et échoue sur 5345f6ad.",
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10, 390 × 844 tactile, 37 fonctions du rail jouées au doigt (inventaire-rail.json : 39 fonctions, dont 2 côté froid jouées par controle-geste-etape --froid) : base v4.10 (consolide, --page=index.html) FONCTIONS-RAIL OK (37/37) ; maquette 5345f6ad FONCTIONS-RAIL ECHEC (21/37, 16 fonctions perdues ou changées : renvoi de l'ébullition, grossissement de la loupe, graduations régulières, IBU au lâcher et son écart, geste interrompu, tout le whirlpool en °C et sa durée, J+n et son réglage, \"aucun IBU\", J+14, cas-ebu200) ; témoin temoins/fonctions-rail-sans-loupe (loupe retirée) ECHEC (24/37, dont les 6 fonctions de la loupe).",
    "verdict": "garde",
    "script": "controle-fonctions-rail.mjs"
   }
