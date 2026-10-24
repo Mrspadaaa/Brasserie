@@ -99,7 +99,7 @@ function ficheCourte(p, f) {
   return `<section class="${p}-fc" data-role="fiche" data-fiche-de="${esc(f.name)}" role="dialog" aria-label="Fiche courte de ${esc(f.name)}" hidden>
 <header><h2>${esc(f.name)}</h2><span class="${p}-us" data-role="usage">${role(f)}</span><button type="button" class="${p}-x" data-role="fermer-fiche" aria-label="Fermer la fiche">${icone('croix', 'fermer')}</button></header>
 <p data-role="fiche-alpha"><b>α ${alphaPlage(f)}</b> <span>${f.alpha.sources.map((s) => s.source + ' ' + v(s.min) + '–' + v(s.max) + ' % (' + s.annee + ')').join(' · ')}</span></p>
-<p data-role="fiche-arome">${decrites.map((a) => `<span style="color:${JETONS[a.family].texte}" data-famille="${a.family}">${NOM[a.family]} ${a.sources}/${a.of}</span>`).join(' · ')}${i.liste.filter((x) => !x.famille).length ? ` · ${i.liste.filter((x) => !x.famille).length} mots hors famille` : ''}</p>
+<p data-role="fiche-arome">${decrites.map((a) => `<span style="color:${JETONS[a.family].texte}" data-famille="${a.family}">${NOM[a.family]} ${a.sources}/${a.of}</span>`).join(' · ')}${i.liste.filter((x) => !x.famille).length ? ` · ${i.liste.filter((x) => !x.famille).length} mot${i.liste.filter((x) => !x.famille).length > 1 ? 's' : ''} hors famille` : ''}</p>
 ${radar(p, f, { R: 44, zone: false, etiquettes: 'aucune', id: p + 'fc' + f.name.replace(/\W/g, ''), classes: p + '-mini' })}
 <div class="${p}-gout" data-role="gout"><button type="button" aria-pressed="false">${icone('coeur', 'j’aime')} j’aime</button><button type="button" aria-pressed="false">${icone('non', 'pas pour moi')} pas pour moi</button></div>
 </section>`;
@@ -109,6 +109,8 @@ const legende = (p, extra = '') => `<button type="button" class="${p}-aide" data
 const lentille = (p) => `<div class="${p}-lent" role="radiogroup" aria-label="échelle"><button type="button" role="radio" data-e="style" aria-checked="true">au style · 16D</button><button type="button" role="radio" data-e="absolu" aria-checked="false">absolu</button></div>`;
 const dock = (p) => `<footer class="${p}-dock"><div class="${p}-gout" data-role="gout"><button type="button" aria-pressed="false" aria-label="j’aime">${icone('coeur', 'j’aime')}</button><button type="button" aria-pressed="false" aria-label="pas pour moi">${icone('non', 'pas pour moi')}</button></div><button type="button" class="${p}-cmp">Comparer</button></footer>`;
 const appBar = (p) => `<div class="${p}-app" aria-hidden="true"><span>‹ Houblons 3/7</span><span>IBU 60 · OG 1,066 · EBC 70</span></div>`;
+const partAutres = (p, f, n, N) => `<div class="${p}-part" data-role="autres" data-houblon="${esc(f.name)}" data-part="${String(Math.round((100 * n) / N) / 100).replace('.', ',')}" aria-label="part hors des familles : ${n} idées sur ${N}"><i style="width:${Math.round((100 * n) / N)}%"></i><span>hors des familles : ${n} idées sur ${N}</span></div>`;
+const CSS_PART = (p) => `.${p}-part{position:relative;height:26px;background:#dedede;border-radius:4px;overflow:hidden;margin-top:8px}.${p}-part i{position:absolute;left:0;top:0;bottom:0;background:#9a9a9a}.${p}-part span{position:relative;display:block;line-height:26px;padding:0 8px;font-size:12px;font-weight:600;color:#111}`;
 const croix = (p) => `<button type="button" class="${p}-ferme" aria-label="Fermer">${icone('croix', 'fermer')}</button>`;
 
 const CSS_COMMUN = (p) => `
@@ -182,7 +184,8 @@ const motsN = (x, N) => `<sup>${x.n}/${N}</sup>`;
 .${p}-mots{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline}.${p}-mots span{font-size:30px;font-weight:700;letter-spacing:-.015em;line-height:1.1;color:#fff}.${p}-mots span sup{font-size:12px;font-weight:600;color:#fff;margin-left:3px}
 .${p}-mots span.g{font-size:14px;font-weight:400;color:#fff}
 .${p}-src{margin:12px 0 0;font-size:12px;color:#fff}
-.${p}-compte{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 0;font-size:12px}.${p}-compte div{background:var(--g1);border-radius:8px;padding:12px 8px 10px;color:#5b5b5b;min-height:96px}.${p}-compte b{font-size:30px;display:block;line-height:1;color:#111;margin-bottom:6px}
+${CSS_PART(p)}
+.${p}-compte{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0 0;font-size:12px}.${p}-compte div{background:var(--g1);border-radius:8px;padding:12px 8px 10px;color:#5b5b5b;min-height:96px}.${p}-compte b{font-size:30px;display:block;line-height:1;color:#111;margin-bottom:6px}
 .${p}-aide{position:absolute;right:60px;top:20px}`;
   const corps = `${appBar(p)}<main class="${p}-feuille" role="dialog" aria-label="Fiche de ${esc(f.name)}" style="--h:${coul(f)}">${enTete(p, f)}${legende(p)}
 <div class="${p}-haut">${radar(p, f, { R: 62, id: p, ml: 66 })}
@@ -190,6 +193,7 @@ const motsN = (x, N) => `<sup>${x.n}/${N}</sup>`;
 <section class="${p}-hd"><p>${hors.length} idées sur ${I.liste.length}, dans aucune des 12 familles : le radar ne peut pas les montrer</p>
 <div class="${p}-mots">${hors.filter((x) => !x.generique).sort((a, b) => b.n - a.n).map((x) => `<span>${x.mot}${motsN(x, I.N)}</span>`).join('')}${hors.filter((x) => x.generique).map((x) => `<span class="g">${x.mot} · mot générique${motsN(x, I.N)}</span>`).join('')}</div>
 <p class="${p}-src">dits par Beer Maverick (2023) et Hopsteiner (2025), traduits de l’anglais</p></section>
+${partAutres(p, f, hors.length, I.liste.length)}
 <div class="${p}-compte"><div><b>${I.N}</b>fiches lues</div><div><b>${I.liste.length}</b>idées</div><div><b>${hors.length}</b>hors des familles</div><div><b>${f.aromes.filter((a) => !a.level).length}</b>familles jamais décrites</div></div>
 ${dock(p)}${ficheCourte(p, f)}</main>`;
   ecrire(p, page(p, 'flz1 — Hors du dessin', css, corps));
@@ -218,14 +222,16 @@ ${dock(p)}${ficheCourte(p, f)}</main>`;
 .${p}-deux{display:grid;grid-template-columns:104px 1fr;gap:6px;align-items:center}
 .${p}-deux p{margin:0;font-size:13px;color:#5b5b5b}.${p}-deux p b{color:#111;font-size:14px;display:block}
 .${p}-titre{display:flex;align-items:baseline;justify-content:space-between;border-top:1px solid #e3e3e3;margin-top:4px;padding-top:6px}.${p}-titre h2{margin:0;font-size:14px}.${p}-titre span{font-size:12px;color:#5b5b5b}
-.${p}-lu{margin:4px 0 8px;padding:8px 10px;background:var(--g1);border-left:4px solid var(--h);font-size:14px}.${p}-lu b{color:var(--h)}
+${CSS_PART(p)}
+.${p}-lu{margin:4px 0 0;padding:8px 10px;background:var(--g1);border-left:4px solid var(--h);font-size:14px}.${p}-lu b{color:var(--h)}
+.${p}-part{margin:6px 0 8px}
 .${p}-cle{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:#5b5b5b;margin:0}.${p}-cle i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--h);vertical-align:-1px;margin-right:4px}.${p}-cle i.c{background:#fff;border:2px solid var(--h)}
 .${p}-aide{position:absolute;right:60px;top:20px}`;
   const corps = `${appBar(p)}<main class="${p}-feuille" role="dialog" aria-label="Fiche de ${esc(f.name)}" style="--h:${coul(f)}">${enTete(p, f)}${legende(p)}
 <div class="${p}-deux">${radar(p, f, { R: 44, id: p, etiquettes: 'aucune' })}<p><b>Le radar des 12 familles n’en voit que 2</b>${picto('citrus', 14)} Agrumes 1/2, ${picto('spice', 14)} Épicé 1/2 ; 10 familles jamais décrites. Ses ${I.liste.length} idées tiennent presque toutes hors de ce dessin.</p></div>
 <div class="${p}-titre"><h2>Le même houblon, dessiné avec ses mots</h2><span>${n} axes · ${I.N} fiches</span></div>
 ${rm}
-<p class="${p}-lu"><b>Lu d’un coup :</b> vin blanc, groseille à maquereau, raisin, dits par les deux fiches ; sauvignon blanc, agrumes, épicé par une seule.</p>
+<p class="${p}-lu"><b>Lu d’un coup :</b> vin blanc, groseille à maquereau, raisin, dits par les deux fiches ; sauvignon blanc, agrumes, épicé par une seule.</p>${partAutres(p, f, I.liste.filter((x) => !x.famille).length, I.liste.length)}
 <p class="${p}-cle"><span><i></i>dit par les 2 fiches</span><span><i class="c"></i>dit par une fiche</span><span>couleur : la famille, quand il y en a une</span><span>fruité, générique, non dessiné · Beer Maverick 2023, Hopsteiner 2025</span></p>
 ${dock(p)}${ficheCourte(p, f)}</main>`;
   ecrire(p, page(p, 'flz2 — Le radar des mots', css, corps.replace(enTete(p, f), enTete(p, f, { forme: 'B' }))));
@@ -250,7 +256,7 @@ ${dock(p)}${ficheCourte(p, f)}</main>`;
   const corps = `${appBar(p)}<main class="${p}-feuille" role="dialog" aria-label="Fiche de ${esc(f.name)}" style="--h:${coul(f)}">${enTete(p, f)}${legende(p, ' Pointillé : ta hypothèse, à toi de la défaire.')}
 <div class="${p}-rad">${radar(p, f, { R: 108, id: p })}</div>
 <div class="${p}-tete"><h2>${hors.length} mots sans famille · range-les</h2>${lentille(p)}</div>
-<div class="${p}-bac" id="${p}-bac">${chips}</div>
+<div class="${p}-bac" id="${p}-bac" data-role="autres" data-houblon="${esc(f.name)}" aria-label="mots sans famille">${chips}</div>
 <div class="${p}-cibles" id="${p}-cibles"><p>pose <b id="${p}-enmain">${hors[0].mot}</b> sur une famille, ou laisse-le dehors</p><div class="${p}-grille">${FAM.map(([fam, nom]) => `<button type="button" data-cible="${fam}">${picto(fam, 20)}${nom}</button>`).join('')}</div></div>
 <p class="${p}-fait" id="${p}-fait">rangé par toi : rien encore · le radar reste celui des fiches</p>
 <p class="${p}-fait">déjà rangés par Hopsteiner : agrumes, épicé · fruité, mot générique, pas à ranger · 2 fiches lues (Beer Maverick 2023, Hopsteiner 2025)</p>

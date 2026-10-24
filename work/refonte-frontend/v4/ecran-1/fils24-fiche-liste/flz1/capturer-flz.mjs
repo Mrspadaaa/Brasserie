@@ -26,7 +26,9 @@ for (const id of ids) {
   await wait(300);
   const m = await page.evaluate(() => ({ scrollW: document.documentElement.scrollWidth, scrollH: document.documentElement.scrollHeight }));
   await page.screenshot({ path: path.join(OUT, id + '-premier-ecran.png') });
+  await page.evaluate(() => { const d = document.querySelector('footer'); if (d) d.style.position = 'static'; });
   await page.screenshot({ path: path.join(OUT, id + '-page.png'), fullPage: true });
+  await page.evaluate(() => { const d = document.querySelector('footer'); if (d) d.style.position = ''; });
   for (const [nom, fn] of ETATS[id] || []) { await page.evaluate(fn); await wait(250); await page.screenshot({ path: path.join(OUT, id + '-' + nom + '.png') }); }
   if (id === 'flz4') {
     await page.goto(url, { waitUntil: 'networkidle0' }); await wait(300);

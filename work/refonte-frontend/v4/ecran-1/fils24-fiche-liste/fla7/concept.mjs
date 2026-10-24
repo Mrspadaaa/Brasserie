@@ -41,7 +41,7 @@ export default {
       }
     });
     const hors = ws.filter((w) => !w.f).length;
-    return `<div class="${p}-bd">${S.radar(h, { r: 40, pad: 6, labels: false })}<p data-role="fiche-arome"><b>${ws.length} mots</b>, ${h.N > 1 ? h.N + ' fiches' : '1 fiche'}. En haut, les plus dits.<br><b>${hors}</b> grises au pointillé : sans famille, hors du radar.${ws.some((w) => w.classeSeul) ? '<br>* classé par la fiche, pas senti.' : ''}</p></div>
+    return `<div class="${p}-bd">${S.radar(h, { r: 40, pad: 6, labels: false })}<p data-role="fiche-arome"><b>${ws.length} mots</b>, ${h.N > 1 ? h.N + ' fiches' : '1 fiche'}. En haut, les plus dits.<br><b>${hors}</b> grise${hors > 1 ? "s" : ""} au pointillé : sans famille, hors du radar.${ws.some((w) => w.classeSeul) ? '<br>* classé par la fiche, pas senti.' : ''}</p></div>
       <svg class="${p}-cone" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Cône des mots de ${S.esc(h.nom)}">${s}</svg>`;
   },
 };

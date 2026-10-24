@@ -56,7 +56,7 @@ export const HOUBLONS = [
   },
   {
     key: 'citra-cryo', pack: 'Citra cryo', nom: 'Citra cryo', origine: 'États-Unis', fiches: [[BM, 2023]],
-    alpha: { min: 10, max: 15, src: 'Citra, Beer Maverick 2023' }, lot: 24.8, usage: 'aromatique', stock: 65,
+    alpha: { min: 10, max: 15, src: 'Citra, Beer Maverick 2023', variete: 'Citra' }, lot: 24.8, usage: 'aromatique', stock: 65,
     mots: [
       { m: 'agrumes', f: 'citrus', src: [[BM, 'agrumes', 'mot']], premier: 1 },
       { m: 'pamplemousse', f: 'citrus', src: [[BM, 'pamplemousse', 'mot']] },

@@ -8,7 +8,7 @@ export default {
     const p = 'fla3';
     return `<header class="${p}-hd"><div class="${p}-hg">
       <h2>${S.esc(h.nom)} <span class="${p}-rep" aria-hidden="true">⊙</span></h2>
-      <div data-role="fiche-alpha" class="${p}-al">α <b>${S.fmt(h.alpha.min)}–${S.fmt(h.alpha.max)} %</b> <span>lot ${S.fmt(h.lot)} %</span></div>
+      <div data-role="fiche-alpha" class="${p}-al">α ${h.alpha.variete ? h.alpha.variete + " " : ""}<b>${S.fmt(h.alpha.min)}–${S.fmt(h.alpha.max)} %</b> <span>lot ${S.fmt(h.lot)} %</span></div>
       <div class="${p}-tags"><span class="${p}-us" data-role="usage">${h.usage}</span>${h.stock ? `<span class="${p}-st">${h.stock} g</span>` : `<span class="${p}-st ${p}-vide">épuisé</span>`}</div></div>
       <div class="${p}-rv">${S.radar(h, { r: 46, pad: 14, labels: false })}</div>
       <button class="${p}-x" data-role="fermer-fiche" aria-label="Fermer">✕</button></header>`;
@@ -17,7 +17,7 @@ export default {
 .${p}-hd{display:flex;align-items:flex-start;gap:6px;position:relative}.${p}-hg{flex:1;min-width:0}
 .${p}-hd h2{font-size:24px;margin:2px 0 0;letter-spacing:-.01em}.${p}-rep{font-size:16px;color:#6b6b68;font-weight:400}
 .${p}-al{font-size:17px;margin-top:2px}.${p}-al b{font-size:21px}.${p}-al span{font-size:13px;color:#5d5d5a}
-.${p}-tags{display:flex;gap:6px;margin-top:5px;align-items:center}.${p}-us{font-size:13px;border:1px solid #bdbdb9;border-radius:999px;padding:1px 9px}
+.${p}-tags{display:flex;gap:6px;margin-top:5px;align-items:center}.${p}-us{font-size:13px;border:1px solid #bdbdb9;border-radius:999px;padding:1px 9px;margin-left:0}
 .${p}-st{font-size:12px;border:1px solid #c4c4c0;border-radius:4px;padding:0 4px;color:#4a4a47}.${p}-vide{border-style:dashed}
 .${p}-rv{flex:none;margin-top:-4px}
 .${p}-x{width:34px;height:34px;border-radius:50%;border:0;background:#ececea;font-size:16px;flex:none}

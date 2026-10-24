@@ -19,7 +19,7 @@ export default {
 .${p}-cl{font-size:13px;color:#e6e6e3;margin:8px 0 0;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 `,
   fiche: (h, S) => {
-    const p = 'fla2', R = 80, W = 362, H = 292, cx = W / 2, cy = 142;
+    const p = 'fla2', R = 94, W = 362, H = 336, cx = W / 2, cy = 162;
     const ang = (i) => (-90 + 30 * i) * (Math.PI / 180);
     const pt = (i, k) => [cx + Math.cos(ang(i)) * R * k, cy + Math.sin(ang(i)) * R * k];
     const kv = (f) => (h.radar[f].level === 2 ? 1 : h.radar[f].level === 1 ? 0.55 : 0.04);

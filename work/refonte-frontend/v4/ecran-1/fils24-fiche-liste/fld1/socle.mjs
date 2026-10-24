@@ -163,7 +163,7 @@ export function ficheCourte(h) {
   return `<section class="fd-fiche" role="dialog" aria-label="Fiche courte de ${esc(h.nom)}" data-role="fiche" hidden>
 <header class="fd-fc-h"><i class="fd-pt" style="background:${h.couleur}" aria-hidden="true"></i><b class="fd-fc-n">${esc(h.nom)}</b><span class="fd-usage">${h.usage}</span><button type="button" class="fd-x fd-x-c" data-role="fermer-fiche" aria-label="Fermer la fiche courte">${IC.croix()}</button></header>
 <p data-role="fiche-alpha" class="fd-fc-a"><b class="num">α ${fr1(h.alpha.lot)} %</b> lot · <span class="num">${fr1(h.alpha.min)}–${fr1(h.alpha.max)} %</span> fiches</p>
-<div class="fd-fc-c">${radarCourt(h)}<ul>${top.map((f) => `<li data-role="fiche-arome">${pic(f.f, 14)}<b style="color:${T(f.f)}">${f.nom}</b> <span class="num">${f.n}/${f.N} fiche${f.N > 1 ? 's' : ''}</span></li>`).join('')}${h.horsFam.length ? `<li class="fd-fc-hors">${h.horsFam.length} mot${h.horsFam.length > 1 ? 's' : ''} hors des 12</li>` : ''}</ul></div>
+<div class="fd-fc-c">${radarCourt(h)}<ul>${top.map((f) => `<li data-role="fiche-arome">${pic(f.f, 14)}<b style="color:${T(f.f)}">${f.nom}</b> <span class="num">${f.n}/${f.N}</span> fiche${f.N > 1 ? 's' : ''}</li>`).join('')}${h.horsFam.length ? `<li class="fd-fc-hors">${h.horsFam.length} mot${h.horsFam.length > 1 ? 's' : ''} hors des 12</li>` : ''}</ul></div>
 <div class="fd-gout" role="group" data-role="gout" aria-label="Mon goût pour ${esc(h.nom)}"><button type="button" aria-pressed="false" aria-label="Aimer ${esc(h.nom)}">${IC.coeur()}</button><button type="button" aria-pressed="false" aria-label="Exclure ${esc(h.nom)}">${IC.exclu()}</button></div>
 </section>`;
 }
@@ -230,6 +230,7 @@ body:not(.abs) [data-abs-seul] { display:none !important; }
 .fd-pt { width:10px; height:10px; border-radius:50%; display:inline-block; }
 .fd-fc-a { font-size:13px; color:var(--gris); } .fd-fc-a b { color:var(--encre); }
 .fd-fc-c { display:flex; gap:10px; align-items:center; } .fd-fc-c ul { list-style:none; display:flex; flex-direction:column; gap:4px; font-size:13px; }
+.fd-fiche .fd-gout { align-self:flex-start; }
 .fd-fc-c li { display:flex; align-items:center; gap:5px; } .fd-fc-hors { color:var(--gris); }
 `;
 

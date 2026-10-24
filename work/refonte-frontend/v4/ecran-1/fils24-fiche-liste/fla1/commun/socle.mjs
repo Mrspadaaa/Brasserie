@@ -80,7 +80,7 @@ function fiche(p, S, h, C) {
   const ent = C.entete ? C.entete(h, S) : `<header class="${p}-fh"><h2>${S.esc(h.nom)} <span class="${p}-rep" aria-hidden="true">⊙</span></h2>
       ${h.stock ? `<span class="${p}-stock">${h.stock} g</span>` : `<span class="${p}-stock ${p}-vide">épuisé</span>`}
       <button class="${p}-x" data-role="fermer-fiche" aria-label="Fermer">✕</button></header>
-    <div class="${p}-fa"><span data-role="fiche-alpha"><span class="${p}-al">α</span> <b>${fmt(h.alpha.min)}–${fmt(h.alpha.max)} %</b> <span class="${p}-lot">lot ${fmt(h.lot)} %</span></span>
+    <div class="${p}-fa"><span data-role="fiche-alpha"><span class="${p}-al">α</span> ${h.alpha.variete ? `<span class="${p}-lot">${h.alpha.variete}</span> ` : ""}<b>${fmt(h.alpha.min)}–${fmt(h.alpha.max)} %</b> <span class="${p}-lot">lot ${fmt(h.lot)} %</span></span>
       <span class="${p}-jauge" aria-hidden="true"><i style="left:${(h.alpha.min / 26) * 100}%;width:${((h.alpha.max - h.alpha.min) / 26) * 100}%"></i><b style="left:${(h.lot / 26) * 100}%"></b></span>
       <span class="${p}-us" data-role="usage">${h.usage}</span></div>`;
   return `<section class="${p}-feuille" data-role="fiche" role="dialog" aria-label="Fiche de ${S.esc(h.nom)}" data-fla-fiche="${h.key}" hidden>
