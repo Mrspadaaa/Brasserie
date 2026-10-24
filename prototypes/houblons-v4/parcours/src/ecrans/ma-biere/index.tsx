@@ -35,8 +35,9 @@ const ETAPES = [
 ];
 const ETAPE_HOUBLONS = 2;
 
-/** D121 : la variante du profil qui ouvre l'analyse. A dans la version ; B et C pour la planche (drapeau ?d121=b|c). */
-const D121: 'a' | 'b' | 'c' = (() => { const v = typeof location === 'undefined' ? null : new URLSearchParams(location.search).get('d121'); return v === 'b' || v === 'c' ? v : 'a'; })();
+/** D121 : la variante du profil qui ouvre l'analyse. B, son choix (24.10, soir : « La meilleure ») ; A et C pour la planche
+ * (drapeau ?d121=a|c). */
+const D121: 'a' | 'b' | 'c' = (() => { const v = typeof location === 'undefined' ? null : new URLSearchParams(location.search).get('d121'); return v === 'a' || v === 'c' ? v : 'b'; })();
 
 /** Ce qui a changé depuis que Ma bière a été quittée : par ajout, et la levure (__levure). */
 function reperesDe(avant: RecetteParcours | null, recette: RecetteParcours): Record<string, string> {
@@ -171,7 +172,7 @@ export default function MaBiere() {
             ))}
           </div>
           {D121 === 'b' && (
-            <button type="button" data-role="pont-biere" onClick={() => aller({ ecran: 'biere' })}
+            <button type="button" data-role="pont-biere" data-etat="etat-etape-analyse" onClick={() => aller({ ecran: 'biere' })}
               className="pq-ma-biere-pont-analyse w-full h-11 inline-flex items-center justify-center gap-1 rounded-full text-base font-semibold">
               Ouvrir l'analyse de ma bière<ChevronRight className="w-4 h-4" aria-hidden="true" />
             </button>
