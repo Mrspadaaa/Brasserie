@@ -635,3 +635,8 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   importante vu qu'il y aura beaucoup de données !! ») : la porte B s'ouvre. Épopée #159, mission
   `work/missions/2026-10-25-integration-houblons/` ; état des lieux mesuré (voie i0), puis conseil complet sur l'architecture
   de fluidité avant le premier code dans `src/`. Push, PR, fusion et déploiement restent sur son accord.
+- D65 (conseil complet, 24.10 nuit, `cerveau/decisions/2026-10-25-integration-architecture.md`) : pile de routes dans App, le
+  wizard reste monté sous les outils ; une seule porte d'écriture (`applyHopV4Change` sur `writeRecipeDraft`, ou `saveRecipeConfirmed`
+  pour RecipePage, patch de `hops` seul) ; calcul : causes mesurées d'abord (T5), interface asynchrone dès T6, worker persistant
+  seulement si le banc ×4 échoue ; catalogue en JSON à la demande ; V5.5 sous drapeau. Ordre : T1, T14, T3, T4, T5, T6, T17, T9,
+  T11, T8, T12, T7 (si besoin), T10, T13, T15, T16, T18 (issues #160 à #176, épopée #159).

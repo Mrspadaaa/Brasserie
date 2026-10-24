@@ -75,3 +75,4 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 ### decisions/ — transcriptions du conseil
 - [[2026-10-22-carte-outils-houblons]] — un facteur libre par écran
 - [[2026-10-24-lot-d125-vues]] — u4 choisi ; Dryhopper passe 4 ; liste de la fiche en entonnoir
+- [[2026-10-25-integration-architecture]] — pile dans App, porte unique, calcul async ; T1, T14

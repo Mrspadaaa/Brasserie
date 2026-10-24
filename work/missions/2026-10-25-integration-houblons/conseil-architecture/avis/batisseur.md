@@ -1,0 +1,13 @@
+**1. Hôte : (b), mais posé par la pile de l'app.** Avec (a), le wizard est démonté. `App.tsx:971` ne rend `BrewWizard` que si `view === 'wizard'`. Au remontage d'une recette déjà enregistrée, `BrewWizard.tsx:466` peut afficher `DraftFreshnessChoice`, qui demande au brasseur de choisir entre « Reprendre le brouillon » et la version enregistrée. Ce serait une rupture à chaque outil fermé. (b) seul ne marche pas non plus : `useFullScreenRoute.ts:64-66` renvoie à `tabs` à chaque `popstate`, donc une couche qui pousse l'historique fermerait le wizard. Il faut une pile de routes dans `App`, où le wizard reste monté sous les outils. L'outil écrit par un `applyHopV4Change` calqué sur `applyHopV55Change` (l. 1410-1437), qui fait de `writeRecipeDraft` son point de validation. (c) est écarté : un second brouillon Dexie ferait deux sources de vérité, ce dont il se plaint déjà (« un choix sur un endroit, semble pas toujours être reporté partout »).
+
+**2. Calcul : T5 d'abord, le worker ensuite si la mesure l'exige.** Le précédent `hopSolver.worker.ts:9` crée un worker par recherche et ne convient pas tel quel : chaque recherche relirait 406 ko de `proto-data`. Il faudra un worker persistant, alimenté une fois, ce qui suppose la fabrique sans singleton (B2). Sans cette fabrique, pas de worker. Je n'écarte pas le worker (L20) : il se décide sur `suggerer` à ×10 ×4 rejoué après T5.
+
+**3. Données : (a).** Le catalogue fait 45 ko gzip (ETAT-DES-LIEUX), donc Dexie n'apporte rien et ne met pas les chunks de code hors ligne. Un service worker (c) toucherait le déploiement et cohabiterait avec `brew-alerts-sw.js` : c'est à l'utilisateur de décider. Les écoutes par écran (T10) viennent en dernier, le hors ligne en dépend.
+
+**4. Coexistence : (a), un drapeau.** Les 178 à 192 tests qui citent `hopV55` restent verts. Le retrait se fera sur son accord.
+
+**5. Ordre.** T1, puis T4+T5 avec le banc ×10 versé dans `scripts/`, bloquant en Node. Ensuite la pile (T3), T6, un `--url` minimal pour `controle-choix.mjs` avant T12, T12, puis T7 si la mesure l'exige. **Premier geste lundi** : `houblon()` doit rendre « arôme non simulé » pour un houblon `inconnu:<nom>` au lieu de lever une exception (`moteur/index.ts:214`), et `prototypes/houblons-v4/tests` doit entrer dans `vitest.config.ts`.
+
+Position : autre voie : hôte (b) porté par une pile de routes dans `App` où le wizard reste monté ; calcul : T5 d'abord, worker persistant décidé sur mesure ; données (a) ; drapeau (a).
+
+LEÇON PROPOSÉE : prouver qu'un état « survit au démontage » en jouant le remontage, pas en lisant l'appel d'écriture. R6 a lu `writeRecipeDraft` sans voir `DraftFreshnessChoice` ni le `popstate` global.
