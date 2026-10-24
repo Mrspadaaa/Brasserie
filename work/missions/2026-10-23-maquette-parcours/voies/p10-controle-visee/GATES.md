@@ -25,7 +25,7 @@ Scope: un contrôle joué qui exige que « + », « − », « × » et « banni
   EVIDENCE: automatic-evidence=v1; definition-sha256=f90c62db0251efffed280d9b357cbdd9d54da654839fcf0fada89dee4faca5a0; exit=0; EXPECT=matched; output-sha256=9e404a6d5bba66ca32edf76244545c2d3f4e867b5625d2bafbd9ca0e60c240c1; output-bytes=32; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G5: D108 est dans la portée des défauts, gardé, sur Ma bière
-  CHECK: node -e "const p=require('./work/refonte-frontend/v4/tournoi/outils/portee-defauts.json');const d=p.defauts.find(x=>x.id==='D108');if(!d||d.verdict!=='garde'||d.tourne!=='oui'||!d.portee.includes('biere')||d.script!=='controle-visee.mjs'){console.log('PORTEE ECHEC');process.exit(1)}console.log('PORTEE OK')"
+  CHECK: node -e "const p=require('./work/refonte-frontend/v4/tournoi/outils/portee-defauts.json');const d=p.defauts.find(x=>x.id==='D108');if(!d||d.verdict!=='garde'||d.tourne!=='oui'||!d.portee.includes('ma-biere')||d.script!=='controle-visee.mjs'){console.log('PORTEE ECHEC');process.exit(1)}console.log('PORTEE OK')"
   EXPECT: PORTEE OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=a0abcccccc4cf3eeb1adc61936cea7f2797b600eedba81f3a02d8962d2a4b4fa; exit=0; EXPECT=matched; output-sha256=1812cb74b426905949893119c1eb3f66773036cdf500a13bf881ef86663fe91b; output-bytes=10; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 

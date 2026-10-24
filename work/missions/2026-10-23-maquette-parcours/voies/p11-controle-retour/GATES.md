@@ -30,7 +30,7 @@ Scope: un contrôle qui exige, sur chaque outil, une croix de 44 px au moins, ic
   EVIDENCE: automatic-evidence=v1; definition-sha256=8298a71e7104bdb694e61b25a676fd624edf6c553127bd3ccba8abefc6caecd2; exit=0; EXPECT=matched; output-sha256=992694cfbfac5ff54b1b1c717ae0431c339ae64c41b8f3e6f957682a059f4388; output-bytes=33; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G5: D109 (avec D118 et D119) est dans la portée des défauts, gardé, sur les outils
-  CHECK: node -e "const p=require('./work/refonte-frontend/v4/tournoi/outils/portee-defauts.json');const d=p.defauts.find(x=>x.id==='D109');if(!d||d.verdict!=='garde'||d.tourne!=='oui'||!['suggerer','comparer','dryhopper','levure','substituer'].every(r=>d.portee.includes(r))||d.script!=='controle-retour.mjs'){console.log('PORTEE ECHEC');process.exit(1)}console.log('PORTEE OK')"
+  CHECK: node -e "const p=require('./work/refonte-frontend/v4/tournoi/outils/portee-defauts.json');const d=p.defauts.find(x=>x.id==='D109');if(!d||d.verdict!=='garde'||d.tourne!=='oui'||!['suggestions','comparer','dryhopper','levure','substituer'].every(r=>d.portee.includes(r))||d.script!=='controle-retour.mjs'){console.log('PORTEE ECHEC');process.exit(1)}console.log('PORTEE OK')"
   EXPECT: PORTEE OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=ffa652578336050c09b5a5541e7f461cccc5ca3e9626507c74b9cdfb312956eb; exit=0; EXPECT=matched; output-sha256=1812cb74b426905949893119c1eb3f66773036cdf500a13bf881ef86663fe91b; output-bytes=10; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
