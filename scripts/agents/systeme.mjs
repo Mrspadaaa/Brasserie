@@ -432,7 +432,12 @@ function gateCheck(args, cwd) {
 // La portée des défauts (audit a1 du 23.10) : pour un sujet d'écran, les contrôles qui le gardent, et la dette (les
 // contrôles à adapter, qui ne tournent plus sur le format actuel). controle-commun couvre les contrôles qu'il appelle.
 export const PORTEE = path.join(RACINE, 'work', 'refonte-frontend', 'v4', 'tournoi', 'outils', 'portee-defauts.json');
-const SUJETS = { dryhopper: /dry ?hop|quand ajouter/i, comparer: /compar/i, fiche: /fiche/i, picto: /picto/i, suggestions: /sugg[eé]r/i, recette: /recette/i, 'ma-biere': /ma bi[eè]re/i, radar: /radar/i, rail: /\brail\b|loupe/i, levure: /levure/i };
+// 'ma-biere' couvre l'étape Houblons (route ma-biere) et l'onglet Ma bière (route biere) : la maquette porte les deux noms.
+const SUJETS = { dryhopper: /dry ?hop|quand ajouter/i, comparer: /compar/i, fiche: /fiche/i, picto: /picto/i, suggestions: /sugg[eé]r/i, recette: /recette/i, 'ma-biere': /ma[ -]bi[eè]re|ecrans\/biere\b|[eé]tape houblons/i, substituer: /substitu|à la place de/i, radar: /radar/i, rail: /\brail\b|loupe/i, levure: /levure/i };
+// Portées qui ne sont pas un écran : aucune voie ne les reçoit par son texte. Toute autre portée doit être un sujet (24.10 :
+// « suggerer », « biere » et « substituer » n'étaient exigés d'aucune voie).
+export const PORTEES_HORS_SUJET = ['tout-ecran', 'donnees', 'page-lot', 'carte-houblon'];
+export const porteesInconnues = (json) => json.defauts.flatMap((d) => d.portee.filter((p) => !(p in SUJETS) && !PORTEES_HORS_SUJET.includes(p)).map((p) => `${d.id} « ${p} »`));
 const COMMUN = ['controle-au-style', 'controle-contraste', 'controle-couleurs', 'controle-fiche', 'controle-gros-blocs', 'controle-legende', 'controle-pictos-trait', 'controle-sens-survol', 'controle-standard', 'controle-usage-parlant', 'controle-valeurs-brutes', 'mots-premier-ecran'];
 export function controlesDeLaPortee(texteVoie, controles, { portee = PORTEE } = {}) {
   if (!existe(portee)) return { sujets: [], manquants: [], dette: [] };
@@ -790,6 +795,7 @@ function verifierCablage() {
   const ignore = (p) => spawnSync('git', ['check-ignore', '-q', p], { cwd: RACINE }).status === 0;
   if (ignore('work/missions/m/voies/v/RESULTAT.md')) erreurs.push('git ignore les textes des missions');
   if (!ignore('work/missions/m/voies/v/captures/a.png')) erreurs.push('git suit les captures des missions');
+  if (existe(PORTEE)) for (const p of porteesInconnues(JSON.parse(lire(PORTEE)))) erreurs.push(`portee-defauts.json : portée inconnue, ${p} ; un sujet de SUJETS (systeme.mjs) ou une de PORTEES_HORS_SUJET`);
   if (existe(DEFAUTS) && (!existe(DEFAUTS_COURT) || lire(DEFAUTS_COURT) !== defautsCourt())) erreurs.push('DEFAUTS-COURT.md en retard sur DEFAUTS-RECURRENTS.md : node scripts/agents/systeme.mjs defauts');
   return erreurs;
 }
@@ -958,6 +964,11 @@ function temoins() {
   const requisDh = controlesDeLaPortee('Dryhopper, le moment ecran-1/lot/**', '').manquants.map((m) => m.split(' ')[0]);
   const tous = [...new Set(['controle-commun', 'controle-choix', 'controle-teinte', ...requisDh])].join(', ');
   attendu('voie Dryhopper avec ses contrôles, un écarté avec sa raison', dh(`${tous}, sans controle-cumul-levure : la levure est un autre outil`), true);
+  // 24.10 : une portée nommée autrement que les sujets n'est exigée d'aucune voie ; le câblage la refuse.
+  attendu('portée « suggerer », inconnue des sujets', porteesInconnues({ defauts: [{ id: 'Dx', portee: ['suggerer'] }] }).length === 0, false);
+  attendu('portées de sujets et hors sujet', porteesInconnues({ defauts: [{ id: 'Dy', portee: ['suggestions', 'ma-biere', 'substituer', 'tout-ecran'] }] }).length === 0, true);
+  attendu('voie de l\'étape Houblons, sujet ma-biere', controlesDeLaPortee('reprise de l\'étape Houblons, prototypes/houblons-v4/parcours/src/ecrans/ma-biere/**', '').sujets.includes('ma-biere'), true);
+  attendu('voie de Substituer, sujet substituer', controlesDeLaPortee('Lequel à la place de Nugget ? src/ecrans/substituer/**', '').sujets.includes('substituer'), true);
   attendu('tri sans mesure du panel', verifierMission(construireEntonnoir(sous('e11'), { triSansPanel: true })).length === 0, false);
   attendu('série qui ne suit pas la baseline', verifierMission(construireEntonnoir(sous('e9'), { sansBaseline: true })).length === 0, false);
   const m1 = sous('m1');

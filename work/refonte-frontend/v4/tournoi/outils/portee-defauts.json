@@ -1539,12 +1539,12 @@
    "mots": "D109 : « Bouton retour souvent assez petit et pas très intuitif » ; « UI pas terribles, toujours pas au point » ; « Juste une croix bien positionné, facile, dans le thème suffirait ». D118 : « Suivant où on est le bouton retour fait pas la même action. Je veux juste retour au \"menu\" pas principal ». D119 : « Header qui change ??? » (23.10, soir)",
    "controle": "controle-retour.mjs <dossier construit> [--routes=biere,suggerer,comparer,dryhopper,levure,substituer] [--page=etat.html] [--parcours=oui|non]",
    "portee": [
-    "suggerer",
+    "suggestions",
     "comparer",
     "dryhopper",
     "levure",
     "substituer",
-    "biere"
+    "ma-biere"
    ],
    "tourne": "oui",
    "resultat": "maquette d332792c : RETOUR ECHEC 0/12 (« ‹ » de 28 × 28 px, icône 16 px #333333, pas une croix ; en-tête 41 px sur biere, 33 px sur suggerer et comparer, croix à 4 px d'écart ; la croix mène à #/biere depuis l'onglet et à #/suggerer depuis Comparer au lieu de #/ma-biere) ; témoins retour-ok (croix de 48 px à l'encre, #/ma-biere, trois onglets à 56 px) : OK ; retour-petit, retour-ailleurs (croix menant à #/biere), retour-en-tete-saute (64 px contre 56 px) : ECHEC",
@@ -1556,7 +1556,7 @@
    "mots": "« Aussi aucun impact sur je met plus, moins bannir ect.. » (23.10, soir, commentaire sur « Tropicaux prévu », Ma bière, maquette publiée)",
    "controle": "controle-visee.mjs <dossier> [--famille=tropical] [--page=chemin]",
    "portee": [
-    "biere"
+    "ma-biere"
    ],
    "tourne": "oui",
    "resultat": "Sa base v4.10 balisée (temoins/visee-base) : VISEE OK (6/6, tropical). Maquette d332792c : VISEE ECHEC (1/6), « + » et « − » ne dessinent aucun losange (HTML de la piste identique avant et après), pas de [data-bannie], nom non barré. visee-sans-trace (le mot seul change) : ECHEC 1/6. visee-mauvais-cote (losange de « + » à gauche du point) : ECHEC 3/6. Jouée à 390 × 844 tactile, une page rechargée par scénario ; capture de la base après « + » regardée (losange, trait pointillé, « faible », « × »).",
@@ -1568,7 +1568,7 @@
    "mots": "« Un peu dur à comprendre ce système de petit bar » (23.10, soir, commentaire sur les pictos d'une voie de Suggérer, maquette publiée d332792c)",
    "controle": "controle-traits.mjs <dossier construit> [--page=etat.html] [--largeur=390|1280]",
    "portee": [
-    "suggerer"
+    "suggestions"
    ],
    "tourne": "oui",
    "resultat": "maquette d332792c : TRAITS ECHEC (6 manques, règle 3 : 0/3 pictos touchés montrent leur famille et leur valeur, à 390 et à 1280 ; règle 1 OK, 84 éléments de traits ; règle 2 OK ; règle 4 OK ; règle 5 sans objet) ; témoin traits-ok : TRAITS OK (6 touchés, 2 largeurs) ; traits-muets : ECHEC règle 3 ; traits-bavards : ECHEC règles 2 et 3 (17 textes sous les pictos) ; traits-feuille : ECHEC règle 4 (feuille de 844 px)",
