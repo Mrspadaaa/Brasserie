@@ -314,6 +314,18 @@ Rejeu du pilote, `node scripts/agents/systeme.mjs voies work/missions/2026-10-23
   - D123 reprend sa base : pas de mini maquettes (ce n'est pas un nouveau choix). Ordre : D123, puis D122 et D115.
   - La supervision rejouera elle-même le glisser côté froid avant son OK.
 
+### Publication demandée (24.10, matin), mot pour mot
+« Tu me mettra à jour la base en me publiant l'artefact complet de bout en bout avec les update. Et pour les choix de vue,
+un artefacts annexe qui montre bien les différentes vue côté à côté ». Donc, après les reprises r1 à r6, leur critique et la
+batterie (CHOIX, ETATS, FONCTIONS-RAIL, GESTE-ETAPE --froid, TEINTE, PARCOURS…) :
+1. la maquette jouable complète, construction commune, dans un artefact neuf (enveloppe de `outils/pages/2026-10-24-maquette/`
+   copiée sous une nouvelle date, `data-theme="clair"` toujours) ;
+2. un artefact annexe « Choix de vues » : chaque choix ouvert en mini maquettes côte à côte avec sa référence (Dryhopper passe 4
+   dh4a et dh4b à côté d'a1, D121 A/B/C, pastille « ~ simulé », liste de la fiche, groupe levure de Suggérer, planche des
+   graphes), chacun avec son canal de retour (commentaire sur l'artefact, lu par cette session).
+Publiés depuis la session « Houblons v4 maquette » : ses commentaires y seront lisibles (les artefacts du 23 et du 24.10 sont
+sur un autre compte).
+
 ### D124 (24.10, 8 h) : fonctions et choix perdus
 - Ses mots : « Ça a bien avancé mais le rail par exemple à perdu en fonctionnalités et certaines de mes choix ont été
   perdue » ; puis « Aide toi de sous agent. Je peux aussi lancé une autre session si il faut » (SPEC § 1, D124 ; commit
