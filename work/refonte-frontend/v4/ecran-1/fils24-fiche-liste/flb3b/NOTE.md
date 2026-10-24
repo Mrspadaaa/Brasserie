@@ -16,12 +16,12 @@
 4. **« non décrites » en ligne de pictos « ? »** : picto de la famille suivi d'un « ? » à sa couleur ; les noms sont dans l'aria-label et la légende. Recompté : Nelson Sauvin 10 (Tropicaux, Noyau, Pépins, Baies, Melon, Floral, Herbacé, Résineux, Végétal, Terreux), Nugget 5 (Noyau, Pépins, Baies, Melon, Végétal, comme g1), Cascade 6.
 5. **Un seul α, celui de g1** : Hopsteiner 2025 s'il existe, sinon la seule fiche (Citra cryo : Beer Maverick 2023). Nelson Sauvin α 12–14 %, lot 9,6 % (hors de la plage, en orangé) ; Nugget α 11–14 %, lot 13 % ; Cascade α 4,5–7 %, lot 6,5 % ; Motueka 6,5–8,5 %, lot 8,1 % ; Citra cryo 10–15 %, lot 24,8 %. Police du thème (plus de chasse fixe sur l'α). La fiche courte (appui long) suit la même règle.
 6. **Mots au premier écran** (G4) : « Agrumes et Épicé : Hopsteiner le range ainsi, sans mot » devient « cat. » après le compte (Nelson : Agrumes 1/2 cat., Épicé 1/2 cat.), expliqué dans la légende ; le libellé « le radar dit aussi » est retiré. 86 → 76 mots.
-7. **Page entière regardée** (, après le message du pilote) : 110 px de blanc sous la feuille, venus d'une hauteur minimale prise pour l'étape v0 ; la feuille va maintenant juste au bas de l'écran (). Le mot générique « fruité » (2/2), caché en v0, passe en gris à la fin de « puis » : tous les mots hors familles de Nelson Sauvin sont à l'écran. 76 → 78 mots.
+7. **Page entière regardée** (`flb3b-page.png`, après le message du pilote) : 110 px de blanc sous la feuille, venus d'une hauteur minimale reprise du socle v0 ; la feuille s'arrête maintenant au bas de l'écran (`min-height: calc(100vh - 141px)`). Le mot générique « fruité » (2/2), caché en v0, passe en gris à la fin de « puis » : tous les mots hors familles de Nelson Sauvin sont à l'écran. 76 → 78 mots.
 
 ## Ce qui tient, ce qui casse
 
 - Tient : Nelson Sauvin se lit en trois secondes (vin blanc, raisin, groseille) ; le repli garde l'honnêteté sur Nugget et Cascade, compte affiché.
-- Casse : sur Cascade, la phrase en repli fait trois lignes de 1/2 : moins une signature qu'un choix parmi des égaux. La forme neutre « autres » de D100 n'est toujours pas dessinée (contrôle indicatif ci-dessous).
+- Casse : sur Cascade, la phrase en repli fait trois lignes de 1/2 : moins une signature qu'un choix parmi des égaux. La forme neutre « autres » de D100 n'est pas dessinée : les mots tiennent lieu de forme (« sans controle-sans-famille » ci-dessous).
 
 ## Sorties des contrôles (24.10, flb3b seule)
 
