@@ -65,7 +65,12 @@
 .pq-comparer-vd-hors { color: #c2410c; }
 .pq-comparer-autres { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; max-width: 100%; font-size: 12px; color: rgb(var(--cave-200)); }
 .pq-comparer-autres i { display: inline-block; height: 6px; border-radius: 2px; background: #8a8a8a; }
-.pq-comparer-retirer { position: absolute; right: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; font-size: 16px; color: rgb(var(--cave-400)); }
+/* D137 : remplacer ⇄ et retirer ×, en bas de la tête, à droite (en haut, ils chevauchaient le nom et l'icône de stock ;
+   au-dessus, les pictos du radar). La cellule est une colonne : la tête grandit d'autant. */
+.pq-comparer-tc-cel { display: flex; flex-direction: column; }
+.pq-comparer-tc-cel > .pq-comparer-tc { flex: 1 1 auto; min-height: 0; }
+.pq-comparer-actions { display: flex; justify-content: flex-end; gap: 2px; padding: 0 2px 1px; }
+.pq-comparer-retirer, .pq-comparer-remplacer { width: 24px; height: 26px; border-radius: 50%; font-size: 15px; line-height: 1; color: rgb(var(--cave-400)); }
 .pq-comparer-ic { flex: none; }
 
 .pq-comparer-rgs { display: flex; flex-direction: column; }
@@ -343,6 +348,8 @@
 
 /* le « + » : la carte de chaque houblon */
 .pq-comparer-ajout { display: flex; flex-direction: column; gap: 8px; }
+.pq-comparer-chercher { height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-900)); font-size: 16px; color: rgb(var(--cave-50)); }
+.pq-comparer-chercher::placeholder { color: rgb(var(--cave-400)); }
 .pq-comparer-ajout-c { display: flex; flex-direction: column; gap: 5px; padding: 10px; border-radius: 8px; background: rgb(var(--cave-900)); box-shadow: inset 0 3px 0 var(--pq-h); }
 .pq-comparer-ajout-n { display: flex; align-items: center; gap: 6px; font-size: 15px; }
 .pq-comparer-ajout-l { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }

@@ -1809,6 +1809,46 @@
    "resultat": "Mesuré le 24.10 au soir : maquette PICS ECHEC (Nugget et Nelson Sauvin, 0 % du rayon) ; g1 PICS OK (10 %) ; après la reprise de l'échelle de g1, PICS OK (Nugget, Nelson Sauvin, Galaxy).",
    "verdict": "garde",
    "script": "controle-radar-pics.mjs"
+  },
+  {
+   "id": "D134",
+   "mots": "« il y a un peu de délai pour \"sortir\" du mode rail » (24.10, soir, commentaire sur la maquette publiée)",
+   "controle": "controle-sortie-rail.mjs <dossier construit> [--max=50] (S1 du lever du doigt à la première image, S2 plus de mode geste)",
+   "portee": ["etape"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquette publiée SORTIE-RAIL ECHEC (142 ms, essais 99, 142, 143) ; propositions différées (useDeferredValue) : SORTIE-RAIL OK (8 ms).",
+   "verdict": "garde",
+   "script": "controle-sortie-rail.mjs"
+  },
+  {
+   "id": "D135",
+   "mots": "« Substitut doit tout de suite ouvrir l'onglet » (24.10, soir, pied de la fiche)",
+   "controle": "controle-fiche-pied.mjs <dossier construit> (F1 « Substituts › » ouvre Substituer)",
+   "portee": ["fiche"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquette publiée FICHE-PIED ECHEC (route #/fiche/nugget) ; corrigée FICHE-PIED OK.",
+   "verdict": "garde",
+   "script": "controle-fiche-pied.mjs"
+  },
+  {
+   "id": "D136",
+   "mots": "« Que veux dire classé ? C'est pas du tout clair » (24.10, soir, matrice de la fiche)",
+   "controle": "controle-fiche-pied.mjs <dossier construit> (F2 pas de « classé » dans la fiche)",
+   "portee": ["fiche"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquette publiée FICHE-PIED ECHEC (« classé ») ; corrigée : point creux et « 1/2 », comme le radar.",
+   "verdict": "garde",
+   "script": "controle-fiche-pied.mjs"
+  },
+  {
+   "id": "D137",
+   "mots": "« pas de possibilité d'enlever, remplacer un houblon choisi, ni en recherche un » (24.10, soir, Comparer)",
+   "controle": "controle-comparer-choix.mjs <dossier construit> (K1 retirer, K2 remplacer à sa place, K3 chercher « nelson »)",
+   "portee": ["comparer"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquette publiée COMPARER-CHOIX ECHEC (K1, K2, K3) ; corrigée COMPARER-CHOIX OK, FAMILLES OK (9).",
+   "verdict": "garde",
+   "script": "controle-comparer-choix.mjs"
   }
  ]
 }

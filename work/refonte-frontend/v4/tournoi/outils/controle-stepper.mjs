@@ -7,8 +7,8 @@
 //     celui de l'étape en cours porte aria-current="step".
 // Aucun marqueur que l'app n'a pas n'est exigé. Les 7 étapes de BrewWizard (STEPS) : Identité, Fermentescibles,
 // Houblons, Levure, Paliers, Eau et sels, Récapitulatif ; la 3e (Houblons) active.
-// Contrôlé à 390 × 844 (tactile) puis à 1280 × 800 : le fil est visible dans l'en-tête (en haut de page), le nom et la
-// position y sont, et aucun texte visible « hypothèse » (ni « 16D · hypothèse ») dans l'en-tête.
+// Contrôlé à 390 × 844 (tactile) puis à 1280 × 800 : le fil est visible dans l'en-tête (en haut de page), et aucun texte
+// visible « hypothèse » (ni « 16D · hypothèse ») dans l'en-tête. Le nom et la position ne sont plus exigés (D58, 24.10).
 // Imprime STEPPER OK, sinon STEPPER ECHEC et la liste (lignes « D116 … »).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -87,7 +87,8 @@ for (const [w, h, mobile] of [[390, 844, true], [1280, 800, false]]) {
     else if (r.activeDansEcran === false) p('l\'étape active (Houblons) est hors de l\'écran dans le fil');
     if (r.railTop > 130) p('le fil est à ' + r.railTop + ' px du haut : ce n\'est pas l\'en-tête');
   }
-  if (!r.nom) p('le nom de l\'étape et sa position (« Houblons » « 3/7 », WizardStepName) manquent dans l\'en-tête');
+  // D58 (24.10, soir, sur « Houblons 3/7 ») : « Text header inutile ». Le nom et la position ne sont plus exigés dans
+  // l'en-tête : le fil d'étapes les dit (Houblons actif). Sa parole plus récente l'emporte sur D116 (D35).
   if (r.hypothese.length) p('texte « hypothèse » visible dans l\'en-tête : « ' + r.hypothese.join(' / ') + ' »');
   console.log(w + ' px · fil ' + (r.rail ? r.nb + ' étapes, active ' + (r.active + 1) + ', haut ' + r.railTop + ' px' : 'absent') + ' · nom/position ' + (r.nom ? 'oui' : 'non') + ' · « hypothèse » ' + r.hypothese.length);
   await page.close();

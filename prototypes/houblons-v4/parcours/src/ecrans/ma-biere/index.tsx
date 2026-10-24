@@ -7,7 +7,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { PageShell } from '@app/pages/PageShell';
-import { WizardStepName, WizardStepRail } from '@app/ui/WizardStepBar';
+import { WizardStepRail } from '@app/ui/WizardStepBar';
 import { Pont, type Echelle } from '../../commun';
 import { BoutonLegende, PanneauLegende, useLegende } from './LegendeGroupe';
 import { ActionsCoquille, useOuvrir } from '../../coquille/ouvrir';
@@ -102,8 +102,9 @@ export default function MaBiere() {
   const surEtape = (id: string) => { if (id === 'houblons') document.querySelector('[data-page-shell] main')?.scrollTo({ top: 0 }); };
   const tete = (
     <div data-element="etape-titre" className="pq-ma-biere-tete px-2 bg-cave-950">
-      <div data-page-titlebar className="flex items-center gap-1.5">
-        <WizardStepName steps={ETAPES} currentIndex={ETAPE_HOUBLONS} />
+      {/* « Text header inutile » (24.10, soir, sur « Houblons 3/7 ») : le nom de l'étape est retiré ; le fil d'étapes dessous
+          le dit déjà (Houblons en gras). */}
+      <div data-page-titlebar className="flex items-center justify-end gap-1.5">
         <span className="flex items-center gap-1 shrink-0"><ActionsCoquille /></span>
       </div>
       <WizardStepRail steps={ETAPES} currentIndex={ETAPE_HOUBLONS} onSelect={surEtape} showLabels compactLabels />
@@ -112,7 +113,7 @@ export default function MaBiere() {
   return (
     <PageShell title={`Modifier « ${recette.name} »`} subtitle={ETAPES[ETAPE_HOUBLONS].label} onClose={() => undefined}
       mobileHeader={tete} className="pq-recette"
-      actions={<span data-element="etape-titre" className="flex items-center gap-2"><WizardStepName steps={ETAPES} currentIndex={ETAPE_HOUBLONS} /><ActionsCoquille /></span>}
+      actions={<span data-element="etape-titre" className="flex items-center gap-2"><ActionsCoquille /></span>}
       progress={<WizardStepRail steps={ETAPES} currentIndex={ETAPE_HOUBLONS} onSelect={surEtape} showLabels />}>
       <div data-ecran="ma-biere" data-etat="etat-etape-repos-1280" className="pq-ma-biere space-y-1">
         <div data-etat={document.body.dataset.cas === 'k3' ? 'etat-etape-cas-k3' : undefined}>

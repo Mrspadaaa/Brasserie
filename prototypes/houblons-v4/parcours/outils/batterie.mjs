@@ -53,6 +53,12 @@ const lot = [
   n(`node ${T}/controle-hors-16d.mjs ${D}/fiche/etat.html --min=1`, 'HORS-16D OK'),
   n(`node ${T}/controle-fiche-exhaustive.mjs ${D}/fiche/etat.html`, 'EXHAUSTIVE OK'),
   n(`node ${T}/controle-radar-pics.mjs ${D}/fiche/etat.html`, 'PICS OK'),
+  // D134 : le rail sort au lever du doigt (« un peu de délai pour "sortir" du mode rail »).
+  n(`node ${T}/controle-sortie-rail.mjs ${D}`, 'SORTIE-RAIL OK'),
+  // D135, D136 : « Substituts › » ouvre Substituer ; plus de « classé » dans la fiche.
+  n(`node ${T}/controle-fiche-pied.mjs ${D}`, 'FICHE-PIED OK'),
+  // D137 : Comparer retire, remplace à sa place et cherche le catalogue.
+  n(`node ${T}/controle-comparer-choix.mjs ${D}`, 'COMPARER-CHOIX OK'),
   // Le parcours joué au téléphone et à l'ordinateur.
   n(`node ${O}/jouer-parcours.mjs --dossier=${D} --routes`, 'ROUTES OK'),
   n(`node ${O}/jouer-parcours.mjs --dossier=${D} --ponts`, 'PONTS OK'),

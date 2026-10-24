@@ -116,3 +116,6 @@ html:has(.pq-outil-suggerer) [data-page-shell]:not(.pq-outil-suggerer) { display
    à l'encre, les mots en gris foncé. Une levure : « elle : … » (sa fiche technique), « ? » sans fiche. */
 .pq-sg-hors16d { display: block; flex-basis: 100%; margin: 0; font-size: 0.8125rem; line-height: 1.25; color: rgb(var(--cave-200)); overflow-wrap: anywhere; }
 .pq-sg-hors16d-cle { font-weight: 700; color: rgb(var(--cave-50)); }
+.pq-sg-hors16d-ic { font-style: normal; margin-right: 3px; color: rgb(var(--cave-50)); }
+.pq-sg-hors-case { display: inline-flex; align-items: center; gap: 2px; margin-left: 6px; font-size: 12px; color: rgb(var(--cave-300)); white-space: nowrap; }
+.pq-sg-hors-case > i { font-style: normal; }

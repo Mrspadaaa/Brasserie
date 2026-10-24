@@ -1,7 +1,7 @@
 // La liste sous le radar de g1, devenue la matrice de flb5b (« La matrice nettoyée », D130) : le bandeau noir
 // « Lui seul : … » (data-role="hors-16d", ses mots que ses remplaçants ne disent pas), puis la grille : ses mots en
 // lignes (picto de leur famille à sa couleur, ◇ hors des 12 familles), « lui » entre deux règles noires (rond noir et
-// « 2/2 », « classé » pour une catégorie de Hopsteiner), ses quatre remplaçants de u4 en colonnes, noms verticaux et score,
+// « 2/2 », point creux « 1/2 » pour une catégorie de Hopsteiner, D136), ses quatre remplaçants de u4 en colonnes, noms verticaux et score,
 // un seul gris (rond plein : il le dit aussi ; rien : il ne le dit pas). Au-dessus, la ligne des familles non décrites
 // en pictos « ? » à leur couleur. Données : donnees-matrice.ts. Classes préfixées pq-fiche-mx- (L26).
 import { useState } from 'react';
@@ -42,7 +42,7 @@ export function Matrice({ h, cle, recette, seuleFiche }: { h: HoublonLu; cle: st
         : <p className="pq-fiche-mx-q">Lui seul : <b>aucun mot</b>, ses remplaçants disent aussi les siens</p>}
       <div id={idLegende} data-role="legende" hidden={!legende} className="pq-fiche-mx-leg">
         <p>Lignes : ses mots, traduits ; ◇ hors des 12 familles. Colonnes : lui, puis ses {colonnes.length} premiers remplaçants de Substituer{dansRecette ? ', à son ajout' : ', hors de ma recette'} (score sur 100).</p>
-        <p>Noir : il le dit{N > 1 ? ` (${N}/${N} : ses ${N} fiches)` : ''}. Gris : le remplaçant le dit aussi. Vide : non. classé : Hopsteiner le range dans cette famille, sans le nommer.</p>
+        <p>Noir : il le dit{N > 1 ? ` (${N}/${N} : ses ${N} fiches)` : ''}. Gris : le remplaçant le dit aussi. Vide : non. Creux : Hopsteiner le range dans cette famille, sans mot qui le décrive.</p>
         <p>autres : la part de ses mots hors des 12 familles.</p>
       </div>
       <div className="pq-fiche-mx-g pq-fiche-mx-ent">
@@ -72,8 +72,16 @@ export function Matrice({ h, cle, recette, seuleFiche }: { h: HoublonLu; cle: st
               <b style={{ color: l.famille ? COULEURS[l.famille].texte : undefined }}>{l.mot}</b>
             </span>
             <span className="pq-fiche-mx-lui">
+              {/* D136 (« Que veux dire classé ? C'est pas du tout clair ») : la catégorie de Hopsteiner compte une fiche, comme
+                  au radar (« 1/2 ») ; le point creux dit qu'elle range le houblon dans la famille sans mot qui le décrive. */}
               {l.classe
-                ? <span className="pq-fiche-mx-cl" title="Hopsteiner le range dans cette famille, sans le nommer">classé</span>
+                ? (
+                  <>
+                    <i role="img" aria-label="Hopsteiner le range dans cette famille, sans mot qui le décrive" title="Hopsteiner le range dans cette famille, sans mot qui le décrive"
+                      className="pq-fiche-mx-d pq-fiche-mx-dc" />
+                    {N > 1 && <span className="pq-fiche-mx-n">1/{N}</span>}
+                  </>
+                )
                 : (
                   <>
                     <i role="img" aria-label={`${l.fiches.join(', ')}`} className={`pq-fiche-mx-d${plein ? ' pq-fiche-mx-d2' : ''}`} />

@@ -22,3 +22,4 @@ Corriger chaque copie, ne pas la contourner.
 | `30 variantes au moins\|au moins 30 variantes\|3 à 8 variantes` | 48 concepts minimalistes au moins, en 6 séries de 4 à 12 (M13) | 2026-10-22 |
 | `réduit à l'essentiel : la représentation qui répond\|environ 5 tours par concept` | un concept minimaliste = une idée sur un écran plein, environ 10 tours (M14) | 2026-10-23 |
 | `publier à la même adresse\|à jour à la même adresse\|artefact privé, à jour seulement\|Source de la page :` | une version = un nouvel artefact daté, inscrit dans « ## Pages » de MISSION.md (« chaque version devrait en créé des nouveaux ») | 2026-10-23 |
+| `nom de l'étape et sa position .* manquent dans l'en-tête` | le fil d'étapes seul dans l'en-tête de l'étape ; « Text header inutile » (D58, sur « Houblons 3/7 ») | 2026-10-24 |

@@ -123,7 +123,9 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
       {...gesteCarte}
       className={`pq-mb-corps pq-ma-biere-carte pq-ma-biere-sans-selection relative min-w-0 px-2.5 pt-1.5 pb-2 space-y-1 rounded-lg ${repere ? 'pq-ma-biere-change' : ''}`}>
       {repere && <p data-role="vient-de-changer" className="pq-mb-l2 pq-ma-biere-repere text-xs leading-none">{repere}</p>}
-      <div className="pq-mb-l1 flex items-center gap-x-1.5 gap-y-1 min-w-0">
+      {/* « Ça créé un slider horizontal ??? À enlever » (24.10, soir, Falconer's Flight) : un nom long renvoie la dose à la
+          ligne, jamais au-delà de la carte. */}
+      <div className="pq-mb-l1 flex flex-wrap items-center gap-x-1.5 gap-y-1 min-w-0">
         <span data-role="ouvrir-fiche" data-houblon={a.hopKey} {...fiche.nom(a.hopKey)}
           className={`pq-mb-nom-h shrink-0 font-semibold text-base text-cave-50 underline decoration-dotted decoration-cave-600 underline-offset-4 ${presse ? 'pq-ma-biere-appui' : ''}`}>{h.nom}</span>
         <span className="pq-mb-avec" />

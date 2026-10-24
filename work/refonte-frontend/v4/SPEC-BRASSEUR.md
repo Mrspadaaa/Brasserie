@@ -530,6 +530,35 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   carte du houblons doit bien contenir de façon exhaustive TOUTES ses informations. » La fiche porte tout ce que le dépôt sait du
   houblon, au premier plan ou à un toucher ; le pied de flu2b, entier. D132. Puis, sur une capture de flu2b (Nugget) où il
   entoure ♡ ⊘ « Comparer » et « Styles › Huiles › Sources › Substituts › », mot pour mot : « Le footer est top ».
+- **Commentaires sur la maquette publiée** (24.10, soir), mot pour mot :
+  - en-tête de l'étape (« Houblons 3/7 ») : « Text header inutile » ;
+  - le × d'une carte du rail (Falconer's Flight) : « C'est quoi ça ? Ça créé un slider horizontal ??? À enlever » ;
+  - le moment proposé d'un ajout : « Ajout à 10' mais pas toujours idéal, pour la vrai app. Utiliser une meilleure prédictions » ;
+  - Suggérer, une ligne « même effet sur tes objectifs » : « Intégré les infos icône subtil des gros changement hors 16d.
+    Exemple neslon sauvin on voit pas que c'est Sauvignon blanc » ; sur « hors 16D : vin blanc, groseille à maque… » : « Ah si là
+    mais ajoute icone » ;
+  - la légende des cartes du rail (« Bande : les 12 familles… ») : « Bien mais mettre la légende juste en dessous des pastilles.
+    Fait moi des mini maquettes de ça dans un artefacts » ; « Plus utilisé les icône... » ; sur la légende « Ajouts proposés » :
+    « Pareil ici, mini maquettes de légende » ; sur Motueka dans « Ajouter un houblon » : « Plus utilisé les icône hors 16d » ;
+  - Comparer, « Ses mots » (« mojito, citron vert, ci… ») : « Vue à revoir mais ce texte là est inutile ».
+  D58.
+- **Comparer : retirer, remplacer, chercher** (24.10, soir, commentaire sur « Ajouter un houblon à la comparaison »), mot pour
+  mot : « Problème principal, pas de possibilité d'enlever, remplacer un houblon choisi, ni en recherche un ». D137. Sur le radar
+  r2 de Comparer : « À revoir, on va en parler » (à discuter, rien changé).
+- **La maquette presque finie** (24.10, soir), mot pour mot : « Vraiment des gros progrès, problème principal, c'est pas ultra
+  réactif, ça lag un peu certaines actions ont du délais... Points à corriger par après. » ; « Sauver cette maquette on est
+  quasiment à du 100% » ; « Autre problème, un choix sur un endroit, semble pas toujours être reporté partout. ». La réactivité
+  et la cohérence des choix entre écrans : les deux points à corriger ensuite (D138, D139) ; la maquette du soir figée comme
+  référence.
+- **Ensuite** (24.10, soir), mot pour mot : « 2 vue, changements à faire. Rencontre moi toutes les mini maquettes du
+  dryhopping. Fait moi un artefacts avec toutes le création depuis de début de toutes les sessions. » ; « Ensuite fait un
+  artefacts de mini maquettes pour de la recherche avancée de houblons. ».
+- **La fiche, deux commentaires** (24.10, soir, sur la maquette publiée), mot pour mot : sur « Substituts › » du pied,
+  « Substitut doit tout de suite ouvrir l'onglet » (D135) ; sur « classé » dans la matrice de flb5b, « Que veux dire classé ?
+  C'est pas du tout clair » (D136).
+- **Sortir du rail sans délai** (24.10, soir, commentaire sur le rail de la maquette publiée), mot pour mot : « Un petit
+  délais lors du déplacement, une fois choisir au bon emplacement, il y a un peu de délai pour "sortir" du mode rail ».
+  Mesuré : une tâche de 98 à 143 ms au lever du doigt (les propositions d'ajout rapide reclassaient tout le catalogue). D134.
 - **Le radar en pics** (24.10, soir, sur le radar de la fiche de Nelson Sauvin, ses deux traits entourés en rouge), mot pour
   mot : « Jsp si c'est la version actuelle mais le spidergraph doit être en pic pas juste des traits... Enfin comme sur les mini
   maquettes ». g1 pose l'inconnue dans le disque du centre : chaque famille décrite fait un pic, même seule. D133.

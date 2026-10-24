@@ -50,16 +50,19 @@ export function useReplis() {
   return { ouverte, basculer: (id: Section) => setOuverte((o) => (o === id ? null : id)) };
 }
 
-/** Les quatre boutons du pied de flu2b, sous ♡ ⊘ Comparer. */
-export function ReplisBoutons({ h, ouverte, basculer }: { h: HoublonLu; ouverte: Section | null; basculer: (id: Section) => void }) {
+/** Les quatre boutons du pied de flu2b, sous ♡ ⊘ Comparer. D135 (« Substitut doit tout de suite ouvrir l'onglet ») :
+ * pour un houblon de ma recette, « Substituts › » ouvre Substituer ; hors de ma recette, la liste se déplie ici. */
+export function ReplisBoutons({ h, ouverte, basculer, onRemplacer }: { h: HoublonLu; ouverte: Section | null; basculer: (id: Section) => void; onRemplacer: (() => void) | null }) {
   return (
     <div data-element="g1-replis" data-etat="etat-fiche-bas" role="group" aria-label="Détail de la fiche" className="pq-fiche-plus">
       {TITRES.map(([id, titre]) => {
         const on = ouverte === id;
+        const outil = id === 'substituts' && onRemplacer;
         const label = id === 'substituts' ? `Ouvrir les remplaçants de ${h.nom}` : `${on ? 'Replier' : 'Déplier'} ${titre.toLowerCase()}`;
         return (
-          <button key={id} type="button" data-etat={`etat-fiche-${id}`} aria-expanded={on} aria-controls="pq-fiche-repli" aria-label={label}
-            onClick={() => basculer(id)} className={`pq-fiche-plus-b${on ? ' pq-fiche-plus-on' : ''}`}>
+          <button key={id} type="button" data-etat={`etat-fiche-${id}`} aria-label={label}
+            {...(outil ? { 'data-role': 'pont-substituer-fiche', 'data-outil': 'Substituer' } : { 'aria-expanded': on, 'aria-controls': 'pq-fiche-repli' })}
+            onClick={() => (outil ? onRemplacer() : basculer(id))} className={`pq-fiche-plus-b${on ? ' pq-fiche-plus-on' : ''}`}>
             <span>{titre} <span aria-hidden="true" className={`inline-block ${on ? 'rotate-90' : ''}`}>›</span></span>
           </button>
         );

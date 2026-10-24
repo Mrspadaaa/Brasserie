@@ -7,7 +7,7 @@
 // « ou », dosés au milieu de la bande d'IBU du style, puis trois aromatiques). Autant de propositions que de place :
 // 5 pour une recette vide, puis 3, 2, 1. Le champ cherche dans tout le catalogue, pas seulement le stock (D21 : « je
 // fais une recette puis ensuite j'achète les ingrédients, souvent pas présent »).
-import { useMemo, useRef, useState } from 'react';
+import { useDeferredValue, useMemo, useRef, useState } from 'react';
 import { Plus, ShoppingCart } from 'lucide-react';
 import { COULEURS, nombre } from '../../commun';
 import { useOuvrir } from '../../coquille/ouvrir';
@@ -57,7 +57,12 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
   const videOuverture = useRef(recette.additions.length === 0);
   const sc = style(recette.styleCode);
   const ebu = recette.boilMin;
-  const liste = useMemo((): Proposition[] => {
+  // D134 (« il y a un peu de délai pour "sortir" du mode rail ») : les propositions reclassent tout le catalogue (66 ms
+  // à chaque recette nouvelle). Elles se recalculent après la première image de la recette nouvelle (useDeferredValue) :
+  // le rail sort au lever du doigt, les propositions suivent aussitôt. Mêmes fonctions, mêmes résultats.
+  const recetteProposee = useDeferredValue(recette);
+  const calculees = useMemo((): Proposition[] => {
+    const recette = recetteProposee;
     const pris = new Set(recette.additions.map((a) => a.hopKey));
     const ok = (cle: string) => !pris.has(cle) && GOUTS.get(cle) !== 'exclure';
     const poser = (cle: string, grams: number, minutes: number, alternative: boolean, statut: Proposition['statut']): Proposition => ({
@@ -87,7 +92,12 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
     const m = propositionsMoteur(recette);
     const st = m.disponibles.filter((r) => ok(r.key)), ca = m.catalogue.filter((r) => ok(r.key)).slice(0, 1);
     return [...st.slice(0, n - ca.length), ...ca].map((r) => poser(r.key, r.dose?.grams ?? 10, momentDe(r.moment), false, statutDe(r)));
-  }, [recette, cherche, ebu, sc]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [recetteProposee, cherche, ebu, sc]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Le temps d'un rendu, la liste vient de la recette d'avant : un houblon que la recette vient de prendre n'y paraît pas.
+  const liste = useMemo(() => {
+    const pris = new Set(recette.additions.map((a) => a.hopKey));
+    return calculees.filter((p) => !pris.has(p.cle));
+  }, [calculees, recette]);
   const premierMarque = liste[0]?.cle;
   return (
     <section data-element="etape-ajouter" data-role="ajouts-proposes" data-etat={recette.additions.length ? undefined : 'etat-etape-cas-k2-vide'}
@@ -131,6 +141,14 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
                       return <i key={f} className="block w-2 h-2.5 rounded-sm" style={{ background: n === 'non décrit' ? 'rgb(var(--cave-800))' : COULEURS[f].base, opacity: n === 'cité' ? 0.55 : 1 }} />;
                     })}
                   </span>
+                  {/* « Plus utilisé les icône hors 16d » (24.10, soir) : le ◇ des mots hors des 12 familles, en treizième case
+                      de la bande (dessin, pas texte : la ligne ne grandit pas, D5, D41) ; ses mots au toucher. */}
+                  {h.motsSansFamille.length > 0 && (
+                    <svg role="img" data-houblon-hors={h.cle} aria-label={`hors des 12 familles : ${h.motsSansFamille.join(', ')}`} viewBox="0 0 10 10" width="10" height="10" className="shrink-0 -ml-1 text-cave-300">
+                      <title>{h.motsSansFamille.join(', ')}</title>
+                      <path d="M5 0.8 L9.2 5 L5 9.2 L0.8 5 Z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+                    </svg>
+                  )}
                 </span>
               </span>
               <span data-role="quand" title={`Moment suggéré : ${libelleDe(v)}`}

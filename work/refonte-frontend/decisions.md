@@ -592,3 +592,23 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   bien dessiné et relié, mais le moteur en direct ne déplace Floral que de 2,5 % de la barre (Agrumes 5,7 %, Tropicaux 1,7 %)
   pour 10 g de Motueka à 10′ ; sa base, aux chiffres figés, montrait 12 → 40 %. Pas d'écart grossi : les valeurs du moteur
   restent ; « floral +1 » sur la carte dit l'effet. Signalé au brasseur. Ouvert : capturer en pleine page les états sous le pli.
+- D54 (le brasseur, 24.10 soir, commentaire sur le rail : « il y a un peu de délai pour "sortir" du mode rail ») : D134, les
+  propositions d'ajout rapide se recalculent après la première image (useDeferredValue dans Ajouter.tsx) ; 142 → 8 ms du lever
+  du doigt à la première image ; `controle-sortie-rail.mjs` dans la batterie. Le retour des rangées (240 ms) reste celui de sa base.
+- D55 (le brasseur, 24.10 soir, commentaires sur la fiche publiée ; pilote pour la forme) : D135, « Substituts › » ouvre
+  Substituer pour un houblon de ma recette (hors recette, la liste se déplie dans la fiche : Substituer remplace un ajout) ;
+  D136, « classé » devient un point creux et « 1/2 », le compte du radar, la légende dit « Hopsteiner le range dans cette
+  famille, sans mot qui le décrive ». `controle-fiche-pied.mjs` dans la batterie.
+- D56 (le brasseur, 24.10 soir, Comparer : « pas de possibilité d'enlever, remplacer un houblon choisi, ni en recherche un ») :
+  D137, chaque houblon choisi (sauf l'épinglé de Substituer) porte ⇄ et × sous sa tête ; ⇄ ouvre la feuille « Remplacer X » ;
+  la feuille cherche tout le catalogue (nom et alias). `controle-comparer-choix.mjs` dans la batterie.
+- D57 (le brasseur, 24.10 soir : « Sauver cette maquette on est quasiment à du 100% ») : la maquette du soir, D134 à D137
+  compris, est figée comme référence (étiquette git locale, copie de la construction, cerveau) ; la réactivité (D138) et le
+  report des choix d'un écran à l'autre (D139) sont les points suivants.
+- D58 (le brasseur, 24.10 soir, commentaires sur la maquette publiée ; pilote pour la forme, réversible) : le nom de l'étape
+  retiré de l'en-tête (le fil d'étapes le dit) ; la ligne de tête d'une carte du rail passe à la ligne (plus de défilement en
+  largeur, le × reste) ; « Plus utilisé les icône hors 16d » lu « utilise plus les icônes » (ses trois autres commentaires
+  demandent des icônes) : le ◇ et le premier mot hors des 12 sur chaque ajout proposé, le ◇ devant « lui seul » / « hors 16D » de
+  Suggérer et en dernière case des effets (discret, les mots au toucher) ; la phrase « X seul dit … » de « Ses mots » de Comparer
+  retirée (la vue reste à reprendre) ; les légendes sous les pastilles, en mini maquettes (lot leg) ; le moment proposé par le
+  moteur (10′) : noté pour la vraie app.

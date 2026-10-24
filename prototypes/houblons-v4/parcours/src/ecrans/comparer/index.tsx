@@ -12,7 +12,7 @@ import { useOuvrir } from '../../coquille/ouvrir';
 import { CONDITIONS, H, VISEE, nomLevure } from '../../donnees/cas';
 import { useRecette } from '../../etat/EtatParcours';
 import { nouvelId } from '../../etat/operations';
-import { style } from '../../moteur';
+import { houblon, style } from '../../moteur';
 import { STOCK, hopRef, type FamilyId } from '../../../../src/engine';
 import Fiche from '../fiche';
 import { ABSOLU, CRITERES, ETAPES, ORANGE, depart, type CodeEtape, houblonDeBase, lireColonnes, lireEtapes, reponse, scoreDefi, sesMots, type MotLu, type CelluleLue, type ColonneLue, type Critere } from './calcul';
@@ -40,10 +40,19 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   // Le houblon épinglé par Substituer (#/comparer?h=…&pin=<houblon>), porté par la route : en colonne 1.
   const pin = route.ecran === 'comparer' ? route.pin ?? null : null;
   const [ajoutes, setAjoutes] = useState<string[]>([]);
+  // D137 (« pas de possibilité d'enlever, remplacer un houblon choisi, ni en recherche un ») : chaque houblon choisi se
+  // retire ou se remplace à sa place (le houblon épinglé par Substituer reste) ; la feuille « + » cherche le catalogue.
+  const [retires, setRetires] = useState<string[]>([]);
+  const [remplaces, setRemplaces] = useState<Record<string, string>>({});
+  const [aRemplacer, setARemplacer] = useState<string | null>(null);
   const cles = useMemo(() => {
-    const base = [...(pin ? [pin] : []), ...houblons, ...ajoutes];
+    const base = [...(pin ? [pin] : []), ...houblons, ...ajoutes].map((c) => remplaces[c] ?? c).filter((c) => !retires.includes(c));
     return [...new Set(base)].filter((c) => !!hopRef(c)).slice(0, MAX_COLONNES);
-  }, [houblons, ajoutes, pin]);
+  }, [houblons, ajoutes, pin, retires, remplaces]);
+  const remplacer = (ancien: string, nouveau: string) => {
+    setRemplaces((r) => ({ ...r, [Object.keys(r).find((k) => r[k] === ancien) ?? ancien]: nouveau }));
+    setRetires((r) => r.filter((x) => x !== nouveau));
+  };
   // En direct : le moteur simule chaque houblon à chaque changement de la recette ou des colonnes (mémoïsé).
   const cols = useMemo(() => lireColonnes(recette, cles), [recette, cles]);
   // D128 : le premier écran est celui de r6a (radar, colonnes, rangées de familles) ; les étapes de x3b deviennent un
@@ -171,12 +180,13 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
           data-element="l8-disposition y1b-plan-d-avant y1b-bandes-style l5b-barres-voie l5b-pistes-objectif">
           <div className="pq-comparer-grille-tab pq-comparer-tetes" role="radiogroup" aria-label="Houblon retenu" data-libre="houblon"
             data-element="r6a-tetes l5f-carte-role-alpha w2-cartes-verdict p06-grille-familles g1-fiche fiche-citra-cryo l8b-verdicts-pictos-trait">
-            <TaStout quatre={quatre} plein={cols.length >= MAX_COLONNES || !disponibles.length} ouvert={feuille === 'ajouter'} onPlus={() => basculer('ajouter')} />
+            <TaStout quatre={quatre} plein={cols.length >= MAX_COLONNES} ouvert={feuille === 'ajouter' && !aRemplacer} onPlus={() => { setARemplacer(null); basculer('ajouter'); }} />
             {vue.map((c) => (
               <TeteColonne key={c.cle} c={c} retenu={c.cle === cleRetenue} quatre={quatre} epinglee={c.cle === pin} mots={horsStyle[c.cle] ?? []}
-                retirable={ajoutes.includes(c.cle)}
+                retirable={c.cle !== pin && vue.length > 1} remplacable={c.cle !== pin}
                 onRetenir={() => setRetenu(c.cle)} onFiche={(apresAppui) => ouvrirFiche(c.cle, apresAppui)}
-                onRetirer={() => { setAjoutes((a) => a.filter((x) => x !== c.cle)); if (retenu === c.cle) setRetenu(null); }} />
+                onRetirer={() => { setRetires((r) => [...r, c.cle]); if (retenu === c.cle) setRetenu(null); }}
+                onRemplacer={() => { setARemplacer(c.cle); setFeuille('ajouter'); }} />
             ))}
           </div>
           {/* D128 : les étapes de x3b en bande-sélecteur sur les rangées de r6a ; la pastille du critère (r6n2) choisit la
@@ -228,7 +238,17 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
       {sel && feuille === 'preuve' && <FeuilleDock titre="La preuve : mesuré et tiré" onFermer={fermer}><FeuillePreuve cols={cols} familles={lignes} /></FeuilleDock>}
       {sel && feuille === 'frise' && <FeuilleDock titre="Le moment, dans Dryhopper" onFermer={fermer}><FeuilleFrise cols={cols} sel={sel} onDryhopper={placer} /></FeuilleDock>}
       {sel && feuille === 'souche' && <FeuilleDock titre="La souche, dans Levure" onFermer={fermer}><FeuilleSouche cols={cols} sel={sel} familles={lignes} onLevure={() => ouvrir({ ecran: 'levure', ajout: nouvelId(recette, sel.cle) })} /></FeuilleDock>}
-      {feuille === 'ajouter' && <FeuilleDock titre="Ajouter un houblon" onFermer={fermer}><FeuilleAjouter disponibles={disponibles} onAjouter={(cle) => { setFeuille(null); setAjoutes((a) => [...a, cle]); setRetenu(cle); }} /></FeuilleDock>}
+      {feuille === 'ajouter' && (
+        <FeuilleDock titre={aRemplacer ? `Remplacer ${houblon(aRemplacer).nom}` : 'Ajouter un houblon'} onFermer={() => { setARemplacer(null); fermer(); }}>
+          <FeuilleAjouter disponibles={disponibles} exclus={cles} verbe={aRemplacer ? 'Mettre' : 'Ajouter'}
+            suite={aRemplacer ? `à la place de ${houblon(aRemplacer).nom}` : 'à la comparaison'}
+            onAjouter={(cle) => {
+              setFeuille(null);
+              if (aRemplacer) { remplacer(aRemplacer, cle); setARemplacer(null); } else setAjoutes((a) => [...a, cle]);
+              setRetenu(cle);
+            }} />
+        </FeuilleDock>
+      )}
       {feuille === 'pourquoi' && <FeuilleDock titre="Pourquoi ce classement" onFermer={fermer}><FeuillePourquoi cols={cols} critere={critere} /></FeuilleDock>}
       {fiche && <Fiche houblon={fiche} />}
     </CadreOutil>
@@ -321,10 +341,9 @@ function SesMots({ cols, mots, retenu, quatre }: { cols: ColonneLue[]; mots: Rec
   const max = quatre ? 5 : 6;
   return (
     <section className="pq-comparer-mots" aria-label="Ses mots : ce que chaque houblon dit en plus des familles de la 16D, d’après ses fiches" data-element="d128bis-ses-mots flb5-lui-seul">
-      <p className="pq-comparer-mots-b" style={{ ['--pq-h' as string]: sel.couleur }} data-role="lui-seul">
-        {seuls.length
-          ? <><b>{sel.houblon.nom}</b> seul dit <b>{seuls.slice(0, 4).map((m) => m.mot).join(', ')}</b></>
-          : <><b>{sel.houblon.nom}</b> : ses mots, les autres les disent aussi</>}
+      {/* « Vue à revoir mais ce texte là est inutile » (24.10, soir, sur « Idaho 7 seul dit mojito, citron vert… ») : la
+          phrase est retirée, la grille dessous dit déjà les mots en gras ; la vue sera reprise. */}
+      <p className="pq-comparer-mots-b" style={{ ['--pq-h' as string]: sel.couleur }} data-role="lui-seul" data-seuls={seuls.length}>
         <span className="pq-comparer-mots-s">face à {liste(cols.filter((c) => c.cle !== sel.cle).map((c) => c.houblon.nom))}, d’après ses fiches · en gras : ce que lui seul dit</span>
       </p>
       <div className="pq-comparer-grille-tab pq-comparer-mots-g">
@@ -390,8 +409,9 @@ function LuiSeul({ cle, nom, mots, quatre }: { cle: string; nom: string; mots: M
 }
 
 // ---------- tête de colonne : nom, α, rôle en mot, familles, verdict (l5f, w2), stock en icône ----------
-function TeteColonne({ c, retenu, quatre, epinglee, mots, retirable, onRetenir, onFiche, onRetirer }: {
-  c: ColonneLue; retenu: boolean; quatre: boolean; epinglee: boolean; mots: MotLu[]; retirable: boolean; onRetenir: () => void; onFiche: (apresAppui: boolean) => void; onRetirer: () => void;
+function TeteColonne({ c, retenu, quatre, epinglee, mots, retirable, remplacable, onRetenir, onFiche, onRetirer, onRemplacer }: {
+  c: ColonneLue; retenu: boolean; quatre: boolean; epinglee: boolean; mots: MotLu[]; retirable: boolean; remplacable: boolean;
+  onRetenir: () => void; onFiche: (apresAppui: boolean) => void; onRetirer: () => void; onRemplacer: () => void;
 }) {
   const appui = useAppuiLong(() => onFiche(true), onRetenir);
   // À l'ordinateur (souris, sans toucher) : un survol long ouvre aussi la fiche (D25).
@@ -454,7 +474,12 @@ function TeteColonne({ c, retenu, quatre, epinglee, mots, retirable, onRetenir, 
           </span>
         )}
       </button>
-      {retirable && <button type="button" className="pq-comparer-retirer" aria-label={`Retirer ${h.nom} de la comparaison`} onClick={onRetirer}>×</button>}
+      {(retirable || remplacable) && (
+        <span className="pq-comparer-actions">
+          {remplacable && <button type="button" className="pq-comparer-remplacer" aria-label={`Remplacer ${h.nom} dans la comparaison`} onClick={onRemplacer}>⇄</button>}
+          {retirable && <button type="button" className="pq-comparer-retirer" aria-label={`Retirer ${h.nom} de la comparaison`} onClick={onRetirer}>×</button>}
+        </span>
+      )}
     </div>
   );
 }

@@ -150,6 +150,7 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
     aller({ ecran: 'comparer', houblons: liste });
   };
   const dansRecette = recette.additions.some((a) => a.hopKey === cle);
+  const remplacer = dansRecette ? () => aller({ ecran: 'substituer', houblon: cle }) : null;
   const replis = useReplis();
   // Le pied de flu2b (24.10, « Le footer est top ») : ♡ ⊘ et « Comparer », un filet, puis Styles › · Huiles › · Sources › · Substituts ›.
   const pied = (
@@ -160,7 +161,7 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
         aria-label={`Comparer ${h.nom} à d’autres houblons`}
         className="ml-auto h-11 px-5 rounded-full border border-cave-700 text-base font-semibold text-cave-50">Comparer</button>
     </div>
-    {s && <ReplisBoutons h={h} ouverte={replis.ouverte} basculer={replis.basculer} />}
+    {s && <ReplisBoutons h={h} ouverte={replis.ouverte} basculer={replis.basculer} onRemplacer={remplacer} />}
     </div>
   );
   return (
@@ -206,7 +207,7 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
         <NonDecrites familles={nonDecrites} />
         <Matrice h={h} cle={cle} recette={recette} seuleFiche={s?.seuleFiche ?? null} />
 
-        {s && <Replis h={h} cle={cle} s={s} recette={recette} ouverte={replis.ouverte} onRemplacer={dansRecette ? () => aller({ ecran: 'substituer', houblon: cle }) : null} />}
+        {s && <Replis h={h} cle={cle} s={s} recette={recette} ouverte={replis.ouverte} onRemplacer={remplacer} />}
       </div>
     </Feuille>
   );

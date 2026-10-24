@@ -41,6 +41,7 @@ body:has(.pq-fiche) [data-vaul-overlay] { -webkit-backdrop-filter: none !importa
 .pq-fiche-mx-n, .pq-fiche-mx-cl { font-size: 11px; color: rgb(var(--cave-400)); font-variant-numeric: tabular-nums; }
 .pq-fiche-mx-d { display: block; flex: none; width: 9px; height: 9px; border-radius: 50%; background: rgb(var(--cave-50)); }
 .pq-fiche-mx-d2 { width: 13px; height: 13px; }
+.pq-fiche-mx-dc { background: transparent; border: 2px solid rgb(var(--cave-50)); }
 .pq-fiche-mx-rc { display: flex; justify-content: center; }
 .pq-fiche-mx-o { display: block; flex: none; width: 11px; height: 11px; border-radius: 50%; background: #8a8f9c; }
 /* Les familles non décrites : pictos et « ? » à leur couleur, centrés sous le radar. */

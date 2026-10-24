@@ -10,7 +10,7 @@ import { CONDITIONS, H, nomLevure } from '../../donnees/cas';
 import { useRecette } from '../../etat/EtatParcours';
 import { placer, quandDe } from '../../etat/quand';
 import { houblon, ibuAjout, lireBiere, style } from '../../moteur';
-import { STOCK, hopRef, type FamilyId } from '../../../../src/engine';
+import { CATALOGUE, STOCK, hopRef, type FamilyId } from '../../../../src/engine';
 import {
   ETAPES, ORANGE, VISEES, biotransformation, couleurHoublon, egaler, enActif, jourApresJour, scoreDefi, souche, tirer, verdict,
   type ColonneLue, type Critere, type Etapes, type Verdict,
@@ -574,10 +574,23 @@ export function FeuilleSouche({ cols, sel, familles, onLevure }: { cols: Colonne
 }
 
 // ---------- le « + » (p4, r6n2) : la carte de chaque houblon du stock avant de l'ajouter (L14) ----------
-export function FeuilleAjouter({ disponibles, onAjouter }: { disponibles: string[]; onAjouter: (cle: string) => void }) {
+// D137 (« ni en recherche un ») : le champ cherche tout le catalogue (nom et alias), sans accent ni casse ; vide, la feuille
+// montre le stock, comme avant.
+const sansAccent = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+export function FeuilleAjouter({ disponibles, exclus, verbe, suite, onAjouter }: {
+  disponibles: string[]; exclus: string[]; verbe: string; suite: string; onAjouter: (cle: string) => void;
+}) {
+  const [cherche, setCherche] = useState('');
+  const q = sansAccent(cherche.trim());
+  const trouves = useMemo(() => (q
+    ? CATALOGUE.filter((h) => !exclus.includes(h.id) && [h.name, ...h.aliases].some((n) => sansAccent(n).includes(q))).slice(0, 8).map((h) => h.id)
+    : disponibles), [q, disponibles, exclus]);
   return (
     <div className="pq-comparer-ajout" data-element="p4-plus-comparaison l5f-carte-role-alpha">
-      {disponibles.map((cle) => {
+      <input type="text" inputMode="search" data-role="chercher-houblon" value={cherche} onChange={(e) => setCherche(e.target.value)}
+        placeholder="Chercher un houblon…" aria-label="Chercher un houblon dans le catalogue" className="pq-comparer-chercher" />
+      {q && !trouves.length && <p className="pq-comparer-note">aucun houblon du catalogue à ce nom</p>}
+      {trouves.map((cle) => {
         const h = houblon(cle), a = h.alpha;
         const familles = (Object.keys(h.familles) as FamilyId[]).filter((f) => h.familles[f].niveau !== 'non décrit')
           .sort((x, y) => (h.familles[y].niveau === 'marqué' ? 1 : 0) - (h.familles[x].niveau === 'marqué' ? 1 : 0)).slice(0, 6);
@@ -598,7 +611,7 @@ export function FeuilleAjouter({ disponibles, onAjouter }: { disponibles: string
               <p className="pq-comparer-ajout-m"><b className="pq-comparer-nb">{nombre(part * 100)} %</b> de ses mots hors des 12 familles : {h.motsSansFamille.slice(0, 5).join(', ')}</p>
               {part > 0.5 && <p className="pq-comparer-note">Ses fiches le décrivent surtout hors familles : ses barres paraîtront maigres, « {h.motsSansFamille[0]} » n’y est pas.</p>}
             </>}
-            <button type="button" className="pq-comparer-ajout-btn" data-ajouter={cle} onClick={() => onAjouter(cle)}>+ Ajouter {h.nom} à la comparaison</button>
+            <button type="button" className="pq-comparer-ajout-btn" data-ajouter={cle} onClick={() => onAjouter(cle)}>+ {verbe} {h.nom} {suite}</button>
           </section>
         );
       })}

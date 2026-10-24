@@ -407,6 +407,13 @@ function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestes
             {cibles.map((f) => caseDe(f, 'cible'))}
             <i aria-hidden="true" className="pq-suggerer-separe mx-1 self-stretch" />
             {slots.map((f) => caseDe(f, 'extra'))}
+            {/* « Intégré les infos icône subtil des gros changement hors 16d. Exemple neslon sauvin on voit pas que c'est
+                Sauvignon blanc » (24.10, soir) : au bout des cases, le ◇ et le premier mot hors des 12, discrets. */}
+            {hors.length > 0 && (
+              <span role="img" aria-label={`hors des 12 familles : ${hors.flatMap((x) => x.mots).join(', ')}`} title={hors.flatMap((x) => x.mots).join(', ')} className="pq-sg-hors-case">
+                <i aria-hidden="true">◇</i>
+              </span>
+            )}
           </span>
         </div>
         <div className="relative flex items-start gap-0.5">
@@ -449,6 +456,8 @@ type Hors = { cle: string; seul: boolean; mots: string[] };
 function Hors16D({ x, nom }: { x: Hors; nom?: string }) {
   return (
     <span data-role="hors-16d" data-houblon={x.cle} className="pq-sg-hors16d pq-sg-sur-axe">
+      {/* « Ah si là mais ajoute icone » (24.10, soir) : le ◇ des mots hors des 12 familles, comme la fiche et Comparer. */}
+      <i aria-hidden="true" className="pq-sg-hors16d-ic">◇</i>
       <span className="pq-sg-hors16d-cle">{nom ? `${nom}, ` : ''}{x.seul ? 'lui seul' : 'hors 16D'} :</span> {x.mots.join(', ')}
     </span>
   );
