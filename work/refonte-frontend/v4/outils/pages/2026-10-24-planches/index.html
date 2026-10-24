@@ -52,6 +52,11 @@ header { display: grid; gap: 6px; }
 .p-chaude { background: #a8431a; }
 .p-accepte { background: #2f6b1f; }
 .p-corrige { background: #9b2f2f; }
+.p-retouche { background: #6a3d9a; }
+.p-neutre { background: #4d554a; }
+.pastilles { display: flex; flex-wrap: wrap; gap: 3px 4px; }
+.verdict { display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.4; padding: 0 7px; border-radius: 999px; border: 1.5px solid currentColor; white-space: nowrap; }
+.v-accepte { color: #2f6b1f; } .v-tete { color: #fff; background: #2f6b1f; border-color: #2f6b1f; } .v-refait { color: #9b2f2f; }
 .legende-pastilles { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 0.875rem; color: var(--discret); align-items: center; }
 
 /* Une rangée par vue : le nom à gauche, la planche à droite. */
@@ -105,17 +110,17 @@ footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; g
   <nav data-autres-vues aria-label="Les autres vues"></nav>
 
   <header>
-    <p class="sur-titre">L'Affinée · houblons · quatre vues · 24.10</p>
+    <p class="sur-titre">L'Affinée · houblons · sept vues · 24.10</p>
     <h1>Planches</h1>
   </header>
 
   <section id="a-choisir" aria-label="À choisir">
     <div class="encart">
-      <p><b>À choisir, par rangée :</b> ta référence d'abord (cerclée), puis onze vues. Pour les graphes : lequel te bloque, et quelle lecture au doigt t'aide.</p>
+      <p><b>À choisir, par rangée :</b> ta référence d'abord (cerclée), puis ses vues : onze, et les retouches de celles que tu as commentées. Pour les graphes : lequel te bloque, et quelle lecture au doigt t'aide.</p>
       <p class="canal">Commente la mini maquette que tu choisis (commentaire de l'artefact) : je lis les commentaires.</p>
       <p>Touche une vignette : elle s'ouvre en grand, à côté de ta référence.</p>
-      <p class="legende-pastilles"><span class="pastille p-ref">ta référence</span><span class="pastille p-froide">froide</span> ta base affinée <span class="pastille p-tiede">tiède</span> forme de la série <span class="pastille p-chaude">chaude</span> forme libre</p>
-      <p class="sommaire"><a href="#r-dryhopper">Dryhopper</a><a href="#r-substituer">Substituer</a><a href="#r-fiche">La liste de la fiche</a><a href="#r-graphes">Les graphes</a></p>
+      <p class="legende-pastilles"><span class="pastille p-ref">ta référence</span><span class="pastille p-froide">froide</span> ta base affinée <span class="pastille p-tiede">tiède</span> forme de la série <span class="pastille p-chaude">chaude</span> forme libre <span class="pastille p-retouche">retouche</span> après celle que tu as commentée <span class="verdict v-tete">en tête</span> tête du critique</p>
+      <p class="sommaire"><a href="#r-dryhopper">Dryhopper</a><a href="#r-substituer">Substituer</a><a href="#r-fiche">La liste de la fiche</a><a href="#r-graphes">Les graphes</a><a href="#r-pastille">La pastille « ~ simulé »</a><a href="#r-levure">Le levier levure</a><a href="#r-analyse">L'entrée de l'analyse</a></p>
     </div>
   </section>
 
@@ -139,6 +144,18 @@ footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; g
       <figure class="vue" data-variante data-vignette>
         <button class="ecran" type="button" data-nom="2 · Le brassin en courbes · p4b2" data-imgs="img/p4b2-premier-ecran.png|img/p4b2-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4b2-premier-ecran.png" width="780" height="1688" alt="p4b2, premier écran"></button>
         <figcaption><span class="pastille p-chaude">chaude</span><b>Le brassin en courbes</b><span class="id">p4b2 · 2</span><span class="ligne">Trois courbes de gain, l'amertume dessous.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="Retouche de p4b2 · L'aire du floral · p4b2f" data-imgs="img/p4b2f-premier-ecran.png|img/p4b2f-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4b2f-premier-ecran.png" width="780" height="1688" alt="p4b2f, premier écran"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-retouche">retouche</span><span class="pastille p-chaude">chaude</span><span class="verdict v-tete">en tête</span></span><b>L'aire du floral</b><span class="id">p4b2f · de p4b2</span><span class="ligne">Les chiffres du moment en bandeau, au-dessus du dessin.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="Retouche de p4b2 · Ta demande devant · p4b2e" data-imgs="img/p4b2e-premier-ecran.png|img/p4b2e-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4b2e-premier-ecran.png" width="780" height="1688" alt="p4b2e, premier écran"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-retouche">retouche</span><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>Ta demande devant</b><span class="id">p4b2e · de p4b2</span><span class="ligne">Floral seul devant, baies et résineux en gris.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="Retouche de p4b2 · La même, nettoyée · p4b2d" data-imgs="img/p4b2d-premier-ecran.png|img/p4b2d-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4b2d-premier-ecran.png" width="780" height="1688" alt="p4b2d, premier écran"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-retouche">retouche</span><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>La même, nettoyée</b><span class="id">p4b2d · de p4b2</span><span class="ligne">Texte à 12 px, courbes à 3 px, « ★ meilleur ».</span></figcaption>
       </figure>
       <figure class="vue" data-variante data-vignette>
         <button class="ecran" type="button" data-nom="3 · La colonne du brassin sous le pouce · p4a3" data-imgs="img/p4a3-premier-ecran.png|img/p4a3-pendant.png" data-etats="premier écran|pendant le geste"><img src="img/p4a3-premier-ecran.png" width="780" height="1688" alt="p4a3, premier écran"></button>
@@ -195,6 +212,26 @@ footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; g
       <figure class="vue" data-variante data-vignette>
         <button class="ecran" type="button" data-nom="u4 enrichi, fait ce soir (tes mots : moins focus sur l'IBU, selon l'étape)" data-imgs="img/u4e-60.png|img/u4e-whirlpool.png|img/u4e-dryhop.png|img/u4e-dryhop-aromes.png|img/u4e-plus-comparer.png" data-etats="à 60′ (la recette)|au whirlpool|au dry hop : l'arôme fait le score|au dry hop, ton tableau « Arômes 16D »|« + » : ajouté à Comparer"><img src="img/u4e-dryhop.png" width="780" height="1688" alt="u4 enrichi, au dry hop"></button>
         <figcaption><span class="pastille p-ref">fait ce soir</span><b>u4 enrichi</b><span class="id">r9 · D127</span><span class="ligne">60′, whirlpool ou dry hop ; les arômes à côté du score ; « + » vers Comparer.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="Retouche de u4 enrichi · Le tableau Arômes 16D au dry hop · u4e5" data-imgs="img/u4e5-premier-ecran.png|img/u4e5-dryhop.png" data-etats="à 60′|au dry hop"><img src="img/u4e5-premier-ecran.png" width="780" height="1688" alt="u4e5 à 60′"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-retouche">retouche</span><span class="pastille p-froide">froide</span><span class="verdict v-tete">en tête</span></span><b>Arômes 16D au dry hop</b><span class="id">u4e5 · de u4 enrichi</span><span class="ligne">Au dry hop, ton tableau coché, couché.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="Retouche de u4 enrichi · La case « comparer » · u4e4" data-imgs="img/u4e4-premier-ecran.png|img/u4e4-dryhop.png" data-etats="à 60′|au dry hop"><img src="img/u4e4-premier-ecran.png" width="780" height="1688" alt="u4e4 à 60′"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-retouche">retouche</span><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>La case « comparer »</b><span class="id">u4e4 · de u4 enrichi</span><span class="ligne">Une case, et la barre nomme les deux houblons.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="Retouche de u4 enrichi · La frise du brassin · u4e1" data-imgs="img/u4e1-premier-ecran.png|img/u4e1-dryhop.png" data-etats="à 60′|au dry hop"><img src="img/u4e1-premier-ecran.png" width="780" height="1688" alt="u4e1 à 60′"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-retouche">retouche</span><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>La frise du brassin</b><span class="id">u4e1 · de u4 enrichi</span><span class="ligne">Le moment en trois stations.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="Retouche de u4 enrichi · Les familles cerclées · u4e2" data-imgs="img/u4e2-premier-ecran.png|img/u4e2-dryhop.png" data-etats="à 60′|au dry hop"><img src="img/u4e2-premier-ecran.png" width="780" height="1688" alt="u4e2 à 60′"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-retouche">retouche</span><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>Les familles cerclées</b><span class="id">u4e2 · de u4 enrichi</span><span class="ligne">Les familles de ta stout en pictos cerclés.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="Retouche de u4 enrichi · L'arôme en titre · u4e3 (relancé)" data-imgs="img/u4e3-premier-ecran.png|img/u4e3-dryhop.png" data-etats="à 60′|au dry hop"><img src="img/u4e3-premier-ecran.png" width="780" height="1688" alt="u4e3 à 60′"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-retouche">retouche</span><span class="pastille p-froide">froide</span><span class="verdict v-refait">rejeté, refait</span></span><b>L'arôme en titre</b><span class="id">u4e3 · de u4 enrichi</span><span class="ligne">« Magnat garde floral et résineux de ta stout ».</span></figcaption>
       </figure>
       <figure class="vue" data-variante data-vignette>
         <button class="ecran" type="button" data-nom="1 · Ton u4, enrichi · sbc1b" data-imgs="img/sbc1b-60.png|img/sbc1b-whirlpool.png" data-etats="à 60′|au whirlpool"><img src="img/sbc1b-60.png" width="780" height="1688" alt="sbc1b à 60′"></button>
@@ -293,6 +330,18 @@ footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; g
         <figcaption><span class="pastille p-tiede">tiède</span><b>Par contraste</b><span class="id">flb5 · panel 9ᵉ · Nelson</span><span class="ligne">« Lui seul dit vin blanc… »</span></figcaption>
       </figure>
       <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="Retouche de flb5 · La matrice nettoyée · flb5b" data-imgs="img/flb5b-premier-ecran.png|img/flb5b-motueka.png" data-etats="Nelson Sauvin|Motueka"><img src="img/flb5b-premier-ecran.png" width="780" height="1688" alt="flb5b sur Nelson Sauvin"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-retouche">retouche</span><span class="pastille p-froide">froide</span><span class="verdict v-tete">en tête</span></span><b>La matrice nettoyée</b><span class="id">flb5b · de flb5</span><span class="ligne">L'en-tête de flz4, quatre colonnes vides face à lui.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="Retouche de flb5 · Les deux cercles · flb5d" data-imgs="img/flb5d-premier-ecran.png|img/flb5d-motueka.png" data-etats="Nelson Sauvin|Motueka"><img src="img/flb5d-premier-ecran.png" width="780" height="1688" alt="flb5d sur Nelson Sauvin"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-retouche">retouche</span><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Les deux cercles</b><span class="id">flb5d · de flb5</span><span class="ligne">Lui en noir, ses quatre remplaçants en gris.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="Retouche de flb5 · Dans le bloc de g1 · flb5c" data-imgs="img/flb5c-premier-ecran.png|img/flb5c-motueka.png" data-etats="Nelson Sauvin|Motueka"><img src="img/flb5c-premier-ecran.png" width="780" height="1688" alt="flb5c sur Nelson Sauvin"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-retouche">retouche</span><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>Dans le bloc de g1</b><span class="id">flb5c · de flb5</span><span class="ligne">« lui seul » par ligne, « aussi chez… » dessous.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
         <button class="ecran" type="button" data-nom="10 · Situer un mot · flz4" data-imgs="img/flz4-premier-ecran.png|img/flz4-fiche-courte.png" data-etats="Cascade|un cousin touché : Citra cryo"><img src="img/flz4-premier-ecran.png" width="780" height="1688" alt="flz4 sur Cascade"></button>
         <figcaption><span class="pastille p-chaude">chaude</span><b>Situer un mot</b><span class="id">flz4 · panel 10ᵉ · Cascade</span><span class="ligne">« citron vert · rare · 3 sur 32 ».</span></figcaption>
       </figure>
@@ -344,23 +393,189 @@ footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; g
     </div>
   </section>
 
-  <!-- À VENIR : séries d126 et leur critique -->
-  <div class="rangee vide" id="r-pastille">
-    <div class="nom"><h2>La pastille « ~ simulé »</h2><p class="question">de Comparer, contre ton r6a</p></div>
-    <p class="a-venir">À venir : les trois déjà faites et huit neuves, quand leur critique aura rendu.</p>
-  </div>
-  <div class="rangee vide" id="r-levure">
-    <div class="nom"><h2>Le levier levure</h2><p class="question">dans Suggérer, contre ton q2b</p></div>
-    <p class="a-venir">À venir : les trois déjà faites et huit neuves, quand leur critique aura rendu.</p>
-  </div>
-  <div class="rangee vide" id="r-analyse">
-    <div class="nom"><h2>L'entrée de l'analyse</h2><p class="question">depuis l'étape Houblons, contre ta base v4.10</p></div>
-    <p class="a-venir">À venir : les trois déjà faites et huit neuves, quand leur critique aura rendu.</p>
-  </div>
+  <!-- LA PASTILLE « ~ SIMULÉ » -->
+  <section class="rangee" id="r-pastille" data-choix="pastille" aria-labelledby="t-ps" data-mode="rangee" data-ref-nom="r6a" data-ref-imgs="img/r6a-premier-ecran.png|img/r6a-toucher.png" data-ref-etats="premier écran|la pastille touchée">
+    <div class="nom">
+      <h2 id="t-ps">La pastille « ~&nbsp;simulé »</h2>
+      <p class="question">de Comparer : que veut dire ce « ~ » ?</p>
+      <p class="note">Ton choix r6a. Au repos, toutes sont ton écran ; la vignette montre la pastille touchée. Les trois têtes du critique d'abord.</p>
+      <p class="chemin">ecran-1/fils22-comparer/captures/r6a-premier-ecran.png</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="r6a · ton Comparer" data-imgs="img/r6a-premier-ecran.png|img/r6a-toucher.png" data-etats="premier écran|la pastille touchée"><img src="img/r6a-premier-ecran.png" width="780" height="1688" alt="r6a, ton écran de Comparer"></button>
+        <figcaption><span class="pastille p-ref">ta référence</span><b>Ton Comparer</b><span class="id">r6a</span><span class="ligne">La pastille « ~ simulé » au-dessus du radar.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="1 · Le curseur simulé ↔ mesuré · pva2" data-imgs="img/pva2-toucher.png|img/pva2-repos.png" data-etats="la pastille touchée|au repos"><img src="img/pva2-toucher.png" width="780" height="1688" alt="pva2, la pastille touchée"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-tete">en tête</span></span><b>Simulé ↔ mesuré</b><span class="id">pva2 · 1</span><span class="ligne">« 4 mesures sur 36 » ; Galaxy « ? », jamais 0.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="2 · L'échelle de confiance · pvz2" data-imgs="img/pvz2-toucher.png|img/pvz2-repos.png" data-etats="la pastille touchée|au repos"><img src="img/pvz2-toucher.png" width="780" height="1688" alt="pvz2, la pastille touchée"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-tete">en tête</span></span><b>L'échelle de confiance</b><span class="id">pvz2 · 2</span><span class="ligne">Des fiches à la bière, un houblon par palier.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="3 · Le moteur | en bière · pvz3" data-imgs="img/pvz3-toucher.png|img/pvz3-repos.png" data-etats="la pastille touchée|au repos"><img src="img/pvz3-toucher.png" width="780" height="1688" alt="pvz3, la pastille touchée"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-tete">en tête</span></span><b>Le moteur | en bière</b><span class="id">pvz3 · 3</span><span class="ligne">À droite, un cadran « rien » et un seul axe mesuré.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="4 · La bulle · psa" data-imgs="img/psa-toucher.png|img/psa-repos.png" data-etats="la pastille touchée|au repos"><img src="img/psa-toucher.png" width="780" height="1688" alt="psa, la pastille touchée"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>La bulle</b><span class="id">psa · 4</span><span class="ligne">« calculé par le moteur », « Vraies valeurs › ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="5 · La ligne des sources · psb" data-imgs="img/psb-toucher.png|img/psb-repos.png" data-etats="la pastille touchée|au repos"><img src="img/psb-toucher.png" width="780" height="1688" alt="psb, la pastille touchée"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>La ligne des sources</b><span class="id">psb · 5</span><span class="ligne">Fiches 8 / 4 / 3, linalol mesuré, panel.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="6 · Les rayons X · psc" data-imgs="img/psc-toucher.png|img/psc-repos.png" data-etats="la pastille touchée|au repos"><img src="img/psc-toucher.png" width="780" height="1688" alt="psc, la pastille touchée"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté, corrigé</span></span><b>Les rayons X</b><span class="id">psc · 6</span><span class="ligne">Quatre entrées coulent vers un « ~ » central.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="7 · Les repères · pva1" data-imgs="img/pva1-toucher.png|img/pva1-repos.png" data-etats="la pastille touchée|au repos"><img src="img/pva1-toucher.png" width="780" height="1688" alt="pva1, la pastille touchée"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>Les repères</b><span class="id">pva1 · 7</span><span class="ligne">① à ⑤ relient le « ~ » à ton écran.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="8 · Le ticket du calcul · pva3" data-imgs="img/pva3-toucher.png|img/pva3-repos.png" data-etats="la pastille touchée|au repos"><img src="img/pva3-toucher.png" width="780" height="1688" alt="pva3, la pastille touchée"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Le ticket du calcul</b><span class="id">pva3 · 8</span><span class="ligne">Ce qui entre, le total, le talon mesuré.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="9 · L'envers du radar · pva4" data-imgs="img/pva4-toucher.png|img/pva4-repos.png" data-etats="la pastille touchée|au repos"><img src="img/pva4-toucher.png" width="780" height="1688" alt="pva4, la pastille touchée"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>L'envers du radar</b><span class="id">pva4 · 9</span><span class="ligne">Presque tout hachuré ou pâle : peu de mesuré.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="10 · Les repères et deux portes · pvz1" data-imgs="img/pvz1-toucher.png|img/pvz1-repos.png" data-etats="la pastille touchée|au repos"><img src="img/pvz1-toucher.png" width="780" height="1688" alt="pvz1, la pastille touchée"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>Repères et deux portes</b><span class="id">pvz1 · 10</span><span class="ligne">❶ à ❹, puis « Chimie › » et « OSU › ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="11 · Avant, maintenant, après la cuve · pvz4" data-imgs="img/pvz4-toucher.png|img/pvz4-repos.png" data-etats="la pastille touchée|au repos"><img src="img/pvz4-toucher.png" width="780" height="1688" alt="pvz4, la pastille touchée"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Avant, maintenant, après</b><span class="id">pvz4 · 11</span><span class="ligne">L'après la cuve, hachuré.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- LE LEVIER LEVURE -->
+  <section class="rangee" id="r-levure" data-choix="levure" aria-labelledby="t-lv" data-mode="rangee" data-ref-nom="q2b" data-ref-imgs="img/q2b.png|img/q2b-levure.png" data-ref-etats="Suggestions, en entier|son groupe « Changer de levure »">
+    <div class="nom">
+      <h2 id="t-lv">Le levier levure</h2>
+      <p class="question">dans Suggérer : et avec une autre levure ?</p>
+      <p class="note">Ton choix q2b et son groupe levure. Les trois têtes du critique d'abord.</p>
+      <p class="chemin">ecran-1/fils15-s5-complexe/captures/q2b-b-390.png ; choix/etats/captures/etat-sugg-levure-choisie.png</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran rogne" type="button" data-nom="q2b · ton Suggérer" data-imgs="img/q2b.png|img/q2b-levure.png" data-etats="Suggestions, en entier|son groupe « Changer de levure »"><img src="img/q2b.png" width="780" height="3376" alt="q2b, le haut de Suggestions"></button>
+        <figcaption><span class="pastille p-ref">ta référence</span><b>Ton Suggérer</b><span class="id">q2b</span><span class="ligne">Le groupe « Changer de levure » plus bas.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="1 · Les fantômes de levure · lsz1" data-imgs="img/lsz1-repos.png|img/lsz1-toucher.png" data-etats="au repos|au toucher"><img src="img/lsz1-repos.png" width="390" height="844" alt="lsz1 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-tete">en tête</span></span><b>Les fantômes de levure</b><span class="id">lsz1 · 1</span><span class="ligne">Une piste fantôme sous chacune de tes cartes.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="2 · Le curseur de souche · lsz4" data-imgs="img/lsz4-repos.png|img/lsz4-toucher.png" data-etats="au repos|au toucher"><img src="img/lsz4-repos.png" width="390" height="844" alt="lsz4 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-tete">en tête</span></span><b>Le curseur de souche</b><span class="id">lsz4 · 2</span><span class="ligne">Trois crans, et tes cartes répondent.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="3 · La tirette et les tubes · lsa3" data-imgs="img/lsa3-repos.png|img/lsa3-toucher.png" data-etats="au repos|au toucher"><img src="img/lsa3-repos.png" width="390" height="844" alt="lsa3 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-tete">en tête</span></span><b>La tirette et les tubes</b><span class="id">lsa3 · 3</span><span class="ligne">Les regards de la cuve, le plafond du style.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="4 · Ton groupe, tel quel · lva" data-imgs="img/lva-repos.png|img/lva-toucher.png" data-etats="au repos|au toucher"><img src="img/lva-repos.png" width="390" height="844" alt="lva au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>Ton groupe, tel quel</b><span class="id">lva · 4</span><span class="ligne">q2b, un trait et la puce « autre levier ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="5 · Le pont « Et avec une autre levure ? » · lvb" data-imgs="img/lvb-repos.png|img/lvb-toucher.png" data-etats="au repos|au toucher"><img src="img/lvb-repos.png" width="390" height="844" alt="lvb au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté, corrigé</span></span><b>Le pont</b><span class="id">lvb · 5</span><span class="ligne">« Et avec une autre levure ? » sous les cartes.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="6 · La levure en contexte · lvc" data-imgs="img/lvc-repos.png|img/lvc-toucher.png" data-etats="au repos|au toucher"><img src="img/lvc-repos.png" width="390" height="844" alt="lvc au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>La levure en contexte</b><span class="id">lvc · 6</span><span class="ligne">Une puce « US-05 », comme un facteur fixé.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="7 · Le groupe de q2b, dessiné · lsa1" data-imgs="img/lsa1-repos.png|img/lsa1-toucher.png" data-etats="au repos|au toucher"><img src="img/lsa1-repos.png" width="390" height="844" alt="lsa1 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>Ton groupe, dessiné</b><span class="id">lsa1 · 7</span><span class="ligne">À sa place, l'effet dessiné une fois.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="8 · Le pont sous le pouce · lsa2" data-imgs="img/lsa2-repos.png|img/lsa2-toucher.png" data-etats="au repos|au toucher"><img src="img/lsa2-repos.png" width="390" height="844" alt="lsa2 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>Le pont sous le pouce</b><span class="id">lsa2 · 8</span><span class="ligne">Les verdicts face aux houblons, dans tes mots.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="9 · Le revers du bandeau · lsa4" data-imgs="img/lsa4-repos.png|img/lsa4-toucher.png" data-etats="au repos|au toucher"><img src="img/lsa4-repos.png" width="390" height="844" alt="lsa4 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Le revers du bandeau</b><span class="id">lsa4 · 9</span><span class="ligne">Ma bière a un revers : la levure.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="10 · La silhouette sur le radar · lsz2" data-imgs="img/lsz2-repos.png|img/lsz2-toucher.png" data-etats="au repos|au toucher"><img src="img/lsz2-repos.png" width="390" height="844" alt="lsz2 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-refait">rejeté, refait</span></span><b>La silhouette sur le radar</b><span class="id">lsz2 · 10</span><span class="ligne">Une puce en Barres, la souche en silhouette au radar.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="11 · L'onglet de bord · lsz3" data-imgs="img/lsz3-repos.png|img/lsz3-toucher.png" data-etats="au repos|au toucher"><img src="img/lsz3-repos.png" width="390" height="844" alt="lsz3 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>L'onglet de bord</b><span class="id">lsz3 · 11</span><span class="ligne">« LEVURE · US-05 », un volet dans tes cartes.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- L'ENTRÉE DE L'ANALYSE -->
+  <section class="rangee" id="r-analyse" data-choix="analyse" aria-labelledby="t-an" data-mode="rangee" data-ref-nom="base v4.10" data-ref-imgs="img/base.png|img/base-profil.png" data-ref-etats="l'étape Houblons|le bas, de près">
+    <div class="nom">
+      <h2 id="t-an">L'entrée de l'analyse</h2>
+      <p class="question">depuis l'étape Houblons, sous « Résineux trop marqué »</p>
+      <p class="note">Ta base v4.10 : un « › » noir, sans mot. Les trois têtes du critique d'abord.</p>
+      <p class="chemin">outils/pages/2026-10-24-d121/img/base.png</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Ta base v4.10 · l'étape Houblons" data-imgs="img/base.png|img/base-profil.png" data-etats="l'étape Houblons|le bas, de près"><img src="img/base.png" width="780" height="1688" alt="Ta base v4.10, l'étape Houblons"></button>
+        <figcaption><span class="pastille p-ref">ta référence</span><b>Ta base</b><span class="id">base v4.10</span><span class="ligne">« Seul bouton qui ouvre vraiment l'analyse ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="1 · Appuyer pour voir · ana4" data-imgs="img/ana4-repos.png|img/ana4-toucher.png" data-etats="au repos|à l'appui long"><img src="img/ana4-repos.png" width="780" height="1688" alt="ana4 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-tete">en tête</span></span><b>Appuyer pour voir</b><span class="id">ana4 · 1</span><span class="ligne">L'appui long, comme sur les houblons ; ×2,8.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="2 · Le rail finit dans le verre · anz1" data-imgs="img/anz1-repos.png|img/anz1-toucher.png" data-etats="au repos|au toucher"><img src="img/anz1-repos.png" width="780" height="1688" alt="anz1 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-tete">en tête</span></span><b>Le rail finit dans le verre</b><span class="id">anz1 · 2</span><span class="ligne">La chope au bout du brassin, « Ma bière › ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="3 · La page d'à côté · anz3" data-imgs="img/anz3-repos.png|img/anz3-toucher.png" data-etats="au repos|au toucher"><img src="img/anz3-repos.png" width="780" height="1688" alt="anz3 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-tete">en tête</span></span><b>La page d'à côté</b><span class="id">anz3 · 3</span><span class="ligne">Barres ↔ radar dans l'étape, une seule porte.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="4 · A : « analyse › » · d121-a" data-imgs="img/d121-a.png|img/d121-a-profil.png" data-etats="l'étape|le bas, de près"><img src="img/d121-a.png" width="780" height="1688" alt="Variante A"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-neutre">version du 24.10</span></span><b>A · « analyse › »</b><span class="id">d121-a · 4</span><span class="ligne">Le « › » garde sa place et dit « analyse ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="5 · B : une barre pleine · d121-b" data-imgs="img/d121-b.png|img/d121-b-profil.png" data-etats="l'étape|le bas, de près"><img src="img/d121-b.png" width="780" height="1688" alt="Variante B"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-neutre">variante</span></span><b>B · une barre pleine</b><span class="id">d121-b · 5</span><span class="ligne">« Ouvrir l'analyse de ma bière › ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="6 · C : l'alerte est l'entrée · d121-c" data-imgs="img/d121-c.png|img/d121-c-profil.png" data-etats="l'étape|le bas, de près"><img src="img/d121-c.png" width="780" height="1688" alt="Variante C"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-neutre">variante</span></span><b>C · l'alerte est l'entrée</b><span class="id">d121-c · 6</span><span class="ligne">« Résineux trop marqué · détail › ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="7 · La carte qui s'enfonce · ana1" data-imgs="img/ana1-repos.png|img/ana1-toucher.png" data-etats="au repos|au toucher"><img src="img/ana1-repos.png" width="780" height="1688" alt="ana1 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>La carte qui s'enfonce</b><span class="id">ana1 · 7</span><span class="ligne">Toute la carte pressable, « 6 au style ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="8 · La feuille qui monte · ana2" data-imgs="img/ana2-repos.png|img/ana2-toucher.png" data-etats="au repos|au toucher"><img src="img/ana2-repos.png" width="780" height="1688" alt="ana2 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>La feuille qui monte</b><span class="id">ana2 · 8</span><span class="ligne">« Ma bière ⌃ », la vraie page monte.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="9 · La frise mène à ma bière · ana3" data-imgs="img/ana3-repos.png|img/ana3-toucher.png" data-etats="au repos|au toucher"><img src="img/ana3-repos.png" width="780" height="1688" alt="ana3 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-refait">rejeté, refait</span></span><b>La frise mène au verre</b><span class="id">ana3 · 9</span><span class="ligne">Le brassin finit dans le verre, à la couleur de l'EBC.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="10 · La vignette radar · anz2" data-imgs="img/anz2-repos.png|img/anz2-toucher.png" data-etats="au repos|au toucher"><img src="img/anz2-repos.png" width="780" height="1688" alt="anz2 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>La vignette radar</b><span class="id">anz2 · 10</span><span class="ligne">Ton radar en petit, avec un « › ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="11 · La feuille en attente · anz4" data-imgs="img/anz4-repos.png|img/anz4-toucher.png" data-etats="au repos|au toucher"><img src="img/anz4-repos.png" width="780" height="1688" alt="anz4 au repos"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>La feuille en attente</b><span class="id">anz4 · 11</span><span class="ligne">L'en-tête de Ma bière attend en bas.</span></figcaption>
+      </figure>
+    </div>
+  </section>
 
   <footer>
-    <p>Mini maquettes : captures des maquettes jouables, sans retouche. Ordres : le conseil dh4 pour Dryhopper, le critique ailleurs ; une proposition, le choix est le tien.</p>
-    <p>Rejeté, corrigé : refusé par le critique, puis corrigé et rejugé accepté.</p>
+    <p>Mini maquettes : captures des maquettes jouables, sans retouche. Ordres : le conseil dh4 pour Dryhopper, le critique ailleurs (ses têtes d'abord) ; une proposition, le choix est le tien. Les retouches suivent l'original que tu as commenté.</p>
+    <p>Rejeté, corrigé (ou accepté, corrigé) : refusé par le critique, corrigé et rejugé accepté. Rejeté, refait : refait après son refus, pas encore rejugé.</p>
     <p>Page d'avant : <a href="https://claude.ai/artifact/5nrApsrrY7yhnqK1gU7wYp">Choix de vues · 24.10</a>.</p>
   </footer>
 </div>

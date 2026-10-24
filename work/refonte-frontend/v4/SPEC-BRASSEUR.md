@@ -510,6 +510,12 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   est inutile, header type 10 » (l'en-tête de flz4, « Situer un mot », sur les versions de flb5). Puis : « J'aime beaucoup le
   9 car ont voit que c'est pas que du 16d, le houblon a vraiment beaucoup plus de subtilité. À montré aussi, notamment pour
   la comparaison » (acquis : ce que le houblon dit en plus de ses familles, dans la fiche et dans Comparer, r10).
+- **La continuité de l'app** (24.10, soir), mot pour mot : « Fait attention aux header, footer, sur la continuité de l'app
+  ect... ». D'un écran à l'autre, le même en-tête (croix, titre, onglets) et le même pied (Annuler à gauche, l'action à
+  droite), à la même place et à la même taille (D109, D118, D119, D120). D129.
+- **Les mots au premier écran** (24.10, soir, sur Substituer au-dessus de 70 mots), mot pour mot : « dépasse les 70 mots au
+  premier écran c'est pas ultra grave. Il faut être modéré avec les mots ». Le seuil devient une alerte ; l'échec seulement
+  au-delà de 40 % de plus (`mots-premier-ecran.mjs --modere`, dans controle-commun). Être modéré reste la règle.
 - **À quoi a servi le quota** (24.10, soir), mot pour mot : « En quoi tout ces quota ont été utile ??? ». Le 24.10, la
   plus grande part est allée à l'outillage (contrôles, cerveau, un délai de test débogué) et à des panels de 48, quand rien
   ou presque ne lui avait été montré. Le quota sert d'abord ce qu'il verra : montrer tôt ce qui est fait (L11).

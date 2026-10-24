@@ -3,7 +3,7 @@
 // plus tôt : « commen ça a pu être oublié ? c'était une demande centre répété à mainte et mainte
 // fois » (au style), « Un appui long montre une vrai fiche de houblons... » (oubliée dans b5). Une
 // exigence transversale ne doit plus dépendre d'un brief : ce lanceur les joue toutes.
-//   MOTS (≤ 70 au premier écran) ; COULEURS (D74) ; AU-STYLE (D75) ; SURVOL (D81) ; BLOCS (D82) ;
+//   MOTS (70 au premier écran, modéré : alerte jusqu'à 98, échec au-delà ; 24.10) ; COULEURS (D74) ; AU-STYLE (D75) ; SURVOL (D81) ; BLOCS (D82) ;
 //   STANDARD (D83) ; CONTRASTE (D86) ; FICHE (D25 : l'appui long ouvre la vraie fiche, sur toute page
 //   qui nomme un houblon) ; TRAIT (D88 : pictos d'arôme au trait, sans halo) ; LEGENDE (D89 : légende
 //   derrière un bouton discret, fermée au repos) ; PARLANT (D90 : l'usage d'un houblon en mot, pas en
@@ -24,7 +24,7 @@ const pg = (args.find((a) => a.startsWith('--page=')) || '--page=etat-b.html').s
 const sans = new Set(((args.find((a) => a.startsWith('--sans=')) || '').slice(7)).split(',').filter(Boolean));
 if (!dir || !ids.length) { console.log('Usage : node controle-commun.mjs <dossier> <id> [id…] [--page=…] [--sans=…]'); process.exit(2); }
 const CONTROLES = [
-  ['mots', 'mots-premier-ecran.mjs', [dir, ...ids, '--max=70', '--page=' + pg], /MOTS OK/],
+  ['mots', 'mots-premier-ecran.mjs', [dir, ...ids, '--max=70', '--modere', '--page=' + pg], /MOTS OK/],
   ['couleurs', 'controle-couleurs.mjs', [dir, ...ids, '--page=' + pg], /COULEURS OK/],
   ['au-style', 'controle-au-style.mjs', [dir, ...ids, '--pages=' + pg], /AU-STYLE OK/],
   ['survol', 'controle-sens-survol.mjs', [dir, ...ids, '--pages=' + pg], /SURVOL OK/],

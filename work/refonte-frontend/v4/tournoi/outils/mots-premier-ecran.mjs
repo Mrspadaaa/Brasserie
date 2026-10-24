@@ -10,6 +10,8 @@ import puppeteer from 'puppeteer-core';
 
 const args = process.argv.slice(2);
 const max = Number((args.find((a) => a.startsWith('--max=')) || '').slice(6)) || null;
+const modere = args.includes('--modere');
+const alertes = [];
 // --page=etat-b.html : compte un autre fichier de chaque dossier (défaut : index.html).
 const pageFile = (args.find((a) => a.startsWith('--page=')) || '--page=index.html').slice(7);
 // --sans-donnees (20.10, d'après le critique du lot 21 : « les données restent, l'explication part ») :
@@ -62,9 +64,13 @@ for (const id of ids) {
     return words;
   }, sansDonnees, sansCoquille);
   await page.close();
-  const bad = max && n > max;
+  // --modere (24.10, soir : « dépasse les 70 mots au premier écran c'est pas ultra grave. Il faut être modéré avec les
+  // mots ») : au-dessus du seuil, une alerte ; l'échec seulement au-delà de 40 % de plus.
+  const bad = max && n > (modere ? Math.floor(max * 1.4) : max);
+  const alerte = max && !bad && n > max;
   if (bad) over++;
-  console.log(id + ' ' + n + ' mots' + (sansDonnees ? ' (hors données)' : '') + (bad ? ' (> ' + max + ')' : ''));
+  if (alerte) alertes.push(`${id} ${n}`);
+  console.log(id + ' ' + n + ' mots' + (sansDonnees ? ' (hors données)' : '') + (bad ? ' (> ' + max + ')' : alerte ? ' (alerte : > ' + max + ', modéré)' : ''));
 }
 await browser.close();
-if (max) console.log(over === 0 ? 'MOTS OK' : 'MOTS ECHEC ' + over + '/' + ids.length + ' au-dessus de ' + max);
+if (max) console.log(over === 0 ? 'MOTS OK' + (alertes.length ? ` (alerte modérée : ${alertes.join(', ')} au-dessus de ${max})` : '') : 'MOTS ECHEC ' + over + '/' + ids.length + ' au-dessus de ' + (modere ? `${Math.floor(max * 1.4)} (seuil ${max} + 40 %)` : max));

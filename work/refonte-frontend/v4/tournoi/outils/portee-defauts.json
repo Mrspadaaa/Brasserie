@@ -1769,6 +1769,16 @@
    "resultat": "Mesuré le 24.10 : sa r6a FAMILLES OK (10 au premier écran) ; maquettes/parcours/comparer FAMILLES ECHEC (0 au premier écran, 9 à partir de 872 px).",
    "verdict": "garde",
    "script": "controle-comparer-familles.mjs"
+  },
+  {
+   "id": "D129",
+   "mots": "« Fait attention aux header, footer, sur la continuité de l'app ect... » (24.10, soir)",
+   "controle": "controle-continuite.mjs <dossier construit> (K1 croix, K2 en-tête, K3 titre des outils, K4 pied en bas)",
+   "portee": ["tout-ecran"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquettes/parcours CONTINUITE ECHEC (4 : titres des outils 20 et 15 px ; pied de Dryhopper au-dessus du rail).",
+   "verdict": "garde",
+   "script": "controle-continuite.mjs"
   }
  ]
 }

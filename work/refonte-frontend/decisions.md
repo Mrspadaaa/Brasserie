@@ -552,3 +552,10 @@ r7 (`work/missions/2026-10-23-maquette-parcours/voies/r7-batterie/PASSE3.md`) :
 - D40 bis (pilote, après la passe 3 de r7) : le plafond de 80 mots au premier écran reste (SPEC § 3, « Dense mais pas
   surchargé ») ; les mots de r6a restent, les ajouts postérieurs passent à un toucher. La règle Végétal (D35) ne vise qu'une
   famille sans source : une famille apportée par la levure reste placée (cas-k2 : « 1 au style · 11 non situées »).
+
+## D41 — Les mots au premier écran : modéré (24.10.2026, soir)
+Décideur : le brasseur (« dépasse les 70 mots au premier écran c'est pas ultra grave. Il faut être modéré avec les mots »),
+appliqué par le pilote : `mots-premier-ecran.mjs --modere` (alerte au-dessus du seuil, échec au-delà de 40 % de plus), dans
+controle-commun. Les autres appels gardent leur seuil strict (aucun ne passe --modere) ; aucun critère n'attend un échec de mots
+de controle-commun, donc l'assouplissement ne fait échouer aucune voie (pas de rejeu des 85 appels). Substituer à 118 mots :
+au-delà même du modéré (98) ; r9 vise 70 à 80.

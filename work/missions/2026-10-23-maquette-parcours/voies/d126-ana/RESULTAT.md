@@ -3,7 +3,7 @@ OK — série ana : quatre entrées de l'analyse (carte, feuille, station, aper�
 ## Les concepts (une ligne chacun)
 - **ana1**, chaleur froide : A affinée, le bloc devient une carte qui s'enfonce au doigt, et une ligne annonce « 6 au style · 5 non situées · résineux ×2,8 ». Tient : A reste A, l'annonce dit ce qu'on va trouver. Casse : l'état pressé se voit peu sur une image fixe ; ×2,8 figé pour ce cas.
 - **ana2**, chaleur tiède : le bloc est le haut d'une feuille (poignée, « Ma bière ⌃ ») ; toucher ou pousser fait monter la vraie page Ma bière depuis sa place. Tient : la forme dit « une page dessous », le mouvement relie l'étape et l'analyse. Casse : la feuille ne colle pas au bas de l'écran ; rayons ramenés à 8 px (S3).
-- **ana3**, chaleur chaude : la frise a une dernière station, « ma bière », dont le nœud est un verre à la couleur de l'EBC ; au toucher, la frise se remplit jusqu'au verre, puis une onde part. Tient : il pense en brassin, et le verre se lit sans légende. Casse : le champ et les ajouts coupent l'axe, il ne reste qu'un bout de pointillé ; aucun chiffre de l'analyse.
+- **ana3**, chaleur chaude : la frise a une dernière station, « ma bière », dont le nœud est un verre à la couleur de l'EBC. Un fil pointillé continu y mène depuis post-fermentation, en contournant les ajouts par la marge ; au toucher, le fil se remplit, puis le verre s'enfonce. Tient : il pense en brassin, et le verre se lit sans légende. Casse : le fil frôle le bord des ajouts (4 px) ; aucun chiffre de l'analyse. Reprise après le rejet du critique (D82) : l'onde grise est retirée, le toucher est capturé à sa dernière image, le fil est continu ; COMMUN OK et CHOIX OK rejoués.
 - **ana4**, chaleur chaude : « Ma bière » est souligné de points comme un nom de houblon ; un toucher bref ouvre l'onglet, un appui long ouvre un aperçu (verdict, résineux ×2,8 sur sa barre, bande des 12, « Ouvrir l'analyse › », croix). Tient : le même geste que ses fiches, et il voit sans quitter l'étape. Casse : l'appui long est à deviner ; une seule famille fautive est montrée.
 
 ## Fichiers écrits
@@ -27,7 +27,7 @@ OK — série ana : quatre entrées de l'analyse (carte, feuille, station, aper�
 `work/refonte-frontend/v4/ecran-1/fils24-petits-choix/captures/` :
 - ana1-repos, ana1-toucher (doigt posé) ;
 - ana2-repos, ana2-toucher (la page Ma bière à mi-montée, ralentie ×8) ;
-- ana3-repos, ana3-toucher (l'onde à mi-course) ;
+- ana3-repos, ana3-toucher (dernière image : fil rempli, verre enfoncé) ;
 - ana4-repos, ana4-toucher (l'aperçu).
 
 ## Prédiction

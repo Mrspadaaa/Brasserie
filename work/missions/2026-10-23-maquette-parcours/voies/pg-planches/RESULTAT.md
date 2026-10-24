@@ -1,4 +1,23 @@
-OK — « Planches · 24.10 » : quatre rangées dans sa disposition, plus les quatre planches séparées
+OK — « Planches · 24.10 » v3 : sept vues dans sa disposition, retouches placées, contrôles verts
+
+## Version 3
+- Même page : `work/refonte-frontend/v4/outils/pages/2026-10-24-planches/index.html`, avec `img/` (images ajoutées des petits choix, des jeux courts, de d121 et des retouches).
+- Trois rangées remplies, chacune avec sa référence (la capture de SON choix, chemin écrit sous le nom de la rangée) puis onze vues : les trois têtes du critique d'abord (pastille « en tête »), puis le reste, chacune avec la pastille de chaleur et le verdict.
+  - **La pastille « ~ simulé »** : r6a (`fils22-comparer/captures/r6a-premier-ecran.png`, en grand aussi `r6a-toucher-390.png`) ; pva2, pvz2, pvz3 | psa, psb, psc (accepté, corrigé), pva1, pva3, pva4, pvz1, pvz4. La vignette montre la pastille touchée, car les huit repos sont r6a au pixel (VERDICTS).
+  - **Le levier levure** : q2b (`fils15-s5-complexe/captures/q2b-b-390.png`, en grand aussi `choix/etats/captures/etat-sugg-levure-choisie.png`) ; lsz1, lsz4, lsa3 | lva, lvb (accepté, corrigé), lvc, lsa1, lsa2, lsa4, lsz2 (rejeté, refait, pas rejugé), lsz3.
+  - **L'entrée de l'analyse** : base v4.10 (`2026-10-24-d121/img/base.png`, en grand aussi `base-profil.png`) ; ana4, anz1, anz3 | A (version du 24.10), B, C (sans verdict), ana1, ana2, ana3 (rejeté, refait, pas rejugé), anz2, anz4.
+- Retouches, pastille « retouche » plus chaleur et verdict, placées juste après l'original, dans l'ordre du critique (ret-critique) :
+  - p4b2f (en tête), p4b2e, p4b2d après p4b2 ;
+  - flb5b (en tête), flb5d, flb5c après flb5 ;
+  - u4e5 (en tête), u4e4, u4e1, u4e2 après « u4 enrichi ». Il s'agit de la vignette r9 · D127 qu'une autre main a ajoutée dans la page pendant mon travail ; je l'ai gardée et j'ai rangé u4e derrière elle, pas derrière sbc1b. u4e3 relancé : ses nouvelles captures (17:47) et sa NOTE passe 2 étaient là, je l'ai donc ajouté en « rejeté, refait », pas rejugé.
+- Le sommaire en tête liste les sept vues, et les pastilles « retouche » et « en tête » sont dans la légende.
+- Critère 1 : `verifier-page.mjs … --page-lot --captures …/verif` → `PAGE OK (91 images chargées, lisible à 390 et 1280 px, sans erreur)`.
+- Critère 2 : `controle-page-choix.mjs … --min=5` → dryhopper 14, substituer 17, fiche 14, graphes 6, pastille 11, levure 11, analyse 11 variantes ; partout 6 par rangée à 1280 et 3 à 390 ; `PAGE-CHOIX OK (7 choix)`.
+- Captures ouvertes : `verif-haut.png`, `verif-page.png` (390 × 15 695), `verif-ordinateur.png`, plus les rangées pastille, Substituer et analyse à 1280 px. Visionneuse jouée sur lsa3 : 0 erreur, 4 panneaux (repos, toucher, q2b, son groupe levure).
+- Risque : au téléphone, la page fait 15 695 px, près de la limite de 16 384 px de la capture pleine page. Une rangée de plus passera la limite : il faudra une seconde page, ou vérifier sans pleine page.
+- DÉCISION À PRENDRE : lsz2, ana3 et u4e3 sont montrés « rejeté, refait » sans nouveau verdict. Faut-il un passage du critique avant de publier ?
+
+
 
 ## La page « Planches · 24.10 » (suite du pilote, disposition qu'il aime)
 - Source : `work/refonte-frontend/v4/outils/pages/2026-10-24-planches/index.html`, avec `img/` (93 images copiées des quatre planches).
