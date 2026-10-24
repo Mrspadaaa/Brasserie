@@ -132,6 +132,21 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
   #121 commentés. Branche poussée jusqu'à b808cee2.
 - Mode `--url` des contrôles pour l'app : après p8 (forme du crochet dans ARCHITECTURE.md « ## Crochet de test »).
 
+## Nuit du 23 au 24.10 : la version D107 à D121 publiée
+- Maquette houblons · 24.10 : https://claude.ai/artifact/2BktuZzij8q2DAsrxQS5iX (construction 5345f6ad ; copie figée
+  `outils/pages/2026-10-24-maquette/`, par la session de la maquette, c5ec5aab).
+- Côte à côte · 24.10 : https://claude.ai/artifact/Q8H8dx98NhqibJkJzv1isW (publiée par moi ; en tête, le choix D121 A, B
+  ou C ; source commitée par l'autre session avec sa signature).
+- Relecture avant publication : BATTERIE OK 31/31, rejouée par moi et reconstruite ; 19 gestes OK (un faux échec venait de
+  mon sélecteur, un « Floral » caché) ; 12 états côte à côte regardés ; critique 8 ACCEPTÉ.
+- Fils de l'artefact 52UB… : 13 résolus avec les liens ; 3 ouverts, qui attendent sa réponse :
+  12fdbdc0 (l'appui long fait-il l'effet attendu ?), 2f687ce7 (la liste de la fiche, en variantes à venir), a0f0b6ef
+  (D121 : A, B ou C).
+- Réserves reportées : Comparer ne montre que floral et résineux par étape ; dock de Dryhopper (#146, commenté) ;
+  Substituer à deux colonnes (#145, commenté).
+- **Prochaine action** : son choix D121 et sa réponse sur D112 ; les variantes de la liste de la fiche (D115) ; puis les
+  tickets #145 et #146, l'architecture (#143) et t1-theme, à relancer sur la nouvelle construction.
+
 ## Soirée du 23.10, après la maquette publiée (https://claude.ai/artifact/52UBb4F7iME2k3ZzsAv4x1)
 - **Son verdict** : « La nouvelle maquette (artefacts) est un vrai bon point de départ. Bien la rendre disponible pour
   les prochaines sessions. Bien consigné son état aussi ». Le travail suivant part de la maquette, pas d'un lot.
