@@ -70,6 +70,9 @@ export default function MaBiere() {
   // Ce qui vient de changer sur l'étape (base : majIbu, apercu) : la recette d'avant le dernier geste, pour les points
   // « avant » des barres du profil ; l'écart du total d'IBU écrit au-dessus de l'IBU pendant 2 s (« +2 », « −60 »).
   const recetteRef = useRef(recette); recetteRef.current = recette;
+  // D40 point 8 : une recette vide à l'ouverture (sa page cas-k2) dit le décompte « 1 au style · 11 non situées », sans
+  // l'alerte ; vidée par « retirer », l'étape garde l'alerte de sa base (capture etat-etape-retirer-choisie).
+  const videOuverture = useRef(recette.additions.length === 0);
   const [avantLocal, setAvantLocal] = useState<RecetteParcours | null>(null);
   const biereAvantLocal = useMemo(() => (avantLocal ? lireBiere(avantLocal) : null), [avantLocal]);
   const geste = () => { effacer(); setAvantLocal(recetteRef.current); };
@@ -133,7 +136,9 @@ export default function MaBiere() {
               ? <button type="button" data-role="pont-biere" onClick={() => aller({ ecran: 'biere' })} className="min-w-0 flex items-center gap-1.5 text-left">
                   <Alerte biere={biere} ordre={sc.order} /><span className="pq-ma-biere-profil-mot shrink-0">· détail</span><ChevronRight className="w-4 h-4 shrink-0" aria-hidden="true" />
                 </button>
-              : <Alerte biere={biere} ordre={sc.order} long />}
+              : !recette.additions.length && videOuverture.current
+                ? <p data-role="decompte" className="text-base text-cave-200">{`${sc.order.filter((f) => biere.profil[f].valeur && !biere.profil[f].horsStyle).length} au style · ${sc.order.filter((f) => !biere.profil[f].valeur).length} non situées`}</p>
+                : <Alerte biere={biere} ordre={sc.order} long />}
             {D121 === 'a' && (
               <button type="button" data-role="pont-biere" data-etat="etat-etape-analyse" aria-label="Ouvrir l'analyse : l'onglet Ma bière" onClick={() => aller({ ecran: 'biere' })}
                 className="pq-ma-biere-pont-analyse ml-auto shrink-0 inline-flex items-center gap-0.5 h-8 pl-3.5 pr-2 rounded-full text-sm font-semibold">

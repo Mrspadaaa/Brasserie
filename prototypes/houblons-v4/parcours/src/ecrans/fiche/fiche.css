@@ -5,3 +5,16 @@
 .pq-fiche-cible { cursor: help; -webkit-tap-highlight-color: transparent; outline: none; }
 /* Bulle d'un sommet du radar (g1) : au-dessus du radar, sans voler le toucher. */
 .pq-fiche-bulle { box-shadow: 0 2px 6px rgb(0 0 0 / 0.12); }
+/* D40 point 11 : derrière la fiche, l'écran assombri et lisible, sans flou ni voile blanc (le Sheet de l'app pose
+   bg-cave-950/70 et backdrop-blur, et cave-950 est le blanc du thème de ses maquettes). Seulement quand la fiche est ouverte. */
+body:has(.pq-fiche) [data-vaul-overlay] { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; background: rgb(0 0 0 / 0.16) !important; }
+/* D40 point 4 : à l'ordinateur, la fiche flotte à droite, à côté de l'étape qui reste lisible (pas de voile, pas de flou),
+   et la carte survolée est encadrée, comme sa base (etat-fiche-survol-1280-choisie.png). */
+@media (min-width: 1024px) {
+  [data-vaul-drawer][data-role="fiche"] { left: auto !important; right: 8px !important; top: 8px !important; bottom: auto !important;
+    width: 380px !important; max-width: 380px !important; max-height: calc(100dvh - 16px) !important; margin: 0 !important;
+    border-radius: 16px !important; box-shadow: 0 8px 28px rgb(0 0 0 / 0.14) !important; }
+  [data-vaul-drawer][data-role="fiche"] > :first-child:not(header) { display: none; }
+  body:has(.pq-fiche) [data-vaul-overlay] { background: transparent !important; }
+}
+[data-fiche-survol] { outline: 2px solid rgb(var(--cave-50)); outline-offset: 1px; border-radius: 0.75rem; }

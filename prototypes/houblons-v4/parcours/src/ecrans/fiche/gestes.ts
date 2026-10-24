@@ -13,6 +13,7 @@ const partage = { fermeeA: 0, derniere: null as string | null, sortiDepuis: true
 export function noterFermeture() {
   partage.fermeeA = performance.now();
   partage.sortiDepuis = false;
+  for (const e of document.querySelectorAll('[data-fiche-survol]')) e.removeAttribute('data-fiche-survol');
 }
 
 type Props = Record<string, unknown>;
@@ -35,6 +36,8 @@ export function useGestesFiche(ouvrir: (cle: string) => void) {
   const stopLong = () => { if (long.current != null) window.clearTimeout(long.current); long.current = null; };
   const stopSurvol = () => { if (survol.current != null) window.clearTimeout(survol.current); survol.current = null; };
   const lancer = (cle: string) => { partage.derniere = cle; ouvrirRef.current(cle); };
+  // D40 point 4 : la carte survolée à la souris est encadrée tant que sa fiche est ouverte (noterFermeture l'efface).
+  const survolee = useRef<HTMLElement | null>(null);
 
   // D49 (« La zone de trigger est que le nom alors que ça devrait être la fiche entière ») : à l'ordinateur, le survol
   // long de toute la carte ouvre la fiche, comme sa base (fiche.js, zoneHoublon : la carte hors de ses commandes).
@@ -43,7 +46,7 @@ export function useGestesFiche(ouvrir: (cle: string) => void) {
     if (survol.current != null) return;
     if (!partage.sortiDepuis && partage.derniere === cle) return;
     if (performance.now() - partage.fermeeA < 400) return;
-    survol.current = window.setTimeout(() => { survol.current = null; lancer(cle); }, DUREE_SURVOL);
+    survol.current = window.setTimeout(() => { survol.current = null; survolee.current?.setAttribute('data-fiche-survol', ''); lancer(cle); }, DUREE_SURVOL);
   };
 
   /** Sur toute la carte du houblon : appui long → fiche ; toucher court → onCourt ; survol long à la souris → fiche. */
@@ -63,7 +66,7 @@ export function useGestesFiche(ouvrir: (cle: string) => void) {
     onPointerMove: (e: React.PointerEvent) => {
       if (depart.current && Math.hypot(e.clientX - depart.current.x, e.clientY - depart.current.y) > 10) stopLong();
       // À la souris : sur une commande de la carte (dose, ×, type…), le survol attend ; hors d'elle, il reprend.
-      if (e.pointerType === 'mouse' && !e.buttons) { if (commande(e)) stopSurvol(); else armerSurvol(cle); }
+      if (e.pointerType === 'mouse' && !e.buttons) { if (commande(e)) stopSurvol(); else { survolee.current = e.currentTarget as HTMLElement; armerSurvol(cle); } }
     },
     onPointerUp: () => { stopLong(); depart.current = null; },
     onPointerCancel: () => { stopLong(); depart.current = null; },

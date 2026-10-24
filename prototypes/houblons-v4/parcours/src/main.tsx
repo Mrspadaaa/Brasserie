@@ -13,6 +13,7 @@ import type { EtatParcours, RecetteParcours } from './etat/types';
 import { MOMENTS } from '../../src/engine';
 import { classeEbullition } from './etat/quand';
 import { H } from './donnees/cas';
+import { configurerDonnees } from './moteur';
 
 /** Cas d'essai du rail (pages cas-ebu45.html, cas-ebu120.html ; cas-ebu200.html pour l'étape) : la même recette, ébullition de n minutes ; un
  * ajout d'ébullition plus long que l'ébullition passe à son début. */
@@ -41,6 +42,9 @@ function casK3(e: EtatParcours): EtatParcours {
 /** Cas d'essai k2, celui de sa base (consolide/cas-k2.html) : la même recette, sans houblon. */
 const casK2 = (e: EtatParcours): EtatParcours => ({ ...e, recette: { ...e.recette, additions: [] } });
 const cas = document.body.dataset.cas;
+// D40 bis : sa page cas-k2 est une bière sans houblon et sans dégustation (« 1 au style · 11 non situées ») : la dégustation
+// du 18.10 appartient à la bière brassée avec Nugget.
+if (cas === 'k2') configurerDonnees({ degustation: null });
 const depart0 = etatDeDepart(depart);
 const racine = document.getElementById('parcours')!;
 createRoot(racine).render(

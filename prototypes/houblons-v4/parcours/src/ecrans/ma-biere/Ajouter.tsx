@@ -7,7 +7,7 @@
 // « ou », dosés au milieu de la bande d'IBU du style, puis trois aromatiques). Autant de propositions que de place :
 // 5 pour une recette vide, puis 3, 2, 1. Le champ cherche dans tout le catalogue, pas seulement le stock (D21 : « je
 // fais une recette puis ensuite j'achète les ingrédients, souvent pas présent »).
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Plus, ShoppingCart } from 'lucide-react';
 import { COULEURS, nombre } from '../../commun';
 import { useOuvrir } from '../../coquille/ouvrir';
@@ -34,7 +34,7 @@ function propositionsMoteur(r: RecetteParcours) {
   const k = cleRecette(r);
   if (!memoire.has(k)) {
     if (memoire.size > 24) memoire.clear();
-    memoire.set(k, quickAdds(r, style(r.styleCode), donnees().degustation?.tasting ?? null, { catalogueLimit: 10000 }));
+    memoire.set(k, quickAdds(r, style(r.styleCode), donnees().degustation?.tasting ?? null, { catalogueLimit: 10000, aromatique: true }));
   }
   return memoire.get(k)!;
 }
@@ -52,6 +52,9 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
   const [legende, basculerLegende] = useLegende();
   const [goutOuvert, setGoutOuvert] = useState<string | null>(null);
   const [, maj] = useState(0);
+  // D40 point 1 : une recette vide à l'ouverture (sa page cas-k2) se construit (buildFromEmpty) ; vidée par « retirer », elle
+  // garde les propositions aromatiques de sa base, à 10′ (quickAdds aromatique : jamais de compensation à 60′).
+  const videOuverture = useRef(recette.additions.length === 0);
   const sc = style(recette.styleCode);
   const ebu = recette.boilMin;
   const liste = useMemo((): Proposition[] => {
@@ -68,7 +71,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
       return [...m.disponibles, ...m.epuises, ...m.catalogue].filter((r) => ok(r.key) && r.name.toLowerCase().includes(q)).slice(0, 4)
         .map((r) => poser(r.key, r.dose?.grams ?? 10, momentDe(r.moment), false, statutDe(r)));
     }
-    if (!recette.additions.length) {
+    if (!recette.additions.length && videOuverture.current) {
       const c = buildFromEmpty(recette, sc);
       const stock = (s: { etat: string }): Proposition['statut'] => (/hors stock/.test(s.etat) ? 'catalogue' : /épuis/.test(s.etat) ? 'epuise' : 'stock');
       const amers = c.amerisants.filter((r) => ok(r.key) && r.dose);
@@ -78,7 +81,8 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
         ...c.aromatiques.filter((r) => ok(r.key)).map((r) => poser(r.key, r.dose.grams, momentDe(r.moment), false, stock(r.stock)))].slice(0, 5);
     }
     // Propositions selon la place : 3, 2, 1 ; au-delà, le champ reste. Le stock d'abord, puis un houblon à acheter.
-    const n = Math.max(0, 4 - recette.additions.length);
+    // Vidée par « retirer » : les cinq de sa base (capture etat-etape-retirer-choisie : Motueka, Citra cryo, Cascade, Target, Saaz Late).
+    const n = recette.additions.length ? Math.max(0, 4 - recette.additions.length) : 5;
     if (!n) return [];
     const m = propositionsMoteur(recette);
     const st = m.disponibles.filter((r) => ok(r.key)), ca = m.catalogue.filter((r) => ok(r.key)).slice(0, 1);
@@ -88,7 +92,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
   return (
     <section data-element="etape-ajouter" data-role="ajouts-proposes" data-etat={recette.additions.length ? undefined : 'etat-etape-cas-k2-vide'}
       aria-label="Ajouter un houblon" className="space-y-1 pt-1.5">
-      {!recette.additions.length && <JaugeVide recette={recette} />}
+      {!recette.additions.length && videOuverture.current && <JaugeVide recette={recette} />}
       <div className="flex items-center gap-1">
         <input ref={champRef} type="text" inputMode="search" value={cherche} onChange={(e) => setCherche(e.target.value)} placeholder="Ajouter — houblon…"
           data-etat="etat-etape-champ-ajouter" aria-label="Ajouter un houblon : stock ou catalogue"
@@ -143,7 +147,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
                 </button>
                 {ouvert && (
                   <span role="group" aria-label={`Mon goût pour ${h.nom}`}
-                    className="pq-mb-gout absolute right-0 bottom-full mb-1 z-30 inline-flex gap-0.5 p-1 rounded-full border border-cave-700 bg-cave-950 shadow-lg">
+                    className="pq-mb-gout absolute right-full top-1/2 -translate-y-1/2 mr-1 z-30 inline-flex gap-0.5 p-1 rounded-full border border-cave-700 bg-cave-950 shadow-lg">
                     {(['aimer', 'neutre', 'exclure'] as Gout[]).map((c) => (
                       <button key={c} type="button" aria-pressed={gout === c}
                         onClick={() => { if (c === 'neutre') GOUTS.delete(p.cle); else GOUTS.set(p.cle, c); setGoutOuvert(null); maj((x) => x + 1); }}

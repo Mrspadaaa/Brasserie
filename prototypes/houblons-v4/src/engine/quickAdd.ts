@@ -58,6 +58,9 @@ export interface QuickAddOptions {
   catalogueLimit?: number;
   /** IBU par moment aussi sur les épuisés et le catalogue (défaut : disponibles seulement). */
   ibuParMomentPartout?: boolean;
+  /** Toujours la proposition aromatique (10′, dose de recherche ou stock libre), même sous la bande d'IBU du style : jamais
+   * de dose de compensation à 60′ (défaut : false, l'amérisant comble la bande). Maquette jouable, D40 point 1. */
+  aromatique?: boolean;
 }
 export function quickAdds(recipe: Recipe, scale: StyleScale, tasting: Tasting | null = null, options: QuickAddOptions = {}):
   { disponibles: QuickAdd[]; epuises: QuickAdd[]; catalogue: QuickAdd[]; catalogueTotal: number; rule: string[]; tastingTrop: FamilyId[] } {
@@ -68,7 +71,7 @@ export function quickAdds(recipe: Recipe, scale: StyleScale, tasting: Tasting | 
   const trop = [...new Set([...tasted, ...excludedFamilies])];
   const tagOf = (f: FamilyId) => (tasted.includes(f) ? `+ ${FAMILY_NAMES[f].toLowerCase()}` : `${FAMILY_NAMES[f].toLowerCase()} exclu (goût)`);
   const ibu0 = recipeIbu(recipe).value;
-  const bitter = !!scale.ibu && ibu0 < scale.ibu[0];
+  const bitter = !options.aromatique && !!scale.ibu && ibu0 < scale.ibu[0];
   const inStock = new Set(STOCK.map((s) => s.varietyId));
   const candidates = [...STOCK.map((s) => ({ key: s.key, grams: s.grams as number | null })), ...CATALOGUE.filter((c) => !inStock.has(c.id)).map((c) => ({ key: c.id, grams: null }))]
     .filter((c) => !excludedVarieties.has(hopRef(c.key)!.varietyId));

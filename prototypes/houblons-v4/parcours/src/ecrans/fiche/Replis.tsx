@@ -12,6 +12,7 @@ import { COURT, Picto, nombre, plage } from '../../commun';
 import { Pont } from '../../commun/Pont';
 import { nomMoment, remplacants, type HoublonLu, type Remplacant } from '../../moteur';
 import { quandDe } from '../../etat/quand';
+import { lireRemplacants } from '../substituer/donnees';
 import type { RecetteParcours } from '../../etat/types';
 import { nomSource, type PlageSource, type SourcesFiche } from './sources';
 
@@ -58,7 +59,9 @@ export function Replis({ h, cle, s, recette, onRemplacer }: {
   // Déplié : la section vient sous le doigt (g1 : scrollIntoView « nearest »).
   useEffect(() => { if (ouverte) zone.current?.querySelector('section')?.scrollIntoView({ block: 'nearest' }); }, [ouverte]);
   const ajout = recette.additions.find((a) => a.hopKey === cle) ?? null;
-  const liste = ouverte === 'substituts' && ajout ? remplacants(recette, ajout.id, 8) : [];
+  // D40 point 3 (D35) : les remplaçants de u4, du même calcul que Substituer (lireRemplacants) : huit, rangés par le pire cas,
+  // la plage dessinée quand une composante est inconnue (« 79 ▨ 99 »), Zenia comprise.
+  const liste = ouverte === 'substituts' && ajout ? lireRemplacants(recette, ajout).candidats : [];
   const lot = h.alpha && !/^plage/.test(h.alpha.source) ? h.alpha.valeur : null;
 
   const contenu = (() => {
@@ -103,30 +106,36 @@ export function Replis({ h, cle, s, recette, onRemplacer }: {
           <>
             <p className="flex items-baseline justify-between gap-2 text-sm">
               <b className="font-semibold text-cave-50">Remplaçants à {nomMoment(q)}</b>
-              <span className="text-xs text-cave-400 whitespace-nowrap">partiel · proche · très proche</span>
+              <span className="text-xs text-cave-400 whitespace-nowrap">pire cas · 50 à 100</span>
             </p>
             {liste.length === 0
               ? <p className="mt-1 text-sm text-cave-400">Aucun remplaçant calculé pour cet ajout.</p>
               : (
                 <ol data-role="fiche-remplacants" aria-label={`Remplaçants de ${h.nom} à ${nomMoment(q)}`} className="mt-1 divide-y divide-cave-800">
-                  {liste.map((r) => (
-                    <li key={r.cle} data-houblon-cle={r.cle} className="flex items-center gap-3 py-1.5">
-                      <span className="w-[7.5rem] shrink-0 flex items-center gap-1 min-w-0">
-                        <span className="truncate text-sm text-cave-50 font-semibold">{r.houblon.nom}</span>
-                        {r.stock.etat === 'en stock' && (
-                          <Package role="img" aria-label={r.stock.suffisant === false ? 'en stock, pas assez pour la dose' : 'en stock'}
-                            className={`w-3.5 h-3.5 shrink-0 ${r.stock.suffisant === false ? 'text-cave-600' : 'text-cave-400'}`} />
-                        )}
-                      </span>
-                      <Score r={r} />
-                      <span className="w-12 shrink-0 text-right font-mono text-sm text-cave-50" title={`${r.palier} : ${r.raison}`}>
-                        {r.score}{Object.values(r.composantes).some((x) => x == null) ? <span className="text-cave-400"> ?</span> : null}
-                      </span>
-                    </li>
-                  ))}
+                  {liste.map((c) => {
+                    const x = (v: number) => `${Math.max(0, Math.min(100, ((v - 50) / 50) * 100)).toFixed(1)}%`;
+                    return (
+                      <li key={c.cle} data-houblon-cle={c.cle} data-min={c.min} data-max={c.max} className="flex items-center gap-3 py-1.5">
+                        <span className="w-[7.5rem] shrink-0 flex items-center gap-1 min-w-0">
+                          <span className="truncate text-sm text-cave-50 font-semibold">{c.nom}</span>
+                          {(c.stock === 'suffisant' || c.stock === 'insuffisant') && (
+                            <Package role="img" aria-label={c.stock === 'insuffisant' ? 'en stock, pas assez pour la dose' : 'en stock'}
+                              className={`w-3.5 h-3.5 shrink-0 ${c.stock === 'insuffisant' ? 'text-cave-600' : 'text-cave-400'}`} />
+                          )}
+                        </span>
+                        <span aria-hidden="true" className="relative flex-1 h-2 rounded-full bg-cave-850">
+                          <i className="absolute inset-y-0 left-0 rounded-full bg-cave-400" style={{ width: x(c.min) }} />
+                          {c.max > c.min && <i className="pq-hachure absolute inset-y-0 rounded-r-full" style={{ left: x(c.min), width: `calc(${x(c.max)} - ${x(c.min)})` }} />}
+                        </span>
+                        <span className="w-14 shrink-0 text-right font-mono text-sm text-cave-50" title={`moteur ${c.moteur} (${c.palier})`}>
+                          {c.min === c.max ? c.min : `${c.min}–${c.max}`}
+                        </span>
+                      </li>
+                    );
+                  })}
                 </ol>
               )}
-            <p className="mt-1 text-xs text-cave-400">Classés comme dans Substituer : en stock d’abord, puis par score ; ○ et « ? » : une composante inconnue. Prix inconnu.</p>
+            <p className="mt-1 text-xs text-cave-400">Comme dans Substituer : rangés par le pire cas ; hachuré, une composante inconnue (de 0 à 100). Prix inconnu.</p>
             {onRemplacer && <div className="mt-2 flex justify-end"><Pont nom="remplacer-fiche" onClick={onRemplacer}>Remplacer {h.nom}</Pont></div>}
           </>
         );

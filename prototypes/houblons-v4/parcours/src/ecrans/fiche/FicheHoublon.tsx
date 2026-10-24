@@ -50,14 +50,14 @@ function Gout({ cle, nom }: { cle: string; nom: string }) {
   const bouton = (v: 'aime' | 'non', icone: React.ReactNode, mot: string, etat: string) => (
     <button type="button" aria-pressed={g === v} aria-label={`${g === v ? 'Remettre neutre : ' : ''}${mot} ${nom}`}
       onClick={() => poser(v)} data-gout={v} data-etat={etat}
-      className={`inline-flex items-center justify-center w-11 h-10 rounded-full ${g === v ? 'bg-ebc-straw text-cave-950' : 'text-cave-200'}`}>
+      className={`inline-flex items-center justify-center w-11 h-10 rounded-full ${g === v ? 'text-cave-50' : 'text-cave-200'}`}>
       {icone}
     </button>
   );
   return (
     <div data-role="gout" role="group" aria-label={`Mon goût pour ${nom}`} className="inline-flex items-center gap-0.5 p-0.5 rounded-full bg-cave-850">
       {bouton('aime', <Heart className="w-4 h-4" aria-hidden="true" fill={g === 'aime' ? 'currentColor' : 'none'} />, 'Aimer', 'etat-fiche-aimer')}
-      {bouton('non', <Ban className="w-4 h-4" aria-hidden="true" />, 'Exclure', 'etat-fiche-exclure')}
+      {bouton('non', <Ban className="w-4 h-4" aria-hidden="true" strokeWidth={g === 'non' ? 3 : 2} />, 'Exclure', 'etat-fiche-exclure')}
     </div>
   );
 }
@@ -183,7 +183,7 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
             <span data-element="g1-alpha" role="group"
               aria-label={`Acides alpha ${texteAlpha}${recente ? ` (${nomSource(recente)})` : ''}${lot != null ? `, mon lot ${nombre(lot, 1)} %` : ''}`}
               className="inline-flex items-baseline gap-2 min-w-0">
-              <span data-role="fiche-alpha" className="font-mono text-xl font-semibold text-cave-50 whitespace-nowrap">
+              <span data-role="fiche-alpha" className="text-xl font-semibold text-cave-50 whitespace-nowrap tabular-nums">
                 <span {...(lot == null ? { 'data-role': 'alpha', 'data-houblon': cle, 'data-source': 'fiches' } : {})}>
                   <span className="text-cave-400 font-sans font-normal">α</span>{' '}{texteAlpha}
                 </span>

@@ -50,11 +50,11 @@ export default {
       verifier: (p) => {
         const r = p.etat?.recette ?? p.recette;
         const a = r.additions.find((x) => x.hopKey === 'beermaverick-nugget');
-        const attendu = p.moteur.remplacants(r, a.id, 8).map((x) => x.cle);
-        const u4 = p.moteur.remplacants(r, a.id, 6).map((x) => x.cle);
-        const vus = [...document.querySelectorAll('[data-role="fiche-remplacants"] [data-houblon-cle]')].map((e) => e.dataset.houblonCle);
-        if (vus.join() !== attendu.join()) return `remplaçants ${vus.join(', ')} ; moteur ${attendu.join(', ')}`;
-        return vus.slice(0, u4.length).join() === u4.join() || 'la fiche classe autrement que Substituer';
+        // D40 point 3 : le calcul de u4 (Substituer) : tous tirés du moteur, rangés par le pire cas (data-min).
+        const moteur = new Set(p.moteur.remplacants(r, a.id, 400).map((x) => x.cle));
+        const vus = [...document.querySelectorAll('[data-role="fiche-remplacants"] [data-houblon-cle]')].map((e) => ({ cle: e.dataset.houblonCle, min: Number(e.dataset.min) }));
+        if (vus.length < 4 || vus.some((x) => !moteur.has(x.cle))) return `remplaçants ${vus.map((x) => x.cle).join(', ')}`;
+        return vus.every((x, i) => i === 0 || x.min <= vus[i - 1].min) || 'la fiche ne range pas par le pire cas, comme Substituer';
       } },
     // Une seule croix (D109, g1) : ronde, 44 px, en haut à droite ; le « ‹ » n'existe plus.
     { nom: 'une seule croix', faire: 'attendre', verifier: () => {

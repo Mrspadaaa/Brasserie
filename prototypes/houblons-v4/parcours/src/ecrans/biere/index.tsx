@@ -130,9 +130,9 @@ export default function Biere() {
               <span role="button" tabIndex={0} data-role="alerte-radar" data-etat="etat-biere-radar-sommet" className="block min-w-0 min-h-[2.75rem] content-center cursor-pointer"
                 aria-label={`${COURT[tropDeguste]} trop marqué : voir ma dégustation sur le radar`}
                 onClick={voirAlerte} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); voirAlerte(); } }}>
-                <Alerte biere={biere} ordre={sc.order} />
+                <Alerte biere={biere} ordre={sc.order} long />
               </span>
-            ) : <Alerte biere={biere} ordre={sc.order} />}
+            ) : <Alerte biere={biere} ordre={sc.order} long />}
           </span>
           <Lentille label="Vue" marques="vue" value={vue} onChange={changerVue} options={[{ value: 'barres', label: 'Barres' }, { value: 'radar', label: 'Radar' }]} />
         </div>

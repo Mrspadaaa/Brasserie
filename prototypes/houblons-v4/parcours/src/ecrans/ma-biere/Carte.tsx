@@ -17,7 +17,7 @@ import { useGestes } from '../../etat/EtatParcours';
 import { placer, quandDe } from '../../etat/operations';
 import type { AjoutParcours, Quand, RecetteParcours } from '../../etat/types';
 import { houblon, lireBiere, style, type BiereLue } from '../../moteur';
-import { FAMILY_NAMES, yeastSignals, type FamilyId } from '../../../../src/engine';
+import { additionEffect, FAMILY_NAMES, yeastSignals, type FamilyId } from '../../../../src/engine';
 import { AlphaLu, Autres, StockIcone, Usage } from '../fiche/briques';
 import { useGestesFiche } from '../fiche/gestes';
 import { BoutonLegende, CleFamilles, PanneauLegende, useLegende } from './LegendeGroupe';
@@ -81,11 +81,16 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
   // Signal : la famille la plus citée par les fiches, entourée de rouge si elle est hors du style dans ma bière.
   const signal = sc.order.filter((f) => h.familles[f].niveau !== 'non décrit')
     .sort((x, y) => (biere.profil[y].horsStyle ? 1 : 0) - (biere.profil[x].horsStyle ? 1 : 0) || h.familles[y].fiches - h.familles[x].fiches)[0];
-  // L'effet prévu d'un ajout qui vient d'entrer (base : effetTag) : la famille attendue qui bouge d'abord, en crans.
+  // L'effet prévu d'un ajout qui vient d'entrer (base : effetTag, build.mjs effetEtabli) : l'effet établi du moteur pour cet
+  // ajout (additionEffect, sur la recette sans lui), en crans du style arrondis ; la famille attendue qui bouge d'abord.
+  // D40 point 2 : « floral +1 » pour Motueka à 10′, comme sa base (le décompte des crans du profil disait « ≈ inchangé »).
+  const effetMoteur = useMemo(() => (nouveau ? additionEffect(a as never, { ...recette, additions: recette.additions.filter((x) => x.id !== a.id) } as never) : null), [nouveau, a, recette]);
   const effetTag = (() => {
     if (!nouveau) return null;
-    if (nonSimule) return { texte: 'effet non établi', long: 'non établi' };
-    const fs = (Object.keys(effet) as FamilyId[]).filter((f) => effet[f]!.delta !== 0);
+    if (nonSimule || !effetMoteur) return { texte: 'effet non établi', long: 'non établi' };
+    const crans = (f: FamilyId) => { const e = (effetMoteur as Record<string, { established: boolean; central: number | null }>)[f]; return e && e.established && e.central != null ? Math.round(Math.round((e.central / sc.families[f].cran) * 100) / 100) : 0; };
+    const effet = Object.fromEntries(sc.order.map((f) => [f, { delta: crans(f) }])) as Record<FamilyId, { delta: number }>;
+    const fs = sc.order.filter((f) => effet[f].delta !== 0);
     const f = fs.find((x) => sc.families[x].status === 'attendue') ?? fs[0];
     if (!f) return { texte: '≈ inchangé', long: '≈ inchangé' };
     const d = effet[f]!.delta;

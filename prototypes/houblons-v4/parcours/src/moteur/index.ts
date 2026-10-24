@@ -9,7 +9,7 @@ import {
   type Direction, type VoieResult,
   type AjoutSimule, type CasSimule, type FamilyId, type FamilyStatus, type MomentSimule, type ProfilFamilles, type Recipe, type StyleScale,
 } from '../../../src/engine';
-import { ibuPerGram, ibuPerGramAt } from '../../../src/engine/recipe';
+import { ibuPerGram, ibuPerGramAt, recipeProfile } from '../../../src/engine/recipe';
 import type { AjoutPouvoir, RecettePouvoir } from '../../../src/engine/pouvoir';
 import { CONDITIONS } from '../donnees/cas';
 import { alphaDeAjout, alphaDeCle, catalogueDuMoteur, donnees, proposable, siDonneesChangent, stockLibre } from './donnees';
@@ -118,8 +118,11 @@ const memeAjout = (a: AjoutParcours, b: AjoutParcours) =>
 const profilSansDegustation = memo('profilSansDegustation', (r: RecettePouvoir, levure: string) => cleRecette(r) + levure,
   (r: RecettePouvoir, levure: string): ProfilFamilles => simulerCas({ id: 'sans', titre: 'sans dégustation', ajouts: [], levure, recette: r, degustation: null, complet: false }).avant);
 
-function lu(f: FamilyId, v: { bas: number; centre: number; haut: number; source: 'simulé' | 'dégustation'; inconnu?: string; hautPartiel?: string[] }, sc: StyleScale): FamilleLue {
+function lu(f: FamilyId, v: { bas: number; centre: number; haut: number; source: 'simulé' | 'dégustation'; inconnu?: string; hautPartiel?: string[] }, sc: StyleScale, decrite = true): FamilleLue {
   const fs = sc.families[f];
+  // D40 point 6 (D35, D65, D14) : une famille simulée n'est placée que si une fiche d'un houblon de la recette la décrit ;
+  // sinon « non située » (Végétal pour Nugget, comme sa base : « 6 au style · 5 non situées »). La dégustation reste placée.
+  if (v.source === 'simulé' && !decrite) v = { ...v, inconnu: v.inconnu ?? 'aucune fiche des houblons de la recette ne la décrit', bas: 0, centre: 0, haut: 0 };
   const inconnu = !!v.inconnu && v.haut === 0;
   const crans = inconnu ? null : cransOf(f, v.centre, sc).crans;
   return {
@@ -130,6 +133,9 @@ function lu(f: FamilyId, v: { bas: number; centre: number; haut: number; source:
     hautPartiel: !!v.hautPartiel?.length, raison: inconnu ? v.inconnu! : null,
   };
 }
+
+/** Ce que la levure apporte seule : la recette sans houblon ni dégustation, simulée. */
+const levureSeule = (recette: RecetteParcours, levure: string): ProfilFamilles => profilSansDegustation(recettePouvoir(recette, []), levure);
 
 /** Ma bière lue : IBU (total, par ajout, bande du style), OG, EBC et profil au style des 12 familles.
  * Le profil part de la bière dégustée (la dégustation prime ; maquette : le 18.10), décalée par l'effet simulé des
@@ -160,6 +166,7 @@ export const lireBiere = memo('lireBiere', (r: RecetteParcours) => cleRecette(r)
       return { ...x, bas: Math.max(0, x.bas + d), centre: Math.max(0, x.centre + d), haut: Math.max(0, x.haut + d) };
     }) as ProfilFamilles;
   }
+  const fond = !recette.additions.length && !deg ? recipeProfile(recette as never).profile : null;
   const ibuParAjout = Object.fromEntries(recette.additions.map((a) => [a.id, ibuAjout(a, recette)]));
   const valeurs = Object.values(ibuParAjout);
   const somme = (k: keyof Plage) => valeurs.reduce((s, x) => s + (x.ibu ? x.ibu[k] : 0), 0);
@@ -168,7 +175,14 @@ export const lireBiere = memo('lireBiere', (r: RecetteParcours) => cleRecette(r)
   return {
     ibu: { valeur: somme('valeur'), min: somme('min'), max: somme('max'), inconnus: recette.additions.filter((a) => inconnu(ibuParAjout[a.id].raison)).map((a) => a.id) },
     ibuParAjout, bandeIbu: sc.ibu, og: recette.og, ebc: recette.ebc ?? null,
-    profil: fam((f) => lu(f, p[f], sc)), nonSimules, retraits: retires.map((b) => b.id), confiance: cas.confiance, drapeaux: cas.drapeauxIds,
+    // D40 bis : une source décrit la famille : la fiche d'un houblon de la recette, ou la levure (ce qu'elle apporte seule,
+    // sans houblon ni dégustation, sur la recette).
+    profil: fam((f) => {
+      // Sans houblon ni dégustation (sa page cas-k2) : le fond de levure du modèle (recipeProfile, comme son pack S4 : « sans
+      // houblon, le modèle ne voit que le fond de levure US-05 ») ; la levure est la source de la famille placée.
+      if (fond) { const e = fond[f]; return e.situated && e.range ? lu(f, { bas: e.range.min, centre: e.central ?? (e.range.min + e.range.max) / 2, haut: e.range.max, source: 'simulé' }, sc, true) : lu(f, { bas: 0, centre: 0, haut: 0, source: 'simulé', inconnu: 'sans houblon : la levure seule ne la situe pas' }, sc, false); }
+      return lu(f, p[f], sc, recette.additions.some((a) => houblon(a.hopKey).familles[f].niveau !== 'non décrit') || levureSeule(recette, levure)[f].centre > 0.05);
+    }), nonSimules, retraits: retires.map((b) => b.id), confiance: cas.confiance, drapeaux: cas.drapeauxIds,
   };
 });
 

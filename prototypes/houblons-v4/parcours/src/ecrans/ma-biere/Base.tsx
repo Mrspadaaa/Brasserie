@@ -104,14 +104,18 @@ export function PisteBase({ x, avant, echelle, fine = false, visee = null, crans
           </>
         );
       })()}
+      {/* D40 point 10 : une visée sous le point (bannir, visée à 0, point près de 0) se décale de 14 px du côté où elle va, reliée
+          par le pointillé, pour rester visible (« ◇---○ » de sa base). */}
       {visee != null && x.valeur && (() => {
-        const a = pos(x.valeur.centre), b = pos(visee);
-        return <i data-visee-lien="" aria-hidden="true" className="pq-ma-biere-lien absolute top-1/2" style={{ left: pc(Math.min(a, b)), width: `${Math.abs(Math.max(0, Math.min(100, b)) - Math.max(0, Math.min(100, a))).toFixed(1)}%` }} />;
+        const a = pos(x.valeur.centre), b = pos(visee), d = Math.abs(a - b) < 6 ? (b <= a ? -14 : 14) : 0;
+        const g = Math.max(0, Math.min(100, Math.min(a, b))), w = Math.abs(Math.max(0, Math.min(100, b)) - Math.max(0, Math.min(100, a)));
+        return <i data-visee-lien="" aria-hidden="true" className="pq-ma-biere-lien absolute top-1/2" style={d ? { left: d < 0 ? `calc(${pc(g)} + ${d}px)` : pc(g), width: `calc(${w.toFixed(1)}% + ${Math.abs(d)}px)` } : { left: pc(g), width: `${w.toFixed(1)}%` }} />;
       })()}
-      {visee != null && (
-        <i data-visee-marque="" data-niveau={String(Math.round((visee / (100 / 3)) * 10) / 10)} aria-hidden="true"
-          className="pq-ma-biere-visee absolute top-1/2" style={{ left: pc(pos(visee)) }} />
-      )}
+      {visee != null && (() => {
+        const b = pos(visee), a = x.valeur ? pos(x.valeur.centre) : null, d = a != null && Math.abs(a - b) < 6 ? (b <= a ? -14 : 14) : 0;
+        return <i data-visee-marque="" data-niveau={String(Math.round((visee / (100 / 3)) * 10) / 10)} aria-hidden="true"
+          className="pq-ma-biere-visee absolute top-1/2" style={{ left: d ? `calc(${pc(Math.min(100, Math.max(0, a! + 0)))} + ${d}px)` : pc(b) }} />;
+      })()}
       {x.valeur && (
         <i data-role="point" data-biere-point="" data-source={deguste ? 'dégustation' : 'simulé'}
           className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full ${fine ? 'w-3.5 h-3.5' : 'w-4 h-4'} ${hors ? 'border-0' : deguste ? 'border-0 bg-cave-50' : 'border-[3px] border-cave-50 bg-cave-900'}`}
