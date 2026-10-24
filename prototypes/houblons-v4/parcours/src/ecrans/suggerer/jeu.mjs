@@ -113,7 +113,7 @@ export default {
     },
     {
       // D110 : « Un peu dur à comprendre ce système de petit bar ». Toucher un picto dit sa famille et sa valeur, près de lui.
-      nom: 'toucher le picto floral de la première voie : « Floral +0,9 cran » dans une bulle, rien d’autre ne bouge',
+      nom: 'toucher le picto floral de la première voie : « Floral · +0,9 cran du 16D · ton objectif · avec Motueka » (gr5 b), rien d’autre ne bouge',
       faire: 'toucher',
       cible: '[data-voie="1"] [data-role="cible"][data-famille="floral"][data-crans]',
       attendre: '[data-role="bulle-traits"]',
@@ -121,7 +121,7 @@ export default {
         const c = document.querySelector('[data-voie="1"] [data-role="cible"][data-famille="floral"][data-crans]');
         const b = document.querySelector('[data-role="bulle-traits"]');
         const v = Number(Number(c.dataset.crans).toFixed(1));
-        const attendu = `Floral ${v < 0 ? '−' : '+'}${Math.abs(v).toFixed(1).replace('.', ',')} cran`;
+        const attendu = `Floral · ${v < 0 ? '−' : '+'}${Math.abs(v).toFixed(1).replace('.', ',')} cran du ${p.moteur.style(p.etat.recette.styleCode).code} · ton objectif · avec `;
         if (!b.textContent.includes(attendu)) return `bulle « ${b.textContent} », attendu « ${attendu} »`;
         const rc = c.getBoundingClientRect(), rb = b.getBoundingClientRect();
         const d = Math.hypot(rc.left + rc.width / 2 - (rb.left + rb.width / 2), rc.top + rc.height / 2 - (rb.top + rb.height / 2));

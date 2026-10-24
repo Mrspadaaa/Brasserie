@@ -78,8 +78,11 @@ html:has(.pq-outil-suggerer) [data-page-shell]:not(.pq-outil-suggerer) { display
 .pq-suggerer-case-marquee > .pq-suggerer-picto { border: 2px solid rgb(var(--cave-50)); }
 .pq-suggerer-case-pale > .pq-suggerer-picto > svg { opacity: 0.45; }
 .pq-suggerer-trait { display: block; width: 4px; height: 6px; border-radius: 2px; background: rgb(var(--cave-50)); }
-/* La case touchée (D110) : un anneau discret, la bulle dit le reste. */
-.pq-suggerer-case[data-bulle-ouverte] > .pq-suggerer-picto, .pq-suggerer-case[data-bulle-ouverte]:not(:has(.pq-suggerer-picto)) { outline: 2px solid rgb(var(--cave-50)); outline-offset: 1px; border-radius: 9999px; }
+/* Les crans comptés (gr5 c) : après les traits, les crans vides jusqu'au plus grand du groupe, cerclés d'un pixel gris
+   comme sa page gr5 (#8a8a86) ; un trait de baisse garde son contour à l'encre (q2b), plus sombre. */
+.pq-suggerer-trait.pq-suggerer-trait-vide { background: transparent; box-shadow: inset 0 0 0 1px #8a8a86; }
+/* La case touchée (gr5 b) : cernée, carré arrondi à l'encre autour du picto et de ses traits ; la bulle dit le reste. */
+.pq-suggerer-case[data-bulle-ouverte] { box-shadow: inset 0 0 0 2px rgb(var(--cave-50)); border-radius: 8px; }
 
 /* Le cadre à bord noir épais des voies au même effet (base). */
 .pq-suggerer-cadre { margin-top: 0.25rem; border-radius: 8px; border-left: 6px solid rgb(var(--cave-50)); background: rgb(var(--cave-950)); box-shadow: 0 1px 4px rgb(0 0 0 / 0.14), inset 0 0 0 1px rgb(var(--cave-800)); overflow: hidden; }
@@ -102,19 +105,9 @@ html:has(.pq-outil-suggerer) [data-page-shell]:not(.pq-outil-suggerer) { display
 .pq-suggerer-comparer { height: 3rem; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); box-shadow: 0 4px 14px rgb(0 0 0 / 0.22); letter-spacing: 0.01em; }
 .pq-suggerer-comparer-n { margin-left: 0.375rem; }
 
-/* La bulle d'une case (D110) : à l'encre, au-dessus de la case touchée, une flèche vers elle. */
-.pq-suggerer-bulle { position: fixed; z-index: 60; max-width: 15rem; padding: 0.4375rem 0.625rem 0.5rem; border-radius: 8px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); box-shadow: 0 6px 18px rgb(0 0 0 / 0.25); pointer-events: auto; }
-.pq-suggerer-bulle::after { content: ""; position: absolute; left: var(--fleche); bottom: -5px; width: 10px; height: 10px; margin-left: -5px; background: inherit; transform: rotate(45deg); border-radius: 2px; }
-.pq-suggerer-bulle-dessous::after { bottom: auto; top: -5px; }
-.pq-suggerer-bulle-titre { display: block; font-size: 0.9375rem; line-height: 1.25; white-space: nowrap; }
-.pq-suggerer-bulle-titre svg { display: inline-block; vertical-align: -3px; margin-right: 5px; background: rgb(var(--cave-950)); border-radius: 9999px; padding: 1px; box-sizing: content-box; }
+/* La bulle d'une case (gr5 b) : blanche, bord à l'encre, une ligne qui se replie, au-dessus de la case touchée. */
+.pq-suggerer-bulle { position: fixed; z-index: 60; max-width: 240px; padding: 6px 10px; border-radius: 8px; background: rgb(var(--cave-950)); color: rgb(var(--cave-50)); border: 1.5px solid rgb(var(--cave-50)); box-shadow: 0 6px 18px rgb(0 0 0 / 0.18); font-size: 14px; line-height: 1.3; pointer-events: auto; }
 .pq-suggerer-bulle-nom { font-weight: 700; }
-.pq-suggerer-bulle-valeur { font-weight: 800; font-variant-numeric: tabular-nums; }
-.pq-suggerer-bulle-muet { font-weight: 600; opacity: 0.85; }
-.pq-suggerer-bulle-cle { display: flex; align-items: center; gap: 0.3125rem; margin-top: 0.1875rem; font-size: 0.75rem; line-height: 1.25; color: rgb(var(--cave-950) / 0.78); white-space: nowrap; }
-.pq-suggerer-bulle-signe.pq-suggerer-trait { background: rgb(var(--cave-950)); }
-.pq-suggerer-bulle-signe.pq-suggerer-trait-baisse { background: transparent; box-shadow: inset 0 0 0 1px rgb(var(--cave-950)); }
-.pq-suggerer-bulle-signe.pq-suggerer-trait-hors { background: #fb923c; }
-.pq-suggerer-bulle-signe.pq-suggerer-calme { background: rgb(var(--cave-950)); }
-.pq-suggerer-bulle-hachure { display: inline-block; width: 0.875rem; height: 0.375rem; border-radius: 2px; }
-.pq-suggerer-bulle-hors { color: #fdba74; font-weight: 700; }
+.pq-suggerer-bulle-avec { color: rgb(var(--cave-200)); white-space: nowrap; }
+.pq-suggerer-bulle-bloc { white-space: nowrap; }
+.pq-suggerer-bulle-hors { color: #c2410c; font-weight: 700; }

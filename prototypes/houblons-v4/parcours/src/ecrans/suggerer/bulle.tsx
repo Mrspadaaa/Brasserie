@@ -4,20 +4,25 @@
 // la clé du signe qu'on touche (« 1 trait = 1 cran du style »). Rien de plus au repos : la bulle n'existe pas tant
 // qu'on ne touche pas. Le toucher n'a pas d'autre effet (ni route, ni comparaison, ni fiche) ; un toucher ailleurs
 // ou Échap la referment ; au défilement, elle suit sa case. À l'ordinateur, le survol la montre, le clic la fixe.
+// Reprise gr5 b (« Ça c'est top à mettre dans la vraie version », 24.10) : la bulle dit une seule ligne, mot pour mot comme
+// sa page gr5 : « Agrumes · +1,6 cran du 16D · ton objectif · avec Motueka » (famille à sa couleur, valeur de data-crans,
+// code du style, « ton objectif » sur une case cerclée, les houblons de la voie) ; la case touchée est cernée. La clé
+// « 1 trait = 1 cran du style » s'efface : « cran du 16D » la dit. Le signe reste vrai (−0,8 pour une baisse) et
+// « hors du style » s'ajoute quand le trait est orangé (encodage de q2b).
 // Classes préfixées pq-suggerer-bulle- (L26).
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { COURT, Picto } from '../../commun';
+import { COULEURS, COURT } from '../../commun';
 import type { FamilyId } from '../../../../src/engine';
 
 /** Ce que dit une case : un effet en crans (traits), un effet non établi (hachures), ou une famille qui ne bouge pas. */
-export type SensCase =
-  | { genre: 'traits'; f: FamilyId; crans: string; hors: boolean }
-  | { genre: 'inconnu'; f: FamilyId }
-  | { genre: 'calme'; f: FamilyId };
+export type SensCase = ({ genre: 'traits'; f: FamilyId; crans: string; hors: boolean } | { genre: 'inconnu'; f: FamilyId } | { genre: 'calme'; f: FamilyId })
+  & { /** Les houblons de la voie (« avec Motueka »). */ avec: string; /** Case cerclée : un objectif. */ cible: boolean };
 
 interface Ouverte { cle: string; sens: SensCase; el: HTMLElement; fixee: boolean }
 interface Bulle {
   ouverte: Ouverte | null;
+  /** Code du style de la recette (« 16D »). */
+  code: string;
   montrer: (cle: string, sens: SensCase, el: HTMLElement, fixee: boolean) => void;
   fermer: (cle?: string) => void;
 }
@@ -30,11 +35,11 @@ export function valeurCrans(crans: string): string {
 }
 const unite = (crans: string) => (Math.abs(Number(crans)) >= 1.95 ? 'crans' : 'cran');
 
-export function BulleTraitsProvider({ children }: { children: ReactNode }) {
+export function BulleTraitsProvider({ children, code }: { children: ReactNode; code: string }) {
   const [ouverte, setOuverte] = useState<Ouverte | null>(null);
   const montrer = useCallback((cle: string, sens: SensCase, el: HTMLElement, fixee: boolean) => setOuverte({ cle, sens, el, fixee }), []);
   const fermer = useCallback((cle?: string) => setOuverte((o) => (!o || (cle && o.cle !== cle) ? o : null)), []);
-  const valeur = useMemo(() => ({ ouverte, montrer, fermer }), [ouverte, montrer, fermer]);
+  const valeur = useMemo(() => ({ ouverte, montrer, fermer, code }), [ouverte, montrer, fermer, code]);
   return <Ctx.Provider value={valeur}>{children}<BulleTraits /></Ctx.Provider>;
 }
 
@@ -60,7 +65,7 @@ export function useCase(cle: string, sens: SensCase) {
 function BulleTraits() {
   const b = useContext(Ctx)!;
   const ref = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState<{ x: number; y: number; fleche: number; dessous: boolean } | null>(null);
+  const [pos, setPos] = useState<{ x: number; y: number; dessous: boolean } | null>(null);
   // Un défilement ou une police chargée déplace la case : la bulle la suit (et se ferme si la case sort de l'écran).
   const [suivre, setSuivre] = useState(0);
   const o = b.ouverte;
@@ -72,9 +77,12 @@ function BulleTraits() {
     const w = ref.current.offsetWidth, h = ref.current.offsetHeight;
     const cx = r.left + r.width / 2;
     const tete = document.querySelector('.pq-outil-suggerer > header')?.getBoundingClientRect().bottom ?? 0;
-    const dessous = r.top - h - 8 < tete + 4;
-    const x = Math.max(8, Math.min(window.innerWidth - w - 8, cx - w / 2));
-    setPos({ x, y: dessous ? r.bottom + 8 : r.top - h - 8, fleche: Math.max(12, Math.min(w - 12, cx - x)), dessous });
+    // Comme gr5 : au-dessus de la ligne du houblon, pour ne pas cacher son nom (« avec Motueka » se lit sur la ligne).
+    const nomLigne = o.el.closest('li')?.querySelector('.pq-sg-l1')?.getBoundingClientRect();
+    const haut = Math.min(r.top, nomLigne && nomLigne.height > 0 ? nomLigne.top : r.top);
+    const dessous = haut - h - 4 < tete + 4;
+    const x = Math.max(6, Math.min(window.innerWidth - w - 6, cx - w / 2));
+    setPos({ x, y: dessous ? r.bottom + 8 : haut - h - 4, dessous });
   }, [o, suivre, b]);
 
   // Un toucher ailleurs ou Échap referment la bulle ; le défilement la fait suivre sa case.
@@ -101,34 +109,21 @@ function BulleTraits() {
 
   if (!o) return null;
   const s = o.sens;
-  const nom = COURT[s.f];
   return (
     <div ref={ref} id="pq-suggerer-bulle" role="tooltip" data-role="bulle-traits" data-famille-bulle={s.f}
-      className={`pq-suggerer-bulle ${pos?.dessous ? 'pq-suggerer-bulle-dessous' : ''}`}
-      style={{ left: pos?.x ?? 0, top: pos?.y ?? 0, visibility: pos ? 'visible' : 'hidden', ['--fleche' as string]: `${pos?.fleche ?? 0}px` }}>
-      <p className="pq-suggerer-bulle-titre">
-        <Picto famille={s.f} taille={14} nomme={false} />
-        <span className="pq-suggerer-bulle-nom">{nom}</span>{' '}
-        {s.genre === 'traits' && <b className="pq-suggerer-bulle-valeur">{valeurCrans(s.crans)} {unite(s.crans)}</b>}
-        {s.genre === 'inconnu' && <b className="pq-suggerer-bulle-valeur">? non établi</b>}
-        {s.genre === 'calme' && <b className="pq-suggerer-bulle-valeur pq-suggerer-bulle-muet">ne bouge pas</b>}
-      </p>
-      <p className="pq-suggerer-bulle-cle">{cle(s)}</p>
+      className="pq-suggerer-bulle" style={{ left: pos?.x ?? 0, top: pos?.y ?? 0, visibility: pos ? 'visible' : 'hidden' }}>
+      <b className="pq-suggerer-bulle-nom" style={{ color: COULEURS[s.f].texte }}>{COURT[s.f]}</b>
+      {' · '}{dit(s, b.code)}
+      {s.cible && <>{' · '}<span className="pq-suggerer-bulle-bloc">ton objectif</span></>}
+      {s.genre === 'traits' && s.hors && <span className="pq-suggerer-bulle-hors"> · hors du style</span>}
+      {' · '}<span className="pq-suggerer-bulle-avec">avec {s.avec}</span>
     </div>
   );
 }
 
-/** La clé du signe touché, en une ligne : ce qu'est un trait, un contour, l'orangé, un point, des hachures. */
-function cle(s: SensCase): ReactNode {
-  if (s.genre === 'calme') return <><i className="pq-suggerer-calme pq-suggerer-bulle-signe" /> moins d’un demi-point</>;
-  if (s.genre === 'inconnu') return <><i className="pq-hachure pq-suggerer-bulle-hachure" /> rien de simulé, jamais 0</>;
-  const baisse = Number(s.crans) < 0;
-  return (
-    <>
-      <i className={`pq-suggerer-trait pq-suggerer-bulle-signe ${baisse ? 'pq-suggerer-trait-baisse' : ''} ${s.hors ? 'pq-suggerer-trait-hors' : ''}`} />
-      {' 1 trait = 1 cran du style'}
-      {baisse && ' · creux : baisse'}
-      {s.hors && <span className="pq-suggerer-bulle-hors"> · hors style</span>}
-    </>
-  );
+/** La valeur de la case, comme gr5 : « +1,6 cran du 16D » ; l'inconnu n'est jamais 0 ; « ne bouge pas » sous ½ point. */
+function dit(s: SensCase, code: string): string {
+  if (s.genre === 'inconnu') return 'non établi : inconnu, pas zéro';
+  if (s.genre === 'calme') return 'ne bouge pas';
+  return `${valeurCrans(s.crans)} ${unite(s.crans)} du ${code}`;
 }

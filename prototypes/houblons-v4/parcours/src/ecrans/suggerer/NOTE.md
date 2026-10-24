@@ -1,5 +1,25 @@
 # Suggérer — q2b, « Quel houblon ajouter à ma bière ? » (voie p2-suggerer ; reprise D105, 23.10 soir)
 
+## Reprise gr5 (24.10, soir, voie r11) : le cran au doigt et les crans comptés
+Ses mots, sur gr5 dans « Planches · 24.10 » : « Ça c'est top à mettre dans la vraie version ». Sa page :
+`work/refonte-frontend/v4/ecran-1/fils24-graphes/gr5/etat.html` (captures `…/captures/gr5-toucher.png`, `gr5-toucher-c.png`).
+Les deux lectures sont rendues sur q2b tel qu'il est, sans rien retirer :
+- **b, le cran au doigt** (`bulle.tsx`) : toucher une case dit, en une ligne, comme sa page : « Agrumes · +1,6 cran du 16D ·
+  ton objectif · avec Motueka » (famille à sa couleur, valeur de `data-crans` au dixième, code du style du moteur, « ton
+  objectif » sur une case cerclée, les houblons de la voie). Bulle blanche à bord noir de 1,5 px, au-dessus de la ligne du
+  houblon pour ne pas cacher son nom ; la case touchée est cernée (carré arrondi à l'encre, picto et traits). La clé
+  « 1 trait = 1 cran du style » (D110) s'efface : « cran du 16D » la dit. Le signe reste vrai (« −0,8 » pour une baisse),
+  « · hors du style » s'ajoute quand le trait est orangé ; une case calme dit « ne bouge pas », une case hachurée « non
+  établi : inconnu, pas zéro ». Largeur 240 px (sa page : 300) : la bulle reste à 120 px au plus du picto (D110, règle 3).
+- **c, les crans comptés** (`briques.tsx`, `traitsDe`) : au repos, après ses traits (plein, demi), chaque case montre ses
+  crans vides, cerclés d'un pixel gris (#8a8a86, comme sa page), jusqu'au plus grand effet **du groupe** (sa liste ; dans
+  « = même effet sur tes objectifs », 2, comme sa page). Le compte est celui des traits dessinés (un demi compte une place),
+  calculé du moteur à chaque rendu ; une case calme ou inconnue ne reçoit rien (l'inconnu n'est pas 0). Aucun mot de plus.
+  La légende du « ? » le dit en une demi-ligne.
+- Contrat de `controle-etats.mjs` : `etat-sugg-gr5-cran` sur l'objectif le plus marqué de la première voie (Agrumes de
+  Motueka), `etat-sugg-gr5-crans-comptes` sur son premier cran vide. `jeu.mjs` attend la nouvelle phrase.
+- Encodage de q2b gardé : contour si la famille baisse (encre, plus sombre que le gris des crans vides), orangé hors du style.
+
 ## Reprise D124 (24.10, voie r4) : tous les états de q2b
 
 « Ça a bien avancé mais […] certaines de mes choix ont été perdue » (D124). Relevé : `work/refonte-frontend/v4/choix/etats/suggerer.json`

@@ -72,36 +72,51 @@ export type NiveauFiches = 'marqué' | 'cité' | 'non décrit';
 const classesCase = (cible: boolean, niveau: NiveauFiches) =>
   `pq-suggerer-case flex flex-col items-center gap-0.5 ${cible ? 'pq-suggerer-case-objectif' : ''} ${cible && niveau === 'marqué' ? 'pq-suggerer-case-marquee' : ''} ${niveau !== 'marqué' ? 'pq-suggerer-case-pale' : ''}`;
 
-/** Une famille qu'un houblon fait bouger : son picto, puis un trait par cran (demi-trait pour un reste ≥ ¼). Toucher la
- * case montre sa bulle (« Floral +0,9 cran », D110) ; rien de plus au repos. */
-export function Traits({ f, crans, hors, role = 'extra', niveau = 'marqué', cle }: {
-  f: FamilyId; crans: number; hors: boolean; role?: 'extra' | 'cible'; niveau?: NiveauFiches; cle: string;
-}) {
+/** Les traits dessinés pour un effet en crans : un plein par cran, un demi pour un reste ≥ ¼ (ou sous le cran), 4 au plus. */
+export function traitsDe(crans: number): { pleins: number; demi: boolean; places: number } {
   const n = Math.min(4, Math.abs(crans));
   const pleins = Math.floor(n + 0.25);
   // Sous le cran (ou un reste d'au moins ¼), un demi-trait : jamais un trait plein pour un petit apport.
   const demi = pleins < 4 && (pleins === 0 || n - pleins >= 0.25);
+  return { pleins, demi, places: pleins + (demi ? 1 : 0) };
+}
+
+/** Une famille qu'un houblon fait bouger : son picto, puis un trait par cran (demi-trait pour un reste ≥ ¼). Toucher la
+ * case montre sa bulle (gr5 b : « Agrumes · +1,6 cran du 16D · ton objectif · avec Motueka ») ; rien de plus au repos.
+ * gr5 c, les crans comptés (« Ça c'est top à mettre dans la vraie version », 24.10) : après ses traits, la case montre
+ * ses crans vides jusqu'au plus grand de la liste (`plafond`, en places de trait, par groupe) ; on compte sans légende. */
+export function Traits({ f, crans, hors, role = 'extra', niveau = 'marqué', cle, avec, plafond = 0, etat, etatVide }: {
+  f: FamilyId; crans: number; hors: boolean; role?: 'extra' | 'cible'; niveau?: NiveauFiches; cle: string;
+  /** Le ou les houblons de la voie (« avec Motueka »). */ avec: string;
+  /** Places de trait du plus grand effet de la liste (gr5 c) ; 0 : aucun cran vide. */ plafond?: number;
+  /** data-etat de la case (toucher) et de son premier cran vide (repos), contrat de controle-etats.mjs. */ etat?: string; etatVide?: string;
+}) {
+  const { pleins, demi, places } = traitsDe(crans);
+  const vides = Math.max(0, Math.min(4, plafond) - places);
   const baisse = crans < 0;
   const ton = hors ? 'pq-suggerer-trait-hors' : '';
   const traits = Array.from({ length: pleins }, (_, i) => i);
   const valeur = crans.toFixed(2);
-  const gestes = useCase(cle, { genre: 'traits', f, crans: valeur, hors });
+  const gestes = useCase(cle, { genre: 'traits', f, crans: valeur, hors, avec, cible: role === 'cible' });
   return (
-    <span data-role={role} data-famille={f} data-crans={valeur} {...(hors ? { 'data-hors-style': '' } : {})} {...gestes}
+    <span data-role={role} data-famille={f} data-crans={valeur} {...(hors ? { 'data-hors-style': '' } : {})} {...(etat ? { 'data-etat': etat } : {})} {...gestes}
       aria-label={`${COURT[f]} ${valeurCrans(valeur)} cran${hors ? ', hors style' : ''}`} role="img"
       className={classesCase(role === 'cible', niveau)}>
       <span className="pq-suggerer-picto"><Picto famille={f} taille={role === 'cible' ? 14 : 15} nomme={false} /></span>
       <span className="flex items-end gap-px h-1.5" aria-hidden="true">
         {traits.map((i) => <i key={i} className={`pq-suggerer-trait ${baisse ? 'pq-suggerer-trait-baisse' : ''} ${ton}`} />)}
         {demi && <i className={`pq-suggerer-trait pq-suggerer-trait-demi ${baisse ? 'pq-suggerer-trait-baisse' : ''} ${ton}`} />}
+        {Array.from({ length: vides }, (_, i) => (
+          <i key={`v${i}`} data-role="cran-vide" {...(i === 0 && etatVide ? { 'data-etat': etatVide } : {})} className="pq-suggerer-trait pq-suggerer-trait-vide" />
+        ))}
       </span>
     </span>
   );
 }
 /** Famille que le houblon ne fait pas bouger (moins de 0,5 point) : un point, à sa place dans l'alignement ; cerclée si
  * c'est un objectif. Au toucher : « ne bouge pas ». */
-export function Calme({ f, cle, cible = false }: { f: FamilyId; cle: string; cible?: boolean }) {
-  const gestes = useCase(cle, { genre: 'calme', f });
+export function Calme({ f, cle, cible = false, avec }: { f: FamilyId; cle: string; cible?: boolean; avec: string }) {
+  const gestes = useCase(cle, { genre: 'calme', f, avec, cible });
   if (cible) {
     return (
       <span role="img" aria-label={`${COURT[f]} : ne bouge pas`} {...gestes} className={classesCase(true, 'cité')}>
@@ -113,8 +128,8 @@ export function Calme({ f, cle, cible = false }: { f: FamilyId; cle: string; cib
   return <span role="img" aria-label={`${COURT[f]} : ne bouge pas`} {...gestes} className="pq-suggerer-case flex items-center justify-center"><i aria-hidden="true" className="pq-suggerer-calme" /></span>;
 }
 /** Famille dont l'écart est inconnu (rien de simulé) : hachuré, jamais 0. Au toucher : « non établi ». */
-export function CaseInconnue({ f, cle, cible = true }: { f: FamilyId; cle: string; cible?: boolean }) {
-  const gestes = useCase(cle, { genre: 'inconnu', f });
+export function CaseInconnue({ f, cle, cible = true, avec }: { f: FamilyId; cle: string; cible?: boolean; avec: string }) {
+  const gestes = useCase(cle, { genre: 'inconnu', f, avec, cible });
   return (
     <span data-inconnu="" role="img" aria-label={`${COURT[f]} : effet non établi`} {...gestes} className={classesCase(cible, 'cité')}>
       <span className="pq-suggerer-picto"><Picto famille={f} taille={14} nomme={false} /></span>

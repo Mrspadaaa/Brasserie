@@ -510,6 +510,66 @@
    "ecart": "Maquette : « ? » à côté de « Au style | Absolu » ouvre une carte de légende (Carte, Piste, Sous un picto, Usage).",
    "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-legende-5345f6ad.png",
    "voulu": "D113 : le « ? » de légende (sa page q2b statique ne le rend pas)"
+  },
+  {
+   "id": "etat-sugg-gr5-cran",
+   "mots": "Ça c'est top à mettre dans la vraie version (gr5, « Planches · 24.10 », 24.10 soir)",
+   "etat": "toucher un picto d’une voie (gr5 b, le cran au doigt) : Agrumes de Motueka",
+   "quoi": "Le doigt sur un picto : la case (picto et ses traits) est cernée d'un carré arrondi à l'encre ; près d'elle, une bulle blanche à bord noir, une ligne : « Agrumes · +1,6 cran du 16D · ton objectif · avec Motueka » (famille à sa couleur, valeur de data-crans, « avec Motueka » en gris).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils24-graphes/gr5/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/ecran-1/fils24-graphes/captures/gr5-toucher.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-suggerer/suggerer/etat.html",
+    "selecteur_geste_choisie": ".jg-l[data-jg=\"b\"] li [data-role=\"cible\"][data-famille=\"citrus\"] (toucher, pointerdown sur le cadre)",
+    "geste_5345f6ad": "sans objet (gr5 est postérieure à 5345f6ad)",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "5345f6ad : bulle à l'encre « Agrumes +1,6 cran » puis la clé « 1 trait = 1 cran du style » (D110), picto cerclé seul ; ni le style (« du 16D »), ni « ton objectif », ni le houblon.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/commentaires/captures/p22-suggerer-trait-extra-touche.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils24-graphes/gr5/etat.html",
+    "selecteur_choisie": ".jg-l[data-jg=\"b\"] li [data-role=\"cible\"][data-famille=\"citrus\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Agrumes · +1,6 cran du 16D · ton objectif · avec Motueka"
+    ],
+    "interdit": [
+     "1 trait = 1 cran du style"
+    ]
+   }
+  },
+  {
+   "id": "etat-sugg-gr5-crans-comptes",
+   "mots": "Ça c'est top à mettre dans la vraie version (gr5, « Planches · 24.10 », 24.10 soir)",
+   "etat": "ouvrir Suggérer, au repos (gr5 c, les crans comptés)",
+   "quoi": "Au repos, sous chaque picto d'une voie, ses traits (plein, demi) puis ses crans vides cerclés d'un pixel gris jusqu'au plus grand de la liste (2 dans le groupe « = même effet sur tes objectifs ») : Motueka floral ▪▫, agrumes ▪▪ ; on compte sans légende. Aucun mot de plus.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils24-graphes/gr5/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/ecran-1/fils24-graphes/captures/gr5-toucher-c.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-suggerer/suggerer/etat.html",
+    "selecteur_geste_choisie": ".jg-l[data-jg=\"c\"] li .jg-vide (premier cran vide, posé au chargement)",
+    "geste_5345f6ad": "sans objet (gr5 est postérieure à 5345f6ad)",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "5345f6ad : seuls les traits pleins et demis ; aucun cran vide, rien pour compter.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-repos-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils24-graphes/gr5/etat.html",
+    "selecteur_choisie": ".jg-l[data-jg=\"c\"] li .jg-vide",
+    "geste": "repos",
+    "attendu": [
+     "même effet sur tes objectifs",
+     "Motueka",
+     "Agrumes +1,6 cran"
+    ],
+    "interdit": []
+   }
   }
  ]
 }

@@ -22,7 +22,7 @@ import { style } from '../../moteur';
 import { offModelLeads, type FamilyId } from '../../../../src/engine';
 import Fiche, { useGestesFiche } from '../fiche';
 import { Bandeau } from '../ma-biere/Base';
-import { AlphaCourt, Calme, CaseInconnue, Lecture, Stock, Traits, Usage, type NiveauFiches } from './briques';
+import { AlphaCourt, Calme, CaseInconnue, Lecture, Stock, Traits, traitsDe, Usage, type NiveauFiches } from './briques';
 import { BulleTraitsProvider } from './bulle';
 import { Divergent, Graphe, type NiveauBarre } from './divergent';
 import { bannisDe, dryhopActif, objectifsDe, verdict, voiesDe, type Groupe, type Ligne, type Objectif } from './voies';
@@ -140,7 +140,7 @@ export default function Suggerer() {
 
   return (
     <CadreOutil ecran="suggerer" question="Quel houblon ajouter à ma bière ?" questionVisible={false} elementTete="q2b-onglets" etat="etat-acquis-couleur-aromes etat-acquis-picto-epice">
-      <BulleTraitsProvider>
+      <BulleTraitsProvider code={sc.code}>
         <div className="pq-suggerer-haut" data-etat="etat-sugg-bandeau-ibu">
           <Bandeau biere={biere} element="q2b-bandeau-ibu" />
         </div>
@@ -151,7 +151,7 @@ export default function Suggerer() {
           <Legende>
             <p><b>Carte</b> : le verdict de la meilleure voie qui reste au style ; Atteint, la visée ; Approche, la moitié du chemin.</p>
             <p><b>Barres</b> : à droite de l’axe, ce qui monte ; à gauche, ce qui baisse ; tirets, la visée ; trait fin, jusqu’au haut du style {sc.code} ; orangé, hors du style ; hachures, effet non établi.</p>
-            <p><b>Sous un picto</b> : un trait par cran du style ; toucher le picto dit sa famille et sa valeur. Cerclés : tes objectifs.</p>
+            <p><b>Sous un picto</b> : un trait par cran du style, puis, en creux, les crans qui manquent jusqu’au plus grand du groupe ; toucher le picto dit sa famille et sa valeur. Cerclés : tes objectifs.</p>
             <p><b>Usage</b> : amer, arôme ou mixte ; souligné en pointillé, déduit de l’α. Appui long sur une voie : sa fiche.</p>
           </Legende>
           <span className="flex-1" aria-hidden="true" />
@@ -282,6 +282,12 @@ function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, ges
   const meme = g.id.startsWith('meme');
   // Le cadre à bord noir de q2b : les voies au même effet (plusieurs lignes, une seule barre d'effet).
   const cadre = meme && g.lignes.length > 1;
+  // gr5 c, les crans comptés : chaque case montre ses crans vides jusqu'au plus grand effet du groupe (sa liste), en places
+  // de trait comme elles sont dessinées ; un effet inconnu ou calme ne compte pas (l'inconnu n'est pas 0).
+  const plafond = Math.max(1, ...g.lignes.flatMap((l) => [...cibles, ...slots].map((f) => {
+    const e = l.effets[f];
+    return e == null || Math.abs(e) < 0.5 ? 0 : traitsDe(e / cran(f)).places;
+  })));
   const element = meme && g.id === 'meme-0' ? 'q2b-groupes-effet' : g.geste === 'assembler' ? 'q2b-assembler' : g.geste === 'remplacer' ? 'q2b-remplacer' : undefined;
   const moment = g.geste === 'dryhop'
     ? <span className="pq-suggerer-moment pq-sg-sur-axe gap-1"><svg width="12" height="14" viewBox="0 0 14 16" aria-hidden="true"><path d="M2 1 H12 V9 L7 15 L2 9 Z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><circle cx="5.5" cy="7" r="1.2" fill="currentColor" /><circle cx="8.5" cy="4.5" r="1.2" fill="currentColor" /></svg>{g.moment}</span>
@@ -307,7 +313,7 @@ function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, ges
         {g.lignes.map((l, i) => (
           <LigneVoie key={l.id} l={l} premiere={premiere && i === 0} cibles={cibles} slots={slots} cran={cran} choisie={choisie(l)} basculer={() => basculer(l)}
             gestesFiche={gestesFiche} barres={!cadre} objectifs={objectifs} echelle={echelle} bande={bande} plus={l.id === lignePlus}
-            gouts={gouts} goutOuvert={goutOuvert} setGoutOuvert={setGoutOuvert} noter={noter} cadre={cadre} />
+            gouts={gouts} goutOuvert={goutOuvert} setGoutOuvert={setGoutOuvert} noter={noter} cadre={cadre} plafond={plafond} />
         ))}
       </ul>
     </section>
@@ -332,21 +338,29 @@ function Bio({ l }: { l: Ligne }) {
   );
 }
 
-function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestesFiche, barres, objectifs, echelle, bande, plus, gouts, goutOuvert, setGoutOuvert, noter, cadre }: {
+function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestesFiche, barres, objectifs, echelle, bande, plus, gouts, goutOuvert, setGoutOuvert, noter, cadre, plafond }: {
   l: Ligne; premiere: boolean; cibles: FamilyId[]; slots: FamilyId[]; cran: (f: FamilyId) => number; choisie: boolean; basculer: () => void;
   gestesFiche: ReturnType<typeof useGestesFiche>; barres: boolean; objectifs: Objectif[]; echelle: Echelle; bande: (f: FamilyId) => [number, number] | null;
-  plus: boolean; gouts: Map<string, Gout>; goutOuvert: string | null; setGoutOuvert: (c: string | null) => void; noter: (c: string, g: Gout) => void; cadre: boolean;
+  plus: boolean; gouts: Map<string, Gout>; goutOuvert: string | null; setGoutOuvert: (c: string | null) => void; noter: (c: string, g: Gout) => void; cadre: boolean; plafond: number;
 }) {
   const noms = l.houblons.map((h) => h.nom).join(' et ');
   const cleGout = l.houblons[0].cle;
   const gout = gouts.get(cleGout) ?? 'neutre';
   const ouvert = goutOuvert === `${l.id}:${cleGout}`;
+  // « avec Motueka » dans la bulle (gr5 b) : les houblons de la voie, comme sur sa ligne.
+  const avec = l.houblons.map((h) => h.nom).join(' + ');
+  const montre = (f: FamilyId) => { const e = l.effets[f]; return e != null && Math.abs(e) >= 0.5; };
+  // Contrat de controle-etats.mjs, sur la première voie : le toucher de gr5 b sur son objectif le plus marqué (Agrumes de
+  // Motueka dans sa page gr5), le repos de gr5 c sur son premier cran vide.
+  const fCran = premiere ? [...cibles].filter(montre).sort((a, b) => Math.abs(l.effets[b]! / cran(b)) - Math.abs(l.effets[a]! / cran(a)))[0] : undefined;
+  const fVide = premiere ? [...cibles, ...slots].find((f) => montre(f) && traitsDe(l.effets[f]! / cran(f)).places < plafond) : undefined;
   const caseDe = (f: FamilyId, role: 'extra' | 'cible') => {
     const e = l.effets[f];
     const cle = `${l.id}:${f}`;
-    if (e == null) return role === 'cible' ? <CaseInconnue key={f} f={f} cle={cle} /> : <Calme key={f} f={f} cle={cle} />;
-    if (Math.abs(e) < 0.5) return <Calme key={f} f={f} cle={cle} cible={role === 'cible'} />;
-    return <Traits key={f} f={f} crans={e / cran(f)} hors={l.hors.includes(f)} role={role} niveau={niveauFiches(l, f)} cle={cle} />;
+    if (e == null) return role === 'cible' ? <CaseInconnue key={f} f={f} cle={cle} avec={avec} /> : <Calme key={f} f={f} cle={cle} avec={avec} />;
+    if (Math.abs(e) < 0.5) return <Calme key={f} f={f} cle={cle} cible={role === 'cible'} avec={avec} />;
+    return <Traits key={f} f={f} crans={e / cran(f)} hors={l.hors.includes(f)} role={role} niveau={niveauFiches(l, f)} cle={cle} avec={avec} plafond={plafond}
+      etat={f === fCran ? 'etat-sugg-gr5-cran' : undefined} etatVide={f === fVide ? 'etat-sugg-gr5-crans-comptes' : undefined} />;
   };
   return (
     <li data-voie={l.n} data-id={l.id} data-role="ligne-houblon" {...(premiere ? { 'data-element': 'q2b-ligne-voie' } : {})} {...(choisie ? { 'data-choisi': '' } : {})}
