@@ -588,3 +588,7 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   traits... Enfin comme sur les mini maquettes ») : D133, le radar de la fiche reprend l'échelle de g1 (de -0,5 au maximum ;
   l'inconnue dans le disque du centre, jamais au centre exact) ; chaque famille décrite fait un pic ; `controle-radar-pics.mjs`
   (témoin : la maquette PICS ECHEC, g1 PICS OK) ; dans la batterie avec les contrôles D127 à D132.
+- D53 (pilote, honnêteté des données) : etat-etape-ajout-rapide (r8a le matin, r15a le soir) : le point « avant » gris est
+  bien dessiné et relié, mais le moteur en direct ne déplace Floral que de 2,5 % de la barre (Agrumes 5,7 %, Tropicaux 1,7 %)
+  pour 10 g de Motueka à 10′ ; sa base, aux chiffres figés, montrait 12 → 40 %. Pas d'écart grossi : les valeurs du moteur
+  restent ; « floral +1 » sur la carte dit l'effet. Signalé au brasseur. Ouvert : capturer en pleine page les états sous le pli.

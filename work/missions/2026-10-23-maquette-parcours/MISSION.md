@@ -171,6 +171,7 @@ Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`).
 | Planche des graphes | six graphes côte à côte, deux lectures chacun (D126) ; 24.10 | https://claude.ai/artifact/JSiBVNWUJqJD8zdkvpKN9t | `work/refonte-frontend/v4/outils/pages/2026-10-24-planche-graphes/index.html` |
 | Planches | toutes les vues à choisir sur une page, dans sa disposition (une rangée par vue, vignettes serrées) ; 24.10 | https://claude.ai/artifact/X1RqagDtEqS4L2yZ63PFBy | `work/refonte-frontend/v4/outils/pages/2026-10-24-planches/index.html` |
 | Pictos hors 16D | huit jeux (pha, phz) en deux passes, critique d131 ; Comparer, Galaxy face à Saaz, la fiche, la planche ; 24.10, soir | https://claude.ai/artifact/Y7jV3JyYZw3VdPmDittgwW | `work/refonte-frontend/v4/outils/pages/2026-10-24-pictos-hors16d/index.html` |
+| Maquette jouable | le soir du 24.10 : Dryhopper p4b2f, fiche flb5b (pied flu2b, exhaustive, radar en pics), Suggérer gr5, Comparer r6a, Substituer u4e5, entrée B ; BATTERIE 42/42, ETATS 141/141, critiques 110/111 | https://claude.ai/artifact/2QTyTCmFC6kRg9xkfVNefN | `work/refonte-frontend/v4/outils/pages/2026-10-24-maquette-reprise/index.html` |
 
 ## Boucle de retour
 - Un critère rouge : l'agent corrige dans sa voie, 3 essais. Au-delà, SendMessage au même agent avec le défaut
@@ -440,3 +441,12 @@ sur un autre compte).
   la portée ; `controle-choix.mjs` rejoue les relevés `choix/etats/*.json` (contrôle d'abord, L13) ; reprise de l'étape et
   des écrans touchés par le concepteur (Opus), depuis sa base ; critique (Fable) côte à côte ; page côte à côte de tous
   les états ; artefact neuf (enveloppe toujours en clair). D122 et D115 après.
+
+## Signature (24.10, soir)
+
+- Rejoué par le pilote (gate-check, sans croire les rapports) : r11 4/4, r13 5/5, r14 5/5, d131-pha 2/2, d131-phz 2/2, d131-critique 1/1 ; r15a et r15b G1/G2 (avis complets). `systeme.mjs voies` sur toute la mission non relancé ce soir (plus de 60 voies) : à faire en ouverture de la prochaine session.
+- Construction commune : BATTERIE OK 42/42 (dont D127 à D133), ETATS OK 141/141, critiques Fable 110/111 reconnus (écart : etat-etape-ajout-rapide, D53).
+- Décisions : D43 à D45 (le brasseur : p4b2f, levure de q2b, B) ; D46, D49 à D51, D53 (pilote) ; D47, D48, D52 (le brasseur : fiche exhaustive, pictos, radar en pics).
+- Contrôles neufs : controle-fiche-exhaustive (D132), controle-radar-pics (D133), jeux.mjs (pictos), avis-complet.mjs (critiques).
+- Leçon : L13 complétée (rejouer chaque critère sur HEAD avant la voie). CHARGE OK, CERVEAU OK.
+- Ouvert : son choix de pictos (planche publiée) ; rendre mots, fiche et légende conscients d'une feuille ouverte (D49) ; captures d'états en pleine page sous le pli (D53) ; l'icône ★/« Nuget » du stock (donnée du dépôt) ; push des commits locaux et mise à jour des tickets : accord de l'utilisateur.
