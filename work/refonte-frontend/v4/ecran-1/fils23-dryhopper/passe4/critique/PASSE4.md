@@ -1,6 +1,9 @@
-OK — accepté : la passe 4 progresse (5 variantes passent devant a1), 9 ACCEPTÉ, 2 REJET à relancer (p4a3, p4b5) ; pas encore « satisfaisant »
+OK — accepté : la passe 4 progresse (5 variantes passent devant a1) ; 11 ACCEPTÉ après la reprise de p4a3 et p4b5 (REJET levés le 24.10) ; « satisfaisant » sous réserve des retouches communes 1 à 5
 
 # Critique de la passe 4 de Dryhopper (Fable, calibré sur le brasseur, 24.10)
+
+Mis à jour le 24.10 après la reprise des deux rejetées (p4a3, p4b5) : captures neuves ouvertes (`p4a3-*.png`, `p4b5-*.png` dont
+`p4b5-60.png`), gestes rejoués par moi (p4a3 : whirlpool, 10′ ; p4b5 : 60′, whirlpool, après · 7 j), mesures au DOM refaites.
 
 Jugé sur `BRIEF-PASSE4.md`, le plancher a1 (`serie-a/passe3/a1`, captures `a1-premier-ecran`, `a1-toucher-390`), les 11 pages
 `passe4/p4a1…p4a6`, `p4b1…p4b5`, leurs NOTE.md et geste.json. **Toutes les captures de `passe4/captures/` ont été ouvertes
@@ -16,8 +19,8 @@ faire », #146). Donc pas de comparaison à une maquette choisie (D105) : la rè
 glisser comme un slider »), à x3b réduit en fin de frise et aux acquis ; je les ai vérifiés sur chaque page.
 
 La passe a-t-elle progressé ? **Oui.** a1 passe 3 est 8ᵉ sur 12 : p4b2, p4a4, p4b3, p4b1, p4a6 lui apprennent plus, et les
-deux froides (p4a1, p4a2) l'améliorent sans le trahir. Elle n'est pas « satisfaisante » (entonnoir § 3) : deux REJET, et deux
-retouches communes restent à faire avant de lui montrer (ci-dessous). C'est la dernière passe avant de changer de genre :
+deux froides (p4a1, p4a2) l'améliorent sans le trahir. Après la reprise de p4a3 et p4b5, plus aucun REJET ;
+les retouches communes 1 à 5 restent à faire avant de lui montrer (ci-dessous). C'est la dernière passe avant de changer de genre :
 les candidates se montrent avec leurs retouches, pas une passe 5.
 
 ## Classement
@@ -42,14 +45,15 @@ brasseur, disposition puis habillage, honnêteté, geste, baseline enrichie, var
 7. **p4a2** (froide) — a1 plus l'interpolé dessiné, la flamme et les bulles au bout du contour, la bande de levure ; les
    signes sont petits mais justes.
 8. **a1** (plancher, passe 3) — reste solide (rubans, loupe chiffrée, « contre ★ ») ; les sept au-dessus en gardent l'essentiel.
-9. **p4a5** (sous ses preuves, tiède) — les vraies valeurs à côté du simulé (« Les deux se complément »), les plages
+9. **p4a3** (debout, repris) — le rail vertical sous le pouce droit, étapes et jours écrits, la loupe à gauche du rail hors de
+   la figure, et la carte remplie d'une mini-colonne par famille plus l'IBU (le ruban d'a1 debout) : d'une main, dense ;
+   les barres l5b sont raccourcies à 170 px et la loupe de 92 px est serrée.
+10. **p4a5** (sous ses preuves, tiède) — les vraies valeurs à côté du simulé (« Les deux se complément »), les plages
    honnêtes ; mais le rail est nu, la mesure d'après est sur Cascade, et les plages 0–123 écrasent les barres.
-10. **p4b4** (Le duel contre ★, chaude) — l'écart par famille et « contre après » sont bons ; au repos sur ★ c'est une
+11. **p4b4** (Le duel contre ★, chaude) — l'écart par famille et « contre après » sont bons ; au repos sur ★ c'est une
     colonne de « = » : le premier écran n'apprend rien tant qu'on ne glisse pas.
-11. **p4a3** (debout, tiède) — le rail vertical sous le pouce droit est une vraie idée ; mais la loupe couvre les neuf barres
-    pendant le geste et la carte a 86 px de vide (REJET, à relancer).
-12. **p4b5** (Cinq moments sous le pouce, chaude) — l'idée des cinq colonnes est celle du tri, mais les barres des voisins
-    font 7 px sous un rond de 12 px : on ne voit rien (REJET, à relancer).
+12. **p4b5** (Trois moments sous le pouce, repris) — trois colonnes lisibles et toutes chiffrées, plus de colonne vide ; mais
+    à 5′ près les voisins disent presque la même chose que le milieu (≈+10 · ≈+11 · ≈+12) : le moins instructif par pixel.
 
 ## Verdicts
 
@@ -170,32 +174,34 @@ Format : `- **<id>** (<nom>) — ACCEPTÉ | REJET : <défaut>`, puis sa phrase p
   - Correction : ouvrir sur « contre après » quand le doigt est sur ★ (la colonne de droite a alors un sens), ou mettre
     à droite le pire des quatre étapes ; zone de style grise ; gain et écart dans les pastilles.
 
-- **p4a3** (debout : la colonne du brassin sous le pouce) — REJET : la loupe couvre la figure pendant le geste, et la carte a 86 px de vide
-  - Défauts vérifiables : (1) pendant le geste, la loupe (235 × 370 px à 390) recouvre les neuf barres l5b : le brasseur
-    pose le doigt et ne voit plus ce qui bouge (`p4a3-pendant.png`, `gestes/p4a3-wp-pendant.png` ; L12 « un effet doit se
-    voir », acquis « glisser le moment comme un curseur » qui montre la bière changer) ; (2) dans la carte, 86 px de vide
-    entre la ligne Végétal (bas à y 527) et « amertume » (haut à y 613), mesurés au DOM, parce que les rubans d'a1 ne tiennent
-    pas debout (D55 « Ça semble un peu étrange d'avoir autant d'espace » ; D4) ; `controle-panel` dit 0,85 parce qu'il compte
-    la carte grise, pas son contenu ; (3) la colonne verticale n'a pas de libellé d'étape (seulement des pictos), et les
-    crans de jours pâles ne disent pas 1 · 2 · 3 · 7 j.
-  - Phrase prédite : « p4a3 le rail vertical d'une main c'est pas con, mais quand je glisse la loupe cache tout, et il y a
-    un trou dans la carte ??? »
-  - Correction (relance, pas écart : l'idée du rail sous le pouce droit mérite d'être montrée, L24) : loupe à gauche du rail,
-    au niveau du doigt, de 180 px de large au plus, jamais sur les barres ; dans la carte, une mini-colonne par famille (le
-    ruban d'a1 tourné de 90°, 24 cases) pour remplir les 86 px ; « 1 j · 2 j · 3 j · 7 j » et « 60′ · WP · actif · après »
-    écrits dans la colonne.
+- **p4a3** (debout : la colonne du brassin sous le pouce) — ACCEPTÉ (REJET du 24.10 levé après reprise)
+  - Reprise vérifiée : (1) la loupe s'ouvre à gauche du rail, au niveau du doigt (mesurée : 92 × 372 px, 0 barre couverte sur
+    les 9 ; `p4a3-pendant.png`, `gestes2/p4a3-wp-pendant.png`) : on voit les barres bouger pendant le geste ; (2) les 86 px de
+    vide sont remplis par une mini-colonne par famille plus l'IBU (24 cases, trait orangé hors style, trait noir au moment du
+    pouce : le ruban d'a1 debout, Végétal bas y 467 → amertume y 676, tout occupé) ; (3) la colonne écrit « 60′ », « 0′ »,
+    « WP », « actif », « après » et « 1 j · 2 j · 3 j · 5 j · 7 j ». Joué par moi au whirlpool (~+14, ~75 IBU trop amer) et
+    à 10′ (~+13, ~97) : juste. COMMUN, UNE-QUESTION, MOTS OK (NOTE).
+  - Défauts restants (retouches) : (1) la loupe de 92 px tasse ses chiffres (≈+9 / ~138 sur deux lignes à 11 px) ; (2) les
+    barres l5b sont raccourcies à 170 px pour laisser la colonne : les petites familles deviennent des traits ; (3) « 60 IBU ·
+    tenue (à cru ?) » passe sur deux lignes ; (4) le bloc des mini-colonnes n'a pas de repère de moment hors le trait noir.
+  - Phrase prédite : « p4a3 ok maintenant, d'une main c'est pratique et le bloc en bas est dense. La loupe est un peu
+    petite. »
+  - Correction : loupe à 120 px (en rognant la marge gauche de la colonne), chiffres sur une ligne ; « 60′ · WP · actif » en
+    petit à gauche du bloc des mini-colonnes.
 
-- **p4b5** (Cinq moments sous le pouce) — REJET : les barres des voisins sont illisibles (7 px sous un rond de 12 px)
-  - Défauts vérifiables : (1) les cellules font 47 px (`p4b5-p`), le rond « avant » 12 px (`p4b5-av`), la barre de gain 7 px
-    (`p4b5-b`) : floral ~+22 n'est qu'un éclat violet derrière le rond, herbacé, terreux, épicé sont invisibles ; la
-    position face au style ne se lit pas sans texte (D12), et les barres l5b, « plus informatives » (acquis), ne le sont plus ;
-    (2) à 60′, deux colonnes vides à gauche (`gestes/p4b5-b60-pendant.png` ; D55) ; (3) l'amertume des voisins est une case
-    grise vide, « trop amer » n'est que sur la colonne ouverte ; (4) la loupe flottante d'a1 est retirée : le rapport
-    ×3,7 vient des colonnes, qui ne montrent rien.
-  - Phrase prédite : « p4b5 l'idée des 5 colonnes ok mais on voit rien, c'est que des ronds. »
-  - Correction (relance ou fusion dans p4a4) : trois colonnes (voisin, ici, voisin) de 100 px au moins, sans rond « avant »
-    chez les voisins, barre de gain seule et chiffrée ; aux bouts du rail, remplir avec les deux voisins du même côté ; amertume
-    chiffrée partout. Ou prendre la forme des cartes d'étape de p4a4, qui fait déjà ce travail lisiblement.
+- **p4b5** (Trois moments sous le pouce) — ACCEPTÉ (REJET du 24.10 levé après reprise)
+  - Reprise vérifiée : (1) cinq colonnes → trois, cellules de 81 à 91 px, pistes de 45 à 49 px (`p4b5-p`, mesuré), plus de
+    rond « avant » chez les voisins (`p4b5-av` à 0 px hors du milieu) : floral ~+22 est une barre visible et chiffrée dans
+    chaque colonne ; (2) plus de colonne vide aux bouts (`p4b5-60.png` : 60′ | 55′ | 50′ ; à après · 7 j : 3 j | 5 j | 7 j) ;
+    (3) amertume chiffrée dans les trois colonnes (≈129 · ≈119 · ~110, orangées ; « 60+? » hachuré à cru). Joué par moi à 60′,
+    au whirlpool (0′ | WP | 1 j) et à après · 7 j : juste. COMMUN, UNE-QUESTION, MOTS OK (NOTE, 39 mots).
+  - Défauts restants (retouches) : (1) à 5′ d'écart, les voisins répètent presque le milieu (≈+10 · ≈+11 · ≈+12) : la figure
+    apprend peu par cran, la loupe du rail fait le vrai travail ; (2) les barres de gain restent courtes (≈10 px pour +22 sur
+    une piste de 45 px) : les chiffres portent la lecture, pas les barres ; (3) la zone de style n'est qu'un trait.
+  - Phrase prédite : « p4b5 c'est lisible maintenant, mais les trois colonnes se ressemblent, ça m'apprend pas grand-chose
+    à côté de p4a4. »
+  - Correction : voisins aux étapes (60′ | WP | ici | actif | après) plutôt qu'aux crans voisins quand on est dans
+    l'ébullition, ou fusion dans les cartes d'étape de p4a4 ; pistes à 60 px en réduisant le label des familles à l'icône.
 
 ### Retouches communes (avant de lui montrer)
 1. **Noyau et Baies : les deux voies ne disent pas la même chose.** La donnée est identique (`S_DATA.AV` : stoneFruit 0,
@@ -209,7 +215,7 @@ Format : `- **<id>** (<nom>) — ACCEPTÉ | REJET : <défaut>`, puis sa phrase p
 3. **La loupe dit le gain** (a1, y1b) : p4b1 ne dit que la perte, p4b4 que l'écart. Les deux, gain devant.
 4. **Chevauchements de texte** : p4b2 (étiquettes de courbe sur les valeurs à J+7), p4b3 (« levure active » sous ★ et le
    pouce, « finie » sous la bande), p4a2 (« trop amer ≈ 60′–10′ » sur deux lignes).
-5. **Le vide** : p4a4 (73 px entre carte et dock), p4a6 (0,46), p4b3 (0,47) ; p4a3 (86 px, REJET).
+5. **Le vide** : p4a4 (73 px entre carte et dock), p4a6 (0,46), p4b3 (0,47) ; p4a3 corrigé (mini-colonnes).
 
 ## Greffes
 
@@ -237,11 +243,11 @@ Idée — id d'origine → candidate(s) qui la reçoivent. Prises partout, y com
 - La plage du moteur en trait fin sous la barre, pointillée quand interpolée — p4a5 → p4b2 (bande d'intervalle autour des
   courbes : « il faut des intervalles de confiance »).
 - La loupe à deux chiffres (floral et IBU par voisin) — p4a3 → toutes les loupes (a1 n'a que le floral), d'abord p4b2 et p4b3.
-- Le rail vertical sous le pouce droit, d'une main — p4a3 → variante de geste à montrer à côté de p4b3 (L24 : lui montrer),
-  une fois la loupe sortie de la figure.
+- Le rail vertical sous le pouce droit, d'une main, étapes et jours écrits — p4a3 (repris) → variante de geste à montrer à
+  côté de p4b3 (L24 : lui montrer) ; son bloc de mini-colonnes (ruban d'a1 debout) → p4a4 (les 73 px de vide).
 - « ● / ○ mesuré · jamais mesuré » sous l'en-tête de colonne — p4b5 → les cartes d'étape de p4a4, l'axe de p4b2.
-- Les voisins en colonnes sans glisser (le tri : e3 + a8 + c7) — p4b5 → p4a4 déjà le fait ; y ajouter un toucher sur une
-  carte pour y aller (p4b5 : « toucher un voisin y va »).
+- Les voisins en colonnes sans glisser, chiffrés partout, amertume comprise (le tri : e3 + a8 + c7) — p4b5 (repris) →
+  p4a4 déjà le fait ; y ajouter un toucher sur une carte pour y aller (p4b5 : « toucher un voisin y va »).
 - Les pictos d'étape (flamme, tourbillon, bulles, cuve) et « whirlpool » en entier — p4a1 → p4b1, p4b4 (pastilles), p4b3
   (en-têtes de l'agenda).
 - Le fil vertical noir du pouce à travers les rubans — p4a1 → p4b2 déjà (le trait) ; p4a4 (à travers les cartes).
@@ -276,8 +282,8 @@ p4b1), tiède (p4a4, p4a6) ; les froides p4a1 et p4a2 se montrent derrière, com
    - lignes resserrées à 72 px et rubans d'a1 dans l'espace gagné (remplissage 0,46 → ≥ 0,60) ;
    - « + 2ᵉ ? » retiré ; colonne Pomona gardée en lecture, avec un « › » vers le pont.
 
-Les deux REJET se relancent (p4a3 : loupe hors figure et carte remplie ; p4b5 : trois colonnes lisibles) ou se fondent dans
-p4a4 ; aucune des deux n'est écartée pour sa diversité (L27).
+Les deux REJET du 24.10 ont été relancés et levés (p4a3 : loupe hors figure, carte remplie ; p4b5 : trois colonnes
+lisibles) : elles se montrent derrière les cinq candidates, avec les froides. Les candidates ne changent pas.
 
 LEÇON PROPOSÉE : deux voies sur la même donnée (`AV` : Noyau 0, Baies 0) l'ont lue différemment (inconnue ou zéro) sans que
 le brief tranche ; quand un brief dit « l'inconnu n'est jamais zéro », il nomme la donnée en cause et dit si elle est

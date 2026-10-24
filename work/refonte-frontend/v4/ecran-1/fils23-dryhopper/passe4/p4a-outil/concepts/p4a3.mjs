@@ -61,7 +61,7 @@ export default {
 .p4a3lev a span { display:inline-flex; align-items:center; gap:3px; color:#d4d4d4; font-size:13px; }
 .p4a3fr { position:relative; background:var(--plan); border:1px solid var(--trait); border-radius:8px; }
 .p4a3col { position:absolute; left:4px; right:30px; top:8px; bottom:8px; }
-.p4a3col i { position:absolute; right:0; display:flex; align-items:center; justify-content:flex-end; padding-right:3px; font:600 11px var(--mono); font-style:normal; color:#fff; height:var(--ch); margin-top:calc(var(--ch) / -2); border-radius:2px 0 0 2px; background:#bf86d6; }
+.p4a3col i { position:absolute; right:0; display:flex; align-items:center; justify-content:flex-end; padding-right:3px; font:600 11px var(--mono); font-style:normal; color:var(--encre); height:var(--ch); margin-top:calc(var(--ch) / -2); border-radius:2px 0 0 2px; background:#bf86d6; }
 .p4a3col i.p4a3-ip { color:var(--gris); background:transparent; border:1px dashed #bf86d6; border-right:0; }
 .p4a3col i.p4a3-calc::before { content:""; position:absolute; left:-3px; top:50%; width:5px; height:5px; margin-top:-2.5px; border-radius:50%; background:#9840bc; }
 .p4a3col i.p4a3-amer { box-shadow:inset -3px 0 0 var(--acc); }
