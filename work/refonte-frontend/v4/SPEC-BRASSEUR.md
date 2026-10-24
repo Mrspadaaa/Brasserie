@@ -503,7 +503,8 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   un ou deux changements type, moins focus sur l'ibu, substitution en fonction de l'étape (60' ou dry hopp) » (fait par r9,
   D127) ; sur p4b2 (Dryhopper, « Le brassin en courbes ») : « Ça j'aime beaucoup mais c'est encore assez peu lisible » ;
   sur flb5 (la fiche, « La preuve par contraste ») : « Ça j'aime beaucoup même si encore un peu fouillis et pas 100%
-  clean ». p4b2 et flb5 : trois versions nettoyées chacune, par leurs auteurs, montrées dans leur rangée.
+  clean ». p4b2 et flb5 : trois versions nettoyées chacune, par leurs auteurs, montrées dans leur rangée. Sur gr5 (les traits
+  de Suggérer, le cran au doigt et les crans comptés) : « Ça c'est top à mettre dans la vraie version » (r11, dans Suggérer).
 - **À quoi a servi le quota** (24.10, soir), mot pour mot : « En quoi tout ces quota ont été utile ??? ». Le 24.10, la
   plus grande part est allée à l'outillage (contrôles, cerveau, un délai de test débogué) et à des panels de 48, quand rien
   ou presque ne lui avait été montré. Le quota sert d'abord ce qu'il verra : montrer tôt ce qui est fait (L11).

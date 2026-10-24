@@ -26,6 +26,7 @@ const rangees = [
   ['Suggérer', [
     { t: 'q2b', s: 'choix', m: '« Ça oui, c\'est effectivement l\'un de mes choix »', i: E + 'fils15-s5-complexe/captures/q2b-b-390.png' },
     { t: 's5', s: 'reserve', m: '« s5 semble vraiment le mieux dans ce cas »', r: 'probablement très compliqué si plusieurs voies', i: E + 'fils14-suggestions-barres/captures/s5-b-390.png' },
+    { t: 'gr5, les traits', s: 'bien', m: '« Ça c\'est top à mettre dans la vraie version »', i: E + 'fils24-graphes/captures/gr5-toucher.png' },
     { t: 'p4b, le « + »', s: 'bien', m: '« plutôt un + qui ajoute le houblon à la comparaison »', i: E + 'fils15-s5-complexe/captures/p4b-b-390.png' },
     { t: 'l5b, les barres', s: 'bien', m: '« Meilleures bar » ; « plus informative »', i: E + 'fils18-baseline/captures/l5b-etat-b-390.png' },
     { t: 'l8, la disposition', s: 'reserve', m: '« la manière dont sont disposés les choses j\'aime beaucoup !! »', r: 'visuellement horrible', i: E + 'fils18-baseline/captures/l8-etat-b-390.png' },
