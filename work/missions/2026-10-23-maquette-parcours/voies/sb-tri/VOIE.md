@@ -17,3 +17,9 @@ reçoit, même des plus extravagantes). Aucun REJET au tri. L'étalonnage (voie 
 classer, et dis-le (L27).
 
 Possède : `work/refonte-frontend/v4/ecran-1/fils24-substituer/critique/**`, `work/missions/2026-10-23-maquette-parcours/voies/sb-tri/RESULTAT.md`. Critères : `GATES.md`. Réponse finale : une ligne.
+
+## Étalonnage du 24.10 (épreuve rejouée par le critique, voie e1)
+Paires 89 %, classes 73 % (seuils 80 % et 70 %) ; moitié A : classes 67 %, sous le seuil ; moitié B : 77 %. Biais constant : trop
+clément (« mitige » ou « aime » là où il rejette). Donc : ton classement est une proposition, contestée par le conseil rapide
+(D36) ; quand tu hésites entre « mitige » et « rejette », choisis « rejette » et dis pourquoi ; ne cache rien, le brasseur voit
+tout le panel (L27, M13).

@@ -511,3 +511,10 @@ Sa demande, mot pour mot : « Faire intervenir le conseil aussi pour la partie c
 président en Opus) reçoit la synthèse du critique et les planches de captures ; il conteste le classement et fixe les cinq
 candidates et leurs greffes, dont partent les passes 2. Le critique garde le tri et le jugement de chaque variante ; un
 désaccord entre eux après une passe passe en avis croisé. Le brasseur voit tout le panel et choisit.
+## D37 — Le critique après l'épreuve du 24.10 (24.10.2026)
+
+Épreuve à l'aveugle sur 70 items (5 verdicts du 23 et du 24.10 ajoutés) : paires 89 %, classes 73 % ; la moitié A tombe à 67 % sur
+les classes (seuil 70 %), et le critique est trop clément (il prédit « mitige » ou « aime » là où le brasseur rejette). Une
+contamination légère : il a vu les réponses d'une passe précédente (pas la clé). Choix du pilote : le critique trie les panels
+D125, mais son classement reste une proposition ; il penche vers « rejette » quand il hésite ; le conseil rapide (D36) conteste
+son tri ; le brasseur voit tout le panel. Le portrait sera revu avec ses verdicts sur les panels.
