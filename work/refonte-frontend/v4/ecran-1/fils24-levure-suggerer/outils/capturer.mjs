@@ -8,7 +8,7 @@ const ici = path.dirname(fileURLToPath(import.meta.url)); const lot = path.resol
 const ids = process.argv.slice(2).length ? process.argv.slice(2) : ['lva', 'lvb', 'lvc'];
 const att = (ms) => new Promise((r) => setTimeout(r, ms));
 const CIBLE = { lva: '[data-role="lva-autre"]', lvb: '[data-role="lvb-pont"]', lvc: '[data-role="lvc-levure"]' };
-const DEFILE = { lva: '[data-lva]', lvb: '[data-lvb]', lvc: null };
+const DEFILE = { lva: '[data-lva]', lvb: null, lvc: null };
 const b = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 for (const id of ids) {
   const p = await b.newPage(); const err = []; p.on('pageerror', (e) => err.push(String(e)));

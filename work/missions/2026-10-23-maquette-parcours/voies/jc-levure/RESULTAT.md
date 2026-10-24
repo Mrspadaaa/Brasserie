@@ -1,4 +1,4 @@
-OK — trois mini maquettes du levier levure dans Suggérer (lva, lvb, lvc), G1 et G2 verts
+OK — trois mini maquettes du levier levure dans Suggérer, lvb corrigée (barres l5b) ; G1, G2 verts
 
 ## Fichiers écrits (tous dans `work/refonte-frontend/v4/ecran-1/fils24-levure-suggerer/`)
 - `lva/etat.html`, `lvb/etat.html`, `lvc/etat.html` : chacune est une copie de Suggérer rendu par r4, avec le même
@@ -15,20 +15,23 @@ OK — trois mini maquettes du levier levure dans Suggérer (lva, lvb, lvc), G1 
 - **lva, froide** : le groupe de q2b tel quel, sous Dry hop, sur l'axe. Les cases, les barres l5b et le « + » restent
   ; s'y ajoutent un trait en tirets et la puce « autre levier ». Au toucher, une bulle : « Toute la bière change de
   souche », puis « Étape Levure › ».
-- **lvb, tiède** : sous la liste, un pont « Et avec une autre levure ? › », avec une ligne chiffrée : « Pomona ·
-  agrumes ~+2,8 hors style · floral, résineux » suivis d'une hachure. Au toucher, une feuille montre les deux souches
-  avec les cases de la page, puis « Ouvrir l'étape Levure › ».
+- **lvb, tiède, corrigée après le REJET du critique** (`fils24-levure-suggerer/CRITIQUE.md`) : le pont « Et avec
+  une autre levure ? › » est remonté sous les cartes d'objectif. Sa ligne chiffrée ne nomme plus de souche : « floral,
+  résineux » hachurés, « non établis », puis agrumes « ~+1,3 à ~+2,8 ». Au toucher, la feuille montre Verdant IPA
+  d'abord, puis Pomona marquée « agrumes hors style » en petit gris, chacune avec ses cases **et sa barre l5b** sur l'axe
+  de Suggérer. La légende dit « floral, résineux : non établis ». Puis « Ouvrir l'étape Levure › ». lva et lvc n'ont pas
+  été touchées.
 - **lvc, chaude** : la levure passe dans le contexte. Une puce « US-05 » s'ajoute dans les réglages. Au toucher, un
   tiroir s'ouvre sous les trois cartes d'objectif, en colonnes alignées sur elles : ce que chaque souche ferait seule.
   On y voit résineux et floral à « ? », agrumes en piste chiffrée, et le noyau hors style.
 
 ## Critères
-- G1 : `JEU-BIEN`.
-- G2 : `COMMUN OK` (mots sauté, --sans ; couleurs, au-style, survol, blocs, contraste, fiche, standard, trait,
+- G1 : `JEU-BIEN` (rejoué après la correction de lvb).
+- G2 : `COMMUN OK`, rejoué sur lva, lvb et lvc après la correction (mots sauté, --sans ; couleurs, au-style, survol, blocs, contraste, fiche, standard, trait,
   legende, parlant, brutes OK). Premier essai : STANDARD ECHEC, S4, car l'icône levure du socle était à 1,6 px et 2,1
   px une fois réduite. Elle est redessinée à 1,2 px, comme les autres icônes.
 - `controle-choix.mjs <copie dans os.tmpdir()>/ --ecran=suggerer`, chaque page posée en `suggerer/etat.html`
-  avec la NOTE r4 : `CHOIX OK (1 écran(s) conforme(s) à son choix ; 0 ouvert(s))` pour lva, lvb, lvc (et la base r4).
+  avec la NOTE r4 : `CHOIX OK (1 écran(s) conforme(s) à son choix ; 0 ouvert(s))` pour lva, lvb (rejoué après correction), lvc et la base r4.
   Sans la NOTE r4 à côté, même la base r4 échoue (0 repris) : l'inventaire se lit dans la NOTE.
 
 ## Captures (390 × 844, toutes ouvertes)
