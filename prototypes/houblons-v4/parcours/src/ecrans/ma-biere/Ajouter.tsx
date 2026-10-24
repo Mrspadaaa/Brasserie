@@ -193,7 +193,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
       <PanneauLegende id="pq-ma-biere-legende-rapides" ouverte={legende && liste.length > 0}>
         <p><b>Ajouts proposés</b> : les houblons que le moteur propose, du stock d'abord, chacun à son moment suggéré.</p>
         <p><b>+</b> : l'ajouter à ce moment ; <b>+n IBU</b> : ce qu'il ajoute à ma bière. <b>Moment en pointillé</b> : où il se posera sur le rail. <b>♡</b> : mon goût, aimer, neutre ou exclure.</p>
-        <p><b>Bande</b> : les 12 familles d'arômes du houblon ; vive, marquée ; pâle, citée ; grise, non décrite.</p>
+        <p><b>Bande</b> : les 12 familles d'arômes du houblon ; vive, marquée ; pâle, citée ; grise, non décrite. <b>◇</b> au bout : hors des 12 familles, ses mots au toucher.</p>
         <CleFamilles ordre={sc.order} />
         <p><b>α</b> : l'acide alpha ; le mot suivant, l'usage. <b>Cube</b> : en stock ; <b>chariot</b> : à acheter.</p>
       </PanneauLegende>

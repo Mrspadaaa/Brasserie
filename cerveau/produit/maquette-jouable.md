@@ -9,6 +9,7 @@ sources: work/refonte-frontend/v4/outils/pages/2026-10-24-maquette/LISEZ-MOI.md 
 **Son verdict** (23.10, soir), sur la version d332792c : « La nouvelle maquette (artefacts) est un vrai bon point de départ. Bien la rendre disponible pour les prochaines sessions ». Le travail suivant part d'elle : on la corrige et on l'enrichit, sans repartir d'un lot.
 
 **Où la trouver** (la plus récente d'abord)
+- **Référence, 24.10 soir** (« Sauver cette maquette on est quasiment à du 100% ») : https://claude.ai/artifact/2QTyTCmFC6kRg9xkfVNefN (version 2) ; étiquette git `maquette-2026-10-24-soir` ; enveloppe `work/refonte-frontend/v4/outils/pages/2026-10-24-maquette-reprise/` ; BATTERIE 45/45, ETATS 141/141. Suite : réactivité (#148), choix reportés partout (#149).
 - Version D107 à D121 (24.10) : https://claude.ai/artifact/2BktuZzij8q2DAsrxQS5iX ; copie figée `work/refonte-frontend/v4/outils/pages/2026-10-24-maquette/` (`publie.html` en `file://`, construction de 5345f6ad) ; page côte à côte `…/pages/2026-10-24-cote-a-cote/`.
 - Version d332792c (23.10) : https://claude.ai/artifact/52UBb4F7iME2k3ZzsAv4x1 (la version en ligne porte une pastille « ‹ Retour » refusée) ; copie figée `…/pages/2026-10-23-maquette/`.
 - Sources : `prototypes/houblons-v4/parcours/`, une NOTE.md par écran (base, reprise, écarts, « Pour l'app »).

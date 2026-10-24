@@ -543,6 +543,8 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   (« Le brassin au doigt », lot 21) : « Une frise de ce type est vraiment intéressant aussi, un peu à retravailler » ; sur w2
   (« Trois plans », lot 21) : « Ça c'est vraiment très intéressant ». Puis : « Faire des mini maquettes du dryhopping avec mes
   feedback ». Lot « Dryhopper, avec ses retours » : p4b2f en base, la frise de y1b, les trois plans de w2 (D59).
+  Puis, mot pour mot : « Pour le dryhopping, la meilleure version est celle de l'app jouable mais il lui faut quelques
+  améliorations » : la base est l'écran Dryhopper de la maquette jouable (sa p4b2f rendue sur le moteur), retouché.
 - **Commentaires sur la maquette publiée** (24.10, soir), mot pour mot :
   - en-tête de l'étape (« Houblons 3/7 ») : « Text header inutile » ;
   - le × d'une carte du rail (Falconer's Flight) : « C'est quoi ça ? Ça créé un slider horizontal ??? À enlever » ;
