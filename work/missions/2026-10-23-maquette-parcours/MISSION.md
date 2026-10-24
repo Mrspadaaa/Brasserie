@@ -153,6 +153,10 @@ Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`).
 | Côte à côte | sa base et la maquette, 12 états à 390 px, et le choix D121 ; 24.10 | https://claude.ai/artifact/Q8H8dx98NhqibJkJzv1isW | `work/refonte-frontend/v4/outils/pages/2026-10-24-cote-a-cote/index.html` |
 | D121, entrer dans l'analyse | trois variantes en mini maquettes, à côté de sa base ; 24.10 | https://claude.ai/artifact/6V21JEc5CqsjpLWrp184be | `work/refonte-frontend/v4/outils/pages/2026-10-24-d121/index.html` |
 | Choix de vues | sept choix ouverts côte à côte avec leur référence, et les deux panels de 48 ; 24.10 | https://claude.ai/artifact/5nrApsrrY7yhnqK1gU7wYp | `work/refonte-frontend/v4/outils/pages/2026-10-24-choix-vues/index.html` |
+| Planche Dryhopper | a1 et les onze de la passe 4, côte à côte (D126) ; 24.10 | https://claude.ai/artifact/ULZkzFyvgc3Chv6hmYDWA7 | `work/refonte-frontend/v4/outils/pages/2026-10-24-planche-dryhopper/index.html` |
+| Planche Substituer | u4 et onze vues à greffer (D126, D127) ; 24.10 | https://claude.ai/artifact/QVfyarrN8m68dTvnq2PF4X | `work/refonte-frontend/v4/outils/pages/2026-10-24-planche-substituer/index.html` |
+| Planche de la fiche | g1 et onze vues de la liste (D126) ; 24.10 | https://claude.ai/artifact/2vUzuyzUpsShrYnkp1PUPZ | `work/refonte-frontend/v4/outils/pages/2026-10-24-planche-fiche/index.html` |
+| Planche des graphes | six graphes côte à côte, deux lectures chacun (D126) ; 24.10 | https://claude.ai/artifact/JSiBVNWUJqJD8zdkvpKN9t | `work/refonte-frontend/v4/outils/pages/2026-10-24-planche-graphes/index.html` |
 
 ## Boucle de retour
 - Un critère rouge : l'agent corrige dans sa voie, 3 essais. Au-delà, SendMessage au même agent avec le défaut
