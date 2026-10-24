@@ -31,11 +31,11 @@ for (const id of ids) {
   const c60 = await page.evaluate(collisions);
   const lire = () => page.evaluate(() => ({ etat: document.body.dataset.moment, cand: document.body.dataset.choix, pied: [...document.querySelectorAll('footer p')].filter((e) => e.checkVisibility()).map((e) => e.innerText.replace(/\s+/g, ' ')).join('') }));
   const r60 = await lire();
-  const pt = async (sel) => page.evaluate((s) => { const e = [...document.querySelectorAll(s)].find((x) => x.checkVisibility() && x.getAttribute('aria-checked') !== 'true'); if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return { x: r.left + Math.min(30, r.width / 2), y: r.top + r.height / 2 }; }, sel);
+  const pt = async (sel) => page.evaluate((s) => { const e = [...document.querySelectorAll(s)].find((x) => x.checkVisibility() && x.getAttribute('aria-checked') !== 'true' && x.getAttribute('aria-pressed') !== 'true'); if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return { x: r.left + Math.min(30, r.width / 2), y: r.top + r.height / 2 }; }, sel);
   let p = await pt('[data-cand]'); if (p) { await page.touchscreen.tap(p.x, p.y); await att(250); await page.evaluate(() => window.scrollTo(0, 0)); await att(100); await page.screenshot({ path: path.join(out, id + '-geste.png') }); }
   const rg = await lire();
   await page.goto(url, { waitUntil: 'networkidle0' }); await att(200);
-  p = await pt('[data-vers]'); await page.touchscreen.tap(p.x, p.y); await att(300); await page.evaluate(() => window.scrollTo(0, 0)); await att(100);
+  p = await pt('[data-edite]'); await page.touchscreen.tap(p.x, p.y); await att(250); await page.screenshot({ path: path.join(out, id + '-feuille-moment.png') }); p = await pt('[data-vers="wp"]'); await page.touchscreen.tap(p.x, p.y); await att(300); await page.evaluate(() => window.scrollTo(0, 0)); await att(100);
   await page.screenshot({ path: path.join(out, id + '-whirlpool.png') });
   const cwp = await page.evaluate(collisions);
   const rwp = await lire();

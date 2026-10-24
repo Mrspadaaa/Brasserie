@@ -1,0 +1,11 @@
+import path from 'node:path'; import { pathToFileURL } from 'node:url';
+import puppeteer from 'puppeteer-core';
+const f = process.argv[2], out = process.argv[3];
+const b = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
+const p = await b.newPage(); const err=[]; p.on('pageerror',e=>err.push(String(e))); p.on('console',m=>{ if(m.type()==='error') err.push(m.text()); });
+await p.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+await p.goto(pathToFileURL(path.resolve(f)).href, { waitUntil: 'networkidle0' }); await new Promise(r=>setTimeout(r,600));
+await p.screenshot({ path: out });
+const info = await p.evaluate(()=>{ const e=document.querySelector('[data-element~="r6a-simule"]'); const r=e?.getBoundingClientRect(); return { puce: e?.outerHTML, r: r && [r.left,r.top,r.width,r.height], radH: document.querySelector('.pq-comparer-rad-h')?.outerHTML.slice(0,600), vsrc: document.querySelector('.pq-comparer-vsrc')?.textContent, body: document.body.innerText.slice(0,900) }; });
+console.log(JSON.stringify(info,null,1)); console.log('ERR', err.join(' | '));
+await b.close();

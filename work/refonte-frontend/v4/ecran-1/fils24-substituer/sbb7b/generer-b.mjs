@@ -33,7 +33,8 @@ const maxDelta = (E, c) => Math.max(...BIERE.map((f) => { const x = c.apres.prof
 // Pourquoi, en trois barres : les composantes du moteur, sans leurs poids (la méthode est derrière « ? »).
 const compos = (E, c) => { const b = (lab, v) => `<span class="§-cp"><span>${lab}</span>${v == null ? '<i class="§-cpi"></i><b class="§-num">?</b>' : `<i class="§-cpt"><i style="width:${v}%"></i></i><b class="§-num">${v}</b>`}</span>`;
   return `<span class="§-cps">${b('amertume', c.comp.amertume)}${b('huiles', c.comp.huiles)}${b(E.mo.aromeMot, c.comp.arome)}</span>`; };
-const contexte = (E) => `<p class="§-ctx" data-role="contexte"><span data-contexte="base">Stout 16D</span><span data-contexte="moment">${E.mo.mot} <a class="§-sw" href="?moment=${E.mo.autre}" data-vers="${E.mo.autre}">${E.mo.autreMot} ⇄</a></span><span data-contexte="dose">46 g · <span class="§-num">${fr(E.nug.ibu, 1)}</span> IBU égal</span></p>`;
+const contexte = (E) => `<p class="§-ctx" data-role="contexte"><span data-contexte="base">Stout 16D</span><span data-contexte="moment">Nugget ${E.mo.mot} <button type="button" class="§-sw" data-edite="moment" aria-controls="§-fm-${E.id}" aria-haspopup="dialog" aria-expanded="false" aria-label="Moment de Nugget : ${E.mo.mot}, changer">⇄</button></span><span data-contexte="dose">46 g · <span class="§-num">${fr(E.nug.ibu, 1)}</span> IBU égal</span></p>
+<div class="§-fm" id="§-fm-${E.id}" role="dialog" aria-label="Moment de Nugget" hidden><p>Nugget 46 g, même ajout :</p>${['b60', 'wp'].map((m) => `<button type="button" data-vers="${m}" aria-pressed="${m === E.id}">${S.MOMENTS[m].mot}</button>`).join('')}</div>`;
 const pied = (E, liste) => `<footer class="§-pied"><p>${blocs(liste, (c) => `46 g de Nugget → <b>${doseTxt(c)} de ${S.esc(c.nom)}</b> <span class="§-gr">${E.mo.mot}</span>`, E.rep.id, 'span')}</p><div class="§-act"><button type="button" class="§-no">Annuler</button><button type="button" class="§-go">Remplacer${S.ico('i-chev-r')}</button></div></footer>`;
 const siAchat = (E) => { const a = E.achatSur; return `<p class="§-si">Si tu achètes : <b style="color:${a.coul}">${S.esc(a.nom)}</b>, ${doseTxt(a)}, ${scoreTxt(a)} ${a.palier}.</p>`; };
 const CSS_COMMUN = `body { display:flex; flex-direction:column; min-height:100vh; }
@@ -43,7 +44,12 @@ const CSS_COMMUN = `body { display:flex; flex-direction:column; min-height:100vh
 .§-ctx { display:flex; flex-wrap:wrap; gap:4px; align-items:center; font-size:13px; margin-top:2px; }
 .§-ctx [data-contexte] { background:#f5f5f5; border-radius:999px; padding:1px 8px; white-space:nowrap; }
 .§-ctx [data-contexte="moment"] { background:#111; color:#fff; font-weight:600; }
-.§-sw { color:#fff; font-weight:400; margin-left:4px; text-decoration:underline; text-underline-offset:2px; }
+.§-sw { display:inline-flex; align-items:center; justify-content:center; width:28px; height:22px; margin:-2px -6px -2px 4px; border-radius:999px; background:#fff; color:#111; font-weight:700; }
+.§-fm { position:absolute; z-index:25; left:12px; right:12px; margin-top:4px; background:#fff; border:1px solid #c9c9c9; border-radius:8px; padding:8px 10px; box-shadow:0 6px 24px rgba(0,0,0,.14); display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:13px; }
+.§-fm p { width:100%; color:#555; }
+.§-fm button { height:36px; padding:0 14px; border-radius:999px; border:1px solid #9e9e9e; font-weight:600; }
+.§-fm button[aria-pressed="true"] { background:#111; color:#fff; border-color:#111; }
+.§-h { position:relative; }
 .§-hz { background:repeating-linear-gradient(45deg,#e0e0e0 0 2px,#fff 2px 5px); padding:0 3px; border-radius:2px; }
 .§-lb { display:grid; grid-template-columns:16px 64px 1fr 34px; align-items:center; gap:6px; min-height:20px; }
 .§-lbn { font-size:13px; font-weight:600; }
@@ -64,7 +70,10 @@ const CSS_COMMUN = `body { display:flex; flex-direction:column; min-height:100vh
 // Le changement d'état (la puce de contexte) : un toucher montre l'autre moment ; ?moment=wp à l'ouverture.
 const CLIENT = `var Q=function(s){return document.querySelector(s)}, QQ=function(s){return [].slice.call(document.querySelectorAll(s))};
 function etat(m){ QQ('main [data-etat], body > [data-etat]').forEach(function(s){ s.hidden = s.dataset.etat!==m; }); document.body.dataset.moment=m; var d=Q('[data-etat="'+m+'"] [data-defaut]'); if(d) d.click(); }
-QQ('[data-vers]').forEach(function(a){ a.addEventListener('click',function(e){ e.preventDefault(); etat(a.dataset.vers); try{ history.replaceState(null,'','?moment='+a.dataset.vers); }catch(x){} }); });
+function feuilles(){ QQ('.§-fm').forEach(function(f){ f.hidden=true; }); QQ('[data-edite]').forEach(function(b){ b.setAttribute('aria-expanded','false'); }); }
+QQ('[data-edite]').forEach(function(b){ b.addEventListener('click',function(e){ e.stopPropagation(); var f=document.getElementById(b.getAttribute('aria-controls')); var o=f.hidden; feuilles(); f.hidden=!o; b.setAttribute('aria-expanded',String(o)); }); });
+QQ('[data-vers]').forEach(function(a){ a.addEventListener('click',function(e){ e.preventDefault(); feuilles(); etat(a.dataset.vers); try{ history.replaceState(null,'','?moment='+a.dataset.vers); }catch(x){} }); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') feuilles(); });
 QQ('[data-aide2]').forEach(function(b){ b.addEventListener('click',function(e){ e.stopPropagation(); Q('[data-role="legende-bouton"]').click(); var l=Q('[data-role="legende"]'); var r=b.getBoundingClientRect(); l.style.top=(r.bottom+window.scrollY+6)+'px'; }); });
 QQ('.§-no').forEach(function(b){ b.addEventListener('click',function(){ document.body.classList.add('§-annule'); }); });
 var mq=location.search.match(/moment=(b60|wp)/); etat(mq?mq[1]:'b60');`;

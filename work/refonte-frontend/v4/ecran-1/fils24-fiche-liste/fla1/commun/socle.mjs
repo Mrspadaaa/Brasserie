@@ -91,7 +91,7 @@ function fiche(p, S, h, C) {
   </section>`;
 }
 
-const CSS = (p) => `
+export const CSS = (p) => `
 *{box-sizing:border-box}html,body{margin:0}body{font-family:system-ui,"Segoe UI",Roboto,sans-serif;color:#1d1d1b;background:#fff;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;cursor:pointer}
 .${p}-etape{max-width:430px;margin:0 auto;padding:6px 12px 24px}
@@ -158,6 +158,7 @@ var m=/fiche=([\\w-]+)/.exec(location.hash);if(m)ouvrir(m[1]);
 })();`;
 
 export function page(C) {
+  if (C.page) return C.page(aides(C.id), { CSS, PICTOS, HOUBLONS }, C);
   const p = C.id, S = aides(p);
   return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${C.id} · ${S.esc(C.titre)} · lot D125, la liste de la fiche (24.10)</title>
