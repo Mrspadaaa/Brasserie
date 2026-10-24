@@ -9,7 +9,7 @@ import { COULEURS, COURT, Picto, nombre, plage } from '../../commun';
 import { CONDITIONS, H, nomLevure } from '../../donnees/cas';
 import { useRecette } from '../../etat/EtatParcours';
 import { placer, quandDe } from '../../etat/quand';
-import { houblon, lireBiere, style } from '../../moteur';
+import { houblon, ibuAjout, lireBiere, style } from '../../moteur';
 import { STOCK, hopRef, type FamilyId } from '../../../../src/engine';
 import {
   ETAPES, ORANGE, VISEES, biotransformation, couleurHoublon, egaler, enActif, jourApresJour, scoreDefi, souche, tirer, verdict,
@@ -190,38 +190,77 @@ export function FeuilleDefi({ cols, retenu, etapes, onSuggerer }: { cols: Colonn
 }
 
 // ---------- Égaler (y3, r6n2) ----------
+// D40 point 5 (r6n2, retenu avec r6a) : par famille, la dose d'un autre houblon pour le même effet, avec sa barre : la famille du
+// critère pour le houblon retenu, puis la signature de chaque autre houblon (sa famille qui monte le plus) ; « ~jamais » quand
+// le moteur plafonne. Puis la même amertume, à 10′ et au whirlpool.
+const DOSE_MAX = 8;
 export function FeuilleEgaler({ cols, sel, critere, etapes }: { cols: ColonneLue[]; sel: ColonneLue; critere: Critere; etapes: Etapes }) {
   const recette = useRecette();
-  const f = critere.sens > 0 ? critere.famille : 'floral';
-  const autres = cols.filter((c) => c.cle !== sel.cle);
-  const res = useMemo(() => egaler(recette, sel, autres, f), [recette, sel, autres, f]);
-  const but = sel.cellules[f].dCran;
-  const ibu = (cle: string) => etapes[cle]?.b10?.ibu?.valeur ?? null;
+  const f0 = critere.sens > 0 ? critere.famille : 'floral';
+  const sections = useMemo(() => {
+    const out: { ref: ColonneLue; famille: FamilyId; res: { cle: string; doseGL: number | null }[] }[] = [];
+    const prises = new Set<FamilyId>();
+    const poser = (ref: ColonneLue, famille: FamilyId) => {
+      if (prises.has(famille) || ref.cellules[famille]?.dCran == null || (ref.cellules[famille].dCran ?? 0) <= 0) return;
+      prises.add(famille);
+      out.push({ ref, famille, res: egaler(recette, ref, cols.filter((c) => c.cle !== ref.cle), famille, DOSE_MAX) });
+    };
+    poser(sel, f0);
+    // La signature de chaque houblon : sa famille la plus citée par ses fiches, celle qui monte le plus à égalité.
+    for (const c of cols) {
+      const part = (g: FamilyId) => { const x = c.houblon.familles[g]; return x.sur ? x.fiches / x.sur + (x.niveau === 'marqué' ? 1 : 0) : 0; };
+      const sig = (Object.keys(c.cellules) as FamilyId[]).filter((g) => c.cellules[g].dCran != null && (c.cellules[g].dCran ?? 0) > 0 && c.houblon.familles[g].niveau !== 'non décrit')
+        .sort((a, b) => part(b) - part(a) || (c.cellules[b].dCran ?? 0) - (c.cellules[a].dCran ?? 0))[0];
+      if (sig) poser(c, sig);
+    }
+    return out;
+  }, [recette, cols, sel, f0]);
+  const pc = (g: number) => `${Math.min(100, (g / DOSE_MAX) * 100).toFixed(1)}%`;
+  const ibu10 = (cle: string) => etapes[cle]?.b10?.ibu?.valeur ?? null;
+  const ibuWp = (cle: string) => {
+    const g = CONDITIONS.doseGL * recette.volumeL;
+    const a = placer({ id: 'egaler-wp', hopKey: cle, grams: g, moment: 'b10' }, { type: 'whirlpool' }, recette);
+    return ibuAjout(a, { ...recette, additions: [...recette.additions, a] }).ibu?.valeur ?? null;
+  };
+  const pour10 = (i: number | null) => (i ? `${nombre((10 * CONDITIONS.doseGL) / i, 2)} g/L` : '?');
   return (
     <div className="pq-comparer-eg" data-element="y3-pour-egaler">
-      <p className="pq-comparer-eg-t">
-        <Picto famille={f} />Pour égaler <Point c={sel} /><b>{sel.houblon.nom}</b> à {nombre(CONDITIONS.doseGL)} g/L
-        {but != null && <span>(<span data-nature="simule">{signeCran(but)}</span> cran de {COURT[f].toLowerCase()}),</span>} il faudrait :
-      </p>
-      {autres.map((c) => {
-        const r = res.find((x) => x.cle === c.cle);
-        return (
-          <p key={c.cle} className="pq-comparer-eg-l">
-            <Point c={c} /><b>{c.houblon.nom}</b>
-            {r?.doseGL != null
-              ? <span data-nature="simule" className="pq-comparer-nb">~{nombre(r.doseGL, 1)} g/L</span>
-              : <span className="pq-comparer-eg-jamais" data-nature="simule">~jamais, même à 16 g/L</span>}
+      <p className="pq-comparer-eg-t">Pour égaler, à {nombre(CONDITIONS.doseGL)} g/L, il faudrait :</p>
+      {sections.map(({ ref, famille, res }) => (
+        <section key={ref.cle + famille} className="pq-comparer-eg-s" data-famille-egaler={famille} data-ref={ref.cle}>
+          <p className="pq-comparer-eg-t">
+            <Picto famille={famille} />les {COURT[famille].toLowerCase()} de <b>{ref.houblon.nom} {nombre(CONDITIONS.doseGL)} g/L</b>
+            <span className="ml-auto" data-nature="simule">~{nombre(ref.cellules[famille].centre)} sur 100</span>
           </p>
-        );
-      })}
-      <p className="pq-comparer-vsrc">~ simulé par le moteur, dose cherchée de 0,5 à 16 g/L ; après fermentation, {CONDITIONS.jours} j, {nomLevure(recette.yeastId)}.</p>
+          {cols.map((c) => {
+            const estRef = c.cle === ref.cle;
+            const r = estRef ? { doseGL: CONDITIONS.doseGL } : res.find((x) => x.cle === c.cle) ?? { doseGL: null };
+            const jamais = r.doseGL == null;
+            return (
+              <p key={c.cle} className="pq-comparer-eg-l">
+                <Point c={c} /><span className="pq-comparer-eg-n">{c.houblon.nom}</span>
+                <span aria-hidden="true" className={`pq-comparer-eg-b ${jamais ? 'pq-hachure' : ''}`}>
+                  {!jamais && <i style={{ width: pc(r.doseGL!), background: COULEURS[famille].base }} />}
+                  <i className="pq-comparer-eg-trait" style={{ left: pc(CONDITIONS.doseGL) }} />
+                </span>
+                {jamais
+                  ? <span className="pq-comparer-eg-jamais" data-nature="simule">~jamais, même à {DOSE_MAX} g/L</span>
+                  : <span data-nature={estRef ? 'fixe' : 'simule'} className="pq-comparer-nb">{estRef ? `${nombre(r.doseGL!)} g/L · réf.` : `~${nombre(r.doseGL!, 1)} g/L`}</span>}
+              </p>
+            );
+          })}
+        </section>
+      ))}
+      <p className="pq-comparer-vsrc">~ simulé par le moteur ; trait : {nombre(CONDITIONS.doseGL)} g/L, ta dose égale ; échelle 0–{DOSE_MAX} g/L, au-delà, inconnu ; après fermentation, {CONDITIONS.jours} j, {nomLevure(recette.yeastId)}.</p>
       <p className="pq-comparer-carte-st"><b>la même amertume en ébullition</b><Calcule /></p>
-      {cols.map((c) => { const i = ibu(c.cle); return (
+      <p className="pq-comparer-eg-l pq-comparer-note"><span className="ml-auto" />10 IBU à 10′<span className="w-24 text-right">5 IBU au whirlpool</span></p>
+      {cols.map((c) => (
         <p key={c.cle} className="pq-comparer-eg-l">
           <Point c={c} /><b>{c.houblon.nom}</b>
-          <span className="pq-comparer-nb" data-nature="calcule">{i ? `${nombre((10 * CONDITIONS.doseGL) / i, 2)} g/L` : '?'}</span><span className="pq-comparer-note">10 IBU à 10′</span>
+          <span className="pq-comparer-nb" data-nature="calcule">{pour10(ibu10(c.cle))}</span>
+          <span className="pq-comparer-nb w-24 text-right" data-nature="calcule">{ibuWp(c.cle) ? `${nombre((5 * CONDITIONS.doseGL) / ibuWp(c.cle)!, 2)} g/L` : '?'}</span>
         </p>
-      ); })}
+      ))}
     </div>
   );
 }
@@ -328,7 +367,7 @@ export function FeuilleValeurs({ cols, sel, quatre, etapes, familles, onPreuve }
       data-element="r6a-chimie v1-vraies-valeurs v1-linalol-en-biere d1-tout-ouvert p03-plages-sources">
       <EnAPlus cols={cols} sel={sel} />
       <div className="pq-comparer-grille-tab pq-comparer-vh"><span />{cols.map((c) => <span key={c.cle} style={{ color: c.couleur }}>{c.houblon.nom}</span>)}</div>
-      <LigneValeurs nom="α" unite="% masse" icone={<IconeLivre />} cols={cols} cellules={alpha} quatre={quatre} />
+      <LigneValeurs nom="α" unite="% masse · toutes fiches" icone={<IconeLivre />} cols={cols} cellules={alpha} quatre={quatre} />
       <LigneValeurs nom="β" unite="% masse" icone={<IconeLivre />} cols={cols} cellules={beta} quatre={quatre} />
       <div className="pq-comparer-chim" data-acquis="chimie" aria-label="Composés de l’huile, rangés par famille">
         <LigneValeurs cle="huile" nom="huile" unite="mL/100 g" icone={<IconeGoutte />} cols={cols} cellules={hu} quatre={quatre} />
@@ -359,7 +398,7 @@ export function FeuilleValeurs({ cols, sel, quatre, etapes, familles, onPreuve }
       <Fiches cols={cols} familles={familles} />
       {/* Le panel OSU (mesuré, Cascade) vit dans Preuve (r6n2, D114) ; sa conclusion est rappelée ici, à côté des vraies
           valeurs, avec ses sources, et un toucher mène à la courbe. */}
-      <p className="pq-comparer-osu-rap" data-etat="etat-comp-osu" data-element="r6a-osu">
+      <p className="pq-comparer-osu-rap" data-etat="etat-comp-osu etat-acquis-panel-osu" data-element="r6a-osu">
         <IconePanel /><span><b>Panel OSU, Cascade</b> : les agrumes plafonnent dès 8 g/L, l’herbacé monte encore ; 4–8 g/L : retenu par les auteurs.
         <span className="pq-comparer-vr"> H22 Lafontaine 2018 · H77 Brülosophy 2019</span></span>
         <button type="button" className="pq-comparer-lien" onClick={onPreuve}>La courbe : Preuve ›</button>

@@ -69,9 +69,31 @@ OK — cinq chaudes p4b1 à p4b5 sur a1, retouches du conseil dh4 appliquées et
 Chrome d'actif · 2 j à 20′ : loupe ×5,6 / ×5,9 / ×5,6 / ×5,6 / ×5,6, aucune erreur de page, 390 px sans défilement
 horizontal, 1,0 écran chacune (p4b2 : 844 px après la dernière retouche).
 
+## Passe 5 (p4b2, 24.10 soir) — « Ça j'aime beaucoup mais c'est encore assez peu lisible »
+Trois versions plus lisibles de p4b2, même idée (trois courbes de gain sur les 24 moments, l'amertume dessous, les barres
+d'a1), baseline et plancher a1 inchangés, dérivées du générateur de p4b2 (`p4b2d|e|f/generer.mjs`), mesurées au DOM par
+`p4b-commun/mesurer-lisibilite.mjs` (`lisibilite.json`) ; p4b2 d'origine : police min 10,4 px, cinq textes sous 12 px,
+courbes 2,08 à 2,84 px, 40 mots.
+- **p4b2d « Le brassin en courbes, nettoyé »** — froide : la même, traits à 3 et 3,5 px, chaque courbe nommée au bout de sa
+  ligne (halo blanc), étapes, jours et axes à 13 / 14 px, « ★ meilleur » et bande verte sur le moment conseillé. Mesures :
+  police min **12 px**, 0 texte sous 12 ; courbes **2,84 à 3,31 px** ; **41 mots** ; page 844 px ; loupe 0 px² (3/3).
+- **p4b2e « Une courbe devant »** — tiède : floral seule au premier plan (3,5 px, points, valeur, nom en couleur), baies et
+  résineux en gris (2,3 px) ; sélecteur Floral · Baies · Résineux en lecture seule (`data-lecture`, D98 vert). Mesures :
+  police min **12 px**, 0 sous 12 ; courbes **2,17 à 3,31 px** ; **40 mots** ; page 844 px ; loupe 0 px² (3/3).
+- **p4b2f « L'aire de floral »** — chaude : floral en aire pleine (4 px), baies et résineux en traits de 2,5 px nommés au
+  bout ; les quatre chiffres du moment (floral · baies · résineux · IBU) en gros, 16 px, dans un bandeau au-dessus du
+  graphique, plus aucun chiffre au croisement ; l'amertume en une bande de 24 cases (orangée, grise, hachurée à cru) ;
+  repères +10 / +20. Mesures : police min **12 px**, 0 sous 12 ; courbes **2,36 à 3,78 px** ; **40 mots** (une légende
+  écrite retirée, D89) ; page 844 px ; loupe 0 px² (3/3).
+- Contrôle demandé : `controle-commun … p4b2d p4b2e p4b2f --page=etat.html --sans=mots` → **COMMUN OK** (p4b2f corrigé en
+  route : rayon des cases 6 → 4 px, S3 de standard). Aussi : UNE-QUESTION OK (moment), MOTS OK (41, 40, 40).
+- Captures `captures/p4b2d|e|f-premier-ecran.png` et `-pendant.png` (390 × 844), toutes ouvertes à côté de
+  `p4b2-premier-ecran.png` (geste au doigt d'actif · 2 j à 20′, loupe ×5,9, aucune erreur de page).
+
 ## Prédiction
 « p4b2 donne vraiment bien, p4b3 c'est comme ça que je pense ; le ? → +21 sur Baies c'est honnête. Mais p4b2 qui bouge
-quand je glisse, bof. »
+quand je glisse, bof. » Sur la passe 5 : « p4b2f là on lit tout de suite, les gros chiffres en haut c'est ça ; p4b2e pas
+mal pour se concentrer sur le floral. »
 
 DÉCISION À PRENDRE : aucune (Noyau et Baies tranchés par le pilote, appliqués).
 

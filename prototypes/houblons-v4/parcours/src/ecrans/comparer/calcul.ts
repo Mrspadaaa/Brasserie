@@ -64,9 +64,11 @@ export interface ColonneLue {
 
 const r2 = (x: number) => Math.round(x * 100) / 100;
 
-export function lireColonnes(recette: RecetteParcours, cles: string[], doseGL?: number): ColonneLue[] {
+/** Les colonnes au moment `quand` (D128 : le sélecteur 60′ · 10′ · dry hop sur les rangées et le radar) ; sans
+ * `quand`, au dry hop, après 3 j (le moment de r6a). « Ta stout » (le trait noir) reste la bière de base. */
+export function lireColonnes(recette: RecetteParcours, cles: string[], doseGL?: number, quand?: Quand): ColonneLue[] {
   const sc = style(recette.styleCode);
-  return comparer(recette, cles, doseGL ? { doseGL } : {}).map((c) => {
+  return comparer(recette, cles, { ...(doseGL ? { doseGL } : {}), ...(quand ? { quand } : {}) }).map((c) => {
     const cellules = {} as Record<FamilyId, CelluleLue>;
     for (const f of sc.order) {
       const fs = sc.families[f];
@@ -110,6 +112,8 @@ export interface ValeurEtape {
   /** Crans du style gagnés sur ta stout (floral, résineux) ; null : inconnu (rien de simulé), jamais 0. */
   floral: number | null;
   resineux: number | null;
+  /** D128 : les crans gagnés de chaque famille (le critère de la pastille choisit celle que montre la bande). */
+  crans: Record<FamilyId, number | null>;
   /** IBU de l'ajout à ce moment (valeur, min, max par la plage d'α) ; null à froid ou α inconnu, avec la raison. */
   ibu: { valeur: number; min: number; max: number } | null;
   raisonIbu: string | null;
@@ -124,7 +128,8 @@ export function lireEtapes(recette: RecetteParcours, cles: string[]): Etapes {
   for (const e of ETAPES) {
     for (const c of comparer(recette, cles, { quand: e.quand })) {
       const cr = (f: FamilyId) => { const x = c.lu.ecart[f]; return x ? r2(x.centre / sc.families[f].cran) : null; };
-      out[c.cle][e.code] = { floral: cr('floral'), resineux: cr('resin'), ibu: c.lu.ibu.ibu, raisonIbu: c.lu.ibu.raison, raison: c.lu.raison };
+      const crans = Object.fromEntries(sc.order.map((f) => [f, cr(f)])) as Record<FamilyId, number | null>;
+      out[c.cle][e.code] = { floral: cr('floral'), resineux: cr('resin'), crans, ibu: c.lu.ibu.ibu, raisonIbu: c.lu.ibu.raison, raison: c.lu.raison };
     }
   }
   return out;
@@ -180,7 +185,7 @@ export function reponse(cols: ColonneLue[], retenu: string, visee: FamilyId, sen
 /** « Égaler » (y3) : la dose de chaque autre houblon qui donne, sur la famille visée, l'écart que le retenu donne
  * à 4 g/L. Recherche par dichotomie sur 0,5–16 g/L (le moteur, à chaque pas ; l'effet croît avec la dose).
  * null : jamais atteint à 16 g/L (le moteur ne l'atteint pas sur cette plage : écrit, jamais un nombre). */
-export function egaler(recette: RecetteParcours, cible: ColonneLue, autres: ColonneLue[], visee: FamilyId): { cle: string; doseGL: number | null }[] {
+export function egaler(recette: RecetteParcours, cible: ColonneLue, autres: ColonneLue[], visee: FamilyId, max = 16): { cle: string; doseGL: number | null }[] {
   const sc = style(recette.styleCode);
   const but = cible.cellules[visee].dCran;
   if (but == null) return autres.map((a) => ({ cle: a.cle, doseGL: null }));
@@ -189,7 +194,7 @@ export function egaler(recette: RecetteParcours, cible: ColonneLue, autres: Colo
     return e ? e.centre / sc.families[visee].cran : null;
   };
   return autres.map((a) => {
-    let bas = 0.5, haut = 16;
+    let bas = 0.5, haut = max;
     const h = effet(a.cle, haut);
     if (h == null || h < but) return { cle: a.cle, doseGL: null };
     for (let i = 0; i < 7; i++) {

@@ -15,8 +15,8 @@ import { nouvelId } from '../../etat/operations';
 import { style } from '../../moteur';
 import { STOCK, hopRef, type FamilyId } from '../../../../src/engine';
 import Fiche from '../fiche';
-import { ABSOLU, CRITERES, ORANGE, depart, houblonDeBase, lireColonnes, lireEtapes, reponse, scoreDefi, type CelluleLue, type ColonneLue, type Critere } from './calcul';
-import { AuxEtapes, PiedEtapes } from './Etapes';
+import { ABSOLU, CRITERES, ETAPES, ORANGE, depart, type CodeEtape, houblonDeBase, lireColonnes, lireEtapes, reponse, scoreDefi, type CelluleLue, type ColonneLue, type Critere } from './calcul';
+import { BandeEtapes, PiedEtapes } from './Etapes';
 import {
   FeuilleAjouter, FeuilleDefi, FeuilleDock, FeuilleEgaler, FeuilleFrise, FeuillePourquoi, FeuillePreuve, FeuilleSouche, FeuilleValeurs, Point, signeCran,
 } from './Feuilles';
@@ -46,6 +46,11 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   }, [houblons, ajoutes, pin]);
   // En direct : le moteur simule chaque houblon à chaque changement de la recette ou des colonnes (mémoïsé).
   const cols = useMemo(() => lireColonnes(recette, cles), [recette, cles]);
+  // D128 : le premier écran est celui de r6a (radar, colonnes, rangées de familles) ; les étapes de x3b deviennent un
+  // sélecteur sur ces rangées et le radar. Au dry hop (départ), les colonnes de r6a ; à 60′ ou 10′, le moteur pose
+  // chaque houblon à ce moment, à la même dose. Le Défi et les feuilles du dock restent au dry hop (leur moment).
+  const [moment, setMoment] = useState<CodeEtape>('dryPost');
+  const vue = useMemo(() => (moment === 'dryPost' ? cols : lireColonnes(recette, cles, undefined, ETAPES.find((e) => e.code === moment)!.quand)), [recette, cles, cols, moment]);
   // Aux étapes (D107) : chaque houblon et la référence (le houblon de base de ta recette) à 60′, 10′ et au dry hop.
   const reference = useMemo(() => houblonDeBase(recette, cles), [recette, cles]);
   const etapes = useMemo(() => lireEtapes(recette, reference ? [...cles, reference] : cles), [recette, cles, reference]);
@@ -54,7 +59,6 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   const [retenu, setRetenu] = useState<string | null>(null);
   const cleRetenue = retenu && cols.some((c) => c.cle === retenu) ? retenu : depart(cols, critere.famille, critere.sens) ?? cols[0]?.cle ?? '';
   const sel = cols.find((c) => c.cle === cleRetenue) ?? null;
-  const rep = useMemo(() => reponse(cols, cleRetenue, critere.famille, critere.sens), [cols, cleRetenue, critere]);
   const [absolu, setAbsolu] = useState(false);
   const [feuille, setFeuille] = useState<FeuilleOuverte>(null);
   const basculer = (f: FeuilleOuverte) => setFeuille((x) => (x === f ? null : f));
@@ -94,6 +98,9 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
     setFiche(cle);
   };
 
+  // L'écart chiffré de r6a sur les rangées de ta demande (Floral ↑, Résineux ↓), sauf la famille du critère : la bande
+  // des étapes, juste au-dessus, la chiffre déjà à chaque moment (le même nombre, 80 mots au premier écran).
+  const chiffre = (f: FamilyId) => (f === VISEE.famille || f === TROP) && f !== critere.famille;
   const lignes = sc.order.filter((f) => !cols.every((c) => c.cellules[f].inconnu));
   const tousInconnus = sc.order.filter((f) => cols.length > 0 && cols.every((c) => c.cellules[f].inconnu));
   const noms = cols.map((c) => c.houblon.nom);
@@ -107,6 +114,8 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
     document.querySelectorAll('.pq-outil-comparer h1').forEach((h) => { if (h.textContent?.trim() === question) h.setAttribute('data-element', 'r6a-question'); });
   }, [question]);
   const score = sel ? scoreDefi(sel) : null;
+  // La réponse de y1b (r6n2), au moment choisi : en conclusion, au-dessus de « Placer » (80 mots au premier écran, D128).
+  const rep = useMemo(() => reponse(vue, cleRetenue, critere.famille, critere.sens), [vue, cleRetenue, critere]);
   // Le pont nomme son outil (title du bouton de Pont, composant du socle) : « Doser Idaho 7 dans Dryhopper », comme r6a.
   const refPont = useRef<HTMLSpanElement>(null);
   const nomRetenu = sel?.houblon.nom ?? '';
@@ -119,9 +128,9 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
           aria-label={`Fixé pour ${nombreMot(cols.length)} : Stout ${sc.code}, dose égale ${nombre(CONDITIONS.doseGL)} g/L chacun, ${nomLevure(recette.yeastId)}`}>
           <LigneContexte items={[
             { cle: 'base', contenu: <span data-element="y1b-ligne-contexte r6a-contexte">Stout {sc.code}</span> },
-            { cle: 'dose', contenu: <span className="pq-comparer-dose" aria-label={`dose égale : ${nombre(CONDITIONS.doseGL)} g/L chacun`}><IconeEgal />{nombre(CONDITIONS.doseGL)} g/L</span> },
+            { cle: 'dose', contenu: <span className="pq-comparer-dose" aria-label={`dose égale : ${nombre(CONDITIONS.doseGL)} g/L chacun`}>dose égale {nombre(CONDITIONS.doseGL)} g/L</span> },
             { cle: 'levure', contenu: <span data-element="y1b-levure-pastilles a2b-ce-que-la-levure-change">{nomLevure(recette.yeastId)}</span> },
-          ]} />
+          ]} sansMot />
           <span data-element="l8b-legende-cachee" data-etat="etat-comp-legende"><Legende><ContenuLegende /></Legende></span>
         </div>
       }
@@ -137,16 +146,6 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
         </nav>
       )}>
       <div className="pq-comparer" data-colonnes={cols.length}>
-        <div className="pq-comparer-crit">
-          <PastilleCritere critere={critere} onChoisir={(c) => { setCritere(c); setRetenu(null); }} />
-          {sel && (
-            <span ref={refPont} className="pq-comparer-placer" data-etat="etat-comp-placer" data-element="y1b-dock-pouce y1b-second-houblon-puis">
-              <Pont nom="placer" onClick={placer}>Placer {sel.houblon.nom}</Pont>
-            </span>
-          )}
-        </div>
-        {rep && <LigneReponse rep={rep} critere={critere} onPourquoi={() => basculer('pourquoi')} />}
-
         <section className="pq-comparer-rad" data-acquis="radar" data-element="r6a-radar p03-radar-superpose p02-radar-intervalle h4-radar-demande" aria-label="Radar r2">
           <div className="pq-comparer-rad-h">
             <span className="pq-comparer-puce" data-nature="simule" data-element="r6a-simule" title="profil simulé par le moteur">~ simulé</span>
@@ -155,7 +154,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
               <button type="button" role="radio" data-e="absolu" data-etat="etat-comp-absolu" aria-checked={absolu} onClick={() => setAbsolu(true)}>Absolu</button>
             </span>
           </div>
-          {sel && <Radar axes={sc.order} cols={cols} retenu={cleRetenue} absolu={absolu} visee={VISEE.famille} trop={TROP} />}
+          {sel && <Radar axes={sc.order} cols={vue} retenu={cleRetenue} absolu={absolu} visee={VISEE.famille} trop={TROP} />}
         </section>
 
         <section className="pq-comparer-tab" data-role="simulation" aria-label="Les houblons, côte à côte"
@@ -163,25 +162,28 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
           <div className="pq-comparer-grille-tab pq-comparer-tetes" role="radiogroup" aria-label="Houblon retenu" data-libre="houblon"
             data-element="r6a-tetes l5f-carte-role-alpha w2-cartes-verdict p06-grille-familles g1-fiche fiche-citra-cryo l8b-verdicts-pictos-trait">
             <TaStout quatre={quatre} plein={cols.length >= MAX_COLONNES || !disponibles.length} ouvert={feuille === 'ajouter'} onPlus={() => basculer('ajouter')} />
-            {cols.map((c) => (
+            {vue.map((c) => (
               <TeteColonne key={c.cle} c={c} retenu={c.cle === cleRetenue} quatre={quatre} epinglee={c.cle === pin}
                 retirable={ajoutes.includes(c.cle)}
                 onRetenir={() => setRetenu(c.cle)} onFiche={(apresAppui) => ouvrirFiche(c.cle, apresAppui)}
                 onRetirer={() => { setAjoutes((a) => a.filter((x) => x !== c.cle)); if (retenu === c.cle) setRetenu(null); }} />
             ))}
           </div>
-          <AuxEtapes cols={cols} etapes={etapes} reference={reference} nomReference={reference ? hopRef(reference)?.name ?? reference : null} retenu={cleRetenue} />
-          <p className="pq-comparer-rg-t">Toutes les familles <b>au dry hop, après {CONDITIONS.jours} j</b>, comme le radar</p>
-          <div className="pq-comparer-rgs" data-element="r6a-rangees">
+          {/* D128 : les étapes de x3b en bande-sélecteur sur les rangées de r6a ; la pastille du critère (r6n2) choisit la
+              famille qu'elle chiffre, ★ au meilleur de chaque étape (la réponse de y1b, à chaque moment). */}
+          <BandeEtapes cols={cols} etapes={etapes} reference={reference} nomReference={reference ? hopRef(reference)?.name ?? reference : null} retenu={cleRetenue}
+            moment={moment} onMoment={setMoment} critere={critere}
+            pastille={<PastilleCritere critere={critere} onChoisir={(c) => { setCritere(c); setRetenu(null); }} onPourquoi={() => basculer('pourquoi')} />} />
+          <div className="pq-comparer-rgs" data-element="r6a-rangees" data-moment={moment}>
             {lignes.map((f, i) => (
-              <div key={f} className={cx('pq-comparer-grille-tab pq-comparer-rg', (f === VISEE.famille || f === TROP) && 'pq-comparer-demande', i === lignes.length - 1 && 'pq-comparer-derniere')} data-famille-ligne={f}
+              <div key={f} className={cx('pq-comparer-grille-tab pq-comparer-rg', chiffre(f) && 'pq-comparer-demande', i === lignes.length - 1 && 'pq-comparer-derniere')} data-famille-ligne={f}
                 {...(f === VISEE.famille || f === TROP ? { 'data-element': 'r6a-ecarts' } : {})}>
                 <span className="pq-comparer-rn" style={{ color: COULEURS[f].texte }}>
                   <Picto famille={f} />{!quatre && <span>{COURT[f]}</span>}
                   {f === VISEE.famille && <span className="pq-comparer-dem" aria-label="ta demande : plus de floral">↑</span>}
                   {f === TROP && <span className="pq-comparer-dem pq-comparer-dem-trop" aria-label="ta dégustation : trop de résineux">↓</span>}
                 </span>
-                {cols.map((c) => <Cellule key={c.cle} c={c} cel={c.cellules[f]} retenu={c.cle === cleRetenue} absolu={absolu} montre={f === VISEE.famille || f === TROP} />)}
+                {vue.map((c) => <Cellule key={c.cle} c={c} cel={c.cellules[f]} retenu={c.cle === cleRetenue} absolu={absolu} montre={chiffre(f)} moment={moment} />)}
               </div>
             ))}
             {tousInconnus.length > 0 && (
@@ -195,9 +197,17 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
         </section>
         {/* D114 : le panel OSU (un acquis) reste replié, au rang d'une note, sous le tableau comme dans r6a ; un toucher ouvre
             Preuve, sa feuille dans le dock de r6n2. */}
-        <section className="pq-comparer-osu-ligne" aria-label="Panel OSU" data-etat="etat-acquis-panel-osu">
+        <section className="pq-comparer-osu-ligne" aria-label="Panel OSU">
           <button type="button" className="pq-comparer-lien pq-comparer-osu-tch" data-ouvre-element="y3-panel-osu r6a-osu" onClick={() => setFeuille('preuve')}>Panel OSU, Cascade : la courbe mesurée, dans Preuve ›</button>
         </section>
+        {/* « Placer <houblon> › » en bas, comme le « Doser Idaho 7 dans Dryhopper » de r6a (80 mots au premier écran), sous
+            la réponse de y1b qui conclut la comparaison. */}
+        {rep && <LigneReponse rep={rep} critere={critere} moment={moment} onPourquoi={() => basculer('pourquoi')} />}
+        {sel && (
+          <span ref={refPont} className="pq-comparer-placer" data-etat="etat-comp-placer" data-element="y1b-dock-pouce y1b-second-houblon-puis">
+            <Pont nom="placer" onClick={placer}>Placer {sel.houblon.nom}</Pont>
+          </span>
+        )}
         <p className="pq-comparer-vsrc">~ simulé par le moteur à {nombre(CONDITIONS.doseGL)} g/L chacun : centre conventionnel, bande = incertitude. Le reste, à un toucher sous le pouce.</p>
       </div>
 
@@ -227,7 +237,7 @@ function BoutonDock({ nom, actif, etat, ouvre, controle, onClick, icone, label, 
 }
 
 // ---------- « Face à ta stout, par [floral ⌄] » (y1b, r6n2) ----------
-function PastilleCritere({ critere, onChoisir }: { critere: Critere; onChoisir: (c: Critere) => void }) {
+function PastilleCritere({ critere, onChoisir, onPourquoi }: { critere: Critere; onChoisir: (c: Critere) => void; onPourquoi: () => void }) {
   const [ouvert, setOuvert] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
@@ -240,9 +250,8 @@ function PastilleCritere({ critere, onChoisir }: { critere: Critere; onChoisir: 
   }, [ouvert]);
   return (
     <span ref={ref} className="pq-comparer-crit-g" data-element="y1b-pastille-critere">
-      <span className="pq-comparer-crit-l">Face à ta stout, par</span>
       <button type="button" className="pq-comparer-crit-p" data-etat="etat-comp-critere" aria-haspopup="listbox" aria-expanded={ouvert}
-        aria-label={`Critère de classement : ${critere.nom}`} onClick={() => setOuvert((o) => !o)}>
+        aria-label={`Critère de classement, face à ta stout : ${critere.nom}`} onClick={() => setOuvert((o) => !o)}>
         <Picto famille={critere.famille} taille={14} /><span>{critere.nom.replace('moins ', '− ')}</span><Chevron ouvert={ouvert} />
       </button>
       {ouvert && (
@@ -252,33 +261,36 @@ function PastilleCritere({ critere, onChoisir }: { critere: Critere; onChoisir: 
               <Picto famille={c.famille} taille={16} />{c.nom}
             </button>
           ))}
+          <button type="button" className="pq-comparer-menu-pq" onClick={() => { setOuvert(false); onPourquoi(); }}>Pourquoi ce classement ›</button>
         </span>
       )}
     </span>
   );
 }
 
-// ---------- la réponse face à ta stout (y1b, r6n2) et « contre ★ » (r6p2) ----------
-function LigneReponse({ rep, critere, onPourquoi }: { rep: NonNullable<ReturnType<typeof reponse>>; critere: Critere; onPourquoi: () => void }) {
+// ---------- la réponse face à ta stout (y1b, r6n2) et « contre ★ » (r6p2), en conclusion, au-dessus de « Placer » ----------
+function LigneReponse({ rep, critere, moment, onPourquoi }: { rep: NonNullable<ReturnType<typeof reponse>>; critere: Critere; moment: CodeEtape; onPourquoi: () => void }) {
   const { etoile, autre, ecart, retenuEstEtoile } = rep;
   const nb = (x: number) => <span className="pq-comparer-nb" data-nature="simule">{signeCran(x)}</span>;
   const f = critere.famille;
+  const quand = moment === 'dryPost' ? 'au dry hop' : `à ${ETAPES.find((e) => e.code === moment)!.nom}`;
   return (
-    <p className="pq-comparer-rep" data-role="reponse" data-element="y1b-face-a-ta-stout" aria-live="polite">
+    <p className="pq-comparer-rep" data-role="reponse" aria-live="polite">
       {retenuEstEtoile || !autre ? (
         <>
           <span className="pq-comparer-etoile" aria-label={`le ${critere.sens > 0 ? 'plus' : 'moins'} ${COURT[f].toLowerCase()} dans ta 16D`}>★</span><Point c={etoile} /><b>{etoile.houblon.nom}</b>
-          {autre && ecart != null && <> devant <Point c={autre} /><b>{autre.houblon.nom}</b> {nb(ecart)} cran</>}
+          {autre && ecart != null && <> devant <Point c={autre} /><b>{autre.houblon.nom}</b> <span aria-label={`${signeCran(ecart)} cran`}>{nb(ecart)}</span></>}
           <Picto famille={f} />
         </>
       ) : (
         <>
-          <Point c={autre} /><b>{autre.houblon.nom}</b> {ecart != null ? nb(ecart) : <span data-inconnu="">?</span>} cran <Picto famille={f} />
+          <Point c={autre} /><b>{autre.houblon.nom}</b> {ecart != null ? <span aria-label={`${signeCran(ecart)} cran`}>{nb(ecart)}</span> : <span data-inconnu="">?</span>} <Picto famille={f} />
           {' '}contre <span className="pq-comparer-etoile" aria-hidden="true">★</span><b>{etoile.houblon.nom}</b>
           {autre.sorties.length > 0 && <span className="pq-comparer-hors-mini" data-nature="simule" aria-label={`~ sort de ta 16D : ${autre.sorties.map((x) => COURT[x].toLowerCase()).join(', ')}`}>~<IconeRisque />{autre.sorties.map((x) => <Picto key={x} famille={x} taille={12} />)}</span>}
         </>
       )}
-      <button type="button" className="pq-comparer-lien pq-comparer-pourquoi" onClick={onPourquoi}>pourquoi ?</button>
+      <span className="pq-comparer-rep-q">{quand}</span>
+      <button type="button" className="pq-comparer-pourquoi-zone" aria-label="pourquoi ce classement ?" onClick={onPourquoi} />
     </p>
   );
 }
@@ -288,8 +300,8 @@ function TaStout({ quatre, plein, ouvert, onPlus }: { quatre: boolean; plein: bo
   return (
     <div className="pq-comparer-ta" data-element="r6a-ta-stout m4-radar-degustation" aria-label="Ta stout : trop résineuse, tu la veux plus florale (dégustation du 18.10)">
       <span className="pq-comparer-ta-n"><i className="pq-comparer-trait" aria-hidden="true" />{!quatre && <b>Ta stout</b>}</span>
-      <span className="pq-comparer-ta-l"><Picto famille={TROP} taille={14} />{!quatre ? <span>trop</span> : <span aria-hidden="true">↓</span>}</span>
-      <span className="pq-comparer-ta-l"><Picto famille={VISEE.famille} taille={14} />{!quatre ? <span>plus</span> : <span aria-hidden="true">↑</span>}</span>
+      <span className="pq-comparer-ta-l"><Picto famille={TROP} taille={14} /><span aria-hidden="true">↓</span></span>
+      <span className="pq-comparer-ta-l"><Picto famille={VISEE.famille} taille={14} /><span aria-hidden="true">↑</span></span>
       {!plein && (
         <button type="button" className="pq-comparer-plus" data-role="ajouter-colonne" data-etat="etat-comp-colonne-plus" data-element="p4-plus-comparaison" aria-haspopup="dialog" aria-expanded={ouvert}
           aria-label="Ajouter un houblon à la comparaison" onClick={onPlus}>+</button>
@@ -352,8 +364,8 @@ function TeteColonne({ c, retenu, quatre, epinglee, retirable, onRetenir, onFich
         </span>
         <span className="pq-comparer-tc-v">
           {c.sorties.length
-            ? <span className="pq-comparer-vd pq-comparer-vd-hors" data-nature="simule" aria-label={`~ sort de ta 16D : ${c.sorties.map((f) => COURT[f].toLowerCase()).join(', ')}`}>~<IconeRisque />{c.sorties.map((f) => <Picto key={f} famille={f} taille={12} />)}</span>
-            : <span className="pq-comparer-vd pq-comparer-vd-dans" data-nature="simule" aria-label="~ reste dans ta 16D, hors le résineux déjà au-dessus">~<IconeOk /></span>}
+            ? <span className="pq-comparer-vd pq-comparer-vd-hors" data-nature="simule" aria-label={`~ sort de ta 16D : ${c.sorties.map((f) => COURT[f].toLowerCase()).join(', ')}`}>~<IconeRisque /><span className="pq-comparer-vd-mot">hors</span>{c.sorties.map((f) => <Picto key={f} famille={f} taille={12} />)}</span>
+            : <span className="pq-comparer-vd pq-comparer-vd-dans" data-nature="simule" aria-label="~ reste dans ta 16D, hors le résineux déjà au-dessus">~<IconeOk /><span className="pq-comparer-vd-mot">dans</span></span>}
         </span>
         {h.partSansFamille != null && h.partSansFamille > 0.5 && (
           <span className="pq-comparer-autres" aria-label={`autres : ${nombre(h.partSansFamille * 100)} % de ses mots hors des 12 familles`}>
@@ -368,8 +380,8 @@ function TeteColonne({ c, retenu, quatre, epinglee, retirable, onRetenir, onFich
 }
 
 // ---------- une cellule : la barre de l5b face à ta 16D ----------
-function Cellule({ c, cel, retenu, absolu, montre }: { c: ColonneLue; cel: CelluleLue; retenu: boolean; absolu: boolean; montre: boolean }) {
-  const nom = COURT[cel.famille];
+function Cellule({ c, cel, retenu, absolu, montre, moment }: { c: ColonneLue; cel: CelluleLue; retenu: boolean; absolu: boolean; montre: boolean; moment: CodeEtape }) {
+  const nom = `${COURT[cel.famille]}, posé ${moment === 'dryPost' ? `au dry hop (${CONDITIONS.jours} j)` : `à ${ETAPES.find((e) => e.code === moment)!.nom}`}`;
   if (cel.inconnu) {
     return (
       <span className={cx('pq-comparer-cel pq-comparer-cel-inc', retenu && 'pq-comparer-sel')} style={{ ['--pq-h' as string]: c.couleur }} data-col={c.cle}
@@ -411,8 +423,8 @@ function ContenuLegende() {
       <p className="pq-comparer-leg-f">{sc.order.map((f) => <span key={f} style={{ color: COULEURS[f].texte }}><Picto famille={f} taille={12} />{COURT[f]}</span>)}</p>
       <p><b>Une barre, par houblon</b></p>
       <p>zone pâle : ce que ta 16D permet ; barre : ~ simulé à 4 g/L ; trait fin : sa bande d’incertitude ; trait noir : ta stout aujourd’hui ; orangé : au-dessus de ta 16D ; hachuré : inconnu, jamais zéro.</p>
-      <p><b>~+1,3</b> : crans du style gagnés. ↑ ↓ : ta demande du 18.10.</p>
-      <p><b>Aux étapes</b> (60′, 10′, dry hop) : chaque houblon posé à ce moment, à 4 g/L ; le nombre : crans de floral gagnés ; bande orangée : le résineux gagné ; pointillé gris : ton Nugget au même moment ; en gras, le plus floral de l’étape. Le radar et les rangées : au dry hop, après 3 j.</p>
+      <p><b>~+1,9</b> : crans du style gagnés. ↑ ↓ : ta demande du 18.10 (Ta stout : plus floral, moins résineux).</p>
+      <p><b>Les étapes</b> (60′, 10′, dry hop), sur les rangées : chaque houblon posé à ce moment, à 4 g/L ; le nombre : crans gagnés de la famille de la pastille ; ★ : le meilleur de l’étape ; à gauche et en pointillé gris : ton Nugget au même moment. Toucher une étape la pose sur le radar et les rangées ; au départ, le dry hop, après 3 j.</p>
       <p><b>Le radar</b> : le houblon retenu plein, avec son intervalle en trait fin (// : il continue au-delà) ; les autres en contour.</p>
       <p><b>★</b> : le meilleur par le critère qui reste dans ta 16D. Toucher une colonne la retient ; appui long sur un nom : sa fiche ; « + » : un 4ᵉ houblon de ton stock.</p>
       <p><b>Sous le pouce</b> : Défi (tes deux objectifs), Égaler, Valeurs (chimie), Preuve (panel, 20 bières), Frise (le moment), Souche (la levure).</p>

@@ -2,8 +2,8 @@
    l'encre et les fonds, table des familles (#142) pour les familles, orangé #c2410c pour « au-dessus du style ».
    Rayons : 2, 4 ou 8 px, pilule ou rond (D83). Textes : 12 px au moins. */
 .pq-outil-comparer main { background: rgb(var(--cave-850)); }
-.pq-comparer { display: flex; flex-direction: column; gap: 8px; color: rgb(var(--cave-50)); }
-.pq-comparer-tete { display: flex; align-items: flex-start; gap: 6px; }
+.pq-comparer { display: flex; flex-direction: column; gap: 6px; color: rgb(var(--cave-50)); }
+.pq-comparer-tete { position: relative; display: flex; align-items: flex-start; gap: 6px; }
 .pq-comparer-tete > [data-role="contexte"] { flex: 1; min-width: 0; }
 .pq-comparer-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
@@ -27,7 +27,7 @@
 .pq-comparer-rond-inconnu { fill: rgb(var(--cave-900)); stroke: rgb(var(--cave-600)); }
 .pq-comparer-rq { font: 700 12px 'Source Sans 3', sans-serif; fill: rgb(var(--cave-400)); }
 .pq-comparer-puce { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border-radius: 999px; box-shadow: inset 0 0 0 1.5px rgb(var(--cave-50)); font-size: 12px; font-weight: 600; white-space: nowrap; }
-.pq-comparer-lentille { display: inline-flex; padding: 3px; border-radius: 999px; background: rgb(var(--cave-950)); }
+.pq-comparer-lentille { display: inline-flex; padding: 3px; border-radius: 999px; background: rgb(var(--cave-800) / .55); }
 .pq-comparer-lentille button { min-height: 32px; padding: 0 12px; border-radius: 999px; font-size: 14px; color: rgb(var(--cave-texte-400)); }
 .pq-comparer-lentille button[aria-checked="true"] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); font-weight: 600; }
 
@@ -49,7 +49,7 @@
 
 .pq-comparer-tc-cel { position: relative; min-width: 0; border-radius: 8px 8px 0 0; box-shadow: inset 0 3px 0 var(--pq-h); }
 .pq-comparer-tc-cel.pq-comparer-sel { background: rgb(var(--cave-900)); box-shadow: inset 0 3px 0 var(--pq-h), inset 2px 0 0 var(--pq-h), inset -2px 0 0 var(--pq-h); }
-.pq-comparer-tc { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; width: 100%; min-height: 100%; padding: 7px 5px 6px; text-align: left; -webkit-touch-callout: none; user-select: none; }
+.pq-comparer-tc { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; min-height: 100%; padding: 6px 5px 4px; text-align: left; -webkit-touch-callout: none; user-select: none; }
 .pq-comparer-tc-n { display: flex; align-items: center; gap: 3px; max-width: 100%; font-size: 14px; }
 .pq-comparer-hn { font-weight: 700; overflow-wrap: anywhere; text-decoration: underline dotted rgb(var(--cave-400)); text-underline-offset: 3px; }
 .pq-comparer[data-colonnes="4"] .pq-comparer-hn { font-size: 12px; overflow-wrap: normal; }
@@ -69,12 +69,12 @@
 .pq-comparer-ic { flex: none; }
 
 .pq-comparer-rgs { display: flex; flex-direction: column; }
-.pq-comparer-rg { align-items: stretch; min-height: 24px; }
-.pq-comparer-rg.pq-comparer-demande { min-height: 36px; }
+.pq-comparer-rg { align-items: stretch; min-height: 22px; }
+.pq-comparer-rg.pq-comparer-demande { min-height: 32px; }
 .pq-comparer-rn { display: flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; letter-spacing: -.01em; }
 .pq-comparer-dem { font-size: 14px; color: rgb(var(--cave-50)); }
 .pq-comparer-dem-trop { color: #c2410c; }
-.pq-comparer-cel { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 1px; min-height: 24px; padding: 0 5px; }
+.pq-comparer-cel { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 1px; min-height: 22px; padding: 0 5px; }
 .pq-comparer-cel.pq-comparer-sel { background: rgb(var(--cave-900)); box-shadow: inset 2px 0 0 var(--pq-h), inset -2px 0 0 var(--pq-h); }
 .pq-comparer-derniere .pq-comparer-cel.pq-comparer-sel { border-radius: 0 0 8px 8px; box-shadow: inset 2px 0 0 var(--pq-h), inset -2px 0 0 var(--pq-h), inset 0 -2px 0 var(--pq-h); }
 .pq-comparer-pis { position: relative; display: block; height: 12px; border-radius: 2px; background: rgb(var(--cave-800) / .35); }
@@ -216,7 +216,7 @@
 .pq-comparer-crit-m { top: calc(100% + 4px); left: auto; right: -60px; min-width: 200px; }
 .pq-comparer-crit-m button[aria-selected="true"] { background: rgb(var(--cave-800)); font-weight: 700; }
 .pq-comparer-placer { display: inline-flex; }
-.pq-comparer-placer [data-role="pont-placer"] { min-height: 36px; font-size: 14px; }
+.pq-comparer-placer [data-role="pont-placer"] { min-height: 32px; font-size: 14px; }
 .pq-comparer-crit + .pq-comparer-rep { margin-top: -4px; }
 .pq-comparer-lien { min-height: 32px; padding: 0 2px; font-size: 12px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; color: rgb(var(--cave-200)); }
 .pq-comparer-pourquoi { margin-left: auto; }
@@ -375,3 +375,85 @@
 .pq-comparer-eg-l > .pq-comparer-note:first-of-type { margin-left: auto; }
 .pq-comparer-osu-tch { font-weight: 400; text-align: left; }
 .pq-comparer-et-pieds { display: flex; flex-direction: column; gap: 2px; padding-top: 6px; }
+
+/* D40 point 5 : la barre de dose de « Pour égaler » (r6n2), de 0 à 16 g/L. */
+.pq-comparer-eg-s { display: flex; flex-direction: column; gap: 2px; }
+.pq-comparer-eg-b { flex: 1; height: 8px; margin-left: 6px; border-radius: 4px; background: rgb(var(--cave-850)); overflow: hidden; }
+.pq-comparer-eg-b > i { display: block; height: 100%; border-radius: 4px; }
+
+/* D40 point 12 (D88) : « dans » / « hors » en mots à côté de l icône. */
+.pq-comparer-vd-mot { margin-left: 2px; font-size: 12px; }
+.pq-comparer-eg-n { width: 6.5rem; flex-shrink: 0; font-size: 13px; }
+.pq-comparer-eg-b { position: relative; }
+.pq-comparer-eg-trait { position: absolute; top: -2px; bottom: -2px; width: 2px; margin-left: -1px; background: rgb(var(--cave-50)); }
+.pq-comparer-eg-jamais { color: #c2410c !important; font-weight: 600; }
+
+/* D40 bis : la ligne de réponse entière ouvre « Pourquoi ce classement ». */
+.pq-comparer-rep { position: relative; }
+.pq-comparer-pourquoi-zone { position: absolute; inset: 0; background: transparent; border: 0; cursor: help; }
+
+/* D128 : « posé à 60′ · 10′ · dry hop », le moment des rangées et du radar, juste au-dessus des rangées de r6a ; la
+   même forme que la lentille Au style | Absolu (piste sombre, choisi en clair) */
+.pq-comparer-mo { display: flex; align-items: center; gap: 8px; padding-top: 2px; }
+.pq-comparer-mo-l { font-size: 12px; font-weight: 600; color: rgb(var(--cave-texte-400)); white-space: nowrap; }
+.pq-comparer-mo-s { display: inline-flex; padding: 2px; border-radius: 999px; background: rgb(var(--cave-800) / .55); }
+.pq-comparer-mo-s button { min-height: 28px; min-width: 52px; padding: 0 12px; border-radius: 999px; font-size: 14px; font-weight: 600; color: rgb(var(--cave-texte-400)); white-space: nowrap; }
+.pq-comparer-mo-s button[aria-checked="true"] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); font-weight: 700; }
+.pq-comparer-mo-j { font: 600 12px 'IBM Plex Mono', ui-monospace, monospace; color: rgb(var(--cave-texte-400)); }
+.pq-comparer-rgs { margin-top: 0; }
+/* aux étapes, sous les rangées : chaque étape est un toucher ; l'étape posée sur les rangées a son nom en pastille */
+button.pq-comparer-et-r { width: 100%; padding: 0; text-align: left; color: inherit; font: inherit; -webkit-tap-highlight-color: transparent; }
+.pq-comparer-et-on .pq-comparer-et-nom { padding: 0 6px; border-radius: 999px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
+.pq-comparer-et .pq-comparer-rg-t { margin-top: 14px; }
+/* D128 : les têtes de colonne serrées (interligne 1,25) pour que les dix rangées de r6a tiennent au-dessus du dock */
+.pq-comparer-tc { line-height: 1.25; }
+.pq-comparer-ta { line-height: 1.25; }
+/* D128 : le « ? » de la légende monte sur la ligne de la question (comme r6a), la ligne de contexte n'a plus que ses
+   pastilles */
+.pq-comparer-tete > [data-element~="l8b-legende-cachee"] { position: absolute; right: 0; top: -36px; }
+.pq-outil-comparer [data-ecran="comparer"] > h1 { padding-right: 40px; }
+
+/* D128 : la bande des étapes, posée sur les rangées de r6a, est leur sélecteur. En tête : la pastille du critère (r6n2)
+   et la référence (ton Nugget, tiret gris). Puis une ligne par étape, chacune un toucher : à gauche l'étape et la valeur
+   du Nugget, en gris ; dans chaque colonne, le nombre (crans gagnés de la famille du critère ; ★ au meilleur) et une
+   barre fine, le trait pointillé gris du Nugget au même moment. L'étape posée sur les rangées : son nom en pastille. */
+.pq-comparer-et { display: flex; flex-direction: column; margin-top: 4px; }
+.pq-comparer-et-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 34px; padding-bottom: 2px; }
+.pq-comparer-et-h .pq-comparer-crit-g { font-size: 14px; }
+.pq-comparer-et-h .pq-comparer-crit-m { left: 0; right: auto; }
+.pq-comparer-et-ref { flex-direction: row; align-items: center; gap: 4px; padding-top: 0; }
+.pq-comparer-et-ref-n { display: inline-flex; align-items: center; gap: 4px; min-height: 32px; font-size: 12px; font-weight: 600; color: rgb(var(--cave-texte-400)); }
+.pq-comparer-et-g { display: flex; flex-direction: column; }
+button.pq-comparer-et-r { align-items: stretch; min-height: 26px; padding: 0; text-align: left; color: inherit; font: inherit; border-top: 1px solid rgb(var(--cave-800)); -webkit-tap-highlight-color: transparent; }
+.pq-comparer-et-r .pq-comparer-et-l { display: flex; align-items: center; justify-content: space-between; gap: 2px; padding: 0 4px 0 0; border-top: 0; }
+.pq-comparer-et-r .pq-comparer-et-c { display: flex; align-items: center; gap: 4px; padding: 0 5px; border-top: 0; }
+.pq-comparer-et-r .pq-comparer-et-nom { font-size: 14px; font-weight: 700; line-height: 20px; letter-spacing: 0; padding: 0 6px; margin-left: -6px; border-radius: 999px; }
+.pq-comparer-et-on .pq-comparer-et-nom { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); }
+.pq-comparer-et-on { background: rgb(var(--cave-800) / .28); }
+.pq-comparer-et-r .pq-comparer-et-v { display: inline-flex; align-items: center; gap: 1px; min-width: 36px; font: 500 13px/20px 'IBM Plex Mono', ui-monospace, monospace; color: rgb(var(--cave-50)); }
+.pq-comparer-et-r .pq-comparer-et-top .pq-comparer-et-v { font-weight: 800; }
+.pq-comparer-et-r .pq-comparer-et-gris { min-width: 0; font-size: 12px; font-weight: 500; color: rgb(var(--cave-texte-400)); }
+.pq-comparer-et-etoile { font-family: 'Source Sans 3', sans-serif; font-size: 11px; }
+.pq-comparer-et-r .pq-comparer-et-pis { flex: 1; min-width: 0; height: 8px; border-left: 2px solid rgb(var(--cave-50)); border-radius: 0 2px 2px 0; background: rgb(var(--cave-800) / .4); }
+.pq-comparer-et-r .pq-comparer-et-pis > .pq-comparer-et-rt { top: -3px; bottom: -3px; }
+.pq-comparer-et + .pq-comparer-rgs, .pq-comparer-et-g + * { margin-top: 0; }
+.pq-comparer-rgs { padding-top: 4px; border-top: 1px solid rgb(var(--cave-800)); }
+.pq-comparer-menu-pq { border-top: 1px solid rgb(var(--cave-800)); color: rgb(var(--cave-texte-400)); }
+.pq-comparer-tab > .pq-comparer-placer { display: flex; justify-content: flex-end; padding-top: 10px; }
+.pq-comparer-radar { overflow: visible; }
+button.pq-comparer-et-r { min-height: 24px; }
+.pq-comparer-et-h { min-height: 32px; }
+.pq-comparer-rgs { padding-top: 2px; }
+.pq-comparer-inc-t { min-height: 22px; }
+.pq-comparer > .pq-comparer-placer { display: flex; justify-content: flex-end; }
+/* Sous le premier écran : rien à lire sous le dock au repos (D40 bis, 80 mots), la suite commence après un filet. */
+.pq-comparer-tab > .pq-comparer-et-pieds { margin-top: 34px; padding-top: 28px; border-top: 1px solid rgb(var(--cave-800)); }
+.pq-comparer-et-h { display: grid; align-items: center; justify-content: stretch; }
+.pq-comparer-et-crit { grid-column: 2 / -1; display: flex; align-items: center; min-width: 0; }
+.pq-comparer-et-h .pq-comparer-et-ref { justify-self: end; padding-right: 4px; }
+.pq-comparer-et-h .pq-comparer-et-ref-n { min-height: 32px; }
+/* la valeur grise du Nugget tient à côté de « dry hop » dans la colonne de gauche (76 px) : chiffres proportionnels */
+.pq-comparer-et-r .pq-comparer-et-v.pq-comparer-et-gris { font: 500 12px/20px 'Source Sans 3', sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.pq-comparer-et-r .pq-comparer-et-nom { padding: 0 5px; margin-left: -5px; }
+.pq-comparer-rep { position: relative; }
+.pq-comparer-rep-q { font-size: 12px; color: rgb(var(--cave-texte-400)); }
