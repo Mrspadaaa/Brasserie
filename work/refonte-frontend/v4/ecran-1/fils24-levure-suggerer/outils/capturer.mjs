@@ -19,7 +19,6 @@ for (const id of ids) {
   await p.screenshot({ path: path.join(lot, 'captures', id + '-repos.png') });
   const r = await p.evaluate((s) => { const e = document.querySelector(s); const q = e.getBoundingClientRect(); return { x: q.left + q.width / 2, y: q.top + q.height / 2, w: q.width, h: q.height }; }, CIBLE[id]);
   await p.touchscreen.tap(r.x, r.y); await att(400);
-  if (id === 'lvb') await p.evaluate(() => { const m = document.querySelector('main'); }); 
   await p.screenshot({ path: path.join(lot, 'captures', id + '-toucher.png') });
   console.log(id, 'cible', Math.round(r.w) + '×' + Math.round(r.h), 'px', err.length ? 'ERREURS ' + err.join(' | ') : 'sans erreur');
   await p.close();
