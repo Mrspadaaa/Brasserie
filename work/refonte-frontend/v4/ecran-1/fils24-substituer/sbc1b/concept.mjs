@@ -82,7 +82,8 @@ export function rendre() {
   const tous = (k) => [...ETATS[k].top, ...ETATS[k].stock];
   const corps = `
   <header class="${P}-tete">${B.croix()}<h1>Lequel à la place de Nugget ?</h1>${B.legB()}</header>
-  <p class="${P}-ctx" data-role="contexte"><span class="${P}-cx" data-contexte="dose">${B.nomH('Nugget')}<span>α 13 % · dose 46 g</span></span><span class="${P}-cx ${P}-mo" data-contexte="moment" tabindex="0" aria-label="Moment de Nugget : à 60′ ; un toucher montre le whirlpool" data-bascule><span data-moment-txt>à 60′</span>${ic('chevb', 12)}</span><span class="${P}-cx" data-contexte="base">Stout 16D</span></p>
+  <p class="${P}-ctx" data-role="contexte"><span class="${P}-cx" data-contexte="dose">${B.nomH('Nugget')}<span>α 13 % · dose 46 g</span></span><span class="${P}-cx ${P}-mo" data-contexte="moment"><button type="button" class="${P}-mb2" data-edite="moment" data-bascule aria-controls="${P}-fm" aria-haspopup="dialog" aria-expanded="false" aria-label="Moment de Nugget : à 60′, changer"><span data-moment-txt>à 60′</span>${ic('chevb', 12)}</button></span><span class="${P}-cx" data-contexte="base">Stout 16D</span></p>
+  <section class="${P}-fm" id="${P}-fm" role="dialog" aria-label="Moment de Nugget" hidden><div class="${P}-fmt"><b>Moment de Nugget</b><button type="button" data-role="fermer-moment" aria-label="Fermer">${ic('x', 18)}</button></div><div class="${P}-fmo" role="radiogroup" aria-label="Moment"><button type="button" role="radio" aria-checked="true" data-mom="b60">à 60′</button><button type="button" role="radio" aria-checked="false" data-mom="wp">au whirlpool</button></div><p class="${P}-k">la dose suit : même IBU à ce moment</p></section>
   ${liste('b60')}${liste('wp')}
   <p class="${P}-leg"><span><i class="${P}-pt0"></i>tout connu</span><span><i class="${P}-pl0"></i>plage, une composante inconnue</span></p>
   <section class="${P}-ff">
@@ -94,7 +95,10 @@ export function rendre() {
   .${P}-tete { display: flex; align-items: center; gap: 4px; } .${P}-tete h1 { flex: 1; font-size: 17px; font-weight: 700; }
   .${P}-ctx { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 13px; }
   .${P}-cx { display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 0 8px; border-radius: 999px; background: #e3e3ea; white-space: nowrap; }
-  .${P}-mo { background: #16161a; color: #fff; font-weight: 600; cursor: pointer; min-height: 32px; }
+  .${P}-mo { background: #16161a; padding: 0; min-height: 32px; } .${P}-mb2 { display: inline-flex; align-items: center; gap: 4px; min-height: 32px; padding: 0 10px; color: #fff; font-weight: 600; border-radius: 999px; }
+  .${P}-fm { position: fixed; z-index: 40; left: 0; right: 0; bottom: 0; max-width: 390px; margin: 0 auto; background: #fff; border-radius: 24px 24px 0 0; box-shadow: 0 -8px 28px rgba(0,0,0,.2); padding: 10px 16px 22px; display: flex; flex-direction: column; gap: 10px; }
+  .${P}-fmt { display: flex; align-items: center; justify-content: space-between; font-size: 15px; } .${P}-fmt button { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; margin-right: -10px; }
+  .${P}-fmo { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .${P}-fmo button { height: 44px; border-radius: 999px; box-shadow: inset 0 0 0 1.5px #16161a; font-weight: 600; font-size: 15px; } .${P}-fmo button[aria-checked="true"] { background: #16161a; color: #fff; }
   .${P}-rep { font-size: 14px; line-height: 1.3; border-left: 3px solid #16161a; padding-left: 9px; } .${P}-rep b { font-weight: 700; }
   .${P}-liste { display: flex; flex-direction: column; }
   .${P}-in, .${P}-hd { display: grid; grid-template-columns: 50px 52px 74px 1fr; column-gap: 6px; align-items: center; }
@@ -150,10 +154,16 @@ function poserMoment(k) {
   ETAT = k;
   document.querySelectorAll('[data-vue]').forEach(function (v) { v.hidden = v.dataset.vue !== k; });
   var c = document.querySelector('[data-bascule]'); c.querySelector('[data-moment-txt]').textContent = k === 'wp' ? 'au whirlpool' : 'à 60′';
-  c.setAttribute('aria-label', 'Moment de Nugget : ' + (k === 'wp' ? 'au whirlpool' : 'à 60′') + ' ; un toucher change de moment');
+  c.setAttribute('aria-label', 'Moment de Nugget : ' + (k === 'wp' ? 'au whirlpool' : 'à 60′') + ', changer');
+  document.querySelectorAll('[data-mom]').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.mom === k)); });
   window.choisir(SBC1B.defaut[k]);
 }
-document.querySelector('[data-bascule]').addEventListener('click', function () { poserMoment(ETAT === 'wp' ? 'b60' : 'wp'); });
+var FM = document.getElementById('${P}-fm'), BM = document.querySelector('[data-bascule]');
+function feuilleMoment(on) { FM.hidden = !on; BM.setAttribute('aria-expanded', String(on)); }
+BM.addEventListener('click', function () { feuilleMoment(FM.hidden); });
+document.querySelector('[data-role="fermer-moment"]').addEventListener('click', function () { feuilleMoment(false); });
+document.querySelectorAll('[data-mom]').forEach(function (b) { b.addEventListener('click', function () { poserMoment(b.dataset.mom); feuilleMoment(false); }); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') feuilleMoment(false); });
 document.querySelectorAll('[data-role="annuler"],[data-role="remplacer"]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); }); });
 (function () {
   document.addEventListener('click', function (e) { var c = e.target.closest('[data-choix]'); if (c && !e.defaultPrevented) window.choisir(c.dataset.choix); });

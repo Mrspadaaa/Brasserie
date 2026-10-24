@@ -1,4 +1,4 @@
-// sbc1b · génère etat.html, puis les captures (390 × 844, ×2) : 60′, whirlpool (toucher réel sur la puce de contexte),
+// sbc1b · génère etat.html, puis les captures (390 × 844, ×2) : 60′, whirlpool (toucher réel : bouton de moment du contexte, puis « au whirlpool » dans sa feuille), la feuille ouverte,
 // page entière, Nelson Sauvin touché à 60′ et au whirlpool, la fiche à l'appui long. Imprime le recompte du moteur.
 // Usage : node work/refonte-frontend/v4/ecran-1/fils24-substituer/sbc1b/generer.mjs [--sans-captures]
 import fs from 'node:fs';
@@ -21,11 +21,13 @@ const vue = async (f, full, geste) => {
   if (geste) await geste(p);
   await p.screenshot({ path: path.join(OUT, f), fullPage: full }); await p.close();
 };
-const puce = async (p) => { await (await p.$('[data-bascule]')).tap(); await wait(400); };
+const feuille = async (p) => { await (await p.$('[data-bascule]')).tap(); await wait(400); };
+const puce = async (p) => { await feuille(p); await (await p.$('[data-mom="wp"]')).tap(); await wait(400); };
 const nelson = (k) => async (p) => { await (await p.$('[data-vue="' + k + '"] [data-choix="Nelson Sauvin"]')).tap(); await wait(350); };
 await vue('sbc1b-60.png', false);
 await vue('sbc1b-whirlpool.png', false, puce);
 await vue('sbc1b-page.png', true);
+await vue('sbc1b-moment.png', false, feuille);
 await vue('sbc1b-whirlpool-page.png', true, puce);
 await vue('sbc1b-60-nelson.png', false, nelson('b60'));
 await vue('sbc1b-whirlpool-nelson.png', false, async (p) => { await puce(p); await nelson('wp')(p); });

@@ -25,8 +25,8 @@ const stockTxt = (c) => c.stock.etat === 'à acheter' ? `<span class="§-stk" ro
   : c.manque != null ? `<span class="§-stk §-court" role="img" aria-label="${fr(c.stock.libre)} g au stock, il en manque ${c.manque}">${S.ico('j-manque')}<span>${fr(c.stock.libre)} g · −${c.manque}</span></span>`
   : `<span class="§-stk" role="img" aria-label="${fr(c.stock.libre)} g au stock, il en restera ${c.reste}">${S.ico('j-stock')}<span>${fr(c.stock.libre)} g</span></span>`;
 const marques = (c) => `data-ibu46="${c.ibu46.map((x) => x.toFixed(1)).filter((x, i, t) => t.indexOf(x) === i).join('-')}" data-dose="${c.dose.min !== c.dose.max ? c.dose.min + '-' + c.dose.max : c.dose.grams}" data-alpha="${c.lot ? c.alpha.valeur : c.alphaPl.join('-')}"`;
-const i46Txt = (E, c) => `à 46 g : <span class="§-num">~${c.ibu46[0] === c.ibu46[1] ? fr(c.ibu46[0]) : fr(c.ibu46[0]) + '–' + fr(c.ibu46[1])}</span> IBU, d’où ${doseTxt(c)} pour <span class="§-num">${fr(E.nug.ibu, 1)}</span>`;
-const restTxt = (c) => c.stock.etat === 'à acheter' ? 'à acheter' : c.manque != null ? `il en manque <b class="§-num">${c.manque} g</b>` : `il t’en restera <b class="§-num">${c.reste} g</b>`;
+const i46Txt = (E, c) => `46 g = <span class="§-num">~${c.ibu46[0] === c.ibu46[1] ? fr(c.ibu46[0]) : fr(c.ibu46[0]) + '–' + fr(c.ibu46[1])}</span> IBU → ${doseTxt(c)}`;
+const restTxt = (c) => c.stock.etat === 'à acheter' ? 'à acheter' : c.manque != null ? `manque <b class="§-num">${c.manque} g</b>` : `reste <b class="§-num">${c.reste} g</b>`;
 const BIERE = ['floral', 'herbal', 'earthy', 'resin'];
 const ligneBiere = (E, f, c) => `<div class="§-lb">${S.pic(f, 16)}<span class="§-lbn" style="color:${S.T(f)}">${S.NOMF[f]}</span>${S.barre(f, c.apres.profil, E.nug.profil)}${S.delta(f, c.apres.profil, E.nug.profil)}</div>`;
 const maxDelta = (E, c) => Math.max(...BIERE.map((f) => { const x = c.apres.profil[f].v, a = E.nug.profil[f].v; return x && a ? Math.abs(x.centre - a.centre) : 0; }));
@@ -65,9 +65,12 @@ const CSS_COMMUN = `body { display:flex; flex-direction:column; min-height:100vh
 const CLIENT = `var Q=function(s){return document.querySelector(s)}, QQ=function(s){return [].slice.call(document.querySelectorAll(s))};
 function etat(m){ QQ('main [data-etat], body > [data-etat]').forEach(function(s){ s.hidden = s.dataset.etat!==m; }); document.body.dataset.moment=m; var d=Q('[data-etat="'+m+'"] [data-defaut]'); if(d) d.click(); }
 QQ('[data-vers]').forEach(function(a){ a.addEventListener('click',function(e){ e.preventDefault(); etat(a.dataset.vers); try{ history.replaceState(null,'','?moment='+a.dataset.vers); }catch(x){} }); });
+QQ('[data-aide2]').forEach(function(b){ b.addEventListener('click',function(e){ e.stopPropagation(); Q('[data-role="legende-bouton"]').click(); var l=Q('[data-role="legende"]'); var r=b.getBoundingClientRect(); l.style.top=(r.bottom+window.scrollY+6)+'px'; }); });
 QQ('.§-no').forEach(function(b){ b.addEventListener('click',function(){ document.body.classList.add('§-annule'); }); });
 var mq=location.search.match(/moment=(b60|wp)/); etat(mq?mq[1]:'b60');`;
 const LEG = (plus) => [...S.LEG_COMMUNE, ...plus];
+// Dans le second état, le « ? » ouvre la même légende (une seule légende par page, D89).
+const AIDE2 = '<button type="button" class="§-aide" data-aide2 aria-label="Lire la légende">?</button>';
 
 // ---------------------------------------------------------------------------------------------------------------
 // sbb7b · chaude · la cible : Nugget au centre, chaque remplaçant à la distance de son score ; à gauche ton stock,
@@ -94,7 +97,7 @@ function sbb7b() {
     svg += `<circle cx="${cx}" cy="${cy}" r="${r0}" fill="#fff" stroke="#111" stroke-width="2"/><text x="${cx}" y="${cy + 4}" font-size="12" font-weight="700" text-anchor="middle" fill="#111">Nugget</text></svg>`;
     const points = [...PG, ...PD].map((p) => { const court = p.c.manque != null, rep = p.c.id === E.rep.id;
       return `<i class="§-dot${court ? ' §-dc' : ''}${rep ? ' §-rep' : ''}" data-point="${S.esc(p.c.nom)}" style="left:${(p.x - 7).toFixed(1)}px;top:${(p.y - 7).toFixed(1)}px;--c:${p.c.coul}" aria-hidden="true"></i>`; }).join('');
-    const boite = (b) => `<button type="button" role="radio" aria-checked="${b.c.id === E.rep.id}" data-cand="${b.c.id}" data-eh="${b.c.k}" data-houblon="${S.esc(b.c.nom)}" ${marques(b.c)}${b.c.id === E.rep.id ? ' data-defaut' : ''} class="§-lab §-l${b.cote}${b.c.id === E.rep.id ? ' on' : ''}" style="top:${b.by.toFixed(1)}px;--c:${b.c.coul}"><b>${S.esc(b.c.nom)}</b><span>${alphaTxt(b.c)}${b.c.sansF > 0.5 ? S.autres(b.c, 24).split('autres ').join('') : ''}</span><span>${doseTxt(b.c)} · ${scoreTxt(b.c)}</span><span>${stockTxt(b.c)}</span></button>`;
+    const boite = (b) => `<button type="button" aria-pressed="${b.c.id === E.rep.id}" data-cand="${b.c.id}" data-eh="${b.c.k}"${b.c.id === E.rep.id ? ' data-defaut' : ''} class="§-lab §-l${b.cote}${b.c.id === E.rep.id ? ' on' : ''}" style="top:${b.by.toFixed(1)}px;--c:${b.c.coul}"><span class="§-mk" data-houblon="${S.esc(b.c.nom)}" ${marques(b.c)}><b>${S.esc(b.c.nom)}</b><span>${alphaTxt(b.c)}${b.c.sansF > 0.5 ? S.autres(b.c, 24).split('autres ').join('') : ''}</span><span>${doseTxt(b.c)} · ${scoreTxt(b.c)}</span><span>${stockTxt(b.c)}</span></span></button>`;
     const carte = (c) => `<div class="§-cd" style="--c:${c.coul}" ${marques(c)} data-houblon="${S.esc(c.nom)}"><div class="§-cdh"><span class="§-cdn">${S.esc(c.nom)}</span>${doseTxt(c)}<span class="§-cds">${scoreTxt(c)}<small>${c.palier}</small></span></div>
 <p class="§-cdl">${alphaTxt(c)}${S.usage(c)}${stockTxt(c)}<span class="§-pk">${S.pictos(c.cites.slice(0, 5), 15)}</span>${S.autres(c, 26)}</p>
 <p class="§-cdx">${i46Txt(E, c)} · ${restTxt(c)}</p>
@@ -102,15 +105,15 @@ ${compos(E, c)}<div class="§-cdm">${BIERE.map((f) => ligneBiere(E, f, c)).join(
     const liste = [...gauche, ...droite];
     return { html: `<section data-etat="${E.id}"${E.id === 'b60' ? '' : ' hidden'}>
 <header class="§-h">${S.croix(P)}<div><h1>Lequel à la place de Nugget ?</h1>${contexte(E)}</div></header>
-<div class="§-ci"><p class="§-cot"><span>ton stock</span><span>à acheter</span></p>${svg}${points}<div data-libre="houblon" role="radiogroup" aria-label="Le remplaçant">${[...BG, ...BD].map(boite).join('')}</div></div>
-<div class="§-outils"><p class="§-leg3"><i class="§-d"></i>suffit <i class="§-d §-dc0"></i>stock court <i class="§-hz0"></i>score ouvert</p>${S.legendeBouton(P)}${S.lentille(P)}</div>
+<div class="§-ci"><p class="§-cot"><span>ton stock</span><span>à acheter</span></p>${svg}${points}<div data-libre="houblon" role="group" aria-label="Le remplaçant">${[...BG, ...BD].map(boite).join('')}</div></div>
+<div class="§-outils"><p class="§-leg3"><i class="§-d"></i><i class="§-d §-dc0"></i><i class="§-hz0"></i></p>${S.legendeBouton(P)}${S.lentille(P)}</div>
 ${blocs(liste, carte, E.rep.id)}
 ${siAchat(E)}
 </section>`, liste };
   };
   const V = ['b60', 'wp'].map((id) => ({ E: S.ETATS[id], ...vue(S.ETATS[id]) }));
   // Une seule lentille et une seule légende par page (contrôles D75, D89) : celles du second état sont retirées.
-  const h1 = V[0].html, h2 = V[1].html.split(S.legendeBouton(P)).join('').split(S.lentille(P)).join('');
+  const h1 = V[0].html, h2 = V[1].html.split(S.legendeBouton(P)).join(AIDE2);
   const corps = `<main class="§-e">${h1}${h2}</main>${V.map((v) => `<div data-etat="${v.E.id}"${v.E.id === 'b60' ? '' : ' hidden'}>${pied(v.E, v.liste)}</div>`).join('')}`;
   const css = `${CSS_COMMUN}
 .§-ci { position:relative; width:${W}px; height:${H}px; border:1px solid #e0e0e0; border-radius:8px; overflow:hidden; }
@@ -120,8 +123,9 @@ ${siAchat(E)}
 .§-dot.§-dc { background:#fff; border:3px solid var(--c); box-shadow:none; }
 .§-dot.§-rep { box-shadow:0 0 0 2px #fff, 0 0 0 4px #111; }
 .§-lab { position:absolute; width:110px; height:60px; display:flex; flex-direction:column; justify-content:center; gap:1px; padding:0 5px; border-radius:8px; background:#fff; border:1px solid #d9d9d9; line-height:1.1; z-index:3; font-size:12px; }
-.§-lg { left:2px; align-items:flex-start; }
-.§-ld { right:2px; align-items:flex-end; }
+.§-mk { display:flex; flex-direction:column; gap:1px; width:100%; }
+.§-lg, .§-lg .§-mk { left:2px; align-items:flex-start; }
+.§-ld, .§-ld .§-mk { right:2px; align-items:flex-end; }
 .§-lab b { font-size:13px; color:var(--c); white-space:nowrap; }
 .§-lab span { display:inline-flex; align-items:center; gap:3px; white-space:nowrap; color:#333; }
 .§-lab .§-stk { font-size:12px; }
@@ -156,32 +160,34 @@ function sbb5b() {
     const dispo = E.cands.filter((c) => c.stock.etat === 'en stock' && c.stock.suffisant && !c.deconseille);
     const sans = E.rep, leger = [...dispo].sort((a, b) => a.dose.grams - b.dose.grams)[0];
     const procheStock = E.cands.find((c) => c.stock.etat === 'en stock');
-    const deux = leger && leger.id !== sans.id ? [leger, 'Le moins de matière', `α ${fr(leger.alpha.valeur, 1)}`] : [procheStock, 'Le plus proche de ton stock', 'mais trop court'];
-    const R = [[sans, 'Sans rien acheter', sans.id === (leger && leger.id) ? 'et le moins de matière' : 'le premier qui suffit'], deux, [E.achatSur, 'Si tu achètes', 'le plus proche, tout connu']];
+    const deux = leger && leger.id !== sans.id ? [leger, 'Le moins de matière'] : [procheStock, 'Le plus proche, stock court'];
+    const R = [[sans, sans.id === (leger && leger.id) ? 'Sans rien acheter, le moins de matière' : 'Sans rien acheter'], deux, [E.achatSur, 'Si tu achètes']];
     const nelson = E.C['nelson-sauvin'];
     const L = R.map((r) => r[0]);
-    const carte = ([c, titre, raison], i) => `<button type="button" role="radio" aria-checked="${c.id === E.rep.id}" data-cand="${c.id}" data-eh="${c.k}" ${marques(c)}${c.id === E.rep.id ? ' data-defaut' : ''} class="§-cd${c.id === E.rep.id ? ' on' : ''}" style="--c:${c.coul}">
-<span class="§-ck">${titre}<span class="§-gr"> · ${raison}</span></span>
+    const carte = ([c, titre], i) => `<button type="button" aria-pressed="${c.id === E.rep.id}" data-cand="${c.id}" data-eh="${c.k}"${c.id === E.rep.id ? ' data-defaut' : ''} class="§-cd${c.id === E.rep.id ? ' on' : ''}" style="--c:${c.coul}"><span class="§-cgr" ${marques(c)}>
+<span class="§-ck">${titre}</span>
 <span class="§-cn" data-houblon="${S.esc(c.nom)}">${S.esc(c.nom)}</span><span class="§-cg">${doseTxt(c)}</span>
 <span class="§-cl">${alphaTxt(c)}${S.usage(c)}${stockTxt(c)}${S.autres(c, 26)}</span>
 <span class="§-ca">${S.pictos(c.cites.slice(0, 7), 16)}</span>
 <span class="§-cs">${scoreTxt(c)}<small>${c.palier}</small></span>
-<span class="§-cx">${i46Txt(E, c)} · ${restTxt(c)}</span></button>`;
+<span class="§-cx">${i46Txt(E, c)} · ${restTxt(c)}</span></span></button>`;
     const avecN = !L.includes(nelson);
-    const ligneN = avecN ? `<button type="button" role="radio" aria-checked="false" data-cand="${nelson.id}" data-eh="${nelson.k}" ${marques(nelson)} class="§-nl" style="--c:${nelson.coul}"><span data-houblon="${S.esc(nelson.nom)}"><b>Ton ${S.esc(nelson.nom)}</b></span>${scoreTxt(nelson)} <span class="§-gr">${nelson.palier}</span>${doseTxt(nelson)}${stockTxt(nelson)}${S.autres(nelson, 28)}</button>` : '';
+    const ligneN = avecN ? `<button type="button" aria-pressed="false" data-cand="${nelson.id}" data-eh="${nelson.k}" class="§-nl" style="--c:${nelson.coul}"><span class="§-nli" ${marques(nelson)}><b data-houblon="${S.esc(nelson.nom)}">${S.esc(nelson.nom)}</b>${alphaTxt(nelson)}${doseTxt(nelson)}${scoreTxt(nelson)} <span class="§-gr">${nelson.palier}</span>${stockTxt(nelson)}${S.autres(nelson, 28)}</span></button>` : '';
     const liste = avecN ? [...L, nelson] : L;
     return { liste, html: `<section data-etat="${E.id}"${E.id === 'b60' ? '' : ' hidden'}>
 <header class="§-h">${S.croix(P)}<div><h1>Lequel à la place de Nugget ?</h1>${contexte(E)}</div></header>
-<div data-libre="houblon" role="radiogroup" aria-label="Le remplaçant" class="§-cds">${R.map(carte).join('')}${ligneN}</div>
+<div data-libre="houblon" role="group" aria-label="Le remplaçant" class="§-cds">${R.map(carte).join('')}${ligneN}</div>
 <div class="§-bi"><div class="§-bih"><h2>Ma bière ${blocs(liste, (c) => 'avec ' + S.esc(c.nom), E.rep.id, 'span')}</h2>${S.legendeBouton(P)}${S.lentille(P)}</div>${blocs(liste, (c) => `<div class="§-big">${BIERE.map((f) => ligneBiere(E, f, c)).join('')}</div>`, E.rep.id)}</div>
 </section>` };
   };
   const V = ['b60', 'wp'].map((id) => ({ E: S.ETATS[id], ...vue(S.ETATS[id]) }));
-  const h1 = V[0].html, h2 = V[1].html.split(S.legendeBouton(P)).join('').split(S.lentille(P)).join('');
+  const h1 = V[0].html, h2 = V[1].html.split(S.legendeBouton(P)).join(AIDE2);
   const corps = `<main class="§-e">${h1}${h2}</main>${V.map((v) => `<div data-etat="${v.E.id}"${v.E.id === 'b60' ? '' : ' hidden'}>${pied(v.E, v.liste)}</div>`).join('')}`;
   const css = `${CSS_COMMUN}
 .§-cds { display:flex; flex-direction:column; gap:6px; }
-.§-cd { display:grid; grid-template-columns:1fr auto; grid-template-areas:"k k" "n g" "l s" "a s" "x x"; gap:3px 8px; width:100%; padding:7px 10px 7px 12px; border-radius:8px; border:1px solid #d9d9d9; border-left:6px solid var(--c); background:#fff; }
+.§-cd { display:block; width:100%; padding:7px 10px 7px 12px; border-radius:8px; border:1px solid #d9d9d9; border-left:6px solid var(--c); background:#fff; }
+.§-cgr { display:grid; grid-template-columns:1fr auto; grid-template-areas:"k k" "n g" "l s" "a s" "x x"; gap:3px 8px; }
+.§-nli { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
 .§-cd.on { border-color:var(--c); border-width:2px 2px 2px 6px; background:#f5f5f5; }
 .§-ck { grid-area:k; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#333; }
 .§-ck .§-gr { text-transform:none; letter-spacing:0; font-weight:400; }
@@ -198,8 +204,7 @@ function sbb5b() {
 .§-bi { display:flex; flex-direction:column; gap:5px; border-top:1px solid #e0e0e0; padding-top:6px; }
 .§-bih { display:flex; align-items:center; gap:8px; }
 .§-bih h2 { font-size:14px; font-weight:700; margin-right:auto; }
-.§-big { display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; }
-.§-big .§-lb { grid-template-columns:16px 58px 1fr 30px; gap:4px; }
+.§-big { display:flex; flex-direction:column; gap:5px; }
 `;
   const fiches = [S.NUG, ...new Map(V.flatMap((v) => v.liste).map((c) => [c.nom, c])).values()];
   return S.page(P, { titre: 'sbb5b · Lequel à la place de Nugget ? · trois raisons, passe 2', corps, css, client: CLIENT.split('§-').join(P + '-'), fiches });

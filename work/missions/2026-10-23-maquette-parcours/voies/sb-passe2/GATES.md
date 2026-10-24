@@ -15,7 +15,7 @@ Scope: les cinq candidates refaites selon le verdict du conseil, capturées à 6
   EVIDENCE: pending
 
 - [ ] G3: une question, un seul facteur libre
-  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-une-question.mjs work/refonte-frontend/v4/ecran-1/fils24-substituer sbc1b sbz7b sbb7b sbz6b sbb5b --page=etat.html
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-une-question.mjs work/refonte-frontend/v4/ecran-1/fils24-substituer sbc1b sbz7b sbb7b sbz6b sbb5b --page=etat.html --edition
   EXPECT: UNE-QUESTION OK
   EVIDENCE: pending
 

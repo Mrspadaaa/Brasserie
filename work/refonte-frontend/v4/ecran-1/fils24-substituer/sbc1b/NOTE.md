@@ -16,7 +16,10 @@ Stout 16D. La v0 `sbc1/` n'est pas touchée ; sbc1b importe son vocabulaire `sbc
 - Au whirlpool, Nelson Sauvin ~29–89 hachuré, jamais « 42 » : son arôme (poids 0,6, moteur 21) repose sur 2 mots de fiche sur
   12 ; la page l'ouvre de 0 à 100 (0,3 × 72 + 0,1 × 74 = 29 ; + 60 = 89), écrit dans sa carte.
 - « Annuler » à côté de « Remplacer » (pied fixe, D120) ; aucun « ×0,6 » à l'écran.
-- L'état whirlpool par la puce de contexte « à 60′ ⌄ » : un toucher (`?moment=wp` pour les captures). Ma stout après se
+- L'état whirlpool par la puce de contexte « à 60′ ⌄ » (décision du pilote, 24.10) : un vrai bouton `data-edite="moment"`
+  (`aria-controls`, `aria-expanded`) dans `[data-contexte="moment"]`, qui ouvre une feuille fermée au repos (« Moment de
+  Nugget » : à 60′ · au whirlpool, radios du seul moment) ; un choix pose l'état et ferme la feuille (`?moment=wp` pour les
+  captures). Ma stout après se
   redessine au moment choisi ; Falconer's Flight n'a pas de profil simulé au whirlpool dans les données : barres hachurées
   « non simulé ici », pas zéro.
 - Colonne « IBU si 46 g » (IBU de Nugget au moment × α / 13, linéaire en α) : les IBU d'une ligne sont cohérents (G5).
@@ -49,17 +52,19 @@ La structure de u4, la paire 60′ / whirlpool d'un toucher : à 60′ Magnat et
 Falconer's Flight ~83 ; Nelson Sauvin passe de ~86 à ~29–89, sa part sans famille visible. Chaque ligne dit stock et manque.
 
 ## Ce qui casse
-La plage de score reste un calcul de la page, pas du moteur ; la puce de moment n'est pas un bouton (span tabindex) pour que
-la ligne de contexte reste sans contrôle (D98 strict) : à trancher. La liste reste longue (8 lignes) ; le face-à-face arrive
+La plage de score reste un calcul de la page, pas du moteur ; changer de moment demande deux touchers (bouton, puis choix
+dans la feuille). La liste reste longue (8 lignes) ; le face-à-face arrive
 sous la liste ; au whirlpool les rangs de Cascade et Galaxy (65, 55) sont ceux du stock d'abord.
 
 ## Contrôles (sbc1b seule)
 - G2 controle-commun --sans=mots : COMMUN OK
-- G3 controle-une-question : UNE-QUESTION OK (1 groupe libre : houblon), à 60′ et avec ?moment=wp
+- G3 controle-une-question --edition : UNE-QUESTION OK (1 groupe libre : houblon), à 60′ et avec ?moment=wp ; le toucher
+  réel sur le bouton de moment ouvre la feuille, qui ne règle que le moment. Témoin : sans --edition, la même page échoue
+  (« la ligne de contexte contient 1 contrôle(s) »), comme attendu.
 - G4 mots-premier-ecran --max=80 --sans-donnees : 78 mots, MOTS OK (whirlpool : MOTS OK)
 - G5 controle-coherence-ibu : COHERENCE-IBU OK (8 lignes)
 - controle-sans-famille : SANS-FAMILLE OK à 60′ et au whirlpool (Nelson Sauvin 83 % ✓)
 
 ## Captures (regardées)
-`captures/sbc1b-60.png`, `-whirlpool.png` (toucher réel sur la puce), `-page.png`, `-whirlpool-page.png`,
+`captures/sbc1b-60.png`, `-whirlpool.png` (toucher réel : bouton de moment, puis « au whirlpool »), `-moment.png` (la feuille ouverte), `-page.png`, `-whirlpool-page.png`,
 `-60-nelson.png`, `-whirlpool-nelson.png`, `-fiche.png`. Générateur : `sbc1b/generer.mjs` (écrit aussi `recompte.json`).
