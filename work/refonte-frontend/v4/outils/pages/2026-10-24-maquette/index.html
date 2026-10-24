@@ -1,0 +1,15 @@
+<title>Maquette houblons · 24.10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<script>
+  // La maquette jouable de prototypes/houblons-v4/parcours, telle que construite : ce cadre ne fait que poser ce que sa
+  // page index.html porte sur <html> et <body> (langue, thème clair par défaut, route de départ Ma bière).
+  document.documentElement.lang = 'fr';
+  if (!document.documentElement.dataset.theme) document.documentElement.dataset.theme = 'clair';
+  document.body.dataset.route = 'ma-biere';
+  document.body.classList.add('overflow-x-hidden', 'font-sans', 'bg-cave-950');
+</script>
+<div id="parcours"></div>
+<script defer src="assets/parcours.js"></script>
