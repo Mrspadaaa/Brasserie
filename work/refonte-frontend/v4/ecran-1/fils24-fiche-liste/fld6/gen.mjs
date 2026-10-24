@@ -48,7 +48,7 @@ function rendu(h) {
   const legende = ['Arc intérieur : ses familles ; gris : hors des 12 familles du radar.', 'Arc extérieur : un secteur par mot, d\'autant plus long que de fiches le citent (chiffre au bout : ses fiches).', 'Trait bleu sous une famille : attendue au 16D.', 'Traduit : ' + (h.mots.flatMap((w) => w.en.map((e) => '« ' + e + ' » → ' + w.fr)).join(', ') || 'aucun mot')];
   const cats = h.mots.filter((w) => w.cat), seules = h.familles.filter((f) => !f.mots.some((w) => !w.nomFam && !w.cat));
   const corps = `${titre(h)}${alpha(h)}
-${radar(h, { taille: 236 })}
+${radar(h, { taille: 214 })}
 ${demande(h)}
 <section class="fld6-ev" aria-label="L'éventail de ses mots" data-houblon="${esc(h.nom)}">
 <div class="fld6-h"><h2>Que sent-il, mot par mot ?</h2>${lentille('leg-' + ID, legende, 'fld6-lent')}</div>

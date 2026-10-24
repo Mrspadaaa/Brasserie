@@ -64,6 +64,9 @@ const CSS = `
 .fld7-cible { position:relative; width:100%; aspect-ratio:1; margin:2px auto 0; }
 .fld7-a { position:absolute; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); }
 .fld7-a2 { border:1.5px dashed #8d8d96; background:#fafafb; }
+.fld7-style .fld7-a2 { background:#3a3d44; border:0; }
+.fld7-style .fld7-nm2 { background:#3a3d44; color:#fff; }
+.fld7-style .fld7-h { color:#fff; background:#3a3d44; padding:1px 4px; border-radius:2px; } .fld7-style .fld7-h small { color:#d2d4da; } .fld7-style .fld7-h.fld7-gen { color:#c9cbd1; }
 .fld7-a1 { background:#f5f5f7; border:1px solid #d6d7dd; }
 .fld7-a0 { background:#e4eaf4; border:2px solid var(--zone); }
 .fld7-absolu .fld7-a0 { background:#e9e9ee; border-color:#16161a; }

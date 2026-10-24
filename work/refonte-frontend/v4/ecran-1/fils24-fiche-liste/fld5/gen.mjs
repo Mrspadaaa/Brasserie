@@ -59,15 +59,15 @@ const CSS = `
 .fld5-w { font-size:13px; font-weight:600; } .fld5-wi { font-weight:400; font-style:italic; }
 .fld5-z16 { fill:var(--zone); font-size:12px; font-weight:700; }
 body.abs .fld5-z16 { display:none; }
-.fld5-hc { border:1.5px dashed #8d8d96; border-radius:8px; padding:8px 10px; display:flex; flex-direction:column; gap:6px; }
+.fld5-hc { background:#3a3d44; color:#fff; border-radius:8px; padding:8px 10px 10px; display:flex; flex-direction:column; gap:6px; }
 .fld5-hc-t { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .fld5-hc-t h2 { font-size:15px; font-weight:700; }
-.fld5-hc-n { font-size:12px; color:var(--gris); }
-.fld5-front { width:14px; height:14px; border-radius:2px; background:#8d8d96; display:inline-block; }
+.fld5-hc-n { font-size:12px; color:#d2d4da; }
+.fld5-front { width:14px; height:14px; border-radius:2px; background:#8d8d96; outline:1px solid #d2d4da; display:inline-block; }
 .fld5-hc-m { display:flex; flex-wrap:wrap; gap:4px 14px; align-items:baseline; }
 .fld5-h { font-weight:800; line-height:1.1; }
-.fld5-h small { font-size:11px; font-weight:600; color:var(--gris); margin-left:2px; }
-.fld5-gen { font-weight:400; color:#5b5b66; }
-.fld5-z { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--gris); }
+.fld5-h small { font-size:11px; font-weight:600; color:#d2d4da; margin-left:2px; }
+.fld5-gen { font-weight:400; color:#c9cbd1; }
+.fld5-z { display:flex; align-items:center; gap:6px; font-size:12px; color:#d2d4da; } .fld5-z .fd-zone { background:#fff; color:var(--zone); }
 `;
 ecrire(ID, 'Citra cryo', rendu);

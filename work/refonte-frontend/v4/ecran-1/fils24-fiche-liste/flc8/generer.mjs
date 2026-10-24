@@ -45,7 +45,7 @@ const css = `
   .${P}-tete { display: flex; align-items: center; gap: 4px; }
   .${P}-radar { flex: none; margin: 4px 14px 0 8px; }
   .${P}-rl { font: 600 10.5px var(--sans); fill: #2b2d33; } .${P}-rl.inc { fill: #6b6f78; font-weight: 400; }
-  .${P}-id { display: flex; flex-direction: column; gap: 3px; padding-top: 20px; min-width: 0; }
+  .${P}-id { display: flex; flex-direction: column; gap: 3px; padding-top: 42px; min-width: 0; }
   .${P}-nom { font-size: 26px; font-weight: 700; line-height: 1.05; }
   .${P}-al { display: flex; flex-direction: column; }
   .${P}-alg { font-size: 14px; color: #4a4d55; } .${P}-alg b { font-size: 21px; color: #16161a; font-weight: 600; }

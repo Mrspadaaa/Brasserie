@@ -51,7 +51,7 @@ const CSS = `
 .fld4-rc .fld4-l b { color:var(--gris); }
 .fld4-cran { position:absolute; left:0; top:50%; width:16px; height:3px; margin-top:-1.5px; border-radius:2px; background:#16161a; }
 .fld4-c { display:flex; flex-wrap:wrap; gap:3px 8px; align-items:center; }
-.fld4-cd { padding:4px 8px; background:#ececf1; border-radius:4px; align-self:stretch; }
+.fld4-cd { padding:4px 8px; background:#3a3d44; border-radius:4px; align-self:stretch; } .fld4-cd .fld4-h { color:#fff; } .fld4-cd .fld4-gen { color:#c9cbd1; } .fld4-cd .fld4-v { color:#c9cbd1; }
 .fld4-m { display:inline-flex; align-items:center; gap:3px; font-weight:700; font-size:calc(14px + 8px * var(--k)); line-height:1.1; position:relative; }
 .fld4-h { color:var(--encre); font-weight:800; }
 .fld4-nf { font-weight:400; }
