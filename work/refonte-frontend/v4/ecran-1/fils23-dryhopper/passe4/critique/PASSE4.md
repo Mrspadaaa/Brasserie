@@ -1,4 +1,4 @@
-OK — accepté : la passe 4 progresse (5 variantes passent devant a1) ; 11 ACCEPTÉ après la reprise de p4a3 et p4b5 (REJET levés le 24.10) ; « satisfaisant » sous réserve des retouches communes 1 à 5
+OK — accepté : passe 4 retouchée selon le conseil dh4 ; les 7 pages vérifiées sont ACCEPTÉ (p4a4, p4b2, p4a3, p4b3, p4a2, p4b1, p4a6), retouches tenues sauf 4 restes mineurs (p4b2 : 855 px et « ? → ~+8 » sur deux lignes ; p4a3 et p4a6 : « Puis la levure » sur deux ou trois lignes ; p4a2 : « trop amer ≈ 60′–10′ » coupé)
 
 # Critique de la passe 4 de Dryhopper (Fable, calibré sur le brasseur, 24.10)
 
@@ -288,3 +288,64 @@ lisibles) : elles se montrent derrière les cinq candidates, avec les froides. L
 LEÇON PROPOSÉE : deux voies sur la même donnée (`AV` : Noyau 0, Baies 0) l'ont lue différemment (inconnue ou zéro) sans que
 le brief tranche ; quand un brief dit « l'inconnu n'est jamais zéro », il nomme la donnée en cause et dit si elle est
 inconnue ou nulle, et le contrôle (D65) le vérifie sur toutes les voies du lot.
+
+## Après le conseil
+
+Conseil rapide dh4 (`work/missions/2026-10-23-maquette-parcours/conseil-dh4/verdict.md`, Recommandation) : tête p4a4, p4b2, p4a3,
+p4b3, p4a2 ; derrière p4b1, p4a6, p4a1, p4a5, p4b4, p4b5 et a1. Vérifié le 24.10 sur les pages retouchées : captures neuves
+ouvertes (`captures/<id>-premier-ecran.png`, `-pendant.png`, `-apres.png`, `p4b2-apres-7j.png`, `p4b3-apres-7j.png`), geste rejoué
+par moi vers 20′, whirlpool et après · 7 j sur les 11 pages avec, à chaque arrêt, la mesure au DOM de ce que la loupe recouvre
+(éléments dessinés de la figure hors rail et dock), la hauteur de page, les textes sous 12 px et les textes sur deux lignes.
+
+### Commune : Noyau et Baies d'une seule lecture (11 pages)
+Tenue. Les 11 pages écrivent « ? → ~+8 » (Noyau) et « ? → ~+21 » (Baies) : avant inconnu, gain connu ; vérifié au DOM sur
+p4a1 à p4a6, p4b2 à p4b5 (`?→~+8` ou `? → ~+8`), et sur la capture pour p4b1 (« ? → ≈+4 · ≈−6 » à 20′) ; Pépins et Melon
+« ? » hachurés partout. Reste : sur p4b2 le « ? → ~+8 » passe sur deux lignes (colonne de valeurs étroite).
+
+### Commune : loupe à 0 px d'intersection avec la figure
+Tenue sur les 7 pages à 20′, au whirlpool et à après · 7 j : 0 élément dessiné de la figure recouvert (barres, rubans, courbes,
+cartes). La loupe recouvre seulement le rail, le dock ou la ligne mesuré / Levure : p4a4 (y 716, sur le pont et les jours),
+p4b2 (y 481, dans la bande réservée du bloc, entre le rail et les boutons de jours), p4a3 (colonne 120 × 372 à gauche du rail,
+sur les crans du rail seulement), p4b3 (y 678, sur la ligne de titres de l'agenda), p4a2 (y 722, sur les pastilles d'étape, le
+profil du dock reste visible), p4b1 (y 699), p4a6 (y 728).
+
+### Par variante, dans l'ordre du conseil
+- **p4a4** (cartes d'étape) — ACCEPTÉ. Rubans d'a1 sous les barres : tenue (`p4a4-premier-ecran.png`, les 73 px de vide sont
+  pris, page 844 px). Bandeau clair : tenue (fond blanc, bord noir, « ★ actif · 2 j » et trois chips). Boutons de jours
+  1 j · 2 j · 3 j · 7 j : tenue. Noyau « ? → ~+8 » : tenue. Loupe hors figure : tenue (`p4a4-pendant.png`). Reste : rien de
+  bloquant ; la loupe mord la pastille « Puis la levure » pendant le geste. Brasseur : « p4a4 très bien, là on a tout. »
+- **p4b2** (courbes) — ACCEPTÉ. Bosse hachurée « levure active · possible, non chiffrée » : tenue. Étiquettes floral / baies
+  disjointes : tenue à l'actif (`p4b2-premier-ecran.png`) et à après · 7 j (elles passent au départ des courbes,
+  `p4b2-apres-7j.png`, sans chevauchement). Pastille du pouce sur l'axe (« 2 j » sous le rail) : tenue. Boutons de jours
+  1 j · 2 j · 3 j · 7 j sous la carte : tenue. Loupe : tenue (dans la bande du bloc, 0 recouvert). Restes : page 855 px
+  (1,01 écran, D5 ≤ 1,05 mais le pont Levure passe sous le pli à après · 7 j) ; « ? → ~+8 » sur deux lignes ; textes de 11 px
+  dans le graphique (« levure active », « IBU », noms de courbes). Brasseur : « p4b2 donne vraiment bien, le graph plus
+  grand. »
+- **p4a3** (rail debout) — ACCEPTÉ. Loupe de 120 px, chiffres sur une ligne (« 30′ ≈+9 ~138 ») : tenue (`p4a3-pendant.png`,
+  mesurée 120 × 372, 0 barre ni mini-colonne couverte). Mini-colonnes, étapes et jours écrits : tenues. Noyau : tenue.
+  Restes : « Puis la levure · Pomona ~+13 › » passe sur deux lignes dans le pont (carte à 230 px), et « 60 IBU · tenue (à cru ?) »
+  aussi ; libellés du rail (1 j … 7 j, 60′, 0′, IBU) sous 12 px (13 textes). Brasseur : « p4a3 d'une main ok, le bas est dense
+  ; le bouton levure est cassé en deux. »
+- **p4b3** (agenda) — ACCEPTÉ. Agenda ≥ 120 px : tenue (titres HTML 38 px + agenda 84 px = 122 px au DOM ; « brassage » haut
+  y 687 → « finie » bas y 796). Libellés à 12 px : tenue (0 texte sous 12 px). « levure active » hors du pouce : tenue
+  (« ★ levure active » en tête de la case fermentation, le houblon 40 px plus bas). Courbe hachurée « forme type » : tenue
+  (pointillé, « finie · forme type »). Rubans d'a1 : tenue (sous chaque barre, Pépins et Melon hachurés). Noyau : tenue. Loupe :
+  tenue (0 recouvert ; elle couvre la ligne de titres de l'agenda, qui se lit à nouveau au lever du doigt). Reste : la loupe
+  n'a plus ses mini-barres, seulement les chiffres. Brasseur : « p4b3 vachement bien, un vrai calendrier. »
+- **p4a2** (a1 enrichi) — ACCEPTÉ. Pictos de cause à 14 px : tenue (svg de 14 px présents, bulles et flamme lisibles au bout
+  du contour). Loupe au-dessus du dock : tenue (le profil du dock reste visible sous la loupe, `p4a2-pendant.png`). Boutons
+  de jours : tenue. Noyau : tenue. Reste : « trop amer ≈ 60′–10′ » coupé sur deux lignes dans la ligne « contre ★ » (chevauchement
+  commun 4, non repris). Brasseur : « p4a2 c'est a1 propre, ok. »
+- **p4b1** (gardé · emporté) — ACCEPTÉ. Gain devant dans la loupe : tenue (« ≈+9 / ≈−14 … ~+13 / ~−9 », `p4b1-pendant.png`).
+  Noyau « ? → ≈+4 · ≈−6 » : tenue. Loupe : tenue (0 recouvert ; le rail est passé sous la loupe, le profil hachuré au-dessous).
+  Reste : les valeurs d'emporté (~−1, ~−6) et ★ sont sous 12 px (11 textes). Brasseur : « p4b1 pas mal, maintenant la loupe
+  dit ce que je gagne et ce que je perds. »
+- **p4a6** (chaîne) — ACCEPTÉ. Étapes remises sur le rail : tenue (quatre pastilles 60′–0′ · WP · actif · après sous la chaîne,
+  `p4a6-premier-ecran.png`). Noyau « ? → ~+8 » dans la colonne gain, « ? » hachuré dans Ma bière : tenue. Loupe : tenue.
+  Reste : la carte « Puis la levure › Pomona » de l'en-tête passe sur trois lignes ; remplissage toujours le plus bas (0,46,
+  lignes de 88 px). Brasseur : « p4a6 la chaîne c'est bien, le bouton levure en haut est moche. »
+
+Verdict d'ensemble : les retouches du conseil sont tenues sur les sept pages ; aucun REJET. Quatre restes mineurs à corriger
+avant publication si le temps le permet, sans relance : p4b2 (855 px → 844, « ? → ~+8 » sur une ligne), p4a3 et p4a6 (« Puis la
+levure » sur une ligne, chip plus large ou texte plus court), p4a2 (« trop amer » et « ≈ 60′–10′ » sur une ligne). L'ordre de
+tête du conseil est gardé : p4a4, p4b2, p4a3, p4b3, p4a2 ; derrière p4b1, p4a6, p4a1, p4a5, p4b4, p4b5, a1.

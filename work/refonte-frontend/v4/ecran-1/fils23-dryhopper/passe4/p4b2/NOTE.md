@@ -35,8 +35,12 @@ d'a1 et b4 ; boutons de jours d'a1.
 - Le piège et la réponse en une figure ; ★ au-dessus de l'actif ; l'amertume orangée de 60′ à 25′, hachurée à cru.
 - Le rail sous l'axe : le doigt et la figure partagent la même géométrie ; loupe ×5,9 ; 42 mots hors données.
 
+## Dernière retouche du critique (« Après le conseil »)
+- La valeur « ? → ~+8 » passait sur deux lignes et la page faisait 855 px : colonne de valeur élastique et sans retour à la
+  ligne, forme compacte « ?→~+21 », lignes de barres à 19 px, bloc resserré. Mesuré au DOM à actif · 2 j, 20′ et après · 7 j :
+  **0 valeur sur deux lignes, page à 844 px** ; loupe toujours à 0 px² de la figure (3/3).
+
 ## Ce qui casse
-- 1,04 écran : les boutons de jours et la loupe en flux allongent la page de 4 % (D5 ≤ 1,05).
 - Floral ~+22 et baies ~+21 restent deux courbes voisines ; disjointes en étiquettes, pas en tracé.
 - Pendant le geste, le bloc des barres descend de 66 px (la loupe en flux) : le doigt reste sur le rail, mais la page bouge.
 
@@ -45,7 +49,7 @@ d'a1 et b4 ; boutons de jours d'a1.
 |---|---|
 | G2 `controle-commun --sans=mots` | **COMMUN OK** |
 | G3 `controle-une-question` | **UNE-QUESTION OK (1 groupe libre : moment)** |
-| G4 `mots-premier-ecran --max=80 --sans-donnees` | **MOTS OK**, 42 mots |
+| G4 `mots-premier-ecran --max=80 --sans-donnees` | **MOTS OK**, 40 mots |
 
 Geste : d'actif · 2 j (~+22, 60+?) à 20′ (≈+11, ≈119, « contre ★ : floral ≈−11 · résineux ≈−7 · trop amer »). Captures
 ouvertes : `captures/p4b2-premier-ecran.png`, `p4b2-pendant.png`, `p4b2-apres.png`, `p4b2-apres-7j.png`, `p4b2-touche-actif.png`.

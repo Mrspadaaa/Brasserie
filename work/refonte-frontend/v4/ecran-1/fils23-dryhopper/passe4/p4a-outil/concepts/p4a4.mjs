@@ -32,7 +32,7 @@ body.p4a4 { padding-bottom:var(--dock,96px); }
 .p4a4rep-ch .s-pi { color:currentColor; }
 .p4a4rep-c { font-size:13px; color:var(--gris); text-align:right; min-height:16px; }
 .p4a4rep-c b { color:var(--encre); }
-.p4a4rep-c .p4a4-trop { color:var(--acc); font-weight:600; }
+.p4a4rep-c .p4a4-trop { color:var(--acc); font-weight:600; white-space:nowrap; }
 .p4a4po { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; }
 .p4a4po button { position:relative; display:flex; flex-direction:column; align-items:stretch; gap:3px; padding:6px 5px 7px; border-radius:8px; background:var(--plan); border:1px solid var(--trait); text-align:left; font-size:12px; }
 .p4a4po button[aria-current="true"] { border:2px solid var(--encre); padding:5px 4px 6px; background:#fff; }

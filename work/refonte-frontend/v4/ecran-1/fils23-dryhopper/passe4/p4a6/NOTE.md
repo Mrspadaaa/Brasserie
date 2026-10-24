@@ -45,3 +45,4 @@ Régénérer : `node ../p4a-outil/generer.mjs p4a6 --captures` (socle : `../p4a-
 - Les quatre étapes d'a1 remises sur le rail (60′–0′, WP, actif, après, floral, orangé si trop amer ; un toucher y saute).
 - Le fantôme « + 2ᵉ ? » retiré de la chaîne (refusé par le conseil avant son choix, L10) : « Ma bière → + Idaho 7 → levure ».
 - Aucune greffe croisée entre variantes. Captures refaites et ouvertes ; G1 à G5 rejoués (COMMUN OK, UNE-QUESTION OK, MOTS OK, PANEL OK).
+- Textes entiers (24.10, après le conseil) : le pont « Puis la levure › » ferme la chaîne au dock au lieu de l'en-tête de 50 px, où il se coupait ; l'en-tête de la colonne dit « Pomona ». G4 : 44 mots hors données.

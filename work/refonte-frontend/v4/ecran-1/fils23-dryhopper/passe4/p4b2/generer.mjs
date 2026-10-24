@@ -28,7 +28,7 @@ rendre({
 .p4b2-contre { flex-basis:100%; font-size:13px; color:var(--gris); }
 .p4b2-contre b { color:var(--encre); }
 .p4b2-contre .p4b2-moins { color:var(--acc); font-weight:600; }
-.p4b2-fig { padding:6px 12px 4px; gap:0; }
+.p4b2-fig { padding:4px 12px 4px; gap:0; }
 .p4b2-seg { display:grid; grid-template-columns:44fr 8fr 24fr 24fr; gap:2px; }
 .p4b2-seg button { height:22px; border-radius:4px; background:#f1f2f5; font-size:12px; color:var(--gris); white-space:nowrap; overflow:hidden; }
 .p4b2-seg button.p4b2-amer { box-shadow:inset 0 -3px 0 var(--acc); }
@@ -45,15 +45,15 @@ rendre({
 .p4b2 .p4r-pl { bottom:auto; top:28px; }
 .p4b2 .p4r-geste { display:flex; flex-direction:column; }
 .p4b2 .p4r-loupe { position:relative; top:auto; left:auto; right:auto; order:2; margin-top:6px; }
-.p4b2-jr { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; margin-top:28px; }
+.p4b2-jr { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; margin-top:26px; }
 .p4b2-jr button { height:22px; border-radius:4px; background:#f1f2f5; font:600 12px var(--sans); color:var(--encre); }
 .p4b2-jr button.p4b2-sg { background:#f7f8fa; color:var(--gris); font-weight:400; border:1px dashed #c9cdd6; }
 .p4b2-jr button[aria-pressed="true"] { background:var(--encre); color:#fff; font-weight:700; border:0; }
 .p4b2-jr button[aria-disabled="true"] { opacity:.45; }
-.p4b2-ba { display:grid; grid-template-columns:92px 1fr 44px; align-items:center; gap:6px; font-size:14px; min-height:21px; }
+.p4b2-ba { display:grid; grid-template-columns:92px 1fr auto; align-items:center; gap:6px; font-size:14px; min-height:19px; }
 .p4b2-n { display:flex; align-items:center; gap:4px; white-space:nowrap; }
 .p4b2-n.p4b2-att { font-weight:700; }
-.p4b2-v { text-align:right; font:600 12px var(--mono); }
+.p4b2-v { text-align:right; font:600 12px var(--mono); white-space:nowrap; min-width:40px; }
 .p4b2-p { position:relative; height:16px; background:#f1f2f5; border-radius:2px; overflow:hidden; }
 .p4b2-p i { position:absolute; top:0; bottom:0; left:0; display:block; }
 .p4b2-p .p4b2-z { width:var(--ws); background:#d9dce3; }
@@ -63,7 +63,7 @@ rendre({
 .p4b2-p .p4b2-h { right:0; background:repeating-linear-gradient(135deg,#c9cdd6 0 2px,transparent 2px 6px); }
 body.abs .p4b2-p .p4b2-z, body.abs .p4b2-p .p4b2-b { width:var(--wa); }
 body.abs .p4b2-p .p4b2-av { left:clamp(6px, var(--wa), calc(100% - 6px)); }
-.p4b2-bars { display:grid; grid-template-columns:1fr; gap:1px; padding:6px 10px; }
+.p4b2-bars { display:grid; grid-template-columns:1fr; gap:0; padding:4px 10px; }
 .p4b2-bas { display:flex; align-items:center; justify-content:space-between; gap:8px; }
 .p4b2-mes { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--gris); min-width:0; }
 .p4b2-mes b { color:var(--encre); font-weight:600; }
@@ -174,7 +174,7 @@ body.abs .p4b2-p .p4b2-av { left:clamp(6px, var(--wa), calc(100% - 6px)); }
         var f = r.dataset.f, u = S.inc(p, f), b = r.querySelector('.p4b2-b'), v = r.querySelector('.p4b2-v');
         r.classList.toggle('p4b2-ipr', !!p.interp); b.hidden = u; r.querySelector('.p4b2-h').hidden = !u;
         if (!u) { b.style.setProperty('--ws', w(p.v[f], f, 's') + '%'); b.style.setProperty('--wa', w(p.v[f], f, 'a') + '%'); }
-        v.textContent = P4.val(p, f); v.style.color = u ? '#55555f' : (S.hors(p, f) ? '#c2410c' : S.T[f]);
+        v.textContent = P4.val(p, f, true); v.style.color = u ? '#55555f' : (S.hors(p, f) ? '#c2410c' : S.T[f]);
       });
     }
     function contre(i) {

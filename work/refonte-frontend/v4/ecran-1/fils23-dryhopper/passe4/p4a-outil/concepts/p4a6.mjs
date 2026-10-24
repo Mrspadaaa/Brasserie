@@ -33,9 +33,9 @@ body.p4a6 { padding-bottom:var(--dock,118px); }
 .p4a6ch-b b { font:700 16px var(--sans); white-space:nowrap; }
 .p4a6ch-b .p4a6-fl { margin-left:auto; display:inline-flex; align-items:center; gap:3px; padding:1px 7px; border-radius:999px; background:#fff; font:700 15px var(--mono); color:#9840bc; }
 .p4a6ch-c { grid-column:4; padding:0; }
-.p4a6ch-c a { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; min-height:40px; padding:3px 2px; border-radius:8px 8px 0 0; background:#e4e4e4; color:var(--encre); font-weight:700; line-height:1.1; text-align:center; }
+.p4a6ch-ct { display:flex; align-items:center; justify-content:center; min-height:40px; padding:3px 2px; border-radius:8px 8px 0 0; background:#e4e4e4; color:var(--encre); font:600 12px var(--sans); text-align:center; }
 .p4a6ch-c a small { font:400 12px var(--sans); color:var(--gris); }
-.p4a6ch-c.p4a6-trav a { background:repeating-linear-gradient(135deg,#d4d4d4 0 2px,#ececec 2px 6px); }
+.p4a6ch-c.p4a6-trav .p4a6ch-ct { background:repeating-linear-gradient(135deg,#d4d4d4 0 2px,#ececec 2px 6px); }
 .p4a6ct { flex-basis:100%; font-size:13px; color:var(--gris); min-height:16px; }
 .p4a6ct b { color:var(--encre); }
 .p4a6ct .p4a6-trop { color:var(--acc); font-weight:600; }
@@ -61,7 +61,9 @@ body.p4a6 { padding-bottom:var(--dock,118px); }
 .p4a6repli { display:flex; align-items:center; gap:6px; height:22px; padding:0 8px; color:var(--gris); }
 .p4a6repli[aria-expanded="true"] svg.p4a6chv { transform:rotate(90deg); }
 .p4a6dock { position:fixed; left:50%; bottom:0; transform:translateX(-50%); width:min(390px,100%); background:#fff; border-top:1px solid var(--trait); box-shadow:0 -12px 40px -16px rgba(22,22,22,.35); padding:6px 12px 8px; z-index:20; }
-.p4a6x3 { display:flex; align-items:center; gap:3px; font-size:12px; white-space:nowrap; overflow:hidden; }
+.p4a6x3l { display:flex; align-items:center; gap:3px; }
+.p4a6x3 { display:flex; align-items:center; gap:3px; font-size:12px; white-space:nowrap; }
+.p4a6pont a { display:inline-flex; align-items:center; height:26px; padding:0 10px; border-radius:13px; background:var(--encre); color:#fff; font:700 13px var(--sans); white-space:nowrap; }
 .p4a6x3 span { display:inline-flex; align-items:center; gap:2px; padding:1px 5px; border-radius:10px; background:#ececec; }
 .p4a6x3 span.p4a6-ici { background:var(--encre); color:#fff; font-weight:600; }
 .p4a6x3 span.p4a6-ghost { background:repeating-linear-gradient(135deg,#d4d4d4 0 2px,#fff 2px 6px); color:var(--gris); }
@@ -84,12 +86,12 @@ body.p4a6 { padding-bottom:var(--dock,118px); }
 <div class="p4a6ch" data-figure aria-live="polite">
   <span class="p4a6ch-a">Ma bière</span>
   <span class="p4a6ch-b"><span class="p4a6ch-bt"><small>+ Idaho 7</small><b id="p4a6m">actif · 2 j</b></span><span class="p4a6-fl"><svg class="s-pi" width="15" height="15" style="width:15px;height:15px" data-famille="floral" aria-label="Floral"><use href="#p-floral"/></svg><span id="p4a6fl"></span></span></span>
-  <nav class="p4a6ch-c" id="p4a6chc" aria-label="Pont vers Levure" data-acquis="levure" data-forme="pont"><a href="${ETAPE}">Puis la levure ›<small>Pomona</small></a></nav>
+  <span class="p4a6ch-c" id="p4a6chc"><span class="p4a6ch-ct">Pomona</span></span>
 </div>
 <p class="p4a6ct" id="p4a6ct"></p>
 <section class="p4a6tab" data-figure id="p4a6tab" aria-label="Ma bière, puis avec Idaho 7, puis ce que la levure changerait"></section>
 <div class="p4a6dock" id="p4a6dock" data-libre="moment" data-acquis="frise">
-  <p class="p4a6x3" id="p4a6x3" aria-label="La chaîne de ta cuve"></p>
+  <div class="p4a6x3l"><p class="p4a6x3" id="p4a6x3" aria-label="La chaîne de ta cuve"></p><nav class="p4a6pont" aria-label="Pont vers Levure" data-acquis="levure" data-forme="pont"><a href="${ETAPE}">Puis la levure ›</a></nav></div>
   <div class="p4a6et" id="p4a6et"></div>
   <div class="p4a6rg" id="p4a6rg"></div>
   <div class="p4a6lev" id="p4a6lev" aria-hidden="true"></div>
@@ -133,7 +135,7 @@ body.p4a6 { padding-bottom:var(--dock,118px); }
     }
     // La chaîne réduite de x3b, au bout de la frise.
     function chaine(p) {
-      document.getElementById('p4a6x3').innerHTML = '<span>Ma bière ' + S.pi('floral', 12) + '<b class="num">~' + r1(S.AV.floral) + '</b></span><i>→</i><span class="p4a6-ici">+ Idaho 7 ' + S.pi('floral', 12) + '<b class="num">' + (p.interp ? '≈' : '~') + Math.round(p.v.floral) + '</b></span><i>→</i><span>' + mp('m-levure', 12) + 'levure</span>';
+      document.getElementById('p4a6x3').innerHTML = '<span>Ma bière ' + S.pi('floral', 12) + '<b class="num">~' + r1(S.AV.floral) + '</b></span><i>→</i><span class="p4a6-ici">+ Idaho 7 ' + S.pi('floral', 12) + '<b class="num">' + (p.interp ? '≈' : '~') + Math.round(p.v.floral) + '</b></span><i>→</i>';
     }
     // La courbe de la levure sous le rail : fermentation active (fin vers J+5), biotransformation hachurée ; 1 j sans gain.
     document.getElementById('p4a6lev').innerHTML = '<span class="p4a6lev-y">' + mp('m-levure', 13) + '</span><svg viewBox="0 0 100 22" preserveAspectRatio="none" aria-hidden="true"><defs><pattern id="p4a6-h" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.3" height="3" fill="#fff"/></pattern></defs>'

@@ -33,7 +33,7 @@ body.p4a2 { padding-bottom:var(--dock,118px); }
 .p4a2rep-par b { color:#9840bc; font-weight:600; }
 .p4a2rep-contre { flex-basis:100%; font-size:13px; color:var(--gris); }
 .p4a2rep-contre b { color:var(--encre); }
-.p4a2rep-contre .p4a2rep-moins { color:var(--acc); font-weight:600; }
+.p4a2rep-contre .p4a2rep-moins { color:var(--acc); font-weight:600; white-space:nowrap; }
 .p4a2fig { position:relative; flex:1; justify-content:space-between; gap:0; padding:6px 10px; }
 .p4a2fig-ba { display:grid; grid-template-columns:88px 1fr 50px; align-items:center; gap:2px 6px; font-size:14px; padding:2px 0; }
 .p4a2fig-n { display:flex; align-items:center; gap:4px; white-space:nowrap; grid-row:span 2; }

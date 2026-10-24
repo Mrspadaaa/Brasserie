@@ -1,4 +1,4 @@
-OK — six variantes de la passe 4 sur a1, retouches du conseil dh4 faites, critères verts
+OK — six variantes de la passe 4 sur a1, conseil dh4 et textes entiers faits, critères verts
 
 ## Fichiers écrits
 - Pages : `work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4a1/` à `p4a6/` (`etat.html`, `NOTE.md`, `geste.json`)
@@ -39,11 +39,19 @@ Toutes gardent ce qu'a1 a d'obligatoire : la baseline, le thème blanc de ses ma
 - Aucune greffe croisée. Les dix-huit captures ont été refaites et ouvertes (premier écran, pendant, après), notamment p4a2, p4a3, p4a4 et p4a6 pendant le geste.
 - La bande d'intervalle a été refusée par le conseil. Elle visait la greffe proposée à p4b2. La plage de p4a5, son idée propre, est gardée : c'est au pilote de dire si ce refus la vise.
 
+## Textes entiers à 390 px (`critique/PASSE4.md`, « Après le conseil »)
+Mesure : chaque nœud de texte contenant « Puis la levure », « trop amer » ou « ≈ 60′–10′ » est compté en lignes au DOM, au repos, à 20′, au whirlpool et à après · 7 j. Avant les retouches : 8 fragments coupés. Après : LIGNES OK, 0 fragment coupé.
+- p4a2 : « trop amer » ne se coupe plus (nowrap) et passe entier à la ligne avec « ≈ 60′–10′ ».
+- p4a3 : « Puis la levure » tient sur une ligne (nowrap, Pomona à 12 px). L'amertume « ≈119 IBU · trop amer » passe sous son libellé, sur une ligne.
+- p4a4 : « trop amer » est entier dans le bandeau au whirlpool.
+- p4a6 : le pont « Puis la levure › » quitte la colonne étroite de 50 px et ferme la chaîne au dock (« Ma bière → + Idaho 7 → Puis la levure › »). L'en-tête de la colonne dit seulement « Pomona ».
+- Les captures de p4a2, p4a3, p4a4 et p4a6 ont été refaites et ouvertes.
+
 ## Sortie décisive de chaque critère
 - G1 : `PASSE-BIEN-6`
 - G2 : `COMMUN OK` (rejoué après les retouches du conseil et la relance ; le contraste des jours de p4a3 a été corrigé en encre ; corrections antérieures : trait d'icône S4 uniformisé à 1,5 px, tons de famille S2 sur fond sombre, rayons S3, contraste des flèches)
 - G3 : `UNE-QUESTION OK (1 groupe libre : moment)`
-- G4 : `MOTS OK` (29, 29, 38, 36, 52, 45 mots hors données), rejoué après les retouches du conseil
+- G4 : `MOTS OK` (29, 29, 38, 36, 52, 44 mots hors données), rejoué après les textes entiers
 - G5 : `NOTE OK` (rejoué après écriture)
 - En plus : `controle-panel` sur les six premiers écrans → `PANEL OK` (médiane 0,69, aucune capture sous 0,50, ressemblance 0,88, 0/15 paires presque identiques) ; mesure de la loupe → `LOUPE OK (0 px)`
 

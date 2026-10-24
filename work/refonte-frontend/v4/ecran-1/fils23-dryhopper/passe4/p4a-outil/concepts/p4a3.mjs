@@ -37,7 +37,8 @@ export default {
 .p4a3fig { flex:1; justify-content:space-between; gap:6px; padding:8px 8px; }
 .p4a3fig .s-ba { grid-template-columns:82px 1fr 44px; font-size:14px; min-height:31px; }
 .p4a3fig .s-jauge { font-size:13px; }
-.p4a3fig .s-jauge .s-jv { font-size:12px; }
+.p4a3fig .s-jauge { grid-template-columns:1fr; }
+.p4a3fig .s-jauge .s-jv { font-size:12px; text-align:left; white-space:nowrap; }
 .p4a3fig .s-jp { height:14px; }
 .p4a3fig .s-piste { height:20px; }
 .p4a3fig .s-piste .s-rem { height:12px; top:4px; }
@@ -56,9 +57,9 @@ export default {
 .p4a3mes { font-size:12px; color:var(--gris); }
 .p4a3mes b { color:var(--encre); font-weight:600; }
 .p4a3mes.p4a3-jamais { align-self:flex-start; padding:1px 6px; border-radius:4px; background:#ececec; }
-.p4a3lev a { display:flex; align-items:center; justify-content:space-between; gap:6px; height:36px; padding:0 12px; border-radius:18px; background:var(--encre); color:#fff; font-size:14px; }
+.p4a3lev a { display:flex; align-items:center; justify-content:space-between; gap:4px; height:36px; padding:0 10px; border-radius:18px; background:var(--encre); color:#fff; font-size:14px; white-space:nowrap; }
 .p4a3lev a b { font-weight:700; }
-.p4a3lev a span { display:inline-flex; align-items:center; gap:3px; color:#d4d4d4; font-size:13px; }
+.p4a3lev a span { display:inline-flex; align-items:center; gap:2px; color:#d4d4d4; font-size:12px; }
 .p4a3fr { position:relative; background:var(--plan); border:1px solid var(--trait); border-radius:8px; }
 .p4a3col { position:absolute; left:4px; right:30px; top:8px; bottom:8px; }
 .p4a3col i { position:absolute; right:0; display:flex; align-items:center; justify-content:flex-end; padding-right:3px; font:600 11px var(--mono); font-style:normal; color:var(--encre); height:var(--ch); margin-top:calc(var(--ch) / -2); border-radius:2px 0 0 2px; background:#bf86d6; }
@@ -150,7 +151,7 @@ export default {
     function levure(p) {
       var dd = X.POMONA[p.id] || null, f2 = null;
       if (dd) for (var f in dd) if (!f2 || Math.abs(dd[f]) > Math.abs(dd[f2])) f2 = f;
-      document.getElementById('p4a3lev-t').innerHTML = dd && Math.abs(dd[f2]) >= 0.5 ? 'Pomona ' + S.pi(f2, 14) + '~+' + Math.round(dd[f2]) + ' ›' : 'rien ici ›';
+      document.getElementById('p4a3lev-t').innerHTML = dd && Math.abs(dd[f2]) >= 0.5 ? 'Pomona ' + S.pi(f2, 13) + '~+' + Math.round(dd[f2]) + ' ›' : 'rien ici ›';
     }
     function contre(i) {
       var c = document.getElementById('p4a3rep-c'), p = D[i], q = D[best];
