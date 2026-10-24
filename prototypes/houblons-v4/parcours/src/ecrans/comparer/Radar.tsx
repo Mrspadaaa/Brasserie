@@ -9,7 +9,8 @@ import type { FamilyId } from '../../../../src/engine';
 import { Picto } from '../../commun';
 import { ABSOLU, ORANGE, type ColonneLue } from './calcul';
 
-const W = 358, H = 276, CX = W / 2, CY = 139, RR = 96;
+// r6n2 : « Le radar perd 22 px (rayon 84 au lieu de 100) pour garder tout le tableau au-dessus du dock » ; ici rayon 80, pour que les étapes (D107) tiennent aussi au-dessus.
+const W = 358, H = 236, CX = W / 2, CY = 118, RR = 80;
 const rd = (x: number) => Math.round(x * 10) / 10;
 
 export function Radar({ axes, cols, retenu, absolu, visee, trop }: {

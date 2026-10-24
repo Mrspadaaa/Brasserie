@@ -1,30 +1,36 @@
 // Comparer — « Cascade, Idaho 7 ou Galaxy pour ma stout ? ». r6a, le choix du brasseur (« r6a reste le meilleur »,
 // 23.10), portée en React et calculée en direct par le moteur, avec les petites améliorations des autres versions
-// (NOTE.md, « Idées reprises »). Un seul facteur libre : le houblon (retenir une colonne, en ajouter une 4ᵉ).
-// Dose, moment et levure sont fixés sur la ligne de contexte. Pont : « Placer <retenu> » → Dryhopper.
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+// (NOTE.md, « Idées reprises ») et, D124, ce que r6n2 montrait sous le premier écran de r6a (« r6n2 donne vraiment
+// bien ») : la pastille de critère, « pourquoi ? », la carte du houblon derrière le « + » et le dock à six feuilles
+// (Défi · Égaler · Valeurs · Preuve · Frise · Souche). Un seul facteur libre : le houblon (retenir une colonne, en
+// ajouter une 4ᵉ) ; le critère ne fait que classer. Dose, moment et levure sont fixés sur la ligne de contexte.
+// Ponts : « Placer <retenu> » → Dryhopper ; Suggérer, Levure depuis les feuilles.
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CadreOutil, COULEURS, COURT, Legende, LigneContexte, Picto, Pont, nombre, plage, useAppuiLong } from '../../commun';
 import { useNavigation } from '../../coquille/navigation';
 import { useOuvrir } from '../../coquille/ouvrir';
-import { CONDITIONS, VISEE, nomLevure } from '../../donnees/cas';
+import { CONDITIONS, H, VISEE, nomLevure } from '../../donnees/cas';
 import { useRecette } from '../../etat/EtatParcours';
 import { nouvelId } from '../../etat/operations';
 import { style } from '../../moteur';
 import { STOCK, hopRef, type FamilyId } from '../../../../src/engine';
 import Fiche from '../fiche';
-import { ABSOLU, ORANGE, couleurHoublon, depart, egaler, houblonDeBase, lireColonnes, lireEtapes, reponse, type CelluleLue, type ColonneLue } from './calcul';
-import { AuxEtapes } from './Etapes';
-import { ETAPES, type Etapes } from './calcul';
+import { ABSOLU, CRITERES, ORANGE, depart, houblonDeBase, lireColonnes, lireEtapes, reponse, scoreDefi, type CelluleLue, type ColonneLue, type Critere } from './calcul';
+import { AuxEtapes, PiedEtapes } from './Etapes';
+import {
+  FeuilleAjouter, FeuilleDefi, FeuilleDock, FeuilleEgaler, FeuilleFrise, FeuillePourquoi, FeuillePreuve, FeuilleSouche, FeuilleValeurs, Point, signeCran,
+} from './Feuilles';
+import { Chevron, IconeCible, IconeEgal, IconeFiole, IconeFrise, IconeLivre, IconeOk, IconePanel, IconeRisque, IconeSouche, IconeStock } from './icones';
 import { Radar } from './Radar';
-import { CHIMIE, acides, compose, huile, linalolEnBiere, panelOSU, titreRef, type ValeurReelle } from './valeurs';
 import './comparer.css';
 
 /** Ta dégustation du 18.10 : « trop résineuse, je la veux plus florale ». */
 const TROP: FamilyId = 'resin';
 const MAX_COLONNES = 4;
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ');
-const signeCran = (x: number) => `~${x >= 0 ? '+' : '−'}${nombre(Math.abs(x), 1)}`;
 const pc = (x: number) => `${(Math.max(0, Math.min(1, x)) * 100).toFixed(1)}%`;
+const nombreMot = (n: number) => ['aucun', 'le seul', 'les deux', 'les trois', 'les quatre'][n] ?? `les ${n}`;
+type FeuilleOuverte = null | 'defi' | 'egaler' | 'valeurs' | 'preuve' | 'frise' | 'souche' | 'ajouter' | 'pourquoi';
 
 export default function Comparer({ houblons }: { houblons: string[] }) {
   const recette = useRecette();
@@ -43,20 +49,24 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   // Aux étapes (D107) : chaque houblon et la référence (le houblon de base de ta recette) à 60′, 10′ et au dry hop.
   const reference = useMemo(() => houblonDeBase(recette, cles), [recette, cles]);
   const etapes = useMemo(() => lireEtapes(recette, reference ? [...cles, reference] : cles), [recette, cles, reference]);
+  // Le critère de classement (r6n2) : floral au départ (ta demande). Il change le ★, la réponse et le mis en avant.
+  const [critere, setCritere] = useState<Critere>(CRITERES[0]);
   const [retenu, setRetenu] = useState<string | null>(null);
-  const cleRetenue = retenu && cols.some((c) => c.cle === retenu) ? retenu : depart(cols, VISEE.famille) ?? cols[0]?.cle ?? '';
+  const cleRetenue = retenu && cols.some((c) => c.cle === retenu) ? retenu : depart(cols, critere.famille, critere.sens) ?? cols[0]?.cle ?? '';
   const sel = cols.find((c) => c.cle === cleRetenue) ?? null;
-  const rep = useMemo(() => reponse(cols, cleRetenue, VISEE.famille), [cols, cleRetenue]);
+  const rep = useMemo(() => reponse(cols, cleRetenue, critere.famille, critere.sens), [cols, cleRetenue, critere]);
   const [absolu, setAbsolu] = useState(false);
-  const [ouvert, setOuvert] = useState<null | 'vraies' | 'egaler' | 'osu'>(null);
+  const [feuille, setFeuille] = useState<FeuilleOuverte>(null);
+  const basculer = (f: FeuilleOuverte) => setFeuille((x) => (x === f ? null : f));
+  const fermer = useCallback(() => setFeuille(null), []);
   const [fiche, setFiche] = useState<string | null>(null);
 
   // La fiche (composant de la voie p1) pousse une entrée d'historique : le retour du téléphone et sa fermeture
   // (retour) la referment, Comparer reste dessous, intact.
   useEffect(() => {
-    const fermer = () => setFiche(null);
-    window.addEventListener('popstate', fermer);
-    return () => window.removeEventListener('popstate', fermer);
+    const fermerFiche = () => setFiche(null);
+    window.addEventListener('popstate', fermerFiche);
+    return () => window.removeEventListener('popstate', fermerFiche);
   }, []);
   // Pont provisoire (RESULTAT.md, besoin vers p1) : la fiche marque sa feuille data-role="fiche" à son montage,
   // avant que la feuille (portail) n'existe quand elle s'ouvre hors de sa route ; on pose la marque si elle manque.
@@ -79,6 +89,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
       window.addEventListener('click', avaler, true);
       window.setTimeout(() => window.removeEventListener('click', avaler, true), 800);
     }
+    setFeuille(null);
     aller({ ecran: 'comparer', houblons: cles.filter((c) => c !== pin), ...(pin ? { pin } : {}) });
     setFiche(cle);
   };
@@ -88,40 +99,60 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   const noms = cols.map((c) => c.houblon.nom);
   const question = `${noms.slice(0, -1).join(', ')}${noms.length > 1 ? ' ou ' : ''}${noms.at(-1) ?? ''} pour ma stout ?`;
   const quatre = cols.length >= 4;
+  const disponibles = STOCK.filter((s) => s.grams > 0 && !cles.includes(s.key)).map((s) => s.key);
+  const placer = () => sel && ouvrir({ ecran: 'dryhopper', ajout: nouvelId(recette, sel.cle) });
   // La question de r6a est le titre de l'écran : le h1 que le cadre (CadreOutil du socle) pose sous l'en-tête commun
   // (D119, onglets et croix), en tête du contenu ; il porte la marque r6a-question (D104).
   useEffect(() => {
     document.querySelectorAll('.pq-outil-comparer h1').forEach((h) => { if (h.textContent?.trim() === question) h.setAttribute('data-element', 'r6a-question'); });
   }, [question]);
+  const score = sel ? scoreDefi(sel) : null;
+  // Le pont nomme son outil (title du bouton de Pont, composant du socle) : « Doser Idaho 7 dans Dryhopper », comme r6a.
+  const refPont = useRef<HTMLSpanElement>(null);
+  const nomRetenu = sel?.houblon.nom ?? '';
+  useEffect(() => { refPont.current?.querySelector('button')?.setAttribute('title', `Doser ${nomRetenu} dans Dryhopper`); }, [nomRetenu]);
 
   return (
     <CadreOutil ecran="comparer" question={question}
       contexte={
-        <div className="pq-comparer-tete">
+        <div className="pq-comparer-tete" role="group" data-etat="etat-comp-repos" data-element="etat-acquis-comparer-v3"
+          aria-label={`Fixé pour ${nombreMot(cols.length)} : Stout ${sc.code}, dose égale ${nombre(CONDITIONS.doseGL)} g/L chacun, ${nomLevure(recette.yeastId)}`}>
           <LigneContexte items={[
             { cle: 'base', contenu: <span data-element="y1b-ligne-contexte r6a-contexte">Stout {sc.code}</span> },
             { cle: 'dose', contenu: <span className="pq-comparer-dose" aria-label={`dose égale : ${nombre(CONDITIONS.doseGL)} g/L chacun`}><IconeEgal />{nombre(CONDITIONS.doseGL)} g/L</span> },
             { cle: 'levure', contenu: <span data-element="y1b-levure-pastilles a2b-ce-que-la-levure-change">{nomLevure(recette.yeastId)}</span> },
           ]} />
-          <span data-element="l8b-legende-cachee"><Legende><ContenuLegende /></Legende></span>
+          <span data-element="l8b-legende-cachee" data-etat="etat-comp-legende"><Legende><ContenuLegende /></Legende></span>
         </div>
       }
       dock={sel && (
-        <nav className="pq-comparer-dock" aria-label="Suite" data-element="y1b-dock-pouce y1b-second-houblon-puis">
-          <Pont nom="placer" onClick={() => ouvrir({ ecran: 'dryhopper', ajout: nouvelId(recette, sel.cle) })}>
-            Placer {sel.houblon.nom}<span className="pq-comparer-lu"> dans Dryhopper</span>
-          </Pont>
+        <nav className="pq-comparer-dock" aria-label="Le reste, à un toucher" data-element="etat-acquis-r6n2-dock">
+          <BoutonDock nom="defi" actif={feuille === 'defi'} etat="etat-comp-defi" ouvre="y1b-defi y1b-jauge-amertume w2-piste-commune s5-deux-objectifs" onClick={() => basculer('defi')} icone={<IconeCible taille={18} />}
+            label={<>Défi <b className="pq-comparer-nb">{`${score!.points}/${score!.sur}`}</b></>} aria={`Défi : ${sel.houblon.nom} tient ${score!.points} critères sur ${score!.sur}`} />
+          <BoutonDock nom="egaler" actif={feuille === 'egaler'} etat="etat-comp-egaler" ouvre="y3-pour-egaler" controle="pq-comparer-egaler" onClick={() => basculer('egaler')} icone={<IconeEgal taille={18} label="" />} label="Égaler" />
+          <BoutonDock nom="valeurs" actif={feuille === 'valeurs'} etat="etat-comp-chimie" ouvre="r6a-chimie v1-vraies-valeurs v1-en-a-plus v1-linalol-en-biere d1-tout-ouvert p03-plages-sources" onClick={() => basculer('valeurs')} icone={<IconeFiole taille={18} />} label="Valeurs" aria="Valeurs : chimie et vraies valeurs" />
+          <BoutonDock nom="preuve" actif={feuille === 'preuve'} etat="etat-comp-preuve" ouvre="r6a-osu y3-panel-osu y1b-tirage-preuve" onClick={() => basculer('preuve')} icone={<IconePanel taille={18} />} label="Preuve" aria="Preuve : panel OSU et 20 bières tirées" />
+          <BoutonDock nom="frise" actif={feuille === 'frise'} etat="etat-comp-frise-levure" onClick={() => basculer('frise')} icone={<IconeFrise taille={18} />} label="Frise" />
+          <BoutonDock nom="souche" actif={feuille === 'souche'} onClick={() => basculer('souche')} icone={<IconeSouche taille={18} />} label="Souche" />
         </nav>
       )}>
       <div className="pq-comparer" data-colonnes={cols.length}>
-        {rep && <LigneReponse rep={rep} />}
+        <div className="pq-comparer-crit">
+          <PastilleCritere critere={critere} onChoisir={(c) => { setCritere(c); setRetenu(null); }} />
+          {sel && (
+            <span ref={refPont} className="pq-comparer-placer" data-etat="etat-comp-placer" data-element="y1b-dock-pouce y1b-second-houblon-puis">
+              <Pont nom="placer" onClick={placer}>Placer {sel.houblon.nom}</Pont>
+            </span>
+          )}
+        </div>
+        {rep && <LigneReponse rep={rep} critere={critere} onPourquoi={() => basculer('pourquoi')} />}
 
         <section className="pq-comparer-rad" data-acquis="radar" data-element="r6a-radar p03-radar-superpose p02-radar-intervalle h4-radar-demande" aria-label="Radar r2">
           <div className="pq-comparer-rad-h">
             <span className="pq-comparer-puce" data-nature="simule" data-element="r6a-simule" title="profil simulé par le moteur">~ simulé</span>
             <span className="pq-comparer-lentille" role="radiogroup" aria-label="Lecture" data-lecture="" data-element="r6a-lentille">
               <button type="button" role="radio" data-e="style" aria-checked={!absolu} onClick={() => setAbsolu(false)}>Au style</button>
-              <button type="button" role="radio" data-e="absolu" aria-checked={absolu} onClick={() => setAbsolu(true)}>Absolu</button>
+              <button type="button" role="radio" data-e="absolu" data-etat="etat-comp-absolu" aria-checked={absolu} onClick={() => setAbsolu(true)}>Absolu</button>
             </span>
           </div>
           {sel && <Radar axes={sc.order} cols={cols} retenu={cleRetenue} absolu={absolu} visee={VISEE.famille} trop={TROP} />}
@@ -131,8 +162,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
           data-element="l8-disposition y1b-plan-d-avant y1b-bandes-style l5b-barres-voie l5b-pistes-objectif">
           <div className="pq-comparer-grille-tab pq-comparer-tetes" role="radiogroup" aria-label="Houblon retenu" data-libre="houblon"
             data-element="r6a-tetes l5f-carte-role-alpha w2-cartes-verdict p06-grille-familles g1-fiche fiche-citra-cryo l8b-verdicts-pictos-trait">
-            <TaStout quatre={quatre} disponibles={STOCK.filter((s) => s.grams > 0 && !cles.includes(s.key)).map((s) => s.key)}
-              plein={cols.length >= MAX_COLONNES} onAjouter={(cle) => { setAjoutes((a) => [...a, cle]); setRetenu(cle); }} />
+            <TaStout quatre={quatre} plein={cols.length >= MAX_COLONNES || !disponibles.length} ouvert={feuille === 'ajouter'} onPlus={() => basculer('ajouter')} />
             {cols.map((c) => (
               <TeteColonne key={c.cle} c={c} retenu={c.cle === cleRetenue} quatre={quatre} epinglee={c.cle === pin}
                 retirable={ajoutes.includes(c.cle)}
@@ -157,101 +187,112 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
             {tousInconnus.length > 0 && (
               <div className="pq-comparer-grille-tab pq-comparer-rg pq-comparer-inc-t" data-element="r6a-inconnus">
                 <span className="pq-comparer-rn">{tousInconnus.map((f) => <Picto key={f} famille={f} />)}</span>
-                <span className="pq-comparer-inc-l"><i className="pq-comparer-hach" aria-hidden="true" />inconnus</span>
+                <span className="pq-comparer-inc-l"><i className="pq-comparer-hach" aria-hidden="true" />inconnus, pas zéro</span>
               </div>
             )}
           </div>
+          <PiedEtapes cols={cols} retenu={cleRetenue} onDryhopper={placer} />
         </section>
-
-        <div className="pq-comparer-touchers">
-          <button type="button" className="pq-comparer-tch" aria-expanded={ouvert === 'vraies'} aria-controls="pq-comparer-vraies"
-            data-ouvre-acquis="valeurs chimie" data-element="r6a-chimie" onClick={() => setOuvert((o) => (o === 'vraies' ? null : 'vraies'))}>
-            <IconeFiole /><span>Chimie et vraies valeurs</span><Chevron ouvert={ouvert === 'vraies'} />
-          </button>
-          <button type="button" className="pq-comparer-tch" aria-expanded={ouvert === 'egaler'} aria-controls="pq-comparer-egaler"
-            onClick={() => setOuvert((o) => (o === 'egaler' ? null : 'egaler'))}>
-            <span aria-hidden="true" className="pq-comparer-egal">=</span><span>Égaler</span><Chevron ouvert={ouvert === 'egaler'} />
-          </button>
-          {/* D114 : « Beaucoup trop mis en avant » : le panel OSU (un acquis) passe derrière un toucher, au même rang que
-              les autres blocs. */}
-          <button type="button" className="pq-comparer-tch" aria-expanded={ouvert === 'osu'} aria-controls="pq-comparer-osu"
-            data-ouvre-acquis="osu" data-ouvre-element="r6a-osu y3-panel-osu" onClick={() => setOuvert((o) => (o === 'osu' ? null : 'osu'))}>
-            <IconePanel /><span>Panel OSU</span><Chevron ouvert={ouvert === 'osu'} />
-          </button>
-        </div>
-        <section id="pq-comparer-vraies" className="pq-comparer-vraies" data-acquis="valeurs" hidden={ouvert !== 'vraies'} aria-label="Vraies valeurs et chimie"
-          data-element="v1-vraies-valeurs v1-en-a-plus v1-linalol-en-biere d1-tout-ouvert p03-plages-sources">
-          {ouvert === 'vraies' && <VraiesValeurs cols={cols} quatre={quatre} etapes={etapes} />}
+        {/* D114 : le panel OSU (un acquis) reste replié, au rang d'une note, sous le tableau comme dans r6a ; un toucher ouvre
+            Preuve, sa feuille dans le dock de r6n2. */}
+        <section className="pq-comparer-osu-ligne" aria-label="Panel OSU">
+          <button type="button" className="pq-comparer-lien pq-comparer-osu-tch" data-ouvre-element="y3-panel-osu r6a-osu" onClick={() => setFeuille('preuve')}>Panel OSU, Cascade : la courbe mesurée, dans Preuve ›</button>
         </section>
-        <section id="pq-comparer-egaler" className="pq-comparer-egaler" data-role="simulation" hidden={ouvert !== 'egaler'} aria-label="Égaler" data-element="y3-pour-egaler">
-          {ouvert === 'egaler' && sel && <Egaler cols={cols} sel={sel} />}
-        </section>
-
-        <div id="pq-comparer-osu" hidden={ouvert !== 'osu'}><PanelOSU noms={noms} /></div>
+        <p className="pq-comparer-vsrc">~ simulé par le moteur à {nombre(CONDITIONS.doseGL)} g/L chacun : centre conventionnel, bande = incertitude. Le reste, à un toucher sous le pouce.</p>
       </div>
+
+      {sel && feuille === 'defi' && <FeuilleDock titre="Ton défi" onFermer={fermer}><FeuilleDefi cols={cols} retenu={cleRetenue} etapes={etapes} onSuggerer={() => ouvrir({ ecran: 'suggerer' })} /></FeuilleDock>}
+      {sel && feuille === 'egaler' && <FeuilleDock titre="Pour égaler" id="pq-comparer-egaler" onFermer={fermer}><FeuilleEgaler cols={cols} sel={sel} critere={critere} etapes={etapes} /></FeuilleDock>}
+      {sel && feuille === 'valeurs' && <FeuilleDock titre="Vraies valeurs et chimie" onFermer={fermer}><FeuilleValeurs cols={cols} sel={sel} quatre={quatre} etapes={etapes} familles={sc.order} onPreuve={() => setFeuille('preuve')} /></FeuilleDock>}
+      {sel && feuille === 'preuve' && <FeuilleDock titre="La preuve : mesuré et tiré" onFermer={fermer}><FeuillePreuve cols={cols} familles={lignes} /></FeuilleDock>}
+      {sel && feuille === 'frise' && <FeuilleDock titre="Le moment, dans Dryhopper" onFermer={fermer}><FeuilleFrise cols={cols} sel={sel} onDryhopper={placer} /></FeuilleDock>}
+      {sel && feuille === 'souche' && <FeuilleDock titre="La souche, dans Levure" onFermer={fermer}><FeuilleSouche cols={cols} sel={sel} familles={lignes} onLevure={() => ouvrir({ ecran: 'levure', ajout: nouvelId(recette, sel.cle) })} /></FeuilleDock>}
+      {feuille === 'ajouter' && <FeuilleDock titre="Ajouter un houblon" onFermer={fermer}><FeuilleAjouter disponibles={disponibles} onAjouter={(cle) => { setFeuille(null); setAjoutes((a) => [...a, cle]); setRetenu(cle); }} /></FeuilleDock>}
+      {feuille === 'pourquoi' && <FeuilleDock titre="Pourquoi ce classement" onFermer={fermer}><FeuillePourquoi cols={cols} critere={critere} /></FeuilleDock>}
       {fiche && <Fiche houblon={fiche} />}
     </CadreOutil>
   );
 }
 
-// ---------- la réponse face à ta stout (y1b, r6n2) et « contre ★ » (r6p2) ----------
-function Point({ c }: { c: ColonneLue }) {
-  return <i className="pq-comparer-pt" style={{ background: c.couleur }} aria-hidden="true" />;
+// ---------- le dock de r6n2 : une icône et un mot, sous le pouce ----------
+function BoutonDock({ nom, actif, etat, ouvre, controle, onClick, icone, label, aria }: {
+  nom: string; actif: boolean; etat?: string; ouvre?: string; controle?: string; onClick: () => void; icone: React.ReactNode; label: React.ReactNode; aria?: string;
+}) {
+  return (
+    <button type="button" className="pq-comparer-dk" data-dock={nom} aria-pressed={actif} aria-haspopup="dialog" onClick={onClick}
+      {...(etat ? { 'data-etat': etat } : {})} {...(ouvre ? { 'data-ouvre-element': ouvre } : {})} {...(controle ? { 'aria-controls': controle } : {})} {...(aria ? { 'aria-label': aria } : {})}>
+      {icone}<span>{label}</span>
+    </button>
+  );
 }
-function LigneReponse({ rep }: { rep: NonNullable<ReturnType<typeof reponse>> }) {
+
+// ---------- « Face à ta stout, par [floral ⌄] » (y1b, r6n2) ----------
+function PastilleCritere({ critere, onChoisir }: { critere: Critere; onChoisir: (c: Critere) => void }) {
+  const [ouvert, setOuvert] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!ouvert) return;
+    const k = (e: KeyboardEvent) => { if (e.key === 'Escape') setOuvert(false); };
+    const hors = (e: PointerEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOuvert(false); };
+    document.addEventListener('keydown', k);
+    document.addEventListener('pointerdown', hors);
+    return () => { document.removeEventListener('keydown', k); document.removeEventListener('pointerdown', hors); };
+  }, [ouvert]);
+  return (
+    <span ref={ref} className="pq-comparer-crit-g" data-element="y1b-pastille-critere">
+      <span className="pq-comparer-crit-l">Face à ta stout, par</span>
+      <button type="button" className="pq-comparer-crit-p" data-etat="etat-comp-critere" aria-haspopup="listbox" aria-expanded={ouvert}
+        aria-label={`Critère de classement : ${critere.nom}`} onClick={() => setOuvert((o) => !o)}>
+        <Picto famille={critere.famille} taille={14} /><span>{critere.nom.replace('moins ', '− ')}</span><Chevron ouvert={ouvert} />
+      </button>
+      {ouvert && (
+        <span className="pq-comparer-menu pq-comparer-crit-m" role="listbox" aria-label="Critère de classement">
+          {CRITERES.map((c) => (
+            <button key={c.id} type="button" role="option" aria-selected={c.id === critere.id} onClick={() => { setOuvert(false); onChoisir(c); }}>
+              <Picto famille={c.famille} taille={16} />{c.nom}
+            </button>
+          ))}
+        </span>
+      )}
+    </span>
+  );
+}
+
+// ---------- la réponse face à ta stout (y1b, r6n2) et « contre ★ » (r6p2) ----------
+function LigneReponse({ rep, critere, onPourquoi }: { rep: NonNullable<ReturnType<typeof reponse>>; critere: Critere; onPourquoi: () => void }) {
   const { etoile, autre, ecart, retenuEstEtoile } = rep;
   const nb = (x: number) => <span className="pq-comparer-nb" data-nature="simule">{signeCran(x)}</span>;
+  const f = critere.famille;
   return (
     <p className="pq-comparer-rep" data-role="reponse" data-element="y1b-face-a-ta-stout" aria-live="polite">
       {retenuEstEtoile || !autre ? (
         <>
-          <span className="pq-comparer-etoile" aria-label="le plus floral dans ta 16D">★</span><Point c={etoile} /><b>{etoile.houblon.nom}</b>
+          <span className="pq-comparer-etoile" aria-label={`le ${critere.sens > 0 ? 'plus' : 'moins'} ${COURT[f].toLowerCase()} dans ta 16D`}>★</span><Point c={etoile} /><b>{etoile.houblon.nom}</b>
           {autre && ecart != null && <> devant <Point c={autre} /><b>{autre.houblon.nom}</b> {nb(ecart)} cran</>}
-          <Picto famille={VISEE.famille} />
+          <Picto famille={f} />
         </>
       ) : (
         <>
-          <Point c={autre} /><b>{autre.houblon.nom}</b> {ecart != null ? nb(ecart) : <span data-inconnu="">?</span>} cran <Picto famille={VISEE.famille} />
+          <Point c={autre} /><b>{autre.houblon.nom}</b> {ecart != null ? nb(ecart) : <span data-inconnu="">?</span>} cran <Picto famille={f} />
           {' '}contre <span className="pq-comparer-etoile" aria-hidden="true">★</span><b>{etoile.houblon.nom}</b>
-          {autre.sorties.length > 0 && <span className="pq-comparer-hors-mini" data-nature="simule" aria-label={`~ sort de ta 16D : ${autre.sorties.map((f) => COURT[f].toLowerCase()).join(', ')}`}>~<IconeRisque />{autre.sorties.map((f) => <Picto key={f} famille={f} taille={12} />)}</span>}
+          {autre.sorties.length > 0 && <span className="pq-comparer-hors-mini" data-nature="simule" aria-label={`~ sort de ta 16D : ${autre.sorties.map((x) => COURT[x].toLowerCase()).join(', ')}`}>~<IconeRisque />{autre.sorties.map((x) => <Picto key={x} famille={x} taille={12} />)}</span>}
         </>
       )}
+      <button type="button" className="pq-comparer-lien pq-comparer-pourquoi" onClick={onPourquoi}>pourquoi ?</button>
     </p>
   );
 }
 
-// ---------- Ta stout, et le « + » (p4) ----------
-function TaStout({ quatre, disponibles, plein, onAjouter }: { quatre: boolean; disponibles: string[]; plein: boolean; onAjouter: (cle: string) => void }) {
-  const [menu, setMenu] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!menu) return;
-    const k = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenu(false); };
-    const hors = (e: PointerEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setMenu(false); };
-    document.addEventListener('keydown', k);
-    document.addEventListener('pointerdown', hors);
-    return () => { document.removeEventListener('keydown', k); document.removeEventListener('pointerdown', hors); };
-  }, [menu]);
+// ---------- Ta stout, et le « + » (p4, r6n2) ----------
+function TaStout({ quatre, plein, ouvert, onPlus }: { quatre: boolean; plein: boolean; ouvert: boolean; onPlus: () => void }) {
   return (
-    <div ref={ref} className="pq-comparer-ta" data-element="r6a-ta-stout m4-radar-degustation" aria-label="Ta stout : trop résineuse, tu la veux plus florale (dégustation du 18.10)">
+    <div className="pq-comparer-ta" data-element="r6a-ta-stout m4-radar-degustation" aria-label="Ta stout : trop résineuse, tu la veux plus florale (dégustation du 18.10)">
       <span className="pq-comparer-ta-n"><i className="pq-comparer-trait" aria-hidden="true" />{!quatre && <b>Ta stout</b>}</span>
       <span className="pq-comparer-ta-l"><Picto famille={TROP} taille={14} />{!quatre ? <span>trop</span> : <span aria-hidden="true">↓</span>}</span>
       <span className="pq-comparer-ta-l"><Picto famille={VISEE.famille} taille={14} />{!quatre ? <span>plus</span> : <span aria-hidden="true">↑</span>}</span>
       {!plein && (
-        <button type="button" className="pq-comparer-plus" data-role="ajouter-colonne" data-element="p4-plus-comparaison" aria-haspopup="menu" aria-expanded={menu}
-          aria-label="Ajouter un houblon à comparer" onClick={() => setMenu((m) => !m)}>+</button>
-      )}
-      {menu && (
-        <div className="pq-comparer-menu" role="menu" aria-label="Houblons de ton stock">
-          {disponibles.map((cle) => {
-            const h = hopRef(cle)!;
-            return (
-              <button key={cle} type="button" role="menuitem" data-ajouter={cle} onClick={() => { setMenu(false); onAjouter(cle); }}>
-                <i className="pq-comparer-pt" style={{ background: couleurHoublon(cle) }} aria-hidden="true" />{h.name}
-              </button>
-            );
-          })}
-        </div>
+        <button type="button" className="pq-comparer-plus" data-role="ajouter-colonne" data-etat="etat-comp-colonne-plus" data-element="p4-plus-comparaison" aria-haspopup="dialog" aria-expanded={ouvert}
+          aria-label="Ajouter un houblon à la comparaison" onClick={onPlus}>+</button>
       )}
     </div>
   );
@@ -276,16 +317,18 @@ function TeteColonne({ c, retenu, quatre, epinglee, retirable, onRetenir, onFich
   const deduit = h.role.source.startsWith('règle');
   const familles = (Object.keys(h.familles) as FamilyId[]).filter((f) => h.familles[f].niveau !== 'non décrit')
     .sort((x, y) => (h.familles[y].niveau === 'marqué' ? 1 : 0) - (h.familles[x].niveau === 'marqué' ? 1 : 0)).slice(0, quatre ? 3 : 5);
+  // Contrat de controle-etats (D124) : retenir Cascade, et l'appui long sur son nom (la fiche).
+  const cascade = c.cle === H.cascade;
   return (
     <div className={cx('pq-comparer-tc-cel', retenu && 'pq-comparer-sel')} style={{ ['--pq-h' as string]: c.couleur }}>
       <button type="button" role="radio" aria-checked={retenu} data-role="reglage" data-col={c.cle}
-        aria-label={`Retenir ${h.nom} ; appui long : sa fiche`} className="pq-comparer-tc"
+        aria-label={`Retenir ${h.nom} ; appui long : sa fiche`} className="pq-comparer-tc" {...(cascade ? { 'data-etat': 'etat-comp-retenir' } : {})}
         {...appui}
         onPointerDown={(e) => { finSurvol(); appui.onPointerDown(e); }}
         onPointerEnter={surEntree} onPointerLeave={(e) => { finSurvol(); appui.onPointerLeave(); void e; }}>
         <span className="pq-comparer-tc-n">
           {epinglee && <span className="pq-comparer-pin" aria-label="épinglé : le houblon à remplacer">⌖</span>}
-          <span className="pq-comparer-hn" data-houblon={c.cle} data-houblon-compare={c.cle}>{h.nom}</span>
+          <span className="pq-comparer-hn" data-houblon={c.cle} data-houblon-compare={c.cle} {...(cascade ? { 'data-etat': 'etat-comp-fiche' } : {})}>{h.nom}</span>
           {h.stock != null && h.stock > 0 && <IconeStock />}
         </span>
         <span className="pq-comparer-tc-a">
@@ -359,174 +402,20 @@ function Cellule({ c, cel, retenu, absolu, montre }: { c: ColonneLue; cel: Cellu
   );
 }
 
-// ---------- vraies valeurs et chimie (v1, d1 rangé, p03), à un toucher ----------
-function LigneValeurs({ cle, nom, unite, famille, icone, cols, cellules, note, quatre }: {
-  cle?: string; nom: string; unite: string; famille?: FamilyId; icone?: ReactNode; cols: ColonneLue[]; cellules: (ValeurReelle | null)[]; note?: string; quatre: boolean;
-}) {
-  const mil = cellules.map((c) => (c ? (c.lo + (c.hi ?? c.lo * 1.6)) / 2 : null));
-  const connus = mil.filter((x): x is number => x != null);
-  const top = !note && connus.length >= 2 ? mil.indexOf(Math.max(...connus)) : -1;
-  const mx = Math.max(...cellules.filter(Boolean).map((c) => Math.max(c!.hi ?? c!.lo * 1.6, c!.lot ?? 0)), 0) * 1.08 || 1;
-  return (
-    <div className="pq-comparer-grille-tab pq-comparer-vg" {...(cle ? { 'data-compose': cle } : {})}>
-      <span className="pq-comparer-vn">{famille ? <Picto famille={famille} /> : icone}{!quatre && <span><b>{nom}</b><span className="pq-comparer-vu">{unite}</span></span>}</span>
-      {cols.map((col, i) => {
-        const v = cellules[i];
-        if (!v) return <span key={col.cle} className="pq-comparer-vc pq-comparer-vc-inc"><i className="pq-comparer-hach" /><span className="pq-comparer-vi">inconnu</span></span>;
-        const l = (v.lo / mx) * 100, r = ((v.hi ?? mx) / mx) * 100;
-        const refs = v.refs.map((x) => `${x} ${titreRef(x)}`).join(' ; ');
-        return (
-          <span key={col.cle} className={cx('pq-comparer-vc', i === top && 'pq-comparer-vc-max', v.aConfirmer && 'pq-comparer-vc-verif')} style={{ ['--pq-h' as string]: col.couleur }}>
-            <span className="pq-comparer-vv" data-nature="mesure" data-source={refs}>{v.texte}{!quatre && !unite.includes(" g") && <span className="pq-comparer-vu-in"> {unite.split(" ")[0]}</span>}</span>
-            <span className="pq-comparer-vb"><i style={{ left: `${l.toFixed(1)}%`, width: `${Math.max(3, r - l).toFixed(1)}%` }} />{v.lot != null && <i className="pq-comparer-vlot" style={{ left: `${((v.lot / mx) * 100).toFixed(1)}%` }} aria-label={`ton lot ${nombre(v.lot, 1)} %`} />}</span>
-            <span className="pq-comparer-vr">{v.refs.join(' ')}{v.aConfirmer ? ' · à confirmer' : ''}{v.note ? ` · ${v.note}` : ''}</span>
-          </span>
-        );
-      })}
-      {note && <p className="pq-comparer-vnote">{note}</p>}
-    </div>
-  );
-}
-function VraiesValeurs({ cols, quatre, etapes }: { cols: ColonneLue[]; quatre: boolean; etapes: Etapes }) {
-  const refs = new Set<string>();
-  const garder = (v: ValeurReelle | null) => { v?.refs.forEach((r) => refs.add(r)); return v; };
-  const alpha = cols.map((c) => garder(acides(c.cle, 'alpha')));
-  const beta = cols.map((c) => garder(acides(c.cle, 'beta')));
-  const hu = cols.map((c) => garder(huile(c.cle)));
-  const chimie = CHIMIE.map((x) => ({ ...x, cellules: cols.map((c) => garder(compose(c.cle, x.cle))) }));
-  const lin = cols.map((c) => garder(linalolEnBiere(c.cle, c.houblon.nom)));
-  return (
-    <>
-      <div className="pq-comparer-grille-tab pq-comparer-vh"><span />{cols.map((c) => <span key={c.cle} style={{ color: c.couleur }}>{c.houblon.nom}</span>)}</div>
-      <LigneValeurs nom="α" unite="% masse" icone={<b className="pq-comparer-sym" aria-hidden="true">α</b>} cols={cols} cellules={alpha} quatre={quatre} />
-      <LigneValeurs nom="β" unite="% masse" icone={<b className="pq-comparer-sym" aria-hidden="true">β</b>} cols={cols} cellules={beta} quatre={quatre} />
-      <div className="pq-comparer-chim" data-acquis="chimie" aria-label="Composés de l’huile, rangés par famille">
-        <LigneValeurs cle="huile" nom="huile" unite="mL/100 g" icone={<IconeGoutte />} cols={cols} cellules={hu} quatre={quatre} />
-        {chimie.map((x) => <LigneValeurs key={x.cle} cle={x.cle} nom={x.nom} unite={x.unite} famille={x.famille} cols={cols} cellules={x.cellules} quatre={quatre} />)}
-      </div>
-      {lin.some(Boolean) && <LigneValeurs cle="linalol-biere" nom="linalol en bière" unite="µg/L" famille="floral" cols={cols} cellules={lin} quatre={quatre}
-        note="Pas comparables entre eux : doses, moments et bières diffèrent." />}
-      {/* L'IBU aux étapes (D107) : calculé (BrewingMath de l'app, α du lot ou milieu de la plage des fiches), à 4 g/L ;
-          à froid, non modélisé (jamais 0). */}
-      <div className="pq-comparer-grille-tab pq-comparer-vg" data-role="ibu-etapes" aria-label="IBU selon l’étape, à 4 g/L">
-        <span className="pq-comparer-vn"><IconeGoutte />{!quatre && <span><b>IBU</b><span className="pq-comparer-vu">calculé, 4 g/L</span></span>}</span>
-        {cols.map((c) => (
-          <span key={c.cle} className="pq-comparer-vc pq-comparer-vc-ibu">
-            {ETAPES.map((e) => {
-              const v = etapes[c.cle]?.[e.code];
-              return (
-                <span key={e.code} className="pq-comparer-vi-l">
-                  <span className="pq-comparer-vu-in">{e.nom}</span>{' '}
-                  {v?.ibu
-                    ? <span className="pq-comparer-vv" data-nature="simule" data-ibu={e.code} title={`calculé, ${nombre(v.ibu.min, 0)}–${nombre(v.ibu.max, 0)} par la plage d’α`}>~{nombre(v.ibu.valeur, 0)}</span>
-                    : <span className="pq-comparer-vi" data-inconnu="">{v?.raisonIbu?.startsWith('à froid') ? 'à froid : ?' : '?'}</span>}
-                </span>
-              );
-            })}
-          </span>
-        ))}
-      </div>
-      <p className="pq-comparer-vsrc">mesuré : fiches et études ; plage = du plus bas au plus haut des sources ; la plus haute de chaque rangée à la couleur de son houblon.</p>
-      <p className="pq-comparer-vrefs">{[...refs].sort((a, b) => a.localeCompare(b, 'fr', { numeric: true })).map((r) => <span key={r}><b>{r}</b> {titreRef(r)}</span>)}</p>
-    </>
-  );
-}
-
-// ---------- Égaler (y3) : la dose qui égale le retenu sur ta demande, calculée par le moteur ----------
-function Egaler({ cols, sel }: { cols: ColonneLue[]; sel: ColonneLue }) {
-  const recette = useRecette();
-  const autres = cols.filter((c) => c.cle !== sel.cle);
-  const res = useMemo(() => egaler(recette, sel, autres, VISEE.famille), [recette, sel, autres]);
-  const but = sel.cellules[VISEE.famille].dCran;
-  return (
-    <div className="pq-comparer-eg">
-      <p className="pq-comparer-eg-t">
-        <Picto famille={VISEE.famille} />Pour égaler <Point c={sel} /><b>{sel.houblon.nom}</b> à {nombre(CONDITIONS.doseGL)} g/L
-        {but != null && <span>(<span data-nature="simule">{signeCran(but)}</span> cran),</span>} il faudrait :
-      </p>
-      {autres.map((c) => {
-        const r = res.find((x) => x.cle === c.cle);
-        return (
-          <p key={c.cle} className="pq-comparer-eg-l">
-            <Point c={c} /><b>{c.houblon.nom}</b>
-            {r?.doseGL != null
-              ? <span data-nature="simule" className="pq-comparer-nb">~{nombre(r.doseGL, 1)} g/L</span>
-              : <span className="pq-comparer-eg-jamais" data-nature="simule">~jamais, même à 16 g/L</span>}
-          </p>
-        );
-      })}
-      <p className="pq-comparer-vsrc">~ simulé par le moteur, dose cherchée de 0,5 à 16 g/L, moment et levure fixés.</p>
-    </div>
-  );
-}
-
-// ---------- panel OSU (y3), mesuré, Cascade seul, sans molette ----------
-function PanelOSU({ noms }: { noms: string[] }) {
-  const O = useMemo(panelOSU, []);
-  if (!O) return null;
-  const W = 358, H = 128, x0 = 30, x1 = W - 96, y0 = 10, y1 = H - 22;
-  const xs = O.doses.map((_, i) => x0 + ((x1 - x0) * i) / (O.doses.length - 1));
-  const y = (v: number) => y1 - ((y1 - y0) * v) / 15;
-  const rd = (v: number) => Math.round(v * 10) / 10;
-  const iDose = O.doses.findIndex((d) => Math.abs(d - 3.86) < 0.01);
-  const iz0 = O.doses.findIndex((d) => d >= 3.86), iz1 = O.doses.findIndex((d) => d >= 8);
-  const serie = (vals: number[], couleur: string, nom: string, famille?: FamilyId) => (
-    <g key={nom}>
-      <polyline points={vals.map((v, i) => `${rd(xs[i])},${rd(y(v))}`).join(' ')} fill="none" stroke={couleur} strokeWidth="2.5" strokeLinejoin="round" />
-      {vals.map((v, i) => <circle key={i} cx={rd(xs[i])} cy={rd(y(v))} r="3" className="pq-comparer-osu-pt" stroke={couleur} strokeWidth="2" />)}
-      {famille && <svg x={x1 + 4} y={rd(y(vals.at(-1)!) - 7)} width="14" height="14" overflow="visible"><Picto famille={famille} taille={14} /></svg>}
-      <text x={x1 + (famille ? 21 : 8)} y={rd(y(vals.at(-1)!) + 4)} className="pq-comparer-osu-l" fill={couleur}>{nom} {nombre(vals.at(-1)!, 1)}</text>
-    </g>
-  );
-  const sans = noms.filter((n) => n !== 'Cascade');
-  return (
-    <section className="pq-comparer-osu" data-acquis="osu" data-element="r6a-osu y3-panel-osu" data-nature="mesure" data-source="H22 Lafontaine 2018 (E04)" aria-label="Panel OSU">
-      <p className="pq-comparer-osu-t"><IconePanel /><span className="pq-comparer-osu-nom">Panel OSU, Cascade</span><span className="pq-comparer-puce">panel</span><span className="pq-comparer-osu-u">sur 15, g/L</span></p>
-      <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Panel OSU, Cascade : intensité, herbacé et agrumes selon la dose, sur 15">
-        {iz0 >= 0 && iz1 >= 0 && <rect x={xs[iz0]} y={y0} width={xs[iz1] - xs[iz0]} height={y1 - y0} className="pq-comparer-osu-z" />}
-        {[0, 5, 10, 15].map((v) => <g key={v}><line x1={x0} x2={x1} y1={rd(y(v))} y2={rd(y(v))} className="pq-comparer-grille" /><text x={x0 - 6} y={rd(y(v) + 4)} textAnchor="end" className="pq-comparer-osu-ax">{v}</text></g>)}
-        {O.doses.map((d, i) => <text key={d} x={rd(xs[i])} y={H - 6} textAnchor="middle" className="pq-comparer-osu-ax">{nombre(d, 2)}</text>)}
-        {iDose >= 0 && <line x1={rd(xs[iDose])} x2={rd(xs[iDose])} y1={y0 - 4} y2={y1} className="pq-comparer-encre-trait" strokeWidth="2" />}
-        {serie(O.intensite, 'rgb(var(--cave-50))', 'intensité')}
-        {serie(O.herbace, COULEURS.herbal.texte, 'herbacé', 'herbal')}
-        {serie(O.agrumes, COULEURS.citrus.texte, 'agrumes', 'citrus')}
-      </svg>
-      <p className="pq-comparer-osu-n"><span><i className="pq-comparer-ld" />3,86 g/L ≈ ta dose égale</span><span><i className="pq-comparer-lz" />4–8 g/L : retenu par les auteurs</span></p>
-      <p className="pq-comparer-osu-n">Agrumes : plafond dès 8 g/L ; l’herbacé monte encore.{sans.length > 0 && <b> {sans.join(', ')} : pas de panel publié.</b>}</p>
-      <p className="pq-comparer-osu-s">H22 Lafontaine 2018 · H77 Brülosophy 2019 : 10 contre 15 g/L non distingués.</p>
-    </section>
-  );
-}
-
-// ---------- légende, derrière « ? » (D89) ----------
+// ---------- légende, derrière « ? » (D89), dans la forme de r6a ----------
 function ContenuLegende() {
+  const sc = style('16D');
   return (
     <div className="pq-comparer-leg">
-      <p><b>Une barre, par houblon</b> : zone pâle, ce que ta 16D permet ; barre, ~ simulé à 4 g/L ; trait fin, sa bande d’incertitude ; trait noir, ta stout aujourd’hui ; orangé, au-dessus de ta 16D ; hachuré, inconnu, jamais zéro.</p>
+      <p><b>Les familles</b></p>
+      <p className="pq-comparer-leg-f">{sc.order.map((f) => <span key={f} style={{ color: COULEURS[f].texte }}><Picto famille={f} taille={12} />{COURT[f]}</span>)}</p>
+      <p><b>Une barre, par houblon</b></p>
+      <p>zone pâle : ce que ta 16D permet ; barre : ~ simulé à 4 g/L ; trait fin : sa bande d’incertitude ; trait noir : ta stout aujourd’hui ; orangé : au-dessus de ta 16D ; hachuré : inconnu, jamais zéro.</p>
       <p><b>~+1,3</b> : crans du style gagnés. ↑ ↓ : ta demande du 18.10.</p>
-      <p><b>Aux étapes</b> (60′, 10′, dry hop) : chaque houblon posé à ce moment, à 4 g/L. Le nombre : crans de floral gagnés sur ta stout ; bande violette, le floral ; bande orangée, le résineux gagné ; pointillé noir, ta stout sans rien ; pointillé gris, ton Nugget (houblon de base de ta recette) au même moment ; en gras, le plus floral de l’étape. Whirlpool ≈ 10′ pour l’arôme ; l’IBU de chaque étape est dans « Chimie et vraies valeurs ». Le radar et les rangées : au dry hop, après 3 j.</p>
-      <p><b>Le radar</b> : le houblon retenu plein, avec son intervalle en trait fin (// : il continue au-delà) ; les autres en contour. Flèche orangée au bout d’un axe : au-delà de l’échelle. Flèche verte : ta demande.</p>
-      <p><b>★</b> : le plus floral qui reste dans ta 16D. Toucher une colonne la retient ; appui long sur un nom : sa fiche ; « + » : un 4ᵉ houblon de ton stock.</p>
-      <p><b>α</b> : du lot en stock (≠ hors de ses fiches) ou des fiches (livre). Rôle pâle : déduit de l’α. ~✓ dans ta 16D ; ~⚠ en sort.</p>
-      <p>Moteur profil-simulé : centre conventionnel, bande = incertitude.</p>
+      <p><b>Aux étapes</b> (60′, 10′, dry hop) : chaque houblon posé à ce moment, à 4 g/L ; le nombre : crans de floral gagnés ; bande orangée : le résineux gagné ; pointillé gris : ton Nugget au même moment ; en gras, le plus floral de l’étape. Le radar et les rangées : au dry hop, après 3 j.</p>
+      <p><b>Le radar</b> : le houblon retenu plein, avec son intervalle en trait fin (// : il continue au-delà) ; les autres en contour.</p>
+      <p><b>★</b> : le meilleur par le critère qui reste dans ta 16D. Toucher une colonne la retient ; appui long sur un nom : sa fiche ; « + » : un 4ᵉ houblon de ton stock.</p>
+      <p><b>Sous le pouce</b> : Défi (tes deux objectifs), Égaler, Valeurs (chimie), Preuve (panel, 20 bières), Frise (le moment), Souche (la levure).</p>
     </div>
   );
 }
-
-// ---------- icônes : grille de 24 px comme lucide ; trait rendu de 1,33 px à toute taille, celui des icônes de
-// l'app à 16 px (D83, S4 : une seule épaisseur de trait rendue) ----------
-const TRAIT_ICONE = 4 / 3;
-const Ic = ({ children, taille = 14, label }: { children: ReactNode; taille?: number; label?: string }) => (
-  <svg width={taille} height={taille} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={(TRAIT_ICONE * 24) / taille}strokeLinecap="round" strokeLinejoin="round"
-    {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })} className="pq-comparer-ic">{children}</svg>
-);
-const IconeStock = () => <Ic label="en stock"><path d="M21 8 12 3 3 8v8l9 5 9-5z" /><path d="M3 8l9 5 9-5M12 13v8" /></Ic>;
-const IconeLivre = () => <Ic taille={12}><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2zM22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z" /></Ic>;
-const IconeOk = () => <Ic taille={13}><circle cx="12" cy="12" r="9" /><path d="m8 12 3 3 5-6" /></Ic>;
-const IconeRisque = () => <Ic taille={13}><path d="M12 3 2 20h20z" /><path d="M12 10v4M12 17v.5" /></Ic>;
-const IconeFiole = () => <Ic taille={16}><path d="M9 3h6M10 3v6L4 20h16L14 9V3" /></Ic>;
-const IconeGoutte = () => <Ic taille={16}><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z" /></Ic>;
-const IconePanel = () => <Ic taille={16}><circle cx="9" cy="8" r="3" /><path d="M3 20c0-3 3-5 6-5s6 2 6 5M16 5a3 3 0 0 1 0 6M18 15c2 .5 3 2 3 5" /></Ic>;
-const Chevron = ({ ouvert }: { ouvert: boolean }) => <Ic taille={14}><path d={ouvert ? 'm6 15 6-6 6 6' : 'm6 9 6 6 6-6'} /></Ic>;
-/** « = » de r6a (« dose égale 4 g/L ») : la même dose pour chaque houblon, dit sans mot. */
-const IconeEgal = () => <Ic taille={12} label="dose égale"><path d="M5 9h14M5 15h14" /></Ic>;

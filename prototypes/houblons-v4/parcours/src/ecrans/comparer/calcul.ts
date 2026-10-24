@@ -7,8 +7,11 @@
 //  - écart en crans : (après − ta stout) / cran du style ;
 //  - « sort de ta 16D » : au-dessus du haut de la bande alors que ta stout était dedans ;
 //  - mis en avant au départ : le plus floral qui reste dans ta 16D.
-import type { FamilyId } from '../../../../src/engine';
-import { comparer, style, type Colonne, type HoublonLu } from '../../moteur';
+import { biotransfoLevure, simulerCas, type FamilyId } from '../../../../src/engine';
+import type { RecettePouvoir } from '../../../../src/engine/pouvoir';
+import { S1_DIRECTION } from '../../../../src/pack/buildPack';
+import { comparer, effetLevure, style, type Colonne, type HoublonLu } from '../../moteur';
+import { placer } from '../../etat/quand';
 import { CONDITIONS } from '../../donnees/cas';
 import type { Quand, RecetteParcours } from '../../etat/types';
 
@@ -135,10 +138,22 @@ export function houblonDeBase(recette: RecetteParcours, compares: string[]): str
   return cle && !compares.includes(cle) ? cle : null;
 }
 
+/** Critère de classement (y1b, r6n2 : « Face à ta stout, par [floral ⌄] ») : la famille et le sens qu'on veut. La
+ * pastille change le ★, la réponse, la colonne mise en avant et le Défi ; l'ordre des colonnes reste celui de la
+ * question (le premier écran de r6a). */
+export interface Critere { id: string; famille: FamilyId; sens: 1 | -1; nom: string }
+export const CRITERES: Critere[] = [
+  { id: 'floral', famille: 'floral', sens: 1, nom: 'floral' },
+  { id: 'agrumes', famille: 'citrus', sens: 1, nom: 'agrumes' },
+  { id: 'tropicaux', famille: 'tropical', sens: 1, nom: 'tropicaux' },
+  { id: 'moins-resineux', famille: 'resin', sens: -1, nom: 'moins résineux' },
+];
+
 /** Mis en avant au départ (règle de r6a, écrite dans la légende) : le plus de la famille visée sans sortir de ta
- * 16D ; à défaut, le plus de la famille visée. */
-export function depart(cols: ColonneLue[], visee: FamilyId): string | null {
-  const parVisee = (a: ColonneLue, b: ColonneLue) => (b.cellules[visee].dCran ?? -Infinity) - (a.cellules[visee].dCran ?? -Infinity);
+ * 16D ; à défaut, le plus de la famille visée. Sens −1 : le moins (« moins résineux »). */
+export function depart(cols: ColonneLue[], visee: FamilyId, sens: 1 | -1 = 1): string | null {
+  const v = (c: ColonneLue) => { const d = c.cellules[visee].dCran; return d == null ? -Infinity : sens * d; };
+  const parVisee = (a: ColonneLue, b: ColonneLue) => v(b) - v(a);
   const dans = cols.filter((c) => !c.sorties.length).sort(parVisee);
   return (dans[0] ?? [...cols].sort(parVisee)[0])?.cle ?? null;
 }
@@ -146,8 +161,8 @@ export function depart(cols: ColonneLue[], visee: FamilyId): string | null {
 /** La réponse face à ta stout (y1b, r6n2) et « contre ★ » chiffré (r6p2) : sur la famille visée, le meilleur
  * houblon (★, même règle que le départ) et l'écart en crans du houblon retenu contre lui, ou du suivant. */
 export interface Reponse { etoile: ColonneLue; autre: ColonneLue | null; ecart: number | null; retenuEstEtoile: boolean }
-export function reponse(cols: ColonneLue[], retenu: string, visee: FamilyId): Reponse | null {
-  const cleEtoile = depart(cols, visee);
+export function reponse(cols: ColonneLue[], retenu: string, visee: FamilyId, sens: 1 | -1 = 1): Reponse | null {
+  const cleEtoile = depart(cols, visee, sens);
   const etoile = cols.find((c) => c.cle === cleEtoile);
   if (!etoile) return null;
   const v = (c: ColonneLue) => c.cellules[visee].dCran;
@@ -156,7 +171,7 @@ export function reponse(cols: ColonneLue[], retenu: string, visee: FamilyId): Re
     const a = r ? v(r) : null, b = v(etoile);
     return { etoile, autre: r, ecart: a != null && b != null ? r2(a - b) : null, retenuEstEtoile: false };
   }
-  const suivants = cols.filter((c) => c.cle !== etoile.cle && v(c) != null).sort((a, b) => (v(b) ?? 0) - (v(a) ?? 0));
+  const suivants = cols.filter((c) => c.cle !== etoile.cle && v(c) != null).sort((a, b) => sens * ((v(b) ?? 0) - (v(a) ?? 0)));
   const s = suivants[0] ?? null;
   const a = v(etoile), b = s ? v(s) : null;
   return { etoile, autre: s, ecart: a != null && b != null ? r2(a - b) : null, retenuEstEtoile: true };
@@ -184,4 +199,127 @@ export function egaler(recette: RecetteParcours, cible: ColonneLue, autres: Colo
     }
     return { cle: a.cle, doseGL: Math.round(haut * 2) / 2 };
   });
+}
+
+// ---------- Le dock de r6n2 : Défi, Preuve, Frise, Souche, et la biotransformation de x3b ----------
+// Tout se lit dans le moteur à l'instant (simulerCas par l'adaptateur), mémoïsé par l'écran.
+
+/** Ta demande en crans (S1_DIRECTION du moteur : floral +1, résineux −1), la visée du Défi. */
+export const VISEES = S1_DIRECTION as Partial<Record<FamilyId, number>>;
+
+export type Verdict = 'atteint' | 'approche' | 'aucune' | 'inconnu';
+/** Verdict d'un houblon face à une visée signée (crans) : atteint au-delà, approche dans le bon sens, aucune sinon. */
+export function verdict(d: number | null, visee: number): Verdict {
+  if (d == null) return 'inconnu';
+  const s = Math.sign(visee);
+  return s * d >= Math.abs(visee) - 0.005 ? 'atteint' : s * d > 0.05 ? 'approche' : 'aucune';
+}
+/** Le score du Défi (r6n2 « Défi 2/4 ») : plus floral, moins résineux, amertume tenue, dans ta 16D. L'amertume du
+ * dry hop n'est pas modélisée à cru : jamais comptée comme tenue (inconnu ≠ réussi). */
+export function scoreDefi(c: ColonneLue): { points: number; sur: number } {
+  let points = 0;
+  for (const [f, v] of Object.entries(VISEES) as [FamilyId, number][]) if (verdict(c.cellules[f].dCran, v) === 'atteint') points++;
+  if (!c.sorties.length) points++;
+  return { points, sur: Object.keys(VISEES).length + 2 };
+}
+
+/** Graine fixe (mulberry32) : le même tirage à chaque rendu ; « 20 autres » change la graine. */
+function hasard(graine: number) {
+  let a = graine >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+export interface Tirage { points: boolean[]; hors: number; deja: boolean }
+/** Les 20 bières tirées (y1b, r6n2) : 20 valeurs au hasard dans la bande du moteur (bas–haut), et combien sortent
+ * de ta 16D. Inconnu : null (rien à tirer, jamais 0). Ta stout déjà au-dessus : « déjà hors ». Une hypothèse
+ * (tirage uniforme), marquée « ~ ». */
+export function tirer(cols: ColonneLue[], familles: FamilyId[], graine: number, n = 20): Record<string, Partial<Record<FamilyId, Tirage | null>>> {
+  const out: Record<string, Partial<Record<FamilyId, Tirage | null>>> = {};
+  cols.forEach((c, i) => {
+    out[c.cle] = {};
+    familles.forEach((f, j) => {
+      const cel = c.cellules[f];
+      if (cel.inconnu || cel.bandeHaut == null) { out[c.cle][f] = null; return; }
+      const deja = cel.avant != null && cel.avant > cel.bandeHaut;
+      const h = hasard(graine * 7919 + i * 131 + j * 17 + 1);
+      const points = Array.from({ length: n }, () => cel.bas + (cel.haut - cel.bas) * h() > cel.bandeHaut!);
+      out[c.cle][f] = { points, hors: points.filter(Boolean).length, deja };
+    });
+  });
+  return out;
+}
+
+const ACTIF: Quand = { type: 'dryhop', phase: 'actif', jours: CONDITIONS.jours };
+const APRES: Quand = { type: 'dryhop', phase: 'apres', jours: CONDITIONS.jours };
+const enCrans = (sc: ReturnType<typeof style>, f: FamilyId, x: number) => r2(x / sc.families[f].cran);
+
+/** Ce qui bouge dans Dryhopper (r6n2, Frise) : le même ajout pendant la fermentation active au lieu d'après, en
+ * crans du style, famille par famille. */
+export function enActif(recette: RecetteParcours, cles: string[]): Record<string, Partial<Record<FamilyId, number>>> {
+  const sc = style(recette.styleCode);
+  const a = comparer(recette, cles, { quand: ACTIF }), p = comparer(recette, cles, { quand: APRES });
+  const out: Record<string, Partial<Record<FamilyId, number>>> = {};
+  a.forEach((c, i) => {
+    out[c.cle] = {};
+    for (const f of sc.order) {
+      const x = c.lu.apres.profil[f].valeur, y = p[i].lu.apres.profil[f].valeur;
+      if (x && y) out[c.cle][f] = enCrans(sc, f, x.centre - y.centre);
+    }
+  });
+  return out;
+}
+
+/** Jour après jour (r6n2, Frise) : le centre simulé d'une famille, sur 100, après 1 à 7 j de contact. */
+export function jourApresJour(recette: RecetteParcours, cles: string[], f: FamilyId, jours = 7): Record<string, (number | null)[]> {
+  const out: Record<string, (number | null)[]> = Object.fromEntries(cles.map((k) => [k, [] as (number | null)[]]));
+  for (let j = 1; j <= jours; j++) {
+    for (const c of comparer(recette, cles, { quand: { type: 'dryhop', phase: 'apres', jours: j } })) out[c.cle].push(c.lu.apres.profil[f].valeur?.centre ?? null);
+  }
+  return out;
+}
+
+/** La souche (r6n2, Souche) : l'autre levure (Pomona, ou US-05 si la recette est déjà en Pomona) face à celle de ta
+ * recette, le même ajout à 4 g/L, après fermentation puis pendant la fermentation active, en crans du style. */
+export const POMONA = 'lalbrew-pomona';
+export interface SoucheLue { levure: string; autre: string; apres: Record<string, Partial<Record<FamilyId, number>>>; actif: Record<string, Partial<Record<FamilyId, number>>> }
+export function souche(recette: RecetteParcours, cles: string[]): SoucheLue {
+  const sc = style(recette.styleCode);
+  const levure = recette.yeastId ?? CONDITIONS.levure;
+  const autre = levure === POMONA ? CONDITIONS.levure : POMONA;
+  const lire = (q: Quand) => {
+    const out: Record<string, Partial<Record<FamilyId, number>>> = {};
+    for (const cle of cles) {
+      const ajout = placer({ id: `souche-${cle}`, hopKey: cle, grams: CONDITIONS.doseGL * recette.volumeL, moment: 'dryPost' }, q, recette);
+      const e = effetLevure({ ...recette, yeastId: levure }, ajout, [levure, autre]).find((x) => x.levure === autre)!;
+      out[cle] = {};
+      for (const f of sc.order) { const d = e.ecart[f]; if (d) out[cle][f] = enCrans(sc, f, d.centre); }
+    }
+    return out;
+  };
+  return { levure, autre, apres: lire(APRES), actif: lire(ACTIF) };
+}
+
+/** La biotransformation de x3b (« La biotransformation de ce plan »), lue dans le moteur : au dry hop de Comparer
+ * (après fermentation), la levure est au repos ; pendant la fermentation active, géraniol → citronellol et thiols
+ * libérés des précurseurs, pour la levure de ta recette, à 4 g/L, 3 j. */
+type Tri = { bas: number; centre: number; haut: number };
+export interface BioLue { cle: string; citronellol: Tri | null; thiols: Tri | null; raison: string | null }
+export interface Bio { levure: string; actifIci: boolean; conv: Tri; rend: Tri; texteConv: string; texteRend: string; sources: string[]; parHoublon: BioLue[] }
+export function biotransformation(recette: RecetteParcours, cles: string[]): Bio {
+  const levure = recette.yeastId ?? CONDITIONS.levure;
+  const b = biotransfoLevure(levure, 'dryActive');
+  const parHoublon = cles.map((cle): BioLue => {
+    const cas = simulerCas({
+      id: `bio-${cle}`, titre: 'biotransformation', levure, recette: { ...recette, additions: [] } as unknown as RecettePouvoir, degustation: null, complet: false,
+      ajouts: [{ id: 'bio', houblon: cle, dose_gL: CONDITIONS.doseGL, moment: 'dryActive', jourDebut: CONDITIONS.jourDebut.dryActive, jours: CONDITIONS.jours }],
+    });
+    const x = cas.biotransformation.parAjout[0];
+    return { cle, citronellol: x?.citronellol_ugL ?? null, thiols: x?.thiolsLiberes_ngL ?? null, raison: x?.raison ?? null };
+  });
+  return { levure, actifIci: biotransfoLevure(levure, 'dryPost').actif, conv: b.conv, rend: b.rend, texteConv: b.texteConv, texteRend: b.texteRend, sources: b.sources, parHoublon };
 }

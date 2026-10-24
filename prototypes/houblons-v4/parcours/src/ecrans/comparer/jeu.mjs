@@ -3,7 +3,7 @@
 // il rend true ou un message. Sérialisé : aucune variable du module dedans.
 // Ce qui est prouvé : la fiche à l'appui long et son retour ; retenir une colonne réécrit la réponse avec l'écart
 // que le moteur calcule à l'instant ; « Égaler » cherche la dose par le moteur ; le « + » ajoute une 4ᵉ colonne
-// simulée en direct ; « Placer » ouvre Dryhopper avec le houblon retenu en brouillon.
+// simulée en direct (sa carte d'abord, dans une feuille, D124) ; « Placer » ouvre Dryhopper avec le houblon retenu en brouillon.
 export default {
   page: 'etat.html',
   gestes: [
@@ -51,6 +51,8 @@ export default {
         const v = [...document.querySelectorAll('#pq-comparer-egaler [data-nature="simule"]')].map((e) => e.textContent.trim());
         return (v.length >= 3 && v.every((t) => t.startsWith('~'))) || `égaler : ${v.join(' | ')}`;
       } },
+    // Le dock de r6n2 (D124) : une feuille basse à la fois ; sa croix la referme avant le geste suivant.
+    { nom: 'Fermer Égaler', faire: 'toucher', cible: '#pq-comparer-egaler .pq-comparer-fd-x', verifier: () => !document.querySelector('#pq-comparer-egaler') || 'la feuille Égaler reste ouverte' },
     { nom: 'Ouvrir le plus', faire: 'toucher', cible: '[data-role="ajouter-colonne"]', attendre: '[data-ajouter="beermaverick-nelson-sauvin"]' },
     { nom: 'Ajouter Nelson Sauvin', faire: 'toucher', cible: '[data-ajouter="beermaverick-nelson-sauvin"]', attendre: '[role="radio"][data-col="beermaverick-nelson-sauvin"]',
       verifier: (p) => {

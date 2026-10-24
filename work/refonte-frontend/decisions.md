@@ -518,3 +518,10 @@ les classes (seuil 70 %), et le critique est trop clément (il prédit « mitige
 contamination légère : il a vu les réponses d'une passe précédente (pas la clé). Choix du pilote : le critique trie les panels
 D125, mais son classement reste une proposition ; il penche vers « rejette » quand il hésite ; le conseil rapide (D36) conteste
 son tri ; le brasseur voit tout le panel. Le portrait sera revu avec ses verdicts sur les panels.
+## D38 — La passe 4 de Dryhopper avant de la montrer (24.10.2026)
+
+Conseil rapide (`work/missions/2026-10-23-maquette-parcours/conseil-dh4/verdict.md`). En tête : p4a4, p4b2, p4a3, p4b3, p4a2
+(trois chaleurs, cinq genres) ; derrière, sans rien cacher : p4b1, p4a6, p4a1, p4a5, p4b4, p4b5 et a1. Retouches avant de les
+montrer, par les agents de leurs séries : la loupe hors de la figure, les rubans et boutons de jours d'a1 gardés, la bosse de
+levure et la densité hachurées, les chevauchements supprimés ; pas de greffe croisée avant son choix. Noyau et Baies (pilote) :
+l'avant est inconnu (les fiches de Nugget ne les décrivent pas), le gain d'Idaho 7 est connu : « ? → ~+21 » partout (D65).

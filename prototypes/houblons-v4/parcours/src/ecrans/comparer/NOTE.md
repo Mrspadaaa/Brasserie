@@ -162,14 +162,14 @@ Aux nombres de r6a (moteur en direct, 23.10, contre la grille `comparer-stout.js
 - r6a-chimie : repris — « Chimie et vraies valeurs » à un toucher sous le tableau
 - r6a-osu : repris — « Panel OSU, Cascade » (panel, sur 15, g/L), à un toucher « Panel OSU » sous le tableau (D114)
 - y1b-face-a-ta-stout : repris — la ligne de réponse sous le contexte, recalculée par le moteur à chaque colonne retenue ou ajoutée
-- y1b-pastille-critere : écarté — la visée est fixée par ta demande, floral ; r6a gardée sobre, son choix du 23.10
-- y1b-jauge-amertume : écarté — à cru l'IBU n'est pas modélisé ; la jauge vit dans Ma bière, pas dans Comparer
+- y1b-pastille-critere : repris — « Face à ta stout, par [floral ⌄] » (r6n2) : floral, agrumes, tropicaux, moins résineux ; il change le ★, la réponse, le mis en avant et le Défi (D124)
+- y1b-jauge-amertume : repris — dock « Défi », carte « Amertume tenue » : Nugget 60′ 46 g et son IBU calculé, « + ? » à cru hachuré, doses pour 10 IBU à 10′ (r6n2, D124)
 - y1b-dock-pouce : en pont — Dryhopper ; le dock sous le pouce porte « Placer <retenu> », qui ouvre Dryhopper
 - y1b-plan-d-avant : repris — le trait noir de ta stout dans chaque barre, son polygone au radar, la colonne Ta stout
 - y1b-bandes-style : repris — les rangées : zone de ta 16D pâle, orangé au-dessus, inconnu hachuré, trait de l'intervalle
 - y1b-ligne-contexte : en contexte — Stout 16D, 4 g/L chacun, US-05
-- y1b-defi : écarté — le défi derrière un toucher alourdit r6a ; la demande est dans les rangées ↑ ↓
-- y1b-tirage-preuve : écarté — vingt bières tirées, une hypothèse de plus, hors de la question de Comparer
+- y1b-defi : repris — dock « Défi 2/4 » (r6n2) : ta dégustation, score par houblon, plus floral, moins résineux, amertume tenue, dans ta 16D (D124)
+- y1b-tirage-preuve : repris — dock « Preuve » (r6n2) : le panel OSU, puis 20 bières tirées dans la bande du moteur, famille par famille, « 20 autres » (D124)
 - y1b-levure-pastilles : en contexte — la levure est fixée dans la ligne de contexte (US-05) ; elle se règle dans Levure
 - y1b-second-houblon-puis : en pont — Dryhopper ; « Placer » ouvre Dryhopper, où se règle la suite des ajouts
 - y3-panel-osu : repris — le panel OSU à un toucher sous le tableau (D114), sans molette, « pas de panel publié » pour les autres
@@ -177,7 +177,7 @@ Aux nombres de r6a (moteur en direct, 23.10, contre la grille `comparer-stout.js
 - v1-vraies-valeurs : repris — « Chimie et vraies valeurs » : α, β, huile dans les colonnes des houblons, sourcés
 - v1-en-a-plus : repris — dans les vraies valeurs, la plus haute de chaque rangée prend la couleur de son houblon
 - v1-linalol-en-biere : repris — linalol mesuré en bière (H12, E03 à confirmer), « pas comparables entre eux »
-- w2-piste-commune : écarté — r6a garde une barre par houblon ; la piste commune lettrée est r6p3, non retenue
+- w2-piste-commune : repris — dock « Défi » : une piste par objectif, un rond lettré par houblon sur la même règle, la visée en pointillé (r6n2, D124)
 - w2-cartes-verdict : repris — les têtes de colonne : verdict face à la 16D en signe, familles qui sortent
 - x3b-cuve-jour-apres-jour : repris — sa manière dans « aux étapes » : la bière de base en pointillé, la bande qui monte à l'étape de l'ajout ; les jours de contact restent à Dryhopper, après « Placer »
 - a2b-ce-que-la-levure-change : en contexte — la levure est fixée (US-05) dans la ligne de contexte
@@ -194,7 +194,7 @@ Aux nombres de r6a (moteur en direct, 23.10, contre la grille `comparer-stout.js
 - p03-radar-superpose : repris — le radar r2, un polygone par houblon à sa couleur
 - p06-grille-familles : repris — les têtes : les familles de ses fiches, marquées grandes, citées petites
 - p02-radar-intervalle : repris — l'intervalle du retenu en trait fin sur chaque axe, coupé « // » au bord (D103)
-- s5-deux-objectifs : écarté — Suggérer précède Comparer dans la carte ; on en vient par « Comparer les 3 »
+- s5-deux-objectifs : en pont — Suggérer ; dock « Défi » : les deux objectifs (Plus floral, Moins résineux : aucune voie houblon), « Toutes les voies pour tes deux objectifs : Suggérer » (r6n2, D124)
 - p4-plus-comparaison : repris — le « + » sous Ta stout : un 4ᵉ houblon de ton stock, simulé en direct
 - g1-fiche : en pont — fiche ; appui long sur un nom de houblon, survol long à l'ordinateur
 - fiche-citra-cryo : en pont — fiche ; la même fiche courte, à l'appui long sur le nom

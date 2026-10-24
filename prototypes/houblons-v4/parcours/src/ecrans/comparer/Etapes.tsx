@@ -7,7 +7,11 @@
 // libre (L10). Disposition : les colonnes du tableau de r6a (une par houblon), une rangée par étape ; la colonne de
 // gauche porte l'étape et la référence (le houblon de base de ta recette, ton Nugget, en gris pointillé).
 // L'IBU de chaque étape est dans l'aria-label de la case et dans « Chimie et vraies valeurs » (80 mots au premier écran).
+import { useState } from 'react';
 import { COULEURS, nombre, Picto } from '../../commun';
+import { CONDITIONS } from '../../donnees/cas';
+import { VoletBio, VoletPlans } from './Feuilles';
+import { Chevron } from './icones';
 import { houblon } from '../../moteur';
 import { hopRef } from '../../../../src/engine';
 import { ETAPES, ORANGE, type CodeEtape, type ColonneLue, type Etapes, type ValeurEtape } from './calcul';
@@ -108,5 +112,33 @@ function AlphaRef({ cle }: { cle: string }) {
   return (
     <span data-role="alpha" data-source={lot ? 'lot' : 'fiches'} data-nature="mesure" className="pq-comparer-et-al"
       aria-label={`α ${lot ? 'du lot en stock' : 'des fiches'} : ${nombre(a.valeur, 1)} %`}>α {nombre(a.valeur, 1)}%</span>
+  );
+}
+
+/** Sous les rangées au dry hop : l'état dans la cuve et la bière de base (x3b), puis deux touchers de x3b, la
+ * biotransformation de ce plan et les plans enchaînés. Hors du premier écran (80 mots). */
+export function PiedEtapes({ cols, retenu, onDryhopper }: { cols: ColonneLue[]; retenu: string; onDryhopper: () => void }) {
+  const [volet, setVolet] = useState<null | 'bio' | 'plans'>(null);
+  const basculer = (v: 'bio' | 'plans') => setVolet((x) => (x === v ? null : v));
+  return (
+    <div className="pq-comparer-et-pieds">
+      {/* x3b : « l'état du moment de l'ajout », la cuve, et la bière de base (ta dégustation) au départ de chaque bande. */}
+      <p className="pq-comparer-et-pied" data-etat="etat-comp-etat-moment" data-element="d107-etat-au-moment">
+        <span data-nature="simule">~ dans la cuve</span>, au moment de chaque ajout ; dry hop : {CONDITIONS.jours} j de contact.
+      </p>
+      <p className="pq-comparer-et-pied" data-etat="etat-comp-reference">
+        <Picto famille="resin" taille={12} />Résineux déjà au-delà, ta dégustation : chaque gain s’y ajoute.
+      </p>
+      <div className="pq-comparer-et-tch">
+        <button type="button" className="pq-comparer-tch" data-role="biotransformation" data-etat="etat-comp-biotransfo" aria-expanded={volet === 'bio'} onClick={() => basculer('bio')}>
+          <Picto famille="citrus" taille={14} /><span>Biotransformation</span><Chevron ouvert={volet === 'bio'} />
+        </button>
+        <button type="button" className="pq-comparer-tch" data-etat="etat-comp-etapes" aria-expanded={volet === 'plans'} onClick={() => basculer('plans')}>
+          <span aria-hidden="true">⇢</span><span>Enchaîner</span><Chevron ouvert={volet === 'plans'} />
+        </button>
+      </div>
+      {volet === 'bio' && <VoletBio cols={cols} />}
+      {volet === 'plans' && <VoletPlans cols={cols} retenu={retenu} onDryhopper={onDryhopper} />}
+    </div>
   );
 }
