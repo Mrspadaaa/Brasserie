@@ -2,7 +2,7 @@
 // (couverture, produit d'arôme cher à amériser, palier très proche, sans inconnue), puis le stock. Le moment change
 // les tamis : à 60′, l'entonnoir est large (137 très proches) et retient les amérisants ; en whirlpool, il ne laisse
 // passer que 8 houblons, et aucun en stock qui suffise.
-import { cas, page, pic, usage, badgeStock, nomHop, croix, lentille, aide, barre, fr, fr1, g0, COURT, LEG_FAM, NUGGET } from '../sbd1/serie/socle.mjs';
+import { cas, page, pic, usage, badgeStock, nomHop, croix, lentille, aide, barre, fr, fr1, g0, COURT, LEG_FAM, NUGGET, troisCas, gagnePerd } from '../sbd1/serie/socle.mjs';
 
 const ID = 'sbd7';
 function vue(c) {
@@ -22,14 +22,15 @@ function vue(c) {
   const sortie = [...c.top.filter((s) => s.fiab === 'bonne' && !s.cher).slice(0, 3), ...stockTP, ...(stockTP.length ? [] : stockOk.slice(0, 2))].filter((r, i, a) => a.indexOf(r) === i).slice(0, 5);
   const n = c.nugget, fams = ['floral', 'herbal', 'earthy', 'resin'];
   const ligne = (r, i) => `<button type="button" role="radio" aria-checked="${i === 0}" data-choix="${r.nom}" class="sbd7-l"><span class="sbd7-sc sbd-num">${r.score}</span>${nomHop(r)}${usage(r)}<span class="sbd-num sbd7-al">α ${r.alpha.lot ? fr1(r.alpha.v) : fr1(r.alpha.min) + '–' + fr1(r.alpha.max)}</span><span class="sbd-num sbd7-g">${g0(r.dose.g)} g</span>${badgeStock(r)}</button>`;
-  const sel = (r, i) => `<div class="sbd7-sel" data-pour="${r.nom}"${i === 0 ? '' : ' hidden'}><span class="sbd7-st">${nomHop(n)} → ${nomHop(r)} dans ta stout <small>~</small></span><span class="sbd7-bars">${fams.map((f) => `<span>${pic(f, 13)}${barre(f, n.prof && n.prof[f], 'sbd7-bn')}${barre(f, r.prof && r.prof[f])}</span>`).join('')}</span></div>`;
+  const sel = (r, i) => `<div class="sbd7-sel" data-pour="${r.nom}"${i === 0 ? '' : ' hidden'}><span class="sbd7-st">${nomHop(n)} → ${nomHop(r)} dans ta stout <small>~</small></span>${gagnePerd(r, c)}<span class="sbd7-bars">${fams.map((f) => `<span>${pic(f, 13)}${barre(f, n.prof && n.prof[f], 'sbd7-bn')}${barre(f, r.prof && r.prof[f])}</span>`).join('')}</span></div>`;
   return `<header class="sbd7-t">${croix()}<h1>Lequel à la place de Nugget ?</h1>${aide(ID + '-leg', [
     'L’entonnoir suit les clés de classement du moteur, dans l’ordre ; la largeur dit combien de variétés restent. Le moment change les tamis et les poids.',
     'En bas : ce qui sort de l’entonnoir, à choisir. Barres : ta stout avec Nugget (pâle) puis avec le remplaçant, ~ simulé.', 'Icônes : ' + LEG_FAM])}</header>
 <div class="sbd7-ctx"><p class="sbd-ctxp" data-role="contexte"><span data-contexte="moment">${c.court}</span><span data-contexte="dose">IBU égal</span><span data-contexte="base">Stout 16D</span></p>${lentille()}</div>
 <div class="sbd7-fun ${amer ? 'sbd7-chaud' : 'sbd7-froid'}">${funnel}</div>
 <div class="sbd7-out" data-libre="houblon" role="radiogroup" aria-label="Remplaçant">${sortie.map(ligne).join('')}</div>
-${sortie.map(sel).join('')}`;
+${sortie.map(sel).join('')}
+${troisCas(c)}`;
 }
 export function construire() {
   const b = cas('b60'), w = cas('wp');
@@ -37,7 +38,7 @@ export function construire() {
   return page({ id: ID, titre: 'sbd7 · l’entonnoir du moment', vue: vue(b), autres: { wp: vue(w) }, fiches: noms, css: CSS });
 }
 const CSS = `
-.sbd7 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:8px; }
+.sbd7 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:5px; }
 .sbd7-t { display:flex; align-items:center; gap:8px; }
 .sbd7-t h1 { font:600 17px/1.2 var(--sans); flex:1; }
 .sbd7-ctx { display:flex; gap:4px; align-items:center; }

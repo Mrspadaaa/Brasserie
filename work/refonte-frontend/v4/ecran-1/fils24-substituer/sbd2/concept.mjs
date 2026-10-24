@@ -1,7 +1,7 @@
 // sbd2 — froide : le face-à-face de u4 (« Face à face, même IBU »), affiné en écart de recette. Ta ligne de Nugget
 // en tête, un remplaçant à la fois ; les trois composantes de u4 viennent dans l'ordre de leur poids au moment :
 // à 60′, l'amertume d'abord (60 %), l'arôme en dernier ; en whirlpool, l'arôme d'abord.
-import { cas, page, pic, usage, badgeStock, alphaTxt, doseTxt, nomHop, croix, lentille, aide, barre, fr, fr1, g0, ico, COURT, LEG_FAM, NUGGET } from '../sbd1/serie/socle.mjs';
+import { cas, page, pic, usage, badgeStock, alphaTxt, doseTxt, nomHop, croix, lentille, aide, barre, fr, fr1, g0, ico, COURT, LEG_FAM, NUGGET, troisCas, gagnePerd } from '../sbd1/serie/socle.mjs';
 
 const ID = 'sbd2';
 const HUILES = [['myrcene', 'myrcène'], ['humulene', 'humulène'], ['caryophyllene', 'caryophyllène'], ['linalool', 'linalol']];
@@ -36,7 +36,7 @@ function arome(r, c) {
 <p class="sbd2-tot">${nomHop(n)} ~${fr(tot(n))} · ${nomHop(r)} ~${fr(tot(r))} <small>sur 6 familles, en points</small></p></section>`;
 }
 function detail(r, c, on) {
-  return `<div class="sbd2-det" data-pour="${r.nom}"${on ? '' : ' hidden'}>${amer(r, c)}${huiles(r, c)}${arome(r, c)}
+  return `<div class="sbd2-det" data-pour="${r.nom}"${on ? '' : ' hidden'}>${gagnePerd(r, c)}${amer(r, c)}${huiles(r, c)}${arome(r, c)}
 <div class="sbd2-cta" style="order:10"><a href="#" class="sbd2-go">Remplacer · ${g0(r.dose.g)} g de ${r.nom}</a></div></div>`;
 }
 const bas = (r, p) => { const ks = ['arome', 'huiles', 'amertume']; return Math.round(ks.reduce((t, k) => t + p[k] * (r.comp[k] ?? 0), 0)); };
@@ -49,6 +49,7 @@ function vue(c) {
     'Les trois parts de la note viennent dans l’ordre de leur poids au moment de l’ajout.', 'Icônes : ' + LEG_FAM])}</header>
 <p class="sbd2-ctx" data-role="contexte"><span data-contexte="moment">${c.court}</span><span data-contexte="dose">IBU égal</span><span data-contexte="base">Stout 16D</span></p>
 <div class="sbd2-ligne"><span class="sbd2-pin">${ico('epingle', 'ta ligne')}</span>${nomHop(n)}${usage(n)}${alphaTxt(n)}<span class="sbd-num">46 g · ${c.court}${c.ref.ibu ? ' · ' + Math.round(c.ref.ibu) + ' IBU' : ''}</span>${badgeStock({ stock: { etat: 'épuisé' } })}</div>
+${troisCas(c)}
 <div class="sbd2-ch" data-libre="houblon" role="radiogroup" aria-label="Remplaçant">${tous.map((r, i) => `<button type="button" role="radio" aria-checked="${i === 0}" data-choix="${r.nom}">${nomHop(r)}<span class="sbd-num">${r.score}${r.fiab === 'partielle' ? '?' : ''}</span>${badgeStock(r)}</button>`).join('')}</div>
 ${tous.map((r, i) => detail(r, c, i === 0)).join('')}`;
 }
@@ -58,7 +59,7 @@ export function construire() {
   return page({ id: ID, titre: 'sbd2 · face-à-face au poids du moment', vue: vue(b), autres: { wp: vue(w) }, fiches: noms, css: CSS });
 }
 const CSS = `
-.sbd2 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:7px; }
+.sbd2 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:5px; }
 .sbd2-t { display:flex; align-items:center; gap:8px; }
 .sbd2-t h1 { font:600 17px/1.2 var(--sans); flex:1; }
 .sbd2-ctx { display:flex; gap:4px; }

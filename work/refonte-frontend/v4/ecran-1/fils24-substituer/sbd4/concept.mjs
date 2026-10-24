@@ -1,7 +1,7 @@
 // sbd4 — tiède : la carte de l'ajout, éclairée par le moment. Les remplaçants prennent la place de Nugget sur le
 // rail du brassin (vocabulaire de l'étape Houblons, base v4.10) ; le moment décide ce que la carte met en lumière :
 // à 60′, l'α et l'IBU en grand, la bande des arômes éteinte (elle part à l'ébullition) ; en whirlpool, l'inverse.
-import { cas, page, pic, usage, badgeStock, nomHop, croix, lentille, aide, barre, fr, fr1, g0, JET, ROUE, COURT, LEG_FAM, NUGGET } from '../sbd1/serie/socle.mjs';
+import { cas, page, pic, usage, badgeStock, nomHop, croix, lentille, aide, barre, fr, fr1, g0, JET, ROUE, COURT, LEG_FAM, NUGGET, troisCas, gagnePerd } from '../sbd1/serie/socle.mjs';
 
 const ID = 'sbd4';
 const bande = (h) => `<span class="sbd4-bd" aria-label="arômes des fiches">${ROUE.map((f) => h.niveaux[f] > 0
@@ -21,11 +21,12 @@ function vue(c) {
   const ici = c.m === 'b60' ? 'b60' : c.m;
   const sel = (r, i) => `<div class="sbd4-sel" data-pour="${r.nom}"${i === 0 ? '' : ' hidden'}><p class="sbd4-sh"><span>Ta stout avec ${nomHop(r)} <small>~ simulé, ${c.titre}</small></span></p>
 <div class="sbd4-bars">${fams.map((f) => `<span class="sbd4-bf"><span>${pic(f, 14)}${COURT[f]}</span>${barre(f, n.prof && n.prof[f], 'sbd4-bn')}${barre(f, r.prof && r.prof[f])}</span>`).join('')}</div>
-<p class="sbd4-mot">${amer ? `${r.raison.split(';').find((x) => /α/.test(x)) || ''} · même IBU, ${g0(r.dose.g)} g.` : `${r.familles ? '' : ''}${(r.communes || []).length ? 'En commun : ' + r.communes.slice(0, 3).map((f) => COURT[f].toLowerCase()).join(', ') : 'Aucune famille en commun'} · ${g0(r.dose.g)} g.`}</p></div>`;
+${gagnePerd(r, c)}<p class="sbd4-mot">${amer ? `${r.raison.split(';').find((x) => /α/.test(x)) || ''} · même IBU, ${g0(r.dose.g)} g.` : `${r.familles ? '' : ''}${(r.communes || []).length ? 'En commun : ' + r.communes.slice(0, 3).map((f) => COURT[f].toLowerCase()).join(', ') : 'Aucune famille en commun'} · ${g0(r.dose.g)} g.`}</p></div>`;
   return `<header class="sbd4-t">${croix()}<h1>Lequel à la place de Nugget ?</h1>${aide(ID + '-leg', [
     'La carte met en lumière ce qui compte au moment de l’ajout : à l’ébullition, l’α et l’IBU ; à froid ou en whirlpool, les arômes.',
     'Bande de 12 cases : les familles citées par les fiches (pâle : citée une fois). « ~ » : ce qui reste dans ta stout, simulé, en points.', 'Icônes : ' + LEG_FAM])}</header>
 <div class="sbd4-ctx"><p class="sbd-ctxp" data-role="contexte"><span data-contexte="moment">${c.court}</span><span data-contexte="dose">IBU égal</span><span data-contexte="base">Stout 16D</span></p>${lentille()}</div>
+${troisCas(c)}
 <div class="sbd4-brassin ${amer ? 'sbd4-amer' : 'sbd4-arome'}">
 <ol class="sbd4-rail">${noeuds.map(([m, lab, pill]) => `<li class="${m === ici ? 'sbd4-ici' : ''}"><i></i><span>${lab}${m === ici && pill ? ` <b>${pill}</b>` : ''}</span>${m === ici ? `<div class="sbd4-slot">
 <div class="sbd4-orig">${nomHop(n)}<span class="sbd-num">α 13 · 46 g · ${c.ref.ibu ? Math.round(c.ref.ibu) + ' IBU' : 'à froid'}</span>${badgeStock({ stock: { etat: 'épuisé' } })}<small>${amer ? "l'arôme part à l'ébullition" : "l'arôme reste"}</small></div>
@@ -38,7 +39,7 @@ export function construire() {
   return page({ id: ID, titre: 'sbd4 · la carte éclairée par le moment', vue: vue(b), autres: { wp: vue(w) }, fiches: noms, css: CSS });
 }
 const CSS = `
-.sbd4 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:8px; }
+.sbd4 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:5px; }
 .sbd4-t { display:flex; align-items:center; gap:8px; }
 .sbd4-t h1 { font:600 17px/1.2 var(--sans); flex:1; }
 .sbd4-ctx { display:flex; gap:4px; align-items:center; }

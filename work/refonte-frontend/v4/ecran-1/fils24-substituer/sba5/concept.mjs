@@ -10,7 +10,7 @@ export default {
 .sba5-t div { display:flex; flex-direction:column; gap:2px; }
 .sba5-t h1 { font:700 18px/1.15 var(--sans); }
 .sba5-ctx { font-size:12px; color:var(--gris); display:flex; gap:6px; flex-wrap:wrap; }
-.sba5-pile { position:relative; height:410px; touch-action:pan-y; user-select:none; }
+.sba5-pile { position:relative; height:575px; touch-action:pan-y; user-select:none; }
 .sba5-c { position:absolute; inset:0; background:#fff; border:1px solid #c9cad2; border-radius:8px; padding:0 0 10px; display:flex; flex-direction:column; gap:7px; overflow:hidden; transition:transform .25s cubic-bezier(.2,.8,.2,1), opacity .25s; }
 .sba5-c.sba5-d1 { transform:translate(8px, 10px) rotate(2deg); }
 .sba5-c.sba5-d2 { transform:translate(-8px, 18px) rotate(-2.5deg); }

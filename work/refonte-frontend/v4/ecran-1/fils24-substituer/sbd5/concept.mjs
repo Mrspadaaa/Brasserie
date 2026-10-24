@@ -2,7 +2,7 @@
 // moteur répond : combien de houblons sont très proches, et lesquels sans inconnue. La falaise entre 15′ et 10′
 // dit tout : à l'ébullition longue, 137 amérisants font l'affaire ; tard, 8. Ta ligne est épinglée à son moment ;
 // la liste dessous répond pour ce moment-là (le seul choix : le remplaçant).
-import { R, cas, page, pic, usage, badgeStock, nomHop, croix, lentille, aide, barre, fr, fr1, g0, COURT, LEG_FAM, NUGGET, COUL } from '../sbd1/serie/socle.mjs';
+import { R, cas, page, pic, usage, badgeStock, nomHop, croix, lentille, aide, barre, fr, fr1, g0, COURT, LEG_FAM, NUGGET, COUL, troisCas, gagnePerd } from '../sbd1/serie/socle.mjs';
 
 const ID = 'sbd5';
 const FRISE = [['b60', '60′'], ['b30', '30′'], ['b15', '15′'], ['b10', '10′'], ['b5', '5′'], ['b0', '0′'], ['wp', 'WP'], ['dryActive', 'actif'], ['dryPost', 'après']];
@@ -33,7 +33,8 @@ function vue(c) {
 ${frise(c)}
 <p class="sbd5-q">${c.contexte === 'amertume' ? `<b>${c.comptes.tresProchesRetenus} très proches ${c.titre}</b> : l'amertume se remplace facilement.` : `<b>${c.comptes.tresProchesRetenus} très proches ${c.titre}</b> : un arôme se remplace mal.`}</p>
 <div class="sbd5-liste" data-libre="houblon" role="radiogroup" aria-label="Remplaçant">${rows.map(ligne).join('')}</div>
-${rows.map(sel).join('')}`;
+${rows.map(sel).join('')}
+${troisCas(c)}`;
 }
 export function construire() {
   const b = cas('b60'), w = cas('wp');
@@ -41,7 +42,7 @@ export function construire() {
   return page({ id: ID, titre: 'sbd5 · la frise des réponses', vue: vue(b), autres: { wp: vue(w) }, fiches: noms, css: CSS });
 }
 const CSS = `
-.sbd5 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:8px; }
+.sbd5 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:5px; }
 .sbd5-t { display:flex; align-items:center; gap:8px; }
 .sbd5-t h1 { font:600 17px/1.2 var(--sans); flex:1; }
 .sbd5-ctx { display:flex; gap:4px; }

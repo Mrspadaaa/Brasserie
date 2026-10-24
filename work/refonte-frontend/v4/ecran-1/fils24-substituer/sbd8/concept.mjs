@@ -1,7 +1,7 @@
 // sbd8 — chaude : la carte qui penche. Chaque remplaçant est un point : à droite, il amérise comme Nugget ; en haut,
 // son arôme lui ressemble (à 60′ : n'ajoute rien d'étranger). La ligne des 80 (note « très proche », huiles à part)
 // penche selon le moment : presque verticale à 60′ (seule l'amertume compte), presque couchée en whirlpool.
-import { cas, page, pic, usage, badgeStock, nomHop, croix, lentille, aide, barre, fr, fr1, g0, COURT, LEG_FAM, NUGGET } from '../sbd1/serie/socle.mjs';
+import { cas, page, pic, usage, badgeStock, nomHop, croix, lentille, aide, barre, fr, fr1, g0, COURT, LEG_FAM, NUGGET, troisCas, gagnePerd } from '../sbd1/serie/socle.mjs';
 
 const ID = 'sbd8';
 const W = 350, H = 290, X0 = 20, PADL = 26, PADB = 22;
@@ -39,11 +39,12 @@ function vue(c) {
   const n = c.nugget, fams = ['floral', 'herbal', 'earthy', 'resin'];
   const det = (r, i) => `<div class="sbd8-det" data-pour="${r.nom}"${i === 0 ? '' : ' hidden'}><p class="sbd8-l1">${nomHop(r)}${usage(r)}<span class="sbd-num">α ${r.alpha.lot ? fr1(r.alpha.v) : fr1(r.alpha.min) + '–' + fr1(r.alpha.max)}</span><span class="sbd-num">${g0(r.dose.g)} g</span>${badgeStock(r, true)}<b class="sbd8-sc sbd-num">${r.score}</b></p>
 <p class="sbd8-cp sbd-num">amertume ${r.comp.amertume ?? '?'} · huiles ${r.comp.huiles ?? '?'} · arôme ${r.comp.arome ?? '?'}${r.cher ? ` · <b class="sbd8-acc">${r.cher}</b>` : ''}</p>
-<div class="sbd8-bars"><span class="sbd8-st">ta stout ~</span>${fams.map((f) => `<span class="sbd8-bf">${pic(f, 13)}${barre(f, r.prof && r.prof[f])}</span>`).join('')}</div></div>`;
+${gagnePerd(r, c)}<div class="sbd8-bars"><span class="sbd8-st">ta stout ~</span>${fams.map((f) => `<span class="sbd8-bf">${pic(f, 13)}${barre(f, r.prof && r.prof[f])}</span>`).join('')}</div></div>`;
   return `<header class="sbd8-t">${croix()}<h1>Lequel à la place de Nugget ?</h1>${aide(ID + '-leg', [
     'Chaque point est un remplaçant : à droite, son amertume ressemble à celle de Nugget (α, β, rôle) ; en haut, son arôme. Rond cerclé de pointillés : huiles inconnues.',
     'La ligne des 80 sépare les très proches (zone bleutée), huiles mises à part ; elle penche selon les poids du moment.', 'Icônes : ' + LEG_FAM])}</header>
 <div class="sbd8-ctx"><p class="sbd-ctxp" data-role="contexte"><span data-contexte="moment">${c.court}</span><span data-contexte="dose">IBU égal</span><span data-contexte="base">Stout 16D</span></p>${lentille()}</div>
+${troisCas(c)}
 <p class="sbd8-rep">${c.contexte === 'amertume' ? '<b>À 60′, la ligne se dresse :</b> tout ce qui amérise comme Nugget passe.' : `<b>${c.court[0].toUpperCase() + c.court.slice(1)}, la ligne se couche :</b> il faut l'arôme.`}</p>
 ${carte(c, rows, choix[0])}
 <div class="sbd8-ch" data-libre="houblon" role="radiogroup" aria-label="Remplaçant">${choix.map((r, i) => `<button type="button" role="radio" aria-checked="${i === 0}" data-choix="${r.nom}">${nomHop(r)}<span class="sbd-num">${r.score}</span></button>`).join('')}</div>
@@ -59,7 +60,7 @@ export function construire() {
 var b = SBD.$('[data-libre="houblon"] [aria-checked="true"]'); if (b) SBD.choisir(b.getAttribute('data-choix'));` });
 }
 const CSS = `
-.sbd8 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:7px; }
+.sbd8 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:5px; }
 .sbd8-t { display:flex; align-items:center; gap:8px; }
 .sbd8-t h1 { font:600 17px/1.2 var(--sans); flex:1; }
 .sbd8-ctx { display:flex; gap:4px; align-items:center; }

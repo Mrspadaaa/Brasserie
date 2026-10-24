@@ -274,6 +274,7 @@ export function page({ id, titre, vue, css, js = '', fiches, autres = {}, apres 
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(titre)} · Lequel à la place de Nugget ?</title>
 <style>${CSS}
+${CSS_CAS}
 ${css}</style></head>
 <body>
 ${SYMBOLES}
@@ -290,3 +291,41 @@ ${js}
 })();</script>
 </body></html>`;
 }
+
+// ---------- le même Nugget à trois moments (le cas de sa stout) : la réponse du moteur à chacun ----------
+// Le moment n'est pas un réglage ici : c'est le cas de la recette (60′), puis le même Nugget déplacé, pour lire que
+// la réponse change. Colonne foncée : le moment de ta ligne.
+export function troisCas(c, cls = '') {
+  const cs = [cas('b60'), cas('wp'), cas('dry')];
+  return `<div class="sbd-3c ${cls}" aria-label="le même Nugget à trois moments">${cs.map((k) => {
+    const best = k.top.find((r) => r.fiab === 'bonne' && !r.cher) || k.top[0];
+    const st = k.stock.find((r) => r.stock.etat === 'en stock' && r.stock.suffisant);
+    const p = k.poids;
+    return `<div class="sbd-3k${k.id === c.id ? ' sbd-3on' : ''}"><p class="sbd-3h"><b>${k.court}</b><span class="sbd-3w"><i style="flex:${p.amertume};background:#5b5b66"></i><i style="flex:${p.huiles};background:#9a9aa6"></i><i style="flex:${p.arome};background:#0e7c86"></i></span></p>
+<p class="sbd-3n">${nomHop(best)} <b class="sbd-num">${best.score}</b></p><p class="sbd-num sbd-3d">${g0(best.dose.g)} g · ${k.ref.ibu ? Math.round(k.ref.ibu) + ' IBU' : 'à froid'}</p>
+<p class="sbd-3d"><b class="sbd-num">${k.comptes.tresProchesRetenus}</b> très proches</p><p class="sbd-3d">${st ? `${ico('stock', 'en stock')}${esc(st.nom)} ${st.score}` : 'stock : aucun assez'}</p></div>`; }).join('')}</div>`;
+}
+// Ce que le remplaçant perd et gagne face à Nugget (familles des fiches) ; à 60′, l'ébullition les emporte.
+export function gagnePerd(r, c) {
+  const p = (r.perd || []).filter((m) => m.a < m.de).map((m) => pic(m.family, 14)).join(''), g = (r.gagne || []).map((m) => pic(m.family, 14)).join('');
+  return `<p class="sbd-gp"><span>perd</span>${p || '<small>rien</small>'}<span>gagne</span>${g || '<small>rien</small>'}<small>${c.contexte === 'amertume' ? 'fiches ; à 60′, l’ébullition les emporte' : 'fiches ; ici, ils restent'}</small></p>`;
+}
+export const CSS_CAS = `
+.sbd-3c { display:grid; grid-template-columns:repeat(3, 1fr); gap:4px; }
+.sbd-3k { display:flex; flex-direction:column; gap:1px; padding:4px 6px; border-radius:8px; background:#f3f3f6; font-size:12px; min-width:0; }
+.sbd-3k p { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:3px; }
+.sbd-3h { justify-content:space-between; font-size:13px; }
+.sbd-3w { display:flex; width:44px; height:8px; border-radius:2px; overflow:hidden; }
+.sbd-3w i { display:block; }
+.sbd-3n { font-size:13px; }
+.sbd-3n b { margin-left:auto; }
+.sbd-3d { color:var(--gris); }
+.sbd-3on { background:var(--encre); color:#fff; }
+.sbd-3on .sbd-3d, .sbd-3on .sbd-hop { color:#fff; }
+.sbd-3on .sbd-3d { color:#d6d6de; }
+.sbd-gp { display:flex; align-items:center; gap:3px; flex-wrap:wrap; font-size:12px; color:var(--gris); }
+.sbd-gp span { font-weight:600; color:var(--encre); margin:0 2px 0 4px; }
+.sbd-gp span:first-child { margin-left:0; }
+.sbd-gp small { font-size:12px; }
+.sbd-gp > small:last-child { margin-left:auto; }
+`;

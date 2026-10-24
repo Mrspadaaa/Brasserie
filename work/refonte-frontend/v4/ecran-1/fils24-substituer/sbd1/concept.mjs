@@ -1,6 +1,6 @@
 // sbd1 — froide : u4 affiné. Le classement de u4 (score, plage quand une composante manque), dont chaque barre
 // se découpe selon les poids du moment : à 60′, l'amertume en fait 60 % ; en whirlpool, l'arôme 60 %.
-import { cas, page, pic, usage, badgeStock, alphaTxt, doseTxt, nomHop, croix, lentille, aide, barre, fr, g0, fr1, COURT, LEG_FAM, NUGGET } from './serie/socle.mjs';
+import { cas, page, pic, usage, badgeStock, alphaTxt, doseTxt, nomHop, croix, lentille, aide, barre, fr, g0, fr1, COURT, LEG_FAM, NUGGET, troisCas, gagnePerd } from './serie/socle.mjs';
 
 const ID = 'sbd1';
 const W = { amertume: 'amertume', huiles: 'huiles', arome: 'arôme' };
@@ -28,6 +28,7 @@ function face(r, c) {
   return `<section class="sbd1-face" data-pour="${r.nom}"${r === c.premier ? '' : ' hidden'}>
 <div class="sbd1-swap"><span>${nomHop(nug)} <span class="sbd-num">46 g</span></span>${'<span class="sbd1-fl">→</span>'}<span>${nomHop(r)} <b class="sbd-num">${doseTxt(r)}</b></span><span class="sbd1-ibu sbd-num">${c.ref.ibu ? Math.round(c.ref.ibu) + ' IBU' : 'à froid'}</span></div>
 <p class="sbd1-raison">${r.cher ? `<span class="sbd1-alerte">${r.cher}</span> · ` : ''}${r.fiab === 'partielle' ? 'huiles inconnues : plage ouverte' : r.fiab === 'bonne' ? 'α, β, huiles et arômes connus' : 'arôme inconnu'}${r.stock.etat === 'en stock' ? ` · stock ${g0(r.stock.libre)} g${r.stock.suffisant === false ? ', il en manque ' + g0(r.dose.g - r.stock.libre) + ' g' : ''}` : ''}</p>
+${gagnePerd(r, c)}
 <div class="sbd1-stout"><div class="sbd1-sh"><span>Dans ta stout ${c.titre} <small>~ simulé</small></span>${lentille()}</div>
 <div class="sbd1-fr sbd1-tete"><span></span>${fams.map((f) => `<span>${pic(f, 14)}${COURT[f]}</span>`).join('')}</div>
 ${rangee(nug, 'sbd1-orig')}${rangee(r, '')}
@@ -44,6 +45,7 @@ function vue(c) {
     'Icônes : ' + LEG_FAM, 'Caddie : à acheter ; boîte : en stock (grise : pas assez).'])}</header>
 <p class="sbd1-ctx" data-role="contexte"><span data-contexte="moment">${c.court}</span><span data-contexte="dose">46 g · IBU égal</span><span data-contexte="base">Stout 16D</span></p>
 <p class="sbd1-rep"><b>${best.map((r) => r.nom + ' ' + r.score).join(', ')}, sans inconnue.</b> <span>${c.comptes.tresProchesRetenus} houblons très proches ${c.titre}.</span></p>
+${troisCas(c)}
 <div class="sbd1-poids" aria-label="poids du moment">${part}</div>
 <div class="sbd1-liste" data-libre="houblon" role="radiogroup" aria-label="Remplaçant">${top.map((r, i) => ligne(r, c, i)).join('')}<p class="sbd1-sep">Dans ton stock</p>${st.map((r) => ligne(r, c, -1)).join('')}</div>
 ${tous.map((r) => face(r, c)).join('')}`;
@@ -54,7 +56,7 @@ export function construire() {
   return page({ id: ID, titre: 'sbd1 · u4 au poids du moment', vue: vue(b), autres: { wp: vue(w) }, fiches: noms, css: CSS });
 }
 const CSS = `
-.sbd1 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:7px; }
+.sbd1 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:5px; }
 .sbd1-t { display:flex; align-items:center; gap:8px; }
 .sbd1-t h1 { font:600 17px/1.2 var(--sans); flex:1; }
 .sbd1-ctx { display:flex; gap:4px; flex-wrap:wrap; }

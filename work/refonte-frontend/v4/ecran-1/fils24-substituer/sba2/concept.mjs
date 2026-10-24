@@ -48,7 +48,7 @@ export default {
     + '<p class="sba2-id" id="sba2-id"></p>'
     + '<div class="sba2-chif"><div><b id="sba2-g"></b><span id="sba2-gp">dose, même IBU</span></div><div id="sba2-ibub"><b id="sba2-ibu"></b><span>ta stout · style 50–70</span></div><div><b id="sba2-st" style="font-size:16px"></b><span>ton stock</span></div><div><b id="sba2-sc"></b><span id="sba2-scl">proche de Nugget</span></div></div>'
     + '<div class="sba2-outil"><span id="sba2-oh"></span>' + aide('sba2', ['Rail : les remplaçants du moteur, rangés par le pire cas ; glisse le pouce, la loupe grossit celui qui est dessous.', 'Score en plage : une composante inconnue peut valoir de 0 à 100.', 'Rond noir : ta stout ; barre : avec lui (~ simulé, 2 g/L) ; hachures : non simulé, pas zéro.'], 'top:32px;left:0') + lentille('sba2') + '</div>'
-    + '<div class="sba2-fam" id="sba2-fam"></div><p class="sba2-gp" id="sba2-gp"></p><div class="sba2-ib"><span>amertume de ta stout, style 50–70</span><span class="sb-j" id="sba2-j"></span></div><p class="sba2-rai" id="sba2-rai"></p>'
+    + '<div class="sba2-fam" id="sba2-fam"></div><p class="sba2-gp" id="sba2-gpf"></p><div class="sba2-ib"><span>amertume de ta stout, style 50–70</span><span class="sb-j" id="sba2-j"></span></div><p class="sba2-rai" id="sba2-rai"></p>'
     + '</section>'
     + '<nav class="sba2-rail" id="sba2-rail" data-libre="houblon" aria-label="Rail des remplaçants"></nav>'
     + '<footer class="sba2-foot" id="sba2-pied"></footer>',
@@ -77,7 +77,7 @@ export default {
       document.getElementById('sba2-st').innerHTML = S.stock(s, true);
       document.getElementById('sba2-sc').textContent = S.scoreTxt(s); document.getElementById('sba2-scl').textContent = s.palier + (S.score(s)[0] !== S.score(s)[1] ? ', une inconnue' : '');
       lire(s); jg(s);
-      document.getElementById('sba2-gp').innerHTML = '<span>perd ' + (S.gp(s, 'perd') || '—') + '</span><span>gagne ' + (S.gp(s, 'gagne') || '—') + '</span>';
+      document.getElementById('sba2-gpf').innerHTML = '<span>perd ' + (S.gp(s, 'perd') || '—') + '</span><span>gagne ' + (S.gp(s, 'gagne') || '—') + '</span>';
       document.getElementById('sba2-rai').textContent = 'Moteur : ' + s.raison;
     }
     S.surChoix(function (s) { montrer(s); maj(s); });

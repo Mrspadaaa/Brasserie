@@ -2,7 +2,7 @@
 // arômes du remplaçant (ses pictos montent et pâlissent), et ce qui reste dans le moût : l'IBU. En whirlpool, pas de
 // feu, 80 °C : les arômes restent dans la stout. Les remplaçants attendent sur l'étagère, cônes à la taille de leur
 // dose au même IBU ; on en touche un, il tombe dans la cuve.
-import { cas, page, pic, usage, badgeStock, nomHop, croix, lentille, aide, barre, fr, fr1, g0, COURT, LEG_FAM, NUGGET, ROUE } from '../sbd1/serie/socle.mjs';
+import { cas, page, pic, usage, badgeStock, nomHop, croix, lentille, aide, barre, fr, fr1, g0, COURT, LEG_FAM, NUGGET, ROUE, troisCas, gagnePerd } from '../sbd1/serie/socle.mjs';
 
 const ID = 'sbd6';
 const STOUT = '#3b1f14';
@@ -34,7 +34,7 @@ function vue(c) {
   const rows = [...c.top.slice(0, 4), ...c.stock.filter((s) => s.stock.etat === 'en stock' && s.stock.suffisant).slice(0, 2)];
   const n = c.nugget, fams = ['floral', 'herbal', 'earthy', 'resin'];
   const cone = (r, i) => `<button type="button" role="radio" aria-checked="${i === 0}" data-choix="${r.nom}" class="sbd6-et"><i class="sbd6-mini" style="--k:${Math.min(1.25, Math.max(.7, r.dose.g / 46)).toFixed(2)};background:${r.couleur || '#8c8c96'}"></i><span class="sbd6-en">${nomHop(r)}<small class="sbd-num">${r.score}${r.fiab === 'partielle' ? '?' : ''} · ${g0(r.dose.g)} g</small><small>${usage(r)} <span class="sbd-num">α ${r.alpha.lot ? fr1(r.alpha.v) : fr1(r.alpha.min) + '–' + fr1(r.alpha.max)}</span> ${badgeStock(r)}</small></span></button>`;
-  const stout = (r, i) => `<div class="sbd6-st" data-pour="${r.nom}"${i === 0 ? '' : ' hidden'}><span class="sbd6-sl">ta stout ~</span>${fams.map((f) => `<span class="sbd6-bf">${pic(f, 13)}${barre(f, r.prof && r.prof[f])}</span>`).join('')}</div>`;
+  const stout = (r, i) => `<div class="sbd6-st" data-pour="${r.nom}"${i === 0 ? '' : ' hidden'}>${gagnePerd(r, c)}<span class="sbd6-sl">ta stout ~</span>${fams.map((f) => `<span class="sbd6-bf">${pic(f, 13)}${barre(f, r.prof && r.prof[f])}</span>`).join('')}</div>`;
   return `<header class="sbd6-t">${croix()}<h1>Lequel à la place de Nugget ?</h1>${aide(ID + '-leg', [
     'La cuve au moment de ton ajout. Pictos dans la vapeur : les arômes des fiches du houblon, emportés par l’ébullition ; dans la stout : ceux qui restent. « ~ » : simulé, en points sur 100.',
     'Cônes : la dose au même IBU (plus grand, plus de grammes).', 'Icônes : ' + LEG_FAM])}</header>
@@ -43,6 +43,7 @@ function vue(c) {
 <p class="sbd6-rep">${c.contexte === 'amertume' ? '<b>À 60′, la cuve garde l’amertume.</b> Les arômes s’en vont : choisis l’α et la dose.' : `<b>${c.court[0].toUpperCase() + c.court.slice(1)} : la cuve garde l’arôme.</b> Choisis ce qu’il sent.`}</p>
 <div class="sbd6-etag" data-libre="houblon" role="radiogroup" aria-label="Remplaçant">${rows.map(cone).join('')}</div>
 ${rows.map(stout).join('')}
+${troisCas(c)}
 <p class="sbd6-orig">${nomHop(n)} <span class="sbd-num">α 13 · 46 g</span> ${badgeStock({ stock: { etat: 'épuisé' } })}<small>épuisé, à remplacer</small></p>`;
 }
 export function construire() {
@@ -51,7 +52,7 @@ export function construire() {
   return page({ id: ID, titre: 'sbd6 · le chaudron', vue: vue(b), autres: { wp: vue(w) }, fiches: noms, css: CSS });
 }
 const CSS = `
-.sbd6 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:7px; }
+.sbd6 { max-width:390px; margin:0 auto; padding:6px 10px 18px; display:flex; flex-direction:column; gap:5px; }
 .sbd6-t { display:flex; align-items:center; gap:8px; }
 .sbd6-t h1 { font:600 17px/1.2 var(--sans); flex:1; }
 .sbd6-ctx { display:flex; gap:4px; align-items:center; }

@@ -1,7 +1,7 @@
 // sbd3 — tiède : la largeur de chaque colonne est le poids du moment. Un tableau des remplaçants dont les trois
 // colonnes (amertume, huiles, arôme) prennent la place que le moteur leur donne : à 60′, l'amertume occupe 60 % de
 // la largeur et se lit en détail ; l'arôme, étroit et éteint. En whirlpool, les colonnes s'inversent.
-import { cas, page, pic, usage, badgeStock, nomHop, croix, lentille, aide, barre, fr, fr1, g0, COURT, LEG_FAM, NUGGET } from '../sbd1/serie/socle.mjs';
+import { cas, page, pic, usage, badgeStock, nomHop, croix, lentille, aide, barre, fr, fr1, g0, COURT, LEG_FAM, NUGGET, troisCas, gagnePerd } from '../sbd1/serie/socle.mjs';
 
 const ID = 'sbd3';
 const FAM = ['floral', 'herbal', 'earthy'];
@@ -31,7 +31,7 @@ function vue(c) {
   const n = c.nugget;
   const ligne = (r, i) => `<button type="button" role="radio" aria-checked="${i === 0}" data-choix="${r.nom}" class="sbd3-r" style="${grid}"><span class="sbd3-nm">${nomHop(r)}<small class="sbd-num">${r.score}${r.fiab === 'partielle' ? '?' : ''} ${badgeStock(r)} ${usage(r)}</small></span>
 <span class="sbd3-c${vif === 'amertume' ? ' sbd3-vif' : ''}">${amer(r, c, W.amertume)}</span><span class="sbd3-c${vif === 'huiles' ? ' sbd3-vif' : ''}">${huiles(r, W.huiles)}</span><span class="sbd3-c${vif === 'arome' ? ' sbd3-vif' : ''}">${arome(r, c, W.arome)}</span></button>`;
-  const choix = (r, i) => `<div class="sbd3-sel" data-pour="${r.nom}"${i === 0 ? '' : ' hidden'}><span>${nomHop(n)} 46 g → ${nomHop(r)} <b class="sbd-num">${g0(r.dose.g)} g</b>${r.dose.min !== r.dose.max ? ` <span class="sbd-pl sbd-num">${g0(r.dose.min)}–${g0(r.dose.max)}</span>` : ''}</span><span class="sbd3-why">${r.cher ? `<b class="sbd3-acc">${r.cher}</b>` : r.fiab === 'partielle' ? 'huiles inconnues : note ouverte' : r.stock.etat === 'en stock' && r.stock.suffisant === false ? `stock ${g0(r.stock.libre)} g, il en manque ${g0(r.dose.g - r.stock.libre)} g` : 'α, β, huiles et arômes connus'}</span><a href="#" class="sbd3-go">Remplacer</a></div>`;
+  const choix = (r, i) => `<div class="sbd3-sel" data-pour="${r.nom}"${i === 0 ? '' : ' hidden'}><span>${nomHop(n)} 46 g → ${nomHop(r)} <b class="sbd-num">${g0(r.dose.g)} g</b>${r.dose.min !== r.dose.max ? ` <span class="sbd-pl sbd-num">${g0(r.dose.min)}–${g0(r.dose.max)}</span>` : ''}</span>${gagnePerd(r, c)}<span class="sbd3-why">${r.cher ? `<b class="sbd3-acc">${r.cher}</b>` : r.fiab === 'partielle' ? 'huiles inconnues : note ouverte' : r.stock.etat === 'en stock' && r.stock.suffisant === false ? `stock ${g0(r.stock.libre)} g, il en manque ${g0(r.dose.g - r.stock.libre)} g` : 'α, β, huiles et arômes connus'}</span><a href="#" class="sbd3-go">Remplacer</a></div>`;
   return `<header class="sbd3-t">${croix()}<h1>Lequel à la place de Nugget ?</h1>${aide(ID + '-leg', [
     'Chaque colonne est aussi large que son poids dans la note au moment de l’ajout. La plus large se lit en détail, les autres en résumé.',
     'α : trait gris, la plage de Nugget ; plein, celle du remplaçant. Barres d’arôme : ce qui reste dans ta stout (~ simulé), face à la zone du style. Hachuré : inconnu.', 'Icônes : ' + LEG_FAM])}</header>
@@ -40,7 +40,8 @@ function vue(c) {
 <div class="sbd3-tab"><div class="sbd3-h" style="${grid}"><span class="sbd3-orig">${nomHop(n)}<small class="sbd-num">α 13</small></span>${col('amertume', 'Amertume')}${col('huiles', 'Huiles')}${col('arome', c.contexte === 'amertume' ? 'Arôme étr.' : 'Arôme')}</div>
 <div data-libre="houblon" role="radiogroup" aria-label="Remplaçant" class="sbd3-rs">${rows.map(ligne).join('')}</div></div>
 <div class="sbd3-nug" style="${grid}"><span>${nomHop({ ...n, couleur: null, nom: 'Nugget' }, 'sbd3-ng')} <small>dans ta stout</small></span><span></span><span></span><span class="sbd3-cr">${FAM.map((f) => barre(f, n.prof && n.prof[f], 'sbd3-mb')).join('')}</span></div>
-${rows.map(choix).join('')}`;
+${rows.map(choix).join('')}
+${troisCas(c)}`;
 }
 export function construire() {
   const b = cas('b60'), w = cas('wp');
@@ -48,7 +49,7 @@ export function construire() {
   return page({ id: ID, titre: 'sbd3 · colonnes au poids du moment', vue: vue(b), autres: { wp: vue(w) }, fiches: noms, css: CSS });
 }
 const CSS = `
-.sbd3 { max-width:390px; margin:0 auto; padding:6px 8px 18px; display:flex; flex-direction:column; gap:8px; }
+.sbd3 { max-width:390px; margin:0 auto; padding:6px 8px 18px; display:flex; flex-direction:column; gap:5px; }
 .sbd3-t { display:flex; align-items:center; gap:8px; }
 .sbd3-t h1 { font:600 17px/1.2 var(--sans); flex:1; }
 .sbd3-ctx { display:flex; gap:4px; align-items:center; }

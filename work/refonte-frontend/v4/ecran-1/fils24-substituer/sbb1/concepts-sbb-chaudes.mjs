@@ -40,7 +40,7 @@ ${tl('cohumulone', '<b>?</b> pas dans nos fiches')}
 <div class="§-tkh"><p class="§-tkt" data-role="contexte"><span data-contexte="base">STOUT 16D · 20 L</span> · <span data-contexte="moment">60′</span> · <span data-contexte="dose">même IBU</span></p>${S.legendeBouton(P)}${S.lentille(P)}</div>
 ${parCand(S, L, ticket)}
 </section>
-<div class="§-pile" data-libre="houblon" role="radiogroup" aria-label="Les autres tickets">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" class="§-pt${c.k === S.REP.k ? ' on' : ''}" style="--c:${c.coul}"><b>${S.esc(c.nom)}</b><span class="§-num">${S.fr(c.dose.grams)} g · ${S.fr(c.ibu, 1)} IBU</span><span class="§-num">${c.score}</span><i>${tampon(c)}</i></button>`).join('')}</div>
+<div class="§-pile" data-libre="houblon" role="radiogroup" aria-label="Les autres tickets">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" class="§-pil${c.k === S.REP.k ? ' on' : ''}" style="--c:${c.coul}"><b>${S.esc(c.nom)}</b><span class="§-num">${S.fr(c.dose.grams)} g · ${S.fr(c.ibu, 1)} IBU</span><span class="§-num">${c.score}</span><i>${tampon(c)}</i></button>`).join('')}</div>
 </main>${pied(S, P, L)}`;
   const css = `${CSS_PAGE}${CSS_LB}
 .§-h h1 { font-size:17px; font-weight:600; }
@@ -74,12 +74,12 @@ ${parCand(S, L, ticket)}
 .§-tot b { font-size:28px; letter-spacing:0; }
 .§-tot .§-gr { text-transform:none; letter-spacing:0; font-size:13px; }
 .§-pile { display:flex; flex-direction:column; margin-top:4px; }
-.§-pt { display:grid; grid-template-columns:1fr 112px 26px 80px; align-items:center; gap:6px; height:28px; padding:0 10px; border:1px solid #d9d9d9; border-top:1px dashed #bdbdbd; margin-top:-1px; background:#fff; font-size:13px; }
-.§-pt b { color:var(--c); }
-.§-pt .§-num { font-size:12px; }
-.§-pt i { font-style:normal; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--c); text-align:right; }
-.§-pt.on { background:#f5f5f5; }
-.§-pt.on b { text-decoration:underline; }
+.§-pil { display:grid; grid-template-columns:1fr 104px 22px 92px; align-items:center; gap:6px; height:28px; padding:0 10px; border:1px solid #d9d9d9; border-top:1px dashed #bdbdbd; margin-top:-1px; background:#fff; font-size:13px; }
+.§-pil b { color:var(--c); white-space:nowrap; }
+.§-pil .§-num { font-size:12px; }
+.§-pil i { white-space:nowrap; font-style:normal; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--c); text-align:right; }
+.§-pil.on { background:#f5f5f5; }
+.§-pil.on b { text-decoration:underline; }
 .§-st { position:absolute; right:2px; bottom:4px; transform:rotate(-8deg); border:2px solid; border-radius:4px; padding:3px 9px; font:800 15px/1 "Source Sans 3","Segoe UI",sans-serif; text-transform:uppercase; letter-spacing:.08em; background:#fff; }
 `;
   return S.page(P, { titre: 'sbb6 · Lequel à la place de Nugget ? · le ticket de remplacement', corps, css, fiches: [S.NUG, ...L] });
@@ -184,7 +184,7 @@ ${parCand(S, L, (c) => `<div class="§-gl"><span>IBU</span>${jauge(S, { v: c.ibu
 </div>
 </section>
 </main>${pied(S, P, L)}`;
-  const css = `${CSS_PAGE}${CSS_LB}${CSS_JG}
+  const css = `${CSS_PAGE}${CSS_LB}${CSS_JG}${CSS_CP}
 .§-h h1 { font-size:17px; font-weight:600; }
 .§-sh { position:relative; border:1px solid #d9d9d9; border-radius:8px; padding:8px 12px 10px 30px; display:flex; flex-direction:column; gap:6px; background:#fff; }
 .§-sh::before { content:""; position:absolute; left:21px; top:0; bottom:0; width:1px; background:#f0b4b4; }
