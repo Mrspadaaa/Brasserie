@@ -146,3 +146,58 @@
 .pq-substituer-regle p { margin: 0; }
 .pq-substituer-regle b { color: #111; }
 .pq-substituer-pictos { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; }
+
+/* ---------- Petites variantes de u4 enrichi (?u4e=…, figées dans fils24-u4-enrichi) ---------- */
+/* Le pied peut porter une barre au-dessus de lui (u4e4). */
+.pq-substituer-dock-pile { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+/* u4e1 : la frise du brassin, trois stations sur un trait (plein à chaud, pointillé pendant la fermentation). */
+.pq-substituer-frise { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); height: 62px; }
+.pq-substituer-frise-trait { position: absolute; left: 16.6%; right: 16.6%; top: 14px; height: 2px; display: flex; }
+.pq-substituer-frise-trait i:first-child { flex: 1; background: #555; }
+.pq-substituer-frise-trait i:last-child { flex: 1; background: repeating-linear-gradient(90deg, #8a8a8a 0 5px, transparent 5px 9px); }
+.pq-substituer-frise-ferm { position: absolute; left: 50%; width: 33.3%; top: -1px; text-align: center; font-size: 12px; color: #6e6e6e; }
+.pq-substituer-frise-st { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0 0; border: 0; background: transparent; color: #333; font-size: 14px; font-weight: 600; min-height: 56px; -webkit-tap-highlight-color: transparent; }
+.pq-substituer-frise-st > i { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 2px solid #555; margin-bottom: 3px; }
+.pq-substituer-frise-st small { font-size: 12px; font-weight: 400; color: #555; line-height: 1; }
+.pq-substituer-frise-on { color: #111; }
+.pq-substituer-frise-on > i { width: 20px; height: 20px; margin-top: -3px; background: #111; border-color: #111; box-shadow: 0 0 0 4px #fff, 0 0 0 5px #111; }
+.pq-substituer-frise-st:focus-visible { outline: 2px solid #111; outline-offset: 2px; border-radius: 8px; }
+/* u4e2 : pictos cerclés à leur valeur. */
+.pq-substituer-pr { gap: 3px; }
+.pq-substituer-pr-f { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
+.pq-substituer-pr-2 { background: #fff; border: 2px solid var(--c); }
+.pq-substituer-pr-1 { background: transparent; border: 0; }
+.pq-substituer-pr-0 { background: #fff; border: 1px dashed #a8a8a8; }
+.pq-substituer-pr-f.pq-substituer-mc-hors { margin-left: 3px; }
+[data-u4e="u4e2"] .pq-substituer-r { height: 46px; }
+/* u4e3 : la dose et l'IBU dans une ligne discrète, les crans à droite de la bande. */
+.pq-substituer-dose-discret { font-size: 12px; color: #555; white-space: nowrap; }
+.pq-substituer-dose-discret b { font-weight: 600; color: #333; }
+.pq-substituer-bande-aro { align-self: center; }
+.pq-substituer-h2-sous { font-size: 13px; margin-left: 6px; }
+/* u4e4 : une case à cocher par ligne, le dock « Comparer (n) › ». */
+.pq-substituer-coche { width: 40px; height: 40px; padding: 0; border: 0; background: transparent; display: inline-flex; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
+.pq-substituer-coche > span { width: 24px; height: 24px; border-radius: 4px; border: 2px solid #555; background: #fff; color: #fff; font-size: 16px; font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; }
+.pq-substituer-coche[aria-checked="true"] > span { background: #111; border-color: #111; }
+.pq-substituer-coche:focus-visible { outline: 2px solid #111; outline-offset: 2px; }
+.pq-substituer-coche-t { font-size: 12px; color: #555; text-align: center; align-self: end; padding-bottom: 2px; }
+.pq-substituer-barre-cmp { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 22px; border: 0; background: #111; color: #fff; font-size: 15px; font-weight: 600; text-align: left; }
+.pq-substituer-barre-cmp span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* u4e5 : au dry hop, le tableau des arômes à côté des scores. */
+.pq-substituer-tf { display: flex; flex-direction: column; }
+.pq-substituer-tf-r { position: relative; display: grid; align-items: center; column-gap: 3px; min-height: 38px; border-radius: 8px; }
+.pq-substituer-tf-tete .pq-substituer-tf-r { min-height: 30px; align-items: end; padding-bottom: 4px; }
+.pq-substituer-tf-tete .pq-substituer-legende { align-self: center; }
+.pq-substituer-tf-t { font-size: 13px; font-weight: 650; }
+.pq-substituer-tf-p { display: inline-flex; justify-content: center; }
+.pq-substituer-tf-att { background: #ececec; align-self: stretch; display: inline-flex; align-items: center; justify-content: center; }
+.pq-substituer-tf-c { display: inline-flex; align-items: center; justify-content: center; gap: 2px; }
+.pq-substituer-tf-c i { width: 6px; height: 11px; border-radius: 2px; background: #e4e4e4; }
+.pq-substituer-tf-c i.pq-substituer-mc-on { background: var(--c); }
+.pq-substituer-tf-s { justify-self: end; display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: #555; white-space: nowrap; padding-right: 2px; }
+.pq-substituer-tf-s b { color: #111; font-size: 14px; font-variant-numeric: tabular-nums; }
+.pq-substituer-tf-pt { width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
+.pq-substituer-tf-pl { padding-bottom: 2px; background: repeating-linear-gradient(45deg, var(--c) 0 2px, #fff 2px 5px) bottom / 100% 4px no-repeat; }
+.pq-substituer-tf .pq-substituer-r[aria-pressed="true"] { background: #f5f5f5; }
+[data-u4e="u4e2"] .pq-substituer-mc-tete { visibility: hidden; }
+@media (min-width: 768px) { .pq-substituer-dock-pile { flex: 0 1 26rem; margin-left: auto; } .pq-substituer-dock-pile .pq-annuler-pied { flex: 1 1 auto; margin-left: 0; } }

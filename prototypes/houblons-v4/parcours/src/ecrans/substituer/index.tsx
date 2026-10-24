@@ -34,6 +34,10 @@ import { RadarU4 } from './Radar';
 import SYMBOLES from '../../../../data/pictos-familles.svg?raw';
 import './substituer.css';
 
+/** Les petites variantes de u4 enrichi (« quelques petites variante, amélioration », 24.10, soir), une par point,
+ * ouvertes par `?u4e=u4e1`… et figées en pages statiques dans fils24-u4-enrichi ; sans paramètre, u4 enrichi. */
+const VARIANTE: string | null = typeof location === 'undefined' ? null : new URLSearchParams(location.search).get('u4e');
+
 /** Dose du remplaçant à IBU égal, au demi-gramme (le moteur arrondit au gramme : jusqu'à 0,65 IBU d'écart). */
 export function doseExacte(recette: RecetteParcours, ajoutId: string, cle: string): { grams: number; recette: RecetteParcours } {
   const r1 = remplacer(recette, ajoutId, cle);
@@ -181,6 +185,7 @@ function momentsDe(original: Quand): { cle: CleMoment; quand: Quand; mot: string
 /** Les crans d'un houblon pour les familles de sa stout (les attendues du style, puis celles hors style dans ma bière) :
  * la grammaire du tableau « Arômes 16D » (2 crans : cité, marqué ; pointillé : non décrit), en petit, à côté du score. */
 function CransRang({ h, familles, attendues }: { h: HoublonLu; familles: FamilyId[]; attendues: FamilyId[] }) {
+  if (VARIANTE === 'u4e2') return <PictosRang h={h} familles={familles} attendues={attendues} />;
   return (
     <span className="pq-substituer-mc" aria-label={`Arômes des fiches : ${familles.map((f) => `${COURT[f]} ${h.familles[f].niveau}`).join(', ')}`}>
       {familles.map((f, i) => {
@@ -190,6 +195,25 @@ function CransRang({ h, familles, attendues }: { h: HoublonLu; familles: FamilyI
           <span key={f} className={`pq-substituer-mc-f ${n ? '' : 'pq-substituer-mc-nd'} ${coupe ? 'pq-substituer-mc-hors' : ''}`} style={{ ['--c' as string]: COULEURS[f].base }}
             data-role="arome-rang" data-famille-rang={f} data-niveau={n} title={`${h.nom}, ${COURT[f]} : ${h.familles[f].niveau}`}>
             <i className={n >= 1 ? 'pq-substituer-mc-on' : ''} /><i className={n >= 2 ? 'pq-substituer-mc-on' : ''} />
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
+/** u4e2 : le picto de la famille, cerclé à sa valeur dans les fiches : marqué = disque plein pâle et cercle à la couleur,
+ * cité = cercle fin, non décrit = cercle pointillé vide (ce n'est pas zéro). Lisible sans en-tête. */
+function PictosRang({ h, familles, attendues }: { h: HoublonLu; familles: FamilyId[]; attendues: FamilyId[] }) {
+  return (
+    <span className="pq-substituer-mc pq-substituer-pr" aria-label={`Arômes des fiches : ${familles.map((f) => `${COURT[f]} ${h.familles[f].niveau}`).join(', ')}`}>
+      {familles.map((f, i) => {
+        const n = NIV[h.familles[f].niveau];
+        const coupe = i > 0 && attendues.includes(familles[i - 1]) && !attendues.includes(f);
+        return (
+          <span key={f} className={`pq-substituer-pr-f pq-substituer-pr-${n} ${coupe ? 'pq-substituer-mc-hors' : ''}`} style={{ ['--c' as string]: COULEURS[f].base, ['--cf' as string]: COULEURS[f].fond }}
+            data-role="arome-rang" data-famille-rang={f} data-niveau={n} title={`${h.nom}, ${COURT[f]} : ${h.familles[f].niveau}`}>
+            {n > 0 ? <PictoEnLigne famille={f} taille={n === 2 ? 15 : 13} /> : null}
           </span>
         );
       })}
@@ -380,6 +404,98 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
   const aAcheter = faces.find((x) => !x.original && x.stock !== 'suffisant') ?? null;
   const ibu0 = ibuAjout(ajout, b.recette).ibu;
   const grille = { gridTemplateColumns: `1fr repeat(${faces.length}, 4.25rem)` };
+  // « + » de Comparer (u4 enrichi) ou case à cocher (u4e4), et la pilule « Comparer (n) › ».
+  const plusComparer = (c: Candidat, envoye: boolean) => VARIANTE === 'u4e4' ? (
+    <button type="button" role="checkbox" className="pq-substituer-coche" data-role="ajout-comparer" data-houblon-comparer={c.cle} aria-checked={envoye}
+      aria-label={`Comparer ${c.nom} avec ${h0.nom}`} onClick={() => gestes.basculerComparaison(c.cle)}>
+      <span aria-hidden="true">{envoye ? '✓' : ''}</span>
+    </button>
+  ) : (
+    <button type="button" className="pq-substituer-plus" data-role="ajout-comparer" data-houblon-comparer={c.cle} aria-pressed={envoye}
+      aria-label={envoye ? `Retirer ${c.nom} de Comparer` : `Ajouter ${c.nom} à Comparer`} onClick={() => gestes.basculerComparaison(c.cle)}>
+      <span aria-hidden="true">{envoye ? '✓' : '+'}</span>
+    </button>
+  );
+  const piluleComparer = (
+    <button type="button" className="pq-substituer-vers-comparer" data-role="pont-comparer-substituer" disabled={!envoyes.length} onClick={versComparer}
+      aria-label={envoyes.length ? `Comparer ${liste([h0.nom, ...envoyes.map((k) => houblon(k).nom)])}` : `Comparer : touche + sur un remplaçant`}>
+      Comparer{envoyes.length ? ` (${envoyes.length + 1})` : ''} <span aria-hidden="true">›</span>
+    </button>
+  );
+  // u4e3 : la réponse par l'arôme d'abord : celui qui garde le plus des familles attendues (fiches), puis le score.
+  const titreArome = (() => {
+    const garde = (h: HoublonLu) => attendues.filter((f) => NIV[h0.familles[f].niveau] > 0 && NIV[h.familles[f].niveau] > 0);
+    const n = Math.max(0, ...cands.map((c) => garde(c.h).length));
+    const meilleurs = cands.filter((c) => garde(c.h).length === n).slice(0, 2);
+    if (!n || !meilleurs.length) return `Aucun ne garde ${liste(attendues.map((f) => COURT[f].toLowerCase()))} de ta ${sc.code}.`;
+    return `${liste(meilleurs.map((c) => c.nom))} ${meilleurs.length > 1 ? 'gardent' : 'garde'} le plus de ta ${sc.code} : ${liste(garde(meilleurs[0].h).map((f) => COURT[f].toLowerCase()))}.`;
+  })();
+  // u4e5 : au dry hop, le tableau « Arômes 16D » à côté des scores : une ligne par remplaçant, une colonne par famille
+  // (attendues en gras sur fond gris, puis hors style), 2 crans, pointillé = non décrit ; le score au bout.
+  const famsT = [...attendues, ...FAMILIES.filter((f) => !attendues.includes(f) && [h0, ...cands.map((c) => c.h)].some((h) => h.familles[f].niveau !== 'non décrit'))];
+  const nulle = FAMILIES.filter((f) => !famsT.includes(f));
+  const gT = { gridTemplateColumns: `5.75rem repeat(${famsT.length}, 15px) 1fr` };
+  const cellules = (h: HoublonLu) => famsT.map((f) => {
+    const n = NIV[h.familles[f].niveau];
+    return (
+      <span key={f} className={`pq-substituer-tf-c ${attendues.includes(f) ? 'pq-substituer-tf-att' : ''} ${n ? '' : 'pq-substituer-mc-nd'}`} style={{ ['--c' as string]: COULEURS[f].base }}
+        data-role="arome-rang" data-famille-rang={f} data-niveau={n} title={`${h.nom}, ${COURT[f]} : ${h.familles[f].niveau}`}>
+        <i className={n >= 1 ? 'pq-substituer-mc-on' : ''} /><i className={n >= 2 ? 'pq-substituer-mc-on' : ''} />
+      </span>
+    );
+  });
+  const tableauFroid = (
+    <section className="pq-substituer-tf" data-etat="etat-subst-echelle" aria-label={`Remplaçants de ${h0.nom} ${moment}, leurs arômes face au ${sc.code}`}>
+      <div className="pq-substituer-l pq-substituer-tf-tete">
+        <div className="pq-substituer-tf-r" style={gT}>
+          <span className="pq-substituer-tf-t">Arômes <span className="pq-substituer-gris">{sc.code}</span></span>
+          {famsT.map((f) => <span key={f} className={`pq-substituer-tf-p ${attendues.includes(f) ? 'pq-substituer-tf-att' : ''}`}><PictoEnLigne famille={f} taille={14} /></span>)}
+          <span className="pq-substituer-tf-s">score</span>
+        </div>
+        <span className="pq-substituer-legende"><Legende>
+          <p><b>Une ligne par remplaçant</b>&#8239;: ses arômes dans les fiches, famille par famille, attendues en {sc.code} sur fond gris. Deux crans&#8239;: cité, marqué&#8239;; pointillé&#8239;: non décrit, ce n’est pas zéro.</p>
+          <p><b>Le score</b>, {moment}&#8239;: surtout l’arôme (poids {nombre(lecture.poids.arome, 1)}). Une plage hachurée&#8239;: une composante inconnue, ouverte de 0 à 100.</p>
+          <p><b>Toucher un nom</b>&#8239;: il passe au face à face&#8239;; appui long&#8239;: sa fiche. <b>+</b>&#8239;: il part à Comparer, avec {h0.nom}.</p>
+        </Legende></span>
+      </div>
+      <div className="pq-substituer-l" data-role="original-rang">
+        <div className="pq-substituer-tf-r pq-substituer-r-orig" style={gT} {...fiche.appui(cle)}>
+          <span className="pq-substituer-nom"><IconeStock etat={stockOriginal(h0, b.recette)} /><span {...fiche.nom(cle)}>{h0.nom}</span></span>
+          {cellules(h0)}
+          <span className="pq-substituer-tf-s pq-substituer-gris">l’original</span>
+        </div>
+        <span />
+      </div>
+      <div data-libre="houblon" role="group" aria-label={`Remplaçants de ${h0.nom}`}>
+        {cands.map((c) => {
+          const col = couleurDe(c.cle), compare = compares.includes(c.cle), envoye = aComparer.includes(c.cle);
+          return (
+            <div key={c.cle} className="pq-substituer-l">
+              <div role="button" tabIndex={0} aria-pressed={compare} data-remplacant={c.cle} data-houblon-rang={c.nom} data-min={c.min} data-max={c.max}
+                title={`${c.nom} : ${c.min === c.max ? c.min : `${c.min} à ${c.max}`} (moteur ${c.moteur})`}
+                className={`pq-substituer-tf-r pq-substituer-r ${c.cle === choix ? 'pq-substituer-r-choisi' : ''}`} style={{ ...gT, ['--c' as string]: col, ['--ct' as string]: SLOTS_TEXTE[col] ?? col }}
+                {...fiche.appui(c.cle, () => toucher(c.cle))}
+                onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toucher(c.cle); } }}>
+                <span className="pq-substituer-nom"><IconeStock etat={c.stock} /><span data-houblon-nom={c.nom} {...fiche.nom(c.cle)}>{c.nom}</span></span>
+                {cellules(c.h)}
+                <span className="pq-substituer-tf-s">{c.min === c.max
+                  ? <><i className="pq-substituer-tf-pt" /><b>{c.min}</b></>
+                  : <span className="pq-substituer-tf-pl"><b>{c.min}–{c.max}</b></span>}</span>
+              </div>
+              {plusComparer(c, envoye)}
+            </div>
+          );
+        })}
+      </div>
+      <div className="pq-substituer-cle-l">
+        <p className="pq-substituer-cle" data-etat="etat-subst-plage">
+          {nulle.length > 0 && <span>{nulle.map((f) => COURT[f]).join(', ')}&#8239;: aucune fiche ne les décrit, ce n’est pas zéro.</span>}
+        </p>
+        {piluleComparer}
+      </div>
+    </section>
+  );
+
   // À 60′, l'α suit les bandes (u4) ; au whirlpool et au dry hop, le tableau des arômes répond d'abord (D127).
   const blocAlpha = (
     <div className="pq-substituer-mesure" data-etat="etat-subst-alpha"><span className="pq-substituer-t">α</span>
@@ -387,26 +503,47 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
     </div>
   );
 
+  const pied = (
+    <PiedAnnuler resume={choisi && choisi.dose ? (
+      <span data-role="choix-dock" className="pq-substituer-dock">{nombre(ajout.grams, 1)} g de {h0.nom}{deplace ? ` ${aMoment(q0)}` : ''} <span aria-hidden="true">→</span><span className="sr-only">remplacés par</span> <b className="font-semibold text-cave-50">{nombre(choisi.dose.grams, 1)} g de {choisi.nom}{deplace ? ` ${moment}` : ''}</b></span>
+    ) : undefined}>
+      <Pont nom="remplacer" disabled={!choisi} onClick={remplacerPar}>Remplacer</Pont>
+    </PiedAnnuler>
+  );
+
   return (
     <CadreOutil ecran="substituer" question={h0.nom}
-      dock={
-        <PiedAnnuler resume={choisi && choisi.dose ? (
-          <span data-role="choix-dock" className="pq-substituer-dock">{nombre(ajout.grams, 1)} g de {h0.nom}{deplace ? ` ${aMoment(q0)}` : ''} <span aria-hidden="true">→</span><span className="sr-only">remplacés par</span> <b className="font-semibold text-cave-50">{nombre(choisi.dose.grams, 1)} g de {choisi.nom}{deplace ? ` ${moment}` : ''}</b></span>
-        ) : undefined}>
-          <Pont nom="remplacer" disabled={!choisi} onClick={remplacerPar}>Remplacer</Pont>
-        </PiedAnnuler>
-      }>
-      <div className="pq-substituer">
+      // u4e4 : la barre « Comparer (n) › » au-dessus du pied ; sinon le pied seul, comme u4 enrichi.
+      dock={VARIANTE === 'u4e4' ? <div className="pq-substituer-dock-pile">
+        {VARIANTE === 'u4e4' && envoyes.length > 0 && (
+          <button type="button" className="pq-substituer-barre-cmp" data-role="pont-comparer-substituer" onClick={versComparer}>
+            <span>Comparer {liste([h0.nom, ...envoyes.map((k) => houblon(k).nom)])}</span><b>({envoyes.length + 1}) ›</b>
+          </button>
+        )}
+        {pied}
+      </div> : pied}>
+      <div className="pq-substituer" data-u4e={VARIANTE ?? undefined}>
         <ContexteTete><p className="pq-substituer-ctx" data-role="contexte" data-etat="etat-subst-repos">remplaçants<br /><b data-contexte="moment">{moment}</b></p></ContexteTete>
 
-        <div className="pq-substituer-moments" role="radiogroup" aria-label={`Moment de ${h0.nom}`} data-contexte="moment" data-role="puce-moment">
+        {VARIANTE === 'u4e1' ? (
+          <div className="pq-substituer-frise" role="radiogroup" aria-label={`Moment de ${h0.nom}, sur le brassin`} data-contexte="moment" data-role="puce-moment">
+            <span className="pq-substituer-frise-trait" aria-hidden="true"><i /><i /></span>
+            <span className="pq-substituer-frise-ferm">fermentation</span>
+            {moments.map((m) => (
+              <button key={m.cle} type="button" role="radio" aria-checked={m.cle === cleLue} data-moment={m.cle} onClick={() => choisirMoment(m)}
+                className={`pq-substituer-frise-st ${m.cle === cleLue ? 'pq-substituer-frise-on' : ''}`}>
+                <i aria-hidden="true" /><span>{m.cle === 'chaud' ? `ébullition ${m.mot}` : m.mot}</span>{m.cle === cleMoment(q0) && <small>ta recette</small>}
+              </button>
+            ))}
+          </div>
+        ) : <div className="pq-substituer-moments" role="radiogroup" aria-label={`Moment de ${h0.nom}`} data-contexte="moment" data-role="puce-moment">
           {moments.map((m) => (
             <button key={m.cle} type="button" role="radio" aria-checked={m.cle === cleLue} data-moment={m.cle} onClick={() => choisirMoment(m)}
               className={`pq-substituer-moment ${m.cle === cleLue ? 'pq-substituer-moment-on' : ''}`}>
               {m.mot}{m.cle === cleMoment(q0) && <span className="pq-substituer-moment-r" aria-label="(ta recette)"> ·&nbsp;recette</span>}
             </button>
           ))}
-        </div>
+        </div>}
         {deplace && (
           <p className="pq-substituer-effet" data-role="moment-effet">
             <b>{Moment}, l’arôme fait le score.</b>{' '}
@@ -414,12 +551,18 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
           </p>
         )}
 
-        <section className="pq-substituer-reponse" data-role="reponse">
+        {VARIANTE === 'u4e3' ? (
+          <section className="pq-substituer-reponse" data-role="reponse">
+            <strong data-role="reponse-aromes">{titreArome}</strong>
+            <span>{reponse}{sousReponse ? ` ${sousReponse}` : ''}</span>
+          </section>
+        ) : <section className="pq-substituer-reponse" data-role="reponse">
           <strong>{reponse}</strong>
           {sousReponse && <span>{sousReponse}</span>}
           {!amertume && aromeTete && <span data-role="reponse-aromes">{aromeTete}</span>}
-        </section>
+        </section>}
 
+        {VARIANTE === 'u4e5' && froid ? tableauFroid : <>
         <section className="pq-substituer-echelle" data-etat="etat-subst-echelle" aria-label={`Ressemblance à ${h0.nom}, de 50 à 100, rangée par le pire cas`}>
           <div className="pq-substituer-paliers">
             <span className="pq-substituer-mc pq-substituer-mc-tete" aria-label={`Familles de ta ${sc.code} : ${colsAro.map((f) => COURT[f]).join(', ')}`}>
@@ -446,7 +589,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
                 </span>
                 <span className="pq-substituer-tr pq-substituer-orig-t">l’original, {nombre(ajout.grams, 1)}&nbsp;g {moment}</span>
               </div>
-              <span />
+              {VARIANTE === 'u4e4' ? <span className="pq-substituer-coche-t">comparer</span> : <span />}
             </div>
             {cands.map((c) => {
               const col = couleurDe(c.cle), compare = compares.includes(c.cle), envoye = aComparer.includes(c.cle);
@@ -472,10 +615,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
                       )}
                     </span>
                   </div>
-                  <button type="button" className="pq-substituer-plus" data-role="ajout-comparer" data-houblon-comparer={c.cle} aria-pressed={envoye}
-                    aria-label={envoye ? `Retirer ${c.nom} de Comparer` : `Ajouter ${c.nom} à Comparer`} onClick={() => gestes.basculerComparaison(c.cle)}>
-                    <span aria-hidden="true">{envoye ? '✓' : '+'}</span>
-                  </button>
+                  {plusComparer(c, envoye)}
                 </div>
               );
             })}
@@ -487,13 +627,11 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
             <span><i className="pq-substituer-cle-pt" />tout connu</span>
             <span><i className="pq-substituer-cle-pl" />plage, une composante inconnue</span>
           </p>
-          <button type="button" className="pq-substituer-vers-comparer" data-role="pont-comparer-substituer" disabled={!envoyes.length} onClick={versComparer}
-            aria-label={envoyes.length ? `Comparer ${liste([h0.nom, ...envoyes.map((k) => houblon(k).nom)])}` : `Comparer : touche + sur un remplaçant`}>
-            Comparer{envoyes.length ? ` (${envoyes.length + 1})` : ''} <span aria-hidden="true">›</span>
-          </button>
+          {VARIANTE !== 'u4e4' && piluleComparer}
         </div>
+        </>}
 
-        <h2 className="pq-substituer-h2" data-etat="etat-subst-face">Face à face, {froid ? 'même masse' : 'même IBU'}</h2>
+        <h2 className="pq-substituer-h2" data-etat="etat-subst-face">{VARIANTE === 'u4e3' ? <>Face à face <span className="pq-substituer-gris pq-substituer-h2-sous">doses {froid ? 'à masse égale' : 'à IBU égal'}</span></> : <>Face à face, {froid ? 'même masse' : 'même IBU'}</>}</h2>
         <div className="pq-substituer-bandes" role="radiogroup" aria-label={`À la place de ${h0.nom}`}>
           {faces.map((x) => {
             const plageDose = !x.original && x.dose && x.dose.min !== x.dose.max;
@@ -502,12 +640,16 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
                 className={`pq-substituer-bande ${!x.original && x.cle === choix ? 'pq-substituer-bande-choisie' : ''}`}
                 {...(x.original ? { 'data-role': 'epingle', ...fiche.appui(x.cle) } : { role: 'radio', 'aria-checked': x.cle === choix, tabIndex: 0, ...fiche.appui(x.cle, () => setChoix(x.cle)), onKeyDown: (e: React.KeyboardEvent) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setChoix(x.cle); } } })}>
                 <span className="pq-substituer-bande-n"><span data-houblon={x.nom} {...fiche.nom(x.cle)}>{x.nom}</span> <IconeStock etat={x.stock} /></span>
-                <span className="pq-substituer-bande-d">
+                {VARIANTE === 'u4e3' ? (
+                  <span className="pq-substituer-bande-d pq-substituer-bande-aro"><CransRang h={x.h} familles={colsAro} attendues={attendues} /></span>
+                ) : <span className="pq-substituer-bande-d">
                   <b data-role="dose-remplacant" data-grammes={String(x.dose?.grams ?? '')}>{plageDose ? `${plage(x.dose!.min, x.dose!.max, 0)} g` : `${nombre(x.dose!.grams, 1)} g`}</b>
                   {plageDose && x.cle === choix && <small>{nombre(x.dose!.grams, 1)} g à α {nombre(x.h.alpha?.valeur ?? 0, 1)}</small>}
                   {x.original && (froid ? <small>à froid, sans IBU</small> : ibu0 && <small>{nombre(ibu0.valeur, 1)} IBU</small>)}
-                </span>
-                <span className="pq-substituer-bande-m"><Usage h={x.h} long /><PictosCites h={x.h} />{!x.original && x.cle === choix && <span className="pq-substituer-a-la-place">à la place de {h0.nom}</span>}</span>
+                </span>}
+                <span className="pq-substituer-bande-m"><Usage h={x.h} long />{VARIANTE === 'u4e3' ? (
+                  <span className="pq-substituer-dose-discret"><b data-role="dose-remplacant" data-grammes={String(x.dose?.grams ?? '')}>{plageDose ? `${plage(x.dose!.min, x.dose!.max, 0)} g` : `${nombre(x.dose!.grams, 1)} g`}</b>{x.original ? (froid ? ' · sans IBU' : ibu0 ? ` · ${nombre(ibu0.valeur, 1)} IBU` : '') : ''}</span>
+                ) : <PictosCites h={x.h} />}{!x.original && x.cle === choix && <span className="pq-substituer-a-la-place">à la place de {h0.nom}</span>}</span>
               </div>
             );
           })}

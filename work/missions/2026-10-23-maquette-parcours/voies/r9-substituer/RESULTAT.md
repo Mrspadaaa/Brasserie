@@ -1,4 +1,4 @@
-OK — u4 enrichi : puce 60′/whirlpool/dry hop, arômes à côté du score, « + » Comparer ; G1 à G5 verts
+OK — u4 enrichi (G1 à G5 verts) et cinq petites variantes u4e1 à u4e5, COMMUN OK
 
 ## Fichiers écrits (Possède seul)
 - `prototypes/houblons-v4/parcours/src/ecrans/substituer/index.tsx` : puce de moment, crans d'arômes par ligne avec Nugget
@@ -50,6 +50,42 @@ OK — u4 enrichi : puce 60′/whirlpool/dry hop, arômes à côté du score, «
   rouvre Substituer à 60′. Garder le brouillon de Substituer sous Comparer demanderait de changer `etat/etapes.ts` ou `Coquille.tsx`.
 - `controle-une-question --edition` attend l'édition du moment en `button[data-edite="moment"]` dans la ligne de contexte ;
   VOIE.md demande un toucher au premier écran : la puce est un groupe radio. À adapter si ce contrôle entre dans la portée.
+
+## Variantes (suite du pilote : « U4 enrichir semble vraiment mieux même si pas du 100% regarde pour faire quelques petites variante, amélioration »)
+Cinq pages figées, un seul point touché chacune, le reste identique à u4 enrichi :
+`work/refonte-frontend/v4/ecran-1/fils24-u4-enrichi/<id>/etat.html` et `NOTE.md` (le point touché, ce qui tient, ce qui casse).
+- **u4e1** la puce devient la frise du brassin : « ébullition 60′ » (ta recette), « whirlpool », puis un trait pointillé
+  marqué « fermentation » jusqu'à « dry hop » ; un toucher par station.
+- **u4e2** les arômes à côté du score en pictos cerclés à leur valeur : marqué = cercle épais à la couleur de la famille,
+  cité = picto seul, non décrit = cercle pointillé vide ; sans en-tête de colonnes. Le premier essai, avec un disque pâle
+  derrière le picto, avait échoué à TRAIT (D88, « glowing ») ; le cercle est maintenant blanc.
+- **u4e3** l'IBU encore moins présent : la réponse a l'arôme en titre (« Idaho 7 garde le plus de ta 16D : floral, herbacé
+  et terreux. »), puis le score en gris ; au face à face, la dose et l'IBU passent dans une ligne discrète (« 46 g · 59,7 IBU »)
+  et les crans de sa stout prennent la droite ; « Face à face · doses à IBU égal ».
+- **u4e4** « + Comparer » plus évident : une case à cocher par ligne (en-tête « comparer ») et un dock noir
+  « Comparer Nugget et Magnat (2) › » au-dessus de « Annuler · Remplacer ».
+- **u4e5** au dry hop, le tableau « Arômes 16D » couché à côté des scores : une ligne par remplaçant, une colonne par
+  famille (attendues sur fond gris), 2 crans, pointillé ; le score au bout ; « Pépins, Melon, Végétal : aucune fiche ne les
+  décrit, ce n'est pas zéro. » À 60′ et au whirlpool, rien ne change.
+
+Méthode : les variantes sont rendues par la maquette jouable (`substituer/etat.html?u4e=<id>`, drapeau `VARIANTE` dans
+`index.tsx`, inactif sans paramètre), puis `fils24-u4-enrichi/outils/figer.mjs` fige le DOM rendu de trois états (60′,
+whirlpool, dry hop) et la fiche de chacun des 17 houblons montrés ; `assets/style.css` est copiée de la construction, avec
+les classes `pq-substituer-` renommées `u4e-` et les ids de React renommés ; `assets/u4e.js` joue la puce, « ? », l'appui long
+ou le survol (fiche figée) et « + » ou la case (« Comparer (n) »). Toucher un remplaçant, Comparer, Remplacer et la lentille y
+sont inertes (écrit dans chaque NOTE).
+
+Contrôle : `controle-commun.mjs work/refonte-frontend/v4/ecran-1/fils24-u4-enrichi u4e1 u4e2 u4e3 u4e4 u4e5 --page=etat.html
+--sans=mots` → `COMMUN OK` (couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, legende, parlant, brutes).
+Il a échoué deux fois avant : TRAIT sur u4e2 (le disque), FICHE sur u4e3 (l'appui long de la page figée attendait 650 ms,
+autant que le contrôle ; maintenant 450 ms, la `DUREE_APPUI_LONG` de la maquette).
+La maquette jouable sans paramètre, rejouée après l'ajout du drapeau : SUBSTITUER-GESTES OK, ETATS OK (14/14), COMMUN OK,
+CHOIX OK, TEINTE OK 6/6, TYPES OK, ETAPE OK, ANNULER OK. Un premier passage de CHOIX avait échoué (controle-annuler à
+1280 px : le pied s'était retrouvé dans l'enveloppe du dock de u4e4) ; l'enveloppe ne sert plus qu'à u4e4.
+
+Captures (390 × 844, ×2, ouvertes) : `fils24-u4-enrichi/captures/<id>-premier-ecran.png`, `<id>-dryhop.png`, `u4e4-coche.png` ;
+côte à côte avec u4 enrichi : `captures/cote-premier-ecran.png`, `captures/cote-dryhop.png`.
+Prédiction : il gardera u4e5 au dry hop et u4e4 pour Comparer ; u4e2 se lit tout de suite, mais il la trouvera chargée.
 
 ## Prédiction
 « Là c'est bien : je vois l'arôme de chacun et je peux passer au dry hop ; par contre whirlpool et dry hop donnent la même liste ? »
