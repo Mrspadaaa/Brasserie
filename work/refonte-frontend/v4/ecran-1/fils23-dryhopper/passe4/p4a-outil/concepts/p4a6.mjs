@@ -24,7 +24,7 @@ export default {
   css: `
 body.p4a6 { padding-bottom:var(--dock,118px); }
 .p4a6 .s-ecran { gap:6px; min-height:calc(100svh - var(--dock,118px)); padding-bottom:8px; }
-.p4a6ch { display:grid; grid-template-columns:82px 46px 1fr 58px; align-items:end; gap:0 9px; font-size:13px; }
+.p4a6ch { display:grid; grid-template-columns:82px 40px 1fr 50px; align-items:end; gap:0 9px; font-size:13px; }
 .p4a6ch-a, .p4a6ch-b, .p4a6ch-c { display:flex; flex-direction:column; gap:1px; padding:5px 4px; border-radius:8px 8px 0 0; }
 .p4a6ch-a { grid-column:2; background:#ececec; text-align:center; font-weight:600; line-height:1.1; }
 .p4a6ch-b { grid-column:3; background:var(--encre); color:#fff; flex-direction:row; align-items:center; gap:6px; }
@@ -40,13 +40,13 @@ body.p4a6 { padding-bottom:var(--dock,118px); }
 .p4a6ct b { color:var(--encre); }
 .p4a6ct .p4a6-trop { color:var(--acc); font-weight:600; }
 .p4a6tab { flex:1; display:flex; flex-direction:column; justify-content:space-between; padding:4px 0 6px; border-radius:8px; background:var(--plan); border:1px solid var(--trait); }
-.p4a6l { display:grid; grid-template-columns:82px 46px 1fr 58px; align-items:center; gap:4px 9px; min-height:34px; padding:0 4px 0 8px; font-size:14px; }
+.p4a6l { display:grid; grid-template-columns:82px 40px 1fr 50px; align-items:center; gap:4px 9px; min-height:34px; padding:0 4px 0 8px; font-size:14px; }
 .p4a6l-n { display:flex; align-items:center; gap:4px; white-space:nowrap; }
 .p4a6l-n.p4a6-att { font-weight:700; }
 .p4a6l-a { display:flex; align-items:center; justify-content:center; height:22px; border-radius:4px; background:#fff; border:1px solid var(--trait); font:600 12px var(--mono); color:var(--gris); }
 .p4a6l-a.p4a6-inc { background:repeating-linear-gradient(135deg,#d4d4d4 0 2px,#fff 2px 6px); color:var(--encre); }
 .p4a6l-b { display:block; position:relative; }
-.p4a6l-b .s-ba { grid-template-columns:1fr 38px; gap:4px; }
+.p4a6l-b .s-ba { grid-template-columns:1fr 50px; gap:4px; }
 .p4a6l-b::before { content:"›"; position:absolute; left:-8px; top:50%; transform:translateY(-52%); color:#6e6e6e; font-weight:700; }
 .p4a6l-b .s-piste { height:16px; }
 .p4a6l-b .s-piste .s-rem { height:10px; top:3px; }
@@ -67,7 +67,13 @@ body.p4a6 { padding-bottom:var(--dock,118px); }
 .p4a6x3 span.p4a6-ghost { background:repeating-linear-gradient(135deg,#d4d4d4 0 2px,#fff 2px 6px); color:var(--gris); }
 .p4a6x3 i { font-style:normal; color:#6e6e6e; }
 .p4a6x3 b.num { font-weight:600; }
-.p4a6rg { margin-top:28px; }
+.p4a6et { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; margin-top:4px; }
+.p4a6et button { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2px 0 4px; border-radius:4px; background:var(--piste); font-size:12px; color:var(--gris); line-height:1.15; overflow:hidden; }
+.p4a6et button b { font:600 12px var(--mono); color:#9840bc; }
+.p4a6et button.p4a6et-amer::after { content:""; position:absolute; left:0; right:0; bottom:0; height:3px; background:var(--acc); }
+.p4a6et button[aria-current="true"] { background:var(--encre); color:#fff; }
+.p4a6et button[aria-current="true"] b { color:#ead7f3; }
+.p4a6rg { margin-top:26px; }
 .p4a6rg .s-lp { left:0; right:0; top:-60px; height:56px; }
 .p4a6lev { position:relative; height:22px; margin-top:2px; }
 .p4a6lev svg { position:absolute; inset:0; width:100%; height:100%; }
@@ -75,15 +81,16 @@ body.p4a6 { padding-bottom:var(--dock,118px); }
 .p4a6lev-j { position:absolute; top:5px; font:600 11px var(--mono); color:var(--gris); transform:translateX(-50%); }
 `,
   corps: `
-<div class="p4a6ch" aria-live="polite">
+<div class="p4a6ch" data-figure aria-live="polite">
   <span class="p4a6ch-a">Ma bière</span>
   <span class="p4a6ch-b"><span class="p4a6ch-bt"><small>+ Idaho 7</small><b id="p4a6m">actif · 2 j</b></span><span class="p4a6-fl"><svg class="s-pi" width="15" height="15" style="width:15px;height:15px" data-famille="floral" aria-label="Floral"><use href="#p-floral"/></svg><span id="p4a6fl"></span></span></span>
   <nav class="p4a6ch-c" id="p4a6chc" aria-label="Pont vers Levure" data-acquis="levure" data-forme="pont"><a href="${ETAPE}">Puis la levure ›<small>Pomona</small></a></nav>
 </div>
 <p class="p4a6ct" id="p4a6ct"></p>
-<section class="p4a6tab" id="p4a6tab" aria-label="Ma bière, puis avec Idaho 7, puis ce que la levure changerait"></section>
+<section class="p4a6tab" data-figure id="p4a6tab" aria-label="Ma bière, puis avec Idaho 7, puis ce que la levure changerait"></section>
 <div class="p4a6dock" id="p4a6dock" data-libre="moment" data-acquis="frise">
   <p class="p4a6x3" id="p4a6x3" aria-label="La chaîne de ta cuve"></p>
+  <div class="p4a6et" id="p4a6et"></div>
   <div class="p4a6rg" id="p4a6rg"></div>
   <div class="p4a6lev" id="p4a6lev" aria-hidden="true"></div>
 </div>`,
@@ -126,16 +133,20 @@ body.p4a6 { padding-bottom:var(--dock,118px); }
     }
     // La chaîne réduite de x3b, au bout de la frise.
     function chaine(p) {
-      document.getElementById('p4a6x3').innerHTML = '<span>Ma bière ' + S.pi('floral', 12) + '<b class="num">~' + r1(S.AV.floral) + '</b></span><i>→</i><span class="p4a6-ici">+ Idaho 7 ' + S.pi('floral', 12) + '<b class="num">' + (p.interp ? '≈' : '~') + Math.round(p.v.floral) + '</b></span><i>→</i><span class="p4a6-ghost">+ 2ᵉ ?</span><i>→</i><span>' + mp('m-levure', 12) + 'levure</span>';
+      document.getElementById('p4a6x3').innerHTML = '<span>Ma bière ' + S.pi('floral', 12) + '<b class="num">~' + r1(S.AV.floral) + '</b></span><i>→</i><span class="p4a6-ici">+ Idaho 7 ' + S.pi('floral', 12) + '<b class="num">' + (p.interp ? '≈' : '~') + Math.round(p.v.floral) + '</b></span><i>→</i><span>' + mp('m-levure', 12) + 'levure</span>';
     }
     // La courbe de la levure sous le rail : fermentation active (fin vers J+5), biotransformation hachurée ; 1 j sans gain.
     document.getElementById('p4a6lev').innerHTML = '<span class="p4a6lev-y">' + mp('m-levure', 13) + '</span><svg viewBox="0 0 100 22" preserveAspectRatio="none" aria-hidden="true"><defs><pattern id="p4a6-h" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.3" height="3" fill="#fff"/></pattern></defs>'
       + '<path d="M52 21 C55 21 56 1 60.5 1 S70 2 73 14 S76 21 77 21 Z" fill="#8c8c8c"/><path d="M55.6 21 C56.6 10 58 2.4 60.5 2.4 S66 4 68 21 Z" fill="url(#p4a6-h)"/><path d="M77 20.4 L100 20.4" stroke="#8c8c8c" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>';
+    // Les étapes d'a1, sur le rail : un toucher saute à l'étape (au même jour en dry hop) ; orangé si trop amère.
+    var ET = [['b60', '60′–0′', 0], ['wp', 'WP', 1], ['dryActive|2', 'actif', 2], ['dryPost|2', 'après', 3]], et = document.getElementById('p4a6et');
+    et.innerHTML = ET.map(function (e) { return '<button type="button" data-etape="' + e[2] + '" data-saut="' + e[0] + '" aria-label="Moment : ' + e[1] + '"' + (S.ibu(D[S.idx(e[0])]).h ? ' class="p4a6et-amer"' : '') + '><span>' + e[1] + '</span><b>' + S.fmt(D[S.idx(e[0])], 'floral') + '</b></button>'; }).join('');
+    et.querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () { var p = D[rail.cur()]; if (seg(p) === +b.dataset.etape) return; rail.poser(S.idx(b.dataset.saut.indexOf('dry') === 0 && S.jours(p) ? b.dataset.saut.split('|')[0] + '|' + S.jours(p) : b.dataset.saut)); }); });
     var rail = S.rail({
       hote: document.getElementById('p4a6rg'), orient: 'h', pas: 66,
       cellule: function (p) { return '<em>' + S.court(p) + '</em><i class="s-lp-b"><b style="width:' + Math.min(100, p.v.floral / 25 * 100).toFixed(0) + '%"></b></i><small>' + S.fmt(p, 'floral') + '</small>'; },
       onPose: function (i) {
-        var p = D[i]; majs.forEach(function (m) { m(p); }); jau(p); levure(p); contre(i); chaine(p);
+        var p = D[i]; majs.forEach(function (m) { m(p); }); jau(p); levure(p); contre(i); chaine(p); et.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-current', String(+b.dataset.etape === seg(p))); });
         document.getElementById('p4a6m').textContent = p.lib; document.getElementById('p4a6fl').textContent = S.fmt(p, 'floral');
       },
     });

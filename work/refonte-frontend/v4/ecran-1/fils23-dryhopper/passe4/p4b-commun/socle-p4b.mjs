@@ -41,6 +41,8 @@ export const CSS_RAIL = `
 .p4r-loupe > span small.p4r-amer { color:var(--acc); }
 .p4r-loupe > span small.p4r-co { color:#3b5f8a; }
 .p4r-loupe > span small.p4r-ok { color:#2f6b5f; }
+.p4r-avinc::before { content:""; position:absolute; left:0; top:0; bottom:0; width:9px; z-index:2; background:repeating-linear-gradient(135deg,#8a8f9c 0 1.5px,transparent 1.5px 4px); }
+.p4r-avinc > [class$="-av"] { display:none !important; }
 `;
 
 // Le client du rail : window.P4 = { x, cw, seg, jours, best, SEG, court, mesure, rail }.
@@ -53,6 +55,10 @@ function railClient() {
   // Le meilleur pour sa demande du 18.10 : floral gagné moins résineux gagné, amertume dans 50–70 ; à 0,05 près, le plus tôt.
   var score = function (p) { return S.d(p, 'floral') - S.d(p, 'resin'); }, best = -1;
   for (var k = 0; k <= N; k++) { if (S.ibu(D[k]).n > 70) continue; if (best < 0 || score(D[k]) > score(D[best]) + 0.05) best = k; }
+  // Noyau et Baies : l'avant de la stout est inconnu (non décrits dans les fiches de Nugget), le gain d'Idaho 7 est connu.
+  var AVINC = { stoneFruit: 1, berries: 1 };
+  function avinc(f) { return !!AVINC[f]; }
+  function val(p, f, compact) { if (S.inc(p, f)) return '?'; return (avinc(f) ? (compact ? '?→' : '? → ') : '') + S.fmt(p, f); }
   function court(p) { return p.court === 'wp' ? 'WP' : p.id.indexOf('dry') === 0 ? p.lib.split(' · ')[1] : p.court; }
   // La mesure publiée du moment (E03 McCabe 2023 en actif, E10 Titus 2021 après) ; sinon « jamais mesuré à ce moment ».
   function mesure(p) {
@@ -97,7 +103,7 @@ function railClient() {
     if (/touche=1/.test(location.search)) { el.classList.add('p4r-touche'); graduations(cur()); }
     return { poser: poser, cur: cur, rafraichir: function () { poser(cur()); } };
   }
-  window.P4 = { x: x, cw: cw, seg: seg, jours: jours, best: best, SEG: SEG, court: court, mesure: mesure, rail: rail };
+  window.P4 = { avinc: avinc, val: val, x: x, cw: cw, seg: seg, jours: jours, best: best, SEG: SEG, court: court, mesure: mesure, rail: rail };
 }
 
 // Une variante : { id, nom, chaleur, titre, legende, css, corps, script }. Levure « propre » : la variante pose son pont.

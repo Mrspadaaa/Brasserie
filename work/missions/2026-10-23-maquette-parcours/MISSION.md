@@ -342,6 +342,20 @@ Rejeu du pilote, `node scripts/agents/systeme.mjs voies work/missions/2026-10-23
   - D123 reprend sa base : pas de mini maquettes (ce n'est pas un nouveau choix). Ordre : D123, puis D122 et D115.
   - La supervision rejouera elle-même le glisser côté froid avant son OK.
 
+### État de reprise (24.10, après-midi)
+- Fait et rejoué par le pilote : p19 à p24 (contrôles et relevés) ; reprises r1 (rail 37/37, froid, 15 états), r2 (15/15, CHOIX
+  OK), r3 (fiche, 13 + 3 appuis posés par r1), r4 (15/15, CHOIX OK), r5 (18/18), r6 (u4, 14/14, CHOIX OK) ; registre Substituer
+  « choisi u4 » (D34) ; conseil complet D125 (D34), avis croisé (D35), conseil dans la création (D36), étalonnage (D37), passe 4
+  de Dryhopper (11 ACCEPTÉ, conseil rapide, D38 ; retouches faites par dh4a, dh4b en cours) ; lot liste de la fiche (48 v0, tri,
+  conseil rapide : candidates flb3, flc8, fld8, flu2, fla5 sur Nelson Sauvin ; passe 2 en cours) ; lot Substituer (48 v0, tri :
+  sbc1, sbc3, sbb7, sbu7, sbz7 ; conseil rapide en cours).
+- En cours : batterie sur la construction commune (sortie dans le scratchpad du pilote, `batterie-d124.txt`) ; critique des six
+  reprises à lancer après la batterie ; page côte à côte de tous les états de geste de sa base ; puis les deux artefacts neufs
+  (maquette complète, et « Choix de vues » : passe 4 de Dryhopper, D121 A/B/C, liste de la fiche, Substituer, pastille, levure,
+  planche des graphes).
+- Restent à faire : pastille « ~ simulé » (3 mini maquettes, sur Comparer rendu), groupe levure de Suggérer en variantes (D35),
+  planche des graphes (Q4) ; tickets et push sur accord de l'utilisateur.
+
 ### Publication demandée (24.10, matin), mot pour mot
 « Tu me mettra à jour la base en me publiant l'artefact complet de bout en bout avec les update. Et pour les choix de vue,
 un artefacts annexe qui montre bien les différentes vue côté à côté ». Donc, après les reprises r1 à r6, leur critique et la

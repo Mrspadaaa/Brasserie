@@ -158,10 +158,10 @@ h1.s-titre { font:600 17px/1.2 var(--sans); }
 .s-ic { color:var(--gris); }
 .s-src { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--gris); }
 .s-src b { color:var(--encre); font-weight:600; }
-.s-ba { display:grid; grid-template-columns:88px 1fr 40px; align-items:center; gap:6px; font-size:13px; min-height:18px; }
+.s-ba { display:grid; grid-template-columns:88px 1fr 48px; align-items:center; gap:6px; font-size:13px; min-height:18px; }
 .s-ba-n { display:flex; align-items:center; gap:4px; white-space:nowrap; }
 .s-ba-n.s-att { font-weight:700; }
-.s-ba-v { text-align:right; font-size:12px; }
+.s-ba-v { text-align:right; font-size:12px; white-space:nowrap; }
 .s-piste { position:relative; height:12px; background:var(--piste); border-radius:2px; overflow:hidden; }
 .s-piste i { position:absolute; top:0; bottom:0; left:0; display:block; }
 .s-piste .s-zone { width:var(--ws); background:var(--zone); }
@@ -255,7 +255,7 @@ function socleClient() {
   function avInc(f) { return AVINC.indexOf(f) >= 0; }
   function d(p, f) { return inc(p, f) || avInc(f) ? null : p.v[f] - AV[f]; }
   function sg(p) { return p.interp ? '≈' : '~'; }
-  function fmt(p, f) { var x = d(p, f); if (x == null) return '?'; if (Math.abs(x) < 0.5) return sg(p) + '0'; return sg(p) + (x > 0 ? '+' : '−') + Math.abs(Math.round(x)); }
+  function fmt(p, f) { if (!inc(p, f) && avInc(f)) { var g = p.v[f] - AV[f]; return '?→' + sg(p) + (g >= 0 ? '+' : '−') + Math.abs(Math.round(g)); } var x = d(p, f); if (x == null) return '?'; if (Math.abs(x) < 0.5) return sg(p) + '0'; return sg(p) + (x > 0 ? '+' : '−') + Math.abs(Math.round(x)); }
   function hors(p, f) { return !inc(p, f) && p.v[f] > B[f]; }
   function ibu(p) {
     if (p.cru) return { n: 60, t: '60 IBU', s: 'tenue', h: false, cru: true };
@@ -276,7 +276,7 @@ function socleClient() {
         var f = r.dataset.f, rem = r.querySelector('.s-rem'), h = r.querySelector('.s-hach'), v = r.querySelector('.s-ba-v'), u = inc(p, f);
         rem.hidden = u; h.hidden = !u; r.classList.toggle('s-interp', !!p.interp);
         if (!u) { rem.style.setProperty('--ws', w(p.v[f], f, 's')); rem.style.setProperty('--wa', w(p.v[f], f, 'a')); }
-        v.textContent = fmt(p, f); v.style.color = u || avInc(f) ? '#555555' : (hors(p, f) ? '#c2410c' : T[f]);
+        v.textContent = fmt(p, f); v.style.color = u ? '#555555' : (hors(p, f) ? '#c2410c' : T[f]);
       });
     };
   }

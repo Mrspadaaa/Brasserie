@@ -26,7 +26,7 @@ export default {
   ],
   css: `
 .p4a3 .s-ecran { gap:6px; }
-.p4a3main { display:grid; grid-template-columns:1fr 128px; gap:8px; height:calc(100svh - 168px); min-height:560px; }
+.p4a3main { display:grid; grid-template-columns:1fr 150px; gap:8px 4px; height:calc(100svh - 168px); min-height:560px; }
 .p4a3g { display:flex; flex-direction:column; gap:6px; min-width:0; }
 .p4a3rep { display:flex; align-items:baseline; flex-wrap:wrap; gap:2px 6px; font-size:15px; }
 .p4a3rep b { font-weight:600; }
@@ -35,7 +35,7 @@ export default {
 .p4a3rep-c b { color:var(--encre); }
 .p4a3rep-c .p4a3-trop { color:var(--acc); font-weight:600; }
 .p4a3fig { flex:1; justify-content:space-between; gap:6px; padding:8px 8px; }
-.p4a3fig .s-ba { grid-template-columns:84px 1fr 34px; font-size:14px; min-height:31px; }
+.p4a3fig .s-ba { grid-template-columns:82px 1fr 44px; font-size:14px; min-height:31px; }
 .p4a3fig .s-jauge { font-size:13px; }
 .p4a3fig .s-jauge .s-jv { font-size:12px; }
 .p4a3fig .s-jp { height:14px; }
@@ -72,10 +72,11 @@ export default {
 .p4a3col .p4a3et.p4a3-on { color:var(--encre); font-weight:700; }
 .p4a3col .p4a3sep { position:absolute; left:0; right:-28px; border-top:1px solid #dcdcdc; }
 .p4a3rg { position:absolute; right:4px; top:8px; bottom:8px; width:24px; }
-.p4a3rg .s-lp { right:28px; width:92px; height:372px; }
-.p4a3rg .s-lp > span { height:62px; left:4px; right:4px; flex-wrap:wrap; align-content:center; justify-content:space-between; gap:3px 2px; }
+.p4a3rg .s-lp { right:26px; width:120px; height:372px; }
+.p4a3rg .s-rl-pc { z-index:4; }
+.p4a3rg .s-lp > span { height:62px; left:4px; right:4px; flex-wrap:wrap; align-content:center; justify-content:space-between; gap:4px 3px; white-space:nowrap; }
 .p4a3rg .s-lp em { text-align:center; }
-.p4a3rg .s-lp i.s-lp-b { flex:1; min-width:24px; height:8px; }
+.p4a3rg .s-lp i.s-lp-b { flex-basis:100%; height:6px; order:9; }
 .p4a3rg .s-lp small { flex-basis:auto; }
 .p4a3rg .s-lp .p4a3-br { flex-basis:100%; height:0; }
 .p4a3rg .s-lp small.p4a3-ibu { color:var(--gris); text-align:right; }
@@ -85,7 +86,7 @@ export default {
 <div class="p4a3main">
   <div class="p4a3g">
     <div class="p4a3rep" aria-live="polite"><b>Face à ta stout</b><span class="p4a3rep-fl"><svg class="s-pi" width="16" height="16" style="width:16px;height:16px" data-famille="floral" aria-label="Floral"><use href="#p-floral"/></svg><span id="p4a3rep-fl">~+22</span></span><span class="p4a3rep-c" id="p4a3rep-c"></span></div>
-    <section class="s-bloc p4a3fig" aria-label="Familles d'arômes au style"><div id="p4a3ba"></div><div class="p4a3mc" id="p4a3mc" aria-hidden="true"></div><div class="p4a3am" id="p4a3am"></div>
+    <section class="s-bloc p4a3fig" data-figure aria-label="Familles d'arômes au style"><div id="p4a3ba"></div><div class="p4a3mc" id="p4a3mc" aria-hidden="true"></div><div class="p4a3am" id="p4a3am"></div>
       <button type="button" class="p4a3repli" id="p4a3repli" aria-expanded="false" aria-controls="p4a3ba2" aria-label="Montrer Pépins, Melon, Épicé"></button><div id="p4a3ba2" hidden></div></section>
     <p class="p4a3mes" id="p4a3mes" data-acquis="valeurs"></p>
     <nav class="p4a3lev" aria-label="Pont vers Levure" data-acquis="levure" data-forme="pont"><a href="${ETAPE}"><b>Puis la levure</b><span id="p4a3lev-t"></span></a></nav>
@@ -159,7 +160,7 @@ export default {
     }
     var rail = S.rail({
       hote: document.getElementById('p4a3rg'), orient: 'v', pas: 72,
-      cellule: function (p) { var b = S.ibu(p); return '<em>' + S.court(p) + '</em><i class="s-lp-b"><b style="width:' + Math.min(100, p.v.floral / 25 * 100).toFixed(0) + '%"></b></i><span class="p4a3-br"></span><small>' + S.fmt(p, 'floral') + '</small><small class="p4a3-ibu' + (b.h ? ' p4a3-trop' : '') + '">' + (b.cru ? '60+?' : b.t.replace(' IBU', '')) + '</small>'; },
+      cellule: function (p) { var b = S.ibu(p); return '<em>' + S.court(p) + '</em><i class="s-lp-b"><b style="width:' + Math.min(100, p.v.floral / 25 * 100).toFixed(0) + '%"></b></i><small>' + S.fmt(p, 'floral') + '</small><small class="p4a3-ibu' + (b.h ? ' p4a3-trop' : '') + '">' + (b.cru ? '60+?' : b.t.replace(' IBU', '')) + '</small>'; },
       loupe: function (i, lp) { var H = lp.parentNode.clientHeight, y = H * x(i) / 100; lp.style.top = Math.max(-8, Math.min(H - 364, y - 186)) + 'px'; },
       onPose: function (i) {
         var p = D[i]; maj(p); maj2(p); jau(p); mesure(p); levure(p); contre(i);

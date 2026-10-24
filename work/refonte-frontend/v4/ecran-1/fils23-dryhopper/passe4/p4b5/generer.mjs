@@ -45,7 +45,8 @@ body.p4b5 { padding-bottom:var(--dock,96px); }
 .p4b5-mes.p4b5-ok { color:var(--encre); }
 .p4b5-n { display:flex; align-items:center; gap:3px; white-space:nowrap; font-size:12.5px; overflow:hidden; }
 .p4b5-n.p4b5-att { font-weight:700; }
-.p4b5-c { display:grid; grid-template-columns:1fr 34px; align-items:center; gap:2px; }
+.p4b5-c { display:grid; grid-template-columns:1fr auto; align-items:center; gap:2px; }
+.p4b5-c .p4b5-v { min-width:34px; }
 .p4b5-c.p4b5-ici { grid-template-columns:1fr 40px; }
 .p4b5-p { position:relative; height:18px; background:#f1f2f5; border-radius:2px; overflow:hidden; }
 .p4b5-ici .p4b5-p { height:20px; background:#eceef3; }
@@ -78,7 +79,7 @@ body.p4b5 { padding-bottom:var(--dock,96px); }
 .p4b5-et button.p4b5-amer::after { content:""; position:absolute; left:0; right:0; bottom:0; height:3px; background:var(--acc); }
 .p4b5-et button[aria-current="true"] { background:var(--encre); color:#fff; }
 .p4b5-et button[aria-current="true"] b { color:#ead7f3; }
-.p4b5-rail { margin-top:26px; }
+.p4b5-rail { margin-top:36px; }
 `,
   corps: `
 <div class="p4b5-rep" aria-live="polite"><span class="p4b5-face">Face à ta stout</span><span class="p4b5-fl"><svg class="s-pi" width="18" height="18" style="width:18px;height:18px" data-famille="floral" aria-label="Floral"><use href="#p-floral"/></svg><span id="p4b5-fl" class="num">~+22</span></span>
@@ -102,7 +103,7 @@ body.p4b5 { padding-bottom:var(--dock,96px); }
     var G = document.getElementById('p4b5-grille'), h = '';
     h += '<span></span>' + COLS.map(function (c) { return '<span class="p4b5-col" data-c="' + c + '"><button type="button" data-saut="" aria-label="Aller à ce moment"><span class="p4b5-t"></span><small></small></button><span class="p4b5-mes"></span></span>'; }).join('');
     var cell = function (f, c) {
-      return '<span class="p4b5-c" data-f="' + f + '" data-c="' + c + '"><span class="p4b5-p"><i class="p4b5-z" data-role="zone" style="--z:50%"></i><i class="p4b5-b" style="background:' + S.BA[f] + '"></i><i class="p4b5-av" style="--a:' + w(S.AV[f], f).toFixed(1) + '%"></i><i class="p4b5-h"></i></span><span class="p4b5-v"></span></span>';
+      return '<span class="p4b5-c" data-f="' + f + '" data-c="' + c + '"><span class="p4b5-p' + (P4.avinc(f) ? ' p4r-avinc' : '') + '"><i class="p4b5-z" data-role="zone" style="--z:50%"></i><i class="p4b5-b" style="background:' + S.BA[f] + '"></i><i class="p4b5-av" style="--a:' + w(S.AV[f], f).toFixed(1) + '%"></i><i class="p4b5-h"></i></span><span class="p4b5-v"></span></span>';
     };
     S.ORDRE.forEach(function (f) { h += '<span class="p4b5-n' + ({ floral: 1, herbal: 1, earthy: 1 }[f] ? ' p4b5-att' : '') + '">' + S.pi(f, 15) + '<span>' + S.NOM[f] + '</span></span>' + COLS.map(function (c) { return cell(f, c); }).join(''); });
     h += '<span class="p4b5-n">Amertume</span>' + COLS.map(function (c) { return '<span class="p4b5-c p4b5-am" data-am data-c="' + c + '"><span class="p4b5-p"><i class="p4b5-zone" style="--zw:' + (10 / 110 * 100).toFixed(1) + '%"></i><i class="p4b5-b"></i><i class="p4b5-cru" hidden></i></span><span class="p4b5-v"></span></span>'; }).join('');
@@ -131,7 +132,7 @@ body.p4b5 { padding-bottom:var(--dock,96px); }
           cl.classList.toggle('p4b5-ip', !!p.interp); b.hidden = u; cl.querySelector('.p4b5-h').hidden = !u; cl.querySelector('.p4b5-z').style.setProperty('--z', (abs() ? S.B[f] / 110 * 100 : 50) + '%');
           if (!u) b.style.setProperty('--w', w(p.v[f], f) + '%');
           var pr = k > 0 ? D[k - 1] : null, sg = !u && P4.seg(p) >= 2 && pr && P4.seg(pr) === P4.seg(p) && Math.abs(p.v[f] - pr.v[f]) < 0.1;
-          v.innerHTML = (sg ? '<span class="p4b5-eg">=</span>' : '') + S.fmt(p, f); v.style.color = u ? '#55555f' : (S.hors(p, f) ? '#c2410c' : S.T[f]);
+          v.innerHTML = (sg ? '<span class="p4b5-eg">=</span>' : '') + P4.val(p, f, true); v.style.color = u ? '#55555f' : (S.hors(p, f) ? '#c2410c' : S.T[f]);
         });
       });
     }

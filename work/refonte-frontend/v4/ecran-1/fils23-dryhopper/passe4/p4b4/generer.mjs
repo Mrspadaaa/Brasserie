@@ -52,6 +52,7 @@ body.p4b4 { padding-bottom:var(--dock,128px); }
 .p4b4-d .p4b4-p .p4b4-e.p4b4-co { background:radial-gradient(circle at 3px 3px,#3b5f8a 1.3px,transparent 1.6px) 0 0/6px 6px, #dfe8f4; }
 .p4b4-ip .p4b4-g .p4b4-b { opacity:.5; }
 .p4b4-p .p4b4-z { width:2px; background:#8a8f9c; }
+.p4b4-g .p4r-avinc::before { left:auto; right:0; }
 .p4b4-g .p4b4-p .p4b4-z { right:var(--z); }
 .p4b4-d .p4b4-p .p4b4-z { left:var(--z); }
 .p4b4-p .p4b4-h { left:0; right:0; background:repeating-linear-gradient(135deg,#c9cdd6 0 2px,transparent 2px 6px); }
@@ -113,9 +114,9 @@ body.p4b4 { padding-bottom:var(--dock,128px); }
     var reference = function (i) { return ref === 'best' ? D[P4.best] : apresDe(D[i]); };
     var cause = function (p) { var s = P4.seg(p); return s <= 1 ? 'ch' : s === 2 ? 'co' : 'ok'; };
     var ligne = function (f) {
-      return '<div class="p4b4-ba" data-f="' + f + '"><span class="p4b4-g"><span class="p4b4-p"><i class="p4b4-h"></i><i class="p4b4-b" style="background:' + S.BA[f] + '"></i><i class="p4b4-z" data-role="zone"></i></span><span class="p4b4-v"></span></span>'
+      return '<div class="p4b4-ba" data-f="' + f + '"><span class="p4b4-g"><span class="p4b4-p' + (P4.avinc(f) ? ' p4r-avinc' : '') + '"><i class="p4b4-h"></i><i class="p4b4-b" style="background:' + S.BA[f] + '"></i><i class="p4b4-z" data-role="zone"></i></span><span class="p4b4-v"></span></span>'
         + '<span class="p4b4-n' + ({ floral: 1, herbal: 1, earthy: 1 }[f] ? ' p4b4-att' : '') + '"><b>' + S.pi(f, 14) + S.NOM[f] + '</b><small></small></span>'
-        + '<span class="p4b4-d"><span class="p4b4-p"><i class="p4b4-h"></i><i class="p4b4-b" style="background:' + S.BA[f] + '"></i><i class="p4b4-e" hidden></i><i class="p4b4-z" data-role="zone"></i></span><span class="p4b4-v"></span></span></div>';
+        + '<span class="p4b4-d"><span class="p4b4-p' + (P4.avinc(f) ? ' p4r-avinc' : '') + '"><i class="p4b4-h"></i><i class="p4b4-b" style="background:' + S.BA[f] + '"></i><i class="p4b4-e" hidden></i><i class="p4b4-z" data-role="zone"></i></span><span class="p4b4-v"></span></span></div>';
     };
     var L = document.getElementById('p4b4-lignes');
     L.innerHTML = S.ORDRE.map(ligne).join('')
@@ -126,7 +127,7 @@ body.p4b4 { padding-bottom:var(--dock,128px); }
       el.querySelector('.p4b4-h').hidden = !u; b.hidden = u; z.style.setProperty('--z', (abs() ? S.B[f] / 110 * 100 : 50) + '%');
       if (u) { v.textContent = '?'; v.style.color = '#55555f'; return; }
       b.style.width = w(p.v[f], f) + '%'; b.className = 'p4b4-b';
-      v.textContent = S.fmt(p, f); v.style.color = c === 'g' ? (S.hors(p, f) ? '#c2410c' : S.T[f]) : '';
+      v.textContent = P4.val(p, f); v.style.color = c === 'g' ? (S.hors(p, f) ? '#c2410c' : S.T[f]) : '';
     }
     function duel(i) {
       var p = D[i], r = reference(i), c = cause(p), meme = r === p;

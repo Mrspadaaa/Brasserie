@@ -76,15 +76,17 @@ body.abs .p4b1-p .p4b1-av { left:clamp(7px, var(--wa), calc(100% - 7px)); }
 .p4b1-jr button.p4b1-sg { background:#f7f8fa; color:var(--gris); font-weight:400; border:1px dashed #c9cdd6; }
 .p4b1-jr button[aria-pressed="true"] { background:var(--encre); color:#fff; font-weight:700; border:0; }
 .p4b1-jr button[aria-disabled="true"] { opacity:.45; }
-.p4b1-strip { position:relative; height:28px; margin-top:5px; }
-.p4b1-strip i { position:absolute; bottom:0; width:var(--cw); margin-left:calc(var(--cw) / -2); border-radius:2px 2px 0 0; background:#f1f2f5; height:100%; }
-.p4b1-strip i b { position:absolute; left:1px; right:1px; bottom:0; border-radius:2px 2px 0 0; background:#bf86d6; }
-.p4b1-strip i u { position:absolute; left:1px; right:1px; bottom:var(--g); height:var(--e); }
+.p4b1 .p4r-loupe { height:74px; top:-80px; }
+.p4b1 .p4r-loupe > span { gap:1px; }
+.p4b1-strip { position:relative; height:28px; margin-top:3px; }
+.p4b1-strip i { position:absolute; top:0; width:var(--cw); margin-left:calc(var(--cw) / -2); border-radius:0 0 2px 2px; background:#f1f2f5; height:100%; }
+.p4b1-strip i b { position:absolute; left:1px; right:1px; top:0; border-radius:0 0 2px 2px; background:#bf86d6; }
+.p4b1-strip i u { position:absolute; left:1px; right:1px; top:var(--g); height:var(--e); }
 .p4b1-strip i u.p4b1-ch { background:repeating-linear-gradient(135deg,#c2410c 0 1.5px,#fde4d6 1.5px 4px); }
 .p4b1-strip i u.p4b1-co { background:radial-gradient(circle at 2px 2px,#3b5f8a 1px,transparent 1.3px) 0 0/4px 4px, #dfe8f4; }
 .p4b1-strip i.p4b1-ip b { opacity:.5; }
 .p4b1-strip i.p4b1-ici { background:#e2e5eb; }
-.p4b1-strip .p4b1-star { position:absolute; top:-2px; font-size:11px; color:#2f6b5f; transform:translateX(-50%); font-weight:700; }
+.p4b1-strip .p4b1-star { position:absolute; bottom:-4px; font-size:11px; color:#2f6b5f; transform:translateX(-50%); font-weight:700; }
 `,
   corps: `
 <div class="p4b1-rep" aria-live="polite"><span class="p4b1-face">Face à ta stout</span><span class="p4b1-fl"><svg class="s-pi" width="18" height="18" style="width:18px;height:18px" data-famille="floral" aria-label="Floral"><use href="#p-floral"/></svg><span id="p4b1-fl" class="num">~+22</span></span>
@@ -99,8 +101,8 @@ body.abs .p4b1-p .p4b1-av { left:clamp(7px, var(--wa), calc(100% - 7px)); }
     <div class="p4b1-et" id="p4b1-et"></div>
     <div class="p4b1-jr" id="p4b1-jr" role="group" aria-label="Jours de contact"></div>
   </div>
+  <div id="p4b1-rail" data-acquis="geste" style="margin-top:26px"></div>
   <div class="p4b1-strip" id="p4b1-strip" aria-hidden="true"></div>
-  <div id="p4b1-rail" data-acquis="geste"></div>
 </div>`,
   script: function () {
     var S = window.S, P4 = window.P4, D = S.D, N = S.N, X = window.S_DATA;
@@ -113,7 +115,7 @@ body.abs .p4b1-p .p4b1-av { left:clamp(7px, var(--wa), calc(100% - 7px)); }
     var perte = function (p, f) { var r = refDe(p); if (!r || S.inc(p, f) || S.inc(r, f)) return 0; return Math.max(0, r.v[f] - p.v[f]); };
     var ligne = function (f) {
       return '<div class="p4b1-ba" data-f="' + f + '"><span class="p4b1-n' + ({ floral: 1, herbal: 1, earthy: 1 }[f] ? ' p4b1-att' : '') + '">' + S.pi(f) + '<span>' + S.NOM[f] + '</span></span>'
-        + '<span class="p4b1-p"><i class="p4b1-z" data-role="zone" style="--ws:50%;--wa:' + (S.B[f] / 110 * 100).toFixed(1) + '%"></i><i class="p4b1-b" style="background:' + S.BA[f] + '"></i><i class="p4b1-q"></i>'
+        + '<span class="p4b1-p' + (P4.avinc(f) ? ' p4r-avinc' : '') + '"><i class="p4b1-z" data-role="zone" style="--ws:50%;--wa:' + (S.B[f] / 110 * 100).toFixed(1) + '%"></i><i class="p4b1-b" style="background:' + S.BA[f] + '"></i><i class="p4b1-q"></i>'
         + '<i class="p4b1-av" style="--ws:' + w(S.AV[f], f).toFixed(1) + '%;--wa:' + Math.min(100, S.AV[f] / 110 * 100).toFixed(1) + '%"></i><i class="p4b1-h"></i></span><span class="p4b1-v"></span></div>';
     };
     var fig = document.getElementById('p4b1-fig');
@@ -133,7 +135,7 @@ body.abs .p4b1-p .p4b1-av { left:clamp(7px, var(--wa), calc(100% - 7px)); }
           q.hidden = false; q.className = 'p4b1-q p4b1-' + c;
           q.style.setProperty('--qs', s0 + '%'); q.style.setProperty('--qw', (s1 - s0) + '%'); q.style.setProperty('--qa', a0 + '%'); q.style.setProperty('--qwa', (a1 - a0) + '%');
         }
-        v.innerHTML = S.fmt(p, f) + (pe >= 0.5 ? '<small class="p4b1-' + c + '">' + (p.interp ? '≈' : '~') + '−' + Math.round(pe) + '</small>' : '');
+        v.innerHTML = P4.val(p, f) + (pe >= 0.5 ? '<small class="p4b1-' + c + '">' + (p.interp ? '≈' : '~') + '−' + Math.round(pe) + '</small>' : '');
         v.style.color = S.hors(p, f) ? '#c2410c' : S.T[f];
       });
       var bb = S.ibu(p), ja = fig.querySelector('.p4b1-ja'), av = document.getElementById('p4b1-amv');
@@ -194,7 +196,7 @@ body.abs .p4b1-p .p4b1-av { left:clamp(7px, var(--wa), calc(100% - 7px)); }
         var out = [];
         for (var k = i - 2; k <= i + 2; k++) {
           if (k < 0 || k > N) continue; var p = D[k], pe = perte(p, 'floral'), c = cause(p);
-          out.push({ k: k, html: '<em>' + P4.court(p) + '</em><i><b style="width:' + Math.min(100, p.v.floral / 25 * 100).toFixed(0) + '%"></b></i><small' + (pe >= 0.5 ? ' class="p4r-' + (c === 'ch' ? 'amer' : 'co') + '"' : '') + '>' + (pe >= 0.5 ? (p.interp ? '≈' : '~') + '−' + Math.round(pe) : S.fmt(p, 'floral')) + '</small>' });
+          out.push({ k: k, html: '<em>' + P4.court(p) + '</em><i><b style="width:' + Math.min(100, p.v.floral / 25 * 100).toFixed(0) + '%"></b></i><small>' + S.fmt(p, 'floral') + '</small>' + (pe >= 0.5 ? '<small class="p4r-' + (c === 'ch' ? 'amer' : 'co') + '">' + (p.interp ? '≈' : '~') + '−' + Math.round(pe) + '</small>' : '') });
         }
         return out;
       },

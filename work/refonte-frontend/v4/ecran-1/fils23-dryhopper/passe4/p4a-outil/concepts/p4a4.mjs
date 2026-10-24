@@ -17,22 +17,22 @@ export default {
   legende: [
     '★ : le meilleur pour ta demande du 18.10 : plus floral, moins résineux, amertume 50–70 IBU.',
     'Chaque étape : floral et résineux gagnés, amertume (orangé : trop amer), et ce que la chaleur (flamme) ou le CO₂ (bulles) emporte face au dry hop après fermentation.',
-    'Touche une étape, puis glisse le pouce sur le rail par 5′ ; la loupe chiffre les moments voisins.',
+    'Touche une étape, puis glisse le pouce sur le rail par 5′ ; la loupe chiffre les moments voisins. Sous chaque barre, son ruban : la famille à chaque moment du rail.',
     'Hachuré de couleur : avant inconnu, écart « ? ». ~ simulé · ≈ interpolé.',
   ],
   css: `
 body.p4a4 { padding-bottom:var(--dock,96px); }
 .p4a4 .s-ecran { gap:7px; }
-.p4a4rep { display:grid; grid-template-columns:auto 1fr; align-items:center; gap:2px 10px; padding:8px 12px; border-radius:8px; background:var(--encre); color:#fff; }
+.p4a4rep { display:grid; grid-template-columns:auto 1fr; align-items:center; gap:2px 10px; padding:7px 12px; border-radius:8px; background:var(--plan); border:2px solid var(--encre); color:var(--encre); }
 .p4a4rep-et { grid-row:span 2; display:flex; align-items:center; gap:6px; font:700 20px var(--sans); white-space:nowrap; }
-.p4a4rep-et .p4a4rep-st { color:#f5c542; }
+.p4a4rep-et .p4a4rep-st { color:#7a5a00; }
 .p4a4rep-ch { display:flex; gap:5px; justify-content:flex-end; font:700 14px var(--mono); }
-.p4a4rep-ch > span { display:inline-flex; align-items:center; gap:3px; white-space:nowrap; padding:1px 6px; border-radius:999px; background:#fff; }
+.p4a4rep-ch > span { display:inline-flex; align-items:center; gap:3px; white-space:nowrap; padding:1px 6px; border-radius:999px; background:#fff; border:1px solid var(--trait); }
 .p4a4rep-ch .p4a4-fl { color:#9840bc; } .p4a4rep-ch .p4a4-rs { color:#c2410c; } .p4a4rep-ch .p4a4-ib { color:var(--encre); }
 .p4a4rep-ch .s-pi { color:currentColor; }
-.p4a4rep-c { font-size:13px; color:#d4d4d4; text-align:right; min-height:16px; }
-.p4a4rep-c b { color:#fff; }
-.p4a4rep-c .p4a4-trop { color:#ffb38a; font-weight:600; }
+.p4a4rep-c { font-size:13px; color:var(--gris); text-align:right; min-height:16px; }
+.p4a4rep-c b { color:var(--encre); }
+.p4a4rep-c .p4a4-trop { color:var(--acc); font-weight:600; }
 .p4a4po { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; }
 .p4a4po button { position:relative; display:flex; flex-direction:column; align-items:stretch; gap:3px; padding:6px 5px 7px; border-radius:8px; background:var(--plan); border:1px solid var(--trait); text-align:left; font-size:12px; }
 .p4a4po button[aria-current="true"] { border:2px solid var(--encre); padding:5px 4px 6px; background:#fff; }
@@ -46,7 +46,17 @@ body.p4a4 { padding-bottom:var(--dock,96px); }
 .p4a4po-em { display:flex; align-items:center; justify-content:center; gap:2px; min-height:16px; font:600 12px var(--mono); color:var(--gris); }
 .p4a4po-em.p4a4-rien { visibility:hidden; }
 .p4a4fig { padding:6px 10px; gap:3px; }
-.p4a4fig .s-ba { grid-template-columns:92px 1fr 40px; min-height:31px; font-size:14px; }
+.p4a4fig .s-ba { grid-template-columns:90px 1fr 48px; gap:2px 6px; min-height:31px; font-size:14px; }
+.p4a4fig .s-ba-n, .p4a4fig .s-ba-v { grid-row:span 2; }
+.p4a4rb { grid-column:2; position:relative; height:11px; }
+.p4a4rb i { position:absolute; top:0; bottom:0; width:var(--cw); margin-left:calc(var(--cw) / -2); border-radius:2px; display:block; }
+.p4a4rb i.p4a4-hs { box-shadow:inset 0 -2px 0 var(--acc); }
+.p4a4rb i.p4a4-ici { outline:1.5px solid var(--encre); z-index:1; }
+.p4a4jr { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; margin-top:4px; }
+.p4a4jr button { height:24px; border-radius:4px; background:var(--piste); font:600 12px var(--sans); color:var(--encre); }
+.p4a4jr button.p4a4jr-sg { background:#f7f7f7; color:var(--gris); font-weight:400; border:1px dashed #c4c4c4; }
+.p4a4jr button[aria-pressed="true"] { background:var(--encre); color:#fff; font-weight:700; border:0; }
+.p4a4jr button[aria-disabled="true"] { opacity:.45; }
 .p4a4fig { flex:1; justify-content:space-between; }
 .p4a4 .s-ecran { min-height:calc(100svh - var(--dock,96px)); padding-bottom:8px; }
 .p4a4fig .s-piste { height:16px; }
@@ -71,15 +81,16 @@ body.p4a4 { padding-bottom:var(--dock,96px); }
 .p4a4prof i.p4a4-ici { background:#d4d4d4; }
 `,
   corps: `
-<section class="p4a4rep" aria-live="polite"><span class="p4a4rep-et"><span class="p4a4rep-st" id="p4a4rep-st">★</span><span id="p4a4rep-m">actif · 2 j</span></span>
+<section class="p4a4rep" data-figure aria-live="polite"><span class="p4a4rep-et"><span class="p4a4rep-st" id="p4a4rep-st">★</span><span id="p4a4rep-m">actif · 2 j</span></span>
   <span class="p4a4rep-ch"><span class="p4a4-fl"><svg class="s-pi" width="16" height="16" style="width:16px;height:16px" data-famille="floral" aria-label="Floral"><use href="#p-floral"/></svg><span id="p4a4rep-fl"></span></span><span class="p4a4-rs"><svg class="s-pi" width="16" height="16" style="width:16px;height:16px" data-famille="resin" aria-label="Résineux"><use href="#p-resin"/></svg><span id="p4a4rep-rs"></span></span><span class="p4a4-ib" id="p4a4rep-ib"></span></span>
   <span class="p4a4rep-c" id="p4a4rep-c"></span></section>
 <div data-libre="moment" data-acquis="frise">
-  <div class="p4a4po" id="p4a4po"></div>
-  <section class="s-bloc p4a4fig" aria-label="Familles d'arômes au style, au moment choisi"><div id="p4a4ba"></div><div id="p4a4am"></div>
+  <div class="p4a4po" data-figure id="p4a4po"></div>
+  <section class="s-bloc p4a4fig" data-figure aria-label="Familles d'arômes au style, au moment choisi"><div id="p4a4ba"></div><div id="p4a4am"></div>
     <button type="button" class="p4a4repli" id="p4a4repli" aria-expanded="false" aria-controls="p4a4ba2" aria-label="Montrer Pépins, Melon, Épicé"></button><div id="p4a4ba2" hidden></div></section>
   <div class="p4a4dock" id="p4a4dock">
     <div class="p4a4dock-h"><p class="p4a4mes" id="p4a4mes" data-acquis="valeurs"></p><nav class="p4a4lev" aria-label="Pont vers Levure" data-acquis="levure" data-forme="pont"><a href="${ETAPE}"><b>Puis la levure</b><span id="p4a4lev-t"></span></a></nav></div>
+    <div class="p4a4jr" id="p4a4jr" data-jours role="group" aria-label="Jours de contact"></div>
     <div class="p4a4rg" id="p4a4rg"><div class="p4a4prof" id="p4a4prof" aria-hidden="true"></div></div>
   </div>
 </div>`,
@@ -131,16 +142,47 @@ body.p4a4 { padding-bottom:var(--dock,96px); }
       var sg = p.interp ? '≈' : '~', fm = function (n) { n = Math.round(n); return sg + (n >= 0 ? '+' : '−') + Math.abs(n); };
       c.innerHTML = 'contre ★ <b>' + q.lib + '</b> : floral ' + fm(p.v.floral - q.v.floral) + (S.ibu(p).h ? ' · <span class="p4a4-trop">trop amer</span>' : '');
     }
+    // Les rubans d'a1 : sous chaque barre, la famille aux 24 moments du rail ; cerclé là où est le pouce.
+    var FAM = ['floral', 'herbal', 'earthy', 'citrus', 'tropical', 'stoneFruit', 'berries', 'resin', 'green', 'pomeFruit', 'melon', 'spice'];
+    document.querySelectorAll('#p4a4ba .s-ba, #p4a4ba2 .s-ba').forEach(function (r) {
+      var hc = '<span class="p4a4rb" aria-hidden="true">'; for (var k = 0; k <= S.N; k++) hc += '<i data-k="' + k + '" style="left:' + S.x(k) + '%;--cw:' + S.cw(k) + '%"></i>'; r.insertAdjacentHTML('beforeend', hc + '</span>');
+    });
+    function rubans() {
+      var abs = document.body.classList.contains('abs');
+      document.querySelectorAll('.p4a4fig .s-ba').forEach(function (r) {
+        var f = r.dataset.f;
+        r.querySelectorAll('.p4a4rb i').forEach(function (c) {
+          var p = D[+c.dataset.k];
+          if (S.inc(p, f)) { c.style.background = 'repeating-linear-gradient(135deg,#c4c4c4 0 2px,transparent 2px 6px)'; c.style.opacity = 1; return; }
+          var t = Math.min(1, abs ? p.v[f] / 110 : p.v[f] / S.B[f] / 2);
+          c.style.background = S.BA[f]; c.style.opacity = ((0.35 + 0.65 * t) * (p.interp ? 0.75 : 1)).toFixed(2); c.classList.toggle('p4a4-hs', S.hors(p, f));
+        });
+      });
+    }
+    rubans();
+    // Les jours de contact d'a1 (1 · 2 · 3 · 7 j), au dock ; pointillé : sans gain.
+    var JR = [1, 2, 3, 7], jr = document.getElementById('p4a4jr');
+    jr.innerHTML = JR.map(function (j) { return '<button type="button" data-jour="' + j + '" aria-pressed="false">' + j + ' j</button>'; }).join('');
+    function majJours(p) {
+      var s0 = seg(p), dj = jours(p);
+      jr.querySelectorAll('button').forEach(function (b) {
+        var j = +b.dataset.jour, on = s0 >= 2;
+        b.setAttribute('aria-disabled', String(!on)); b.setAttribute('aria-pressed', String(on && j === dj));
+        var q = on ? D[S.idx(p.id.split('|')[0] + '|' + j)] : null, pr = on && j > 1 ? D[S.idx(p.id.split('|')[0] + '|' + JR[JR.indexOf(j) - 1])] : null;
+        b.classList.toggle('p4a4jr-sg', !!(q && pr && Math.abs(q.v.floral - pr.v.floral) < 0.1));
+      });
+    }
     var prof = document.getElementById('p4a4prof'), h = '';
     for (var k = 0; k <= S.N; k++) h += '<i class="' + (D[k].interp ? 'p4a4-ip' : '') + (S.ibu(D[k]).h ? ' p4a4-amer' : '') + '" style="left:' + S.x(k) + '%;--cw:' + S.cw(k) + '%"><b style="height:' + Math.max(6, D[k].v.floral / 25 * 100).toFixed(0) + '%"></b></i>';
     prof.innerHTML = h;
     var rail = S.rail({
       hote: document.getElementById('p4a4rg'), orient: 'h', pas: 66,
       cellule: function (p) { return '<em>' + S.court(p) + '</em><i class="s-lp-b"><b style="width:' + Math.min(100, p.v.floral / 25 * 100).toFixed(0) + '%"></b></i><small>' + S.fmt(p, 'floral') + '</small>'; },
-      onPose: function (i) { var p = D[i]; maj(p); maj2(p); jau(p); postes(i); mesure(p); levure(p); reponse(i); prof.querySelectorAll('i').forEach(function (c, k) { c.classList.toggle('p4a4-ici', k === i); }); },
+      onPose: function (i) { var p = D[i]; maj(p); maj2(p); jau(p); postes(i); mesure(p); levure(p); reponse(i); majJours(p); prof.querySelectorAll('i').forEach(function (c, k) { c.classList.toggle('p4a4-ici', k === i); }); document.querySelectorAll('.p4a4rb i').forEach(function (c) { c.classList.toggle('p4a4-ici', +c.dataset.k === i); }); },
     });
+    jr.querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () { var p = D[rail.cur()]; if (seg(p) < 2) return; rail.poser(S.idx(p.id.split('|')[0] + '|' + b.dataset.jour)); }); });
     po.querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () { var n = +b.dataset.etape, p = D[rail.cur()]; if (seg(p) !== n) rail.poser(repDe(n, jours(p))); }); });
-    S.surLecture(function () { var p = D[rail.cur()]; maj(p); maj2(p); });
+    S.surLecture(function () { var p = D[rail.cur()]; maj(p); maj2(p); rubans(); });
     var dk = document.getElementById('p4a4dock'), haut = function () { document.body.style.setProperty('--dock', dk.offsetHeight + 'px'); };
     haut(); addEventListener('resize', haut);
     rail.poser(rail.depart);

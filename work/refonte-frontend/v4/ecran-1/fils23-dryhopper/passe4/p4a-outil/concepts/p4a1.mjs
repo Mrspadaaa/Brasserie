@@ -31,7 +31,7 @@ body.p4a1 { padding-bottom:var(--dock,118px); }
 .p4a1rep-contre b { color:var(--encre); }
 .p4a1rep-contre .p4a1rep-moins { color:var(--acc); font-weight:600; }
 .p4a1fig { position:relative; flex:1; justify-content:space-between; gap:0; padding:6px 10px; }
-.p4a1fig-ba { display:grid; grid-template-columns:92px 1fr 42px; align-items:center; gap:2px 6px; font-size:14px; padding:2px 0; }
+.p4a1fig-ba { display:grid; grid-template-columns:88px 1fr 50px; align-items:center; gap:2px 6px; font-size:14px; padding:2px 0; }
 .p4a1fig-n { display:flex; align-items:center; gap:4px; white-space:nowrap; grid-row:span 2; }
 .p4a1fig-n.p4a1fig-att { font-weight:700; }
 .p4a1fig-v { text-align:right; font-size:13px; font-family:var(--mono); grid-row:span 2; white-space:nowrap; }
@@ -95,7 +95,7 @@ body.abs .p4a1fig-p .p4a1fig-av { left:clamp(7px, var(--wa), calc(100% - 7px)); 
 <div class="p4a1rep" aria-live="polite"><span class="p4a1rep-face">Face à ta stout</span><span class="p4a1rep-fl"><svg class="s-pi" width="18" height="18" style="width:18px;height:18px" data-famille="floral" aria-label="Floral"><use href="#p-floral"/></svg><span id="p4a1rep-fl" class="num">~+22</span></span>
   <span class="p4a1rep-par" data-role="critere">par <svg class="s-pi" width="14" height="14" style="width:14px;height:14px" data-famille="floral" aria-label="Floral"><use href="#p-floral"/></svg><b>floral</b></span>
   <span class="p4a1rep-contre" id="p4a1rep-contre" hidden></span></div>
-<section class="s-bloc p4a1fig" id="p4a1fig" aria-label="Familles d'arômes au style, et leur ruban le long du brassin"></section>
+<section class="s-bloc p4a1fig" data-figure id="p4a1fig" aria-label="Familles d'arômes au style, et leur ruban le long du brassin"></section>
 <div class="p4a1bas">
   <p class="p4a1bas-mes" id="p4a1bas-mes" data-acquis="valeurs"></p>
   <nav class="p4a1bas-lev" aria-label="Pont vers Levure" data-acquis="levure" data-forme="pont"><a href="${ETAPE}"><b>Puis la levure</b><span id="p4a1bas-lev-t">Pomona ~+13</span>${CHEV}</a></nav>
@@ -156,7 +156,7 @@ body.abs .p4a1fig-p .p4a1fig-av { left:clamp(7px, var(--wa), calc(100% - 7px)); 
             if (s1 - s0 > 0.5) { q.hidden = false; q.style.setProperty('--qs', s0 + '%'); q.style.setProperty('--qw', (s1 - s0) + '%'); q.style.setProperty('--qa', a0 + '%'); q.style.setProperty('--qwa', (a9 - a0) + '%'); }
           }
         }
-        v.textContent = S.fmt(p, f); v.style.color = u || S.avInc(f) ? '#555555' : (S.hors(p, f) ? '#c2410c' : S.T[f]);
+        v.textContent = S.fmt(p, f); v.style.color = u ? '#555555' : (S.hors(p, f) ? '#c2410c' : S.T[f]);
       });
       fig.querySelectorAll('.p4a1fig-rb i').forEach(function (c) { c.classList.toggle('p4a1fig-ici', +c.dataset.k === i); });
       var bb = S.ibu(p), ja = fig.querySelector('.p4a1fig-ja'), av = document.getElementById('p4a1fig-amv');

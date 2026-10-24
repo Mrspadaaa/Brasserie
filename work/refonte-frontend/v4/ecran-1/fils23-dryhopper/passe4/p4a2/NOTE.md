@@ -7,7 +7,7 @@ Page : `etat.html` ; captures : `../captures/p4a2-premier-ecran.png`, `-pendant.
 - **1. L'arôme entre deux moments** : le moteur ne simule l'arôme qu'à 60′, 10′, au whirlpool et à froid (`parcours/src/moteur/index.ts` : « le moteur simule l'arôme à 60′ et 10′ seulement »). Le profil du dock le dessine : crans calculés pleins et pointés, crans interpolés en fantôme pointillé sur la droite qui relie deux crans calculés ; la ligne du doigt dit « ≈ 60′–10′ ».
 - **2. Le contour « chaleur ou CO₂ »** : le contour blanc d'a1 porte au bout son picto, la flamme à chaud, les bulles en fermentation active (ce que le moment perd face au dry hop après, mêmes jours).
 - **3. La courbe de levure** : une bande sous le profil, une colline sur l'actif (la levure travaille, fin vers J+5), hachurée là où la biotransformation est possible mais non chiffrée, la levure en picto à son pied ; après, un trait plat (au repos).
-- **4.** Noyau et Baies hachurés de leur couleur, écart « ? ».
+- **4.** Noyau et Baies hachurés de leur couleur, « ? → ~+21 ».
 
 ## Greffes et leur source
 la courbe d'activité de la levure (f5, g6), en bande au lieu du trait fin d'a1.
@@ -15,7 +15,7 @@ la courbe d'activité de la levure (f5, g6), en bande au lieu du trait fin d'a1.
 **Obligatoire, tenu** : la baseline d'a1 (pictos au trait, épicé en cannelle et clou croisés, couleurs des familles,
 barres l5b, au style / absolu, α du lot puis plage, « mixte » en mot, stock en icône, fiche à l'appui long avec le
 certificat du lot), le thème blanc de ses maquettes (D106 : page blanche, gris neutres), « ~ » simulé, « ≈ » interpolé,
-l'inconnu jamais zéro (Noyau, Baies : ma bière avant non décrite, barre hachurée de leur couleur, écart « ? »), un seul
+l'inconnu jamais zéro (Noyau, Baies : ma bière avant non décrite, barre hachurée de leur couleur, « ? → ~+21 »), un seul
 facteur libre (le moment), la levure en contexte et en pont (« Puis la levure »), rien de Levure en outil propre.
 
 ## Ce qui tient
@@ -39,3 +39,10 @@ trop amer, « contre ★ actif · 2 j : floral ≈−11 », « jamais mesuré à
 
 `--sans=mots` : prévu par le brief (le plafond de la passe est 80 mots hors données, joué par G4). Aucun écart à la baseline.
 Régénérer : `node ../p4a-outil/generer.mjs p4a2 --captures` (socle : `../p4a-outil/socle.mjs`, repris d'a1 passe 3).
+
+## Retouches du conseil dh4 (`conseil-dh4/verdict.md`, 24.10)
+- Noyau et Baies : l'avant est inconnu (Nugget ne les décrit pas), le gain d'Idaho 7 est connu. La valeur dit « ?→~+8 » et « ?→~+21 » à actif · 2 j (« ?→≈+4 », « ?→≈+11 » à 20′), dans la couleur de la famille. Jamais « 0 », jamais un « ? » seul. Barre hachurée de sa couleur, sans rond « avant ».
+- Loupe à 0 px d'intersection avec la figure (`[data-figure]`), mesurée au DOM doigt posé : 20′ 0 px · whirlpool 0 px · après · 7 j 0 px.
+- Pictos de cause (flamme, bulles) au bout du contour : 12 → 14 px.
+- Loupe posée sur le haut du dock (étapes et jours), 52 px, jamais au-dessus de la carte.
+- Aucune greffe croisée entre variantes. Captures refaites et ouvertes ; G1 à G5 rejoués (COMMUN OK, UNE-QUESTION OK, MOTS OK, PANEL OK).

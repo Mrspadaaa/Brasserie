@@ -14,7 +14,7 @@ la table des preuves alignée sur les étapes (c7), « jamais mesuré » hachur�
 **Obligatoire, tenu** : la baseline d'a1 (pictos au trait, épicé en cannelle et clou croisés, couleurs des familles,
 barres l5b, au style / absolu, α du lot puis plage, « mixte » en mot, stock en icône, fiche à l'appui long avec le
 certificat du lot), le thème blanc de ses maquettes (D106 : page blanche, gris neutres), « ~ » simulé, « ≈ » interpolé,
-l'inconnu jamais zéro (Noyau, Baies : ma bière avant non décrite, barre hachurée de leur couleur, écart « ? »), un seul
+l'inconnu jamais zéro (Noyau, Baies : ma bière avant non décrite, barre hachurée de leur couleur, « ? → ~+21 »), un seul
 facteur libre (le moment), la levure en contexte et en pont (« Puis la levure »), rien de Levure en outil propre.
 
 ## Ce qui tient
@@ -38,3 +38,9 @@ trop amer, « contre ★ actif · 2 j : floral ≈−11 », « jamais mesuré à
 
 `--sans=mots` : prévu par le brief (le plafond de la passe est 80 mots hors données, joué par G4). Aucun écart à la baseline.
 Régénérer : `node ../p4a-outil/generer.mjs p4a5 --captures` (socle : `../p4a-outil/socle.mjs`, repris d'a1 passe 3).
+
+## Retouches du conseil dh4 (`conseil-dh4/verdict.md`, 24.10)
+- Noyau et Baies : l'avant est inconnu (Nugget ne les décrit pas), le gain d'Idaho 7 est connu. La valeur dit « ?→~+8 » et « ?→~+21 » à actif · 2 j (« ?→≈+4 », « ?→≈+11 » à 20′), dans la couleur de la famille. Jamais « 0 », jamais un « ? » seul. Barre hachurée de sa couleur, sans rond « avant ».
+- Loupe à 0 px d'intersection avec la figure (`[data-figure]`), mesurée au DOM doigt posé : 20′ 0 px · whirlpool 0 px · après · 7 j 0 px (15 px avant retouche).
+- Loupe abaissée (top −60 → −36 px, 52 px) : elle couvre le pont et les fioles pendant le geste, plus la carte.
+- Aucune greffe croisée entre variantes. Captures refaites et ouvertes ; G1 à G5 rejoués (COMMUN OK, UNE-QUESTION OK, MOTS OK, PANEL OK).

@@ -68,16 +68,16 @@ body.abs .p4a5ba-p .p4a5-b { width:var(--ba); } body.abs .p4a5ba-p .p4a5-av { le
 .p4a5lev a { display:inline-flex; align-items:center; gap:5px; height:30px; padding:0 12px; border-radius:15px; background:var(--encre); color:#fff; font-size:13px; white-space:nowrap; }
 .p4a5lev a b { font-weight:700; }
 .p4a5lev a span { display:inline-flex; align-items:center; gap:3px; color:#d4d4d4; }
-.p4a5rg .s-lp { left:0; right:0; top:-60px; height:56px; }
+.p4a5rg .s-lp { left:0; right:0; top:-36px; height:52px; }
 .p4a5pins { position:relative; height:16px; }
 .p4a5pins span { position:absolute; top:0; transform:translateX(-50%); color:#0f6f8f; }
 .p4a5pins span.p4a5-hach { top:5px; height:6px; transform:none; background:repeating-linear-gradient(135deg,#c4c4c4 0 2px,transparent 2px 5px); border-radius:2px; }
 `,
   corps: `
-<div class="p4a5pr" id="p4a5pr" data-acquis="valeurs"></div>
+<div class="p4a5pr" data-figure id="p4a5pr" data-acquis="valeurs"></div>
 <p class="p4a5lot"><span><b>ton lot</b> <span data-nature="mesure" data-source="CoA ID7-2573">huile 2,5 mL/100 g · linalol 0,4 % · myrcène 45,4 %</span></span><span class="p4a5-ip" id="p4a5ip" hidden></span></p>
 <div class="p4a5rep" aria-live="polite"><b>Face à ta stout</b><span class="p4a5rep-fl"><svg class="s-pi" width="16" height="16" style="width:16px;height:16px" data-famille="floral" aria-label="Floral"><use href="#p-floral"/></svg><span id="p4a5rep-fl"></span></span><span class="p4a5rep-c" id="p4a5rep-c"></span></div>
-<section class="s-bloc p4a5fig" id="p4a5fig" aria-label="Familles d'arômes au style, avec la plage du moteur"></section>
+<section class="s-bloc p4a5fig" data-figure id="p4a5fig" aria-label="Familles d'arômes au style, avec la plage du moteur"></section>
 <div class="p4a5dock" id="p4a5dock" data-libre="moment" data-acquis="frise">
   <div class="p4a5dock-h"><nav class="p4a5lev" aria-label="Pont vers Levure" data-acquis="levure" data-forme="pont"><a href="${ETAPE}"><b>Puis la levure</b><span id="p4a5lev-t"></span></a></nav></div>
   <div class="p4a5rg" id="p4a5rg"><div class="p4a5pins" id="p4a5pins" aria-hidden="true"></div></div>
@@ -123,7 +123,7 @@ body.abs .p4a5ba-p .p4a5-b { width:var(--ba); } body.abs .p4a5ba-p .p4a5-av { le
           pl.style.setProperty('--ps', w(iv[0], f, 's') + '%'); pl.style.setProperty('--pw', (w(iv[1], f, 's') - w(iv[0], f, 's')) + '%');
           pl.style.setProperty('--pa', w(iv[0], f, 'a') + '%'); pl.style.setProperty('--pwa', (w(iv[1], f, 'a') - w(iv[0], f, 'a')) + '%');
         }
-        v.textContent = S.fmt(p, f); v.style.color = u || S.avInc(f) ? '#555555' : (S.hors(p, f) ? '#c2410c' : S.T[f]);
+        v.textContent = S.fmt(p, f); v.style.color = u ? '#555555' : (S.hors(p, f) ? '#c2410c' : S.T[f]);
         sm.textContent = u ? '' : r1(iv[0]) + '–' + r1(iv[1]);
       });
     }

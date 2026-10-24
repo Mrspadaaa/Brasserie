@@ -40,9 +40,15 @@ rendre({
 .p4b2-svg .p4b2-ibu { fill:#9a9fab; }
 .p4b2-svg .p4b2-ibu.p4b2-trop { fill:var(--acc); }
 .p4b2-svg .p4b2-ibu.p4b2-ipb { opacity:.55; }
-.p4b2-svg .p4b2-lev { fill:#dfe8f4; stroke:#3b5f8a; stroke-width:1.2; }
-.p4b2-rail { margin-top:2px; }
-.p4b2 .p4r-pl { display:none; }
+.p4b2-svg .p4b2-lev { fill:url(#p4b2-hachb); stroke:#3b5f8a; stroke-width:1.2; stroke-dasharray:3 2; }
+.p4b2-rail { margin-top:16px; }
+.p4b2 .p4r-geste { display:flex; flex-direction:column; }
+.p4b2 .p4r-loupe { position:relative; top:auto; left:auto; right:auto; order:2; margin-top:6px; }
+.p4b2-jr { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; margin-top:4px; }
+.p4b2-jr button { height:22px; border-radius:4px; background:#f1f2f5; font:600 12px var(--sans); color:var(--encre); }
+.p4b2-jr button.p4b2-sg { background:#f7f8fa; color:var(--gris); font-weight:400; border:1px dashed #c9cdd6; }
+.p4b2-jr button[aria-pressed="true"] { background:var(--encre); color:#fff; font-weight:700; border:0; }
+.p4b2-jr button[aria-disabled="true"] { opacity:.45; }
 .p4b2-ba { display:grid; grid-template-columns:92px 1fr 44px; align-items:center; gap:6px; font-size:14px; min-height:22px; }
 .p4b2-n { display:flex; align-items:center; gap:4px; white-space:nowrap; }
 .p4b2-n.p4b2-att { font-weight:700; }
@@ -70,8 +76,9 @@ body.abs .p4b2-p .p4b2-av { left:clamp(6px, var(--wa), calc(100% - 6px)); }
   <span class="p4b2-contre" id="p4b2-contre" hidden></span></div>
 <section class="s-bloc p4b2-fig" data-libre="moment" data-acquis="frise" aria-label="Le brassin : gains en courbes, amertume en colonnes, rail du moment">
   <div class="p4b2-seg" id="p4b2-seg"></div>
-  <svg class="p4b2-svg" id="p4b2-svg" viewBox="0 0 366 236" aria-hidden="true"></svg>
+  <svg class="p4b2-svg" id="p4b2-svg" viewBox="0 0 366 248" aria-hidden="true"></svg>
   <div class="p4b2-rail" id="p4b2-rail" data-acquis="geste"></div>
+  <div class="p4b2-jr" id="p4b2-jr" role="group" aria-label="Jours de contact"></div>
 </section>
 <section class="s-bloc p4b2-bars" id="p4b2-bars" aria-label="Les 12 familles d'arômes au style, à ce moment"></section>
 <div class="p4b2-bas">
@@ -80,7 +87,7 @@ body.abs .p4b2-p .p4b2-av { left:clamp(6px, var(--wa), calc(100% - 6px)); }
 </div>`,
   script: function () {
     var S = window.S, P4 = window.P4, D = S.D, N = S.N, X = window.S_DATA;
-    var W = 366, H = 236, TOP = 14, YC = 150, YI0 = 168, YI1 = 212, YAX = 222;
+    var W = 366, H = 248, TOP = 14, YC = 150, YI0 = 168, YI1 = 212, YAX = 222;
     var px = function (k) { return P4.x(k) / 100 * W; };
     var GAIN = 26, yc = function (g) { return YC - Math.max(0, g) / GAIN * (YC - TOP); };
     var COURBES = ['resin', 'berries', 'floral'];
@@ -93,9 +100,9 @@ body.abs .p4b2-p .p4b2-av { left:clamp(6px, var(--wa), calc(100% - 6px)); }
     // La levure : sous l'axe, une bosse d'activité sur l'actif (J+2 → J+5), qui retombe avant l'après.
     var xa = P4.SEG[2][0] / 100 * W, xb = P4.SEG[2][1] / 100 * W, xc = P4.SEG[3][0] / 100 * W;
     h += '<path class="p4b2-lev" d="M' + (xa - 6) + ' ' + YAX + ' C' + (xa + 6) + ' ' + YAX + ' ' + (xa + 8) + ' ' + (YAX - 11) + ' ' + (xa + 22) + ' ' + (YAX - 11) + ' S' + (xb - 14) + ' ' + (YAX - 5) + ' ' + (xb - 2) + ' ' + (YAX - 2) + ' L' + xc + ' ' + YAX + ' Z"/>';
-    h += '<text class="p4b2-lb" x="' + (xa + 4) + '" y="' + (YAX + 12) + '">levure active</text><text class="p4b2-lb" x="' + (xc + 4) + '" y="' + (YAX + 12) + '">levure finie</text>';
+    h += '<text class="p4b2-lb" x="' + (xa + 2) + '" y="' + (YAX + 12) + '">levure active</text><text class="p4b2-lb" x="' + (xa + 2) + '" y="' + (YAX + 24) + '">possible, non chiffrée</text><text class="p4b2-lb" x="' + W + '" y="' + (YAX + 12) + '" text-anchor="end">levure finie</text>';
     // L'amertume en colonnes : orangée au-delà de 70, hachurée à cru.
-    h += '<defs><pattern id="p4b2-hach" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="2" height="6" fill="#c9cdd6"/></pattern></defs>';
+    h += '<defs><pattern id="p4b2-hachb" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="2" height="6" fill="#3b5f8a" opacity=".45"/></pattern><pattern id="p4b2-hach" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="2" height="6" fill="#c9cdd6"/></pattern></defs>';
     for (var k = 0; k <= N; k++) {
       var p = D[k], b = S.ibu(p), cw = P4.cw(k) / 100 * W;
       if (b.cru) h += '<rect x="' + (px(k) - cw / 2) + '" y="' + yi(60) + '" width="' + cw + '" height="' + (YI1 - yi(60)) + '" fill="#9a9fab"/><rect x="' + (px(k) - cw / 2) + '" y="' + yi(75) + '" width="' + cw + '" height="' + (yi(60) - yi(75)) + '" fill="url(#p4b2-hach)"/>';
@@ -108,17 +115,24 @@ body.abs .p4b2-p .p4b2-av { left:clamp(6px, var(--wa), calc(100% - 6px)); }
       for (var k = 1; k <= N; k++) h += '<line x1="' + pts[k - 1][0] + '" y1="' + pts[k - 1][1] + '" x2="' + pts[k][0] + '" y2="' + pts[k][1] + '" stroke="' + S.T[f] + '" stroke-width="' + (f === 'floral' ? 3 : 2.2) + '" stroke-linecap="round"' + (pts[k][2] || pts[k - 1][2] ? ' class="p4b2-ip"' : '') + '/>';
       for (var k = 0; k <= N; k++) if (!pts[k][2]) h += '<circle cx="' + pts[k][0] + '" cy="' + pts[k][1] + '" r="3" fill="' + S.T[f] + '"/>';
     });
-    (function () { var ls = COURBES.map(function (f) { return { f: f, y: yc(S.d(D[N], f)) }; }).sort(function (a, b) { return a.y - b.y; }); for (var n = 1; n < ls.length; n++) if (ls[n].y - ls[n - 1].y < 13) ls[n].y = ls[n - 1].y + 13; ls.forEach(function (l) { h += '<text x="' + (W - 2) + '" y="' + (l.y - 6) + '" text-anchor="end" fill="' + S.T[l.f] + '">' + S.NOM[l.f].toLowerCase() + '</text>'; }); })();
+    (function () { var ls = COURBES.map(function (f) { return { f: f, y: yc(S.d(D[N], f)) }; }).sort(function (a, b) { return a.y - b.y; }); for (var n = 1; n < ls.length; n++) if (ls[n].y - ls[n - 1].y < 13) ls[n].y = ls[n - 1].y + 13; ls.forEach(function (l) { h += '<text data-nom="' + l.f + '" x="' + (W - 2) + '" y="' + (l.y - 6) + '" text-anchor="end" fill="' + S.T[l.f] + '">' + S.NOM[l.f].toLowerCase() + '</text>'; }); })();
     // L'axe, les moments mesurés (● plein), ★.
-    for (k = 0; k <= N; k++) { var m = P4.mesure(D[k]); if (m.ok && (k === S.idx('dryActive|2') || k === S.idx('dryPost|2'))) h += '<circle cx="' + px(k) + '" cy="' + (YAX - 1) + '" r="3" fill="var(--encre)"/><text class="p4b2-lb" x="' + (px(k) + 6) + '" y="' + (YAX + 2) + '">' + m.court + '</text>'; }
+    for (k = 0; k <= N; k++) { var m = P4.mesure(D[k]); if (m.ok && (k === S.idx('dryActive|2') || k === S.idx('dryPost|2'))) h += '<circle cx="' + px(k) + '" cy="' + (YAX - 1) + '" r="3" fill="var(--encre)"/><text class="p4b2-lb" x="' + (px(k) + 6) + '" y="' + (YAX - 4) + '">' + m.court + '</text>'; }
     h += '<text x="' + px(P4.best) + '" y="' + (TOP - 3) + '" text-anchor="middle" fill="#2f6b5f">★</text>';
     // Le trait du doigt et les valeurs au croisement.
     h += '<g id="p4b2-doigt"><line id="p4b2-dl" x1="0" x2="0" y1="' + TOP + '" y2="' + YAX + '" stroke="var(--encre)" stroke-width="2"/>'
       + COURBES.map(function (f) { return '<circle data-c="' + f + '" r="6" fill="#fff" stroke="' + S.T[f] + '" stroke-width="2.4"/><text data-t="' + f + '" fill="' + S.T[f] + '"></text>'; }).join('')
       + '<text id="p4b2-di" class="p4b2-ib"></text></g>';
     svg.innerHTML = h;
+    // Les noms des courbes : à la fin des courbes, sauf quand le doigt y est (alors au début) : boîtes disjointes des valeurs.
+    function noms(x) {
+      var fin = x < W - 110, k = fin ? N : 0;
+      var ls = COURBES.map(function (f) { return { f: f, y: yc(S.d(D[k], f)) }; }).sort(function (a, b) { return a.y - b.y; });
+      for (var n = 1; n < ls.length; n++) if (ls[n].y - ls[n - 1].y < 13) ls[n].y = ls[n - 1].y + 13;
+      ls.forEach(function (l) { var t = svg.querySelector('[data-nom="' + l.f + '"]'); t.setAttribute('x', fin ? W - 2 : 2); t.setAttribute('text-anchor', fin ? 'end' : 'start'); t.setAttribute('y', fin ? l.y - 6 : l.y - 6); });
+    }
     function doigt(i) {
-      var p = D[i], x = px(i), droite = x < W - 70;
+      var p = D[i], x = px(i), droite = x < W - 70; noms(x);
       document.getElementById('p4b2-dl').setAttribute('x1', x); document.getElementById('p4b2-dl').setAttribute('x2', x);
       var ls = COURBES.map(function (f) { return { f: f, y: yc(S.d(p, f)), ty: yc(S.d(p, f)) }; }).sort(function (a, b) { return a.y - b.y; });
       for (var n = 1; n < ls.length; n++) if (ls[n].ty - ls[n - 1].ty < 13) ls[n].ty = ls[n - 1].ty + 13;
@@ -134,13 +148,24 @@ body.abs .p4b2-p .p4b2-av { left:clamp(6px, var(--wa), calc(100% - 6px)); }
     var ET = [['b60', 'ébullition', 0], ['wp', 'WP', 1], ['dryActive|2', 'actif', 2], ['dryPost|2', 'après', 3]];
     var seg = document.getElementById('p4b2-seg');
     seg.innerHTML = ET.map(function (e) { return '<button type="button" data-etape="' + e[2] + '" data-saut="' + e[0] + '" aria-label="Moment : ' + e[1] + '"' + (S.ibu(D[S.idx(e[0])]).h ? ' class="p4b2-amer"' : '') + '>' + e[1] + '</button>'; }).join('');
-    // Les 12 barres l5b, compactes, en deux colonnes.
+    var JR = [1, 2, 3, 7], jr = document.getElementById('p4b2-jr');
+    jr.innerHTML = JR.map(function (j) { return '<button type="button" data-jour="' + j + '" aria-pressed="false">' + j + ' j</button>'; }).join('');
+    function majJours(p) {
+      var s = P4.seg(p), dj = P4.jours(p);
+      jr.querySelectorAll('button').forEach(function (b) {
+        var j = +b.dataset.jour, on = s >= 2;
+        b.setAttribute('aria-disabled', String(!on)); b.setAttribute('aria-pressed', String(on && j === dj));
+        var q = on ? D[S.idx(p.id.split('|')[0] + '|' + j)] : null, pr = on && j > 1 ? D[S.idx(p.id.split('|')[0] + '|' + JR[JR.indexOf(j) - 1])] : null;
+        b.classList.toggle('p4b2-sg', !!(q && pr && Math.abs(q.v.floral - pr.v.floral) < 0.1));
+      });
+    }
+    // Les 12 barres l5b.
     var abs = function () { return document.body.classList.contains('abs'); };
     var w = function (v, f, m) { return (m === 's' ? Math.min(100, v / S.B[f] / 2 * 100) : Math.min(100, v / 110 * 100)); };
     var bars = document.getElementById('p4b2-bars');
     bars.innerHTML = S.ORDRE.map(function (f) {
       return '<div class="p4b2-ba" data-f="' + f + '"><span class="p4b2-n' + ({ floral: 1, herbal: 1, earthy: 1 }[f] ? ' p4b2-att' : '') + '">' + S.pi(f) + '<span>' + S.NOM[f] + '</span></span>'
-        + '<span class="p4b2-p"><i class="p4b2-z" data-role="zone" style="--ws:50%;--wa:' + (S.B[f] / 110 * 100).toFixed(1) + '%"></i><i class="p4b2-b" style="background:' + S.BA[f] + '"></i><i class="p4b2-av" style="--ws:' + w(S.AV[f], f, 's').toFixed(1) + '%;--wa:' + w(S.AV[f], f, 'a').toFixed(1) + '%"></i><i class="p4b2-h"></i></span><span class="p4b2-v"></span></div>';
+        + '<span class="p4b2-p' + (P4.avinc(f) ? ' p4r-avinc' : '') + '"><i class="p4b2-z" data-role="zone" style="--ws:50%;--wa:' + (S.B[f] / 110 * 100).toFixed(1) + '%"></i><i class="p4b2-b" style="background:' + S.BA[f] + '"></i><i class="p4b2-av" style="--ws:' + w(S.AV[f], f, 's').toFixed(1) + '%;--wa:' + w(S.AV[f], f, 'a').toFixed(1) + '%"></i><i class="p4b2-h"></i></span><span class="p4b2-v"></span></div>';
     }).join('');
     function barres(i) {
       var p = D[i];
@@ -148,7 +173,7 @@ body.abs .p4b2-p .p4b2-av { left:clamp(6px, var(--wa), calc(100% - 6px)); }
         var f = r.dataset.f, u = S.inc(p, f), b = r.querySelector('.p4b2-b'), v = r.querySelector('.p4b2-v');
         r.classList.toggle('p4b2-ipr', !!p.interp); b.hidden = u; r.querySelector('.p4b2-h').hidden = !u;
         if (!u) { b.style.setProperty('--ws', w(p.v[f], f, 's') + '%'); b.style.setProperty('--wa', w(p.v[f], f, 'a') + '%'); }
-        v.textContent = S.fmt(p, f); v.style.color = u ? '#55555f' : (S.hors(p, f) ? '#c2410c' : S.T[f]);
+        v.textContent = P4.val(p, f); v.style.color = u ? '#55555f' : (S.hors(p, f) ? '#c2410c' : S.T[f]);
       });
     }
     function contre(i) {
@@ -168,7 +193,7 @@ body.abs .p4b2-p .p4b2-av { left:clamp(6px, var(--wa), calc(100% - 6px)); }
     var R = P4.rail(document.getElementById('p4b2-rail'), {
       calcules: true,
       surPoser: function (i, p) {
-        doigt(i); barres(i); contre(i); mesure(p); levure(p);
+        doigt(i); barres(i); contre(i); mesure(p); levure(p); majJours(p);
         seg.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-current', String(+b.dataset.etape === P4.seg(p))); });
         document.getElementById('p4b2-fl').textContent = S.fmt(p, 'floral');
       },
@@ -181,6 +206,7 @@ body.abs .p4b2-p .p4b2-av { left:clamp(6px, var(--wa), calc(100% - 6px)); }
         return out;
       },
     });
+    jr.querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () { var p = D[R.cur()]; if (P4.seg(p) < 2) return; R.poser(S.idx(p.id.split('|')[0] + '|' + b.dataset.jour)); }); });
     seg.querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () { var p = D[R.cur()]; if (P4.seg(p) === +b.dataset.etape) return; R.poser(S.idx(b.dataset.saut.indexOf('dry') === 0 && P4.jours(p) ? b.dataset.saut.split('|')[0] + '|' + P4.jours(p) : b.dataset.saut)); }); });
     S.surLecture(function () { barres(R.cur()); });
     window.P4ETAT = function () { var p = D[R.cur()]; return { m: p.lib, fl: S.fmt(p, 'floral'), am: document.getElementById('p4b2-di').textContent, contre: document.getElementById('p4b2-contre').textContent, lev: document.getElementById('p4b2-lev-t').textContent, mes: document.getElementById('p4b2-mes').textContent }; };

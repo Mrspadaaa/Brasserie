@@ -35,7 +35,7 @@ body.p4a2 { padding-bottom:var(--dock,118px); }
 .p4a2rep-contre b { color:var(--encre); }
 .p4a2rep-contre .p4a2rep-moins { color:var(--acc); font-weight:600; }
 .p4a2fig { position:relative; flex:1; justify-content:space-between; gap:0; padding:6px 10px; }
-.p4a2fig-ba { display:grid; grid-template-columns:92px 1fr 42px; align-items:center; gap:2px 6px; font-size:14px; padding:2px 0; }
+.p4a2fig-ba { display:grid; grid-template-columns:88px 1fr 50px; align-items:center; gap:2px 6px; font-size:14px; padding:2px 0; }
 .p4a2fig-n { display:flex; align-items:center; gap:4px; white-space:nowrap; grid-row:span 2; }
 .p4a2fig-n.p4a2fig-att { font-weight:700; }
 .p4a2fig-v { text-align:right; font-size:13px; font-family:var(--mono); grid-row:span 2; white-space:nowrap; }
@@ -83,7 +83,7 @@ body.abs .p4a2fig-p .p4a2fig-av { left:clamp(7px, var(--wa), calc(100% - 7px)); 
 .p4a2jr button.p4a2jr-sg { background:#f7f7f7; color:var(--gris); font-weight:400; border:1px dashed #c4c4c4; }
 .p4a2jr button[aria-pressed="true"] { background:var(--encre); color:#fff; font-weight:700; border:0; }
 .p4a2jr button[aria-disabled="true"] { opacity:.45; }
-.p4a2fig-p .p4a2fig-qp { left:calc(var(--qe) + 1px); top:3px; width:12px; height:12px; background:none; }
+.p4a2fig-p .p4a2fig-qp { left:calc(var(--qe) + 1px); top:2px; width:14px; height:14px; background:none; }
 body.abs .p4a2fig-p .p4a2fig-qp { left:calc(var(--qea) + 1px); }
 .p4a2rep-ip { white-space:nowrap; margin-left:6px; padding:0 5px; border-radius:4px; border:1px dashed #b4b4b4; font-style:italic; }
 .p4a2prof .p4a2prof-lev { z-index:0; }
@@ -102,7 +102,7 @@ body.abs .p4a2fig-p .p4a2fig-qp { left:calc(var(--qea) + 1px); }
 .p4a2et button[aria-current="true"] { background:var(--encre); color:#fff; }
 .p4a2et button[aria-current="true"] b { color:#ead7f3; }
 .p4a2geste { margin-top:4px; }
-.p4a2geste .s-lp { left:0; right:0; top:-62px; height:56px; }
+.p4a2geste .s-lp { left:0; right:0; top:var(--lp-top,-46px); height:52px; }
 .p4a2prof { position:relative; height:30px; }
 .p4a2prof i { position:absolute; bottom:0; width:var(--cw); margin-left:calc(var(--cw) / -2); background:var(--piste); border-radius:2px 2px 0 0; height:100%; }
 .p4a2prof i b { position:absolute; left:1px; right:1px; bottom:0; background:#bf86d6; border-radius:2px 2px 0 0; }
@@ -118,7 +118,7 @@ body.abs .p4a2fig-p .p4a2fig-qp { left:calc(var(--qea) + 1px); }
 <div class="p4a2rep" aria-live="polite"><span class="p4a2rep-face">Face à ta stout</span><span class="p4a2rep-fl"><svg class="s-pi" width="18" height="18" style="width:18px;height:18px" data-famille="floral" aria-label="Floral"><use href="#p-floral"/></svg><span id="p4a2rep-fl" class="num">~+22</span></span>
   <span class="p4a2rep-par" data-role="critere">par <svg class="s-pi" width="14" height="14" style="width:14px;height:14px" data-famille="floral" aria-label="Floral"><use href="#p-floral"/></svg><b>floral</b></span>
   <span class="p4a2rep-contre" id="p4a2rep-contre" hidden></span></div>
-<section class="s-bloc p4a2fig" id="p4a2fig" aria-label="Familles d'arômes au style, et leur ruban le long du brassin"></section>
+<section class="s-bloc p4a2fig" data-figure id="p4a2fig" aria-label="Familles d'arômes au style, et leur ruban le long du brassin"></section>
 <div class="p4a2bas">
   <p class="p4a2bas-mes" id="p4a2bas-mes" data-acquis="valeurs"></p>
   <nav class="p4a2bas-lev" aria-label="Pont vers Levure" data-acquis="levure" data-forme="pont"><a href="${ETAPE}"><b>Puis la levure</b><span id="p4a2bas-lev-t">Pomona ~+13</span>${CHEV}</a></nav>
@@ -176,10 +176,10 @@ body.abs .p4a2fig-p .p4a2fig-qp { left:calc(var(--qea) + 1px); }
           b.style.setProperty('--ws', w(p.v[f], f, 's') + '%'); b.style.setProperty('--wa', w(p.v[f], f, 'a') + '%');
           if (r0 && !S.inc(r0, f) && r0.v[f] - p.v[f] >= 0.5) {
             var s0 = w(p.v[f], f, 's'), s1 = w(r0.v[f], f, 's'), a0 = w(p.v[f], f, 'a'), a9 = w(r0.v[f], f, 'a');
-            if (s1 - s0 > 0.5) { qp.hidden = false; qp.innerHTML = mp(seg(p) === 2 ? 'm-bulle' : 'm-feu', 12); qp.style.setProperty('--qe', s1 + '%'); qp.style.setProperty('--qea', a9 + '%'); qp.style.color = S.T[f]; q.hidden = false; q.style.setProperty('--qs', s0 + '%'); q.style.setProperty('--qw', (s1 - s0) + '%'); q.style.setProperty('--qa', a0 + '%'); q.style.setProperty('--qwa', (a9 - a0) + '%'); }
+            if (s1 - s0 > 0.5) { qp.hidden = false; qp.innerHTML = mp(seg(p) === 2 ? 'm-bulle' : 'm-feu', 14); qp.style.setProperty('--qe', s1 + '%'); qp.style.setProperty('--qea', a9 + '%'); qp.style.color = S.T[f]; q.hidden = false; q.style.setProperty('--qs', s0 + '%'); q.style.setProperty('--qw', (s1 - s0) + '%'); q.style.setProperty('--qa', a0 + '%'); q.style.setProperty('--qwa', (a9 - a0) + '%'); }
           }
         }
-        v.textContent = S.fmt(p, f); v.style.color = u || S.avInc(f) ? '#555555' : (S.hors(p, f) ? '#c2410c' : S.T[f]);
+        v.textContent = S.fmt(p, f); v.style.color = u ? '#555555' : (S.hors(p, f) ? '#c2410c' : S.T[f]);
       });
       fig.querySelectorAll('.p4a2fig-rb i').forEach(function (c) { c.classList.toggle('p4a2fig-ici', +c.dataset.k === i); });
       var bb = S.ibu(p), ja = fig.querySelector('.p4a2fig-ja'), av = document.getElementById('p4a2fig-amv');
