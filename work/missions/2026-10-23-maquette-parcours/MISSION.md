@@ -112,6 +112,12 @@ Variantes choisies, dont repartent les écrans :
 | sb-tri | D125 : tri du panel v0 de Substituer (u4 en plancher) (48), niveau mesuré par controle-panel, classement, candidates, greffes | jugement | critique | fable | 80 | `work/refonte-frontend/v4/ecran-1/fils24-substituer/critique/**`, `voies/sb-tri/RESULTAT.md` | sb-a, sb-b, sb-c, sb-d, sb-z, sb-u, e1-etalonnage | SYNTHESE (Classement, Candidates, Greffes) ; controle-panel | pilote | tri |
 | sb-passe2 | D125 : passe 2 de Substituer (u4 en plancher), les 5 candidates par les agents de leur série (SendMessage), tous les contrôles du lot | conception | concepteur | opus | 80 | `work/refonte-frontend/v4/ecran-1/fils24-substituer/*b/**`, `voies/sb-passe2/RESULTAT.md` | sb-tri | controle-commun ; controle-une-question ; mots ; controle-teinte ; controle-retour ; controle-annuler ; controle-choix (règle n° 1) | brasseur | passe 2 |
 
+## Agents (24.10) — l'agent de chaque série fait sa passe 2 (SendMessage)
+fl-a a8c5f7e0d32261f36 ; fl-b a4ead6849b2b323a5 ; fl-c a0704f0045129d1c8 ; fl-d a3013a7e47611d7e3 ; fl-z afc100b2d937e62ba ;
+fl-u ae528f8f496d0dd59 ; sb-a a044770567ed230d2 ; sb-b a8ccd7c02df1405fb ; sb-c a91947513ec3ec00f ; sb-d aa8295f7fe8bc2428 ;
+sb-z a25c1b996e40ec8b1 ; sb-u a4daa06f45d93aa5b ; e1 a7c108234cb9656c8 ; dh4a a013463c187a07a34 ; dh4b aa2bba31019b7a234 ;
+p24 a893b35e28274ce36.
+
 Chemins de « Possède » : relatifs à la racine du dépôt ; `voies/…` est relatif au dossier de cette mission.
 
 ## Pages
