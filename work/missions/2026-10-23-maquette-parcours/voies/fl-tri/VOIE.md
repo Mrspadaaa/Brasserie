@@ -23,3 +23,8 @@ Paires 89 %, classes 73 % (seuils 80 % et 70 %) ; moitié A : classes 67 %, sous
 clément (« mitige » ou « aime » là où il rejette). Donc : ton classement est une proposition, contestée par le conseil rapide
 (D36) ; quand tu hésites entre « mitige » et « rejette », choisis « rejette » et dis pourquoi ; ne cache rien, le brasseur voit
 tout le panel (L27, M13).
+## Après le conseil de la passe 4 de Dryhopper (24.10)
+Trois manques relevés chez le critique, à ne pas refaire : (1) vérifier dans `work/refonte-frontend/v4/SPEC-BRASSEUR.md` chaque mot
+du brasseur cité comme raison d'un rang (« radar beaucoup plus grand » visait Suggestions, pas un graphique de courbes) ;
+(2) relever ce que chaque concept **perd** du plancher (g1 ou u4), pas seulement ce qu'il ajoute ; (3) sur les captures avec
+geste, chercher ce que le doigt et la loupe cachent : une figure qui perd sa lecture sous le geste est un défaut majeur.
