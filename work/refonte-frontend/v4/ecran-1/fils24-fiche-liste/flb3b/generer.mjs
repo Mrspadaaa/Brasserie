@@ -16,7 +16,7 @@ export function phrase(h) {
   const tous = signes.filter((c) => c.n === c.N);
   const repli = !tous.length;
   const mots = (repli ? signes.filter((c) => c.n * 2 >= c.N) : tous).slice(0, 3);
-  const reste = signes.filter((c) => !mots.includes(c)).slice(0, 4);
+  const reste = [...signes.filter((c) => !mots.includes(c)).slice(0, 4), ...h.concepts.filter((c) => c.generique && !c.seulCategorie)];
   return { mots, reste, repli };
 }
 
@@ -35,7 +35,7 @@ function feuille(h) {
     + '<div class="flb3b-r">' + radar(h, { taille: 362, rayon: 80 }) + '</div>'
     + '<blockquote class="flb3b-q" data-role="signature"><p>' + mots.map(mot).join(', ') + '.</p><cite>' + esc(sous)
     + (premier ? ' · « ' + esc(premier.mot) + ' » d\'abord' + (premier.premier.length > 1 ? (premier.premier.length === h.N ? ' dans toutes' : ', chez ' + premier.premier.length) : '') : '') + '</cite></blockquote>'
-    + (reste.length ? '<p class="flb3b-p"><span class="flb3b-k">' + (reste.every((c) => c.n === c.N) ? 'aussi' : 'puis') + '</span>' + reste.map((c) => '<b style="color:' + (c.famille ? T(c.famille) : '#16161a') + '">' + esc(c.mot) + '</b><span class="num">' + c.n + '/' + c.N + '</span>').join('') + '</p>' : '')
+    + (reste.length ? '<p class="flb3b-p"><span class="flb3b-k">' + (reste.every((c) => c.n === c.N) ? 'aussi' : 'puis') + '</span>' + reste.map((c) => '<b' + (c.generique ? ' class="flb3b-gen"' : '') + ' style="color:' + (c.famille ? T(c.famille) : c.generique ? '#55555f' : '#16161a') + '">' + esc(c.mot) + '</b><span class="num">' + c.n + '/' + c.N + '</span>').join('') + '</p>' : '')
     + '<div class="flb3b-o">' + legende('flb3b-' + h.cle, ['La phrase : les mots que toutes ses fiches disent et que peu de houblons disent ; s\'il n\'y en a pas, ceux d\'au moins la moitié de ses fiches, avec leur compte. Rien n\'y est ajouté.', '<b>puis</b> : ce qu\'une partie de ses fiches ajoute.', 'En bas : les familles que le radar dessine (cat. : Hopsteiner l\'y range sans aucun mot), puis les familles non décrites (picto et « ? »).']) + '' + lentille() + '</div>'
     + '<p class="flb3b-fam">' + h.familles.map((a) => '<span class="flb3b-fa" data-famille="' + a.f + '">' + pi(a.f, 14) + '<b style="color:' + T(a.f) + '">' + NOM[a.f] + '</b><span class="num">' + a.n + '/' + a.N + (cat.includes(a) ? ' cat.' : '') + '</span></span>').join('') + '</p>'
     + (h.inconnues.length ? '<p class="flb3b-nd" aria-label="' + h.inconnues.length + ' familles non décrites : ' + h.inconnues.map((f) => NOM[f]).join(', ') + '">' + h.inconnues.map((f) => '<span class="flb3b-q1" data-famille="' + f + '">' + pi(f, 16) + '<i style="color:' + T(f) + '">?</i></span>').join('') + '</p>' : '')
@@ -70,6 +70,8 @@ const CSS = `
 .flb3b-q cite { display:block; font-style:normal; font-size:14px; color:var(--gris); margin-top:5px; }
 .flb3b-p { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 6px; font-size:17px; }
 .flb3b-p .num { font-size:12px; color:var(--gris); margin-right:8px; }
+.flb3b-gen { font-weight:400; }
+.flb3b .flb-feuille { min-height:calc(100vh - 141px); }
 .flb3b-k { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--gris); margin-right:4px; }
 .flb3b-o { display:flex; align-items:center; gap:8px; border-top:1px solid var(--trait); padding-top:8px; }
 .flb3b-o .flb-seg { margin-left:auto; }
