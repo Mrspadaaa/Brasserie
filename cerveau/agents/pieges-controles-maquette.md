@@ -38,6 +38,7 @@ sources: voies p1, p4, p5, p11, p12, p17, p19, p24, r3, r4, r7, sb-b, sb-z, fl-u
   orange hors style) ont disparu ainsi (jc-levure) ; un modificateur porte deux classes.
 
 ## Compléments des leçons (24.10)
+- L17 : le dossier temporaire est partagé entre agents : un sous-dossier au nom de la voie (24.10 : `cap.mjs` écrasé).
 - L05 : jouer le contrôle de standard sur toutes les candidates ensemble (un houblon change de couleur) ; étendre la liste
   d'écrans (`FICHIERS`) dans la même voie.
 - L11 : un refactor « rien ne bouge » se prouve par un instantané du DOM (outerHTML, deux largeurs) avant et après.

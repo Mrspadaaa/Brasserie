@@ -1739,6 +1739,16 @@
    "resultat": "Mesuré le 24.10, 390 × 844 tactile, 37 fonctions du rail jouées au doigt (inventaire-rail.json : 39 fonctions, dont 2 côté froid jouées par controle-geste-etape --froid) : base v4.10 (consolide, --page=index.html) FONCTIONS-RAIL OK (37/37) ; maquette 5345f6ad FONCTIONS-RAIL ECHEC (21/37, 16 fonctions perdues ou changées : renvoi de l'ébullition, grossissement de la loupe, graduations régulières, IBU au lâcher et son écart, geste interrompu, tout le whirlpool en °C et sa durée, J+n et son réglage, \"aucun IBU\", J+14, cas-ebu200) ; témoin temoins/fonctions-rail-sans-loupe (loupe retirée) ECHEC (24/37, dont les 6 fonctions de la loupe).",
    "verdict": "garde",
    "script": "controle-fonctions-rail.mjs"
+  },
+  {
+   "id": "D126",
+   "mots": "« Mais il y a très peu de mini maquettes ??? J'ai pratiquement aucun choix ?? Et j'ai pas du coté à cote » (24.10, soir, sur « Choix de vues · 24.10 »)",
+   "controle": "controle-page-choix.mjs <page.html> [--min=11] (C1 aucune variante cachée dans une bande, C2 trois par rangée à 1280 et deux à 390, C3 onze variantes au moins par choix (« Je dirais 11 par vue »), C4 référence marquée, C5 agrandissement au toucher)",
+   "portee": ["page-lot"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 : 2026-10-24-choix-vues PAGE-CHOIX ECHEC (9/9 : bandes qui défilent, 3 à 11 variantes, aucune référence marquée) ; 2026-10-23-dryhopper-v0 ECHEC (une par rangée à 390, pas de référence marquée).",
+   "verdict": "garde",
+   "script": "controle-page-choix.mjs"
   }
  ]
 }

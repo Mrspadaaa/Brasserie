@@ -31,11 +31,15 @@ const TEXTE_MIN = 14;
 const MOTS_MAX = 45;
 
 // Mesures de lisibilité, dans la page : captures (images de 600 px de large au moins), tailles de texte, longueur des blocs.
-function lisibilite({ largeurCapture, texteMin, motsMax }) {
+// vignettes (téléphone seulement, D126 : « j'ai pas du coté à cote ») : une planche de choix pose ses mini maquettes deux
+// par rangée ; une image dans `[data-vignette]` qui s'ouvre en grand au toucher (lien, bouton, `data-agrandir`) peut
+// être plus étroite que la capture lisible. À 1280 px, la règle des 340 px vaut pour toutes (« dur à lire », 23.10).
+function lisibilite({ largeurCapture, texteMin, motsMax, vignettes }) {
   const visible = (el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && !el.closest('[hidden], dialog:not([open])'); };
   const court = (t) => t.replace(/\s+/g, ' ').trim().slice(0, 50);
+  const vignette = (i) => vignettes && i.closest('[data-vignette]') && i.closest('a[href], button, [data-agrandir]');
   const etroites = [...document.images]
-    .filter((i) => i.getAttribute('src') && Number(i.getAttribute('width') || i.naturalWidth) >= 600 && visible(i))
+    .filter((i) => i.getAttribute('src') && Number(i.getAttribute('width') || i.naturalWidth) >= 600 && visible(i) && !vignette(i))
     .filter((i) => i.getBoundingClientRect().width < largeurCapture)
     .map((i) => `${i.getAttribute('src')} (${Math.round(i.getBoundingClientRect().width)} px)`);
   const petits = new Map();
@@ -78,7 +82,7 @@ try {
   if (r.images < minImages) erreurs.push(`${r.images} images (${minImages} au moins)`);
   if (r.debord > 0) erreurs.push(`défilement horizontal de ${r.debord} px à 390 px`);
   const seuils = { largeurCapture: LARGEUR_CAPTURE, texteMin: TEXTE_MIN, motsMax: MOTS_MAX };
-  const tel = pageLot ? await p.evaluate(lisibilite, seuils) : null;
+  const tel = pageLot ? await p.evaluate(lisibilite, { ...seuils, vignettes: true }) : null;
   if (captures) {
     await p.screenshot({ path: `${captures}-haut.png` });
     await p.screenshot({ path: `${captures}-page.png`, fullPage: true });

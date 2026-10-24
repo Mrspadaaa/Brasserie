@@ -538,3 +538,17 @@ Décideur : pilote, réversible. r7 rend BATTERIE OK 33/33 et ETATS 113/117 ; le
   une règle CSS placée plus bas (relevé de jc-levure) : choix perdu, rendu (deux classes par modificateur).
 Signature : les « LEÇON PROPOSÉE » et « CONNAISSANCE » des voies triées par s1-lecons, appliquées par le pilote (M16 ; M11,
 M12, M14 passés dans [[controles-mecanises]] pour tenir la charge ; trois notes neuves, sept complétées).
+
+## D40 — Les écarts des critiques des reprises (24.10.2026, soir)
+Décideur : pilote, réversible. Critiques r8a, r8b, r8c (Fable), 128 états en images : étape REJET, le reste ACCEPTÉ. Passe 3 de
+r7 (`work/missions/2026-10-23-maquette-parcours/voies/r7-batterie/PASSE3.md`) :
+- ajouts rapides : une recette qui a des houblons garde les propositions aromatiques de sa base (stock d'abord, 10 g à 10′),
+  jamais des doses de compensation à 60′ ; recette vide à l'ouverture : sa page cas-k2 ; après « retirer » du dernier houblon,
+  la lecture la plus proche de sa capture (REPRISE § 6) ;
+- Végétal non situé pour Nugget (D35 appliqué) ; « Substituts » de la fiche du calcul de u4 (D35) ; « Pour égaler » par
+  famille comme r6n2 ; survol à 1280 en fiche flottante ; ses mots (« Boisé et résineux trop marqué ») ;
+- laissés, avec leur raison : fil d'étapes sans autre écran, Citra cryo « 1 seule fiche », nombres de Nelson Sauvin (L14),
+  groupe « Changer de levure » (D35), « Sans Nugget › » (#145).
+- D40 bis (pilote, après la passe 3 de r7) : le plafond de 80 mots au premier écran reste (SPEC § 3, « Dense mais pas
+  surchargé ») ; les mots de r6a restent, les ajouts postérieurs passent à un toucher. La règle Végétal (D35) ne vise qu'une
+  famille sans source : une famille apportée par la levure reste placée (cas-k2 : « 1 au style · 11 non situées »).

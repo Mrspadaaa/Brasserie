@@ -67,7 +67,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L11 — Fini veut dire utilisable, pas un reçu
 - Erreur : 08.10, des reçus, des registres « qualifiés » et des couches V3/V4/V5.5 donnaient l'impression d'avancer, sans fonction utilisable.
 - Cause : on comptait des preuves déclarées au lieu de parcours réels.
-- Faire : une chose est finie si elle est branchée, atteinte par un vrai parcours dans Chrome, typée, testée, avec un build vert. Classer l'existant : fini, inachevé récupérable, inutilisable.
+- Faire : une chose est finie si elle est branchée, atteinte par un vrai parcours dans Chrome, typée, testée, avec un build vert. Classer l'existant : fini, inachevé récupérable, inutilisable. Le quota sert d'abord ce qu'il verra : montrer tôt, outiller seulement ce qui bloque (24.10, SPEC § 1).
 - Rôles : pilote, relecteur, exécutant
 - Contrôle : aucun
 
@@ -97,7 +97,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
 - Erreur : lot 21, un auteur a laissé `pistes-l5f.png` à la racine du dépôt. 22.10, la voie r4c a écrit `loupe.html` et `loupe.png` à la racine (un sous-agent n'a pas le dossier temporaire du pilote).
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
-- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine. Un critère non plus n'écrit dans un livrable (24.10 : un G1 recapturait les images d'une page publiée). Le dossier temporaire est partagé : un sous-dossier au nom de la voie.
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine. Un critère non plus n'écrit dans un livrable (24.10 : un G1 recapturait les images d'une page publiée).
 - Rôles : pilote, auteur, exécutant, concepteur
 - Contrôle : aucun
 
@@ -134,9 +134,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L24 — Un choix du brasseur se montre en variantes, il ne bloque pas le lot
 - Erreur : 22.10, le plan de reprise faisait attendre le lot 22 sur quatre questions fermées (radar r2/r3, base de comparaison…). La vague 1 n'a donné aucune mini maquette d'écran, et sa planche n'a pas été publiée. « Pourquoi ça n'a pas produit les mini maquettes ? »
 - Cause : le pilote a traduit « au brasseur de trancher » (conseil) en portes bloquantes, contre [[le-brasseur-choisit]] et [[fil-de-fer-d-abord]].
-- Faire : chaque choix ouvert devient un axe de variantes du lot suivant ; on lui montre, il choisit. Le pilote publie lui-même la page des fils de fer (artefact privé).
+- Faire : chaque choix ouvert devient un axe de variantes du lot suivant ; on lui montre, il choisit. Le pilote publie lui-même la page des fils de fer (artefact privé). Une page par choix, toutes ses variantes côte à côte avec sa référence, onze par vue ; une limite d'outil ne décide pas la mise en page (D126).
 - Rôles : pilote, conseil
-- Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur (décideur brasseur) qui dépend de son choix
+- Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur (décideur brasseur) qui dépend de son choix ; `controle-page-choix.mjs` (D126)
 
 ### L25 — Ce que le brasseur verra se conçoit avec Opus et se juge par le critique calibré
 - Erreur : 22.10, la planche « épicé » de Sonnet a été acceptée par le relecteur Sonnet et par le pilote. Le brasseur : « Aucun me convient... », troisième refus. L'utilisateur : « pas très qualitatif... trop d'usage de sonnet et hiku sur des tâches complexes ».
@@ -161,6 +161,5 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 
 ## Mécanisées
 
-- M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle : le 22.10, les deux `\b` de D98 étaient des 0x08 (table `NOMME` morte, vue par la voie r6i), comme le `—` du pilote devenu un tiret. `systeme.mjs cablage` refuse tout caractère de contrôle dans les scripts de contrôle ; une voie qui en écrit un le rejoue (oublié deux fois le 24.10). Un critère n'imprime jamais son jeton sans condition : le jeton dans la commande donne un faux vert. Par `node -e` ou un heredoc non cité, antislashs et `${…}` se perdent aussi : Write, ou `<<'EOF'`.
-- M13 — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 22 (12 variantes) a perdu face au lot 21 (44 v0 : « vraiment plus qualitatif »). `systeme.mjs mission` : 48 v0 au moins en 6 séries, chaleurs (D22), baseline, tri, passe 2.
+- M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle : le 22.10, les deux `\b` de D98 étaient des 0x08 (table `NOMME` morte, vue par la voie r6i), comme le `—` du pilote devenu un tiret. `systeme.mjs cablage` refuse tout caractère de contrôle dans les scripts de contrôle ; une voie qui en écrit un le rejoue (oublié deux fois le 24.10). Un critère n'imprime jamais son jeton sans condition : le jeton dans la commande donne un faux vert.- M13 — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 22 (12 variantes) a perdu face au lot 21 (44 v0 : « vraiment plus qualitatif »). `systeme.mjs mission` : 48 v0 au moins en 6 séries, chaleurs (D22), baseline, tri, passe 2.
 - M16 (L03) — Une reprise se contrôle geste par geste (repos, pendant, après), sur sa maquette et sur la construction : le 24.10, des inventaires « au repos » ont laissé le rail perdre ses fonctions (D124). Un contrôle arrêté au premier échec cache les suivants (« RAIL ECHEC 1 » en cachait 8). `controle-etats.mjs`, `controle-fonctions-rail.mjs`.

@@ -477,6 +477,15 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   faut des mini maquettes avec un nouvel artefacts comme pour les mini maquettes côté à côté.... Pour les autres gros
   changement aussi au non je peux pas choisir. Met ca dans tes règles aussi ». Tout choix qu'on lui demande se montre en
   mini maquettes, dans un artefact neuf ; jamais une question en mots seuls (CLAUDE.md, règle n° 1).
+- **Trop peu de mini maquettes, pas de côte à côte** (24.10, soir, sur « Choix de vues · 24.10 »), mot pour mot : « Mais
+  il y a très peu de mini maquettes ??? J'ai pratiquement aucun choix ?? Et j'ai pas du coté à cote ». La page cumulait
+  sept sujets : chaque choix tenait dans une bande qui défile (une variante visible à la fois), les deux panels de 48 en
+  bas, et les jeux courts n'avaient que trois variantes. Une page par choix : toutes ses mini maquettes à la fois, côte à
+  côte avec sa référence. Puis, mot pour mot : « Pas besoin d'autant, représente moi aussi les mini maquettes déjà
+  faites pour ces vues. Je dirais 11 par vue ». Onze par vue, celles déjà faites comprises. D126.
+- **À quoi a servi le quota** (24.10, soir), mot pour mot : « En quoi tout ces quota ont été utile ??? ». Le 24.10, la
+  plus grande part est allée à l'outillage (contrôles, cerveau, un délai de test débogué) et à des panels de 48, quand rien
+  ou presque ne lui avait été montré. Le quota sert d'abord ce qu'il verra : montrer tôt ce qui est fait (L11).
 - **La maquette jouable ne suit pas ses choix** (23.10, soir, sur la maquette de bout en bout), mot pour mot : « Mais
   ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? ». Sur la capture de q2b (lot 15,
   Suggestions) : « Ça oui, c'est effectivement l'un de mes choix ». Sur celle de Ma bière de la base v4.10 : « Ça

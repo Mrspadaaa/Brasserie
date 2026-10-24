@@ -304,7 +304,12 @@ const jouerEtat = async (fichier, e) => {
       : null;
     const tenu = await geste(page, h, v, () => trouver(page, e, mode), capturer);
     trace(e.id, 'geste fait');
-    if (capturer && !tenu) await capturer();
+    // Au repos, l'élément marqué est amené dans le cadre avant la capture, sans bouger un écran déjà visible (24.10 : le
+    // pied du profil restait hors du cadre).
+    if (capturer && !tenu) {
+      if (v.geste === 'repos') await h.evaluate((el) => el.scrollIntoView({ block: 'nearest' })).catch(() => {});
+      await capturer();
+    }
     const apres = tenu?.apres ?? await empreinte(page);
     const texte = tenu?.texte ?? await lire(page);
     trace(e.id, 'lu après le geste');

@@ -687,14 +687,19 @@ export function verifierMission(fichier, { minVoies = 2 } = {}) {
     if (!/baseline/i.test(v.controles ?? '')) erreurs.push(`${v.voie} : la baseline n'est pas dans ses contrôles ; elle est un plancher même en v0 (« ça suit pas la Baseline, ça suit rien du tout ??? », M13)`);
   }
   const tris = voies.filter((v) => etape(v) === 'tri');
+  // Le brasseur peut lui-même réduire un lot : « Pas besoin d'autant […] Je dirais 11 par vue » (24.10, D126). Une ligne
+  // « Dérogation M13 : <tri> : « ses mots » » lève l'éventail de 48, la mesure du panel et la passe 2 de ce tri, et rien
+  // d'autre (critique, Fable, brief minimal, chaleurs). Sans ses mots entre guillemets, pas de dérogation.
+  const derogee = (id) => new RegExp(`Dérogation M13 : ${id} : « [^»\\n]{8,} »`).test(texte);
   for (const t of tris) {
     if (t.agent !== 'critique') erreurs.push(`${t.voie} : tri confié à ${t.agent} ; critique attendu (M13)`);
+    const reduit = derogee(t.voie);
     // M14 (23.10) : le panel est d'abord mesuré (remplissage, diversité) contre le lot 21 ; « vraiment moins quali ».
-    if (!finie(t.voie) && !/controle-panel|controle-planche-picto/.test(t.controles ?? '')) erreurs.push(`${t.voie} : le tri ne mesure pas le panel ; controle-panel.mjs (écrans) ou controle-planche-picto.mjs (pictos) dans ses contrôles (M14)`);
+    if (!reduit && !finie(t.voie) && !/controle-panel|controle-planche-picto/.test(t.controles ?? '')) erreurs.push(`${t.voie} : le tri ne mesure pas le panel ; controle-panel.mjs (écrans) ou controle-planche-picto.mjs (pictos) dans ses contrôles (M14)`);
     const siennes = dependances(t).filter((d) => series.has(d));
     const total = siennes.reduce((s, d) => s + series.get(d), 0);
     // 22.10 : « Et plus de diversité et de nombre de mini proto » ; le lot 21 en avait 44, en 10 séries.
-    if (total < 48 || siennes.length < 6) erreurs.push(`${t.voie} : éventail de ${total} variantes en ${siennes.length} séries ; 48 au moins, en 6 séries au moins (« Et plus de diversité et de nombre de mini proto ») (M13)`);
+    if (!reduit && (total < 48 || siennes.length < 6)) erreurs.push(`${t.voie} : éventail de ${total} variantes en ${siennes.length} séries ; 48 au moins, en 6 séries au moins (« Et plus de diversité et de nombre de mini proto ») (M13)`);
     // Les deux contrepoids du lot 21 : une série Fable (z, « créatif à fond ») et une série libre au brief
     // minimal (u : « La série libre a produit de meilleurs gestes et de meilleures questions »).
     const sesVoies = voies.filter((v) => siennes.includes(v.voie));
@@ -703,7 +708,7 @@ export function verifierMission(fichier, { minVoies = 2 } = {}) {
     if (!sesVoies.some((v) => /brief minimal/i.test(v.objectif ?? ''))) erreurs.push(`${t.voie} : aucune série libre au brief minimal (contrepoids du lot 21) (M13)`);
     const chaleur = Object.fromEntries(NIVEAUX_CHALEUR.map((k) => [k, siennes.reduce((s, d) => s + (chaleurs.get(d)?.[k] ?? 0), 0)]));
     if (total && (chaleur.chaude < 0.3 * total || !chaleur.tiede || !chaleur.froide)) erreurs.push(`${t.voie} : chaleur ${chaleur.tiede} tiède, ${chaleur.chaude} chaude, ${chaleur.froide} froide ; les trois, et 30 % de chaudes au moins (« 4 tiède, 5 chaude, 2 froide », D22) (M13)`);
-    if (!voies.some((v) => etape(v) === 'passe 2' && dependances(v).includes(t.voie))) erreurs.push(`${t.voie} : aucune passe 2 n'en dépend ; les candidates s'améliorent avant d'être montrées (M13)`);
+    if (!reduit && !voies.some((v) => etape(v) === 'passe 2' && dependances(v).includes(t.voie))) erreurs.push(`${t.voie} : aucune passe 2 n'en dépend ; les candidates s'améliorent avant d'être montrées (M13)`);
   }
   // L13 (23.10, audit a1) : une voie d'écran à contractualiser prévoit tous les contrôles qui gardent son sujet
   // (portee-defauts.json, verdict « garde »), ou en écarte un avec sa raison (« sans controle-x : raison »).
@@ -915,7 +920,7 @@ function construireMissionPlan(dir, { sansDecideur = false, attendBrasseur = fal
 }
 
 // Un lot en entonnoir : des séries v0, un tri par le critique, une passe 2 qui en dépend (M13).
-function construireEntonnoir(dir, { series = 7, parSerie = 8, sansTri = false, sansPasse = false, sansLibre = false, chaleur = null, sansBaseline = false, triSansPanel = false } = {}) {
+function construireEntonnoir(dir, { series = 7, parSerie = 8, sansTri = false, sansPasse = false, sansLibre = false, chaleur = null, sansBaseline = false, triSansPanel = false, derogation = null } = {}) {
   const f = path.join(dir, 'MISSION.md');
   const ids = Array.from({ length: series }, (_, i) => `s${i + 1}`);
   // Par défaut, chaque série porte les trois chaleurs : 1 froide, 1 tiède, le reste en chaude.
@@ -924,7 +929,7 @@ function construireEntonnoir(dir, { series = 7, parSerie = 8, sansTri = false, s
   const voies = ids.map((id, i) => `| ${id} | série ${id}${i === 1 && !sansLibre ? ', libre au brief minimal' : ''} | conception | concepteur | ${i === 0 ? 'fable' : 'opus'} | 120 | ecran-1/lot/${id}/** | — | ${ctl} | brasseur | v0 ×${parSerie}${temp} |`);
   if (!sansTri) voies.push(`| t | tri des séries | jugement | critique | fable | 30 | t/RESULTAT.md | ${ids.join(', ')} | ${triSansPanel ? 'captures ouvertes' : 'controle-panel, captures ouvertes'} | pilote | tri |`);
   if (!sansPasse) voies.push('| p2 | les cinq améliorées | conception | concepteur | opus | 80 | ecran-1/lot/p2/** | t | controle-commun, controle-choix, controle-teinte | brasseur | passe 2 |');
-  fs.writeFileSync(f, planMission(voies));
+  fs.writeFileSync(f, planMission(voies) + (derogation ? `\nDérogation M13 : t : ${derogation}\n` : ''));
   return f;
 }
 
@@ -955,6 +960,8 @@ function temoins() {
   attendu('lot de 12, une variante par agent', verifierMission(construireEntonnoir(sous('e2'), { series: 12, parSerie: 1 })).length === 0, false);
   attendu('éventail trop étroit', verifierMission(construireEntonnoir(sous('e3'), { series: 3, parSerie: 4 })).length === 0, false);
   attendu('éventail sans tri', verifierMission(construireEntonnoir(sous('e4'), { sansTri: true })).length === 0, false);
+  attendu('éventail réduit par ses mots', verifierMission(construireEntonnoir(sous('e12'), { series: 6, parSerie: 4, sansPasse: true, triSansPanel: true, derogation: '« Pas besoin d\'autant, je dirais 11 par vue »' })).length === 0, true);
+  attendu('éventail réduit sans ses mots', verifierMission(construireEntonnoir(sous('e13'), { series: 6, parSerie: 4, sansPasse: true, triSansPanel: true, derogation: 'pour aller plus vite' })).length === 0, false);
   attendu('éventail sans passe 2', verifierMission(construireEntonnoir(sous('e5'), { sansPasse: true })).length === 0, false);
   attendu('éventail sans série libre', verifierMission(construireEntonnoir(sous('e6'), { sansLibre: true })).length === 0, false);
   attendu('éventail sans chaleur déclarée', verifierMission(construireEntonnoir(sous('e7'), { chaleur: '' })).length === 0, false);
