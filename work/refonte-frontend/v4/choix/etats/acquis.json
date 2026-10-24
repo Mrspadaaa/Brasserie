@@ -20,7 +20,20 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette Suggérer : pictos colorés par famille sur chaque ligne, Comparer et fiche aussi.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-couleur-aromes-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-couleur-aromes-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "body",
+    "geste": "repos",
+    "attendu": [
+     "Plus floral",
+     "Plus agrumes"
+    ],
+    "interdit": [],
+    "couleurs_min": 8
+   }
   },
   {
    "id": "etat-acquis-glisser-moment",
@@ -37,7 +50,20 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : rail et pastille « 10′ » sur chaque ajout, 60′ de Nugget. Le geste lui-même n'est pas rejoué ici : voie p20 (inventaire du rail).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-glisser-moment-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-glisser-moment-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"glisser-moment\"]",
+    "geste": "repos",
+    "attendu": [
+     "60′",
+     "Moment : 60 minutes d'ébullition"
+    ],
+    "interdit": [],
+    "note": "le geste du rail est relevé par la voie p20 (controle-fonctions-rail.mjs) ; ici seulement sa présence"
+   }
   },
   {
    "id": "etat-acquis-barres-l5b",
@@ -54,7 +80,20 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Comparer garde les barres l5b (zone, barre, intervalle) ; dans Suggérer elles deviennent un rail fin sous la ligne, l'axe central a disparu.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-barres-l5b-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-barres-l5b-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "section[data-role=\"objectif\"]",
+    "geste": "repos",
+    "attendu": [
+     "même effet sur tes objectifs",
+     "+1 cran",
+     "+2 crans"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-disposition-l8",
@@ -71,7 +110,21 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : objectifs, pistes, puis voies en rangées compactes. Même ordre.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-disposition-l8-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-disposition-l8-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "section[data-role=\"objectif\"]",
+    "geste": "repos",
+    "attendu": [
+     "Plus floral",
+     "Plus agrumes",
+     "Moins résineux",
+     "Hors houblon"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-radars-m4-h4",
@@ -88,7 +141,22 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Maquette Ma bière en Radar : radar à 12 axes et pastilles « + floral − résineux » ; la grille de dégustation à quatre niveaux par famille (m4) n'est pas là. À confirmer avec la voie p21a (Ma bière).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-radars-m4-h4-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-radars-m4-h4-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/biere-radar.html",
+    "selecteur_choisie": "[data-role=\"degustation\"]",
+    "geste": "repos",
+    "attendu": [
+     "Ma dégustation",
+     "pas senti",
+     "faible",
+     "moyen",
+     "marqué"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-comparer-v3",
@@ -105,7 +173,21 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : radar, barres avec intervalle et style (zone du 16D), un houblon par colonne.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-comparer-v3-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-comparer-v3-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+    "selecteur_choisie": "p[data-role=\"contexte\"]",
+    "geste": "repos",
+    "attendu": [
+     "Floral",
+     "Herbacé",
+     "Résineux",
+     "inconnus, pas zéro"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-fiche-g1",
@@ -122,7 +204,19 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette Suggérer : appui long sur Golding ouvre la fiche g1 plein écran.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-fiche-g1-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-fiche-g1-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "fiche",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/fiche.html",
+    "selecteur_choisie": "[data-role=\"fiche\"]",
+    "geste": "repos",
+    "attendu": [
+     "Nugget",
+     "Hopsteiner 2025"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-fiche-citra-cryo",
@@ -139,7 +233,20 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : appui long sur Citra cryo ouvre « Citra cryo α 10–15 % lot 24,8 % » avec familles 1/1 et radar.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-fiche-citra-cryo-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-fiche-citra-cryo-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"ajout-rapide\"]",
+    "geste": "appui-long",
+    "attendu": [
+     "pellets",
+     "Beer Maverick"
+    ],
+    "interdit": [],
+    "rang": 1
+   }
   },
   {
    "id": "etat-acquis-plus-comparer",
@@ -156,7 +263,18 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : ✓ et « Comparer (3) ».",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-plus-comparer-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-plus-comparer-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "[aria-label=\"Ajouter Aurum à la comparaison\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Comparer (3)"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-q2b-suite-s5",
@@ -173,7 +291,21 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Maquette : usage en mot, nom, α, stock, ♡, « + » ; les traits sous les pictos restent ; la barre l5b à droite de l'axe est devenue un rail sous la ligne.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-q2b-suite-s5-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-q2b-suite-s5-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "section[data-role=\"objectif\"]",
+    "geste": "repos",
+    "attendu": [
+     "East Kent Goldings",
+     "Columbus",
+     "Celeia",
+     "Motueka + Citra cryo"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-y1b-brassin-au-doigt",
@@ -190,7 +322,22 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette Dryhopper : « Quand ajouter Idaho 7 ? », face à ta stout par famille, frise et histogramme, Annuler / Puis la levure. Dryhopper est un écran au choix ouvert (provisoire a1, y1b affiné) : non jugé plus loin.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-y1b-brassin-au-doigt-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-y1b-brassin-au-doigt-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils21-choisir/y1b/etat.html",
+    "selecteur_choisie": "section[data-role=\"simulation\"]",
+    "geste": "repos",
+    "attendu": [
+     "Quand ?",
+     "Citra",
+     "US-05",
+     "Pomona",
+     "Tire 20 bières"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-panel-osu",
@@ -207,7 +354,21 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : panel à un toucher (D114), sans molette.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-panel-osu-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-panel-osu-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+    "selecteur_choisie": "contient=Panel OSU",
+    "geste": "repos",
+    "attendu": [
+     "Panel OSU"
+    ],
+    "interdit": [],
+    "avant": [
+     "etat-acquis-vraies-valeurs-v1"
+    ]
+   }
   },
   {
    "id": "etat-acquis-maniere-w2",
@@ -224,7 +385,8 @@
    },
    "verdict_5345f6ad": "absent",
    "ecart": "Ni la maquette ni r6a (choisie) ne reprennent la piste commune à repères lettrés ni les cartes Sage/Franc/Osé : à ne pas compter comme perte de la maquette seule ; question au pilote.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-maniere-w2-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-maniere-w2-5345f6ad.png",
+   "voulu": "D107 : r6a, sa maquette choisie, ne reprend pas la manière w2 ; question au pilote (RESULTAT de p24)"
   },
   {
    "id": "etat-acquis-vraies-valeurs-v1",
@@ -241,7 +403,19 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : même tableau (α, β, huile, composés, sources).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-vraies-valeurs-v1-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-vraies-valeurs-v1-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+    "selecteur_choisie": "texte=Chimie et vraies valeurs",
+    "geste": "toucher",
+    "attendu": [
+     "% masse",
+     "BM"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-r6a-elements-notes",
@@ -258,7 +432,22 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Maquette : réponse en ligne, plan d'avant (Nugget), « contre ★ » et Égaler repris ; critère, défi, tirage de 20 bières, frise, pastilles levure et jauge d'amertume non repris (voir etat-comp-defi, -critere, -preuve, -frise-levure).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-r6a-elements-notes-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-r6a-elements-notes-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+    "selecteur_choisie": "texte=Défi 2/4",
+    "geste": "repos",
+    "attendu": [
+     "Face à ta stout, par",
+     "floral",
+     "Défi 2/4",
+     "Preuve",
+     "Frise"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-r6n2-dock",
@@ -275,7 +464,23 @@
    },
    "verdict_5345f6ad": "absent",
    "ecart": "Maquette : pas de dock ; trois boutons (Chimie, Égaler, Panel OSU) sous le tableau et le pont « Placer … › » en bas. Choix perdu : Défi, Preuve, Frise, Souche.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-r6n2-dock-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-r6n2-dock-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+    "selecteur_choisie": "texte=Défi 2/4",
+    "geste": "repos",
+    "attendu": [
+     "Défi 2/4",
+     "Égaler",
+     "Valeurs",
+     "Preuve",
+     "Frise",
+     "Souche"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-picto-epice",
@@ -292,7 +497,19 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : picto brun croisé sur les voies épicées (East Kent Goldings), à la même place.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-picto-epice-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-picto-epice-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "body",
+    "geste": "repos",
+    "attendu": [
+     "East Kent Goldings"
+    ],
+    "interdit": [],
+    "couleurs_min": 8
+   }
   },
   {
    "id": "etat-acquis-maquette-jouable",
@@ -309,7 +526,19 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : l'étape Houblons 3/7 s'ouvre à l'index, rail et ajouts en place.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-maquette-jouable-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-maquette-jouable-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"houblons-recette\"]",
+    "geste": "repos",
+    "attendu": [
+     "Ébullition 60′",
+     "Nugget"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-theme-blanc-gris-noir",
@@ -326,7 +555,19 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Mesuré : maquette fond rgb(255,255,255), texte rgb(51,51,51) (#333), data-theme=\"clair\", contre texte rgb(22,22,26) de q2b ; fond tenu, texte plus clair.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-theme-blanc-gris-noir-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-theme-blanc-gris-noir-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "section[data-role=\"objectif\"]",
+    "geste": "repos",
+    "attendu": [
+     "Plus floral"
+    ],
+    "interdit": [],
+    "fond": "rgb(255, 255, 255)"
+   }
   },
   {
    "id": "etat-acquis-premier-plan-80-mots",
@@ -343,7 +584,19 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Mesuré à 390 × 844 : Comparer maquette 68 mots, Suggérer maquette 67 mots (q2b : 52), tous sous 80.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-premier-plan-80-mots-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-premier-plan-80-mots-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+    "selecteur_choisie": "p[data-role=\"contexte\"]",
+    "geste": "repos",
+    "attendu": [
+     "Fixé pour les trois"
+    ],
+    "interdit": [],
+    "max_mots": 80
+   }
   },
   {
    "id": "etat-acquis-au-style-absolu",
@@ -360,7 +613,19 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette Comparer : Au style par défaut, Absolu à un toucher, radar redessiné.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-au-style-absolu-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-au-style-absolu-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+    "selecteur_choisie": "texte=Au style",
+    "geste": "repos",
+    "attendu": [
+     "Au style",
+     "Absolu"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-simule-marque",
@@ -377,7 +642,18 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : pastille « ~ simulé » et chaque valeur simulée en « ~ ».",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-simule-marque-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-simule-marque-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "comparer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
+    "selecteur_choisie": "p[data-role=\"contexte\"]",
+    "geste": "repos",
+    "attendu": [
+     "~ simulé"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-croix-retour",
@@ -394,7 +670,8 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette Comparer : ✕, ouvre l'étape Houblons.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-croix-retour-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-croix-retour-5345f6ad.png",
+   "voulu": "D109 : la croix ✕ remplace le ‹ (sa page q2b est statique, le retour n'y est pas jouable)"
   },
   {
    "id": "etat-acquis-levure-bio-cumul",
@@ -411,7 +688,20 @@
    },
    "verdict_5345f6ad": "absent",
    "ecart": "Maquette Suggérer : ni groupe « Changer de levure » ni pastilles bio ; Comparer : ni biotransformation ni frise. Voir etat-sugg-levure et etat-sugg-dry-hop.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-levure-bio-cumul-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-levure-bio-cumul-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "section[data-role=\"objectif\"]",
+    "geste": "repos",
+    "attendu": [
+     "creep",
+     "Biotransformation"
+    ],
+    "interdit": [],
+    "note": "D35 : le groupe levure ne revient pas dans Suggérer ; reste la biotransformation du dry hop actif"
+   }
   },
   {
    "id": "etat-acquis-stock-icone",
@@ -428,7 +718,18 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : icône de panier (à acheter) ou boîte (en stock) à côté de l'α.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-stock-icone-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-stock-icone-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "section[data-role=\"objectif\"]",
+    "geste": "repos",
+    "attendu": [
+     "Aurum"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-acquis-bascule-barres-radar",
@@ -445,7 +746,19 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette Suggérer : « Radar » active la lentille radar et « Barres » revient ; voir etat-sugg-radar pour ce que le radar a perdu.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-bascule-barres-radar-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-bascule-barres-radar-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/suggestions-radar.html",
+    "selecteur_choisie": "texte=Barres",
+    "geste": "toucher",
+    "attendu": [
+     "Barres",
+     "Radar"
+    ],
+    "interdit": []
+   }
   }
  ]
 }

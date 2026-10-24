@@ -19,7 +19,21 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Voulus (ses mots) : fil d'étapes de l'app à la place de ‹ et de la pastille « 16D hypothèse » (D116) ; « ? » de légende ×3 (D113) ; « analyse › » (D121) ; pictos de famille (D74). Non demandés, mesurés : le chevron « › » de « Ébullition 60′ » est absent ; α affiché « 13 % 9,5–16 » au lieu de « 13 » ; rôle « mixte » au lieu de « double » ; ajouts rapides Cascade, Citra cryo, Idaho 7 au lieu de Motueka, Citra cryo, Saaz Late ; Végétal placé (point) alors que la base le garde « non situé » hachuré ; « Sans Nugget › » ajouté (pont Substituer, choix ouvert).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-repos-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-repos-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"houblons-recette\"]",
+    "geste": "repos",
+    "attendu": [
+     "Ébullition 60′",
+     "Nugget",
+     "46 g",
+     "SafAle US-05"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-etape-dose-plus",
@@ -36,7 +50,20 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Pas de 1 g au lieu de 2 g (46 → 47 g, IBU 61) ; repère « +2 » du bandeau absent (texte du bandeau : « IBU 61 » seul).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-dose-plus-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-dose-plus-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[aria-label^=\"Ajouter 2 g\"]",
+    "geste": "toucher",
+    "attendu": [
+     "48 g"
+    ],
+    "interdit": [
+     "47 g"
+    ]
+   }
   },
   {
    "id": "etat-etape-dose-moins",
@@ -53,7 +80,20 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Pas de 1 g (45 g, IBU 58) ; repère « −3 » absent.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-dose-moins-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-dose-moins-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[aria-label^=\"Retirer 2 g\"]",
+    "geste": "toucher",
+    "attendu": [
+     "44 g"
+    ],
+    "interdit": [
+     "45 g"
+    ]
+   }
   },
   {
    "id": "etat-etape-retirer",
@@ -70,7 +110,18 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Emplacement « + » pointillé absent ; repère « −60 » absent ; 3 ajouts proposés (Cascade, Citra cryo, Idaho 7) au lieu de 5.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-retirer-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-retirer-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[aria-label=\"Retirer Nugget de la recette\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Aucun houblon dans la recette"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-etape-ajout-rapide",
@@ -87,7 +138,18 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Ajout bien posé à 10′ (Cascade, IBU 62) mais : repère « +2 » absent ; aucun point « avant » ni liaison « après » sur les barres du profil (une capture en bas de page prise : seul un point de Baies bouge) ; carte « résine 1/2 » au lieu du signal de ce que l'ajout fait bouger (« floral +1 »).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-ajout-rapide-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-ajout-rapide-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"ajout-rapide\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Effet prévu"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-etape-type-whirlpool",
@@ -104,7 +166,22 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Bulle « WP » au lieu de « 80 °C » ; « − 20 min + » absent ; IBU 9 correct mais repère « −51 » absent.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-type-whirlpool-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-type-whirlpool-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"type-ajout\"]",
+    "geste": "toucher",
+    "attendu": [
+     "80 °C",
+     "20 min",
+     "whirlpool"
+    ],
+    "interdit": [
+     "WP"
+    ]
+   }
   },
   {
    "id": "etat-etape-type-froid",
@@ -121,7 +198,23 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Bulle « 3 j », « dry hop » au lieu de « à froid », « ? IBU » au lieu de « aucun IBU », « − J+n + » absent, pastille « biotransformation possible, non quantifiée » absente (mots de Dryhopper, choix ouvert : D123).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-type-froid-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-type-froid-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"type-ajout\"]",
+    "geste": "toucher",
+    "attendu": [
+     "J+3",
+     "aucun IBU",
+     "biotransformation possible, non quantifiée"
+    ],
+    "interdit": [
+     "? IBU"
+    ],
+    "fois": 2
+   }
   },
   {
    "id": "etat-etape-gout-coeur",
@@ -138,7 +231,20 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Le ♡ devient plein rouge d'un toucher (2 états) ; « exclure » n'est plus offert sur la carte (il reste en ⊘ dans la fiche).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-gout-coeur-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-gout-coeur-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"gout\"]",
+    "geste": "toucher",
+    "attendu": [
+     "aimer",
+     "neutre",
+     "exclure"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-etape-champ-ajouter",
@@ -155,7 +261,20 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Le champ filtre : seul Citra cryo reste (amélioration, ne contredit pas sa base).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-champ-ajouter-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-champ-ajouter-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "input",
+    "geste": "toucher",
+    "attendu": [
+     "cit",
+     "catalogue"
+    ],
+    "interdit": [],
+    "saisie": "cit"
+   }
   },
   {
    "id": "etat-etape-levure",
@@ -172,7 +291,8 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "La ligne ouvre l'outil Levure (#/levure/a1 : « Et avec quelle levure ? », US-05, Pomona, Verdant, Diamond). Levure est un écran au choix ouvert (provisoire : étape de Dryhopper) ; la base n'ouvrait rien. Pas une perte.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-levure-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-levure-5345f6ad.png",
+   "voulu": "Levure est un écran au choix ouvert (étape de Dryhopper en attendant), D123 ; la base n'ouvrait rien"
   },
   {
    "id": "etat-etape-analyse",
@@ -189,7 +309,21 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Même destination (onglet Ma bière). Décompte « 7 au style · 4 non situées » au lieu de « 6 · 5 » (Végétal placé en maquette, « non situé » en base).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-analyse-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-analyse-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"panneau\"]",
+    "geste": "toucher",
+    "attendu": [
+     "au style",
+     "non situées",
+     "Barres",
+     "Radar"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-etape-ebullition-lien",
@@ -206,7 +340,19 @@
    },
    "verdict_5345f6ad": "absent",
    "ecart": "Aucun <a> dans la frise, pas de chevron : la durée d'ébullition n'a plus de renvoi à son réglage (le titre « Ébullition 60′ » est un div).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-ebullition-lien-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-ebullition-lien-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"ebullition\"] a",
+    "geste": "repos",
+    "attendu": [
+     "Ébullition 60′",
+     "Ébullition 60 minutes, réglée dans la fiche de brassage"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-etape-entete",
@@ -223,7 +369,8 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Voulu (D116) : fil de 7 étapes (WizardStepRail), thème et « Recommencer » ajoutés ; toucher une autre étape ne fait rien (NOTE). Le « ‹ » de retour vers l'étape Malts n'a plus d'équivalent.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-entete-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-entete-5345f6ad.png",
+   "voulu": "D116 : fil d'étapes de l'app à la place de ‹ et de la pastille « 16D hypothèse »"
   },
   {
    "id": "etat-etape-cas-k3",
@@ -240,7 +387,22 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "La maquette ne joue pas ce cas : son cas-k3 est Nugget 46 g, Cascade 20 g, Galaxy 20 g, tous en ébullition (IBU 71). Whirlpool 80 °C avec minutes, J+n et biotransformation (géraniol, thiols, hop creep) n'y sont ni montrés ni atteignables (voir type-froid).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-cas-k3-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-cas-k3-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/cas-k3.html",
+    "selecteur_choisie": "[data-role=\"houblons-recette\"]",
+    "geste": "repos",
+    "attendu": [
+     "80 °C",
+     "J+3",
+     "Citra cryo",
+     "biotransformation possible"
+    ],
+    "interdit": [],
+    "page_construite": "cas-k3.html"
+   }
   },
   {
    "id": "etat-etape-cas-k2-vide",
@@ -257,7 +419,20 @@
    },
    "verdict_5345f6ad": "absent",
    "ecart": "Sans houblon, la maquette propose seulement Cascade, Citra cryo, Idaho 7 à 10′ : aucun amérisant à 60′, pas de « ou », pas d'emplacement « + », pas de jauge IBU à vide.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-cas-k2-vide-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-cas-k2-vide-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/cas-k2.html",
+    "selecteur_choisie": "[data-role=\"ajouts-proposes\"]",
+    "geste": "repos",
+    "attendu": [
+     "suggéré à 60 minutes d'ébullition",
+     "Aucun houblon dans la recette"
+    ],
+    "interdit": [],
+    "page_construite": "cas-k2.html"
+   }
   },
   {
    "id": "etat-etape-pied-profil",
@@ -274,7 +449,20 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Voulus : pictos (D74), « ? », « + floral › », Au style / Absolu sur le profil. Mesuré : Végétal et Noyau n'ont pas le même statut qu'en base (Végétal placé).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-pied-profil-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-pied-profil-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"panneau\"]",
+    "geste": "repos",
+    "attendu": [
+     "Boisé et résineux trop marqué",
+     "Résineux",
+     "Tropicaux"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-etape-repos-1280",
@@ -291,7 +479,20 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Capture 1280 × 800 (hors consigne 390). Maquette : barre « Modifier « Stout export » » ajoutée en tête, colonne pleine largeur ; même contenu qu'au repos 390.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-repos-1280-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-etape-repos-1280-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "ma-biere",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
+    "selecteur_choisie": "[data-role=\"houblons-recette\"]",
+    "geste": "repos",
+    "attendu": [
+     "Ébullition 60′",
+     "Nugget"
+    ],
+    "interdit": [],
+    "viewport": "1280x800"
+   }
   }
  ]
 }

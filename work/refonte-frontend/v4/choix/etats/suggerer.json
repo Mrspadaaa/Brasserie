@@ -20,7 +20,23 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Deux cartes au lieu de trois (Plus floral Atteint, Moins résineux Aucune ; « Plus agrumes » absent, écart écrit dans la NOTE de la maquette) ; règle « ‹ visée | visée › » absente (D91 : « inutile ») ; ajouts : bandeau IBU/OG/EBC, « ? », « Comparer (2) » en onglet ; l'effet du groupe se lit « ~+0,9 » sur un rail, plus « +1 cran / +2 crans ».",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-repos-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-repos-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "section[data-role=\"objectif\"]",
+    "geste": "repos",
+    "attendu": [
+     "Plus floral",
+     "Plus agrumes",
+     "Moins résineux",
+     "Atteint",
+     "Approche",
+     "Hors houblon"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-croix",
@@ -37,7 +53,8 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : ✕ à gauche, le toucher ouvre #/ma-biere (étape Houblons 3/7). La croix vient de D109, tenue.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-croix-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-croix-5345f6ad.png",
+   "voulu": "D109 : la croix ✕ remplace le ‹ (sa page q2b est statique, le retour n'y est pas jouable)"
   },
   {
    "id": "etat-sugg-absolu",
@@ -54,7 +71,19 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : Absolu actif, l'effet du groupe passe de ~+0,9 à ~+16, les rails suivent.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-absolu-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-absolu-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "texte=Absolu",
+    "geste": "toucher",
+    "attendu": [
+     "Au style",
+     "Absolu"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-radar",
@@ -71,7 +100,22 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Le radar est là (12 axes, zone, ma bière, légende) mais plus petit, sous les cartes, avec la liste des barres dessous : plus de « ‹ 10′ › » pour décaler le moment, plus de « Appliquer à la recette », plus de case « montrer sur le radar », plus de « +11 voies ».",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-radar-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-radar-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/suggestions-radar.html",
+    "selecteur_choisie": "[aria-label^=\"Appliquer à la recette\"]",
+    "geste": "repos",
+    "attendu": [
+     "Appliquer à la recette",
+     "Montrer sur le radar",
+     "Plus tôt",
+     "Voir les 11 autres voies"
+    ],
+    "interdit": [],
+    "note": "le bouton Radar de q2b est statique : le mode Radar (« ‹ 10′ ›, Appliquer, case radar) se mesure sur la page suggestions-radar.html de la base v4.10, qu'il a validée (m4, h4)"
+   }
   },
   {
    "id": "etat-sugg-hors-houblon",
@@ -88,7 +132,20 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : même volet, mêmes quatre pistes et sources, défilé jusqu'à lui.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-hors-houblon-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-hors-houblon-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "texte=Hors houblon",
+    "geste": "toucher",
+    "attendu": [
+     "Amertume dans le haut de la bande du style",
+     "Malt torréfié",
+     "Oxydation du houblon"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-plus",
@@ -105,7 +162,18 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : ✓ sur Aurum, « Comparer (3) » en bas et dans l'onglet.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-plus-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-plus-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "[aria-label=\"Ajouter Aurum à la comparaison\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Comparer (3)"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-comparer-n",
@@ -122,7 +190,19 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : ouvre #/comparer?h=motueka,idaho-7 (Comparer r6a, son choix) ; q2b ouvrait son Comparer statique, remplacé par r6a (D107).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-comparer-n-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-comparer-n-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "a[data-role=\"comparer\"]",
+    "geste": "toucher",
+    "attendu": [
+     "IBU",
+     "non établi"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-piste-objectif",
@@ -139,7 +219,20 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "La piste sort de la carte : deux rails pleine largeur sous les cartes (floral : barre violette ; résineux : segments vert/orange jusqu'au repère 16D) ; la carte ne garde que le verdict.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-piste-objectif-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-piste-objectif-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "section[data-role=\"objectif\"]",
+    "geste": "repos",
+    "attendu": [
+     "Atteint",
+     "atteint la visée"
+    ],
+    "interdit": [],
+    "rang": 2
+   }
   },
   {
    "id": "etat-sugg-groupes-effet",
@@ -156,7 +249,20 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Un seul groupe (Golding, Motueka, Aurum, East Kent Goldings, Columbus, Motueka + Citra cryo, Citra cryo ; ~+0,9) ; le 2e groupe n'existe plus (Nelson Sauvin et Galaxy passent en Remplacer et Dry hop) ; un rail au lieu de deux barres.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-groupes-effet-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-groupes-effet-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "section[data-role=\"objectif\"]",
+    "geste": "repos",
+    "attendu": [
+     "même effet sur tes objectifs",
+     "+1 cran",
+     "+2 crans"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-assembler",
@@ -173,7 +279,20 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "La voie existe (5+5 g, ~+0,4 estimé) mais sans barre à droite de l'axe central : un petit rail sous la ligne ; l'axe vertical central a disparu de toute la liste.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-assembler-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-assembler-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "section[data-role=\"objectif\"]",
+    "geste": "repos",
+    "attendu": [
+     "Assembler 5 + 5 g",
+     "Motueka + Citra cryo",
+     "Motueka + Nelson Sauvin"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-remplacer",
@@ -190,7 +309,21 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Cinq remplaçants (Motueka 74 g, Citra cryo 24 g, Nelson Sauvin 62 g, Galaxy 35 g, Hallertau Blanc 63 g) avec ~+0 / ~−0,1 écrits et un petit rail ; les barres à deux traits sont remplacées par un chiffre.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-remplacer-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-remplacer-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "section[data-role=\"objectif\"]",
+    "geste": "repos",
+    "attendu": [
+     "Remplacer Nugget",
+     "Motueka",
+     "Hallertau Blanc",
+     "Nelson Sauvin"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-dry-hop",
@@ -207,7 +340,22 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "« Dry hop 4 g/L · après 3 j · estimé » : quatre voies (Idaho 7 ✓ ~+1,3 ; Target, Cascade, Galaxy ~+0,9) ; pastilles de biotransformation et « creep » absentes de la ligne ; « actif » devient « après 3 j ».",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-dry-hop-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-dry-hop-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "section[data-role=\"objectif\"]",
+    "geste": "repos",
+    "attendu": [
+     "Dry hop",
+     "actif",
+     "Motueka",
+     "20 g",
+     "creep"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-levure",
@@ -224,7 +372,8 @@
    },
    "verdict_5345f6ad": "absent",
    "ecart": "Aucun groupe « Changer de levure » : la liste finit sur le dry hop. Levure est un écran au choix ouvert ; l'absence ici n'a pas été décidée par lui.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-levure-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-levure-5345f6ad.png",
+   "voulu": "D35 : le groupe « Changer de levure » ne revient pas dans Suggérer (L10 : Levure est un écran au choix ouvert)"
   },
   {
    "id": "etat-sugg-coeur",
@@ -241,7 +390,20 @@
    },
    "verdict_5345f6ad": "different",
    "ecart": "Le ♡ devient un cœur rouge plein (un seul état) ; le menu « aimer / neutre / exclure » n'existe plus (exclure : visée à 0, D108).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-coeur-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-coeur-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/etat-b.html",
+    "selecteur_choisie": "[aria-label^=\"Mon goût pour Golding\"]",
+    "geste": "toucher",
+    "attendu": [
+     "aimer",
+     "neutre",
+     "exclure"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-fiche",
@@ -258,7 +420,19 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : fiche g1 en feuille plein écran (α 4–6 %, radar 12 axes, familles, ♡ ⊘, Comparer).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-fiche-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-fiche-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/etat-b.html",
+    "selecteur_choisie": "[data-houblon]",
+    "geste": "appui-long",
+    "attendu": [
+     "sans famille",
+     "Floral"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-ibu-details",
@@ -275,7 +449,19 @@
    },
    "verdict_5345f6ad": "absent",
    "ecart": "Pas de volet : l'IBU reste en tête (60) mais l'IBU après chaque voie n'est écrit nulle part sur Suggérer.",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-ibu-details-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-ibu-details-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "texte=IBU après chaque voie",
+    "geste": "toucher",
+    "attendu": [
+     "IBU après chaque voie",
+     "style"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-bandeau-ibu",
@@ -292,7 +478,20 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : même bandeau, collé sous la tête au défilement (visible sur la capture défilée).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-bandeau-ibu-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-bandeau-ibu-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/etat-b.html",
+    "selecteur_choisie": "contient=EBC",
+    "geste": "repos",
+    "attendu": [
+     "IBU",
+     "OG",
+     "EBC"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-legende",
@@ -309,7 +508,8 @@
    },
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : « ? » à côté de « Au style | Absolu » ouvre une carte de légende (Carte, Piste, Sous un picto, Usage).",
-   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-legende-5345f6ad.png"
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-legende-5345f6ad.png",
+   "voulu": "D113 : le « ? » de légende (sa page q2b statique ne le rend pas)"
   }
  ]
 }

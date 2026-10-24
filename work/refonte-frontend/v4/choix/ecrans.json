@@ -1,5 +1,5 @@
 {
- "maj": "2026-10-23",
+ "maj": "2026-10-24",
  "regle": "« C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10). Chaque écran repart de la maquette qu'il a choisie, telle qu'il l'a vue (CLAUDE.md, règle n° 1 ; D105).",
  "usage": "controle-choix.mjs <dossier construit> : chaque écran « choisi » passe controle-reprise avec son inventaire (et ses contrôles) ; un écran « ouvert » est signalé avec ses options. À mettre à jour à chacun de ses choix, avec ses mots.",
  "ecrans": [
@@ -16,7 +16,10 @@
     "work/refonte-frontend/v4/tournoi/outils/controle-geste-etape.mjs {dossier}",
     "work/refonte-frontend/v4/tournoi/outils/controle-appui.mjs {dossier} --etape",
     "work/refonte-frontend/v4/tournoi/outils/controle-legende.mjs {dossier} --etape",
-    "work/refonte-frontend/v4/tournoi/outils/controle-profil-ouvre.mjs {dossier}"
+    "work/refonte-frontend/v4/tournoi/outils/controle-profil-ouvre.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=etape",
+    "work/refonte-frontend/v4/tournoi/outils/controle-fonctions-rail.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-geste-etape.mjs {dossier} --froid"
    ]
   },
   {
@@ -28,7 +31,8 @@
    "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-biere-390.png",
    "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-ma-biere.json",
    "controles": [
-    "work/refonte-frontend/v4/tournoi/outils/controle-visee.mjs {dossier}"
+    "work/refonte-frontend/v4/tournoi/outils/controle-visee.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=biere"
    ]
   },
   {
@@ -40,7 +44,8 @@
    "capture": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/captures/q2b-b-390.png",
    "inventaire": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/donnees/inventaire-q2b.json",
    "controles": [
-    "work/refonte-frontend/v4/tournoi/outils/controle-traits.mjs {dossier}"
+    "work/refonte-frontend/v4/tournoi/outils/controle-traits.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=suggerer"
    ]
   },
   {
@@ -69,7 +74,8 @@
     }
    ],
    "controles": [
-    "work/refonte-frontend/v4/tournoi/outils/controle-comparer-etapes.mjs {dossier}"
+    "work/refonte-frontend/v4/tournoi/outils/controle-comparer-etapes.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=comparer"
    ],
    "note": "r6a donne la forme (inventaire) ; D107 y met les étapes, l'état au moment de l'ajout et la référence à la manière de x3b (lot 21, « Ma cuve, jour après jour », notée le 20.10 « pour de la comparaison entre ma bière de base -> 1 dry hop, 2 dry hop: levure ») : 3 éléments « d107- » de l'inventaire, et controle-comparer-etapes. Pas le Comparer de la base v4.10 (« Non pas cette version »)."
   },
@@ -83,7 +89,8 @@
    "controles": [
     "work/refonte-frontend/v4/tournoi/outils/controle-fiche.mjs {dossier} ma-biere --pages=etat.html",
     "work/refonte-frontend/v4/tournoi/outils/controle-fiche-baseline.mjs {dossier} ma-biere --page=etat.html",
-    "work/refonte-frontend/v4/tournoi/outils/controle-fiche-radar.mjs {dossier}"
+    "work/refonte-frontend/v4/tournoi/outils/controle-fiche-radar.mjs {dossier}",
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=fiche"
    ],
    "note": "La forme de la fiche se vérifie sur sa page (fiche/etat.html, ouverte) par l'inventaire g1 ; le geste (appui long, survol à l'ordinateur) par controle-fiche et controle-fiche-baseline depuis l'étape Houblons.",
    "inventaire": "work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-fiche.json"
@@ -106,13 +113,15 @@
   {
    "ecran": "substituer",
    "route": "substituer",
-   "statut": "ouvert",
-   "options": [
-    "la porte vers Comparer",
-    "un outil propre (u4)"
+   "statut": "choisi",
+   "choix": "u4 (lot 11, fils11-substitution)",
+   "mots": "Substitution, ça serait plus du u4",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils11-substitution/captures/u4-vue-390.png",
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=substituer",
+    "work/refonte-frontend/v4/tournoi/outils/controle-annuler.mjs {dossier} --routes=substituer"
    ],
-   "provisoire": "la porte",
-   "page": "https://claude.ai/artifact/9FrNPBUDv7ABeo5CsSFW7g"
+   "note": "Son choix du 19.10 (« Substitution, ça serait plus du u4 » ; le jury mettait u3 devant), confirmé par « Ajouter, vue -> substituer à faire dans le git » (23.10, #145). Le registre le marquait « ouvert » avec la « porte vers Comparer » du conseil du 22.10 en provisoire : une carte mise à la place de sa parole (règle n° 1). Rétabli par le pilote après le conseil complet du 24.10 (cerveau/decisions/2026-10-24-lot-d125-vues.md, D34). Les états de u4 : choix/etats/substituer.json (voie r6). Le lot D125 explore Substituer en fils de fer avec u4 en plancher ; il choisit sur les variantes."
   },
   {
    "ecran": "levure",
