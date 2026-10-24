@@ -146,6 +146,9 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
   Substituer à deux colonnes (#145, commenté).
 - Mission maquette-parcours signée par l'autre session (c0d684ca, VOIES OK 18/18). Ses 4 leçons proposées sont fusionnées
   (L13, L17, L26, M10), et la dette de portée réglée : sujets normalisés, portée inconnue refusée par cablage (56527630).
+- 24.10, matin : D122 (« ????? » sur « ~ simulé » de Comparer ; fil 552eb2dd de la maquette 24.10, ouvert), 9a8744a2.
+  Confié à « En attente » avec les variantes de la liste de la fiche (D115) ; publication en attente de ses réponses
+  D121 et D112, sinon D122 et la page D115 ensemble.
 - **Prochaine action** : son choix D121 et sa réponse sur D112 ; les variantes de la liste de la fiche (D115) ; puis les
   tickets #145 et #146, l'architecture (#143) et t1-theme, à relancer sur la nouvelle construction.
 
