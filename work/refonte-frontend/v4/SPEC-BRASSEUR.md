@@ -506,7 +506,10 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   clean ». p4b2 et flb5 : trois versions nettoyées chacune, par leurs auteurs, montrées dans leur rangée. Sur gr5 (les traits
   de Suggérer, le cran au doigt et les crans comptés) : « Ça c'est top à mettre dans la vraie version » (r11, dans Suggérer).
   Sur u4 enrichi : « U4 enrichir semble vraiment mieux même si pas du 100% regarde pour faire quelques petites variante,
-  amélioration » (cinq variantes d'un seul point chacune, u4e1 à u4e5).
+  amélioration » (cinq variantes d'un seul point chacune, u4e1 à u4e5). Sur flb5, dans la planche de la fiche : « Le header
+  est inutile, header type 10 » (l'en-tête de flz4, « Situer un mot », sur les versions de flb5). Puis : « J'aime beaucoup le
+  9 car ont voit que c'est pas que du 16d, le houblon a vraiment beaucoup plus de subtilité. À montré aussi, notamment pour
+  la comparaison » (acquis : ce que le houblon dit en plus de ses familles, dans la fiche et dans Comparer, r10).
 - **À quoi a servi le quota** (24.10, soir), mot pour mot : « En quoi tout ces quota ont été utile ??? ». Le 24.10, la
   plus grande part est allée à l'outillage (contrôles, cerveau, un délai de test débogué) et à des panels de 48, quand rien
   ou presque ne lui avait été montré. Le quota sert d'abord ce qu'il verra : montrer tôt ce qui est fait (L11).

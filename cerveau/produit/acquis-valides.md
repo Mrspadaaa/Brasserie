@@ -35,6 +35,7 @@ Plancher à enrichir, pas plafond ([[le-brasseur-choisit]]).
 | Picto « épicé » : cannelle et clou croisés (f1 de la série F, r4d) | « Mon Picto préféré est cannelley clou croisé. Ça doit être changé dans la baseline » (23.10) | symbole `p-spice` de `fils17-standard/v3/planche.html` |
 | La maquette jouable de bout en bout (construction d332792c) | « La nouvelle maquette (artefacts) est un vrai bon point de départ » (23.10, soir) | base du travail suivant : [[maquette-jouable]] |
 | Le tableau « Arômes 16D » de u4 (familles au style et hors style, une barre par houblon, pointillé = non décrit) | « Ça c'est vraiment bien » (24.10, soir, coche sur la capture de u4) ; mais l'ensemble « Trop centré ibu quand même » | Substituer, à tous les moments |
+| flb5, « La preuve par contraste » : ce que le houblon dit en plus de ses familles de la 16D (ses mots, ce que lui seul dit) | « J'aime beaucoup le 9 car ont voit que c'est pas que du 16d, le houblon a vraiment beaucoup plus de subtilité. À montré aussi, notamment pour la comparaison » (24.10, soir) | fiche, Comparer |
 
 Contrôle de présence, écrit le 22.10 : `controle-acquis.mjs` (D99). Sur un écran Comparer, il exige
 le radar, la chimie, le panel OSU et les vraies valeurs, balisés `data-acquis`. À ajuster avant le
