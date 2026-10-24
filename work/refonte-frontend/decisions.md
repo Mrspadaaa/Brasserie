@@ -504,3 +504,10 @@ de sa maquette font foi (« double usage »). Suggérer et Comparer : tout ce qu
 refus postérieurs (la règle « ‹ visée | visée › », D91) et le groupe « Changer de levure » (L10 ; Levure ouvert), qui passera
 en variantes. Quantité : la base v4.10 et le stock en petit badge ; la mise à jour des tickets #122 et #123 attend l'accord
 de l'utilisateur.
+## D36 — Le conseil dans la création (24.10.2026, matin)
+
+Sa demande, mot pour mot : « Faire intervenir le conseil aussi pour la partie création ». Après le tri de chaque panel D125
+(liste de la fiche, Substituer) et sur la passe 4 de Dryhopper, un conseil rapide (six regards, le Brasseur en Fable, un
+président en Opus) reçoit la synthèse du critique et les planches de captures ; il conteste le classement et fixe les cinq
+candidates et leurs greffes, dont partent les passes 2. Le critique garde le tri et le jugement de chaque variante ; un
+désaccord entre eux après une passe passe en avis croisé. Le brasseur voit tout le panel et choisit.
