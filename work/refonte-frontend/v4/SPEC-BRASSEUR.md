@@ -450,6 +450,11 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
 - **Un vrai bon point de départ** (23.10, soir, après ses 17 fils de commentaires), mot pour mot : « La nouvelle maquette
   (artefacts) est un vrai bon point de départ. Bien la rendre disponible pour les prochaines sessions. Bien consigné son
   état aussi ». Copie figée : `outils/pages/2026-10-23-maquette/` ; état : `cerveau/produit/maquette-jouable.md`.
+- **« ~ simulé »** (24.10, matin, commentaire sur la maquette 24.10, posé sur la pastille « ~ simulé » du radar de Comparer),
+  mot pour mot : « ????? ». La pastille vient de r6a (`r6a-simule`) : elle dit que le radar et les « ~ » sont calculés par
+  le moteur (fiches, dose, moment, levure), pas mesurés. Son sens n'est que dans un `title`, invisible au doigt ; la
+  toucher ne montre rien (vérifié). Elle reste (r6a), mais doit se comprendre là où on la lit, sans un mot de plus au
+  repos, comme les traits (D110). D122.
 - **La maquette jouable ne suit pas ses choix** (23.10, soir, sur la maquette de bout en bout), mot pour mot : « Mais
   ça semble pas du tout correspondre aux choix que j'ai fait de maquette de base ??? ». Sur la capture de q2b (lot 15,
   Suggestions) : « Ça oui, c'est effectivement l'un de mes choix ». Sur celle de Ma bière de la base v4.10 : « Ça
