@@ -30,12 +30,14 @@ const legende = (id) => JSON.parse(X(id + '.json')).legende.filter((l) => l.leng
 const G = {
   gr1: { titre: 'Les barres de Ma bière', sous: 'au style', ou: 'Ma bière et l\'étape Houblons',
     a: () => `<div data-jg-vue="style">${figer(X('gr1.html'))}</div><div data-jg-vue="absolu" hidden>${figer(X('gr2.html'))}</div>`,
-    b: ['le mot sous le doigt', 'barres'], c: ['le haut du 16D nommé', 'barres'] },
+    b: ['le mot sous le doigt', 'barres'], c: ['le haut du style, un trait', 'barres'] },
   gr2: { titre: 'Les barres en absolu', sous: 'faible, moyen, marqué', ou: 'Ma bière, après « Absolu »',
     a: () => `<div data-jg-vue="absolu">${figer(X('gr2.html'))}</div><div data-jg-vue="style" hidden>${figer(X('gr1.html'))}</div>`,
     b: ['le mot sous le doigt', 'barres'], c: ['au style, l\'absolu au doigt', 'barres-style'] },
   gr3: { titre: 'Le radar de Ma bière', sous: 'et sa grille', ou: 'Ma bière, après « Radar »',
-    a: () => figer(X('gr3.html')), b: ['le sommet au doigt', 'radar'], c: ['la grille au doigt, le 16D nommé', 'radar'] },
+    a: () => figer(X('gr3.html')), b: ['le sommet au doigt', 'radar'], c: ['la grille au doigt', 'radar'],
+    // m4 n'a pas de lentille en mode Radar (CRITIQUE gr3) : la lentille au style (D75) reste où elle est, à l'étape.
+    pied: () => `<section class="jg-l jg-pied"><h2 class="jg-n"><span>le même profil, à l'étape</span></h2><div class="jg-cadre">${figer(X('etape.html'))}</div></section>` },
   gr4: { titre: 'Le radar de la fiche', sous: 'Nugget', ou: 'la fiche, à l\'appui long',
     a: () => figer(X('gr4.html')), b: ['les mots des fiches au doigt', 'fiche'], c: ['face à ma bière', 'fiche'],
     pied: () => `<section class="jg-l jg-pied"><h2 class="jg-n"><span>sous la fiche : l'étape</span></h2><div class="jg-cadre">${figer(X('etape.html'))}</div></section>` },
@@ -76,6 +78,7 @@ const CSS = `
 .jg-bulle{position:fixed;z-index:9;max-width:300px;background:#fff;border:1.5px solid #1d1d1b;border-radius:8px;padding:6px 10px;font:14px/1.3 system-ui,sans-serif;color:#1d1d1b;box-shadow:0 6px 18px rgba(0,0,0,.18);pointer-events:none}
 .jg-bulle b{font-weight:700}.jg-bulle span{color:#3a3a38}
 .jg-bulle[hidden]{display:none}
+body[data-jg-id="gr1"] .jg-bulle{max-width:378px;white-space:nowrap}
 .jg-haut{position:absolute;top:-5px;bottom:-5px;width:2px;background:#1d1d1b;border-radius:2px;margin-left:-1px;pointer-events:none}
 .jg-hautlab{position:absolute;top:-19px;font:600 12px/1 system-ui,sans-serif;color:#1d1d1b;white-space:nowrap;transform:translateX(-50%);pointer-events:none}
 .jg-rempli{position:absolute;left:0;top:2px;bottom:2px;border-radius:999px;opacity:.85;pointer-events:none}

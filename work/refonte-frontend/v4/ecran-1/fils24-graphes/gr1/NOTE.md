@@ -7,12 +7,14 @@ Honnêteté : chaque mot de bulle est lu dans le DOM figé (position du rond et 
 ## Les trois lectures
 - **1a tel qu'il est** : Ma bière, Barres, Au style (reprise r2, `parcours-biere/biere/etat.html`). La lentille marche : elle bascule sur la vue absolue figée.
 - **1b le mot sous le doigt** : le doigt sur une famille → « Agrumes · à peine · ~ prévu », « Résineux · au-dessus du 16D ×2,8 · dégusté 18.10 », « Noyau · non situé : inconnu, pas zéro ». La ligne touchée se cerne.
-- **1c le haut du 16D nommé** : au repos, un trait noir au haut de la zone du style sur chaque barre, nommé une fois (« haut du 16D ») ; au doigt, la barre se remplit jusqu'au rond à la couleur de la famille, et la bulle ajoute « ~4 % du haut du 16D ».
+- **1c le haut du style, un trait** : au repos, un trait noir au haut de la zone du style sur chaque barre, sans mot (repère, pas légende) ; au doigt, la barre se remplit jusqu'au rond à la couleur de la famille, et la bulle, sur une ligne, dit « Agrumes · ~4 % du haut du 16D » (« Résineux · ×2,8 du haut du 16D · dégusté 18.10 »).
 
-Ce qui tient : c'est le DOM de la maquette. Ce qui casse : « haut du 16D » frôle « zone du style · au-dessus » de la ligne des pastilles. À l'étape, les mêmes barres sont en deux colonnes : la lecture retenue s'y appliquera, elle n'est pas montrée ici.
+Passe 2 (CRITIQUE.md, rejet de 1c) : le mot « haut du 16D » écrit au repos est retiré ; il n'est plus dit que dans la bulle.
+
+Ce qui tient : c'est le DOM de la maquette. À l'étape, les mêmes barres sont en deux colonnes : la lecture retenue s'y appliquera, elle n'est pas montrée ici.
 
 Captures (`../captures/`, 390 × 844 tactile) : gr1-repos.png (premier écran), gr1-toucher.png (1b, Agrumes), gr1-toucher-c.png (1c, Agrumes), gr1-page.png (page entière).
 
 ## Sorties des contrôles (24.10, planche entière)
 - G1 (GATES) → JEU-BIEN.
-- G2 `controle-commun.mjs work/refonte-frontend/v4/ecran-1/fils24-graphes gr1 gr2 gr3 gr4 gr5 gr6 --page=etat.html --sans=mots` → couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, legende, parlant, brutes OK ; **COMMUN OK** (mots sauté par GATES.md : la page empile trois fois le graphe). Au premier essai, COULEURS ECHEC sur gr3 et gr5 (2 teintes) : corrigé par les cartes d'objectif réelles de Suggérer en 5a et la bande de Nugget dans le contexte.
+- G2 `controle-commun.mjs work/refonte-frontend/v4/ecran-1/fils24-graphes gr1 gr2 gr3 gr4 gr5 gr6 --page=etat.html --sans=mots` → couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, legende, parlant, brutes OK ; **COMMUN OK** (mots sauté par GATES.md : la page empile trois fois le graphe). Au premier essai, COULEURS ECHEC sur gr3 et gr5 (2 teintes) : corrigé par les cartes d'objectif réelles de Suggérer en 5a et la bande de Nugget dans le contexte. Rejoué après la passe 2 (gr1, gr3, gr6) : COMMUN OK.

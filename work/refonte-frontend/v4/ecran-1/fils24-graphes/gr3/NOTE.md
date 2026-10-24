@@ -7,12 +7,12 @@ Honnêteté : chaque mot de bulle est lu dans le DOM figé (position du rond et 
 ## Les trois lectures
 - **3a tel qu'il est** : Ma bière, après « Radar » : radar m4 (dégustation en bleu, zone grise du 16D, « ? » hachurés) et la grille pas senti · faible · moyen · marqué.
 - **3b le sommet au doigt** : le doigt sur le radar → le rayon de la famille se trace à sa couleur, sa ligne de grille se cerne ; bulle « Résineux · marqué, au-dessus du 16D · dégusté 18.10 » ou « Agrumes · pas goûté : inconnu, pas zéro · le 16D va jusqu'à ~faible » (lu sur l'aria-label du radar et le contour de la zone).
-- **3c la grille au doigt, le 16D nommé** : au repos, la zone grise porte son nom (« 16D »), et une lentille Au style · Absolu (Absolu retire la zone : la dégustation est déjà en paliers absolus) ; le doigt sur une ligne de la grille trace le rayon de sa famille sur le radar.
+- **3c la grille au doigt** : m4 tel quel au repos ; le doigt sur une ligne de la grille trace le rayon de sa famille sur le radar, cerne la ligne et dit « Floral · pas goûté : inconnu, pas zéro · le 16D va jusqu'à ~moyen ».
 
-Écart : la maquette n'a pas de lentille en mode Radar ; 3c l'ajoute (D75, au style partout). À lui montrer, pas imposé.
+Passe 2 (CRITIQUE.md, rejet de 3c) : la lentille ajoutée au radar et le mot « 16D » écrit sur la zone sont retirés (m4 ne change pas ; « Pas besoin d'écrire la légende »). Une lentille en mode Radar serait une question à part, en mini maquette. Sous les trois, « le même profil, à l'étape » : le profil de l'étape figé, qui porte la lentille au style (D75), comme en gr4.
 
 Captures (`../captures/`, 390 × 844 tactile) : gr3-repos.png (premier écran), gr3-toucher.png (3b, Résineux), gr3-toucher-c.png (3c, Floral), gr3-page.png (page entière).
 
 ## Sorties des contrôles (24.10, planche entière)
 - G1 (GATES) → JEU-BIEN.
-- G2 `controle-commun.mjs work/refonte-frontend/v4/ecran-1/fils24-graphes gr1 gr2 gr3 gr4 gr5 gr6 --page=etat.html --sans=mots` → couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, legende, parlant, brutes OK ; **COMMUN OK** (mots sauté par GATES.md : la page empile trois fois le graphe). Au premier essai, COULEURS ECHEC sur gr3 et gr5 (2 teintes) : corrigé par les cartes d'objectif réelles de Suggérer en 5a et la bande de Nugget dans le contexte.
+- G2 `controle-commun.mjs work/refonte-frontend/v4/ecran-1/fils24-graphes gr1 gr2 gr3 gr4 gr5 gr6 --page=etat.html --sans=mots` → couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, legende, parlant, brutes OK ; **COMMUN OK** (mots sauté par GATES.md : la page empile trois fois le graphe). Au premier essai, COULEURS ECHEC sur gr3 et gr5 (2 teintes) : corrigé par les cartes d'objectif réelles de Suggérer en 5a et la bande de Nugget dans le contexte. Rejoué après la passe 2 (gr1, gr3, gr6) : COMMUN OK.

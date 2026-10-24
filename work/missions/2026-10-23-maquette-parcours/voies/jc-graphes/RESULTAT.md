@@ -1,4 +1,4 @@
-OK — planche des six graphes : chacun figé tel quel, deux lectures au doigt dessous
+OK — planche des graphes, passe 2 : gr1, gr3 et gr6 corrigés selon CRITIQUE.md
 
 ## Fichiers écrits (tous dans `work/refonte-frontend/v4/ecran-1/fils24-graphes/`)
 - `gr1/` à `gr6/` : `etat.html` et `NOTE.md` (rôle jeu court, ce qui tient, ce qui casse, sorties des contrôles).
@@ -19,13 +19,20 @@ Pour **a** (« tel qu'il est »), le DOM rendu de ses écrans choisis (reprises 
 - G2 → `COMMUN OK` : couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, legende, parlant et brutes OK ; mots sauté (`--sans=mots`). Au premier essai, COULEURS ECHEC sur gr3 et gr5 (2 teintes). Corrigé avec deux vrais éléments de la base : les cartes d'objectif de Suggérer en 5a, et la bande des familles de Nugget dans la ligne de contexte.
 - `git status` : rien hors de « Possède ». `extraire.mjs` et `sonde2.mjs` (sonde supprimée) apparaissent suivis : un commit les a pris pendant la coupure.
 
+## Passe 2 (CRITIQUE.md : rejet de gr1, gr3 et gr6 ; gr2, gr4 et gr5 acceptées, NOTE inchangées)
+- gr1 : en 1c, « haut du 16D » n'est plus écrit au repos ; le trait reste. La bulle tient sur une ligne : « Agrumes · ~4 % du haut du 16D ». La lecture s'appelle maintenant « le haut du style, un trait ».
+- gr3 : en 3c, la lentille ajoutée au radar m4 et le mot « 16D » sont retirés ; m4 reste tel quel, et la grille au doigt trace le rayon. La lentille au style (D75) reste dans « le même profil, à l'étape » (profil figé), comme en gr4.
+- gr6 : la ligne « Panel OSU… › » et le paragraphe « ~ simulé par le moteur… », placés après le tableau dans r5, sont retirés : le radar est suivi des colonnes. En 6b, quand le doigt est au nord, la bulle passe sous le radar.
+- Recapturées et ouvertes : gr1, gr3, gr6 (repos, toucher, toucher-c, page). gr2, gr4 et gr5 n'ont pas changé de comportement (régénérées par le script commun, captures gardées).
+- G1 → JEU-BIEN ; G2 → COMMUN OK (rejoué sur les six pages).
+
 ## Captures
 `work/refonte-frontend/v4/ecran-1/fils24-graphes/captures/gr{1..6}-repos.png`, `-toucher.png`, `-toucher-c.png`, `-page.png`.
 
 ## Prédiction
 « Ah, là je vois lequel me bloque : les petits traits, et 5c ou 1b se lisent sans légende. » Il désignera probablement 5c et 1b. Il trouvera la page longue, puisque chaque graphe y est montré trois fois.
 
-DÉCISION À PRENDRE : 3c ajoute une lentille Au style · Absolu au radar m4, que la maquette n'a pas en mode Radar (D75). 4c lit les flèches de la fiche comme ses objectifs de Ma bière. Ces deux points sont à lui montrer, pas à imposer.
+DÉCISION À PRENDRE : une lentille Au style · Absolu en mode Radar (m4) serait une question à part, à lui poser en mini maquette (CRITIQUE gr3) ; non faite ici. 4c lit les flèches de la fiche comme ses objectifs de Ma bière.
 
 CONNAISSANCE : figer le DOM rendu de la maquette jouable (outerHTML et `style.css` copiée) donne une copie exacte d'un écran choisi, contrôlable par controle-commun. Il faut renommer dans l'extrait `data-houblon`, `ligne-houblon`, `legende` et les id de React, qui appartiennent à la page.
 
