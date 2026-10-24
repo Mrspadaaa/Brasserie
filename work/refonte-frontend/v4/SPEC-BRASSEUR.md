@@ -530,6 +530,19 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   carte du houblons doit bien contenir de façon exhaustive TOUTES ses informations. » La fiche porte tout ce que le dépôt sait du
   houblon, au premier plan ou à un toucher ; le pied de flu2b, entier. D132. Puis, sur une capture de flu2b (Nugget) où il
   entoure ♡ ⊘ « Comparer » et « Styles › Huiles › Sources › Substituts › », mot pour mot : « Le footer est top ».
+- **La recherche avancée, plus tard** (24.10, soir), mot pour mot : « Faire en Todo la recherche avancée, mettre dans le git.
+  Pas si utile pour le moment. Ajoute les mini maquettes ». Issue #151 en P3, `status:deferred`, les douze mini maquettes
+  gardées dans le dépôt (commit 7f9cac8c) et montrées dans l'issue. D60.
+- **Les légendes, plus loin** (24.10, soir, sur « la légende ouverte » de la planche des légendes), mot pour mot : « Ça à
+  l'air top, poussé même le concept un peu plus loing avec taux d'intensité et + d'info sur les caractéristiques spéciales ».
+  Passe 2 de leg1 à leg4 (il ne dit pas laquelle) : un taux d'intensité par famille tiré des fiches, et les mots hors des 12,
+  les mots précis et ce que les fiches disent en propre.
+  Puis, sur la même vue : « Fait moi 5 version un peu modifié améliorer de cette version » : cinq versions de leg3 (en tête du
+  critique ; la vue ne dit pas laquelle il regardait).
+- **Dryhopper, ses retours** (24.10, soir, sur la galerie de toutes ses mini maquettes), mot pour mot : sur la frise de y1b
+  (« Le brassin au doigt », lot 21) : « Une frise de ce type est vraiment intéressant aussi, un peu à retravailler » ; sur w2
+  (« Trois plans », lot 21) : « Ça c'est vraiment très intéressant ». Puis : « Faire des mini maquettes du dryhopping avec mes
+  feedback ». Lot « Dryhopper, avec ses retours » : p4b2f en base, la frise de y1b, les trois plans de w2 (D59).
 - **Commentaires sur la maquette publiée** (24.10, soir), mot pour mot :
   - en-tête de l'étape (« Houblons 3/7 ») : « Text header inutile » ;
   - le × d'une carte du rail (Falconer's Flight) : « C'est quoi ça ? Ça créé un slider horizontal ??? À enlever » ;

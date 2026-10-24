@@ -612,3 +612,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   Suggérer et en dernière case des effets (discret, les mots au toucher) ; la phrase « X seul dit … » de « Ses mots » de Comparer
   retirée (la vue reste à reprendre) ; les légendes sous les pastilles, en mini maquettes (lot leg) ; le moment proposé par le
   moteur (10′) : noté pour la vraie app.
+- D59 (le brasseur, 24.10 soir : « Faire des mini maquettes du dryhopping avec mes feedback ») : lot de douze variantes sur sa
+  p4b2f (règle n° 1 : la base reste), trois séries : la frise de y1b retravaillée (dga), les trois plans de w2 (dgb), libre
+  (dgz, Fable) ; critique dg ; planche dans un artefact neuf.
+- D60 (le brasseur, 24.10 soir : « Faire en Todo la recherche avancée, mettre dans le git. Pas si utile pour le moment. Ajoute
+  les mini maquettes ») : #151 passe en P3 et `status:deferred` ; les douze mini maquettes, leurs captures et les verdicts sont
+  commités (7f9cac8c), la branche poussée, les images posées dans l'issue.
