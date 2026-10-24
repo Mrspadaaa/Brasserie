@@ -33,6 +33,7 @@ Fini veut dire :
 | t1-branche-verte | #160 (T1) : un houblon inconnu rend « non simulé » au lieu d'une exception, test rouge sur HEAD puis vert ; tests du prototype dans le Vitest de la racine ; parcours wizard → hopV55 → retour joué dans Chrome | jugement | auteur | sonnet | 70 | `prototypes/houblons-v4/parcours/src/moteur/index.ts`, `prototypes/houblons-v4/tests/`, `vitest.config.ts`, `voies/t1-branche-verte/**` | — | `voies/t1-branche-verte/verifier.mjs` ; npm run build | pilote | — |
 | t14-url | #161 (T14 minimal) : résolveur commun de page cible et `controle-choix.mjs --url` ; CHOIX OK sur la maquette servie, témoin servi en échec | jugement | auteur | sonnet | 70 | `work/refonte-frontend/v4/tournoi/outils/lib/`, `…/controle-choix.mjs` et les contrôles appelés, `…/servir.mjs`, `…/temoins/choix-url-*/`, `prototypes/houblons-v4/maquettes/parcours-t14/`, `voies/t14-url/**` | t1-branche-verte | `voies/t14-url/verifier.mjs` ; controle-choix --registre | pilote | — |
 | t3-pile | #162 (T3) : pile de routes dans App, le wizard monté sous les couches d'outils, retours existants inchangés, drapeau hopV4 éteint, joué dans Chrome | conception | auteur | opus | 90 | `src/pages/useFullScreenRoute.ts`, `src/App.tsx`, `src/ui/hopIndex/devHook.ts`, `src/ui/hopIndex/HopToolLayer.tsx`, `src/ui/hopIndex/flags.ts`, `tests/integration/`, `tests/unit/`, `voies/t3-pile/**` | t1-branche-verte | `voies/t3-pile/verifier.mjs` (suite complète) ; npm run build | pilote | — |
+| t4-moteur | #163 (T4) : le moteur v4 et ses données déménagent dans `src/domain/hopIndex/v4/` et `src/data/hopV4/`, une seule copie ; maquette et tests importent de là ; rien de plus au démarrage | jugement | auteur | sonnet | 80 | `src/domain/hopIndex/v4/`, `src/data/hopV4/`, `prototypes/houblons-v4/src/`, `prototypes/houblons-v4/data/`, chemins d'import de `prototypes/houblons-v4/parcours/src/` et `prototypes/houblons-v4/tests/`, `voies/t4-moteur/**` | t1-branche-verte, t3-pile, t14-url | `voies/t4-moteur/verifier.mjs` ; batterie 46/46 ; controle-etats | pilote | — |
 
 Chemins de « Possède » : relatifs à la racine du dépôt ; `voies/…` est relatif au dossier de cette mission.
 
@@ -64,5 +65,14 @@ Chemins de « Possède » : relatifs à la racine du dépôt ; `voies/…` est r
 - `work/missions/2026-10-23-theme-performance/voies/t2-performance/RESULTAT.md`
 - `work/refonte-frontend/v4/choix/ecrans.json`
 - Épopée #159 ; issues #119, #121, #143, #144, #148, #149
+
+## Reprise (25.10, vers 1 h)
+
+- Fait et poussé (`claude/refonte-houblons-v4`) : état des lieux i0 (relu), conseil D65, épopée #159 et issues #160 à #176 ; T1 (#160), T14 (#161), T3 (#162) fermées.
+- #177 : 14 tests déjà rouges sur HEAD (atelier V5.5, monkey, YeastRecipeChoice) ; bloque la bascule, pas les tâches.
+- En vol : t4-moteur (#163). Ensuite, dans l'ordre du verdict : T5 (#164), T6 (#165), T17 (#166), T9 (#167), T11 (#168), T8 (#169), T12 (#170), T7 si le banc échoue (#171), T10 (#172), T13 (#173), T15 (#174), T16 (#175), T18 (#176).
+- Méthode par tâche : VOIE.md et GATES.md avec un `verifier.mjs` qui échoue d'abord sur HEAD ; agent auteur (Sonnet, Opus pour une direction) ; le pilote rejoue chaque critère, regarde les captures, committe, pousse, ferme l'issue avec ses preuves et coche l'épopée.
+- Le budget d'ouverture d'une couche (100 ms ×4) se mesure sur le build de production, pas sur le serveur de dev (~400 ms) : T17.
+- Attendent l'utilisateur : retrait de V5.5, service worker, fusion des catalogues, catalogue réel (R9), PR et fusion vers main. Attendent le brasseur : états d'attente, budget t2, Comparer r6a++, Dryhopper, Levure.
 
 ## Signature
