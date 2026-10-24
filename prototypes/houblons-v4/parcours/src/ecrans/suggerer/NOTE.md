@@ -1,5 +1,30 @@
 # Suggérer — q2b, « Quel houblon ajouter à ma bière ? » (voie p2-suggerer ; reprise D105, 23.10 soir)
 
+## Reprise D124 (24.10, voie r4) : tous les états de q2b
+
+« Ça a bien avancé mais […] certaines de mes choix ont été perdue » (D124). Relevé : `work/refonte-frontend/v4/choix/etats/suggerer.json`
+(18 états) ; chaque déclencheur porte `data-etat` (controle-etats.mjs).
+- **Trois cartes** comme q2b : Moins résineux · Plus floral · Plus agrumes. Sans visée, la demande de q2b (`DEMANDE_Q2B`,
+  voies.ts : + floral, + agrumes, − résineux) ; le moteur rend alors exactement les voies de q2b (Motueka… Citra cryo, puis
+  Nelson Sauvin, Galaxy, Hallertau Blanc ; Assembler Motueka + Nelson Sauvin ; Remplacer Nugget par Motueka 74 g,
+  Hallertau Blanc 63 g, Nelson Sauvin 62 g ; dry hop actif Motueka 20 g) et ses IBU (62,7 ; 61,4…). Verdict de q2b : la
+  meilleure voie **qui reste au style** (Plus floral : Approche ; Plus agrumes : Atteint ; Moins résineux : Aucune).
+- **Barres divergentes l5b** (divergent.tsx) : l'axe central noir sur toute la liste, la visée en tirets ; à droite ce qui
+  monte, à gauche ce qui baisse ; un couloir par objectif ; plein (marqué), pâle (cité), blanc (baisse ou sans fiche),
+  orangé hors style, hachures (non établi). Une fois par groupe au même effet (« +1 cran », « +2 crans »), puis une
+  rangée sous chaque voie hors cadre (Assembler, Remplacer, Dry hop). Plus de chiffre « ~+0,4 » à la place des barres.
+- **Deux groupes « = même effet »**, chacun dans son cadre à bord noir.
+- **Dry hop · actif** : le levier « houblonner à froid en fermentation active » du moteur (proposeVoies, leviersLevure),
+  avec les pastilles de biotransformation de q2b (floral → agrumes, tropical et baies, « creep », yeastSignals). Le dry
+  hop « 4 g/L après 3 j » du simulateur (Idaho 7), ajouté par 5345f6ad, est retiré : il n'est pas dans q2b et touche
+  Dryhopper (choix ouvert).
+- **IBU après chaque voie (ma bière 59,7 ; style 50–70)** : le repli de q2b, l'IBU de chaque voie lu du moteur.
+- **♡ → aimer · neutre · exclure** (base v4.10) ; exclure retire ses voies, « Exclus : … × » les rend.
+- **Mode Radar** de la base v4.10 (vue-radar.tsx) : objectifs en rangées, radar à 12 axes (ma bière, la voie montrée en
+  plein), trois voies avec « ‹ 10′ › » (par 5′, de premier moût au whirlpool), dérive d'IBU, « Montrer sur le radar »,
+  « Appliquer à la recette » (Annuler) et « +11 ».
+- Retraits : la bande « ‹ visée | visée › » (D91) ; le groupe « Changer de levure » (D35, Levure au choix ouvert).
+
 ## Base
 
 - **q2b**, son choix : q2 (« cella là », 19.10, 14 h 34), puis q2b (« C'est effectivement qb2 reprise le mieux », 19.10,
@@ -77,15 +102,13 @@ j'ai vraiment choisir ?? »). Inventaire : `fils15-s5-complexe/donnees/inventair
 
 ## Écarts
 
-- **Deux cartes, pas trois.** q2b (cas c1 du lot 15) avait « Plus agrumes ». La stout S1 du parcours n'a que deux
-  objectifs dans sa dégustation du 18.10 (plus floral, moins résineux), comme la base v4.10.
+- ~~Deux cartes, pas trois~~ : remplacé par la reprise D124 (trois cartes, comme q2b).
 - **Pas de question en titre, pas de ligne de contexte** (D117, sa base) : `controle-une-question` (G5) les exige ; il échoue
   sur ces deux points. Conflit signalé au pilote (RESULTAT.md) ; son choix prime (règle n° 1).
 - **Le « ? » de la légende reste**, discret, entre les deux lentilles : ses mots D89 (« il faut un bouton légende un peu
   caché pour pas que ça gêne ») et `controle-legende` (G3). L'inventaire D117 le dit « en plus » : à trancher par le pilote.
-- « IBU après chaque voie » (repli du bas de la base) : absent ; l'adaptateur ne rend pas l'IBU d'une voie.
-- Groupe « Dry hop · 4 g/L · après 3 j » : il vient de `suggerer` (simulateur, dégustation comprise), pas de
-  `proposer`, qui ne propose pas de dry hop ici. Idaho 7 n'est que là. Les verdicts comparent l'effet de la meilleure
+- « IBU après chaque voie » : rendu (D124), lu de `voie.ibu.after`.
+- Groupe « Dry hop · actif » (D124) : le levier du moteur, comme q2b ; le dry hop du simulateur (Idaho 7) est retiré. Les verdicts comparent l'effet de la meilleure
   voie au cran voulu : Atteint, le cran entier ; Approche, la moitié au moins.
 - « Diminuer Nugget » (voie du moteur) n'a pas de ligne : il n'y a pas de houblon à comparer. Les leviers levure de
   q2b passent par l'étape Levure (p4).

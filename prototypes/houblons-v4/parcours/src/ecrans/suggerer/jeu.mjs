@@ -20,14 +20,16 @@ export default {
         const r = p.etat.recette;
         // La direction de l'écran (objectifs de la visée commune, en crans) ; au départ, sans visée, la demande dégustée.
         const dir = JSON.parse(document.querySelector('[data-libre="houblon"]').dataset.direction);
-        if (!Object.keys(p.etat.visee).length && JSON.stringify(dir) !== JSON.stringify({ floral: 1, resin: -1 })) return `direction ${JSON.stringify(dir)} ; la dégustation demande + floral, − résineux`;
+        if (!Object.keys(p.etat.visee).length && JSON.stringify(dir) !== JSON.stringify({ floral: 1, citrus: 1, resin: -1 })) return `direction ${JSON.stringify(dir)} ; q2b demande + floral, + agrumes, − résineux`;
         const vs = p.moteur.proposer(r, dir).voies.filter((v) => ['ajouter', 'assemblage', 'remplacer à IBU égal'].includes(v.type));
         const manque = vs.filter((v) => !document.querySelector(`[data-ecran="suggerer"] [data-voie][data-id="${v.id}"]`)).map((v) => v.label);
         if (manque.length) return `voies du moteur absentes : ${manque.join(' ; ')}`;
         if (!document.querySelector('[data-groupe="meme-0"]')) return 'pas de groupe « même effet »';
-        if (!document.querySelector('[data-voie][data-id^="dryhop-beermaverick-idaho-7"]')) return 'Idaho 7 absent du geste Dry hop';
+        const dh = window.__suggerer.dryhopActif(r, dir);
+        if (!dh.length || dh.some((v) => !document.querySelector(`[data-groupe="dryhop"] [data-voie][data-id="${v.id}"]`))) return 'dry hop actif du moteur absent du geste Dry hop';
+        if (!document.querySelector('[data-groupe="dryhop"] [data-role="bio"]')) return 'pastilles de biotransformation absentes';
         const a = p.etat.aComparer;
-        if (!a.includes('beermaverick-idaho-7')) return `proposés : ${a.join(', ')}`;
+        if (!a.includes('beermaverick-motueka') || !a.includes('beermaverick-nelson-sauvin')) return `proposés : ${a.join(', ')}`;
         const pont = document.querySelector('[data-role="pont-comparer"]');
         if (!pont || pont.disabled || pont.textContent.indexOf(`Comparer (${a.length})`) < 0) return `pont : ${pont && pont.textContent}`;
         return true;
@@ -39,22 +41,15 @@ export default {
       verifier: (p) => {
         const r = p.etat.recette, sc = p.moteur.style(r.styleCode);
         const dir = JSON.parse(document.querySelector('[data-libre="houblon"]').dataset.direction);
-        const vs = p.moteur.proposer(r, dir).voies, cs = p.moteur.suggerer(r, 'floral');
+        const vs = [...p.moteur.proposer(r, dir).voies, ...window.__suggerer.dryhopActif(r, dir)];
         const fautes = [];
         let familles = 0;
         for (const ligne of document.querySelectorAll('[data-ecran="suggerer"] [data-voie]')) {
           const id = ligne.dataset.id;
-          let effets, cles;
-          if (id.startsWith('dryhop-')) {
-            const c = cs.find((x) => `dryhop-${x.cle}` === id);
-            if (!c) { fautes.push(`${id} inconnu du moteur`); continue; }
-            effets = Object.fromEntries(Object.entries(c.lu.ecart).map(([f, e]) => [f, e ? e.centre : null])); cles = [c.cle];
-          } else {
-            const v = vs.find((x) => x.id === id);
-            if (!v) { fautes.push(`${id} inconnu du moteur`); continue; }
-            effets = Object.fromEntries(Object.entries(v.effect).map(([f, e]) => [f, e.established && e.central != null ? e.central : null]));
-            cles = [...new Set(v.actions.map((a) => a.hopKey))];
-          }
+          const v = vs.find((x) => x.id === id);
+          if (!v) { fautes.push(`${id} inconnu du moteur`); continue; }
+          const effets = Object.fromEntries(Object.entries(v.effect).map(([f, e]) => [f, e.established && e.central != null ? e.central : null]));
+          const cles = [...new Set(v.actions.map((a) => a.hopKey))];
           const bougent = Object.entries(effets).filter(([, e]) => e != null && Math.abs(e) >= 0.5);
           for (const [f, e] of bougent) {
             familles++;
@@ -71,7 +66,7 @@ export default {
             const u = ligne.querySelector(`[data-role="usage"][data-pour="${cle}"]`);
             if (!u || u.dataset.usage !== (role.value ?? 'inconnu') || u.dataset.source !== src) fautes.push(`${id} : usage de ${cle} ${u && u.dataset.usage}/${u && u.dataset.source}, hopRole ${role.value}/${src}`);
             const al = p.regles.hopAlpha(cle);
-            const el = ligne.querySelector(`[data-houblon="${cle}"]`)?.parentElement?.querySelector('[data-role="alpha"]');
+            const el = ligne.querySelector(`[data-role="alpha"][data-pour="${cle}"]`);
             const lu = el ? parseFloat(el.textContent.replace(',', '.')) : NaN;
             if (al && Math.abs(lu - al.value) > 0.05) fautes.push(`${id} : α de ${cle} ${lu}, moteur ${al.value}`);
           }
@@ -81,21 +76,31 @@ export default {
       },
     },
     {
-      nom: '« + » sur Golding (à acheter) : ajouté à la comparaison',
+      nom: '« + » sur Aurum (à acheter) : ajouté à la comparaison',
       faire: 'toucher',
-      cible: '[data-voie][data-id$="golding"] [data-role="ajouter"], [data-voie] [data-role="ajouter"][aria-label="Ajouter Golding à la comparaison"]',
+      cible: '[data-voie] [data-role="ajouter"][aria-label="Ajouter Aurum à la comparaison"]',
       verifier: (p) => {
         const a = p.etat.aComparer;
-        if (!a.includes('beermaverick-golding')) return `Golding absent de la comparaison : ${a.join(', ')}`;
+        if (!a.includes('beermaverick-aurum')) return `Aurum absent de la comparaison : ${a.join(', ')}`;
         const pont = document.querySelector('[data-role="pont-comparer"]');
         return pont.textContent.indexOf(`Comparer (${a.length})`) >= 0 ? true : `pont : ${pont.textContent}`;
       },
     },
     {
-      nom: '« ✓ » sur Golding : retiré',
+      nom: '« ✓ » sur Aurum : retiré',
       faire: 'toucher',
-      cible: '[data-voie] [data-role="ajouter"][aria-label="Retirer Golding de la comparaison"]',
-      verifier: (p) => (p.etat.aComparer.includes('beermaverick-golding') ? 'Golding encore dans la comparaison' : true),
+      cible: '[data-voie] [data-role="ajouter"][aria-label="Retirer Aurum de la comparaison"]',
+      verifier: (p) => (p.etat.aComparer.includes('beermaverick-aurum') ? 'Aurum encore dans la comparaison' : true),
+    },
+    {
+      // Proposés au départ, Motueka et Nelson Sauvin cochent l'assemblage : le ✓ les retire tous deux, le « + » les remet.
+      nom: '« ✓ » sur l’assemblage Motueka + Nelson Sauvin : les deux houblons sortent',
+      faire: 'toucher',
+      cible: '[data-groupe="assembler"] [data-role="ajouter"][aria-pressed="true"]',
+      verifier: (p) => {
+        const a = p.etat.aComparer;
+        return !a.includes('beermaverick-motueka') && !a.includes('beermaverick-nelson-sauvin') ? true : `comparaison : ${a.join(', ')}`;
+      },
     },
     {
       nom: '« + » sur l’assemblage Motueka + Nelson Sauvin : les deux houblons',
@@ -147,23 +152,25 @@ export default {
       nom: 'lentille absolu : l’effet du groupe en points',
       faire: 'toucher',
       cible: '[data-ecran="suggerer"] [data-e="absolu"]',
-      verifier: () => (/~\+\d+$/.test((document.querySelector('[data-groupe="meme-0"] .font-mono')?.textContent || '').trim()) ? true : 'effet du groupe pas en points'),
+      verifier: () => (/^[+−]\d+$/.test((document.querySelector('[data-groupe="meme-0"] .pq-sg-lab')?.textContent || '').trim()) ? true : 'effet du groupe pas en points'),
     },
     {
-      nom: 'vue Radar : ma bière et les voies retenues',
+      nom: 'vue Radar (base v4.10) : ma bière, la voie montrée, « ‹ 10′ › », Appliquer',
       faire: 'toucher',
       cible: '[data-ecran="suggerer"] [data-e="radar"]',
       attendre: 'svg[data-radar][data-objet="suggerer"]',
-      verifier: (p) => {
+      verifier: () => {
         const n = document.querySelectorAll('svg[data-radar] [data-serie]').length;
-        return n >= 2 ? true : `radar : ${n} série(s)`;
+        if (n < 2) return `radar : ${n} série(s)`;
+        for (const l of ['Plus tôt', 'Montrer sur le radar', 'Appliquer à la recette']) if (!document.querySelector(`[aria-label^="${l}"]`)) return `« ${l} » absent`;
+        return true;
       },
     },
     {
       nom: 'retour aux barres',
       faire: 'toucher',
       cible: '[data-ecran="suggerer"] [data-e="barres"]',
-      verifier: () => (document.querySelector('[data-objectif] [data-role="piste"]') && !document.querySelector('svg[data-radar][data-objet="suggerer"]') ? true : 'pistes absentes ou radar resté'),
+      verifier: () => (document.querySelector('[data-objectif] [data-role="piste"]') && document.querySelector('[data-role="graphe"] [data-role="effet"]') && !document.querySelector('svg[data-radar][data-objet="suggerer"]') ? true : 'pistes et barres absentes ou radar resté'),
     },
     {
       // L'action de l'état commun, comme l'onglet Ma bière (D108 : bannir = visée à 0) : le crochet de test du socle.
@@ -174,11 +181,11 @@ export default {
     {
       nom: 'une carte « Sans épicé », et les voies du moteur pour la nouvelle direction',
       faire: 'attendre',
-      attendre: '[data-ecran="suggerer"] [data-objectif="spice"] .pq-suggerer-carte',
+      attendre: '[data-ecran="suggerer"] [data-objectif="spice"].pq-suggerer-carte',
       verifier: (p) => {
         const dir = JSON.parse(document.querySelector('[data-libre="houblon"]').dataset.direction);
         if (!(dir.spice < 0)) return `direction ${JSON.stringify(dir)} : l'épicé banni n'est pas demandé en baisse`;
-        const carte = document.querySelector('[data-objectif="spice"] .pq-suggerer-carte');
+        const carte = document.querySelector('[data-objectif="spice"].pq-suggerer-carte');
         if (!carte || !/Sans épicé/.test(carte.textContent)) return `carte : ${carte && carte.textContent}`;
         const vs = p.moteur.proposer(p.etat.recette, dir).voies.filter((v) => ['ajouter', 'assemblage', 'remplacer à IBU égal'].includes(v.type));
         const manque = vs.filter((v) => !document.querySelector(`[data-voie][data-id="${v.id}"]`)).map((v) => v.label);
@@ -191,9 +198,9 @@ export default {
       verifier: (p) => { p.envoyer({ type: 'visee/fixer', famille: 'spice', valeur: null }); return true; },
     },
     {
-      nom: 'la demande dégustée revient (Golding)',
+      nom: 'la demande de q2b revient (Aurum)',
       faire: 'attendre',
-      attendre: '[data-ecran="suggerer"] [data-voie] [data-houblon="beermaverick-golding"]',
+      attendre: '[data-ecran="suggerer"] [data-voie] [data-houblon="beermaverick-aurum"]',
       verifier: (p) => (!document.querySelector('[data-objectif="spice"]') && !('spice' in p.etat.visee) ? true : 'visée de l’épicé restée'),
     },
     {

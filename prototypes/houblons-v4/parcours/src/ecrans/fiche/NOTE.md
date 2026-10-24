@@ -11,19 +11,32 @@
 
 - g1-feuille : repris — la feuille de l'app (Sheet), presque pleine, le haut de la page assombri, « × » rond en haut à droite
 - g1-titre : repris — le nom du houblon en titre de la feuille, avec ⊙ quand son α vient d'un lot
-- g1-alpha : repris — « α 9,5–16 % » en gros (plage des fiches), « lot 13 % » à côté et sa jauge dans la plage
+- g1-alpha : repris — « α 11–14 % » en gros (la fiche la plus récente, Hopsteiner 2025, comme g1), « lot 13 % » à côté,
+  la réglette de g1 (chaque fiche sur 0–25 %, mon lot en trait) ; la note d'honnêteté sous l'α (cryo : « α : plages de
+  Citra en pellets ; la fiche du cryo manque. » ; lot hors de toutes les plages : « Mon lot … : hors des plages de ses fiches. »)
 - g1-usage : repris — l'usage en mots dans une pastille (« double usage »)
 - g1-bande : repris — la bande des 12 familles en couleur, en tête du bloc gris
-- g1-familles : repris — le bloc gris : picto au trait (D93), nom, « 2/4 », et les mots des fiches dessous
-- g1-premier : repris — « nommé en premier » sur la famille que les fiches citent en premier
-- g1-sans-famille : repris — « sans famille : gingembre, resiny », avec la part « autres » dessinée au-delà de 25 % (D100)
+- g1-familles : repris — le bloc gris : picto au trait (D93), nom, « 2/4 » (rien à une seule fiche, jamais « 1/1 »), et les
+  mots des fiches dessous, dans l'ordre de la bande ; « 1 seule fiche : Beer Maverick » à droite de la bande
+- g1-premier : repris — « nommé en premier » sur une famille citée par une seule fiche qui la nomme en premier (g1 : Épicé
+  pour Nugget, Agrumes pour Citra cryo ; plus sur les quatre familles de 5345f6ad)
+- g1-sans-famille : repris — « sans famille : gingembre, resiny », avec la part « autres » dessinée à sa part réelle (D100, « autres 14 % »)
 - g1-non-decrites : repris — « 5 non décrites : Noyau, Pépins, Baies, Melon, Végétal »
-- g1-radar : repris — le grand radar légendé : chaque axe nommé avec « 2/4 », les inconnus « ? » hachurés, les flèches de sa demande
-- g1-demande : repris — « + Floral 2/4 − Résineux 2/4 » sous le radar, lu dans la visée de l'onglet Ma bière (état commun)
-- g1-actions : repris — en pied, ♡ et ⊘ (son goût), et « Comparer » (ajoute le houblon à la comparaison et l'ouvre)
+- g1-radar : repris — le grand radar légendé : chaque axe nommé avec « 2/4 », les inconnus « ? » hachurés, les flèches de sa
+  demande ; l'échelle à 2 fiches au moins (une famille d'une seule fiche ne touche pas le bord) ; toucher un sommet ou son
+  secteur ouvre la bulle de g1 (« Melon : ses fiches ne le décrivent pas, inconnu (ce n'est pas zéro), posé au centre »)
+- g1-demande : repris — « + Floral 2/4 − Résineux 2/4 » sous le radar, lu dans la visée de l'onglet Ma bière (état commun) ;
+  « 1 seule fiche » et « inconnu » comme la fiche courte de Citra cryo
+- g1-actions : repris — en pied, ♡ et ⊘ (son goût : « Aimer Nugget », « Remettre neutre : Aimer Nugget »), et « Comparer »
+  (ajoute le houblon à la comparaison et l'ouvre)
 
 ## Idées reprises
 
+- Le pied de g1 (D124, rendu par la voie r3) : Styles › · Huiles › · Sources › · Substituts ›, repliés, un seul déplié à la fois
+  (Replis.tsx) : styles d'un fournisseur ; huile totale et composants avec leur source ; α et β de chaque fiche datée, mon lot,
+  origine, auteurs de chaque famille, descripteurs ; remplaçants à 60′ (8, comme g1) du même calcul que Substituer
+  (`remplacants`, en stock d'abord : les 6 premiers sont ceux de u4) et le pont « Remplacer Nugget › » vers Substituer.
+  Lecture des fiches : sources.ts (catalogue du moteur en direct, rien de recopié).
 - α du lot balisé `data-role="alpha" data-source="lot"` : c'est le premier α de la fiche (D93 B3) ; la plage est la
   lecture en gros, comme g1.
 - La demande et les flèches suivent la visée posée dans l'onglet Ma bière (bannir, −, +).
@@ -44,6 +57,9 @@
 
 - Les familles portent leur picto au trait au lieu du carré de couleur de g1 : D93 (« ça suit pas la Baseline »).
 - La table des IBU par moment n'y est pas (« Inutile »), ni « Ajouter à 10′ » (« palace holder ? »).
+- Les étiquettes de Styles et des descripteurs sont des puces séparées (g1 les collait : « West Coast IPANEIPASession IPA »).
+- La bulle du radar se déclenche aussi sur le secteur entier de la famille (un sommet inconnu est posé au centre, trop
+  petit sous le doigt).
 
 ## Pour l'app
 
@@ -59,4 +75,10 @@
 - `Sheet` devrait accepter des attributs `data-*`, une largeur maximale et une cible de focus initiale. La maquette
   les pose sur la feuille après son ouverture : `data-role="fiche"`, cadre de 768 px à l'ordinateur (D10), focus sur la
   fiche et non sur « × ». Le « click » qui suit un appui long est avalé (350 ms) pour ne pas refermer la feuille.
+- Le voile de la feuille : la pile d'inertie de PageShell pose `inert` sur le voile de vaul (un enfant du corps hors du
+  dialogue) ; le toucher tombait sur `<html>` (la feuille se fermait quand même, par « toucher hors »). La fiche retire
+  `inert` du voile et lui rend le toucher (`data-etat="etat-fiche-fermer-fond"`). À l'intégration : exclure le voile d'un
+  Sheet de la pile (src/pages/PageShell.tsx), plutôt que ce retrait.
+- La croix : son icône de 20 px prend un trait de 1,6 (1,33 px rendu, comme les icônes de 16 px ; D83 S4) ; feuille.css lui
+  donne 2,25 : à aligner à l'intégration.
 - Les goûts s'écriront dans Dexie (préférences du brasseur) ; les mots des fiches viendront du catalogue réel.

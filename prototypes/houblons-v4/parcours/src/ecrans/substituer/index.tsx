@@ -1,25 +1,32 @@
-// Substituer, la porte : « Lequel à la place de Nugget ? ». Facteur libre : le remplaçant (L10) ; le moment,
-// le style et la règle de dose (à IBU égal à chaud, à masse égale à froid) sont fixés. L'original est épinglé
-// en colonne 1 ; les remplaçants du moteur (substitutes, « en stock d'abord ») suivent, classés, en colonnes
-// qui défilent sous l'original. Chaque colonne dit, dans l'ordre du brasseur : α (lot d'abord), usage, dose à
-// IBU égal (et sa plage par l'α), les arômes, ce qu'on perd et ce qu'on gagne en familles, puis ma bière après
-// le remplacement, au style, sur les familles qui comptent pour ce style, et la proximité calculée.
-// Toucher une colonne la choisit ; « Remplacer » l'inscrit et revient à Ma bière ; « Annuler », à côté (D120), et la
-// croix abandonnent.
-// Classes propres préfixées pq-substituer- (L26).
-import { useMemo, useState } from 'react';
-import { Pin } from 'lucide-react';
-import { CadreOutil, COULEURS, COURT, FAMILIES, Inconnu, Legende, LigneContexte, PiedAnnuler, Picto, Pont, Simule, nombre, plage, type Echelle } from '../../commun';
+// Substituer = u4, son choix du 19.10 (« Substitution, ça serait plus du u4 » ; fils11-substitution/u4/vue.html,
+// capture captures/u4-vue-390.png), reprise telle qu'elle est, moteur v4 en direct (voie r6, 24.10, D34) :
+//  1. la réponse en une phrase (« Magnat et Yeoman, 99 sans inconnue. ») et la plage de ceux qu'une composante
+//     inconnue ouvre (« Altus, Trident, Zenia vont de 78 à 99. ») ;
+//  2. l'échelle de ressemblance 50–100 à paliers (partiel, proche, très proche), huit remplaçants (cinq du catalogue,
+//     trois du stock) rangés par le pire cas : un point si tout est connu, une plage hachurée sinon ; stock en icône ;
+//  3. le face à face, même IBU, sur la grammaire de Comparer p3 : bandes (usage, stock, dose), α par source (lot ou
+//     article nommé), arômes en barres face au style (attendues d'abord, « hors 16D », « ce n'est pas zéro »), radar D3,
+//     β, huiles, relation au style ; puis « Ajouter … aux achats » et « Lire ces scores ».
+// Écarts voulus : la croix (D109) ; « Annuler » à côté de « Remplacer » en pied (D120) ; la légende des gestes derrière
+// « ? » (D89). Plancher enrichi (L07) : toucher un remplaçant le met au face à face et en fait le remplaçant (u4 :
+// « choix des deux comparés statique ») ; « Ma bière avec chacun », au style ou en absolu (D75) ; la part des mots
+// sans famille (L14) ; « à 60′, surtout l'amertume ». Classes propres préfixées pq-substituer- (L26).
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { CadreOutil, COULEURS, COURT, FAMILIES, Inconnu, Legende, PiedAnnuler, Picto, Pont, Simule, nombre, plage, type Echelle } from '../../commun';
 import { useNavigation } from '../../coquille/navigation';
 import { useBrouillon, useGestes, useRecette } from '../../etat/EtatParcours';
 import { quandDe, remplacer, trouver } from '../../etat/operations';
 import type { AjoutParcours, RecetteParcours } from '../../etat/types';
-import { houblon, ibuAjout, lireBiere, nomMoment, remplacants, style, type BiereLue, type FamilleLue, type HoublonLu } from '../../moteur';
+import { houblon, ibuAjout, lireBiere, nomMoment, style, type BiereLue, type FamilleLue, type HoublonLu } from '../../moteur';
 import type { FamilyId } from '../../../../src/engine';
-import { AlphaLu, Autres, StockIcone, Usage } from '../fiche/briques';
+import { Usage } from '../fiche/briques';
 import { useFiche } from '../fiche/FicheHoublon';
 import { Lentille } from '../ma-biere/Lentille';
 import { noterAvant } from '../ma-biere/repere';
+import { lireRemplacants, mesures, stockOriginal, TEXTE_STOCK, type Candidat, type EtatStock, type Intervalle } from './donnees';
+import { RadarU4 } from './Radar';
+import SYMBOLES from '../../../../data/pictos-familles.svg?raw';
 import './substituer.css';
 
 /** Dose du remplaçant à IBU égal, au demi-gramme (le moteur arrondit au gramme : jusqu'à 0,65 IBU d'écart). */
@@ -32,7 +39,91 @@ export function doseExacte(recette: RecetteParcours, ajoutId: string, cle: strin
   return { grams: g, recette: { ...r1, additions: r1.additions.map((x) => (x.id === ajoutId ? { ...x, grams: g } : x)) } };
 }
 
-/** Mini barre l5b, au style (zone = moitié gauche) ou en absolu ; rond = ma bière avec l'original. */
+// Couleurs de u4 : l'original en gris foncé, les deux comparés en Okabe et Ito (bleu, vert) ; gris pour les autres.
+const GRIS_ORIGINAL = '#4d4d4d';
+const SLOTS = ['#0072B2', '#009E73'] as const;
+/** Les mêmes, foncés pour un texte (4,5:1 au moins sur #f5f5f5, D86). */
+const SLOTS_TEXTE: Record<string, string> = { '#0072B2': '#0072B2', '#009E73': '#007a5c' };
+const GRIS_RANG = '#8a8a8a';
+
+/** Le stock en icône seule, celle de u4 : chariot (à acheter), boîte pleine (suffit), boîte basse (ne suffit pas),
+ * boîte pointillée (épuisé). Le mot est dans aria-label et title. */
+function IconeStock({ etat }: { etat: EtatStock }) {
+  const t = TEXTE_STOCK[etat];
+  const boite = <><rect x="3" y="3.5" width="10" height="10" rx="1.5" fill="none" stroke="#555" strokeWidth="1.3" strokeDasharray={etat === 'epuise' ? '2 1.5' : undefined} /><path d="M5 1.8h6" stroke="#555" strokeWidth="1.3" /></>;
+  return (
+    <svg className="pq-substituer-ico" viewBox="0 0 16 16" role="img" aria-label={t} data-stock={etat}>
+      <title>{t}</title>
+      {etat === 'acheter' ? (
+        <><path d="M1.5 2.5h2l1.6 8h7.4l1.5-5.5H4.3" fill="none" stroke="#555" strokeWidth="1.3" strokeLinejoin="round" /><circle cx="6.3" cy="13.3" r="1.2" fill="#555" /><circle cx="11.6" cy="13.3" r="1.2" fill="#555" /></>
+      ) : (
+        <>{boite}{etat === 'suffisant' && <rect x="4.5" y="5" width="7" height="7" rx=".5" fill="#555" />}{etat === 'insuffisant' && <rect x="4.5" y="9" width="7" height="3" rx=".5" fill="#555" />}</>
+      )}
+    </svg>
+  );
+}
+
+const fr = (v: number) => nombre(v, 2);
+
+/** Le picto de la planche standard (data/pictos-familles.svg, le même que <Picto>), dessiné en ligne plutôt que par
+ * <use> : son trait porte la couleur de la famille dans le document (lisible par les contrôles de couleur, D74). */
+const PLANCHE = typeof DOMParser === 'undefined' ? null : new DOMParser().parseFromString(SYMBOLES, 'image/svg+xml');
+function PictoEnLigne({ famille, taille = 16 }: { famille: FamilyId; taille?: number }) {
+  const s = PLANCHE?.getElementById(`p-${famille}`);
+  if (!s) return <Picto famille={famille} taille={taille} />;
+  const a = (n: string) => s.getAttribute(n) ?? undefined;
+  return (
+    <svg width={taille} height={taille} viewBox={a('viewBox') ?? '0 0 24 24'} data-famille={famille} className="shrink-0" role="img" aria-label={COURT[famille]}>
+      <g fill={a('fill')} stroke={a('stroke')} strokeWidth={a('stroke-width')} strokeLinecap={a('stroke-linecap') as 'round' | undefined}
+        strokeLinejoin={a('stroke-linejoin') as 'round' | undefined} dangerouslySetInnerHTML={{ __html: s.innerHTML }} />
+    </svg>
+  );
+}
+
+/** Les familles que ses fiches citent, marquées d'abord, en pictos à la couleur de la famille (L04 : les arômes en
+ * couleur sur la carte du houblon ; D74). Le détail cité / marqué est dans le tableau des arômes. */
+function PictosCites({ h, max = 5 }: { h: HoublonLu; max?: number }) {
+  const fs = FAMILIES.filter((f) => h.familles[f].niveau !== 'non décrit')
+    .sort((p, q) => (h.familles[q].niveau === 'marqué' ? 1 : 0) - (h.familles[p].niveau === 'marqué' ? 1 : 0));
+  if (!fs.length) return null;
+  return (
+    <span className="pq-substituer-pictos" aria-label={`Arômes cités : ${fs.map((f) => COURT[f]).join(', ')}`}>
+      {fs.slice(0, max).map((f) => <PictoEnLigne key={f} famille={f} taille={15} />)}
+      {fs.length > max && <span className="pq-substituer-gris">+{fs.length - max}</span>}
+    </span>
+  );
+}
+
+/** Une rangée de mesure (grammaire de Comparer p3) : sources en traits fins, plage, milieu moyen des sources en noir,
+ * le lot ou l'article nommé au-dessus. */
+function Rangee({ dom, nom, couleur, src, lot, mesure }: { dom: Intervalle; nom: string; couleur: string; src: Intervalle[]; lot?: { v: number; origine: 'lot' | 'article' } | null; mesure: string }) {
+  const x = (v: number) => `${Math.max(0, Math.min(100, ((v - dom[0]) / (dom[1] - dom[0])) * 100)).toFixed(1)}%`;
+  if (!src.length) {
+    return (
+      <div className="pq-substituer-mr" data-plage-inconnue={mesure} data-houblon={nom}>
+        <span className="pq-substituer-mr-h">{nom}</span><span className="pq-substituer-mr-v pq-substituer-gris">?</span>
+        <span className="pq-substituer-note">non renseigné</span>
+      </div>
+    );
+  }
+  const lo = Math.min(...src.map((s) => s[0])), hi = Math.max(...src.map((s) => s[1]));
+  const centre = src.reduce((t, s) => t + (s[0] + s[1]) / 2, 0) / src.length;
+  return (
+    <div className="pq-substituer-mr" style={{ ['--c' as string]: couleur }}>
+      <span className="pq-substituer-mr-h">{nom}</span>
+      <span className="pq-substituer-mr-v">{plage(lo, hi, 2)}</span>
+      <span className="pq-substituer-tb" data-plage="" data-houblon={nom} data-mesure={mesure} data-min={lo} data-max={hi}>
+        <span className="pq-substituer-tb-fond" />
+        <span className="pq-substituer-tb-pg" style={{ left: x(lo), width: `calc(${x(hi)} - ${x(lo)})` }} />
+        {src.map((s, i) => <span key={i} className="pq-substituer-tb-src" style={{ left: x(s[0]), width: `calc(${x(s[1])} - ${x(s[0])})`, top: 26 + i * 4 }} />)}
+        <span className="pq-substituer-tb-ctr" data-role="central" data-valeur={Math.round(centre * 100) / 100} style={{ left: x(centre) }} />
+        {lot && <span className={`pq-substituer-tb-lot ${lot.origine === 'article' ? 'pq-substituer-article' : ''}`} data-role="lot" data-valeur={lot.v} data-origine={lot.origine === 'article' ? 'article' : 'stock'} style={{ left: x(lot.v) }}>{lot.origine} {fr(lot.v)}</span>}
+      </span>
+    </div>
+  );
+}
+
+/** Mini barre l5b de Ma bière, au style (zone = moitié gauche) ou en absolu ; rond = ma bière avec l'original. */
 function MiniBarre({ x, avant, echelle }: { x: FamilleLue; avant?: FamilleLue; echelle: Echelle }) {
   const haut = x.bande?.[1] ?? null;
   const pos = (v: number) => `${Math.max(0, Math.min(100, echelle === 'style' && haut ? (v / haut) * 50 : (v / 110) * 100)).toFixed(1)}%`;
@@ -41,23 +132,34 @@ function MiniBarre({ x, avant, echelle }: { x: FamilleLue; avant?: FamilleLue; e
   const f = x.famille;
   if (!x.valeur) return <span data-inconnu="" title={x.raison ?? 'inconnu'} className="pq-hachure block h-2 rounded-full" />;
   return (
-    <span data-barre={f} className="relative block h-2 rounded-full bg-cave-800/60">
+    <span data-barre={f} className="relative block h-2 rounded-full bg-cave-850">
       {zone && <i data-role="zone" className="absolute inset-y-0 rounded-full bg-cave-700/70" style={zone} />}
       <i className="absolute inset-y-0 left-0 rounded-full" style={{ width: pos(x.valeur.centre), background: x.horsStyle === 'au-dessus' ? '#c2410c' : COULEURS[f].base }} />
-      {avant?.valeur && <i className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full border-2 border-cave-50 bg-cave-900" style={{ left: pos(avant.valeur.centre) }} />}
+      {avant?.valeur && <i className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full border-2 border-cave-950 bg-cave-50" style={{ left: pos(avant.valeur.centre) }} />}
     </span>
   );
 }
 
-const Pictos = ({ familles, attenue = false, max = 5 }: { familles: FamilyId[]; attenue?: boolean; max?: number }) => (
-  <span className={`flex flex-wrap items-center gap-0.5 ${attenue ? 'opacity-60' : ''}`}>
-    {familles.slice(0, max).map((f) => <span key={f} data-famille={f} className="inline-flex"><Picto famille={f} taille={15} /></span>)}
-    {familles.length > max && <span className="text-xs text-cave-400">+{familles.length - max}</span>}
-    {!familles.length && <span className="text-xs text-cave-400">—</span>}
-  </span>
-);
+/** Le contexte de la tête de u4 (« remplaçants / à 60′ »), à droite du nom : rendu dans la tête du cadre (portail),
+ * car le contenu défile sous elle. */
+function ContexteTete({ children }: { children: ReactNode }) {
+  const [hote, setHote] = useState<Element | null>(null);
+  useEffect(() => {
+    let id = 0, n = 0;
+    const chercher = () => {
+      const t = document.querySelector('.pq-outil-substituer [data-page-titlebar]');
+      if (t) setHote(t); else if (++n < 30) id = requestAnimationFrame(chercher);
+    };
+    chercher();
+    return () => cancelAnimationFrame(id);
+  }, []);
+  return hote ? createPortal(children, hote) : null;
+}
 
-interface Col { cle: string; h: HoublonLu; dose: { grams: number; min: number; max: number; regle: string } | null; aromes: FamilyId[]; perd: FamilyId[]; gagne: FamilyId[]; biere: BiereLue; score: number | null; palier: string | null; composantes: { arome: number | null; huiles: number | null; amertume: number | null } | null; stock: string | null; epingle: boolean }
+interface Face { cle: string; nom: string; h: HoublonLu; couleur: string; stock: EtatStock; dose: { grams: number; min: number; max: number } | null; original: boolean; biere: BiereLue; cand: Candidat | null }
+
+const NIV = { 'non décrit': 0, 'cité': 1, 'marqué': 2 } as const;
+const liste = (xs: string[]) => (xs.length <= 1 ? xs.join('') : `${xs.slice(0, -1).join(', ')} et ${xs.at(-1)}`);
 
 export default function Substituer({ houblon: cle }: { houblon: string }) {
   const b = useBrouillon()!;
@@ -65,140 +167,337 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
   const gestes = useGestes();
   const { revenirMaBiere } = useNavigation();
   const fiche = useFiche();
-  const [echelle, setEchelle] = useState<Echelle>('style');
   const ajout: AjoutParcours | null = b.remplace ? trouver(b.recette, b.remplace.ajoutId) : null;
-  const liste = useMemo(() => (ajout ? remplacants(b.recette, ajout.id, 6) : []), [b.recette, ajout]);
-  const [choix, setChoix] = useState<string | null>(() => liste.find((r) => r.stock.etat === 'en stock' && r.stock.suffisant !== false)?.cle ?? liste[0]?.cle ?? null);
-  const cols = useMemo<Col[]>(() => {
-    if (!ajout) return [];
-    const h0 = houblon(cle);
-    const cites = (h: HoublonLu) => FAMILIES.filter((f) => h.familles[f].niveau !== 'non décrit').sort((p, q) => (h.familles[q].niveau === 'marqué' ? 1 : 0) - (h.familles[p].niveau === 'marqué' ? 1 : 0));
-    const original: Col = { cle, h: h0, dose: { grams: ajout.grams, min: ajout.grams, max: ajout.grams, regle: 'recette' }, aromes: cites(h0), perd: [], gagne: [], biere: lireBiere(b.recette), score: null, palier: null, composantes: null, stock: null, epingle: true };
-    return [original, ...liste.map((r): Col => {
-      const d = doseExacte(b.recette, ajout.id, r.cle);
-      return { cle: r.cle, h: r.houblon, dose: { grams: d.grams, min: r.dose.min, max: r.dose.max, regle: r.dose.regle }, aromes: cites(r.houblon), perd: r.familles.perd, gagne: r.familles.gagne,
-        biere: lireBiere(d.recette), score: r.score, palier: r.palier, composantes: r.composantes, stock: r.stock.etat, epingle: false };
-    })];
-  }, [ajout, liste, b.recette, cle]);
-  if (!ajout) return null;
-  const h = houblon(cle);
+  const lecture = useMemo(() => (ajout ? lireRemplacants(b.recette, ajout) : null), [b.recette, ajout]);
+  const cands = lecture?.candidats ?? [];
+  // u4 : Magnat, premier sûr à acheter ; Nelson Sauvin, premier du stock qui suffit. Il remplace par celui du stock.
+  const defauts = useMemo(() => {
+    const B = cands.find((c) => c.stock === 'suffisant') ?? null;
+    const A = cands.find((c) => c.min === c.max && c !== B && c.stock !== 'suffisant') ?? cands.find((c) => c !== B) ?? null;
+    const B2 = B ?? cands.find((c) => c !== A) ?? null;
+    return { compares: [A?.cle, B2?.cle].filter(Boolean) as string[], choix: B2?.cle ?? A?.cle ?? null };
+  }, [cands]);
+  const [compares, setCompares] = useState<string[]>(defauts.compares);
+  const [choix, setChoix] = useState<string | null>(defauts.choix);
+  const [echelle, setEchelle] = useState<Echelle>('style');
+  const [achats, setAchats] = useState<Set<string>>(() => new Set());
+  if (!ajout || !lecture) return null;
+
+  const h0 = houblon(cle);
   const sc = style(b.recette.styleCode);
   const q = quandDe(ajout, b.recette);
-  const ibu0 = ibuAjout(ajout, b.recette).ibu;
-  // Les familles qui comptent ici : celles que le style attend, puis celles hors du style dans ma bière.
-  const cles = [...sc.order.filter((f) => sc.families[f].status === 'attendue'), ...FAMILIES.filter((f) => cols[0]?.biere.profil[f].horsStyle)]
-    .filter((f, k, t) => t.indexOf(f) === k).slice(0, 4);
-  const choisi = cols.find((c) => c.cle === choix) ?? null;
+  const moment = nomMoment(q);
+  const amertume = lecture.contexte === 'amertume';
+  const biere0 = lireBiere(b.recette);
+  const doseDe = (c: Candidat) => doseExacte(b.recette, ajout.id, c.cle);
+
+  // Toucher un remplaçant : il entre au face à face (à la place de l'autre comparé) et devient le remplaçant.
+  const toucher = (c: string) => {
+    if (!compares.includes(c)) {
+      setCompares((cs) => {
+        if (cs.length < 2) return [...cs, c];
+        const garde = choix && cs.includes(choix) ? choix : cs[1];
+        return cs.map((x) => (x === garde ? x : c));
+      });
+    }
+    setChoix(c);
+  };
+
+  const faces: Face[] = [
+    { cle, nom: h0.nom, h: h0, couleur: GRIS_ORIGINAL, stock: stockOriginal(h0, b.recette), dose: { grams: ajout.grams, min: ajout.grams, max: ajout.grams }, original: true, biere: biere0, cand: null },
+    ...compares.map((k, i): Face | null => {
+      const c = cands.find((x) => x.cle === k);
+      if (!c) return null;
+      const d = doseDe(c);
+      return { cle: k, nom: c.nom, h: c.h, couleur: SLOTS[i], stock: c.stock, dose: { grams: d.grams, min: c.dose.min, max: c.dose.max }, original: false, biere: lireBiere(d.recette), cand: c };
+    }).filter((f): f is Face => !!f),
+  ];
+  // L'état « toucher un remplaçant » (u4 : Yeoman) : le premier rang qui n'est pas au face à face par défaut.
+  const premierLibre = cands.find((c) => !defauts.compares.includes(c.cle))?.cle ?? null;
+  const couleurDe = (k: string) => { const i = compares.indexOf(k); return i >= 0 ? SLOTS[i] : GRIS_RANG; };
+  const choisi = faces.find((f) => f.cle === choix && !f.original) ?? null;
+
+  // 1. La réponse : les meilleurs sans inconnue, puis la plage de ceux qu'une composante inconnue ouvre.
+  const surs = cands.filter((c) => c.min === c.max);
+  const hautSur = surs.length ? Math.max(...surs.map((c) => c.min)) : null;
+  const tete = surs.filter((c) => c.min === hautSur);
+  const ouverts = cands.filter((c) => c.min < c.max);
+  const reponse = tete.length ? `${liste(tete.map((c) => c.nom))}, ${hautSur} sans inconnue.` : `Aucun remplaçant sans inconnue.`;
+  const sousReponse = ouverts.length ? `${ouverts.map((c) => c.nom).join(", ")} ${ouverts.length > 1 ? 'vont' : 'va'} de ${Math.min(...ouverts.map((c) => c.min))} à ${Math.max(...ouverts.map((c) => c.max))}.` : null;
+
+  // 2. L'échelle 50–100 : paliers partiel 50, proche 65, très proche 80.
+  const P = (v: number) => ((Math.max(50, Math.min(100, v)) - 50) / 50) * 86 + 2;
+
+  // 3. Arômes face au style.
+  const attendues = sc.order.filter((f) => sc.families[f].status === 'attendue');
+  const niveaux = (h: HoublonLu) => Object.fromEntries(FAMILIES.map((f) => [f, NIV[h.familles[f].niveau]])) as Record<FamilyId, 0 | 1 | 2>;
+  const inconnues = FAMILIES.filter((f) => faces.every((x) => x.h.familles[f].niveau === 'non décrit'));
+  const horsStyle = FAMILIES.filter((f) => !attendues.includes(f) && !inconnues.includes(f));
+  const ligneArome = (f: FamilyId, att: boolean) => (
+    <div key={f} className={`pq-substituer-lg ${att ? 'pq-substituer-att' : ''}`} data-statut-style={att ? 'attendue' : 'neutre'} style={{ gridTemplateColumns: `1fr repeat(${faces.length}, 4.25rem)` }}>
+      <span className="pq-substituer-lg-nom"><Picto famille={f} taille={14} />{COURT[f]}</span>
+      {faces.map((x) => {
+        const d = x.h.familles[f], n = NIV[d.niveau];
+        return (
+          <span key={x.cle} className={`pq-substituer-crans ${n ? '' : 'pq-substituer-nd'}`} style={{ ['--c' as string]: x.couleur }} data-role="arome" data-col={x.cle}
+            data-houblon={x.nom} data-famille-fiche={f} data-niveau={n} data-sources={d.fiches} data-de={d.sur} title={`${x.nom}, ${COURT[f]} : ${d.niveau} (${d.fiches}/${d.sur})`}>
+            <i className={n >= 1 ? 'pq-substituer-on' : ''} /><i className={n >= 2 ? 'pq-substituer-on' : ''} />
+          </span>
+        );
+      })}
+    </div>
+  );
+
+  // 4. Mesures par source.
+  const M = Object.fromEntries(faces.map((x) => [x.cle, mesures(x.h)]));
+  const domaine = (rs: Intervalle[], pad: number): Intervalle => {
+    if (!rs.length) return [0, 1];
+    const lo = Math.min(...rs.map((r) => r[0])), hi = Math.max(...rs.map((r) => r[1]));
+    return [Math.max(0, Math.floor(lo - pad)), Math.ceil(hi + pad)];
+  };
+  const domA = domaine(faces.flatMap((x) => [...M[x.cle].alpha.src.map((s) => s.r), ...(M[x.cle].alpha.lot ? [[M[x.cle].alpha.lot!.v, M[x.cle].alpha.lot!.v] as Intervalle] : [])]), 1.5);
+  const domB = domaine(faces.flatMap((x) => M[x.cle].beta.src.map((s) => s.r)), 1);
+  const HUILES = [['myrcene', 'Myrcène'], ['humulene', 'Humulène'], ['caryophyllene', 'Caryophyllène'], ['linalool', 'Linalol']] as const;
+  const domH = (k: (typeof HUILES)[number][0]) => {
+    const rs = faces.map((x) => M[x.cle].huiles[k]).filter((r): r is Intervalle => !!r);
+    if (!rs.length) return [0, 1] as Intervalle;
+    const lo = Math.min(...rs.map((r) => r[0])), hi = Math.max(...rs.map((r) => r[1]));
+    const pad = Math.max(0.2, (hi - lo) * 0.35);
+    return [Math.max(0, Math.round((lo - pad) * 10) / 10), Math.round((hi + pad) * 10) / 10] as Intervalle;
+  };
+  const sansSource = faces.filter((x) => M[x.cle].alpha.src.length === 1).map((x) => x.nom);
+  const sousPlage = faces.filter((x) => { const l = M[x.cle].alpha.lot; const s = M[x.cle].alpha.src; return l && s.length && l.v < Math.min(...s.map((y) => y.r[0])); });
+  const surPlage = faces.filter((x) => { const l = M[x.cle].alpha.lot; const s = M[x.cle].alpha.src; return l && s.length && l.v > Math.max(...s.map((y) => y.r[1])); });
+  const aPlageDose = faces.filter((x) => !x.original && x.dose && x.dose.min !== x.dose.max);
+  const huileInconnue = faces.flatMap((x) => HUILES.filter(([k]) => !M[x.cle].huiles[k]).map(([, n]) => `${n} de ${x.nom}`));
+
+  // 5. Relation au style.
+  const nomsAtt = attendues.map((f) => COURT[f].toLowerCase());
+  const relation = (x: Face): ReactNode => {
+    const n = niveaux(x.h);
+    const cites = attendues.filter((f) => n[f] > 0), marques = attendues.filter((f) => n[f] === 2);
+    const m = M[x.cle];
+    const stout = m.styles.some((s) => /stout/i.test(s));
+    const emploi = m.styles.length
+      ? <> Employé en <span data-role="styles-usage" data-houblon={x.nom}>{m.styles.join(', ')}</span>{m.stylesSource ? ` (${m.stylesSource})` : ''}&nbsp;; {stout ? 'stout citée.' : 'aucune stout citée.'}</>
+      : <> Aucun style d’emploi dans le dépôt.</>;
+    const mots = m.mots.length ? <> <span data-role="descripteurs" data-houblon={x.nom}>{m.mots.join(', ')}</span> ({m.motsSource}).</> : null;
+    if (x.original) {
+      const dit = cites.length === attendues.length ? `cite ${attendues.length === 3 ? 'les trois' : 'toutes'}` : cites.length ? `cite ${liste(cites.map((f) => COURT[f].toLowerCase()))}` : `ne cite aucune des ${attendues.length}`;
+      return <><b>{x.nom}</b> {dit}{marques.length ? ` (${liste(marques.map((f) => COURT[f].toLowerCase()))} marqué${marques.length > 1 ? 's' : ''})` : ''}.{emploi}</>;
+    }
+    const perd = attendues.filter((f) => n[f] === 0);
+    const dit = !cites.length ? `ne cite aucune des ${attendues.length === 3 ? 'trois' : attendues.length}.`
+      : `garde ${liste(cites.map((f) => `${COURT[f].toLowerCase()} (${x.h.familles[f].niveau})`))}${perd.length ? `, perd ${liste(perd.map((f) => COURT[f].toLowerCase()))}` : ''}.`;
+    return <><b>{x.nom}</b> {dit}{mots}{emploi}</>;
+  };
+
+  // 6. Ma bière avec chacun (D75) : familles attendues, puis celles hors du style dans ma bière.
+  const clesBiere = [...attendues, ...FAMILIES.filter((f) => biere0.profil[f].horsStyle)].filter((f, k, t) => t.indexOf(f) === k).slice(0, 4);
+
   const remplacerPar = () => {
-    if (!choix) return;
-    const d = doseExacte(b.recette, ajout.id, choix);
-    gestes.remplacer('brouillon', ajout.id, choix);
-    gestes.dose('brouillon', ajout.id, d.grams);
+    if (!choisi) return;
+    gestes.remplacer('brouillon', ajout.id, choisi.cle);
+    gestes.dose('brouillon', ajout.id, choisi.dose!.grams);
     noterAvant(inscrite);
     gestes.inscrire();
     revenirMaBiere();
   };
-  const nbCols = cols.length;
-  const grille = { gridTemplateColumns: `4.5rem 5.75rem repeat(${nbCols - 1}, 7rem)` };
-  const cellule = (c: Col, contenu: React.ReactNode, k: string) => (
-    <div key={c.cle + k} data-col={c.cle} onClick={c.epingle ? undefined : () => setChoix(c.cle)}
-      className={`pq-substituer-cellule px-1.5 py-1 min-w-0 ${c.epingle ? 'pq-substituer-epingle' : 'cursor-pointer'} ${c.cle === choix ? 'pq-substituer-choisi' : ''}`}>
-      {contenu}
-    </div>
-  );
-  const ligne = (nom: React.ReactNode, k: string, rendu: (c: Col) => React.ReactNode, attr: Record<string, string> = {}) => (
-    <div key={k} className="contents" {...attr}>
-      <div className="pq-substituer-etiquette px-1 py-1 text-xs text-cave-400 flex items-center">{nom}</div>
-      {cols.map((c) => cellule(c, rendu(c), k))}
-    </div>
-  );
+  const aAcheter = faces.find((x) => !x.original && x.stock !== 'suffisant') ?? null;
+  const ibu0 = ibuAjout(ajout, b.recette).ibu;
+  const grille = { gridTemplateColumns: `1fr repeat(${faces.length}, 4.25rem)` };
 
   return (
-    <CadreOutil ecran="substituer" question={`Lequel à la place de ${h.nom} ?`}
-      contexte={<LigneContexte items={[
-        { cle: 'base', contenu: `Stout ${sc.code}` },
-        { cle: 'moment', contenu: `à ${nomMoment(q)}` },
-        { cle: 'dose', contenu: ibu0 ? `${nombre(ibu0.valeur)} IBU égal` : 'masse égale' },
-      ]} />}
+    <CadreOutil ecran="substituer" question={h0.nom}
       dock={
         <PiedAnnuler resume={choisi && choisi.dose ? (
-          <span data-role="choix-dock">{nombre(ajout.grams, 1)} g de {h.nom} <span aria-hidden="true">→</span><span className="sr-only">remplacés par</span> <b className="font-semibold text-cave-50">{nombre(choisi.dose.grams, 1)} g de {choisi.h.nom}</b></span>
+          <span data-role="choix-dock">{nombre(ajout.grams, 1)} g de {h0.nom} <span aria-hidden="true">→</span><span className="sr-only">remplacés par</span> <b className="font-semibold text-cave-50">{nombre(choisi.dose.grams, 1)} g de {choisi.nom}</b></span>
         ) : undefined}>
-          <Pont nom="remplacer" disabled={!choix} onClick={remplacerPar}>Remplacer</Pont>
+          <Pont nom="remplacer" disabled={!choisi} onClick={remplacerPar}>Remplacer</Pont>
         </PiedAnnuler>
       }>
-      <div className="flex items-center gap-2">
-        <Legende>
-          <p><b>Colonne 1</b> : {h.nom}, épinglé ; les remplaçants suivent, classés par le moteur.</p>
-          <p><b>Dose</b> : à IBU égal au même moment ; dessous, la plage par l’α des fiches.</p>
-          <p><b>Perd, gagne</b> : familles de {h.nom} absentes du remplaçant, et l’inverse.</p>
-          <p><b>Ma bière</b> : après le remplacement, simulée (~), face à la zone du style ; le rond, avec {h.nom}.</p>
-        </Legende>
-        <span className="text-xs text-cave-400">toucher une colonne pour choisir</span>
-        <span className="ml-auto" />
-        <Lentille label="Échelle" marques="e" value={echelle} onChange={setEchelle} options={[{ value: 'style', label: 'Au style' }, { value: 'absolu', label: 'Absolu' }]} />
-      </div>
+      <div className="pq-substituer">
+        <ContexteTete><p className="pq-substituer-ctx" data-role="contexte" data-etat="etat-subst-repos">remplaçants<br /><b data-contexte="moment">à {moment}</b></p></ContexteTete>
 
-      <div data-role="porte" className="pq-substituer-defile overflow-x-auto overscroll-x-contain rounded-lg border border-cave-800 bg-cave-900">
-        <div data-role="remplacants" data-libre="houblon" className="grid w-max" style={grille} role="radiogroup" aria-label={`Remplaçants de ${h.nom}`}>
-          {/* En-têtes : nom (appui long → fiche), choix. */}
-          <div className="pq-substituer-etiquette" />
-          {cols.map((c) => (
-            <div key={c.cle} data-col={c.cle} {...(c.epingle ? { 'data-role': 'epingle' } : { 'data-remplacant': c.cle, role: 'radio', 'aria-checked': c.cle === choix, tabIndex: 0 })}
-              {...fiche.appui(c.cle, c.epingle ? undefined : () => setChoix(c.cle))}
-              onKeyDown={c.epingle ? undefined : (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setChoix(c.cle); } }}
-              className={`pq-substituer-tete px-1.5 pt-1.5 pb-1 ${c.epingle ? 'pq-substituer-epingle' : 'cursor-pointer'} ${c.cle === choix ? 'pq-substituer-choisi' : ''}`}>
-              <span className="flex items-start gap-1.5 min-w-0">
-                {!c.epingle && <i aria-hidden="true" className={`mt-1 shrink-0 w-3.5 h-3.5 rounded-full border-2 ${c.cle === choix ? 'pq-substituer-radio-on bg-ebc-straw' : 'border-cave-600'}`} />}
-                <span data-houblon={c.h.nom} {...fiche.nom(c.cle)} className="font-semibold text-sm leading-tight text-cave-50 break-words underline decoration-dotted decoration-cave-600 underline-offset-4">{c.h.nom}</span>
-                <span className="mt-0.5"><StockIcone h={c.h} /></span>
-              </span>
-              {c.epingle && <span className="flex items-center gap-1 mt-0.5 text-2xs text-cave-400"><Pin className="w-3.5 h-3.5" aria-hidden="true" />épinglé</span>}
+        <section className="pq-substituer-reponse" data-role="reponse">
+          <strong>{reponse}</strong>
+          {sousReponse && <span>{sousReponse}</span>}
+        </section>
+
+        <section className="pq-substituer-echelle" data-etat="etat-subst-echelle" aria-label={`Ressemblance à ${h0.nom}, de 50 à 100, rangée par le pire cas`}>
+          <div className="pq-substituer-paliers">
+            <span className="pq-substituer-legende"><Legende>
+              <p><b>Toucher un nom</b>&#8239;: il passe au face à face et devient le remplaçant&#8239;; appui long&#8239;: sa fiche.</p>
+              <p><b>Un point</b>&#8239;: tout est connu. <b>Une plage hachurée</b>&#8239;: une composante inconnue, ouverte de 0 à 100.</p>
+              <p><b>Icône</b>&#8239;: chariot à acheter, boîte pleine en stock qui suffit, boîte basse qui ne suffit pas, pointillée épuisé.</p>
+            </Legende></span>
+            {([[50, 'partiel'], [65, 'proche'], [80, 'très proche']] as const).map(([v, t]) => <span key={v} style={{ left: `${P(v)}%` }}>{t}</span>)}
+          </div>
+          <div className="pq-substituer-rangs" data-libre="houblon" role="group" aria-label={`Remplaçants de ${h0.nom}`}>
+            <div className="pq-substituer-fondp" style={{ left: `calc(7rem + (100% - 7rem) * ${P(80) / 100})`, right: 0, background: '#f2f2f2' }} />
+            <div className="pq-substituer-fondp" style={{ left: `calc(7rem + (100% - 7rem) * ${P(65) / 100})`, width: `calc((100% - 7rem) * ${(P(80) - P(65)) / 100})`, background: '#f9f9f9', borderLeft: '1px dashed #ddd' }} />
+            {cands.map((c) => {
+              const col = couleurDe(c.cle), compare = compares.includes(c.cle);
+              return (
+                <div key={c.cle} role="button" tabIndex={0} aria-pressed={compare} data-remplacant={c.cle} data-houblon-rang={c.nom} data-min={c.min} data-max={c.max}
+                  data-etat={c.cle === premierLibre ? 'etat-subst-toucher-rang' : undefined}
+                  title={`${c.nom} : ${c.min === c.max ? c.min : `${c.min} à ${c.max}`} (moteur ${c.moteur})`}
+                  className={`pq-substituer-r ${c.cle === choix ? 'pq-substituer-r-choisi' : ''}`} style={{ ['--c' as string]: col, ['--ct' as string]: SLOTS_TEXTE[col] ?? col }}
+                  {...fiche.appui(c.cle, () => toucher(c.cle))}
+                  onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toucher(c.cle); } }}>
+                  <span className="pq-substituer-nom"><IconeStock etat={c.stock} /><span data-houblon-nom={c.nom} {...fiche.nom(c.cle)}>{c.nom}</span></span>
+                  <span className="pq-substituer-tr">
+                    {c.min === c.max ? (
+                      <><span className="pq-substituer-pt" style={{ left: `${P(c.min)}%` }} /><span className="pq-substituer-val" style={{ left: `calc(${P(c.min)}% + 12px)` }}><b>{c.min}</b></span></>
+                    ) : (
+                      <><span className="pq-substituer-pl" style={{ left: `${P(c.min)}%`, width: `${P(c.max) - P(c.min)}%` }} />
+                        <span className="pq-substituer-val" style={{ left: `calc(${P(c.min)}% - 28px)` }}><b>{c.min}</b></span>
+                        <span className="pq-substituer-val" style={{ left: `calc(${P(c.max)}% + 4px)` }}><b>{c.max}</b></span></>
+                    )}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <div className="pq-substituer-axe">{[50, 65, 80, 100].map((v) => <span key={v} style={{ left: `${P(v)}%` }}>{v}</span>)}</div>
+        </section>
+        <p className="pq-substituer-cle" data-etat="etat-subst-plage">
+          <span><i className="pq-substituer-cle-pt" />tout connu</span>
+          <span><i className="pq-substituer-cle-pl" />plage, une composante inconnue</span>
+        </p>
+
+        <h2 className="pq-substituer-h2" data-etat="etat-subst-face">Face à face, même IBU</h2>
+        <div className="pq-substituer-bandes" role="radiogroup" aria-label={`À la place de ${h0.nom}`}>
+          {faces.map((x) => {
+            const plageDose = !x.original && x.dose && x.dose.min !== x.dose.max;
+            return (
+              <div key={x.cle} data-col={x.cle} data-houblon-compare={x.nom} style={{ ['--c' as string]: x.couleur }}
+                className={`pq-substituer-bande ${!x.original && x.cle === choix ? 'pq-substituer-bande-choisie' : ''}`}
+                {...(x.original ? { 'data-role': 'epingle', ...fiche.appui(x.cle) } : { role: 'radio', 'aria-checked': x.cle === choix, tabIndex: 0, ...fiche.appui(x.cle, () => setChoix(x.cle)), onKeyDown: (e: React.KeyboardEvent) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setChoix(x.cle); } } })}>
+                <span className="pq-substituer-bande-n"><span data-houblon={x.nom} {...fiche.nom(x.cle)}>{x.nom}</span> <IconeStock etat={x.stock} /></span>
+                <span className="pq-substituer-bande-d">
+                  <b data-role="dose-remplacant" data-grammes={String(x.dose?.grams ?? '')}>{plageDose ? `${plage(x.dose!.min, x.dose!.max, 0)} g` : `${nombre(x.dose!.grams, 1)} g`}</b>
+                  {plageDose && x.cle === choix && <small>{nombre(x.dose!.grams, 1)} g à α {nombre(x.h.alpha?.valeur ?? 0, 1)}</small>}
+                  {x.original && ibu0 && <small>{nombre(ibu0.valeur, 1)} IBU</small>}
+                </span>
+                <span className="pq-substituer-bande-m"><Usage h={x.h} long /><PictosCites h={x.h} />{!x.original && x.cle === choix && <span className="pq-substituer-a-la-place">à la place de {h0.nom}</span>}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="pq-substituer-mesure" data-etat="etat-subst-alpha"><span className="pq-substituer-t">α</span>
+          <div>{faces.map((x) => <Rangee key={x.cle} dom={domA} nom={x.nom} couleur={x.couleur} src={M[x.cle].alpha.src.map((s) => s.r)} lot={M[x.cle].alpha.lot} mesure="alpha" />)}</div>
+        </div>
+
+        <section className="pq-substituer-aro" data-etat="etat-subst-aromes" aria-label={`Arômes des fiches, face au ${sc.code}`}>
+          <div className="pq-substituer-tete" style={grille}>
+            <span>Arômes <span className="pq-substituer-gris">{sc.code}</span></span>
+            {faces.map((x) => <span key={x.cle} style={{ ['--c' as string]: x.couleur }}>{x.nom.split(' ')[0]}</span>)}
+          </div>
+          {attendues.map((f) => ligneArome(f, true))}
+          {horsStyle.length > 0 && <div className="pq-substituer-groupe">Hors {sc.code}</div>}
+          {horsStyle.map((f) => ligneArome(f, false))}
+          <div className="pq-substituer-lg" style={grille} data-role="sans-famille">
+            <span className="pq-substituer-lg-nom pq-substituer-gris">sans famille</span>
+            {faces.map((x) => <span key={x.cle} className="pq-substituer-autres" data-role="autres" data-houblon={x.nom} data-part={x.h.partSansFamille ?? ''}>
+              {x.h.partSansFamille == null ? '?' : <><i style={{ width: `${Math.max(3, Math.round(x.h.partSansFamille * 40))}px` }} />{Math.round(x.h.partSansFamille * 100)}&nbsp;%</>}
+            </span>)}
+          </div>
+          {inconnues.length > 0 && <p className="pq-substituer-inc">{inconnues.map((f) => COURT[f]).join(', ')}&#8239;: aucune des {faces.length === 3 ? 'trois' : faces.length} fiches ne les décrit, ce n’est pas zéro.</p>}
+          <p className="pq-substituer-note">Fiches lues&#8239;: {faces.map((x) => `${x.nom} ${x.h.familles.citrus.sur}`).join(', ')}. Pointillé&#8239;: non décrit.{amertume ? <> <b data-role="a-l-ebullition">À {moment}, surtout l’amertume</b>&#8239;: ces arômes partent en grande partie à l’ébullition.</> : null}</p>
+        </section>
+
+        <section data-etat="etat-subst-radar">
+          <div className="pq-substituer-graphe">
+            <RadarU4 series={faces.map((x) => ({ nom: x.nom, couleur: x.couleur, original: x.original, niveaux: niveaux(x.h) }))} attendues={new Set(attendues)} inconnues={new Set(inconnues)} nomStyle={sc.code} />
+          </div>
+          <p className="pq-substituer-legende-radar">
+            {faces.map((x) => <span key={x.cle}><i style={x.original ? { background: '#fff', border: `2.5px solid ${x.couleur}` } : { background: x.couleur }} />{x.nom}{x.original ? ' (l’original, contour seul)' : ''}</span>)}
+            <span>gras&#8239;: attendu en {sc.code}</span>
+          </p>
+          <p className="pq-substituer-note">Du centre vers le bord&#8239;: non décrit, cité, marqué. <b>?</b>&#8239;: aucune des {faces.length === 3 ? 'trois' : faces.length} fiches ne décrit la famille, ce n’est pas zéro.</p>
+        </section>
+
+        <div className="pq-substituer-mesure" data-etat="etat-subst-beta"><span className="pq-substituer-t">β</span>
+          <div>{faces.map((x) => <Rangee key={x.cle} dom={domB} nom={x.nom} couleur={x.couleur} src={M[x.cle].beta.src.map((s) => s.r)} mesure="beta" />)}</div>
+        </div>
+        <p className="pq-substituer-note">
+          α et β&#8239;: traits fins, une source chacun (Beer Maverick, Hopsteiner)&#8239;; trait noir, milieu moyen des sources
+          {aPlageDose.length ? <>&#8239;; plage de dose de {liste(aPlageDose.map((x) => `${x.nom} selon son α (${plage(M[x.cle].alpha.src[0]?.r[0] ?? 0, M[x.cle].alpha.src[0]?.r[1] ?? 0)})`))}</> : null}.
+          {sousPlage.map((x) => <> L’{M[x.cle].alpha.lot!.origine === 'article' ? 'article' : 'lot'} de {x.nom} ({fr(M[x.cle].alpha.lot!.v)}) est sous sa plage variétale&#8239;: la dose de {nombre(x.dose!.grams, 1)}&nbsp;g en tient compte.</>)}
+          {surPlage.map((x) => <> Le lot de {x.nom} ({fr(M[x.cle].alpha.lot!.v)}) est au-dessus de sa plage variétale&#8239;: la dose de {nombre(x.dose!.grams, 1)}&nbsp;g en tient compte.</>)}
+          {sansSource.length ? <> {liste(sansSource)}&#8239;: une seule source{faces.filter((x) => sansSource.includes(x.nom) && !M[x.cle].alpha.lot).length ? ', pas de lot' : ''}.</> : null}
+        </p>
+
+        <section data-etat="etat-subst-huiles">
+          <h2 className="pq-substituer-h2 pq-substituer-h2-petit">Huiles, composants <span className="pq-substituer-gris">% de l’huile</span></h2>
+          {HUILES.map(([k, n]) => (
+            <div key={k}>
+              <div className="pq-substituer-groupe">{n}</div>
+              {faces.map((x) => { const r = M[x.cle].huiles[k]; return <Rangee key={x.cle} dom={domH(k)} nom={x.nom} couleur={x.couleur} src={r ? [r] : []} mesure={n} />; })}
             </div>
           ))}
-          {ligne('α', 'alpha', (c) => <AlphaLu h={c.h} mode="colonne" balise={c.h.nom} />)}
-          {ligne('usage', 'usage', (c) => <Usage h={c.h} />)}
-          {ligne('dose', 'dose', (c) => c.dose && (
-            <span className="block font-mono text-sm leading-tight">
-              <span data-role="dose-remplacant" data-grammes={String(c.dose.grams)} className="text-cave-50">{nombre(c.dose.grams, 1)}<span className="font-sans text-cave-400"> g</span></span>
-              {!c.epingle && c.dose.min !== c.dose.max && <span className="block text-2xs text-cave-400">{plage(c.dose.min, c.dose.max, 0)}</span>}
-            </span>
-          ))}
-          {ligne('arômes', 'aromes', (c) => (<span className="block space-y-1"><Pictos familles={c.aromes} />{c.h.partSansFamille != null && c.h.partSansFamille >= 0.25 && <Autres h={c.h} largeur={36} petit />}</span>))}
-          {ligne('perd', 'perd', (c) => (c.epingle ? null : <Pictos familles={c.perd} attenue max={12} />))}
-          {ligne('gagne', 'gagne', (c) => (c.epingle ? null : <Pictos familles={c.gagne} max={12} />))}
-          <div className="contents">
-            <div className="pq-substituer-etiquette pq-substituer-section px-1 pt-2 pb-0.5 text-xs font-semibold text-cave-200">ma bière</div>
-            {cols.map((c) => <div key={c.cle + 'sec'} className={`pq-substituer-section ${c.epingle ? 'pq-substituer-epingle' : ''} ${c.cle === choix ? 'pq-substituer-choisi' : ''}`} />)}
+          <p className="pq-substituer-note">{huileInconnue.length ? `${liste(huileInconnue)} non renseigné${huileInconnue.length > 1 ? 's' : ''}, ce n’est pas zéro. ` : ''}Farnésène publié par Beer Maverick, non importé.</p>
+        </section>
+
+        <section className="pq-substituer-style" data-etat="etat-subst-style">
+          <p style={{ ['--c' as string]: GRIS_ORIGINAL }}><b data-role="style" data-code={sc.code}>{sc.code} {sc.name}</b> attend {nomsAtt.join(", ")}
+            {biere0.bandeIbu ? <>&#8239;; IBU {plage(biere0.bandeIbu[0], biere0.bandeIbu[1], 0)}, la recette est à {nombre(biere0.ibu.valeur, 1)} et chaque dose la garde.</> : '.'}</p>
+          {faces.map((x) => <p key={x.cle} style={{ ['--c' as string]: x.couleur }}>{relation(x)}</p>)}
+        </section>
+
+        <section className="pq-substituer-biere" data-role="ma-biere-avec" aria-label="Ma bière avec chacun">
+          <div className="pq-substituer-biere-tete">
+            <h2 className="pq-substituer-h2 pq-substituer-h2-petit">Ma bière avec chacun <span className="pq-substituer-gris">~ simulé</span></h2>
+            <Lentille label="Échelle" marques="e" value={echelle} onChange={setEchelle} options={[{ value: 'style', label: 'Au style' }, { value: 'absolu', label: 'Absolu' }]} />
           </div>
-          {cles.map((f) => ligne(
-            <span className="inline-flex items-center gap-1"><Picto famille={f} taille={14} /><span className="truncate">{COURT[f]}</span></span>,
-            'f-' + f,
-            (c) => {
-              const x = c.biere.profil[f], a = cols[0].biere.profil[f];
-              const d = x.valeur && a.valeur ? x.valeur.centre - a.valeur.centre : null;
-              return (
-                <span className="block space-y-0.5">
-                  <MiniBarre x={x} avant={c.epingle ? undefined : a} echelle={echelle} />
-                  <span className="block text-right text-2xs leading-none h-3">
-                    {c.epingle ? (x.horsStyle === 'au-dessus' ? <span className="text-alert">hors style</span> : null)
-                      : d == null ? <Inconnu raison={x.raison ?? 'inconnu'} /> : Math.abs(d) >= 0.5 ? <Simule valeur={d} ecart couleur={COULEURS[f].texte} /> : <span className="text-cave-400">=</span>}
+          <div className="pq-substituer-tete" style={grille}>
+            <span />
+            {faces.map((x) => <span key={x.cle} style={{ ['--c' as string]: x.couleur }}>{x.nom.split(' ')[0]}</span>)}
+          </div>
+          {clesBiere.map((f) => (
+            <div key={f} className="pq-substituer-lg pq-substituer-lg-biere" style={grille} data-famille-ligne={f}>
+              <span className="pq-substituer-lg-nom"><Picto famille={f} taille={14} />{COURT[f]}</span>
+              {faces.map((x) => {
+                const v = x.biere.profil[f], a = biere0.profil[f];
+                const d = v.valeur && a.valeur ? v.valeur.centre - a.valeur.centre : null;
+                return (
+                  <span key={x.cle} className="pq-substituer-mb">
+                    <MiniBarre x={v} avant={x.original ? undefined : a} echelle={echelle} />
+                    <span className="pq-substituer-mb-e">
+                      {x.original ? (v.horsStyle === 'au-dessus' ? <span className="text-alert">hors style</span> : null)
+                        : d == null ? <Inconnu raison={v.raison ?? 'inconnu'} /> : Math.abs(d) >= 0.5 ? <Simule valeur={d} ecart couleur={COULEURS[f].texte} /> : <span className="pq-substituer-gris">=</span>}
+                    </span>
                   </span>
-                </span>
-              );
-            },
-            { 'data-famille-ligne': f },
+                );
+              })}
+            </div>
           ))}
-          {ligne('proche', 'score', (c) => (c.score == null ? null : (
-            <span className="flex items-center gap-1" title={c.palier ?? undefined}>
-              <span className="relative block flex-1 h-1.5 rounded-full bg-cave-800"><i className="absolute inset-y-0 left-0 rounded-full bg-cave-200" style={{ width: `${Math.max(0, Math.min(100, c.score))}%` }} /></span>
-              <span className="font-mono text-xs text-cave-50">{nombre(c.score)}</span>
-            </span>
-          )))}
-          {ligne('· arôme', 'arome', (c) => (c.composantes == null ? null : c.composantes.arome == null ? <Inconnu raison="composante inconnue" /> : (<span className="flex items-center gap-1"><span className="relative block flex-1 h-1 rounded-full bg-cave-800"><i className="absolute inset-y-0 left-0 rounded-full bg-cave-400" style={{ width: `${Math.max(0, Math.min(100, c.composantes.arome))}%` }} /></span><span className="font-mono text-2xs text-cave-200">{nombre(c.composantes.arome)}</span></span>)))}
-          {ligne('· huiles', 'huiles', (c) => (c.composantes == null ? null : c.composantes.huiles == null ? <Inconnu raison="composante inconnue" /> : (<span className="flex items-center gap-1"><span className="relative block flex-1 h-1 rounded-full bg-cave-800"><i className="absolute inset-y-0 left-0 rounded-full bg-cave-400" style={{ width: `${Math.max(0, Math.min(100, c.composantes.huiles))}%` }} /></span><span className="font-mono text-2xs text-cave-200">{nombre(c.composantes.huiles)}</span></span>)))}
-          {ligne('· amer', 'amertume', (c) => (c.composantes == null ? null : c.composantes.amertume == null ? <Inconnu raison="composante inconnue" /> : (<span className="flex items-center gap-1"><span className="relative block flex-1 h-1 rounded-full bg-cave-800"><i className="absolute inset-y-0 left-0 rounded-full bg-cave-400" style={{ width: `${Math.max(0, Math.min(100, c.composantes.amertume))}%` }} /></span><span className="font-mono text-2xs text-cave-200">{nombre(c.composantes.amertume)}</span></span>)))}
-        </div>
+          <p className="pq-substituer-note">Après le remplacement, à {moment}, à IBU égal&#8239;; le rond, ma bière avec {h0.nom}.</p>
+        </section>
+
+        {aAcheter && (
+          <div className="pq-substituer-choisir" data-etat="etat-subst-actions">
+            <button type="button" data-role="achats" aria-pressed={achats.has(aAcheter.cle)} title="Maquette : la liste d’achats n’existe pas encore"
+              onClick={() => setAchats((s) => { const n = new Set(s); if (n.has(aAcheter.cle)) n.delete(aAcheter.cle); else n.add(aAcheter.cle); return n; })}>
+              {achats.has(aAcheter.cle) ? `${aAcheter.nom} noté aux achats ✓` : `Ajouter ${aAcheter.nom} aux achats`}
+            </button>
+          </div>
+        )}
+
+        <details open className="pq-substituer-details" data-etat="etat-subst-lire">
+          <summary data-etat="etat-subst-lire-fermer">Lire ces scores</summary>
+          <div className="pq-substituer-regle">
+            <p><b>Calculés depuis nos fiches</b>, pas les scores de substitution de Beer Maverick (non importés). Prix, rareté et cohumulone&nbsp;: inconnus.</p>
+            {ouverts[0] && <p><b>La plage</b>&nbsp;: le moteur calcule le score sans la composante inconnue (poids renormalisés), ce qui donne {ouverts[0].moteur} à {ouverts[0].nom}. Ici, l’inconnue est laissée ouverte de 0 à 100&nbsp;: à {moment} (poids arôme {nombre(lecture.poids.arome, 1)}, huiles {nombre(lecture.poids.huiles, 1)}, amertume {nombre(lecture.poids.amertume, 1)}), {ouverts[0].nom} vaut entre {ouverts[0].min} et {ouverts[0].max}. Les composantes connues restent celles du moteur, sans plage propre.</p>}
+            <p><b>Sans inconnue ne veut pas dire sûr</b>&nbsp;: chaque composante connue vient de peu de fiches ({faces.map((x) => `${x.nom} : ${x.h.familles.citrus.sur}`).join(', ')}). Le score n’a pas d’intervalle statistique, seulement cette plage.</p>
+            {amertume && <p><b>À {moment}, l’arôme compte peu</b>&nbsp;: il ne mesure que ce que le remplaçant apporte de plus que {h0.nom}, pas ce qu’il perd (l’arôme de {h0.nom} part à l’ébullition). Un remplaçant qui perd six familles peut y valoir 100&#8239;: c’est pour cela que l’écran ne l’affiche pas seul.</p>}
+            <p><b>Le pire cas d’abord</b>&nbsp;: rangés par le bas de la plage. Le moteur, lui, range par score, puis par nom.</p>
+            <p><b>{cands.length} des {lecture.total}</b>&nbsp;: les {cands.filter((c) => c.vient === 'catalogue').length} premiers du catalogue et les {lecture.stockRangs.length} premiers de ton stock ({lecture.stockRangs.map((s) => `${s.nom} ${s.rang}e`).join(', ')}).</p>
+            <p><b>Face à face</b>&nbsp;: {faces[1] ? `${faces[1].nom}, ${faces[1].stock === 'suffisant' ? 'en stock' : 'premier sûr à acheter'}` : ''}{faces[2] ? ` ; ${faces[2].nom}, ${faces[2].stock === 'suffisant' ? 'premier du stock qui suffit' : faces[2].stock === 'acheter' ? 'à acheter' : 'en stock, ne suffit pas'}` : ''}. Arômes&nbsp;: citations dans les fiches, pas une intensité dans la bière.</p>
+          </div>
+        </details>
       </div>
       {fiche.rendu}
     </CadreOutil>

@@ -1,16 +1,25 @@
-// Gestes et attentes de l'écran « substituer » (la porte), rejoués par outils/jouer-parcours.mjs --etape=substituer
+// Gestes et attentes de l'écran « substituer » (u4, voie r6), rejoués par outils/jouer-parcours.mjs --etape=substituer
 // sur substituer/etat.html. Format : ARCHITECTURE.md, « Contrat d'un écran ». verifier(p) se joue DANS la page.
 export default {
   page: 'etat.html',
   gestes: [
-    { nom: 'Nugget epingle, remplacants du moteur', faire: 'attendre', attendre: '[data-role="epingle"]',
+    { nom: 'echelle de u4, pire cas d abord', faire: 'attendre', attendre: '[data-remplacant]',
       verifier: (p) => {
         window.__ibu0 = p.biere().ibu.valeur;
-        const ep = document.querySelector('[data-ecran="substituer"] [data-role="epingle"]');
-        if (!ep || !/Nugget/.test(ep.textContent)) return 'Nugget non épinglé en colonne 1';
-        const montre = [...document.querySelectorAll('[data-ecran="substituer"] [data-remplacant]')].map((e) => e.dataset.remplacant);
-        const moteur = p.moteur.remplacants(p.etat.brouillon.recette, 'a1', 6).map((r) => r.cle);
-        return JSON.stringify(montre) === JSON.stringify(moteur) || `ordre ${montre.join(',')} ≠ moteur ${moteur.join(',')}`;
+        const rangs = [...document.querySelectorAll('[data-ecran="substituer"] [data-remplacant]')];
+        if (rangs.length < 4) return `${rangs.length} remplaçants seulement`;
+        const mins = rangs.map((e) => Number(e.dataset.min));
+        for (let i = 1; i < mins.length; i++) if (mins[i] > mins[i - 1]) return `pas rangé par le pire cas (${mins.join(',')})`;
+        // Une plage n'existe que si une composante est inconnue ; sinon le score du moteur, en un point.
+        const moteur = Object.fromEntries(p.moteur.remplacants(p.etat.brouillon.recette, 'a1', 400).map((r) => [r.cle, r]));
+        for (const e of rangs) {
+          const r = moteur[e.dataset.remplacant];
+          if (!r) continue;
+          const inconnue = Object.values(r.composantes).some((v) => v === null);
+          if (!inconnue && (Number(e.dataset.min) !== r.score || Number(e.dataset.max) !== r.score)) return `${r.cle} : ${e.dataset.min}–${e.dataset.max} ≠ moteur ${r.score}`;
+          if (inconnue && !(Number(e.dataset.min) < Number(e.dataset.max) && Number(e.dataset.max) >= r.score - 1)) return `${r.cle} : plage ${e.dataset.min}–${e.dataset.max} pour une composante inconnue (moteur ${r.score})`;
+        }
+        return !!document.querySelector('[data-ecran="substituer"] [data-role="epingle"]') || 'Nugget absent du face à face';
       } },
     { nom: 'dose a IBU egal', faire: 'attendre',
       verifier: (p) => {
@@ -25,22 +34,28 @@ export default {
         }
         return true;
       } },
-    { nom: 'perd et gagne', faire: 'attendre',
+    { nom: 'perd et gagne au tableau des aromes', faire: 'attendre',
       verifier: (p) => {
-        const r = p.moteur.remplacants(p.etat.brouillon.recette, 'a1', 6)[0];
-        const fams = [...document.querySelectorAll(`[data-ecran="substituer"] [data-col="${r.cle}"]`)].flatMap((c) => [...c.querySelectorAll('[data-famille]')].map((x) => x.dataset.famille));
-        const manque = [...r.familles.perd, ...r.familles.gagne].filter((f) => !fams.includes(f));
-        return !manque.length || `${r.cle} : familles perdues ou gagnées absentes (${manque.join(', ')})`;
+        const moteur = p.moteur.remplacants(p.etat.brouillon.recette, 'a1', 400);
+        for (const b of document.querySelectorAll('[data-ecran="substituer"] [role="radio"][data-col]')) {
+          const r = moteur.find((x) => x.cle === b.dataset.col);
+          if (!r) return `${b.dataset.col} absent du moteur`;
+          const cases = [...document.querySelectorAll(`[data-ecran="substituer"] [data-role="arome"][data-col="${r.cle}"]`)].map((x) => x.dataset.familleFiche);
+          const manque = [...r.familles.perd, ...r.familles.gagne].filter((f) => !cases.includes(f));
+          if (manque.length) return `${r.cle} : familles perdues ou gagnées absentes du tableau (${manque.join(', ')})`;
+        }
+        return true;
       } },
-    { nom: 'choisir le dernier', faire: 'toucher', cible: '[data-ecran="substituer"] [data-remplacant]',
+    { nom: 'toucher le dernier de l echelle', faire: 'toucher', cible: '[data-ecran="substituer"] [data-remplacant]',
       verifier: () => {
         const t = [...document.querySelectorAll('[data-ecran="substituer"] [data-remplacant]')].at(-1);
-        const nom = t.querySelector('[data-houblon]').textContent;
-        const b = document.querySelector('[data-role="choix-dock"]')?.textContent ?? '';
-        return (t.getAttribute('aria-checked') === 'true' && b.includes(nom)) || `choix non pris (${nom} / ${b})`;
+        const nom = t.dataset.houblonRang;
+        const bande = document.querySelector(`[data-ecran="substituer"] [role="radio"][data-col="${t.dataset.remplacant}"]`);
+        const dock = document.querySelector('[data-role="choix-dock"]')?.textContent ?? '';
+        return (t.getAttribute('aria-pressed') === 'true' && bande?.getAttribute('aria-checked') === 'true' && dock.includes(nom)) || `choix non pris (${nom} / ${dock})`;
       } },
     { nom: 'abandon', faire: 'fermer', attendre: '[data-ecran="ma-biere"]',
-      verifier: (p) => (p.etat.brouillon === null && p.etat.recette.additions.find((a) => a.id === 'a1').hopKey === 'beermaverick-nugget') || '« ‹ » a changé la recette' },
+      verifier: (p) => (p.etat.brouillon === null && p.etat.recette.additions.find((a) => a.id === 'a1').hopKey === 'beermaverick-nugget') || '« ✕ » a changé la recette' },
     { nom: 'rouvrir', faire: 'toucher', cible: '[data-role="pont-substituer"][data-houblon="beermaverick-nugget"]', attendre: '[data-ecran="substituer"]' },
     // D120 : « Annuler », à côté de « Remplacer », jette le brouillon sans toucher la recette et ramène à l'étape Houblons.
     { nom: 'choisir avant Annuler', faire: 'toucher', cible: '[data-ecran="substituer"] [data-remplacant]', verifier: (p) => { window.__pqSubAvant = JSON.stringify(p.etat.recette); return true; } },

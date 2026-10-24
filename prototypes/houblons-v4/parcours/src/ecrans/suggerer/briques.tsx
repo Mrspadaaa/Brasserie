@@ -145,9 +145,9 @@ export function Usage({ h }: { h: HoublonLu }) {
 export const sourceAlpha = (h: HoublonLu): 'lot' | 'fiches' => (!h.alpha || /^plage/.test(h.alpha.source) ? 'fiches' : 'lot');
 /** α du lot (« α » et « ≠ » posés par la feuille de style) ; « ≠ » : le lot sort de la plage des fiches. */
 export function AlphaCourt({ h }: { h: HoublonLu }) {
-  if (!h.alpha) return <span data-role="alpha" data-source="fiches" className="font-mono text-xs text-cave-400">α ?</span>;
+  if (!h.alpha) return <span data-role="alpha" data-pour={h.cle} data-source="fiches" className="font-mono text-xs text-cave-400">α ?</span>;
   return (
-    <span data-role="alpha" data-source={sourceAlpha(h)} {...(h.alpha.horsFiches ? { 'data-hors-fiches': '', 'aria-label': `α ${nombre(h.alpha.valeur, 1)} %, hors de la plage des fiches` } : {})}
+    <span data-role="alpha" data-pour={h.cle} data-source={sourceAlpha(h)} {...(h.alpha.horsFiches ? { 'data-hors-fiches': '', 'aria-label': `α ${nombre(h.alpha.valeur, 1)} %, hors de la plage des fiches` } : {})}
       className={`pq-suggerer-alpha font-mono text-xs text-cave-200 whitespace-nowrap ${h.alpha.horsFiches ? 'pq-suggerer-alpha-hors' : ''}`}>
       {`${nombre(h.alpha.valeur, 1)}%`}
     </span>
@@ -163,13 +163,17 @@ export function Stock({ etat }: { etat: 'suffisant' | 'manque' | 'à acheter' })
 
 // ---------- Réglages de lecture (q2b) ----------
 /** SegmentedControl de l'app, en lecture seule de l'affichage (data-lecture) ; data-e sur chaque option si donné. */
-export function Lecture<T extends string>({ valeur, onChange, options, label, e }: {
+export function Lecture<T extends string>({ valeur, onChange, options, label, e, etats }: {
   valeur: T; onChange: (v: T) => void; options: { value: T; label: string }[]; label: string; e?: string[];
+  /** data-etat de chaque option (contrat de controle-etats.mjs : l'élément déclencheur d'un état). */
+  etats?: (string | undefined)[];
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
-    if (!e) return;
-    ref.current?.querySelectorAll<HTMLElement>('[role="radio"]').forEach((r, i) => { r.dataset.e = e[i]; });
+    ref.current?.querySelectorAll<HTMLElement>('[role="radio"]').forEach((r, i) => {
+      if (e) r.dataset.e = e[i];
+      if (etats?.[i]) r.dataset.etat = etats[i]; else delete r.dataset.etat;
+    });
   });
   return (
     <div ref={ref} data-lecture="" className="pq-suggerer-lentille shrink-0 [&_span]:whitespace-nowrap [&_button]:px-2.5">

@@ -8,9 +8,11 @@ import type { BiereLue } from '../../moteur';
 const R = 112, C = 150;
 const TRAITS = ['6 3', '2 3', '9 3 2 3', '1 2'];
 
-export function Radar({ biere, sc, echelle, series }: {
+export function Radar({ biere, sc, echelle, series, plein = false }: {
   biere: BiereLue; sc: StyleScale; echelle: Echelle;
   series: { cle: string; nom: string; effets: Record<FamilyId, number | null> }[];
+  /** Mode Radar de la base v4.10 : une voie montrée, en plein, avec ses sommets. */
+  plein?: boolean;
 }) {
   const ang = (i: number) => -Math.PI / 2 + (i * 2 * Math.PI) / ROUE.length;
   const max = (f: FamilyId) => (echelle === 'style' && sc.families[f].band ? 2 * sc.families[f].band![1] : 110);
@@ -33,10 +35,15 @@ export function Radar({ biere, sc, echelle, series }: {
           <path key={f} className="pq-suggerer-radar-inconnu" d={`M${C},${C} L${bord(i - 0.5)} A${R},${R} 0 0 1 ${bord(i + 0.5)} Z`} />
         ))}
         <polygon points={poly(zone)} className="pq-suggerer-radar-zone" />
-        {series.map((s, j) => (
-          <polygon key={s.cle} data-serie={s.cle} points={poly(ROUE.map((f, i) => (avant[i] == null ? null : avant[i]! + (s.effets[f] ?? 0))))}
-            className="pq-suggerer-radar-serie" strokeDasharray={TRAITS[j % TRAITS.length]} />
-        ))}
+        {series.map((s, j) => {
+          const vals = ROUE.map((f, i) => (avant[i] == null ? null : avant[i]! + (s.effets[f] ?? 0)));
+          return (
+            <g key={s.cle}>
+              <polygon data-serie={s.cle} points={poly(vals)} className={plein ? 'pq-sg-radar-plein' : 'pq-suggerer-radar-serie'} strokeDasharray={plein ? undefined : TRAITS[j % TRAITS.length]} />
+              {plein && vals.map((v, i) => v != null && <circle key={i} cx={pt(i, v)[0]} cy={pt(i, v)[1]} r={3.2} className="pq-sg-radar-sommet" />)}
+            </g>
+          );
+        })}
         <polygon data-serie="ma-biere" points={poly(avant)} className="pq-suggerer-radar-biere" />
         {ROUE.map((f, i) => {
           const a = ang(i), x = C + Math.cos(a) * (R + 22), y = C + Math.sin(a) * (R + 16);
@@ -48,7 +55,7 @@ export function Radar({ biere, sc, echelle, series }: {
         <span className="inline-flex items-center gap-1"><svg width="18" height="6" aria-hidden="true"><line x1="0" y1="3" x2="18" y2="3" className="pq-suggerer-radar-biere" /></svg>ma bière</span>
         {series.map((s, j) => (
           <span key={s.cle} className="inline-flex items-center gap-1">
-            <svg width="18" height="6" aria-hidden="true"><line x1="0" y1="3" x2="18" y2="3" className="pq-suggerer-radar-serie" strokeDasharray={TRAITS[j % TRAITS.length]} /></svg>{s.nom}
+            {plein ? <svg width="14" height="10" aria-hidden="true"><rect x="1" y="1" width="12" height="8" rx="2" className="pq-sg-radar-plein" /></svg> : <svg width="18" height="6" aria-hidden="true"><line x1="0" y1="3" x2="18" y2="3" className="pq-suggerer-radar-serie" strokeDasharray={TRAITS[j % TRAITS.length]} /></svg>}{s.nom}
           </span>
         ))}
       </figcaption>

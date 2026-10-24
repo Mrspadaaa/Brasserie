@@ -40,6 +40,22 @@ export default {
       } },
     { nom: 'gout j aime', faire: 'toucher', cible: '[data-role="gout"] [data-gout="aime"]',
       verifier: () => document.querySelector('[data-role="gout"] [data-gout="aime"]').getAttribute('aria-pressed') === 'true' || 'goût non retenu' },
+    // Le pied de g1 (D124, p21a) : Sources dit d'où vient chaque α ; Substituts sort du même calcul que Substituer.
+    { nom: 'sources depliees', faire: 'toucher', cible: '[data-etat="etat-fiche-sources"]',
+      verifier: () => {
+        const t = document.querySelector('[data-role="fiche"]').innerText;
+        return (/Hopsteiner 2025/.test(t) && /Beer Maverick 2023/.test(t) && /mon lot/.test(t)) || 'Sources sans ses fiches datées ni mon lot';
+      } },
+    { nom: 'substituts du meme calcul', faire: 'toucher', cible: '[data-etat="etat-fiche-substituts"]',
+      verifier: (p) => {
+        const r = p.etat?.recette ?? p.recette;
+        const a = r.additions.find((x) => x.hopKey === 'beermaverick-nugget');
+        const attendu = p.moteur.remplacants(r, a.id, 8).map((x) => x.cle);
+        const u4 = p.moteur.remplacants(r, a.id, 6).map((x) => x.cle);
+        const vus = [...document.querySelectorAll('[data-role="fiche-remplacants"] [data-houblon-cle]')].map((e) => e.dataset.houblonCle);
+        if (vus.join() !== attendu.join()) return `remplaçants ${vus.join(', ')} ; moteur ${attendu.join(', ')}`;
+        return vus.slice(0, u4.length).join() === u4.join() || 'la fiche classe autrement que Substituer';
+      } },
     // Une seule croix (D109, g1) : ronde, 44 px, en haut à droite ; le « ‹ » n'existe plus.
     { nom: 'une seule croix', faire: 'attendre', verifier: () => {
       const f = document.querySelector('[data-role="fiche"]');

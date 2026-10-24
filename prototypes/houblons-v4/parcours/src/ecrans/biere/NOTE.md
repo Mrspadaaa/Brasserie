@@ -17,7 +17,7 @@
 - biere-barres : repris — une barre par famille : zone du style, « au-dessus » en pointillé, point plein ou creux, hachuré
 - biere-hors-style : repris — la famille hors du style en rouge, son facteur à droite (« ×2,8 », centre ÷ haut de la bande)
 - biere-bannir : repris — la famille touchée s'ouvre sous sa barre : « bannir · − · sans visée · + », et « × » quand une visée est posée (résineux ouvert au repos) ; la visée se dessine sur la piste (D108)
-- biere-objectifs : en pont — Suggérer : « + floral », « − résineux », « + … » ouvrent Suggestions ; « + floral » est le pont-floral
+- biere-objectifs : en pont — Suggérer : « + floral », « − résineux » posent leur visée sur la barre sans quitter l'onglet (posée, la puce la retire) ; dessous, « Plus floral : 7 voies, 2 faibles › » (voiesSummary du moteur) ouvre Suggestions, c'est le pont-floral ; « + … » ouvre la famille suivante à viser (voie r2, D124)
 - biere-crans-style : repris — au style, la zone des familles que le style n'attend pas (Agrumes, Tropicaux, Résineux, Épicé…) découpée en trois crans par deux traits fins, couleur de la page ; rien sur les attendues ni en absolu, comme la base
 - biere-levure : repris — « Prévu avec SafAle US-05, caractérisée » au pied de l'écran
 
@@ -25,7 +25,7 @@
 
 - Les objectifs suivent les visées posées sous les barres : « bannir floral » remplace « + floral », et l'inverse ; une puce
   pleine (la puce noire de la base) dit une visée posée, une puce au trait la demande dégustée.
-- Le radar m4 à un toucher (« Barres / Radar »), au style ou en absolu.
+- Le radar m4 de sa base à un toucher (« Barres / Radar ») : voir « Reprise D124 » plus bas.
 
 ## Écarts
 
@@ -33,7 +33,7 @@
   « et Nugget 46 g à 60′ » après la levure. Ce n'était pas dans sa base, ni dans ses mots ; le pied redit « Prévu avec
   SafAle US-05, caractérisée », comme elle. La fiche ne s'ouvre donc plus depuis cet onglet (aucun nom de houblon).
 - Un picto de famille devant chaque nom : le code couleur des arômes est un acquis, et l'écran passe COULEURS (D74).
-- Les puces ouvrent toutes Suggérer ; Suggérer lit la visée commune dans l'état (pas de paramètre de route).
+- Suggérer lit la visée commune dans l'état (pas de paramètre de route) ; les puces la posent, la ligne des voies l'ouvre (D124).
 - Le bouton du sens posé (« + », « − » ou « bannir ») a l'encre pleine (`aria-pressed`) ; la base n'en marquait aucun. Le
   palier nommé et le losange disent déjà le niveau ; l'encre dit le sens d'un coup d'œil.
 - La puce d'une visée suit le sens réel (palier face à ma bière). La base écrivait « − tropicaux » après « + » (crans
@@ -61,3 +61,17 @@ faible, « + » moyen, « − » deux fois bannie, ligne refermée nom barré).
 - `src/ui/hops/RecipeProfile.tsx`, route `{ view: 'recipe', tab: 'beer' }` ; les visées (bannir, −, +) entrent dans le
   brouillon de la recette (`useRecipeDraft`) et dans la direction passée à Suggérer (`proposeVoies`).
 - La dégustation (18.10) vient de la fixture du moteur : à brancher sur les dégustations de Dexie.
+
+## Reprise D124 (24.10, voie r2) : tous les états de sa base
+
+Relevé joué : `work/refonte-frontend/v4/choix/etats/biere.json` (17 états, 15 rejoués). Contrôle : `controle-etats.mjs --ecran=biere`.
+- Radar (`ma-biere/RadarBiere.tsx`) : celui de sa base (radar.js, RADAR.biere), ma DÉGUSTATION face à la zone du style, échelle
+  −1 → 3, pas senti sur l'anneau du zéro, pas goûté au centre avec « ? » et secteur hachuré, bleu #0072B2, l'orangé au-dessus du
+  style, attendues en gras ; 358 px de large ; bulle au toucher d'un sommet (« Résineux : marqué, au-dessus du style »).
+- Grille m4 dessous (`Degustation.tsx`) : « pas senti · faible · moyen · marqué » une fois en tête, quatre pastilles par famille ;
+  un toucher note, retoucher revient à pas goûté ; le radar se redessine. Notes de départ : la dégustation des données
+  (`donnees().degustation`, le 18.10 : résineux marqué). Elles vivent dans l'onglet (l'état commun n'a pas de notes).
+- En radar, le décompte, la légende, l'échelle et la levure se replient, comme la base ; un « ? » en haut à gauche du radar (D113).
+- Absolu : « faible · moyen · marqué » en tête des barres, au milieu de chaque classe sur la piste.
+- L'alerte « Résineux trop marqué » ouvre le radar, la bulle sur Résineux (ajout : D121, l'alerte ne faisait rien).
+- data-etat sur chaque déclencheur ; sur les radios du SegmentedControl et la croix, posé après le rendu.

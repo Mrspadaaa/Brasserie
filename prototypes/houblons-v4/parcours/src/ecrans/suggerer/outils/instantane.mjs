@@ -26,21 +26,19 @@ await p.waitForFunction(() => !!window.__parcours && document.querySelectorAll('
 const cas = await p.evaluate(() => {
   const P = window.__parcours, m = P.moteur, r = P.etat.recette, sc = m.style(r.styleCode);
   // Les voies dans l'ordre de l'écran (data-voie, data-id) ; leurs effets lus du moteur, comme jeu.mjs.
-  const dir = Object.fromEntries(Object.entries(P.etat.visee).filter(([, v]) => typeof v === 'number' && v !== 0));
-  const vs = m.proposer(r, dir).voies, cs = m.suggerer(r, Object.keys(dir).find((f) => dir[f] > 0) ?? 'floral');
+  const dir = JSON.parse(document.querySelector('[data-libre="houblon"]').dataset.direction);
+  const vs = [...m.proposer(r, dir).voies, ...window.__suggerer.dryhopActif(r, dir)];
   const lignes = [...document.querySelectorAll('[data-ecran="suggerer"] [data-voie]')].sort((x, y) => +x.dataset.voie - +y.dataset.voie);
   return {
-    cas: 'cas-direct', titre: 'Suggérer en direct (D105) : stout 16D, plus florale, moins résineuse (moteur v4, état de départ)',
+    cas: 'cas-direct', titre: 'Suggérer en direct (D124, q2b) : stout 16D, plus florale, plus agrumes, moins résineuse (moteur v4, état de départ)',
     genere: 'outils/instantane.mjs', objectifs: Object.keys(dir),
     voies: lignes.map((l) => {
       const id = l.dataset.id;
-      const c = id.startsWith('dryhop-') ? cs.find((x) => 'dryhop-' + x.cle === id) : null;
-      const v = c ? null : vs.find((x) => x.id === id);
-      const effets = c ? Object.fromEntries(Object.entries(c.lu.ecart).map(([f, e]) => [f, e ? e.centre : null]))
-        : Object.fromEntries(Object.entries(v.effect).map(([f, e]) => [f, e.established && e.central != null ? e.central : null]));
-      const cles = c ? [c.cle] : [...new Set(v.actions.map((x) => x.hopKey))];
+      const v = vs.find((x) => x.id === id);
+      const effets = Object.fromEntries(Object.entries(v.effect).map(([f, e]) => [f, e.established && e.central != null ? e.central : null]));
+      const cles = [...new Set(v.actions.map((x) => x.hopKey))];
       return {
-        rang: +l.dataset.voie, libelle: c ? 'Dry hop : ' + c.houblon.nom : v.label,
+        rang: +l.dataset.voie, libelle: v.label,
         tout: Object.entries(effets).filter(([, e]) => e != null).map(([f, e]) => ({ famille: f, nom: f, visee: f in dir, effet: e, crans: Math.round((e / sc.families[f].cran) * 100) / 100 })),
         fiches: cles.map((k) => ({ houblon: m.houblon(k).nom, cle: k, role: P.regles.hopRole(k).value, roleSource: P.regles.hopRole(k).source })),
       };

@@ -51,8 +51,22 @@ export default {
     { nom: 'bannir floral', faire: 'toucher', cible: '#pq-biere-visee-floral [data-visee="bannir"]',
       verifier: () => (window.__parcours.etat.visee.floral === 0 && document.querySelector('[data-famille-ligne="floral"][data-bannie]') && !document.querySelector('[data-role="pont-floral"]') && /bannir floral/.test(document.querySelector('[data-element~="biere-objectifs"]').textContent)) || 'visée « bannir » non posée ou objectif absent' },
     { nom: 'plus floral', faire: 'toucher', cible: '#pq-biere-visee-floral [data-visee="plus"]',
-      verifier: () => window.__parcours.etat.visee.floral === 0.5 && document.querySelector('#pq-biere-visee-floral [data-palier]')?.textContent === 'faible' && /\+ floral/.test(document.querySelector('[data-role="pont-floral"]')?.textContent ?? '') || 'objectif « + floral » absent' },
+      verifier: () => window.__parcours.etat.visee.floral === 0.5 && document.querySelector('#pq-biere-visee-floral [data-palier]')?.textContent === 'faible' && /\+ floral/.test(document.querySelector('[data-role="pont-objectif-floral"]')?.textContent ?? '') && /^Plus floral : /.test(document.querySelector('[data-role="pont-floral"]')?.textContent ?? '') || 'objectif « + floral » ou ligne « Plus floral : … voies › » absent' },
     { nom: 'radar', faire: 'toucher', cible: '[data-vue="radar"]', attendre: 'svg[data-radar][data-objet="biere"]' },
+    // Le radar m4 de sa base : ma dégustation (résineux marqué) face à la zone du style, la grille dessous (D124).
+    { nom: 'radar : grille de dégustation', faire: 'attendre', attendre: '[data-role="degustation"]',
+      verifier: () => {
+        const g = document.querySelector('[data-role="degustation"]');
+        if (!['pas senti', 'faible', 'moyen', 'marqué'].every((m) => g.textContent.includes(m))) return 'en-têtes de la grille absents';
+        const coche = g.querySelector('[data-famille="resin"] [aria-checked="true"]');
+        return (coche && coche.className.includes('pq-biere-deg-trop')) || 'résineux non noté marqué (orangé)';
+      } },
+    { nom: 'radar : toucher le sommet de Résineux', faire: 'toucher', cible: '[data-cible-sommet="resin"]',
+      verifier: () => /Résineux : marqué, au-dessus du style/.test(document.querySelector('[data-role="bulle-radar"]')?.textContent ?? '') || 'bulle absente' },
+    { nom: 'radar : noter le floral moyen', faire: 'toucher', cible: '[data-famille="floral"] [aria-label="Floral : moyen"]',
+      verifier: () => !!document.querySelector('[data-cible-sommet="floral"]') || 'le floral noté ne fait pas de sommet' },
+    { nom: 'radar : le retoucher, pas goûté', faire: 'toucher', cible: '[data-famille="floral"] [aria-checked="true"]',
+      verifier: () => !document.querySelector('[data-cible-sommet="floral"]') || 'le floral reste noté' },
     { nom: 'barres', faire: 'toucher', cible: '[data-vue="barres"]', attendre: '[data-barre="resin"]' },
     { nom: 'plus floral vers Suggestions', faire: 'toucher', cible: '[data-role="pont-floral"]', attendre: '[data-ecran="suggerer"]',
       verifier: (p) => p.route === '#/suggerer' || `route ${p.route}` },

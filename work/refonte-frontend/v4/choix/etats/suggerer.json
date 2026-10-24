@@ -106,7 +106,7 @@
     "route": "suggerer",
     "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/suggestions-radar.html",
     "selecteur_choisie": "[aria-label^=\"Appliquer à la recette\"]",
-    "geste": "repos",
+    "geste": "toucher",
     "attendu": [
      "Appliquer à la recette",
      "Montrer sur le radar",
@@ -199,7 +199,7 @@
     "geste": "toucher",
     "attendu": [
      "IBU",
-     "non établi"
+     "Motueka"
     ],
     "interdit": []
    }

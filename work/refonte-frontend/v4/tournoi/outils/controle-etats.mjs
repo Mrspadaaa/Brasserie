@@ -43,7 +43,7 @@ import puppeteer from 'puppeteer-core';
 const ici = path.dirname(fileURLToPath(import.meta.url));
 const RACINE = path.resolve(ici, '..', '..', '..', '..', '..');
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const FICHIERS = ['etape', 'biere', 'fiche', 'suggerer', 'comparer', 'acquis'];
+const FICHIERS = ['etape', 'biere', 'fiche', 'suggerer', 'comparer', 'acquis', 'substituer'];
 
 const args = process.argv.slice(2);
 const opt = (nom) => { const a = args.find((x) => x.startsWith(`--${nom}=`)); return a ? a.slice(nom.length + 3) : null; };
@@ -138,7 +138,7 @@ const empreinte = async (page) => {
 const trouver = async (page, e, mode) => {
   const v = e.verif;
   if (mode === 'construite') {
-    const h = await page.$$(`[data-etat="${e.id}"]`);
+    const h = await page.$$(`[data-etat~="${e.id}"]`);
     if (h[0] || !repli) return h[0] ?? null;
     // --repli (diagnostic) : sans data-etat, tenter le sélecteur que p21a/p21b ont joué sur 5345f6ad, pour voir si la
     // perte est réelle (mots absents) ou seulement le contrat non posé.

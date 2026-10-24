@@ -1,3 +1,7 @@
 /* Classes propres à la fiche (L26 : préfixe pq-fiche-). */
 /* Part « autres » (D100) : une forme pleine, neutre (gris), ni hachurée ni à une couleur d'arôme. */
 .pq-fiche-autres { background: #8f8f8f; }
+/* Cibles du doigt du radar (un secteur par famille) : rien de dessiné, pas de flash au toucher. */
+.pq-fiche-cible { cursor: help; -webkit-tap-highlight-color: transparent; outline: none; }
+/* Bulle d'un sommet du radar (g1) : au-dessus du radar, sans voler le toucher. */
+.pq-fiche-bulle { box-shadow: 0 2px 6px rgb(0 0 0 / 0.12); }

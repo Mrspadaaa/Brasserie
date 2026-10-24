@@ -84,7 +84,7 @@
    "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-appui-long-carte-5345f6ad.png",
    "voulu": "",
    "verif": {
-    "route": "fiche",
+    "route": "ma-biere",
     "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
     "selecteur_choisie": "[data-role=\"ligne-houblon\"]",
     "geste": "appui-long",
@@ -113,7 +113,7 @@
    "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-appui-en-cours-5345f6ad.png",
    "voulu": "",
    "verif": {
-    "route": "fiche",
+    "route": "ma-biere",
     "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
     "selecteur_choisie": "[data-role=\"ligne-houblon\"]",
     "geste": "appui-long",
@@ -144,7 +144,7 @@
    "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-appui-long-citra-5345f6ad.png",
    "voulu": "",
    "verif": {
-    "route": "fiche",
+    "route": "ma-biere",
     "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
     "selecteur_choisie": "[data-role=\"ajout-rapide\"]",
     "geste": "appui-long",
@@ -468,7 +468,7 @@
    "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-fiche-survol-1280-5345f6ad.png",
    "voulu": "",
    "verif": {
-    "route": "fiche",
+    "route": "ma-biere",
     "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/index.html",
     "selecteur_choisie": "[data-role=\"ligne-houblon\"]",
     "geste": "survol",

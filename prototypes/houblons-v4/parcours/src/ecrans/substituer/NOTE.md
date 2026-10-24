@@ -1,38 +1,41 @@
-# Substituer, la porte : « Lequel à la place de Nugget ? » (voie p1-ma-biere, 23.10)
+# Substituer = u4, son choix du 19.10 (voie r6-substituer, 24.10)
 
 ## Base
 
-- La porte de la carte : `fils22-carte/substituer-porte/etat.html`, capture
-  `fils22-carte/captures/substituer-porte-390.png` (Nugget épinglé en colonne 1).
-- u4 de la base : `base/consolide/substitution.html`, capture `base/captures/consolide-substitution-390.png`
-  (remplaçants classés, dose à IBU égal, perd et gagne).
+- Sa maquette choisie : `work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html` et sa NOTE ; capture
+  `fils11-substitution/captures/u4-vue-390.png`. Ses mots : « Substitution, ça serait plus du u4 » (19.10) ; registre
+  « choisi u4 » (D34). La « porte » du conseil du 22.10 (colonnes, Nugget épinglé) est retirée : une carte mise à sa place.
+- Ses états, joués : `work/refonte-frontend/v4/choix/etats/substituer.json` (15 états, 14 rejoués, croix voulue D109).
 
-## Idées reprises
+## Repris de u4, tel quel
 
-- Facteur libre : le remplaçant (`data-libre="houblon"`) ; fixés : style, moment, « 60 IBU égal ».
-- Nugget épinglé à gauche ; les remplaçants du moteur (`substitutes`, en stock d'abord) défilent dessous.
-- Par colonne : α (lot d'abord), usage, dose à IBU égal et sa plage par l'α, arômes et part « autres », ce qu'on
-  perd et ce qu'on gagne, puis ma bière après le remplacement au style (familles attendues et hors du style, rond
-  = avec Nugget, écart « ~−1 »), et la proximité calculée (score, arôme, huiles, amertume).
-- Toucher une colonne la choisit ; le dock dit « 62,5 g de Nelson Sauvin » et « Remplacer › ».
+- Tête : le nom, et à droite « remplaçants / à 60′ » (rendu dans la tête du cadre par un portail, le contenu défilant).
+- La réponse : « Magnat et Yeoman, 99 sans inconnue. » ; « Altus, Trident, Zenia vont de 78 à 99. ».
+- L'échelle 50–100 à paliers (partiel, proche, très proche), huit remplaçants (cinq du catalogue, trois du stock, le
+  premier du stock qui suffit toujours compris) rangés par le pire cas ; point si tout est connu, plage hachurée sinon
+  (inconnue ouverte de 0 à 100 aux poids du moteur) ; stock en icône (chariot, boîte pleine, basse, pointillée).
+- Face à face, même IBU : bandes (usage, stock, dose ; plage de dose pour un houblon à acheter), α par source (lot,
+  article ▽), arômes en barres face au style (attendues en gras, « Hors 16D », « ce n'est pas zéro », fiches lues),
+  radar D3 (Nugget en contour), β, huiles, relation au style ; « Ajouter Magnat aux achats » ; « Lire ces scores » ouvert.
 
-## Écarts
+## Écarts voulus et retraits
 
-- La dose est posée au demi-gramme à IBU égal (le moteur arrondit au gramme : jusqu'à 0,65 IBU d'écart) ; la
-  plage par l'α reste celle du moteur.
-- « Remplacer › » ne porte pas le nom du houblon (D98 le lisait comme un second choix) : le nom est à sa gauche.
+- La croix (D109) ; « Annuler » à côté de « Remplacer › » en pied, avec le résumé « 46 g de Nugget → 62,5 g de Nelson
+  Sauvin » (D120) : « Remplacer par Nelson Sauvin » de u4 devient ce pied (le nom passe au résumé, D98).
+- L'usage en mot de l'app (« double usage », « amérisant », comme l'étape Houblons ; u4 : « double »), D90.
+- La ligne d'annotation « u4 · Chaud : … » de la page de lot : une note d'auteur, pas un élément d'écran.
+- La dose au demi-gramme à IBU égal (62,5 g ; u4 et le moteur : 62 g) : jusqu'à 0,65 IBU d'écart au gramme.
+
+## Enrichi (plancher, L07)
+
+- Toucher un remplaçant le met au face à face (à la place de l'autre comparé) et en fait le remplaçant ; toucher une
+  bande le choisit ; appui long : sa fiche. u4 : « choix des deux comparés statique ».
+- Les arômes cités en pictos dans chaque bande (L04, D74) ; « sans famille » au tableau (L14 : Nelson Sauvin 83 %).
+- « À 60′, surtout l'amertume » sous les arômes ; « Ma bière avec chacun », au style ou en absolu (D75).
+- « Lire ces scores » dit pourquoi la composante arôme n'est pas montrée seule à 60′ (elle vaut 100 pour un houblon
+  qui perd six familles : elle ne mesure que l'arôme étranger, contexte amertume du moteur).
 
 ## Pour l'app
 
-- `src/ui/hops/HopSubstitute.tsx`, route `{ view: 'hopSubstitute', recipeId, hopKey }`.
-- « Remplacer » écrit la recette dans Dexie ; `doseExacte` va dans `src/domain/hops/recipeHops.ts`.
-- Le stock et l'α des lots viennent de la fixture : à brancher sur le vrai stock.
-
-## Pied « Annuler » (D120, voie p17, 23.10)
-
-- « Pas de bouton cancer » : `commun/PiedAnnuler.tsx` (classes `pq-annuler-`, `commun/pied-annuler.css`), le pied commun des trois
-  outils qui changent la recette. Une ligne de résumé, « 46 g de Nugget → **62,5 g de Nelson Sauvin** » (le
-  `choix-dock`), puis « Annuler » (contour, à gauche) et « Remplacer › » (plein, le reste de la largeur), 48 px tous
-  deux, sous le pouce. À l'ordinateur, le pied se range à droite sur 26 rem.
-- Annuler : `abandonner()` puis `revenirMaBiere()` ; la recette ne bouge pas, retour à l'étape Houblons (D118).
-- Pour l'app : `PiedAnnuler` va dans `src/ui/hops/` (pied commun des outils, à côté du Dock).
+- `src/ui/hops/HopSubstitute.tsx`, route `{ view: 'hopSubstitute', recipeId, hopKey }` ; `donnees.ts` (plage, huit
+  remplaçants, mesures par source) va à côté de `src/domain/hops/` ; « Ajouter aux achats » attend une liste d'achats.

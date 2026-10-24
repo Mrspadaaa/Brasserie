@@ -1,10 +1,116 @@
-/* Classes propres à Substituer (L26 : préfixe pq-substituer-). */
-/* L'étiquette et l'original restent épinglés à gauche pendant que les remplaçants défilent. */
-.pq-substituer-etiquette { position: sticky; left: 0; z-index: 2; background: rgb(var(--cave-900)); }
-.pq-substituer-epingle { position: sticky; left: 4.5rem; z-index: 2; background: rgb(var(--cave-900)); box-shadow: 1px 0 0 rgb(var(--cave-800)); }
-.pq-substituer-choisi { background: rgb(var(--cave-950)); box-shadow: inset 2px 0 0 rgb(var(--cave-50)), inset -2px 0 0 rgb(var(--cave-50)); }
-.pq-substituer-cellule, .pq-substituer-tete { border-top: 1px solid rgb(var(--cave-800) / 0.6); }
-.pq-substituer-tete { border-top: 0; }
-.pq-substituer-section { border-top: 1px solid rgb(var(--cave-700)); }
-.pq-substituer-defile { scrollbar-width: thin; }
-.pq-substituer-radio-on { border-color: rgb(var(--ebc-straw-bord)); }
+/* Substituer = u4 (fils11-substitution/u4/vue.html), ses mesures reprises telles quelles ; classes propres préfixées
+   pq-substituer- (L26). Encre #111, gris #555 / #6e6e6e, traits #d4d4d4, surfaces #f5f5f5 / #ebebeb (thème de ses
+   maquettes, D106). */
+.pq-substituer { position: relative; display: flex; flex-direction: column; gap: 10px; color: #111; font-size: 14px; line-height: 1.25; }
+.pq-substituer b, .pq-substituer strong { font-weight: 700; }
+.pq-substituer-gris { color: #6e6e6e; font-weight: 400; }
+.pq-substituer-ico { width: 16px; height: 16px; flex: none; display: inline-block; vertical-align: -3px; }
+
+/* Le contexte de la tête de u4 (« remplaçants / à 60′ »), rangé à droite du nom, dans la tête du cadre ; le nom en 20 px gras. */
+.pq-outil-substituer .pq-tete h1 { font-size: 20px; font-weight: 700; }
+.pq-substituer-ctx { margin: 0 0 0 auto; padding-right: 4px; font-size: 13px; color: #555; text-align: right; line-height: 1.2; white-space: nowrap; }
+.pq-substituer-ctx b { color: #111; }
+
+.pq-substituer-reponse { border-left: 4px solid #111; padding: 2px 0 2px 10px; }
+.pq-substituer-reponse strong { display: block; font-size: 19px; line-height: 1.2; }
+.pq-substituer-reponse span { display: block; font-size: 14px; color: #555; margin-top: 3px; line-height: 1.3; }
+
+/* Échelle de ressemblance : 50 à 100, paliers en bandes. */
+.pq-substituer-echelle { position: relative; }
+.pq-substituer-paliers { position: relative; height: 22px; margin-left: 7rem; }
+.pq-substituer-paliers > span:not(.pq-substituer-legende) { position: absolute; top: 3px; font-size: 12px; color: #6e6e6e; white-space: nowrap; }
+.pq-substituer-legende { position: absolute; left: -7rem; top: -6px; }
+.pq-substituer-legende [data-role="legende"] { z-index: 30; }
+.pq-substituer-rangs { position: relative; display: flex; flex-direction: column; }
+.pq-substituer-fondp { position: absolute; top: 0; bottom: 0; pointer-events: none; }
+.pq-substituer-r { position: relative; display: grid; grid-template-columns: 7rem 1fr; align-items: center; height: 34px; cursor: pointer; border-radius: 8px; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+.pq-substituer-nom { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; padding-left: 2px; }
+.pq-substituer-tr { position: relative; height: 34px; }
+.pq-substituer-pl { position: absolute; top: 13px; height: 8px; border-radius: 4px; background: repeating-linear-gradient(45deg, var(--c) 0 2px, #fff 2px 5px); outline: 1.5px dashed var(--c); outline-offset: -1px; }
+.pq-substituer-pt { position: absolute; top: 10px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: var(--c); border: 2px solid #fff; }
+.pq-substituer-val { position: absolute; top: 9px; font-size: 13px; color: #555; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pq-substituer-val b { color: #111; }
+.pq-substituer-r[aria-pressed="true"] { background: #f5f5f5; }
+.pq-substituer-r[aria-pressed="true"] .pq-substituer-nom { color: var(--ct, var(--c)); }
+.pq-substituer-r-choisi { box-shadow: inset 3px 0 0 var(--c); }
+.pq-substituer-axe { position: relative; height: 16px; margin-left: 7rem; border-top: 1px solid #d4d4d4; }
+.pq-substituer-axe span { position: absolute; top: 2px; font-size: 12px; color: #6e6e6e; transform: translateX(-50%); }
+.pq-substituer-cle { font-size: 12px; color: #6e6e6e; display: flex; flex-wrap: wrap; gap: 3px 12px; align-items: center; line-height: 1.3; margin: 0; }
+.pq-substituer-cle i { display: inline-block; vertical-align: -1px; margin-right: 4px; }
+.pq-substituer-cle-pt { width: 12px; height: 12px; border-radius: 50%; background: #777; }
+.pq-substituer-cle-pl { width: 22px; height: 8px; border-radius: 4px; background: repeating-linear-gradient(45deg, #777 0 2px, #fff 2px 5px); outline: 1.5px dashed #777; outline-offset: -1px; }
+
+/* Face à face, grammaire de Comparer p3 : bandes par houblon, rangées par mesure. */
+.pq-substituer-h2 { font-size: 16px; font-weight: 700; margin: 6px 0 0; }
+.pq-substituer-h2-petit { font-size: 15px; }
+.pq-substituer-bandes { display: flex; flex-direction: column; gap: 6px; }
+.pq-substituer-bande { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding: 7px 10px; border-radius: 8px; background: #f5f5f5; border-left: 4px solid var(--c); min-height: 52px; }
+.pq-substituer-bande[role="radio"] { cursor: pointer; user-select: none; -webkit-user-select: none; }
+.pq-substituer-bande-choisie { box-shadow: inset 0 0 0 2px var(--c); background: #fff; }
+.pq-substituer-bande-n { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.pq-substituer-bande-m { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #555; }
+.pq-substituer-a-la-place { font-size: 12px; color: #111; font-weight: 600; }
+.pq-substituer-bande-d { grid-row: 1 / 3; grid-column: 2; text-align: right; align-self: center; }
+.pq-substituer-bande-d b { display: block; font-size: 16px; color: #111; font-variant-numeric: tabular-nums; }
+.pq-substituer-bande-d small { display: block; font-size: 12px; color: #6e6e6e; }
+
+.pq-substituer-mesure { display: grid; grid-template-columns: 30px 1fr; border-top: 1px solid #d4d4d4; padding-top: 4px; }
+.pq-substituer-t { font-size: 15px; font-weight: 700; padding-top: 6px; }
+.pq-substituer-mr { display: grid; grid-template-columns: 92px 52px 1fr; align-items: center; height: 34px; gap: 6px; }
+.pq-substituer-mr-h { font-size: 13px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pq-substituer-mr-v { font-size: 13px; font-weight: 650; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pq-substituer-tb { position: relative; height: 34px; }
+.pq-substituer-tb-fond { position: absolute; left: 0; right: 0; top: 15px; height: 6px; border-radius: 3px; background: #ebebeb; }
+.pq-substituer-tb-src { position: absolute; height: 2px; background: var(--c); opacity: .55; }
+.pq-substituer-tb-pg { position: absolute; top: 13px; height: 10px; border-radius: 4px; background: var(--c); opacity: .85; }
+.pq-substituer-tb-ctr { position: absolute; top: 11px; width: 2px; height: 14px; margin-left: -1px; background: #111; }
+.pq-substituer-tb-lot { position: absolute; top: -5px; font-size: 12px; white-space: nowrap; transform: translateX(-50%); line-height: 12px; text-align: center; background: linear-gradient(#fff 0 12px, transparent 12px); }
+.pq-substituer-tb-lot::after { content: '▼'; display: block; font-size: 10px; line-height: 9px; }
+.pq-substituer-tb-lot.pq-substituer-article::after { content: '▽'; }
+.pq-substituer-note { font-size: 12px; color: #6e6e6e; line-height: 1.35; margin: 0; }
+.pq-substituer-note b { color: #111; }
+
+/* Arômes en barres : 2 crans (cité, marqué), pointillé = non décrit. */
+.pq-substituer-aro, .pq-substituer-biere { border-top: 1px solid #d4d4d4; margin-top: 8px; display: block; }
+.pq-substituer-tete, .pq-substituer-lg { display: grid; align-items: center; gap: 4px; }
+.pq-substituer-tete { padding: 6px 0 4px; font-size: 13px; font-weight: 650; }
+.pq-substituer-tete > span + span { border-bottom: 3px solid var(--c); padding-bottom: 2px; white-space: nowrap; overflow: hidden; }
+.pq-substituer-lg { height: 26px; font-size: 13px; }
+.pq-substituer-lg-nom { display: inline-flex; align-items: center; gap: 4px; min-width: 0; white-space: nowrap; }
+.pq-substituer-att { font-weight: 700; font-size: 14px; height: 30px; background: #f5f5f5; }
+.pq-substituer-att > span:first-child { padding-left: 4px; }
+.pq-substituer-crans { display: inline-flex; gap: 3px; }
+.pq-substituer-crans i { width: 18px; height: 9px; border-radius: 2px; background: #ebebeb; }
+.pq-substituer-crans i.pq-substituer-on { background: var(--c); }
+.pq-substituer-nd i { background: #fff; outline: 1px dashed #9a9a9a; outline-offset: -1px; }
+.pq-substituer-autres { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #555; }
+.pq-substituer-autres i { display: inline-block; height: 8px; border-radius: 2px; background: #8a8a8a; }
+.pq-substituer-groupe { font-size: 12px; color: #6e6e6e; padding: 6px 0 2px; }
+.pq-substituer-inc { font-size: 13px; color: #6e6e6e; font-style: italic; padding: 4px 0; margin: 0; }
+
+.pq-substituer-graphe { position: relative; width: 358px; max-width: 100%; height: 300px; margin-top: 8px; }
+.pq-substituer-radar { display: block; overflow: visible; }
+.pq-substituer-legende-radar { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: #555; margin: 0; }
+.pq-substituer-legende-radar span { display: inline-flex; align-items: center; gap: 5px; }
+.pq-substituer-legende-radar i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; box-sizing: border-box; }
+
+/* Relation au style. */
+.pq-substituer-style { border-top: 1px solid #d4d4d4; padding-top: 6px; display: grid; gap: 8px; font-size: 13px; }
+.pq-substituer-style p { border-left: 3px solid var(--c); padding-left: 8px; line-height: 1.35; color: #555; margin: 0; }
+.pq-substituer-style p b { color: #111; }
+
+/* Ma bière avec chacun (D75), au style ou en absolu. */
+.pq-substituer-biere-tete { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 4px; }
+.pq-substituer-lg-biere { height: 34px; }
+.pq-substituer-mb { display: block; padding-right: 4px; }
+.pq-substituer-mb-e { display: block; text-align: right; font-size: 11px; line-height: 12px; height: 12px; margin-top: 2px; }
+
+.pq-substituer-choisir { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.pq-substituer-choisir button { height: 44px; border-radius: 22px; font-weight: 650; font-size: 14px; border: 1px solid #d4d4d4; background: #fff; color: #111; }
+.pq-substituer-choisir button[aria-pressed="true"] { background: #f5f5f5; }
+.pq-substituer-details { border-top: 1px solid #d4d4d4; padding-top: 6px; }
+.pq-substituer-details summary { cursor: pointer; font-size: 14px; color: #555; padding: 4px 0; min-height: 32px; }
+.pq-substituer-regle { font-size: 13px; color: #555; display: grid; gap: 6px; margin-top: 6px; line-height: 1.35; }
+.pq-substituer-regle p { margin: 0; }
+.pq-substituer-regle b { color: #111; }
+.pq-substituer-pictos { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; }

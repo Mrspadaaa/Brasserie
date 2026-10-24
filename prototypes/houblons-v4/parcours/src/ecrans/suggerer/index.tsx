@@ -1,16 +1,18 @@
-// Suggérer — l'onglet Suggestions de la base v4.10, q2b tel qu'il l'a choisi (« C'est effectivement qb2 reprise le
-// mieux », 19.10 ; « Ça oui, c'est effectivement l'un de mes choix », 23.10), repris élément par élément sur
-// consolide-b-390.png (D117 : « J'ai l'impression que cette vue suggestions et pas la bonne que j'ai vraiment choisir ?? »).
-// En tête, la tête des trois onglets (croix, Ma bière · Suggestions · Comparer ; D109, D118, D119, CadreOutil) ; le
-// bandeau IBU · OG · EBC ; Au style / Absolu et Barres / Radar ; les cartes d'objectif (verdict en un mot, « Aucune voie
-// houblon · Hors houblon › ») et leur piste l5b (D92). Puis les voies du moteur groupées par effet : « = même effet sur
-// tes objectifs · 10 g · 10′ » dans leur cadre à bord noir, Assembler, Remplacer Nugget, Dry hop ; chaque voie en deux
-// lignes (usage en mot D90, nom, α, stock en icône, ♡, « + » ou ✓ ; les objectifs cerclés puis les extras, en traits par
-// cran, lisibles au toucher D110). En bas, « Hors houblon » et la barre noire « Comparer (n) ».
-// Écarts qui ont ses mots : l'usage en mot (D90), la bande « ‹ visée | visée › » retirée (D91), les pistes l5b (D92).
+// Suggérer — q2b tel qu'il l'a choisi (« C'est effectivement qb2 reprise le mieux », 19.10 ; « Ça oui, c'est
+// effectivement l'un de mes choix », 23.10), avec tous ses états (reprise D124 : « certaines de mes choix ont été
+// perdue »), dans l'onglet Suggestions de sa base v4.10.
+// En tête : la croix et les trois onglets (D109, D118, D119), le bandeau IBU · OG · EBC, « Au style | Absolu » et
+// « Barres | Radar ». Les trois cartes d'objectif de q2b (Moins résineux · Plus floral · Plus agrumes), chacune avec
+// son verdict et sa piste. Puis les voies du moteur autour de l'axe central noir de q2b, la visée en tirets : les
+// groupes « = même effet » (leur barre une fois, « +1 cran », « +2 crans », puis le cadre à bord noir), « Assembler
+// 5 + 5 g », « Remplacer Nugget », « Dry hop · actif » (pastilles de biotransformation, « creep ») ; chaque voie hors
+// cadre a sa barre l5b à droite de l'axe. Le ♡ ouvre « aimer · neutre · exclure ». En bas : « IBU après chaque voie »,
+// « Hors houblon », la barre noire « Comparer (n) ». En Radar : le mode Radar de la base v4.10 (vue-radar.tsx).
+// Écarts voulus par lui : la croix (D109), le « ? » (D113), l'usage en mot (D90), les traits lus au toucher (D110) ; la
+// bande « ‹ visée | visée › » ne revient pas (D91), ni le groupe « Changer de levure » (D35).
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Heart } from 'lucide-react';
-import { CadreOutil, COULEURS, COURT, Legende, Picto, ROUE, signe, type Echelle } from '../../commun';
+import { CadreOutil, COULEURS, COURT, Legende, nombre, Picto, ROUE, type Echelle } from '../../commun';
 import { useNavigation } from '../../coquille/navigation';
 import { useOuvrir } from '../../coquille/ouvrir';
 import type { Route } from '../../coquille/routes';
@@ -20,17 +22,31 @@ import { style } from '../../moteur';
 import { offModelLeads, type FamilyId } from '../../../../src/engine';
 import Fiche, { useGestesFiche } from '../fiche';
 import { Bandeau } from '../ma-biere/Base';
-import { AlphaCourt, Calme, CaseInconnue, Lecture, Piste, Stock, Traits, Usage, domaine, type Domaine, type NiveauFiches } from './briques';
+import { AlphaCourt, Calme, CaseInconnue, Lecture, Stock, Traits, Usage, type NiveauFiches } from './briques';
 import { BulleTraitsProvider } from './bulle';
-import { Radar } from './radar';
-import { bannisDe, objectifsDe, verdict, voiesDe, type Groupe, type Ligne, type Objectif } from './voies';
+import { Divergent, Graphe, type NiveauBarre } from './divergent';
+import { bannisDe, dryhopActif, objectifsDe, verdict, voiesDe, type Groupe, type Ligne, type Objectif } from './voies';
+import { VueRadar } from './vue-radar';
 import './suggerer.css';
+import './reprise.css';
 
 /** Instantané du moteur (même état de départ) pour controle-autres-ajouts, lu depuis son dossier de cas (voir NOTE). */
 const CAS_DIRECT = '../../../../../../prototypes/houblons-v4/parcours/src/ecrans/suggerer/cas-direct';
 
-/** Mes goûts, en mémoire (maquette), comme la fiche : ♡ d'une voie. Au portage : la même table que la fiche (D20). */
-const AIMES = new Set<string>();
+/** Mes goûts, en mémoire (maquette) : aimer, neutre, exclure (base v4.10). Au portage : la table des goûts de la fiche (D20). */
+type Gout = 'aimer' | 'neutre' | 'exclure';
+const GOUTS = new Map<string, Gout>();
+
+const RANG: Record<NiveauFiches, number> = { 'non décrit': 0, cité: 1, marqué: 2 };
+/** Le niveau des fiches d'une famille sur la voie : le plus haut de ses houblons. */
+const niveauFiches = (l: Ligne, f: FamilyId): NiveauFiches => l.houblons.map((h) => h.familles[f].niveau).sort((a, b) => RANG[b] - RANG[a])[0] ?? 'non décrit';
+/** La barre de q2b : pleine si une fiche marque la famille, pâle si elle la cite, blanche sinon ou quand elle baisse. */
+const niveauBarre = (l: Ligne) => (f: FamilyId, e: number): NiveauBarre => {
+  if (e < 0) return 'sf';
+  const n = niveauFiches(l, f);
+  return n === 'marqué' ? 'mq' : n === 'cité' ? 'ci' : 'sf';
+};
+const nomsVoie = (l: Ligne) => l.houblons.map((h) => h.nom).join(' + ');
 
 export default function Suggerer() {
   const recette = useRecette();
@@ -44,37 +60,46 @@ export default function Suggerer() {
   const [vue, setVue] = useState<'barres' | 'radar'>('barres');
   const [horsHoublon, setHorsHoublon] = useState(false);
   const refHorsHoublon = useRef<HTMLDetailsElement>(null);
+  const [gouts, setGouts] = useState(() => new Map(GOUTS));
+  const [goutOuvert, setGoutOuvert] = useState<string | null>(null);
+  const noter = (cle: string, g: Gout) => {
+    if (g === 'neutre') GOUTS.delete(cle); else GOUTS.set(cle, g);
+    setGouts(new Map(GOUTS)); setGoutOuvert(null);
+  };
 
-  // La visée commune (état du parcours) : réglée dans l'onglet Ma bière ; sans visée, la demande dégustée (+ floral, − résineux).
+  // La visée commune (Ma bière) ; sans visée, la demande de q2b (+ floral, + agrumes, − résineux).
   const visee = useVisee();
   const objectifs = useMemo(() => objectifsDe(recette, biere, visee), [recette, biere, visee]);
   const bannis = useMemo(() => bannisDe(visee), [visee]);
-  const groupes = useMemo(() => voiesDe(recette, objectifs, ROUE, bannis), [recette, objectifs, bannis]);
+  const tous = useMemo(() => voiesDe(recette, objectifs, ROUE, bannis), [recette, objectifs, bannis]);
+  // « exclure » (♡) : les voies de ce houblon quittent la liste ; « Exclus » les rend.
+  const exclus = [...gouts].filter(([, g]) => g === 'exclure').map(([c]) => c);
+  const groupes = useMemo(() => tous.map((g) => ({ ...g, lignes: g.lignes.filter((l) => !l.houblons.some((h) => exclus.includes(h.cle))) })).filter((g) => g.lignes.length),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tous, exclus.join()]);
   const lignes = groupes.flatMap((g) => g.lignes);
-  const ov = objectifs.find((o) => o.sens > 0) ?? objectifs[0];
-  // Cartes et pistes dans l'ordre de la base v4.10 : la visée « plus » d'abord (objectifsDe), deux par rang au téléphone.
-  const colonnes = Math.max(1, Math.min(2, objectifs.length));
-  const rangsCartes = Math.ceil(objectifs.length / colonnes);
-  const place = (k: number) => ({ gridRow: Math.floor(k / colonnes) + 1, gridColumn: (k % colonnes) + 1 });
-  // Teinte de la carte, celle de q2b et de sa base (q-tuile : dégradé du blanc vers --fd, #e6d2f2 floral, #cfe5de
-  // résineux) : le fond pâle de la famille, relevé de 18 % de sa couleur (D74, « trop limité au niveau des couleurs »).
+  const cran = (f: FamilyId) => sc.families[f].cran;
+  const bande = (f: FamilyId) => sc.families[f].band ?? null;
+  const colonnes = Math.max(1, Math.min(3, objectifs.length));
   const teinte = (f: FamilyId) => `linear-gradient(160deg, rgb(var(--cave-950)), color-mix(in srgb, ${COULEURS[f].base} 18%, ${COULEURS[f].fond}))`;
-  const domaines = useMemo(() => Object.fromEntries(objectifs.map((o) => [o.f, domaine(o.f, sc, echelle,
-    [o.avant ?? 0, o.visee ?? 0, ...lignes.map((l) => (o.avant ?? 0) + (l.effets[o.f] ?? 0))])])) as Record<FamilyId, Domaine>, [objectifs, lignes, sc, echelle]);
 
-  // Proposés au départ, comme la base (des voies cochées) : la meilleure voie du stock à 10′ et le meilleur dry hop.
+  // Les cartes dans l'ordre de q2b : « Moins résineux » d'abord (sa plainte, « trop résineuse »), puis les « plus ».
+  // Proposés au départ, comme q2b (des voies cochées) : la meilleure voie du stock de chacun des deux groupes au même
+  // effet, et le dry hop actif (Motueka, déjà compté).
   useEffect(() => {
     if (aComparer.length) return;
-    const premier = (g?: Groupe) => g?.lignes.find((l) => l.stock !== 'à acheter' && ov && (l.effets[ov.f] ?? 0) > 0)?.houblons.map((h) => h.cle) ?? [];
-    const choix = [...new Set([...premier(groupes.find((g) => g.geste === 'meme')), ...premier(groupes.find((g) => g.geste === 'dryhop'))])];
+    const premier = (g?: Groupe) => g?.lignes.find((l) => l.stock !== 'à acheter')?.houblons.map((h) => h.cle) ?? [];
+    const choix = [...new Set([...premier(groupes.find((g) => g.id === 'meme-0')), ...premier(groupes.find((g) => g.id === 'meme-1')), ...premier(groupes.find((g) => g.geste === 'dryhop'))])];
     if (choix.length) fixerComparaison(choix);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const choisie = (l: Ligne) => l.houblons.every((h) => aComparer.includes(h.cle));
   const basculer = (l: Ligne) => {
-    const tous = choisie(l);
-    for (const h of l.houblons) if (tous || !aComparer.includes(h.cle)) basculerComparaison(h.cle);
+    const tousDedans = choisie(l);
+    for (const h of l.houblons) if (tousDedans || !aComparer.includes(h.cle)) basculerComparaison(h.cle);
   };
+  // Le « + » joué par controle-etats (etat-sugg-plus) : Aurum, comme sa maquette, sinon la première voie non retenue.
+  const lignePlus = lignes.find((l) => l.houblons.length === 1 && /aurum/.test(l.houblons[0].cle) && !choisie(l)) ?? lignes.find((l) => !choisie(l));
 
   // Fiche à l'appui long : une entrée d'historique (le retour du téléphone la ferme), Suggérer reste ouvert dessous.
   const [fiche, setFiche] = useState<string | null>(null);
@@ -86,85 +111,98 @@ export default function Suggerer() {
   useEffect(() => { if (fiche && route !== routeFiche.current) setFiche(null); }, [route, fiche]);
   const gestesFiche = useGestesFiche(ouvrirFiche);
 
-  // Cas lu par controle-autres-ajouts (D76).
-  useEffect(() => { document.body.dataset.cas = CAS_DIRECT; return () => { delete document.body.dataset.cas; }; }, []);
+  // Cas lu par controle-autres-ajouts (D76) ; le levier « dry hop actif » du moteur, pour jeu.mjs et instantane.mjs
+  // (le crochet du socle n'expose que proposer).
+  useEffect(() => {
+    document.body.dataset.cas = CAS_DIRECT;
+    (window as unknown as { __suggerer?: unknown }).__suggerer = { dryhopActif };
+    return () => { delete document.body.dataset.cas; };
+  }, []);
+  // Un toucher hors du menu du goût le ferme.
+  useEffect(() => {
+    if (!goutOuvert) return;
+    const f = (e: PointerEvent) => { if (!(e.target as Element).closest?.('[data-role="gout"],[data-role="gout-choix"]')) setGoutOuvert(null); };
+    document.addEventListener('pointerdown', f, true);
+    return () => document.removeEventListener('pointerdown', f, true);
+  }, [goutOuvert]);
 
   const leads = offModelLeads(Object.fromEntries(objectifs.map((o) => [o.f, o.sens])));
   const pistesHors = leads.flatMap((x) => x.leads);
   const famHors = leads[0]?.family as FamilyId | undefined;
-  const series = lignes.filter((l) => choisie(l)).filter((l, i, t) => t.findIndex((x) => x.houblons.map((h) => h.cle).join() === l.houblons.map((h) => h.cle).join()) === i)
-    .map((l) => ({ cle: l.id, nom: l.houblons.map((h) => h.nom).join(' + '), effets: l.effets }));
   const montrerHorsHoublon = () => {
     setHorsHoublon(true);
     requestAnimationFrame(() => refHorsHoublon.current?.scrollIntoView({ block: 'center', behavior: 'smooth' }));
   };
+  const avecIbu = lignes.filter((l) => l.ibuApres != null);
+  // La piste regardée par controle-etats (etat-sugg-piste-objectif) : celle d'un objectif atteint, comme sa maquette.
+  const fPiste = (objectifs.find((o) => o.sens > 0 && verdict(o, groupes).mot === 'Atteint') ?? objectifs.find((o) => o.sens > 0))?.f;
+  const groupe2 =groupes.filter((g) => g.id.startsWith('meme-'))[1] ?? groupes.find((g) => g.id.startsWith('meme-'));
 
   return (
     <CadreOutil ecran="suggerer" question="Quel houblon ajouter à ma bière ?" questionVisible={false} elementTete="q2b-onglets">
       <BulleTraitsProvider>
-        <div className="pq-suggerer-haut">
+        <div className="pq-suggerer-haut" data-etat="etat-sugg-bandeau-ibu">
           <Bandeau biere={biere} element="q2b-bandeau-ibu" />
         </div>
         <div data-element="q2b-reglages" className="flex items-center gap-1.5">
-          <Lecture<Echelle> label="Échelle" valeur={echelle} onChange={setEchelle} e={['style', 'absolu']}
+          <Lecture<Echelle> label="Échelle" valeur={echelle} onChange={setEchelle} e={['style', 'absolu']} etats={[undefined, 'etat-sugg-absolu']}
             options={[{ value: 'style', label: 'Au style' }, { value: 'absolu', label: 'Absolu' }]} />
           {/* D89 : « il faut un bouton légende un peu caché pour pas que ça gêne ». Les traits se lisent aussi au toucher (D110). */}
           <Legende>
-            <p><b>Carte</b> : le verdict de la meilleure voie ; Atteint, le cran entier ; Approche, la moitié au moins.</p>
-            <p><b>Piste</b> : zone pâle, le style {sc.code} ; rond, ma bière ; barre, la meilleure voie ; pointillé, la visée ; orangé, hors du style.</p>
+            <p><b>Carte</b> : le verdict de la meilleure voie qui reste au style ; Atteint, la visée ; Approche, la moitié du chemin.</p>
+            <p><b>Barres</b> : à droite de l’axe, ce qui monte ; à gauche, ce qui baisse ; tirets, la visée ; trait fin, jusqu’au haut du style {sc.code} ; orangé, hors du style ; hachures, effet non établi.</p>
             <p><b>Sous un picto</b> : un trait par cran du style ; toucher le picto dit sa famille et sa valeur. Cerclés : tes objectifs.</p>
             <p><b>Usage</b> : amer, arôme ou mixte ; souligné en pointillé, déduit de l’α. Appui long sur une voie : sa fiche.</p>
           </Legende>
           <span className="flex-1" aria-hidden="true" />
-          <Lecture<'barres' | 'radar'> label="Vue" valeur={vue} onChange={setVue} e={['barres', 'radar']}
+          <Lecture<'barres' | 'radar'> label="Vue" valeur={vue} onChange={setVue} e={['barres', 'radar']} etats={[undefined, 'etat-sugg-radar']}
             options={[{ value: 'barres', label: 'Barres' }, { value: 'radar', label: 'Radar' }]} />
         </div>
 
-        <section aria-label="Objectifs" data-element="q2b-cartes-objectifs q2b-piste-objectif" className="grid gap-x-2 gap-y-1.5"
-          style={{ gridTemplateColumns: `repeat(${colonnes}, minmax(0, 1fr))` }}>
-          {objectifs.map((o, i) => {
-            const v = verdict(o, groupes);
-            const d = domaines[o.f];
-            const marques = vue === 'barres' ? series.map((s) => ({ cle: s.cle, x: (o.avant ?? 0) + (s.effets[o.f] ?? 0) })) : [];
-            const mot = o.bannie ? 'Sans' : o.sens > 0 ? 'Plus' : 'Moins';
-            return (
-              <div key={o.f} data-role="objectif" data-objectif={o.f} {...(o.bannie ? { 'data-banni': o.f } : {})} className="contents">
-                <div className="pq-suggerer-carte rounded-lg px-3 py-2 flex flex-col gap-1 min-w-0" style={{ ...place(i), background: teinte(o.f) }}
-                  aria-label={`${mot} ${COURT[o.f].toLowerCase()} : ${v.mot}${v.meilleure ? `, ${v.meilleure.houblons.map((h) => h.nom).join(' + ')}` : ''}`}>
-                  <span className="flex items-center gap-1 text-[0.9375rem] font-bold leading-tight" style={{ color: COULEURS[o.f].texte }}>
-                    <span className="relative inline-flex"><Picto famille={o.f} taille={17} nomme={false} />{biere.profil[o.f].horsStyle && <i className="pq-suggerer-alerte" aria-hidden="true" />}</span>
-                    {mot} {COURT[o.f].toLowerCase()}
-                  </span>
-                  <span data-role="reponse" data-verdict={v.mot} className={`pq-suggerer-verdict pq-suggerer-verdict-${v.mot.toLowerCase()} leading-none`}>
-                    {v.mot}{v.mot === 'Aucune' && <small className="pq-suggerer-verdict-suite"> voie houblon</small>}
-                  </span>
-                  {v.mot === 'Aucune' && o.f === famHors && pistesHors.length > 0
-                    ? <button type="button" data-element="q2b-hors-houblon" data-role="hors-houblon" aria-label={`Lecture des pistes hors houblon pour le ${COURT[o.f].toLowerCase()}`} aria-expanded={horsHoublon} aria-controls="pq-suggerer-hors-houblon" onClick={montrerHorsHoublon}
-                        className="pq-suggerer-hh self-start h-8 px-3 rounded-full text-sm font-bold whitespace-nowrap" style={{ color: COULEURS[o.f].texte, borderColor: COULEURS[o.f].texte }}>Hors houblon</button>
-                    : null}
-                </div>
-                {vue === 'barres' && (
-                  <span className="relative flex items-center gap-1.5 pt-0.5" style={{ gridRow: rangsCartes + i + 1, gridColumn: '1 / -1' }}>
-                    <Picto famille={o.f} taille={14} nomme={false} />
-                    <span className="relative flex-1">
-                      <Piste f={o.f} d={d} barre={v.effet == null || o.avant == null ? null : o.avant + v.effet} avant={o.avant} visee={o.visee} marques={marques} epaisse />
-                    </span>
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </section>
-        {vue === 'radar' && <Radar biere={biere} sc={sc} echelle={echelle} series={series} />}
+        {vue === 'radar' ? (
+          <VueRadar biere={biere} sc={sc} echelle={echelle} objectifs={objectifs} groupes={groupes} onHorsHoublon={montrerHorsHoublon} famHors={famHors} pistesHors={pistesHors.length} />
+        ) : (
+          <>
+            <section aria-label="Objectifs" data-element="q2b-cartes-objectifs q2b-piste-objectif" data-etat="etat-sugg-repos" className="grid gap-2"
+              style={{ gridTemplateColumns: `repeat(${colonnes}, minmax(0, 1fr))` }}>
+              {[...objectifs].sort((x, y) => x.sens - y.sens).map((o) => <Carte key={o.f} o={o} groupes={groupes} biere={biere} teinte={teinte(o.f)} famHors={famHors} pistesHors={pistesHors.length}
+                horsHoublon={horsHoublon} onHorsHoublon={montrerHorsHoublon} etatPiste={o.f === fPiste} />)}
+            </section>
 
-        <div data-libre="houblon" aria-label="Voies du moteur" className="space-y-1"
-          data-direction={JSON.stringify(Object.fromEntries(objectifs.map((o) => [o.f, o.requis / o.cran])))}>
-          {groupes.map((g) => (
-            <BlocGroupe key={g.id} g={g} objectifs={objectifs} domaines={domaines} echelle={echelle} cran={(f) => sc.families[f].cran}
-              choisie={choisie} basculer={basculer} gestesFiche={gestesFiche} barres={vue === 'barres'} />
-          ))}
-        </div>
+            <div data-libre="houblon" aria-label="Voies du moteur"
+              data-direction={JSON.stringify(Object.fromEntries(objectifs.map((o) => [o.f, o.requis / o.cran])))}>
+              {exclus.length > 0 && (
+                <p className="flex flex-wrap items-center gap-1.5 px-1 pb-1 text-sm text-cave-200">
+                  Exclus :
+                  {exclus.map((c) => {
+                    const h = tous.flatMap((g) => g.lignes).flatMap((l) => l.houblons).find((x) => x.cle === c);
+                    return <button key={c} type="button" onClick={() => noter(c, 'neutre')} aria-label={`Ne plus exclure ${h?.nom ?? c}`} className="h-8 px-3 rounded-full border border-cave-700 font-semibold">{h?.nom ?? c} ×</button>;
+                  })}
+                </p>
+              )}
+              <Graphe objectifs={objectifs} echelle={echelle} cran={cran}>
+                {groupes.map((g) => (
+                  <BlocGroupe key={g.id} g={g} objectifs={objectifs} echelle={echelle} cran={cran} bande={bande} choisie={choisie} basculer={basculer}
+                    gestesFiche={gestesFiche} etat={g === groupe2 ? 'etat-sugg-groupes-effet' : g.geste === 'assembler' ? 'etat-sugg-assembler' : g.geste === 'remplacer' ? 'etat-sugg-remplacer' : g.geste === 'dryhop' ? 'etat-sugg-dry-hop' : undefined}
+                    premiere={g === groupes[0]} lignePlus={lignePlus?.id ?? null} gouts={gouts} goutOuvert={goutOuvert} setGoutOuvert={setGoutOuvert} noter={noter} />
+                ))}
+              </Graphe>
+            </div>
+          </>
+        )}
 
+        {avecIbu.length > 0 && (
+          <details data-lecture="" className="pq-suggerer-repli rounded-lg">
+            <summary data-etat="etat-sugg-ibu-details" className="flex items-center gap-2 px-3 min-h-[44px] text-[0.9375rem] font-semibold text-cave-50 cursor-pointer">
+              IBU après chaque voie (ma bière {nombre(biere.ibu.valeur, 1)}{biere.bandeIbu ? ` ; style ${biere.bandeIbu[0]}–${biere.bandeIbu[1]}` : ''})
+            </summary>
+            <p data-role="ibu-voies" className="px-3 pb-3 text-sm text-cave-200 leading-snug">
+              {avecIbu.map((l, i) => (
+                <span key={l.id}>{i > 0 ? ' · ' : ''}{nomsVoie(l)} {l.voie.actions[0].momentLabel.replace(/^dry hop.*$/i, 'actif')} <b className="font-mono text-cave-50">{nombre(l.ibuApres!, 1)}</b></span>
+              ))}
+            </p>
+          </details>
+        )}
         {pistesHors.length > 0 && famHors && (
           <details ref={refHorsHoublon} id="pq-suggerer-hors-houblon" open={horsHoublon} onToggle={(e) => setHorsHoublon((e.target as HTMLDetailsElement).open)}
             data-lecture="" className="pq-suggerer-repli rounded-lg">
@@ -181,7 +219,7 @@ export default function Suggerer() {
         <p className="text-xs text-cave-400 px-1">{nomLevure(recette.yeastId)} · les voies viennent du moteur ; « ~ » simulé.</p>
 
         <div className="pq-suggerer-barre-bas" data-element="q2b-comparer-n">
-          <button type="button" data-role="pont-comparer" disabled={aComparer.length < 1} onClick={() => ouvrir({ ecran: 'comparer', houblons: aComparer })}
+          <button type="button" data-role="pont-comparer" data-etat="etat-sugg-comparer-n" disabled={aComparer.length < 1} onClick={() => ouvrir({ ecran: 'comparer', houblons: aComparer })}
             className="pq-suggerer-comparer w-full rounded-full text-base font-bold disabled:opacity-40">
             Comparer <span className="pq-suggerer-comparer-n">({aComparer.length})</span>
           </button>
@@ -192,113 +230,178 @@ export default function Suggerer() {
   );
 }
 
-function BlocGroupe({ g, objectifs, domaines, echelle, cran, choisie, basculer, gestesFiche, barres }: {
-  g: Groupe; objectifs: Objectif[]; domaines: Record<FamilyId, Domaine>; echelle: Echelle; cran: (f: FamilyId) => number;
-  choisie: (l: Ligne) => boolean; basculer: (l: Ligne) => void; gestesFiche: ReturnType<typeof useGestesFiche>; barres: boolean;
+/** Une carte d'objectif de q2b : flèche et picto, « Plus floral », le verdict en un mot, et sa piste (ce que la
+ * meilleure voie atteint, la visée en tirets) ; « Aucune voie houblon » et « Hors houblon › » sinon. */
+function Carte({ o, groupes, biere, teinte, famHors, pistesHors, horsHoublon, onHorsHoublon, etatPiste }: {
+  o: Objectif; groupes: Groupe[]; biere: ReturnType<typeof useBiere>; teinte: string; famHors: FamilyId | undefined; pistesHors: number;
+  horsHoublon: boolean; onHorsHoublon: () => void; etatPiste: boolean;
+}) {
+  const v = verdict(o, groupes);
+  const mot = o.bannie ? 'Sans' : o.sens > 0 ? 'Plus' : 'Moins';
+  const nom = `${mot} ${COURT[o.f].toLowerCase()}`;
+  const fr = (x: number) => nombre(x, 1);
+  const apres = o.avant != null && v.effet != null ? o.avant + v.effet : null;
+  const dit = v.mot === 'Aucune'
+    ? 'aucune voie houblon ne l’y ramène'
+    : `la meilleure voie, ${v.meilleure ? nomsVoie(v.meilleure) : '?'}, ${v.mot === 'Atteint' ? 'atteint' : 'approche'} la visée${o.avant != null && apres != null && o.visee != null ? ` (${fr(o.avant)} → ${fr(apres)}, visée ${fr(o.visee)})` : ''}`;
+  // La piste de la carte (q2b, cible) : ce que la meilleure voie fait, en part du chemin voulu, et la visée en tirets.
+  const frac = v.effet != null && o.sens > 0 ? Math.max(0, v.effet / Math.abs(o.requis)) : null;
+  const max = Math.max(1, frac ?? 0) * 1.12;
+  return (
+    <div data-role="objectif" data-objectif={o.f} {...(o.bannie ? { 'data-banni': o.f } : {})}
+      className="pq-suggerer-carte pq-sg-carte rounded-lg px-2.5 py-2 flex flex-col gap-1 min-w-0" style={{ background: teinte }} aria-label={`${nom} : ${dit}`}>
+      <span className="flex items-start gap-1 text-[0.8125rem] font-bold leading-tight" style={{ color: COULEURS[o.f].texte }}>
+        <span className="relative inline-flex shrink-0"><Picto famille={o.f} taille={17} nomme={false} />{biere.profil[o.f].horsStyle && <i className="pq-suggerer-alerte" aria-hidden="true" />}</span>
+        <span className="min-w-0">{nom}</span>
+      </span>
+      <span data-role="reponse" data-verdict={v.mot} className={`pq-sg-verdict pq-suggerer-verdict-${v.mot.toLowerCase()} leading-none`}>
+        {v.mot}{v.mot === 'Aucune' && <small className="pq-sg-verdict-suite">voie houblon</small>}
+      </span>
+      {v.mot === 'Aucune' && o.f === famHors && pistesHors > 0 ? (
+        <button type="button" data-element="q2b-hors-houblon" data-role="hors-houblon" data-etat="etat-sugg-hors-houblon" aria-label={`Hors houblon : les pistes pour le ${COURT[o.f].toLowerCase()}`}
+          aria-expanded={horsHoublon} aria-controls="pq-suggerer-hors-houblon" onClick={onHorsHoublon}
+          className="pq-suggerer-hh mt-auto self-start h-8 px-2.5 rounded-full text-xs font-bold whitespace-nowrap" style={{ color: COULEURS[o.f].texte, borderColor: COULEURS[o.f].texte }}>Hors houblon</button>
+      ) : frac != null ? (
+        <span data-role="piste" data-famille-piste={o.f} {...(etatPiste ? { 'data-etat': 'etat-sugg-piste-objectif' } : {})} className="pq-sg-cible mt-auto" aria-hidden="true">
+          <i className="pq-sg-cible-barre" style={{ width: `${(Math.min(frac, max) / max) * 100}%`, background: COULEURS[o.f].base }} />
+          <i className="pq-sg-cible-visee" style={{ left: `${(1 / max) * 100}%` }} />
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, gestesFiche, etat, premiere, lignePlus, gouts, goutOuvert, setGoutOuvert, noter }: {
+  g: Groupe; objectifs: Objectif[]; echelle: Echelle; cran: (f: FamilyId) => number; bande: (f: FamilyId) => [number, number] | null;
+  choisie: (l: Ligne) => boolean; basculer: (l: Ligne) => void; gestesFiche: ReturnType<typeof useGestesFiche>; etat?: string; premiere: boolean;
+  lignePlus: string | null; gouts: Map<string, Gout>; goutOuvert: string | null; setGoutOuvert: (c: string | null) => void; noter: (c: string, g: Gout) => void;
 }) {
   const cibles = objectifs.map((o) => o.f);
   // Cases alignées du groupe (q2b) : les familles hors objectifs qu'au moins une voie fait bouger.
   const slots = ROUE.filter((f) => !cibles.includes(f) && g.lignes.some((l) => l.effets[f] != null && Math.abs(l.effets[f]!) >= 0.5));
   const meme = g.id.startsWith('meme');
-  // Le cadre à bord noir de la base : les voies au même effet (plusieurs lignes, une seule barre d'effet).
+  // Le cadre à bord noir de q2b : les voies au même effet (plusieurs lignes, une seule barre d'effet).
   const cadre = meme && g.lignes.length > 1;
-  const ov = objectifs.find((o) => o.sens > 0) ?? objectifs[0];
   const element = meme && g.id === 'meme-0' ? 'q2b-groupes-effet' : g.geste === 'assembler' ? 'q2b-assembler' : g.geste === 'remplacer' ? 'q2b-remplacer' : undefined;
-  const ecrireGain = (e: number, f: FamilyId) => (echelle === 'style' ? `~${signe(e / cran(f), 1)}` : `~${signe(e, 0)}`);
+  const moment = g.geste === 'dryhop'
+    ? <span className="pq-suggerer-moment pq-sg-sur-axe gap-1"><svg width="12" height="14" viewBox="0 0 14 16" aria-hidden="true"><path d="M2 1 H12 V9 L7 15 L2 9 Z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><circle cx="5.5" cy="7" r="1.2" fill="currentColor" /><circle cx="8.5" cy="4.5" r="1.2" fill="currentColor" /></svg>{g.moment}</span>
+    : <span className="pq-suggerer-moment pq-sg-sur-axe">{g.moment}</span>;
   return (
-    <section data-groupe={g.id} {...(element ? { 'data-element': element } : {})} className="pt-2">
-      <h3 className="flex items-center gap-2 px-1 text-[0.9375rem] font-bold text-cave-50 leading-tight">
-        {meme && g.titre !== 'Ajouter' && <span aria-hidden="true" className="pq-suggerer-egal" />}
-        <span>{g.titre}</span>
-        {g.dose && <span className="font-normal text-cave-200">{g.dose}</span>}
-        <span className="pq-suggerer-moment">{g.moment}</span>
-        {g.estime && <span className="text-sm font-normal text-cave-400">estimé</span>}
+    <section data-groupe={g.id} {...(element ? { 'data-element': element } : {})} {...(etat ? { 'data-etat': etat } : {})} className="relative pt-2">
+      <h3 className="relative flex items-center gap-2 px-1 min-h-[1.875rem] text-[0.9375rem] font-bold text-cave-50 leading-tight">
+        <span className="pq-sg-sur-axe inline-flex items-center gap-1.5">
+          {meme && g.titre !== 'Ajouter' && <span aria-hidden="true" className="pq-suggerer-egal" />}
+          <span>{g.titre}</span>
+        </span>
+        {g.dose && <span className="pq-sg-sur-axe font-semibold text-cave-200">{g.dose}</span>}
+        {moment}
+        {g.estime && <span className="pq-sg-sur-axe text-sm font-normal text-cave-400">estimé</span>}
       </h3>
-      {cadre && barres && (
-        // L'effet du groupe sur les objectifs, dessiné une fois (q2b : « +1 cran »).
-        <div className="px-1 pt-1.5 pb-1 space-y-0.5">
-          {objectifs.filter((o) => g.lignes[0].effets[o.f] != null).map((o) => (
-            <div key={o.f} className="grid grid-cols-[1fr_2.75rem] items-center gap-x-1.5">
-              <Piste f={o.f} d={domaines[o.f]} barre={(o.avant ?? 0) + g.lignes[0].effets[o.f]!} avant={o.avant} visee={o.visee} />
-              <span className="font-mono text-xs font-semibold text-right" style={{ color: COULEURS[o.f].texte }}>{ecrireGain(g.lignes[0].effets[o.f]!, o.f)}</span>
-            </div>
-          ))}
+      {cadre && (
+        // L'effet du groupe, dessiné une fois (q2b : « +1 cran », « +2 crans »).
+        <div className="pt-1 pb-1.5">
+          <Divergent objectifs={objectifs} effets={g.lignes[0].effets} hors={g.lignes[0].hors} niveau={niveauBarre(g.lignes[0])} echelle={echelle} cran={cran} bande={bande} etiquettes />
         </div>
       )}
       <ul className={cadre ? 'pq-suggerer-cadre' : 'pq-suggerer-liste'} {...(cadre ? { 'data-role': 'cadre-voies' } : {})} {...(cadre && g.id === 'meme-0' ? { 'data-element': 'q2b-cadre-liste' } : {})}>
         {g.lignes.map((l, i) => (
-          <LigneVoie key={l.id} l={l} premiere={i === 0} cibles={cibles} slots={slots} cran={cran} choisie={choisie(l)} basculer={() => basculer(l)}
-            gestesFiche={gestesFiche} piste={!cadre && barres && ov ? { f: ov.f, d: domaines[ov.f], avant: ov.avant, visee: ov.visee } : null} gain={!cadre ? ecrireGain : null} />
+          <LigneVoie key={l.id} l={l} premiere={premiere && i === 0} cibles={cibles} slots={slots} cran={cran} choisie={choisie(l)} basculer={() => basculer(l)}
+            gestesFiche={gestesFiche} barres={!cadre} objectifs={objectifs} echelle={echelle} bande={bande} plus={l.id === lignePlus}
+            gouts={gouts} goutOuvert={goutOuvert} setGoutOuvert={setGoutOuvert} noter={noter} cadre={cadre} />
         ))}
       </ul>
     </section>
   );
 }
 
-const RANG: Record<NiveauFiches, number> = { 'non décrit': 0, cité: 1, marqué: 2 };
+/** Les pastilles de biotransformation de q2b : chaque signal par les pictos de son effet, le hop creep par son mot. */
+function Bio({ l }: { l: Ligne }) {
+  if (!l.bio.length) return null;
+  const a = (id: string) => l.bio.some((s) => s.id === id);
+  return (
+    <details className="pq-sg-bio" data-role="bio" onPointerDown={(e) => e.stopPropagation()}>
+      <summary aria-label="Biotransformation possible, ampleur non quantifiée" className="pq-hachure">
+        {a('geraniol-citronellol') && <span className="pq-sg-bt"><Picto famille="floral" taille={13} nomme={false} /><b aria-hidden="true">→</b><Picto famille="citrus" taille={13} nomme={false} /></span>}
+        {a('thiols') && <span className="pq-sg-bt"><Picto famille="tropical" taille={13} nomme={false} /><Picto famille="berries" taille={13} nomme={false} /></span>}
+        {a('hop-creep') && <span className="pq-sg-bt pq-sg-bt-mot">creep</span>}
+      </summary>
+      <ul className="pq-sg-bio-liste">
+        {l.bio.map((s) => <li key={s.id}><b>{s.titre}</b> · {s.statut}. <span className="text-cave-400">{s.pourquoi}</span></li>)}
+      </ul>
+    </details>
+  );
+}
 
-function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestesFiche, piste, gain }: {
+function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestesFiche, barres, objectifs, echelle, bande, plus, gouts, goutOuvert, setGoutOuvert, noter, cadre }: {
   l: Ligne; premiere: boolean; cibles: FamilyId[]; slots: FamilyId[]; cran: (f: FamilyId) => number; choisie: boolean; basculer: () => void;
-  gestesFiche: ReturnType<typeof useGestesFiche>; piste: { f: FamilyId; d: Domaine; avant: number | null; visee: number | null } | null;
-  gain: ((e: number, f: FamilyId) => string) | null;
+  gestesFiche: ReturnType<typeof useGestesFiche>; barres: boolean; objectifs: Objectif[]; echelle: Echelle; bande: (f: FamilyId) => [number, number] | null;
+  plus: boolean; gouts: Map<string, Gout>; goutOuvert: string | null; setGoutOuvert: (c: string | null) => void; noter: (c: string, g: Gout) => void; cadre: boolean;
 }) {
   const noms = l.houblons.map((h) => h.nom).join(' et ');
-  const cleAime = l.houblons.map((h) => h.cle).join('+');
-  const [aime, setAime] = useState(() => AIMES.has(cleAime));
-  // Le niveau des fiches d'une famille sur la voie : le plus haut de ses houblons (picto plein si une fiche la marque).
-  const niveau = (f: FamilyId): NiveauFiches => l.houblons.map((h) => h.familles[f].niveau).sort((a, b) => RANG[b] - RANG[a])[0] ?? 'non décrit';
+  const cleGout = l.houblons[0].cle;
+  const gout = gouts.get(cleGout) ?? 'neutre';
+  const ouvert = goutOuvert === `${l.id}:${cleGout}`;
   const caseDe = (f: FamilyId, role: 'extra' | 'cible') => {
     const e = l.effets[f];
     const cle = `${l.id}:${f}`;
     if (e == null) return role === 'cible' ? <CaseInconnue key={f} f={f} cle={cle} /> : <Calme key={f} f={f} cle={cle} />;
     if (Math.abs(e) < 0.5) return <Calme key={f} f={f} cle={cle} cible={role === 'cible'} />;
-    return <Traits key={f} f={f} crans={e / cran(f)} hors={l.hors.includes(f)} role={role} niveau={niveau(f)} cle={cle} />;
+    return <Traits key={f} f={f} crans={e / cran(f)} hors={l.hors.includes(f)} role={role} niveau={niveauFiches(l, f)} cle={cle} />;
   };
-  const ef = piste ? l.effets[piste.f] : null;
   return (
     <li data-voie={l.n} data-id={l.id} data-role="ligne-houblon" {...(premiere ? { 'data-element': 'q2b-ligne-voie' } : {})} {...(choisie ? { 'data-choisi': '' } : {})}
       {...gestesFiche.appui(l.houblons[0].cle)}
-      className={`pq-suggerer-voie grid grid-cols-[1fr_auto] gap-x-1 pl-2 pr-1 py-1 select-none ${choisie ? 'pq-suggerer-voie-choisie' : ''}`}>
-      <div className="min-w-0 space-y-0.5">
-        <p className={`flex items-center gap-x-1.5 gap-y-0.5 min-w-0 min-h-[1.625rem] leading-tight ${l.houblons.length > 1 ? 'flex-wrap' : ''}`}>
-          {l.houblons.map((h, j) => (
-            <span key={h.cle} className="inline-flex items-baseline gap-1 min-w-0">
-              {j > 0 && <span className="text-cave-400">+</span>}
-              <Usage h={h} />
-              <span data-houblon={h.cle} data-role="ouvrir-fiche" {...gestesFiche.nom(h.cle)} className={`pq-suggerer-nom ${l.houblons.length > 1 ? 'whitespace-nowrap' : 'truncate'} text-base text-cave-50 font-semibold`}>{h.nom}</span>
-              <AlphaCourt h={h} />
+      className={`pq-suggerer-voie relative select-none ${cadre ? 'pl-2 pr-1' : ''} py-1 ${choisie ? 'pq-suggerer-voie-choisie' : ''}`}>
+      <div className="grid grid-cols-[1fr_auto] gap-x-1">
+        <div className="min-w-0 space-y-0.5">
+          <p className="pq-sg-l1 flex items-center gap-x-1.5 gap-y-0.5 min-w-0 min-h-[1.625rem] leading-tight flex-wrap">
+            <span className="pq-sg-sur-axe inline-flex items-baseline gap-1 shrink-0">{l.houblons.map((h) => <Usage key={h.cle} h={h} />)}</span>
+            <span className="pq-sg-sur-axe pq-sg-noms text-base text-cave-50 font-semibold">
+              {/* Les noms d'abord, d'un seul tenant comme q2b (« Motueka + Nelson Sauvin »), puis l'α de chacun (D87). */}
+              {l.houblons.map((h, j) => (
+                <span key={h.cle}>{j > 0 ? ' + ' : ''}<span data-houblon={h.cle} data-role="ouvrir-fiche" {...(premiere && j === 0 ? { 'data-etat': 'etat-sugg-fiche' } : {})} {...gestesFiche.nom(h.cle)} className="pq-suggerer-nom">{h.nom}</span></span>
+              ))}
+              {l.houblons.map((h) => <span key={h.cle}> <AlphaCourt h={h} /></span>)}
             </span>
-          ))}
-          {l.dose && <span className={`shrink-0 font-mono text-xs text-cave-200 whitespace-nowrap ${l.dose.includes('+') ? 'pq-suggerer-estime' : ''}`}>{l.dose}</span>}
-          <Stock etat={l.stock} />
-          {gain && ef != null && piste && <span data-simule="" className="ml-auto shrink-0 font-mono text-sm font-semibold" style={{ color: COULEURS[piste.f].texte }}>{gain(ef, piste.f)}</span>}
-        </p>
-        <span className="flex items-center gap-0.5" aria-label="Effet sur les familles" {...(premiere ? { 'data-element': 'q2b-cercle-objectif' } : {})}>
-          {cibles.map((f) => caseDe(f, 'cible'))}
-          <i aria-hidden="true" className="pq-suggerer-separe mx-1 self-stretch" />
-          {slots.map((f) => caseDe(f, 'extra'))}
-        </span>
-        {piste && (
-          <span className="block pt-0.5 pb-1" {...(ef != null ? { 'data-role': 'cible', 'data-famille': piste.f, 'data-crans': (ef / cran(piste.f)).toFixed(2) } : {})}>
-            <Piste f={piste.f} d={piste.d} barre={ef == null ? null : (piste.avant ?? 0) + ef} avant={piste.avant} visee={piste.visee} inconnu={ef == null ? 'effet inconnu sur la visée' : null} />
+            {l.dose && <span className={`pq-sg-sur-axe shrink-0 font-mono text-xs text-cave-200 whitespace-nowrap ${l.dose.includes('+') ? 'pq-suggerer-estime' : ''}`}>{l.dose}</span>}
+            <span className="pq-sg-sur-axe inline-flex"><Stock etat={l.stock} /></span>
+            <Bio l={l} />
+          </p>
+          <span className="flex items-center gap-0.5" aria-label="Effet sur les familles" {...(premiere ? { 'data-element': 'q2b-cercle-objectif' } : {})}>
+            {cibles.map((f) => caseDe(f, 'cible'))}
+            <i aria-hidden="true" className="pq-suggerer-separe mx-1 self-stretch" />
+            {slots.map((f) => caseDe(f, 'extra'))}
           </span>
-        )}
+        </div>
+        <div className="relative flex items-start gap-0.5">
+          <button type="button" data-role="gout" {...(premiere ? { 'data-element': 'q2b-coeur', 'data-etat': 'etat-sugg-coeur' } : {})} aria-expanded={ouvert}
+            aria-label={`Mon goût pour ${noms} : ${gout}`}
+            onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); setGoutOuvert(ouvert ? null : `${l.id}:${cleGout}`); }}
+            className={`pq-suggerer-aime pq-sg-sur-axe w-8 h-11 inline-flex items-start justify-center pt-1.5 ${gout === 'aimer' ? 'pq-sg-aime' : ''}`}>
+            <Heart aria-hidden="true" className={`w-4 h-4 ${gout === 'aimer' ? 'fill-current' : ''}`} strokeWidth={1.8} />
+          </button>
+          {ouvert && (
+            <span role="group" data-role="gout-choix" aria-label={`Mon goût pour ${noms}`} className="pq-sg-gout-choix" onPointerDown={(e) => e.stopPropagation()}>
+              {(['aimer', 'neutre', 'exclure'] as const).map((c) => (
+                <button key={c} type="button" aria-pressed={gout === c} onClick={(e) => { e.stopPropagation(); noter(cleGout, c); }}>{c}</button>
+              ))}
+            </span>
+          )}
+          <button type="button" data-role="ajouter" data-element="q2b-plus-coche" {...(plus ? { 'data-etat': 'etat-sugg-plus' } : {})} aria-pressed={choisie}
+            aria-label={choisie ? `Retirer ${noms} de la comparaison` : `Ajouter ${noms} à la comparaison`}
+            onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); basculer(); }}
+            className="touch-target pq-sg-sur-axe w-11 h-11 rounded-full flex items-start justify-center">
+            <span className={`flex items-center justify-center w-10 h-10 rounded-full border-[2.5px] ${choisie ? 'pq-suggerer-choisi' : 'border-cave-50 text-cave-50 bg-cave-950'}`}>
+              <i aria-hidden="true" className={choisie ? 'pq-suggerer-coche' : 'pq-suggerer-plus'} />
+            </span>
+          </button>
+        </div>
       </div>
-      <div className="flex items-start gap-0.5">
-        <button type="button" data-role="aime" {...(premiere ? { 'data-element': 'q2b-coeur' } : {})} aria-pressed={aime} aria-label={`J’aime ${noms}`}
-          onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); if (aime) AIMES.delete(cleAime); else AIMES.add(cleAime); setAime(!aime); }}
-          className="pq-suggerer-aime w-8 h-11 inline-flex items-start justify-center pt-1.5">
-          <Heart aria-hidden="true" className={`w-4 h-4 ${aime ? 'fill-current' : ''}`} strokeWidth={1.8} />
-        </button>
-        <button type="button" data-role="ajouter" data-element="q2b-plus-coche" aria-pressed={choisie}
-          aria-label={choisie ? `Retirer ${noms} de la comparaison` : `Ajouter ${noms} à la comparaison`}
-          onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); basculer(); }}
-          className="touch-target w-11 h-11 rounded-full flex items-start justify-center">
-          <span className={`flex items-center justify-center w-10 h-10 rounded-full border-[2.5px] ${choisie ? 'pq-suggerer-choisi' : 'border-cave-50 text-cave-50'}`}>
-            <i aria-hidden="true" className={choisie ? 'pq-suggerer-coche' : 'pq-suggerer-plus'} />
-          </span>
-        </button>
-      </div>
+      {barres && (
+        <div className="pt-1 pb-1.5" data-role="barres-voie">
+          <Divergent objectifs={objectifs} effets={l.effets} hors={l.hors} niveau={niveauBarre(l)} echelle={echelle} cran={cran} bande={bande} />
+        </div>
+      )}
     </li>
   );
 }
