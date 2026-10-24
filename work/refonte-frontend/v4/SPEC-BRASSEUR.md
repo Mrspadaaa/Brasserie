@@ -495,6 +495,10 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   réf ??? ». Sa r6a montre au premier écran le radar, les colonnes et ses rangées de familles (une barre par houblon, « ~
   dans » / « ~ hors ») ; la maquette avait mis les rangées 60′ / 10′ / dry hop de x3b à leur place et repoussé les familles
   sous le premier écran, contre D107 (« r6a garde la forme »). Les étapes deviennent un sélecteur sur les rangées. D128.
+- **La disposition des artefacts** (24.10, soir, une grande coche sur l'image globale de ses mini maquettes choisies et
+  dites « bien »), mot pour mot : « J'aime beaucoup cette disposition. Utilise là pour les artefacts comme ça je peux voir
+  rapidement plusieurs versions d'un coup ». Une rangée par écran, sa référence puis les mini maquettes en vignettes
+  serrées, une pastille de verdict et ses mots dessous (PUBLIER.md ; modèle `choix/global/mini-maquettes-choisies-2026-10-24.png`).
 - **À quoi a servi le quota** (24.10, soir), mot pour mot : « En quoi tout ces quota ont été utile ??? ». Le 24.10, la
   plus grande part est allée à l'outillage (contrôles, cerveau, un délai de test débogué) et à des panels de 48, quand rien
   ou presque ne lui avait été montré. Le quota sert d'abord ce qu'il verra : montrer tôt ce qui est fait (L11).

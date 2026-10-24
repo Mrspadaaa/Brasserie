@@ -31,9 +31,10 @@ const TEXTE_MIN = 14;
 const MOTS_MAX = 45;
 
 // Mesures de lisibilité, dans la page : captures (images de 600 px de large au moins), tailles de texte, longueur des blocs.
-// vignettes (téléphone seulement, D126 : « j'ai pas du coté à cote ») : une planche de choix pose ses mini maquettes deux
-// par rangée ; une image dans `[data-vignette]` qui s'ouvre en grand au toucher (lien, bouton, `data-agrandir`) peut
-// être plus étroite que la capture lisible. À 1280 px, la règle des 340 px vaut pour toutes (« dur à lire », 23.10).
+// vignettes (D126 : « j'ai pas du coté à cote » ; puis « J'aime beaucoup cette disposition. Utilise là pour les artefacts
+// comme ça je peux voir rapidement plusieurs versions d'un coup », 24.10) : une planche pose ses mini maquettes en
+// vignettes serrées ; une image dans `[data-vignette]` qui s'ouvre en grand au toucher (lien, bouton, `data-agrandir`)
+// peut être plus étroite que la capture lisible, à toutes les largeurs. Les autres captures : 340 px (« dur à lire », 23.10).
 function lisibilite({ largeurCapture, texteMin, motsMax, vignettes }) {
   const visible = (el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && !el.closest('[hidden], dialog:not([open])'); };
   const court = (t) => t.replace(/\s+/g, ' ').trim().slice(0, 50);
@@ -89,7 +90,7 @@ try {
   }
   if (pageLot) {
     await p.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
-    const ordi = await p.evaluate(lisibilite, seuils);
+    const ordi = await p.evaluate(lisibilite, { ...seuils, vignettes: true });
     if (captures) await p.screenshot({ path: `${captures}-ordinateur.png` });
     const liste = (xs) => `${xs.slice(0, 4).join(' ; ')}${xs.length > 4 ? ` ; et ${xs.length - 4} de plus` : ''}`;
     if (!/\b\d{1,2}\.\d{2}\b/.test(tel.titre)) erreurs.push(`titre sans date (« ${tel.titre} ») : une page par version, datée (23.10)`);

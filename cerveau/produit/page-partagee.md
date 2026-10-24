@@ -2,7 +2,7 @@
 name: page-partagee
 description: 23.10 — une version, un artefact neuf et daté ; une page ne montre que sa version, lisible ; pas de légende écrite sur la version finale.
 type: produit
-maj: 2026-10-23
+maj: 2026-10-24
 sources: mémoire locale affinee-page-partagee-a-jour.md ; work/refonte-frontend/v4/outils/pages/PUBLIER.md ; SPEC-BRASSEUR § 7 (23.10)
 ---
 
@@ -21,3 +21,5 @@ sources: mémoire locale affinee-page-partagee-a-jour.md ; work/refonte-frontend
 **Pages inaccessibles** (22.10) : la page des fils de fer (`2VTRQP7nLXhX5GqDaAGAyU`) et l'ancienne page partagée (`MoohEoyj…`) répondent « artifact not found » depuis le compte des sessions actuelles.
 
 Voir [[fil-de-fer-d-abord]] et [[pas-de-cockpit]].
+
+**La disposition qu'il aime** (24.10, soir) : « J'aime beaucoup cette disposition. Utilise là pour les artefacts comme ça je peux voir rapidement plusieurs versions d'un coup ». Une rangée par écran, sa référence puis toutes les mini maquettes en vignettes serrées, une pastille de verdict et ses mots dessous ; agrandies au toucher. Règle et modèle : PUBLIER.md ; une page qui cache des variantes dans une bande échoue à controle-page-choix (D126).

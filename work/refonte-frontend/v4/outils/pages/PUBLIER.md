@@ -15,8 +15,16 @@ texte de l'écran tombait à 7 px. Elle reste en l'état, comme archive de ses v
 ## Lisible (contrôlé par `scripts/agents/verifier-page.mjs`)
 - La date dans le `<title>` : la galerie de claude.ai range les pages par date, et le titre les distingue.
 - `#a-choisir` en tête, dans le premier écran du téléphone : ce qu'il choisit, en une ou deux phrases.
-- Captures à 340 px rendus au moins, à 390 et à 1280 px de large : trois colonnes au plus sur ordinateur, une au
-  téléphone. À 277 px, le texte de l'écran capturé est illisible.
+- **La disposition qu'il aime** (24.10, soir, sur l'image globale de ses mini maquettes, une grande coche) : « J'aime
+  beaucoup cette disposition. Utilise là pour les artefacts comme ça je peux voir rapidement plusieurs versions d'un
+  coup ». Une rangée par écran ou par question, le nom à gauche ; dans la rangée, sa référence d'abord puis toutes les
+  mini maquettes en vignettes serrées (six environ par rangée à l'ordinateur, trois au téléphone) ; sous chacune une
+  pastille de couleur (ton choix, « bien », avec réserve, à ajouter, à choisir), le nom, ses mots en italique. Modèle :
+  `work/refonte-frontend/v4/choix/global/mini-maquettes-choisies-2026-10-24.png` (outil `tournoi/outils/image-etat-global.mjs`).
+  Rien ne défile en largeur (D126).
+- Une vignette (`data-vignette`) s'ouvre en grand au toucher (lien, bouton ou `data-agrandir`) : c'est en grand qu'elle
+  est lisible, à 340 px au moins. Une capture qui ne s'ouvre pas en grand fait 340 px au moins, à 390 et à 1280 px (à
+  277 px, le texte de l'écran capturé est illisible, 23.10).
 - Aucun texte sous 14 px ; aucun paragraphe, puce ou légende de plus de 45 mots.
 - Des noms en mots du brasseur (« La réponse d'abord ») ; l'identifiant (`r6p2`) en petit à côté.
 
