@@ -530,6 +530,9 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   carte du houblons doit bien contenir de façon exhaustive TOUTES ses informations. » La fiche porte tout ce que le dépôt sait du
   houblon, au premier plan ou à un toucher ; le pied de flu2b, entier. D132. Puis, sur une capture de flu2b (Nugget) où il
   entoure ♡ ⊘ « Comparer » et « Styles › Huiles › Sources › Substituts › », mot pour mot : « Le footer est top ».
+- **Le radar en pics** (24.10, soir, sur le radar de la fiche de Nelson Sauvin, ses deux traits entourés en rouge), mot pour
+  mot : « Jsp si c'est la version actuelle mais le spidergraph doit être en pic pas juste des traits... Enfin comme sur les mini
+  maquettes ». g1 pose l'inconnue dans le disque du centre : chaque famille décrite fait un pic, même seule. D133.
 - **Des icônes pour les types hors 16D** (24.10, soir, après avoir vérifié qu'ils étaient ajoutés), mot pour mot : « le profil
   extra 16d sont bien ajouter ? Peut être mettre dans la baseline aussi des icône en plus, pour avoir une version courte juste
   icône, et une version plus textuel ». Les mots hors familles les plus fréquents reçoivent un picto au trait (baseline) ; deux

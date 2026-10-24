@@ -27,8 +27,13 @@ export function RadarFiche({ h, demande }: { h: HoublonLu; demande: Partial<Reco
   // Échelle d'au moins 2 fiches (g1) : une famille citée par la seule fiche d'un houblon n'atteint pas le bord.
   const plus = Math.max(2, ...ROUE.map((f) => (h.familles[f].niveau === 'non décrit' ? 0 : h.familles[f].fiches)));
   const inconnue = (f: FamilyId) => h.familles[f].niveau === 'non décrit' || h.familles[f].fiches === 0;
-  const rayon = (f: FamilyId) => (inconnue(f) ? null : Math.max(0.2, h.familles[f].fiches / plus));
-  const pts = ROUE.map((f, i) => pt(i, (rayon(f) ?? 0) * R));
+  // L'échelle de g1, de -0,5 à `plus` : une famille inconnue se pose dans le disque du centre, à mi-chemin du zéro (RC),
+  // jamais au centre exact ; chaque famille décrite garde ainsi une base et fait un pic, même seule entre deux inconnues
+  // (D133 : « le spidergraph doit être en pic pas juste des traits... »).
+  const echelle = (v: number) => (v + 0.5) / (plus + 0.5);
+  const RC = echelle(-0.25);
+  const rayon = (f: FamilyId) => (inconnue(f) ? null : echelle(h.familles[f].fiches));
+  const pts = ROUE.map((f, i) => pt(i, (rayon(f) ?? RC) * R));
   const poly = (ps: (readonly [number, number])[]) => ps.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
   const compte = (f: FamilyId) => (h.familles[f].sur === 1 ? '' : ` ${h.familles[f].fiches}/${h.familles[f].sur}`);
   const motsBulle = (f: FamilyId) => {

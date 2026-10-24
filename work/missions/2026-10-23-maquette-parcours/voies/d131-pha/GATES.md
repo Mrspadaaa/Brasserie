@@ -4,12 +4,12 @@ OWNS: work/refonte-frontend/v4/ecran-1/fils24-pictos-hors16d/pha[1-4]/**, work/r
 
 Scope: quatre jeux de quinze pictos et du picto « en plus », au trait, chacun montré en version courte et textuelle dans deux vraies cartes, avec légende et mot précis.
 
-- [ ] G1: chaque jeu a sa page, ses quinze pictos et le picto « en plus », sa légende, son mot précis, sa NOTE et ses deux captures
-  CHECK: node -e "const fs=require('fs');const p='work/refonte-frontend/v4/ecran-1/fils24-pictos-hors16d/';const ids=['pha1','pha2','pha3','pha4'];const mal=ids.filter(i=>{const f=p+i+'/etat.html';if(!fs.existsSync(f))return true;const t=fs.readFileSync(f,'utf8');const n=new Set([...t.matchAll(/data-mot=\"([^\"]+)\"/g)].map(m=>m[1])).size;return n<16||!t.includes('data-mot=\"en-plus\"')||!t.includes('data-role=\"legende\"')||!t.includes('data-role=\"precis\"')||!/chaleur/i.test(fs.existsSync(p+i+'/NOTE.md')?fs.readFileSync(p+i+'/NOTE.md','utf8'):'')||!['planche','carte'].every(c=>fs.existsSync(p+'captures/'+i+'-'+c+'.png'))});console.log(mal.length?'JEUX ECHEC '+mal.join(','):['JEUX','BIEN',ids.length].join('-'));process.exit(mal.length?1:0)"
+- [x] G1: chaque jeu a sa page, ses quinze pictos et le picto « en plus », sa légende, son mot précis, sa NOTE et ses deux captures
+  CHECK: node work/refonte-frontend/v4/ecran-1/fils24-pictos-hors16d/outils/jeux.mjs pha1 pha2 pha3 pha4
   EXPECT: JEUX-BIEN-4
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=f90f9b3823f3d76e7e292fa6dc1c17aa8f8a93291d60e72a60bbe7ac9ecabeab; exit=0; EXPECT=matched; output-sha256=3eee4d2551f7eb629d0d935acc9fcbb8a955042713bfe0ed2e2e5fa61424a58d; output-bytes=12; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G2: au trait, sans halo (D88)
+- [x] G2: au trait, sans halo (D88)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-pictos-trait.mjs work/refonte-frontend/v4/ecran-1/fils24-pictos-hors16d pha1 pha2 pha3 pha4 --page=etat.html
   EXPECT: TRAIT OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=d111ee3c6cbe5a91cf5bdb2bd2e506ae6a15f67894c6c21eb174f3935f9183cd; exit=0; EXPECT=matched; output-sha256=65688d6f25d9735a00e800c685309b3d5e2c90017810d1d20d2b55516ea526a0; output-bytes=185; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries

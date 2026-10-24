@@ -1799,6 +1799,16 @@
    "resultat": "Mesuré le 24.10 au soir : flb5b EXHAUSTIVE ECHEC (P1, α, β, huiles, composés, origine, styles, sources, IBU/g) ; maquettes/parcours-fiche (r14 en cours) ECHEC (stock, IBU/g).",
    "verdict": "garde",
    "script": "controle-fiche-exhaustive.mjs"
+  },
+  {
+   "id": "D133",
+   "mots": "« le spidergraph doit être en pic pas juste des traits... Enfin comme sur les mini maquettes » (24.10, soir, radar de la fiche)",
+   "controle": "controle-radar-pics.mjs <page.html>… (R1 aucun sommet au centre, R2 un pic isolé garde une base)",
+   "portee": ["fiche"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquette PICS ECHEC (Nugget et Nelson Sauvin, 0 % du rayon) ; g1 PICS OK (10 %) ; après la reprise de l'échelle de g1, PICS OK (Nugget, Nelson Sauvin, Galaxy).",
+   "verdict": "garde",
+   "script": "controle-radar-pics.mjs"
   }
  ]
 }

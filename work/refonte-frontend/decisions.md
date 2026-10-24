@@ -582,3 +582,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   rendre ces trois contrôles conscients d'une feuille ouverte.
 - D50 (pilote, D35) : `controle-fiche-exhaustive` lit les remplaçants de la fiche (`[data-role="fiche-remplacants"]`, calcul de
   Substituer au style), non la liste figée du pack ; Nugget et Nelson Sauvin EXHAUSTIVE OK, flb5b toujours ECHEC (témoin).
+- D51 (pilote, règle n° 1) : la hauteur de Ma bière se compte contre sa B (D45, « La meilleure ») : 1,09 écran avec la barre
+  pleine « Ouvrir l'analyse de ma bière › » (1,05 avant) ; batterie `controle-hauteur --max=1.10`.
+- D52 (le brasseur, 24.10 soir, sur le radar de la fiche de Nelson Sauvin : « le spidergraph doit être en pic pas juste des
+  traits... Enfin comme sur les mini maquettes ») : D133, le radar de la fiche reprend l'échelle de g1 (de -0,5 au maximum ;
+  l'inconnue dans le disque du centre, jamais au centre exact) ; chaque famille décrite fait un pic ; `controle-radar-pics.mjs`
+  (témoin : la maquette PICS ECHEC, g1 PICS OK) ; dans la batterie avec les contrôles D127 à D132.

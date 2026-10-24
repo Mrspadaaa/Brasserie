@@ -18,7 +18,9 @@ const lot = [
   // L'onglet Ma bière de sa base ne nomme aucun houblon : pas d'appui long à y vérifier (fiche).
   ...['ma-biere', 'biere', 'suggerer', 'comparer', 'dryhopper', 'levure', 'substituer'].map((r) => n(`node ${T}/controle-commun.mjs ${D} ${r} --page=etat.html --sans=${r === 'biere' ? 'mots,fiche' : 'mots'}`, 'COMMUN OK')),
   n(`node ${T}/mots-premier-ecran.mjs ${D} ma-biere --max=30 --page=etat.html --sans-coquille --sans-donnees`, 'MOTS OK'),
-  n(`node ${T}/controle-hauteur.mjs ${D} ma-biere --max=1.05`, 'HAUTEUR OK'),
+  // D51 (24.10, soir) : la barre B de son choix (D45, « La meilleure ») porte Ma bière à 1,09 écran ; la hauteur se compte
+  // contre sa B (règle n° 1), comme les mots de Dryhopper contre sa p4b2f (D46). Avant B : 1,05.
+  n(`node ${T}/controle-hauteur.mjs ${D} ma-biere --max=1.10`, 'HAUTEUR OK'),
   n(`node ${T}/controle-retour.mjs ${D} --fiche`, 'RETOUR OK'),
   // Le rail (D27, D35 à D37, D46, D47, D55, D69).
   // 24.10 (r7, décision du pilote, option b) : le contrat --parcours de controle-rail décrit le rail D111 que sa base a
@@ -40,6 +42,17 @@ const lot = [
   n(`node ${T}/controle-stepper.mjs ${D}`, 'STEPPER OK'),
   n(`node ${T}/controle-annuler.mjs ${D}`, 'ANNULER OK'),
   n(`node ${T}/controle-profil-ouvre.mjs ${D}`, 'PROFIL OK'),
+  // D127 à D133 (24.10, soir) : Substituer au dry hop, Comparer et ses familles, la continuité, les types hors 16D, la fiche
+  // exhaustive au pied de flu2b, le radar en pics.
+  n(`node ${T}/controle-substituer-gestes.mjs ${D}`, 'SUBSTITUER-GESTES OK'),
+  n(`node ${T}/controle-comparer-familles.mjs ${D}/comparer/etat.html`, 'FAMILLES OK'),
+  n(`node ${T}/controle-continuite.mjs ${D}`, 'CONTINUITE OK'),
+  n(`node ${T}/controle-hors-16d.mjs ${D}/comparer/etat.html --min=3 --premier-ecran`, 'HORS-16D OK'),
+  n(`node ${T}/controle-hors-16d.mjs ${D}/substituer/etat.html --min=2`, 'HORS-16D OK'),
+  n(`node ${T}/controle-hors-16d.mjs ${D}/suggerer/etat.html --min=2`, 'HORS-16D OK'),
+  n(`node ${T}/controle-hors-16d.mjs ${D}/fiche/etat.html --min=1`, 'HORS-16D OK'),
+  n(`node ${T}/controle-fiche-exhaustive.mjs ${D}/fiche/etat.html`, 'EXHAUSTIVE OK'),
+  n(`node ${T}/controle-radar-pics.mjs ${D}/fiche/etat.html`, 'PICS OK'),
   // Le parcours joué au téléphone et à l'ordinateur.
   n(`node ${O}/jouer-parcours.mjs --dossier=${D} --routes`, 'ROUTES OK'),
   n(`node ${O}/jouer-parcours.mjs --dossier=${D} --ponts`, 'PONTS OK'),
