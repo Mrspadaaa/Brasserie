@@ -1,4 +1,4 @@
-OK — Comparer r6a, étapes en bande-sélecteur, ses mots (flb5) sous l'écran, 80 mots
+OK — Comparer r6a, « Face à ta stout, par » rendu, étapes en bande, ses mots, 80 mots
 
 ## Fichiers écrits (Possède)
 - `prototypes/houblons-v4/parcours/src/ecrans/comparer/index.tsx` : état `moment` (60′ · 10′ · dry hop) ; radar, têtes (~ dans / ~ hors) et rangées lues au moment choisi (`vue`) ; Défi et feuilles du dock restent au dry hop ; la bande des étapes posée sur les rangées ; la pastille du critère en tête de la bande (« Pourquoi ce classement › » en bas de sa liste) ; la réponse de y1b et « Placer <houblon> › » en conclusion, en bas (comme le « Doser … dans Dryhopper » de r6a) ; « ? » sur la ligne de la question ; légende mise à jour.
@@ -43,6 +43,20 @@ Ses mots, sur flb5 : « J'aime beaucoup le 9 car ont voit que c'est pas que du 1
 - Captures : `captures-r10/cote-a-cote-flb5-r6a.png` (flb5, r6a, ses mots), `d128bis-ses-mots.png` (Idaho 7 retenu), `d128bis-galaxy.png`, `d128bis-nelson.png` (4 colonnes).
 - Critères rejoués sur la construction finale : CONSTRUIT OK · FAMILLES OK (9) · COMPARER-ETAPES OK · ETATS OK (18/18) et ETATS OK (1/1), 80 mots · CHOIX OK · COMMUN OK · TEINTE OK 6/6 · TYPES OK · ETAPE OK (comparer).
 - Prédiction : « Là on voit que Galaxy c'est pas que du tropical » ; risque : les mots partagés en gris jugés en trop.
+
+## D128 ter — « Face à ta stout, par » rendu ; en-tête et pied comme les autres écrans
+- Signalé par le pilote : `etat-acquis-r6a-elements-notes` échouait (« Face à ta stout, par » absent). La ligne de r6n2 est rendue : « Face à ta stout, par [❀ floral ⌄] », en tête de la bande des étapes, au premier écran.
+- « Fait attention aux header, footer, sur la continuité de l'app » : le « ? » revient sur la ligne de contexte, comme avant r10. Il ne déborde plus sur la ligne de la question. La croix, les onglets et le titre (CadreOutil du socle) sont à la même place que sur Suggérer (`captures-r10/continuite-suggerer-comparer.png`). Le dock de r6n2 n'a pas bougé, dans l'emplacement de pied de CadreOutil. Suggérer a son propre pied (« Comparer (2) »), qui vient de son choix.
+- Les 5 mots rendus sont payés au premier écran (toujours 80) :
+  - « Stout 16D » devient « 16D », comme l'en-tête de flb5 ; « Stout 16D » reste dans l'aria-label.
+  - « dose égale 4 g/L » devient « 4 g/L chacun », le mot de r6n2.
+  - L'écart chiffré du résineux quitte les rangées au repos. Il se lit dans la bande en choisissant « moins résineux », et les barres orangées le montrent.
+- 8 px regagnés pour le « ? » : la bande passe à 22 px par ligne. Tout reste au-dessus du dock, « inconnus, pas zéro » compris (`captures-r10/d128-repos.png`, `cote-a-cote-r6a.png` refaites).
+- Rejoué sur `parcours-comparer`, construction finale :
+  - FAMILLES OK (9) · COMPARER-ETAPES OK · ETATS OK (18/18) comparer · ETATS OK (1/1) 80 mots ;
+  - `etat-acquis-r6a-elements-notes` ETATS OK (1/1) ; acquis : ETATS OK (23/23), 1 en attente de son choix (Dryhopper) ;
+  - CHOIX OK · COMMUN OK · TEINTE OK 6/6 · TYPES OK · ETAPE OK (comparer).
+- DÉCISION À PRENDRE (s'ajoute à la première) : au plafond de 80 mots, chaque élément rendu en fait sortir un autre (ici l'écart du résineux et « Stout »). Pour garder tout au premier écran, il faut ouvrir le plafond pour Comparer.
 
 CONNAISSANCE : sur un écran à CadreOutil, `controle-comparer-etapes` traite tout ce qui passe sous le bas du `main` défilant (783 px à 390 × 844) comme « rogné » : « visibles ensemble » veut dire au premier écran. Le compteur de 80 mots compte aussi ce qui passe sous le dock (jusqu'à 844 px).
 Le contrôle de reprise refuse dans « ## Reprise » de NOTE.md toute ligne dont l'identifiant n'est pas dans l'inventaire. Une greffe hors inventaire va dans « Idées reprises ».

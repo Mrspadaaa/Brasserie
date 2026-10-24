@@ -152,19 +152,19 @@ Aux nombres de r6a (moteur en direct, 23.10, contre la grille `comparer-stout.js
 ## Reprise
 
 - r6a-question : repris — le titre en question, « Cascade, Idaho 7 ou Galaxy pour ma stout ? », en tête de l'écran (D119)
-- r6a-contexte : repris — la ligne de contexte : Stout 16D, dose égale 4 g/L, US-05 ; le moment en sort, il est dans la bande des étapes (D107, D128)
+- r6a-contexte : repris — la ligne de contexte : 16D, 4 g/L chacun (r6n2), US-05, et le « ? » à sa droite ; le moment en sort, il est dans la bande des étapes (D107, D128)
 - r6a-simule : repris — la pastille « ~ simulé » au-dessus du radar
 - r6a-lentille : repris — « Au style / Absolu », au style par défaut
 - r6a-radar : repris — le radar r2 à 12 axes : zone de ta 16D, un trait par houblon, pictos aux axes, secteurs inconnus hachurés
 - r6a-ta-stout : repris — la colonne Ta stout (♣ ↓, ❀ ↑ : les flèches de ses rangées, 80 mots, D128) et son trait noir dans chaque barre
 - r6a-tetes : repris — les têtes de colonne : nom, α (lot ou plage, ≠), rôle, familles en pictos, verdict ~✓ ou ~⚠
 - r6a-rangees : repris — au premier écran comme r6a (D128, FAMILLES OK) : une rangée par famille, une barre l5b par houblon, au moment choisi dans la bande des étapes
-- r6a-ecarts : repris — Floral ↑ et Résineux ↓ : la flèche ; l'écart chiffré sur la rangée du trop, et celui de la famille du critère dans la bande des étapes, juste au-dessus (D128)
+- r6a-ecarts : repris — Floral ↑ et Résineux ↓ : la flèche ; l'écart chiffré de la famille du critère dans la bande des étapes, juste au-dessus, à chaque moment ; sur la rangée Floral quand le critère est une autre famille (80 mots, D128)
 - r6a-inconnus : repris — les cases hachurées et la rangée « inconnus »
 - r6a-chimie : repris — « Chimie et vraies valeurs » à un toucher sous le tableau
 - r6a-osu : repris — « Panel OSU, Cascade » (panel, sur 15, g/L), à un toucher « Panel OSU » sous le tableau (D114)
 - y1b-face-a-ta-stout : repris — dans la bande des étapes (D128) : ★ au meilleur de chaque étape par le critère, le nombre de chacun ; la ligne de réponse à part n'est plus au premier écran (80 mots)
-- y1b-pastille-critere : repris — la pastille [floral ⌄] en tête de la bande des étapes : floral, agrumes, tropicaux, moins résineux ; elle choisit la famille chiffrée aux étapes, le ★, le mis en avant et le Défi ; « Pourquoi ce classement › » en bas de sa liste (D124, D128)
+- y1b-pastille-critere : repris — « Face à ta stout, par [floral ⌄] » (r6n2) en tête de la bande des étapes : floral, agrumes, tropicaux, moins résineux ; il choisit la famille chiffrée aux étapes, le ★, le mis en avant et le Défi ; « Pourquoi ce classement › » en bas de sa liste (D124, D128)
 - y1b-jauge-amertume : repris — dock « Défi », carte « Amertume tenue » : Nugget 60′ 46 g et son IBU calculé, « + ? » à cru hachuré, doses pour 10 IBU à 10′ (r6n2, D124)
 - y1b-dock-pouce : en pont — Dryhopper ; « Placer <retenu> › » en bas de l'écran, comme le « Doser … dans Dryhopper » de r6a (D128)
 - y1b-plan-d-avant : repris — le trait noir de ta stout dans chaque barre, son polygone au radar, la colonne Ta stout
@@ -188,7 +188,7 @@ Aux nombres de r6a (moteur en direct, 23.10, contre la grille `comparer-stout.js
 - l5b-pistes-objectif : repris — les rangées Floral ↑ et Résineux ↓ de ta demande, avec l'écart chiffré par houblon
 - l8-disposition : repris — tournée : familles communes en rangées, houblons en colonnes, la réponse en tête
 - l8b-verdicts-pictos-trait : repris — verdicts en signe dans les têtes, pictos au trait partout
-- l8b-legende-cachee : repris — le « ? » à droite de la question, fermé au repos (comme r6a, D128)
+- l8b-legende-cachee : repris — le « ? » à droite du contexte, fermé au repos, à la même place que sur les autres écrans
 - l5f-carte-role-alpha : repris — les têtes de colonne : nom, α du lot ou des fiches (≠), rôle en mot, familles, stock en icône
 - m4-radar-degustation : repris — la colonne Ta stout : ta dégustation du 18.10 (trop ♣, plus ❀) et son trait noir
 - h4-radar-demande : repris — au radar, flèche verte vers l'extérieur sur Floral, flèche orangée au bout du résineux

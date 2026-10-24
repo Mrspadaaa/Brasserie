@@ -408,10 +408,6 @@ button.pq-comparer-et-r { width: 100%; padding: 0; text-align: left; color: inhe
 /* D128 : les têtes de colonne serrées (interligne 1,25) pour que les dix rangées de r6a tiennent au-dessus du dock */
 .pq-comparer-tc { line-height: 1.25; }
 .pq-comparer-ta { line-height: 1.25; }
-/* D128 : le « ? » de la légende monte sur la ligne de la question (comme r6a), la ligne de contexte n'a plus que ses
-   pastilles */
-.pq-comparer-tete > [data-element~="l8b-legende-cachee"] { position: absolute; right: 0; top: -36px; }
-.pq-outil-comparer [data-ecran="comparer"] > h1 { padding-right: 40px; }
 
 /* D128 : la bande des étapes, posée sur les rangées de r6a, est leur sélecteur. En tête : la pastille du critère (r6n2)
    et la référence (ton Nugget, tiret gris). Puis une ligne par étape, chacune un toucher : à gauche l'étape et la valeur
@@ -485,3 +481,10 @@ button.pq-comparer-et-r { min-height: 24px; }
 .pq-comparer-mot-t { min-width: 0; overflow-wrap: break-word; hyphens: manual; }
 .pq-comparer-mot-seul { font-size: 13px; }
 .pq-comparer[data-colonnes="4"] .pq-comparer-mot-seul { font-size: 12px; }
+/* D128 (24.10, soir) : « Fait attention aux header, footer, sur la continuité de l'app » : le « ? » reste sur la ligne
+   de contexte, comme les autres écrans ; la bande gagne 8 px (rangées de 22 px) */
+button.pq-comparer-et-r { min-height: 22px; }
+.pq-comparer-et-r .pq-comparer-et-nom { line-height: 18px; }
+.pq-comparer-rgs { padding-top: 0; }
+.pq-comparer-et-crit .pq-comparer-crit-l { font-size: 14px; font-weight: 700; white-space: nowrap; }
+.pq-comparer[data-colonnes="4"] button.pq-comparer-et-r { min-height: 34px; }

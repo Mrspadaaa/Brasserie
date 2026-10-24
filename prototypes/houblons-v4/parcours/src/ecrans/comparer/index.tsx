@@ -102,7 +102,9 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
 
   // L'écart chiffré de r6a sur les rangées de ta demande (Floral ↑, Résineux ↓), sauf la famille du critère : la bande
   // des étapes, juste au-dessus, la chiffre déjà à chaque moment (le même nombre, 80 mots au premier écran).
-  const chiffre = (f: FamilyId) => (f === VISEE.famille || f === TROP) && f !== critere.famille;
+  // D128 (80 mots, la ligne « Face à ta stout, par » rendue) : au repos, l'écart chiffré vit dans la bande des étapes
+  // (la famille du critère, à chaque moment) ; sur les rangées, celui de ta demande qui n'est ni le critère ni le trop.
+  const chiffre = (f: FamilyId) => f === VISEE.famille && f !== critere.famille;
   const lignes = sc.order.filter((f) => !cols.every((c) => c.cellules[f].inconnu));
   const tousInconnus = sc.order.filter((f) => cols.length > 0 && cols.every((c) => c.cellules[f].inconnu));
   const noms = cols.map((c) => c.houblon.nom);
@@ -129,8 +131,8 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
         <div className="pq-comparer-tete" role="group" data-etat="etat-comp-repos etat-acquis-comparer-v3 etat-acquis-premier-plan-80-mots etat-acquis-simule-marque etat-acquis-au-style-absolu"
           aria-label={`Fixé pour ${nombreMot(cols.length)} : Stout ${sc.code}, dose égale ${nombre(CONDITIONS.doseGL)} g/L chacun, ${nomLevure(recette.yeastId)}`}>
           <LigneContexte items={[
-            { cle: 'base', contenu: <span data-element="y1b-ligne-contexte r6a-contexte">Stout {sc.code}</span> },
-            { cle: 'dose', contenu: <span className="pq-comparer-dose" aria-label={`dose égale : ${nombre(CONDITIONS.doseGL)} g/L chacun`}>dose égale {nombre(CONDITIONS.doseGL)} g/L</span> },
+            { cle: 'base', contenu: <span data-element="y1b-ligne-contexte r6a-contexte" aria-label={`Stout ${sc.code}`}>{sc.code}</span> },
+            { cle: 'dose', contenu: <span className="pq-comparer-dose" aria-label={`dose égale : ${nombre(CONDITIONS.doseGL)} g/L chacun`}>{nombre(CONDITIONS.doseGL)} g/L chacun</span> },
             { cle: 'levure', contenu: <span data-element="y1b-levure-pastilles a2b-ce-que-la-levure-change">{nomLevure(recette.yeastId)}</span> },
           ]} sansMot />
           <span data-element="l8b-legende-cachee" data-etat="etat-comp-legende"><Legende><ContenuLegende /></Legende></span>
@@ -253,6 +255,7 @@ function PastilleCritere({ critere, onChoisir, onPourquoi }: { critere: Critere;
   }, [ouvert]);
   return (
     <span ref={ref} className="pq-comparer-crit-g" data-element="y1b-pastille-critere">
+      <span className="pq-comparer-crit-l">Face à ta stout, par</span>
       <button type="button" className="pq-comparer-crit-p" data-etat="etat-comp-critere" aria-haspopup="listbox" aria-expanded={ouvert}
         aria-label={`Critère de classement, face à ta stout : ${critere.nom}`} onClick={() => setOuvert((o) => !o)}>
         <Picto famille={critere.famille} taille={14} /><span>{critere.nom.replace('moins ', '− ')}</span><Chevron ouvert={ouvert} />

@@ -559,3 +559,5 @@ appliqué par le pilote : `mots-premier-ecran.mjs --modere` (alerte au-dessus du
 controle-commun. Les autres appels gardent leur seuil strict (aucun ne passe --modere) ; aucun critère n'attend un échec de mots
 de controle-commun, donc l'assouplissement ne fait échouer aucune voie (pas de rejeu des 85 appels). Substituer à 118 mots :
 au-delà même du modéré (98) ; r9 vise 70 à 80.
+- D42 (pilote, réversible ; D129) : le titre d'en-tête des outils à 18 px (DESIGN.md, « Titre d'écran »), le pied de Dryhopper en
+  bas comme les autres ; reprise r12-continuite après r9.
