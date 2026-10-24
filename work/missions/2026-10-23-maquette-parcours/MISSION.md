@@ -356,6 +356,16 @@ Rejeu du pilote, `node scripts/agents/systeme.mjs voies work/missions/2026-10-23
 - Restent à faire : pastille « ~ simulé » (3 mini maquettes, sur Comparer rendu), groupe levure de Suggérer en variantes (D35),
   planche des graphes (Q4) ; tickets et push sur accord de l'utilisateur.
 
+### Arrêt sur limite d'usage (24.10, soir)
+- Fini et rejoué : reprises r1 à r6 (chacune dans sa sortie) ; Dryhopper passe 4 prête (11 ACCEPTÉ, tête p4a4, p4b2, p4a3, p4b3, p4a2) ;
+  liste de la fiche : flc8b, flu2b, fld8b ACCEPTÉ, flb3c et fla5c (passe 3) et flu6b à faire juger (critique relancé) ; Substituer :
+  sbc1b, sbb5b ACCEPTÉ, sbz7c, sbz6c, sbb7c en passe 3 (agents stoppés, à relancer).
+- Interrompus (à relancer par SendMessage ou un agent neuf) : r7-batterie (construction commune 23/31 : FICHE dryhopper et levure,
+  MOTS étape, RAIL, RETOUR, PONTS Idaho 7) ; jc-pastille, jc-levure, jc-graphes ; critique de la passe 3 de la liste ; passe 3 de
+  Substituer (sbz7c, sbz6c, sbb7c).
+- Puis : batterie verte, critique des six reprises, page côte à côte, les deux artefacts neufs (maquette complète ; « Choix de vues »).
+- Accords de l'utilisateur en attente : push (≈ 90 commits locaux), tickets (`work/refonte-frontend/tickets-2026-10-24.md`).
+
 ### Publication demandée (24.10, matin), mot pour mot
 « Tu me mettra à jour la base en me publiant l'artefact complet de bout en bout avec les update. Et pour les choix de vue,
 un artefacts annexe qui montre bien les différentes vue côté à côté ». Donc, après les reprises r1 à r6, leur critique et la

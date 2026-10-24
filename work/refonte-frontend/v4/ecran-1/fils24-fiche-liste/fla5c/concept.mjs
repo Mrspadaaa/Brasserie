@@ -19,8 +19,8 @@ export default {
   etats: [
     { nom: 'nelson', hop: 'nelson-sauvin' },
     { nom: 'nugget', hop: 'nugget' },
-    { nom: 'nugget-absolu', hop: 'nugget', geste: async (pg) => { await pg.tap('[data-role="fiche"]:not([hidden]) [data-fla5c-e="absolu"]'); } },
-    { nom: 'nelson-aide', hop: 'nelson-sauvin', geste: async (pg) => { await pg.tap('[data-role="fiche"]:not([hidden]) .fla5c-aideb'); } },
+    { nom: 'nugget-absolu', hop: 'nugget', geste: async (pg) => { await pg.tap('.fla5c-feuille [data-fla5c-e="absolu"]'); } },
+    { nom: 'nelson-aide', hop: 'nelson-sauvin', geste: async (pg) => { await pg.tap('.fla5c-feuille .fla5c-aideb'); } },
   ],
   css: (p) => `
 .${p}-rz{display:flex;justify-content:center;margin:0 0 2px}
@@ -38,6 +38,8 @@ export default {
 .${p}-pk{display:inline-flex;background:#fff;border-radius:50%;padding:2px}
 .${p}-wh{border:2px dashed #1d1d1b;background:#fff}
 .${p}-wa{border-color:#c2410c;color:#c2410c}
+.${p}-un{font-size:12px;font-weight:600;background:#1d1d1b;color:#fff;border-radius:4px;padding:1px 5px;margin-left:8px;vertical-align:4px;letter-spacing:0}
+.${p}-t b .${p}-un{display:inline-block;font-size:12px;line-height:16px;vertical-align:5px}
 .${p}-rf{font-size:12px;font-weight:500;color:#4a4a47}
 .${p}-tu{display:grid;grid-template-columns:1fr 1fr;gap:6px;grid-auto-flow:dense}
 .${p}-t{border-radius:8px;padding:8px 10px 9px;min-height:66px;display:flex;flex-direction:column;justify-content:space-between;border:2px solid transparent}
@@ -55,12 +57,14 @@ export default {
       if (alerte || w.classeSeul || PALE[w.f]) return { bg: S.JETONS[w.f].fond, ink: alerte ? '#c2410c' : S.JETONS[w.f].texte };
       return { bg: S.JETONS[w.f].base, ink: SOMBRE[w.f] ? '#fff' : '#1d1d1b' };
     };
+    const premier = h.mots.filter((w) => !w.classeSeul).reduce((m, w) => (w.premier > (m ? m.premier : 0) ? w : m), null);
+    const un = (w) => (w === premier ? `<span class="${p}-un">1er</span>` : '');
     const rang = (w) => (w.classeSeul ? `<span class="${p}-rf">rangé par le fournisseur</span>` : '');
     const chip = (w, alerte) => { const c = couleurs(w, alerte);
-      return `<span class="${p}-w${w.f ? '' : ' ' + p + '-wh'}${alerte ? ' ' + p + '-wa' : ''}"${w.f ? ` data-famille="${w.f}"` : ''} style="background:${c.bg}">${w.f ? '<span class="' + p + '-pk">' + S.picto(w.f, 14) + '</span>' : ''}<span style="color:${c.ink}">${w.m}</span><small style="color:${c.ink}">${w.n}/${h.N}</small>${rang(w)}</span>`; };
+      return `<span class="${p}-w${w.f ? '' : ' ' + p + '-wh'}${alerte ? ' ' + p + '-wa' : ''}"${w.f ? ` data-famille="${w.f}"` : ''} style="background:${c.bg}">${w.f ? '<span class="' + p + '-pk">' + S.picto(w.f, 14) + '</span>' : ''}<span style="color:${c.ink}">${w.m}</span>${un(w)}<small style="color:${c.ink}">${w.n}/${h.N}</small>${rang(w)}</span>`; };
     const tuile = (w, alerte) => { const c = couleurs(w, alerte);
       return `<div class="${p}-t${w.f ? '' : ' ' + p + '-th'}${w.m.length > 16 ? ' ' + p + '-t2' : ''}${w.m.length > 11 ? ' ' + p + '-lg' : ''}"${w.f ? ` data-famille="${w.f}"` : ''} style="background:${c.bg}${alerte ? ';border-color:#c2410c' : ''}">
-        <b style="color:${c.ink}">${w.m}</b><span style="color:${c.ink}">${w.f ? '<span class="' + p + '-pk">' + S.picto(w.f, 13) + '</span>' + S.NOM[w.f] + ' · ' : 'hors des 12 · '}${w.n}/${h.N}${w.classeSeul ? ' · rangé par le fournisseur' : ''}</span></div>`; };
+        <b style="color:${c.ink}">${w.m}${un(w)}</b><span style="color:${c.ink}">${w.f ? '<span class="' + p + '-pk">' + S.picto(w.f, 13) + '</span>' + S.NOM[w.f] + ' · ' : 'hors des 12 · '}${w.n}/${h.N}${w.classeSeul ? ' · rangé par le fournisseur' : ''}</span></div>`; };
     // Étagères non vides ; la plus pleine (somme des fiches qui disent ses mots) en tête, en tuiles.
     const poids = (k) => h.mots.filter((w) => zone(w) === k && !w.classeSeul).reduce((s, w) => s + w.n, 0);
     const pleines = ZONES.filter(([k]) => h.mots.some((w) => zone(w) === k));

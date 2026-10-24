@@ -22,7 +22,7 @@ for (const id of ids) {
   await page.screenshot({ path: path.join(out, id + '-toucher.png') });
   const apres = await page.evaluate(() => { const e = document.querySelector('[data-element~="r6a-simule"]'); const ctl = document.getElementById(e.getAttribute('aria-controls') || '-'); return { exp: e.getAttribute('aria-expanded'), texte: ctl ? ctl.innerText.replace(/\s+/g, ' ').trim() : '' }; });
   let suite = 'pas de pont';
-  const v = await page.evaluate(() => { const b = [...document.querySelectorAll('[data-role="pont-valeurs"]')].find((x) => x.checkVisibility()); if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+  const v = await page.evaluate(() => { const b = [...document.querySelectorAll('[data-role="pont-valeurs"], [data-dock="valeurs"].psc-mesure')].find((x) => x.checkVisibility()); if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
   if (v) {
     await page.touchscreen.tap(v.x, v.y); await att(450);
     await page.screenshot({ path: path.join(out, id + '-suite.png') });
@@ -31,7 +31,7 @@ for (const id of ids) {
   // Échap referme (au clavier) : rouvrir puis Échap.
   await page.goto(pathToFileURL(path.join(ici, id, 'etat.html')).href, { waitUntil: 'networkidle0' }); await att(400);
   await page.touchscreen.tap(p.x, p.y); await att(300); await page.keyboard.press('Escape'); await att(200);
-  const echap = await page.evaluate(() => document.querySelector('[data-element~="r6a-simule"]').getAttribute('aria-expanded'));
+  const echap = await page.evaluate(() => document.querySelector('[data-element~="r6a-simule"]')?.getAttribute('aria-expanded') ?? 'PASTILLE PERDUE');
   console.log(id, '· pastille', Math.round(p.w) + '×' + Math.round(p.h), 'repos', p.exp, '→ toucher', apres.exp, '· Échap', echap, '·', suite);
   console.log('   ', apres.texte.slice(0, 400));
   if (err.length) console.log('   ERREURS', err.join(' | '));

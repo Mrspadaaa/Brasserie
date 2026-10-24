@@ -1,0 +1,12 @@
+import path from 'node:path'; import { pathToFileURL } from 'node:url';
+import puppeteer from 'puppeteer-core';
+const b = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
+const p = await b.newPage(); const err=[]; p.on('pageerror',e=>err.push(String(e))); p.on('console',m=>err.push(m.type()+': '+m.text()));
+await p.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+await p.goto(pathToFileURL(path.resolve(process.argv[2])).href, { waitUntil: 'networkidle0' }); await new Promise(r=>setTimeout(r,500));
+await p.touchscreen.tap(45, 227); await new Promise(r=>setTimeout(r,300));
+console.log('apres tap', await p.evaluate(()=>[!!document.querySelector('[data-element~="r6a-simule"]'), location.href.slice(-40), document.body.innerText.slice(0,200)]));
+await p.keyboard.press('Escape'); await new Promise(r=>setTimeout(r,300));
+console.log('apres esc', await p.evaluate(()=>[!!document.querySelector('[data-element~="r6a-simule"]'), location.href.slice(-40), document.body.innerText.slice(0,300)]));
+console.log(err.join('\n'));
+await b.close();

@@ -19,7 +19,7 @@ async function ouvrir(id, hop) {
   await wait(250);
   const pt = await pg.evaluate((k) => { const c = document.querySelector('[data-fla-h="' + k + '"] .' + document.title.split(' ')[0] + '-cl2') || document.querySelector('[data-fla-h="' + k + '"]'); const r = c.getBoundingClientRect(); return { x: r.left + r.width * 0.55, y: r.top + r.height / 2 }; }, hop);
   const t = await pg.touchscreen.touchStart(pt.x, pt.y); await wait(700); await t.end(); await wait(350);
-  const ok = await pg.evaluate(() => !!document.querySelector('[data-role="fiche"]:not([hidden])'));
+  const ok = await pg.evaluate(() => !!document.querySelector('[data-role="fiche"]:not([hidden]), [data-fla-ouverte]:not(.x)'));
   if (!ok) throw new Error(id + ' : l\'appui long n\'a pas ouvert la fiche de ' + hop);
   return pg;
 }
@@ -29,7 +29,7 @@ for (const id of ids) {
   if (C.avant) { await C.avant(pg); await wait(300); }
   await pg.screenshot({ path: path.join(cap, id + '-premier-ecran.png') });
   // Page entière : la feuille dépliée sous le haut de l'étape.
-  const h = await pg.evaluate(() => { const f = document.querySelector('[data-role="fiche"]:not([hidden])'); f.style.position = 'absolute'; f.style.bottom = 'auto'; f.style.overflow = 'visible'; f.style.height = 'auto'; const H = f.offsetTop + f.scrollHeight + 4; document.body.style.minHeight = H + 'px'; const v = document.querySelector('[class$="-voile"]'); v.style.position = 'absolute'; v.style.height = H + 'px'; return H; });
+  const h = await pg.evaluate(() => { const f = document.querySelector('[data-role="fiche"]:not([hidden]), [data-fla-ouverte]:not(.x)'); f.style.position = 'absolute'; f.style.bottom = 'auto'; f.style.overflow = 'visible'; f.style.height = 'auto'; const H = f.offsetTop + f.scrollHeight + 4; document.body.style.minHeight = H + 'px'; const v = document.querySelector('[class$="-voile"]'); v.style.position = 'absolute'; v.style.height = H + 'px'; return H; });
   await pg.setViewport({ width: 390, height: Math.max(844, h), deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   await wait(200);
   await pg.screenshot({ path: path.join(cap, id + '-page.png'), fullPage: true });

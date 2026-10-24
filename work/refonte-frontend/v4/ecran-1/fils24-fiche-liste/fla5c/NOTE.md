@@ -19,20 +19,23 @@
 - Nelson Sauvin : α 12–14 % (Hopsteiner 2025), lot 9,6 %, stock 100 g ; radar Agrumes 1/2, Épicé 1/2, 10 « ? » ; 7 mots, 2 fiches ; vin blanc 2/2 (Beer Maverick, Hopsteiner « White wine »), raisin 2/2 (« grape »), groseille à maquereau 2/2 (« gooseberry »), fruité 2/2 (« fruity »), sauvignon blanc 1/2 (Beer Maverick) ; agrumes et épicé 1/2 : la ligne « Familles déclarées » de Hopsteiner.
 - Nugget : α 11–14 %, lot 13 %, épuisé (0 g) ; radar Résineux, Tropicaux, Herbacé, Floral 2/4, Agrumes, Terreux, Épicé 1/4 ; 12 mots, 4 fiches ; boisé 2/4, ananas 2/4, herbacé 2/4 (un mot de Beer Maverick et la famille déclarée par Hopsteiner), les autres 1/4 ; épicé 1/4 rangé par le fournisseur.
 
-## Passe 3 : la correction du REJET (D119, D116)
-- L'étape garde son en-tête et sa barre tels quels : « ‹ Houblons 3/7 », « 16D hypothèse », IBU 60 · OG 1,066 · EBC 70 (capture : haut de fla5c-nelson.png, sous le voile).
-- Sous l'en-tête, le choix du houblon (greffe flc8b / fld8b), une pastille à la couleur du houblon : seul facteur libre (data-libre="houblon"). Un toucher change la fiche ; un appui long ou un survol long l'ouvre comme « la fiche » (data-role="fiche").
-- La fiche s'ouvre par-dessus l'étape avec son propre en-tête : « Que sent ce houblon ? » (petit, au-dessus du nom), le nom et son ⊙, le stock, l'α de g1 et le lot avec sa jauge, l'usage, la ligne de contexte « Stout 16D · SafAle US-05 », la croix ronde de 44 px.
-- Repris de fla5b sans changement : radar g1 à sa taille, lentille au style / absolu, « 7 mots, 2 fiches », le « ? » et son aide (désormais la légende de la page, 12 familles nommées), les étagères, la tête en tuiles, « rangé par le fournisseur », aucun 0.
-- Page propre à fla5c (page.mjs, appelée par le socle commun) ; fla5b reste telle quelle. L'en-tête de l'étape est un div au même style que le h1 de la base, pour que la question de la fiche soit le titre de l'écran.
+## Passe 3 : la correction du REJET (D119, D116), puis les décisions du pilote
+- L'étape garde l'en-tête de sa base, tel quel : `h1` « ‹ Houblons 3/7 », « 16D hypothèse », IBU 60 · OG 1,066 · EBC 70 (haut de `fla5c-nelson.png`, sous le voile).
+- Sous l'en-tête, le choix du houblon (greffe flc8b / fld8b) : une pastille par houblon, à sa couleur, sur deux lignes à 390 px (Nugget, Nelson Sauvin, Citra cryo / Motueka, Cascade), sans défilement caché ; seul facteur libre (`data-libre="houblon"`). Un toucher ou un appui long change la fiche.
+- La fiche (feuille g1 par-dessus l'étape) a son propre en-tête : son titre `h2` « Que sent Nelson Sauvin ? », le ⊙, le stock, l'α de g1 et le lot avec sa jauge, l'usage, la ligne de contexte « Stout 16D · SafAle US-05 », la croix ronde de 44 px.
+- « 1er » sur vin blanc (nommé en premier par les deux fiches), une seule fois ; sur Nugget, sur boisé (nommé en premier par Hopsteiner boutique US et Yakima Chief Hops).
+- Repris de fla5b sans changement : radar g1 à sa taille, lentille au style / absolu, « 7 mots, 2 fiches », le « ? » et son aide (la légende de la page, 12 familles nommées), les étagères, la tête en tuiles, « rangé par le fournisseur », aucun 0.
+- Sans controle-fiche : la fiche est montrée ouverte, le geste d'appui long n'est pas le sujet de ce fil de fer. Aucun `data-role="fiche"` dans la page (le marqueur posé pour le contrôle à la version précédente est retiré).
+- Page propre à fla5c (`page.mjs`, appelée par le socle commun) ; fla5 et fla5b restent telles quelles.
 
 ## Ce qui casse encore
-- Pas de « 1er » sur vin blanc (demandé par le critique, non bloquant) ; règle de repli de flb3b non greffée.
-- Le cinquième houblon (Cascade) déborde à droite de la rangée de choix : il se fait défiler.
+- UNE-QUESTION sans levée échoue sur le titre : le premier titre de l'écran est le `h1` « Houblons 3/7 » de la base, la question est le titre de la feuille. Avec `--regle-n1` (l'étape garde l'en-tête de sa base), OK.
+- Règle de repli de flb3b non greffée.
 - Nugget : la liste dépasse le premier écran (le « hors des 12 », gingembre, est sous le pli).
 - Herbacé 2/4 de Nugget mêle un mot senti et un classement : compté comme mot (ce que dit le pack).
 
 ## Sorties des contrôles (fla5c seule)
-- controle-commun.mjs … fla5c --page=etat.html --sans=mots → COMMUN OK (couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, legende, parlant, brutes).
-- controle-une-question.mjs … fla5c --page=etat.html → titre « Que sent ce houblon ? » · libres : houblon · 5 contrôles · contexte : base, levure → UNE-QUESTION OK (1 groupe libre : houblon).
-- mots-premier-ecran.mjs … fla5c --max=80 --page=etat.html --sans-donnees → 78 mots (hors données), MOTS OK (près du plafond : l'en-tête de l'étape et la fiche sont au premier écran).
+- `controle-commun.mjs … fla5c --page=etat.html --sans=mots,fiche` → COMMUN OK (couleurs, au-style, survol, blocs, contraste, standard, trait, legende, parlant, brutes ; mots et fiche sautés).
+- `controle-une-question.mjs … fla5c --page=etat.html` → UNE-QUESTION ECHEC 1 problème : « le titre « Houblons 3/7 » ne pose pas une question » (libres : houblon, 5 contrôles ; contexte : base, levure).
+- `controle-une-question.mjs … fla5c --page=etat.html "--regle-n1=étape de la base v4.10 (h1 Houblons 3/7) gardée ; question et contexte dans la feuille"` → UNE-QUESTION OK (1 groupe libre : houblon).
+- `mots-premier-ecran.mjs … fla5c --max=80 --page=etat.html --sans-donnees` → 77 mots (hors données), MOTS OK.
