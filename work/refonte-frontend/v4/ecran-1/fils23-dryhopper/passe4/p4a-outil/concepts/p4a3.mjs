@@ -7,6 +7,10 @@
 //      les jours sans gain sont pâles ;
 //   6. la lecture sans légende : chaque étape porte son picto (flamme, tourbillon, bulles, cuve au repos) ;
 //   4. l'avant inconnu (Noyau, Baies) hachuré de sa couleur, écart « ? ».
+// Relance après le REJET du critique (passe4/critique/PASSE4.md, 24.10) : la loupe sort de la figure (à gauche du
+// rail, au niveau du doigt, 92 px, sur la colonne seulement, jamais sur les barres) ; la carte se remplit d'une
+// mini-colonne par famille (le ruban d'a1 tourné de 90°, 24 cases alignées sur la colonne du brassin) ; la colonne
+// écrit ses étapes (60′, 0′, WP, actif, après) et ses jours (1 j, 2 j, 3 j, 5 j, 7 j).
 // Gardé d'a1 : « Face à ta stout », les barres l5b au style, l'amertume et sa bande, « contre ★ », la vraie valeur, le
 // pont levure qui suit le moment, Pépins / Melon / Épicé repliés, la fiche à l'appui long. Classes « p4a3 » (L26).
 import { ETAPE } from '../socle.mjs';
@@ -16,13 +20,13 @@ export default {
   titre: 'Quand ajouter Idaho 7 ?',
   legende: [
     'Glisse le pouce le long de la colonne, de 60′ (en haut) à après 7 j (en bas) ; la loupe chiffre les moments voisins.',
-    'Colonne : le floral à chaque moment ; plein et pointé, calculé ; en pointillé, interpolé ; trait orangé : trop amer.',
+    'Colonne et mini-colonnes : chaque famille à chaque moment, de 60′ (en haut) à après 7 j ; le trait noir, ton moment ; colonne : le floral ; plein et pointé, calculé ; en pointillé, interpolé ; trait orangé : trop amer.',
     'Barre : ta stout avec Idaho 7 ; rond : avant ; hachuré de couleur : avant inconnu, écart « ? ».',
     '★ : le meilleur pour ta demande du 18.10. ~ simulé · ≈ interpolé · ? inconnu.',
   ],
   css: `
 .p4a3 .s-ecran { gap:6px; }
-.p4a3main { display:grid; grid-template-columns:1fr 118px; gap:8px; height:calc(100svh - 168px); min-height:560px; }
+.p4a3main { display:grid; grid-template-columns:1fr 128px; gap:8px; height:calc(100svh - 168px); min-height:560px; }
 .p4a3g { display:flex; flex-direction:column; gap:6px; min-width:0; }
 .p4a3rep { display:flex; align-items:baseline; flex-wrap:wrap; gap:2px 6px; font-size:15px; }
 .p4a3rep b { font-weight:600; }
@@ -30,8 +34,8 @@ export default {
 .p4a3rep-c { flex-basis:100%; font-size:13px; color:var(--gris); line-height:1.3; }
 .p4a3rep-c b { color:var(--encre); }
 .p4a3rep-c .p4a3-trop { color:var(--acc); font-weight:600; }
-.p4a3fig { flex:1; justify-content:space-between; padding:8px 8px; }
-.p4a3fig .s-ba { grid-template-columns:84px 1fr 34px; font-size:14px; min-height:38px; }
+.p4a3fig { flex:1; justify-content:space-between; gap:6px; padding:8px 8px; }
+.p4a3fig .s-ba { grid-template-columns:84px 1fr 34px; font-size:14px; min-height:31px; }
 .p4a3fig .s-jauge { font-size:13px; }
 .p4a3fig .s-jauge .s-jv { font-size:12px; }
 .p4a3fig .s-jp { height:14px; }
@@ -39,6 +43,13 @@ export default {
 .p4a3fig .s-piste .s-rem { height:12px; top:4px; }
 .p4a3fig .s-piste .s-av { width:16px; height:16px; top:2px; margin-left:-8px; }
 .p4a3am { margin-top:2px; }
+.p4a3mc { flex:1; min-height:128px; display:grid; grid-template-columns:repeat(10,1fr); gap:3px; padding-top:2px; position:relative; }
+.p4a3mc-c { display:flex; flex-direction:column; align-items:center; gap:3px; min-width:0; }
+.p4a3mc-c > b { font:600 11px var(--sans); color:var(--gris); height:14px; display:flex; align-items:center; }
+.p4a3mc-r { position:relative; flex:1; width:100%; max-width:16px; }
+.p4a3mc-r i { position:absolute; left:0; right:0; height:var(--cw); margin-top:calc(var(--cw) / -2); border-radius:2px; }
+.p4a3mc-r i.p4a3-hs { box-shadow:inset -2px 0 0 var(--acc); }
+.p4a3mc-ici { position:absolute; left:-2px; right:-2px; height:2px; margin-top:-1px; background:var(--encre); border-radius:1px; pointer-events:none; z-index:2; }
 .p4a3repli { display:flex; align-items:center; gap:6px; height:22px; color:var(--gris); }
 .p4a3repli svg.p4a3ch { transition:transform .15s; }
 .p4a3repli[aria-expanded="true"] svg.p4a3ch { transform:rotate(90deg); }
@@ -49,29 +60,32 @@ export default {
 .p4a3lev a b { font-weight:700; }
 .p4a3lev a span { display:inline-flex; align-items:center; gap:3px; color:#d4d4d4; font-size:13px; }
 .p4a3fr { position:relative; background:var(--plan); border:1px solid var(--trait); border-radius:8px; }
-.p4a3col { position:absolute; left:6px; right:34px; top:8px; bottom:8px; }
-.p4a3col i { position:absolute; right:0; height:var(--ch); margin-top:calc(var(--ch) / -2); border-radius:2px 0 0 2px; background:#bf86d6; }
-.p4a3col i.p4a3-ip { background:transparent; border:1px dashed #bf86d6; border-right:0; }
+.p4a3col { position:absolute; left:4px; right:30px; top:8px; bottom:8px; }
+.p4a3col i { position:absolute; right:0; display:flex; align-items:center; justify-content:flex-end; padding-right:3px; font:600 11px var(--mono); font-style:normal; color:#fff; height:var(--ch); margin-top:calc(var(--ch) / -2); border-radius:2px 0 0 2px; background:#bf86d6; }
+.p4a3col i.p4a3-ip { color:var(--gris); background:transparent; border:1px dashed #bf86d6; border-right:0; }
 .p4a3col i.p4a3-calc::before { content:""; position:absolute; left:-3px; top:50%; width:5px; height:5px; margin-top:-2.5px; border-radius:50%; background:#9840bc; }
 .p4a3col i.p4a3-amer { box-shadow:inset -3px 0 0 var(--acc); }
-.p4a3col i.p4a3-sg { opacity:.35; }
+.p4a3col i.p4a3-sg { background:#e6d4ee; color:#555555; }
 .p4a3col i.p4a3-ici { outline:2px solid var(--encre); outline-offset:1px; }
-.p4a3col .p4a3et { position:absolute; left:0; display:flex; align-items:center; gap:2px; color:var(--gris); font-size:12px; }
+.p4a3col .p4a3et { position:absolute; left:0; width:30px; display:flex; flex-direction:column; align-items:flex-start; gap:1px; transform:translateY(-50%); color:var(--gris); font:600 11px var(--sans); line-height:1.1; }
+.p4a3col .p4a3bo { position:absolute; left:0; transform:translateY(-50%); font:600 11px var(--mono); color:var(--gris); }
 .p4a3col .p4a3et.p4a3-on { color:var(--encre); font-weight:700; }
 .p4a3col .p4a3sep { position:absolute; left:0; right:-28px; border-top:1px solid #dcdcdc; }
 .p4a3rg { position:absolute; right:4px; top:8px; bottom:8px; width:24px; }
-.p4a3rg .s-lp { right:30px; width:236px; height:372px; }
-.p4a3rg .s-lp > span { height:58px; justify-content:space-between; }
-.p4a3rg .s-lp em { min-width:44px; text-align:center; }
-.p4a3rg .s-lp i.s-lp-b { flex:1; height:10px; }
-.p4a3rg .s-lp small.p4a3-ibu { color:var(--gris); min-width:34px; text-align:right; }
+.p4a3rg .s-lp { right:28px; width:92px; height:372px; }
+.p4a3rg .s-lp > span { height:62px; left:4px; right:4px; flex-wrap:wrap; align-content:center; justify-content:space-between; gap:3px 2px; }
+.p4a3rg .s-lp em { text-align:center; }
+.p4a3rg .s-lp i.s-lp-b { flex:1; min-width:24px; height:8px; }
+.p4a3rg .s-lp small { flex-basis:auto; }
+.p4a3rg .s-lp .p4a3-br { flex-basis:100%; height:0; }
+.p4a3rg .s-lp small.p4a3-ibu { color:var(--gris); text-align:right; }
 .p4a3rg .s-lp small.p4a3-ibu.p4a3-trop { color:var(--acc); }
 `,
   corps: `
 <div class="p4a3main">
   <div class="p4a3g">
     <div class="p4a3rep" aria-live="polite"><b>Face à ta stout</b><span class="p4a3rep-fl"><svg class="s-pi" width="16" height="16" style="width:16px;height:16px" data-famille="floral" aria-label="Floral"><use href="#p-floral"/></svg><span id="p4a3rep-fl">~+22</span></span><span class="p4a3rep-c" id="p4a3rep-c"></span></div>
-    <section class="s-bloc p4a3fig" aria-label="Familles d'arômes au style"><div id="p4a3ba"></div><div class="p4a3am" id="p4a3am"></div>
+    <section class="s-bloc p4a3fig" aria-label="Familles d'arômes au style"><div id="p4a3ba"></div><div class="p4a3mc" id="p4a3mc" aria-hidden="true"></div><div class="p4a3am" id="p4a3am"></div>
       <button type="button" class="p4a3repli" id="p4a3repli" aria-expanded="false" aria-controls="p4a3ba2" aria-label="Montrer Pépins, Melon, Épicé"></button><div id="p4a3ba2" hidden></div></section>
     <p class="p4a3mes" id="p4a3mes" data-acquis="valeurs"></p>
     <nav class="p4a3lev" aria-label="Pont vers Levure" data-acquis="levure" data-forme="pont"><a href="${ETAPE}"><b>Puis la levure</b><span id="p4a3lev-t"></span></a></nav>
@@ -95,10 +109,34 @@ export default {
     var pas = function (k) { var g = 1e9; if (k > 0) g = Math.min(g, x(k) - x(k - 1)); if (k < N) g = Math.min(g, x(k + 1) - x(k)); return g; };
     for (var k = 0; k <= N; k++) {
       var p = D[k], pr = S.jours(p) > 1 ? D[k - 1] : null, sg = pr && seg(pr) === seg(p) && Math.abs(p.v.floral - pr.v.floral) < 0.1;
-      h += '<i data-k="' + k + '" class="' + (p.interp ? 'p4a3-ip' : 'p4a3-calc') + (S.ibu(p).h ? ' p4a3-amer' : '') + (sg ? ' p4a3-sg' : '') + '" data-pas="' + pas(k).toFixed(3) + '" style="top:' + x(k) + '%;width:' + Math.max(8, p.v.floral / 25 * 100).toFixed(0) + '%"></i>';
+      h += '<i data-k="' + k + '" class="' + (p.interp ? 'p4a3-ip' : 'p4a3-calc') + (S.ibu(p).h ? ' p4a3-amer' : '') + (sg ? ' p4a3-sg' : '') + '" data-pas="' + pas(k).toFixed(3) + '" style="top:' + x(k) + '%;width:' + Math.max(8, p.v.floral / 25 * 64).toFixed(0) + '%">' + (S.jours(p) ? S.jours(p) + ' j' : '') + '</i>';
     }
-    S.SEG.forEach(function (z, n) { if (n) h += '<span class="p4a3sep" style="top:' + z[0] + '%"></span>'; h += '<span class="p4a3et" data-s="' + n + '" style="top:calc(' + z[0] + '% + 2px)">' + mp(PIC[n], 14) + '</span>'; });
+    var NOMS = ['', 'WP', 'actif', 'après'];
+    S.SEG.forEach(function (z, n) { if (n) h += '<span class="p4a3sep" style="top:' + z[0] + '%"></span>'; h += '<span class="p4a3et" data-s="' + n + '" style="top:' + ((z[0] + z[1]) / 2) + '%">' + mp(PIC[n], 14) + NOMS[n] + '</span>'; });
+    h += '<span class="p4a3bo" style="top:' + x(0) + '%">60′</span><span class="p4a3bo" style="top:' + x(S.idx('b0')) + '%">0′</span>';
     col.innerHTML = h;
+    var MC = ['floral', 'herbal', 'earthy', 'citrus', 'tropical', 'stoneFruit', 'berries', 'resin', 'green'], mc = document.getElementById('p4a3mc');
+    var hc = '';
+    MC.concat(['ibu']).forEach(function (f) {
+      hc += '<span class="p4a3mc-c"><b>' + (f === 'ibu' ? 'IBU' : S.pi(f, 13)) + '</b><span class="p4a3mc-r" data-f="' + f + '">';
+      for (var k = 0; k <= N; k++) hc += '<i data-k="' + k + '" style="top:' + x(k) + '%;--cw:' + S.cw(k) + '%"></i>';
+      hc += '<span class="p4a3mc-ici"></span></span></span>';
+    });
+    mc.innerHTML = hc;
+    function minis() {
+      var abs = document.body.classList.contains('abs');
+      mc.querySelectorAll('.p4a3mc-r').forEach(function (r) {
+        var f = r.dataset.f;
+        r.querySelectorAll('i').forEach(function (c) {
+          var p = D[+c.dataset.k];
+          if (f === 'ibu') { var b = S.ibu(p); c.style.background = b.h ? '#c2410c' : '#8c8c8c'; c.style.opacity = Math.max(0.15, Math.min(1, (b.n - 40) / 130)); return; }
+          if (S.inc(p, f)) { c.style.background = 'repeating-linear-gradient(135deg,#c4c4c4 0 2px,transparent 2px 5px)'; c.style.opacity = 1; return; }
+          var t = Math.min(1, abs ? p.v[f] / 110 : p.v[f] / S.B[f] / 2);
+          c.style.background = S.BA[f]; c.style.opacity = ((0.3 + 0.7 * t) * (p.interp ? 0.75 : 1)).toFixed(2); c.classList.toggle('p4a3-hs', S.hors(p, f));
+        });
+      });
+    }
+    minis();
     var hauteurs = function () { var H = col.clientHeight; col.querySelectorAll('i[data-pas]').forEach(function (c) { c.style.setProperty('--ch', Math.min(22, H * c.dataset.pas / 100 * 0.74).toFixed(1) + 'px'); }); };
     hauteurs(); addEventListener('resize', hauteurs);
     function mesure(p) {
@@ -121,16 +159,17 @@ export default {
     }
     var rail = S.rail({
       hote: document.getElementById('p4a3rg'), orient: 'v', pas: 72,
-      cellule: function (p) { var b = S.ibu(p); return '<em>' + S.court(p) + '</em><i class="s-lp-b"><b style="width:' + Math.min(100, p.v.floral / 25 * 100).toFixed(0) + '%"></b></i><small>' + S.fmt(p, 'floral') + '</small><small class="p4a3-ibu' + (b.h ? ' p4a3-trop' : '') + '">' + (b.cru ? '60+?' : b.t.replace(' IBU', '')) + '</small>'; },
-      loupe: function (i, lp) { var H = lp.parentNode.clientHeight, y = H * x(i) / 100; lp.style.top = Math.max(-60, Math.min(H - 260, y - 160)) + 'px'; },
+      cellule: function (p) { var b = S.ibu(p); return '<em>' + S.court(p) + '</em><i class="s-lp-b"><b style="width:' + Math.min(100, p.v.floral / 25 * 100).toFixed(0) + '%"></b></i><span class="p4a3-br"></span><small>' + S.fmt(p, 'floral') + '</small><small class="p4a3-ibu' + (b.h ? ' p4a3-trop' : '') + '">' + (b.cru ? '60+?' : b.t.replace(' IBU', '')) + '</small>'; },
+      loupe: function (i, lp) { var H = lp.parentNode.clientHeight, y = H * x(i) / 100; lp.style.top = Math.max(-8, Math.min(H - 364, y - 186)) + 'px'; },
       onPose: function (i) {
         var p = D[i]; maj(p); maj2(p); jau(p); mesure(p); levure(p); contre(i);
         document.getElementById('p4a3rep-fl').textContent = S.fmt(p, 'floral');
         col.querySelectorAll('i').forEach(function (c) { c.classList.toggle('p4a3-ici', +c.dataset.k === i); });
         col.querySelectorAll('.p4a3et').forEach(function (e) { e.classList.toggle('p4a3-on', +e.dataset.s === seg(p)); });
+        mc.querySelectorAll('.p4a3mc-ici').forEach(function (l) { l.style.top = x(i) + '%'; });
       },
     });
-    S.surLecture(function () { var p = D[rail.cur()]; maj(p); maj2(p); });
+    S.surLecture(function () { var p = D[rail.cur()]; maj(p); maj2(p); minis(); });
     rail.poser(rail.depart);
     window.LIRE = function () { return { m: rail.el.getAttribute('aria-valuetext'), fl: document.getElementById('p4a3rep-fl').textContent, am: document.querySelector('#p4a3am .s-jv').textContent, noyau: document.querySelector('#p4a3ba [data-f=stoneFruit] .s-ba-v').textContent, lev: document.getElementById('p4a3lev-t').textContent, mes: document.getElementById('p4a3mes').textContent, mieux: document.getElementById('p4a3rep-c').textContent }; };
     if (/touche=1/.test(location.search)) rail.toucher();

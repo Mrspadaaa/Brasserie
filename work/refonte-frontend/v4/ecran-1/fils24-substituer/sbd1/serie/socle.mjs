@@ -303,12 +303,12 @@ export function troisCas(c, cls = '') {
     const p = k.poids;
     return `<div class="sbd-3k${k.id === c.id ? ' sbd-3on' : ''}"><p class="sbd-3h"><b>${k.court}</b><span class="sbd-3w"><i style="flex:${p.amertume};background:#5b5b66"></i><i style="flex:${p.huiles};background:#9a9aa6"></i><i style="flex:${p.arome};background:#0e7c86"></i></span></p>
 <p class="sbd-3n">${nomHop(best)} <b class="sbd-num">${best.score}</b></p><p class="sbd-num sbd-3d">${g0(best.dose.g)} g · ${k.ref.ibu ? Math.round(k.ref.ibu) + ' IBU' : 'à froid'}</p>
-<p class="sbd-3d"><b class="sbd-num">${k.comptes.tresProchesRetenus}</b> très proches</p><p class="sbd-3d">${st ? `${ico('stock', 'en stock')}${esc(st.nom)} ${st.score}` : 'stock : aucun assez'}</p></div>`; }).join('')}</div>`;
+<p class="sbd-3d" aria-label="très proches"><b class="sbd-num">${k.comptes.tresProchesRetenus}</b> ≥ 80</p><p class="sbd-3d">${st ? `${ico('stock', 'en stock')}${nomHop({ ...st, couleur: null })} ${st.score}` : 'stock : aucun'}</p></div>`; }).join('')}</div>`;
 }
 // Ce que le remplaçant perd et gagne face à Nugget (familles des fiches) ; à 60′, l'ébullition les emporte.
 export function gagnePerd(r, c) {
   const p = (r.perd || []).filter((m) => m.a < m.de).map((m) => pic(m.family, 14)).join(''), g = (r.gagne || []).map((m) => pic(m.family, 14)).join('');
-  return `<p class="sbd-gp"><span>perd</span>${p || '<small>rien</small>'}<span>gagne</span>${g || '<small>rien</small>'}<small>${c.contexte === 'amertume' ? 'fiches ; à 60′, l’ébullition les emporte' : 'fiches ; ici, ils restent'}</small></p>`;
+  return `<p class="sbd-gp"><span>perd</span>${p || '<small>rien</small>'}<span>gagne</span>${g || '<small>rien</small>'}<small>${c.contexte === 'amertume' ? 'emportés à 60′' : 'restent ici'}</small></p>`;
 }
 export const CSS_CAS = `
 .sbd-3c { display:grid; grid-template-columns:repeat(3, 1fr); gap:4px; }

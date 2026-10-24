@@ -82,7 +82,8 @@ const CSS = `
 .sbd6-en .sbd-hop { white-space:nowrap; }
 .sbd6-en small { font-size:12px; color:var(--gris); display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
 .sbd6-en .sbd-us { font-size:11px; line-height:14px; padding:0 4px; }
-.sbd6-st { display:flex; align-items:center; gap:6px; }
+.sbd6-st { display:flex; flex-wrap:wrap; align-items:center; gap:4px 6px; }
+.sbd6-st .sbd-gp { flex-basis:100%; }
 .sbd6-sl { font-size:12px; color:var(--gris); white-space:nowrap; }
 .sbd6-bf { flex:1; display:flex; align-items:center; gap:3px; }
 .sbd6-bf .sbd-bar { flex:1; }

@@ -22,7 +22,17 @@ facteur libre (le moment), la levure en contexte et en pont (« Puis la levure �
 les barres l5b au style, l'amertume et sa bande, « contre ★ », la vraie valeur, le pont qui suit le moment ; le pas de 5′ (24 crans sur ~560 px, ~21 px par cran, loupe à 72 px : ×3,4).
 
 ## Ce qui casse
-les rubans par famille d'a1 ne tiennent pas debout : seul le floral a sa colonne ; la loupe couvre les barres pendant le geste ; ×3,4 est juste au-dessus du ×3.
+la colonne et les mini-colonnes disent la même chose pour le floral ; ×3,4 reste juste au-dessus du ×3 ; « 1 j · 2 j… » au repos
+sont des graduations (demandées par le critique, contre D47 qui les voulait doigt posé seulement).
+
+## Relance après le REJET du critique (`../critique/PASSE4.md`, 24.10)
+- **Loupe hors de la figure** : elle s'ouvre à gauche du rail, au niveau du doigt, 92 px de large, sur la colonne du brassin
+  seulement ; les neuf barres l5b restent visibles et bougent pendant le geste (`p4a3-pendant.png`). Deux lignes par voisin :
+  moment et barre de floral, puis floral et IBU.
+- **La carte remplie** : à la place des 86 px de vide, une mini-colonne par famille, plus l'IBU (le ruban d'a1 tourné de 90°,
+  24 cases alignées sur la colonne du brassin, trait orangé hors du style) ; un trait noir passe au moment du pouce.
+- **La colonne écrit ses étapes et ses jours** : « 60′ » et « 0′ » aux bouts de l'ébullition, « WP », « actif », « après » sous
+  leur picto, « 1 j · 2 j · 3 j · 5 j · 7 j » dans les barres du dry hop.
 
 ## Geste (joué au doigt, `geste.json`)
 De ★ actif · 2 j (floral ~+22, 60+? IBU, Pomona ~+13 agrumes, linalol 38 µg/L McCabe 2023) à 20′ (floral ≈+11, ≈119 IBU
@@ -34,7 +44,7 @@ trop amer, « contre ★ actif · 2 j : floral ≈−11 », « jamais mesuré à
 |---|---|
 | G2 `controle-commun --page=etat.html --sans=mots` | **COMMUN OK** (couleurs, au-style, survol, blocs, contraste, fiche, standard, trait, légende, parlant, brutes) |
 | G3 `controle-une-question --page=etat.html` | **UNE-QUESTION OK (1 groupe libre : moment)** ; contexte : houblon, dose, levure, base |
-| G4 `mots-premier-ecran --max=80 --sans-donnees` | **MOTS OK**, 35 mots hors données |
+| G4 `mots-premier-ecran --max=80 --sans-donnees` | **MOTS OK**, 38 mots hors données |
 | `controle-panel` (6 premiers écrans de la voie) | **PANEL OK** : remplissage médian 0,67, ressemblance 0,88, 0/15 paires presque identiques |
 
 `--sans=mots` : prévu par le brief (le plafond de la passe est 80 mots hors données, joué par G4). Aucun écart à la baseline.

@@ -19,7 +19,7 @@ export function sbb3(S) {
   const corps = `<main class="§-e">
 <div class="§-tete"><header class="§-top">${S.croix(P)}<div><h1>Lequel à la place de Nugget ?</h1><p class="§-ctx" data-role="contexte"><span data-contexte="base">ta stout 16D</span> · <span data-contexte="moment">Nugget à 60′</span> · <span data-contexte="dose">46 g, 59,7 IBU</span> · ${S.stock(S.NUG)}</p></div></header>
 ${parCand(S, L, bloc)}</div>
-<div class="§-alt"><span class="§-altl">Les autres</span><div data-libre="houblon" role="radiogroup" aria-label="Le remplaçant" class="§-als">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" class="${c.k === S.REP.k ? 'on' : ''}" style="--c:${c.coul}"><b>${S.esc(c.nom)}</b><span class="§-num">${c.score}</span></button>`).join('')}</div></div>
+<div class="§-alt"><span class="§-altl">Les autres</span><div data-libre="houblon" role="radiogroup" aria-label="Le remplaçant" class="§-als">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" data-eh="${c.k}" class="${c.k === S.REP.k ? 'on' : ''}" style="--c:${c.coul}"><b>${S.esc(c.nom)}</b><span class="§-num">${c.score}</span></button>`).join('')}</div></div>
 <div class="§-bi"><div class="§-bih"><h2>Ma bière</h2>${S.legendeBouton(P)}${S.lentille(P)}</div><div class="§-big3">${parCand(S, L, (c) => S.BIERE_FAM.map((f) => ligneBiere(S, f, c)).join(''))}</div></div>
 </main>${pied(S, P, L)}`;
   const css = `${CSS_LB}${CSS_CP}
@@ -95,7 +95,7 @@ export function sbb4(S) {
 <p class="§-gn">IBU : zone 50–70 de la 16D · grammes : zone = ton stock${c.stock && c.stock.libre != null ? ' (' + S.fr(c.stock.libre) + ' g)' : ' (aucun)'} · rond : Nugget</p></div>`;
   const corps = `<main class="§-e">
 <header class="§-h">${S.croix(P)}<div class="§-ht"><h1>Lequel à la place de Nugget ?</h1><p data-role="contexte" class="§-ctx"><span data-contexte="base">Stout 16D</span> · <span data-contexte="moment">à 60′</span> · <span data-contexte="dose">même IBU</span></p></div>${S.legendeBouton(P)}</header>
-<div data-libre="houblon" role="radiogroup" aria-label="Le remplaçant" class="§-tabs">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" class="${c.k === S.REP.k ? 'on' : ''}" style="--c:${c.coul}">${S.esc(c.nom.split(' ')[0])}<small class="§-num">${c.score}</small></button>`).join('')}</div>
+<div data-libre="houblon" role="radiogroup" aria-label="Le remplaçant" class="§-tabs">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" data-eh="${c.k}" class="${c.k === S.REP.k ? 'on' : ''}" style="--c:${c.coul}">${S.esc(c.nom.split(' ')[0])}<small class="§-num">${c.score}</small></button>`).join('')}</div>
 ${parCand(S, L, bloc)}
 <div class="§-ft"><p class="§-res">${S.pic('resin', 16)}<span>Le résineux reste hors du style : à 60′, aucun de ces remplaçants ne le corrige.</span></p>${S.lentille(P)}</div>
 </main>${pied(S, P, L)}`;
@@ -144,7 +144,7 @@ export function sbb5(S) {
   const proche = S.CANDS.filter((c) => c.stock.etat === 'à acheter' && c.fiab === 'bonne').sort((a, b) => b.score - a.score)[0];
   const R = [[sans, 'Sans rien acheter', 'le premier de ton stock'], [leger, 'Le moins de matière', `α ${S.fr(leger.alpha.valeur, 1)} : ${S.fr(S.NUG.grams - leger.dose.grams)} g de moins`], [proche, 'Le plus proche', 'à acheter, tout connu']];
   const L = R.map((r) => r[0]);
-  const carte = ([c, titre, raison], i) => `<button type="button" role="radio" aria-checked="${i === 0}" data-cand="${c.k}" class="§-cd${i === 0 ? ' on' : ''}" style="--c:${c.coul}">
+  const carte = ([c, titre, raison], i) => `<button type="button" role="radio" aria-checked="${i === 0}" data-cand="${c.k}" data-eh="${c.k}" class="§-cd${i === 0 ? ' on' : ''}" style="--c:${c.coul}">
 <span class="§-ck">${titre}<span class="§-gr"> · ${raison}</span></span>
 <span class="§-cn" data-houblon="${S.esc(c.nom)}">${S.esc(c.nom)}</span><span class="§-cg §-num">${S.fr(c.dose.grams)} g</span>
 <span class="§-cl">${S.alphaTxt(c)}${S.usage(c)}${S.stock(c)}${S.autres(c, 24)}</span>

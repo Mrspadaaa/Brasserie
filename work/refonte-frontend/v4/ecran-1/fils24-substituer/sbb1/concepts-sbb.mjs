@@ -14,7 +14,7 @@ function sbb1(S) {
     const p = plage(c);
     const marque = p ? `<i class="§-pl" style="left:${x(p[0]).toFixed(1)}%;width:${(x(p[1]) - x(p[0])).toFixed(1)}%"></i><b class="§-sc §-num" style="left:${x(p[0]).toFixed(1)}%">${p[0]}</b>`
       : `<i class="§-dot" style="left:${x(c.score).toFixed(1)}%;background:${c.coul}"></i>`;
-    return `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" class="§-row${c.k === S.REP.k ? ' on' : ''}" data-cand="${c.k}" data-houblon="${S.esc(c.nom)}">
+    return `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" class="§-row${c.k === S.REP.k ? ' on' : ''}" data-cand="${c.k}" data-eh="${c.k}" data-houblon="${S.esc(c.nom)}">
 <span class="§-id"><span class="§-nm"><b style="color:${c.coul}">${S.esc(c.nom)}</b>${S.stock(c)}</span><span class="§-sub">${S.alphaTxt(c)}${S.usage(c)}<span class="§-num">${S.fr(c.dose.grams)} g</span></span></span>
 <span class="§-tr">${marque}</span><span class="§-num §-sv">${p ? p[1] : c.score}</span></button>`;
   };
@@ -105,7 +105,7 @@ ${aromes(c)}
 <header class="§-h">${S.croix(P)}<div><p class="§-k" data-role="contexte"><span data-contexte="base">Stout 16D</span> · <span data-contexte="moment">60′</span> · <span data-contexte="dose">même IBU (59,7)</span></p><h1>Lequel à la place de Nugget ?</h1></div></header>
 <div class="§-fl">${carte(S.NUG, '46 g', 'épuisé : 0 g au stock', true)}<span class="§-fle" aria-hidden="true">↓</span></div>
 ${parCand(S, L, bloc)}
-<div class="§-ch"><div data-libre="houblon" role="radiogroup" aria-label="Le remplaçant" class="§-chs">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" class="${c.k === S.REP.k ? 'on' : ''}" style="--c:${c.coul}">${S.pastille(c, 8)}${S.esc(c.nom)}</button>`).join('')}</div><span class="§-tools">${S.legendeBouton(P)}${S.lentille(P)}</span></div>
+<div class="§-ch"><div data-libre="houblon" role="radiogroup" aria-label="Le remplaçant" class="§-chs">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" data-eh="${c.k}" class="${c.k === S.REP.k ? 'on' : ''}" style="--c:${c.coul}">${S.pastille(c, 8)}${S.esc(c.nom)}</button>`).join('')}</div><span class="§-tools">${S.legendeBouton(P)}${S.lentille(P)}</span></div>
 </main>${pied(S, P, L)}`;
   const css = `${CSS_LB}
 body { display:flex; flex-direction:column; min-height:100vh; }

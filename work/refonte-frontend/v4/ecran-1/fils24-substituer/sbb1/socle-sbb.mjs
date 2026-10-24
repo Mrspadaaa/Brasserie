@@ -77,7 +77,7 @@ export function stock(h, P) {
 export const pastille = (h, s = 10) => `<i class="§-pt" data-serie="${esc(h.nom)}" data-couleur="${h.coul}" style="background:${h.coul};width:${s}px;height:${s}px" aria-hidden="true"></i>`;
 export const pictos = (fs_, s = 16) => fs_.map((f) => pic(f, s)).join('');
 // La part « autres » (mots hors des 12 familles, L14) : une forme grise, pas une ligne en petit.
-export const autres = (h, w = 40) => h.sansF != null && h.sansF >= 0.25 ? `<span class="§-aut" data-role="autres"><i style="width:${w}px"></i><span>autres ${fr(h.sansF * 100)} %</span></span>` : '';
+export const autres = (h, w = 40) => h.sansF != null && h.sansF >= 0.25 ? `<span class="§-aut"><i data-role="autres" data-houblon="${esc(h.nom)}" data-part="${fr(h.sansF, 2)}" role="img" aria-label="${esc(h.nom)} : ${fr(h.sansF * 100)} % de mots sans famille" style="width:${Math.max(w, 28)}px"></i><span>autres ${fr(h.sansF * 100)} %</span></span>` : '';
 
 // Barre l5b au style : la zone de la 16D sur la moitié gauche ; absolu (0–110) à un toucher. Rond : ma bière avec Nugget.
 const posS = (x, b1) => Math.max(0, Math.min(100, (x / b1) * 50));

@@ -21,7 +21,6 @@ ${tl('<b class="§-sgn">−</b> Nugget · 60′', `<span class="§-num">46 g · 
 ${tl('amertume', `<span class="§-num">${S.sg(dI, 1)} IBU</span> ${Math.abs(dI) < 1 ? S.ico('i-check') : ''}`)}
 ${tl('matière', `<span class="§-num">${S.sg(dg)} g</span> <span class="§-gr">α ${S.fr(c.alpha.valeur, 1)} contre 13</span>`)}
 ${tl('usage', `${S.usage(c)} <span class="§-gr">Nugget ${S.NUG.role}</span>`)}
-${tl('huiles (proximité)', c.comp.huiles == null ? '<b>?</b> inconnues' : `<span class="§-num">${c.comp.huiles}</span>`)}
 ${tl('stock ' + S.esc(c.nom.split(' ')[0]), c.stock && c.stock.libre != null ? `<span class="§-num">${S.fr(c.stock.libre)} → ${c.reste >= 0 ? S.fr(c.reste) : '−' + S.fr(-c.reste)} g</span>` : 'aucun')}
 ${tl('arôme de ma bière', `<span class="§-num">${md < 1.5 ? '~±1' : '~' + S.fr(md)}</span>`)}
 ${tl('ajoute (fiches)', c.gagne.length ? ajoute(S, c) : 'rien de cité')}
@@ -30,19 +29,20 @@ ${tl('cohumulone', '<b>?</b> pas dans nos fiches')}
 <hr>
 <p class="§-tbh">ma bière, au style</p><div class="§-tb">${S.BIERE_FAM.map((f) => ligneBiere(S, f, c)).join('')}</div>
 <hr class="§-dbl">
+<div class="§-tcp">${compos(S, c)}</div>
 <div class="§-tot"><span>proximité</span><b class="§-num">${c.score}</b><span class="§-gr">${c.palier}</span></div>
 <span class="§-st" style="color:${c.coul};border-color:${c.coul}">${tampon(c)}</span></div>`;
   };
   const corps = `<main class="§-e">
-<header class="§-h">${S.croix(P)}<div data-libre="houblon" role="radiogroup" aria-label="Le remplaçant" class="§-tabs">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" class="${c.k === S.REP.k ? 'on' : ''}" style="--c:${c.coul}">${S.esc(c.nom.split(' ')[0])}<b class="§-num">${c.score}</b></button>`).join('')}</div></header>
+<header class="§-h">${S.croix(P)}<div data-libre="houblon" role="radiogroup" aria-label="Le remplaçant" class="§-tabs">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" data-eh="${c.k}" class="${c.k === S.REP.k ? 'on' : ''}" style="--c:${c.coul}">${S.esc(c.nom.split(' ')[0])}<b class="§-num">${c.score}</b></button>`).join('')}</div></header>
 <section class="§-tk">
 <h1 class="§-tkq">Lequel à la place de Nugget ?</h1>
 <div class="§-tkh"><p class="§-tkt" data-role="contexte"><span data-contexte="base">STOUT 16D · 20 L</span> · <span data-contexte="moment">60′</span> · <span data-contexte="dose">même IBU</span></p>${S.legendeBouton(P)}${S.lentille(P)}</div>
 ${parCand(S, L, ticket)}
 </section>
-<div class="§-pile" data-libre="houblon" role="radiogroup" aria-label="Les autres tickets">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" class="§-pil${c.k === S.REP.k ? ' on' : ''}" style="--c:${c.coul}"><b>${S.esc(c.nom)}</b><span class="§-num">${S.fr(c.dose.grams)} g · ${S.fr(c.ibu, 1)} IBU</span><span class="§-num">${c.score}</span><i>${tampon(c)}</i></button>`).join('')}</div>
+<div class="§-pile" data-libre="houblon" role="radiogroup" aria-label="Les autres tickets">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" data-eh="${c.k}" class="§-pil${c.k === S.REP.k ? ' on' : ''}" style="--c:${c.coul}"><b>${S.esc(c.nom)}</b><span class="§-num">${S.fr(c.dose.grams)} g · ${S.fr(c.ibu, 1)} IBU</span><span class="§-num">${c.score}</span><i>${tampon(c)}</i></button>`).join('')}</div>
 </main>${pied(S, P, L)}`;
-  const css = `${CSS_PAGE}${CSS_LB}
+  const css = `${CSS_PAGE}${CSS_LB}${CSS_CP}
 .§-h h1 { font-size:17px; font-weight:600; }
 .§-h { align-items:flex-end; }
 .§-h .§-x { margin-bottom:6px; }
@@ -70,6 +70,7 @@ ${parCand(S, L, ticket)}
 .§-tk hr.§-dbl { border-top:3px double #9e9e9e; }
 .§-tb { display:flex; flex-direction:column; gap:5px; font-family:"Source Sans 3","Segoe UI",sans-serif; }
 .§-tbh { font-size:12px; color:#555; text-transform:uppercase; letter-spacing:.05em; }
+.§-tcp { font-family:"Source Sans 3","Segoe UI",sans-serif; }
 .§-tot { display:flex; align-items:baseline; gap:8px; font-size:14px; text-transform:uppercase; letter-spacing:.06em; }
 .§-tot b { font-size:28px; letter-spacing:0; }
 .§-tot .§-gr { text-transform:none; letter-spacing:0; font-size:13px; }
@@ -113,7 +114,7 @@ export function sbb7(S) {
     svg += rep ? `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="11" fill="none" stroke="#111" stroke-width="2"/>` : '';
     svg += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6.5" fill="${court ? '#fff' : c.coul}" stroke="${c.coul}" stroke-width="${court ? 3 : 1}"/>`; }
   svg += '</svg>';
-  const etiq = ({ c, y }, cote) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" data-houblon="${S.esc(c.nom)}" class="§-lab §-l${cote}${c.k === S.REP.k ? ' on' : ''}" style="top:${(y - 20).toFixed(1)}px;--c:${c.coul}"><b>${S.esc(c.nom)}</b><span class="§-num">${S.fr(c.dose.grams)} g · ${c.score}</span></button>`;
+  const etiq = ({ c, y }, cote) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" data-eh="${c.k}" data-houblon="${S.esc(c.nom)}" class="§-lab §-l${cote}${c.k === S.REP.k ? ' on' : ''}" style="top:${(y - 20).toFixed(1)}px;--c:${c.coul}"><b>${S.esc(c.nom)}</b><span class="§-num">${S.fr(c.dose.grams)} g · ${c.score}</span></button>`;
   const carte = (c) => `<div class="§-cd" style="--c:${c.coul}"><div class="§-cdh"><span class="§-cdn">${S.esc(c.nom)}</span><span class="§-num §-cdg">${S.fr(c.dose.grams)} g</span><span class="§-num §-cds">${c.score}</span></div>
 <p class="§-cdl">${S.alphaTxt(c)}${S.usage(c)}${S.stock(c)}<span class="§-pk">${S.pictos(c.cites.slice(0, 5), 15)}</span>${S.autres(c, 22)}</p>
 <p class="§-cdx">${stockMot(S, c)} · <span class="§-num">${S.fr(c.ibu, 1)}</span> IBU${c.gagne.length ? ` · ajoute ${ajoute(S, c)}` : ''}</p>
@@ -168,7 +169,7 @@ export function sbb8(S) {
     `arôme : <b class="§-num">${md < 1.5 ? '~±1' : '~' + S.fr(md)}</b>, l’ébullition l’emporte`]; };
   const correction = (c) => `<div class="§-co" style="--c:${c.coul}"><p class="§-cw"><span class="§-car">↳</span><span class="§-cn" data-houblon="${S.esc(c.nom)}">${S.esc(c.nom)}</span><span class="§-num">${S.fr(c.dose.grams)} g · 60′</span></p>
 <p class="§-ci">${S.alphaTxt(c)}${S.usage(c)}${S.stock(c)}<span class="§-pk">${S.pictos(c.cites.slice(0, 6), 15)}</span>${S.autres(c, 22)}</p>
-<ul class="§-mg">${notes(c).map((n) => `<li>${n}</li>`).join('')}</ul>
+<ul class="§-mg">${notes(c).map((n) => `<li>${n}</li>`).join('')}<li class="§-mgi">on ne sait pas : cohumulone${c.comp.huiles == null ? ', huiles' : ''}${c.alpha.horsFiches ? ', α du lot hors fiches' : ''}${c.sansF >= 0.25 ? `, ${S.fr(c.sansF * 100)} % de mots sans famille` : ''}</li></ul>
 <div class="§-pq"><span class="§-pql">pourquoi ${c.score}</span>${compos(S, c)}</div></div>`;
   const corps = `<main class="§-e">
 <header class="§-h">${S.croix(P)}<p class="§-sht">Fiche de brassage · <b>Stout export</b></p></header>
@@ -178,7 +179,7 @@ export function sbb8(S) {
 <p class="§-bar"><span class="§-barn">Nugget · 46 g · 60′ · <span class="§-num">${S.fr(S.NUG.ibu, 1)}</span> IBU</span>${S.stock(S.NUG)}</p>
 ${parCand(S, L, correction)}
 <h2>Ou bien <span class="§-gr">· crayonné, touche pour corriger</span></h2>
-<div data-libre="houblon" role="radiogroup" aria-label="Le remplaçant" class="§-ob">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" class="${c.k === S.REP.k ? 'on' : ''}" style="--c:${c.coul}"><span class="§-obn">${S.esc(c.nom)}</span><span class="§-num">${S.fr(c.dose.grams)} g</span><span class="§-obs">${c.stock.etat === 'à acheter' ? 'à acheter' : c.stock.suffisant === false ? S.fr(c.stock.libre) + ' g au stock' : 'au stock'}</span><b class="§-num">${c.score}</b></button>`).join('')}</div>
+<div data-libre="houblon" role="radiogroup" aria-label="Le remplaçant" class="§-ob">${L.map((c) => `<button type="button" role="radio" aria-checked="${c.k === S.REP.k}" data-cand="${c.k}" data-eh="${c.k}" class="${c.k === S.REP.k ? 'on' : ''}" style="--c:${c.coul}"><span class="§-obn">${S.esc(c.nom)}</span><span class="§-num">${S.fr(c.dose.grams)} g</span><span class="§-obs">${c.stock.etat === 'à acheter' ? 'à acheter' : c.stock.suffisant === false ? S.fr(c.stock.libre) + ' g au stock' : 'au stock'}</span><b class="§-num">${c.score}</b></button>`).join('')}</div>
 <div class="§-bl"><div class="§-blh"><h2>Bilan, au style</h2>${S.legendeBouton(P)}${S.lentille(P)}</div>
 ${parCand(S, L, (c) => `<div class="§-gl"><span>IBU</span>${jauge(S, { v: c.ibu, av: S.NUG.ibu, b0: 50, b1: 70, max: 100, coul: c.coul })}<span class="§-num">${S.fr(S.NUG.ibu, 1)} → ${S.fr(c.ibu, 1)}</span></div><div class="§-blb">${S.BIERE_FAM.map((f) => ligneBiere(S, f, c)).join('')}</div>`)}
 </div>
@@ -203,6 +204,7 @@ ${parCand(S, L, (c) => `<div class="§-gl"><span>IBU</span>${jauge(S, { v: c.ibu
 .§-ci { display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:13px; padding-left:22px; }
 .§-pk { display:inline-flex; gap:2px; }
 .§-mg { list-style:none; display:flex; flex-direction:column; gap:3px; margin-left:22px; padding:5px 8px; border-left:3px solid var(--c); background:#f5f5f5; border-radius:0 4px 4px 0; font-size:13px; font-style:italic; }
+.§-mgi { color:#555; font-size:12px; }
 .§-pq { display:grid; grid-template-columns:62px 1fr; gap:6px; align-items:start; margin-left:22px; }
 .§-pql { font-size:12px; font-style:italic; color:#555; }
 .§-ob { display:flex; flex-direction:column; }
