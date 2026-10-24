@@ -48,7 +48,8 @@ export function aides(p) {
 const BIERE = { floral: 0.19, herbal: 0.17, earthy: 0.19, citrus: 0.22, tropical: 0.19, stoneFruit: null, pomeFruit: null, berries: null, melon: null, resin: 2.5, spice: 0.19, green: null };
 const HAUT = (f) => (ATTENDUES_16D.includes(f) ? 1.65 : 0.9);
 
-function etape(p, S) {
+function etape(p, S, C = {}) {
+  const E = C.etape;
   const barre = (f, abs) => {
     const max = abs ? 3 : 3, v = BIERE[f], z = HAUT(f) / max * 100, hors = v != null && v > HAUT(f);
     const pos = v == null ? null : Math.min(v / max, 1) * 100;
@@ -61,10 +62,10 @@ function etape(p, S) {
       <div class="${p}-cl2">${rapide ? '<span>10 g</span>' : `<span>${h.dansRecette}</span>`}<span class="${p}-band">${S.ORDRE.map((f) => `<i style="background:${h.radar[f].level ? JETONS[f][h.radar[f].level === 2 ? 'base' : 'fond'] : '#ececea'}${h.radar[f].level === 1 ? ';box-shadow:inset 0 0 0 1.5px ' + JETONS[f].base : ''}"></i>`).join('')}</span></div></div></div>`;
   const [nug, ...autres] = HOUBLONS;
   return `<main class="${p}-etape">
-  <header class="${p}-top"><span class="${p}-ret" aria-hidden="true">‹</span><h1>Houblons <small>3/7</small></h1><span class="${p}-style">16D <em>hypothèse</em></span></header>
-  <div class="${p}-ibu"><span>IBU <b>60</b></span><span>OG <b>1,066</b></span><span>EBC <b>70</b></span></div>
+  <header class="${p}-top"><span class="${p}-ret" aria-hidden="true">‹</span>${E ? `<h1 style="font-size:18px;white-space:nowrap">${E.titre}</h1>` : "<h1>Houblons <small>3/7</small></h1>"}<span class="${p}-style">16D <em>hypothèse</em></span></header>
+  <div class="${p}-ibu"><span>IBU <b>60</b></span><span>OG <b>1,066</b></span><span>EBC <b>70</b></span></div>${E ? `<p class="${p}-ctx" data-role="contexte"><span data-contexte="base">Stout 16D</span> · <span data-contexte="levure">SafAle US-05</span> · <span>appui long : la fiche</span></p>` : ""}
   <section class="${p}-sec"><div class="${p}-moment">Ébullition <b>60′</b></div>${carte(nug, false)}
-  <div class="${p}-moment">Ajouts proposés</div>${autres.map((h) => carte(h, true)).join('')}</section>
+  <div class="${p}-moment">Ajouts proposés</div>${E ? '<div data-libre="houblon">' : ''}${autres.map((h) => carte(h, true)).join('')}${E ? '</div>' : ''}</section>
   <section class="${p}-profil" data-role="profil">
     <div class="${p}-ph"><b class="${p}-alerte">● Résineux trop marqué</b><span class="${p}-src">ta dégustation 18.10</span>
       <span class="${p}-lent" role="radiogroup" aria-label="Lecture"><button role="radio" data-e="style" aria-checked="true">au style</button><button role="radio" data-e="absolu" aria-checked="false">absolu</button></span>
@@ -96,6 +97,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .${p}-etape{max-width:430px;margin:0 auto;padding:6px 12px 24px}
 .${p}-top{display:flex;align-items:center;gap:10px;height:44px}.${p}-ret{font-size:28px;line-height:1}.${p}-top h1{font-size:20px;margin:0;flex:1}.${p}-top small{font-weight:400;color:#5d5d5a;font-size:13px}
 .${p}-style{border:1px solid #bdbdb9;border-radius:999px;padding:3px 4px 3px 10px;font-size:13px}.${p}-style em{font-style:normal;background:#ececea;border-radius:999px;padding:2px 8px;margin-left:4px;color:#4a4a47}
+.${p}-n37{font-size:12px;color:#5d5d5a}.${p}-ctx{font-size:13px;color:#3a3a38;margin:0 0 4px}
 .${p}-ibu{display:flex;justify-content:space-between;border:1px solid #cfcfcb;border-radius:999px;padding:7px 16px;font-size:13px;color:#4a4a47;margin:2px 0 8px}.${p}-ibu b{font-size:17px;color:#1d1d1b}
 .${p}-moment{font-size:13px;color:#4a4a47;margin:8px 0 4px}.${p}-moment b{color:#1d1d1b}
 .${p}-carte{display:flex;gap:8px;align-items:center;background:#f4f4f2;border-radius:8px;padding:7px 10px;margin-bottom:6px;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
@@ -161,7 +163,7 @@ export function page(C) {
 <title>${C.id} · ${S.esc(C.titre)} · lot D125, la liste de la fiche (24.10)</title>
 <style>${CSS(p)}${C.css(p, S)}</style></head><body>
 ${PICTOS}
-${etape(p, S)}
+${etape(p, S, C)}
 <div class="${p}-voile"></div>
 ${HOUBLONS.map((h) => fiche(p, S, h, C)).join('\n')}
 <script>${JS(p)}</script>${C.js ? `<script>(function(){var P=${JSON.stringify(p)};${C.js(p)}})();</script>` : ''}
