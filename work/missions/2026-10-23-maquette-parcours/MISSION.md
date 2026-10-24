@@ -449,4 +449,4 @@ sur un autre compte).
 - Décisions : D43 à D45 (le brasseur : p4b2f, levure de q2b, B) ; D46, D49 à D51, D53 (pilote) ; D47, D48, D52 (le brasseur : fiche exhaustive, pictos, radar en pics).
 - Contrôles neufs : controle-fiche-exhaustive (D132), controle-radar-pics (D133), jeux.mjs (pictos), avis-complet.mjs (critiques).
 - Leçon : L13 complétée (rejouer chaque critère sur HEAD avant la voie). CHARGE OK, CERVEAU OK.
-- Ouvert : son choix de pictos (planche publiée) ; rendre mots, fiche et légende conscients d'une feuille ouverte (D49) ; captures d'états en pleine page sous le pli (D53) ; l'icône ★/« Nuget » du stock (donnée du dépôt) ; push des commits locaux et mise à jour des tickets : accord de l'utilisateur.
+- Ouvert : son choix de pictos (planche publiée) ; rendre mots, fiche et légende conscients d'une feuille ouverte (D49) ; captures d'états en pleine page sous le pli (D53) ; l'article de stock « Nuget » (orthographe du dépôt, montrée telle quelle) ; push des commits locaux et mise à jour des tickets : accord de l'utilisateur.
