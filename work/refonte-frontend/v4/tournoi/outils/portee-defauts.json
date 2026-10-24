@@ -1789,6 +1789,16 @@
    "resultat": "Mesuré le 24.10 au soir : maquettes/parcours, Comparer (--min=3 --premier-ecran) et Substituer (--min=2) HORS-16D ECHEC (0 élément).",
    "verdict": "garde",
    "script": "controle-hors-16d.mjs"
+  },
+  {
+   "id": "D132",
+   "mots": "« la carte du houblons doit bien contenir de façon exhaustive TOUTES ses informations » ; « Le footer est top » (flu2b) ; « C'est pas exhaustif sur les infos du houblons » (24.10, soir, sur flb5b)",
+   "controle": "controle-fiche-exhaustive.mjs <page.html> [--houblon=<nom>] (P1 pied de flu2b, P2 toute information du pack)",
+   "portee": ["fiche"],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : flb5b EXHAUSTIVE ECHEC (P1, α, β, huiles, composés, origine, styles, sources, IBU/g) ; maquettes/parcours-fiche (r14 en cours) ECHEC (stock, IBU/g).",
+   "verdict": "garde",
+   "script": "controle-fiche-exhaustive.mjs"
   }
  ]
 }

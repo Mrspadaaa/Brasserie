@@ -1,101 +1,74 @@
 # Dryhopper — Quand ajouter Idaho 7 ?
 
-Voie p4-dryhopper (mission 2026-10-23-maquette-parcours), 23.10. Écran jouable, en React dans le socle, calculé en
-direct à chaque geste. Fichiers : `index.tsx` (écran), `frise.ts` (la frise en direct, la loupe, ★ parmi les crans calculés), `mesures.ts` (la vraie valeur du houblon en brouillon),
-`fiche-sur-outil.tsx` (la fiche de p1 posée sur l'outil), `dryhopper.css` (classes `pq-dry-`), `jeu.mjs`.
+Écran jouable, en React dans le socle, calculé en direct à chaque geste. Fichiers : `index.tsx` (écran), `frise.ts` (la
+frise en direct, ★ parmi les crans calculés), `mesures.ts` (la vraie valeur du houblon en brouillon, la durée de contact
+d'E10), `fiche-sur-outil.tsx` (la fiche de p1 posée sur l'outil), `dryhopper.css` (classes `pq-dry-`), `jeu.mjs`.
 
-## Base
+## Reprise D43 (voie r13-dryhopper, 24.10, soir)
 
-**a1, passe 3** (`work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/passe3/a1/`), c'est-à-dire y1b affiné :
-« y1b est de mon point de vue semble meilleur » (20.10). Choix encore ouvert du brasseur (a1, b4, d8, e5, g1) : son
-choix remplacera l'écran dans le même socle.
+Son choix, mot pour mot, sur p4b2f (« L'aire du floral », passe 5 de p4b2) : « Partir sur cette version ». Sur p4b2 : « Ça
+j'aime beaucoup mais c'est encore assez peu lisible ». Règle n° 1 : p4b2f est la base de l'écran, reprise telle quelle,
+tous ses états compris. a1 (provisoire depuis le 23.10) est remplacé.
 
-- Un seul facteur libre, le moment (D98). Le rail est sous le pouce : ébullition par 5′ (60′ → 0′), whirlpool, dry hop
-  actif puis après fermentation, de 1 à 7 jours. Houblon, dose, levure et base sont sur la ligne de contexte.
-- Premier écran de a1 : « Face à ta stout » ; 9 familles au style (barres l5b de `BarreStyle`) avec leur ruban le long
-  du brassin ; l'amertume en figure (bande 50–70 IBU) avec son ruban ; la vraie valeur sourcée ; le pont Levure ; le
-  dock (étapes, jours, profil floral, rail).
+### Ses états, relevés puis rendus
+Relevé sur sa page (`work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html`) :
+`work/refonte-frontend/v4/choix/etats/dryhopper.json`, 24 états (21 rejoués, 3 voulus), chaque mot d'un « attendu » lu sur sa
+page puis retrouvé ici. Captures côte à côte : `choix/etats/captures/etat-dryh-<état>-choisie.png` et `-construite.png`.
+Témoin `controle-etats --choisie --ecran=dryhopper` : ETATS OK 21/21 ; maquette : ETATS OK 21/21.
 
-## Idées reprises
+Ce qui est rendu tel quel, sur le moteur en direct (`calculerFrise` → `simulerMoment` → `simulerCas`, 24 crans) :
+- « Face à ta stout ✿ ~+22 », la pastille « ★ actif · 2 j » (vert pâle quand le moment tenu est ★), la ligne « contre ★ :
+  floral … · résineux … · trop amer » ailleurs qu'à ★ ;
+- les quatre étapes en tête de figure (ébullition, WP, actif, après ; soulignées d'orangé quand le saut est trop amer) ;
+- le bandeau des quatre chiffres du moment en 16 px (floral, baies, résineux, IBU ; orangé hors du style, « 60+? » à cru) ;
+- le dessin de p4b2f, même géométrie (viewBox 366 de large) : l'aire du floral, baies et résineux en traits nommés au bout,
+  points pleins aux moments calculés, pointillés interpolés (≈), +10 / +20, zones grises du whirlpool et de l'après, la
+  bande de 24 cases d'IBU (orangée au-delà du style, grise dedans, hachurée à cru), la bosse de levure « levure active /
+  possible, non chiffrée », « levure finie », les moments mesurés sur l'axe (● 38 µg/L, ● 1 h ≈ 96 h), ★, le trait du doigt
+  et ses trois anneaux ;
+- le rail sous l'axe (quatre zones, points des crans calculés, pouce et sa pastille « ● 2 j » au point d'Idaho 7), la loupe
+  sous le rail pendant le geste (cinq cases à 66 px : moment, barre de floral, valeur ou « sans gain »), les crans de la
+  seule étape sous le doigt ;
+- les jours 1, 2, 3, 7 j (pointillés « sans gain ») ; les 12 barres l5b de p4b2f (16 px, zone du style, rond d'avant, « ?→~+21 »
+  quand ma bière avant n'est pas décrite, hachuré « ? » quand la famille est inconnue) ; au style / absolu ; la légende ;
+- la vraie valeur du moment (« mesuré linalol 38 µg/L (McCabe 2023) », « jamais mesuré à ce moment ») et le pont
+  « Levure Pomona ~+13 agrumes › » ; l'écran s'ouvre sur ★, comme le rail de p4b2f (un ajout neuf seulement, une fois, dans
+  le brouillon ; un ajout déjà dans ma bière garde son moment).
 
-- De y1b : le geste « glisser le moment comme un curseur, par 5′ » ; « Face à ta stout » ; la jauge d'amertume ; le
-  dock sous le pouce ; la loupe sous le doigt ; les sauts (pastilles d'étape et jours). Aucune graduation au repos
-  (D47) : les crans n'apparaissent que doigt posé.
-- De a1 passe 3 : les rubans par famille (greffe d8 / e1), l'amertume en ligne de figure (b4), la ligne « contre ★ »
-  (b4), les pastilles d'étape soulignées en orangé quand c'est trop amer, les jours « sans gain » en pointillé, Pépins,
-  Melon, Épicé repliés.
-- x3b réduit : les jours de contact au bout de la frise.
-- La loupe est une vraie loupe : le profil floral et les crans du rail s'écartent sous le doigt (distorsion de Sarkar et
-  Brown centrée sur le cran touché, m = 6, bornée à l'étape sous le doigt), et la bande du haut chiffre le floral des 5
-  crans voisins. Mesuré doigt posé, sur onze positions : ×6,8 à ×27,7 entre l'écart sous le doigt et l'écart au loin
-  (L12). Aucune transition sur le geste : une transition héritée de l'app faisait lire des positions en retard (×2,7
-  au contrôle, 23.10).
-- Le rail tient ses plaintes (`controle-rail --parcours`, RAIL OK, y compris à 45′ et 120′ d'ébullition) :
-  - D35 : les cinq cases de la loupe gardent leur pas ; au bord, la rangée entière se décale ;
-  - D46 : le pouce suit le doigt en continu, seule la valeur s'accroche au cran ;
-  - D47 : pendant le geste, seuls les crans de l'étape sous le doigt s'affichent, et seule cette étape se déforme.
-- Calcul en direct : la frise entière (28 crans) passe par `simulerMoment` → `simulerCas` à l'ouverture (30 `lireBiere`,
-  40 ms) ; un cran neuf coûte 0,9 ms en médiane (1,6 ms au plus). Plus aucune grille.
-- D95 corrigé : le rail lui-même (`role="slider"`, `data-role="reglage"`) fait bouger le simulé ; la vraie valeur
-  (`data-nature="mesure"`) se tient sous la figure. `controle-simulation` : SIMULATION OK (rouge sur a1).
-- L'appui long (et le survol long à l'ordinateur) sur Idaho 7 ouvre la fiche de la voie p1 (`src/ecrans/fiche`),
-  posée sur l'outil : le brouillon et le moment restent ; le retour du téléphone la referme.
+### Écarts, chacun avec sa raison
+- **Continuité (D129)** : la tête des outils (croix ronde de 44 px, D109 ; titre à 18 px) ; le pied « Annuler · Levure › »
+  en bas de l'écran (D120), l'action en aplat noir comme Substituer et Levure ; la vraie valeur passe juste au-dessus du
+  pied (dans p4b2f, elle se tenait à côté du pont, au bas de la page). Le rail reste sous l'axe, au-dessus du pied (lecture
+  la plus proche de sa capture : sous les courbes, le trait du doigt les traverse).
+- **Tenir dans l'écran** : avec la tête et le pied de l'app, sa page aurait débordé de 70 px. « ? » et la lecture montent sur
+  la fin de la ligne de contexte (p4b2f leur donnait une ligne), les blocs sont à 2 px (5), les barres à 17 px (18), les
+  jours à 22 px du rail (26). Tout l'écran tient au-dessus du pied, comme sa page de 844 px (701/701 px de défilement).
+- **D35 (rail)** : « possible, non chiffrée » passe à 16 d'écart de « levure active » (12) et « levure finie » commence à
+  l'après sur la première ligne (calée à droite sur p4b2f) : sur sa page, les trois textes se chevauchaient.
+- **D46** : le pouce suit le doigt en continu, la valeur s'accroche au cran (sur p4b2f, il sautait de cran en cran).
+- **D106 (teinte)** : l'aire du floral à 18 % (22 %) : sur la page blanche des outils, elle est l'un des quatre grands
+  aplats clairs et sortait de la neutralité de ses aplats (teinte 16 contre 8 ; TEINTE OK à 12).
+- **S4** : le chevron du pont à 12 px au trait de 2,5 (10 px et 3,6) : une seule épaisseur d'icône sur l'écran.
+- **Données (REPRISE § 8)** : Végétal « ? » (p4b2f « ~+5 ») : aucune source d'Idaho 7 ne le décrit dans le moteur ; l'IBU
+  est calculée à la minute (« ~161 » à 60′ contre « ~162 » sur sa grille, « ~121 » à 20′ contre « ≈119 »).
+- **L14** : après fermentation, sa page dit « mesuré 1 h ≈ 96 h au nez (Titus 2021) » ; l'étude (E10) porte sur Cascade. La
+  ligne dit « (Titus 2021, sur Cascade) », lue dans `comparatifs-dryhop.json` (`dureeDeContact`).
+- La légende réécrit sa deuxième phrase (« Colonnes grises … Bande 50–70 », celles de p4b2, que p4b2f ne dessine plus).
+- L'appui long sur Idaho 7 ouvre la vraie fiche (D25, acquis fiche g1), pas la fiche courte de sa page.
 
-## Écarts
+### Acquis y1b
+`etat-acquis-y1b-brassin-au-doigt` (acquis.json) se rejoue sur p4b2f, son héritier : « Quand ajouter », « Face à ta stout »,
+US-05, Pomona, ébullition, WP, actif, après, au style / absolu ; `attend_choix` retiré. « Tire 20 bières », « Défi 2 sur
+4 », « Preuve », « second houblon » et la dose réglable ne sont pas sur p4b2f : non inventés (décision au pilote).
 
-Aux nombres de a1, aux moments de sa grille (Idaho 7, 4 g/L, US-05, stout 16D) :
-
-| moment | a1 | ici | cause |
-|---|---|---|---|
-| actif · 2 j | floral ~+22, résineux ~+14, agrumes ~+13, tropicaux ~+16 | identiques | même moteur |
-| étapes | 60′ ~+2, WP ~+14, actif ~+22, après ~+23 | identiques | |
-| 60′ / 10′ / WP | 162 / 97 / 75 IBU | 161 / 97 / 75 | arrondi |
-| 20′ | floral ≈+11, ≈119 IBU | floral ≈+11, 121 IBU | l'IBU est calculée à la minute (`ibuPerGramAt`), a1 l'interpolait entre 30′ et 15′ |
-| Noyau, Baies | ~+8, ~+21 | « ? » hachuré | ma bière avant n'est pas décrite pour elles : l'écart est inconnu, pas 0 (a1 le prenait pour 0) ; la barre montre le niveau après |
-| Pomona en aperçu | ~+13 agrumes | ~+13 agrumes | |
-
-- L'arôme reste « ≈ » interpolé entre deux crans calculés (60′, 10′, whirlpool) : le moteur ne le simule pas à 35′.
-  L'IBU, elle, est calculée partout ; à cru, elle reste « ? » (non modélisée, jamais 0).
-- Pas de contour « ce que la chaleur ou le CO₂ emporte » sur les barres : `BarreStyle` du socle est employée telle
-  quelle ; les rubans montrent déjà la perte à chaud.
-- Pas de courbe d'activité de la levure sur le dock : c'était un tracé illustratif, sans donnée.
-- Le pont s'appelle « Puis la levure » (carte), suivi de l'aperçu de Pomona.
-- La vraie valeur est toujours celle du houblon en brouillon, au moment qu'elle documente (L14, relevé par Comparer le 23.10 : le linalol d'Idaho 7 s'affichait avec Nelson Sauvin) : mesures en bière du moteur (`verifications()`), puis les comparatifs E01 à E10, ligne de la variété. Idaho 7 actif : linalol 38 µg/L (McCabe 2023, E03) ; Nelson Sauvin : linalol 70 µg/L (Feng 2015, E06) ; Galaxy : « ? pas de mesure ». `jeu.mjs` joue les trois.
-
-Contrôles écartés, avec leur raison :
-- **controle-moments** : lié aux cas figés du lot 15 (`data-cas`, `donnees/<cas>.json`) ; ici le moteur calcule en
-  direct. Le rail est vérifié par `controle-acquis --outil=dryhopper` (geste, frise) et par `jeu.mjs` (loupe ×3 sous le
-  doigt, aucune graduation au repos, chute de l'IBU et hausse du floral de 60′ au dry hop actif, rien ne bouge
-  au-delà de 2 jours).
-- **controle-rail** : « à adapter » (audit a1) ; même couverture que ci-dessus.
-- **D96** (`controle-cumul-levure`) : hors Dryhopper par décision du 23.10 (un seul facteur libre, le moment) ; il se
-  vérifie sur l'étape Levure (CUMUL OK).
+### Mesures
+- Premier écran, 390 × 844 : 106 mots (sa page : 106), au-dessus du seuil modéré de 98 (D41) : ses mots sont gardés.
+- Loupe : 66 px entre deux cases contre ≈ 15 px entre deux crans du rail (×4,3). Ouverture : 24 crans, 15 ms (390) ;
+  un geste : 1,5 à 2 ms (`parcours-complet`).
 
 ## Pour l'app
-
 - `index.tsx` → `src/ui/hops/HopTiming.tsx` ; route `{ view: 'hopTiming', recipeId, additionId }`.
-- `frise.ts` → `src/ui/hops/hopTiming.ts`. Le calcul de la frise (28 crans, 40 ms à froid) ira dans un Web Worker ;
-  le cran courant reste sur le fil principal (0,9 ms).
-- `fiche-sur-outil.tsx` : à remplacer par un crochet commun `useHopSheet()` (Sheet posée sur la page ouverte) ; il
-  relit ici la clé d'historique de `navigation.tsx`.
-- À brancher : l'α du lot réel (Dexie), le stock réel, la persistance de « Ajouter à ma bière » (Dexie puis
-  Firestore). Le type `Quand` et les minutes libres sont à créer dans `src/types/` (ARCHITECTURE.md).
-- La vraie valeur (E03, McCabe 2023) vient de `comparatifs-dryhop.json` ; dans l'app, une table de mesures sourcées.
-
-## Pied « Annuler » (D120, voie p17, 23.10 ; décision du pilote)
-
-- L'action de Dryhopper est « Puis la levure » : D120 veut « Annuler » à côté. En tête du dock, au-dessus des étapes,
-  « Annuler » (contour) et « Puis la levure · Pomona ~+13 › » (le pont d'a1, même `data-role="pont-levure"`, même
-  `data-acquis="levure"`), 48 px tous deux : le pied commun `commun/PiedAnnuler.tsx`, même forme que Substituer et
-  Levure. Annuler jette le brouillon et ramène à l'étape Houblons (`#/ma-biere`, D118). Joué par `jeu.mjs` (Galaxy
-  posé à 7 j, Annuler, recette inchangée).
-- Pourquoi en tête et pas sous le rail (G9, D35) : le corps d'a1 dépasse de 40 px sous le dock (642 px de contenu pour
-  602 de place). Sa dernière ligne, « mesuré linalol 38 µg/L (McCabe 2023) », coupée par le défilement, reste dans
-  l'écran, derrière le haut du dock. Avec le pied sous le rail, la loupe montait sur elle (« jamais mesuré » sur
-  « ≈+5 »). La frise ne se serre pas. Le pied en tête garde la loupe et les étapes au bas, sous le bas du corps ; pendant
-  le geste, le pied s'efface (`visibility: hidden`, sa place reste, comme les étapes) : le doigt est sur le rail.
-- Le dock : `.pq-dry-pied`, puis `.pq-dry-geste-zone` (repère de la loupe : étapes, loupe, rail). Le pied et ses enfants
-  sont sans transition : la visibilité héritée revient au lâcher, sans un temps de retard (PONTS, 24.10).
-- **Écart** : le pont « Puis la levure » quitte le corps d'a1 (la ligne « mesuré … » garde sa place, seule) pour le
-  pied ; il redevient visible au repos (666–714 px à 390 × 844, juste au-dessus des étapes, là où a1 le posait). Rien d'autre ne change dans le corps. Aucune action
-  « Ajouter à ma bière » sur Dryhopper : elle vit dans Levure.
+- `frise.ts` → `src/ui/hops/hopTiming.ts` ; le calcul de la frise dans un Web Worker, le cran courant sur le fil principal.
+- `fiche-sur-outil.tsx` : un crochet commun `useHopSheet()`.
+- À brancher : l'α du lot réel (Dexie), le stock réel, la persistance (Dexie puis Firestore), une table de mesures sourcées
+  (E03, E10) servie par l'adaptateur. Le type `Quand` et les minutes libres sont à créer dans `src/types/`.

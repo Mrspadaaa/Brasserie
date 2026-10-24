@@ -23,3 +23,8 @@ Scope: la matrice de flb5b sous le radar de g1, ses types hors 16D en tête, san
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours-fiche --ecran=fiche && node work/refonte-frontend/v4/tournoi/outils/controle-commun.mjs prototypes/houblons-v4/maquettes/parcours-fiche fiche --page=etat.html
   EXPECT: COMMUN OK
   EVIDENCE: pending
+
+- [ ] G5: la fiche exhaustive, le pied de flu2b (D132)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-fiche-exhaustive.mjs prototypes/houblons-v4/maquettes/parcours-fiche/fiche/etat.html
+  EXPECT: EXHAUSTIVE OK
+  EVIDENCE: pending

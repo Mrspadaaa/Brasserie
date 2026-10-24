@@ -1,0 +1,693 @@
+{
+ "ecran": "dryhopper",
+ "choix": "p4b2f (passe 5 de p4b2, « L'aire du floral ») : « Partir sur cette version » (24.10, soir, D43) ; registre « choisi p4b2f »",
+ "source": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html, NOTE.md, generer.mjs ; captures passe4/captures/p4b2f-premier-ecran.png, p4b2f-pendant.png, p4b2f-apres.png",
+ "maj": "2026-10-24",
+ "construction": "relevé sur sa page p4b2f (voie r13-dryhopper) ; la maquette d'avant la reprise montrait a1 (provisoire)",
+ "note": "p4b2f est une page statique sur la grille du lot 20 (Idaho 7, 4 g/L, US-05, stout 16D) ; elle s'ouvre sur ★ (actif · 2 j). Jouée à 390 × 844 tactile. Chaque mot d'un « attendu » a été lu sur sa page (controle-etats --choisie --montre) puis retrouvé sur la maquette construite ; un nombre qui diffère entre les deux (IBU à 60′ : 162 sur sa grille, 161 calculé à la minute ; Végétal ~+5 contre « ? ») n'est dans aucun « attendu », et son écart est écrit. Le rail se joue en son milieu (le whirlpool) : un point précis du rail n'est pas au même endroit sur les deux pages.",
+ "etats": [
+  {
+   "id": "etat-dryh-repos",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "ouvrir Dryhopper, au repos (le rail sur ★)",
+   "quoi": "Titre « Quand ajouter Idaho 7 ? », contexte Idaho 7 (α 12,7, 9,5–14,9, mixte, stock) · 4 g/L · US-05 · Stout 16D ; « Face à ta stout ✿ ~+22 » et, à droite, « ★ actif · 2 j » sur fond vert pâle (le moment tenu est le meilleur) ; aucune ligne « contre ★ ». 96 mots au premier écran.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-repos-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": ".p4b2f-rep",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [
+     "contre ★"
+    ],
+    "selecteur_choisie": ".p4b2f-rep",
+    "geste": "repos",
+    "attendu": [
+     "Quand ajouter Idaho 7 ?",
+     "Idaho 7",
+     "12,7",
+     "9,5–14,9",
+     "mixte",
+     "4 g/L",
+     "US-05",
+     "Stout 16D",
+     "Face à ta stout",
+     "~+22",
+     "★",
+     "actif · 2 j"
+    ],
+    "max_mots": 96
+   }
+  },
+  {
+   "id": "etat-dryh-etoile",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "★ du meilleur moment, au repos",
+   "quoi": "Pastille « ★ actif · 2 j » (texte vert, fond vert pâle quand le moment tenu est ★) ; ★ vert au-dessus du graphique, à l'aplomb de l'actif 2 j.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-etoile-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "#p4b2f-star",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "#p4b2f-star",
+    "geste": "repos",
+    "attendu": [
+     "★",
+     "actif · 2 j"
+    ],
+    "couleurs_min": 1
+   }
+  },
+  {
+   "id": "etat-dryh-bandeau",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "le bandeau des quatre chiffres du moment, au repos",
+   "quoi": "Quatre cases au-dessus du graphique, 16 px : ✿ ~+22 (floral, violet) · baies ~+21 · résineux ~+14 (orangé : hors du style) · « IBU 60+? » (à cru, non modélisée).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-bandeau-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "#p4b2f-call",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "#p4b2f-call",
+    "geste": "repos",
+    "attendu": [
+     "~+22",
+     "~+21",
+     "~+14",
+     "IBU",
+     "60+?"
+    ],
+    "couleurs_min": 2
+   }
+  },
+  {
+   "id": "etat-dryh-courbes",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "les trois courbes de gain et l'aire du floral, au repos",
+   "quoi": "Floral en aire violette pleine (trait 4 px), baies et résineux en traits de 2,5 px, nommés au bout de leur ligne ; repères +10 / +20 ; points pleins aux moments calculés (60′, 10′, whirlpool, dry hop), pointillés entre eux ; zones grises derrière le whirlpool et l'après ; le trait du doigt et ses anneaux à l'actif 2 j ; ★ au-dessus.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-courbes-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "#p4b2f-svg",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "#p4b2f-svg",
+    "geste": "repos",
+    "attendu": [
+     "floral",
+     "baies",
+     "résineux",
+     "+10",
+     "+20",
+     "★"
+    ],
+    "couleurs_min": 3
+   }
+  },
+  {
+   "id": "etat-dryh-bosse-levure",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "la bosse de levure sous l'axe, au repos",
+   "quoi": "Sous l'axe, dans l'actif, une bosse hachurée bleue (contour pointillé) : « levure active / possible, non chiffrée », puis « levure finie » à droite.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-bosse-levure-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": ".p4b2f-lev",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": ".p4b2f-lev",
+    "geste": "repos",
+    "attendu": [
+     "levure active",
+     "possible, non chiffrée",
+     "levure finie"
+    ],
+    "couleurs_min": 1
+   }
+  },
+  {
+   "id": "etat-dryh-amertume",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "l'amertume en une bande de cases, au repos",
+   "quoi": "Sous le graphique, « IBU » et une case par moment : orangée au-delà de 70 IBU (ébullition, whirlpool), grise dans le style (0′), hachurée à cru (dry hop).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-amertume-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": ".p4b2f-ibu",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": ".p4b2f-ibu",
+    "geste": "repos",
+    "attendu": [
+     "IBU"
+    ],
+    "couleurs_min": 1
+   }
+  },
+  {
+   "id": "etat-dryh-mesures-axe",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "les moments mesurés sur l'axe, au repos",
+   "quoi": "● sur l'axe à l'actif 2 j « 38 µg/L » (linalol, McCabe 2023) et à l'après 2 j « 1 h ≈ 96 h » (Titus 2021).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-mesures-axe-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "#p4b2f-svg",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "#p4b2f-svg",
+    "geste": "repos",
+    "attendu": [
+     "38 µg/L",
+     "1 h ≈ 96 h"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-rail",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "le rail sous l'axe, au repos",
+   "quoi": "Rail en quatre zones (ébullition 0–44 %, whirlpool, actif, après), points des moments calculés, pouce noir sur l'actif 2 j et sa pastille « ● 2 j » (point rouge d'Idaho 7) dessous ; aucune graduation, aucune loupe.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-rail-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": ".p4r",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [
+     "sans gain"
+    ],
+    "selecteur_choisie": ".p4r",
+    "geste": "repos",
+    "attendu": [
+     "2 j"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-loupe",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "le doigt posé au milieu du rail (tenu) : la loupe",
+   "quoi": "Doigt tenu au whirlpool : la pastille du pouce s'efface, la loupe s'ouvre sous le rail (cinq cases à pas fixe : 5′ ≈+14, 0′ ≈+14, WP ~+14 en noir, 1 j ~+22, 2 j ~+22, une barre de floral dans chacune) ; les crans du seul whirlpool sur le rail ; le trait du doigt sur le WP ; bandeau ~+14 · ~+14 · ~+8 · IBU ~75 orangé ; « contre ★ : floral ~−9 · résineux ~−6 · trop amer ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-loupe-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": ".p4r",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": ".p4r",
+    "geste": "appui-long",
+    "appui_ms": 700,
+    "tenu": true,
+    "attendu": [
+     "5′",
+     "0′",
+     "WP",
+     "1 j",
+     "2 j",
+     "≈+14",
+     "~+14",
+     "~+22",
+     "~+8",
+     "~75",
+     "contre ★ : floral ~−9 · résineux ~−6",
+     "trop amer"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-etape-ebullition",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "toucher « ébullition »",
+   "quoi": "Saut à 60′ : pastille « 60′ », bandeau ~+2 · ~+2 · ~+2 · IBU orangé ; « contre ★ : floral ~−20 · résineux ~−12 · trop amer » ; « jamais mesuré à ce moment » ; Levure « rien ne change ici ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-etape-ebullition-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "[data-etape=\"0\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "IBU à 60′ : « ~162 » sur sa page (grille du lot 20 : 60 + 102, arrondis à part), « ~161 » calculé à la minute par le moteur ; hors de l'attendu.",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "[data-etape=\"0\"]",
+    "geste": "toucher",
+    "attendu": [
+     "60′",
+     "~+2",
+     "contre ★ : floral ~−20 · résineux ~−12",
+     "trop amer",
+     "jamais mesuré à ce moment",
+     "rien ne change ici"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-etape-wp",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "toucher « WP »",
+   "quoi": "Saut au whirlpool : pastille « WP », bandeau ~+14 · ~+14 · ~+8 · IBU ~75 orangé ; « contre ★ : floral ~−9 · résineux ~−6 · trop amer ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-etape-wp-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "[data-etape=\"1\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "[data-etape=\"1\"]",
+    "geste": "toucher",
+    "attendu": [
+     "WP",
+     "~+14",
+     "~+8",
+     "~75",
+     "contre ★ : floral ~−9 · résineux ~−6",
+     "trop amer",
+     "jamais mesuré à ce moment"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-etape-apres",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "toucher « après »",
+   "quoi": "Saut à l'après fermentation, 2 j : bandeau ~+23 · ~+23 · ~+20 · IBU 60+? ; « contre ★ : floral ~+1 · résineux ~+6 » ; « mesuré 1 h ≈ 96 h au nez (Titus 2021) » ; Levure « rien ne change ici ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-etape-apres-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "[data-etape=\"3\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "[data-etape=\"3\"]",
+    "geste": "toucher",
+    "attendu": [
+     "~+23",
+     "~+20",
+     "60+?",
+     "contre ★ : floral ~+1 · résineux ~+6",
+     "mesuré",
+     "1 h ≈ 96 h",
+     "au nez",
+     "Titus 2021",
+     "rien ne change ici"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-jour-1",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "toucher « 1 j »",
+   "quoi": "Actif 1 j : pastille « 1 j », bandeau ~+22 · ~+20 · ~+13 ; « contre ★ : floral ~+0 · résineux ~+0 » ; la mesure de l'actif reste.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-jour-1-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "[data-jour=\"1\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "[data-jour=\"1\"]",
+    "geste": "toucher",
+    "attendu": [
+     "1 j",
+     "~+22",
+     "~+20",
+     "~+13",
+     "contre ★ : floral ~+0 · résineux ~+0",
+     "38 µg/L"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-jour-7",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "toucher « 7 j »",
+   "quoi": "Actif 7 j : pastille « 7 j », bandeau ~+22 · ~+21 · ~+14 (rien ne bouge au-delà de 2 j : 3 j et 7 j en pointillé, « sans gain ») ; « contre ★ : floral ~+0 · résineux ~+0 » ; Levure « Pomona ~+13 agrumes ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-jour-7-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "[data-jour=\"7\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "[data-jour=\"7\"]",
+    "geste": "toucher",
+    "attendu": [
+     "7 j",
+     "~+22",
+     "~+21",
+     "~+14",
+     "contre ★ : floral ~+0 · résineux ~+0",
+     "Pomona ~+13 agrumes"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-barres",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "les 12 barres l5b, au repos",
+   "quoi": "Les 12 familles, les trois attendues en gras (Floral, Herbacé, Terreux), puis la roue ; zone du style en gris, aplat à la couleur de la famille, rond = ma bière avant ; Floral ~+22, Herbacé ~+6, Terreux ~+8, Agrumes ~+13, Tropicaux ~+16, Résineux ~+14 (orangé, hors du style), Épicé ~+2 ; Pépins et Melon hachurés « ? ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-barres-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "#p4b2f-bars",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "Végétal : « ~+5 » sur sa page (grille du lot 20) ; « ? » sur la maquette : aucune source d'Idaho 7 ne décrit Végétal dans le moteur (sa propre fiche le dit : « Pépins, Melon, Épicé, Végétal non décrits ») ; une famille n'est placée que si une source la décrit (D65, D14, REPRISE § 8). Hors de l'attendu.",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "#p4b2f-bars",
+    "geste": "repos",
+    "attendu": [
+     "Floral",
+     "Herbacé",
+     "Terreux",
+     "Agrumes",
+     "Tropicaux",
+     "Noyau",
+     "Pépins",
+     "Baies",
+     "Melon",
+     "Résineux",
+     "Épicé",
+     "Végétal",
+     "~+22",
+     "~+6",
+     "~+8",
+     "~+13",
+     "~+16",
+     "~+14",
+     "~+2"
+    ],
+    "couleurs_min": 6
+   }
+  },
+  {
+   "id": "etat-dryh-avant-inconnu",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "« ? → ~+21 » : ma bière avant non décrite, au repos",
+   "quoi": "Noyau « ?→~+8 » et Baies « ?→~+21 » : bande hachurée au début de la piste, sans rond d'avant (la stout n'en a aucune source) ; ce qu'Idaho 7 y met, en chiffre.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-avant-inconnu-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "#p4b2f-bars",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "#p4b2f-bars",
+    "geste": "repos",
+    "attendu": [
+     "?→~+8",
+     "?→~+21"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-absolu",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "toucher « Absolu »",
+   "quoi": "Les barres passent à l'échelle absolue (0–110) : la zone du style va de 0 au haut de la bande ; Résineux, très au-dessus, ne remplit plus la piste.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-absolu-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "[data-e=\"absolu\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "[data-e=\"absolu\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Au style",
+     "Absolu",
+     "Résineux",
+     "~+14"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-legende",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "toucher « ? »",
+   "quoi": "La légende s'ouvre sous « ? » : courbes, cases d'amertume, levure sous l'axe, le geste et la loupe, les barres et ★.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-legende-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "[data-role=\"legende-bouton\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "Deuxième phrase de sa page : « Colonnes grises : l'amertume, orangée au-delà de 70 IBU ; hachurée à cru (non modélisé). Bande 50–70 : ton style. » décrit les colonnes et la bande de p4b2, que p4b2f ne dessine plus (sa NOTE : « La zone 50–70 IBU du style n'est plus dessinée ») ; réécrite sur ce que p4b2f montre (cases, orangé au-delà du style).",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "[data-role=\"legende-bouton\"]",
+    "geste": "toucher",
+    "attendu": [
+     "ce qu'Idaho 7 ajoute à ta stout en floral, baies et résineux",
+     "interpolé entre 60′, 10′ et whirlpool",
+     "hachurée à cru",
+     "la levure travaille",
+     "la loupe chiffre les moments voisins",
+     "un moment mesuré",
+     "★ : le meilleur pour ta demande du 18.10"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-mesure",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "la vraie valeur sourcée, au repos",
+   "quoi": "Au bas de l'écran, à gauche du pont : ✿ « mesuré linalol 38 µg/L (McCabe 2023) », la mesure d'Idaho 7 en dry hop actif (E03).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-mesure-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "#p4b2f-mes",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "#p4b2f-mes",
+    "geste": "repos",
+    "attendu": [
+     "mesuré",
+     "linalol",
+     "38 µg/L",
+     "McCabe 2023"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-pont-levure",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "le pont Levure, au repos",
+   "quoi": "Au bas de l'écran, à droite : « Levure Pomona ~+13 agrumes › » (ce que Pomona changerait au moment tenu).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-pont-levure-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": ".p4b2f-lev a",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": ".p4b2f-lev a",
+    "geste": "repos",
+    "attendu": [
+     "Levure",
+     "Pomona ~+13 agrumes"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-pont-levure-toucher",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "toucher « Levure › »",
+   "quoi": "Ouvre l'outil Levure (sur sa page : la page de la carte, fils22-carte/levure-outil).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-pont-levure-toucher-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": ".p4b2f-lev a",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "Sur sa page, le lien du pont est cassé (chemin du socle de la passe 3, « ../../../../fils22-carte/levure-outil/etat.html », pris depuis la passe 4 : Chrome ouvre une page d'erreur) ; son intention, ouvrir l'outil Levure, est rendue (#/levure/<ajout>). Le témoin ne lit donc que le changement de page.",
+   "voulu": "",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": ".p4b2f-lev a",
+    "geste": "toucher",
+    "attendu": []
+   }
+  },
+  {
+   "id": "etat-dryh-fiche",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "appui long sur Idaho 7",
+   "quoi": "Sa page ouvre une fiche courte d'Idaho 7 (mots par famille, radar, certificat du lot).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-fiche-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": "[data-houblon=\"Idaho 7\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "D25 ; acquis fiche g1 (etat-acquis-fiche-g1) : l'appui long ouvre la vraie fiche de l'app (voie p1), posée sur l'outil",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": "[data-houblon=\"Idaho 7\"]",
+    "geste": "appui-long",
+    "attendu": [
+     "Idaho 7"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-croix",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "la tête de l'outil",
+   "quoi": "Sa page : « ‹ » rond de 28 px, titre de 17 px.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-croix-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": ".s-retour",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "D109 (la croix ronde de 44 px des outils) ; D129 (titre d'outil à 18 px, le même sur Substituer, Levure et Dryhopper)",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": ".s-retour",
+    "geste": "repos",
+    "attendu": [
+     "Quand ajouter Idaho 7 ?"
+    ]
+   }
+  },
+  {
+   "id": "etat-dryh-annuler",
+   "mots": "« Partir sur cette version » (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "etat": "le pied « Annuler · Levure › »",
+   "quoi": "Sa page n'a pas d'Annuler ; le pont Levure est un lien blanc à contour, au bas de la page, à droite de la vraie valeur.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-dryh-annuler-choisie.png",
+   "jeu": {
+    "selecteur_geste_choisie": ".p4b2f-lev a",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "ecart": "",
+   "voulu": "D120 (« Annuler » à gauche de l'action, 48 px) ; D129 (le pied en bas de l'écran, l'action en aplat noir, comme Substituer et Levure)",
+   "verif": {
+    "route": "dryhopper",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "interdit": [],
+    "selecteur_choisie": ".p4b2f-lev a",
+    "geste": "repos",
+    "attendu": [
+     "Levure"
+    ]
+   }
+  }
+ ]
+}

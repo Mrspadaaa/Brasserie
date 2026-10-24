@@ -45,9 +45,10 @@ function lerpFamille(a: FamilleLue, b: FamilleLue, t: number): FamilleLue {
   return { ...a, valeur: v, crans: null, horsStyle: a.bande && v.centre > a.bande[1] ? 'au-dessus' : null };
 }
 
-/** Tous les crans de la frise pour un ajout posé sur `base` (la recette sans cet ajout). */
-export function calculerFrise(base: RecetteParcours, ajout: AjoutParcours): Point[] {
-  const crans = cransFrise(base);
+/** Tous les crans de la frise pour un ajout posé sur `base` (la recette sans cet ajout). `jours` : les jours de contact
+ * posés sur le rail (p4b2f : 1, 2, 3, 5, 7) ; sans eux, tous de 1 à 7. */
+export function calculerFrise(base: RecetteParcours, ajout: AjoutParcours, jours?: number[]): Point[] {
+  const crans = cransFrise(base).filter((q) => !jours || q.type !== 'dryhop' || jours.includes(q.jours));
   const lus = crans.map((q) => simulerMoment(base, ajout, q));
   const simules = lus.map((l, k) => (l.simule ? k : -1)).filter((k) => k >= 0);
   return crans.map((q, k) => {

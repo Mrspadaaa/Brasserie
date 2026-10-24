@@ -525,10 +525,26 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   Sur sa q2b, dans la rangée du levier levure : « Celle ci aussi est toujours meilleures. Mais aussi ajouter les spec en plus
   type comme matrice nettoyée flb5b · de flb5 » (le groupe « Changer de levure » de q2b revient tel quel, son choix l'emporte
   sur D35 ; les houblons et les levures de Suggérer disent ce qui leur est propre). D44.
+- **La fiche exhaustive, le pied de flu2b** (24.10, soir, sur flb5b), mot pour mot : « La matrice nettoyée flb5b · de flb5 est
+  très bien mais le footer doit être aussi avec tout ces informations comme 4 · Les cartes de famille · flu2b. Attention car la
+  carte du houblons doit bien contenir de façon exhaustive TOUTES ses informations. » La fiche porte tout ce que le dépôt sait du
+  houblon, au premier plan ou à un toucher ; le pied de flu2b, entier. D132. Puis, sur une capture de flu2b (Nugget) où il
+  entoure ♡ ⊘ « Comparer » et « Styles › Huiles › Sources › Substituts › », mot pour mot : « Le footer est top ».
 - **Des icônes pour les types hors 16D** (24.10, soir, après avoir vérifié qu'ils étaient ajoutés), mot pour mot : « le profil
   extra 16d sont bien ajouter ? Peut être mettre dans la baseline aussi des icône en plus, pour avoir une version courte juste
   icône, et une version plus textuel ». Les mots hors familles les plus fréquents reçoivent un picto au trait (baseline) ; deux
-  lectures : courte (les icônes seules) et textuelle (icône et mot). D131.
+  lectures : courte (les icônes seules) et textuelle (icône et mot). D131. Puis, sur le relevé confié à un exécutant, mot pour
+  mot : « même niche ou un Picto pour les truc super niche pour montrer que il y a qqch en plus.. Il faudra pas oublier d'ajouter
+  la légende à certains endroits clé ». Les mots rares ont aussi leur picto, ou un picto commun « en plus » dit qu'il y a quelque
+  chose de plus ; une légende des pictos aux endroits clés (Comparer, la fiche). D131 bis. Puis, mot pour mot : « Ah oui aussi
+  si par exemple dans le 16d qui est assez vague, par exemple un houblon floral est super floral type rose ou Jasmine, agrume type
+  mangue, épice hyper typé qqch... Ectt le mettre en valeur ». Le mot précis d'une famille (rose, jasmin, pamplemousse, litchi…),
+  tiré de ses fiches, est mis en valeur à côté de sa famille. D131 ter. Puis : « Il faut pas que ça gêne ! Que ce soit bien
+  intégré. Regarde avec des agents de critique pour ça ». Pictos, « en plus », légende et mot précis s'intègrent à la carte sans
+  l'alourdir ; le critique le juge sur les captures, avant de lui montrer. Puis : « C'est peut être aussi un moyen de
+  différencier un houblon hyper aromatique type Galaxy d'un houblons plus "fade" type saaz ». Les fiches le portent : Galaxy a
+  des mots précis (fruit de la passion, ananas, pêche) et 1,8–5 mL/100 g d'huile ; Saaz redit ses familles (floral, herbacé,
+  terreux) avec 0,3–1 mL/100 g. Le mot précis mis en valeur doit faire lire cet écart.
 - **L'entrée de l'analyse : B** (24.10, soir, sur B, la barre pleine « Ouvrir l'analyse de ma bière › », dans la planche),
   mot pour mot : « La meilleure ». D121 tranché : B dans l'étape, à la place de A.
 - **Les mots au premier écran** (24.10, soir, sur Substituer au-dessus de 70 mots), mot pour mot : « dépasse les 70 mots au

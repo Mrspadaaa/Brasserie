@@ -1,4 +1,4 @@
-// Gestes et attentes de Dryhopper (a1, y1b affiné), rejoués par outils/jouer-parcours.mjs --etape=dryhopper sur
+// Gestes et attentes de Dryhopper (p4b2f, son choix du 24.10 au soir ; reprise r13), rejoués par outils/jouer-parcours.mjs --etape=dryhopper sur
 // Le dock (rail, jours) vit dans le pied de PageShell, hors de [data-ecran] : la page de l’outil se vise par .pq-outil-<écran>.
 // dryhopper/etat.html. Format : ARCHITECTURE.md, « Contrat d'un écran ». verifier(p) et mesurer(p) se jouent DANS la
 // page, avec p = window.__parcours ; ils rendent true ou un message. Sérialisés : aucune variable du module dedans.
@@ -10,7 +10,8 @@ export default {
       const ec = document.querySelector('.pq-outil-dryhopper');
       const r = ec.querySelector('[role="slider"]');
       if (ec.querySelectorAll('[data-cran]').length) return 'des graduations au repos (D47)';
-      if (r.getAttribute('aria-valuetext') !== 'actif · 3 j') return 'moment de départ : ' + r.getAttribute('aria-valuetext');
+      // p4b2f s'ouvre sur ★ : un ajout neuf est posé au meilleur moment (actif · 2 j), dans le brouillon seulement.
+      if (r.getAttribute('aria-valuetext') !== 'actif · 2 j') return 'moment de départ : ' + r.getAttribute('aria-valuetext');
       const m = ec.querySelector('[data-acquis="valeurs"] [data-nature="mesure"]');
       if (!m || !m.textContent.includes('38 µg/L') || !/Idaho/.test(m.dataset.source)) return 'vraie valeur d’Idaho 7 absente : ' + (m ? m.textContent + ' / ' + m.dataset.source : 'aucune');
       window.__pqDry = {};
@@ -22,7 +23,7 @@ export default {
       if (document.querySelector('[data-ecran="fiche"]')) return 'fiche encore ouverte';
       if (!document.querySelector('.pq-outil-dryhopper')) return 'Dryhopper perdu';
       const a = p.etat.brouillon && p.etat.brouillon.recette.additions.find((x) => x.id === p.etat.brouillon.ajoutId);
-      return (a && a.moment === 'dryActive' && a.jours === 3) || 'moment perdu après la fiche';
+      return (a && a.moment === 'dryActive' && a.jours === 2) || 'moment perdu après la fiche';
     } },
     { nom: 'loupe sous le doigt', faire: 'maintenir', cible: '.pq-outil-dryhopper [data-role="frise"]', de: 0.62, a: 0.3, pas: 10,
       // L12 et D47 : doigt posé, l'écart entre deux crans voisins sous le doigt vaut au moins trois fois l'écart au loin.
@@ -36,7 +37,9 @@ export default {
         if (a < 0) return 'le cran tenu (' + i + ') n’est pas parmi les graduations';
         const g = (n) => Math.abs(xs[n + 1].x - xs[n].x);
         const pres = Math.min(a > 0 ? g(a - 1) : Infinity, a < xs.length - 1 ? g(a) : Infinity);
-        const loin = a < xs.length / 2 ? g(xs.length - 2) : g(0);
+        // p4b2f : les crans chiffrés sont dans la loupe sous le rail ; « au loin », c'est le pas du rail au repos.
+        const rr = ec.querySelector('[role="slider"]').getBoundingClientRect();
+        const loin = rr.width / Number(ec.querySelector('[role="slider"]').getAttribute('aria-valuemax'));
         const ratio = pres / loin;
         window.__pqDry.loupe = { i, pres, loin, ratio };
         return ratio >= 3 || ('loupe ×' + ratio.toFixed(2) + ' (sous le doigt ' + pres.toFixed(1) + ' px, au loin ' + loin.toFixed(1) + ' px)');
@@ -70,17 +73,17 @@ export default {
     { nom: '2 jours de contact', faire: 'toucher', cible: '.pq-outil-dryhopper [data-jour="2"]', verifier: () => {
       const ec = document.querySelector('.pq-outil-dryhopper');
       if (ec.querySelector('[role="slider"]').getAttribute('aria-valuetext') !== 'actif · 2 j') return 'pas à actif · 2 j';
-      window.__pqDry.j2 = [...ec.querySelectorAll('[data-role="simulation"] [data-nature="simule"], [data-role="ibu-dry"]')].map((e) => e.textContent).join('|');
+      window.__pqDry.j2 = [...ec.querySelectorAll('[data-role="bandeau"] > span, [data-ligne] [data-nature="simule"]')].map((e) => e.textContent).join('|');
       return true;
     } },
     { nom: 'au-delà de 2 jours, rien ne bouge', faire: 'toucher', cible: '.pq-outil-dryhopper [data-jour="7"]', verifier: (p) => {
       const ec = document.querySelector('.pq-outil-dryhopper');
       const a = p.etat.brouillon.recette.additions.find((x) => x.id === p.etat.brouillon.ajoutId);
       if (a.jours !== 7) return 'jours ' + a.jours + ' (7 attendus)';
-      const j7 = [...ec.querySelectorAll('[data-role="simulation"] [data-nature="simule"], [data-role="ibu-dry"]')].map((e) => e.textContent).join('|');
+      const j7 = [...ec.querySelectorAll('[data-role="bandeau"] > span, [data-ligne] [data-nature="simule"]')].map((e) => e.textContent).join('|');
       return j7 === window.__pqDry.j2 || ('7 j ≠ 2 j : ' + window.__pqDry.j2 + ' / ' + j7);
     } },
-    { nom: 'Puis la levure', faire: 'toucher', cible: '[data-role="pont-levure"]', attendre: '[data-ecran="levure"]', verifier: (p) => {
+    { nom: 'Levure ›', faire: 'toucher', cible: '[data-role="pont-levure"]', attendre: '[data-ecran="levure"]', verifier: (p) => {
       const b = p.etat.brouillon;
       const a = b && b.recette.additions.find((x) => x.id === b.ajoutId);
       return (a && a.moment === 'dryActive' && a.jours === 7) || 'le moment retenu ne suit pas vers Levure';
@@ -97,9 +100,9 @@ export default {
     { nom: 'Galaxy : « ? », jamais une autre valeur', faire: 'attendre', attendre: '.pq-outil-dryhopper [data-role="ouvrir-fiche"][data-houblon="beermaverick-galaxy"]', verifier: () => {
       const ec = document.querySelector('.pq-outil-dryhopper');
       if (ec.querySelector('[data-acquis="valeurs"] [data-nature="mesure"]')) return 'Galaxy affiche une mesure : ' + ec.querySelector('[data-acquis="valeurs"] [data-nature="mesure"]').textContent;
-      return !!ec.querySelector('[data-role="mesure-absente"] [data-inconnu]') || 'Galaxy : pas de « ? » à la place de la mesure';
+      return /jamais mesuré/.test(ec.querySelector('[data-role="mesure-absente"]')?.textContent ?? '') || 'Galaxy : pas de « jamais mesuré » à la place de la mesure';
     } },
-    // D120 : « Annuler », à côté de « Ajouter à ma bière », jette le brouillon (Galaxy à 7 j) sans toucher la recette.
+    // D120 : « Annuler », à côté de « Levure › », jette le brouillon (Galaxy à 7 j) sans toucher la recette.
     { nom: 'Galaxy à 7 j, puis Annuler', faire: 'toucher', cible: '.pq-outil-dryhopper [data-jour="7"]', verifier: (p) => {
       window.__pqDryAvant = JSON.stringify(p.etat.recette);
       const b = p.etat.brouillon, a = b && b.recette.additions.find((x) => x.id === b.ajoutId);

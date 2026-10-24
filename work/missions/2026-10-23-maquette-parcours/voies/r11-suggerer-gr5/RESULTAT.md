@@ -29,7 +29,7 @@ Critères (rejoués après la dernière construction) :
   - `standard` S4 : l'icône levure de q2b avait des traits de 1,6 et 1,8 px ; ramenés à 1,2 px, comme le dry hop.
   - Règle 2 de D110 : la ligne hors 16D était sous les pictos ; elle passe sous le nom.
   - Règle 3 de D110 : la bulle était à 121 px du picto ; son placement s'adapte.
-- `controle-choix` → `CHOIX ECHEC`, mais Suggérer est conforme (« 1 écran conforme »). Les écarts restants viennent d'**autres écrans** : etape-houblons et dryhopper, dont « ses mots ne se retrouvent pas dans SPEC-BRASSEUR » ; ce sont les registres du pilote. `controle-teinte` → `TEINTE ECHEC (6/7)`, sur **dryhopper** (teinte 16, choisie 8), hors de ma voie.
+- `controle-choix … --ecran=suggerer` → `CHOIX OK (1 écran(s) conforme(s) à son choix ; 0 ouvert(s))`. Rejoué après la remarque du pilote : son ECHEC « lui seul » sous les pictos venait d'une construction antérieure au déplacement de la ligne sous le nom. La ligne hors 16D est sur la ligne du nom, hors de la rangée des pictos : TRAITS OK, HORS-16D OK (11). `controle-teinte` → `TEINTE ECHEC (6/7)` sur **dryhopper** (teinte 16, choisie 8), hors de ma voie.
 
 Captures (ouvertes) : `prototypes/houblons-v4/maquettes/parcours-suggerer/captures-r11/etat-sugg-repos-construite.png`, `…/etat-sugg-gr5-cran-construite.png` et `…/etat-sugg-levure-construite.png`. La dernière se regarde à côté de `work/refonte-frontend/v4/choix/etats/captures/etat-sugg-levure-choisie.png` : même groupe, mêmes pictos et mêmes barres ; la ligne « elle : … » est en plus.
 

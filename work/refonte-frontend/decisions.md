@@ -568,3 +568,12 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   levure de D35) ; houblons et levures de Suggérer disent ce qui leur est propre (D130) ; r11.
 - D45 (le brasseur, 24.10 soir, sur B : « La meilleure ») : D121 tranché, B (« Ouvrir l'analyse de ma bière › ») par défaut dans
   l'étape ; A et C derrière ?d121=a|c ; ETATS OK 15/15 étape, PROFIL OK.
+- D46 (pilote, réversible ; règle n° 1, D41) : r13 G5, les mots de Dryhopper se comptent contre sa p4b2f (106 mots), non contre
+  le seuil commun de 98 ; `controle-commun --sans=mots` (forme REPRISE-D124) puis `mots-premier-ecran --max=106`.
+- D47 (le brasseur, 24.10 soir, sur flb5b : « le footer doit être aussi avec tout ces informations comme 4 · Les cartes de
+  famille · flu2b » ; « Le footer est top » sur le pied de flu2b ; « C'est pas exhaustif sur les infos du houblons ») : D132,
+  la fiche reprend le pied de flu2b et porte toute l'information du pack ; `controle-fiche-exhaustive.mjs` (témoin : flb5b
+  EXHAUSTIVE ECHEC, P1 et 8 catégories) ; r14.
+- D48 (le brasseur, 24.10 soir : D131 bis, ter, quater et Galaxy/Saaz) : le lot de pictos D131 ajoute le picto « en plus »,
+  la légende aux endroits clés, le mot précis dans sa famille (Galaxy face à Saaz) et la règle « Il faut pas que ça gêne ! » ;
+  deux séries de quatre jeux (d131-pha Opus, d131-phz Fable), d131-critique juge d'abord l'intégration.

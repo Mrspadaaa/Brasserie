@@ -43,6 +43,22 @@ function phases(e: Etude): Seg[] {
 /** Ordre de préférence : le floral d'abord (sa demande : « plus florale »), puis les autres familles. */
 const rang = (f: FamilyId | null) => (f === 'floral' ? 0 : f ? 1 : 2);
 
+/** p4b2f, après fermentation : la durée de contact mesurée au nez (E10, Titus 2021 : « 1 h ≈ 96 h », non distinguables
+ * par le panel en bière jeune). L'étude porte sur Cascade, pas sur le houblon en brouillon (L14) : la variété est rendue
+ * avec la mesure, jamais tue. Lue dans comparatifs-dryhop.json ; null si l'étude n'y est pas. */
+export interface Duree { texte: string; source: string; variete: string; cle: string }
+export function dureeDeContact(): Duree | null {
+  const e = (comparatifs as unknown as { etudes: (Etude & { varietes?: string[]; conditions: { jours?: unknown } })[] }).etudes.find((x) => x.id === 'E10');
+  if (!e) return null;
+  const m = /\((\d+\s*h)\s*à\s*(\d+\s*h)\)/.exec(String(e.conditions.jours ?? ''));
+  const indistinct = e.mesures.some((x) => /non distinguable/.test(String(x.valeur)));
+  if (!m || !indistinct) return null;
+  const auteur = e.ref.split(/[\s,]/)[0];
+  const annee = (e.ref.match(/(19|20)\d{2}/) ?? [''])[0];
+  const variete = e.varietes?.[0] ?? '?';
+  return { texte: `${m[1]} ≈ ${m[2]}`, source: `${auteur} ${annee}`.trim(), variete, cle: `E10 ${auteur} ${annee} · ${variete}` };
+}
+
 export function mesureDe(nomHoublon: string, seg: Seg): Mesure | null {
   if (seg < 2) return null;
   const n = norm(nomHoublon);
