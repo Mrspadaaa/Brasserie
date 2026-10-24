@@ -149,6 +149,13 @@ Mission de l'autre session `work/missions/2026-10-23-maquette-parcours/` (React 
 - 24.10, matin : D122 (« ????? » sur « ~ simulé » de Comparer ; fil 552eb2dd de la maquette 24.10, ouvert), 9a8744a2.
   Confié à « En attente » avec les variantes de la liste de la fiche (D115) ; publication en attente de ses réponses
   D121 et D112, sinon D122 et la page D115 ensemble.
+- 24.10, matin, ses messages directs à « En attente » :
+  - D123 : le rail côté froid avait pris l'échelle et les mots de Dryhopper (choix ouvert) depuis c62ad129. Ma relecture n'a
+    joué que l'ébullition, et j'avais écrit dans le fil 12fdbdc0 que le geste était celui de sa base. Corrigé dans le fil ;
+    L03 complétée (chaque état, gestes compris).
+  - Sa règle, dans CLAUDE.md (8576066f) : un choix se montre en mini maquettes dans un artefact neuf. D121 :
+    https://claude.ai/artifact/6V21JEc5CqsjpLWrp184be, donné dans le fil a0f0b6ef.
+  - Thème : la maquette s'affiche sombre sur un téléphone en mode sombre ; l'enveloppe doit toujours poser « clair » (D106).
 - **Prochaine action** : son choix D121 et sa réponse sur D112 ; les variantes de la liste de la fiche (D115) ; puis les
   tickets #145 et #146, l'architecture (#143) et t1-theme, à relancer sur la nouvelle construction.
 
