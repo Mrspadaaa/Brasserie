@@ -33,7 +33,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { versUrl, existe } from './lib/cible.mjs';
 
 const ici = path.dirname(fileURLToPath(import.meta.url));
 const RACINE = path.resolve(ici, '..', '..', '..', '..', '..');
@@ -51,7 +52,7 @@ const TAILLES = [
   { l: 1280, h: 800, mobile: false, nom: '1280x800' },
 ].filter((t) => !seule || String(t.l) === String(seule));
 const fichier = path.join(dossier, 'suggerer', page);
-if (!fs.existsSync(fichier)) { console.log('TRAITS ECHEC : page absente (' + path.relative(RACINE, fichier) + ')'); process.exit(2); }
+if (!existe(fichier)) { console.log('TRAITS ECHEC : page absente (' + path.relative(RACINE, fichier) + ')'); process.exit(2); }
 if (!TAILLES.length) { console.log('TRAITS ECHEC : --largeur=390 ou 1280'); process.exit(2); }
 
 // La table des noms courts : lue dans l'app, jamais recopiée.
@@ -205,7 +206,7 @@ try {
     const p = await browser.newPage();
     await p.setViewport({ width: t.l, height: t.h, deviceScaleFactor: 1, isMobile: t.mobile, hasTouch: t.mobile });
     const charger = async () => {
-      await p.goto(pathToFileURL(fichier).href, { waitUntil: 'networkidle0', timeout: 30000 }).catch(() => {});
+      await p.goto(versUrl(fichier).href, { waitUntil: 'networkidle0', timeout: 30000 }).catch(() => {});
       await p.waitForSelector('[data-famille][data-crans]', { timeout: 6000 }).catch(() => {});
       await attendre(350);
       await p.addScriptTag({ content: '(' + aide.toString() + ')()' });

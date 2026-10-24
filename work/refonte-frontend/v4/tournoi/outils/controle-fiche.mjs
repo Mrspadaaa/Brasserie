@@ -15,7 +15,7 @@
 // Imprime FICHE OK si tout passe, sinon FICHE ECHEC et la liste.
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { versUrl, existe, liste } from './lib/cible.mjs';
 import puppeteer from 'puppeteer-core';
 
 const args = process.argv.slice(2);
@@ -25,8 +25,8 @@ const pages = ((args.find((a) => a.startsWith('--pages=')) || '').slice(8) || 'i
 // 19.10, soir (b5 du lot 17 : « Un appui long montre une vrai fiche de houblons... ») : un dossier
 // nommé est contrôlé quel que soit son nom (q2b, b5…) ; sans nom, les dossiers pNN, consolide et
 // version-… qui ont la première page. Aucun dossier contrôlé = échec, jamais « OK 0/0 ».
-const ids = (only.length ? only.filter((d) => fs.existsSync(path.join(dir, d)))
-  : fs.readdirSync(dir).filter((d) => /^p\d+$|^consolide$|^version-/.test(d) && fs.existsSync(path.join(dir, d, pages[0])))).sort();
+const ids = (only.length ? only.filter((d) => existe(path.join(dir, d, pages[0])))
+  : liste(dir).filter((d) => /^p\d+$|^consolide$|^version-/.test(d) && existe(path.join(dir, d, pages[0])))).sort();
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const problems = [];
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -49,8 +49,8 @@ const ficheEtat = (page) => page.evaluate(() => {
 for (const id of ids) {
   const p = (m) => problems.push(id + ' : ' + m);
   for (const file of pages) {
-    if (!fs.existsSync(path.join(dir, id, file))) { p('D25 ' + file + ' absente'); continue; }
-    const url = pathToFileURL(path.join(dir, id, file)).href;
+    if (!existe(path.join(dir, id, file))) { p('D25 ' + file + ' absente'); continue; }
+    const url = versUrl(path.join(dir, id, file)).href;
     const page = await browser.newPage();
     await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
     await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });

@@ -37,7 +37,8 @@
 // --montre ajoute, par état, ce que le geste a fait apparaître (pour mesurer un « attendu »).
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { versUrl, existe } from './lib/cible.mjs';
 import puppeteer from 'puppeteer-core';
 
 const ici = path.dirname(fileURLToPath(import.meta.url));
@@ -81,7 +82,7 @@ let voulus = 0;
 const enAttente = [];
 for (const f of fichiers) {
   const chemin = path.join(dossierEtats, `${f}.json`);
-  if (!fs.existsSync(chemin)) {
+  if (!existe(chemin)) {
     if (A_VENIR.has(f) && !seulEcran) continue;
     console.log(`ETATS ECHEC : ${path.relative(RACINE, chemin)} absent`); process.exit(1);
   }
@@ -257,12 +258,12 @@ const jouerEtat = async (fichier, e) => {
   if (choisie) {
     if (!v.page_choisie || !v.selecteur_choisie) return { ko: ['verif incomplète (page_choisie, selecteur_choisie)'] };
     const f = path.resolve(RACINE, v.page_choisie);
-    if (!fs.existsSync(f)) return { ko: [`page choisie absente (${v.page_choisie})`] };
-    adresse = pathToFileURL(f).href;
+    if (!existe(f)) return { ko: [`page choisie absente (${v.page_choisie})`] };
+    adresse = versUrl(f).href;
   } else {
     const f = path.join(dossier, v.route, v.page_construite ?? 'etat.html');
-    if (!fs.existsSync(f)) return { ko: [`page absente (${path.relative(RACINE, f)})`] };
-    adresse = pathToFileURL(f).href;
+    if (!existe(f)) return { ko: [`page absente (${path.relative(RACINE, f)})`] };
+    adresse = versUrl(f).href;
   }
   const [lw, lh] = (v.viewport ?? '390x844').split('x').map(Number);
   const page = await auPremierPlan(null, () => navigateur.newPage());

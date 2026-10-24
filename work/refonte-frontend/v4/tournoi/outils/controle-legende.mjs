@@ -11,7 +11,7 @@
 // LEGENDE OK, ou LEGENDE ECHEC et la liste.
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { versUrl, existe, liste } from './lib/cible.mjs';
 import puppeteer from 'puppeteer-core';
 
 const args = process.argv.slice(2);
@@ -19,7 +19,7 @@ const dir = path.resolve(args.find((a) => !a.startsWith('--')) || '.');
 const only = args.filter((a) => !a.startsWith('--')).slice(1);
 const pg = (args.find((a) => a.startsWith('--page=')) || '--page=etat-b.html').slice(7);
 const temoin = args.includes('--temoin');
-const ids = (only.length ? only : fs.readdirSync(dir).filter((d) => fs.existsSync(path.join(dir, d, pg)))).sort();
+const ids = (only.length ? only : liste(dir).filter((d) => existe(path.join(dir, d, pg)))).sort();
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const problems = [];
 // ===== Mode --etape : D113 (voie p13-controles-etape, 23.10, soir) =====
@@ -43,7 +43,7 @@ if (args.includes('--etape')) {
   const opt = (n, d) => ((args.find((a) => a.startsWith('--' + n + '=')) || '').slice(n.length + 3)) || d;
   const houblon = opt('houblon', 'Nugget');
   const pageArg = opt('page', '');
-  const fichier = pageArg ? path.join(dir, pageArg) : fs.existsSync(path.join(dir, 'ma-biere', 'etat.html')) ? path.join(dir, 'ma-biere', 'etat.html') : path.join(dir, 'etat.html');
+  const fichier = pageArg ? path.join(dir, pageArg) : existe(path.join(dir, 'ma-biere', 'etat.html')) ? path.join(dir, 'ma-biere', 'etat.html') : path.join(dir, 'etat.html');
   const attente = (ms) => new Promise((r) => setTimeout(r, ms));
   const infos = [];
   const sortir = async () => {
@@ -53,11 +53,11 @@ if (args.includes('--etape')) {
     console.log('LEGENDE OK');
     process.exit(0);
   };
-  if (!fs.existsSync(fichier)) { problems.push('page absente : ' + fichier); await sortir(); }
+  if (!existe(fichier)) { problems.push('page absente : ' + fichier); await sortir(); }
   const ouvrir = async () => {
     const page = await browser.newPage();
     await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-    await page.goto(pathToFileURL(fichier).href, { waitUntil: 'load', timeout: 30000 });
+    await page.goto(versUrl(fichier).href, { waitUntil: 'load', timeout: 30000 });
     await attente(1200);
     return page;
   };
@@ -182,7 +182,7 @@ const etat = () => {
 for (const id of ids) {
   const page = await browser.newPage();
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-  await page.goto(pathToFileURL(path.join(dir, id, pg)).href, { waitUntil: 'networkidle0', timeout: 30000 });
+  await page.goto(versUrl(path.join(dir, id, pg)).href, { waitUntil: 'networkidle0', timeout: 30000 });
   await new Promise((r) => setTimeout(r, 300));
   if (temoin) await page.evaluate(() => { const l = document.querySelector('[data-role="legende"]'); if (l) { l.hidden = false; l.removeAttribute('hidden'); } });
   const a = await page.evaluate(etat);

@@ -24,7 +24,7 @@
 // Usage : node controle-appui.mjs <dossier du lot> [ids…]   Imprime APPUI OK, ou APPUI ECHEC et la liste.
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { versUrl, existe, liste } from './lib/cible.mjs';
 import puppeteer from 'puppeteer-core';
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '../../../../..');
@@ -33,7 +33,7 @@ const MOT = FICHES.find((f) => f.key === 'beermaverick-motueka');
 const COURT = { citrus: 'Agrumes', tropical: 'Tropicaux', stoneFruit: 'Noyau', pomeFruit: 'Pépins', berries: 'Baies', melon: 'Melon', floral: 'Floral', green: 'Végétal', herbal: 'Herbacé', spice: 'Épicé', earthy: 'Terreux', resin: 'Résineux' };
 const dir = path.resolve(process.argv[2] || '.');
 const only = process.argv.slice(3).filter((a) => !a.startsWith('--'));
-const ids = (only.length ? only : fs.readdirSync(dir).filter((d) => /^[a-z]+\d+$/.test(d) && fs.existsSync(path.join(dir, d, 'vue.html')))).sort();
+const ids = (only.length ? only : liste(dir).filter((d) => /^[a-z]+\d+$/.test(d) && existe(path.join(dir, d, 'vue.html')))).sort();
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const problems = [];
 // ===== Mode --etape : critère A9 (D112, voie p13-controles-etape, 23.10, soir) =====
@@ -58,7 +58,7 @@ if (process.argv.includes('--etape')) {
   const opt = (n, d) => ((ARGS.find((a) => a.startsWith('--' + n + '=')) || '').slice(n.length + 3)) || d;
   const houblon = opt('houblon', 'Nugget');
   const pageArg = opt('page', '');
-  const fichier = pageArg ? path.join(dir, pageArg) : fs.existsSync(path.join(dir, 'ma-biere', 'etat.html')) ? path.join(dir, 'ma-biere', 'etat.html') : path.join(dir, 'etat.html');
+  const fichier = pageArg ? path.join(dir, pageArg) : existe(path.join(dir, 'ma-biere', 'etat.html')) ? path.join(dir, 'ma-biere', 'etat.html') : path.join(dir, 'etat.html');
   const attente = (ms) => new Promise((r) => setTimeout(r, ms));
   const infos = [];
   const sortir = async () => {
@@ -68,10 +68,10 @@ if (process.argv.includes('--etape')) {
     console.log('APPUI-ETAPE OK');
     process.exit(0);
   };
-  if (!fs.existsSync(fichier)) { problems.push('page absente : ' + fichier); await sortir(); }
+  if (!existe(fichier)) { problems.push('page absente : ' + fichier); await sortir(); }
   const page = await browser.newPage();
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-  await page.goto(pathToFileURL(fichier).href, { waitUntil: 'load', timeout: 30000 });
+  await page.goto(versUrl(fichier).href, { waitUntil: 'load', timeout: 30000 });
   await attente(1200);
   // Le nom qui porte l'appui, dans la carte de Nugget.
   const cible = () => page.evaluate((nom) => {
@@ -132,6 +132,7 @@ if (process.argv.includes('--etape')) {
     for (const s of sources) {
       if (s.texte) css += '\n' + s.texte;
       else if (s.href && s.href.startsWith('file:')) { try { css += '\n' + fs.readFileSync(new URL(s.href), 'utf8'); } catch { /* feuille absente */ } }
+      else if (s.href && /^https?:/.test(s.href) && s.href.startsWith(new URL(page.url()).origin)) css += '\n' + await page.evaluate((h) => fetch(h).then((r) => r.text()).catch(() => ''), s.href); // page servie (#161)
     }
     const selecteurs = [];
     for (const m of css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)) if (/-webkit-touch-callout\s*:\s*none/.test(m[2])) for (const s of m[1].split(',')) selecteurs.push(s.trim());
@@ -155,7 +156,7 @@ if (process.argv.includes('--etape')) {
 const lire = async (f) => {
   const page = await browser.newPage();
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-  await page.goto(pathToFileURL(f).href, { waitUntil: 'networkidle0', timeout: 30000 });
+  await page.goto(versUrl(f).href, { waitUntil: 'networkidle0', timeout: 30000 });
   const r = await page.evaluate(() => {
     const vis = (e) => { const b = e.getBoundingClientRect(); const cs = getComputedStyle(e); return b.width > 0 && b.height > 0 && cs.visibility !== 'hidden' && Number(cs.opacity) > 0.15; };
     let carte = document.querySelector('[data-houblon="beermaverick-motueka"]');
@@ -191,7 +192,7 @@ const BASE = (await lire(path.join(root, 'work/refonte-frontend/v4/ecran-1/base/
 for (const id of ids) {
   const p = (m) => problems.push(id + ' : ' + m);
   const vue = path.join(dir, id, 'vue.html'), app = path.join(dir, id, 'appui.html');
-  if (!fs.existsSync(app)) { p('pas de page appui.html (le long appui sur Motueka, montré ouvert)'); continue; }
+  if (!existe(app)) { p('pas de page appui.html (le long appui sur Motueka, montré ouvert)'); continue; }
   const r = await lire(vue), a = await lire(app);
   for (const [nom, x] of [['vue', r], ['appui', a]]) {
     if (!x.carte) { p(nom + ' : pas de carte data-houblon="beermaverick-motueka"'); continue; }

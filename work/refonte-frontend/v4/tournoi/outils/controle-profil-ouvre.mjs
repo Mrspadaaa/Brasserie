@@ -16,7 +16,7 @@
 // Témoins : maquette d332792c → ECHEC (seul le « › ») ; temoins/profil-chevron-seul → ECHEC ; temoins/profil-ouvre-ok → OK.
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { versUrl, existe } from './lib/cible.mjs';
 import puppeteer from 'puppeteer-core';
 
 const args = process.argv.slice(2);
@@ -24,7 +24,7 @@ const dir = path.resolve(args.find((a) => !a.startsWith('--')) || '.');
 const opt = (n, d) => ((args.find((a) => a.startsWith('--' + n + '=')) || '').slice(n.length + 3)) || d;
 const pageArg = opt('page', '');
 const fichier = pageArg ? path.join(dir, pageArg)
-  : fs.existsSync(path.join(dir, 'ma-biere', 'etat.html')) ? path.join(dir, 'ma-biere', 'etat.html') : path.join(dir, 'etat.html');
+  : existe(path.join(dir, 'ma-biere', 'etat.html')) ? path.join(dir, 'ma-biere', 'etat.html') : path.join(dir, 'etat.html');
 const FAMILLES = ['Floral', 'Herbacé', 'Terreux', 'Agrumes', 'Tropicaux', 'Noyau', 'Pépins', 'Baies', 'Melon', 'Résineux', 'Épicé', 'Végétal'];
 const attente = (ms) => new Promise((r) => setTimeout(r, ms));
 // Hasard reproductible : --seed=N (par défaut, l'heure) ; la graine est imprimée pour rejouer un échec.
@@ -39,12 +39,12 @@ const fin = async (nav) => {
   console.log('PROFIL OK');
   process.exit(0);
 };
-if (!fs.existsSync(fichier)) { problems.push('page absente : ' + fichier); await fin(null); }
+if (!existe(fichier)) { problems.push('page absente : ' + fichier); await fin(null); }
 const navigateur = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const ouvrir = async () => {
   const page = await navigateur.newPage();
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-  await page.goto(pathToFileURL(fichier).href, { waitUntil: 'load', timeout: 30000 });
+  await page.goto(versUrl(fichier).href, { waitUntil: 'load', timeout: 30000 });
   await attente(1200);
   return page;
 };

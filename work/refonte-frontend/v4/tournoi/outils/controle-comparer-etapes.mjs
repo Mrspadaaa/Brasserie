@@ -52,7 +52,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { versUrl, existe } from './lib/cible.mjs';
 
 const ici = path.dirname(fileURLToPath(import.meta.url));
 const RACINE = path.resolve(ici, '..', '..', '..', '..', '..');
@@ -70,7 +71,7 @@ const TAILLES = [
   { l: 1280, h: 800, mobile: false, nom: '1280x800' },
 ].filter((t) => !seule || String(t.l) === String(seule));
 const fichier = path.join(dossier, 'comparer', page);
-if (!fs.existsSync(fichier)) { console.log('COMPARER-ETAPES ECHEC : page absente (' + path.relative(RACINE, fichier) + ')'); process.exit(2); }
+if (!existe(fichier)) { console.log('COMPARER-ETAPES ECHEC : page absente (' + path.relative(RACINE, fichier) + ')'); process.exit(2); }
 if (!TAILLES.length) { console.log('COMPARER-ETAPES ECHEC : --largeur=390 ou 1280'); process.exit(2); }
 
 const NOMS = { b60: '60′', b10: '10′', dry: 'dry hop (dryActive ou dryPost)' };
@@ -248,7 +249,7 @@ try {
   for (const t of TAILLES) {
     const p = await browser.newPage();
     await p.setViewport({ width: t.l, height: t.h, deviceScaleFactor: 1, isMobile: t.mobile, hasTouch: t.mobile });
-    await p.goto(pathToFileURL(fichier).href, { waitUntil: 'load', timeout: 30000 }).catch(() => {});
+    await p.goto(versUrl(fichier).href, { waitUntil: 'load', timeout: 30000 }).catch(() => {});
     await p.waitForSelector('[data-houblon-compare], [data-etape]', { timeout: 6000 }).catch(() => {});
     await new Promise((r) => setTimeout(r, 700));
     const m = await p.evaluate(mesurer);
@@ -257,7 +258,7 @@ try {
       const q = await browser.newPage();
       await q.setViewport({ width: t.l, height: t.h, deviceScaleFactor: 1, isMobile: t.mobile, hasTouch: t.mobile });
       const charger = async () => {
-        await q.goto(pathToFileURL(fichier).href, { waitUntil: 'load', timeout: 30000 }).catch(() => {});
+        await q.goto(versUrl(fichier).href, { waitUntil: 'load', timeout: 30000 }).catch(() => {});
         await q.waitForSelector('[data-houblon-compare], [data-etape], [data-acquis]', { timeout: 6000 }).catch(() => {});
         await new Promise((r) => setTimeout(r, 700));
       };

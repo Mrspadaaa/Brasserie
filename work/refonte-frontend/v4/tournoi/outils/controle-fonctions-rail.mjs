@@ -18,7 +18,8 @@
 // Témoins : base v4.10 → OK ; temoins/fonctions-rail-sans-loupe (la loupe retirée) → ECHEC ; maquette 5345f6ad → ECHEC.
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { versUrl, existe } from './lib/cible.mjs';
 import puppeteer from 'puppeteer-core';
 
 const args = process.argv.slice(2);
@@ -34,7 +35,7 @@ const attente = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function fichierPage(cle) {
   if (pageArg) return path.join(dir, cle === 'etat' ? pageArg : cle + '.html');
-  const rac = fs.existsSync(path.join(dir, 'ma-biere')) ? path.join(dir, 'ma-biere') : dir;
+  const rac = existe(path.join(dir, 'ma-biere', 'etat.html')) ? path.join(dir, 'ma-biere') : dir;
   return path.join(rac, cle === 'etat' ? 'etat.html' : cle + '.html');
 }
 
@@ -125,10 +126,10 @@ class Doigt {
 }
 async function ouvrir(nav, cle, hauteur = 844) {
   const f = fichierPage(cle);
-  if (!fs.existsSync(f)) throw new Error('page absente : ' + path.relative(process.cwd(), f).replace(/\\/g, '/'));
+  if (!existe(f)) throw new Error('page absente : ' + path.relative(process.cwd(), f).replace(/\\/g, '/'));
   const page = await nav.newPage();
   await page.setViewport({ width: 390, height: hauteur, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-  await page.goto(pathToFileURL(f).href, { waitUntil: 'load', timeout: 30000 });
+  await page.goto(versUrl(f).href, { waitUntil: 'load', timeout: 30000 });
   let e = null;
   for (let i = 0; i < 50; i++) { e = await page.evaluate(lireEtat); if (e.hs.length) break; await attente(100); }
   await attente(500);

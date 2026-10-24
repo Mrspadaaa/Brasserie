@@ -12,7 +12,7 @@
 // Imprime FICHE-RADAR OK, sinon FICHE-RADAR ECHEC et la liste (lignes « D115 … »).
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { versUrl, existe } from './lib/cible.mjs';
 import puppeteer from 'puppeteer-core';
 
 const args = process.argv.slice(2);
@@ -22,14 +22,14 @@ const fichier = path.join(dir, rel);
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const problems = [];
 
-if (!fs.existsSync(fichier)) {
+if (!existe(fichier)) {
   console.log('FICHE-RADAR ECHEC ' + rel + ' absente dans ' + dir);
   process.exit(1);
 }
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const page = await browser.newPage();
 await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-await page.goto(pathToFileURL(fichier).href, { waitUntil: 'networkidle0', timeout: 30000 });
+await page.goto(versUrl(fichier).href, { waitUntil: 'networkidle0', timeout: 30000 });
 await wait(500);
 const r = await page.evaluate(() => {
   const visible = (e) => {

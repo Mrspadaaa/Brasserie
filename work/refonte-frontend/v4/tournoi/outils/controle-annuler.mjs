@@ -22,7 +22,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { versUrl, existe } from './lib/cible.mjs';
 
 const ici = path.dirname(fileURLToPath(import.meta.url));
 const RACINE = path.resolve(ici, '..', '..', '..', '..', '..');
@@ -89,7 +90,7 @@ const diff = (a, b) => {
   return `…${a.slice(Math.max(0, i - 20), i + 40)}… contre …${b.slice(Math.max(0, i - 20), i + 40)}…`;
 };
 
-const manquantes = routes.map((r) => path.join(dossier, r, page)).filter((f) => !fs.existsSync(f));
+const manquantes = routes.map((r) => path.join(dossier, r, page)).filter((f) => !existe(f));
 if (manquantes.length) {
   for (const f of manquantes) console.log(`ANNULER PAGE ABSENTE : ${path.relative(RACINE, f)}`);
   process.exit(2);
@@ -106,7 +107,7 @@ try {
       const fautes = [];
       try {
         await p.setViewport({ width: v.l, height: v.h, deviceScaleFactor: 1, hasTouch: v.tactile, isMobile: v.tactile });
-        await p.goto(pathToFileURL(path.join(dossier, route, page)).href, { waitUntil: 'networkidle0' });
+        await p.goto(versUrl(path.join(dossier, route, page)).href, { waitUntil: 'networkidle0' });
         await pause(500);
         const m = await p.evaluate(mesurer);
         const a = m.annuler;

@@ -12,7 +12,7 @@
 // Imprime STEPPER OK, sinon STEPPER ECHEC et la liste (lignes « D116 … »).
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { versUrl, existe } from './lib/cible.mjs';
 import puppeteer from 'puppeteer-core';
 
 const args = process.argv.slice(2);
@@ -24,7 +24,7 @@ const ACTIVE = 2;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const problems = [];
 
-if (!fs.existsSync(fichier)) {
+if (!existe(fichier)) {
   console.log('STEPPER ECHEC ' + rel + ' absente dans ' + dir);
   process.exit(1);
 }
@@ -33,7 +33,7 @@ for (const [w, h, mobile] of [[390, 844, true], [1280, 800, false]]) {
   const p = (m) => problems.push(w + ' px : D116 ' + m);
   const page = await browser.newPage();
   await page.setViewport({ width: w, height: h, deviceScaleFactor: 1, isMobile: mobile, hasTouch: mobile });
-  await page.goto(pathToFileURL(fichier).href, { waitUntil: 'networkidle0', timeout: 30000 });
+  await page.goto(versUrl(fichier).href, { waitUntil: 'networkidle0', timeout: 30000 });
   await wait(400);
   const r = await page.evaluate((ETAPES) => {
     const visible = (e) => {

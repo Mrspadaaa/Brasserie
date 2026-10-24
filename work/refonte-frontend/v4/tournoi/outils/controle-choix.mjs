@@ -12,6 +12,9 @@
 //   - ouvert : options (deux au moins), provisoire, page (l'adresse où il choisit).
 //
 // Usage : node controle-choix.mjs <dossier construit> [--registre=chemin] [--ecran=<ecran>]
+//   node controle-choix.mjs --url=<adresse> [--gabarit=<modèle>] : la même vérification sur une adresse servie (HTTP)
+//     au lieu des fichiers construits (#161, lib/cible.mjs) ; --gabarit pour une app dont la route n'est pas
+//     <adresse>/<route>/etat.html, p. ex. '{adresse}/#/{route}'. Serveur de test : servir.mjs <dossier>.
 //   → « CHOIX OK (n écrans conformes à son choix ; o ouverts : … ) » (code 0), ou « CHOIX ECHEC » et, par écran,
 //     ce qui diverge (code 1). Un écran choisi dont la page manque est un échec : ne pas le montrer sans lui.
 //   node controle-choix.mjs --registre[=chemin]
@@ -22,6 +25,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { cibleDe, environnement, existe } from './lib/cible.mjs';
 
 const ici = path.dirname(fileURLToPath(import.meta.url));
 const RACINE = path.resolve(ici, '..', '..', '..', '..', '..');
@@ -69,8 +73,14 @@ if (modeRegistre) {
   console.log(`REGISTRE OK (${registre.ecrans.length} écrans)`);
   process.exit(0);
 }
-if (!pos[0]) { console.log('Usage : node controle-choix.mjs <dossier construit> [--registre=chemin] [--ecran=<ecran>]'); process.exit(2); }
-const dossier = path.resolve(RACINE, pos[0]);
+if (!pos[0] && !opt('url')) { console.log('Usage : node controle-choix.mjs <dossier construit> | --url=<adresse> [--gabarit=<modèle>] [--registre=chemin] [--ecran=<ecran>]'); process.exit(2); }
+let cible;
+try { cible = cibleDe({ dossier: pos[0] ?? null, url: opt('url'), gabarit: opt('gabarit'), racine: RACINE }); } catch (e) { console.log(`CHOIX ECHEC : ${e.message}`); process.exit(2); }
+// Un dossier construit (file://) ou un dossier virtuel + l'adresse dans l'environnement (http://) : les contrôles appelés
+// reçoivent le même argument <dossier> et le même environnement, et traduisent leurs pages par lib/cible.mjs.
+const dossier = cible.dossier;
+const env = environnement(cible);
+Object.assign(process.env, env); // le résolveur de ce script-ci (existe) lit les mêmes variables
 
 // 2. Chaque écran choisi, contre sa maquette.
 const divergences = [];
@@ -80,15 +90,15 @@ for (const e of registre.ecrans) {
   if (seul && e.ecran !== seul) continue;
   if (e.statut === 'ouvert') { ouverts.push(`${e.ecran} (${e.provisoire} en attendant)`); continue; }
   const page = path.join(dossier, e.route, 'etat.html');
-  if (!fs.existsSync(page)) { divergences.push(`${e.ecran} : page absente (${path.relative(RACINE, page)})`); continue; }
+  if (!existe(page)) { divergences.push(`${e.ecran} : page absente (${cible.mode === 'url' ? cible.adresse + '/' + e.route + '/etat.html' : path.relative(RACINE, page)})`); continue; }
   const sorties = [];
   if (e.inventaire) {
-    const r = spawnSync(process.execPath, [path.join(ici, 'controle-reprise.mjs'), dossier, e.route, '--page=etat.html', `--inventaire=${path.resolve(RACINE, e.inventaire)}`], { cwd: RACINE, encoding: 'utf8' });
+    const r = spawnSync(process.execPath, [path.join(ici, 'controle-reprise.mjs'), dossier, e.route, '--page=etat.html', `--inventaire=${path.resolve(RACINE, e.inventaire)}`], { cwd: RACINE, encoding: 'utf8', env });
     if (r.status !== 0) sorties.push(`ne reprend pas ${e.choix} : ${(r.stdout + r.stderr).trim().split('\n').filter((l) => l.trim().startsWith('-') || /ECHEC/.test(l)).slice(0, 6).join(' ; ')}`);
   }
   for (const c of e.controles ?? []) {
     const [script, ...rest] = c.split(' ').map((x) => x.split('{dossier}').join(dossier));
-    const r = spawnSync(process.execPath, [path.resolve(RACINE, script), ...rest], { cwd: RACINE, encoding: 'utf8' });
+    const r = spawnSync(process.execPath, [path.resolve(RACINE, script), ...rest], { cwd: RACINE, encoding: 'utf8', env });
     if (r.status !== 0) sorties.push(`${path.basename(script)} : ${(r.stdout + r.stderr).trim().split('\n').slice(-2).join(' ; ')}`);
   }
   if (sorties.length) divergences.push(`${e.ecran} (choix : ${e.choix}) : ${sorties.join(' | ')}`);
