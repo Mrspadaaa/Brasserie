@@ -621,3 +621,17 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - D61 (le brasseur, 24.10 soir : « Tu peux intégrer légende type leg3-v2a · Les barres n/N mais barre leg3-v2e · Les spéciaux
   repliés ») : la légende des pastilles devient leg3-v2f, intégrée sous les pastilles des cartes du rail et des ajouts
   proposés ; registre `choix/ecrans.json` (complément de l'étape) à mettre à jour après la reprise.
+- D62 (le brasseur, 24.10 nuit : « Je veux qqch comme ça moi ???? », sur sa capture de la carte ouverte de Nugget dans
+  leg3-v2a) : D61 relue. « Les spéciaux repliés » est le nom de la vignette v2e, pas une consigne. La légende des pastilles
+  est v2a telle quelle (mots précis avec leurs pictos, ◇ et ses sources, ce que disent les fiches, huiles, ligne-clé, ouverts
+  sous la bande, puis marquée, citée, non décrite, « ? » et « Sans X › »), avec seulement la petite barre de v2e et le point
+  « en tête » ; plus de pastille repliée. Contrôle D140 : `controle-legende-v2a.mjs`.
+- D63 (le brasseur, 24.10 nuit : « Les commentaires pour le dryhopping était pour la partie compare ») : ses mots sur la frise
+  de y1b et les trois plans de w2 visent Comparer. Ils vont au lot r6a++ (Comparer sur r6a, critique rp) ; la planche
+  « Dryhopper, tes retours » (D59) les greffait sur Dryhopper : elle reste en ligne, marquée, et ne sert pas de choix pour
+  Comparer. La base de Dryhopper reste l'écran jouable (« la meilleure version est celle de l'app jouable »).
+- D64 (le brasseur, 24.10 nuit : « Tu peux commencer la mise en place pour l'intégration dans la vrai application. Faire une
+  liste des tâche, mettre à jour git et suivre tout ça. Jusqu'à l'intégration. La fluidité, l'optimisation de code est très
+  importante vu qu'il y aura beaucoup de données !! ») : la porte B s'ouvre. Épopée #159, mission
+  `work/missions/2026-10-25-integration-houblons/` ; état des lieux mesuré (voie i0), puis conseil complet sur l'architecture
+  de fluidité avant le premier code dans `src/`. Push, PR, fusion et déploiement restent sur son accord.

@@ -1,0 +1,270 @@
+<title>Dryhopper, tes retours · 24.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+/* La disposition qu'il aime (24.10, soir) : une rangée par endroit, le nom à gauche (au téléphone : au-dessus) ; sa
+   référence puis les huit jeux en vignettes serrées, six par rangée à l'ordinateur, trois au téléphone. Rien ne défile
+   en largeur (D126). Chaque vignette s'ouvre en grand, à côté de sa référence. Page claire (D106). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 4px 14px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 var(--texte); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 64px;
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.25rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--houblon); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 84ch; }
+.encart .canal { font-weight: 700; }
+.sommaire { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.pastille { justify-self: start; display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.5; padding: 0 9px; border-radius: 999px; color: #fff; white-space: nowrap; }
+.p-ref { background: #2f6b1f; }
+.p-froide { background: #2a6fb0; }
+.p-tiede { background: #85600a; }
+.p-chaude { background: #a8431a; }
+.pastilles { display: flex; flex-wrap: wrap; gap: 3px 4px; }
+.verdict { display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.4; padding: 0 7px; border-radius: 999px; border: 1.5px solid currentColor; white-space: nowrap; }
+.v-accepte { color: #2f6b1f; } .v-tete { color: #fff; background: #2f6b1f; border-color: #2f6b1f; }
+.legende-pastilles { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 0.875rem; color: var(--discret); align-items: center; }
+.rangee { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.nom { display: grid; gap: 4px; align-content: start; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.05rem; color: var(--houblon); }
+.note { font-size: 0.875rem; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 8px; align-items: start; }
+@media (min-width: 900px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 20px; }
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px 14px; }
+}
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; aspect-ratio: 780 / 1688; }
+.ecran img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.vue[data-reference] .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--ambre), var(--ombre); }
+.vue figcaption { display: grid; gap: 3px; }
+.vue figcaption b { font-family: var(--titre); font-size: 0.95rem; line-height: 1.2; }
+.id { font-size: 0.875rem; color: var(--discret); font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
+.ligne { font-size: 0.875rem; font-style: italic; color: var(--encre); line-height: 1.35; }
+.reserves { display: grid; gap: 6px; font-size: 0.95rem; }
+footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: calc(64px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)); background: #0e100c; }
+.vis-titre { font: 800 1.05rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-corps { display: grid; gap: 28px; max-width: 1240px; margin: 0 auto; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.vis-panneau { flex: 0 0 86%; scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau img { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.vis-panneau.ref img { box-shadow: 0 0 0 3px var(--ambre); }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #f6d38f; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; flex-wrap: wrap; }
+  .vis-panneau { flex: 0 1 400px; min-width: 290px; }
+  .vis-glisse { display: none; }
+}
+</style>
+
+<style>.v-ecarte { color: #9a3b1e; }</style>
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · houblons · Dryhopper, avec tes retours · 24.10, nuit</p>
+    <h1>Dryhopper : ta base jouable, et trois greffes</h1>
+  </header>
+
+  <section id="a-choisir" aria-label="À choisir">
+    <div class="encart">
+      <p><b>À choisir :</b> ce qu'on greffe sur l'écran Dryhopper de la maquette jouable. On garde le haut tel quel : courbes, aire du floral, quatre chiffres.</p>
+      <p>Tes mots : « Pour le dryhopping, la meilleure version est celle de l'app jouable mais il lui faut quelques améliorations ».</p>
+      <p><b>Correction :</b> tes mots sur y1b et w2 visaient Comparer ; ils sont dans la planche r6a++ (https://claude.ai/artifact/WJBxNSr9CCDVBy8jbJXpDC). Ici, greffés sur Dryhopper par erreur : à regarder seulement si une idée te sert pour Dryhopper.</p>
+      <p class="canal">Commente la mini maquette que tu choisis : je lis les commentaires.</p>
+      <p class="legende-pastilles"><span class="pastille p-ref">ta base</span> l'écran jouable <span class="verdict v-tete">en tête</span> le critique les met devant <span class="verdict v-ecarte">écartée</span> montrée quand même</p>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-frise" data-choix="frise-y1b" aria-labelledby="t-frise" data-ref-nom="Ta base jouable" data-ref-imgs="img/base-jouable.png" data-ref-etats="Dryhopper de la maquette jouable">
+    <div class="nom">
+      <h2 id="t-frise">La frise de y1b</h2>
+      <p class="question">« Une frise de ce type est vraiment intéressant aussi »</p>
+      <p class="note">Les quatre dga mettent la frise à la place du rail à points et des jours 1 j · 2 j · 3 j · 7 j ; dgz1 garde les deux.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Ta base jouable" data-imgs="img/base-jouable.png" data-etats="Dryhopper de la maquette jouable"><img src="img/base-jouable.png" width="780" height="1688" alt="Dryhopper de la maquette jouable"></button>
+        <figcaption><span class="pastille p-ref">ta base</span><b>L'écran jouable</b><span class="id">p4b2f</span><span class="ligne">Idaho 7 dans ta stout, sur le moteur.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="dga2 · Le graphique est la frise" data-imgs="img/dga2.png|img/dga2-geste.png|img/dga2-apres.png" data-etats="repos|pendant le geste|après"><img src="img/dga2.png" width="780" height="1688" alt="dga2"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-tete">en tête</span></span><b>Le graphique est la frise</b><span class="id">dga2</span><span class="ligne">La frise à la place du rail, loupe sous le doigt.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="dga1 · La frise sous le pouce" data-imgs="img/dga1.png|img/dga1-geste.png" data-etats="repos|pendant le geste"><img src="img/dga1.png" width="780" height="1688" alt="dga1"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>La frise sous le pouce</b><span class="id">dga1</span><span class="ligne">En bas, minutes et jours sous leurs crans.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="dga3 · Le tambour" data-imgs="img/dga3.png|img/dga3-geste.png" data-etats="repos|pendant le geste"><img src="img/dga3.png" width="780" height="1688" alt="dga3"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>Le tambour</b><span class="id">dga3</span><span class="ligne">Chaque moment dans sa case, avec son floral.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="dgz1 · Le brassin au pouce" data-imgs="img/dgz1.png|img/dgz1-geste.png" data-etats="repos|pendant le geste"><img src="img/dgz1.png" width="780" height="1688" alt="dgz1"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>Les cinq arrêts chiffrés</b><span class="id">dgz1</span><span class="ligne">60′ · 10′ · whirlpool · actif · après, chacun son floral.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="dga4 · Le calendrier de la cuve (écartée)" data-imgs="img/dga4.png|img/dga4-geste.png" data-etats="repos|pendant le geste"><img src="img/dga4.png" width="780" height="1688" alt="dga4"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-ecarte">écartée</span></span><b>Le calendrier de la cuve</b><span class="id">dga4</span><span class="ligne">Des jours de cuve (J2, ≈J4) que le moteur ne donne pas.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-plans" data-choix="trois-plans-w2" aria-labelledby="t-plans" data-ref-nom="Ta base jouable" data-ref-imgs="img/base-jouable.png" data-ref-etats="Dryhopper de la maquette jouable">
+    <div class="nom">
+      <h2 id="t-plans">Les trois plans de w2</h2>
+      <p class="question">« Ça c'est vraiment très intéressant »</p>
+      <p class="note">Sage, Franc, Osé : chacun sa dose, ses jours, son moment ; le plan tenu se règle dessous.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Ta base jouable" data-imgs="img/base-jouable.png" data-etats="Dryhopper de la maquette jouable"><img src="img/base-jouable.png" width="780" height="1688" alt="Dryhopper de la maquette jouable"></button>
+        <figcaption><span class="pastille p-ref">ta base</span><b>L'écran jouable</b><span class="id">p4b2f</span><span class="ligne">Pour comparer.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="dgz2 · Trois plans, un moment chacun" data-imgs="img/dgz2.png|img/dgz2-geste.png" data-etats="repos|pendant le geste"><img src="img/dgz2.png" width="780" height="1688" alt="dgz2"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-tete">en tête</span></span><b>Trois plans, un moment chacun</b><span class="id">dgz2</span><span class="ligne">Les vraies valeurs, une ligne d'honnêteté par carte.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="dgb1 · Trois plans en bandeau" data-imgs="img/dgb1.png|img/dgb1-geste.png" data-etats="repos|pendant le geste"><img src="img/dgb1.png" width="780" height="1688" alt="dgb1"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>Trois plans en bandeau</b><span class="id">dgb1</span><span class="ligne">S F O épinglés sur les courbes.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="dgb2 · Les trois plans sur les 12 familles" data-imgs="img/dgb2.png|img/dgb2-barres.png|img/dgb2-geste.png" data-etats="repos|les barres|pendant le geste"><img src="img/dgb2.png" width="780" height="1688" alt="dgb2"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>Sur les 12 familles</b><span class="id">dgb2</span><span class="ligne">S, F, O sous chaque barre : le prix d'Osé par famille.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="dgb3 · Trois épingles sur le rail" data-imgs="img/dgb3.png|img/dgb3-geste.png" data-etats="repos|pendant le geste"><img src="img/dgb3.png" width="780" height="1688" alt="dgb3"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>Trois épingles sur le rail</b><span class="id">dgb3</span><span class="ligne">Aucune surface neuve ; le plan tenu au doigt.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="dgb4 · Trois verres" data-imgs="img/dgb4.png|img/dgb4-geste.png" data-etats="repos|pendant le geste"><img src="img/dgb4.png" width="780" height="1688" alt="dgb4"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>Trois verres</b><span class="id">dgb4</span><span class="ligne">La volute à la hauteur du gain, l'IBU sur la bière.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-cuve" data-choix="cuve-x3b" aria-labelledby="t-cuve" data-ref-nom="Ta base jouable" data-ref-imgs="img/base-jouable.png" data-ref-etats="Dryhopper de la maquette jouable">
+    <div class="nom">
+      <h2 id="t-cuve">Ma cuve, de x3b</h2>
+      <p class="question">« ma bière de base -> 1 dry hop, 2 dry hop: levure »</p>
+      <p class="note">Ce que chaque étape ajoute à ta stout, famille par famille.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Ta base jouable" data-imgs="img/base-jouable.png" data-etats="Dryhopper de la maquette jouable"><img src="img/base-jouable.png" width="780" height="1688" alt="Dryhopper de la maquette jouable"></button>
+        <figcaption><span class="pastille p-ref">ta base</span><b>L'écran jouable</b><span class="id">p4b2f</span><span class="ligne">Pour comparer.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="dgz3 · Ma cuve" data-imgs="img/dgz3.png|img/dgz3-geste.png" data-etats="repos|pendant le geste"><img src="img/dgz3.png" width="780" height="1688" alt="dgz3"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-tete">en tête</span></span><b>Ma cuve</b><span class="id">dgz3</span><span class="ligne">Ta stout → + Idaho 7 → + Pomona, une colonne par famille.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="dgz4 · Les 12 familles, moment par moment" data-imgs="img/dgz4.png|img/dgz4-geste.png" data-etats="repos|pendant le geste"><img src="img/dgz4.png" width="780" height="1688" alt="dgz4"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>Moment par moment</b><span class="id">dgz4</span><span class="ligne">Une carte de chaleur alignée sur le rail.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <p>Douze greffes sur ta base jouable. Le critique en accepte onze et écarte dga4, montrée quand même. Rien n'entre dans la maquette avant ton choix. Source : <span class="id">ecran-1/fils24-dryhopper-greffes/</span>.</p>
+  </footer>
+</div>
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+  <div class="vis-tete">
+    <p class="vis-titre" id="vis-titre"></p>
+    <div class="vis-boutons">
+      <button type="button" id="vis-prec" aria-label="Vue précédente">◀</button>
+      <button type="button" id="vis-suiv" aria-label="Vue suivante">▶</button>
+      <button type="button" class="fermer" id="vis-fermer">Fermer</button>
+    </div>
+  </div>
+  <div class="vis-corps" id="vis-corps"></div>
+</div>
+
+<script>
+// En grand : chaque état du jeu à côté de la maquette telle quelle. Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var corps = document.getElementById('vis-corps');
+  var titre = document.getElementById('vis-titre');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function liste(el, cle) { return (el.getAttribute(cle) || '').split('|').filter(Boolean); }
+  function panneaux(b) {
+    var sec = b.closest('[data-choix]');
+    var etats = liste(b, 'data-etats');
+    var v = liste(b, 'data-imgs').map(function (s, i) { return { src: s, leg: etats[i] || '' }; });
+    if (b.closest('[data-reference]') || !sec.getAttribute('data-ref-imgs')) return v;
+    var refEtats = liste(sec, 'data-ref-etats');
+    return v.concat(liste(sec, 'data-ref-imgs').map(function (s, i) { return { src: s, leg: 'maquette telle quelle · ' + (refEtats[i] || ''), ref: true }; }));
+  }
+  function panneau(p) {
+    var f = document.createElement('figure');
+    f.className = 'vis-panneau' + (p.ref ? ' ref' : '');
+    var c = document.createElement('figcaption'); c.textContent = p.leg;
+    var i = document.createElement('img'); i.src = p.src; i.alt = p.leg;
+    f.appendChild(c); f.appendChild(i);
+    return f;
+  }
+  function ouvrir(n, depuis) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    corps.textContent = '';
+    var ps = panneaux(b);
+    if (ps.length > 1) { var g = document.createElement('p'); g.className = 'vis-glisse'; g.textContent = 'Glisse : ' + ps.slice(1).map(function (p) { return p.leg; }).join(', ') + ' →'; corps.appendChild(g); }
+    var d = document.createElement('div'); d.className = 'vis-rangee';
+    ps.forEach(function (p) { d.appendChild(panneau(p)); });
+    corps.appendChild(d);
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; corps.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.planche .ecran');
+    if (b) ouvrir(boutons.indexOf(b), b);
+  });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

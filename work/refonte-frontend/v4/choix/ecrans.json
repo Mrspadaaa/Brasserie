@@ -19,7 +19,8 @@
     "work/refonte-frontend/v4/tournoi/outils/controle-profil-ouvre.mjs {dossier}",
     "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=etape",
     "work/refonte-frontend/v4/tournoi/outils/controle-fonctions-rail.mjs {dossier}",
-    "work/refonte-frontend/v4/tournoi/outils/controle-geste-etape.mjs {dossier} --froid"
+    "work/refonte-frontend/v4/tournoi/outils/controle-geste-etape.mjs {dossier} --froid",
+    "work/refonte-frontend/v4/tournoi/outils/controle-legende-v2a.mjs {dossier}"
    ],
    "complements": [
     {
@@ -29,8 +30,13 @@
     },
     {
      "mots": "Tu peux intégrer légende type leg3-v2a · Les barres n/N mais barre leg3-v2e · Les spéciaux repliés",
-     "capture": "work/refonte-frontend/v4/ecran-1/fils24-legendes/captures/leg3-v2f.png",
-     "contexte": "24.10, soir, sur la planche des légendes v2 : la légende des pastilles (D61) ; et « Légende vraiment bien, avec icône sans full text, bonne infos ciblé mais barre comme leg3-v2e »"
+     "capture": "work/refonte-frontend/v4/ecran-1/fils24-legendes/captures/leg3-v2a.png",
+     "contexte": "24.10, soir, sur la planche des légendes v2 : la légende de leg3-v2a telle quelle, avec la barre de leg3-v2e (captures/leg3-v2e.png) ; « Les spéciaux repliés » est le nom de v2e, pas une consigne (D62, D140) ; et « Légende vraiment bien, avec icône sans full text, bonne infos ciblé mais barre comme leg3-v2e »"
+    },
+    {
+     "mots": "Je veux qqch comme ça moi ????",
+     "capture": "work/refonte-frontend/v4/ecran-1/fils24-legendes/captures/brasseur-24-10-nuit-v2a.jpg",
+     "contexte": "24.10, nuit, sa capture de la carte ouverte de Nugget dans leg3-v2a : la légende qu'il veut, lignes ouvertes (D140)"
     }
    ]
   },

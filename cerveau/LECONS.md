@@ -12,9 +12,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Comprendre la demande
 
 ### L01 — Reformuler la portée d'une décision avant de la propager
-- Erreur : 12.10, « seul 3.8 peut être utilisé », dit pour des tests, a été appliqué à toute l'app ; le lot G38 (#93) perdu.
+- Erreur : 12.10, « seul 3.8 », dit pour des tests, appliqué à toute l'app (G38 perdu). 24.10 : y1b et w2 visaient Comparer, greffés sur Dryhopper (D63).
 - Cause : la portée (tests seuls, un usage, toute l'app) n'a pas été écrite avant d'agir.
-- Faire : écrire la portée en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler.
+- Faire : écrire la portée (et l'écran visé) en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler.
 - Rôles : pilote, conseil
 - Contrôle : aucun
 
@@ -26,9 +26,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, « Meilleures bar » de l5b. Seules les barres de voie ont été reprises, pas les pistes d'objectif. « C'est pas exactement ce que j'ai demandé ». 23.10 : la maquette suivait la carte et un thème proposé, pas ses choix (D105, D106), pourtant dite conforme ; « comme la maquette de base » lu base v4.10, c'était x3b, notée pour cela (D107).
+- Erreur : 19.10, « Meilleures bar » de l5b : barres reprises, pas les pistes. 23.10 : maquette sur la carte et un thème proposé, pas ses choix (D105, D106) ; « la maquette de base » lu v4.10 au lieu de x3b (D107). 24.10 nuit : « leg3-v2e · Les spéciaux repliés », nom d'une vignette, lu comme une consigne (D140).
 - Cause : « X de la variante Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte de chaque état qu'elle montre, gestes compris, même pour une revue (24.10 : seul le glisser d'ébullition comparé, le froid avait pris Dryhopper, D123). Ses maquettes : ses captures, mesurées (D106). Désignée vaguement : ses mots dans SPEC et les inventaires.
+- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (24.10 : le froid avait pris Dryhopper, D123). Un nom de vignette cité (`data-nom`) n'est pas une consigne. Ses maquettes : ses captures, mesurées (D106). Désignée vaguement : ses mots dans SPEC et les inventaires.
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 
@@ -161,5 +161,5 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 
 ## Mécanisées
 
-- M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle : le 22.10, les deux `\b` de D98 étaient des 0x08 (table `NOMME` morte, vue par la voie r6i), comme le `—` du pilote devenu un tiret. `systeme.mjs cablage` refuse tout caractère de contrôle dans les scripts de contrôle ; une voie qui en écrit un le rejoue. Un critère n'imprime jamais son jeton sans condition : le jeton dans la commande donne un faux vert.- M13 — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 22 (12 variantes) a perdu face au lot 21 (44 v0 : « vraiment plus qualitatif »). `systeme.mjs mission` : 48 v0 au moins en 6 séries, chaleurs (D22), baseline, tri, passe 2.
+- M10 — Un échappement écrit par un outil d'édition peut devenir un caractère de contrôle : le 22.10, les deux `\b` de D98 étaient des 0x08 (table `NOMME` morte), comme le `—` du pilote devenu un tiret. `systeme.mjs cablage` refuse tout caractère de contrôle dans les scripts de contrôle ; une voie qui en écrit un le rejoue. Un critère n'imprime jamais son jeton sans condition : le jeton dans la commande donne un faux vert.- M13 — Ce que le brasseur verra passe par l'entonnoir (`.claude/skills/voies/references/entonnoir.md`) : un vaste panel de concepts minimalistes sur la baseline, en trois chaleurs ; un classement ; des greffes « même les plus extravagantes » ; des passes v2, v3… jusqu'au satisfaisant. Le 22.10, le lot 22 (12 variantes) a perdu face au lot 21 (44 v0 : « vraiment plus qualitatif »). `systeme.mjs mission` : 48 v0 au moins en 6 séries, chaleurs (D22), baseline, tri, passe 2.
 - M16 (L03) — Une reprise se contrôle geste par geste (repos, pendant, après), sur sa maquette et sur la construction : le 24.10, des inventaires « au repos » ont laissé le rail perdre ses fonctions (D124). Un contrôle arrêté au premier échec cache les suivants (« RAIL ECHEC 1 » en cachait 8). `controle-etats.mjs`, `controle-fonctions-rail.mjs`.

@@ -172,6 +172,8 @@ Dérogation M13 : dg-critique : « Faire des mini maquettes du dryhopping avec m
 
 Dérogation M13 : rp-critique : « Faire des version r6a ++ avec tout les commentaires du dryhopping » (24.10, soir ; avec « Je dirais 11 par vue » du même soir : douze variantes en trois séries sur sa r6a, ni éventail de 48 ni passe 2 d'office ; le critique juge chaque variante).
 
+rpa1 écartée : « ses mots » au premier écran, qu'il trouvait inutiles (« ce texte là est inutile ») ; montrée marquée sur la planche.
+
 dga4 écartée : des jours de cuve chiffrés qui ne viennent pas du moteur (honnêteté) ; montrée marquée sur la planche.
 
 ## Agents (24.10) — l'agent de chaque série fait sa passe 2 (SendMessage)
@@ -204,6 +206,8 @@ Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`).
 | Toutes les mini maquettes | 1 172 mini maquettes en 54 lots depuis le 17.10, ses choix marqués ; 24.10, soir | https://claude.ai/artifact/HEiJX4ipJhYUXwnrgizkSd | `work/refonte-frontend/v4/outils/pages/2026-10-24-galerie/index.html` |
 | Dryhopper, tout | 96 mini maquettes de Dryhopper depuis le 19.10, sa p4b2f en tête ; 24.10, soir | https://claude.ai/artifact/VXa3fDxdzm9eWxPBsD8Pvf | `work/refonte-frontend/v4/outils/pages/2026-10-24-dryhopper-tout/index.html` |
 | Recherche avancée | douze concepts (rca, rcb, rcc), critique rc : 12 acceptés ; 24.10, soir | https://claude.ai/artifact/3A9jrMwgFK2feHWKkr4t2w | `work/refonte-frontend/v4/outils/pages/2026-10-24-recherche-avancee/index.html` |
+| Dryhopper, tes retours | douze greffes sur la base jouable (frise y1b, trois plans w2, cuve x3b), critique dg : 11 acceptées, dga4 écartée et montrée ; 24.10, nuit | https://claude.ai/artifact/4dnWwTDjKjZoPmngX7GTvm | `work/refonte-frontend/v4/outils/pages/2026-10-24-dryhopper-retours/index.html` |
+| Comparer r6a++ | douze versions de Comparer sur r6a avec ses retours (moment, frise y1b, trois plans w2, cuve x3b, différences), critique rp : 11 acceptées, rpa1 écartée et montrée ; 24.10, nuit | https://claude.ai/artifact/WJBxNSr9CCDVBy8jbJXpDC | `work/refonte-frontend/v4/outils/pages/2026-10-24-r6a-plus/index.html` |
 | Légendes sous les pastilles | huit variantes (leg, legz), critique : 7 acceptées, legz2 écartée et montrée ; 24.10, soir | https://claude.ai/artifact/TeKjPQDVHmxSwwMhGLWkKH | `work/refonte-frontend/v4/outils/pages/2026-10-24-legendes/index.html` |
 | Légendes v2 | passe 2 : cinq versions de leg3, v2 de leg1, leg2, leg4 ; 8 acceptées ; 24.10, soir | https://claude.ai/artifact/QFyJ5vPu2cLho29yCtUyQn | `work/refonte-frontend/v4/outils/pages/2026-10-24-legendes-v2/index.html` |
 

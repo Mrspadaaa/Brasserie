@@ -23,6 +23,8 @@ l'app, puis dans l'app après la porte B (fermée tant qu'il ne l'ouvre pas). Is
   batterie `outils/batterie.mjs` (31/31). Règle n° 1 : registre `v4/choix/ecrans.json`, `controle-choix.mjs`.
   Prochaine action : ses réponses (D121 A, B ou C ; l'appui long D112 ; les variantes de la liste de la fiche D115),
   ses choix ouverts (Dryhopper #146, Substituer #145, Levure), puis la porte B (#143).
+- **Intégration dans l'app (porte B ouverte le 24.10, nuit, D64)** : `work/missions/2026-10-25-integration-houblons/MISSION.md`,
+  épopée #159. État des lieux mesuré (voie i0), puis conseil sur l'architecture de fluidité, puis les tâches en issues.
 - **Système d'agents** (cerveau, voies, conseil, entonnoir, élagage) : `work/missions/2026-10-22-systeme-agents/ETAT.md`.
 - **Page de lot en vigueur** : https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv. Pour la republier :
   `v4/outils/page-lot/PUBLIER.md`.

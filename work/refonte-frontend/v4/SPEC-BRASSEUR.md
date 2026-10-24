@@ -545,6 +545,18 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   spéciaux repliés » : leg3-v2f, intégrée dans la maquette (cartes du rail, ajouts proposés). D61.
   Et sur v2a : « Légende vraiment bien, avec icône sans full text, bonne infos ciblé mais barre comme leg3-v2e » : des icônes
   sans texte complet, la petite barre de v2e.
+  Lecture corrigée (24.10, nuit) : « leg3-v2a · Les barres n/N » et « leg3-v2e · Les spéciaux repliés » sont les noms
+  des deux vignettes de la planche. Son choix est v2a telle quelle, avec seulement la barre de v2e ; v2f repliait les
+  lignes de v2a dans la pastille de v2e. Sur sa capture de la carte ouverte de Nugget dans v2a
+  (`fils24-legendes/captures/brasseur-24-10-nuit-v2a.jpg`), mot pour mot : « Je veux qqch comme ça moi ???? » (D140). Puis, la rangée des barres à quatre segments entourée (`captures/brasseur-24-10-nuit-barres.jpg`) : « Modifié juste ça par les vrai barre pas de stepper ».
+- **L'intégration dans l'app** (24.10, nuit), mot pour mot : « En attendant les variations dryhopping et mon choix dessu. Tu
+  peux commencer la mise en place pour l'intégration dans la vrai application. Faire une liste des tâche, mettre à jour git et
+  suivre tout ça. Jusqu'à l'intégration. La fluidité, l'optimisation de code est très importante vu qu'il y aura beaucoup de
+  données !! » (D64, #159).
+- **Ses retours sur y1b et w2 visaient Comparer** (24.10, nuit), mot pour mot, après la planche « Dryhopper, tes retours » :
+  « On c'est pas du tout compris. Je parlais de la vue comparé. C'est uniquement ces vues là où j'ai mis des commentaires
+  sur les mini maquettes ??? » ; puis « Les commentaires pour le dryhopping était pour la partie compare ». La frise de y1b
+  et les trois plans de w2 vont à Comparer, sur r6a (lot r6a++, D63) ; la planche Dryhopper les avait greffés au mauvais écran.
 - **Dryhopper, ses retours** (24.10, soir, sur la galerie de toutes ses mini maquettes), mot pour mot : sur la frise de y1b
   (« Le brassin au doigt », lot 21) : « Une frise de ce type est vraiment intéressant aussi, un peu à retravailler » ; sur w2
   (« Trois plans », lot 21) : « Ça c'est vraiment très intéressant ». Puis : « Faire des mini maquettes du dryhopping avec mes
