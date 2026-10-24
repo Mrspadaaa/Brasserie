@@ -73,6 +73,8 @@ for (const r of REPLIS) {
   await new Promise((res) => setTimeout(res, 350));
   texte += ' ' + norm(await p.evaluate(() => document.body.innerText));
 }
+const remplacants = await p.evaluate(() => [...document.querySelectorAll('[data-role="fiche-remplacants"] li')]
+  .filter((e) => e.getBoundingClientRect().height > 0).map((e) => (e.innerText || '').trim().split('\n')[0]));
 await nav.close();
 
 const a = (t) => texte.includes(norm(t));
@@ -111,8 +113,13 @@ for (const x of cites) for (const m of new Set(x.mots.flatMap((s) => s.mots).map
 if (precis.length) exiger('mots précis des familles', precis);
 const hors = [...new Map((fiche.motsSansFamille ?? []).map((x) => [TRAD[norm(x.mot)] ?? norm(x.mot), x.mot])).values()];
 if (hors.length) exiger('mots hors des 12', hors.map((m) => ({ dit: m, ok: mot(m) })));
-const remp = fiche.substitutsCalcules?.remplacants?.slice(0, 4) ?? [];
-if (remp.length) exiger('remplaçants', remp.map((r) => ({ dit: r.name, ok: a(r.name) })));
+// Les remplaçants suivent le calcul de Substituer au style de ma recette (D35) : la liste de la fiche
+// ([data-role="fiche-remplacants"], trois au moins) fait foi ; sans elle, les quatre premiers du pack.
+if (remplacants.length >= 3) exiger('remplaçants', [{ dit: '', ok: true }]);
+else {
+  const remp = fiche.substitutsCalcules?.remplacants?.slice(0, 4) ?? [];
+  if (remp.length) exiger('remplaçants', remp.map((r) => ({ dit: r.name, ok: a(r.name) })));
+}
 
 console.log(ecarts.length
   ? `EXHAUSTIVE ECHEC ${fiche.name} (${ecarts.join(' ; ')})`

@@ -61,6 +61,55 @@ la comparaison !!!! ». Registre : fiche = g1, liste sous le radar = flb5b.
 - Non repris de flb5b, hors de la liste (le reste de g1 ne change pas, VOIE r14) : l'en-tête « type 10 », la lentille « au
   style · 16D / absolu », le petit radar à zone 16D, la bande des houblons en bas (navigation de sa maquette).
 
+## Pied de flu2b et fiche exhaustive (D132)
+
+Ses mots (24.10, soir) : « La matrice nettoyée flb5b · de flb5 est très bien mais le footer doit être aussi avec tout ces
+informations comme 4 · Les cartes de famille · flu2b. Attention car la carte du houblons doit bien contenir de façon
+exhaustive TOUTES ses informations. » ; puis « Le footer est top » (pied de flu2b) et « C'est pas exhaustif sur les infos du
+houblons » (sous le pied de flb5b).
+
+- Le pied, celui de flu2b (captures flu2b-nugget.png, flu2b-nelson.png) : ♡ ⊘ à gauche, « Comparer » à droite, un filet,
+  puis quatre pastilles grises sans bord « Styles › · Huiles › · Sources › · Substituts › » (32 px dessinés, 44 px sous le
+  doigt). Il reste fixé en bas de la feuille ; la section touchée se déplie dans le flux, sous la matrice (Replis.tsx).
+  Chez flu2b ses quatre boutons étaient inertes : leur contenu est celui de g1 (D124), complété ci-dessous.
+
+### Inventaire : chaque champ du dépôt et sa place (pack-fiches.json, Nugget et Nelson Sauvin ; lu en direct dans le moteur)
+
+| Champ | Où dans la fiche |
+| --- | --- |
+| key, name | titre de la feuille (⊙ si l'α vient d'un lot) |
+| origin | Sources › « Origine : États-Unis » |
+| aliases (catalogue : NUG, 7005-194 ; NSN, 85-03-06) | Sources › « alias » |
+| form (catalogue, stock) | Sources › « forme : ? » (inconnue dans le dépôt) |
+| usage[].styles, source | Styles › étiquettes et « Crosby Hops, … » |
+| usage[].roles | vide dans le dépôt pour ces deux houblons |
+| role.value, role.source | pastille « double usage » (au premier plan), sa règle en title |
+| alpha.sources (BM 2023, HS 2025) | α en gros (Hopsteiner 2025, comme g1) et réglette ; Sources › chaque fiche datée |
+| alpha.retenu (lot, from) | « lot 13 % » à côté de l'α ; note « hors des plages » ; Sources › « α mon lot : 13 %, fiche de stock » |
+| alpha.divergence, beta.divergence | Sources › « α : fiches recouvrantes ; β : fiches recouvrantes » |
+| beta.sources | Sources › β de chaque fiche datée |
+| huiles.totale.sources, divergence | Huiles › « totale, Beer Maverick 2023 / Hopsteiner 2025 » et « Huile totale : fiches recouvrantes » |
+| huiles.composants (myrcène, humulène, caryophyllène, linalol) | Huiles ›, avec leur source |
+| farnesene null, farneseneRaison | Huiles › « farnésène : Publié par Beer Maverick, non importé dans le dépôt. » |
+| hsThiol (catalogue : faible ; forte) | Huiles › « thiols, Hopsteiner : classe forte » |
+| aromes[] (sources/of, authors, level) | radar (chaque axe « 2/4 », inconnus « ? » hachurés) ; Sources › auteurs de chaque famille |
+| aromes[].mots | matrice (D130) : ses mots en lignes, picto et couleur de leur famille, « 2/2 » |
+| aromes[].premier | Sources › « · 1er chez Hopsteiner » ; ordre des lignes de la matrice |
+| familles sans fiche (sources 0) | ligne des pictos « ? » sous le radar |
+| motsSansFamille | matrice : lignes ◇, bandeau « Lui seul : … » (hors-16d), part « autres 83 % » (D100) |
+| descripteurs.beerMaverick | Sources › « Descripteurs Beer Maverick » ; mots de la matrice |
+| descripteurs.hopsteiner, cites | Sources › chaque texte, tel qu'écrit (langue source), avec son auteur ; « classé » dans la matrice pour « Familles déclarées » |
+| substituts null, substitutsRaison | Substituts › « Scores de Beer Maverick non importés » |
+| substitutsCalcules | matrice (4 colonnes) et Substituts › (8) : le calcul de u4 en direct (D35), au style de ma recette ; pas la liste figée du pack |
+| stock.grams, etat | icône de stock à côté de l'usage (en stock) ; Sources › « mon stock : 100 g » ou « épuisé » |
+| stock article, α lu sur l'article | Sources › « article : Houblon Nelson Sauvin 9.6% » ; « α mon lot : 9,6 %, lu sur l'article » |
+| stock.libre (par scénario) | le scénario de la maquette seul : « mon stock » moins « dans ma recette » ; les autres scénarios (S4, S5) ne sont pas dans la maquette |
+| dansRecette | Sources › « dans ma recette : 46 g à 60′, 59,7 IBU » (état commun de la recette) ; « non » sinon |
+| ibuParGramme (b60) | Sources › « IBU par gramme à 60′ : 1,3 » (le moteur, ma recette : 20 L, DI 1,066, ébullition 60 min) |
+| ibuParGramme (autres moments) | écarté : la table des IBU par moment, « Inutile » (sa base) ; seul 60′ demandé (D132) |
+| gout.aime, exclu | ♡ ⊘ du pied |
+| url des fiches | non montrées : les noms et années des sources les disent ; à brancher dans l'app (liens) |
+
 ## Idées reprises
 
 - Le pied de g1 (D124, rendu par la voie r3) : Styles › · Huiles › · Sources › · Substituts ›, repliés, un seul déplié à la fois
@@ -113,3 +162,9 @@ la comparaison !!!! ». Registre : fiche = g1, liste sous le radar = flb5b.
 - La croix : son icône de 20 px prend un trait de 1,6 (1,33 px rendu, comme les icônes de 16 px ; D83 S4) ; feuille.css lui
   donne 2,25 : à aligner à l'intégration.
 - Les goûts s'écriront dans Dexie (préférences du brasseur) ; les mots des fiches viendront du catalogue réel.
+
+## `--sans=mots,fiche,legende` sur la route fiche (pilote, 24.10 soir, D49)
+La route fiche est Ma bière avec la feuille ouverte au chargement. Trois contrôles de COMMUN y échouent par construction, dès HEAD.
+`mots` compte Ma bière sous la feuille (194 mots). `fiche` (D25/D49) attend une fiche fermée à ouvrir. `legende` prend le premier
+bouton de légende, celui de Ma bière. Le geste de la fiche est couvert par ETATS (16/16) et `controle-fiche` (FICHE OK 1/1).
+Reste ouvert : rendre ces trois contrôles conscients d'une feuille ouverte.

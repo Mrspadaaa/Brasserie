@@ -7,7 +7,8 @@
 // et « + Floral 2/4  − Résineux 2/4 » ; ensuite, à la place de la liste de g1, la matrice de flb5b (D130, son choix du
 // 24.10, soir) : les familles non décrites en pictos « ? », le bandeau « Lui seul : … » (ses mots que ses remplaçants ne
 // disent pas, data-role="hors-16d"), ses mots en lignes face à ses quatre remplaçants de u4 (Matrice.tsx) ; enfin
-// Styles › · Huiles › · Sources › · Substituts › repliés (Replis.tsx). En pied, ♡ ⊘ et « Comparer ».
+// en pied, celui de flu2b (D132) : ♡ ⊘ et « Comparer », puis Styles › · Huiles › · Sources › · Substituts ›, dépliés dans
+// le flux sous la matrice (Replis.tsx) : tout ce que le dépôt sait du houblon, à un toucher.
 // Fermée par une seule croix ronde en haut à droite (Feuille, la tête de g1 et D109), le fond assombri, Échap et le
 // retour du téléphone. Emploi depuis un autre écran : export par défaut de index.tsx (<Fiche houblon={cle} />, fermée
 // par le retour), ou useFiche() (état local). Chaque état de g1 porte data-etat (controle-etats.mjs, D124).
@@ -19,11 +20,11 @@ import { useBiere, useComparaison, useGestes, useRecette, useVisee } from '../..
 import { sensDe, type Sens } from '../../etat/visee';
 import { houblon, style } from '../../moteur';
 import type { FamilyId } from '../../../../src/engine';
-import { sourceAlpha, Usage } from './briques';
+import { sourceAlpha, StockIcone, Usage } from './briques';
 import { Matrice, NonDecrites } from './Matrice';
 import { noterFermeture, useGestesFiche } from './gestes';
 import { RadarFiche } from './RadarFiche';
-import { Replis } from './Replis';
+import { Replis, ReplisBoutons, useReplis } from './Replis';
 import { nomSource, sourcesFiche, type SourcesFiche } from './sources';
 import './fiche.css';
 
@@ -149,12 +150,17 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
     aller({ ecran: 'comparer', houblons: liste });
   };
   const dansRecette = recette.additions.some((a) => a.hopKey === cle);
+  const replis = useReplis();
+  // Le pied de flu2b (24.10, « Le footer est top ») : ♡ ⊘ et « Comparer », un filet, puis Styles › · Huiles › · Sources › · Substituts ›.
   const pied = (
+    <div className="pq-fiche-pied">
     <div data-element="g1-actions" className="flex items-center gap-2 py-1">
       <Gout cle={cle} nom={h.nom} />
       <button type="button" data-role="pont-comparer-fiche" data-outil="Comparer" data-etat="etat-fiche-comparer" onClick={comparer}
         aria-label={`Comparer ${h.nom} à d’autres houblons`}
         className="ml-auto h-11 px-5 rounded-full border border-cave-700 text-base font-semibold text-cave-50">Comparer</button>
+    </div>
+    {s && <ReplisBoutons h={h} ouverte={replis.ouverte} basculer={replis.basculer} />}
     </div>
   );
   return (
@@ -175,7 +181,7 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
               )}
               {s && s.alpha.length > 0 && <Reglette s={s} lot={lot} />}
             </span>
-            <span data-element="g1-usage" className="ml-auto shrink-0"><Usage h={h} long /></span>
+            <span data-element="g1-usage" className="ml-auto shrink-0 inline-flex items-center gap-1.5"><StockIcone h={h} /><Usage h={h} long /></span>
           </div>
           {noteAlpha && <p data-role="fiche-note-alpha" className="text-sm text-cave-400 leading-snug">{noteAlpha}</p>}
         </div>
@@ -200,7 +206,7 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
         <NonDecrites familles={nonDecrites} />
         <Matrice h={h} cle={cle} recette={recette} seuleFiche={s?.seuleFiche ?? null} />
 
-        {s && <Replis h={h} cle={cle} s={s} recette={recette} onRemplacer={dansRecette ? () => aller({ ecran: 'substituer', houblon: cle }) : null} />}
+        {s && <Replis h={h} cle={cle} s={s} recette={recette} ouverte={replis.ouverte} onRemplacer={dansRecette ? () => aller({ ecran: 'substituer', houblon: cle }) : null} />}
       </div>
     </Feuille>
   );

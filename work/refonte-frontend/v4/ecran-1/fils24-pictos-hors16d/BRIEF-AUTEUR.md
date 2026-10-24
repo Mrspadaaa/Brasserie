@@ -16,6 +16,10 @@ qui y était. Mots modérés (D41). Si un ajout gêne, il passe à un toucher. C
 avant de rendre ; la NOTE dit ce que la carte a gagné et ce qu'elle a perdu en place. Un critique (Fable) juge ensuite chaque jeu
 sur ce point d'abord.
 
+Mais l'inverse compte autant, mot pour mot : « Mais il faut aussi que on voit comme il faut les différence ! ». Discret ne veut
+pas dire invisible : entre Galaxy et Saaz, entre Nelson Sauvin et un houblon sans mot propre, l'écart se voit au premier regard,
+sans lire. Un jeu qui ne gêne pas mais où Galaxy et Saaz se ressemblent a échoué.
+
 ## Les mots à dessiner (relevé du catalogue : `donnees/mots-hors16d.json` et `donnees/NOTE.md`)
 Les objets : groseille à maquereau, raisin, vin blanc (et sauvignon blanc), cannabis (et dank), crème, chewing-gum, citronnelle,
 café, curry, gingembre, marmelade, miel, mojito, nectar, oignon. Les qualificatifs (fruité, doux, noble, net, délicat, neutre)

@@ -544,7 +544,9 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   l'alourdir ; le critique le juge sur les captures, avant de lui montrer. Puis : « C'est peut être aussi un moyen de
   différencier un houblon hyper aromatique type Galaxy d'un houblons plus "fade" type saaz ». Les fiches le portent : Galaxy a
   des mots précis (fruit de la passion, ananas, pêche) et 1,8–5 mL/100 g d'huile ; Saaz redit ses familles (floral, herbacé,
-  terreux) avec 0,3–1 mL/100 g. Le mot précis mis en valeur doit faire lire cet écart.
+  terreux) avec 0,3–1 mL/100 g. Le mot précis mis en valeur doit faire lire cet écart. Puis, sur « Ta règle « Il faut pas que
+  ça gêne ! » passe », mot pour mot : « Mais il faut aussi que on voit comme il faut les différence ! ». Les deux tiennent
+  ensemble : sans gêner, et l'écart Galaxy / Saaz se voit franchement.
 - **L'entrée de l'analyse : B** (24.10, soir, sur B, la barre pleine « Ouvrir l'analyse de ma bière › », dans la planche),
   mot pour mot : « La meilleure ». D121 tranché : B dans l'étape, à la place de A.
 - **Les mots au premier écran** (24.10, soir, sur Substituer au-dessus de 70 mots), mot pour mot : « dépasse les 70 mots au

@@ -3,7 +3,7 @@
 // d'emploi d'un fournisseur, l'origine, et les auteurs de chaque famille. Lu en direct dans le catalogue du moteur
 // (hopRef(cle).catalogue, describeFamilies), comme hopSheet (src/engine/fiches.ts) : aucune valeur recopiée ni inventée ;
 // une donnée absente reste absente, avec sa raison (D14, D65).
-import { FAMILIES, describeFamilies, hopRef, type FamilyId } from '../../../../src/engine';
+import { FAMILIES, describeFamilies, familyWords, hopRef, type FamilyId } from '../../../../src/engine';
 
 export interface PlageSource { source: string; annee: number | null; min: number; max: number }
 export interface ComposantHuile { nom: string; plage: PlageSource | null; raison: string | null }
@@ -24,7 +24,26 @@ export interface SourcesFiche {
   descripteurs: string[];
   /** Un produit cryo porte les plages de sa variété en pellets : sa propre fiche manque (#131). */
   cryo: boolean;
+  /** Accord des deux fiches (règle de hopSheet) : identiques, recouvrantes, disjointes ; null à une seule fiche. */
+  accord: { alpha: Accord; beta: Accord; huile: Accord };
+  /** Codes et noms d'usage de la variété (« NSN, 85-03-06 »). */
+  alias: string[];
+  /** Classe « Thiol impact » de Hopsteiner (« forte »), un signal, jamais une intensité ; null : non publiée. */
+  thiol: string | null;
+  /** Mon stock : grammes au stock, articles, d'où vient l'α du lot ; null : pas au stock. */
+  stock: { grammes: number; articles: string[]; alphaDe: string | null; forme: string } | null;
+  /** Les textes des fiches autres que les étiquettes de Beer Maverick, tels qu'écrits (langue source). */
+  textes: { auteur: string; texte: string }[];
+  /** Par famille, les fiches qui la nomment en premier (« nommé en premier »). */
+  premier: Partial<Record<FamilyId, string[]>>;
 }
+export type Accord = 'identiques' | 'recouvrantes' | 'disjointes' | null;
+const accordDe = (l: PlageSource[]): Accord => {
+  if (l.length < 2) return null;
+  const [a, b] = l;
+  if (a.min === b.min && a.max === b.max) return 'identiques';
+  return Math.max(a.min, b.min) <= Math.min(a.max, b.max) ? 'recouvrantes' : 'disjointes';
+};
 
 const lignes = (bm: [number, number] | null, an: number | null, hs: [number, number] | null, anHs: number | null): PlageSource[] => [
   ...(bm ? [{ source: 'Beer Maverick', annee: an, min: bm[0], max: bm[1] }] : []),
@@ -45,10 +64,18 @@ export function sourcesFiche(cle: string): SourcesFiche | null {
   const d = describeFamilies(h.varietyId);
   const auteurs = FAMILIES.filter((f) => d[f].sources > 0).map((f) => ({ famille: f, fiches: d[f].sources, sur: d[f].of, auteurs: d[f].authors }));
   const sur = FAMILIES.map((f) => d[f].of).find((n) => n > 0) ?? 0;
+  const beta = lignes(c.beta, c.bmYear, hs?.beta ?? null, hs?.year ?? null);
+  const huileTotale = lignes(c.oil, c.bmYear, hs?.totalOil ?? null, hs?.year ?? null);
+  const w = familyWords(h.varietyId, c);
+  const st = h.stock;
   const r: SourcesFiche = {
-    alpha, alphaRecente,
-    beta: lignes(c.beta, c.bmYear, hs?.beta ?? null, hs?.year ?? null),
-    huileTotale: lignes(c.oil, c.bmYear, hs?.totalOil ?? null, hs?.year ?? null),
+    alpha, alphaRecente, beta, huileTotale,
+    accord: { alpha: accordDe(alpha), beta: accordDe(beta), huile: accordDe(huileTotale) },
+    alias: c.aliases ?? [],
+    thiol: c.hsThiol?.class ?? null,
+    stock: st ? { grammes: st.grams, articles: st.items ?? [], alphaDe: st.alphaFrom ?? null, forme: st.form } : null,
+    textes: (c.descriptions ?? []).filter((d) => d.source.author !== 'Beer Maverick').map((d) => ({ auteur: d.source.author, texte: d.text })),
+    premier: Object.fromEntries(FAMILIES.filter((f) => w.premier[f].length).map((f) => [f, w.premier[f]])),
     composants: [
       comp('myrcène', c.oils.myrcene), comp('humulène', c.oils.humulene), comp('caryophyllène', c.oils.caryophyllene),
       { nom: 'farnésène', plage: null, raison: 'Publié par Beer Maverick, non importé dans le dépôt.' },

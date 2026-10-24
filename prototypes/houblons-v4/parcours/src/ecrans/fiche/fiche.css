@@ -52,3 +52,11 @@ body:has(.pq-fiche) [data-vaul-overlay] { -webkit-backdrop-filter: none !importa
 .pq-fiche-mx-aide::after { content: ''; position: absolute; inset: -10px; }
 .pq-fiche-mx-leg { padding: 8px 10px; border-bottom: 1px solid rgb(var(--cave-850)); background: rgb(var(--cave-900)); display: flex; flex-direction: column; gap: 4px; font-size: 13px; line-height: 1.35; color: rgb(var(--cave-200)); }
 .pq-fiche-mx-leg[hidden] { display: none; }
+/* Le pied de flu2b : ♡ ⊘ · Comparer, un filet, puis quatre pastilles grises sans bord (Styles › … Substituts ›). Le
+   bouton garde 44 px sous le doigt ; la pastille dessinée fait 32 px, comme flu2b. */
+.pq-fiche-pied { display: flex; flex-direction: column; }
+.pq-fiche-plus { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; border-top: 1px solid rgb(var(--cave-800)); margin-top: 4px; }
+.pq-fiche-plus-b { min-height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; }
+.pq-fiche-plus-b > span { display: inline-flex; align-items: center; justify-content: center; gap: 3px; width: 100%; height: 32px; border-radius: 9999px;
+  background: rgb(var(--cave-850)); color: rgb(var(--cave-200)); font-size: 14px; white-space: nowrap; }
+.pq-fiche-plus-on > span { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); font-weight: 600; }

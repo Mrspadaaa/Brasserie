@@ -1,70 +1,74 @@
-ECHEC — G4 : CHOIX ECHEC (registre : dryhopper, étape) et COMMUN de la route fiche, en échec dès HEAD
+ECHEC — G4 : COMMUN échoue sur la route fiche dès HEAD (Ma bière sous la feuille) ; CHOIX OK, G1–G3 OK, G5 OK
 
-La matrice de flb5b est rendue sous le radar de g1 : G1, G2 et G3 sont OK, la fiche est « conforme » pour controle-choix (REPRISE OK), et ses quatre contrôles du registre passent. G4 échoue sur des causes extérieures à mon « Possède », toutes déjà présentes avant mon changement (détail plus bas).
+La fiche porte maintenant :
+- la matrice de flb5b sous le radar de g1 (D130) ;
+- le pied de flu2b (D132) ;
+- un inventaire exhaustif des données du houblon.
+
+Tous les critères passent, sauf le COMMUN de G4. Ses trois échecs viennent de la page (Ma bière rendue sous la feuille), pas de la fiche. Sur Nelson Sauvin, le contrôle exhaustif bute sur un seul remplaçant (DÉCISION 2).
 
 ## Fichiers écrits (Possède seulement)
-- `prototypes/houblons-v4/parcours/src/ecrans/fiche/donnees-matrice.ts` (neuf) : les mots des fiches (familyWords, traduits : étiquettes françaises de Beer Maverick, puis la table de flb5b) et l'ordre de flb5b. « classé » : la ligne « Familles déclarées » de Hopsteiner. Les colonnes : les 4 premiers de `lireRemplacants` (u4, D35), sans sa propre variété.
-- `…/fiche/Matrice.tsx` (neuf) : le bandeau « Lui seul : … » (`data-role="hors-16d" data-houblon="<clé>"`), la grille, la ligne des pictos « ? » et la légende derrière un « ? ».
-- `…/fiche/FicheHoublon.tsx` : le bloc gris de g1 (bande, familles, « sans famille », « non décrites ») est remplacé par `<NonDecrites>` et `<Matrice>`. Le reste de g1 ne change pas.
-- `…/fiche/fiche.css` : les classes `pq-fiche-mx-*`.
-- `…/fiche/jeu.mjs` : le geste « aromes et sources » devient « matrice de flb5b » (bandeau, pictos, colonnes du moteur rangées par pire cas).
-- `…/fiche/NOTE.md` : section « ## Reprise D130 » ; dans « ## Reprise », g1-bande et g1-premier sont écartés avec leur raison, et g1-familles, g1-sans-famille et g1-non-decrites sont repris dans la matrice.
-- Construit dans `prototypes/houblons-v4/maquettes/parcours-fiche/`. Aucune écriture à la racine ni hors du « Possède » (git status vérifié).
+Dans `prototypes/houblons-v4/parcours/src/ecrans/fiche/` :
+- `donnees-matrice.ts`, `Matrice.tsx` : la matrice de flb5b, le bandeau « Lui seul » (`data-role="hors-16d"`), les pictos « ? » et la légende derrière un « ? ».
+- `Replis.tsx` : le pied de flu2b. `ReplisBoutons` porte les quatre pastilles, fixées en bas de la feuille sous ♡ ⊘ Comparer. `Replis` déplie la section dans le flux, sous la matrice. Les ajouts :
+  - Huiles : accord des fiches, thiols de Hopsteiner ;
+  - Sources : accord α/β, mon stock (ou « épuisé »), article, d'où vient l'α du lot, dans ma recette (g, moment, IBU), IBU par gramme à 60′, alias, forme « ? », « 1er chez … », textes des fiches tels qu'écrits ;
+  - Substituts : calculés aussi hors de ma recette, sans moment ; scores de Beer Maverick non importés.
+- `sources.ts` : accord, alias, thiol, stock, textes, premier (lus dans le catalogue du moteur).
+- `FicheHoublon.tsx` : le pied flu2b ; l'icône de stock à côté de l'usage (L04).
+- `fiche.css`, `jeu.mjs` (geste « matrice de flb5b »).
+- `NOTE.md` : sections « Reprise D130 » et « Pied de flu2b et fiche exhaustive (D132) », avec l'inventaire champ → place de pack-fiches.json, Nugget et Nelson Sauvin.
+
+Dans la sortie : `prototypes/houblons-v4/maquettes/parcours-fiche/fiche/nelson-sauvin.html`, une copie de `etat.html` qui ouvre `#/fiche/beermaverick-nelson-sauvin`. C'est un état de contrôle, à recréer après chaque construction.
 
 ## Critères (rejoués sur la dernière construction)
-- G1 : `CONSTRUIT OK (9 pages) → prototypes/houblons-v4/maquettes/parcours-fiche/` ; `TYPES OK`.
+- G1 : `CONSTRUIT OK (9 pages)` ; `TYPES OK`.
 - G2 : `HORS-16D OK (1 : beermaverick-nugget « Lui seul : ananas, gingembre, géranium, litchi »)`.
 - G3 : `ETATS OK (16/16)`.
-- G4 : ECHEC.
-  - `CHOIX ECHEC (1 écran(s) conforme(s) à son choix ; 0 ouvert(s))`. La fiche est conforme (`REPRISE OK (10 repris, 0 en contexte, 0 en pont, 2 écartés)`). L'échec vient de deux défauts du registre `choix/ecrans.json`, dont le contrôle rejoue tous les écrans même avec `--ecran=fiche` :
-    - dryhopper : `mots` contient un commentaire (« Partir sur cette version (24.10, soir, sur p4b2f dans « Planches… ») »), introuvable tel quel dans SPEC-BRASSEUR ;
-    - etape-houblons : son complément 1, même cause.
-  - `COMMUN ECHEC` sur la route fiche, avec trois contrôles en échec. Les trois échouent **à l'identique sur HEAD**, sans mon changement : j'ai construit la fiche de HEAD à part, puis je l'ai supprimée.
-    - mots : 194 mots, car la page compte Ma bière sous la feuille ;
-    - fiche D25/D49 : la page s'ouvre fiche déjà ouverte, donc « un toucher court ouvre la fiche » ;
-    - legende : `document.querySelector` prend le « ? » de Ma bière, caché sous la feuille. Celui de la fiche vient après, par le portail.
-  - Avec `--sans=mots` (contrat REPRISE-D124) : COMMUN ECHEC 2 (fiche, legende).
-- Contrôles du registre pour la fiche :
+- G4 :
+  - `CHOIX OK (1 écran(s) conforme(s) à son choix ; 0 ouvert(s))`. L'échec signalé par le pilote venait d'une construction antérieure à ma NOTE ; `REPRISE OK (10 repris, 0 en contexte, 0 en pont, 2 écartés)`.
+  - `COMMUN ECHEC 3 contrôle(s)`, identique sur HEAD avant la voie. Les trois échecs ne sont pas dans ma voie :
+    - mots : 194 mots, parce que Ma bière est comptée sous la feuille ;
+    - fiche D25/D49 : la page s'ouvre fiche déjà ouverte ;
+    - legende : `document.querySelector` prend le premier `[data-role="legende-bouton"]`. Relevé au rendu : 3 boutons de `ma-biere` (page), puis celui de la fiche (feuille).
+- G5 : `EXHAUSTIVE OK Nugget (pied de flu2b ; 15 catégories : nom, α, β, huile totale, composés des huiles, origine, styles, sources, stock, dans ma recette, IBU par gramme à 60′, familles citées, mots précis des familles, mots hors des 12, remplaçants)`.
+- G5 sur Nelson Sauvin, avec `controle-fiche-exhaustive.mjs …/fiche/nelson-sauvin.html --houblon="Nelson Sauvin"` : `EXHAUSTIVE ECHEC Nelson Sauvin (P2 remplaçants : Pacific Jade)`. Voir DÉCISION 2.
+- Autres contrôles :
+  - `ETAPE OK (fiche)` ;
   - `FICHE OK 1/1` ;
-  - `FICHE-BASELINE OK` ;
-  - `FICHE-RADAR OK` (radar 168–510 px, liste dès 589 px) ;
-  - `ETATS OK` ;
-  - `ETAPE OK (fiche)` (jeu.mjs) ;
-  - `SANS-FAMILLE OK`.
-- `TEINTE ECHEC (6/7)` : l'écart vient de dryhopper, pas de la fiche.
+  - `FICHE-RADAR OK` ;
+  - `FICHE-BASELINE OK` et `SANS-FAMILLE OK` (passe précédente, la fiche n'a pas changé dans leur portée).
 
-## Captures (ouvertes, à côté de flb5b-premier-ecran.png, flb5b-motueka.png et consolide-fiche-390.png)
+## Captures (ouvertes, à côté de flb5b, flu2b et g1)
 Dans `prototypes/houblons-v4/maquettes/parcours-fiche/captures/` :
-- `r14-nelson-sauvin.png` (premier écran : bandeau à 613 px) et `r14-nelson-sauvin-bas.png` ;
-- `r14-motueka.png` et `r14-motueka-bas.png` ;
+- `r14-nelson-sauvin.png` : premier écran, avec le bandeau et le pied de flu2b ;
+- `r14-nelson-sauvin-bas.png`, `r14-motueka(-bas).png`, `r14-nugget(-bas).png`, `r14-idaho-7(-bas).png`, `r14-citra-cryo(-bas).png` ;
 - `r14-nelson-sauvin-legende.png` ;
-- `r14-nugget(-bas).png`, `r14-idaho-7(-bas).png` (« 1 seule fiche : Beer Maverick », jamais « 1/1 ») et `r14-citra-cryo(-bas).png`.
+- `r14-nugget-sources.png` et `r14-nelson-sauvin-sources.png` ;
+- `r14-*-huiles.png` et `r14-*-substituts.png`.
 
-Les lignes sont recomptées identiques à flb5b :
-- Nelson Sauvin : vin blanc, raisin, groseille à maquereau (2/2), sauvignon blanc (1/2), fruité 2/2, agrumes et épicé « classé » ;
-- Motueka : citron vert, mojito, zeste de citron, citron, agrumes, fruits tropicaux, floral, puis fruité « classé ».
+Les lignes de la matrice sont recomptées identiques à flb5b, sur Nelson Sauvin comme sur Motueka.
 
-« Lui seul » est identique aussi : « vin blanc, raisin, groseille à maquereau, sauvignon blanc » et « mojito, zeste de citron ».
-
-Prédiction : « Oui, c'est ma matrice, et le hors 16d saute aux yeux. » Il demandera peut-être pourquoi les remplaçants ne sont plus ceux de flb5b.
+Prédiction : « Le footer est là, et tout y est. » Sources est dense, mais seulement à un toucher.
 
 ## Choix faits dans le contrat
-- DÉCISION : les colonnes suivent le calcul de u4 (VOIE, D35), pas pack-fiches.json comme flb5b.
-  - Nelson Sauvin : Boomerang 91, Herkules 89, Phoenix 87, CTZ 84 (flb5b : …, Pacific Jade 87).
-  - Motueka : Cascade 88, Taiheke 86, Mandarina Bavaria 82, Pilot 82 (flb5b : Buzz Bullets 94, Shaddock, Cascade, Southern Sublime).
-  - « Lui seul » ne change pas.
-  - Un houblon hors de la recette prend le contexte « défaut » du moteur : `lireRemplacants` sans moment.
-- DÉCISION : sa propre variété sous une autre forme (Citra pour Citra cryo) ne prend pas de colonne : elle a les mêmes fiches, donc les mêmes mots. Sans ce choix, Citra cryo donnait « Lui seul : aucun mot ».
-- Ajouts dans le coin vide de la grille de flb5b :
-  - la légende de flb5b, derrière un « ? » de 24 px (cible de 44 px) ;
-  - « 1 seule fiche : … » (g1) ;
-  - la part « autres » (D100).
-- Sans aucun mot propre, le bandeau dit « Lui seul : aucun mot, ses remplaçants disent aussi les siens », sans `data-role="hors-16d"`.
+- DÉCISION : l'inventaire de g1 nomme la liste elle-même par cinq éléments : g1-bande, g1-familles, g1-premier, g1-sans-famille, g1-non-decrites. flb5b les remplace par son choix :
+  - g1-familles, g1-sans-famille et g1-non-decrites sont repris dans la matrice et dans la ligne des pictos « ? » ;
+  - g1-bande et g1-premier sont écartés avec leur raison (D130). « 1er chez … » reste dans Sources.
+  - Les autres éléments de g1 sont tous rendus.
+- DÉCISION : les colonnes de la matrice et Substituts suivent le calcul de u4 en direct (D35), au style de ma recette, pas la liste figée du pack. Hors de ma recette : sans moment. Sa propre variété (Citra pour Citra cryo) ne prend pas de colonne.
+- La ligne « IBU par gramme à 60′ » sort du moteur sur ma recette (Nugget 1,3, comme le pack). Les autres moments restent écartés (« Inutile »).
 
 DÉCISION À PRENDRE :
-1. Corriger `mots` de dryhopper et le complément 1 d'etape-houblons dans `choix/ecrans.json`, avec ses mots seuls, mot pour mot. Sans cela, `controle-choix.mjs` reste ECHEC pour tous les écrans.
-2. G4 lance `controle-commun` sur la route fiche, où mots, fiche et legende échouent par construction (Ma bière sous la feuille). Il faut soit le remplacer par les contrôles du registre (controle-fiche sur ma-biere : OK), soit rendre ces trois contrôles conscients de la feuille ouverte (`[data-role="fiche"]` d'abord).
+1. G4 joue `controle-commun` sur la route fiche, où mots, fiche et legende échouent par construction. Deux voies : remplacer ce contrôle par les contrôles du registre (déjà OK), ou rendre mots-premier-ecran, controle-fiche et controle-legende conscients d'une feuille ouverte (`[data-role="fiche"]` d'abord). Ces scripts sont hors de ma voie.
+2. Sur Nelson Sauvin, `controle-fiche-exhaustive` P2 exige les quatre premiers `substitutsCalcules` du pack : Boomerang, Herkules, Phoenix, Pacific Jade. Ce calcul figé n'a pas de style. La fiche suit D35 (le calcul de Substituer au style 16D de ma recette) et montre Boomerang 91, Herkules 89, Phoenix 87, CTZ 84, Marynka 84, puis le stock. Pacific Jade n'y est pas. Deux voies :
+   - le contrôle lit les remplaçants du moteur au style de la recette ;
+   - on revient au pack, mais alors la fiche et Substituer classeraient autrement les mêmes houblons, contre D35.
+   - Je n'ai pas ajouté Pacific Jade à la main.
+3. Données : l'article de stock de Nugget s'appelle « Nuget » dans le dépôt. Il est montré tel quel.
 
-CONNAISSANCE : la ligne Hopsteiner « Familles déclarées » est comptée comme une fiche par le radar (Nugget : « Herbacé 2/4 ») mais « classé » dans la matrice (« herbacé 1/4 »). Ces deux nombres se contredisent à l'œil sur Nugget, à trancher par le pilote ou en variantes. Autre fait : les mots des remplaçants gardent de l'anglais non traduit (« light citrus », « dank », « lilac »), qui ne se croise pas avec les mots français.
+CONNAISSANCE :
+- La ligne Hopsteiner « Familles déclarées » compte comme une fiche au radar (Nugget « Herbacé 2/4 »). La matrice la range « classé » (« herbacé 1/4 »). Les deux nombres se contredisent à l'œil.
+- Les mots des remplaçants gardent de l'anglais non traduit (« light citrus », « dank »).
 
-LEÇON PROPOSÉE : rejouer chaque CHECK de GATES.md sur la base (HEAD) avant de lancer la voie. Un critère déjà en échec sur la base, ici COMMUN sur la route fiche et CHOIX par le registre, condamne la voie sans rien dire de son travail.
+LEÇON PROPOSÉE : rejouer chaque CHECK de GATES.md sur HEAD avant de lancer une voie. Un critère déjà rouge sur la base, comme COMMUN sur la route fiche, ou qui lit une donnée figée contraire à une décision (le pack contre D35), condamne la voie sans rien dire de son travail.

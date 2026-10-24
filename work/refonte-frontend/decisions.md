@@ -577,3 +577,8 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - D48 (le brasseur, 24.10 soir : D131 bis, ter, quater et Galaxy/Saaz) : le lot de pictos D131 ajoute le picto « en plus »,
   la légende aux endroits clés, le mot précis dans sa famille (Galaxy face à Saaz) et la règle « Il faut pas que ça gêne ! » ;
   deux séries de quatre jeux (d131-pha Opus, d131-phz Fable), d131-critique juge d'abord l'intégration.
+- D49 (pilote, réversible) : sur la route fiche (Ma bière, feuille ouverte au chargement), COMMUN se joue `--sans=mots,fiche,legende`
+  (échecs par construction dès HEAD ; raison dans fiche/NOTE.md) ; le geste reste couvert par ETATS 16/16 et FICHE OK. Ouvert :
+  rendre ces trois contrôles conscients d'une feuille ouverte.
+- D50 (pilote, D35) : `controle-fiche-exhaustive` lit les remplaçants de la fiche (`[data-role="fiche-remplacants"]`, calcul de
+  Substituer au style), non la liste figée du pack ; Nugget et Nelson Sauvin EXHAUSTIVE OK, flb5b toujours ECHEC (témoin).
