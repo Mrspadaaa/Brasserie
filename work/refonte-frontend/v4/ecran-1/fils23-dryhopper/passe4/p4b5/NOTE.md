@@ -1,4 +1,4 @@
-# p4b5 — « Trois moments sous le pouce » (passe 4 sur a1, voie dh4b, 24.10 ; reprise après REJET)
+# p4b5 — « Trois moments sous le pouce » (passe 4 sur a1, voie dh4b, 24.10 ; reprise après REJET, puis retouches du conseil dh4)
 
 **Chaleur : chaude.** Forme libre sur a1 : la figure compare trois moments côte à côte, le moment sous le pouce au milieu,
 ouvert (barres l5b avec rond « avant » et chiffre), un voisin de chaque côté : barre de gain seule, sans rond, chiffrée.
@@ -7,46 +7,41 @@ Toucher un voisin y va. Le dock garde les quatre pastilles d'étape, le rail et 
 « contre ★ », mesuré et pont Levure sont ceux d'a1. Régénérer : `node generer.mjs` ; captures :
 `node ../p4b-commun/capturer.mjs p4b5`.
 
-## Reprise après le verdict du critique (`passe4/critique/PASSE4.md`, REJET : « barres des voisins illisibles, 7 px sous un rond de 12 px »)
-- **Cinq colonnes → trois** (voisin · ici · voisin) : cellules de 85 px au lieu de 47 ; barres de gain à 12 px de haut
-  (14 au milieu) sur des pistes de 51 à 55 px (45 à 61 aux bouts), mesurées au DOM (`geste.json`, `largeurBarres`).
-- **Plus de rond « avant » chez les voisins** : la barre de gain seule, chiffrée dans chaque colonne (~+22 · ~+22 · = ~+22) ;
-  le rond reste sur la colonne ouverte.
-- **Aux bouts du rail, les deux voisins du même côté** : à 60′, 60′ · 55′ · 50′ (`captures/p4b5-60.png`) ; à après · 7 j,
-  3 j · 5 j · 7 j. Plus de colonne vide.
-- **Amertume chiffrée dans les trois colonnes** : à 20′, ≈129 · ≈119 · ~110, orangées ; à cru « 60+? » hachuré partout.
-- **La loupe d'a1 rétablie** sur le rail (cinq moments par 5′, floral, ×5,6) : la figure ne tient plus lieu de loupe.
-- Les chiffres des voisins collaient à la barre du milieu : colonnes écartées de 10 px, chaque chiffre à 2 px de sa barre.
+## Retouches du conseil (`conseil-dh4/verdict.md`), avec leur mesure
+- **Noyau et Baies** : « ?→~+21 » (forme compacte, la colonne de valeur s'élargit seule sur ces deux lignes), stub hachuré
+  au pied de chaque barre dans les trois colonnes ; aucun « 0 » (`valeursZero: 0`).
+- **Loupe hors figure** : rail descendu de 10 px dans le dock ; la loupe d'a1 (60 px) couvre les pastilles ; intersection
+  mesurée au DOM avec la figure (`.p4b5-grille`) : **0 px²** à 20′, au whirlpool et à après · 7 j.
+
+## Reprise après le verdict du critique (REJET : « barres des voisins illisibles, 7 px sous un rond de 12 px »)
+- Cinq colonnes → trois (voisin · ici · voisin) : cellules de 85 px, barres de gain à 12 px de haut (14 au milieu) sur des
+  pistes de 51 à 55 px (DOM) ; plus de rond « avant » chez les voisins ; chaque colonne chiffrée ; amertume chiffrée partout
+  (à 20′ : ≈129 · ≈119 · ~110) ; aux bouts du rail, les deux voisins du même côté (60′ · 55′ · 50′) ; loupe d'a1 rétablie.
 
 ## Améliorations du brief prises
-- **1, l'interpolation dite** : une colonne interpolée a un en-tête en pointillé et « ≈ » (25′ · 20′ · 15′), une colonne
-  calculée un en-tête plein et « ~ » (60′, 10′) ; les points calculés sont aussi marqués sur le rail.
-- **5, deux facteurs à l'écran** : en dry hop, les voisins sont des jours (1 j · 2 j · 3 j) : la durée de contact se lit sans
-  second geste, et « = » devant le chiffre marque un jour sans gain.
-- **6, la lecture sans légende** : trois colonnes alignées, toutes chiffrées, ● / ○ sous l'en-tête pour « mesuré » /
-  « jamais mesuré » (c7).
+- **1, l'interpolation dite** : en-tête en pointillé et « ≈ » pour une colonne interpolée, plein et « ~ » pour une calculée.
+- **5, deux facteurs à l'écran** : en dry hop, les voisins sont des jours (1 j · 2 j · 3 j) ; « = » devant le chiffre marque
+  un jour sans gain.
+- **6, la lecture sans légende** : trois colonnes alignées, toutes chiffrées, ● / ○ sous l'en-tête pour mesuré / jamais mesuré.
 
 ## Greffes
-Les cases comparées dont celle du doigt s'ouvre (e3) ; la mesure par colonne (c7) ; « sans gain » (e2) ; pastilles d'étape,
-sauts, loupe et « contre ★ » d'a1 et b4.
+Les cases comparées dont celle du doigt s'ouvre (e3) ; la mesure par colonne (c7) ; « sans gain » (e2) ; pastilles, sauts,
+loupe et « contre ★ » d'a1 et b4.
 
 ## Ce qui tient
-- La comparaison des étapes sans glisser, que le tri demandait (relance « e3 + a8 + c7 »), en gardant le geste et la loupe d'a1.
-- 39 mots hors données ; un écran ; D98 vert (les boutons de colonne sont des sauts, dans le groupe `data-libre`).
+- La comparaison des étapes sans glisser, en gardant le geste et la loupe d'a1 ; 45 mots hors données ; un écran.
 
 ## Ce qui casse
-- Les pistes des voisins font 51 px (le label des familles prend 70 px) : les écarts de 1 point (floral 1 j → 2 j) se lisent au
-  chiffre, pas à la barre.
-- Trois colonnes au lieu de cinq : à 5′ près on ne voit qu'un cran de chaque côté ; la loupe du rail complète.
-- Le « = » sans gain apparaît aussi sur la colonne ouverte (épicé à 2 j) : juste, mais discret.
+- Les pistes des voisins font 51 px : les écarts de 1 point se lisent au chiffre, pas à la barre ; sur Noyau et Baies,
+  « ?→~+21 » rétrécit encore la piste (≈ 30 px).
+- Trois colonnes : un seul cran de chaque côté ; la loupe du rail complète.
 
-## Contrôles (rejoués après la reprise)
+## Contrôles (rejoués après les retouches)
 | critère | sortie |
 |---|---|
 | G2 `controle-commun --sans=mots` | **COMMUN OK** |
 | G3 `controle-une-question` | **UNE-QUESTION OK (1 groupe libre : moment)** |
-| G4 `mots-premier-ecran --max=80 --sans-donnees` | **MOTS OK**, 39 mots |
+| G4 `mots-premier-ecran --max=80 --sans-donnees` | **MOTS OK**, 45 mots |
 
-Geste : d'actif · 2 j (colonnes 1 j | 2 j | 3 j, ~+22, 60+?) à 20′ (colonnes 25′ | 20′ | 15′, ≈+11, ≈119, « contre ★ :
-floral ≈−11 · résineux ≈−7 · trop amer »), loupe 5 voisins ×5,6. Captures ouvertes : `captures/p4b5-premier-ecran.png`,
-`p4b5-pendant.png`, `p4b5-apres.png`, `p4b5-60.png`.
+Geste : d'actif · 2 j (colonnes 1 j | 2 j | 3 j, ~+22, 60+?) à 20′ (colonnes 25′ | 20′ | 15′, ≈+11, ≈119), loupe ×5,6.
+Captures ouvertes : `captures/p4b5-premier-ecran.png`, `p4b5-pendant.png`, `p4b5-apres.png`, `p4b5-60.png`.

@@ -41,15 +41,16 @@ rendre({
 .p4b2-svg .p4b2-ibu.p4b2-trop { fill:var(--acc); }
 .p4b2-svg .p4b2-ibu.p4b2-ipb { opacity:.55; }
 .p4b2-svg .p4b2-lev { fill:url(#p4b2-hachb); stroke:#3b5f8a; stroke-width:1.2; stroke-dasharray:3 2; }
-.p4b2-rail { margin-top:16px; }
+.p4b2-rail { margin-top:2px; }
+.p4b2 .p4r-pl { bottom:auto; top:28px; }
 .p4b2 .p4r-geste { display:flex; flex-direction:column; }
 .p4b2 .p4r-loupe { position:relative; top:auto; left:auto; right:auto; order:2; margin-top:6px; }
-.p4b2-jr { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; margin-top:4px; }
+.p4b2-jr { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; margin-top:28px; }
 .p4b2-jr button { height:22px; border-radius:4px; background:#f1f2f5; font:600 12px var(--sans); color:var(--encre); }
 .p4b2-jr button.p4b2-sg { background:#f7f8fa; color:var(--gris); font-weight:400; border:1px dashed #c9cdd6; }
 .p4b2-jr button[aria-pressed="true"] { background:var(--encre); color:#fff; font-weight:700; border:0; }
 .p4b2-jr button[aria-disabled="true"] { opacity:.45; }
-.p4b2-ba { display:grid; grid-template-columns:92px 1fr 44px; align-items:center; gap:6px; font-size:14px; min-height:22px; }
+.p4b2-ba { display:grid; grid-template-columns:92px 1fr 44px; align-items:center; gap:6px; font-size:14px; min-height:21px; }
 .p4b2-n { display:flex; align-items:center; gap:4px; white-space:nowrap; }
 .p4b2-n.p4b2-att { font-weight:700; }
 .p4b2-v { text-align:right; font:600 12px var(--mono); }
@@ -115,7 +116,7 @@ body.abs .p4b2-p .p4b2-av { left:clamp(6px, var(--wa), calc(100% - 6px)); }
       for (var k = 1; k <= N; k++) h += '<line x1="' + pts[k - 1][0] + '" y1="' + pts[k - 1][1] + '" x2="' + pts[k][0] + '" y2="' + pts[k][1] + '" stroke="' + S.T[f] + '" stroke-width="' + (f === 'floral' ? 3 : 2.2) + '" stroke-linecap="round"' + (pts[k][2] || pts[k - 1][2] ? ' class="p4b2-ip"' : '') + '/>';
       for (var k = 0; k <= N; k++) if (!pts[k][2]) h += '<circle cx="' + pts[k][0] + '" cy="' + pts[k][1] + '" r="3" fill="' + S.T[f] + '"/>';
     });
-    (function () { var ls = COURBES.map(function (f) { return { f: f, y: yc(S.d(D[N], f)) }; }).sort(function (a, b) { return a.y - b.y; }); for (var n = 1; n < ls.length; n++) if (ls[n].y - ls[n - 1].y < 13) ls[n].y = ls[n - 1].y + 13; ls.forEach(function (l) { h += '<text data-nom="' + l.f + '" x="' + (W - 2) + '" y="' + (l.y - 6) + '" text-anchor="end" fill="' + S.T[l.f] + '">' + S.NOM[l.f].toLowerCase() + '</text>'; }); })();
+    (function () { var ls = COURBES.map(function (f) { return { f: f, y: yc(S.d(D[N], f)) }; }).sort(function (a, b) { return a.y - b.y; }); for (var n = 1; n < ls.length; n++) if (ls[n].y - ls[n - 1].y < 16) ls[n].y = ls[n - 1].y + 16; ls.forEach(function (l) { h += '<text data-nom="' + l.f + '" x="' + (W - 2) + '" y="' + (l.y - 6) + '" text-anchor="end" fill="' + S.T[l.f] + '">' + S.NOM[l.f].toLowerCase() + '</text>'; }); })();
     // L'axe, les moments mesurés (● plein), ★.
     for (k = 0; k <= N; k++) { var m = P4.mesure(D[k]); if (m.ok && (k === S.idx('dryActive|2') || k === S.idx('dryPost|2'))) h += '<circle cx="' + px(k) + '" cy="' + (YAX - 1) + '" r="3" fill="var(--encre)"/><text class="p4b2-lb" x="' + (px(k) + 6) + '" y="' + (YAX - 4) + '">' + m.court + '</text>'; }
     h += '<text x="' + px(P4.best) + '" y="' + (TOP - 3) + '" text-anchor="middle" fill="#2f6b5f">★</text>';
@@ -128,20 +129,20 @@ body.abs .p4b2-p .p4b2-av { left:clamp(6px, var(--wa), calc(100% - 6px)); }
     function noms(x) {
       var fin = x < W - 110, k = fin ? N : 0;
       var ls = COURBES.map(function (f) { return { f: f, y: yc(S.d(D[k], f)) }; }).sort(function (a, b) { return a.y - b.y; });
-      for (var n = 1; n < ls.length; n++) if (ls[n].y - ls[n - 1].y < 13) ls[n].y = ls[n - 1].y + 13;
+      for (var n = 1; n < ls.length; n++) if (ls[n].y - ls[n - 1].y < 16) ls[n].y = ls[n - 1].y + 16;
       ls.forEach(function (l) { var t = svg.querySelector('[data-nom="' + l.f + '"]'); t.setAttribute('x', fin ? W - 2 : 2); t.setAttribute('text-anchor', fin ? 'end' : 'start'); t.setAttribute('y', fin ? l.y - 6 : l.y - 6); });
     }
     function doigt(i) {
       var p = D[i], x = px(i), droite = x < W - 70; noms(x);
       document.getElementById('p4b2-dl').setAttribute('x1', x); document.getElementById('p4b2-dl').setAttribute('x2', x);
       var ls = COURBES.map(function (f) { return { f: f, y: yc(S.d(p, f)), ty: yc(S.d(p, f)) }; }).sort(function (a, b) { return a.y - b.y; });
-      for (var n = 1; n < ls.length; n++) if (ls[n].ty - ls[n - 1].ty < 13) ls[n].ty = ls[n - 1].ty + 13;
+      for (var n = 1; n < ls.length; n++) if (ls[n].ty - ls[n - 1].ty < 16) ls[n].ty = ls[n - 1].ty + 16;
       ls.forEach(function (l) {
         var c = svg.querySelector('[data-c="' + l.f + '"]'), t = svg.querySelector('[data-t="' + l.f + '"]');
         c.setAttribute('cx', x); c.setAttribute('cy', l.y); t.setAttribute('x', droite ? x + 9 : x - 9); t.setAttribute('y', l.ty + 4); t.setAttribute('text-anchor', droite ? 'start' : 'end'); t.textContent = S.fmt(p, l.f);
       });
       var b = S.ibu(p), di = document.getElementById('p4b2-di');
-      di.setAttribute('x', droite ? x + 9 : x - 9); di.setAttribute('y', yi(Math.min(170, b.n)) - 3); di.setAttribute('text-anchor', droite ? 'start' : 'end'); di.setAttribute('fill', b.h ? '#c2410c' : '#55555f');
+      di.setAttribute('x', droite ? x + 9 : x - 9); di.setAttribute('y', Math.max(yi(Math.min(170, b.n)) - 3, ls[ls.length - 1].ty + 18)); di.setAttribute('text-anchor', droite ? 'start' : 'end'); di.setAttribute('fill', b.h ? '#c2410c' : '#55555f');
       di.textContent = b.cru ? '60+?' : b.t.replace(' IBU', '');
     }
     // Les quatre étapes en tête de figure : des sauts.
