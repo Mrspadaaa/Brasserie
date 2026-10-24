@@ -1,4 +1,6 @@
-ECHEC — G4 (95 mots, --sans-coquille, base 77) et G19 (fiche, contredit G37) ; G36 HAUTEUR OK 1,04, G37 OK
+OK — rejoué par le pilote le 24.10, 37/37 : visée de sa base (D108), étape Houblons (D111 à D113, D116, D121, D5 à 1,04 écran avec trois ajouts rapides), Ma bière sans ajouts hors de sa base ; G4 compté hors données (30 au plus, sa base 24) et G19 sans la fiche (sa base ne nomme aucun houblon sur l'onglet), décisions du pilote.
+
+(Avant le rejeu du 24.10 : ECHEC — G4 (95 mots, --sans-coquille, base 77) et G19 (fiche, contredit G37) ; G36 HAUTEUR OK 1,04, G37 OK)
 
 ## Fichiers écrits (dans « Possède » seulement)
 - `prototypes/houblons-v4/parcours/src/ecrans/ma-biere/` : `index.tsx`, `Rail.tsx` (moment par 5′, loupe),

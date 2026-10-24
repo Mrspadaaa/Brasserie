@@ -22,12 +22,12 @@ Scope: l'écran Suggérer de q2b (base v4.10), « Quel houblon ajouter à ma bi�
 - [x] G4: 80 mots au plus au premier écran
   CHECK: node work/refonte-frontend/v4/tournoi/outils/mots-premier-ecran.mjs prototypes/houblons-v4/maquettes/parcours-p2 suggerer --max=80 --page=etat.html
   EXPECT: MOTS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=d3c5ef513a53604d86e1a74f7b930747820aa2cd5fc5d4ced8f2bdd765a6004e; exit=0; EXPECT=matched; output-sha256=b85f6b65b93e87d06818e522cec1d6108ff72df3a74deb946e21759374590788; output-bytes=25; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=d3c5ef513a53604d86e1a74f7b930747820aa2cd5fc5d4ced8f2bdd765a6004e; exit=0; EXPECT=matched; output-sha256=5d147c100c300323a2ee86608f311a1af4c404fd0530274f571e5921797a5c90; output-bytes=25; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G5: un seul facteur libre, le houblon (D98) ; titre et contexte levés par la règle n° 1 (D117)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-une-question.mjs prototypes/houblons-v4/maquettes/parcours-p2 suggerer --page=etat.html --regle-n1="D117 : sa base v4.10 et q2b n'ont ni question en titre ni ligne fixé"
   EXPECT: /UNE-QUESTION OK \(1 groupe libre : houblon\)/
-  EVIDENCE: automatic-evidence=v1; definition-sha256=4e574cb2f338e5cbe1d33f8322623f3fae36480d3ea81d213307d712c0245a6f; exit=0; EXPECT=matched; output-sha256=3d23eb0514aaafb9b97514f623fe868a70c2fe97c8ce7ab4e3c67501e17f0ddf; output-bytes=169; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=4a1b034e109a1ef1c0de0982ca9d5872dc96d3c5c123e0a610a1a6d2e84f1ac0; exit=0; EXPECT=matched; output-sha256=7db7e5244a802d2f3984b7049a1b8a88c124ce63492b3f41758310dedd596ac8; output-bytes=257; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G6: les extras hors objectif se voient (D76)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-autres-ajouts.mjs prototypes/houblons-v4/maquettes/parcours-p2 suggerer --pages=etat.html
@@ -42,7 +42,7 @@ Scope: l'écran Suggérer de q2b (base v4.10), « Quel houblon ajouter à ma bi�
 - [x] G8: cinq candidats au premier écran, sans gros blocs (D84)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-place-voies.mjs prototypes/houblons-v4/maquettes/parcours-p2 suggerer --page=etat.html
   EXPECT: PLACE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=d07577d8c926d637fc7eddc30db8783877d079a75b0c7bd6ec928f41b7f9a654; exit=0; EXPECT=matched; output-sha256=df38f777e422157ab34036b9f0bb3955e2db1db89d6e54469aff3174f1f6a47e; output-bytes=77; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=d07577d8c926d637fc7eddc30db8783877d079a75b0c7bd6ec928f41b7f9a654; exit=0; EXPECT=matched; output-sha256=8996824595eaf2c6333f02b8bf0c9070f19e5d1a7c866432d17b01ff9ab53cfe; output-bytes=77; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G9: ce qu'il a validé de Ma bière tient sur l'écran (D79)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-ma-biere.mjs prototypes/houblons-v4/maquettes/parcours-p2 suggerer --page=etat.html
@@ -62,12 +62,12 @@ Scope: l'écran Suggérer de q2b (base v4.10), « Quel houblon ajouter à ma bi�
 - [x] G12: le parcours entier joue encore
   CHECK: node prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs --dossier=prototypes/houblons-v4/maquettes/parcours-p2 --ponts
   EXPECT: PONTS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=a05f673d3fedfa58847023318d6cda48725433bc0ebc95c4d33e84b8f9741de6; exit=0; EXPECT=matched; output-sha256=b1628d60ee9d04697c5f1998e28be28b81d542e2aba2ebeef04c86ab70f34e5b; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=a05f673d3fedfa58847023318d6cda48725433bc0ebc95c4d33e84b8f9741de6; exit=0; EXPECT=matched; output-sha256=1ac24ff9ce3f6a3c387b521549ec93303c238ac9e13cc47b35936ac91ddb0cdf; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G13: les tolérances du moteur tiennent (D54)
   CHECK: cd prototypes/houblons-v4 && npx vitest run tests/tolerance.test.ts && echo TOLERANCE OK
   EXPECT: TOLERANCE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=01bb0fa00b4b584a8e4d38492ef7d074a5bf40ff8e439186d899e81749431e45; exit=0; EXPECT=matched; output-sha256=4db0e08a6ed48a7d3b4845548f2e13893f83d7e0e2b82d82f955cbb80dd3827c; output-bytes=2577; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=01bb0fa00b4b584a8e4d38492ef7d074a5bf40ff8e439186d899e81749431e45; exit=0; EXPECT=matched; output-sha256=7f569c312bfb20a4f10cd263d5af6ebc05b3eeacb041456bb0056f3e19d2ab1b; output-bytes=2577; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G14: aucun fichier de l'app n'a changé
   CHECK: node prototypes/houblons-v4/parcours/outils/app-intacte.mjs
@@ -87,7 +87,7 @@ Scope: l'écran Suggérer de q2b (base v4.10), « Quel houblon ajouter à ma bi�
 - [x] G17: Suggérer reprend q2b, élément par élément (D105)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-reprise.mjs prototypes/houblons-v4/maquettes/parcours-p2 suggerer --page=etat.html --inventaire=work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/donnees/inventaire-q2b.json
   EXPECT: REPRISE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=9a30ac4248a41159a42dba5fa36350f0566d98b4556910b109e7f29439cd86a9; exit=0; EXPECT=matched; output-sha256=c28906ab34bd8f81ead1068c728d8208a71ffbb5f365ffd56e8171d2f21c2e18; output-bytes=477; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=9a30ac4248a41159a42dba5fa36350f0566d98b4556910b109e7f29439cd86a9; exit=0; EXPECT=matched; output-sha256=630a3af9f4943269f5da270d5989892995df6701f2bc05d0e2ae4f47b7f3381a; output-bytes=627; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G18: Suggérer est conforme à son choix, q2b (règle n° 1)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours-p2 --ecran=suggerer
@@ -97,34 +97,34 @@ Scope: l'écran Suggérer de q2b (base v4.10), « Quel houblon ajouter à ma bi�
 - [x] G19: Suggérer a la teinte de q2b : cartes d'objectif à sa hauteur (D106)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-teinte.mjs prototypes/houblons-v4/maquettes/parcours-p2 --ecran=suggerer
   EXPECT: TEINTE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=4bd8a00746b415972b5089153a7ec48addfb4616fd8e6fb966f9aeba64f1c901; exit=0; EXPECT=matched; output-sha256=00a96512e5308df6f250d4374b7cb4fe08ad8c41a51fa54b4641fbad36369575; output-bytes=113; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=4bd8a00746b415972b5089153a7ec48addfb4616fd8e6fb966f9aeba64f1c901; exit=0; EXPECT=matched; output-sha256=0cc2904da6d00fb1cd9be5f02d482a7d3cac845f46670768d7f05c6e906eaac7; output-bytes=113; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G20: les traits se lisent au toucher, près du picto, et rien de plus au repos (D110)
+- [x] G20: les traits se lisent au toucher, près du picto, et rien de plus au repos (D110)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-traits.mjs prototypes/houblons-v4/maquettes/parcours-p2
   EXPECT: TRAITS OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=0c5537fa38dd65ba1436759616d1a7f8f63238ef3f8268cf421359de331a5d3a; exit=0; EXPECT=matched; output-sha256=b26acd8ddd022cd0fcf5f5f3534b77ce34020e312f5c0aa13d5348ff492c226c; output-bytes=946; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G21: le retour de chaque outil est grand, à l'encre, nommé, et quitte l'outil (D109)
+- [x] G21: le retour de chaque outil est grand, à l'encre, nommé, et quitte l'outil (D109)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-retour.mjs prototypes/houblons-v4/maquettes/parcours-p2
   EXPECT: RETOUR OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=acbca49291b0dd6baefe38ffc57712b6bea80a78147acfc9ee5162c2fabd2fe6; exit=0; EXPECT=matched; output-sha256=14619a45202c82146fda765ca97881026fb190aa27dbaaee5028225a33054f1e; output-bytes=2146; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G22: le parcours entier joue avec le nouveau retour
+- [x] G22: le parcours entier joue avec le nouveau retour
   CHECK: node prototypes/houblons-v4/parcours/outils/parcours-complet.mjs --sans-construire --dossier=prototypes/houblons-v4/maquettes/parcours-p2
   EXPECT: PARCOURS OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=66b36296211a50f03cac3d8fd197f2ba18f60e988734784142cbd72827478f5d; exit=0; EXPECT=matched; output-sha256=a8af4e74b582fa5b34111d88ad010668f39db71f48a7d03b47d93aa437b98e5e; output-bytes=1015; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G23: le rapport de la reprise nomme ses captures côte à côte avec q2b, les textes au toucher et les mesures du retour
+- [x] G23: le rapport de la reprise nomme ses captures côte à côte avec q2b, les textes au toucher et les mesures du retour
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p2-suggerer/RESULTAT.md --contient "## Reprise D117, D110, D109, D118, D119,consolide-b-390,q2b,cran,44,390,1280"
   EXPECT: NOTE OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=0a4b662e2ef4832787f04c1b8262b76ab1a21b2c175f0c62a0384d942b915454; exit=0; EXPECT=matched; output-sha256=9ebc2a3bc86c0b29c21d72443842e536bd7da4e7adcc302b3ba991bcde6c1c36; output-bytes=8; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G24: Suggérer reprend sa base v4.10 et q2b, élément par élément, inventaire complété (D117, règle n° 1)
+- [x] G24: Suggérer reprend sa base v4.10 et q2b, élément par élément, inventaire complété (D117, règle n° 1)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours-p2 --ecran=suggerer
   EXPECT: CHOIX OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=3c4742fbf57123e7252efe449f3e5294d4e1925d8250f755a4a370a029940c04; exit=0; EXPECT=matched; output-sha256=faa65b63173f33986f1ad3af01b780870adfd9ee989c03f90f26ec4a2865d201; output-bytes=62; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G25: la croix est la même sur les trois onglets et ramène à l'étape Houblons (D109, D118, D119)
+- [x] G25: la croix est la même sur les trois onglets et ramène à l'étape Houblons (D109, D118, D119)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-retour.mjs prototypes/houblons-v4/maquettes/parcours-p2 --routes=biere,suggerer,comparer
   EXPECT: RETOUR OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=25b0b653fddec56a3e3780ac2598fe135ef16ea103ca475e13b5a26dfe40c72a; exit=0; EXPECT=matched; output-sha256=cf80727d79152325cbb8ad0fa36ec8882f550acfd1146bc667daf7aa2129606e; output-bytes=1214; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries

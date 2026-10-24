@@ -89,6 +89,7 @@ Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`).
 |---|---|---|---|
 | Maquette jouable | parcours de bout en bout, construction d332792c ; 23.10 | https://claude.ai/artifact/52UBb4F7iME2k3ZzsAv4x1 | `work/refonte-frontend/v4/outils/pages/2026-10-23-maquette/index.html` |
 | Maquette jouable | version D107 à D121, construction 5345f6ad ; 24.10 | https://claude.ai/artifact/2BktuZzij8q2DAsrxQS5iX | `work/refonte-frontend/v4/outils/pages/2026-10-24-maquette/index.html` |
+| Côte à côte | sa base et la maquette, 12 états à 390 px, et le choix D121 ; 24.10 | https://claude.ai/artifact/Q8H8dx98NhqibJkJzv1isW | `work/refonte-frontend/v4/outils/pages/2026-10-24-cote-a-cote/index.html` |
 
 ## Boucle de retour
 - Un critère rouge : l'agent corrige dans sa voie, 3 essais. Au-delà, SendMessage au même agent avec le défaut
@@ -201,4 +202,65 @@ Rejeu du pilote (23.10, nuit), `node scripts/agents/systeme.mjs voies work/missi
 - **Reste** :
   - à lui : Dryhopper (a1, b4, d8, e5, g1), Substituer (porte ou outil), Levure (étape ou outil), puis la porte B ;
   - à faire : #143, B6 (atelier V5.5 remplacé ou gardé) et B9 à B11 ; rendu d'écran 93 à 118 ms contre 100 ms ;
+  - à l'utilisateur : le push des commits locaux.
+
+### Version D107 à D121 (24.10, nuit)
+
+Rejeu du pilote, `node scripts/agents/systeme.mjs voies work/missions/2026-10-23-maquette-parcours --approuver` :
+**VOIES OK 18/18** (p0 à p18 ; p16 non attribuée).
+
+- **Livré** :
+  - la maquette https://claude.ai/artifact/2BktuZzij8q2DAsrxQS5iX (construction 5345f6ad), figée dans
+    `work/refonte-frontend/v4/outils/pages/2026-10-24-maquette/` ;
+  - la page côte à côte https://claude.ai/artifact/Q8H8dx98NhqibJkJzv1isW (publiée par la supervision) ;
+  - les preuves :
+    - `outils/batterie.mjs` → BATTERIE OK 31/31 ;
+    - critique p6 : 8 ACCEPTÉ, 0 REJET, après corrections ;
+    - rejeu de la supervision : 31/31 et 19 gestes.
+- **Ses mots, et ce qu'ils ont produit** : quinze commentaires sur d332792c, D107 à D121 (SPEC § 1, DEFAUTS-RECURRENTS).
+  Chacun a son contrôle, qui échoue sur d332792c :
+  - comparer-etapes (D107, D114) ; visee (D108) ; retour, dont `--fiche` (D109, D118, D119) ; traits (D110) ;
+  - geste-etape (D111) ; appui A9 (D112) ; legende `--etape` (D113) ; fiche-radar (D115) ; stepper (D116) ;
+  - choix, avec l'inventaire q2b complété (D117) ; annuler (D120) ; profil-ouvre (D121) ;
+  - hauteur (D5, rendu vivant ; l'étape à 1,04 écran).
+  Sur la capture barrée du Comparer v4.10 : « Non pas cette version, une version du dryhopping, dans un des top » → la
+  source de D107 est x3b (lot 21).
+- **Décisions** :
+  - brasseur : x3b pour les étapes de Comparer ; la croix (D109, « Juste une croix bien positionné ») ;
+  - supervision : D118 (retour à l'étape) ; trois ajouts rapides comme sa base ; publication après sa page côte à côte ;
+  - pilote :
+    - D114, panel replié au repos ;
+    - D112, contrôle sur le nom comme la base, carte entière non sélectionnable dans la maquette ;
+    - D115, radar d'abord, variantes de la liste plus tard ;
+    - D117, « ? » gardé (D89, D113), `controle-une-question --regle-n1` ;
+    - mots de l'étape et de Dryhopper comptés hors données, au plus sa base + 6 et d332792c + « Annuler », et hors
+      en-tête de l'app (`--sans-coquille`) ;
+    - Dryhopper, Annuler à côté de « Puis la levure › » ;
+    - Ma bière, « surtout Nugget » retiré.
+- **Leçons** : L03 enrichie (« comme la maquette de base » lu base v4.10 ; c'était x3b, notée pour cela).
+  Les leçons suivantes restent à intégrer par la supervision, car la charge est au plafond (30 000 caractères) :
+  - LEÇON PROPOSÉE : un composant de l'app réemployé (le `Sheet` et son « × » de 16 px) apporte ses propres boutons. Ils
+    échappent aux contrôles écrits pour les routes. Une plainte sur un genre d'élément (« bouton retour ») se contrôle
+    sur tous les éléments de ce genre, composants de l'app compris (critique p6).
+  - LEÇON PROPOSÉE : M10 est revenu deux fois cette nuit : le `\b` de controle-annuler, devenu 0x08 ; un critère du
+    pilote dont l'échappement s'est perdu, et dont le message d'erreur, qui recopiait le code, contenait le jeton
+    attendu : faux vert.
+    - Une voie qui écrit un contrôle rejoue `systeme.mjs cablage` dans ses GATES.
+    - Le jeton attendu d'un critère ne doit pas figurer dans le texte de sa commande ; gate-lint pourrait le refuser.
+  - LEÇON PROPOSÉE : une voie qui touche un écran porte dans ses GATES tous les contrôles qui gardent cet écran. p17
+    n'avait pas le rail de Dryhopper : régression D35, vue seulement par la batterie. `systeme.mjs mission` ne rejuge pas
+    une voie déjà contractée ; une reprise ajoutée devrait l'être.
+  - LEÇON PROPOSÉE : un critère n'écrit jamais dans un livrable. Le G1 de p18 recapturait dans les images de la page
+    publiée ; il écrit désormais dans un dossier d'essai.
+- **Reste** :
+  - au brasseur :
+    - son choix D121 (A, B ou C ; la version porte A) ;
+    - les variantes de la liste de la fiche (D115, à faire) ;
+    - l'effet attendu de l'appui long (D112, question dans le fil) ;
+    - Dryhopper, Substituer et Levure (#145, #146) ;
+    - la porte B ;
+  - à faire :
+    - normaliser les portées de `portee-defauts.json` : « suggerer » devient « suggestions », « biere » devient
+      « ma-biere », et le sujet « substituer » s'ajoute à `systeme.mjs`. Les critères G5 de p10 à p12 et p15 suivront ;
+    - les réserves reportées (`cerveau/produit/maquette-jouable.md`) ;
   - à l'utilisateur : le push des commits locaux.

@@ -22,22 +22,22 @@ Scope: r6a portée en React dans le socle, calculée en direct, avec les petites
 - [x] G4: 80 mots au plus au premier écran
   CHECK: node work/refonte-frontend/v4/tournoi/outils/mots-premier-ecran.mjs prototypes/houblons-v4/maquettes/parcours-p3 comparer --max=80 --page=etat.html
   EXPECT: MOTS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=30bef40d6277b1196e86180f2a4fe97d28334f56f5abd13e2499d7f41e486707; exit=0; EXPECT=matched; output-sha256=fcd07fb570655a8e1b6fdcee235ef72d19ed96ccc2a261b348933b619321c3c3; output-bytes=25; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=30bef40d6277b1196e86180f2a4fe97d28334f56f5abd13e2499d7f41e486707; exit=0; EXPECT=matched; output-sha256=c7a57522ea7956c91b04c30304b05e8d096a81d171e7768cb557a1a90d918ed2; output-bytes=25; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G5: un seul facteur libre, le houblon (D98)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-une-question.mjs prototypes/houblons-v4/maquettes/parcours-p3 comparer --page=etat.html
   EXPECT: /UNE-QUESTION OK \(1 groupe libre : houblon\)/
-  EVIDENCE: automatic-evidence=v1; definition-sha256=b41ab1d25728a6a51cd8e26cf2e1d22fdffc9312501b5300b34dee838de656d7; exit=0; EXPECT=matched; output-sha256=afea7b950b7a6692c668553412b70ea320daad292dfafad0c3028520eda86c09; output-bytes=183; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=b41ab1d25728a6a51cd8e26cf2e1d22fdffc9312501b5300b34dee838de656d7; exit=0; EXPECT=matched; output-sha256=ecf70c61acbce4e14f21028fbb9406a89b841adae1638a796a40964f77a0d3dd; output-bytes=175; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G6: les quatre acquis de Comparer sont là (D99)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-acquis.mjs prototypes/houblons-v4/maquettes/parcours-p3 comparer --page=etat.html
   EXPECT: ACQUIS OK (4/4
-  EVIDENCE: automatic-evidence=v1; definition-sha256=87acba122b4783c573598c85b5799259d75b1dbb3bc956b3db3aefdef6b2509a; exit=0; EXPECT=matched; output-sha256=04ff6c7a6734e077f5601a94ac92cd482a235e6c4059414fbacce7beb1a254e5; output-bytes=146; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=87acba122b4783c573598c85b5799259d75b1dbb3bc956b3db3aefdef6b2509a; exit=0; EXPECT=matched; output-sha256=2f74b39633c5b93c895942ee20e58842ac01ff264cd1bfcd2b7d9516f6c237cf; output-bytes=151; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G7: l'α de chaque houblon, sourcé (D87)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-alpha.mjs prototypes/houblons-v4/maquettes/parcours-p3 comparer --page=etat.html
   EXPECT: ALPHA OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=d23126fc16db861ddd7b3f81032566a88c209abca28a43ba1b4575c7cf6184f8; exit=0; EXPECT=matched; output-sha256=8b8e5433b8a74f6f4a921b3cb1bf0812042c42f53734c18fb8ee6d4cc3eabdf8; output-bytes=47; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=d23126fc16db861ddd7b3f81032566a88c209abca28a43ba1b4575c7cf6184f8; exit=0; EXPECT=matched; output-sha256=31d31e925f96220d1f9a506b8080e7bc90ece9f33ec5ab141aae5040d747df88; output-bytes=47; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G8: chaque houblon se distingue sur le radar (D77)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-radar-series.mjs prototypes/houblons-v4/maquettes/parcours-p3/comparer/etat.html
@@ -47,7 +47,7 @@ Scope: r6a portée en React dans le socle, calculée en direct, avec les petites
 - [x] G9: tout simulé est marqué (D94)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-lisible.mjs prototypes/houblons-v4/maquettes/parcours-p3 comparer --page=etat.html
   EXPECT: LISIBLE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=67d6ec29b237e0d40e7a265977a7329473bdc65f7fd74b7f5b5d3b0a66f5c93a; exit=0; EXPECT=matched; output-sha256=c578f74f520643ded8899c8987456f1a7d2ae76da4c4e0102d3b83d3e0f8acc9; output-bytes=78; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=67d6ec29b237e0d40e7a265977a7329473bdc65f7fd74b7f5b5d3b0a66f5c93a; exit=0; EXPECT=matched; output-sha256=5e1bd931c6979f0fbbb7ca699c4666445666ea91c800edc30092df8348e31dc9; output-bytes=78; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G10: un réglage fait bouger le simulé, une vraie valeur à côté (D95, rouge sur r6a)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-simulation.mjs prototypes/houblons-v4/maquettes/parcours-p3 comparer --page=etat.html
@@ -57,12 +57,12 @@ Scope: r6a portée en React dans le socle, calculée en direct, avec les petites
 - [x] G11: un houblon aux mots hors familles le montre (D100)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-sans-famille.mjs prototypes/houblons-v4/maquettes/parcours-p3 comparer --page=etat.html
   EXPECT: SANS-FAMILLE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=d092c7eb7fd2b797d3185caad1075aa0580b8cfe8343ba88370dcb7570be932a; exit=0; EXPECT=matched; output-sha256=487b5c22b9142c6fa022da7238738e15bfee202439ffa2a302ee435f3967e7d6; output-bytes=134; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=d092c7eb7fd2b797d3185caad1075aa0580b8cfe8343ba88370dcb7570be932a; exit=0; EXPECT=matched; output-sha256=6708b0b21ce579f53840b4ca5e9d919a4e3d8f60bb94c1af3c8418a4a896152f; output-bytes=134; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G12: r6a elle-même (12 éléments) et les 37 éléments notés ailleurs sont classés et balisés (D104, D105, règle n° 1)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-reprise.mjs prototypes/houblons-v4/maquettes/parcours-p3 comparer --page=etat.html --inventaire=work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/inventaire-comparer.json
   EXPECT: REPRISE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=168c825947ac709e3e81db6425b009a90ce0ad657395ac5442278e4a34ea49c2; exit=0; EXPECT=matched; output-sha256=d983d93c98cb89ab3ed84c03f907f0e3612af042b124757d7af18bafb32a07f8; output-bytes=1775; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=168c825947ac709e3e81db6425b009a90ce0ad657395ac5442278e4a34ea49c2; exit=0; EXPECT=matched; output-sha256=39acb350a90c34517057f41eeca46d7aeba1d935701b8721ff879ea3e6106dc3; output-bytes=1897; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G13: les gestes de Comparer jouent, et « Placer » ouvre Dryhopper avec le bon houblon
   CHECK: node prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs --dossier=prototypes/houblons-v4/maquettes/parcours-p3 --etape=comparer
@@ -72,7 +72,7 @@ Scope: r6a portée en React dans le socle, calculée en direct, avec les petites
 - [x] G14: le parcours entier joue encore
   CHECK: node prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs --dossier=prototypes/houblons-v4/maquettes/parcours-p3 --ponts
   EXPECT: PONTS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=764472f0846dd366203a591554d6f9ccf894805bef8ddc30d01a9a52c6a9b916; exit=0; EXPECT=matched; output-sha256=1738dd52822c974afae49e79fe8ed9fc734a5ee3d875297fdb7638f5a439e87e; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=764472f0846dd366203a591554d6f9ccf894805bef8ddc30d01a9a52c6a9b916; exit=0; EXPECT=matched; output-sha256=3b50f857f26b21d91dccfe9cf22e59f95329b74a48527e222dea51b485db7f10; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G15: aucun fichier de l'app n'a changé
   CHECK: node prototypes/houblons-v4/parcours/outils/app-intacte.mjs
@@ -89,17 +89,17 @@ Scope: r6a portée en React dans le socle, calculée en direct, avec les petites
   EXPECT: CHOIX OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=14652e9da1f754719d83dce411af61509eaaa2be8340c9f9b8e7cbf9ab6ce406; exit=0; EXPECT=matched; output-sha256=faa65b63173f33986f1ad3af01b780870adfd9ee989c03f90f26ec4a2865d201; output-bytes=62; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G18: chaque houblon comparé à 60′, 10′ et au dry hop, visibles ensemble, avec une référence (D107)
+- [x] G18: chaque houblon comparé à 60′, 10′ et au dry hop, visibles ensemble, avec une référence (D107)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-comparer-etapes.mjs prototypes/houblons-v4/maquettes/parcours-p3
   EXPECT: COMPARER-ETAPES OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=894e46530a9ddeaf85284552d0c0eb81410073bc6a37742eb238a495df739229; exit=0; EXPECT=matched; output-sha256=3485b3c4d8ab12ce59feb7ad894aaba5e4922b1c7c23105ea4753778e0476c93; output-bytes=499; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G19: le parcours entier joue avec le nouveau Comparer
+- [x] G19: le parcours entier joue avec le nouveau Comparer
   CHECK: node prototypes/houblons-v4/parcours/outils/parcours-complet.mjs --sans-construire --dossier=prototypes/houblons-v4/maquettes/parcours-p3
   EXPECT: PARCOURS OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=82a1f180c63407e49705b6d88682fdb855eee716ee59ee19cf7cdbc682db2de6; exit=0; EXPECT=matched; output-sha256=653614977aff1473f49b81c5c84b72c8cfd713bd510d0a6bc642def9d29de74c; output-bytes=1015; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G20: le rapport de la reprise D107 nomme ses captures côte à côte avec r6a et x3b
+- [x] G20: le rapport de la reprise D107 nomme ses captures côte à côte avec r6a et x3b
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p3-comparer/RESULTAT.md --contient "## Reprise D107,x3b,r6a,d107-etapes,d107-reference,390,1280"
   EXPECT: NOTE OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=eb6c6ab3ea22f8981ac1e58bf225d86b12adf902e6447b5c6d9db07598ea6841; exit=0; EXPECT=matched; output-sha256=9ebc2a3bc86c0b29c21d72443842e536bd7da4e7adcc302b3ba991bcde6c1c36; output-bytes=8; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries

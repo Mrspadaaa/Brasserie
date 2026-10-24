@@ -16,10 +16,13 @@ l'app, puis dans l'app après la porte B (fermée tant qu'il ne l'ouvre pas). Is
   `work/missions/2026-10-22-reprise-lot21/MISSION.md`. Au 23.10, midi : VOIES OK 63/63. Picto « épicé » choisi (cannelle et
   clou croisés, dans la baseline) ; r6n2 et ses quatre variantes (r6p1 à r6p4) et les cinq Dryhopper améliorées (passes 2
   et 3, sans vide) publiés (page v11). Prochaine action : ses choix (Comparer, Dryhopper, carte, A ou B), puis l'intégration.
-- **Maquette jouable de bout en bout** (23.10) : `work/missions/2026-10-23-maquette-parcours/MISSION.md`, VOIES OK 9/9 ;
-  publiée à https://claude.ai/artifact/52UBb4F7iME2k3ZzsAv4x1 ; code `prototypes/houblons-v4/parcours/` (ARCHITECTURE.md).
-  Règle n° 1 : ses choix, registre `v4/choix/ecrans.json`, `controle-choix.mjs`. Prochaine action : ses choix ouverts
-  (Dryhopper, Substituer, Levure), puis la porte B (#143).
+- **Maquette jouable de bout en bout** : `work/missions/2026-10-23-maquette-parcours/MISSION.md`, VOIES OK 18/18 (24.10).
+  Version D107 à D121 publiée à https://claude.ai/artifact/2BktuZzij8q2DAsrxQS5iX (figée dans
+  `v4/outils/pages/2026-10-24-maquette/`), côte à côte https://claude.ai/artifact/Q8H8dx98NhqibJkJzv1isW ; version
+  d'avant https://claude.ai/artifact/52UBb4F7iME2k3ZzsAv4x1. Code `prototypes/houblons-v4/parcours/` (ARCHITECTURE.md),
+  batterie `outils/batterie.mjs` (31/31). Règle n° 1 : registre `v4/choix/ecrans.json`, `controle-choix.mjs`.
+  Prochaine action : ses réponses (D121 A, B ou C ; l'appui long D112 ; les variantes de la liste de la fiche D115),
+  ses choix ouverts (Dryhopper #146, Substituer #145, Levure), puis la porte B (#143).
 - **Système d'agents** (cerveau, voies, conseil, entonnoir, élagage) : `work/missions/2026-10-22-systeme-agents/ETAT.md`.
 - **Page de lot en vigueur** : https://claude.ai/artifact/GzpfxNeKZLKXfkg4pz9kzv. Pour la republier :
   `v4/outils/page-lot/PUBLIER.md`.

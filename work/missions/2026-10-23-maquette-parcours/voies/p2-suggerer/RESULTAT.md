@@ -1,4 +1,6 @@
-ECHEC — G5 (question et contexte exigés, contraires à sa base, D117) ; G21 (Substituer, encre #666 de p1) ; reste vert
+OK — rejoué par le pilote le 24.10, 25/25 : Suggérer refait sur sa base v4.10 et q2b (D117), traits lus au toucher (D110), en-tête commun et croix (D109, D118, D119), cartes aux teintes de q2b ; G5 avec --regle-n1 (sa base sans titre ni contexte) et G21 sur l'encre du thème, décisions du pilote.
+
+(Avant le rejeu du 24.10 : ECHEC — G5 (question et contexte exigés, contraires à sa base, D117) ; G21 (Substituer, encre #666 de p1) ; reste vert)
 
 ## Reprise D117, D110, D109, D118, D119 (23.10, nuit)
 

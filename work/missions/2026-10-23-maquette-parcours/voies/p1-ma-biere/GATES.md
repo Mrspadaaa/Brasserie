@@ -22,7 +22,7 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
 - [x] G4: pas plus de mots qui expliquent que sa base au premier écran : 30 hors données au plus (sa base v4.10 : 24 hors données, 77 en tout ; D5 fait tenir l'étape entière dans un écran), hors en-tête de l'app (D116)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/mots-premier-ecran.mjs prototypes/houblons-v4/maquettes/parcours-p1 ma-biere --max=30 --page=etat.html --sans-coquille --sans-donnees
   EXPECT: MOTS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=e9447a8e339ac1694f11949de7ed1296d34ca361e5e9385ad9d5a64f7955063f; exit=0; EXPECT=matched; output-sha256=6d489ea8cb6e9b6485c5b59d56fd9e588b08167a6148c5a7002cba9430a670f4; output-bytes=25; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=f7b857610423d8758f604264b400e2d71bc02f9d8b518ba481960ed74fb10399; exit=0; EXPECT=matched; output-sha256=2543e0891a2f7250a3b0614b35e9b3d306e36a07f5b4d069e0aeb9bce9c7c96e; output-bytes=41; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G5: Ma bière garde ce qu'il a validé (D79)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-ma-biere.mjs prototypes/houblons-v4/maquettes/parcours-p1 ma-biere --page=etat.html
@@ -47,7 +47,7 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
 - [x] G9: un houblon aux mots hors familles le montre (D100)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-sans-famille.mjs prototypes/houblons-v4/maquettes/parcours-p1 ma-biere --page=etat.html
   EXPECT: SANS-FAMILLE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=50c302b9a5cac7d2fa1a4b273cfad4d408fa8ac3c593a5a343130b2a68783fa3; exit=0; EXPECT=matched; output-sha256=aa72bf568e20ea2772a096c128646425e5e4a057fa590c5d8c8d8b5527477183; output-bytes=134; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=50c302b9a5cac7d2fa1a4b273cfad4d408fa8ac3c593a5a343130b2a68783fa3; exit=0; EXPECT=matched; output-sha256=f004121c1d0e3234e87aa9afbbb9a3c865972956a817a74110cfda67e78b85ec; output-bytes=134; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G10: Substituer garde les exigences de toute l'app
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-commun.mjs prototypes/houblons-v4/maquettes/parcours-p1 substituer --page=etat.html --sans=mots
@@ -62,12 +62,12 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
 - [x] G12: le parcours entier joue encore
   CHECK: node prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs --dossier=prototypes/houblons-v4/maquettes/parcours-p1 --ponts
   EXPECT: PONTS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=c3b30601c35cdec0d05c046e7fb33741518c68a64b9cb20a29f59afc11060e52; exit=0; EXPECT=matched; output-sha256=27eca9d9022a792d09547113633a400faceac5f819c9ea69a2dcf7e033cb3055; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=c3b30601c35cdec0d05c046e7fb33741518c68a64b9cb20a29f59afc11060e52; exit=0; EXPECT=matched; output-sha256=18292f1109750a44bc1cb7cef2cdc0bf7b01fd907c546677f7695bfb40d9d0a4; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G13: les tolérances du moteur tiennent (D54)
   CHECK: cd prototypes/houblons-v4 && npx vitest run tests/tolerance.test.ts && echo TOLERANCE OK
   EXPECT: TOLERANCE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=01bb0fa00b4b584a8e4d38492ef7d074a5bf40ff8e439186d899e81749431e45; exit=0; EXPECT=matched; output-sha256=bb6b60d187f4251aa69194541afeafa8957ff009be8197fb643e54fbdeb2df64; output-bytes=2577; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=01bb0fa00b4b584a8e4d38492ef7d074a5bf40ff8e439186d899e81749431e45; exit=0; EXPECT=matched; output-sha256=8071d48032349d19b61a8a8d2da36636d97e55a1caa0e9512692b580750e20c3; output-bytes=2577; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G14: aucun fichier de l'app n'a changé
   CHECK: node prototypes/houblons-v4/parcours/outils/app-intacte.mjs
@@ -92,12 +92,12 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
 - [x] G18: l'onglet Ma bière reprend la base v4.10, élément par élément (D105)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-reprise.mjs prototypes/houblons-v4/maquettes/parcours-p1 biere --page=etat.html --inventaire=work/refonte-frontend/v4/ecran-1/base/donnees/inventaire-ma-biere.json
   EXPECT: REPRISE OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=149511c14fde0d9601191d06d667f85054fc4e8762f2b9427b70117e39a575d1; exit=0; EXPECT=matched; output-sha256=697ab1519ee1ac77c7dc9dfa12f1ef0646c3e85d73371e8d6b2bbb098d5433e2; output-bytes=462; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=149511c14fde0d9601191d06d667f85054fc4e8762f2b9427b70117e39a575d1; exit=0; EXPECT=matched; output-sha256=e454ce723b45ea1fcff9ac2d9d74dddb8369c20618c73bfd5ca76058f7a7e7ed; output-bytes=502; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G19: l'onglet Ma bière garde les exigences de toute l'app ; sans l'appui long sur un houblon (fiche) : sa base n'y nomme aucun houblon, la seule ligne qui en nommait un était un ajout retiré (règle n° 1)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-commun.mjs prototypes/houblons-v4/maquettes/parcours-p1 biere --page=etat.html --sans=mots,fiche
   EXPECT: COMMUN OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=b7423792b024fde0fd8a0e26ea8341f05d04de3d8161a2e481a08a61ac34298c; exit=0; EXPECT=matched; output-sha256=17c208fcc8bcaece23f4c60d9cb18741b72129c670bc157e4fe6eff6b3b9ac33; output-bytes=191; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=f131149be3c1839528afa8a62c2e2a18c1b4236376d6137c4b30385295fc921e; exit=0; EXPECT=matched; output-sha256=6e8e86e3a7d17a3498b68732241cdb417d064f3c1c31ee4d0f1af14597de3615; output-bytes=204; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G20: les gestes de l'onglet Ma bière jouent (bannir, objectifs vers Suggérer)
   CHECK: node prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs --dossier=prototypes/houblons-v4/maquettes/parcours-p1 --etape=biere
@@ -129,62 +129,62 @@ Scope: Ma bière (étape Houblons), sa fiche au long appui et Substituer en port
   EXPECT: TEINTE OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=3955fc03117c6e201c5d14f3228b404ac175f0914279b6f5e2234cfcfda319aa; exit=0; EXPECT=matched; output-sha256=90ea0da53fc5332d471791aa81c3a2bce609370ab700fee5ee31502588382a31; output-bytes=110; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G26: la visée de Ma bière se dessine sur la piste, comme sa base (D108)
+- [x] G26: la visée de Ma bière se dessine sur la piste, comme sa base (D108)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-visee.mjs prototypes/houblons-v4/maquettes/parcours-p1
   EXPECT: VISEE OK (6/6
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=6576136f04824c4b770f8f63c06f7695f1147ead25c86e1a2a4c522af33b50d3; exit=0; EXPECT=matched; output-sha256=65abf475b67a9deabcb426471378adc4cc801e37f37279ec11ee074cae1295f7; output-bytes=341; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G27: le parcours entier joue avec la nouvelle visée
+- [x] G27: le parcours entier joue avec la nouvelle visée
   CHECK: node prototypes/houblons-v4/parcours/outils/parcours-complet.mjs --sans-construire --dossier=prototypes/houblons-v4/maquettes/parcours-p1
   EXPECT: PARCOURS OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=dbb00abac730f4e391904806973d0f3601a909e7e0126cd1e691e408e9523ed1; exit=0; EXPECT=matched; output-sha256=f95ae16ecfbdf250703dc089189e77637fd8cd4af87018ef43b0b917e495ef8a; output-bytes=1015; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G28: le dossier est typé sans erreur après le changement de la visée
+- [x] G28: le dossier est typé sans erreur après le changement de la visée
   CHECK: node prototypes/houblons-v4/parcours/outils/verifier-types.mjs
   EXPECT: TYPES OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=04b8f7f64868614636c57492d1eed9c8a1a1faefce1f18fda5816ed951a12860; exit=0; EXPECT=matched; output-sha256=5015cfef1a82e20e9a8cf800854297f68212ed6cc721038a989cde20903a582b; output-bytes=9; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G29: le rapport de la reprise D108 nomme ses captures côte à côte avec la base et les voies avec agrumes bannis
+- [x] G29: le rapport de la reprise D108 nomme ses captures côte à côte avec la base et les voies avec agrumes bannis
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p1-ma-biere/RESULTAT.md --contient "## Reprise D108,base v4.10,bannir,390,1280"
   EXPECT: NOTE OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=803293f16baf4d23b9aabdc4ccac516929623c2e8453a7827f8466d4011c31fd; exit=0; EXPECT=matched; output-sha256=9ebc2a3bc86c0b29c21d72443842e536bd7da4e7adcc302b3ba991bcde6c1c36; output-bytes=8; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G30: le glisser de l'étape suit sa base : carte repliée en puce, aucune étiquette chevauchée, rien de sélectionné (D111)
+- [x] G30: le glisser de l'étape suit sa base : carte repliée en puce, aucune étiquette chevauchée, rien de sélectionné (D111)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-geste-etape.mjs prototypes/houblons-v4/maquettes/parcours-p1
   EXPECT: GESTE-ETAPE OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=96677722cfa018d82beb533c6639256ab9fe7db3d1e6d58ea1ad36b8a5c8d3f8; exit=0; EXPECT=matched; output-sha256=aa34fbb9a0b214ff4081c5c078e9bb593522eaf24f8dd9510c67f7f74bb78260; output-bytes=221; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G31: l'en-tête de l'étape est le fil d'étapes de l'app, sans « hypothèse » (D116)
+- [x] G31: l'en-tête de l'étape est le fil d'étapes de l'app, sans « hypothèse » (D116)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-stepper.mjs prototypes/houblons-v4/maquettes/parcours-p1
   EXPECT: STEPPER OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=b118b96685ff418ee248f27c03e0bc1a323467b5d99d61ceebb2e934027459b7; exit=0; EXPECT=matched; output-sha256=d5e6ebcf89dca75c9a15eeb1606bc5e93c0f86559fceb0a3f1c6e9d4c1c30abf; output-bytes=201; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G32: le rapport de la reprise de l'étape nomme ses captures côte à côte avec la base et la variante D121 retenue
+- [x] G32: le rapport de la reprise de l'étape nomme ses captures côte à côte avec la base et la variante D121 retenue
   CHECK: node scripts/agents/systeme.mjs note work/missions/2026-10-23-maquette-parcours/voies/p1-ma-biere/RESULTAT.md --contient "## Reprise de l'étape (D111 à D113, D116, D121),base v4.10,D121,variante,390,1280"
   EXPECT: NOTE OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=fe791e2599def605663ad247a62d5b079ebf1eb8d674ab386c4c41136bed8288; exit=0; EXPECT=matched; output-sha256=9ebc2a3bc86c0b29c21d72443842e536bd7da4e7adcc302b3ba991bcde6c1c36; output-bytes=8; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G33: pendant l'appui long, un retour visible avant 300 ms, puis la fiche ; le nom non sélectionnable (D112)
+- [x] G33: pendant l'appui long, un retour visible avant 300 ms, puis la fiche ; le nom non sélectionnable (D112)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-appui.mjs prototypes/houblons-v4/maquettes/parcours-p1 --etape
   EXPECT: APPUI-ETAPE OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=e7b48c4e24ff4b4284ff7f2d71f2e0a632eef72ec72916854747f0554c4b8618; exit=0; EXPECT=matched; output-sha256=677cdda80f34dca1a477d99ecae3841308b57cef235177a7af2ba9e6ad6b2ccc; output-bytes=169; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G34: un « ? » près de chaque groupe d'icônes de l'étape, qui nomme ses icônes (D113)
+- [x] G34: un « ? » près de chaque groupe d'icônes de l'étape, qui nomme ses icônes (D113)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-legende.mjs prototypes/houblons-v4/maquettes/parcours-p1 --etape
   EXPECT: LEGENDE OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=8116b04939f0890c4646d1e132b367cc2068ab7ba170be5a8034acc21c1d5233; exit=0; EXPECT=matched; output-sha256=23728b89159bb12d828c2459a70c6b746749bd0e8e3fd94d0b34fd2b7be928e5; output-bytes=412; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G35: toucher l'alerte ou une famille du profil ouvre l'analyse, et un mot dit où (D121)
+- [x] G35: toucher l'alerte ou une famille du profil ouvre l'analyse, et un mot dit où (D121)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-profil-ouvre.mjs prototypes/houblons-v4/maquettes/parcours-p1
   EXPECT: PROFIL OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=20757e0cb74da7c8b7f940af7d0b40766560bb89f2a63194f68dbb564bcba483; exit=0; EXPECT=matched; output-sha256=6611d35885a627cf39b90d63c98bb823f7cf9c79d24f3327ec9fe3e005db3ec0; output-bytes=309; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G36: l'étape tient dans 1,05 écran à 390 (D5, critique p6 : 1,14)
+- [x] G36: l'étape tient dans 1,05 écran à 390 (D5, critique p6 : 1,14)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-hauteur.mjs prototypes/houblons-v4/maquettes/parcours-p1 ma-biere --max=1.05
   EXPECT: HAUTEUR OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=786354da927051203e210d825dc55b2a0a5a888cc7e4c8bc1710e8d0700434d7; exit=0; EXPECT=matched; output-sha256=18f10046f6dfc836a281893c03d2af53c368145ace05deb135a6bedc31a5ccd3; output-bytes=209; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [ ] G37: l'onglet Ma bière reste sa base, sans « surtout Nugget » ni « et Nugget » ajoutés à l'écran (règle n° 1)
+- [x] G37: l'onglet Ma bière reste sa base, sans « surtout Nugget » ni « et Nugget » ajoutés à l'écran (règle n° 1)
   CHECK: node -e "(async()=>{const p=require('puppeteer-core');const b=await p.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:'new'});const g=await b.newPage();await g.setViewport({width:390,height:844});await g.goto('file:///'+process.cwd().split(String.fromCharCode(92)).join('/')+'/prototypes/houblons-v4/maquettes/parcours-p1/biere/etat.html');await new Promise(r=>setTimeout(r,1500));const t=await g.evaluate(()=>document.body.innerText);await b.close();const m=t.includes('surtout')||t.includes('et Nugget');console.log(m?'AJOUT VU':['SANS','AJOUT','OK'].join('-'));process.exit(m?1:0)})()"
   EXPECT: SANS-AJOUT-OK
-  EVIDENCE: pending
+  EVIDENCE: automatic-evidence=v1; definition-sha256=1a2b15e9bed85de0e5c8e898b6e1c993e29df751a46c192cf0c86482749881d9; exit=0; EXPECT=matched; output-sha256=13827c1604995766929cc83817d61fe54cfea6187c3c2c734e25f4f653681ac2; output-bytes=14; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries

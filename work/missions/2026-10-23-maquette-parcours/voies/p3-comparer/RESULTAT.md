@@ -1,4 +1,6 @@
-ECHEC — G14, G19 : la croix D118 (p2) ramène à Ma bière ; Comparer D107 vert (18/20)
+OK — rejoué par le pilote le 24.10, 20/20 : Comparer aux étapes à la manière de x3b, Nugget en référence (D107), panel OSU replié (D114) ; G14 et G19 verts depuis l'alignement des scripts du parcours sur la croix (D118).
+
+(Avant le rejeu du 24.10 : ECHEC — G14, G19 : la croix D118 (p2) ramène à Ma bière ; Comparer D107 vert (18/20))
 
 ## Ce qui est fait
 

@@ -7,12 +7,12 @@ Scope: le parcours de la carte joué d'un bout à l'autre dans une seule session
 - [x] G1: le parcours entier joue, au téléphone et à l'ordinateur
   CHECK: node prototypes/houblons-v4/parcours/outils/parcours-complet.mjs --captures work/missions/2026-10-23-maquette-parcours/voies/p5-parcours/captures
   EXPECT: PARCOURS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=aca8bea10d5b5c34a47df16cf143a13ca22dde533b28d9b5563a157ff3577681; exit=0; EXPECT=matched; output-sha256=5aeb58920870d43718468d87c9dec83421f3c0a4f01916af6c958fe890d59c5d; output-bytes=1017; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=aca8bea10d5b5c34a47df16cf143a13ca22dde533b28d9b5563a157ff3577681; exit=0; EXPECT=matched; output-sha256=caa85ef33f4d7deeff7e1c60577c7944552dc2aa3802e56932c70b3d93e49be2; output-bytes=1015; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G2: le parcours des ponts joue encore sur la maquette intégrée
   CHECK: node prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs --ponts
   EXPECT: PONTS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=24c7d735263f2dde02a464fd259d21ead0a36f558e142824751cd275ed338d8b; exit=0; EXPECT=matched; output-sha256=897179f40ee6e98a750a6a6adf67a3bf6552f536ad3a38ddf036300eb22945ac; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=24c7d735263f2dde02a464fd259d21ead0a36f558e142824751cd275ed338d8b; exit=0; EXPECT=matched; output-sha256=8c75598b6d116fd525884bddc47da589585ca9d87be44836adc619c454ad7a05; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G3: aucun fichier de l'app n'a changé
   CHECK: node prototypes/houblons-v4/parcours/outils/app-intacte.mjs
@@ -37,4 +37,4 @@ Scope: le parcours de la carte joué d'un bout à l'autre dans une seule session
 - [x] G7: chaque écran choisi a la teinte de sa maquette (fond, aplats, encre ; D106)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-teinte.mjs prototypes/houblons-v4/maquettes/parcours
   EXPECT: TEINTE OK 5/5
-  EVIDENCE: automatic-evidence=v1; definition-sha256=5af2c9212c090623552cf1339a7fc9857909e6d6beec3a22eb13d219ed6324a2; exit=0; EXPECT=matched; output-sha256=806adede415fb4dfd41d2006019045f16bf1f32f06bb5cd3a88c3412ce50f6d0; output-bytes=513; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=5af2c9212c090623552cf1339a7fc9857909e6d6beec3a22eb13d219ed6324a2; exit=0; EXPECT=matched; output-sha256=7f94d4cae5874566448b55d0915b9090574d36676a0e28c64b0a11d19a9edfe5; output-bytes=514; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries

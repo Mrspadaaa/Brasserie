@@ -22,12 +22,12 @@ Scope: lever dans la maquette les bloquants d'intégration prouvés par p7 (mote
 - [x] G4: le moteur garde ses tests et son témoin négatif
   CHECK: cd prototypes/houblons-v4 && npm run check:engine
   EXPECT: ENGINE-V4 OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=327f1297ec29eea4b87982695dae6b13f6360534e0660b8d384196b43c10f000; exit=0; EXPECT=matched; output-sha256=fbbd774ba7a3470e19c560cd91dc4549ee9f31d258af4fa079e1d9e202f608d0; output-bytes=544; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=327f1297ec29eea4b87982695dae6b13f6360534e0660b8d384196b43c10f000; exit=0; EXPECT=matched; output-sha256=d776a52fe955c6728e176f6f31aac3ba34b616807e1bf40b81eebcd8b477d84d; output-bytes=545; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G5: la conversion de recette de l'app est testée sur une recette réelle (B5)
   CHECK: cd prototypes/houblons-v4 && npx vitest run tests/conversion-recette.test.ts && echo CONVERSION OK
   EXPECT: CONVERSION OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=afee0a628951e2263d31dc9f1e8be1e3f0b61463cac698ec920d48e9abe90dbf; exit=0; EXPECT=matched; output-sha256=f9685c9d2986a816ca374486c60f99bd52876e748b3be77613c0af2668a6986d; output-bytes=958; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=afee0a628951e2263d31dc9f1e8be1e3f0b61463cac698ec920d48e9abe90dbf; exit=0; EXPECT=matched; output-sha256=bbe46f38869ce60914d406d033a5380c781646f173365870c9d093b0bb9e366b; output-bytes=959; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G6: le dossier est typé sans erreur
   CHECK: node prototypes/houblons-v4/parcours/outils/verifier-types.mjs
@@ -42,7 +42,7 @@ Scope: lever dans la maquette les bloquants d'intégration prouvés par p7 (mote
 - [x] G8: le parcours des ponts joue encore (navigation en pile)
   CHECK: node prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs --ponts
   EXPECT: PONTS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=24c7d735263f2dde02a464fd259d21ead0a36f558e142824751cd275ed338d8b; exit=0; EXPECT=matched; output-sha256=a4cca8e1c49ea5e76d30ed0176faa59579b87404c1264e298b8caeb209847b27; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=24c7d735263f2dde02a464fd259d21ead0a36f558e142824751cd275ed338d8b; exit=0; EXPECT=matched; output-sha256=290760454c5040ea46371b9b5d40f93d39883ac5cd2f90895232f83b8f9e5138; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G9: rien de ce que le brasseur voit n'a changé : ses choix sont tenus (règle n° 1)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-choix.mjs prototypes/houblons-v4/maquettes/parcours

@@ -22,7 +22,7 @@ Scope: une app React/TS jouable qui importe composants, jetons et moteur de l'ap
 - [x] G4: le parcours de la carte se joue de bout en bout, état vérifié après chaque geste
   CHECK: node prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs --ponts
   EXPECT: PONTS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=24c7d735263f2dde02a464fd259d21ead0a36f558e142824751cd275ed338d8b; exit=0; EXPECT=matched; output-sha256=0f5fd1b597cbf67a39870f040a4b67153abf383194995fb1b5a5c727cb8f09ac; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=24c7d735263f2dde02a464fd259d21ead0a36f558e142824751cd275ed338d8b; exit=0; EXPECT=matched; output-sha256=e9e8ca774783056658dafffe2db03a73b97d1b198f81eff3263a8122b5840d4f; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G5: aucun fichier de l'app n'a changé
   CHECK: node prototypes/houblons-v4/parcours/outils/app-intacte.mjs

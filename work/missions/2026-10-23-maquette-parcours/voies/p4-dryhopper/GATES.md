@@ -19,10 +19,10 @@ Scope: a1 portée en React dans le socle, le moment calculé en direct à chaque
   EXPECT: COMMUN OK
   EVIDENCE: automatic-evidence=v1; definition-sha256=d47485aafa10d19b2d79f0385df898cb37f1d294efd5b68298dafe89ef4b1156; exit=0; EXPECT=matched; output-sha256=17c208fcc8bcaece23f4c60d9cb18741b72129c670bc157e4fe6eff6b3b9ac33; output-bytes=191; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
-- [x] G4: 80 mots au plus au premier écran
-  CHECK: node work/refonte-frontend/v4/tournoi/outils/mots-premier-ecran.mjs prototypes/houblons-v4/maquettes/parcours-p4 dryhopper --max=80 --page=etat.html
+- [x] G4: pas plus de mots qui expliquent que la version publiée d332792c : 31 hors données au plus (d332792c : 30 hors données, 80 en tout ; le mot de plus est « Annuler », qu'il a demandé, D120)
+  CHECK: node work/refonte-frontend/v4/tournoi/outils/mots-premier-ecran.mjs prototypes/houblons-v4/maquettes/parcours-p4 dryhopper --max=31 --page=etat.html --sans-donnees
   EXPECT: MOTS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=4e6f76187edbe38ed9b3068628bb263cd726861b0403375b15e02b644c4d6c4d; exit=0; EXPECT=matched; output-sha256=6ab13fa4dc6b393cafe39c067358d5edf6eafce49da383decd25316481d29488; output-bytes=26; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=73a1bccd31559680f3a25aad62cf90a72828a29500428523026bd3adc3639c9d; exit=0; EXPECT=matched; output-sha256=e3a027b9ce738e9cf5bd156032bdeb6e5526d0f8a6c04dd9793f50d391293e7e; output-bytes=42; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G5: un seul facteur libre, le moment (D98)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-une-question.mjs prototypes/houblons-v4/maquettes/parcours-p4 dryhopper --page=etat.html
@@ -72,12 +72,12 @@ Scope: a1 portée en React dans le socle, le moment calculé en direct à chaque
 - [x] G14: le parcours entier joue encore
   CHECK: node prototypes/houblons-v4/parcours/outils/jouer-parcours.mjs --dossier=prototypes/houblons-v4/maquettes/parcours-p4 --ponts
   EXPECT: PONTS OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=ab272d0337a845774e4deb40f24b1a8f138be8aea33476f697be38e8066ade1a; exit=0; EXPECT=matched; output-sha256=0f5fd1b597cbf67a39870f040a4b67153abf383194995fb1b5a5c727cb8f09ac; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=ab272d0337a845774e4deb40f24b1a8f138be8aea33476f697be38e8066ade1a; exit=0; EXPECT=matched; output-sha256=1f6bed8442638ca03671c81c99b969de46589e2d27f726d4724a27e0c66e3cdc; output-bytes=130; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G15: le pouvoir des composés tient (D85)
   CHECK: cd prototypes/houblons-v4 && npx vitest run tests/pouvoir.test.ts && echo POUVOIR OK
   EXPECT: POUVOIR OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=5d255539635fa4c0f40ef9338994498e2d207e625ffff92f227e100e960ef610; exit=0; EXPECT=matched; output-sha256=c9b5ac1ea0b7f88616d6433a7f63a15495b8a310e7e799d2144d12ccb119818d; output-bytes=800; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=5d255539635fa4c0f40ef9338994498e2d207e625ffff92f227e100e960ef610; exit=0; EXPECT=matched; output-sha256=86bfe326d95550a4a65737115e3e3a53e6f0bea116ce1b66cf65361b9665f5a4; output-bytes=800; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
 
 - [x] G16: aucun fichier de l'app n'a changé
   CHECK: node prototypes/houblons-v4/parcours/outils/app-intacte.mjs

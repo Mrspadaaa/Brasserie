@@ -1,4 +1,6 @@
-ECHEC — G7 (systeme.mjs temoins), cause étrangère : D109 (p11) absent de la liste du témoin Dryhopper ; G1 à G6 et G8 tenus
+OK — rejoué par le pilote le 24.10, 8/8 : controle-traits.mjs (D110) échoue sur d332792c et trois témoins, passe sur traits-ok ; G7 vert depuis que le témoin Dryhopper du système lit sa liste dans la portée.
+
+(Avant le rejeu du 24.10 : ECHEC — G7 (systeme.mjs temoins), cause étrangère : D109 (p11) absent de la liste du témoin Dryhopper ; G1 à G6 et G8 tenus)
 
 ## Fichiers écrits
 - `work/refonte-frontend/v4/tournoi/outils/controle-traits.mjs`
