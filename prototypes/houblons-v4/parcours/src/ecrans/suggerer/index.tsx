@@ -9,7 +9,9 @@
 // cadre a sa barre l5b à droite de l'axe. Le ♡ ouvre « aimer · neutre · exclure ». En bas : « IBU après chaque voie »,
 // « Hors houblon », la barre noire « Comparer (n) ». En Radar : le mode Radar de la base v4.10 (vue-radar.tsx).
 // Écarts voulus par lui : la croix (D109), le « ? » (D113), l'usage en mot (D90), les traits lus au toucher (D110) ; la
-// bande « ‹ visée | visée › » ne revient pas (D91), ni le groupe « Changer de levure » (D35).
+// bande « ‹ visée | visée › » ne revient pas (D91). Le groupe « Changer de levure » de q2b revient (D44, 24.10 : « Celle
+// ci aussi est toujours meilleures ») ; chaque houblon dit ses mots hors des familles de la 16D (« lui seul : … », flb5b,
+// D130), chaque levure ce que sa fiche dit d'elle en propre.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Heart } from 'lucide-react';
 import { CadreOutil, COULEURS, COURT, Legende, nombre, Picto, ROUE, type Echelle } from '../../commun';
@@ -25,7 +27,8 @@ import { Bandeau } from '../ma-biere/Base';
 import { AlphaCourt, Calme, CaseInconnue, Lecture, Stock, Traits, traitsDe, Usage, type NiveauFiches } from './briques';
 import { BulleTraitsProvider } from './bulle';
 import { Divergent, Graphe, type NiveauBarre } from './divergent';
-import { bannisDe, dryhopActif, objectifsDe, verdict, voiesDe, type Groupe, type Ligne, type Objectif } from './voies';
+import { bannisDe, dryhopActif, levuresDe, objectifsDe, verdict, voiesDe, type Groupe, type Ligne, type Objectif } from './voies';
+import { horsDesFamilles, motsLevure } from './hors16d';
 import { VueRadar } from './vue-radar';
 import './suggerer.css';
 import './reprise.css';
@@ -78,6 +81,19 @@ export default function Suggerer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [tous, exclus.join()]);
   const lignes = groupes.flatMap((g) => g.lignes);
+  // « Changer de levure » (q2b), après les voies houblon, à part (ni verdict, ni radar, ni comparaison de houblons).
+  const levures = useMemo(() => levuresDe(recette, objectifs, ROUE, lignes.length), [recette, objectifs, lignes.length]);
+  // D130 : ses mots hors des familles, sur la première ligne où chaque houblon paraît (une fois : mots modérés, D41).
+  const hors16d = useMemo(() => {
+    const parCle = horsDesFamilles(lignes.flatMap((l) => l.houblons.map((h) => h.cle)));
+    const vu = new Set<string>(), m = new Map<string, Hors[]>();
+    for (const l of lignes) {
+      const ici = l.houblons.filter((h) => !vu.has(h.cle) && parCle.has(h.cle)).map((h) => ({ cle: h.cle, ...parCle.get(h.cle)! }));
+      l.houblons.forEach((h) => vu.add(h.cle));
+      if (ici.length) m.set(l.id, ici);
+    }
+    return m;
+  }, [lignes]);
   const cran = (f: FamilyId) => sc.families[f].cran;
   const bande = (f: FamilyId) => sc.families[f].band ?? null;
   const colonnes = Math.max(1, Math.min(3, objectifs.length));
@@ -184,8 +200,9 @@ export default function Suggerer() {
                 {groupes.map((g) => (
                   <BlocGroupe key={g.id} g={g} objectifs={objectifs} echelle={echelle} cran={cran} bande={bande} choisie={choisie} basculer={basculer}
                     gestesFiche={gestesFiche} etat={g === groupe2 ? 'etat-sugg-groupes-effet' : g.geste === 'assembler' ? 'etat-sugg-assembler' : g.geste === 'remplacer' ? 'etat-sugg-remplacer' : g.geste === 'dryhop' ? 'etat-sugg-dry-hop' : undefined}
-                    premiere={g === groupes[0]} lignePlus={lignePlus?.id ?? null} gouts={gouts} goutOuvert={goutOuvert} setGoutOuvert={setGoutOuvert} noter={noter} />
+                    premiere={g === groupes[0]} lignePlus={lignePlus?.id ?? null} gouts={gouts} goutOuvert={goutOuvert} setGoutOuvert={setGoutOuvert} noter={noter} hors16d={hors16d} />
                 ))}
+                {levures && <BlocLevure g={levures} objectifs={objectifs} echelle={echelle} cran={cran} bande={bande} />}
               </Graphe>
             </div>
           </>
@@ -271,10 +288,11 @@ function Carte({ o, groupes, biere, teinte, famHors, pistesHors, horsHoublon, on
   );
 }
 
-function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, gestesFiche, etat, premiere, lignePlus, gouts, goutOuvert, setGoutOuvert, noter }: {
+function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, gestesFiche, etat, premiere, lignePlus, gouts, goutOuvert, setGoutOuvert, noter, hors16d }: {
   g: Groupe; objectifs: Objectif[]; echelle: Echelle; cran: (f: FamilyId) => number; bande: (f: FamilyId) => [number, number] | null;
   choisie: (l: Ligne) => boolean; basculer: (l: Ligne) => void; gestesFiche: ReturnType<typeof useGestesFiche>; etat?: string; premiere: boolean;
   lignePlus: string | null; gouts: Map<string, Gout>; goutOuvert: string | null; setGoutOuvert: (c: string | null) => void; noter: (c: string, g: Gout) => void;
+  hors16d: Map<string, Hors[]>;
 }) {
   const cibles = objectifs.map((o) => o.f);
   // Cases alignées du groupe (q2b) : les familles hors objectifs qu'au moins une voie fait bouger.
@@ -313,7 +331,7 @@ function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, ges
         {g.lignes.map((l, i) => (
           <LigneVoie key={l.id} l={l} premiere={premiere && i === 0} cibles={cibles} slots={slots} cran={cran} choisie={choisie(l)} basculer={() => basculer(l)}
             gestesFiche={gestesFiche} barres={!cadre} objectifs={objectifs} echelle={echelle} bande={bande} plus={l.id === lignePlus}
-            gouts={gouts} goutOuvert={goutOuvert} setGoutOuvert={setGoutOuvert} noter={noter} cadre={cadre} plafond={plafond} />
+            gouts={gouts} goutOuvert={goutOuvert} setGoutOuvert={setGoutOuvert} noter={noter} cadre={cadre} plafond={plafond} hors={hors16d.get(l.id) ?? []} />
         ))}
       </ul>
     </section>
@@ -338,10 +356,12 @@ function Bio({ l }: { l: Ligne }) {
   );
 }
 
-function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestesFiche, barres, objectifs, echelle, bande, plus, gouts, goutOuvert, setGoutOuvert, noter, cadre, plafond }: {
+function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestesFiche, barres, objectifs, echelle, bande, plus, gouts, goutOuvert, setGoutOuvert, noter, cadre, plafond, hors }: {
   l: Ligne; premiere: boolean; cibles: FamilyId[]; slots: FamilyId[]; cran: (f: FamilyId) => number; choisie: boolean; basculer: () => void;
   gestesFiche: ReturnType<typeof useGestesFiche>; barres: boolean; objectifs: Objectif[]; echelle: Echelle; bande: (f: FamilyId) => [number, number] | null;
   plus: boolean; gouts: Map<string, Gout>; goutOuvert: string | null; setGoutOuvert: (c: string | null) => void; noter: (c: string, g: Gout) => void; cadre: boolean; plafond: number;
+  /** D130 : ses mots hors des familles de la 16D, pour les houblons qui paraissent ici pour la première fois. */
+  hors: Hors[];
 }) {
   const noms = l.houblons.map((h) => h.nom).join(' et ');
   const cleGout = l.houblons[0].cle;
@@ -380,6 +400,8 @@ function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestes
             {l.dose && <span className={`pq-sg-sur-axe shrink-0 font-mono text-xs text-cave-200 whitespace-nowrap ${l.dose.includes('+') ? 'pq-suggerer-estime' : ''}`}>{l.dose}</span>}
             <span className="pq-sg-sur-axe inline-flex"><Stock etat={l.stock} /></span>
             <Bio l={l} />
+            {/* D130 : sur la carte, sous le nom et au-dessus des pictos (les traits restent muets au repos, D110). */}
+            {hors.map((x) => <Hors16D key={x.cle} x={x} nom={l.houblons.length > 1 ? l.houblons.find((h) => h.cle === x.cle)?.nom : undefined} />)}
           </p>
           <span className="flex items-center gap-0.5" aria-label="Effet sur les familles" {...(premiere ? { 'data-element': 'q2b-cercle-objectif' } : {})}>
             {cibles.map((f) => caseDe(f, 'cible'))}
@@ -417,5 +439,88 @@ function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestes
         </div>
       )}
     </li>
+  );
+}
+
+/** Les mots d'un houblon hors des familles de la 16D (D130). */
+type Hors = { cle: string; seul: boolean; mots: string[] };
+/** « lui seul : mojito, zeste de citron » (flb5b) : les mots de ses fiches qu'aucune famille ne dessine et qu'aucun autre
+ * houblon de l'écran n'a ; sinon « hors 16D : … » (ses mots hors familles, qu'un autre a aussi). Une ligne courte. */
+function Hors16D({ x, nom }: { x: Hors; nom?: string }) {
+  return (
+    <span data-role="hors-16d" data-houblon={x.cle} className="pq-sg-hors16d pq-sg-sur-axe">
+      <span className="pq-sg-hors16d-cle">{nom ? `${nom}, ` : ''}{x.seul ? 'lui seul' : 'hors 16D'} :</span> {x.mots.join(', ')}
+    </span>
+  );
+}
+
+/** « Changer de levure » de q2b : chaque souche, son effet (traits et barre ; modèle seul, estimé) et ce que sa fiche
+ * technique dit d'elle en propre (« elle : abricot dominant, POF négative » ; « ? » si aucune fiche ne le dit). */
+function BlocLevure({ g, objectifs, echelle, cran, bande }: {
+  g: Groupe; objectifs: Objectif[]; echelle: Echelle; cran: (f: FamilyId) => number; bande: (f: FamilyId) => [number, number] | null;
+}) {
+  const cibles = objectifs.map((o) => o.f);
+  const slots = ROUE.filter((f) => !cibles.includes(f) && g.lignes.some((l) => l.effets[f] != null && Math.abs(l.effets[f]!) >= 0.5));
+  const plafond = Math.max(1, ...g.lignes.flatMap((l) => [...cibles, ...slots].map((f) => {
+    const e = l.effets[f];
+    return e == null || Math.abs(e) < 0.5 ? 0 : traitsDe(e / cran(f)).places;
+  })));
+  const [retenues, setRetenues] = useState<string[]>([]);
+  return (
+    <section data-groupe="levure" data-element="q2b-levure" data-etat="etat-sugg-levure" className="relative pt-2">
+      <h3 className="relative flex items-center gap-2 px-1 min-h-[1.875rem] text-[0.9375rem] font-bold text-cave-50 leading-tight">
+        <span className="pq-sg-sur-axe">{g.titre}</span>
+        <span className="pq-suggerer-moment pq-sg-sur-axe gap-1">
+          <svg width="16" height="14" viewBox="0 0 16 14" aria-hidden="true"><circle cx="6" cy="8" r="5" fill="none" stroke="currentColor" strokeWidth="1.2" /><circle cx="12.2" cy="3.8" r="2.8" fill="none" stroke="currentColor" strokeWidth="1.2" /><circle cx="5" cy="7" r="1.2" fill="currentColor" /></svg>
+          levure
+        </span>
+        <span className="pq-sg-sur-axe text-sm font-normal text-cave-400">estimé</span>
+      </h3>
+      <ul className="pq-suggerer-liste">
+        {g.lignes.map((l) => {
+          const y = l.levure!;
+          const mots = motsLevure(y.id);
+          const retenue = retenues.includes(y.id);
+          const caseDe = (f: FamilyId, role: 'extra' | 'cible') => {
+            const e = l.effets[f], cle = `${l.id}:${f}`;
+            if (e == null) return role === 'cible' ? <CaseInconnue key={f} f={f} cle={cle} avec={y.nom} /> : <Calme key={f} f={f} cle={cle} avec={y.nom} />;
+            if (Math.abs(e) < 0.5) return <Calme key={f} f={f} cle={cle} cible={role === 'cible'} avec={y.nom} />;
+            return <Traits key={f} f={f} crans={e / cran(f)} hors={l.hors.includes(f)} role={role} niveau="non décrit" cle={cle} avec={y.nom} plafond={plafond} />;
+          };
+          return (
+            <li key={l.id} data-levure={y.id} data-role="ligne-levure" className="pq-suggerer-voie relative select-none py-1">
+              <div className="grid grid-cols-[1fr_auto] gap-x-1">
+                <div className="min-w-0 space-y-0.5">
+                  <p className="pq-sg-l1 flex items-center flex-wrap min-h-[1.625rem] leading-tight">
+                    <span className="pq-sg-sur-axe text-base text-cave-50 font-semibold">{y.nom}</span>
+                    <span data-role="hors-16d" data-houblon={y.id} data-levure-propre="" className="pq-sg-hors16d pq-sg-sur-axe">
+                      <span className="pq-sg-hors16d-cle">elle :</span> {mots ? mots.join(', ') : <span aria-label="inconnu, pas zéro">?</span>}
+                    </span>
+                  </p>
+                  <span className="flex items-center gap-0.5" aria-label="Effet sur les familles">
+                    {cibles.map((f) => caseDe(f, 'cible'))}
+                    <i aria-hidden="true" className="pq-suggerer-separe mx-1 self-stretch" />
+                    {slots.map((f) => caseDe(f, 'extra'))}
+                  </span>
+                </div>
+                {/* Le « + » de q2b. Comparer ne compare que des houblons : la levure est retenue ici, sans entrer dans
+                    « Comparer (n) » (comparer des levures : l'écran Levure, au choix ouvert). */}
+                <button type="button" data-role="ajouter-levure" aria-pressed={retenue}
+                  aria-label={retenue ? `Ne plus retenir ${y.nom}` : `Retenir ${y.nom}`}
+                  onClick={() => setRetenues((m) => (m.includes(y.id) ? m.filter((x) => x !== y.id) : [...m, y.id]))}
+                  className="touch-target pq-sg-sur-axe w-11 h-11 rounded-full flex items-start justify-center">
+                  <span className={`flex items-center justify-center w-10 h-10 rounded-full border-[2.5px] ${retenue ? 'pq-suggerer-choisi' : 'border-cave-50 text-cave-50 bg-cave-950'}`}>
+                    <i aria-hidden="true" className={retenue ? 'pq-suggerer-coche' : 'pq-suggerer-plus'} />
+                  </span>
+                </button>
+              </div>
+              <div className="pt-1 pb-1.5" data-role="barres-voie">
+                <Divergent objectifs={objectifs} effets={l.effets} hors={l.hors} niveau={() => 'sf'} echelle={echelle} cran={cran} bande={bande} />
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }

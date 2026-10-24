@@ -4,8 +4,9 @@
 // - `proposer(recette, direction)` (proposeVoies du moteur v4) : ajouter à 10′, assembler, remplacer à IBU égal ;
 //   effets en points 0–100 (apports V5.5 des familles citées, `established`), débordements de style ;
 // - `proposeVoies(…, { leviersLevure: true })` (même moteur) : le houblonnage à froid en fermentation active, le geste
-//   « Dry hop · actif » de q2b (Motueka 20 g, avec ses signaux de biotransformation, yeastSignals). Les voies « Changer
-//   de levure » de ce levier ne sont pas reprises (D35 : Suggérer ne fait varier que le houblon ; Levure, choix ouvert).
+//   « Dry hop · actif » de q2b (Motueka 20 g, avec ses signaux de biotransformation, yeastSignals), et les voies
+//   « Changer de levure » de ce levier (levuresDe), son groupe de q2b : « Celle ci aussi est toujours meilleures » (24.10,
+//   sur sa q2b) ; son choix l'emporte sur D35. Elles restent à part des voies houblon (verdicts, radar, comparaison).
 // Inconnu ≠ 0 : un effet non établi ou non simulé est `null`.
 import { applyVoie, proposeVoies, yeastSignals, type FamilyId, type Voie } from '../../../../src/engine';
 import type { BiereLue, Candidat, HoublonLu } from '../../moteur';
@@ -21,7 +22,7 @@ import { DEMANDE_DEGUSTEE, enPoints, type Visee } from '../../etat/visee';
  * (D124 : « certaines de mes choix ont été perdue »). Une visée posée dans Ma bière l'emporte, famille par famille. */
 export const DEMANDE_Q2B: Partial<Record<FamilyId, 1 | -1>> = { floral: 1, citrus: 1, ...DEMANDE_DEGUSTEE };
 
-export type Geste = 'meme' | 'assembler' | 'remplacer' | 'dryhop';
+export type Geste = 'meme' | 'assembler' | 'remplacer' | 'dryhop' | 'levure';
 export interface Ligne {
   /** Numéro de la voie à l'écran (data-voie), 1 pour la première. */
   n: number;
@@ -44,6 +45,8 @@ export interface Ligne {
   ibuApres: number | null;
   /** Signaux de biotransformation du dry hop actif (yeastSignals) : id, titre, statut, pourquoi. */
   bio: { id: string; titre: string; statut: string; pourquoi: string }[];
+  /** Changer de levure (q2b) : la souche visée ; aucun houblon. */
+  levure?: { id: string; nom: string };
 }
 export interface Groupe { id: string; geste: Geste; titre: string; dose: string | null; moment: string; estime: boolean; lignes: Ligne[] }
 export interface Objectif {
@@ -171,17 +174,40 @@ export function verdict(o: Objectif, groupes: Groupe[]): { mot: 'Atteint' | 'App
   return { mot: k >= 1 ? 'Atteint' : k >= 0.5 ? 'Approche' : 'Aucune', meilleure: k > 0 ? m : null, effet: e };
 }
 
-/** Les voies « houblonner à froid en fermentation active » du moteur (levier R44), mémoïsées par recette et direction. */
-const DH = new Map<string, Voie[]>();
-export function dryhopActif(recette: RecetteParcours, direction: Record<string, number>): Voie[] {
+/** Les leviers levure du moteur (R43, R44), mémoïsés par recette et direction : le houblonnage à froid en fermentation
+ * active (dry hop « actif ») et les changements de souche. */
+const DH = new Map<string, { dry: Voie[]; souches: Voie[] }>();
+function leviers(recette: RecetteParcours, direction: Record<string, number>) {
   const cle = JSON.stringify([recette.styleCode, recette.volumeL, recette.og, recette.boilMin, recette.yeastId, recette.additions, direction]);
   if (!DH.has(cle)) {
     const res = proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: false, leviersLevure: true });
-    DH.set(cle, res.voies.filter((v) => v.type === 'levure' && !v.yeastChange && v.actions.length > 0 && v.actions.every((x) => x.op === 'ajouter' && x.moment === 'dryActive'))
-      .filter((v) => catalogueDuMoteur() || v.actions.every((x) => proposable(x.hopKey))));
+    DH.set(cle, {
+      dry: res.voies.filter((v) => v.type === 'levure' && !v.yeastChange && v.actions.length > 0 && v.actions.every((x) => x.op === 'ajouter' && x.moment === 'dryActive'))
+        .filter((v) => catalogueDuMoteur() || v.actions.every((x) => proposable(x.hopKey))),
+      souches: res.voies.filter((v) => v.type === 'levure' && !!v.yeastChange),
+    });
     if (DH.size > 60) DH.delete(DH.keys().next().value!);
   }
   return DH.get(cle)!;
+}
+/** Les voies « houblonner à froid en fermentation active » du moteur (levier R44). */
+export const dryhopActif = (recette: RecetteParcours, direction: Record<string, number>): Voie[] => leviers(recette, direction).dry;
+
+/** « Changer de levure » de q2b (levier R43) : une voie par souche caractérisée autre que la levure de la recette, son
+ * effet = la différence des arômes propres des deux souches (modèle V5.5, établi seulement là où une souche a un
+ * paramètre ; ailleurs null, inconnu). Numérotées après les voies houblon (`depuis`). null : aucune souche. */
+export function levuresDe(recette: RecetteParcours, objectifs: Objectif[], familles: readonly FamilyId[], depuis: number): Groupe | null {
+  const direction = Object.fromEntries(objectifs.map((o) => [o.f, o.requis / o.cran]));
+  const vs = leviers(recette, direction).souches;
+  if (!vs.length) return null;
+  return { id: 'levure', geste: 'levure', titre: 'Changer de levure', dose: null, moment: 'levure', estime: true,
+    lignes: vs.map((v, i): Ligne => ({
+      n: depuis + i + 1, id: v.id, geste: 'levure', houblons: [], dose: null,
+      effets: fam(familles, (f) => (v.effect[f].established && v.effect[f].central != null ? v.effect[f].central : null)),
+      hors: [...new Set(v.styleOverflow.map((o) => o.family))],
+      stock: 'suffisant', estime: true, muet: null, voie: v, ibuApres: v.ibu.unknown ? null : v.ibu.after, bio: [],
+      levure: { id: v.yeastChange!.to, nom: v.yeastChange!.toName },
+    })) };
 }
 
 // ---------- Radar : une voie à un autre moment (« ‹ 10′ › » de la base v4.10) ----------

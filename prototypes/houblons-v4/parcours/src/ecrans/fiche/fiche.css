@@ -18,3 +18,37 @@ body:has(.pq-fiche) [data-vaul-overlay] { -webkit-backdrop-filter: none !importa
   body:has(.pq-fiche) [data-vaul-overlay] { background: transparent !important; }
 }
 [data-fiche-survol] { outline: 2px solid rgb(var(--cave-50)); outline-offset: 1px; border-radius: 0.75rem; }
+/* D130 : la matrice de flb5b sous le radar (Matrice.tsx), telle qu'il l'a choisie : cadre noir, bandeau noir « Lui seul »,
+   colonnes égales de 38 px, « lui » entre deux règles noires, un seul gris pour les remplaçants. */
+.pq-fiche-mx { border: 1.5px solid rgb(var(--cave-50)); border-radius: 8px; overflow: hidden; background: rgb(var(--cave-950)); }
+.pq-fiche-mx-q { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); font-size: 16px; line-height: 1.25; padding: 8px 10px; }
+.pq-fiche-mx-q b { font-weight: 800; }
+.pq-fiche-mx-g { display: grid; grid-template-columns: minmax(0, 1fr) 52px repeat(4, 38px); align-items: center; padding: 0 6px 0 10px; }
+.pq-fiche-mx-ent { align-items: end; padding-top: 6px; padding-bottom: 4px; border-bottom: 1.5px solid rgb(var(--cave-50)); }
+.pq-fiche-mx-coin { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding-right: 6px; font-size: 11px; color: rgb(var(--cave-400)); line-height: 1.2; }
+.pq-fiche-mx-ent .pq-fiche-mx-lui { font-size: 13px; font-weight: 700; color: rgb(var(--cave-50)); padding-bottom: 2px; }
+.pq-fiche-mx-rn { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.pq-fiche-mx-rn i { font-style: normal; font-size: 11px; color: rgb(var(--cave-400)); writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; }
+.pq-fiche-mx-rn b { font-size: 11px; font-weight: 400; color: rgb(var(--cave-400)); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pq-fiche-mx-l { min-height: 27px; border-bottom: 1px solid rgb(var(--cave-850)); }
+.pq-fiche-mx-l:last-child { border-bottom: 0; }
+.pq-fiche-mx-m { display: flex; align-items: center; gap: 6px; min-width: 0; padding: 2px 4px 2px 0; }
+.pq-fiche-mx-m b { font-size: 15px; font-weight: 600; line-height: 1.1; color: rgb(var(--cave-50)); }
+.pq-fiche-mx-seul .pq-fiche-mx-m b { font-size: 16px; font-weight: 800; }
+.pq-fiche-mx-m svg { flex: none; }
+.pq-fiche-mx-hf { display: block; flex: none; width: 9px; height: 9px; margin: 0 2.5px; border: 2px solid rgb(var(--cave-50)); transform: rotate(45deg); }
+.pq-fiche-mx-lui { display: flex; align-items: center; justify-content: center; gap: 4px; align-self: stretch; border-left: 1.5px solid rgb(var(--cave-50)); border-right: 1.5px solid rgb(var(--cave-50)); }
+.pq-fiche-mx-n, .pq-fiche-mx-cl { font-size: 11px; color: rgb(var(--cave-400)); font-variant-numeric: tabular-nums; }
+.pq-fiche-mx-d { display: block; flex: none; width: 9px; height: 9px; border-radius: 50%; background: rgb(var(--cave-50)); }
+.pq-fiche-mx-d2 { width: 13px; height: 13px; }
+.pq-fiche-mx-rc { display: flex; justify-content: center; }
+.pq-fiche-mx-o { display: block; flex: none; width: 11px; height: 11px; border-radius: 50%; background: #8a8f9c; }
+/* Les familles non décrites : pictos et « ? » à leur couleur, centrés sous le radar. */
+.pq-fiche-mx-nd { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px 9px; }
+.pq-fiche-mx-nd1 { display: inline-flex; align-items: center; gap: 1px; }
+.pq-fiche-mx-nd1 i { font-style: normal; font-size: 13px; font-weight: 700; }
+.pq-fiche-mx-aide { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-950)); color: rgb(var(--cave-400)); font-size: 13px; font-weight: 600; line-height: 1; display: inline-flex; align-items: center; justify-content: center; position: relative; }
+/* Une cible de 44 px autour du « ? » de 24 px (le doigt), sans l'agrandir à l'œil. */
+.pq-fiche-mx-aide::after { content: ''; position: absolute; inset: -10px; }
+.pq-fiche-mx-leg { padding: 8px 10px; border-bottom: 1px solid rgb(var(--cave-850)); background: rgb(var(--cave-900)); display: flex; flex-direction: column; gap: 4px; font-size: 13px; line-height: 1.35; color: rgb(var(--cave-200)); }
+.pq-fiche-mx-leg[hidden] { display: none; }

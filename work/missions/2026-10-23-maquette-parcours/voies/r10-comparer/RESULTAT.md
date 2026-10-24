@@ -1,4 +1,4 @@
-OK — Comparer r6a, « Face à ta stout, par » rendu, étapes en bande, ses mots, 80 mots
+ECHEC — G4 : 88 mots au premier écran (« lui seul » D130, D41 admis) ; reste OK
 
 ## Fichiers écrits (Possède)
 - `prototypes/houblons-v4/parcours/src/ecrans/comparer/index.tsx` : état `moment` (60′ · 10′ · dry hop) ; radar, têtes (~ dans / ~ hors) et rangées lues au moment choisi (`vue`) ; Défi et feuilles du dock restent au dry hop ; la bande des étapes posée sur les rangées ; la pastille du critère en tête de la bande (« Pourquoi ce classement › » en bas de sa liste) ; la réponse de y1b et « Placer <houblon> › » en conclusion, en bas (comme le « Doser … dans Dryhopper » de r6a) ; « ? » sur la ligne de la question ; légende mise à jour.
@@ -57,6 +57,39 @@ Ses mots, sur flb5 : « J'aime beaucoup le 9 car ont voit que c'est pas que du 1
   - `etat-acquis-r6a-elements-notes` ETATS OK (1/1) ; acquis : ETATS OK (23/23), 1 en attente de son choix (Dryhopper) ;
   - CHOIX OK · COMMUN OK · TEINTE OK 6/6 · TYPES OK · ETAPE OK (comparer).
 - DÉCISION À PRENDRE (s'ajoute à la première) : au plafond de 80 mots, chaque élément rendu en fait sortir un autre (ici l'écart du résineux et « Stout »). Pour garder tout au premier écran, il faut ouvrir le plafond pour Comparer.
+
+## D130 — « lui seul » au premier écran, dans chaque colonne
+Ses mots, sur flb5b : « Les type spéciaux des houblons hors 16d ! C'est très important surtout dans la comparaison !!!! ».
+- **Ce qui est rendu.** Au bas de chaque tête de colonne, au premier écran, une pastille noire à la manière du bandeau de flb5b. Elle porte ce que lui seul dit face aux autres houblons comparés :
+  - Cascade : « citron vert » ;
+  - Idaho 7 : « orange +4 » ;
+  - Galaxy : « ◇ cannabis +4 » ;
+  - Nelson Sauvin, s'il est ajouté : « ◇ vin blanc +3 ».
+
+  La clé « lui seul » est écrite une fois, dans la colonne Ta stout. Contrat : `data-role="hors-16d"` et `data-houblon="<clé>"`. La liste entière est dans l'aria-label et dans « ses mots », sous le premier écran (D128 bis).
+- **Mots montrés.** Ce sont ceux de `sesMots` (D128 bis) : tirés de ses fiches par `familyWords` du moteur, traduits (D97), sans nom de famille ni « fruité », jamais inventés. Ils sont rangés « hors 16D » d'abord :
+  1. les mots hors des 12 familles (◇) ;
+  2. ceux d'une famille que la 16D n'attend pas (agrumes, tropicaux…) ;
+  3. ceux d'une famille qu'elle attend (floral, herbacé, terreux ; `status === 'attendue'` du style).
+
+  Une ligne de 13 signes au plus (9 à quatre colonnes, où elle peut passer à la ligne), puis « +n ».
+- **DÉCISION.** Cascade et Idaho 7 n'ont aucun mot hors des 12 familles (Cascade : « fruité », générique ; Idaho 7 : aucun). Montrer seulement ceux-là aurait laissé leurs colonnes vides (H1 l'interdit, et le brasseur n'y verrait rien). La ligne prend donc les mots que lui seul dit, hors 16D d'abord, comme le demande le pilote (« les mots que ta D128 bis a mis »).
+- **Place.** Les têtes gagnent une ligne (+23 px). Le radar perd 8 px (200 px de haut) et les têtes 4 px de marge. Toutes les rangées restent au-dessus du dock, Épicé compris ; « inconnus, pas zéro » est rogné de 3 px sous le cadre (`captures-r10/d130-repos.png`).
+- **Mots au premier écran : 88.** C'est au-dessus de 80, sous les 112 de D41, comme le pilote l'a admis. `etat-acquis-premier-plan-80-mots` est donc en ECHEC (« 88 mots au premier écran (au plus 80) ») : c'est le critère G4 de GATES, second volet.
+- **Critères rejoués sur `parcours-comparer`.**
+  - HORS-16D OK (`--min=3 --premier-ecran`) ;
+  - FAMILLES OK (9) ;
+  - COMPARER-ETAPES OK ;
+  - ETATS OK (18/18) comparer ;
+  - « Face à ta stout, par » : `etat-acquis-r6a-elements-notes` ETATS OK (1/1) ;
+  - COMMUN OK, TEINTE OK 7/7, TYPES OK, ETAPE OK (comparer).
+- **CHOIX.** `controle-choix --ecran=comparer` sort « CHOIX ECHEC (1 écran(s) conforme(s) à son choix) ». Comparer est conforme ; l'échec vient du registre, pour Dryhopper : « ses mots ne se retrouvent pas dans SPEC-BRASSEUR (« Partir sur cette version (24.10, soir, sur p4b2f… ») ». C'est une entrée hors de mon périmètre, sans doute en cours d'écriture par le pilote.
+- **Captures.**
+  - `captures-r10/cote-a-cote-flb5b-r6a.png` : flb5b, r6a et la nouvelle Comparer ;
+  - `d130-repos.png` ;
+  - `d130-quatre.png` : quatre colonnes, Nelson Sauvin « ◇ vin blanc +3 ».
+- **DÉCISION À PRENDRE.** Le plafond de 80 mots de G4 et l'acquis `etat-acquis-premier-plan-80-mots` restent à 80 alors que D41 admet 112. Il faut relever ce plafond pour Comparer, ou retirer un autre élément du premier écran.
+- **Prédiction.** « Là je vois tout de suite que Galaxy c'est cannabis/dank et Nelson vin blanc » ; risque : « orange » pour Idaho 7 jugé banal (pas de rareté au catalogue dans le moteur).
 
 CONNAISSANCE : sur un écran à CadreOutil, `controle-comparer-etapes` traite tout ce qui passe sous le bas du `main` défilant (783 px à 390 × 844) comme « rogné » : « visibles ensemble » veut dire au premier écran. Le compteur de 80 mots compte aussi ce qui passe sous le dock (jusqu'à 844 px).
 Le contrôle de reprise refuse dans « ## Reprise » de NOTE.md toute ligne dont l'identifiant n'est pas dans l'inventaire. Une greffe hors inventaire va dans « Idées reprises ».

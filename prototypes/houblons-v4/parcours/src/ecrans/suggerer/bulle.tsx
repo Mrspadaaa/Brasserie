@@ -79,9 +79,13 @@ function BulleTraits() {
     const tete = document.querySelector('.pq-outil-suggerer > header')?.getBoundingClientRect().bottom ?? 0;
     // Comme gr5 : au-dessus de la ligne du houblon, pour ne pas cacher son nom (« avec Motueka » se lit sur la ligne).
     const nomLigne = o.el.closest('li')?.querySelector('.pq-sg-l1')?.getBoundingClientRect();
-    const haut = Math.min(r.top, nomLigne && nomLigne.height > 0 ? nomLigne.top : r.top);
-    const dessous = haut - h - 4 < tete + 4;
     const x = Math.max(6, Math.min(window.innerWidth - w - 6, cx - w / 2));
+    // Au-dessus de la ligne du nom tant que la bulle reste près du picto (110 px au plus, D110) ; sinon (nom sur deux lignes,
+    // avec ses mots hors 16D), juste au-dessus de la case : la bulle dit elle-même « avec Motueka ».
+    const loin = (y: number) => Math.hypot(x + w / 2 - cx, y + h / 2 - (r.top + r.height / 2));
+    const surNom = Math.min(r.top, nomLigne && nomLigne.height > 0 ? nomLigne.top : r.top);
+    const haut = loin(surNom - h - 4) <= 110 ? surNom : r.top;
+    const dessous = haut - h - 4 < tete + 4;
     setPos({ x, y: dessous ? r.bottom + 8 : haut - h - 4, dessous });
   }, [o, suivre, b]);
 

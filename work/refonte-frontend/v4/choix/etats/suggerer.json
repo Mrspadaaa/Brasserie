@@ -371,9 +371,22 @@
     "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
    },
    "verdict_5345f6ad": "absent",
-   "ecart": "Aucun groupe « Changer de levure » : la liste finit sur le dry hop. Levure est un écran au choix ouvert ; l'absence ici n'a pas été décidée par lui.",
+   "ecart": "Aucun groupe « Changer de levure » : la liste finit sur le dry hop. Levure est un écran au choix ouvert ; l'absence ici n'a pas été décidée par lui. Voulu absent par D35 (« Levure, choix ouvert ») ; D44 (24.10 soir, sur sa q2b : « Celle ci aussi est toujours meilleures ») le rend : son choix l'emporte.",
    "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-levure-5345f6ad.png",
-   "voulu": "D35 : le groupe « Changer de levure » ne revient pas dans Suggérer (L10 : Levure est un écran au choix ouvert)"
+   "voulu": "",
+   "verif": {
+    "route": "suggerer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+    "selecteur_choisie": "[data-moment=\"levure\"]",
+    "geste": "repos",
+    "attendu": [
+     "Changer de levure",
+     "LalBrew Verdant IPA",
+     "LalBrew Pomona",
+     "estimé"
+    ],
+    "interdit": []
+   }
   },
   {
    "id": "etat-sugg-coeur",

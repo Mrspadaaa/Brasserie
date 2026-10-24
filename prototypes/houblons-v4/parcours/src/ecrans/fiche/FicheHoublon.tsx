@@ -4,22 +4,23 @@
 // plus récente en gros (« α 11–14 % », Hopsteiner 2025), le lot à côté et la réglette de toutes les fiches ; l'usage en
 // mots ; la note d'honnêteté de l'α (« α : plages de Citra en pellets ; la fiche du cryo manque. ») ; puis, avant la
 // liste (D115, « Mettre le radargraph avant »), le grand radar légendé, ses flèches sur sa demande et sa bulle au toucher,
-// et « + Floral 2/4  − Résineux 2/4 » ; ensuite le bloc des familles : la bande des 12 (« 1 seule fiche : Beer Maverick »
-// à côté), chaque famille citée dans l'ordre de la bande, son picto au trait (D93), « 2/4 », « nommé en premier » quand
-// une seule fiche la cite, ses mots ; « sans famille : … » (et sa part dessinée, D100) ; « n non décrites : … » ; enfin
+// et « + Floral 2/4  − Résineux 2/4 » ; ensuite, à la place de la liste de g1, la matrice de flb5b (D130, son choix du
+// 24.10, soir) : les familles non décrites en pictos « ? », le bandeau « Lui seul : … » (ses mots que ses remplaçants ne
+// disent pas, data-role="hors-16d"), ses mots en lignes face à ses quatre remplaçants de u4 (Matrice.tsx) ; enfin
 // Styles › · Huiles › · Sources › · Substituts › repliés (Replis.tsx). En pied, ♡ ⊘ et « Comparer ».
 // Fermée par une seule croix ronde en haut à droite (Feuille, la tête de g1 et D109), le fond assombri, Échap et le
 // retour du téléphone. Emploi depuis un autre écran : export par défaut de index.tsx (<Fiche houblon={cle} />, fermée
 // par le retour), ou useFiche() (état local). Chaque état de g1 porte data-etat (controle-etats.mjs, D124).
 import { useCallback, useEffect, useState } from 'react';
 import { Ban, Heart } from 'lucide-react';
-import { COULEURS, COURT, FAMILIES, Feuille, Picto, nombre, plage } from '../../commun';
+import { COURT, Feuille, nombre, plage } from '../../commun';
 import { useNavigation } from '../../coquille/navigation';
 import { useBiere, useComparaison, useGestes, useRecette, useVisee } from '../../etat/EtatParcours';
 import { sensDe, type Sens } from '../../etat/visee';
-import { houblon, style, type HoublonLu } from '../../moteur';
-import { familyWords, hopRef, type FamilyId } from '../../../../src/engine';
-import { Autres, sourceAlpha, Usage } from './briques';
+import { houblon, style } from '../../moteur';
+import type { FamilyId } from '../../../../src/engine';
+import { sourceAlpha, Usage } from './briques';
+import { Matrice, NonDecrites } from './Matrice';
 import { noterFermeture, useGestesFiche } from './gestes';
 import { RadarFiche } from './RadarFiche';
 import { Replis } from './Replis';
@@ -28,20 +29,6 @@ import './fiche.css';
 
 /** Goûts du brasseur, en mémoire (maquette) : « j'aime » ou « pas pour moi » par houblon (D20). */
 const GOUTS = new Map<string, 'aime' | 'non'>();
-
-/** Mots des fiches par famille (dédoublonnés), et les familles nommées en premier par une fiche. */
-function motsDe(h: HoublonLu) {
-  const ref = hopRef(h.cle);
-  const vide = { mots: {} as Record<string, string[]>, premier: new Set<FamilyId>() };
-  if (!ref) return vide;
-  const w = familyWords(ref.varietyId, ref.catalogue);
-  const mots = Object.fromEntries(FAMILIES.map((f) => {
-    const vus = new Map<string, string>();
-    for (const m of w.mots[f].flatMap((x) => x.mots)) { const k = m.toLowerCase(); if (!vus.has(k)) vus.set(k, k); }
-    return [f, [...vus.values()]];
-  }));
-  return { mots, premier: new Set(FAMILIES.filter((f) => w.premier[f].length > 0)) };
-}
 
 function Gout({ cle, nom }: { cle: string; nom: string }) {
   const [g, setG] = useState(() => GOUTS.get(cle) ?? null);
@@ -140,14 +127,10 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
   }, [cle, racine]);
   useEffect(() => () => noterFermeture(), [cle]);
 
-  const { mots, premier } = motsDe(h);
   const s = sourcesFiche(cle);
   // g1 : les familles que cite au moins une fiche, dans l'ordre de la bande (le style : attendues d'abord).
   const cite = (f: FamilyId) => h.familles[f].niveau !== 'non décrit' && h.familles[f].fiches > 0;
-  const citees = sc.order.filter(cite);
   const nonDecrites = sc.order.filter((f) => !cite(f));
-  const nbAttendues = sc.order.filter((f) => sc.families[f].status === 'attendue').length;
-  const sansMots = h.motsSansFamille.filter((m, i, t) => t.findIndex((x) => x.toLowerCase() === m.toLowerCase()) === i);
   const src = sourceAlpha(h);
   const recente = s?.alphaRecente ?? null;
   const p: [number, number] | null = recente ? [recente.min, recente.max] : h.alpha?.plage ?? null;
@@ -157,7 +140,6 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
   // plages de ses fiches se dit.
   const noteAlpha = s?.cryo ? `α : plages de ${h.nom.replace(/\s*cryo$/i, '')} en pellets ; la fiche du cryo manque.`
     : lot != null && s && s.alpha.length && s.alpha.every((a) => lot < a.min || lot > a.max) ? `Mon lot ${nombre(lot, 1)} % : hors des plages de ses fiches.` : null;
-  const compte = (f: FamilyId) => (h.familles[f].sur === 1 ? '' : `${h.familles[f].fiches}/${h.familles[f].sur}`);
   // Sa demande : la visée posée dans Ma bière face à ma bière, ou, sans visée, la demande dégustée (etat/visee.ts, D108).
   const sens = sensDe(visee, (f) => biere.profil[f].valeur?.centre ?? null);
   const demande = Object.entries(sens) as [FamilyId, Sens][];
@@ -212,48 +194,11 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
           </p>
         )}
 
-        <div data-element="g1-familles" data-role="fiche-arome" aria-label="Arômes et sources" className="rounded-lg bg-cave-900 border border-cave-800 p-2.5 space-y-2">
-          <div className="flex items-center gap-2">
-            <div data-element="g1-bande" role="img" aria-label={`Les familles citées par les fiches de ${h.nom}`} className="flex items-center gap-[3px]">
-              {sc.order.map((f, i) => {
-                const n = cite(f) ? h.familles[f].fiches : 0;
-                return <i key={f} className={`block w-[13px] h-[18px] rounded-sm ${i === nbAttendues ? 'ml-1.5' : ''}`}
-                  style={{ background: n === 0 ? 'rgb(var(--cave-800))' : COULEURS[f].base, opacity: n === 1 ? 0.45 : 1 }} />;
-              })}
-            </div>
-            {s?.seuleFiche && <span data-role="fiche-seule" className="ml-auto text-xs text-cave-400 text-right whitespace-nowrap">1 seule fiche : {s.seuleFiche}</span>}
-          </div>
-          {/* r7 : data-role="fiche-arome" porte tout le bloc (bande, « 1 seule fiche : Beer Maverick », liste) : un houblon
-              d'une seule fiche (Idaho 7) n'a pas de « 2/4 » dans sa liste, sa source est dite dans la bande. */}
-          <ul data-element="g1-liste" className="space-y-1.5">
-            {citees.map((f) => {
-              const c = compte(f);
-              const prem = h.familles[f].fiches === 1 && premier.has(f);
-              return (
-                <li key={f} data-famille={f} className="min-w-0">
-                  <span className="flex items-center gap-1.5 text-base leading-tight">
-                    <Picto famille={f} taille={18} />
-                    <b className="font-semibold text-cave-50">{COURT[f]}</b>
-                    {c && <span className="text-sm text-cave-200">{c}</span>}
-                    {prem && <span data-element="g1-premier" className="text-sm text-cave-400">{c ? '· ' : ''}nommé en premier</span>}
-                  </span>
-                  {mots[f]?.length > 0 && <span className="block pl-[1.625rem] text-sm text-cave-200">{mots[f].join(', ')}</span>}
-                </li>
-              );
-            })}
-          </ul>
-          {sansMots.length > 0 && (
-            <p data-element="g1-sans-famille" className="flex items-center gap-2 pl-[1.625rem] text-sm text-cave-400 min-w-0">
-              <span className="min-w-0">sans famille : {sansMots.join(', ')}</span>
-              {h.partSansFamille != null && h.partSansFamille > 0 && <Autres h={h} largeur={48} petit />}
-            </p>
-          )}
-          {nonDecrites.length > 0 && (
-            <p data-element="g1-non-decrites" className="pl-[1.625rem] text-sm text-cave-400">
-              {nonDecrites.length} non décrite{nonDecrites.length > 1 ? 's' : ''} : {nonDecrites.map((f) => COURT[f]).join(', ')}
-            </p>
-          )}
-        </div>
+        {/* D130 (24.10, soir) : la liste sous le radar devient la matrice de flb5b, « La matrice nettoyée » (« Partie sur celle
+            ci […] Les type spéciaux des houblons hors 16d ! ») : les familles non décrites en pictos « ? », puis « Lui seul : … »
+            et ses mots face à ses quatre remplaçants de u4 (Matrice.tsx, donnees-matrice.ts). */}
+        <NonDecrites familles={nonDecrites} />
+        <Matrice h={h} cle={cle} recette={recette} seuleFiche={s?.seuleFiche ?? null} />
 
         {s && <Replis h={h} cle={cle} s={s} recette={recette} onRemplacer={dansRecette ? () => aller({ ecran: 'substituer', houblon: cle }) : null} />}
       </div>

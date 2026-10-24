@@ -50,12 +50,14 @@ export function Onglets({ actif }: { actif: Onglet }) {
   );
 }
 
-/** La tête d'un outil sans onglets (Dryhopper, Levure, Substituer) : la même croix, au même endroit, puis la question. */
+/** La tête d'un outil sans onglets (Dryhopper, Levure, Substituer) : la même croix, au même endroit, puis la question.
+ * D129 (« Fait attention aux header, footer, sur la continuité de l'app ») : le titre d'écran de DESIGN.md (`title`,
+ * 18 px, graisse 600, interligne 22 px), le même sur les trois outils, sur une ligne (« … » si trop long). */
 export function TeteOutil({ question }: { question: string }) {
   return (
     <div data-page-titlebar className="pq-tete flex items-center gap-1.5">
       <Croix />
-      <h1 className="min-w-0 flex-1 text-[0.9375rem] font-semibold text-cave-50 leading-tight">{question}</h1>
+      <h1 data-role="titre-outil" className="pq-tete-titre min-w-0 flex-1 truncate text-cave-50">{question}</h1>
     </div>
   );
 }

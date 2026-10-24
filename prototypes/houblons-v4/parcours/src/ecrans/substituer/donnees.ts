@@ -6,7 +6,7 @@
 //   dans « Lire ces scores ») ; une composante connue reste celle du moteur. Rangés par le pire cas (bas de plage).
 // - Le face à face : α et β par source (Beer Maverick, Hopsteiner), huiles (Beer Maverick ; linalol Hopsteiner),
 //   familles des fiches (niveau, N/M), mots et styles d'emploi des fiches : catalogue du moteur (hopRef).
-import { familyWords, hopRef, substitutes, type FamilyId } from '../../../../src/engine';
+import { DONNEES_POUVOIR, familyWords, hopRef, substitutes, type FamilyId } from '../../../../src/engine';
 import { houblon, style, type HoublonLu } from '../../moteur';
 import { proposable } from '../../moteur/donnees';
 import { memo } from '../../moteur/mesure';
@@ -99,5 +99,58 @@ export function mesures(h: HoublonLu): Mesures {
     huiles: { myrcene: c?.oils.myrcene ?? null, humulene: c?.oils.humulene ?? null, caryophyllene: c?.oils.caryophyllene ?? null, linalool: c?.hsLinalool?.range ?? null },
     mots: (c?.tagsFr?.length ? c.tagsFr.map((m) => m.toLowerCase()) : tous).slice(0, 6), motsSource: c?.tagsFr?.length ? 'Beer Maverick' : 'fiches',
     styles: usage?.styles.slice(0, 3) ?? [], stylesSource: usage?.source ? usage.source.split(/[,—]/)[0].trim() : null,
+  };
+}
+
+// ---------- D130 : ses mots hors des familles (« Les type spéciaux des houblons hors 16d ! ») ----------
+/** Mots génériques ou noms de famille, qui ne disent rien de propre au houblon (flb5b : « fruité », « fruits tropicaux »). */
+const GENERIQUE = /^(fruit(é|ée|y|s|ée?s)?|fruits? tropicaux|tropical|aromatique|arôme|houblon|doux|léger|intense|complexe|agréable)$/i;
+/** Un mot qui n'est que le nom d'une famille, écrit autrement (« resiny ») : la famille le dit déjà, il n'est pas propre au houblon. */
+const NOM_DE_FAMILLE = /^(r[ée]sin|citr|agrum|flor|fleur|herb|terr|earth|[ée]pic|spic|tropic|berr|bai|melon|noyau|stone|p[ée]pin|v[ée]g[ée]tal|green|pine|pin)/i;
+/** Traductions sûres de mots de fiches restés en anglais ou en italien. */
+const FR: Record<string, string> = { tabacco: 'tabac', tobacco: 'tabac', marmalade: 'marmelade', ginger: 'gingembre', licorice: 'réglisse', onion: 'oignon', garlic: 'ail', catty: 'urine de chat', lilac: 'lilas', chamomile: 'camomille', gooseberry: 'groseille à maquereau', 'white wine': 'vin blanc', grape: 'raisin' };
+/** Les mots de ses fiches qu'aucune famille ne range (sansFamille du moteur), sans doublon ni mot générique, et le nombre de
+ * fiches qui les citent ; plus tous ses mots (rangés ou non), pour dire ce qu'il est seul à avoir face aux autres. */
+export function motsHors(cle: string): { hors: { mot: string; fiches: number }[]; tous: Set<string> } {
+  const ref = hopRef(cle);
+  if (!ref) return { hors: [], tous: new Set() };
+  const w = familyWords(ref.varietyId, ref.catalogue);
+  const compte = new Map<string, { mot: string; fiches: Set<string> }>();
+  for (const x of w.sansFamille) {
+    const brut = x.mot.toLowerCase().trim();
+    const k = FR[brut] ?? brut;
+    if (!k || GENERIQUE.test(k) || NOM_DE_FAMILLE.test(brut)) continue;
+    const e = compte.get(k) ?? { mot: k, fiches: new Set<string>() };
+    e.fiches.add(x.source); compte.set(k, e);
+  }
+  const tous = new Set([...compte.keys(), ...Object.values(w.mots).flatMap((l) => l.flatMap((r) => r.mots.map((m) => m.toLowerCase().trim()))), ...(ref.catalogue.tagsFr ?? []).map((m) => m.toLowerCase())]);
+  const hors = [...compte.values()].map((e) => ({ mot: e.mot, fiches: e.fiches.size })).sort((a, b) => b.fiches - a.fiches);
+  return { hors, tous };
+}
+
+// ---------- D130 bis : la matrice des huiles (grammaire de flb5b) ----------
+export type LigneHuile = 'totale' | 'myrcene' | 'humulene' | 'caryophyllene' | 'farnesene' | 'linalol' | 'geraniol';
+export const LIGNES_HUILE: { id: LigneHuile; nom: string; unite: string }[] = [
+  { id: 'totale', nom: 'huile totale', unite: 'mL/100 g' }, { id: 'myrcene', nom: 'myrcène', unite: '%' }, { id: 'humulene', nom: 'humulène', unite: '%' },
+  { id: 'caryophyllene', nom: 'caryophyllène', unite: '%' }, { id: 'farnesene', nom: 'farnésène', unite: '%' }, { id: 'linalol', nom: 'linalol', unite: '%' },
+  { id: 'geraniol', nom: 'géraniol', unite: '%' },
+];
+/** Les valeurs des fiches d'un houblon, en plage (enveloppe des sources), ou null quand aucune fiche ne la donne (jamais 0) :
+ * data/composes-houblon.json d'abord (8 variétés, toutes ses sources), sinon le catalogue (Beer Maverick ; linalol Hopsteiner). */
+export function huilesDe(cle: string): Record<LigneHuile, Intervalle | null> {
+  const ref = hopRef(cle);
+  const c = ref?.catalogue;
+  const v = (DONNEES_POUVOIR.varietes as Record<string, { huile?: { valeurs: { plage: Intervalle }[] | null }; composes?: Record<string, { valeurs: { plage: Intervalle }[] | null }> }>)[cle];
+  const env = (vs: { plage: Intervalle }[] | null | undefined): Intervalle | null => (vs?.length ? [Math.min(...vs.map((x) => x.plage[0])), Math.max(...vs.map((x) => x.plage[1]))] : null);
+  const env2 = (...rs: (Intervalle | null | undefined)[]): Intervalle | null => { const l = rs.filter((r): r is Intervalle => !!r); return l.length ? [Math.min(...l.map((r) => r[0])), Math.max(...l.map((r) => r[1]))] : null; };
+  const de = (k: string) => env(v?.composes?.[k]?.valeurs);
+  return {
+    totale: env(v?.huile?.valeurs) ?? env2(c?.oil, c?.hs?.totalOil),
+    myrcene: de('myrcene') ?? c?.oils.myrcene ?? null,
+    humulene: de('humulene') ?? c?.oils.humulene ?? null,
+    caryophyllene: de('caryophyllene') ?? c?.oils.caryophyllene ?? null,
+    farnesene: de('farnesene'),
+    linalol: de('linalol') ?? c?.hsLinalool?.range ?? null,
+    geraniol: de('geraniol'),
   };
 }

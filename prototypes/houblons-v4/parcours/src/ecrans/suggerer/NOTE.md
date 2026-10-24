@@ -1,5 +1,25 @@
 # Suggérer — q2b, « Quel houblon ajouter à ma bière ? » (voie p2-suggerer ; reprise D105, 23.10 soir)
 
+## D44 et D130 (24.10, soir, voie r11, suite) : le groupe levure de q2b, ce qui est propre à chacun
+Ses mots, sur sa q2b dans la planche : « Celle ci aussi est toujours meilleures. Mais aussi ajouter les spec en plus type
+comme matrice nettoyée flb5b · de flb5 » ; sur flb5b : « Les type spéciaux des houblons hors 16d ! C'est très important
+surtout dans la comparaison !!!! » (D130).
+- **« Changer de levure »** revient tel qu'il est dans q2b (D44 : son choix l'emporte sur D35), après le dry hop : titre,
+  pastille « levure », « estimé » ; LalBrew Verdant IPA et LalBrew Pomona (les souches caractérisées autres que US-05),
+  chacune avec ses pictos, ses traits (crans comptés, gr5 c) et sa barre. Effet : le levier R43 du moteur
+  (`proposeVoies(…, { leviersLevure: true })`, `yeastChange`), différence des arômes propres des deux souches (modèle V5.5,
+  sans fiche : pictos pâles, barres blanches) ; non établi ailleurs (hachures, jamais 0). Mêmes nombres que q2b : Verdant
+  agrumes +1,3, tropicaux +2,2, noyau +4,4 hors style ; Pomona +2,8, +3,1, +4,3, tous hors style. Les levures restent à part
+  des voies houblon (pas de `data-voie`, ni verdict des cartes, ni radar, ni « Comparer (n) ») ; leur « + » les retient
+  sur place (Comparer ne compare que des houblons). `levuresDe` dans `voies.ts`, `BlocLevure` dans `index.tsx`.
+- **Hors des familles de la 16D** (`hors16d.ts`, contrat `data-role="hors-16d"` et `data-houblon`) : sous les pictos,
+  une ligne courte. Pour un houblon, les mots de ses fiches qu'aucune famille ne range (`sansFamille` du moteur), mots
+  génériques et noms de famille écartés, comme flb5b ; « lui seul : … » quand aucun autre houblon de l'écran ne les a,
+  sinon « hors 16D : … » ; deux au plus, sur la première ligne où le houblon paraît (une fois : mots modérés, D41). Pour
+  une levure, « elle : … », la fiche technique du fabricant relevée par le modèle (« abricot dominant, POF négative »,
+  « pêche, POF négative »), sans les noms de famille que ses traits disent déjà ; « ? » si aucune fiche ne le dit. Écrit
+  dans Suggérer plutôt qu'importé de Substituer (fichier en cours dans une autre voie).
+
 ## Reprise gr5 (24.10, soir, voie r11) : le cran au doigt et les crans comptés
 Ses mots, sur gr5 dans « Planches · 24.10 » : « Ça c'est top à mettre dans la vraie version ». Sa page :
 `work/refonte-frontend/v4/ecran-1/fils24-graphes/gr5/etat.html` (captures `…/captures/gr5-toucher.png`, `gr5-toucher-c.png`).

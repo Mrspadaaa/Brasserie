@@ -28,7 +28,7 @@ import { Usage } from '../fiche/briques';
 import { useFiche } from '../fiche/FicheHoublon';
 import { Lentille } from '../ma-biere/Lentille';
 import { noterAvant } from '../ma-biere/repere';
-import { lireRemplacants, mesures, stockOriginal, TEXTE_STOCK, type Candidat, type EtatStock, type Intervalle } from './donnees';
+import { huilesDe, LIGNES_HUILE, lireRemplacants, mesures, motsHors, stockOriginal, TEXTE_STOCK, type Candidat, type EtatStock, type Intervalle } from './donnees';
 import { RadarU4 } from './Radar';
 import SYMBOLES from '../../../../data/pictos-familles.svg?raw';
 import './substituer.css';
@@ -385,6 +385,95 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
     gestes.inscrire();
     revenirMaBiere();
   };
+  // D130 : ce que chaque houblon du face à face est seul à avoir, hors des familles (ses fiches, jamais inventé) : les mots
+  // qu'aucune famille ne range et qu'aucun des autres comparés ne cite. C'est là qu'on voit ce qu'on perd ou gagne.
+  const HORS = Object.fromEntries(faces.map((x) => [x.cle, motsHors(x.cle)]));
+  const horsDe = (k: string): ReactNode => {
+    const m = HORS[k];
+    if (!m.hors.length) return <>hors familles&#8239;: <span className="pq-substituer-hors-rien">aucun mot dans ses fiches</span></>;
+    const autres = faces.filter((y) => y.cle !== k).map((y) => HORS[y.cle].tous);
+    const seul = m.hors.filter((w) => !autres.some((t) => t.has(w.mot)));
+    if (!seul.length) return <>lui seul&#8239;: <span className="pq-substituer-hors-rien">rien, ses mots ({liste(m.hors.slice(0, 2).map((w) => w.mot))}) sont aussi chez les autres</span></>;
+    return <>lui seul&#8239;: <b>{seul.slice(0, 4).map((w) => w.mot).join(', ')}</b>{seul.length > 4 ? ` +${seul.length - 4}` : ''}</>;
+  };
+  // D130 bis (« ajouter des La matrice nettoyée flb5b · de flb5 sur les arômes hors 16d + les huiles ») : deux matrices de la
+  // grammaire de flb5b. Colonnes : Nugget, puis ses remplaçants (les deux du face à face, puis la tête de l'échelle), 5 au
+  // plus. Lignes : ses mots hors familles (ses fiches), puis ceux des remplaçants qu'il n'a pas ; un seul gris, un point
+  // plein si toutes ses fiches le citent, petit sinon, vide s'il n'est pas cité. Puis les huiles : plages des fiches, « ? ».
+  const colsM = [cle, ...compares, ...cands.map((c) => c.cle)].filter((k, i, t) => t.indexOf(k) === i).slice(0, 5);
+  const HM = Object.fromEntries(colsM.map((k) => [k, HORS[k] ?? motsHors(k)]));
+  const surDe = (k: string) => houblon(k).familles.citrus.sur;
+  const nomCol = (k: string) => (k === cle ? h0.nom : cands.find((c) => c.cle === k)?.nom ?? houblon(k).nom);
+  const scoreCol = (k: string) => { const c = cands.find((x) => x.cle === k); return c ? (c.min === c.max ? `${c.min}` : `${c.min}–${c.max}`) : null; };
+  const motsM = (() => {
+    const vus = new Map<string, number>();
+    for (const k of colsM) for (const w of HM[k].hors) if (!vus.has(w.mot)) vus.set(w.mot, colsM.indexOf(k));
+    const cite = (k: string, m: string) => HM[k].hors.find((w) => w.mot === m) ?? null;
+    return [...vus.entries()]
+      .map(([m, i]) => ({ m, i, n: colsM.filter((k) => HM[k].tous.has(m)).length, f0: cite(cle, m)?.fiches ?? 0 }))
+      .sort((a, b) => a.i - b.i || b.f0 - a.f0 || b.n - a.n || a.m.localeCompare(b.m, 'fr'));
+  })();
+  const MAX_MOTS = 9;
+  const seulNugget = HM[cle].hors.filter((w) => !colsM.slice(1).some((k) => HM[k].tous.has(w.mot)));
+  const gM = { gridTemplateColumns: `1fr repeat(${colsM.length}, 2.6rem)` };
+  const enteteM = (titre: string) => (
+    <div className="pq-substituer-mx-l pq-substituer-mx-tete" style={gM}>
+      <span className="pq-substituer-mx-titre">{titre}</span>
+      {colsM.map((k) => (
+        <span key={k} className={`pq-substituer-mx-col ${k === cle ? 'pq-substituer-mx-lui' : ''}`}>
+          <span className="pq-substituer-mx-nom" data-houblon-col={k}>{nomCol(k)}</span>
+          {scoreCol(k) && <small>{scoreCol(k)}</small>}
+        </span>
+      ))}
+    </div>
+  );
+  const matrices = (
+    <section className="pq-substituer-mx" data-role="matrices" aria-label={`Mots hors familles et huiles : ${liste(colsM.map(nomCol))}`}>
+      <p className="pq-substituer-mx-bandeau" data-role="hors-16d" data-houblon={cle}>
+        {seulNugget.length ? <>{h0.nom} seul&#8239;: <b>{seulNugget.slice(0, 4).map((w) => w.mot).join(', ')}</b></>
+          : HM[cle].hors.length ? <>{h0.nom} seul&#8239;: <span className="pq-substituer-hors-rien">rien, ses mots hors familles sont aussi chez eux</span></>
+            : <>{h0.nom}&#8239;: <span className="pq-substituer-hors-rien">aucun mot hors familles dans ses fiches</span></>}
+      </p>
+      <div className="pq-substituer-mx-cadre">
+        {enteteM('hors familles')}
+        {motsM.slice(0, MAX_MOTS).map((r) => (
+          <div key={r.m} className="pq-substituer-mx-l" style={gM} data-role="mot-hors" data-mot={r.m}>
+            <span className={`pq-substituer-mx-mot ${r.f0 ? 'pq-substituer-mx-sien' : ''}`}>{r.f0 ? <i className="pq-substituer-mx-losange" aria-hidden="true" /> : null}{r.m}</span>
+            {colsM.map((k) => {
+              const w = HM[k].hors.find((x) => x.mot === r.m);
+              const sur = surDe(k);
+              const plein = !!w && w.fiches >= Math.max(1, Math.ceil(sur / 2));
+              return (
+                <span key={k} className={`pq-substituer-mx-c ${k === cle ? 'pq-substituer-mx-lui' : ''}`} data-col-mot={k} data-fiches={w?.fiches ?? 0} data-sur={sur}>
+                  {w ? <i className={plein ? 'pq-substituer-mx-pt' : 'pq-substituer-mx-pt pq-substituer-mx-pt-petit'} aria-label={`cité par ${w.fiches} fiche${w.fiches > 1 ? 's' : ''} sur ${sur}`} /> : HM[k].tous.has(r.m) ? <i className="pq-substituer-mx-classe" aria-label="cité, rangé dans une famille" /> : null}
+                  {k === cle && w ? <small>{w.fiches}/{sur}</small> : null}
+                </span>
+              );
+            })}
+          </div>
+        ))}
+        {motsM.length > MAX_MOTS && <p className="pq-substituer-note pq-substituer-mx-plus">+{motsM.length - MAX_MOTS} autres mots, moins cités.</p>}
+        {enteteM('huiles')}
+        {LIGNES_HUILE.map((l) => (
+          <div key={l.id} className="pq-substituer-mx-l" style={gM} data-role="huile-matrice" data-huile={l.id}>
+            <span className="pq-substituer-mx-mot">{l.nom} <span className="pq-substituer-gris">{l.unite}</span></span>
+            {colsM.map((k) => {
+              const r = huilesDe(k)[l.id];
+              return (
+                <span key={k} className={`pq-substituer-mx-c pq-substituer-mx-v ${k === cle ? 'pq-substituer-mx-lui' : ''}`} data-col-huile={k} data-min={r?.[0] ?? ''} data-max={r?.[1] ?? ''}>
+                  {r ? plage(r[0], r[1], 1) : <span className="pq-substituer-gris" title="aucune fiche ne la donne, ce n’est pas zéro">?</span>}
+                </span>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      <p className="pq-substituer-note">Points&#8239;: cité par ses fiches (gros&#8239;: la moitié au moins), cercle&#8239;: le mot est rangé dans une famille chez lui. <b>?</b>&#8239;: aucune fiche ne donne la valeur, ce n’est pas zéro. Huiles en % de l’huile (Beer Maverick, Hopsteiner, dépôt).</p>
+    </section>
+  );
+  // D130 bis : au dry hop, le tableau des arômes de u4e5 au premier écran, dans u4 enrichi (« Très bien »).
+  const tableauAuFroid = froid && (VARIANTE === null || VARIANTE === 'u4e5');
+  const avecMatrices = VARIANTE === null;
   const aAcheter = faces.find((x) => !x.original && x.stock !== 'suffisant') ?? null;
   const ibu0 = ibuAjout(ajout, b.recette).ibu;
   const grille = { gridTemplateColumns: `1fr repeat(${faces.length}, 4.25rem)` };
@@ -555,7 +644,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
           {!amertume && aromeTete && <span data-role="reponse-aromes">{aromeTete}</span>}
         </section>}
 
-        {VARIANTE === 'u4e5' && froid ? tableauFroid : <>
+        {tableauAuFroid ? <>{tableauFroid}{avecMatrices && matrices}</> : <>
         <section className="pq-substituer-echelle" data-etat="etat-subst-echelle" aria-label={`Ressemblance à ${h0.nom}, de 50 à 100, rangée par le pire cas`}>
           <div className="pq-substituer-paliers">
             <span className="pq-substituer-mc pq-substituer-mc-tete" aria-label={`Familles de ta ${sc.code} : ${colsAro.map((f) => COURT[f]).join(', ')}`}>
@@ -638,6 +727,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
                   {plageDose && x.cle === choix && <small>{nombre(x.dose!.grams, 1)} g à α {nombre(x.h.alpha?.valeur ?? 0, 1)}</small>}
                   {x.original && (froid ? <small>à froid, sans IBU</small> : ibu0 && <small>{nombre(ibu0.valeur, 1)} IBU</small>)}
                 </span>}
+                <span className="pq-substituer-hors" data-role="hors-16d" data-houblon={x.cle}>{horsDe(x.cle)}</span>
                 <span className="pq-substituer-bande-m"><Usage h={x.h} long />{VARIANTE === 'u4e3' ? (
                   <span className="pq-substituer-dose-discret"><b data-role="dose-remplacant" data-grammes={String(x.dose?.grams ?? '')}>{plageDose ? `${plage(x.dose!.min, x.dose!.max, 0)} g` : `${nombre(x.dose!.grams, 1)} g`}</b>{x.original ? (froid ? ' · sans IBU' : ibu0 ? ` · ${nombre(ibu0.valeur, 1)} IBU` : '') : ''}</span>
                 ) : <PictosCites h={x.h} />}</span>
@@ -665,6 +755,8 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
           {inconnues.length > 0 && <p className="pq-substituer-inc">{inconnues.map((f) => COURT[f]).join(', ')}&#8239;: aucune des {faces.length === 3 ? 'trois' : faces.length} fiches ne les décrit, ce n’est pas zéro.</p>}
           <p className="pq-substituer-note">Fiches lues&#8239;: {faces.map((x) => `${x.nom} ${x.h.familles.citrus.sur}`).join(', ')}. Pointillé&#8239;: non décrit.{amertume ? <> <b data-role="a-l-ebullition">{Moment}, surtout l’amertume</b>&#8239;: ces arômes partent en grande partie à l’ébullition.</> : null}</p>
         </section>
+
+        {avecMatrices && !tableauAuFroid && matrices}
 
         <section data-etat="etat-subst-radar">
           <div className="pq-substituer-graphe">

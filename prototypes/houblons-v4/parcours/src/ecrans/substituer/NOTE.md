@@ -81,3 +81,20 @@ ferme la vue » ; coche sur le tableau « Arômes 16D » : « Ça c'est vraiment
   de Nugget » dans la bande choisie (redit du pied) est retiré ; la clé « tout connu · plage, une composante inconnue »
   (redite de « ? ») passe au toucher : chaque point et chaque plage portent leur mot (aria-label). Lignes de l'échelle à
   44 px (cible du doigt). Restent au-dessus de 80 : la réponse de u4 et ses nombres, le face à face qui commence à l'écran.
+
+## Reprise D130 (« Les type spéciaux des houblons hors 16d ! C'est très important surtout dans la comparaison !!!! » ; sur u4e5 : « Très bien + ajouter des La matrice nettoyée flb5b · de flb5 sur les arômes hors 16d + les huiles »)
+
+- Chaque bande du face à face finit par un bandeau noir « lui seul : … » (`data-role="hors-16d"`, `data-houblon`) : ses mots
+  de fiches qu'aucune famille ne range (`familyWords().sansFamille`), sans mot générique (« fruité ») ni nom de famille écrit
+  autrement (« resiny »), et qu'aucun des autres comparés ne cite. Nelson Sauvin : vin blanc, groseille à maquereau, raisin,
+  sauvignon blanc ; Magnat : lilas, camomille ; Nugget : gingembre. Sans mot : « aucun mot hors familles dans ses fiches ».
+  Traductions sûres seulement (tabacco → tabac, lilac → lilas…), jamais un mot ajouté.
+- Au dry hop, le tableau « Arômes 16D » de u4e5 est au premier écran (une ligne par remplaçant, une colonne par famille,
+  attendues sur fond gris, le score au bout) ; l'échelle 50–100 reste à 60′ et au whirlpool.
+- La matrice de flb5b, sous le tableau (au dry hop) ou sous « Arômes 16D » (60′, whirlpool) : bandeau « Nugget seul : … »,
+  puis les mots hors familles en lignes (losange et gras : ceux de Nugget, avec n/m fiches), Nugget puis 4 remplaçants en
+  colonnes (le face à face, puis la tête de l'échelle ; noms debout, score dessous), un seul gris : point plein si la moitié de
+  ses fiches au moins le citent, petit sinon, cercle si le mot est rangé dans une famille chez lui.
+- La matrice des huiles, même grammaire : huile totale (mL/100 g), myrcène, humulène, caryophyllène, farnésène, linalol,
+  géraniol (% de l'huile), en plage, enveloppe des sources (`data/composes-houblon.json`, sinon Beer Maverick et Hopsteiner) ;
+  « ? » quand aucune fiche ne la donne, jamais 0. Le bloc « Huiles, composants » de u4 reste plus bas.

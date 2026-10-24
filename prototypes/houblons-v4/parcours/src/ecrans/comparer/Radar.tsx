@@ -10,7 +10,7 @@ import { Picto } from '../../commun';
 import { ABSOLU, ORANGE, type ColonneLue } from './calcul';
 
 // r6n2 : « Le radar perd 22 px (rayon 84 au lieu de 100) pour garder tout le tableau au-dessus du dock » ; ici rayon 77 (D128) : les dix rangées de familles de r6a tiennent au premier écran, au-dessus du dock, sous le sélecteur des étapes.
-const W = 358, H = 208, CX = W / 2, CY = 104, RR = 77;
+const W = 358, H = 200, CX = W / 2, CY = 100, RR = 77;
 const rd = (x: number) => Math.round(x * 10) / 10;
 
 export function Radar({ axes, cols, retenu, absolu, visee, trop }: {

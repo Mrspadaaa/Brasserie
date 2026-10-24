@@ -15,13 +15,16 @@
   la réglette de g1 (chaque fiche sur 0–25 %, mon lot en trait) ; la note d'honnêteté sous l'α (cryo : « α : plages de
   Citra en pellets ; la fiche du cryo manque. » ; lot hors de toutes les plages : « Mon lot … : hors des plages de ses fiches. »)
 - g1-usage : repris — l'usage en mots dans une pastille (« double usage »)
-- g1-bande : repris — la bande des 12 familles en couleur, en tête du bloc gris
-- g1-familles : repris — le bloc gris : picto au trait (D93), nom, « 2/4 » (rien à une seule fiche, jamais « 1/1 »), et les
-  mots des fiches dessous, dans l'ordre de la bande ; « 1 seule fiche : Beer Maverick » à droite de la bande
-- g1-premier : repris — « nommé en premier » sur une famille citée par une seule fiche qui la nomme en premier (g1 : Épicé
-  pour Nugget, Agrumes pour Citra cryo ; plus sur les quatre familles de 5345f6ad)
-- g1-sans-famille : repris — « sans famille : gingembre, resiny », avec la part « autres » dessinée à sa part réelle (D100, « autres 14 % »)
-- g1-non-decrites : repris — « 5 non décrites : Noyau, Pépins, Baies, Melon, Végétal »
+- g1-bande : écarté — D130 : la matrice de flb5b, son choix du 24.10 au soir, remplace le bloc gris et sa bande ; les familles citées se lisent au radar, et les non décrites dans la ligne des pictos « ? »
+- g1-familles : repris — devenu la matrice de flb5b (D130, Matrice.tsx) : ses mots en lignes avec le picto au trait de leur
+  famille et sa couleur (D93), « 2/2 » (rien à une seule fiche, jamais « 1/1 »), « classé » pour la ligne « Familles
+  déclarées » de Hopsteiner ; lui puis ses quatre remplaçants de u4 en colonnes ; « 1 seule fiche : Beer Maverick » dans le coin
+- g1-premier : écarté — D130 : flb5b ne dit plus « nommé en premier » ; il compte dans l'ordre des lignes (le premier nommé d'abord), et D115 visait déjà cette liste (« cette vue est vraiment pas terribles »)
+- g1-sans-famille : repris — les mots hors des 12 familles en lignes, marqués ◇, en tête quand ils lui sont propres ; le
+  bandeau « Lui seul : vin blanc, raisin, groseille à maquereau, sauvignon blanc » (data-role="hors-16d") ; la part
+  « autres » dessinée à sa part réelle dans le coin de la grille (D100, « autres 83 % »)
+- g1-non-decrites : repris — la ligne de flb5b sous le radar : le picto de chaque famille non décrite et un « ? » à sa couleur
+  (aria-label « 10 non décrites : Floral, … »)
 - g1-radar : repris — le grand radar légendé : chaque axe nommé avec « 2/4 », les inconnus « ? » hachurés, les flèches de sa
   demande ; l'échelle à 2 fiches au moins (une famille d'une seule fiche ne touche pas le bord) ; toucher un sommet ou son
   secteur ouvre la bulle de g1 (« Melon : ses fiches ne le décrivent pas, inconnu (ce n'est pas zéro), posé au centre »)
@@ -29,6 +32,34 @@
   « 1 seule fiche » et « inconnu » comme la fiche courte de Citra cryo
 - g1-actions : repris — en pied, ♡ et ⊘ (son goût : « Aimer Nugget », « Remettre neutre : Aimer Nugget »), et « Comparer »
   (ajoute le houblon à la comparaison et l'ouvre)
+
+## Reprise D130
+
+La liste sous le radar devient la matrice de flb5b (« La matrice nettoyée », work/refonte-frontend/v4/ecran-1/fils24-fiche-liste/flb5b/,
+captures flb5b-premier-ecran.png et flb5b-motueka.png). Ses mots (24.10, soir) : « Partie sur celle ci, elle met parcontre en
+avant qqch qu'il faut ajouter à plusieurs endroits. Les type spéciaux des houblons hors 16d ! C'est très important surtout dans
+la comparaison !!!! ». Registre : fiche = g1, liste sous le radar = flb5b.
+
+- Reprise telle quelle : le bandeau noir « Lui seul : … » (ses mots que ses quatre remplaçants ne disent pas, ni générique ni
+  nom de famille ; data-role="hors-16d" data-houblon="<clé>") ; la grille : colonnes égales de 38 px, « lui » entre deux
+  règles noires, l'en-tête fermé par un trait noir, noms des remplaçants verticaux en 11 px et leur score ; rond noir et
+  « 2/2 » pour lui (rond plus petit quand toutes ses fiches ne le disent pas), « classé » pour une catégorie de Hopsteiner ;
+  un seul gris (#8a8f9c) pour les remplaçants : rond plein, il le dit ; rien, il ne le dit pas ; ◇ hors des 12 familles ;
+  sept lignes au plus, puis les « classé » ; la ligne des familles non décrites en pictos « ? » au-dessus.
+- Données (donnees-matrice.ts) : familyWords du moteur, traduit (étiquettes françaises de Beer Maverick du catalogue, puis la
+  table de flb5b pour les mots de Hopsteiner) ; ordre de flb5b (fiches qui le disent, premier nommé, rareté au catalogue) ;
+  colonnes : les quatre premiers remplaçants de lireRemplacants (u4, D35), au moment de son ajout s'il est dans la recette,
+  sinon sans moment (contexte « défaut » du moteur). Recompté : Nelson Sauvin, lui seul : vin blanc, raisin, groseille à
+  maquereau (2/2), sauvignon blanc (1/2), fruité 2/2, agrumes et épicé classés, comme flb5b ; Motueka, lui seul : mojito
+  (2/2), zeste de citron (1/2), comme flb5b ; Nugget : ananas, gingembre, géranium, litchi.
+- Écart de données : flb5b prenait les remplaçants de pack-fiches.json (substitution v1 sans style : Nelson Sauvin →
+  Boomerang 91, Herkules 89, Phoenix 88, Pacific Jade 87 ; Motueka → Buzz Bullets 94, Shaddock, Cascade, Southern Sublime) ;
+  la fiche prend ceux de Substituer au style de la recette (D35) : Boomerang 91, Herkules 89, Phoenix 87, CTZ 84 ; Cascade
+  88, Taiheke 86, Mandarina Bavaria 82, Pilot 82. « Lui seul » est le même.
+- Ajouts : la légende de flb5b (son « ? » d'en-tête) passe derrière un « ? » de 24 px dans le coin de la grille, dépliée sous
+  le bandeau ; la part « autres » (D100) et « 1 seule fiche : … » (g1) vont dans ce coin, vide chez flb5b.
+- Non repris de flb5b, hors de la liste (le reste de g1 ne change pas, VOIE r14) : l'en-tête « type 10 », la lentille « au
+  style · 16D / absolu », le petit radar à zone 16D, la bande des houblons en bas (navigation de sa maquette).
 
 ## Idées reprises
 
@@ -53,7 +84,7 @@
 - D115 (23.10, soir, « Mettre le radargraph avant, cette vue est vraiment pas terribles. À revoir... ») : le radar
   et sa demande (« + Floral 2/4 − Résineux 2/4 ») passent avant le bloc des familles, entiers dans le premier écran
   à 390 × 844 (radar 189–530 px, liste dès 617 px). Rien d'autre ne bouge ; la liste elle-même (« nommé en
-  premier », mots anglais) est à revoir plus tard, en variantes sur une page à part (pilote).
+  premier », mots anglais) a été revue en variantes (fils24-fiche-liste) : il a choisi flb5b (D130, « Reprise D130 » ci-dessus).
 
 - Les familles portent leur picto au trait au lieu du carré de couleur de g1 : D93 (« ça suit pas la Baseline »).
 - La table des IBU par moment n'y est pas (« Inutile »), ni « Ajouter à 10′ » (« palace holder ? »).

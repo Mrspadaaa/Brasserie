@@ -17,18 +17,27 @@ export default {
         const v = h.alpha.valeur.toLocaleString('fr-CH', { maximumFractionDigits: 1 });
         return (a && a.dataset.source === src && a.textContent.includes(v)) || `α de la fiche : ${a?.dataset.source} « ${a?.textContent} », moteur ${src} ${v}`;
       } },
-    { nom: 'aromes et sources', faire: 'attendre',
+    // D130 : la liste sous le radar est la matrice de flb5b : « Lui seul : … » (hors-16d), ses mots en lignes (picto de leur
+    // famille), lui puis ses quatre premiers remplaçants de u4 en colonnes, du même calcul que Substituer.
+    { nom: 'matrice de flb5b', faire: 'attendre',
       verifier: (p) => {
-        const h = p.moteur.houblon('beermaverick-nugget');
-        const cites = Object.keys(h.familles).filter((f) => h.familles[f].niveau !== 'non décrit');
-        const li = [...document.querySelectorAll('[data-role="fiche"] [data-role="fiche-arome"] li[data-famille]')];
-        if (li.length !== cites.length) return `${li.length} familles montrées, ${cites.length} décrites`;
-        for (const e of li) {
-          const x = h.familles[e.dataset.famille];
-          if (!e.textContent.includes(`${x.fiches}/${x.sur}`)) return `${e.dataset.famille} : « ${x.fiches}/${x.sur} » absent`;
-          if (!e.querySelector(`svg[data-famille="${e.dataset.famille}"] use`)) return `${e.dataset.famille} sans picto`;
+        const f = document.querySelector('[data-role="fiche"] [data-role="fiche-arome"]');
+        if (!f) return 'pas de matrice (data-role="fiche-arome")';
+        const lignes = [...f.querySelectorAll('[data-mot]')];
+        if (lignes.length < 3) return lignes.length + ' mots en lignes';
+        for (const e of lignes.filter((x) => x.dataset.famille)) if (!e.querySelector('svg[data-famille="' + e.dataset.famille + '"] use')) return e.dataset.mot + ' sans picto';
+        const seul = f.querySelector('[data-role="hors-16d"][data-houblon="beermaverick-nugget"]');
+        if (!seul) return 'pas de bandeau « Lui seul » pour Nugget';
+        for (const e of lignes.filter((x) => x.dataset.seul)) {
+          if (!seul.textContent.includes(e.dataset.mot)) return e.dataset.mot + ' seul, absent du bandeau';
+          if (e.querySelector('.pq-fiche-mx-o')) return e.dataset.mot + ' seul, mais un remplaçant le dit';
         }
-        return true;
+        const r = p.etat?.recette ?? p.recette;
+        const a = r.additions.find((x) => x.hopKey === 'beermaverick-nugget');
+        const moteur = new Set(p.moteur.remplacants(r, a.id, 400).map((x) => x.cle));
+        const cols = [...f.querySelectorAll('[data-houblon-cle]')].map((e) => ({ cle: e.dataset.houblonCle, min: Number(e.dataset.min) }));
+        if (cols.length !== 4 || cols.some((x) => !moteur.has(x.cle))) return 'colonnes ' + cols.map((x) => x.cle).join(', ');
+        return cols.every((x, i) => i === 0 || x.min <= cols[i - 1].min) || 'colonnes hors de l’ordre de Substituer (pire cas)';
       } },
     { nom: 'silhouette et autres', faire: 'attendre',
       verifier: (p) => {

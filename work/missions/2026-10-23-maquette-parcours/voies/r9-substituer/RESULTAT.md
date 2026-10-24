@@ -1,4 +1,4 @@
-OK — u4 enrichi (85 mots, en-tête et pied des outils), cinq variantes u4e1 à u4e5, COMMUN OK
+OK — u4 enrichi : hors 16D, matrices flb5b et huiles, tableau au dry hop ; HORS-16D OK
 
 ## Fichiers écrits (Possède seul)
 - `prototypes/houblons-v4/parcours/src/ecrans/substituer/index.tsx` : puce de moment, crans d'arômes par ligne avec Nugget
@@ -110,6 +110,26 @@ Prédiction : il gardera u4e5 au dry hop et u4e4 pour Comparer ; u4e2 se lit tou
   78 à 99. » (8 mots : les mêmes plages que les lignes juste dessous). Elle fait partie de son choix (état `etat-subst-repos`),
   je ne l'ai donc pas retirée. Les pages figées u4e1 à u4e5 gardent l'en-tête de u4 enrichi d'avant D129 : relancer
   `outils/figer.mjs` les met à jour.
+
+## Reprise D130 (les mots hors 16D, la matrice de flb5b, les huiles)
+- Face à face : chaque bande finit par « lui seul : … » (`data-role="hors-16d"`, `data-houblon`), avec les mots de ses fiches
+  qu'aucune famille ne range et qu'aucun autre comparé ne cite. Nugget : gingembre ; Magnat : lilas, camomille ; Nelson
+  Sauvin : vin blanc, groseille à maquereau, raisin, sauvignon blanc.
+- u4e5 passe dans u4 enrichi : au dry hop, le tableau « Arômes 16D » est au premier écran. En dessous (sous « Arômes 16D » à
+  60′ et au whirlpool) viennent les deux matrices de flb5b. La première porte le bandeau « Nugget seul : gingembre » et les
+  mots hors familles en lignes, avec Nugget puis 4 remplaçants en colonnes et un seul gris. La seconde donne les huiles :
+  huile totale, myrcène, humulène, caryophyllène, farnésène, linalol et géraniol, en plages des fiches, avec « ? » quand
+  aucune fiche ne donne la valeur (jamais 0). Le détail des choix est dans la NOTE de l'écran, « Reprise D130 ».
+- Critères : `controle-hors-16d.mjs …/substituer/etat.html --min=2` → **HORS-16D OK** (4 éléments). SUBSTITUER-GESTES OK,
+  ETATS OK (14/14), ANNULER OK, ETAPE OK, TYPES OK, TEINTE OK 7/7. `controle-commun … substituer --page=etat.html` → **COMMUN OK**
+  (87 mots, dans l'alerte). Un premier passage avait échoué à STANDARD S3 (rayons de 6 et 10 px), ramenés à 8 px.
+- `controle-choix --ecran=substituer` : Substituer est conforme (« 1 écran conforme »), mais la sortie dit CHOIX ECHEC à cause de
+  deux autres écrans du registre, etape-houblons et dryhopper, dont les mots manquent dans SPEC-BRASSEUR (« La meilleure… »,
+  « Partir sur cette version… »). Ce n'est pas ma voie : c'est au pilote de le régler.
+- Captures ouvertes : `prototypes/houblons-v4/maquettes/parcours-substituer/captures-d127/d130-60.png`,
+  `d130-60-bandes.png`, `d130-60-matrices.png`, `d130-dryhop.png`, `d130-dryhop-matrices.png`, et `cote-d130.png` (flb5b | dry
+  hop, premier écran | matrices | face à face).
+- Le titre d'en-tête n'est pas touché (voie r12).
 
 ## Prédiction
 « Là c'est bien : je vois l'arôme de chacun et je peux passer au dry hop ; par contre whirlpool et dry hop donnent la même liste ? »

@@ -111,3 +111,8 @@ html:has(.pq-outil-suggerer) [data-page-shell]:not(.pq-outil-suggerer) { display
 .pq-suggerer-bulle-avec { color: rgb(var(--cave-200)); white-space: nowrap; }
 .pq-suggerer-bulle-bloc { white-space: nowrap; }
 .pq-suggerer-bulle-hors { color: #c2410c; font-weight: 700; }
+
+/* D130 : ses mots hors des familles de la 16D (« lui seul : … », flb5b), une ligne courte sous ses pictos ; la clé en gras
+   à l'encre, les mots en gris foncé. Une levure : « elle : … » (sa fiche technique), « ? » sans fiche. */
+.pq-sg-hors16d { display: block; flex-basis: 100%; margin: 0; font-size: 0.8125rem; line-height: 1.25; color: rgb(var(--cave-200)); overflow-wrap: anywhere; }
+.pq-sg-hors16d-cle { font-weight: 700; color: rgb(var(--cave-50)); }

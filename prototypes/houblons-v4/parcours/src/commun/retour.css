@@ -10,6 +10,9 @@
 /* Une tête, une hauteur : 44 px de croix (ou d'onglets) et 4 px au-dessus et au-dessous, dans le cadre de 48 rem. */
 .pq-tete { max-width: 48rem; margin: 0 auto; padding: 4px 8px; min-height: 52px; }
 
+/* Le titre d'un outil (D129) : le titre d'écran de DESIGN.md, 18 px, graisse 600, interligne 22 px. */
+.pq-tete-titre { font-size: 1.125rem; font-weight: 600; line-height: 1.375rem; }
+
 /* La croix (D109) : 44 × 44 px, icône de 22 px à l'encre, un rond gris clair qui dit « bouton » sans peser. */
 .pq-croix {
   display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 9999px;

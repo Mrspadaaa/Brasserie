@@ -55,6 +55,12 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   const reference = useMemo(() => houblonDeBase(recette, cles), [recette, cles]);
   // D128 bis : ses mots, tirés de ses fiches, face aux autres houblons comparés (flb5).
   const mots = useMemo(() => sesMots(cles), [cles]);
+  // D130 : « les type spéciaux des houblons hors 16d » d'abord : hors des 12 familles (◇), puis dans une famille que la
+  // 16D n'attend pas, puis dans une famille qu'elle attend (floral, herbacé, terreux).
+  const horsStyle = useMemo(() => {
+    const rang = (m: MotLu) => (m.famille == null ? 0 : sc.families[m.famille]?.status === 'attendue' ? 2 : 1);
+    return Object.fromEntries(cles.map((k) => [k, (mots[k] ?? []).filter((m) => m.seul).sort((a, b) => rang(a) - rang(b))]));
+  }, [cles, mots, sc]);
   const etapes = useMemo(() => lireEtapes(recette, reference ? [...cles, reference] : cles), [recette, cles, reference]);
   // Le critère de classement (r6n2) : floral au départ (ta demande). Il change le ★, la réponse et le mis en avant.
   const [critere, setCritere] = useState<Critere>(CRITERES[0]);
@@ -167,7 +173,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
             data-element="r6a-tetes l5f-carte-role-alpha w2-cartes-verdict p06-grille-familles g1-fiche fiche-citra-cryo l8b-verdicts-pictos-trait">
             <TaStout quatre={quatre} plein={cols.length >= MAX_COLONNES || !disponibles.length} ouvert={feuille === 'ajouter'} onPlus={() => basculer('ajouter')} />
             {vue.map((c) => (
-              <TeteColonne key={c.cle} c={c} retenu={c.cle === cleRetenue} quatre={quatre} epinglee={c.cle === pin}
+              <TeteColonne key={c.cle} c={c} retenu={c.cle === cleRetenue} quatre={quatre} epinglee={c.cle === pin} mots={horsStyle[c.cle] ?? []}
                 retirable={ajoutes.includes(c.cle)}
                 onRetenir={() => setRetenu(c.cle)} onFiche={(apresAppui) => ouvrirFiche(c.cle, apresAppui)}
                 onRetirer={() => { setAjoutes((a) => a.filter((x) => x !== c.cle)); if (retenu === c.cle) setRetenu(null); }} />
@@ -354,13 +360,38 @@ function TaStout({ quatre, plein, ouvert, onPlus }: { quatre: boolean; plein: bo
         <button type="button" className="pq-comparer-plus" data-role="ajouter-colonne" data-etat="etat-comp-colonne-plus" data-element="p4-plus-comparaison" aria-haspopup="dialog" aria-expanded={ouvert}
           aria-label="Ajouter un houblon à la comparaison" onClick={onPlus}>+</button>
       )}
+      {/* D130 : la clé de la ligne noire des têtes, une fois, dans la colonne de Ta stout */}
+      {!quatre && <span className="pq-comparer-ta-seul" aria-hidden="true">lui seul</span>}
     </div>
   );
 }
 
+// ---------- « lui seul : … » dans la tête (D130, à la manière du bandeau de flb5b) ----------
+// « Les type spéciaux des houblons hors 16d ! C'est très important surtout dans la comparaison !!!! » (24.10) : au premier
+// écran, dans chaque colonne, ce que ses fiches disent et qu'aucun des autres houblons comparés ne dit (sesMots, D128 bis :
+// ses mots, sans nom de famille ni « fruité », jamais inventés) ; d'abord les mots hors des 12 familles (◇), puis les
+// autres, ~26 signes au plus (le détail sous le premier écran, dans « ses mots »).
+function LuiSeul({ cle, nom, mots, quatre }: { cle: string; nom: string; mots: MotLu[]; quatre: boolean }) {
+  const seuls = mots.filter((m) => m.seul);
+  const pris: MotLu[] = [];
+  let n = 0;
+  for (const m of seuls) { if (pris.length && n + m.mot.length > (quatre ? 9 : 13)) break; pris.push(m); n += m.mot.length + 2; }
+  const reste = seuls.length - pris.length;
+  return (
+    <span className="pq-comparer-seul" data-role="hors-16d" data-houblon={cle}
+      aria-label={seuls.length ? `${nom}, lui seul, d’après ses fiches : ${seuls.map((m) => m.mot).join(', ')}` : `${nom} : rien que les autres ne disent aussi`}>
+      {seuls.length
+        ? <>{pris.map((m, i) => (
+            <span key={m.mot} className="pq-comparer-seul-m" aria-hidden="true">{m.famille ? null : <span className="pq-comparer-seul-hors">◇</span>}{m.mot}{i < pris.length - 1 ? ',' : ''}</span>
+          ))}{reste > 0 && <span className="pq-comparer-seul-p" aria-hidden="true">+{reste}</span>}</>
+        : <span className="pq-comparer-seul-rien" aria-hidden="true">—</span>}
+    </span>
+  );
+}
+
 // ---------- tête de colonne : nom, α, rôle en mot, familles, verdict (l5f, w2), stock en icône ----------
-function TeteColonne({ c, retenu, quatre, epinglee, retirable, onRetenir, onFiche, onRetirer }: {
-  c: ColonneLue; retenu: boolean; quatre: boolean; epinglee: boolean; retirable: boolean; onRetenir: () => void; onFiche: (apresAppui: boolean) => void; onRetirer: () => void;
+function TeteColonne({ c, retenu, quatre, epinglee, mots, retirable, onRetenir, onFiche, onRetirer }: {
+  c: ColonneLue; retenu: boolean; quatre: boolean; epinglee: boolean; mots: MotLu[]; retirable: boolean; onRetenir: () => void; onFiche: (apresAppui: boolean) => void; onRetirer: () => void;
 }) {
   const appui = useAppuiLong(() => onFiche(true), onRetenir);
   // À l'ordinateur (souris, sans toucher) : un survol long ouvre aussi la fiche (D25).
@@ -415,6 +446,7 @@ function TeteColonne({ c, retenu, quatre, epinglee, retirable, onRetenir, onFich
             ? <span className="pq-comparer-vd pq-comparer-vd-hors" data-nature="simule" aria-label={`~ sort de ta 16D : ${c.sorties.map((f) => COURT[f].toLowerCase()).join(', ')}`}>~<IconeRisque /><span className="pq-comparer-vd-mot">hors</span>{c.sorties.map((f) => <Picto key={f} famille={f} taille={12} />)}</span>
             : <span className="pq-comparer-vd pq-comparer-vd-dans" data-nature="simule" aria-label="~ reste dans ta 16D, hors le résineux déjà au-dessus">~<IconeOk /><span className="pq-comparer-vd-mot">dans</span></span>}
         </span>
+        <LuiSeul cle={c.cle} nom={h.nom} mots={mots} quatre={quatre} />
         {h.partSansFamille != null && h.partSansFamille > 0.5 && (
           <span className="pq-comparer-autres" aria-label={`autres : ${nombre(h.partSansFamille * 100)} % de ses mots hors des 12 familles`}>
             <i data-role="autres" data-houblon={h.nom} data-part={String(h.partSansFamille)} style={{ width: `${Math.max(24, Math.round(h.partSansFamille * 40))}px` }} />

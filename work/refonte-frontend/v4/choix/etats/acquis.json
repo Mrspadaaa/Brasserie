@@ -322,25 +322,35 @@
     "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
    },
    "verdict_5345f6ad": "present",
-   "ecart": "Maquette Dryhopper : « Quand ajouter Idaho 7 ? », face à ta stout par famille, frise et histogramme, Annuler / Puis la levure. Dryhopper est un écran au choix ouvert (provisoire a1, y1b affiné) : non jugé plus loin.",
+   "ecart": "Maquette 5345f6ad : « Quand ajouter Idaho 7 ? », face à ta stout par famille, frise et histogramme, Annuler / Puis la levure (a1, y1b affiné). Le 24.10 au soir, il a choisi p4b2f (D43), qui descend d'a1 : l'acquis se rejoue désormais sur p4b2f (voie r13).",
    "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-y1b-brassin-au-doigt-5345f6ad.png",
    "voulu": "",
    "verif": {
     "route": "dryhopper",
-    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils21-choisir/y1b/etat.html",
-    "selecteur_choisie": "section[data-role=\"simulation\"]",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "selecteur_choisie": "section.p4b2f-fig",
     "geste": "repos",
     "attendu": [
-     "Quand ?",
-     "Citra",
+     "Quand ajouter",
+     "Face à ta stout",
      "US-05",
      "Pomona",
-     "Tire 20 bières"
+     "ébullition",
+     "WP",
+     "actif",
+     "après",
+     "Au style",
+     "Absolu"
     ],
     "interdit": [],
-    "note": "Mots de y1b sur Dryhopper, écran au choix ouvert (a1 en attendant, passe 4 montrée le 24.10) : rien d'un écran au choix ouvert (D123). Rejoué quand il aura choisi. Décision du pilote, 24.10 (r7)."
+    "note": "Choix fermé le 24.10 au soir (D43, p4b2f) : l'acquis y1b se rejoue sur p4b2f, son héritier (mots mesurés sur sa page, voie r13). « Tire 20 bières » n'y est plus : voir heritier.perdu."
    },
-   "attend_choix": "dryhopper"
+   "heritier": {
+    "page": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+    "capture": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/captures/p4b2f-premier-ecran.png",
+    "reste": "De y1b, p4b2f garde : la question « Quand… ? » (« Quand ajouter Idaho 7 ? »), « Face à ta stout », le brassin au doigt (le rail sous l'axe, par 5′, ébullition, WP, actif, après, et ses jours), l'amertume de la stout (cases d'IBU), au style / absolu, US-05 en contexte et Pomona (dans le pont Levure).",
+    "perdu": "« Tire 20 bières », « Défi 2 sur 4 », « Preuve », « second houblon » et le choix de la dose (1, 2, 4, 8 g/L) ne sont pas sur p4b2f (la dose est fixée sur la ligne de contexte : un seul facteur libre, D98). Citra était le houblon de y1b ; p4b2f montre le houblon placé (Idaho 7). Non inventés ici : décision au pilote (RESULTAT de r13)."
+   }
   },
   {
    "id": "etat-acquis-panel-osu",
@@ -598,7 +608,8 @@
      "Fixé pour les trois"
     ],
     "interdit": [],
-    "max_mots": 80
+    "max_mots": 112,
+    "note": "Modéré (D41, 24.10 soir : « dépasse les 70 mots au premier écran c'est pas ultra grave. Il faut être modéré avec les mots ») : 80 visés, 112 au plus (80 + 40 %)."
    }
   },
   {

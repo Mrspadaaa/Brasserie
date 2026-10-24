@@ -488,3 +488,15 @@ button.pq-comparer-et-r { min-height: 22px; }
 .pq-comparer-rgs { padding-top: 0; }
 .pq-comparer-et-crit .pq-comparer-crit-l { font-size: 14px; font-weight: 700; white-space: nowrap; }
 .pq-comparer[data-colonnes="4"] button.pq-comparer-et-r { min-height: 34px; }
+/* D130 : « lui seul : … » dans chaque tête, la pastille noire du bandeau de flb5b */
+.pq-comparer-seul { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 4px; max-width: 100%; margin-top: 1px; padding: 2px 5px 3px; border-radius: 4px; background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); font-size: 12px; line-height: 1.2; }
+.pq-comparer-seul-l { font-weight: 400; opacity: .75; }
+.pq-comparer-seul-m { font-weight: 800; }
+.pq-comparer-seul-hors { margin-right: 1px; font-weight: 400; }
+.pq-comparer-seul-p, .pq-comparer-seul-rien { font-weight: 400; opacity: .75; }
+.pq-comparer-seul { flex-wrap: nowrap; overflow: hidden; white-space: nowrap; }
+.pq-comparer-ta-seul { margin-top: auto; padding: 2px 0 3px; font-size: 12px; font-weight: 700; line-height: 1.2; }
+.pq-comparer-ta { padding-bottom: 6px; }
+.pq-comparer-tc { padding-bottom: 2px; }
+.pq-comparer-ta { padding-bottom: 2px; }
+.pq-comparer[data-colonnes="4"] .pq-comparer-seul { flex-wrap: wrap; white-space: normal; padding: 2px 4px; }
