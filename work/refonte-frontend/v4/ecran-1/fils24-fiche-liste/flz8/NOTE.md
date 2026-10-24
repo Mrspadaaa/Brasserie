@@ -16,3 +16,43 @@
 - **Captures** : `captures/flz8-premier-ecran.png`, `captures/flz8-page.png`.
 
 ## Contrôles (sorties recopiées)
+- COMMUN (`controle-commun --sans=mots`, les 8 pages ensemble) :
+```
+mots       sauté (--sans)
+couleurs   OK
+au-style   OK
+survol     OK
+blocs      OK
+contraste  OK
+fiche      OK
+standard   OK
+trait      OK
+legende    OK
+parlant    OK
+brutes     OK
+COMMUN OK
+```
+- PANEL (`controle-panel`, les 8 premiers écrans) :
+```
+8 captures · remplissage médian 0,64, 0 sous 0,50 · ressemblance moyenne 0,86 · paires presque identiques 0/28 (0 %)
+PANEL OK
+```
+- UNE-QUESTION (indicatif, D98) :
+```
+flz8 · titre « Motueka » · libres : aucun · 0 contrôle(s) · contexte : aucun · 3 faute(s)
+UNE-QUESTION ECHEC 24 problème(s)
+  flz8 etat.html : le titre « Motueka » ne pose pas une question (« … ? »)
+  flz8 etat.html : aucun sélecteur libre : l'outil ne fait varier aucun facteur
+  flz8 etat.html : pas de ligne de contexte visible [data-role="contexte"]
+```
+- SANS-FAMILLE (indicatif, D100) :
+```
+flz8 · 1 houblon(s) repéré(s) · 0 au-dessus de 50 % (aucun)
+SANS-FAMILLE ECHEC 3 problème(s)
+```
+- MOTS au premier écran (indicatif ; --sans-donnees puis brut, --max=80) :
+```
+flz8 102 mots (hors données)
+flz8 142 mots (> 80)
+MOTS ECHEC 8/8 au-dessus de 80
+```

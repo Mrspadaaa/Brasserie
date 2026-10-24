@@ -40,7 +40,7 @@ function rendu(h) {
   const hors = h.horsFam.filter((w) => !w.cat);
   const legende = ['Au bout de chaque axe : ses mots, dans la couleur de la famille.', '« Hors carte » : les mots que le radar ne sait pas dessiner (hors des 12 familles), avec leurs fiches.', 'Point bleu près du picto : famille attendue au 16D.', 'Traduit : ' + (h.mots.flatMap((w) => w.en.map((e) => '« ' + e + ' » → ' + w.fr)).join(', ') || 'aucun mot')];
   const corps = `${titre(h)}${alpha(h)}
-<div class="fld5-carte"><h2 class="fld5-q">Où tombent ses mots ?</h2>${lentille('leg-' + ID, legende, 'fld5-lent')}
+<div class="fld5-carte"><div class="fld5-row"><h2 class="fld5-q">Où tombent ses mots ?</h2>${lentille('leg-' + ID, legende, 'fld5-lent')}</div>
 ${radar(h, { taille: TAILLE, haut: H, etiquettes: false, marge: MARGE, extra: etiquettes(h), cls: 'fld5-svg' })}</div>
 ${demande(h)}
 <section class="fld5-hc" aria-label="Hors carte" data-houblon="${esc(h.nom)}">
@@ -52,8 +52,9 @@ ${hors.length ? `<div class="fld5-hc-m">${hors.map((w) => `<span class="fld5-h${
 }
 const CSS = `
 .fld5-carte { position:relative; margin-top:2px; }
-.fld5-q { position:absolute; top:3px; left:36px; font-size:15px; font-weight:600; z-index:2; }
-.fld5-lent { position:absolute; top:0; left:0; right:0; z-index:2; }
+.fld5-row { display:flex; align-items:center; gap:6px; }
+.fld5-q { font-size:15px; font-weight:600; }
+.fld5-lent { margin-left:auto; } .fld5-lent .fd-leg { left:auto; right:0; }
 .fld5-et { font:400 12px var(--sans); paint-order:stroke; stroke:#fff; stroke-width:3px; stroke-linejoin:round; }
 .fld5-fn { font-weight:700; font-size:13px; } .fld5-nn { font-weight:600; fill:#16161a; font-size:12px; }
 .fld5-w { font-size:13px; font-weight:600; } .fld5-wi { font-weight:400; font-style:italic; }
