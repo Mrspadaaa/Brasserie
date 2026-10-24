@@ -46,10 +46,12 @@ const rangees = [
   ['Fiche', [
     { t: 'g1', s: 'choix', m: '« la v1 est la meilleure »', i: E + 'base/captures/consolide-fiche-390.png' },
     { t: 'fiche courte, Citra cryo', s: 'bien', m: '« Ça c\'est très bien »', i: E + 'fils13-carte-fiche/captures/g1-fiche-citra-390.png' },
+    { t: 'flb5, par contraste', s: 'reserve', m: '« Ça j\'aime beaucoup »', r: 'encore un peu fouillis, pas 100 % clean', i: E + 'fils24-fiche-liste/captures/flb5-premier-ecran.png' },
   ]],
   ['Substituer', [
     { t: 'u4', s: 'choix', m: '« Substitution, ça serait plus du u4 »', r: '« trop centré ibu », aussi en dry hop ; Comparer facile', i: E + 'fils11-substitution/captures/u4-vue-390.png' },
     { t: 'u4, Arômes 16D', s: 'bien', m: '« Ça c\'est vraiment bien »', i: 'work/refonte-frontend/v4/choix/commentaires/captures/2026-10-24-u4-aromes-coche.png', pos: 'center 54%' },
+    { t: 'u4 enrichi, ce soir', s: 'ajout', m: '« moins focus sur l\'ibu, substitution en fonction de l\'étape »', i: 'prototypes/houblons-v4/maquettes/parcours-substituer/captures-d127/d127-dryhop.png' },
   ]],
   ['Dryhopper', [
     { t: 'y1b', s: 'bien', m: '« y1b est de mon point de vue semble meilleur »', i: E + 'fils21-choisir/captures/y1b-premier-ecran.png' },
@@ -58,6 +60,7 @@ const rangees = [
     { t: 'y1b, 20 bières tirées', s: 'bien', m: '(y1b)', i: E + 'fils21-choisir/captures/y1b-tire.png' },
     { t: 'a2b, la levure', s: 'reserve', m: '« voir ce que la levure change […] vraiment intéressant »', r: 'peut-être pas en main', i: E + 'fils21-choisir/captures/a2b-390.png' },
     { t: 'd1, tout ouvert', s: 'reserve', m: '« d1, tout ouvert était aussi intéressant »', r: 'trop bordélique', i: E + 'fils20-dryhop/captures/d1-ouvert-390.png' },
+    { t: 'p4b2, le brassin en courbes', s: 'reserve', m: '« Ça j\'aime beaucoup »', r: 'encore assez peu lisible', i: E + 'fils23-dryhopper/passe4/captures/p4b2-premier-ecran.png' },
     { t: 'a1, plancher', s: 'ouvert', m: 'passe 4 à choisir (11 mini maquettes)', i: E + 'fils23-dryhopper/serie-a/passe2/captures/a1-premier-ecran.png' },
   ]],
   ['Levure', [

@@ -499,6 +499,11 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   dites « bien »), mot pour mot : « J'aime beaucoup cette disposition. Utilise là pour les artefacts comme ça je peux voir
   rapidement plusieurs versions d'un coup ». Une rangée par écran, sa référence puis les mini maquettes en vignettes
   serrées, une pastille de verdict et ses mots dessous (PUBLIER.md ; modèle `choix/global/mini-maquettes-choisies-2026-10-24.png`).
+- **Sur « Planches · 24.10 »** (24.10, soir), mot pour mot : sur u4 : « u4 · ton choix, est la meilleure mais il manque juste
+  un ou deux changements type, moins focus sur l'ibu, substitution en fonction de l'étape (60' ou dry hopp) » (fait par r9,
+  D127) ; sur p4b2 (Dryhopper, « Le brassin en courbes ») : « Ça j'aime beaucoup mais c'est encore assez peu lisible » ;
+  sur flb5 (la fiche, « La preuve par contraste ») : « Ça j'aime beaucoup même si encore un peu fouillis et pas 100%
+  clean ». p4b2 et flb5 : trois versions nettoyées chacune, par leurs auteurs, montrées dans leur rangée.
 - **À quoi a servi le quota** (24.10, soir), mot pour mot : « En quoi tout ces quota ont été utile ??? ». Le 24.10, la
   plus grande part est allée à l'outillage (contrôles, cerveau, un délai de test débogué) et à des panels de 48, quand rien
   ou presque ne lui avait été montré. Le quota sert d'abord ce qu'il verra : montrer tôt ce qui est fait (L11).
