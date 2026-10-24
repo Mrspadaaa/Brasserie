@@ -37,7 +37,7 @@ Chemins de « Possède » : relatifs à la racine du dépôt ; `voies/…` est r
 ## Agents
 - i0-etat : faite (ETAT OK, 18 tâches).
 - i0-relecture : faite (accepté, 6 défauts corrigés par le pilote).
-- t1-branche-verte : à lancer.
+- t1-branche-verte : faite (BRANCHE OK 131/131, build vert, rejoués par le pilote ; parcours wizard → atelier → wizard rouvert : étape 3/7, brouillon intact, sans DraftFreshnessChoice ; capture 05 ouverte). Restes reportés à T3 (#162) : DraftFreshnessChoice sur une recette enregistrée, à jouer avec une fixture.
 
 ## Pages
 | Sujet | Version | Adresse | Source |

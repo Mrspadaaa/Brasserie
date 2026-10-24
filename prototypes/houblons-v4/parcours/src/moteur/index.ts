@@ -197,6 +197,8 @@ export function ecart(avant: ProfilLu, apres: ProfilLu): EcartProfil {
 // ---------- Un houblon ----------
 export interface HoublonLu {
   cle: string; nom: string;
+  /** false : houblon hors des fiches du moteur (`inconnu:<nom>` d'une vraie recette) ; la fiche est alors vide, jamais inventée. */
+  connu: boolean;
   /** α du lot (stock ou article), sinon milieu de la plage variétale ; plage des fiches ; « ≠ » si le lot en sort. */
   alpha: { valeur: number; source: string; plage: [number, number] | null; horsFiches: boolean } | null;
   /** Rôle en mot du brasseur : « mixte » pour le « double » de la règle rôle-α v1 (D90). */
@@ -209,9 +211,21 @@ export interface HoublonLu {
   stock: number | null;
   origine: string | null;
 }
+/** Un houblon que les fiches du moteur ne connaissent pas (`inconnu:hallertau` d'une recette réelle) : une fiche vide qui le dit.
+ * Ni α, ni rôle, ni famille, ni stock inventés (inconnu ≠ 0) ; le nom est celui de la clé (plié par la conversion : sans accents). */
+function houblonInconnu(cle: string): HoublonLu {
+  const brut = cle.includes(':') ? cle.slice(cle.indexOf(':') + 1) : cle;
+  const nom = brut.split('-').join(' ').split(' ').filter(Boolean).map((m) => m.charAt(0).toUpperCase() + m.slice(1)).join(' ') || cle;
+  return {
+    cle, nom, connu: false, alpha: null,
+    role: { mot: null, source: 'houblon absent des fiches du moteur' },
+    familles: fam(() => ({ niveau: 'non décrit' as const, fiches: 0, sur: 0 })),
+    partSansFamille: null, motsSansFamille: [], stock: null, origine: null,
+  };
+}
 export const houblon = memo('houblon', (cle: string) => cle, (cle: string): HoublonLu => {
   const h = hopRef(cle);
-  if (!h) throw new Error(`Houblon inconnu du moteur : ${cle}`);
+  if (!h) return houblonInconnu(cle);
   const a = hopAlpha(cle), plage = h.catalogue.alpha;
   const role = hopRole(cle);
   const d = describeFamilies(h.varietyId);
@@ -219,7 +233,7 @@ export const houblon = memo('houblon', (cle: string) => cle, (cle: string): Houb
   const rattaches = new Set(FAMILIES.flatMap((f) => w.mots[f].flatMap((x) => x.mots.map((m) => m.toLowerCase()))));
   const total = rattaches.size + w.sansFamille.length;
   return {
-    cle, nom: h.name,
+    cle, nom: h.name, connu: true,
     alpha: a ? { valeur: a.value, source: a.source, plage: plage ? [plage[0], plage[1]] : null, horsFiches: !!plage && (a.value < plage[0] || a.value > plage[1]) } : null,
     role: { mot: role.value === 'double' ? 'mixte' : role.value, source: role.source },
     familles: fam((f) => ({ niveau: d[f].level, fiches: d[f].sources, sur: d[f].of })),

@@ -61,7 +61,9 @@ export default defineConfig({
     include: [
       'tests/unit/**/*.test.{ts,tsx}',
       'tests/integration/**/*.test.{ts,tsx}',
-      'tests/fuzz/**/*.test.{ts,tsx}'
+      'tests/fuzz/**/*.test.{ts,tsx}',
+      // Moteur et parcours du prototype houblons v4 (#160) : testés avec la suite de l'app, jamais d'appel Gemini.
+      'prototypes/houblons-v4/tests/**/*.test.{ts,tsx}'
     ],
     exclude: [
       'tests/ai/**',
