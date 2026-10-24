@@ -203,6 +203,7 @@ Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`).
 | Dryhopper, tout | 96 mini maquettes de Dryhopper depuis le 19.10, sa p4b2f en tête ; 24.10, soir | https://claude.ai/artifact/VXa3fDxdzm9eWxPBsD8Pvf | `work/refonte-frontend/v4/outils/pages/2026-10-24-dryhopper-tout/index.html` |
 | Recherche avancée | douze concepts (rca, rcb, rcc), critique rc : 12 acceptés ; 24.10, soir | https://claude.ai/artifact/3A9jrMwgFK2feHWKkr4t2w | `work/refonte-frontend/v4/outils/pages/2026-10-24-recherche-avancee/index.html` |
 | Légendes sous les pastilles | huit variantes (leg, legz), critique : 7 acceptées, legz2 écartée et montrée ; 24.10, soir | https://claude.ai/artifact/TeKjPQDVHmxSwwMhGLWkKH | `work/refonte-frontend/v4/outils/pages/2026-10-24-legendes/index.html` |
+| Légendes v2 | passe 2 : cinq versions de leg3, v2 de leg1, leg2, leg4 ; 8 acceptées ; 24.10, soir | https://claude.ai/artifact/QFyJ5vPu2cLho29yCtUyQn | `work/refonte-frontend/v4/outils/pages/2026-10-24-legendes-v2/index.html` |
 
 ## Boucle de retour
 - Un critère rouge : l'agent corrige dans sa voie, 3 essais. Au-delà, SendMessage au même agent avec le défaut
