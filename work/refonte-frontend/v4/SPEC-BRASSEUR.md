@@ -513,6 +513,9 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
 - **La continuité de l'app** (24.10, soir), mot pour mot : « Fait attention aux header, footer, sur la continuité de l'app
   ect... ». D'un écran à l'autre, le même en-tête (croix, titre, onglets) et le même pied (Annuler à gauche, l'action à
   droite), à la même place et à la même taille (D109, D118, D119, D120). D129.
+- **Dryhopper choisi : p4b2f** (24.10, soir, sur p4b2f, « L'aire du floral », retouche de p4b2, dans « Planches · 24.10 »), mot
+  pour mot : « Partir sur cette version ». Son choix ferme l'écran ouvert depuis le 23.10 (a1 provisoire) ; registre
+  `choix/ecrans.json` ; reprise r13-dryhopper. D43.
 - **Les mots au premier écran** (24.10, soir, sur Substituer au-dessus de 70 mots), mot pour mot : « dépasse les 70 mots au
   premier écran c'est pas ultra grave. Il faut être modéré avec les mots ». Le seuil devient une alerte ; l'échec seulement
   au-delà de 40 % de plus (`mots-premier-ecran.mjs --modere`, dans controle-commun). Être modéré reste la règle.

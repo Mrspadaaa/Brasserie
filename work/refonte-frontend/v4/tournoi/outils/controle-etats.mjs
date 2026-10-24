@@ -43,7 +43,9 @@ import puppeteer from 'puppeteer-core';
 const ici = path.dirname(fileURLToPath(import.meta.url));
 const RACINE = path.resolve(ici, '..', '..', '..', '..', '..');
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const FICHIERS = ['etape', 'biere', 'fiche', 'suggerer', 'comparer', 'acquis', 'substituer'];
+const FICHIERS = ['etape', 'biere', 'fiche', 'suggerer', 'comparer', 'acquis', 'substituer', 'dryhopper'];
+// Un relevé à venir (dryhopper : p4b2f choisi le 24.10 au soir, relevé par r13) ne bloque que s'il est demandé (--ecran).
+const A_VENIR = new Set(['dryhopper']);
 
 const args = process.argv.slice(2);
 const opt = (nom) => { const a = args.find((x) => x.startsWith(`--${nom}=`)); return a ? a.slice(nom.length + 3) : null; };
@@ -79,7 +81,10 @@ let voulus = 0;
 const enAttente = [];
 for (const f of fichiers) {
   const chemin = path.join(dossierEtats, `${f}.json`);
-  if (!fs.existsSync(chemin)) { console.log(`ETATS ECHEC : ${path.relative(RACINE, chemin)} absent`); process.exit(1); }
+  if (!fs.existsSync(chemin)) {
+    if (A_VENIR.has(f) && !seulEcran) continue;
+    console.log(`ETATS ECHEC : ${path.relative(RACINE, chemin)} absent`); process.exit(1);
+  }
   const j = JSON.parse(fs.readFileSync(chemin, 'utf8'));
   parFichier[f] = new Map(j.etats.map((s) => [s.id, s]));
   for (const s of j.etats) {

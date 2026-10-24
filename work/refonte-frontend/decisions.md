@@ -561,3 +561,5 @@ de controle-commun, donc l'assouplissement ne fait échouer aucune voie (pas de 
 au-delà même du modéré (98) ; r9 vise 70 à 80.
 - D42 (pilote, réversible ; D129) : le titre d'en-tête des outils à 18 px (DESIGN.md, « Titre d'écran »), le pied de Dryhopper en
   bas comme les autres ; reprise r12-continuite après r9.
+- D43 (le brasseur, 24.10 soir, sur p4b2f : « Partir sur cette version ») : Dryhopper choisi = p4b2f ; registre mis à jour,
+  reprise r13-dryhopper (relevé de ses états, rendu dans la maquette, continuité D129, acquis y1b réévalué) ; r12 laisse Dryhopper.

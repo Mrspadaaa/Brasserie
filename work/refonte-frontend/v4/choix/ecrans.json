@@ -98,17 +98,15 @@
   {
    "ecran": "dryhopper",
    "route": "dryhopper",
-   "statut": "ouvert",
-   "options": [
-    "a1",
-    "b4",
-    "d8",
-    "e5",
-    "g1"
+   "statut": "choisi",
+   "choix": "p4b2f (passe 5, retouche de p4b2, « L'aire du floral »)",
+   "mots": "Partir sur cette version (24.10, soir, sur p4b2f dans « Planches · 24.10 ») ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/captures/p4b2f-premier-ecran.png",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
+   "controles": [
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=dryhopper"
    ],
-   "provisoire": "a1 (y1b affiné)",
-   "page": "https://claude.ai/artifact/HjWdF2rgUHDzY3QpgMWVV8",
-   "mots": "y1b est de mon point de vue semble meilleur."
+   "note": "Choisi le 24.10 au soir, à la place d'a1 (provisoire) ; reprise r13-dryhopper : ses états relevés sur p4b2f (choix/etats/dryhopper.json), puis rendus dans la maquette."
   },
   {
    "ecran": "substituer",
