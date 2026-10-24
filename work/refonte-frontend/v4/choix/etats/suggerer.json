@@ -1,0 +1,315 @@
+{
+ "ecran": "suggerer",
+ "choix": "q2b",
+ "source": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/ ; base v4.10 ; inventaire-q2b.json",
+ "maj": "2026-10-24",
+ "construction": "5345f6ad",
+ "etats": [
+  {
+   "id": "etat-sugg-repos",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix (q2b, 23.10)",
+   "etat": "ouvrir Suggérer, au repos",
+   "quoi": "Trois cartes d'objectif teintées côte à côte (Moins résineux Aucune / Plus floral Approche / Plus agrumes Atteint), chacune avec sa piste ; « Au style | Absolu », « Barres | Radar » ; règle « ‹ visée | visée › » ; groupe « = même effet sur tes objectifs · 10 g · 10′ » (+1 cran / +2 crans) ; Motueka ✓ ; barre « Comparer (2) » pleine largeur.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-repos-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "premier écran",
+    "geste_5345f6ad": "premier écran",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Deux cartes au lieu de trois (Plus floral Atteint, Moins résineux Aucune ; « Plus agrumes » absent, écart écrit dans la NOTE de la maquette) ; règle « ‹ visée | visée › » absente (D91 : « inutile ») ; ajouts : bandeau IBU/OG/EBC, « ? », « Comparer (2) » en onglet ; l'effet du groupe se lit « ~+0,9 » sur un rail, plus « +1 cran / +2 crans ».",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-repos-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-croix",
+   "mots": "Croix à la place du « ‹ » (D109, D118)",
+   "etat": "toucher la croix de l'en-tête",
+   "quoi": "Croix à gauche des onglets Ma bière · Suggestions · Comparer ; retour vers l'étape Houblons.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-croix-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "a.retour (statique : ‹, aucun effet)",
+    "geste_5345f6ad": "[data-role=retour]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : ✕ à gauche, le toucher ouvre #/ma-biere (étape Houblons 3/7). La croix vient de D109, tenue.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-croix-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-absolu",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix (q2b, 23.10)",
+   "etat": "toucher « Absolu »",
+   "quoi": "La lentille passe à l'absolu ; les pistes se redessinent ; « Au style » inactif.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-absolu-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "bouton « Absolu »",
+    "geste_5345f6ad": "bouton « Absolu »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : Absolu actif, l'effet du groupe passe de ~+0,9 à ~+16, les rails suivent.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-absolu-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-radar",
+   "mots": "Radars m4 et h4 ; « Barres | Radar » (D74)",
+   "etat": "toucher « Radar »",
+   "quoi": "Radar à 12 axes (ma bière en contour, la voie en plein), deux cartes de verdict, trois voies avec « ‹ 10′ › », case « montrer sur le radar », « Appliquer à la recette » ✓ et « +11 ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/suggestions-radar.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-radar-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "page suggestions-radar.html (v4.10 ; le bouton Radar de q2b statique ne fait rien)",
+    "geste_5345f6ad": "bouton « Radar »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Le radar est là (12 axes, zone, ma bière, légende) mais plus petit, sous les cartes, avec la liste des barres dessous : plus de « ‹ 10′ › » pour décaler le moment, plus de « Appliquer à la recette », plus de case « montrer sur le radar », plus de « +11 voies ».",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-radar-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-hors-houblon",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix (q2b, 23.10)",
+   "etat": "toucher « Hors houblon › »",
+   "quoi": "Déplie « Hors houblon · résineux (4 pistes) » : amertume, malt torréfié, oxydation, dose à l'ébullition, avec leur source.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-hors-houblon-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "bouton « Hors houblon »",
+    "geste_5345f6ad": "[data-role=hors-houblon]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : même volet, mêmes quatre pistes et sources, défilé jusqu'à lui.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-hors-houblon-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-plus",
+   "mots": "« un + qui ajoute le houblon à la comparaison » (19.10)",
+   "etat": "toucher « + » sur Aurum",
+   "quoi": "« + » devient ✓, la barre passe à « Comparer (3) ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-plus-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "« Ajouter Aurum à la comparaison »",
+    "geste_5345f6ad": "« Ajouter Aurum à la comparaison »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : ✓ sur Aurum, « Comparer (3) » en bas et dans l'onglet.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-plus-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-comparer-n",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix (q2b, 23.10)",
+   "etat": "toucher la barre « Comparer (2) »",
+   "quoi": "Ouvre Comparer avec les voies retenues.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-comparer-n-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "a.cmp",
+    "geste_5345f6ad": "[data-role=pont-comparer]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : ouvre #/comparer?h=motueka,idaho-7 (Comparer r6a, son choix) ; q2b ouvrait son Comparer statique, remplacé par r6a (D107).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-comparer-n-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-piste-objectif",
+   "mots": "« Les bar de ce type sont plus informative donc meilleur » (D92)",
+   "etat": "regarder la piste de chaque objectif, en haut",
+   "quoi": "La piste l5b dans la carte : visée en trait sur la barre de ce que la meilleure voie atteint.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-piste-objectif-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "défiler en haut",
+    "geste_5345f6ad": "défiler en haut",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "La piste sort de la carte : deux rails pleine largeur sous les cartes (floral : barre violette ; résineux : segments vert/orange jusqu'au repère 16D) ; la carte ne garde que le verdict.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-piste-objectif-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-groupes-effet",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix (q2b, 23.10)",
+   "etat": "défiler jusqu'au 2e groupe « = même effet »",
+   "quoi": "Deux groupes : Motueka … Citra cryo (+1 cran, +2 crans) puis Nelson Sauvin, Galaxy, Hallertau Blanc (+2 crans), chacun dans un cadre blanc à bord noir.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-groupes-effet-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "défiler au 2e en-tête",
+    "geste_5345f6ad": "défiler au 1er en-tête",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Un seul groupe (Golding, Motueka, Aurum, East Kent Goldings, Columbus, Motueka + Citra cryo, Citra cryo ; ~+0,9) ; le 2e groupe n'existe plus (Nelson Sauvin et Galaxy passent en Remplacer et Dry hop) ; un rail au lieu de deux barres.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-groupes-effet-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-assembler",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix (q2b, 23.10)",
+   "etat": "défiler jusqu'à « Assembler 5 + 5 g »",
+   "quoi": "« Assembler 5 + 5 g · 10′ · estimé » : Motueka + Nelson Sauvin, barre l5b à droite de l'axe central.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-assembler-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "défiler à « Assembler »",
+    "geste_5345f6ad": "défiler à « Assembler »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "La voie existe (5+5 g, ~+0,4 estimé) mais sans barre à droite de l'axe central : un petit rail sous la ligne ; l'axe vertical central a disparu de toute la liste.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-assembler-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-remplacer",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix (q2b, 23.10)",
+   "etat": "défiler jusqu'à « Remplacer Nugget · 60′ »",
+   "quoi": "Trois remplaçants à IBU égal (Motueka 74 g, Hallertau Blanc 63 g, Nelson Sauvin 62 g) et deux barres chacun.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-remplacer-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "défiler à « Remplacer »",
+    "geste_5345f6ad": "défiler à « Remplacer »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Cinq remplaçants (Motueka 74 g, Citra cryo 24 g, Nelson Sauvin 62 g, Galaxy 35 g, Hallertau Blanc 63 g) avec ~+0 / ~−0,1 écrits et un petit rail ; les barres à deux traits sont remplacées par un chiffre.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-remplacer-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-dry-hop",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix (q2b, 23.10)",
+   "etat": "défiler jusqu'à « Dry hop »",
+   "quoi": "« Dry hop · actif · estimé » : Motueka 20 g, ses pastilles de biotransformation (floral → agrumes, tropical/baies, « creep ») et sa barre.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-dry-hop-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "défiler à « Dry hop »",
+    "geste_5345f6ad": "défiler à « Dry hop »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "« Dry hop 4 g/L · après 3 j · estimé » : quatre voies (Idaho 7 ✓ ~+1,3 ; Target, Cascade, Galaxy ~+0,9) ; pastilles de biotransformation et « creep » absentes de la ligne ; « actif » devient « après 3 j ».",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-dry-hop-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-levure",
+   "mots": "Levure, biotransformation et ajout cumulé font partie de l'outil (D96)",
+   "etat": "défiler jusqu'à « Changer de levure »",
+   "quoi": "« Changer de levure · estimé » : LalBrew Verdant IPA et Pomona, chacune avec son effet en barre.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-levure-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "défiler à « Changer de levure »",
+    "geste_5345f6ad": "défiler en bas",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Aucun groupe « Changer de levure » : la liste finit sur le dry hop. Levure est un écran au choix ouvert ; l'absence ici n'a pas été décidée par lui.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-levure-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-coeur",
+   "mots": "♡ « j'aime ce houblon » à gauche du « + » (D117)",
+   "etat": "toucher le ♡ de Golding",
+   "quoi": "Menu aimer · neutre · exclure près du houblon.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-coeur-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "« Mon goût pour Golding » (base v4.10)",
+    "geste_5345f6ad": "« J'aime Golding »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Le ♡ devient un cœur rouge plein (un seul état) ; le menu « aimer / neutre / exclure » n'existe plus (exclure : visée à 0, D108).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-coeur-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-fiche",
+   "mots": "« L'appui long sur un houblon ouvre sa vraie fiche » (D25, D49, D70)",
+   "etat": "appui long (800 ms) sur le nom Golding",
+   "quoi": "Fiche g1 par-dessus : α plage et lot, familles et mots, roue, Styles/Huiles/Sources/Substituts.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-fiche-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "appui long « Golding »",
+    "geste_5345f6ad": "appui long « Golding »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : fiche g1 en feuille plein écran (α 4–6 %, radar 12 axes, familles, ♡ ⊘, Comparer).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-fiche-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-ibu-details",
+   "mots": "Ça oui, c'est effectivement l'un de mes choix (q2b, 23.10)",
+   "etat": "toucher « IBU après chaque voie (ma bière 59,7 ; style 50–70) »",
+   "quoi": "Volet replié : l'IBU de la recette après chaque voie (Motueka 10′ 62,7 · Aurum 10′ 61,4 …).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-ibu-details-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "summary « IBU après chaque voie »",
+    "geste_5345f6ad": "défiler en bas",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Pas de volet : l'IBU reste en tête (60) mais l'IBU après chaque voie n'est écrit nulle part sur Suggérer.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-ibu-details-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-bandeau-ibu",
+   "mots": "Bandeau IBU de Ma bière collé sous la tête au défilement (q2b-bandeau-ibu)",
+   "etat": "défiler la liste",
+   "quoi": "« IBU 60 · OG 1,066 · EBC 70 » reste collé sous la tête.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/base/consolide/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-bandeau-ibu-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "défiler",
+    "geste_5345f6ad": "défiler de 500 px",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : même bandeau, collé sous la tête au défilement (visible sur la capture défilée).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-bandeau-ibu-5345f6ad.png"
+  },
+  {
+   "id": "etat-sugg-legende",
+   "mots": "« un bouton légende un peu caché » (D89, D113)",
+   "etat": "toucher le « ? »",
+   "quoi": "Légende derrière un petit « ? » : carte, piste, picto, usage.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils15-s5-complexe/q2b/etat-b.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-legende-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/suggerer/etat.html",
+    "selecteur_geste_choisie": "(« ? » non rendu par la page q2b statique : capture du repos)",
+    "geste_5345f6ad": "« Lire la légende »",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : « ? » à côté de « Au style | Absolu » ouvre une carte de légende (Carte, Piste, Sous un picto, Usage).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-legende-5345f6ad.png"
+  }
+ ]
+}

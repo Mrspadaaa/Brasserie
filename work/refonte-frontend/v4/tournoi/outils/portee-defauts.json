@@ -1724,7 +1724,7 @@
     "ma-biere"
    ],
    "tourne": "oui",
-   "resultat": "À remplir à la signature de la voie p19 (sorties sur la base v4.10, sur 5345f6ad et sur le témoin geste-froid-deborde).",
+   "resultat": "Base v4.10 (--page=index.html --froid) : GESTE-ETAPE OK (froid, 3 segments) ; carte repliée à 31 px, « 80 °C » au whirlpool, J+7 en fermentation, J+3 en post-fermentation, « à froid », « aucun IBU », « − J+n + ». Maquette 5345f6ad : GESTE-ETAPE ECHEC, 57 problèmes (carte tenue à 102 px, « 3 j » sur le champ « Ajouter », « 2 j » au lieu de « J+n », « dry hop », « ? IBU », whirlpool sans échelle en °C). Témoin geste-froid-deborde : ECHEC (18 débordements) ; geste-froid-ok : OK. Voie p19, 24.10.",
    "verdict": "garde",
    "script": "controle-geste-etape.mjs"
   },

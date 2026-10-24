@@ -472,6 +472,9 @@ export function appelsDansGates(script, { racine = RACINE } = {}) {
       lignes.forEach((l, i) => {
         const m = l.match(/^\s*CHECK:\s*(.+)$/);
         if (!m || !m[1].includes(nom)) return;
+        // Un critère qui lance lui-même le rejeu (« systeme.mjs appels <script> --rejouer ») n'est pas un appel du
+        // script : le rejouer relancerait le rejeu sans fin (voie p19, 24.10 : 9 processus imbriqués).
+        if (/systeme\.mjs\s+appels\b/.test(m[1])) return;
         const attendu = ((lignes[i + 1] ?? '').match(/^\s*EXPECT:\s*(.+)$/) ?? [])[1] ?? '';
         appels.push({ gates: path.relative(racine, p).split(path.sep).join('/'), commande: m[1].trim(), attendu: attendu.trim() });
       });
