@@ -463,6 +463,11 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   `consolide-nugget-p14-620-pendant.png`) : carte repliée en puce pendant le geste, J+0 à J+14 réguliers, « à froid »,
   « aucun IBU », J+n et son réglage. Pendant le geste, la carte restait entière et les jours débordaient sur les ajouts.
   Les contrôles du rail ne jouaient que l'ébullition. D123.
+- **Des fonctions et des choix perdus** (24.10, 8 h, sur la maquette 24.10), mot pour mot : « Ça a bien avancé mais le
+  rail par exemple à perdu en fonctionnalités et certaines de mes choix ont été perdue ». Puis : « Aide toi de sous
+  agent. Je peux aussi lancé une autre session si il faut ». Les inventaires de ses maquettes ne relèvent que l'état au
+  repos ; les gestes et les états (loupe, segments, whirlpool, levure, J+n, ébullition 45′ à 200′, plusieurs houblons)
+  n'y sont pas, et CHOIX OK, RAIL OK restent verts. D124.
 - **Des mini maquettes pour choisir** (24.10, matin, après « ton choix pour D121 (A, B ou C) »), mot pour mot : « Il me
   faut des mini maquettes avec un nouvel artefacts comme pour les mini maquettes côté à côté.... Pour les autres gros
   changement aussi au non je peux pas choisir. Met ca dans tes règles aussi ». Tout choix qu'on lui demande se montre en

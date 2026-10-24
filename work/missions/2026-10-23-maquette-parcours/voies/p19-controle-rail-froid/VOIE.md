@@ -46,7 +46,9 @@ Si la base nomme un mot autrement que ce contrat (par exemple « J+5 » en bulle
 - `work/refonte-frontend/v4/tournoi/outils/controle-geste-etape.mjs` (mode `--froid`)
 - `work/refonte-frontend/v4/tournoi/outils/temoins/geste-froid-*/**`
 - `prototypes/houblons-v4/maquettes/parcours-5345f6ad/**` (ignoré par git)
-- `work/refonte-frontend/v4/tournoi/outils/portee-defauts.json` : la ligne D123 seulement (portée `["ma-biere"]`, garde)
+- (la ligne D123 de `portee-defauts.json` est écrite par le pilote, le 24.10 ; ne modifie pas ce fichier : la voie p20
+  y écrit en même temps que toi. Tes sorties vont dans RESULTAT.md, le pilote les reporte.)
+- (`prototypes/houblons-v4/maquettes/parcours-5345f6ad/` est déjà rassemblée par le pilote, identique aux assets figés.)
 - `work/missions/2026-10-23-maquette-parcours/voies/p19-controle-rail-froid/RESULTAT.md`
 
 ## Exigences transversales (recopiées, L05)

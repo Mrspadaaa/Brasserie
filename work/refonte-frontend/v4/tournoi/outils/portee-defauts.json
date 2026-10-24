@@ -1,5 +1,5 @@
 {
- "maj": "2026-10-23",
+ "maj": "2026-10-24",
  "defauts": [
   {
    "id": "D1",
@@ -1715,6 +1715,30 @@
    "resultat": "24.10 : RETOUR OK sur 5345f6ad (en-tête de 53 px et croix au même x sur les trois onglets) ; même contrôle que D109",
    "verdict": "garde",
    "script": "controle-retour.mjs"
+  },
+  {
+   "id": "D123",
+   "mots": "« Le rail c'est toujours n'importe quoi. Il y a un vrai historique dessus, pourquoi tu es revenu sur un choix que je n'ai pas fait ? » (24.10, matin, maquette 24.10, Nugget glissé vers la post-fermentation)",
+   "controle": "controle-geste-etape.mjs <dossier construit> [--page=…] --froid (lignes « D123 »)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "À remplir à la signature de la voie p19 (sorties sur la base v4.10, sur 5345f6ad et sur le témoin geste-froid-deborde).",
+   "verdict": "garde",
+   "script": "controle-geste-etape.mjs"
+  },
+  {
+   "id": "D124",
+   "mots": "« Ça a bien avancé mais le rail par exemple à perdu en fonctionnalités et certaines de mes choix ont été perdue » (24.10, 8 h, maquette 24.10)",
+   "controle": "controle-fonctions-rail.mjs <dossier construit> [--page=index.html] (une ligne par fonction de inventaire-rail.json)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "non",
+   "resultat": "À écrire par la voie p20 : tourne passe à « oui » quand le contrôle existe et échoue sur 5345f6ad.",
+   "verdict": "garde",
+   "script": "controle-fonctions-rail.mjs"
   }
  ]
 }
