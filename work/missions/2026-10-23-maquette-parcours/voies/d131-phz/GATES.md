@@ -12,4 +12,4 @@ Scope: quatre jeux de quinze pictos et du picto « en plus », au trait, chacun 
 - [x] G2: au trait, sans halo (D88)
   CHECK: node work/refonte-frontend/v4/tournoi/outils/controle-pictos-trait.mjs work/refonte-frontend/v4/ecran-1/fils24-pictos-hors16d phz1 phz2 phz3 phz4 --page=etat.html
   EXPECT: TRAIT OK
-  EVIDENCE: automatic-evidence=v1; definition-sha256=9b23b2f6a46ed98b6791911eb54563f426ea606157844d40942e6b41fcd4370b; exit=0; EXPECT=matched; output-sha256=ae96c6b9dc4125c6f1877bbaf0bb90cb62819f9ef171d2934852b7201b6d3872; output-bytes=185; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries
+  EVIDENCE: automatic-evidence=v1; definition-sha256=9b23b2f6a46ed98b6791911eb54563f426ea606157844d40942e6b41fcd4370b; exit=0; EXPECT=matched; output-sha256=b1340e4ab2da3ba485d6812cc97a4a7ea250e291a12cab7094846fc61c6e00d4; output-bytes=185; shell=C:\WINDOWS\system32\cmd.exe; cwd=C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie; path=e6b74341549f/27 entries

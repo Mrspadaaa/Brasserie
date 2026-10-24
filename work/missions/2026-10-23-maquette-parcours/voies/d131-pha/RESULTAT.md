@@ -1,4 +1,4 @@
-OK — quatre jeux pha de 16 pictos au trait, posés dans Comparer et la fiche réelles
+OK — quatre jeux pha prêts : Citra +4 partout, citronnelle et gingembre en mot
 
 ## Fichiers écrits
 - `work/refonte-frontend/v4/ecran-1/fils24-pictos-hors16d/pha1/` à `pha4/` : `etat.html` et `NOTE.md` pour chacun.
@@ -34,3 +34,12 @@ DÉCISION À PRENDRE : où poser le mot précis. Trois façons sont montrées : 
 CONNAISSANCE : Nelson Sauvin n'a aucun mot précis dans ses fiches : elles disent seulement « Agrumes » et « Épicé ». Saaz (CZ) en a un : « lemon » (Hopsteiner), traduit citron. La grille de la fiche range « fruité » parmi les mots hors des 12 avec un ◇ : c'est un qualificatif, qui doit rester un mot sans picto.
 
 LEÇON PROPOSÉE : une maquette en React se montre dans une vraie carte, sans refaire la carte : il suffit de figer son DOM rendu par la route (`#/comparer?h=…`, `#/fiche/<houblon>`) après y avoir posé l'ajout, dans un cadre `transform: translateZ(0)` qui contient ses éléments fixes. Le défilement figé se rejoue par un attribut.
+
+## Passe 2 (retour du critique, 24.10 soir)
+- Les quatre jeux sont repris sur place (G1 tourne sur pha1 à pha4). La v0 est gardée : pha*/v0-etat.html, pha*/v0-NOTE.md, captures/pha*-v0-*.png.
+- Commun : un picto ne passe jamais dans « +n » ; Nelson Sauvin a ses trois pictos (la groseille, aussi chez Citra, en clair) ; « herbe » retiré de Saaz ; plus de pastille vide ; barre d’huile (1,8–5 contre 0,3–1 mL/100 g) dans la carte Galaxy/Saaz ; curry en marmite, crème en brique, nectar en pichet, citronnelle en biseau, gingembre en rhizome.
+- pha2 : le mot précis revient dans la ligne noire, souligné à la couleur de sa famille (rang des familles intact) ; « en plus » devient la bulle ronde. pha3 : le premier mot précis de Galaxy sort du « +n », et le miel passe en alvéoles. pha4 : le premier mot précis est écrit dans la version courte.
+- Sorties : jeux.mjs → JEUX-BIEN-4 ; controle-pictos-trait → TRAIT OK ; PANEL des planches → PANEL OK ; controle-commun : les mêmes trois écarts (couleurs, fiche, standard S1).
+- Reste ouvert : citronnelle (le biseau se lit « tige » ou « crayon ») et gingembre (le rhizome se lit « chaîne »). DÉCISION À PRENDRE : un autre dessin, ou le mot seul pour ces deux mots.
+- Prédiction : « Là on voit Galaxy face à Saaz, et ça gêne toujours pas ; mais gingembre, c’est une chaîne ? »
+- Retouche courte (nuit) : Citra « +4 » partout (data-plus=4 dans les huit cartes Citra des quatre jeux) ; citronnelle et gingembre en mot seul ; JEUX-BIEN-4, TRAIT OK.

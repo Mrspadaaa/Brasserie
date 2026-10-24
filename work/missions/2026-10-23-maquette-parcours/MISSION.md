@@ -170,6 +170,7 @@ Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`).
 | Planche de la fiche | g1 et onze vues de la liste (D126) ; 24.10 | https://claude.ai/artifact/2vUzuyzUpsShrYnkp1PUPZ | `work/refonte-frontend/v4/outils/pages/2026-10-24-planche-fiche/index.html` |
 | Planche des graphes | six graphes côte à côte, deux lectures chacun (D126) ; 24.10 | https://claude.ai/artifact/JSiBVNWUJqJD8zdkvpKN9t | `work/refonte-frontend/v4/outils/pages/2026-10-24-planche-graphes/index.html` |
 | Planches | toutes les vues à choisir sur une page, dans sa disposition (une rangée par vue, vignettes serrées) ; 24.10 | https://claude.ai/artifact/X1RqagDtEqS4L2yZ63PFBy | `work/refonte-frontend/v4/outils/pages/2026-10-24-planches/index.html` |
+| Pictos hors 16D | huit jeux (pha, phz) en deux passes, critique d131 ; Comparer, Galaxy face à Saaz, la fiche, la planche ; 24.10, soir | https://claude.ai/artifact/Y7jV3JyYZw3VdPmDittgwW | `work/refonte-frontend/v4/outils/pages/2026-10-24-pictos-hors16d/index.html` |
 
 ## Boucle de retour
 - Un critère rouge : l'agent corrige dans sa voie, 3 essais. Au-delà, SendMessage au même agent avec le défaut

@@ -1,4 +1,4 @@
-<title>Maquette houblons · 24.10, reprise</title>
+<title>Maquette houblons · 24.10, soir</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -12,8 +12,11 @@
   new MutationObserver(() => {
     if (document.documentElement.dataset.theme !== 'clair') document.documentElement.dataset.theme = 'clair';
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+</script>
+<div id="parcours"></div>
+<script>
+  // Après le conteneur : <body> existe, en local comme une fois publiée.
   document.body.dataset.route = 'ma-biere';
   document.body.classList.add('overflow-x-hidden', 'font-sans', 'bg-cave-950');
 </script>
-<div id="parcours"></div>
 <script defer src="assets/parcours.js"></script>

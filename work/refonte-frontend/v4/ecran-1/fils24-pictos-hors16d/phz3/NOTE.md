@@ -9,9 +9,11 @@
 - **Ce qui tient** : le grain de café, le verre, le bocal, la bulle de parole et la marmite se nomment à 12 px ; le
   pointillé de la grappe reste lisible à 16 px ; la bulle de parole dit « en plus » sans ressembler ni au « + », ni à
   une famille, ni au hachuré.
-- **Ce qui casse** : la cuillère à miel se lit « clé » ou « marteau » à 16 px (connu des séries r4d : un manche à
-  crans) ; la goutte sur la coupe (nectar) peut se lire « bougie » ; la feuille à trois lobes reste proche d'une feuille
-  (Herbacé) même fendue.
+- **Ce qui cassait** (v0, REJET du critique : « Un marteau pour le miel ? Et Galaxy a une feuille comme herbacé ? ») : la
+  feuille à trois lobes était un symbole pris (Herbacé) et envoyait Galaxy du côté de Saaz ; la cuillère à miel se lisait
+  « marteau », la goutte sur la coupe « bougie », la grappe en trois points disparaissait dans la pastille. Passe 2 : sept
+  folioles, alvéole, pichet, grappe de points pleins et rhizome (greffes de pha1 et phz2) ; gardés : grain de café, verre
+  « Y », bocal, bulle de parole « en plus » (la meilleure des huit selon le critique).
 - **Écart à la baseline** : la grappe emploie un trait de 4 pour ses points (sinon 1,7 px à 16 px) ; tout le reste au
   trait 2,571.
 
@@ -37,10 +39,34 @@
   cannabis (brief). Rare hors relevé (« Tabacco » de Target) : le picto « en plus », le mot au toucher et dans la version
   textuelle.
 
-## Contrôles
-- G1 : JEUX-BIEN-4. G2 `controle-pictos-trait.mjs … --page=etat.html` : TRAIT OK (0 faute sur les quatre jeux).
-- `controle-panel.mjs` sur les planches : PANEL OK (remplissage médian 0,64, ressemblance 0,88, 0 paire identique) ;
-  sur les cartes : PANEL ECHEC (ressemblance 0,94) par construction : les quatre jeux posent leurs pictos dans la même
-  carte, qui ne doit pas changer.
-- Limites : pack de 32 houblons ; la lisibilité à 12 px est montrée sur la planche mais pas mesurée ; contraste des
-  pictos de famille sombres (épicé, baies) sur la pastille noire non contrôlé.
+## Passe 2 (retour du critique, VERDICTS.md)
+- Commun aux quatre jeux : en version textuelle la pastille passe à la ligne dans sa colonne (plus de troncature), le bloc
+  « mots précis » vient après la pastille (« dans » reste à la même hauteur dans toutes les têtes), la pastille ne redit
+  plus le bloc précis (Citra, sans mot propre, n'a plus de pastille en textuel : le bloc précis la remplace, jamais une
+  pastille vide). « +n » ne compte que les mots sans picto (un deuxième mot précis d'une même famille) ; un doublon de
+  picto (sauvignon blanc → vin blanc, dank → cannabis) ne compte pas. « herbe » retiré des mots précis de Saaz (il redit
+  Végétal) : Saaz = doux, noble, citron.
+- Honnêteté des comptes : dans Comparer face à Citra cryo et Target, Nelson Sauvin a DEUX pictos (vin blanc, qui couvre
+  sauvignon blanc ; raisin) : « groseille à maquereau » n'y est pas « lui seul », Citra cryo le dit aussi (aria-label du
+  moteur). Dans la fiche, face à Boomerang, Herkules, Phoenix et CTZ, il en a TROIS (vin blanc, raisin, groseille).
+- Côte à côte avec la maquette telle quelle (la vraie page, puis la même page avec les pictos posés en version courte) :
+  `captures/<id>-cote-carte.png`, `<id>-cote-galaxy-saaz.png`, `<id>-cote-fiche.png`. Vu : la tête garde sa hauteur dans
+  Nelson Sauvin / Citra / Target ; dans Galaxy / Saaz, la barre huile ajoute une ligne (≈ 20 px) sous la pastille, qui
+  pousse le tableau d'autant : c'est le prix de « on voit comme il faut les différence ».
+- Greffes : cannabis à sept folioles et gingembre en rhizome (pha1) dans phz2, phz3 et phz4 ; grappe de points pleins,
+  groseille striée, alvéole et pichet de phz2 dans phz3 et phz4 ; bulle de parole « en plus » (phz3) dans phz4.
+
+## Contrôles (passe 2)
+- G1 : JEUX-BIEN-4. G2 `controle-pictos-trait.mjs … --page=etat.html` : TRAIT OK (phz1 144, phz2 160, phz3 144, phz4 160
+  pictos de famille visibles, 0 faute).
+- `controle-panel.mjs` sur les planches (v0) : PANEL OK ; sur les cartes : PANEL ECHEC par construction (même carte).
+- Limites : pack de 32 houblons ; lisibilité à 12 px montrée, pas mesurée ; contraste des pictos de famille sombres sur la
+  pastille noire non contrôlé.
+
+## Retouche courte avant de lui montrer (passe 2 jugée : quatre jeux acceptés, phz2 en tête)
+- Nelson Sauvin dans Comparer : trois pictos, la groseille en clair (opacité ,5, « un autre le dit aussi » au toucher) ;
+  un seul compte avec la fiche. Version textuelle : « pamplemousse » sur sa ligne, sans césure. Version courte : le
+  premier mot précis (le plus court) écrit dans la pastille avec le picto de sa famille (« 🍑 pêche 🍊 🍍 », « 🍊 citron »),
+  pour que les pictos ne redisent pas le rang des familles ; ce qui dépasse la colonne reste coupé, comme dans la carte
+  d'origine. Citronnelle et gingembre : le mot seul en clair sur la planche, sans picto, tant qu'aucun dessin ne se nomme.
+  Recapturé, rouvert ; G1 JEUX-BIEN-4, G2 TRAIT OK.
