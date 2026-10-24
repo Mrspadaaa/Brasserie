@@ -7,7 +7,7 @@
 //  - écart en crans : (après − ta stout) / cran du style ;
 //  - « sort de ta 16D » : au-dessus du haut de la bande alors que ta stout était dedans ;
 //  - mis en avant au départ : le plus floral qui reste dans ta 16D.
-import { biotransfoLevure, simulerCas, type FamilyId } from '../../../../src/engine';
+import { biotransfoLevure, familyWords, hopRef, simulerCas, type FamilyId } from '../../../../src/engine';
 import type { RecettePouvoir } from '../../../../src/engine/pouvoir';
 import { S1_DIRECTION } from '../../../../src/pack/buildPack';
 import { comparer, effetLevure, style, type Colonne, type HoublonLu } from '../../moteur';
@@ -327,4 +327,52 @@ export function biotransformation(recette: RecetteParcours, cles: string[]): Bio
     return { cle, citronellol: x?.citronellol_ugL ?? null, thiols: x?.thiolsLiberes_ngL ?? null, raison: x?.raison ?? null };
   });
   return { levure, actifIci: biotransfoLevure(levure, 'dryPost').actif, conv: b.conv, rend: b.rend, texteConv: b.texteConv, texteRend: b.texteRend, sources: b.sources, parHoublon };
+}
+
+// ---------- Ses mots (D128 bis) ----------
+// Sur flb5 (24.10) : « J'aime beaucoup le 9 car ont voit que c'est pas que du 16d, le houblon a vraiment beaucoup plus
+// de subtilité. À montré aussi, notamment pour la comparaison ». Ce que chaque houblon dit en plus des familles de la
+// 16D : les mots de ses fiches (familyWords du moteur : chaque descripteur, rangé dans sa famille ou hors des 12),
+// traduits (D97), sans le nom d'une famille (il redit le radar) ni un mot générique (« fruité » : 77 houblons, il ne
+// signe personne) ; jamais inventés. « Lui seul » : aucun des autres houblons comparés ne le dit (la manière de flb5).
+const VERS_FR: Record<string, string> = {
+  'white wine': 'vin blanc', fruity: 'fruité', gooseberry: 'groseille à maquereau', gooseberries: 'groseille à maquereau', grape: 'raisin', grapes: 'raisin',
+  pineapple: 'ananas', woody: 'boisé', resinous: 'résineux', resiny: 'résineux', 'fresh lime': 'citron vert', lime: 'citron vert', 'lemon zest': 'zeste de citron',
+  lemon: 'citron', citrus: 'agrumes', 'black currant': 'cassis', blackcurrant: 'cassis', herbal: 'herbacé', spicy: 'épicé', pine: 'pin', grapefruit: 'pamplemousse',
+  'passion fruit': 'fruit de la passion', peach: 'pêche', lychee: 'litchi', coconut: 'noix de coco', geranium: 'géranium', ginger: 'gingembre', earthy: 'terreux',
+  'tropical fruit': 'fruits tropicaux', tropical: 'fruits tropicaux', floral: 'floral', 'résine': 'résine',
+};
+const GENERIQUES = new Set(['fruité']);
+const NOMS_FAMILLE = new Set(['agrumes', 'floral', 'épicé', 'herbacé', 'terreux', 'résineux', 'fruits tropicaux', 'tropicaux', 'végétal', 'baies', 'melon', 'noyau', 'pépins']);
+const versFr = (m: string) => { const k = m.trim().toLowerCase(); return VERS_FR[k] ?? k; };
+export interface MotLu { mot: string; famille: FamilyId | null; fiches: string[]; seul: boolean; aussi: string[] }
+export function sesMots(cles: string[]): Record<string, MotLu[]> {
+  const brut: Record<string, Map<string, { famille: FamilyId | null; fiches: string[] }>> = {};
+  for (const cle of cles) {
+    const h = hopRef(cle);
+    const m = new Map<string, { famille: FamilyId | null; fiches: string[] }>();
+    brut[cle] = m;
+    if (!h) continue;
+    const w = familyWords(h.varietyId, h.catalogue);
+    const ajoute = (mot: string, source: string, famille: FamilyId | null) => {
+      const k = versFr(mot);
+      if (!k || GENERIQUES.has(k) || NOMS_FAMILLE.has(k)) return;
+      const c = m.get(k) ?? { famille, fiches: [] };
+      if (famille && !c.famille) c.famille = famille;
+      if (!c.fiches.includes(source)) c.fiches.push(source);
+      m.set(k, c);
+    };
+    for (const f of Object.keys(w.mots) as FamilyId[]) for (const r of w.mots[f]) for (const mot of r.mots) ajoute(mot, r.source, f);
+    for (const x of w.sansFamille) ajoute(x.mot, x.source, null);
+  }
+  const out: Record<string, MotLu[]> = {};
+  for (const cle of cles) {
+    const autres = cles.filter((k) => k !== cle);
+    out[cle] = [...brut[cle].entries()].map(([mot, c]) => {
+      const aussi = autres.filter((k) => brut[k].has(mot)).map((k) => hopRef(k)?.name ?? k);
+      return { mot, famille: c.famille, fiches: c.fiches, seul: aussi.length === 0, aussi };
+    // Lui seul d'abord, puis les mots cités par plus de fiches, puis hors des 12 familles avant les autres.
+    }).sort((a, b) => Number(b.seul) - Number(a.seul) || b.fiches.length - a.fiches.length || Number(a.famille != null) - Number(b.famille != null));
+  }
+  return out;
 }

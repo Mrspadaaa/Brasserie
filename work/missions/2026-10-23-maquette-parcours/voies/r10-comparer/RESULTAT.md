@@ -1,4 +1,4 @@
-OK — Comparer : premier écran r6a (radar, colonnes, rangées), étapes en bande-sélecteur dessus, 80 mots
+OK — Comparer r6a, étapes en bande-sélecteur, ses mots (flb5) sous l'écran, 80 mots
 
 ## Fichiers écrits (Possède)
 - `prototypes/houblons-v4/parcours/src/ecrans/comparer/index.tsx` : état `moment` (60′ · 10′ · dry hop) ; radar, têtes (~ dans / ~ hors) et rangées lues au moment choisi (`vue`) ; Défi et feuilles du dock restent au dry hop ; la bande des étapes posée sur les rangées ; la pastille du critère en tête de la bande (« Pourquoi ce classement › » en bas de sa liste) ; la réponse de y1b et « Placer <houblon> › » en conclusion, en bas (comme le « Doser … dans Dryhopper » de r6a) ; « ? » sur la ligne de la question ; légende mise à jour.
@@ -31,5 +31,19 @@ DÉCISION À PRENDRE : si le brasseur veut voir aussi la ligne de réponse et «
 
 Prédiction : « Là c'est ma r6a, et je vois les étapes d'un coup » ; risque : la bande à 12 nombres jugée « dur à lire », comme x3b.
 
+## D128 bis — ses mots, à la manière de flb5
+Ses mots, sur flb5 : « J'aime beaucoup le 9 car ont voit que c'est pas que du 16d, le houblon a vraiment beaucoup plus de subtilité. À montré aussi, notamment pour la comparaison ».
+- Ce qui est rendu : **sous le premier écran** (il est à 80 mots, la règle tient ; c'est le premier bloc sous les rangées, après le filet). D'abord le bandeau noir de flb5 pour le houblon retenu (« **Idaho 7** seul dit **orange, papaye, abricot, thé noir** · face à Cascade et Galaxy, d'après ses fiches · en gras : ce que lui seul dit »), à la couleur du houblon. Ce bandeau suit le toucher d'une colonne. Puis, **sous chaque colonne**, ses mots : en gras ceux que lui seul dit face aux autres houblons comparés, en gris ceux qu'un autre dit aussi. Devant chaque mot, le picto de sa famille, ou ◇ s'il est hors des 12 familles. Au-delà de 6 mots, « +n ». Le détail (fiches, « aussi chez … », famille) est dans le title.
+- Source : `familyWords` du moteur (les descripteurs de chaque fiche, rangés dans leur famille ou hors des 12), lu en direct (`sesMots` dans `calcul.ts`). Traduction D97 (white wine → vin blanc, gooseberry → groseille à maquereau, lime → citron vert, black currant → cassis…). Un nom de famille est retiré (« agrumes » redit le radar), de même que « fruité » (générique). Rien n'est inventé.
+- Sur le cas : Cascade : **citron vert**, pamplemousse, cassis, pin. Idaho 7 : **orange, papaye, abricot, thé noir, résine**, pamplemousse (+2). Galaxy : **cannabis, dank, fruit de la passion, ananas, pêche**. Avec Nelson Sauvin en 4ᵉ (« + ») : « Nelson Sauvin seul dit **vin blanc, groseille à maquereau, raisin, sauvignon blanc** » ◇, les mots de flb5.
+- DÉCISION : « ce que chaque houblon dit en plus de ses familles » est lu comme flb5 le montre : ses mots à lui, ceux d'une famille compris (flb5 : « Lui seul dit mojito, **zeste de citron** », en agrumes), et pas seulement les mots hors des 12. Seuls hors des 12, Cascade et Idaho 7 n'auraient rien (Cascade : « fruité » seulement, Idaho 7 : aucun mot). Le ◇ distingue les mots hors familles.
+- Pas de signe au premier écran : chaque mot de plus y casse les 80 mots (D40 bis).
+- Mots coupés à la française (césure douce « pample-mousse », « maque-reau ») : Chrome headless n'a pas de césure automatique pour le français.
+- Fichiers : `index.tsx` (`SesMots`), `calcul.ts` (`sesMots`, `MotLu`), `comparer.css`, `NOTE.md` (« Idées reprises »). Les rangées d'étapes à 4 colonnes passent en court (« DH », le Nugget dessous) : à 30 px, « dry hop » se cassait.
+- Captures : `captures-r10/cote-a-cote-flb5-r6a.png` (flb5, r6a, ses mots), `d128bis-ses-mots.png` (Idaho 7 retenu), `d128bis-galaxy.png`, `d128bis-nelson.png` (4 colonnes).
+- Critères rejoués sur la construction finale : CONSTRUIT OK · FAMILLES OK (9) · COMPARER-ETAPES OK · ETATS OK (18/18) et ETATS OK (1/1), 80 mots · CHOIX OK · COMMUN OK · TEINTE OK 6/6 · TYPES OK · ETAPE OK (comparer).
+- Prédiction : « Là on voit que Galaxy c'est pas que du tropical » ; risque : les mots partagés en gris jugés en trop.
+
 CONNAISSANCE : sur un écran à CadreOutil, `controle-comparer-etapes` traite tout ce qui passe sous le bas du `main` défilant (783 px à 390 × 844) comme « rogné » : « visibles ensemble » veut dire au premier écran. Le compteur de 80 mots compte aussi ce qui passe sous le dock (jusqu'à 844 px).
-LEÇON PROPOSÉE : aucune
+Le contrôle de reprise refuse dans « ## Reprise » de NOTE.md toute ligne dont l'identifiant n'est pas dans l'inventaire. Une greffe hors inventaire va dans « Idées reprises ».
+LEÇON PROPOSÉE : l'outil Edit et les heredocs Bash transforment l'échappement « ­ » en caractère invisible dans la source (même famille que M10). Pour un caractère spécial dans le code, écrire `String.fromCharCode(n)`.

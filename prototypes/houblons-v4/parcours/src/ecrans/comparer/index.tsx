@@ -15,7 +15,7 @@ import { nouvelId } from '../../etat/operations';
 import { style } from '../../moteur';
 import { STOCK, hopRef, type FamilyId } from '../../../../src/engine';
 import Fiche from '../fiche';
-import { ABSOLU, CRITERES, ETAPES, ORANGE, depart, type CodeEtape, houblonDeBase, lireColonnes, lireEtapes, reponse, scoreDefi, type CelluleLue, type ColonneLue, type Critere } from './calcul';
+import { ABSOLU, CRITERES, ETAPES, ORANGE, depart, type CodeEtape, houblonDeBase, lireColonnes, lireEtapes, reponse, scoreDefi, sesMots, type MotLu, type CelluleLue, type ColonneLue, type Critere } from './calcul';
 import { BandeEtapes, PiedEtapes } from './Etapes';
 import {
   FeuilleAjouter, FeuilleDefi, FeuilleDock, FeuilleEgaler, FeuilleFrise, FeuillePourquoi, FeuillePreuve, FeuilleSouche, FeuilleValeurs, Point, signeCran,
@@ -53,6 +53,8 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   const vue = useMemo(() => (moment === 'dryPost' ? cols : lireColonnes(recette, cles, undefined, ETAPES.find((e) => e.code === moment)!.quand)), [recette, cles, cols, moment]);
   // Aux étapes (D107) : chaque houblon et la référence (le houblon de base de ta recette) à 60′, 10′ et au dry hop.
   const reference = useMemo(() => houblonDeBase(recette, cles), [recette, cles]);
+  // D128 bis : ses mots, tirés de ses fiches, face aux autres houblons comparés (flb5).
+  const mots = useMemo(() => sesMots(cles), [cles]);
   const etapes = useMemo(() => lireEtapes(recette, reference ? [...cles, reference] : cles), [recette, cles, reference]);
   // Le critère de classement (r6n2) : floral au départ (ta demande). Il change le ★, la réponse et le mis en avant.
   const [critere, setCritere] = useState<Critere>(CRITERES[0]);
@@ -193,6 +195,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
               </div>
             )}
           </div>
+          <SesMots cols={cols} mots={mots} retenu={cleRetenue} quatre={quatre} />
           <PiedEtapes cols={cols} retenu={cleRetenue} onDryhopper={placer} />
         </section>
         {/* D114 : le panel OSU (un acquis) reste replié, au rang d'une note, sous le tableau comme dans r6a ; un toucher ouvre
@@ -292,6 +295,48 @@ function LigneReponse({ rep, critere, moment, onPourquoi }: { rep: NonNullable<R
       <span className="pq-comparer-rep-q">{quand}</span>
       <button type="button" className="pq-comparer-pourquoi-zone" aria-label="pourquoi ce classement ?" onClick={onPourquoi} />
     </p>
+  );
+}
+
+// ---------- ses mots, au-delà de la 16D (D128 bis, à la manière de flb5) ----------
+// Sous le premier écran (80 mots) : en tête, le bandeau de flb5 pour le houblon retenu (« Idaho 7 seul dit … ») ; puis,
+// sous chaque colonne, ses mots : en gras ceux que lui seul dit face aux autres, en gris ceux qu'un autre dit aussi ;
+// le picto de sa famille devant, ◇ pour un mot hors des 12 familles.
+/** Une césure douce dans un mot long (9 lettres et plus), entre une voyelle et une consonne : « pample-mousse ». */
+const coupure = (w: string) => { if (w.length < 9) return w; for (let i = 5; i <= w.length - 4; i++) if (/[aeiouyéèê]/i.test(w[i - 1]) && !/[aeiouyéèê]/i.test(w[i])) return w.slice(0, i) + String.fromCharCode(173) + w.slice(i); return w; };
+const liste = (l: string[]) => (l.length > 1 ? `${l.slice(0, -1).join(', ')} et ${l.at(-1)}` : l[0] ?? '');
+function SesMots({ cols, mots, retenu, quatre }: { cols: ColonneLue[]; mots: Record<string, MotLu[]>; retenu: string; quatre: boolean }) {
+  const sel = cols.find((c) => c.cle === retenu) ?? cols[0];
+  if (!sel) return null;
+  const seuls = (mots[sel.cle] ?? []).filter((m) => m.seul);
+  const max = quatre ? 5 : 6;
+  return (
+    <section className="pq-comparer-mots" aria-label="Ses mots : ce que chaque houblon dit en plus des familles de la 16D, d’après ses fiches" data-element="d128bis-ses-mots flb5-lui-seul">
+      <p className="pq-comparer-mots-b" style={{ ['--pq-h' as string]: sel.couleur }} data-role="lui-seul">
+        {seuls.length
+          ? <><b>{sel.houblon.nom}</b> seul dit <b>{seuls.slice(0, 4).map((m) => m.mot).join(', ')}</b></>
+          : <><b>{sel.houblon.nom}</b> : ses mots, les autres les disent aussi</>}
+        <span className="pq-comparer-mots-s">face à {liste(cols.filter((c) => c.cle !== sel.cle).map((c) => c.houblon.nom))}, d’après ses fiches · en gras : ce que lui seul dit</span>
+      </p>
+      <div className="pq-comparer-grille-tab pq-comparer-mots-g">
+        <span className="pq-comparer-mots-l">{!quatre && 'ses mots'}</span>
+        {cols.map((c) => {
+          const l = mots[c.cle] ?? [];
+          return (
+            <span key={c.cle} className={cx('pq-comparer-mots-c', c.cle === retenu && 'pq-comparer-sel')} style={{ ['--pq-h' as string]: c.couleur }} data-col={c.cle}>
+              {l.length === 0 && <span className="pq-comparer-mots-rien">rien de plus que ses familles</span>}
+              {l.slice(0, max).map((m) => (
+                <span key={m.mot} className={cx('pq-comparer-mot', m.seul && 'pq-comparer-mot-seul')} data-mot={m.mot} data-seul={m.seul ? '' : undefined}
+                  title={`${m.mot} : ${m.fiches.join(', ')}${m.aussi.length ? ` ; aussi chez ${m.aussi.join(', ')}` : ' ; lui seul ici'}${m.famille ? ` ; famille ${COURT[m.famille].toLowerCase()}` : ' ; hors des 12 familles'}`}>
+                  {m.famille ? <Picto famille={m.famille} taille={12} /> : <span className="pq-comparer-mot-hors" aria-label="hors des 12 familles">◇</span>}<span className="pq-comparer-mot-t">{m.mot.split(' ').map(coupure).join(' ')}</span>
+                </span>
+              ))}
+              {l.length > max && <span className="pq-comparer-mots-rien">+{l.length - max}</span>}
+            </span>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 

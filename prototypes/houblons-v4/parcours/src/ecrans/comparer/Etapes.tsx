@@ -69,7 +69,7 @@ export function BandeEtapes({ cols, etapes, reference, nomReference, retenu, mom
             <button key={e.code} type="button" role="radio" aria-checked={on} onClick={() => onMoment(e.code)} data-moment={e.code}
               className={cx('pq-comparer-grille-tab pq-comparer-et-r', on && 'pq-comparer-et-on', i === 0 && 'pq-comparer-et-premiere')} data-etape-ligne={e.code}>
               <span className="pq-comparer-et-l">
-                <b className="pq-comparer-et-nom">{e.nom}</b>
+                <b className="pq-comparer-et-nom" data-court={e.code === 'dryPost' ? 'DH' : e.nom}><span>{e.nom}</span></b>
                 <Valeur v={vr} code={e.code} cle={reference ?? undefined} nom={nomRef} etape={ref} famille={f} gris />
               </span>
               {cols.map((c) => {

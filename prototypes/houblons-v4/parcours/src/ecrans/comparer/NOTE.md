@@ -96,6 +96,8 @@ Laissées de côté, et pourquoi :
   ce qui règle le reproche du critique sans perdre les noms.
 - Les 20 bières tirées, la frise jour après jour, la souche (r6n1, r6n2) : hors de la question de Comparer.
 
+- Ses mots (D128 bis), de flb5 (« J'aime beaucoup le 9 […] À montré aussi, notamment pour la comparaison », 24.10) — sous le premier écran (80 mots) : le bandeau « <retenu> seul dit … » (flb5), puis sous chaque colonne ses mots tirés de ses fiches (familyWords du moteur, traduits D97, sans nom de famille ni « fruité »), en gras ce que lui seul dit face aux autres houblons comparés, ◇ hors des 12 familles
+
 ## Écarts
 
 Aux étapes (D107, moteur en direct, 23.10, nuit ; 4 g/L, US-05, dry hop après 3 j), crans gagnés sur ta stout :
