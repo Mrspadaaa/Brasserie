@@ -39,3 +39,33 @@
 
 - `src/ui/hops/HopSubstitute.tsx`, route `{ view: 'hopSubstitute', recipeId, hopKey }` ; `donnees.ts` (plage, huit
   remplaçants, mesures par source) va à côté de `src/domain/hops/` ; « Ajouter aux achats » attend une liste d'achats.
+
+## Reprise D127 (voie r9, 24.10, soir)
+
+Ses mots sur « u4 · ton choix » : « bien mais trop centré ibu, il faudrait aussi pas que à 60' mais aussi en dry hop. […]
+Attention à toujours utilisé la baseline. Aussi ajouter à comparé doit être facile. Et le remplacement aussi. Ainsi que
+ferme la vue » ; coche sur le tableau « Arômes 16D » : « Ça c'est vraiment bien ». Tout u4 reste (15 états, ETATS 14/14).
+
+- **Le moment, un toucher** : la puce de sbc1b, étendue en trois segments sous la tête : « 60′ · recette », « whirlpool »,
+  « dry hop » (`role=radio`, `data-moment`). Le toucher place l'ajout du brouillon à ce moment (`gestes.moment`, dry hop
+  actif 3 j comme Dryhopper) ; `substitutes()` reclasse au moment (poids arôme 0,6, huiles 0,3, amertume 0,1 hors
+  ébullition), la tête dit « remplaçants / au dry hop », le face à face repart de ses deux par défaut. Hors de la recette,
+  une phrase dit le prix : « Au dry hop, l'arôme fait le score. Nugget au dry hop : ta stout passerait de 59,7 à 0 IBU ;
+  chaque remplaçant à masse égale. » ; le pied dit les deux moments (« 46 g de Nugget à 60′ → 46 g de Cascade au dry hop »).
+  « Remplacer » inscrit ce brouillon ; la croix et « Annuler » le jettent (la recette reste à 60′).
+- **L'arôme à côté du score** : sous chaque nom, les crans du tableau « Arômes 16D » (2 crans cité / marqué, pointillé =
+  non décrit), en couleur de famille, pour les familles de sa stout : floral, herbacé, terreux (attendues), puis résineux
+  (hors style dans sa recette), pictos au trait en tête de colonne. Nugget en tête de l'échelle (« l'original, 46 g à 60′ »)
+  pour lire ce que chacun garde ou perd d'un coup d'œil. Le tableau « Arômes 16D » reste tel quel (forme, mots, pointillé).
+- **Au whirlpool et au dry hop, l'arôme répond** : la réponse ajoute « Target garde floral, herbacé et résineux, perd
+  terreux (fiches). » ; le tableau des arômes et le radar montent juste sous les bandes, l'α passe après. « Face à face,
+  même masse » au dry hop (même IBU ailleurs) ; « à froid, sans IBU » sur la bande de Nugget. À 60′ : l'ordre de u4 et
+  « À 60′, surtout l'amertume », « l'arôme compte peu » (Lire ces scores) restent.
+- **Comparer, d'un toucher** : un « + » (40 px sous le doigt, rond léger de 30 px ; ✓ noir une fois ajouté) au bout de
+  chaque ligne, la grammaire de q2b ; il ajoute à la liste partagée (celle de Suggérer) sans quitter la vue.
+  « Comparer (n) › » sous l'échelle ouvre `#/comparer?h=…&pin=nugget` : Nugget épinglé en colonne 1 (⌖), 4 colonnes au plus.
+- **Remplacer et fermer** : inchangés (pied fixe « Annuler · Remplacer › », croix en haut, D109, D120).
+- Légende « ? » rangée à droite de l'en-tête de l'échelle (sa feuille s'ouvre vers la gauche) ; elle dit les crans et le « + ».
+- Limites : au whirlpool et au dry hop, `substitutes()` a les mêmes poids (contexte « arôme ») : le classement est le même,
+  seuls la dose et le stock changent. Aller à Comparer quitte le brouillon (la Coquille l'abandonne hors d'un outil) :
+  revenir rouvre Substituer à 60′.

@@ -62,6 +62,28 @@ export default {
     { nom: 'Annuler', faire: 'toucher', cible: '[data-role="annuler"]', attendre: '[data-ecran="ma-biere"]',
       verifier: (p) => (p.etat.brouillon === null && JSON.stringify(p.etat.recette) === window.__pqSubAvant && location.hash === '#/ma-biere') || '« Annuler » : brouillon ' + (p.etat.brouillon ? 'ouvert' : 'nul') + ', route ' + location.hash + (JSON.stringify(p.etat.recette) === window.__pqSubAvant ? '' : ', recette changée') },
     { nom: 'rouvrir', faire: 'toucher', cible: '[data-role="pont-substituer"][data-houblon="beermaverick-nugget"]', attendre: '[data-ecran="substituer"]' },
+    // D127 : la puce de moment (un toucher) relit les remplaçants au dry hop, dans le moteur ; « + » envoie à Comparer.
+    { nom: 'puce dry hop', faire: 'toucher', cible: '[data-ecran="substituer"] [data-moment="dryhop"]',
+      verifier: (p) => {
+        const a = p.etat.brouillon?.recette.additions.find((x) => x.id === 'a1');
+        if (!a || a.moment !== 'dryActive') return `moment du brouillon : ${a && a.moment}`;
+        if (p.etat.recette.additions.find((x) => x.id === 'a1').moment !== 'b60') return 'la recette inscrite a bougé';
+        const moteur = p.moteur.remplacants(p.etat.brouillon.recette, 'a1', 400).map((r) => r.cle);
+        const rangs = [...document.querySelectorAll('[data-ecran="substituer"] [data-remplacant]')].map((e) => e.dataset.remplacant);
+        if (!rangs.length || rangs.some((k) => !moteur.includes(k))) return 'remplaçants hors du moteur au dry hop';
+        if (!/au dry hop/.test(document.querySelector('[data-role="contexte"]')?.textContent ?? '')) return 'tête sans « au dry hop »';
+        return /au dry hop/.test(document.querySelector('[data-role="choix-dock"]')?.textContent ?? '') || 'le pied ne dit pas « au dry hop »';
+      } },
+    { nom: '+ Comparer', faire: 'toucher', cible: '[data-ecran="substituer"] [data-role="ajout-comparer"]',
+      verifier: (p) => {
+        // Le jeu touche la dernière cible visible (jouer-parcours, cible()).
+        const k = [...document.querySelectorAll('[data-ecran="substituer"] [data-role="ajout-comparer"]')].at(-1).dataset.houblonComparer;
+        if (!p.etat.aComparer.includes(k)) return `${k} absent de la liste de comparaison`;
+        const pont = document.querySelector('[data-role="pont-comparer-substituer"]');
+        return (pont && !pont.disabled && /Comparer \(2\)/.test(pont.textContent)) || `pont : ${pont && pont.textContent}`;
+      } },
+    { nom: 'puce 60', faire: 'toucher', cible: '[data-ecran="substituer"] [data-moment="chaud"]',
+      verifier: (p) => { const a = p.etat.brouillon.recette.additions.find((x) => x.id === 'a1'); return (a.moment === 'b60' && a.minutes === 60) || `retour à 60′ : ${a.moment} ${a.minutes}`; } },
     { nom: 'Remplacer', faire: 'toucher', cible: '[data-role="pont-remplacer"]', attendre: '[data-ecran="ma-biere"]',
       verifier: (p) => {
         const a = p.etat.recette.additions.find((x) => x.id === 'a1');
