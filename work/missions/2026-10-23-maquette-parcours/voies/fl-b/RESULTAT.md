@@ -40,3 +40,34 @@ DÉCISION À PRENDRE : la règle « signe » (fiches qui citent, place dans la f
 CONNAISSANCE : sur les 5 houblons montrés, les « Agrumes » et « Épicé » de Nelson Sauvin et le « Fruité » de Motueka et de Cascade ne sont que des catégories Hopsteiner (ligne « Familles déclarées »), sans aucun mot de fiche ; « vin blanc » est nommé en premier par ses deux fiches (7 houblons sur 318 le disent) ; ses 4 remplaçants calculés (Boomerang, Herkules, Phoenix, Pacific Jade) ne disent ni vin blanc, ni raisin, ni groseille.
 
 LEÇON PROPOSÉE : aucune
+
+## Passe flb5
+
+Ses mots, sur flb5 : « Ça j'aime beaucoup même si encore un peu fouillis et pas 100% clean ». Puis : « Le header est inutile, header type 10 ».
+Les trois versions gardent l'idée de flb5 : sa signature prouvée face à ses 4 remplaçants calculés. Toutes prennent l'en-tête de flz4 tel quel, à la place de celui de flb5. Toutes sont capturées sur Nelson Sauvin, puis Motueka.
+
+- **flb5b** — froide — la même matrice, nettoyée.
+  - Le bandeau dit « Lui seul : … » et rien d'autre.
+  - Grille à colonnes égales, la colonne « lui » entre deux règles noires.
+  - Un seul gris pour les remplaçants : rond plein, ou case vide.
+  - 74 mots visibles (Nelson Sauvin), 73 (Motueka) ; plus petit texte : 11 px.
+- **flb5c** — tiède — dans la fiche g1, sous le radar, à la place de la liste.
+  - Une ligne g1 par mot ; « lui seul » en pastille noire, ou « aussi chez … » dessous.
+  - 81 mots visibles (Nelson Sauvin), 90 (Motueka) ; plus petit texte : 12 px.
+- **flb5d** — chaude — deux cercles : lui, ses remplaçants.
+  - Sa part seule en grand ; au milieu, ce qu'ils partagent, avec un point gris par remplaçant ; à droite, ce qu'eux seuls disent.
+  - 72 mots visibles (Nelson Sauvin), 68 (Motueka) ; plus petit texte : 11 px.
+
+Recompté sur les captures :
+- Nelson Sauvin, lui seul : vin blanc, raisin et groseille à maquereau (2/2), sauvignon blanc (1/2). Agrumes (classé) est chez 3 des 4 remplaçants, épicé (classé) chez les 4.
+- Motueka, lui seul : mojito (2/2) et zeste de citron (1/2). Citron vert est chez Shaddock et Cascade.
+
+Contrôles :
+- `controle-commun … flb5b flb5c flb5d --page=etat.html --sans=mots` → COMMUN OK. Le premier essai était en ECHEC couleurs, avec une seule teinte franche sur Nelson Sauvin. Corrigé par la ligne des familles non décrites, en pictos « ? » à leur couleur, sous le radar.
+- `mots-premier-ecran --max=80` : 110, 120 et 110 mots en comptant l'étape et la bande des houblons, donc au-dessus de 80. Avec `--sans-donnees` : 67, 78 et 63, MOTS OK.
+
+Captures, ouvertes à côté de flb5 et de g1 : `captures/flb5b-premier-ecran.png`, `flb5b-motueka.png`, `flb5c-premier-ecran.png`, `flb5c-motueka.png`, `flb5d-premier-ecran.png`, `flb5d-motueka.png`.
+
+Écarts à flz4 : l'α est celui de g1 (Hopsteiner 2025) et le lot hors de ses fiches reste en orangé. Les cinq houblons passent dans une bande fixée en bas, en navigation de maquette.
+
+Prédiction : « flb5b c'est propre là, flb5d les cercles on comprend direct ».
