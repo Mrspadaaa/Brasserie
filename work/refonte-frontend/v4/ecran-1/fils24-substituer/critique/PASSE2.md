@@ -49,3 +49,29 @@ Critique Fable, calibré (portrait v2 ; biais connu : trop clément, donc dans l
 
 ## Passe satisfaisante ?
 Non : trois REJET (sbz7b, sbb7b, sbz6b), chacun avec une correction précise et courte. Deux ACCEPTÉ (sbc1b, sbb5b) à phrase positive. Passe 3 sur les trois rejetées ; sbc1b et sbb5b reçoivent les greffes sans relance obligatoire.
+
+## Passe 3 (24.10) — sbz7c, sbz6c, sbb7c, après les REJET de la passe 2
+
+Jugé sur la paire 60′ / whirlpool, la puce jouée (`-puce`, `-feuille-moment`), un toucher par page (`-toucher`, `-geste`), les pages entières ; deux nombres recomptés par page. `sbz7c/etat.html` vérifié : « nez » n'apparaît qu'au whirlpool (`wp ? ' · nez ' : ' · rien d'étranger '`) ; `sbz6c/etat.html` : « cher pour amériser » 3 fois.
+
+### Recomptes
+| page | nombre 1 | nombre 2 | verdict |
+|---|---|---|---|
+| sbz7c | Nelson à 60′ ~86 = 0,6 × 86 + 0,2 × 72 + 0,2 × 100 = 51,6 + 14,4 + 20 ✓ (« rien d'étranger 100 ») | Helios au whirlpool ~12–15 : 16,8 / 13 × 9,04 = 11,7 ; 21 / 13 × 9,04 = 14,6 ✓ ; Nelson au whirlpool 29–89 : 0,1 × 74 + 0,3 × 72 = 29 ; + 60 = 89 ✓ | juste |
+| sbz6c | Sabro « 46 g = ~62 IBU → ~45 g pour 60 » : 61,6 × 44,6 / 46 = 59,7 ✓ | Target 213e à 60′ (score 94, « cher pour amériser ») → 2e au whirlpool (~84) ; Galaxy 80e → 117e (~59) : conformes au moteur de la NOTE ✓ | juste, un seul rang par moment |
+| sbb7c | Nelson à 60′ ~66–86 : 0,6 × 86 + 0,2 × 72 = 66 ; + 0,2 × 100 = 86 ✓, la raison écrite (« arôme du moteur 100, d'où ~66–86 ») | Citra cryo au whirlpool « 46 g = ~17 IBU → ~24 g · reste 41 g » : 24,8 / 13 × 9,04 = 17,2 ; 17,2 × 24,1 / 46 = 9,0 ; 65 − 24 = 41 ✓ | juste |
+
+### Verdicts
+- **sbz7c** (gramme pour gramme) — **ACCEPTÉ**. Les deux défauts du REJET sont levés : la carte s'ouvre en place sous la ligne touchée (`-toucher.png` : Galaxy ouverte sous Galaxy, différente de `-60.png`) ; à 60′ la composante s'appelle « rien d'étranger 100 », « nez 25 » seulement au whirlpool ; pictos entiers sur une troisième ligne, chiffres plus barrés par le trait. Nelson au whirlpool en plage « 29–89 (arôme ?) » avec sa raison. Perd encore de u4 : les mots de l'échelle (partiel / proche / très proche) ; le radar à la fiche seulement. Signalé, sans rejet : au whirlpool, Nelson reste la ligne sélectionnée au repos et sa carte s'ouvre en dernière position, sous le pied (`-whirlpool-page.png`) ; au changement de moment, sélectionner le premier du moteur (Target) pour que la carte soit en haut. Phrase prédite : « Là on comprend direct pourquoi 62 g, et la carte s'ouvre où je touche. Pas mal du tout. Au whirlpool Nelson tout en bas, ok c'est honnête. »
+- **sbz6c** (la file des 318) — **ACCEPTÉ**. Les deux défauts sont levés : l'écran est plein (table « achat » et « stock » : rang, α, dose ~, score, grammes et manque, jusqu'au pied dans les deux états) ; Target porte « 213e · cher pour amériser » (Citra cryo « 215e · cher pour amériser »), un seul rang et un seul score par moment ; les mots de l'échelle sont sous l'axe, plus barrés ; la puce « 46 g → ~60 IBU égal » n'a plus de curseur (D98). Le toucher (Galaxy) réécrit la carte (« 80 à 60′ · 117 au whirlpool », bande 16D en trait). Signalé, sans rejet : à 60′ les mâts de Galaxy et Nelson traversent « pour amériser » des drapeaux de Citra cryo et Target (lisible, mais c'est ce qu'il appelle « bordélique ») ; le drapeau de Galaxy au whirlpool touche la barre « autres 83 % » de Nelson. Phrase prédite : « Voir où tombe mon stock dans les 318 et la file qui se renverse, c'est vachement bien. Target 213e parce que cher pour amériser, ça je comprends. Les lignes passent sur le texte, à nettoyer. »
+- **sbb7c** (la cible) — **ACCEPTÉ**. Le défaut D10 est levé : quatre boîtes par côté, entières dans le cadre et dans 390 px aux deux états (Nelson « ~66–86 📦 100 g », Sabro « ~93 📦 30 −15 », Yeoman « ~99 🛒 » ; au whirlpool Nelson « ~29–89 📦 100 g »), aucune collision point / boîte. Légende en mots (« suffit · stock court · score ouvert · très proche (80) », D90). Nelson jamais « ~42 » sec : ~66–86 à 60′, ~29–89 au whirlpool, la raison dans le détail. Le geste (Galaxy) réécrit détail, ma bière et pied. Perd encore de u4 : la liste ordonnée (les boîtes sont rangées par moteur, pas par score lisible) ; les mots de l'échelle sur les boîtes. Signalé : Sabro n'a plus de boîte au whirlpool (5e, dit dans la NOTE) ; le détail est long (le pied à 1 540 px sur 1 688). Phrase prédite : « Ça c'est pas mal du tout, on voit tout de suite qui est en stock et qui est proche. Plus rien de coupé. »
+
+### Classement final des cinq
+1. **sbc1b** (froide) — son u4, enrichi : règle n° 1 ; la paire d'un toucher, Nelson en plage avec sa raison, 12 familles avec « ? ». Reste à faire en reprise : radar et arômes cités à un toucher, mots de l'échelle.
+2. **sbb7c** (chaude) — la réponse en figure, lue en trois secondes, détail complet (α, 3 composantes, autres 83 %, « 46 g = ~44 IBU → ~62 g · reste 38 g · 76e sur 318 »).
+3. **sbz7c** (chaude) — le piège de la dose et sa correction sur la même ligne, carte en place, tout recompte juste ; la leçon « α fait la dose » la plus claire du lot.
+4. **sbz6c** (chaude) — le renversement de la file, l'image la plus forte ; écran plein ; mâts sur le texte à nettoyer.
+5. **sbb5b** (tiède) — trois raisons, honnête, la paire change bien ; n'en montre que trois et perd l'échelle ; Nelson ~42 sec au whirlpool reste à passer en plage (greffe de sbc1b / sbb7c).
+
+### Le lot est-il satisfaisant ?
+**Oui.** Aucun REJET ; les cinq candidates ont une phrase prédite positive ; chaque REJET de la passe 2 a sa correction vérifiée sur capture et dans le code. Les restes signalés (mots de l'échelle de u4, radar à un toucher, sélection au changement de moment dans sbz7c, mâts de sbz6c, Nelson ~42 de sbb5b) vont dans la reprise après son choix, pas dans une passe 4. À montrer : les cinq (sbc1b, sbb7c, sbz7c, sbz6c, sbb5b) sur la paire 60′ / whirlpool, et derrière, les 48 v0 dans l'ordre du classement (M13).

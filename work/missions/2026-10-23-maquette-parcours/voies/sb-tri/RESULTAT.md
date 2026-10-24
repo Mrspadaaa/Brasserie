@@ -29,3 +29,18 @@ Remplaçantes : sbb4, sbu1, sbb5.
 Les 48 sont ACCEPTÉ au sens du tri (ordonnées, pas écartées) ; le classement et les classes prédites sont dans SYNTHESE.md.
 
 LEÇON PROPOSÉE : un panel « minimaliste » tient ses 48 concepts, mais deux séries sur six ont posé un bloc commun à toutes leurs pages (12 familles à ~0 ; trois cartes de moment) : `controle-panel` ne le voit pas (ressemblance 0,82 à 0,87), seul l'œil le voit. Ajouter au contrôle de panel une mesure de bloc répété à l'intérieur d'une série (même zone, mêmes pixels sur 6 pages et plus), ou demander au brief de série « aucun bloc identique sur plus de la moitié des pages ».
+
+## Passe 2 (24.10) — `work/refonte-frontend/v4/ecran-1/fils24-substituer/critique/PASSE2.md`
+Jugé sur la paire 60′ / whirlpool, puce jouée, un toucher par page, deux nombres recomptés par page (tous justes). La passe a progressé (paire, Annuler, « ~ » et plages, autres 83 %, IBU de sbz7 corrigés) ; elle n'est pas satisfaisante : trois REJET.
+- **sbc1b** (son u4, enrichi) — ACCEPTÉ. « Ça c'est mon u4, en mieux. Le whirlpool change tout, bien. Manque le radar et les arômes face à face. » Attendu en passe 3 : radar et arômes cités à un toucher, mots de l'échelle.
+- **sbz7b** (gramme pour gramme) — REJET : la carte du houblon touché est sous le pied fixe, invisible au premier écran (L12, portrait § 3.1) ; « nez 100 » rejoue l'« arôme 100 » du plancher. Correction : carte en place sous la ligne, « rien d'étranger » ou plage ; pictos non coupés.
+- **sbb7b** (la cible) — REJET : boîtes tranchées par le cadre à 60′ (Sabro, Yeoman) et au whirlpool (Nelson), Citra cryo empiète sur Sabro (D10 ; conseil : « aucune collision »). Correction : cadre plus haut ou 4 boîtes par côté ; Nelson ~42 en plage ; légende nommée.
+- **sbz6b** (la file des 318) — REJET : 0,69 d'écran couvert, vide sous « Si tu achètes » (D4 ≥ 0,80) ; Target ~94 / 213e sans raison à l'écran (D41, honnêteté). Correction : « Ma stout après » et les cinq à acheter dans le vide ; « cher pour amériser » sur le drapeau.
+- **sbb5b** (trois raisons) — ACCEPTÉ. « J'aime les trois raisons, et au whirlpool ça change bien. Mais y'en a que trois ? » Attendu : Nelson ~42 en plage, D4 à mesurer.
+
+## Passe 3 (24.10) — `critique/PASSE2.md`, section « Passe 3 »
+Les trois rejetées sont corrigées, vérifiées sur captures et code, nombres recomptés justes. **Lot satisfaisant** : aucun REJET, phrase positive pour les cinq.
+- **sbz7c** (gramme pour gramme) — ACCEPTÉ. Carte en place sous la ligne touchée ; « rien d'étranger » à 60′ ; Nelson 29–89 au whirlpool. Signalé : au whirlpool, sélectionner le premier du moteur pour que la carte soit en haut.
+- **sbz6c** (la file des 318) — ACCEPTÉ. Écran plein ; « 213e · cher pour amériser » ; un rang par moment. Signalé : mâts sur « pour amériser » à 60′.
+- **sbb7c** (la cible) — ACCEPTÉ. Boîtes entières dans 390 px aux deux états, légende en mots, Nelson en plage.
+- Classement final : sbc1b, sbb7c, sbz7c, sbz6c, sbb5b (sbc1b et sbb5b acceptées en passe 2).
