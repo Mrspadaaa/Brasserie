@@ -645,3 +645,7 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   `captures/base-jouable.png`), et non de r6a. Obligatoire : choisir quand comparer (60′, 10′, dry hop…), les hors 16D bien montrés, les
   huiles, moins de texte (≤ 100 mots au premier écran, la base en a 114), et tous ses commentaires sur Comparer. La planche r6a++ reste
   montrée, marquée « bâtie sur r6a ». Dérogation M13 : « Refait une série » (trois séries de quatre, critique, planche).
+- D67 (pilote, 25.10, lecture du critère de D142) : « Pas normalisé au timing. Pareil pour les barre » se lit par famille :
+  au moment choisi, la plus grande barre de chaque famille non nulle remplit 40 % de sa piste au moins (option A de
+  `voies/cm-normalise/RESULTAT.md`). Un apport quasi nul (sous 0,05 cran) ne se grossit pas : il s'affiche « ~0 », sans barre,
+  et n'est pas jugé. Réversible : `--barres=globale` rend la lecture à la lettre.
