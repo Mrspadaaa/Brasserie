@@ -208,7 +208,7 @@ Chemins de « Possède » : relatifs à la racine du dépôt ; `voies/…` est r
 ## Reprise (25.10, soir) — Comparer et le radar
 - Son choix pour Comparer : **cmc2g**, retouché en **cmc2h** (publié). Registre des choix mis à jour (radar rdg5, chaque axe à son échelle, D68).
 - Règles nouvelles : D68 (Au style : style et moment ; Absolu : aucune normalisation), D143 à D149, note cerveau/sources/beermaverick-radar.
-- Fait : rb-radar-commun (b0d517c1). En vol : rc-registres-comparer (registres de Comparer sur cmc2g, D69 à écrire) et rb2-ma-biere (mission intégration : RadarBase dans l'app, Ma bière). Attend son choix : transition cmc2j ou cmc2k, puis intégrer la version choisie dans la maquette.
+- Fait : rb-radar-commun (b0d517c1). En vol : rc-registres-comparer (registres de Comparer sur cmc2g, D69 à écrire) et rb2-ma-biere (mission intégration : RadarBase dans l'app, Ma bière). Son choix : **cmc2k** (bande teintée), avec tous ses mots triés du plus fort au plus faible (D151) ; voie t15a-comparer (mission intégration) : la maquette passe à cmc2k, puis Comparer dans l'app (#174).
 - Ensuite : Ma bière (RadarBiere de l'app) sur la baseline, puis T13/T15 de l'intégration avec ces écrans.
 
 ## Pages
