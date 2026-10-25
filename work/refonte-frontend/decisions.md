@@ -649,3 +649,8 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   au moment choisi, la plus grande barre de chaque famille non nulle remplit 40 % de sa piste au moins (option A de
   `voies/cm-normalise/RESULTAT.md`). Un apport quasi nul (sous 0,05 cran) ne se grossit pas : il s'affiche « ~0 », sans barre,
   et n'est pas jugé. Réversible : `--barres=globale` rend la lecture à la lettre.
+- D68 (le brasseur, 25.10 : « Attention à la normalisation, elle est en terme de style et de timing toujours de style mais
+  dynamique en terme de timing. SI choisi absolu, plus de normalisation, pour le radar et pour les barre et le reste !! ») :
+  règle transversale de toutes les vues. « Au style » : lecture par rapport au style, échelle qui suit le moment choisi
+  (radar et barres ; D67 pour les barres). « Absolu » : aucune normalisation, nulle part — valeurs brutes en crans, échelle
+  fixe commune à tous les moments et à tous les axes, barres et nombres bruts. Précise D67 (qui ne vaut qu'« Au style »).
