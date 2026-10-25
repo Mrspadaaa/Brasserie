@@ -1,6 +1,7 @@
 // Fiche détaillée d'un houblon (appui long, survol long) : uniquement des données du dépôt, sourcées ;
 // null avec une raison quand la donnée manque. Aucune valeur inventée.
-import { STOCK, hopRef } from './data';
+import { stock as stockDuMoteur, hopRef } from './data';
+import { nombreFr } from './nombres';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { describeFamilies, familyWords } from './hops';
 import { additionIbu, MOMENTS, type Recipe } from './recipe';
@@ -63,7 +64,7 @@ export function hopSheet(key: string, ctx: HopSheetContext) {
       const cold = MOMENTS[a.moment].timing === 'fermentation' || MOMENTS[a.moment].timing === 'postFermentation';
       return { scenario, additionId: a.id, moment: a.moment, momentLabel: MOMENTS[a.moment].label, ...(a.day ? { jour: `J+${a.day}` } : {}), grams: a.grams, ibu: cold ? null : Math.round(ibu.value * 10) / 10 };
     })),
-    ibuParGramme: { base: `${ctx.ibuBase.volumeL} L, DI ${ctx.ibuBase.og.toLocaleString('fr-CH', { minimumFractionDigits: 3 })}, ébullition ${ctx.ibuBase.boilMin} min`,
+    ibuParGramme: { base: `${ctx.ibuBase.volumeL} L, DI ${nombreFr(ctx.ibuBase.og, { minimumFractionDigits: 3 })}, ébullition ${ctx.ibuBase.boilMin} min`,
       moments: ibuByMoment(key, 1, ctx.ibuBase).map((m) => ({ code: m.code, ibuPerGram: m.ibuPerGram, ...(m.raison ? { raison: m.raison } : {}) })) },
     gout: { aime: liked.has(key) || liked.has(h.varietyId), exclu: excludedVarieties.has(h.varietyId) },
   };
@@ -86,11 +87,11 @@ function computedSubstitutes(key: string, ctx: HopSheetContext) {
     methode: SUBSTITUTION_METHOD.nom, date: SUBSTITUTION_METHOD.date, statut: SUBSTITUTION_METHOD.statut,
     contexte: all.contexte, poids: all.poids,
     reference: { scenario: use?.scenario ?? null, moment: all.reference.moment, momentLabel: all.reference.momentLabel, grams: all.reference.grams, ibu: all.reference.ibu,
-      base: use ? `ajout de la recette ${use.scenario}` : `1 g à 60′ (${ctx.ibuBase.volumeL} L, DI ${ctx.ibuBase.og.toLocaleString('fr-CH', { minimumFractionDigits: 3 })}) : la dose se lit en g par g` },
+      base: use ? `ajout de la recette ${use.scenario}` : `1 g à 60′ (${ctx.ibuBase.volumeL} L, DI ${nombreFr(ctx.ibuBase.og, { minimumFractionDigits: 3 })}) : la dose se lit en g par g` },
     candidats: all.candidats, manque: all.manque,
     remplacants: all.remplacants.slice(0, 5).map(compact),
     enStock: stockFirst.remplacants.filter((s) => s.stock.etat === 'en stock').slice(0, 3).map((s) => ({ ...compact(s), rangGeneral: generalRank.get(s.key)! })),
   };
 }
 export const sheetKeys = (keys: string[]) => [...new Set(keys)].filter((k) => !!hopRef(k)).sort((a, b) => hopRef(a)!.name.localeCompare(hopRef(b)!.name, 'fr'));
-export const stockKeyOf = (varietyId: string) => STOCK.find((s) => s.varietyId === varietyId)?.key ?? varietyId;
+export const stockKeyOf = (varietyId: string) => stockDuMoteur().find((s) => s.varietyId === varietyId)?.key ?? varietyId;

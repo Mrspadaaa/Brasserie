@@ -34,8 +34,14 @@ export interface StockHop {
   alpha: number | null; alphaFrom: string | null; items: string[];
 }
 
-export const CATALOGUE = protoData.varieties as unknown as CatalogueHop[];
-export const STOCK = protoData.stock as unknown as StockHop[];
+/** Données injectées dans un moteur (B2, #164) : la connaissance des variétés (fiches, huiles, descripteurs) et le
+ * stock du brasseur. Les connaissances V5.5 (axes, levures, modèle, solveur) restent des documents versionnés, communs. */
+export interface DonneesMoteur { catalogue: CatalogueHop[]; stock: StockHop[] }
+/** Données par défaut : celles du prototype (fixture). Seuls la fabrique et le moteur par défaut les lisent. */
+export const DONNEES_FIXTURE: DonneesMoteur = { catalogue: protoData.varieties as unknown as CatalogueHop[], stock: protoData.stock as unknown as StockHop[] };
+/** Les fixtures, pour les écrans qui les citent (cas du parcours) ; aucun module du moteur ne les lit. */
+export const CATALOGUE = DONNEES_FIXTURE.catalogue;
+export const STOCK = DONNEES_FIXTURE.stock;
 export const STOCK_SOURCE = { fixture: protoData.fixture, note: protoData.fixtureSource, unlinked: protoData.unlinked as string[] };
 
 // Levures du programme d'essais (LalBrew Pomona…) : seulement leurs fiches de souche, pas les essais.
@@ -51,10 +57,54 @@ const variety = (h: CatalogueHop): HopVariety => ({ id: h.id, name: h.name, alia
  * « Cryo Hops » est un produit cryo ; les autres articles ne disent pas leur forme. */
 const lot = (s: StockHop): HopLot => ({ id: `stock:${s.key}`, varietyId: s.varietyId, name: s.items.join(' + '), form: s.form === 'cryo' ? 'cryo' : 'unknown', analysis: [] });
 
-export const ENGINE_DATA: HopEngineData = { varieties: CATALOGUE.map(variety), lots: STOCK.map(lot), knowledge };
-export const VARIETY_BY_ID = new Map(ENGINE_DATA.varieties.map((v) => [v.id, v]));
-export const CATALOGUE_BY_ID = new Map(CATALOGUE.map((h) => [h.id, h]));
-export const STOCK_BY_KEY = new Map(STOCK.map((s) => [s.key, s]));
+/** Contexte d'un moteur : ses données, leurs index et ses caches. Un par moteur, jamais partagé entre deux jeux de données. */
+export interface Contexte {
+  donnees: DonneesMoteur;
+  catalogue: CatalogueHop[]; stock: StockHop[];
+  engineData: HopEngineData;
+  varietyById: Map<string, HopVariety>; catalogueById: Map<string, CatalogueHop>; stockByKey: Map<string, StockHop>;
+  /** Clés des articles du stock qui ne sont pas une variété du catalogue (Citra cryo…), dans l'ordre du stock. */
+  stockHorsCatalogue: string[];
+  /** Valeurs dérivées et caches bornés du moteur, par nom (local). */
+  locaux: Map<string, unknown>;
+}
+export function contexte(donnees: DonneesMoteur): Contexte {
+  const { catalogue, stock } = donnees;
+  const engineData: HopEngineData = { varieties: catalogue.map(variety), lots: stock.map(lot), knowledge };
+  const catalogueById = new Map(catalogue.map((h) => [h.id, h]));
+  return {
+    donnees, catalogue, stock, engineData, catalogueById,
+    varietyById: new Map(engineData.varieties.map((v) => [v.id, v])),
+    stockByKey: new Map(stock.map((s) => [s.key, s])),
+    stockHorsCatalogue: stock.map((s) => s.key).filter((k) => !catalogueById.has(k)),
+    locaux: new Map(),
+  };
+}
+
+// Contexte actif : celui du moteur dont une fonction est en cours (dansContexte), sinon le moteur par défaut (fixtures).
+// Le moteur est synchrone : un appel ne rend la main qu'une fois fini ; le contexte ne passe donc jamais d'un moteur à l'autre.
+let actif: Contexte | null = null;
+let parDefaut: Contexte | null = null;
+export const contexteParDefaut = (): Contexte => (parDefaut ??= contexte(DONNEES_FIXTURE));
+export const courant = (): Contexte => actif ?? contexteParDefaut();
+/** Exécute f dans le contexte c, puis rétablit le précédent (même en cas d'erreur). */
+export function dansContexte<T>(c: Contexte, f: () => T): T {
+  const avant = actif;
+  actif = c;
+  try { return f(); } finally { actif = avant; }
+}
+/** Valeur dérivée des données du moteur actif, construite une fois par moteur (index, cache borné, prédicteur). */
+export function local<T>(nom: string, init: () => T): T {
+  const c = courant();
+  let v = c.locaux.get(nom) as T | undefined;
+  if (v === undefined) { v = init(); c.locaux.set(nom, v); }
+  return v;
+}
+export const catalogue = (): CatalogueHop[] => courant().catalogue;
+export const stock = (): StockHop[] => courant().stock;
+export const engineData = (): HopEngineData => courant().engineData;
+export const varietyById = (): Map<string, HopVariety> => courant().varietyById;
+export const stockByKey = (): Map<string, StockHop> => courant().stockByKey;
 
 export interface HopRef {
   key: string; varietyId: string; name: string; stock: StockHop | null; catalogue: CatalogueHop; lotId: string | null;
@@ -63,9 +113,10 @@ export interface HopRef {
 }
 /** Un houblon du stock (clé « id » ou « id:cryo ») ou du catalogue (« id »). */
 export function hopRef(key: string): HopRef | null {
-  const stock = STOCK_BY_KEY.get(key) ?? null;
+  const c = courant();
+  const stock = c.stockByKey.get(key) ?? null;
   const varietyId = stock?.varietyId ?? key.replace(/:cryo$/, '');
-  const catalogue = CATALOGUE_BY_ID.get(varietyId);
+  const catalogue = c.catalogueById.get(varietyId);
   if (!catalogue) return null;
   const alpha = stock?.alpha != null ? { value: stock.alpha, min: stock.alpha, max: stock.alpha, from: stock.alphaFrom ?? 'stock' }
     : catalogue.alpha ? { value: (catalogue.alpha[0] + catalogue.alpha[1]) / 2, min: catalogue.alpha[0], max: catalogue.alpha[1], from: 'plage variétale (Beer Maverick)' } : null;

@@ -1,4 +1,4 @@
-import { CATALOGUE, STOCK, hopRef } from './data';
+import { catalogue as catalogueDuMoteur, stock as stockDuMoteur, hopRef } from './data';
 import { goutsSets, type Gouts } from './gouts';
 import { hopAlpha, hopRole, type HopAlpha } from './roles';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
@@ -72,8 +72,8 @@ export function quickAdds(recipe: Recipe, scale: StyleScale, tasting: Tasting | 
   const tagOf = (f: FamilyId) => (tasted.includes(f) ? `+ ${FAMILY_NAMES[f].toLowerCase()}` : `${FAMILY_NAMES[f].toLowerCase()} exclu (goût)`);
   const ibu0 = recipeIbu(recipe).value;
   const bitter = !options.aromatique && !!scale.ibu && ibu0 < scale.ibu[0];
-  const inStock = new Set(STOCK.map((s) => s.varietyId));
-  const candidates = [...STOCK.map((s) => ({ key: s.key, grams: s.grams as number | null })), ...CATALOGUE.filter((c) => !inStock.has(c.id)).map((c) => ({ key: c.id, grams: null }))]
+  const inStock = new Set(stockDuMoteur().map((s) => s.varietyId));
+  const candidates = [...stockDuMoteur().map((s) => ({ key: s.key, grams: s.grams as number | null })), ...catalogueDuMoteur().filter((c) => !inStock.has(c.id)).map((c) => ({ key: c.id, grams: null }))]
     .filter((c) => !excludedVarieties.has(hopRef(c.key)!.varietyId));
   const fits = new Map(styleFit(candidates.map((c) => c.key), scale).map((r) => [r.key, r]));
   const rows = candidates.map((s): QuickAdd => {

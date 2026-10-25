@@ -7,7 +7,7 @@
 // Une valeur absente reste absente (« inconnu »), jamais 0. Plage = du plus bas au plus haut des sources.
 import composes from '../../../../../../src/data/hopV4/composes-houblon.json';
 import comparatifs from '../../../../../../src/data/hopV4/comparatifs-dryhop.json'; // copie de work/…/fils21-choisir/donnees (src/data/hopV4/copies-de-work.mjs)
-import { hopRef, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { hopRef, nombreFr, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 
 export interface ValeurReelle {
   lo: number; hi: number | null;
@@ -30,7 +30,8 @@ type Variete = {
 };
 const VARIETES = (composes as unknown as { varietes: Record<string, Variete> }).varietes;
 
-const fr = (x: number, d = 2) => x.toLocaleString('fr-CH', { maximumFractionDigits: d });
+// Formateur en cache (t2, optimisation 3 ; #164) : même texte que l'ancien appel par nombre.
+const fr = (x: number, d = 2) => nombreFr(x, { maximumFractionDigits: d });
 const court = (id: string) => (/^bm-/.test(id) ? 'BM' : /^hs-/.test(id) ? 'HS' : id);
 /** Titre court d'une référence (« Lafontaine 2018 »). */
 export function titreRef(id: string): string {

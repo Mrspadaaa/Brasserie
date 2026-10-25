@@ -6,7 +6,7 @@
 // Une mesure ne se montre qu'au moment qu'elle documente (dry hop actif ou après fermentation) ; sinon, ou si le
 // houblon n'en a pas : null, et l'écran dit « ? », jamais une valeur d'un autre houblon.
 // Place future : une table de mesures sourcées de l'app (src/domain/hops/), servie par l'adaptateur (besoin socle).
-import { verifications } from '../../../../../../src/domain/hopIndex/v4';
+import { nombreFr, verifications } from '../../../../../../src/domain/hopIndex/v4';
 import comparatifs from '../../../../../../src/data/hopV4/comparatifs-dryhop.json'; // copie de work/…/fils21-choisir/donnees (src/data/hopV4/copies-de-work.mjs)
 import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import type { Seg } from './frise';
@@ -26,7 +26,8 @@ interface MesureEtude { variete: string; compose?: string; valeur: number | stri
 interface Etude { id: string; ref: string; conditions: { moment: string | null }; mesures: MesureEtude[] }
 
 const norm = (s: string) => s.toLowerCase().replace(/[-\s]+/g, ' ').trim();
-const fr = (x: number) => x.toLocaleString('fr-CH', { maximumFractionDigits: x < 10 ? 1 : 0 });
+// Formateur en cache (t2, optimisation 3 ; #164) : même texte que l'ancien appel par nombre.
+const fr = (x: number) => nombreFr(x, { maximumFractionDigits: x < 10 ? 1 : 0 });
 const FAMILLE_COMPOSE: Record<string, FamilyId> = { linalol: 'floral', geraniol: 'floral', myrcene: 'resin', humulene: 'herbal', caryophyllene: 'spice', '4MMP': 'tropical', '3MH': 'citrus', '3M4MP': 'citrus' };
 const NOM_COMPOSE: Record<string, string> = { geraniol: 'géraniol', myrcene: 'myrcène', humulene: 'humulène', caryophyllene: 'caryophyllène' };
 

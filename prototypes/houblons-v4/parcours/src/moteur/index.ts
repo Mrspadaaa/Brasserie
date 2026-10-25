@@ -4,15 +4,14 @@
 // toujours SIMULÉ (couche de lecture profil-simule.ts, « ~ ») sauf la famille dégustée ; α en % m/m ; doses en g.
 // Inconnu ≠ 0 : une valeur qu'on ne sait pas est `null` avec sa raison, jamais un zéro.
 import {
-  FAMILIES, FAMILY_NAMES, MOMENTS, cransOf, describeFamilies, familyWords, getStyleScale, hopAlpha, hopRef, hopRole,
-  simulerCas, substitutes, proposeVoies,
+  FAMILIES, FAMILY_NAMES, MOMENTS, cransOf, getStyleScale,
   type Direction, type VoieResult,
   type AjoutSimule, type CasSimule, type FamilyId, type FamilyStatus, type MomentSimule, type ProfilFamilles, type Recipe, type StyleScale,
 } from '../../../../../src/domain/hopIndex/v4';
-import { ibuPerGram, ibuPerGramAt, recipeProfile } from '../../../../../src/domain/hopIndex/v4/recipe';
+import { ibuPerGram, ibuPerGramAt } from '../../../../../src/domain/hopIndex/v4/recipe';
 import type { AjoutPouvoir, RecettePouvoir } from '../../../../../src/domain/hopIndex/v4/pouvoir';
 import { CONDITIONS } from '../donnees/cas';
-import { alphaDeAjout, alphaDeCle, catalogueDuMoteur, donnees, proposable, siDonneesChangent, stockLibre } from './donnees';
+import { alphaDeAjout, alphaDeCle, catalogueDuMoteur, donnees, moteur, proposable, siDonneesChangent, stockLibre } from './donnees';
 import { placer, quandDe } from '../etat/quand';
 import type { AjoutParcours, Quand, RecetteParcours } from '../etat/types';
 import { memo, viderCaches } from './mesure';
@@ -98,7 +97,7 @@ const ARÔME_EBULLITION: Record<number, MomentSimule> = { 60: 'b60', 10: 'b10' }
 export function versSimule(a: AjoutParcours, recette: RecetteParcours): AjoutSimule | { raison: string } {
   const q = quandDe(a, recette);
   const base = { id: a.id, houblon: a.hopKey, dose_gL: a.grams / recette.volumeL };
-  if (!hopRef(a.hopKey)) return { raison: 'houblon absent des fiches du moteur : arôme non simulé' };
+  if (!moteur().hopRef(a.hopKey)) return { raison: 'houblon absent des fiches du moteur : arôme non simulé' };
   if (a.momentInconnu) return { raison: a.momentInconnu };
   if (q.type === 'premierMout') return { raison: 'premier moût : arôme non simulé par le moteur' };
   if (q.type === 'whirlpool') return { ...base, moment: 'wp' };
@@ -116,7 +115,7 @@ const memeAjout = (a: AjoutParcours, b: AjoutParcours) =>
   a.hopKey === b.hopKey && a.grams === b.grams && a.moment === b.moment && (a.minutes ?? null) === (b.minutes ?? null) && (a.jours ?? null) === (b.jours ?? null) && (a.day ?? null) === (b.day ?? null);
 
 const profilSansDegustation = memo('profilSansDegustation', (r: RecettePouvoir, levure: string) => cleRecette(r) + levure,
-  (r: RecettePouvoir, levure: string): ProfilFamilles => simulerCas({ id: 'sans', titre: 'sans dégustation', ajouts: [], levure, recette: r, degustation: null, complet: false }).avant);
+  (r: RecettePouvoir, levure: string): ProfilFamilles => moteur().simulerCas({ id: 'sans', titre: 'sans dégustation', ajouts: [], levure, recette: r, degustation: null, complet: false }).avant);
 
 function lu(f: FamilyId, v: { bas: number; centre: number; haut: number; source: 'simulé' | 'dégustation'; inconnu?: string; hautPartiel?: string[] }, sc: StyleScale, decrite = true): FamilleLue {
   const fs = sc.families[f];
@@ -156,7 +155,7 @@ export const lireBiere = memo('lireBiere', (r: RecetteParcours) => cleRecette(r)
     if ('raison' in s) nonSimules.push({ ajoutId: a.id, raison: s.raison }); else ajouts.push(s);
   }
   const rBase = recettePouvoir(recette, base.additions);
-  const cas = simulerCas({ id: 'ma-biere', titre: recette.name, ajouts, levure, recette: rBase, degustation: deg?.tasting ?? null, complet: false });
+  const cas = moteur().simulerCas({ id: 'ma-biere', titre: recette.name, ajouts, levure, recette: rBase, degustation: deg?.tasting ?? null, complet: false });
   let p: ProfilFamilles = cas.apres;
   if (retires.length) {
     const avec_ = profilSansDegustation(rBase, levure);
@@ -166,7 +165,7 @@ export const lireBiere = memo('lireBiere', (r: RecetteParcours) => cleRecette(r)
       return { ...x, bas: Math.max(0, x.bas + d), centre: Math.max(0, x.centre + d), haut: Math.max(0, x.haut + d) };
     }) as ProfilFamilles;
   }
-  const fond = !recette.additions.length && !deg ? recipeProfile(recette as never).profile : null;
+  const fond = !recette.additions.length && !deg ? moteur().recipeProfile(recette as never).profile : null;
   const ibuParAjout = Object.fromEntries(recette.additions.map((a) => [a.id, ibuAjout(a, recette)]));
   const valeurs = Object.values(ibuParAjout);
   const somme = (k: keyof Plage) => valeurs.reduce((s, x) => s + (x.ibu ? x.ibu[k] : 0), 0);
@@ -224,12 +223,12 @@ function houblonInconnu(cle: string): HoublonLu {
   };
 }
 export const houblon = memo('houblon', (cle: string) => cle, (cle: string): HoublonLu => {
-  const h = hopRef(cle);
+  const h = moteur().hopRef(cle);
   if (!h) return houblonInconnu(cle);
-  const a = hopAlpha(cle), plage = h.catalogue.alpha;
-  const role = hopRole(cle);
-  const d = describeFamilies(h.varietyId);
-  const w = familyWords(h.varietyId, h.catalogue);
+  const a = moteur().hopAlpha(cle), plage = h.catalogue.alpha;
+  const role = moteur().hopRole(cle);
+  const d = moteur().describeFamilies(h.varietyId);
+  const w = moteur().familyWords(h.varietyId, h.catalogue);
   const rattaches = new Set(FAMILIES.flatMap((f) => w.mots[f].flatMap((x) => x.mots.map((m) => m.toLowerCase()))));
   const total = rattaches.size + w.sansFamille.length;
   return {
@@ -279,7 +278,7 @@ export const simulerMoment = (recette: RecetteParcours, ajout: AjoutParcours, q:
  * effet à l'écran. Mémoïsé par recette et direction. */
 export const proposer = memo<[RecetteParcours, Direction], VoieResult>('proposer', (r, d) => cleRecette(r) + JSON.stringify(d),
   (recette, direction) => {
-    const res = proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: true });
+    const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: true });
     // Catalogue injecté (app : catalogue de production, #120) : seules les voies dont tous les houblons sont
     // proposables restent. Catalogue du moteur (maquette) : rien n'est filtré.
     return catalogueDuMoteur() ? res : { ...res, voies: res.voies.filter((v) => v.actions.every((x) => x.op === 'retirer' || proposable(x.hopKey))) };
@@ -339,7 +338,7 @@ export const remplacants = memo<[RecetteParcours, string, number?], Remplacant[]
   (recette, ajoutId, limite = 8) => {
     const a = recette.additions.find((x) => x.id === ajoutId);
     if (!a) return [];
-    const res = substitutes(a.hopKey, { moment: a.moment, grams: a.grams, recipe: recette, style: style(recette.styleCode), stockFirst: true, limit: limite });
+    const res = moteur().substitutes(a.hopKey, { moment: a.moment, grams: a.grams, recipe: recette, style: style(recette.styleCode), stockFirst: true, limit: limite });
     return res.remplacants.filter((s) => proposable(s.key)).map((s) => {
       const d = doseRemplacement(recette, a, s.key);
       return {

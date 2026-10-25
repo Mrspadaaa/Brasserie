@@ -1,6 +1,7 @@
 import { checkHopExclusions } from '../solver';
 import { suggestedHopVarieties } from '../styleSelection';
-import { AXES, CATALOGUE, STOCK, VARIETY_BY_ID, YEASTS, hopRef } from './data';
+import { AXES, catalogue as catalogueDuMoteur, local, stock as stockDuMoteur, varietyById, YEASTS, hopRef } from './data';
+import { Lru } from './lru';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { cites } from './hops';
 import {
@@ -95,10 +96,11 @@ const round = (x: number, n = 1) => Math.round(x * 10 ** n) / 10 ** n;
 const nameOf = (key: string) => hopRef(key)?.name ?? key;
 
 // Apport d'un ajout seul : repère central V5.5 à cette dose moins celui à dose nulle (fond de levure).
-const apportCache = new Map<string, Record<FamilyId, number | null> | null>();
+const apportCache = () => local('voies:apport', () => new Lru<Record<FamilyId, number | null> | null>(4096));
 function apport(a: Addition, recipe: Recipe): Record<FamilyId, number | null> | null {
   const key = `${a.hopKey}|${a.moment}|${a.grams}|${recipe.volumeL}|${recipe.yeastId}|${recipe.boilMin}`;
-  if (apportCache.has(key)) return apportCache.get(key)!;
+  const cache = apportCache();
+  if (cache.has(key)) return cache.get(key)!;
   const t = tripletOf(a, recipe);
   const on = predictTriplet(t, {}), off = predictTriplet({ ...t, doseGL: 0 }, {});
   const any = FAMILIES.some((f) => on.profile[f]?.range);
@@ -106,7 +108,7 @@ function apport(a: Addition, recipe: Recipe): Record<FamilyId, number | null> | 
     const c1 = on.profile[f]?.central, c0 = off.profile[f]?.central;
     return [f, c1 !== undefined && c0 !== undefined ? c1 - c0 : null];
   })) as Record<FamilyId, number | null> : null;
-  apportCache.set(key, out);
+  cache.set(key, out);
   return out;
 }
 
@@ -160,24 +162,24 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
 
   // Stock libre = stock − ajouts de la recette (hors ajout remplacé ou modifié).
   const used = (key: string, except?: string) => recipe.additions.filter((a) => a.hopKey === key && a.id !== except).reduce((s, a) => s + a.grams, 0);
-  const free = (key: string, except?: string) => { const s = STOCK.find((x) => x.key === key); return s ? s.grams - used(key, except) : null; };
+  const free = (key: string, except?: string) => { const s = stockDuMoteur().find((x) => x.key === key); return s ? s.grams - used(key, except) : null; };
 
   // Goûts du brasseur : variétés exclues hors du domaine ; familles exclues ajoutées aux exclusions V5.5.
   const { excludedVarieties, excludedFamilies } = goutsSets(options.gouts);
   const allowed = (key: string) => !excludedVarieties.has(hopRef(key)?.varietyId ?? key);
   const avoid = [...new Set([...minus, ...excludedFamilies])];
-  const stockHops = STOCK.filter((s) => (free(s.key) ?? 0) > 0 && allowed(s.key)).map((s) => s.key);
+  const stockHops = stockDuMoteur().filter((s) => (free(s.key) ?? 0) > 0 && allowed(s.key)).map((s) => s.key);
   // À acheter : variétés sans stock libre (épuisées comprises), classées par familles visées citées,
   // puis familles attendues par le style citées, puis usage attesté, puis nom.
-  const available = new Set(STOCK.filter((s) => (free(s.key) ?? 0) > 0).map((s) => s.varietyId));
-  const suggested = new Set(suggestedHopVarieties(CATALOGUE.map((c) => VARIETY_BY_ID.get(c.id)!), style.name).map((v) => v.id));
+  const available = new Set(stockDuMoteur().filter((s) => (free(s.key) ?? 0) > 0).map((s) => s.varietyId));
+  const suggested = new Set(suggestedHopVarieties(catalogueDuMoteur().map((c) => varietyById().get(c.id)!), style.name).map((v) => v.id));
   const expected = style.documented ? FAMILIES.filter((f) => style.families[f].status === 'attendue') : [];
-  const buyPool = (requirePlus: boolean) => CATALOGUE.filter((c) => !available.has(c.id) && allowed(c.id))
+  const buyPool = (requirePlus: boolean) => catalogueDuMoteur().filter((c) => !available.has(c.id) && allowed(c.id))
     .map((c) => ({ c, plus: plus.filter((f) => cites(c.id, f)).length, fit: expected.filter((f) => cites(c.id, f)).length,
       bad: avoid.some((f) => cites(c.id, f)) || FAMILIES.some((f) => style.families[f].status === 'indésirable' && cites(c.id, f)) }))
     .filter((r) => !r.bad && (!requirePlus || r.plus > 0))
     .sort((a, b) => b.plus - a.plus || b.fit - a.fit || Number(suggested.has(b.c.id)) - Number(suggested.has(a.c.id)) || a.c.name.localeCompare(b.c.name, 'fr'))
-    .slice(0, maxBuy).map((r) => STOCK.find((s) => s.varietyId === r.c.id && s.form !== 'cryo')?.key ?? r.c.id);
+    .slice(0, maxBuy).map((r) => stockDuMoteur().find((s) => s.varietyId === r.c.id && s.form !== 'cryo')?.key ?? r.c.id);
 
   let n = 0;
   const evaluate = (type: VoieType, label: string, actions: Action[], changes: Change[], next: Recipe, extraEstimated: string[] = [], effectOverride?: Record<FamilyId, FamilyEffect> | null): Voie => {
@@ -211,7 +213,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     let status: Voie['stock']['status'] = 'suffisant';
     const needed = [...new Set(actions.filter((a) => a.op !== 'retirer' && (a.previousGrams === undefined || a.grams > a.previousGrams || a.previousHopKey)).map((a) => a.hopKey))];
     for (const key of needed) {
-      const s = STOCK.find((x) => x.key === key);
+      const s = stockDuMoteur().find((x) => x.key === key);
       const total = next.additions.filter((a) => a.hopKey === key).reduce((t, a) => t + a.grams, 0);
       if (!s || s.grams <= 0) { status = 'à acheter'; missing.push({ hopKey: key, hopName: nameOf(key), grams: round(total) }); continue; }
       if (s.grams < total - 1e-9) { if (status === 'suffisant') status = 'manque'; missing.push({ hopKey: key, hopName: nameOf(key), grams: round(total - Math.max(0, s.grams)) }); }
@@ -240,7 +242,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     const sideTotal = round(sideEffects.reduce((s, o) => s + o.crans, 0), 2);
     return {
       id: `${type}|${actions.map((a) => `${a.hopKey}@${a.moment}:${round(a.grams)}`).join('+')}`, type, label,
-      domain: needed.every((k) => STOCK.some((s) => s.key === k && s.grams > 0)) ? 'stock' : 'à acheter',
+      domain: needed.every((k) => stockDuMoteur().some((s) => s.key === k && s.grams > 0)) ? 'stock' : 'à acheter',
       actions, estimated: estimatedWhy.length > 0, estimatedWhy, conflicts,
       effect: effect ?? (Object.fromEntries(FAMILIES.map((f) => [f, { family: f, central: null, established: false, partial: false }])) as Record<FamilyId, FamilyEffect>),
       distance: { total: total === null ? null : round(total, 3), byFamily },

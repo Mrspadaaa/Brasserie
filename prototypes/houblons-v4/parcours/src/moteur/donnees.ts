@@ -4,10 +4,10 @@
 // (StockService, articles « Houblon » reliés à une variété), le catalogue de production (#120) et la dégustation du
 // brasseur ; l'α du lot vient de chaque ajout de la recette (HopIngredient.alpha, conversion.ts).
 //
-// Ce qui reste en singleton DANS le moteur v4 (data.ts : CATALOGUE, STOCK, ENGINE_DATA, hopRef) : la connaissance des
-// variétés (fiches, huiles, descripteurs) et le stock que lisent `substitutes` et `proposeVoies` pour classer « en
-// stock d'abord ». Le chemin pour l'enlever est écrit dans ARCHITECTURE.md (« ## Données injectées »).
-import { CATALOGUE, STOCK, hopRef, type CatalogueHop, type StockHop, type Tasting } from '../../../../../src/domain/hopIndex/v4';
+// Le moteur v4 de l'adaptateur est créé PAR LA FABRIQUE (creerMoteur, #164) sur les fiches et le stock injectés : plus aucun
+// singleton. `substitutes` et `proposeVoies` classent « en stock d'abord » sur le stock injecté. Mêmes tableaux = même
+// moteur (mêmes caches) ; les écrans qui importent encore le moteur v4 directement lisent le moteur par défaut (fixtures).
+import { CATALOGUE, STOCK, creerMoteur, type CatalogueHop, type Moteur, type StockHop, type Tasting } from '../../../../../src/domain/hopIndex/v4';
 import { DEGUSTATION, recetteDegustee } from '../donnees/cas';
 import type { AjoutParcours, RecetteParcours } from '../etat/types';
 
@@ -23,6 +23,9 @@ export interface DonneesParcours {
    * Défaut : CATALOGUE du moteur (318 variétés Beer Maverick, fixture). Une variété absente des fiches du moteur
    * reste inconnue (le moteur n'a ni ses descripteurs ni ses huiles). */
   catalogue: CatalogueHop[];
+  /** Fiches des variétés que le moteur connaît (descripteurs, huiles, α). Défaut : CATALOGUE (fixture, 318 variétés). Une
+   * variété absente des fiches reste inconnue du moteur. */
+  fiches: CatalogueHop[];
   /** Stock du brasseur : grammes libres et α du lot. Défaut : STOCK du moteur (fixture houblons-2026-10-17). */
   stock: StockHop[];
   /** Sa dégustation ; null = aucune : le profil de Ma bière est alors tout simulé (« ~ »). Défaut : S1 du 18.10. */
@@ -34,6 +37,7 @@ export interface DonneesParcours {
 
 const DEFAUT: DonneesParcours = {
   catalogue: CATALOGUE,
+  fiches: CATALOGUE,
   stock: STOCK,
   degustation: { tasting: DEGUSTATION, recette: recetteDegustee },
   alphaDuLot: (a) => a.alphaLot,
@@ -41,6 +45,9 @@ const DEFAUT: DonneesParcours = {
 
 let courantes: DonneesParcours = DEFAUT;
 let index = { stock: new Map(STOCK.map((s) => [s.key, s])), catalogue: new Map(CATALOGUE.map((h) => [h.id, h])) };
+let moteurCourant: Moteur = creerMoteur({ catalogue: DEFAUT.fiches, stock: DEFAUT.stock });
+/** Le moteur v4 des données courantes (fabrique). */
+export const moteur = (): Moteur => moteurCourant;
 const ecouteurs: (() => void)[] = [];
 
 /** Les données lues par l'adaptateur. */
@@ -53,6 +60,7 @@ export const catalogueDuMoteur = (): boolean => courantes.catalogue === CATALOGU
 export function configurerDonnees(d: Partial<DonneesParcours> = {}): void {
   courantes = { ...DEFAUT, ...d };
   index = { stock: new Map(courantes.stock.map((s) => [s.key, s])), catalogue: new Map(courantes.catalogue.map((h) => [h.id, h])) };
+  moteurCourant = creerMoteur({ catalogue: courantes.fiches, stock: courantes.stock });
   for (const f of ecouteurs) f();
 }
 /** Abonné au changement de données (mesure.ts : vider les caches). */
@@ -66,7 +74,7 @@ export function stockLibre(cle: string): number | null {
 /** Le houblon est-il proposable (au stock, ou dans le catalogue injecté) ? */
 export function proposable(cle: string): boolean {
   if (catalogueDuMoteur() || index.stock.has(cle)) return true;
-  const ref = hopRef(cle);
+  const ref = moteurCourant.hopRef(cle);
   return !!ref && index.catalogue.has(ref.varietyId);
 }
 
@@ -75,7 +83,7 @@ export function proposable(cle: string): boolean {
 export function alphaDeCle(cle: string): { value: number; min: number; max: number; from: string } | null {
   const s = index.stock.get(cle) ?? null;
   if (s?.alpha != null) return { value: s.alpha, min: s.alpha, max: s.alpha, from: s.alphaFrom ?? 'stock' };
-  const ref = hopRef(cle);
+  const ref = moteurCourant.hopRef(cle);
   const c = ref ? index.catalogue.get(ref.varietyId) ?? ref.catalogue : null;
   return c?.alpha ? { value: (c.alpha[0] + c.alpha[1]) / 2, min: c.alpha[0], max: c.alpha[1], from: 'plage variétale (Beer Maverick)' } : null;
 }

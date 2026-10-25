@@ -1,5 +1,5 @@
 // Cas de figure de l'écran (work/refonte-frontend/v4/ecran-1/CAS.md) : recettes construites par règle.
-import { STOCK, hopRef } from './data';
+import { stock as stockDuMoteur, hopRef } from './data';
 import { MOMENTS, additionIbu, gramsForIbu, ibuPerGram, recipeIbu, searchDoses, type Addition, type MomentId, type Recipe } from './recipe';
 import { quickAdds, quickAddKey, type QuickAdd } from './quickAdd';
 import { POLICY } from './data';
@@ -26,7 +26,7 @@ export function loadedRecipe(base: Recipe, scale: StyleScale, bitteringKey = 'be
   const plan: { id: string; moment: MomentId; day?: number }[] = [{ id: 'a10', moment: 'b10' }, { id: 'awp', moment: 'wp' }, { id: 'adry', moment: 'dryActive', day: 3 }];
   for (const p of plan) {
     const grams = searchDoses(p.moment)[0] * base.volumeL;
-    const key = order.find((k) => k !== bitteringKey && !additions.some((a) => a.hopKey === k) && (STOCK.find((s) => s.key === k)?.grams ?? 0) >= grams);
+    const key = order.find((k) => k !== bitteringKey && !additions.some((a) => a.hopKey === k) && (stockDuMoteur().find((s) => s.key === k)?.grams ?? 0) >= grams);
     if (key) additions.push({ id: p.id, hopKey: key, moment: p.moment, grams: round1(grams), ...(p.day ? { day: p.day } : {}) });
   }
   const aroma = recipeIbu({ ...base, additions }).value;
@@ -53,7 +53,7 @@ export function buildFromEmpty(recipe: Recipe, scale: StyleScale) {
   const q = quickAdds(recipe, scale, null, { catalogueLimit: 10000 });
   const all = [...q.disponibles, ...q.epuises, ...q.catalogue];
   const mid = scale.ibu ? (scale.ibu[0] + scale.ibu[1]) / 2 : null;
-  const etat = (k: string) => { const s = STOCK.find((x) => x.key === k); return !s ? 'hors stock' : s.grams <= 0 ? 'épuisé' : 'en stock'; };
+  const etat = (k: string) => { const s = stockDuMoteur().find((x) => x.key === k); return !s ? 'hors stock' : s.grams <= 0 ? 'épuisé' : 'en stock'; };
   const base = (r: QuickAdd) => ({ key: r.key, name: r.name, alpha: r.alpha, role: r.role, fit: r.fit,
     stock: { etat: etat(r.key), grams: r.stock.grams, libre: r.stock.free }, fiches: ficheLevels(hopRef(r.key)!.varietyId, scale).map(({ family, level }) => ({ family, level })) });
   // 1. Amérisants à 60′.
@@ -100,7 +100,7 @@ export function buildFromEmpty(recipe: Recipe, scale: StyleScale) {
 /** Liste d'achats : la recette d'abord, le stock informe (« je fais une recette puis j'achète »).
  * Par ajout : besoin, stock libre restant avant cet ajout, manque (g) ; par variété : total. */
 export function shoppingList(recipe: Recipe) {
-  const left = new Map(STOCK.map((s) => [s.key, Math.max(0, s.grams)]));
+  const left = new Map(stockDuMoteur().map((s) => [s.key, Math.max(0, s.grams)]));
   const lignes = recipe.additions.map((a) => {
     const free = left.get(a.hopKey) ?? 0;
     left.set(a.hopKey, Math.max(0, free - a.grams));
@@ -109,8 +109,8 @@ export function shoppingList(recipe: Recipe) {
   const keys = [...new Set(recipe.additions.map((a) => a.hopKey))];
   const parVariete = keys.map((k) => {
     const besoin = recipe.additions.filter((a) => a.hopKey === k).reduce((s, a) => s + a.grams, 0);
-    const stock = Math.max(0, STOCK.find((s) => s.key === k)?.grams ?? 0);
-    return { hopKey: k, name: hopRef(k)?.name ?? k, besoin: round1(besoin), stock: round1(stock), manque: round1(Math.max(0, besoin - stock)), enStock: STOCK.some((s) => s.key === k) };
+    const stock = Math.max(0, stockDuMoteur().find((s) => s.key === k)?.grams ?? 0);
+    return { hopKey: k, name: hopRef(k)?.name ?? k, besoin: round1(besoin), stock: round1(stock), manque: round1(Math.max(0, besoin - stock)), enStock: stockDuMoteur().some((s) => s.key === k) };
   });
   return { unite: 'g', lignes, parVariete, aAcheter: parVariete.filter((v) => v.manque > 0), totalManque: round1(parVariete.reduce((s, v) => s + v.manque, 0)) };
 }
@@ -119,7 +119,7 @@ export function shoppingList(recipe: Recipe) {
 export function recipeLines(recipe: Recipe) {
   const type = (m: MomentId) => (MOMENTS[m].timing === 'whirlpool' ? 'whirlpool' : MOMENTS[m].timing === 'firstWort' ? 'premier moût' : MOMENTS[m].timing === 'boil' ? 'ébullition' : 'à froid');
   return recipe.additions.map((a) => {
-    const s = STOCK.find((x) => x.key === a.hopKey);
+    const s = stockDuMoteur().find((x) => x.key === a.hopKey);
     const used = recipe.additions.filter((x) => x.hopKey === a.hopKey).reduce((t, x) => t + x.grams, 0);
     const ibu = additionIbu(a, recipe);
     return { additionId: a.id, hopKey: a.hopKey, name: hopRef(a.hopKey)?.name ?? a.hopKey, type: type(a.moment), moment: a.moment, momentLabel: MOMENTS[a.moment].label,

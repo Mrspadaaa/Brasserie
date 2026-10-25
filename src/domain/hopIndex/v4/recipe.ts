@@ -2,7 +2,8 @@ import { BrewingMath } from '../../../services/brewingMath';
 import { predictHopRecipe, type HopRecipeInput } from '../../../../functions/src/hopRecipePrediction';
 import { createHopPredictor } from '../../../../functions/src/hopPredictionCore';
 import type { HopEstimate, HopPrediction, HopTiming, HopTriplet } from '../../../../functions/src/hopPredictionSchema';
-import { ENGINE_DATA, EXTRAPOLATION, POLICY, YEASTS, hopRef, type HopRef } from './data';
+import { engineData, EXTRAPOLATION, POLICY, YEASTS, hopRef, local, type HopRef } from './data';
+import { nombreFr } from './nombres';
 import { FAMILIES, type FamilyId } from './families';
 
 // ---------- Moments ----------
@@ -121,7 +122,7 @@ export interface MatrixContext {
  * à l'alcool ou à l'acidité. Aucun coefficient n'est inventé : le contexte est rendu comme inconnue. */
 export function matrixContext(recipe: Recipe): MatrixContext {
   const m = EXTRAPOLATION.matrix;
-  const val = (x: number | undefined, u: string, n = 0) => (x === undefined ? null : `${x.toLocaleString('fr-CH', { maximumFractionDigits: n })} ${u}`.trim());
+  const val = (x: number | undefined, u: string, n = 0) => (x === undefined ? null : `${nombreFr(x, { maximumFractionDigits: n })} ${u}`.trim());
   return {
     factor: { range: m.range, central: m.central, source: `${m.source.author}, ${m.source.reference} : ${m.source.locator.split(' Hypothèse')[0]}` },
     contextApplied: false,
@@ -142,7 +143,8 @@ export function matrixContext(recipe: Recipe): MatrixContext {
 }
 
 // ---------- Prédictions V5.5 ----------
-export const predictTriplet = createHopPredictor(ENGINE_DATA);
+/** Prédicteur V5.5 préparé une fois par moteur (createHopPredictor : « un contexte de recherche immuable »). */
+export const predictTriplet: ReturnType<typeof createHopPredictor> = (triplet, target) => local('recipe:predicteur', () => createHopPredictor(engineData()))(triplet, target);
 export function recipeInput(recipe: Recipe): HopRecipeInput {
   return { volumeL: recipe.volumeL, yeastId: recipe.yeastId, fermentation: [],
     additions: recipe.additions.filter((a) => a.grams > 0).map((a) => ({ id: a.id, name: hopRef(a.hopKey)?.name ?? a.hopKey, triplet: tripletOf(a, recipe) })) };
@@ -150,6 +152,6 @@ export function recipeInput(recipe: Recipe): HopRecipeInput {
 export interface RecipeProfile { profile: Profile; warnings: string[]; yeast: YeastInfo; interactions: boolean }
 /** Profil de la recette entière : cumul expérimental V5.5 (predictHopRecipe), en plages par famille. */
 export function recipeProfile(recipe: Recipe): RecipeProfile {
-  const p = predictHopRecipe(recipeInput(recipe), {}, ENGINE_DATA);
+  const p = predictHopRecipe(recipeInput(recipe), {}, engineData());
   return { profile: profileOf(p.overall), warnings: p.warnings, yeast: yeastInfo(recipe.yeastId), interactions: p.overall.interactionsNonQuantifiees };
 }

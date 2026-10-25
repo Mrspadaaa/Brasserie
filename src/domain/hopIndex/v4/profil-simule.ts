@@ -12,7 +12,8 @@
 // haute non publiée est dite (hautPartiel), jamais remplacée. Déterministe : ni hasard, ni horloge.
 import corrFile from '../../../data/hopV4/correspondance-familles.json';
 import { getStyleScale, type StyleScale } from './style/scale';
-import { hopRef } from './data';
+import { hopRef, local, courant } from './data';
+import { Lru, borneHoublons } from './lru';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { describeFamilies } from './hops';
 import { CRANS_RULE, classeDegustee, cransOf } from './levels';
@@ -160,14 +161,16 @@ export function courbeDe(f: FamilyId): { K: number; id: 'agrumes' | 'intensite' 
   for (const id of ['agrumes', 'herbace', 'intensite'] as const) if (C.courbes[id].familles.includes(f)) return { K: C.courbes[id].K, id };
   return { K: C.courbes.intensite.K, id: 'intensite' };
 }
-let aRefCache: number | null = null;
+/** Bornes des caches (#164) : bases d'ajout (houblon × dose × moment × recette) et formes (une par variété). */
+export const BORNE_BASES = 4096;
+const bases = () => local('profil:bases', () => new Lru<Base>(BORNE_BASES));
+const formes = () => local('profil:formes', () => new Lru<Record<FamilyId, number>>(borneHoublons(courant().catalogue.length + courant().stock.length)));
 /** Activité agrumes de l'ancre : Cascade 3,86 g/L, dry hop après fermentation, 24 h, bière à 4,75 % vol. (H22, vérifié par K). */
-export function activiteAncre(): number {
-  if (aRefCache != null) return aRefCache;
+export const activiteAncre = (): number => local('profil:ancre', ancre);
+function ancre(): number {
   const r: RecettePouvoir = { name: 'ancre H22', styleCode: '', volumeL: 20, og: 1.05, boilMin: 60, yeastId: 'fermentis-us05', abv: ANCRE.abv, additions: [] };
   const b = baseAjout({ id: 'ancre', houblon: ANCRE.houblon, dose_gL: ANCRE.doseGL, moment: ANCRE.moment, jours: ANCRE.jours }, r);
-  aRefCache = activite(b, ANCRE.jours).A[ANCRE.famille].centre;
-  return aRefCache;
+  return activite(b, ANCRE.jours).A[ANCRE.famille].centre;
 }
 /** Points 0–100 d'une activité, pour une famille (hyperbole de saturation passant par l'ancre ; jamais rognée). */
 export function points(A: number, f: FamilyId): number {
@@ -192,15 +195,12 @@ interface Base {
   forme: Record<FamilyId, number>; sommeForme: number;
   precurseurs: (Trio & { unite: string }) | null;
 }
-const cacheBase = new Map<string, Base>();
-const formeCache = new Map<string, Record<FamilyId, number>>();
 export function formeDe(hopKey: string): Record<FamilyId, number> {
   const k = hopRef(hopKey)?.varietyId ?? hopKey.replace(/:cryo$/, '');
-  if (!formeCache.has(k)) {
+  return formes().obtenir(k, () => {
     const d = describeFamilies(k);
-    formeCache.set(k, Object.fromEntries(FAMILIES.map((f) => [f, C.forme.poids[d[f].level]])) as Record<FamilyId, number>);
-  }
-  return formeCache.get(k)!;
+    return Object.fromEntries(FAMILIES.map((f) => [f, C.forme.poids[d[f].level]])) as Record<FamilyId, number>;
+  });
 }
 export const ajoutPouvoirDe = (a: AjoutSimule, recette: RecettePouvoir, id = a.id ?? `${a.houblon}@${a.moment}`): AjoutPouvoir =>
   ({ id, hopKey: a.houblon, moment: a.moment, grams: a.dose_gL * recette.volumeL, ...(a.jourDebut != null ? { day: a.jourDebut } : {}), ...(estSec(a.moment) ? { dureeJours: a.jours ?? 3 } : {}) });
@@ -208,7 +208,8 @@ function baseAjout(a: AjoutSimule, recette: RecettePouvoir): Base {
   if (!MOMENTS_SIMULES.includes(a.moment)) throw Error(`Moment non simulé : ${a.moment} (seuls ${MOMENTS_SIMULES.join(', ')})`);
   const id = a.id ?? `${a.houblon}@${a.moment}`;
   const key = [a.houblon, a.moment, a.dose_gL, a.jourDebut ?? '', a.jours ?? '', recette.yeastId, recette.styleCode, recette.abv ?? '', recette.volumeL, id].join('|');
-  const hit = cacheBase.get(key);
+  const cache = bases();
+  const hit = cache.get(key);
   if (hit) return hit;
   const p = pouvoirAjout(ajoutPouvoirDe(a, recette, id), recette);
   const conc: Base['conc'] = {}, seuils: Base['seuils'] = {}, inconnus: Base['inconnus'] = {}, ouverts = new Set<CompSim>();
@@ -228,7 +229,7 @@ function baseAjout(a: AjoutSimule, recette: RecettePouvoir): Base {
   const b: Base = { a, id, nom: p.nom, p, levure: recette.yeastId, sansDonnees: p.donnees == null, conc, seuils, inconnus, ouverts,
     forme: formeDe(a.houblon), sommeForme: 0, precurseurs: C.biotransformation.thiolsLiberes.precurseurs[a.houblon] ?? null };
   b.sommeForme = FAMILIES.reduce((s, f) => s + b.forme[f], 0);
-  cacheBase.set(key, b);
+  cache.set(key, b);
   return b;
 }
 
@@ -304,8 +305,8 @@ const fusion = (a: Somme, b: Somme | null): Somme => (b ? { A: Object.fromEntrie
   ouverts: Object.fromEntries(FAMILIES.map((f) => [f, [...new Set([...a.ouverts[f], ...b.ouverts[f]])]])) as Record<FamilyId, string[]> } : a);
 
 // ---------- Profil : points, crans, dégustation ----------
-const SCALES = new Map<string, StyleScale>();
-const scaleDe = (code: string) => { if (!SCALES.has(code)) SCALES.set(code, getStyleScale(code)); return SCALES.get(code)!; };
+const SCALES = new Lru<StyleScale>(64);
+const scaleDe = (code: string) => SCALES.obtenir(code, () => getStyleScale(code));
 function valeur(f: FamilyId, t: Tri, scale: StyleScale, src: ValeurFamille['source'], ouverts: string[], inconnu?: string): ValeurFamille {
   const crans = scale.documented ? cransOf(f, t.centre, scale).crans : null;
   return { bas: arrondi(t.bas), centre: arrondi(t.centre), haut: arrondi(t.haut), crans, largeur: largeur(t.bas, t.haut), source: src,

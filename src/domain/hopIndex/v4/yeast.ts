@@ -2,7 +2,7 @@
 // biotransformation (work/refonte-frontend/v4/ecran-1/MODELE.md, « La levure » ; R43, R44 ;
 // rapport E, recommandation 8). Aucun chiffre inventé : le modèle V5.5 ou une source citée.
 import factsFile from '../../../data/hopV4/faits-cites.json';
-import { CATALOGUE, EXTRAPOLATION, YEASTS, hopRef } from './data';
+import { catalogue as catalogueDuMoteur, EXTRAPOLATION, YEASTS, hopRef } from './data';
 import { FAMILIES, type FamilyId } from './families';
 import { MOMENTS, predictTriplet, tripletOf, yeastInfo, type Addition, type Recipe, type YeastInfo } from './recipe';
 import type { FamilyEffect } from './voies';
@@ -13,7 +13,7 @@ export const CHARACTERIZED_YEASTS = EXTRAPOLATION.yeasts.map((s) => s.yeastId);
 
 /** Profil de la seule levure (ajout à dose nulle) : l'arôme propre selon V5.5, sur l'échelle 0–100. */
 function yeastOnly(recipe: Recipe, yeastId: string | null) {
-  const a: Addition = recipe.additions[0] ?? { id: 'fond', hopKey: CATALOGUE[0].id, moment: 'b60', grams: 0 };
+  const a: Addition = recipe.additions[0] ?? { id: 'fond', hopKey: catalogueDuMoteur()[0].id, moment: 'b60', grams: 0 };
   return predictTriplet({ ...tripletOf(a, { ...recipe, yeastId }), doseGL: 0 }, {});
 }
 

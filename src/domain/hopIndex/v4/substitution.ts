@@ -3,7 +3,8 @@
 // de substitution, mais ils n'ont pas été importés (fiche : substituts null) : rien n'en est repris ni
 // imité. La ressemblance se calcule sur ce que les fiches savent vraiment : familles citées (N fiches
 // sur M), composants de l'huile, alpha, bêta. Règle du prototype, à valider par le brasseur.
-import { CATALOGUE, STOCK, hopRef, type HopRef } from './data';
+import { catalogue as catalogueDuMoteur, courant, local, hopRef, type HopRef } from './data';
+import { Lru, borneHoublons } from './lru';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { REFERENCE, describeFamilies } from './hops';
 import { MOMENTS, ibuPerGram, type MomentId, type Recipe } from './recipe';
@@ -58,43 +59,58 @@ interface Features {
   aroma: Record<FamilyId, number> | null;
   oils: Record<OilId, Range | null>;
   alpha: Range | null; beta: Range | null; role: HopRoleValue | null;
+  /** Vecteurs dans l'ordre de FAMILIES (calcul du classement sans objet intermédiaire). */
+  levelsV: Level[]; aromaV: number[] | null;
+  /** Raison de passer après les amérisants à un moment d'amertume (bitterDemotion, côté remplaçant) ; undefined : pas encore lue. */
+  demotion?: string | null;
 }
 const mid = (r: Range) => (r[0] + r[1]) / 2;
 const half = (r: Range) => (r[1] - r[0]) / 2;
 const round = (x: number, n = 0) => Math.round(x * 10 ** n) / 10 ** n;
 const fr = (x: number, n = 1) => String(round(x, n)).replace('.', ',');
 
-const featureCache = new Map<string, Features>();
+/** Traits d'un houblon : un cache borné par moteur (deux fois les houblons connus : un classement n'y recalcule rien). */
+const featureCache = () => local('substitution:traits', () => new Lru<Features>(borneHoublons(courant().catalogue.length + courant().stock.length)));
 function features(key: string): Features {
-  const hit = featureCache.get(key);
+  const cache = featureCache();
+  const hit = cache.get(key);
   if (hit) return hit;
   const ref = hopRef(key);
   if (!ref) throw Error(`Houblon inconnu : ${key}`);
   const c = ref.catalogue, desc = describeFamilies(ref.varietyId);
-  const levels = Object.fromEntries(FAMILIES.map((f) => [f, desc[f].level === 'marqué' ? 2 : desc[f].level === 'cité' ? 1 : 0])) as Record<FamilyId, Level>;
-  const cited = FAMILIES.some((f) => levels[f] > 0);
-  const aroma = cited ? Object.fromEntries(FAMILIES.map((f) => [f, desc[f].of ? (levels[f] / 2) * (desc[f].sources / desc[f].of) : 0])) as Record<FamilyId, number> : null;
-  const marked = FAMILIES.some((f) => levels[f] === 2);
+  // Une passe sur les familles (mêmes valeurs que les Object.fromEntries d'avant ; ordre des clés : FAMILIES).
+  const levels = {} as Record<FamilyId, Level>, levelsV: Level[] = [];
+  let cited = false, marked = false;
+  for (const f of FAMILIES) {
+    const l: Level = desc[f].level === 'marqué' ? 2 : desc[f].level === 'cité' ? 1 : 0;
+    levels[f] = l; levelsV.push(l);
+    if (l > 0) cited = true;
+    if (l === 2) marked = true;
+  }
+  let aroma: Record<FamilyId, number> | null = null, aromaV: number[] | null = null;
+  if (cited) {
+    aroma = {} as Record<FamilyId, number>; aromaV = [];
+    for (const f of FAMILIES) { const x = desc[f].of ? (levels[f] / 2) * (desc[f].sources / desc[f].of) : 0; aroma[f] = x; aromaV.push(x); }
+  }
   const out: Features = {
     key, ref, levels, aroma,
     oils: { myrcene: c.oils.myrcene, humulene: c.oils.humulene, caryophyllene: c.oils.caryophyllene, linalool: c.hsLinalool?.range ?? null },
     alpha: c.alpha, beta: c.beta, role: c.alpha ? roleFromAlpha(mid(c.alpha), marked) : null,
+    levelsV, aromaV,
   };
-  featureCache.set(key, out);
+  cache.set(key, out);
   return out;
 }
 
 /** Écart-type des milieux de plage du catalogue, par composant de l'huile (échelle de comparaison). */
-let sigmaCache: Record<OilId, number> | null = null;
-function oilSigma(): Record<OilId, number> {
-  if (sigmaCache) return sigmaCache;
+const oilSigma = (): Record<OilId, number> => local('substitution:sigma', sigmaDuCatalogue);
+function sigmaDuCatalogue(): Record<OilId, number> {
   const sd = (xs: number[]) => { const m = xs.reduce((a, b) => a + b, 0) / xs.length; return Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / xs.length); };
   const ranges: Record<OilId, (Range | null)[]> = {
-    myrcene: CATALOGUE.map((c) => c.oils.myrcene), humulene: CATALOGUE.map((c) => c.oils.humulene),
-    caryophyllene: CATALOGUE.map((c) => c.oils.caryophyllene), linalool: CATALOGUE.map((c) => c.hsLinalool?.range ?? null),
+    myrcene: catalogueDuMoteur().map((c) => c.oils.myrcene), humulene: catalogueDuMoteur().map((c) => c.oils.humulene),
+    caryophyllene: catalogueDuMoteur().map((c) => c.oils.caryophyllene), linalool: catalogueDuMoteur().map((c) => c.hsLinalool?.range ?? null),
   };
-  sigmaCache = Object.fromEntries(OILS.map((o) => [o, sd(ranges[o].filter((r): r is Range => !!r).map(mid))])) as Record<OilId, number>;
-  return sigmaCache;
+  return Object.fromEntries(OILS.map((o) => [o, sd(ranges[o].filter((r): r is Range => !!r).map(mid))])) as Record<OilId, number>;
 }
 /** Écart-types utilisés, pour les lire dans le pack. */
 export const oilScales = () => Object.fromEntries(OILS.map((o) => [o, round(oilSigma()[o], 2)])) as Record<OilId, number>;
@@ -125,6 +141,32 @@ function oilSim(a: Features, b: Features): { value: number | null; compared: Oil
 }
 const ratioSim = (x: number, y: number) => Math.max(0, 1 - Math.abs(Math.log(x / y)) / Math.log(3));
 const roleSim = (x: HopRoleValue, y: HopRoleValue) => (x === y ? 1 : x === 'double' || y === 'double' ? 0.5 : 0);
+/** oilSim, valeur seule et sans tableau intermédiaire (classement de tous les candidats) : même arithmétique, même ordre. */
+/** aromaSim sur les vecteurs (poids W par famille, ordre de FAMILIES) : même arithmétique, même ordre de somme. */
+function aromaValue(a: Features, b: Features, context: SubstitutionContext, W: number[]): number | null {
+  const A = a.aromaV, B = b.aromaV;
+  if (!A || !B) return null;
+  if (context === 'amertume') {
+    let foreign = 0, total = 0;
+    for (let i = 0; i < W.length; i++) { total += W[i] * B[i]; if (a.levelsV[i] === 0) foreign += W[i] * B[i]; }
+    return total ? 1 - foreign / total : null;
+  }
+  let dot = 0, na = 0, nb = 0;
+  for (let i = 0; i < W.length; i++) { dot += W[i] * A[i] * B[i]; na += W[i] * A[i] ** 2; nb += W[i] * B[i] ** 2; }
+  return na && nb ? dot / Math.sqrt(na * nb) : 0;
+}
+function oilValue(a: Features, b: Features): number | null {
+  const sigma = oilSigma();
+  let n = 0, sum = 0;
+  for (const o of OILS) {
+    const x = a.oils[o], y = b.oils[o];
+    if (!x || !y) continue;
+    n++;
+    const gap = Math.max(0, Math.abs(mid(x) - mid(y)) - (half(x) + half(y)) / 2);
+    sum += Math.max(0, 1 - gap / (2 * sigma[o]));
+  }
+  return n < 2 ? null : sum / n;
+}
 type BitterPart = 'α' | 'β' | 'rôle';
 function bitterSim(a: Features, b: Features, context: SubstitutionContext): { value: number | null; compared: BitterPart[] } {
   const parts: { id: BitterPart; w: number; s: number }[] = [];
@@ -138,6 +180,17 @@ function bitterSim(a: Features, b: Features, context: SubstitutionContext): { va
   return { value: parts.reduce((s, p) => s + p.w * p.s, 0) / tw, compared: parts.map((p) => p.id) };
 }
 
+/** bitterSim, valeur seule et sans tableau intermédiaire : mêmes parts (α 0,5, β 0,25, rôle 0,25), même ordre de somme. */
+function bitterValue(a: Features, b: Features, context: SubstitutionContext): number | null {
+  const bitter = context === 'amertume';
+  let tw = 0, num = 0;
+  if (!(a.alpha && b.alpha && mid(a.alpha) > 0 && mid(b.alpha) > 0)) return null;
+  const sa = bitter && mid(b.alpha) >= mid(a.alpha) ? 1 : ratioSim(mid(a.alpha), mid(b.alpha));
+  tw += 0.5; num += 0.5 * sa;
+  if (a.beta && b.beta && mid(a.beta) > 0 && mid(b.beta) > 0) { tw += 0.25; num += 0.25 * ratioSim(mid(a.beta), mid(b.beta)); }
+  if (a.role && b.role) { tw += 0.25; num += 0.25 * (bitter && a.role !== 'aromatique' && b.role !== 'aromatique' ? 1 : roleSim(a.role, b.role)); }
+  return num / tw;
+}
 export interface FamilyMove { family: FamilyId; de: Level; a: Level }
 export interface SubstituteDose {
   moment: MomentId; momentLabel: string;
@@ -212,12 +265,19 @@ function aromaProduct(ref: HopRef): string | null {
   const text = [ref.name, ...ref.catalogue.aliases, (ref.catalogue as { form?: string }).form ?? '', ref.stock?.form ?? '', ...(ref.stock?.items ?? [])].join(' ');
   return AROMA_PRODUCT.find(([re]) => re.test(text))?.[1] ?? null;
 }
-const roleCache = new Map<string, ReturnType<typeof hopRole>>();
-const engineRole = (key: string) => { if (!roleCache.has(key)) roleCache.set(key, hopRole(key)); return roleCache.get(key)!; };
+const roleCache = () => local('substitution:roles', () => new Lru<ReturnType<typeof hopRole>>(borneHoublons(courant().catalogue.length + courant().stock.length)));
+const engineRole = (key: string) => roleCache().obtenir(key, () => hopRole(key));
+/** Produit d'arôme d'un houblon, une fois par moteur (lu à chaque classement d'amertume, pour chaque candidat). */
+const produitCache = () => local('substitution:produits', () => new Lru<string | null>(borneHoublons(courant().catalogue.length + courant().stock.length)));
+const produitDe = (ref: HopRef) => produitCache().obtenir(ref.key, () => aromaProduct(ref));
 /** Raison de passer après les amérisants et doubles usages à un moment d'amertume, ou null. */
-function bitterDemotion(orig: HopRef, sub: HopRef, context: SubstitutionContext): string | null {
-  if (context !== 'amertume' || aromaProduct(orig) || engineRole(orig.key).value === 'aromatique') return null;
-  const product = aromaProduct(sub);
+/** L'original échappe-t-il à la règle (contexte d'arôme, ou lui-même produit d'arôme ou aromatique) ? */
+const demotionExclue = (orig: HopRef, context: SubstitutionContext) => context !== 'amertume' || !!produitDe(orig) || engineRole(orig.key).value === 'aromatique';
+function bitterDemotion(orig: HopRef, sub: HopRef, context: SubstitutionContext, exclue = demotionExclue(orig, context)): string | null {
+  return exclue ? null : demotionDe(sub);
+}
+function demotionDe(sub: HopRef): string | null {
+  const product = produitDe(sub);
   if (product) return `produit d’arôme (${product}), cher pour amériser`;
   const role = engineRole(sub.key);
   return role.value === 'aromatique' ? `houblon aromatique (${role.source}), cher pour amériser` : null;
@@ -244,7 +304,11 @@ function reasonOf(s: Omit<Substitute, 'rank' | 'raison'>, orig: Features, sub: F
   return text.charAt(0).toUpperCase() + text.slice(1) + '.';
 }
 
-/** Remplaçants classés d'un houblon (clé du prototype : id de variété, « :cryo » pour l'article Cryo). */
+/** Remplaçants classés d'un houblon (clé du prototype : id de variété, « :cryo » pour l'article Cryo).
+ * Deux temps (#164) : 1) chaque candidat reçoit son score et ses clés de classement (composantes, couverture, conflit,
+ * amertume déconseillée, stock) ; 2) seuls les rendus (`limit`) reçoivent familles, dose, raison. Même classement et
+ * mêmes rendus qu'en un seul temps : la dose n'entre dans le classement que par « stock suffisant », calculée alors
+ * pour les candidats en stock. */
 export function substitutes(key: string, options: SubstitutionOptions = {}): SubstitutionResult {
   const orig = features(key);
   const moment = options.moment ?? 'b60', grams = options.grams ?? 1, recipe = options.recipe ?? defaultRecipe();
@@ -252,38 +316,82 @@ export function substitutes(key: string, options: SubstitutionOptions = {}): Sub
   // Témoin négatif : V4_TEMOIN_NEGATIF=substitution met tous les poids à zéro (scores nuls, ordre alphabétique).
   const w = temoinNegatif() === 'substitution' ? ZERO : options.weights ?? WEIGHTS[context];
   const style = options.style?.documented ? options.style : undefined;
-  const pool = options.pool ?? [...CATALOGUE.map((c) => c.id), ...STOCK.map((s) => s.key).filter((k) => !CATALOGUE.some((c) => c.id === k))];
-  const used = (k: string) => (recipe.additions ?? []).filter((a) => a.hopKey === k).reduce((t, a) => t + a.grams, 0);
+  const pool = options.pool ?? [...catalogueDuMoteur().map((c) => c.id), ...courant().stockHorsCatalogue];
+  const usedBy = new Map<string, number>();
+  for (const a of recipe.additions ?? []) usedBy.set(a.hopKey, (usedBy.get(a.hopKey) ?? 0) + a.grams);
+  const used = (k: string) => usedBy.get(k) ?? 0;
+  const stockFirst = !!options.stockFirst;
 
-  const rows = pool.filter((k) => k !== key).map((k): Omit<Substitute, 'rank'> => {
+  // 1) Score et clés de classement de chaque candidat.
+  interface Ligne {
+    k: string; sub: Features; name: string; score: number; palier: Palier;
+    a: number | null; o: number | null; b: number | null; fiabilite: Substitute['couverture']['fiabilite'];
+    stock: Substitute['stock']; dose: SubstituteDose | null; conflitsStyle: FamilyId[]; amertumeDeconseillee: string | null; cles: number[];
+    /** Les clés en un nombre (ordre lexicographique : chaque clé est bornée), quand le score est un entier de 0 à 100. */
+    rang: number;
+  }
+  const lignes: Ligne[] = [];
+  const exclue = demotionExclue(orig.ref, context);
+  const W = FAMILIES.map((f) => (style?.documented && style.families[f].status === 'attendue' ? 2 : 1));
+  // Familles indésirables au style que l'original ne cite pas : un conflit si le candidat en cite une (ordre de FAMILIES).
+  const indesirables = style ? FAMILIES.filter((f) => style.families[f].status === 'indésirable' && orig.levels[f] === 0) : [];
+  for (const k of pool) {
+    if (k === key) continue;
     const sub = features(k);
-    const a = aromaSim(orig, sub, context, style), o = oilSim(orig, sub), b = bitterSim(orig, sub, context);
-    const comps = [{ s: a, w: w.arome }, { s: o.value, w: w.huiles }, { s: b.value, w: w.amertume }].filter((c) => c.s !== null);
-    const tw = comps.reduce((t, c) => t + c.w, 0);
-    const score = tw > 0 ? round((100 * comps.reduce((t, c) => t + c.w * c.s!, 0)) / tw) : 0;
-    const fiabilite = a === null ? 'faible' : o.value === null ? 'partielle' : 'bonne';
-    const communes = FAMILIES.filter((f) => orig.levels[f] > 0 && sub.levels[f] > 0).sort((x, y) => Math.min(sub.levels[y], orig.levels[y]) - Math.min(sub.levels[x], orig.levels[x]));
-    const moves = FAMILIES.filter((f) => orig.levels[f] !== sub.levels[f]).map((f) => ({ family: f, de: orig.levels[f], a: sub.levels[f] }));
-    const dose = doseOf(orig.ref, sub.ref, moment, grams, recipe);
+    const a = aromaValue(orig, sub, context, W), o = oilValue(orig, sub), b = bitterValue(orig, sub, context);
+    let tw = 0, num = 0;
+    if (a !== null) { tw += w.arome; num += w.arome * a; }
+    if (o !== null) { tw += w.huiles; num += w.huiles * o; }
+    if (b !== null) { tw += w.amertume; num += w.amertume * b; }
+    const score = tw > 0 ? round((100 * num) / tw) : 0;
+    const fiabilite = a === null ? 'faible' : o === null ? 'partielle' : 'bonne';
     const st = sub.ref.stock, libre = st ? round(st.grams - used(k), 1) : null;
     const etat = !st ? 'à acheter' : libre! > 0 ? 'en stock' : 'épuisé';
-    const conflitsStyle = style ? FAMILIES.filter((f) => style.families[f].status === 'indésirable' && sub.levels[f] > 0 && orig.levels[f] === 0) : [];
+    const dose = etat === 'en stock' ? doseOf(orig.ref, sub.ref, moment, grams, recipe) : null;
+    const stock: Substitute['stock'] = { etat, libre, suffisant: etat === 'en stock' ? libre! >= dose!.grams : null };
+    const conflitsStyle = indesirables.length ? indesirables.filter((f) => sub.levels[f] > 0) : indesirables;
+    const amertumeDeconseillee = exclue ? null : sub.demotion !== undefined ? sub.demotion : (sub.demotion = demotionDe(sub.ref));
+    const palier = palierOf(score);
+    const c0 = conflitsStyle.length ? 1 : 0, c1 = fiabilite === 'faible' ? 1 : 0, c2 = amertumeDeconseillee ? 1 : 0;
+    const cles = stockFirst ? [c0, c1, c2, PALIER_RANK[palier], stockRank(stock), -score] : [c0, c1, c2, -score];
+    const rang = ((((c0 * 2 + c1) * 2 + c2) * 4 + (stockFirst ? PALIER_RANK[palier] : 0)) * 3 + (stockFirst ? stockRank(stock) : 0)) * 101 + (100 - score);
+    lignes.push({ k, sub, name: sub.ref.name, score, palier, a, o, b, fiabilite, stock, dose, conflitsStyle, amertumeDeconseillee, cles, rang });
+  }
+  // Classement : clés, puis nom. Le rang numérique vaut les clés quand chaque score est un entier de 0 à 100 (toujours, sauf
+  // poids imposés hors de [0, 1]) ; sinon, comparaison clé par clé. Avec une limite, seuls les candidats dont le rang ne
+  // dépasse pas celui du dernier rendu sont triés par nom (les ex aequo de la limite compris) : même ordre qu'un tri complet.
+  const entiers = lignes.every((l) => Number.isInteger(l.score) && l.score >= 0 && l.score <= 100);
+  const cmp = entiers ? (x: Ligne, y: Ligne) => x.rang - y.rang
+    : (x: Ligne, y: Ligne) => { const kx = x.cles, ky = y.cles; for (let i = 0; i < kx.length; i++) if (kx[i] !== ky[i]) return kx[i] - ky[i]; return 0; };
+  const limite = Math.min(options.limit ?? lignes.length, lignes.length);
+  let tries = lignes;
+  if (entiers && limite > 0 && limite < lignes.length) {
+    const seuil = Float64Array.from(lignes, (l) => l.rang).sort()[limite - 1];
+    tries = lignes.filter((l) => l.rang <= seuil);
+  }
+  tries.sort((x, y) => cmp(x, y) || NOMS.compare(x.name, y.name));
+
+  // 2) Les rendus seulement : familles, dose, raison.
+  const rendus = tries.slice(0, limite);
+  const remplacants: Substitute[] = [];
+  rendus.forEach((l, i) => {
+    const { sub, a } = l;
+    const o = oilSim(orig, sub), b = bitterSim(orig, sub, context);
+    const communes = FAMILIES.filter((f) => orig.levels[f] > 0 && sub.levels[f] > 0).sort((x, y) => Math.min(sub.levels[y], orig.levels[y]) - Math.min(sub.levels[x], orig.levels[x]));
+    const moves = FAMILIES.filter((f) => orig.levels[f] !== sub.levels[f]).map((f) => ({ family: f, de: orig.levels[f], a: sub.levels[f] }));
+    const dose = l.dose ?? doseOf(orig.ref, sub.ref, moment, grams, recipe);
     const row: Omit<Substitute, 'rank' | 'raison'> = {
-      key: k, name: sub.ref.name, score, palier: palierOf(score),
+      key: l.k, name: l.name, score: l.score, palier: l.palier,
       composantes: { arome: a === null ? null : round(100 * a), huiles: o.value === null ? null : round(100 * o.value), amertume: b.value === null ? null : round(100 * b.value) },
-      couverture: { arome: a !== null, huiles: o.compared, amertume: b.compared, fiabilite },
+      couverture: { arome: a !== null, huiles: o.compared, amertume: b.compared, fiabilite: l.fiabilite },
       familles: { communes, gagne: moves.filter((m) => m.a > m.de), perd: moves.filter((m) => m.a < m.de) },
-      dose, stock: { etat, libre, suffisant: etat === 'en stock' ? libre! >= dose.grams : null },
-      conflitsStyle, memeVariete: sub.ref.varietyId === orig.ref.varietyId, amertumeDeconseillee: bitterDemotion(orig.ref, sub.ref, context),
+      dose, stock: l.stock,
+      conflitsStyle: [...l.conflitsStyle], memeVariete: sub.ref.varietyId === orig.ref.varietyId, amertumeDeconseillee: l.amertumeDeconseillee,
     };
-    return { ...row, raison: reasonOf(row, orig, sub) };
+    const r = { ...row, raison: reasonOf(row, orig, sub) } as Substitute;
+    r.rank = i > 0 && cmp(rendus[i - 1], l) === 0 ? remplacants[i - 1].rank : i + 1;
+    remplacants.push(r);
   });
-  const stockFirst = !!options.stockFirst;
-  const keys = (r: Omit<Substitute, 'rank'>) => [r.conflitsStyle.length ? 1 : 0, r.couverture.fiabilite === 'faible' ? 1 : 0, r.amertumeDeconseillee ? 1 : 0,
-    ...(stockFirst ? [PALIER_RANK[r.palier], stockRank(r.stock)] : []), -r.score];
-  const cmp = (x: Omit<Substitute, 'rank'>, y: Omit<Substitute, 'rank'>) => { const kx = keys(x), ky = keys(y); for (let i = 0; i < kx.length; i++) if (kx[i] !== ky[i]) return kx[i] - ky[i]; return 0; };
-  const sorted = rows.sort((x, y) => cmp(x, y) || x.name.localeCompare(y.name, 'fr')) as Substitute[];
-  sorted.forEach((r, i) => { r.rank = i > 0 && cmp(sorted[i - 1], r) === 0 ? sorted[i - 1].rank : i + 1; });
 
   const manque = [
     ...(!orig.aroma ? ['arôme : aucune famille citée dans les fiches'] : []),
@@ -295,6 +403,8 @@ export function substitutes(key: string, options: SubstitutionOptions = {}): Sub
   return {
     key, name: orig.ref.name, methode: SUBSTITUTION_METHOD, contexte: context, poids: w, stockFirst, style: style?.code ?? null,
     reference: { moment, momentLabel: MOMENTS[moment].label, grams, ibu: k0 > 0 ? round(grams * k0, 2) : null },
-    manque, candidats: rows.length, remplacants: sorted.slice(0, options.limit ?? sorted.length), regle: RANKING,
+    manque, candidats: lignes.length, remplacants, regle: RANKING,
   };
 }
+/** Tri des noms : Intl.Collator('fr') est la définition de localeCompare(…, 'fr') (ECMA-402), construit une fois. */
+const NOMS = new Intl.Collator('fr');
