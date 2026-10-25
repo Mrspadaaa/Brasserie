@@ -1,0 +1,23 @@
+OK — tri : cmb2, cma1, cma4, cma3, cmb3
+
+Verdicts, classement, candidates et greffes : `work/refonte-frontend/v4/ecran-1/fils25-comparer/critique/VERDICTS.md`.
+52 captures ouvertes (L12) ; `controle-comparer-familles.mjs` rejoué sur les douze pages (FAMILLES OK : cma3, cmb2 ; les dix
+autres entre 4 et 8 rangées au premier écran, retouche commune D128). Panel au niveau du lot 21 et de r6n2 ; la série cmb est faite
+de ses exemples (par brief), la série cmz perd des fonctions de sa base.
+
+- **cma1** (étapes à toucher) — ACCEPTÉ. « Ça c'est clair, je choisis quand et tout bouge. Manque les valeurs du Nugget à gauche. » Correction : lignes 44 px, Nugget chiffré.
+- **cma2** (la tête parle le moment) — ACCEPTÉ. « Pensé brasseur, mais le radar à 60′ c'est quoi ce point ??? » Correction : un mot au centre du radar vide.
+- **cma3** (rangée lui seul) — ACCEPTÉ. « La ligne lui seul c'est très bien. Pourquoi le radar est en bas ? » Correction : radar remonté (D115), rangée gardée.
+- **cma4** (brassin, appareils) — ACCEPTÉ. « Pas mal les cuves, on voit tout d'un coup. Mais je veux les valeurs. » Correction : chiffre par mini barre, ★ coloré.
+- **cmb1** (rail rpb1) — ACCEPTÉ. « Bien au pouce mais on voit plus les familles ; à 60′ pourquoi Galaxy devant ? » Correction : pas de point sur égalité, rail 64 px.
+- **cmb2** (écart chiffré) — ACCEPTÉ. « Les écarts c'est bien, on voit direct les différences. Vachement bien. » Correction : moment sur le radar, écart dans la colonne retenue. Tête proposée.
+- **cmb3** (frise y1b) — ACCEPTÉ. « La frise est vraiment intéressante, mais tout le reste est en dessous. » Correction : frise 90 px, chiffres à un toucher.
+- **cmb4** (trois plans w2) — ACCEPTÉ. « Très intéressant, mais ça compare plus la même chose. » Signal D98, à lui de trancher.
+- **cmz1** (brasserie) — REJET : Biotransformation, Enchaîner, Panel OSU absents de la page (0 occurrence ; sa capture de base les montre ; D22, D96), étapes sans chiffres (D107). « Et la biotransformation ??? ça a été demandé ». Correction : remettre les trois fonctions et la ligne chiffrée des moments ; le schéma passe en greffe de cma4.
+- **cmz2** (cadran) — REJET : mêmes fonctions absentes (D22, D96), étapes sans chiffres (D107), mots tournés sur l'arc (D94). Correction : mots droits, fonctions remises ; la pastille « moment · IBU » passe en greffe.
+- **cmz3** (pellicule) — REJET : Biotransformation, Enchaîner, Panel OSU absents (D22, D96 ; règle n° 1). « Les vignettes c'est pas mal, mais il manque des boutons de la base ». Correction : remettre les trois fonctions ; pellicule et pastille famille en greffe sur cma4.
+- **cmz4** (échelle qui gagne quand) — REJET : Biotransformation, Enchaîner, Panel OSU absents (D22, D96 ; règle n° 1). « L'échelle est très bien, mais c'est pas la base complète ». Correction : remettre les trois fonctions ; l'échelle en greffe sur cma1 et cmb2.
+
+Tête : cmb2 (passe 2 avec les lignes radio de cma1, la rangée « lui seul » de cma3, l'échelle de cmz4).
+
+LEÇON PROPOSÉE : une série « libre » qui reconstruit la base à la main perd ses fonctions sans que les contrôles le voient (VARIANTES, QUAND, HORS-16D verts sur quatre pages sans Biotransformation ni Enchaîner) : inventorier les fonctions visibles de la capture désignée (boutons, dock, pastilles) et en faire un contrôle du lot avant la série, comme D124 pour le rail.

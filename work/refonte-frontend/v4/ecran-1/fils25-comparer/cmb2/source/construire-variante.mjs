@@ -1,0 +1,21 @@
+// Construit une variante cmbN : copie var/<id>/ dans la maquette du miroir, construit, recopie dans le dossier possédé.
+import fs from 'node:fs'; import path from 'node:path'; import { execFileSync } from 'node:child_process';
+const R = 'C:/Users/mrspa/AppData/Local/Temp/cmb-R';
+const LOT = 'C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/refonte-frontend/v4/ecran-1/fils25-comparer';
+const id = process.argv[2];
+const src = path.join(R, 'var', id), dst = path.join(R, 'prototypes/houblons-v4/parcours/src/ecrans/comparer');
+fs.rmSync(dst, { recursive: true, force: true }); fs.cpSync(src, dst, { recursive: true });
+const sortie = path.join(R, 'prototypes/houblons-v4/maquettes', id);
+fs.rmSync(sortie, { recursive: true, force: true });
+const out = execFileSync(process.execPath, ['prototypes/houblons-v4/parcours/outils/construire.mjs', `--sortie=prototypes/houblons-v4/maquettes/${id}`], { cwd: R, encoding: 'utf8' });
+console.log(out.trim().split('\n').slice(-3).join('\n'));
+if (!/CONSTRUIT OK/.test(out)) process.exit(1);
+const cible = path.join(LOT, id);
+fs.mkdirSync(cible, { recursive: true });
+fs.rmSync(path.join(cible, 'assets'), { recursive: true, force: true });
+fs.cpSync(path.join(sortie, 'assets'), path.join(cible, 'assets'), { recursive: true });
+const html = fs.readFileSync(path.join(sortie, 'comparer/etat.html'), 'utf8').split('../assets/').join('assets/');
+fs.writeFileSync(path.join(cible, 'etat.html'), html);
+fs.rmSync(path.join(cible, 'source'), { recursive: true, force: true });
+fs.cpSync(src, path.join(cible, 'source'), { recursive: true });
+console.log('VARIANTE', id, '→', cible);
