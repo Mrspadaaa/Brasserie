@@ -1,4 +1,4 @@
-/* Le radar commun (RadarBase.tsx), porté de cmc2h (classes cmc- de fils25-comparer/cmc2h/source/comparer.css), préfixé rb- (L26). */
+/* Le radar commun (RadarBase.tsx), porté de cmc2h (classes cmc- de fils25-comparer/cmc2h/source/comparer.css), préfixé rb- (L26). Dans l'app depuis rb2-ma-biere. */
 .rb-boite { position: relative; display: flex; flex-direction: column; align-items: center; }
 .rb-radar { display: block; margin: 0 auto; max-width: 100%; height: auto; overflow: visible; }
 .rb-grille line, .rb-grille polygon { stroke: rgb(var(--cave-800)); }
@@ -16,3 +16,6 @@
 .rb-fl-tete-plus { fill: #2f6b4f; }
 .rb-fl-tete-moins { fill: #b42318; }
 .rb-cible { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.rb-qi { font-size: 12px; font-weight: 700; fill: rgb(var(--cave-400)); }
+.rb-marque-pale { stroke: rgb(var(--cave-400)); stroke-dasharray: 3 2; }
+.rb-secteur-pale { opacity: .5; }

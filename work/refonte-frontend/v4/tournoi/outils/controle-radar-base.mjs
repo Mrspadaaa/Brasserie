@@ -4,13 +4,16 @@
 // absolu, plus de normalisation, pour le radar et pour les barre et le reste !! ».
 //
 // Sur chaque vue à radar de la maquette construite (Comparer au repos, en Absolu, à 60′ ; la fiche ; Suggérer en mode
-// Radar, au style et en Absolu ; Substituer), à 390 × 844 tactile, chaque radar visible doit :
+// Radar, au style et en Absolu ; Substituer ; Ma bière en Radar), à 390 × 844 tactile, chaque radar visible doit :
 //   B1 porter data-radar="base" (le radar commun, commun/RadarBase.tsx) et 12 axes ;
 //   B2 n'avoir aucun point sur un axe inconnu : ni dans le secteur « sans donnée » (inconnu de tous), ni sur l'axe d'une
 //      pastille « ? » de sa série (inconnu de ce houblon) ; et aucun point au centre ;
 //   B3 n'avoir aucun remplissage qui touche le centre (isPointInFill au centre du radar, et à 3 px autour) ;
 //   B4 avoir ses anneaux chiffrés : 3 anneaux au moins ; en Absolu, une étiquette par anneau ; au style, le maximum de
-//      chaque axe connu écrit près de son picto.
+//      chaque axe connu écrit près de son picto ; au style sur une échelle commune (data-echelle-axe="commune", Ma bière :
+//      des notes en mots, jamais normalisées), une étiquette par anneau.
+// Voie rb2-ma-biere : la vue biere (Ma bière, Radar) s'ajoute aux 8 ; témoin : RadarBiere d'avant (b0d517c1) → ECHEC
+// (data-radar="", pas le radar commun).
 // Une ligne par vue, puis RADAR-BASE OK ou RADAR-BASE ECHEC (n). Ne s'arrête pas au premier échec (M16).
 // Témoin : la maquette construite depuis HEAD (28989963) → ECHEC (aucun radar ne porte data-radar="base").
 // Usage : node work/refonte-frontend/v4/tournoi/outils/controle-radar-base.mjs <dossier construit>
@@ -35,6 +38,7 @@ const VUES = [
   { nom: 'suggerer · radar, au style', route: 'suggerer', gestes: [{ texte: 'Radar' }] },
   { nom: 'suggerer · radar, absolu', route: 'suggerer', gestes: [{ texte: 'Radar' }, { texte: 'Absolu' }] },
   { nom: 'substituer', route: 'substituer', gestes: [] },
+  { nom: 'biere · radar', route: 'biere', gestes: [{ texte: 'Radar' }] },
 ];
 
 function lire() {
@@ -87,10 +91,11 @@ function lire() {
     const etiquettes = [...svg.querySelectorAll('[data-role="echelle"] text')].map((t) => t.textContent.trim()).filter(Boolean);
     const maxAxes = [...svg.querySelectorAll('[data-axe] [data-role="max-axe"]')].map((t) => t.textContent.trim()).filter(Boolean);
     const axesConnus = svg.querySelectorAll('[data-axe]').length;
-    if (mode === 'absolu') { if (etiquettes.length < anneaux || anneaux < 3) f.push(`B4 absolu : ${etiquettes.length} étiquettes pour ${anneaux} anneaux`); }
+    const commune = svg.getAttribute('data-echelle-axe') === 'commune';
+    if (mode === 'absolu' || (mode === 'style' && commune)) { if (etiquettes.length < anneaux || anneaux < 3) f.push(`B4 ${mode} commune : ${etiquettes.length} étiquettes pour ${anneaux} anneaux`); }
     else if (mode === 'style') { if (!axesConnus || maxAxes.length < axesConnus) f.push(`B4 au style : ${maxAxes.length} maximums écrits pour ${axesConnus} axes connus`); }
     else f.push('B4 mode inconnu (data-mode : style ou absolu)');
-    return { objet: svg.getAttribute('data-objet') ?? '?', base, mode, moment: svg.getAttribute('data-moment') ?? '', points, remplis, sansDonnee: sansDonnee.size, inconnus: inconnuDe.size, etiquettes, maxAxes: maxAxes.length, f };
+    return { objet: svg.getAttribute('data-objet') ?? '?', base, mode, commune, moment: svg.getAttribute('data-moment') ?? '', points, remplis, sansDonnee: sansDonnee.size, inconnus: inconnuDe.size, etiquettes, maxAxes: maxAxes.length, f };
   });
 }
 
@@ -124,7 +129,7 @@ try {
     const f = manques.map((m) => `geste introuvable : ${m}`);
     if (!radars.length) f.push('aucun radar visible (svg[data-radar])');
     for (const r of radars) f.push(...r.f);
-    const dit = radars.map((r) => `${r.objet} ${r.base ? 'base' : 'ancien'} ${r.mode}${r.moment ? ` « ${r.moment} »` : ''} · ${r.points} points, ${r.remplis} remplis, sans donnée ${r.sansDonnee}, « ? » ${r.inconnus}, ${r.mode === 'absolu' ? `anneaux ${r.etiquettes.join(' ')}` : `${r.maxAxes} maximums d'axe`}`).join(' | ');
+    const dit = radars.map((r) => `${r.objet} ${r.base ? 'base' : 'ancien'} ${r.mode}${r.moment ? ` « ${r.moment} »` : ''} · ${r.points} points, ${r.remplis} remplis, sans donnée ${r.sansDonnee}, « ? » ${r.inconnus}, ${r.mode === 'absolu' || r.commune ? `anneaux ${r.etiquettes.join(' ')}` : `${r.maxAxes} maximums d'axe`}`).join(' | ');
     if (f.length) { echecs++; console.log(`ECHEC ${v.nom} : ${dit || '—'}`); for (const x of [...new Set(f)]) console.log(`  ${x}`); }
     else console.log(`tenu  ${v.nom} : ${dit}`);
   }

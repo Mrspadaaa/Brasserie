@@ -182,10 +182,10 @@ export default function Biere() {
               <RadarBiere notes={notes} haut={haut} attendues={attendues} etatSommet="etat-biere-radar-sommet" ouvrirSur={sommet} />
               {/* Un « ? » par groupe (D113) ; la base n'écrit pas de légende sur le radar (« Pas besoin d'écrire la légende »). */}
               <span className="absolute left-0 top-0"><Legende>
-                <p><b>Zone grise</b> : la bande du style {sc.code}.</p>
-                <p><b>Bleu</b> : ma dégustation, de pas senti à marqué ; l'orangé, au-dessus du style.</p>
-                <p><b>« ? » et hachuré</b> : pas goûté, inconnu (ce n'est pas zéro).</p>
-                <p><b>Toucher un sommet</b> : la famille en mots. <b>Une pastille</b> : la note ; la retoucher, pas goûté.</p>
+                <p><b>Zone verte</b> : la bande du style {sc.code}. <b>Cerné</b> : le style l'attend.</p>
+                <p><b>Bleu</b> : ma dégustation, de pas senti (le petit anneau) à marqué ; l'orangé, au-dessus du style.</p>
+                <p><b>Hachuré, « ? »</b> : pas goûté, inconnu : aucun point (ce n'est pas zéro).</p>
+                <p><b>Toucher une famille</b> : sa note en mots. <b>Une pastille</b> : la note ; la retoucher, pas goûté.</p>
               </Legende></span>
             </div>
             <GrilleDegustation notes={notes} haut={haut} attendues={attendues} noter={(f, n) => setNotes((x) => ({ ...x, [f]: n }))} />
