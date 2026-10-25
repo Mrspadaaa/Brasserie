@@ -78,3 +78,81 @@ describe('wizard (T12) : drapeau et une seule copie', () => {
     expect(restes).toEqual([]);
   });
 });
+
+// Voie t12b-finitions (#170) : l'inconnu jamais à 0, l'en-tête réduit à l'étape 3, la rangée Retour/Suivant hors du coin
+// du « + », la recette de la maquette pour `?dev-local&etape=houblons`, le champ protégé.
+describe('étape Houblons v4 (T12b) : l\'inconnu s\'écrit « ? »', () => {
+  const VIDE = { id: 'REC-VIDE', name: '', style: '16D', volumeL: 20, boilMin: 60, fermentables: [], hops: [] } as unknown as Recipe;
+  const SANS_MALT = { ...VIDE, id: 'REC-SM', hops: [{ name: 'Citra', alpha: 12, weightG: 15, stage: 'boil', timeMin: 10 }] } as unknown as Recipe;
+  const bandeau = (c: HTMLElement) => c.querySelector('[data-element="etape-bandeau"]') as HTMLElement;
+
+  it('recette vide : ni « NaN » ni « IBU 0 » ; IBU et OG « ? » avec leur raison', async () => {
+    const { container } = render(<EtapeHoublons recipe={VIDE} boilOg={null} draftId="REC-VIDE" onChange={() => {}} />);
+    await waitFor(() => expect(bandeau(container)).not.toBeNull());
+    const b = bandeau(container);
+    expect(b.textContent).not.toMatch(/NaN/);
+    expect(b.querySelector('[data-role="ibu"]')?.textContent).toBe('?');
+    expect(b.querySelector('[data-role="ibu"] [data-inconnu]')?.getAttribute('title')).toMatch(/densité/);
+    expect(b.textContent?.replace(/\s+/g, ' ')).toMatch(/OG ?\?/);
+    expect(container.querySelector('[data-ecran="ma-biere"]')?.textContent).not.toMatch(/NaN/);
+  });
+
+  it('un houblon sans malts : le total d\'IBU reste « ? » (la carte dit « ? IBU »), jamais 0', async () => {
+    const { container } = render(<EtapeHoublons recipe={SANS_MALT} boilOg={null} draftId="REC-SM" onChange={() => {}} />);
+    await waitFor(() => expect(container.querySelector('[data-role="ligne-houblon"]')).not.toBeNull());
+    expect(bandeau(container).querySelector('[data-role="ibu"]')?.textContent).toBe('?');
+    expect(bandeau(container).textContent).not.toMatch(/NaN|IBU ?0\b/);
+  });
+
+  it('sans levure, la frise ne la dit pas « caractérisée »', async () => {
+    const { container } = render(<EtapeHoublons recipe={VIDE} boilOg={null} draftId="REC-VIDE" onChange={() => {}} />);
+    await waitFor(() => expect(container.querySelector('[data-role="pont-etape-levure"]')).not.toBeNull());
+    expect(container.querySelector('[data-role="pont-etape-levure"]')?.textContent).not.toMatch(/caractérisée/);
+  });
+
+  it('la recette de la maquette se chiffre : IBU et OG 1,066', async () => {
+    const { container } = render(<EtapeHoublons recipe={RECETTE} boilOg={1.066} draftId="REC-T12" onChange={() => {}} />);
+    await waitFor(() => expect(bandeau(container)).not.toBeNull());
+    expect(bandeau(container).querySelector('[data-role="ibu"]')?.textContent).toMatch(/^\d+$/);
+    expect(bandeau(container).textContent).toMatch(/1,066/);
+    expect(container.querySelector('[data-role="pont-etape-levure"]')?.textContent).toMatch(/caractérisée/);
+  });
+});
+
+describe('wizard (T12b) : en-tête, rangée de fin, banc local, champ protégé', () => {
+  const racine = path.resolve(__dirname, '../../..');
+  const lire = (f: string) => fs.readFileSync(path.join(racine, f), 'utf8');
+  it('à l\'étape 3 drapeau allumé, la rangée du titre garde le repère « 3/7 » sans le nom ; ailleurs WizardStepName', () => {
+    const w = lire('src/pages/BrewWizard.tsx');
+    expect(w).toMatch(/step === 'houblons' && hopV4Actif \? \(\s*<p data-role="repere-etape"/);
+    expect(w).toMatch(/: <WizardStepName steps=\{STEPS\} currentIndex=\{stepIndex\} \/>\}/);
+  });
+  it('Retour et Suivant sont la rangée de fin de PageShell, qui laisse le coin du « + » flottant', () => {
+    const w = lire('src/pages/BrewWizard.tsx');
+    expect(w).toMatch(/endActions=\{stepActions\}/);
+    const p = lire('src/pages/PageShell.tsx');
+    expect(p).toMatch(/data-floating-actions-gap=\{endActions \? 'page-row' : 'page'\}/);
+    expect(p).toMatch(/launcherPresent && !dockInHeader \? 'pr-16' : ''/);
+  });
+  it('le banc `?dev-local&etape=houblons` reste derrière import.meta.env.DEV et le compte dev-local', () => {
+    const a = lire('src/App.tsx');
+    const i = a.indexOf("q.get('etape') !== 'houblons'");
+    expect(i).toBeGreaterThan(0);
+    const avant = a.slice(Math.max(0, i - 400), i);
+    expect(avant).toMatch(/if \(import\.meta\.env\.DEV\) \{\s*if \(!isDevLocal \|\| !isDataReady/);
+  });
+  it('le champ « Ajouter — houblon… » est le champ protégé de l\'app (Input), pas un <input> brut', () => {
+    const a = lire('src/ui/hopIndex/maBiere/Ajouter.tsx');
+    expect(a).toMatch(/<Input ref=\{champRef\}/);
+    expect(a).not.toMatch(/<input\b/);
+  });
+});
+
+describe('recette du banc local (T12b)', () => {
+  it('est celle de sa maquette : Stout export 16D, 20 L, OG 1,066, Nugget 46 g à 60′, α 13 %', async () => {
+    const { recetteApercuEtapeHoublons } = await import('../../../src/ui/hopIndex/maBiere/apercuDev');
+    const r = recetteApercuEtapeHoublons() as unknown as Record<string, unknown> & { hops: Array<Record<string, unknown>> };
+    expect([r.style, r.volumeL, r.ogTarget, r.colorEbc]).toEqual(['16D', 20, 1.066, 70]);
+    expect(r.hops).toEqual([{ name: 'Nugget', alpha: 13, weightG: 46, stage: 'boil', timeMin: 60 }]);
+  });
+});

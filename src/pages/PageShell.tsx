@@ -258,6 +258,16 @@ interface PageShellProps {
   /** Barre collée en bas — validation, étape suivante. */
   footer?: React.ReactNode;
   /**
+   * Actions de fin de contenu (Retour, Suivant du wizard), non collées : la dernière rangée de la page.
+   *
+   * ⚠️ Le lanceur flottant (#114) se posait sur « Suivant » à chaque fois qu'on le croisait en défilant (T12b, #170).
+   * Ici la rangée lui laisse son coin : elle garde à droite la largeur du bouton (48 px + 16 px de bord), et la fin du
+   * contenu ne réserve plus sa hauteur. Au bas de la page, le bouton se pose au bout de la rangée, à sa hauteur ; en
+   * défilant, Retour et Suivant ne passent jamais dessous. Clavier ouvert, le lanceur va dans l'en-tête : la rangée
+   * reprend toute sa largeur.
+   */
+  endActions?: React.ReactNode;
+  /**
    * Sans effet depuis #114 : le lanceur ne réserve plus de case dans le pied,
    * il flotte au-dessus de la page.
    */
@@ -281,6 +291,7 @@ export const PageShell: React.FC<PageShellProps> = ({
   actions,
   progress,
   footer,
+  endActions,
   mobileHeader,
   wide = false,
   className = '',
@@ -604,7 +615,8 @@ export const PageShell: React.FC<PageShellProps> = ({
       <main ref={scrollRef} tabIndex={-1} aria-label={subtitle || title}
         className="flex-1 min-h-0 overflow-y-auto overscroll-contain focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw focus-visible:-outline-offset-2">
         <div
-          data-floating-actions-gap="page"
+          // Avec une rangée de fin, c'est elle qui laisse le coin au lanceur : la fin du contenu ne réserve plus sa hauteur.
+          data-floating-actions-gap={endActions ? 'page-row' : 'page'}
           className={`${frame} mx-auto pb-3 ${
             tight
               ? 'px-2.5 py-1.5 space-y-1.5'
@@ -614,6 +626,11 @@ export const PageShell: React.FC<PageShellProps> = ({
           }`}
         >
           {children}
+          {endActions && (
+            <div data-page-end-actions className={`pb-safe ${launcherPresent && !dockInHeader ? 'pr-16' : ''}`}>
+              {endActions}
+            </div>
+          )}
         </div>
       </main>
 

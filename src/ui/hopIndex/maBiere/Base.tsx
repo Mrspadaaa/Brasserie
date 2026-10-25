@@ -12,6 +12,8 @@ const LEVURES: Record<string, string> = {
   'fermentis-us05': 'SafAle US-05', 'lalbrew-pomona': 'LalBrew Pomona', 'lalbrew-verdant-ipa': 'LalBrew Verdant IPA', 'lalbrew-diamond': 'LalBrew Diamond',
 };
 export const nomLevureBase = (id: string | null | undefined) => (id ? LEVURES[id] ?? id : 'levure ?');
+/** Le moteur caractérise-t-il cette levure ? Sans levure, ou hors de ces fiches : non, et rien ne le prétend. */
+export const levureCaracterisee = (id: string | null | undefined) => !!id && Object.prototype.hasOwnProperty.call(LEVURES, id);
 
 /** Familles hors du style par le haut, la dégustée d'abord. */
 export function tropMarquees(biere: BiereLue, ordre: FamilyId[]) {
@@ -35,27 +37,42 @@ export function Alerte({ biere, ordre, element, long = false }: { biere: BiereLu
 
 /** Bandeau IBU · OG · EBC, en pilule, avec la jauge de l'IBU face à la bande du style. `ecart` (facultatif, étape
  * Houblons) : l'écart du total qui vient de changer, écrit au-dessus de l'IBU (« +2 », « −60 ») comme sa base (majIbu). */
+/** Pourquoi le total d'IBU ne se chiffre pas ; null s'il se chiffre. Densité inconnue (recette sans malts) : aucun IBU à
+ * chaud ne se calcule, même sans houblon, et le total n'est jamais un 0 (PRODUCT.md : « refuse d'inventer un chiffre »). */
+export function ibuIncalculable(biere: BiereLue): string | null {
+  if (!Number.isFinite(biere.og)) return 'densité initiale inconnue : IBU incalculable';
+  const n = biere.ibu.inconnus.length;
+  if (n) return `IBU de ${n} ajout${n > 1 ? 's' : ''} incalculable${n > 1 ? 's' : ''}`;
+  return Number.isFinite(biere.ibu.valeur) ? null : 'IBU incalculable';
+}
+
 export function Bandeau({ biere, avant, element, ecart = null }: { biere: BiereLue; avant?: BiereLue | null; element: string; ecart?: number | null }) {
   const ibu = biere.ibu.valeur;
+  const raisonIbu = ibuIncalculable(biere);
   const b = biere.bandeIbu;
   const max = b ? Math.max(b[1] * 1.4, ibu * 1.1) : Math.max(1, ibu * 1.5);
   const pc = (x: number) => `${Math.max(0, Math.min(100, (x / max) * 100)).toFixed(1)}%`;
-  const ibuAvant = avant && Math.abs(avant.ibu.valeur - ibu) >= 0.5 ? avant.ibu.valeur : null;
+  const ibuAvant = !raisonIbu && avant && !ibuIncalculable(avant) && Math.abs(avant.ibu.valeur - ibu) >= 0.5 ? avant.ibu.valeur : null;
   return (
     <div data-role="lectures" data-element={element} className="pq-mb-lectures flex items-center justify-between gap-2 px-4 py-1.5 rounded-full border border-cave-700 bg-cave-900">
       <span className="relative inline-flex items-baseline gap-1.5">
         <span className="text-sm text-cave-400">IBU</span>
-        {ecart ? <span data-role="ibu-ecart" aria-live="polite" className="pq-mb-ecart absolute left-8 -top-3.5 font-mono text-xs font-semibold leading-none">{`${ecart > 0 ? '+' : '−'}${Math.abs(ecart)}`}</span> : null}
-        <output data-role="ibu" data-valeur={ibu.toFixed(2)} className="reading text-xl">{nombre(ibu)}</output>
+        {ecart && !raisonIbu ? <span data-role="ibu-ecart" aria-live="polite" className="pq-mb-ecart absolute left-8 -top-3.5 font-mono text-xs font-semibold leading-none">{`${ecart > 0 ? '+' : '−'}${Math.abs(ecart)}`}</span> : null}
+        {raisonIbu
+          ? <output data-role="ibu" data-valeur=""><Inconnu raison={raisonIbu} /></output>
+          : <output data-role="ibu" data-valeur={ibu.toFixed(2)} className="reading text-xl">{nombre(ibu)}</output>}
         {ibuAvant != null && <s data-role="vient-de-changer" className="font-mono text-xs text-cave-400">{nombre(ibuAvant)}</s>}
         {b && (
           <span aria-label={`style ${b[0]}–${b[1]} IBU`} role="img" className="relative self-center w-12 h-2 ml-1 rounded-full bg-cave-800">
             <i className="absolute inset-y-0 rounded-full bg-cave-600" style={{ left: pc(b[0]), width: `calc(${pc(b[1])} - ${pc(b[0])})` }} />
-            <i className="absolute -top-1 -bottom-1 w-0.5 rounded-sm bg-cave-50" style={{ left: pc(ibu) }} />
+            {/* Le repère de ma bière, seulement quand son IBU se chiffre : la bande du style reste lisible. */}
+            {!raisonIbu && <i className="absolute -top-1 -bottom-1 w-0.5 rounded-sm bg-cave-50" style={{ left: pc(ibu) }} />}
           </span>
         )}
       </span>
-      <span className="inline-flex items-baseline gap-1.5"><span className="text-sm text-cave-400">OG</span><span className="reading text-xl">{nombre(biere.og, 3)}</span></span>
+      <span className="inline-flex items-baseline gap-1.5"><span className="text-sm text-cave-400">OG</span>{Number.isFinite(biere.og)
+        ? <span className="reading text-xl">{nombre(biere.og, 3)}</span>
+        : <Inconnu raison="densité initiale inconnue (aucun malt chiffré)" />}</span>
       <span className="inline-flex items-baseline gap-1.5">
         <span className="text-sm text-cave-400">EBC</span>
         {biere.ebc == null ? <Inconnu raison="couleur non calculée" /> : <span className="reading text-xl">{nombre(biere.ebc)}</span>}

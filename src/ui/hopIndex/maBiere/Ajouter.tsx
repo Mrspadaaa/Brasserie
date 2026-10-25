@@ -9,6 +9,7 @@
 // fais une recette puis ensuite j'achète les ingrédients, souvent pas présent »).
 import { useDeferredValue, useMemo, useRef, useState } from 'react';
 import { Plus, ShoppingCart } from 'lucide-react';
+import { Input, type InputElement } from '../../Input';
 import { COULEURS, nombre } from './commun';
 import { useOuvrir } from './hote';
 import { useNavigation } from './hote';
@@ -44,7 +45,7 @@ const statutDe = (q: QuickAdd): Proposition['statut'] => (q.stock.status === 'à
 const momentDe = (m: string) => (m === 'b60' ? 60 : 10);
 
 export function Ajouter({ recette, onGeste, onAjout, champRef }: {
-  recette: RecetteParcours; onGeste: () => void; onAjout: (id: string) => void; champRef: React.RefObject<HTMLInputElement | null>;
+  recette: RecetteParcours; onGeste: () => void; onAjout: (id: string) => void; champRef: React.RefObject<InputElement | null>;
 }) {
   const gestes = useGestes();
   const ouvrir = useOuvrir();
@@ -111,9 +112,11 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
       aria-label="Ajouter un houblon" className="space-y-1 pt-1.5">
       {!recette.additions.length && videOuverture.current && <JaugeVide recette={recette} />}
       <div className="flex items-center gap-1">
-        <input ref={champRef} type="text" inputMode="search" value={cherche} onChange={(e) => setCherche(e.target.value)} placeholder="Ajouter — houblon…"
+        {/* Le champ protégé de l'app (audit_inputs : pas d'accessoire Android) ; au doigt, une ligne de textarea, d'où py-2 et
+            leading-6 : le texte reste centré dans ses 40 px comme dans le champ natif. */}
+        <Input ref={champRef} inputMode="search" value={cherche} onChange={(e) => setCherche(e.target.value)} placeholder="Ajouter — houblon…"
           data-etat="etat-etape-champ-ajouter" aria-label="Ajouter un houblon : stock ou catalogue"
-          className="flex-1 min-w-0 h-10 px-4 rounded-full border border-cave-700 bg-cave-900 text-base text-cave-50 placeholder:text-cave-400" />
+          className="flex-1 min-w-0 h-10 px-4 py-2 leading-6 rounded-full border border-cave-700 bg-cave-900 text-base text-cave-50 placeholder:text-cave-400" />
         {liste.length > 0 && <BoutonLegende ouverte={legende} onBasculer={() => { setBandeOuverte(legende ? null : liste[0]?.cle ?? null); basculerLegende(); }} groupe="les icônes des ajouts proposés" controle="pq-ma-biere-legende-rapides" />}
       </div>
       <ul className="space-y-1" aria-label="Ajouts proposés par le moteur, chacun à son moment suggéré">
@@ -153,7 +156,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
                   {/* « Plus utilisé les icône hors 16d » (24.10, soir) : le ◇ des mots hors des 12 familles, en treizième case
                       de la bande (dessin, pas texte : la ligne ne grandit pas, D5, D41) ; ses mots au toucher. */}
                   {!ouvreBande && h.motsSansFamille.length > 0 && (
-                    <svg role="img" data-houblon-hors={h.cle} aria-label={`hors des 12 familles : ${h.motsSansFamille.join(', ')}`} viewBox="0 0 10 10" width="10" height="10" className="shrink-0 -ml-1 text-cave-300">
+                    <svg role="img" data-houblon-hors={h.cle} aria-label={`hors des 12 familles : ${h.motsSansFamille.join(', ')}`} viewBox="0 0 10 10" width="10" height="10" className="shrink-0 -ml-1 text-cave-200">
                       <title>{h.motsSansFamille.join(', ')}</title>
                       <path d="M5 0.8 L9.2 5 L5 9.2 L0.8 5 Z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
                     </svg>

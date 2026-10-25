@@ -449,6 +449,25 @@ export const App: React.FC = () => {
       duplicate: !!duplicateOf, title: seed?.title, description: seed?.description });
   };
 
+  /*
+   * Banc local de l'étape Houblons (T12b, #170 ; contrôles de ses choix sur l'app, T14) : `?dev-local&etape=houblons`
+   * ouvre le wizard à l'étape 3 sur la recette de sa maquette (fixture), `&recette=vide` sur une recette neuve. Mêmes
+   * deux verrous que devLocalUser : `import.meta.env.DEV` (éliminé au build) et le compte dev-local ; une seule fois.
+   */
+  const apercuOuvert = useRef(false);
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      if (!isDevLocal || !isDataReady || apercuOuvert.current) return;
+      const q = new URLSearchParams(location.search);
+      if (q.get('etape') !== 'houblons') return;
+      apercuOuvert.current = true;
+      if (q.get('recette') === 'vide') { openWizard({ step: 'houblons' }); return; }
+      import('./ui/hopIndex/maBiere/apercuDev').then(({ recetteApercuEtapeHoublons }) =>
+        openWizard({ recipe: recetteApercuEtapeHoublons(), step: 'houblons' }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDevLocal, isDataReady]);
+
   /**
    * Le bouton + conserve l'action de création de l'écran courant
    * (article, recette, écriture…). Le compagnon dispose de son propre bouton.

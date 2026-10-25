@@ -6,6 +6,7 @@
 // d'un outil. Classes propres préfixées pq-ma-biere- (L26).
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
+import type { InputElement } from '../../Input';
 import { PageShell } from '../../../pages/PageShell';
 import { WizardStepRail } from '../../WizardStepBar';
 import { Pont, type Echelle } from './commun';
@@ -89,7 +90,7 @@ export function EtapeHoublonsContenu() {
     const t = window.setTimeout(() => setEcart(null), 2000);
     return () => window.clearTimeout(t);
   }, [ibuArrondi]);
-  const champ = useRef<HTMLInputElement>(null);
+  const champ = useRef<InputElement>(null);
   const [, majNouveaux] = useState(0);
   // Les deux colonnes de la base : familles attendues et fruitées à gauche, le reste à droite.
   const moitie = Math.ceil(sc.order.length / 2);

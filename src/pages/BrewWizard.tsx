@@ -395,7 +395,7 @@ const KIND_DEF: Record<
  * brasse. L'eau se traite désormais en avant-dernier, comme le fait un brasseur.
  */
 
-type StepId =
+export type StepId =
   | 'identite'
   | 'fermentescibles'
   | 'houblons'
@@ -419,6 +419,8 @@ export interface WizardSeed {
   description?: string;
   /** Recette existante à modifier ou dupliquer. */
   recipe?: Recipe;
+  /** Étape d'ouverture quand aucun brouillon n'est repris (banc local `?dev-local&etape=houblons`, T12b). */
+  step?: StepId;
 }
 
 interface BrewWizardProps {
@@ -559,7 +561,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     (['id', 'volumeL', 'efficiencyPct', 'boilOffRatePct', 'deadSpaceL', 'equipment', 'preferences'] as const)
       .some(key => JSON.stringify(details.brewhouse![key]) !== JSON.stringify(configuredBrewhouse[key]));
 
-  const [step, setStep] = useState<StepId>(restoredDraft?.step ?? 'identite');
+  const [step, setStep] = useState<StepId>(restoredDraft?.step ?? seed?.step ?? 'identite');
   const [validationRequested, setValidationRequested] = useState(false);
   const [focusIssue, setFocusIssue] = useState<RecipeFieldIssue>();
   const [saveError, setSaveError] = useState('');
@@ -2064,7 +2066,14 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         <ChevronLeft className="w-4 h-4" />
       </button>
 
-      <WizardStepName steps={STEPS} currentIndex={stepIndex} />
+      {/* Étape Houblons, drapeau hopV4 : « Text header inutile » (24.10, sur sa maquette ; D58). Le fil d'étapes juste
+          dessous nomme déjà « Houblons » : la rangée garde le retour et le repère compact « 3/7 » (T12b, #170). */}
+      {step === 'houblons' && hopV4Actif ? (
+        <p data-role="repere-etape" className="flex min-w-0 flex-1 items-baseline">
+          <span aria-hidden="true" className="font-mono text-sm text-cave-400">{stepIndex + 1}/{STEPS.length}</span>
+          <span aria-live="polite" className="sr-only">{`${STEPS[stepIndex].label} — étape ${stepIndex + 1} sur ${STEPS.length}`}</span>
+        </p>
+      ) : <WizardStepName steps={STEPS} currentIndex={stepIndex} />}
 
       <button
         type="button"
@@ -2091,12 +2100,53 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     </div>
   );
 
+  /*
+    ⚠️ RETOUR / SUIVANT NE SUIVENT PLUS.
+
+    Ils vivaient dans la barre collée en bas de `PageShell` : cinquante-six
+    pixels confisqués en permanence sur un écran de téléphone, pour deux
+    boutons dont on ne se sert qu'une fois par étape — à la fin. Ils sont
+    maintenant à LEUR place, au bas du contenu, et petits : on les atteint en
+    finissant de dérouler la page, ce qu'on fait de toute façon.
+
+    Le récapitulatif garde sa barre collée, lui : « Enregistrer » et
+    « Lancer le brassin » sont la décision de la page, pas une navigation.
+
+    Ils sont la rangée de fin de `PageShell` (`endActions`), la même pour les six
+    étapes : elle laisse son coin au « + » flottant de l'app, qui se posait sur
+    « Suivant » à chaque fois qu'on le croisait en défilant (T12b, #170). Hors du
+    fieldset du contenu : `saving` les désactive lui-même.
+  */
+  const stepActions = !draftReadOnly && step !== 'recap' ? (
+    <nav className="recipe-step-actions flex justify-between gap-2 pt-1 pb-2">
+      <button
+        type="button"
+        onClick={() => go(-1)}
+        disabled={stepIndex === 0 || hopGuideBusy || saving}
+        className="min-h-touch-sm px-3 rounded-control border border-cave-800
+                   text-cave-400 text-sm disabled:opacity-30 transition-colors hover:bg-cave-850"
+      >
+        Retour
+      </button>
+      <button
+        type="button"
+        onClick={() => go(1)}
+        disabled={hopGuideBusy || saving}
+        className="recipe-primary-action min-h-touch px-2 rounded-control bg-ebc-straw text-cave-950
+                   text-sm font-semibold disabled:opacity-40 transition-colors hover:brightness-105"
+      >
+        {`Suivant — ${STEPS[stepIndex + 1]?.label ?? ''}`}
+      </button>
+    </nav>
+  ) : undefined;
+
   return (
     <PageShell
       title={draftReadOnly ? 'Brouillon en lecture seule' : seed?.recipe ? `Modifier « ${seed.recipe.name} »` : 'Nouvelle recette'}
       subtitle={STEPS[stepIndex].label}
       onClose={onClose}
       mobileHeader={mobileHeader}
+      endActions={stepActions}
       compactDock
       className="recipe-wizard"
       scrollKey={step}
@@ -3280,41 +3330,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         /></Suspense>
         <BrewBudgetButton recipe={build()} />
         </>
-      )}
-
-      {/*
-        ⚠️ RETOUR / SUIVANT NE SUIVENT PLUS.
-
-        Ils vivaient dans la barre collée en bas de `PageShell` : cinquante-six
-        pixels confisqués en permanence sur un écran de téléphone, pour deux
-        boutons dont on ne se sert qu'une fois par étape — à la fin. Ils sont
-        maintenant à LEUR place, au bas du contenu, et petits : on les atteint en
-        finissant de dérouler la page, ce qu'on fait de toute façon.
-
-        Le récapitulatif garde sa barre collée, lui : « Enregistrer » et
-        « Lancer le brassin » sont la décision de la page, pas une navigation.
-      */}
-      {step !== 'recap' && (
-        <nav className="recipe-step-actions flex justify-between gap-2 pt-1 pb-2">
-          <button
-            type="button"
-            onClick={() => go(-1)}
-            disabled={stepIndex === 0 || hopGuideBusy}
-            className="min-h-touch-sm px-3 rounded-control border border-cave-800
-                       text-cave-400 text-sm disabled:opacity-30 transition-colors hover:bg-cave-850"
-          >
-            Retour
-          </button>
-          <button
-            type="button"
-            onClick={() => go(1)}
-            disabled={hopGuideBusy}
-            className="recipe-primary-action min-h-touch px-2 rounded-control bg-ebc-straw text-cave-950
-                       text-sm font-semibold disabled:opacity-40 transition-colors hover:brightness-105"
-          >
-            {`Suivant — ${STEPS[stepIndex + 1]?.label ?? ''}`}
-          </button>
-        </nav>
       )}
 
       {/*

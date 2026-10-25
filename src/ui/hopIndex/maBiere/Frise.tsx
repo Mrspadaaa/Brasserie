@@ -17,7 +17,7 @@ import { placer, quandDe } from '../parcours/operations';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 import { houblon, type BiereLue } from '../parcours/adaptateur';
 import { Carte } from './Carte';
-import { nomLevureBase } from './Base';
+import { levureCaracterisee, nomLevureBase } from './Base';
 import { brancherGlisser, creerRail, type Rail, type Segment } from './rail';
 
 /** La valeur du rail d'un ajout : « fwh », « b35 », « wp80 », « f3 », « p10 ». */
@@ -153,12 +153,12 @@ export function Frise({ recette, biere, reperes, nouveaux, onGeste, ouvrirChamp 
       <div data-rang="T-levure" data-etape="levure" className="pq-mb-rang pq-mb-r-levure">
         <Point c="levure" />
         <button type="button" data-role="pont-etape-levure" data-element="etape-levure" disabled={!ajoutLevure}
-          aria-label={`Levure de la recette : ${nomLevureBase(recette.yeastId)}, caractérisée`}
+          aria-label={`Levure de la recette : ${nomLevureBase(recette.yeastId)}${levureCaracterisee(recette.yeastId) ? ', caractérisée' : ''}`}
           onClick={() => ajoutLevure && ouvrir({ ecran: 'levure', ajout: ajoutLevure })}
           className={`pq-mb-levure ${levureChangee ? 'pq-ma-biere-change' : ''}`}>
           <i aria-hidden="true" className="pq-mb-ic-levure" />
           <span className="pq-mb-levure-nom">{nomLevureBase(recette.yeastId)}</span>
-          <span className="pq-mb-gris">caractérisée</span>
+          {levureCaracterisee(recette.yeastId) && <span className="pq-mb-gris">caractérisée</span>}
           {levureChangee && <span data-role="vient-de-changer" className="pq-ma-biere-repere text-xs truncate">{levureChangee}</span>}
         </button>
       </div>

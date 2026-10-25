@@ -33,7 +33,8 @@ export function AlphaLu({ h, mode = 'ligne', balise = h.cle }: { h: HoublonLu; m
         α{' '}{src === 'fiches' && p ? plage(p[0], p[1]) : nombre(valeur, 1)}{' '}%
       </span>
       {mode === 'fiche' && <span className="text-xs text-cave-400">{src === 'lot' ? 'lot' : 'fiches'}</span>}
-      {mode === 'fiche' && plageLot && <span aria-hidden="true" className="text-cave-600">·</span>}
+      {/* Le séparateur, un point dessiné (gris de bordure) : un décor, pas un texte (designTokens). */}
+      {mode === 'fiche' && plageLot && <span aria-hidden="true" className="inline-block self-center w-[3px] h-[3px] rounded-full bg-cave-600" />}
       {plageLot}
     </span>
   );
