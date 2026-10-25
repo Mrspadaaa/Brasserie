@@ -15,7 +15,7 @@
 //   3. un toucher montre le sens, près du picto : pour le premier élément de traits de trois lignes différentes, un
 //      toucher fait apparaître, en moins de 400 ms (comptées au retour du toucher), un élément visible (au centre de
 //      l'écran, non couvert), à 120 px au plus du picto, dont le texte contient le nom court de la famille (table
-//      COURT de parcours/src/commun/familles.ts) et sa valeur en crans (data-crans arrondi au dixième, virgule
+//      COURT de src/ui/hopIndex/familyTokens.ts) et sa valeur en crans (data-crans arrondi au dixième, virgule
 //      décimale, signe « + » ou « − » ; pour un effet non établi, « ? » ou « non établi »). L'élément doit être
 //      nouveau : un texte déjà là avant le toucher ne compte pas. À l'ordinateur : le survol, sinon le clic ;
 //   4. le toucher n'a pas d'autre effet : la route (location.hash, window.__parcours.route) et la liste à comparer
@@ -56,10 +56,10 @@ if (!existe(fichier)) { console.log('TRAITS ECHEC : page absente (' + path.relat
 if (!TAILLES.length) { console.log('TRAITS ECHEC : --largeur=390 ou 1280'); process.exit(2); }
 
 // La table des noms courts : lue dans l'app, jamais recopiée.
-const srcFamilles = fs.readFileSync(path.join(RACINE, 'prototypes/houblons-v4/parcours/src/commun/familles.ts'), 'utf8');
+const srcFamilles = fs.readFileSync(path.join(RACINE, 'src/ui/hopIndex/familyTokens.ts'), 'utf8');
 const bloc = (srcFamilles.match(/COURT[^=]*=\s*\{([\s\S]*?)\}/) || [])[1] || '';
 const COURT = Object.fromEntries([...bloc.matchAll(/(\w+):\s*'([^']+)'/g)].map((m) => [m[1], m[2]]));
-if (Object.keys(COURT).length < 12) { console.log('TRAITS ECHEC : table des familles illisible (familles.ts)'); process.exit(2); }
+if (Object.keys(COURT).length < 12) { console.log('TRAITS ECHEC : table des familles illisible (familyTokens.ts)'); process.exit(2); }
 
 const norm = (s) => String(s).replace(/[\s\u00a0\u202f]+/g, ' ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const MOINS = '\\u2212\\u2013-';

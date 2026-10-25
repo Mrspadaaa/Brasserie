@@ -4,7 +4,7 @@
 // Les familles du profil gardent la légende du socle (Legende). Classes préfixées pq-ma-biere- (L26).
 import { useEffect, useState, type ReactNode } from 'react';
 import { COULEURS, COURT } from '../../commun';
-import { ROUE } from '../../commun/familles';
+import { ROUE } from '@app/ui/hopIndex/familyTokens';
 import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 
 /** L'état d'une légende de groupe : ouverte ou non ; Échap la referme (comme la légende du socle). */

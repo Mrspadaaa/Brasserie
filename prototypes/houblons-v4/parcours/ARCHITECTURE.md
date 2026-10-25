@@ -34,7 +34,7 @@ mêlent pas au moteur V5.5 qu'ils importent).
 | `src/integration/crochetTest.ts` | `src/ui/hopIndex/devHook.ts`, derrière `import.meta.env.DEV` | oui | voir « ## Crochet de test » |
 | `src/donnees/cas.ts` | aucune | oui | la recette, la dégustation et le stock viennent de l'app ; `CONDITIONS`, `VISEE`, `LEVURES` restent comme règles |
 | `src/commun/Cadres.tsx` | rien : `PageShell` et `Sheet` de l'app, employés tels quels | oui | |
-| `src/commun/*` (BarreStyle, JetonHoublon, Pictos, familles, Marques, LigneContexte, Legende, Pont, Onglets, gestes, nombres) | `src/ui/hopIndex/` | oui | `familles.ts` → `src/ui/hopIndex/familyTokens.ts` |
+| ~~`src/commun/*` (BarreStyle, JetonHoublon, Pictos, familles, Marques, LigneContexte, Legende, Pont, gestes, nombres)~~ **fait (T11, #168, 25.10)** : `src/ui/hopIndex/` (`familles.ts` → `familyTokens.ts`), déplacés par `git mv` | oui | une seule copie ; `commun/index.ts` de la maquette les réexporte depuis `@app/ui/hopIndex/…`. `BarreStyle` et `JetonHoublon` lisent `FamilleAffichee` et `HoublonAffiche` (`lecturesAffichees.ts`, champs affichés seulement : `FamilleLue` et `HoublonLu` y entrent par typage structurel) ; `.pq-hachure` vit dans `communs.css`. **Restent dans la maquette** (ils importent `coquille/` ou `etat/`) : `Onglets.tsx` (`useNavigation`, `useComparaison`), `PiedAnnuler.tsx` (`useNavigation`, `useGestes`), `Cadres.tsx`, et `retour.css`, `feuille.css`, `pied-annuler.css`. Test : `tests/unit/hopIndexV4/communsHopIndex.test.tsx`. |
 | ~~`prototypes/houblons-v4/data/`~~ **fait (T4, #163)** : `src/data/hopV4/` (`proto-data`, `composes-houblon`, `style-bands`, `correspondance-familles`, `faits-cites` : moteur ; `jetons-familles`, `pictos-familles.svg`, `comparatifs-dryhop` : écrans) | oui | copies de `work/` par `src/data/hopV4/copies-de-work.mjs`, avec leur source ; `pack-fiches.json` et `pack-mini-protos.json` restent au prototype (sorties générées, lues par les contrôles de `work/`) |
 | `src/ecrans/<écran>/index.tsx` | `src/ui/hopIndex/<Écran>.tsx` | oui | un écran = un outil |
 | `src/ecrans/<écran>/jeu.mjs`, `NOTE.md`, `outils/*.mjs` | `scripts/` (contrôles de parcours, mode `--url`) | non | |
@@ -179,7 +179,7 @@ Mesuré par `work/refonte-frontend/v4/tournoi/outils/mesure-performance.mjs … 
 Fait : (1) préchauffage au repos (`src/moteur/prechauffage.ts`, appelé par `Coquille.tsx` sur Ma bière) : les voies
 de Suggérer et les remplaçants de chaque ajout, une tâche par `requestIdleCallback`, mêmes appels que les écrans ;
 (2) formateurs de nombres mis en cache (`Intl.NumberFormat`, même texte) dans `src/domain/hopIndex/v4/pouvoir.ts` et
-`commun/nombres.ts`. Pas fait ici (fichiers d'écran ou configuration hors de la voie) : les formateurs de
+`nombres.ts` (aujourd'hui `src/ui/hopIndex/nombres.ts`, T11). Pas fait ici (fichiers d'écran ou configuration hors de la voie) : les formateurs de
 `dryhopper/mesures.ts` et `comparer/valeurs.ts`, le rendu des écrans d'arrivée, le découpage du paquet.
 
 **Ce qui part en worker dans l'app** (précédent : `src/ui/hopIndex/hopSolver.worker.ts`, `hopSolverMessages.ts`,

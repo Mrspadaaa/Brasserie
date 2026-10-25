@@ -14,7 +14,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Package } from 'lucide-react';
 import { COURT, Picto, nombre, plage } from '../../commun';
-import { Pont } from '../../commun/Pont';
+import { Pont } from '@app/ui/hopIndex/Pont';
 import { nomMoment, ibuAjout, type HoublonLu } from '../../moteur';
 import { quandDe } from '../../etat/quand';
 import { useRemplacants } from '../substituer/donnees';

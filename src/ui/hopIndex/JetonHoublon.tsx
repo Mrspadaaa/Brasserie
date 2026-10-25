@@ -1,10 +1,10 @@
 // Jeton d'un houblon, dans l'ordre du brasseur (L04) : nom, α (lot, puis plage des fiches, « ≠ » si le lot en
 // sort), rôle en mot. Le stock n'est qu'une icône (D23 ter).
 import { Package } from 'lucide-react';
-import type { HoublonLu } from '../moteur';
+import type { HoublonAffiche } from './lecturesAffichees';
 import { nombre, plage } from './nombres';
 
-export function Alpha({ h, court = false }: { h: HoublonLu; court?: boolean }) {
+export function Alpha({ h, court = false }: { h: HoublonAffiche; court?: boolean }) {
   if (!h.alpha) return <span data-role="alpha" className="font-mono text-cave-400">α ?</span>;
   const { valeur, plage: p, horsFiches } = h.alpha;
   return (
@@ -15,7 +15,7 @@ export function Alpha({ h, court = false }: { h: HoublonLu; court?: boolean }) {
   );
 }
 
-export function JetonHoublon({ h, couleur, court = false }: { h: HoublonLu; couleur?: string; court?: boolean }) {
+export function JetonHoublon({ h, couleur, court = false }: { h: HoublonAffiche; couleur?: string; court?: boolean }) {
   return (
     <span data-jeton-houblon={h.cle} className="inline-flex items-baseline gap-1.5 min-w-0">
       {couleur && <span aria-hidden="true" className="inline-block w-2.5 h-2.5 rounded-full shrink-0 self-center" style={{ background: couleur }} />}

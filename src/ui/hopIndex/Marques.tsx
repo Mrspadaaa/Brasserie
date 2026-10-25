@@ -1,5 +1,6 @@
 // Marques d'honnêteté : le simulé porte « ~ », l'inconnu « ? » hachuré (jamais 0).
 import type { ReactNode } from 'react';
+import './communs.css';
 import { signe as ecrireSigne, nombre } from './nombres';
 
 /** Valeur simulée : « ~+23 » (écart) ou « ~24 » (niveau). */

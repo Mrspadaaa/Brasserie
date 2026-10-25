@@ -6,7 +6,7 @@ import { Sheet } from '@app/ui/Sheet';
 import { useNavigation } from '../coquille/navigation';
 import type { RoutePage } from '../coquille/pages';
 import { Onglets, TeteOutil } from './Onglets';
-import { Dock } from './Pont';
+import { Dock } from '@app/ui/hopIndex/Pont';
 import './retour.css';
 import './feuille.css';
 

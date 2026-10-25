@@ -2,18 +2,19 @@
 // style sur la moitié gauche ; repère rond = ma bière avant ; aplat à la couleur de la famille = la valeur montrée.
 // En absolu : piste 0 → 110 sur l'échelle des axes V5.5, zone = la bande brute. Inconnu : piste hachurée, jamais 0.
 import type { ReactNode } from 'react';
-import type { FamilleLue } from '../moteur';
-import { COULEURS, COURT } from './familles';
+import type { FamilleAffichee } from './lecturesAffichees';
+import { COULEURS, COURT } from './familyTokens';
 import { Picto } from './Pictos';
+import './communs.css';
 
 export type Echelle = 'style' | 'absolu';
 const pc = (x: number) => `${Math.max(0, Math.min(100, x)).toFixed(1)}%`;
 
 export function BarreStyle({ apres, avant, echelle = 'style', valeur, nomme = true }: {
   /** Ce que la barre montre (la bière, ou la bière après un ajout). */
-  apres: FamilleLue;
+  apres: FamilleAffichee;
   /** Repère « ma bière avant », facultatif. */
-  avant?: FamilleLue;
+  avant?: FamilleAffichee;
   echelle?: Echelle;
   /** Ce qui s'écrit à droite (écart simulé, « hors style »…). */
   valeur?: ReactNode;

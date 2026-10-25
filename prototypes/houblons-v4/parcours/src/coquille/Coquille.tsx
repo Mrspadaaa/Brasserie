@@ -2,7 +2,7 @@
 // écran, la fiche en feuille. Elle tient le brouillon en accord avec la route : une route d'outil suppose son
 // brouillon ; revenir hors de l'outil l'abandonne (la recette reste intacte).
 import { useEffect, useRef } from 'react';
-import { JeuPictos } from '../commun/Pictos';
+import { JeuPictos } from '@app/ui/hopIndex/Pictos';
 import { useParcours } from '../etat/EtatParcours';
 import { brouillonPour } from '../etat/etapes';
 import MaBiere from '../ecrans/ma-biere';
@@ -14,7 +14,7 @@ import Dryhopper from '../ecrans/dryhopper';
 import Levure from '../ecrans/levure';
 import Substituer from '../ecrans/substituer';
 import { bannisDe, objectifsDe, voiesDe } from '../ecrans/suggerer/voies';
-import { ROUE } from '../commun/familles';
+import { ROUE } from '@app/ui/hopIndex/familyTokens';
 import { lireBiere, remplacants } from '../moteur';
 import { prechauffer } from '../moteur/prechauffage';
 import { useNavigation } from './navigation';

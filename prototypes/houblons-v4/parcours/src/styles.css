@@ -5,10 +5,7 @@
 /* Le thème de ses maquettes choisies, par défaut (règle n° 1, D106) : remplace le clair « papier chaud ». */
 @import './theme-maquettes.css';
 
-/* Inconnu : hachuré, jamais une barre à zéro. */
-.pq-hachure {
-  background-image: repeating-linear-gradient(135deg, rgb(var(--cave-700) / 0.55) 0 3px, transparent 3px 7px);
-}
+/* .pq-hachure (inconnu hachuré) : src/ui/hopIndex/communs.css, avec les composants communs (T11, #168). */
 
 /* PageShell (app) donne le focus à son conteneur de défilement (tabindex="-1") à l'ouverture d'une page : c'est une
    cible de programme, jamais de tabulation. Sans ce réglage, l'anneau de focus paille encadrait tout l'outil sur les
