@@ -197,6 +197,14 @@ temps).
 
 Chemins de « Possède » : relatifs à la racine du dépôt ; `voies/…` est relatif au dossier de cette mission.
 
+## Lot 26 — le radar seul (25.10)
+- Ses mots : « Fait moi juste plein de mini maquettes, genre 20 sur le radargraph uniquement focus dessus. Prends l'exemple de
+  base » ; « En partant de ce type de base » (cmb3b) ; « Allégé les contrôle, Review, feedback ». Contrat : `ecran-1/fils26-radar/BRIEF.md`.
+- Dérogation M13, L25 et des GATES par ses mots : 20 mini maquettes en 5 séries de 4 (rda à rde), un seul contrôle de rendu
+  (`RADAR OK`), aucune critique Fable ; le pilote regarde les captures avant de publier.
+- Voies : rd0 (auteur, données communes, socle rd00 = cmb3b redessiné, outils) ; rda à rde (concepteur chacun).
+- Passe radar cmb4a à cmb4d arrêtée : cmb4b « n'importe quoi » (D144) ; cmb4a, c, d gardées sur le disque, non publiées.
+
 ## Pages
 Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`).
 

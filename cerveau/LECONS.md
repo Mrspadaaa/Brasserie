@@ -67,7 +67,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L11 — Fini veut dire utilisable, pas un reçu
 - Erreur : 08.10, des reçus, des registres « qualifiés » et des couches V3/V4/V5.5 donnaient l'impression d'avancer, sans fonction utilisable.
 - Cause : on comptait des preuves déclarées au lieu de parcours réels.
-- Faire : une chose est finie si elle est branchée, atteinte par un vrai parcours dans Chrome, typée, testée, avec un build vert (classement de l'existant : CLAUDE.md). Le quota sert d'abord ce qu'il verra : montrer tôt, outiller seulement ce qui bloque (24.10, SPEC § 1).
+- Faire : une chose est finie si elle est branchée, atteinte par un vrai parcours dans Chrome, typée, testée, avec un build vert. Le quota sert d'abord ce qu'il verra : montrer tôt, outiller seulement ce qui bloque (24.10, SPEC § 1).
 - Rôles : pilote, relecteur, exécutant
 - Contrôle : aucun
 
@@ -81,9 +81,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L13 — Une plainte devient un contrôle qui échoue sur la version rejetée, avant toute correction
 - Erreur : 18.10, les mêmes défauts revenaient de v2 à v4 (trop de texte, cockpit) ; 20.10, « épicé » critiqué une deuxième fois (lots 15 et 21), la première plainte n'étant pas un contrôle.
 - Cause : les corrections étaient des règles écrites, lues par des agents, et non des contrôles bloquants.
-- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet. Un contrôle ne garde que s'il tourne sur le format actuel : ceux de la portée du lot (`portee-defauts.json`) entrent tous dans ses GATES, et un contrôle mort est adapté ou déclaré caduc (23.10 : D4 oublié ; 31 scripts sur 50 non rejoués). Rejouer chaque critère sur HEAD avant la voie : rouge sur la base, il la condamne à tort (24.10, r14).
+- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet. Une plainte ambiguë ne fige pas une seule lecture en contrôle bloquant : chaque lecture devient un axe de variantes (25.10 : « les pic » lu « sans pointe », D144). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de la portée du lot (`portee-defauts.json`) entrent tous dans ses GATES, et un mort est adapté ou caduc (23.10 : D4). Rejouer chaque critère sur HEAD avant la voie (24.10, r14).
 - Rôles : pilote, auteur
-- Contrôle : `systeme.mjs mission` (portée) ; cablage (« OK 0/0 » ; portée inconnue, 24.10 : p17 sans rail)
+- Contrôle : `systeme.mjs mission` (portée) ; cablage (« OK 0/0 », portée inconnue)
 
 ### L14 — Confronter les données au savoir du brasseur sur les houblons phares
 - Erreur : 20.10, avec l5f, Nelson Sauvin paraît « un houbon ordinaire alors que c'est un un houbon incroyable », et Motueka « ultra fruité ».
