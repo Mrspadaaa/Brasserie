@@ -88,4 +88,8 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
 - Mesures de référence : démarrage 919 ko gzip (budget 350, #121) ; chunk des outils 117 ko ; couche préchargée 36 à 59 ms ×4 ; `npm run check:hop-perf` ECHEC 5 à 6 (Suggérer à froid 205 ms, tranche des voies 345 ms, Comparer jour après jour 120 ms).
 - Attendent l'utilisateur : retrait de V5.5, service worker, fusion des catalogues, catalogue réel (R9), PR et fusion vers main. Attendent le brasseur : états d'attente, budget t2, Comparer (lot fils25 en cours), Dryhopper, Levure.
 
+## Règle de la fluidité (25.10, soir)
+- Ses mots : « SI Des étape bloque vraiment sur la fluidité. Tu peux skip trouvé une solution et compromis et me propose ça. Dans le pire des cas ». Une étape qui bloque sur la fluidité ne bloque pas la mission : un compromis mesuré (avant, après) lui est proposé, en DÉCISION À PRENDRE de la voie.
+- En vol (25.10, soir) : t15a-comparer (Comparer cmc2k dans l'app, #174), rb2-ma-biere (radar commun dans Ma bière). Fait : t12b (#170 fermé), rc-registres-comparer (D69).
+
 ## Signature
