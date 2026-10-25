@@ -1,0 +1,1079 @@
+{
+  "meta": {
+    "commit": "36ba5643",
+    "fichiersModifiesSrcEtPrototypes": 0,
+    "machine": "Intel(R) Core(TM) i5-14600KF · 20 cœurs",
+    "node": "v24.19.0",
+    "n": 8,
+    "taux": [
+      4
+    ],
+    "build": "production (vite build --mode banc, import.meta.env.DEV=true, VITE_HOP_V4=on)",
+    "dossier": "C:\\Users\\mrspa\\AppData\\Local\\Temp\\affinee-banc-hop-prod\\dist",
+    "fixture": "?dev-local&etape=houblons (Stout export 16D, Nugget 46 g à 60′, stock vide), Comparer sur Cascade/Idaho 7/Galaxy puis Citra/Mosaic/Simcoe",
+    "erreurs": [],
+    "bloquees": []
+  },
+  "profil": {
+    "comparer-ouverture": {
+      "reps": 4,
+      "fichiers": [
+        {
+          "fichier": "src/pages/PageShell.tsx",
+          "ms": 614.53975
+        },
+        {
+          "fichier": "src/ui/hopIndex/comparer/index.tsx",
+          "ms": 320.27975
+        },
+        {
+          "fichier": "node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 37.342
+        },
+        {
+          "fichier": "src/domain/hopIndex/v4/profil-simule.ts",
+          "ms": 7.45975
+        },
+        {
+          "fichier": "src/domain/hopIndex/v4/moteur.ts",
+          "ms": 5.885
+        },
+        {
+          "fichier": "src/ui/hopIndex/parcours/adaptateur.ts",
+          "ms": 2.32075
+        },
+        {
+          "fichier": "src/hopExtrapolationCore.ts",
+          "ms": 1.42475
+        },
+        {
+          "fichier": "src/ui/hopIndex/parcours/mesure.ts",
+          "ms": 1.36625
+        },
+        {
+          "fichier": "src/ui/hopIndex/commun/RadarBase.tsx",
+          "ms": 1.212
+        },
+        {
+          "fichier": "src/ui/hopIndex/nombres.ts",
+          "ms": 1.15075
+        },
+        {
+          "fichier": "node_modules/react/cjs/react.production.js",
+          "ms": 1.14775
+        },
+        {
+          "fichier": "src/pages/BrewWizard.tsx",
+          "ms": 1.0535
+        },
+        {
+          "fichier": "src/ui/hopIndex/maBiere/Base.tsx",
+          "ms": 0.85875
+        },
+        {
+          "fichier": "src/pages/useFullScreenRoute.ts",
+          "ms": 0.8195
+        },
+        {
+          "fichier": "(racine)",
+          "ms": 0.80825
+        }
+      ],
+      "natifs": [
+        {
+          "appel": "getBoundingClientRect ← src/ui/hopIndex/comparer/index.tsx",
+          "ms": 315.62525
+        },
+        {
+          "appel": "focus ← src/pages/PageShell.tsx",
+          "ms": 104.25025
+        },
+        {
+          "appel": "querySelectorAll ← src/pages/PageShell.tsx",
+          "ms": 5.22425
+        },
+        {
+          "appel": "removeChild ← node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 4.327
+        },
+        {
+          "appel": "setAttribute ← node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 3.78825
+        },
+        {
+          "appel": "appendChild ← node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 1.974
+        },
+        {
+          "appel": "querySelectorAll ← src/ui/hopIndex/maBiere/Lentille.tsx",
+          "ms": 0.70425
+        },
+        {
+          "appel": "createElement ← node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 0.5425
+        }
+      ],
+      "scriptActifMs": 1014.679,
+      "gcMs": 12.5135,
+      "programmeNatifMs": 132.0765,
+      "composants": [],
+      "fonctions": [
+        {
+          "fonction": "(anonyme) · src/pages/PageShell.tsx",
+          "msPropre": 504.72475
+        },
+        {
+          "fonction": "getBoundingClientRect · (natif)",
+          "msPropre": 315.62525
+        },
+        {
+          "fonction": "focus · (natif)",
+          "msPropre": 104.25025
+        },
+        {
+          "fonction": "querySelectorAll · (natif)",
+          "msPropre": 5.9285
+        },
+        {
+          "fonction": "il · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 5.5035
+        },
+        {
+          "fonction": "(anonyme) · src/domain/hopIndex/v4/profil-simule.ts",
+          "msPropre": 4.6685
+        },
+        {
+          "fonction": "removeChild · (natif)",
+          "msPropre": 4.327
+        },
+        {
+          "fonction": "setAttribute · (natif)",
+          "msPropre": 3.78825
+        },
+        {
+          "fonction": "pt · src/domain/hopIndex/v4/moteur.ts",
+          "msPropre": 2.76
+        },
+        {
+          "fonction": "nn · src/domain/hopIndex/v4/moteur.ts",
+          "msPropre": 2.256
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/comparer/index.tsx",
+          "msPropre": 2.08725
+        },
+        {
+          "fonction": "appendChild · (natif)",
+          "msPropre": 1.974
+        },
+        {
+          "fonction": "Ud · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.7965
+        },
+        {
+          "fonction": "nd · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.783
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/parcours/adaptateur.ts",
+          "msPropre": 1.65725
+        },
+        {
+          "fonction": "(anonyme) · src/hopExtrapolationCore.ts",
+          "msPropre": 1.2845
+        },
+        {
+          "fonction": "$f · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.257
+        },
+        {
+          "fonction": "Vi · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.173
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/nombres.ts",
+          "msPropre": 1.15075
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/parcours/mesure.ts",
+          "msPropre": 1.07875
+        },
+        {
+          "fonction": "set webkitSpeechRecognitionEvent · (natif)",
+          "msPropre": 1.051
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/commun/RadarBase.tsx",
+          "msPropre": 0.956
+        },
+        {
+          "fonction": "(anonyme) · (natif)",
+          "msPropre": 0.93675
+        },
+        {
+          "fonction": "vr · src/ui/hopIndex/comparer/index.tsx",
+          "msPropre": 0.91675
+        },
+        {
+          "fonction": "D · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.88925
+        }
+      ],
+      "metriquesParRepetitionMs": {
+        "ScriptDuration": 92.93175,
+        "LayoutDuration": 27.830999999999996,
+        "RecalcStyleDuration": 895.9615,
+        "TaskDuration": 1174.405
+      }
+    },
+    "suggerer-ouverture": {
+      "reps": 4,
+      "fichiers": [
+        {
+          "fichier": "src/pages/PageShell.tsx",
+          "ms": 381.19825
+        },
+        {
+          "fichier": "node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 23.59975
+        },
+        {
+          "fichier": "src/hopRecipePrediction.ts",
+          "ms": 15.11175
+        },
+        {
+          "fichier": "src/hopExtrapolationCore.ts",
+          "ms": 15.0905
+        },
+        {
+          "fichier": "src/domain/hopIndex/v4/moteur.ts",
+          "ms": 8.83725
+        },
+        {
+          "fichier": "src/domain/hopIndex/styleSelection.ts",
+          "ms": 8.2715
+        },
+        {
+          "fichier": "src/domain/hopIndex/v4/voies.ts",
+          "ms": 4.24325
+        },
+        {
+          "fichier": "node_modules/react/cjs/react.production.js",
+          "ms": 1.866
+        },
+        {
+          "fichier": "src/hopIndexSchema.ts",
+          "ms": 1.755
+        },
+        {
+          "fichier": "src/hopPredictionCore.ts",
+          "ms": 1.721
+        },
+        {
+          "fichier": "(racine)",
+          "ms": 1.62075
+        },
+        {
+          "fichier": "src/hopExtrapolationSchema.ts",
+          "ms": 1.36125
+        },
+        {
+          "fichier": "src/pages/BrewWizard.tsx",
+          "ms": 1.12525
+        },
+        {
+          "fichier": "src/domain/hopIndex/v4/profil-simule.ts",
+          "ms": 1.03425
+        },
+        {
+          "fichier": "node_modules/lucide-react/dist/esm/Icon.mjs",
+          "ms": 1.029
+        }
+      ],
+      "natifs": [
+        {
+          "appel": "focus ← src/pages/PageShell.tsx",
+          "ms": 67.43125
+        },
+        {
+          "appel": "querySelectorAll ← src/pages/PageShell.tsx",
+          "ms": 2.29625
+        },
+        {
+          "appel": "removeChild ← node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 1.029
+        },
+        {
+          "appel": "appendChild ← node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 0.54875
+        },
+        {
+          "appel": "setAttribute ← node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 0.5205
+        },
+        {
+          "appel": "set webkitSpeechRecognitionEvent ← src/domain/hopIndex/styleSelection.ts",
+          "ms": 0.43125
+        },
+        {
+          "appel": "pushState ← src/pages/useFullScreenRoute.ts",
+          "ms": 0.415
+        },
+        {
+          "appel": "set webkitSpeechRecognitionEvent ← message-circle-CQ65uIZQ.js",
+          "ms": 0.40175
+        }
+      ],
+      "scriptActifMs": 484.80475,
+      "gcMs": 6.48625,
+      "programmeNatifMs": 56.6125,
+      "composants": [],
+      "fonctions": [
+        {
+          "fonction": "(anonyme) · src/pages/PageShell.tsx",
+          "msPropre": 310.9395
+        },
+        {
+          "fonction": "focus · (natif)",
+          "msPropre": 67.43125
+        },
+        {
+          "fonction": "(anonyme) · src/hopRecipePrediction.ts",
+          "msPropre": 12.49625
+        },
+        {
+          "fonction": "(anonyme) · src/hopExtrapolationCore.ts",
+          "msPropre": 11.84375
+        },
+        {
+          "fonction": "il · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 5.665
+        },
+        {
+          "fonction": "nn · src/domain/hopIndex/v4/moteur.ts",
+          "msPropre": 4.07575
+        },
+        {
+          "fonction": "pt · src/domain/hopIndex/v4/moteur.ts",
+          "msPropre": 3.84575
+        },
+        {
+          "fonction": "(anonyme) · src/domain/hopIndex/styleSelection.ts",
+          "msPropre": 3.5425
+        },
+        {
+          "fonction": "h · src/domain/hopIndex/styleSelection.ts",
+          "msPropre": 3.33675
+        },
+        {
+          "fonction": "(anonyme) · src/domain/hopIndex/v4/voies.ts",
+          "msPropre": 2.636
+        },
+        {
+          "fonction": "querySelectorAll · (natif)",
+          "msPropre": 2.42825
+        },
+        {
+          "fonction": "ai · src/hopExtrapolationCore.ts",
+          "msPropre": 2.115
+        },
+        {
+          "fonction": "(anonyme) · (natif)",
+          "msPropre": 1.62075
+        },
+        {
+          "fonction": "set webkitSpeechRecognitionEvent · (natif)",
+          "msPropre": 1.4875
+        },
+        {
+          "fonction": "ac · src/hopRecipePrediction.ts",
+          "msPropre": 1.4545
+        },
+        {
+          "fonction": "$f · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.4305
+        },
+        {
+          "fonction": "(anonyme) · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.32775
+        },
+        {
+          "fonction": "Ud · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.20575
+        },
+        {
+          "fonction": "ws · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.16775
+        },
+        {
+          "fonction": "(anonyme) · src/hopExtrapolationSchema.ts",
+          "msPropre": 1.09875
+        },
+        {
+          "fonction": "Fs · src/domain/hopIndex/v4/voies.ts",
+          "msPropre": 1.08375
+        },
+        {
+          "fonction": "oi · src/hopRecipePrediction.ts",
+          "msPropre": 1.0305
+        },
+        {
+          "fonction": "removeChild · (natif)",
+          "msPropre": 1.029
+        },
+        {
+          "fonction": "(anonyme) · node_modules/lucide-react/dist/esm/Icon.mjs",
+          "msPropre": 1.029
+        },
+        {
+          "fonction": "q0 · src/hopExtrapolationCore.ts",
+          "msPropre": 1.00575
+        }
+      ],
+      "metriquesParRepetitionMs": {
+        "ScriptDuration": 110.17149999999998,
+        "LayoutDuration": 7.825249999999997,
+        "RecalcStyleDuration": 369.45174999999995,
+        "TaskDuration": 564.8325
+      }
+    },
+    "fiche-ouverture": {
+      "reps": 4,
+      "fichiers": [
+        {
+          "fichier": "node_modules/vaul/dist/index.mjs",
+          "ms": 130.77575
+        },
+        {
+          "fichier": "node_modules/@radix-ui/react-focus-scope/dist/index.mjs",
+          "ms": 113.95075
+        },
+        {
+          "fichier": "node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 91.3355
+        },
+        {
+          "fichier": "src/pages/PageShell.tsx",
+          "ms": 42.95325
+        },
+        {
+          "fichier": "node_modules/@radix-ui/react-presence/dist/index.mjs",
+          "ms": 29.58225
+        },
+        {
+          "fichier": "src/ui/hopIndex/fiche/FicheHoublon.tsx",
+          "ms": 6.70675
+        },
+        {
+          "fichier": "pptr:internal",
+          "ms": 1.793
+        },
+        {
+          "fichier": "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs",
+          "ms": 1.3395
+        },
+        {
+          "fichier": "src/ui/hopIndex/commun/RadarBase.tsx",
+          "ms": 1.06975
+        },
+        {
+          "fichier": "(racine)",
+          "ms": 0.95525
+        },
+        {
+          "fichier": "FicheApp-Dkk_3HcS.js",
+          "ms": 0.9245
+        },
+        {
+          "fichier": "src/ui/Sheet.tsx",
+          "ms": 0.8105
+        },
+        {
+          "fichier": "node_modules/react/cjs/react.production.js",
+          "ms": 0.664
+        },
+        {
+          "fichier": "src/ui/hopIndex/maBiere/gestesFiche.ts",
+          "ms": 0.63975
+        },
+        {
+          "fichier": "src/ui/useViewport.ts",
+          "ms": 0.546
+        }
+      ],
+      "natifs": [
+        {
+          "appel": "focus ← node_modules/@radix-ui/react-focus-scope/dist/index.mjs",
+          "ms": 112.756
+        },
+        {
+          "appel": "getBoundingClientRect ← node_modules/vaul/dist/index.mjs",
+          "ms": 104.40925
+        },
+        {
+          "appel": "removeChild ← node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 68.89575
+        },
+        {
+          "appel": "focus ← src/ui/hopIndex/fiche/FicheHoublon.tsx",
+          "ms": 5.9005
+        },
+        {
+          "appel": "querySelectorAll ← src/pages/PageShell.tsx",
+          "ms": 2.33675
+        },
+        {
+          "appel": "setAttribute ← node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 1.28275
+        },
+        {
+          "appel": "focus ← src/ui/Sheet.tsx",
+          "ms": 0.684
+        },
+        {
+          "appel": "nextNode ← node_modules/@radix-ui/react-focus-scope/dist/index.mjs",
+          "ms": 0.66
+        }
+      ],
+      "scriptActifMs": 432.974,
+      "gcMs": 35.149,
+      "programmeNatifMs": 248.36125,
+      "composants": [],
+      "fonctions": [
+        {
+          "fonction": "focus · (natif)",
+          "msPropre": 119.3405
+        },
+        {
+          "fonction": "getBoundingClientRect · (natif)",
+          "msPropre": 104.40925
+        },
+        {
+          "fonction": "removeChild · (natif)",
+          "msPropre": 68.89575
+        },
+        {
+          "fonction": "(anonyme) · src/pages/PageShell.tsx",
+          "msPropre": 40.48475
+        },
+        {
+          "fonction": "xe · node_modules/@radix-ui/react-presence/dist/index.mjs",
+          "msPropre": 28.76225
+        },
+        {
+          "fonction": "l · node_modules/vaul/dist/index.mjs",
+          "msPropre": 25.7085
+        },
+        {
+          "fonction": "querySelectorAll · (natif)",
+          "msPropre": 2.71075
+        },
+        {
+          "fonction": "il · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 2.599
+        },
+        {
+          "fonction": "setAttribute · (natif)",
+          "msPropre": 1.68325
+        },
+        {
+          "fonction": "(anonyme) · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.62175
+        },
+        {
+          "fonction": "$f · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.32125
+        },
+        {
+          "fonction": "ws · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.305
+        },
+        {
+          "fonction": "Ji · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.03925
+        },
+        {
+          "fonction": "nextNode · (natif)",
+          "msPropre": 1.0265
+        },
+        {
+          "fonction": "(anonyme) · (natif)",
+          "msPropre": 0.95525
+        },
+        {
+          "fonction": "_c · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.95025
+        },
+        {
+          "fonction": "Ba · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.8145
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/commun/RadarBase.tsx",
+          "msPropre": 0.807
+        },
+        {
+          "fonction": "o · FicheApp-Dkk_3HcS.js",
+          "msPropre": 0.664
+        },
+        {
+          "fonction": "(anonyme) · node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs",
+          "msPropre": 0.65475
+        },
+        {
+          "fonction": "appendChild · (natif)",
+          "msPropre": 0.648
+        },
+        {
+          "fonction": "t · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.6105
+        },
+        {
+          "fonction": "querySelector · (natif)",
+          "msPropre": 0.54425
+        },
+        {
+          "fonction": "createElementNS · (natif)",
+          "msPropre": 0.542
+        },
+        {
+          "fonction": "set webkitSpeechRecognitionEvent · (natif)",
+          "msPropre": 0.53575
+        }
+      ],
+      "metriquesParRepetitionMs": {
+        "ScriptDuration": 51.544749999999965,
+        "LayoutDuration": 6.280249999999995,
+        "RecalcStyleDuration": 454.06999999999994,
+        "TaskDuration": 724.1774999999993
+      }
+    },
+    "comparer-moment": {
+      "reps": 8,
+      "fichiers": [
+        {
+          "fichier": "src/ui/hopIndex/comparer/index.tsx",
+          "ms": 42.650875
+        },
+        {
+          "fichier": "node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 8.975
+        },
+        {
+          "fichier": "(racine)",
+          "ms": 1.196625
+        },
+        {
+          "fichier": "src/pages/PageShell.tsx",
+          "ms": 0.77475
+        },
+        {
+          "fichier": "src/ui/hopIndex/nombres.ts",
+          "ms": 0.444875
+        },
+        {
+          "fichier": "pptr:evaluate;Object.un%20(file%3A%2F%2F%2FC%3A%2FUsers%2Fmrspa%2F.codex%2Fworktrees%2Fopenai-clean-start%2FBrasserie%2Fscripts%2Fbench-hop-prod.mjs%3A372%3A78)",
+          "ms": 0.364
+        },
+        {
+          "fichier": "src/ui/hopIndex/commun/RadarBase.tsx",
+          "ms": 0.348125
+        },
+        {
+          "fichier": "EcranApp-lIlf5ity.js",
+          "ms": 0.311
+        },
+        {
+          "fichier": "node_modules/scheduler/cjs/scheduler.production.js",
+          "ms": 0.137125
+        },
+        {
+          "fichier": "src/ui/hopIndex/comparer/Ensemble.tsx",
+          "ms": 0.12975
+        },
+        {
+          "fichier": "src/ui/hopIndex/parcours/adaptateur.ts",
+          "ms": 0.123375
+        },
+        {
+          "fichier": "src/utils/toCamelCase.mjs",
+          "ms": 0.0815
+        },
+        {
+          "fichier": "recipeInstallation-Ch4dArBd.js",
+          "ms": 0.080875
+        },
+        {
+          "fichier": "node_modules/@firebase/auth/dist/esm2017/index-35c79a8a.js",
+          "ms": 0.06825
+        },
+        {
+          "fichier": "node_modules/lucide-react/dist/esm/createLucideIcon.mjs",
+          "ms": 0.068125
+        }
+      ],
+      "natifs": [
+        {
+          "appel": "getBoundingClientRect ← src/ui/hopIndex/comparer/index.tsx",
+          "ms": 41.432
+        },
+        {
+          "appel": "setAttribute ← node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 0.745125
+        },
+        {
+          "appel": "querySelectorAll ← src/pages/PageShell.tsx",
+          "ms": 0.641875
+        },
+        {
+          "appel": "click ← pptr:evaluate;Object.un%20(file%3A%2F%2F%2FC%3A%2FUsers%2Fmrspa%2F.codex%2Fworktrees%2Fopenai-clean-start%2FBrasserie%2Fscripts%2Fbench-hop-prod.mjs%3A372%3A78)",
+          "ms": 0.225625
+        },
+        {
+          "appel": "removeChild ← node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 0.195125
+        },
+        {
+          "appel": "set webkitSpeechRecognitionEvent ← EcranApp-lIlf5ity.js",
+          "ms": 0.13225
+        },
+        {
+          "appel": "queueMicrotask ← node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 0.099625
+        },
+        {
+          "appel": "now ← node_modules/scheduler/cjs/scheduler.production.js",
+          "ms": 0.071875
+        }
+      ],
+      "scriptActifMs": 56.006,
+      "gcMs": 0.48925,
+      "programmeNatifMs": 49.32275,
+      "composants": [],
+      "fonctions": [
+        {
+          "fonction": "getBoundingClientRect · (natif)",
+          "msPropre": 41.432
+        },
+        {
+          "fonction": "(anonyme) · (natif)",
+          "msPropre": 1.196625
+        },
+        {
+          "fonction": "(anonyme) · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.075125
+        },
+        {
+          "fonction": "setAttribute · (natif)",
+          "msPropre": 0.745125
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/comparer/index.tsx",
+          "msPropre": 0.728375
+        },
+        {
+          "fonction": "ii · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.6875
+        },
+        {
+          "fonction": "querySelectorAll · (natif)",
+          "msPropre": 0.641875
+        },
+        {
+          "fonction": "Ba · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.63525
+        },
+        {
+          "fonction": "sf · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.474125
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/nombres.ts",
+          "msPropre": 0.444875
+        },
+        {
+          "fonction": "Li · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.408375
+        },
+        {
+          "fonction": "Re · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.364
+        },
+        {
+          "fonction": "Ud · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.342875
+        },
+        {
+          "fonction": "fi · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.325375
+        },
+        {
+          "fonction": "$f · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.308625
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/commun/RadarBase.tsx",
+          "msPropre": 0.237125
+        },
+        {
+          "fonction": "click · (natif)",
+          "msPropre": 0.225625
+        },
+        {
+          "fonction": "_c · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.199
+        },
+        {
+          "fonction": "removeChild · (natif)",
+          "msPropre": 0.195125
+        },
+        {
+          "fonction": "D · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.18875
+        },
+        {
+          "fonction": "Fu · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.182375
+        },
+        {
+          "fonction": "vr · src/ui/hopIndex/comparer/index.tsx",
+          "msPropre": 0.181
+        },
+        {
+          "fonction": "o · EcranApp-lIlf5ity.js",
+          "msPropre": 0.17875
+        },
+        {
+          "fonction": "ff · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.175625
+        },
+        {
+          "fonction": "t · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.169125
+        }
+      ],
+      "metriquesParRepetitionMs": {
+        "ScriptDuration": 13.651749999999993,
+        "LayoutDuration": 1.9974999999999952,
+        "RecalcStyleDuration": 41.81637500000011,
+        "TaskDuration": 106.63699999999972
+      }
+    },
+    "dose-plus": {
+      "reps": 8,
+      "fichiers": [
+        {
+          "fichier": "src/pages/PageShell.tsx",
+          "ms": 77.780875
+        },
+        {
+          "fichier": "node_modules/react-dom/cjs/react-dom-client.production.js",
+          "ms": 10.253375
+        },
+        {
+          "fichier": "src/pages/BrewWizard.tsx",
+          "ms": 1.469625
+        },
+        {
+          "fichier": "src/services/recipeDraft.ts",
+          "ms": 1.43025
+        },
+        {
+          "fichier": "src/hopRecipePrediction.ts",
+          "ms": 0.848
+        },
+        {
+          "fichier": "message-circle-CQ65uIZQ.js",
+          "ms": 0.805125
+        },
+        {
+          "fichier": "src/domain/hopIndex/v4/hops.ts",
+          "ms": 0.58225
+        },
+        {
+          "fichier": "src/domain/hopIndex/v4/profil-simule.ts",
+          "ms": 0.54075
+        },
+        {
+          "fichier": "src/domain/hopIndex/styleSelection.ts",
+          "ms": 0.540125
+        },
+        {
+          "fichier": "src/services/brewingMath.ts",
+          "ms": 0.53175
+        },
+        {
+          "fichier": "src/domain/hopIndex/v4/moteur.ts",
+          "ms": 0.526
+        },
+        {
+          "fichier": "src/ui/hopIndex/maBiere/Ajouter.tsx",
+          "ms": 0.48325
+        },
+        {
+          "fichier": "node_modules/react/cjs/react.production.js",
+          "ms": 0.43325
+        },
+        {
+          "fichier": "src/ui/hopIndex/maBiere/Frise.tsx",
+          "ms": 0.392125
+        },
+        {
+          "fichier": "src/domain/yeastProjection.ts",
+          "ms": 0.347625
+        }
+      ],
+      "natifs": [
+        {
+          "appel": "querySelectorAll ← src/pages/PageShell.tsx",
+          "ms": 1.654875
+        },
+        {
+          "appel": "set toTemporalInstant ← message-circle-CQ65uIZQ.js",
+          "ms": 0.411125
+        },
+        {
+          "appel": "setItem ← src/services/recipeDraft.ts",
+          "ms": 0.3205
+        },
+        {
+          "appel": "getAttribute ← src/pages/PageShell.tsx",
+          "ms": 0.142625
+        },
+        {
+          "appel": "structuredClone ← src/services/recipeDraft.ts",
+          "ms": 0.141125
+        },
+        {
+          "appel": "postMessage ← node_modules/scheduler/cjs/scheduler.production.js",
+          "ms": 0.13925
+        },
+        {
+          "appel": "click ← pptr:evaluate;Object.un%20(file%3A%2F%2F%2FC%3A%2FUsers%2Fmrspa%2F.codex%2Fworktrees%2Fopenai-clean-start%2FBrasserie%2Fscripts%2Fbench-hop-prod.mjs%3A375%3A73)",
+          "ms": 0.107875
+        },
+        {
+          "appel": "set toTemporalInstant ← Base-dUURNDLw.js",
+          "ms": 0.083625
+        }
+      ],
+      "scriptActifMs": 104.25225,
+      "gcMs": 1.884125,
+      "programmeNatifMs": 29.541,
+      "composants": [
+        {
+          "composant": "URL · (natif)",
+          "msInclusif": 0.056
+        }
+      ],
+      "fonctions": [
+        {
+          "fonction": "(anonyme) · src/pages/PageShell.tsx",
+          "msPropre": 75.858625
+        },
+        {
+          "fonction": "il · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 2.947125
+        },
+        {
+          "fonction": "querySelectorAll · (natif)",
+          "msPropre": 1.654875
+        },
+        {
+          "fonction": "Uo · src/pages/BrewWizard.tsx",
+          "msPropre": 0.94
+        },
+        {
+          "fonction": "wl · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.9235
+        },
+        {
+          "fonction": "(anonyme) · src/hopRecipePrediction.ts",
+          "msPropre": 0.827375
+        },
+        {
+          "fonction": "set toTemporalInstant · (natif)",
+          "msPropre": 0.681625
+        },
+        {
+          "fonction": "cv · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.592875
+        },
+        {
+          "fonction": "(anonyme) · src/domain/hopIndex/v4/hops.ts",
+          "msPropre": 0.58225
+        },
+        {
+          "fonction": "$f · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.581
+        },
+        {
+          "fonction": "(anonyme) · src/pages/BrewWizard.tsx",
+          "msPropre": 0.529625
+        },
+        {
+          "fonction": "hopIbu · src/services/brewingMath.ts",
+          "msPropre": 0.47575
+        },
+        {
+          "fonction": "(anonyme) · src/domain/hopIndex/styleSelection.ts",
+          "msPropre": 0.460875
+        },
+        {
+          "fonction": "Ud · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.43175
+        },
+        {
+          "fonction": "rl · src/services/recipeDraft.ts",
+          "msPropre": 0.408875
+        },
+        {
+          "fonction": "gc · src/services/recipeDraft.ts",
+          "msPropre": 0.405125
+        },
+        {
+          "fonction": "Y.createElement · node_modules/react/cjs/react.production.js",
+          "msPropre": 0.400375
+        },
+        {
+          "fonction": "l · message-circle-CQ65uIZQ.js",
+          "msPropre": 0.394
+        },
+        {
+          "fonction": "(anonyme) · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.343125
+        },
+        {
+          "fonction": "ws · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.321875
+        },
+        {
+          "fonction": "setItem · (natif)",
+          "msPropre": 0.3205
+        },
+        {
+          "fonction": "nd · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.312375
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/maBiere/Frise.tsx",
+          "msPropre": 0.311375
+        },
+        {
+          "fonction": "xe · src/domain/hopIndex/v4/recipe.ts",
+          "msPropre": 0.286625
+        },
+        {
+          "fonction": "D · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.2815
+        }
+      ],
+      "metriquesParRepetitionMs": {
+        "ScriptDuration": 32.05174999999994,
+        "LayoutDuration": 3.8612500000000054,
+        "RecalcStyleDuration": 70.88037500000019,
+        "TaskDuration": 136.54549999999995
+      }
+    }
+  }
+}

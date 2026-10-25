@@ -108,6 +108,13 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
   7. #182 : compagnon brasseur (Sonnet), après 5 et 6.
   8. #177 : les tests rouges anciens (Sonnet), si le temps le permet.
 - Saut au « + » (D153) : non reproduit en test ; à revérifier dans son Chrome au retour.
+- 26.10, 00 h 20 : points 1 à 3 faits et déployés (D74, 36ba5643). En vol :
+  - p1-banc-prod (point 4) ;
+  - d2-import-bm (point 5). La cause des trous : le collecteur ne lisait que 6 lignes des pages Beer Maverick. Réextraction depuis
+    le cache local du 08.09 (319 pages), sans réseau ni Firestore ;
+  - r177-tests-rouges (point 8, indépendant).
+
+  #181 attend d2 : les substituts de Beer Maverick serviront de vérité de terrain au banc d'évaluation.
 
 ## Règle de la fluidité (25.10, soir)
 - Ses mots : « SI Des étape bloque vraiment sur la fluidité. Tu peux skip trouvé une solution et compromis et me propose ça. Dans le pire des cas ». Une étape qui bloque sur la fluidité ne bloque pas la mission : un compromis mesuré (avant, après) lui est proposé, en DÉCISION À PRENDRE de la voie.
