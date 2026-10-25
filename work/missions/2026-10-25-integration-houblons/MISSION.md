@@ -90,7 +90,7 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
 
 ## Règle de la fluidité (25.10, soir)
 - Ses mots : « SI Des étape bloque vraiment sur la fluidité. Tu peux skip trouvé une solution et compromis et me propose ça. Dans le pire des cas ». Une étape qui bloque sur la fluidité ne bloque pas la mission : un compromis mesuré (avant, après) lui est proposé, en DÉCISION À PRENDRE de la voie.
-- Ensuite, à sa demande : importer toutes les données de tous les houblons (#180), après Comparer et la fiche ; l'écriture en production attend son accord.
+- Ensuite, à sa demande : importer toutes les données de tous les houblons (#180), après Comparer et la fiche ; l'écriture en production attend son accord. Puis bien régler Suggérer et Substituer sur un banc d'évaluation (#181).
 - En vol (25.10, soir) : t15a-comparer (Comparer cmc2k dans l'app, #174), rb2-ma-biere (radar commun dans Ma bière). Fait : t12b (#170 fermé), rc-registres-comparer (D69).
 
 ## Signature
