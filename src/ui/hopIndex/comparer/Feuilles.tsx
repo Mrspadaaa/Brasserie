@@ -9,6 +9,7 @@ import { createPortal } from 'react-dom';
 import { COULEURS, COURT, Picto, nombre, plage } from './commun';
 import { CONDITIONS, H, nomLevure } from './cas';
 import { useRecette } from './hote';
+import { termes } from './hote';
 import { placer, quandDe } from '../parcours/quand';
 import { donnees, houblon, ibuAjout, lireBiere, style } from '../parcours/adaptateur';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
@@ -116,7 +117,7 @@ export function FeuilleDefi({ cols, retenu, etapes, onSuggerer }: { cols: Colonn
   const atteints = (f: FamilyId, v: number) => cols.filter((c) => verdict(c.cellules[f].dCran, v) === 'atteint');
   return (
     <div className="pq-comparer-defi" data-element="y1b-defi w2-piste-commune l5b-pistes-objectif l8b-verdicts-pictos-trait y1b-jauge-amertume s5-deux-objectifs">
-      <p className="pq-comparer-defi-q">« ma stout est trop résineuses, je la veux plus floral »<span>ta dégustation du 18.10</span></p>
+      <p className="pq-comparer-defi-q">{termes().degustation ? <>« ma {termes().biere} est trop résineuses, je la veux plus floral »<span>ta dégustation du {termes().degustation}</span></> : <>plus floral, moins résineux<span>ta demande</span></>}</p>
       <div className="pq-comparer-defi-sc">
         {cols.map((c) => { const s = scoreDefi(c); return (
           <span key={c.cle} className={cx('pq-comparer-defi-sc-c', c.cle === retenu && 'pq-comparer-sel')} style={{ ['--pq-h' as string]: c.couleur }}>
@@ -166,11 +167,11 @@ export function FeuilleDefi({ cols, retenu, etapes, onSuggerer }: { cols: Colonn
         ))}
       </section>
       <section className="pq-comparer-carte">
-        <p className="pq-comparer-carte-t"><Picto famille="floral" taille={14} /><b>Dans ta 16D</b><span className="pq-comparer-carte-n">~ simulé</span></p>
+        <p className="pq-comparer-carte-t"><Picto famille="floral" taille={14} /><b>Dans ta {termes().style}</b><span className="pq-comparer-carte-n">~ simulé</span></p>
         <div className="pq-comparer-defi-v" style={{ ['--pq-n' as string]: cols.length }}>
           {cols.map((c) => (
             <span key={c.cle} className={cx('pq-comparer-defi-wm', c.sorties.length ? 'pq-comparer-defi-w-aucune' : 'pq-comparer-defi-w-atteint')}
-              aria-label={`${c.houblon.nom} : ${c.sorties.length ? `sort de ta 16D (${c.sorties.map((f) => COURT[f].toLowerCase()).join(', ')})` : 'reste dans ta 16D'}`}>
+              aria-label={`${c.houblon.nom} : ${c.sorties.length ? `sort de ta ${termes().style} (${c.sorties.map((f) => COURT[f].toLowerCase()).join(', ')})` : `reste dans ta ${termes().style}`}`}>
               {c.sorties.length ? <IconeRisque /> : <IconeOk />}<Point c={c} /><b>{c.sorties.length ? 'sort' : 'dedans'}</b>{c.sorties.map((f) => <Picto key={f} famille={f} taille={12} />)}
             </span>
           ))}
@@ -459,7 +460,7 @@ export function FeuillePreuve({ cols, familles }: { cols: ColonneLue[]; familles
       <section className="pq-comparer-tir" aria-label="20 bières tirées">
         <p className="pq-comparer-carte-st"><b>20 bières tirées</b><Simule />
           <button type="button" className="pq-comparer-puce pq-comparer-tir-b" onClick={() => setGraine((g) => g + 1)}><IconeTirer />20 autres</button></p>
-        <p className="pq-comparer-note">Combien sortent de ta 16D, famille par famille. Tirées au hasard dans la bande du moteur (une hypothèse : tirage uniforme).</p>
+        <p className="pq-comparer-note">Combien sortent de ta {termes().style}, famille par famille. Tirées au hasard dans la bande du moteur (une hypothèse : tirage uniforme).</p>
         <div className="pq-comparer-grille-tab pq-comparer-tir-h"><span />{cols.map((c) => <b key={c.cle} style={{ color: c.couleur }}>{c.houblon.nom}</b>)}</div>
         {familles.map((f) => (
           <div key={f} className="pq-comparer-grille-tab pq-comparer-tir-l">
@@ -467,7 +468,7 @@ export function FeuillePreuve({ cols, familles }: { cols: ColonneLue[]; familles
             {cols.map((c) => { const x = t[c.cle]?.[f]; return x == null
               ? <span key={c.cle} className="pq-comparer-tir-c"><i className="pq-comparer-hach" role="img" aria-label={`${c.houblon.nom}, ${COURT[f].toLowerCase()} : inconnu, rien à tirer`} /></span>
               : (
-                <span key={c.cle} className="pq-comparer-tir-c" role="img" aria-label={`${c.houblon.nom}, ${COURT[f].toLowerCase()} : ${x.deja ? 'ta stout est déjà au-dessus de ta 16D' : `${x.hors} bières sur 20 sortent de ta 16D`}`}>
+                <span key={c.cle} className="pq-comparer-tir-c" role="img" aria-label={`${c.houblon.nom}, ${COURT[f].toLowerCase()} : ${x.deja ? `ta ${termes().biere} est déjà au-dessus de ta ${termes().style}` : `${x.hors} bières sur 20 sortent de ta {termes().style}`}`}>
                   <span className="pq-comparer-tir-p">{x.points.map((h, i) => <i key={i} style={{ background: h ? ORANGE : COULEURS[f].base }} />)}</span>
                   <span className={cx('pq-comparer-nb', (x.deja || x.hors > 0) && 'pq-comparer-dl-hors')} data-nature="simule">{x.deja ? 'déjà hors' : `${x.hors} sur 20`}</span>
                 </span>
@@ -631,11 +632,11 @@ export function FeuillePourquoi({ cols, critere }: { cols: ColonneLue[]; critere
   const recouvre = cols.every((a) => cols.every((b) => a.cellules[f].bas <= b.cellules[f].haut && b.cellules[f].bas <= a.cellules[f].haut));
   return (
     <div className="pq-comparer-pq">
-      <p className="pq-comparer-note">Par {critere.nom} : le centre simulé de chaque houblon à {nombre(CONDITIONS.doseGL)} g/L, en crans du style, face à ta stout{avant != null ? ` (~${nombre(avant, 1)} sur 100)` : ''}.</p>
+      <p className="pq-comparer-note">Par {critere.nom} : le centre simulé de chaque houblon à {nombre(CONDITIONS.doseGL)} g/L, en crans du style, face à ta {termes().biere}{avant != null ? ` (~${nombre(avant, 1)} sur 100)` : ''}.</p>
       {ordre.map((c, i) => { const cel = c.cellules[f]; return (
         <p key={c.cle} className="pq-comparer-pq-l">
           <b className="pq-comparer-pq-r">{i + 1}</b>
-          <span><b><Point c={c} /> {c.houblon.nom}</b><span className="pq-comparer-note">{cel.inconnu ? 'inconnu' : `~${nombre(cel.centre)} sur 100, bande ${nombre(cel.bas)}–${nombre(cel.haut)}`} · {c.sorties.length ? `sort de ta 16D : ${c.sorties.map((x) => COURT[x].toLowerCase()).join(', ')}` : 'dans ta 16D'}</span></span>
+          <span><b><Point c={c} /> {c.houblon.nom}</b><span className="pq-comparer-note">{cel.inconnu ? 'inconnu' : `~${nombre(cel.centre)} sur 100, bande ${nombre(cel.bas)}–${nombre(cel.haut)}`} · {c.sorties.length ? `sort de ta ${termes().style} : ${c.sorties.map((x) => COURT[x].toLowerCase()).join(', ')}` : 'dans ta {termes().style}'}</span></span>
           <span className="pq-comparer-nb" data-nature="simule">{cel.dCran == null ? '?' : signeCran(cel.dCran)}</span>
         </p>
       ); })}
@@ -719,7 +720,7 @@ export function VoletPlans({ cols, retenu, onDryhopper }: { cols: ColonneLue[]; 
         {plans.map((x, k) => (x.groupe === 'ici' ? puce(x, k) : null))}
       </div>
       {plans.some((x) => x.groupe === 'x3b') && <>
-        <p className="pq-comparer-note">Les plans de x3b, ta stout : Citra cryo de ton stock, 2 g/L chacun, pendant la fermentation active.</p>
+        <p className="pq-comparer-note">Les plans de x3b, ta {termes().biere} : Citra cryo de ton stock, 2 g/L chacun, pendant la fermentation active.</p>
         <div className="pq-comparer-plans-ch" role="radiogroup" aria-label="Les plans de x3b">
           {plans.map((x, k) => (x.groupe === 'x3b' ? puce(x, k) : null))}
         </div>
@@ -732,7 +733,7 @@ export function VoletPlans({ cols, retenu, onDryhopper }: { cols: ColonneLue[]; 
           {p.sorties.length > 0 ? <span className="pq-comparer-hors-mini">~<IconeRisque />{p.sorties.map((f) => <Picto key={f} famille={f} taille={12} />)}</span> : <span className="pq-comparer-vd-dans"><IconeOk /></span>}
         </p>
       )}
-      <p className="pq-comparer-note">Avec tes houblons : {nombre(CONDITIONS.doseGL)} g/L en tout, après fermentation. Crans gagnés sur ta stout ; ~⚠ : sort de ta 16D.</p>
+      <p className="pq-comparer-note">Avec tes houblons : {nombre(CONDITIONS.doseGL)} g/L en tout, après fermentation. Crans gagnés sur ta {termes().biere} ; ~⚠ : sort de ta {termes().style}.</p>
       <button type="button" className="pq-comparer-lien" onClick={onDryhopper}>Les jours, l’ordre et la dose : Dryhopper ›</button>
     </div>
   );

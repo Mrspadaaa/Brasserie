@@ -1,3 +1,4 @@
+import { termes } from './hote';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { RadarBase, type SerieRadar } from '../commun/RadarBase';
 import { etape, type CodeEtape, type ColonneLue } from './calcul';
@@ -27,7 +28,7 @@ export function Radar({ axes, cols, retenu, absolu, moment }: Props) {
   }));
   return (
     <RadarBase familles={axes} series={series} mode={absolu ? 'absolu' : 'style'} moment={moment ? etape(moment).dit : undefined}
-      zone={zone} reference={absolu ? { nom: 'ta stout', valeurs: stout } : undefined} objet="houblons" className="pq-comparer-radar"
+      zone={zone} reference={absolu ? { nom: `ta ${termes().biere}`, valeurs: stout } : undefined} objet="houblons" className="pq-comparer-radar"
       label={(haut) => `Radar ${absolu ? 'absolu' : 'au style'}${nomRetenu ? ` : ${nomRetenu} plein` : ''}, de 0 à ${haut} crans : ${cols.map((c) => c.houblon.nom).join(', ')}`} />
   );
 }

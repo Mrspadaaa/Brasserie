@@ -5,8 +5,9 @@
  * contenu métier : les écrans de la maquette viendront ici (T12), sous le drapeau `hopV4`. Tant qu'il est éteint,
  * seul le crochet de développement (`devHook.ts`) l'ouvre.
  */
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { PageShell } from '../../pages/PageShell';
+import { hopV4Enabled } from './flags';
 import type { LayerRoute } from '../../pages/useFullScreenRoute';
 import { chargerOutils, outilsCharges, type Outils } from './chargement';
 
@@ -38,7 +39,22 @@ export function useOutils(): { outils: Outils | null; echec: boolean; reessayer:
   return { outils, echec, reessayer: () => setEssai(n => n + 1) };
 }
 
+// Comparer (T15b, #174) : l'écran cmc2k, son choix, chargé à la demande et seulement drapeau hopV4 allumé.
+const EcranComparer = lazy(() => import('./comparer/EcranApp'));
+const comparerActif = hopV4Enabled();
+
 export default function HopToolLayer({ route, level, onClose }: { route: HopToolRoute; level: number; onClose: () => void }) {
+  if (route.view === 'hopCompare' && comparerActif) {
+    return (
+      <Suspense fallback={<PageShell title="Comparer" onClose={onClose}><p data-hop-tool-layer="hopCompare" data-hop-tool-level={level} className="text-xs text-cave-400">Ouverture de Comparer…</p></PageShell>}>
+        <EcranComparer houblons={route.hops} pin={route.pinned} recipeId={route.recipeId} onClose={onClose} />
+      </Suspense>
+    );
+  }
+  return <CoucheProvisoire route={route} level={level} onClose={onClose} />;
+}
+
+function CoucheProvisoire({ route, level, onClose }: { route: HopToolRoute; level: number; onClose: () => void }) {
   const { outils, echec, reessayer } = useOutils();
   return (
     <PageShell title={hopToolTitle(route)} subtitle={`Outil houblons · niveau ${level}`} onClose={onClose}>

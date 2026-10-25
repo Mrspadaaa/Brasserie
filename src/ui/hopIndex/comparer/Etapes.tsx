@@ -8,6 +8,7 @@
 // gris, à gauche et en trait pointillé sur chaque barre) ; toucher une ligne pose ce moment sur les rangées et le radar.
 // Les trois étapes restent lisibles ensemble, au repos (« visibles ensemble, pour chaque houblon comparé »).
 // L'IBU de chaque étape est dans le title de la case et dans « Valeurs » (80 mots au premier écran).
+import { termes } from './hote';
 import { useState, type ReactNode } from 'react';
 import { COULEURS, COURT, nombre, Picto } from './commun';
 import { CONDITIONS } from './cas';
@@ -41,7 +42,7 @@ export function BandeEtapes({ cols, etapes, reference, nomReference, retenu, mom
     // ★ au meilleur seulement s'il passe le second d'au moins 0,05 cran (sinon égalité : pas d'étoile).
     return tri[0] > -Infinity && (cols.length < 2 || tri[0] - tri[1] >= 0.05) ? cols[vals.indexOf(tri[0])].cle : null;
   };
-  const nomRef = nomReference ?? 'ta stout';
+  const nomRef = nomReference ?? `ta ${termes().biere}`;
   return (
     <section className="pq-comparer-et" aria-label={`Aux étapes : ${COURT[f].toLowerCase()} gagné par chaque houblon posé à 60′, à 10′ et au dry hop, à ${nombre(CONDITIONS.doseGL)} g/L ; toucher une étape la pose sur les rangées et le radar`}
       data-element="d107-etapes d107-etat-au-moment x3b-cuve-jour-apres-jour d128-selecteur-etapes y1b-face-a-ta-stout">

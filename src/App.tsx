@@ -984,7 +984,10 @@ export const App: React.FC = () => {
 
       {/* Le geste d'action : présent sur les onglets ET sur les pages plein écran,
           posé sur la case que la barre ou la page lui réserve. */}
-      <FloatingActions
+      {/* Une couche d'outil houblons v4 a son propre dock (Défi, Égaler, Valeurs…) : le lanceur flottant s'efface tant qu'elle
+          est ouverte (le « + » rond couvrait la colonne de Galaxy et « Placer »), et revient à sa fermeture. L'atelier V5.5
+          (hopV55) et le wizard (rangée endActions) gardent le lanceur. */}
+      {!layerRoutes.some(l => l.view !== 'hopV55') && <FloatingActions
         launcherRef={actionLauncherRef}
         // `quickAction` ne crée rien de propre à l'écran : il rouvrirait le
         // sommaire des saisies que le menu liste déjà en clair.
@@ -996,7 +999,7 @@ export const App: React.FC = () => {
         onSale={() => setQuickAction('quick-sale', actionLauncherRef.current)}
         onRecipe={() => openWizard()}
         onBrew={() => setQuickAction('brew-batch', actionLauncherRef.current)}
-      />
+      />}
 
       {/* Quick Action Modal (Scanner IA, Matching Stock interactif, Brassin, Vente) */}
       <ModalOpenerContext.Provider value={quickActionOpener.current}><DeferredSurface active={quickAction !== null} fallback={<Sheet open={quickAction !== null} title="Chargement…" onClose={() => setQuickAction(null)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal

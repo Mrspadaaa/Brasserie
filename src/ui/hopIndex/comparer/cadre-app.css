@@ -1,0 +1,26 @@
+/* Le cadre de Comparer dans l'app (T15b, #174) : la tête des onglets, reprise de la maquette (prototypes/houblons-v4/parcours/
+   src/commun/retour.css, D109, D118, D119) pour que l'écran ait la même tête qu'en maquette. PageShell ne montre
+   `mobileHeader` que sous 640 px : pour un outil (.pq-cadre-retour), cette tête vaut à toutes les largeurs. */
+:is(.pq-cadre-retour) > header > div > div > .sm\:hidden { display: block; }
+:is(.pq-cadre-retour) > header > div > div > .hidden.sm\:block { display: none; }
+.pq-tete { max-width: 48rem; margin: 0 auto; padding: 4px 8px; min-height: 52px; }
+.pq-croix {
+  display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 9999px;
+  color: rgb(var(--cave-texte-800, var(--cave-50))); background: rgb(var(--cave-900)); box-shadow: inset 0 0 0 1px rgb(var(--cave-800));
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: background-color 120ms ease-out;
+}
+.pq-croix-icone { width: 22px; height: 22px; }
+.pq-croix:hover { background: rgb(var(--cave-850)); }
+.pq-croix:active { background: rgb(var(--cave-800)); }
+.pq-croix:focus-visible { outline: 2px solid rgb(var(--cave-50)); outline-offset: 1px; }
+.pq-onglets { height: 44px; }
+.pq-onglet { font-size: 0.9375rem; line-height: 1; }
+.pq-outil-comparer [data-role="onglets"] [role="tab"][aria-selected="false"] { color: rgb(var(--cave-200)); }
+
+/* La page blanche de ses maquettes (prototypes/houblons-v4/parcours/src/theme-maquettes.css) : le conteneur de PageShell
+   prend la page, pas le panneau gris (comparer.css le pose en repli pour le thème « cave »). */
+[data-theme='clair'] .pq-outil-comparer main { background-color: rgb(var(--cave-950)); }
+
+/* PageShell donne le focus à son conteneur de défilement (tabindex="-1") : cible de programme, jamais de tabulation. Sans
+   ce réglage l'anneau de focus encadre tout l'outil (styles.css de la maquette, 23.10). Les commandes gardent leur anneau. */
+.pq-outil-comparer main[tabindex="-1"]:focus-visible, .pq-outil-comparer div[tabindex="-1"]:focus-visible { outline: none; }

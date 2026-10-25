@@ -8,8 +8,8 @@ import type { RecetteParcours } from '../parcours/types';
 /** Les écrans que Comparer ouvre (routes de la maquette ; l'app les traduit en couches de sa pile). */
 export type RouteComparer =
   | { ecran: 'comparer'; houblons: string[]; pin?: string }
-  | { ecran: 'dryhopper'; ajout: string }
-  | { ecran: 'levure'; ajout: string }
+  | { ecran: 'dryhopper'; ajout: string; houblon?: string }
+  | { ecran: 'levure'; ajout: string; houblon?: string }
   | { ecran: 'suggerer' };
 
 export interface CadreComparerProps {
@@ -30,11 +30,14 @@ export interface HoteComparer {
   Cadre: ComponentType<CadreComparerProps>;
   /** La fiche d'un houblon (appui long) ; absente, l'appui long n'ouvre rien. */
   Fiche?: ComponentType<{ houblon: string }>;
+  /** Les mots de la bière (nom, style, date de la dégustation) ; absents : le cas S1 de la maquette. */
+  termes?: TermesComparer;
 }
 
 const Ctx = createContext<HoteComparer | null>(null);
 
 export function HoteComparerProvider({ valeur, children }: { valeur: HoteComparer; children: ReactNode }) {
+  courants = valeur.termes ?? TERMES_S1;
   return <Ctx.Provider value={valeur}>{children}</Ctx.Provider>;
 }
 
@@ -59,3 +62,12 @@ export function FicheHote({ houblon }: { houblon: string }) {
   const { Fiche } = useHoteComparer();
   return Fiche ? <Fiche houblon={houblon} /> : null;
 }
+
+// ---------- Les mots de la bière (T15b) ----------
+// L'écran dit « ma stout », « ta 16D », « dégustation du 18.10 » : c'est le cas S1 de la maquette. Sur une vraie recette
+// de l'app, ces mots viennent de l'hôte (nom de la bière, code du style, date de la dégustation ; null : aucune dégustation,
+// tout est simulé). Lus au rendu, après le Provider : un seul Comparer est monté à la fois.
+export interface TermesComparer { biere: string; style: string; degustation: string | null }
+export const TERMES_S1: TermesComparer = { biere: 'stout', style: '16D', degustation: '18.10' };
+let courants: TermesComparer = TERMES_S1;
+export const termes = (): TermesComparer & { Biere: string } => ({ ...courants, Biere: courants.biere.charAt(0).toUpperCase() + courants.biere.slice(1) });

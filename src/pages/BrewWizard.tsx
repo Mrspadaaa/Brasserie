@@ -64,6 +64,7 @@ import { appendHopV55RecipeColdContactAssociation, compareHopV55RecipeColdContac
 import { YeastIngredientPicker as SyncYeastIngredientPicker } from '../ui/YeastIngredientPicker';
 import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
 import { hopV4Enabled } from '../ui/hopIndex/flags';
+import { poserPorteEtape } from '../ui/hopIndex/comparer/porte';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
 import { hotBitterness } from '../domain/hopBitterness';
 import {
@@ -1478,6 +1479,14 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     setDraftError('');
     setDraftNotice(draftKey ? 'Changement appliqué et brouillon conservé sur cet appareil.' : 'Changement appliqué dans cet éditeur.');
   };
+
+  // Comparer (T15b, #174) est une couche posée AU-DESSUS du wizard : il lit le brouillon et écrit par cette même porte
+  // (applyHopV4Change), posés ici à chaque rendu. Drapeau hopV4 éteint : rien n'est posé.
+  useEffect(() => {
+    if (!hopV4Actif) return;
+    poserPorteEtape({ recipe: build(), boilOg, draftId: draftRecipeId, onChange: applyHopV4Change });
+  });
+  useEffect(() => () => poserPorteEtape(null), []);
 
   /** Persist cold-contact provenance alone; it never changes hops, IBU or any other recipe field. */
   const conserveHopV55ColdEvidence = async (change: HopV55RecipeColdContactChange): Promise<void> => {

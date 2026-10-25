@@ -5,6 +5,7 @@
 // moment (la plus grande barre de la ligne remplit sa piste ; sous 0,05 cran : « ~0 », sans barre) ; « Absolu », brutes,
 // sur une échelle fixe (0 à 4 crans) commune à tous les moments. cmc2i : le « ? » explicatif est au bout de la barre des
 // moments, son signe dessiné en SVG au centre de son rond.
+import { termes } from './hote';
 import { useEffect, useRef, useState } from 'react';
 import { COULEURS, COURT, nombre } from './commun';
 import { CONDITIONS } from './cas';
@@ -33,7 +34,7 @@ export function EtapesEnsemble({ cols, etapes, reference, nomReference, moment, 
     `${nom} ${ETAPES.find((e) => e.code === code)!.dit}, ${nombre(CONDITIONS.doseGL)} g/L : ${COURT[f].toLowerCase()} ${v == null ? 'inconnu' : `${txt(v)} cran`}`;
   const couleur = COULEURS[f];
   return (
-    <section className="p3-ens cmc-ens" data-element="d107-etapes x3b-cuve-jour-apres-jour y1b-face-a-ta-stout" aria-label={`Aux étapes : ${COURT[f].toLowerCase()} gagné par chaque houblon, à chaque moment ; à gauche, ${nomReference ?? 'ta stout'}`}>
+    <section className="p3-ens cmc-ens" data-element="d107-etapes x3b-cuve-jour-apres-jour y1b-face-a-ta-stout" aria-label={`Aux étapes : ${COURT[f].toLowerCase()} gagné par chaque houblon, à chaque moment ; à gauche, ${nomReference ?? `ta ${termes().biere}`}`}>
       {ETAPES.map((e) => {
         const t = top(e.code), k = echelle(e.code), vr = reference ? val(reference, e.code) : 0;
         return (
@@ -41,7 +42,7 @@ export function EtapesEnsemble({ cols, etapes, reference, nomReference, moment, 
             <span className="p3-ens-g">
               <b className={e.code === moment ? 'cmc-ens-pastille' : undefined}>{e.court}</b>
               <span className="p3-ens-ref" {...(e.code === 'b60' ? (reference ? { 'data-reference': 'houblon', 'data-houblon': reference, 'data-element': 'd107-reference' } : { 'data-reference': 'biere', 'data-element': 'd107-reference' }) : {})}>
-                <span data-etape={e.code} data-nature="simule" title={lab(nomReference ?? 'ta stout', e.code, vr)}>{vr == null ? '?' : txt(vr)}</span>
+                <span data-etape={e.code} data-nature="simule" title={lab(nomReference ?? `ta ${termes().biere}`, e.code, vr)}>{vr == null ? '?' : txt(vr)}</span>
               </span>
             </span>
             {cols.map((c) => {
@@ -85,11 +86,11 @@ export function AideEtapes({ nomReference, famille }: { nomReference: string | n
         <div className="cmc-aide-f" role="dialog" aria-label="Les étapes, expliquées" data-role="aide-etapes-feuille">
           <p><b>Le nombre</b> : ce que le houblon apporte en {famille} (la pastille), posé à ce moment, à {nombre(CONDITIONS.doseGL)} g/L, en crans du style.</p>
           <p><b>★</b> : le meilleur de l’étape.</p>
-          <p><b>À gauche, en gris</b> : {nomReference ? `ton ${nomReference}` : 'ta stout'} au même moment ; son trait gris dans chaque barre.</p>
+          <p><b>À gauche, en gris</b> : {nomReference ? `ton ${nomReference}` : `ta ${termes().biere}`} au même moment ; son trait gris dans chaque barre.</p>
           <p><b>~</b> : simulé. <b>~0</b> : moins de 0,05 cran.</p>
-          <p><b>Au style</b> : chaque ligne à l’échelle de son plus fort apport, face à ta 16D. <b>Absolu</b> : valeurs brutes, même échelle à tous les moments.</p>
+          <p><b>Au style</b> : chaque ligne à l’échelle de son plus fort apport, face à ta {termes().style}. <b>Absolu</b> : valeurs brutes, même échelle à tous les moments.</p>
           <p>Toucher une ligne la pose sur le radar et les rangées ; dry hop : {CONDITIONS.jours} j de contact.</p>
-          <p><b>Par famille</b> : la barre de chaque houblon face à ta 16D (zone pâle), le trait noir de ta stout, l’orangé au-dessus de la 16D, l’écart chiffré face au retenu.</p>
+          <p><b>Par famille</b> : la barre de chaque houblon face à ta {termes().style} (zone pâle), le trait noir de ta {termes().biere}, l’orangé au-dessus de la {termes().style}, l’écart chiffré face au retenu.</p>
         </div>
       )}
     </span>
