@@ -491,11 +491,10 @@ sur un autre compte).
 
 ## Reprise (24.10, nuit)
 
-- Maquette de référence figée : https://claude.ai/artifact/2QTyTCmFC6kRg9xkfVNefN (version 2), étiquette `maquette-2026-10-24-soir`.
-- Légende des pastilles leg3-v2f (D61, son choix) intégrée dans `src/ecrans/ma-biere/Carte.tsx` et `Ajouter.tsx` (voie leg), registre `choix/ecrans.json` à jour. Batterie et états en cours sur `maquettes/parcours` (log scratchpad batterie8). Ensuite : enveloppe neuve `outils/pages/2026-10-24-maquette-nuit/` (copie de `2026-10-24-maquette-reprise`, titre « Maquette houblons · 24.10, nuit », `assets/` recopiés), publier dans un **nouvel** artefact, l'inscrire dans « ## Pages ».
-- Dryhopper avec ses retours : 12 variantes, critique dg : 11 acceptées, en tête dga2, dgz2, dgz3 ; dga4 écartée (jours de cuve chiffrés hors moteur). Planche à faire (`outils/pages/2026-10-24-dryhopper-retours/`, modèle de `2026-10-24-recherche-avancee`, référence = capture de `maquettes/parcours/dryhopper/etat.html`).
-- r6a++ : rpb et rpz rendus, rpa en vol ; puis voie rp-critique, puis planche (`outils/pages/2026-10-24-r6a-plus/`).
-- Fils ouverts : radar r2 (maquette) ; galerie y1b et w2 (à fermer quand la planche Dryhopper est publiée) ; r6a (galerie, à fermer avec la planche r6a++) ; légendes v2 (deux fils, à fermer avec la maquette nuit).
+- Mis à jour le 25.10 vers 7 h 30. Maquette publiée du 25.10 : https://claude.ai/artifact/HP2He7tNjqPMsAHSCtrRgx (légende v2a avec les barres de v2e, D140).
+- Lot fils25-comparer (D141, D66) en vol : cma et cmb (concepteur opus), cmz (fable), cm-quand (contrôle `controle-quand-comparer.mjs`). Base de reprise = l'écran Comparer de la maquette jouable (`maquettes/parcours-cmp-base`, captures `fils25-comparer/captures/base-jouable*.png`, sa capture `brasseur-base-reprise.jpg`). Ensuite : rejouer `outils/variantes.mjs` et les GATES des séries, lancer cm-critique (contrat prêt), monter la planche (référence = base jouable et sa capture), la publier dans un artefact neuf, l'inscrire dans « ## Pages ».
+- Planches du soir et de la nuit : Dryhopper (4dnWwTDjKjZoPmngX7GTvm, y1b et w2 greffés par erreur, marqué) ; Comparer r6a++ (WJBxNSr9CCDVBy8jbJXpDC, bâtie sur r6a, marquée) ; fils galerie fermés.
+- Ouverts chez lui : radar r2 de Comparer (« À revoir, on va en parler ») ; choix de Dryhopper, Comparer, Levure.
 
 ## Signature (24.10, soir)
 
