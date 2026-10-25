@@ -73,7 +73,7 @@ export function ContenuSources({ h, cle, s, recette }: { h: HoublonLu; cle: stri
           <li key={l.url ?? `${l.nom}|${l.annee}`} data-source-nom={l.nom} className="text-sm leading-snug">
             <LienUrl nom={l.nom} url={l.url} role={l === bm ? 'lien-beer-maverick' : 'lien-source'} />
             <span className="block text-xs text-cave-400">
-              {l.annee ?? 'date ?'} · {l.sert.join(' ; ')}{l.url ? '' : ' · sans adresse'}
+              {l.annee ?? 'date ?'} · {l.sert.join(' ; ')}{l.url ? '' : ' · sans adresse'}{l.releve ? ` · modifiée ${l.modifiee ?? 'date non publiée'}, relevée ${l.releve}` : ''}
             </span>
           </li>
         ))}
@@ -84,6 +84,8 @@ export function ContenuSources({ h, cle, s, recette }: { h: HoublonLu; cle: stri
         <Rangee nom="alias" valeur={s.alias.length ? s.alias.join(', ') : '?'} inconnu={!s.alias.length} />
         <Rangee nom="origine" valeur={s.origine ?? '?'} inconnu={!s.origine} />
         <Rangee nom="usage" valeur={h.role.mot ?? '?'} inconnu={!h.role.mot} />
+        {s.bm && <Rangee nom={<>usage <LienUrl nom={s.bm.ref.nom} url={s.bm.ref.url} /></>} valeur={s.bm.usage ?? '?'} inconnu={!s.bm.usage} />}
+        {s.bm?.proprietaire && <Rangee nom={<>propriétaire <LienUrl nom={s.bm.ref.nom} url={s.bm.ref.url} /></>} valeur={s.bm.proprietaire} />}
         <Rangee nom="forme" valeur={st && st.forme !== 'unknown' ? st.forme : s.forme && s.forme !== 'unknown' ? s.forme : '?'} inconnu={!(st && st.forme !== 'unknown') && !(s.forme && s.forme !== 'unknown')} />
         <Rangee nom="identifiants" valeur={[s.id, s.hopsteinerId].filter(Boolean).join(' ; ')} />
         {s.faitsCites.length > 0 && <Rangee nom="faits cités" valeur={s.faitsCites.join(' ; ')} />}
@@ -93,7 +95,11 @@ export function ContenuSources({ h, cle, s, recette }: { h: HoublonLu; cle: stri
         {s.alpha.map((x) => <Rangee key={`a${x.source}`} nom={<>α <NomPlage x={x} /></>} valeur={`${pl(x)} %`} />)}
         {lot != null && <Rangee nom="α mon lot" valeur={`${nombre(lot, 1)} %${st?.alphaDe ? `, ${st.alphaDe}` : ''}`} />}
         {s.beta.length ? s.beta.map((x) => <Rangee key={`b${x.source}`} nom={<>β <NomPlage x={x} /></>} valeur={`${pl(x)} %`} />) : <Rangee nom="β" valeur="?" inconnu />}
-        <Rangee nom="cohumulone" valeur="?" inconnu />
+        {s.cohumulone
+          ? <Rangee nom={<>cohumulone <NomPlage x={s.cohumulone} /></>} valeur={`${pl(s.cohumulone)} % des α`} />
+          : <Rangee nom="cohumulone" valeur="?" inconnu />}
+        {s.bm?.rapportAB && <Rangee nom={<>rapport α/β <LienUrl nom={s.bm.ref.nom} url={s.bm.ref.url} /></>} valeur={s.bm.rapportAB} />}
+        {s.bm?.stockage && <Rangee nom={<>stockage (HSI) <LienUrl nom={s.bm.ref.nom} url={s.bm.ref.url} /></>} valeur={s.bm.stockage} />}
         {(s.accord.alpha || s.accord.beta) && (
           <p className="text-xs text-cave-400">{[accordTexte(s.accord.alpha) && `α : ${accordTexte(s.accord.alpha)}`, accordTexte(s.accord.beta) && `β : ${accordTexte(s.accord.beta)}`].filter(Boolean).join(' ; ')}.</p>
         )}
@@ -108,6 +114,7 @@ export function ContenuSources({ h, cle, s, recette }: { h: HoublonLu; cle: stri
             valeur={c.plage ? `${pl(c.plage)} % de l’huile` : '?'} inconnu={!c.plage} />
         ))}
         <Rangee nom="géraniol" valeur="?" inconnu />
+        {s.composants.some((c) => c.nom === 'autres huiles' && c.plage) && <p className="text-xs text-cave-400">autres huiles : β-pinène, linalol, géraniol et sélinène, non séparés par la page Beer Maverick.</p>}
         <Rangee nom="thiols, Hopsteiner" valeur={s.thiol ? `classe ${s.thiol}` : '?'} inconnu={!s.thiol} />
         {s.composants.filter((c) => !c.plage && c.raison && c.raison !== 'non renseigné').map((c) => <p key={c.nom} className="text-xs text-cave-400">{c.nom} : {c.raison}</p>)}
       </Theme>
@@ -138,6 +145,13 @@ export function ContenuSources({ h, cle, s, recette }: { h: HoublonLu; cle: stri
             ))}
           </ul>
         )}
+        {s.bm?.arome && (
+          <div data-role="sources-profil-bm" className="mt-2">
+            <p className="mb-1 text-xs text-cave-400">Profil d’arôme <LienUrl nom={s.bm.ref.nom} url={s.bm.ref.url} />, de 0 à 5</p>
+            <Etiquettes mots={s.bm.arome.filter((a) => a.valeur > 0).sort((a, b) => b.valeur - a.valeur).map((a) => `${a.nom} ${a.valeur}`)} />
+            <p className="mt-1 text-xs text-cave-400">à 0 : {s.bm.arome.filter((a) => a.valeur === 0).map((a) => a.nom).join(', ') || 'aucun axe'}.</p>
+          </div>
+        )}
         {s.descripteurs.length > 0 && <div className="mt-2"><p className="mb-1 text-xs text-cave-400">Descripteurs Beer Maverick</p><Etiquettes mots={s.descripteurs} /></div>}
         {s.textes.length > 0 && (
           <details className="mt-2">
@@ -150,6 +164,12 @@ export function ContenuSources({ h, cle, s, recette }: { h: HoublonLu; cle: stri
       </Theme>
 
       <Theme id="styles" titre="Styles et usages">
+        {s.bm && s.bm.styles.length > 0 && (
+          <div data-role="sources-styles-bm" className="py-1 text-sm">
+            <Etiquettes mots={s.bm.styles} />
+            <span className="mt-0.5 block text-xs text-cave-400"><LienUrl nom={s.bm.ref.nom} url={s.bm.ref.url} /></span>
+          </div>
+        )}
         {s.usages.length > 0
           ? s.usages.map((u, i) => (
             <div key={i} className="py-1 text-sm">
@@ -157,7 +177,7 @@ export function ContenuSources({ h, cle, s, recette }: { h: HoublonLu; cle: stri
               {u.source && <span className="mt-0.5 block text-xs text-cave-400"><LienUrl nom={u.source} url={u.url && /^https?:\/\//i.test(u.url) ? u.url : null} /></span>}
             </div>
           ))
-          : <p className="text-sm text-cave-400">{s.stylesRaison}</p>}
+          : !(s.bm && s.bm.styles.length > 0) && <p className="text-sm text-cave-400">{s.stylesRaison}</p>}
       </Theme>
 
       <Theme id="recette" titre="Ma recette et mon stock">
@@ -170,9 +190,26 @@ export function ContenuSources({ h, cle, s, recette }: { h: HoublonLu; cle: stri
         <p className="text-xs text-cave-400">IBU : {nombre(recette.volumeL, 1)} L, DI {nombre(recette.og, 3)}, ébullition {recette.boilMin} min.</p>
       </Theme>
 
+      {s.bm && (s.bm.substituts?.length || s.bm.accords?.length) ? (
+        <Theme id="substituts" titre="Substituts et accords">
+          {s.bm.substituts?.length ? (
+            <div data-role="sources-substituts-bm" className="py-1 text-sm">
+              <p className="mb-1 text-xs text-cave-400">Substituts choisis par des brasseurs · <LienUrl nom={s.bm.ref.nom} url={s.bm.ref.url} /></p>
+              <Etiquettes mots={s.bm.substituts.map((x) => x.name)} />
+            </div>
+          ) : null}
+          {s.bm.accords?.length ? (
+            <div data-role="sources-accords-bm" className="py-1 text-sm">
+              <p className="mb-1 text-xs text-cave-400">Utilisés avec lui, nombre de bières · <LienUrl nom={s.bm.ref.nom} url={s.bm.ref.url} /></p>
+              <Etiquettes mots={s.bm.accords.map((x) => `${x.name} ${x.count}`)} />
+            </div>
+          ) : null}
+        </Theme>
+      ) : null}
+
       <Theme id="inconnus" titre="Pas dans les fiches">
         {s.inconnus.map((c) => <Rangee key={c.nom} nom={c.nom} valeur={<span title={c.raison}>?</span>} inconnu />)}
-        <p className="text-xs text-cave-400">Substituts : {s.inconnus.find((c) => /substituts/.test(c.nom))?.raison}.</p>
+        <p className="text-xs text-cave-400">Remplaçants calculés par le moteur : Substituts ›.</p>
       </Theme>
 
       {s.liens.some((l) => l.note) && (

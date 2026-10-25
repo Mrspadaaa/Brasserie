@@ -13,7 +13,12 @@ const here = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const repo = path.resolve(here, '../..');
 const read = (p) => JSON.parse(fs.readFileSync(path.join(repo, p), 'utf8'));
 const FIXTURE = 'tests/fixtures/production/houblons-2026-10-17.json';
-const bm = read('src/data/hopBeerMaverickBootstrap.json').hopVarieties;
+const bmPack = read('src/data/hopBeerMaverickBootstrap.json');
+const bm = bmPack.hopVarieties;
+// Dossier étendu de chaque page Beer Maverick (cohumulone, farnésène, autres huiles, usage, styles, substituts, accords, profil d'arôme),
+// extrait du cache par scripts/scrape-hop-community.mjs --offline. Une valeur absente de la page y est null, jamais 0.
+const bmFiches = new Map((bmPack.hopBeerMaverickFiches || []).map((f) => [f.id, f]));
+const plage = (x) => (x ? [x.min, x.max] : null);
 const hs = read('src/data/hopManufacturerBootstrap.json').hopVarieties;
 const bjcp = read('src/data/brewingStylesBootstrap.json').find((g) => g.id === 'styles-bjcp-2021');
 const prod = read(FIXTURE);
@@ -66,6 +71,24 @@ const usageOf = (v) => {
 const facts = JSON.parse(fs.readFileSync(path.join(here, '..', '..', 'src', 'data', 'hopV4', 'faits-cites.json'), 'utf8')).facts;
 for (const f of facts) if (!bm.some((v) => v.id === f.varietyId)) throw Error(`Fait cité sur une variété absente : ${f.id}`);
 
+// Le bloc `bm` d'une variété : ce que sa page Beer Maverick publie en plus, avec ses dates (l'adresse est le champ `url` ; le reçu sha256 reste dans le fichier d'amorçage).
+// Forme compacte (budget B5 : le catalogue est dans le chunk des outils) : dates sans l'heure, houblons cités par leur identifiant sans
+// « beermaverick- » (ou { name } quand le nom ne se résout pas), accords en paires [houblon, nombre de bières], radar en 9 nombres dans
+// l'ordre BM_AXES (src/domain/hopIndex/v4/data.ts), indice de stockage en [pct, rang de la classe, indice min, indice max].
+const AXES_BM = ['citrus', 'tropicalFruit', 'stoneFruit', 'berry', 'floral', 'grassy', 'herbal', 'spice', 'resinPine'];
+const CLASSES_HSI = ['Great', 'Good', 'Fair', 'Poor']; // = BM_CLASSES_HSI de data.ts
+const classeHsi = (c) => { const i = CLASSES_HSI.indexOf(c); if (i < 0) throw Error(`Classe HSI inconnue : ${c}`); return i; };
+const jour = (iso) => (iso ? iso.slice(0, 10) : null);
+const lien = (x) => (x.id ? x.id.replace(/^beermaverick-/, '') : { name: x.name });
+const bmDe = (f) => ({
+  modifiee: jour(f.modifiedAt), releve: jour(f.retrievedAt),
+  proprietaire: f.ownership, rapportAB: f.alphaBetaRatio,
+  hsi: f.hsi ? [f.hsi.pct, classeHsi(f.hsi.classe), f.hsi.indice[0], f.hsi.indice[1]] : null,
+  styles: f.styles, substituts: f.substituts ? f.substituts.map(lien) : null,
+  accords: f.accords ? f.accords.map((a) => [lien(a), a.count]) : null,
+  arome: f.aroma ? AXES_BM.map((k) => f.aroma[k]) : null,
+});
+
 // Descriptions conservées pour le moteur : seulement celles qui portent des descripteurs.
 const varieties = bm.map((v) => {
   const id = v.id;
@@ -73,6 +96,7 @@ const varieties = bm.map((v) => {
   const h = hsByName.get(key) || hsByName.get(HS_ALIAS[key]) || (v.aliases || []).map((a) => hsByName.get(fold(a))).find(Boolean) || null;
   const short = id.replace(/^beermaverick-/, '');
   const tags = tagsOf(v);
+  const f = bmFiches.get(id);
   return {
     id, name: v.name, aliases: v.aliases || [], origin: ORIGIN_FIX[short] || origin(v.origin), form: v.form,
     alpha: range(v, 'alpha'), beta: range(v, 'beta'), oil: range(v, 'totalOil'),
@@ -82,8 +106,11 @@ const varieties = bm.map((v) => {
     citedFacts: facts.filter((f) => f.varietyId === id).map((f) => f.id),
     hopsteinerId: h?.id ?? null, hsLinalool: h?.linalool ?? null, hsThiol: h?.thiol ?? null,
     hs: h ? { name: h.name, alpha: h.analysis.alpha, beta: h.analysis.beta, totalOil: h.analysis.totalOil, reference: h.reference, year: h.year } : null,
-    // Composants de l'huile (% de l'huile, Beer Maverick) ; le farnésène n'a pas été importé dans le dépôt.
-    oils: { myrcene: range(v, 'myrcene'), humulene: range(v, 'humulene'), caryophyllene: range(v, 'caryophyllene') },
+    // Composants de l'huile (% de l'huile, Beer Maverick) : farnésène et « All Others » (β-pinène, linalol, géraniol, sélinène non séparés).
+    oils: { myrcene: range(v, 'myrcene'), humulene: range(v, 'humulene'), caryophyllene: range(v, 'caryophyllene'), farnesene: plage(f?.farnesene), others: plage(f?.others) },
+    // Cohumulone, en % des acides α (pas en % de l'huile). Usage : Aroma, Bittering ou Dual.
+    cohumulone: plage(f?.cohumulone), purpose: f?.purpose ?? null,
+    bm: f ? bmDe(f) : null,
     bmYear: v.descriptions?.[0]?.source?.year ?? null,
     usage: usageOf(v),
     url: v.descriptions?.[0]?.source?.reference || null,
@@ -126,7 +153,7 @@ const styles = bjcp.styles.map((s) => ({
 const out = {
   fixture: FIXTURE, fixtureSource: prod.source,
   sources: {
-    varieties: 'Beer Maverick (descripteurs, plages historiques), src/data/hopBeerMaverickBootstrap.json',
+    varieties: 'Beer Maverick (descripteurs, plages historiques, cohumulone, farnésène, usage, styles, substituts, accords), src/data/hopBeerMaverickBootstrap.json',
     hopsteiner: 'Hopsteiner 2025, familles déclarées et descripteurs, src/data/hopManufacturerBootstrap.json',
     styles: 'BJCP 2021, statistiques, src/data/brewingStylesBootstrap.json',
     stock: `Stock de production, lecture seule, ${FIXTURE}`,

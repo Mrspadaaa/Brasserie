@@ -10,6 +10,37 @@ import solverBootstrap from '../../../data/hopSolverBootstrap.json';
 import trialBootstrap from '../../../data/hopTrialBootstrap.json';
 import protoData from '../../../data/hopV4/proto-data.json';
 
+/** Un houblon cité par une page Beer Maverick (substitut ou accord) : son id dans le catalogue sans le préfixe « beermaverick- » quand le nom
+ * se résout, sinon { name } (le nom écrit par la page). Forme compacte : voir prototypes/houblons-v4/scripts/build-data.mjs. */
+export type BmLien = string | { name: string };
+/** L'id du catalogue d'un houblon cité, ou null. */
+export const bmLienId = (l: BmLien): string | null => (typeof l === 'string' ? `beermaverick-${l}` : null);
+/** Axes du radar d'arôme de Beer Maverick (9 axes, de 0 à 5) : ce ne sont pas les 12 familles du moteur. */
+export type BmAxe = 'citrus' | 'tropicalFruit' | 'stoneFruit' | 'berry' | 'floral' | 'grassy' | 'herbal' | 'spice' | 'resinPine';
+/** Classes de l'indice de stockage publiées par la page, de la meilleure à la pire. */
+export const BM_CLASSES_HSI = ['Great', 'Good', 'Fair', 'Poor'] as const;
+/** L'ordre des 9 nombres de `BmFiche.arome`, celui de la page. */
+export const BM_AXES: readonly BmAxe[] = ['citrus', 'tropicalFruit', 'stoneFruit', 'berry', 'floral', 'grassy', 'herbal', 'spice', 'resinPine'];
+/** Ce que la page Beer Maverick d'un houblon publie en plus (d2-import-bm, #180). Chaque valeur vient de la page `CatalogueHop.url`,
+ * modifiée le `modifiee` (null : date non publiée) et relevée le `releve`. Un champ absent de la page est null, jamais 0. */
+export interface BmFiche {
+  /** Jours « 2023-03-08 » ; modifiee null : date non publiée. */
+  modifiee: string | null; releve: string;
+  /** Propriétaire de la variété, tel qu'écrit (« ™ NZ Hops Ltd. »). */
+  proprietaire: string | null;
+  /** Rapport α/β, en texte brut (« 1:1 - 3:1 »). */
+  rapportAB: string | null;
+  /** Indice de stockage : [% des acides perdus en 6 mois à 20 °C, rang de la classe publiée dans BM_CLASSES_HSI, indice min, indice max]. */
+  hsi: [number, number, number, number] | null;
+  /** Styles de bière cités par la page (langue source). */
+  styles: string[] | null;
+  /** Substituts choisis par des brasseurs ; [] : la page dit n'en avoir aucun ; null : section absente. */
+  substituts: BmLien[] | null;
+  /** Accords (Hop Pairings) : les houblons les plus utilisés avec celui-ci, et le nombre de bières. */
+  accords: [BmLien, number][] | null;
+  /** Radar d'arôme : 9 nombres de 0 à 5 dans l'ordre BM_AXES ; null : la page ne publie aucune valeur. Non branché au moteur. */
+  arome: number[] | null;
+}
 /** Données du prototype : produites par scripts/build-data.mjs depuis le dépôt et le fixture
  * de production (lecture seule). Connaissances V5.5 : importées telles quelles des bootstraps. */
 export interface CatalogueHop {
@@ -22,7 +53,15 @@ export interface CatalogueHop {
   /** Fiche Hopsteiner reliée : alpha, bêta, huile totale (plages), référence et année. */
   hs: { name: string; alpha: [number, number] | null; beta: [number, number] | null; totalOil: [number, number] | null; reference: string | null; year: number | null } | null;
   /** Composants de l'huile, % de l'huile (Beer Maverick). */
-  oils: { myrcene: [number, number] | null; humulene: [number, number] | null; caryophyllene: [number, number] | null };
+  oils: { myrcene: [number, number] | null; humulene: [number, number] | null; caryophyllene: [number, number] | null;
+    /** Farnésène et « All Others » (β-pinène, linalol, géraniol, sélinène non séparés), % de l'huile (Beer Maverick). */
+    farnesene?: [number, number] | null; others?: [number, number] | null };
+  /** Cohumulone, en % des acides α (pas en % de l'huile), Beer Maverick ; null : « Unknown » dans la page. */
+  cohumulone?: [number, number] | null;
+  /** Usage selon Beer Maverick : aroma, bittering ou dual. */
+  purpose?: 'aroma' | 'bittering' | 'dual' | null;
+  /** Le reste de la page Beer Maverick (styles, substituts, accords, propriétaire, profil d'arôme). */
+  bm?: BmFiche | null;
   bmYear: number | null;
   /** Usages attestés par un fournisseur (hopStyleUsageBootstrap), ou null. */
   usage: { styles: string[]; roles: string[]; source: string | null; url: string | null }[] | null;

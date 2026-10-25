@@ -4,10 +4,53 @@
 // (hopRef(cle).catalogue, describeFamilies), comme hopSheet (src/domain/hopIndex/v4/fiches.ts) : aucune valeur recopiée ni inventée ;
 // une donnée absente reste absente, avec sa raison (D14, D65).
 import type { FamilyId } from '../../../domain/hopIndex/v4';
-import type { CatalogueHop } from '../../../domain/hopIndex/v4/data';
+import { BM_AXES, BM_CLASSES_HSI, bmLienId, type BmAxe, type BmLien, type CatalogueHop } from '../../../domain/hopIndex/v4/data';
 import { FAMILIES, describeFamilies, familyWords, hopRef } from '../parcours/v4';
 
 export interface PlageSource { source: string; annee: number | null; min: number; max: number; url: string | null }
+/** Le reste de la page Beer Maverick (d2-import-bm, #180), en français, prêt à afficher. `ref` : la page, pour le lien de chaque ligne. */
+export interface BmAffiche {
+  ref: { nom: string; url: string | null };
+  /** Date de modification publiée et date de relevé, « 08.03.2023 ». */
+  modifiee: string | null; releve: string;
+  usage: string | null; proprietaire: string | null; rapportAB: string | null;
+  /** « 85 % perdus en 6 mois (médiocre), indice 0,85 ». */
+  stockage: string | null;
+  styles: string[];
+  /** null : la page n'a pas de section ; [] : elle dit n'en avoir aucun. */
+  substituts: LienBm[] | null;
+  accords: (LienBm & { count: number })[] | null;
+  /** Radar à 9 axes (0 à 5), dans l'ordre de la page ; null : la page ne publie aucune valeur. */
+  arome: { axe: BmAxe; nom: string; valeur: number }[] | null;
+}
+/** Un houblon cité par la page : son nom (celui du catalogue quand il se résout, sinon celui de la page) et son id si le catalogue le connaît. */
+export interface LienBm { id: string | null; name: string }
+const USAGE_FR: Record<string, string> = { aroma: 'arôme', bittering: 'amertume', dual: 'mixte, arôme et amertume' };
+const STOCKAGE_FR: Record<string, string> = { Poor: 'médiocre', Fair: 'moyenne', Good: 'bonne', Great: 'excellente' };
+const AXES_FR: Record<BmAxe, string> = { citrus: 'agrumes', tropicalFruit: 'fruits tropicaux', stoneFruit: 'fruits à noyau', berry: 'petits fruits', floral: 'floral', grassy: 'herbe verte', herbal: 'herbacé', spice: 'épicé', resinPine: 'résine, pin' };
+/** « 2023-03-08T22:45:36+00:00 » → « 08.03.2023 ». */
+export const dateCourte = (iso: string | null | undefined): string | null => {
+  const m = iso?.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? `${m[3]}.${m[2]}.${m[1]}` : null;
+};
+const nb = (x: number) => String(x).replace('.', ',');
+function lienBm(l: BmLien): LienBm {
+  const id = bmLienId(l);
+  return { id, name: typeof l === 'string' ? hopRef(`beermaverick-${l}`)?.name ?? l : l.name };
+}
+function bmAffiche(c: CatalogueHop): BmAffiche | null {
+  const b = c.bm;
+  if (!b) return null;
+  return {
+    ref: { nom: `Beer Maverick${c.bmYear ? ` ${c.bmYear}` : ''}`, url: c.url },
+    modifiee: dateCourte(b.modifiee), releve: dateCourte(b.releve) ?? b.releve,
+    usage: c.purpose ? USAGE_FR[c.purpose] : null, proprietaire: b.proprietaire, rapportAB: b.rapportAB,
+    stockage: b.hsi ? `${nb(b.hsi[0])} % perdus en 6 mois (${STOCKAGE_FR[BM_CLASSES_HSI[b.hsi[1]]]}), indice ${b.hsi[2] === b.hsi[3] ? nb(b.hsi[2]) : `${nb(b.hsi[2])}–${nb(b.hsi[3])}`}` : null,
+    styles: b.styles ?? [], substituts: b.substituts ? b.substituts.map(lienBm) : null,
+    accords: b.accords ? b.accords.map(([l, count]) => ({ ...lienBm(l), count })) : null,
+    arome: b.arome ? BM_AXES.map((axe, i) => ({ axe, nom: AXES_FR[axe], valeur: b.arome![i] })) : null,
+  };
+}
 /** Une source citée : son nom complet et sa date ; l'adresse de sa page quand elle en a une (sinon, ni lien ni adresse inventée). */
 export interface LienSource {
   /** Nom complet : « Beer Maverick · Lotus », « Hopsteiner — Fiche variétale Lotus ». */
@@ -16,6 +59,8 @@ export interface LienSource {
   sert: string[];
   /** Ce que la fiche précise de sa propre portée (« Agrégat de plages historiques… »), tel qu'écrit ; null : rien. */
   note: string | null;
+  /** Dates de la page : modification publiée et relevé (« 08.03.2023 », « 08.09.2026 ») ; null : sans objet ou non publiée. */
+  modifiee?: string | null; releve?: string | null;
 }
 export interface UsageSource { styles: string[]; source: string | null; url: string | null }
 /** Un composant de l'huile ou un champ que le dépôt ne porte pas : « ? », jamais 0. */
@@ -26,6 +71,10 @@ export interface SourcesFiche {
   /** La fiche la plus récente (g1 : « α 11–14 % », Hopsteiner 2025 pour Nugget) ; la première à année égale. */
   alphaRecente: PlageSource | null;
   beta: PlageSource[];
+  /** Cohumulone, en % des acides α (Beer Maverick) ; null : « Unknown » dans la page. */
+  cohumulone: PlageSource | null;
+  /** Ce que la page Beer Maverick publie en plus (usage, propriétaire, styles, substituts, accords, arôme) ; null : pas de bloc. */
+  bm: BmAffiche | null;
   huileTotale: PlageSource[];
   composants: ComposantHuile[];
   styles: string[]; stylesSources: string[]; stylesRaison: string | null;
@@ -86,7 +135,9 @@ export function liensDe(c: CatalogueHop): LienSource[] {
   };
   // 1. Beer Maverick : le champ `url` du catalogue.
   const bm = (c.descriptions ?? []).find((d) => d.source.author === 'Beer Maverick');
-  poser('Beer Maverick', `Beer Maverick · ${c.name}`, c.bmYear ?? bm?.source.year ?? null, c.url, 'α, β, huile, composants, descripteurs', bm?.source.locator ?? null);
+  poser('Beer Maverick', `Beer Maverick · ${c.name}`, c.bmYear ?? bm?.source.year ?? null, c.url,
+    c.bm ? 'α, β, cohumulone, huile, composants, usage, styles, substituts, accords, arôme, descripteurs' : 'α, β, huile, composants, descripteurs', bm?.source.locator ?? null);
+  if (c.bm) { const l = out[0]; l.modifiee = dateCourte(c.bm.modifiee); l.releve = dateCourte(c.bm.releve) ?? c.bm.releve; }
   // 2. Hopsteiner, puis les autres fiches des descriptions.
   if (c.hs) poser('Hopsteiner', `Fiche variétale ${c.hs.name}`, c.hs.year, c.hs.reference, 'α, β, huile totale');
   if (c.hsLinalool) poser('Hopsteiner', `Fiche variétale ${c.name}`, c.hsLinalool.year, c.hsLinalool.reference, 'linalol');
@@ -120,6 +171,8 @@ export function sourcesFiche(cle: string): SourcesFiche | null {
   const st = h.stock;
   const r: SourcesFiche = {
     alpha, alphaRecente, beta, huileTotale,
+    cohumulone: c.cohumulone ? { source: 'Beer Maverick', annee: c.bmYear, min: c.cohumulone[0], max: c.cohumulone[1], url: c.url } : null,
+    bm: bmAffiche(c),
     accord: { alpha: accordDe(alpha), beta: accordDe(beta), huile: accordDe(huileTotale) },
     alias: c.aliases ?? [],
     thiol: c.hsThiol?.class ?? null,
@@ -128,7 +181,8 @@ export function sourcesFiche(cle: string): SourcesFiche | null {
     premier: Object.fromEntries(FAMILIES.filter((f) => w.premier[f].length).map((f) => [f, w.premier[f]])),
     composants: [
       comp('myrcène', c.oils.myrcene), comp('humulène', c.oils.humulene), comp('caryophyllène', c.oils.caryophyllene),
-      { nom: 'farnésène', plage: null, raison: 'Publié par Beer Maverick, non importé dans le dépôt.' },
+      comp('farnésène', c.oils.farnesene ?? null),
+      comp('autres huiles', c.oils.others ?? null),
       c.hsLinalool
         ? { nom: 'linalol', plage: { source: 'Hopsteiner', annee: c.hsLinalool.year, min: c.hsLinalool.range[0], max: c.hsLinalool.range[1], url: c.hsLinalool.reference }, raison: null }
         : { nom: 'linalol', plage: null, raison: 'non renseigné' },
@@ -142,11 +196,12 @@ export function sourcesFiche(cle: string): SourcesFiche | null {
     faitsCites: (c as unknown as { citedFacts?: string[] }).citedFacts ?? [],
     liens: liensDe(c),
     usages: (c.usage ?? []).map((u) => ({ styles: u.styles, source: u.source, url: u.url })),
+    // Ce qu'aucune fiche du dépôt ne porte pour ce houblon : « ? », jamais 0. Une valeur que Beer Maverick publie n'y est plus.
     inconnus: [
-      { nom: 'cohumulone', raison: 'non publiée dans les fiches du dépôt' },
-      { nom: 'géraniol', raison: 'non publié dans les fiches du dépôt' },
-      { nom: 'stockage (HSI)', raison: 'non publié dans les fiches du dépôt' },
-      { nom: 'substituts publiés', raison: 'scores de Beer Maverick non importés ; remplaçants calculés par le moteur (Substituts ›)' },
+      ...(c.cohumulone ? [] : [{ nom: 'cohumulone', raison: 'Beer Maverick l’indique « Unknown », ou la fiche manque' }]),
+      { nom: 'géraniol', raison: 'Beer Maverick le range dans « autres huiles » ; aucune fiche fournisseur chargée' },
+      ...(c.bm?.hsi ? [] : [{ nom: 'stockage (HSI)', raison: 'non publié dans les fiches du dépôt' }]),
+      ...(c.bm?.substituts?.length ? [] : [{ nom: 'substituts publiés', raison: c.bm?.substituts ? 'la page Beer Maverick dit n’en proposer aucun' : 'aucune fiche du dépôt' }]),
     ],
     auteurs,
     seuleFiche: sur === 1 ? auteurs.find((a) => a.auteurs.length)?.auteurs[0] ?? null : null,

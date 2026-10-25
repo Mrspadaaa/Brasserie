@@ -186,10 +186,20 @@ describe('Sources › : les liens d’abord, puis tout ce que le catalogue dit d
       if (v.hopsteinerId) a(v.hopsteinerId);
       a(v.id);
       // Les champs que le catalogue ne porte pas : « ? », jamais 0.
-      for (const nom of ['cohumulone', 'géraniol', 'stockage (HSI)']) {
-        const ligne = [...container.querySelectorAll('.pq-fiche-rangee')].find((r) => r.textContent!.startsWith(nom))!;
-        expect(ligne.textContent, `${cle} : ${nom}`).toBe(`${nom}?`);
-      }
+      const ligneDe = (nom: string) => [...container.querySelectorAll('.pq-fiche-rangee')].find((r) => r.textContent!.startsWith(nom))!;
+      // d2-import-bm : ce que Beer Maverick publie s'affiche avec sa valeur ; ce qu'il ne publie pas reste « ? ».
+      if (v.cohumulone) a(`${plage(v.cohumulone[0], v.cohumulone[1], 1)} % des α`);
+      else expect(ligneDe('cohumulone').textContent, `${cle} : cohumulone`).toBe('cohumulone?');
+      if (v.oils.farnesene) a(`${plage(v.oils.farnesene[0], v.oils.farnesene[1], 1)} % de l’huile`);
+      if (v.oils.others) a(`${plage(v.oils.others[0], v.oils.others[1], 1)} % de l’huile`);
+      if (v.bm?.hsi) expect(ligneDe('stockage (HSI)').textContent, `${cle} : HSI`).toContain('% perdus en 6 mois');
+      else expect(ligneDe('stockage (HSI)').textContent, `${cle} : HSI`).toBe('stockage (HSI)?');
+      // Le géraniol n'est séparé par aucune fiche chargée (Beer Maverick le range dans « autres huiles »).
+      expect(ligneDe('géraniol').textContent, `${cle} : géraniol`).toBe('géraniol?');
+      for (const st of v.bm?.styles ?? []) a(st);
+      const nomBm = (x: string | { name: string }) => (typeof x === 'string' ? fiches().find((f) => f.id === `beermaverick-${x}`)!.name : x.name);
+      for (const x of v.bm?.substituts ?? []) a(nomBm(x));
+      for (const [x, n] of v.bm?.accords ?? []) a(`${nomBm(x)} ${n}`);
       // Les fiches : un lien par adresse, et leur nom complet visible.
       for (const l of sourcesFiche(cle)!.liens) a(l.nom);
       unmount();
@@ -204,6 +214,34 @@ describe('Sources › : les liens d’abord, puis tout ce que le catalogue dit d
     expect(s.alpha[0].url).toBe(fiches().find((x) => x.id === LOTUS)!.url);
     const alphaHs = rangees.find((r) => /^α Hopsteiner/.test(r.textContent!))!;
     expect(alphaHs.querySelector('a')!.getAttribute('href')).toBe(fiches().find((x) => x.id === LOTUS)!.hs!.reference);
+  });
+
+  it('Nelson Sauvin : cohumulone 20–25 % des α et farnésène 0–1 % avec le lien de la page, les dates de la page et les listes de Beer Maverick', () => {
+    const { container, s: sf } = rendre('beermaverick-nelson-sauvin');
+    const rangees = [...container.querySelectorAll('.pq-fiche-rangee')];
+    const url = 'https://beermaverick.com/hop/nelson-sauvin/';
+    const coh = rangees.find((r) => /^cohumulone/.test(r.textContent!))!;
+    expect(coh.textContent).toContain('20–25 % des α');
+    expect(coh.querySelector('a')!.getAttribute('href')).toBe(url);
+    const farn = rangees.find((r) => /^farnésène/.test(r.textContent!))!;
+    expect(farn.textContent).toContain('0–1 % de l’huile');
+    expect(farn.querySelector('a')!.getAttribute('href')).toBe(url);
+    expect(rangees.find((r) => /^autres huiles/.test(r.textContent!))!.textContent).toContain('6–49 % de l’huile');
+    // Le lien de la page d'abord, avec la date de modification publiée et la date de relevé.
+    const premier = container.querySelector('[data-role="sources-liens"] li')!;
+    expect(premier.querySelector('a')!.getAttribute('href')).toBe(url);
+    expect(premier.textContent).toContain('modifiée 08.03.2023, relevée 08.09.2026');
+    expect(sf.bm!.usage).toBe('arôme');
+    const t = container.textContent!;
+    for (const x of ['Hallertau Blanc', 'Enigma', 'Motueka', 'Riwaka', 'American Ale', 'IPA', 'Citra 8', '1:1 - 3:1', 'NZ Hops Ltd.', 'fruits tropicaux 2', 'petits fruits 4']) expect(t, x).toContain(x);
+  });
+  it('un houblon dont la cohumulone est « Unknown » chez Beer Maverick : « ? », jamais 0 ; un profil d’arôme absent n’est pas dessiné', () => {
+    const inconnue = fiches().find((x) => !x.cohumulone)!;
+    const { container } = rendre(inconnue.id);
+    expect([...container.querySelectorAll('.pq-fiche-rangee')].find((r) => /^cohumulone/.test(r.textContent!))!.textContent).toBe('cohumulone?');
+    const sansProfil = fiches().find((x) => x.bm && !x.bm.arome)!;
+    const r2 = rendre(sansProfil.id);
+    expect(r2.container.querySelector('[data-role="sources-profil-bm"]')).toBeNull();
   });
 
   it('trois cents houblons : la feuille se monte pour chacun, Beer Maverick en premier', () => {
