@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// Voie t12e-fiche-details (#184), points 1 et 2 : « autres 42 % » expliqué pour ce houblon (une ligne de calcul et la liste de ses
+// Voie t12e-fiche-details (#184), points 1 et 2 : « autres N % » expliqué pour ce houblon (une ligne de calcul et la liste de ses
 // mots, du même calcul que le chiffre) ; la feuille « Sources › » : la page Beer Maverick d'abord (champ `url` du catalogue, dans
 // un nouvel onglet), les fiches fournisseurs ensuite, puis tout ce que le catalogue dit du houblon, chaque champ présent affiché.
 // Données : les fixtures du moteur (proto-data.json) ; aucune donnée réelle, aucun appel Gemini.
@@ -19,7 +19,7 @@ vi.mock('../../../src/services/storage', () => ({
 import { toHopRecipe } from '../../../src/domain/hopIndex/v4/recipeConversion';
 import { houblon } from '../../../src/ui/hopIndex/parcours/adaptateur';
 import { fiches } from '../../../src/ui/hopIndex/parcours/v4';
-import { autresDe, ligneAutres } from '../../../src/ui/hopIndex/fiche/autres';
+import { autresDe, compterAutres, ligneAutres, type MotsFiches } from '../../../src/ui/hopIndex/fiche/autres';
 import { Autres } from '../../../src/ui/hopIndex/maBiere/briques';
 import { liensDe, sourcesFiche } from '../../../src/ui/hopIndex/fiche/sources';
 import { ContenuSources } from '../../../src/ui/hopIndex/fiche/SourcesFiche';
@@ -39,17 +39,48 @@ afterEach(cleanup);
 
 const LOTUS = 'beermaverick-lotus';
 
-describe('« autres 42 % » : le chiffre et la liste viennent du même calcul', () => {
-  it('Lotus : 42 % = 5 de ses 12 mots, avec la liste de ces 5 mots', () => {
+describe('« autres 44 % » : le chiffre et la liste viennent du même calcul', () => {
+  it('Lotus : 44 % = 4 de ses 9 mots distincts, vanille (Beer Maverick) et vanilla (Hopsteiner) comptés une fois', () => {
     const h = houblon(LOTUS);
     const a = autresDe(LOTUS)!;
-    expect(h.partSansFamille).toBe(0.42);
-    expect(a.part).toBe(0.42);
-    expect([a.n, a.total]).toEqual([5, 12]);
-    expect(ligneAutres(a)).toBe('5 de ses 12 mots n’entrent dans aucune des 12 familles');
-    // Les mots sont traduits (« vanilla » de Hopsteiner devient « vanille »), le doublon compte deux fois et se dit.
+    expect(h.partSansFamille).toBe(0.44);
+    expect(a.part).toBe(0.44);
+    expect([a.n, a.total]).toEqual([4, 9]);
+    expect(ligneAutres(a)).toBe('4 de ses 9 mots n’entrent dans aucune des 12 familles');
+    // Les mots sont traduits (« vanilla » de Hopsteiner devient « vanille ») : un mot, deux fiches qui le disent.
     expect(a.mots.map((m) => m.mot)).toEqual(['vanille', 'crème', 'fruité', 'doux']);
     expect(a.mots.find((m) => m.mot === 'vanille')!.fiches).toEqual(['Beer Maverick', 'Hopsteiner']);
+  });
+
+  it('carte, fiche et « ? » : le même nombre et la même liste (une seule source de calcul)', () => {
+    const h = houblon(LOTUS);
+    const a = autresDe(LOTUS)!;
+    expect(h.motsSansFamille).toEqual(a.mots.map((m) => m.mot));
+    expect(h.motsSansFamille).toHaveLength(a.n);
+    expect(new Set(h.motsSansFamille).size).toBe(h.motsSansFamille.length);
+    const { container } = render(<div><Autres h={h} /></div>);
+    fireEvent.click(container.querySelector('[data-role="autres-bouton"]')!);
+    expect(container.querySelector('[data-role="autres-bouton"]')!.textContent).toContain('autres 44 %');
+    expect([...container.querySelectorAll('li')].map((l) => l.getAttribute('data-mot'))).toEqual(h.motsSansFamille);
+    expect(container.querySelector('[data-role="autres-explication"]')!.getAttribute('data-n')).toBe(String(a.n));
+  });
+
+  it('un mot hors familles cité par deux fiches (vanille / vanilla) est compté une fois, au numérateur et au dénominateur', () => {
+    const trad = (m: string) => ({ vanilla: 'vanille' } as Record<string, string>)[m.toLowerCase()] ?? m.toLowerCase();
+    const w: MotsFiches = {
+      mots: { citrus: [{ source: 'BM', mots: ['orange'] }, { source: 'Hopsteiner', mots: ['Orange', 'citron'] }], floral: [{ source: 'BM', mots: ['floral'] }] },
+      sansFamille: [{ source: 'BM', mot: 'vanille' }, { source: 'Hopsteiner', mot: 'vanilla' }, { source: 'BM', mot: 'crème' }],
+    };
+    const a = compterAutres(w, trad, ['citrus', 'floral'])!;
+    expect(a.mots.map((m) => m.mot)).toEqual(['vanille', 'crème']);
+    expect(a.mots[0].fiches).toEqual(['BM', 'Hopsteiner']);
+    // 3 mots rattachés distincts (orange, citron, floral) + 2 sans famille distincts = 5 ; 2 / 5 = 40 %.
+    expect([a.n, a.total, a.part]).toEqual([2, 5, 0.4]);
+    // Un mot sans famille chez une fiche, rattaché chez l'autre une fois traduit : rattaché, compté une fois.
+    const b = compterAutres({ mots: { citrus: [{ source: 'BM', mots: ['orange'] }] }, sansFamille: [{ source: 'Hopsteiner', mot: 'Orange' }, { source: 'Hopsteiner', mot: 'doux' }] }, trad, ['citrus'])!;
+    expect([b.n, b.total]).toEqual([1, 2]);
+    // Rien du tout : inconnu, jamais 0.
+    expect(compterAutres({ mots: {}, sansFamille: [] }, trad, [])).toBeNull();
   });
 
   it('pour tout le catalogue : même part que la carte, et le nombre de mots listés vaut le numérateur', () => {
@@ -61,7 +92,9 @@ describe('« autres 42 % » : le chiffre et la liste viennent du même calcul', 
       n += 1;
       expect(a, v.id).not.toBeNull();
       expect(a!.part, v.id).toBe(h.partSansFamille);
-      expect(a!.mots.reduce((t, m) => t + m.fiches.length, 0), v.id).toBe(a!.n);
+      expect(a!.mots, v.id).toHaveLength(a!.n);
+      expect(h.motsSansFamille, v.id).toEqual(a!.mots.map((m) => m.mot));
+      expect(new Set(a!.mots.map((m) => m.mot)).size, v.id).toBe(a!.n);
       expect(Math.round(a!.n / a!.total * 100) / 100, v.id).toBe(h.partSansFamille);
     }
     expect(n).toBeGreaterThan(300);
@@ -74,11 +107,11 @@ describe('« autres 42 % » : le chiffre et la liste viennent du même calcul', 
   it('au toucher de la mention, la ligne de calcul et la liste s’ouvrent ; un second toucher les referme', () => {
     const { container } = render(<div><Autres h={houblon(LOTUS)} /></div>);
     const b = container.querySelector<HTMLButtonElement>('[data-role="autres-bouton"]')!;
-    expect(b.textContent).toContain('autres 42 %');
+    expect(b.textContent).toContain('autres 44 %');
     expect(container.querySelector('[data-role="autres-explication"]')).toBeNull();
     fireEvent.click(b);
     const e = container.querySelector('[data-role="autres-explication"]')!;
-    expect(e.querySelector('[data-role="autres-calcul"]')!.textContent).toBe('5 de ses 12 mots n’entrent dans aucune des 12 familles.');
+    expect(e.querySelector('[data-role="autres-calcul"]')!.textContent).toBe('4 de ses 9 mots n’entrent dans aucune des 12 familles.');
     expect([...e.querySelectorAll('li')].map((l) => l.getAttribute('data-mot'))).toEqual(['vanille', 'crème', 'fruité', 'doux']);
     expect(b.getAttribute('aria-expanded')).toBe('true');
     fireEvent.click(b);

@@ -13,6 +13,7 @@ import type { AjoutPouvoir, RecettePouvoir } from '../../../domain/hopIndex/v4/p
 import { CONDITIONS } from './conditions';
 import { alphaDeAjout, alphaDeCle, catalogueDuMoteur, donnees, moteur, proposable, siDonneesChangent, stockLibre } from './donnees';
 import { placer, quandDe } from './quand';
+import { autresDe } from '../fiche/autres';
 import type { AjoutParcours, Quand, RecetteParcours } from './types';
 import { memo, viderCaches } from './mesure';
 
@@ -228,16 +229,15 @@ export const houblon = memo('houblon', (cle: string) => cle, (cle: string): Houb
   const a = moteur().hopAlpha(cle), plage = h.catalogue.alpha;
   const role = moteur().hopRole(cle);
   const d = moteur().describeFamilies(h.varietyId);
-  const w = moteur().familyWords(h.varietyId, h.catalogue);
-  const rattaches = new Set(FAMILIES.flatMap((f) => w.mots[f].flatMap((x) => x.mots.map((m) => m.toLowerCase()))));
-  const total = rattaches.size + w.sansFamille.length;
+  // Un seul calcul des mots sans famille, en mots distincts traduits (fiche/autres.ts) : carte, fiche et « ? » le lisent.
+  const au = autresDe(cle);
   return {
     cle, nom: h.name, connu: true,
     alpha: a ? { valeur: a.value, source: a.source, plage: plage ? [plage[0], plage[1]] : null, horsFiches: !!plage && (a.value < plage[0] || a.value > plage[1]) } : null,
     role: { mot: role.value === 'double' ? 'mixte' : role.value, source: role.source },
     familles: fam((f) => ({ niveau: d[f].level, fiches: d[f].sources, sur: d[f].of })),
-    partSansFamille: total ? r2(w.sansFamille.length / total) : null,
-    motsSansFamille: w.sansFamille.map((x) => x.mot),
+    partSansFamille: au ? au.part : null,
+    motsSansFamille: au ? au.mots.map((x) => x.mot) : [],
     stock: stockLibre(cle), origine: h.catalogue.origin,
   };
 });

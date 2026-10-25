@@ -1,44 +1,61 @@
-// « autres 42 % » expliqué (t12e, #184 ; ses mots du 25.10 : « Explique pas le 42% autre pour lotus par exemple ») : le chiffre
-// de la carte et la liste des mots viennent d'un seul calcul, celui de l'adaptateur (parcours/adaptateur.ts, houblon()) :
-//   mots sans famille = les mots des fiches (familyWords) qu'aucune des 12 familles ne reconnaît, un par fiche qui le dit ;
-//   total = les mots rattachés à une famille (distincts) + ces mots sans famille ;
+// « autres 42 % » expliqué (t12e, #184 ; t12f) : le chiffre de la carte de Ma bière, celui de la fiche et la liste du « ? »
+// viennent d'un seul calcul, celui-ci (l'adaptateur, parcours/adaptateur.ts, houblon(), le lit : partSansFamille et
+// motsSansFamille). On compte des mots DISTINCTS, après traduction et normalisation (« vanille » chez Beer Maverick et
+// « vanilla » chez Hopsteiner sont un seul mot), au numérateur comme au dénominateur :
+//   mots sans famille = les mots distincts des fiches qu'aucune des 12 familles ne reconnaît ;
+//   total = les mots distincts rattachés à une famille + ces mots sans famille ;
 //   part = mots sans famille / total, arrondie au centième.
-// Les mots sont traduits (traduction.versFr) comme dans la matrice. Un même mot dit par deux fiches (« vanille » chez Beer
-// Maverick, « vanilla » chez Hopsteiner) compte deux fois dans ce calcul : la liste le montre (« 2 fiches ») au lieu de le cacher.
+// Un mot que deux fiches disent, l'une hors famille, l'autre rattaché (après traduction), est rattaché : il ne compte qu'une fois.
 // Un houblon absent des fiches du moteur : null (ni chiffre ni liste, jamais 0).
 import { FAMILIES, familyWords, hopRef } from '../parcours/v4';
 import { versFr } from './traduction';
 
 export interface MotAutres { mot: string; fiches: string[] }
 export interface AutresLu {
-  /** Mots sans famille, comptés par fiche. */
+  /** Mots distincts sans famille. */
   n: number;
-  /** Mots rattachés (distincts) + n. */
+  /** Mots distincts rattachés + n. */
   total: number;
   /** n / total, au centième : le chiffre de la carte. */
   part: number;
-  /** Les mots, traduits, un mot et ses fiches. La somme des fiches vaut n. */
+  /** Ces n mots, traduits, chacun une fois, avec les fiches qui le disent (information, pas un poids). */
   mots: MotAutres[];
+}
+
+/** Les mots d'une variété tels que le moteur les range (familyWords). */
+export interface MotsFiches {
+  mots: Record<string, { source: string; mots: string[] }[]>;
+  sansFamille: { source: string; mot: string }[];
+}
+
+/** La clé de comparaison : mot traduit, en minuscules, sans accents ni tirets. */
+const cleDe = (mot: string) => mot.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+
+/** Le calcul, pur : les mots des fiches et une fonction de traduction. Testable sans moteur. */
+export function compterAutres(w: MotsFiches, traduire: (mot: string) => string, familles: readonly string[] = FAMILIES): AutresLu | null {
+  const rattaches = new Set<string>();
+  for (const f of familles) for (const x of w.mots[f] ?? []) for (const m of x.mots) rattaches.add(cleDe(traduire(m).toLowerCase()));
+  const groupes = new Map<string, MotAutres>();
+  for (const x of w.sansFamille) {
+    const mot = traduire(x.mot).toLowerCase().trim();
+    const k = cleDe(mot);
+    if (!k || rattaches.has(k)) continue;
+    const g = groupes.get(k) ?? { mot, fiches: [] };
+    if (!g.fiches.includes(x.source)) g.fiches.push(x.source);
+    groupes.set(k, g);
+  }
+  const n = groupes.size;
+  const total = rattaches.size + n;
+  if (!total) return null;
+  return { n, total, part: Math.round((n / total) * 100) / 100, mots: [...groupes.values()] };
 }
 
 export function autresDe(cle: string): AutresLu | null {
   const h = hopRef(cle);
   if (!h) return null;
-  const w = familyWords(h.varietyId, h.catalogue);
-  const rattaches = new Set(FAMILIES.flatMap((f) => w.mots[f].flatMap((x) => x.mots.map((m) => m.toLowerCase()))));
-  const n = w.sansFamille.length;
-  const total = rattaches.size + n;
-  if (!total) return null;
-  const groupes = new Map<string, MotAutres>();
-  for (const x of w.sansFamille) {
-    const mot = versFr(x.mot);
-    const g = groupes.get(mot) ?? { mot, fiches: [] };
-    g.fiches.push(x.source);
-    groupes.set(mot, g);
-  }
-  return { n, total, part: Math.round((n / total) * 100) / 100, mots: [...groupes.values()] };
+  return compterAutres(familyWords(h.varietyId, h.catalogue), versFr);
 }
 
-/** La ligne de calcul : « 5 de ses 12 mots n’entrent dans aucune des 12 familles ». */
+/** La ligne de calcul : « 4 de ses 11 mots n’entrent dans aucune des 12 familles ». */
 export const ligneAutres = (a: AutresLu) =>
   `${a.n} de ses ${a.total} mots ${a.n > 1 ? 'n’entrent' : 'n’entre'} dans aucune des 12 familles`;

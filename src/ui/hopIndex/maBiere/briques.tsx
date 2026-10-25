@@ -84,7 +84,7 @@ export function Intensite({ famille, crans, signe }: { famille: FamilyId; crans:
 
 /** « autres 42 % » expliqué, pour ce houblon (t12e, #184) : une ligne de calcul (« 5 de ses 12 mots n'entrent dans aucune des 12
  * familles ») et la liste de ces mots, traduits, avec ◇ (hors des 12 familles) ; le chiffre et la liste viennent du même calcul
- * (fiche/autres.ts). Un mot dit par deux fiches compte deux fois (« ×2 »). */
+ * (fiche/autres.ts). Mots distincts, traduits : un mot dit par deux fiches compte une fois (t12f) ; ses fiches sont dans le title. */
 export function ExplicationAutres({ cle, id }: { cle: string; id?: string }) {
   const a = autresDe(cle);
   if (!a || a.n === 0) return null;
@@ -98,11 +98,9 @@ export function ExplicationAutres({ cle, id }: { cle: string; id?: string }) {
           <li key={m.mot} data-mot={m.mot} data-fiches={m.fiches.length} title={m.fiches.join(', ')} className="inline-flex items-center gap-1 whitespace-nowrap text-cave-50">
             <i aria-hidden="true" className="pq-fiche-mx-hf" style={{ width: 7, height: 7, margin: '0 2px', borderWidth: 1.5 }} />
             <span className="sr-only">hors des 12 familles : </span>{m.mot}
-            {m.fiches.length > 1 && <span className="text-cave-400">×{m.fiches.length}</span>}
           </li>
         ))}
       </ul>
-      {a.mots.some((m) => m.fiches.length > 1) && <p className="mt-1 text-cave-400">×2 : deux fiches disent ce mot, il compte deux fois.</p>}
     </div>
   );
 }
