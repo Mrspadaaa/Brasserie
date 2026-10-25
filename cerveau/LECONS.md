@@ -12,9 +12,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Comprendre la demande
 
 ### L01 — Reformuler la portée d'une décision avant de la propager
-- Erreur : 12.10, « seul 3.8 », dit pour des tests, appliqué à toute l'app (G38 perdu). 24.10 : y1b et w2 visaient Comparer, greffés sur Dryhopper (D63). 25.10 : « traits trié » lu « plein », c'était « tiretés » (D147).
+- Erreur : 12.10, « seul 3.8 », dit pour des tests, appliqué à toute l'app (G38 perdu). 24.10 : y1b et w2 visaient Comparer, greffés sur Dryhopper (D63). 25.10 : « traits trié » lu « plein », c'était « tiretés » (D147) ; « le + pas centré » (le signe dans son rond) lu comme la place du bouton (D149).
 - Cause : la portée (tests seuls, un usage, toute l'app) n'a pas été écrite avant d'agir.
-- Faire : écrire la portée (et l'écran visé) en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler. Un mot mal tapé : chercher le terme du métier le plus proche, et dire sa lecture.
+- Faire : écrire la portée (et l'écran visé) en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler. Un mot mal tapé : le terme du métier le plus proche, et dire sa lecture. Une plainte visuelle : le plus petit sens, sur sa capture zoomée.
 - Rôles : pilote, conseil
 - Contrôle : aucun
 
@@ -56,7 +56,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L10 — Un outil = un seul facteur libre, et la carte avant les variantes
-- Erreur : 20.10, 41 variantes v0 au lot 21 sans carte des outils. « plusieur confusion entre timing, comparaison, houbons side by side […] ». 22.10, le conseil a montré que « Quand ? » (y1b) et « Quelle dose ? » (y3) laissaient libres houblon, dose et levure.
+- Erreur : 20.10, 41 variantes v0 au lot 21 sans carte des outils. 22.10, le conseil a montré que « Quand ? » (y1b) et « Quelle dose ? » (y3) laissaient libres houblon, dose et levure.
 - Cause : chaque écran faisait varier plusieurs facteurs. Un titre en forme de question ne suffisait pas à l'empêcher.
 - Faire : définir chaque outil par le seul facteur qui y varie, afficher les autres sur une ligne de contexte, et lister ses éléments admis. Montrer la carte en fil de fer avant tout lot. Voir [[outils-houblons]] et [[2026-10-22-carte-outils-houblons]].
 - Rôles : pilote, conseil, auteur, relecteur
@@ -153,9 +153,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun ; revenu 4 fois le 23.10 : à mécaniser
 
 ### L27 — Un juge qui parle pour le brasseur s'étalonne sur ses vrais verdicts
-- Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré », et rejeté r6a, que le brasseur a choisie. Son portrait (PORTRAIT.md), écrit par un modèle, n'avait jamais été confronté à ses verdicts.
+- Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré », et rejeté r6a, que le brasseur a choisie. Son portrait n'avait jamais été confronté à ses verdicts.
 - Cause : aucune étape n'éprouvait le juge à l'aveugle, et les verdicts du brasseur ne revenaient jamais le corriger (boucle ouverte).
-- Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts et ne rejette jamais la diversité. À l'entonnoir, son classement (demandé : « vaste panel et ensuite ranking ») est une proposition, et le brasseur voit tout (M13). Idem pour le regard Brasseur du conseil. L'agent qui a lu ou enrichi le jeu ne refait jamais l'épreuve.
+- Faire : un jeu d'étalonnage (capture et verdict mot pour mot), nourri à chaque retour du brasseur ; éprouver le critique à l'aveugle avant de s'y fier. Sous le seuil, il signale des défauts et ne rejette jamais la diversité. À l'entonnoir, son classement est une proposition ; le brasseur voit tout (M13). Idem pour le regard Brasseur du conseil. L'agent qui a lu ou enrichi le jeu ne refait jamais l'épreuve.
 - Rôles : pilote, critique, conseil
 - Contrôle : `systeme.mjs etalonnage` (portrait v2 : 88 % et 75 %)
 
