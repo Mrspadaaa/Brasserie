@@ -5,17 +5,17 @@
 // (Défi · Égaler · Valeurs · Preuve · Frise · Souche). Un seul facteur libre : le houblon (retenir une colonne, en
 // ajouter une 4ᵉ) ; le critère ne fait que classer. Dose, moment et levure sont fixés sur la ligne de contexte.
 // Ponts : « Placer <retenu> » → Dryhopper ; Suggérer, Levure depuis les feuilles.
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { CadreOutil, COULEURS, COURT, Legende, LigneContexte, Picto, Pont, nombre, plage, useAppuiLong } from '../../commun';
-import { useNavigation } from '../../coquille/navigation';
-import { useOuvrir } from '../../coquille/ouvrir';
-import { CONDITIONS, H, VISEE, nomLevure } from '../../donnees/cas';
-import { useRecette } from '../../etat/EtatParcours';
-import { nouvelId } from '../../etat/operations';
-import { donnees, houblon, style } from '../../moteur';
-import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
-import { hopRef } from '../../moteur/v4';
-import Fiche from '../fiche';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { CadreOutil, COULEURS, COURT, Legende, LigneContexte, Picto, Pont, nombre, plage, useAppuiLong } from './commun';
+import { useNavigation } from './hote';
+import { useOuvrir } from './hote';
+import { CONDITIONS, H, VISEE, nomLevure } from './cas';
+import { useRecette } from './hote';
+import { nouvelId } from '../parcours/operations';
+import { donnees, houblon, style } from '../parcours/adaptateur';
+import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { hopRef } from '../parcours/v4';
+import { FicheHote as Fiche } from './hote';
 import { ABSOLU, CRITERES, ETAPES, HUILE_MAX, SAAZ, etape, huileDe, ORANGE, depart, type CodeEtape, houblonDeBase, lireColonnes, lireEtapes, reponse, scoreDefi, sesMots, type MotLu, type CelluleLue, type ColonneLue, type Critere } from './calcul';
 import { BandeEtapes, PiedEtapes } from './Etapes';
 import { HuilesVue } from './Huiles';
@@ -145,6 +145,26 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
     document.querySelectorAll('.pq-outil-comparer h1').forEach((h) => { if (h.textContent?.trim() === question) h.setAttribute('data-element', 'r6a-question'); });
   }, [question]);
   const score = sel ? scoreDefi(sel) : null;
+  // cmc2k (« Transition est toujours horrible ??? ») : plus de cadre, la colonne retenue est une bande teintée continue
+  // (fond pâle de sa couleur), mesurée des têtes au bas de « Ses mots » ; la tête garde son trait de couleur en haut.
+  // Reprise de cmc2j :
+  // la colonne retenue est UN seul cadre continu, des têtes jusqu'au bas de « Ses mots », mesuré sur la page et dessiné
+  // par-dessus les cellules ; son fond, dessous. Les filets des sections passent sous le cadre sans le couper.
+  const refTab = useRef<HTMLElement>(null);
+  const [colonne, setColonne] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  useLayoutEffect(() => {
+    const tab = refTab.current; if (!tab) return;
+    const mesurer = () => {
+      const haut = tab.querySelector('.pq-comparer-tetes .pq-comparer-sel'), bas = [...tab.querySelectorAll('.pq-comparer-mots .pq-comparer-sel')].pop();
+      if (!haut || !bas) { setColonne(null); return; }
+      const t = tab.getBoundingClientRect(), a = haut.getBoundingClientRect(), b = bas.getBoundingClientRect();
+      const n = { x: Math.round(a.left - t.left), y: Math.round(a.top - t.top), w: Math.round(a.width), h: Math.round(b.bottom - a.top) };
+      setColonne((o) => (o && o.x === n.x && o.y === n.y && o.w === n.w && o.h === n.h ? o : n));
+    };
+    mesurer();
+    const ro = new ResizeObserver(mesurer); ro.observe(tab);
+    return () => ro.disconnect();
+  });
   // La réponse de y1b (r6n2), au moment choisi : en conclusion, au-dessus de « Placer » (80 mots au premier écran, D128).
   const rep = useMemo(() => reponse(vue, cleRetenue, critere.famille, critere.sens), [vue, cleRetenue, critere]);
   // Le pont nomme son outil (title du bouton de Pont, composant du socle) : « Doser Idaho 7 dans Dryhopper », comme r6a.
@@ -188,8 +208,12 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
           {sel && <Radar axes={sc.order} cols={vue} retenu={cleRetenue} absolu={absolu} visee={VISEE.famille} trop={TROP} moment={moment} />}
         </section>
 
-        <section className="pq-comparer-tab" data-role="simulation" aria-label="Les houblons, côte à côte"
+        <section ref={refTab} className="pq-comparer-tab cmc-tab" data-role="simulation" aria-label="Les houblons, côte à côte"
           data-element="l8-disposition y1b-plan-d-avant y1b-bandes-style l5b-barres-voie l5b-pistes-objectif">
+          {colonne && sel && <>
+            <i className="cmc-col-fond" aria-hidden="true" style={{ left: colonne.x, top: colonne.y, width: colonne.w, height: colonne.h, ['--pq-h' as string]: sel.couleur }} />
+            <i className="cmc-col-cadre" aria-hidden="true" data-role="cadre-retenu" style={{ left: colonne.x, top: colonne.y, width: colonne.w, height: colonne.h, ['--pq-h' as string]: sel.couleur }} />
+          </>}
           <div className="pq-comparer-grille-tab pq-comparer-tetes" role="radiogroup" aria-label="Houblon retenu" data-libre="houblon"
             data-element="r6a-tetes l5f-carte-role-alpha w2-cartes-verdict p06-grille-familles g1-fiche fiche-citra-cryo l8b-verdicts-pictos-trait">
             <TaStout quatre={quatre} plein={cols.length >= MAX_COLONNES} ouvert={feuille === 'ajouter' && !aRemplacer} onPlus={() => { setARemplacer(null); basculer('ajouter'); }} />
@@ -205,12 +229,16 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
               famille qu'elle chiffre, ★ au meilleur de chaque étape (la réponse de y1b, à chaque moment). */}
           <BandeEtapes cols={cols} etapes={etapes} reference={reference} nomReference={reference ? hopRef(reference)?.name ?? reference : null} retenu={cleRetenue}
             moment={moment} onMoment={setMoment} critere={critere}
-            pastille={<PastilleCritere critere={critere} onChoisir={(c) => { setCritere(c); setRetenu(null); }} onPourquoi={() => basculer('pourquoi')} />} />
+            pastille={<PastilleCritere critere={critere} onChoisir={(c) => { setCritere(c); setRetenu(null); }} onPourquoi={() => basculer('pourquoi')} />}
+            aide={<AideEtapes nomReference={reference ? hopRef(reference)?.name ?? reference : null} famille={COURT[critere.famille].toLowerCase()} />} />
           <EtapesEnsemble onMoment={setMoment} cols={cols} etapes={etapes} reference={reference} nomReference={reference ? hopRef(reference)?.name ?? reference : null}
             moment={moment} critere={critere} absolu={absolu} />
-          {/* cmc2h (« il y a pas de transition entre les type de données ») : un filet et un titre par bloc ; le « ? »
-              des étapes vit dans celui-ci. */}
-          <p className="cmc-tb" data-role="titre-bloc"><span>Par famille</span><AideEtapes nomReference={reference ? hopRef(reference)?.name ?? reference : null} famille={COURT[critere.famille].toLowerCase()} /></p>
+          {/* cmc2i (« La transition est toujours très très mauvaise ») : le titre est le libellé de la première ligne, à gauche
+              comme « Ta stout », sur la ligne de son premier contenu (ici le nom de chaque houblon), filet franc au-dessus. */}
+          <div className="pq-comparer-grille-tab cmc-sect" data-role="titre-bloc">
+            <span className="cmc-sect-n">Par famille</span>
+            {vue.map((c) => <span key={c.cle} className={cx('cmc-sect-h', c.cle === cleRetenue && 'pq-comparer-sel')} style={{ color: c.couleur, ['--pq-h' as string]: c.couleur }}>{c.houblon.nom}</span>)}
+          </div>
           <div className="pq-comparer-rgs" data-element="r6a-rangees" data-moment={moment}>
             {lignes.map((f, i) => (
               <div key={f} className={cx('pq-comparer-grille-tab pq-comparer-rg', chiffre(f) && 'pq-comparer-demande', i === lignes.length - 1 && 'pq-comparer-derniere')} data-famille-ligne={f}
@@ -235,8 +263,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
               </div>
             )}
           </div>
-          <p className="cmc-tb" data-role="titre-bloc"><span>Ses mots</span></p>
-          <SesMots cols={cols} mots={mots} retenu={cleRetenue} quatre={quatre} />
+          <SesMots cols={cols} mots={mots} retenu={cleRetenue} />
           {/* cmc2d (« Non la première partie doit être en dessous. La seconde dans l'autre vue... ») : l'huile totale de rpz2
               sous « ses mots », avant les notes « ~ dans la cuve » ; la composition des huiles est dans la feuille Valeurs. */}
           <HuilesVue cols={cols} reference={reference} />
@@ -361,30 +388,42 @@ function LigneReponse({ rep, critere, moment, onPourquoi }: { rep: NonNullable<R
 /** Une césure douce dans un mot long (9 lettres et plus), entre une voyelle et une consonne : « pample-mousse ». */
 const coupure = (w: string) => { if (w.length < 9) return w; for (let i = 5; i <= w.length - 4; i++) if (/[aeiouyéèê]/i.test(w[i - 1]) && !/[aeiouyéèê]/i.test(w[i])) return w.slice(0, i) + String.fromCharCode(173) + w.slice(i); return w; };
 const liste = (l: string[]) => (l.length > 1 ? `${l.slice(0, -1).join(', ')} et ${l.at(-1)}` : l[0] ?? '');
-function SesMots({ cols, mots, retenu, quatre }: { cols: ColonneLue[]; mots: Record<string, MotLu[]>; retenu: string; quatre: boolean }) {
+/** La force d'un mot (D151), dans cet ordre : (1) le nombre de ses fiches qui le citent ; (2) l'apport de sa famille chez ce
+ * houblon, selon le moteur, au moment comparé (dCran de sa rangée « Par famille », juste au-dessus) ; un mot hors des 12
+ * familles ou d'une famille inconnue n'a pas de force moteur : après les autres ; (3) « lui seul » d'abord ; puis l'ordre des
+ * fiches (sesMots). */
+const forceMoteur = (c: ColonneLue, m: MotLu): number | null => {
+  const cel = m.famille ? c.cellules[m.famille] : null;
+  return cel && !cel.inconnu && cel.dCran != null ? Math.round(cel.dCran * 100) / 100 : null;
+};
+const parForce = (c: ColonneLue, l: MotLu[]) => l.map((m) => ({ m, f: forceMoteur(c, m) }))
+  .sort((a, b) => b.m.fiches.length - a.m.fiches.length || (b.f ?? -Infinity) - (a.f ?? -Infinity) || Number(b.m.seul) - Number(a.m.seul));
+function SesMots({ cols, mots, retenu }: { cols: ColonneLue[]; mots: Record<string, MotLu[]>; retenu: string }) {
   const sel = cols.find((c) => c.cle === retenu) ?? cols[0];
   if (!sel) return null;
   const seuls = (mots[sel.cle] ?? []).filter((m) => m.seul);
-  const max = quatre ? 5 : 6;
   return (
     <section className="pq-comparer-mots" aria-label="Ses mots, d’après ses fiches : le picto de sa famille, le losange hors des 12 familles ; en gras, lui seul" data-element="d128bis-ses-mots flb5-lui-seul">
       {/* « Vue à revoir mais ce texte là est inutile » (24.10, soir, sur « Idaho 7 seul dit mojito, citron vert… ») : la
           phrase est retirée, la grille dessous dit déjà les mots en gras ; la vue sera reprise. */}
       <span hidden data-role="lui-seul" data-seuls={seuls.length} />
       <div className="pq-comparer-grille-tab pq-comparer-mots-g">
-        <span className="pq-comparer-mots-l" aria-hidden="true" />
+        <span className="pq-comparer-mots-l cmc-mots-l"><span className="cmc-sect-n" data-role="titre-bloc">Ses mots</span>
+          {/* la colonne de gauche ne reste pas vide : la clé des signes des mots, sous le titre */}
+          <span className="cmc-mots-k"><Hors16D /> hors familles</span><span className="cmc-mots-k"><b>gras</b> : lui seul</span></span>
         {cols.map((c) => {
-          const l = [...(mots[c.cle] ?? [])].sort((a, b) => Number(a.famille != null) - Number(b.famille != null));
+          // D151 (« Le +2 de idao7 ça va pas du tout, il doit tout y avoir avec en ordre décroissant du plus fort au plus
+          // faible ») : tous ses mots, sans « +n », par force décroissante (parForce).
+          const l = parForce(c, mots[c.cle] ?? []);
           return (
-            <span key={c.cle} className={cx('pq-comparer-mots-c', c.cle === retenu && 'pq-comparer-sel')} style={{ ['--pq-h' as string]: c.couleur }} data-col={c.cle}>
+            <span key={c.cle} className={cx('pq-comparer-mots-c', c.cle === retenu && 'pq-comparer-sel')} style={{ ['--pq-h' as string]: c.couleur }} data-col={c.cle} data-n-mots={l.length}>
               {l.length === 0 && <span className="pq-comparer-mots-rien">—</span>}
-              {l.slice(0, max).map((m) => (
-                <span key={m.mot} className={cx('pq-comparer-mot', m.seul && 'pq-comparer-mot-seul')} data-mot={m.mot} data-seul={m.seul ? '' : undefined}
+              {l.map(({ m, f }) => (
+                <span key={m.mot} className={cx('pq-comparer-mot', m.seul && 'pq-comparer-mot-seul')} data-mot={m.mot} data-seul={m.seul ? '' : undefined} data-fiches={m.fiches.length} data-force={f ?? ''}
                   title={`${m.mot} : ${m.fiches.join(', ')}${m.aussi.length ? ` ; aussi chez ${m.aussi.join(', ')}` : ' ; lui seul ici'}${m.famille ? ` ; famille ${COURT[m.famille].toLowerCase()}` : ' ; hors des 12 familles'}`}>
                   {m.famille ? <Picto famille={m.famille} taille={12} /> : <Hors16D />}<span className="pq-comparer-mot-t">{m.mot.split(' ').map(coupure).join(' ')}</span>
                 </span>
               ))}
-              {l.length > max && <span className="pq-comparer-mots-rien">+{l.length - max}</span>}
             </span>
           );
         })}

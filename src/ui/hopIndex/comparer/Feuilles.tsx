@@ -6,13 +6,13 @@
 import { CompositionVue } from './Huiles';
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { COULEURS, COURT, Picto, nombre, plage } from '../../commun';
-import { CONDITIONS, H, nomLevure } from '../../donnees/cas';
-import { useRecette } from '../../etat/EtatParcours';
-import { placer, quandDe } from '../../etat/quand';
-import { donnees, houblon, ibuAjout, lireBiere, style } from '../../moteur';
-import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
-import { hopRef } from '../../moteur/v4';
+import { COULEURS, COURT, Picto, nombre, plage } from './commun';
+import { CONDITIONS, H, nomLevure } from './cas';
+import { useRecette } from './hote';
+import { placer, quandDe } from '../parcours/quand';
+import { donnees, houblon, ibuAjout, lireBiere, style } from '../parcours/adaptateur';
+import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { hopRef } from '../parcours/v4';
 import {
   ETAPES, ORANGE, VISEES, biotransformation, couleurHoublon, egaler, enActif, jourApresJour, scoreDefi, souche, tirer, verdict,
   type ColonneLue, type Critere, type Etapes, type Verdict,

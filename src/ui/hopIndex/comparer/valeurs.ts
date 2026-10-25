@@ -5,10 +5,10 @@
 //  - linalol mesuré en bière : mesuresEnBiere du même fichier, et l'étude E03 (McCabe 2023) ;
 //  - panel OSU : l'étude E04 (Lafontaine 2018, H22), Cascade seul.
 // Une valeur absente reste absente (« inconnu »), jamais 0. Plage = du plus bas au plus haut des sources.
-import composes from '../../../../../../src/data/hopV4/composes-houblon.json';
-import comparatifs from '../../../../../../src/data/hopV4/comparatifs-dryhop.json'; // copie de work/…/fils21-choisir/donnees (src/data/hopV4/copies-de-work.mjs)
-import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
-import { hopRef, nombreFr } from '../../moteur/v4';
+import composes from '../../../data/hopV4/composes-houblon.json';
+import comparatifs from '../../../data/hopV4/comparatifs-dryhop.json'; // copie de work/…/fils21-choisir/donnees (src/data/hopV4/copies-de-work.mjs)
+import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { hopRef, nombreFr } from '../parcours/v4';
 
 export interface ValeurReelle {
   lo: number; hi: number | null;

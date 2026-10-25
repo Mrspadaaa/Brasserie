@@ -7,16 +7,16 @@
 //  - écart en crans : (après − ta stout) / cran du style ;
 //  - « sort de ta 16D » : au-dessus du haut de la bande alors que ta stout était dedans ;
 //  - mis en avant au départ : le plus floral qui reste dans ta 16D.
-import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
-import { biotransfoLevure, familyWords, hopRef, simulerCas } from '../../moteur/v4';
-import type { RecettePouvoir } from '../../../../../../src/domain/hopIndex/v4/pouvoir';
-import { S1_DIRECTION } from '../../../../src/pack/buildPack';
-import { comparer, effetLevure, style, type Colonne, type HoublonLu } from '../../moteur';
-import { placer } from '../../etat/quand';
-import { CONDITIONS } from '../../donnees/cas';
-import type { Quand, RecetteParcours } from '../../etat/types';
+import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { biotransfoLevure, familyWords, hopRef, simulerCas } from '../parcours/v4';
+import type { RecettePouvoir } from '../../../domain/hopIndex/v4/pouvoir';
+import { DEMANDE_DEGUSTEE } from '../parcours/visee';
+import { comparer, effetLevure, style, type Colonne, type HoublonLu } from '../parcours/adaptateur';
+import { placer } from '../parcours/quand';
+import { CONDITIONS } from './cas';
+import type { Quand, RecetteParcours } from '../parcours/types';
 import { huile as huileSources } from './valeurs';
-import { nombre } from '../../commun';
+import { nombre } from './commun';
 
 export const ABSOLU = 125;
 /** Orangé « au-dessus du style » (D83 : la seule couleur hors famille admise sur un élément de famille). */
@@ -230,8 +230,8 @@ export function egaler(recette: RecetteParcours, cible: ColonneLue, autres: Colo
 // ---------- Le dock de r6n2 : Défi, Preuve, Frise, Souche, et la biotransformation de x3b ----------
 // Tout se lit dans le moteur à l'instant (simulerCas par l'adaptateur), mémoïsé par l'écran.
 
-/** Ta demande en crans (S1_DIRECTION du moteur : floral +1, résineux −1), la visée du Défi. */
-export const VISEES = S1_DIRECTION as Partial<Record<FamilyId, number>>;
+/** Ta demande en crans (DEMANDE_DEGUSTEE, comme S1_DIRECTION du moteur : floral +1, résineux −1), la visée du Défi. */
+export const VISEES = DEMANDE_DEGUSTEE as Partial<Record<FamilyId, number>>;
 
 export type Verdict = 'atteint' | 'approche' | 'aucune' | 'inconnu';
 /** Verdict d'un houblon face à une visée signée (crans) : atteint au-delà, approche dans le bon sens, aucune sinon. */

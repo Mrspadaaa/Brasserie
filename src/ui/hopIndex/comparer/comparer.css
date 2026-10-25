@@ -587,6 +587,15 @@ button.pq-comparer-et-r { min-height: 22px; }
 .pq-comparer-seul-m { white-space: normal; overflow-wrap: anywhere; }
 
 /* cmc : le radar de Beer Maverick, l'inconnu mis en valeur (rdg1 / rdg5). */
+.cmc-boite { display: flex; flex-direction: column; align-items: center; }
+.cmc-grille line, .cmc-grille polygon { stroke: rgb(var(--cave-800)); }
+.cmc-hach-fond { fill: rgb(var(--cave-850) / .55); }
+.cmc-hach-trait { stroke: rgb(var(--cave-400) / .75); }
+.cmc-ech { font-size: 10.5px; fill: rgb(var(--cave-400)); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 3px; stroke-linejoin: round; font-family: "IBM Plex Mono", monospace; }
+.cmc-q { font-size: 13px; font-weight: 700; fill: rgb(var(--cave-400)); }
+.cmc-sd { font-size: 13px; font-weight: 700; fill: rgb(var(--cave-200)); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 4px; stroke-linejoin: round; }
+.cmc-sd-fond { fill: rgb(var(--cave-950)); }
+.cmc-stout { stroke: rgb(var(--cave-50)); stroke-width: 1.6; stroke-linejoin: round; }
 .cmc-cle { display: flex; justify-content: center; flex-wrap: wrap; gap: 2px 14px; margin: -2px 6px 6px; font-size: 14px; font-weight: 600; }
 .cmc-cle span { display: inline-flex; align-items: center; gap: 5px; min-height: 30px; }
 .cmc-cle i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
@@ -595,6 +604,7 @@ button.pq-comparer-et-r { min-height: 22px; }
 .cmc-cle .cmc-cle-k { color: rgb(var(--cave-400)); font-weight: 500; font-size: 13px; }
 .cmc-cle-zone { background: rgba(47,107,79,.16); box-shadow: inset 0 0 0 1px rgba(47,107,79,.4); }
 .cmc-cle-stout { height: 2px !important; width: 14px !important; background: rgb(var(--cave-50)); border-radius: 0 !important; }
+.cmc-qp { font-size: 10px; font-weight: 800; fill: #fff; }
 
 /* cmc2c : la vue des huiles de rpz2 (reprise de cmb4d). */
 .p4-hu { margin: 4px 0 8px; padding: 6px 0 4px; border-top: 1px solid #e7e5e4; border-bottom: 1px solid #e7e5e4; }
@@ -624,6 +634,7 @@ button.pq-comparer-et-r { min-height: 22px; }
 .cmc-co-mi { width: 1.5px; margin-left: -.75px; background: rgba(28,25,23,.75); top: -1px !important; bottom: -1px !important; }
 /* cmc2d (« un poil plus large ») : le ⇄ à peine plus large (+9 px de cible), sur un fond léger ; le × tel quel. */
 .pq-comparer-remplacer { width: 33px; border-radius: 13px; background: rgb(var(--cave-900)); color: rgb(var(--cave-200)); }
+.cmc-max { font: 600 10.5px 'IBM Plex Mono', ui-monospace, monospace; fill: rgb(var(--cave-400)); }
 /* cmc2d : le tableau des étapes comme la base (pastille noire au moment choisi, petite barre par valeur, trait gris de
    la référence), et son « ? » explicatif. */
 .cmc-ens .p3-ens-l { min-height: 26px; }
@@ -650,3 +661,46 @@ button.pq-comparer-et-r { min-height: 22px; }
 .p3-ens { margin-bottom: 0; }
 .p4-hu { margin: 6px 0 4px; }
 .pq-comparer-et-pieds { padding-top: 2px; }
+/* ---------- cmc2i (« Le + doit juste être au centre du rond du bouton ??? ») ---------- */
+/* Les signes des boutons ronds au centre exact de leur rond : un flex centré, sans line-height parasite, SVG en bloc. */
+.pq-comparer-plus, .pq-comparer-remplacer, .pq-comparer-retirer, .cmc-aide-b { display: inline-flex; align-items: center; justify-content: center; padding: 0; line-height: 0; }
+.pq-comparer-plus > svg, .pq-comparer-remplacer > svg, .pq-comparer-retirer > svg, .cmc-aide-b > svg { display: block; flex: none; }
+[data-role="legende-bouton"] { display: inline-flex; align-items: center; justify-content: center; padding: 0; line-height: 1; }
+/* Le « ? » des étapes au bout de la barre des moments. */
+.cmb2-tete .cmc-aide { flex: none; }
+.cmb2-tete .cmc-aide-b { width: 30px; height: 30px; }
+/* Transitions : le titre est le libellé de la première ligne, à gauche comme « Ta stout », filet franc au-dessus. */
+.cmc-sect { align-items: center; min-height: 24px; margin-top: 6px; padding-top: 3px; border-top: 2px solid rgb(var(--cave-50)); }
+.cmc-sect-n { font-size: 13px; font-weight: 800; color: rgb(var(--cave-50)); white-space: nowrap; }
+.cmc-sect-h { padding: 0 5px; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cmc-sect-h.pq-comparer-sel { background: rgb(var(--cave-900)); box-shadow: inset 2px 0 0 var(--pq-h), inset -2px 0 0 var(--pq-h); align-self: stretch; display: flex; align-items: center; }
+.pq-comparer-tab > .pq-comparer-mots { margin-top: 6px; padding-top: 3px; border-top: 2px solid rgb(var(--cave-50)); }
+.pq-comparer-mots-l.cmc-sect-n { padding-top: 4px; }
+.p4-hu { margin: 6px 0 0; padding-top: 4px; border-top: 2px solid rgb(var(--cave-50)); }
+/* Moins de blanc en bas : Biotransformation, Panel OSU, ★, Placer serrés ; sous Placer, seulement le dock. */
+.pq-comparer-et-pieds { padding-top: 4px; }
+.pq-comparer-et-tch { padding-top: 0; }
+.pq-comparer > .pq-comparer-osu-ligne { margin-top: -2px; }
+.pq-comparer-osu-tch { min-height: 26px; }
+.pq-comparer > .pq-comparer-placer { margin-top: -2px; }
+.cmc-mots-l { display: flex; flex-direction: column; gap: 4px; padding-top: 4px; }
+.cmc-mots-k { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 500; line-height: 1.2; color: rgb(var(--cave-400)); }
+.cmc-mots-k b { font-weight: 800; color: rgb(var(--cave-200)); }
+/* ---------- cmc2j : la colonne retenue, un seul cadre continu (« Transition est toujours horrible ??? ») ---------- */
+.cmc-tab { position: relative; }
+.cmc-tab > :not(.cmc-col-fond):not(.cmc-col-cadre) { position: relative; z-index: 1; }
+.cmc-col-fond, .cmc-col-cadre { position: absolute; display: block; pointer-events: none; border-radius: 10px 10px 8px 8px; }
+.cmc-col-fond { z-index: 0; background: rgb(var(--cave-900)); }
+.cmc-col-cadre { z-index: 2; box-shadow: inset 0 3px 0 var(--pq-h), inset 2px 0 0 var(--pq-h), inset -2px 0 0 var(--pq-h), inset 0 -2px 0 var(--pq-h); }
+/* la barre des moments passe par-dessus la colonne (le cadre passe dessous, sans être coupé ailleurs) */
+.cmc-tab > .pq-comparer-et.pq-comparer-et:not(.cmc-col-fond) { z-index: 3; }
+/* plus de cadre ni de fond par cellule : la colonne entière les porte */
+.cmc-tab .pq-comparer-tc-cel.pq-comparer-sel, .cmc-tab .pq-comparer-cel.pq-comparer-sel, .cmc-tab .pq-comparer-derniere .pq-comparer-cel.pq-comparer-sel,
+.cmc-tab .pq-comparer-mots-c.pq-comparer-sel, .cmc-tab .cmc-sect-h.pq-comparer-sel { background: transparent; box-shadow: none; border-radius: 0; }
+/* les séparations entre types de données : un filet fin de 1 px, gris pâle, sous le cadre */
+.cmc-sect { border-top: 1px solid rgb(var(--cave-800)); margin-top: 4px; padding-top: 2px; }
+.pq-comparer-tab > .pq-comparer-mots { border-top: 1px solid rgb(var(--cave-800)); margin-top: 0; padding-top: 2px; }
+.p4-hu { border-top: 1px solid rgb(var(--cave-800)); }
+/* ---------- cmc2k : plus de cadre, la colonne retenue en bande teintée continue, du haut au bas ---------- */
+.cmc-col-fond { background: color-mix(in srgb, var(--pq-h) 9%, transparent); border-radius: 10px 10px 8px 8px; }
+.cmc-col-cadre { box-shadow: inset 0 3px 0 var(--pq-h); border-radius: 10px 10px 0 0; }

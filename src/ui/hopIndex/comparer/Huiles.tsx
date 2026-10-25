@@ -3,7 +3,7 @@
 // plus "fade" type saaz ». L'huile totale mesurée (mL/100 g, plage des sources), une barre par houblon sur la même
 // échelle, Saaz en étalon, ta référence en gris ; inconnue : « ? », jamais 0.
 import { HUILE_MAX, SAAZ, huileDe, type ColonneLue } from './calcul';
-import { hopRef } from '../../moteur/v4';
+import { hopRef } from '../parcours/v4';
 import { IconeFiole, IconeGoutte } from './icones';
 
 const ECH = HUILE_MAX + 0.5;

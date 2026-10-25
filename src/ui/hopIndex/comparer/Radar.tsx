@@ -1,5 +1,5 @@
-import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
-import { RadarBase, type SerieRadar } from '../../commun/RadarBase';
+import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { RadarBase, type SerieRadar } from '../commun/RadarBase';
 import { etape, type CodeEtape, type ColonneLue } from './calcul';
 
 // cmc2h — le radar de son choix (« C'est quasiment parfait », sur cmc2g), devenu le radar commun (commun/RadarBase.tsx,

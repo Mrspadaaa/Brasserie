@@ -3,11 +3,11 @@
 // chaque valeur avec sa petite barre à la couleur de la famille de la pastille, et le trait gris de ta référence (ton
 // Nugget) au même moment ; nos cinq moments, les nombres et les ★ gardés. Barres (D68) : « Au style », la règle D67 au
 // moment (la plus grande barre de la ligne remplit sa piste ; sous 0,05 cran : « ~0 », sans barre) ; « Absolu », brutes,
-// sur une échelle fixe (0 à 4 crans) commune à tous les moments. cmc2h : le « ? » explicatif est dans la ligne de titre
-// « Par famille », juste sous le tableau (« il y a un ? Qui prend toute la place »).
+// sur une échelle fixe (0 à 4 crans) commune à tous les moments. cmc2i : le « ? » explicatif est au bout de la barre des
+// moments, son signe dessiné en SVG au centre de son rond.
 import { useEffect, useRef, useState } from 'react';
-import { COULEURS, COURT, nombre } from '../../commun';
-import { CONDITIONS } from '../../donnees/cas';
+import { COULEURS, COURT, nombre } from './commun';
+import { CONDITIONS } from './cas';
 import { ETAPES, type CodeEtape, type ColonneLue, type Critere, type Etapes } from './calcul';
 
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ');
@@ -80,7 +80,7 @@ export function AideEtapes({ nomReference, famille }: { nomReference: string | n
   return (
     <span ref={ref} className="cmc-aide">
       <button type="button" data-role="aide-etapes" aria-expanded={ouvert} aria-label="Lire ces nombres" onClick={(e) => { e.stopPropagation(); setOuvert((o) => !o); }}
-        className="cmc-aide-b">?</button>
+        className="cmc-aide-b"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M8.5 8.5a3.5 3.5 0 1 1 5 3.2c-1 .5-1.5 1.2-1.5 2.3v.5M12 19.5v.01" /></svg></button>
       {ouvert && (
         <div className="cmc-aide-f" role="dialog" aria-label="Les étapes, expliquées" data-role="aide-etapes-feuille">
           <p><b>Le nombre</b> : ce que le houblon apporte en {famille} (la pastille), posé à ce moment, à {nombre(CONDITIONS.doseGL)} g/L, en crans du style.</p>

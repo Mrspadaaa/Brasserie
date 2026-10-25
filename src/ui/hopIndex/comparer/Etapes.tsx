@@ -9,12 +9,12 @@
 // Les trois étapes restent lisibles ensemble, au repos (« visibles ensemble, pour chaque houblon comparé »).
 // L'IBU de chaque étape est dans le title de la case et dans « Valeurs » (80 mots au premier écran).
 import { useState, type ReactNode } from 'react';
-import { COULEURS, COURT, nombre, Picto } from '../../commun';
-import { CONDITIONS } from '../../donnees/cas';
+import { COULEURS, COURT, nombre, Picto } from './commun';
+import { CONDITIONS } from './cas';
 import { VoletBio, VoletPlans } from './Feuilles';
 import { Chevron } from './icones';
-import { houblon } from '../../moteur';
-import { hopRef } from '../../moteur/v4';
+import { houblon } from '../parcours/adaptateur';
+import { hopRef } from '../parcours/v4';
 import { ETAPES, type CodeEtape, type ColonneLue, type Critere, type Etapes, type ValeurEtape } from './calcul';
 
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ');
@@ -24,9 +24,9 @@ const txt = (x: number) => `~${x < 0 ? '-' : ''}${nombre(Math.abs(x), 1)}`;
 const nomEtape = (code: CodeEtape) => ETAPES.find((e) => e.code === code)!.nom;
 /** cmb2 : la bande est un trait par moment ; « dry hop » sépare le chaud du froid. */
 
-export function BandeEtapes({ cols, etapes, reference, nomReference, retenu, moment, onMoment, critere, pastille }: {
+export function BandeEtapes({ cols, etapes, reference, nomReference, retenu, moment, onMoment, critere, pastille, aide }: {
   cols: ColonneLue[]; etapes: Etapes; reference: string | null; nomReference: string | null; retenu: string;
-  moment: CodeEtape; onMoment: (m: CodeEtape) => void; critere: Critere; pastille: ReactNode;
+  moment: CodeEtape; onMoment: (m: CodeEtape) => void; critere: Critere; pastille: ReactNode; aide?: ReactNode;
 }) {
   const [alphaVu, setAlphaVu] = useState(false);
   const f = critere.famille;
@@ -57,6 +57,8 @@ export function BandeEtapes({ cols, etapes, reference, nomReference, retenu, mom
               className={cx('cmb2-s', moment === e.code && 'cmb2-s-on', e.code === 'dryActive' && 'cmb2-s-froid')} aria-label={e.nom}>{e.court}</button>
           ))}
         </div>
+        {/* cmc2i : le « ? » des étapes au bout de la barre des moments (il ne prend plus de ligne). */}
+        {aide}
       </div>
     </section>
   );
@@ -101,10 +103,10 @@ export function PiedEtapes({ cols, retenu, onDryhopper }: { cols: ColonneLue[]; 
       {/* x3b, « l'état du moment de l'ajout » (D107) : une ligne, sous le premier écran. */}
       {/* cmc2d : les deux lignes « ~ dans la cuve… » et « Résineux déjà au-delà… » passent dans la feuille « ? ». */}
       <div className="pq-comparer-et-tch">
-        <button type="button" className="pq-comparer-tch" data-role="biotransformation" data-etat="etat-comp-biotransfo" aria-expanded={volet === 'bio'} onClick={() => basculer('bio')}>
+        <button type="button" className="pq-comparer-tch" data-role="biotransformation" data-etat="etat-comp-biotransfo" data-ouvre-element="x3b-biotransfo" aria-expanded={volet === 'bio'} onClick={() => basculer('bio')}>
           <Picto famille="citrus" taille={14} /><span>Biotransformation</span><Chevron ouvert={volet === 'bio'} />
         </button>
-        <button type="button" className="pq-comparer-tch" data-etat="etat-comp-etapes" aria-expanded={volet === 'plans'} onClick={() => basculer('plans')}>
+        <button type="button" className="pq-comparer-tch" data-etat="etat-comp-etapes" data-ouvre-element="x3b-plans" aria-expanded={volet === 'plans'} onClick={() => basculer('plans')}>
           <span aria-hidden="true">⇢</span><span>Enchaîner</span><Chevron ouvert={volet === 'plans'} />
         </button>
       </div>
