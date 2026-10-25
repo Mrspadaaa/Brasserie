@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build && node scripts/check-private-research.mjs",
     "preview": "vite preview",
+    "check:hop-perf": "node scripts/check-hop-tools-perf.mjs",
     "deploy": "npm run build && node scripts/build-rules.mjs && firebase deploy --only firestore --non-interactive && firebase deploy --only functions --non-interactive && firebase deploy --only hosting --non-interactive",
     "test": "node scripts/check-test-boundary.mjs && node scripts/audit_inputs.mjs && vitest run",
     "test:inputs": "node scripts/audit_inputs.mjs && vitest run tests/integration/inputProtection.test.tsx tests/integration/textInput.test.tsx tests/unit/numericInput.test.ts",

@@ -10,11 +10,16 @@ import * as v4 from '../src/domain/hopIndex/v4';
 import * as data from '../src/domain/hopIndex/v4/data';
 import type { CatalogueHop, StockHop } from '../src/domain/hopIndex/v4';
 import * as adapter from '../prototypes/houblons-v4/parcours/src/moteur/index';
-import { DEGUSTATION, H, recetteDegustee } from '../prototypes/houblons-v4/parcours/src/donnees/cas';
+import { CONDITIONS, DEGUSTATION, H, LEVURES, recetteDegustee } from '../prototypes/houblons-v4/parcours/src/donnees/cas';
+import { placer } from '../prototypes/houblons-v4/parcours/src/etat/quand';
+import { CALCULS } from '../prototypes/houblons-v4/parcours/src/moteur/client';
+import type { AjoutParcours, Quand, RecetteParcours } from '../prototypes/houblons-v4/parcours/src/etat/types';
 
 const args = process.argv.slice(2);
 const K = Number(args.find((a) => a.startsWith('--echelle='))?.split('=')[1] ?? 1);
 const BALAYAGE = args.includes('--balayage');
+const VOLUME = args.includes('--volume');
+const TEMOIN = args.find((a) => a.startsWith('--temoin='))?.split('=')[1] ?? null;
 const med = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); const k = Math.floor(s.length / 2); return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2; };
 const r2 = (x: number) => Math.round(x * 100) / 100;
 function t<T>(f: () => T): [T, number] { const a = performance.now(); const r = f(); return [r, performance.now() - a]; }
@@ -44,6 +49,8 @@ function jeu(k: number) {
   return { catalogue, stock };
 }
 const J = jeu(K);
+
+if (VOLUME) { volume(); process.exit(0); }
 
 let moteur: any, methode: string;
 if (typeof (v4 as any).creerMoteur === 'function') {
@@ -119,3 +126,142 @@ if (BALAYAGE) {
 out.memoireMo = Math.round(process.memoryUsage().heapUsed / 1e5) / 10;
 process.stderr.write(`banc ×${K} (${methode}) : substitutes froid ${(out.substitutes as any).froid} ms, chaud ${(out.substitutes as any).chaud} ms\n`);
 process.stdout.write(JSON.stringify(out) + '\n');
+
+// =====================================================================================================================
+// Mode --volume (#166, voie t17-banc) : le jeu réaliste « beaucoup de données » et les mesures du contrôle bloquant
+// scripts/check-hop-tools-perf.mjs. Sortie : un objet JSON { meta, mesures: { id: { n, med, p95, max } } } sur stdout ; le
+// contrôle juge (budgets par moment), le banc mesure seulement. Jeu : 318 houblons (×K au-delà), stock ×5 (80 articles),
+// 10 recettes et 10 dégustations (SIMULÉES : graine fixe, aucune donnée réelle), snapshots répétés.
+// Chaque calcul est mesuré À FROID sur une entrée que le cache n'a jamais vue (L20), sauf ceux qui disent « cache ».
+// --temoin=lent : un délai de 8 ms est injecté dans un calcul fait sous le doigt (le contrôle doit alors échouer).
+// =====================================================================================================================
+function volume() {
+  const pct = (xs: number[], p: number) => { const s = [...xs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.max(0, Math.ceil(p * s.length) - 1))]; };
+  const M: Record<string, number[]> = {};
+  const noter = (id: string, ms: number) => { (M[id] ??= []).push(ms); };
+  const mesure = <T,>(id: string, f: () => T): T => { const [r, ms] = t(f); noter(id, ms); return r; };
+  const attendre = (ms: number) => { const a = performance.now(); while (performance.now() - a < ms) { /* délai du témoin */ } };
+  let graine = 20261025;
+  const alea = () => { graine = (graine * 1664525 + 1013904223) % 4294967296; return graine / 4294967296; };
+  const entre = (a: number, b: number) => a + alea() * (b - a);
+  const choix = <T,>(xs: T[]): T => xs[Math.floor(alea() * xs.length)];
+  const g1 = (x: number) => Math.round(x * 10) / 10;
+  const GROUPES = (args.find((a) => a.startsWith('--groupes='))?.split('=')[1] ?? 'repos,toucher,glisser,snapshot').split(',');
+  const STOCK_N = Number(args.find((a) => a.startsWith('--stock='))?.split('=')[1] ?? 80);
+  const clone = <T,>(x: T): T => structuredClone(x);
+
+  // ---- Stock ×5 : les 16 articles du jeu d'essai + 64 lots simulés sur des variétés distinctes (80 à ×1 ; 16K au-delà).
+  const stock: StockHop[] = [...J.stock];
+  if (K === 1) {
+    const prises = new Set(stock.map((s) => s.varietyId));
+    const libres = J.catalogue.filter((c) => c.alpha && !prises.has(c.id));
+    for (let i = 0; stock.length < STOCK_N && i < libres.length * 7; i += 7) {
+      const c = libres[(i * 3) % libres.length];
+      if (prises.has(c.id)) continue;
+      prises.add(c.id);
+      const a = ((c.alpha![0] + c.alpha![1]) / 2) * (1 + (((i * 7) % 11) - 5) / 100);
+      stock.push({ key: c.id, varietyId: c.id, form: 'unknown', grams: 20 + ((i * 37) % 480), alpha: Math.round(a * 10) / 10, alphaFrom: 'lot simulé (jeu de volume)', items: [] } as StockHop);
+    }
+  }
+
+  // ---- 10 recettes et 10 dégustations (simulées) ; l'addition n1 est neuve : elle n'est pas dans la dégustation.
+  const STYLES: [string, number, string, number, number][] = [
+    ['16D', 1.066, 'fermentis-us05', 20, 60], ['21A', 1.062, 'lalbrew-pomona', 25, 60], ['18B', 1.068, 'lalbrew-verdant-ipa', 20, 60], ['15B', 1.042, 'fermentis-us05', 30, 60],
+    ['3B', 1.052, 'lalbrew-diamond', 20, 90], ['12C', 1.050, 'fermentis-us05', 15, 60], ['22A', 1.080, 'lalbrew-verdant-ipa', 20, 60], ['20B', 1.056, 'fermentis-us05', 40, 60],
+    ['5D', 1.054, 'lalbrew-diamond', 20, 90], ['7B', 1.060, 'lalbrew-pomona', 20, 60],
+  ];
+  const NIVEAUX = ['faible', 'moyen', 'marqué'] as const;
+  const FAM = (v4 as any).FAMILIES as string[];
+  interface Cas { i: number; recette: RecetteParcours; base: RecetteParcours; tasting: any; direction: Record<string, number>; neuf: AjoutParcours }
+  const cas: Cas[] = STYLES.map(([code, og, levure, vol, boil], i) => {
+    const additions: AjoutParcours[] = [];
+    const moments: [string, number | null][] = [['b60', null], ['b10', null], ['wp', null], ['b60', null], ['dryActive', 2]];
+    for (let k = 0; k < 3 + (i % 3); k++) {
+      const [moment, day] = moments[k];
+      additions.push({ id: `a${k + 1}`, hopKey: choix(stock).key, moment: moment as any, grams: g1(entre(15, 60)), ...(day ? { day, jours: 3 } : {}) } as AjoutParcours);
+    }
+    const neuf = { id: 'n1', hopKey: choix(stock).key, moment: 'dryPost', grams: g1(entre(40, 110)), day: 7, jours: 3 } as AjoutParcours;
+    const base: RecetteParcours = { name: `Recette simulée ${i + 1}`, styleCode: code, volumeL: vol, og, boilMin: boil, yeastId: levure, ebc: 20 + i * 6, additions };
+    const f1 = FAM[(i * 5) % FAM.length], f2 = FAM[(i * 5 + 3) % FAM.length];
+    const tasting = (v4 as any).tastingFrom({ [f1]: NIVEAUX[i % 3], [f2]: NIVEAUX[(i + 1) % 3] }, { origin: 'jeu simulé', date: '2026-10-18', quote: null, source: 'jeu de volume simulé (t17)' });
+    return { i, base, recette: { ...base, additions: [...additions, neuf] }, tasting, direction: { [f1]: 1, [f2]: -1 }, neuf };
+  });
+  const donneesDe = (c: Cas) => ({ fiches: J.catalogue, catalogue: J.catalogue, stock, degustation: { tasting: c.tasting, recette: () => clone(c.base) } });
+  const empreinteJeu = empreinte([J.catalogue.map((c) => c.id), stock.map((s) => [s.key, s.grams, s.alpha]), cas.map((c) => [c.recette, c.direction])]);
+
+  const crans = (r: RecetteParcours): Quand[] => adapter.cransFrise(r).filter((q) => q.type !== 'dryhop' || [1, 2, 3, 5, 7].includes(q.jours));
+  const avecAjout = (r: RecetteParcours, a: AjoutParcours): RecetteParcours => ({ ...r, additions: [...r.additions.filter((x) => x.id !== a.id), a] });
+  // Douze houblons à comparer, différents d'un cas à l'autre (stock puis catalogue en fenêtre glissante) : jamais la même entrée.
+  const tousHoublons = [...new Set([...stock.map((s) => s.key), ...J.catalogue.map((c) => c.id)])];
+  const comparablesDe = (i: number) => Array.from({ length: 12 }, (_, k) => tousHoublons[(i * 31 + k * 7) % tousHoublons.length]);
+
+  for (const c of cas) {
+    const comparables = comparablesDe(c.i);
+    // ---- Au repos : le moteur est créé, Ma bière est lue (premier écran), puis le préchauffage de la Coquille en tranches :
+    // voiesDe (proposer + leviers, une tranche) et un remplaçants par ajout (une tranche chacun).
+    const debut = performance.now();
+    const [, creation] = t(() => adapter.configurerDonnees(donneesDe(c) as any));
+    if (GROUPES.includes('repos')) {
+    noter('repos:creation-du-moteur', creation);
+    mesure('repos:premier-ecran-ma-biere', () => adapter.lireBiere(c.recette));
+    const [, tProposer] = t(() => adapter.proposer(c.recette, c.direction as any));
+    const [, tLeviers] = t(() => adapter.leviersLevure(c.recette, c.direction));
+    noter('repos:voies-proposer', tProposer); noter('repos:voies-leviers-levure', tLeviers); noter('repos:tranche-voies-de-suggerer', tProposer + tLeviers);
+    for (const a of c.recette.additions) mesure('repos:tranche-remplacants', () => adapter.remplacants(c.recette, a.id, 6));
+    noter('repos:total-premier-ecran-et-prechauffage', performance.now() - debut);
+    }
+
+    const a = c.neuf, base = c.base;
+    if (GROUPES.includes('toucher')) {
+    // ---- À un toucher : l'ouverture d'un outil, sur ce que le préchauffage ne couvre pas.
+    mesure('toucher:dryhopper-frise-complete', () => { for (const q of crans(base)) adapter.simulerMoment(base, a, q); });
+    const actif = placer(a, { type: 'dryhop', phase: 'actif', jours: 3 }, base);
+    mesure('toucher:levure-effets-4-souches', () => { adapter.effetLevure(base, actif, LEVURES.map((l) => l.id)); adapter.lireBiere(base); });
+    const cible = c.recette.additions[0];
+    mesure('toucher:substituer-classement', () => (CALCULS as any).substitutes(cible.hopKey, { moment: cible.moment, grams: cible.grams, recipe: c.recette, style: adapter.style(c.recette.styleCode), stockFirst: false }));
+    mesure('toucher:comparer-12-houblons', () => adapter.comparer(c.recette, comparables));
+    mesure('toucher:comparer-jour-apres-jour', () => { for (let j = 1; j <= 7; j++) adapter.comparer(c.recette, comparables, { quand: { type: 'dryhop', phase: 'apres', jours: j } }); });
+    const dir2 = Object.fromEntries(Object.entries(c.direction).map(([f, k]) => [f, k * 2]));
+    mesure('toucher:suggerer-sans-prechauffage', () => { adapter.proposer(c.recette, dir2 as any); adapter.leviersLevure(c.recette, dir2); });
+    mesure('toucher:suggerer-prechauffe-cache', () => { adapter.proposer(c.recette, c.direction as any); adapter.leviersLevure(c.recette, c.direction); });
+    mesure('toucher:ma-biere-apres-un-outil', () => adapter.lireBiere({ ...c.recette, additions: c.recette.additions.map((x) => (x.id === 'n1' ? { ...x, grams: x.grams + 7 } : x)) }));
+    for (const cle of comparables) mesure('toucher:fiche-houblon', () => adapter.houblon(cle));
+
+    }
+    if (GROUPES.includes('glisser')) {
+    // ---- Sous le doigt : un cran du glisser (moment, jours) et un pas de dose, sur des entrées jamais vues.
+    const dose2 = g1(a.grams + 3.3);
+    for (const q of crans(base).filter((_, k) => k % 2 === 0)) {
+      const aq = placer({ ...a, grams: dose2 }, q, base);
+      mesure('glisser:cran-ma-biere', () => { if (TEMOIN === 'lent') attendre(8); return adapter.lireBiere(avecAjout(base, aq)); });
+      mesure('glisser:cran-apercu-levure', () => adapter.effetLevure(base, aq, [base.yeastId ?? CONDITIONS.levure, 'lalbrew-pomona']));
+    }
+    for (const q of crans(base).slice(0, 12)) { const aq = placer(a, q, base); mesure('glisser:cran-deja-calcule-cache', () => adapter.lireBiere(avecAjout(base, aq))); }
+    for (let d = 1; d <= 8; d++) {
+      const r = { ...c.recette, additions: c.recette.additions.map((x) => (x.id === 'a1' ? { ...x, grams: g1(x.grams + d) } : x)) };
+      mesure('glisser:pas-de-dose', () => { adapter.lireBiere(r); adapter.lireBiere({ ...r, additions: r.additions.filter((x) => x.id !== 'a1') }); });
+    }
+    }
+  }
+
+  // ---- Snapshots répétés : le magasin rend les mêmes données dans des tableaux neufs (Firestore, Dexie). Référence : le même
+  // moteur rappelé (chaud). Recréé : creerMoteur sur une copie des mêmes données, puis son premier calcul.
+  if (GROUPES.includes('snapshot')) snapshots();
+  function snapshots() {
+  const c0 = cas[0].recette.additions[0];
+  const optionsSub = (r: RecetteParcours) => ({ moment: c0.moment, grams: c0.grams, recipe: r, style: adapter.style(r.styleCode), stockFirst: true, limit: 8 });
+  const ref = (v4 as any).creerMoteur({ catalogue: J.catalogue, stock });
+  ref.substitutes(c0.hopKey, optionsSub(cas[0].recette));
+  for (let i = 0; i < 5; i++) noter('snapshot:calcul-sur-le-meme-moteur', t(() => ref.substitutes(c0.hopKey, optionsSub(cas[0].recette)))[1]);
+  for (let i = 0; i < 5; i++) {
+    const copie = { catalogue: clone(J.catalogue), stock: clone(stock) };
+    const [m, ms] = t(() => (v4 as any).creerMoteur(copie));
+    noter('snapshot:creation-du-moteur', ms);
+    noter('snapshot:calcul-apres-donnees-identiques', t(() => m.substitutes(c0.hopKey, optionsSub(cas[0].recette)))[1]);
+  }
+  }
+
+  const sortie: Record<string, unknown> = {};
+  for (const [id, xs] of Object.entries(M)) sortie[id] = { n: xs.length, med: r2(med(xs)), p95: r2(pct(xs, 0.95)), max: r2(Math.max(...xs)) };
+  process.stdout.write(JSON.stringify({ meta: { echelle: K, temoin: TEMOIN, catalogue: J.catalogue.length, stock: stock.length, recettes: cas.length, degustations: cas.length, empreinteJeu, memoireMo: Math.round(process.memoryUsage().heapUsed / 1e5) / 10 }, mesures: sortie }) + '\n');
+}
