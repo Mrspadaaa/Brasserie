@@ -63,11 +63,16 @@ function dock(R: Rail) {
   const nIntervalles = (s: Segment) => valeursSeg(s).length - 1;
   /* Plan de base du rail (sans grossissement) pour des écarts e (par segment) et des ajouts aux écarts
      de structure x, la tête d'ébullition centrée en h : y de chaque graduation (P), des rangées (R). */
-  function planFixe(e: Record<Segment, number>, x: number[], h: number) {
+  function planFixe(e: Record<Segment, number>, x: number[], h: number, eh?: { seg: Segment; n: number; ecart: number }) {
     const g = (i: number) => STRUCT[i] + (x[i] || 0);
     const P: Record<string, number> = {}, Rg: Record<string, number> = { 'T-ebu': h };
     let y = h + g(0);
-    const poser = (s: Segment) => { valeursSeg(s).forEach((v, k) => { P[v] = y + k * e[s]; }); y += nIntervalles(s) * e[s]; };
+    // eh (t12d) : les n premiers écarts du segment tenu, ceux d'au-dessus du doigt, plus larges que les autres : un rail court
+    // ne laisse plus un vide entre le bandeau et sa tête.
+    const poser = (s: Segment) => {
+      const V = valeursSeg(s);
+      V.forEach((v, k) => { P[v] = y; if (k < V.length - 1) y += eh && eh.seg === s && k < eh.n ? eh.ecart : e[s]; });
+    };
     poser('ebullition');
     Rg['T-fin'] = y; Rg['T-wp'] = y + g(1); y = Rg['T-wp'] + g(2);
     poser('whirlpool');
@@ -143,8 +148,9 @@ function dock(R: Rail) {
       t.sH ? (yA - ech.haut - t.fixeH - ech.F * t.aH) / t.sH : Infinity,
       t.sB ? (ech.vBas - yA - t.fixeB - ech.F * t.aB) / t.sB : Infinity);
     const e = Object.fromEntries(SEGMENTS.map((s) => [s, s === segA ? Math.max(LOUPE.min.autre, loupe) : Math.max(LOUPE.min.autre, Math.min(LOUPE.max.autre, ech.F / LOUPE.poids))])) as Record<Segment, number>;
+    let eh: { seg: Segment; n: number; ecart: number } | undefined;
     const plan = (e: Record<Segment, number>, x: number[]): Plan => {
-      const f = planFixe(e, x, 0);
+      const f = planFixe(e, x, 0, eh);
       const G = { ...f, seg: segA, e, Pl: LOUPE.plateau * e[segA], Ra: LOUPE.rampe * e[segA], surplus: 0, cA: 0, F0: 0, F1: 0, Zh: 0, Zb: 0, O: 0, Z: [] as number[] } as Plan;
       G.surplus = KG * (2 * G.Pl + G.Ra);
       G.cA = vA === 'fwh' ? G.P['b' + EBU] - e.ebullition : G.P[vA];
@@ -162,6 +168,14 @@ function dock(R: Rail) {
     const avant = SEGMENTS.slice(0, SEGMENTS.indexOf(segA)), N = avant.reduce((t, s) => t + nIntervalles(s), 0);
     const G1 = plan(e, []), vide = G1.O + G1.haut - ech.vHaut;
     if (N && vide > 0) for (const s of avant) e[s] = Math.min(e[segA], e[s] + vide / N);
+    /* t12d : le segment tenu est l'ébullition et le haut du rail flotte sous le haut de la zone (rail court, doigt bas) :
+       les écarts d'au-dessus du doigt s'élargissent (11,5 px au plus) jusqu'à remplir la place, au lieu de laisser un vide
+       entre le bandeau et la tête du rail. Le bas ne bouge pas : seuls les écarts d'au-dessus du doigt changent. */
+    if (segA === 'ebullition') {
+      const Va = valeursSeg(segA), n = vA === 'fwh' ? 0 : Math.max(0, Va.indexOf(vA));
+      const videH = plan(e, []).O + plan(e, []).haut - ech.vHaut;
+      if (n > 0 && videH > 1) { eh = { seg: segA, n, ecart: Math.min(LOUPE.max.focus, e[segA] + videH / n) }; }
+    }
     const x: number[] = [];
     const k = structAvant(vA);
     const G0 = plan(e, x);
@@ -290,7 +304,7 @@ function ouvrirLoupe(o: OptionsGeste, ev: { clientY: number; pointerId: number }
   const ech = D.echelleGeste(vA, yA, zone.haut - R0.top + 8, zone.bas - R0.top);
   let G = D.disposerDock(vA, yA, R0.height, ech, true);
   const ancre = (v: string) => G.P[v] ?? (v === 'fwh' ? G.P['b' + rail.ebu] - G.e.ebullition : G.P[rail.valeursSeg(rail.segDe(v)).slice(-1)[0]]);
-  const rangees = Object.entries(tetes).filter(([k]) => k in G.R).map(([k, el]) => ({ el, k, z: G.R[k], h: hauteur.get(el)!, y: 0 }));
+  const rangees = Object.entries(tetes).filter(([k]) => k in G.R).map(([k, el]) => ({ el, k, z: G.R[k], h: hauteur.get(el)!, y: 0, fondu: false }));
   const jetons = lignes.filter((r) => r !== carte && /^L/.test(r.dataset.rang!)).map((el) => {
     const v = el.dataset.valeur!;
     return { el, v, nom: el.dataset.nom ?? '', quand: o.libelle(v), z: ancre(v), h: hauteur.get(el)!, avec: avecDe(el), fondu: false, txt: '', y: 0, lie: [] as string[] };
@@ -309,11 +323,17 @@ function ouvrirLoupe(o: OptionsGeste, ev: { clientY: number; pointerId: number }
     const k = p >= 1 ? 1 : lisse(p);
     const vers = (el: HTMLElement, cible: number) => depart.get(el)! + (cible - depart.get(el)!) * k;
     const c = D.cran(G, D.borne(G, D.sousDoigt(G, yDoigt)));
-    for (const r of rangees) { r.y = vers(r.el, D.Yd(G, r.z, c) - r.h / 2) + r.h / 2; placer(r.el, r.y - r.h / 2); }
+    const yC0 = topCarte + g.dy, yC1 = yC0 + hCarte;
+    // t12d : une rangée nommée (« Ébullition 120′ », « 0′ »…) que la carte tenue recouvre s'efface, comme les autres houblons :
+    // jamais deux libellés l'un sur l'autre (à 120′, la carte tombait sur « Ébullition »).
+    for (const r of rangees) {
+      r.y = vers(r.el, D.Yd(G, r.z, c) - r.h / 2) + r.h / 2; placer(r.el, r.y - r.h / 2);
+      const sous = croise(r.y - r.h / 2, r.y + r.h / 2, yC0 - 2, yC1 + 2);
+      if (sous !== r.fondu) { r.fondu = sous; r.el.classList.toggle('pq-mb-fondu', sous); }
+    }
     // Les autres houblons : à leur moment, jamais de côté. Sous la carte tenue, ils s'effacent ; au même moment qu'elle,
     // leur nom rejoint son étiquette ; deux autres qui se touchent, une étiquette.
     const avecT: string[] = [];
-    const yC0 = topCarte + g.dy, yC1 = yC0 + hCarte;
     let prec: (typeof jetons)[number] | null = null;
     for (const j of jetons) {
       j.y = D.Yd(G, j.z, c);
@@ -348,7 +368,7 @@ function ouvrirLoupe(o: OptionsGeste, ev: { clientY: number; pointerId: number }
     const yTete = D.Yd(G, G.R['T-ebu'], c), yBas = D.Yd(G, G.bas, c);
     if (axe) { axe.style.top = yTete + 'px'; axe.style.height = Math.max(0, yBas - 6 - yTete) + 'px'; axe.style.bottom = 'auto'; }
     fr.style.height = Math.max(R0.height, yBas) + 'px';
-    o.estompe?.classList.toggle('pq-mb-rail-haut', D.Yd(G, G.haut, c) < -8);
+    o.estompe?.classList.toggle('pq-mb-rail-haut', D.Yd(G, G.haut, c) < -8 || yC0 < 4);
     return c;
   };
   tetes[TETE_SEG[g.seg]]?.classList.add('pq-mb-focus');

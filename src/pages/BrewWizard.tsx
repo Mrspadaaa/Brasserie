@@ -134,7 +134,22 @@ function IbuEnPlage({ mesures }: { mesures: MesuresEtape }) {
   const cls = 'reading text-sm sm:text-base';
   const l = libelleIbu(mesures);
   if (l.texte == null) return <span data-role="ibu-bandeau" className={cls} title={l.titre}>—</span>;
-  return <span data-role="ibu-bandeau" data-valeur={l.valeur!.toFixed(2)} className={cls} title={l.titre}>{l.texte}</span>;
+  // Sa présentation d'avant (25.10) : le nombre, puis sa petite piste avec la bande du style et le repère de ma bière. Même
+  // hauteur que la ligne du bandeau compact : la piste (48 × 8 px) se centre sur le texte, elle n'ajoute pas de hauteur.
+  const b = mesures.bande, ibu = l.valeur!;
+  const max = b ? Math.max(b[1] * 1.4, ibu * 1.1) : 0;
+  const pc = (x: number) => `${Math.max(0, Math.min(100, (x / max) * 100)).toFixed(1)}%`;
+  return (
+    <>
+      <span data-role="ibu-bandeau" data-valeur={ibu.toFixed(2)} className={cls} title={l.titre}>{l.texte}</span>
+      {b && (
+        <span data-role="ibu-piste" role="img" aria-label={`style ${b[0]}–${b[1]} IBU`} className="relative self-center w-12 h-2 rounded-full bg-cave-800">
+          <i className="absolute inset-y-0 rounded-full bg-cave-600" style={{ left: pc(b[0]), width: `calc(${pc(b[1])} - ${pc(b[0])})` }} />
+          <i className="absolute -top-1 -bottom-1 w-0.5 rounded-sm bg-cave-50" style={{ left: pc(ibu) }} />
+        </span>
+      )}
+    </>
+  );
 }
 const chargerEtapeHoublonsV4 = () => import('../ui/hopIndex/maBiere/EtapeHoublons');
 const EtapeHoublonsV4 = lazy(chargerEtapeHoublonsV4);
@@ -1480,6 +1495,13 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
    * (hopV55Applications, hopV55ColdEvidenceAssociations) is kept; prediction and trial links of replaced hops are
    * dropped, as in the J4 adapter. Not reached by any screen yet (the `hopV4` flag is off; the tools come with T12/T13).
    */
+  /** Les renvois de l'étape Houblons (t12d) : « Ébullition 60′ › » ouvre le champ Durée d'ébullition de l'étape Identité (la durée
+   * est celle de ce champ, boilMin, et le rail la suit) ; la ligne de la levure ouvre l'étape Levure. */
+  const allerDepuisHoublons = (cible: 'duree-ebullition' | 'levure') => {
+    if (cible === 'levure') { setStep('levure'); return; }
+    setStep('identite');
+    setFocusIssue({ field: 'wz-boil', step: 'identite', message: '' } as RecipeFieldIssue);
+  };
   const applyHopV4Change = (change: ChangementHoublonsV4) => {
     const { nextDraft } = preparerEcritureHoublons({ draftReadOnly, ownerKey, draftRecipeId, current: latestWizardDraft.current, change });
     const committed = serializeRecipeDraft(nextDraft);
@@ -1772,7 +1794,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   }, [volumeL, boilMin, brewhouse]);
   const stepIndex = STEPS.findIndex((s) => s.id === step);
   /** Le message de reprise ou de conservation du brouillon : ni erreur ni événement, il ne prend plus de ligne. */
-  const messageDeBase = /^Brouillon (repris|conservé) sur cet appareil.$/.test(draftNotice);
+  const messageDeBase = /^(Brouillon (repris|conservé) sur cet appareil|Changement appliqué et brouillon conservé sur cet appareil).$/.test(draftNotice);
   const resizeForEquipment=(profile=brewhouse, targetL=defaultBrewVolume(profile), destination: StepId = 'identite')=>{
     try {
       if(!profile)return;
@@ -2277,7 +2299,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             </span>
           </div>
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
-            <span className="text-sm text-cave-400">{hops.some(h=>h.stage==='dryHop') ? 'IBU chaud' : 'IBU'}</span>
+            <span className="text-sm text-cave-400">{!(hopV4Actif && mesuresV4) && hops.some(h=>h.stage==='dryHop') ? 'IBU chaud' : 'IBU'}</span>
             {hopV4Actif && mesuresV4 ? <IbuEnPlage mesures={mesuresV4} /> : <span className="reading text-sm sm:text-base">{ibu ?? '—'}</span>}
           </div>
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
@@ -2557,7 +2579,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           pas de titre de section (« Text header inutile », 24.10). Éteint (défaut) : l'atelier V5.5 ci-dessous, inchangé. */}
       {step === 'houblons' && hopV4Actif && (
         <Suspense fallback={null}>
-          <EtapeHoublonsV4 recipe={build()} boilOg={boilOg} draftId={draftRecipeId} onChange={applyHopV4Change} onMesures={setMesuresV4} />
+          <EtapeHoublonsV4 recipe={build()} boilOg={boilOg} draftId={draftRecipeId} onChange={applyHopV4Change} onMesures={setMesuresV4} onAller={allerDepuisHoublons} />
         </Suspense>
       )}
       {step === 'houblons' && !hopV4Actif && (

@@ -35,6 +35,9 @@ export interface HoteEtape {
   gestes: GestesEtape;
   /** Changer un ajout en place pendant un geste continu (le glisser du rail), l'ordre de la recette gardé. */
   modifierAjout: (id: string, f: (a: AjoutParcours, r: RecetteParcours) => AjoutParcours) => void;
+  /** Renvoyer vers une étape du wizard (app seulement ; la maquette n'en a pas) : le champ « Durée d'ébullition » de l'étape
+   * Identité, ou l'étape Levure. */
+  allerWizard?: (cible: 'duree-ebullition' | 'levure') => void;
   /** Les commandes de l'en-tête (maquette : thème et Recommencer ; app : aucune). */
   Actions?: ComponentType;
 }

@@ -10,7 +10,7 @@
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { biotransfoLevure, familyWords, hopRef, simulerCas } from '../parcours/v4';
 import type { RecettePouvoir } from '../../../domain/hopIndex/v4/pouvoir';
-import { DEMANDE_DEGUSTEE } from '../parcours/visee';
+import { demandeCourante } from '../parcours/visee';
 import { comparer, effetLevure, style, type Colonne, type HoublonLu } from '../parcours/adaptateur';
 import { placer } from '../parcours/quand';
 import { CONDITIONS } from './cas';
@@ -231,7 +231,7 @@ export function egaler(recette: RecetteParcours, cible: ColonneLue, autres: Colo
 // Tout se lit dans le moteur à l'instant (simulerCas par l'adaptateur), mémoïsé par l'écran.
 
 /** Ta demande en crans (DEMANDE_DEGUSTEE, comme S1_DIRECTION du moteur : floral +1, résineux −1), la visée du Défi. */
-export const VISEES = DEMANDE_DEGUSTEE as Partial<Record<FamilyId, number>>;
+export const visees = () => demandeCourante() as Partial<Record<FamilyId, number>>;
 
 export type Verdict = 'atteint' | 'approche' | 'aucune' | 'inconnu';
 /** Verdict d'un houblon face à une visée signée (crans) : atteint au-delà, approche dans le bon sens, aucune sinon. */
@@ -244,9 +244,9 @@ export function verdict(d: number | null, visee: number): Verdict {
  * dry hop n'est pas modélisée à cru : jamais comptée comme tenue (inconnu ≠ réussi). */
 export function scoreDefi(c: ColonneLue): { points: number; sur: number } {
   let points = 0;
-  for (const [f, v] of Object.entries(VISEES) as [FamilyId, number][]) if (verdict(c.cellules[f].dCran, v) === 'atteint') points++;
+  for (const [f, v] of Object.entries(visees()) as [FamilyId, number][]) if (verdict(c.cellules[f].dCran, v) === 'atteint') points++;
   if (!c.sorties.length) points++;
-  return { points, sur: Object.keys(VISEES).length + 2 };
+  return { points, sur: Object.keys(visees()).length + 2 };
 }
 
 /** Graine fixe (mulberry32) : le même tirage à chaque rendu ; « 20 autres » change la graine. */

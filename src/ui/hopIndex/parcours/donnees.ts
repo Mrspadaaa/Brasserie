@@ -8,7 +8,12 @@
 // singleton. `substitutes` et `proposeVoies` classent « en stock d'abord » sur le stock injecté. Mêmes tableaux = même
 // moteur (mêmes caches) ; les écrans qui importent encore le moteur v4 directement lisent le moteur par défaut (fixtures).
 import { CATALOGUE, STOCK, creerMoteur, type CatalogueHop, type Moteur, type StockHop, type Tasting } from '../../../domain/hopIndex/v4';
+import type { FamilyId } from '../../../domain/hopIndex/v4';
 import type { AjoutParcours, RecetteParcours } from './types';
+
+/** La demande de la maquette (fixture S1, sa dégustation du 18.10 : « trop résineuse, je la veux plus florale »), en crans du style.
+ * Jamais lue par l'app : elle y est vide tant que le brasseur n'a pas posé de visée (t12d, 25.10). */
+export const DEMANDE_S1: Partial<Record<FamilyId, 1 | -1>> = { floral: 1, resin: -1 };
 
 /** La dégustation du brasseur et la recette telle qu'il l'a dégustée (la base dont part Ma bière). */
 export interface DegustationParcours {
@@ -32,6 +37,9 @@ export interface DonneesParcours {
   /** α du lot d'un ajout, en % m/m : un nombre ; null = inconnu (IBU inconnu, jamais 0) ; undefined = l'α du stock,
    * sinon le milieu de la plage variétale. Défaut : `a.alphaLot` (posé par la conversion de la recette de l'app). */
   alphaDuLot: (a: AjoutParcours) => number | null | undefined;
+  /** La demande de dégustation par famille (+1 plus, −1 moins). Défaut : S1, la fixture de la maquette. Dans l'app (toute
+   * configuration explicite) : vide, une demande ne s'invente pas ; elle vient de la visée que le brasseur pose. */
+  demande: Partial<Record<FamilyId, 1 | -1>>;
 }
 
 const DEFAUT: DonneesParcours = {
@@ -42,6 +50,7 @@ const DEFAUT: DonneesParcours = {
   // moteur/donnees.ts) ; l'app n'en a pas (null : tout simulé) et passe la dégustation du brasseur par configurerDonnees.
   degustation: null,
   alphaDuLot: (a) => a.alphaLot,
+  demande: DEMANDE_S1,
 };
 
 /** La dégustation des données par défaut (maquette : sa fixture). À appeler au chargement, avant tout calcul. */
@@ -66,7 +75,7 @@ export const catalogueDuMoteur = (): boolean => courantes.catalogue === CATALOGU
 /** Remplace tout ou partie des données (les autres gardent leur valeur par défaut) et vide les caches de l'adaptateur.
  * Sans argument : revient aux fixtures. À appeler avant le premier calcul, ou quand le stock ou la dégustation changent. */
 export function configurerDonnees(d: Partial<DonneesParcours> = {}): void {
-  courantes = { ...DEFAUT, ...d };
+  courantes = { ...DEFAUT, ...(Object.keys(d).length ? { demande: {} } : {}), ...d };
   index = { stock: new Map(courantes.stock.map((s) => [s.key, s])), catalogue: new Map(courantes.catalogue.map((h) => [h.id, h])) };
   moteurCourant = creerMoteur({ catalogue: courantes.fiches, stock: courantes.stock });
   for (const f of ecouteurs) f();

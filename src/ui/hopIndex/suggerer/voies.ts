@@ -15,12 +15,14 @@ import type { BiereLue, Candidat, HoublonLu } from '../parcours/adaptateur';
 import { houblon, leviersLevure, lireBiere, style, type LeviersLevure } from '../parcours/adaptateur';
 import { placer } from '../parcours/operations';
 import type { Quand, RecetteParcours } from '../parcours/types';
-import { DEMANDE_DEGUSTEE, enPoints, type Visee } from '../parcours/visee';
+import { DEMANDE_DEGUSTEE, demandeCourante, enPoints, type Visee } from '../parcours/visee';
 
 /** La demande de q2b, son choix (cas c1 du lot 15) : « Moins résineux · Plus floral · Plus agrumes ». La dégustation du
  * 18.10 (etat/visee.ts) ne porte que + floral et − résineux ; « Plus agrumes » est la troisième carte de sa maquette
  * (D124 : « certaines de mes choix ont été perdue »). Une visée posée dans Ma bière l'emporte, famille par famille. */
 export const DEMANDE_Q2B: Partial<Record<FamilyId, 1 | -1>> = { floral: 1, citrus: 1, ...DEMANDE_DEGUSTEE };
+/** La demande de Suggérer en vigueur : celle de q2b dans la maquette ; dans l'app, aucune sans visée posée (t12d). */
+export const demandeQ2B = (): Partial<Record<FamilyId, 1 | -1>> => { const d = demandeCourante(); return d === DEMANDE_DEGUSTEE ? DEMANDE_Q2B : d; };
 
 export type Geste = 'meme' | 'assembler' | 'remplacer' | 'dryhop' | 'levure';
 export interface Ligne {
@@ -71,11 +73,12 @@ export type { Visee } from '../parcours/visee';
  * visée à 0 : un objectif « faire baisser » (`bannie`), et non l'exclusion V5.5 des houblons qui la citent. */
 export function objectifsDe(recette: RecetteParcours, biere: BiereLue, visee: Visee): Objectif[] {
   const sc = style(recette.styleCode);
-  const fams = [...new Set([...(Object.keys(DEMANDE_Q2B) as FamilyId[]).filter((f) => visee[f] == null), ...(Object.keys(visee) as FamilyId[])])];
+  const demande = demandeQ2B();
+  const fams = [...new Set([...(Object.keys(demande) as FamilyId[]).filter((f) => visee[f] == null), ...(Object.keys(visee) as FamilyId[])])];
   return fams.flatMap((f): Objectif[] => {
     const cran = sc.families[f].cran, avant = biere.profil[f].valeur?.centre ?? null, v = visee[f];
     if (v == null) {
-      const k = DEMANDE_Q2B[f]!;
+      const k = demande[f]!;
       return [{ f, sens: k, nom: biere.profil[f].nom, cran, requis: k * cran, avant, visee: avant == null ? null : Math.max(0, avant + k * cran), palier: null, bannie: false }];
     }
     const cible = enPoints(v), d = cible - (avant ?? 0);

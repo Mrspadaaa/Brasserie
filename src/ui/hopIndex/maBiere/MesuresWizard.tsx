@@ -24,7 +24,7 @@ export default function MesuresWizard({ recipe, boilOg, onMesures }: { recipe: R
     configurerDonnees({ stock: donnees.stock, degustation: tasting ? { tasting, recette: () => structuredClone(degustee) } : null });
     posees.current = { stock: donnees.stock, degustation: donnees.degustation, recette: conversion };
   }
-  const mesures = useMemo<MesuresEtape>(() => { const b = lireBiere(conversion.recette); return { ibu: b.ibu, ebc: b.ebc, og: b.og }; }, [conversion, donnees.stock, donnees.degustation]);
+  const mesures = useMemo<MesuresEtape>(() => { const b = lireBiere(conversion.recette); return { ibu: b.ibu, ebc: b.ebc, og: b.og, bande: b.bandeIbu }; }, [conversion, donnees.stock, donnees.degustation]);
   useEffect(() => { onMesures(mesures); }, [mesures, onMesures]);
   return null;
 }

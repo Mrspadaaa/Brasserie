@@ -16,7 +16,7 @@ import { donnees, houblon, ibuAjout, lireBiere, style } from '../parcours/adapta
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { hopRef } from '../parcours/v4';
 import {
-  ETAPES, ORANGE, VISEES, biotransformation, couleurHoublon, egaler, enActif, jourApresJour, scoreDefi, souche, tirer, verdict,
+  ETAPES, ORANGE, visees, biotransformation, couleurHoublon, egaler, enActif, jourApresJour, scoreDefi, souche, tirer, verdict,
   type ColonneLue, type Critere, type Etapes, type Verdict,
 } from './calcul';
 import {
@@ -109,7 +109,7 @@ function PisteDefi({ cols, f, visee, retenu, ini }: { cols: ColonneLue[]; f: Fam
 export function FeuilleDefi({ cols, retenu, etapes, onSuggerer }: { cols: ColonneLue[]; retenu: string; etapes: Etapes; onSuggerer: () => void }) {
   const recette = useRecette();
   const ini = initiales(cols);
-  const objectifs = Object.entries(VISEES) as [FamilyId, number][];
+  const objectifs = Object.entries(visees()) as [FamilyId, number][];
   const biere = lireBiere(recette);
   const chauds = recette.additions.filter((a) => { const q = quandDe(a, recette); return q.type === 'ebullition' || q.type === 'premierMout'; });
   const dose10 = (cle: string) => { const i = etapes[cle]?.b10?.ibu?.valeur; return i ? (10 * CONDITIONS.doseGL) / i : null; };

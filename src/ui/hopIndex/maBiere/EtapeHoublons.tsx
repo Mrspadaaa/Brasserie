@@ -33,9 +33,12 @@ export interface EtapeHoublonsProps {
   /** Les mesures de la recette à l'écran (IBU en plage, EBC), rendues au bandeau du wizard à chaque geste (t12c) : l'étape
    * n'a plus de bandeau propre, elle partage celui des autres étapes. */
   onMesures?: (m: MesuresEtape) => void;
+  /** Les renvois de l'étape vers le wizard : « Ébullition 60′ › » ouvre le champ Durée d'ébullition (Identité), la ligne de la
+   * levure ouvre l'étape Levure (t12d). */
+  onAller?: (cible: 'duree-ebullition' | 'levure') => void;
 }
 /** IBU total (valeur, plage, ajouts incalculables) et EBC de la recette de l'étape. */
-export type MesuresEtape = { ibu: BiereLue['ibu']; ebc: number | null; og: number };
+export type MesuresEtape = { ibu: BiereLue['ibu']; ebc: number | null; og: number; /** la bande d'IBU du style (piste du bandeau) */ bande?: [number, number] | null };
 
 /** Ce que la conversion lit du brouillon : la recette n'est reconvertie que si l'un de ces champs change. */
 const signature = (r: Recipe) => JSON.stringify([r.hops, r.yeast, r.styleRef, r.style, r.boilMin, r.ogTarget, r.volumeL, r.name, r.fermentables?.map((f) => [f.use, f.weightKg])]);
@@ -52,7 +55,7 @@ function coucheDe(r: RouteEtape, recipeId: string) {
   }
 }
 
-export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMesures }: EtapeHoublonsProps) {
+export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMesures, onAller }: EtapeHoublonsProps) {
   const sig = signature(recipe) + String(boilOg);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversion = useMemo(() => toHopRecipe(recipe, boilOg === undefined ? {} : { boilOg }), [sig]);
@@ -74,7 +77,7 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
   useEffect(() => { setLocale(null); }, [conversion]);
   const recette = locale ?? conversion.recette;
   const recetteRef = useRef(recette); recetteRef.current = recette;
-  const mesures = useMemo<MesuresEtape>(() => { const b = lireBiere(recette); return { ibu: b.ibu, ebc: b.ebc, og: b.og }; }, [recette]);
+  const mesures = useMemo<MesuresEtape>(() => { const b = lireBiere(recette); return { ibu: b.ibu, ebc: b.ebc, og: b.og, bande: b.bandeIbu }; }, [recette]);
   useEffect(() => { onMesures?.(mesures); }, [mesures, onMesures]);
   const [erreur, setErreur] = useState<string | null>(null);
 
@@ -122,6 +125,7 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
     route: { ecran: fiche ? 'fiche' : 'ma-biere' },
     aller: ouvrir,
     ouvrir,
+    allerWizard: onAller,
     gestes: {
       ajouter: (_sur, a: AjoutParcours) => geste((r) => ajouter(r, a)),
       dose: (_sur, id, g) => geste((r) => changerDose(r, id, g)),
@@ -138,7 +142,7 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
       if (minuterie.current != null) window.clearTimeout(minuterie.current);
       minuterie.current = window.setTimeout(vider, 400);
     },
-  }), [recette, fiche, ouvrir, geste, vider]);
+  }), [recette, fiche, ouvrir, geste, vider, onAller]);
   const brouillon = useMemo(() => ({ recette, draftId }), [recette, draftId]);
 
   return (

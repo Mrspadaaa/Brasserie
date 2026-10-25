@@ -19,6 +19,9 @@ vi.mock('../../../src/services/storage', () => ({
 }));
 
 import EcranSuggererApp from '../../../src/ui/hopIndex/suggerer/EcranApp';
+
+/** Une visée posée par le brasseur : sans elle (et sans dégustation) l'app n'invente aucune demande (t12d). */
+const VISEE_POSEE = { floral: 2.5, resin: 0.5 };
 import { ContexteFicheApp, FicheDeLApp } from '../../../src/ui/hopIndex/fiche/FicheApp';
 import { fixerComparaison, lireComparaison, viderComparaison } from '../../../src/ui/hopIndex/fiche/comparaison';
 import { poserPorteEtape } from '../../../src/ui/hopIndex/comparer/porte';
@@ -70,7 +73,7 @@ describe('Suggérer dans l\'app (T13)', () => {
   it('« Appliquer » (mode Radar) écrit un patch de hops par la porte unique', async () => {
     const changements: ChangementHoublonsV4[] = [];
     poser((c) => changements.push(c));
-    const { container } = render(<EcranSuggererApp onClose={() => {}} />);
+    const { container } = render(<EcranSuggererApp onClose={() => {}} visee={VISEE_POSEE} />);
     await waitFor(() => expect(container.querySelector('[data-lecture] [role="radio"][data-e="radar"]')).not.toBeNull());
     fireEvent.click(container.querySelector('[data-lecture] [role="radio"][data-e="radar"]')!);
     const appliquer = await waitFor(() => { const b = container.querySelector<HTMLButtonElement>('[data-action="appliquer"]'); expect(b).not.toBeNull(); return b!; });
@@ -82,7 +85,7 @@ describe('Suggérer dans l\'app (T13)', () => {
 
   it('un refus de la porte est dit', async () => {
     poser(() => { throw new Error('Ce brouillon est conservé en lecture seule; aucun outil ne le remplace.'); });
-    const { container } = render(<EcranSuggererApp onClose={() => {}} />);
+    const { container } = render(<EcranSuggererApp onClose={() => {}} visee={VISEE_POSEE} />);
     await waitFor(() => expect(container.querySelector('[data-lecture] [role="radio"][data-e="radar"]')).not.toBeNull());
     fireEvent.click(container.querySelector('[data-lecture] [role="radio"][data-e="radar"]')!);
     const appliquer = await waitFor(() => { const b = container.querySelector<HTMLButtonElement>('[data-action="appliquer"]'); expect(b).not.toBeNull(); return b!; });

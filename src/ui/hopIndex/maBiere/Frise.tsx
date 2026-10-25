@@ -10,6 +10,7 @@
 // Contrat : [data-role="frise"] aria-orientation="vertical" ; une poignée par ajout [data-role="glisser-moment"]
 // [role="slider"][aria-orientation="vertical"][data-ajout-repere] dans sa ligne [data-role="ligne-houblon"].
 import { useEffect, useMemo, useRef } from 'react';
+import { DUREE_APPUI_LONG } from './commun';
 import { ChevronRight } from 'lucide-react';
 import { useOuvrir } from './hote';
 import { useHote } from './hote';
@@ -76,7 +77,8 @@ function Poignee({ a, v, rail, recette, frise, onGeste }: {
     return brancherGlisser(el, () => ({
       rail, frise: frise.current!, carte: el.closest<HTMLElement>('[data-rang]')!, v: vRef.current, libelle: libelleDe,
       zone: () => { const m = el.closest('main')?.getBoundingClientRect(); return { haut: m?.top ?? 0, bas: m?.bottom ?? window.innerHeight }; },
-      estompe: el.closest<HTMLElement>('[data-ecran="ma-biere"]'),
+      // Le bandeau du wizard (Grain · OG · IBU · EBC) est hors de l'écran Houblons : la classe va sur le défilement qui les contient.
+      estompe: el.closest<HTMLElement>('main') ?? el.closest<HTMLElement>('[data-ecran="ma-biere"]'),
       fin: (nv) => { if (nv) { onGesteRef.current(); modifier(a.id, (x, r) => appliquerValeur(x, nv, r)); } },
     }));
   }, [rail, a.id]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -103,6 +105,10 @@ export function Frise({ recette, biere, reperes, nouveaux, onGeste, ouvrirChamp 
   recette: RecetteParcours; biere: BiereLue; reperes: Record<string, string>; nouveaux: Set<string>; onGeste: () => void; ouvrirChamp: () => void;
 }) {
   const ouvrir = useOuvrir();
+  const { allerWizard } = useHote();
+  // La levure : un toucher renvoie à l'étape Levure du wizard, un appui long ouvre sa vue (la couche Levure). Sans hôte du wizard
+  // (la maquette), le toucher ouvre la vue comme avant.
+  const appuiLong = useRef<{ t: number | null; fait: boolean }>({ t: null, fait: false });
   const frise = useRef<HTMLElement>(null);
   const ebu = recette.boilMin;
   const rail = useMemo(() => creerRail(ebu), [ebu]);
@@ -135,7 +141,7 @@ export function Frise({ recette, biere, reperes, nouveaux, onGeste, ouvrirChamp 
         <Point c="ebu" />
         <a href="#fiche-brassage" data-etat="etat-etape-ebullition-lien" data-action="renvoi-ebullition" className="pq-mb-renvoi"
           title="Réglée dans la fiche de brassage" aria-label={`Ébullition ${ebu} minutes, réglée dans la fiche de brassage`}
-          onClick={(e) => e.preventDefault()}>
+          onClick={(e) => { e.preventDefault(); allerWizard?.('duree-ebullition'); }}>
           <span className="pq-mb-cle">Ébullition</span>
           <b className="pq-mb-ebu-v">{`${ebu}′`}</b>
           <ChevronRight aria-hidden="true" className="pq-mb-chevron" />
@@ -152,9 +158,20 @@ export function Frise({ recette, biere, reperes, nouveaux, onGeste, ouvrirChamp 
       {duSegment('whirlpool')}
       <div data-rang="T-levure" data-etape="levure" className="pq-mb-rang pq-mb-r-levure">
         <Point c="levure" />
-        <button type="button" data-role="pont-etape-levure" data-element="etape-levure" disabled={!ajoutLevure}
+        <button type="button" data-role="pont-etape-levure" data-element="etape-levure" disabled={!ajoutLevure && !allerWizard}
           aria-label={`Levure de la recette : ${nomLevureBase(recette.yeastId)}${levureCaracterisee(recette.yeastId) ? ', caractérisée' : ''}`}
-          onClick={() => ajoutLevure && ouvrir({ ecran: 'levure', ajout: ajoutLevure })}
+          onPointerDown={() => {
+            const a = appuiLong.current; a.fait = false;
+            if (a.t != null) window.clearTimeout(a.t);
+            if (allerWizard && ajoutLevure) a.t = window.setTimeout(() => { a.t = null; a.fait = true; ouvrir({ ecran: 'levure', ajout: ajoutLevure }); }, DUREE_APPUI_LONG);
+          }}
+          onPointerUp={() => { const a = appuiLong.current; if (a.t != null) { window.clearTimeout(a.t); a.t = null; } }}
+          onPointerLeave={() => { const a = appuiLong.current; if (a.t != null) { window.clearTimeout(a.t); a.t = null; } }}
+          onPointerCancel={() => { const a = appuiLong.current; if (a.t != null) { window.clearTimeout(a.t); a.t = null; } }}
+          onClick={() => {
+            if (appuiLong.current.fait) { appuiLong.current.fait = false; return; }
+            if (allerWizard) allerWizard('levure'); else if (ajoutLevure) ouvrir({ ecran: 'levure', ajout: ajoutLevure });
+          }}
           className={`pq-mb-levure ${levureChangee ? 'pq-ma-biere-change' : ''}`}>
           <i aria-hidden="true" className="pq-mb-ic-levure" />
           <span className="pq-mb-levure-nom">{nomLevureBase(recette.yeastId)}</span>

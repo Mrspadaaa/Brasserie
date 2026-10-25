@@ -5,6 +5,7 @@
 // Sans visée posée, la demande de sa dégustation du 18.10 vaut (« trop résineuse, je la veux plus florale ») : c'est
 // elle que portent les puces « + floral · − résineux » au repos, comme dans la base. Pur : ni React ni moteur.
 import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { DEMANDE_S1, donnees } from './donnees';
 
 /** Palier visé par famille, sur 0 à 3 ; 0 = bannie. */
 export type Visee = Partial<Record<FamilyId, number>>;
@@ -25,14 +26,16 @@ export const monter = (depuis: number) => PALIERS.find((p) => p > depuis + 1e-9)
 export const descendre = (depuis: number) => [...PALIERS].reverse().find((p) => p < depuis - 1e-9) ?? 0;
 
 /** La demande de sa dégustation (18.10), en crans du style : ce que vaut une famille sans visée posée. */
-export const DEMANDE_DEGUSTEE: Partial<Record<FamilyId, 1 | -1>> = { floral: 1, resin: -1 };
+export const DEMANDE_DEGUSTEE = DEMANDE_S1;
+/** La demande en vigueur : S1 dans la maquette, vide dans l'app tant que le brasseur n'a pas posé de visée (t12d). */
+export const demandeCourante = (): Partial<Record<FamilyId, 1 | -1>> => donnees().demande;
 
 export type Sens = 1 | -1 | 'banni';
 /** Le sens de la demande par famille : la visée posée face à ma bière (`points` : sa valeur, null si non située), ou, sans
  * visée, la demande dégustée. Une visée au niveau de ma bière ne demande rien. */
 export function sensDe(visee: Visee, points: (f: FamilyId) => number | null): Partial<Record<FamilyId, Sens>> {
   const out: Partial<Record<FamilyId, Sens>> = {};
-  for (const [f, s] of Object.entries(DEMANDE_DEGUSTEE) as [FamilyId, 1 | -1][]) if (visee[f] == null) out[f] = s;
+  for (const [f, s] of Object.entries(demandeCourante()) as [FamilyId, 1 | -1][]) if (visee[f] == null) out[f] = s;
   for (const [f, v] of Object.entries(visee) as [FamilyId, number][]) {
     if (v === 0) { out[f] = 'banni'; continue; }
     const d = enPoints(v) - (points(f) ?? 0);
