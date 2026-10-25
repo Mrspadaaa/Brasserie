@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 import { COULEURS, COURT } from './commun';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { additionEffect, describeFamilies, familyWords, hopRef, FAMILY_NAMES } from '../parcours/v4';
+import { autresDe } from '../fiche/autres';
 import { style, type HoublonLu } from '../parcours/adaptateur';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 
@@ -62,8 +63,9 @@ export function speciauxDe(cle: string): Speciaux {
     const gardes = mots.filter((m) => !mots.some((x) => x !== m && ` ${x.toLowerCase()} `.includes(` ${m.toLowerCase()} `)));
     if (gardes.length) precis[f] = gardes;
   }
-  const sans = new Map<string, Set<string>>();
-  for (const x of w.sansFamille) { const k = x.mot.trim().toLowerCase(); if (!sans.has(k)) sans.set(k, new Set()); sans.get(k)!.add(SOURCES[x.source] ?? x.source); }
+  // t12g : les mots hors des 12 familles viennent de `autresDe` (fiche/autres.ts), la source unique du chiffre « autres n % » :
+  // mots traduits, distincts, un mot rattaché à une famille par une autre fiche n'y figure pas. Aucun calcul propre ici.
+  const sans = (autresDe(cle)?.mots ?? []).map((x) => ({ mot: x.mot, sources: [...new Set(x.fiches.map((f) => SOURCES[f] ?? f))] }));
   const cat = h.catalogue as { hs?: { totalOil?: number[]; year?: number }; hsLinalool?: { range?: number[] }; hsThiol?: { class?: string } };
   const fiches = [
     { nom: 'linalol', valeur: plage(cat.hsLinalool?.range) ? `${plage(cat.hsLinalool?.range)} %` : null },
@@ -71,7 +73,7 @@ export function speciauxDe(cle: string): Speciaux {
     { nom: 'géraniol', valeur: null },
     { nom: 'huiles', valeur: plage(cat.hs?.totalOil) ? `${plage(cat.hs?.totalOil)} mL/100 g` : null },
   ];
-  const r: Speciaux = { premier, precis, sans: [...sans].map(([mot, s]) => ({ mot, sources: [...s] })), fiches, source: cat.hs?.year ? `Hopsteiner ${cat.hs.year}` : cat.hs ? 'Hopsteiner' : null };
+  const r: Speciaux = { premier, precis, sans, fiches, source: cat.hs?.year ? `Hopsteiner ${cat.hs.year}` : cat.hs ? 'Hopsteiner' : null };
   memo.set(cle, r);
   return r;
 }

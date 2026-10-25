@@ -92,9 +92,11 @@
 .pq-mb-frise[data-geste] > .pq-mb-r-ebu, .pq-mb-frise[data-geste] > .pq-mb-r-etape, .pq-mb-frise[data-geste] > .pq-mb-r-fin, .pq-mb-frise[data-geste] > .pq-mb-r-levure { z-index: 2; }
 /* Le rail monte sur le bandeau quand la place manque au-dessus (longue ébullition) : il l'estompe. */
 .pq-ma-biere .pq-mb-lectures, .recipe-metrics { transition: opacity 160ms; }
-/* t12e : le bandeau du wizard (IBU, EBC) se masque pendant tout le glisser, comme avant ; il garde
-   sa place (opacité seule : la vue ne saute pas) et revient au relâcher. */
-.pq-mb-rail-haut .pq-mb-lectures, .pq-mb-rail-haut .recipe-metrics { opacity: 0; }
+/* t12e/t12g : le bandeau du wizard (IBU, EBC) est masqué pendant tout le glisser, comme avant, et revient au relâcher.
+   Il reste monté et garde sa place (ni display, ni visibility, ni hauteur changés : la vue ne saute pas) et son IBU garde
+   sa valeur : le recalcul n'a lieu qu'au lâcher. Masqué par découpe, pas par opacité : un bandeau à opacité 0 se lit
+   comme absent (le contrôle de fonctions du rail lisait « 60 → null »). */
+.pq-mb-rail-haut .pq-mb-lectures, .pq-mb-rail-haut .recipe-metrics { clip-path: inset(0 0 100% 0); pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .pq-mb-grad { transition: none; } }
 /* L'écart du total d'IBU qui vient de changer (« +2 », « −60 »), au-dessus de l'IBU, comme sa base (.delta). */
 .pq-mb-ecart { color: rgb(var(--cave-50)); white-space: nowrap; }
