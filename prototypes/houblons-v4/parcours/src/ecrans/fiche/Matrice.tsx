@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { COULEURS, COURT, Picto } from '../../commun';
 import type { HoublonLu } from '../../moteur';
 import type { RecetteParcours } from '../../etat/types';
-import type { FamilyId } from '../../../../src/engine';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { Autres } from './briques';
 import { matrice } from './donnees-matrice';
 

@@ -1,14 +1,14 @@
 // Les quatre objets de l'écran (work/refonte-frontend/v4/ecran-1/MODELE.md), en niveaux prêts à dessiner.
 // Intensité dans la bière (objets 1, 2, 4) : 0 absent, 1 faible, 2 moyen, 3 marqué (classes V5.5).
 // Fiches d'un houblon (objet 3) : 0 non décrit, 1 cité, 2 marqué. Ce n'est pas une intensité.
-import bandsFile from '../../data/style-bands.json';
+import bandsFile from '../../../data/hopV4/style-bands.json';
 import { AXES } from './data';
 import { FAMILY_NAMES, type FamilyId } from './families';
 import { describeFamilies } from './hops';
 import type { Profile } from './recipe';
 import { tastingMention, type Tasting } from './tasting';
 import type { FamilyEffect } from './voies';
-import type { FamilyStatus, StyleScale } from '../style/scale';
+import type { FamilyStatus, StyleScale } from './style/scale';
 
 export type Level = 0 | 1 | 2 | 3;
 /** Borne haute du niveau « none » de la table mots → bandes (absent). */

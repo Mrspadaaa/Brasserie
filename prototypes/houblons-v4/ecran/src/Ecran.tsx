@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { Minus, Plus } from 'lucide-react';
 import { SegmentedControl } from '@app/ui/SegmentedControl';
 import { RecipeDisclosure } from '@app/ui/RecipeDisclosure';
-import type { Addition, FamilyId } from '../../src/engine';
+import type { Addition, FamilyId } from '../../../../src/domain/hopIndex/v4';
 import {
   AJOUTS_RAPIDES, DIRECTION_B, RECETTE, STYLE, ibuAjout, ibuRecette, nombre, nomHoublon,
   quandCourt, quandLong, quandSuivant, typeAjout, typeSuivant,

@@ -2,7 +2,7 @@
 // Exactement celle de la carte (fils22-carte/generer.mjs, via comparer-stout.json) : recette S1 et dégustation
 // du moteur v4 (src/pack/buildPack.ts), IMPORTÉES et non recopiées. Nugget 46 g à 60′, 20 L, DI 1,066,
 // 70 EBC, US-05 ; dégustation du 18.10 : résineux « marqué ».
-import { STOCK, hopRef, type FamilyId, type Tasting } from '../../../src/engine';
+import { STOCK, hopRef, type FamilyId, type Tasting } from '../../../../../src/domain/hopIndex/v4';
 import { S1_TASTING, s1Recipe } from '../../../src/pack/buildPack';
 import type { RecetteParcours } from '../etat/types';
 

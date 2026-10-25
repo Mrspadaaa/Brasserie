@@ -1,8 +1,8 @@
 import { AXES } from './data';
 import { FAMILIES, type FamilyId } from './families';
 import type { Profile } from './recipe';
-import { valueVerdict, type ValueVerdict } from '../style/verdict';
-import type { StyleScale } from '../style/scale';
+import { valueVerdict, type ValueVerdict } from './style/verdict';
+import type { StyleScale } from './style/scale';
 
 /** Niveau perçu par le brasseur, sur les classes des axes V5.5 (faible ≤ lowMax < moyen ≤ mediumMax < marqué). */
 export type PerceivedLevel = 'faible' | 'moyen' | 'marqué';

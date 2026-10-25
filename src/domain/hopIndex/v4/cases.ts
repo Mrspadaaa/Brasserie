@@ -6,8 +6,8 @@ import { POLICY } from './data';
 import { ficheLevels } from './levels';
 import { ROLE_RULE } from './roles';
 import { additionEffect } from './voies';
-import protoData from '../../data/proto-data.json';
-import type { StyleScale } from '../style/scale';
+import protoData from '../../../data/hopV4/proto-data.json';
+import type { StyleScale } from './style/scale';
 
 export const LOADED_RECIPE_RULE = [
   'Quatre ajouts : amérisant à 60′, ajout à 10′, whirlpool, houblonnage à froid à J+3 (fermentation active).',

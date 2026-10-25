@@ -12,7 +12,7 @@
 //   classent jamais autrement les mêmes houblons), au moment de son ajout s'il est dans la recette, sinon sans moment
 //   (le contexte « défaut » du moteur, comme la fiche du pack que montrait flb5b), hors de sa propre variété ; leurs mots,
 //   de leurs fiches, sans leurs catégories.
-import { CATALOGUE, describeFamilies, familyWords, hopRef, type FamilyId } from '../../../../src/engine';
+import { CATALOGUE, describeFamilies, familyWords, hopRef, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { memo } from '../../moteur/mesure';
 import type { AjoutParcours, RecetteParcours } from '../../etat/types';
 import { lireRemplacants } from '../substituer/donnees';

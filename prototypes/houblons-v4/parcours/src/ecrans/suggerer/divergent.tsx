@@ -10,7 +10,7 @@
 // - la visée en tirets verticaux sur toute la hauteur (Graphe).
 // La bande « ‹ visée | visée › » et ses flèches d'axe ne reviennent pas : « Ça c'est inutile » (D91).
 import type { CSSProperties, ReactNode } from 'react';
-import type { FamilyId } from '../../../../src/engine';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { COULEURS, COURT, nombre, type Echelle } from '../../commun';
 import type { Objectif } from './voies';
 

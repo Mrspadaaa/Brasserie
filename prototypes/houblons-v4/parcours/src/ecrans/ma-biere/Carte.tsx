@@ -17,7 +17,7 @@ import { useGestes } from '../../etat/EtatParcours';
 import { placer, quandDe } from '../../etat/operations';
 import type { AjoutParcours, Quand, RecetteParcours } from '../../etat/types';
 import { houblon, lireBiere, style, type BiereLue } from '../../moteur';
-import { additionEffect, FAMILY_NAMES, yeastSignals, type FamilyId } from '../../../../src/engine';
+import { additionEffect, FAMILY_NAMES, yeastSignals, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { AlphaLu, Autres, StockIcone, Usage } from '../fiche/briques';
 import { useGestesFiche } from '../fiche/gestes';
 import { BoutonLegende, useLegende } from './LegendeGroupe';

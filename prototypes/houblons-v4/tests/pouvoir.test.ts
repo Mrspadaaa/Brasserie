@@ -3,12 +3,12 @@ import './temoin'; // témoin négatif de check:engine (B3)
 // plus la sortie par famille et tous les moments (consignes du pilote, 19.10, soir). Recette 16D S1
 // (Nugget 46 g à 60′, US-05, 20 L) ; 4 g/L ; dry hop après fermentation sauf mention.
 import { describe, expect, it } from 'vitest';
-import dataFile from '../data/composes-houblon.json';
+import dataFile from '../../../src/data/hopV4/composes-houblon.json';
 import {
   COMPOSES, FAMILIES, MOMENTS_POUVOIR, comparerComposes, comparerFamilles, pouvoirAjout, pouvoirRecette, profilParMoment, sensPlages, verifications,
   type AjoutPouvoir, type PouvoirAjout, type RecettePouvoir,
-} from '../src/engine';
-import { predictTriplet, profileOf, tripletOf, type MomentId } from '../src/engine/recipe';
+} from '../../../src/domain/hopIndex/v4';
+import { predictTriplet, profileOf, tripletOf, type MomentId } from '../../../src/domain/hopIndex/v4/recipe';
 import { s1Recipe } from '../src/pack/buildPack';
 
 const CITRA = 'beermaverick-citra', CASCADE = 'beermaverick-cascade', GALAXY = 'beermaverick-galaxy', IDAHO7 = 'beermaverick-idaho-7';

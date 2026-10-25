@@ -4,10 +4,10 @@
 // ([P] publié, [F] fabricant, [S] secondaire, [H] hypothèse du pilote).
 // Jamais une intensité 0–100 : le « pouvoir aromatique » est une lecture ordinale des rapports au seuil
 // (sous, autour, au-dessus ×N), et le signal d'une famille est le rapport au seuil de son marqueur
-// dominant. Aucun chiffre hors de H ou du dépôt (data/composes-houblon.json) : une valeur absente est
+// dominant. Aucun chiffre hors de H ou du dépôt (src/data/hopV4/composes-houblon.json) : une valeur absente est
 // null avec sa raison, jamais 0. Pas de courbe inventée (durée, alcool, dose : plages entre mesures).
-import dataFile from '../../data/composes-houblon.json';
-import bandsFile from '../../data/style-bands.json';
+import dataFile from '../../../data/hopV4/composes-houblon.json';
+import bandsFile from '../../../data/hopV4/style-bands.json';
 import { POLICY, hopRef } from './data';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { MOMENTS, additionIbu, type Addition, type MomentId, type Recipe } from './recipe';
@@ -418,7 +418,7 @@ function calculCompose(c: ComposeId, v: Variete | null, lot: Lot | null, huile: 
   const val = v?.composes[c];
   const lotVal = lot?.composes?.[c] != null && (type === 'thiol' || lot.uniteFractions) ? lot.composes![c]! : null;
   const quoi = `teneur en ${nom(c)}`;
-  const ten = !v ? inconnue(unite, quoi, 'variété absente de data/composes-houblon.json') : lotVal != null ? teneurLot(lot!, lotVal, unite, quoi) : teneurDe(val, unite, quoi);
+  const ten = !v ? inconnue(unite, quoi, 'variété absente de src/data/hopV4/composes-houblon.json') : lotVal != null ? teneurLot(lot!, lotVal, unite, quoi) : teneurDe(val, unite, quoi);
   const dosage = constante(dose, 'g/L', 'dose de l’ajout');
   const chargeDe = (t: Grandeur) => (type === 'thiol' ? produit([dosage, t], 1, 'ng/L', 'dose × teneur en thiol libre')
     : produit([dosage, huile, t, densite(c)], 100, 'µg/L', 'dose × huile × fraction × densité'));
@@ -632,7 +632,7 @@ export function pouvoirAjout(a: AjoutPouvoir, recette: RecettePouvoir): PouvoirA
   const lot = lotDe(v, a.lot);
   const { cat, hypotheses: hypCat } = categorie(a, recette);
   const abv = degre(recette).plage;
-  const huile = !v ? inconnue('mL/100 g', 'huile totale', 'variété absente de data/composes-houblon.json')
+  const huile = !v ? inconnue('mL/100 g', 'huile totale', 'variété absente de src/data/hopV4/composes-houblon.json')
     : lot?.huile != null ? teneurLot(lot, lot.huile, 'mL/100 g', 'huile totale') : teneurDe(v.huile, 'mL/100 g', 'huile totale');
   if (hypotheses.length || hypCat.length) huile.hypotheses = uniq([...huile.hypotheses, ...hypotheses, ...hypCat]);
   const composes = Object.fromEntries(COMPOSES.map((c) => [c, calculCompose(c, v, lot, huile, dose, cat, abv)])) as Record<ComposeId, PouvoirCompose>;

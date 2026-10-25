@@ -95,9 +95,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Agents et outils
 
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
-- Erreur : lot 21, un auteur a laissé `pistes-l5f.png` à la racine du dépôt. 22.10, la voie r4c a écrit `loupe.html` et `loupe.png` à la racine (un sous-agent n'a pas le dossier temporaire du pilote).
+- Erreur : lot 21 et 22.10, des fichiers de travail à la racine (`pistes-l5f.png`, `loupe.html`). 25.10, T4 : un déménagement sans les importeurs hors dossier.
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
-- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine. Un critère non plus n'écrit dans un livrable (24.10 : un G1 recapturait les images d'une page publiée).
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine. Un déménagement : `grep` de l'ancien chemin sur tout le dépôt avant l'OWNS. Un critère non plus n'écrit dans un livrable (24.10).
 - Rôles : pilote, auteur, exécutant, concepteur
 - Contrôle : aucun
 

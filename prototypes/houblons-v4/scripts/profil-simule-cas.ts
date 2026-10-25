@@ -9,7 +9,7 @@ import {
   CORRESPONDANCE, FAMILIES, FAMILY_NAMES, MENTION_RAPPORT, MENTION_SIMULE, MOMENTS_SIMULES, PROFIL_RULE,
   activiteAncre, echelleSimulee, hopRef, simulerCas, sourceSimulee, styleSimule,
   type AjoutSimule, type CasSimule, type FamilyId, type MomentSimule, type ProfilFamilles,
-} from '../src/engine';
+} from '../../../src/domain/hopIndex/v4';
 import { S1_TASTING, s1Recipe } from '../src/pack/buildPack';
 
 const here = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -139,7 +139,7 @@ const biereD = dedup(biere), casD = dedup(cas);
 
 const fichier = {
   version: 'profils-simules-v1', date: '2026-10-19', simule: true,
-  _origine: 'prototypes/houblons-v4/src/engine/profil-simule.ts (simulerCas), scripts/profil-simule-cas.ts ; table data/correspondance-familles.json ; note fils21-choisir/donnees/PROFIL-SIMULE.md',
+  _origine: 'src/domain/hopIndex/v4/profil-simule.ts (simulerCas), scripts/profil-simule-cas.ts ; table data/correspondance-familles.json ; note fils21-choisir/donnees/PROFIL-SIMULE.md',
   mention: MENTION_SIMULE, mentionRapport: MENTION_RAPPORT, regle: PROFIL_RULE,
   lecture: [
     'Chaque famille : { bas, centre, haut, crans, largeur, source }. Échelle 0–100 de style-bands.json, jamais rognée. crans : CRANS_RULE sur le centre (0–3 dans la bande du style, 4 au-dessus, −1 en dessous).',
@@ -161,7 +161,7 @@ const fichier = {
   formatGrille: FORMAT_GRILLE,
   grille,
   grillePaires,
-  correspondance: 'prototypes/houblons-v4/data/correspondance-familles.json',
+  correspondance: 'src/data/hopV4/correspondance-familles.json',
   textes,
   sources,
 };

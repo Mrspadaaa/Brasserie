@@ -4,7 +4,7 @@
 // moment « ‹ 10′ › » (plus tôt, plus tard ; par 5′, rien de figé), la dérive d'IBU, le stock, « Montrer sur le radar »
 // et « Appliquer à la recette » (Annuler la retire). « +n » montre les autres voies. Tout vient du moteur en direct.
 import { useMemo, useState } from 'react';
-import type { FamilyId } from '../../../../src/engine';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { COURT, nombre, type Echelle } from '../../commun';
 import { useGestes, useRecette } from '../../etat/EtatParcours';
 import { quandDe } from '../../etat/operations';

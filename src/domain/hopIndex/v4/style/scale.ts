@@ -1,9 +1,9 @@
-import bandsFile from '../../data/style-bands.json';
-import protoData from '../../data/proto-data.json';
-import { FAMILIES, type FamilyId } from '../engine/families';
-import { temoinNegatif } from '../engine/temoin';
+import bandsFile from '../../../../data/hopV4/style-bands.json';
+import protoData from '../../../../data/hopV4/proto-data.json';
+import { FAMILIES, type FamilyId } from '../families';
+import { temoinNegatif } from '../temoin';
 
-/** [H] Table et seuils « à valider par le brasseur » : data/style-bands.json. */
+/** [H] Table et seuils « à valider par le brasseur » : src/data/hopV4/style-bands.json. */
 export type FamilyStatus = 'attendue' | 'neutre' | 'indésirable';
 export type Range = { min: number; max: number };
 

@@ -7,7 +7,7 @@
 // Ce qui reste en singleton DANS le moteur v4 (data.ts : CATALOGUE, STOCK, ENGINE_DATA, hopRef) : la connaissance des
 // variétés (fiches, huiles, descripteurs) et le stock que lisent `substitutes` et `proposeVoies` pour classer « en
 // stock d'abord ». Le chemin pour l'enlever est écrit dans ARCHITECTURE.md (« ## Données injectées »).
-import { CATALOGUE, STOCK, hopRef, type CatalogueHop, type StockHop, type Tasting } from '../../../src/engine';
+import { CATALOGUE, STOCK, hopRef, type CatalogueHop, type StockHop, type Tasting } from '../../../../../src/domain/hopIndex/v4';
 import { DEGUSTATION, recetteDegustee } from '../donnees/cas';
 import type { AjoutParcours, RecetteParcours } from '../etat/types';
 

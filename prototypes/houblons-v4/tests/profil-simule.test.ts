@@ -2,12 +2,12 @@ import './temoin'; // témoin négatif de check:engine (B3)
 // Moteur « profil aromatique simulé » (lot 21) : les contrôles demandés par le pilote (19.10, soir), sur la
 // stout 16D S1 du lot 20 (Nugget 46 g à 60′, 20 L, dégustation « trop résineuse »).
 import { describe, expect, it } from 'vitest';
-import corr from '../data/correspondance-familles.json';
-import dataFile from '../data/composes-houblon.json';
+import corr from '../../../src/data/hopV4/correspondance-familles.json';
+import dataFile from '../../../src/data/hopV4/composes-houblon.json';
 import {
   FAMILIES, MENTION_RAPPORT, MENTION_SIMULE, partExtraite, pointsSimules, simulerCas,
   type AjoutSimule, type CasSimule, type FamilyId, type MomentSimule,
-} from '../src/engine';
+} from '../../../src/domain/hopIndex/v4';
 import { S1_TASTING, s1Recipe } from '../src/pack/buildPack';
 
 const CITRA = 'beermaverick-citra', CASCADE = 'beermaverick-cascade', GALAXY = 'beermaverick-galaxy', IDAHO7 = 'beermaverick-idaho-7';

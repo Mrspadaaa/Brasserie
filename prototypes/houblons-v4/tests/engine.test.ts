@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   FAMILIES, additionIbu, applyVoie, compareRankKeys, gramsForIbu, hopProfile, hopRef, matrixContext, proposeVoies, recipeIbu, recipeProfile, styleFit, getStyleScale, yeastInfo, STOCK, CATALOGUE,
   type Recipe,
-} from '../src/engine';
+} from '../../../src/domain/hopIndex/v4';
 import { s1Recipe } from '../src/pack/buildPack';
 
 const stout = (additions: Recipe['additions'], yeastId: string | null = 'fermentis-us05'): Recipe => ({ ...s1Recipe(), yeastId, additions });

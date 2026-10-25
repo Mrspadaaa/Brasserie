@@ -10,7 +10,7 @@ import { CONDITIONS, H, nomLevure } from '../../donnees/cas';
 import { useRecette } from '../../etat/EtatParcours';
 import { placer, quandDe } from '../../etat/quand';
 import { houblon, ibuAjout, lireBiere, style } from '../../moteur';
-import { CATALOGUE, STOCK, hopRef, type FamilyId } from '../../../../src/engine';
+import { CATALOGUE, STOCK, hopRef, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import {
   ETAPES, ORANGE, VISEES, biotransformation, couleurHoublon, egaler, enActif, jourApresJour, scoreDefi, souche, tirer, verdict,
   type ColonneLue, type Critere, type Etapes, type Verdict,

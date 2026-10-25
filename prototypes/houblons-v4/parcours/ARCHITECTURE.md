@@ -29,13 +29,13 @@ mêlent pas au moteur V5.5 qu'ils importent).
 | `src/etat/EtatParcours.tsx` | `src/ui/hopIndex/useHopDraft.ts` | oui | brouillon d'outil en mémoire ; la recette vient de `StorageService` |
 | `src/etat/etapes.ts` | aucune, sauf `brouillonPour` et `ajoutPlace` (dans `useHopDraft`) | oui | états de départ des pages de la maquette |
 | `src/moteur/index.ts`, `mesure.ts`, `donnees.ts`, `prechauffage.ts` | `src/domain/hopIndex/v4/adapter.ts` (+ `src/ui/hopIndex/hopTools.worker.ts`) | oui | l'adaptateur et ses données injectées |
-| `prototypes/houblons-v4/src/engine/`, `src/style/` | `src/domain/hopIndex/v4/` | oui | imports déjà relatifs (`../../../../src/…` devient `../../…`) |
+| ~~`prototypes/houblons-v4/src/engine/`, `src/style/`~~ **fait (T4, #163, 25.10)** : `src/domain/hopIndex/v4/` (22 fichiers du moteur) et `src/domain/hopIndex/v4/style/` (`scale.ts`, `verdict.ts`), déplacés par `git mv` | oui | imports relatifs (`../../../../src/…` est devenu `../…` et `../../../…`) ; une seule copie ; `src/pack/buildPack.ts` reste au prototype (il bâtit le pack des mini-prototypes et les cas S1/S2 de la maquette) |
 | `src/integration/conversion.ts` | `src/domain/hopIndex/v4/recipeConversion.ts` | oui | voir « ## Conversion de recette » |
 | `src/integration/crochetTest.ts` | `src/ui/hopIndex/devHook.ts`, derrière `import.meta.env.DEV` | oui | voir « ## Crochet de test » |
 | `src/donnees/cas.ts` | aucune | oui | la recette, la dégustation et le stock viennent de l'app ; `CONDITIONS`, `VISEE`, `LEVURES` restent comme règles |
 | `src/commun/Cadres.tsx` | rien : `PageShell` et `Sheet` de l'app, employés tels quels | oui | |
 | `src/commun/*` (BarreStyle, JetonHoublon, Pictos, familles, Marques, LigneContexte, Legende, Pont, Onglets, gestes, nombres) | `src/ui/hopIndex/` | oui | `familles.ts` → `src/ui/hopIndex/familyTokens.ts` |
-| `prototypes/houblons-v4/data/jetons-familles.json`, `pictos-familles.svg`, `comparatifs-dryhop.json` | `src/data/` | oui | copies de `work/` par `data/copies-de-work.mjs`, avec leur source |
+| ~~`prototypes/houblons-v4/data/`~~ **fait (T4, #163)** : `src/data/hopV4/` (`proto-data`, `composes-houblon`, `style-bands`, `correspondance-familles`, `faits-cites` : moteur ; `jetons-familles`, `pictos-familles.svg`, `comparatifs-dryhop` : écrans) | oui | copies de `work/` par `src/data/hopV4/copies-de-work.mjs`, avec leur source ; `pack-fiches.json` et `pack-mini-protos.json` restent au prototype (sorties générées, lues par les contrôles de `work/`) |
 | `src/ecrans/<écran>/index.tsx` | `src/ui/hopIndex/<Écran>.tsx` | oui | un écran = un outil |
 | `src/ecrans/<écran>/jeu.mjs`, `NOTE.md`, `outils/*.mjs` | `scripts/` (contrôles de parcours, mode `--url`) | non | |
 
@@ -108,7 +108,7 @@ Par défaut : les fixtures actuelles (la maquette calcule les mêmes nombres).
 | `degustation` | S1 du 18.10 et la recette dégustée | la dégustation du brasseur sur le brassin de la recette ; `null` sans dégustation |
 | `alphaDuLot(ajout)` | `ajout.alphaLot` | idem : `HopIngredient.alpha` posé par `toHopRecipe` |
 
-**Reste en singleton dans le moteur v4** (`src/engine/data.ts`) : `CATALOGUE`, `STOCK`, `ENGINE_DATA`, `hopRef` et
+**Reste en singleton dans le moteur v4** (`src/domain/hopIndex/v4/data.ts`) : `CATALOGUE`, `STOCK`, `ENGINE_DATA`, `hopRef` et
 les caches qui en dérivent (`profil-simule.ts` `cacheBase`, `substitution.ts` `featureCache` et `roleCache`,
 `voies.ts` `apportCache`, `hops.ts` cache d'extrapolation, `recipe.ts` `predictTriplet`). Ils portent la connaissance
 des variétés (fiches, huiles, descripteurs) et le stock que `substitutes` et `proposeVoies` classent « en stock
@@ -178,7 +178,7 @@ Mesuré par `work/refonte-frontend/v4/tournoi/outils/mesure-performance.mjs … 
 
 Fait : (1) préchauffage au repos (`src/moteur/prechauffage.ts`, appelé par `Coquille.tsx` sur Ma bière) : les voies
 de Suggérer et les remplaçants de chaque ajout, une tâche par `requestIdleCallback`, mêmes appels que les écrans ;
-(2) formateurs de nombres mis en cache (`Intl.NumberFormat`, même texte) dans `src/engine/pouvoir.ts` et
+(2) formateurs de nombres mis en cache (`Intl.NumberFormat`, même texte) dans `src/domain/hopIndex/v4/pouvoir.ts` et
 `commun/nombres.ts`. Pas fait ici (fichiers d'écran ou configuration hors de la voie) : les formateurs de
 `dryhopper/mesures.ts` et `comparer/valeurs.ts`, le rendu des écrans d'arrivée, le découpage du paquet.
 
@@ -196,7 +196,7 @@ Chaque chantier se finit branché, typé, testé, joué dans Chrome, avant le su
    cave) ; l'atelier V5.5 (`src/ui/hopV55/`, route `hopV55`) et le panneau « Potentiel aromatique » **remplacés** ou
    **gardés** à côté des outils (B6) ; Dryhopper (a1, b4, d8, e5, g1), Substituer (porte ou outil u4) et Levure
    (étape ou outil a2b) sont encore ouverts : un écran choisi plus tard remplace le sien, le socle ne bouge pas.
-2. **Moteur** : `src/engine` et `src/style` → `src/domain/hopIndex/v4/` (imports relatifs déjà faits, `temoin.ts`
+2. **Moteur** (FAIT par T4, #163, le 25.10 : `src/domain/hopIndex/v4/`, `src/data/hopV4/`, une seule copie ; les tests restent dans `prototypes/houblons-v4/tests`, déjà dans le Vitest de la racine) : `src/engine` et `src/style` → `src/domain/hopIndex/v4/` (imports relatifs déjà faits, `temoin.ts`
    compris) ; les tests du prototype dans `tests/unit/hopIndexV4/` (le Vitest de la racine n'inclut que `tests/unit`,
    `tests/integration`, `tests/fuzz`) ; `data/*.json` → `src/data/`.
 3. **Conversion** : `recipeConversion.ts` et ses tests ; une lecture `useHopRecipe(recipeId)` (StorageService →

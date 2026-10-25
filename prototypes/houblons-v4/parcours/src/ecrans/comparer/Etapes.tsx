@@ -14,7 +14,7 @@ import { CONDITIONS } from '../../donnees/cas';
 import { VoletBio, VoletPlans } from './Feuilles';
 import { Chevron } from './icones';
 import { houblon } from '../../moteur';
-import { hopRef } from '../../../../src/engine';
+import { hopRef } from '../../../../../../src/domain/hopIndex/v4';
 import { ETAPES, type CodeEtape, type ColonneLue, type Critere, type Etapes, type ValeurEtape } from './calcul';
 
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ');

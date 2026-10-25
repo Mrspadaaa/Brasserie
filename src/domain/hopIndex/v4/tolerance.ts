@@ -1,7 +1,7 @@
-import protoData from '../../data/proto-data.json';
+import protoData from '../../../data/hopV4/proto-data.json';
 import { FAMILIES, type FamilyId } from './families';
 import { temoinNegatif } from './temoin';
-import { getStyleScale, SCALE_PARAMETERS, type FamilyStatus, type StyleScale } from '../style/scale';
+import { getStyleScale, SCALE_PARAMETERS, type FamilyStatus, type StyleScale } from './style/scale';
 
 /**
  * Tolérance par style et a priori du brasseur (D54, 18.10.2026, soir).

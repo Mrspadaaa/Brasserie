@@ -21,7 +21,7 @@ import type { Route } from '../../coquille/routes';
 import { nomLevure } from '../../donnees/cas';
 import { useBiere, useComparaison, useGestes, useRecette, useVisee } from '../../etat/EtatParcours';
 import { style } from '../../moteur';
-import { offModelLeads, type FamilyId } from '../../../../src/engine';
+import { offModelLeads, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import Fiche, { useGestesFiche } from '../fiche';
 import { Bandeau } from '../ma-biere/Base';
 import { AlphaCourt, Calme, CaseInconnue, Lecture, Stock, Traits, traitsDe, Usage, type NiveauFiches } from './briques';

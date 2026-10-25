@@ -1,5 +1,5 @@
-import { checkHopExclusions } from '../../../../src/domain/hopIndex/solver';
-import { suggestedHopVarieties } from '../../../../src/domain/hopIndex/styleSelection';
+import { checkHopExclusions } from '../solver';
+import { suggestedHopVarieties } from '../styleSelection';
 import { AXES, CATALOGUE, STOCK, VARIETY_BY_ID, YEASTS, hopRef } from './data';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { cites } from './hops';
@@ -7,8 +7,8 @@ import {
   MOMENTS, additionIbu, gramsForIbu, ibuPerGram, matrixContext, predictTriplet, recipeIbu, recipeProfile, searchDoses, tripletOf, yeastInfo,
   type Addition, type FamilyEstimate, type MatrixContext, type MomentId, type Profile, type Recipe, type RecipeProfile, type YeastInfo,
 } from './recipe';
-import { getStyleScale, type StyleScale } from '../style/scale';
-import { valueVerdict } from '../style/verdict';
+import { getStyleScale, type StyleScale } from './style/scale';
+import { valueVerdict } from './style/verdict';
 import type { Tasting } from './tasting';
 import { goutsSets, type Gouts } from './gouts';
 import { CHARACTERIZED_YEASTS, yeastChangeEffect } from './yeast';

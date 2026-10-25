@@ -10,7 +10,7 @@ import { lireRoute } from './coquille/routes';
 import { EtatParcoursProvider } from './etat/EtatParcours';
 import { COMPARER_CARTE, etatDeDepart, routeDePage } from './etat/etapes';
 import type { EtatParcours, RecetteParcours } from './etat/types';
-import { MOMENTS } from '../../src/engine';
+import { MOMENTS } from '../../../../src/domain/hopIndex/v4';
 import { classeEbullition } from './etat/quand';
 import { H } from './donnees/cas';
 import { configurerDonnees } from './moteur';

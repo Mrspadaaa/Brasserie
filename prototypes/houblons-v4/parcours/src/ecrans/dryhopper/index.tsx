@@ -17,7 +17,7 @@ import { nomLevure } from '../../donnees/cas';
 import { useBrouillon, useGestes, useRecette } from '../../etat/EtatParcours';
 import { quandDe, trouver } from '../../etat/operations';
 import { effetLevure, houblon, lireBiere, style, type ProfilLu } from '../../moteur';
-import type { FamilyId } from '../../../../src/engine';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { couleurHoublon } from '../comparer/calcul';
 import { BORNES_SEG, calculerFrise, meilleur, memeQuand, positions, type Point } from './frise';
 import { useFicheSurOutil } from './fiche-sur-outil';

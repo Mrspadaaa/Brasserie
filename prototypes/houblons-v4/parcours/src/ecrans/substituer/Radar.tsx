@@ -3,7 +3,7 @@
 // du centre vers le bord : non décrit, cité, marqué (ronds blancs = cité, pleins = marqué) ; une famille qu'aucune
 // des trois fiches ne décrit a son secteur hachuré, un rond pointillé et son nom en italique suivi de « ? » (D65 :
 // l'inconnu n'est pas un zéro) ; en gras, les familles attendues au style. Classes préfixées pq-substituer- (L26).
-import type { FamilyId } from '../../../../src/engine';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { COURT } from '../../commun';
 
 export const AXES_U4: FamilyId[] = ['citrus', 'tropical', 'melon', 'stoneFruit', 'pomeFruit', 'berries', 'floral', 'green', 'herbal', 'spice', 'earthy', 'resin'];

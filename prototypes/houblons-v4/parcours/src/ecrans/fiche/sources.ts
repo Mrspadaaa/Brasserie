@@ -1,9 +1,9 @@
 // Ce que les fiches du dépôt disent d'un houblon, source par source, pour la fiche g1 (« la v1 est la meilleure ») :
 // l'α et le β de chaque fiche (Beer Maverick, Hopsteiner) avec leur année, l'huile totale et ses composants, les styles
 // d'emploi d'un fournisseur, l'origine, et les auteurs de chaque famille. Lu en direct dans le catalogue du moteur
-// (hopRef(cle).catalogue, describeFamilies), comme hopSheet (src/engine/fiches.ts) : aucune valeur recopiée ni inventée ;
+// (hopRef(cle).catalogue, describeFamilies), comme hopSheet (src/domain/hopIndex/v4/fiches.ts) : aucune valeur recopiée ni inventée ;
 // une donnée absente reste absente, avec sa raison (D14, D65).
-import { FAMILIES, describeFamilies, familyWords, hopRef, type FamilyId } from '../../../../src/engine';
+import { FAMILIES, describeFamilies, familyWords, hopRef, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 
 export interface PlageSource { source: string; annee: number | null; min: number; max: number }
 export interface ComposantHuile { nom: string; plage: PlageSource | null; raison: string | null }

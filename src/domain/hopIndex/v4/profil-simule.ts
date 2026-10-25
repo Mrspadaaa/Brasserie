@@ -4,14 +4,14 @@
 //  - la FORME vient des fiches (describeFamilies : familles marquées ou citées) ;
 //  - la FORCE vient du moteur : charge introduite × part retrouvée selon le moment × part extraite selon les
 //    jours, divisée par le seuil (rapport au seuil), puis la saturation par une courbe de dose (H22) ;
-//  - les NUANCES viennent des composés, par la table data/correspondance-familles.json ;
+//  - les NUANCES viennent des composés, par la table src/data/hopV4/correspondance-familles.json ;
 //  - la levure déplace le profil (géraniol → citronellol, thiols libérés) en dry hop actif, et lève des drapeaux.
 // Chaque famille sort en { bas, centre, haut, crans, largeur } sur l'échelle 0–100 de style-bands.json, en
 // crans du style (levels.ts). Le centre est une convention. Le rapport au seuil n'est jamais présenté comme
 // une intensité : il reste, réel, dans mesures[] (MENTION_RAPPORT). Aucune plage n'est rognée : une borne
 // haute non publiée est dite (hautPartiel), jamais remplacée. Déterministe : ni hasard, ni horloge.
-import corrFile from '../../data/correspondance-familles.json';
-import { getStyleScale, type StyleScale } from '../style/scale';
+import corrFile from '../../../data/hopV4/correspondance-familles.json';
+import { getStyleScale, type StyleScale } from './style/scale';
 import { hopRef } from './data';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { describeFamilies } from './hops';
@@ -360,7 +360,7 @@ function confianceDe(bases: Base[], levure: string): { niveau: Confiance; pourqu
 
 // ---------- Mesures réelles ----------
 const SOURCES_EN_PLUS: Record<string, Omit<SourceRef, 'cle'>> = {
-  'stock-affinee': { titre: 'Stock de L’Affinée : α lu sur la fiche de stock ou l’article (prototypes/houblons-v4/data/proto-data.json)', url: 'prototypes/houblons-v4/data/proto-data.json', annee: 2026, niveau: 'F', lecture: 'dépôt' },
+  'stock-affinee': { titre: 'Stock de L’Affinée : α lu sur la fiche de stock ou l’article (src/data/hopV4/proto-data.json)', url: 'src/data/hopV4/proto-data.json', annee: 2026, niveau: 'F', lecture: 'dépôt' },
   'recette-s1': { titre: 'Recette du lot 20 : stout 16D S1, Nugget 46 g à 60′, 20 L (prototypes/houblons-v4/src/pack/buildPack.ts)', url: 'prototypes/houblons-v4/src/pack/buildPack.ts', annee: 2026, niveau: 'H', lecture: 'dépôt' },
 };
 export function sourceSimulee(cle: string): Omit<SourceRef, 'cle'> | null {
@@ -532,7 +532,7 @@ export function echelleSimulee(code = '16D') {
   const s = scaleDe(code);
   return {
     min: 0, max: 100, classes: { faible: [0, 33], moyenne: [33, 66], forte: [66, 100] },
-    source: 'prototypes/houblons-v4/data/style-bands.json (échelle des axes V5.5) ; crans : prototypes/houblons-v4/src/engine/levels.ts',
+    source: 'src/data/hopV4/style-bands.json (échelle des axes V5.5) ; crans : src/domain/hopIndex/v4/levels.ts',
     crans: CRANS_RULE, statut: s.table.status, rognage: 'aucun : une valeur simulée peut dépasser la bande du style (crans 4) ; elle n’est jamais ramenée dans 0–100 de force',
     parFamille: fam((f) => { const fs = s.families[f]; return { bande: fs.band, cran: arrondi(fs.cran), seuilEcart: arrondi(fs.threshold), domaine: fs.domain, courbe: courbeDe(f).id }; }),
   };

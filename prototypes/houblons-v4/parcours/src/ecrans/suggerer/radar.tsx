@@ -1,7 +1,7 @@
 // Vue « Radar » de Suggérer (q2b : « Barres / Radar ») : ma bière, la zone du style, et la bière après chaque voie
 // retenue pour la comparaison. Au style : chaque axe va de 0 à deux fois le haut de la bande (la zone sur la moitié du
 // rayon) ; absolu : 0 → 110. Une famille inconnue pour cette bière a son nom suivi de « ? » et son secteur hachuré.
-import type { FamilyId, StyleScale } from '../../../../src/engine';
+import type { FamilyId, StyleScale } from '../../../../../../src/domain/hopIndex/v4';
 import { COURT, ROUE, type Echelle } from '../../commun';
 import type { BiereLue } from '../../moteur';
 

@@ -2,8 +2,8 @@ import { FAMILY_NAMES, type FamilyId } from './families';
 import type { Profile } from './recipe';
 import type { Tasting } from './tasting';
 import type { VoieResult } from './voies';
-import { valueVerdict, type GapVerdict } from '../style/verdict';
-import type { FamilyStatus, StyleScale } from '../style/scale';
+import { valueVerdict, type GapVerdict } from './style/verdict';
+import type { FamilyStatus, StyleScale } from './style/scale';
 
 /** Lecture commune à toutes les vues : une entrée par famille, dans l'ordre canonique du style. */
 export type ReadingVerdict = 'au style' | 'peu' | 'trop' | 'hors style' | 'incertain' | 'non situé';

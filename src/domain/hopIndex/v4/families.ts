@@ -1,4 +1,4 @@
-import axes from '../../../../src/data/hopKnowledgeBootstrap.json';
+import axes from '../../../data/hopKnowledgeBootstrap.json';
 
 /** Les 12 axes V5.5, dans leur ordre canonique (src/data/hopKnowledgeBootstrap.json). */
 export const FAMILIES = ['citrus', 'tropical', 'stoneFruit', 'pomeFruit', 'berries', 'melon', 'floral', 'herbal', 'resin', 'spice', 'green', 'earthy'] as const;

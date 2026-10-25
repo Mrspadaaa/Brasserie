@@ -16,7 +16,7 @@ import { useGestes } from '../../etat/EtatParcours';
 import { nouvelId, placer } from '../../etat/operations';
 import type { AjoutParcours, RecetteParcours } from '../../etat/types';
 import { donnees, houblon, ibuAjout, style } from '../../moteur';
-import { buildFromEmpty, hopRole, quickAdds, type QuickAdd } from '../../../../src/engine';
+import { buildFromEmpty, hopRole, quickAdds, type QuickAdd } from '../../../../../../src/domain/hopIndex/v4';
 import { AlphaLu, StockIcone } from '../fiche/briques';
 import { useGestesFiche } from '../fiche/gestes';
 import { BoutonLegende, useLegende } from './LegendeGroupe';

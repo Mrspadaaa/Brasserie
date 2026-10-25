@@ -1,4 +1,4 @@
-import { BrewingMath } from '../../../../src/services/brewingMath';
+import { BrewingMath } from '../../../services/brewingMath';
 import { predictHopRecipe, type HopRecipeInput } from '../../../../functions/src/hopRecipePrediction';
 import { createHopPredictor } from '../../../../functions/src/hopPredictionCore';
 import type { HopEstimate, HopPrediction, HopTiming, HopTriplet } from '../../../../functions/src/hopPredictionSchema';

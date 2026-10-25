@@ -2,7 +2,7 @@
 // En mémoire (décision du pilote) ; la persistance de l'app est décrite dans ARCHITECTURE.md.
 import { createContext, useContext, useMemo, useReducer, type Dispatch, type ReactNode } from 'react';
 import * as moteur from '../moteur';
-import type { FamilyId } from '../../../src/engine';
+import type { FamilyId } from '../../../../../src/domain/hopIndex/v4';
 import { useCrochetTest } from '../integration/crochetTest';
 import { reducteur } from './reducteur';
 import type { Action, AjoutParcours, Brouillon, Cible, EtatParcours, Quand, RecetteParcours } from './types';

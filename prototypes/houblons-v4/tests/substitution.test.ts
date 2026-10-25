@@ -2,8 +2,8 @@ import './temoin'; // témoin négatif de check:engine (B3)
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { CATALOGUE, FAMILIES, additionIbu, describeFamilies, getStyleScale, hopRef, hopRole } from '../src/engine';
-import { PALIERS, RANKING, SUBSTITUTION_METHOD, WEIGHTS, substitutes, type SubstitutionOptions, type SubstitutionWeights } from '../src/engine/substitution';
+import { CATALOGUE, FAMILIES, additionIbu, describeFamilies, getStyleScale, hopRef, hopRole } from '../../../src/domain/hopIndex/v4';
+import { PALIERS, RANKING, SUBSTITUTION_METHOD, WEIGHTS, substitutes, type SubstitutionOptions, type SubstitutionWeights } from '../../../src/domain/hopIndex/v4/substitution';
 import { s1Recipe } from '../src/pack/buildPack';
 
 const K = (id: string) => `beermaverick-${id}`;

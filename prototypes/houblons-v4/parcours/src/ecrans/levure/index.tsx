@@ -13,7 +13,7 @@ import { CONDITIONS, LEVURES, nomLevure } from '../../donnees/cas';
 import { useBrouillon, useGestes } from '../../etat/EtatParcours';
 import { quandDe, trouver } from '../../etat/operations';
 import { ecart, effetLevure, houblon, lireBiere, style, type EffetLevure } from '../../moteur';
-import { biotransfoLevure, type FamilyId } from '../../../../src/engine';
+import { biotransfoLevure, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { libMoment } from '../dryhopper/frise';
 import { useFicheSurOutil } from '../dryhopper/fiche-sur-outil';
 import './levure.css';

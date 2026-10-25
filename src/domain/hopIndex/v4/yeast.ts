@@ -1,7 +1,7 @@
 // La levure : double impact (arôme propre, expression du houblon), leviers et signaux de
 // biotransformation (work/refonte-frontend/v4/ecran-1/MODELE.md, « La levure » ; R43, R44 ;
 // rapport E, recommandation 8). Aucun chiffre inventé : le modèle V5.5 ou une source citée.
-import factsFile from '../../data/faits-cites.json';
+import factsFile from '../../../data/hopV4/faits-cites.json';
 import { CATALOGUE, EXTRAPOLATION, YEASTS, hopRef } from './data';
 import { FAMILIES, type FamilyId } from './families';
 import { MOMENTS, predictTriplet, tripletOf, yeastInfo, type Addition, type Recipe, type YeastInfo } from './recipe';

@@ -1,9 +1,9 @@
 import { createHopExtrapolationCache, hopDescriptorEvidence } from '../../../../functions/src/hopExtrapolationCore';
-import { suggestedHopVarieties } from '../../../../src/domain/hopIndex/styleSelection';
+import { suggestedHopVarieties } from '../styleSelection';
 import { ENGINE_DATA, EXTRAPOLATION, POLICY, STOCK, VARIETY_BY_ID, hopRef, type HopRef } from './data';
 import { FAMILIES, type FamilyId } from './families';
 import { MOMENTS, predictTriplet, profileOf, tripletOf, yeastInfo, type FamilyEstimate, type MomentId, type Recipe, type YeastInfo } from './recipe';
-import type { StyleScale } from '../style/scale';
+import type { StyleScale } from './style/scale';
 
 // ---------- Descripteurs (preuve documentaire V5.5) ----------
 const cache = createHopExtrapolationCache();

@@ -13,8 +13,8 @@
 // - un moment incomplet (durée d'ébullition, de whirlpool ou température de whirlpool absentes) rend l'IBU de l'ajout
 //   inconnu, comme hotBitterness ; une DI d'ébullition inconnue rend l'IBU à chaud de toute la recette inconnu.
 import type { HopIngredient, Recipe as RecetteApp, YeastSpec } from '../../../../../src/types';
-import { CATALOGUE, hopRef, yeastInfo } from '../../../src/engine';
-import protoData from '../../../data/proto-data.json';
+import { CATALOGUE, hopRef, yeastInfo } from '../../../../../src/domain/hopIndex/v4';
+import protoData from '../../../../../src/data/hopV4/proto-data.json';
 import { alphaDeCle } from '../moteur/donnees';
 import { classeEbullition, quandDe } from '../etat/quand';
 import type { AjoutParcours, RecetteParcours } from '../etat/types';

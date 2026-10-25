@@ -19,7 +19,7 @@ import { nomMoment, ibuAjout, type HoublonLu } from '../../moteur';
 import { quandDe } from '../../etat/quand';
 import { lireRemplacants } from '../substituer/donnees';
 import type { AjoutParcours, RecetteParcours } from '../../etat/types';
-import { ibuByMoment } from '../../../../src/engine';
+import { ibuByMoment } from '../../../../../../src/domain/hopIndex/v4';
 import { nomSource, type Accord, type PlageSource, type SourcesFiche } from './sources';
 
 export type Section = 'styles' | 'huiles' | 'sources' | 'substituts';

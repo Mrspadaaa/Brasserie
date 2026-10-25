@@ -6,7 +6,7 @@
 //   dans « Lire ces scores ») ; une composante connue reste celle du moteur. Rangés par le pire cas (bas de plage).
 // - Le face à face : α et β par source (Beer Maverick, Hopsteiner), huiles (Beer Maverick ; linalol Hopsteiner),
 //   familles des fiches (niveau, N/M), mots et styles d'emploi des fiches : catalogue du moteur (hopRef).
-import { DONNEES_POUVOIR, familyWords, hopRef, substitutes, type FamilyId } from '../../../../src/engine';
+import { DONNEES_POUVOIR, familyWords, hopRef, substitutes, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { houblon, style, type HoublonLu } from '../../moteur';
 import { proposable } from '../../moteur/donnees';
 import { memo } from '../../moteur/mesure';
@@ -136,7 +136,7 @@ export const LIGNES_HUILE: { id: LigneHuile; nom: string; unite: string }[] = [
   { id: 'geraniol', nom: 'géraniol', unite: '%' },
 ];
 /** Les valeurs des fiches d'un houblon, en plage (enveloppe des sources), ou null quand aucune fiche ne la donne (jamais 0) :
- * data/composes-houblon.json d'abord (8 variétés, toutes ses sources), sinon le catalogue (Beer Maverick ; linalol Hopsteiner). */
+ * src/data/hopV4/composes-houblon.json d'abord (8 variétés, toutes ses sources), sinon le catalogue (Beer Maverick ; linalol Hopsteiner). */
 export function huilesDe(cle: string): Record<LigneHuile, Intervalle | null> {
   const ref = hopRef(cle);
   const c = ref?.catalogue;

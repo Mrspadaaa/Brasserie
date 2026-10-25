@@ -19,7 +19,7 @@ import { useNavigation } from '../../coquille/navigation';
 import { useBiere, useComparaison, useGestes, useRecette, useVisee } from '../../etat/EtatParcours';
 import { sensDe, type Sens } from '../../etat/visee';
 import { houblon, style } from '../../moteur';
-import type { FamilyId } from '../../../../src/engine';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { sourceAlpha, StockIcone, Usage } from './briques';
 import { Matrice, NonDecrites } from './Matrice';
 import { noterFermeture, useGestesFiche } from './gestes';

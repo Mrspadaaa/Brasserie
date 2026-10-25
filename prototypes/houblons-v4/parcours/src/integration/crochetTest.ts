@@ -7,7 +7,7 @@
 // (le test est constant, le code mort est retiré par la construction). Au portage, supprimer MAQUETTE.
 import { useEffect, type Dispatch } from 'react';
 import * as moteur from '../moteur';
-import { cransOf, getStyleScale, hopAlpha, hopRole } from '../../../src/engine';
+import { cransOf, getStyleScale, hopAlpha, hopRole } from '../../../../../src/domain/hopIndex/v4';
 import type { Action, EtatParcours } from '../etat/types';
 
 /** La maquette pose toujours le crochet. Dans l'app : `false`, et seul `import.meta.env.DEV` décide. */

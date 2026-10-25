@@ -15,7 +15,7 @@ import { COURT, Legende, Onglets, ROUE, nombre, type Echelle } from '../../commu
 import { useNavigation } from '../../coquille/navigation';
 import { useBiere, useGestes, useRecette, useVisee } from '../../etat/EtatParcours';
 import { donnees, proposer, style } from '../../moteur';
-import { voiesSummary, type FamilyId } from '../../../../src/engine';
+import { voiesSummary, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { Alerte, Bandeau, NomFamille, PisteBase, nomLevureBase } from '../ma-biere/Base';
 import { Lentille } from '../ma-biere/Lentille';
 import { RadarBiere, auDessus, type Note } from '../ma-biere/RadarBiere';

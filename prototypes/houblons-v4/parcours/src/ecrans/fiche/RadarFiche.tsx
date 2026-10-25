@@ -7,7 +7,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { COULEURS, COURT, ROUE } from '../../commun';
 import type { HoublonLu } from '../../moteur';
-import type { FamilyId } from '../../../../src/engine';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 
 const W = 340, H = 330, C = { x: W / 2, y: H / 2 }, R = 96;
 

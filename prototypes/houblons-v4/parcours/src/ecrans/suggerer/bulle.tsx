@@ -12,7 +12,7 @@
 // Classes préfixées pq-suggerer-bulle- (L26).
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { COULEURS, COURT } from '../../commun';
-import type { FamilyId } from '../../../../src/engine';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 
 /** Ce que dit une case : un effet en crans (traits), un effet non établi (hachures), ou une famille qui ne bouge pas. */
 export type SensCase = ({ genre: 'traits'; f: FamilyId; crans: string; hors: boolean } | { genre: 'inconnu'; f: FamilyId } | { genre: 'calme'; f: FamilyId })

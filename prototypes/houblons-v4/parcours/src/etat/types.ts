@@ -1,6 +1,6 @@
 // Types de l'état du parcours. La recette EST le type Recipe du moteur v4 ; un ajout est un Addition du moteur
 // complété de ce que le parcours règle librement (minutes d'ébullition par 5′, jours de contact du dry hop).
-import type { Addition, FamilyId, MomentId, Recipe } from '../../../src/engine';
+import type { Addition, FamilyId, MomentId, Recipe } from '../../../../../src/domain/hopIndex/v4';
 import type { Visee } from './visee';
 
 /** Un ajout de houblon. `moment` reste l'identifiant du moteur ; pour l'ébullition, `minutes` fait foi

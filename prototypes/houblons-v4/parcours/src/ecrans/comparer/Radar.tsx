@@ -5,7 +5,7 @@
 //    (moustache, adoucie comme r6p1), coupé « // » quand il dépasse l'échelle ;
 //  - ta demande (h4) : flèche verte vers l'extérieur sur la famille voulue plus, orangée vers le centre sur celle
 //    qui est en trop.
-import type { FamilyId } from '../../../../src/engine';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { Picto } from '../../commun';
 import { ABSOLU, ORANGE, type ColonneLue } from './calcul';
 

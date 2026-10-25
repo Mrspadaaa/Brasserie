@@ -23,14 +23,14 @@ import { useBrouillon, useComparaison, useGestes, useRecette } from '../../etat/
 import { quandDe, remplacer, trouver } from '../../etat/operations';
 import type { AjoutParcours, Quand, RecetteParcours } from '../../etat/types';
 import { houblon, ibuAjout, lireBiere, style, type BiereLue, type FamilleLue, type HoublonLu } from '../../moteur';
-import type { FamilyId } from '../../../../src/engine';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { Usage } from '../fiche/briques';
 import { useFiche } from '../fiche/FicheHoublon';
 import { Lentille } from '../ma-biere/Lentille';
 import { noterAvant } from '../ma-biere/repere';
 import { huilesDe, LIGNES_HUILE, lireRemplacants, mesures, motsHors, stockOriginal, TEXTE_STOCK, type Candidat, type EtatStock, type Intervalle } from './donnees';
 import { RadarU4 } from './Radar';
-import SYMBOLES from '../../../../data/pictos-familles.svg?raw';
+import SYMBOLES from '../../../../../../src/data/hopV4/pictos-familles.svg?raw';
 import './substituer.css';
 
 /** Les petites variantes de u4 enrichi (« quelques petites variante, amélioration », 24.10, soir), une par point,
@@ -73,7 +73,7 @@ function IconeStock({ etat }: { etat: EtatStock }) {
 
 const fr = (v: number) => nombre(v, 2);
 
-/** Le picto de la planche standard (data/pictos-familles.svg, le même que <Picto>), dessiné en ligne plutôt que par
+/** Le picto de la planche standard (src/data/hopV4/pictos-familles.svg, le même que <Picto>), dessiné en ligne plutôt que par
  * <use> : son trait porte la couleur de la famille dans le document (lisible par les contrôles de couleur, D74). */
 const PLANCHE = typeof DOMParser === 'undefined' ? null : new DOMParser().parseFromString(SYMBOLES, 'image/svg+xml');
 function PictoEnLigne({ famille, taille = 16 }: { famille: FamilyId; taille?: number }) {

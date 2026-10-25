@@ -5,7 +5,7 @@ import pack from '../../data/pack-mini-protos.json';
 import {
   FAMILY_NAMES, MOMENTS, additionIbu, getStyleScale, hopRef, recipeIbu,
   type Addition, type FamilyId, type MomentId, type Recipe, type StyleScale,
-} from '../../src/engine';
+} from '../../../../src/domain/hopIndex/v4';
 
 interface AjoutRapidePack { key: string; name: string; moment: MomentId; dose: { grams: number }; stock: { free: number } }
 interface DirectionPack { family: FamilyId; name: string; crans: number; targetAbsolute: number | null; targetFrom: string }

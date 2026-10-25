@@ -1,6 +1,6 @@
 import './temoin'; // témoin négatif de check:engine (B3)
 import { describe, expect, it } from 'vitest';
-import { ecartTolerances, styleMasking, toleranceScale } from '../src/engine/tolerance';
+import { ecartTolerances, styleMasking, toleranceScale } from '../../../src/domain/hopIndex/v4/tolerance';
 
 // D54 : « un peu plus résineux pour une stout est pas très problématique, pour une lager kolsch très ».
 const resine = (code: string, a?: Parameters<typeof toleranceScale>[1]) => toleranceScale(code, a).familles.find((x) => x.family === 'resin')!;

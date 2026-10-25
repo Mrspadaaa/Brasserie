@@ -25,8 +25,8 @@ export { hopSheet, sheetKeys, type HopSheetContext } from './fiches';
 export { beerCrans, targetCrans, afterCrans, CRANS_RULE, type CransPosition, type TargetCrans, type AfterCrans } from './levels';
 export { beerLevels, targetLevels, afterLevels, ficheLevels, classOf, LEVEL_RULE, type Level, type BeerLevel, type TargetLevel, type AfterLevel, type FicheLevel } from './levels';
 export { proposeVoies, compareVoies, compareRankKeys, applyVoie, RANKING, type Direction, type Voie, type VoieType, type Action, type VoieResult, type FamilyEffect, type DirectedTarget, type StyleOverflow } from './voies';
-export { getStyleScale, documentedStyleCodes, SCALE_PARAMETERS, type StyleScale, type FamilyScale, type FamilyStatus } from '../style/scale';
-export { valueVerdict, gapVerdict, trackPosition, trackShare, type ValueVerdict, type GapVerdict, type EstimateLike } from '../style/verdict';
+export { getStyleScale, documentedStyleCodes, SCALE_PARAMETERS, type StyleScale, type FamilyScale, type FamilyStatus } from './style/scale';
+export { valueVerdict, gapVerdict, trackPosition, trackShare, type ValueVerdict, type GapVerdict, type EstimateLike } from './style/verdict';
 export { toleranceScale, styleMasking, ecartTolerances, TOLERANCE_RULE, type Apriori, type FamilyTolerance, type ToleranceScale, type Masking } from './tolerance';
 export {
   pouvoirAjout, pouvoirRecette, profilParMoment, signauxFamilles, comparerFamilles, comparerComposes, sensPlages, verifications, lire as lirePouvoirSeuil, texte as textePlage, source as sourcePouvoir,

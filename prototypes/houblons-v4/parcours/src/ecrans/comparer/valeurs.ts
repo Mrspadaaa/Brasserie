@@ -1,13 +1,13 @@
 // Les vraies valeurs de Comparer (acquis v1, chimie, panel OSU), lues dans les données du moteur v4 et des lots,
 // importées telles quelles (jamais recopiées) :
 //  - α, β : catalogue du moteur (Beer Maverick) et fiche Hopsteiner reliée ; ton lot si sa fiche de stock le dit ;
-//  - huile et composés : prototypes/houblons-v4/data/composes-houblon.json (plages par source, « à confirmer ») ;
+//  - huile et composés : src/data/hopV4/composes-houblon.json (plages par source, « à confirmer ») ;
 //  - linalol mesuré en bière : mesuresEnBiere du même fichier, et l'étude E03 (McCabe 2023) ;
 //  - panel OSU : l'étude E04 (Lafontaine 2018, H22), Cascade seul.
 // Une valeur absente reste absente (« inconnu »), jamais 0. Plage = du plus bas au plus haut des sources.
-import composes from '../../../../data/composes-houblon.json';
-import comparatifs from '../../../../data/comparatifs-dryhop.json'; // copie de work/…/fils21-choisir/donnees (data/copies-de-work.mjs)
-import { hopRef, type FamilyId } from '../../../../src/engine';
+import composes from '../../../../../../src/data/hopV4/composes-houblon.json';
+import comparatifs from '../../../../../../src/data/hopV4/comparatifs-dryhop.json'; // copie de work/…/fils21-choisir/donnees (src/data/hopV4/copies-de-work.mjs)
+import { hopRef, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 
 export interface ValeurReelle {
   lo: number; hi: number | null;

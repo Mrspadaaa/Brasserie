@@ -4,8 +4,8 @@
 // pictos, le jeu de symboles extrait tel quel de la planche), jamais retapées à la main. La source reste la maison
 // du fait : tests/copies-de-work.test.ts échoue si une copie s'écarte de sa source (relancer --ecrire).
 // Usage (depuis la racine du dépôt) :
-//   node prototypes/houblons-v4/data/copies-de-work.mjs            → COPIES OK (n) ou COPIES ECHEC
-//   node prototypes/houblons-v4/data/copies-de-work.mjs --ecrire   → recopie depuis work/
+//   node src/data/hopV4/copies-de-work.mjs            → COPIES OK (n) ou COPIES ECHEC
+//   node src/data/hopV4/copies-de-work.mjs --ecrire   → recopie depuis work/
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';

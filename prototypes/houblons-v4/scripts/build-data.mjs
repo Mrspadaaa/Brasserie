@@ -63,7 +63,7 @@ const usageOf = (v) => {
 };
 
 // Faits cités un à un (data/faits-cites.json, D25) : descriptions sourcées ajoutées à la variété.
-const facts = JSON.parse(fs.readFileSync(path.join(here, 'data', 'faits-cites.json'), 'utf8')).facts;
+const facts = JSON.parse(fs.readFileSync(path.join(here, '..', '..', 'src', 'data', 'hopV4', 'faits-cites.json'), 'utf8')).facts;
 for (const f of facts) if (!bm.some((v) => v.id === f.varietyId)) throw Error(`Fait cité sur une variété absente : ${f.id}`);
 
 // Descriptions conservées pour le moteur : seulement celles qui portent des descripteurs.
@@ -134,7 +134,7 @@ const out = {
   },
   varieties, stock, unlinked, styles,
 };
-fs.mkdirSync(path.join(here, 'data'), { recursive: true });
-fs.writeFileSync(path.join(here, 'data', 'proto-data.json'), JSON.stringify(out));
+fs.mkdirSync(path.join(here, '..', '..', 'src', 'data', 'hopV4'), { recursive: true });
+fs.writeFileSync(path.join(here, '..', '..', 'src', 'data', 'hopV4', 'proto-data.json'), JSON.stringify(out));
 const inStock = stock.filter((s) => s.grams > 0);
 console.log(`DATA-V4 ${varieties.length} variétés (${varieties.filter((v) => v.tags.length).length} avec descripteurs, ${varieties.filter((v) => v.hopsteinerId).length} reliées à Hopsteiner), ${styles.length} styles, ${inStock.length} houblons en stock (${inStock.reduce((t, s) => t + s.grams, 0)} g), ${stock.length - inStock.length} épuisés` + (unlinked.length ? ` ; non reliés : ${unlinked.join(', ')}` : ''));

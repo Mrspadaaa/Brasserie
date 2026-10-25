@@ -9,7 +9,7 @@ import { PackageCheck, PackageMinus, ShoppingCart } from 'lucide-react';
 import { COULEURS, COURT, Picto, SegmentedControl, nombre, type Echelle } from '../../commun';
 import type { HoublonLu } from '../../moteur';
 import { useCase, valeurCrans } from './bulle';
-import type { FamilyId, StyleScale } from '../../../../src/engine';
+import type { FamilyId, StyleScale } from '../../../../../../src/domain/hopIndex/v4';
 
 // ---------- Échelle d'une famille ----------
 export interface Domaine { max: number; zone: [number, number] | null; cran: number; crans: number[] }

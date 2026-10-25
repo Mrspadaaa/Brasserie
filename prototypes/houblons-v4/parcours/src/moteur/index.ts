@@ -8,9 +8,9 @@ import {
   simulerCas, substitutes, proposeVoies,
   type Direction, type VoieResult,
   type AjoutSimule, type CasSimule, type FamilyId, type FamilyStatus, type MomentSimule, type ProfilFamilles, type Recipe, type StyleScale,
-} from '../../../src/engine';
-import { ibuPerGram, ibuPerGramAt, recipeProfile } from '../../../src/engine/recipe';
-import type { AjoutPouvoir, RecettePouvoir } from '../../../src/engine/pouvoir';
+} from '../../../../../src/domain/hopIndex/v4';
+import { ibuPerGram, ibuPerGramAt, recipeProfile } from '../../../../../src/domain/hopIndex/v4/recipe';
+import type { AjoutPouvoir, RecettePouvoir } from '../../../../../src/domain/hopIndex/v4/pouvoir';
 import { CONDITIONS } from '../donnees/cas';
 import { alphaDeAjout, alphaDeCle, catalogueDuMoteur, donnees, proposable, siDonneesChangent, stockLibre } from './donnees';
 import { placer, quandDe } from '../etat/quand';

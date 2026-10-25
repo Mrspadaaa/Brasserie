@@ -8,10 +8,10 @@
 //   « Changer de levure » de ce levier (levuresDe), son groupe de q2b : « Celle ci aussi est toujours meilleures » (24.10,
 //   sur sa q2b) ; son choix l'emporte sur D35. Elles restent à part des voies houblon (verdicts, radar, comparaison).
 // Inconnu ≠ 0 : un effet non établi ou non simulé est `null`.
-import { applyVoie, proposeVoies, yeastSignals, type FamilyId, type Voie } from '../../../../src/engine';
+import { applyVoie, proposeVoies, yeastSignals, type FamilyId, type Voie } from '../../../../../../src/domain/hopIndex/v4';
 import type { BiereLue, Candidat, HoublonLu } from '../../moteur';
 import { donnees, houblon, lireBiere, proposer, style } from '../../moteur';
-import { additionEffect } from '../../../../src/engine/voies';
+import { additionEffect } from '../../../../../../src/domain/hopIndex/v4/voies';
 import { catalogueDuMoteur, proposable } from '../../moteur/donnees';
 import { placer } from '../../etat/operations';
 import type { Quand, RecetteParcours } from '../../etat/types';

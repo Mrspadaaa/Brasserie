@@ -8,7 +8,7 @@ import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { REFERENCE, describeFamilies } from './hops';
 import { MOMENTS, ibuPerGram, type MomentId, type Recipe } from './recipe';
 import { hopRole, roleFromAlpha, type HopRoleValue } from './roles';
-import type { StyleScale } from '../style/scale';
+import type { StyleScale } from './style/scale';
 import { temoinNegatif } from './temoin';
 
 export const SUBSTITUTION_METHOD = {

@@ -1,5 +1,5 @@
 // Moments d'un ajout : la forme claire (Quand) et les champs du moteur. Sans dépendance au moteur en direct.
-import { MOMENTS, type MomentId } from '../../../src/engine';
+import { MOMENTS, type MomentId } from '../../../../../src/domain/hopIndex/v4';
 import { CONDITIONS } from '../donnees/cas';
 import type { AjoutParcours, Quand, RecetteParcours } from './types';
 

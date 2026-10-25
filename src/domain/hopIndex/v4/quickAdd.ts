@@ -4,8 +4,8 @@ import { hopAlpha, hopRole, type HopAlpha } from './roles';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
 import { describeFamilies, styleFit, type FitClass } from './hops';
 import { MOMENTS, additionIbu, gramsForIbu, recipeIbu, searchDoses, type MomentId, type Recipe } from './recipe';
-import type { StyleScale } from '../style/scale';
-import { valueVerdict } from '../style/verdict';
+import type { StyleScale } from './style/scale';
+import { valueVerdict } from './style/verdict';
 import type { Tasting } from './tasting';
 import { ibuByMoment, type IbuAtMoment } from './ibuMoments';
 

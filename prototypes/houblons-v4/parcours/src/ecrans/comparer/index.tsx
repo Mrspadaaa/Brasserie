@@ -13,7 +13,7 @@ import { CONDITIONS, H, VISEE, nomLevure } from '../../donnees/cas';
 import { useRecette } from '../../etat/EtatParcours';
 import { nouvelId } from '../../etat/operations';
 import { houblon, style } from '../../moteur';
-import { STOCK, hopRef, type FamilyId } from '../../../../src/engine';
+import { STOCK, hopRef, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import Fiche from '../fiche';
 import { ABSOLU, CRITERES, ETAPES, ORANGE, depart, type CodeEtape, houblonDeBase, lireColonnes, lireEtapes, reponse, scoreDefi, sesMots, type MotLu, type CelluleLue, type ColonneLue, type Critere } from './calcul';
 import { BandeEtapes, PiedEtapes } from './Etapes';

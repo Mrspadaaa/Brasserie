@@ -7,7 +7,7 @@
 import { FAMILIES } from '../../commun';
 import { cransFrise, simulerMoment, type FamilleLue, type ProfilLu } from '../../moteur';
 import type { AjoutParcours, Quand, RecetteParcours } from '../../etat/types';
-import type { FamilyId } from '../../../../src/engine';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 
 /** Étape du brassin : 0 ébullition, 1 whirlpool, 2 dry hop actif, 3 dry hop après fermentation. */
 export type Seg = 0 | 1 | 2 | 3;

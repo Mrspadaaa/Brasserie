@@ -4,7 +4,7 @@
 // depuis la visée, ou depuis ma bière s'il n'y en a pas encore ; « × » la retire.
 // Sans visée posée, la demande de sa dégustation du 18.10 vaut (« trop résineuse, je la veux plus florale ») : c'est
 // elle que portent les puces « + floral · − résineux » au repos, comme dans la base. Pur : ni React ni moteur.
-import type { FamilyId } from '../../../src/engine';
+import type { FamilyId } from '../../../../../src/domain/hopIndex/v4';
 
 /** Palier visé par famille, sur 0 à 3 ; 0 = bannie. */
 export type Visee = Partial<Record<FamilyId, number>>;

@@ -7,7 +7,7 @@ import { companionRecipe } from '../../../tests/fixtures/companionRecipe';
 import { yeastFlowRecipe } from '../../../tests/fixtures/yeastRecipeFlow';
 import { toHopRecipe } from '../parcours/src/integration/conversion';
 import { configurerDonnees, houblon, lireBiere } from '../parcours/src/moteur';
-import { FAMILIES } from '../src/engine';
+import { FAMILIES } from '../../../src/domain/hopIndex/v4';
 
 beforeAll(() => configurerDonnees({ degustation: null }));
 afterAll(() => configurerDonnees());
