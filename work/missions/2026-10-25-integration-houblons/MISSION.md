@@ -97,7 +97,7 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
 
 ## Reprise autonome (25.10, nuit) — « Continue sans mes feedback, tu me feras un récap demain à 13h »
 - Récap à lui faire le 26.10 à 13 h (tâche programmée de la session ; si elle a disparu, le faire à la reprise) : fait et déployé, en cours, accords en attente, décisions prises seul, suite.
-- Méthode par lot : voie Sonnet (code) ou concepteur Opus (ce qu'il voit) → rejeu Haiku dans la copie propre  (git -C … checkout --detach <commit>) → commit par chemins (L17) → build  +  dans la copie →  depuis la copie → issue et D-n.
+- Méthode par lot : voie Sonnet (code) ou concepteur Opus (ce qu'il voit) → rejeu Haiku dans la copie propre `%TEMP%/deploy-63130965` (`git -C … checkout --detach <commit>`) → commit par chemins (L17) → build `VITE_HOP_V4=on npm run build` et `node scripts/check-no-dev-auth.mjs` dans la copie → `node_modules/.bin/firebase deploy --only hosting --project brasserie-l-affinee` depuis la copie → issue et D-n.
 - File d'attente, dans l'ordre :
   1. 5d3f89bc (t12e) : rejeu Haiku en cours, puis déployer (D74).
   2. t15c-outils (Substituer, Dryhopper, Levure, #174) : finir, rejouer, commiter, déployer.
