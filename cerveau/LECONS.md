@@ -26,9 +26,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, « Meilleures bar » de l5b : barres reprises, pas les pistes. 23.10 : maquette sur la carte et un thème proposé, pas ses choix (D105, D106) ; « la maquette de base » lu v4.10 au lieu de x3b (D107). 24.10 nuit : « leg3-v2e · Les spéciaux repliés », nom d'une vignette, lu comme une consigne (D140).
+- Erreur : 19.10, l5b : barres reprises sans les pistes. 23.10 : maquette hors de ses choix (D105, D106) ; « la maquette de base » lu v4.10 au lieu de x3b (D107). 24.10 nuit : « leg3-v2e · Les spéciaux repliés », nom de vignette pris pour consigne (D140). 24-25.10 : Dryhopper et Comparer bâtis sur la mini maquette, pas l'écran jouable (D141).
 - Cause : « X de la variante Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (24.10 : le froid avait pris Dryhopper, D123). Un nom de vignette cité (`data-nom`) n'est pas une consigne. Ses maquettes : ses captures, mesurées (D106). Désignée vaguement : ses mots dans SPEC et les inventaires.
+- Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette cité (`data-nom`) n'est pas une consigne. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires.
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 

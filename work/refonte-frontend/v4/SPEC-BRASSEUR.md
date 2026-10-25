@@ -553,6 +553,8 @@ Défauts déjà refusés, en court : `DEFAUTS-COURT.md`. Acquis validés : `cerv
   peux commencer la mise en place pour l'intégration dans la vrai application. Faire une liste des tâche, mettre à jour git et
   suivre tout ça. Jusqu'à l'intégration. La fluidité, l'optimisation de code est très importante vu qu'il y aura beaucoup de
   données !! » (D64, #159).
+- **Comparer repart de la maquette jouable** (25.10, sur la planche « Comparer r6a++ », bâtie sur la mini maquette r6a), mot pour mot :
+  « Mais elle a rien que j'ai demandé. Je veux partir de la version de base, celle sur la maquette jouable et il faut l'améliorer avec mes commentaires. Notamment le fait que les style hors 16d soit bien montré. Mais surtout pouvoir choisir quand comparé. 60' 10' dryhopping... L'ajout des huiles aussi est bien. Mais ça couvre pas tout. Il y a aussi un peu trop de text inutile... Refait une série avec ça et mes commentaires sur toutes les maquettes comparé et mes commentaires sur la maquette de base sur cette vue » (D141). Puis, sur sa capture de Comparer (2) dans la maquette publiée (Motueka face à Nelson Sauvin, `fils25-comparer/captures/brasseur-base-reprise.jpg`) : « C'est celle là la base de reprise ».
 - **Ses retours sur y1b et w2 visaient Comparer** (24.10, nuit), mot pour mot, après la planche « Dryhopper, tes retours » :
   « On c'est pas du tout compris. Je parlais de la vue comparé. C'est uniquement ces vues là où j'ai mis des commentaires
   sur les mini maquettes ??? » ; puis « Les commentaires pour le dryhopping était pour la partie compare ». La frise de y1b

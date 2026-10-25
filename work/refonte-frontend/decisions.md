@@ -640,3 +640,8 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   pour RecipePage, patch de `hops` seul) ; calcul : causes mesurées d'abord (T5), interface asynchrone dès T6, worker persistant
   seulement si le banc ×4 échoue ; catalogue en JSON à la demande ; V5.5 sous drapeau. Ordre : T1, T14, T3, T4, T5, T6, T17, T9,
   T11, T8, T12, T7 (si besoin), T10, T13, T15, T16, T18 (issues #160 à #176, épopée #159).
+- D66 (le brasseur, 25.10 : « Je veux partir de la version de base, celle sur la maquette jouable ») : un nouveau lot de Comparer,
+  `ecran-1/fils25-comparer/`, part de l'écran Comparer de la maquette jouable (figé dans `maquettes/parcours-cmp-base`, capture
+  `captures/base-jouable.png`), et non de r6a. Obligatoire : choisir quand comparer (60′, 10′, dry hop…), les hors 16D bien montrés, les
+  huiles, moins de texte (≤ 100 mots au premier écran, la base en a 114), et tous ses commentaires sur Comparer. La planche r6a++ reste
+  montrée, marquée « bâtie sur r6a ». Dérogation M13 : « Refait une série » (trois séries de quatre, critique, planche).
