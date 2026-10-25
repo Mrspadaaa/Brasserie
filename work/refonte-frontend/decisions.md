@@ -662,3 +662,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   Contrôles adaptés sans affaiblir D107 : controle-comparer-etapes (référence aux mêmes étapes, défilement vertical permis :
   actif et après sous le dock parce que le radar est mis en avant) et controle-comparer-familles (deux écrans, `--strict` garde
   l'ancienne règle). controle-teinte inchangé (16 contre 16).
+- D70 (pilote, 25.10, Comparer dans l'app, voie t15b) : (1) fluidité — l'ouverture mesure 500 ms (886 ms au processeur ×4) sur
+  le serveur de développement, dont 20 ms de moteur et le reste en rendu React ; avant tout compromis, mesurer sur un build de
+  production (banc à faire, Haiku), puis alléger le rendu dans #179 (SesMots, colonnes) ; sa règle reste : si ça bloque, un
+  compromis chiffré lui est proposé. (2) « Placer » et « Souche » écrivent l'ajout dans le brouillon avant la confirmation de
+  Dryhopper ou de Levure : gardé (simple, annulable dans Dryhopper, une seule porte d'écriture), à revoir si le brasseur le veut
+  autrement.
