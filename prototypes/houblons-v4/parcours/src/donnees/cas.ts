@@ -28,12 +28,8 @@ export const H = {
 
 /** Conditions fixées des outils de la carte (NOTE.md de fils22-carte) : 4 g/L, US-05, après 3 j (Suggérer,
  * Comparer), actif 3 j (Dryhopper, Levure). Jour de début : celui de profil-simule-cas.ts (actif J+2, après J+7). */
-export const CONDITIONS = {
-  doseGL: 4,
-  jours: 3,
-  jourDebut: { dryActive: 2, dryPost: 7 } as const,
-  levure: 'fermentis-us05',
-};
+// Les conditions des ajouts proposés vivent dans l'app (T12, #170) : src/ui/hopIndex/parcours/conditions.ts.
+export { CONDITIONS } from '../../../../../src/ui/hopIndex/parcours/conditions';
 /** Levures que le moteur simule en dry hop (profil-simule.ts, biotransfoLevure) et leur nom court. */
 export const LEVURES: { id: string; nom: string }[] = [
   { id: 'fermentis-us05', nom: 'US-05' },

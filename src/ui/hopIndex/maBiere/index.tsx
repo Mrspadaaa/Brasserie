@@ -6,15 +6,15 @@
 // d'un outil. Classes propres préfixées pq-ma-biere- (L26).
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
-import { PageShell } from '@app/pages/PageShell';
-import { WizardStepRail } from '@app/ui/WizardStepBar';
-import { Pont, type Echelle } from '../../commun';
+import { PageShell } from '../../../pages/PageShell';
+import { WizardStepRail } from '../../WizardStepBar';
+import { Pont, type Echelle } from './commun';
 import { BoutonLegende, PanneauLegende, useLegende } from './LegendeGroupe';
-import { ActionsCoquille, useOuvrir } from '../../coquille/ouvrir';
-import { useNavigation } from '../../coquille/navigation';
-import { useBiere, useRecette } from '../../etat/EtatParcours';
-import type { RecetteParcours } from '../../etat/types';
-import { houblon, lireBiere, style } from '../../moteur';
+import { ActionsCoquille, useOuvrir } from './hote';
+import { useNavigation } from './hote';
+import { useBiere, useRecette } from './hote';
+import type { RecetteParcours } from '../parcours/types';
+import { houblon, lireBiere, style } from '../parcours/adaptateur';
 import { Ajouter } from './Ajouter';
 import { Alerte, Bandeau, NomFamille, PisteBase, nomLevureBase } from './Base';
 import { Frise } from './Frise';
@@ -56,7 +56,8 @@ function reperesDe(avant: RecetteParcours | null, recette: RecetteParcours): Rec
 /** Les ajouts entrés depuis cette étape (base : l.nouveau) : leur carte dit ce qu'ils font bouger (« floral +1 »). */
 const NOUVEAUX = new Set<string>();
 
-export default function MaBiere() {
+/** Le contenu de l'étape : le même dans la maquette (sous sa coquille) et dans l'app (sous le wizard, T12). */
+export function EtapeHoublonsContenu() {
   const recette = useRecette();
   const biere = useBiere();
   const ouvrir = useOuvrir();
@@ -94,27 +95,7 @@ export default function MaBiere() {
   const moitie = Math.ceil(sc.order.length / 2);
   const colonnes = [sc.order.slice(0, moitie), sc.order.slice(moitie)];
 
-  // D116 (« Il faudra remplacer tout ça par le vrai Stepper de la vrai app ») : le fil d'étapes de l'app, importé tel
-  // quel (src/ui/WizardStepBar.tsx) et posé comme BrewWizard : au téléphone, le nom de l'étape et sa position dans la
-  // rangée du titre, le fil seul sur son rang (showLabels, compactLabels) ; à l'ordinateur, le fil dans « progress ».
-  // Le badge « 16D hypothèse » (une note de concepteur de la base) est retiré. Seule l'étape Houblons existe dans la
-  // maquette : toucher une autre étape ne fait rien.
-  const surEtape = (id: string) => { if (id === 'houblons') document.querySelector('[data-page-shell] main')?.scrollTo({ top: 0 }); };
-  const tete = (
-    <div data-element="etape-titre" className="pq-ma-biere-tete px-2 bg-cave-950">
-      {/* « Text header inutile » (24.10, soir, sur « Houblons 3/7 ») : le nom de l'étape est retiré ; le fil d'étapes dessous
-          le dit déjà (Houblons en gras). */}
-      <div data-page-titlebar className="flex items-center justify-end gap-1.5">
-        <span className="flex items-center gap-1 shrink-0"><ActionsCoquille /></span>
-      </div>
-      <WizardStepRail steps={ETAPES} currentIndex={ETAPE_HOUBLONS} onSelect={surEtape} showLabels compactLabels />
-    </div>
-  );
   return (
-    <PageShell title={`Modifier « ${recette.name} »`} subtitle={ETAPES[ETAPE_HOUBLONS].label} onClose={() => undefined}
-      mobileHeader={tete} className="pq-recette"
-      actions={<span data-element="etape-titre" className="flex items-center gap-2"><ActionsCoquille /></span>}
-      progress={<WizardStepRail steps={ETAPES} currentIndex={ETAPE_HOUBLONS} onSelect={surEtape} showLabels />}>
       <div data-ecran="ma-biere" data-etat="etat-etape-repos-1280" className="pq-ma-biere space-y-1">
         <div data-etat={document.body.dataset.cas === 'k3' ? 'etat-etape-cas-k3' : undefined}>
           <Bandeau biere={biere} avant={biereAvant} element="etape-bandeau" ecart={ecart} />
@@ -180,6 +161,34 @@ export default function MaBiere() {
           )}
         </section>
       </div>
+  );
+}
+
+/** La page de la maquette : l'étape sous une coquille qui imite le wizard (D116 : le vrai fil d'étapes de l'app). */
+export default function MaBiere() {
+  const recette = useRecette();
+  // D116 (« Il faudra remplacer tout ça par le vrai Stepper de la vrai app ») : le fil d'étapes de l'app, importé tel
+  // quel (src/ui/WizardStepBar.tsx) et posé comme BrewWizard : au téléphone, le nom de l'étape et sa position dans la
+  // rangée du titre, le fil seul sur son rang (showLabels, compactLabels) ; à l'ordinateur, le fil dans « progress ».
+  // Le badge « 16D hypothèse » (une note de concepteur de la base) est retiré. Seule l'étape Houblons existe dans la
+  // maquette : toucher une autre étape ne fait rien.
+  const surEtape = (id: string) => { if (id === 'houblons') document.querySelector('[data-page-shell] main')?.scrollTo({ top: 0 }); };
+  const tete = (
+    <div data-element="etape-titre" className="pq-ma-biere-tete px-2 bg-cave-950">
+      {/* « Text header inutile » (24.10, soir, sur « Houblons 3/7 ») : le nom de l'étape est retiré ; le fil d'étapes dessous
+          le dit déjà (Houblons en gras). */}
+      <div data-page-titlebar className="flex items-center justify-end gap-1.5">
+        <span className="flex items-center gap-1 shrink-0"><ActionsCoquille /></span>
+      </div>
+      <WizardStepRail steps={ETAPES} currentIndex={ETAPE_HOUBLONS} onSelect={surEtape} showLabels compactLabels />
+    </div>
+  );
+  return (
+    <PageShell title={`Modifier « ${recette.name} »`} subtitle={ETAPES[ETAPE_HOUBLONS].label} onClose={() => undefined}
+      mobileHeader={tete} className="pq-recette"
+      actions={<span data-element="etape-titre" className="flex items-center gap-2"><ActionsCoquille /></span>}
+      progress={<WizardStepRail steps={ETAPES} currentIndex={ETAPE_HOUBLONS} onSelect={surEtape} showLabels />}>
+      <EtapeHoublonsContenu />
     </PageShell>
   );
 }

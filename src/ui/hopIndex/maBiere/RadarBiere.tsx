@@ -11,8 +11,8 @@
 // - au toucher d'un sommet, la famille et la valeur en mots dans une bulle (« Résineux : marqué, au-dessus du style »).
 // Sans légende écrite (le « ? » de l'onglet l'ouvre, D113). Classes préfixées pq-biere- (L26).
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { COURT, ROUE } from '../../commun';
-import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { COURT, ROUE } from './commun';
+import type { FamilyId } from '../../../domain/hopIndex/v4';
 
 /** Une note de dégustation : 0 pas senti, 1 faible, 2 moyen, 3 marqué ; null pas goûté (inconnu, jamais 0). */
 export type Note = 0 | 1 | 2 | 3 | null;

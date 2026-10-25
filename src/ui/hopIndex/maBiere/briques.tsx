@@ -3,10 +3,10 @@
 // familles qu'un ajout fait bouger avec leur intensité en crans du style (data-famille, data-crans, D80), et la
 // part « autres » des mots sans famille (data-role="autres", D100). Classes propres préfixées pq-fiche- (L26).
 import { Package } from 'lucide-react';
-import { COULEURS, COURT, Picto, nombre, plage } from '../../commun';
-import type { HoublonLu } from '../../moteur';
-import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
-import { hopRole } from '../../moteur/v4';
+import { COULEURS, COURT, Picto, nombre, plage } from './commun';
+import type { HoublonLu } from '../parcours/adaptateur';
+import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { hopRole } from '../parcours/v4';
 
 /** « lot » quand l'α vient du lot en stock (il fait la dose), « fiches » quand c'est le milieu de la plage variétale. */
 export const sourceAlpha = (h: HoublonLu): 'lot' | 'fiches' | null =>

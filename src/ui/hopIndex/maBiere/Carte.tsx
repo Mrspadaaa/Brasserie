@@ -10,17 +10,17 @@
 // son nom (classes pq-mb-leve et pq-mb-jeton de la ligne, ma-biere.css).
 import { useMemo, useRef, useState } from 'react';
 import { Minus, Plus, RotateCw, X } from 'lucide-react';
-import { COULEURS, COURT, Inconnu, nombre } from '../../commun';
-import { useOuvrir } from '../../coquille/ouvrir';
-import { useNavigation } from '../../coquille/navigation';
-import { useGestes } from '../../etat/EtatParcours';
-import { placer, quandDe } from '../../etat/operations';
-import type { AjoutParcours, Quand, RecetteParcours } from '../../etat/types';
-import { houblon, lireBiere, style, type BiereLue } from '../../moteur';
-import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
-import { additionEffect, FAMILY_NAMES, yeastSignals } from '../../moteur/v4';
-import { AlphaLu, Autres, StockIcone, Usage } from '../fiche/briques';
-import { useGestesFiche } from '../fiche/gestes';
+import { COULEURS, COURT, Inconnu, nombre } from './commun';
+import { useOuvrir } from './hote';
+import { useNavigation } from './hote';
+import { useGestes } from './hote';
+import { placer, quandDe } from '../parcours/operations';
+import type { AjoutParcours, Quand, RecetteParcours } from '../parcours/types';
+import { houblon, lireBiere, style, type BiereLue } from '../parcours/adaptateur';
+import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { additionEffect, FAMILY_NAMES, yeastSignals } from '../parcours/v4';
+import { AlphaLu, Autres, StockIcone, Usage } from './briques';
+import { useGestesFiche } from './gestesFiche';
 import { BoutonLegende, useLegende } from './LegendeGroupe';
 import { BandeOuverte, LignesV2a, TonsV2a } from './legende-bande';
 import { nomLevureBase } from './Base';

@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import { JeuPictos } from '@app/ui/hopIndex/Pictos';
 import { useParcours } from '../etat/EtatParcours';
 import { brouillonPour } from '../etat/etapes';
-import MaBiere from '../ecrans/ma-biere';
+import MaBiere from '../integration/hoteMaBiere';
 import Biere from '../ecrans/biere';
 import Fiche from '../ecrans/fiche';
 import Suggerer from '../ecrans/suggerer';

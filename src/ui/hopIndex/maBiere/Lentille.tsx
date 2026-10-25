@@ -2,7 +2,7 @@
 // les contrôles (data-e="style" / "absolu", D75). Le composant de l'app n'accepte pas d'attribut par option :
 // le balisage est posé après le rendu (voir NOTE, « Pour l'app »).
 import { useEffect, useRef } from 'react';
-import { SegmentedControl } from '../../commun';
+import { SegmentedControl } from './commun';
 import './ma-biere.css';
 
 export function Lentille<T extends string>({ value, onChange, options, label, marques }: {

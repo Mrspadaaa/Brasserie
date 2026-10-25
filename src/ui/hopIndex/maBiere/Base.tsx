@@ -2,10 +2,10 @@
 // bandeau IBU · OG · EBC (pilule, jauge IBU au style), l'alerte dégustée, la barre de famille de la base (zone du
 // style, zone « au-dessus » en pointillé, point dégusté plein ou « prévu » creux, inconnu hachuré « non situé »),
 // et les mots de la levure. Classes propres préfixées pq-ma-biere- (L26).
-import { COULEURS, COURT, Inconnu, Picto, nombre, type Echelle } from '../../commun';
-import type { BiereLue, FamilleLue } from '../../moteur';
-import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
-import { FAMILY_NAMES } from '../../moteur/v4';
+import { COULEURS, COURT, Inconnu, Picto, nombre, type Echelle } from './commun';
+import type { BiereLue, FamilleLue } from '../parcours/adaptateur';
+import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { FAMILY_NAMES } from '../parcours/v4';
 
 /** Noms de levure de la base (« SafAle US-05 ») ; toutes celles-ci sont caractérisées par le moteur (biotransformation). */
 const LEVURES: Record<string, string> = {

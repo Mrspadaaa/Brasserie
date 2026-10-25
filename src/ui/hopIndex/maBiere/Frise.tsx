@@ -11,11 +11,11 @@
 // [role="slider"][aria-orientation="vertical"][data-ajout-repere] dans sa ligne [data-role="ligne-houblon"].
 import { useEffect, useMemo, useRef } from 'react';
 import { ChevronRight } from 'lucide-react';
-import { useOuvrir } from '../../coquille/ouvrir';
-import { useParcours } from '../../etat/EtatParcours';
-import { placer, quandDe } from '../../etat/operations';
-import type { AjoutParcours, RecetteParcours } from '../../etat/types';
-import { houblon, type BiereLue } from '../../moteur';
+import { useOuvrir } from './hote';
+import { useHote } from './hote';
+import { placer, quandDe } from '../parcours/operations';
+import type { AjoutParcours, RecetteParcours } from '../parcours/types';
+import { houblon, type BiereLue } from '../parcours/adaptateur';
 import { Carte } from './Carte';
 import { nomLevureBase } from './Base';
 import { brancherGlisser, creerRail, type Rail, type Segment } from './rail';
@@ -53,12 +53,7 @@ export function momentLong(v: string, ebu: number, minutesWp = 20) {
 
 /** Changer un ajout en place (l'ordre de la recette est gardé) : un geste du parcours. */
 export function useModifier() {
-  const { etat, dispatch } = useParcours();
-  const ref = useRef(etat); ref.current = etat;
-  return (id: string, f: (a: AjoutParcours, r: RecetteParcours) => AjoutParcours) => {
-    const e = ref.current;
-    dispatch({ type: 'etat/poser', etat: { ...e, gestes: e.gestes + 1, recette: { ...e.recette, additions: e.recette.additions.map((a) => (a.id === id ? f(a, e.recette) : a)) } } });
-  };
+  return useHote().modifierAjout;
 }
 
 function Point({ c }: { c: 'ebu' | 'etape' | 'fin' | 'levure' }) {

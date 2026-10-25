@@ -3,7 +3,7 @@
 // module : la coquille ne monte pas Ma bière sous un outil plein écran. Un outil qui inscrit peut aussi le poser
 // (noterAvant), pour une page ouverte directement sur l'outil.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { RecetteParcours } from '../../etat/types';
+import type { RecetteParcours } from '../parcours/types';
 
 let instantane: RecetteParcours | null = null;
 const meme = (a: RecetteParcours, b: RecetteParcours) => JSON.stringify(a) === JSON.stringify(b);

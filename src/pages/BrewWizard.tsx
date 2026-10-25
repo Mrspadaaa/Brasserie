@@ -63,6 +63,7 @@ import { preparerEcritureHoublons, type ChangementHoublonsV4 } from '../domain/h
 import { appendHopV55RecipeColdContactAssociation, compareHopV55RecipeColdContactAssociationSourceV1, hopV55RecipeColdSourceReference } from '../services/hopV55/recipeColdContactAssociation';
 import { YeastIngredientPicker as SyncYeastIngredientPicker } from '../ui/YeastIngredientPicker';
 import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
+import { hopV4Enabled } from '../ui/hopIndex/flags';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
 import { hotBitterness } from '../domain/hopBitterness';
 import {
@@ -120,6 +121,12 @@ import { Trash2, Plus, AlertTriangle, ClipboardPaste, ClipboardList, ChevronLeft
 const syncWizardPanels = import.meta.env.MODE === 'test';
 // The V5.5 hop workbench owns its local dossiers and scenario engine; it stays
 // a separate chunk in every mode and is awaited by its step, tests included.
+// Étape Houblons v4 (T12, #170), drapeau hopV4 allumé seulement : l'écran choisi par le brasseur (base v4.10, légende v2a),
+// le même code que la maquette. Chunk à part, demandé dès l'ouverture du wizard (drapeau allumé) pour être prêt avant
+// l'étape 3 : aucun état d'attente à l'écran (repli vide, ni roue ni « chargement »). Drapeau éteint : jamais demandé.
+const hopV4Actif = hopV4Enabled();
+const chargerEtapeHoublonsV4 = () => import('../ui/hopIndex/maBiere/EtapeHoublons');
+const EtapeHoublonsV4 = lazy(chargerEtapeHoublonsV4);
 const HopV55RecipeStep = lazy(() => import('../ui/hopV55/RecipeStep').then(({ HopV55RecipeStep: Panel }) => ({ default: Panel })));
 const HopRecipeGuide = syncWizardPanels ? SyncHopRecipeGuide : lazy(() => import('../ui/hopIndex/HopRecipeGuide').then(({ HopRecipeGuide: Panel }) => ({ default: Panel })));
 const FermentationWorkshop = syncWizardPanels ? SyncFermentationWorkshop : lazy(() => import('../ui/FermentationWorkshop').then(({ FermentationWorkshop: Panel }) => ({ default: Panel })));
@@ -581,6 +588,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const [yeastFocus, setYeastFocus] = useState<{ goal: import('../domain/yeastRecipeDesign').YeastRecipeGoal; yeastId?: string }>();
   const yeastSelectionEpoch = useRef(0);
   useEffect(() => { if (step !== 'levure') setYeastFocus(undefined); }, [step]);
+  // T12 : l'étape Houblons v4 est demandée dès l'ouverture du wizard (drapeau allumé), pour être prête à l'étape 3.
+  useEffect(() => { if (hopV4Actif) chargerEtapeHoublonsV4().catch(() => {}); }, []);
   const [yeastSelection, setYeastSelection] = useState(0);
   const knowledge = useStorageValue(StorageService.getHopKnowledge);
   const styles = useMemo(() => brewingStyles(knowledge), [knowledge]);
@@ -2157,7 +2166,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       {hasMetrics && (
         <div
           className={`recipe-metrics panel px-2.5 py-1.5 sm:px-4 sm:py-2.5 items-baseline justify-between gap-2
-                     sm:grid sm:grid-cols-4 sm:gap-3 sm:items-stretch ${step === 'eau' ? 'hidden' : 'flex'}`}
+                     sm:grid sm:grid-cols-4 sm:gap-3 sm:items-stretch ${step === 'eau' || (step === 'houblons' && hopV4Actif) ? 'hidden' : 'flex'}`}
         >
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
             <span className="text-sm text-cave-400">Grain</span>
@@ -2446,7 +2455,14 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       )}
 
       {/* ---------------------------------------------------- ÉTAPE 3 */}
-      {step === 'houblons' && (
+      {/* Drapeau hopV4 allumé : l'étape est son écran choisi (T12, #170). Le fil d'étapes du wizard dit déjà « Houblons » :
+          pas de titre de section (« Text header inutile », 24.10). Éteint (défaut) : l'atelier V5.5 ci-dessous, inchangé. */}
+      {step === 'houblons' && hopV4Actif && (
+        <Suspense fallback={null}>
+          <EtapeHoublonsV4 recipe={build()} boilOg={boilOg} draftId={draftRecipeId} onChange={applyHopV4Change} />
+        </Suspense>
+      )}
+      {step === 'houblons' && !hopV4Actif && (
         <Section
           title="Houblons"
         >

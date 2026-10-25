@@ -3,9 +3,9 @@
 // dans le même écran. Les icônes restent ; la légende s'ouvre sous le groupe, dans le flux (rien ne déborde de l'écran).
 // Les familles du profil gardent la légende du socle (Legende). Classes préfixées pq-ma-biere- (L26).
 import { useEffect, useState, type ReactNode } from 'react';
-import { COULEURS, COURT } from '../../commun';
-import { ROUE } from '@app/ui/hopIndex/familyTokens';
-import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { COULEURS, COURT } from './commun';
+import { ROUE } from '../familyTokens';
+import type { FamilyId } from '../../../domain/hopIndex/v4';
 
 /** L'état d'une légende de groupe : ouverte ou non ; Échap la referme (comme la légende du socle). */
 export function useLegende(): [boolean, () => void] {

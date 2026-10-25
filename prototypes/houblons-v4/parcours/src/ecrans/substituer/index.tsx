@@ -26,8 +26,8 @@ import { houblon, ibuAjout, lireBiere, style, type BiereLue, type FamilleLue, ty
 import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { Usage } from '../fiche/briques';
 import { useFiche } from '../fiche/FicheHoublon';
-import { Lentille } from '../ma-biere/Lentille';
-import { noterAvant } from '../ma-biere/repere';
+import { Lentille } from '@app/ui/hopIndex/maBiere/Lentille';
+import { noterAvant } from '@app/ui/hopIndex/maBiere/repere';
 import { huilesDe, LIGNES_HUILE, mesures, useRemplacants, motsHors, stockOriginal, TEXTE_STOCK, type Candidat, type EtatStock, type Intervalle } from './donnees';
 import { RadarU4 } from './Radar';
 import SYMBOLES from '../../../../../../src/data/hopV4/pictos-familles.svg?raw';

@@ -9,17 +9,17 @@
 // fais une recette puis ensuite j'achète les ingrédients, souvent pas présent »).
 import { useDeferredValue, useMemo, useRef, useState } from 'react';
 import { Plus, ShoppingCart } from 'lucide-react';
-import { COULEURS, nombre } from '../../commun';
-import { useOuvrir } from '../../coquille/ouvrir';
-import { useNavigation } from '../../coquille/navigation';
-import { useGestes } from '../../etat/EtatParcours';
-import { nouvelId, placer } from '../../etat/operations';
-import type { AjoutParcours, RecetteParcours } from '../../etat/types';
-import { donnees, houblon, ibuAjout, style } from '../../moteur';
-import type { QuickAdd } from '../../../../../../src/domain/hopIndex/v4';
-import { buildFromEmpty, hopRole, quickAdds } from '../../moteur/v4';
-import { AlphaLu, StockIcone } from '../fiche/briques';
-import { useGestesFiche } from '../fiche/gestes';
+import { COULEURS, nombre } from './commun';
+import { useOuvrir } from './hote';
+import { useNavigation } from './hote';
+import { useGestes } from './hote';
+import { nouvelId, placer } from '../parcours/operations';
+import type { AjoutParcours, RecetteParcours } from '../parcours/types';
+import { donnees, houblon, ibuAjout, style } from '../parcours/adaptateur';
+import type { QuickAdd } from '../../../domain/hopIndex/v4';
+import { buildFromEmpty, hopRole, quickAdds } from '../parcours/v4';
+import { AlphaLu, StockIcone } from './briques';
+import { useGestesFiche } from './gestesFiche';
 import { BoutonLegende, useLegende } from './LegendeGroupe';
 import { BandeOuverte, effetSiAjoute, LignesV2a, TonsV2a } from './legende-bande';
 import { libelleDe, momentLong, valeurDe } from './Frise';

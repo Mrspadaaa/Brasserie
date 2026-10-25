@@ -6,6 +6,7 @@
  * aucune donnée : il ne fait que pousser et dépiler des routes.
  */
 import { useEffect } from 'react';
+import { poserOuvreurCouche } from './ouvrirCouche';
 import { isLayerRoute, type FullScreenRoute, type LayerRoute, type Route } from '../../pages/useFullScreenRoute';
 
 export interface HopPileDevHook {
@@ -23,6 +24,11 @@ declare global { interface Window { __hopPile?: HopPileDevHook } }
 
 export function useHopPileDevHook(route: Pick<FullScreenRoute, 'open' | 'close' | 'pile'> & Partial<Pick<FullScreenRoute, 'closeTo'>>) {
   const { open, close, closeTo, pile } = route;
+  // La pile est aussi posée pour les écrans montés dessous (l'étape Houblons du wizard, T12), en production comme en dev.
+  useEffect(() => {
+    poserOuvreurCouche(next => { if (isLayerRoute(next)) open(next); });
+    return () => poserOuvreurCouche(null);
+  }, [open]);
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     window.__hopPile = {

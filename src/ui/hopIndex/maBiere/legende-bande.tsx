@@ -11,11 +11,11 @@
 // Données : describeFamilies, familyWords, additionEffect du moteur, catalogue Hopsteiner ; rien d'inventé. Classes
 // pq-mb-lg- (L26). Contrôle : controle-legende-v2a.mjs.
 import { useEffect } from 'react';
-import { COULEURS, COURT } from '../../commun';
-import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
-import { additionEffect, describeFamilies, familyWords, hopRef, FAMILY_NAMES } from '../../moteur/v4';
-import { style, type HoublonLu } from '../../moteur';
-import type { AjoutParcours, RecetteParcours } from '../../etat/types';
+import { COULEURS, COURT } from './commun';
+import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { additionEffect, describeFamilies, familyWords, hopRef, FAMILY_NAMES } from '../parcours/v4';
+import { style, type HoublonLu } from '../parcours/adaptateur';
+import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 
 // Les mots qui ne font que redire la famille ne sont pas des mots précis.
 const GENERIQUES = new Set(['agrumes', 'citrus', 'citrique', 'floral', 'florale', 'fleuri', 'herbacé', 'herbal', 'herbaceous', 'terreux', 'earthy',

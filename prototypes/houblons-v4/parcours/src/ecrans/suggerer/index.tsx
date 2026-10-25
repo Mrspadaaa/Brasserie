@@ -25,7 +25,7 @@ import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { offModelLeads } from '../../moteur/v4';
 import { useCalcul } from '../../moteur/useCalcul';
 import Fiche, { useGestesFiche } from '../fiche';
-import { Bandeau } from '../ma-biere/Base';
+import { Bandeau } from '@app/ui/hopIndex/maBiere/Base';
 import { AlphaCourt, Calme, CaseInconnue, Lecture, Stock, Traits, traitsDe, Usage, type NiveauFiches } from './briques';
 import { BulleTraitsProvider } from './bulle';
 import { Divergent, Graphe, type NiveauBarre } from './divergent';

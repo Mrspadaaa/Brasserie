@@ -18,12 +18,12 @@ import { donnees, style } from '../../moteur';
 import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { voiesSummary } from '../../moteur/v4';
 import { useCalcul } from '../../moteur/useCalcul';
-import { Alerte, Bandeau, NomFamille, PisteBase, nomLevureBase } from '../ma-biere/Base';
-import { Lentille } from '../ma-biere/Lentille';
-import { RadarBiere, auDessus, type Note } from '../ma-biere/RadarBiere';
+import { Alerte, Bandeau, NomFamille, PisteBase, nomLevureBase } from '@app/ui/hopIndex/maBiere/Base';
+import { Lentille } from '@app/ui/hopIndex/maBiere/Lentille';
+import { RadarBiere, auDessus, type Note } from '@app/ui/hopIndex/maBiere/RadarBiere';
 import { directionDe, objectifsDe } from '../suggerer/voies';
 import { GrilleDegustation } from './Degustation';
-import '../ma-biere/ma-biere.css';
+import '@app/ui/hopIndex/maBiere/ma-biere.css';
 import './biere.css';
 import { DEMANDE_DEGUSTEE, descendre, enNiveau, enPoints, monter, nomPalier, sensDe, type Sens } from '../../etat/visee';
 
