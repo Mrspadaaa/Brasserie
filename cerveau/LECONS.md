@@ -102,9 +102,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
-- Erreur : lots 5 à 21, 8 à 12 auteurs en vol (3 prévus), à 130 à 350 k jetons chacun ; le pilote lisait tout.
+- Erreur : lots 5 à 21, 8 à 12 auteurs en vol (3 prévus), 130 à 350 k jetons chacun. 25.10 : ports de code et finitions au concepteur Opus ; « pas tout le temps Opus, mais bien hiku ou si vraiment sonnet ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, un retour sans format.
-- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique, Sonnet pour l'analyse et le code, Opus pour l'interface, la planification et la signature (L25). Retour en une ligne. Le plafond porte sur les agents et les tours, jamais sur les variantes (M13).
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports dans l'app compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne. Le plafond porte sur les agents et les tours, jamais sur les variantes (M13).
 - Rôles : pilote
 - Contrôle : `node scripts/agents/systeme.mjs agents`
 
@@ -118,7 +118,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Décider
 
 ### L19 — Cadrer une décision sur l'acquis et les choix en attente, et lire la plainte comme une proposition
-- Erreur : 22.10, le pilote a cadré le conseil sur « A, B ou C, combien d'outils ». Il ignorait que Comparer était déjà intégré (base v4.6), que le radar r2 ou r3 attendait son choix, et que la plainte « suggestions, comparer, substituer, dryhopper » contenait déjà une carte.
+- Erreur : 22.10, conseil cadré sur « A, B ou C », sans savoir que Comparer était déjà intégré, qu'un choix de radar attendait, et que sa plainte contenait déjà une carte.
 - Cause : le cadrage partait de la carte candidate du registre, sans relire les acquis, les décisions en attente ni les mots exacts.
 - Faire : avant de cadrer, relire [[acquis-valides]], les choix en attente du registre et les mots du brasseur. Poser la cause observée (captures) avant les options.
 - Rôles : pilote, conseil
