@@ -6,8 +6,8 @@
 // familles attendues au style sont cerclées (« gras : attendu en 16D »).
 // Pas de normalisation : des niveaux de fiches n'ont pas d'échelle au style ; la bascule Au style / Absolu de l'écran
 // règle les barres de Ma bière, le radar garde son échelle fixe dans les deux (D68 : rien ne se rechiffre en Absolu).
-import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
-import { RadarBase } from '../../commun/RadarBase';
+import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { RadarBase } from '../commun/RadarBase';
 
 export const AXES_U4: FamilyId[] = ['citrus', 'tropical', 'melon', 'stoneFruit', 'pomeFruit', 'berries', 'floral', 'green', 'herbal', 'spice', 'earthy', 'resin'];
 

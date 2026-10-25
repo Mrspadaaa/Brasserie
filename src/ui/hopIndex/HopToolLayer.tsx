@@ -45,7 +45,27 @@ const comparerActif = hopV4Enabled();
 // Suggérer (T13, #173) : l'écran q2b, son choix, chargé à la demande, drapeau hopV4 allumé seulement.
 const EcranSuggerer = lazy(() => import('./suggerer/EcranApp'));
 
+// Dryhopper et Levure (T15c, #174) : l'écran p4b2f, son choix, et la feuille « Souche », chargés à la demande, drapeau hopV4 allumé seulement.
+const EcranTiming = lazy(() => import('./dryhopper/EcranApp'));
+// Substituer (T15c, #174) : l'écran u4, son choix, chargé à la demande, drapeau hopV4 allumé seulement.
+const EcranSubstituer = lazy(() => import('./substituer/EcranApp'));
+
 export default function HopToolLayer({ route, level, onClose }: { route: HopToolRoute; level: number; onClose: () => void }) {
+  if (route.view === 'hopTiming' && comparerActif) {
+    const titre = hopToolTitle(route);
+    return (
+      <Suspense fallback={<PageShell title={titre} onClose={onClose}><p data-hop-tool-layer="hopTiming" data-hop-tool-level={level} className="text-xs text-cave-400">Ouverture de {titre}…</p></PageShell>}>
+        <EcranTiming additionId={route.additionId} {...(route.step ? { step: route.step } : {})} recipeId={route.recipeId} onClose={onClose} />
+      </Suspense>
+    );
+  }
+  if (route.view === 'hopSubstitute' && comparerActif) {
+    return (
+      <Suspense fallback={<PageShell title="Substituer" onClose={onClose}><p data-hop-tool-layer="hopSubstitute" data-hop-tool-level={level} className="text-xs text-cave-400">Ouverture de Substituer…</p></PageShell>}>
+        <EcranSubstituer hopKey={route.hopKey} recipeId={route.recipeId} onClose={onClose} />
+      </Suspense>
+    );
+  }
   if (route.view === 'hopCompare' && comparerActif) {
     return (
       <Suspense fallback={<PageShell title="Comparer" onClose={onClose}><p data-hop-tool-layer="hopCompare" data-hop-tool-level={level} className="text-xs text-cave-400">Ouverture de Comparer…</p></PageShell>}>

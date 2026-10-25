@@ -4,10 +4,10 @@
 // - L'arôme n'est simulé qu'à 60′, 10′, au whirlpool et en dry hop. Entre deux crans simulés, il est INTERPOLÉ
 //   (marqué « ≈ ») entre ses deux voisins calculés, comme y1b et a1 ; l'IBU, elle, reste calculée.
 // Place future dans l'app : src/ui/hops/hopTiming.ts (le calcul de la frise ira dans un Web Worker, ARCHITECTURE.md).
-import { FAMILIES } from '../../commun';
-import { cransFrise, simulerMoment, type FamilleLue, type ProfilLu } from '../../moteur';
-import type { AjoutParcours, Quand, RecetteParcours } from '../../etat/types';
-import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { FAMILIES } from '../familyTokens';
+import { cransFrise, simulerMoment, type FamilleLue, type ProfilLu } from '../parcours/adaptateur';
+import type { AjoutParcours, Quand, RecetteParcours } from '../parcours/types';
+import type { FamilyId } from '../../../domain/hopIndex/v4';
 
 /** Étape du brassin : 0 ébullition, 1 whirlpool, 2 dry hop actif, 3 dry hop après fermentation. */
 export type Seg = 0 | 1 | 2 | 3;
