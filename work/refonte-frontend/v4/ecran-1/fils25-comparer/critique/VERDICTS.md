@@ -172,3 +172,46 @@ icônes, mais D113 : un « ? » près du groupe) ; la colonne retenue sans écar
 
 Tête passe 3 : cmb3d — la seule qui change de genre sans rien perdre du vrai problème ; cmb3b en second si la rose ne lui parle
 pas ; les petits radars de cmb3a en greffe derrière « Valeurs » du dock.
+
+## Passe radar (cmb4)
+
+Tête : cmb4d
+
+Jugé contre ses deux captures (`brasseur-radar-courbes.jpg` : deux courbes orange, lisses, sans point, qui suivent le contour
+et ne plongent pas au centre ; `brasseur-rpz2-huiles-radar.jpg` : la vue des huiles « De Saaz à Galaxy »). 16 captures ouvertes.
+Avis indicatif (L27) : il verra les quatre.
+
+**Ses trois questions**
+- *Les pics ont-ils disparu ?* Oui dans les quatre : le zéro est un anneau pointillé « 0 », plus d'aiguille ni de plongée au
+  centre (D143). Les formes sont des courbes fermées, comme son dessin.
+- *Lit-on la différence entre deux houblons à 60′ ?* Oui dans a, c, d (captures `-moment`) : Idaho 7 pointe au floral, Cascade
+  s'étale sur épicé et résineux, les deux contours se séparent nettement (D142 réglé). Dans b, à 60′ aussi ; mais à « après »
+  les lobes deviennent deux disques presque pleins qui se recouvrent : la différence s'efface.
+- *La vue des huiles est-elle aussi facile que dans rpz2 ?* Oui, identique dans les quatre : Saaz hachuré en étalon, une barre
+  par houblon, Nugget en gris, « ← fade · Saaz » / « hyper aromatique → », « mesuré ». Nelson Sauvin : « De Saaz à Motueka »
+  suit le retenu. Signalé : Saaz 0,4–1, Cascade 0,5–2,6, Idaho 7 1–3 ici ; rpz2 disait 0,3–1, 0,7–2,5, 1–2 (L14 : une seule
+  source de fiches avant de lui montrer).
+
+**Variante par variante**
+- cmb4a : ACCEPTÉ — courbe lisse fermée, la plus proche de son dessin ; à 60′ les deux formes se lisent ; l'inconnu reste
+  hachuré (la courbe le contourne). Défaut : entre deux axes la courbe gonfle au-delà des valeurs (Motueka entre agrumes et
+  tropicaux, Cascade entre épicé et résineux) : on ne sait pas où est la valeur. « C'est ça que je voulais. Mais ça déborde un
+  peu entre les axes. »
+- cmb4b : REJET — D65 (« les spidergraph ne montre pas que certaines données sont inconnus et du coup ont les traitements comme
+  connue ») : les lobes polaires passent en plein rayon sur les familles inconnues. Vérifiable sur `cmb4b-nelson.png` : la
+  surface brune de Motueka couvre noyau, baies, pomme et melon (hachurés, inconnus) et la bande rose du style ; à « après »
+  Idaho 7 et Cascade deviennent deux disques superposés. Il dirait : « C'est quoi cette patate ? On voit plus rien. »
+  Correction : la spline ne traverse pas un secteur inconnu (elle rejoint les deux valeurs connues par l'intérieur, comme a) ;
+  tension plus forte pour que les lobes gardent la forme des valeurs.
+- cmb4c : ACCEPTÉ — formes pleines adoucies, le retenu plein, l'autre en pointillé : la lecture la plus nette à distance ; à
+  60′ très lisible ; l'inconnu respecté. Défaut : la bande rose du style disparaît sous les deux aplats (on ne voit plus où
+  on sort de la 16D : le point orangé seul le dit). « Propre, on voit bien les deux. Mais où est ma limite de style ? »
+- cmb4d : ACCEPTÉ — la courbe de a et un point à chaque valeur (plein le retenu, creux l'autre) : on sait où la valeur est et
+  où la courbe ne fait que relier ; pas de point sur l'inconnu (D65 lisible) ; le point orangé marque le hors 16D ; à 60′ les
+  deux séries de points se comparent axe par axe. Défaut : le même gonflement entre axes que a (la courbe relie, le point
+  tranche). « Les points en plus c'est bien, on sait où on est. »
+
+**Commun, à corriger avant de montrer** : l'échelle du moment n'est écrite nulle part (à 60′ un apport de 0,08 cran remplit
+le rayon : écrire « axe = 0,x cran » près du « 0 ») ; les têtes passent sous le pli (1 340 px) et les rangées des familles à
+2 000 px : l'écart chiffré par famille (son « vrai problème ») n'est plus au premier écran, la vue des huiles l'a poussé ; une
+rangée de deux lignes (radar à 300 px) le ramènerait. Tête : cmb4d, avec le pointillé de cmb4c pour le second houblon.

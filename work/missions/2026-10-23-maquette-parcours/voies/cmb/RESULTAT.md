@@ -52,3 +52,14 @@ OK — cmb3a–cmb3d : sélecteur de cmb2, ses mots visibles, barres et radar no
 - Critères : `VARIANTES-CMP-4` ; `TRAIT OK` (85, 61, 61, 61 pictos, 0 faute) ; `QUAND OK` ; MOTS OK (84, 96, 93, 94). Captures ouvertes, comparées à cmb2d.
 - Prédiction : « Les petits radars, enfin je vois chaque houblon ; et à 60′ ça bouge ».
 - DÉCISION À PRENDRE : dans cmb3a, sélecteur et bande passent au-dessus des radars et les têtes sous le premier écran ; dans cmb3c, les rangées perdent leurs noms (picto seul) pour tenir 100 mots.
+
+## Passe radar (depuis cmb3b) — cmb4a à cmb4d
+OK — cmb4a–cmb4d : radar en courbes, zéro sur anneau, bande rose et huiles de rpz2 ; PICS OK
+- Seul le radar change (cmb3b telle quelle) : a courbe lisse fermée ; b en polaire, r(θ) par spline périodique (lobes arrondis) ; c formes pleines douces ; d courbes et points aux sommets. Toutes passent par les valeurs exactes ; inconnu hachuré, jamais un point à 0.
+- D143 : zéro sur un anneau intérieur à 18 % du rayon (« 0 »). D142 : radar et barres à l'échelle du moment (barres `barre-famille` / `piste-famille`, « ~0 » sous 0,05 cran).
+- rpz2 : bande du style rose pâle sous les courbes ; vue des huiles « De Saaz à … » sous le radar, au premier écran (98 mots) ; la barre des moments passe juste sous le pli.
+- Critères : `VARIANTES-CMP-4` ; `TRAIT OK` (61 pictos, 0 faute) ; `QUAND OK` ; `PICS OK` ; MOTS OK (98 ×4). Captures ouvertes et comparées à `brasseur-radar-courbes.jpg`.
+- Prédiction : « Là oui, c'est des courbes ; la b est la plus belle ».
+- DÉCISION À PRENDRE : la vue des huiles sous le radar pousse la barre des moments sous le premier écran ; à lui de dire s'il la préfère sous le premier écran.
+
+- Retouche du pilote : barre des moments (avec la pastille) sous la légende du radar, au-dessus des huiles, entière au premier écran ; têtes sous le pli. VARIANTES-CMP-4, PICS OK, NORMALISE OK, TRAIT OK, QUAND OK, MOTS OK (98 ×4) ; captures repos, 60′, Nelson et long reprises et ouvertes. La DÉCISION sur la barre des moments sous le pli est levée.

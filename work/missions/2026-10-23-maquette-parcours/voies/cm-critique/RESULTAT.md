@@ -39,3 +39,12 @@ Détail : VERDICTS.md § Passe 3. 16 captures ouvertes ; FAMILLES rejoué (a 0 r
 - **cmb3d** (la rose) — ACCEPTÉ. « Ça c'est différent, on voit qui dépasse. Mais c'est quoi ces couleurs ? » Correction : couleurs exactes des têtes, retenu plein / autres hachurés, échelle écrite.
 Commun : l'échelle de normalisation (0,3 cran au moins) n'est écrite nulle part (D65) ; Nelson Sauvin « ~0 » à 60′.
 Tête passe 3 : cmb3d (cmb3b en second).
+
+## Passe radar (cmb4a à cmb4d) — pics disparus dans les quatre ; différence à 60′ lisible dans a, c, d ; huiles aussi faciles que rpz2
+Détail : VERDICTS.md § Passe radar. 16 captures et ses deux captures ouvertes.
+- **cmb4a** (courbe lisse) — ACCEPTÉ. « C'est ça que je voulais. Mais ça déborde un peu entre les axes. »
+- **cmb4b** (lobes polaires) — REJET : D65, les lobes couvrent les familles inconnues (noyau, baies, pomme, melon hachurés sous la surface brune de Motueka, `cmb4b-nelson.png`) et à « après » deux disques superposés. Correction : la spline contourne l'inconnu, tension plus forte.
+- **cmb4c** (formes pleines douces) — ACCEPTÉ. « Propre, on voit bien les deux. Mais où est ma limite de style ? » (bande rose cachée sous les aplats).
+- **cmb4d** (courbes et points) — ACCEPTÉ. « Les points en plus c'est bien, on sait où on est. »
+Commun : échelle du moment non écrite ; têtes et rangées des familles sous le pli (1 340 et 2 000 px) ; valeurs d'huile de Saaz, Cascade, Idaho 7 différentes de rpz2 (L14).
+Tête : cmb4d (pointillé de cmb4c pour le second houblon).
