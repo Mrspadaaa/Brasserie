@@ -205,6 +205,12 @@ Chemins de « Possède » : relatifs à la racine du dépôt ; `voies/…` est r
 - Voies : rd0 (auteur, données communes, socle rd00 = cmb3b redessiné, outils) ; rda à rde (concepteur chacun).
 - Passe radar cmb4a à cmb4d arrêtée : cmb4b « n'importe quoi » (D144) ; cmb4a, c, d gardées sur le disque, non publiées.
 
+## Reprise (25.10, soir) — Comparer et le radar
+- Son choix pour Comparer : **cmc2g**, retouché en **cmc2h** (publié). Registre des choix mis à jour (radar rdg5, chaque axe à son échelle, D68).
+- Règles nouvelles : D68 (Au style : style et moment ; Absolu : aucune normalisation), D143 à D149, note cerveau/sources/beermaverick-radar.
+- En vol : voie rb-radar-commun (le radar de cmc2h dans Comparer, la fiche, Suggérer, Substituer ; Ma bière après t12b).
+- Ensuite : Ma bière (RadarBiere de l'app) sur la baseline, puis T13/T15 de l'intégration avec ces écrans.
+
 ## Pages
 Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`).
 
