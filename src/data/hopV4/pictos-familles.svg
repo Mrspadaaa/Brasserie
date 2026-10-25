@@ -2,8 +2,7 @@
   <!-- Pictos des familles en duo : trait du ton base à 1,5 px rendu à 14 px (2,571 sur 24), sur un rond de 20 px au ton fond (posé par la page).
        Fleur, feuille, sapin et pomme : lucide (flower, leaf, tree-pine, apple). Les autres gardent la
        silhouette des pictos du lot 15, redessinés sur la même grille : tranche, ananas, melon, pêche,
-       grains de poivre, brins, butte. Baies : une framboise (25.10, « utiliser plutôt un icône de framboises ») :
-       douze drupéoles en dôme 3-4-3-2 (anneaux de rayon 2,4, jour visible à 12 px), sépales et tige. -->
+       baies, grains de poivre, brins, butte. -->
   <symbol id="p-citrus" viewBox="0 0 24 24" fill="none" stroke="#d9b414" stroke-width="2.571" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 5.5v13M6.4 8.75l11.2 6.5M6.4 15.25l11.2-6.5"/></symbol>
   <symbol id="p-tropical" viewBox="0 0 24 24" fill="none" stroke="#ee9b2f" stroke-width="2.571" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8.5 9.5 3.5M12 8.5V2.5M12 8.5l2.5-5"/><ellipse cx="12" cy="15.5" rx="5.5" ry="6.5"/><path d="M9 13l6 5M15 13l-6 5"/></symbol>
   <symbol id="p-melon" viewBox="0 0 24 24" fill="none" stroke="#6fc09b" stroke-width="2.571" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9h19a9.5 9.5 0 0 1-19 0Z"/><path d="M6.5 9a5.5 5.5 0 0 0 11 0"/><path d="M10 11.5h.01M14 11.5h.01"/></symbol>
