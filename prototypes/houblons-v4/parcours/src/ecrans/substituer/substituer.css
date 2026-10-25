@@ -120,7 +120,7 @@
 .pq-substituer-groupe { font-size: 12px; color: #6e6e6e; padding: 6px 0 2px; }
 .pq-substituer-inc { font-size: 13px; color: #6e6e6e; font-style: italic; padding: 4px 0; margin: 0; }
 
-.pq-substituer-graphe { position: relative; width: 358px; max-width: 100%; height: 300px; margin-top: 8px; }
+.pq-substituer-graphe { position: relative; width: 358px; max-width: 100%; margin-top: 8px; }
 .pq-substituer-radar { display: block; overflow: visible; }
 .pq-substituer-legende-radar { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: #555; margin: 0; }
 .pq-substituer-legende-radar span { display: inline-flex; align-items: center; gap: 5px; }

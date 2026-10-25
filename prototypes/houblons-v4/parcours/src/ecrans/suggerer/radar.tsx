@@ -1,63 +1,45 @@
-// Vue « Radar » de Suggérer (q2b : « Barres / Radar ») : ma bière, la zone du style, et la bière après chaque voie
-// retenue pour la comparaison. Au style : chaque axe va de 0 à deux fois le haut de la bande (la zone sur la moitié du
-// rayon) ; absolu : 0 → 110. Une famille inconnue pour cette bière a son nom suivi de « ? » et son secteur hachuré.
+// Vue « Radar » de Suggérer (q2b : « Barres / Radar »), sur le radar commun (commun/RadarBase.tsx, porté de cmc2h :
+// « utiliser ce radar graph comme Baseline et l'utiliser partout dans les vue où il y en a », voie rb-radar-commun).
+// Ses valeurs restent les siennes : ma bière (le trait noir), la zone du style, et la bière après la voie montrée (en
+// plein, aux sommets). Tout en crans du style (valeur / cran de la famille), comme Comparer :
+//   - Au style : chaque axe à son échelle, le plus fort de ma bière et de la voie, écrit près du picto ; la zone ;
+//     orangé au-dessus du haut du style ;
+//   - Absolu : l'échelle fixe et commune, 0 à 12,5 crans, plus de normalisation (D68).
+// Une famille inconnue pour ma bière l'est aussi après la voie : elle rejoint le secteur « sans donnée ».
 import type { FamilyId, StyleScale } from '../../../../../../src/domain/hopIndex/v4';
-import { COURT, ROUE, type Echelle } from '../../commun';
+import { ROUE, type Echelle } from '../../commun';
+import { RadarBase, type SerieRadar } from '../../commun/RadarBase';
 import type { BiereLue } from '../../moteur';
 
-const R = 112, C = 150;
-const TRAITS = ['6 3', '2 3', '9 3 2 3', '1 2'];
+const VOIE = '#0e7490';
 
-export function Radar({ biere, sc, echelle, series, plein = false }: {
+export function Radar({ biere, sc, echelle, series, moment }: {
   biere: BiereLue; sc: StyleScale; echelle: Echelle;
   series: { cle: string; nom: string; effets: Record<FamilyId, number | null> }[];
-  /** Mode Radar de la base v4.10 : une voie montrée, en plein, avec ses sommets. */
+  /** Le moment de la voie montrée (60′, 10′…), écrit sur le radar. */
+  moment?: string;
+  /** Mode Radar de la base v4.10 : une voie montrée, en plein, avec ses sommets (toujours le cas sur le radar commun). */
   plein?: boolean;
 }) {
-  const ang = (i: number) => -Math.PI / 2 + (i * 2 * Math.PI) / ROUE.length;
-  const max = (f: FamilyId) => (echelle === 'style' && sc.families[f].band ? 2 * sc.families[f].band![1] : 110);
-  const pt = (i: number, v: number) => { const f = ROUE[i], k = Math.max(0, Math.min(1.08, v / max(f))); return [C + Math.cos(ang(i)) * R * k, C + Math.sin(ang(i)) * R * k]; };
-  const bord = (i: number) => `${(C + Math.cos(ang(i)) * R).toFixed(1)},${(C + Math.sin(ang(i)) * R).toFixed(1)}`;
-  const poly = (vals: (number | null)[]) => vals.map((v, i) => pt(i, v ?? 0).map((x) => x.toFixed(1)).join(',')).join(' ');
-  const avant = ROUE.map((f) => biere.profil[f].valeur?.centre ?? null);
-  const zone = ROUE.map((f) => sc.families[f].band?.[1] ?? null);
-  const inconnue = (f: FamilyId) => biere.profil[f].valeur == null;
+  const cran = (f: FamilyId) => sc.families[f].cran || 1;
+  const parFamille = (lire: (f: FamilyId) => number | null) => Object.fromEntries(ROUE.map((f) => [f, lire(f)])) as Record<FamilyId, number | null>;
+  const avant = parFamille((f) => { const v = biere.profil[f].valeur?.centre; return v == null ? null : v / cran(f); });
+  const zone = parFamille((f) => { const b = sc.families[f].band; return b ? b[1] / cran(f) : null; });
+  const lues: SerieRadar[] = series.map((s) => {
+    const valeurs = parFamille((f) => (avant[f] == null ? null : Math.max(0, avant[f]! + (s.effets[f] ?? 0) / cran(f))));
+    return { cle: s.cle, nom: s.nom, couleur: VOIE, role: 'retenu', valeurs,
+      hors: Object.fromEntries(ROUE.map((f) => [f, valeurs[f] != null && zone[f] != null && valeurs[f]! > zone[f]! + 1e-6])) };
+  });
+  // Ma bière seule (aucune voie montrée) reste lisible : son trait noir sur la grille, ses inconnus regroupés.
+  const toutes: SerieRadar[] = lues.length ? lues : [{ cle: 'ma-biere', nom: 'ma bière', couleur: '#3d3d47', role: 'contour', valeurs: avant }];
   return (
     <figure data-role="radar" className="pq-suggerer-radar">
-      <svg data-radar="" data-objet="suggerer" viewBox="-34 -4 368 308" className="w-full max-w-[23rem] mx-auto block" role="img"
-        aria-label={`Radar : ma bière et ${series.map((s) => s.nom).join(', ') || 'aucune voie retenue'}`}>
-        {[0.25, 0.5, 0.75, 1].map((k) => <circle key={k} cx={C} cy={C} r={R * k} className="pq-suggerer-radar-grille" />)}
-        {ROUE.map((f, i) => {
-          const [x, y] = pt(i, max(f));
-          return <line key={f} x1={C} y1={C} x2={x} y2={y} className="pq-suggerer-radar-grille" />;
-        })}
-        {ROUE.map((f, i) => inconnue(f) && (
-          <path key={f} className="pq-suggerer-radar-inconnu" d={`M${C},${C} L${bord(i - 0.5)} A${R},${R} 0 0 1 ${bord(i + 0.5)} Z`} />
-        ))}
-        <polygon points={poly(zone)} className="pq-suggerer-radar-zone" />
-        {series.map((s, j) => {
-          const vals = ROUE.map((f, i) => (avant[i] == null ? null : avant[i]! + (s.effets[f] ?? 0)));
-          return (
-            <g key={s.cle}>
-              <polygon data-serie={s.cle} points={poly(vals)} className={plein ? 'pq-sg-radar-plein' : 'pq-suggerer-radar-serie'} strokeDasharray={plein ? undefined : TRAITS[j % TRAITS.length]} />
-              {plein && vals.map((v, i) => v != null && <circle key={i} cx={pt(i, v)[0]} cy={pt(i, v)[1]} r={3.2} className="pq-sg-radar-sommet" />)}
-            </g>
-          );
-        })}
-        <polygon data-serie="ma-biere" points={poly(avant)} className="pq-suggerer-radar-biere" />
-        {ROUE.map((f, i) => {
-          const a = ang(i), x = C + Math.cos(a) * (R + 22), y = C + Math.sin(a) * (R + 16);
-          return <text key={f} x={x} y={y} textAnchor={Math.abs(Math.cos(a)) < 0.2 ? 'middle' : Math.cos(a) > 0 ? 'start' : 'end'} dominantBaseline="middle"
-            className="pq-suggerer-radar-nom">{COURT[f]}{inconnue(f) ? '?' : ''}</text>;
-        })}
-      </svg>
-      <figcaption className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs text-cave-200">
-        <span className="inline-flex items-center gap-1"><svg width="18" height="6" aria-hidden="true"><line x1="0" y1="3" x2="18" y2="3" className="pq-suggerer-radar-biere" /></svg>ma bière</span>
-        {series.map((s, j) => (
-          <span key={s.cle} className="inline-flex items-center gap-1">
-            {plein ? <svg width="14" height="10" aria-hidden="true"><rect x="1" y="1" width="12" height="8" rx="2" className="pq-sg-radar-plein" /></svg> : <svg width="18" height="6" aria-hidden="true"><line x1="0" y1="3" x2="18" y2="3" className="pq-suggerer-radar-serie" strokeDasharray={TRAITS[j % TRAITS.length]} /></svg>}{s.nom}
-          </span>
-        ))}
+      <RadarBase familles={sc.order?.length ? sc.order : ROUE} series={toutes} mode={echelle === 'absolu' ? 'absolu' : 'style'} moment={moment}
+        zone={zone} reference={lues.length ? { nom: 'ma-biere', valeurs: avant } : undefined} objet="suggerer"
+        label={(haut) => `Radar ${echelle === 'absolu' ? `absolu, de 0 à ${haut} crans` : 'au style'} : ma bière et ${series.map((s) => s.nom).join(', ') || 'aucune voie retenue'}`} />
+      <figcaption className="pq-sg-radar-cle">
+        <span><i aria-hidden="true" className="pq-sg-radar-cle-biere" />ma bière</span>
+        {series.map((s) => <span key={s.cle}><i aria-hidden="true" className="pq-sg-radar-cle-voie" style={{ background: VOIE }} />{s.nom}</span>)}
       </figcaption>
     </figure>
   );

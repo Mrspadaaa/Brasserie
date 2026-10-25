@@ -763,7 +763,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
 
         <section data-etat="etat-subst-radar">
           <div className="pq-substituer-graphe">
-            <RadarU4 series={faces.map((x) => ({ nom: x.nom, couleur: x.couleur, original: x.original, niveaux: niveaux(x.h) }))} attendues={new Set(attendues)} inconnues={new Set(inconnues)} nomStyle={sc.code} />
+            <RadarU4 series={faces.map((x) => ({ cle: x.cle, nom: x.nom, couleur: x.couleur, original: x.original, niveaux: niveaux(x.h) }))} retenu={choisi?.cle} attendues={new Set(attendues)} inconnues={new Set(inconnues)} nomStyle={sc.code} />
           </div>
           <p className="pq-substituer-legende-radar">
             {faces.map((x) => <span key={x.cle}><i style={x.original ? { background: '#fff', border: `2.5px solid ${x.couleur}` } : { background: x.couleur }} />{x.nom}{x.original ? ' (l’original, contour seul)' : ''}</span>)}

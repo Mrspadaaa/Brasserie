@@ -114,7 +114,7 @@ export function VueRadar({ biere, sc, echelle, objectifs, groupes, onHorsHoublon
           );
         })}
       </section>
-      <Radar biere={biere} sc={sc} echelle={echelle} series={series} plein />
+      <Radar biere={biere} sc={sc} echelle={echelle} series={series} moment={lm ? nomQuand(momentDe(lm) ?? quandMoteur(lm)) : undefined} plein />
       {luM && !luM.effets && <p className="text-xs text-cave-400 px-1">À ce moment, {luM.raison} : la voie n’est pas dessinée.</p>}
       {applique && (
         <p className="flex items-center gap-2 px-1 text-sm text-cave-200">

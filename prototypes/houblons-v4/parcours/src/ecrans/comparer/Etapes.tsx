@@ -22,6 +22,7 @@ const pc = (x: number) => `${(Math.max(0, Math.min(1, x)) * 100).toFixed(1)}%`;
 /** Le nombre d'une étape : crans gagnés sur ta stout, « ~ » devant (simulé) ; « ? » pour l'inconnu, jamais 0. */
 const txt = (x: number) => `~${x < 0 ? '-' : ''}${nombre(Math.abs(x), 1)}`;
 const nomEtape = (code: CodeEtape) => ETAPES.find((e) => e.code === code)!.nom;
+/** cmb2 : la bande est un trait par moment ; « dry hop » sépare le chaud du froid. */
 
 export function BandeEtapes({ cols, etapes, reference, nomReference, retenu, moment, onMoment, critere, pastille }: {
   cols: ColonneLue[]; etapes: Etapes; reference: string | null; nomReference: string | null; retenu: string;
@@ -46,48 +47,16 @@ export function BandeEtapes({ cols, etapes, reference, nomReference, retenu, mom
       data-element="d107-etapes d107-etat-au-moment x3b-cuve-jour-apres-jour d128-selecteur-etapes y1b-face-a-ta-stout">
       {/* En tête, au-dessus de sa colonne : la référence (ses valeurs sont dans la colonne de gauche) ; au-dessus des
           houblons : la pastille du critère, qui choisit la famille chiffrée. */}
-      <div className="pq-comparer-grille-tab pq-comparer-et-h">
-        {reference
-          ? <span className="pq-comparer-et-ref" data-reference="houblon" data-houblon={reference} data-element="d107-reference"
-              aria-label={`Référence : ${nomRef}${aRef ? `, α ${nombre(aRef.valeur, 1)} %` : ''}, le houblon de base de ta recette, aux mêmes étapes, à la même dose`}>
-              {/* D40 bis (80 mots) : l'α de la référence passe à un toucher sur son nom (il reste dans le libellé). */}
-              <button type="button" className="pq-comparer-et-ref-n" aria-expanded={alphaVu} onClick={() => setAlphaVu((x) => !x)}><i className="pq-comparer-et-tiret" aria-hidden="true" /><span>{nomRef}</span></button>
-              {alphaVu && <AlphaRef cle={reference} />}
-            </span>
-          : <span className="pq-comparer-et-ref" data-reference="biere" data-element="d107-reference" aria-label="Référence : ta stout seule, sans ajout">
-              <i className="pq-comparer-et-tiret" aria-hidden="true" /><span>ta stout</span>
-            </span>}
-        <span className="pq-comparer-et-crit">{pastille}</span>
-      </div>
-      <div role="radiogroup" aria-label="Moment de l’ajout, pour les rangées et le radar" className="pq-comparer-et-g">
-        {ETAPES.map((e, i) => {
-          const top = meilleur(e.code);
-          const ref = reference ? etapes[reference]?.[e.code] ?? null : null;
-          const vr = reference ? val(ref) : 0;
-          const on = moment === e.code;
-          return (
-            <button key={e.code} type="button" role="radio" aria-checked={on} onClick={() => onMoment(e.code)} data-moment={e.code}
-              className={cx('pq-comparer-grille-tab pq-comparer-et-r', on && 'pq-comparer-et-on', i === 0 && 'pq-comparer-et-premiere')} data-etape-ligne={e.code}>
-              <span className="pq-comparer-et-l">
-                <b className="pq-comparer-et-nom" data-court={e.code === 'dryPost' ? 'DH' : e.nom}><span>{e.nom}</span></b>
-                <Valeur v={vr} code={e.code} cle={reference ?? undefined} nom={nomRef} etape={ref} famille={f} gris />
-              </span>
-              {cols.map((c) => {
-                const v = etapes[c.cle]?.[e.code] ?? null, x = val(v);
-                return (
-                  <span key={c.cle} className={cx('pq-comparer-et-c', c.cle === retenu && 'pq-comparer-sel', top === c.cle && 'pq-comparer-et-top')}
-                    style={{ ['--pq-h' as string]: c.couleur }} data-col={c.cle}>
-                    <Valeur v={x} code={e.code} cle={c.cle} nom={c.houblon.nom} etape={v} famille={f} etoile={top === c.cle} />
-                    <span className="pq-comparer-et-pis" aria-hidden="true">
-                      {x != null && <i className="pq-comparer-et-fl" style={{ width: pc(Math.max(0, x) / k), background: COULEURS[f].base }} />}
-                      {vr != null && reference && <i className="pq-comparer-et-rt" style={{ left: pc(Math.max(0, vr) / k) }} />}
-                    </span>
-                  </span>
-                );
-              })}
-            </button>
-          );
-        })}
+      {/* cmb2 : une ligne, la pastille du critère (picto seul) puis les cinq moments en segments ; dessous, la seule
+          ligne du moment choisi (la référence à gauche, chaque houblon, ★ au meilleur). */}
+      <div className="cmb2-tete">
+        <span className="pq-comparer-et-crit cmb2-crit">{pastille}</span>
+        <div className="cmb2-seg" role="radiogroup" aria-label="Quand comparer : le moment de l’ajout, pour les têtes, les rangées et le radar" data-role="quand-comparer">
+          {ETAPES.map((e) => (
+            <button key={e.code} type="button" role="radio" aria-checked={moment === e.code} data-moment={e.dm} onClick={() => onMoment(e.code)}
+              className={cx('cmb2-s', moment === e.code && 'cmb2-s-on', e.code === 'dryActive' && 'cmb2-s-froid')} aria-label={e.nom}>{e.court}</button>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -99,7 +68,7 @@ function Valeur({ v, code, cle, nom, etape, famille, gris, etoile }: {
 }) {
   const ibu = etape?.ibu ? `, ~${nombre(etape.ibu.valeur, 0)} IBU (${nombre(etape.ibu.min, 0)}–${nombre(etape.ibu.max, 0)})` : etape?.raisonIbu ? `, IBU : ${etape.raisonIbu}` : '';
   const lab = `${nom}, posé à ${nomEtape(code)}, ${nombre(CONDITIONS.doseGL)} g/L : ${COURT[famille].toLowerCase()} ${v == null ? 'inconnu' : `~${nombre(v, 2)} cran`}${etoile ? ', le meilleur de l’étape' : ''}${ibu}`;
-  const attrs = { 'data-etape': code, ...(cle ? { 'data-houblon': cle } : {}), 'data-nature': 'simule', title: lab };
+  const attrs = { 'data-etape-choisie': code, ...(cle ? { 'data-houblon': cle } : {}), 'data-nature': 'simule', title: lab };
   return (
     <span className={cx('pq-comparer-et-v', gris && 'pq-comparer-et-gris')}>
       {v == null
@@ -129,12 +98,8 @@ export function PiedEtapes({ cols, retenu, onDryhopper }: { cols: ColonneLue[]; 
   return (
     <div className="pq-comparer-et-pieds">
       {/* x3b : « l'état du moment de l'ajout », la cuve, et la bière de base (ta dégustation) au départ de chaque bande. */}
-      <p className="pq-comparer-et-pied" data-etat="etat-comp-etat-moment" data-element="d107-etat-au-moment">
-        <span data-nature="simule">~ dans la cuve</span>, au moment de chaque ajout ; dry hop : {CONDITIONS.jours} j de contact.
-      </p>
-      <p className="pq-comparer-et-pied" data-etat="etat-comp-reference">
-        <Picto famille="resin" taille={12} />Résineux déjà au-delà, ta dégustation : chaque gain s’y ajoute.
-      </p>
+      {/* x3b, « l'état du moment de l'ajout » (D107) : une ligne, sous le premier écran. */}
+      {/* cmc2d : les deux lignes « ~ dans la cuve… » et « Résineux déjà au-delà… » passent dans la feuille « ? ». */}
       <div className="pq-comparer-et-tch">
         <button type="button" className="pq-comparer-tch" data-role="biotransformation" data-etat="etat-comp-biotransfo" aria-expanded={volet === 'bio'} onClick={() => basculer('bio')}>
           <Picto famille="citrus" taille={14} /><span>Biotransformation</span><Chevron ouvert={volet === 'bio'} />

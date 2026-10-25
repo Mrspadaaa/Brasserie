@@ -190,3 +190,12 @@ j'ai vraiment choisir ?? »). Inventaire : `fils15-s5-complexe/donnees/inventair
   l'encre, qui appelle `closeTo(r => r.view === 'recipe')` (étape Houblons) ; le retour du téléphone garde `close`.
   `aria-label="Fermer"` reste pour les scripts du parcours.
 - Bulle des traits (`bulle.tsx`) → `src/ui/hops/TraitBubble.tsx`, réutilisable dans Comparer et la fiche.
+
+## Le radar commun (voie rb-radar-commun, 25.10)
+
+« Ensuite utiliser ce radar graph comme Baseline et l'utiliser partout dans les vue où il y en a » : le mode Radar
+(`radar.tsx`) pose le radar de cmc2h (`src/commun/RadarBase.tsx`). Ses valeurs restent les siennes, en crans du style :
+ma bière en trait noir, la bière après la voie montrée en plein, la zone du style. Au style, chaque axe à son échelle (le
+plus fort des deux, écrit près du picto), orangé au-dessus du haut du style ; en Absolu, l'échelle fixe 0 à 12,5 crans,
+plus de normalisation (D68). Le moment de la voie (« ‹ 10′ › ») est écrit sur le radar (`data-moment`). Une clé d'une
+ligne reste sous le radar (ma bière, la voie) : ici, pas de têtes de colonnes qui portent les couleurs.

@@ -15,22 +15,26 @@ import { comparer, effetLevure, style, type Colonne, type HoublonLu } from '../.
 import { placer } from '../../etat/quand';
 import { CONDITIONS } from '../../donnees/cas';
 import type { Quand, RecetteParcours } from '../../etat/types';
+import { huile as huileSources } from './valeurs';
+import { nombre } from '../../commun';
 
 export const ABSOLU = 125;
 /** Orangé « au-dessus du style » (D83 : la seule couleur hors famille admise sur un élément de famille). */
 export const ORANGE = '#c2410c';
 
-/** Une couleur par houblon, la même que dans les lots 20 à 22 (fils20-dryhop/donnees-h.json ; Nelson Sauvin
+/** cmc (25.10, « les couleurs et contraste mieux dessiné […] car on peut confondre un peu ») : rouge, bleu, vert d'eau,
+ * violet, magenta, bien séparés en teinte, chacun ≥ 4,8:1 sur le papier et sur la colonne retenue (#f4f4f4).
+ * Avant : une couleur par houblon, la même que dans les lots 20 à 22 (fils20-dryhop/donnees-h.json ; Nelson Sauvin
  * comme r6c et r6n2). Les autres, choisies à plus de 25 ΔE des trois du cas (D77). */
 const COULEURS_HOUBLON: Record<string, string> = {
-  'beermaverick-cascade': '#781838',
-  'beermaverick-idaho-7': '#e80030',
-  'beermaverick-galaxy': '#681878',
-  'beermaverick-citra': '#184078',
-  'beermaverick-citra:cryo': '#184078',
+  'beermaverick-cascade': '#1d5bd8',
+  'beermaverick-idaho-7': '#d1043c',
+  'beermaverick-galaxy': '#00796b',
+  'beermaverick-citra': '#6d28d9',
+  'beermaverick-citra:cryo': '#6d28d9',
   'beermaverick-nelson-sauvin': '#0b6e63',
   'beermaverick-motueka': '#8a5a00',
-  'beermaverick-sabro': '#1f5fa8',
+  'beermaverick-sabro': '#b5179e',
   'beermaverick-hallertau-blanc': '#4f6b00',
   'beermaverick-target': '#3d3d47',
   'beermaverick-nugget': '#0072b2',
@@ -103,12 +107,28 @@ export function lireColonnes(recette: RecetteParcours, cles: string[], doseGL?: 
 // base » (23.10). Chaque houblon, à la même dose (4 g/L), posé à 60′, à 10′ et au dry hop (après, 3 j : le moment du
 // radar et des rangées), simulé par le moteur à chaque changement de houblons ou de recette. Le moteur simule l'arôme
 // à 60′, 10′, whirlpool et dry hop ; l'IBU à toute minute (ibuAjout) et pas à froid.
-export type CodeEtape = 'b60' | 'b10' | 'dryPost';
-export const ETAPES: { code: CodeEtape; nom: string; quand: Quand }[] = [
-  { code: 'b60', nom: '60′', quand: { type: 'ebullition', minutes: 60 } },
-  { code: 'b10', nom: '10′', quand: { type: 'ebullition', minutes: 10 } },
-  { code: 'dryPost', nom: 'dry hop', quand: { type: 'dryhop', phase: 'apres', jours: CONDITIONS.jours } },
+// D141 (25.10, « surtout pouvoir choisir quand comparé. 60' 10' dryhopping... ») : cinq moments ; le moteur pose chaque
+// houblon à chacun, à la même dose (ébullition 60′ et 10′, whirlpool, dry hop pendant la fermentation active ou après, 3 j).
+export type CodeEtape = 'b60' | 'b10' | 'wp' | 'dryActive' | 'dryPost';
+export const ETAPES: { code: CodeEtape; dm: string; nom: string; court: string; dit: string; groupe: 'chaud' | 'froid'; quand: Quand }[] = [
+  { code: 'b60', dm: '60', nom: '60′', court: '60′', dit: 'à 60′', groupe: 'chaud', quand: { type: 'ebullition', minutes: 60 } },
+  { code: 'b10', dm: '10', nom: '10′', court: '10′', dit: 'à 10′', groupe: 'chaud', quand: { type: 'ebullition', minutes: 10 } },
+  { code: 'wp', dm: 'whirlpool', nom: 'whirlpool', court: 'WP', dit: 'au whirlpool', groupe: 'chaud', quand: { type: 'whirlpool' } },
+  { code: 'dryActive', dm: 'dryhop-actif', nom: 'dry hop actif', court: 'actif', dit: 'au dry hop actif', groupe: 'froid', quand: { type: 'dryhop', phase: 'actif', jours: CONDITIONS.jours } },
+  { code: 'dryPost', dm: 'dryhop-apres', nom: 'dry hop après', court: 'après', dit: 'au dry hop après', groupe: 'froid', quand: { type: 'dryhop', phase: 'apres', jours: CONDITIONS.jours } },
 ];
+export const etape = (code: CodeEtape) => ETAPES.find((e) => e.code === code)!;
+
+/** Huile totale (mL/100 g) : l'enveloppe des sources (valeurs.ts, celle de « Valeurs »), sinon le catalogue (Beer
+ * Maverick) ; null : inconnue, jamais 0. Échelle commune des têtes : 0 à 5 mL/100 g ; Saaz (catalogue) en repère « fade ». */
+export const HUILE_MAX = 5;
+export const SAAZ = 'beermaverick-saaz-cz';
+export function huileDe(cle: string): { lo: number; hi: number; texte: string; source: string } | null {
+  const v = huileSources(cle);
+  if (v && v.hi != null) return { lo: v.lo, hi: v.hi, texte: v.texte, source: v.refs.join(', ') };
+  const o = hopRef(cle)?.catalogue.oil;
+  return o ? { lo: o[0], hi: o[1], texte: `${nombre(o[0], 1)}–${nombre(o[1], 1)}`, source: 'BM' } : null;
+}
 export interface ValeurEtape {
   /** Crans du style gagnés sur ta stout (floral, résineux) ; null : inconnu (rien de simulé), jamais 0. */
   floral: number | null;

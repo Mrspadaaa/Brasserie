@@ -16,18 +16,26 @@ import { donnees, houblon, style } from '../../moteur';
 import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import { hopRef } from '../../moteur/v4';
 import Fiche from '../fiche';
-import { ABSOLU, CRITERES, ETAPES, ORANGE, depart, type CodeEtape, houblonDeBase, lireColonnes, lireEtapes, reponse, scoreDefi, sesMots, type MotLu, type CelluleLue, type ColonneLue, type Critere } from './calcul';
+import { ABSOLU, CRITERES, ETAPES, HUILE_MAX, SAAZ, etape, huileDe, ORANGE, depart, type CodeEtape, houblonDeBase, lireColonnes, lireEtapes, reponse, scoreDefi, sesMots, type MotLu, type CelluleLue, type ColonneLue, type Critere } from './calcul';
 import { BandeEtapes, PiedEtapes } from './Etapes';
+import { HuilesVue } from './Huiles';
 import {
   FeuilleAjouter, FeuilleDefi, FeuilleDock, FeuilleEgaler, FeuilleFrise, FeuillePourquoi, FeuillePreuve, FeuilleSouche, FeuilleValeurs, Point, signeCran,
 } from './Feuilles';
-import { Chevron, IconeCible, IconeEgal, IconeFiole, IconeFrise, IconeLivre, IconeOk, IconePanel, IconeRisque, IconeSouche, IconeStock } from './icones';
+import { Chevron, IconeGoutte, IconeCible, IconeEgal, IconeFiole, IconeFrise, IconeLivre, IconeOk, IconePanel, IconeRisque, IconeSouche, IconeStock } from './icones';
 import { Radar } from './Radar';
+import { AideEtapes, EtapesEnsemble } from './Ensemble';
 import './comparer.css';
 
 /** Ta dégustation du 18.10 : « trop résineuse, je la veux plus florale ». */
 const TROP: FamilyId = 'resin';
 const MAX_COLONNES = 4;
+/** cmb : les glyphes des boutons dessinés au trait (⇄, ×, +, ↑, ↓) : la même lecture, sans compter pour des mots. */
+const Trait = ({ d, t = 16, label }: { d: string; t?: number; label?: string }) => (
+  <svg width={t} height={t} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={32 / t} strokeLinecap="round" strokeLinejoin="round" {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}><path d={d} /></svg>
+);
+const G_ECH = 'M16 3l4 4-4 4M20 7H8M8 21l-4-4 4-4M4 17h12', G_CROIX = 'M6 6l12 12M18 6 6 18', G_PLUS = 'M12 5v14M5 12h14', G_HAUT = 'M12 19V5M6 11l6-6 6 6', G_BAS = 'M12 5v14M6 13l6 6 6-6';
+
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ');
 const pc = (x: number) => `${(Math.max(0, Math.min(1, x)) * 100).toFixed(1)}%`;
 const nombreMot = (n: number) => ['aucun', 'le seul', 'les deux', 'les trois', 'les quatre'][n] ?? `les ${n}`;
@@ -60,7 +68,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   // sélecteur sur ces rangées et le radar. Au dry hop (départ), les colonnes de r6a ; à 60′ ou 10′, le moteur pose
   // chaque houblon à ce moment, à la même dose. Le Défi et les feuilles du dock restent au dry hop (leur moment).
   const [moment, setMoment] = useState<CodeEtape>('dryPost');
-  const vue = useMemo(() => (moment === 'dryPost' ? cols : lireColonnes(recette, cles, undefined, ETAPES.find((e) => e.code === moment)!.quand)), [recette, cles, cols, moment]);
+  const vue = useMemo(() => (moment === 'dryPost' ? cols : lireColonnes(recette, cles, undefined, etape(moment).quand)), [recette, cles, cols, moment]);
   // Aux étapes (D107) : chaque houblon et la référence (le houblon de base de ta recette) à 60′, 10′ et au dry hop.
   const reference = useMemo(() => houblonDeBase(recette, cles), [recette, cles]);
   // D128 bis : ses mots, tirés de ses fiches, face aux autres houblons comparés (flb5).
@@ -68,9 +76,12 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   // D130 : « les type spéciaux des houblons hors 16d » d'abord : hors des 12 familles (◇), puis dans une famille que la
   // 16D n'attend pas, puis dans une famille qu'elle attend (floral, herbacé, terreux).
   const horsStyle = useMemo(() => {
-    const rang = (m: MotLu) => (m.famille == null ? 0 : sc.families[m.famille]?.status === 'attendue' ? 2 : 1);
-    return Object.fromEntries(cles.map((k) => [k, (mots[k] ?? []).filter((m) => m.seul).sort((a, b) => rang(a) - rang(b))]));
+    void sc;
+    const rang = (m: MotLu) => (m.famille == null ? 0 : 1);
+    return Object.fromEntries(cles.map((k) => [k, [...(mots[k] ?? [])].sort((a, b) => rang(a) - rang(b) || Number(b.seul) - Number(a.seul))]));
   }, [cles, mots, sc]);
+  // Échelle de chaque famille au moment choisi (radar et barres) : le plus fort apport, 0,3 cran au moins.
+  const echF = useMemo(() => Object.fromEntries(sc.order.map((f) => [f, Math.max(0.05, ...vue.map((c) => c.cellules[f].dCran).filter((x): x is number => x != null))])) as Record<FamilyId, number>, [vue, sc]);
   const etapes = useMemo(() => lireEtapes(recette, reference ? [...cles, reference] : cles), [recette, cles, reference]);
   // Le critère de classement (r6n2) : floral au départ (ta demande). Il change le ★, la réponse et le mis en avant.
   const [critere, setCritere] = useState<Critere>(CRITERES[0]);
@@ -148,7 +159,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
           aria-label={`Fixé pour ${nombreMot(cols.length)} : Stout ${sc.code}, dose égale ${nombre(CONDITIONS.doseGL)} g/L chacun, ${nomLevure(recette.yeastId)}`}>
           <LigneContexte items={[
             { cle: 'base', contenu: <span data-element="y1b-ligne-contexte r6a-contexte" aria-label={`Stout ${sc.code}`}>{sc.code}</span> },
-            { cle: 'dose', contenu: <span className="pq-comparer-dose" aria-label={`dose égale : ${nombre(CONDITIONS.doseGL)} g/L chacun`}>{nombre(CONDITIONS.doseGL)} g/L chacun</span> },
+            { cle: 'dose', contenu: <span className="pq-comparer-dose" aria-label={`dose égale : ${nombre(CONDITIONS.doseGL)} g/L chacun`}>{nombre(CONDITIONS.doseGL)} g/L</span> },
             { cle: 'levure', contenu: <span data-element="y1b-levure-pastilles a2b-ce-que-la-levure-change">{nomLevure(recette.yeastId)}</span> },
           ]} sansMot />
           <span data-element="l8b-legende-cachee" data-etat="etat-comp-legende"><Legende><ContenuLegende /></Legende></span>
@@ -174,7 +185,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
               <button type="button" role="radio" data-e="absolu" data-etat="etat-comp-absolu" aria-checked={absolu} onClick={() => setAbsolu(true)}>Absolu</button>
             </span>
           </div>
-          {sel && <Radar axes={sc.order} cols={vue} retenu={cleRetenue} absolu={absolu} visee={VISEE.famille} trop={TROP} />}
+          {sel && <Radar axes={sc.order} cols={vue} retenu={cleRetenue} absolu={absolu} visee={VISEE.famille} trop={TROP} moment={moment} />}
         </section>
 
         <section className="pq-comparer-tab" data-role="simulation" aria-label="Les houblons, côte à côte"
@@ -195,42 +206,57 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
           <BandeEtapes cols={cols} etapes={etapes} reference={reference} nomReference={reference ? hopRef(reference)?.name ?? reference : null} retenu={cleRetenue}
             moment={moment} onMoment={setMoment} critere={critere}
             pastille={<PastilleCritere critere={critere} onChoisir={(c) => { setCritere(c); setRetenu(null); }} onPourquoi={() => basculer('pourquoi')} />} />
+          <EtapesEnsemble onMoment={setMoment} cols={cols} etapes={etapes} reference={reference} nomReference={reference ? hopRef(reference)?.name ?? reference : null}
+            moment={moment} critere={critere} absolu={absolu} />
+          {/* cmc2h (« il y a pas de transition entre les type de données ») : un filet et un titre par bloc ; le « ? »
+              des étapes vit dans celui-ci. */}
+          <p className="cmc-tb" data-role="titre-bloc"><span>Par famille</span><AideEtapes nomReference={reference ? hopRef(reference)?.name ?? reference : null} famille={COURT[critere.famille].toLowerCase()} /></p>
           <div className="pq-comparer-rgs" data-element="r6a-rangees" data-moment={moment}>
             {lignes.map((f, i) => (
               <div key={f} className={cx('pq-comparer-grille-tab pq-comparer-rg', chiffre(f) && 'pq-comparer-demande', i === lignes.length - 1 && 'pq-comparer-derniere')} data-famille-ligne={f}
                 {...(f === VISEE.famille || f === TROP ? { 'data-element': 'r6a-ecarts' } : {})}>
                 <span className="pq-comparer-rn" style={{ color: COULEURS[f].texte }}>
                   <Picto famille={f} />{!quatre && <span>{COURT[f]}</span>}
-                  {f === VISEE.famille && <span className="pq-comparer-dem" aria-label="ta demande : plus de floral">↑</span>}
-                  {f === TROP && <span className="pq-comparer-dem pq-comparer-dem-trop" aria-label="ta dégustation : trop de résineux">↓</span>}
+                  {f === VISEE.famille && <span className="pq-comparer-dem"><Trait d={G_HAUT} t={13} label="ta demande : plus de floral" /></span>}
+                  {f === TROP && <span className="pq-comparer-dem pq-comparer-dem-trop"><Trait d={G_BAS} t={13} label="ta dégustation : trop de résineux" /></span>}
                 </span>
-                {vue.map((c) => <Cellule key={c.cle} c={c} cel={c.cellules[f]} retenu={c.cle === cleRetenue} absolu={absolu} montre={chiffre(f)} moment={moment} />)}
+                {vue.map((c) => {
+                  const r = vue.find((x) => x.cle === cleRetenue)?.cellules[f];
+                  const a = c.cellules[f];
+                  const ecart = c.cle === cleRetenue ? undefined : (!r || r.inconnu || a.inconnu ? null : (a.centre - r.centre) / a.cran);
+                  return <Cellule key={c.cle} c={c} cel={a} retenu={c.cle === cleRetenue} absolu={absolu} montre={false} moment={moment} ecart={ecart} nomRetenu={sel?.houblon.nom ?? ''} ech={echF[f]} />;
+                })}
               </div>
             ))}
             {tousInconnus.length > 0 && (
               <div className="pq-comparer-grille-tab pq-comparer-rg pq-comparer-inc-t" data-element="r6a-inconnus">
                 <span className="pq-comparer-rn">{tousInconnus.map((f) => <Picto key={f} famille={f} />)}</span>
-                <span className="pq-comparer-inc-l"><i className="pq-comparer-hach" aria-hidden="true" />inconnus, pas zéro</span>
+                <span className="pq-comparer-inc-l" aria-label="inconnus, pas zéro"><i className="pq-comparer-hach" aria-hidden="true" /></span>
               </div>
             )}
           </div>
+          <p className="cmc-tb" data-role="titre-bloc"><span>Ses mots</span></p>
           <SesMots cols={cols} mots={mots} retenu={cleRetenue} quatre={quatre} />
+          {/* cmc2d (« Non la première partie doit être en dessous. La seconde dans l'autre vue... ») : l'huile totale de rpz2
+              sous « ses mots », avant les notes « ~ dans la cuve » ; la composition des huiles est dans la feuille Valeurs. */}
+          <HuilesVue cols={cols} reference={reference} />
           <PiedEtapes cols={cols} retenu={cleRetenue} onDryhopper={placer} />
         </section>
         {/* D114 : le panel OSU (un acquis) reste replié, au rang d'une note, sous le tableau comme dans r6a ; un toucher ouvre
             Preuve, sa feuille dans le dock de r6n2. */}
-        <section className="pq-comparer-osu-ligne" aria-label="Panel OSU">
-          <button type="button" className="pq-comparer-lien pq-comparer-osu-tch" data-ouvre-element="y3-panel-osu r6a-osu" onClick={() => setFeuille('preuve')}>Panel OSU, Cascade : la courbe mesurée, dans Preuve ›</button>
-        </section>
+
         {/* « Placer <houblon> › » en bas, comme le « Doser Idaho 7 dans Dryhopper » de r6a (80 mots au premier écran), sous
             la réponse de y1b qui conclut la comparaison. */}
+        {/* D114 : le panel OSU, replié, à un toucher (dans Preuve) ; un mot, plus une phrase (« Beaucoup trop mis en avant ») */}
+        <section className="pq-comparer-osu-ligne" aria-label="Panel OSU">
+          <button type="button" className="pq-comparer-lien pq-comparer-osu-tch" data-ouvre-element="y3-panel-osu r6a-osu" onClick={() => setFeuille('preuve')}>Panel OSU ›</button>
+        </section>
         {rep && <LigneReponse rep={rep} critere={critere} moment={moment} onPourquoi={() => basculer('pourquoi')} />}
         {sel && (
           <span ref={refPont} className="pq-comparer-placer" data-etat="etat-comp-placer" data-element="y1b-dock-pouce y1b-second-houblon-puis">
             <Pont nom="placer" onClick={placer}>Placer {sel.houblon.nom}</Pont>
           </span>
         )}
-        <p className="pq-comparer-vsrc">~ simulé par le moteur à {nombre(CONDITIONS.doseGL)} g/L chacun : centre conventionnel, bande = incertitude. Le reste, à un toucher sous le pouce.</p>
       </div>
 
       {sel && feuille === 'defi' && <FeuilleDock titre="Ton défi" onFermer={fermer}><FeuilleDefi cols={cols} retenu={cleRetenue} etapes={etapes} onSuggerer={() => ouvrir({ ecran: 'suggerer' })} /></FeuilleDock>}
@@ -306,7 +332,7 @@ function LigneReponse({ rep, critere, moment, onPourquoi }: { rep: NonNullable<R
   const { etoile, autre, ecart, retenuEstEtoile } = rep;
   const nb = (x: number) => <span className="pq-comparer-nb" data-nature="simule">{signeCran(x)}</span>;
   const f = critere.famille;
-  const quand = moment === 'dryPost' ? 'au dry hop' : `à ${ETAPES.find((e) => e.code === moment)!.nom}`;
+  const quand = etape(moment).dit;
   return (
     <p className="pq-comparer-rep" data-role="reponse" aria-live="polite">
       {retenuEstEtoile || !autre ? (
@@ -341,23 +367,21 @@ function SesMots({ cols, mots, retenu, quatre }: { cols: ColonneLue[]; mots: Rec
   const seuls = (mots[sel.cle] ?? []).filter((m) => m.seul);
   const max = quatre ? 5 : 6;
   return (
-    <section className="pq-comparer-mots" aria-label="Ses mots : ce que chaque houblon dit en plus des familles de la 16D, d’après ses fiches" data-element="d128bis-ses-mots flb5-lui-seul">
+    <section className="pq-comparer-mots" aria-label="Ses mots, d’après ses fiches : le picto de sa famille, le losange hors des 12 familles ; en gras, lui seul" data-element="d128bis-ses-mots flb5-lui-seul">
       {/* « Vue à revoir mais ce texte là est inutile » (24.10, soir, sur « Idaho 7 seul dit mojito, citron vert… ») : la
           phrase est retirée, la grille dessous dit déjà les mots en gras ; la vue sera reprise. */}
-      <p className="pq-comparer-mots-b" style={{ ['--pq-h' as string]: sel.couleur }} data-role="lui-seul" data-seuls={seuls.length}>
-        <span className="pq-comparer-mots-s">face à {liste(cols.filter((c) => c.cle !== sel.cle).map((c) => c.houblon.nom))}, d’après ses fiches · en gras : ce que lui seul dit</span>
-      </p>
+      <span hidden data-role="lui-seul" data-seuls={seuls.length} />
       <div className="pq-comparer-grille-tab pq-comparer-mots-g">
-        <span className="pq-comparer-mots-l">{!quatre && 'ses mots'}</span>
+        <span className="pq-comparer-mots-l" aria-hidden="true" />
         {cols.map((c) => {
-          const l = mots[c.cle] ?? [];
+          const l = [...(mots[c.cle] ?? [])].sort((a, b) => Number(a.famille != null) - Number(b.famille != null));
           return (
             <span key={c.cle} className={cx('pq-comparer-mots-c', c.cle === retenu && 'pq-comparer-sel')} style={{ ['--pq-h' as string]: c.couleur }} data-col={c.cle}>
-              {l.length === 0 && <span className="pq-comparer-mots-rien">rien de plus que ses familles</span>}
+              {l.length === 0 && <span className="pq-comparer-mots-rien">—</span>}
               {l.slice(0, max).map((m) => (
                 <span key={m.mot} className={cx('pq-comparer-mot', m.seul && 'pq-comparer-mot-seul')} data-mot={m.mot} data-seul={m.seul ? '' : undefined}
                   title={`${m.mot} : ${m.fiches.join(', ')}${m.aussi.length ? ` ; aussi chez ${m.aussi.join(', ')}` : ' ; lui seul ici'}${m.famille ? ` ; famille ${COURT[m.famille].toLowerCase()}` : ' ; hors des 12 familles'}`}>
-                  {m.famille ? <Picto famille={m.famille} taille={12} /> : <span className="pq-comparer-mot-hors" aria-label="hors des 12 familles">◇</span>}<span className="pq-comparer-mot-t">{m.mot.split(' ').map(coupure).join(' ')}</span>
+                  {m.famille ? <Picto famille={m.famille} taille={12} /> : <Hors16D />}<span className="pq-comparer-mot-t">{m.mot.split(' ').map(coupure).join(' ')}</span>
                 </span>
               ))}
               {l.length > max && <span className="pq-comparer-mots-rien">+{l.length - max}</span>}
@@ -369,19 +393,23 @@ function SesMots({ cols, mots, retenu, quatre }: { cols: ColonneLue[]; mots: Rec
   );
 }
 
+/** « Hors 16D » : le losange de ses captures, dessiné au trait (un mot que les 12 familles ne disent pas). */
+function Hors16D({ taille = 12 }: { taille?: number }) {
+  return <svg width={taille} height={taille} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={32 / taille} strokeLinejoin="round" className="p2-hors" data-role="icone-hors-16d" aria-hidden="true"><path d="M12 2.5 21.5 12 12 21.5 2.5 12z" /></svg>;
+}
+
 // ---------- Ta stout, et le « + » (p4, r6n2) ----------
 function TaStout({ quatre, plein, ouvert, onPlus }: { quatre: boolean; plein: boolean; ouvert: boolean; onPlus: () => void }) {
   return (
     <div className="pq-comparer-ta" data-element="r6a-ta-stout m4-radar-degustation" aria-label="Ta stout : trop résineuse, tu la veux plus florale (dégustation du 18.10)">
       <span className="pq-comparer-ta-n"><i className="pq-comparer-trait" aria-hidden="true" />{!quatre && <b>Ta stout</b>}</span>
-      <span className="pq-comparer-ta-l"><Picto famille={TROP} taille={14} /><span aria-hidden="true">↓</span></span>
-      <span className="pq-comparer-ta-l"><Picto famille={VISEE.famille} taille={14} /><span aria-hidden="true">↑</span></span>
+      <span className="pq-comparer-ta-l"><Picto famille={TROP} taille={14} /><Trait d={G_BAS} t={13} /></span>
+      <span className="pq-comparer-ta-l"><Picto famille={VISEE.famille} taille={14} /><Trait d={G_HAUT} t={13} /></span>
       {!plein && (
         <button type="button" className="pq-comparer-plus" data-role="ajouter-colonne" data-etat="etat-comp-colonne-plus" data-element="p4-plus-comparaison" aria-haspopup="dialog" aria-expanded={ouvert}
-          aria-label="Ajouter un houblon à la comparaison" onClick={onPlus}>+</button>
+          aria-label="Ajouter un houblon à la comparaison" onClick={onPlus}><Trait d={G_PLUS} t={26} /></button>
       )}
       {/* D130 : la clé de la ligne noire des têtes, une fois, dans la colonne de Ta stout */}
-      {!quatre && <span className="pq-comparer-ta-seul" aria-hidden="true">lui seul</span>}
     </div>
   );
 }
@@ -392,18 +420,18 @@ function TaStout({ quatre, plein, ouvert, onPlus }: { quatre: boolean; plein: bo
 // ses mots, sans nom de famille ni « fruité », jamais inventés) ; d'abord les mots hors des 12 familles (◇), puis les
 // autres, ~26 signes au plus (le détail sous le premier écran, dans « ses mots »).
 function LuiSeul({ cle, nom, mots, quatre }: { cle: string; nom: string; mots: MotLu[]; quatre: boolean }) {
-  const seuls = mots.filter((m) => m.seul);
+  const seuls = mots;
   const pris: MotLu[] = [];
   let n = 0;
-  for (const m of seuls) { if (pris.length && n + m.mot.length > (quatre ? 9 : 13)) break; pris.push(m); n += m.mot.length + 2; }
+  for (const m of seuls) { if (pris.length >= 2) break; pris.push(m); n += m.mot.length; }
   const reste = seuls.length - pris.length;
   return (
     <span className="pq-comparer-seul" data-role="hors-16d" data-houblon={cle}
-      aria-label={seuls.length ? `${nom}, lui seul, d’après ses fiches : ${seuls.map((m) => m.mot).join(', ')}` : `${nom} : rien que les autres ne disent aussi`}>
+      aria-label={seuls.length ? `${nom}, ses mots, d’après ses fiches (losange : hors des 12 familles) : ${seuls.map((m) => m.mot).join(', ')}` : `${nom} : ses fiches ne disent rien de plus que ses familles`}>
       {seuls.length
         ? <>{pris.map((m, i) => (
-            <span key={m.mot} className="pq-comparer-seul-m" aria-hidden="true">{m.famille ? null : <span className="pq-comparer-seul-hors">◇</span>}{m.mot}{i < pris.length - 1 ? ',' : ''}</span>
-          ))}{reste > 0 && <span className="pq-comparer-seul-p" aria-hidden="true">+{reste}</span>}</>
+            <span key={m.mot} className={cx('pq-comparer-seul-m', !m.seul && 'p2-pas-seul')} aria-hidden="true">{m.famille ? <Picto famille={m.famille} taille={12} /> : <Hors16D />}{m.mot.split(" ").map(coupure).join(" ")}</span>
+          ))}{/* la suite : « ses mots », sous les rangées */}</>
         : <span className="pq-comparer-seul-rien" aria-hidden="true">—</span>}
     </span>
   );
@@ -447,11 +475,11 @@ function TeteColonne({ c, retenu, quatre, epinglee, mots, retirable, remplacable
           {a ? (lot
             ? <span data-role="alpha" data-source="lot" data-nature="mesure" className={cx('pq-comparer-al', a.horsFiches && 'pq-comparer-al-hors')}
                 aria-label={`α du lot en stock : ${nombre(a.valeur, 1)} %${a.horsFiches && a.plage ? ` ; hors des fiches (${plage(a.plage[0], a.plage[1])} %)` : ''}`}>
-                α {nombre(a.valeur, 1)}%{a.horsFiches && <span aria-hidden="true"> ≠</span>}
+                {`α ${nombre(a.valeur, 1)}%`}{a.horsFiches && <span aria-hidden="true"> ≠</span>}
               </span>
             : <span data-role="alpha" data-source="fiches" data-nature="mesure" className="pq-comparer-al pq-comparer-al-fi"
                 aria-label={`α des fiches : ${a.plage ? plage(a.plage[0], a.plage[1]) : nombre(a.valeur, 1)} %`}>
-                <IconeLivre />{a.plage ? (quatre ? `${nombre(a.plage[0], 1)}–${nombre(a.plage[1], 0)}` : plage(a.plage[0], a.plage[1])) : nombre(a.valeur, 1)}%
+                <IconeLivre />{`${a.plage ? (quatre ? `${nombre(a.plage[0], 1)}–${nombre(a.plage[1], 0)}` : plage(a.plage[0], a.plage[1])) : nombre(a.valeur, 1)}%`}
               </span>)
             : <span data-role="alpha" data-inconnu="" className="pq-comparer-al">α ?</span>}
         </span>
@@ -459,13 +487,14 @@ function TeteColonne({ c, retenu, quatre, epinglee, mots, retirable, remplacable
           <span className={cx('pq-comparer-us', deduit && 'pq-comparer-deduit')} data-role="usage" data-usage={h.role.mot === 'mixte' ? 'double' : h.role.mot}
             data-source={deduit ? 'règle' : 'fournisseur'} aria-label={`Usage : ${h.role.mot}${deduit ? ', déduit de l’α, à valider' : ', attesté par le fournisseur'}`}>{h.role.mot}</span>
         )}
+        <HuileTete cle={c.cle} nom={h.nom} couleur={c.couleur} />
         <span className="pq-comparer-tc-f" aria-label="ses familles, d’après ses fiches">
           {familles.map((f) => <Picto key={f} famille={f} taille={h.familles[f].niveau === 'marqué' ? 16 : 13} />)}
         </span>
         <span className="pq-comparer-tc-v">
           {c.sorties.length
-            ? <span className="pq-comparer-vd pq-comparer-vd-hors" data-nature="simule" aria-label={`~ sort de ta 16D : ${c.sorties.map((f) => COURT[f].toLowerCase()).join(', ')}`}>~<IconeRisque /><span className="pq-comparer-vd-mot">hors</span>{c.sorties.map((f) => <Picto key={f} famille={f} taille={12} />)}</span>
-            : <span className="pq-comparer-vd pq-comparer-vd-dans" data-nature="simule" aria-label="~ reste dans ta 16D, hors le résineux déjà au-dessus">~<IconeOk /><span className="pq-comparer-vd-mot">dans</span></span>}
+            ? <span className="pq-comparer-vd pq-comparer-vd-hors" data-nature="simule" aria-label={`~ sort de ta 16D : ${c.sorties.map((f) => COURT[f].toLowerCase()).join(', ')}`}><IconeRisque /><span className="pq-comparer-vd-mot">hors</span>{c.sorties.map((f) => <Picto key={f} famille={f} taille={12} />)}</span>
+            : <span className="pq-comparer-vd pq-comparer-vd-dans" data-nature="simule" aria-label="~ reste dans ta 16D, hors le résineux déjà au-dessus"><IconeOk /><span className="pq-comparer-vd-mot">dans</span></span>}
         </span>
         <LuiSeul cle={c.cle} nom={h.nom} mots={mots} quatre={quatre} />
         {h.partSansFamille != null && h.partSansFamille > 0.5 && (
@@ -477,17 +506,48 @@ function TeteColonne({ c, retenu, quatre, epinglee, mots, retirable, remplacable
       </button>
       {(retirable || remplacable) && (
         <span className="pq-comparer-actions">
-          {remplacable && <button type="button" className="pq-comparer-remplacer" aria-label={`Remplacer ${h.nom} dans la comparaison`} onClick={onRemplacer}>⇄</button>}
-          {retirable && <button type="button" className="pq-comparer-retirer" aria-label={`Retirer ${h.nom} de la comparaison`} onClick={onRetirer}>×</button>}
+          {remplacable && <button type="button" className="pq-comparer-remplacer" aria-label={`Remplacer ${h.nom} dans la comparaison`} onClick={onRemplacer}><Trait d={G_ECH} /></button>}
+          {retirable && <button type="button" className="pq-comparer-retirer" aria-label={`Retirer ${h.nom} de la comparaison`} onClick={onRetirer}><Trait d={G_CROIX} /></button>}
         </span>
       )}
     </div>
   );
 }
 
+// ---------- l'huile totale (rpz2 de r6a++, « L'ajout des huiles aussi est bien », D131) ----------
+// Une goutte et la plage mesurée sur une échelle commune (0–5 mL/100 g) : la même longueur pour le même volume, d'une
+// colonne à l'autre ; le trait gris : Saaz, le repère « fade » (« différencier un houblon hyper aromatique type Galaxy
+// d'un houblon plus "fade" type saaz »). Le nombre dans l'aria-label et dans Valeurs ; inconnue : « ? », jamais 0.
+function HuileTete({ cle, nom, couleur }: { cle: string; nom: string; couleur: string }) {
+  const v = huileDe(cle), saaz = huileDe(SAAZ);
+  const x = (n: number) => `${(Math.min(n, HUILE_MAX) / HUILE_MAX * 100).toFixed(1)}%`;
+  return (
+    <span className="cmb-huile" data-greffe="rpz2-huiles" data-role="huile" data-houblon={cle}
+      aria-label={v ? `${nom} : huile totale ${v.texte} mL/100 g (${v.source})${saaz ? `, Saaz ${saaz.texte}` : ''}` : `${nom} : huile totale inconnue`}>
+      <IconeGoutte taille={12} />
+      {v
+        ? <span className="cmb-huile-p" aria-hidden="true">
+            {saaz && <i className="cmb-huile-saaz" style={{ left: x((saaz.lo + saaz.hi) / 2) }} />}
+            <i className="cmb-huile-b" style={{ left: x(v.lo), width: `calc(${x(v.hi)} - ${x(v.lo)})`, background: couleur }} />
+          </span>
+        : <span className="cmb-huile-inc" aria-hidden="true">?</span>}
+    </span>
+  );
+}
+
 // ---------- une cellule : la barre de l5b face à ta 16D ----------
-function Cellule({ c, cel, retenu, absolu, montre, moment }: { c: ColonneLue; cel: CelluleLue; retenu: boolean; absolu: boolean; montre: boolean; moment: CodeEtape }) {
-  const nom = `${COURT[cel.famille]}, posé ${moment === 'dryPost' ? `au dry hop (${CONDITIONS.jours} j)` : `à ${ETAPES.find((e) => e.code === moment)!.nom}`}`;
+function Cellule({ c, cel, retenu, absolu, montre, moment, ecart, nomRetenu, ech }: { c: ColonneLue; cel: CelluleLue; retenu: boolean; absolu: boolean; montre: boolean; moment: CodeEtape; ecart?: number | null; nomRetenu?: string; ech?: number }) {
+  // rpz4 (« Ça c'est très bien, on voit direct les différences ») : à droite de la barre, l'écart face au houblon retenu,
+  // au moment choisi, en crans de ta 16D ; « ≈ » sous 0,1 cran ; « ? » si l'un des deux est inconnu (jamais 0).
+  // Couleur selon ta demande du 18.10 : vert dans son sens (plus floral, moins résineux), orangé contre ; neutre ailleurs.
+  const voeu = cel.famille === VISEE.famille ? 1 : cel.famille === TROP ? -1 : 0;
+  const ec = ecart === undefined ? null : (
+    <span className={cx('cmb2-ec', ecart != null && Math.abs(ecart) >= 0.1 && voeu !== 0 && (Math.sign(ecart) === voeu ? 'cmb2-ec-bien' : 'cmb2-ec-contre'))} data-greffe="rpz4-ecart-chiffre" data-nature="simule"
+      aria-label={ecart == null ? `face à ${nomRetenu} : inconnu` : `face à ${nomRetenu} : ${signeCran(ecart)} cran`}>
+      {ecart == null ? '?' : Math.abs(ecart) < 0.1 ? <svg width="14" height="10" viewBox="0 0 14 10" aria-hidden="true" className="cmb2-egal"><path d="M1 3.5c2-2 4 0 6 0s4-2 6 0M1 8c2-2 4 0 6 0s4-2 6 0" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg> : signeCran(ecart).replace('~', '')}
+    </span>
+  );
+  const nom = `${COURT[cel.famille]}, posé ${etape(moment).dit}`;
   if (cel.inconnu) {
     return (
       <span className={cx('pq-comparer-cel pq-comparer-cel-inc', retenu && 'pq-comparer-sel')} style={{ ['--pq-h' as string]: c.couleur }} data-col={c.cle}
@@ -497,12 +557,12 @@ function Cellule({ c, cel, retenu, absolu, montre, moment }: { c: ColonneLue; ce
     );
   }
   const k = absolu ? ABSOLU : cel.domaine;
-  const s = (x: number) => x / k;
+  const s = (x: number) => (absolu || !ech ? x / k : Math.max(0, (x - (cel.avant ?? 0)) / cel.cran / ech));
   const bande = cel.bandeHaut;
   const z = bande != null ? s(bande) : 0;
   const gb = s(bande != null ? Math.min(cel.centre, bande) : cel.centre);
   const xo = bande != null && cel.centre > bande ? Math.min(1, s(cel.centre)) - Math.min(1, s(bande)) : 0;
-  const depasse = s(cel.centre) > 1;
+  const depasse = s(cel.centre) > 1.001 && (absolu || !ech);
   const d = cel.dCran;
   return (
     <span className={cx('pq-comparer-cel', retenu && 'pq-comparer-sel')} style={{ ['--pq-h' as string]: c.couleur }} data-col={c.cle} role="img"
@@ -515,6 +575,7 @@ function Cellule({ c, cel, retenu, absolu, montre, moment }: { c: ColonneLue; ce
         {cel.avant != null && <i className="pq-comparer-av" style={{ left: `calc(${pc(s(cel.avant))} - 1px)` }} />}
         {depasse && <i className="pq-comparer-fl" style={{ borderLeftColor: ORANGE }} aria-hidden="true" />}
       </span>
+      {ec}
       {montre && d != null && <span className={cx('pq-comparer-dl', cel.hors || (cel.famille === TROP && d > 0) ? 'pq-comparer-dl-hors' : '')} data-nature="simule">{signeCran(d)}</span>}
     </span>
   );
@@ -531,7 +592,13 @@ function ContenuLegende() {
       <p>zone pâle : ce que ta 16D permet ; barre : ~ simulé à 4 g/L ; trait fin : sa bande d’incertitude ; trait noir : ta stout aujourd’hui ; orangé : au-dessus de ta 16D ; hachuré : inconnu, jamais zéro.</p>
       <p><b>~+1,9</b> : crans du style gagnés. ↑ ↓ : ta demande du 18.10 (Ta stout : plus floral, moins résineux).</p>
       <p><b>Les étapes</b> (60′, 10′, dry hop), sur les rangées : chaque houblon posé à ce moment, à 4 g/L ; le nombre : crans gagnés de la famille de la pastille ; ★ : le meilleur de l’étape ; à gauche et en pointillé gris : ton Nugget au même moment. Toucher une étape la pose sur le radar et les rangées ; au départ, le dry hop, après 3 j.</p>
-      <p><b>Le radar</b> : le houblon retenu plein, avec son intervalle en trait fin (// : il continue au-delà) ; les autres en contour.</p>
+      <p><b>Le radar</b> : chaque houblon à la couleur de sa tête, le retenu en plein ; trait plein entre deux familles connues voisines, tireté au-dessus d’un inconnu ; « ? » au bord : inconnu pour ce houblon ; « sans donnée » : inconnu pour tous ; vert pâle : ta 16D (Au style).</p>
+      <p>~ dans la cuve, au moment comparé ; dry hop : {CONDITIONS.jours} j de contact.</p>
+      <p>Résineux déjà au-delà dans ta dégustation : chaque gain s’y ajoute.</p>
+      <p>~ simulé, {nombre(CONDITIONS.doseGL)} g/L chacun ; trait fin : incertitude.</p>
+      <p>Hachuré : inconnu, pas zéro.</p>
+      <p>Au style, chaque famille du radar a son échelle : le bord vaut le plus fort des houblons comparés, écrit près du picto ; anneaux en parts. En Absolu : échelle commune.</p>
+      <p>Sous chaque tête : ses mots, tirés de ses fiches ; ✓ sous la tête : reste dans ta 16D ; ⚠ et le picto : la famille qui en sort (simulé).</p>
       <p><b>★</b> : le meilleur par le critère qui reste dans ta 16D. Toucher une colonne la retient ; appui long sur un nom : sa fiche ; « + » : un 4ᵉ houblon de ton stock.</p>
       <p><b>Sous le pouce</b> : Défi (tes deux objectifs), Égaler, Valeurs (chimie), Preuve (panel, 20 bières), Frise (le moment), Souche (la levure).</p>
     </div>

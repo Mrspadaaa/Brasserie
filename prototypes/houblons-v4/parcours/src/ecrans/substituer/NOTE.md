@@ -98,3 +98,12 @@ ferme la vue » ; coche sur le tableau « Arômes 16D » : « Ça c'est vraiment
 - La matrice des huiles, même grammaire : huile totale (mL/100 g), myrcène, humulène, caryophyllène, farnésène, linalol,
   géraniol (% de l'huile), en plage, enveloppe des sources (`data/composes-houblon.json`, sinon Beer Maverick et Hopsteiner) ;
   « ? » quand aucune fiche ne la donne, jamais 0. Le bloc « Huiles, composants » de u4 reste plus bas.
+
+## Le radar commun (voie rb-radar-commun, 25.10)
+
+« Ensuite utiliser ce radar graph comme Baseline et l'utiliser partout dans les vue où il y en a » : `Radar.tsx` (RadarU4)
+pose le radar de cmc2h (`src/commun/RadarBase.tsx`). Ses valeurs restent celles de u4, le niveau dans les fiches (non
+décrit 0, sur le petit anneau du zéro ; cité 1 ; marqué 2), anneaux « 0, cité, marqué ». Nugget, l'original, en contour
+seul ; le remplaçant choisi en avant ; l'autre en contour et voile léger. Les familles qu'aucune fiche ne décrit
+rejoignent le secteur « sans donnée » ; les attendues au style sont cerclées (« gras »). Pas de normalisation : des
+niveaux de fiches n'ont pas d'échelle au style, le radar garde son échelle dans les deux lectures (D68).

@@ -3,6 +3,7 @@
 // basse au-dessus du dock, qui reste là (un second toucher, la croix, le voile ou Échap referment ; un autre toucher
 // du dock change de feuille). Et les feuilles du « + » (la carte du houblon avant de l'ajouter, L14) et de
 // « pourquoi ? ». Tout est lu dans le moteur à l'instant (calcul.ts) ; les vraies valeurs dans valeurs.ts.
+import { CompositionVue } from './Huiles';
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { COULEURS, COURT, Picto, nombre, plage } from '../../commun';
@@ -372,6 +373,8 @@ export function FeuilleValeurs({ cols, sel, quatre, etapes, familles, onPreuve }
       <LigneValeurs nom="β" unite="% masse" icone={<IconeLivre />} cols={cols} cellules={beta} quatre={quatre} />
       <div className="pq-comparer-chim" data-acquis="chimie" aria-label="Composés de l’huile, rangés par famille">
         <LigneValeurs cle="huile" nom="huile" unite="mL/100 g" icone={<IconeGoutte />} cols={cols} cellules={hu} quatre={quatre} />
+        {/* cmc2d : la composition des huiles de Beer Maverick (barres superposées), sous la ligne « huile ». */}
+        <CompositionVue cols={cols} />
         {chimie.map((x) => <LigneValeurs key={x.cle} cle={x.cle} nom={x.nom} unite={x.unite} famille={x.famille} cols={cols} cellules={x.cellules} quatre={quatre} />)}
       </div>
       {lin.some(Boolean) && <LigneValeurs cle="linalol-biere" nom="linalol en bière" unite="µg/L" famille="floral" cols={cols} cellules={lin} quatre={quatre}

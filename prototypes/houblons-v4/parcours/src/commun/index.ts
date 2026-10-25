@@ -17,3 +17,4 @@ export { PiedAnnuler } from './PiedAnnuler';
 // Composants de l'app, à employer quand ils conviennent (importés, jamais recopiés).
 export { SegmentedControl } from '@app/ui/SegmentedControl';
 export { RecipeDisclosure } from '@app/ui/RecipeDisclosure';
+export { RadarBase, chiffreRadar, ORANGE_HORS, type RadarBaseProps, type SerieRadar as SerieRadarBase, type RoleSerie } from './RadarBase';

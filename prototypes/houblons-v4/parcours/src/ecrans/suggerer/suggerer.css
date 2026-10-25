@@ -53,12 +53,6 @@ html:has(.pq-outil-suggerer) [data-page-shell]:not(.pq-outil-suggerer) { display
 .pq-suggerer-egal::before { content: "="; font-weight: 800; }
 /* Onglets du socle : texte des onglets inactifs au contraste de 4,5:1 sur leur fond gris (thème des maquettes). */
 .pq-suggerer-moment { display: inline-flex; align-items: center; height: 1.375rem; padding: 0 0.5rem; border-radius: 9999px; border: 1.5px dashed rgb(var(--cave-600)); font-size: 0.75rem; font-weight: 600; color: rgb(var(--cave-50)); }
-.pq-suggerer-radar-grille { fill: none; stroke: rgb(var(--cave-700) / 0.6); stroke-width: 0.8; }
-.pq-suggerer-radar-zone { fill: rgb(var(--cave-700) / 0.35); stroke: none; }
-.pq-suggerer-radar-inconnu { fill: rgb(var(--cave-600) / 0.18); stroke: none; }
-.pq-suggerer-radar-biere { fill: none; stroke: rgb(var(--cave-50)); stroke-width: 2.2; }
-.pq-suggerer-radar-serie { fill: rgb(var(--cave-400) / 0.12); stroke: rgb(var(--cave-200)); stroke-width: 1.6; }
-.pq-suggerer-radar-nom { font-size: 10px; fill: rgb(var(--cave-200)); }
 /* « ≈ » (assemblage estimé) et « › » posés par la feuille : des signes, pas des mots. */
 .pq-suggerer-estime::after { content: " \2248"; }
 .pq-suggerer-hh::after { content: " \203A"; }
@@ -119,3 +113,8 @@ html:has(.pq-outil-suggerer) [data-page-shell]:not(.pq-outil-suggerer) { display
 .pq-sg-hors16d-ic { font-style: normal; margin-right: 3px; color: rgb(var(--cave-50)); }
 .pq-sg-hors-case { display: inline-flex; align-items: center; gap: 2px; margin-left: 6px; font-size: 12px; color: rgb(var(--cave-300)); white-space: nowrap; }
 .pq-sg-hors-case > i { font-style: normal; }
+/* Radar commun (voie rb-radar-commun) : la clé d'une ligne, ma bière en trait noir, la voie montrée à sa couleur. */
+.pq-sg-radar-cle { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 14px; margin-top: -2px; font-size: 13px; font-weight: 600; color: rgb(var(--cave-200)); }
+.pq-sg-radar-cle span { display: inline-flex; align-items: center; gap: 5px; min-height: 24px; }
+.pq-sg-radar-cle-biere { display: inline-block; width: 14px; height: 2px; background: rgb(var(--cave-50)); }
+.pq-sg-radar-cle-voie { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }

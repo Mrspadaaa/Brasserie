@@ -1,0 +1,18 @@
+/* Le radar commun (RadarBase.tsx), porté de cmc2h (classes cmc- de fils25-comparer/cmc2h/source/comparer.css), préfixé rb- (L26). */
+.rb-boite { position: relative; display: flex; flex-direction: column; align-items: center; }
+.rb-radar { display: block; margin: 0 auto; max-width: 100%; height: auto; overflow: visible; }
+.rb-grille line, .rb-grille polygon { stroke: rgb(var(--cave-800)); }
+.rb-hach-fond { fill: rgb(var(--cave-850) / .55); }
+.rb-hach-trait { stroke: rgb(var(--cave-400) / .75); }
+.rb-ech { font-size: 10.5px; fill: rgb(var(--cave-400)); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 3px; stroke-linejoin: round; font-family: "IBM Plex Mono", monospace; }
+.rb-sd { font-size: 13px; font-weight: 700; fill: rgb(var(--cave-200)); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 4px; stroke-linejoin: round; }
+.rb-sd-fond { fill: rgb(var(--cave-950)); }
+.rb-stout { stroke: rgb(var(--cave-50)); stroke-width: 1.6; stroke-linejoin: round; }
+.rb-qp { font-size: 10px; font-weight: 800; fill: #fff; }
+.rb-max { font: 600 10.5px 'IBM Plex Mono', ui-monospace, monospace; fill: rgb(var(--cave-400)); }
+.rb-marque { fill: none; stroke: rgb(var(--cave-50)); stroke-width: 2.2; }
+.rb-fl-plus { stroke: #2f6b4f; }
+.rb-fl-moins { stroke: #b42318; }
+.rb-fl-tete-plus { fill: #2f6b4f; }
+.rb-fl-tete-moins { fill: #b42318; }
+.rb-cible { cursor: pointer; -webkit-tap-highlight-color: transparent; }
