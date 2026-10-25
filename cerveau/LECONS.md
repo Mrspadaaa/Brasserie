@@ -12,9 +12,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Comprendre la demande
 
 ### L01 — Reformuler la portée d'une décision avant de la propager
-- Erreur : 12.10, « seul 3.8 », dit pour des tests, appliqué à toute l'app (G38 perdu). 24.10 : y1b et w2 visaient Comparer, greffés sur Dryhopper (D63).
+- Erreur : 12.10, « seul 3.8 », dit pour des tests, appliqué à toute l'app (G38 perdu). 24.10 : y1b et w2 visaient Comparer, greffés sur Dryhopper (D63). 25.10 : « traits trié » lu « plein », c'était « tiretés » (D147).
 - Cause : la portée (tests seuls, un usage, toute l'app) n'a pas été écrite avant d'agir.
-- Faire : écrire la portée (et l'écran visé) en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler.
+- Faire : écrire la portée (et l'écran visé) en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler. Un mot mal tapé : chercher le terme du métier le plus proche, et dire sa lecture.
 - Rôles : pilote, conseil
 - Contrôle : aucun
 
@@ -109,7 +109,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `node scripts/agents/systeme.mjs agents`
 
 ### L28 — Charger les skills de méthode avant de planifier, surtout après une reprise
-- Erreur : 24.10, après une reprise, six voies lancées sans `voies` ni `conseil`. « Pourquoi tu n'as pas utiliser de base les bon outils ? »
+- Erreur : 24.10, après une reprise, six voies lancées sans `voies` ni `conseil`.
 - Cause : le résumé précédait le système.
 - Faire : avant le premier VOIE.md ou Agent, invoquer `voies` (et `conseil` si le lot fixe une direction).
 - Rôles : pilote
@@ -127,14 +127,14 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
 - Erreur : 20.10 et 22.10, la « grille 1,8 Mo » (fichier de maquette) a été lue comme un coût de calcul. Un conseiller a ensuite proposé d'abandonner le repli « dry hop et biotransformation seulement si c'est trop lourd » sans rien chronométrer.
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
-- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel et le premier passage à froid. Avant une architecture de calcul, attribuer au profil le temps mesuré (25.10 : caches et rendu, pas le ×10).
+- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel et le premier passage à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10).
 - Rôles : pilote, conseil, auteur, exécutant
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
 ### L24 — Un choix du brasseur se montre en variantes, il ne bloque pas le lot
 - Erreur : 22.10, le plan de reprise faisait attendre le lot 22 sur quatre questions fermées (radar r2/r3, base de comparaison…). La vague 1 n'a donné aucune mini maquette d'écran, et sa planche n'a pas été publiée. « Pourquoi ça n'a pas produit les mini maquettes ? »
 - Cause : le pilote a traduit « au brasseur de trancher » (conseil) en portes bloquantes, contre [[le-brasseur-choisit]] et [[fil-de-fer-d-abord]].
-- Faire : chaque choix ouvert devient un axe de variantes du lot suivant ; on lui montre, il choisit. Le pilote publie lui-même la page des fils de fer (artefact privé). Une page par choix, toutes ses variantes côte à côte avec sa référence, onze par vue ; une limite d'outil ne décide pas la mise en page (D126).
+- Faire : chaque choix ouvert devient un axe de variantes du lot suivant ; on lui montre, il choisit. Le pilote publie lui-même la page des fils de fer (artefact privé). Une page par choix, ses variantes côte à côte avec sa référence (D126).
 - Rôles : pilote, conseil
 - Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur (décideur brasseur) qui dépend de son choix ; `controle-page-choix.mjs` (D126)
 
