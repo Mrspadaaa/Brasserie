@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Témoin : choisir quand comparer (valeurs fictives)</title>
+<style>
+  body { margin: 0; font: 14px/1.3 system-ui, sans-serif; background: #1b1713; color: #eadfcf; }
+  main { padding: 12px; }
+  h1 { font-size: 16px; margin: 0 0 4px; }
+  .qc-sel { display: flex; gap: 6px; margin: 8px 0; }
+  .qc-sel button { flex: 1; min-height: 44px; border: 1px solid #6b5a43; background: #2a231b; color: inherit; border-radius: 8px; }
+  .qc-sel button[aria-pressed="true"] { background: #c8902f; color: #1b1713; }
+  .qc-cols { display: grid; grid-template-columns: 70px repeat(3, 1fr); gap: 4px; align-items: center; }
+  .qc-cols b { font-size: 12px; }
+  .qc-barre { height: 8px; background: #c8902f; border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Cascade, Idaho 7 ou Galaxy</h1>
+  <p>Témoin du contrôle « choisir quand comparer » : valeurs fictives, à ne pas lire comme des mesures.</p>
+  <div data-role="quand-comparer" class="qc-sel" role="group" aria-label="Quand comparer">
+    <button type="button" data-moment="60" aria-pressed="true">60′</button>
+    <button type="button" data-moment="10" aria-pressed="false">10′</button>
+    <button type="button" data-moment="dryhop" aria-pressed="false">Dry hop</button>
+  </div>
+  <div id="tab" class="qc-cols"></div>
+</main>
+<script>
+  // Valeurs fictives par moment : [Cascade, Idaho 7, Galaxy] pour chaque famille.
+  const V = {
+    '60':     { Floral: [2, 1, 1], Agrumes: [3, 2, 4], Tropicaux: [1, 3, 5], Résineux: [6, 4, 2] },
+    '10':     { Floral: [4, 3, 2], Agrumes: [5, 4, 6], Tropicaux: [3, 5, 7], Résineux: [5, 6, 3] },
+    'dryhop': { Floral: [7, 5, 3], Agrumes: [6, 7, 8], Tropicaux: [5, 8, 9], Résineux: [3, 7, 4] }
+  };
+  const noms = ['Cascade', 'Idaho 7', 'Galaxy'];
+  function rendre(m) {
+    const t = document.getElementById('tab');
+    t.innerHTML = '<span></span>' + noms.map((n) => '<b>' + n + '</b>').join('');
+    for (const [fam, vals] of Object.entries(V[m])) {
+      t.insertAdjacentHTML('beforeend', '<span>' + fam + '</span>' + vals.map((v) => '<div><div class="qc-barre" style="width:' + v * 10 + '%"></div>' + v + '</div>').join(''));
+    }
+  }
+  document.querySelectorAll('[data-moment]').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-moment]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    rendre(b.dataset.moment);
+  }));
+  rendre('60');
+</script>
+</body>
+</html>
