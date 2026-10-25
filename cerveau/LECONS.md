@@ -97,7 +97,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
 - Erreur : lot 21 et 22.10, des fichiers de travail à la racine (`pistes-l5f.png`, `loupe.html`). 25.10, T4 : un déménagement sans les importeurs hors dossier.
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
-- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine. Un déménagement : `grep` de l'ancien chemin sur tout le dépôt avant l'OWNS. Un critère non plus n'écrit dans un livrable (24.10).
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Le pilote commite par chemins (`git commit -- <chemins>`) : un `git mv` d'une voie en vol est déjà dans l'index (25.10). Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine. Un déménagement : `grep` de l'ancien chemin sur tout le dépôt avant l'OWNS. Un critère non plus n'écrit dans un livrable (24.10).
 - Rôles : pilote, auteur, exécutant, concepteur
 - Contrôle : aucun
 
@@ -132,7 +132,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
 ### L24 — Un choix du brasseur se montre en variantes, il ne bloque pas le lot
-- Erreur : 22.10, le plan de reprise faisait attendre le lot 22 sur quatre questions fermées (radar r2/r3, base de comparaison…). La vague 1 n'a donné aucune mini maquette d'écran, et sa planche n'a pas été publiée. « Pourquoi ça n'a pas produit les mini maquettes ? »
+- Erreur : 22.10, le lot 22 attendait quatre questions fermées ; aucune mini maquette, aucune planche publiée.
 - Cause : le pilote a traduit « au brasseur de trancher » (conseil) en portes bloquantes, contre [[le-brasseur-choisit]] et [[fil-de-fer-d-abord]].
 - Faire : chaque choix ouvert devient un axe de variantes du lot suivant ; on lui montre, il choisit. Le pilote publie lui-même la page des fils de fer (artefact privé). Une page par choix, ses variantes côte à côte avec sa référence (D126).
 - Rôles : pilote, conseil
