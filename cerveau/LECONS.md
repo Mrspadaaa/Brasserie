@@ -72,9 +72,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
-- Erreur : 19.10, loupe p02 : RAIL OK et LOT OK, mais 19 à 20 px sous le doigt, 8 à 13 au loin ; 24 à 44 % des captures regardées.
+- Erreur : 19.10, loupe p02 : RAIL OK et LOT OK, mais 19 à 20 px sous le doigt, 8 à 13 au loin. 25.10 : + centré à 0 px (CENTRE OK), blancs jugés sur une page réduite : « comment ça peut passer ça ??? ».
 - Cause : les contrôles bornaient le geste sans exiger de force minimale, et les captures n'étaient pas ouvertes.
-- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK, dont celles de `verifier-page.mjs`.
+- Faire : mesurer le rapport « sous le doigt / au loin » (×3 au moins). Ouvrir chaque capture en image avant de dire OK. Juger la zone qu'il a entourée en recadrage plein format : un vert ne dit pas que c'est bien.
 - Rôles : relecteur, auteur, exécutant
 - Contrôle : aucun
 
@@ -109,7 +109,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `node scripts/agents/systeme.mjs agents`
 
 ### L28 — Charger les skills de méthode avant de planifier, surtout après une reprise
-- Erreur : 24.10, après une reprise, six voies lancées sans `voies` ni `conseil`.
+- Erreur : 24.10, après une reprise, six voies sans `voies` ni `conseil`.
 - Cause : le résumé précédait le système.
 - Faire : avant le premier VOIE.md ou Agent, invoquer `voies` (et `conseil` si le lot fixe une direction).
 - Rôles : pilote
@@ -139,14 +139,14 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `systeme.mjs mission` refuse une voie montrée au brasseur (décideur brasseur) qui dépend de son choix ; `controle-page-choix.mjs` (D126)
 
 ### L25 — Ce que le brasseur verra se conçoit avec Opus et se juge par le critique calibré
-- Erreur : 22.10, la planche « épicé » de Sonnet a été acceptée par le relecteur et le pilote. Le brasseur : « Aucun me convient... », troisième refus. L'utilisateur : « pas très qualitatif... trop d'usage de sonnet et hiku sur des tâches complexes ».
+- Erreur : 22.10, la planche « épicé » de Sonnet a été acceptée par le relecteur et le pilote. Le brasseur : « Aucun me convient... », troisième refus. L'utilisateur : « trop d'usage de sonnet et hiku ».
 - Cause : les modèles étaient répartis par coût, et le critique Fable calibré du lot 21 (`fils21-choisir/critique/PORTRAIT.md`) avait été remplacé par un relecteur générique.
 - Faire : maquettes, pictos et cartes à l'agent `concepteur` (Opus), montrés dans une vraie carte de la base. Relecture d'interface à l'agent `critique` (Fable). Sonnet pour les diagnostics, les contrôles et le code ; Haiku pour le mécanique.
 - Rôles : pilote
 - Contrôle : `systeme.mjs mission` refuse une voie d'interface hors Opus ou Fable, et une relecture d'interface sans critique
 
 ### L26 — Une variante qui reprend un socle préfixe ses classes et assemble son code sans remplacement de chaîne
-- Erreur : 22.10, lot 22, cinq variantes sur douze cassées en silence par le socle importé (l8g, fiche g1) : classes partagées (`.rep`, `.r-bord`…), un `$$` devenu `$` par `String.replace`. Tous les contrôles étaient verts.
+- Erreur : 22.10, lot 22, cinq variantes sur douze cassées en silence par le socle importé : classes partagées, un `$$` devenu `$` par `String.replace` ; contrôles verts.
 - Cause : les classes de la variante partageaient l'espace de noms du socle, et le code client était assemblé par remplacement de chaînes.
 - Faire : préfixer ses classes (`r6x-…`), un nom par rôle, et ses globales JS (script dans une fonction immédiate) ; assembler le code par `split/join` ou des indices ; capturer aussi l'état ouvert et la fiche, et les ouvrir (L12). Un composant de l'app réemployé apporte ses boutons (24.10 : le × du Sheet) : les contrôles de route le couvrent.
 - Rôles : concepteur, auteur
