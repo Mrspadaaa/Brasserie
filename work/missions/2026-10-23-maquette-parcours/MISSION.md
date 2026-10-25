@@ -208,7 +208,7 @@ Chemins de « Possède » : relatifs à la racine du dépôt ; `voies/…` est r
 ## Reprise (25.10, soir) — Comparer et le radar
 - Son choix pour Comparer : **cmc2g**, retouché en **cmc2h** (publié). Registre des choix mis à jour (radar rdg5, chaque axe à son échelle, D68).
 - Règles nouvelles : D68 (Au style : style et moment ; Absolu : aucune normalisation), D143 à D149, note cerveau/sources/beermaverick-radar.
-- En vol : voie rb-radar-commun (le radar de cmc2h dans Comparer, la fiche, Suggérer, Substituer ; Ma bière après t12b).
+- Fait : rb-radar-commun (b0d517c1). En vol : rc-registres-comparer (registres de Comparer sur cmc2g, D69 à écrire) et rb2-ma-biere (mission intégration : RadarBase dans l'app, Ma bière). Attend son choix : transition cmc2j ou cmc2k, puis intégrer la version choisie dans la maquette.
 - Ensuite : Ma bière (RadarBiere de l'app) sur la baseline, puis T13/T15 de l'intégration avec ces écrans.
 
 ## Pages
@@ -236,6 +236,7 @@ Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`).
 | Maquette | 25.10 : légende v2a avec les barres de v2e (D140), houblon inconnu sans plantage (#160) ; BATTERIE 45/45 hors app-intacte adaptée, ETATS 141/141 | https://claude.ai/artifact/HP2He7tNjqPMsAHSCtrRgx | `work/refonte-frontend/v4/outils/pages/2026-10-25-maquette/index.html` |
 | Comparer, depuis ta base | douze versions sur l'écran Comparer de la maquette jouable (D141), le moment au choix ; critique cm : 8 acceptées, cmz1 à cmz4 écartées et montrées, tête cmb2 ; 25.10 | https://claude.ai/artifact/8tFBhx1DYEybS8tvNw1B8V | `work/refonte-frontend/v4/outils/pages/2026-10-25-comparer/index.html` |
 | Comparer, passe 2 sur cmb2 | quatre versions de cmb2 (son choix) avec ses quatre retours ; critique : 4 acceptées, tête cmb2d ; 25.10 | https://claude.ai/artifact/1geWG3kjv1KoXbbC6RMbzx | `work/refonte-frontend/v4/outils/pages/2026-10-25-comparer-v2/index.html` |
+| Radar commun | RadarBase (porté de cmc2h) dans la fiche, Suggérer et Substituer de la maquette, Comparer en référence ; RADAR-BASE OK (8 vues) ; 25.10 | https://claude.ai/artifact/SC99zkTh2DoYjuPvNDtbLb | `work/refonte-frontend/v4/outils/pages/2026-10-25-radar-partout/index.html` |
 | Comparer, la transition | cmc2j (cadre continu) et cmc2k (bande teintée) : la colonne retenue d'un seul tenant, filet fin (D150) ; 25.10 | https://claude.ai/artifact/7T6PTE2XqUmDZYKh1j9fvn | `work/refonte-frontend/v4/outils/pages/2026-10-25-comparer-transition/index.html` |
 | Comparer, cmc2i | cmc2h refusée (« Le + doit juste être au centre du rond du bouton ??? ») : signe + centré dans son rond, ⇄ et × aussi (CENTRE réécrit, D149), transitions en libellé de ligne, moins de vide (D150) ; 25.10 | https://claude.ai/artifact/GaqZuZTL7RP7CiDMRGCqKA | `work/refonte-frontend/v4/outils/pages/2026-10-25-comparer-cmc2i/index.html` |
 | Comparer, cmc2h | cmc2g (son choix, « quasiment parfait ») avec ses quatre retouches : transitions, « ? » rangé, + centré (CENTRE OK, D149), moins de blanc ; 25.10 | https://claude.ai/artifact/SSQCuDjaHz6241e2FosWsP | `work/refonte-frontend/v4/outils/pages/2026-10-25-comparer-cmc2h/index.html` |
