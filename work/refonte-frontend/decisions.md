@@ -654,3 +654,11 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   règle transversale de toutes les vues. « Au style » : lecture par rapport au style, échelle qui suit le moment choisi
   (radar et barres ; D67 pour les barres). « Absolu » : aucune normalisation, nulle part — valeurs brutes en crans, échelle
   fixe commune à tous les moments et à tous les axes, barres et nombres bruts. Précise D67 (qui ne vaut qu'« Au style »).
+- D69 (le brasseur, 25.10 : « Parfait pour Une bande teintée cmc2k », sur cmc2g « C'est quasiment parfait » ; et pour ses mots
+  « il doit tout y avoir avec en ordre décroissant du plus fort au plus faible ») : son choix pour Comparer est cmc2k, il remplace
+  D107 (« r6a pour la forme » et les étapes de x3b). Registres (voie rc-registres-comparer) : choix, inventaire de 57 éléments ;
+  états comp-etat-moment et comp-reference voulus, car leur texte a été retiré à sa demande (« Aussi encore pas mal de légende et
+  texte inutile, qui n'apporte rien ») et leur sens est dans la feuille « ? » ; « Face à ta stout, par » et « IBU » retirés.
+  Contrôles adaptés sans affaiblir D107 : controle-comparer-etapes (référence aux mêmes étapes, défilement vertical permis :
+  actif et après sous le dock parce que le radar est mis en avant) et controle-comparer-familles (deux écrans, `--strict` garde
+  l'ancienne règle). controle-teinte inchangé (16 contre 16).

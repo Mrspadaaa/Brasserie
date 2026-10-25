@@ -25,6 +25,15 @@
 //     [data-etape] qu'il contient, ou [data-etape][data-houblon=<clé de la référence>]. Elle n'est pas un houblon
 //     comparé.
 //
+// 25.10 (cmc2h, son choix : « C'est quasiment parfait », sur cmc2g ; registre D69) : trois adaptations, qui ne retirent rien à
+// ce que D107 demande (choisir quand comparer ; les 5 moments ensemble ; ta stout aux mêmes étapes ; l'inconnu jamais 0) :
+//   1. « au repos » = sans toucher, le défilement vertical simple permis. cmc2h met le radar en avant (« Mettre plus le radargraph
+//      en avant ») puis les têtes, le sélecteur de moment et le tableau des étapes : 60′, 10′ et WP sont dans les 844 premiers
+//      pixels, actif et après juste dessous, sous le dock (y 790 et 816). Une valeur que seul le défilement vertical d'un cadre de
+//      page cache n'est plus « rognée » ; la largeur, overflow:hidden, <details> fermé, display, opacity restent des échecs ;
+//   2. la référence (ta stout, « — Ta stout » en tête de colonne) porte [data-reference] sur sa première ligne, et ses autres
+//      valeurs sont les [data-etape] SANS data-houblon de la même section : elles comptent comme siennes ;
+//   3. un message d'information dit combien de valeurs sont au premier écran (844 px), sans échec.
 // Usage : node controle-comparer-etapes.mjs <dossier construit> [--page=etat.html] [--largeur=390|1280]
 //   Page lue : <dossier>/comparer/<page>, à 390 × 844 tactile puis à 1280 × 800 (sans --largeur : les deux).
 //   Une ligne par largeur, puis « COMPARER-ETAPES OK (n houblons + référence <clé|biere>, étapes …) » (code 0),
@@ -102,7 +111,10 @@ function mesurer() {
       const cs = getComputedStyle(n);
       if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue;
       const a = n.getBoundingClientRect();
-      if (cx < a.left - 0.5 || cx > a.right + 0.5 || cy < a.top - 0.5 || cy > a.bottom + 0.5) return 'rogné ou à défiler dans un cadre (hors de son cadre au repos)';
+      const horsX = cx < a.left - 0.5 || cx > a.right + 0.5, horsY = cy < a.top - 0.5 || cy > a.bottom + 0.5;
+      // Un cadre qui défile verticalement (page de l'écran) : une valeur plus bas n'est pas rognée, elle est à un défilement.
+      const defileV = /^(auto|scroll)$/.test(cs.overflowY) && n.scrollHeight > n.clientHeight + 1 && cs.overflowX !== 'hidden';
+      if (horsX || (horsY && !defileV)) return 'rogné ou à défiler dans un cadre (hors de son cadre au repos)';
     }
     return null;
   };
@@ -122,10 +134,11 @@ function mesurer() {
       couvert: null,
     };
   };
+  const sectionsRef = [...document.querySelectorAll('[data-reference]')].map((r) => r.closest('section'));
   const tous = [...document.querySelectorAll('[data-etape]')].map((el) => ({
     code: el.getAttribute('data-etape'),
     cle: el.getAttribute('data-houblon') || '',
-    dansRef: [...document.querySelectorAll('[data-reference]')].map((r) => r.contains(el)),
+    dansRef: [...document.querySelectorAll('[data-reference]')].map((r, i) => r.contains(el) || (!el.hasAttribute('data-houblon') && !!sectionsRef[i] && sectionsRef[i].contains(el))),
     ...fait(el),
   }));
   const compares = [...new Set([...document.querySelectorAll('[data-houblon-compare]')].map((e) => e.getAttribute('data-houblon-compare')))];
@@ -369,7 +382,8 @@ try {
     }
 
     const codes = [...new Set(retenues.map((v) => v.code))].sort();
-    lignes.push(t.nom + ' : ' + m.compares.length + ' houblon(s) comparé(s), référence ' + (refNom || 'aucune') + ', ' + retenues.length + ' valeur(s) visibles ensemble, écart vertical ' + ecart + ' / ' + m.H + ' px' + (sortie.length ? ' → ' + sortie.length + ' manque(s)' : ''));
+    const auPremier = retenues.filter((v) => v.haut < m.H).length;
+    lignes.push(t.nom + ' : ' + m.compares.length + ' houblon(s) comparé(s), référence ' + (refNom || 'aucune') + ', ' + retenues.length + ' valeur(s) visibles ensemble (' + auPremier + ' dans les ' + m.H + ' premiers px), écart vertical ' + ecart + ' / ' + m.H + ' px' + (sortie.length ? ' → ' + sortie.length + ' manque(s)' : ''));
     for (const s of sortie) { if (!manques.has(s)) manques.set(s, []); manques.get(s).push(t.l); }
     if (!resume || sortie.length === 0) resume = { n: m.compares.length, ref: refNom || 'aucune', codes };
   }

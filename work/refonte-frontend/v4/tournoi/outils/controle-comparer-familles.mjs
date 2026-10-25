@@ -8,7 +8,12 @@
 // Joue une page de Comparer à 390 × 844, sans geste, et compte les rangées de familles du premier écran : une étiquette dont
 // le texte est le nom d'une des 12 familles, dans la colonne de gauche (60 px au plus du bord), en haut à 844 px au plus.
 // Sa r6a en montre 10 (témoin positif : work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html).
-// Usage : node controle-comparer-familles.mjs <page.html> [--min=9]
+// 25.10 (cmc2h, son choix : « C'est quasiment parfait », sur cmc2g) : le radar est « plus en avant » (« Mettre plus le radargraph en
+// avant »), puis les têtes, les étapes, puis « Par famille ». Les rangées ne sont plus dans les 844 premiers pixels (la première à
+// ~880 px) mais à un défilement, ensemble : par défaut la première rangée commence à 1,25 écran au plus (1055 px) et les 9
+// premières tiennent dans deux écrans (1688 px). `--strict` garde le contrat D128 de r6a (premier écran, 844 px) : témoin
+// work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html.
+// Usage : node controle-comparer-familles.mjs <page.html> [--min=9] [--strict]
 // Sortie : « FAMILLES OK (n rangées au premier écran : …) » ou « FAMILLES ECHEC (… ; m plus bas, à partir de y px) ».
 import fs from 'node:fs';
 import path from 'node:path';
@@ -20,6 +25,9 @@ const puppeteer = createRequire(path.join(RACINE, 'package.json'))('puppeteer-co
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const args = process.argv.slice(2);
 const page = args.find((a) => !a.startsWith('--'));
+const strict = args.includes('--strict');
+const LIMITE = strict ? 844 : 1055;
+const FIN = strict ? 844 : 1688;
 const min = Number((args.find((a) => a.startsWith('--min=')) ?? '--min=9').slice(6));
 if (!page || !fs.existsSync(path.resolve(RACINE, page))) { console.log('Usage : node controle-comparer-familles.mjs <page.html> [--min=9]'); process.exit(2); }
 
@@ -35,9 +43,10 @@ const etiquettes = await p.evaluate((F) => [...document.querySelectorAll('body *
     && F.includes((e.innerText ?? '').replace(/[↑↓\s]+/g, ' ').trim()) && ![...e.children].some((c) => (c.innerText ?? '').trim());
 }).map((e) => ({ nom: e.innerText.replace(/[↑↓\s]+/g, ' ').trim(), haut: Math.round(e.getBoundingClientRect().top + scrollY) })), FAMILLES);
 await navigateur.close();
-const haut = etiquettes.filter((e) => e.haut < 844);
-const bas = etiquettes.filter((e) => e.haut >= 844);
-const ok = new Set(haut.map((e) => e.nom)).size >= min;
+const haut = etiquettes.filter((e) => e.haut < FIN);
+const bas = etiquettes.filter((e) => e.haut >= FIN);
+const premiere = haut.length ? Math.min(...haut.map((e) => e.haut)) : Infinity;
+const ok = new Set(haut.map((e) => e.nom)).size >= min && premiere < LIMITE;
 const suite = bas.length ? ` ; ${bas.length} plus bas, à partir de ${Math.min(...bas.map((e) => e.haut))} px` : '';
-console.log(`FAMILLES ${ok ? 'OK' : 'ECHEC'} (${haut.length} rangées au premier écran${ok ? '' : `, ${min} au moins`} : ${haut.map((e) => e.nom).join(', ') || 'aucune'}${suite})`);
+console.log(`FAMILLES ${ok ? 'OK' : 'ECHEC'} (${haut.length} rangées ${strict ? 'au premier écran' : 'dans les deux premiers écrans, la première à ' + premiere + ' px (' + LIMITE + ' au plus)'}${ok ? '' : `, ${min} au moins`} : ${haut.map((e) => e.nom).join(', ') || 'aucune'}${suite})`);
 process.exit(ok ? 0 : 1);

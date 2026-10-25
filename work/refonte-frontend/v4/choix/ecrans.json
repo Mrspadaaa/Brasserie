@@ -70,10 +70,10 @@
    "ecran": "comparer",
    "route": "comparer",
    "statut": "choisi",
-   "choix": "r6a pour la forme, avec les petites améliorations des autres versions ; les étapes, l'état au moment de l'ajout et la référence, à la manière de x3b (lot 21) (D107)",
-   "mots": "r6a reste le meilleur, tu peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions",
-   "capture": "work/refonte-frontend/v4/ecran-1/fils22-comparer/captures/r6a-premier-ecran.png",
-   "inventaire": "work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/inventaire-comparer.json",
+   "choix": "cmc2k (cmc2g retouché : le + au centre de son rond, la colonne retenue en bande teintée continue, les transitions en libellé de ligne, moins de vide) : radar rdg5, chaque axe à son échelle au moment (D68), les étapes et la référence ta stout aux mêmes étapes (D107)",
+   "mots": "Parfait pour Une bande teintée cmc2k",
+   "capture": "work/refonte-frontend/v4/ecran-1/fils25-comparer/captures/cmc2k.png",
+   "inventaire": "work/refonte-frontend/v4/ecran-1/fils25-comparer/donnees/inventaire-comparer.json",
    "complements": [
     {
      "mots": "je voulais comparé au moins : les étapes 60' 10' dryhopping ect comme la maquette de base",
@@ -94,13 +94,19 @@
      "mots": "C'est la meilleure mais c'est pas relié par des traits trié. Pourquoi ? À changé",
      "capture": "work/refonte-frontend/v4/ecran-1/fils25-comparer/captures/brasseur-cmc2-traits.jpg",
      "quoi": "le radar de cmc2g (rdg5, chaque axe à son échelle au moment, maximum écrit près du picto, en Au style ; Absolu brut, D68) : grammaire Beer Maverick, 12 axes et leurs pictos, inconnus de tous regroupés en un secteur « sans donnée », points connus de chaque houblon reliés par des traits pleins, inconnu d'un houblon en pastille « ? » au bord, couleurs de houblons distinctes, le retenu en avant, remplissage jamais au centre (D144 à D147)"
+    },
+    {
+     "mots": "il doit tout y avoir avec en ordre décroissant du plus fort au plus faible",
+     "capture": "work/refonte-frontend/v4/ecran-1/fils25-comparer/captures/cmc2k-long.png",
+     "quoi": "Ses mots : tous les mots de chaque houblon, sans « +n », triés du plus fort au plus faible"
     }
    ],
    "controles": [
     "work/refonte-frontend/v4/tournoi/outils/controle-comparer-etapes.mjs {dossier}",
-    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=comparer"
+    "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=comparer",
+    "work/refonte-frontend/v4/tournoi/outils/controle-mots-tous.mjs {dossier}"
    ],
-   "note": "r6a donne la forme (inventaire) ; D107 y met les étapes, l'état au moment de l'ajout et la référence à la manière de x3b (lot 21, « Ma cuve, jour après jour », notée le 20.10 « pour de la comparaison entre ma bière de base -> 1 dry hop, 2 dry hop: levure ») : 3 éléments « d107- » de l'inventaire, et controle-comparer-etapes. Pas le Comparer de la base v4.10 (« Non pas cette version »)."
+   "note": "cmc2k est la maquette de Comparer (25.10) ; l'inventaire est tiré de son code. D107 reste vrai en substance (les 5 moments, ta stout aux mêmes étapes) mais le radar passe devant : dry hop sous le premier écran, voir controle-comparer-etapes et controle-comparer-familles (25.10, D69). Pas le Comparer de la base v4.10 (« Non pas cette version »). r6a n'est plus la base : D107 « r6a pour la forme » est remplacé par son choix cmc2g puis cmc2k."
   },
   {
    "ecran": "fiche",

@@ -189,7 +189,7 @@
     "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
    },
    "verdict_5345f6ad": "present",
-   "ecart": "Maquette : ouvre #/comparer?h=motueka,idaho-7 (Comparer r6a, son choix) ; q2b ouvrait son Comparer statique, remplacé par r6a (D107).",
+   "ecart": "Maquette : ouvre #/comparer?h=motueka,idaho-7 (Comparer r6a, son choix) ; q2b ouvrait son Comparer statique, remplacé par r6a (D107). D69 (25.10) : « IBU » n'est plus sur Comparer (« encore pas mal de légende et texte inutile »), il est dans la feuille Valeurs.",
    "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-comparer-n-5345f6ad.png",
    "voulu": "",
    "verif": {
@@ -198,7 +198,6 @@
     "selecteur_choisie": "a[data-role=\"comparer\"]",
     "geste": "toucher",
     "attendu": [
-     "IBU",
      "Motueka"
     ],
     "interdit": []

@@ -444,16 +444,15 @@
     "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
    },
    "verdict_5345f6ad": "different",
-   "ecart": "Maquette : réponse en ligne, plan d'avant (Nugget), « contre ★ » et Égaler repris ; critère, défi, tirage de 20 bières, frise, pastilles levure et jauge d'amertume non repris (voir etat-comp-defi, -critere, -preuve, -frise-levure).",
+   "ecart": "Maquette : réponse en ligne, plan d'avant (Nugget), « contre ★ » et Égaler repris ; critère, défi, tirage de 20 bières, frise, pastilles levure et jauge d'amertume non repris (voir etat-comp-defi, -critere, -preuve, -frise-levure). D69 (25.10) : « Face à ta stout, par » est retiré avec la réponse en ligne (« Trop de blanc inutil, d'espace pour rien », sur cmc2g) ; la pastille « floral ⌄ » du sélecteur reste.",
    "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-r6a-elements-notes-5345f6ad.png",
    "voulu": "",
    "verif": {
     "route": "comparer",
-    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils25-comparer/cmc2k/etat.html",
     "selecteur_choisie": "texte=Défi 2/4",
     "geste": "repos",
     "attendu": [
-     "Face à ta stout, par",
      "floral",
      "Défi 2/4",
      "Preuve",
