@@ -1,18 +1,18 @@
 import { checkHopExclusions } from '../solver';
 import { suggestedHopVarieties } from '../styleSelection';
 import { AXES, catalogue as catalogueDuMoteur, local, stock as stockDuMoteur, varietyById, YEASTS, hopRef } from './data';
-import { Lru } from './lru';
+import { borneHoublons, Lru } from './lru';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
-import { cites } from './hops';
+import { citations } from './hops';
 import {
-  MOMENTS, additionIbu, gramsForIbu, ibuPerGram, matrixContext, predictTriplet, recipeIbu, recipeProfile, searchDoses, tripletOf, yeastInfo,
+  MOMENTS, additionIbu, gramsForIbu, ibuPerGram, matrixContext, recipeIbu, recipeProfile, searchDoses, tripletOf, yeastInfo,
   type Addition, type FamilyEstimate, type MatrixContext, type MomentId, type Profile, type Recipe, type RecipeProfile, type YeastInfo,
 } from './recipe';
 import { getStyleScale, type StyleScale } from './style/scale';
 import { valueVerdict } from './style/verdict';
 import type { Tasting } from './tasting';
 import { goutsSets, type Gouts } from './gouts';
-import { CHARACTERIZED_YEASTS, yeastChangeEffect } from './yeast';
+import { CHARACTERIZED_YEASTS, predictionDe, yeastChangeEffect } from './yeast';
 
 /** Direction relative à la recette : nombre de crans par famille (+1 « plus floral », −1 « moins résineux »). */
 export type Direction = Partial<Record<FamilyId, number>>;
@@ -95,6 +95,14 @@ export const RANKING = [
 const round = (x: number, n = 1) => Math.round(x * 10 ** n) / 10 ** n;
 const nameOf = (key: string) => hopRef(key)?.name ?? key;
 
+// Familles citées par les fiches d’une variété (cites de hops.ts, une lecture de citations : un bit par famille, ordre de FAMILIES), lues une fois
+// par moteur (#178) : le tri des houblons à acheter et les conflits de chaque voie les relisaient à chaque fois.
+const citees = () => local('voies:citees', () => new Lru<number>(borneHoublons(catalogueDuMoteur().length + stockDuMoteur().length)));
+function cites(varietyId: string, f: FamilyId): boolean {
+  const m = citees().obtenir(varietyId, () => { const c = citations(varietyId); return FAMILIES.reduce((b, g, i) => (c[g].status === 'cité' ? b | (1 << i) : b), 0); });
+  return (m & (1 << FAMILIES.indexOf(f))) !== 0;
+}
+
 // Apport d'un ajout seul : repère central V5.5 à cette dose moins celui à dose nulle (fond de levure).
 const apportCache = () => local('voies:apport', () => new Lru<Record<FamilyId, number | null> | null>(4096));
 function apport(a: Addition, recipe: Recipe): Record<FamilyId, number | null> | null {
@@ -102,7 +110,7 @@ function apport(a: Addition, recipe: Recipe): Record<FamilyId, number | null> | 
   const cache = apportCache();
   if (cache.has(key)) return cache.get(key)!;
   const t = tripletOf(a, recipe);
-  const on = predictTriplet(t, {}), off = predictTriplet({ ...t, doseGL: 0 }, {});
+  const on = predictionDe(t), off = predictionDe({ ...t, doseGL: 0 });
   const any = FAMILIES.some((f) => on.profile[f]?.range);
   const out = any ? Object.fromEntries(FAMILIES.map((f) => {
     const c1 = on.profile[f]?.central, c0 = off.profile[f]?.central;
@@ -174,7 +182,10 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const available = new Set(stockDuMoteur().filter((s) => (free(s.key) ?? 0) > 0).map((s) => s.varietyId));
   const suggested = new Set(suggestedHopVarieties(catalogueDuMoteur().map((c) => varietyById().get(c.id)!), style.name).map((v) => v.id));
   const expected = style.documented ? FAMILIES.filter((f) => style.families[f].status === 'attendue') : [];
-  const buyPool = (requirePlus: boolean) => catalogueDuMoteur().filter((c) => !available.has(c.id) && allowed(c.id))
+  // Calculé une fois par appel et par variante (le même pour chaque ajout remplacé).
+  const pools = new Map<boolean, string[]>();
+  const buyPool = (requirePlus: boolean) => pools.get(requirePlus) ?? pools.set(requirePlus, buyPoolDe(requirePlus)).get(requirePlus)!;
+  const buyPoolDe = (requirePlus: boolean) => catalogueDuMoteur().filter((c) => !available.has(c.id) && allowed(c.id))
     .map((c) => ({ c, plus: plus.filter((f) => cites(c.id, f)).length, fit: expected.filter((f) => cites(c.id, f)).length,
       bad: avoid.some((f) => cites(c.id, f)) || FAMILIES.some((f) => style.families[f].status === 'indésirable' && cites(c.id, f)) }))
     .filter((r) => !r.bad && (!requirePlus || r.plus > 0))
@@ -200,7 +211,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       for (const f of minus) if (cites(h.varietyId, f)) conflicts.push(`${h.name} : ${FAMILY_NAMES[f].toLowerCase()} cité dans une fiche, exclu par ta direction.`);
       for (const f of FAMILIES) if (style.families[f].status === 'indésirable' && cites(h.varietyId, f)) conflicts.push(`${h.name} : ${FAMILY_NAMES[f].toLowerCase()} exclu par le style, cité dans une fiche.`);
       for (const f of excludedFamilies) if (!minus.includes(f) && cites(h.varietyId, f)) conflicts.push(`${h.name} : ${FAMILY_NAMES[f].toLowerCase()} cité dans une fiche, exclu par tes goûts.`);
-      for (const k of checkHopExclusions(predictTriplet(tripletOf(c.addition, next), {}), avoid, AXES)) if (k.status === 'conflict') conflicts.push(`${h.name} : ${k.message}`);
+      for (const k of checkHopExclusions(predictionDe(tripletOf(c.addition, next)), avoid, AXES)) if (k.status === 'conflict') conflicts.push(`${h.name} : ${k.message}`);
       if (!(c.addition.grams > 0)) conflicts.push('Dose invalide.');
     }
     const ibu1 = recipeIbu(next);

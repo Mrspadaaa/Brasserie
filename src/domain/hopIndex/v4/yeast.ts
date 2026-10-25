@@ -2,10 +2,26 @@
 // biotransformation (work/refonte-frontend/v4/ecran-1/MODELE.md, « La levure » ; R43, R44 ;
 // rapport E, recommandation 8). Aucun chiffre inventé : le modèle V5.5 ou une source citée.
 import factsFile from '../../../data/hopV4/faits-cites.json';
-import { catalogue as catalogueDuMoteur, EXTRAPOLATION, YEASTS, hopRef } from './data';
+import type { HopTriplet } from '../../../../functions/src/hopPredictionSchema';
+import { catalogue as catalogueDuMoteur, EXTRAPOLATION, YEASTS, hopRef, local, stock as stockDuMoteur } from './data';
 import { FAMILIES, type FamilyId } from './families';
+import { borneHoublons, Lru } from './lru';
 import { MOMENTS, predictTriplet, tripletOf, yeastInfo, type Addition, type Recipe, type YeastInfo } from './recipe';
 import type { FamilyEffect } from './voies';
+
+// L'effet d'un houblon à un moment (#178) : la prédiction V5.5 d'un triplet (houblon, lot, levure, moment, dose en g/L,
+// température, contact), calculée une fois par moteur (le contexte de ses données, data.ts : local), jamais globale.
+// Partagée par l'apport d'un ajout (à sa dose et à dose nulle) et les conflits des voies (voies.ts), entre proposer et
+// les leviers levure (deux appels de proposeVoies), et par la levure seule ci-dessous. Ici et non dans voies.ts : voies.ts
+// importe ce module. Clé : le triplet entier (JSON, champs dans l'ordre de tripletOf) ; prédicteur pur, cible {}.
+export type Prediction = ReturnType<typeof predictTriplet>;
+/** Borne du cache : un proposeVoies lit ≈ 5 doses × 4 moments par houblon examiné, plus les remplacements. */
+export const bornePredictions = () => 8 * borneHoublons(catalogueDuMoteur().length + stockDuMoteur().length);
+const predictions = () => local('levure:predictions', () => new Lru<Prediction>(bornePredictions()));
+/** predictTriplet(t, {}) mis en cache dans le moteur actif ; le même objet est rendu : à lire, jamais à modifier. */
+export const predictionDe = (t: HopTriplet): Prediction => predictions().obtenir(JSON.stringify(t), () => predictTriplet(t, {}));
+/** Entrées du cache des prédictions du moteur actif (tests : partage et borne). */
+export const predictionsEnCache = () => predictions().size;
 
 const round1 = (x: number) => Math.round(x * 10) / 10;
 const strainOf = (id: string | null) => EXTRAPOLATION.yeasts.find((s) => s.yeastId === id);
@@ -14,7 +30,7 @@ export const CHARACTERIZED_YEASTS = EXTRAPOLATION.yeasts.map((s) => s.yeastId);
 /** Profil de la seule levure (ajout à dose nulle) : l'arôme propre selon V5.5, sur l'échelle 0–100. */
 function yeastOnly(recipe: Recipe, yeastId: string | null) {
   const a: Addition = recipe.additions[0] ?? { id: 'fond', hopKey: catalogueDuMoteur()[0].id, moment: 'b60', grams: 0 };
-  return predictTriplet({ ...tripletOf(a, { ...recipe, yeastId }), doseGL: 0 }, {});
+  return predictionDe({ ...tripletOf(a, { ...recipe, yeastId }), doseGL: 0 });
 }
 
 export interface YeastDoubleImpact extends YeastInfo {
