@@ -30,3 +30,12 @@ Détail : `work/refonte-frontend/v4/ecran-1/fils25-comparer/critique/VERDICTS.md
 - **cmb2d** (brassage | dry hop, clé des couleurs) — ACCEPTÉ. « Vachement bien, là on comprend les pastilles et les couleurs. » Correction : commentaire 2, échelle écrite.
 Commun, à corriger avant de montrer : le commentaire 2 est fait à moitié (la liste « ses mots » de sa capture remplacée par les seuls mots hors 16D ; « citron vert », « pamplemousse » : 0 occurrence ; Cascade et Idaho 7 à « — » ; D131 ter) ; le radar normalisé n'écrit pas son échelle (0,1 cran = un tiers d'axe à 60′, D65) et ne dessine plus ta stout au style.
 Tête passe 2 : cmb2d (greffes : phrase de cmb2c, pictos de cmb2b).
+
+## Passe 3 (cmb3a à cmb3d) — progrès : trois sur quatre gardent le vrai problème au premier écran ; un REJET
+Détail : VERDICTS.md § Passe 3. 16 captures ouvertes ; FAMILLES rejoué (a 0 rangée à 929 px, b 2, c pictos seuls, d 3) ; « citron vert », « pamplemousse », Biotransformation, Enchaîner, Panel OSU présents dans les quatre.
+- **cmb3a** (un radar par houblon) — REJET : table des moments en tête sans nom de colonne (couleur seule, D81 ; son 2e refus des pastilles), têtes à 725 px et familles à 929 px (D128). « C'est quoi ces chiffres en couleur ? Et où sont les familles ? » Correction : table sous les têtes, radars à 150 px ; les petits multiples en greffe (dock « Valeurs »).
+- **cmb3b** (deux contours) — ACCEPTÉ. « Là on voit les deux, mais pour le troisième faut cliquer. Pas mal. » Correction : échelle écrite, radar 90 px.
+- **cmb3c** (médaillon, familles devant) — ACCEPTÉ. « Les barres c'est bien mais le radar sert plus à rien là, et il est de travers. » Correction : médaillon centré à deux contours, noms des familles.
+- **cmb3d** (la rose) — ACCEPTÉ. « Ça c'est différent, on voit qui dépasse. Mais c'est quoi ces couleurs ? » Correction : couleurs exactes des têtes, retenu plein / autres hachurés, échelle écrite.
+Commun : l'échelle de normalisation (0,3 cran au moins) n'est écrite nulle part (D65) ; Nelson Sauvin « ~0 » à 60′.
+Tête passe 3 : cmb3d (cmb3b en second).

@@ -128,3 +128,47 @@ huiles, hors 16D). Aucune ne le perd : passe satisfaisante, pas de REJET.
 Tête passe 2 : cmb2d — avec la phrase en clair de cmb2c sous la barre, les pictos de cmb2b dans les pastilles, et la correction
 commune du commentaire 2 (liste de sa capture, pictos de famille, ◇ hors des 12) avant de lui montrer ; cmb2c en second si le
 radar héros l'emporte chez lui.
+
+## Passe 3 (cmb3a à cmb3d, sur cmb2d avec le sélecteur de cmb2)
+
+Les 16 captures ouvertes, comparées à `cmb2d.png` ; FAMILLES (D128) rejoué : a 0 rangée (familles à 929 px), b 2, c 0 nommée
+(les rangées sont au premier écran mais en pictos seuls : le contrôle compte les noms), d 3. « citron vert », « pamplemousse »,
+Biotransformation, Enchaîner, Panel OSU : présents dans les quatre pages.
+
+**Le vrai problème d'abord** : les quatre gardent le sélecteur de cmb2 (« Slider de timing beaucoup mieux ici »), la table des
+cinq moments avec ses lignes nommées (60′ … après) et le Nugget à gauche, et les rangées des familles avec l'écart chiffré au
+moment choisi (−0,4, +0,7, ≈). Trois le gardent au premier écran ; cmb3a le repousse (table sans noms de colonnes en haut,
+têtes à 725 px, familles à 929 px).
+
+**Ses commentaires, un par un**
+1. « on comprend toujours pas ce que c'est ces pastilles » (2e refus) : les points de couleur de la table ont disparu et chaque
+   nombre est sous le nom de son houblon dans b, c, d (réglé par la position, pas par une légende : bon genre de solution).
+   **cmb3a** remet la table au-dessus des radars : des colonnes de nombres en couleur, sans nom (le nom est 300 px plus bas,
+   sur le petit radar) ; c'est la pastille de couleur sans son sens (D81 « c'est quoi ce double boul violette ? »), rejouée.
+2. Radar (3e refus → changer de genre, L13) : **a** (un radar par houblon) et **d** (la rose, pétales côte à côte) changent de
+   genre ; **b** (deux contours, ⇄ pour le troisième) et **c** (médaillon du seul retenu face à ta stout) gardent le même radar en
+   le réduisant. À « après », b reste lisible (une surface, un trait) ; c ne compare plus rien dans le radar (un seul houblon) :
+   il dirait « pourquoi un seul houblon dans le radar ? ». d sépare bien les longueurs, à 60′ comme à après, mais 36 pétales en
+   trois teintes proches (Cascade en mauve clair, Galaxy en violet) plus l'orangé « au-delà » : D77 guette (mon biais connu, je le
+   note contre d).
+3. « Les barre semble pas être normalisé au temps et au style » : fait dans les quatre (à 60′ les barres de Galaxy se détachent,
+   +0,3 agrumes, +0,5 tropicaux ; Floral écrasé). Comme en passe 2, l'échelle (« plus fort apport du moment, 0,3 cran au moins »)
+   n'est écrite nulle part : à 60′ un écart de 0,3 cran remplit la barre (D65, honnêteté). À écrire sur la ligne de la famille.
+4. Sélecteur de cmb2 : gardé tel quel dans les quatre.
+5. « Pas centré » : a, b, d centrés ; **c** pose le médaillon à gauche et les boutons à droite : la plainte revient.
+   « Inutile ce texte » : la clé des couleurs et « bord : le meilleur » retirés ; b garde une clé, mais fonctionnelle (⇄ change le
+   second houblon) : admis.
+6. « Je vois pas cet type de vue » / « Ajouter ça aussi avec le icône et vraiment hors 16d » : fait dans b, c, d au premier écran :
+   « ◇ mojito · ⊛ citron vert », « ⊛ citron vert · ⊛ pamplemousse », « ◇ cannabis · ◇ dank », étiquette « ses mots » ; la liste
+   complète en bas. Dans a, les têtes sont sous le premier écran : il ne la verrait toujours pas.
+
+**Signalé sans rejeter** : Nelson Sauvin « ~0 » à 60′ (écrire « < 0,1 ») ; c passe les rangées en pictos seuls (il aime les
+icônes, mais D113 : un « ? » près du groupe) ; la colonne retenue sans écart (connu).
+
+- cmb3a : REJET — la table des moments en tête sans nom de colonne (couleur seule : D81, et son 2e refus des pastilles), têtes à 725 px et rangées des familles à 929 px (D128 : « C'est pas du tout cette vue là », 872 px). Il dirait : « C'est quoi ces chiffres en couleur ? Et où sont les familles ? ». Correction : garder les trois petits radars comme greffe, remettre la table sous les têtes et les radars à 150 px.
+- cmb3b : ACCEPTÉ — deux contours, le retenu plein, ⇄ pour le troisième : le radar se lit enfin ; ses mots au premier écran ; 2 rangées. « Là on voit les deux, mais pour le troisième faut cliquer. Pas mal. » Correction : écrire l'échelle, 2 rangées de plus (radar 90 px).
+- cmb3c : ACCEPTÉ — les familles normalisées comparent au premier écran, écarts visibles ; mais le radar ne montre que le retenu (ne compare plus) et n'est pas centré (sa plainte revient) ; rangées en pictos seuls. « Les barres c'est bien mais le radar sert plus à rien là, et il est de travers. » Correction : médaillon centré avec deux contours (cmb3b), noms des familles.
+- cmb3d : ACCEPTÉ — la rose : un autre genre, les longueurs côte à côte se comparent sans croisement, à 60′ comme à après ; ses mots au premier écran ; 3 rangées. Réserve D77 : trois teintes proches sur 36 pétales. « Ça c'est différent, on voit qui dépasse. Mais c'est quoi ces couleurs ? » Correction : pétales aux couleurs exactes des têtes (Cascade bordeaux, pas mauve), le retenu plein et les autres hachurés, échelle écrite.
+
+Tête passe 3 : cmb3d — la seule qui change de genre sans rien perdre du vrai problème ; cmb3b en second si la rose ne lui parle
+pas ; les petits radars de cmb3a en greffe derrière « Valeurs » du dock.

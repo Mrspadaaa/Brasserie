@@ -43,3 +43,12 @@ OK — mots précis avec picto à côté du losange hors 16D, échelle du radar 
 - Radar au style : « bord : le meilleur » au pied du radar (0,3 cran au moins, dans l'aria-label et au survol).
 - Critères : `VARIANTES-CMP-4` ; `TRAIT OK` (59 pictos, 0 faute chacune) ; `QUAND OK` ; MOTS OK (100, 97, 96, 100). Captures reprises et ouvertes (`cmb2{a..d}.png`, `-moment.png`, `-nelson.png`, `-long.png`).
 - Reste à voir avec lui : où est ta stout au radar en mode style (elle est le centre) ; le radar en héros (cmb2c) contre les rangées des familles.
+
+## Passe 3 (depuis cmb2d) — cmb3a à cmb3d
+OK — cmb3a–cmb3d : sélecteur de cmb2, ses mots visibles, barres et radar normalisés, quatre genres de radar
+- Départ : cmb2d (vue agrandie sans version ; première de la rangée, tête de la critique), écrit dans chaque NOTE.
+- Communs : points de couleur et pastilles noires retirés (bande des étapes sous les têtes, « ses mots » en liste avec picto ou losange, deux par houblon au premier écran) ; barres des familles normalisées au moment et au style (apport en crans, à l'échelle du meilleur du moment, 0,3 cran au moins) ; sélecteur de cmb2 tel quel ; radar centré, textes d'explication retirés.
+- Radars : a un radar par houblon (ta stout en anneau) ; b deux contours, le second à toucher ; c médaillon et familles devant (ta stout en anneau) ; d rose à pétales. Ta stout montrée dans a et c, pas dans b et d.
+- Critères : `VARIANTES-CMP-4` ; `TRAIT OK` (85, 61, 61, 61 pictos, 0 faute) ; `QUAND OK` ; MOTS OK (84, 96, 93, 94). Captures ouvertes, comparées à cmb2d.
+- Prédiction : « Les petits radars, enfin je vois chaque houblon ; et à 60′ ça bouge ».
+- DÉCISION À PRENDRE : dans cmb3a, sélecteur et bande passent au-dessus des radars et les têtes sous le premier écran ; dans cmb3c, les rangées perdent leurs noms (picto seul) pour tenir 100 mots.

@@ -179,6 +179,8 @@ Dérogation M13 : cm-critique : « Refait une série avec ça et mes commentaire
 
 Dérogation M13 : rp-critique : « Faire des version r6a ++ avec tout les commentaires du dryhopping » (24.10, soir ; avec « Je dirais 11 par vue » du même soir : douze variantes en trois séries sur sa r6a, ni éventail de 48 ni passe 2 d'office ; le critique juge chaque variante).
 
+cmb3a écartée : têtes sans noms de colonnes (D81), familles trop bas (D128) ; montrée marquée.
+
 cmz1 à cmz4 écartées : elles perdent Biotransformation, Enchaîner et le panel OSU de sa base (D22, D96) ; montrées marquées sur la planche.
 
 rpa1 écartée : « ses mots » au premier écran, qu'il trouvait inutiles (« ce texte là est inutile ») ; montrée marquée sur la planche.
@@ -220,6 +222,7 @@ Une version, un artefact (`work/refonte-frontend/v4/outils/pages/PUBLIER.md`).
 | Maquette | 25.10 : légende v2a avec les barres de v2e (D140), houblon inconnu sans plantage (#160) ; BATTERIE 45/45 hors app-intacte adaptée, ETATS 141/141 | https://claude.ai/artifact/HP2He7tNjqPMsAHSCtrRgx | `work/refonte-frontend/v4/outils/pages/2026-10-25-maquette/index.html` |
 | Comparer, depuis ta base | douze versions sur l'écran Comparer de la maquette jouable (D141), le moment au choix ; critique cm : 8 acceptées, cmz1 à cmz4 écartées et montrées, tête cmb2 ; 25.10 | https://claude.ai/artifact/8tFBhx1DYEybS8tvNw1B8V | `work/refonte-frontend/v4/outils/pages/2026-10-25-comparer/index.html` |
 | Comparer, passe 2 sur cmb2 | quatre versions de cmb2 (son choix) avec ses quatre retours ; critique : 4 acceptées, tête cmb2d ; 25.10 | https://claude.ai/artifact/1geWG3kjv1KoXbbC6RMbzx | `work/refonte-frontend/v4/outils/pages/2026-10-25-comparer-v2/index.html` |
+| Comparer, passe 3 | quatre versions de cmb2d, un autre genre de radar chacune, le sélecteur de cmb2 ; critique : tête cmb3d, cmb3a écartée ; échelle de normalisation encore à écrire ; 25.10 | https://claude.ai/artifact/7Sn51TfEG3sszskMVV4r1K | `work/refonte-frontend/v4/outils/pages/2026-10-25-comparer-v3/index.html` |
 | Légendes sous les pastilles | huit variantes (leg, legz), critique : 7 acceptées, legz2 écartée et montrée ; 24.10, soir | https://claude.ai/artifact/TeKjPQDVHmxSwwMhGLWkKH | `work/refonte-frontend/v4/outils/pages/2026-10-24-legendes/index.html` |
 | Légendes v2 | passe 2 : cinq versions de leg3, v2 de leg1, leg2, leg4 ; 8 acceptées ; 24.10, soir | https://claude.ai/artifact/QFyJ5vPu2cLho29yCtUyQn | `work/refonte-frontend/v4/outils/pages/2026-10-24-legendes-v2/index.html` |
 
