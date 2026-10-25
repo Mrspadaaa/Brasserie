@@ -36,3 +36,10 @@ OK — cmb2a–cmb2d : cmb2 gardée, ses quatre commentaires corrigés ; VARIANT
 - Critères : `VARIANTES-CMP-4` ; `TRAIT OK` (44 pictos, 0 faute chacune) ; `QUAND OK` ; MOTS OK (99, 93, 92, 96).
 - Prédiction : « Là le radar à 60′ montre enfin la différence ; je prends les boîtes brassage / dry hop ».
 - DÉCISION À PRENDRE : au style, le radar montre désormais l'apport (ta stout au centre) et non plus le niveau de la bière ; ta stout reste visible en Absolu. Normalisation par axe : une différence de 0,1 cran à 60′ pèse un tiers d'axe (plancher 0,3 cran) ; à lui de dire si le plancher convient.
+
+## Passe 2, retouches de la critique (cmb2a à cmb2d)
+OK — mots précis avec picto à côté du losange hors 16D, échelle du radar écrite ; gates vertes
+- « ses mots » comme sur sa capture : dans chaque tête, ◇ hors des 12 familles d'abord, puis le mot précis avec son picto (citron vert, orange) ; la liste complète sous les rangées (citron vert, pamplemousse…). Le « +n » qui débordait est retiré.
+- Radar au style : « bord : le meilleur » au pied du radar (0,3 cran au moins, dans l'aria-label et au survol).
+- Critères : `VARIANTES-CMP-4` ; `TRAIT OK` (59 pictos, 0 faute chacune) ; `QUAND OK` ; MOTS OK (100, 97, 96, 100). Captures reprises et ouvertes (`cmb2{a..d}.png`, `-moment.png`, `-nelson.png`, `-long.png`).
+- Reste à voir avec lui : où est ta stout au radar en mode style (elle est le centre) ; le radar en héros (cmb2c) contre les rangées des familles.

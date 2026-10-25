@@ -21,3 +21,12 @@ de ses exemples (par brief), la série cmz perd des fonctions de sa base.
 Tête : cmb2 (passe 2 avec les lignes radio de cma1, la rangée « lui seul » de cma3, l'échelle de cmz4).
 
 LEÇON PROPOSÉE : une série « libre » qui reconstruit la base à la main perd ses fonctions sans que les contrôles le voient (VARIANTES, QUAND, HORS-16D verts sur quatre pages sans Biotransformation ni Enchaîner) : inventorier les fonctions visibles de la capture désignée (boutons, dock, pastilles) et en faire un contrôle du lot avant la série, comme D124 pour le rail.
+
+## Passe 2 (cmb2a à cmb2d) — satisfaisante : aucun REJET, les quatre gardent le vrai problème (moment choisi, écarts chiffrés)
+Détail : `work/refonte-frontend/v4/ecran-1/fils25-comparer/critique/VERDICTS.md` § Passe 2. 16 captures ouvertes ; FAMILLES rejoué (a 6, b 6, c 3, d 4 rangées).
+- **cmb2a** (pastilles nommées, radar en place) — ACCEPTÉ. « Ok, propre, c'est plus clair. » Correction : mots précis avec picto (commentaire 2), échelle écrite sur le radar.
+- **cmb2b** (pictos, moment au-dessus du radar) — ACCEPTÉ. « Les petites icônes c'est bien, mais pourquoi tout a bougé ? » Correction : pictos gardés, ordre de cmb2.
+- **cmb2c** (phrase, radar héros) — ACCEPTÉ. « Le radar comme ça c'est très bien, mais on voit plus les familles. » (3 rangées à 861 px, D128.) Correction : rayon 110, sélecteur sous le radar.
+- **cmb2d** (brassage | dry hop, clé des couleurs) — ACCEPTÉ. « Vachement bien, là on comprend les pastilles et les couleurs. » Correction : commentaire 2, échelle écrite.
+Commun, à corriger avant de montrer : le commentaire 2 est fait à moitié (la liste « ses mots » de sa capture remplacée par les seuls mots hors 16D ; « citron vert », « pamplemousse » : 0 occurrence ; Cascade et Idaho 7 à « — » ; D131 ter) ; le radar normalisé n'écrit pas son échelle (0,1 cran = un tiers d'axe à 60′, D65) et ne dessine plus ta stout au style.
+Tête passe 2 : cmb2d (greffes : phrase de cmb2c, pictos de cmb2b).

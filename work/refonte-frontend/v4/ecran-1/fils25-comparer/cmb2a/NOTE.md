@@ -11,3 +11,9 @@
 - Défauts qui restent : la colonne retenue reste sans chiffre ; au style, le radar ne montre plus ta stout (elle est le centre : rien ajouté), elle reste en Absolu ; à 60′, une petite différence (0,1 cran) pèse un tiers de l axe.
 - Contrôles (25.10) : VARIANTES-CMP-4 ; TRAIT OK (44 pictos, 0 faute) ; QUAND OK ; MOTS OK (cmb2a 99, cmb2b 93, cmb2c 92, cmb2d 96).
 - Captures : `captures/<id>.png`, `<id>-moment.png` (60′), `<id>-nelson.png`, `<id>-long.png`. Source : `source/`.
+
+## Retouches de la critique (§ Passe 2)
+- Commentaire 2 en entier : « ses mots » reviennent comme sur sa capture : dans chaque tête, d'abord les mots hors des 12 familles (losange au trait), puis le mot précis d'une famille avec son picto (Cascade « citron vert », Idaho 7 « orange », Galaxy « cannabis ») ; sous les rangées, la liste complète (citron vert, pamplemousse, cassis, pin…), picto de sa famille ou losange, en gras ce que lui seul dit ; « — » seulement si ses fiches ne disent rien. Le « +n » qui débordait de la puce est retiré : la suite est dans la liste.
+- L'échelle du radar au style est écrite au pied du radar : « bord : le meilleur » (le détail, 0,3 cran au moins, au survol et dans l'aria-label).
+- cmb2d : la clé « ses mots » de la colonne Ta stout est masquée pour tenir 100 mots avec la clé des couleurs.
+- Contrôles rejoués : VARIANTES-CMP-4 ; TRAIT OK (59 pictos, 0 faute) ; QUAND OK ; MOTS OK (cmb2a 100, cmb2b 97, cmb2c 96, cmb2d 100).

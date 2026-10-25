@@ -80,3 +80,51 @@ ouvertes (L12). Contrôle rejoué : `controle-comparer-familles.mjs` (D128) sur 
 Tête : cmb2 — la base intacte, le moment choisi en un toucher, les écarts chiffrés, les huiles, 9 familles au premier écran ; passe 2 avec les lignes radio de cma1, la rangée « lui seul » de cma3 et l'échelle de cmz4.
 
 LEÇON PROPOSÉE : une série « libre » qui reconstruit la base à la main perd ses fonctions sans que les contrôles le voient (VARIANTES OK, QUAND OK, HORS-16D OK sur quatre pages sans Biotransformation ni Enchaîner) : un inventaire des fonctions visibles de la capture désignée (boutons, dock, pastilles) devient un contrôle du lot avant la série, comme D124 pour le rail.
+
+## Passe 2 (cmb2a à cmb2d, sur cmb2 : son choix)
+
+Étalonnage reçu (L27) : il a choisi cmb2, « la seule maquettes qui répond vraiment au vrai problématique ». J'en avais accepté huit :
+trop clément sur « choisir quand » sans écart chiffré. Jugé d'abord sur le vrai problème : deux ou trois houblons au moment choisi,
+des écarts qui se voient et se chiffrent. Les 16 captures ouvertes ; FAMILLES (D128) rejoué sur les quatre pages ;
+Biotransformation, Enchaîner, Panel OSU présents dans les quatre (1 occurrence chacun).
+
+**Le vrai problème** : les quatre le gardent (barre des moments, table des cinq moments par houblon, écart chiffré face au retenu,
+huiles, hors 16D). Aucune ne le perd : passe satisfaisante, pas de REJET.
+
+**Ses quatre commentaires, un par un**
+1. « ces pastilles sont pas super clair » : réglé dans les quatre, de quatre manières (a : temps sous le moment ; b : picto flamme,
+   tourbillon, cuve ; c : phrase en clair sous la barre ; d : deux boîtes « brassage » et « dry hop »). « WP » devient « whirlpool ».
+   Les plus lisibles en trois secondes : d, puis a.
+2. « Ajouter ça aussi avec le icône et vraiment hors 16d » : **à moitié**. Le ◇ au trait est là (chip « ◇ cannabis +1 », clé « ◇ hors 16D »,
+   liste « hors 16D » en bas). Mais il a dit *ajouter* : la liste « ses mots » de sa capture (mojito ◇, citron vert ⊛, citron ⊛,
+   zeste ⊛) a été **remplacée** par les seuls mots hors des 12 familles. « citron vert » et « pamplemousse » : 0 occurrence dans les
+   quatre pages ; Cascade et Idaho 7 montrent « — » en tête et « rien hors des 12 familles » en bas (texte pour rien, D1). Le mot précis
+   d'une famille (D131 ter : « un houblon floral super floral type rose […] le mettre en valeur ») est perdu. Il dirait : « Et les mots
+   de Cascade ??? citron vert, pamplemousse… ». Correction commune, avant de lui montrer : garder la liste de sa capture, chaque mot
+   avec le picto de sa famille, ◇ pour ceux hors des 12 ; « — » seulement quand les fiches ne disent rien.
+3. Radar normalisé au moment, au style : fait. À 60′ les trois formes se séparent (captures `-moment`) : « 2 houblons différents
+   à 60' bien marqués ». Deux réserves : (a) honnêteté (D65, § 0 « l'inconnu n'est jamais 0 », portrait § 3.4) : à 60′ un écart de
+   0,1 cran prend un tiers de l'axe sans que l'échelle soit écrite ; écrire l'échelle de l'axe sur le radar (« axe = 0,3 cran ») ou
+   un anneau chiffré ; (b) ta stout n'est plus dessinée au style (elle est le centre) : il demandera « où est ma stout ? » (D19,
+   D107 « la bière de base ») ; un point ou un trait « ta stout » au centre, nommé.
+4. « Mettre plus le radargraph en avant » : fait dans les quatre (rayon 77 → 96 à 128). Prix : les rangées des familles descendent
+   (FAMILLES ECHEC : a 6, b 6, c 3, d 4 rangées ; cmb2 en avait 9). Il l'a demandé ; mais c (3 rangées, à partir de 861 px) rejoue
+   presque D128 (872 px) : à lui de trancher entre le radar héros et les familles.
+
+**Ce que je signale sans rejeter** (mon biais connu : trop clément devant un radar à plusieurs couleurs)
+- D77 : à « après », trois polygones agrandis se croisent ; une seule surface (le retenu), les autres en trait, c'est la parade
+  prévue, mais le radar héros de c est le plus emmêlé. La clé des couleurs sous le radar (d) est la meilleure réponse à « très
+  compliqué à voir les différences avec les couleurs » : à greffer partout.
+- Le chip « ◇ cannabis +1 » : le « +1 » déborde du chip (a, b, d).
+- Nelson Sauvin « ~0 » à 60′ (table) : écrire « < 0,1 ».
+- b déplace le sélecteur et la table au-dessus du radar : les écarts chiffrés des rangées (−0,4…) se retrouvent à 900 px du
+  sélecteur ; c'est l'écart de forme le plus grand à cmb2 (règle n° 1) ; il le reconnaîtrait, mais à dire.
+
+- cmb2a : ACCEPTÉ — pastilles nommées (temps sous le moment), radar agrandi en place, la plus fidèle à cmb2 ; 6 rangées. « Ok, propre, c'est plus clair. » Correction : commentaire 2 (mots précis avec picto), échelle écrite sur le radar.
+- cmb2b : ACCEPTÉ — pictos de moment lisibles (flamme, tourbillon, cuve), le radar change sous le doigt ; mais la table monte en tête et le radar descend à 590 px : « plus en avant » lu à l'envers. « Les petites icônes c'est bien, mais pourquoi tout a bougé ? » Correction : garder les pictos, remettre l'ordre de cmb2.
+- cmb2c : ACCEPTÉ — phrase en clair sous la barre (« dry hop après fermentation, 3 j »), radar héros ; 3 rangées de familles au premier écran (861 px, D128) et le sélecteur à 1280 px. « Le radar comme ça c'est très bien, mais on voit plus les familles. » Correction : rayon 110 et sélecteur sous le radar.
+- cmb2d : ACCEPTÉ — « brassage | dry hop » en deux boîtes : les pastilles les plus claires ; clé des couleurs sous le radar (D77) ; forme de cmb2 gardée ; 4 rangées. « Vachement bien, là on comprend les pastilles et les couleurs. » Correction : commentaire 2, échelle écrite, 60 px de moins au radar pour rendre deux rangées.
+
+Tête passe 2 : cmb2d — avec la phrase en clair de cmb2c sous la barre, les pictos de cmb2b dans les pastilles, et la correction
+commune du commentaire 2 (liste de sa capture, pictos de famille, ◇ hors des 12) avant de lui montrer ; cmb2c en second si le
+radar héros l'emporte chez lui.
