@@ -4,9 +4,22 @@
 // (hopRef(cle).catalogue, describeFamilies), comme hopSheet (src/domain/hopIndex/v4/fiches.ts) : aucune valeur recopiée ni inventée ;
 // une donnée absente reste absente, avec sa raison (D14, D65).
 import type { FamilyId } from '../../../domain/hopIndex/v4';
+import type { CatalogueHop } from '../../../domain/hopIndex/v4/data';
 import { FAMILIES, describeFamilies, familyWords, hopRef } from '../parcours/v4';
 
-export interface PlageSource { source: string; annee: number | null; min: number; max: number }
+export interface PlageSource { source: string; annee: number | null; min: number; max: number; url: string | null }
+/** Une source citée : son nom complet et sa date ; l'adresse de sa page quand elle en a une (sinon, ni lien ni adresse inventée). */
+export interface LienSource {
+  /** Nom complet : « Beer Maverick · Lotus », « Hopsteiner — Fiche variétale Lotus ». */
+  nom: string; auteur: string; annee: number | null; url: string | null;
+  /** Ce que cette source apporte pour ce houblon (« α, β, huile », « descripteurs », « usages »). */
+  sert: string[];
+  /** Ce que la fiche précise de sa propre portée (« Agrégat de plages historiques… »), tel qu'écrit ; null : rien. */
+  note: string | null;
+}
+export interface UsageSource { styles: string[]; source: string | null; url: string | null }
+/** Un composant de l'huile ou un champ que le dépôt ne porte pas : « ? », jamais 0. */
+export interface ChampInconnu { nom: string; raison: string }
 export interface ComposantHuile { nom: string; plage: PlageSource | null; raison: string | null }
 export interface SourcesFiche {
   alpha: PlageSource[];
@@ -16,7 +29,15 @@ export interface SourcesFiche {
   huileTotale: PlageSource[];
   composants: ComposantHuile[];
   styles: string[]; stylesSources: string[]; stylesRaison: string | null;
+  /** Les usages de chaque fournisseur, avec l'adresse de la page. */
+  usages: UsageSource[];
   origine: string | null;
+  /** Nom du houblon dans le catalogue, identifiant Beer Maverick, identifiant Hopsteiner, forme, faits cités (identifiants). */
+  nom: string; id: string; hopsteinerId: string | null; forme: string | null; faitsCites: string[];
+  /** Les sources citées, la page Beer Maverick d'abord (champ `url` du catalogue), puis les fiches fournisseurs. */
+  liens: LienSource[];
+  /** Les champs que le catalogue ne porte pas : cohumulone, farnésène, géraniol, stockage (HSI), substituts publiés. */
+  inconnus: ChampInconnu[];
   /** Les fiches qui citent chaque famille (auteurs), dans l'ordre du moteur. */
   auteurs: { famille: FamilyId; fiches: number; sur: number; auteurs: string[] }[];
   /** Une seule fiche décrit ce houblon : son auteur (« 1 seule fiche : Beer Maverick »), sinon null. */
@@ -46,10 +67,38 @@ const accordDe = (l: PlageSource[]): Accord => {
   return Math.max(a.min, b.min) <= Math.min(a.max, b.max) ? 'recouvrantes' : 'disjointes';
 };
 
-const lignes = (bm: [number, number] | null, an: number | null, hs: [number, number] | null, anHs: number | null): PlageSource[] => [
-  ...(bm ? [{ source: 'Beer Maverick', annee: an, min: bm[0], max: bm[1] }] : []),
-  ...(hs ? [{ source: 'Hopsteiner', annee: anHs, min: hs[0], max: hs[1] }] : []),
+const lignes = (bm: [number, number] | null, an: number | null, urlBm: string | null, hs: [number, number] | null, anHs: number | null, urlHs: string | null): PlageSource[] => [
+  ...(bm ? [{ source: 'Beer Maverick', annee: an, min: bm[0], max: bm[1], url: urlBm }] : []),
+  ...(hs ? [{ source: 'Hopsteiner', annee: anHs, min: hs[0], max: hs[1], url: urlHs }] : []),
 ];
+
+/** Les sources citées d'un houblon, dans l'ordre demandé (25.10) : la page Beer Maverick d'abord, puis chaque fiche fournisseur
+ * qui a une adresse (une fois par adresse), puis les sources sans adresse (nom complet et date, sans lien). */
+export function liensDe(c: CatalogueHop): LienSource[] {
+  const out: LienSource[] = [];
+  const nomDe = (auteur: string, titre: string | null) => (!titre ? auteur : titre.toLowerCase().startsWith(auteur.toLowerCase()) ? titre : `${auteur} — ${titre}`);
+  const poser = (auteur: string, titre: string | null, annee: number | null, url: string | null, sert: string, note: string | null = null) => {
+    const adresse = url && /^https?:\/\//i.test(url) ? url : null;
+    const nom = nomDe(auteur, titre);
+    const deja = out.find((x) => (adresse ? x.url === adresse : x.url === null && x.nom === nom && x.annee === annee));
+    if (deja) { if (!deja.sert.includes(sert)) deja.sert.push(sert); if (!deja.note && note) deja.note = note; if (!deja.annee && annee) deja.annee = annee; return; }
+    out.push({ nom, auteur, annee, url: adresse, sert: [sert], note });
+  };
+  // 1. Beer Maverick : le champ `url` du catalogue.
+  const bm = (c.descriptions ?? []).find((d) => d.source.author === 'Beer Maverick');
+  poser('Beer Maverick', `Beer Maverick · ${c.name}`, c.bmYear ?? bm?.source.year ?? null, c.url, 'α, β, huile, composants, descripteurs', bm?.source.locator ?? null);
+  // 2. Hopsteiner, puis les autres fiches des descriptions.
+  if (c.hs) poser('Hopsteiner', `Fiche variétale ${c.hs.name}`, c.hs.year, c.hs.reference, 'α, β, huile totale');
+  if (c.hsLinalool) poser('Hopsteiner', `Fiche variétale ${c.name}`, c.hsLinalool.year, c.hsLinalool.reference, 'linalol');
+  if (c.hsThiol) poser('Hopsteiner', `Fiche variétale ${c.name}`, null, c.hsThiol.reference, 'thiols');
+  for (const d of c.descriptions ?? []) {
+    if (d.source.author === 'Beer Maverick') continue;
+    poser(d.source.author, d.source.title, d.source.year ?? null, d.source.reference, 'descripteurs', d.source.locator ?? null);
+  }
+  for (const u of c.usage ?? []) if (u.source) poser(u.source.split(',')[0].trim() || u.source, u.source, null, u.url, 'usages');
+  // Les sources à adresse d'abord (Beer Maverick en tête), puis celles sans adresse.
+  return [...out.filter((x) => x.url), ...out.filter((x) => !x.url)];
+}
 
 const CACHE = new Map<string, SourcesFiche>();
 export function sourcesFiche(cle: string): SourcesFiche | null {
@@ -58,15 +107,15 @@ export function sourcesFiche(cle: string): SourcesFiche | null {
   const h = hopRef(cle);
   if (!h) return null;
   const c = h.catalogue, hs = c.hs;
-  const alpha = lignes(c.alpha, c.bmYear, hs?.alpha ?? null, hs?.year ?? null);
+  const alpha = lignes(c.alpha, c.bmYear, c.url, hs?.alpha ?? null, hs?.year ?? null, hs?.reference ?? null);
   const alphaRecente = alpha.reduce<PlageSource | null>((a, s) => (!a || (s.annee ?? 0) > (a.annee ?? 0) ? s : a), null);
   const comp = (nom: string, r: [number, number] | null): ComposantHuile =>
-    ({ nom, plage: r ? { source: 'Beer Maverick', annee: c.bmYear, min: r[0], max: r[1] } : null, raison: r ? null : 'non renseigné' });
+    ({ nom, plage: r ? { source: 'Beer Maverick', annee: c.bmYear, min: r[0], max: r[1], url: c.url } : null, raison: r ? null : 'non renseigné' });
   const d = describeFamilies(h.varietyId);
   const auteurs = FAMILIES.filter((f) => d[f].sources > 0).map((f) => ({ famille: f, fiches: d[f].sources, sur: d[f].of, auteurs: d[f].authors }));
   const sur = FAMILIES.map((f) => d[f].of).find((n) => n > 0) ?? 0;
-  const beta = lignes(c.beta, c.bmYear, hs?.beta ?? null, hs?.year ?? null);
-  const huileTotale = lignes(c.oil, c.bmYear, hs?.totalOil ?? null, hs?.year ?? null);
+  const beta = lignes(c.beta, c.bmYear, c.url, hs?.beta ?? null, hs?.year ?? null, hs?.reference ?? null);
+  const huileTotale = lignes(c.oil, c.bmYear, c.url, hs?.totalOil ?? null, hs?.year ?? null, hs?.reference ?? null);
   const w = familyWords(h.varietyId, c);
   const st = h.stock;
   const r: SourcesFiche = {
@@ -81,13 +130,24 @@ export function sourcesFiche(cle: string): SourcesFiche | null {
       comp('myrcène', c.oils.myrcene), comp('humulène', c.oils.humulene), comp('caryophyllène', c.oils.caryophyllene),
       { nom: 'farnésène', plage: null, raison: 'Publié par Beer Maverick, non importé dans le dépôt.' },
       c.hsLinalool
-        ? { nom: 'linalol', plage: { source: 'Hopsteiner', annee: c.hsLinalool.year, min: c.hsLinalool.range[0], max: c.hsLinalool.range[1] }, raison: null }
+        ? { nom: 'linalol', plage: { source: 'Hopsteiner', annee: c.hsLinalool.year, min: c.hsLinalool.range[0], max: c.hsLinalool.range[1], url: c.hsLinalool.reference }, raison: null }
         : { nom: 'linalol', plage: null, raison: 'non renseigné' },
     ],
     styles: (c.usage ?? []).flatMap((u) => u.styles),
     stylesSources: (c.usage ?? []).map((u) => u.source).filter((s): s is string => !!s),
     stylesRaison: c.usage?.length ? null : 'Aucun usage attesté dans le dépôt (usages fournisseurs connus pour les IPA seulement).',
     origine: c.origin,
+    nom: c.name, id: c.id, hopsteinerId: c.hopsteinerId ?? null,
+    forme: (c as unknown as { form?: string }).form ?? null,
+    faitsCites: (c as unknown as { citedFacts?: string[] }).citedFacts ?? [],
+    liens: liensDe(c),
+    usages: (c.usage ?? []).map((u) => ({ styles: u.styles, source: u.source, url: u.url })),
+    inconnus: [
+      { nom: 'cohumulone', raison: 'non publiée dans les fiches du dépôt' },
+      { nom: 'géraniol', raison: 'non publié dans les fiches du dépôt' },
+      { nom: 'stockage (HSI)', raison: 'non publié dans les fiches du dépôt' },
+      { nom: 'substituts publiés', raison: 'scores de Beer Maverick non importés ; remplaçants calculés par le moteur (Substituts ›)' },
+    ],
     auteurs,
     seuleFiche: sur === 1 ? auteurs.find((a) => a.auteurs.length)?.auteurs[0] ?? null : null,
     descripteurs: c.tagsFr ?? [],

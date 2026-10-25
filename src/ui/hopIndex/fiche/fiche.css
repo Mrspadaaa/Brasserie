@@ -61,3 +61,9 @@ body:has(.pq-fiche) [data-vaul-overlay] { -webkit-backdrop-filter: none !importa
 .pq-fiche-plus-b > span { display: inline-flex; align-items: center; justify-content: center; gap: 3px; width: 100%; height: 32px; border-radius: 9999px;
   background: rgb(var(--cave-850)); color: rgb(var(--cave-200)); font-size: 14px; white-space: nowrap; }
 .pq-fiche-plus-on > span { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); font-weight: 600; }
+/* « autres 42 % » (t12e) : un bouton discret (pointillé comme les noms), une cible de doigt plus large que la pastille, sans
+   chevaucher ses voisins (7 px en hauteur, 3 px de côté). L'explication est dessous, dans la ligne ou la légende. */
+.pq-fiche-autres-b { -webkit-tap-highlight-color: transparent; background: transparent; padding: 0; text-decoration: underline dotted rgb(var(--cave-600)); text-underline-offset: 3px; }
+.pq-fiche-autres-b::after { content: ''; position: absolute; inset: -7px -3px; }
+.pq-fiche-autres-expl { padding: 4px 0 2px; }
+.pq-fiche-mx-leg .pq-fiche-autres-expl { padding: 0; }

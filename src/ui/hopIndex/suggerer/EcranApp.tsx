@@ -4,15 +4,16 @@
 // démarrage. Même principe que comparer/EcranApp.tsx.
 // - « Ajouter » du mode Radar (vue-radar.tsx) écrit le brouillon par la porte (ajouter, moment, dose, remplacer, retirer) ;
 // - « Comparer (n) » ouvre la route hopCompare avec les houblons retenus (fiche/comparaison.ts) ;
-// - la visée : celle que l'hôte passe (`visee`), sinon aucune. L'app n'invente plus de demande (t12d, 25.10 : la fixture S1
-//   « + floral, − résineux » n'est plus lue) ; la visée posée dans Ma bière n'est pas encore transmise à cet écran.
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+// - la visée : celle que l'hôte passe (`visee`), sinon celle posée dans Ma bière (parcours/visee.ts, t12e : transmise par la porte),
+//   sinon aucune. L'app n'invente aucune demande (t12d, 25.10 : la fixture S1 « + floral, − résineux » n'est plus lue) : sans visée,
+//   Suggérer le dit et ne propose rien.
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { PageShell } from '../../../pages/PageShell';
 import { idAjout, toHopRecipe, versPatch } from '../../../domain/hopIndex/v4/recipeConversion';
 import { configurerDonnees } from '../parcours/adaptateur';
 import { ajouter, changerDose, changerMoment, remplacer, retirer } from '../parcours/operations';
 import type { RecetteParcours } from '../parcours/types';
-import type { Visee } from '../parcours/visee';
+import { abonnerVisee, lireVisee, type Visee } from '../parcours/visee';
 import { ContexteFicheApp, FicheDeLApp } from '../fiche/FicheApp';
 import { basculerComparaison, fixerComparaison, useComparaisonRetenue } from '../fiche/comparaison';
 import { JeuPictos } from '../Pictos';
@@ -47,8 +48,10 @@ export default function EcranSuggererApp(p: EcranSuggererProps) {
 
 const BASE: RouteSuggerer = { ecran: 'suggerer' };
 
-function Contenu({ onClose, porte, visee }: { onClose: () => void; porte: PorteEtape; visee?: Visee }) {
+function Contenu({ onClose, porte, visee: viseeProp }: { onClose: () => void; porte: PorteEtape; visee?: Visee }) {
   const { recipe, boilOg, draftId } = porte;
+  const viseePosee = useSyncExternalStore(abonnerVisee, lireVisee, lireVisee);
+  const visee = viseeProp ?? viseePosee;
   const donnees = useHopData(recipe);
   // La conversion ne se refait que si la porte change d'identité (son contenu lu change : porte.ts) ou le stock.
   const conversion = useMemo(() => toHopRecipe(recipe, {
@@ -112,8 +115,8 @@ function Contenu({ onClose, porte, visee }: { onClose: () => void; porte: PorteE
   }, [draftId]);
 
   const valeur = useMemo<HoteSuggerer>(() => ({
-    recette, visee: visee ?? {}, aComparer: comparaison, route, aller, ouvrir, gestes, Cadre: CadreApp, Fiche: FicheDeLApp,
-  }), [recette, comparaison, route, ouvrir, gestes]);
+    recette, visee, aComparer: comparaison, route, aller, ouvrir, gestes, Cadre: CadreApp, Fiche: FicheDeLApp,
+  }), [recette, visee, comparaison, route, ouvrir, gestes]);
   const brouillon = useMemo(() => ({ recette, draftId }), [recette, draftId]);
   const cadre = useMemo(() => ({
     fermer: onClose, comparer: () => { ouvrirCouche({ view: 'hopCompare', recipeId: draftId, hops: comparaison }); }, nbHoublons: comparaison.length,

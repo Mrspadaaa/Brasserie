@@ -43,3 +43,23 @@ export function sensDe(visee: Visee, points: (f: FamilyId) => number | null): Pa
   }
   return out;
 }
+
+// ---------- La visée posée dans Ma bière, transmise aux outils par la porte (t12e, #184) ----------
+// Ma bière pose la visée (poserVisee) ; Suggérer et la fiche la lisent (lireVisee, abonnerVisee) sans que l'hôte du wizard la
+// connaisse : même principe que la porte de l'étape (comparer/porte.ts). Vide : rien n'est visé, et les outils ne proposent
+// rien d'inventé (aucune demande de la fixture S1 dans l'app). Une valeur inconnue n'est jamais 0 : « bannie » est un palier posé.
+let VISEE_POSEE: Visee = {};
+const ECOUTEURS = new Set<() => void>();
+/** La visée en vigueur ; le même objet tant qu'elle ne change pas (lisible par useSyncExternalStore). */
+export const lireVisee = (): Visee => VISEE_POSEE;
+/** Pose la visée (une copie) ; null ou {} la retire. Prévient les lecteurs seulement si elle change. */
+export function poserVisee(v: Visee | null): void {
+  const suivante: Visee = {};
+  for (const [f, n] of Object.entries(v ?? {}) as [FamilyId, number][]) if (Number.isFinite(n)) suivante[f] = n;
+  const pareil = Object.keys(suivante).length === Object.keys(VISEE_POSEE).length
+    && (Object.keys(suivante) as FamilyId[]).every((f) => VISEE_POSEE[f] === suivante[f]);
+  if (pareil) return;
+  VISEE_POSEE = suivante;
+  ECOUTEURS.forEach((f) => f());
+}
+export const abonnerVisee = (f: () => void): (() => void) => { ECOUTEURS.add(f); return () => { ECOUTEURS.delete(f); }; };

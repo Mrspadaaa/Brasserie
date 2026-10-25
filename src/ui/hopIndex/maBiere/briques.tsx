@@ -2,11 +2,13 @@
 // l'α écrit « lot » d'abord (data-source, D87, D93 B3), l'usage en mot (data-usage comme hopRole, D90), les
 // familles qu'un ajout fait bouger avec leur intensité en crans du style (data-famille, data-crans, D80), et la
 // part « autres » des mots sans famille (data-role="autres", D100). Classes propres préfixées pq-fiche- (L26).
+import { useState } from 'react';
 import { Package } from 'lucide-react';
 import { COULEURS, COURT, Picto, nombre, plage } from './commun';
 import type { HoublonLu } from '../parcours/adaptateur';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { hopRole } from '../parcours/v4';
+import { autresDe, ligneAutres } from '../fiche/autres';
 
 /** « lot » quand l'α vient du lot en stock (il fait la dose), « fiches » quand c'est le milieu de la plage variétale. */
 export const sourceAlpha = (h: HoublonLu): 'lot' | 'fiches' | null =>
@@ -80,16 +82,55 @@ export function Intensite({ famille, crans, signe }: { famille: FamilyId; crans:
   );
 }
 
-/** Part des mots des fiches sans famille (L14, D100) : une forme grise, neutre, à sa part réelle. */
-export function Autres({ h, largeur = 56, petit = false, balise = h.nom }: { h: HoublonLu; largeur?: number; petit?: boolean; balise?: string }) {
+/** « autres 42 % » expliqué, pour ce houblon (t12e, #184) : une ligne de calcul (« 5 de ses 12 mots n'entrent dans aucune des 12
+ * familles ») et la liste de ces mots, traduits, avec ◇ (hors des 12 familles) ; le chiffre et la liste viennent du même calcul
+ * (fiche/autres.ts). Un mot dit par deux fiches compte deux fois (« ×2 »). */
+export function ExplicationAutres({ cle, id }: { cle: string; id?: string }) {
+  const a = autresDe(cle);
+  if (!a || a.n === 0) return null;
+  return (
+    <div id={id} data-role="autres-explication" data-houblon={cle} data-n={a.n} data-total={a.total}
+      onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}
+      className="pq-fiche-autres-expl basis-full min-w-0 text-xs leading-snug text-cave-200">
+      <p data-role="autres-calcul">{ligneAutres(a)}.</p>
+      <ul className="mt-1 flex flex-wrap gap-x-2.5 gap-y-1">
+        {a.mots.map((m) => (
+          <li key={m.mot} data-mot={m.mot} data-fiches={m.fiches.length} title={m.fiches.join(', ')} className="inline-flex items-center gap-1 whitespace-nowrap text-cave-50">
+            <i aria-hidden="true" className="pq-fiche-mx-hf" style={{ width: 7, height: 7, margin: '0 2px', borderWidth: 1.5 }} />
+            <span className="sr-only">hors des 12 familles : </span>{m.mot}
+            {m.fiches.length > 1 && <span className="text-cave-400">×{m.fiches.length}</span>}
+          </li>
+        ))}
+      </ul>
+      {a.mots.some((m) => m.fiches.length > 1) && <p className="mt-1 text-cave-400">×2 : deux fiches disent ce mot, il compte deux fois.</p>}
+    </div>
+  );
+}
+
+/** Part des mots des fiches sans famille (L14, D100) : une forme grise, neutre, à sa part réelle. Un toucher l'explique
+ * (t12e) : dessous, dans la ligne qui la porte, ou ailleurs (`onToucher` : l'écran qui l'accueille montre
+ * ExplicationAutres lui-même, par ex. la légende de la matrice). */
+export function Autres({ h, largeur = 56, petit = false, balise = h.nom, onToucher, ouvert: ouvertDehors }: {
+  h: HoublonLu; largeur?: number; petit?: boolean; balise?: string; onToucher?: () => void; ouvert?: boolean;
+}) {
   const part = h.partSansFamille;
+  const [ouvertLocal, setOuvert] = useState(false);
   if (part == null || part <= 0) return null;
   const pc = Math.round(part * 100);
+  const dehors = !!onToucher;
+  const ouvert = dehors ? !!ouvertDehors : ouvertLocal;
+  const id = `pq-fiche-autres-${h.cle}`;
   return (
-    <span className={`inline-flex items-center gap-1 ${petit ? 'text-2xs' : 'text-xs'} text-cave-400 whitespace-nowrap`}>
-      <i data-role="autres" data-houblon={balise} data-part={part.toFixed(2)} role="img" aria-label={`autres : ${pc} % des mots sans famille`}
-        className="pq-fiche-autres block h-2 rounded-sm" style={{ width: Math.max(24, Math.round(largeur * part)) }} />
-      autres {pc} %
-    </span>
+    <>
+      <button type="button" data-role="autres-bouton" aria-expanded={ouvert} aria-controls={dehors ? undefined : id}
+        aria-label={`autres ${pc} % : expliquer ces mots sans famille`}
+        onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); if (dehors) onToucher!(); else setOuvert((v) => !v); }}
+        className={`pq-fiche-autres-b relative inline-flex items-center gap-1 ${petit ? 'text-2xs' : 'text-xs'} text-cave-400 whitespace-nowrap`}>
+        <i data-role="autres" data-houblon={balise} data-part={part.toFixed(2)} role="img" aria-label={`autres : ${pc} % des mots sans famille`}
+          className="pq-fiche-autres block h-2 rounded-sm" style={{ width: Math.max(24, Math.round(largeur * part)) }} />
+        autres {pc} %
+      </button>
+      {!dehors && ouvert && <ExplicationAutres cle={h.cle} id={id} />}
+    </>
   );
 }

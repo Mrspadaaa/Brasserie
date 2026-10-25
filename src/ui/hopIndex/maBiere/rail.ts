@@ -205,7 +205,7 @@ export interface OptionsGeste {
   v: string;
   /** Le libellé du moment sur la poignée (« 35′ », « 80 °C », « J+3 »), et son type (« ébullition », « à froid »). */
   libelle: (v: string) => string;
-  /** La zone qui défile (le haut et le bas que le rail ne dépasse pas), et l'élément qui s'efface quand le rail y monte. */
+  /** La zone qui défile (le haut et le bas que le rail ne dépasse pas), et l'élément qui s'efface pendant le glisser (t12e : toujours, plus seulement quand le rail y monte). */
   zone: () => { haut: number; bas: number };
   estompe: HTMLElement | null;
   /** Le lâcher : la nouvelle valeur (null : rien n'a changé ou le geste est interrompu). */
@@ -368,7 +368,8 @@ function ouvrirLoupe(o: OptionsGeste, ev: { clientY: number; pointerId: number }
     const yTete = D.Yd(G, G.R['T-ebu'], c), yBas = D.Yd(G, G.bas, c);
     if (axe) { axe.style.top = yTete + 'px'; axe.style.height = Math.max(0, yBas - 6 - yTete) + 'px'; axe.style.bottom = 'auto'; }
     fr.style.height = Math.max(R0.height, yBas) + 'px';
-    o.estompe?.classList.toggle('pq-mb-rail-haut', D.Yd(G, G.haut, c) < -8 || yC0 < 4);
+    // t12e (#184, sa décision) : le bandeau (IBU, EBC) est masqué pendant tout le glisser, comme avant, et revient au relâcher.
+    o.estompe?.classList.add('pq-mb-rail-haut');
     return c;
   };
   tetes[TETE_SEG[g.seg]]?.classList.add('pq-mb-focus');

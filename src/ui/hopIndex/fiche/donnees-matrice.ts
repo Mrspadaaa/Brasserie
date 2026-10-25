@@ -17,32 +17,13 @@ import { describeFamilies, familyWords, fiches, hopRef } from '../parcours/v4';
 import { memo } from '../parcours/mesure';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 import { lireRemplacants } from '../substituer/donnees';
+import { bas, tableFr, versFr, versionFiches } from './traduction';
 
-// Les mots anglais des fiches qui n'ont pas d'étiquette française dans le catalogue (Hopsteiner, citations), comme flb5b ;
-// les autres se traduisent par les étiquettes de Beer Maverick (tags → tagsFr) de tout le catalogue.
-const COMPLEMENT: Record<string, string> = {
-  'white wine': 'vin blanc', fruity: 'fruité', gooseberry: 'groseille à maquereau', gooseberries: 'groseille à maquereau', grape: 'raisin', grapes: 'raisin',
-  pineapple: 'ananas', woody: 'boisé', resinous: 'résineux', resiny: 'résineux', 'fresh lime': 'citron vert', lime: 'citron vert', 'lemon zest': 'zeste de citron',
-  lemon: 'citron', mojito: 'mojito', citrus: 'agrumes', 'black currant': 'cassis', blackcurrant: 'cassis', herbal: 'herbacé', spicy: 'épicé', pine: 'pin',
-  grapefruit: 'pamplemousse', 'passion fruit': 'fruit de la passion', peach: 'pêche', lychee: 'litchi', coconut: 'noix de coco', geranium: 'géranium',
-  ginger: 'gingembre', earthy: 'terreux', 'tropical fruit': 'fruits tropicaux', floral: 'floral',
-};
-const bas = (s: string) => s.trim().toLowerCase().replace(/[_#-]+/g, ' ').replace(/\s+/g, ' ');
-let VERS_FR: Map<string, string> | null = null;
-// Les caches suivent les fiches du moteur courant (données injectées) : d'autres fiches, caches à refaire.
-let FICHES_LUES: unknown = null;
+// Les caches de ce fichier suivent les fiches du moteur courant (traduction.ts : versionFiches).
+let VERSION_LUE = -1;
 function aJour(): void {
-  if (FICHES_LUES === fiches()) return;
-  FICHES_LUES = fiches(); VERS_FR = null; TEXTES = null; CHEZ.clear();
-}
-function versFr(mot: string): string {
-  aJour();
-  if (!VERS_FR) {
-    VERS_FR = new Map(Object.entries(COMPLEMENT));
-    for (const v of fiches()) (v.tags ?? []).forEach((t, i) => { const k = bas(t); const f = v.tagsFr?.[i]; if (f && !VERS_FR!.has(k)) VERS_FR!.set(k, bas(f)); });
-  }
-  const k = bas(mot).replace(/^étiquette\s+/, '');
-  return VERS_FR.get(k) ?? k;
+  const v = versionFiches();
+  if (v !== VERSION_LUE) { VERSION_LUE = v; TEXTES = null; CHEZ.clear(); }
 }
 
 // Le mot générique ne signe personne (« fruité » : 77 houblons, cerveau/metier/descripteurs-hors-familles.md) ; le nom d'une
@@ -64,8 +45,7 @@ function chez(mot: string): Set<string> {
   const vu = CHEZ.get(mot);
   if (vu) return vu;
   if (!TEXTES) TEXTES = fiches().map((v) => ({ id: v.id, t: ` ${bas([...(v.tags ?? []), ...(v.tagsFr ?? []), ...(v.descriptions ?? []).filter((d) => !estCategories(d.text)).map((d) => d.text)].join(' , '))} ` }));
-  versFr('');
-  const formes = [mot, ...[...VERS_FR!].filter(([, f]) => f === mot).map(([k]) => k)];
+  const formes = [mot, ...[...tableFr()].filter(([, f]) => f === mot).map(([k]) => k)];
   const re = formes.map((f) => new RegExp(`(^|[^a-zà-ÿ])${f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-zà-ÿ]|$)`));
   const s = new Set(TEXTES.filter((x) => re.some((r) => r.test(x.t))).map((x) => x.id));
   CHEZ.set(mot, s);

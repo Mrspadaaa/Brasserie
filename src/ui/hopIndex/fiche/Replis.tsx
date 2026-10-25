@@ -13,37 +13,18 @@
 // « non renseigné », jamais 0 (D65). Classes préfixées pq-fiche- (L26).
 import { useEffect, useRef, useState } from 'react';
 import { Package } from 'lucide-react';
-import { COURT, Picto, nombre, plage } from './commun';
+import { nombre } from './commun';
 import { Pont } from '../Pont';
 import { nomMoment, ibuAjout, type HoublonLu } from '../parcours/adaptateur';
 import { quandDe } from '../parcours/quand';
 import { useRemplacants } from '../substituer/donnees';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 import { ibuByMoment } from '../parcours/v4';
-import { nomSource, type Accord, type PlageSource, type SourcesFiche } from './sources';
+import type { SourcesFiche } from './sources';
+import { ContenuSources, Etiquettes, LienUrl, NomPlage, Rangee, pl } from './SourcesFiche';
 
 export type Section = 'styles' | 'huiles' | 'sources' | 'substituts';
 const TITRES: [Section, string][] = [['styles', 'Styles'], ['huiles', 'Huiles'], ['sources', 'Sources'], ['substituts', 'Substituts']];
-const pl = (s: PlageSource) => plage(s.min, s.max, 1);
-const accordTexte = (a: Accord) => (a ? `fiches ${a}` : null);
-
-function Rangee({ nom, valeur }: { nom: string; valeur: string }) {
-  return (
-    <div className="pq-fiche-rangee flex items-baseline justify-between gap-3 py-1.5 text-sm">
-      <span className="text-cave-200 shrink-0 max-w-[55%]">{nom}</span>
-      <span className="text-cave-50 text-right tabular-nums min-w-0">{valeur}</span>
-    </div>
-  );
-}
-
-function Etiquettes({ mots }: { mots: string[] }) {
-  return (
-    <span className="flex flex-wrap gap-1">
-      {mots.map((m) => <span key={m} className="inline-flex items-center h-6 px-2 rounded-full bg-cave-850 border border-cave-800 text-sm text-cave-50">{m}</span>)}
-    </span>
-  );
-}
-
 /** L'état des replis, partagé par les quatre boutons du pied et la section dépliée dans le flux. */
 export function useReplis() {
   const [ouverte, setOuverte] = useState<Section | null>(null);
@@ -92,60 +73,20 @@ export function Replis({ h, cle, s, recette, ouverte, onRemplacer }: {
       case 'styles': return (
         <>
           {s.styles.length ? <Etiquettes mots={s.styles} /> : <p className="text-sm text-cave-400">{s.stylesRaison}</p>}
-          {s.stylesSources.length > 0 && <p className="mt-1.5 text-sm text-cave-400">{s.stylesSources.join(' ; ')}</p>}
+          {s.usages.some((u) => u.source) && <p className="mt-1.5 text-sm text-cave-400">{s.usages.filter((u) => u.source).map((u, i) => <span key={i}>{i > 0 ? ' ; ' : ''}<LienUrl nom={u.source!} url={u.url && /^https?:\/\//i.test(u.url) ? u.url : null} /></span>)}</p>}
         </>
       );
       case 'huiles': return (
         <>
           <div className="divide-y divide-cave-800">
-            {s.huileTotale.length ? s.huileTotale.map((x) => <Rangee key={x.source} nom={`totale, ${nomSource(x)}`} valeur={`${pl(x)} mL/100 g`} />) : <Rangee nom="totale" valeur="non renseigné" />}
-            {s.composants.map((c) => <Rangee key={c.nom} nom={c.nom} valeur={c.plage ? `${pl(c.plage)} %, ${c.plage.source}` : c.raison ?? 'non renseigné'} />)}
+            {s.huileTotale.length ? s.huileTotale.map((x) => <Rangee key={x.source} nom={<>totale, <NomPlage x={x} /></>} valeur={`${pl(x)} mL/100 g`} />) : <Rangee nom="totale" valeur="non renseigné" />}
+            {s.composants.map((c) => <Rangee key={c.nom} nom={c.nom} valeur={c.plage ? <>{pl(c.plage)} %, <NomPlage x={c.plage} /></> : c.raison ?? 'non renseigné'} />)}
             <Rangee nom="thiols, Hopsteiner" valeur={s.thiol ? `classe ${s.thiol}` : 'non publié'} />
           </div>
-          {accordTexte(s.accord.huile) && <p className="mt-1 text-xs text-cave-400">Huile totale : {accordTexte(s.accord.huile)}. Composants en % de l’huile.</p>}
+          {s.accord.huile && <p className="mt-1 text-xs text-cave-400">Huile totale : fiches {s.accord.huile}. Composants en % de l’huile.</p>}
         </>
       );
-      case 'sources': {
-        const st = s.stock;
-        return (
-          <>
-            <div className="divide-y divide-cave-800">
-              {s.alpha.map((x) => <Rangee key={x.source} nom={`α ${nomSource(x)}`} valeur={`${pl(x)} %`} />)}
-              {lot != null && <Rangee nom="α mon lot" valeur={`${nombre(lot, 1)} %${st?.alphaDe ? `, ${st.alphaDe}` : ''}`} />}
-              {s.beta.length ? s.beta.map((x) => <Rangee key={x.source} nom={`β ${nomSource(x)}`} valeur={`${pl(x)} %`} />) : <Rangee nom="β" valeur="non renseigné" />}
-              <Rangee nom="mon stock" valeur={st ? (st.grammes > 0 ? `${nombre(st.grammes, 1)} g` : 'épuisé') : 'pas au stock'} />
-              {st && st.articles.length > 0 && <Rangee nom="article" valeur={st.articles.join(' ; ')} />}
-              <Rangee nom="dans ma recette" valeur={ajouts.length
-                ? ajouts.map((a) => { const i = ibuAjout(a, recette).ibu; return `${nombre(a.grams, 1)} g à ${nomMoment(quandDe(a, recette))}${i ? `, ${nombre(i.valeur, 1)} IBU` : ''}`; }).join(' ; ')
-                : 'non'} />
-              {/* L'IBU d'un gramme à 60′ dans ma recette (l'α qui fait la dose : lot, sinon milieu des fiches), du moteur. */}
-              <Rangee nom="IBU par gramme à 60′" valeur={(() => { const m = ibuByMoment(cle, 1, recette).find((x) => x.code === 'b60'); return m?.ibuPerGram ? nombre(m.ibuPerGram.value, 2) : '?'; })()} />
-            </div>
-            <p className="mt-2 text-sm text-cave-200">
-              {[accordTexte(s.accord.alpha) && `α : ${accordTexte(s.accord.alpha)}`, accordTexte(s.accord.beta) && `β : ${accordTexte(s.accord.beta)}`].filter(Boolean).join(' ; ')}
-              {(s.accord.alpha || s.accord.beta) && '. '}
-              Origine : {s.origine ?? '?'}{s.alias.length ? ` ; alias ${s.alias.join(', ')}` : ''} ; forme : {st && st.forme !== 'unknown' ? st.forme : '?'} ; IBU : {nombre(recette.volumeL, 1)} L, DI {nombre(recette.og, 3)}, ébullition {recette.boilMin} min
-            </p>
-            <ul className="mt-1.5 space-y-1">
-              {s.auteurs.map((a) => (
-                <li key={a.famille} data-famille={a.famille} className="flex items-start gap-1.5 text-sm text-cave-200">
-                  <Picto famille={a.famille} taille={14} />
-                  <span>
-                    <b className="font-semibold text-cave-50">{COURT[a.famille]}{a.sur > 1 ? ` ${a.fiches}/${a.sur}` : ''}</b> {a.auteurs.join(', ') || 'non renseigné'}
-                    {s.premier[a.famille]?.length ? <span className="text-cave-400"> · 1er chez {s.premier[a.famille]!.join(', ')}</span> : null}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            {s.descripteurs.length > 0 && <div className="mt-2"><p className="mb-1 text-xs text-cave-400">Descripteurs Beer Maverick</p><Etiquettes mots={s.descripteurs} /></div>}
-            {s.textes.length > 0 && (
-              <ul className="mt-2 space-y-1 text-sm text-cave-200">
-                {s.textes.map((t, i) => <li key={i}><b className="font-semibold text-cave-50">{t.auteur}</b> : {t.texte.replace(/^[^:]*:\s*/, '')}</li>)}
-              </ul>
-            )}
-          </>
-        );
-      }
+      case 'sources': return <ContenuSources h={h} cle={cle} s={s} recette={recette} />;
       case 'substituts': {
         const q = ajout ? quandDe(ajout, recette) : null;
         return (

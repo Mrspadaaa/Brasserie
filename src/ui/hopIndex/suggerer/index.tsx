@@ -179,7 +179,13 @@ export default function Suggerer() {
             options={[{ value: 'barres', label: 'Barres' }, { value: 'radar', label: 'Radar' }]} />
         </div>
 
-        {vue === 'radar' ? (
+        {objectifs.length === 0 ? (
+          // t12e (#184) : sans visée posée dans Ma bière ni demande dégustée, rien à viser : il le dit et ne propose rien d'inventé
+          // (ni voie houblon, ni levure : une levure « estimée » sans but serait une proposition au hasard).
+          <p data-role="suggerer-sans-visee" className="rounded-lg px-3 py-3 text-sm text-cave-200 leading-snug" style={{ background: 'rgb(var(--cave-900))' }}>
+            <b className="text-cave-50">Aucune visée.</b> Rien n'est visé dans Ma bière, et aucune dégustation ne porte de demande : Suggérer n'a rien à proposer.
+          </p>
+        ) : vue === 'radar' ? (
           <VueRadar biere={biere} sc={sc} echelle={echelle} objectifs={objectifs} groupes={groupes} onHorsHoublon={montrerHorsHoublon} famHors={famHors} pistesHors={pistesHors.length} />
         ) : (
           <>

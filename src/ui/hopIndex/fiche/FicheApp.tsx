@@ -3,7 +3,8 @@
 // Les houblons retenus sont ceux de ./comparaison.ts ; « Comparer » et « Substituts › » empilent la couche de l'outil (pile de
 // l'app, ouvrirCouche) sur le brouillon `draftId`, après avoir fermé la feuille.
 // L'écran qui la monte pose d'abord son brouillon (`ContexteFicheApp`) ; la fiche, un composant stable (`FicheDeLApp`), le lit.
-import { createContext, useContext, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNode } from 'react';
+import { abonnerVisee, lireVisee } from '../parcours/visee';
 import type { RecetteParcours } from '../parcours/types';
 import { ouvrirCouche } from '../ouvrirCouche';
 import { basculerComparaison, useComparaisonRetenue } from './comparaison';
@@ -28,14 +29,15 @@ export function FicheDeLApp({ houblon, onFermer }: { houblon: string; onFermer?:
   const b = useContext(Ctx);
   if (!b) throw new Error('FicheDeLApp hors de ContexteFicheApp');
   const aComparer = useComparaisonRetenue();
+  const visee = useSyncExternalStore(abonnerVisee, lireVisee, lireVisee);
   const { recette, draftId } = b;
   const valeur = useMemo<HoteFiche>(() => ({
-    recette, visee: {}, aComparer, basculerComparaison,
+    recette, visee, aComparer, basculerComparaison,
     aller: (r: RouteFiche) => {
       onFermer?.();
       if (r.ecran === 'comparer') ouvrirCouche({ view: 'hopCompare', recipeId: draftId, hops: r.houblons });
       else ouvrirCouche({ view: 'hopSubstitute', recipeId: draftId, hopKey: r.houblon });
     },
-  }), [recette, aComparer, draftId, onFermer]);
+  }), [recette, visee, aComparer, draftId, onFermer]);
   return <HoteFicheProvider valeur={valeur}><FicheHoublon key={houblon} cle={houblon} onFermer={onFermer ?? (() => {})} /></HoteFicheProvider>;
 }

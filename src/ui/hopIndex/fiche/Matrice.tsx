@@ -9,7 +9,7 @@ import { COULEURS, COURT, Picto } from './commun';
 import type { HoublonLu } from '../parcours/adaptateur';
 import type { RecetteParcours } from '../parcours/types';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
-import { Autres } from './briques';
+import { Autres, ExplicationAutres } from './briques';
 import { matrice } from './donnees-matrice';
 
 /** Les familles que ses fiches ne décrivent pas : leur picto suivi d'un « ? » à leur couleur (flb5b, sous le radar). */
@@ -32,7 +32,9 @@ export function Matrice({ h, cle, recette, seuleFiche }: { h: HoublonLu; cle: st
   const m = matrice(recette, cle);
   const { N, colonnes, lignes, seul } = m;
   const [legende, setLegende] = useState(false);
+  const [autres, setAutres] = useState(false);
   const idLegende = `pq-fiche-mx-leg-${cle}`;
+  const idAutres = `pq-fiche-mx-autres-${cle}`;
   const dansRecette = recette.additions.some((a) => a.hopKey === cle);
   const score = (c: (typeof colonnes)[number]) => (c.max > c.min ? `${c.min}–${c.max}` : String(c.min));
   return (
@@ -43,8 +45,9 @@ export function Matrice({ h, cle, recette, seuleFiche }: { h: HoublonLu; cle: st
       <div id={idLegende} data-role="legende" hidden={!legende} className="pq-fiche-mx-leg">
         <p>Lignes : ses mots, traduits ; ◇ hors des 12 familles. Colonnes : lui, puis ses {colonnes.length} premiers remplaçants de Substituer{dansRecette ? ', à son ajout' : ', hors de ma recette'} (score sur 100).</p>
         <p>Noir : il le dit{N > 1 ? ` (${N}/${N} : ses ${N} fiches)` : ''}. Gris : le remplaçant le dit aussi. Vide : non. Creux : Hopsteiner le range dans cette famille, sans mot qui le décrive.</p>
-        <p>autres : la part de ses mots hors des 12 familles.</p>
+        <p>autres : la part de ses mots hors des 12 familles (touche « autres » pour le détail).</p>
       </div>
+      <div id={idAutres} data-role="legende-autres" hidden={!autres} className="pq-fiche-mx-leg">{autres && <ExplicationAutres cle={cle} />}</div>
       <div className="pq-fiche-mx-g pq-fiche-mx-ent">
         <span className="pq-fiche-mx-coin">
           {/* La légende de flb5b, derrière un « ? » discret (D89), dépliée dans le flux sous le bandeau. */}
@@ -52,7 +55,7 @@ export function Matrice({ h, cle, recette, seuleFiche }: { h: HoublonLu; cle: st
             onClick={() => setLegende((v) => !v)} onKeyDown={(e) => { if (e.key === 'Escape' && legende) { e.stopPropagation(); setLegende(false); } }}
             className="pq-fiche-mx-aide">?</button>
           {seuleFiche && <span data-role="fiche-seule">1 seule fiche : {seuleFiche}</span>}
-          <Autres h={h} largeur={56} petit />
+          <Autres h={h} largeur={56} petit onToucher={() => setAutres((v) => !v)} ouvert={autres} />
         </span>
         <span className="pq-fiche-mx-lui">lui</span>
         {colonnes.map((c) => (
