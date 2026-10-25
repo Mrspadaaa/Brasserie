@@ -677,3 +677,8 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   `seedData.ts` locaux copiés), pour ne pas embarquer la voie t12d en cours. Contenu : IBU de ses vraies recettes (D152), haut
   d'écran commun aux 7 étapes, la fiche et Suggérer. Rejeu Haiku vert (313 tests, 52 d'intégration, CHOIX, ETATS 139/139,
   RADAR-BASE, MOTS-TOUS, FINITIONS). La fiche reste une feuille locale (le retour du téléphone ne la ferme pas), comme la maquette.
+- D73 (25.10, soir) : redéploiement de l'hébergement seul depuis la copie propre, au commit 238e6756 : rail en ébullition 120′,
+  bandeau et IBU compact présentés comme avant, phrase « Changement appliqué » masquée, renvois (Ébullition → Identité, levure),
+  demande de test S1 retirée de l'app, picto framboise des Baies. Rejeu Haiku dans la copie : types, 317 tests, 52 d'intégration,
+  audit des champs, FONCTIONS-RAIL 37/37, RADAR-BASE, ETATS 139/139 et build verts ; CHOIX et copies-de-work en échec dans la
+  copie seulement, faute des captures et fichiers de travail ignorés par git (verts sur l'arbre complet au commit précédent).
