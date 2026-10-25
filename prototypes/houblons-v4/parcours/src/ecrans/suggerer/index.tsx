@@ -21,13 +21,15 @@ import type { Route } from '../../coquille/routes';
 import { nomLevure } from '../../donnees/cas';
 import { useBiere, useComparaison, useGestes, useRecette, useVisee } from '../../etat/EtatParcours';
 import { style } from '../../moteur';
-import { offModelLeads, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { offModelLeads } from '../../moteur/v4';
+import { useCalcul } from '../../moteur/useCalcul';
 import Fiche, { useGestesFiche } from '../fiche';
 import { Bandeau } from '../ma-biere/Base';
 import { AlphaCourt, Calme, CaseInconnue, Lecture, Stock, Traits, traitsDe, Usage, type NiveauFiches } from './briques';
 import { BulleTraitsProvider } from './bulle';
 import { Divergent, Graphe, type NiveauBarre } from './divergent';
-import { bannisDe, dryhopActif, levuresDe, objectifsDe, verdict, voiesDe, type Groupe, type Ligne, type Objectif } from './voies';
+import { bannisDe, directionDe, dryhopActif, levuresDe, objectifsDe, verdict, voiesDe, type Groupe, type Ligne, type Objectif } from './voies';
 import { horsDesFamilles, motsLevure } from './hors16d';
 import { VueRadar } from './vue-radar';
 import './suggerer.css';
@@ -74,7 +76,13 @@ export default function Suggerer() {
   const visee = useVisee();
   const objectifs = useMemo(() => objectifsDe(recette, biere, visee), [recette, biere, visee]);
   const bannis = useMemo(() => bannisDe(visee), [visee]);
-  const tous = useMemo(() => voiesDe(recette, objectifs, ROUE, bannis), [recette, objectifs, bannis]);
+  // Les calculs lourds des voies passent par le client asynchrone (#165) : tout de suite sur le fil principal ; d'un
+  // worker, l'écran garde ses voies d'avant jusqu'à la réponse (aucun état d'attente : ses maquettes n'en ont pas).
+  const direction = useMemo(() => directionDe(objectifs), [objectifs]);
+  const proposes = useCalcul('proposer', [recette, direction]);
+  const leviers = useCalcul('leviers', [recette, direction]);
+  const lus = useMemo(() => (proposes && leviers ? { recette: proposes.args[0], calculs: { proposes: proposes.valeur, leviers: leviers.valeur } } : null), [proposes, leviers]);
+  const tous = useMemo(() => (lus ? voiesDe(lus.recette, objectifs, ROUE, bannis, 4, lus.calculs) : []), [lus, objectifs, bannis]);
   // « exclure » (♡) : les voies de ce houblon quittent la liste ; « Exclus » les rend.
   const exclus = [...gouts].filter(([, g]) => g === 'exclure').map(([c]) => c);
   const groupes = useMemo(() => tous.map((g) => ({ ...g, lignes: g.lignes.filter((l) => !l.houblons.some((h) => exclus.includes(h.cle))) })).filter((g) => g.lignes.length),
@@ -82,7 +90,7 @@ export default function Suggerer() {
     [tous, exclus.join()]);
   const lignes = groupes.flatMap((g) => g.lignes);
   // « Changer de levure » (q2b), après les voies houblon, à part (ni verdict, ni radar, ni comparaison de houblons).
-  const levures = useMemo(() => levuresDe(recette, objectifs, ROUE, lignes.length), [recette, objectifs, lignes.length]);
+  const levures = useMemo(() => (lus ? levuresDe(lus.recette, objectifs, ROUE, lignes.length, lus.calculs) : null), [lus, objectifs, lignes.length]);
   // D130 : ses mots hors des familles, sur la première ligne où chaque houblon paraît (une fois : mots modérés, D41).
   const hors16d = useMemo(() => {
     const parCle = horsDesFamilles(lignes.flatMap((l) => l.houblons.map((h) => h.cle)));

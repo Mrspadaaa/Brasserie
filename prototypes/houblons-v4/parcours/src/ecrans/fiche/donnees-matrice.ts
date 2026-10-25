@@ -12,7 +12,8 @@
 //   classent jamais autrement les mêmes houblons), au moment de son ajout s'il est dans la recette, sinon sans moment
 //   (le contexte « défaut » du moteur, comme la fiche du pack que montrait flb5b), hors de sa propre variété ; leurs mots,
 //   de leurs fiches, sans leurs catégories.
-import { CATALOGUE, describeFamilies, familyWords, hopRef, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { describeFamilies, familyWords, fiches, hopRef } from '../../moteur/v4';
 import { memo } from '../../moteur/mesure';
 import type { AjoutParcours, RecetteParcours } from '../../etat/types';
 import { lireRemplacants } from '../substituer/donnees';
@@ -28,10 +29,17 @@ const COMPLEMENT: Record<string, string> = {
 };
 const bas = (s: string) => s.trim().toLowerCase().replace(/[_#-]+/g, ' ').replace(/\s+/g, ' ');
 let VERS_FR: Map<string, string> | null = null;
+// Les caches suivent les fiches du moteur courant (données injectées) : d'autres fiches, caches à refaire.
+let FICHES_LUES: unknown = null;
+function aJour(): void {
+  if (FICHES_LUES === fiches()) return;
+  FICHES_LUES = fiches(); VERS_FR = null; TEXTES = null; CHEZ.clear();
+}
 function versFr(mot: string): string {
+  aJour();
   if (!VERS_FR) {
     VERS_FR = new Map(Object.entries(COMPLEMENT));
-    for (const v of CATALOGUE) (v.tags ?? []).forEach((t, i) => { const k = bas(t); const f = v.tagsFr?.[i]; if (f && !VERS_FR!.has(k)) VERS_FR!.set(k, bas(f)); });
+    for (const v of fiches()) (v.tags ?? []).forEach((t, i) => { const k = bas(t); const f = v.tagsFr?.[i]; if (f && !VERS_FR!.has(k)) VERS_FR!.set(k, bas(f)); });
   }
   const k = bas(mot).replace(/^étiquette\s+/, '');
   return VERS_FR.get(k) ?? k;
@@ -52,9 +60,10 @@ const elements = (t: string) => (t.split(':').slice(1).join(':') || t).split(/,|
 let TEXTES: { id: string; t: string }[] | null = null;
 const CHEZ = new Map<string, Set<string>>();
 function chez(mot: string): Set<string> {
+  aJour();
   const vu = CHEZ.get(mot);
   if (vu) return vu;
-  if (!TEXTES) TEXTES = CATALOGUE.map((v) => ({ id: v.id, t: ` ${bas([...(v.tags ?? []), ...(v.tagsFr ?? []), ...(v.descriptions ?? []).filter((d) => !estCategories(d.text)).map((d) => d.text)].join(' , '))} ` }));
+  if (!TEXTES) TEXTES = fiches().map((v) => ({ id: v.id, t: ` ${bas([...(v.tags ?? []), ...(v.tagsFr ?? []), ...(v.descriptions ?? []).filter((d) => !estCategories(d.text)).map((d) => d.text)].join(' , '))} ` }));
   versFr('');
   const formes = [mot, ...[...VERS_FR!].filter(([, f]) => f === mot).map(([k]) => k)];
   const re = formes.map((f) => new RegExp(`(^|[^a-zà-ÿ])${f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-zà-ÿ]|$)`));

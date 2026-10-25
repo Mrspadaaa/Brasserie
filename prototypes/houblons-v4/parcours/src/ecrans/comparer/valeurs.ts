@@ -7,7 +7,8 @@
 // Une valeur absente reste absente (« inconnu »), jamais 0. Plage = du plus bas au plus haut des sources.
 import composes from '../../../../../../src/data/hopV4/composes-houblon.json';
 import comparatifs from '../../../../../../src/data/hopV4/comparatifs-dryhop.json'; // copie de work/…/fils21-choisir/donnees (src/data/hopV4/copies-de-work.mjs)
-import { hopRef, nombreFr, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { hopRef, nombreFr } from '../../moteur/v4';
 
 export interface ValeurReelle {
   lo: number; hi: number | null;

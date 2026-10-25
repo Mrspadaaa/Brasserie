@@ -5,7 +5,7 @@
 // Inconnu ≠ 0 : une valeur qu'on ne sait pas est `null` avec sa raison, jamais un zéro.
 import {
   FAMILIES, FAMILY_NAMES, MOMENTS, cransOf, getStyleScale,
-  type Direction, type VoieResult,
+  type Direction, type Voie, type VoieResult,
   type AjoutSimule, type CasSimule, type FamilyId, type FamilyStatus, type MomentSimule, type ProfilFamilles, type Recipe, type StyleScale,
 } from '../../../../../src/domain/hopIndex/v4';
 import { ibuPerGram, ibuPerGramAt } from '../../../../../src/domain/hopIndex/v4/recipe';
@@ -283,6 +283,25 @@ export const proposer = memo<[RecetteParcours, Direction], VoieResult>('proposer
     // proposables restent. Catalogue du moteur (maquette) : rien n'est filtré.
     return catalogueDuMoteur() ? res : { ...res, voies: res.voies.filter((v) => v.actions.every((x) => x.op === 'retirer' || proposable(x.hopKey))) };
   });
+
+/** Les leviers levure du moteur (R43, R44), par recette et direction : le houblonnage à froid en fermentation active
+ * (dry hop « actif ») et les changements de souche. Un calcul lourd (proposeVoies), servi par le client asynchrone. */
+export interface LeviersLevure { dry: Voie[]; souches: Voie[] }
+const LEVIERS = new Map<string, LeviersLevure>();
+siDonneesChangent(() => LEVIERS.clear());
+export function leviersLevure(recette: RecetteParcours, direction: Record<string, number>): LeviersLevure {
+  const cle = JSON.stringify([recette.styleCode, recette.volumeL, recette.og, recette.boilMin, recette.yeastId, recette.additions, direction]);
+  if (!LEVIERS.has(cle)) {
+    const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: false, leviersLevure: true });
+    LEVIERS.set(cle, {
+      dry: res.voies.filter((v) => v.type === 'levure' && !v.yeastChange && v.actions.length > 0 && v.actions.every((x) => x.op === 'ajouter' && x.moment === 'dryActive'))
+        .filter((v) => catalogueDuMoteur() || v.actions.every((x) => proposable(x.hopKey))),
+      souches: res.voies.filter((v) => v.type === 'levure' && !!v.yeastChange),
+    });
+    if (LEVIERS.size > 60) LEVIERS.delete(LEVIERS.keys().next().value!);
+  }
+  return LEVIERS.get(cle)!;
+}
 
 // ---------- Suggérer ----------
 export interface Candidat { cle: string; houblon: HoublonLu; ajout: AjoutParcours; lu: AjoutLu; visee: Ecart; besoin: number; stockSuffisant: boolean | null }

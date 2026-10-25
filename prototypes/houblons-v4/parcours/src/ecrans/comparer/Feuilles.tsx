@@ -9,8 +9,9 @@ import { COULEURS, COURT, Picto, nombre, plage } from '../../commun';
 import { CONDITIONS, H, nomLevure } from '../../donnees/cas';
 import { useRecette } from '../../etat/EtatParcours';
 import { placer, quandDe } from '../../etat/quand';
-import { houblon, ibuAjout, lireBiere, style } from '../../moteur';
-import { CATALOGUE, STOCK, hopRef, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { donnees, houblon, ibuAjout, lireBiere, style } from '../../moteur';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { hopRef } from '../../moteur/v4';
 import {
   ETAPES, ORANGE, VISEES, biotransformation, couleurHoublon, egaler, enActif, jourApresJour, scoreDefi, souche, tirer, verdict,
   type ColonneLue, type Critere, type Etapes, type Verdict,
@@ -583,7 +584,7 @@ export function FeuilleAjouter({ disponibles, exclus, verbe, suite, onAjouter }:
   const [cherche, setCherche] = useState('');
   const q = sansAccent(cherche.trim());
   const trouves = useMemo(() => (q
-    ? CATALOGUE.filter((h) => !exclus.includes(h.id) && [h.name, ...h.aliases].some((n) => sansAccent(n).includes(q))).slice(0, 8).map((h) => h.id)
+    ? donnees().catalogue.filter((h) => !exclus.includes(h.id) && [h.name, ...h.aliases].some((n) => sansAccent(n).includes(q))).slice(0, 8).map((h) => h.id)
     : disponibles), [q, disponibles, exclus]);
   return (
     <div className="pq-comparer-ajout" data-element="p4-plus-comparaison l5f-carte-role-alpha">
@@ -676,7 +677,7 @@ export function VoletPlans({ cols, retenu, onDryhopper }: { cols: ColonneLue[]; 
   const b = [...cols].filter((c) => c.cle !== a?.cle).sort((x, y) => (y.cellules.floral.dCran ?? -9) - (x.cellules.floral.dCran ?? -9))[0];
   // Les plans de x3b eux-mêmes, pour ta stout (« Ma cuve, jour après jour ») : ton Citra cryo du stock, 2 g/L chacun,
   // pendant la fermentation active ; « ma bière de base -> 1 dry hop, 2 dry hop » (sa note sur x3b, 20.10).
-  const citra = STOCK.find((x) => x.key.startsWith('beermaverick-citra') && x.grams > 0)?.key ?? null;
+  const citra = donnees().stock.find((x) => x.key.startsWith('beermaverick-citra') && x.grams > 0)?.key ?? null;
   const [i, setI] = useState(2);
   const plans = useMemo(() => {
     if (!a) return [];

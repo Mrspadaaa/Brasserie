@@ -4,7 +4,8 @@
 // et les mots de la levure. Classes propres préfixées pq-ma-biere- (L26).
 import { COULEURS, COURT, Inconnu, Picto, nombre, type Echelle } from '../../commun';
 import type { BiereLue, FamilleLue } from '../../moteur';
-import { FAMILY_NAMES, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { FAMILY_NAMES } from '../../moteur/v4';
 
 /** Noms de levure de la base (« SafAle US-05 ») ; toutes celles-ci sont caractérisées par le moteur (biotransformation). */
 const LEVURES: Record<string, string> = {

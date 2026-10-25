@@ -6,10 +6,14 @@
 //   dans « Lire ces scores ») ; une composante connue reste celle du moteur. Rangés par le pire cas (bas de plage).
 // - Le face à face : α et β par source (Beer Maverick, Hopsteiner), huiles (Beer Maverick ; linalol Hopsteiner),
 //   familles des fiches (niveau, N/M), mots et styles d'emploi des fiches : catalogue du moteur (hopRef).
-import { DONNEES_POUVOIR, familyWords, hopRef, substitutes, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { useMemo } from 'react';
+import type { FamilyId, SubstitutionOptions, SubstitutionResult } from '../../../../../../src/domain/hopIndex/v4';
+import { DONNEES_POUVOIR, familyWords, hopRef } from '../../moteur/v4';
 import { houblon, style, type HoublonLu } from '../../moteur';
+import { calcul } from '../../moteur/client';
 import { proposable } from '../../moteur/donnees';
 import { memo } from '../../moteur/mesure';
+import { useCalcul } from '../../moteur/useCalcul';
 import type { AjoutParcours, RecetteParcours } from '../../etat/types';
 
 export type EtatStock = 'acheter' | 'suffisant' | 'insuffisant' | 'epuise';
@@ -39,9 +43,32 @@ const etatDe = (s: { etat: string; suffisant: boolean | null }): EtatStock =>
 
 const cleR = (r: RecetteParcours, a: AjoutParcours) => `${r.styleCode}|${r.volumeL}|${r.og}|${r.boilMin}|${a.hopKey}|${a.moment}|${a.grams}|${r.additions.map((x) => x.hopKey + ':' + x.grams).join(',')}`;
 
-/** Les huit remplaçants de u4 et la règle du moteur, pour un ajout. */
-export const lireRemplacants = memo<[RecetteParcours, AjoutParcours], Lecture>('substituer-u4', (r, a) => cleR(r, a), (recette, a) => {
-  const res = substitutes(a.hopKey, { moment: a.moment, grams: a.grams, recipe: recette, style: style(recette.styleCode), stockFirst: false });
+/** La demande au moteur : au moment et à la dose de l'ajout, au style de la recette, tout le classement (u4 lit le stock). */
+const optionsDe = (recette: RecetteParcours, a: AjoutParcours): SubstitutionOptions =>
+  ({ moment: a.moment, grams: a.grams, recipe: recette, style: style(recette.styleCode), stockFirst: false });
+
+/** Les huit remplaçants de u4 et la règle du moteur, pour un ajout. `res` : le classement déjà rendu par le client
+ * asynchrone (useRemplacants) ; absent, il est demandé au client (tout de suite sur le fil principal). */
+export const lireRemplacants = memo<[RecetteParcours, AjoutParcours, SubstitutionResult?], Lecture>('substituer-u4', (r, a) => cleR(r, a), (recette, a, res) =>
+  composer(res ?? calcul().lire('substitutes', a.hopKey, optionsDe(recette, a)) ?? sansReponse(a)));
+
+/** Le client n'a pas de réponse immédiate (worker) : on n'invente rien, l'écran garde son dernier résultat (useRemplacants). */
+function sansReponse(a: AjoutParcours): never { throw new Error(`remplaçants de ${a.hopKey} : pas de réponse immédiate du client`); }
+
+/** Les remplaçants de u4 par le client asynchrone (#165) : tout de suite sur le fil principal ; d'un worker, la lecture
+ * d'avant reste jusqu'à la réponse (aucun état d'attente). `a` null : rien de demandé, null. */
+export function useRemplacants(recette: RecetteParcours, a: AjoutParcours | null): Lecture | null {
+  const args = useMemo(() => (a ? ([a.hopKey, optionsDe(recette, a)] as [string, SubstitutionOptions]) : null), [recette, a]);
+  const recu = useCalcul('substitutes', args);
+  return useMemo(() => {
+    if (!recu || !a || !args) return null;
+    // La réponse de la demande courante : mise en cache sous sa clé ; une réponse gardée d'avant : composée seule.
+    const courante = calcul().cle('substitutes', recu.args) === calcul().cle('substitutes', args);
+    return courante ? lireRemplacants(recette, a, recu.valeur) : composer(recu.valeur);
+  }, [recu, args]); // eslint-disable-line react-hooks/exhaustive-deps
+}
+
+function composer(res: SubstitutionResult): Lecture {
   const w = res.poids;
   const tous = res.remplacants.filter((s) => proposable(s.key));
   const versCandidat = (s: (typeof tous)[number], vient: Candidat['vient']): Candidat => {
@@ -66,7 +93,7 @@ export const lireRemplacants = memo<[RecetteParcours, AjoutParcours], Lecture>('
     .sort((x, y) => y.min - x.min || y.max - x.max || x.nom.localeCompare(y.nom, 'fr'));
   const stockRangs = stock.map((s) => ({ nom: s.name, rang: tous.indexOf(s) + 1 }));
   return { contexte: res.contexte, poids: w, candidats, total: res.candidats, stockRangs };
-});
+}
 
 /** Le stock de l'original (son lot au stock moins ce que la recette en prend). */
 export function stockOriginal(h: HoublonLu, recette: RecetteParcours): EtatStock {

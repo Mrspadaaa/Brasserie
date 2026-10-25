@@ -8,11 +8,11 @@
 //   « Changer de levure » de ce levier (levuresDe), son groupe de q2b : « Celle ci aussi est toujours meilleures » (24.10,
 //   sur sa q2b) ; son choix l'emporte sur D35. Elles restent à part des voies houblon (verdicts, radar, comparaison).
 // Inconnu ≠ 0 : un effet non établi ou non simulé est `null`.
-import { applyVoie, proposeVoies, yeastSignals, type FamilyId, type Voie } from '../../../../../../src/domain/hopIndex/v4';
+import type { FamilyId, Voie, VoieResult } from '../../../../../../src/domain/hopIndex/v4';
+import { additionEffect, applyVoie, yeastSignals } from '../../moteur/v4';
+import { calcul } from '../../moteur/client';
 import type { BiereLue, Candidat, HoublonLu } from '../../moteur';
-import { donnees, houblon, lireBiere, proposer, style } from '../../moteur';
-import { additionEffect } from '../../../../../../src/domain/hopIndex/v4/voies';
-import { catalogueDuMoteur, proposable } from '../../moteur/donnees';
+import { houblon, leviersLevure, lireBiere, style, type LeviersLevure } from '../../moteur';
 import { placer } from '../../etat/operations';
 import type { Quand, RecetteParcours } from '../../etat/types';
 import { DEMANDE_DEGUSTEE, enPoints, type Visee } from '../../etat/visee';
@@ -92,10 +92,30 @@ export const bannisDe = (_visee: Visee): FamilyId[] => [];
  * exclue n'est pas proposée. Seulement sur une liste explicite (voiesDe, `bannis`) ; bannir dans Ma bière n'exclut plus. */
 export const exclue = (houblons: HoublonLu[], bannis: FamilyId[]) => houblons.some((h) => bannis.some((f) => h.familles[f].niveau !== 'non décrit'));
 
-/** Les voies du moteur, rangées en groupes comme q2b. `familles` : l'ordre des familles du moteur. */
-export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], familles: readonly FamilyId[], bannis: FamilyId[] = [], dryhopMax = 4): Groupe[] {
-  const direction = Object.fromEntries(objectifs.map((o) => [o.f, o.requis / o.cran]));
-  const res = proposer(recette, direction);
+/** La direction du moteur tirée des objectifs (crans signés : « + floral », « − résineux »). */
+export const directionDe = (objectifs: Objectif[]): Record<string, number> => Object.fromEntries(objectifs.map((o) => [o.f, o.requis / o.cran]));
+
+/** Les deux calculs lourds dont partent les voies (client asynchrone, moteur/client.ts) : proposer et les leviers levure. */
+export interface CalculsVoies { proposes: VoieResult; leviers: LeviersLevure }
+/** Les calculs lourds des voies, lus par le client : tout de suite sur le fil principal, ou déjà reçus (préchauffés).
+ * Sinon (worker) : la requête part au préchauffage et la réponse est undefined. */
+function lireCalculs(recette: RecetteParcours, direction: Record<string, number>): CalculsVoies | undefined {
+  const c = calcul();
+  const proposes = c.lire('proposer', recette, direction), leviers = c.lire('leviers', recette, direction);
+  if (proposes && leviers) return { proposes, leviers };
+  void c.prechauffer('proposer', recette, direction);
+  void c.prechauffer('leviers', recette, direction);
+  return undefined;
+}
+
+/** Les voies du moteur, rangées en groupes comme q2b. `familles` : l'ordre des familles du moteur. `lus` : les calculs
+ * lourds déjà rendus par le client (écran : useCalcul) ; absents, ils sont lus par le client (préchauffage : la
+ * Coquille), et sans réponse immédiate la liste est vide (rien d'inventé). */
+export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], familles: readonly FamilyId[], bannis: FamilyId[] = [], dryhopMax = 4, lus?: CalculsVoies): Groupe[] {
+  const direction = directionDe(objectifs);
+  const calc = lus ?? lireCalculs(recette, direction);
+  if (!calc) return [];
+  const res = calc.proposes;
   const lignes = res.voies.filter((v) => v.type === 'ajouter' || v.type === 'assemblage' || v.type === 'remplacer à IBU égal')
     .filter((v) => !exclue([...new Set(v.actions.map((a) => a.hopKey))].map((c) => houblon(c)), bannis)).map((v) => {
     const cles = [...new Set(v.actions.filter((a) => a.op !== 'retirer').map((a) => a.hopKey))];
@@ -138,7 +158,7 @@ export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], famille
     groupes.push({ id: 'remplacer', geste: 'remplacer', titre: `Remplacer ${avant ? houblon(avant).nom : ''}`.trim(), dose: null, moment: remp[0].moment, estime: false, lignes: remp.map((x) => x.ligne) });
   }
   // Dry hop · actif (q2b) : le levier « houblonner à froid en fermentation active » du moteur, avec ses signaux.
-  const dh = dryhopActif(recette, direction).filter((v) => !exclue(v.actions.map((x) => houblon(x.hopKey)), bannis)).slice(0, dryhopMax);
+  const dh = calc.leviers.dry.filter((v) => !exclue(v.actions.map((x) => houblon(x.hopKey)), bannis)).slice(0, dryhopMax);
   if (dh.length) groupes.push({ id: 'dryhop', geste: 'dryhop', titre: 'Dry hop', dose: null, moment: 'actif', estime: true,
     lignes: dh.map((v): Ligne => {
       const x = v.actions[0];
@@ -174,31 +194,17 @@ export function verdict(o: Objectif, groupes: Groupe[]): { mot: 'Atteint' | 'App
   return { mot: k >= 1 ? 'Atteint' : k >= 0.5 ? 'Approche' : 'Aucune', meilleure: k > 0 ? m : null, effet: e };
 }
 
-/** Les leviers levure du moteur (R43, R44), mémoïsés par recette et direction : le houblonnage à froid en fermentation
- * active (dry hop « actif ») et les changements de souche. */
-const DH = new Map<string, { dry: Voie[]; souches: Voie[] }>();
-function leviers(recette: RecetteParcours, direction: Record<string, number>) {
-  const cle = JSON.stringify([recette.styleCode, recette.volumeL, recette.og, recette.boilMin, recette.yeastId, recette.additions, direction]);
-  if (!DH.has(cle)) {
-    const res = proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: false, leviersLevure: true });
-    DH.set(cle, {
-      dry: res.voies.filter((v) => v.type === 'levure' && !v.yeastChange && v.actions.length > 0 && v.actions.every((x) => x.op === 'ajouter' && x.moment === 'dryActive'))
-        .filter((v) => catalogueDuMoteur() || v.actions.every((x) => proposable(x.hopKey))),
-      souches: res.voies.filter((v) => v.type === 'levure' && !!v.yeastChange),
-    });
-    if (DH.size > 60) DH.delete(DH.keys().next().value!);
-  }
-  return DH.get(cle)!;
-}
 /** Les voies « houblonner à froid en fermentation active » du moteur (levier R44). */
-export const dryhopActif = (recette: RecetteParcours, direction: Record<string, number>): Voie[] => leviers(recette, direction).dry;
+// Calcul de l'adaptateur (leviersLevure), synchrone : pour les contrôles (window.__suggerer) ; l'écran passe par le client.
+export const dryhopActif = (recette: RecetteParcours, direction: Record<string, number>): Voie[] => leviersLevure(recette, direction).dry;
 
 /** « Changer de levure » de q2b (levier R43) : une voie par souche caractérisée autre que la levure de la recette, son
  * effet = la différence des arômes propres des deux souches (modèle V5.5, établi seulement là où une souche a un
  * paramètre ; ailleurs null, inconnu). Numérotées après les voies houblon (`depuis`). null : aucune souche. */
-export function levuresDe(recette: RecetteParcours, objectifs: Objectif[], familles: readonly FamilyId[], depuis: number): Groupe | null {
-  const direction = Object.fromEntries(objectifs.map((o) => [o.f, o.requis / o.cran]));
-  const vs = leviers(recette, direction).souches;
+export function levuresDe(recette: RecetteParcours, objectifs: Objectif[], familles: readonly FamilyId[], depuis: number, lus?: CalculsVoies): Groupe | null {
+  const calc = lus ?? lireCalculs(recette, directionDe(objectifs));
+  if (!calc) return null;
+  const vs = calc.leviers.souches;
   if (!vs.length) return null;
   return { id: 'levure', geste: 'levure', titre: 'Changer de levure', dose: null, moment: 'levure', estime: true,
     lignes: vs.map((v, i): Ligne => ({

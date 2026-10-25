@@ -28,7 +28,7 @@ import { Usage } from '../fiche/briques';
 import { useFiche } from '../fiche/FicheHoublon';
 import { Lentille } from '../ma-biere/Lentille';
 import { noterAvant } from '../ma-biere/repere';
-import { huilesDe, LIGNES_HUILE, lireRemplacants, mesures, motsHors, stockOriginal, TEXTE_STOCK, type Candidat, type EtatStock, type Intervalle } from './donnees';
+import { huilesDe, LIGNES_HUILE, mesures, useRemplacants, motsHors, stockOriginal, TEXTE_STOCK, type Candidat, type EtatStock, type Intervalle } from './donnees';
 import { RadarU4 } from './Radar';
 import SYMBOLES from '../../../../../../src/data/hopV4/pictos-familles.svg?raw';
 import './substituer.css';
@@ -218,7 +218,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
   const { revenirMaBiere, aller } = useNavigation();
   const fiche = useFiche();
   const ajout: AjoutParcours | null = b.remplace ? trouver(b.recette, b.remplace.ajoutId) : null;
-  const lecture = useMemo(() => (ajout ? lireRemplacants(b.recette, ajout) : null), [b.recette, ajout]);
+  const lecture = useRemplacants(b.recette, ajout);
   const cands = lecture?.candidats ?? [];
   // Le moment lu (D127) : celui de l'ajout dans le brouillon ; la puce le change, « Remplacer » l'inscrit tel quel.
   const qLu = ajout ? quandDe(ajout, b.recette) : null;
@@ -235,7 +235,10 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
   const [echelle, setEchelle] = useState<Echelle>('style');
   const [achats, setAchats] = useState<Set<string>>(() => new Set());
   // Un autre moment, d'autres remplaçants : le face à face repart de ses deux par défaut (u4) à ce moment.
-  useEffect(() => { setCompares(defauts.compares); setChoix(defauts.choix); }, [cleLue]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Les remplaçants arrivés après le premier rendu (client sans réponse immédiate, #165) : le face à face part alors aussi
+  // de ses deux par défaut. Sur le fil principal, ils sont là dès le premier rendu : rien ne change.
+  const recue = lecture != null;
+  useEffect(() => { setCompares(defauts.compares); setChoix(defauts.choix); }, [cleLue, recue]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!ajout || !lecture) return null;
 
   const h0 = houblon(cle);

@@ -17,9 +17,9 @@ import { COURT, Picto, nombre, plage } from '../../commun';
 import { Pont } from '../../commun/Pont';
 import { nomMoment, ibuAjout, type HoublonLu } from '../../moteur';
 import { quandDe } from '../../etat/quand';
-import { lireRemplacants } from '../substituer/donnees';
+import { useRemplacants } from '../substituer/donnees';
 import type { AjoutParcours, RecetteParcours } from '../../etat/types';
-import { ibuByMoment } from '../../../../../../src/domain/hopIndex/v4';
+import { ibuByMoment } from '../../moteur/v4';
 import { nomSource, type Accord, type PlageSource, type SourcesFiche } from './sources';
 
 export type Section = 'styles' | 'huiles' | 'sources' | 'substituts';
@@ -84,7 +84,7 @@ export function Replis({ h, cle, s, recette, ouverte, onRemplacer }: {
   const pour = ajout ?? ({ id: `fiche-${cle}`, hopKey: cle } as unknown as AjoutParcours);
   // D40 point 3 (D35) : les remplaçants de u4, du même calcul que Substituer (lireRemplacants) : huit, rangés par le pire cas,
   // la plage dessinée quand une composante est inconnue (« 79 ▨ 99 »), Zenia comprise.
-  const liste = ouverte === 'substituts' ? lireRemplacants(recette, pour).candidats : [];
+  const liste = useRemplacants(recette, ouverte === 'substituts' ? pour : null)?.candidats ?? [];
   const lot = h.alpha && !/^plage/.test(h.alpha.source) ? h.alpha.valeur : null;
 
   const contenu = (() => {

@@ -7,7 +7,8 @@
 //  - écart en crans : (après − ta stout) / cran du style ;
 //  - « sort de ta 16D » : au-dessus du haut de la bande alors que ta stout était dedans ;
 //  - mis en avant au départ : le plus floral qui reste dans ta 16D.
-import { biotransfoLevure, familyWords, hopRef, simulerCas, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { biotransfoLevure, familyWords, hopRef, simulerCas } from '../../moteur/v4';
 import type { RecettePouvoir } from '../../../../../../src/domain/hopIndex/v4/pouvoir';
 import { S1_DIRECTION } from '../../../../src/pack/buildPack';
 import { comparer, effetLevure, style, type Colonne, type HoublonLu } from '../../moteur';

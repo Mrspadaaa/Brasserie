@@ -5,7 +5,8 @@
 import { Package } from 'lucide-react';
 import { COULEURS, COURT, Picto, nombre, plage } from '../../commun';
 import type { HoublonLu } from '../../moteur';
-import { hopRole, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { hopRole } from '../../moteur/v4';
 
 /** « lot » quand l'α vient du lot en stock (il fait la dose), « fiches » quand c'est le milieu de la plage variétale. */
 export const sourceAlpha = (h: HoublonLu): 'lot' | 'fiches' | null =>

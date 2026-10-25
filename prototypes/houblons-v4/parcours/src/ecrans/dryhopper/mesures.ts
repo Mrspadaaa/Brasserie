@@ -6,7 +6,7 @@
 // Une mesure ne se montre qu'au moment qu'elle documente (dry hop actif ou après fermentation) ; sinon, ou si le
 // houblon n'en a pas : null, et l'écran dit « ? », jamais une valeur d'un autre houblon.
 // Place future : une table de mesures sourcées de l'app (src/domain/hops/), servie par l'adaptateur (besoin socle).
-import { nombreFr, verifications } from '../../../../../../src/domain/hopIndex/v4';
+import { nombreFr, verifications } from '../../moteur/v4';
 import comparatifs from '../../../../../../src/data/hopV4/comparatifs-dryhop.json'; // copie de work/…/fils21-choisir/donnees (src/data/hopV4/copies-de-work.mjs)
 import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
 import type { Seg } from './frise';

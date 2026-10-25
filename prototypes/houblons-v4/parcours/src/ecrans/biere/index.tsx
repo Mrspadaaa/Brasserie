@@ -14,12 +14,14 @@ import { PageShell } from '@app/pages/PageShell';
 import { COURT, Legende, Onglets, ROUE, nombre, type Echelle } from '../../commun';
 import { useNavigation } from '../../coquille/navigation';
 import { useBiere, useGestes, useRecette, useVisee } from '../../etat/EtatParcours';
-import { donnees, proposer, style } from '../../moteur';
-import { voiesSummary, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { donnees, style } from '../../moteur';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { voiesSummary } from '../../moteur/v4';
+import { useCalcul } from '../../moteur/useCalcul';
 import { Alerte, Bandeau, NomFamille, PisteBase, nomLevureBase } from '../ma-biere/Base';
 import { Lentille } from '../ma-biere/Lentille';
 import { RadarBiere, auDessus, type Note } from '../ma-biere/RadarBiere';
-import { objectifsDe } from '../suggerer/voies';
+import { directionDe, objectifsDe } from '../suggerer/voies';
 import { GrilleDegustation } from './Degustation';
 import '../ma-biere/ma-biere.css';
 import './biere.css';
@@ -76,13 +78,15 @@ export default function Biere() {
   };
   // Sous les puces, pour chaque visée posée : le résumé des voies du moteur (voiesSummary, comme la base), sur la même
   // direction que Suggérer (objectifsDe), et le « › » qui l'ouvre.
+  // proposer passe par le client asynchrone (#165) : tout de suite sur le fil principal ; d'un worker, les liens d'avant
+  // restent jusqu'à la réponse (aucun état d'attente).
+  const direction = useMemo(() => (Object.keys(visee).length ? directionDe(objectifsDe(recette, biere, visee)) : null), [recette, biere, visee]);
+  const proposes = useCalcul('proposer', direction ? [recette, direction] : null);
   const liens = useMemo(() => {
     const dirs = Object.keys(visee) as FamilyId[];
-    if (!dirs.length) return [];
-    const obj = objectifsDe(recette, biere, visee);
-    const res = proposer(recette, Object.fromEntries(obj.map((o) => [o.f, o.requis / o.cran])));
-    return voiesSummary(res).byFamily.filter((r) => dirs.includes(r.family));
-  }, [recette, biere, visee]);
+    if (!dirs.length || !proposes) return [];
+    return voiesSummary(proposes.valeur).byFamily.filter((r) => dirs.includes(r.family));
+  }, [proposes, visee]);
   // « + … » ouvre la famille suivante à viser (dans l'ordre du style, située, sans visée, hors des puces).
   const ouvrirAutre = () => {
     const candidates = sc.order.filter((f) => biere.profil[f].valeur && visee[f] == null && !(f in sens));

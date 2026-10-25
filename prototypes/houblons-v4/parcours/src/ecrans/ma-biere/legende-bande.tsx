@@ -12,7 +12,8 @@
 // pq-mb-lg- (L26). Contrôle : controle-legende-v2a.mjs.
 import { useEffect } from 'react';
 import { COULEURS, COURT } from '../../commun';
-import { additionEffect, describeFamilies, familyWords, hopRef, FAMILY_NAMES, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { additionEffect, describeFamilies, familyWords, hopRef, FAMILY_NAMES } from '../../moteur/v4';
 import { style, type HoublonLu } from '../../moteur';
 import type { AjoutParcours, RecetteParcours } from '../../etat/types';
 

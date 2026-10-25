@@ -5,8 +5,8 @@
 // rien ; une levure sans fiche qui le dise a « ? » (inconnu, jamais 0).
 // Même grammaire que flb5b (« Lui seul : vin blanc, raisin… ») : mots génériques et noms de famille écartés, mots anglais
 // sûrs traduits. Écrit ici plutôt qu'importé de Substituer, dont le fichier est en cours de travail dans une autre voie.
-import { familyWords, hopRef } from '../../../../../../src/domain/hopIndex/v4';
-import { EXTRAPOLATION } from '../../../../../../src/domain/hopIndex/v4/data';
+import { familyWords, hopRef } from '../../moteur/v4';
+import { EXTRAPOLATION } from '../../moteur/v4';
 
 /** Mots génériques, qui ne disent rien de propre au houblon (flb5b : « fruité », « fruits tropicaux »). */
 const GENERIQUE = /^(fruit(é|ée|y|s|ées?)?|fruits? tropicaux|tropical|aromatique|arôme|houblon|doux|léger|intense|complexe|agréable|propre|neutre|net|clean)$/i;

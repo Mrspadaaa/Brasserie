@@ -12,8 +12,9 @@ import { useOuvrir } from '../../coquille/ouvrir';
 import { CONDITIONS, H, VISEE, nomLevure } from '../../donnees/cas';
 import { useRecette } from '../../etat/EtatParcours';
 import { nouvelId } from '../../etat/operations';
-import { houblon, style } from '../../moteur';
-import { STOCK, hopRef, type FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { donnees, houblon, style } from '../../moteur';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { hopRef } from '../../moteur/v4';
 import Fiche from '../fiche';
 import { ABSOLU, CRITERES, ETAPES, ORANGE, depart, type CodeEtape, houblonDeBase, lireColonnes, lireEtapes, reponse, scoreDefi, sesMots, type MotLu, type CelluleLue, type ColonneLue, type Critere } from './calcul';
 import { BandeEtapes, PiedEtapes } from './Etapes';
@@ -125,7 +126,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   const noms = cols.map((c) => c.houblon.nom);
   const question = `${noms.slice(0, -1).join(', ')}${noms.length > 1 ? ' ou ' : ''}${noms.at(-1) ?? ''} pour ma stout ?`;
   const quatre = cols.length >= 4;
-  const disponibles = STOCK.filter((s) => s.grams > 0 && !cles.includes(s.key)).map((s) => s.key);
+  const disponibles = donnees().stock.filter((s) => s.grams > 0 && !cles.includes(s.key)).map((s) => s.key);
   const placer = () => sel && ouvrir({ ecran: 'dryhopper', ajout: nouvelId(recette, sel.cle) });
   // La question de r6a est le titre de l'écran : le h1 que le cadre (CadreOutil du socle) pose sous l'en-tête commun
   // (D119, onglets et croix), en tête du contenu ; il porte la marque r6a-question (D104).
