@@ -1,11 +1,12 @@
+/* Thèmes clair (défaut) et cave : variables lues par tailwind.config.js. */
+@import './theme/themes.css';
+@import './theme/couleurs-portees.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    color-scheme: dark;
-  }
   summary.list-none::-webkit-details-marker { display: none; }
 
   html,

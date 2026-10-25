@@ -1,6 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import { initialiserTheme } from './theme/theme';
+
+// Le thème est posé par index.html avant le premier rendu ; ceci le relit et suit un changement venu d'un autre onglet.
+initialiserTheme();
 
 type ReusableRoot = ReturnType<typeof ReactDOM.createRoot>;
 const rootHolder = window as Window & { __laffineeReactRoot__?: ReusableRoot };

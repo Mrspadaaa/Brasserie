@@ -1,3 +1,8 @@
+const v = (nom) => `rgb(var(--${nom}) / <alpha-value>)`;
+const DEGRES = ['950', '900', '850', '800', '700', '600', '400', '200', '50'];
+const degres = (prefixe) => Object.fromEntries(DEGRES.map((d) => [d, v(`${prefixe}-${d}`)]));
+const AREAS = ['production', 'finances', 'stocks', 'agenda'];
+const areas = (suffixe) => Object.fromEntries(AREAS.map((a) => [a, v(`area-${a}${suffixe}`)]));
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
@@ -25,32 +30,24 @@ export default {
   },
   theme: {
     extend: {
+      /**
+       * Couleurs par thème (#144, D106) : chaque jeton lit une variable en canaux RGB définie par thème dans
+       * src/theme/themes.css (clair par défaut : ses maquettes choisies ; « cave » au choix). Les noms ne changent pas et
+       * les opacités (`bg-water/50`) restent valides. Valeurs, contrastes et règles : DESIGN.md, « Colors ».
+       *
+       * Cave : charbon CHAUD dérivé du malt torréfié, pas le bleu-noir `slate`. Une cave n'est pas bleue.
+       * Clair : page blanche, gris neutres, texte presque noir, action principale noire.
+       */
       colors: {
-        /**
-         * Fond : charbon CHAUD dérivé du malt torréfié, pas le bleu-noir `slate`
-         * qui donnait à l'app une allure de tableau de bord de développeur.
-         * Une cave n'est pas bleue.
-         */
-        cave: {
-          950: '#12100E', // fond de page
-          900: '#1A1613', // surface principale
-          850: '#221D19', // surface surélevée
-          800: '#2C2521', // bordure / séparateur
-          700: '#3D342E', // bordure marquée
-          600: '#574A42', // texte très secondaire
-          400: '#9A8A7E', // texte secondaire
-          200: '#D8CEC5', // texte courant
-          50: '#F5F0EA' // texte fort
-        },
+        cave: degres('cave'), // 950 page · 900 surface · 850 surélevée · 800/700 bordures · 600/400 secondaire · 200 courant · 50 fort
 
         /**
-         * Échelle EBC — la référence normalisée que les brasseurs utilisent pour
-         * décrire la couleur d'un moût, de la paille au noir opaque.
-         * RÉSERVÉE au produit et à l'état des brassins : un rouge d'alerte ne
-         * doit jamais pouvoir se confondre avec une couleur de bière.
+         * Échelle EBC — la référence normalisée que les brasseurs utilisent pour décrire la couleur d'un moût.
+         * RÉSERVÉE au produit et à l'état des brassins. Mêmes aplats dans les deux thèmes, sauf la paille, qui est
+         * aussi l'aplat de l'action principale (noire en clair).
          */
         ebc: {
-          straw: '#F2C14E', // paille — action principale
+          straw: v('ebc-straw'), // paille — action principale
           gold: '#E0A02E',
           amber: '#C87A2C',
           copper: '#A0522D',
@@ -59,19 +56,37 @@ export default {
         },
 
         // Repères de rubrique : stables, même en l'absence d'une alerte.
-        area: {
-          production: '#E7A070', // cuivre
-          finances: '#86B9E6', // bleu
-          stocks: '#A3C97A', // vert
-          agenda: '#BCA5E8' // violet
-        },
+        area: areas(''),
 
         // Sémantique — volontairement HORS de l'échelle bière.
-        attention: '#E3B55D', // réapprovisionnement, action à prévoir
-        'alert-strong': '#F29289', // texte d'erreur lisible sur les surfaces cave
-        alert: '#D6453D', // rupture, erreur
-        hop: '#6E9B5B', // disponible, validé (vert houblon sourd, pas un vert acide)
-        water: '#5B8AA6' // eau, chimie, information
+        attention: v('attention'), // réapprovisionnement, action à prévoir
+        'alert-strong': v('alert-strong'), // texte d'erreur lisible
+        alert: v('alert'), // rupture, erreur
+        hop: v('hop'), // disponible, validé
+        water: v('water'), // eau, chimie, information
+        marque: v('marque'), // marque porteuse de sens (bande du style, piste)
+        repere: v('repere') // repère d'accent (cible)
+      },
+
+      /**
+       * Texte et aplat sont séparés : chaque accent a une variante texte qui tient 4,5:1 sur la page du thème. En clair,
+       * `text-cave-950` reste une encre sombre (texte posé sur la paille), alors que `bg-cave-950` est la page blanche.
+       */
+      textColor: {
+        cave: degres('cave-texte'),
+        ebc: {
+          straw: v('ebc-straw-texte'),
+          gold: v('ebc-gold-texte'),
+          amber: v('ebc-amber-texte'),
+          copper: v('ebc-copper-texte')
+        },
+        area: areas('-texte'),
+        attention: v('attention-texte'),
+        'alert-strong': v('alert-strong-texte'),
+        alert: v('alert-texte'),
+        hop: v('hop-texte'),
+        water: v('water-texte'),
+        repere: v('repere-texte')
       },
 
       fontFamily: {
@@ -110,9 +125,9 @@ export default {
 
       boxShadow: {
         // Une élévation franche plutôt que la même ombre grise partout.
-        panel: '0 1px 0 0 rgba(245,240,234,0.04) inset',
-        lift: '0 8px 24px -12px rgba(0,0,0,0.7)',
-        sheet: '0 -12px 40px -16px rgba(0,0,0,0.8)'
+        panel: '0 1px 0 0 rgb(var(--cave-50) / 0.04) inset',
+        lift: '0 8px 24px -12px rgb(0 0 0 / var(--ombre-lift))',
+        sheet: '0 -12px 40px -16px rgb(0 0 0 / var(--ombre-sheet))'
       },
 
       screens: { xs: '375px' }

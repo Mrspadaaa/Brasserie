@@ -113,6 +113,7 @@ import { admitImportedWaterSnapshot, declaredWaterSourceId, frozenWaterSource, h
   retainedWaterCache, sameYeastForTargets, waterCacheBelongsToReference, waterProfileModeOf, waterProfileOrigin, withoutImportedAnalysis,
   type WaterProfileMode } from '../domain/wizardSourceValues';
 import { Trash2, Plus, AlertTriangle, ClipboardPaste, ClipboardList, ChevronLeft } from 'lucide-react';
+import { ThemeToggle } from '../theme/ThemeToggle';
 
 // Vitest exercises the wizard with immediate, cross-step assertions. Keep
 // those assertions deterministic while the production build retains the
@@ -2074,6 +2075,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       >
         <ClipboardPaste className="w-3.5 h-3.5" />
       </button>
+      {/* Le choix du thème, à côté de l'import (#144, 25.10). */}
+      <ThemeToggle />
       </div>
 
       {/* Le fil seul sur son rang : chaque segment passe de 30 px de large à ~50. */}

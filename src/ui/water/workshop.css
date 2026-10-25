@@ -1,5 +1,5 @@
 .water-workshop :is(button,:is(input, textarea:where([data-single-line])), summary):focus-visible {
-  outline: 2px solid #f2c14e;
+  outline: 2px solid rgb(var(--ebc-straw));
   outline-offset: 3px;
 }
 
@@ -96,7 +96,7 @@
     font-size: 13px;
     line-height: 1.2;
     font-weight: normal;
-    color: #9a8a7e;
+    color: rgb(var(--cave-texte-400));
   }
 
   .water-ratio-compact .ratio-readings {

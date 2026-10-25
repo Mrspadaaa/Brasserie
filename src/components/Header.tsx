@@ -16,6 +16,7 @@ import {
 import { AppConfig, TimeFilterPeriod } from '../types';
 import { StorageService } from '../services/storage';
 import { IconButton } from './ui/Button';
+import { ThemeToggle } from '../theme/ThemeToggle';
 import { useDensity, useMobileLayout } from '../ui/useViewport';
 
 interface HeaderProps {
@@ -184,6 +185,8 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
+        {/* Le choix du thème (#144) : clair par défaut, « cave » au choix. */}
+        <ThemeToggle className={compactLayout ? '' : 'w-touch h-touch'} />
         {/* Recherche universelle. Au clavier c'est ⌘K / Ctrl+K ; au doigt,
             cette loupe est le seul chemin — d'où sa place en clair, hors menu. */}
         <IconButton label="Rechercher (⌘K)" onClick={onOpenSearch} intent="secondary" className={compactLayout ? 'min-h-7 min-w-7' : ''}>

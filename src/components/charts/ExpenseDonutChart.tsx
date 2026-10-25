@@ -20,7 +20,7 @@ export const ExpenseDonutChart: React.FC<ExpenseDonutChartProps> = ({
     materiel: { name: 'Matériel & Outils', value: 0, color: '#3b82f6', cat: 'materiel' },
     nettoyage: { name: 'Nettoyage & CIP', value: 0, color: '#ec4899', cat: 'nettoyage' },
     chargesFixes: { name: 'Charges Fixes', value: 0, color: '#8b5cf6', cat: 'chargesFixes' },
-    divers: { name: 'Frais Divers', value: 0, color: '#64748b', cat: 'divers' }
+    divers: { name: 'Frais Divers', value: 0, color: 'rgb(var(--cave-texte-400))', cat: 'divers' }
   };
 
   transactions.forEach((tx) => {
@@ -84,7 +84,7 @@ export const ExpenseDonutChart: React.FC<ExpenseDonutChartProps> = ({
                   <Cell 
                     key={`cell-${index}`} 
                     fill={entry.color} 
-                    stroke="#0f172a" 
+                    stroke="rgb(var(--cave-950))" 
                     strokeWidth={2}
                     opacity={selectedCategory === 'all' || selectedCategory === entry.cat ? 1 : 0.4}
                   />

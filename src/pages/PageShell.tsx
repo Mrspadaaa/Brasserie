@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ChevronLeft } from 'lucide-react';
+import { ThemeToggle } from '../theme/ThemeToggle';
 import { useCoarsePointer, useDensity, useKeyboardInset } from '../ui/useViewport';
 import './page-shell.css';
 
@@ -536,6 +537,7 @@ export const PageShell: React.FC<PageShellProps> = ({
                   )}
                 </div>
 
+                <ThemeToggle />
                 {actions && <div className="page-title-actions shrink-0">{actions}</div>}
               </div>
 
@@ -578,7 +580,8 @@ export const PageShell: React.FC<PageShellProps> = ({
                 )}
               </div>
 
-              {actions && <div className="page-title-actions shrink-0">{actions}</div>}
+              <ThemeToggle />
+                {actions && <div className="page-title-actions shrink-0">{actions}</div>}
             </div>
 
             {progress && (

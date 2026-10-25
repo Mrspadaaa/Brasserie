@@ -88,20 +88,27 @@ components:
     typography: "{typography.reading}"
 ---
 
-> **Décision du brasseur, 23.10.2026 : le thème de l'app est revu, on garde celui des maquettes.**
-> Ses mots : « Le thème de l'app principal doit être revu. On garde celle des maquettes ». Les maquettes, ce sont
-> celles qu'il a choisies : l'étape Houblons et Ma bière de la base v4.10, q2b, r6a (registre
-> `work/refonte-frontend/v4/choix/ecrans.json`). Leurs couleurs, mesurées dans Chrome :
-> - page blanche `#FFFFFF` ;
-> - surfaces gris neutre `#F5F5F5` et `#EBEBEB` (r6a et q2b : `#F3F3F6`, `#ECECF1`) ;
-> - texte `#111111` (`#16161A`), texte secondaire `#6B6B6B` (`#5B5B66`) ;
-> - les couleurs des familles d'arômes inchangées.
+> **Deux thèmes depuis le 25.10.2026 (#144) : clair par défaut, « cave » au choix.**
+> Décision du brasseur, 23.10 : « Le thème de l'app principal doit être revu. On garde celle des maquettes ». Les
+> maquettes, ce sont celles qu'il a choisies : l'étape Houblons et Ma bière de la base v4.10, q2b, r6a (registre
+> `work/refonte-frontend/v4/choix/ecrans.json`). 25.10 : « Pourquoi c'est en thème noir, tu peux ajouter dans le header
+> le choix de thèmes à côté de l'import ».
+> - **Clair**, le thème par défaut, a les couleurs de ses maquettes, mesurées dans Chrome : page blanche `#FFFFFF`,
+>   surfaces gris neutre `#F5F5F5` et `#EBEBEB`, texte `#111111`, secondaire `#666666`, action principale noire à texte
+>   blanc ; les couleurs des familles d'arômes ne changent pas.
+> - **Cave** est le thème sombre : le charbon chaud décrit ci-dessous, au choix.
+> - **Pas** le « clair » à papier chaud (`#F2ECE4`) de `prototypes/houblons-v4/ecran/THEMES.md`, rejeté le 23.10 :
+>   « Pourquoi c'est en thème pastel horrible ??? C'est pas ce que j'ai demandé ??? » (D106). On en garde le mécanisme.
 >
-> **Pas** le « clair » à papier chaud (`#F2ECE4`) de `prototypes/houblons-v4/ecran/THEMES.md`. Il a été rejeté le
-> même jour : « Pourquoi c'est en thème pastel horrible ??? C'est pas ce que j'ai demandé ??? » (D106). On reprend en
-> revanche son mécanisme : mêmes noms de jetons, valeurs par thème en variables. Le « cave » décrit ci-dessous devient
-> le thème sombre. Tant que le portage n'est pas fait, les couleurs ci-dessous restent celles du code ; un nouvel
-> écran se conçoit déjà dans le blanc neutre de ses maquettes.
+> **Mécanisme** (repris de THEMES.md) : les noms de jetons ne changent pas (`cave-*`, `ebc-straw`, `hop`, `water`…) ;
+> `tailwind.config.js` les lit en variables à canaux RGB (`rgb(var(--cave-900) / <alpha-value>)`), définies par thème
+> dans `src/theme/themes.css` sous `[data-theme='clair']` et `[data-theme='cave']`. L'attribut `data-theme` est posé sur
+> `<html>` avant le premier rendu (script d'`index.html`), et le choix est gardé sur l'appareil (`localStorage`,
+> `laffinee.theme`), hors ligne. On choisit par le bouton soleil/lune de l'en-tête : accueil, en-tête des pages, et dans
+> le wizard à côté de l'icône d'import. Les teintes propres d'un composant (CSS) passent par `src/theme/couleurs-portees.css`
+> (généré par `scripts/theme/porter-reste.mjs`). Contrastes : `node scripts/theme/contraste.mjs` (tableau : `--tableau`).
+> Les valeurs hexadécimales de l'en-tête de ce document sont celles du thème cave ; celles du clair sont dans la section
+> « Colors ».
 
 ## Overview
 
@@ -161,33 +168,62 @@ juge ces décisions dans le parcours, au-delà du respect des dimensions.
 
 ## Colors
 
+### Deux thèmes, les mêmes jetons
+
+L'app a deux thèmes (`data-theme` sur `<html>`) : **clair**, par défaut, aux couleurs des maquettes choisies par le
+brasseur, et **cave**, le sombre. Un composant n'écrit jamais une couleur en dur : il prend un jeton, et le jeton change
+de valeur avec le thème. Texte et aplat ont des variables distinctes (`textColor`) : en clair, `bg-cave-950` est la page
+blanche mais `text-cave-950` reste une encre sombre, car l'app ne l'emploie que pour un texte posé sur l'action.
+
+| Rôle | Jeton | Clair | Cave |
+|---|---|---|---|
+| Page | `cave-950` | `#FFFFFF` | `#12100E` |
+| Panneau | `cave-900` | `#F5F5F5` | `#1A1613` |
+| Surface surélevée (feuille, champ, ligne active) | `cave-850` | `#EBEBEB` | `#221D19` |
+| Bordure, séparateur | `cave-800` | `#DDDDDD` | `#2C2521` |
+| Bordure marquée | `cave-700` | `#BFBFBF` | `#3D342E` |
+| Trait faible, bordure | `cave-600` | `#9E9E9E` | `#574A42` |
+| Texte secondaire | `cave-400` | `#666666` | `#9A8A7E` |
+| Texte courant | `cave-200` | `#333333` | `#D8CEC5` |
+| Valeur lue, titre | `cave-50` | `#111111` | `#F5F0EA` |
+| Action principale (aplat) | `ebc-straw` | `#111111`, texte blanc | `#F2C14E`, texte `#12100E` |
+
+Accents en clair, aplat puis texte (cave : valeurs de l'en-tête) : houblon `#567F45` / `#3F6B2E`, eau `#4F7E9B` /
+`#2F5F7D`, alerte `#C8382F` / `#A8291F`, attention `#9C7020` / `#7F5B10` ; rubriques production `#9A4F1E`, finances
+`#1F64A3`, stocks `#4C6B2A`, agenda `#6A4FB0`. L'échelle EBC garde ses aplats dans les deux thèmes ; ses textes foncent
+en clair (or `#7A5A12`, ambre `#8A5212`, cuivre `#8D442C`). En cave, trois textes colorés s'éclaircissent pour tenir
+4,5:1 : `text-alert` `#DC5F58`, `text-water` `#5E8CA8`, `text-ebc-copper` `#B5785B` ; les aplats ne changent pas.
+
 ### Les trois tons neutres de texte
 
-Mesuré sur `cave-900`, la surface la plus courante :
+| Jeton | Emploi | Seuil | Clair, pire fond | Cave, pire fond |
+|---|---|---|---|---|
+| `cave-50` | Valeur relevée, titre d'écran, chiffre qu'on lit de loin | 7:1 | 15,84:1 | 14,74:1 |
+| `cave-200` | Texte courant | 7:1 | 10,60:1 | 10,78:1 |
+| `cave-400` | Texte secondaire, intitulé, unité, aide | 4,5:1 | 4,82:1 | 5,02:1 |
 
-| Jeton | Emploi | Contraste |
-|---|---|---|
-| `cave-50` | Valeur relevée, titre d'écran, chiffre qu'on lit de loin | 15.87:1 |
-| `cave-200` | Texte courant | 11.60:1 |
-| `cave-400` | Texte secondaire, intitulé, unité, aide | 5.40:1 |
+Mesurés sur la page, le panneau et la surface surélevée ; le pire des trois est retenu. Tout texte coloré tient 4,5:1,
+toute marque porteuse de sens qui n'est pas du texte 3:1, le texte posé sur l'action 7:1 (18,88:1 en clair, 11,31:1 en
+cave). Contrôle bloquant : `node scripts/theme/contraste.mjs`.
 
-**`cave-600` et plus sombre ne portent jamais de texte.** Mesuré à 2.11:1 sur
-`cave-900` — sous le minimum AA de 4.5:1, et illisible dans la pénombre. C'est
-une couleur de **bordure et de séparateur**, y compris pour les textes
-d'intention faible comme les marques de curseur ou les placeholders : un
-placeholder est du texte et doit tenir 4.5:1, donc `cave-400`.
+**`cave-600` et plus clair-sur-clair ne portent jamais de texte.** En cave, `cave-600` et plus sombre ; en clair,
+`cave-600` et plus pâle (`#9E9E9E` : 2,68:1 sur la page) : ce sont des couleurs de **bordure et de séparateur**, y
+compris pour les textes d'intention faible comme les marques de curseur ou les placeholders. Un placeholder est du
+texte et doit tenir 4,5:1, donc `cave-400`, dans les deux thèmes.
 
 **Les degrés 100, 300, 500 et 750 n'existent pas** et ne doivent pas être
 réintroduits. Ces trois tons constituent l'échelle neutre de lecture. Les
 couleurs de rubrique, de statut et de style décrites ci-dessous complètent
 cette échelle pour aider au repérage. Les jetons ajoutés au thème doivent être
-déclarés dans la palette et pris en compte par ses contrôles
-(`tests/unit/designTokens.test.ts`).
+déclarés dans les deux thèmes de `src/theme/themes.css` et pris en compte par ses contrôles
+(`tests/unit/designTokens.test.ts`, `scripts/theme/contraste.mjs`).
 
 ### Les surfaces
 
 `cave-950` fond de page · `cave-900` panneau · `cave-850` surface surélevée
 (feuille, champ, ligne active) · `cave-800` bordure · `cave-700` bordure marquée.
+En clair, la page est la plus claire et les surfaces foncent d'un cran (blanc, `#F5F5F5`, `#EBEBEB`) ; en cave, elles
+s'éclaircissent. Les ombres suivent le thème (`--ombre-lift`, `--ombre-sheet` : légères en clair, profondes en cave).
 
 Un panneau ne se pose jamais sur un panneau. Si un bloc a besoin d'un bloc à
 l'intérieur, c'est un séparateur qu'il lui faut, pas une carte.
@@ -199,8 +235,8 @@ pour décrire la couleur d'un moût. Elle sert à dire **ce qu'est la bière** :
 couleur prévue d'une recette, classe d'un malt, état d'un brassin.
 
 Une exception, une seule : **`ebc-straw` est aussi la couleur de l'action
-principale** — le seul aplat clair de l'interface, impossible à rater dans la
-pénombre. Cette exception est bornée par la règle suivante.
+principale** — en cave, le seul aplat clair de l'interface, impossible à rater dans la
+pénombre ; en clair, un aplat noir à texte blanc, comme dans ses maquettes. Cette exception est bornée par la règle suivante.
 
 > **Une seule action principale par écran.**
 > Si deux aplats `ebc-straw` sont visibles en même temps, l'un des deux est en
