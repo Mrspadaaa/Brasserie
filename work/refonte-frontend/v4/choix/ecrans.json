@@ -1,5 +1,5 @@
 {
- "maj": "2026-10-24",
+ "maj": "2026-10-25",
  "regle": "« C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10). Chaque écran repart de la maquette qu'il a choisie, telle qu'il l'a vue (CLAUDE.md, règle n° 1 ; D105).",
  "usage": "controle-choix.mjs <dossier construit> : chaque écran « choisi » passe controle-reprise avec son inventaire (et ses contrôles) ; un écran « ouvert » est signalé avec ses options. À mettre à jour à chacun de ses choix, avec ses mots.",
  "ecrans": [
@@ -89,6 +89,11 @@
      "mots": "Et aussi le houblon de base ou bière de base",
      "capture": "work/refonte-frontend/v4/ecran-1/fils21-choisir/captures/x3b-390.png",
      "quoi": "une référence aux mêmes étapes : la bière de base (ta stout) ou le houblon de base de la recette (Nugget)"
+    },
+    {
+     "mots": "Secteurs hachurés rdg1 et Les inconnus regroupés rdg5 j'aime beaucoup. […] Juste le radar graph lui même changé. Aussi peut-être les couleurs et contraste mieux dessiné, mis en avant car on peut confondre un peu. — puis, sur cmc2 : C'est la meilleure mais c'est pas relié par des traits trié. Pourquoi ? À changé",
+     "capture": "work/refonte-frontend/v4/ecran-1/fils25-comparer/captures/brasseur-cmc2-traits.jpg",
+     "quoi": "le radar de cmc2 (rdg5) : grammaire Beer Maverick, 12 axes et leurs pictos, inconnus de tous regroupés en un secteur « sans donnée », points connus de chaque houblon reliés par des traits pleins, inconnu d'un houblon en pastille « ? » au bord, couleurs de houblons distinctes, le retenu en avant, remplissage jamais au centre (D144 à D147)"
     }
    ],
    "controles": [
