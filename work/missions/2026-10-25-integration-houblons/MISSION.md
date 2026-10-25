@@ -95,6 +95,20 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
 - Ensuite, sans attendre son retour (« N'attende jamais sur mon feedback ») : Substituer, Dryhopper, Levure dans l'app (reste de #174, Sonnet) ; mesure de fluidité en production (D70, Haiku) puis #179 ; #180 import complet ; #181 affinage (tests IA permis, journalisés) ; #182 compagnon ; T10 (#172) ; T18 (#176). Après chaque lot : rejeu Haiku, commit par chemins (L17), push, redéploiement de l'hébergement s'il le faut pour qu'il joue.
 - Répartition (L18) : Haiku le mécanique, Sonnet le code et les ports, Opus seulement ce qu'il voit et le pilotage.
 
+## Reprise autonome (25.10, nuit) — « Continue sans mes feedback, tu me feras un récap demain à 13h »
+- Récap à lui faire le 26.10 à 13 h (tâche programmée de la session ; si elle a disparu, le faire à la reprise) : fait et déployé, en cours, accords en attente, décisions prises seul, suite.
+- Méthode par lot : voie Sonnet (code) ou concepteur Opus (ce qu'il voit) → rejeu Haiku dans la copie propre  (git -C … checkout --detach <commit>) → commit par chemins (L17) → build  +  dans la copie →  depuis la copie → issue et D-n.
+- File d'attente, dans l'ordre :
+  1. 5d3f89bc (t12e) : rejeu Haiku en cours, puis déployer (D74).
+  2. t15c-outils (Substituer, Dryhopper, Levure, #174) : finir, rejouer, commiter, déployer.
+  3. « autres n % » : compter un mot une seule fois (t12e DÉCISION), Sonnet.
+  4. Fluidité en production (D70) : un banc sur le build de production (sans ?dev-local), Haiku pour mesurer, Sonnet pour le banc ; puis #179 (rendu de Suggérer, Substituer, Comparer).
+  5. #180 : état des lieux de la couverture des données (Haiku), plan des sources et import local avec tests (Sonnet) ; rien en production sans accord.
+  6. #181 : banc d'évaluation hors ligne et affinage (Sonnet) ; tests IA réels seulement journalisés, hors npm test.
+  7. #182 : compagnon brasseur (Sonnet), après 5 et 6.
+  8. #177 : les tests rouges anciens (Sonnet), si le temps le permet.
+- Saut au « + » (D153) : non reproduit en test ; à revérifier dans son Chrome au retour.
+
 ## Règle de la fluidité (25.10, soir)
 - Ses mots : « SI Des étape bloque vraiment sur la fluidité. Tu peux skip trouvé une solution et compromis et me propose ça. Dans le pire des cas ». Une étape qui bloque sur la fluidité ne bloque pas la mission : un compromis mesuré (avant, après) lui est proposé, en DÉCISION À PRENDRE de la voie.
 - Ensuite, à sa demande : importer toutes les données de tous les houblons (#180), après Comparer et la fiche ; l'écriture en production attend son accord. Puis affiner Suggérer et Substituer sur un banc d'évaluation (#181), avec des tests d'appel IA permis s'ils gagnent en qualité sans lenteur (journalisés, hors npm test, production sur accord) ; enfin brancher les outils au compagnon brasseur (#182).
