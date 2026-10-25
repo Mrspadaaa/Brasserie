@@ -12,6 +12,8 @@
 // Usage :
 //   node scripts/check-hop-budget.mjs --dist <dossier du build> [--boot index,App,firebase] [--step Host]
 //   node scripts/check-hop-budget.mjs --adapter <adaptateur> [--tap "libellé"]
+//   --chunk-outils <préfixe> [--deja a,b] : B5 = JavaScript ajouté à l'ouverture d'un outil v4 (#167) ≤ 150 ko gzip : la fermeture du
+//      chunk des outils hors démarrage, moins celle des écrans déjà ouverts dessous (--deja, p. ex. BrewWizardEntry).
 //   --witness : le sujet DOIT dépasser au moins un budget (témoin négatif).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -39,6 +41,13 @@ if (arg('dist')) {
   for (const f of boot) step.delete(f);
   const stepGz = gz(step);
   results.push({ id: 'B2', label: 'étape Houblons', value: stepGz, budget: BUDGET.B2, text: `${kb(stepGz)} gzip ajoutés (${step.size} fichiers)` });
+  if (arg('chunk-outils')) {
+    const deja = close((arg('deja', '') || '').split(',').filter(Boolean).map(find), new Set(boot));
+    const outils = close([find(arg('chunk-outils'))], new Set(boot));
+    for (const f of [...boot, ...deja]) outils.delete(f);
+    const outilsGz = gz(outils);
+    results.push({ id: 'B5', label: 'ouverture d’un outil v4', value: outilsGz, budget: BUDGET.B2, text: `${(outilsGz / 1000).toFixed(1)} ko gzip ajoutés (${[...outils].join(', ')})` });
+  }
 }
 
 if (arg('adapter')) {

@@ -75,7 +75,13 @@ const BrewWizard = lazy(() => import('./pages/BrewWizardEntry'));
 const HopV55Host = lazy(() => import('./ui/hopV55/Host').then(module => ({ default: module.HopV55Host })));
 // Écran provisoire des outils houblons v4 (#162) : atteint seulement par le crochet de développement tant que le
 // drapeau `hopV4` (src/ui/hopIndex/flags.ts) est éteint.
-const HopToolLayer = lazy(() => import('./ui/hopIndex/HopToolLayer'));
+// Une couche préchargée (precharge.ts) se rend d'un coup : la fabrique rend alors un thenable synchrone, car React garde sinon
+// 300 ms le repli de Suspense même quand le module est déjà là (mesuré : 311 ms à la première ouverture).
+type CoucheOutils = typeof import('./ui/hopIndex/HopToolLayer');
+let coucheOutils: CoucheOutils | undefined;
+const HopToolLayer = lazy(() => coucheOutils
+  ? ({ then: (ok: (m: CoucheOutils) => unknown) => ok(coucheOutils!) } as unknown as Promise<CoucheOutils>)
+  : import('./ui/hopIndex/HopToolLayer').then(m => (coucheOutils = m)));
 
 /**
  * Compte factice pour le DÉVELOPPEMENT LOCAL, et rien d'autre.
@@ -245,6 +251,16 @@ export const App: React.FC = () => {
   const layerRoutes: LayerRoute[] = route.layers ?? [];
   const baseIndex = routePile.length - 1 - layerRoutes.length;
   useHopPileDevHook({ open: route.open, close: route.close, closeTo: route.closeTo, pile: routePile });
+  // Outils houblons v4 (#167) : préchargés au repos, en ligne, drapeau allumé seulement ; rien sur le chemin du démarrage.
+  // Le drapeau est lu en clair : éteint, Vite retire tout le bloc (ni code ni requête) ; allumé, le programmateur est un petit
+  // chunk à part, demandé après le montage, qui attend la fin du chargement et un instant de repos avant de rien charger.
+  useEffect(() => {
+    if (import.meta.env.VITE_HOP_V4 !== 'on') return;
+    let annuler = () => {};
+    let demonte = false;
+    void import('./ui/hopIndex/precharge').then(m => { if (!demonte) annuler = m.prechargerOutilsAuRepos(c => { coucheOutils = c; }); });
+    return () => { demonte = true; annuler(); };
+  }, []);
   const [hopV55Journal, setHopV55Journal] = useState<{ batchId: string; journal: import('./types').BrewDayState }>();
   // A resolved background import should not still mount a Suspense fallback.
   // Lock the surface for this route so later data updates preserve local UI state.
