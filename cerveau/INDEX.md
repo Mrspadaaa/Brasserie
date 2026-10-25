@@ -71,6 +71,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 
 ### sources/ — références externes
 - [[moneaudebrassage]] — la référence visuelle de l'atelier de l'eau
+- [[beermaverick-radar]] — le radar de référence : anneaux chiffrés, zéro hors du centre
 
 ### decisions/ — transcriptions du conseil
 - [[2026-10-22-carte-outils-houblons]] — un facteur libre par écran
