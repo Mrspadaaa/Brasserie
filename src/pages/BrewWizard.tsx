@@ -127,8 +127,20 @@ const syncWizardPanels = import.meta.env.MODE === 'test';
 // le même code que la maquette. Chunk à part, demandé dès l'ouverture du wizard (drapeau allumé) pour être prêt avant
 // l'étape 3 : aucun état d'attente à l'écran (repli vide, ni roue ni « chargement »). Drapeau éteint : jamais demandé.
 const hopV4Actif = hopV4Enabled();
+
+/** L'IBU de l'étape Houblons (drapeau hopV4) dans le bandeau commun : un α de lot absent se lit à la plage de la variété, donc
+ * « ~12 » et la plage au toucher ; « — » seulement quand une donnée manque vraiment (densité, moment, variété hors du moteur). */
+function IbuEnPlage({ mesures }: { mesures: MesuresEtape }) {
+  const cls = 'reading text-sm sm:text-base';
+  const l = libelleIbu(mesures);
+  if (l.texte == null) return <span data-role="ibu-bandeau" className={cls} title={l.titre}>—</span>;
+  return <span data-role="ibu-bandeau" data-valeur={l.valeur!.toFixed(2)} className={cls} title={l.titre}>{l.texte}</span>;
+}
 const chargerEtapeHoublonsV4 = () => import('../ui/hopIndex/maBiere/EtapeHoublons');
 const EtapeHoublonsV4 = lazy(chargerEtapeHoublonsV4);
+import type { MesuresEtape } from '../ui/hopIndex/maBiere/EtapeHoublons';
+import { libelleIbu } from '../domain/hopIndex/v4/recipeConversion';
+const MesuresWizardV4 = lazy(() => import('../ui/hopIndex/maBiere/MesuresWizard'));
 const HopV55RecipeStep = lazy(() => import('../ui/hopV55/RecipeStep').then(({ HopV55RecipeStep: Panel }) => ({ default: Panel })));
 const HopRecipeGuide = syncWizardPanels ? SyncHopRecipeGuide : lazy(() => import('../ui/hopIndex/HopRecipeGuide').then(({ HopRecipeGuide: Panel }) => ({ default: Panel })));
 const FermentationWorkshop = syncWizardPanels ? SyncFermentationWorkshop : lazy(() => import('../ui/FermentationWorkshop').then(({ FermentationWorkshop: Panel }) => ({ default: Panel })));
@@ -582,6 +594,17 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const [draftAside, setDraftAside] = useState(draftSetAside);
   const [draftError, setDraftError] = useState('');
   const [discarding, setDiscarding] = useState(false);
+  // Étape Houblons (drapeau hopV4) : IBU en plage lu par l'étape sur la recette à l'écran, pour le bandeau commun (t12c).
+  const [mesuresV4, setMesuresV4] = useState<MesuresEtape | null>(null);
+  // Ordinateur (≥ 640 px, comme `sm:`) : « Abandonner » passe par l'en-tête de la coquille ; téléphone : par la rangée mobile.
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.('(min-width: 640px)').matches);
+  useEffect(() => {
+    const m = typeof window !== 'undefined' ? window.matchMedia?.('(min-width: 640px)') : undefined;
+    if (!m) return;
+    const suivre = () => setIsDesktop(m.matches);
+    m.addEventListener?.('change', suivre);
+    return () => m.removeEventListener?.('change', suivre);
+  }, []);
   const draftFinished = useRef(false);
   const [hopGuideBusy, setHopGuideBusy] = useState(false);
   // Manual hop lines are the correction path under the V5.5 workbench; a field
@@ -1748,6 +1771,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     return `${formatDecimal(perdu)} L évaporés — autant d’eau à prévoir en plus dans la cuve.`;
   }, [volumeL, boilMin, brewhouse]);
   const stepIndex = STEPS.findIndex((s) => s.id === step);
+  /** Le message de reprise ou de conservation du brouillon : ni erreur ni événement, il ne prend plus de ligne. */
+  const messageDeBase = /^Brouillon (repris|conservé) sur cet appareil.$/.test(draftNotice);
   const resizeForEquipment=(profile=brewhouse, targetL=defaultBrewVolume(profile), destination: StepId = 'identite')=>{
     try {
       if(!profile)return;
@@ -2062,6 +2087,15 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     if (next) setStep(next.id);
   };
 
+  // « Abandonner » le brouillon : dans l'en-tête, compact, à côté de l'import et du thème (25.10). La confirmation, elle, reste
+  // sous l'en-tête (« Supprimer ce brouillon ? »). Sur ordinateur, le bouton passe par `actions` de la coquille.
+  const abandonner = draftKey && (draftNotice || draftError) && !draftAside && !discarding && !draftReadOnly ? (
+    // Dans un <span> : la règle `.recipe-titlebar > button` du wizard fixe 28 × 28 px aux boutons-icônes de la rangée.
+    <span className="shrink-0">
+      <button type="button" aria-label="Abandonner le brouillon" data-role="abandonner-brouillon" onClick={() => setDiscarding(true)}
+        className="h-7 px-1.5 rounded-control text-xs text-cave-200 underline underline-offset-2 active:bg-cave-850 transition-colors">Abandonner</button>
+    </span>
+  ) : null;
   const mobileHeader = (
     <div className="recipe-mobile-header px-2 bg-cave-950">
       <div className="recipe-titlebar flex items-center gap-1.5">
@@ -2075,14 +2109,11 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         <ChevronLeft className="w-4 h-4" />
       </button>
 
-      {/* Étape Houblons, drapeau hopV4 : « Text header inutile » (24.10, sur sa maquette ; D58). Le fil d'étapes juste
-          dessous nomme déjà « Houblons » : la rangée garde le retour et le repère compact « 3/7 » (T12b, #170). */}
-      {step === 'houblons' && hopV4Actif ? (
-        <p data-role="repere-etape" className="flex min-w-0 flex-1 items-baseline">
-          <span aria-hidden="true" className="font-mono text-sm text-cave-400">{stepIndex + 1}/{STEPS.length}</span>
-          <span aria-live="polite" className="sr-only">{`${STEPS[stepIndex].label} — étape ${stepIndex + 1} sur ${STEPS.length}`}</span>
-        </p>
-      ) : <WizardStepName steps={STEPS} currentIndex={stepIndex} />}
+      {/* Le même haut d'écran aux sept étapes (25.10 : « seul houblons a une variation… Changé ça »), l'étape Houblons
+          comprise : « ‹ Houblons 3/7 », puis Abandonner, l'import et le thème. */}
+      <WizardStepName steps={STEPS} currentIndex={stepIndex} />
+
+      {!isDesktop && abandonner}
 
       <button
         type="button"
@@ -2158,6 +2189,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       endActions={stepActions}
       compactDock
       className="recipe-wizard"
+      actions={abandonner && isDesktop ? abandonner : undefined}
       scrollKey={step}
       wide={step === 'levure' && !details.nolo?.enabled || step === 'houblons'}
       /*
@@ -2199,11 +2231,13 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         {initialDraftState.status === 'readOnly' && 'raw' in initialDraftState && initialDraftState.raw ? <details className="mt-2"><summary className="text-xs">Lire le contenu conservé</summary><pre className="mt-2 whitespace-pre-wrap break-all text-xs">{initialDraftState.raw}</pre></details> : null}
         <button type="button" onClick={onClose} className="mt-2 text-xs underline">Revenir aux recettes</button>
       </section> : <fieldset disabled={saving} aria-busy={saving} className="contents space-y-3">
-      {(draftNotice || draftError) && draftKey && <div className="recipe-draft-status flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-cave-400">
-        <span role={draftError ? 'alert' : 'status'}>{draftError || draftNotice}</span>
-        {draftAside ? null : !discarding ? <button type="button" aria-label="Abandonner le brouillon" onClick={() => setDiscarding(true)} className="text-cave-200 underline underline-offset-2">Abandonner</button>
-          : <span className="flex items-center gap-2"><span className="text-attention">Supprimer ce brouillon ?</span><button type="button" autoFocus onClick={() => setDiscarding(false)}>Garder</button><button type="button" onClick={discardDraft} className="text-alert-strong">Abandonner</button></span>}
+      {/* « Brouillon repris sur cet appareil. » ne s'écrit plus à l'écran (25.10) : il reste annoncé aux lecteurs d'écran. Les autres
+          messages (erreur, programme appliqué, version enregistrée ouverte) et la confirmation d'abandon restent visibles. */}
+      {draftKey && (draftNotice || draftError) && (draftError || discarding || !messageDeBase) && <div className="recipe-draft-status flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-cave-400">
+        {(draftError || (draftNotice && !messageDeBase)) && <span role={draftError ? 'alert' : 'status'}>{draftError || draftNotice}</span>}
+        {discarding && <span className="flex items-center gap-2"><span className="text-attention">Supprimer ce brouillon ?</span><button type="button" autoFocus onClick={() => setDiscarding(false)}>Garder</button><button type="button" onClick={discardDraft} className="text-alert-strong">Abandonner</button></span>}
       </div>}
+      {draftKey && messageDeBase && !draftError && !discarding && <span role="status" className="sr-only">{draftNotice}</span>}
       {visibleIssues.length > 0 && <div id="wz-validation" role="alert" tabIndex={-1} className="border border-alert-strong/50 rounded-control p-2 text-sm text-alert-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw">
         <p className="font-semibold">{visibleIssues.length === 1 ? 'Une valeur à corriger' : `${visibleIssues.length} valeurs à corriger`}</p>
         <ul>{visibleIssues.map(issue => <li key={issue.field}><button type="button" className="text-left underline underline-offset-2" onClick={() => requestCorrection([issue])}>{issue.message}</button></li>)}</ul>
@@ -2225,10 +2259,12 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         sont les quatre chiffres qu'un brasseur regarde en composant sa facture,
         et rien d'autre.
       */}
+      {/* Drapeau hopV4 : le même IBU (plage de la variété, « ~ ») à toutes les étapes ; à l'étape Houblons, l'étape elle-même le rend. */}
+      {hopV4Actif && hasMetrics && step !== 'houblons' && <Suspense fallback={null}><MesuresWizardV4 recipe={build()} boilOg={boilOg} onMesures={setMesuresV4} /></Suspense>}
       {hasMetrics && (
         <div
           className={`recipe-metrics panel px-2.5 py-1.5 sm:px-4 sm:py-2.5 items-baseline justify-between gap-2
-                     sm:grid sm:grid-cols-4 sm:gap-3 sm:items-stretch ${step === 'eau' || (step === 'houblons' && hopV4Actif) ? 'hidden' : 'flex'}`}
+                     sm:grid sm:grid-cols-4 sm:gap-3 sm:items-stretch ${step === 'eau' ? 'hidden' : 'flex'}`}
         >
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
             <span className="text-sm text-cave-400">Grain</span>
@@ -2242,7 +2278,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           </div>
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
             <span className="text-sm text-cave-400">{hops.some(h=>h.stage==='dryHop') ? 'IBU chaud' : 'IBU'}</span>
-            <span className="reading text-sm sm:text-base">{ibu ?? '—'}</span>
+            {hopV4Actif && mesuresV4 ? <IbuEnPlage mesures={mesuresV4} /> : <span className="reading text-sm sm:text-base">{ibu ?? '—'}</span>}
           </div>
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
             <span className="text-sm text-cave-400">EBC</span>
@@ -2521,7 +2557,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           pas de titre de section (« Text header inutile », 24.10). Éteint (défaut) : l'atelier V5.5 ci-dessous, inchangé. */}
       {step === 'houblons' && hopV4Actif && (
         <Suspense fallback={null}>
-          <EtapeHoublonsV4 recipe={build()} boilOg={boilOg} draftId={draftRecipeId} onChange={applyHopV4Change} />
+          <EtapeHoublonsV4 recipe={build()} boilOg={boilOg} draftId={draftRecipeId} onChange={applyHopV4Change} onMesures={setMesuresV4} />
         </Suspense>
       )}
       {step === 'houblons' && !hopV4Actif && (

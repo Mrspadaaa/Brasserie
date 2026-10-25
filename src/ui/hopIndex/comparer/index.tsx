@@ -305,7 +305,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
         </FeuilleDock>
       )}
       {feuille === 'pourquoi' && <FeuilleDock titre="Pourquoi ce classement" onFermer={fermer}><FeuillePourquoi cols={cols} critere={critere} /></FeuilleDock>}
-      {fiche && <Fiche houblon={fiche} />}
+      {fiche && <Fiche houblon={fiche} onFermer={() => setFiche(null)} />}
     </CadreOutil>
   );
 }

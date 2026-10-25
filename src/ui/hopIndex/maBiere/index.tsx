@@ -58,7 +58,7 @@ function reperesDe(avant: RecetteParcours | null, recette: RecetteParcours): Rec
 const NOUVEAUX = new Set<string>();
 
 /** Le contenu de l'étape : le même dans la maquette (sous sa coquille) et dans l'app (sous le wizard, T12). */
-export function EtapeHoublonsContenu() {
+export function EtapeHoublonsContenu({ bandeau = true }: { /** Faux dans le wizard : le bandeau d'informations est celui des autres étapes (t12c). */ bandeau?: boolean } = {}) {
   const recette = useRecette();
   const biere = useBiere();
   const ouvrir = useOuvrir();
@@ -98,9 +98,11 @@ export function EtapeHoublonsContenu() {
 
   return (
       <div data-ecran="ma-biere" data-etat="etat-etape-repos-1280" className="pq-ma-biere space-y-1">
-        <div data-etat={document.body.dataset.cas === 'k3' ? 'etat-etape-cas-k3' : undefined}>
-          <Bandeau biere={biere} avant={biereAvant} element="etape-bandeau" ecart={ecart} />
-        </div>
+        {bandeau && (
+          <div data-etat={document.body.dataset.cas === 'k3' ? 'etat-etape-cas-k3' : undefined}>
+            <Bandeau biere={biere} avant={biereAvant} element="etape-bandeau" ecart={ecart} />
+          </div>
+        )}
 
         <Frise recette={recette} biere={biere} reperes={reperes} nouveaux={NOUVEAUX} onGeste={geste}
           ouvrirChamp={() => champ.current?.focus({ preventScroll: true })} />

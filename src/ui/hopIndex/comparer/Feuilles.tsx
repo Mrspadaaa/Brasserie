@@ -3,6 +3,7 @@
 // basse au-dessus du dock, qui reste là (un second toucher, la croix, le voile ou Échap referment ; un autre toucher
 // du dock change de feuille). Et les feuilles du « + » (la carte du houblon avant de l'ajouter, L14) et de
 // « pourquoi ? ». Tout est lu dans le moteur à l'instant (calcul.ts) ; les vraies valeurs dans valeurs.ts.
+import { Input } from '../../Input';
 import { CompositionVue } from './Huiles';
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
@@ -592,7 +593,7 @@ export function FeuilleAjouter({ disponibles, exclus, verbe, suite, onAjouter }:
     : disponibles), [q, disponibles, exclus]);
   return (
     <div className="pq-comparer-ajout" data-element="p4-plus-comparaison l5f-carte-role-alpha">
-      <input type="text" inputMode="search" data-role="chercher-houblon" value={cherche} onChange={(e) => setCherche(e.target.value)}
+      <Input type="search" inputMode="search" data-role="chercher-houblon" value={cherche} onChange={(e) => setCherche(e.target.value)}
         placeholder="Chercher un houblon…" aria-label="Chercher un houblon dans le catalogue" className="pq-comparer-chercher" />
       {q && !trouves.length && <p className="pq-comparer-note">aucun houblon du catalogue à ce nom</p>}
       {trouves.map((cle) => {

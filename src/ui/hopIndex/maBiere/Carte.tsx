@@ -170,7 +170,7 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
           {q.type === 'dryhop'
             ? <span className="font-sans text-cave-400">aucun IBU</span>
             : ibu.ibu
-              ? <><output data-role="ibu-ajout" data-valeur={ibu.ibu.valeur.toFixed(2)} className="text-cave-50">{nombre(ibu.ibu.valeur)}</output><span className="font-sans text-cave-400">{' '}IBU</span></>
+              ? <><output data-role="ibu-ajout" data-valeur={ibu.ibu.valeur.toFixed(2)} title={ibu.ibu.max - ibu.ibu.min >= 0.5 ? `entre ${nombre(ibu.ibu.min)} et ${nombre(ibu.ibu.max)} IBU : α du lot absent, plage de la variété` : undefined} className="text-cave-50">{ibu.ibu.max - ibu.ibu.min >= 0.5 ? '~' : ''}{nombre(ibu.ibu.valeur)}</output><span className="font-sans text-cave-400">{' '}IBU</span></>
               : <><Inconnu raison={ibu.raison ?? 'inconnu'} /><span className="font-sans text-cave-400">{' '}IBU</span></>}
         </span>
       </div>

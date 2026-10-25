@@ -19,6 +19,8 @@ vi.mock('../../../src/services/storage', () => ({
 
 import EtapeHoublons from '../../../src/ui/hopIndex/maBiere/EtapeHoublons';
 import type { ChangementHoublonsV4 } from '../../../src/domain/hopIndex/v4/recipeConversion';
+import type { MesuresEtape } from '../../../src/ui/hopIndex/maBiere/EtapeHoublons';
+import { ibuIncalculable } from '../../../src/ui/hopIndex/maBiere/Base';
 
 const RECETTE = {
   id: 'REC-T12', name: 'Stout export', style: '16D', volumeL: 20, boilMin: 60, ogTarget: 1.066, colorEbc: 70,
@@ -32,7 +34,7 @@ describe('étape Houblons v4 (T12)', () => {
   it('rend l\'écran choisi sur la recette du brouillon : bandeau, frise, carte, profil', async () => {
     const { container } = render(<EtapeHoublons recipe={RECETTE} boilOg={1.066} draftId="REC-T12" onChange={() => {}} />);
     await waitFor(() => expect(container.querySelector('[data-ecran="ma-biere"]')).not.toBeNull());
-    expect(container.querySelector('[data-element="etape-bandeau"]')?.textContent).toMatch(/60/);
+    expect(container.querySelector('[data-element="etape-bandeau"]')).toBeNull(); // t12c : le bandeau du wizard le remplace
     expect(container.querySelector('[data-role="ligne-houblon"]')?.textContent).toContain('Nugget');
     expect(container.querySelector('[data-role="moment-pouce"]')?.textContent).toBe('60′');
     expect(container.querySelector('[data-element="etape-profil"]')).not.toBeNull();
@@ -84,26 +86,30 @@ describe('wizard (T12) : drapeau et une seule copie', () => {
 describe('étape Houblons v4 (T12b) : l\'inconnu s\'écrit « ? »', () => {
   const VIDE = { id: 'REC-VIDE', name: '', style: '16D', volumeL: 20, boilMin: 60, fermentables: [], hops: [] } as unknown as Recipe;
   const SANS_MALT = { ...VIDE, id: 'REC-SM', hops: [{ name: 'Citra', alpha: 12, weightG: 15, stage: 'boil', timeMin: 10 }] } as unknown as Recipe;
-  const bandeau = (c: HTMLElement) => c.querySelector('[data-element="etape-bandeau"]') as HTMLElement;
+  // t12c : l'étape n'a plus de bandeau propre ; ses mesures vont au bandeau du wizard par onMesures. L'inconnu y reste « — »
+  // avec sa raison (ibuIncalculable) ; jamais 0.
+  const mesuresDe = async (recipe: Recipe, boilOg: number | null) => {
+    let m: MesuresEtape | null = null;
+    const { container } = render(<EtapeHoublons recipe={recipe} boilOg={boilOg} draftId={recipe.id} onChange={() => {}} onMesures={(x) => { m = x; }} />);
+    await waitFor(() => expect(container.querySelector('[data-ecran="ma-biere"]')).not.toBeNull());
+    await waitFor(() => expect(m).not.toBeNull());
+    return { container, mesures: m! as MesuresEtape };
+  };
 
-  it('recette vide : ni « NaN » ni « IBU 0 » ; IBU et OG « ? » avec leur raison', async () => {
-    const { container } = render(<EtapeHoublons recipe={VIDE} boilOg={null} draftId="REC-VIDE" onChange={() => {}} />);
-    await waitFor(() => expect(bandeau(container)).not.toBeNull());
-    const b = bandeau(container);
-    expect(b.textContent).not.toMatch(/NaN/);
-    expect(b.querySelector('[data-role="ibu"]')?.textContent).toBe('?');
-    expect(b.querySelector('[data-role="ibu"] [data-inconnu]')?.getAttribute('title')).toMatch(/densité/);
-    expect(b.textContent?.replace(/\s+/g, ' ')).toMatch(/OG ?\?/);
+  it('recette vide : ni « NaN » ni « IBU 0 » ; l\'IBU est dit incalculable avec sa raison (densité)', async () => {
+    const { container, mesures } = await mesuresDe(VIDE, null);
+    expect(ibuIncalculable(mesures)).toMatch(/densité/);
+    expect(Number.isFinite(mesures.og)).toBe(false);
     expect(container.querySelector('[data-ecran="ma-biere"]')?.textContent).not.toMatch(/NaN/);
   });
 
-  it('un houblon sans malts : le total d\'IBU reste « ? » (la carte dit « ? IBU »), jamais 0', async () => {
-    const { container } = render(<EtapeHoublons recipe={SANS_MALT} boilOg={null} draftId="REC-SM" onChange={() => {}} />);
+  it('un houblon sans malts : le total d\'IBU reste incalculable (la carte dit « ? IBU »), jamais 0', async () => {
+    const { container, mesures } = await mesuresDe(SANS_MALT, null);
     await waitFor(() => expect(container.querySelector('[data-role="ligne-houblon"]')).not.toBeNull());
-    expect(bandeau(container).querySelector('[data-role="ibu"]')?.textContent).toBe('?');
-    expect(bandeau(container).textContent).not.toMatch(/NaN|IBU ?0\b/);
+    expect(ibuIncalculable(mesures)).toMatch(/densité/);
+    expect(container.querySelector('[data-role="ligne-houblon"]')?.textContent).toMatch(/\?\s*IBU/);
+    expect(container.textContent).not.toMatch(/NaN|IBU ?0\b/);
   });
-
   it('sans levure, la frise ne la dit pas « caractérisée »', async () => {
     const { container } = render(<EtapeHoublons recipe={VIDE} boilOg={null} draftId="REC-VIDE" onChange={() => {}} />);
     await waitFor(() => expect(container.querySelector('[data-role="pont-etape-levure"]')).not.toBeNull());
@@ -111,10 +117,11 @@ describe('étape Houblons v4 (T12b) : l\'inconnu s\'écrit « ? »', () => {
   });
 
   it('la recette de la maquette se chiffre : IBU et OG 1,066', async () => {
-    const { container } = render(<EtapeHoublons recipe={RECETTE} boilOg={1.066} draftId="REC-T12" onChange={() => {}} />);
-    await waitFor(() => expect(bandeau(container)).not.toBeNull());
-    expect(bandeau(container).querySelector('[data-role="ibu"]')?.textContent).toMatch(/^\d+$/);
-    expect(bandeau(container).textContent).toMatch(/1,066/);
+    const { container, mesures } = await mesuresDe(RECETTE, 1.066);
+    expect(ibuIncalculable(mesures)).toBeNull();
+    expect(mesures.ibu.valeur).toBeGreaterThan(0);
+    expect(mesures.og).toBeCloseTo(1.066, 3);
+    await waitFor(() => expect(container.querySelector('[data-role="pont-etape-levure"]')).not.toBeNull());
     expect(container.querySelector('[data-role="pont-etape-levure"]')?.textContent).toMatch(/caractérisée/);
   });
 });
@@ -122,10 +129,13 @@ describe('étape Houblons v4 (T12b) : l\'inconnu s\'écrit « ? »', () => {
 describe('wizard (T12b) : en-tête, rangée de fin, banc local, champ protégé', () => {
   const racine = path.resolve(__dirname, '../../..');
   const lire = (f: string) => fs.readFileSync(path.join(racine, f), 'utf8');
-  it('à l\'étape 3 drapeau allumé, la rangée du titre garde le repère « 3/7 » sans le nom ; ailleurs WizardStepName', () => {
+  it('le même haut d\'écran aux sept étapes : WizardStepName partout, plus de repère « 3/7 » propre à l\'étape 3 (t12c)', () => {
     const w = lire('src/pages/BrewWizard.tsx');
-    expect(w).toMatch(/step === 'houblons' && hopV4Actif \? \(\s*<p data-role="repere-etape"/);
-    expect(w).toMatch(/: <WizardStepName steps=\{STEPS\} currentIndex=\{stepIndex\} \/>\}/);
+    expect(w).not.toMatch(/data-role="repere-etape"/);
+    expect(w).toMatch(/<WizardStepName steps=\{STEPS\} currentIndex=\{stepIndex\} \/>/);
+    // « Abandonner » dans l'en-tête, et le bandeau Grain · OG · IBU · EBC aussi à l'étape 3.
+    expect(w).toMatch(/data-role="abandonner-brouillon"/);
+    expect(w).toMatch(/\$\{step === 'eau' \? 'hidden' : 'flex'\}/);
   });
   it('Retour et Suivant sont la rangée de fin de PageShell, qui laisse le coin du « + » flottant', () => {
     const w = lire('src/pages/BrewWizard.tsx');

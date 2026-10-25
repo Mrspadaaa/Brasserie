@@ -4,16 +4,18 @@
 //   de la recette ; aucune donnée inventée : sans dégustation, le profil est tout simulé, « ~ ») ;
 // - chaque geste écrit par la seule porte du wizard (applyHopV4Change, reçue en onChange) : un patch de `hops` ;
 //   le glisser du rail suit le doigt en mémoire et n'écrit qu'au repos (400 ms après le dernier cran) ;
-// - les outils s'ouvrent par la pile de l'app (couche provisoire tant que T13/T15 ne les portent pas) ;
+// - les outils s'ouvrent par la pile de l'app (Suggérer, Comparer : T13, T15) ; la fiche d'un houblon (appui long) s'ouvre en
+//   feuille par-dessus l'étape (fiche/FicheApp.tsx), sans couche ;
 // - aucun état d'attente : ce module est chargé avec le moteur ; le wizard le précharge dès son ouverture.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Recipe } from '../../../types';
 import { toHopRecipe, versPatch, type ChangementHoublonsV4 } from '../../../domain/hopIndex/v4/recipeConversion';
-import { configurerDonnees } from '../parcours/adaptateur';
+import { configurerDonnees, lireBiere, type BiereLue } from '../parcours/adaptateur';
 import { ajouter, changerDose, changerMoment, retirer } from '../parcours/operations';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 import { useHopData } from '../useHopData';
 import { ouvrirCouche } from '../ouvrirCouche';
+import { ContexteFicheApp, FicheDeLApp } from '../fiche/FicheApp';
 import { HoteEtapeProvider, type HoteEtape, type RouteEtape } from './hote';
 import { EtapeHoublonsContenu } from './index';
 import { JeuPictos } from '../Pictos';
@@ -28,12 +30,17 @@ export interface EtapeHoublonsProps {
   draftId: string;
   /** La porte d'écriture du wizard (applyHopV4Change) ; elle lève une erreur si elle refuse. */
   onChange: (change: ChangementHoublonsV4) => void;
+  /** Les mesures de la recette à l'écran (IBU en plage, EBC), rendues au bandeau du wizard à chaque geste (t12c) : l'étape
+   * n'a plus de bandeau propre, elle partage celui des autres étapes. */
+  onMesures?: (m: MesuresEtape) => void;
 }
+/** IBU total (valeur, plage, ajouts incalculables) et EBC de la recette de l'étape. */
+export type MesuresEtape = { ibu: BiereLue['ibu']; ebc: number | null; og: number };
 
 /** Ce que la conversion lit du brouillon : la recette n'est reconvertie que si l'un de ces champs change. */
 const signature = (r: Recipe) => JSON.stringify([r.hops, r.yeast, r.styleRef, r.style, r.boilMin, r.ogTarget, r.volumeL, r.name, r.fermentables?.map((f) => [f.use, f.weightKg])]);
 
-/** La route d'une couche de l'app pour un écran de l'étape ; null : rien à ouvrir (la fiche n'est pas une couche). */
+/** La route d'une couche de l'app pour un écran de l'étape ; null : rien à ouvrir (la fiche est une feuille, tenue par l'étape). */
 function coucheDe(r: RouteEtape, recipeId: string) {
   switch (r.ecran) {
     case 'biere': return { view: 'hopBeer' as const, recipeId };
@@ -45,7 +52,7 @@ function coucheDe(r: RouteEtape, recipeId: string) {
   }
 }
 
-export default function EtapeHoublons({ recipe, boilOg, draftId, onChange }: EtapeHoublonsProps) {
+export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMesures }: EtapeHoublonsProps) {
   const sig = signature(recipe) + String(boilOg);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversion = useMemo(() => toHopRecipe(recipe, boilOg === undefined ? {} : { boilOg }), [sig]);
@@ -67,6 +74,8 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange }: Eta
   useEffect(() => { setLocale(null); }, [conversion]);
   const recette = locale ?? conversion.recette;
   const recetteRef = useRef(recette); recetteRef.current = recette;
+  const mesures = useMemo<MesuresEtape>(() => { const b = lireBiere(recette); return { ibu: b.ibu, ebc: b.ebc, og: b.og }; }, [recette]);
+  useEffect(() => { onMesures?.(mesures); }, [mesures, onMesures]);
   const [erreur, setErreur] = useState<string | null>(null);
 
   const ecrire = useCallback((suivante: RecetteParcours) => {
@@ -98,15 +107,19 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange }: Eta
     ecrire(suivante);
   }, [ecrire, vider]);
 
+  // La fiche d'un houblon (appui long) : une feuille par-dessus l'étape, qui reste montée dessous.
+  const [fiche, setFiche] = useState<string | null>(null);
+  const fermerFiche = useCallback(() => setFiche(null), []);
   const ouvrir = useCallback((r: RouteEtape) => {
     vider();
+    if (r.ecran === 'fiche') { setFiche(r.houblon); return; }
     const couche = coucheDe(r, draftId);
     if (couche) ouvrirCouche(couche);
   }, [draftId, vider]);
 
   const valeur = useMemo<HoteEtape>(() => ({
     recette,
-    route: { ecran: 'ma-biere' },
+    route: { ecran: fiche ? 'fiche' : 'ma-biere' },
     aller: ouvrir,
     ouvrir,
     gestes: {
@@ -125,7 +138,8 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange }: Eta
       if (minuterie.current != null) window.clearTimeout(minuterie.current);
       minuterie.current = window.setTimeout(vider, 400);
     },
-  }), [recette, ouvrir, geste, vider]);
+  }), [recette, fiche, ouvrir, geste, vider]);
+  const brouillon = useMemo(() => ({ recette, draftId }), [recette, draftId]);
 
   return (
     <HoteEtapeProvider valeur={valeur}>
@@ -133,7 +147,8 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange }: Eta
         {/* Le jeu de pictos des familles (symboles SVG <use>), posé par la coquille dans la maquette. */}
         <JeuPictos />
         {erreur && <p role="alert" className="mb-1 text-sm text-cave-200">{erreur}</p>}
-        <EtapeHoublonsContenu />
+        <EtapeHoublonsContenu bandeau={false} />
+        {fiche && <ContexteFicheApp valeur={brouillon}><FicheDeLApp houblon={fiche} onFermer={fermerFiche} /></ContexteFicheApp>}
       </div>
     </HoteEtapeProvider>
   );

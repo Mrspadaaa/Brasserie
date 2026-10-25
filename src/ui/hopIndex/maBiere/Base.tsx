@@ -6,6 +6,7 @@ import { COULEURS, COURT, Inconnu, Picto, nombre, type Echelle } from './commun'
 import type { BiereLue, FamilleLue } from '../parcours/adaptateur';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { FAMILY_NAMES } from '../parcours/v4';
+import { raisonIbuIncalculable } from '../../../domain/hopIndex/v4/recipeConversion';
 
 /** Noms de levure de la base (« SafAle US-05 ») ; toutes celles-ci sont caractérisées par le moteur (biotransformation). */
 const LEVURES: Record<string, string> = {
@@ -39,16 +40,13 @@ export function Alerte({ biere, ordre, element, long = false }: { biere: BiereLu
  * Houblons) : l'écart du total qui vient de changer, écrit au-dessus de l'IBU (« +2 », « −60 ») comme sa base (majIbu). */
 /** Pourquoi le total d'IBU ne se chiffre pas ; null s'il se chiffre. Densité inconnue (recette sans malts) : aucun IBU à
  * chaud ne se calcule, même sans houblon, et le total n'est jamais un 0 (PRODUCT.md : « refuse d'inventer un chiffre »). */
-export function ibuIncalculable(biere: BiereLue): string | null {
-  if (!Number.isFinite(biere.og)) return 'densité initiale inconnue : IBU incalculable';
-  const n = biere.ibu.inconnus.length;
-  if (n) return `IBU de ${n} ajout${n > 1 ? 's' : ''} incalculable${n > 1 ? 's' : ''}`;
-  return Number.isFinite(biere.ibu.valeur) ? null : 'IBU incalculable';
-}
+export const ibuIncalculable = (biere: Pick<BiereLue, 'og' | 'ibu'>): string | null => raisonIbuIncalculable(biere);
 
 export function Bandeau({ biere, avant, element, ecart = null }: { biere: BiereLue; avant?: BiereLue | null; element: string; ecart?: number | null }) {
   const ibu = biere.ibu.valeur;
   const raisonIbu = ibuIncalculable(biere);
+  // Un α de lot absent se lit à la plage de la variété : l'IBU est alors une plage, écrite « ~ » au milieu (t12c).
+  const plage = !raisonIbu && biere.ibu.max - biere.ibu.min >= 0.5;
   const b = biere.bandeIbu;
   const max = b ? Math.max(b[1] * 1.4, ibu * 1.1) : Math.max(1, ibu * 1.5);
   const pc = (x: number) => `${Math.max(0, Math.min(100, (x / max) * 100)).toFixed(1)}%`;
@@ -60,7 +58,7 @@ export function Bandeau({ biere, avant, element, ecart = null }: { biere: BiereL
         {ecart && !raisonIbu ? <span data-role="ibu-ecart" aria-live="polite" className="pq-mb-ecart absolute left-8 -top-3.5 font-mono text-xs font-semibold leading-none">{`${ecart > 0 ? '+' : '−'}${Math.abs(ecart)}`}</span> : null}
         {raisonIbu
           ? <output data-role="ibu" data-valeur=""><Inconnu raison={raisonIbu} /></output>
-          : <output data-role="ibu" data-valeur={ibu.toFixed(2)} className="reading text-xl">{nombre(ibu)}</output>}
+          : <output data-role="ibu" data-valeur={ibu.toFixed(2)} title={plage ? `entre ${nombre(biere.ibu.min)} et ${nombre(biere.ibu.max)} IBU : α du lot absent, plage de la variété` : undefined} className="reading text-xl">{plage ? '~' : ''}{nombre(ibu)}</output>}
         {ibuAvant != null && <s data-role="vient-de-changer" className="font-mono text-xs text-cave-400">{nombre(ibuAvant)}</s>}
         {b && (
           <span aria-label={`style ${b[0]}–${b[1]} IBU`} role="img" className="relative self-center w-12 h-2 ml-1 rounded-full bg-cave-800">

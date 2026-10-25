@@ -9,6 +9,7 @@ import { configurerDonnees } from '../parcours/adaptateur';
 import { ajouter } from '../parcours/operations';
 import { placer } from '../parcours/quand';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
+import { ContexteFicheApp, FicheDeLApp } from '../fiche/FicheApp';
 import { JeuPictos } from '../Pictos';
 import { ouvrirCouche } from '../ouvrirCouche';
 import { useHopData } from '../useHopData';
@@ -96,7 +97,8 @@ function Contenu({ houblons, pin, onClose, porte }: EcranComparerProps & { porte
     }
   }, [draftId, poser]);
 
-  // La fiche (g1) n'est pas encore une couche de l'app : l'appui long n'ouvre rien (Fiche absente).
+  // La fiche (g1) s'ouvre en feuille, par l'appui long (T13) : Comparer pousse une entrée d'historique à la maquette, pas à l'app,
+  // où la feuille se ferme par sa croix (`onFermer`) ; `aller` n'a rien à faire.
   const aller = useCallback(() => {}, []);
 
   const recette = conversion.recette;
@@ -107,16 +109,19 @@ function Contenu({ houblons, pin, onClose, porte }: EcranComparerProps & { porte
     degustation: dateDeg ? dateDeg.split('-').slice(1).reverse().join('.') : null,
   }), [recette.styleCode, dateDeg]);
   const valeur = useMemo<HoteComparer>(() => ({
-    recette, route: { ecran: 'comparer', ...(pin ? { pin } : {}) }, aller, ouvrir, Cadre: CadreApp, termes,
+    recette, route: { ecran: 'comparer', ...(pin ? { pin } : {}) }, aller, ouvrir, Cadre: CadreApp, Fiche: FicheDeLApp, termes,
   }), [recette, pin, aller, ouvrir, termes]);
+  const brouillon = useMemo(() => ({ recette, draftId }), [recette, draftId]);
   const cadre = useMemo(() => ({ fermer: onClose, suggerer: () => { ouvrirCouche({ view: 'hopSuggest', recipeId: draftId }); }, nbHoublons: houblons.length }), [onClose, draftId, houblons.length]);
 
   return (
     <CadreCtx.Provider value={cadre}>
       <HoteComparerProvider valeur={valeur}>
+        <ContexteFicheApp valeur={brouillon}>
         <JeuPictos />
         {erreur && <p role="alert" data-role="comparer-erreur" className="fixed left-2 right-2 top-14 z-40 rounded-control bg-cave-900 p-2 text-sm text-cave-50">{erreur}</p>}
         <div data-hop-v4-comparer="app"><Comparer houblons={houblons} /></div>
+        </ContexteFicheApp>
       </HoteComparerProvider>
     </CadreCtx.Provider>
   );

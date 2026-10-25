@@ -28,8 +28,9 @@ export interface HoteComparer {
   ouvrir: (r: RouteComparer) => void;
   /** Le cadre de l'écran (en-tête, onglets, dock). */
   Cadre: ComponentType<CadreComparerProps>;
-  /** La fiche d'un houblon (appui long) ; absente, l'appui long n'ouvre rien. */
-  Fiche?: ComponentType<{ houblon: string }>;
+  /** La fiche d'un houblon (appui long) ; absente, l'appui long n'ouvre rien. `onFermer` : l'app la ferme par là (la maquette,
+   * par le retour de son historique). */
+  Fiche?: ComponentType<{ houblon: string; onFermer?: () => void }>;
   /** Les mots de la bière (nom, style, date de la dégustation) ; absents : le cas S1 de la maquette. */
   termes?: TermesComparer;
 }
@@ -58,9 +59,9 @@ export function CadreOutil(p: CadreComparerProps) {
   const { Cadre } = useHoteComparer();
   return <Cadre {...p} />;
 }
-export function FicheHote({ houblon }: { houblon: string }) {
+export function FicheHote({ houblon, onFermer }: { houblon: string; onFermer?: () => void }) {
   const { Fiche } = useHoteComparer();
-  return Fiche ? <Fiche houblon={houblon} /> : null;
+  return Fiche ? <Fiche houblon={houblon} onFermer={onFermer} /> : null;
 }
 
 // ---------- Les mots de la bière (T15b) ----------

@@ -13,15 +13,12 @@
 //   un écran sans réponse immédiate). configurerCalcul({ differer: true }) fait de même.
 import { creerClient, servirSurFilPrincipal, type ClientCalculs, type OptionsFilPrincipal } from '../../../../../src/domain/hopIndex/v4/client';
 import { servirParWorker, type ServeurWorker } from '../../../../../src/ui/hopIndex/hopToolsTransport';
-import { CALCULS, cleSubstitutes, type CalculsParcours } from './calculs';
+import { CALCULS, type CalculsParcours } from './calculs';
+import { OPTIONS_CLIENT, poserClient } from '../../../../../src/ui/hopIndex/parcours/calcul';
 import { donneesClonables, siDonneesChangent } from './donnees';
 import { enPrechauffage } from './mesure';
 
 export { CALCULS, type CalculsParcours } from './calculs';
-
-const OPTIONS_CLIENT = {
-  cles: { substitutes: cleSubstitutes },
-};
 
 type Mode = 'immediat' | 'differe' | 'worker';
 const modeParAdresse = (): Mode => {
@@ -50,10 +47,11 @@ function creer(mode: Mode): ClientCalculs<CalculsParcours> {
   return creerClient(filPrincipal(mode === 'differe'), OPTIONS_CLIENT);
 }
 
-let courant: ClientCalculs<CalculsParcours> = creer(modeParAdresse());
-siDonneesChangent(() => { courant.vider(); transport?.alimenter(donneesClonables()); });
-
 let asynchrones = typeof location !== 'undefined' && typeof window !== 'undefined' && /[?&]recalcul=worker(&|$)/.test(location.search);
+let courant: ClientCalculs<CalculsParcours> = creer(modeParAdresse());
+// T13 : les écrans de l'app (fiche, Suggérer…) lisent le client par src/ui/hopIndex/parcours/calcul.ts : la maquette y pose le sien.
+poserClient(courant, asynchrones);
+siDonneesChangent(() => { courant.vider(); transport?.alimenter(donneesClonables()); });
 /** true : les recalculs d'un écran ouvert passent au worker (useCalcul). Défaut : false. */
 export const recalculsAsynchrones = (): boolean => asynchrones;
 /** Le client courant des calculs lourds. */
@@ -64,4 +62,5 @@ export const serveurCalcul = (): string => transport ? transport.etat : courant.
 export function configurerCalcul(o: { differer?: boolean; worker?: boolean; recalculsAsynchrones?: boolean } = {}): void {
   asynchrones = !!o.recalculsAsynchrones;
   courant = creer(o.worker ? 'worker' : o.differer ? 'differe' : 'immediat');
+  poserClient(courant, asynchrones);
 }

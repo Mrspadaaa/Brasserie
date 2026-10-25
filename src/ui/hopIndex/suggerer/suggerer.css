@@ -1,8 +1,8 @@
 /* Suggérer (q2b) : classes propres, préfixées pq-suggerer- (L26). Jetons de l'app (variables --cave-*). */
 
-/* Ma bière reste montée sous l'outil (inerte, PageShell), mais retirée du rendu tant que Suggérer la couvre : les
-   contrôles du dépôt lisent la boîte, pas `inert`. Demande au socle dans RESULTAT.md (le faire dans CadreOutil pour tous). */
-html:has(.pq-outil-suggerer) [data-page-shell]:not(.pq-outil-suggerer) { display: none; }
+/* (T13) La règle de la maquette « html:has(.pq-outil-suggerer) [data-page-shell]:not(.pq-outil-suggerer) { display: none } » est retirée : elle
+   cachait aussi la couche posée PAR-DESSUS Suggérer (Comparer, l'app empile ses couches). Dans l'app, l'App retire déjà la base couverte ;
+   la maquette ne monte pas Ma bière sous un outil (Coquille). */
 
 .pq-suggerer-zone { background: rgb(var(--cave-700) / 0.45); }
 .pq-suggerer-cran { background: rgb(var(--cave-950) / 0.9); }

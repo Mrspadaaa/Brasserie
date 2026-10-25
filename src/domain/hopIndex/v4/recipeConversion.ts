@@ -14,11 +14,13 @@
 //   (brouillon du wizard ou recette enregistrée) ; `preparerEcritureHoublons` y ajoute les refus du wizard
 //   (lecture seule, profil, autre brouillon). Ni `hopV55Applications` ni `hopV55ColdEvidenceAssociations` n'y changent ;
 // - un houblon remplacé ou retiré perd son lot (stockItemRef, hopLotId, α) : les notes du patch le disent ;
-// - l'α est celui du LOT de la recette (HopIngredient.alpha), comme la page recette (hotBitterness) ; un α hors de
-//   ]0 ; 100] est inconnu (null), jamais 0 ;
+// - l'α est celui du LOT de la recette (HopIngredient.alpha) ; un α hors de ]0 ; 100] (0 = « non saisi ») n'est pas un lot :
+//   l'α vient du stock ou de la plage variétale (IBU en plage, « ~ »), jamais d'un 0 ; inconnu seulement hors du moteur ;
+// - l'EBC vient du brouillon, sinon des grains (computeBeerColor) ;
 // - un moment incomplet (durée d'ébullition, de whirlpool ou température de whirlpool absentes) rend l'IBU de l'ajout
 //   inconnu, comme hotBitterness ; une DI d'ébullition inconnue rend l'IBU à chaud de toute la recette inconnu.
-import type { HopIngredient, Recipe as RecetteApp, YeastSpec } from '../../../types';
+import type { HopIngredient, MaltIngredient, Recipe as RecetteApp, YeastSpec } from '../../../types';
+import { computeBeerColor } from '../../beerColor';
 import type { RecipeWizardDraft } from '../../../services/recipeDraft';
 import protoData from '../../../data/hopV4/proto-data.json';
 import { CATALOGUE, MOMENTS, STOCK, hopRef, yeastInfo, type Addition, type MomentId, type Recipe as RecetteMoteur } from './index';
@@ -122,14 +124,16 @@ function styleDe(r: RecetteApp): { code: string; supposition: string | null } {
   return { code: '', supposition: `style « ${r.style} » absent des styles BJCP du moteur : échelle absolue, sans bande de style` };
 }
 
-/** α du lot : un nombre dans ]0 ; 100], sinon inconnu (null), jamais 0. */
-const alphaDuLot = (a: number) => (fini(a) && a > 0 && a <= 100 ? a : null);
+/** α du lot : un nombre dans ]0 ; 100] ; sinon `undefined` : pas de lot connu, l'α se lit alors au stock ou à la plage
+ * variétale (« ~ »). L'app écrit 0 pour « α non saisi » (une ligne sans lot) : ce n'est pas un α de 0, et l'IBU ne devient
+ * pas « ? » tant que la plage de la variété est connue. Une variété hors du moteur, elle, reste inconnue (adaptateur). */
+const alphaDuLot = (a: number) => (fini(a) && a > 0 && a <= 100 ? a : undefined);
 
 function ajoutDe(h: HopIngredient, i: number, boilMin: number): { ajout: AjoutParcours; lien: LienAjout } {
   const { cle, relie } = cleDe(h);
   const suppositions: string[] = [];
   if (!relie) suppositions.push(`« ${h.name} » n'est relié à aucune variété du moteur (ni hopVarietyId, ni nom exact) : arôme non simulé`);
-  const base: AjoutParcours = { id: idAjout(i), hopKey: cle, moment: 'b60', grams: h.weightG, alphaLot: alphaDuLot(h.alpha) };
+  const base: AjoutParcours = { id: idAjout(i), hopKey: cle, moment: 'b60', grams: h.weightG, ...(alphaDuLot(h.alpha) !== undefined ? { alphaLot: alphaDuLot(h.alpha) } : {}) };
   let ajout: AjoutParcours;
   switch (h.stage) {
     case 'firstWort': ajout = { ...base, moment: 'fwh' }; break;
@@ -159,6 +163,26 @@ function ajoutDe(h: HopIngredient, i: number, boilMin: number): { ajout: AjoutPa
   return { ajout, lien: { index: i, relie, suppositions } };
 }
 
+/** Ce que le bandeau lit de l'IBU d'une recette : l'OG (NaN = inconnue) et l'IBU total en plage, avec les ajouts incalculables. */
+export interface MesuresIbu { og: number; ibu: { valeur: number; min: number; max: number; inconnus: string[] } }
+/** Pourquoi le total d'IBU ne se chiffre pas ; null s'il se chiffre. Densité inconnue (recette sans malts) : aucun IBU à
+ * chaud ne se calcule, même sans houblon, et le total n'est jamais un 0 (PRODUCT.md : « refuse d'inventer un chiffre »). */
+export function raisonIbuIncalculable(m: MesuresIbu): string | null {
+  if (!Number.isFinite(m.og)) return 'densité initiale inconnue : IBU incalculable';
+  const n = m.ibu.inconnus.length;
+  if (n) return `IBU de ${n} ajout${n > 1 ? 's' : ''} incalculable${n > 1 ? 's' : ''}`;
+  return Number.isFinite(m.ibu.valeur) ? null : 'IBU incalculable';
+}
+/** L'IBU du bandeau : « ~7 » quand l'α du lot est absent (plage de la variété, bornes dans `titre`), « 7 » sinon ; `texte` null et
+ * sa raison dans `titre` quand une donnée manque vraiment. */
+export function libelleIbu(m: MesuresIbu): { texte: string | null; titre?: string; valeur?: number } {
+  const raison = raisonIbuIncalculable(m);
+  if (raison) return { texte: null, titre: raison };
+  const plage = m.ibu.max - m.ibu.min >= 0.5;
+  return { texte: `${plage ? '~' : ''}${Math.round(m.ibu.valeur)}`, valeur: m.ibu.valeur,
+    ...(plage ? { titre: `entre ${Math.round(m.ibu.min)} et ${Math.round(m.ibu.max)} IBU : α du lot absent, plage de la variété` } : {}) };
+}
+
 /** La recette de l'app lue par le moteur. */
 export function toHopRecipe(app: RecetteApp, options: OptionsConversion = {}): Conversion {
   const boilMin = fini(app.boilMin) ? app.boilMin : 60; // le défaut de l'app (RecipePage : recipe.boilMin ?? 60)
@@ -173,6 +197,10 @@ export function toHopRecipe(app: RecetteApp, options: OptionsConversion = {}): C
       suppositions.push('DI de recette prise pour l’ébullition alors que des fermentescibles entrent en fermentation : passer la DI d’ébullition de l’app (boilOg) pour le même IBU que la page recette');
     }
   }
+  // EBC : celui du brouillon s'il est posé, sinon celui des grains (Morey, comme l'étape Fermentescibles) ; null si une couleur
+  // de grain manque (computeBeerColor), jamais 0.
+  const ebc = fini(app.colorEbc) ? app.colorEbc
+    : computeBeerColor((app.fermentables ?? []).filter((f) => f.kind === 'grain') as MaltIngredient[], app.volumeL)?.ebc ?? null;
   const yeastId = app.yeast?.hopIndexId ?? null;
   if (!yeastId) suppositions.push(`levure « ${app.yeast?.name ?? '?'} » sans identifiant de l’index (yeast.hopIndexId) : le moteur suppose US-05 pour l’arôme`);
   const ajouts: Record<string, LienAjout> = {};
@@ -183,7 +211,7 @@ export function toHopRecipe(app: RecetteApp, options: OptionsConversion = {}): C
   });
   const recette: RecetteParcours = {
     name: app.name, styleCode: st.code, volumeL: app.volumeL, og: og ?? Number.NaN, boilMin, yeastId,
-    ...(fini(app.colorEbc) ? { ebc: app.colorEbc } : {}),
+    ...(ebc != null ? { ebc } : {}),
     ...(fini(app.fgTarget) ? { fg: app.fgTarget } : {}),
     ...(fini(app.abvTarget) ? { abv: app.abvTarget } : {}),
     additions,
@@ -244,7 +272,7 @@ function ingredientDe(a: AjoutParcours, recette: RecetteParcours, origine: HopIn
     const alpha = alphaDuStock(a.hopKey);
     h = { name: ref?.name ?? a.hopKey, alpha: alpha ?? 0, weightG: a.grams, stage: 'boil', ...(ref ? { hopVarietyId: ref.varietyId } : {}) };
     if (origine) notes.push(`« ${origine.name} » remplacé par « ${h.name} » : ${perdu(origine)} de l’ancienne ligne ne sont pas repris`);
-    if (alpha == null) notes.push(`${h.name} : α du lot inconnu, écrit 0 (convention de l’app : α ≤ 0 = inconnu, IBU non calculé)`);
+    if (alpha == null) notes.push(`${h.name} : α du lot inconnu, écrit 0 (convention de l’app : α ≤ 0 = pas de lot) ; l’IBU se lit à la plage de la variété (« ~ »)`);
   }
   h.weightG = a.grams;
   if (memeHoublon && fini(a.alphaLot)) h.alpha = a.alphaLot;
