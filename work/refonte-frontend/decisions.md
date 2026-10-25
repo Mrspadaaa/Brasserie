@@ -668,3 +668,8 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   compromis chiffré lui est proposé. (2) « Placer » et « Souche » écrivent l'ajout dans le brouillon avant la confirmation de
   Dryhopper ou de Levure : gardé (simple, annulable dans Dryhopper, une seule porte d'écriture), à revoir si le brasseur le veut
   autrement.
+- D71 (l'utilisateur, 25.10 : « Tu peux deployé la vrai app pour que je puisse un peu jouer avec cette implemtation ») :
+  hébergement seul déployé en production (https://brasserie-l-affinee.web.app), depuis d53cbcfe, construit avec
+  `VITE_HOP_V4=on` ; ni règles Firestore ni fonctions. Contrôles avant : build vert, `check-no-dev-auth` propre, drapeau
+  corrigé pour ne plus embarquer tout l'environnement (d53cbcfe). Vérifié en ligne en lecture seule : page de connexion en
+  thème clair, aucune erreur de console. Retour arrière possible : version du 17.10 dans la console Hosting.
