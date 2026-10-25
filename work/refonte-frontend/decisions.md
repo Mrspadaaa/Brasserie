@@ -673,3 +673,7 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   `VITE_HOP_V4=on` ; ni règles Firestore ni fonctions. Contrôles avant : build vert, `check-no-dev-auth` propre, drapeau
   corrigé pour ne plus embarquer tout l'environnement (d53cbcfe). Vérifié en ligne en lecture seule : page de connexion en
   thème clair, aucune erreur de console. Retour arrière possible : version du 17.10 dans la console Hosting.
+- D72 (25.10, soir) : redéploiement de l'hébergement seul, depuis une copie propre de 63130965 (worktree temporaire, `.env` et
+  `seedData.ts` locaux copiés), pour ne pas embarquer la voie t12d en cours. Contenu : IBU de ses vraies recettes (D152), haut
+  d'écran commun aux 7 étapes, la fiche et Suggérer. Rejeu Haiku vert (313 tests, 52 d'intégration, CHOIX, ETATS 139/139,
+  RADAR-BASE, MOTS-TOUS, FINITIONS). La fiche reste une feuille locale (le retour du téléphone ne la ferme pas), comme la maquette.

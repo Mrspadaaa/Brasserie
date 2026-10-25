@@ -91,7 +91,7 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
 ## Reprise (25.10, 21 h)
 - Fait et poussé : T12b (#170 fermé), radar commun RadarBase dans l'app (src/ui/hopIndex/commun) et les 9 vues, Ma bière sur la baseline (rb2), registres de Comparer sur cmc2k (D69), Comparer cmc2k dans l'app (t15a, t15b ; 8624c8f8), lanceur + masqué sous les outils, drapeau qui ne lit que sa clé (d53cbcfe).
 - Déployé (D71) : hébergement seul en production, https://brasserie-l-affinee.web.app, VITE_HOP_V4=on. PR #183 ouverte vers main (pas de CI sur le dépôt).
-- En vol : t13-fiche-suggerer (Sonnet) — fiche par appui long, Suggérer, Comparer (n).
+- Fait : t13 (fiche, Suggérer, #173 fermé), t12c (IBU réel, haut commun), redéployés (D72, 63130965). En vol : t12d-rail (Sonnet, rail 120′ et saut de vue, #184), vérification Haiku dans son Chrome.
 - Ensuite, sans attendre son retour (« N'attende jamais sur mon feedback ») : Substituer, Dryhopper, Levure dans l'app (reste de #174, Sonnet) ; mesure de fluidité en production (D70, Haiku) puis #179 ; #180 import complet ; #181 affinage (tests IA permis, journalisés) ; #182 compagnon ; T10 (#172) ; T18 (#176). Après chaque lot : rejeu Haiku, commit par chemins (L17), push, redéploiement de l'hébergement s'il le faut pour qu'il joue.
 - Répartition (L18) : Haiku le mécanique, Sonnet le code et les ports, Opus seulement ce qu'il voit et le pilotage.
 
