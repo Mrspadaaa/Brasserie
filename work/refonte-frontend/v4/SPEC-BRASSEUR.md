@@ -799,3 +799,4 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   sujets et ~100 captures de 277 px. Le même jour, à la session du lot : « Je les vois pas dans les artefacts.. ».
   Remplace « publier à la même adresse » (19.10). Mode d'emploi : `outils/pages/PUBLIER.md` ; contrôles :
   `verifier-page.mjs`, `systeme.mjs voies` (M12).
+- **Le picto des baies** (25.10, soir), mot pour mot : « L'icône baie de la baseline est mauvais, utiliser plutôt un icône de framboises ».
