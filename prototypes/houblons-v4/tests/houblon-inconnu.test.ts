@@ -5,7 +5,7 @@ import './temoin'; // témoin négatif de check:engine (B3)
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { companionRecipe } from '../../../tests/fixtures/companionRecipe';
 import { yeastFlowRecipe } from '../../../tests/fixtures/yeastRecipeFlow';
-import { toHopRecipe } from '../parcours/src/integration/conversion';
+import { toHopRecipe } from '../../../src/domain/hopIndex/v4/recipeConversion';
 import { configurerDonnees, houblon, lireBiere } from '../parcours/src/moteur';
 import { FAMILIES } from '../../../src/domain/hopIndex/v4';
 

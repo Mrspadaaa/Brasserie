@@ -12,7 +12,7 @@ import { fruty } from '../../../tests/fixtures/fruty';
 import { hotBitterness } from '../../../src/domain/hopBitterness';
 import { yeastRecipeBoilOg, yeastRecipeComputedOg } from '../../../src/domain/yeastProjection';
 import type { Recipe } from '../../../src/types';
-import { appliquerPatch, idAjout, toHopRecipe, versPatch } from '../parcours/src/integration/conversion';
+import { appliquerPatchHoublons as appliquerPatch, idAjout, toHopRecipe, versPatch } from '../../../src/domain/hopIndex/v4/recipeConversion';
 import { configurerDonnees, lireBiere } from '../parcours/src/moteur';
 import { changerDose, changerMoment, remplacer } from '../parcours/src/etat/operations';
 

@@ -59,6 +59,7 @@ import { brewingStyles, matchBrewingStyles, resolveBrewingStyle } from '../domai
 import { StorageService } from '../services/storage';
 import type { HopV55RecipeColdContactChange, HopV55RecipeDraftChange } from '../ui/hopV55/RecipeStep';
 import { assertHopV55RecipeDraftApplicationTarget } from '../services/hopV55/recipeDraftApplication';
+import { preparerEcritureHoublons, type ChangementHoublonsV4 } from '../domain/hopIndex/v4/recipeConversion';
 import { appendHopV55RecipeColdContactAssociation, compareHopV55RecipeColdContactAssociationSourceV1, hopV55RecipeColdSourceReference } from '../services/hopV55/recipeColdContactAssociation';
 import { YeastIngredientPicker as SyncYeastIngredientPicker } from '../ui/YeastIngredientPicker';
 import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
@@ -1434,6 +1435,36 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     setDetails(nextDetails);
     setDraftError('');
     setDraftNotice(draftKey ? 'Programme appliqué et brouillon conservé sur cet appareil.' : 'Programme appliqué dans cet éditeur.');
+  };
+
+  /**
+   * The single write door of the v4 hop tools (#165): a patch of `hops` (and `yeast` if the Yeast tool asks), nothing
+   * else. Same checks and same commit point as applyHopV55Change: read-only draft, owner and draft ID are refused
+   * before anything is written, then writeRecipeDraft is the commit and the screen follows. The V5.5 history
+   * (hopV55Applications, hopV55ColdEvidenceAssociations) is kept; prediction and trial links of replaced hops are
+   * dropped, as in the J4 adapter. Not reached by any screen yet (the `hopV4` flag is off; the tools come with T12/T13).
+   */
+  const applyHopV4Change = (change: ChangementHoublonsV4) => {
+    const { nextDraft } = preparerEcritureHoublons({ draftReadOnly, ownerKey, draftRecipeId, current: latestWizardDraft.current, change });
+    const committed = serializeRecipeDraft(nextDraft);
+    if (draftKey) {
+      try { writeRecipeDraft(draftKey, committed); }
+      catch (cause) {
+        // Storage is the commit point: nothing changes on screen. Name the problem and the way out before the browser detail.
+        if (cause instanceof RecipeDraftWriteBlockedError) throw cause;
+        throw new Error(`Changement non appliqué : le brouillon ne peut pas être conservé sur cet appareil (stockage local plein ou bloqué). Libère de l’espace, puis refais le geste. Détail : ${cause instanceof Error ? cause.message : String(cause)}`);
+      }
+    }
+    latestWizardDraft.current = nextDraft;
+    latestDraft.current = committed;
+    // An explicit brewer write: the draft now exists and any set-aside draft has been replaced.
+    contentChanged.current = true;
+    setDraftAside(false);
+    setHops(nextDraft.recipe.hops);
+    if (change.patch.yeast) setYeast(nextDraft.recipe.yeast);
+    setDetails(nextDraft.details);
+    setDraftError('');
+    setDraftNotice(draftKey ? 'Changement appliqué et brouillon conservé sur cet appareil.' : 'Changement appliqué dans cet éditeur.');
   };
 
   /** Persist cold-contact provenance alone; it never changes hops, IBU or any other recipe field. */
