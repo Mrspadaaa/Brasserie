@@ -26,3 +26,13 @@ DÉCISION À PRENDRE : la base au premier plan (règle n° 1, brief) et la diver
 CONNAISSANCE : `variantes.mjs` lit `etat.html` sans le jouer ; une page React construite n'y a que la coquille : il faut la prérendre (`source/prerendu.mjs`) ou que le contrôle rende la page. `controle-comparer-etapes` exige les étapes au premier écran (cadre défilant), pas seulement à l'écran après défilement.
 
 LEÇON PROPOSÉE : une série qui reprend la maquette jouable joue `controle-choix` dès le premier rendu : retirer une ligne « inutile » (« dans la cuve ») ou un lien (panel OSU) casse un acquis gardé (états, D114).
+
+## Passe 2 (cmb2, son choix) — cmb2a à cmb2d
+OK — cmb2a–cmb2d : cmb2 gardée, ses quatre commentaires corrigés ; VARIANTES-CMP-4, TRAIT OK, QUAND OK
+
+- Fichiers : `fils25-comparer/cmb2a/` à `cmb2d/` (`etat.html` prérendu et jouable, `assets/`, `NOTE.md`, `source/`) ; captures `cmb2{a..d}.png`, `-moment.png` (60′), `-nelson.png`, `-long.png`.
+- Communs : pastille critère avec son mot ; « whirlpool » en clair ; dans chaque tête et sous les rangées, seuls les mots hors des 12 familles, derrière un losange au trait (« vraiment hors 16D, avec le icône ») ; radar au style normalisé au moment, par axe (ce que chaque houblon ajoute, à l'échelle du meilleur apport du moment) : à 60′, les trois formes se séparent.
+- Les quatre diffèrent : a, segments nommés sur deux lignes et radar agrandi en place ; b, pictos de moment et sélecteur au-dessus du radar ; c, phrase du moment et radar pleine largeur ; d, deux boîtes « brassage » / « dry hop » et clé des couleurs sous le radar.
+- Critères : `VARIANTES-CMP-4` ; `TRAIT OK` (44 pictos, 0 faute chacune) ; `QUAND OK` ; MOTS OK (99, 93, 92, 96).
+- Prédiction : « Là le radar à 60′ montre enfin la différence ; je prends les boîtes brassage / dry hop ».
+- DÉCISION À PRENDRE : au style, le radar montre désormais l'apport (ta stout au centre) et non plus le niveau de la bière ; ta stout reste visible en Absolu. Normalisation par axe : une différence de 0,1 cran à 60′ pèse un tiers d'axe (plancher 0,3 cran) ; à lui de dire si le plancher convient.
