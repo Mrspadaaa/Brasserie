@@ -95,3 +95,32 @@ export function alphaDeAjout(a: AjoutParcours): { value: number; min: number; ma
   if (lot !== undefined) return { value: lot, min: lot, max: lot, from: 'lot de la recette' };
   return alphaDeCle(a.hopKey);
 }
+
+// ---------- Données clonables, pour le worker des calculs (#171) ----------
+/** Les données injectées en données simples (postMessage) : seulement ce qui diffère des fixtures (le worker les a
+ * déjà), la recette dégustée en valeur. null : non clonables (un α du lot calculé par une fonction propre), le worker
+ * n'est alors pas employé. */
+export interface DonneesClonables {
+  catalogue?: CatalogueHop[]; fiches?: CatalogueHop[]; stock?: StockHop[];
+  degustation?: { tasting: Tasting; recette: RecetteParcours } | null;
+}
+export function donneesClonables(): DonneesClonables | null {
+  const d = courantes;
+  if (d.alphaDuLot !== DEFAUT.alphaDuLot) return null;
+  const c: DonneesClonables = {};
+  if (d.catalogue !== DEFAUT.catalogue) c.catalogue = d.catalogue;
+  if (d.fiches !== DEFAUT.fiches) c.fiches = d.fiches;
+  if (d.stock !== DEFAUT.stock) c.stock = d.stock;
+  if (d.degustation !== DEFAUT.degustation) c.degustation = d.degustation ? { tasting: d.degustation.tasting, recette: d.degustation.recette() } : null;
+  return c;
+}
+/** Dans le worker : les données reçues deviennent les données injectées (configurerDonnees). */
+export function configurerDonneesClonables(c: DonneesClonables): void {
+  const { degustation, ...reste } = c;
+  configurerDonnees({
+    ...reste,
+    ...(degustation === undefined ? {} : {
+      degustation: degustation && { tasting: degustation.tasting, recette: () => structuredClone(degustation.recette) },
+    }),
+  });
+}

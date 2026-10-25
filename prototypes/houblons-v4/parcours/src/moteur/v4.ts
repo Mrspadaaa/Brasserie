@@ -19,7 +19,19 @@ export { EXTRAPOLATION } from '../../../../../src/domain/hopIndex/v4/data';
 export const hopRef = lie('hopRef');
 export const hopRole = lie('hopRole');
 export const describeFamilies = lie('describeFamilies');
-export const familyWords = lie('familyWords');
+/** Les mots des fiches d'une variété, rangés par famille (pur : fiches du moteur courant et étiquettes données). Gardés par
+ * moteur (#171) : Suggérer les relit pour chaque paire de houblons montrés (hors16d.ts, « lui seul »), 400 appels environ
+ * à son ouverture. Un moteur neuf (données changées) repart d'un cache vide. Lecture seule pour les appelants. */
+const MOTS = new WeakMap<Moteur, Map<string, ReturnType<Moteur['familyWords']>>>();
+export const familyWords: Moteur['familyWords'] = (varietyId, tags) => {
+  const m = moteur();
+  let c = MOTS.get(m);
+  if (!c) MOTS.set(m, (c = new Map()));
+  const k = JSON.stringify([varietyId, tags?.tags ?? null, tags?.tagsFr ?? null]);
+  let w = c.get(k);
+  if (!w) { w = m.familyWords(varietyId, tags); c.set(k, w); }
+  return w;
+};
 export const additionEffect = lie('additionEffect');
 export const yeastSignals = lie('yeastSignals');
 export const biotransfoLevure = lie('biotransfoLevure');

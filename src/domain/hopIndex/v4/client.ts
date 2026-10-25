@@ -3,7 +3,8 @@
 // SERVEUR le rend. Le contrat est un échange de messages, comme src/ui/hopIndex/hopSolverMessages.ts : une requête typée
 // porte un identifiant, la réponse porte le même. Aujourd'hui le serveur tourne sur le fil principal
 // (servirSurFilPrincipal) ; un worker persistant (T7, #171, seulement si le banc échoue) le remplacera en recevant les
-// mêmes requêtes par postMessage et en rendant les mêmes réponses, sans toucher aux écrans.
+// mêmes requêtes par postMessage et en rendant les mêmes réponses, sans toucher aux écrans. Le worker (T7) :
+// src/ui/hopIndex/hopToolsTransport.ts (côté page) et hopTools.worker.ts (côté worker).
 // `lireBiere` (0,27 ms chaud) reste synchrone, sous le doigt : il n'entre pas ici.
 //
 // Règles du client :
@@ -42,6 +43,10 @@ export interface ServeurCalculs<C extends Calculs> {
   envoyer(requete: RequeteCalcul<C>): Promise<ReponseCalcul<C>>;
   /** Fil principal seulement : la réponse tout de suite (synchrone). Absent d'un worker et du mode différé. */
   servirTout?: (requete: RequeteCalcul<C>) => ReponseCalcul<C>;
+  /** Repli synchrone d'un worker (#171, option b) : la réponse calculée sur le fil principal, pour une PREMIÈRE ouverture
+   * qui n'a ni résultat préchauffé ni résultat précédent à garder (sans lui, l'écran naîtrait vide). Absent du mode
+   * différé, qui éprouve justement un écran sans réponse immédiate. */
+  servirSurPlace?: (requete: RequeteCalcul<C>) => ReponseCalcul<C>;
   fermer?: () => void;
 }
 
@@ -97,9 +102,11 @@ export interface ClientCalculs<C extends Calculs> {
   /** Toutes les fonctions de la table, en asynchrone : client.proposer(recette, direction) → Promise. */
   readonly calculs: MethodesAsynchrones<C>;
   demander<N extends NomCalcul<C>>(nom: N, ...args: ArgsDe<C, N>): Promise<ResultatDe<C, N>>;
-  /** Le résultat tout de suite si le serveur le peut (fil principal) ou s'il a déjà été reçu ; sinon undefined (un
-   * worker : demander, et garder le dernier résultat en attendant). */
+  /** Le résultat tout de suite si le serveur le peut (fil principal) ou s'il a déjà été reçu ; sinon, d'un worker, le
+   * repli synchrone du fil principal (servirSurPlace, première ouverture) ; sinon undefined (mode différé). */
   lire<N extends NomCalcul<C>>(nom: N, ...args: ArgsDe<C, N>): ResultatDe<C, N> | undefined;
+  /** Comme lire, sans le repli synchrone : un écran qui a déjà un résultat le garde et demande au worker (recalcul). */
+  lireGarde<N extends NomCalcul<C>>(nom: N, ...args: ArgsDe<C, N>): ResultatDe<C, N> | undefined;
   /** Calcule au repos et garde la réponse pour `lire` ; les erreurs sont tues (l'écran refera le calcul et dira la sienne). */
   prechauffer<N extends NomCalcul<C>>(nom: N, ...args: ArgsDe<C, N>): Promise<void>;
   canal<N extends NomCalcul<C>>(nom: N): Canal<C, N>;
@@ -121,6 +128,10 @@ export interface OptionsClient<C extends Calculs> {
 export function creerClient<C extends Calculs>(serveur: ServeurCalculs<C>, options: OptionsClient<C> = {}): ClientCalculs<C> {
   let suivant = 0;
   const gardees = new Lru<unknown>(Math.max(2, options.borne ?? 256));
+  // Génération des données : une réponse partie avant vider() n'est plus gardée (elle vient des données d'avant).
+  let generation = 0;
+  // Préchauffages en vol, par clé : un toucher qui demande la même chose attend leur réponse au lieu d'en refaire une.
+  const enVol = new Map<string, Promise<ReponseCalcul<C>>>();
   const cle = <N extends NomCalcul<C>>(nom: N, args: ArgsDe<C, N>): string => {
     const f = options.cles?.[nom];
     return nom + '\u001f' + (f ? f(...args) : JSON.stringify(args));
@@ -131,12 +142,19 @@ export function creerClient<C extends Calculs>(serveur: ServeurCalculs<C>, optio
     if (r.type === 'erreur') throw new Error(r.message);
     return r.valeur as ResultatDe<C, N>;
   };
+  const garder = (k: string, g: number, v: unknown) => { if (!serveur.servirTout && g === generation) gardees.set(k, v); };
   async function demander<N extends NomCalcul<C>>(nom: N, ...args: ArgsDe<C, N>): Promise<ResultatDe<C, N>> {
-    const v = valeurDe<N>(await serveur.envoyer(requete('calcul', nom, args)));
+    const k = cle(nom, args), g = generation;
+    const v = valeurDe<N>(await (enVol.get(k) ?? serveur.envoyer(requete('calcul', nom, args))));
     // Un serveur sans réponse immédiate (worker) : la réponse est gardée pour un `lire` suivant.
-    if (!serveur.servirTout) gardees.set(cle(nom, args), v);
+    garder(k, g, v);
     return v;
   }
+  const lireGarde = <N extends NomCalcul<C>>(nom: N, args: ArgsDe<C, N>): ResultatDe<C, N> | undefined => {
+    if (serveur.servirTout) return valeurDe(serveur.servirTout(requete('calcul', nom, args)));
+    const k = cle(nom, args);
+    return gardees.has(k) ? (gardees.get(k) as ResultatDe<C, N>) : undefined;
+  };
   const calculs = new Proxy({} as MethodesAsynchrones<C>, {
     get: (_c, nom) => (typeof nom === 'string' ? (...args: unknown[]) => demander(nom as NomCalcul<C>, ...(args as ArgsDe<C, NomCalcul<C>>)) : undefined),
   });
@@ -146,17 +164,22 @@ export function creerClient<C extends Calculs>(serveur: ServeurCalculs<C>, optio
     immediat: !!serveur.servirTout,
     cle,
     lire(nom, ...args) {
-      if (serveur.servirTout) return valeurDe(serveur.servirTout(requete('calcul', nom, args)));
-      const k = cle(nom, args);
-      return gardees.has(k) ? (gardees.get(k) as ResultatDe<C, typeof nom>) : undefined;
+      const v = lireGarde(nom, args);
+      if (v !== undefined || !serveur.servirSurPlace) return v;
+      const k = cle(nom, args), g = generation;
+      const r = valeurDe<typeof nom>(serveur.servirSurPlace(requete('calcul', nom, args)));
+      garder(k, g, r);
+      return r;
     },
+    lireGarde: (nom, ...args) => lireGarde(nom, args),
     async prechauffer(nom, ...args) {
-      const k = cle(nom, args);
-      if (!serveur.servirTout && gardees.has(k)) return;
+      const k = cle(nom, args), g = generation;
+      if (!serveur.servirTout && (gardees.has(k) || enVol.has(k))) return;
+      const p = serveur.envoyer(requete('prechauffer', nom, args));
+      if (!serveur.servirTout) enVol.set(k, p);
       try {
-        const v = valeurDe(await serveur.envoyer(requete('prechauffer', nom, args)));
-        if (!serveur.servirTout) gardees.set(k, v);
-      } catch { /* rien : l'écran refera le calcul */ }
+        garder(k, g, valeurDe(await p));
+      } catch { /* rien : l'écran refera le calcul */ } finally { if (enVol.get(k) === p) enVol.delete(k); }
     },
     canal<N extends NomCalcul<C>>(nom: N): Canal<C, N> {
       let derniere = 0;
@@ -176,6 +199,6 @@ export function creerClient<C extends Calculs>(serveur: ServeurCalculs<C>, optio
         fermer() { ferme = true; },
       };
     },
-    vider() { gardees.clear(); },
+    vider() { generation += 1; gardees.clear(); enVol.clear(); },
   };
 }

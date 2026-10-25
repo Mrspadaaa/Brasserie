@@ -135,7 +135,10 @@ describe('structure : le moteur v4 n\'entre jamais par un import statique du dé
   it('outils.ts est le seul point d\'entrée statique du moteur v4 dans src/ui/hopIndex/', () => {
     const fichiers = fs.readdirSync('src/ui/hopIndex').filter(f => /\.(ts|tsx)$/.test(f));
     // donneesApp (T8, #169) est pur : aucun import de valeur (le moteur n'y entre pas), donc sans effet sur le démarrage.
-    const tirent = fichiers.filter(f => importsStatiques(lire(`src/ui/hopIndex/${f}`)).some(s => /domain\/hopIndex\/v4/.test(s) && !/v4\/donneesApp$/.test(s)));
+    // families (T11, #168) ne porte que les 12 familles et leurs noms (11 lignes, 18 ko de données) : pas le moteur.
+    // hopTools.worker.ts (T7, #171) est son propre paquet : le moteur y entre, hors du démarrage et du chunk de l'écran.
+    const legers = /v4\/(donneesApp|families)$/;
+    const tirent = fichiers.filter(f => f !== 'hopTools.worker.ts' && importsStatiques(lire(`src/ui/hopIndex/${f}`)).some(s => /domain\/hopIndex\/v4/.test(s) && !legers.test(s)));
     expect(tirent).toEqual(['outils.ts']);
   });
   it('donneesApp.ts (pur, importé par useHopData) n\'a aucun import de valeur : le moteur n\'y entre pas', () => {
