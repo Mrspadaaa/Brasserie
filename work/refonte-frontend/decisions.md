@@ -688,3 +688,13 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   glisser du rail, sans perdre l'IBU au relâcher. Rejeu Haiku dans la copie : types, 190 tests hopIndexV4 et designTokens,
   52 d'intégration, audit des champs, FONCTIONS-RAIL 37/37, RADAR-BASE (9 vues), ETATS 139/139, build et `check-no-dev-auth`
   verts. Le bundle ne porte que les valeurs d'environnement lues par leur code (l'IBAN dans `companyDefaults`, comme sur main).
+- D75 (pilote, 26.10, #180, voie d2-import-bm, commit 79ca35f5) : le catalogue est complété depuis le cache local des 318 pages
+  Beer Maverick (relevé le 08.09), en mode hors ligne strict : aucune nouvelle collecte, aucun accès Firestore. Cohumulone 90 %,
+  farnésène 78 %, autres huiles 81 %, usage 100 %, styles 82 %, substituts 68 % (101 pages n'en donnent aucun), profil d'arôme
+  57 % ; le moteur rend les mêmes résultats (empreintes identiques). Décisions :
+  (1) le profil d'arôme Beer Maverick (9 axes, 0 à 5) est affiché dans Sources mais pas branché au moteur : ses axes ne
+  recoupent pas les 12 familles, il faudrait une convention (conseil) ;
+  (2) la ligne « Autres » de Comparer lit la valeur publiée « All Others » (β-pinène, linalol, géraniol, sélinène), le calcul
+  100 − 3 en repli ; une ligne Farnésène serait un ajout visuel, à lui montrer en mini maquette ;
+  (3) B5 tient à 148,3 ko sur 150 : à la prochaine extension, le bloc `bm` sortira vers un fichier chargé à l'ouverture de Sources.
+  Linalol (79 % manquant) et géraniol (99 %) restent à combler par des fiches fournisseurs, collecte à son accord.
