@@ -2,8 +2,8 @@
 name: cout-calcul-moteur
 description: Temps mesuré de simulerCas (léger et complet) sur le cas stout, sur un ajout, et sur tout le catalogue (318 houblons) — base du choix de calcul dans le navigateur.
 type: metier
-maj: 2026-10-25
-sources: scripts/bench-hop-v4.ts (banc du 25.10, fabrique creerMoteur) ; work/missions/2026-10-25-integration-houblons/voies/t5-causes/RESULTAT.md ; src/domain/hopIndex/v4/profil-simule.ts (simulerCas ; déplacé le 25.10 depuis prototypes/houblons-v4/src/engine) ; prototypes/houblons-v4/scripts/profil-simule-cas.ts ; prototypes/houblons-v4/src/pack/buildPack.ts (s1Recipe, S1_TASTING) ; prototypes/houblons-v4/src/engine/index.ts ; work/refonte-frontend/v4/ecran-1/fils21-choisir/donnees/PROFIL-SIMULE.md ; work/refonte-frontend/v4/ecran-1/fils21-choisir/donnees/profils-simules.json ; annexe work/missions/2026-10-22-reprise-lot21/voies/r2-cout-calcul/ANNEXE.md (script bench.ts, sortie brute)
+maj: 2026-10-26
+sources: scripts/bench-hop-prod.mjs (rendu, 26.10) ; scripts/bench-hop-v4.ts (banc du 25.10, fabrique creerMoteur) ; work/missions/2026-10-25-integration-houblons/voies/t5-causes/RESULTAT.md ; src/domain/hopIndex/v4/profil-simule.ts (simulerCas ; déplacé le 25.10 depuis prototypes/houblons-v4/src/engine) ; prototypes/houblons-v4/scripts/profil-simule-cas.ts ; prototypes/houblons-v4/src/pack/buildPack.ts (s1Recipe, S1_TASTING) ; prototypes/houblons-v4/src/engine/index.ts ; work/refonte-frontend/v4/ecran-1/fils21-choisir/donnees/PROFIL-SIMULE.md ; work/refonte-frontend/v4/ecran-1/fils21-choisir/donnees/profils-simules.json ; annexe work/missions/2026-10-22-reprise-lot21/voies/r2-cout-calcul/ANNEXE.md (script bench.ts, sortie brute)
 ---
 
 Mesure du moteur de simulation, sans modifier le moteur ni les données. Léger = `complet: false` (grille) ; complet = `complet: true` (drapeaux et parJour). Détail, script et sortie brute : ANNEXE.md de la voie r2-cout-calcul.
@@ -43,3 +43,7 @@ complets du 22.10 ci-dessus sont périmés : le complet est environ 9 fois plus 
 - `proposer` ×10 froid ≈ 1,1 s (14 voies, 1 499 évaluées) : la fabrique voit tout le stock, l'ancien banc non. À tenir par T17 (#166) ou un worker (#171).
 - Causes retirées : preuves documentaires sans cache (premier mot, `describeFamilies` refait), LRU qui supprimait et remettait à chaque lecture,
   `toLocaleString` à chaque appel. Un geste sur une recette reste sous 15 ms quelle que soit la taille du catalogue.
+**Rendu en production** (26.10, `scripts/bench-hop-prod.mjs`, build de production, jusqu'à l'image peinte ; voie p1-banc-prod) : le moteur
+pèse ~13 ms par ouverture de Comparer ; le recalcul de style forcé par `getBoundingClientRect` et `focus()` domine (Comparer ouvert :
+restyle complet 70 ms à ×1 pour 2 153 nœuds). Ouvertures à ×1 : Comparer 112 à 176 ms, Suggérer 48 à 72, fiche 48 à 98 ; à ×4, 1,6 à
+14 fois les budgets du téléphone. Les `:has()` ne freinent pas les ouvertures. Correctifs : voie p2-rendu (#179).
