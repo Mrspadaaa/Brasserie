@@ -134,8 +134,16 @@ describe('structure : le moteur v4 n\'entre jamais par un import statique du dé
     });
   it('outils.ts est le seul point d\'entrée statique du moteur v4 dans src/ui/hopIndex/', () => {
     const fichiers = fs.readdirSync('src/ui/hopIndex').filter(f => /\.(ts|tsx)$/.test(f));
-    const tirent = fichiers.filter(f => importsStatiques(lire(`src/ui/hopIndex/${f}`)).some(s => /domain\/hopIndex\/v4/.test(s)));
+    // donneesApp (T8, #169) est pur : aucun import de valeur (le moteur n'y entre pas), donc sans effet sur le démarrage.
+    const tirent = fichiers.filter(f => importsStatiques(lire(`src/ui/hopIndex/${f}`)).some(s => /domain\/hopIndex\/v4/.test(s) && !/v4\/donneesApp$/.test(s)));
     expect(tirent).toEqual(['outils.ts']);
+  });
+  it('donneesApp.ts (pur, importé par useHopData) n\'a aucun import de valeur : le moteur n\'y entre pas', () => {
+    expect(importsStatiques(lire('src/domain/hopIndex/v4/donneesApp.ts'))).toEqual([]);
+  });
+  it('useHopData.ts n\'importe statiquement du moteur que donneesApp (les autres imports v4 sont des types)', () => {
+    const v4 = importsStatiques(lire('src/ui/hopIndex/useHopData.ts')).filter(s => /domain\/hopIndex\/v4|data\/hopV4/.test(s));
+    expect(v4).toEqual(['../../domain/hopIndex/v4/donneesApp']);
   });
   it('App.tsx ne déclenche le préchargement que derrière le drapeau lu en clair, en import dynamique', () => {
     const app = lire('src/App.tsx');
