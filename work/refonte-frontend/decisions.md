@@ -682,3 +682,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   demande de test S1 retirée de l'app, picto framboise des Baies. Rejeu Haiku dans la copie : types, 317 tests, 52 d'intégration,
   audit des champs, FONCTIONS-RAIL 37/37, RADAR-BASE, ETATS 139/139 et build verts ; CHOIX et copies-de-work en échec dans la
   copie seulement, faute des captures et fichiers de travail ignorés par git (verts sur l'arbre complet au commit précédent).
+- D74 (26.10, nuit) : redéploiement de l'hébergement seul depuis la copie propre, au commit 36ba5643 : Substituer, Dryhopper et
+  Levure dans l'app (fin de #174) ; la fiche, avec ses Sources (Beer Maverick en premier, puis tout le houblon) et « autres n % »
+  expliqué sur les mots distincts (Lotus : 4 sur 9, 44 %) ; Suggérer reçoit la visée posée ; le bandeau se masque pendant tout
+  glisser du rail, sans perdre l'IBU au relâcher. Rejeu Haiku dans la copie : types, 190 tests hopIndexV4 et designTokens,
+  52 d'intégration, audit des champs, FONCTIONS-RAIL 37/37, RADAR-BASE (9 vues), ETATS 139/139, build et `check-no-dev-auth`
+  verts. Le bundle ne porte que les valeurs d'environnement lues par leur code (l'IBAN dans `companyDefaults`, comme sur main).
