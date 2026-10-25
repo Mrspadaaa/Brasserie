@@ -86,3 +86,6 @@ Dans `GATES.md`, même dossier. Ne pas le modifier. Lancer chaque `CHECK:` depui
 
 ## Rendre
 `RESULTAT.md` au format de l'agent, avec la section `## Captures regardées`. Réponse finale au pilote : une ligne.
+
+## Ajout du 25.10 (ses mots)
+« Pourquoi c'est en thème noir, tu peux ajouter dans le header le choix de thèmes à côté de l'import » (capture : `brasseur-theme-noir.jpg`, même dossier). Le choix du thème (clair | cave) se fait par un bouton dans l'en-tête des pages, à côté de l'icône d'import (en haut à droite de l'en-tête du wizard), gardé sur l'appareil, hors ligne. Clair par défaut. Vérifie en particulier l'étape Houblons v4 (drapeau `hopV4`, `src/ui/hopIndex/`) : en clair, elle doit ressembler à sa maquette (captures de `work/missions/2026-10-25-integration-houblons/voies/t12-ma-biere/`). Joue avec le skill `webapp-testing` (`scripts/with_server.mjs`, `?dev-local`), captures ouvertes.
