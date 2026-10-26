@@ -174,9 +174,16 @@
     "geste": "toucher",
     "attendu": [
      "% masse",
-     "BM"
+     "mL/100 g"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "% masse",
+      "BM"
+     ]
+    },
+    "note": "D168 : noms de sources retirés (voie s2). Le sigle « BM » (legende des sources) disparaît ; « mL/100 g » (unité des huiles, toujours là) le remplace ; la maquette choisie garde son sigle (attendu ancien)."
    }
   },
   {

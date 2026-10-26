@@ -214,9 +214,16 @@
     "geste": "repos",
     "attendu": [
      "Nugget",
-     "Hopsteiner 2025"
+     "11–14 %"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Nugget",
+      "Hopsteiner 2025"
+     ]
+    },
+    "note": "D168 : noms de sources retirés (voie s2). « Hopsteiner 2025 » devient « 11–14 % », la valeur qu'il qualifiait ; la maquette choisie garde son nom (attendu ancien)."
    }
   },
   {
@@ -243,7 +250,7 @@
     "geste": "appui-long",
     "attendu": [
      "pellets",
-     "Beer Maverick"
+     "10–15 %"
     ],
     "interdit": [],
     "rang": 1,
@@ -257,7 +264,7 @@
      ],
      "avant": []
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : l'ajout rapide « Citra cryo » n'est plus proposé par le moteur ; la fiche courte de Citra cryo (« Ça c'est très bien », 19.10) s'obtient par l'appui long sur sa ligne après avoir tapé « cit » dans « Ajouter — houblon… » (« avant » : etape:etat-etape-champ-ajouter). Sur la maquette choisie rien ne change. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-acquis-fiche-citra-cryo.png.)"
+    "note": "D168 : noms de sources retirés (voie s2). « Beer Maverick » devient « 10–15 % », la valeur qu'il qualifiait ; la maquette choisie garde son nom (attendu ancien). D83/D86, 26.10 : données changées, dessin identique : l'ajout rapide « Citra cryo » n'est plus proposé par le moteur ; la fiche courte de Citra cryo (« Ça c'est très bien », 19.10) s'obtient par l'appui long sur sa ligne après avoir tapé « cit » dans « Ajouter — houblon… » (« avant » : etape:etat-etape-champ-ajouter). Sur la maquette choisie rien ne change. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-acquis-fiche-citra-cryo.png.)"
    }
   },
   {
@@ -451,9 +458,16 @@
     "geste": "toucher",
     "attendu": [
      "% masse",
-     "BM"
+     "mL/100 g"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "% masse",
+      "BM"
+     ]
+    },
+    "note": "D168 : noms de sources retirés (voie s2). Le sigle « BM » (legende des sources) disparaît ; « mL/100 g » (unité des huiles, toujours là) le remplace ; la maquette choisie garde son sigle (attendu ancien)."
    }
   },
   {

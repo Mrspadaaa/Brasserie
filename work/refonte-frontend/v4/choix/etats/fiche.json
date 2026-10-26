@@ -28,10 +28,18 @@
     "geste": "repos",
     "attendu": [
      "Nugget",
-     "Hopsteiner 2025",
+     "11–14 %",
      "lot 13 %"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Nugget",
+      "Hopsteiner 2025",
+      "lot 13 %"
+     ]
+    },
+    "note": "D168 : noms de sources retirés (voie s2). « Hopsteiner 2025 » devient « 11–14 % », la valeur qu'il qualifiait ; la maquette choisie garde son nom (attendu ancien)."
    }
   },
   {
@@ -151,7 +159,7 @@
     "attendu": [
      "pellets",
      "fiche du cryo manque",
-     "Beer Maverick",
+     "10–15 %",
      "inconnu"
     ],
     "interdit": [],
@@ -168,7 +176,7 @@
      ],
      "avant": []
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : l'ajout rapide « Citra cryo » n'est plus proposé par le moteur (Hallertau Blanc et Wild Wolf le remplacent dans la liste) ; la fiche courte de Citra cryo s'obtient comme avant par l'appui long sur sa ligne, désormais après avoir tapé « cit » dans « Ajouter — houblon… » (« avant » : etape:etat-etape-champ-ajouter). Mêmes mots lus dans la fiche. Sur la maquette choisie, la ligne Citra cryo est déjà dans la liste : rien ne change. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-fiche-appui-long-citra.png.)"
+    "note": "D168 : noms de sources retirés (voie s2). « Beer Maverick » devient « 10–15 % », la valeur qu'il qualifiait ; la maquette choisie garde son nom (attendu ancien). D83/D86, 26.10 : données changées, dessin identique : l'ajout rapide « Citra cryo » n'est plus proposé par le moteur (Hallertau Blanc et Wild Wolf le remplacent dans la liste) ; la fiche courte de Citra cryo s'obtient comme avant par l'appui long sur sa ligne, désormais après avoir tapé « cit » dans « Ajouter — houblon… » (« avant » : etape:etat-etape-champ-ajouter). Mêmes mots lus dans la fiche. Sur la maquette choisie, la ligne Citra cryo est déjà dans la liste : rien ne change. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-fiche-appui-long-citra.png.)"
    }
   },
   {
@@ -280,9 +288,17 @@
     "attendu": [
      "West Coast IPA",
      "NEIPA",
-     "Crosby Hops"
+     "Session IPA"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "West Coast IPA",
+      "NEIPA",
+      "Crosby Hops"
+     ]
+    },
+    "note": "D168 : noms de sources retirés (voie s2). La ligne « Crosby Hops, Nugget — Crosby Hops » (source du style) disparaît ; « Crosby Hops » devient « Session IPA », un style déjà listé ; la maquette choisie garde son nom (attendu ancien)."
    }
   },
   {

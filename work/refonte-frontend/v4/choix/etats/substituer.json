@@ -475,7 +475,7 @@
      "Linalol",
      "non renseigné",
      "27–60",
-     "Farnésène publié par Beer Maverick, non importé"
+     "Farnésène publié, non importé"
     ],
     "interdit": [],
     "choisie": {
@@ -491,7 +491,7 @@
       "Farnésène publié par Beer Maverick, non importé"
      ]
     },
-    "note": "D83/D86 puis s1/t1, 26.10 : dessin voulu, pas une régression (s1, exigence du brasseur du 26.10 : un trait par plage de source qui diffère, sources d'accord fusionnées, rangées plus hautes ; t1, D160 : mots traduits) : Nugget myrcène 27–60 (au lieu de 48–59), un trait fin par plage qui diffère sous chaque barre ; mêmes trois lignes par composant, mêmes titres, même note « Linalol de Yeoman non renseigné ». (captures avant (98fac6b2) et après (deeb4d23) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires-s1t1/etat-subst-huiles.png.)"
+    "note": "D168 : noms de sources retirés (voie s2) : « par Beer Maverick » disparaît de « Farnésène publié » (la ligne reste, sans nom de source). D83/D86 puis s1/t1, 26.10 : dessin voulu, pas une régression (s1, exigence du brasseur du 26.10 : un trait par plage de source qui diffère, sources d'accord fusionnées, rangées plus hautes ; t1, D160 : mots traduits) : Nugget myrcène 27–60 (au lieu de 48–59), un trait fin par plage qui diffère sous chaque barre ; mêmes trois lignes par composant, mêmes titres, même note « Linalol de Yeoman non renseigné ». (captures avant (98fac6b2) et après (deeb4d23) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires-s1t1/etat-subst-huiles.png.)"
    }
   },
   {
@@ -612,7 +612,7 @@
     "attendu": [
      "Lire ces scores",
      "Calculés depuis nos fiches",
-     "pas les scores de substitution de Beer Maverick",
+     "pas des scores de substitution déjà publiés",
      "Prix, rareté et cohumulone",
      "Sans inconnue ne veut pas dire sûr",
      "Le pire cas d’abord",
@@ -634,7 +634,7 @@
       "premier du stock qui suffit"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : le paragraphe « La plage : … Altus vaut entre 79 et 99 » n'est écrit que s'il existe un candidat à composante inconnue (aucun avec ces données) ; les cinq autres paragraphes restent dans le même ordre. « La plage » n'était plus lu que par coïncidence (« bas de la plage »). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-lire.png.)"
+    "note": "D168 : noms de sources retirés (voie s2). « pas les scores de substitution de Beer Maverick » devient « pas des scores de substitution déjà publiés » (même sens : des scores publiés, non importés) ; la maquette choisie garde son nom (attendu ancien). D83/D86, 26.10 : données changées, dessin identique : le paragraphe « La plage : … Altus vaut entre 79 et 99 » n'est écrit que s'il existe un candidat à composante inconnue (aucun avec ces données) ; les cinq autres paragraphes restent dans le même ordre. « La plage » n'était plus lu que par coïncidence (« bas de la plage »). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-lire.png.)"
    }
   },
   {
