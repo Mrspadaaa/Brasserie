@@ -44,7 +44,7 @@ function montres(id: string): { ecran: string; mot: string }[] {
 
 describe('D160 : les mots montrés sont en français', () => {
   const fr = traduits();
-  it('318 houblons à contrôler', () => { expect(IDS.length).toBe(318); });
+  it('317 houblons à contrôler (c6 : Equinox est Ekuanot)', () => { expect(IDS.length).toBe(317); });
   it('chaque mot montré par la matrice, Ses mots, lui seul, Sources et autres est une traduction ou un mot gardé', () => {
     const fautes = new Map<string, Set<string>>();
     for (const id of IDS) for (const x of montres(id)) {

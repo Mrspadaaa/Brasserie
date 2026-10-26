@@ -25,7 +25,11 @@ const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recett
 // proposer 3584e2c7dabd → 31d7feb6324c (g2c, D90, 26.10) : une famille « moins » n'exclut plus un houblon que si la moitié au moins de ses fiches la citent ;
 // Citra cryo (résineux : 1 fiche sur 7) n'est plus en conflit sur la stout, et « Remplacer Nugget par Citra cryo » (24 g) prend la place de « Retirer Nugget » (voies/g2c-exclusion-style).
 // Les trois autres empreintes ne bougent pas (stout 16D : aucune famille indésirable ; substitutes sans conflit de style).
-const EMPREINTES = { substitutes: 'cac6de6d0c72', suggerer: '166a7dbd9516', proposer: '31d7feb6324c', remplacants: '32e2ef725fec' };
+// D99 (26.10, voie d99-apport-c-defaut) : l'option c de g2d est le défaut au dry hop (le débordement d'une famille non marquée ne compte plus dans le rang). Les quatre
+// empreintes sont rejouées et NE BOUGENT PAS (mesuré : la liste retenue de ce cas, stout, floral +1 / résineux −1, garde les mêmes voies dans le même ordre) ; l'ordre de
+// Suggérer au dry hop est contrôlé dans tests/unit/hopIndexV4/apportCDefaut.test.ts.
+// c6 (26.10, catalogue-complet) : suggerer 166a7dbd9516 → af7f2ecc1069 (Equinox est Ekuanot ; 26 variétés rattachées à des fiches de plus par la table d'alias).
+const EMPREINTES = { substitutes: 'cac6de6d0c72', suggerer: 'af7f2ecc1069', proposer: '31d7feb6324c', remplacants: '32e2ef725fec' };
 const forme = {
   substitutes: (sr: ReturnType<typeof CALCULS.substitutes>) => empreinte(sr.remplacants.map((r) => [r.key, r.rank, r.score, r.dose, r.stock, r.raison, r.amertumeDeconseillee])),
   suggerer: (c: ReturnType<typeof CALCULS.suggerer>) => empreinte(c.map((x) => [x.cle, x.visee, x.besoin])),

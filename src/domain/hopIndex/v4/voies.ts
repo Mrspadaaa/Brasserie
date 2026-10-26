@@ -14,7 +14,7 @@ import type { Tasting } from './tasting';
 import { goutsSets, type Gouts } from './gouts';
 import { CHARACTERIZED_YEASTS, predictionDe, yeastChangeEffect } from './yeast';
 import { cleDeVoie, comparerCles, type CleDepartage, type Departage } from './departage';
-import { partDesFiches, type ApportMinoritaire } from './minoritaire';
+import { MOMENTS_APPORT_C_DEFAUT, partDesFiches, type ApportMinoritaire } from './minoritaire';
 import {
   BORNES_DRYHOP_GL, GRILLE_DRYHOP_GL, RANKING_PALIER60, REGLE_DRYHOP, comparerGrammesPalier, comparerPalier, comparerUsagePalier, drapeauIbu, rangUsage,
   type DoseDryHop, type InfoPalier, type RegleDryHop,
@@ -104,8 +104,9 @@ export interface VoieOptions {
   /** Départage à distance égale (g2a, D88) : 'aucun' (défaut, comportement d'avant) ou une des clés mesurées k1, k2, k3 (departage.ts).
    * La clé passe après la distance et ne change jamais l'effet calculé. */
   departage?: Departage;
-  /** Apport minoritaire (g2d) : 'aucun' (défaut, comportement d'avant à l'octet près), 'c' (le débordement d'une famille non marquée ne compte plus dans le rang), 'm' (une famille citée par moins de
-   * la moitié des fiches n'apporte pas d'effet établi), 'w' (l'effet d'une famille est multiplié par la part des fiches qui la citent). Voir minoritaire.ts. Mesure seulement : jamais activée par défaut. */
+  /** Apport minoritaire (g2d, D99) : ABSENT (défaut) = 'c' sur les voies au dry hop actif ou après seulement (le débordement d'une famille non marquée ne compte plus dans leur rang ; aucune barre ne change),
+   * comportement d'avant ailleurs ; 'aucun' = le comportement d'avant partout, à l'octet près ; 'c' = ce rang à tous les moments ; 'm' (une famille citée par moins de
+   * la moitié des fiches n'apporte pas d'effet établi) et 'w' (l'effet d'une famille est multiplié par la part des fiches qui la citent) : mesure seulement, jamais par défaut. Voir minoritaire.ts. */
   apportMinoritaire?: ApportMinoritaire;
   /** Palier 60′ (g2b, D88 B, D165) : une visée d'IBU `{ ibu: +n }`. Ajoute `VoieResult.palier60` (un ajout à 60′ par houblon, à la dose exacte pour +n IBU) et range
    * « remplacer à IBU égal » par usage puis α. Absent : comportement d'avant, à l'octet près. */
@@ -311,7 +312,9 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     }
     const overflowTotal = round(styleOverflow.reduce((s, o) => s + o.crans, 0), 2);
     // g2d 'c' : le rang ne lit que le débordement d'une famille marquée chez un houblon changé (ajouté ou retiré) ; une voie sans houblon changé (levure) garde tout son débordement.
-    const overflowRang = apportMode === 'c'
+    // D99 : option absente = c sur les voies dont tous les ajouts sont au dry hop (actif ou après) ; 'c' explicite = tous les moments ; 'aucun', 'm', 'w' : jamais.
+    const rangC = options.apportMinoritaire === 'c' || (options.apportMinoritaire === undefined && changes.length > 0 && changes.every((c) => MOMENTS_APPORT_C_DEFAUT.includes(c.addition.moment)));
+    const overflowRang = rangC
       ? round(styleOverflow.filter((o) => !changes.length || changes.some((c) => marque(hopRef(c.addition.hopKey)?.varietyId ?? '', o.family))).reduce((s, o) => s + o.crans, 0), 2)
       : null;
     const sideTotal = round(sideEffects.reduce((s, o) => s + o.crans, 0), 2);

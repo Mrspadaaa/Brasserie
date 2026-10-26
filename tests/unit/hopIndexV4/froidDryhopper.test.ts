@@ -114,8 +114,9 @@ describe('familles près de leur limite', () => {
     expect(par.herbal).toMatchObject({ depasse: true, borne: 5 });
     expect(par.resin).toMatchObject({ depasse: false, borne: 30, statut: 'neutre' });
     expect(par.floral).toMatchObject({ depasse: false, borne: 30 });
-    expect(par.green.valeur).toBeCloseTo(20.6, 1);
-    expect(par.resin.valeur).toBeCloseTo(27.5, 1);
+    // c6 (26.10) : Freestyle Hops (NZ) n'est plus un mot de Cascade : vert 20,6 → 20,0, résineux 27,5 → 27,2.
+    expect(par.green.valeur).toBeCloseTo(20.0, 1);
+    expect(par.resin.valeur).toBeCloseTo(27.2, 1);
     expect(par.green.bande).toEqual([0, 5]);
     // Du plus loin au-dessus de la borne au plus proche d'elle : les colonnes de la cellule dans cet ordre.
     expect(l.lignes.map((x) => x.famille)).toEqual(['green', 'herbal', 'resin', 'floral']);

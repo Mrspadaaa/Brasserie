@@ -44,7 +44,7 @@ describe('useHopData', () => {
     const { result } = renderHook(() => useHopData({ id: 'R1' }));
     await waitFor(() => expect(result.current.moteur).not.toBeNull());
     const d = result.current;
-    expect(d.catalogue!.length).toBe(318);                               // le catalogue du moteur, pas fusionné
+    expect(d.catalogue!.length).toBe(317);                               // le catalogue du moteur, pas fusionné
     expect(d.stock).toHaveLength(16);
     expect(d.nonRelies).toEqual([expect.objectContaining({ cle: 'inconnu:Houblon Zythos Imaginaire 9.9%', grams: 40 })]);
     expect(d.stock.some((s) => s.items.includes('Pale Ale Malt'))).toBe(false);

@@ -47,8 +47,8 @@ describe('valeurs en plage', () => {
 
 describe('bloc bm : sources et liens', () => {
   const avecBm = CATALOGUE.filter((h) => h.bm);
-  it('les 318 houblons ont leur bloc, avec date de relevé, et une date de modification ISO ou null (non publiée)', () => {
-    expect(avecBm).toHaveLength(318);
+  it('les 317 houblons (318 moins Equinox, fusionné dans Ekuanot par c6) ont leur bloc, avec date de relevé, et une date de modification ISO ou null (non publiée)', () => {
+    expect(avecBm).toHaveLength(317);
     for (const h of avecBm) {
       expect(h.url).toMatch(/^https:\/\/beermaverick\.com\/hop\/[^/]+\/$/);
       expect(h.bm!.releve).toMatch(/^\d{4}-\d{2}-\d{2}$/);

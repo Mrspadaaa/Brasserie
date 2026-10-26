@@ -15,6 +15,10 @@
 import { fiches } from '../parcours/v4';
 
 const COMPLEMENT: Record<string, string> = {
+  // c6 (26.10) : les mots des fiches que la table d'alias rattache à une variété (Hallertauer Mittelfrüh, Mt. Rainier, Northern Brewer…).
+  celery: 'céleri', 'classic herbs': 'herbes classiques', 'mixed berry': 'baies variées', 'peach tea': 'thé à la pêche', 'sugar like': 'sucré', 'morello cherry': 'griotte',
+  'orange syrup': "sirop d'orange", 'excellent floral': 'floral', 'noble aromas': 'arômes nobles', 'with citrus': 'agrumes', 'licorice tones': 'réglisse', 'wild fruit': 'fruits sauvages',
+  'herbal/earthy': 'herbacé, terreux', 'woody/tobacco': 'boisé, tabac', 'oak barrel': 'fût de chêne', 'ripe banana': 'banane mûre', 'soft spice': 'épices douces',
   'white wine': 'vin blanc', fruity: 'fruité', gooseberry: 'groseille à maquereau', gooseberries: 'groseille à maquereau', grape: 'raisin', grapes: 'raisin',
   pineapple: 'ananas', woody: 'boisé', resinous: 'résineux', resiny: 'résineux', 'fresh lime': 'citron vert', lime: 'citron vert', 'lemon zest': 'zeste de citron',
   lemon: 'citron', mojito: 'mojito', citrus: 'agrumes', 'black currant': 'cassis', blackcurrant: 'cassis', herbal: 'herbacé', spicy: 'épicé', pine: 'pin',

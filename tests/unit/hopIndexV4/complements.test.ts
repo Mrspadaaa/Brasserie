@@ -8,11 +8,13 @@ import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import brut from '../../../src/data/hopV4/complements.json';
 import protoData from '../../../src/data/hopV4/proto-data.json';
+import ajouts from '../../../src/data/hopV4/catalogue-ajouts.json';
 import { chargerComplements, complementsCharges, enveloppeDe, lireComplements, valeursDe, type ComplementsBrut } from '../../../src/domain/hopIndex/v4/complements';
 
 const racine = resolve(__dirname, '../../..');
 const C = brut as unknown as ComplementsBrut;
-const idsCatalogue = new Set((protoData.varieties as { id: string }[]).map((v) => v.id));
+// c6 (26.10) : le catalogue complet = Beer Maverick (proto-data.json) + les variétés des sources (catalogue-ajouts.json, à la demande).
+const idsCatalogue = new Set([...(protoData.varieties as { id: string }[]), ...(ajouts.varieties as { id: string }[])].map((v) => v.id));
 // Le hash d'un fichier extrait en CRLF (core.autocrlf=true, copie propre de Windows) se prend sur son texte LF : le script produit du LF.
 const sha = (p: string) => createHash('sha256').update(readFileSync(resolve(racine, p), 'utf8').replace(/\r\n/g, '\n')).digest('hex');
 const FICHIERS = ['src/data/hopV4/complements.json', 'src/data/hopV4/complements-non-rattachees.json', 'work/missions/2026-10-25-integration-houblons/voies/d3a-fusion/rapport.md'];

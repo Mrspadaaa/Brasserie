@@ -66,6 +66,10 @@ export interface CatalogueHop {
   /** Usages attestés par un fournisseur (hopStyleUsageBootstrap), ou null. */
   usage: { styles: string[]; roles: string[]; source: string | null; url: string | null }[] | null;
   descriptions: HopVariety['descriptions'];
+  /** c6 (D98) : variété citée par les sources et absente de Beer Maverick. Ses plages (α, β, huile…) sont l'enveloppe des valeurs valides des
+   * sources, pas celles de Beer Maverick. `peuDeDonnees` : moins de deux sources, ou pas d'α : elle ne doit jamais passer devant une variété
+   * documentée à égalité (D175) ; `nbSources` : le nombre de sources (hors Brewer's Friend, index sans valeur). Absents des variétés Beer Maverick. */
+  peuDeDonnees?: boolean; nbSources?: number;
 }
 export interface StockHop {
   /** Clé du houblon dans le prototype : id de variété, suffixé « :cryo » pour un produit Cryo. */
@@ -93,7 +97,24 @@ export function descriptionsDe(fiches: FichesCompactes | undefined, t: Descripte
 export function depliee(brut: { varieties: unknown[] } & DescripteursCompacts): CatalogueHop[] {
   return (brut.varieties as (CatalogueHop & { fiches?: FichesCompactes })[]).map(({ fiches, ...h }) => (fiches ? { ...h, descriptions: [...h.descriptions, ...descriptionsDe(fiches, brut)] } : h));
 }
-export const DONNEES_FIXTURE: DonneesMoteur = { catalogue: depliee(protoData as unknown as { varieties: unknown[] } & DescripteursCompacts), stock: protoData.stock as unknown as StockHop[] };
+/** Identifiants fusionnés (c6) : l'ancien id mène à la variété qui l'a absorbée (Equinox est Ekuanot). Un stock ou une recette qui portait l'ancien id reste valide. */
+export const ID_FUSIONNES: Readonly<Record<string, string>> = (protoData as unknown as { idsFusionnes?: Record<string, string> }).idsFusionnes ?? {};
+let ajoutsCharges: CatalogueHop[] | null = null;
+let ajoutsEnCours: Promise<CatalogueHop[]> | null = null;
+/** Les variétés ajoutées par c6 (citées par les sources, absentes de Beer Maverick), chargées à la demande : un morceau à part, jamais dans le démarrage
+ * ni dans le chunk des outils (budget B5). Un seul chargement, partagé. Le moteur par défaut ne les lit pas : un appelant qui les veut crée son moteur
+ * avec `chargerCataloguePlein()`. */
+export function chargerAjouts(): Promise<CatalogueHop[]> {
+  ajoutsEnCours ??= import('../../../data/hopV4/catalogue-ajouts.json')
+    .then((m) => (ajoutsCharges = depliee((m.default ?? m) as unknown as { varieties: unknown[] } & DescripteursCompacts)))
+    .catch((e) => { ajoutsEnCours = null; throw e; });
+  return ajoutsEnCours;
+}
+/** Les ajouts déjà chargés, sinon null (jamais de chargement implicite). */
+export const ajoutsDejaCharges = (): CatalogueHop[] | null => ajoutsCharges;
+/** Beer Maverick puis les variétés des sources : le catalogue complet, dans un ordre fixe (les documentées d'abord n'est pas promis : voir `peuDeDonnees`). */
+export const chargerCataloguePlein = async (): Promise<CatalogueHop[]> => [...CATALOGUE, ...(await chargerAjouts())];
+export const DONNEES_FIXTURE: DonneesMoteur ={ catalogue: depliee(protoData as unknown as { varieties: unknown[] } & DescripteursCompacts), stock: protoData.stock as unknown as StockHop[] };
 /** Les fixtures, pour les écrans qui les citent (cas du parcours) ; aucun module du moteur ne les lit. */
 export const CATALOGUE = DONNEES_FIXTURE.catalogue;
 export const STOCK = DONNEES_FIXTURE.stock;
@@ -170,7 +191,8 @@ export interface HopRef {
 export function hopRef(key: string): HopRef | null {
   const c = courant();
   const stock = c.stockByKey.get(key) ?? null;
-  const varietyId = stock?.varietyId ?? key.replace(/:cryo$/, '');
+  const brut = stock?.varietyId ?? key.replace(/:cryo$/, '');
+  const varietyId = ID_FUSIONNES[brut] ?? brut;
   const catalogue = c.catalogueById.get(varietyId);
   if (!catalogue) return null;
   const alpha = stock?.alpha != null ? { value: stock.alpha, min: stock.alpha, max: stock.alpha, from: stock.alphaFrom ?? 'stock' }

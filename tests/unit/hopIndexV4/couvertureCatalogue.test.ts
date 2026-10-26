@@ -12,7 +12,7 @@ const part = (n: number) => (100 * n) / N;
 const plageOk = (r: unknown): r is [number, number] => Array.isArray(r) && r.length === 2 && r.every((x) => typeof x === 'number' && Number.isFinite(x));
 
 describe('couverture du catalogue (Beer Maverick, cache du 2026-09-08)', () => {
-  it('318 variétés', () => expect(N).toBe(318));
+  it('317 variétés (c6, 26.10 : Equinox est Ekuanot, un seul identifiant)', () => expect(N).toBe(317));
   it('cohumulone ≥ 90 % des variétés', () => {
     expect(part(CATALOGUE.filter((h) => plageOk(h.cohumulone)).length)).toBeGreaterThanOrEqual(90);
   });
