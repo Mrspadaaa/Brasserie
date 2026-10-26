@@ -929,3 +929,19 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - S : Suggérer à 60′ par ressemblance, après le test à l'aveugle E (accordé, D100).
 
   B3 (D90 en drapeau au lieu d'une exclusion) n'est pas décidé.
+- D103 (26.10, vers 17 h) : l'hébergement seul est redéployé depuis la copie propre, au commit 6e368cbd.
+  - **Contenu** : les sources à un seul endroit (D168), la carte de Ma bière qui se referme (D169), les mots en français (D170) et
+    l'appui long sur les grammes (D173).
+  - **Rejeu complet** :
+    - tsc vert ;
+    - vitest 8173 sur 8174, le seul échec étant un délai sous charge, vert quand on le relance seul ;
+    - build vert, B5 à 158,5 ko ;
+    - six contrôles Chrome OK ;
+    - états de la maquette 138/138 après e4.
+  - **Pas encore en ligne** :
+    - Ma bière et sa croix (p6, p6b) ;
+    - D99 ;
+    - le catalogue complet (c6, c7) ;
+    - l'affinage f2.
+
+    Ils partiront ensemble après la mesure de B5 et de la fluidité.
