@@ -45,3 +45,27 @@ DÉCISION À PRENDRE : le contrôle D154 « somme des milieux d'un houblon ≤ 1
 
 CONNAISSANCE : l'enveloppe des compositions de 18 sources n'est pas une composition (somme des milieux jusqu'à 105 %) ; un contrôle de non-double-compte doit comparer les bornes (bas ≤ 100 ≤ haut), pas les milieux. Les valeurs de HPA (farnésène de Citra et Mosaic, myrcène de Mosaic) et de Hopslist (farnésène de Nelson) sont à relire.
 LEÇON PROPOSÉE : un script Node passé par heredoc dans le Bash de cet environnement perd encore les barres inverses (`\(`, `\/`, `\\`) sans erreur : 4 fois dans cette voie (regex, chemin Windows, `\s`). Écrire tout code avec barres inverses par Write/Edit, puis `node --check` et un test qui exerce la regex (déjà notée par c3c et d3a : à mécaniser).
+
+## Suite (26.10) : l'attente de Comparer mesurée en production, et le lancement au repos
+
+Ligne 1 inchangée : OK. Un seul fichier hors de « Possède » touché : `src/ui/hopIndex/precharge.ts` (le préchargement au repos qui charge déjà HopToolLayer et le chunk des outils : `requestIdleCallback` avec timeout 10 s, repli `setTimeout` 2 s, drapeau hopV4, en ligne, sans économie de données). J'y ai ajouté `import('./fiche/complements-ui').then(m => m.lancerComplements())` dans `charger`. Pas HopToolLayer ni l'hôte de Ma bière : le mécanisme existe, il couvre l'étape Houblons montée et tout autre écran, et ses garde-fous (hors ligne, économie de données) s'appliquent. L'attente bornée (600 ms Comparer, 1,5 s fiche) reste en filet. Aucune donnée touchée.
+
+### Mesure en build de production (`node scripts/bench-hop-prod.mjs --n=8 --cpu=1 --sans-build`, mode banc, `?dev-local`)
+Trois builds du mode banc, mesurés en alternance, deux tours (avant, après, précharge, avant, après, précharge) ; sorties dans `%TEMP%\d3b-bench` (journaux `log-*`) :
+- **avant** = commit 18141d87 (sans ma voie) ; **après** = HEAD 7f09037b (ma voie, attente de 600 ms, sans lancement au repos) ; **précharge** = après + lancement au repos.
+- Le dossier du « avant » vient de `git archive` avec le `.env` copié (sans lui, l'app affiche « Impossible de charger la brasserie » : une première série a échoué pour cela, écartée).
+
+| ms, CPU ×1 | avant t1 · t2 | après t1 · t2 | précharge t1 · t2 |
+|---|---|---|---|
+| Comparer, 1re ouverture (chunk + calculs à froid) | 595 · 554 | 557 · 551 | 555 · 572 |
+| Comparer, réouverture (médiane · p95, n = 8) | 176·202 · 168·198 | 162·182 · 166·212 | 164·187 · 164·188 |
+| Fiche, 1re ouverture | 155 · 144 | 135 · 138 | 134 · 141 |
+| Premier écran (étape Houblons montée) | 529 · 478 | 480 · 473 | 471 · 471 |
+
+Lecture : aucune régression mesurable. L'écart entre séries (≈ 40 ms) est du bruit du poste, la 1re ouverture « après » n'est pas plus lente que « avant ». Raison : en production le morceau (57 ko gzip, servi en local) arrive pendant l'ouverture du chunk de Comparer, bien avant les 600 ms ; l'écran d'attente de dev (540 ms) venait du transform de 335 ko de JSON par Vite. Limites : CPU ×1 seul (pas ×4), serveur local sans latence réseau ; sur un réseau lent, l'attente de Comparer coûterait jusqu'à 600 ms, d'où le lancement au repos.
+- Preuve du lancement au repos (build banc, rien ouvert) : « précharge » demande `complements-*.js` dès l'étape montée (déjà arrivé à la première lecture) ; « après » : aucune requête en 12 s.
+
+### Rejeux
+- `comparerValeurs.chrome.mjs` : OK en 390, `--large`, `--trio saaz --large` (dev, `?dev-local`).
+- `npx vitest run tests/unit/hopIndexV4 tests/unit/designTokens.test.ts` : 47 fichiers, 365 tests verts, `moteurInchange` compris (le total a augmenté : d'autres voies ont ajouté des tests).
+- `npm run build` vert ; B5 148,3 ko gzip tenu ; morceau `complements-CicB0H6c.js` toujours à part ; `audit_inputs` : `INPUT PROTECTION AUDIT PASSED`.

@@ -62,6 +62,8 @@ export function prechargerOutilsAuRepos(auChargementCouche?: (couche: typeof imp
       return () => window.clearTimeout(t);
     },
     quandEnLigne: (f) => { window.addEventListener('online', f, { once: true }); return () => window.removeEventListener('online', f); },
-    charger: () => Promise.all([import('./HopToolLayer').then(m => { auChargementCouche?.(m); return m; }), chargerOutils()])
+    // d3b (#180) : les compléments des 18 sources (morceau à part, 57 ko gzip) arrivent au même repos : Comparer et la fiche les trouvent
+    // déjà là. `lancerComplements()` ne rejette jamais (échec : catalogue seul, l'ouverture réessaie).
+    charger: () => Promise.all([import('./HopToolLayer').then(m => { auChargementCouche?.(m); return m; }), chargerOutils(), import('./fiche/complements-ui').then(m => m.lancerComplements())])
   });
 }
