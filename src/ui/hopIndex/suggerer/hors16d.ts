@@ -7,15 +7,13 @@
 // sûrs traduits. Écrit ici plutôt qu'importé de Substituer, dont le fichier est en cours de travail dans une autre voie.
 import { familyWords, hopRef } from '../parcours/v4';
 import { EXTRAPOLATION } from '../parcours/v4';
+import { estGenerique, motAffiche } from '../fiche/traduction';
 
 /** Mots génériques, qui ne disent rien de propre au houblon (flb5b : « fruité », « fruits tropicaux »). */
 const GENERIQUE = /^(fruit(é|ée|y|s|ées?)?|fruits? tropicaux|tropical|aromatique|arôme|houblon|doux|léger|intense|complexe|agréable|propre|neutre|net|clean)$/i;
 /** Un mot qui n'est que le nom d'une famille écrit autrement (« resiny ») : la 16D le dessine déjà. */
 const NOM_DE_FAMILLE = /^(r[ée]sin|citr|agrum|flor|fleur|herb|terr|earth|[ée]pic|spic|tropic|berr|bai|melon|noyau|stone|p[ée]pin|v[ée]g[ée]tal|green|pine|pin\b)/i;
-const FR: Record<string, string> = {
-  tabacco: 'tabac', tobacco: 'tabac', marmalade: 'marmelade', ginger: 'gingembre', licorice: 'réglisse', onion: 'oignon', garlic: 'ail',
-  catty: 'urine de chat', lilac: 'lilas', chamomile: 'camomille', gooseberry: 'groseille à maquereau', 'white wine': 'vin blanc', grape: 'raisin', grapes: 'raisin', coffee: 'café', 'passion fruit': 'fruit de la passion',
-};
+// D160 : la traduction des mots anglais et le tri des phrases qui ne sont pas des arômes sont ceux de la fiche (fiche/traduction.ts).
 
 /** Les mots de ses fiches hors des familles, du plus cité au moins cité (nombre de fiches), sans doublon. */
 export function motsHors(cle: string): { mot: string; fiches: number }[] {
@@ -25,8 +23,8 @@ export function motsHors(cle: string): { mot: string; fiches: number }[] {
   const compte = new Map<string, Set<string>>();
   for (const x of w.sansFamille) {
     const brut = x.mot.toLowerCase().trim();
-    const k = FR[brut] ?? brut;
-    if (!k || GENERIQUE.test(k) || NOM_DE_FAMILLE.test(brut)) continue;
+    const k = motAffiche(brut);
+    if (!k || GENERIQUE.test(k) || estGenerique(k) || NOM_DE_FAMILLE.test(brut)) continue;
     compte.set(k, (compte.get(k) ?? new Set()).add(x.source));
   }
   return [...compte].map(([mot, s]) => ({ mot, fiches: s.size })).sort((a, b) => b.fiches - a.fiches);
@@ -51,8 +49,10 @@ export function tousMots(cle: string): Set<string> {
   const ref = hopRef(cle);
   if (!ref) return new Set();
   const w = familyWords(ref.varietyId, ref.catalogue);
-  return new Set([...motsHors(cle).map((x) => x.mot), ...Object.values(w.mots).flatMap((l) => l.flatMap((r) => r.mots.map((m) => m.toLowerCase().trim()))),
-    ...(ref.catalogue.tagsFr ?? []).map((m) => m.toLowerCase())]);
+  // Traduits, comme motsHors : « nutmeg » d'une fiche et « muscade » d'une autre sont un seul mot.
+  const fr = (m: string) => motAffiche(m) ?? m.toLowerCase().trim();
+  return new Set([...motsHors(cle).map((x) => x.mot), ...Object.values(w.mots).flatMap((l) => l.flatMap((r) => r.mots.map(fr))),
+    ...(ref.catalogue.tagsFr ?? []).map(fr)]);
 }
 
 /** Pour chaque houblon montré : ses mots hors des familles, ceux qu'aucun autre houblon de l'écran n'a d'abord (« lui seul »,

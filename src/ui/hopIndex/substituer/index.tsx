@@ -27,6 +27,8 @@ import { Usage } from '../fiche/briques';
 import { Lentille } from '../maBiere/Lentille';
 import { noterAvant } from '../maBiere/repere';
 import { huilesDe, LIGNES_HUILE, mesures, useRemplacants, motsHors, stockOriginal, TEXTE_STOCK, type Candidat, type EtatStock, type Intervalle } from './donnees';
+import { enveloppeDesPlages, milieuMoyen, titreTrait, type TraitSource } from '../commun/plagesSources';
+import { useComplements } from '../fiche/complements-ui';
 import { RadarU4 } from './Radar';
 import SYMBOLES from '../../../data/hopV4/pictos-familles.svg?raw';
 import '../dryhopper/pied-annuler.css';
@@ -101,11 +103,13 @@ function PictosCites({ h, max = 5 }: { h: HoublonLu; max?: number }) {
   );
 }
 
-/** Une rangée de mesure (grammaire de Comparer p3) : sources en traits fins, plage, milieu moyen des sources en noir,
- * le lot ou l'article nommé au-dessus. */
-function Rangee({ dom, nom, couleur, src, lot, mesure }: { dom: Intervalle; nom: string; couleur: string; src: Intervalle[]; lot?: { v: number; origine: 'lot' | 'article' } | null; mesure: string }) {
+/** Une rangée de mesure (grammaire de Comparer p3) : un trait fin par plage qui diffère (les sources d'accord n'en font qu'un,
+ * leurs noms au survol : s1-sources-lignes, commun/plagesSources.ts), plage, milieu moyen des sources en noir, le lot ou
+ * l'article nommé au-dessus. Plus de trois plages : la rangée grandit de 4 px par trait, rien n'est caché. */
+const HAUT_RANGEE = 34, DEPART_TRAITS = 26, PAS_TRAIT = 4;
+function Rangee({ dom, nom, couleur, traits, lot, mesure }: { dom: Intervalle; nom: string; couleur: string; traits: TraitSource[]; lot?: { v: number; origine: 'lot' | 'article' } | null; mesure: string }) {
   const x = (v: number) => `${Math.max(0, Math.min(100, ((v - dom[0]) / (dom[1] - dom[0])) * 100)).toFixed(1)}%`;
-  if (!src.length) {
+  if (!traits.length) {
     return (
       <div className="pq-substituer-mr" data-plage-inconnue={mesure} data-houblon={nom}>
         <span className="pq-substituer-mr-h">{nom}</span><span className="pq-substituer-mr-v pq-substituer-gris">?</span>
@@ -113,16 +117,22 @@ function Rangee({ dom, nom, couleur, src, lot, mesure }: { dom: Intervalle; nom:
       </div>
     );
   }
-  const lo = Math.min(...src.map((s) => s[0])), hi = Math.max(...src.map((s) => s[1]));
-  const centre = src.reduce((t, s) => t + (s[0] + s[1]) / 2, 0) / src.length;
+  const env = enveloppeDesPlages(traits) as Intervalle;
+  const [lo, hi] = env;
+  const centre = milieuMoyen(traits) ?? lo;
+  const haut = Math.max(HAUT_RANGEE, DEPART_TRAITS + (traits.length - 1) * PAS_TRAIT + 2 + 2);
+  const grand = haut > HAUT_RANGEE;
   return (
-    <div className="pq-substituer-mr" style={{ ['--c' as string]: couleur }}>
+    <div className="pq-substituer-mr" style={{ ['--c' as string]: couleur, ...(grand ? { height: haut } : {}) }} {...(grand ? { 'data-haut': '' } : {})}>
       <span className="pq-substituer-mr-h">{nom}</span>
       <span className="pq-substituer-mr-v">{plage(lo, hi, 2)}</span>
-      <span className="pq-substituer-tb" data-plage="" data-houblon={nom} data-mesure={mesure} data-min={lo} data-max={hi}>
+      <span className="pq-substituer-tb" data-plage="" data-houblon={nom} data-mesure={mesure} data-min={lo} data-max={hi} data-traits={traits.length} style={grand ? { height: haut } : undefined}>
         <span className="pq-substituer-tb-fond" />
         <span className="pq-substituer-tb-pg" style={{ left: x(lo), width: `calc(${x(hi)} - ${x(lo)})` }} />
-        {src.map((s, i) => <span key={i} className="pq-substituer-tb-src" style={{ left: x(s[0]), width: `calc(${x(s[1])} - ${x(s[0])})`, top: 26 + i * 4 }} />)}
+        {traits.map((t, i) => (
+          <span key={`${t.r[0]}|${t.r[1]}`} className="pq-substituer-tb-src" data-role="trait-source" data-min={t.r[0]} data-max={t.r[1]} data-sources={t.noms.join(' ; ')} data-nb-sources={t.noms.length}
+            title={titreTrait(t, (a, b) => plage(a, b, 2))} style={{ left: x(t.r[0]), width: `calc(${x(t.r[1])} - ${x(t.r[0])})`, top: DEPART_TRAITS + i * PAS_TRAIT }} />
+        ))}
         <span className="pq-substituer-tb-ctr" data-role="central" data-valeur={Math.round(centre * 100) / 100} style={{ left: x(centre) }} />
         {lot && <span className={`pq-substituer-tb-lot ${lot.origine === 'article' ? 'pq-substituer-article' : ''}`} data-role="lot" data-valeur={lot.v} data-origine={lot.origine === 'article' ? 'article' : 'stock'} style={{ left: x(lot.v) }}>{lot.origine} {fr(lot.v)}</span>}
       </span>
@@ -217,6 +227,9 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
   const { revenirMaBiere, aller } = useNavigation();
   const fiche = useFiche();
   const T = useTermes();
+  // s1 : les valeurs des 18 sources de complements.json entrent dans les traits α, β et huiles (préchargées au repos) ; l'écran
+  // attend leur arrivée, 600 ms au plus, pour ne rien montrer d'incomplet (un trait qui apparaît, une échelle qui bouge).
+  const { attente } = useComplements(600);
   const ajout: AjoutParcours | null = b.remplace ? trouver(b.recette, b.remplace.ajoutId) : null;
   const lecture = useRemplacants(b.recette, ajout);
   const cands = lecture?.candidats ?? [];
@@ -239,7 +252,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
   // de ses deux par défaut. Sur le fil principal, ils sont là dès le premier rendu : rien ne change.
   const recue = lecture != null;
   useEffect(() => { setCompares(defauts.compares); setChoix(defauts.choix); }, [cleLue, recue]); // eslint-disable-line react-hooks/exhaustive-deps
-  if (!ajout || !lecture) return null;
+  if (!ajout || !lecture || attente) return null;
 
   const h0 = houblon(cle);
   const sc = style(b.recette.styleCode);
@@ -588,7 +601,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
   // À 60′, l'α suit les bandes (u4) ; au whirlpool et au dry hop, le tableau des arômes répond d'abord (D127).
   const blocAlpha = (
     <div className="pq-substituer-mesure" data-etat="etat-subst-alpha"><span className="pq-substituer-t">α</span>
-      <div>{faces.map((x) => <Rangee key={x.cle} dom={domA} nom={x.nom} couleur={x.couleur} src={M[x.cle].alpha.src.map((s) => s.r)} lot={M[x.cle].alpha.lot} mesure="alpha" />)}</div>
+      <div>{faces.map((x) => <Rangee key={x.cle} dom={domA} nom={x.nom} couleur={x.couleur} traits={M[x.cle].alpha.traits} lot={M[x.cle].alpha.lot} mesure="alpha" />)}</div>
     </div>
   );
 
@@ -778,10 +791,10 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
         {!amertume && blocAlpha}
 
         <div className="pq-substituer-mesure" data-etat="etat-subst-beta"><span className="pq-substituer-t">β</span>
-          <div>{faces.map((x) => <Rangee key={x.cle} dom={domB} nom={x.nom} couleur={x.couleur} src={M[x.cle].beta.src.map((s) => s.r)} mesure="beta" />)}</div>
+          <div>{faces.map((x) => <Rangee key={x.cle} dom={domB} nom={x.nom} couleur={x.couleur} traits={M[x.cle].beta.traits} mesure="beta" />)}</div>
         </div>
         <p className="pq-substituer-note">
-          α et β&#8239;: traits fins, une source chacun (Beer Maverick, Hopsteiner)&#8239;; trait noir, milieu moyen des sources
+          α et β&#8239;: traits fins, un par plage qui diffère (des sources d’accord n’en font qu’un, leurs noms au survol)&#8239;; trait noir, milieu moyen des sources
           {aPlageDose.length ? <>&#8239;; plage de dose de {liste(aPlageDose.map((x) => `${x.nom} selon son α (${plage(M[x.cle].alpha.src[0]?.r[0] ?? 0, M[x.cle].alpha.src[0]?.r[1] ?? 0)})`))}</> : null}.
           {sousPlage.map((x) => <> L’{M[x.cle].alpha.lot!.origine === 'article' ? 'article' : 'lot'} de {x.nom} ({fr(M[x.cle].alpha.lot!.v)}) est sous sa plage variétale&#8239;: la dose de {nombre(x.dose!.grams, 1)}&nbsp;g en tient compte.</>)}
           {surPlage.map((x) => <> Le lot de {x.nom} ({fr(M[x.cle].alpha.lot!.v)}) est au-dessus de sa plage variétale&#8239;: la dose de {nombre(x.dose!.grams, 1)}&nbsp;g en tient compte.</>)}
@@ -793,7 +806,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
           {HUILES.map(([k, n]) => (
             <div key={k}>
               <div className="pq-substituer-groupe">{n}</div>
-              {faces.map((x) => { const r = M[x.cle].huiles[k]; return <Rangee key={x.cle} dom={domH(k)} nom={x.nom} couleur={x.couleur} src={r ? [r] : []} mesure={n} />; })}
+              {faces.map((x) => <Rangee key={x.cle} dom={domH(k)} nom={x.nom} couleur={x.couleur} traits={M[x.cle].huilesTraits[k]} mesure={n} />)}
             </div>
           ))}
           <p className="pq-substituer-note">{huileInconnue.length ? `${liste(huileInconnue)} non renseigné${huileInconnue.length > 1 ? 's' : ''}, ce n’est pas zéro. ` : ''}Farnésène publié par Beer Maverick, non importé.</p>

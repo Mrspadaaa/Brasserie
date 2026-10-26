@@ -93,7 +93,10 @@
 .pq-substituer-mr-v { font-size: 13px; font-weight: 650; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pq-substituer-tb { position: relative; height: 34px; }
 .pq-substituer-tb-fond { position: absolute; left: 0; right: 0; top: 15px; height: 6px; border-radius: 3px; background: #ebebeb; }
-.pq-substituer-tb-src { position: absolute; height: 2px; background: var(--c); opacity: .55; }
+.pq-substituer-tb-src { position: absolute; height: 2px; min-width: 3px; background: var(--c); opacity: .55; }
+/* s1 : au-delà de trois plages distinctes, la rangée grandit (hauteur posée en ligne) ; nom et plage restent à la hauteur de la barre. */
+.pq-substituer-mr[data-haut] { align-items: start; }
+.pq-substituer-mr[data-haut] > .pq-substituer-mr-h, .pq-substituer-mr[data-haut] > .pq-substituer-mr-v { line-height: 34px; }
 .pq-substituer-tb-pg { position: absolute; top: 13px; height: 10px; border-radius: 4px; background: var(--c); opacity: .85; }
 .pq-substituer-tb-ctr { position: absolute; top: 11px; width: 2px; height: 14px; margin-left: -1px; background: #111; }
 .pq-substituer-tb-lot { position: absolute; top: -5px; font-size: 12px; white-space: nowrap; transform: translateX(-50%); line-height: 12px; text-align: center; background: linear-gradient(#fff 0 12px, transparent 12px); }

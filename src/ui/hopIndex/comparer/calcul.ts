@@ -17,6 +17,7 @@ import { CONDITIONS } from './cas';
 import type { Quand, RecetteParcours } from '../parcours/types';
 import { huile as huileSources } from './valeurs';
 import { nombre } from './commun';
+import { estGenerique, motAffiche } from '../fiche/traduction';
 
 export const ABSOLU = 125;
 /** Orangé « au-dessus du style » (D83 : la seule couleur hors famille admise sur un élément de famille). */
@@ -351,16 +352,10 @@ export function biotransformation(recette: RecetteParcours, cles: string[]): Bio
 // 16D : les mots de ses fiches (familyWords du moteur : chaque descripteur, rangé dans sa famille ou hors des 12),
 // traduits (D97), sans le nom d'une famille (il redit le radar) ni un mot générique (« fruité » : 77 houblons, il ne
 // signe personne) ; jamais inventés. « Lui seul » : aucun des autres houblons comparés ne le dit (la manière de flb5).
-const VERS_FR: Record<string, string> = {
-  'white wine': 'vin blanc', fruity: 'fruité', gooseberry: 'groseille à maquereau', gooseberries: 'groseille à maquereau', grape: 'raisin', grapes: 'raisin',
-  pineapple: 'ananas', woody: 'boisé', resinous: 'résineux', resiny: 'résineux', 'fresh lime': 'citron vert', lime: 'citron vert', 'lemon zest': 'zeste de citron',
-  lemon: 'citron', citrus: 'agrumes', 'black currant': 'cassis', blackcurrant: 'cassis', herbal: 'herbacé', spicy: 'épicé', pine: 'pin', grapefruit: 'pamplemousse',
-  'passion fruit': 'fruit de la passion', peach: 'pêche', lychee: 'litchi', coconut: 'noix de coco', geranium: 'géranium', ginger: 'gingembre', earthy: 'terreux',
-  'tropical fruit': 'fruits tropicaux', tropical: 'fruits tropicaux', floral: 'floral', 'résine': 'résine',
-};
+// D160 : la table de traduction et le tri des phrases qui ne sont pas des arômes sont ceux de la fiche (fiche/traduction.ts) ;
+// la table locale d'avant ne connaissait que 40 mots et laissait passer « no distinct aroma characteristics ».
 const GENERIQUES = new Set(['fruité']);
 const NOMS_FAMILLE = new Set(['agrumes', 'floral', 'épicé', 'herbacé', 'terreux', 'résineux', 'fruits tropicaux', 'tropicaux', 'végétal', 'baies', 'melon', 'noyau', 'pépins']);
-const versFr = (m: string) => { const k = m.trim().toLowerCase(); return VERS_FR[k] ?? k; };
 export interface MotLu { mot: string; famille: FamilyId | null; fiches: string[]; seul: boolean; aussi: string[] }
 export function sesMots(cles: string[]): Record<string, MotLu[]> {
   const brut: Record<string, Map<string, { famille: FamilyId | null; fiches: string[] }>> = {};
@@ -371,8 +366,8 @@ export function sesMots(cles: string[]): Record<string, MotLu[]> {
     if (!h) continue;
     const w = familyWords(h.varietyId, h.catalogue);
     const ajoute = (mot: string, source: string, famille: FamilyId | null) => {
-      const k = versFr(mot);
-      if (!k || GENERIQUES.has(k) || NOMS_FAMILLE.has(k)) return;
+      const k = motAffiche(mot);
+      if (!k || GENERIQUES.has(k) || estGenerique(k) || NOMS_FAMILLE.has(k)) return;
       const c = m.get(k) ?? { famille, fiches: [] };
       if (famille && !c.famille) c.famille = famille;
       if (!c.fiches.includes(source)) c.fiches.push(source);

@@ -20,7 +20,9 @@ const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recett
 // 26.10, voies d4 (descripteurs de 12 sources) et e2 (moteur de substitution v2) : substitutes 9ef77aa53ecc → cac6de6d0c72 et remplacants d646d7130b2f →
 // 6561a4d6240b (v2 sur les fiches de d4) ; suggerer 85aab6303283 → 166a7dbd9516 et proposer b42c299e6ebf → 3584e2c7dabd (les fiches de d4 changent
 // les niveaux de famille que lisent ces deux calculs ; ils n'importent pas substitution.ts).
-const EMPREINTES = { substitutes: 'cac6de6d0c72', suggerer: '166a7dbd9516', proposer: '3584e2c7dabd', remplacants: '6561a4d6240b' };
+// remplacants 6561a4d6240b → 32e2ef725fec (t1, D160, 26.10) : seuls les champs « autres » changent, par la traduction des
+// descripteurs des nouvelles sources ; aucun score ni rang (voies/t1-traduction/RESULTAT.md).
+const EMPREINTES = { substitutes: 'cac6de6d0c72', suggerer: '166a7dbd9516', proposer: '3584e2c7dabd', remplacants: '32e2ef725fec' };
 const forme = {
   substitutes: (sr: ReturnType<typeof CALCULS.substitutes>) => empreinte(sr.remplacants.map((r) => [r.key, r.rank, r.score, r.dose, r.stock, r.raison, r.amertumeDeconseillee])),
   suggerer: (c: ReturnType<typeof CALCULS.suggerer>) => empreinte(c.map((x) => [x.cle, x.visee, x.besoin])),

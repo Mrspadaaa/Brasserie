@@ -4,7 +4,8 @@
 //   premiers du catalogue et les trois premiers du stock (le premier du stock qui suffit toujours compris).
 // - La plage de u4 : une composante inconnue s'ouvre de 0 à 100 avec les poids du moteur (calcul de l'écran, écrit
 //   dans « Lire ces scores ») ; une composante connue reste celle du moteur. Rangés par le pire cas (bas de plage).
-// - Le face à face : α et β par source (Beer Maverick, Hopsteiner), huiles (Beer Maverick ; linalol Hopsteiner),
+// - Le face à face : α, β et huiles par source (Beer Maverick, Hopsteiner et les 18 sources de complements.json, par
+//   commun/sourcesMesures.ts) ; un trait par plage qui diffère, les sources d'accord n'en font qu'un (s1, commun/plagesSources.ts) ;
 //   familles des fiches (niveau, N/M), mots et styles d'emploi des fiches : catalogue du moteur (hopRef).
 import { useMemo } from 'react';
 import type { FamilyId, SubstitutionOptions, SubstitutionResult } from '../../../domain/hopIndex/v4';
@@ -15,6 +16,9 @@ import { proposable } from '../parcours/donnees';
 import { memo } from '../parcours/mesure';
 import { useCalcul } from '../parcours/useCalcul';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
+import { estGenerique, motAffiche } from '../fiche/traduction';
+import { dedoublonnerPlages, enveloppeDesPlages, type SourcePlage, type TraitSource } from '../commun/plagesSources';
+import { sourcesDeBarre } from '../commun/sourcesMesures';
 
 export type EtatStock = 'acheter' | 'suffisant' | 'insuffisant' | 'epuise';
 export const TEXTE_STOCK: Record<EtatStock, string> = { acheter: 'À acheter', suffisant: 'En stock, suffisant', insuffisant: 'En stock, insuffisant', epuise: 'Épuisé' };
@@ -141,27 +145,36 @@ export function stockOriginal(h: HoublonLu, recette: RecetteParcours): EtatStock
 
 // ---------- Les mesures du face à face, par source ----------
 export type Intervalle = [number, number];
+type CleHuile = 'myrcene' | 'humulene' | 'caryophyllene' | 'linalool';
 export interface Mesures {
-  alpha: { src: { qui: string; r: Intervalle }[]; lot: { v: number; origine: 'lot' | 'article' } | null };
-  beta: { src: { qui: string; r: Intervalle }[] };
-  huiles: Record<'myrcene' | 'humulene' | 'caryophyllene' | 'linalool', Intervalle | null>;
+  /** `src` : toutes les sources (catalogue et compléments), une entrée chacune ; `traits` : ce qu'on dessine, un par plage
+   * qui diffère (s1-sources-lignes, commun/plagesSources.ts). */
+  alpha: { src: { qui: string; r: Intervalle }[]; traits: TraitSource[]; lot: { v: number; origine: 'lot' | 'article' } | null };
+  beta: { src: { qui: string; r: Intervalle }[]; traits: TraitSource[] };
+  /** L'enveloppe de toutes les sources de chaque huile (null : aucune source, jamais 0) ; ses traits dans `huilesTraits`. */
+  huiles: Record<CleHuile, Intervalle | null>;
+  huilesTraits: Record<CleHuile, TraitSource[]>;
   /** Mots des fiches (Beer Maverick d'abord) et styles d'emploi attestés par un fournisseur. */
   mots: string[]; motsSource: string; styles: string[]; stylesSource: string | null;
 }
+/** Les champs de barre de Substituer : l'huile « linalool » de l'écran est le « linalol » des sources. */
+const CHAMP_HUILE: Record<CleHuile, 'myrcene' | 'humulene' | 'caryophyllene' | 'linalol'> = { myrcene: 'myrcene', humulene: 'humulene', caryophyllene: 'caryophyllene', linalool: 'linalol' };
 export function mesures(h: HoublonLu): Mesures {
   const ref = hopRef(h.cle);
   const c = ref?.catalogue;
-  const src = (bm: Intervalle | null | undefined, hs: Intervalle | null | undefined) =>
-    [...(bm ? [{ qui: 'Beer Maverick', r: bm }] : []), ...(hs ? [{ qui: 'Hopsteiner', r: hs }] : [])];
+  const src = (champ: 'alpha' | 'beta') => sourcesDeBarre(h.cle, champ);
+  const sortie = (l: SourcePlage[]) => l.map((s) => ({ qui: s.nom, r: s.r }));
+  const huile = (k: CleHuile) => sourcesDeBarre(h.cle, CHAMP_HUILE[k]);
   const lotA = h.alpha && !/^plage/.test(h.alpha.source) ? { v: h.alpha.valeur, origine: /article/.test(h.alpha.source) ? 'article' as const : 'lot' as const } : null;
   const w = ref ? familyWords(ref.varietyId, ref.catalogue) : null;
-  const tous = w ? [...new Set([...(c?.tagsFr ?? []), ...Object.values(w.mots).flatMap((l) => l.flatMap((x) => x.mots)), ...w.sansFamille.map((x) => x.mot)].map((m) => m.toLowerCase()))] : [];
+  const tous = w ? [...new Set([...(c?.tagsFr ?? []), ...Object.values(w.mots).flatMap((l) => l.flatMap((x) => x.mots)), ...w.sansFamille.map((x) => x.mot)].map((m) => motAffiche(m)).filter((m): m is string => !!m))] : [];
   const usage = c?.usage?.find((u) => u.styles.length) ?? null;
   return {
-    alpha: { src: src(c?.alpha, c?.hs?.alpha), lot: lotA },
-    beta: { src: src(c?.beta, c?.hs?.beta) },
-    huiles: { myrcene: c?.oils.myrcene ?? null, humulene: c?.oils.humulene ?? null, caryophyllene: c?.oils.caryophyllene ?? null, linalool: c?.hsLinalool?.range ?? null },
-    mots: (c?.tagsFr?.length ? c.tagsFr.map((m) => m.toLowerCase()) : tous).slice(0, 6), motsSource: c?.tagsFr?.length ? 'Beer Maverick' : 'fiches',
+    alpha: { src: sortie(src('alpha')), traits: dedoublonnerPlages(src('alpha')), lot: lotA },
+    beta: { src: sortie(src('beta')), traits: dedoublonnerPlages(src('beta')) },
+    huiles: { myrcene: enveloppeDesPlages(huile('myrcene')), humulene: enveloppeDesPlages(huile('humulene')), caryophyllene: enveloppeDesPlages(huile('caryophyllene')), linalool: enveloppeDesPlages(huile('linalool')) },
+    huilesTraits: { myrcene: dedoublonnerPlages(huile('myrcene')), humulene: dedoublonnerPlages(huile('humulene')), caryophyllene: dedoublonnerPlages(huile('caryophyllene')), linalool: dedoublonnerPlages(huile('linalool')) },
+    mots: (c?.tagsFr?.length ? c.tagsFr.map((m) => motAffiche(m)).filter((m): m is string => !!m) : tous).slice(0, 6), motsSource: c?.tagsFr?.length ? 'Beer Maverick' : 'fiches',
     styles: usage?.styles.slice(0, 3) ?? [], stylesSource: usage?.source ? usage.source.split(/[,—]/)[0].trim() : null,
   };
 }
@@ -171,8 +184,7 @@ export function mesures(h: HoublonLu): Mesures {
 const GENERIQUE = /^(fruit(é|ée|y|s|ée?s)?|fruits? tropicaux|tropical|aromatique|arôme|houblon|doux|léger|intense|complexe|agréable)$/i;
 /** Un mot qui n'est que le nom d'une famille, écrit autrement (« resiny ») : la famille le dit déjà, il n'est pas propre au houblon. */
 const NOM_DE_FAMILLE = /^(r[ée]sin|citr|agrum|flor|fleur|herb|terr|earth|[ée]pic|spic|tropic|berr|bai|melon|noyau|stone|p[ée]pin|v[ée]g[ée]tal|green|pine|pin)/i;
-/** Traductions sûres de mots de fiches restés en anglais ou en italien. */
-const FR: Record<string, string> = { tabacco: 'tabac', tobacco: 'tabac', marmalade: 'marmelade', ginger: 'gingembre', licorice: 'réglisse', onion: 'oignon', garlic: 'ail', catty: 'urine de chat', lilac: 'lilas', chamomile: 'camomille', gooseberry: 'groseille à maquereau', 'white wine': 'vin blanc', grape: 'raisin' };
+// D160 : les traductions de mots de fiches restés en anglais ou en italien sont dans fiche/traduction.ts (une seule table).
 /** Les mots de ses fiches qu'aucune famille ne range (sansFamille du moteur), sans doublon ni mot générique, et le nombre de
  * fiches qui les citent ; plus tous ses mots (rangés ou non), pour dire ce qu'il est seul à avoir face aux autres. */
 export function motsHors(cle: string): { hors: { mot: string; fiches: number }[]; tous: Set<string> } {
@@ -182,12 +194,15 @@ export function motsHors(cle: string): { hors: { mot: string; fiches: number }[]
   const compte = new Map<string, { mot: string; fiches: Set<string> }>();
   for (const x of w.sansFamille) {
     const brut = x.mot.toLowerCase().trim();
-    const k = FR[brut] ?? brut;
-    if (!k || GENERIQUE.test(k) || NOM_DE_FAMILLE.test(brut)) continue;
+    // D160 : la traduction et le tri des phrases qui ne sont pas des arômes sont ceux de la fiche (fiche/traduction.ts).
+    const k = motAffiche(brut);
+    if (!k || GENERIQUE.test(k) || estGenerique(k) || NOM_DE_FAMILLE.test(brut)) continue;
     const e = compte.get(k) ?? { mot: k, fiches: new Set<string>() };
     e.fiches.add(x.source); compte.set(k, e);
   }
-  const tous = new Set([...compte.keys(), ...Object.values(w.mots).flatMap((l) => l.flatMap((r) => r.mots.map((m) => m.toLowerCase().trim()))), ...(ref.catalogue.tagsFr ?? []).map((m) => m.toLowerCase())]);
+  // Les mots rangés et les étiquettes se comparent traduits, comme `compte` : « nutmeg » d'une fiche et « muscade » d'une autre sont un mot.
+  const fr = (m: string) => motAffiche(m) ?? m.toLowerCase().trim();
+  const tous = new Set([...compte.keys(), ...Object.values(w.mots).flatMap((l) => l.flatMap((r) => r.mots.map(fr))), ...(ref.catalogue.tagsFr ?? []).map(fr)]);
   const hors = [...compte.values()].map((e) => ({ mot: e.mot, fiches: e.fiches.size })).sort((a, b) => b.fiches - a.fiches);
   return { hors, tous };
 }

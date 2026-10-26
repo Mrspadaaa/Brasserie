@@ -113,6 +113,9 @@ describe('controle-capture-fidele : F1 (rien de caché) et F2 (mesure)', () => {
     const avecA = (blocsA: string[], blocs: string[]) => ({ mesures: [{ image: 'b.png', avant: { noeudsHorsRangs: 800, blocs }, apres: { noeudsHorsRangs: 800, blocs }, referenceA: { noeudsHorsRangs: 950, blocs: blocsA } }] });
     expect(mesurePerdante(avecA(['a', 'b'], ['a', 'b']))).toEqual([]);
     expect(mesurePerdante(avecA(['a', 'b'], ['a']))[0]).toMatch(/colonne A absents.*b/);
+    // m4 : le champ s'appelle `reference` (la colonne sans injection, v2).
+    const m4 = { mesures: [{ image: 'a.png', avant: { noeudsHorsRangs: 5, blocs: ['a'] }, apres: { noeudsHorsRangs: 5, blocs: ['a'] }, reference: { blocs: ['a', 'z'] } }] };
+    expect(mesurePerdante(m4)[0]).toMatch(/absents.*z/);
     expect(mesurePerdante({ mesures: [] })).toHaveLength(1);
     expect(mesurePerdante(mesure({ noeudsHorsRangs: null, blocs: [] }, { noeudsHorsRangs: 5, blocs: [] }))[0]).toMatch(/incomplète/);
   });

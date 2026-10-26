@@ -11,6 +11,7 @@ import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { complementsCharges, type ChampComplement } from '../../../domain/hopIndex/v4/complements';
 import { refDe, titreComplement } from '../fiche/complements-ui';
 import { hopRef, nombreFr } from '../parcours/v4';
+import { sourcesDeBarre } from '../commun/sourcesMesures';
 
 export interface ValeurReelle {
   lo: number; hi: number | null;
@@ -71,15 +72,12 @@ function desComplements(cle: string, champ: ChampComplement): Val[] {
   return c.valeursDe(id, champ).filter((v) => !v.horsEnveloppe && (v.min != null || v.max != null)).map((v) => ({ plage: [v.min, v.max] as [number | null, number | null], sources: [refDe(v)] }));
 }
 
-/** α ou β : Beer Maverick (catalogue) et Hopsteiner (fiche reliée) ; ton lot si sa fiche de stock le donne. */
+/** α ou β : Beer Maverick (catalogue), Hopsteiner (fiche reliée) et les compléments (s1, 26.10 : les mêmes sources que les traits
+ * de Substituer, commun/sourcesMesures.ts) ; ton lot si sa fiche de stock le donne. */
 export function acides(cle: string, quoi: 'alpha' | 'beta'): ValeurReelle | null {
   const h = hopRef(cle);
   if (!h) return null;
-  const vals: Val[] = [];
-  const bm = h.catalogue[quoi];
-  if (bm) vals.push({ plage: bm, sources: ['BM'] });
-  const hs = h.catalogue.hs?.[quoi];
-  if (hs) vals.push({ plage: hs, sources: ['HS'] });
+  const vals: Val[] = sourcesDeBarre(cle, quoi).map((s) => ({ plage: s.r, sources: [s.ref] }));
   const e = enveloppe(vals);
   if (!e) return null;
   const lot = quoi === 'alpha' && h.stock?.alpha != null && h.stock.alphaFrom === 'fiche de stock' ? h.stock.alpha : undefined;

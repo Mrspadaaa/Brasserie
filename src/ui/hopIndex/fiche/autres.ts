@@ -8,7 +8,7 @@
 // Un mot que deux fiches disent, l'une hors famille, l'autre rattaché (après traduction), est rattaché : il ne compte qu'une fois.
 // Un houblon absent des fiches du moteur : null (ni chiffre ni liste, jamais 0).
 import { FAMILIES, familyWords, hopRef } from '../parcours/v4';
-import { versFr } from './traduction';
+import { motAffiche } from './traduction';
 
 export interface MotAutres { mot: string; fiches: string[] }
 export interface AutresLu {
@@ -34,7 +34,7 @@ const cleDe = (mot: string) => mot.normalize('NFD').replace(/[\u0300-\u036f]/g, 
 /** Le calcul, pur : les mots des fiches et une fonction de traduction. Testable sans moteur. */
 export function compterAutres(w: MotsFiches, traduire: (mot: string) => string, familles: readonly string[] = FAMILIES): AutresLu | null {
   const rattaches = new Set<string>();
-  for (const f of familles) for (const x of w.mots[f] ?? []) for (const m of x.mots) rattaches.add(cleDe(traduire(m).toLowerCase()));
+  for (const f of familles) for (const x of w.mots[f] ?? []) for (const m of x.mots) { const k = cleDe(traduire(m).toLowerCase()); if (k) rattaches.add(k); }
   const groupes = new Map<string, MotAutres>();
   for (const x of w.sansFamille) {
     const mot = traduire(x.mot).toLowerCase().trim();
@@ -53,7 +53,8 @@ export function compterAutres(w: MotsFiches, traduire: (mot: string) => string, 
 export function autresDe(cle: string): AutresLu | null {
   const h = hopRef(cle);
   if (!h) return null;
-  return compterAutres(familyWords(h.varietyId, h.catalogue), versFr);
+  // D160 : un mot qui n'est pas un arôme (« clean bitterness ») ne compte ni parmi les mots rattachés ni parmi les autres.
+  return compterAutres(familyWords(h.varietyId, h.catalogue), (m) => motAffiche(m) ?? '');
 }
 
 /** La ligne de calcul : « 4 de ses 11 mots n’entrent dans aucune des 12 familles ». */

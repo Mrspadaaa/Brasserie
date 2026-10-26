@@ -17,7 +17,7 @@ import { describeFamilies, familyWords, fiches, hopRef } from '../parcours/v4';
 import { memo } from '../parcours/mesure';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 import { lireRemplacants } from '../substituer/donnees';
-import { bas, tableFr, versFr, versionFiches } from './traduction';
+import { bas, estGenerique, motAffiche, tableFr, versFr, versionFiches } from './traduction';
 
 // Les caches de ce fichier suivent les fiches du moteur courant (traduction.ts : versionFiches).
 let VERSION_LUE = -1;
@@ -74,7 +74,8 @@ export const motsFiche = memo('fiche-mots', (cle: string) => cle, (cle: string):
   const w = familyWords(h.varietyId, c);
   const vus = new Map<string, { famille: FamilyId | null; fiches: string[]; categorie: boolean }>();
   const ajoute = (brut: string, source: string, famille: FamilyId | null) => {
-    const mot = versFr(brut);
+    // D160 : une phrase qui n'est pas un arôme (« clean bitterness ») reste dans la donnée, pas parmi les mots.
+    const mot = motAffiche(brut);
     if (!mot) return;
     const x = vus.get(mot) ?? { famille: null, fiches: [], categorie: false };
     if (famille && !x.famille) x.famille = famille;
@@ -90,7 +91,7 @@ export const motsFiche = memo('fiche-mots', (cle: string) => cle, (cle: string):
     const premier = ordres.some((o) => o[0] === mot);
     const pos = Math.min(99, ...ordres.map((o) => (o.indexOf(mot) < 0 ? 99 : o.indexOf(mot))));
     const nb = chez(mot).size + (chez(mot).has(h.varietyId) ? 0 : 1);
-    const signe = !classe && !GENERIQUES.has(mot) && !NOMS_FAMILLE.has(mot);
+    const signe = !classe && !GENERIQUES.has(mot) && !estGenerique(mot) && !NOMS_FAMILLE.has(mot);
     const score = signe ? n * 100 + (premier ? 40 : 0) + Math.max(0, 10 - pos) * 4 + (nb <= RARE ? 15 : 0) - nb * 0.1 : -1000 + n;
     return { mot, famille: x.famille, fiches: x.fiches, classe, score, signe, pos };
   });
