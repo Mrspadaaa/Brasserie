@@ -152,6 +152,24 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
     - trier et fusionner les données collectées (seconde étape de D154 : toutes les huiles séparées) ;
     - conseil sur les réglages du moteur, éclairé par ia1 ;
     - rejouer et déployer.
+- **26.10, fin d'après-midi.**
+  - Fait et commité :
+    - c3a à c3d : 18 sources collectées ;
+    - d3a : fusion, `complements.json`, règles d'aberrance ;
+    - d3b : Comparer et la fiche lisent les compléments, précharge au repos ;
+    - o1 (D154) et p2 (#179) ;
+    - ia1 et ia2 : IA Flash-Lite, 160 appels, 1,28 CHF ;
+    - e1 suite (D77) ;
+    - m3, les listes dans son vrai écran u4 (D155) ;
+    - r177 (#177 : 197/197, reste l'erreur de worker des tours froids) ;
+    - r180 (D79 : le pack Beer Maverick de nouveau installable).
+  - En vol : le rejeu complet de 6d021cfb (`npm test` entier, prototype, contrôles), puis le déploiement (D80).
+  - À lui : choisir sur la page m3 (`SpBwwn9ecTXzhAF8SEQXmC`) ; la cohumulone sur la page m1.
+  - Petites suites :
+    - `fiches.ts` l. 59, texte « substituts non importés » devenu faux (non affiché) ;
+    - les tours froids de V5.5 à alléger ;
+    - IHPS (PDF sur gov.si) à collecter ;
+    - mécaniser le refus du heredoc (règle d'agent ajoutée, hook à proposer).
 
 ## Règle de la fluidité (25.10, soir)
 - Ses mots : « SI Des étape bloque vraiment sur la fluidité. Tu peux skip trouvé une solution et compromis et me propose ça. Dans le pire des cas ». Une étape qui bloque sur la fluidité ne bloque pas la mission : un compromis mesuré (avant, après) lui est proposé, en DÉCISION À PRENDRE de la voie.
