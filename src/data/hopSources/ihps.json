@@ -1,0 +1,1848 @@
+{
+  "source": {
+    "id": "ihps",
+    "nom": "Inštitut za hmeljarstvo in pivovarstvo Slovenije (IHPS Žalec) et ministère slovène de l’agriculture",
+    "hote": "www.gov.si",
+    "type": "liste variétale officielle (Slovénie)",
+    "conditions": "robots.txt de www.gov.si : Disallow /admin, /resources, /pomoc seulement ; PDF public ; aucune licence lue",
+    "lecturePdf": "tableaux couchés lus en image (pages tournées), valeurs recopiées telles qu’imprimées",
+    "releve": "2026-10-26"
+  },
+  "fiches": [
+    {
+      "nom": "Ahil",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 20,
+      "transcrit": "lecture visuelle",
+      "horsProduction": true,
+      "resistances": {
+        "peronosporaPrimaire": "nizka",
+        "peronosporaSecondaire": "nizka",
+        "pepelovka": "nizka",
+        "verticilijaBlaga": "/",
+        "verticilijaLetalna": "/",
+        "sivaPlesen": "srednja",
+        "cbcvd": "/",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "9,4–11,3",
+          "valeur": null,
+          "min": 9.4,
+          "max": 11.3,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "1,5–1,8",
+          "valeur": null,
+          "min": 1.5,
+          "max": 1.8,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1200–2000",
+          "valeur": null,
+          "min": 1200,
+          "max": 2000,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 20
+        }
+      },
+      "listes": {
+        "classification": [
+          "grenčica (amérisant)"
+        ],
+        "registre": [
+          "HUL002"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "31. 12. 1971"
+        ],
+        "maturite": [
+          "srednje pozna",
+          "début 25. 8."
+        ],
+        "periodeTaille": [
+          "1. 4. - 10. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Apolon",
+      "alias": [],
+      "varietyId": "beermaverick-apolon",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 20,
+      "transcrit": "lecture visuelle",
+      "horsProduction": true,
+      "resistances": {
+        "peronosporaPrimaire": "srednja",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "nizka",
+        "verticilijaBlaga": "/",
+        "verticilijaLetalna": "/",
+        "sivaPlesen": "srednja",
+        "cbcvd": "/",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "9,0–11,0",
+          "valeur": null,
+          "min": 9,
+          "max": 11,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "0,8–1,2",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.2,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1200–2000",
+          "valeur": null,
+          "min": 1200,
+          "max": 2000,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 20
+        }
+      },
+      "listes": {
+        "classification": [
+          "grenčica (amérisant)"
+        ],
+        "registre": [
+          "HUL003"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "31. 12. 1971"
+        ],
+        "maturite": [
+          "srednje pozna",
+          "début 25. 8. - 5. 9."
+        ],
+        "periodeTaille": [
+          "1. 4. - 10. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Atlas",
+      "alias": [],
+      "varietyId": "beermaverick-atlas",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 20,
+      "transcrit": "lecture visuelle",
+      "resistances": {
+        "peronosporaPrimaire": "nizka",
+        "peronosporaSecondaire": "nizka",
+        "pepelovka": "srednja",
+        "verticilijaBlaga": "visoka",
+        "verticilijaLetalna": "srednja",
+        "sivaPlesen": "visoka",
+        "cbcvd": "nizka",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "9,3–11,0",
+          "valeur": null,
+          "min": 9.3,
+          "max": 11,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "0,9–3,0",
+          "valeur": null,
+          "min": 0.9,
+          "max": 3,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1300–2000",
+          "valeur": null,
+          "min": 1300,
+          "max": 2000,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 20
+        }
+      },
+      "listes": {
+        "classification": [
+          "grenčica (amérisant)"
+        ],
+        "registre": [
+          "HUL004"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "31. 12. 1971"
+        ],
+        "maturite": [
+          "srednje pozna",
+          "début 1. 9. - 6. 9."
+        ],
+        "periodeTaille": [
+          "21. 3. - 10. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Aurora",
+      "alias": [],
+      "varietyId": "beermaverick-aurora",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 20,
+      "transcrit": "lecture visuelle",
+      "resistances": {
+        "peronosporaPrimaire": "srednja",
+        "peronosporaSecondaire": "visoka",
+        "pepelovka": "visoka",
+        "verticilijaBlaga": "srednja",
+        "verticilijaLetalna": "nizka",
+        "sivaPlesen": "visoka",
+        "cbcvd": "nizka",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "7,2–12,6",
+          "valeur": null,
+          "min": 7.2,
+          "max": 12.6,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "0,9–1,6",
+          "valeur": null,
+          "min": 0.9,
+          "max": 1.6,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1600–3000",
+          "valeur": null,
+          "min": 1600,
+          "max": 3000,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 20
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL005"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "31. 12. 1971"
+        ],
+        "maturite": [
+          "srednje pozna",
+          "début 20. 8. - 29. 8.",
+          "durée 20 dni"
+        ],
+        "periodeTaille": [
+          "25. 3. - 5. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Blisk",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 20,
+      "transcrit": "lecture visuelle",
+      "horsProduction": true,
+      "resistances": {
+        "peronosporaPrimaire": "nizka",
+        "peronosporaSecondaire": "nizka",
+        "pepelovka": "visoka",
+        "verticilijaBlaga": "/",
+        "verticilijaLetalna": "/",
+        "sivaPlesen": "nizka",
+        "cbcvd": "/",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "5,0–7,0",
+          "valeur": null,
+          "min": 5,
+          "max": 7,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "0,4–3,4",
+          "valeur": null,
+          "min": 0.4,
+          "max": 3.4,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1500–2000",
+          "valeur": null,
+          "min": 1500,
+          "max": 2000,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 20
+        }
+      },
+      "listes": {
+        "classification": [
+          "grenčica (amérisant)"
+        ],
+        "registre": [
+          "HUL006"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "31. 12. 1979"
+        ],
+        "maturite": [
+          "pozna",
+          "début 1. 9. - 6. 9."
+        ],
+        "periodeTaille": [
+          "25. 3. - 5. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Bobek",
+      "alias": [],
+      "varietyId": "beermaverick-bobek",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 20,
+      "transcrit": "lecture visuelle",
+      "resistances": {
+        "peronosporaPrimaire": "nizka",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "srednja",
+        "verticilijaBlaga": "srednja",
+        "verticilijaLetalna": "nizka",
+        "sivaPlesen": "srednja",
+        "cbcvd": "nizka",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "3,5–7,8",
+          "valeur": null,
+          "min": 3.5,
+          "max": 7.8,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "0,7–4,0",
+          "valeur": null,
+          "min": 0.7,
+          "max": 4,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1300–2400",
+          "valeur": null,
+          "min": 1300,
+          "max": 2400,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 20
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL007"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "31. 12. 1979"
+        ],
+        "maturite": [
+          "srednje pozna",
+          "début 28. 8. - 2. 9."
+        ],
+        "periodeTaille": [
+          "1. 4. - 10. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Buket",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 20,
+      "transcrit": "lecture visuelle",
+      "horsProduction": true,
+      "resistances": {
+        "peronosporaPrimaire": "srednja",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "srednja",
+        "verticilijaBlaga": "srednja",
+        "verticilijaLetalna": "nizka",
+        "sivaPlesen": "srednja",
+        "cbcvd": "/",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "6,4–10,1",
+          "valeur": null,
+          "min": 6.4,
+          "max": 10.1,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "1,2–4,2",
+          "valeur": null,
+          "min": 1.2,
+          "max": 4.2,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1300–2800",
+          "valeur": null,
+          "min": 1300,
+          "max": 2800,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 20
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL008"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "31. 12. 1979"
+        ],
+        "maturite": [
+          "srednje pozna",
+          "début 25. 8. - 5. 9."
+        ],
+        "periodeTaille": [
+          "5. 4. - 15. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Cekin",
+      "alias": [],
+      "varietyId": "beermaverick-cekin",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 20,
+      "transcrit": "lecture visuelle",
+      "horsProduction": true,
+      "resistances": {
+        "peronosporaPrimaire": "srednja",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "srednja",
+        "verticilijaBlaga": "/",
+        "verticilijaLetalna": "/",
+        "sivaPlesen": "srednja",
+        "cbcvd": "/",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "4,0–7,1",
+          "valeur": null,
+          "min": 4,
+          "max": 7.1,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "0,4–2,3",
+          "valeur": null,
+          "min": 0.4,
+          "max": 2.3,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1500–2800",
+          "valeur": null,
+          "min": 1500,
+          "max": 2800,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 20
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL009"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "31. 12. 1990"
+        ],
+        "maturite": [
+          "pozna",
+          "début 1. 9. - 12. 9."
+        ],
+        "periodeTaille": [
+          "1. 4. - 10. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Celeia",
+      "alias": [],
+      "varietyId": "beermaverick-celeia",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 20,
+      "transcrit": "lecture visuelle",
+      "resistances": {
+        "peronosporaPrimaire": "srednja",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "srednja",
+        "verticilijaBlaga": "nizka",
+        "verticilijaLetalna": "nizka",
+        "sivaPlesen": "srednja",
+        "cbcvd": "nizka",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "3,0–8,7",
+          "valeur": null,
+          "min": 3,
+          "max": 8.7,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "0,6–3,6",
+          "valeur": null,
+          "min": 0.6,
+          "max": 3.6,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1100–3000",
+          "valeur": null,
+          "min": 1100,
+          "max": 3000,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 20
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL010"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "31. 12. 1990"
+        ],
+        "maturite": [
+          "pozna",
+          "début 1. 9. - 7. 9.",
+          "durée 10 dni"
+        ],
+        "periodeTaille": [
+          "1. 4. - 10. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Cerera",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 20,
+      "transcrit": "lecture visuelle",
+      "resistances": {
+        "peronosporaPrimaire": "srednja",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "srednja",
+        "verticilijaBlaga": "nizka",
+        "verticilijaLetalna": "nizka",
+        "sivaPlesen": "srednja",
+        "cbcvd": "nizka",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "3,4–7,0",
+          "valeur": null,
+          "min": 3.4,
+          "max": 7,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "1,3–2,8",
+          "valeur": null,
+          "min": 1.3,
+          "max": 2.8,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1800–3000",
+          "valeur": null,
+          "min": 1800,
+          "max": 3000,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 20
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL011"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "31. 12. 1990"
+        ],
+        "maturite": [
+          "pozna",
+          "début 6. 9. - 15. 9."
+        ],
+        "periodeTaille": [
+          "1. 4. - 10. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Cicero",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 20,
+      "transcrit": "lecture visuelle",
+      "horsProduction": true,
+      "resistances": {
+        "peronosporaPrimaire": "srednja",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "srednja",
+        "verticilijaBlaga": "srednja",
+        "verticilijaLetalna": "nizka",
+        "sivaPlesen": "srednja",
+        "cbcvd": "/",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "6,0–9,5",
+          "valeur": null,
+          "min": 6,
+          "max": 9.5,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "0,9–2,3",
+          "valeur": null,
+          "min": 0.9,
+          "max": 2.3,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1700–2800",
+          "valeur": null,
+          "min": 1700,
+          "max": 2800,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 20
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL012"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "31. 12. 1990"
+        ],
+        "maturite": [
+          "pozna",
+          "début 4. 9. - 12. 9."
+        ],
+        "periodeTaille": [
+          "1. 4. - 5. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Dana",
+      "alias": [],
+      "varietyId": "beermaverick-dana",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 20,
+      "transcrit": "lecture visuelle",
+      "resistances": {
+        "peronosporaPrimaire": "nizka",
+        "peronosporaSecondaire": "visoka",
+        "pepelovka": "nizka",
+        "verticilijaBlaga": "srednja",
+        "verticilijaLetalna": "nizka",
+        "sivaPlesen": "nizka",
+        "cbcvd": "visoka (a)",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "12,5–19,3",
+          "valeur": null,
+          "min": 12.5,
+          "max": 19.3,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "3,1–4,6",
+          "valeur": null,
+          "min": 3.1,
+          "max": 4.6,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1800–2200",
+          "valeur": null,
+          "min": 1800,
+          "max": 2200,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 20
+        }
+      },
+      "listes": {
+        "classification": [
+          "grenčica (amérisant)"
+        ],
+        "registre": [
+          "HUL021"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "2. 11. 2009"
+        ],
+        "maturite": [
+          "srednje pozna",
+          "début 28. 8. - 5. 9."
+        ],
+        "periodeTaille": [
+          "10. 4. - 20. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Hallertauer Magnum",
+      "alias": [],
+      "varietyId": "beermaverick-magnum-gr",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 20,
+      "transcrit": "lecture visuelle",
+      "resistances": {
+        "peronosporaPrimaire": "srednja",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "nizka",
+        "verticilijaBlaga": "visoka",
+        "verticilijaLetalna": "visoka",
+        "sivaPlesen": "nizka",
+        "cbcvd": "srednja (a)",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "10,9–15,2",
+          "valeur": null,
+          "min": 10.9,
+          "max": 15.2,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "1,8–3,8",
+          "valeur": null,
+          "min": 1.8,
+          "max": 3.8,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 20
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1500–2000",
+          "valeur": null,
+          "min": 1500,
+          "max": 2000,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 20
+        }
+      },
+      "listes": {
+        "classification": [
+          "grenčica (amérisant)"
+        ],
+        "registre": [
+          "HUL013"
+        ],
+        "obtenteur": [
+          "70 : Gesellschaft für Hopfenforschung (Hüll, Allemagne)"
+        ],
+        "dateInscription": [
+          "3. 9. 2004"
+        ],
+        "maturite": [
+          "pozna",
+          "début 1. 9. - 5. 9."
+        ],
+        "periodeTaille": [
+          "15. 4. - 25. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Hallertauer Taurus",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 21,
+      "transcrit": "lecture visuelle",
+      "horsProduction": true,
+      "resistances": {
+        "peronosporaPrimaire": "srednja",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "nizka",
+        "verticilijaBlaga": "srednja",
+        "verticilijaLetalna": "nizka",
+        "sivaPlesen": "nizka",
+        "cbcvd": "nizka",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "13,6–16,5",
+          "valeur": null,
+          "min": 13.6,
+          "max": 16.5,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "1,4–1,8",
+          "valeur": null,
+          "min": 1.4,
+          "max": 1.8,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1500–2500",
+          "valeur": null,
+          "min": 1500,
+          "max": 2500,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 21
+        }
+      },
+      "listes": {
+        "classification": [
+          "grenčica (amérisant)"
+        ],
+        "registre": [
+          "HUL020"
+        ],
+        "obtenteur": [
+          "70 : Gesellschaft für Hopfenforschung (Hüll, Allemagne)"
+        ],
+        "dateInscription": [
+          "3. 9. 2004"
+        ],
+        "maturite": [
+          "pozna",
+          "début 5. 9. - 15. 9."
+        ],
+        "periodeTaille": [
+          "15. 4. - 25. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Savinjski golding",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 21,
+      "transcrit": "lecture visuelle",
+      "resistances": {
+        "peronosporaPrimaire": "nizka",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "srednja",
+        "verticilijaBlaga": "srednja",
+        "verticilijaLetalna": "nizka",
+        "sivaPlesen": "visoka",
+        "cbcvd": "nizka",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "2,8–6,1",
+          "valeur": null,
+          "min": 2.8,
+          "max": 6.1,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "0,3–1,7",
+          "valeur": null,
+          "min": 0.3,
+          "max": 1.7,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1200–2200",
+          "valeur": null,
+          "min": 1200,
+          "max": 2200,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 21
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL001"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "31. 12. 1968"
+        ],
+        "maturite": [
+          "srednje zgodnja",
+          "début 10. 9. - 20. 8.",
+          "durée 7 dni"
+        ],
+        "periodeTaille": [
+          "5. 4. - 15. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Styrian Cardinal",
+      "alias": [],
+      "varietyId": "beermaverick-cardinal",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 21,
+      "transcrit": "lecture visuelle",
+      "resistances": {
+        "peronosporaPrimaire": "srednja",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "nizka",
+        "verticilijaBlaga": "srednja",
+        "verticilijaLetalna": "nizka",
+        "sivaPlesen": "visoka",
+        "cbcvd": "visoka (a)",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "10,0–15,0",
+          "valeur": null,
+          "min": 10,
+          "max": 15,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "3,0–4,0",
+          "valeur": null,
+          "min": 3,
+          "max": 4,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "2000–2800",
+          "valeur": null,
+          "min": 2000,
+          "max": 2800,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 21
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL034"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "14. 4. 2016"
+        ],
+        "maturite": [
+          "srednje pozna",
+          "début 28. 8. - 5. 9.",
+          "durée 10 dni"
+        ],
+        "periodeTaille": [
+          "1. 4. - 5. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Styrian Dragon",
+      "alias": [],
+      "varietyId": "beermaverick-styrian-dragon",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 21,
+      "transcrit": "lecture visuelle",
+      "resistances": {
+        "peronosporaPrimaire": "srednja",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "visoka",
+        "verticilijaBlaga": "visoka",
+        "verticilijaLetalna": "visoka",
+        "sivaPlesen": "visoka",
+        "cbcvd": "nizka",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "6,0–11,0",
+          "valeur": null,
+          "min": 6,
+          "max": 11,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "1,5–2,1",
+          "valeur": null,
+          "min": 1.5,
+          "max": 2.1,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1500–2400",
+          "valeur": null,
+          "min": 1500,
+          "max": 2400,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 21
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL040"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "19. 1. 2018"
+        ],
+        "maturite": [
+          "srednje zgodnja",
+          "début 20. 8. - 25. 8."
+        ],
+        "periodeTaille": [
+          "5. 4. - 15. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Styrian Eagle",
+      "alias": [],
+      "varietyId": "beermaverick-styrian-eagle",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 21,
+      "transcrit": "lecture visuelle",
+      "periodeTailleIndicative": true,
+      "resistances": {
+        "peronosporaPrimaire": "visoka",
+        "peronosporaSecondaire": "visoka",
+        "pepelovka": "srednja",
+        "verticilijaBlaga": "visoka",
+        "verticilijaLetalna": "visoka",
+        "sivaPlesen": "srednja",
+        "cbcvd": "srednja (a)",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "12,5–17,5",
+          "valeur": null,
+          "min": 12.5,
+          "max": 17.5,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "2,5–3,9",
+          "valeur": null,
+          "min": 2.5,
+          "max": 3.9,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1500–2400",
+          "valeur": null,
+          "min": 1500,
+          "max": 2400,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 21
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL030"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "5. 5. 2015"
+        ],
+        "maturite": [
+          "pozna",
+          "début 1. 9. - 5. 9.",
+          "durée 7 dni"
+        ],
+        "periodeTaille": [
+          "5. 4. - 10. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Styrian Eureka",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 21,
+      "transcrit": "lecture visuelle",
+      "periodeTailleIndicative": true,
+      "resistances": {
+        "peronosporaPrimaire": "nizka",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "nizka",
+        "verticilijaBlaga": "visoka",
+        "verticilijaLetalna": "srednja",
+        "sivaPlesen": "visoka",
+        "cbcvd": "nizka",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "11,0–17,0",
+          "valeur": null,
+          "min": 11,
+          "max": 17,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "2,5–4,0",
+          "valeur": null,
+          "min": 2.5,
+          "max": 4,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1500–2400",
+          "valeur": null,
+          "min": 1500,
+          "max": 2400,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 21
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL027"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "14. 5.2013"
+        ],
+        "maturite": [
+          "pozna",
+          "début 1. 9. - 5. 9."
+        ],
+        "periodeTaille": [
+          "5. 4. - 10. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Styrian Fox",
+      "alias": [],
+      "varietyId": "beermaverick-styrian-fox",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 21,
+      "transcrit": "lecture visuelle",
+      "periodeTailleIndicative": true,
+      "resistances": {
+        "peronosporaPrimaire": "nizka",
+        "peronosporaSecondaire": "nizka",
+        "pepelovka": "srednja",
+        "verticilijaBlaga": "srednja",
+        "verticilijaLetalna": "nizka",
+        "sivaPlesen": "visoka",
+        "cbcvd": "nizka",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "6,0–12,0",
+          "valeur": null,
+          "min": 6,
+          "max": 12,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "0,7–1,7",
+          "valeur": null,
+          "min": 0.7,
+          "max": 1.7,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "2000–2500",
+          "valeur": null,
+          "min": 2000,
+          "max": 2500,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 21
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL039"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "18. 1. 2018"
+        ],
+        "maturite": [
+          "srednje pozna",
+          "début 28. 8. - 2. 9."
+        ],
+        "periodeTaille": [
+          "25. 3 - 5. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Styrian gold",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 21,
+      "transcrit": "lecture visuelle",
+      "resistances": {
+        "peronosporaPrimaire": "nizka",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "visoka",
+        "verticilijaBlaga": "visoka",
+        "verticilijaLetalna": "srednja",
+        "sivaPlesen": "srednja",
+        "cbcvd": "nizka",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "3,5–6,5",
+          "valeur": null,
+          "min": 3.5,
+          "max": 6.5,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "1,3–2,3",
+          "valeur": null,
+          "min": 1.3,
+          "max": 2.3,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1600–2800",
+          "valeur": null,
+          "min": 1600,
+          "max": 2800,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 21
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL029"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "27. 2. 2012"
+        ],
+        "maturite": [
+          "srednje pozna",
+          "début 20. 8. - 29. 8."
+        ],
+        "periodeTaille": [
+          "5. 4. - 10. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Styrian Kolibri",
+      "alias": [],
+      "varietyId": "beermaverick-styrian-kolibri",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 21,
+      "transcrit": "lecture visuelle",
+      "periodeTailleIndicative": true,
+      "resistances": {
+        "peronosporaPrimaire": "nizka",
+        "peronosporaSecondaire": "nizka",
+        "pepelovka": "nizka",
+        "verticilijaBlaga": "srednja",
+        "verticilijaLetalna": "nizka",
+        "sivaPlesen": "visoka",
+        "cbcvd": "nizka",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "4,0–6,0",
+          "valeur": null,
+          "min": 4,
+          "max": 6,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "1,0–2,0",
+          "valeur": null,
+          "min": 1,
+          "max": 2,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "2000–2500",
+          "valeur": null,
+          "min": 2000,
+          "max": 2500,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 21
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL036"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "1. 2. 2017"
+        ],
+        "maturite": [
+          "srednje pozna",
+          "début 28. 8. - 2. 9.",
+          "durée 10 dni"
+        ],
+        "periodeTaille": [
+          "1. 4. - 5. 4."
+        ]
+      }
+    },
+    {
+      "nom": "Styrian Wolf",
+      "alias": [],
+      "varietyId": "beermaverick-styrian-wolf",
+      "url": "https://www.gov.si/assets/ministrstva/MKGP/PODROCJA/KMETIJSTVO/RASTLINSKA-PRIDELAVA/Hmeljarstvo/210602-Opisna-sortna-lista-za-hmelj-2021/Opisna-sortna-lista-za-hmelj-2021.pdf",
+      "releve": "2026-10-26",
+      "publie": "2021",
+      "page": "tableau 7.1",
+      "pageImprimee": 21,
+      "transcrit": "lecture visuelle",
+      "periodeTailleIndicative": true,
+      "resistances": {
+        "peronosporaPrimaire": "nizka",
+        "peronosporaSecondaire": "srednja",
+        "pepelovka": "visoka",
+        "verticilijaBlaga": "srednja",
+        "verticilijaLetalna": "nizka",
+        "sivaPlesen": "visoka",
+        "cbcvd": "visoka (b)",
+        "page": 22
+      },
+      "sha256Pdf": "01e0883c35505ddf54b6c060b01f450c19f3c6ae962706236d6ff024c35ca506",
+      "pageIhps": "https://www.ihps.si/opisna-sortna-lista-za-hmelj/",
+      "champs": {
+        "alpha": {
+          "champ": "Alfa-kisline (% v SS)",
+          "brut": "13,5–18,5",
+          "valeur": null,
+          "min": 13.5,
+          "max": 18.5,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "huileTotale": {
+          "champ": "Eterično olje (% v SS)",
+          "brut": "3,0–4,5",
+          "valeur": null,
+          "min": 3,
+          "max": 4.5,
+          "unite": "%",
+          "base": "Matière sèche (SS, ou à 11 % d’humidité)",
+          "transcrit": "lecture visuelle",
+          "page": 21
+        },
+        "rendement": {
+          "champ": "Pridelek (kg/ha)",
+          "brut": "1800–3200",
+          "valeur": null,
+          "min": 1800,
+          "max": 3200,
+          "unite": "kg/ha",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 21
+        }
+      },
+      "listes": {
+        "classification": [
+          "aroma (aromatique)"
+        ],
+        "registre": [
+          "HUL035"
+        ],
+        "obtenteur": [
+          "120 : Institut za hmeljarstvo in pivovarstvo Slovenije (Žalec)"
+        ],
+        "dateInscription": [
+          "14. 4. 2016"
+        ],
+        "maturite": [
+          "pozna",
+          "début 30. 8. - 4. 9."
+        ],
+        "periodeTaille": [
+          "5. 4. - 10. 4."
+        ]
+      }
+    }
+  ]
+}
