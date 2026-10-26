@@ -698,3 +698,10 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   100 − 3 en repli ; une ligne Farnésène serait un ajout visuel, à lui montrer en mini maquette ;
   (3) B5 tient à 148,3 ko sur 150 : à la prochaine extension, le bloc `bm` sortira vers un fichier chargé à l'ouverture de Sources.
   Linalol (79 % manquant) et géraniol (99 %) restent à combler par des fiches fournisseurs, collecte à son accord.
+- D76 (26.10, nuit) : redéploiement de l'hébergement seul depuis la copie propre, au commit 1ea6ddd1 : le catalogue complété
+  (D75) et sa feuille Sources ; la feuille Valeurs de Comparer sans débordement à la ligne IBU, sans mot coupé, avec les valeurs
+  du catalogue au lieu d'« inconnu » (Mosaic), « Autres » publié. Rejeu Haiku dans la copie : types, 227 tests, audit des champs,
+  COMPARER VALEURS OK (390 et 1280), FONCTIONS-RAIL 37/37, RADAR-BASE, ETATS 139/139, build et `check-no-dev-auth` verts ;
+  B5 148,3 ko tenu (B1 et B2 au-dessus depuis avant). `.env.local` de la copie (émulateurs) est sans effet en production : la
+  garde est `import.meta.env.DEV`. Vu ensuite par le pilote et rendu à la voie c2 : l'huile de Mosaic encore « inconnu »,
+  l'encadré ⇄ à vérifier, et l'en-tête « Nelson Sauvin Citra » collé, une régression de la colonne des noms.
