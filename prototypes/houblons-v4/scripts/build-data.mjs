@@ -13,11 +13,11 @@ const here = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const repo = path.resolve(here, '../..');
 const read = (p) => JSON.parse(fs.readFileSync(path.join(repo, p), 'utf8'));
 const FIXTURE = 'tests/fixtures/production/houblons-2026-10-17.json';
-const bmPack = read('src/data/hopBeerMaverickBootstrap.json');
-const bm = bmPack.hopVarieties;
+const bm = read('src/data/hopBeerMaverickBootstrap.json').hopVarieties;
 // Dossier étendu de chaque page Beer Maverick (cohumulone, farnésène, autres huiles, usage, styles, substituts, accords, profil d'arôme),
 // extrait du cache par scripts/scrape-hop-community.mjs --offline. Une valeur absente de la page y est null, jamais 0.
-const bmFiches = new Map((bmPack.hopBeerMaverickFiches || []).map((f) => [f.id, f]));
+// (fichier à part : le pack Beer Maverick est installé par l'app et ne porte que ses collections.)
+const bmFiches = new Map(read('src/data/hopBeerMaverickFiches.json').map((f) => [f.id, f]));
 const plage = (x) => (x ? [x.min, x.max] : null);
 const hs = read('src/data/hopManufacturerBootstrap.json').hopVarieties;
 const bjcp = read('src/data/brewingStylesBootstrap.json').find((g) => g.id === 'styles-bjcp-2021');

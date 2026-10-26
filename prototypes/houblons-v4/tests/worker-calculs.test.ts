@@ -15,7 +15,8 @@ import { recetteDegustee, H } from '../parcours/src/donnees/cas';
 const empreinte = (x: unknown) => createHash('sha1').update(JSON.stringify(x)).digest('hex').slice(0, 12);
 const recette = recetteDegustee();
 const DIR = { floral: 1, resin: -1 } as const;
-const EMPREINTES = { substitutes: '9ef77aa53ecc', suggerer: '85aab6303283', proposer: 'b42c299e6ebf', remplacants: '81efdc544613' };
+// remplacants : 81efdc544613 → d646d7130b2f au commit 883e1c9b (mots sans famille distincts) : voir client-async.test.ts.
+const EMPREINTES = { substitutes: '9ef77aa53ecc', suggerer: '85aab6303283', proposer: 'b42c299e6ebf', remplacants: 'd646d7130b2f' };
 const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recette as never, style: adapter.style(recette.styleCode), stockFirst: true, limit: 8 });
 
 /** Le worker joué dans le même processus : messages clonés dans les deux sens, une tâche plus tard. */

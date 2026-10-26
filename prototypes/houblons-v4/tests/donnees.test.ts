@@ -193,8 +193,13 @@ describe('Radars en intensité absolue (D24) et fiches houblons', () => {
     expect(f.alpha.divergence).toBe('recouvrantes');
     expect(f.alpha.retenu).toMatchObject({ value: 13, from: 'fiche de stock' });
     expect(f.huiles.composants.myrcene).toMatchObject({ min: 48, max: 59, unite: '% de l’huile' });
-    expect(f.huiles.composants.farnesene).toBeNull();
-    expect(f.huiles.composants.farneseneRaison).toMatch(/non importé/);
+    // d2 (#180) : le farnésène de Nugget est publié par sa page Beer Maverick (« 0-1% ») et importé ; avant d2 il était null « non importé ».
+    expect(f.huiles.composants.farnesene).toMatchObject({ min: 0, max: 1, unite: '% de l’huile' });
+    expect(f.huiles.composants.farneseneRaison).toBeUndefined();
+    // Un houblon dont la page ne publie pas de farnésène (« Unknown » : 69 sur 318) reste null avec sa raison, jamais 0.
+    const sans = hopSheet('beermaverick-akoya', ctx);
+    expect(sans.huiles.composants.farnesene).toBeNull();
+    expect(sans.huiles.composants.farneseneRaison).toMatch(/ne publie pas de farnésène/);
     expect(f.substituts).toBeNull();
     expect(f.dansRecette.map((d) => [d.scenario, d.grams])).toEqual([['S1', 46], ['S5', 42.5]]);
     expect(f.dansRecette[0].ibu).toBeCloseTo(59.7, 1);

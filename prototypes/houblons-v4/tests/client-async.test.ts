@@ -15,7 +15,9 @@ const recette = recetteDegustee();
 const DIR = { floral: 1, resin: -1 } as const;
 const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recette as never, style: adapter.style(recette.styleCode), stockFirst: true, limit: 8 });
 // Empreintes de RESULTAT.md de t5-causes (banc ×1, après la fabrique) : la même forme que le banc les calcule.
-const EMPREINTES = { substitutes: '9ef77aa53ecc', suggerer: '85aab6303283', proposer: 'b42c299e6ebf', remplacants: '81efdc544613' };
+// remplacants : 81efdc544613 → d646d7130b2f au commit 883e1c9b (« autres n % » : mots sans famille distincts après traduction) ;
+// seuls partSansFamille et motsSansFamille de deux houblons changent, aucun score ni rang (voie r180-pack, RESULTAT.md).
+const EMPREINTES = { substitutes: '9ef77aa53ecc', suggerer: '85aab6303283', proposer: 'b42c299e6ebf', remplacants: 'd646d7130b2f' };
 const forme = {
   substitutes: (sr: ReturnType<typeof CALCULS.substitutes>) => empreinte(sr.remplacants.map((r) => [r.key, r.rank, r.score, r.dose, r.stock, r.raison, r.amertumeDeconseillee])),
   suggerer: (c: ReturnType<typeof CALCULS.suggerer>) => empreinte(c.map((x) => [x.cle, x.visee, x.besoin])),

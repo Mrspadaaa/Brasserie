@@ -2,6 +2,7 @@
 // jamais 0 ; chaque valeur a sa source (page, date de modification publiée, date de relevé) ; les liens entre houblons existent.
 import { describe, expect, it } from 'vitest';
 import bootstrap from '../../../src/data/hopBeerMaverickBootstrap.json';
+import fichesBM from '../../../src/data/hopBeerMaverickFiches.json';
 import { BM_AXES, BM_CLASSES_HSI, CATALOGUE } from '../../../src/domain/hopIndex/v4/data';
 
 type Plage = [number, number] | null | undefined;
@@ -113,8 +114,8 @@ describe('alias', () => {
 });
 
 describe('bootstrap : chaque valeur porte sa source et son reçu', () => {
-  const fiches = (bootstrap as unknown as { hopBeerMaverickFiches: { id: string; source: { reference: string; kind: string; author: string }; retrievedAt: string; sha256: string; modifiedAt: string | null;
-    cohumulone: { min: number; max: number; raw: string } | null; farnesene: { min: number; max: number; raw: string } | null }[] }).hopBeerMaverickFiches;
+  const fiches = fichesBM as unknown as { id: string; source: { reference: string; kind: string; author: string }; retrievedAt: string; sha256: string; modifiedAt: string | null;
+    cohumulone: { min: number; max: number; raw: string } | null; farnesene: { min: number; max: number; raw: string } | null }[];
   it('318 dossiers, un par variété, même ordre d\'identifiants que hopVarieties', () => {
     expect(fiches.map((f) => f.id)).toEqual((bootstrap as unknown as { hopVarieties: { id: string }[] }).hopVarieties.map((v) => v.id));
   });

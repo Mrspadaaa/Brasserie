@@ -134,12 +134,14 @@ export async function main() {
   // Hors ligne, le cache est en lecture seule : les fichiers de travail vont dans le dossier temporaire.
   const sortie = offlineMode() ? resolve(tmpdir(), 'affinee-hop-scrape') : sourceCache;
   await mkdir(sortie, { recursive: true });
-  const save = async (name, rows, extra) => {
+  const ecrire = async (name, contenu, nombre) => {
     // A sampling run must never replace a complete checked catalogue.
     const target = Number.isFinite(limit) ? resolve(sortie, `${name}-sample.json`) : resolve('src/data', name);
-    await writeFile(target, JSON.stringify(pack(rows, extra), null, 2) + '\n');
-    manifest.results[name] = { records: rows.length, file: target };
+    await writeFile(target, JSON.stringify(contenu, null, 2) + '\n');
+    manifest.results[name] = { records: nombre, file: target };
   };
+  // Un pack est installé tel quel par l'app (une collection par clé, validée par backupCore) : il ne porte que ses collections.
+  const save = (name, rows) => ecrire(name, pack(rows), rows.length);
   if (only === 'all' || only === 'git') {
     const repos = [
       { owner: 'kasperg3/HopDatabase', revision: 'cf9aad4b59fe7c30441550ef703e095f8b1116ab', file: 'website/public/data/hops.json', output: 'hopDatabaseBootstrap.json', prefix: 'hopdb' },
@@ -222,7 +224,9 @@ export async function main() {
     for (const r of records) for (const n of [r.name, ...r.aliases]) { const k = pliage(n); if (k && !(parNom.get(k) ?? []).includes(r.id)) parNom.set(k, [...(parNom.get(k) ?? []), r.id]); }
     const fiches = pages.map(p => extraireFicheBM(load(p.html), p, { ids, parNom })).sort((a, b) => a.id.localeCompare(b.id));
     for (const f of fiches) for (const i of f.illisibles ?? []) manifest.excluded.push({ reference: f.source.reference, field: i.champ, raw: i.brut, reason: 'Valeur Beer Maverick non lisible : laissée inconnue.' });
-    await save('hopBeerMaverickBootstrap.json', records.sort((a, b) => a.id.localeCompare(b.id)), { hopBeerMaverickFiches: fiches });
+    await save('hopBeerMaverickBootstrap.json', records.sort((a, b) => a.id.localeCompare(b.id)));
+    // Les dossiers étendus ne sont pas un pack : fichier à part, jamais envoyé à l'installation (r180).
+    await ecrire('hopBeerMaverickFiches.json', fiches, fiches.length);
     manifest.results.beerMaverick = { discovered: urls.length, extracted: records.length, errors };
   }
   await writeFile(resolve(sortie, 'community-manifest.json'), JSON.stringify(manifest, null, 2));
