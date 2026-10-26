@@ -969,3 +969,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - **P6, les témoins.**
 
   P4 (places et formes) et P5 B et C (dose et moment par houblon) seront montrés en mini maquettes.
+- D108 (pilote, 26.10, f4 puis f6) :
+  - **Préchauffe.** `proposerRapide` se préchauffe au repos, dès l'étape Houblons. Avant, le premier calcul à froid prenait 409 ms,
+    contre 206 sur HEAD ; le toucher est déjà passé à 201 ms, contre 220.
+  - **Place réservée.** Le groupe « Remplacer », calculé en différé, a sa place réservée : 0 px de saut.
+  - **Banc.** Le banc de fluidité mesure `proposerRapide`, c'est-à-dire le premier affichage.
+  - **B5.** Il mesure 163,0 ko pour 162. On cherche d'abord ce qui a grossi ; le brasseur décide.
