@@ -26,7 +26,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, l5b : barres reprises sans les pistes. 23.10 : maquette hors de ses choix (D105, D106) ; « la maquette de base » lu v4.10 au lieu de x3b (D107). 24.10 nuit : « leg3-v2e · Les spéciaux repliés », nom de vignette pris pour consigne (D140). 24-25.10 : Dryhopper et Comparer bâtis sur la mini maquette, pas l'écran jouable (D141).
+- Erreur : 19.10, l5b : barres reprises sans les pistes. 23.10 : maquette hors de ses choix (D105 à D107). 24.10 : un nom de vignette pris pour consigne (D140). 24-25.10 : Dryhopper et Comparer bâtis sur la mini maquette, pas l'écran jouable (D141).
 - Cause : « X de la variante Y » lu au sens étroit.
 - Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette cité (`data-nom`) n'est pas une consigne. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires.
 - Rôles : pilote, auteur, concepteur
@@ -56,7 +56,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L10 — Un outil = un seul facteur libre, et la carte avant les variantes
-- Erreur : 20.10, 41 variantes v0 au lot 21 sans carte des outils. 22.10, le conseil a montré que « Quand ? » (y1b) et « Quelle dose ? » (y3) laissaient libres houblon, dose et levure.
+- Erreur : 20.10, 41 variantes v0 au lot 21 sans carte des outils. 22.10, le conseil a montré que « Quand ? » et « Quelle dose ? » laissaient libres houblon, dose et levure.
 - Cause : chaque écran faisait varier plusieurs facteurs. Un titre en forme de question ne suffisait pas à l'empêcher.
 - Faire : définir chaque outil par le seul facteur qui y varie, afficher les autres sur une ligne de contexte, et lister ses éléments admis. Montrer la carte en fil de fer avant tout lot. Voir [[outils-houblons]] et [[2026-10-22-carte-outils-houblons]].
 - Rôles : pilote, conseil, auteur, relecteur
@@ -120,14 +120,14 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L19 — Cadrer une décision sur l'acquis et les choix en attente, et lire la plainte comme une proposition
 - Erreur : 22.10, conseil cadré sur « A, B ou C », sans savoir que Comparer était déjà intégré, qu'un choix de radar attendait, et que sa plainte contenait déjà une carte.
 - Cause : le cadrage partait de la carte candidate du registre, sans relire les acquis, les décisions en attente ni les mots exacts.
-- Faire : avant de cadrer, relire [[acquis-valides]], les choix en attente du registre et les mots du brasseur. Poser la cause observée (captures) avant les options.
+- Faire : avant de cadrer, relire [[acquis-valides]], les choix en attente du registre et les mots du brasseur. Poser la cause observée (captures) avant les options. Citer la formule exacte, poids compris (D77).
 - Rôles : pilote, conseil
 - Contrôle : aucun
 
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
 - Erreur : 20.10 et 22.10, la « grille 1,8 Mo » (fichier de maquette) a été lue comme un coût de calcul. Un conseiller a ensuite proposé d'abandonner le repli « dry hop et biotransformation seulement si c'est trop lourd » sans rien chronométrer.
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
-- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel et le premier passage à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10).
+- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel et le premier passage à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77).
 - Rôles : pilote, conseil, auteur, exécutant
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 

@@ -714,3 +714,7 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   réglage + IA) sur ses houblons phares, sans mention de Beer Maverick, en mini maquettes dans u4 : **il choisit**. Le regard
   Brasseur : montrer les mots partagés en couleur, « pourquoi en un mot ». L'IA en production (Gemini facturé) attend en plus
   l'accord de l'utilisateur.
+- D78 (l'utilisateur, 26.10) : sur les conditions de Hopsteiner et de John I. Haas (accord écrit pour la reproduction ou
+  l'affichage public), mot pour mot : « C'est pas plublic donc pas de problème ». Leurs valeurs entrent dans l'app comme les
+  autres ; le champ `diffusion` de chaque source garde la trace des conditions lues. Rappel fait une fois : les fichiers JS de
+  l'hébergement restent téléchargeables par qui connaît leur adresse, même si l'app demande une connexion.
