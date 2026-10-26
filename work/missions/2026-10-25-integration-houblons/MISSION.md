@@ -60,6 +60,7 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
 ## Pages
 | Sujet | Version | Adresse | Source |
 |---|---|---|---|
+| Choix farnésène et cohumulone (Comparer, Valeurs) | 26.10 v1 | https://claude.ai/artifact/2243SR3kYaE6PfgU2d2yM4 | `voies/m1-farnesene/page.html` |
 
 ## Boucle de retour
 - Un critère rouge : l'agent corrige dans sa voie, 3 essais ; puis SendMessage au même agent (2 relances) ; puis le pilote
