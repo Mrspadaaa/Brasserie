@@ -94,12 +94,12 @@ export const CHIMIE: { cle: string; famille: FamilyId; nom: string; unite: strin
   { cle: 'caryophyllene', famille: 'spice', nom: 'caryo­phyllène', unite: '% huile' },
   { cle: '4MMP', famille: 'tropical', nom: '4MMP', unite: 'µg/kg' },
 ];
-/** Ce que le catalogue du moteur porte pour un composé de la chimie : l'huile de Beer Maverick (BM) et le linalol de
+/** Ce que le catalogue du moteur porte pour un composé de la chimie : l'huile de Beer Maverick (BM, farnésène compris : la composition de Comparer le lit par compose()) et le linalol de
  * Hopsteiner (HS), chacun avec sa page source. Le géraniol et le 4MMP n'y sont pas : la liste reste vide, jamais 0. */
 function duCatalogue(cle: string, c: string): Val[] {
   const cat = hopRef(cle)?.catalogue;
   if (!cat) return [];
-  const bm = c === 'myrcene' || c === 'humulene' || c === 'caryophyllene' ? cat.oils?.[c] : null;
+  const bm = c === 'myrcene' || c === 'humulene' || c === 'caryophyllene' || c === 'farnesene' ? cat.oils?.[c] : null;
   if (bm) return [{ plage: bm, sources: ['BM'] }];
   const hs = c === 'linalol' ? cat.hsLinalool?.range : null;
   return hs ? [{ plage: hs, sources: ['HS'] }] : [];

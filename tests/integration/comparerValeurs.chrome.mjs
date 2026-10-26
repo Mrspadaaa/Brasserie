@@ -2,6 +2,9 @@
 // (puis 1280 × 800 avec --large). Données : le fixture du banc `?dev-local&etape=houblons` (aucune donnée réelle).
 // Vérifie (1) qu'aucun texte ne déborde de sa cellule ni ne recouvre la colonne voisine, (2) qu'aucun mot d'un nom de ligne
 // n'est coupé, (3) qu'aucune cellule « inconnu » n'existe là où le catalogue porte la valeur.
+// o1 (D154, 26.10) : la composition des huiles a une ligne par huile nommée (farnésène, linalol, géraniol quand un houblon comparé a
+// une valeur), aucun titre de groupe ne nomme une huile qui a sa ligne, et la somme des milieux d'un houblon ne dépasse pas 100 % + 2.
+// `--trio saaz` compare Saaz, Citra et Hallertau Blanc au lieu de Nelson Sauvin, Citra et Mosaic.
 // Usage (racine) :
 //   node scripts/with_server.mjs --server "npm run dev -- --port 5201 --strictPort" --port 5201 --env VITE_HOP_V4=on -- node tests/integration/comparerValeurs.chrome.mjs [--large] [--captures <dossier>]
 import fs from 'node:fs';
@@ -17,7 +20,8 @@ if (dossier) fs.mkdirSync(dossier, { recursive: true });
 const catalogue = JSON.parse(fs.readFileSync(path.join(process.env.CATALOGUE_RACINE ?? RACINE, 'src/data/hopV4/proto-data.json'), 'utf8')).varieties;
 const base = `http://localhost:${process.env.WITH_SERVER_PORTS}`;
 const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
-const HOUBLONS = ['beermaverick-nelson-sauvin', 'beermaverick-citra', 'beermaverick-mosaic'];
+const TRIO = argv.includes('--trio') ? argv[argv.indexOf('--trio') + 1] : 'nelson';
+const HOUBLONS = TRIO === 'saaz' ? ['beermaverick-saaz-cz', 'beermaverick-citra', 'beermaverick-hallertau-blanc'] : ['beermaverick-nelson-sauvin', 'beermaverick-citra', 'beermaverick-mosaic'];
 const { browser, page, journal } = await ouvrir(large ? { largeur: 1280, hauteur: 800, mobile: false } : { largeur: 390, hauteur: 844 });
 const echecs = [];
 const ok = (c, m) => { if (!c) echecs.push(m); console.log(c ? 'OK   ' : 'ECHEC', m); };
@@ -34,7 +38,7 @@ await dormir(1200);
 
 const noms = await page.evaluate(() => [...document.querySelectorAll('.pq-comparer-vh > span')].slice(1).map((s) => s.textContent));
 console.log('colonnes :', noms.join(' | '));
-ok(noms.length === 3, 'trois colonnes (Nelson Sauvin, Citra, Mosaic) : ' + noms.join(', '));
+ok(noms.length === 3, 'trois colonnes : ' + noms.join(', '));
 
 const mesure = await page.evaluate(() => {
   const feuille = document.querySelector('.pq-comparer-vraies');
@@ -126,6 +130,45 @@ for (const [cle, lit] of Object.entries(attendu)) {
 }
 ok(!HOUBLONS.some((id, i) => !catalogue.find((x) => x.id === id)?.oils && !mesure.inconnus.myrcene?.[i]), 'pas de valeur inventée sans source');
 
+// ---- o1 : la composition des huiles, une ligne par huile nommée (D154) ----
+const fiches = JSON.parse(fs.readFileSync(path.join(process.env.CATALOGUE_RACINE ?? RACINE, 'src/data/hopV4/composes-houblon.json'), 'utf8')).varietes;
+const deFiche = (id, c) => (fiches[id]?.composes?.[c]?.valeurs ?? []).some((v) => (!v.portee || v.portee === 'variété') && v.plage.some((x) => x != null));
+// Une huile a une valeur pour un houblon si le catalogue (Beer Maverick, Hopsteiner) ou une fiche de composés la porte.
+const aValeur = { farnesene: (v, id) => !!v.oils?.farnesene || deFiche(id, 'farnesene'), linalol: (v, id) => !!v.hsLinalool?.range || deFiche(id, 'linalol'), geraniol: (v, id) => deFiche(id, 'geraniol') };
+const huiles = await page.evaluate(() => [...document.querySelectorAll('[data-role="composition-huiles"] .cmc-co-g')].map((g) => ({
+  id: g.getAttribute('data-compose'),
+  titre: g.querySelector('.cmc-co-n').textContent.toLowerCase(),
+  aromes: g.querySelector('.cmc-co-n span')?.textContent.toLowerCase() ?? '',
+  inconnus: [...g.querySelectorAll('.cmc-co-l')].map((l) => !!l.querySelector('.cmc-co-inc')),
+  milieux: [...g.querySelectorAll('.cmc-co-l')].map((l) => { const m = l.querySelector('.cmc-co-mi'); return m ? parseFloat(m.style.left) : null; }),
+})));
+const idsLignes = huiles.map((g) => g.id);
+console.log('groupes de la composition :', idsLignes.join(', '));
+const catHop = (id) => catalogue.find((x) => x.id === id);
+for (const [oil, lit] of Object.entries(aValeur)) {
+  const vals = HOUBLONS.map((id) => lit(catHop(id), id));
+  const g = huiles.find((x) => x.id === oil);
+  ok(vals.some(Boolean) === !!g, `composition · ${oil} : ${vals.some(Boolean) ? 'un houblon comparé a une valeur → ligne propre' : 'aucune valeur chez les houblons comparés → pas de ligne'}`);
+  if (g) HOUBLONS.forEach((id, i) => ok(g.inconnus[i] === !vals[i], `composition · ${oil} · ${noms[i]} : ${vals[i] ? 'valeur affichée' : 'inconnu hachuré, jamais 0'}`));
+}
+const ORDRE = ['myrcene', 'humulene', 'caryophyllene', 'farnesene', 'linalol', 'geraniol', 'autres'];
+ok(idsLignes.every((x, i) => i === 0 || ORDRE.indexOf(idsLignes[i - 1]) < ORDRE.indexOf(x)), 'composition · ordre de Beer Maverick puis linalol, géraniol, le reste en dernier : ' + idsLignes.join(' > '));
+ok(idsLignes.length === new Set(idsLignes).size, 'composition · aucun groupe en double');
+// Un titre de groupe ne nomme qu'une huile sans ligne propre : ni dans la composition, ni plus bas dans le tableau de chimie
+// (« sauf si elles sont déjà séparées à un endroit », D154) ; le linalol et le géraniol y ont leur ligne.
+const ailleurs = await page.evaluate(() => [...document.querySelectorAll('.pq-comparer-vraies .pq-comparer-vg[data-compose]')].map((r) => r.getAttribute('data-compose')));
+const NOMS = { myrcene: 'myrcène', humulene: 'humulène', caryophyllene: 'caryophyllène', farnesene: 'farnésène', linalol: 'linalol', geraniol: 'géraniol' };
+for (const g of huiles) {
+  const nommees = Object.entries(NOMS).filter(([, n]) => g.aromes.includes(n)).map(([k]) => k);
+  const avecLigne = nommees.filter((k) => idsLignes.includes(k) || ailleurs.includes(k));
+  ok(avecLigne.length === 0, `composition · titre de « ${g.id} » (${g.aromes}) ${avecLigne.length ? 'nomme des huiles qui ont leur ligne : ' + avecLigne.join(', ') : 'ne nomme aucune huile qui a sa ligne'}`);
+}
+// Pas de double compte : la somme des milieux d'un houblon ne dépasse pas 100 % + 2 points.
+HOUBLONS.forEach((id, i) => {
+  const somme = huiles.reduce((s, g) => s + (g.milieux[i] ?? 0), 0);
+  ok(somme <= 102, `composition · ${noms[i]} : somme des milieux ${Math.round(somme * 10) / 10} % ≤ 102`);
+});
+
 // L'encadré « X en a plus » lit les mêmes valeurs que le tableau : « ? » seulement si une cellule du tableau est inconnue ou n'a qu'une borne.
 const CLE_LIGNE = { 'myrcène': 'myrcene', 'linalol': 'linalol', 'géraniol': 'geraniol', 'humulène': 'humulene', 'caryophyllène': 'caryophyllene', '4MMP': '4MMP', 'huile totale': 'huile' };
 const lireEncadre = () => page.evaluate(() => {
@@ -172,6 +215,7 @@ if (dossier) {
   await page.screenshot({ path: path.join(dossier, `haut-${tag}.png`) });
   await aller('[data-role="composition-huiles"]');
   await page.screenshot({ path: path.join(dossier, `composition-${tag}.png`) });
+  await (await page.$('[data-role="composition-huiles"]')).screenshot({ path: path.join(dossier, `composition-entiere-${tag}.png`) });
   await aller('.pq-comparer-chim [data-compose="myrcene"]');
   await page.screenshot({ path: path.join(dossier, `chimie-${tag}.png`) });
   await aller('[data-role="ibu-etapes"]', 'center');

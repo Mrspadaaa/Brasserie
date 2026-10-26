@@ -5,6 +5,7 @@
 import { HUILE_MAX, SAAZ, huileDe, type ColonneLue } from './calcul';
 import { hopRef } from '../parcours/v4';
 import { IconeFiole, IconeGoutte } from './icones';
+import { compose, titreRef } from './valeurs';
 
 const ECH = HUILE_MAX + 0.5;
 export function HuilesVue({ cols, reference }: { cols: ColonneLue[]; reference: string | null }) {
@@ -33,42 +34,80 @@ export function HuilesVue({ cols, reference }: { cols: ColonneLue[]; reference: 
 // cmc2c — « Composition des huiles », reprise telle quelle de Beer Maverick (ses mots, 25.10 : « Aussi, pour comparé les
 // chimies. Les mettre lune au dessus de l'autre pour bien voir les différences »). Un groupe par composé, une barre par
 // houblon comparé l'une au-dessus de l'autre, à sa couleur, sur la même échelle 0–100 % : pâle de 0 au bas de la plage,
-// franche du bas au haut, un trait fin au milieu, la plage écrite à gauche. Données : `oils` du catalogue du moteur
-// (Beer Maverick), en % de l'huile totale ; « Autres » = la valeur publiée « All Others » (repli : 100 − les composés, bornée à 0). Inconnu :
-// barre hachurée et « ? », jamais 0.
+// franche du bas au haut, un trait fin au milieu, la plage écrite à gauche. Inconnu : barre hachurée et « ? », jamais 0.
+// o1 (D154, 26.10 : « Oui ne regroupe jamais plusieurs huiles. Sauf si c'est utile et que elles sont déjà séparé à un
+// endroit ») : une ligne par huile nommée, dans l'ordre de Beer Maverick (myrcène, humulène, caryophyllène, farnésène), puis
+// linalol et géraniol ; le reste « autres » en dernière ligne, sans aucune huile qui a sa propre ligne.
+// Données, en % de l'huile totale :
+//  - myrcène, humulène, caryophyllène : `oils` du catalogue (Beer Maverick), comme avant ;
+//  - farnésène, linalol, géraniol : `compose()` de valeurs.ts, la source du tableau de chimie (fiches de composés + catalogue :
+//    `oils.farnesene` BM, `hsLinalool` HS), enveloppe de toutes les sources ;
+//  - autres : « All Others » de Beer Maverick (β-pinène, linalol, géraniol, sélinène ; le farnésène est publié à part), moins
+//    les plages du linalol et du géraniol quand elles sont connues (intervalles, bornée à 0). Repli sans valeur publiée :
+//    100 − myrcène − humulène − caryophyllène − farnésène, avec la même soustraction.
 type Plage = [number, number] | null;
-const COMPOSES: { id: 'myrcene' | 'humulene' | 'caryophyllene' | 'autres'; nom: string; aromes: string }[] = [
+type Id = 'myrcene' | 'humulene' | 'caryophyllene' | 'farnesene' | 'linalol' | 'geraniol' | 'autres';
+// Mots d'arôme : farnésène « frais, vert, floral », linalol « floral, lavande, agrumes », géraniol « rose, floral » sont
+// les descripteurs de la consigne de la voie o1 (linalol et géraniol : famille floral de `FAMILLE_COMPOSE`, dryhopper/mesures.ts) ;
+// aucune fiche de données ne les porte mot pour mot.
+export const COMPOSES: { id: Id; nom: string; aromes: string }[] = [
   { id: 'myrcene', nom: 'Myrcène', aromes: 'résineux, agrumes, fruité' },
   { id: 'humulene', nom: 'Humulène', aromes: 'boisé, noble, épicé' },
   { id: 'caryophyllene', nom: 'Caryophyllène', aromes: 'poivre, boisé, herbacé' },
-  { id: 'autres', nom: 'Autres', aromes: 'β-pinène, linalol, géraniol' },
+  { id: 'farnesene', nom: 'Farnésène', aromes: 'frais, vert, floral' },
+  { id: 'linalol', nom: 'Linalol', aromes: 'floral, lavande, agrumes' },
+  { id: 'geraniol', nom: 'Géraniol', aromes: 'rose, floral' },
+  // Le seul groupe : β-pinène et sélinène ne sont séparés nulle part tant que la collecte (voies c3) n'a rien rapporté.
+  { id: 'autres', nom: 'Autres', aromes: 'β-pinène, sélinène…' },
 ];
-function plageDe(cle: string, id: (typeof COMPOSES)[number]['id']): Plage {
+interface Mesure { p: Plage; refs: string[] }
+const SANS: Mesure = { p: null, refs: [] };
+// Une plage ouverte en haut (« > x ») n'a pas de borne : elle reste inconnue ici, comme la « borne seule » du tableau.
+const deCompose = (cle: string, c: 'farnesene' | 'linalol' | 'geraniol'): Mesure => {
+  const v = compose(cle, c);
+  return v && v.hi != null ? { p: [v.lo, v.hi], refs: v.refs } : SANS;
+};
+export function mesureDe(cle: string, id: Id): Mesure {
+  if (id === 'farnesene' || id === 'linalol' || id === 'geraniol') return deCompose(cle, id);
   const o = hopRef(cle)?.catalogue.oils;
-  if (!o) return null;
-  if (id !== 'autres') return o[id] ?? null;
-  // « Autres » = la valeur publiée « All Others » de Beer Maverick (β-pinène, linalol, géraniol, sélinène) ; le calcul
-  // (100 − les trois composés, moins le farnésène s'il est publié) ne sert qu'en repli, quand elle manque.
-  if (o.others) return o.others;
-  const t = [o.myrcene, o.humulene, o.caryophyllene, ...(o.farnesene ? [o.farnesene] : [])];
-  if (t.slice(0, 3).some((p) => !p)) return null;
-  const lo = Math.max(0, 100 - t.reduce((s, p) => s + p![1], 0)), hi = Math.max(0, 100 - t.reduce((s, p) => s + p![0], 0));
-  return [lo, hi];
+  if (!o) return SANS;
+  if (id !== 'autres') return o[id] ? { p: o[id], refs: ['BM'] } : SANS;
+  const lin = deCompose(cle, 'linalol').p, ger = deCompose(cle, 'geraniol').p;
+  let base: Plage = null;
+  if (o.others) base = o.others;
+  else {
+    // Repli : le farnésène retiré est celui de la ligne Farnésène (même source), sinon celui de Beer Maverick.
+    const far = deCompose(cle, 'farnesene').p ?? o.farnesene ?? null;
+    const t = [o.myrcene, o.humulene, o.caryophyllene];
+    if (t.some((x) => !x)) return SANS;
+    const plage = [...t, ...(far ? [far] : [])] as [number, number][];
+    base = [Math.max(0, 100 - plage.reduce((s, x) => s + x[1], 0)), Math.max(0, 100 - plage.reduce((s, x) => s + x[0], 0))];
+  }
+  // Pas de double compte : chaque huile qui a sa propre ligne ET une valeur pour ce houblon sort du reste (arithmétique
+  // d'intervalles : le bas moins les hauts, le haut moins les bas, bornés à 0). Une huile sans valeur reste dans le reste publié.
+  let lo = base[0], hi = base[1];
+  for (const x of [lin, ger]) if (x) { lo -= x[1]; hi -= x[0]; }
+  return { p: [Math.max(0, lo), Math.max(0, hi)], refs: ['BM'] };
 }
 const ent = (x: number) => String(Math.round(x));
+const dec = (x: number) => String(Math.round(x * 10) / 10).replace('.', ',');
+// Une ligne sans valeur chez aucun houblon comparé ne s'affiche pas ; un reste dont aucun houblon n'atteint 1 % n'apprend rien.
+const utile = (id: Id, ms: Mesure[]) => (id === 'autres' ? ms.some((m) => m.p && m.p[1] >= 1) : ms.some((m) => m.p));
 export function CompositionVue({ cols }: { cols: ColonneLue[] }) {
   return (
     <section className="cmc-co" data-role="composition-huiles" aria-label="Composition des huiles, en % de l'huile totale, Beer Maverick">
       <p className="p4-hu-t"><b>Composition des huiles</b><span>% de l'huile totale</span><span className="p4-hu-m"><IconeFiole taille={13} />mesuré · Beer Maverick</span></p>
-      {COMPOSES.map((k) => (
+      {COMPOSES.map((k) => ({ k, ms: cols.map((c) => mesureDe(c.cle, k.id)) })).filter(({ k, ms }) => utile(k.id, ms)).map(({ k, ms }) => (
         <div key={k.id} className="cmc-co-g" data-compose={k.id}>
           <p className="cmc-co-n"><b>{k.nom}</b><span>{k.aromes}</span></p>
-          {cols.map((c) => {
-            const p = plageDe(c.cle, k.id);
-            const lab = `${c.houblon.nom}, ${k.nom.toLowerCase()} : ${p ? `${ent(p[0])}–${ent(p[1])} %` : 'inconnu'}`;
+          {cols.map((c, i) => {
+            const { p, refs } = ms[i];
+            // Les huiles rares (< 10 %) gardent la décimale : « 0,5–2 % » ne devient pas « 1–2 % ».
+            const plage = p ? (p[1] >= 10 ? `${ent(p[0])}–${ent(p[1])} %` : `${dec(p[0])}–${dec(p[1])} %`) : null;
+            const lab = `${c.houblon.nom}, ${k.nom.toLowerCase()} : ${plage ?? 'inconnu'}${refs.length ? ` (${[...new Set(refs.map(titreRef))].join(', ')})` : ''}`;
             return (
               <div key={c.cle} className="cmc-co-l" data-houblon={c.cle} aria-label={lab} title={lab}>
-                <span className="cmc-co-v" style={{ color: c.couleur }}>{p ? `${ent(p[0])}–${ent(p[1])} %` : '?'}</span>
+                <span className="cmc-co-v" style={{ color: c.couleur }}>{plage ?? '?'}</span>
                 <span className={p ? 'cmc-co-p' : 'cmc-co-p cmc-co-inc'}>
                   {p && <>
                     <i className="cmc-co-pale" style={{ width: `${p[0]}%`, background: c.couleur }} />
