@@ -30,6 +30,10 @@ import { HopV55Page } from '../../src/ui/hopV55/Page';
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
+// Le panneau V3 est un chunk paresseux (Page.tsx:156) : son premier chargement dans un worker jsdom dépasse parfois la seconde par défaut de
+// Testing Library quand la machine est chargée (e6, 26.10 : le test échoue 5 fois sur 5 sur fb0d14e3, qui passait). Mêmes assertions que
+// hopV55PageDisplayedPropertyVersionV4.test.tsx:37.
+const LAZY_PANEL_TIMEOUT = 15000;
 const ownerKey = 'fixture:property-advice-page-v3-owner';
 const question = 'Ma pastry stout est trop sucrée, comment compenser ça avec mon houblon ?';
 
@@ -73,7 +77,7 @@ async function rereadLegacyQuestion(harness: ReturnType<typeof pageHarness>) {
   fireEvent.click(await screen.findByRole('button', { name: 'Relire cette demande dans le contexte actif' }));
   await waitFor(() => expect(harness.stored?.decisionReadings).toHaveLength(2));
   await waitFor(() => expect(harness.stored?.documentaryAnswers).toHaveLength(1));
-  await screen.findByText('Conseil documentaire · V3');
+  await screen.findByText('Conseil documentaire · V3', undefined, { timeout: LAZY_PANEL_TIMEOUT });
   const answer = readHopV55DocumentaryAnswerRecord(harness.stored!.documentaryAnswers![0]);
   if (answer.status !== 'readOnly' || answer.record.format !== 'hop-v55-documentary-answer-record-v3') throw new Error('Réponse V3 de relecture legacy attendue.');
   const archive = activeReading(harness, answer.record.sourceReadingReference);
@@ -195,7 +199,7 @@ describe('Page V5.5 — parcours V3 du conseil par propriétés', () => {
     fireEvent.click(screen.getByText(/Réponses et dossiers documentaires · 2/));
     const rereadButtons = await screen.findAllByRole('button', { name: 'Relire cette réponse documentaire', exact: true });
     fireEvent.click(rereadButtons[rereadButtons.length - 1]);
-    await screen.findByText('Conseil documentaire · V3');
+    await screen.findByText('Conseil documentaire · V3', undefined, { timeout: LAZY_PANEL_TIMEOUT });
     expect(screen.getByRole('heading', { name: 'Réponse documentaire' })).toBeInTheDocument();
     expect(builder).toHaveBeenCalledTimes(buildsBeforeReload);
     expect(parser).toHaveBeenCalledTimes(readsBeforeReload);
@@ -402,7 +406,7 @@ describe('Page V5.5 — parcours V3 du conseil par propriétés', () => {
     const archivedButtons = await screen.findAllByRole('button', { name: 'Relire cette réponse documentaire', exact: true });
     expect(archivedButtons).toHaveLength(5);
     fireEvent.click(archivedButtons[2]); // B: re-examined snapshot, sampling unknown.
-    await screen.findByText('Conseil documentaire · V3');
+    await screen.findByText('Conseil documentaire · V3', undefined, { timeout: LAZY_PANEL_TIMEOUT });
     await waitFor(() => expect(screen.getByLabelText('Contexte de cette lecture'))
       .toHaveTextContent('Accès à préciser pour cette question : lot de bière, prélèvement, portion séparée.'));
     expect(screen.getAllByText('Inconnu / non déclaré')).toHaveLength(3);
@@ -412,7 +416,7 @@ describe('Page V5.5 — parcours V3 du conseil par propriétés', () => {
     fireEvent.click(screen.getByText(/Réponses et dossiers documentaires · 5/));
     const archivedButtonsAgain = await screen.findAllByRole('button', { name: 'Relire cette réponse documentaire', exact: true });
     fireEvent.click(archivedButtonsAgain[1]); // A: previous yes declaration, not re-examined.
-    await screen.findByText('Conseil documentaire · V3');
+    await screen.findByText('Conseil documentaire · V3', undefined, { timeout: LAZY_PANEL_TIMEOUT });
     await waitFor(() => expect(screen.getByText('Oui, accès déclaré')).toBeInTheDocument());
     await waitFor(() => expect(screen.queryByLabelText('Contexte de cette lecture')).toBeNull());
     expect(harness.stored!.documentaryAnswers).toEqual(archiveBeforeReload);

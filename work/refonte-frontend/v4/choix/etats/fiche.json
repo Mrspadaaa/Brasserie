@@ -384,9 +384,17 @@
     "attendu": [
      "Magnat",
      "Yeoman",
-     "Sabro"
+     "Trident"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Magnat",
+      "Yeoman",
+      "Sabro"
+     ]
+    },
+    "note": "e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Le bouton ouvre toujours les remplaçants à 60′ : la tête dit « Trident et Yeoman, 99 sans inconnue. » et l’échelle nomme Trident, Yeoman, Helios, Centennial, Magnat, Citra cryo, Motueka, Galaxy (Sabro n’y est plus). (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-fiche-substituts.png.)"
    }
   },
   {

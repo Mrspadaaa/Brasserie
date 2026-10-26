@@ -1,0 +1,547 @@
+Nugget
+60′recette
+whirlpool
+dry hop
+Trident et Yeoman, 99 sans inconnue.
+partiel
+proche
+très proche
+?
+Nugget
+l’original
+Trident
+99
+Yeoman
+99
+Helios
+97
+Centennial
+96
+Magnat
+96
+Citra cryo
+95
+Motueka
+80
+Galaxy
+77
+50
+65
+80
+100
+Comparer
+Face à face, même IBU
+Nugget
+46 g
+59,7 IBU
+lui seul : gingembre, herbes fraîches écrasées
+double usage
++6
+Yeoman
+37–50 g
+42,5 g à α 14
+lui seul : noble
+amérisant
+Citra cryo
+24 g
+lui seul : groseille à maquereau, fruit sucré
+aromatique
++2
+α
+Nugget
+9–16
+lot 13
+Yeoman
+12–16
+Citra cryo
+10–15
+article 24,8
+Arômes 16D
+Nugget
+Yeoman
+Citra
+Floral
+Herbacé
+Terreux
+Hors 16D
+Agrumes
+Tropicaux
+Noyau
+Pépins
+Baies
+Melon
+Résineux
+Épicé
+Végétal
+sans famille
+9 %
+50 %
+14 %
+
+Fiches lues : Nugget 10, Yeoman 1, Citra cryo 7. Pointillé : non décrit. À 60′, surtout l’amertume : ces arômes partent en grande partie à l’ébullition.
+
+Nugget seul : gingembre, herbes fraîches écrasées
+
+hors familles
+Nugget
+Yeoman
+99
+Citra cryo
+95
+Trident
+99
+Helios
+97
+gingembre
+1/10
+herbes fraîches écrasées
+1/10
+noble
+fruit sucré
+groseille à maquereau
+huiles
+Nugget
+Yeoman
+99
+Citra cryo
+95
+Trident
+99
+Helios
+97
+huile totale
+mL/100 g
+0,9–3,3
+1,7–2,4
+2–6
+1,5–3
+1,5–2
+myrcène
+%
+48–59
+47–49
+60–70
+?
+40–70
+humulène
+%
+12–22
+19–21
+7–13
+?
+19–24
+caryophyllène
+%
+7–10
+9–10
+5–8
+?
+7–10
+farnésène
+%
+?
+?
+?
+?
+?
+linalol
+%
+0,8–1
+?
+?
+?
+0,6–0,7
+géraniol
+%
+?
+?
+?
+?
+?
+
+Points : cité par ses fiches (gros : la moitié au moins), cercle : le mot est rangé dans une famille chez lui. ? : aucune fiche ne donne la valeur, ce n’est pas zéro. Huiles en % de l’huile.
+
+0
+cité
+marqué
+
+Nugget (l’original, contour seul)
+Yeoman
+Citra cryo
+gras : attendu en 16D
+
+Du centre vers le bord : non décrit, cité, marqué. ? : aucune des trois fiches ne décrit la famille, ce n’est pas zéro.
+
+β
+Nugget
+3–8
+Yeoman
+4–5
+Citra cryo
+2,7–4,5
+
+α et β : traits fins, un par plage qui diffère (des sources d’accord n’en font qu’un ; leurs noms sont dans la section Sources de la fiche) ; trait noir, milieu moyen des sources ; plage de dose de Yeoman selon son α (12–16). Le lot de Citra cryo (24,8) est au-dessus de sa plage variétale : la dose de 24 g en tient compte.
+
+Huiles, composants % de l’huile
+Myrcène
+Nugget
+27–60
+Yeoman
+47–49
+Citra cryo
+28,6–70
+Humulène
+Nugget
+12–40
+Yeoman
+19–21
+Citra cryo
+7–13,2
+Caryophyllène
+Nugget
+7–20
+Yeoman
+9–10
+Citra cryo
+3,7–9
+Linalol
+Nugget
+0,5–1
+Yeoman
+?
+non renseigné
+Citra cryo
+0,5–2
+
+Linalol de Yeoman non renseigné, ce n’est pas zéro. Farnésène publié, non importé.
+
+16D Foreign Extra Stout attend floral, herbacé, terreux ; IBU 50–70, la recette est à 59,7 et chaque dose la garde.
+
+Nugget cite les trois (floral et herbacé marqués). Employé en West Coast IPA, NEIPA, Session IPA ; aucune stout citée.
+
+Yeoman ne cite aucune des trois. noble, agrumes. Aucun style d’emploi dans le dépôt.
+
+Citra cryo garde floral (marqué), perd herbacé et terreux. agrumes, pamplemousse, pêche, melon, citron vert, floral. Employé en IPA, NEIPA, Double IPA ; aucune stout citée.
+
+Ma bière avec chacun ~ simulé
+Au style
+Absolu
+Nugget
+Yeoman
+Citra
+Floral
+?
+~−2
+Herbacé
+?
+?
+Terreux
+?
+?
+Résineux
+hors style
+~−2
+~−2
+
+Après le remplacement, à 60′, à IBU égal ; le rond, ma bière avec Nugget.
+
+Ajouter Yeoman aux achats
+Lire ces scores
+
+Calculés depuis nos fiches, pas des scores de substitution déjà publiés (non importés). Prix, rareté et cohumulone : inconnus.
+
+Sans inconnue ne veut pas dire sûr : chaque composante connue vient de peu de fiches (Nugget : 10, Yeoman : 1, Citra cryo : 7). Le score n’a pas d’intervalle statistique, seulement cette plage.
+
+À 60′, l’arôme compte peu : il ne mesure que ce que le remplaçant apporte de plus que Nugget, pas ce qu’il perd (l’arôme de Nugget part à l’ébullition). Un remplaçant qui perd six familles peut y valoir 100 : c’est pour cela que l’écran ne l’affiche pas seul.
+
+Le pire cas d’abord : rangés par le bas de la plage. Le moteur, lui, range par score, puis par nom.
+
+8 des 317 : les 5 premiers du catalogue et les 3 premiers de ton stock (Motueka 107e, Galaxy 125e, Citra cryo 159e).
+
+Face à face : Yeoman, premier sûr à acheter ; Citra cryo, premier du stock qui suffit. Arômes : citations dans les fiches, pas une intensité dans la bière.
+
+46 g de Nugget 
+remplacés par
+ 42,5 g de Yeoman
+Annuler
+Remplacer
+›
+Fermer
+Fermer : retour à l’étape Houblons
+Nugget
+Moment des remplaçants de Nugget : à 60′
+(ta recette)
+Ressemblance à Nugget, de 50 à 100, rangée par le pire cas
+Familles de ta 16D : Floral, Herbacé, Terreux, Résineux
+Floral
+Herbacé
+Terreux
+Résineux
+Lire la légende
+Remplaçants de Nugget
+Épuisé
+Arômes des fiches : Floral marqué, Herbacé marqué, Terreux cité, Résineux marqué
+Nugget, Floral : marqué
+Nugget, Herbacé : marqué
+Nugget, Terreux : cité
+Nugget, Résineux : marqué
+Trident : 99 (moteur 99)
+À acheter
+Arômes des fiches : Floral non décrit, Herbacé non décrit, Terreux non décrit, Résineux non décrit
+Trident, Floral : non décrit
+Trident, Herbacé : non décrit
+Trident, Terreux : non décrit
+Trident, Résineux : non décrit
+tout connu
+Ajouter Trident à Comparer
+Yeoman : 99 (moteur 99)
+À acheter
+Arômes des fiches : Floral non décrit, Herbacé non décrit, Terreux non décrit, Résineux non décrit
+Yeoman, Floral : non décrit
+Yeoman, Herbacé : non décrit
+Yeoman, Terreux : non décrit
+Yeoman, Résineux : non décrit
+tout connu
+Ajouter Yeoman à Comparer
+Helios : 97 (moteur 97)
+À acheter
+Arômes des fiches : Floral non décrit, Herbacé marqué, Terreux non décrit, Résineux cité
+Helios, Floral : non décrit
+Helios, Herbacé : marqué
+Helios, Terreux : non décrit
+Helios, Résineux : cité
+tout connu
+Ajouter Helios à Comparer
+Centennial : 96 (moteur 96)
+À acheter
+Arômes des fiches : Floral marqué, Herbacé marqué, Terreux non décrit, Résineux marqué
+Centennial, Floral : marqué
+Centennial, Herbacé : marqué
+Centennial, Terreux : non décrit
+Centennial, Résineux : marqué
+tout connu
+Ajouter Centennial à Comparer
+Magnat : 96 (moteur 96)
+À acheter
+Arômes des fiches : Floral cité, Herbacé non décrit, Terreux non décrit, Résineux marqué
+Magnat, Floral : cité
+Magnat, Herbacé : non décrit
+Magnat, Terreux : non décrit
+Magnat, Résineux : marqué
+tout connu
+Ajouter Magnat à Comparer
+Citra cryo : 95 (moteur 95)
+En stock, suffisant
+Arômes des fiches : Floral marqué, Herbacé non décrit, Terreux non décrit, Résineux cité
+Citra cryo, Floral : marqué
+Citra cryo, Herbacé : non décrit
+Citra cryo, Terreux : non décrit
+Citra cryo, Résineux : cité
+tout connu
+Ajouter Citra cryo à Comparer
+Motueka : 80 (moteur 80)
+En stock, insuffisant
+Arômes des fiches : Floral marqué, Herbacé cité, Terreux non décrit, Résineux non décrit
+Motueka, Floral : marqué
+Motueka, Herbacé : cité
+Motueka, Terreux : non décrit
+Motueka, Résineux : non décrit
+tout connu
+Ajouter Motueka à Comparer
+Galaxy : 77 (moteur 77)
+En stock, suffisant
+Arômes des fiches : Floral non décrit, Herbacé non décrit, Terreux non décrit, Résineux non décrit
+Galaxy, Floral : non décrit
+Galaxy, Herbacé : non décrit
+Galaxy, Terreux : non décrit
+Galaxy, Résineux : non décrit
+tout connu
+Ajouter Galaxy à Comparer
+Comparer : touche + sur un remplaçant
+À la place de Nugget
+Épuisé
+règle : règle rôle-α v1 (prototype, à valider)
+Arômes cités : Agrumes, Tropicaux, Noyau, Pépins, Floral, Herbacé, Résineux, Épicé, Végétal, Baies, Terreux
+Agrumes
+Tropicaux
+Noyau
+Pépins
+Floral
+À acheter
+règle : règle rôle-α v1 (prototype, à valider)
+Arômes cités : Agrumes
+Agrumes
+En stock, suffisant
+attesté par un fournisseur
+Arômes cités : Agrumes, Tropicaux, Noyau, Floral, Baies, Melon, Résineux
+Agrumes
+Tropicaux
+Noyau
+Floral
+Baies
+9,5–16
+11–14
+9–16 · 2 sources d’accord
+11,5–14 · 5 sources d’accord
+10–14
+14,8
+9,5–14
+11–15
+12–16 · 2 sources d’accord
+10–15 · 2 sources d’accord
+11–14,3 · 2 sources d’accord
+11–13 · 4 sources d’accord
+11–14
+11–15
+13,9
+Arômes des fiches, face au 16D
+Floral
+Nugget, Floral : marqué (3/10)
+Yeoman, Floral : non décrit (0/1)
+Citra cryo, Floral : marqué (2/7)
+Herbacé
+Nugget, Herbacé : marqué (6/10)
+Yeoman, Herbacé : non décrit (0/1)
+Citra cryo, Herbacé : non décrit (0/7)
+Terreux
+Nugget, Terreux : cité (1/10)
+Yeoman, Terreux : non décrit (0/1)
+Citra cryo, Terreux : non décrit (0/7)
+Agrumes
+Nugget, Agrumes : marqué (5/10)
+Yeoman, Agrumes : cité (1/1)
+Citra cryo, Agrumes : marqué (7/7)
+Tropicaux
+Nugget, Tropicaux : marqué (4/10)
+Yeoman, Tropicaux : non décrit (0/1)
+Citra cryo, Tropicaux : marqué (7/7)
+Noyau
+Nugget, Noyau : marqué (2/10)
+Yeoman, Noyau : non décrit (0/1)
+Citra cryo, Noyau : marqué (2/7)
+Pépins
+Nugget, Pépins : marqué (2/10)
+Yeoman, Pépins : non décrit (0/1)
+Citra cryo, Pépins : non décrit (0/7)
+Baies
+Nugget, Baies : cité (1/10)
+Yeoman, Baies : non décrit (0/1)
+Citra cryo, Baies : cité (1/7)
+Melon
+Nugget, Melon : non décrit (0/10)
+Yeoman, Melon : non décrit (0/1)
+Citra cryo, Melon : cité (1/7)
+Résineux
+Nugget, Résineux : marqué (3/10)
+Yeoman, Résineux : non décrit (0/1)
+Citra cryo, Résineux : cité (1/7)
+Épicé
+Nugget, Épicé : marqué (3/10)
+Yeoman, Épicé : non décrit (0/1)
+Citra cryo, Épicé : non décrit (0/7)
+Végétal
+Nugget, Végétal : marqué (2/10)
+Yeoman, Végétal : non décrit (0/1)
+Citra cryo, Végétal : non décrit (0/7)
+Mots hors familles et huiles : Nugget, Yeoman, Citra cryo, Trident et Helios
+cité par 1 fiche sur 10
+cité par 1 fiche sur 10
+cité par 1 fiche sur 1
+cité par 1 fiche sur 7
+cité par 2 fiches sur 7
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+aucune fiche ne la donne, ce n’est pas zéro
+Radar des citations : Nugget, Yeoman, Citra cryo ; cerclé : attendu en 16D
+Agrumes
+Tropicaux
+Melon
+Noyau
+Pépins
+Baies
+Floral
+Végétal
+Herbacé
+Épicé
+Terreux
+Résineux
+3–5,8 · 2 sources d’accord
+4–6 · 2 sources d’accord
+3–6 · 2 sources d’accord
+3–5 · 4 sources d’accord
+4,2–5,8
+3–8
+4–5 · 2 sources d’accord
+3–4,5 · 4 sources d’accord
+2,7–4,5 · 2 sources d’accord
+3,5–4,5 · 4 sources d’accord
+48–59 · 2 sources d’accord
+27–50 · 2 sources d’accord
+40–59
+27–42 · 3 sources d’accord
+50–60
+47–49
+48
+60–70 · 4 sources d’accord
+28,6–66
+29–66
+60–65 · 3 sources d’accord
+12–22 · 3 sources d’accord
+18–40 · 2 sources d’accord
+16–22
+16–19 · 3 sources d’accord
+17
+19–21
+20
+7–13 · 3 sources d’accord
+7,9–13,2 · 2 sources d’accord
+7–12
+11–13 · 3 sources d’accord
+7–10 · 5 sources d’accord
+9–20 · 2 sources d’accord
+7–11
+10
+9–10
+10
+5–8 · 3 sources d’accord
+3,7–9 · 2 sources d’accord
+6–8 · 3 sources d’accord
+0,8–1
+0,5–1 · 4 sources d’accord
+0,5–1,1 · 2 sources d’accord
+1–2 · 3 sources d’accord
+Ma bière avec chacun
+Échelle
+Floral
+aucune fiche des houblons de la recette ne la décrit
+inconnu : aucune fiche des houblons de la recette ne la décrit
+aucune fiche des houblons de la recette ne la décrit
+Herbacé
+aucune fiche des houblons de la recette ne la décrit
+inconnu : aucune fiche des houblons de la recette ne la décrit
+aucune fiche des houblons de la recette ne la décrit
+aucune fiche des houblons de la recette ne la décrit
+inconnu : aucune fiche des houblons de la recette ne la décrit
+aucune fiche des houblons de la recette ne la décrit
+Terreux
+aucune fiche des houblons de la recette ne la décrit
+inconnu : aucune fiche des houblons de la recette ne la décrit
+aucune fiche des houblons de la recette ne la décrit
+aucune fiche des houblons de la recette ne la décrit
+inconnu : aucune fiche des houblons de la recette ne la décrit
+aucune fiche des houblons de la recette ne la décrit
+Résineux
+Maquette : la liste d’achats n’existe pas encore

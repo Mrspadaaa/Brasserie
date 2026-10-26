@@ -33,7 +33,7 @@
      "Nugget",
      "remplaçants",
      "à 60′",
-     "Yeoman, 100 sans inconnue."
+     "Trident et Yeoman, 99 sans inconnue."
     ],
     "interdit": [],
     "choisie": {
@@ -45,7 +45,7 @@
       "Altus, Trident, Zenia vont de 78 à 99."
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : la réponse en gras devient « Yeoman, 100 sans inconnue. » ; la ligne « Altus, Trident, Zenia vont de 78 à 99. » n'existe plus car plus aucun candidat n'a de composante inconnue (la ligne ne s'écrit que pour une plage). Même tête, même bascule 60′/whirlpool/dry hop, même échelle. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-repos.png.)"
+    "note": "D83/D86, 26.10 : données changées, dessin identique : la réponse en gras devient « Yeoman, 100 sans inconnue. » ; la ligne « Altus, Trident, Zenia vont de 78 à 99. » n'existe plus car plus aucun candidat n'a de composante inconnue (la ligne ne s'écrit que pour une plage). Même tête, même bascule 60′/whirlpool/dry hop, même échelle. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-repos.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. La réponse en gras devient « Trident et Yeoman, 99 sans inconnue. » (Yeoman 100 avant). (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-repos.png.)"
    }
   },
   {
@@ -75,13 +75,14 @@
      "partiel",
      "proche",
      "très proche",
-     "Magnat",
-     "Yeoman",
-     "Sabro",
-     "Nelson Sauvin",
-     "Altus",
      "Trident",
+     "Yeoman",
      "Helios",
+     "Centennial",
+     "Magnat",
+     "Citra cryo",
+     "Motueka",
+     "Galaxy",
      "50",
      "65",
      "80",
@@ -112,7 +113,7 @@
       "En stock, insuffisant"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : Helios prend la place de Zenia parmi les huit candidats ; même échelle 50–100, mêmes trois paliers, mêmes icônes de stock. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-echelle.png.)"
+    "note": "D83/D86, 26.10 : données changées, dessin identique : Helios prend la place de Zenia parmi les huit candidats ; même échelle 50–100, mêmes trois paliers, mêmes icônes de stock. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-echelle.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Les huit candidats sont Trident, Yeoman, Helios, Centennial, Magnat (à acheter), Citra cryo, Motueka, Galaxy (du stock) ; Sabro, Nelson Sauvin et Altus n’y sont plus. Même échelle 50–100, mêmes trois paliers, mêmes icônes de stock. (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-echelle.png.)"
    }
   },
   {
@@ -140,13 +141,13 @@
     "geste": "repos",
     "attendu": [
      "tout connu",
-     "97",
-     "99",
-     "96",
-     "94",
      "100",
-     "93",
-     "85"
+     "99",
+     "97",
+     "96",
+     "95",
+     "80",
+     "77"
     ],
     "interdit": [],
     "choisie": {
@@ -159,7 +160,7 @@
       "98"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : plus aucun candidat de Nugget à 60′ n'a de composante inconnue, donc aucune plage hachurée n'est dessinée (« plage, une composante inconnue » n'est plus lu) ; seuls des points « tout connu » (100, 99, 97, 96, 94, 93, 85). Le dessin de la plage existe toujours dans le code (src/ui/hopIndex/substituer/index.tsx) mais n'est plus joué par cette fixture : voir RESULTAT, DÉCISION À PRENDRE. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-plage.png.)"
+    "note": "D83/D86, 26.10 : données changées, dessin identique : plus aucun candidat de Nugget à 60′ n'a de composante inconnue, donc aucune plage hachurée n'est dessinée (« plage, une composante inconnue » n'est plus lu) ; seuls des points « tout connu » (100, 99, 97, 96, 94, 93, 85). Le dessin de la plage existe toujours dans le code (src/ui/hopIndex/substituer/index.tsx) mais n'est plus joué par cette fixture : voir RESULTAT, DÉCISION À PRENDRE. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-plage.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Points « tout connu » à 99, 99, 97, 96, 96, 95, 80 et 77 ; toujours aucune plage hachurée (voir DÉCISION de e3 : la fixture ne l’exerce plus). (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-plage.png.)"
    }
   },
   {
@@ -218,11 +219,12 @@
      "Face à face, même IBU",
      "Nugget",
      "46 g",
-     "Yeoman",
-     "37–50 g",
-     "Nelson Sauvin",
-     "62",
-     "amérisant",
+     "Trident",
+     "43–54 g",
+     "Citra cryo",
+     "24 g",
+     "double usage",
+     "aromatique",
      "Épuisé"
     ],
     "interdit": [],
@@ -239,7 +241,7 @@
       "Épuisé"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : le premier remplaçant sûr à acheter est Yeoman (37–50 g) et non Magnat (37–54 g) ; même bande « Face à face, même IBU », mêmes trois cartes. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-face.png.)"
+    "note": "D83/D86, 26.10 : données changées, dessin identique : le premier remplaçant sûr à acheter est Yeoman (37–50 g) et non Magnat (37–54 g) ; même bande « Face à face, même IBU », mêmes trois cartes. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-face.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Les trois bandes : Nugget (épuisé, 46 g), Trident (premier sûr à acheter, 43–54 g), Citra cryo (premier du stock qui suffit, 24 g, aromatique) ; Nelson Sauvin (62 g) n’est plus le premier du stock. (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-face.png.)"
    }
   },
   {
@@ -267,10 +269,10 @@
     "geste": "repos",
     "attendu": [
      "9–16",
-     "12–16",
-     "10–14,5",
+     "11–14",
+     "10–15",
      "lot 13",
-     "article 9,6"
+     "article 24,8"
     ],
     "interdit": [],
     "choisie": {
@@ -282,7 +284,7 @@
       "article 9,6"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : α de Yeoman 12–16 à la place de Magnat 11–16 ; mêmes trois lignes, même repère « lot 13 » et « article 9,6 ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-alpha.png.) — 2e passe, commit deeb4d23 : dessin voulu, pas une régression (s1, exigence du brasseur du 26.10 : un trait par plage de source qui diffère, sources d'accord fusionnées, rangées plus hautes ; t1, D160 : mots traduits) : Nugget α 9–16 (au lieu de 9,5–16) et Nelson Sauvin 10–14,5 (au lieu de 10–14) parce que les compléments de d4 ajoutent des sources ; la rangée α porte un trait fin par plage qui diffère. Mêmes trois lignes, mêmes repères « lot 13 » et « article 9,6 ». (captures avant (98fac6b2) et après (deeb4d23) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires-s1t1/etat-subst-alpha.png.)"
+    "note": "D83/D86, 26.10 : données changées, dessin identique : α de Yeoman 12–16 à la place de Magnat 11–16 ; mêmes trois lignes, même repère « lot 13 » et « article 9,6 ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-alpha.png.) — 2e passe, commit deeb4d23 : dessin voulu, pas une régression (s1, exigence du brasseur du 26.10 : un trait par plage de source qui diffère, sources d'accord fusionnées, rangées plus hautes ; t1, D160 : mots traduits) : Nugget α 9–16 (au lieu de 9,5–16) et Nelson Sauvin 10–14,5 (au lieu de 10–14) parce que les compléments de d4 ajoutent des sources ; la rangée α porte un trait fin par plage qui diffère. Mêmes trois lignes, mêmes repères « lot 13 » et « article 9,6 ». (captures avant (98fac6b2) et après (deeb4d23) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires-s1t1/etat-subst-alpha.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Les trois rangées α sont Nugget 9–16 (lot 13), Trident 11–14, Citra cryo 10–15 (article 24,8) ; le repère « article » passe de Nelson Sauvin (9,6) à Citra cryo (24,8). (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-alpha.png.)"
    }
   },
   {
@@ -321,8 +323,8 @@
      "Épicé",
      "Fiches lues",
      "Nugget 10",
-     "Yeoman 1",
-     "Nelson Sauvin 9",
+     "Trident 2",
+     "Citra cryo 7",
      "Pointillé",
      "Noyau",
      "Pépins",
@@ -353,7 +355,7 @@
       "Pointillé"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : les fiches décrivent maintenant les douze familles, donc la note « Noyau, Pépins, Baies, Melon, Végétal : aucune des trois fiches ne les décrit » n'est plus écrite (elle ne l'est que pour une famille sans donnée) ; ces cinq familles ont leur ligne dans « Hors 16D ». Mêmes colonnes, mêmes deux groupes (16D, hors 16D), même ligne « sans famille ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-aromes.png.)"
+    "note": "D83/D86, 26.10 : données changées, dessin identique : les fiches décrivent maintenant les douze familles, donc la note « Noyau, Pépins, Baies, Melon, Végétal : aucune des trois fiches ne les décrit » n'est plus écrite (elle ne l'est que pour une famille sans donnée) ; ces cinq familles ont leur ligne dans « Hors 16D ». Mêmes colonnes, mêmes deux groupes (16D, hors 16D), même ligne « sans famille ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-aromes.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Fiches lues : Nugget 10, Trident 2, Citra cryo 7 (avant Yeoman 1, Nelson Sauvin 9) ; mêmes colonnes et mêmes groupes. (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-aromes.png.)"
    }
   },
   {
@@ -380,7 +382,7 @@
     "selecteur_choisie": "svg[data-radar]",
     "geste": "repos",
     "attendu": [
-     "Radar des citations : Nugget, Yeoman, Nelson Sauvin",
+     "Radar des citations : Nugget, Trident, Citra cryo",
      "Nugget (l’original, contour seul)",
      "gras : attendu en 16D",
      "Du centre vers le bord",
@@ -397,7 +399,7 @@
       "non décrit, cité, marqué"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : le radar compare Nugget, Yeoman, Nelson Sauvin ; la zone hachurée « sans donnée » a disparu parce que les douze axes sont décrits (mêmes anneaux, mêmes cercles gras pour les familles attendues en 16D). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-radar.png.)"
+    "note": "D83/D86, 26.10 : données changées, dessin identique : le radar compare Nugget, Yeoman, Nelson Sauvin ; la zone hachurée « sans donnée » a disparu parce que les douze axes sont décrits (mêmes anneaux, mêmes cercles gras pour les familles attendues en 16D). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-radar.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Le radar compare Nugget, Trident et Citra cryo ; mêmes anneaux, même contour seul pour l’original. (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-radar.png.)"
    }
   },
   {
@@ -426,7 +428,7 @@
     "attendu": [
      "3–8",
      "4–5",
-     "4,5–8",
+     "2,7–4,5",
      "un par plage qui diffère",
      "milieu moyen des sources"
     ],
@@ -440,7 +442,7 @@
       "milieu moyen des sources"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : β de Yeoman 4–5 à la place de Magnat 2,8–7 ; mêmes trois lignes, même légende. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-beta.png.) — 2e passe, commit deeb4d23 : dessin voulu, pas une régression (s1, exigence du brasseur du 26.10 : un trait par plage de source qui diffère, sources d'accord fusionnées, rangées plus hautes ; t1, D160 : mots traduits) : la légende « α et β : traits fins, une source chacun (Beer Maverick, Hopsteiner) » devient « un par plage qui diffère (des sources d'accord n'en font qu'un, leurs noms au survol) » ; Nugget β 3–8 (au lieu de 3–6). (captures avant (98fac6b2) et après (deeb4d23) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires-s1t1/etat-subst-beta.png.)"
+    "note": "D83/D86, 26.10 : données changées, dessin identique : β de Yeoman 4–5 à la place de Magnat 2,8–7 ; mêmes trois lignes, même légende. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-beta.png.) — 2e passe, commit deeb4d23 : dessin voulu, pas une régression (s1, exigence du brasseur du 26.10 : un trait par plage de source qui diffère, sources d'accord fusionnées, rangées plus hautes ; t1, D160 : mots traduits) : la légende « α et β : traits fins, une source chacun (Beer Maverick, Hopsteiner) » devient « un par plage qui diffère (des sources d'accord n'en font qu'un, leurs noms au survol) » ; Nugget β 3–8 (au lieu de 3–6). (captures avant (98fac6b2) et après (deeb4d23) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires-s1t1/etat-subst-beta.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Rangées β : Nugget 3–8, Trident 4–5, Citra cryo 2,7–4,5 ; même légende. (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-beta.png.)"
    }
   },
   {
@@ -523,11 +525,11 @@
      "IBU 50–70",
      "la recette est à 59,7 et chaque dose la garde",
      "cite les trois",
-     "noble, agrumes",
      "ne cite aucune des trois",
-     "vin blanc, fruité, groseille à maquereau, raisin, sauvignon blanc",
-     "aucune stout citée",
-     "Aucun style d’emploi dans le dépôt"
+     "fruité, agrumes, fruits tropicaux, fruit de la passion",
+     "garde floral (marqué), perd herbacé et terreux",
+     "Employé en Hazy IPA, IPA",
+     "aucune stout citée"
     ],
     "interdit": [],
     "choisie": {
@@ -544,7 +546,7 @@
       "Aucun style d’emploi dans le dépôt"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : la ligne du premier remplaçant est celle de Yeoman (« ne cite aucune des trois. noble, agrumes (Beer Maverick) ») et non de Magnat (« garde floral (cité), perd herbacé et terreux ») ; même liste de quatre lignes (16D, Nugget, remplaçant, Nelson Sauvin). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-style.png.)"
+    "note": "D83/D86, 26.10 : données changées, dessin identique : la ligne du premier remplaçant est celle de Yeoman (« ne cite aucune des trois. noble, agrumes (Beer Maverick) ») et non de Magnat (« garde floral (cité), perd herbacé et terreux ») ; même liste de quatre lignes (16D, Nugget, remplaçant, Nelson Sauvin). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-style.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Les quatre lignes sont la 16D, Nugget, Trident (« ne cite aucune des trois ») et Citra cryo (« garde floral (marqué), perd herbacé et terreux ») ; les trois houblons ont maintenant un style d’emploi : « Aucun style d’emploi dans le dépôt » n’est plus lu par cette fixture (à rejouer avec un houblon sans style d’emploi : DÉCISION de e6). (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-style.png.)"
    }
   },
   {
@@ -571,9 +573,9 @@
     "selecteur_choisie": ".choisir",
     "geste": "repos",
     "attendu": [
-     "Ajouter Yeoman aux achats",
+     "Ajouter Trident aux achats",
      "Remplacer",
-     "Nelson Sauvin"
+     "Citra cryo"
     ],
     "interdit": [],
     "choisie": {
@@ -583,7 +585,7 @@
       "Nelson Sauvin"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : le bouton nomme Yeoman (premier remplaçant sûr à acheter) ; mêmes « Ma bière avec chacun », même bouton, même pied. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-actions.png.)"
+    "note": "D83/D86, 26.10 : données changées, dessin identique : le bouton nomme Yeoman (premier remplaçant sûr à acheter) ; mêmes « Ma bière avec chacun », même bouton, même pied. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-actions.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Le bouton nomme Trident (premier remplaçant sûr à acheter) et le pied propose « 46 g de Nugget → 24 g de Citra cryo » (premier du stock qui suffit) ; même bouton « Remplacer ›». (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-actions.png.)"
    }
   },
   {

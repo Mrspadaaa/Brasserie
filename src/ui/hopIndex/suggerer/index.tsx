@@ -467,7 +467,7 @@ function LigneVoie({ l, premiere, cibles, slots, cran, choisie, basculer, gestes
               ))}
             </span>
           )}
-          <button type="button" data-role="ajouter" data-element="q2b-plus-coche" {...(plus || noms === 'Aurum' ? { 'data-etat': [plus && 'etat-sugg-plus', noms === 'Aurum' && 'etat-acquis-plus-comparer'].filter(Boolean).join(' ') } : {})} aria-pressed={choisie}
+          <button type="button" data-role="ajouter" data-element="q2b-plus-coche" {...(plus ? { 'data-etat': 'etat-sugg-plus etat-acquis-plus-comparer' } : {})} aria-pressed={choisie}
             aria-label={choisie ? `Retirer ${noms} de la comparaison` : `Ajouter ${noms} à la comparaison`}
             onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); basculer(); }}
             className="touch-target pq-sg-sur-axe w-11 h-11 rounded-full flex items-start justify-center">
