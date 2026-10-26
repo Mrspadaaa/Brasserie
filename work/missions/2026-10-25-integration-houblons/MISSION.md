@@ -181,3 +181,70 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
 - En vol (25.10, soir) : t15a-comparer (Comparer cmc2k dans l'app, #174), rb2-ma-biere (radar commun dans Ma bière). Fait : t12b (#170 fermé), rc-registres-comparer (D69).
 
 ## Signature
+
+## Reprise (26.10, vers 15 h 30) : ARRÊT, quota hebdomadaire à 99 %, demandé par l'utilisateur
+« À 99% d'usage hebdo fait attention. Enregistrer bien TOUT pour la reprise et arrêt ». Le quota est remis à zéro le 31.10 vers 03 h.
+Le contexte de cette session était à 50 % (500 k) : reprendre dans une **session neuve**, depuis ce paragraphe.
+
+### En ligne (production)
+- Hébergement au commit **9dba6971** (D95) : d4, Substituer v2 avec l'IA (puce dans la tête), D90, son choix D dans Dryhopper, s1, t1,
+  le ★, la bulle du jour.
+- Callable **hopReclasserIA** déployé seul, en europe-west6 (D92).
+- La branche `claude/refonte-houblons-v4` a été poussée jusqu'à 292a45c1. Les commits locaux suivants **ne sont pas poussés**.
+
+### Commité, non déployé (après 9dba6971)
+- g2b (e511311b, 31aa9605) : options `palier60` et `dryHop`, la sortie de m7.
+- g2d (34eae4a7) : options d'apport minoritaire c, m, w ; défaut inchangé.
+- u1 et v1 : diagnostics ; import et export vérifiés.
+- Décisions D96 à D98, défauts D164 à D177, tickets #187 et #182 (commentaire).
+
+### Voies arrêtées en plein travail (à reprendre ; leurs fichiers restent NON COMMITÉS dans l'arbre de travail)
+1. **s2-sources-une-fois** (D168 à D170, puis D173). Fichiers :
+   - `src/ui/hopIndex/commun/plagesSources.ts` ;
+   - `comparer/{Feuilles,Huiles,index}.tsx` ;
+   - `fiche/{FicheHoublon,Matrice,Replis}.tsx` ;
+   - `maBiere/{Ajouter,Carte,briques,index,legende-bande}.tsx` et `maBiere/carteOuverte.tsx` (neuf) ;
+   - `substituer/index.tsx` ;
+   - `tests/unit/hopIndexV4/{plagesSources,traductionMots}.test.ts` ;
+   - `tests/integration/controle-sources-une-fois.mjs`.
+
+   État inconnu : relire son `RESULTAT.md`, faire `git diff`, puis relancer le même contrat (`voies/s2-sources-une-fois/VOIE.md`).
+   L'appui long sur les grammes (D173) était demandé après les trois points. Deux tests rouges, dans `sourcesLignes.test.tsx`, viennent
+   de ce travail en cours.
+2. **p6-ma-biere-app** (D171, D97) : `src/ui/hopIndex/biere/` (neuf, partiel ; il en était à la CSS). Contrat :
+   `voies/p6-ma-biere-app/VOIE.md`. Une fois l'écran prêt, rebrancher `analyse = true` dans `maBiere/index.tsx`, l. 75 et 76.
+3. **f1-affinage-diagnostic** (D174 à D176, le principe de l'α) : `scripts/eval-hop/f1-{diagnostic,formes,sonde}.ts`,
+   `voies/f1-affinage-diagnostic/formes.json`. Rapport non écrit ; relancer le contrat.
+4. **m7-suggerer-rangees** (D165, D166) : capturer partiel (`voies/m7-suggerer-rangees/`). Le relancer **après** avoir choisi l'option
+   d'apport (D99 ci-dessous), parce que les listes en dépendent.
+5. **c5-houblons-manquants** : arrêté à 40 tours, sans rapport (`voies/c5-houblons-manquants/`). Le relancer en Sonnet ou par
+   morceaux.
+- En plus, hors agent : le téléchargement poli de Beer Analytics (PID 8368, lettres A, B, C, G, M, N déjà écrites dans
+  `src/data/hopSources/beeranalytics*.json`, non commités). Quand il a fini :
+  `node scripts/collecte-hop/beeranalytics.mjs --offline --rapport`.
+
+### Décisions à prendre à la reprise (pilote)
+- **D99, à décider** : activer l'option **c** de g2d par défaut au dry hop. Mesuré : Citra passe de la 54e à la 2e place, Mosaic de
+  la 134e à la 20e, Nelson Sauvin de la 107e à la 31e ; 0 barre changée ; 0 ms. Les empreintes changent. Ensuite, mesurer m2 avant
+  Ma bière.
+- Choisir le défaut de départage des ex æquo (k1 ou k3, D91), à lui montrer dans q2b.
+
+### Questions posées au brasseur, sans réponse
+- Sa recette a-t-elle des ajouts à 15, 20 ou 30′ ? C'est la cause probable des barres hachurées ; D177 prévoit d'interpoler.
+- Le test à l'aveugle moteur contre IA : 10 houblons, environ 0,1 CHF.
+- L'essai de l'IA dans Suggérer : 30 appels, environ 0,1 CHF, puis la production.
+- Fusionner la PR #183 ; écrire dans le catalogue Firestore ; tester dans son Chrome en lecture seule.
+- Choix encore ouverts sur ses pages : m1 (farnésène, cohumulone), m4 (remplaçants à 60′). Choix faits : m5 (D), m6 (M1 + M2 + IA,
+  avec réserves).
+
+### File d'attente, dans l'ordre
+1. Finir s2, puis rejeu, critique et redéploiement : les sources une seule fois, la carte qui se referme, l'anglais, l'appui long.
+2. Finir p6 (l'onglet Ma bière dans l'app), puis critique et redéploiement.
+3. D99, puis m7 : la planche des rangées et du vrai dry hop, à publier.
+4. f1 (affinage : Cryo, coupes, poids de l'α, formes produit), puis c5 (houblons manquants) et #187 (rattachement du stock).
+5. D172 : le dry hop actif dans Substituer, avec un diagnostic des données de levure. D177 : interpoler 20′.
+6. #182 : le compagnon. Il crée et enrichit déjà les houblons dans Firestore, mais les outils v4 ne le lisent pas : il faut une
+   surcouche en lecture.
+
+Méthode (skill voies, 26.10) : une voie de code s'arrête au code, aux tests, au build et à son contrôle ; la suite mécanique va à un
+exécutant Haiku. Le plafond de l'auteur est de 120 tours (nouvelle session).
