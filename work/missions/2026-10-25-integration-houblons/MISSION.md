@@ -350,3 +350,18 @@ PR #188 fusionnée (71dc41bb). Callable IA (D92).
   - **w1** : la préchauffe dans le worker, et le face à face sans produit d'arôme à 60′. Cette voie bloque le déploiement.
 - Ensuite : un rejeu ciblé de HEAD, puis le déploiement depuis la copie propre (personne d'autre n'y écrit ; lire « found N files »
   et la page servie). Puis push, PR, et fusion une fois propre.
+
+## Reprise (26.10, vers 21 h 45) : complément
+- Commités : p7 (a3bb8346 : G, le trou du 0, et les points confondus) et w1 (b1d73ea1 : la préchauffe dans le worker, le face à face
+  sans produit d'arôme). Rien n'est encore poussé depuis 2cccbdc0.
+- En vol : **le rejeu complet de b1d73ea1** (Haiku, journaux dans `%TEMP%/rejeu-b1d7/`). S'il est vert :
+  1. déployer depuis la copie propre (lire « found N files » et la page servie, L17) ;
+  2. pousser ;
+  3. ouvrir une PR et la fusionner, avec `--match-head-commit`.
+- Ensuite :
+  - la page des listes k1/k3 sur sa Double IPA (D91) ;
+  - m7 ;
+  - les mini maquettes P4 et P5 de « Ajouter », B2 et les formes ;
+  - les accords D100 ;
+  - D172, D178, D182, D185, #182, #187 ;
+  - la voie de profil D101, avec les tâches de 100 à 250 ms qui restent après la préchauffe (w1), dont l'arrivée du catalogue plein de c7.
