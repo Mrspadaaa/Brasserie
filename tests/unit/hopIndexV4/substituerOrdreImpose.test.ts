@@ -75,7 +75,7 @@ describe('ordre imposé de Substituer (développement)', () => {
 describe('controle-capture-fidele : F1 (rien de caché) et F2 (mesure)', () => {
   // Témoin négatif (D155) : le script de capture de la page m2, copié dans les fixtures suivies (les dossiers de voie sont ignorés par git).
   const m2 = fs.readFileSync(path.resolve(__dirname, '../../fixtures/controle-capture/temoin-m2-capturer.mjs.txt'), 'utf8');
-  const m3 = fs.readFileSync(path.resolve(__dirname, '../../../work/missions/2026-10-25-integration-houblons/voies/m3-listes-u4/capturer.mjs'), 'utf8');
+  const m3 = fs.readFileSync(path.resolve(__dirname, '../../fixtures/controle-capture/temoin-m3-capturer.mjs.txt'), 'utf8');
 
   it('F1 : le script de m2 est refusé (:not(...) { display: none }, bloc du dock)', () => {
     const d = nodesCaches(m2) as string[];
