@@ -874,3 +874,15 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - **D167.** Une citation minoritaire donne tout son effet, et Citra, Nelson Sauvin, Motueka et Mosaic tombent loin. La voie g2d
     mesure trois options (rang seul, effet si marquée, effet pondéré) avant toute décision. Les listes de m7 ne lui seront pas
     montrées avant.
+- D97 (pilote, 26.10, voie u1) : la cause de D171 est b68d7935 (a2, D84). L'entrée « Ouvrir l'analyse de ma bière » ne menait qu'à un
+  écran provisoire ; en production, l'entrée a été cachée et le panneau ne répond plus.
+  - Remettre l'écran provisoire est refusé : il l'a déjà jugé inutile.
+  - Son onglet « Ma bière » (base v4.10, « Ça aussi ») est porté dans l'app par la voie p6, puis l'entrée sera rebranchée.
+  - Les 12 familles hachurées ne sont pas une régression. Aucun ajout de sa recette n'est simulé quand le moment est hors de 60′,
+    10′, whirlpool et dry hop (par exemple 20′), quand le whirlpool n'a pas de température, ou quand le houblon n'est pas dans les
+    fiches. C'est une hypothèse très probable, car sa recette réelle n'a pas été lue.
+  - D177 : interpoler entre 60′ et 10′, en le dessinant comme tel (D65), est à faire.
+- D98 (pilote, 26.10, en réponse à « Il faut tout mettre ?? Pas exclure certains ?? ») : au catalogue, on met toutes les variétés
+  attestées par au moins une source, et toutes les formes produit rattachées à leur variété. Rien n'est exclu à l'entrée. Ce qui a peu
+  de données est marqué « peu de données », et ce qui n'est plus vendu est marqué « non commercialisé » si une source le dit. Le tri
+  et les exclusions se font dans les écrans, par des règles écrites (D90), et le plus tard possible (D175).
