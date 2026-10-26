@@ -50,3 +50,19 @@ la version facile de chaque partie. Ne rends la main qu'avec tous les critères 
 - `CONNAISSANCE : …` ou `aucune` ; `LEÇON PROPOSÉE : …` ou `aucune`.
 
 Ta réponse finale au pilote tient en une ligne : la ligne 1 de RESULTAT.md suivie de son chemin.
+
+## Le mécanique part chez Haiku (26.10, demande de l'utilisateur)
+« les agents type Opus ou fable, peut aussi lancé eux même des sous agent hiku pour allégé leur tâches ». Un sous-agent ne peut pas
+en lancer un autre : Claude Code l'interdit. Le relais passe donc par le pilote.
+
+Quand ta voie demande une **série mécanique** — plus de 3 captures à refaire, la maquette à reconstruire, un rejeu de contrôles ou de
+tests, une régénération de données —, ne la fais pas toi-même au-delà d'un premier essai :
+1. Écris dans RESULTAT.md une section `DEMANDE EXECUTANT :`, avec :
+   - les commandes exactes, dans l'ordre ;
+   - les fichiers à produire ;
+   - les sorties attendues, par exemple `FIDELE OK` ou `PAGE OK` ;
+   - les captures à ouvrir.
+2. Arrête-toi et rends ta ligne.
+
+Le pilote confie la demande à un exécutant Haiku, puis te renvoie le résultat pour que tu juges, sans que ton contexte soit relu en
+vain. Ce que tu juges toi-même reste à toi : le dessin, le verdict, le choix entre variantes.
