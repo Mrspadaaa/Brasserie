@@ -705,3 +705,12 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   B5 148,3 ko tenu (B1 et B2 au-dessus depuis avant). `.env.local` de la copie (émulateurs) est sans effet en production : la
   garde est `import.meta.env.DEV`. Vu ensuite par le pilote et rendu à la voie c2 : l'huile de Mosaic encore « inconnu »,
   l'encadré ⇄ à vérifier, et l'en-tête « Nelson Sauvin Citra » collé, une régression de la colonne des noms.
+- D77 (pilote, 26.10, #181, avis croisé : Brasseur en Fable, Contradicteur en Opus ; dossier `work/missions/2026-10-25-integration-houblons/conseil-substituts/question.md`) :
+  rien n'est branché dans Substituer, ni l'option 1 de e1, ni l'IA. Raisons du contradicteur, vérifiées dans le rapport de e1 :
+  - l'option 1 met 75 % du poids de l'arôme sur tous les mots (λ = 0,25), et non un simple ajout des mots hors famille ;
+  - λ a été choisi sans moitié de contrôle, et Hallertau Blanc dépend de ce seul réglage ;
+  - Motueka recule de 89e à 130e.
+  Suite : λ rejoué sur une moitié de contrôle, garde contre le mot rare unique, puis listes côte à côte (moteur, réglages retenus,
+  réglage + IA) sur ses houblons phares, sans mention de Beer Maverick, en mini maquettes dans u4 : **il choisit**. Le regard
+  Brasseur : montrer les mots partagés en couleur, « pourquoi en un mot ». L'IA en production (Gemini facturé) attend en plus
+  l'accord de l'utilisateur.
