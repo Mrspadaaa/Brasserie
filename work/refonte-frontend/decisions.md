@@ -729,3 +729,10 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   facturé en production sur cet usage (~0,003 CHF par recherche). Rien n'est branché avant la revue du moteur de substitution,
   qu'il demande, à la lumière de l'article de Beer Maverick « Your hop substitutions are wrong » (lecture en cours, vérification
   anti-robot passée par lui-même dans son Chrome).
+- D81 (l'utilisateur, 26.10) : « Tu peux y aller, j'ai eu leur autorisation explicite. Pour un usage non commerciales, c'est bon,
+  tu dois juste pas être trop intrusif » (Yakima Chief et Freestyle Hops).
+  - Freestyle Hops : son `robots.txt` refuse nos robots. Collecte lancée (voie c3f), au plus une requête toutes les 2 s et
+    80 requêtes en tout, avec l'autorisation inscrite dans la source.
+  - Yakima Chief : son site oppose une vérification anti-robot (Vercel Security Checkpoint, 429). Le pilote ne la contourne pas,
+    même autorisé : c'est hors de ce qu'il peut faire. Il propose que l'utilisateur enregistre lui-même les pages ou le guide PDF
+    de Yakima Chief, qui seront lus en local ; ou qu'il passe la vérification dans son Chrome pour une lecture page par page.
