@@ -40,6 +40,8 @@ export interface FamilleLue {
   /** Borne haute partielle (composés sans borne publiée) : le vrai haut peut être plus haut. */
   hautPartiel: boolean;
   raison: string | null;
+  /** D177 : la valeur simulée compte au moins un ajout d'ébullition interpolé entre 60′ et 10′ (aucune mesure à sa minute). */
+  interpole?: boolean;
 }
 export type ProfilLu = Record<FamilyId, FamilleLue>;
 export interface BiereLue {
@@ -50,6 +52,8 @@ export interface BiereLue {
   profil: ProfilLu;
   /** Ajouts dont l'arôme n'est pas simulé (moment hors du simulateur) : le profil les ignore. */
   nonSimules: { ajoutId: string; raison: string }[];
+  /** D177 : ajouts d'ébullition entre 10′ et 60′ exclus, dont l'arôme est INTERPOLÉ entre les deux moments simulés (jamais mesuré). */
+  interpoles: { ajoutId: string; minutes: number }[];
   /** Un ajout dégusté a été retiré ou changé : sa part simulée est retranchée du profil dégusté. */
   retraits: string[];
   confiance: CasSimule['confiance'];
@@ -104,7 +108,11 @@ export function versSimule(a: AjoutParcours, recette: RecetteParcours): AjoutSim
   if (q.type === 'whirlpool') return { ...base, moment: 'wp' };
   if (q.type === 'ebullition') {
     const m = ARÔME_EBULLITION[q.minutes];
-    return m ? { ...base, moment: m } : { raison: `ébullition ${q.minutes}′ : le moteur simule l'arôme à 60′ et 10′ seulement` };
+    if (m) return { ...base, moment: m };
+    // D177 : entre 10′ et 60′ exclus, l'arôme est interpolé entre les deux moments simulés (moteur : poidsInterpole), pas ignoré.
+    // Au-delà de 60′ ou en deçà de 10′ (5′, flame-out), rien n'est mesuré : l'extrapoler serait inventer, l'ajout reste non simulé.
+    if (q.minutes > 10 && q.minutes < 60) return { ...base, moment: 'b60', minutes: q.minutes };
+    return { raison: `ébullition ${q.minutes}′ : le moteur simule l'arôme de 10′ à 60′ seulement (interpolé entre les deux)` };
   }
   const moment: MomentSimule = q.phase === 'actif' ? 'dryActive' : 'dryPost';
   return { ...base, moment, jourDebut: a.day ?? CONDITIONS.jourDebut[moment], jours: q.jours };
@@ -181,8 +189,9 @@ export const lireBiere = memo('lireBiere', (r: RecetteParcours) => cleRecette(r)
       // Sans houblon ni dégustation (sa page cas-k2) : le fond de levure du modèle (recipeProfile, comme son pack S4 : « sans
       // houblon, le modèle ne voit que le fond de levure US-05 ») ; la levure est la source de la famille placée.
       if (fond) { const e = fond[f]; return e.situated && e.range ? lu(f, { bas: e.range.min, centre: e.central ?? (e.range.min + e.range.max) / 2, haut: e.range.max, source: 'simulé' }, sc, true) : lu(f, { bas: 0, centre: 0, haut: 0, source: 'simulé', inconnu: 'sans houblon : la levure seule ne la situe pas' }, sc, false); }
-      return lu(f, p[f], sc, recette.additions.some((a) => houblon(a.hopKey).familles[f].niveau !== 'non décrit') || levureSeule(recette, levure)[f].centre > 0.05);
-    }), nonSimules, retraits: retires.map((b) => b.id), confiance: cas.confiance, drapeaux: cas.drapeauxIds,
+      const x = lu(f, p[f], sc, recette.additions.some((a) => houblon(a.hopKey).familles[f].niveau !== 'non décrit') || levureSeule(recette, levure)[f].centre > 0.05);
+      return cas.interpoles.length && x.valeur && x.source === 'simulé' ? { ...x, interpole: true } : x;
+    }), nonSimules, interpoles: cas.interpoles.map((i) => ({ ajoutId: i.ajout, minutes: i.minutes })), retraits: retires.map((b) => b.id), confiance: cas.confiance, drapeaux: cas.drapeauxIds,
   };
 });
 
