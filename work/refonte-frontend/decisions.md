@@ -993,3 +993,8 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     83aee2c1).
   - Le contrôle « sources une fois » ne passait pas à cause de l'état laissé par le contrôle précédent. Seul, il passe.
   - Le lot moteur (689160fb) n'est pas encore poussé : rejeu, puis deuxième déploiement, puis nouvelle PR.
+- D113 (pilote, 26.10, voie u2) : un ajout d'ébullition entre 10′ et 60′ est interpolé (D177). Les finitions sont confiées à la voie
+  u3 :
+  1. Une valeur interpolée se marque d'un rond en pointillé, et la légende « interpolé » n'apparaît que si le cas existe.
+  2. La raison au survol est propre à l'ajout : « ajout à 40′ hors des moments simulés ».
+  3. Un whirlpool sans température est simulé à 80 °C, avec « 80 °C supposé ».
