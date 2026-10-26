@@ -873,6 +873,6 @@
   }
 }
 
-body:has([data-vaul-drawer][data-state='open']) .brewer-activity-pill {
+:root body[data-has-drawer-open] .brewer-activity-pill {
   display: none;
 }

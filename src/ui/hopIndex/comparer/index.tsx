@@ -153,19 +153,24 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   // par-dessus les cellules ; son fond, dessous. Les filets des sections passent sous le cadre sans le couper.
   const refTab = useRef<HTMLElement>(null);
   const [colonne, setColonne] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  // p2-rendu (#179) : la mesure ne se refait plus à CHAQUE rendu (trois getBoundingClientRect et un ResizeObserver neuf à
+  // chaque fois forçaient le recalcul de style de ~2 000 nœuds). Elle se refait quand la colonne ou la hauteur peuvent
+  // changer (colonne retenue, moment, colonnes, lecture, familles montrées) ; la taille de la section (fenêtre
+  // redimensionnée, section repliée, police chargée) est suivie par UN ResizeObserver, créé une fois.
+  const mesurer = useCallback(() => {
+    const tab = refTab.current; if (!tab) return;
+    const haut = tab.querySelector('.pq-comparer-tetes .pq-comparer-sel'), bas = [...tab.querySelectorAll('.pq-comparer-mots .pq-comparer-sel')].pop();
+    if (!haut || !bas) { setColonne(null); return; }
+    const t = tab.getBoundingClientRect(), a = haut.getBoundingClientRect(), b = bas.getBoundingClientRect();
+    const n = { x: Math.round(a.left - t.left), y: Math.round(a.top - t.top), w: Math.round(a.width), h: Math.round(b.bottom - a.top) };
+    setColonne((o) => (o && o.x === n.x && o.y === n.y && o.w === n.w && o.h === n.h ? o : n));
+  }, []);
+  useLayoutEffect(() => { mesurer(); }, [mesurer, vue, cols, cleRetenue, moment, absolu, quatre, lignes.length, tousInconnus.length, etapes, horsStyle, reference, pin]);
   useLayoutEffect(() => {
     const tab = refTab.current; if (!tab) return;
-    const mesurer = () => {
-      const haut = tab.querySelector('.pq-comparer-tetes .pq-comparer-sel'), bas = [...tab.querySelectorAll('.pq-comparer-mots .pq-comparer-sel')].pop();
-      if (!haut || !bas) { setColonne(null); return; }
-      const t = tab.getBoundingClientRect(), a = haut.getBoundingClientRect(), b = bas.getBoundingClientRect();
-      const n = { x: Math.round(a.left - t.left), y: Math.round(a.top - t.top), w: Math.round(a.width), h: Math.round(b.bottom - a.top) };
-      setColonne((o) => (o && o.x === n.x && o.y === n.y && o.w === n.w && o.h === n.h ? o : n));
-    };
-    mesurer();
     const ro = new ResizeObserver(mesurer); ro.observe(tab);
     return () => ro.disconnect();
-  });
+  }, [mesurer]);
   // La réponse de y1b (r6n2), au moment choisi : en conclusion, au-dessus de « Placer » (80 mots au premier écran, D128).
   const rep = useMemo(() => reponse(vue, cleRetenue, critere.famille, critere.sens), [vue, cleRetenue, critere]);
   // Le pont nomme son outil (title du bouton de Pont, composant du socle) : « Doser Idaho 7 dans Dryhopper », comme r6a.

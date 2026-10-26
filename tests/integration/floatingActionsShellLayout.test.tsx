@@ -138,7 +138,7 @@ function phoneWithKeyboard() {
 }
 
 describe('Lanceur global · case réservée hors de la zone défilante', () => {
-  it('#114 : flotte en bas à droite d’une page plein écran, sans bande de pied, et réserve la fin du contenu', ({ task }) => {
+  it('#114 : flotte en bas à droite d’une page plein écran, sans bande de pied, et réserve la fin du contenu', async ({ task }) => {
     hostStyle(readFloatingActionsCss(task.file?.filepath));
     const calls = callbacks();
     render(<PageOnly calls={calls} />);
@@ -149,6 +149,8 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     expect(launcherRoot()).toHaveAttribute('data-floating-actions-dock', 'none');
     expect(launcherRoot()).toHaveAttribute('data-floating-actions-docked', 'false');
     expect(launcherRoot().style.getPropertyValue('--floating-actions-bottom')).toBe('calc(var(--page-footer-height, 0px) + 1rem)');
+    // p2-rendu (#179) : le CSS lit body[data-has-fab-floating], posé par un observateur (micro-tâche, avant la peinture).
+    await act(async () => {});
     const gap = pageMain.querySelector<HTMLElement>('[data-floating-actions-gap="page"]')!;
     expect(getComputedStyle(gap).paddingBottom, 'Le dernier champ défile au-dessus du bouton flottant.')
       .toBe('calc(4.5rem + env(safe-area-inset-bottom, 0px))');
@@ -275,8 +277,10 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     modal.setAttribute('role', 'dialog');
     modal.setAttribute('aria-modal', 'true');
     document.body.append(modal);
+    await act(async () => {});
     expect(rendered(button), 'Une vraie modale efface toujours le lanceur.').toBe(false);
     modal.remove();
+    await act(async () => {});
     expect(rendered(button)).toBe(true);
   });
 

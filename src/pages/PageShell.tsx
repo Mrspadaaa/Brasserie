@@ -5,6 +5,45 @@ import { useCoarsePointer, useDensity, useKeyboardInset } from '../ui/useViewpor
 import './page-shell.css';
 
 /*
+ * p2-rendu (#179) : des attributs sur <body> à la place des règles `body:has(...)`.
+ *
+ * ⚠️ Une règle `body:has(.x)` oblige le navigateur à ré-évaluer, à CHAQUE changement du DOM, le sélecteur pour toute la
+ * page (mesuré : −20 à −50 % sur le changement de moment de Comparer et sur les grammes de Ma bière une fois retirées).
+ * Un observateur léger pose donc l'attribut une fois par lot de mutations, et les CSS (floating-actions, water/workshop,
+ * brewer-chat, brewer-navigation, yeast-choice) lisent `body[data-has-…]`. Le sens est le même qu'avant : « existe-t-il un
+ * tel élément dans la page ? ». L'attribut suit l'élément avec une micro-tâche de retard, avant la peinture.
+ */
+const BODY_FLAGS: ReadonlyArray<readonly [string, string]> = [
+  ['data-has-modal', '[role="dialog"][aria-modal="true"]'],
+  ['data-has-drawer-open', "[data-vaul-drawer][data-state='open']"],
+  ['data-has-fab', '.floating-actions'],
+  ['data-has-fab-floating', '.floating-actions[data-floating-actions-docked="false"]'],
+  ['data-has-water-sels', '[data-water-step="sels"]'],
+  ['data-has-activity-pill', '.brewer-activity-pill'],
+];
+function syncBodyFlags() {
+  const body = document.body;
+  if (!body) return;
+  for (const [name, selector] of BODY_FLAGS) {
+    const present = body.querySelector(selector) !== null;
+    if (present !== body.hasAttribute(name)) {
+      if (present) body.setAttribute(name, ''); else body.removeAttribute(name);
+    }
+  }
+}
+let bodyFlagsObserver: MutationObserver | undefined;
+function watchBodyFlags() {
+  if (typeof document === 'undefined' || typeof MutationObserver === 'undefined' || bodyFlagsObserver || !document.body) return;
+  syncBodyFlags();
+  bodyFlagsObserver = new MutationObserver(syncBodyFlags);
+  bodyFlagsObserver.observe(document.body, {
+    childList: true, subtree: true, attributes: true,
+    attributeFilter: ['data-state', 'aria-modal', 'role', 'data-floating-actions-docked', 'data-water-step']
+  });
+}
+watchBodyFlags();
+
+/*
  * Zones d'action réservées au lanceur global (`FloatingActions`).
  *
  * Sur les onglets, le lanceur se pose dans une case réservée à droite de la
@@ -336,7 +375,9 @@ export const PageShell: React.FC<PageShellProps> = ({
 
   useLayoutEffect(() => {
     const header = headerRef.current;
-    if (!launcherPresent || !header) return;
+    // p2-rendu (#179) : ce résultat ne sert que clavier ouvert (dockInHeader) ; hors de là, la chaîne d'ancêtres n'est plus
+    // relue par getComputedStyle (8 appels, dont le premier force le recalcul de style de toute la page, à chaque ouverture).
+    if (!launcherPresent || !tight || !header) return;
     // Rendu au sens de la mise en page seulement : un `aria-hidden` posé par une
     // modale sur la branche ne retire pas l'en-tête de l'écran.
     const check = () => {
@@ -351,7 +392,7 @@ export const PageShell: React.FC<PageShellProps> = ({
     const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(check);
     observer?.observe(header);
     return () => observer?.disconnect();
-  }, [launcherPresent, className]);
+  }, [launcherPresent, tight, className]);
 
   useLayoutEffect(() => {
     const page = pageRef.current;
@@ -366,7 +407,14 @@ export const PageShell: React.FC<PageShellProps> = ({
     pageOpenerSources.set(page, opener);
     refreshPageIsolation();
     if (!isolationObserver) {
-      isolationObserver = new MutationObserver(refreshPageIsolation);
+      // p2-rendu (#179) : une mutation interne à la page de devant ne change ni les couches à isoler ni le focus permis
+      // (portails et annonces sont HORS de la page ; ses dialogues internes sont déjà permis par sa branche). On ne refait
+      // donc pas la passe, qui relit getComputedStyle sur la chaîne d'ancêtres (~78 ms par toucher sur « + »).
+      isolationObserver = new MutationObserver((records) => {
+        const front = foregroundPage();
+        if (front && records.every(record => record.target !== front && front.contains(record.target))) return;
+        refreshPageIsolation();
+      });
       isolationObserver.observe(document.body, {
         childList: true, subtree: true, attributes: true,
         attributeFilter: ['open', 'hidden', 'data-state', 'role', 'aria-live']
@@ -418,7 +466,11 @@ export const PageShell: React.FC<PageShellProps> = ({
     };
   }, [opener]);
 
+  const firstScrollKey = useRef(true);
   useLayoutEffect(() => {
+    // Au montage la page est déjà en haut et l'effet d'isolation vient de lui donner le focus : ne rien refaire (écrire
+    // scrollTop force une mise en page, focus() un recalcul de style). Seul un changement de scrollKey remonte et refocalise.
+    if (firstScrollKey.current) { firstScrollKey.current = false; return; }
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
     // A field can disappear when Enter changes steps. Keep rail/button focus when it survives.
     if (foregroundPage() === pageRef.current && !pageRef.current?.contains(document.activeElement) && !hasPageDialog()) {
@@ -501,6 +553,7 @@ export const PageShell: React.FC<PageShellProps> = ({
     <div
       ref={pageRef}
       data-page-shell
+      {...(footerShown ? { 'data-page-footer': '' } : {})}
       style={{
         bottom: keyboardInset || undefined
       }}

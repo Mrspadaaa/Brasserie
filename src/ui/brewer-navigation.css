@@ -14,6 +14,6 @@
 .brewer-inbox-empty { color: rgb(var(--ct-b6b0a1)); padding: 20px 4px; line-height: 1.6; }
 .brewer-conversation button:disabled { opacity: .6; }
 /* Keep a phone's form controls clear while a dialog owns the interaction. */
-body:has([role="dialog"][aria-modal="true"]) .brewer-activity-pill {
+:root body[data-has-modal] .brewer-activity-pill {
   display: none;
 }
