@@ -26,7 +26,7 @@ import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { Usage } from '../fiche/briques';
 import { Lentille } from '../maBiere/Lentille';
 import { noterAvant } from '../maBiere/repere';
-import { huilesDe, LIGNES_HUILE, mesures, useRemplacants, motsHors, stockOriginal, TEXTE_STOCK, type Candidat, type EtatStock, type Intervalle } from './donnees';
+import { faceAFaceParDefaut, huilesDe, LIGNES_HUILE, mesures, useRemplacants, motsHors, stockOriginal, TEXTE_STOCK, type Candidat, type EtatStock, type Intervalle } from './donnees';
 import { enveloppeDesPlages, milieuMoyen, titreTrait, type TraitSource } from '../commun/plagesSources';
 import { useComplements } from '../fiche/complements-ui';
 import { RadarU4 } from './Radar';
@@ -250,12 +250,8 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
   useEffect(() => { if (ia.appliquee) setAEuIA(true); }, [ia.appliquee]);
   const fonduIA = aEuIA || ia.appliquee ? 'pq-substituer-ia-fondu' : '';
   // u4 : Magnat, premier sûr à acheter ; Nelson Sauvin, premier du stock qui suffit. Il remplace par celui du stock.
-  const defauts = useMemo(() => {
-    const B = cands.find((c) => c.stock === 'suffisant') ?? null;
-    const A = cands.find((c) => c.min === c.max && c !== B && c.stock !== 'suffisant') ?? cands.find((c) => c !== B) ?? null;
-    const B2 = B ?? cands.find((c) => c !== A) ?? null;
-    return { compares: [A?.cle, B2?.cle].filter(Boolean) as string[], choix: B2?.cle ?? A?.cle ?? null };
-  }, [cands]);
+  // w1 (D102 A) : sans candidat reculé (produit d'arôme, usage « arôme » à 60′) ; la règle est faceAFaceParDefaut (donnees.ts).
+  const defauts = useMemo(() => faceAFaceParDefaut(cands), [cands]);
   const [compares, setCompares] = useState<string[]>(defauts.compares);
   const [choix, setChoix] = useState<string | null>(defauts.choix);
   const [echelle, setEchelle] = useState<Echelle>('style');

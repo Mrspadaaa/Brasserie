@@ -1,8 +1,10 @@
 // Le client des calculs lourds (proposer, suggerer, remplacants, substitutes, leviers), tel que les écrans l'appellent
 // (T13, #173). Une seule copie, ici ; la maquette y pose son serveur (worker persistant, fil principal différé :
 // prototypes/houblons-v4/parcours/src/moteur/client.ts), l'app garde le défaut : le fil principal, tout de suite.
-// - défaut (l'app, les tests) : `servirSurFilPrincipal`, réponse immédiate, caches du moteur ; aucun état d'attente ;
-// - `poserClient` : la maquette y remplace le client (et dit si ses recalculs sont asynchrones, useCalcul).
+// - défaut (les tests, et l'app avant l'étape Houblons ou sans worker) : `servirSurFilPrincipal`, réponse immédiate, caches du moteur ;
+//   aucun état d'attente ;
+// - `poserClient` : la maquette y remplace le client (et dit si ses recalculs sont asynchrones, useCalcul) ; l'app y pose, au montage de
+//   l'étape Houblons, le client du worker (clientWorker.ts, w1, D115) : la préchauffe de Suggérer n'est plus un bloc du fil principal.
 // Un changement des données du brasseur (stock, dégustation) vide le client de l'app.
 import { creerClient, servirSurFilPrincipal, type ClientCalculs } from '../../../domain/hopIndex/v4/client';
 import { CALCULS, cleSubstitutes, type CalculsParcours } from './calculs';
@@ -31,6 +33,12 @@ export function calcul(): ClientCalculs<CalculsParcours> {
 export function poserClient(c: ClientCalculs<CalculsParcours>, recalculsAsynchrones: boolean): void {
   courant = c; pose = true; asynchrones = recalculsAsynchrones;
 }
+
+/** true : un client a été posé (la maquette, ou le worker de l'app : clientWorker.ts) ; le défaut du fil principal n'est plus le client courant. */
+export const clientEstPose = (): boolean => pose;
+
+/** Remet le client par défaut (fil principal), tel qu'avant tout `poserClient` (tests). */
+export function reinitialiserClient(): void { courant = null; pose = false; asynchrones = false; }
 
 /** true : les recalculs d'un écran ouvert passent au worker (useCalcul). Défaut : false. */
 export const recalculsAsynchrones = (): boolean => asynchrones;

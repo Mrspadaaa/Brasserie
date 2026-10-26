@@ -36,6 +36,8 @@ export interface Candidat {
   /** D'où il vient dans u4 : premiers du catalogue, ou premiers du stock. */
   vient: 'catalogue' | 'stock';
   rangMoteur: number;
+  /** w1 (D102 A, D106 (3)) : à un moment d'amertume, la raison pour laquelle le moteur le fait reculer (produit d'arôme, usage « arôme », houblon aromatique) ; null sinon. Jamais le choix par défaut. */
+  recule: string | null;
 }
 export interface Lecture {
   contexte: string; poids: { arome: number; huiles: number; amertume: number };
@@ -77,6 +79,18 @@ export function useRemplacants(recette: RecetteParcours, a: AjoutParcours | null
   }, [recu, args, cleIA]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
+/** Le face à face par défaut de u4 (w1, D102 A) : A = le premier sûr à acheter, B = le premier du stock qui suffit, et le choix est B (« il remplace par celui du stock »).
+ * Un candidat reculé par le moteur (produit d'arôme, usage « arôme » : `recule`) n'est jamais B : « un brasseur n'amérise pas avec un produit d'arôme » (« 46 g de Nugget → 24 g de
+ * Citra cryo » contredisait D102 A). Sans candidat du stock restant, le face à face prend le premier de la liste, hors stock ; un reculé n'y entre qu'à défaut de tout autre. */
+export function faceAFaceParDefaut(cands: readonly Candidat[]): { compares: string[]; choix: string | null } {
+  const B = cands.find((c) => c.stock === 'suffisant' && !c.recule) ?? null;
+  const A = cands.find((c) => c.min === c.max && c !== B && c.stock !== 'suffisant') ?? cands.find((c) => c !== B) ?? null;
+  // Sans B : le premier de la liste hors stock (à acheter, épuisé), puis, à défaut, le premier autre candidat non reculé, puis n'importe lequel (la liste n'a jamais un face à face vide).
+  const horsStock = (c: Candidat) => c.stock === 'acheter' || c.stock === 'epuise';
+  const B2 = B ?? cands.find((c) => c !== A && horsStock(c)) ?? cands.find((c) => c !== A && !c.recule) ?? cands.find((c) => c !== A) ?? null;
+  return { compares: [A?.cle, B2?.cle].filter(Boolean) as string[], choix: B2?.cle ?? A?.cle ?? null };
+}
+
 /** `ordreIA` (voie i2) : les clés que l'IA a rangées en tête, dans son ordre. Les remplaçants viennent alors d'abord dans cet ordre,
  * puis les autres dans celui du moteur ; la liste garde ses huit (cinq du catalogue, trois du stock) et n'est plus rangée par le
  * pire cas. Les scores restent ceux du moteur ; le rang du stock (« 5e ») reste celui du moteur. */
@@ -98,6 +112,7 @@ function composer(res: SubstitutionResult, ordreIA?: readonly string[]): Lecture
       stock: etatDe(s.stock), libre: s.stock.libre,
       dose: { grams: s.dose.grams, min: s.dose.min, max: s.dose.max, regle: s.dose.regle },
       perd: s.familles.perd.map((m) => m.family), gagne: s.familles.gagne.map((m) => m.family), vient, rangMoteur: s.rank,
+      recule: s.amertumeDeconseillee ?? null,
     };
   };
   const catalogue = tous.filter((s) => s.stock.etat !== 'en stock').slice(0, 5).map((s) => versCandidat(s, 'catalogue'));

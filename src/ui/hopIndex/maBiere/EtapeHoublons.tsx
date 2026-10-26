@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Recipe } from '../../../types';
 import { toHopRecipe, versPatch, type ChangementHoublonsV4 } from '../../../domain/hopIndex/v4/recipeConversion';
 import { configurerDonnees, lireBiere, type BiereLue } from '../parcours/adaptateur';
+import { activerWorker } from '../parcours/clientWorker';
 import { ajouter, changerDose, changerMoment, retirer } from '../parcours/operations';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 import { useHopData } from '../useHopData';
@@ -78,6 +79,9 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
   useEffect(() => { setLocale(null); }, [conversion]);
   const recette = locale ?? conversion.recette;
   const recetteRef = useRef(recette); recetteRef.current = recette;
+  // w1 (D115) : les calculs lourds de l'app passent par un worker dès que l'étape est à l'écran, avant la préchauffe de Suggérer (programmée au repos, plus bas) : elle ne bloque plus le fil
+  // principal. Sans worker possible (tests, file://, ?calcul=immediat, worker en panne), le fil principal reste le client, comme avant.
+  useEffect(() => { activerWorker(); }, []);
   usePrechauffeSuggerer(recette);
   const mesures = useMemo<MesuresEtape>(() => { const b = lireBiere(recette); return { ibu: b.ibu, ebc: b.ebc, og: b.og, bande: b.bandeIbu }; }, [recette]);
   useEffect(() => { onMesures?.(mesures); }, [mesures, onMesures]);

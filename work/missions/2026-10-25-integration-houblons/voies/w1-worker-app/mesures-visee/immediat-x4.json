@@ -1,0 +1,187 @@
+[
+ {
+  "essai": 1,
+  "client": "immediat",
+  "cpu": 4,
+  "enAttente": 5,
+  "liberees": 5,
+  "resolue": true,
+  "chauffe": {
+   "appelMs": 378,
+   "resoluMs": null,
+   "rappels": [
+    1,
+    0,
+    378,
+    0,
+    0
+   ]
+  },
+  "tachesLongues": [
+   {
+    "debut": 700,
+    "ms": 82
+   }
+  ],
+  "plusLongue": 82,
+  "plusLongBlocageMs": 390,
+  "touchers": {
+   "n": 75,
+   "mediane": 4,
+   "max": 79,
+   "au_dessus_de_50": 1,
+   "au_dessus_de_100": 0
+  },
+  "envois": [],
+  "blocages": [
+   {
+    "t": 688,
+    "ecart": 390
+   },
+   {
+    "t": 790,
+    "ecart": 101
+   }
+  ],
+  "ouverture": {
+   "listeVue": true,
+   "versLigneMs": 246,
+   "plusLongBlocageMs": 312,
+   "tachesLongues": [
+    252,
+    104,
+    153,
+    234,
+    60
+   ]
+  },
+  "journal": [],
+  "echecs": []
+ },
+ {
+  "essai": 2,
+  "client": "immediat",
+  "cpu": 4,
+  "enAttente": 5,
+  "liberees": 5,
+  "resolue": true,
+  "chauffe": {
+   "appelMs": 446,
+   "resoluMs": null,
+   "rappels": [
+    0,
+    0,
+    446,
+    0,
+    0
+   ]
+  },
+  "tachesLongues": [
+   {
+    "debut": 806,
+    "ms": 65
+   }
+  ],
+  "plusLongue": 65,
+  "plusLongBlocageMs": 454,
+  "touchers": {
+   "n": 73,
+   "mediane": 4,
+   "max": 427,
+   "au_dessus_de_50": 1,
+   "au_dessus_de_100": 1
+  },
+  "envois": [],
+  "blocages": [
+   {
+    "t": 279,
+    "ecart": 32
+   },
+   {
+    "t": 755,
+    "ecart": 454
+   },
+   {
+    "t": 802,
+    "ecart": 47
+   },
+   {
+    "t": 883,
+    "ecart": 81
+   }
+  ],
+  "ouverture": {
+   "listeVue": true,
+   "versLigneMs": 126,
+   "plusLongBlocageMs": 451,
+   "tachesLongues": [
+    128,
+    91,
+    190,
+    233,
+    66
+   ]
+  },
+  "journal": [],
+  "echecs": []
+ },
+ {
+  "essai": 3,
+  "client": "immediat",
+  "cpu": 4,
+  "enAttente": 5,
+  "liberees": 5,
+  "resolue": true,
+  "chauffe": {
+   "appelMs": 421,
+   "resoluMs": null,
+   "rappels": [
+    0,
+    0,
+    421,
+    0,
+    0
+   ]
+  },
+  "tachesLongues": [
+   {
+    "debut": 745,
+    "ms": 79
+   }
+  ],
+  "plusLongue": 79,
+  "plusLongBlocageMs": 429,
+  "touchers": {
+   "n": 75,
+   "mediane": 4,
+   "max": 77,
+   "au_dessus_de_50": 1,
+   "au_dessus_de_100": 0
+  },
+  "envois": [],
+  "blocages": [
+   {
+    "t": 731,
+    "ecart": 429
+   },
+   {
+    "t": 836,
+    "ecart": 92
+   }
+  ],
+  "ouverture": {
+   "listeVue": true,
+   "versLigneMs": 134,
+   "plusLongBlocageMs": 405,
+   "tachesLongues": [
+    137,
+    106,
+    137,
+    240,
+    58
+   ]
+  },
+  "journal": [],
+  "echecs": []
+ }
+]

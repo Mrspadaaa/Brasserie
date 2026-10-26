@@ -1,0 +1,12 @@
+Serveur 1/1 : npm run dev -- --port 5293 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-oVvHVj\serveur-1-5293.log)
+Attente du port 5293…
+Serveur prêt sur le port 5293
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-10-25-integration-houblons/voies/w1-worker-app/mesure-w1.mjs --client=worker --essais=1 --sortie=work/missions/2026-10-25-integration-houblons/voies/w1-worker-app/mesures-essai
+
+essai 1 (worker, ×4) : préchauffe {"debut":303,"appelMs":0,"resoluMs":296,"rappels":[1,0,0,0,0]} · tâches longues (API) ["347+62","435+124"] · plus long blocage (battement) 245 ms [{"t":590,"ecart":245}] · envois [{"type":"donnees","t":-2098,"ms":0.1,"catalogue":false,"inchange":false},{"type":"donnees","t":-2052,"ms":0,"catalogue":false,"inchange":false},{"type":"donnees","t":394,"ms":14.9,"catalogue":true,"inchange":false}] · toucher : médiane 4 ms, max 145 ms, > 50 ms 1/80, > 100 ms 1/80 · ouverture de Suggérer : {"listeVue":true,"versLigneMs":239,"plusLongBlocageMs":266,"tachesLongues":[242,134,54]}
+MESURE OK
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

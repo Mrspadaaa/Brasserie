@@ -1,0 +1,15 @@
+Serveur 1/1 : npm run dev -- --port 5293 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-4s57hE\serveur-1-5293.log)
+Attente du port 5293…
+Serveur prêt sur le port 5293
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/longtask.mjs --variante=avec --essais=3 --sortie=work/missions/2026-10-25-integration-houblons/voies/w1-worker-app/avant
+
+essai 1 (avec, ×4) : préchauffe {"debut":304,"appelMs":1691} · tâches longues ["2025+72","2105+336"] · toucher : médiane 4 ms, max 59 ms, > 50 ms 1/77, > 100 ms 0/77
+essai 2 (avec, ×4) : préchauffe {"debut":305,"appelMs":1887} · tâches longues ["2264+314"] · toucher : médiane 4 ms, max 1875 ms, > 50 ms 1/77, > 100 ms 1/77
+essai 3 (avec, ×4) : préchauffe {"debut":305,"appelMs":1957} · tâches longues ["2355+288"] · toucher : médiane 4 ms, max 1952 ms, > 50 ms 2/78, > 100 ms 2/78
+LONGTASK OK
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…
+FIN
