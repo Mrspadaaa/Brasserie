@@ -43,6 +43,10 @@ export function BulleTraitsProvider({ children, code }: { children: ReactNode; c
   return <Ctx.Provider value={valeur}>{children}<BulleTraits /></Ctx.Provider>;
 }
 
+/** Le code du style de la recette (« 21C »), ou null hors du fournisseur : les libellés disent le style de la recette, jamais
+ * celui du cas de la maquette (D158 : « hors 16D » sur une 21C). */
+export const useCodeStyle = (): string | null => useContext(Ctx)?.code ?? null;
+
 /** Les gestes d'une case : toucher ou cliquer ouvre (ou referme) sa bulle ; survol à la souris. */
 export function useCase(cle: string, sens: SensCase) {
   const b = useContext(Ctx);

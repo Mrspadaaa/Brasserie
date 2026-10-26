@@ -132,8 +132,11 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
   const secteur = (i: number, j: number, r: number) => { const s: P2[] = [[CX, CY], mil(i - 1, r)]; for (let a = i; a <= j; a++) s.push(pt(a, r)); s.push(mil(j, r)); return s.map(xy).join(' '); };
   const id = `rb-h-${uid}`;
 
-  // Les séries : contours seuls d'abord, puis les autres, la retenue par-dessus.
-  const rang = (s: SerieRadar) => (s.role === 'contour' ? 0 : s.role === 'autre' ? 1 : 2);
+  // Les séries : les autres d'abord, la retenue par-dessus, et le contour seul (l'original) tout en haut. Un remplaçant
+  // décrit souvent la même famille au même niveau que l'original (échelle à trois crans) : dessiné dessous, le contour
+  // disparaissait sous son trait et ses points (D156 : « sur le radargraph, on voit pas Galaxy »). Dessus, il reste visible :
+  // son trait fin laisse voir la couleur du remplaçant de part et d'autre, et ses sommets sont des anneaux creux.
+  const rang = (s: SerieRadar) => (s.role === 'contour' ? 2 : s.role === 'autre' ? 0 : 1);
   const ordre = [...series].sort((a, b) => rang(a) - rang(b));
   const groupe = enPlace ? [] : inc.map((x, i) => (x ? i : -1)).filter((i) => i >= 0);
   const marque = new Set(marquees ?? []);
@@ -195,7 +198,7 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
               {(() => {
                 const K = v.map((x, i) => (x == null ? -1 : i)).filter((i) => i >= 0);
                 const P = (i: number) => pt(i, rvA(i, v[i]!)), Z = (i: number) => pt(i, rvA(i, 0));
-                const trait = { stroke: s.couleur, strokeWidth: lui ? 3 : seul ? 2.5 : 1.8, strokeLinejoin: 'round' as const, strokeLinecap: 'round' as const };
+                const trait = { stroke: s.couleur, strokeWidth: lui ? 3 : seul ? (series.length > 1 ? 2.2 : 2.5) : 1.8, strokeLinejoin: 'round' as const, strokeLinecap: 'round' as const };
                 // Une seule valeur connue : un rayon du petit anneau du zéro à son point, sans voile (rien d'inventé à côté).
                 if (K.length === 1) { const p = P(K[0]), z = Z(K[0]); return <line data-role="rayon" x1={rd(z[0])} y1={rd(z[1])} x2={rd(p[0])} y2={rd(p[1])} {...trait} />; }
                 if (K.length < 2) return null;
@@ -214,6 +217,10 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
               {v.map((x, i) => {
                 if (x == null) return null;
                 const p = pt(i, rvA(i, x)), h = hors(s, axes[i]);
+                // Le contour seul : un anneau creux autour du sommet (la légende de Substituer : disque blanc cerclé), pour que
+                // le point plein d'un remplaçant au même niveau reste visible au centre.
+                if (seul && series.length > 1) return <circle key={axes[i]} data-valeur={chiffreRadar(x)} data-point={axes[i]} cx={rd(p[0])} cy={rd(p[1])} r={6.2}
+                  fill="none" stroke={h ? ORANGE_HORS : s.couleur} strokeWidth={2} />;
                 return <circle key={axes[i]} data-valeur={chiffreRadar(x)} data-point={axes[i]} cx={rd(p[0])} cy={rd(p[1])} r={lui ? (h ? 4.8 : 4) : h ? 3.8 : 3}
                   fill={h ? ORANGE_HORS : s.couleur} stroke={h || lui ? '#fff' : 'none'} strokeWidth={h || lui ? 1.2 : 0} />;
               })}

@@ -24,7 +24,7 @@ import { useCalcul } from '../parcours/useCalcul';
 import { useGestesFiche } from '../fiche/gestes';
 import { Bandeau } from '../maBiere/Base';
 import { AlphaCourt, Calme, CaseInconnue, Lecture, Stock, Traits, traitsDe, Usage, type NiveauFiches } from './briques';
-import { BulleTraitsProvider } from './bulle';
+import { BulleTraitsProvider, useCodeStyle } from './bulle';
 import { Divergent, Graphe, type NiveauBarre } from './divergent';
 import { bannisDe, directionDe, dryhopActif, levuresDe, objectifsDe, verdict, voiesDe, type Groupe, type Ligne, type Objectif } from './voies';
 import { horsDesFamilles, motsLevure } from './hors16d';
@@ -464,11 +464,12 @@ type Hors = { cle: string; seul: boolean; mots: string[] };
 /** « lui seul : mojito, zeste de citron » (flb5b) : les mots de ses fiches qu'aucune famille ne dessine et qu'aucun autre
  * houblon de l'écran n'a ; sinon « hors 16D : … » (ses mots hors familles, qu'un autre a aussi). Une ligne courte. */
 function Hors16D({ x, nom }: { x: Hors; nom?: string }) {
+  const code = useCodeStyle();
   return (
     <span data-role="hors-16d" data-houblon={x.cle} className="pq-sg-hors16d pq-sg-sur-axe">
       {/* « Ah si là mais ajoute icone » (24.10, soir) : le ◇ des mots hors des 12 familles, comme la fiche et Comparer. */}
       <i aria-hidden="true" className="pq-sg-hors16d-ic">◇</i>
-      <span className="pq-sg-hors16d-cle">{nom ? `${nom}, ` : ''}{x.seul ? 'lui seul' : 'hors 16D'} :</span> {x.mots.join(', ')}
+      <span className="pq-sg-hors16d-cle">{nom ? `${nom}, ` : ''}{x.seul ? 'lui seul' : `hors ${code ?? 'familles'}`} :</span> {x.mots.join(', ')}
     </span>
   );
 }
