@@ -1,0 +1,317 @@
+=== etat-subst-face (h2)
+60′recette whirlpool dry hop Trident et Yeoman, 99 sans inconnue. partiel proche très proche ? Nugget l’original Trident 99 Yeoman 99 Helios 97 Centennial 96 Magnat 96 Citra cryo 95 Motueka 80 Galaxy 77 50 65 80 100 Comparer Face à face, même IBU Nugget 46 g 59,7 IBU lui seul : gingembre, herbes fraîches écrasées double usage +6 Trident 43–54 g hors familles : aucun mot dans ses fiches double usage Galaxy 35 g lui seul : groseille à maquereau, cannabis, dank, cassis double usage α Nugget 9–16 lot 13 Trident 11–14 Galaxy 11–19,8 lot 17,2 Arômes 16D Nugget Trident Galaxy Floral Herbacé Terreux Hors 16D Agrumes Tropicaux Noyau Pépins Baies Résineux Épicé Végétal sans famille 9 % 25 % 27 % Melon : aucune des trois fiches ne les décrit, ce n’est pas zéro. Fiches lues : Nugget 10, Trident 2, Galaxy 5. Pointillé : non décrit. À 60′, surtout l’amertume : ces arômes partent en grande partie à l’ébullition. Nugget seul : gingembre, herbes fraîches écrasées hors familles Nugget Trident 99 Galaxy 77 Yeoman 99 Helios 97 gingembre 1/10 herbes fraîches écrasées 1/10 cannabis cassis dank groseille à maquereau noble huiles Nugget Trident 99 Galaxy 77 Yeoman 99 Helios 97 huile totale mL/100 g 0,9–3,3 1,5–3 1,8–5 1,7–2,4 1,5–2 myrcène % 48–59 ? 32–69 47–49 40–70 humulène % 12–22 ? 0,8–2,2 19–21 19–24 caryophyllène % 7–10 ? 7–14,7 9–10 7–10 farnésène % ? ? 2,8–5,1 ? ? linalol % 0,8–1 ? 0,5–1 ? 0,6–0,7 géraniol % ? ? ? ? ? Points : cité par ses fiches (gros : la moitié au moins), cercle : le mot est rangé dans une famille chez lui. ? : aucune fiche ne donne la valeur, ce n’est pas zéro. Huiles en % de l’huile. 0 cité marqué sans donnée Nugget (l’original, contour seul) Trident Galaxy gras : attendu en 16D Du centre vers le bord : non décrit, cité, marqué. ? : aucune des trois fiches ne décrit la famille, ce n’est pas zéro. β Nugget 3–8 Trident 4–5 Galaxy 5–11,6 α et β : traits fins, un par plage qui diffère (des sources d’accord n’en font qu’un ; leurs noms sont dans la section Sources de la fiche) ; trait noir, milieu moyen des sources ; plage de dose de Trident selon son α (11–14). Huiles, composants % de l’huile Myrcène Nugget 27–60 Trident ? non renseigné Galaxy 32–69 Humulène Nugget 12–40 Trident ? non renseigné Galaxy 0,8–2,2 Caryophyllène Nugget 7–20 Trident ? non renseigné Galaxy 7–14,7 Linalol Nugget 0,5–1 Trident ? non renseigné Galaxy 0,5–1 Myrcène de Trident, Humulène de Trident, Caryophyllène de Trident et Linalol de Trident non renseignés, ce n’est pas zéro. Farnésène publié, non importé. 16D Foreign Extra Stout attend floral, herbacé, terreux ; IBU 50–70, la recette est à 59,7 et chaque dose la garde. Nugget cite les trois (floral et herbacé marqués). Employé en West Coast IPA, NEIPA, Session IPA ; aucune stout citée. Trident ne cite aucune des trois. fruité, agrumes, fruits tropicaux, fruit de la passion. Employé en Hazy IPA, IPA ; aucune stout citée. Galaxy ne cite aucune des trois. fruit de la passion, agrumes, pêche, ananas, fruits tropicaux, cannabis. Employé en IPA, NEIPA ; aucune stout citée. Ma bière avec chacun ~ simulé Au style Absolu Nugget Trident Galaxy Floral ? ? Herbacé ? ? Terreux ? ? Résineux hors style ~−2 ~−1 Après le remplacement, à 60′, à IBU égal ; le rond, ma bière avec Nugget. Ajouter Trident aux achats Lire ces scores Calculés depuis nos fiches, pas des scores de substitution déjà publiés (non importés). Prix, rareté et cohumulone : inconnus. Sans inconnue ne veut pas dire sûr : chaque composante connue vient de peu de fiches (Nugget : 10, Trident : 2, Galaxy : 5). Le score n’a pas d’intervalle statistique, seulement cette plage. À 60′, l’arôme compte peu : il ne mesure que ce que le remplaçant apporte de plus que Nugget, pas ce qu’il perd (l’arôme de Nugget part à l’ébullition). Un remplaçant qui perd six familles peut y valoir 100 : c’est pour cela que l’écran ne l’affiche pas seul. Le pire cas d’abord : rangés par le bas de la plage. Le moteur, lui, range par score, puis par nom. 8 des 317 : les 5 premiers du catalogue et les 3 premiers de ton stock (Motueka 107e, Galaxy 125e, Citra cryo 159e). Face à face : Trident, premier sûr à acheter ; Galaxy, premier du stock qui suffit. Arômes : citations dans les fiches, pas une intensité dans la bière.
+[aria-label] Moment des remplaçants de Nugget : à 60′
+[aria-label] (ta recette)
+[aria-label] Ressemblance à Nugget, de 50 à 100, rangée par le pire cas
+[aria-label] Familles de ta 16D : Floral, Herbacé, Terreux, Résineux
+[aria-label] Floral
+[aria-label] Herbacé
+[aria-label] Terreux
+[aria-label] Résineux
+[aria-label] Lire la légende
+[aria-label] Remplaçants de Nugget
+[aria-label] Épuisé
+[aria-label] Arômes des fiches : Floral marqué, Herbacé marqué, Terreux cité, Résineux marqué
+[title] Nugget, Floral : marqué
+[title] Nugget, Herbacé : marqué
+[title] Nugget, Terreux : cité
+[title] Nugget, Résineux : marqué
+[title] Trident : 99 (moteur 99)
+[aria-label] À acheter
+[aria-label] Arômes des fiches : Floral non décrit, Herbacé non décrit, Terreux non décrit, Résineux non décrit
+[title] Trident, Floral : non décrit
+[title] Trident, Herbacé : non décrit
+[title] Trident, Terreux : non décrit
+[title] Trident, Résineux : non décrit
+[aria-label] tout connu
+[aria-label] Ajouter Trident à Comparer
+[title] Yeoman : 99 (moteur 99)
+[aria-label] À acheter
+[aria-label] Arômes des fiches : Floral non décrit, Herbacé non décrit, Terreux non décrit, Résineux non décrit
+[title] Yeoman, Floral : non décrit
+[title] Yeoman, Herbacé : non décrit
+[title] Yeoman, Terreux : non décrit
+[title] Yeoman, Résineux : non décrit
+[aria-label] tout connu
+[aria-label] Ajouter Yeoman à Comparer
+[title] Helios : 97 (moteur 97)
+[aria-label] À acheter
+[aria-label] Arômes des fiches : Floral non décrit, Herbacé marqué, Terreux non décrit, Résineux cité
+[title] Helios, Floral : non décrit
+[title] Helios, Herbacé : marqué
+[title] Helios, Terreux : non décrit
+[title] Helios, Résineux : cité
+[aria-label] tout connu
+[aria-label] Ajouter Helios à Comparer
+[title] Centennial : 96 (moteur 96)
+[aria-label] À acheter
+[aria-label] Arômes des fiches : Floral marqué, Herbacé marqué, Terreux non décrit, Résineux marqué
+[title] Centennial, Floral : marqué
+[title] Centennial, Herbacé : marqué
+[title] Centennial, Terreux : non décrit
+[title] Centennial, Résineux : marqué
+[aria-label] tout connu
+[aria-label] Ajouter Centennial à Comparer
+[title] Magnat : 96 (moteur 96)
+[aria-label] À acheter
+[aria-label] Arômes des fiches : Floral cité, Herbacé non décrit, Terreux non décrit, Résineux marqué
+[title] Magnat, Floral : cité
+[title] Magnat, Herbacé : non décrit
+[title] Magnat, Terreux : non décrit
+[title] Magnat, Résineux : marqué
+[aria-label] tout connu
+[aria-label] Ajouter Magnat à Comparer
+[title] Citra cryo : 95 (moteur 95)
+[aria-label] En stock, suffisant
+[aria-label] Arômes des fiches : Floral marqué, Herbacé non décrit, Terreux non décrit, Résineux cité
+[title] Citra cryo, Floral : marqué
+[title] Citra cryo, Herbacé : non décrit
+[title] Citra cryo, Terreux : non décrit
+[title] Citra cryo, Résineux : cité
+[aria-label] tout connu
+[aria-label] Ajouter Citra cryo à Comparer
+[title] Motueka : 80 (moteur 80)
+[aria-label] En stock, insuffisant
+[aria-label] Arômes des fiches : Floral marqué, Herbacé cité, Terreux non décrit, Résineux non décrit
+[title] Motueka, Floral : marqué
+[title] Motueka, Herbacé : cité
+[title] Motueka, Terreux : non décrit
+[title] Motueka, Résineux : non décrit
+[aria-label] tout connu
+[aria-label] Ajouter Motueka à Comparer
+[title] Galaxy : 77 (moteur 77)
+[aria-label] En stock, suffisant
+[aria-label] Arômes des fiches : Floral non décrit, Herbacé non décrit, Terreux non décrit, Résineux non décrit
+[title] Galaxy, Floral : non décrit
+[title] Galaxy, Herbacé : non décrit
+[title] Galaxy, Terreux : non décrit
+[title] Galaxy, Résineux : non décrit
+[aria-label] tout connu
+[aria-label] Ajouter Galaxy à Comparer
+[aria-label] Comparer : touche + sur un remplaçant
+[aria-label] À la place de Nugget
+[aria-label] Épuisé
+[title] règle : règle rôle-α v1 (prototype, à valider)
+[aria-label] Arômes cités : Agrumes, Tropicaux, Noyau, Pépins, Floral, Herbacé, Résineux, Épicé, Végétal, Baies, Terreux
+[aria-label] Agrumes
+[aria-label] Tropicaux
+[aria-label] Noyau
+[aria-label] Pépins
+[aria-label] Floral
+[aria-label] À acheter
+[title] attesté par un fournisseur
+[aria-label] Arômes cités : Agrumes, Tropicaux
+[aria-label] Agrumes
+[aria-label] Tropicaux
+[aria-label] En stock, suffisant
+[title] règle : règle rôle-α v1 (prototype, à valider)
+[aria-label] Arômes cités : Agrumes, Tropicaux, Noyau, Baies
+[aria-label] Agrumes
+[aria-label] Tropicaux
+[aria-label] Noyau
+[aria-label] Baies
+[title] 9,5–16
+[title] 11–14
+[title] 9–16 · 2 sources d’accord
+[title] 11,5–14 · 5 sources d’accord
+[title] 10–14
+[title] 14,8
+[title] 9,5–14
+[title] 11–15
+[title] 11–14 · 2 sources d’accord
+[title] 11–16 · 2 sources d’accord
+[title] 12,3–19,8 · 2 sources d’accord
+[title] 13–15
+[title] 15,9–19,8 · 2 sources d’accord
+[title] 15,7–19,8
+[title] 13–18,5
+[aria-label] Arômes des fiches, face au 16D
+[aria-label] Floral
+[title] Nugget, Floral : marqué (3/10)
+[title] Trident, Floral : non décrit (0/2)
+[title] Galaxy, Floral : non décrit (0/5)
+[aria-label] Herbacé
+[title] Nugget, Herbacé : marqué (6/10)
+[title] Trident, Herbacé : non décrit (0/2)
+[title] Galaxy, Herbacé : non décrit (0/5)
+[aria-label] Terreux
+[title] Nugget, Terreux : cité (1/10)
+[title] Trident, Terreux : non décrit (0/2)
+[title] Galaxy, Terreux : non décrit (0/5)
+[aria-label] Agrumes
+[title] Nugget, Agrumes : marqué (5/10)
+[title] Trident, Agrumes : marqué (2/2)
+[title] Galaxy, Agrumes : marqué (2/5)
+[aria-label] Tropicaux
+[title] Nugget, Tropicaux : marqué (4/10)
+[title] Trident, Tropicaux : marqué (2/2)
+[title] Galaxy, Tropicaux : marqué (5/5)
+[aria-label] Noyau
+[title] Nugget, Noyau : marqué (2/10)
+[title] Trident, Noyau : non décrit (0/2)
+[title] Galaxy, Noyau : marqué (5/5)
+[aria-label] Pépins
+[title] Nugget, Pépins : marqué (2/10)
+[title] Trident, Pépins : non décrit (0/2)
+[title] Galaxy, Pépins : non décrit (0/5)
+[aria-label] Baies
+[title] Nugget, Baies : cité (1/10)
+[title] Trident, Baies : non décrit (0/2)
+[title] Galaxy, Baies : marqué (2/5)
+[aria-label] Résineux
+[title] Nugget, Résineux : marqué (3/10)
+[title] Trident, Résineux : non décrit (0/2)
+[title] Galaxy, Résineux : non décrit (0/5)
+[aria-label] Épicé
+[title] Nugget, Épicé : marqué (3/10)
+[title] Trident, Épicé : non décrit (0/2)
+[title] Galaxy, Épicé : non décrit (0/5)
+[aria-label] Végétal
+[title] Nugget, Végétal : marqué (2/10)
+[title] Trident, Végétal : non décrit (0/2)
+[title] Galaxy, Végétal : non décrit (0/5)
+[aria-label] Mots hors familles et huiles : Nugget, Trident, Galaxy, Yeoman et Helios
+[aria-label] cité par 1 fiche sur 10
+[aria-label] cité par 1 fiche sur 10
+[aria-label] cité par 1 fiche sur 5
+[aria-label] cité par 1 fiche sur 5
+[aria-label] cité par 1 fiche sur 5
+[aria-label] cité par 2 fiches sur 5
+[aria-label] cité par 1 fiche sur 1
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[title] aucune fiche ne la donne, ce n’est pas zéro
+[aria-label] Radar des citations : Nugget, Trident, Galaxy ; cerclé : attendu en 16D ; sans donnée : 1 familles
+[aria-label] Agrumes
+[aria-label] Tropicaux
+[aria-label] Noyau
+[aria-label] Pépins
+[aria-label] Baies
+[aria-label] Floral
+[aria-label] Végétal
+[aria-label] Herbacé
+[aria-label] Épicé
+[aria-label] Terreux
+[aria-label] Résineux
+[aria-label] Melon
+[title] 3–5,8 · 2 sources d’accord
+[title] 4–6 · 2 sources d’accord
+[title] 3–6 · 2 sources d’accord
+[title] 3–5 · 4 sources d’accord
+[title] 4,2–5,8
+[title] 3–8
+[title] 4–5 · 2 sources d’accord
+[title] 5–9
+[title] 5,7–9,9 · 2 sources d’accord
+[title] 5–6,9 · 2 sources d’accord
+[title] 7,8–9,9 · 3 sources d’accord
+[title] 6,1–11,6
+[title] 48–59 · 2 sources d’accord
+[title] 27–50 · 2 sources d’accord
+[title] 40–59
+[title] 27–42 · 3 sources d’accord
+[title] 50–60
+[title] 33–69 · 2 sources d’accord
+[title] 32–56 · 5 sources d’accord
+[title] 33–67
+[title] 12–22 · 3 sources d’accord
+[title] 18–40 · 2 sources d’accord
+[title] 16–22
+[title] 16–19 · 3 sources d’accord
+[title] 17
+[title] 1–2 · 3 sources d’accord
+[title] 0,8–2,2 · 5 sources d’accord
+[title] 7–10 · 5 sources d’accord
+[title] 9–20 · 2 sources d’accord
+[title] 7–11
+[title] 10
+[title] 7–13
+[title] 7–14,7 · 5 sources d’accord
+[title] 7–9
+[title] 0,8–1
+[title] 0,5–1 · 4 sources d’accord
+[title] 0,5–1 · 5 sources d’accord
+[aria-label] Ma bière avec chacun
+[aria-label] Échelle
+[aria-label] Floral
+[title] aucune fiche des houblons de la recette ne la décrit
+[aria-label] inconnu : aucune fiche des houblons de la recette ne la décrit
+[title] aucune fiche des houblons de la recette ne la décrit
+[title] aucune fiche des houblons de la recette ne la décrit
+[aria-label] inconnu : aucune fiche des houblons de la recette ne la décrit
+[title] aucune fiche des houblons de la recette ne la décrit
+[aria-label] Herbacé
+[title] aucune fiche des houblons de la recette ne la décrit
+[aria-label] inconnu : aucune fiche des houblons de la recette ne la décrit
+[title] aucune fiche des houblons de la recette ne la décrit
+[title] aucune fiche des houblons de la recette ne la décrit
+[aria-label] inconnu : aucune fiche des houblons de la recette ne la décrit
+[title] aucune fiche des houblons de la recette ne la décrit
+[aria-label] Terreux
+[title] aucune fiche des houblons de la recette ne la décrit
+[aria-label] inconnu : aucune fiche des houblons de la recette ne la décrit
+[title] aucune fiche des houblons de la recette ne la décrit
+[title] aucune fiche des houblons de la recette ne la décrit
+[aria-label] inconnu : aucune fiche des houblons de la recette ne la décrit
+[title] aucune fiche des houblons de la recette ne la décrit
+[aria-label] Résineux
+[title] Maquette : la liste d’achats n’existe pas encore
+[svg] Épuisé
+[svg] À acheter
+[svg] À acheter
+[svg] À acheter
+[svg] À acheter
+[svg] À acheter
+[svg] En stock, suffisant
+[svg] En stock, insuffisant
+[svg] En stock, suffisant
+[svg] Épuisé
+[svg] À acheter
+[svg] En stock, suffisant
+[svg] 0
+[svg] cité
+[svg] marqué
+[svg] sans donnée
+
+=== etat-subst-alpha (#m-alpha)
+(sélecteur absent)
+
+=== etat-subst-aromes (#aro)
+(sélecteur absent)
+
+=== etat-subst-radar (svg[data-radar])
+0citémarquésans donnée
+[aria-label] Agrumes
+[aria-label] Tropicaux
+[aria-label] Noyau
+[aria-label] Pépins
+[aria-label] Baies
+[aria-label] Floral
+[aria-label] Végétal
+[aria-label] Herbacé
+[aria-label] Épicé
+[aria-label] Terreux
+[aria-label] Résineux
+[aria-label] Melon
+[svg] 0
+[svg] cité
+[svg] marqué
+[svg] sans donnée
+
+=== etat-subst-beta (#m-beta)
+(sélecteur absent)
+
+=== etat-subst-style (#style16)
+(sélecteur absent)
+

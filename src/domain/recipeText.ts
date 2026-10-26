@@ -103,6 +103,12 @@ const n = (v: number, dec = 1) =>
   Number.isFinite(v) ? String(Math.round(v * 10 ** dec) / 10 ** dec) : '—';
 
 /**
+ * Une valeur connue : ni absente, ni NaN. Un champ vidé dans l'assistant vaut NaN (`emptyValue`), et `!= null` le laisse passer :
+ * le texte copié disait « NaN j » (monkey, graine 11, x2). Inconnu s'écrit « inconnu », jamais NaN ni 0.
+ */
+const fini = (v: number | null | undefined): v is number => typeof v === 'number' && Number.isFinite(v);
+
+/**
  * Les masses passent par `Units`, jamais par une unité écrite à la main.
  *
  * ⚠️ `scripts/check-units.mjs` a refusé ma première version, et il avait
@@ -214,7 +220,7 @@ function readableLines(r: RecipeTextInput, date: Date, intent?: string): string[
 
   l.push(`${r.name || 'Recette sans nom'}${r.style ? ` — ${r.style}` : ''}`);
   l.push(
-    `${n(r.volumeL)} L en fermenteur · ébullition ${r.boilMin} min · ${date.toLocaleDateString('fr-CH')}`
+    `${n(r.volumeL)} L en fermenteur · ébullition ${fini(r.boilMin) ? `${r.boilMin} min` : 'durée inconnue'} · ${date.toLocaleDateString('fr-CH')}`
   );
   const house = r.recipe?.brewhouse;
   if (house?.name)
@@ -226,12 +232,12 @@ function readableLines(r: RecipeTextInput, date: Date, intent?: string): string[
    * ressemble à ce qu'on cherche, avant même de lire les ingrédients.
    */
   const cibles = [
-    r.og != null ? `OG ${r.og.toFixed(3)}` : null,
-    r.fg != null ? `FG ${r.fg.toFixed(3)}` : null,
-    r.abv != null ? `ABV ${n(r.abv)} %` : null,
-    r.ibu != null ? `IBU ${Math.round(r.ibu)}` : null,
-    r.ebc != null ? `EBC ${n(r.ebc)}` : null,
-    r.efficiencyPct != null ? `rendement ${Math.round(r.efficiencyPct)} %` : null
+    fini(r.og) ? `OG ${r.og.toFixed(3)}` : null,
+    fini(r.fg) ? `FG ${r.fg.toFixed(3)}` : null,
+    fini(r.abv) ? `ABV ${n(r.abv)} %` : null,
+    fini(r.ibu) ? `IBU ${Math.round(r.ibu)}` : null,
+    fini(r.ebc) ? `EBC ${n(r.ebc)}` : null,
+    fini(r.efficiencyPct) ? `rendement ${Math.round(r.efficiencyPct)} %` : null
   ].filter(Boolean);
   if (cibles.length) l.push(cibles.join(' · '));
 
@@ -240,16 +246,16 @@ function readableLines(r: RecipeTextInput, date: Date, intent?: string): string[
     l.push(...titre(`Fermentescibles — ${masse(r.totalGristKg)}`));
     r.fermentables.forEach((f) => {
       const part =
-        r.totalGristKg > 0 && f.kind === 'grain'
+        r.totalGristKg > 0 && f.kind === 'grain' && fini(f.weightKg)
           ? `${Math.round((f.weightKg / r.totalGristKg) * 100)} %`
           : null;
       const detail = [
         part,
-        f.colorEbc != null ? `${f.colorEbc} EBC` : null,
-        f.potentialPpg != null ? `${f.potentialPpg} PPG` : null,
+        fini(f.colorEbc) ? `${f.colorEbc} EBC` : null,
+        fini(f.potentialPpg) ? `${f.potentialPpg} PPG` : null,
         f.use,
-        f.dayOffset != null ? `jour ${f.dayOffset}` : null,
-        f.fermentabilityPct != null ? `${f.fermentabilityPct} % fermentescible` : null,
+        fini(f.dayOffset) ? `jour ${f.dayOffset}` : null,
+        fini(f.fermentabilityPct) ? `${f.fermentabilityPct} % fermentescible` : null,
         f.kind !== 'grain' ? f.kind : null
       ]
         .filter(Boolean)
@@ -278,11 +284,11 @@ function readableLines(r: RecipeTextInput, date: Date, intent?: string): string[
       }
       const quand =
         h.stage === 'dryHop'
-          ? [h.dayOffset != null ? `J+${h.dayOffset}` : null,
-              h.timeMin ? (h.timeMin >= 60 ? `${n(h.timeMin / 60)} h` : `${h.timeMin} min`) : null]
+          ? [fini(h.dayOffset) ? `J+${h.dayOffset}` : null,
+              h.timeMin && fini(h.timeMin) ? (h.timeMin >= 60 ? `${n(h.timeMin / 60)} h` : `${h.timeMin} min`) : null]
               .filter(Boolean).join(' · ') || null
-          : h.timeMin != null
-            ? `${h.timeMin} min${h.tempC != null ? ` à ${h.tempC} °C` : ''}`
+          : fini(h.timeMin)
+            ? `${h.timeMin} min${fini(h.tempC) ? ` à ${h.tempC} °C` : ''}`
             : null;
       const ibu = r.hopIbu?.(h);
       const detail = [quand, h.alpha ? `${n(h.alpha)} % AA` : null, ibu ? `${n(ibu)} IBU` : null]
@@ -303,7 +309,7 @@ function readableLines(r: RecipeTextInput, date: Date, intent?: string): string[
   if (r.adjuncts?.length) {
     l.push(...titre('Autres ajouts'));
     r.adjuncts.forEach((a) =>
-      l.push(`  ${a.name} — ${a.amount} ${a.unit} · ${a.step}${a.notes ? ` · ${a.notes.replace(/\s*\n\s*/g, ' ')}` : ''}`)
+      l.push(`  ${a.name} — ${fini(a.amount) ? `${a.amount} ${a.unit}` : 'quantité inconnue'} · ${a.step}${a.notes ? ` · ${a.notes.replace(/\s*\n\s*/g, ' ')}` : ''}`)
     );
   }
   if (r.mashSteps.length) {
@@ -314,8 +320,8 @@ function readableLines(r: RecipeTextInput, date: Date, intent?: string): string[
         `  Rinçage : ${{ batch: 'par lots', fly: 'continu', none: 'aucun' }[r.spargeType] ?? r.spargeType}`
       );
     r.mashSteps.forEach((s) =>
-      l.push(`  ${s.tempC != null ? `${n(s.tempC)} °C` : 'T° inconnue'}`.padEnd(11) +
-        ` ${s.durationMin != null ? `${s.durationMin} min` : 'durée inconnue'} — ${s.name}`)
+      l.push(`  ${fini(s.tempC) ? `${n(s.tempC)} °C` : 'T° inconnue'}`.padEnd(11) +
+        ` ${fini(s.durationMin) ? `${s.durationMin} min` : 'durée inconnue'} — ${s.name}`)
     );
   }
 
@@ -415,8 +421,8 @@ function readableLines(r: RecipeTextInput, date: Date, intent?: string): string[
   if (r.fermentation.length) {
     l.push(...titre('Fermentation'));
     r.fermentation.forEach((s) =>
-      l.push(`  ${s.tempC != null ? `${n(s.tempC)} °C` : 'T° inconnue'}`.padEnd(11) +
-        ` ${s.days != null ? `${s.days} j` : 'durée inconnue'} — ${s.name}`)
+      l.push(`  ${fini(s.tempC) ? `${n(s.tempC)} °C` : 'T° inconnue'}`.padEnd(11) +
+        ` ${fini(s.days) ? `${s.days} j` : 'durée inconnue'} — ${s.name}`)
     );
   }
 
