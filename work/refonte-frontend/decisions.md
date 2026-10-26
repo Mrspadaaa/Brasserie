@@ -865,3 +865,12 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     - rejeu complet de b020da5e : tsc, vitest (deux tests lents rejoués seuls, verts), build, états 138/138, contrôles Chrome ;
     - rejeu ciblé de 9dba6971 : 753 tests, build, B5 157,7 ko, états, ★, FROID OK.
   - La production sert `index-CqHKOn9T.js`, le même que le build. L'app appelle désormais `hopReclasserIA` (D92).
+- D96 (pilote, 26.10, voie g2b, commit e511311b) : le moteur sait proposer un palier 60′ et un vrai dry hop, sous option. Le défaut
+  est inchangé à l'octet : rien n'est encore à l'écran. Deux suites :
+  - **La dose de dry hop.** La règle visée +1 cran donne 1,5 g/L en actif et 1 g/L après fermentation. Ce n'est pas le « vrai dry
+    hopping » qu'il attend d'une Hazy, et aucune source de dose par style n'est dans le dépôt. Les mini maquettes m7 lui
+    montreront la dose de la règle, 4 g/L et 8 g/L, marquées « générique ». La dose usuelle est un savoir de brasseur : il
+    choisira en regardant.
+  - **D167.** Une citation minoritaire donne tout son effet, et Citra, Nelson Sauvin, Motueka et Mosaic tombent loin. La voie g2d
+    mesure trois options (rang seul, effet si marquée, effet pondéré) avant toute décision. Les listes de m7 ne lui seront pas
+    montrées avant.
