@@ -1,0 +1,149 @@
+L’AFFINÉE — RECETTE v1
+
+Nom : "neipa v3"
+Style : "NEIPA"
+Scénario de levure versionné : {"modelVersion":"yeast-recipe-2","yeastId":"wyeast-3068","styleId":"hazy-ipa","goal":"clove","goalExplicit":true,"pressureBar":0,"ferulicRest":false,"process":"unspecified","applied":{"yeast":{"name":"Wyeast 3068","lab":"Wyeast","hopIndexId":"wyeast-3068","form":"liquide","qty":125,"unit":"mL","technicalFacts":[{"key":"attenuation","reported":"Atténuation apparente 74–80 %","range":{"min":74,"max":80},"unit":"%","qualifier":"range","origin":"manufacturer","source":"Lallemand","sourceUrl":"https://www.lallemandbrewing.com/fr/verdant-ipa","retrievedAt":"2026-09-12"},{"key":"temperature","reported":"Fermentation 18–22 °C","range":{"min":18,"max":22},"unit":"°C","qualifier":"range","origin":"manufacturer","source":"Lallemand","sourceUrl":"https://www.lallemandbrewing.com/fr/verdant-ipa","retrievedAt":"2026-09-12"},{"key":"flocculation","reported":"Floculation faible","origin":"manufacturer","source":"Lallemand","sourceUrl":"https://www.lallemandbrewing.com/fr/verdant-ipa","retrievedAt":"2026-09-12"},{"key":"attenuation","reported":"Atténuation apparente 75–82 %","range":{"min":75,"max":82},"unit":"%","qualifier":"range","origin":"manufacturer","source":"Brau Rauch","sourceUrl":"https://brau-rauch.example/verdant-ipa","retrievedAt":"2026-09-27"},{"key":"temperature","reported":"Fermentation 18–23 °C","range":{"min":18,"max":23},"unit":"°C","qualifier":"range","origin":"manufacturer","source":"Brau Rauch","sourceUrl":"https://brau-rauch.example/verdant-ipa","retrievedAt":"2026-09-27"},{"key":"flocculation","reported":"Floculation faible","origin":"manufacturer","source":"Brau Rauch","sourceUrl":"https://brau-rauch.example/verdant-ipa","retrievedAt":"2026-09-27"},{"key":"attenuation","reported":"Atténuation apparente 76–80 %","range":{"min":76,"max":80},"unit":"%","qualifier":"range","origin":"manufacturer","source":"Malt Miller","sourceUrl":"https://maltmiller.example/verdant","retrievedAt":"2026-10-01"},{"key":"temperature","reported":"Fermentation 17–22 °C","range":{"min":17,"max":22},"unit":"°C","qualifier":"range","origin":"manufacturer","source":"Malt Miller","sourceUrl":"https://maltmiller.example/verdant","retrievedAt":"2026-10-01"},{"key":"flocculation","reported":"Floculation faible","origin":"manufacturer","source":"Malt Miller","sourceUrl":"https://maltmiller.example/verdant","retrievedAt":"2026-10-01"}]},"volumeL":20,"fermentation":[{"name":"Primaire","kind":"primaire","tempC":19,"days":8},{"name":"Garde","kind":"garde","tempC":4,"days":7}],"mashSteps":[{"name":"Saccharification","tempC":66,"durationMin":60},{"name":"Mash-out","tempC":76,"durationMin":10}],"hops":[{"name":"Magnum","weightG":10,"alpha":12,"stage":"boil","timeMin":60}],"style":"NEIPA"}}
+Volume fermenteur (L) : 20
+Date de brassage : "2026-09-08"
+OG cible : 1.064
+FG cible : 1.014
+ABV cible (%) : 6.6
+IBU cible : 38
+Couleur annoncée (EBC) : 11.75
+Rendement (%) : 71.5
+Volume avant ébullition (L) : 24.125
+Matériel du plan :
+  Identifiant matériel : "cuve-30"
+  Nom matériel : "Cuve 30 L"
+  Volume visé (L) : 20
+  Rendement matériel (%) : 72
+Carbonatation : "2.35 vol"
+Ébullition (min) : 60
+Grain total (kg) : 5.4
+Fermentescibles :
+  -
+    Nom : "Pilsner"
+    Masse (kg) : 3.6
+    Famille : "grain"
+    Ajout : "empatage"
+    Couleur (EBC) : 3.5
+  -
+    Nom : "Flocons d’avoine"
+    Masse (kg) : 1
+    Famille : "grain"
+    Ajout : "empatage"
+    Couleur (EBC) : 2
+  -
+    Nom : "Froment"
+    Masse (kg) : 0.8
+    Famille : "grain"
+    Ajout : "empatage"
+    Couleur (EBC) : 4
+  -
+    Nom : "Lactose"
+    Masse (kg) : 0.3
+    Famille : "lactose"
+    Ajout : "ebullition"
+    Fermentescibilité (%) : 0
+Houblons :
+  -
+    Nom : "Magnum"
+    Masse (g) : 10
+    Alpha (%) : 12
+    Moment : "boil"
+    Durée (min) : 60
+  -
+    Nom : "Lotus"
+    Masse (g) : 25
+    Alpha (%) : 14
+    Moment : "boil"
+    Durée (min) : 40
+  -
+    Nom : "Citra"
+    Masse (g) : 60
+    Alpha (%) : 12.5
+    Moment : "whirlpool"
+    Durée (min) : 20
+    Température (°C) : 80
+  -
+    Nom : "Mosaic"
+    Masse (g) : 80
+    Alpha (%) : 11
+    Moment : "dryHop"
+    Durée (min) : 2880
+    Jour : 3
+  -
+    Nom : "Citra"
+    Masse (g) : 60
+    Alpha (%) : 12.5
+    Moment : "dryHop"
+    Jour : 6
+Autres ajouts :
+  -
+    Nom : "Whirlfloc"
+    Quantité : 0.5
+    Unité : "pastille"
+    Moment : "Ébullition"
+    Notes : |
+      Écraser
+      Ajouter à T−10.
+Levure :
+  Nom : "Wyeast 3068"
+  Souche de référence : "wyeast-3068"
+  Laboratoire : "Wyeast"
+  Faits de levure sourcés : [{"key":"attenuation","reported":"Atténuation apparente 74–80 %","origin":"manufacturer","range":{"min":74,"max":80},"unit":"%","qualifier":"range","source":"Lallemand","sourceUrl":"https://www.lallemandbrewing.com/fr/verdant-ipa","retrievedAt":"2026-09-12"},{"key":"temperature","reported":"Fermentation 18–22 °C","origin":"manufacturer","range":{"min":18,"max":22},"unit":"°C","qualifier":"range","source":"Lallemand","sourceUrl":"https://www.lallemandbrewing.com/fr/verdant-ipa","retrievedAt":"2026-09-12"},{"key":"flocculation","reported":"Floculation faible","origin":"manufacturer","source":"Lallemand","sourceUrl":"https://www.lallemandbrewing.com/fr/verdant-ipa","retrievedAt":"2026-09-12"},{"key":"attenuation","reported":"Atténuation apparente 75–82 %","origin":"manufacturer","range":{"min":75,"max":82},"unit":"%","qualifier":"range","source":"Brau Rauch","sourceUrl":"https://brau-rauch.example/verdant-ipa","retrievedAt":"2026-09-27"},{"key":"temperature","reported":"Fermentation 18–23 °C","origin":"manufacturer","range":{"min":18,"max":23},"unit":"°C","qualifier":"range","source":"Brau Rauch","sourceUrl":"https://brau-rauch.example/verdant-ipa","retrievedAt":"2026-09-27"},{"key":"flocculation","reported":"Floculation faible","origin":"manufacturer","source":"Brau Rauch","sourceUrl":"https://brau-rauch.example/verdant-ipa","retrievedAt":"2026-09-27"},{"key":"attenuation","reported":"Atténuation apparente 76–80 %","origin":"manufacturer","range":{"min":76,"max":80},"unit":"%","qualifier":"range","source":"Malt Miller","sourceUrl":"https://maltmiller.example/verdant","retrievedAt":"2026-10-01"},{"key":"temperature","reported":"Fermentation 17–22 °C","origin":"manufacturer","range":{"min":17,"max":22},"unit":"°C","qualifier":"range","source":"Malt Miller","sourceUrl":"https://maltmiller.example/verdant","retrievedAt":"2026-10-01"},{"key":"flocculation","reported":"Floculation faible","origin":"manufacturer","source":"Malt Miller","sourceUrl":"https://maltmiller.example/verdant","retrievedAt":"2026-10-01"}]
+  Forme : "liquide"
+  Quantité : 125
+  Unité : "mL"
+Empâtage :
+  Paliers :
+    -
+      Nom : "Saccharification"
+      Température (°C) : 66
+      Durée (min) : 60
+    -
+      Nom : "Mash-out"
+      Température (°C) : 76
+      Durée (min) : 10
+Fermentation :
+  -
+    Phase : "primaire"
+    Nom : "Primaire"
+    Température (°C) : 19
+    Durée (jours) : 8
+  -
+    Phase : "garde"
+    Nom : "Garde"
+    Température (°C) : 4
+    Durée (jours) : 7
+Déroulé : |
+  Préparer l’eau.
+  
+    Puis concasser : 1 mm.
+  FIN DE RECETTE
+  
+Étapes complémentaires :
+  -
+    Étape : "Conditionnement"
+    Température (°C) : 20
+    Durée (min) : 30
+    Notes : "Purger au CO₂."
+Notes :
+  - "Note : houblons frais"
+  - ""
+  - |
+    Deux lignes
+      - avec indentation
+Notes de création : |
+  Auteur : Gaëtan
+  Source originale
+  
+  
+Estimations au moment de la copie :
+  Intention levure à la copie : "Hazy · NEIPA · objectif Girofle · épices · pression de fermentation 0 bar. Scénario ancien : réglages modifiés depuis son adoption ; les consignes actuelles figurent dans la recette. L’objectif aromatique ne prédit pas une intensité de goût."
+  OG estimée : 1.064
+  FG estimée : 1.014
+  ABV estimé (%) : 6.6
+  IBU estimée : 38
+  Couleur estimée (EBC) : 8
+FIN DE RECETTE

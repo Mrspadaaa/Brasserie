@@ -1,0 +1,54 @@
+L’AFFINÉE — RECETTE v3
+neipa v3 — NEIPA
+20 L en fermenteur · ébullition 60 min · 26.10.2026
+Matériel : Cuve 30 L · 20 L visés · rendement 72 %
+OG 1.064 · FG 1.014 · ABV 6.6 % · IBU 38 · EBC 8 · rendement 72 %
+
+FERMENTESCIBLES — 5,4 KG
+────────────────────────
+  3,6 kg    Pilsner  (67 % · 3.5 EBC · empatage)
+  1 kg      Flocons d’avoine  (19 % · 2 EBC · empatage)
+  800 g     Froment  (15 % · 4 EBC · empatage)
+  300 g     Lactose  (ebullition · 0 % fermentescible · lactose)
+
+HOUBLONS
+────────
+  Ébullition :
+    10 g    Magnum  (60 min · 12 % AA)
+    25 g    Lotus  (40 min · 14 % AA)
+  Whirlpool :
+    60 g    Citra  (20 min à 80 °C · 12.5 % AA)
+  Houblonnage à cru :
+    80 g    Mosaic  (J+3 · 48 h · 11 % AA)
+    60 g    Citra  (J+6 · 12.5 % AA)
+
+LEVURE
+──────
+  Wyeast 3068 — 125 mL (liquide)
+  fermentation 17–23 °C · atténuation 74–82 % · floculation faible
+  Intention levure à la copie : Hazy · NEIPA · objectif Girofle · épices · pression de fermentation 0 bar. Scénario ancien : réglages modifiés depuis son adoption ; les consignes actuelles figurent dans la recette. L’objectif aromatique ne prédit pas une intensité de goût.
+  Carbonatation : 2.35 vol
+
+AUTRES AJOUTS
+─────────────
+  Whirlfloc — 0.5 pastille · Ébullition · Écraser Ajouter à T−10.
+
+EMPÂTAGE
+────────
+  66 °C     60 min — Saccharification
+  76 °C     10 min — Mash-out
+
+FERMENTATION
+────────────
+  19 °C     8 j — Primaire
+  4 °C      7 j — Garde
+
+NOTES
+─────
+  Note : houblons frais
+  Deux lignes
+    - avec indentation
+
+— Données de réimport (ne pas modifier) —
+{"format":3,"name":"neipa v3","style":"NEIPA","yeastDesign":{"modelVersion":"yeast-recipe-2","yeastId":"wyeast-3068","styleId":"hazy-ipa","goal":"clove","goalExplicit":true,"pressureBar":0,"ferulicRest":false,"process":"unspecified","applied":{"volumeL":20,"hops":[{"name":"Magnum","weightG":10,"alpha":12,"stage":"boil","timeMin":60}],"style":"NEIPA","same":["yeast","fermentation","mashSteps"]}},"volumeL":20,"brewDate":"2026-09-08","ogTarget":1.064,"fgTarget":1.014,"abvTarget":6.6,"ibuTarget":38,"colorEbc":11.75,"efficiencyPct":71.5,"preBoilL":24.125,"brewhouse":{"id":"cuve-30","name":"Cuve 30 L","volumeL":20,"efficiencyPct":72},"carboTarget":"2.35 vol","boilMin":60,"totalGristKg":5.4,"fermentables":[{"name":"Pilsner","weightKg":3.6,"kind":"grain","use":"empatage","colorEbc":3.5},{"name":"Flocons d’avoine","weightKg":1,"kind":"grain","use":"empatage","colorEbc":2},{"name":"Froment","weightKg":0.8,"kind":"grain","use":"empatage","colorEbc":4},{"name":"Lactose","weightKg":0.3,"kind":"lactose","use":"ebullition","fermentabilityPct":0}],"hops":[{"name":"Magnum","weightG":10,"alpha":12,"stage":"boil","timeMin":60},{"name":"Lotus","weightG":25,"alpha":14,"stage":"boil","timeMin":40},{"name":"Citra","weightG":60,"alpha":12.5,"stage":"whirlpool","timeMin":20,"tempC":80},{"name":"Mosaic","weightG":80,"alpha":11,"stage":"dryHop","timeMin":2880,"dayOffset":3},{"name":"Citra","weightG":60,"alpha":12.5,"stage":"dryHop","dayOffset":6}],"adjuncts":[{"name":"Whirlfloc","amount":0.5,"unit":"pastille","step":"Ébullition","notes":"Écraser\nAjouter à T−10."}],"yeast":{"name":"Wyeast 3068","hopIndexId":"wyeast-3068","lab":"Wyeast","technicalFacts":[{"key":"attenuation","reported":"Atténuation apparente 74–80 %","origin":"manufacturer","range":{"min":74,"max":80},"unit":"%","qualifier":"range","source":"Lallemand","sourceUrl":"https://www.lallemandbrewing.com/fr/verdant-ipa","retrievedAt":"2026-09-12"},{"key":"temperature","reported":"Fermentation 18–22 °C","origin":"manufacturer","range":{"min":18,"max":22},"unit":"°C","qualifier":"range","source":"Lallemand","sourceUrl":"https://www.lallemandbrewing.com/fr/verdant-ipa","retrievedAt":"2026-09-12"},{"key":"flocculation","reported":"Floculation faible","origin":"manufacturer","source":"Lallemand","sourceUrl":"https://www.lallemandbrewing.com/fr/verdant-ipa","retrievedAt":"2026-09-12"},{"key":"attenuation","reported":"Atténuation apparente 75–82 %","origin":"manufacturer","range":{"min":75,"max":82},"unit":"%","qualifier":"range","source":"Brau Rauch","sourceUrl":"https://brau-rauch.example/verdant-ipa","retrievedAt":"2026-09-27"},{"key":"temperature","reported":"Fermentation 18–23 °C","origin":"manufacturer","range":{"min":18,"max":23},"unit":"°C","qualifier":"range","source":"Brau Rauch","sourceUrl":"https://brau-rauch.example/verdant-ipa","retrievedAt":"2026-09-27"},{"key":"flocculation","reported":"Floculation faible","origin":"manufacturer","source":"Brau Rauch","sourceUrl":"https://brau-rauch.example/verdant-ipa","retrievedAt":"2026-09-27"},{"key":"attenuation","reported":"Atténuation apparente 76–80 %","origin":"manufacturer","range":{"min":76,"max":80},"unit":"%","qualifier":"range","source":"Malt Miller","sourceUrl":"https://maltmiller.example/verdant","retrievedAt":"2026-10-01"},{"key":"temperature","reported":"Fermentation 17–22 °C","origin":"manufacturer","range":{"min":17,"max":22},"unit":"°C","qualifier":"range","source":"Malt Miller","sourceUrl":"https://maltmiller.example/verdant","retrievedAt":"2026-10-01"},{"key":"flocculation","reported":"Floculation faible","origin":"manufacturer","source":"Malt Miller","sourceUrl":"https://maltmiller.example/verdant","retrievedAt":"2026-10-01"}],"form":"liquide","qty":125,"unit":"mL"},"mash":{"steps":[{"name":"Saccharification","tempC":66,"durationMin":60},{"name":"Mash-out","tempC":76,"durationMin":10}]},"fermentation":[{"kind":"primaire","name":"Primaire","tempC":19,"days":8},{"kind":"garde","name":"Garde","tempC":4,"days":7}],"instructions":"Préparer l’eau.\n\n  Puis concasser : 1 mm.\nFIN DE RECETTE\n","steps":[{"step":"Conditionnement","tempC":20,"durationMin":30,"notes":"Purger au CO₂."}],"notes":["Note : houblons frais","","Deux lignes\n  - avec indentation"],"notesCreation":"Auteur : Gaëtan\nSource originale\n\n"}
+FIN DE RECETTE

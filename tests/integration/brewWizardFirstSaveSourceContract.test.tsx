@@ -297,8 +297,10 @@ describe('premier enregistrement — cible nulle, zéro ou absente face à une p
     projection.exact = { fg: 1.009, abv: 5.4 };
     const { save } = mount(json(sourceRecipe({ fgTarget: null, abvTarget: null })));
     const text = copyRecipeText();
-    expect(text).toContain('FG cible : null');
-    expect(text).toContain('FG estimée : 1.009');
+    // Export concis (D184) : la cible nulle vit dans le bloc de réimport, l'estimation exacte dans la ligne des cibles lisibles.
+    expect(readRecipeText(text)!.fgTarget).toBeNull();
+    expect(text).toContain('"fgTarget":null');
+    expect(text).toMatch(/FG 1\.009/);
     const saved = saveFromRecap(save);
     expect(saved.fgTarget).toBeNull();
     expect(saved.abvTarget).toBeNull();
@@ -574,7 +576,8 @@ describe('premier enregistrement — référence d’analyse vide ou blanche', (
     expectKeptWithoutBorrowing(saveFromRecap(save).waterPlan!, blank);
     expect(screen.getByText(/La référence d’analyse d’eau de cette recette est vide/)).toBeInTheDocument();
     const text = copyRecipeText();
-    expect(text).toContain(`Référence de source : ${JSON.stringify(blank)}`);
+    expect(text).toContain(`"sourceId":${JSON.stringify(blank)}`);
+    expect(readRecipeText(text)!.waterPlan!.sourceId).toBe(blank);
     expect(text).not.toContain(RECIPE_WATER.id);
     expect(text).not.toContain(ACTIVE_WATER.id);
   });
@@ -820,7 +823,7 @@ describe('premier enregistrement — snapshot legacy sans identité utilisable',
     const snapshot = anonymousSnapshot('');
     const source = mount(json(sourceRecipe({ style: first, waterPlan: legacyPlan(snapshot, firstCode) })));
     const text = copyRecipeText();
-    expect(text, 'Aucune référence blanche n’est déclarée dans le texte.').not.toContain('Référence de source');
+    expect(text, 'Aucune référence blanche n’est déclarée dans le texte.').not.toContain('"sourceId"');
     const read = readRecipeText(text)!;
     expect(hasOwn(read.waterPlan, 'sourceId')).toBe(false);
     expect(read.waterPlan!.sourceSnapshot).toEqual(snapshot);
