@@ -1,0 +1,85 @@
+{
+  "sources": {
+    "hpa": {
+      "hotes": [
+        "https://hops.com.au"
+      ],
+      "statuts": {
+        "200": 82
+      },
+      "absents": [],
+      "arretes": []
+    },
+    "crosbyhops": {
+      "hotes": [
+        "https://www.crosbyhops.com"
+      ],
+      "statuts": {
+        "200": 152
+      },
+      "absents": [],
+      "arretes": []
+    },
+    "indiehops": {
+      "hotes": [
+        "https://indiehops.com"
+      ],
+      "statuts": {
+        "200": 21
+      },
+      "absents": [],
+      "arretes": []
+    },
+    "bsg": {
+      "hotes": [
+        "https://www.rahrbsg.com"
+      ],
+      "statuts": {
+        "200": 81
+      },
+      "absents": [],
+      "arretes": []
+    },
+    "usahops": {
+      "hotes": [
+        "https://www.usahops.org"
+      ],
+      "statuts": {
+        "200": 8
+      },
+      "absents": [],
+      "arretes": []
+    },
+    "nzhops": {
+      "hotes": [
+        "https://nzhops.co.nz",
+        "https://cdn.shopify.com"
+      ],
+      "statuts": {
+        "200": 28
+      },
+      "absents": [],
+      "arretes": []
+    },
+    "hopsdirect": {
+      "hotes": [
+        "https://hopsdirect.com"
+      ],
+      "statuts": {
+        "200": 79
+      },
+      "absents": [],
+      "arretes": []
+    },
+    "yakimavalleyhops": {
+      "hotes": [
+        "https://yakimavalleyhops.com"
+      ],
+      "statuts": {
+        "200": 152
+      },
+      "absents": [],
+      "arretes": []
+    }
+  }
+}

@@ -1,0 +1,1555 @@
+{
+  "source": {
+    "id": "usahops",
+    "nom": "USA Hops / Hop Growers of America",
+    "hote": "www.usahops.org",
+    "type": "association de producteurs (États-Unis)",
+    "conditions": "robots.txt : tout permis (Disallow vide) ; aucune licence lue ; pages et PDF publics",
+    "releve": "2026-10-26"
+  },
+  "fiches": [
+    {
+      "nom": "Ahtanum",
+      "alias": [],
+      "varietyId": "beermaverick-ahtanum",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral"
+        ]
+      }
+    },
+    {
+      "nom": "AlphAroma",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Tropical Fruit",
+          "Citrus"
+        ]
+      }
+    },
+    {
+      "nom": "Amarillo",
+      "alias": [],
+      "varietyId": "beermaverick-amarillo",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral",
+          "Tropical Fruit"
+        ]
+      }
+    },
+    {
+      "nom": "Apollo",
+      "alias": [],
+      "varietyId": "beermaverick-apollo",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Spicy",
+          "Tobacco/Earthy",
+          "Herbal",
+          "Pine"
+        ]
+      }
+    },
+    {
+      "nom": "Azacca, ADHA-483",
+      "alias": [],
+      "varietyId": "beermaverick-azacca",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Tropical Fruit",
+          "Citrus"
+        ]
+      }
+    },
+    {
+      "nom": "Bitter Gold",
+      "alias": [],
+      "varietyId": "beermaverick-bitter-gold",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Stone Fruit",
+          "Tropical Fruit"
+        ]
+      }
+    },
+    {
+      "nom": "Bravo",
+      "alias": [],
+      "varietyId": "beermaverick-bravo",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Floral"
+        ]
+      }
+    },
+    {
+      "nom": "Brewer's Gold",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Bullion",
+      "alias": [],
+      "varietyId": "beermaverick-bullion",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity"
+        ]
+      }
+    },
+    {
+      "nom": "Calypso",
+      "alias": [],
+      "varietyId": "beermaverick-calypso",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Tropical Fruit",
+          "Citrus",
+          "Tobacco/Earthy"
+        ]
+      }
+    },
+    {
+      "nom": "Cascade",
+      "alias": [],
+      "varietyId": "beermaverick-cascade",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Citrus",
+          "Floral"
+        ]
+      }
+    },
+    {
+      "nom": "Cashmere",
+      "alias": [],
+      "varietyId": "beermaverick-cashmere",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Citrus",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "Centennial",
+      "alias": [],
+      "varietyId": "beermaverick-centennial",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral"
+        ]
+      }
+    },
+    {
+      "nom": "Chelan",
+      "alias": [],
+      "varietyId": "beermaverick-chelan",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral"
+        ]
+      }
+    },
+    {
+      "nom": "Chinook",
+      "alias": [],
+      "varietyId": "beermaverick-chinook",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Spicy",
+          "Pine"
+        ]
+      }
+    },
+    {
+      "nom": "Citra",
+      "alias": [],
+      "varietyId": "beermaverick-citra",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Tropical Fruit",
+          "Citrus"
+        ]
+      }
+    },
+    {
+      "nom": "Cluster",
+      "alias": [],
+      "varietyId": "beermaverick-cluster",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral",
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Columbia",
+      "alias": [],
+      "varietyId": "beermaverick-columbia",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Tobacco/Earthy"
+        ]
+      }
+    },
+    {
+      "nom": "Columbus",
+      "alias": [],
+      "varietyId": "beermaverick-columbus",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Comet",
+      "alias": [],
+      "varietyId": "beermaverick-comet",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Tobacco/Earthy"
+        ]
+      }
+    },
+    {
+      "nom": "Crystal",
+      "alias": [],
+      "varietyId": "beermaverick-crystal",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "CTZ",
+      "alias": [],
+      "varietyId": "beermaverick-ctz",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral",
+          "Spicy",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "Delta",
+      "alias": [],
+      "varietyId": "beermaverick-delta",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Citrus",
+          "Floral",
+          "Spicy",
+          "Tobacco/Earthy",
+          "Herbal",
+          "Pine"
+        ]
+      }
+    },
+    {
+      "nom": "Denali",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Tropical Fruit",
+          "Citrus",
+          "Pine"
+        ]
+      }
+    },
+    {
+      "nom": "Ekuanot Brand HBC 366",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Tropical Fruit",
+          "Citrus",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "El Dorado",
+      "alias": [],
+      "varietyId": "beermaverick-el-dorado",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Stone Fruit",
+          "Tropical Fruit"
+        ]
+      }
+    },
+    {
+      "nom": "Eroica",
+      "alias": [],
+      "varietyId": "beermaverick-eroica",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity"
+        ]
+      }
+    },
+    {
+      "nom": "Eureka!",
+      "alias": [],
+      "varietyId": "beermaverick-eureka",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Stone Fruit",
+          "Tropical Fruit",
+          "Citrus",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "First Gold",
+      "alias": [],
+      "varietyId": "beermaverick-first-gold",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Citrus",
+          "Floral",
+          "Spicy",
+          "Tobacco/Earthy",
+          "Herbal",
+          "Pine"
+        ]
+      }
+    },
+    {
+      "nom": "Fuggle",
+      "alias": [],
+      "varietyId": "beermaverick-fuggle",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Tobacco/Earthy"
+        ]
+      }
+    },
+    {
+      "nom": "Galena",
+      "alias": [],
+      "varietyId": "beermaverick-galena",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Stone Fruit",
+          "Citrus",
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Glacier",
+      "alias": [],
+      "varietyId": "beermaverick-glacier",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Cedar"
+        ]
+      }
+    },
+    {
+      "nom": "Golding",
+      "alias": [],
+      "varietyId": "beermaverick-golding",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Hallertauer",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Spicy",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "Horizon",
+      "alias": [],
+      "varietyId": "beermaverick-horizon",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Idaho 7",
+      "alias": [],
+      "varietyId": "beermaverick-idaho-7",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Tropical Fruit",
+          "Citrus",
+          "Herbal",
+          "Pine"
+        ]
+      }
+    },
+    {
+      "nom": "Lemondrop",
+      "alias": [],
+      "varietyId": "beermaverick-lemondrop",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Citrus",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "Liberty",
+      "alias": [],
+      "varietyId": "beermaverick-liberty",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Magnum",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Stone Fruit",
+          "Tropical Fruit",
+          "Citrus",
+          "Floral",
+          "Spicy",
+          "Tobacco/Earthy",
+          "Cedar",
+          "Herbal",
+          "Pine",
+          "Grassy"
+        ]
+      }
+    },
+    {
+      "nom": "Meridian",
+      "alias": [],
+      "varietyId": "beermaverick-meridian",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Tropical Fruit",
+          "Citrus"
+        ]
+      }
+    },
+    {
+      "nom": "Millennium",
+      "alias": [],
+      "varietyId": "beermaverick-millennium",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Tobacco/Earthy",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "Mosaic",
+      "alias": [],
+      "varietyId": "beermaverick-mosaic",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral",
+          "Grassy"
+        ]
+      }
+    },
+    {
+      "nom": "Mt. Hood",
+      "alias": [],
+      "varietyId": "beermaverick-mount-hood",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Spicy",
+          "Tobacco/Earthy",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "Mt. Rainier",
+      "alias": [],
+      "varietyId": "beermaverick-mount-rainier",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral",
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Newport",
+      "alias": [],
+      "varietyId": "beermaverick-newport",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Pine"
+        ]
+      }
+    },
+    {
+      "nom": "Northern Brewer",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Tobacco/Earthy",
+          "Pine"
+        ]
+      }
+    },
+    {
+      "nom": "Nugget",
+      "alias": [],
+      "varietyId": "beermaverick-nugget",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Spicy",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "Olympic",
+      "alias": [],
+      "varietyId": "beermaverick-olympic",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Palisade",
+      "alias": [],
+      "varietyId": "beermaverick-palisade",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Stone Fruit",
+          "Herbal",
+          "Grassy"
+        ]
+      }
+    },
+    {
+      "nom": "Pekko, ADHA-871",
+      "alias": [],
+      "varietyId": "beermaverick-pekko",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Tropical Fruit",
+          "Citrus",
+          "Floral",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "Saaz",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Spicy",
+          "Tobacco/Earthy"
+        ]
+      }
+    },
+    {
+      "nom": "Santiam",
+      "alias": [],
+      "varietyId": "beermaverick-santiam",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Spicy",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "Serebrianka",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Citrus",
+          "Tobacco/Earthy"
+        ]
+      }
+    },
+    {
+      "nom": "Simcoe",
+      "alias": [],
+      "varietyId": "beermaverick-simcoe",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Tobacco/Earthy",
+          "Pine"
+        ]
+      }
+    },
+    {
+      "nom": "Sorachi Ace",
+      "alias": [],
+      "varietyId": "beermaverick-sorachi-ace",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Herbal",
+          "Grassy"
+        ]
+      }
+    },
+    {
+      "nom": "Spalter",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Tobacco/Earthy",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "Sterling",
+      "alias": [],
+      "varietyId": "beermaverick-sterling",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral",
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Strissel Spalt",
+      "alias": [],
+      "varietyId": "beermaverick-strisselspalt",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Spicy",
+          "Tobacco/Earthy",
+          "Herbal",
+          "Grassy"
+        ]
+      }
+    },
+    {
+      "nom": "Summit",
+      "alias": [],
+      "varietyId": "beermaverick-summit",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Spicy",
+          "Tobacco/Earthy"
+        ]
+      }
+    },
+    {
+      "nom": "Super Galena",
+      "alias": [],
+      "varietyId": "beermaverick-super-galena",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Citrus",
+          "Spicy",
+          "Tobacco/Earthy",
+          "Herbal",
+          "Pine",
+          "Grassy"
+        ]
+      }
+    },
+    {
+      "nom": "Tahoma",
+      "alias": [],
+      "varietyId": "beermaverick-tahoma",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Cedar"
+        ]
+      }
+    },
+    {
+      "nom": "Talisman",
+      "alias": [],
+      "varietyId": "beermaverick-talisman",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {}
+    },
+    {
+      "nom": "Talus HBC 692",
+      "alias": [],
+      "varietyId": "beermaverick-talus",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Tropical Fruit",
+          "Citrus",
+          "Floral",
+          "Pine"
+        ]
+      }
+    },
+    {
+      "nom": "Teamaker",
+      "alias": [],
+      "varietyId": "beermaverick-teamaker",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "Tettnanger",
+      "alias": [],
+      "varietyId": "beermaverick-tettnanger",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Thora",
+      "alias": [
+        "HQG4"
+      ],
+      "varietyId": null,
+      "url": "https://www.usahops.org/img/blog_pdf/502.pdf",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "avis-usda",
+      "texteIllisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (%)",
+          "brut": "alpha acids averaging 8.7%",
+          "valeur": 8.7,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "moyenne annoncée"
+        }
+      },
+      "listes": {
+        "thiols": [
+          "4MMP",
+          "3S4MP",
+          "3MH"
+        ],
+        "aromes": [
+          "passionfruit",
+          "guava",
+          "grapefruit",
+          "stone fruit"
+        ]
+      }
+    },
+    {
+      "nom": "Tillicum",
+      "alias": [],
+      "varietyId": "beermaverick-tillicum",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Stone Fruit",
+          "Citrus"
+        ]
+      }
+    },
+    {
+      "nom": "Tomahawk",
+      "alias": [],
+      "varietyId": "beermaverick-tomahawk",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Stone Fruit",
+          "Tobacco/Earthy"
+        ]
+      }
+    },
+    {
+      "nom": "Topaz",
+      "alias": [],
+      "varietyId": "beermaverick-topaz",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Tropical Fruit",
+          "Spicy",
+          "Grassy"
+        ]
+      }
+    },
+    {
+      "nom": "Triple Pearl",
+      "alias": [],
+      "varietyId": "beermaverick-triplepearl",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Citrus",
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Triumph",
+      "alias": [
+        "2000009-033"
+      ],
+      "varietyId": "beermaverick-triumph",
+      "url": "https://www.usahops.org/img/blog_pdf/193.pdf",
+      "releve": "2026-10-26",
+      "publie": 2019,
+      "page": "avis-usda",
+      "texteIllisible": true,
+      "champs": {},
+      "listes": {}
+    },
+    {
+      "nom": "Ultra",
+      "alias": [],
+      "varietyId": "beermaverick-ultra",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Vanguard",
+      "alias": [],
+      "varietyId": "beermaverick-vanguard",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Herbal"
+        ]
+      }
+    },
+    {
+      "nom": "Vera",
+      "alias": [
+        "W1108-333",
+        "HRC003"
+      ],
+      "varietyId": null,
+      "url": "https://www.usahops.org/img/blog_pdf/499.pdf",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "avis-usda",
+      "texteIllisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (%)",
+          "brut": "alpha-acids (3.79 in small plot trials, where it was statistically similar to Cascade, and 5.44% on-farm)",
+          "valeur": 3.79,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "essai en parcelle (Prosser, 2023-2024)"
+        },
+        "alphaFerme": {
+          "champ": "Alpha acids (%)",
+          "brut": "alpha-acids (3.79 in small plot trials, where it was statistically similar to Cascade, and 5.44% on-farm)",
+          "valeur": 5.44,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "essai chez le producteur (WA, ID, 2022-)"
+        },
+        "beta": {
+          "champ": "Beta acids (%)",
+          "brut": "beta acids (4.59% in small plot trials, and 4.65% on-farm)",
+          "valeur": 4.59,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "essai en parcelle (Prosser, 2023-2024)"
+        },
+        "betaFerme": {
+          "champ": "Beta acids (%)",
+          "brut": "beta acids (4.59% in small plot trials, and 4.65% on-farm)",
+          "valeur": 4.65,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "essai chez le producteur (WA, ID, 2022-)"
+        },
+        "huileTotale": {
+          "champ": "Total oil (mL/100g)",
+          "brut": "produced 0.814 mL/100g oil in small plot trials and 1.31 mL/100g on-farm",
+          "valeur": 0.814,
+          "min": null,
+          "max": null,
+          "unite": "mL/100 g",
+          "base": "mL/100 g",
+          "contexte": "essai en parcelle (Prosser, 2023-2024)"
+        },
+        "huileTotaleFerme": {
+          "champ": "Total oil (mL/100g)",
+          "brut": "produced 0.814 mL/100g oil in small plot trials and 1.31 mL/100g on-farm",
+          "valeur": 1.31,
+          "min": null,
+          "max": null,
+          "unite": "mL/100 g",
+          "base": "mL/100 g",
+          "contexte": "essai chez le producteur (WA, ID, 2022-)"
+        },
+        "cohumulone": {
+          "champ": "Co-humulone (% of alpha acids)",
+          "brut": "co-humulone in the alpha acids (45%)",
+          "valeur": 45,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": "% des α",
+          "contexte": "essai en parcelle (Prosser, 2023-2024)"
+        },
+        "linalol": {
+          "champ": "Linalool (%)",
+          "brut": "linalool (0.85%)",
+          "valeur": 0.85,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "contexte": "essai en parcelle (Prosser, 2023-2024)"
+        },
+        "farnesene": {
+          "champ": "Farnesene (%)",
+          "brut": "farnesene (19.3%)",
+          "valeur": 19.3,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "contexte": "essai en parcelle (Prosser, 2023-2024)"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene (%)",
+          "brut": "caryophyllene (3.98%)",
+          "valeur": 3.98,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "contexte": "essai en parcelle (Prosser, 2023-2024)"
+        },
+        "humulene": {
+          "champ": "Humulene (%)",
+          "brut": "Humuluene (10%)",
+          "valeur": 10,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "contexte": "essai en parcelle (Prosser, 2023-2024)"
+        },
+        "geraniol": {
+          "champ": "Geraniol (%)",
+          "brut": "geraniol (0.58%)",
+          "valeur": 0.58,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "contexte": "essai en parcelle (Prosser, 2023-2024)"
+        },
+        "myrcene": {
+          "champ": "Myrcene (%)",
+          "brut": "myrcene (42.5%)",
+          "valeur": 42.5,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "contexte": "essai en parcelle (Prosser, 2023-2024)"
+        },
+        "betaPinene": {
+          "champ": "b-Pinene (%)",
+          "brut": "b-pinene (0.65%)",
+          "valeur": 0.65,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "contexte": "essai en parcelle (Prosser, 2023-2024)"
+        },
+        "rendement": {
+          "champ": "Yield (kg/ha)",
+          "brut": "Yield of USDA-ARS Vera ranged from 1723-3049 kg/ha when mature",
+          "valeur": null,
+          "min": 1723,
+          "max": 3049,
+          "unite": "kg/ha",
+          "base": null,
+          "contexte": "plantes adultes (2+ ans), chez le producteur"
+        }
+      },
+      "listes": {
+        "aromes": [
+          "tropical",
+          "stone fruit",
+          "citrus"
+        ]
+      }
+    },
+    {
+      "nom": "Vista",
+      "alias": [],
+      "varietyId": "beermaverick-vista",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Stone Fruit",
+          "Tropical Fruit",
+          "Citrus"
+        ]
+      }
+    },
+    {
+      "nom": "Warrior",
+      "alias": [],
+      "varietyId": "beermaverick-warrior",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Herbal",
+          "Grassy"
+        ]
+      }
+    },
+    {
+      "nom": "Willamette",
+      "alias": [],
+      "varietyId": "beermaverick-willamette",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Spicy"
+        ]
+      }
+    },
+    {
+      "nom": "Yakima Gold",
+      "alias": [],
+      "varietyId": "beermaverick-yakima-gold",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Fruity",
+          "Stone Fruit",
+          "Tropical Fruit",
+          "Citrus",
+          "Floral",
+          "Spicy",
+          "Tobacco/Earthy",
+          "Cedar",
+          "Herbal",
+          "Grassy"
+        ]
+      }
+    },
+    {
+      "nom": "Zappa",
+      "alias": [],
+      "varietyId": "beermaverick-zappa",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Tropical Fruit",
+          "Citrus",
+          "Spicy",
+          "Pine"
+        ]
+      }
+    },
+    {
+      "nom": "Zeus",
+      "alias": [],
+      "varietyId": "beermaverick-zeus",
+      "url": "https://www.usahops.org/hop-finder/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "sensory-finder",
+      "champs": {},
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Spicy"
+        ]
+      }
+    }
+  ]
+}

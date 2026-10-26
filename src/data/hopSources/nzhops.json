@@ -1,0 +1,654 @@
+{
+  "source": {
+    "id": "nzhops",
+    "nom": "NZ Hops Ltd",
+    "hote": "nzhops.co.nz",
+    "type": "producteur (Nouvelle-Zélande)",
+    "conditions": "robots.txt Shopify : /products/ permis ; /cart, /checkout, /account, /admin, filtres de collection interdits ; aucune licence lue",
+    "releve": "2026-10-26"
+  },
+  "fiches": [
+    {
+      "nom": "Dr. Rudi",
+      "alias": [],
+      "varietyId": "beermaverick-dr-rudi",
+      "url": "https://nzhops.co.nz/products/dr-rudi",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "10-12%",
+          "valeur": null,
+          "min": 10,
+          "max": 12,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose / bittering hop with classic resinous pine and lifted citrus characters"
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "Green Bullet",
+      "alias": [],
+      "varietyId": "beermaverick-green-bullet",
+      "url": "https://nzhops.co.nz/products/green-bullet",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "11-14 %",
+          "valeur": null,
+          "min": 11,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose / bittering hop with a spicy dried fruit character and solid finish"
+        ],
+        "recoltes": [
+          "2020",
+          "2010",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "Kohatu",
+      "alias": [],
+      "varietyId": "beermaverick-kohatu",
+      "url": "https://nzhops.co.nz/products/kohatu",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "5-7.5%",
+          "valeur": null,
+          "min": 5,
+          "max": 7.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose hop with fresh tropical fruit characters and excellent finish and bitterness"
+        ],
+        "recoltes": [
+          "2019",
+          "2020",
+          "2018"
+        ]
+      }
+    },
+    {
+      "nom": "Motueka",
+      "alias": [],
+      "varietyId": "beermaverick-motueka",
+      "url": "https://nzhops.co.nz/products/motueka",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "5.5-10%",
+          "valeur": null,
+          "min": 5.5,
+          "max": 10,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "An aroma hop with a distinctive fresh crushed citrus “Mojito” lime character."
+        ],
+        "recoltes": [
+          "2019",
+          "2020",
+          "2018"
+        ],
+        "fichePdf": [
+          "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Motueka_Variety_Sheet_English.pdf?v=1698953236"
+        ]
+      }
+    },
+    {
+      "nom": "Moutere",
+      "alias": [],
+      "varietyId": "beermaverick-moutere",
+      "url": "https://nzhops.co.nz/products/moutere%E2%84%A2",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "15.5-18.0%",
+          "valeur": null,
+          "min": 15.5,
+          "max": 18,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A high alpha hop with distinctive tropical, grapefruit and passionfruit characters."
+        ],
+        "recoltes": [
+          "2019",
+          "2020"
+        ]
+      }
+    },
+    {
+      "nom": "Nectaron",
+      "alias": [],
+      "varietyId": "beermaverick-nectaron",
+      "url": "https://nzhops.co.nz/products/nectaron",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "10-14%",
+          "valeur": null,
+          "min": 10,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "Intense tropical pineapple, passion fruit and stone fruit characters."
+        ],
+        "recoltes": [
+          "2020",
+          "2019",
+          "2021"
+        ],
+        "fichePdf": [
+          "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Nectaron_Variety_Sheet_English.pdf?v=1698953231",
+          "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Nectaron_Variety_Sheet_English.pdf?v=1697144767"
+        ]
+      }
+    },
+    {
+      "nom": "Nelson Sauvin",
+      "alias": [],
+      "varietyId": "beermaverick-nelson-sauvin",
+      "url": "https://nzhops.co.nz/products/nelson-sauvin",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "10-13 %",
+          "valeur": null,
+          "min": 10,
+          "max": 13,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "An aroma /dual purpose flavour hop with distinctive New World white wine characters"
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ],
+        "fichePdf": [
+          "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Nelson_Sauvin_Variety_Sheet_English.pdf?v=1698953225"
+        ]
+      }
+    },
+    {
+      "nom": "NZ Chinook",
+      "alias": [],
+      "varietyId": "beermaverick-chinook",
+      "url": "https://nzhops.co.nz/products/nz-chinoook",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "10.5-14%",
+          "valeur": null,
+          "min": 10.5,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "New Zealand grown USA bittering cultivar."
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "NZ Fuggle",
+      "alias": [],
+      "varietyId": "beermaverick-fuggle",
+      "url": "https://nzhops.co.nz/products/fuggle-nz",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "6.0-6.4 %",
+          "valeur": null,
+          "min": 6,
+          "max": 6.4,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "New Zealand grown UK aroma cultivar with mild fruit herbal/woody characters"
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "NZ Pacific Jade",
+      "alias": [],
+      "varietyId": "beermaverick-pacific-jade",
+      "url": "https://nzhops.co.nz/products/pacific-jade",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "12-14%",
+          "valeur": null,
+          "min": 12,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A soft bittering / dual purpose hop with fresh citrus and complex spice characters"
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "NZ Southern Cross",
+      "alias": [],
+      "varietyId": "beermaverick-southern-cross",
+      "url": "https://nzhops.co.nz/products/southern-cross",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "11-14%",
+          "valeur": null,
+          "min": 11,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose / soft bittering hop with a citrus lemon zest character with hints of pine"
+        ],
+        "recoltes": [
+          "2020",
+          "2015",
+          "2019",
+          "2018"
+        ]
+      }
+    },
+    {
+      "nom": "Pacific Gem",
+      "alias": [],
+      "varietyId": "beermaverick-pacific-gem",
+      "url": "https://nzhops.co.nz/products/pacific-gem",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "13-15 %",
+          "valeur": null,
+          "min": 13,
+          "max": 15,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A solid bittering hop with spicy black pepper and berry fruit aroma characters."
+        ],
+        "recoltes": [
+          "2020",
+          "2019",
+          "2018"
+        ]
+      }
+    },
+    {
+      "nom": "Pacifica",
+      "alias": [],
+      "varietyId": "beermaverick-pacifica",
+      "url": "https://nzhops.co.nz/products/pacifica",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "5-6%",
+          "valeur": null,
+          "min": 5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose / bittering hop with a spicy “dried fruit” character and solid finish."
+        ],
+        "recoltes": [
+          "2019",
+          "2020",
+          "2018",
+          "2009"
+        ]
+      }
+    },
+    {
+      "nom": "Rakau",
+      "alias": [],
+      "varietyId": "beermaverick-rakau",
+      "url": "https://nzhops.co.nz/products/rakau",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "10-11 %",
+          "valeur": null,
+          "min": 10,
+          "max": 11,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A true dual purpose hops with stone fruit and fig characters and excellent bittering qualities."
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "Riwaka",
+      "alias": [],
+      "varietyId": "beermaverick-riwaka",
+      "url": "https://nzhops.co.nz/products/riwaka%E2%84%A2",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "4.5-6.5%",
+          "valeur": null,
+          "min": 4.5,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A unique aroma hop with a powerfully fuelled tropical passion fruit character."
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "Superdelic",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://nzhops.co.nz/products/superdelic",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "9-10.5%",
+          "valeur": null,
+          "min": 9,
+          "max": 10.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "recoltes": [
+          "2020",
+          "2019",
+          "2021"
+        ],
+        "fichePdf": [
+          "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Superdelic_Variety_Sheet_English.pdf?v=1698953220"
+        ]
+      }
+    },
+    {
+      "nom": "Taiheke",
+      "alias": [],
+      "varietyId": "beermaverick-taiheke",
+      "url": "https://nzhops.co.nz/products/taiheke",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "6-8 %",
+          "valeur": null,
+          "min": 6,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "New Zealand grown dual purpose US Cultivar with citrus “grapefruit/lime” characters."
+        ],
+        "recoltes": [
+          "2019",
+          "2020",
+          "2018"
+        ]
+      }
+    },
+    {
+      "nom": "Wai-iti",
+      "alias": [],
+      "varietyId": "beermaverick-wai-iti",
+      "url": "https://nzhops.co.nz/products/wai-iti",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "2-3.5%",
+          "valeur": null,
+          "min": 2,
+          "max": 3.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A fine aroma hop with fresh peaches and apricot characters within a weight of essential oils"
+        ],
+        "recoltes": [
+          "2020",
+          "2018",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "Waimea",
+      "alias": [],
+      "varietyId": "beermaverick-waimea",
+      "url": "https://nzhops.co.nz/products/waimea",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "16-19 %",
+          "valeur": null,
+          "min": 16,
+          "max": 19,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A big alpha hop that carries an even bigger weight of oils with lots of pine and citrus characters"
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "Wakatu",
+      "alias": [],
+      "varietyId": "beermaverick-wakatu",
+      "url": "https://nzhops.co.nz/products/wakatu-1",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "6-9%",
+          "valeur": null,
+          "min": 6,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A really fine dual purpose hop with a heady mix of floral and citrus characteristics"
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    }
+  ]
+}
