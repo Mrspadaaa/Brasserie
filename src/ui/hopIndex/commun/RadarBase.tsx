@@ -75,7 +75,20 @@ export interface RadarBaseProps {
   cibles?: { toucher: (f: FamilyId) => void; survol?: (f: FamilyId | null) => void; etats?: Partial<Record<FamilyId, string>> };
   /** Une bulle posée près d'un axe (x, y en fraction du radar). */
   bulle?: { famille: FamilyId; rendu: (ancre: { x: number; y: number }) => ReactNode };
+  /** Le trou du 0 (D114, sa variante G de m8 : « G le trou du o, met ça sur tout les radar de comparaison ») : le disque du
+   *  petit anneau du zéro teinté d'un gris uni très clair, sans hachures ni mot ; un point à 0 (non décrit) devient un rond
+   *  creux. Substituer et Comparer l'activent ; Ma bière et la fiche, non. */
+  trouDuZero?: boolean;
+  /** Points confondus (D186, « sur certains points, on ne voit pas le bleu ») : sur un même axe, des points de même rayon (à
+   *  6 près, en unités du radar) s'écartent le long de l'anneau, d'environ 8 px à 390. L'original reste au centre, les autres
+   *  suivent dans l'ordre des séries (celui de la légende). Seuls les points bougent : traits, aires et tiretés restent sur
+   *  la valeur exacte. Substituer et Comparer l'activent. */
+  ecarterConfondus?: boolean;
 }
+
+/** L'écart entre deux points confondus, en unités du radar (W = 358 : 7,3 donne 8 px à 390) ; sous 6, des points d'un même axe se recouvrent. */
+const ECART_CONFONDUS = 7.3;
+const SEUIL_CONFONDUS = 6;
 
 const rd = (x: number) => Math.round(x * 10) / 10;
 type P2 = [number, number];
@@ -90,7 +103,7 @@ function echelle(max: number) {
 }
 export const chiffreRadar = (x: number) => String(Math.round(x * 100) / 100).replace('.', ',');
 
-export function RadarBase({ familles, series, mode, moment, zone: zoneP, reference, echelleAbsolue, echelleCommune, enPlace, seuilHors = 1e-6, objet, label, className, marquees, fleches, cibles, bulle }: RadarBaseProps) {
+export function RadarBase({ familles, series, mode, moment, zone: zoneP, reference, echelleAbsolue, echelleCommune, enPlace, seuilHors = 1e-6, objet, label, className, marquees, fleches, cibles, bulle, trouDuZero, ecarterConfondus }: RadarBaseProps) {
   const absolu = mode === 'absolu';
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   const brut = (s: { valeurs: Valeurs }, f: FamilyId): number | null => { const v = s.valeurs[f]; return v == null || !Number.isFinite(v) ? null : Math.max(0, v); };
@@ -131,6 +144,26 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
   const xy = (p: P2) => `${rd(p[0])},${rd(p[1])}`;
   const secteur = (i: number, j: number, r: number) => { const s: P2[] = [[CX, CY], mil(i - 1, r)]; for (let a = i; a <= j; a++) s.push(pt(a, r)); s.push(mil(j, r)); return s.map(xy).join(' '); };
   const id = `rb-h-${uid}`;
+
+  // D186 : le décalage de chaque point confondu, le long de l'anneau (la tangente de l'axe), clé « série|axe ». Les points d'un axe
+  // se regroupent de proche en proche (moins de 6 d'écart de rayon). Dans un groupe : l'original au centre, puis les séries dans
+  // l'ordre donné (0, −1, +1, −2, +2 crans) ; sans original, répartis de part et d'autre du centre, dans l'ordre des séries.
+  const decal = new Map<string, number>();
+  /** L'écart d'un point décalé, lu par les contrôles (data-decale) ; rien pour un point à sa place. */
+  const decale = (dt: number) => (dt ? { 'data-decale': rd(dt) } : {});
+  if (ecarterConfondus) {
+    const legende = [...series.filter((s) => s.role === 'contour'), ...series.filter((s) => s.role !== 'contour')];
+    axes.forEach((f, i) => {
+      const pts = legende.flatMap((s) => { const v = brut(s, f); return v == null ? [] : [{ s, r: rvA(i, v) }]; }).sort((a, b) => a.r - b.r);
+      const groupes: (typeof pts)[] = [];
+      for (const p of pts) { const g = groupes[groupes.length - 1]; if (g && p.r - g[g.length - 1].r <= SEUIL_CONFONDUS) g.push(p); else groupes.push([p]); }
+      for (const g of groupes) {
+        if (g.length < 2) continue;
+        const l = legende.filter((s) => g.some((p) => p.s === s)), avecOriginal = l[0].role === 'contour';
+        l.forEach((s, k) => decal.set(`${s.cle}|${i}`, (avecOriginal ? [0, -1, 1, -2, 2, -3, 3][k] ?? 0 : k - (l.length - 1) / 2) * ECART_CONFONDUS));
+      }
+    });
+  }
 
   // Les séries : les autres d'abord, la retenue par-dessus, et le contour seul (l'original) tout en haut. Un remplaçant
   // décrit souvent la même famille au même niveau que l'original (échelle à trois crans) : dessiné dessous, le contour
@@ -218,6 +251,9 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
         {groupe.length > 0 && <polygon data-inconnu={groupe.map((i) => axes[i]).join(' ')} data-role="secteur-sans-donnee" points={secteur(groupe[0], groupe[groupe.length - 1], RR)} fill={`url(#${id})`} />}
         {/* En place : un secteur hachuré par axe inconnu de tous, sous la grille. */}
         {enPlace && axes.map((f, i) => (inc[i] ? <polygon key={`h${f}`} data-inconnu={f} data-role="secteur-inconnu" points={secteur(i, i, RR)} fill={`url(#${id})`} className="rb-secteur-pale" /> : null))}
+        {/* Le trou du 0 (D114, variante G) : le disque du petit anneau du zéro, gris uni très clair, sous la grille et les aires. Il
+            recouvre la pointe du secteur « sans donnée » sans prendre son habit (ni hachures ni mot). */}
+        {trouDuZero && <polygon data-role="trou-du-zero" points={axes.map((_f, i) => xy(pt(i, rvA(i, 0)))).join(' ')} className="rb-trou" />}
         {/* La grille : anneaux réguliers, rayons. */}
         <g className="rb-grille" data-role="anneaux" data-anneaux={parAxe ? 5 : nb + 1} fill="none" strokeWidth="1">
           {axes.map((f, i) => { if (inc[i] && !enPlace) return null; const e = pt(i, RR); return <line key={`a${f}`} x1={CX} y1={CY} x2={rd(e[0])} y2={rd(e[1])} />; })}
@@ -272,14 +308,23 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
               })()}
               {v.map((x, i) => {
                 if (x == null) return null;
-                const p = pt(i, rvA(i, x)), h = hors(s, axes[i]);
+                const p0 = pt(i, rvA(i, x)), dt = decal.get(`${s.cle}|${i}`) ?? 0, h = hors(s, axes[i]);
+                // D186 : un point confondu s'écarte le long de l'anneau ; la valeur, le trait et l'aire restent à leur place exacte.
+                const p: P2 = dt ? [p0[0] + Math.cos(i * PAS) * dt, p0[1] + Math.sin(i * PAS) * dt] : p0;
                 // Le contour seul : un anneau creux autour du sommet (la légende de Substituer : disque blanc cerclé), pour que
                 // le point plein d'un remplaçant au même niveau reste visible au centre.
-                if (seul && series.length > 1) return <circle key={axes[i]} data-valeur={chiffreRadar(x)} data-point={axes[i]} cx={rd(p[0])} cy={rd(p[1])} r={6.2}
+                if (seul && series.length > 1) return <circle key={axes[i]} data-valeur={chiffreRadar(x)} data-point={axes[i]} {...decale(dt)} cx={rd(p[0])} cy={rd(p[1])} r={6.2}
                   fill="none" stroke={h ? ORANGE_HORS : s.couleur} strokeWidth={2} />;
+                // Le trou du 0 : un point à 0 (non décrit) tombe dans le disque teinté ; il y devient un rond creux (4,2, trait de la
+                // couleur de la série, 2), posé sur un fond blanc et un liseré clair de 1,6 comme les autres points (D181). Le rond
+                // lui-même est sans remplissage : comme l'anneau de l'original, il est hors de la règle des points pleins.
+                if (trouDuZero && x === 0) return <g key={axes[i]}>
+                  <circle data-role="creux-fond" cx={rd(p[0])} cy={rd(p[1])} r={5.2} fill="#fff" stroke="#fff" strokeWidth={1.6} aria-hidden="true" />
+                  <circle data-valeur={chiffreRadar(x)} data-point={axes[i]} data-creux="0" {...decale(dt)} cx={rd(p[0])} cy={rd(p[1])} r={4.2} fill="none" stroke={s.couleur} strokeWidth={2} />
+                </g>;
                 // D181 (« Les points bleu sont difficile à voir ») : 9 px de diamètre au moins (la retenue 10, hors du style 11), et
                 // un liseré clair de 1,6 qui les détache du trait et de l'aire des autres séries. Les couleurs ne changent pas.
-                return <circle key={axes[i]} data-valeur={chiffreRadar(x)} data-point={axes[i]} cx={rd(p[0])} cy={rd(p[1])} r={lui ? (h ? 5.6 : 5) : h ? 5.2 : 4.6}
+                return <circle key={axes[i]} data-valeur={chiffreRadar(x)} data-point={axes[i]} {...decale(dt)} cx={rd(p[0])} cy={rd(p[1])} r={lui ? (h ? 5.6 : 5) : h ? 5.2 : 4.6}
                   fill={h ? ORANGE_HORS : s.couleur} stroke="#fff" strokeWidth={1.6} />;
               })}
             </g>

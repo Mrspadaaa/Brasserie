@@ -20,7 +20,7 @@ export function RadarU4({ series, retenu, attendues, inconnues, nomStyle }: { se
         cle: s.cle, nom: s.nom, couleur: s.couleur, role: s.original ? 'contour' : s.cle === retenu ? 'retenu' : 'autre',
         valeurs: Object.fromEntries(AXES_U4.map((f) => [f, inconnues.has(f) ? null : s.niveaux[f]])),
       }))}
-      echelleAbsolue={{ pas: 1, nb: 2, etiquettes: ['0', 'cité', 'marqué'] }}
+      echelleAbsolue={{ pas: 1, nb: 2, etiquettes: ['0', 'cité', 'marqué'] }} trouDuZero ecarterConfondus
       marquees={AXES_U4.filter((f) => attendues.has(f))}
       label={`Radar des citations : ${series.map((s) => s.nom).join(', ')} ; cerclé : attendu en ${nomStyle}`} />
   );
