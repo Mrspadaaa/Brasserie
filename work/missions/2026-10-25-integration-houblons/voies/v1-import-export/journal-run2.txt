@@ -1,0 +1,74 @@
+Serveur 1/1 : npm run dev -- --port 5263 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-0G4zNm\serveur-1-5263.log)
+Attente du port 5263…
+Serveur prêt sur le port 5263
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-10-25-integration-houblons/voies/v1-import-export/parcours-import-export.mjs
+
+OK    bouton « Récapitulatif » cliquable
+OK    bouton « Texte complet et fichier » cliquable
+--- export-1 (début) ---
+L’AFFINÉE — RECETTE v1
+
+Nom : "Stout export"
+Style : "16D"
+Volume fermenteur (L) : 20
+Date de brassage : ""
+OG cible : 1.066
+FG cible : null
+ABV cible (%) : null
+IBU cible : 60
+Couleur annoncée (EBC) : 70
+Volume avant ébullition (L) : 0
+Volume avant ébullition à chaud (L) : 0
+Choix de matériel pour la recette :
+  Répartition manuelle de l’eau : false
+Ébullition (min) : 60
+Grain total (kg) : 0
+Fermentescibles : []
+Houblons :
+  -
+    Nom : "Nugget"
+    Masse (g) : 46
+    Alpha (%) : 13
+    Moment : "boil"
+    Durée (min) : 60
+Levure :
+  Nom : "SafAle US-05"
+  Souche de référence : "fermentis-us05"
+  Laboratoire : "Fermentis"
+  Données fermentaires sourcées : {"version":1,"strainName":"SafAle US-05 (Fermentis)","source":{"title":"SafAle US‑05™","author":"Fermentis","year":null,"kind":"manufacturer","reference":"https://fermentis.com/en/product/safale-us-05/"},"retrievedAt":"2026-09-08","conditions":"Fiche de souche : aucune relation quantitative NOLO ni assimilation non publiée déduite. https://fermentis.com/en/product/safale-us-05/ ; https://fermentis.com/en/product/safale-us-05/","sugars":{},"pof":"unknown","hydrolysis":"unknown","pitchGL":{"min":0.5,"max":0.8},"temperatureC":{"min":18,"max":26}}
+  Faits de levure sourcés : [{"key":"temperature","reported":"50 to 80 g/hl at ideally 18-26°C (64.4-78.8°F).","origin":"manufacturer","range":{"min":18,"max":26},"unit":"°C","qualifier":"range","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"pitchRate","reported":"50 to 80 g/hl at ideally 18-26°C (64.4-78.8°F).","origin":"manufacturer","range":{"min":50,"max":80},"unit":"g/hL","qualifier":"range","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"esters","reported":"Low","origin":"manufacturer","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"attenuation","reported":"78-82%","origin":"manufacturer","range":{"min":78,"max":82},"unit":"%","qualifier":"range","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"alcoholTolerance","reported":"9-11%","origin":"manufacturer","range":{"min":9,"max":11},"unit":"%","qualifier":"range","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"species","reported":"Saccharomyces cerevisiae","origin":"manufacturer","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"form","reported":"sèche","origin":"manufacturer","source":"https://fermentis.com/fr/produit/safale-us-05/"}]
+  Source de la fiche : "https://fermentis.com/fr/produit/safale-us-05/"
+  Forme : "sèche"
+  Fermentation minimum (°C) : 18
+  Fermentation maximum (°C) : 26
+Empâtage :
+  Mash-out (°C) : 76
+  Vitesse de chauffe (°C/min) : 0.43333333333333335
+  Rinçage (°C) : 76
+  Méthode de rinçage : "batch"
+--- fin extrait ---
+OK    export non vide (5361 caractères)
+OK    en-tête de recette présent
+OK    export : Nugget présent dans les houblons (- | Nom : "Nugget" | Masse (g) : 46 | Alpha (%) : 13 | Moment : "boil" | Durée (min) : 60)
+OK    export : masse 46 g présente (« Masse (g) : 46 »)
+OK    export : moment « boil » et durée 60 min présents
+OK    export : mention de l’eau présente
+OK    bouton « Coller une recette » cliquable
+OK    bouton « Lire la recette » cliquable
+OK    import lu localement (sans IA) : « Lue localement »
+avertissements/admissions à l’import : []
+OK    bouton « Reprendre » cliquable
+OK    bouton « Récapitulatif » cliquable
+OK    bouton « Texte complet et fichier » cliquable
+OK    après import : Nugget conservé (- | Nom : "Nugget" | Masse (g) : 46 | Alpha (%) : 13 | Moment : "boil" | Durée (min) : 60)
+OK    après import : houblons identiques à l’export initial
+journal erreurs page : []
+journal console error : ["Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector","Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector","Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector","Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"]
+requêtes bloquées (hors localhost) : 4 ["https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap","https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap","https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap","https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"]
+OK    aucune erreur de page
+OK tous les contrôles du parcours
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

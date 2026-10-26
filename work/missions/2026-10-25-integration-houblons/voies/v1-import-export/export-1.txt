@@ -1,0 +1,119 @@
+L’AFFINÉE — RECETTE v1
+
+Nom : "Stout export"
+Style : "16D"
+Volume fermenteur (L) : 20
+Date de brassage : ""
+OG cible : 1.066
+FG cible : null
+ABV cible (%) : null
+IBU cible : 60
+Couleur annoncée (EBC) : 70
+Volume avant ébullition (L) : 0
+Volume avant ébullition à chaud (L) : 0
+Choix de matériel pour la recette :
+  Répartition manuelle de l’eau : false
+Ébullition (min) : 60
+Grain total (kg) : 0
+Fermentescibles : []
+Houblons :
+  -
+    Nom : "Nugget"
+    Masse (g) : 46
+    Alpha (%) : 13
+    Moment : "boil"
+    Durée (min) : 60
+Levure :
+  Nom : "SafAle US-05"
+  Souche de référence : "fermentis-us05"
+  Laboratoire : "Fermentis"
+  Données fermentaires sourcées : {"version":1,"strainName":"SafAle US-05 (Fermentis)","source":{"title":"SafAle US‑05™","author":"Fermentis","year":null,"kind":"manufacturer","reference":"https://fermentis.com/en/product/safale-us-05/"},"retrievedAt":"2026-09-08","conditions":"Fiche de souche : aucune relation quantitative NOLO ni assimilation non publiée déduite. https://fermentis.com/en/product/safale-us-05/ ; https://fermentis.com/en/product/safale-us-05/","sugars":{},"pof":"unknown","hydrolysis":"unknown","pitchGL":{"min":0.5,"max":0.8},"temperatureC":{"min":18,"max":26}}
+  Faits de levure sourcés : [{"key":"temperature","reported":"50 to 80 g/hl at ideally 18-26°C (64.4-78.8°F).","origin":"manufacturer","range":{"min":18,"max":26},"unit":"°C","qualifier":"range","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"pitchRate","reported":"50 to 80 g/hl at ideally 18-26°C (64.4-78.8°F).","origin":"manufacturer","range":{"min":50,"max":80},"unit":"g/hL","qualifier":"range","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"esters","reported":"Low","origin":"manufacturer","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"attenuation","reported":"78-82%","origin":"manufacturer","range":{"min":78,"max":82},"unit":"%","qualifier":"range","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"alcoholTolerance","reported":"9-11%","origin":"manufacturer","range":{"min":9,"max":11},"unit":"%","qualifier":"range","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"species","reported":"Saccharomyces cerevisiae","origin":"manufacturer","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"form","reported":"sèche","origin":"manufacturer","source":"https://fermentis.com/fr/produit/safale-us-05/"}]
+  Source de la fiche : "https://fermentis.com/fr/produit/safale-us-05/"
+  Forme : "sèche"
+  Fermentation minimum (°C) : 18
+  Fermentation maximum (°C) : 26
+Empâtage :
+  Mash-out (°C) : 76
+  Vitesse de chauffe (°C/min) : 0.43333333333333335
+  Rinçage (°C) : 76
+  Méthode de rinçage : "batch"
+  Paliers :
+    -
+      Nom : "Saccharification"
+      Température (°C) : 67
+      Durée (min) : 60
+Eau :
+  Référence de source : "reseau"
+  Analyse de source :
+    Référence : "reseau"
+    Nom : "Réseau — Villars-sur-Glâne"
+    Ca (ppm) : 85
+    Mg (ppm) : 14
+    Na (ppm) : 8
+    SO₄ (ppm) : 28
+    Cl (ppm) : 22
+    HCO₃ (ppm) : 250
+    pH : 7.4
+    Note : "Valeurs de départ, à remplacer par l’analyse du distributeur."
+  Version du traitement : 2
+  Osmosée empâtage (%) : 50
+  Code du profil cible : "—"
+  Origine du profil cible : "Suit le style de bière"
+  Départ dilué :
+    Ca (ppm) : 42.5
+    Mg (ppm) : 7
+    Na (ppm) : 4
+    SO₄ (ppm) : 14
+    Cl (ppm) : 11
+    HCO₃ (ppm) : 125
+  Eau traitée après acide :
+    Ca (ppm) : 42.5
+    Mg (ppm) : 7
+    Na (ppm) : 4
+    SO₄ (ppm) : 14
+    Cl (ppm) : 11
+    HCO₃ (ppm) : 125
+  Eau empâtage (L) : 0
+  Eau rinçage (L) : 0
+  Tous les sels à l’empâtage : true
+  Sels empâtage : {}
+  Sels rinçage : {}
+  Acides retenus :
+    Acidifiant : "Acide lactique 80 %"
+    Empâtage (mL ou g de malt acidulé) : 0
+    Rinçage (mL ou g de malt acidulé) : 0
+  Sels désactivés : []
+  Consigne de pH à l’empâtage (à mesurer) : 5.4
+Fermentation :
+  -
+    Phase : "primaire"
+    Nom : "Fermentation primaire"
+    Température (°C) : 19
+    Durée (jours) : 10
+  -
+    Phase : "garde"
+    Nom : "Maturation"
+    Température (°C) : 4
+    Durée (jours) : 5
+Étapes complémentaires : []
+Notes : []
+Estimations au moment de la copie :
+  IBU estimée : 60
+  Empâtage après acide :
+    Ca (ppm) : 42.5
+    Mg (ppm) : 7
+    Na (ppm) : 4
+    SO₄ (ppm) : 14
+    Cl (ppm) : 11
+    HCO₃ (ppm) : 125
+  Rinçage après acide :
+    Ca (ppm) : 42.5
+    Mg (ppm) : 7
+    Na (ppm) : 4
+    SO₄ (ppm) : 14
+    Cl (ppm) : 11
+    HCO₃ (ppm) : 125
+  Alcalinité résiduelle après acide (ppm CaCO₃) : 68
+  Limite du diagnostic de l’eau : "Analyse source ou volumes manquants : traitement et pH non vérifiables."
+FIN DE RECETTE
