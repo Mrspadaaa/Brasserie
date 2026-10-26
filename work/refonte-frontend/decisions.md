@@ -757,3 +757,13 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   chargé à la demande, ~7 ko), avec un chargeur qui rend les mêmes `descriptions`, et le budget B5 relevé à 160 ko. Le morceau des
   outils est préchargé au repos : l'ouverture n'attend pas. Les 22 tests du prototype qui fixent l'ancien catalogue sont repris un
   par un, avec leur preuve, par la voie e2, avec le rejeu de son moteur v2 sur ces données.
+- D84 (pilote, 26.10, D158, audit de la voie a1) : la demande de test S1 de la maquette du 18.10 (« plus floral, moins résineux »)
+  s'affichait comme sa demande dans Comparer, Dryhopper, Levure et la puce « + floral » de Ma bière (sa capture de Dryhopper :
+  « floral ?, baies ?, résineux ? »). Règle : jamais une demande inventée.
+  - Sa visée, si elle existe ; sinon sa dégustation ;
+  - sinon les familles attendues du style de la recette, dites « attendu en <style> » ;
+  - la puce de Ma bière seulement avec une visée ou une dégustation.
+
+  L'entrée « Ouvrir l'analyse de ma bière » (écran provisoire, données du prototype) est cachée en production tant que l'écran
+  n'existe pas. Le trait « ta bière » de Comparer et de Suggérer passe au-dessus des séries, comme le contour de Substituer (D156).
+  Voie a2-demande-reelle.
