@@ -62,7 +62,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[agents-sans-openai]] — plus d'agent OpenAI depuis le 08.10
 - [[controles-mecanises]] — leçons devenues contrôles, sorties de LECONS (plafond de 8 lignes)
 - [[autonomie-decisions]] — pas de question bloquante ; l'irréversible attend l'utilisateur
-- [[fermeture-et-quota]] — stop à 80 % hebdo, aucun lancement dès 77 % (`get_usage` avant) ; 450 k
+- [[fermeture-et-quota]] — fermer sans bloquant ; fenêtre 5 h, pas de plafond hebdo ; 450 k
 - [[verification-locale]] — ?dev-local, scripts de contrôle locaux
 - [[monkey-testing]] — trois règles, deux angles morts, le cumul de stock
 - [[pieges-controles-maquette]] — pièges des contrôles Chrome de la maquette

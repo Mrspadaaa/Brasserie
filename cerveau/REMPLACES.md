@@ -24,3 +24,4 @@ Corriger chaque copie, ne pas la contourner.
 | `publier à la même adresse\|à jour à la même adresse\|artefact privé, à jour seulement\|Source de la page :` | une version = un nouvel artefact daté, inscrit dans « ## Pages » de MISSION.md (« chaque version devrait en créé des nouveaux ») | 2026-10-23 |
 | `nom de l'étape et sa position .* manquent dans l'en-tête` | le fil d'étapes seul dans l'en-tête de l'étape ; « Text header inutile » (D58, sur « Houblons 3/7 ») | 2026-10-24 |
 | `APP INTACTE OK` | depuis D64 (porte B ouverte), l'intégration écrit dans src/ ; `app-intacte.mjs` ne garde plus que functions/ (FONCTIONS INTACTES OK) | 2026-10-25 |
+| `stop à 80 %\|[Aa]ucun lancement (dès\|à partir de) 77 %` | aucun plafond hebdomadaire, la fenêtre de 5 h reste la seule limite (« Oublie la règle 80% elle est fausse, tu peux la supprimer ») | 2026-10-26 |
