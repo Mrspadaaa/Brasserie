@@ -116,6 +116,28 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
   - r177-tests-rouges (point 8, indépendant).
 
   #181 attend d2 : les substituts de Beer Maverick serviront de vérité de terrain au banc d'évaluation.
+- **26.10, 01 h 40 : ARRÊT PROPRE, quota hebdomadaire à 79 %** (sa règle : stop à 80 %, aucun lancement dès 77 %). Il reprend
+  sur sa demande ; remise à zéro le 31.10 vers 03 h.
+  - Déployé : D74 (36ba5643) et D76 (1ea6ddd1).
+  - Commité, non déployé :
+    - 50f00b78, c2 suite : l'huile du catalogue, l'encadré ⇄, l'en-tête. Rejeu Haiku dans la copie propre, puis déploiement ;
+    - dec0295d, e1 : le banc d'évaluation.
+  - Non commité, dans l'arbre : p2-rendu (#179). Fichiers : `PageShell.tsx`, `comparer/index.tsx`, cinq CSS sans `:has`, deux
+    tests d'intégration.
+    - Gain à ×1 : moment et grammes ÷ 1,8 ; ouvertures inchangées.
+    - À finir : captures (la bande cmc2k au même pixel), contrôles de maquette, vitest hopIndexV4 et intégration, build,
+      audit. Voir `voies/p2-rendu/RESULTAT.md`.
+  - r177 : diagnostic seul. 15 délais dépassés, aucune assertion fausse ; le coût est dans
+    `src/services/hopV55/operationScopedQualifiedValidation.ts` (canonique, SHA-256, `structuredClone`). Rien corrigé.
+  - Prochaines actions, dans l'ordre :
+    1. finir et prouver p2, puis le commiter ;
+    2. rejouer et déployer 50f00b78 et p2 ;
+    3. conseil sur l'option 1 de e1 (mots hors famille dans `substitutes()`, Nelson Sauvin 155e → 2e) et sur l'intensité par
+       variété dans Suggérer, qui est plat ;
+    4. r177 : mémoïser la validation canonique ;
+    5. #182, le compagnon.
+  - À lui : la page de choix farnésène et cohumulone (table « Pages ») ; la collecte des fiches fournisseurs pour le linalol et le
+    géraniol (accord) ; le protocole d'essai IA de e1 § 7 (aucun appel fait).
 
 ## Règle de la fluidité (25.10, soir)
 - Ses mots : « SI Des étape bloque vraiment sur la fluidité. Tu peux skip trouvé une solution et compromis et me propose ça. Dans le pire des cas ». Une étape qui bloque sur la fluidité ne bloque pas la mission : un compromis mesuré (avant, après) lui est proposé, en DÉCISION À PRENDRE de la voie.
