@@ -1,0 +1,46 @@
+{
+ "casId": "el-dorado@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "3590e54e3e10d788",
+ "simule": false,
+ "appel": 71,
+ "http": 200,
+ "latenceMs": 5862,
+ "finishReason": "STOP",
+ "jetonsEntree": 3842,
+ "jetonsSortie": 502,
+ "coutMicroChf": 11910,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Partage le côté bonbon, fruits tropicaux et fruits à noyau typique d'El Dorado, malgré l'absence d'arôme marqué de poire.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Rejoint El Dorado sur la note rare de pastèque et les fruits à noyau, avec un profil d'huiles très proche.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Excellente alternative apportant la note poire et des fruits tropicaux intenses, avec des proportions d'huiles quasi identiques.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Offre des arômes nets de poire et de fruits à noyau, mais avec un fond plus axé sur la pomme verte.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Recrée fidèlement le profil très fruité et doux de bonbon tropical, sans toutefois la spécificité de la pastèque.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Évoque fortement le côté confiseur et fruits doux de l'El Dorado, complété par une pointe de cerise.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Puissant profil de fruits à noyau et fruits tropicaux, bien que plus tranchant sur le fruit de la passion.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Apporte la note distinctive de poire et de pêche, mais avec un niveau d'huiles totales généralement plus faible.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Valeur sûre pour un dry hop tropical et pêche, mais tirant nettement plus sur les agrumes acides.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Délivre une intensité tropicale et pêche comparable, tout en amenant un côté dank plus marqué en fermentation active.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c06",
+   "c18",
+   "c09",
+   "c08",
+   "c01",
+   "c16",
+   "c02",
+   "c07",
+   "c14",
+   "c03"
+  ],
+  "phrases": {
+   "c06": "Partage le côté bonbon, fruits tropicaux et fruits à noyau typique d'El Dorado, malgré l'absence d'arôme marqué de poire.",
+   "c18": "Rejoint El Dorado sur la note rare de pastèque et les fruits à noyau, avec un profil d'huiles très proche.",
+   "c09": "Excellente alternative apportant la note poire et des fruits tropicaux intenses, avec des proportions d'huiles quasi identiques.",
+   "c08": "Offre des arômes nets de poire et de fruits à noyau, mais avec un fond plus axé sur la pomme verte.",
+   "c01": "Recrée fidèlement le profil très fruité et doux de bonbon tropical, sans toutefois la spécificité de la pastèque.",
+   "c16": "Évoque fortement le côté confiseur et fruits doux de l'El Dorado, complété par une pointe de cerise.",
+   "c02": "Puissant profil de fruits à noyau et fruits tropicaux, bien que plus tranchant sur le fruit de la passion.",
+   "c07": "Apporte la note distinctive de poire et de pêche, mais avec un niveau d'huiles totales généralement plus faible.",
+   "c14": "Valeur sûre pour un dry hop tropical et pêche, mais tirant nettement plus sur les agrumes acides.",
+   "c03": "Délivre une intensité tropicale et pêche comparable, tout en amenant un côté dank plus marqué en fermentation active."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

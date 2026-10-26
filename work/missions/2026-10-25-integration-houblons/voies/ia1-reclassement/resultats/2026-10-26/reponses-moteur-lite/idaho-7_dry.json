@@ -1,0 +1,46 @@
+{
+ "casId": "idaho-7@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "5cfc5f7167cb25a6",
+ "simule": false,
+ "appel": 96,
+ "http": 200,
+ "latenceMs": 1877,
+ "finishReason": "STOP",
+ "jetonsEntree": 4089,
+ "jetonsSortie": 568,
+ "coutMicroChf": 3309,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Mosaic partage les fruits tropicaux et les agrumes de l'Idaho 7, mais apporte des notes de myrtille absentes de l'original.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Simcoe offre une résine et des agrumes proches de l'Idaho 7, tout en étant un peu plus terreux et moins fruité.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Ekuanot combine les agrumes et fruits tropicaux de l'Idaho 7, mais se distingue par des touches prononcées d'eucalyptus et de melon.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Zythos imite bien le profil agrumes et fruits tropicaux de l'Idaho 7 grâce à son assemblage, mais manque de complexité résineuse.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Hydra présente des notes d'agrumes et de fruits tropicaux similaires à l'Idaho 7, avec une charge fruitée plus axée sur la pêche.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Falconer's Flight reprend les notes de pamplemousse et fruits tropicaux de l'Idaho 7, mais s'avère plus floral et moins résineux.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Talus partage le pamplemousse et les agrumes de l'Idaho 7, mais se démarque nettement par des notes florales et de crème.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Strata apporte des fruits de la passion et des agrumes proches, mais son côté cannabis et dank s'éloigne du profil résineux.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Bitter Gold offre des fruits tropicaux et des agrumes adaptés au dry hop, mais introduit des notes de poire inédites.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"HBC 630 partage les fruits tropicaux de l'Idaho 7, mais penche vers des arômes de cerise et de bonbon très distincts.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c01",
+   "c15",
+   "c20",
+   "c04",
+   "c16",
+   "c08",
+   "c10",
+   "c13",
+   "c05"
+  ],
+  "phrases": {
+   "c02": "Mosaic partage les fruits tropicaux et les agrumes de l'Idaho 7, mais apporte des notes de myrtille absentes de l'original.",
+   "c01": "Simcoe offre une résine et des agrumes proches de l'Idaho 7, tout en étant un peu plus terreux et moins fruité.",
+   "c15": "Ekuanot combine les agrumes et fruits tropicaux de l'Idaho 7, mais se distingue par des touches prononcées d'eucalyptus et de melon.",
+   "c20": "Zythos imite bien le profil agrumes et fruits tropicaux de l'Idaho 7 grâce à son assemblage, mais manque de complexité résineuse.",
+   "c04": "Hydra présente des notes d'agrumes et de fruits tropicaux similaires à l'Idaho 7, avec une charge fruitée plus axée sur la pêche.",
+   "c16": "Falconer's Flight reprend les notes de pamplemousse et fruits tropicaux de l'Idaho 7, mais s'avère plus floral et moins résineux.",
+   "c08": "Talus partage le pamplemousse et les agrumes de l'Idaho 7, mais se démarque nettement par des notes florales et de crème.",
+   "c10": "Strata apporte des fruits de la passion et des agrumes proches, mais son côté cannabis et dank s'éloigne du profil résineux.",
+   "c13": "Bitter Gold offre des fruits tropicaux et des agrumes adaptés au dry hop, mais introduit des notes de poire inédites.",
+   "c05": "HBC 630 partage les fruits tropicaux de l'Idaho 7, mais penche vers des arômes de cerise et de bonbon très distincts."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

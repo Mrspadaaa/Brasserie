@@ -1,0 +1,46 @@
+{
+ "casId": "motueka@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "85902b8d958e948a",
+ "simule": false,
+ "appel": 5,
+ "http": 200,
+ "latenceMs": 6269,
+ "finishReason": "STOP",
+ "jetonsEntree": 3584,
+ "jetonsSortie": 537,
+ "coutMicroChf": 11755,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Originaire de Nouvelle-Zélande, il partage le combo parfait de citron vert, agrumes et fruits tropicaux, avec un profil d'huiles très similaire.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Ses notes d'agrumes, de citron et de menthe reproduisent fidèlement l'effet 'mojito' si caractéristique et recherché du Motueka.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Il apporte d'excellentes notes de citron vert et de fruits tropicaux, bien qu'il soit plus expressif et opulent en huiles totales.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Il partage les notes de citron vert, d'agrumes et de fleurs, mais tend vers un fond plus résineux et boisé.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Présente la touche citron vert et florale du Motueka, mais se distingue nettement par une dominance de baies et fruits rouges.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Apporte une base aromatique d'agrumes et de fruits tropicaux très proche, sans toutefois la spécificité citron vert/mojito.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Fournit un profil fruité tropical et agrumes très efficace en dry hop, mais manque de la nuance citron vert fraîche.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Offre des arômes nets d'agrumes et de fruits tropicaux bien adaptés au dry hop, malgré un profil moins complexe.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Assure le côté agrumes et fruits tropicaux avec un bon niveau de thiols, mais s'oriente vers la mandarine et la résine.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Apporte des agrumes et un côté floral et fruité original, mais tire davantage vers le vin blanc et le melon.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c08",
+   "c13",
+   "c14",
+   "c17",
+   "c12",
+   "c07",
+   "c15",
+   "c18",
+   "c05",
+   "c20"
+  ],
+  "phrases": {
+   "c08": "Originaire de Nouvelle-Zélande, il partage le combo parfait de citron vert, agrumes et fruits tropicaux, avec un profil d'huiles très similaire.",
+   "c13": "Ses notes d'agrumes, de citron et de menthe reproduisent fidèlement l'effet 'mojito' si caractéristique et recherché du Motueka.",
+   "c14": "Il apporte d'excellentes notes de citron vert et de fruits tropicaux, bien qu'il soit plus expressif et opulent en huiles totales.",
+   "c17": "Il partage les notes de citron vert, d'agrumes et de fleurs, mais tend vers un fond plus résineux et boisé.",
+   "c12": "Présente la touche citron vert et florale du Motueka, mais se distingue nettement par une dominance de baies et fruits rouges.",
+   "c07": "Apporte une base aromatique d'agrumes et de fruits tropicaux très proche, sans toutefois la spécificité citron vert/mojito.",
+   "c15": "Fournit un profil fruité tropical et agrumes très efficace en dry hop, mais manque de la nuance citron vert fraîche.",
+   "c18": "Offre des arômes nets d'agrumes et de fruits tropicaux bien adaptés au dry hop, malgré un profil moins complexe.",
+   "c05": "Assure le côté agrumes et fruits tropicaux avec un bon niveau de thiols, mais s'oriente vers la mandarine et la résine.",
+   "c20": "Apporte des agrumes et un côté floral et fruité original, mais tire davantage vers le vin blanc et le melon."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

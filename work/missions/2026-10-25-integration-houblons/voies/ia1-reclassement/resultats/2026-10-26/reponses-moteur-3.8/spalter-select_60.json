@@ -1,0 +1,46 @@
+{
+ "casId": "spalter-select@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "de05d79f6701dbcb",
+ "simule": false,
+ "appel": 60,
+ "http": 200,
+ "latenceMs": 6344,
+ "finishReason": "STOP",
+ "jetonsEntree": 3774,
+ "jetonsSortie": 561,
+ "coutMicroChf": 12336,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Parent direct du Select, il partage exactement la même structure d'alpha et de cohumulone pour une amertume noble et douce parfaitement identique.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Taux d'alpha et de cohumulone quasi identiques au Select, garantissant une amertume fine et noble très classique à l'ébullition.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Parfait équivalent en acides alpha et cohumulone basse, apportant la même qualité d'amertume sans aucune dureté après 60 minutes.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Variété allemande moderne aux acides alpha et cohumulone très proches, idéale pour reproduire le profil d'amertume propre du Select.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Plage d'alpha très similaire et cohumulone basse assurant une amertume très douce et propre, bien que légèrement plus résineuse.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Descendant de Hallertau avec un taux d'alpha et de cohumulone équivalent, offrant une amertume neutre et délicate à 60 minutes.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Alpha et cohumulone très comparables, apportant une amertume noble et équilibrée sans risque de faux-goûts amers.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Son niveau modéré d'alpha et sa faible cohumulone s'alignent bien avec le Select pour une amertume douce et discrète.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Spécifiquement taillé pour l'amertume avec une cohumulone encore plus basse, il donnera une amertume extrêmement douce et nette.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Même profil de cohumulone et d'alpha légèrement supérieur, fournissant une amertume noble et propre en ajustant légèrement le grammage.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c15",
+   "c05",
+   "c01",
+   "c14",
+   "c03",
+   "c08",
+   "c07",
+   "c09",
+   "c02",
+   "c12"
+  ],
+  "phrases": {
+   "c15": "Parent direct du Select, il partage exactement la même structure d'alpha et de cohumulone pour une amertume noble et douce parfaitement identique.",
+   "c05": "Taux d'alpha et de cohumulone quasi identiques au Select, garantissant une amertume fine et noble très classique à l'ébullition.",
+   "c01": "Parfait équivalent en acides alpha et cohumulone basse, apportant la même qualité d'amertume sans aucune dureté après 60 minutes.",
+   "c14": "Variété allemande moderne aux acides alpha et cohumulone très proches, idéale pour reproduire le profil d'amertume propre du Select.",
+   "c03": "Plage d'alpha très similaire et cohumulone basse assurant une amertume très douce et propre, bien que légèrement plus résineuse.",
+   "c08": "Descendant de Hallertau avec un taux d'alpha et de cohumulone équivalent, offrant une amertume neutre et délicate à 60 minutes.",
+   "c07": "Alpha et cohumulone très comparables, apportant une amertume noble et équilibrée sans risque de faux-goûts amers.",
+   "c09": "Son niveau modéré d'alpha et sa faible cohumulone s'alignent bien avec le Select pour une amertume douce et discrète.",
+   "c02": "Spécifiquement taillé pour l'amertume avec une cohumulone encore plus basse, il donnera une amertume extrêmement douce et nette.",
+   "c12": "Même profil de cohumulone et d'alpha légèrement supérieur, fournissant une amertume noble et propre en ajustant légèrement le grammage."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

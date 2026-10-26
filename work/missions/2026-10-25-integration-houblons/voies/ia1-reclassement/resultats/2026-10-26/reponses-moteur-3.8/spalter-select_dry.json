@@ -1,0 +1,46 @@
+{
+ "casId": "spalter-select@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "deecf8c4c3297c6e",
+ "simule": false,
+ "appel": 59,
+ "http": 200,
+ "latenceMs": 6208,
+ "finishReason": "STOP",
+ "jetonsEntree": 3826,
+ "jetonsSortie": 571,
+ "coutMicroChf": 12527,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Même profil aromatique typique mêlant notes épicées et herbe coupée, avec une composition d'huiles très proche bien qu'un peu moins de farnésène.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Partage une haute teneur en farnésène et ce côté noble herbacé très pur, mais apporte une nuance plus florale et terreuse.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Offre des arômes épicés et un taux de farnésène notable proches du Spalter Select, complétés par de subtiles touches de thé.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Revisite bien les notes d'herbe coupée et d'épices avec un profil noble, bien qu'il présente une touche d'agrumes plus marquée.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Retrouve fidèlement le duo épicé et herbe coupée typique des nobles allemands, malgré un taux de farnésène nettement plus bas.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Sa teneur élevée en farnésène correspond parfaitement à la matrice d'huiles originale, mais son bouquet est plus poivré et floral qu'herbacé.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Taux de farnésène similaire et caractère noble épicé évident, compensé par des accents floraux de magnolia un peu plus prononcés.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Combine très bien l'herbe coupée et le côté épicé en dry hopping, malgré des nuances boisées et résineuses supplémentaires.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Parfait pour un dry hop noble délicat et épicé, bien qu'il tire davantage sur les fleurs et presque sans farnésène.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Apporte cette trame classique d'épices et d'herbe fraîche, tout en manquant du niveau de farnésène distinctif du Spalter Select.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c05",
+   "c15",
+   "c06",
+   "c18",
+   "c17",
+   "c09",
+   "c08",
+   "c12",
+   "c14"
+  ],
+  "phrases": {
+   "c01": "Même profil aromatique typique mêlant notes épicées et herbe coupée, avec une composition d'huiles très proche bien qu'un peu moins de farnésène.",
+   "c05": "Partage une haute teneur en farnésène et ce côté noble herbacé très pur, mais apporte une nuance plus florale et terreuse.",
+   "c15": "Offre des arômes épicés et un taux de farnésène notable proches du Spalter Select, complétés par de subtiles touches de thé.",
+   "c06": "Revisite bien les notes d'herbe coupée et d'épices avec un profil noble, bien qu'il présente une touche d'agrumes plus marquée.",
+   "c18": "Retrouve fidèlement le duo épicé et herbe coupée typique des nobles allemands, malgré un taux de farnésène nettement plus bas.",
+   "c17": "Sa teneur élevée en farnésène correspond parfaitement à la matrice d'huiles originale, mais son bouquet est plus poivré et floral qu'herbacé.",
+   "c09": "Taux de farnésène similaire et caractère noble épicé évident, compensé par des accents floraux de magnolia un peu plus prononcés.",
+   "c08": "Combine très bien l'herbe coupée et le côté épicé en dry hopping, malgré des nuances boisées et résineuses supplémentaires.",
+   "c12": "Parfait pour un dry hop noble délicat et épicé, bien qu'il tire davantage sur les fleurs et presque sans farnésène.",
+   "c14": "Apporte cette trame classique d'épices et d'herbe fraîche, tout en manquant du niveau de farnésène distinctif du Spalter Select."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

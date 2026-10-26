@@ -1,0 +1,46 @@
+{
+ "casId": "green-bullet@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "995f03805f10319a",
+ "simule": false,
+ "appel": 47,
+ "http": 200,
+ "latenceMs": 5624,
+ "finishReason": "STOP",
+ "jetonsEntree": 3778,
+ "jetonsSortie": 520,
+ "coutMicroChf": 11959,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Originaire de Nouvelle-Zélande, il partage le profil de poivre noir, pin et petits fruits sombres très proche de Green Bullet.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Autre néo-zélandais au profil résineux et pin marqué, avec une pointe d'agrumes qui remplace les touches de fruits secs.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Il restitue fidèlement la trame boisée, épicée de poivre noir et de pin, bien qu'il manque le côté fruité foncé.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Parfait pour recréer l'intensité résineuse et boisée en dry hop, avec une touche d'agrumes plus prononcée que Green Bullet.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Ses notes caractéristiques de prune, mûre et bois compensent un profil pin moins affirmé.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Offre un fond résineux et de pin très propre, mais s'avère plus neutre et moins épicé que la référence.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Apporte des arômes de pin, baies et notes épicées avec un taux d'humulène plus élevé que l'original.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Proche par ses origines et ses notes de pin, mais tire davantage sur les agrumes frais que sur les fruits secs.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Ses facettes boisées et de poivre noir fonctionnent bien en dry hop, malgré une dominante globale plus florale.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Rejoint Green Bullet sur le pin et les épices, bien qu'il oriente la bière vers un fruité plus doux.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c04",
+   "c02",
+   "c16",
+   "c05",
+   "c08",
+   "c10",
+   "c07",
+   "c17",
+   "c03"
+  ],
+  "phrases": {
+   "c01": "Originaire de Nouvelle-Zélande, il partage le profil de poivre noir, pin et petits fruits sombres très proche de Green Bullet.",
+   "c04": "Autre néo-zélandais au profil résineux et pin marqué, avec une pointe d'agrumes qui remplace les touches de fruits secs.",
+   "c02": "Il restitue fidèlement la trame boisée, épicée de poivre noir et de pin, bien qu'il manque le côté fruité foncé.",
+   "c16": "Parfait pour recréer l'intensité résineuse et boisée en dry hop, avec une touche d'agrumes plus prononcée que Green Bullet.",
+   "c05": "Ses notes caractéristiques de prune, mûre et bois compensent un profil pin moins affirmé.",
+   "c08": "Offre un fond résineux et de pin très propre, mais s'avère plus neutre et moins épicé que la référence.",
+   "c10": "Apporte des arômes de pin, baies et notes épicées avec un taux d'humulène plus élevé que l'original.",
+   "c07": "Proche par ses origines et ses notes de pin, mais tire davantage sur les agrumes frais que sur les fruits secs.",
+   "c17": "Ses facettes boisées et de poivre noir fonctionnent bien en dry hop, malgré une dominante globale plus florale.",
+   "c03": "Rejoint Green Bullet sur le pin et les épices, bien qu'il oriente la bière vers un fruité plus doux."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

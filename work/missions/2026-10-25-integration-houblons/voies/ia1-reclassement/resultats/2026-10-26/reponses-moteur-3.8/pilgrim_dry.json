@@ -1,0 +1,46 @@
+{
+ "casId": "pilgrim@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "b6f33c647f7d3f63",
+ "simule": false,
+ "appel": 77,
+ "http": 200,
+ "latenceMs": 5876,
+ "finishReason": "STOP",
+ "jetonsEntree": 3964,
+ "jetonsSortie": 541,
+ "coutMicroChf": 12505,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage les notes de poire, pamplemousse, baies et le côté épicé avec un taux de myrcène très proche.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Offre le même profil fruité axé sur la poire, le citron et l'épice, bien que plus chargé en huiles.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Apporte la poire et les agrumes caractéristiques avec un équilibre myrcène/humulène très similaire, malgré des thiols plus intenses.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Assure une trame fruitée, d'agrumes et d'épices très compatible en fermentation active, avec une touche plus marquée de pin.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Rappelle le profil fruité de baies et d'agrumes épicés, mais apporte des nuances originales de coing et de gingembre.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Combine parfaitement agrumes zestés et épices avec une proportion d'huiles similaire, bien que tirant un peu plus sur le pin.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Rejoint directement le caractère agrumes et épicé du Pilgrim avec des teneurs en myrcène et humulène comparables.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Repose sur l'association citron et épices du Pilgrim, bien que son potentiel aromatique soit plus rustique et noble.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Reproduit l'équilibre agrumes et épicé avec un taux de myrcène identique, mais s'avère plus nettement poivré et herbacé.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Originaire du même terroir britannique avec des notes d'agrumes épicés, malgré des touches de réglisse et de résine.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c02",
+   "c18",
+   "c11",
+   "c16",
+   "c10",
+   "c03",
+   "c14",
+   "c20",
+   "c04"
+  ],
+  "phrases": {
+   "c01": "Partage les notes de poire, pamplemousse, baies et le côté épicé avec un taux de myrcène très proche.",
+   "c02": "Offre le même profil fruité axé sur la poire, le citron et l'épice, bien que plus chargé en huiles.",
+   "c18": "Apporte la poire et les agrumes caractéristiques avec un équilibre myrcène/humulène très similaire, malgré des thiols plus intenses.",
+   "c11": "Assure une trame fruitée, d'agrumes et d'épices très compatible en fermentation active, avec une touche plus marquée de pin.",
+   "c16": "Rappelle le profil fruité de baies et d'agrumes épicés, mais apporte des nuances originales de coing et de gingembre.",
+   "c10": "Combine parfaitement agrumes zestés et épices avec une proportion d'huiles similaire, bien que tirant un peu plus sur le pin.",
+   "c03": "Rejoint directement le caractère agrumes et épicé du Pilgrim avec des teneurs en myrcène et humulène comparables.",
+   "c14": "Repose sur l'association citron et épices du Pilgrim, bien que son potentiel aromatique soit plus rustique et noble.",
+   "c20": "Reproduit l'équilibre agrumes et épicé avec un taux de myrcène identique, mais s'avère plus nettement poivré et herbacé.",
+   "c04": "Originaire du même terroir britannique avec des notes d'agrumes épicés, malgré des touches de réglisse et de résine."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

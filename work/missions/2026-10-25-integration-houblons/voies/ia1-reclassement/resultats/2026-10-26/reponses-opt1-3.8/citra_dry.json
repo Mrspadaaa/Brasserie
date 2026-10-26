@@ -1,0 +1,46 @@
+{
+ "casId": "citra@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "e0caee14c3d5987d",
+ "simule": false,
+ "appel": 80,
+ "http": 200,
+ "latenceMs": 6357,
+ "finishReason": "STOP",
+ "jetonsEntree": 3959,
+ "jetonsSortie": 555,
+ "coutMicroChf": 12627,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Partage le même profil percutant de pêche, fruit de la passion et pamplemousse, avec une charge aromatique idéale en fermentation active.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Apporte cette même intensité de fruit de la passion, pêche et agrumes tropicaux, bien qu'il tire davantage sur des notes dank.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Rejoint parfaitement le Citra sur le pamplemousse et le fruit de la passion avec un taux de myrcène très proche.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Offre des arômes intenses de pamplemousse et fruits tropicaux très adaptés au dry hop, malgré un profil d'acides alpha plus faible.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Évoque le côté agrumes, pamplemousse et pêche mûre, mais présente une facette florale et épicée un peu plus marquée.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Retrouve la touche rare de groseille à maquereau et d'agrumes, avec une grande richesse en huiles totales parfaite en bio-aromatisation.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Combine citron vert, pêche et fruits tropicaux avec un bon niveau de myrcène, bien qu'il s'oriente plus vers la mandarine.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Fournit une explosion d'agrumes et de fruits tropicaux typique des IPA américaines, avec un accent résineux un peu plus soutenu.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Partage les arômes de citron vert et de pêche, complétés d'ananas, avec un niveau de myrcène très similaire au Citra.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Revisite les notes de pêche, melon et pamplemousse, bien qu'il glisse vers des nuances plus vineuses de sauvignon.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c15",
+   "c01",
+   "c03",
+   "c06",
+   "c12",
+   "c16",
+   "c17",
+   "c08",
+   "c13"
+  ],
+  "phrases": {
+   "c02": "Partage le même profil percutant de pêche, fruit de la passion et pamplemousse, avec une charge aromatique idéale en fermentation active.",
+   "c15": "Apporte cette même intensité de fruit de la passion, pêche et agrumes tropicaux, bien qu'il tire davantage sur des notes dank.",
+   "c01": "Rejoint parfaitement le Citra sur le pamplemousse et le fruit de la passion avec un taux de myrcène très proche.",
+   "c03": "Offre des arômes intenses de pamplemousse et fruits tropicaux très adaptés au dry hop, malgré un profil d'acides alpha plus faible.",
+   "c06": "Évoque le côté agrumes, pamplemousse et pêche mûre, mais présente une facette florale et épicée un peu plus marquée.",
+   "c12": "Retrouve la touche rare de groseille à maquereau et d'agrumes, avec une grande richesse en huiles totales parfaite en bio-aromatisation.",
+   "c16": "Combine citron vert, pêche et fruits tropicaux avec un bon niveau de myrcène, bien qu'il s'oriente plus vers la mandarine.",
+   "c17": "Fournit une explosion d'agrumes et de fruits tropicaux typique des IPA américaines, avec un accent résineux un peu plus soutenu.",
+   "c08": "Partage les arômes de citron vert et de pêche, complétés d'ananas, avec un niveau de myrcène très similaire au Citra.",
+   "c13": "Revisite les notes de pêche, melon et pamplemousse, bien qu'il glisse vers des nuances plus vineuses de sauvignon."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

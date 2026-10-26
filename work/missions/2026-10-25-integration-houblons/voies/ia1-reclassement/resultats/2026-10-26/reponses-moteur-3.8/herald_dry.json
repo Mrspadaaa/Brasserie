@@ -1,0 +1,46 @@
+{
+ "casId": "herald@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "f42fc877a24f94ef",
+ "simule": false,
+ "appel": 43,
+ "http": 200,
+ "latenceMs": 6279,
+ "finishReason": "STOP",
+ "jetonsEntree": 3640,
+ "jetonsSortie": 566,
+ "coutMicroChf": 12132,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Partage les notes d'orange et d'agrumes avec une belle charge aromatique en fermentation active, malgré des touches tropicales et résineuses supplémentaires.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Excellent profil d'agrumes centré sur le pamplemousse et la mandarine, apportant un fruité similaire avec une nuance florale plus marquée.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Le grand classique du pamplemousse et des agrumes nets, très efficace en dry hopping, bien qu'un peu plus épicé et résineux.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Retrouve fidèlement l'orange et les agrumes nets de l'Herald, enrichis d'arômes d'ananas et de groseille à maquereau très expressifs.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Délivre des notes franches de mandarine et d'agrumes très proches, mais avec un côté résineux et un taux d'huile plus intenses.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Profil aromatique identique à Eclipse, centré sur la mandarine et les agrumes, avec une pointe de pin absente chez Herald.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Offre un profil d'agrumes doux orienté pamplemousse et citron, avec un taux de myrcène comparable mais une touche plus noble.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Combine bien le zeste de mandarine et les agrumes, mais introduit des notes de pêche et de pin plus prononcées.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Profil d'huiles très proche et caractère d'agrumes très net, bien qu'il soit moins complexe et historiquement orienté amérisant.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Origine britannique commune et profil d'agrumes orienté marmelade et citron, mais avec une dimension épicée un peu plus austère.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c03",
+   "c15",
+   "c08",
+   "c12",
+   "c10",
+   "c11",
+   "c02",
+   "c16",
+   "c01",
+   "c09"
+  ],
+  "phrases": {
+   "c03": "Partage les notes d'orange et d'agrumes avec une belle charge aromatique en fermentation active, malgré des touches tropicales et résineuses supplémentaires.",
+   "c15": "Excellent profil d'agrumes centré sur le pamplemousse et la mandarine, apportant un fruité similaire avec une nuance florale plus marquée.",
+   "c08": "Le grand classique du pamplemousse et des agrumes nets, très efficace en dry hopping, bien qu'un peu plus épicé et résineux.",
+   "c12": "Retrouve fidèlement l'orange et les agrumes nets de l'Herald, enrichis d'arômes d'ananas et de groseille à maquereau très expressifs.",
+   "c10": "Délivre des notes franches de mandarine et d'agrumes très proches, mais avec un côté résineux et un taux d'huile plus intenses.",
+   "c11": "Profil aromatique identique à Eclipse, centré sur la mandarine et les agrumes, avec une pointe de pin absente chez Herald.",
+   "c02": "Offre un profil d'agrumes doux orienté pamplemousse et citron, avec un taux de myrcène comparable mais une touche plus noble.",
+   "c16": "Combine bien le zeste de mandarine et les agrumes, mais introduit des notes de pêche et de pin plus prononcées.",
+   "c01": "Profil d'huiles très proche et caractère d'agrumes très net, bien qu'il soit moins complexe et historiquement orienté amérisant.",
+   "c09": "Origine britannique commune et profil d'agrumes orienté marmelade et citron, mais avec une dimension épicée un peu plus austère."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

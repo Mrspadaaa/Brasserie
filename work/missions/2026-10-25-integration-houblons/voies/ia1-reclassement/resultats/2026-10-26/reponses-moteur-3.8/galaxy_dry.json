@@ -1,0 +1,46 @@
+{
+ "casId": "galaxy@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "fbeeba9660045d6e",
+ "simule": false,
+ "appel": 9,
+ "http": 200,
+ "latenceMs": 6338,
+ "finishReason": "STOP",
+ "jetonsEntree": 3617,
+ "jetonsSortie": 539,
+ "coutMicroChf": 11835,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Copie presque conforme du profil Galaxy avec son intense mélange de fruit de la passion, pêche et agrumes, bien qu'un peu moins dank.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Partage le trio aromatique majeur fruit de la passion, pêche et ananas, mais apporte une touche légèrement plus douce et moins résineuse.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Offre cette puissante dominante d'agrumes et de fruit de la passion très proche de l'hémisphère sud, sans la composante pêche marquée.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Sa richesse en thiols restitue parfaitement la trame tropicale mangue et fruit de la passion, avec une expression toutefois plus propre et fruitée.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Rejoint Galaxy sur l'ananas, les fruits tropicaux et ce côté dank caractéristique, mais met davantage l'orange en avant.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Bon profil ananas et fruit de la passion soutenu par une forte charge en huiles, complété d'une légère touche épicée absente du Galaxy.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Excellente alternative pour un punch de fruits tropicaux et de passion en dry hop, sans toutefois atteindre la même complexité dank.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Apporte une explosion d'ananas et de fruits tropicaux très adaptée au dry hop, mais avec une note bonbon plus sucrée.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Partage ce mélange recherché de fruits tropicaux et de notes dank et piquantes, bien qu'axé sur la prune plutôt que la passion.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Origine australienne et profil axé sur la passion et le pamplemousse, mais nettement plus épicé et moins lourd en fruits jaunes.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c04",
+   "c03",
+   "c06",
+   "c13",
+   "c09",
+   "c15",
+   "c08",
+   "c01",
+   "c10",
+   "c16"
+  ],
+  "phrases": {
+   "c04": "Copie presque conforme du profil Galaxy avec son intense mélange de fruit de la passion, pêche et agrumes, bien qu'un peu moins dank.",
+   "c03": "Partage le trio aromatique majeur fruit de la passion, pêche et ananas, mais apporte une touche légèrement plus douce et moins résineuse.",
+   "c06": "Offre cette puissante dominante d'agrumes et de fruit de la passion très proche de l'hémisphère sud, sans la composante pêche marquée.",
+   "c13": "Sa richesse en thiols restitue parfaitement la trame tropicale mangue et fruit de la passion, avec une expression toutefois plus propre et fruitée.",
+   "c09": "Rejoint Galaxy sur l'ananas, les fruits tropicaux et ce côté dank caractéristique, mais met davantage l'orange en avant.",
+   "c15": "Bon profil ananas et fruit de la passion soutenu par une forte charge en huiles, complété d'une légère touche épicée absente du Galaxy.",
+   "c08": "Excellente alternative pour un punch de fruits tropicaux et de passion en dry hop, sans toutefois atteindre la même complexité dank.",
+   "c01": "Apporte une explosion d'ananas et de fruits tropicaux très adaptée au dry hop, mais avec une note bonbon plus sucrée.",
+   "c10": "Partage ce mélange recherché de fruits tropicaux et de notes dank et piquantes, bien qu'axé sur la prune plutôt que la passion.",
+   "c16": "Origine australienne et profil axé sur la passion et le pamplemousse, mais nettement plus épicé et moins lourd en fruits jaunes."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

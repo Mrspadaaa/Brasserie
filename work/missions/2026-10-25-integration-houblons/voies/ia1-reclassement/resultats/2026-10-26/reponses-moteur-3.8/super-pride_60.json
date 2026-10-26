@@ -1,0 +1,46 @@
+{
+ "casId": "super-pride@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "8b90dc8b2f8c6251",
+ "simule": false,
+ "appel": 76,
+ "http": 200,
+ "latenceMs": 7059,
+ "finishReason": "STOP",
+ "jetonsEntree": 3804,
+ "jetonsSortie": 455,
+ "coutMicroChf": 11399,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c02\", \"phrase\": \"Taux d'acides alpha et profil de cohumulone très proches, apportant une amertume franche similaire à 60 minutes d'ébullition.\"},\n    {\"id\": \"c13\", \"phrase\": \"Un amérisant pur au taux d'alpha et à la cohumulone parfaitement adaptés pour remplacer l'amertume du Super Pride.\"},\n    {\"id\": \"c10\", \"phrase\": \"Plage d'alpha et niveau de cohumulone comparables, garantissant une intensité amère très cohérente en début d'ébullition.\"},\n    {\"id\": \"c06\", \"phrase\": \"Origine australienne et taux d'alpha similaires, avec une cohumulone haute assurant un impact amer bien affirmé.\"},\n    {\"id\": \"c18\", \"phrase\": \"Teneur en alpha et cohumulone comparables, offrant une amertume solide et nette typique des ébullitions longues.\"},\n    {\"id\": \"c14\", \"phrase\": \"Profil amérisant direct avec des acides alpha équivalents et une cohumulone modérée pour un rendu propre à 60 minutes.\"},\n    {\"id\": \"c01\", \"phrase\": \"Alpha élevés et amertume très propre, bien que sa cohumulone plus basse procure un tranchant légèrement plus doux.\"},\n    {\"id\": \"c04\", \"phrase\": \"Taux d'alpha et de cohumulone très proches, parfait pour l'amertume même si son potentiel aromatique sera totalement perdu.\"},\n    {\"id\": \"c20\", \"phrase\": \"Alpha et cohumulone dans la même gamme, produisant une amertume fiable et bien calibrée à l'ébullition.\"},\n    {\"id\": \"c15\", \"phrase\": \"Même souche australienne à alpha élevés, produisant une amertume robuste malgré une cohumulone un peu plus prononcée.\"}\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c13",
+   "c10",
+   "c06",
+   "c18",
+   "c14",
+   "c01",
+   "c04",
+   "c20",
+   "c15"
+  ],
+  "phrases": {
+   "c02": "Taux d'acides alpha et profil de cohumulone très proches, apportant une amertume franche similaire à 60 minutes d'ébullition.",
+   "c13": "Un amérisant pur au taux d'alpha et à la cohumulone parfaitement adaptés pour remplacer l'amertume du Super Pride.",
+   "c10": "Plage d'alpha et niveau de cohumulone comparables, garantissant une intensité amère très cohérente en début d'ébullition.",
+   "c06": "Origine australienne et taux d'alpha similaires, avec une cohumulone haute assurant un impact amer bien affirmé.",
+   "c18": "Teneur en alpha et cohumulone comparables, offrant une amertume solide et nette typique des ébullitions longues.",
+   "c14": "Profil amérisant direct avec des acides alpha équivalents et une cohumulone modérée pour un rendu propre à 60 minutes.",
+   "c01": "Alpha élevés et amertume très propre, bien que sa cohumulone plus basse procure un tranchant légèrement plus doux.",
+   "c04": "Taux d'alpha et de cohumulone très proches, parfait pour l'amertume même si son potentiel aromatique sera totalement perdu.",
+   "c20": "Alpha et cohumulone dans la même gamme, produisant une amertume fiable et bien calibrée à l'ébullition.",
+   "c15": "Même souche australienne à alpha élevés, produisant une amertume robuste malgré une cohumulone un peu plus prononcée."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

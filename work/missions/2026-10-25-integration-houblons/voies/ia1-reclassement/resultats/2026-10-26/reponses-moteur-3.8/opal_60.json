@@ -1,0 +1,46 @@
+{
+ "casId": "opal@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "9c9360f98222799d",
+ "simule": false,
+ "appel": 58,
+ "http": 200,
+ "latenceMs": 7129,
+ "finishReason": "STOP",
+ "jetonsEntree": 3613,
+ "jetonsSortie": 477,
+ "coutMicroChf": 11247,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c03\", \"phrase\": \"Amertume très propre et taux d'alpha comparables à Opal, avec une cohumulone modérée idéale pour 60 minutes d'ébullition.\"},\n    {\"id\": \"c08\", \"phrase\": \"Ce houblon allemand offre une amertume noble et équilibrée avec un profil d'acides alpha et de cohumulone très proche d'Opal.\"},\n    {\"id\": \"c05\", \"phrase\": \"Excellente alternative amérisante douce grâce à sa cohumulone basse et une plage d'acides alpha parfaitement alignée avec Opal.\"},\n    {\"id\": \"c07\", \"phrase\": \"Profil d'amertume et cohumulone très similaires à 60 minutes, apportant une base amère solide et nette.\"},\n    {\"id\": \"c15\", \"phrase\": \"Teneur en alpha et niveau de cohumulone comparables, garantissant une amertume nette et bien structurée à l'ébullition.\"},\n    {\"id\": \"c01\", \"phrase\": \"Variété allemande moderne avec un taux d'alpha et de cohumulone très proches, apportant une amertume franche et équilibrée.\"},\n    {\"id\": \"c11\", \"phrase\": \"Taux d'alpha et niveau de cohumulone modérés qui procurent une amertume droite et noble similaire à Opal.\"},\n    {\"id\": \"c09\", \"phrase\": \"Amérisant allemand classique très efficace ; un peu plus concentré en alpha, il nécessite un léger ajustement de dosage.\"},\n    {\"id\": \"c20\", \"phrase\": \"Taux d'acides alpha et cohumulone très proches d'Opal, délivrant une amertume franche et sans âcreté à l'ébullition.\"},\n    {\"id\": \"c04\", \"phrase\": \"Pur amérisant américain au potentiel d'amertume équivalent, bien que sa cohumulone légèrement plus haute donne une amertume un peu plus incisive.\"}\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c03",
+   "c08",
+   "c05",
+   "c07",
+   "c15",
+   "c01",
+   "c11",
+   "c09",
+   "c20",
+   "c04"
+  ],
+  "phrases": {
+   "c03": "Amertume très propre et taux d'alpha comparables à Opal, avec une cohumulone modérée idéale pour 60 minutes d'ébullition.",
+   "c08": "Ce houblon allemand offre une amertume noble et équilibrée avec un profil d'acides alpha et de cohumulone très proche d'Opal.",
+   "c05": "Excellente alternative amérisante douce grâce à sa cohumulone basse et une plage d'acides alpha parfaitement alignée avec Opal.",
+   "c07": "Profil d'amertume et cohumulone très similaires à 60 minutes, apportant une base amère solide et nette.",
+   "c15": "Teneur en alpha et niveau de cohumulone comparables, garantissant une amertume nette et bien structurée à l'ébullition.",
+   "c01": "Variété allemande moderne avec un taux d'alpha et de cohumulone très proches, apportant une amertume franche et équilibrée.",
+   "c11": "Taux d'alpha et niveau de cohumulone modérés qui procurent une amertume droite et noble similaire à Opal.",
+   "c09": "Amérisant allemand classique très efficace ; un peu plus concentré en alpha, il nécessite un léger ajustement de dosage.",
+   "c20": "Taux d'acides alpha et cohumulone très proches d'Opal, délivrant une amertume franche et sans âcreté à l'ébullition.",
+   "c04": "Pur amérisant américain au potentiel d'amertume équivalent, bien que sa cohumulone légèrement plus haute donne une amertume un peu plus incisive."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

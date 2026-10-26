@@ -1,0 +1,46 @@
+{
+ "casId": "saaz-cz@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "f544340b928fc097",
+ "simule": false,
+ "appel": 94,
+ "http": 200,
+ "latenceMs": 2190,
+ "finishReason": "STOP",
+ "jetonsEntree": 3866,
+ "jetonsSortie": 593,
+ "coutMicroChf": 3303,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Saaz Late partage le profil terreux, herbacé et floral exact du Saaz, avec un taux de farnésène similaire garantissant un arôme noble identique.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"La version américaine du Saaz conserve l'esprit noble et terreux, bien que le farnésène soit légèrement inférieur et le myrcène plus direct.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Tettnang offre le même profil noble et épicé avec des notes d'herbe coupée, s'en rapprochant grandement malgré un farnésène un peu plus bas.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Styrian Golding procure des notes terreuses, épicées et douces comparables, mais l'humulène est nettement plus élevé au détriment du farnésène.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Celeia se rapproche par son caractère noble, floral et épicé, tout en affichant un taux de farnésène très honorable et proche du modèle.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Spalter Select intègre beaucoup de farnésène et des notes herbacées proches, mais s'oriente plus nettement vers l'épicé et l'herbe coupée.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Hallertau Tradition présente un profil noble et terreux avec un fort taux d'humulène, bien que le farnésène soit quasi absent.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Strisselspalt possède des alpha bas et un profil floral et épicé séduisant, mais manque cruellement de farnésène par rapport au Saaz.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Aurum propose des notes florales, douces et herbacées congruentes, mais introduit des nuances fruitées et d'agrumes absentes chez le Saaz.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Pacific Crest rappelle le caractère noble, terreux et floral, mais s'en éloigne par une dominante de myrcène plus haute et l'absence de farnésène.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c12",
+   "c19",
+   "c02",
+   "c04",
+   "c14",
+   "c07",
+   "c05",
+   "c10",
+   "c03",
+   "c01"
+  ],
+  "phrases": {
+   "c12": "Saaz Late partage le profil terreux, herbacé et floral exact du Saaz, avec un taux de farnésène similaire garantissant un arôme noble identique.",
+   "c19": "La version américaine du Saaz conserve l'esprit noble et terreux, bien que le farnésène soit légèrement inférieur et le myrcène plus direct.",
+   "c02": "Tettnang offre le même profil noble et épicé avec des notes d'herbe coupée, s'en rapprochant grandement malgré un farnésène un peu plus bas.",
+   "c04": "Styrian Golding procure des notes terreuses, épicées et douces comparables, mais l'humulène est nettement plus élevé au détriment du farnésène.",
+   "c14": "Celeia se rapproche par son caractère noble, floral et épicé, tout en affichant un taux de farnésène très honorable et proche du modèle.",
+   "c07": "Spalter Select intègre beaucoup de farnésène et des notes herbacées proches, mais s'oriente plus nettement vers l'épicé et l'herbe coupée.",
+   "c05": "Hallertau Tradition présente un profil noble et terreux avec un fort taux d'humulène, bien que le farnésène soit quasi absent.",
+   "c10": "Strisselspalt possède des alpha bas et un profil floral et épicé séduisant, mais manque cruellement de farnésène par rapport au Saaz.",
+   "c03": "Aurum propose des notes florales, douces et herbacées congruentes, mais introduit des nuances fruitées et d'agrumes absentes chez le Saaz.",
+   "c01": "Pacific Crest rappelle le caractère noble, terreux et floral, mais s'en éloigne par une dominante de myrcène plus haute et l'absence de farnésène."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

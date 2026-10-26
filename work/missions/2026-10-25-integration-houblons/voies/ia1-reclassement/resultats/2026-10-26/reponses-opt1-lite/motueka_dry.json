@@ -1,0 +1,46 @@
+{
+ "casId": "motueka@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "bfa6d47e98c302b0",
+ "simule": false,
+ "appel": 99,
+ "http": 200,
+ "latenceMs": 1717,
+ "finishReason": "STOP",
+ "jetonsEntree": 3889,
+ "jetonsSortie": 490,
+ "coutMicroChf": 2990,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Taiheke partage les origines neozelandaises et le profil citron vert du Motueka, mais offre plus de pamplemousse.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Riwaka apporte une touche tropicale intense proche du Motueka, bien que moins axee sur le mojito.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Cascade imite bien les agrumes du Motueka grace au myrcene, mais vire davantage vers le pin.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Mandarina Bavaria offre des notes citriques similaires au Motueka, mais marque une derive vers la mandarine.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Southern Cross possede le citron vert du Motueka avec un alpha eleve, mais ajoute des notes de pin.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Barbe Rouge propose des agrumes et du citron vert proches du Motueka, mais avec des baies en plus.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Atlas reprend le citron vert et le cote floral du Motueka, mais integre une composante pineuse.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"HORT9909 partage les notes de citron vert et d'agrumes du Motueka, mais se montre plus epice.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Meridian possede des agrumes et du citron rappelant le Motueka, avec une pointe de menthe verte.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Falconer's Flight livre des fruits tropicaux et du citron proches du Motueka, mais avec du pin.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c03",
+   "c01",
+   "c04",
+   "c05",
+   "c11",
+   "c08",
+   "c09",
+   "c15",
+   "c13"
+  ],
+  "phrases": {
+   "c02": "Taiheke partage les origines neozelandaises et le profil citron vert du Motueka, mais offre plus de pamplemousse.",
+   "c03": "Riwaka apporte une touche tropicale intense proche du Motueka, bien que moins axee sur le mojito.",
+   "c01": "Cascade imite bien les agrumes du Motueka grace au myrcene, mais vire davantage vers le pin.",
+   "c04": "Mandarina Bavaria offre des notes citriques similaires au Motueka, mais marque une derive vers la mandarine.",
+   "c05": "Southern Cross possede le citron vert du Motueka avec un alpha eleve, mais ajoute des notes de pin.",
+   "c11": "Barbe Rouge propose des agrumes et du citron vert proches du Motueka, mais avec des baies en plus.",
+   "c08": "Atlas reprend le citron vert et le cote floral du Motueka, mais integre une composante pineuse.",
+   "c09": "HORT9909 partage les notes de citron vert et d'agrumes du Motueka, mais se montre plus epice.",
+   "c15": "Meridian possede des agrumes et du citron rappelant le Motueka, avec une pointe de menthe verte.",
+   "c13": "Falconer's Flight livre des fruits tropicaux et du citron proches du Motueka, mais avec du pin."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

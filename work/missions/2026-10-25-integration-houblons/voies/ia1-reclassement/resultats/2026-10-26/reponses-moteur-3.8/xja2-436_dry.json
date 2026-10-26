@@ -1,0 +1,46 @@
+{
+ "casId": "xja2-436@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "c0da0c0af25016bb",
+ "simule": false,
+ "appel": 63,
+ "http": 200,
+ "latenceMs": 6003,
+ "finishReason": "STOP",
+ "jetonsEntree": 3879,
+ "jetonsSortie": 552,
+ "coutMicroChf": 12449,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Même terroir sud-africain et profil très proche avec groseille à maquereau, myrtille et agrumes, bien qu'il offre un côté plus dank.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Partage directement les notes de papaye, citron et agrumes avec un profil d'huiles très riche, malgré une touche plus herbacée.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Autre variété sud-africaine à composition en huiles quasi identique ; profil de baies et fruits tropicaux très raccord, sans la groseille.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Apporte la fraîcheur citronnée, le zeste et la résine avec un bon taux de farnésène, mais sans le caractère baies sauvages.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Retrouve la groseille à maquereau et les agrumes caractéristiques, bien que son profil myrcène soit plus élevé et plus floral.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Rejoint le fruit tropical avec le melon et les notes de baies, mais manque la composante résineuse de l'original.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Excellente alternative aromatique mêlant agrumes, baies et résine, même si son caractère est plus orienté sur le pin.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Offre des fruits tropicaux et des baies adaptés au dry hopping, mais apporte une facette vanillée absente du XJA2.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Combine bien le zeste, le citron et la résine, mais s'avère plus centré sur la pêche que sur les petits fruits.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Équilibre semblable d'agrumes intenses et de résine avec des huiles proches, mais tire davantage sur le pamplemousse franc.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c12",
+   "c19",
+   "c08",
+   "c17",
+   "c03",
+   "c20",
+   "c01",
+   "c11",
+   "c16"
+  ],
+  "phrases": {
+   "c02": "Même terroir sud-africain et profil très proche avec groseille à maquereau, myrtille et agrumes, bien qu'il offre un côté plus dank.",
+   "c12": "Partage directement les notes de papaye, citron et agrumes avec un profil d'huiles très riche, malgré une touche plus herbacée.",
+   "c19": "Autre variété sud-africaine à composition en huiles quasi identique ; profil de baies et fruits tropicaux très raccord, sans la groseille.",
+   "c08": "Apporte la fraîcheur citronnée, le zeste et la résine avec un bon taux de farnésène, mais sans le caractère baies sauvages.",
+   "c17": "Retrouve la groseille à maquereau et les agrumes caractéristiques, bien que son profil myrcène soit plus élevé et plus floral.",
+   "c03": "Rejoint le fruit tropical avec le melon et les notes de baies, mais manque la composante résineuse de l'original.",
+   "c20": "Excellente alternative aromatique mêlant agrumes, baies et résine, même si son caractère est plus orienté sur le pin.",
+   "c01": "Offre des fruits tropicaux et des baies adaptés au dry hopping, mais apporte une facette vanillée absente du XJA2.",
+   "c11": "Combine bien le zeste, le citron et la résine, mais s'avère plus centré sur la pêche que sur les petits fruits.",
+   "c16": "Équilibre semblable d'agrumes intenses et de résine avec des huiles proches, mais tire davantage sur le pamplemousse franc."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

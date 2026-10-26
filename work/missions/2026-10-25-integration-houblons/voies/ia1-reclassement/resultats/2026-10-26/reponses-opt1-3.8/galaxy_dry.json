@@ -1,0 +1,46 @@
+{
+ "casId": "galaxy@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "67309a9d4c2d2a36",
+ "simule": false,
+ "appel": 83,
+ "http": 200,
+ "latenceMs": 6535,
+ "finishReason": "STOP",
+ "jetonsEntree": 3823,
+ "jetonsSortie": 540,
+ "coutMicroChf": 12231,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Partage l'intensité passion, pêche et ananas du Galaxy avec une forte teneur en myrcène, mais offre un profil plus net et moins dank.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Originaire du même terroir australien, il reproduit fidèlement les notes de fruits tropicaux et passion, bien qu'il soit plus résineux.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Capture parfaitement la combinaison rare de fruit de la passion intense et de notes dank et cannabis propres au Galaxy.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Excellente alternative en biotransformation pour ses notes puissantes d'agrumes, pêche et fruit de la passion, avec moins d'arômes végétaux.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Revisite le trio fruité passion, pêche et ananas avec un profil d'huiles similaire, mais manque de la signature dank du Galaxy.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Offre une belle proximité sur le fruit de la passion et les agrumes, bien que son expression aromatique globale soit un peu moins explosive.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Apporte la facette ananas ultra mûr et fruitée très recherchée chez Galaxy, mais fait l'impasse sur le côté dank et passion.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Retrouve le mariage de fruits tropicaux, d'ananas et de nuances dank, même si le fruit de la passion n'y est pas explicite.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Partage les descripteurs d'ananas et de pêche soutenus par un fort taux de myrcène, mais tire davantage sur le citron vert.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Fournit une explosion de fruits tropicaux et d'ananas idéale en fermentation active, malgré des notes épicées absentes du Galaxy.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c03",
+   "c05",
+   "c14",
+   "c01",
+   "c04",
+   "c13",
+   "c08",
+   "c12",
+   "c15"
+  ],
+  "phrases": {
+   "c02": "Partage l'intensité passion, pêche et ananas du Galaxy avec une forte teneur en myrcène, mais offre un profil plus net et moins dank.",
+   "c03": "Originaire du même terroir australien, il reproduit fidèlement les notes de fruits tropicaux et passion, bien qu'il soit plus résineux.",
+   "c05": "Capture parfaitement la combinaison rare de fruit de la passion intense et de notes dank et cannabis propres au Galaxy.",
+   "c14": "Excellente alternative en biotransformation pour ses notes puissantes d'agrumes, pêche et fruit de la passion, avec moins d'arômes végétaux.",
+   "c01": "Revisite le trio fruité passion, pêche et ananas avec un profil d'huiles similaire, mais manque de la signature dank du Galaxy.",
+   "c04": "Offre une belle proximité sur le fruit de la passion et les agrumes, bien que son expression aromatique globale soit un peu moins explosive.",
+   "c13": "Apporte la facette ananas ultra mûr et fruitée très recherchée chez Galaxy, mais fait l'impasse sur le côté dank et passion.",
+   "c08": "Retrouve le mariage de fruits tropicaux, d'ananas et de nuances dank, même si le fruit de la passion n'y est pas explicite.",
+   "c12": "Partage les descripteurs d'ananas et de pêche soutenus par un fort taux de myrcène, mais tire davantage sur le citron vert.",
+   "c15": "Fournit une explosion de fruits tropicaux et d'ananas idéale en fermentation active, malgré des notes épicées absentes du Galaxy."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

@@ -1,0 +1,46 @@
+{
+ "casId": "magnum-us@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "b4c6be93894f6527",
+ "simule": false,
+ "appel": 38,
+ "http": 200,
+ "latenceMs": 6100,
+ "finishReason": "STOP",
+ "jetonsEntree": 3767,
+ "jetonsSortie": 542,
+ "coutMicroChf": 12145,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"C'est le parfait équivalent botanique : même taux d'acide alpha et profil d'amertume très propre avec une cohumulone modérée.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Apparenté au Magnum, il apporte une amertume nette et noble idéale à 60 minutes avec une cohumulone basse équivalente.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Autre standard amérisant allemand aux alphas similaires, il donnera une amertume légèrement plus incisive en raison d'une cohumulone un peu supérieure.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Teneur en alpha et cohumulone très proches, apportant une base amère propre et équilibrée à l'ébullition.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Amérisant au profil d'acides alphas et de cohumulone parfaitement superposable, assurant une amertume nette en début d'ébullition.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Taux d'acides alphas et niveau de cohumulone similaires, garantissant une amertume franche et douce sans rudesse.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Variété amérisante efficace aux alphas comparables, bien que sa cohumulone un peu plus haute apporte un tranchant légèrement accru.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Excellent amérisant américain avec une concentration en alpha proche, mais avec un niveau de cohumulone légèrement supérieur.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Fourchette d'acides alphas et cohumulone très compatibles pour assurer le travail d'amertume recherché sur 60 minutes.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Taux d'alphas et niveau de cohumulone très proches, parfait pour extraire une amertume neutre au long cours.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c06",
+   "c03",
+   "c01",
+   "c08",
+   "c10",
+   "c09",
+   "c11",
+   "c15",
+   "c07",
+   "c17"
+  ],
+  "phrases": {
+   "c06": "C'est le parfait équivalent botanique : même taux d'acide alpha et profil d'amertume très propre avec une cohumulone modérée.",
+   "c03": "Apparenté au Magnum, il apporte une amertume nette et noble idéale à 60 minutes avec une cohumulone basse équivalente.",
+   "c01": "Autre standard amérisant allemand aux alphas similaires, il donnera une amertume légèrement plus incisive en raison d'une cohumulone un peu supérieure.",
+   "c08": "Teneur en alpha et cohumulone très proches, apportant une base amère propre et équilibrée à l'ébullition.",
+   "c10": "Amérisant au profil d'acides alphas et de cohumulone parfaitement superposable, assurant une amertume nette en début d'ébullition.",
+   "c09": "Taux d'acides alphas et niveau de cohumulone similaires, garantissant une amertume franche et douce sans rudesse.",
+   "c11": "Variété amérisante efficace aux alphas comparables, bien que sa cohumulone un peu plus haute apporte un tranchant légèrement accru.",
+   "c15": "Excellent amérisant américain avec une concentration en alpha proche, mais avec un niveau de cohumulone légèrement supérieur.",
+   "c07": "Fourchette d'acides alphas et cohumulone très compatibles pour assurer le travail d'amertume recherché sur 60 minutes.",
+   "c17": "Taux d'alphas et niveau de cohumulone très proches, parfait pour extraire une amertume neutre au long cours."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

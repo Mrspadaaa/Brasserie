@@ -1,0 +1,46 @@
+{
+ "casId": "sonnet@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "ea8f4786a8c68e18",
+ "simule": false,
+ "appel": 27,
+ "http": 200,
+ "latenceMs": 6464,
+ "finishReason": "STOP",
+ "jetonsEntree": 3818,
+ "jetonsSortie": 527,
+ "coutMicroChf": 12100,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage les notes florales, de miel et d'agrumes doux, tout en apportant une touche de marmelade légèrement plus marquée.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Recrée fidèlement le profil de miel, citron et fleurs de Sonnet, avec une pointe d'herbes aromatiques en plus.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Combine admirablement agrumes, citron et élégance florale, avec un côté thé vert remplaçant le boisé d'origine.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Excellente parenté aromatique sur le citron, le floral et les notes boisées, mais avec un pamplemousse plus affirmé.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Offre cette douceur florale et miellée de type nectar avec un côté terreux délicat, bien que moins axé sur les agrumes.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Évoque bien les agrumes, le floral et le côté boisé de Sonnet, complétés par une nuance résineuse plus présente.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Apporte la douceur florale et les agrumes recherchés en fermentation active, avec un fruité globalement plus sucré.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Proche par ses facettes florales, terreuses et herbacées douces, mais les fruits à noyau dépassent le profil citronné.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Reproduit la douceur terreuse et le fond noble traditionnel, mais sans l'éclat citronné caractéristique de Sonnet.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Délivre de beaux arômes floraux et d'agrumes délicats, bien que tirant davantage vers la mandarine et l'épice.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c18",
+   "c10",
+   "c05",
+   "c08",
+   "c20",
+   "c11",
+   "c02",
+   "c04",
+   "c15"
+  ],
+  "phrases": {
+   "c01": "Partage les notes florales, de miel et d'agrumes doux, tout en apportant une touche de marmelade légèrement plus marquée.",
+   "c18": "Recrée fidèlement le profil de miel, citron et fleurs de Sonnet, avec une pointe d'herbes aromatiques en plus.",
+   "c10": "Combine admirablement agrumes, citron et élégance florale, avec un côté thé vert remplaçant le boisé d'origine.",
+   "c05": "Excellente parenté aromatique sur le citron, le floral et les notes boisées, mais avec un pamplemousse plus affirmé.",
+   "c08": "Offre cette douceur florale et miellée de type nectar avec un côté terreux délicat, bien que moins axé sur les agrumes.",
+   "c20": "Évoque bien les agrumes, le floral et le côté boisé de Sonnet, complétés par une nuance résineuse plus présente.",
+   "c11": "Apporte la douceur florale et les agrumes recherchés en fermentation active, avec un fruité globalement plus sucré.",
+   "c02": "Proche par ses facettes florales, terreuses et herbacées douces, mais les fruits à noyau dépassent le profil citronné.",
+   "c04": "Reproduit la douceur terreuse et le fond noble traditionnel, mais sans l'éclat citronné caractéristique de Sonnet.",
+   "c15": "Délivre de beaux arômes floraux et d'agrumes délicats, bien que tirant davantage vers la mandarine et l'épice."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

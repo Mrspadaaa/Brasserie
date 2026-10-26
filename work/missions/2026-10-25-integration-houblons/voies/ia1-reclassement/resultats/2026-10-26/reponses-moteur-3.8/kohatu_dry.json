@@ -1,0 +1,46 @@
+{
+ "casId": "kohatu@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "77fd5f7d699fd31b",
+ "simule": false,
+ "appel": 61,
+ "http": 200,
+ "latenceMs": 6722,
+ "finishReason": "STOP",
+ "jetonsEntree": 3611,
+ "jetonsSortie": 536,
+ "coutMicroChf": 11796,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Son profil d'huiles très proche (myrcène bas, humulène élevé) délivre des fruits tropicaux fidèles, avec des notes vanillées crémeuses en plus.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Excellente alternative en dry hop avec son bouquet tropical éclatant et ses thiols puissants, bien que plus expressif et légèrement plus acide.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Partage le cœur aromatique de fruits tropicaux et d'ananas, offrant un profil sucré très pertinent malgré un caractère bonbon plus marqué.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Apporte la même trame dominante de fruits tropicaux et d'agrumes, avec une intensité globale et une amertume résiduelle légèrement supérieures.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Idéal en fermentation active pour ses notes tropicales et d'ananas, avec une nuance résineuse dank absente chez Kohatu.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Équilibre d'huiles similaire et arômes tropicaux doux très cohérents, complétés par des facettes florales et de thé vert plus subtiles.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Fournit un punch tropical typique de l'hémisphère sud, mais enrichi de notes de raisin blanc et de fruits rouges spécifiques.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Profil tropical et fruit de la passion emblématique très compatible, mais avec une intensité dank et résineuse bien plus percutante.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Restitue un profil tropical et fruité direct très proche, avec une touche d'agrumes plus nette et vive.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Origine géographique proche et notes de fruits de la passion adaptées, mais apporte une dimension noble absente du Kohatu.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c14",
+   "c02",
+   "c05",
+   "c15",
+   "c03",
+   "c18",
+   "c09",
+   "c16",
+   "c19",
+   "c01"
+  ],
+  "phrases": {
+   "c14": "Son profil d'huiles très proche (myrcène bas, humulène élevé) délivre des fruits tropicaux fidèles, avec des notes vanillées crémeuses en plus.",
+   "c02": "Excellente alternative en dry hop avec son bouquet tropical éclatant et ses thiols puissants, bien que plus expressif et légèrement plus acide.",
+   "c05": "Partage le cœur aromatique de fruits tropicaux et d'ananas, offrant un profil sucré très pertinent malgré un caractère bonbon plus marqué.",
+   "c15": "Apporte la même trame dominante de fruits tropicaux et d'agrumes, avec une intensité globale et une amertume résiduelle légèrement supérieures.",
+   "c03": "Idéal en fermentation active pour ses notes tropicales et d'ananas, avec une nuance résineuse dank absente chez Kohatu.",
+   "c18": "Équilibre d'huiles similaire et arômes tropicaux doux très cohérents, complétés par des facettes florales et de thé vert plus subtiles.",
+   "c09": "Fournit un punch tropical typique de l'hémisphère sud, mais enrichi de notes de raisin blanc et de fruits rouges spécifiques.",
+   "c16": "Profil tropical et fruit de la passion emblématique très compatible, mais avec une intensité dank et résineuse bien plus percutante.",
+   "c19": "Restitue un profil tropical et fruité direct très proche, avec une touche d'agrumes plus nette et vive.",
+   "c01": "Origine géographique proche et notes de fruits de la passion adaptées, mais apporte une dimension noble absente du Kohatu."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

@@ -1,0 +1,46 @@
+{
+ "casId": "motueka@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "f06f508e797e33c3",
+ "simule": false,
+ "appel": 6,
+ "http": 200,
+ "latenceMs": 6793,
+ "finishReason": "STOP",
+ "jetonsEntree": 3480,
+ "jetonsSortie": 577,
+ "coutMicroChf": 11935,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Originaire de Nouvelle-Zélande, son profil d'acides alpha et bêta est quasiment identique, assurant une amertume très comparable malgré une cohumulone légèrement supérieure.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Taux d'acides alpha et niveau de cohumulone parfaitement alignés avec Motueka, garantissant une amertume nette et propre à 60 minutes d'ébullition.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Sa plage d'alpha-acides similaire permet de cibler facilement les mêmes IBU sans altérer le profil d'amertume en début d'ébullition.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Teneurs en alpha et bêta-acides très proches de la cible, idéales pour fournir une amertume stable et équivalente à l'ébullition.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Acides alpha équivalents et faible cohumulone apportant une amertume encore plus douce et neutre, parfaite pour une base de 60 minutes.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Cohumulone similaire et alpha-acides modérés assurant une transition facile pour l'amertume, avec seulement un léger ajustement de dosage nécessaire.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Alpha-acides légèrement supérieurs mais suffisamment proches pour un remplacement direct de l'amertume en début d'ébullition.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Cohumulone équivalente mais potentiel en acides alpha plus élevé, nécessitant de réduire un peu la quantité pour égaler les IBU.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Taux d'acides alpha modéré convenable pour l'amertume, bien qu'un peu plus élevé que le Motueka moyen.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Cohumulone comparable garantissant une texture d'amertume similaire, bien que sa teneur en alpha-acides demande un léger recalcul.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c20",
+   "c12",
+   "c01",
+   "c03",
+   "c15",
+   "c08",
+   "c16",
+   "c02",
+   "c06",
+   "c09"
+  ],
+  "phrases": {
+   "c20": "Originaire de Nouvelle-Zélande, son profil d'acides alpha et bêta est quasiment identique, assurant une amertume très comparable malgré une cohumulone légèrement supérieure.",
+   "c12": "Taux d'acides alpha et niveau de cohumulone parfaitement alignés avec Motueka, garantissant une amertume nette et propre à 60 minutes d'ébullition.",
+   "c01": "Sa plage d'alpha-acides similaire permet de cibler facilement les mêmes IBU sans altérer le profil d'amertume en début d'ébullition.",
+   "c03": "Teneurs en alpha et bêta-acides très proches de la cible, idéales pour fournir une amertume stable et équivalente à l'ébullition.",
+   "c15": "Acides alpha équivalents et faible cohumulone apportant une amertume encore plus douce et neutre, parfaite pour une base de 60 minutes.",
+   "c08": "Cohumulone similaire et alpha-acides modérés assurant une transition facile pour l'amertume, avec seulement un léger ajustement de dosage nécessaire.",
+   "c16": "Alpha-acides légèrement supérieurs mais suffisamment proches pour un remplacement direct de l'amertume en début d'ébullition.",
+   "c02": "Cohumulone équivalente mais potentiel en acides alpha plus élevé, nécessitant de réduire un peu la quantité pour égaler les IBU.",
+   "c06": "Taux d'acides alpha modéré convenable pour l'amertume, bien qu'un peu plus élevé que le Motueka moyen.",
+   "c09": "Cohumulone comparable garantissant une texture d'amertume similaire, bien que sa teneur en alpha-acides demande un léger recalcul."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

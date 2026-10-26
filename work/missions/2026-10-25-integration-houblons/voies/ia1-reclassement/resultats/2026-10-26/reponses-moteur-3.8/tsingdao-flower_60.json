@@ -1,0 +1,46 @@
+{
+ "casId": "tsingdao-flower@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "f7b82233714456b1",
+ "simule": false,
+ "appel": 40,
+ "http": 200,
+ "latenceMs": 6283,
+ "finishReason": "STOP",
+ "jetonsEntree": 3704,
+ "jetonsSortie": 556,
+ "coutMicroChf": 12158,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Taux d'alpha et de cohumulone quasi identiques pour une amertume équivalente à 60 minutes, malgré un profil aromatique d'origine plus discret.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Son niveau d'alpha et sa cohumulone élevée reproduisent fidèlement l'amertume un peu tranchante du Tsingdao Flower en début d'ébullition.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Plages d'alpha et de bêta similaires avec une cohumulone proche de 35 %, garantissant une intensité d'amertume très comparable.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Son taux de cohumulone et ses acides alpha modérés offrent une amertume nette et franche, très proche de la cible.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Amérisant à cohumulone similaire donnant une amertume comparable, bien que ses acides alpha soient légèrement plus élevés.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Même taux de cohumulone de 35 % pour une amertume analogue, mais nécessite d'ajuster les quantités car ses alphas sont plus élevés.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Taux d'acides alpha parfait, bien que sa cohumulone nettement plus basse confère une amertume un peu plus douce que le Tsingdao.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Acides alpha et bêta très proches, mais sa cohumulone plus modérée donnera une amertume un peu plus ronde.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Cohumulone très proche de 35 % pour une amertume tranchante, mais teneur en alpha bien supérieure demandant un calcul précis du dosage.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Cohumulone identique apportant un mordant similaire, mais la concentration en alpha est presque double de celle du Tsingdao Flower.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c12",
+   "c10",
+   "c11",
+   "c06",
+   "c05",
+   "c04",
+   "c01",
+   "c18",
+   "c07",
+   "c20"
+  ],
+  "phrases": {
+   "c12": "Taux d'alpha et de cohumulone quasi identiques pour une amertume équivalente à 60 minutes, malgré un profil aromatique d'origine plus discret.",
+   "c10": "Son niveau d'alpha et sa cohumulone élevée reproduisent fidèlement l'amertume un peu tranchante du Tsingdao Flower en début d'ébullition.",
+   "c11": "Plages d'alpha et de bêta similaires avec une cohumulone proche de 35 %, garantissant une intensité d'amertume très comparable.",
+   "c06": "Son taux de cohumulone et ses acides alpha modérés offrent une amertume nette et franche, très proche de la cible.",
+   "c05": "Amérisant à cohumulone similaire donnant une amertume comparable, bien que ses acides alpha soient légèrement plus élevés.",
+   "c04": "Même taux de cohumulone de 35 % pour une amertume analogue, mais nécessite d'ajuster les quantités car ses alphas sont plus élevés.",
+   "c01": "Taux d'acides alpha parfait, bien que sa cohumulone nettement plus basse confère une amertume un peu plus douce que le Tsingdao.",
+   "c18": "Acides alpha et bêta très proches, mais sa cohumulone plus modérée donnera une amertume un peu plus ronde.",
+   "c07": "Cohumulone très proche de 35 % pour une amertume tranchante, mais teneur en alpha bien supérieure demandant un calcul précis du dosage.",
+   "c20": "Cohumulone identique apportant un mordant similaire, mais la concentration en alpha est presque double de celle du Tsingdao Flower."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

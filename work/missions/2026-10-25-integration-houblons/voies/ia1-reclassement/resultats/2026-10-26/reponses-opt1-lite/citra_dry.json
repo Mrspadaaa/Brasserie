@@ -1,0 +1,46 @@
+{
+ "casId": "citra@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "e0caee14c3d5987d",
+ "simule": false,
+ "appel": 98,
+ "http": 200,
+ "latenceMs": 1721,
+ "finishReason": "STOP",
+ "jetonsEntree": 3959,
+ "jetonsSortie": 498,
+ "coutMicroChf": 3041,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Nectaron partage les notes de pêche, agrumes et fruits tropicaux du Citra avec un profil aromatique très proche.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Galaxy offre une intensité de fruit de la passion et d'agrumes similaire au Citra pour le dry hop.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"NZH-107 s'approche du Citra par ses notes d'agrumes et de fruit de la passion avec des huiles comparables.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Amarillo complète bien le profil agrumes et pêche du Citra malgré un humulène un peu plus élevé.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Hydra apporte des touches de mandarine, pêche et agrumes qui rappellent la complexité aromatique du Citra.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Riwaka possède des arômes de pamplemousse et fruits tropicaux proches, mais avec un alpha inférieur.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Styrian Cardinal intègre groseille à maquereau et agrumes, rejoignant les notes spécifiques du Citra.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"HBC 586 se rapproche par la mangue et les agrumes, mais son alpha est nettement plus puissant.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Falconer's Flight combine pamplemousse et fruits tropicaux, s'alignant bien sur l'esprit aromatique du Citra.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Mistral propose melon et agrumes, offrant une alternative originale mais légèrement éloignée du Citra pur.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c15",
+   "c01",
+   "c06",
+   "c16",
+   "c03",
+   "c12",
+   "c09",
+   "c17",
+   "c10"
+  ],
+  "phrases": {
+   "c02": "Nectaron partage les notes de pêche, agrumes et fruits tropicaux du Citra avec un profil aromatique très proche.",
+   "c15": "Galaxy offre une intensité de fruit de la passion et d'agrumes similaire au Citra pour le dry hop.",
+   "c01": "NZH-107 s'approche du Citra par ses notes d'agrumes et de fruit de la passion avec des huiles comparables.",
+   "c06": "Amarillo complète bien le profil agrumes et pêche du Citra malgré un humulène un peu plus élevé.",
+   "c16": "Hydra apporte des touches de mandarine, pêche et agrumes qui rappellent la complexité aromatique du Citra.",
+   "c03": "Riwaka possède des arômes de pamplemousse et fruits tropicaux proches, mais avec un alpha inférieur.",
+   "c12": "Styrian Cardinal intègre groseille à maquereau et agrumes, rejoignant les notes spécifiques du Citra.",
+   "c09": "HBC 586 se rapproche par la mangue et les agrumes, mais son alpha est nettement plus puissant.",
+   "c17": "Falconer's Flight combine pamplemousse et fruits tropicaux, s'alignant bien sur l'esprit aromatique du Citra.",
+   "c10": "Mistral propose melon et agrumes, offrant une alternative originale mais légèrement éloignée du Citra pur."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

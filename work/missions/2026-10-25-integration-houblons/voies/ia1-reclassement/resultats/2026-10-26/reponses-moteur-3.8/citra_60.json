@@ -1,0 +1,46 @@
+{
+ "casId": "citra@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "c0343f05cdfac1e4",
+ "simule": false,
+ "appel": 4,
+ "http": 200,
+ "latenceMs": 6802,
+ "finishReason": "STOP",
+ "jetonsEntree": 3724,
+ "jetonsSortie": 552,
+ "coutMicroChf": 12158,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Taux d'acides alpha et cohumulone quasi identiques, apportant une amertume nette et propre très similaire à 60 minutes.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Pur amérisant américain avec une cohumulone et des alpha similaires, idéal pour générer une amertume équivalente à l'ébullition.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Teneurs en alpha et cohumulone très proches assurant une amertume franche et équilibrée, sans les notes aromatiques perdues à l'ébullition.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Profil amérisant proche avec des alpha élevés et une cohumulone comparable, pour une amertume soutenue et efficace.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Variété duale dont la cohumulone modérée et la plage d'alpha permettent d'obtenir une amertume nette similaire.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Alpha et cohumulone superposables au Citra pour un rendu amer franc et propre lors d'une longue ébullition.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Cohumulone basse assurant une amertume douce et soyeuse, avec un niveau d'alpha suffisant pour calibrer l'ébullition.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Alpha comparables et faible taux de cohumulone offrant une base d'amertume très propre et agréable à 60 minutes.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Teneurs en alpha et cohumulone très adaptées, bien que son potentiel aromatique unique soit dommage à sacrifier à l'ébullition.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Taux d'alpha et de cohumulone très bien alignés pour l'amertume, mais dommage de dissiper son aromatique noble.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c02",
+   "c10",
+   "c04",
+   "c14",
+   "c13",
+   "c09",
+   "c05",
+   "c17",
+   "c03"
+  ],
+  "phrases": {
+   "c01": "Taux d'acides alpha et cohumulone quasi identiques, apportant une amertume nette et propre très similaire à 60 minutes.",
+   "c02": "Pur amérisant américain avec une cohumulone et des alpha similaires, idéal pour générer une amertume équivalente à l'ébullition.",
+   "c10": "Teneurs en alpha et cohumulone très proches assurant une amertume franche et équilibrée, sans les notes aromatiques perdues à l'ébullition.",
+   "c04": "Profil amérisant proche avec des alpha élevés et une cohumulone comparable, pour une amertume soutenue et efficace.",
+   "c14": "Variété duale dont la cohumulone modérée et la plage d'alpha permettent d'obtenir une amertume nette similaire.",
+   "c13": "Alpha et cohumulone superposables au Citra pour un rendu amer franc et propre lors d'une longue ébullition.",
+   "c09": "Cohumulone basse assurant une amertume douce et soyeuse, avec un niveau d'alpha suffisant pour calibrer l'ébullition.",
+   "c05": "Alpha comparables et faible taux de cohumulone offrant une base d'amertume très propre et agréable à 60 minutes.",
+   "c17": "Teneurs en alpha et cohumulone très adaptées, bien que son potentiel aromatique unique soit dommage à sacrifier à l'ébullition.",
+   "c03": "Taux d'alpha et de cohumulone très bien alignés pour l'amertume, mais dommage de dissiper son aromatique noble."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

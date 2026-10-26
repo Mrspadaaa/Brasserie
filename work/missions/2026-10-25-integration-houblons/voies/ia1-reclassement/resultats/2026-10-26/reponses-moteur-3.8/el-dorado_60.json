@@ -1,0 +1,46 @@
+{
+ "casId": "el-dorado@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "95d75560482a5c22",
+ "simule": false,
+ "appel": 72,
+ "http": 200,
+ "latenceMs": 5993,
+ "finishReason": "STOP",
+ "jetonsEntree": 3806,
+ "jetonsSortie": 568,
+ "coutMicroChf": 12462,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Taux d'alpha très proche et niveau de cohumulone idéal pour reproduire l'amertume modérée et douce d'El Dorado à 60 minutes.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Potentiel amérisant très similaire avec des acides alpha et une cohumulone comparables, apportant une base amère nette et équivalente.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Variété amérisante pure offrant des alpha et un ratio de cohumulone quasi identiques, idéale pour un profil d'amertume très propre.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Parfait pour l'ébullition avec un niveau d'alpha équivalent et une amertume franche, bien que sa cohumulone soit un peu plus haute.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Taux d'acides alpha superposable et niveau de cohumulone voisin, ce qui en fait une alternative directe et fiable pour l'amertume.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Teneur en alpha et cohumulone très proches, garantissant une amertume comparable en début d'ébullition malgré moins de données analytiques.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Même plage d'acides alpha, assurant un calibrage facile des IBU bien que sa cohumulone soit légèrement supérieure.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Fourchette d'alpha très similaire convenant à l'amertume, avec une cohumulone un peu plus élevée qui donnera un tranchant discret.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Niveau d'alpha équivalent permettant un bon rendement d'amertume, avec une cohumulone légèrement plus basse apportant plus de rondeur.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Profil amérisant solide et teneur en alpha compatible, bien que sa cohumulone un peu plus haute apporte une amertume plus ferme.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c05",
+   "c01",
+   "c04",
+   "c06",
+   "c03",
+   "c17",
+   "c16",
+   "c07",
+   "c14",
+   "c19"
+  ],
+  "phrases": {
+   "c05": "Taux d'alpha très proche et niveau de cohumulone idéal pour reproduire l'amertume modérée et douce d'El Dorado à 60 minutes.",
+   "c01": "Potentiel amérisant très similaire avec des acides alpha et une cohumulone comparables, apportant une base amère nette et équivalente.",
+   "c04": "Variété amérisante pure offrant des alpha et un ratio de cohumulone quasi identiques, idéale pour un profil d'amertume très propre.",
+   "c06": "Parfait pour l'ébullition avec un niveau d'alpha équivalent et une amertume franche, bien que sa cohumulone soit un peu plus haute.",
+   "c03": "Taux d'acides alpha superposable et niveau de cohumulone voisin, ce qui en fait une alternative directe et fiable pour l'amertume.",
+   "c17": "Teneur en alpha et cohumulone très proches, garantissant une amertume comparable en début d'ébullition malgré moins de données analytiques.",
+   "c16": "Même plage d'acides alpha, assurant un calibrage facile des IBU bien que sa cohumulone soit légèrement supérieure.",
+   "c07": "Fourchette d'alpha très similaire convenant à l'amertume, avec une cohumulone un peu plus élevée qui donnera un tranchant discret.",
+   "c14": "Niveau d'alpha équivalent permettant un bon rendement d'amertume, avec une cohumulone légèrement plus basse apportant plus de rondeur.",
+   "c19": "Profil amérisant solide et teneur en alpha compatible, bien que sa cohumulone un peu plus haute apporte une amertume plus ferme."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

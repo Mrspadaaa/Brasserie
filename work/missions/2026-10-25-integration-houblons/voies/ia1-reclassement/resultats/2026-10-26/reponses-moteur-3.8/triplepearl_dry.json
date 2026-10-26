@@ -1,0 +1,46 @@
+{
+ "casId": "triplepearl@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "aea33451991e047d",
+ "simule": false,
+ "appel": 25,
+ "http": 200,
+ "latenceMs": 5901,
+ "finishReason": "STOP",
+ "jetonsEntree": 3870,
+ "jetonsSortie": 522,
+ "coutMicroChf": 12150,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Partage idéalement l'orange, le cèdre boisé et les épices, bien qu'il apporte une note citronnée un peu plus vive.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Rejoint parfaitement le profil avec melon, résine et agrumes, mais pousse vers des fruits à noyau plus intenses.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Excellente parenté aromatique sur la mandarine, la résine et le côté épicé, avec toutefois une puissance générale plus marquée.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Retrouve le profil d'agrumes doux façon mandarine et le fond résineux, mais ajoute une dimension tropicale absente de l'original.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Apporte les mêmes accents de mandarine, de pin et de fleurs, avec une dominante de pamplemousse plus classique.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Offre le zeste d'agrumes, le pin et le poivré, bien que plus orienté vers le citron vert vif.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Partage la note distinctive de melon et les agrumes, mais dévie vers des notes de vin blanc et de mangue.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Reproduit fidèlement le duo poivre noir et résine avec des agrumes, mais avec un accent citronné plus herbacé.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Fournit une base d'agrumes, de fleurs et de pin très proche, mais sans la rondeur du melon ou du bois.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Retient la note gourmande d'orange et le floral, tout en introduisant une touche de vanille plus singulière.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c08",
+   "c03",
+   "c10",
+   "c17",
+   "c04",
+   "c06",
+   "c16",
+   "c02",
+   "c01",
+   "c19"
+  ],
+  "phrases": {
+   "c08": "Partage idéalement l'orange, le cèdre boisé et les épices, bien qu'il apporte une note citronnée un peu plus vive.",
+   "c03": "Rejoint parfaitement le profil avec melon, résine et agrumes, mais pousse vers des fruits à noyau plus intenses.",
+   "c10": "Excellente parenté aromatique sur la mandarine, la résine et le côté épicé, avec toutefois une puissance générale plus marquée.",
+   "c17": "Retrouve le profil d'agrumes doux façon mandarine et le fond résineux, mais ajoute une dimension tropicale absente de l'original.",
+   "c04": "Apporte les mêmes accents de mandarine, de pin et de fleurs, avec une dominante de pamplemousse plus classique.",
+   "c06": "Offre le zeste d'agrumes, le pin et le poivré, bien que plus orienté vers le citron vert vif.",
+   "c16": "Partage la note distinctive de melon et les agrumes, mais dévie vers des notes de vin blanc et de mangue.",
+   "c02": "Reproduit fidèlement le duo poivre noir et résine avec des agrumes, mais avec un accent citronné plus herbacé.",
+   "c01": "Fournit une base d'agrumes, de fleurs et de pin très proche, mais sans la rondeur du melon ou du bois.",
+   "c19": "Retient la note gourmande d'orange et le floral, tout en introduisant une touche de vanille plus singulière."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

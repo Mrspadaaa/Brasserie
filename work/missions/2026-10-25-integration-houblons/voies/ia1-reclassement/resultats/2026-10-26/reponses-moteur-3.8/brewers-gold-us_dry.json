@@ -1,0 +1,46 @@
+{
+ "casId": "brewers-gold-us@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "ffaf374c9dd24bfe",
+ "simule": false,
+ "appel": 23,
+ "http": 200,
+ "latenceMs": 6070,
+ "finishReason": "STOP",
+ "jetonsEntree": 3884,
+ "jetonsSortie": 538,
+ "coutMicroChf": 12327,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Proche parent génétique partageant exactement les mêmes notes de cassis et d'épices, avec un profil d'huiles quasi identique parfait en dry hopping.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Même variété cultivée en Allemagne, elle offre le profil aromatique cassis et épicé recherché, malgré une teneur en humulène légèrement plus élevée.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Descendant de Brewer's Gold, il restitue fidèlement le cassis et les épices avec une touche d'agrumes en bonus.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Issu de Brewer's Gold, il combine ses notes caractéristiques de cassis et d'épices avec des arômes fruités plus éclatants.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Ce houblon associe cassis et épices dans une trame aromatique rustique très proche, malgré un côté pamplemousse plus marqué.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Il apporte la note fruitée de cassis et baies souhaitée, bien que son côté épicé soit plus discret.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Offre une dominante de cassis très nette, mais tire davantage vers les fruits tropicaux et floraux que l'original.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Dérivé de Brewer's Gold, il rappelle son profil par ses baies sombres et ses notes poivrées et boisées intenses.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Partage la note de cassis et une belle intensité résineuse, tout en étant nettement plus exubérant en fruits tropicaux.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Descendant direct apportant le caractère épicé et une composition d'huiles similaire, mais sans le fruité de cassis distinctif.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c03",
+   "c04",
+   "c15",
+   "c20",
+   "c02",
+   "c09",
+   "c08",
+   "c10",
+   "c12"
+  ],
+  "phrases": {
+   "c01": "Proche parent génétique partageant exactement les mêmes notes de cassis et d'épices, avec un profil d'huiles quasi identique parfait en dry hopping.",
+   "c03": "Même variété cultivée en Allemagne, elle offre le profil aromatique cassis et épicé recherché, malgré une teneur en humulène légèrement plus élevée.",
+   "c04": "Descendant de Brewer's Gold, il restitue fidèlement le cassis et les épices avec une touche d'agrumes en bonus.",
+   "c15": "Issu de Brewer's Gold, il combine ses notes caractéristiques de cassis et d'épices avec des arômes fruités plus éclatants.",
+   "c20": "Ce houblon associe cassis et épices dans une trame aromatique rustique très proche, malgré un côté pamplemousse plus marqué.",
+   "c02": "Il apporte la note fruitée de cassis et baies souhaitée, bien que son côté épicé soit plus discret.",
+   "c09": "Offre une dominante de cassis très nette, mais tire davantage vers les fruits tropicaux et floraux que l'original.",
+   "c08": "Dérivé de Brewer's Gold, il rappelle son profil par ses baies sombres et ses notes poivrées et boisées intenses.",
+   "c10": "Partage la note de cassis et une belle intensité résineuse, tout en étant nettement plus exubérant en fruits tropicaux.",
+   "c12": "Descendant direct apportant le caractère épicé et une composition d'huiles similaire, mais sans le fruité de cassis distinctif."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

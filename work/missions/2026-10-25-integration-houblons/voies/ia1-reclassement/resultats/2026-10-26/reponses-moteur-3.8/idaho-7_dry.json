@@ -1,0 +1,46 @@
+{
+ "casId": "idaho-7@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "5cfc5f7167cb25a6",
+ "simule": false,
+ "appel": 17,
+ "http": 200,
+ "latenceMs": 7236,
+ "finishReason": "STOP",
+ "jetonsEntree": 4089,
+ "jetonsSortie": 588,
+ "coutMicroChf": 13180,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage cette combinaison unique d'agrumes, d'abricot, de fruits tropicaux et de résine de pin, avec un profil d'huiles très proche en biotransformation.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Excellente alternative pour les notes intenses de papaye, d'agrumes et de pin résineux, bien que plus orienté myrtille qu'Idaho 7.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Offre un profil d'agrumes intenses et une résine boisée très semblable à la touche thé noir/pin, avec une nuance florale plus marquée.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Retrouve la papaye, les agrumes lourds et la composante résineuse/herbacée, mais apporte une touche d'eucalyptus inexistante chez Idaho 7.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Rapprochement parfait sur l'abricot, la mandarine et la résine, avec un taux de myrcène comparable idéal en fermentation active.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Apporte la fraîcheur du pamplemousse, des fruits tropicaux et du pin, mais reste un assemblage un peu moins complexe et terreux.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Copie bien les saveurs de mandarine, pamplemousse et pin typiques d'Idaho 7, tout en étant légèrement moins expressif sur le côté fruité lourd.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Rejoint la note caractéristique de cassis, les agrumes et le pin, mais s'avère plus délicat et moins dense en huiles totales.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Offre des fruits tropicaux et du pamplemousse soutenus par un côté résineux dank, remplaçant efficacement la composante terreuse mais avec plus de fraise.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Partage le fruité tropical éclatant et le fond résineux, avec cependant une orientation bonbon et cerise noire plus prononcée.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c02",
+   "c08",
+   "c15",
+   "c04",
+   "c16",
+   "c20",
+   "c03",
+   "c10",
+   "c17"
+  ],
+  "phrases": {
+   "c01": "Partage cette combinaison unique d'agrumes, d'abricot, de fruits tropicaux et de résine de pin, avec un profil d'huiles très proche en biotransformation.",
+   "c02": "Excellente alternative pour les notes intenses de papaye, d'agrumes et de pin résineux, bien que plus orienté myrtille qu'Idaho 7.",
+   "c08": "Offre un profil d'agrumes intenses et une résine boisée très semblable à la touche thé noir/pin, avec une nuance florale plus marquée.",
+   "c15": "Retrouve la papaye, les agrumes lourds et la composante résineuse/herbacée, mais apporte une touche d'eucalyptus inexistante chez Idaho 7.",
+   "c04": "Rapprochement parfait sur l'abricot, la mandarine et la résine, avec un taux de myrcène comparable idéal en fermentation active.",
+   "c16": "Apporte la fraîcheur du pamplemousse, des fruits tropicaux et du pin, mais reste un assemblage un peu moins complexe et terreux.",
+   "c20": "Copie bien les saveurs de mandarine, pamplemousse et pin typiques d'Idaho 7, tout en étant légèrement moins expressif sur le côté fruité lourd.",
+   "c03": "Rejoint la note caractéristique de cassis, les agrumes et le pin, mais s'avère plus délicat et moins dense en huiles totales.",
+   "c10": "Offre des fruits tropicaux et du pamplemousse soutenus par un côté résineux dank, remplaçant efficacement la composante terreuse mais avec plus de fraise.",
+   "c17": "Partage le fruité tropical éclatant et le fond résineux, avec cependant une orientation bonbon et cerise noire plus prononcée."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

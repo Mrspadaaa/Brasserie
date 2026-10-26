@@ -1,0 +1,46 @@
+{
+ "casId": "flyer@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "601b420a9b51927f",
+ "simule": false,
+ "appel": 74,
+ "http": 200,
+ "latenceMs": 6325,
+ "finishReason": "STOP",
+ "jetonsEntree": 3724,
+ "jetonsSortie": 459,
+ "coutMicroChf": 11286,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c19\", \"phrase\": \"Origine britannique similaire avec des taux d'acides alpha et de cohumulone très proches, garantissant une amertume comparable à 60 minutes.\"},\n    {\"id\": \"c07\", \"phrase\": \"Autre houblon anglais à double usage, ses acides alpha et sa cohumulone modérée reproduisent fidèlement l'amertume du Flyer.\"},\n    {\"id\": \"c08\", \"phrase\": \"Son profil d'acides alpha et sa cohumulone quasi identique en font un excellent substitut britannique pour l'ébullition.\"},\n    {\"id\": \"c13\", \"phrase\": \"Sa teneur en acides alpha et son niveau de cohumulone s'alignent parfaitement pour fournir la même intensité d'amertume.\"},\n    {\"id\": \"c18\", \"phrase\": \"Avec 31 % de cohumulone et des alpha similaires, il apporte une amertume nette et bien équilibrée.\"},\n    {\"id\": \"c20\", \"phrase\": \"Ses plages d'acides alpha et de cohumulone sont très proches, assurant une amertume propre et similaire en début d'ébullition.\"},\n    {\"id\": \"c14\", \"phrase\": \"Taux d'alpha et de cohumulone parfaitement alignés avec le Flyer, idéal pour remplacer son amertume à 60 minutes.\"},\n    {\"id\": \"c17\", \"phrase\": \"Plages d'alpha et de cohumulone parfaitement superposables, bien que son amertume puisse être légèrement plus tranchante.\"},\n    {\"id\": \"c16\", \"phrase\": \"Des acides alpha équivalents et une cohumulone modérée qui permettent un remplacement facile pour l'amertume du moût.\"},\n    {\"id\": \"c01\", \"phrase\": \"Taux d'acides alpha très proche pour un dosage identique, même si son niveau de cohumulone reste inconnu.\"}\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c19",
+   "c07",
+   "c08",
+   "c13",
+   "c18",
+   "c20",
+   "c14",
+   "c17",
+   "c16",
+   "c01"
+  ],
+  "phrases": {
+   "c19": "Origine britannique similaire avec des taux d'acides alpha et de cohumulone très proches, garantissant une amertume comparable à 60 minutes.",
+   "c07": "Autre houblon anglais à double usage, ses acides alpha et sa cohumulone modérée reproduisent fidèlement l'amertume du Flyer.",
+   "c08": "Son profil d'acides alpha et sa cohumulone quasi identique en font un excellent substitut britannique pour l'ébullition.",
+   "c13": "Sa teneur en acides alpha et son niveau de cohumulone s'alignent parfaitement pour fournir la même intensité d'amertume.",
+   "c18": "Avec 31 % de cohumulone et des alpha similaires, il apporte une amertume nette et bien équilibrée.",
+   "c20": "Ses plages d'acides alpha et de cohumulone sont très proches, assurant une amertume propre et similaire en début d'ébullition.",
+   "c14": "Taux d'alpha et de cohumulone parfaitement alignés avec le Flyer, idéal pour remplacer son amertume à 60 minutes.",
+   "c17": "Plages d'alpha et de cohumulone parfaitement superposables, bien que son amertume puisse être légèrement plus tranchante.",
+   "c16": "Des acides alpha équivalents et une cohumulone modérée qui permettent un remplacement facile pour l'amertume du moût.",
+   "c01": "Taux d'acides alpha très proche pour un dosage identique, même si son niveau de cohumulone reste inconnu."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

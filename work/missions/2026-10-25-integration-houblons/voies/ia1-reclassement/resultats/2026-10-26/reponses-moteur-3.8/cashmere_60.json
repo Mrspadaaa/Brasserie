@@ -1,0 +1,46 @@
+{
+ "casId": "cashmere@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "95b8ddbce56ca0c4",
+ "simule": false,
+ "appel": 70,
+ "http": 200,
+ "latenceMs": 7403,
+ "finishReason": "STOP",
+ "jetonsEntree": 3662,
+ "jetonsSortie": 590,
+ "coutMicroChf": 12398,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Cohumulone très basse (20-25 %) et taux d'alpha modéré, offrant une amertume propre et fine comparable à celle du Cashmere à 60 minutes.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Profil en alpha (8-11 %) et cohumulone (26-30 %) très proche, garantissant une amertume douce sans astringence excessive.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Taux d'acides alpha quasi identique (7-10 %) et cohumulone modérée pour un apport d'amertume équivalent en début d'ébullition.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Teneur en alpha très similaire (6-10 %) pour cibler les mêmes IBU, bien que son taux de cohumulone ne soit pas documenté.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Taux d'alpha très proche (8,8-10,3 %) permettant un dosage quasiment identique pour atteindre les IBU souhaités à 60 minutes.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Fourchette d'acides alpha similaire, convenant bien pour une amertume de base même si le niveau de cohumulone reste inconnu.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Cohumulone bien contenue (20-30 %) pour une amertume nette, nécessitant seulement de légers ajustements de dosage vu ses alpha légèrement supérieurs.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Taux d'alpha proche avec une cohumulone modérée, permettant de délivrer une amertume propre sans rugosité marquée.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Gamme d'acides alpha voisine (9-12 %) adaptée au rôle amérisant, malgré le manque de données sur sa cohumulone.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Taux d'alpha comparable avec une cohumulone acceptable (30 %), fournissant une amertume correcte bien que potentiellement un peu plus tranchante.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c15",
+   "c20",
+   "c19",
+   "c10",
+   "c01",
+   "c05",
+   "c09",
+   "c02",
+   "c17",
+   "c04"
+  ],
+  "phrases": {
+   "c15": "Cohumulone très basse (20-25 %) et taux d'alpha modéré, offrant une amertume propre et fine comparable à celle du Cashmere à 60 minutes.",
+   "c20": "Profil en alpha (8-11 %) et cohumulone (26-30 %) très proche, garantissant une amertume douce sans astringence excessive.",
+   "c19": "Taux d'acides alpha quasi identique (7-10 %) et cohumulone modérée pour un apport d'amertume équivalent en début d'ébullition.",
+   "c10": "Teneur en alpha très similaire (6-10 %) pour cibler les mêmes IBU, bien que son taux de cohumulone ne soit pas documenté.",
+   "c01": "Taux d'alpha très proche (8,8-10,3 %) permettant un dosage quasiment identique pour atteindre les IBU souhaités à 60 minutes.",
+   "c05": "Fourchette d'acides alpha similaire, convenant bien pour une amertume de base même si le niveau de cohumulone reste inconnu.",
+   "c09": "Cohumulone bien contenue (20-30 %) pour une amertume nette, nécessitant seulement de légers ajustements de dosage vu ses alpha légèrement supérieurs.",
+   "c02": "Taux d'alpha proche avec une cohumulone modérée, permettant de délivrer une amertume propre sans rugosité marquée.",
+   "c17": "Gamme d'acides alpha voisine (9-12 %) adaptée au rôle amérisant, malgré le manque de données sur sa cohumulone.",
+   "c04": "Taux d'alpha comparable avec une cohumulone acceptable (30 %), fournissant une amertume correcte bien que potentiellement un peu plus tranchante."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

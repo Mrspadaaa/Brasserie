@@ -1,0 +1,46 @@
+{
+ "casId": "cashmere@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "4d01ebda23e106f2",
+ "simule": true,
+ "appel": 69,
+ "http": 200,
+ "latenceMs": 0,
+ "finishReason": "STOP",
+ "jetonsEntree": 2338,
+ "jetonsSortie": 99,
+ "coutMicroChf": 5312,
+ "texte": "{\"classement\":[{\"id\":\"c01\",\"phrase\":\"Doublon.\"},{\"id\":\"c01\",\"phrase\":\"Doublon.\"},{\"id\":\"c02\",\"phrase\":\"Doublon.\"},{\"id\":\"c03\",\"phrase\":\"Doublon.\"},{\"id\":\"c04\",\"phrase\":\"Doublon.\"},{\"id\":\"c05\",\"phrase\":\"Doublon.\"},{\"id\":\"c06\",\"phrase\":\"Doublon.\"},{\"id\":\"c07\",\"phrase\":\"Doublon.\"},{\"id\":\"c08\",\"phrase\":\"Doublon.\"},{\"id\":\"c09\",\"phrase\":\"Doublon.\"}]}",
+ "analyse": {
+  "valide": false,
+  "ordre": [
+   "c01",
+   "c02",
+   "c03",
+   "c04",
+   "c05",
+   "c06",
+   "c07",
+   "c08",
+   "c09"
+  ],
+  "phrases": {
+   "c01": "Doublon.",
+   "c02": "Doublon.",
+   "c03": "Doublon.",
+   "c04": "Doublon.",
+   "c05": "Doublon.",
+   "c06": "Doublon.",
+   "c07": "Doublon.",
+   "c08": "Doublon.",
+   "c09": "Doublon."
+  },
+  "erreurs": [
+   "identifiant en double : c01"
+  ]
+ },
+ "erreurReseau": null
+}

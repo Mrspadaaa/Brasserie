@@ -1,0 +1,46 @@
+{
+ "casId": "multihead@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "48b7fb79b742f090",
+ "simule": false,
+ "appel": 68,
+ "http": 200,
+ "latenceMs": 5959,
+ "finishReason": "STOP",
+ "jetonsEntree": 3599,
+ "jetonsSortie": 480,
+ "coutMicroChf": 11249,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c04\", \"phrase\": \"Même variété néomexicaine, teneurs en acides alpha et cohumulone quasi identiques, offrant un profil d'amertume très similaire à 60 minutes.\"},\n    {\"id\": \"c10\", \"phrase\": \"Taux d'acides alpha très proche et même niveau très élevé de cohumulone (45-50 %), garantissant une amertume incisive comparable.\"},\n    {\"id\": \"c13\", \"phrase\": \"Son niveau d'alpha est très voisin et sa cohumulone à 47 % reproduit fidèlement le mordant attendu à l'ébullition.\"},\n    {\"id\": \"c01\", \"phrase\": \"Plage d'alpha très proche de Multihead, idéale pour caler précisément le même niveau d'IBU à 60 minutes de cuisson.\"},\n    {\"id\": \"c03\", \"phrase\": \"Teneur en alpha et cohumulone relativement proches, assurant une amertume comparable bien qu'un peu plus douce.\"},\n    {\"id\": \"c08\", \"phrase\": \"Acides alpha très voisins pour ajuster facilement l'amertume, même si le profil de cohumulone n'est pas renseigné.\"},\n    {\"id\": \"c02\", \"phrase\": \"Usage amérisant adapté avec des alpha proches, mais sa cohumulone plus basse apportera une amertume plus ronde et douce.\"},\n    {\"id\": \"c11\", \"phrase\": \"Taux d'alpha légèrement supérieur mais facilement ajustable, avec toutefois une amertume plus douce en raison d'une cohumulone faible.\"},\n    {\"id\": \"c14\", \"phrase\": \"Gamme d'alpha parfaitement alignée, bien que sa cohumulone nettement plus basse rende l'amertume moins tranchante que le Multihead.\"},\n    {\"id\": \"c20\", \"phrase\": \"Acides alpha compatibles avec un profil doux, quoiqu'une cohumulone globalement plus basse atténue l'agressivité de l'amertume.\"}\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c04",
+   "c10",
+   "c13",
+   "c01",
+   "c03",
+   "c08",
+   "c02",
+   "c11",
+   "c14",
+   "c20"
+  ],
+  "phrases": {
+   "c04": "Même variété néomexicaine, teneurs en acides alpha et cohumulone quasi identiques, offrant un profil d'amertume très similaire à 60 minutes.",
+   "c10": "Taux d'acides alpha très proche et même niveau très élevé de cohumulone (45-50 %), garantissant une amertume incisive comparable.",
+   "c13": "Son niveau d'alpha est très voisin et sa cohumulone à 47 % reproduit fidèlement le mordant attendu à l'ébullition.",
+   "c01": "Plage d'alpha très proche de Multihead, idéale pour caler précisément le même niveau d'IBU à 60 minutes de cuisson.",
+   "c03": "Teneur en alpha et cohumulone relativement proches, assurant une amertume comparable bien qu'un peu plus douce.",
+   "c08": "Acides alpha très voisins pour ajuster facilement l'amertume, même si le profil de cohumulone n'est pas renseigné.",
+   "c02": "Usage amérisant adapté avec des alpha proches, mais sa cohumulone plus basse apportera une amertume plus ronde et douce.",
+   "c11": "Taux d'alpha légèrement supérieur mais facilement ajustable, avec toutefois une amertume plus douce en raison d'une cohumulone faible.",
+   "c14": "Gamme d'alpha parfaitement alignée, bien que sa cohumulone nettement plus basse rende l'amertume moins tranchante que le Multihead.",
+   "c20": "Acides alpha compatibles avec un profil doux, quoiqu'une cohumulone globalement plus basse atténue l'agressivité de l'amertume."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

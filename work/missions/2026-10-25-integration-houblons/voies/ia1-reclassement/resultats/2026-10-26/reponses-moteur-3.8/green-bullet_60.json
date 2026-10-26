@@ -1,0 +1,46 @@
+{
+ "casId": "green-bullet@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "b3c3d774a6792272",
+ "simule": false,
+ "appel": 48,
+ "http": 200,
+ "latenceMs": 6518,
+ "finishReason": "STOP",
+ "jetonsEntree": 3718,
+ "jetonsSortie": 475,
+ "coutMicroChf": 11425,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c01\", \"phrase\": \"Même origine néo-zélandaise, taux d'alpha et de cohumulone quasi identiques, apportant une amertume franche et robuste très similaire à 60 minutes.\"},\n    {\"id\": \"c07\", \"phrase\": \"Autre variété néo-zélandaise historique, elle partage des niveaux d'alpha et de cohumulone très proches, garantissant une intensité amère comparable.\"},\n    {\"id\": \"c06\", \"phrase\": \"Profil amérisant néo-zélandais très proche avec une cohumulone élevée similaire, bien que ses acides alpha soient légèrement inférieurs.\"},\n    {\"id\": \"c10\", \"phrase\": \"Taux d'alpha et taux de cohumulone élevés très comparables, offrant une amertume tranchante tout à fait adaptée à l'ébullition.\"},\n    {\"id\": \"c05\", \"phrase\": \"Teneur en alpha et niveau de cohumulone compatibles, produisant une amertume nette et puissante au profil proche.\"},\n    {\"id\": \"c19\", \"phrase\": \"Amérisant efficace aux acides alpha comparables et cohumulone soutenue, apportant une amertume vigoureuse en début d'ébullition.\"},\n    {\"id\": \"c02\", \"phrase\": \"Acides alpha et taux de cohumulone très proches, convenant bien pour remplacer la charge amère de Green Bullet.\"},\n    {\"id\": \"c03\", \"phrase\": \"Acides alpha équivalents pour le calcul des IBU, mais sa cohumulone plus faible donnera une amertume plus douce.\"},\n    {\"id\": \"c04\", \"phrase\": \"Référence amérisante aux alpha similaires ; sa cohumulone plus basse procurera cependant une amertume un peu plus ronde.\"},\n    {\"id\": \"c20\", \"phrase\": \"Potentiel amérisant identique en ébullition, avec une amertume toutefois plus propre et moins mordante due à une cohumulone inférieure.\"}\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c07",
+   "c06",
+   "c10",
+   "c05",
+   "c19",
+   "c02",
+   "c03",
+   "c04",
+   "c20"
+  ],
+  "phrases": {
+   "c01": "Même origine néo-zélandaise, taux d'alpha et de cohumulone quasi identiques, apportant une amertume franche et robuste très similaire à 60 minutes.",
+   "c07": "Autre variété néo-zélandaise historique, elle partage des niveaux d'alpha et de cohumulone très proches, garantissant une intensité amère comparable.",
+   "c06": "Profil amérisant néo-zélandais très proche avec une cohumulone élevée similaire, bien que ses acides alpha soient légèrement inférieurs.",
+   "c10": "Taux d'alpha et taux de cohumulone élevés très comparables, offrant une amertume tranchante tout à fait adaptée à l'ébullition.",
+   "c05": "Teneur en alpha et niveau de cohumulone compatibles, produisant une amertume nette et puissante au profil proche.",
+   "c19": "Amérisant efficace aux acides alpha comparables et cohumulone soutenue, apportant une amertume vigoureuse en début d'ébullition.",
+   "c02": "Acides alpha et taux de cohumulone très proches, convenant bien pour remplacer la charge amère de Green Bullet.",
+   "c03": "Acides alpha équivalents pour le calcul des IBU, mais sa cohumulone plus faible donnera une amertume plus douce.",
+   "c04": "Référence amérisante aux alpha similaires ; sa cohumulone plus basse procurera cependant une amertume un peu plus ronde.",
+   "c20": "Potentiel amérisant identique en ébullition, avec une amertume toutefois plus propre et moins mordante due à une cohumulone inférieure."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

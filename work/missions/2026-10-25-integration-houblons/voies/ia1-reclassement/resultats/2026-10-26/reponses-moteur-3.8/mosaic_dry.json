@@ -1,0 +1,46 @@
+{
+ "casId": "mosaic@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "9e9da08790795f36",
+ "simule": false,
+ "appel": 7,
+ "http": 200,
+ "latenceMs": 6412,
+ "finishReason": "STOP",
+ "jetonsEntree": 4009,
+ "jetonsSortie": 469,
+ "coutMicroChf": 11914,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c03\", \"phrase\": \"Parent génétique de Mosaic, Simcoe offre la même dualité baies, agrumes et pin résineux, avec un côté chewing-gum très proche.\"},\n    {\"id\": \"c02\", \"phrase\": \"Idaho 7 partage ce profil intensément fruité et tropical (papaye, agrumes), rehaussé d'une touche résineuse et terreuse idéale en dry hopping.\"},\n    {\"id\": \"c06\", \"phrase\": \"Hydra reproduit fidèlement la complexité de Mosaic avec ses notes de mandarine, fruits tropicaux, rose et baies bien présentes.\"},\n    {\"id\": \"c08\", \"phrase\": \"Strata apporte ce cœur fruité entre fraise, fruit de la passion et pamplemousse, assorti d'une note dank très complémentaire.\"},\n    {\"id\": \"c09\", \"phrase\": \"Ce blend apporte le panier de fruits tropicaux, de pamplemousse et de pin typique des IPA modernes axées sur Mosaic.\"},\n    {\"id\": \"c01\", \"phrase\": \"Styrian Fox offre un profil intéressant de fruits tropicaux et de cassis, rappelant la myrtille de Mosaic avec une touche herbacée.\"},\n    {\"id\": \"c14\", \"phrase\": \"Sultana développe une intensité tropicale majeure sur l'ananas et les agrumes résineux, bien que moins axé sur les fruits rouges.\"},\n    {\"id\": \"c15\", \"phrase\": \"Ariana partage l'orientation mandarine, fruits tropicaux et baies, tout en restant un peu plus douce et florale.\"},\n    {\"id\": \"c11\", \"phrase\": \"Southern Cross combine fruits tropicaux, zeste d'agrumes et pin, offrant une aromatique expressive en fermentation active malgré un profil plus citronné.\"},\n    {\"id\": \"c20\", \"phrase\": \"Taiheke apporte une belle fraîcheur d'agrumes et de fruits tropicaux, bien que son intensité aromatique globale soit légèrement plus légère.\"}\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c03",
+   "c02",
+   "c06",
+   "c08",
+   "c09",
+   "c01",
+   "c14",
+   "c15",
+   "c11",
+   "c20"
+  ],
+  "phrases": {
+   "c03": "Parent génétique de Mosaic, Simcoe offre la même dualité baies, agrumes et pin résineux, avec un côté chewing-gum très proche.",
+   "c02": "Idaho 7 partage ce profil intensément fruité et tropical (papaye, agrumes), rehaussé d'une touche résineuse et terreuse idéale en dry hopping.",
+   "c06": "Hydra reproduit fidèlement la complexité de Mosaic avec ses notes de mandarine, fruits tropicaux, rose et baies bien présentes.",
+   "c08": "Strata apporte ce cœur fruité entre fraise, fruit de la passion et pamplemousse, assorti d'une note dank très complémentaire.",
+   "c09": "Ce blend apporte le panier de fruits tropicaux, de pamplemousse et de pin typique des IPA modernes axées sur Mosaic.",
+   "c01": "Styrian Fox offre un profil intéressant de fruits tropicaux et de cassis, rappelant la myrtille de Mosaic avec une touche herbacée.",
+   "c14": "Sultana développe une intensité tropicale majeure sur l'ananas et les agrumes résineux, bien que moins axé sur les fruits rouges.",
+   "c15": "Ariana partage l'orientation mandarine, fruits tropicaux et baies, tout en restant un peu plus douce et florale.",
+   "c11": "Southern Cross combine fruits tropicaux, zeste d'agrumes et pin, offrant une aromatique expressive en fermentation active malgré un profil plus citronné.",
+   "c20": "Taiheke apporte une belle fraîcheur d'agrumes et de fruits tropicaux, bien que son intensité aromatique globale soit légèrement plus légère."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

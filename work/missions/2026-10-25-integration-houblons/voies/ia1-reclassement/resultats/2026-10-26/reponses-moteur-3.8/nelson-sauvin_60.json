@@ -1,0 +1,46 @@
+{
+ "casId": "nelson-sauvin@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "2d237cb91ce52fa6",
+ "simule": false,
+ "appel": 2,
+ "http": 200,
+ "latenceMs": 6185,
+ "finishReason": "STOP",
+ "jetonsEntree": 3872,
+ "jetonsSortie": 561,
+ "coutMicroChf": 12520,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Originaire de Nouvelle-Zélande, il présente un taux d'acide alpha et un niveau de cohumulone quasi identiques pour une amertume très similaire.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Également néo-zélandais, ses acides alpha et sa faible cohumulone assurent une amertume propre et douce, idéale à 60 minutes.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Amérisant classique avec des taux d'acide alpha comparables et une cohumulone basse, garantissant une amertume nette et sans âpreté.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Sa cohumulone très basse apporte une amertume douce similaire, bien que son taux d'alpha soit légèrement plus élevé.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Taux d'acides alpha et de cohumulone très proches, apportant une base amère similaire malgré une fraction d'humulène bien plus faible.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Ses 25 % de cohumulone et ses acides alpha équivalents procurent une qualité d'amertume très fidèle au Nelson Sauvin.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Acides alpha équivalents pour un dosage facile, mais sa cohumulone légèrement plus haute donnera une amertume un peu plus tranchante.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Parfait alignement sur les acides alpha, mais sa cohumulone un peu plus élevée offrira un profil d'amertume légèrement plus rustique.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Taux d'alpha et de cohumulone bien alignés pour l'ébullition, offrant une amertume modérée bien que le profil général soit plus boisé.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Sa teneur en acides alpha est parfaitement calibrée pour remplacer le Nelson, bien que son profil chimique détaillé reste inconnu.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c03",
+   "c14",
+   "c13",
+   "c08",
+   "c05",
+   "c07",
+   "c01",
+   "c12",
+   "c18",
+   "c16"
+  ],
+  "phrases": {
+   "c03": "Originaire de Nouvelle-Zélande, il présente un taux d'acide alpha et un niveau de cohumulone quasi identiques pour une amertume très similaire.",
+   "c14": "Également néo-zélandais, ses acides alpha et sa faible cohumulone assurent une amertume propre et douce, idéale à 60 minutes.",
+   "c13": "Amérisant classique avec des taux d'acide alpha comparables et une cohumulone basse, garantissant une amertume nette et sans âpreté.",
+   "c08": "Sa cohumulone très basse apporte une amertume douce similaire, bien que son taux d'alpha soit légèrement plus élevé.",
+   "c05": "Taux d'acides alpha et de cohumulone très proches, apportant une base amère similaire malgré une fraction d'humulène bien plus faible.",
+   "c07": "Ses 25 % de cohumulone et ses acides alpha équivalents procurent une qualité d'amertume très fidèle au Nelson Sauvin.",
+   "c01": "Acides alpha équivalents pour un dosage facile, mais sa cohumulone légèrement plus haute donnera une amertume un peu plus tranchante.",
+   "c12": "Parfait alignement sur les acides alpha, mais sa cohumulone un peu plus élevée offrira un profil d'amertume légèrement plus rustique.",
+   "c18": "Taux d'alpha et de cohumulone bien alignés pour l'ébullition, offrant une amertume modérée bien que le profil général soit plus boisé.",
+   "c16": "Sa teneur en acides alpha est parfaitement calibrée pour remplacer le Nelson, bien que son profil chimique détaillé reste inconnu."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

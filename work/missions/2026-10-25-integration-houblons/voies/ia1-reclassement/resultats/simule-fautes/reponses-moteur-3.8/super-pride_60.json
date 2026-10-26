@@ -1,0 +1,46 @@
+{
+ "casId": "super-pride@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "8b90dc8b2f8c6251",
+ "simule": true,
+ "appel": 76,
+ "http": 200,
+ "latenceMs": 0,
+ "finishReason": "STOP",
+ "jetonsEntree": 2238,
+ "jetonsSortie": 116,
+ "coutMicroChf": 5284,
+ "texte": "{\"classement\":[{\"id\":\"c10\",\"phrase\":\"Ordre inversé.\"},{\"id\":\"c09\",\"phrase\":\"Ordre inversé.\"},{\"id\":\"c08\",\"phrase\":\"Ordre inversé.\"},{\"id\":\"c07\",\"phrase\":\"Ordre inversé.\"},{\"id\":\"c06\",\"phrase\":\"Ordre inversé.\"},{\"id\":\"c05\",\"phrase\":\"Ordre inversé.\"},{\"id\":\"c04\",\"phrase\":\"Ordre inversé.\"},{\"id\":\"c03\",\"phrase\":\"Ordre inversé.\"},{\"id\":\"c02\",\"phrase\":\"Ordre inversé.\"},{\"id\":\"c01\",\"phrase\":\"Ordre inversé.\"}]}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c10",
+   "c09",
+   "c08",
+   "c07",
+   "c06",
+   "c05",
+   "c04",
+   "c03",
+   "c02",
+   "c01"
+  ],
+  "phrases": {
+   "c10": "Ordre inversé.",
+   "c09": "Ordre inversé.",
+   "c08": "Ordre inversé.",
+   "c07": "Ordre inversé.",
+   "c06": "Ordre inversé.",
+   "c05": "Ordre inversé.",
+   "c04": "Ordre inversé.",
+   "c03": "Ordre inversé.",
+   "c02": "Ordre inversé.",
+   "c01": "Ordre inversé."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

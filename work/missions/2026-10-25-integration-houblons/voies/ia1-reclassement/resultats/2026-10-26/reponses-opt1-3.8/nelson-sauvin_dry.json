@@ -1,0 +1,46 @@
+{
+ "casId": "nelson-sauvin@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "2c8dbe3fee53b0b2",
+ "simule": false,
+ "appel": 79,
+ "http": 200,
+ "latenceMs": 7337,
+ "finishReason": "STOP",
+ "jetonsEntree": 4025,
+ "jetonsSortie": 552,
+ "coutMicroChf": 12722,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Le clone aromatique idéal : même profil marqué de vin blanc, sauvignon et groseille à maquereau, enrichi d'une forte teneur en thiols.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Partage directement les notes clés de vin blanc et groseille à maquereau, bien que son taux d'huiles soit légèrement plus faible.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Apporte cette touche spécifique de groseille à maquereau et de fruits intenses, avec un profil d'huiles très proche mais plus dank.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Évoque directement le vin blanc avec un profil très fruité et juteux, malgré des notes de poire et banane plus prononcées.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Offre des arômes communs de groseille à maquereau et de fruits intenses, bien qu'il tire davantage vers le cassis et les agrumes.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Profil fruité complexe et moderne convenant bien au dry hop, mais orienté agrumes doux et noix de coco plutôt que vin blanc.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Apporte des notes fruitées intéressantes et des fruits de la passion compatibles, mais avec un fond plus noble et herbacé.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Partage un bel équilibre fruité en houblonnage à cru, mais reste dominé par la pêche, le pin et les agrumes classiques.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Riche en thiols pour la biotransformation en fermentation active, mais son profil penche nettement vers le pamplemousse floral plutôt que le sauvignon.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Offre un profil fruité atypique et frais en fermentation, bien qu'il s'éloigne du vin blanc avec des notes herbacées et épicées.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c03",
+   "c19",
+   "c07",
+   "c10",
+   "c06",
+   "c04",
+   "c09",
+   "c20",
+   "c17"
+  ],
+  "phrases": {
+   "c02": "Le clone aromatique idéal : même profil marqué de vin blanc, sauvignon et groseille à maquereau, enrichi d'une forte teneur en thiols.",
+   "c03": "Partage directement les notes clés de vin blanc et groseille à maquereau, bien que son taux d'huiles soit légèrement plus faible.",
+   "c19": "Apporte cette touche spécifique de groseille à maquereau et de fruits intenses, avec un profil d'huiles très proche mais plus dank.",
+   "c07": "Évoque directement le vin blanc avec un profil très fruité et juteux, malgré des notes de poire et banane plus prononcées.",
+   "c10": "Offre des arômes communs de groseille à maquereau et de fruits intenses, bien qu'il tire davantage vers le cassis et les agrumes.",
+   "c06": "Profil fruité complexe et moderne convenant bien au dry hop, mais orienté agrumes doux et noix de coco plutôt que vin blanc.",
+   "c04": "Apporte des notes fruitées intéressantes et des fruits de la passion compatibles, mais avec un fond plus noble et herbacé.",
+   "c09": "Partage un bel équilibre fruité en houblonnage à cru, mais reste dominé par la pêche, le pin et les agrumes classiques.",
+   "c20": "Riche en thiols pour la biotransformation en fermentation active, mais son profil penche nettement vers le pamplemousse floral plutôt que le sauvignon.",
+   "c17": "Offre un profil fruité atypique et frais en fermentation, bien qu'il s'éloigne du vin blanc avec des notes herbacées et épicées."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

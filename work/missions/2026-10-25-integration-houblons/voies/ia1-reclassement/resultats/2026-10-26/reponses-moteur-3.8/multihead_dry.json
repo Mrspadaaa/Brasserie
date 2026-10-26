@@ -1,0 +1,46 @@
+{
+ "casId": "multihead@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "59587a82ce04fb75",
+ "simule": false,
+ "appel": 67,
+ "http": 200,
+ "latenceMs": 6433,
+ "finishReason": "STOP",
+ "jetonsEntree": 3698,
+ "jetonsSortie": 564,
+ "coutMicroChf": 12222,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Identique génétiquement (Medusa étant l'autre nom de Multihead), il partage les mêmes notes d'agrumes, pêche et melon avec un profil néomexicanus identique.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Offre précisément le triptyque agrumes, goyave/fruits tropicaux et pêche, idéal pour reproduire l'empreinte aromatique recherchée en fermentation active.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Son alliance classique de pêche, fruits tropicaux et agrumes restituera superbement le profil en dry hop, avec une intensité aromatique plus affirmée.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Partage les notes majeures de pêche, agrumes et fruits tropicaux, bien que son côté dank et sa puissance soient plus marqués.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Apporte la douceur de la pêche et du fruit de la passion avec des agrumes, malgré une pointe florale plus prononcée.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Propose une belle synergie mangue et agrumes avec un taux de myrcène très proche, mais apporte une touche dank et piquante.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Excellente alternative pour les agrumes et fruits tropicaux percutants en dry hop, sans toutefois la rondeur spécifique de la pêche.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Ce mélange axé agrumes et fruits tropicaux fonctionnera très bien en fermentation active, malgré l'absence de descripteur pêche explicite.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Partage les agrumes, les fruits tropicaux et un taux de myrcène équivalent, mais tire davantage vers le citron vert et la fraîcheur mojito.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Apporte la rondeur de l'abricot et des fruits exotiques avec des agrumes, complétée par une touche miellée et florale.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c10",
+   "c17",
+   "c14",
+   "c19",
+   "c08",
+   "c01",
+   "c04",
+   "c16",
+   "c05",
+   "c02"
+  ],
+  "phrases": {
+   "c10": "Identique génétiquement (Medusa étant l'autre nom de Multihead), il partage les mêmes notes d'agrumes, pêche et melon avec un profil néomexicanus identique.",
+   "c17": "Offre précisément le triptyque agrumes, goyave/fruits tropicaux et pêche, idéal pour reproduire l'empreinte aromatique recherchée en fermentation active.",
+   "c14": "Son alliance classique de pêche, fruits tropicaux et agrumes restituera superbement le profil en dry hop, avec une intensité aromatique plus affirmée.",
+   "c19": "Partage les notes majeures de pêche, agrumes et fruits tropicaux, bien que son côté dank et sa puissance soient plus marqués.",
+   "c08": "Apporte la douceur de la pêche et du fruit de la passion avec des agrumes, malgré une pointe florale plus prononcée.",
+   "c01": "Propose une belle synergie mangue et agrumes avec un taux de myrcène très proche, mais apporte une touche dank et piquante.",
+   "c04": "Excellente alternative pour les agrumes et fruits tropicaux percutants en dry hop, sans toutefois la rondeur spécifique de la pêche.",
+   "c16": "Ce mélange axé agrumes et fruits tropicaux fonctionnera très bien en fermentation active, malgré l'absence de descripteur pêche explicite.",
+   "c05": "Partage les agrumes, les fruits tropicaux et un taux de myrcène équivalent, mais tire davantage vers le citron vert et la fraîcheur mojito.",
+   "c02": "Apporte la rondeur de l'abricot et des fruits exotiques avec des agrumes, complétée par une touche miellée et florale."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

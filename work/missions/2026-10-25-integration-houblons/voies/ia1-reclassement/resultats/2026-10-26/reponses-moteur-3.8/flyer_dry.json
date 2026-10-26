@@ -1,0 +1,46 @@
+{
+ "casId": "flyer@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "8ca91a3d354c12de",
+ "simule": false,
+ "appel": 73,
+ "http": 200,
+ "latenceMs": 7159,
+ "finishReason": "STOP",
+ "jetonsEntree": 3917,
+ "jetonsSortie": 574,
+ "coutMicroChf": 12726,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage le profil résineux, épicé et agrumes du Flyer, mais son intensité en huiles et ses thiols forts le rendront bien plus éclatant.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Rejoint parfaitement les notes d'agrumes et de réglisse caractéristiques de Flyer, avec toutefois un côté foin et herbacé plus prononcé.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Également d'origine britannique, il reproduit bien le tandem agrumes et épices, tout en apportant des touches de fruits du verger supplémentaires.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Offre une combinaison directe d'épices et d'agrumes très proche du Flyer, bien qu'il soit dépourvu des notes de caramel et de réglisse.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Apporte des agrumes, des épices et des notes anisées rappelant la réglisse, mais s'avère plus floral et poivré en fermentation active.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Autre variété anglaise offrant les facettes épicées, résineuses et maltées-chocolatées proches du caramel, mais sans la fraîcheur des agrumes.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Capture intensément l'axe résine et agrumes du Flyer, mais développe un caractère dank et cannabis beaucoup plus lourd en dry hopping.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Propose une base épicée, résineuse et très portée sur les agrumes, mais glisse davantage vers la pêche et les fruits sucrés.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Combine pin résineux, épices et agrumes vifs, mais apporte une touche de fruits tropicaux absente du profil plus terrien du Flyer.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Reproduit fidèlement la facette réglisse et les épices chaudes, mais manque nettement du bouquet d'agrumes doux du houblon d'origine.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c20",
+   "c06",
+   "c07",
+   "c17",
+   "c04",
+   "c19",
+   "c08",
+   "c16",
+   "c14"
+  ],
+  "phrases": {
+   "c01": "Partage le profil résineux, épicé et agrumes du Flyer, mais son intensité en huiles et ses thiols forts le rendront bien plus éclatant.",
+   "c20": "Rejoint parfaitement les notes d'agrumes et de réglisse caractéristiques de Flyer, avec toutefois un côté foin et herbacé plus prononcé.",
+   "c06": "Également d'origine britannique, il reproduit bien le tandem agrumes et épices, tout en apportant des touches de fruits du verger supplémentaires.",
+   "c07": "Offre une combinaison directe d'épices et d'agrumes très proche du Flyer, bien qu'il soit dépourvu des notes de caramel et de réglisse.",
+   "c17": "Apporte des agrumes, des épices et des notes anisées rappelant la réglisse, mais s'avère plus floral et poivré en fermentation active.",
+   "c04": "Autre variété anglaise offrant les facettes épicées, résineuses et maltées-chocolatées proches du caramel, mais sans la fraîcheur des agrumes.",
+   "c19": "Capture intensément l'axe résine et agrumes du Flyer, mais développe un caractère dank et cannabis beaucoup plus lourd en dry hopping.",
+   "c08": "Propose une base épicée, résineuse et très portée sur les agrumes, mais glisse davantage vers la pêche et les fruits sucrés.",
+   "c16": "Combine pin résineux, épices et agrumes vifs, mais apporte une touche de fruits tropicaux absente du profil plus terrien du Flyer.",
+   "c14": "Reproduit fidèlement la facette réglisse et les épices chaudes, mais manque nettement du bouquet d'agrumes doux du houblon d'origine."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

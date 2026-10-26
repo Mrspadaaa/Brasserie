@@ -1,0 +1,46 @@
+{
+ "casId": "nelson-sauvin@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "5bb816708a5834eb",
+ "simule": false,
+ "appel": 1,
+ "http": 200,
+ "latenceMs": 6333,
+ "finishReason": "STOP",
+ "jetonsEntree": 3897,
+ "jetonsSortie": 542,
+ "coutMicroChf": 12389,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Partage les arômes clés de vin blanc et de groseille à maquereau typiques du Nelson, malgré un volume d'huile plus modeste.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Évoque directement le profil vin blanc et fruité recherché, tout en apportant une touche de poire plus marquée.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Origine néo-zélandaise offrant une belle dimension fruitée et tropicale en fermentation active, mais plus orientée sur les zestes d'agrumes.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Apporte un fruité intense et doux adapté au dry hop, bien qu'il tire davantage sur la pêche que le raisin blanc.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Sa forte teneur en thiols maximise la biotransformation fruitée, mais son profil est nettement plus dank et alliacé.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Riche en thiols pour libérer des arômes tropicaux en fermentation, compensant un profil aromatique plus résineux et épicé.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Offre des notes fraîches de melon et d'agrumes assez douces, mais sans l'intensité vineuse ni la puissance thiolé du Nelson.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Terroir néo-zélandais commun avec un profil d'huiles similaire, mais dominé par le poivre et les agrumes plutôt que le raisin.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Propose une facette fruitée melon et agrumes intéressante, mais reste un profil amérisant allemand beaucoup moins expressif en biotransformation.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Composition en huiles assez proche, mais ses notes très épicées et classiques manquent cruellement de l'éclat fruité et vineux initial.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c09",
+   "c17",
+   "c18",
+   "c12",
+   "c07",
+   "c20",
+   "c11",
+   "c06",
+   "c02",
+   "c01"
+  ],
+  "phrases": {
+   "c09": "Partage les arômes clés de vin blanc et de groseille à maquereau typiques du Nelson, malgré un volume d'huile plus modeste.",
+   "c17": "Évoque directement le profil vin blanc et fruité recherché, tout en apportant une touche de poire plus marquée.",
+   "c18": "Origine néo-zélandaise offrant une belle dimension fruitée et tropicale en fermentation active, mais plus orientée sur les zestes d'agrumes.",
+   "c12": "Apporte un fruité intense et doux adapté au dry hop, bien qu'il tire davantage sur la pêche que le raisin blanc.",
+   "c07": "Sa forte teneur en thiols maximise la biotransformation fruitée, mais son profil est nettement plus dank et alliacé.",
+   "c20": "Riche en thiols pour libérer des arômes tropicaux en fermentation, compensant un profil aromatique plus résineux et épicé.",
+   "c11": "Offre des notes fraîches de melon et d'agrumes assez douces, mais sans l'intensité vineuse ni la puissance thiolé du Nelson.",
+   "c06": "Terroir néo-zélandais commun avec un profil d'huiles similaire, mais dominé par le poivre et les agrumes plutôt que le raisin.",
+   "c02": "Propose une facette fruitée melon et agrumes intéressante, mais reste un profil amérisant allemand beaucoup moins expressif en biotransformation.",
+   "c01": "Composition en huiles assez proche, mais ses notes très épicées et classiques manquent cruellement de l'éclat fruité et vineux initial."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

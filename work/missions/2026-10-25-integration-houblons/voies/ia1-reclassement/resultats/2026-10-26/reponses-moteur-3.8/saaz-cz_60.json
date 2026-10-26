@@ -1,0 +1,46 @@
+{
+ "casId": "saaz-cz@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "42889ef1645ed835",
+ "simule": false,
+ "appel": 14,
+ "http": 200,
+ "latenceMs": 5946,
+ "finishReason": "STOP",
+ "jetonsEntree": 3744,
+ "jetonsSortie": 577,
+ "coutMicroChf": 12430,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Descendant direct du Saaz avec un taux d'acides alpha et de cohumulone quasi identiques, apportant une amertume tout aussi douce.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Variété noble classique offrant des alpha et un ratio de cohumulone très proches, garantissant une amertume noble et propre à l'ébullition.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Profil analytique très semblable avec un faible taux d'alpha et de cohumulone, délivrant une amertume fine typique des lagers traditionnelles.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Issu de la même lignée noble, il présente des taux d'alpha et de cohumulone presque parfaits pour imiter l'amertume du Saaz.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Excellente alternative amérisante noble avec une teneur en acides alpha et cohumulone assurant une amertume modérée et sans astringence.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Teneur en alpha et cohumulone très similaire, procurant une amertume délicate parfaitement adaptée aux styles exigeant la pureté du Saaz.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Même plage d'acides alpha très basse et cohumulone modérée pour une amertume d'une grande finesse, bien que légèrement plus ronde.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Bien que plus riche en résines, sa cohumulone basse permet d'obtenir une amertume très propre en ajustant légèrement le grammage.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Taux d'acides alpha et de cohumulone très comparables, idéal pour une amertume neutre et douce à 60 minutes de cuisson.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Teneur en acides alpha comparable au Saaz pour doser facilement l'amertume, même si le manque de données sur la cohumulone invite à la prudence.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c03",
+   "c05",
+   "c10",
+   "c20",
+   "c06",
+   "c12",
+   "c14",
+   "c02",
+   "c11",
+   "c01"
+  ],
+  "phrases": {
+   "c03": "Descendant direct du Saaz avec un taux d'acides alpha et de cohumulone quasi identiques, apportant une amertume tout aussi douce.",
+   "c05": "Variété noble classique offrant des alpha et un ratio de cohumulone très proches, garantissant une amertume noble et propre à l'ébullition.",
+   "c10": "Profil analytique très semblable avec un faible taux d'alpha et de cohumulone, délivrant une amertume fine typique des lagers traditionnelles.",
+   "c20": "Issu de la même lignée noble, il présente des taux d'alpha et de cohumulone presque parfaits pour imiter l'amertume du Saaz.",
+   "c06": "Excellente alternative amérisante noble avec une teneur en acides alpha et cohumulone assurant une amertume modérée et sans astringence.",
+   "c12": "Teneur en alpha et cohumulone très similaire, procurant une amertume délicate parfaitement adaptée aux styles exigeant la pureté du Saaz.",
+   "c14": "Même plage d'acides alpha très basse et cohumulone modérée pour une amertume d'une grande finesse, bien que légèrement plus ronde.",
+   "c02": "Bien que plus riche en résines, sa cohumulone basse permet d'obtenir une amertume très propre en ajustant légèrement le grammage.",
+   "c11": "Taux d'acides alpha et de cohumulone très comparables, idéal pour une amertume neutre et douce à 60 minutes de cuisson.",
+   "c01": "Teneur en acides alpha comparable au Saaz pour doser facilement l'amertume, même si le manque de données sur la cohumulone invite à la prudence."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

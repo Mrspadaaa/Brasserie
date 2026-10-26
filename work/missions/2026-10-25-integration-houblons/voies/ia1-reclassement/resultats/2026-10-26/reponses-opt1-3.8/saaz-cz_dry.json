@@ -1,0 +1,46 @@
+{
+ "casId": "saaz-cz@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "51e827a01284d4e1",
+ "simule": false,
+ "appel": 85,
+ "http": 200,
+ "latenceMs": 5535,
+ "finishReason": "STOP",
+ "jetonsEntree": 3763,
+ "jetonsSortie": 538,
+ "coutMicroChf": 12100,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Dérivé direct du Saaz avec un profil aromatique terreux, herbacé et floral identique et un taux de farnésène parfaitement équivalent.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Version américaine du Saaz, très proche sur le caractère noble et terreux, avec une fraction de farnésène bien préservée.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Variété noble partageant les mêmes notes terreuses, florales et herbacées, soutenue par un ratio d'huiles très similaire, notamment en farnésène.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Hybride issu du Saaz offrant le même profil noble, épicé et floral avec une teneur en farnésène presque identique en dry hop.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Profil aromatique noble, floral et terreux extrêmement fidèle au Saaz, bien qu'il apporte une touche fruitée supplémentaire.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Excellente correspondance aromatique sur l'herbacé, le floral et le terreux noble, malgré un manque de données précises sur les huiles.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Apporte la finesse noble, florale et terreuse recherchée en fermentation active, avec seulement une légère nuance de lavande.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Noble classique très herbe coupée et épicé qui s'intègre bien, bien que son taux de farnésène soit plus modeste.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Partage le caractère noble, terreux et doux, mais s'avère un peu plus résineux et pauvre en farnésène.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Taux de farnésène très proche et notes nobles herbacées et florales, mais plus fruité et intense en huiles totales.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c03",
+   "c14",
+   "c02",
+   "c17",
+   "c01",
+   "c07",
+   "c04",
+   "c06",
+   "c08",
+   "c19"
+  ],
+  "phrases": {
+   "c03": "Dérivé direct du Saaz avec un profil aromatique terreux, herbacé et floral identique et un taux de farnésène parfaitement équivalent.",
+   "c14": "Version américaine du Saaz, très proche sur le caractère noble et terreux, avec une fraction de farnésène bien préservée.",
+   "c02": "Variété noble partageant les mêmes notes terreuses, florales et herbacées, soutenue par un ratio d'huiles très similaire, notamment en farnésène.",
+   "c17": "Hybride issu du Saaz offrant le même profil noble, épicé et floral avec une teneur en farnésène presque identique en dry hop.",
+   "c01": "Profil aromatique noble, floral et terreux extrêmement fidèle au Saaz, bien qu'il apporte une touche fruitée supplémentaire.",
+   "c07": "Excellente correspondance aromatique sur l'herbacé, le floral et le terreux noble, malgré un manque de données précises sur les huiles.",
+   "c04": "Apporte la finesse noble, florale et terreuse recherchée en fermentation active, avec seulement une légère nuance de lavande.",
+   "c06": "Noble classique très herbe coupée et épicé qui s'intègre bien, bien que son taux de farnésène soit plus modeste.",
+   "c08": "Partage le caractère noble, terreux et doux, mais s'avère un peu plus résineux et pauvre en farnésène.",
+   "c19": "Taux de farnésène très proche et notes nobles herbacées et florales, mais plus fruité et intense en huiles totales."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

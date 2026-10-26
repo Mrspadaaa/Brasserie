@@ -1,0 +1,46 @@
+{
+ "casId": "idaho-gem@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "1aff815dcfbaf4b1",
+ "simule": false,
+ "appel": 34,
+ "http": 200,
+ "latenceMs": 4514,
+ "finishReason": "STOP",
+ "jetonsEntree": 3750,
+ "jetonsSortie": 434,
+ "coutMicroChf": 11100,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c06\", \"phrase\": \"Taux d'alpha très proche et cohumulone élevée similaire, offrant un profil d'amertume mordant équivalent à 60 minutes.\"},\n    {\"id\": \"c02\", \"phrase\": \"Profil amérisant idéal avec une cohumulone élevée comparable et des acides alpha similaires pour l'ébullition.\"},\n    {\"id\": \"c19\", \"phrase\": \"Teneur en alpha et cohumulone élevée très proches, garantissant une intensité d'amertume comparable.\"},\n    {\"id\": \"c09\", \"phrase\": \"Acides alpha et bêta identiques, bien que sa cohumulone soit un peu plus modérée que celle d'Idaho Gem.\"},\n    {\"id\": \"c18\", \"phrase\": \"Taux d'alpha parfait pour l'ébullition avec une cohumulone assez haute, bien que ses bêta soient plus élevés.\"},\n    {\"id\": \"c11\", \"phrase\": \"Alpha parfaitement dans la même plage avec une cohumulone convenable, bien que légèrement plus douce en amertume.\"},\n    {\"id\": \"c13\", \"phrase\": \"Même niveau d'acides alpha et bêta, produisant une amertume un peu plus propre car moins riche en cohumulone.\"},\n    {\"id\": \"c04\", \"phrase\": \"Cohumulone et alpha assez proches pour l'amertume, bien que le potentiel en alpha soit légèrement supérieur.\"},\n    {\"id\": \"c03\", \"phrase\": \"Très similaire à CTZ, il offre une amertume comparable malgré des acides alpha potentiellement un peu plus hauts.\"},\n    {\"id\": \"c10\", \"phrase\": \"Taux d'alpha identiques permettant un calcul d'amertume direct, mais sa cohumulone bien plus basse donnera plus de rondeur.\"}\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c06",
+   "c02",
+   "c19",
+   "c09",
+   "c18",
+   "c11",
+   "c13",
+   "c04",
+   "c03",
+   "c10"
+  ],
+  "phrases": {
+   "c06": "Taux d'alpha très proche et cohumulone élevée similaire, offrant un profil d'amertume mordant équivalent à 60 minutes.",
+   "c02": "Profil amérisant idéal avec une cohumulone élevée comparable et des acides alpha similaires pour l'ébullition.",
+   "c19": "Teneur en alpha et cohumulone élevée très proches, garantissant une intensité d'amertume comparable.",
+   "c09": "Acides alpha et bêta identiques, bien que sa cohumulone soit un peu plus modérée que celle d'Idaho Gem.",
+   "c18": "Taux d'alpha parfait pour l'ébullition avec une cohumulone assez haute, bien que ses bêta soient plus élevés.",
+   "c11": "Alpha parfaitement dans la même plage avec une cohumulone convenable, bien que légèrement plus douce en amertume.",
+   "c13": "Même niveau d'acides alpha et bêta, produisant une amertume un peu plus propre car moins riche en cohumulone.",
+   "c04": "Cohumulone et alpha assez proches pour l'amertume, bien que le potentiel en alpha soit légèrement supérieur.",
+   "c03": "Très similaire à CTZ, il offre une amertume comparable malgré des acides alpha potentiellement un peu plus hauts.",
+   "c10": "Taux d'alpha identiques permettant un calcul d'amertume direct, mais sa cohumulone bien plus basse donnera plus de rondeur."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

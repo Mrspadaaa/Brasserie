@@ -1,0 +1,46 @@
+{
+ "casId": "brewers-gold-us@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "c33028ac72b45f2c",
+ "simule": false,
+ "appel": 24,
+ "http": 200,
+ "latenceMs": 5842,
+ "finishReason": "STOP",
+ "jetonsEntree": 3835,
+ "jetonsSortie": 577,
+ "coutMicroChf": 12600,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Proche parent avec des taux d'acides alpha et de cohumulone quasi identiques, offrant un profil d'amertume mordant et similaire à 60 minutes.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Sa cohumulone élevée à 48 % et son taux d'acides alpha équivalent reproduisent fidèlement l'amertume tranchante du Brewer's Gold.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Doté d'une cohumulone marquée et d'un rôle amérisant assumé, il offre une amertume robuste malgré un taux d'alpha légèrement supérieur.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Teneur en acides alpha parfaitement alignée pour l'amertume, bien que l'absence de données sur la cohumulone laisse planer un léger doute.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Usage amérisant avec des alpha comparables, bien que sa cohumulone plus modérée produise une amertume légèrement plus ronde.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Alpha proches et niveau de cohumulone intermédiaire, fournissant une amertume franche avec des ajustements de dosage minimes.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Amérisant puissant avec une cohumulone approchante, mais nécessitant de réduire le grammage en raison de ses acides alpha nettement plus élevés.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Taux d'alpha très proche permettant un dosage facile, même si sa cohumulone inférieure apporte une amertume un peu plus douce.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Plage d'alpha très similaire pour un calcul d'IBU direct, mais sa faible cohumulone donnera une amertume plus discrète et noble.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Vrai profil amérisant adapté à l'ébullition longue, mais ses alpha plus hauts et sa cohumulone basse adoucissent l'impact par rapport à l'original.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c11",
+   "c19",
+   "c01",
+   "c12",
+   "c14",
+   "c03",
+   "c07",
+   "c04",
+   "c05"
+  ],
+  "phrases": {
+   "c02": "Proche parent avec des taux d'acides alpha et de cohumulone quasi identiques, offrant un profil d'amertume mordant et similaire à 60 minutes.",
+   "c11": "Sa cohumulone élevée à 48 % et son taux d'acides alpha équivalent reproduisent fidèlement l'amertume tranchante du Brewer's Gold.",
+   "c19": "Doté d'une cohumulone marquée et d'un rôle amérisant assumé, il offre une amertume robuste malgré un taux d'alpha légèrement supérieur.",
+   "c01": "Teneur en acides alpha parfaitement alignée pour l'amertume, bien que l'absence de données sur la cohumulone laisse planer un léger doute.",
+   "c12": "Usage amérisant avec des alpha comparables, bien que sa cohumulone plus modérée produise une amertume légèrement plus ronde.",
+   "c14": "Alpha proches et niveau de cohumulone intermédiaire, fournissant une amertume franche avec des ajustements de dosage minimes.",
+   "c03": "Amérisant puissant avec une cohumulone approchante, mais nécessitant de réduire le grammage en raison de ses acides alpha nettement plus élevés.",
+   "c07": "Taux d'alpha très proche permettant un dosage facile, même si sa cohumulone inférieure apporte une amertume un peu plus douce.",
+   "c04": "Plage d'alpha très similaire pour un calcul d'IBU direct, mais sa faible cohumulone donnera une amertume plus discrète et noble.",
+   "c05": "Vrai profil amérisant adapté à l'ébullition longue, mais ses alpha plus hauts et sa cohumulone basse adoucissent l'impact par rapport à l'original."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

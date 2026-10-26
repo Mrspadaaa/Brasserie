@@ -1,0 +1,46 @@
+{
+ "casId": "mosaic@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "40de2f1fcc67025a",
+ "simule": false,
+ "appel": 82,
+ "http": 200,
+ "latenceMs": 6812,
+ "finishReason": "STOP",
+ "jetonsEntree": 4036,
+ "jetonsSortie": 558,
+ "coutMicroChf": 12799,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Parent génétique de Mosaic, Simcoe reproduit idéalement le mélange complexe de baies, fruits tropicaux, chewing-gum et pin, malgré une touche plus terreuse.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Parfait pour la biotransformation avec son côté papaye, cassis et agrumes résineux, bien qu'il tire davantage vers le thé noir et l'abricot.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Un profil d'huiles très proche avec des notes communes de rose, mandarine et fruits tropicaux, mais plus axé sur la pastèque.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Apporte la charge intense de mangue, papaye et agrumes nécessaire en fermentation active, tout en manquant des facettes myrtille et résineuse.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Offre des arômes fruités rares avec ce cassis proche de la myrtille de Mosaic, quoiqu'un peu plus floral et épicé.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Ce mélange moderne restitue bien les fruits tropicaux, les agrumes et le pin, mais avec moins de profondeur sur les petits fruits.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Un assemblage dual très fruité qui coche mandarine, fruits tropicaux et pin, restant toutefois plus sage et agrumes que Mosaic.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Ses notes de fruits tropicaux et de résine fonctionnent en fermentation active, mais son profil litchi et clou de girofle s'éloigne.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Une énorme charge d'huiles délivrant agrumes, pin et fruits tropicaux, tirant cependant très fort vers l'ananas pur.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Riche en thiols pour le dry hop avec de belles mandarines, mais sans la complexité de baies et de fruits tropicaux de Mosaic.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c03",
+   "c01",
+   "c06",
+   "c02",
+   "c10",
+   "c08",
+   "c05",
+   "c16",
+   "c07",
+   "c04"
+  ],
+  "phrases": {
+   "c03": "Parent génétique de Mosaic, Simcoe reproduit idéalement le mélange complexe de baies, fruits tropicaux, chewing-gum et pin, malgré une touche plus terreuse.",
+   "c01": "Parfait pour la biotransformation avec son côté papaye, cassis et agrumes résineux, bien qu'il tire davantage vers le thé noir et l'abricot.",
+   "c06": "Un profil d'huiles très proche avec des notes communes de rose, mandarine et fruits tropicaux, mais plus axé sur la pastèque.",
+   "c02": "Apporte la charge intense de mangue, papaye et agrumes nécessaire en fermentation active, tout en manquant des facettes myrtille et résineuse.",
+   "c10": "Offre des arômes fruités rares avec ce cassis proche de la myrtille de Mosaic, quoiqu'un peu plus floral et épicé.",
+   "c08": "Ce mélange moderne restitue bien les fruits tropicaux, les agrumes et le pin, mais avec moins de profondeur sur les petits fruits.",
+   "c05": "Un assemblage dual très fruité qui coche mandarine, fruits tropicaux et pin, restant toutefois plus sage et agrumes que Mosaic.",
+   "c16": "Ses notes de fruits tropicaux et de résine fonctionnent en fermentation active, mais son profil litchi et clou de girofle s'éloigne.",
+   "c07": "Une énorme charge d'huiles délivrant agrumes, pin et fruits tropicaux, tirant cependant très fort vers l'ananas pur.",
+   "c04": "Riche en thiols pour le dry hop avec de belles mandarines, mais sans la complexité de baies et de fruits tropicaux de Mosaic."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

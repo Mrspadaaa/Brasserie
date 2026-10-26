@@ -1,0 +1,46 @@
+{
+ "casId": "nelson-sauvin@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "2c8dbe3fee53b0b2",
+ "simule": false,
+ "appel": 97,
+ "http": 200,
+ "latenceMs": 2453,
+ "finishReason": "STOP",
+ "jetonsEntree": 4025,
+ "jetonsSortie": 505,
+ "coutMicroChf": 3088,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Hallertau Blanc partage la groseille et le vin blanc, mais son profil myrcène est plus haut et l'humulène absent.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"African Queen offre la groseille et une classe thiol forte, mais ajoute des notes dank et épicées plus marquées.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Godiva évoque le vin blanc et la groseille, mais ses acides alpha sont plus faibles et les huiles peu documentées.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Galena possède la groseille à maquereau recherchée, mais son usage aroma cache un profil de cohumulone nettement plus élevé.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Jarrylo intègre des notes de vin blanc, mais son dosage en huiles totales est bien plus lourd et fruité.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Cashmere apporte une complexité fruitée et noix de coco, mais s'éloigne du profil typique de raisin du Nelson.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Summit possède une classe thiol forte, mais ses arômes orientés agrumes et oignon s'éloignent du vin blanc.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Cascade affiche une classe thiol forte et un linalol proche, mais ses notes de pamplemousse dominent le raisin.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Sládek offre un profil fruité intéressant pour un usage aroma, mais manque de la finesse thiolée du sauvignon.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Hallertau Taurus présente un fort taux de linalol, mais ses arômes de chocolat et curry s'opposent au Nelson.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c19",
+   "c03",
+   "c10",
+   "c07",
+   "c06",
+   "c18",
+   "c20",
+   "c04",
+   "c15"
+  ],
+  "phrases": {
+   "c02": "Hallertau Blanc partage la groseille et le vin blanc, mais son profil myrcène est plus haut et l'humulène absent.",
+   "c19": "African Queen offre la groseille et une classe thiol forte, mais ajoute des notes dank et épicées plus marquées.",
+   "c03": "Godiva évoque le vin blanc et la groseille, mais ses acides alpha sont plus faibles et les huiles peu documentées.",
+   "c10": "Galena possède la groseille à maquereau recherchée, mais son usage aroma cache un profil de cohumulone nettement plus élevé.",
+   "c07": "Jarrylo intègre des notes de vin blanc, mais son dosage en huiles totales est bien plus lourd et fruité.",
+   "c06": "Cashmere apporte une complexité fruitée et noix de coco, mais s'éloigne du profil typique de raisin du Nelson.",
+   "c18": "Summit possède une classe thiol forte, mais ses arômes orientés agrumes et oignon s'éloignent du vin blanc.",
+   "c20": "Cascade affiche une classe thiol forte et un linalol proche, mais ses notes de pamplemousse dominent le raisin.",
+   "c04": "Sládek offre un profil fruité intéressant pour un usage aroma, mais manque de la finesse thiolée du sauvignon.",
+   "c15": "Hallertau Taurus présente un fort taux de linalol, mais ses arômes de chocolat et curry s'opposent au Nelson."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

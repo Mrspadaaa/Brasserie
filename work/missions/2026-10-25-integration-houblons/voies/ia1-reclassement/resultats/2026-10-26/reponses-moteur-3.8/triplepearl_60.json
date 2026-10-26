@@ -1,0 +1,46 @@
+{
+ "casId": "triplepearl@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "a336d653c22f201b",
+ "simule": false,
+ "appel": 26,
+ "http": 200,
+ "latenceMs": 8024,
+ "finishReason": "STOP",
+ "jetonsEntree": 3700,
+ "jetonsSortie": 557,
+ "coutMicroChf": 12160,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Taux d'alpha et cohumulone très proches pour une amertume similaire, bien que ses huiles soient légèrement plus orientées vers les épices.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Acides alpha et cohumulone quasiment identiques pour un amérisage équivalent, mais son profil d'huiles est un peu plus noble.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Niveau d'alpha équivalent apportant une amertume nette, avec une cohumulone modérée bien alignée sur la plage moyenne de TriplePearl.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Parfait pour l'ébullition avec un taux d'alpha quasi superposable, bien que sa cohumulone soit un peu plus resserrée.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Taux d'acides alpha similaire garantissant une amertume douce, malgré un potentiel aromatique résiduel plus floral que TriplePearl.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Plage d'alpha très compatible et cohumulone modérée assurant une amertume propre, même si sa teneur en farnésène est supérieure.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Teneur en alpha idéale pour remplacer TriplePearl à 60 minutes, malgré des données sur la cohumulone manquantes.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Fourchette d'alpha et cohumulone comparables pour une amertume fine, bien que ce houblon soit souvent réservé aux ajouts tardifs.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Teneur en alpha adaptée à un premier moût ou amérisage direct, avec une cohumulone basse donnant une amertume plus douce.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Cohumulone et profil amérisant très proches de la moyenne de TriplePearl, mais avec un niveau d'alpha légèrement plus élevé.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c10",
+   "c16",
+   "c09",
+   "c06",
+   "c18",
+   "c08",
+   "c04",
+   "c02",
+   "c12",
+   "c20"
+  ],
+  "phrases": {
+   "c10": "Taux d'alpha et cohumulone très proches pour une amertume similaire, bien que ses huiles soient légèrement plus orientées vers les épices.",
+   "c16": "Acides alpha et cohumulone quasiment identiques pour un amérisage équivalent, mais son profil d'huiles est un peu plus noble.",
+   "c09": "Niveau d'alpha équivalent apportant une amertume nette, avec une cohumulone modérée bien alignée sur la plage moyenne de TriplePearl.",
+   "c06": "Parfait pour l'ébullition avec un taux d'alpha quasi superposable, bien que sa cohumulone soit un peu plus resserrée.",
+   "c18": "Taux d'acides alpha similaire garantissant une amertume douce, malgré un potentiel aromatique résiduel plus floral que TriplePearl.",
+   "c08": "Plage d'alpha très compatible et cohumulone modérée assurant une amertume propre, même si sa teneur en farnésène est supérieure.",
+   "c04": "Teneur en alpha idéale pour remplacer TriplePearl à 60 minutes, malgré des données sur la cohumulone manquantes.",
+   "c02": "Fourchette d'alpha et cohumulone comparables pour une amertume fine, bien que ce houblon soit souvent réservé aux ajouts tardifs.",
+   "c12": "Teneur en alpha adaptée à un premier moût ou amérisage direct, avec une cohumulone basse donnant une amertume plus douce.",
+   "c20": "Cohumulone et profil amérisant très proches de la moyenne de TriplePearl, mais avec un niveau d'alpha légèrement plus élevé."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

@@ -1,0 +1,46 @@
+{
+ "casId": "hallertau-taurus@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "70c3778303e1d6c0",
+ "simule": false,
+ "appel": 19,
+ "http": 200,
+ "latenceMs": 7858,
+ "finishReason": "STOP",
+ "jetonsEntree": 3777,
+ "jetonsSortie": 555,
+ "coutMicroChf": 12285,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Partage les notes rares de chocolat et d'épices avec un profil d'huiles très proche, malgré un accent floral et résineux supplémentaire.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Retrouve les facettes épicées atypiques de poivre et curry du Taurus, bien qu'il soit nettement plus résineux et piquant en dry hop.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Excellente proximité sur le profil poivré et le ratio humulène/caryophyllène, avec toutefois un apport d'agrumes et d'anis plus frais.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Offre le même équilibre terreux et épicé, mais apporte une touche dank et fruitée plus moderne en fermentation active.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Apporte une complexité épicée rappelant le clou de girofle et le tabac avec des huiles nobles similaires, mais reste plus doux.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Rejoint le Taurus sur la gourmandise sombre (caramel, réglisse) et le côté épicé, avec cependant moins de volume d'huiles.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Profil d'huiles remarquablement similaire et côté épicé présent, mais développe en cuve des arômes d'agrumes et de pêche absents du Taurus.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Très bon relais sur les tonalités épicées et herbacées, mais tire vers des notes d'agrumes inconnues chez le Taurus.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Retrouve les aspects terreux et épicés caractéristiques, mais s'avère beaucoup plus noble et nettement moins expressif en fermentation.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Partage le poivre noir et le côté terreux lourd, mais dérive vers un profil alliacé et dank beaucoup plus marqué.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c04",
+   "c16",
+   "c03",
+   "c15",
+   "c20",
+   "c19",
+   "c06",
+   "c01",
+   "c05",
+   "c18"
+  ],
+  "phrases": {
+   "c04": "Partage les notes rares de chocolat et d'épices avec un profil d'huiles très proche, malgré un accent floral et résineux supplémentaire.",
+   "c16": "Retrouve les facettes épicées atypiques de poivre et curry du Taurus, bien qu'il soit nettement plus résineux et piquant en dry hop.",
+   "c03": "Excellente proximité sur le profil poivré et le ratio humulène/caryophyllène, avec toutefois un apport d'agrumes et d'anis plus frais.",
+   "c15": "Offre le même équilibre terreux et épicé, mais apporte une touche dank et fruitée plus moderne en fermentation active.",
+   "c20": "Apporte une complexité épicée rappelant le clou de girofle et le tabac avec des huiles nobles similaires, mais reste plus doux.",
+   "c19": "Rejoint le Taurus sur la gourmandise sombre (caramel, réglisse) et le côté épicé, avec cependant moins de volume d'huiles.",
+   "c06": "Profil d'huiles remarquablement similaire et côté épicé présent, mais développe en cuve des arômes d'agrumes et de pêche absents du Taurus.",
+   "c01": "Très bon relais sur les tonalités épicées et herbacées, mais tire vers des notes d'agrumes inconnues chez le Taurus.",
+   "c05": "Retrouve les aspects terreux et épicés caractéristiques, mais s'avère beaucoup plus noble et nettement moins expressif en fermentation.",
+   "c18": "Partage le poivre noir et le côté terreux lourd, mais dérive vers un profil alliacé et dank beaucoup plus marqué."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

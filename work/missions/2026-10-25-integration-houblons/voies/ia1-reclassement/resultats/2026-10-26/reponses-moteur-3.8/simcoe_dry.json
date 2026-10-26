@@ -1,0 +1,46 @@
+{
+ "casId": "simcoe@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "975081b80f800325",
+ "simule": false,
+ "appel": 11,
+ "http": 200,
+ "latenceMs": 6046,
+ "finishReason": "STOP",
+ "jetonsEntree": 4036,
+ "jetonsSortie": 538,
+ "coutMicroChf": 12612,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Descendant partiel du Simcoe, il partage parfaitement son duo résine de pin et fruits tropicaux, avec des notes de myrtille en plus.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Il restitue fidèlement l'équilibre entre pamplemousse, fruits tropicaux, abricot et résine de pin typique du Simcoe en dry hop.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Son profil marqué de fruit de la passion et de pin résineux rappelle vivement le côté percutant et fruité du Simcoe.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Ce mélange reproduit fidèlement la trame agrumes, pamplemousse et pin, bien qu'il soit légèrement plus floral et moins terreux.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Il apporte les arômes indispensables de pamplemousse, fruits tropicaux et pin, avec une touche citronnée un peu plus brillante.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Très pertinent en biotransformation grâce au fruit de la passion et au pamplemousse, avec une facette dank plus appuyée.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Il offre le même fond puissant de pamplemousse rose et de résine de pin, complété par des notes florales plus prononcées.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Son alliance de résine, d'agrumes vifs et de fruits tropicaux offre une excellente alternative fruitée et fraîche.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Excellent pour pousser le fruit de la passion et les agrumes en fermentation active, mais moins boisé et résineux que le Simcoe.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Il restitue le caractère résineux et épicé avec des notes d'agrumes franches, bien qu'il manque un peu de fruits tropicaux.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c04",
+   "c01",
+   "c11",
+   "c09",
+   "c12",
+   "c06",
+   "c07",
+   "c03",
+   "c18",
+   "c16"
+  ],
+  "phrases": {
+   "c04": "Descendant partiel du Simcoe, il partage parfaitement son duo résine de pin et fruits tropicaux, avec des notes de myrtille en plus.",
+   "c01": "Il restitue fidèlement l'équilibre entre pamplemousse, fruits tropicaux, abricot et résine de pin typique du Simcoe en dry hop.",
+   "c11": "Son profil marqué de fruit de la passion et de pin résineux rappelle vivement le côté percutant et fruité du Simcoe.",
+   "c09": "Ce mélange reproduit fidèlement la trame agrumes, pamplemousse et pin, bien qu'il soit légèrement plus floral et moins terreux.",
+   "c12": "Il apporte les arômes indispensables de pamplemousse, fruits tropicaux et pin, avec une touche citronnée un peu plus brillante.",
+   "c06": "Très pertinent en biotransformation grâce au fruit de la passion et au pamplemousse, avec une facette dank plus appuyée.",
+   "c07": "Il offre le même fond puissant de pamplemousse rose et de résine de pin, complété par des notes florales plus prononcées.",
+   "c03": "Son alliance de résine, d'agrumes vifs et de fruits tropicaux offre une excellente alternative fruitée et fraîche.",
+   "c18": "Excellent pour pousser le fruit de la passion et les agrumes en fermentation active, mais moins boisé et résineux que le Simcoe.",
+   "c16": "Il restitue le caractère résineux et épicé avec des notes d'agrumes franches, bien qu'il manque un peu de fruits tropicaux."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

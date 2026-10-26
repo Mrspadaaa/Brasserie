@@ -1,0 +1,46 @@
+{
+ "casId": "santiam@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "17d0e73879b75ef9",
+ "simule": false,
+ "appel": 50,
+ "http": 200,
+ "latenceMs": 7073,
+ "finishReason": "STOP",
+ "jetonsEntree": 3642,
+ "jetonsSortie": 541,
+ "coutMicroChf": 11901,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Teneurs en alpha et cohumulone quasi identiques au Santiam, garantissant une amertume très douce et propre à 60 minutes.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Son taux d'alpha équivalent et sa cohumulone basse reproduisent fidèlement le profil d'amertume sans agressivité recherché ici.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Parfait pour l'ébullition avec des acides alpha et une cohumulone très proches, apportant une base amère similaire.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Taux d'acides alpha et de cohumulone parfaitement alignés avec le Santiam, offrant une amertume nette et délicate.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Profil analytique très voisin avec une cohumulone basse, idéale pour une amertume fine bien que les alphas puissent être légèrement supérieurs.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Fourchette d'acides alpha comparable pour une amertume douce, même si la cohumulone peut monter un peu plus haut.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Taux d'alpha très proche et cohumulone modérée qui permettront de remplacer le Santiam à 60 minutes sans déséquilibrer la bière.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Bonne amertume noble et cohumulone contenue, mais ses alphas potentiellement plus élevés nécessitent d'ajuster légèrement les quantités.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Peut fournir une amertume propre et similaire, bien que sa variabilité en acides alpha impose de recalculer le dosage.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Amérisant classique à cohumulone modérée pour une amertume propre, mais ses alphas bien plus élevés obligeront à réduire le grammage.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c09",
+   "c04",
+   "c12",
+   "c02",
+   "c10",
+   "c19",
+   "c15",
+   "c03",
+   "c20",
+   "c14"
+  ],
+  "phrases": {
+   "c09": "Teneurs en alpha et cohumulone quasi identiques au Santiam, garantissant une amertume très douce et propre à 60 minutes.",
+   "c04": "Son taux d'alpha équivalent et sa cohumulone basse reproduisent fidèlement le profil d'amertume sans agressivité recherché ici.",
+   "c12": "Parfait pour l'ébullition avec des acides alpha et une cohumulone très proches, apportant une base amère similaire.",
+   "c02": "Taux d'acides alpha et de cohumulone parfaitement alignés avec le Santiam, offrant une amertume nette et délicate.",
+   "c10": "Profil analytique très voisin avec une cohumulone basse, idéale pour une amertume fine bien que les alphas puissent être légèrement supérieurs.",
+   "c19": "Fourchette d'acides alpha comparable pour une amertume douce, même si la cohumulone peut monter un peu plus haut.",
+   "c15": "Taux d'alpha très proche et cohumulone modérée qui permettront de remplacer le Santiam à 60 minutes sans déséquilibrer la bière.",
+   "c03": "Bonne amertume noble et cohumulone contenue, mais ses alphas potentiellement plus élevés nécessitent d'ajuster légèrement les quantités.",
+   "c20": "Peut fournir une amertume propre et similaire, bien que sa variabilité en acides alpha impose de recalculer le dosage.",
+   "c14": "Amérisant classique à cohumulone modérée pour une amertume propre, mais ses alphas bien plus élevés obligeront à réduire le grammage."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

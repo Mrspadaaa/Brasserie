@@ -1,0 +1,46 @@
+{
+ "casId": "cascade@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "d36f1a2d0a809366",
+ "simule": false,
+ "appel": 16,
+ "http": 200,
+ "latenceMs": 6000,
+ "finishReason": "STOP",
+ "jetonsEntree": 3653,
+ "jetonsSortie": 549,
+ "coutMicroChf": 11997,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Taux d'acides alpha et cohumulone très proches, apportant une amertume d'intensité et de finesse parfaitement comparable à 60 minutes.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Cohumulone similaire assurant une qualité d'amertume comparable, avec un taux d'alpha très proche demandant peu d'ajustement de dosage.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Teneur en alpha-acides très similaire permettant un remplacement direct sans recalcul complexe du profil d'amertume.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Cohumulone alignée garantissant une amertume nette et propre, bien que les acides alpha plus élevés imposent de réduire la dose.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Niveau de cohumulone très équivalent pour une amertume similaire, malgré un potentiel amérisant en alpha légèrement supérieur.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Son ratio de cohumulone correspond bien à l'amertume du Cascade, mais son taux d'alpha nécessite d'ajuster le grammage.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Taux de cohumulone identique offrant un profil d'amertume semblable, bien que ses acides alpha plus forts obligent à sous-doser.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Plage de cohumulone identique pour une amertume franche, mais une concentration en alpha bien plus élevée demandant de réduire la quantité.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Cohumulone proche pour une amertume équivalente à l'ébullition, mais demande de diviser la dose en raison d'alphas élevés.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Même profil de cohumulone pour une amertume comparable, nécessitant simplement de recalculer les IBU à cause d'alphas plus puissants.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c13",
+   "c17",
+   "c05",
+   "c19",
+   "c15",
+   "c04",
+   "c18",
+   "c03",
+   "c06",
+   "c08"
+  ],
+  "phrases": {
+   "c13": "Taux d'acides alpha et cohumulone très proches, apportant une amertume d'intensité et de finesse parfaitement comparable à 60 minutes.",
+   "c17": "Cohumulone similaire assurant une qualité d'amertume comparable, avec un taux d'alpha très proche demandant peu d'ajustement de dosage.",
+   "c05": "Teneur en alpha-acides très similaire permettant un remplacement direct sans recalcul complexe du profil d'amertume.",
+   "c19": "Cohumulone alignée garantissant une amertume nette et propre, bien que les acides alpha plus élevés imposent de réduire la dose.",
+   "c15": "Niveau de cohumulone très équivalent pour une amertume similaire, malgré un potentiel amérisant en alpha légèrement supérieur.",
+   "c04": "Son ratio de cohumulone correspond bien à l'amertume du Cascade, mais son taux d'alpha nécessite d'ajuster le grammage.",
+   "c18": "Taux de cohumulone identique offrant un profil d'amertume semblable, bien que ses acides alpha plus forts obligent à sous-doser.",
+   "c03": "Plage de cohumulone identique pour une amertume franche, mais une concentration en alpha bien plus élevée demandant de réduire la quantité.",
+   "c06": "Cohumulone proche pour une amertume équivalente à l'ébullition, mais demande de diviser la dose en raison d'alphas élevés.",
+   "c08": "Même profil de cohumulone pour une amertume comparable, nécessitant simplement de recalculer les IBU à cause d'alphas plus puissants."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

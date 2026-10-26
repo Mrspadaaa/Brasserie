@@ -1,0 +1,46 @@
+{
+ "casId": "callista@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "1ae069f4d2f81dc4",
+ "simule": false,
+ "appel": 45,
+ "http": 200,
+ "latenceMs": 7384,
+ "finishReason": "STOP",
+ "jetonsEntree": 3736,
+ "jetonsSortie": 560,
+ "coutMicroChf": 12255,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Allemand axé fruits rouges délicats, il partage les notes de fraise, passion et orange avec une structure d'huiles très proche.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Autre variété allemande moderne, elle reproduit parfaitement le profil abricot, orange et mûre, malgré l'absence de note fruit de la passion.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Teneurs en alpha et huiles comparables, il restitue l'association fraise, pêche et fruits tropicaux typique du Callista en fermentation active.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Il apporte la fraise et le fruit de la passion emblématiques du Callista, mais s'avère nettement plus dank et puissant en huiles.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Son niveau élevé de myrcène porte très bien la pêche et le fruit de la passion, tout en étant plus exotique et moins fruits rouges.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Taux d'acides alpha très similaire, il livre les notes d'abricot et pêche du Callista, complétées par des touches de melon plus végétales.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Ce profil délicat partage la pêche et le fruit de la passion avec un alpha très bas, mais amène une touche florale et lavande différente.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Riche en myrcène, il rappelle la poire et les fruits à noyau caractéristiques du Callista, avec un côté bonbon plus prononcé.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Idéal pour ses arômes gourmands de fruits rouges et bonbon, même s'il manque de pêche et d'abricot par rapport au Callista.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Excellente charge aromatique pour le fruit de la passion et la pêche, bien qu'il tire davantage sur les agrumes lourds et tropicaux.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c12",
+   "c18",
+   "c20",
+   "c08",
+   "c06",
+   "c17",
+   "c03",
+   "c05",
+   "c14"
+  ],
+  "phrases": {
+   "c01": "Allemand axé fruits rouges délicats, il partage les notes de fraise, passion et orange avec une structure d'huiles très proche.",
+   "c12": "Autre variété allemande moderne, elle reproduit parfaitement le profil abricot, orange et mûre, malgré l'absence de note fruit de la passion.",
+   "c18": "Teneurs en alpha et huiles comparables, il restitue l'association fraise, pêche et fruits tropicaux typique du Callista en fermentation active.",
+   "c20": "Il apporte la fraise et le fruit de la passion emblématiques du Callista, mais s'avère nettement plus dank et puissant en huiles.",
+   "c08": "Son niveau élevé de myrcène porte très bien la pêche et le fruit de la passion, tout en étant plus exotique et moins fruits rouges.",
+   "c06": "Taux d'acides alpha très similaire, il livre les notes d'abricot et pêche du Callista, complétées par des touches de melon plus végétales.",
+   "c17": "Ce profil délicat partage la pêche et le fruit de la passion avec un alpha très bas, mais amène une touche florale et lavande différente.",
+   "c03": "Riche en myrcène, il rappelle la poire et les fruits à noyau caractéristiques du Callista, avec un côté bonbon plus prononcé.",
+   "c05": "Idéal pour ses arômes gourmands de fruits rouges et bonbon, même s'il manque de pêche et d'abricot par rapport au Callista.",
+   "c14": "Excellente charge aromatique pour le fruit de la passion et la pêche, bien qu'il tire davantage sur les agrumes lourds et tropicaux."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

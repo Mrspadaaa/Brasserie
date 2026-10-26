@@ -1,0 +1,46 @@
+{
+ "casId": "herald@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "a16d747c36ea032c",
+ "simule": false,
+ "appel": 44,
+ "http": 200,
+ "latenceMs": 6305,
+ "finishReason": "STOP",
+ "jetonsEntree": 3746,
+ "jetonsSortie": 481,
+ "coutMicroChf": 11534,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c02\", \"phrase\": \"Taux d'alpha et de cohumulone très proches, garantissant une amertume nette similaire à 60 minutes avec un peu plus de bêta.\"},\n    {\"id\": \"c15\", \"phrase\": \"Excellent amérisant au niveau de cohumulone quasi identique, offrant une amertume tranchante comparable malgré des acides alpha légèrement supérieurs.\"},\n    {\"id\": \"c03\", \"phrase\": \"Plage d'alpha parfaitement alignée et cohumulone proche pour une amertume nette équivalente, avec une composition globale très similaire à l'ébullition.\"},\n    {\"id\": \"c12\", \"phrase\": \"Teneurs en alpha et cohumulone très cohérentes, fournissant une amertume propre et directe tout à fait équivalente en début d'ébullition.\"},\n    {\"id\": \"c18\", \"phrase\": \"Origine britannique commune et profil d'amertume franc avec une cohumulone élevée, bien que ses alphas soient légèrement plus forts.\"},\n    {\"id\": \"c14\", \"phrase\": \"Cohumulone identique à 35 % assurant une texture d'amertume similaire, bien que ses acides alpha plus élevés imposent un léger réajustement.\"},\n    {\"id\": \"c13\", \"phrase\": \"Plage d'alpha très proche produisant une amertume modérée et propre, malgré une cohumulone légèrement plus basse que Herald.\"},\n    {\"id\": \"c01\", \"phrase\": \"Autre variété britannique à l'amertume franche, bien que sa cohumulone plus basse donne un profil amer un peu plus doux.\"},\n    {\"id\": \"c16\", \"phrase\": \"Taux de cohumulone et d'alpha très bien alignés pour 60 minutes, même s'il est plus traditionnellement employé en aromatique.\"},\n    {\"id\": \"c05\", \"phrase\": \"Amérisant efficace avec une cohumulone comparable, bien que ses alphas potentiellement plus hauts nécessitent de réduire légèrement le dosage.\"}\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c15",
+   "c03",
+   "c12",
+   "c18",
+   "c14",
+   "c13",
+   "c01",
+   "c16",
+   "c05"
+  ],
+  "phrases": {
+   "c02": "Taux d'alpha et de cohumulone très proches, garantissant une amertume nette similaire à 60 minutes avec un peu plus de bêta.",
+   "c15": "Excellent amérisant au niveau de cohumulone quasi identique, offrant une amertume tranchante comparable malgré des acides alpha légèrement supérieurs.",
+   "c03": "Plage d'alpha parfaitement alignée et cohumulone proche pour une amertume nette équivalente, avec une composition globale très similaire à l'ébullition.",
+   "c12": "Teneurs en alpha et cohumulone très cohérentes, fournissant une amertume propre et directe tout à fait équivalente en début d'ébullition.",
+   "c18": "Origine britannique commune et profil d'amertume franc avec une cohumulone élevée, bien que ses alphas soient légèrement plus forts.",
+   "c14": "Cohumulone identique à 35 % assurant une texture d'amertume similaire, bien que ses acides alpha plus élevés imposent un léger réajustement.",
+   "c13": "Plage d'alpha très proche produisant une amertume modérée et propre, malgré une cohumulone légèrement plus basse que Herald.",
+   "c01": "Autre variété britannique à l'amertume franche, bien que sa cohumulone plus basse donne un profil amer un peu plus doux.",
+   "c16": "Taux de cohumulone et d'alpha très bien alignés pour 60 minutes, même s'il est plus traditionnellement employé en aromatique.",
+   "c05": "Amérisant efficace avec une cohumulone comparable, bien que ses alphas potentiellement plus hauts nécessitent de réduire légèrement le dosage."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}
