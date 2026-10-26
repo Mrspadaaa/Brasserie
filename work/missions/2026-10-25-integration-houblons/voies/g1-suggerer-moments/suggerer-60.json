@@ -1,0 +1,487 @@
+{
+ "voie": "g1-suggerer-moments",
+ "E1": [
+  {
+   "recette": "21C",
+   "ibuAjoute": 10,
+   "varietesCalculables": 318,
+   "sur": 318,
+   "g_par_L": {
+    "min": 0.23,
+    "p10": 0.31,
+    "mediane": 0.52,
+    "p90": 1.09,
+    "max": 3.88
+   },
+   "plus_de_5_g_par_L": 0,
+   "plus_de_10_g_par_L": 0,
+   "parUsage": {
+    "bittering": {
+     "n": 46,
+     "mediane_g_par_L": 0.39,
+     "p10": 0.3,
+     "p90": 0.89
+    },
+    "dual": {
+     "n": 137,
+     "mediane_g_par_L": 0.44,
+     "p10": 0.29,
+     "p90": 0.68
+    },
+    "aroma": {
+     "n": 135,
+     "mediane_g_par_L": 0.78,
+     "p10": 0.38,
+     "p90": 1.24
+    }
+   },
+   "couverture": {
+    "alpha": 318,
+    "usage": 318,
+    "cohumulone": 287,
+    "beta": 311
+   },
+   "moinsDeGrammes": [
+    {
+     "nom": "Polaris",
+     "alpha": 20.5,
+     "usage": "dual",
+     "cohu": 25.5,
+     "beta": 5.5,
+     "g": 4.5
+    },
+    {
+     "nom": "HBC 586",
+     "alpha": 20,
+     "usage": "dual",
+     "cohu": 37.5,
+     "beta": 12.5,
+     "g": 4.7
+    },
+    {
+     "nom": "Helios",
+     "alpha": 18.9,
+     "usage": "dual",
+     "cohu": 27.5,
+     "beta": 4,
+     "g": 4.9
+    },
+    {
+     "nom": "Brooklyn",
+     "alpha": 18.5,
+     "usage": "dual",
+     "cohu": 26,
+     "beta": 9,
+     "g": 5
+    },
+    {
+     "nom": "Eureka",
+     "alpha": 18.5,
+     "usage": "dual",
+     "cohu": 28.5,
+     "beta": 5.25,
+     "g": 5
+    },
+    {
+     "nom": "Moutere",
+     "alpha": 18.5,
+     "usage": "dual",
+     "cohu": 26,
+     "beta": 9,
+     "g": 5
+    },
+    {
+     "nom": "Pahto",
+     "alpha": 18.5,
+     "usage": "bittering",
+     "cohu": 29,
+     "beta": 5.25,
+     "g": 5
+    },
+    {
+     "nom": "Vic Secret",
+     "alpha": 17.9,
+     "usage": "dual",
+     "cohu": 54,
+     "beta": 7.199999999999999,
+     "g": 5.2
+    },
+    {
+     "nom": "Apollo",
+     "alpha": 17.75,
+     "usage": "bittering",
+     "cohu": 25.5,
+     "beta": 6.75,
+     "g": 5.2
+    },
+    {
+     "nom": "Eclipse",
+     "alpha": 17.35,
+     "usage": "dual",
+     "cohu": 35,
+     "beta": 7.45,
+     "g": 5.4
+    }
+   ],
+   "plusDeGrammes": [
+    {
+     "nom": "Teamaker",
+     "alpha": 1.2,
+     "usage": "aroma",
+     "cohu": null,
+     "beta": 9.3,
+     "g": 77.6
+    },
+    {
+     "nom": "Lambic",
+     "alpha": 1.5,
+     "usage": "aroma",
+     "cohu": 32,
+     "beta": 3.9,
+     "g": 62.1
+    },
+    {
+     "nom": "Relax",
+     "alpha": 2.15,
+     "usage": "aroma",
+     "cohu": null,
+     "beta": 12.5,
+     "g": 43.3
+    },
+    {
+     "nom": "Strisselspalt",
+     "alpha": 2.5,
+     "usage": "aroma",
+     "cohu": 23.5,
+     "beta": 4.5,
+     "g": 37.3
+    },
+    {
+     "nom": "Monroe",
+     "alpha": 2.7,
+     "usage": "aroma",
+     "cohu": null,
+     "beta": 7,
+     "g": 34.5
+    },
+    {
+     "nom": "Grungeist",
+     "alpha": 2.9,
+     "usage": "aroma",
+     "cohu": 19.2,
+     "beta": 9,
+     "g": 32.1
+    },
+    {
+     "nom": "Wai-iti",
+     "alpha": 3,
+     "usage": "aroma",
+     "cohu": 23,
+     "beta": 5,
+     "g": 31.1
+    },
+    {
+     "nom": "Petit Blanc",
+     "alpha": 3,
+     "usage": "aroma",
+     "cohu": 15,
+     "beta": 5.5,
+     "g": 31.1
+    },
+    {
+     "nom": "Saphir",
+     "alpha": 3.25,
+     "usage": "aroma",
+     "cohu": 14.5,
+     "beta": 5.5,
+     "g": 28.7
+    },
+    {
+     "nom": "Hersbrucker",
+     "alpha": 3.25,
+     "usage": "aroma",
+     "cohu": 21,
+     "beta": 4.25,
+     "g": 28.7
+    }
+   ]
+  },
+  {
+   "recette": "16D",
+   "ibuAjoute": 10,
+   "varietesCalculables": 318,
+   "sur": 318,
+   "g_par_L": {
+    "min": 0.24,
+    "p10": 0.33,
+    "mediane": 0.56,
+    "p90": 1.17,
+    "max": 4.17
+   },
+   "plus_de_5_g_par_L": 0,
+   "plus_de_10_g_par_L": 0,
+   "parUsage": {
+    "bittering": {
+     "n": 46,
+     "mediane_g_par_L": 0.42,
+     "p10": 0.32,
+     "p90": 0.95
+    },
+    "dual": {
+     "n": 137,
+     "mediane_g_par_L": 0.48,
+     "p10": 0.31,
+     "p90": 0.73
+    },
+    "aroma": {
+     "n": 135,
+     "mediane_g_par_L": 0.83,
+     "p10": 0.41,
+     "p90": 1.33
+    }
+   },
+   "couverture": {
+    "alpha": 318,
+    "usage": 318,
+    "cohumulone": 287,
+    "beta": 311
+   },
+   "moinsDeGrammes": [
+    {
+     "nom": "Polaris",
+     "alpha": 20.5,
+     "usage": "dual",
+     "cohu": 25.5,
+     "beta": 5.5,
+     "g": 4.9
+    },
+    {
+     "nom": "HBC 586",
+     "alpha": 20,
+     "usage": "dual",
+     "cohu": 37.5,
+     "beta": 12.5,
+     "g": 5
+    },
+    {
+     "nom": "Helios",
+     "alpha": 18.9,
+     "usage": "dual",
+     "cohu": 27.5,
+     "beta": 4,
+     "g": 5.3
+    },
+    {
+     "nom": "Brooklyn",
+     "alpha": 18.5,
+     "usage": "dual",
+     "cohu": 26,
+     "beta": 9,
+     "g": 5.4
+    },
+    {
+     "nom": "Eureka",
+     "alpha": 18.5,
+     "usage": "dual",
+     "cohu": 28.5,
+     "beta": 5.25,
+     "g": 5.4
+    },
+    {
+     "nom": "Moutere",
+     "alpha": 18.5,
+     "usage": "dual",
+     "cohu": 26,
+     "beta": 9,
+     "g": 5.4
+    },
+    {
+     "nom": "Pahto",
+     "alpha": 18.5,
+     "usage": "bittering",
+     "cohu": 29,
+     "beta": 5.25,
+     "g": 5.4
+    },
+    {
+     "nom": "Vic Secret",
+     "alpha": 17.9,
+     "usage": "dual",
+     "cohu": 54,
+     "beta": 7.199999999999999,
+     "g": 5.6
+    },
+    {
+     "nom": "Apollo",
+     "alpha": 17.75,
+     "usage": "bittering",
+     "cohu": 25.5,
+     "beta": 6.75,
+     "g": 5.6
+    },
+    {
+     "nom": "Eclipse",
+     "alpha": 17.35,
+     "usage": "dual",
+     "cohu": 35,
+     "beta": 7.45,
+     "g": 5.8
+    }
+   ],
+   "plusDeGrammes": [
+    {
+     "nom": "Teamaker",
+     "alpha": 1.2,
+     "usage": "aroma",
+     "cohu": null,
+     "beta": 9.3,
+     "g": 83.4
+    },
+    {
+     "nom": "Lambic",
+     "alpha": 1.5,
+     "usage": "aroma",
+     "cohu": 32,
+     "beta": 3.9,
+     "g": 66.7
+    },
+    {
+     "nom": "Relax",
+     "alpha": 2.15,
+     "usage": "aroma",
+     "cohu": null,
+     "beta": 12.5,
+     "g": 46.6
+    },
+    {
+     "nom": "Strisselspalt",
+     "alpha": 2.5,
+     "usage": "aroma",
+     "cohu": 23.5,
+     "beta": 4.5,
+     "g": 40
+    },
+    {
+     "nom": "Monroe",
+     "alpha": 2.7,
+     "usage": "aroma",
+     "cohu": null,
+     "beta": 7,
+     "g": 37.1
+    },
+    {
+     "nom": "Grungeist",
+     "alpha": 2.9,
+     "usage": "aroma",
+     "cohu": 19.2,
+     "beta": 9,
+     "g": 34.5
+    },
+    {
+     "nom": "Wai-iti",
+     "alpha": 3,
+     "usage": "aroma",
+     "cohu": 23,
+     "beta": 5,
+     "g": 33.4
+    },
+    {
+     "nom": "Petit Blanc",
+     "alpha": 3,
+     "usage": "aroma",
+     "cohu": 15,
+     "beta": 5.5,
+     "g": 33.4
+    },
+    {
+     "nom": "Saphir",
+     "alpha": 3.25,
+     "usage": "aroma",
+     "cohu": 14.5,
+     "beta": 5.5,
+     "g": 30.8
+    },
+    {
+     "nom": "Hersbrucker",
+     "alpha": 3.25,
+     "usage": "aroma",
+     "cohu": 21,
+     "beta": 4.25,
+     "g": 30.8
+    }
+   ]
+  }
+ ],
+ "E2": [
+  {
+   "recette": "21C",
+   "visee": "plus d’agrumes",
+   "remplacementsPossibles": 67,
+   "dansLEcranParDefaut": 0,
+   "g_par_L": {
+    "min": 1.05,
+    "mediane": 1.6,
+    "max": 4.7
+   },
+   "plus_de_5_g_par_L": 0,
+   "groupesDistincts": 62,
+   "premierGroupe": 1,
+   "ecran": []
+  },
+  {
+   "recette": "21C",
+   "visee": "moins de résineux",
+   "remplacementsPossibles": 98,
+   "dansLEcranParDefaut": 4,
+   "g_par_L": {
+    "min": 0.75,
+    "mediane": 1.35,
+    "max": 10.6
+   },
+   "plus_de_5_g_par_L": 1,
+   "groupesDistincts": 59,
+   "premierGroupe": 1,
+   "ecran": [
+    "Remplacer Nugget par Galaxy · 60′ · 19 g (rang 2)",
+    "Remplacer Nugget par Belma · 60′ · 25 g (rang 3)",
+    "Remplacer Nugget par Kazbek · 60′ · 39 g (rang 4)",
+    "Remplacer Nugget par Medusa · 60′ · 64 g (rang 5)"
+   ]
+  },
+  {
+   "recette": "16D",
+   "visee": "plus d’agrumes",
+   "remplacementsPossibles": 159,
+   "dansLEcranParDefaut": 0,
+   "g_par_L": {
+    "min": 2.42,
+    "mediane": 3.9,
+    "max": 11.75
+   },
+   "plus_de_5_g_par_L": 47,
+   "groupesDistincts": 119,
+   "premierGroupe": 1,
+   "ecran": []
+  },
+  {
+   "recette": "16D",
+   "visee": "moins de résineux",
+   "remplacementsPossibles": 184,
+   "dansLEcranParDefaut": 4,
+   "g_par_L": {
+    "min": 1.48,
+    "mediane": 3.63,
+    "max": 24.45
+   },
+   "plus_de_5_g_par_L": 46,
+   "groupesDistincts": 94,
+   "premierGroupe": 6,
+   "ecran": [
+    "Remplacer Nugget par Boadicea · 60′ · 67 g (rang 1)",
+    "Remplacer Nugget par East Kent Goldings · 60′ · 112 g (rang 2)",
+    "Remplacer Nugget par Aurum · 60′ · 128 g (rang 3)",
+    "Remplacer Nugget par Hallertau Tradition · 60′ · 101 g (rang 4)"
+   ]
+  }
+ ]
+}

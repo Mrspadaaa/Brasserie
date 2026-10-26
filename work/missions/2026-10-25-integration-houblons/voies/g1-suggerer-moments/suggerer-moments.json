@@ -1,0 +1,3823 @@
+{
+ "diagnostic": {
+  "voie": "g1-suggerer-moments",
+  "moteur": "creerMoteur(fixtures) pour l’écran ; creerMoteur({catalogue, stock: []}) pour les mesures sur tout le pool",
+  "graine": 181
+ },
+ "A": [
+  {
+   "recette": "21C",
+   "ibuRecette": 27.906064701103006,
+   "visees": [
+    {
+     "visee": "plus d’agrumes",
+     "direction": {
+      "citrus": 1
+     },
+     "ecran": {
+      "voies": 14,
+      "evalue": 228,
+      "parGesteEtMoment": {
+       "ajouter@b10": 7,
+       "ajouter@wp": 4,
+       "assemblage@b10": 1,
+       "remplacer à IBU égal@b60": 2
+      },
+      "groupesDistincts": 14,
+      "premierGroupe": 1,
+      "top": [
+       {
+        "label": "Ajouter Galaxy · 10′ · 40 g",
+        "type": "ajouter",
+        "domaine": "stock",
+        "rang": 1,
+        "exAequo": 0,
+        "distance": 0.012,
+        "derive": 26.8,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 34.5,
+         "tropical": 34.9,
+         "stoneFruit": 34.9,
+         "berries": 34.9
+        }
+       },
+       {
+        "label": "Ajouter Huell Melon · 10′ · 40 g",
+        "type": "ajouter",
+        "domaine": "à acheter",
+        "rang": 2,
+        "exAequo": 0,
+        "distance": 0.012,
+        "derive": 11.6,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 34.5,
+         "stoneFruit": 34.9,
+         "berries": 34.9,
+         "melon": 34.9
+        }
+       },
+       {
+        "label": "Ajouter Belma · 10′ · 40 g",
+        "type": "ajouter",
+        "domaine": "à acheter",
+        "rang": 3,
+        "exAequo": 0,
+        "distance": 0.012,
+        "derive": 16,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 34.5,
+         "tropical": 34.9,
+         "stoneFruit": 34.9,
+         "berries": 34.9,
+         "melon": 34.9
+        }
+       },
+       {
+        "label": "Ajouter African Queen · 10′ · 40 g",
+        "type": "ajouter",
+        "domaine": "à acheter",
+        "rang": 4,
+        "exAequo": 0,
+        "distance": 0.012,
+        "derive": 21,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 34.5,
+         "stoneFruit": 34.9,
+         "berries": 34.9,
+         "melon": 34.9
+        }
+       },
+       {
+        "label": "Ajouter Galaxy · whirlpool · 40 g",
+        "type": "ajouter",
+        "domaine": "stock",
+        "rang": 5,
+        "exAequo": 0,
+        "distance": 0.063,
+        "derive": 11.2,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 39.6,
+         "tropical": 39.9,
+         "stoneFruit": 39.9,
+         "berries": 39.9
+        }
+       },
+       {
+        "label": "Ajouter Huell Melon · whirlpool · 40 g",
+        "type": "ajouter",
+        "domaine": "à acheter",
+        "rang": 6,
+        "exAequo": 0,
+        "distance": 0.063,
+        "derive": 4.8,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 39.6,
+         "stoneFruit": 39.9,
+         "berries": 39.9,
+         "melon": 39.9
+        }
+       },
+       {
+        "label": "Ajouter Citra cryo · whirlpool · 20 g",
+        "type": "ajouter",
+        "domaine": "stock",
+        "rang": 7,
+        "exAequo": 0,
+        "distance": 0.067,
+        "derive": 8.1,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 26.6,
+         "tropical": 26.9,
+         "stoneFruit": 26.9,
+         "berries": 26.9,
+         "melon": 26.9,
+         "floral": 26.9,
+         "resin": 26.9
+        }
+       },
+       {
+        "label": "Ajouter Citra cryo · 10′ · 20 g",
+        "type": "ajouter",
+        "domaine": "stock",
+        "rang": 8,
+        "exAequo": 0,
+        "distance": 0.086,
+        "derive": 19.3,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 24.7,
+         "tropical": 24.9,
+         "stoneFruit": 24.9,
+         "berries": 24.9,
+         "melon": 24.9,
+         "floral": 24.9,
+         "resin": 24.9
+        }
+       },
+       {
+        "label": "Assembler Galaxy + Citra cryo · 10′ · 20 g + 20 g",
+        "type": "assemblage",
+        "domaine": "stock",
+        "rang": 9,
+        "exAequo": 0,
+        "distance": 0.012,
+        "derive": 32.7,
+        "conflits": 1,
+        "debord": 0,
+        "effets": {
+         "citrus": 34.5,
+         "tropical": 34.9,
+         "stoneFruit": 34.9,
+         "berries": 34.9,
+         "melon": 17.4,
+         "floral": 17.4,
+         "resin": 17.4
+        }
+       },
+       {
+        "label": "Ajouter Target · 10′ · 5 g",
+        "type": "ajouter",
+        "domaine": "stock",
+        "rang": 10,
+        "exAequo": 0,
+        "distance": 0.242,
+        "derive": 2.2,
+        "conflits": 1,
+        "debord": 0,
+        "effets": {
+         "citrus": 9.1,
+         "stoneFruit": 9.2,
+         "floral": 9.2,
+         "herbal": 5,
+         "resin": 9.2,
+         "spice": 9.2
+        }
+       },
+       {
+        "label": "Ajouter Target · whirlpool · 5 g",
+        "type": "ajouter",
+        "domaine": "stock",
+        "rang": 11,
+        "exAequo": 0,
+        "distance": 0.244,
+        "derive": 0.9,
+        "conflits": 1,
+        "debord": 0,
+        "effets": {
+         "citrus": 8.9,
+         "stoneFruit": 9,
+         "floral": 9,
+         "herbal": 4.8,
+         "resin": 9,
+         "spice": 9
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Nelson Sauvin · 60′ · 27 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "stock",
+        "rang": 12,
+        "exAequo": 0,
+        "distance": 0.33,
+        "derive": -0.1,
+        "conflits": 1,
+        "debord": 0.1,
+        "effets": {
+         "citrus": 0.3,
+         "tropical": 0.3,
+         "stoneFruit": 0.3,
+         "pomeFruit": -1.6,
+         "berries": -1.6,
+         "melon": 2,
+         "floral": -1.6,
+         "herbal": -1,
+         "resin": -1.6,
+         "spice": 0.3,
+         "green": 0.3,
+         "earthy": -1.6
+        }
+       }
+      ],
+      "notes": [
+       "25 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+       "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+       "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+      ],
+      "momentsDemandes": [
+       "b10",
+       "wp",
+       "dryActive",
+       "dryPost"
+      ]
+     },
+     "leviers": {
+      "voies": 17,
+      "dry": [
+       {
+        "label": "Houblonner à froid en fermentation active : Galaxy, 40 g",
+        "type": "levure",
+        "domaine": "stock",
+        "rang": 10,
+        "exAequo": 0,
+        "distance": 0.087,
+        "derive": 0,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 42,
+         "tropical": 39.5,
+         "stoneFruit": 39.5,
+         "berries": 39.5
+        }
+       }
+      ],
+      "souches": 2
+     },
+     "parMoment": {
+      "b60": {
+       "evalue": 574,
+       "voiesRetenues": 164,
+       "ajouts": 93,
+       "ajoutsParVariete": 93,
+       "groupesDistincts": 80,
+       "premierGroupe": 1,
+       "ajoutsAvecEffetEtabli": 93,
+       "autresTypes": {
+        "augmenter": 4,
+        "remplacer à IBU égal": 67
+       },
+       "top5": [
+        {
+         "label": "Ajouter Monroe · 60′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 0,
+         "distance": 0.309,
+         "derive": 11.6,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 2.4,
+          "tropical": 2.4,
+          "stoneFruit": 2.4,
+          "berries": 2.4
+         }
+        },
+        {
+         "label": "Ajouter Medusa · 60′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 1,
+         "distance": 0.309,
+         "derive": 17.2,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 2.4,
+          "tropical": 2.4,
+          "stoneFruit": 2.4,
+          "melon": 2.4
+         }
+        },
+        {
+         "label": "Ajouter Multihead · 60′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 1,
+         "distance": 0.309,
+         "derive": 17.2,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 2.4,
+          "tropical": 2.4,
+          "stoneFruit": 2.4
+         }
+        },
+        {
+         "label": "Ajouter Shaddock · 60′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 4,
+         "exAequo": 0,
+         "distance": 0.309,
+         "derive": 21.3,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 2.4
+         }
+        },
+        {
+         "label": "Ajouter Yellow Sub · 60′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 5,
+         "exAequo": 0,
+         "distance": 0.309,
+         "derive": 28.8,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 2.4,
+          "stoneFruit": 2.4,
+          "berries": 2.4
+         }
+        }
+       ],
+       "notes": [
+        "224 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "b30": {
+       "evalue": 574,
+       "voiesRetenues": 164,
+       "ajouts": 93,
+       "ajoutsParVariete": 93,
+       "groupesDistincts": 80,
+       "premierGroupe": 1,
+       "ajoutsAvecEffetEtabli": 93,
+       "autresTypes": {
+        "augmenter": 4,
+        "remplacer à IBU égal": 67
+       },
+       "top5": [
+        {
+         "label": "Ajouter Monroe · 30′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 0,
+         "distance": 0.206,
+         "derive": 8.9,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 12.7,
+          "tropical": 12.8,
+          "stoneFruit": 12.8,
+          "berries": 12.8
+         }
+        },
+        {
+         "label": "Ajouter Medusa · 30′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 1,
+         "distance": 0.206,
+         "derive": 13.2,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 12.7,
+          "tropical": 12.8,
+          "stoneFruit": 12.8,
+          "melon": 12.8
+         }
+        },
+        {
+         "label": "Ajouter Multihead · 30′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 1,
+         "distance": 0.206,
+         "derive": 13.2,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 12.7,
+          "tropical": 12.8,
+          "stoneFruit": 12.8
+         }
+        },
+        {
+         "label": "Ajouter Shaddock · 30′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 4,
+         "exAequo": 0,
+         "distance": 0.206,
+         "derive": 16.4,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 12.7
+         }
+        },
+        {
+         "label": "Ajouter Yellow Sub · 30′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 5,
+         "exAequo": 0,
+         "distance": 0.206,
+         "derive": 22.1,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 12.7,
+          "stoneFruit": 12.8,
+          "berries": 12.8
+         }
+        }
+       ],
+       "notes": [
+        "224 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "b15": {
+       "evalue": 574,
+       "voiesRetenues": 164,
+       "ajouts": 93,
+       "ajoutsParVariete": 93,
+       "groupesDistincts": 79,
+       "premierGroupe": 1,
+       "ajoutsAvecEffetEtabli": 93,
+       "autresTypes": {
+        "augmenter": 4,
+        "remplacer à IBU égal": 67
+       },
+       "top5": [
+        {
+         "label": "Ajouter Monroe · 15′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 0,
+         "distance": 0.06,
+         "derive": 5.8,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 27.3,
+          "tropical": 27.6,
+          "stoneFruit": 27.6,
+          "berries": 27.6
+         }
+        },
+        {
+         "label": "Ajouter Medusa · 15′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 1,
+         "distance": 0.06,
+         "derive": 8.5,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 27.3,
+          "tropical": 27.6,
+          "stoneFruit": 27.6,
+          "melon": 27.6
+         }
+        },
+        {
+         "label": "Ajouter Multihead · 15′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 1,
+         "distance": 0.06,
+         "derive": 8.5,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 27.3,
+          "tropical": 27.6,
+          "stoneFruit": 27.6
+         }
+        },
+        {
+         "label": "Ajouter Shaddock · 15′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 4,
+         "exAequo": 0,
+         "distance": 0.06,
+         "derive": 10.6,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 27.3
+         }
+        },
+        {
+         "label": "Ajouter Yellow Sub · 15′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 5,
+         "exAequo": 0,
+         "distance": 0.06,
+         "derive": 14.3,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 27.3,
+          "stoneFruit": 27.6,
+          "berries": 27.6
+         }
+        }
+       ],
+       "notes": [
+        "224 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "b10": {
+       "evalue": 574,
+       "voiesRetenues": 164,
+       "ajouts": 93,
+       "ajoutsParVariete": 93,
+       "groupesDistincts": 77,
+       "premierGroupe": 1,
+       "ajoutsAvecEffetEtabli": 93,
+       "autresTypes": {
+        "augmenter": 4,
+        "remplacer à IBU égal": 67
+       },
+       "top5": [
+        {
+         "label": "Ajouter Monroe · 10′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 0,
+         "distance": 0.012,
+         "derive": 4.2,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 34.5,
+          "tropical": 34.9,
+          "stoneFruit": 34.9,
+          "berries": 34.9
+         }
+        },
+        {
+         "label": "Ajouter Medusa · 10′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 1,
+         "distance": 0.012,
+         "derive": 6.2,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 34.5,
+          "tropical": 34.9,
+          "stoneFruit": 34.9,
+          "melon": 34.9
+         }
+        },
+        {
+         "label": "Ajouter Multihead · 10′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 1,
+         "distance": 0.012,
+         "derive": 6.2,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 34.5,
+          "tropical": 34.9,
+          "stoneFruit": 34.9
+         }
+        },
+        {
+         "label": "Ajouter Shaddock · 10′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 4,
+         "exAequo": 0,
+         "distance": 0.012,
+         "derive": 7.7,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 34.5
+         }
+        },
+        {
+         "label": "Ajouter Yellow Sub · 10′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 5,
+         "exAequo": 0,
+         "distance": 0.012,
+         "derive": 10.4,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 34.5,
+          "stoneFruit": 34.9,
+          "berries": 34.9
+         }
+        }
+       ],
+       "notes": [
+        "224 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "wp": {
+       "evalue": 574,
+       "voiesRetenues": 164,
+       "ajouts": 93,
+       "ajoutsParVariete": 93,
+       "groupesDistincts": 70,
+       "premierGroupe": 1,
+       "ajoutsAvecEffetEtabli": 93,
+       "autresTypes": {
+        "augmenter": 4,
+        "remplacer à IBU égal": 67
+       },
+       "top5": [
+        {
+         "label": "Ajouter Monroe · whirlpool · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 0,
+         "distance": 0.063,
+         "derive": 1.8,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 39.6,
+          "tropical": 39.9,
+          "stoneFruit": 39.9,
+          "berries": 39.9
+         }
+        },
+        {
+         "label": "Ajouter Medusa · whirlpool · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 1,
+         "distance": 0.063,
+         "derive": 2.6,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 39.6,
+          "tropical": 39.9,
+          "stoneFruit": 39.9,
+          "melon": 39.9
+         }
+        },
+        {
+         "label": "Ajouter Multihead · whirlpool · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 1,
+         "distance": 0.063,
+         "derive": 2.6,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 39.6,
+          "tropical": 39.9,
+          "stoneFruit": 39.9
+         }
+        },
+        {
+         "label": "Ajouter Shaddock · whirlpool · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 4,
+         "exAequo": 0,
+         "distance": 0.063,
+         "derive": 3.2,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 39.6
+         }
+        },
+        {
+         "label": "Ajouter Yellow Sub · whirlpool · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 5,
+         "exAequo": 0,
+         "distance": 0.063,
+         "derive": 4.4,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 39.6,
+          "stoneFruit": 39.9,
+          "berries": 39.9
+         }
+        }
+       ],
+       "notes": [
+        "224 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "dryActive": {
+       "evalue": 574,
+       "voiesRetenues": 164,
+       "ajouts": 93,
+       "ajoutsParVariete": 93,
+       "groupesDistincts": 4,
+       "premierGroupe": 23,
+       "ajoutsAvecEffetEtabli": 93,
+       "autresTypes": {
+        "augmenter": 4,
+        "remplacer à IBU égal": 67
+       },
+       "top5": [
+        {
+         "label": "Ajouter African Queen · dry hop en fermentation active · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 22,
+         "distance": 0.087,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 42,
+          "stoneFruit": 39.5,
+          "berries": 39.5,
+          "melon": 39.5
+         }
+        },
+        {
+         "label": "Ajouter Belma · dry hop en fermentation active · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 22,
+         "distance": 0.087,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 42,
+          "tropical": 39.5,
+          "stoneFruit": 39.5,
+          "berries": 39.5,
+          "melon": 39.5
+         }
+        },
+        {
+         "label": "Ajouter Galaxy · dry hop en fermentation active · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 22,
+         "distance": 0.087,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 42,
+          "tropical": 39.5,
+          "stoneFruit": 39.5,
+          "berries": 39.5
+         }
+        },
+        {
+         "label": "Ajouter Herald · dry hop en fermentation active · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 22,
+         "distance": 0.087,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 42
+         }
+        },
+        {
+         "label": "Ajouter Huell Melon · dry hop en fermentation active · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 22,
+         "distance": 0.087,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 42,
+          "stoneFruit": 39.5,
+          "berries": 39.5,
+          "melon": 39.5
+         }
+        }
+       ],
+       "notes": [
+        "224 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "dryPost": {
+       "evalue": 574,
+       "voiesRetenues": 164,
+       "ajouts": 93,
+       "ajoutsParVariete": 93,
+       "groupesDistincts": 4,
+       "premierGroupe": 23,
+       "ajoutsAvecEffetEtabli": 93,
+       "autresTypes": {
+        "augmenter": 4,
+        "remplacer à IBU égal": 67
+       },
+       "top5": [
+        {
+         "label": "Ajouter African Queen · dry hop après fermentation · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 22,
+         "distance": 0.166,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 49.9,
+          "stoneFruit": 47.2,
+          "berries": 47.2,
+          "melon": 47.2
+         }
+        },
+        {
+         "label": "Ajouter Belma · dry hop après fermentation · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 22,
+         "distance": 0.166,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 49.9,
+          "tropical": 47.2,
+          "stoneFruit": 47.2,
+          "berries": 47.2,
+          "melon": 47.2
+         }
+        },
+        {
+         "label": "Ajouter Galaxy · dry hop après fermentation · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 22,
+         "distance": 0.166,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 49.9,
+          "tropical": 47.2,
+          "stoneFruit": 47.2,
+          "berries": 47.2
+         }
+        },
+        {
+         "label": "Ajouter Herald · dry hop après fermentation · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 22,
+         "distance": 0.166,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 49.9
+         }
+        },
+        {
+         "label": "Ajouter Huell Melon · dry hop après fermentation · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 22,
+         "distance": 0.166,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 49.9,
+          "stoneFruit": 47.2,
+          "berries": 47.2,
+          "melon": 47.2
+         }
+        }
+       ],
+       "notes": [
+        "224 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      }
+     }
+    },
+    {
+     "visee": "plus d’amertume",
+     "direction": {},
+     "ecran": {
+      "voies": 0,
+      "evalue": 37,
+      "parGesteEtMoment": {},
+      "groupesDistincts": 0,
+      "premierGroupe": 0,
+      "top": [],
+      "notes": [
+       "37 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+       "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas."
+      ],
+      "momentsDemandes": [
+       "b10",
+       "wp",
+       "dryActive",
+       "dryPost"
+      ]
+     },
+     "leviers": {
+      "voies": 2,
+      "dry": [],
+      "souches": 2
+     },
+     "parMoment": {
+      "b60": {
+       "evalue": 295,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "295 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas."
+       ]
+      },
+      "b30": {
+       "evalue": 295,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "295 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas."
+       ]
+      },
+      "b15": {
+       "evalue": 295,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "295 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas."
+       ]
+      },
+      "b10": {
+       "evalue": 295,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "295 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas."
+       ]
+      },
+      "wp": {
+       "evalue": 295,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "295 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas."
+       ]
+      },
+      "dryActive": {
+       "evalue": 295,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "295 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas."
+       ]
+      },
+      "dryPost": {
+       "evalue": 295,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "295 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas."
+       ]
+      }
+     }
+    },
+    {
+     "visee": "moins de résineux",
+     "direction": {
+      "resin": -1
+     },
+     "ecran": {
+      "voies": 14,
+      "evalue": 37,
+      "parGesteEtMoment": {
+       "diminuer@b60": 2,
+       "diminuer@dryActive": 1,
+       "remplacer à IBU égal@b60": 8,
+       "remplacer à masse égale@dryActive": 2,
+       "retirer@dryActive": 1
+      },
+      "groupesDistincts": 14,
+      "premierGroupe": 1,
+      "top": [
+       {
+        "label": "Diminuer Nugget · 60′ · 20 → 17.9 g (bas de la bande d’IBU)",
+        "type": "diminuer",
+        "domaine": "stock",
+        "rang": 1,
+        "exAequo": 0,
+        "distance": 0.33,
+        "derive": -2.9,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": -0.1,
+         "tropical": -0.1,
+         "stoneFruit": -0.1,
+         "pomeFruit": -0.1,
+         "berries": -0.1,
+         "floral": -0.1,
+         "herbal": -0.1,
+         "resin": -0.1,
+         "spice": -0.1,
+         "green": -0.1,
+         "earthy": -0.1
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Monroe · 60′ · 96 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "à acheter",
+        "rang": 2,
+        "exAequo": 0,
+        "distance": 0.28,
+        "derive": -0.1,
+        "conflits": 0,
+        "debord": 0.05,
+        "effets": {
+         "citrus": 1.8,
+         "tropical": 1.8,
+         "stoneFruit": 1.8,
+         "pomeFruit": -1.6,
+         "berries": 1.8,
+         "floral": -1.6,
+         "herbal": -1,
+         "resin": -1.6,
+         "spice": -1.6,
+         "green": -1,
+         "earthy": -1.6
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Belma · 60′ · 25 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "à acheter",
+        "rang": 3,
+        "exAequo": 0,
+        "distance": 0.28,
+        "derive": -0.3,
+        "conflits": 0,
+        "debord": 0.05,
+        "effets": {
+         "citrus": 0.2,
+         "tropical": 0.2,
+         "stoneFruit": 0.2,
+         "pomeFruit": -1.6,
+         "berries": 0.2,
+         "melon": 1.9,
+         "floral": -1.6,
+         "herbal": -1,
+         "resin": -1.6,
+         "spice": -1.6,
+         "green": -1,
+         "earthy": -1.6
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Kazbek · 60′ · 40 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "à acheter",
+        "rang": 4,
+        "exAequo": 0,
+        "distance": 0.28,
+        "derive": 0,
+        "conflits": 0,
+        "debord": 0.05,
+        "effets": {
+         "citrus": 0.8,
+         "tropical": 0.8,
+         "stoneFruit": 0.8,
+         "pomeFruit": -1.6,
+         "berries": 0.8,
+         "floral": -1.6,
+         "herbal": -1,
+         "resin": -1.6,
+         "spice": 0.8,
+         "green": -1,
+         "earthy": 0.8
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Galaxy · 60′ · 15 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "stock",
+        "rang": 5,
+        "exAequo": 0,
+        "distance": 0.28,
+        "derive": -0.2,
+        "conflits": 0,
+        "debord": 0.09,
+        "effets": {
+         "citrus": -0.3,
+         "tropical": -0.3,
+         "stoneFruit": -0.3,
+         "pomeFruit": -1.6,
+         "berries": -0.3,
+         "floral": -1.6,
+         "herbal": -1,
+         "resin": -1.6,
+         "spice": -1.6,
+         "green": -1,
+         "earthy": -1.6
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Medusa · 60′ · 65 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "à acheter",
+        "rang": 6,
+        "exAequo": 0,
+        "distance": 0.28,
+        "derive": 0,
+        "conflits": 0,
+        "debord": 0.1,
+        "effets": {
+         "citrus": 1.4,
+         "tropical": 1.4,
+         "stoneFruit": 1.4,
+         "pomeFruit": -1.6,
+         "berries": -1.6,
+         "melon": 3,
+         "floral": -1.6,
+         "herbal": -1,
+         "resin": -1.6,
+         "spice": -1.6,
+         "green": -1,
+         "earthy": -1.6
+        }
+       },
+       {
+        "label": "Remplacer Cascade par Galaxy · dry hop en fermentation active · 80 g",
+        "type": "remplacer à masse égale",
+        "domaine": "stock",
+        "rang": 7,
+        "exAequo": 0,
+        "distance": 1.363,
+        "derive": 0,
+        "conflits": 0,
+        "debord": 1.53,
+        "effets": {
+         "citrus": 0,
+         "tropical": 0,
+         "stoneFruit": 0,
+         "pomeFruit": -50.9,
+         "berries": 0,
+         "floral": -50.9,
+         "herbal": -39.9,
+         "resin": -50.9,
+         "spice": -50.9,
+         "green": -39.5
+        }
+       },
+       {
+        "label": "Diminuer Cascade · dry hop en fermentation active · 80 → 40 g",
+        "type": "diminuer",
+        "domaine": "stock",
+        "rang": 8,
+        "exAequo": 0,
+        "distance": 0.05,
+        "derive": 0,
+        "conflits": 0,
+        "debord": 1.81,
+        "effets": {
+         "citrus": -13.7,
+         "tropical": -11.5,
+         "stoneFruit": -11.5,
+         "pomeFruit": -11.5,
+         "berries": -11.5,
+         "floral": -11.5,
+         "herbal": -13.9,
+         "resin": -11.5,
+         "spice": -11.5,
+         "green": -12.4
+        }
+       },
+       {
+        "label": "Retirer Cascade · dry hop en fermentation active",
+        "type": "retirer",
+        "domaine": "stock",
+        "rang": 9,
+        "exAequo": 0,
+        "distance": 1.363,
+        "derive": 0,
+        "conflits": 0,
+        "debord": 7.79,
+        "effets": {
+         "citrus": -55.6,
+         "tropical": -50.9,
+         "stoneFruit": -50.9,
+         "pomeFruit": -50.9,
+         "berries": -50.9,
+         "floral": -50.9,
+         "herbal": -39.9,
+         "resin": -50.9,
+         "spice": -50.9,
+         "green": -39.5
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Nelson Sauvin · 60′ · 27 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "stock",
+        "rang": 10,
+        "exAequo": 0,
+        "distance": 0.28,
+        "derive": -0.1,
+        "conflits": 1,
+        "debord": 0.1,
+        "effets": {
+         "citrus": 0.3,
+         "tropical": 0.3,
+         "stoneFruit": 0.3,
+         "pomeFruit": -1.6,
+         "berries": -1.6,
+         "melon": 2,
+         "floral": -1.6,
+         "herbal": -1,
+         "resin": -1.6,
+         "spice": 0.3,
+         "green": 0.3,
+         "earthy": -1.6
+        }
+       },
+       {
+        "label": "Diminuer Nugget · 60′ · 20 → 10 g",
+        "type": "diminuer",
+        "domaine": "stock",
+        "rang": 11,
+        "exAequo": 0,
+        "distance": 0.313,
+        "derive": -14,
+        "conflits": 1,
+        "debord": 0.1,
+        "effets": {
+         "citrus": -0.6,
+         "tropical": -0.6,
+         "stoneFruit": -0.6,
+         "pomeFruit": -0.6,
+         "berries": -0.6,
+         "floral": -0.6,
+         "herbal": -0.4,
+         "resin": -0.6,
+         "spice": -0.6,
+         "green": -0.4,
+         "earthy": -0.6
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Citra cryo · 60′ · 10.5 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "stock",
+        "rang": 12,
+        "exAequo": 0,
+        "distance": 0.313,
+        "derive": 0,
+        "conflits": 1,
+        "debord": 0.13,
+        "effets": {
+         "citrus": -0.6,
+         "tropical": -0.6,
+         "stoneFruit": -0.6,
+         "pomeFruit": -1.6,
+         "berries": -0.6,
+         "melon": 1,
+         "floral": -0.6,
+         "herbal": -1,
+         "resin": -0.6,
+         "spice": -1.6,
+         "green": -1,
+         "earthy": -1.6
+        }
+       }
+      ],
+      "notes": [
+       "11 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+       "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+       "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+      ],
+      "momentsDemandes": [
+       "b10",
+       "wp",
+       "dryActive",
+       "dryPost"
+      ]
+     },
+     "leviers": {
+      "voies": 16,
+      "dry": [],
+      "souches": 2
+     },
+     "parMoment": {
+      "b60": {
+       "evalue": 205,
+       "voiesRetenues": 201,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 3,
+        "remplacer à IBU égal": 98,
+        "remplacer à masse égale": 98,
+        "retirer": 2
+       },
+       "top5": [],
+       "notes": [
+        "4 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "b30": {
+       "evalue": 205,
+       "voiesRetenues": 201,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 3,
+        "remplacer à IBU égal": 98,
+        "remplacer à masse égale": 98,
+        "retirer": 2
+       },
+       "top5": [],
+       "notes": [
+        "4 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "b15": {
+       "evalue": 205,
+       "voiesRetenues": 201,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 3,
+        "remplacer à IBU égal": 98,
+        "remplacer à masse égale": 98,
+        "retirer": 2
+       },
+       "top5": [],
+       "notes": [
+        "4 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "b10": {
+       "evalue": 205,
+       "voiesRetenues": 201,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 3,
+        "remplacer à IBU égal": 98,
+        "remplacer à masse égale": 98,
+        "retirer": 2
+       },
+       "top5": [],
+       "notes": [
+        "4 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "wp": {
+       "evalue": 205,
+       "voiesRetenues": 201,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 3,
+        "remplacer à IBU égal": 98,
+        "remplacer à masse égale": 98,
+        "retirer": 2
+       },
+       "top5": [],
+       "notes": [
+        "4 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "dryActive": {
+       "evalue": 205,
+       "voiesRetenues": 201,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 3,
+        "remplacer à IBU égal": 98,
+        "remplacer à masse égale": 98,
+        "retirer": 2
+       },
+       "top5": [],
+       "notes": [
+        "4 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "dryPost": {
+       "evalue": 205,
+       "voiesRetenues": 201,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 3,
+        "remplacer à IBU égal": 98,
+        "remplacer à masse égale": 98,
+        "retirer": 2
+       },
+       "top5": [],
+       "notes": [
+        "4 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "12 familles sur 12 ont une plage 0–100 dans la recette actuelle : le cumul V5.5 ne les situe pas.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "recette": "16D",
+   "ibuRecette": 59.7312650727123,
+   "visees": [
+    {
+     "visee": "plus d’agrumes",
+     "direction": {
+      "citrus": 1
+     },
+     "ecran": {
+      "voies": 14,
+      "evalue": 230,
+      "parGesteEtMoment": {
+       "ajouter@b10": 11,
+       "ajouter@dryPost": 1,
+       "assemblage@dryPost": 2
+      },
+      "groupesDistincts": 14,
+      "premierGroupe": 1,
+      "top": [
+       {
+        "label": "Assembler Target + Motueka · dry hop après fermentation · 3 g + 3 g",
+        "type": "assemblage",
+        "domaine": "stock",
+        "rang": 1,
+        "exAequo": 0,
+        "distance": 0.013,
+        "derive": 0,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 10.4,
+         "tropical": 5.8,
+         "stoneFruit": 5.8,
+         "floral": 11.7,
+         "herbal": 5.4,
+         "resin": 5.8,
+         "spice": 5.8
+        }
+       },
+       {
+        "label": "Assembler Target + Galaxy · dry hop après fermentation · 3 g + 3 g",
+        "type": "assemblage",
+        "domaine": "stock",
+        "rang": 2,
+        "exAequo": 0,
+        "distance": 0.013,
+        "derive": 0,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 10.4,
+         "tropical": 5.8,
+         "stoneFruit": 11.7,
+         "berries": 5.8,
+         "floral": 5.8,
+         "herbal": 2.7,
+         "resin": 5.8,
+         "spice": 5.8
+        }
+       },
+       {
+        "label": "Ajouter Target · dry hop après fermentation · 5 g",
+        "type": "ajouter",
+        "domaine": "stock",
+        "rang": 3,
+        "exAequo": 0,
+        "distance": 0.013,
+        "derive": 0,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 10.4,
+         "stoneFruit": 11.7,
+         "floral": 11.7,
+         "herbal": 5.4,
+         "resin": 11.7,
+         "spice": 11.7
+        }
+       },
+       {
+        "label": "Ajouter Target · 10′ · 5 g",
+        "type": "ajouter",
+        "domaine": "stock",
+        "rang": 4,
+        "exAequo": 0,
+        "distance": 0.03,
+        "derive": 2,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 9.1,
+         "stoneFruit": 9.2,
+         "floral": 9.2,
+         "herbal": 5,
+         "resin": 9.2,
+         "spice": 9.2
+        }
+       },
+       {
+        "label": "Ajouter Motueka · 10′ · 10 g",
+        "type": "ajouter",
+        "domaine": "stock",
+        "rang": 5,
+        "exAequo": 0,
+        "distance": 0.19,
+        "derive": 2.9,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 15.7,
+         "tropical": 15.9,
+         "floral": 15.9,
+         "herbal": 9.2
+        }
+       },
+       {
+        "label": "Ajouter Aurum · 10′ · 10 g",
+        "type": "ajouter",
+        "domaine": "à acheter",
+        "rang": 6,
+        "exAequo": 0,
+        "distance": 0.19,
+        "derive": 1.7,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 15.7,
+         "floral": 15.9,
+         "herbal": 9.2,
+         "spice": 15.9,
+         "earthy": 15.9
+        }
+       },
+       {
+        "label": "Ajouter Boadicea · 10′ · 10 g",
+        "type": "ajouter",
+        "domaine": "à acheter",
+        "rang": 7,
+        "exAequo": 0,
+        "distance": 0.19,
+        "derive": 3.2,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 15.7,
+         "floral": 15.9,
+         "herbal": 9.2,
+         "spice": 15.9,
+         "earthy": 15.9
+        }
+       },
+       {
+        "label": "Ajouter Celeia · 10′ · 10 g",
+        "type": "ajouter",
+        "domaine": "à acheter",
+        "rang": 8,
+        "exAequo": 0,
+        "distance": 0.19,
+        "derive": 1.6,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 15.7,
+         "pomeFruit": 15.9,
+         "floral": 15.9,
+         "herbal": 9.2,
+         "spice": 15.9,
+         "green": 9.2,
+         "earthy": 15.9
+        }
+       },
+       {
+        "label": "Ajouter Ahtanum · 10′ · 10 g",
+        "type": "ajouter",
+        "domaine": "à acheter",
+        "rang": 9,
+        "exAequo": 0,
+        "distance": 0.19,
+        "derive": 1.8,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 15.7,
+         "floral": 15.9,
+         "herbal": 9.2,
+         "resin": 15.9,
+         "spice": 15.9,
+         "green": 9.2,
+         "earthy": 15.9
+        }
+       },
+       {
+        "label": "Ajouter Sabro · 10′ · 10 g",
+        "type": "ajouter",
+        "domaine": "stock",
+        "rang": 10,
+        "exAequo": 0,
+        "distance": 0.19,
+        "derive": 4.9,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 15.7,
+         "tropical": 15.9,
+         "stoneFruit": 15.9,
+         "herbal": 9.2,
+         "resin": 15.9
+        }
+       },
+       {
+        "label": "Ajouter Galaxy · 10′ · 10 g",
+        "type": "ajouter",
+        "domaine": "stock",
+        "rang": 11,
+        "exAequo": 0,
+        "distance": 0.19,
+        "derive": 6.2,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 15.7,
+         "tropical": 15.9,
+         "stoneFruit": 15.9,
+         "berries": 15.9
+        }
+       },
+       {
+        "label": "Ajouter Hallertau Blanc · 10′ · 10 g",
+        "type": "ajouter",
+        "domaine": "stock",
+        "rang": 12,
+        "exAequo": 0,
+        "distance": 0.19,
+        "derive": 3.4,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 15.7,
+         "tropical": 15.9,
+         "berries": 15.9,
+         "floral": 15.9,
+         "herbal": 9.2,
+         "spice": 15.9,
+         "green": 9.2
+        }
+       }
+      ],
+      "notes": [
+       "8 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ],
+      "momentsDemandes": [
+       "b10",
+       "wp",
+       "dryActive",
+       "dryPost"
+      ]
+     },
+     "leviers": {
+      "voies": 17,
+      "dry": [
+       {
+        "label": "Houblonner à froid en fermentation active : Target, 5 g",
+        "type": "levure",
+        "domaine": "stock",
+        "rang": 3,
+        "exAequo": 0,
+        "distance": 0.06,
+        "derive": 0,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 8.2,
+         "stoneFruit": 9.3,
+         "floral": 9.3,
+         "herbal": 4.3,
+         "resin": 9.3,
+         "spice": 9.3
+        }
+       }
+      ],
+      "souches": 2
+     },
+     "parMoment": {
+      "b60": {
+       "evalue": 1021,
+       "voiesRetenues": 394,
+       "ajouts": 233,
+       "ajoutsParVariete": 233,
+       "groupesDistincts": 199,
+       "premierGroupe": 1,
+       "ajoutsAvecEffetEtabli": 233,
+       "autresTypes": {
+        "augmenter": 2,
+        "remplacer à IBU égal": 159
+       },
+       "top5": [
+        {
+         "label": "Ajouter Strisselspalt · 60′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 0,
+         "distance": 0.253,
+         "derive": 10,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 2.4,
+          "floral": 2.4,
+          "herbal": 1.6,
+          "spice": 2.4,
+          "green": 1.6
+         }
+        },
+        {
+         "label": "Ajouter Grungeist · 60′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 0,
+         "distance": 0.253,
+         "derive": 11.6,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 2.4,
+          "tropical": 2.4,
+          "stoneFruit": 2.4,
+          "floral": 2.4
+         }
+        },
+        {
+         "label": "Ajouter Monroe · 60′ · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 3,
+         "exAequo": 0,
+         "distance": 0.253,
+         "derive": 10.8,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 2.4,
+          "tropical": 2.4,
+          "stoneFruit": 2.4,
+          "berries": 2.4
+         }
+        },
+        {
+         "label": "Ajouter Diamond Springs · 60′ · 20 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 4,
+         "exAequo": 0,
+         "distance": 0.28,
+         "derive": 9.6,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 1.6,
+          "herbal": 1
+         }
+        },
+        {
+         "label": "Ajouter Shaddock · 60′ · 20 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 5,
+         "exAequo": 0,
+         "distance": 0.28,
+         "derive": 9.9,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 1.6
+         }
+        }
+       ],
+       "notes": [
+        "161 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "b30": {
+       "evalue": 1021,
+       "voiesRetenues": 394,
+       "ajouts": 233,
+       "ajoutsParVariete": 233,
+       "groupesDistincts": 197,
+       "premierGroupe": 1,
+       "ajoutsAvecEffetEtabli": 233,
+       "autresTypes": {
+        "augmenter": 2,
+        "remplacer à IBU égal": 159
+       },
+       "top5": [
+        {
+         "label": "Ajouter Diamond Springs · 30′ · 20 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 0,
+         "distance": 0.047,
+         "derive": 7.4,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 8.6,
+          "herbal": 5.3
+         }
+        },
+        {
+         "label": "Ajouter Shaddock · 30′ · 20 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 0,
+         "distance": 0.047,
+         "derive": 7.6,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 8.6
+         }
+        },
+        {
+         "label": "Ajouter Sonnet · 30′ · 20 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 3,
+         "exAequo": 0,
+         "distance": 0.047,
+         "derive": 7.7,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 8.6,
+          "floral": 8.7,
+          "green": 5.3,
+          "earthy": 8.7
+         }
+        },
+        {
+         "label": "Ajouter Sussex · 30′ · 20 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 4,
+         "exAequo": 0,
+         "distance": 0.047,
+         "derive": 7.8,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 8.6,
+          "floral": 8.7,
+          "herbal": 5.3,
+          "green": 5.3,
+          "earthy": 8.7
+         }
+        },
+        {
+         "label": "Ajouter Pacifica · 30′ · 20 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 5,
+         "exAequo": 0,
+         "distance": 0.047,
+         "derive": 8.4,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 8.6,
+          "floral": 8.7,
+          "herbal": 5.3,
+          "green": 5.3
+         }
+        }
+       ],
+       "notes": [
+        "161 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "b15": {
+       "evalue": 1021,
+       "voiesRetenues": 394,
+       "ajouts": 233,
+       "ajoutsParVariete": 233,
+       "groupesDistincts": 190,
+       "premierGroupe": 1,
+       "ajoutsAvecEffetEtabli": 233,
+       "autresTypes": {
+        "augmenter": 2,
+        "remplacer à IBU égal": 159
+       },
+       "top5": [
+        {
+         "label": "Ajouter Diamond Springs · 15′ · 10 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 0,
+         "distance": 0.067,
+         "derive": 2.4,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 12,
+          "herbal": 7
+         }
+        },
+        {
+         "label": "Ajouter Shaddock · 15′ · 10 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 0,
+         "distance": 0.067,
+         "derive": 2.5,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 12
+         }
+        },
+        {
+         "label": "Ajouter Buzz Bullets · 15′ · 10 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 3,
+         "exAequo": 0,
+         "distance": 0.067,
+         "derive": 4.5,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 12,
+          "floral": 12.2
+         }
+        },
+        {
+         "label": "Ajouter Arcadian · 15′ · 10 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 4,
+         "exAequo": 0,
+         "distance": 0.067,
+         "derive": 4.9,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 12,
+          "floral": 12.2
+         }
+        },
+        {
+         "label": "Ajouter Zenith · 15′ · 10 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 5,
+         "exAequo": 0,
+         "distance": 0.067,
+         "derive": 5,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 12,
+          "floral": 12.2
+         }
+        }
+       ],
+       "notes": [
+        "161 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "b10": {
+       "evalue": 1021,
+       "voiesRetenues": 394,
+       "ajouts": 233,
+       "ajoutsParVariete": 233,
+       "groupesDistincts": 179,
+       "premierGroupe": 1,
+       "ajoutsAvecEffetEtabli": 233,
+       "autresTypes": {
+        "augmenter": 2,
+        "remplacer à IBU égal": 159
+       },
+       "top5": [
+        {
+         "label": "Ajouter Diamond Springs · 10′ · 10 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 1,
+         "exAequo": 0,
+         "distance": 0.19,
+         "derive": 1.7,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 15.7,
+          "herbal": 9.2
+         }
+        },
+        {
+         "label": "Ajouter Shaddock · 10′ · 10 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 2,
+         "exAequo": 0,
+         "distance": 0.19,
+         "derive": 1.8,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 15.7
+         }
+        },
+        {
+         "label": "Ajouter Buzz Bullets · 10′ · 10 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 3,
+         "exAequo": 0,
+         "distance": 0.19,
+         "derive": 3.3,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 15.7,
+          "floral": 15.9
+         }
+        },
+        {
+         "label": "Ajouter Arcadian · 10′ · 10 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 4,
+         "exAequo": 0,
+         "distance": 0.19,
+         "derive": 3.5,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 15.7,
+          "floral": 15.9
+         }
+        },
+        {
+         "label": "Ajouter Zenith · 10′ · 10 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 5,
+         "exAequo": 0,
+         "distance": 0.19,
+         "derive": 3.6,
+         "conflits": 0,
+         "debord": 0,
+         "effets": {
+          "citrus": 15.7,
+          "floral": 15.9
+         }
+        }
+       ],
+       "notes": [
+        "161 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "wp": {
+       "evalue": 1021,
+       "voiesRetenues": 394,
+       "ajouts": 233,
+       "ajoutsParVariete": 233,
+       "groupesDistincts": 180,
+       "premierGroupe": 2,
+       "ajoutsAvecEffetEtabli": 233,
+       "autresTypes": {
+        "augmenter": 2,
+        "remplacer à IBU égal": 159
+       },
+       "top5": [
+        {
+         "label": "Ajouter Diamond Springs · whirlpool · 20 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 160,
+         "exAequo": 1,
+         "distance": 0.553,
+         "derive": 1.5,
+         "conflits": 0,
+         "debord": 0.4,
+         "effets": {
+          "citrus": 26.6,
+          "herbal": 16.2
+         }
+        },
+        {
+         "label": "Ajouter Shaddock · whirlpool · 20 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 160,
+         "exAequo": 1,
+         "distance": 0.553,
+         "derive": 1.5,
+         "conflits": 0,
+         "debord": 0.4,
+         "effets": {
+          "citrus": 26.6
+         }
+        },
+        {
+         "label": "Ajouter Buzz Bullets · whirlpool · 20 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 162,
+         "exAequo": 0,
+         "distance": 0.553,
+         "derive": 2.7,
+         "conflits": 0,
+         "debord": 0.4,
+         "effets": {
+          "citrus": 26.6,
+          "floral": 26.9
+         }
+        },
+        {
+         "label": "Ajouter Arcadian · whirlpool · 20 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 163,
+         "exAequo": 1,
+         "distance": 0.553,
+         "derive": 3,
+         "conflits": 0,
+         "debord": 0.4,
+         "effets": {
+          "citrus": 26.6,
+          "floral": 26.9
+         }
+        },
+        {
+         "label": "Ajouter Zenith · whirlpool · 20 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 163,
+         "exAequo": 1,
+         "distance": 0.553,
+         "derive": 3,
+         "conflits": 0,
+         "debord": 0.4,
+         "effets": {
+          "citrus": 26.6,
+          "floral": 26.9
+         }
+        }
+       ],
+       "notes": [
+        "161 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "dryActive": {
+       "evalue": 1021,
+       "voiesRetenues": 394,
+       "ajouts": 233,
+       "ajoutsParVariete": 233,
+       "groupesDistincts": 22,
+       "premierGroupe": 8,
+       "ajoutsAvecEffetEtabli": 233,
+       "autresTypes": {
+        "augmenter": 2,
+        "remplacer à IBU égal": 159
+       },
+       "top5": [
+        {
+         "label": "Ajouter Arcadian · dry hop en fermentation active · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 160,
+         "exAequo": 7,
+         "distance": 1.067,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 1.94,
+         "effets": {
+          "citrus": 42,
+          "floral": 39.5
+         }
+        },
+        {
+         "label": "Ajouter Buzz Bullets · dry hop en fermentation active · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 160,
+         "exAequo": 7,
+         "distance": 1.067,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 1.94,
+         "effets": {
+          "citrus": 42,
+          "floral": 39.5
+         }
+        },
+        {
+         "label": "Ajouter Diamond Springs · dry hop en fermentation active · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 160,
+         "exAequo": 7,
+         "distance": 1.067,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 1.94,
+         "effets": {
+          "citrus": 42,
+          "herbal": 26
+         }
+        },
+        {
+         "label": "Ajouter Herald · dry hop en fermentation active · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 160,
+         "exAequo": 7,
+         "distance": 1.067,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 1.94,
+         "effets": {
+          "citrus": 42
+         }
+        },
+        {
+         "label": "Ajouter Satus · dry hop en fermentation active · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 160,
+         "exAequo": 7,
+         "distance": 1.067,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 1.94,
+         "effets": {
+          "citrus": 42
+         }
+        }
+       ],
+       "notes": [
+        "161 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      },
+      "dryPost": {
+       "evalue": 1021,
+       "voiesRetenues": 394,
+       "ajouts": 233,
+       "ajoutsParVariete": 233,
+       "groupesDistincts": 22,
+       "premierGroupe": 8,
+       "ajoutsAvecEffetEtabli": 233,
+       "autresTypes": {
+        "augmenter": 2,
+        "remplacer à IBU égal": 159
+       },
+       "top5": [
+        {
+         "label": "Ajouter Arcadian · dry hop après fermentation · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 160,
+         "exAequo": 7,
+         "distance": 1.33,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 2.73,
+         "effets": {
+          "citrus": 49.9,
+          "floral": 47.2
+         }
+        },
+        {
+         "label": "Ajouter Buzz Bullets · dry hop après fermentation · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 160,
+         "exAequo": 7,
+         "distance": 1.33,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 2.73,
+         "effets": {
+          "citrus": 49.9,
+          "floral": 47.2
+         }
+        },
+        {
+         "label": "Ajouter Diamond Springs · dry hop après fermentation · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 160,
+         "exAequo": 7,
+         "distance": 1.33,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 2.73,
+         "effets": {
+          "citrus": 49.9,
+          "herbal": 31.9
+         }
+        },
+        {
+         "label": "Ajouter Herald · dry hop après fermentation · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 160,
+         "exAequo": 7,
+         "distance": 1.33,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 2.73,
+         "effets": {
+          "citrus": 49.9
+         }
+        },
+        {
+         "label": "Ajouter Satus · dry hop après fermentation · 40 g",
+         "type": "ajouter",
+         "domaine": "à acheter",
+         "rang": 160,
+         "exAequo": 7,
+         "distance": 1.33,
+         "derive": 0,
+         "conflits": 0,
+         "debord": 2.73,
+         "effets": {
+          "citrus": 49.9
+         }
+        }
+       ],
+       "notes": [
+        "161 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.",
+        "Après un ajout d’arôme, le cumul V5.5 rend souvent des plages 0–100 : la variation prévue s’appuie alors sur les repères centraux de l’ajout seul et sur les fiches qui citent la famille."
+       ]
+      }
+     }
+    },
+    {
+     "visee": "plus d’amertume",
+     "direction": {},
+     "ecran": {
+      "voies": 0,
+      "evalue": 20,
+      "parGesteEtMoment": {},
+      "groupesDistincts": 0,
+      "premierGroupe": 0,
+      "top": [],
+      "notes": [
+       "20 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ],
+      "momentsDemandes": [
+       "b10",
+       "wp",
+       "dryActive",
+       "dryPost"
+      ]
+     },
+     "leviers": {
+      "voies": 2,
+      "dry": [],
+      "souches": 2
+     },
+     "parMoment": {
+      "b60": {
+       "evalue": 322,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "322 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "b30": {
+       "evalue": 322,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "322 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "b15": {
+       "evalue": 322,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "322 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "b10": {
+       "evalue": 322,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "322 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "wp": {
+       "evalue": 322,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "322 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "dryActive": {
+       "evalue": 322,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "322 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "dryPost": {
+       "evalue": 322,
+       "voiesRetenues": 0,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {},
+       "top5": [],
+       "notes": [
+        "322 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      }
+     }
+    },
+    {
+     "visee": "moins de résineux",
+     "direction": {
+      "resin": -1
+     },
+     "ecran": {
+      "voies": 11,
+      "evalue": 20,
+      "parGesteEtMoment": {
+       "diminuer@b60": 1,
+       "remplacer à IBU égal@b60": 9,
+       "retirer@b60": 1
+      },
+      "groupesDistincts": 11,
+      "premierGroupe": 1,
+      "top": [
+       {
+        "label": "Remplacer Nugget par Galaxy · 60′ · 35 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "stock",
+        "rang": 1,
+        "exAequo": 0,
+        "distance": 0.247,
+        "derive": 0.4,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": -0.3,
+         "tropical": -0.3,
+         "stoneFruit": -0.3,
+         "pomeFruit": -2.6,
+         "berries": -0.3,
+         "floral": -2.6,
+         "herbal": -1.8,
+         "resin": -2.6,
+         "spice": -2.6,
+         "green": -1.8,
+         "earthy": -2.6
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Boadicea · 60′ · 68 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "à acheter",
+        "rang": 2,
+        "exAequo": 0,
+        "distance": 0.247,
+        "derive": -0.3,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 0.4,
+         "tropical": -2.6,
+         "stoneFruit": -2.6,
+         "pomeFruit": -2.6,
+         "berries": -2.6,
+         "floral": 0.5,
+         "herbal": 0.5,
+         "resin": -2.6,
+         "spice": 0.5,
+         "green": -1.8,
+         "earthy": 0.5
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Motueka · 60′ · 74 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "stock",
+        "rang": 3,
+        "exAequo": 0,
+        "distance": 0.247,
+        "derive": 0.1,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 0.5,
+         "tropical": 0.5,
+         "stoneFruit": -2.6,
+         "pomeFruit": -2.6,
+         "berries": -2.6,
+         "floral": 0.5,
+         "herbal": 0.6,
+         "resin": -2.6,
+         "spice": -2.6,
+         "green": -1.8,
+         "earthy": -2.6
+        }
+       },
+       {
+        "label": "Remplacer Nugget par East Kent Goldings · 60′ · 109 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "à acheter",
+        "rang": 4,
+        "exAequo": 0,
+        "distance": 0.247,
+        "derive": 0.1,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 0.9,
+         "tropical": -2.6,
+         "stoneFruit": -2.6,
+         "pomeFruit": -2.6,
+         "berries": -2.6,
+         "floral": 0.9,
+         "herbal": 1,
+         "resin": -2.6,
+         "spice": 0.9,
+         "green": -1.8,
+         "earthy": 0.9
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Hallertau Blanc · 60′ · 63 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "stock",
+        "rang": 5,
+        "exAequo": 0,
+        "distance": 0.247,
+        "derive": 0,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 0.4,
+         "tropical": 0.4,
+         "stoneFruit": -2.6,
+         "pomeFruit": -2.6,
+         "berries": 0.4,
+         "floral": 0.4,
+         "herbal": 0.4,
+         "resin": -2.6,
+         "spice": 0.4,
+         "green": 0.4,
+         "earthy": -2.6
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Aurum · 60′ · 130 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "à acheter",
+        "rang": 6,
+        "exAequo": 0,
+        "distance": 0.247,
+        "derive": 0,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 1.1,
+         "tropical": -2.6,
+         "stoneFruit": -2.6,
+         "pomeFruit": -2.6,
+         "berries": -2.6,
+         "floral": 1.1,
+         "herbal": 1.2,
+         "resin": -2.6,
+         "spice": 1.1,
+         "green": -1.8,
+         "earthy": 1.1
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Hallertau Tradition · 60′ · 103 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "à acheter",
+        "rang": 7,
+        "exAequo": 0,
+        "distance": 0.247,
+        "derive": -0.1,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 0.9,
+         "tropical": -2.6,
+         "stoneFruit": 0.9,
+         "pomeFruit": -2.6,
+         "berries": -2.6,
+         "floral": 0.9,
+         "herbal": 0.9,
+         "resin": -2.6,
+         "spice": 0.9,
+         "green": 0.9,
+         "earthy": 0.9
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Nelson Sauvin · 60′ · 62 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "stock",
+        "rang": 8,
+        "exAequo": 0,
+        "distance": 0.247,
+        "derive": -0.3,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": 0.3,
+         "tropical": 0.3,
+         "stoneFruit": 0.3,
+         "pomeFruit": -2.6,
+         "berries": -2.6,
+         "melon": 2.9,
+         "floral": -2.6,
+         "herbal": -1.8,
+         "resin": -2.6,
+         "spice": 0.3,
+         "green": 0.3,
+         "earthy": -2.6
+        }
+       },
+       {
+        "label": "Diminuer Nugget · 60′ · 46 → 38.5 g (bas de la bande d’IBU)",
+        "type": "diminuer",
+        "domaine": "stock",
+        "rang": 9,
+        "exAequo": 0,
+        "distance": 0.327,
+        "derive": -9.7,
+        "conflits": 0,
+        "debord": 0,
+        "effets": {
+         "citrus": -0.2,
+         "tropical": -0.2,
+         "stoneFruit": -0.2,
+         "pomeFruit": -0.2,
+         "berries": -0.2,
+         "floral": -0.2,
+         "herbal": -0.2,
+         "resin": -0.2,
+         "spice": -0.2,
+         "green": -0.2,
+         "earthy": -0.2
+        }
+       },
+       {
+        "label": "Retirer Nugget · 60′",
+        "type": "retirer",
+        "domaine": "stock",
+        "rang": 10,
+        "exAequo": 0,
+        "distance": 0.247,
+        "derive": -59.7,
+        "conflits": 1,
+        "debord": 0,
+        "effets": {
+         "citrus": -2.6,
+         "tropical": -2.6,
+         "stoneFruit": -2.6,
+         "pomeFruit": -2.6,
+         "berries": -2.6,
+         "floral": -2.6,
+         "herbal": -1.8,
+         "resin": -2.6,
+         "spice": -2.6,
+         "green": -1.8,
+         "earthy": -2.6
+        }
+       },
+       {
+        "label": "Remplacer Nugget par Citra cryo · 60′ · 24 g",
+        "type": "remplacer à IBU égal",
+        "domaine": "stock",
+        "rang": 11,
+        "exAequo": 0,
+        "distance": 0.307,
+        "derive": -0.3,
+        "conflits": 1,
+        "debord": 0,
+        "effets": {
+         "citrus": -0.8,
+         "tropical": -0.8,
+         "stoneFruit": -0.8,
+         "pomeFruit": -2.6,
+         "berries": -0.8,
+         "melon": 1.8,
+         "floral": -0.8,
+         "herbal": -1.8,
+         "resin": -0.8,
+         "spice": -2.6,
+         "green": -1.8,
+         "earthy": -2.6
+        }
+       }
+      ],
+      "notes": [
+       "6 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ],
+      "momentsDemandes": [
+       "b10",
+       "wp",
+       "dryActive",
+       "dryPost"
+      ]
+     },
+     "leviers": {
+      "voies": 13,
+      "dry": [],
+      "souches": 2
+     },
+     "parMoment": {
+      "b60": {
+       "evalue": 189,
+       "voiesRetenues": 187,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 2,
+        "remplacer à IBU égal": 184,
+        "retirer": 1
+       },
+       "top5": [],
+       "notes": [
+        "2 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "b30": {
+       "evalue": 189,
+       "voiesRetenues": 187,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 2,
+        "remplacer à IBU égal": 184,
+        "retirer": 1
+       },
+       "top5": [],
+       "notes": [
+        "2 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "b15": {
+       "evalue": 189,
+       "voiesRetenues": 187,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 2,
+        "remplacer à IBU égal": 184,
+        "retirer": 1
+       },
+       "top5": [],
+       "notes": [
+        "2 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "b10": {
+       "evalue": 189,
+       "voiesRetenues": 187,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 2,
+        "remplacer à IBU égal": 184,
+        "retirer": 1
+       },
+       "top5": [],
+       "notes": [
+        "2 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "wp": {
+       "evalue": 189,
+       "voiesRetenues": 187,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 2,
+        "remplacer à IBU égal": 184,
+        "retirer": 1
+       },
+       "top5": [],
+       "notes": [
+        "2 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "dryActive": {
+       "evalue": 189,
+       "voiesRetenues": 187,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 2,
+        "remplacer à IBU égal": 184,
+        "retirer": 1
+       },
+       "top5": [],
+       "notes": [
+        "2 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      },
+      "dryPost": {
+       "evalue": 189,
+       "voiesRetenues": 187,
+       "ajouts": 0,
+       "ajoutsParVariete": 0,
+       "groupesDistincts": 0,
+       "premierGroupe": 0,
+       "ajoutsAvecEffetEtabli": 0,
+       "autresTypes": {
+        "diminuer": 2,
+        "remplacer à IBU égal": 184,
+        "retirer": 1
+       },
+       "top5": [],
+       "notes": [
+        "2 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+       ]
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "B": {
+  "b60": {
+   "citrus": {
+    "dose_g_par_L": 1,
+    "varietesQuiCitent": 233,
+    "effetNonEtabli": 0,
+    "effetEtabli": 233,
+    "valeursDistinctes": 1,
+    "min": 1.6,
+    "max": 1.6,
+    "valeurs": [
+     1.6
+    ]
+   },
+   "tropical": {
+    "dose_g_par_L": 1,
+    "varietesQuiCitent": 123,
+    "effetNonEtabli": 0,
+    "effetEtabli": 123,
+    "valeursDistinctes": 1,
+    "min": 1.6,
+    "max": 1.6,
+    "valeurs": [
+     1.6
+    ]
+   },
+   "floral": {
+    "dose_g_par_L": 1,
+    "varietesQuiCitent": 154,
+    "effetNonEtabli": 0,
+    "effetEtabli": 154,
+    "valeursDistinctes": 1,
+    "min": 1.6,
+    "max": 1.6,
+    "valeurs": [
+     1.6
+    ]
+   },
+   "resin": {
+    "dose_g_par_L": 1,
+    "varietesQuiCitent": 134,
+    "effetNonEtabli": 0,
+    "effetEtabli": 134,
+    "valeursDistinctes": 1,
+    "min": 1.6,
+    "max": 1.6,
+    "valeurs": [
+     1.6
+    ]
+   }
+  },
+  "b10": {
+   "citrus": {
+    "dose_g_par_L": 2,
+    "varietesQuiCitent": 233,
+    "effetNonEtabli": 0,
+    "effetEtabli": 233,
+    "valeursDistinctes": 1,
+    "min": 34.5,
+    "max": 34.5,
+    "valeurs": [
+     34.5
+    ]
+   },
+   "tropical": {
+    "dose_g_par_L": 2,
+    "varietesQuiCitent": 123,
+    "effetNonEtabli": 0,
+    "effetEtabli": 123,
+    "valeursDistinctes": 1,
+    "min": 34.9,
+    "max": 34.9,
+    "valeurs": [
+     34.9
+    ]
+   },
+   "floral": {
+    "dose_g_par_L": 2,
+    "varietesQuiCitent": 154,
+    "effetNonEtabli": 0,
+    "effetEtabli": 154,
+    "valeursDistinctes": 1,
+    "min": 34.9,
+    "max": 34.9,
+    "valeurs": [
+     34.9
+    ]
+   },
+   "resin": {
+    "dose_g_par_L": 2,
+    "varietesQuiCitent": 134,
+    "effetNonEtabli": 0,
+    "effetEtabli": 134,
+    "valeursDistinctes": 1,
+    "min": 34.9,
+    "max": 34.9,
+    "valeurs": [
+     34.9
+    ]
+   }
+  },
+  "wp": {
+   "citrus": {
+    "dose_g_par_L": 3,
+    "varietesQuiCitent": 233,
+    "effetNonEtabli": 0,
+    "effetEtabli": 233,
+    "valeursDistinctes": 1,
+    "min": 47,
+    "max": 47,
+    "valeurs": [
+     47
+    ]
+   },
+   "tropical": {
+    "dose_g_par_L": 3,
+    "varietesQuiCitent": 123,
+    "effetNonEtabli": 0,
+    "effetEtabli": 123,
+    "valeursDistinctes": 1,
+    "min": 47.5,
+    "max": 47.5,
+    "valeurs": [
+     47.5
+    ]
+   },
+   "floral": {
+    "dose_g_par_L": 3,
+    "varietesQuiCitent": 154,
+    "effetNonEtabli": 0,
+    "effetEtabli": 154,
+    "valeursDistinctes": 1,
+    "min": 47.5,
+    "max": 47.5,
+    "valeurs": [
+     47.5
+    ]
+   },
+   "resin": {
+    "dose_g_par_L": 3,
+    "varietesQuiCitent": 134,
+    "effetNonEtabli": 0,
+    "effetEtabli": 134,
+    "valeursDistinctes": 1,
+    "min": 47.5,
+    "max": 47.5,
+    "valeurs": [
+     47.5
+    ]
+   }
+  },
+  "dryActive": {
+   "citrus": {
+    "dose_g_par_L": 4,
+    "varietesQuiCitent": 233,
+    "effetNonEtabli": 0,
+    "effetEtabli": 233,
+    "valeursDistinctes": 1,
+    "min": 55.6,
+    "max": 55.6,
+    "valeurs": [
+     55.6
+    ]
+   },
+   "tropical": {
+    "dose_g_par_L": 4,
+    "varietesQuiCitent": 123,
+    "effetNonEtabli": 0,
+    "effetEtabli": 123,
+    "valeursDistinctes": 1,
+    "min": 50.9,
+    "max": 50.9,
+    "valeurs": [
+     50.9
+    ]
+   },
+   "floral": {
+    "dose_g_par_L": 4,
+    "varietesQuiCitent": 154,
+    "effetNonEtabli": 0,
+    "effetEtabli": 154,
+    "valeursDistinctes": 1,
+    "min": 50.9,
+    "max": 50.9,
+    "valeurs": [
+     50.9
+    ]
+   },
+   "resin": {
+    "dose_g_par_L": 4,
+    "varietesQuiCitent": 134,
+    "effetNonEtabli": 0,
+    "effetEtabli": 134,
+    "valeursDistinctes": 1,
+    "min": 50.9,
+    "max": 50.9,
+    "valeurs": [
+     50.9
+    ]
+   }
+  },
+  "dryPost": {
+   "citrus": {
+    "dose_g_par_L": 4,
+    "varietesQuiCitent": 233,
+    "effetNonEtabli": 0,
+    "effetEtabli": 233,
+    "valeursDistinctes": 1,
+    "min": 64.1,
+    "max": 64.1,
+    "valeurs": [
+     64.1
+    ]
+   },
+   "tropical": {
+    "dose_g_par_L": 4,
+    "varietesQuiCitent": 123,
+    "effetNonEtabli": 0,
+    "effetEtabli": 123,
+    "valeursDistinctes": 1,
+    "min": 59.4,
+    "max": 59.4,
+    "valeurs": [
+     59.4
+    ]
+   },
+   "floral": {
+    "dose_g_par_L": 4,
+    "varietesQuiCitent": 154,
+    "effetNonEtabli": 0,
+    "effetEtabli": 154,
+    "valeursDistinctes": 1,
+    "min": 59.4,
+    "max": 59.4,
+    "valeurs": [
+     59.4
+    ]
+   },
+   "resin": {
+    "dose_g_par_L": 4,
+    "varietesQuiCitent": 134,
+    "effetNonEtabli": 0,
+    "effetEtabli": 134,
+    "valeursDistinctes": 1,
+    "min": 59.4,
+    "max": 59.4,
+    "valeurs": [
+     59.4
+    ]
+   }
+  }
+ },
+ "C": {
+  "echantillon": 66,
+  "graine": 181,
+  "dryActive": {
+   "houblons": 66,
+   "aucuneVoie": 0,
+   "X": {
+    "dansLaListe": 66,
+    "rangMoyenMedian": 27,
+    "dansLesDix": 4,
+    "premierGroupeMedian": 53,
+    "groupesDistinctsMedian": 5,
+    "listeMediane": 252.5
+   },
+   "substitutsBM": {
+    "n": 66,
+    "rappel5": 0.003,
+    "rappel10": 0.011,
+    "touche10": 0.03,
+    "rangMedian": 36.25,
+    "mrr": 0.034,
+    "sansRang": 2
+   },
+   "absentsDeLaListe": {
+    "absents": 13,
+    "total": 210
+   }
+  },
+  "b60": {
+   "houblons": 66,
+   "aucuneVoie": 0,
+   "X": {
+    "dansLaListe": 66,
+    "rangMoyenMedian": 25,
+    "dansLesDix": 17,
+    "premierGroupeMedian": 1,
+    "groupesDistinctsMedian": 174.5,
+    "listeMediane": 252.5
+   },
+   "substitutsBM": {
+    "n": 66,
+    "rappel5": 0.066,
+    "rappel10": 0.195,
+    "touche10": 0.364,
+    "rangMedian": 13.5,
+    "mrr": 0.101,
+    "sansRang": 2
+   },
+   "absentsDeLaListe": {
+    "absents": 13,
+    "total": 210
+   }
+  }
+ },
+ "D": {
+  "inventaire": {
+   "varietes": 318,
+   "alpha": 318,
+   "beta": 311,
+   "cohumulone": 287,
+   "huileTotale": 301,
+   "aumoins2ComposantsHuile": 253,
+   "linalolHopsteiner": 64,
+   "classeThiolHopsteiner": 59,
+   "usage": 318,
+   "radarBM": 181,
+   "fichesAvecMots": 302
+  },
+  "parFamille": [
+   {
+    "famille": "citrus",
+    "citent": 233,
+    "groupesAujourdhui": 1,
+    "cles": {
+     "marque": 2,
+     "premierDescripteur": 2,
+     "partDesFichesQuiLaCitent": 17,
+     "huileTotale": 68,
+     "huileTotaleAbsente": 10,
+     "cascadeMarque_Premier_Part_Huile": 179
+    },
+    "dixPremiersCascade": [
+     {
+      "nom": "Styrian Dragon",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.75
+     },
+     {
+      "nom": "Altus",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.7
+     },
+     {
+      "nom": "Styrian Cardinal",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.5
+     },
+     {
+      "nom": "Sorachi Ace",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.5
+     },
+     {
+      "nom": "Ekuanot",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.25
+     },
+     {
+      "nom": "Tango",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.2
+     },
+     {
+      "nom": "Ahhhroma",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.05
+     },
+     {
+      "nom": "CTZ",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3
+     },
+     {
+      "nom": "Tomahawk",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3
+     },
+     {
+      "nom": "Sabro",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 2.65
+     }
+    ],
+    "dixPremiersAujourdhui": [
+     "Adeena",
+     "Admiral",
+     "African Queen",
+     "Agnus",
+     "Ahhhroma",
+     "Ahtanum",
+     "Akoya",
+     "Altus",
+     "Amarillo",
+     "Amethyst"
+    ]
+   },
+   {
+    "famille": "tropical",
+    "citent": 123,
+    "groupesAujourdhui": 1,
+    "cles": {
+     "marque": 2,
+     "premierDescripteur": 2,
+     "partDesFichesQuiLaCitent": 22,
+     "huileTotale": 52,
+     "huileTotaleAbsente": 4,
+     "cascadeMarque_Premier_Part_Huile": 107
+    },
+    "dixPremiersCascade": [
+     {
+      "nom": "Styrian Wolf",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.75
+     },
+     {
+      "nom": "Sultana (Denali)",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.5
+     },
+     {
+      "nom": "HBC 586",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.5
+     },
+     {
+      "nom": "Galaxy",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.4
+     },
+     {
+      "nom": "Ekuanot",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.25
+     },
+     {
+      "nom": "Tango",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.2
+     },
+     {
+      "nom": "Melba",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3
+     },
+     {
+      "nom": "Sabro",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 2.65
+     },
+     {
+      "nom": "Vic Secret",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 2.3499999999999996
+     },
+     {
+      "nom": "Citra",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 2.25
+     }
+    ],
+    "dixPremiersAujourdhui": [
+     "Ahhhroma",
+     "Amarillo",
+     "Ariana",
+     "Astra",
+     "Azacca",
+     "Belma",
+     "Bergamot",
+     "Bitter Gold",
+     "Bravo",
+     "Brooklyn"
+    ]
+   },
+   {
+    "famille": "resin",
+    "citent": 134,
+    "groupesAujourdhui": 1,
+    "cles": {
+     "marque": 2,
+     "premierDescripteur": 2,
+     "partDesFichesQuiLaCitent": 19,
+     "huileTotale": 60,
+     "huileTotaleAbsente": 4,
+     "cascadeMarque_Premier_Part_Huile": 123
+    },
+    "dixPremiersCascade": [
+     {
+      "nom": "Altus",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.7
+     },
+     {
+      "nom": "Super Pride",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.5
+     },
+     {
+      "nom": "Eureka",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.25
+     },
+     {
+      "nom": "Millennium",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 2.25
+     },
+     {
+      "nom": "HBC 472",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 2.15
+     },
+     {
+      "nom": "Simcoe",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 2
+     },
+     {
+      "nom": "Apollo",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 1.65
+     },
+     {
+      "nom": "Magnat",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 1.5
+     },
+     {
+      "nom": "Northern Brewer (US)",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 1.5
+     },
+     {
+      "nom": "Pride of Ringwood",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 1.5
+     }
+    ],
+    "dixPremiersAujourdhui": [
+     "Adeena",
+     "Admiral",
+     "Ahtanum",
+     "Altus",
+     "Amarillo",
+     "Apollo",
+     "Ariana",
+     "Atlas",
+     "Azacca",
+     "Bitter Gold"
+    ]
+   },
+   {
+    "famille": "floral",
+    "citent": 154,
+    "groupesAujourdhui": 1,
+    "cles": {
+     "marque": 2,
+     "premierDescripteur": 2,
+     "partDesFichesQuiLaCitent": 20,
+     "huileTotale": 57,
+     "huileTotaleAbsente": 4,
+     "cascadeMarque_Premier_Part_Huile": 136
+    },
+    "dixPremiersCascade": [
+     {
+      "nom": "Styrian Cardinal",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 3.5
+     },
+     {
+      "nom": "Elixir",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 2
+     },
+     {
+      "nom": "Horizon",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 2
+     },
+     {
+      "nom": "Zenith",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 1.8
+     },
+     {
+      "nom": "Perle (GR)",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 1.5
+     },
+     {
+      "nom": "Santiam",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 1.5
+     },
+     {
+      "nom": "Styrian Kolibri",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 1.5
+     },
+     {
+      "nom": "Atlas",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 1.4500000000000002
+     },
+     {
+      "nom": "X13459",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 1.4
+     },
+     {
+      "nom": "Taiheke",
+      "marque": 1,
+      "premier": 1,
+      "part": 1,
+      "huile": 1.25
+     }
+    ],
+    "dixPremiersAujourdhui": [
+     "Adeena",
+     "Agnus",
+     "Ahtanum",
+     "Amarillo",
+     "Aramis",
+     "Arcadian",
+     "Archer",
+     "Ariana",
+     "Atlas",
+     "Aurora"
+    ]
+   }
+  ]
+ }
+}
