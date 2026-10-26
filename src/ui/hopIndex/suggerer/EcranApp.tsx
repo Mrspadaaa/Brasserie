@@ -28,6 +28,8 @@ export interface EcranSuggererProps {
   /** L'identifiant du brouillon visé par la route ; absent : le brouillon ouvert dessous. */
   recipeId?: string;
   onClose: () => void;
+  /** La croix (D118) : jusqu'à l'étape Houblons quand Suggérer est empilé sur Ma bière ; absent : `onClose`. */
+  onCloseAll?: () => void;
   /** La visée posée par le brasseur (palier par famille) ; absente : aucune demande, Suggérer n'a rien à viser. */
   visee?: Visee;
 }
@@ -43,12 +45,12 @@ function SansBrouillon({ onClose }: { onClose: () => void }) {
 export default function EcranSuggererApp(p: EcranSuggererProps) {
   const porte = usePorteEtape();
   if (!porte || (p.recipeId && p.recipeId !== porte.draftId)) return <SansBrouillon onClose={p.onClose} />;
-  return <Contenu onClose={p.onClose} porte={porte} visee={p.visee} />;
+  return <Contenu onClose={p.onClose} onCloseAll={p.onCloseAll} porte={porte} visee={p.visee} />;
 }
 
 const BASE: RouteSuggerer = { ecran: 'suggerer' };
 
-function Contenu({ onClose, porte, visee: viseeProp }: { onClose: () => void; porte: PorteEtape; visee?: Visee }) {
+function Contenu({ onClose, onCloseAll, porte, visee: viseeProp }: { onClose: () => void; onCloseAll?: () => void; porte: PorteEtape; visee?: Visee }) {
   const { recipe, boilOg, draftId } = porte;
   const viseePosee = useSyncExternalStore(abonnerVisee, lireVisee, lireVisee);
   const visee = viseeProp ?? viseePosee;
@@ -119,8 +121,9 @@ function Contenu({ onClose, porte, visee: viseeProp }: { onClose: () => void; po
   }), [recette, visee, comparaison, route, ouvrir, gestes]);
   const brouillon = useMemo(() => ({ recette, draftId }), [recette, draftId]);
   const cadre = useMemo(() => ({
-    fermer: onClose, comparer: () => { ouvrirCouche({ view: 'hopCompare', recipeId: draftId, hops: comparaison }); }, nbHoublons: comparaison.length,
-  }), [onClose, draftId, comparaison]);
+    fermer: onClose, ...(onCloseAll ? { fermerTout: onCloseAll } : {}),
+    comparer: () => { ouvrirCouche({ view: 'hopCompare', recipeId: draftId, hops: comparaison }); }, nbHoublons: comparaison.length,
+  }), [onClose, onCloseAll, draftId, comparaison]);
 
   return (
     <CadreSuggererCtx.Provider value={cadre}>

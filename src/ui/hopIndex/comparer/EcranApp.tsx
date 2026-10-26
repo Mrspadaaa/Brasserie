@@ -28,6 +28,8 @@ export interface EcranComparerProps {
   /** L'identifiant du brouillon visé par la route ; absent : le brouillon ouvert dessous. */
   recipeId?: string;
   onClose: () => void;
+  /** La croix (D118) : jusqu'à l'étape Houblons quand Comparer est empilé sur Ma bière ; absent : `onClose`. */
+  onCloseAll?: () => void;
 }
 
 /** Ajout neuf posé par « Placer <houblon> » : 4 g/L, dry hop en fermentation active, 3 j (la carte : « actif · 3 j »). */
@@ -48,7 +50,7 @@ export default function EcranComparerApp(p: EcranComparerProps) {
   return <Contenu {...p} porte={porte} />;
 }
 
-function Contenu({ houblons, pin, onClose, porte }: EcranComparerProps & { porte: PorteEtape }) {
+function Contenu({ houblons, pin, onClose, onCloseAll, porte }:EcranComparerProps & { porte: PorteEtape }) {
   const { recipe, boilOg, draftId } = porte;
   // d3b (#180) : les compléments des 18 sources se chargent dès l'ouverture (morceau à part). L'écran attend leur arrivée, au plus 600 ms,
   // pour ne rien montrer d'incomplet (un « ? » qui devient une valeur, une barre qui s'allonge) ; hors ligne, le catalogue seul.
@@ -116,7 +118,10 @@ function Contenu({ houblons, pin, onClose, porte }: EcranComparerProps & { porte
     recette, route: { ecran: 'comparer', ...(pin ? { pin } : {}) }, aller, ouvrir, Cadre: CadreApp, Fiche: FicheDeLApp, termes,
   }), [recette, pin, aller, ouvrir, termes]);
   const brouillon = useMemo(() => ({ recette, draftId }), [recette, draftId]);
-  const cadre = useMemo(() => ({ fermer: onClose, suggerer: () => { ouvrirCouche({ view: 'hopSuggest', recipeId: draftId }); }, nbHoublons: houblons.length }), [onClose, draftId, houblons.length]);
+  const cadre = useMemo(() => ({
+    fermer: onClose, ...(onCloseAll ? { fermerTout: onCloseAll } : {}),
+    suggerer: () => { ouvrirCouche({ view: 'hopSuggest', recipeId: draftId }); }, nbHoublons: houblons.length,
+  }), [onClose, onCloseAll, draftId, houblons.length]);
 
   if (attente) return <div role="status" data-role="comparer-attente" className="py-3 text-sm text-cave-400">Chargement de cet atelier…</div>;
   return (

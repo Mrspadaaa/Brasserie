@@ -8,7 +8,8 @@ import { Dock } from '../Pont';
 import type { CadreSuggererProps } from './hote';
 import '../comparer/cadre-app.css';
 
-export interface ActionsCadreSuggerer { fermer: () => void; comparer: () => void; nbHoublons: number }
+/** `fermer` : un niveau (l'onglet « Ma bière » y revient). `fermerTout` : la croix (D118), jusqu'à l'étape Houblons ; absent : `fermer`. */
+export interface ActionsCadreSuggerer { fermer: () => void; fermerTout?: () => void; comparer: () => void; nbHoublons: number }
 export const CadreSuggererCtx = createContext<ActionsCadreSuggerer | null>(null);
 
 function Onglets({ a }: { a: ActionsCadreSuggerer }) {
@@ -19,7 +20,7 @@ function Onglets({ a }: { a: ActionsCadreSuggerer }) {
   ];
   return (
     <div data-role="onglets" data-page-titlebar className="pq-tete flex items-center gap-1.5">
-      <button type="button" data-role="retour" aria-label="Fermer" title="Fermer : retour à l’étape Houblons" onClick={a.fermer} className="pq-croix shrink-0">
+      <button type="button" data-role="retour" aria-label="Fermer" title="Fermer : retour à l’étape Houblons" onClick={a.fermerTout ?? a.fermer} className="pq-croix shrink-0">
         <svg viewBox="0 0 24 24" aria-hidden="true" className="pq-croix-icone" fill="currentColor"><path d="M5.4 4 12 10.6 18.6 4 20 5.4 13.4 12 20 18.6 18.6 20 12 13.4 5.4 20 4 18.6 10.6 12 4 5.4Z" /></svg>
       </button>
       <div role="tablist" className="pq-onglets flex-1 grid grid-cols-3 gap-0.5 rounded-full bg-cave-850 p-0.5">
@@ -38,7 +39,7 @@ export function CadreApp({ ecran, question, elementTete, contexte, dock, etat, c
   const a = useContext(CadreSuggererCtx);
   if (!a) throw new Error('CadreApp (Suggérer) hors de CadreSuggererCtx');
   return (
-    <PageShell title={question} onClose={a.fermer} footer={dock ? <Dock>{dock}</Dock> : undefined}
+    <PageShell title={question} onClose={a.fermerTout ?? a.fermer} footer={dock ? <Dock>{dock}</Dock> : undefined}
       mobileHeader={<div {...(elementTete ? { 'data-element': elementTete } : {})}><Onglets a={a} /></div>}
       className={`pq-outil pq-outil-${ecran} pq-cadre-retour`}>
       <div data-ecran={ecran} {...(etat ? { 'data-etat': etat } : {})} className="space-y-2">

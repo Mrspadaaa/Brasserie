@@ -6,7 +6,7 @@
  * aucune donnée : il ne fait que pousser et dépiler des routes.
  */
 import { useEffect } from 'react';
-import { poserOuvreurCouche } from './ouvrirCouche';
+import { poserFermeurJusquaLEtape, poserOuvreurCouche } from './ouvrirCouche';
 import { isLayerRoute, type FullScreenRoute, type LayerRoute, type Route } from '../../pages/useFullScreenRoute';
 
 export interface HopPileDevHook {
@@ -29,6 +29,17 @@ export function useHopPileDevHook(route: Pick<FullScreenRoute, 'open' | 'close' 
     poserOuvreurCouche(next => { if (isLayerRoute(next)) open(next); });
     return () => poserOuvreurCouche(null);
   }, [open]);
+  // D118 : la croix d'une couche empilée ferme toute la pile jusqu'à l'étape Houblons, jamais ailleurs.
+  useEffect(() => {
+    if (!closeTo) return;
+    poserFermeurJusquaLEtape(() => {
+      const haut = pile.length - 1;
+      if (haut < 1 || !isLayerRoute(pile[haut]) || pile[haut].view === 'hopBeer') return false;
+      closeTo(r => !isLayerRoute(r), { view: 'hopBeer' });
+      return true;
+    });
+    return () => poserFermeurJusquaLEtape(null);
+  }, [closeTo, pile]);
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     window.__hopPile = {
