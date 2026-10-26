@@ -829,3 +829,13 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - Le CLI a accordé `secretAccessor` sur `GEMINI_API_KEY` au compte de service de calcul par défaut. C'est le geste standard de
     `defineSecret`.
   - Rien ne l'appelle encore : le client part avec l'hébergement, qui attend les corrections de la puce et la voie g2c.
+- D93 (pilote, 26.10, voie g2c, commit b020da5e) : D90 est appliqué. Une famille n'exclut un houblon que si au moins la moitié de
+  ses fiches la citent ; on garde la règle de la moitié plutôt que le niveau d'affichage `marqué`.
+  - Sur la 21C, le pool exclu passe de 175 à 113 houblons.
+  - Pour Galaxy, dans Substituer, Mosaic passe de la 143e à la 2e place.
+  - Idaho 7 (herbacé, 3 fiches sur 6) et Strata (3 sur 4) restent exclus d'une Hazy : à montrer au brasseur, pour l'éprouver contre
+    la réputation de ces houblons (L14).
+  - Une clé `mineure` fait passer un houblon cité par une minorité de fiches après ceux qu'aucune fiche ne cite. Sans elle, East
+    Kent Goldings sortait de la liste de la stout S1.
+  - Leçon proposée par g2c : un assouplissement se mesure sur la liste que le brasseur voit, pas sur le pool seul. Elle est
+    couverte par L14 et L20 (confronter ce qu'il voit), donc pas d'entrée nouvelle (plafond de LECONS).
