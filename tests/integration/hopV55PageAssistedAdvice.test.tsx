@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { configure, act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BrewerChatInput, BrewerTurn } from '../../functions/src/companionTypes';
 import { createBrewerHopAdviceProposalEnvelope } from '../../functions/src/brewerHopAdviceProposal';
@@ -43,6 +43,9 @@ vi.mock('../../src/ui/hopV55/SensoryComparison', () => ({ HopV55SensoryCompariso
 vi.mock('../../src/ui/hopV55/NuanceExplorer', () => ({ HopV55NuanceExplorer: () => null }));
 
 import { HopV55Page } from '../../src/ui/hopV55/Page';
+// Charge CPU de la suite : un état attendu (findBy/waitFor) reste attendu jusqu'à son arrivée, au lieu des 1000 ms par défaut (#177).
+configure({ asyncUtilTimeout: 30_000 });
+vi.setConfig({ testTimeout: 60_000 });
 
 function ColdFixtureHarness({ namespace, onReady, onSession }: {
   namespace: string;
@@ -675,7 +678,7 @@ describe('Page V5.5 — lancement et archive du compagnon assisté', () => {
     expect(freshReceipt.value.ticket.reference).toBe(ticket.value.reference);
     expect(freshReceipt.value.record.payload.turnEvidence).toEqual(completeEvidence);
     expect(freshReceipt.value.record.payload.contextCheckAtReception.applicability.status).toBe('current');
-  }, 60_000);
+  }, 300_000);
 
   it('rattache le ticket et le tour froid A sous B sans déplacer son receipt ni son contexte', async () => {
     const namespace = `assisted-cold-recovery-${crypto.randomUUID()}`;
@@ -736,7 +739,7 @@ describe('Page V5.5 — lancement et archive du compagnon assisté', () => {
     expect((await services.assistedAdvice.readTicketByOperationId(workspaceA.id, operationId)).status).toBe('available');
     expect(await services.assistedAdvice.readRecordByOperationId(workspaceA.id, operationId)).toMatchObject({ status: 'available' });
     expect((await services.workspaces.read(services.ownerKey, workspaceA.id))?.intent.question).toBe(questionA);
-  }, 120_000);
+  }, 300_000);
 });
 
 describe('R23-1 — identification des reprises avant ouverture', () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { configure, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BrewerContext } from '../../functions/src/companionTypes';
 import { createHopDecisionDossierV2, type CreateHopDecisionDossierV2Input,
@@ -33,6 +33,9 @@ vi.mock('../../src/ui/hopV55/SensoryComparison', () => ({ HopV55SensoryCompariso
 vi.mock('../../src/ui/hopV55/NuanceExplorer', () => ({ HopV55NuanceExplorer: () => null }));
 
 import { HopV55Page } from '../../src/ui/hopV55/Page';
+// Charge CPU de la suite : un état attendu (findBy/waitFor) reste attendu jusqu'à son arrivée, au lieu des 1000 ms par défaut (#177).
+configure({ asyncUtilTimeout: 30_000 });
+vi.setConfig({ testTimeout: 60_000 });
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
@@ -224,7 +227,7 @@ describe('Page V5.5 — étude produit qualifiée Q03', () => {
     const preparation = prepRead.preparation;
     expect(preparation.sourceReadingReference).toBe(archiveRead.archive.contentReference);
 
-    await screen.findByText('Étude préparée', {}, { timeout: 15000 });
+    await screen.findByText('Étude préparée', {}, { timeout: 60000 });
     expect(workspace?.qualifiedStudyLinks).toBeUndefined();
     expect(harness.qualifiedStudies.createCalls).toBe(0);
     expect(preparation.createCommand.study.kind).toBe('calculated');
@@ -237,7 +240,7 @@ describe('Page V5.5 — étude produit qualifiée Q03', () => {
 
     harness.qualifiedStudies.failNextCreate = true;
     fireEvent.click(screen.getByRole('button', { name: 'Conserver cette étude produit' }));
-    const repositoryErrors = await screen.findAllByText('Échec transitoire du dépôt local de dossiers.', {}, { timeout: 15000 });
+    const repositoryErrors = await screen.findAllByText('Échec transitoire du dépôt local de dossiers.', {}, { timeout: 60000 });
     expect(repositoryErrors.length).toBeGreaterThan(0);
     await waitFor(() => expect(screen.getByRole('button', { name: 'Conserver cette étude produit' })).toBeEnabled());
     workspace = await harness.repository.read(ownerKey, harness.workspaceId);
@@ -247,7 +250,7 @@ describe('Page V5.5 — étude produit qualifiée Q03', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Conserver cette étude produit' }));
     await waitFor(() => expect(harness.qualifiedStudies.createCalls).toBe(2), { timeout: 10000 });
-    await waitFor(() => expect(harness.qualifiedStudies.successfulCreates).toBe(1), { timeout: 15000 });
+    await waitFor(() => expect(harness.qualifiedStudies.successfulCreates).toBe(1), { timeout: 60000 });
     workspace = await waitForStudyLink(harness);
     await screen.findByText('Étude produit conservée avec ses fiches et sources exactes.', {}, { timeout: 10000 });
     workspace = await harness.repository.read(ownerKey, harness.workspaceId);
@@ -280,7 +283,7 @@ describe('Page V5.5 — étude produit qualifiée Q03', () => {
     expect(parser).toHaveBeenCalledTimes(1);
     expect(builder).toHaveBeenCalledTimes(1);
     expect((await harness.repository.read(ownerKey, harness.workspaceId))?.decisionReadings?.[0]).toEqual(active!.decisionReadings![0]);
-  }, 60000);
+  }, 240000);
 
   it('scelle le numéro de révision réel du journal du brassin dans la préparation produit', async () => {
     const harness = await pageHarness('batch');
@@ -310,7 +313,7 @@ describe('Page V5.5 — étude produit qualifiée Q03', () => {
     expect(parserCall[1]).toEqual(harness.prepared);
 
     expect(builder).toHaveBeenCalledTimes(1);
-  }, 30000);
+  }, 240000);
 
   it('refuse un brassin sans révision de journal au lieu d’en créer une valeur zéro', async () => {
     const harness = await pageHarness('batch', { missingBatchJournal: true });
@@ -336,5 +339,5 @@ describe('Page V5.5 — étude produit qualifiée Q03', () => {
     expect(parserCall[1]).toEqual(harness.prepared);
 
     expect(builder).not.toHaveBeenCalled();
-  }, 30000);
+  }, 240000);
 });

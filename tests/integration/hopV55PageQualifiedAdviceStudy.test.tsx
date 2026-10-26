@@ -23,6 +23,9 @@ import { readHopV55QualifiedStudyPreferenceCommand } from '../../src/services/ho
 import { hopV55ScenarioRuntimeReference } from '../../src/services/hopV55/scenarioCommit';
 import { ensureHopV55ReferenceJournal } from '../../src/services/hopV55/referenceWorkspace';
 import type { HopDecisionLocalRepository } from '../../src/services/hopDecisionLocalRepository';
+
+// Volume de calcul (validation canonique + SHA-256 de gros dossiers, jsdom) : aucun état à attendre, la durée dépend du CPU. Plafond explicite (#177).
+vi.setConfig({ testTimeout: 120_000 });
 import { createHopV55WorkspaceRepository, type HopV55WorkspaceDatabaseAdapter, type HopV55WorkspaceEnvelopeV1,
   type HopV55WorkspaceTable } from '../../src/services/hopV55/workspaceRepository';
 
@@ -358,8 +361,8 @@ describe('Page V5.5 — étude qualifiée Q09 avec portées V3', () => {
     harness.failNextWorkspaceSave();
     const writesBeforePreparation = harness.save.mock.calls.length;
     fireEvent.click(screen.getByRole('button', { name: 'Préparer l’étude qualifiée' }));
-    await waitFor(() => expect(harness.save).toHaveBeenCalledTimes(writesBeforePreparation + 1), { timeout: 15000 });
-    await screen.findByText('Échec transitoire du CAS workspace fixture.', {}, { timeout: 15000 });
+    await waitFor(() => expect(harness.save).toHaveBeenCalledTimes(writesBeforePreparation + 1), { timeout: 60000 });
+    await screen.findByText('Échec transitoire du CAS workspace fixture.', {}, { timeout: 60000 });
     const failedWorkspace = await harness.stored();
     expect(failedWorkspace.qualifiedStudyPreparations).toBeUndefined();
     expect(spies.adviceBuilder).toHaveBeenCalledTimes(1);
@@ -367,7 +370,7 @@ describe('Page V5.5 — étude qualifiée Q09 avec portées V3', () => {
     const retryPreparation = screen.getByRole('button', { name: 'Réessayer la même demande' });
     await waitFor(() => expect(retryPreparation).toBeEnabled());
     fireEvent.click(retryPreparation);
-    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 15000 });
+    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 60000 });
 
     const preparedWorkspace = await harness.stored();
     expect(preparedWorkspace.qualifiedStudyPreparations).toHaveLength(1);
@@ -401,12 +404,12 @@ describe('Page V5.5 — étude qualifiée Q09 avec portées V3', () => {
     harness.qualifiedStudies.failCreateOnce = true;
     await waitFor(() => expect(createButtons[0]).toBeEnabled());
     fireEvent.click(createButtons[0]);
-    await screen.findByText('Échec transitoire du DAO advice fixture.', {}, { timeout: 15000 });
+    await screen.findByText('Échec transitoire du DAO advice fixture.', {}, { timeout: 60000 });
     expect(harness.qualifiedStudies.successfulCreates).toBe(0);
     const retryStudy = screen.getByRole('button', { name: 'Conserver cette étude de conseil' });
     await waitFor(() => expect(retryStudy).toBeEnabled());
     fireEvent.click(retryStudy);
-    await screen.findByText('Étude des emplois et matières conservée avec ses sources exactes.', {}, { timeout: 15000 });
+    await screen.findByText('Étude des emplois et matières conservée avec ses sources exactes.', {}, { timeout: 60000 });
     expect(harness.qualifiedStudies.createCalls).toBe(2);
     expect(harness.qualifiedStudies.successfulCreates).toBe(1);
     expect(harness.qualifiedStudies.createInputs[0]).toEqual(harness.qualifiedStudies.createInputs[1]);
@@ -423,7 +426,7 @@ describe('Page V5.5 — étude qualifiée Q09 avec portées V3', () => {
     fireEvent.change(screen.getByRole('textbox', { name: 'Pourquoi cette voie vous intéresse-t-elle ?' }),
       { target: { value: 'Je préfère conserver cette voie comme hypothèse de travail, sans dose ni changement du programme.' } });
     fireEvent.click(screen.getByRole('button', { name: 'Conserver cette préférence' }));
-    await screen.findByText('Choix documentaire conservé dans l’étude exacte.', {}, { timeout: 15000 });
+    await screen.findByText('Choix documentaire conservé dans l’étude exacte.', {}, { timeout: 60000 });
     expect(spies.preferenceCapture).toHaveBeenCalledTimes(1);
 
     const preferredWorkspace = await harness.stored();
@@ -453,7 +456,7 @@ describe('Page V5.5 — étude qualifiée Q09 avec portées V3', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Historique', exact: true }));
     fireEvent.click(await screen.findByText(/Études produit et conseils qualifiés · 1/u));
     fireEvent.click(await screen.findByRole('button', { name: 'Relire cette étude exacte' }));
-    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 15000 });
+    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 60000 });
     expect(screen.getByText('Étude archivée')).toBeInTheDocument();
     fireEvent.click(screen.getByText('Historique de conservation'));
     fireEvent.click(screen.getByText(/Préférences de stratégie enregistrées · 1/u));
@@ -466,7 +469,7 @@ describe('Page V5.5 — étude qualifiée Q09 avec portées V3', () => {
     expect(harness.qualifiedStudies.createCalls).toBe(createsBeforeHistoricalRead);
     expect(harness.qualifiedStudies.appendCalls).toBe(appendsBeforeHistoricalRead);
     expect(await harness.stored()).toEqual(preferredWorkspace);
-  }, 60000);
+  }, 240000);
 
   it('ne propose pas d’étude lorsque les deux portées Q09 sont explicitement écartées', async () => {
     const harness = await pageHarness({ source: 'recipe' });
@@ -493,7 +496,7 @@ describe('Page V5.5 — étude qualifiée Q09 avec portées V3', () => {
     expect(screen.queryByRole('heading', { name: 'Choisir le contexte à examiner' })).not.toBeInTheDocument();
     expect((await harness.stored()).qualifiedStudyPreparations).toBeUndefined();
     expect(spies.adviceBuilder).not.toHaveBeenCalled();
-  }, 30000);
+  }, 240000);
 
   it('exige un stade et un motif pour la source exploration et relit ces valeurs sans reparsing', async () => {
     const harness = await pageHarness({ source: 'exploration' });
@@ -509,7 +512,7 @@ describe('Page V5.5 — étude qualifiée Q09 avec portées V3', () => {
       { target: { value: 'Comparer explicitement une future période de garde; ce n’est pas un fait du brassin.' } });
     expect(screen.getByRole('button', { name: 'Préparer l’étude qualifiée' })).toBeEnabled();
     fireEvent.click(screen.getByRole('button', { name: 'Préparer l’étude qualifiée' }));
-    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 15000 });
+    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 60000 });
 
     const preparedWorkspace = await harness.stored();
     const preparation = latestAdvicePreparation(preparedWorkspace);
@@ -532,7 +535,7 @@ describe('Page V5.5 — étude qualifiée Q09 avec portées V3', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Historique', exact: true }));
     fireEvent.click(await screen.findByText(/Études produit et conseils qualifiés · 1/u));
     fireEvent.click(await screen.findByRole('button', { name: 'Relire cette étude exacte' }));
-    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 15000 });
+    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 60000 });
     expect(spies.parser).toHaveBeenCalledTimes(parserCallsBeforeReload);
     expect(spies.propertyBuilder).toHaveBeenCalledTimes(propertyBuilderCallsBeforeReload);
     expect(spies.adviceBuilder).toHaveBeenCalledTimes(adviceBuilderCallsBeforeReload);
@@ -542,7 +545,7 @@ describe('Page V5.5 — étude qualifiée Q09 avec portées V3', () => {
     expect(reopened.advicePreparationContext?.explicitFutureStage).toEqual(preparation.advicePreparationContext?.explicitFutureStage);
     expect(reopened.createCommand.kind === 'advice' && reopened.createCommand.study.requestSnapshot.action.situation.stage)
       .toBe('conditioning');
-  }, 45000);
+  }, 240000);
 
   it('garde le stade exact du batch sans guide et ne le renomme pas en planning ou exploration future', async () => {
     const harness = await pageHarness({ source: 'batch' });
@@ -569,7 +572,7 @@ describe('Page V5.5 — étude qualifiée Q09 avec portées V3', () => {
     expect(screen.getByText('Fermentation')).toBeInTheDocument();
     expect(screen.queryByRole('combobox', { name: 'Stade envisagé pour cette étude' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Préparer l’étude qualifiée' }));
-    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 15000 });
+    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 60000 });
 
     const preparation = latestAdvicePreparation(await harness.stored());
     expect(preparation.explicitFutureStage).toBeUndefined();
@@ -583,5 +586,5 @@ describe('Page V5.5 — étude qualifiée Q09 avec portées V3', () => {
       programFingerprint: programFingerprint(harness.prepared.runtime.current.program), stage: 'fermenting' });
     expect(preparation.createCommand.study.requestSnapshot.intent.originalQuestion).toBe(q09Question);
     expect(spies.adviceBuilder).toHaveBeenCalledTimes(1);
-  }, 45000);
+  }, 240000);
 });

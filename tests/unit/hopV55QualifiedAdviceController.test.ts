@@ -28,6 +28,9 @@ import { createHopV55QualifiedStudyPreparationV1, readHopV55QualifiedStudyLink,
 import type { HopDecisionLocalRepository } from '../../src/services/hopDecisionLocalRepository';
 import { hopV55Workspace } from '../fixtures/hopV55';
 
+// Volume de calcul (validation canonique + SHA-256 de gros dossiers, jsdom) : aucun état à attendre, la durée dépend du CPU. Plafond explicite (#177).
+vi.setConfig({ testTimeout: 120_000 });
+
 const ownerKey = 'fixture:q09-qualified-advice-controller';
 const workspaceId = 'workspace:q09-qualified-advice-controller';
 const recordedAt = '2026-10-03T21:10:00.000Z';

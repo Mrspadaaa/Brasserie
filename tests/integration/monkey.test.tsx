@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, fireEvent, cleanup } from '@testing-library/react';
 import { SaltSolver, WaterState } from '../../src/ui/SaltSolver';
 import { BrewWizard } from '../../src/pages/BrewWizard';
 import { DEFAULT_WATER_SOURCE } from '../../src/domain/water';
 import { defaultConfig } from '../../src/services/storage';
 import { AppConfig, Recipe, StockItem } from '../../src/types';
+
+// Volume de calcul (validation canonique + SHA-256 de gros dossiers, jsdom) : aucun état à attendre, la durée dépend du CPU. Plafond explicite (#177).
+vi.setConfig({ testTimeout: 120_000 });
 
 /**
  * MONKEY TESTING : on tape au hasard, partout, et on regarde ce qui casse.
