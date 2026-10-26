@@ -907,3 +907,13 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - 0 barre changée, 0 ms.
   - L'option est réversible. Les options m et w restent mesurées : elles changeraient les barres et retireraient Galaxy.
   - Voie d99. Le lot m7 attend ce défaut.
+- D101 (pilote, 26.10, sur « architectures db différentes, ou … index … À regarder si ça vaut le coût ») : pas de changement de base
+  de données (SQLite dans le navigateur, etc.). Avec environ 570 houblons, la recherche prend moins d'une milliseconde ; le temps est
+  dans le moteur : simulation 1,4 à 6 ms, liste de Suggérer 27 ms à chaud et 110 ms à froid, liste complète environ 1 s.
+  - Après les mesures de c6, une voie de profil attribuera le temps (L20) entre lecture, moteur et rendu.
+  - Les options seront ensuite chiffrées :
+    1. des index calculés au build : famille vers houblons, vecteurs de caractéristiques, top 50 des candidats de Substituer par houblon
+       et par moment ;
+    2. le catalogue analysé mis en cache dans Dexie ;
+    3. plus de calcul dans le worker (D65, conseil du 25.10).
+  - On choisit sur la mesure, rien avant.
