@@ -139,6 +139,17 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
     5. #182, le compagnon.
   - À lui : la page de choix farnésène et cohumulone (table « Pages ») ; la collecte des fiches fournisseurs pour le linalol et le
     géraniol (accord) ; le protocole d'essai IA de e1 § 7 (aucun appel fait).
+- **26.10, matin : reprise.** L'utilisateur : « Oublie la règle 80% elle est fausse, tu peux la supprimer » (retirée, REMPLACES.md).
+  Il accorde la collecte et l'essai d'IA : « Il faut récupérer un maximum de données. Toutes données sera bonne à prendre. Il
+  faudra trié ensuite. Pour le moment récupère TOUT ». Et sur les huiles : « ne regroupe jamais plusieurs huiles. Sauf si c'est
+  utile et que elles sont déjà séparé à un endroit. Donc je veux les deux » (D154). Le farnésène a donc sa ligne, par sa règle ;
+  la cohumulone reste à choisir sur la page.
+  - En vol : o1-huiles-separees, c3a-hopsteiner, c3b-europe, c3c-amerique-oceanie, c3d-communautaire (règles :
+    `voies/c3-COMMUN.md`), ia1-reclassement, p2-rendu (reprise), r177 (reprise).
+  - Ensuite :
+    - trier et fusionner les données collectées (seconde étape de D154 : toutes les huiles séparées) ;
+    - conseil sur les réglages du moteur, éclairé par ia1 ;
+    - rejouer et déployer.
 
 ## Règle de la fluidité (25.10, soir)
 - Ses mots : « SI Des étape bloque vraiment sur la fluidité. Tu peux skip trouvé une solution et compromis et me propose ça. Dans le pire des cas ». Une étape qui bloque sur la fluidité ne bloque pas la mission : un compromis mesuré (avant, après) lui est proposé, en DÉCISION À PRENDRE de la voie.
