@@ -24,3 +24,9 @@ Relevé par le lot Substituer (D125, 24.10 ; u4 choisi, D34).
   Hallertau Blanc 155e. Les mots hors famille, pondérés par leur rareté et mêlés à l'arôme (λ 0,25), le remontent au 2e rang et
   portent le MRR à 0,18–0,20. Suggérer ne départage pas les houblons qui citent les mêmes familles : un seul groupe, rangé par
   ordre alphabétique (l'effet d'une famille citée ne dépend pas de la variété).
+- **Suite du 26.10** (D77) : jugé sur une moitié de contrôle, le gain des « mots » tient à λ = 0,25, pas à λ = 0. La variante
+  « mots hors famille seuls » n'apporte rien : le gain vient des mots fins rattachés à une famille (grapefruit, lime, mojito). La
+  garde « au moins 2 mots partagés » écarte 86 % des remontées par un mot rare, sans perte. Une IA qui reclasse une fenêtre de 20
+  ne remonte jamais ce que la liste a rejeté : vérifier que le cas clé tient dans la fenêtre avant tout appel payant. Sur la
+  liste de l'option 1, Flash-Lite ajoute +0,10 de MRR (60 cas), p95 2,2 s, 0,003 CHF par geste. Le brasseur juge sur les listes
+  (`voies/m2-listes-substituts/`) ; ses mots : « pas forcé d'utiliser l'ai » si l'algorithme suffit.
