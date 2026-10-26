@@ -49,7 +49,7 @@ const optionsDe = (recette: RecetteParcours, a: AjoutParcours): SubstitutionOpti
 
 /** Les huit remplaçants de u4 et la règle du moteur, pour un ajout. `res` : le classement déjà rendu par le client
  * asynchrone (useRemplacants) ; absent, il est demandé au client (tout de suite sur le fil principal). */
-export const lireRemplacants = memo<[RecetteParcours, AjoutParcours, SubstitutionResult?], Lecture>('substituer-u4', (r, a) => cleR(r, a), (recette, a, res) =>
+export const lireRemplacants = memo<[RecetteParcours, AjoutParcours, SubstitutionResult?], Lecture>('substituer-u4', (r, a) => cleR(r, a) + cleOrdre(), (recette, a, res) =>
   composer(res ?? calcul().lire('substitutes', a.hopKey, optionsDe(recette, a)) ?? sansReponse(a)));
 
 /** Le client n'a pas de réponse immédiate (worker) : on n'invente rien, l'écran garde son dernier résultat (useRemplacants). */
@@ -92,7 +92,44 @@ function composer(res: SubstitutionResult): Lecture {
   const candidats = [...catalogue, ...stock.map((s) => versCandidat(s, 'stock'))]
     .sort((x, y) => y.min - x.min || y.max - x.max || x.nom.localeCompare(y.nom, 'fr'));
   const stockRangs = stock.map((s) => ({ nom: s.name, rang: tous.indexOf(s) + 1 }));
+  // Développement seulement : un ordre imposé (voie m3), pour montrer l'écran tel quel avec une autre liste.
+  // Le bloc entier est derrière `import.meta.env.DEV` : le build le supprime avec son message (aucune trace dans `dist/`).
+  if (import.meta.env.DEV) {
+    const imp = ordreImpose();
+    if (imp) {
+      const parCle = new Map(tous.map((s) => [s.key, s]));
+      const absents = imp.filter((o) => !parCle.has(o.id)).map((o) => o.id);
+      if (absents.length) console.warn(`ordre imposé : absents des remplaçants du moteur, ignorés : ${absents.join(', ')}`);
+      const pris = imp.flatMap((o) => { const s = parCle.get(o.id); return s ? [{ s, score: o.score }] : []; });
+      const enStock = (s: (typeof tous)[number]) => s.stock.etat === 'en stock';
+      return {
+        contexte: res.contexte, poids: w, total: res.candidats,
+        // Le score est celui de la colonne, un point (jamais une plage) ; tout le reste vient du moteur (stock, dose, familles).
+        candidats: pris.map(({ s, score }) => ({ ...versCandidat(s, enStock(s) ? 'stock' : 'catalogue'), min: score, max: score })),
+        stockRangs: pris.filter(({ s }) => enStock(s)).map(({ s }) => ({ nom: s.name, rang: tous.indexOf(s) + 1 })),
+      };
+    }
+  }
   return { contexte: res.contexte, poids: w, candidats, total: res.candidats, stockRangs };
+}
+
+// ---------- Développement seulement : l'ordre imposé de la voie m3 (listes de remplaçants) ----------
+/** Un remplaçant imposé : l'id de la variété (clé du moteur) et le score de sa colonne. */
+export interface OrdreImpose { id: string; score: number }
+declare global { interface Window { __hopSubstituerOrdre?: OrdreImpose[] } }
+/** `window.__hopSubstituerOrdre` : sous `import.meta.env.DEV` seulement (remplacé par `false` au build : aucune trace dans `dist/`,
+ * contrôlé par scripts/check-no-dev-auth.mjs). Une liste non vide remplace le classement du moteur ; sinon null. */
+function ordreImpose(): OrdreImpose[] | null {
+  if (import.meta.env.DEV) {
+    const o = window.__hopSubstituerOrdre;
+    return Array.isArray(o) && o.length ? o : null;
+  }
+  return null;
+}
+/** La clé de mémoire suit l'ordre imposé : un autre ordre, une autre lecture. Vide en production. */
+function cleOrdre(): string {
+  if (import.meta.env.DEV) { const o = ordreImpose(); return o ? `|ordre:${JSON.stringify(o)}` : ''; }
+  return '';
 }
 
 /** Le stock de l'original (son lot au stock moins ce que la recette en prend). */

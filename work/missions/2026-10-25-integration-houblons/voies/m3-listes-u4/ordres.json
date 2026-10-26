@@ -1,0 +1,2395 @@
+{
+ "lecture": "Ordre et score de chaque colonne (B, C, D), pour window.__hopSubstituerOrdre. A : aucune injection.",
+ "verifies": 220,
+ "houblons": [
+  {
+   "houblon": "Nelson Sauvin",
+   "id": "beermaverick-nelson-sauvin",
+   "colonnes": {
+    "b": [
+     {
+      "rang": 1,
+      "nom": "Herkules",
+      "id": "beermaverick-herkules",
+      "score": 72,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Godiva",
+      "id": "beermaverick-godiva",
+      "score": 67,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Boomerang",
+      "id": "beermaverick-boomerang",
+      "score": 65,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Pacific Jade",
+      "id": "beermaverick-pacific-jade",
+      "score": 64,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Phoenix",
+      "id": "beermaverick-phoenix",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Summit",
+      "id": "beermaverick-summit",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Marynka",
+      "id": "beermaverick-marynka",
+      "score": 62,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Cashmere",
+      "id": "beermaverick-cashmere",
+      "score": 61,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Galena",
+      "id": "beermaverick-galena",
+      "score": 61,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Hallertau Taurus",
+      "id": "beermaverick-hallertau-taurus",
+      "score": 61,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     }
+    ],
+    "c": [
+     {
+      "rang": 1,
+      "nom": "Herkules",
+      "id": "beermaverick-herkules",
+      "score": 62,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Godiva",
+      "id": "beermaverick-godiva",
+      "score": 57,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Hallertau Blanc",
+      "id": "beermaverick-hallertau-blanc",
+      "score": 57,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Sládek",
+      "id": "beermaverick-sladek",
+      "score": 56,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Admiral",
+      "id": "beermaverick-admiral",
+      "score": 54,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Cashmere",
+      "id": "beermaverick-cashmere",
+      "score": 53,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Galena",
+      "id": "beermaverick-galena",
+      "score": 53,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Pilgrim",
+      "id": "beermaverick-pilgrim",
+      "score": 52,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Pacific Jade",
+      "id": "beermaverick-pacific-jade",
+      "score": 51,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Boomerang",
+      "id": "beermaverick-boomerang",
+      "score": 50,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     }
+    ],
+    "d": [
+     {
+      "rang": 1,
+      "nom": "Hallertau Blanc",
+      "id": "beermaverick-hallertau-blanc",
+      "score": 57,
+      "rangC": 3,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Hallertau Blanc partage la groseille et le vin blanc, mais son profil myrcène est plus haut et l'humulène absent."
+     },
+     {
+      "rang": 2,
+      "nom": "African Queen",
+      "id": "beermaverick-african-queen",
+      "score": 44,
+      "rangC": 35,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "African Queen offre la groseille et une classe thiol forte, mais ajoute des notes dank et épicées plus marquées."
+     },
+     {
+      "rang": 3,
+      "nom": "Godiva",
+      "id": "beermaverick-godiva",
+      "score": 57,
+      "rangC": 2,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Godiva évoque le vin blanc et la groseille, mais ses acides alpha sont plus faibles et les huiles peu documentées."
+     },
+     {
+      "rang": 4,
+      "nom": "Galena",
+      "id": "beermaverick-galena",
+      "score": 53,
+      "rangC": 7,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Galena possède la groseille à maquereau recherchée, mais son usage aroma cache un profil de cohumulone nettement plus élevé."
+     },
+     {
+      "rang": 5,
+      "nom": "Jarrylo",
+      "id": "beermaverick-jarrylo",
+      "score": 44,
+      "rangC": 39,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Jarrylo intègre des notes de vin blanc, mais son dosage en huiles totales est bien plus lourd et fruité."
+     },
+     {
+      "rang": 6,
+      "nom": "Cashmere",
+      "id": "beermaverick-cashmere",
+      "score": 53,
+      "rangC": 6,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Cashmere apporte une complexité fruitée et noix de coco, mais s'éloigne du profil typique de raisin du Nelson."
+     },
+     {
+      "rang": 7,
+      "nom": "Summit",
+      "id": "beermaverick-summit",
+      "score": 50,
+      "rangC": 14,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Summit possède une classe thiol forte, mais ses arômes orientés agrumes et oignon s'éloignent du vin blanc."
+     },
+     {
+      "rang": 8,
+      "nom": "Cascade",
+      "id": "beermaverick-cascade",
+      "score": 49,
+      "rangC": 16,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Cascade affiche une classe thiol forte et un linalol proche, mais ses notes de pamplemousse dominent le raisin."
+     },
+     {
+      "rang": 9,
+      "nom": "Sládek",
+      "id": "beermaverick-sladek",
+      "score": 56,
+      "rangC": 4,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Sládek offre un profil fruité intéressant pour un usage aroma, mais manque de la finesse thiolée du sauvignon."
+     },
+     {
+      "rang": 10,
+      "nom": "Hallertau Taurus",
+      "id": "beermaverick-hallertau-taurus",
+      "score": 50,
+      "rangC": 11,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Hallertau Taurus présente un fort taux de linalol, mais ses arômes de chocolat et curry s'opposent au Nelson."
+     }
+    ]
+   }
+  },
+  {
+   "houblon": "Motueka",
+   "id": "beermaverick-motueka",
+   "colonnes": {
+    "b": [
+     {
+      "rang": 1,
+      "nom": "Cascade",
+      "id": "beermaverick-cascade",
+      "score": 71,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Taiheke",
+      "id": "beermaverick-taiheke",
+      "score": 68,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Mandarina Bavaria",
+      "id": "beermaverick-mandarina-bavaria",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Riwaka",
+      "id": "beermaverick-riwaka",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Triskel",
+      "id": "beermaverick-triskel",
+      "score": 62,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Bravo",
+      "id": "beermaverick-bravo",
+      "score": 61,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Southern Cross",
+      "id": "beermaverick-southern-cross",
+      "score": 61,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Barbe Rouge",
+      "id": "beermaverick-barbe-rouge",
+      "score": 60,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Buzz Bullets",
+      "id": "beermaverick-buzz-bullets",
+      "score": 60,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Comet",
+      "id": "beermaverick-comet",
+      "score": 59,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     }
+    ],
+    "c": [
+     {
+      "rang": 1,
+      "nom": "Cascade",
+      "id": "beermaverick-cascade",
+      "score": 63,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Taiheke",
+      "id": "beermaverick-taiheke",
+      "score": 61,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Riwaka",
+      "id": "beermaverick-riwaka",
+      "score": 58,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Bravo",
+      "id": "beermaverick-bravo",
+      "score": 53,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Mandarina Bavaria",
+      "id": "beermaverick-mandarina-bavaria",
+      "score": 53,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Southern Cross",
+      "id": "beermaverick-southern-cross",
+      "score": 53,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Atlas",
+      "id": "beermaverick-atlas",
+      "score": 52,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Triskel",
+      "id": "beermaverick-triskel",
+      "score": 52,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Barbe Rouge",
+      "id": "beermaverick-barbe-rouge",
+      "score": 50,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Comet",
+      "id": "beermaverick-comet",
+      "score": 50,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     }
+    ],
+    "d": [
+     {
+      "rang": 1,
+      "nom": "Taiheke",
+      "id": "beermaverick-taiheke",
+      "score": 61,
+      "rangC": 2,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Taiheke partage les origines neozelandaises et le profil citron vert du Motueka, mais offre plus de pamplemousse."
+     },
+     {
+      "rang": 2,
+      "nom": "Riwaka",
+      "id": "beermaverick-riwaka",
+      "score": 58,
+      "rangC": 3,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Riwaka apporte une touche tropicale intense proche du Motueka, bien que moins axee sur le mojito."
+     },
+     {
+      "rang": 3,
+      "nom": "Cascade",
+      "id": "beermaverick-cascade",
+      "score": 63,
+      "rangC": 1,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Cascade imite bien les agrumes du Motueka grace au myrcene, mais vire davantage vers le pin."
+     },
+     {
+      "rang": 4,
+      "nom": "Mandarina Bavaria",
+      "id": "beermaverick-mandarina-bavaria",
+      "score": 53,
+      "rangC": 5,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Mandarina Bavaria offre des notes citriques similaires au Motueka, mais marque une derive vers la mandarine."
+     },
+     {
+      "rang": 5,
+      "nom": "Southern Cross",
+      "id": "beermaverick-southern-cross",
+      "score": 53,
+      "rangC": 6,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Southern Cross possede le citron vert du Motueka avec un alpha eleve, mais ajoute des notes de pin."
+     },
+     {
+      "rang": 6,
+      "nom": "Barbe Rouge",
+      "id": "beermaverick-barbe-rouge",
+      "score": 50,
+      "rangC": 9,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Barbe Rouge propose des agrumes et du citron vert proches du Motueka, mais avec des baies en plus."
+     },
+     {
+      "rang": 7,
+      "nom": "Atlas",
+      "id": "beermaverick-atlas",
+      "score": 52,
+      "rangC": 7,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Atlas reprend le citron vert et le cote floral du Motueka, mais integre une composante pineuse."
+     },
+     {
+      "rang": 8,
+      "nom": "HORT9909",
+      "id": "beermaverick-hort9909",
+      "score": 50,
+      "rangC": 12,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "HORT9909 partage les notes de citron vert et d'agrumes du Motueka, mais se montre plus epice."
+     },
+     {
+      "rang": 9,
+      "nom": "Meridian",
+      "id": "beermaverick-meridian",
+      "score": 47,
+      "rangC": 15,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Meridian possede des agrumes et du citron rappelant le Motueka, avec une pointe de menthe verte."
+     },
+     {
+      "rang": 10,
+      "nom": "Falconer's Flight",
+      "id": "beermaverick-falconers-flight",
+      "score": 50,
+      "rangC": 11,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Falconer's Flight livre des fruits tropicaux et du citron proches du Motueka, mais avec du pin."
+     }
+    ]
+   }
+  },
+  {
+   "houblon": "Citra",
+   "id": "beermaverick-citra",
+   "colonnes": {
+    "b": [
+     {
+      "rang": 1,
+      "nom": "Nectaron",
+      "id": "beermaverick-nectaron",
+      "score": 70,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "NZH-107",
+      "id": "beermaverick-nzh-107",
+      "score": 70,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Amarillo",
+      "id": "beermaverick-amarillo",
+      "score": 68,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Mistral",
+      "id": "beermaverick-mistral",
+      "score": 68,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Riwaka",
+      "id": "beermaverick-riwaka",
+      "score": 68,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Taiheke",
+      "id": "beermaverick-taiheke",
+      "score": 68,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Sitiva Blend",
+      "id": "beermaverick-sitiva",
+      "score": 67,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Hydra",
+      "id": "beermaverick-hydra",
+      "score": 66,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "YQH-1380",
+      "id": "beermaverick-yqh-1320",
+      "score": 66,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Bitter Gold",
+      "id": "beermaverick-bitter-gold",
+      "score": 65,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     }
+    ],
+    "c": [
+     {
+      "rang": 1,
+      "nom": "NZH-107",
+      "id": "beermaverick-nzh-107",
+      "score": 67,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Nectaron",
+      "id": "beermaverick-nectaron",
+      "score": 64,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Riwaka",
+      "id": "beermaverick-riwaka",
+      "score": 63,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Sitiva Blend",
+      "id": "beermaverick-sitiva",
+      "score": 62,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Taiheke",
+      "id": "beermaverick-taiheke",
+      "score": 62,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Amarillo",
+      "id": "beermaverick-amarillo",
+      "score": 61,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Harlequin",
+      "id": "beermaverick-harlequin",
+      "score": 59,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "YQH-1380",
+      "id": "beermaverick-yqh-1320",
+      "score": 59,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Mistral",
+      "id": "beermaverick-mistral",
+      "score": 58,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Styrian Cardinal",
+      "id": "beermaverick-cardinal",
+      "score": 58,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     }
+    ],
+    "d": [
+     {
+      "rang": 1,
+      "nom": "Nectaron",
+      "id": "beermaverick-nectaron",
+      "score": 64,
+      "rangC": 2,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Nectaron partage les notes de pêche, agrumes et fruits tropicaux du Citra avec un profil aromatique très proche."
+     },
+     {
+      "rang": 2,
+      "nom": "Galaxy",
+      "id": "beermaverick-galaxy",
+      "score": 55,
+      "rangC": 15,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Galaxy offre une intensité de fruit de la passion et d'agrumes similaire au Citra pour le dry hop."
+     },
+     {
+      "rang": 3,
+      "nom": "NZH-107",
+      "id": "beermaverick-nzh-107",
+      "score": 67,
+      "rangC": 1,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "NZH-107 s'approche du Citra par ses notes d'agrumes et de fruit de la passion avec des huiles comparables."
+     },
+     {
+      "rang": 4,
+      "nom": "Amarillo",
+      "id": "beermaverick-amarillo",
+      "score": 61,
+      "rangC": 6,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Amarillo complète bien le profil agrumes et pêche du Citra malgré un humulène un peu plus élevé."
+     },
+     {
+      "rang": 5,
+      "nom": "Hydra",
+      "id": "beermaverick-hydra",
+      "score": 55,
+      "rangC": 16,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Hydra apporte des touches de mandarine, pêche et agrumes qui rappellent la complexité aromatique du Citra."
+     },
+     {
+      "rang": 6,
+      "nom": "Riwaka",
+      "id": "beermaverick-riwaka",
+      "score": 63,
+      "rangC": 3,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Riwaka possède des arômes de pamplemousse et fruits tropicaux proches, mais avec un alpha inférieur."
+     },
+     {
+      "rang": 7,
+      "nom": "Styrian Cardinal",
+      "id": "beermaverick-cardinal",
+      "score": 58,
+      "rangC": 10,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Styrian Cardinal intègre groseille à maquereau et agrumes, rejoignant les notes spécifiques du Citra."
+     },
+     {
+      "rang": 8,
+      "nom": "HBC 586",
+      "id": "beermaverick-hbc-586",
+      "score": 56,
+      "rangC": 13,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "HBC 586 se rapproche par la mangue et les agrumes, mais son alpha est nettement plus puissant."
+     },
+     {
+      "rang": 9,
+      "nom": "Falconer's Flight",
+      "id": "beermaverick-falconers-flight",
+      "score": 54,
+      "rangC": 18,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Falconer's Flight combine pamplemousse et fruits tropicaux, s'alignant bien sur l'esprit aromatique du Citra."
+     },
+     {
+      "rang": 10,
+      "nom": "Mistral",
+      "id": "beermaverick-mistral",
+      "score": 58,
+      "rangC": 9,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Mistral propose melon et agrumes, offrant une alternative originale mais légèrement éloignée du Citra pur."
+     }
+    ]
+   }
+  },
+  {
+   "houblon": "Galaxy",
+   "id": "beermaverick-galaxy",
+   "colonnes": {
+    "b": [
+     {
+      "rang": 1,
+      "nom": "Harlequin",
+      "id": "beermaverick-harlequin",
+      "score": 83,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Nectaron",
+      "id": "beermaverick-nectaron",
+      "score": 74,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "NZH-107",
+      "id": "beermaverick-nzh-107",
+      "score": 70,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Tango",
+      "id": "beermaverick-tango",
+      "score": 68,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Southern Sublime",
+      "id": "beermaverick-southern-sublime",
+      "score": 67,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Tropica",
+      "id": "beermaverick-tropica",
+      "score": 67,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "YQH-1380",
+      "id": "beermaverick-yqh-1320",
+      "score": 67,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Strata",
+      "id": "beermaverick-strata",
+      "score": 66,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Vic Secret",
+      "id": "beermaverick-vic-secret",
+      "score": 66,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Sultana (Denali)",
+      "id": "beermaverick-denali",
+      "score": 64,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     }
+    ],
+    "c": [
+     {
+      "rang": 1,
+      "nom": "Harlequin",
+      "id": "beermaverick-harlequin",
+      "score": 79,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Nectaron",
+      "id": "beermaverick-nectaron",
+      "score": 67,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Vic Secret",
+      "id": "beermaverick-vic-secret",
+      "score": 64,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Strata",
+      "id": "beermaverick-strata",
+      "score": 63,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "NZH-107",
+      "id": "beermaverick-nzh-107",
+      "score": 61,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Tango",
+      "id": "beermaverick-tango",
+      "score": 61,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Southern Sublime",
+      "id": "beermaverick-southern-sublime",
+      "score": 58,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Sultana (Denali)",
+      "id": "beermaverick-denali",
+      "score": 58,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Tropica",
+      "id": "beermaverick-tropica",
+      "score": 58,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Amarillo",
+      "id": "beermaverick-amarillo",
+      "score": 57,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     }
+    ],
+    "d": [
+     {
+      "rang": 1,
+      "nom": "Nectaron",
+      "id": "beermaverick-nectaron",
+      "score": 67,
+      "rangC": 2,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Partage l'intensité passion, pêche et ananas du Galaxy avec une forte teneur en myrcène, mais offre un profil plus net et moins dank."
+     },
+     {
+      "rang": 2,
+      "nom": "Vic Secret",
+      "id": "beermaverick-vic-secret",
+      "score": 64,
+      "rangC": 3,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Originaire du même terroir australien, il reproduit fidèlement les notes de fruits tropicaux et passion, bien qu'il soit plus résineux."
+     },
+     {
+      "rang": 3,
+      "nom": "Strata",
+      "id": "beermaverick-strata",
+      "score": 63,
+      "rangC": 4,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Capture parfaitement la combinaison rare de fruit de la passion intense et de notes dank et cannabis propres au Galaxy."
+     },
+     {
+      "rang": 4,
+      "nom": "Citra",
+      "id": "beermaverick-citra",
+      "score": 55,
+      "rangC": 12,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Excellente alternative en biotransformation pour ses notes puissantes d'agrumes, pêche et fruit de la passion, avec moins d'arômes végétaux."
+     },
+     {
+      "rang": 5,
+      "nom": "Harlequin",
+      "id": "beermaverick-harlequin",
+      "score": 79,
+      "rangC": 1,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Revisite le trio fruité passion, pêche et ananas avec un profil d'huiles similaire, mais manque de la signature dank du Galaxy."
+     },
+     {
+      "rang": 6,
+      "nom": "NZH-107",
+      "id": "beermaverick-nzh-107",
+      "score": 61,
+      "rangC": 5,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Offre une belle proximité sur le fruit de la passion et les agrumes, bien que son expression aromatique globale soit un peu moins explosive."
+     },
+     {
+      "rang": 7,
+      "nom": "BRU-1",
+      "id": "beermaverick-bru-1",
+      "score": 48,
+      "rangC": 25,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Apporte la facette ananas ultra mûr et fruitée très recherchée chez Galaxy, mais fait l'impasse sur le côté dank et passion."
+     },
+     {
+      "rang": 8,
+      "nom": "Tropica",
+      "id": "beermaverick-tropica",
+      "score": 58,
+      "rangC": 9,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Retrouve le mariage de fruits tropicaux, d'ananas et de nuances dank, même si le fruit de la passion n'y est pas explicite."
+     },
+     {
+      "rang": 9,
+      "nom": "YQH-1380",
+      "id": "beermaverick-yqh-1320",
+      "score": 56,
+      "rangC": 11,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Partage les descripteurs d'ananas et de pêche soutenus par un fort taux de myrcène, mais tire davantage sur le citron vert."
+     },
+     {
+      "rang": 10,
+      "nom": "Azacca",
+      "id": "beermaverick-azacca",
+      "score": 54,
+      "rangC": 14,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Fournit une explosion de fruits tropicaux et d'ananas idéale en fermentation active, malgré des notes épicées absentes du Galaxy."
+     }
+    ]
+   }
+  },
+  {
+   "houblon": "Saaz (CZ)",
+   "id": "beermaverick-saaz-cz",
+   "colonnes": {
+    "b": [
+     {
+      "rang": 1,
+      "nom": "Aurum",
+      "id": "beermaverick-aurum",
+      "score": 75,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Spalt",
+      "id": "beermaverick-spalt",
+      "score": 71,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Pacific Crest",
+      "id": "beermaverick-pacific-crest",
+      "score": 69,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Saaz Late",
+      "id": "beermaverick-saaz-late",
+      "score": 69,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Celeia",
+      "id": "beermaverick-celeia",
+      "score": 66,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Styrian Golding",
+      "id": "beermaverick-styrian-golding",
+      "score": 66,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Wild Loyalist",
+      "id": "beermaverick-wild-loyalist",
+      "score": 64,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Saaz (US)",
+      "id": "beermaverick-saaz-us",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Strisselspalt",
+      "id": "beermaverick-strisselspalt",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Crystal",
+      "id": "beermaverick-crystal",
+      "score": 62,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     }
+    ],
+    "c": [
+     {
+      "rang": 1,
+      "nom": "Aurum",
+      "id": "beermaverick-aurum",
+      "score": 71,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Spalt",
+      "id": "beermaverick-spalt",
+      "score": 71,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Saaz Late",
+      "id": "beermaverick-saaz-late",
+      "score": 66,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Celeia",
+      "id": "beermaverick-celeia",
+      "score": 61,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Pacific Crest",
+      "id": "beermaverick-pacific-crest",
+      "score": 61,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Wild Loyalist",
+      "id": "beermaverick-wild-loyalist",
+      "score": 60,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Styrian Golding",
+      "id": "beermaverick-styrian-golding",
+      "score": 58,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Saaz (US)",
+      "id": "beermaverick-saaz-us",
+      "score": 57,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Strisselspalt",
+      "id": "beermaverick-strisselspalt",
+      "score": 57,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Crystal",
+      "id": "beermaverick-crystal",
+      "score": 56,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     }
+    ],
+    "d": [
+     {
+      "rang": 1,
+      "nom": "Saaz Late",
+      "id": "beermaverick-saaz-late",
+      "score": 66,
+      "rangC": 3,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Dérivé direct du Saaz avec un profil aromatique terreux, herbacé et floral identique et un taux de farnésène parfaitement équivalent."
+     },
+     {
+      "rang": 2,
+      "nom": "Saaz (US)",
+      "id": "beermaverick-saaz-us",
+      "score": 57,
+      "rangC": 8,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Version américaine du Saaz, très proche sur le caractère noble et terreux, avec une fraction de farnésène bien préservée."
+     },
+     {
+      "rang": 3,
+      "nom": "Spalt",
+      "id": "beermaverick-spalt",
+      "score": 71,
+      "rangC": 2,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Variété noble partageant les mêmes notes terreuses, florales et herbacées, soutenue par un ratio d'huiles très similaire, notamment en farnésène."
+     },
+     {
+      "rang": 4,
+      "nom": "Sterling",
+      "id": "beermaverick-sterling",
+      "score": 54,
+      "rangC": 14,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Hybride issu du Saaz offrant le même profil noble, épicé et floral avec une teneur en farnésène presque identique en dry hop."
+     },
+     {
+      "rang": 5,
+      "nom": "Aurum",
+      "id": "beermaverick-aurum",
+      "score": 71,
+      "rangC": 1,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Profil aromatique noble, floral et terreux extrêmement fidèle au Saaz, bien qu'il apporte une touche fruitée supplémentaire."
+     },
+     {
+      "rang": 6,
+      "nom": "Wild Loyalist",
+      "id": "beermaverick-wild-loyalist",
+      "score": 60,
+      "rangC": 6,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Excellente correspondance aromatique sur l'herbacé, le floral et le terreux noble, malgré un manque de données précises sur les huiles."
+     },
+     {
+      "rang": 7,
+      "nom": "Celeia",
+      "id": "beermaverick-celeia",
+      "score": 61,
+      "rangC": 4,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Apporte la finesse noble, florale et terreuse recherchée en fermentation active, avec seulement une légère nuance de lavande."
+     },
+     {
+      "rang": 8,
+      "nom": "Tettnang (US)",
+      "id": "beermaverick-tettnang-us",
+      "score": 49,
+      "rangC": 26,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Noble classique très herbe coupée et épicé qui s'intègre bien, bien que son taux de farnésène soit plus modeste."
+     },
+     {
+      "rang": 9,
+      "nom": "Styrian Golding",
+      "id": "beermaverick-styrian-golding",
+      "score": 58,
+      "rangC": 7,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Partage le caractère noble, terreux et doux, mais s'avère un peu plus résineux et pauvre en farnésène."
+     },
+     {
+      "rang": 10,
+      "nom": "Zagrava",
+      "id": "beermaverick-zagrava",
+      "score": 52,
+      "rangC": 16,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Taux de farnésène très proche et notes nobles herbacées et florales, mais plus fruité et intense en huiles totales."
+     }
+    ]
+   }
+  },
+  {
+   "houblon": "Mosaic",
+   "id": "beermaverick-mosaic",
+   "colonnes": {
+    "b": [
+     {
+      "rang": 1,
+      "nom": "Idaho 7",
+      "id": "beermaverick-idaho-7",
+      "score": 73,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Styrian Fox",
+      "id": "beermaverick-styrian-fox",
+      "score": 66,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Simcoe",
+      "id": "beermaverick-simcoe",
+      "score": 65,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Azacca",
+      "id": "beermaverick-azacca",
+      "score": 64,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Hydra",
+      "id": "beermaverick-hydra",
+      "score": 64,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Zythos",
+      "id": "beermaverick-zythos",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Falconer's Flight",
+      "id": "beermaverick-falconers-flight",
+      "score": 61,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Southern Cross",
+      "id": "beermaverick-southern-cross",
+      "score": 61,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Sultana (Denali)",
+      "id": "beermaverick-denali",
+      "score": 61,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Bitter Gold",
+      "id": "beermaverick-bitter-gold",
+      "score": 59,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     }
+    ],
+    "c": [
+     {
+      "rang": 1,
+      "nom": "Idaho 7",
+      "id": "beermaverick-idaho-7",
+      "score": 64,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Azacca",
+      "id": "beermaverick-azacca",
+      "score": 60,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Simcoe",
+      "id": "beermaverick-simcoe",
+      "score": 59,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Zythos",
+      "id": "beermaverick-zythos",
+      "score": 59,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Hydra",
+      "id": "beermaverick-hydra",
+      "score": 58,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Mandarina Bavaria",
+      "id": "beermaverick-mandarina-bavaria",
+      "score": 58,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Sultana (Denali)",
+      "id": "beermaverick-denali",
+      "score": 56,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Falconer's Flight",
+      "id": "beermaverick-falconers-flight",
+      "score": 55,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Styrian Fox",
+      "id": "beermaverick-styrian-fox",
+      "score": 55,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Falconer's Flight 7CS",
+      "id": "beermaverick-falconers-flight-7cs",
+      "score": 54,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     }
+    ],
+    "d": [
+     {
+      "rang": 1,
+      "nom": "Simcoe",
+      "id": "beermaverick-simcoe",
+      "score": 59,
+      "rangC": 3,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Simcoe partage le profil fruité et pin, s'en éloignant par moins de fruits tropicaux."
+     },
+     {
+      "rang": 2,
+      "nom": "Idaho 7",
+      "id": "beermaverick-idaho-7",
+      "score": 64,
+      "rangC": 1,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Idaho 7 apporte des fruits tropicaux proches de Mosaic, mais avec plus de résine."
+     },
+     {
+      "rang": 3,
+      "nom": "Azacca",
+      "id": "beermaverick-azacca",
+      "score": 60,
+      "rangC": 2,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Azacca offre mangue et papaye comme Mosaic, mais avec une touche citronnée plus marquée."
+     },
+     {
+      "rang": 4,
+      "nom": "Zythos",
+      "id": "beermaverick-zythos",
+      "score": 59,
+      "rangC": 4,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Zythos combine agrumes et fruits tropicaux, s'éloignant par son côté floral prononcé."
+     },
+     {
+      "rang": 5,
+      "nom": "Falconer's Flight",
+      "id": "beermaverick-falconers-flight",
+      "score": 55,
+      "rangC": 8,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Falconer's Flight imite le pamplemousse et les fruits tropicaux, avec moins de nuances terreuses."
+     },
+     {
+      "rang": 6,
+      "nom": "Hydra",
+      "id": "beermaverick-hydra",
+      "score": 58,
+      "rangC": 5,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Hydra brille par ses agrumes et fruits tropicaux, différant par des notes de pêche."
+     },
+     {
+      "rang": 7,
+      "nom": "Sultana (Denali)",
+      "id": "beermaverick-denali",
+      "score": 56,
+      "rangC": 7,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Sultana partage l'ananas et les fruits tropicaux, mais avec une intensité d'huile supérieure."
+     },
+     {
+      "rang": 8,
+      "nom": "Mackinac",
+      "id": "beermaverick-mackinac",
+      "score": 52,
+      "rangC": 15,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Mackinac propose fruits tropicaux et papaye, s'écartant par son poivre noir distinctif."
+     },
+     {
+      "rang": 9,
+      "nom": "Centennial",
+      "id": "beermaverick-centennial",
+      "score": 51,
+      "rangC": 17,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Centennial offre pin et agrumes proches, mais manque de complexité tropicale."
+     },
+     {
+      "rang": 10,
+      "nom": "Mandarina Bavaria",
+      "id": "beermaverick-mandarina-bavaria",
+      "score": 58,
+      "rangC": 6,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Mandarina Bavaria partage les agrumes, mais se focalise trop sur la mandarine."
+     }
+    ]
+   }
+  },
+  {
+   "houblon": "Simcoe",
+   "id": "beermaverick-simcoe",
+   "colonnes": {
+    "b": [
+     {
+      "rang": 1,
+      "nom": "Idaho 7",
+      "id": "beermaverick-idaho-7",
+      "score": 74,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Mosaic",
+      "id": "beermaverick-mosaic",
+      "score": 65,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Vic Secret",
+      "id": "beermaverick-vic-secret",
+      "score": 65,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Zythos",
+      "id": "beermaverick-zythos",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Hydra",
+      "id": "beermaverick-hydra",
+      "score": 62,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Mandarina Bavaria",
+      "id": "beermaverick-mandarina-bavaria",
+      "score": 62,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Palisade",
+      "id": "beermaverick-palisade",
+      "score": 62,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Sticklebract",
+      "id": "beermaverick-sticklebract",
+      "score": 62,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Falconer's Flight",
+      "id": "beermaverick-falconers-flight",
+      "score": 61,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Falconer's Flight 7CS",
+      "id": "beermaverick-falconers-flight-7cs",
+      "score": 61,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     }
+    ],
+    "c": [
+     {
+      "rang": 1,
+      "nom": "Idaho 7",
+      "id": "beermaverick-idaho-7",
+      "score": 65,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Vic Secret",
+      "id": "beermaverick-vic-secret",
+      "score": 61,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Falconer's Flight 7CS",
+      "id": "beermaverick-falconers-flight-7cs",
+      "score": 60,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Mandarina Bavaria",
+      "id": "beermaverick-mandarina-bavaria",
+      "score": 59,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Mosaic",
+      "id": "beermaverick-mosaic",
+      "score": 59,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Sticklebract",
+      "id": "beermaverick-sticklebract",
+      "score": 58,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Zythos",
+      "id": "beermaverick-zythos",
+      "score": 57,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Falconer's Flight",
+      "id": "beermaverick-falconers-flight",
+      "score": 56,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Palisade",
+      "id": "beermaverick-palisade",
+      "score": 56,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Hydra",
+      "id": "beermaverick-hydra",
+      "score": 55,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     }
+    ],
+    "d": [
+     {
+      "rang": 1,
+      "nom": "Mosaic",
+      "id": "beermaverick-mosaic",
+      "score": 59,
+      "rangC": 5,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Partage l'ADN aromatique du Simcoe avec des notes marquées de pin, fruits tropicaux, terreux et chewing-gum, malgré un profil un peu plus myrtille."
+     },
+     {
+      "rang": 2,
+      "nom": "Idaho 7",
+      "id": "beermaverick-idaho-7",
+      "score": 65,
+      "rangC": 1,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Offre un équilibre parfait entre agrumes, fruits tropicaux, abricot et résine de pin, bien qu'il présente une facette thé noir absente du Simcoe."
+     },
+     {
+      "rang": 3,
+      "nom": "Vic Secret",
+      "id": "beermaverick-vic-secret",
+      "score": 61,
+      "rangC": 2,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Rejoint très fidèlement la combinaison pin, fruit de la passion et terreux du Simcoe, mais se montre globalement plus axé sur l'ananas."
+     },
+     {
+      "rang": 4,
+      "nom": "Moutere",
+      "id": "beermaverick-moutere",
+      "score": 52,
+      "rangC": 20,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Combine admirablement le fruit de la passion, le pamplemousse, le pin et le côté terreux, avec une touche herbacée de foin en plus."
+     },
+     {
+      "rang": 5,
+      "nom": "Chinook",
+      "id": "beermaverick-chinook",
+      "score": 52,
+      "rangC": 16,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Recrée impeccablement la trame résineuse, pin et pamplemousse du Simcoe, tout en manquant de sa dimension fruitée tropicale."
+     },
+     {
+      "rang": 6,
+      "nom": "Falconer's Flight",
+      "id": "beermaverick-falconers-flight",
+      "score": 56,
+      "rangC": 8,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Ce mélange moderne délivre les tonalités attendues de pin, pamplemousse et fruits tropicaux, avec un accent floral plus prononcé."
+     },
+     {
+      "rang": 7,
+      "nom": "Zythos",
+      "id": "beermaverick-zythos",
+      "score": 57,
+      "rangC": 7,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Apporte les marqueurs agrumes, pamplemousse et pin du Simcoe en dry hop, avec une intensité globale un soupçon plus modérée."
+     },
+     {
+      "rang": 8,
+      "nom": "Amarillo",
+      "id": "beermaverick-amarillo",
+      "score": 54,
+      "rangC": 12,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Retrouve le pamplemousse, l'abricot et le côté dank si typiques, mais tire davantage sur l'orange douce que sur le pin résineux."
+     },
+     {
+      "rang": 9,
+      "nom": "Hydra",
+      "id": "beermaverick-hydra",
+      "score": 55,
+      "rangC": 10,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Excellente alternative fruitée mêlant résine, agrumes, abricot et baies, même si le profil s'avère plus doux et orienté melon-pêche."
+     },
+     {
+      "rang": 10,
+      "nom": "Ahtanum",
+      "id": "beermaverick-ahtanum",
+      "score": 53,
+      "rangC": 14,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Partage le spectre pamplemousse, pin et terreux propre au Simcoe, mais avec une intensité fruitée et tropicale nettement plus discrète."
+     }
+    ]
+   }
+  },
+  {
+   "houblon": "Cascade",
+   "id": "beermaverick-cascade",
+   "colonnes": {
+    "b": [
+     {
+      "rang": 1,
+      "nom": "Taiheke",
+      "id": "beermaverick-taiheke",
+      "score": 78,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Cluster",
+      "id": "beermaverick-cluster",
+      "score": 75,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Bravo",
+      "id": "beermaverick-bravo",
+      "score": 74,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Mandarina Bavaria",
+      "id": "beermaverick-mandarina-bavaria",
+      "score": 71,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Motueka",
+      "id": "beermaverick-motueka",
+      "score": 71,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Southern Cross",
+      "id": "beermaverick-southern-cross",
+      "score": 71,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Atlas",
+      "id": "beermaverick-atlas",
+      "score": 70,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "HORT9909",
+      "id": "beermaverick-hort9909",
+      "score": 70,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Olympic",
+      "id": "beermaverick-olympic",
+      "score": 70,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Barbe Rouge",
+      "id": "beermaverick-barbe-rouge",
+      "score": 69,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     }
+    ],
+    "c": [
+     {
+      "rang": 1,
+      "nom": "Taiheke",
+      "id": "beermaverick-taiheke",
+      "score": 73,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Cluster",
+      "id": "beermaverick-cluster",
+      "score": 71,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Atlas",
+      "id": "beermaverick-atlas",
+      "score": 69,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Bravo",
+      "id": "beermaverick-bravo",
+      "score": 69,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Riwaka",
+      "id": "beermaverick-riwaka",
+      "score": 66,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Brewer's Gold (US)",
+      "id": "beermaverick-brewers-gold-us",
+      "score": 64,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Southern Cross",
+      "id": "beermaverick-southern-cross",
+      "score": 64,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Bullion",
+      "id": "beermaverick-bullion",
+      "score": 63,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Motueka",
+      "id": "beermaverick-motueka",
+      "score": 63,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Endeavour",
+      "id": "beermaverick-endeavour",
+      "score": 62,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     }
+    ],
+    "d": [
+     {
+      "rang": 1,
+      "nom": "Centennial",
+      "id": "beermaverick-centennial",
+      "score": 61,
+      "rangC": 13,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Considéré comme un super Cascade, il partage son profil pamplemousse, floral et pin, idéal en dry hop malgré un peu plus de puissance."
+     },
+     {
+      "rang": 2,
+      "nom": "Taiheke",
+      "id": "beermaverick-taiheke",
+      "score": 73,
+      "rangC": 1,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Issu du Cascade néo-zélandais, il reproduit fidèlement la trame agrumes, pamplemousse et floral, enrichie d'une touche tropicale typique du terroir."
+     },
+     {
+      "rang": 3,
+      "nom": "Falconer's Flight",
+      "id": "beermaverick-falconers-flight",
+      "score": 59,
+      "rangC": 21,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Cet assemblage centré sur le profil nord-américain offre exactement l'équilibre pamplemousse, pin et floral recherché pour une bière portée sur le houblon."
+     },
+     {
+      "rang": 4,
+      "nom": "Zythos",
+      "id": "beermaverick-zythos",
+      "score": 62,
+      "rangC": 12,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Parfait pour le dry hop, il apporte une signature agrumes, pamplemousse et pin très proche, avec une nuance de mandarine plus marquée."
+     },
+     {
+      "rang": 5,
+      "nom": "Dana",
+      "id": "beermaverick-dana",
+      "score": 61,
+      "rangC": 14,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Son équilibre floral, agrumes et résineux rappelle bien le Cascade, avec une touche continentale un peu plus herbacée en biotransformation."
+     },
+     {
+      "rang": 6,
+      "nom": "Southern Cross",
+      "id": "beermaverick-southern-cross",
+      "score": 64,
+      "rangC": 7,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Il combine les notes de pin, d'agrumes et d'épices du Cascade, bien que son côté fruité soit plus exotique."
+     },
+     {
+      "rang": 7,
+      "nom": "Styrian Dragon",
+      "id": "beermaverick-styrian-dragon",
+      "score": 60,
+      "rangC": 20,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Il livre un profil pamplemousse et floral très aromatique, complété par des notes de baies inexistantes chez le Cascade."
+     },
+     {
+      "rang": 8,
+      "nom": "Riwaka",
+      "id": "beermaverick-riwaka",
+      "score": 66,
+      "rangC": 5,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Centré sur le pamplemousse et les agrumes, il sera beaucoup plus exubérant et tropical que le Cascade en fin de fermentation."
+     },
+     {
+      "rang": 9,
+      "nom": "Atlas",
+      "id": "beermaverick-atlas",
+      "score": 69,
+      "rangC": 3,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Partage les descripteurs floral, pin et agrumes avec un bon niveau de myrcène, mais son profil reste plus discret."
+     },
+     {
+      "rang": 10,
+      "nom": "Motueka",
+      "id": "beermaverick-motueka",
+      "score": 63,
+      "rangC": 9,
+      "source": "ordre de l'IA (cote-a-cote.json) ; score du réglage C recalculé par eval-hop",
+      "phrase": "Apporte la fraîcheur d'agrumes et le côté floral du Cascade, mais tire distinctement sur le citron vert et le mojito."
+     }
+    ]
+   }
+  },
+  {
+   "houblon": "Fuggle",
+   "id": "beermaverick-fuggle",
+   "colonnes": {
+    "b": [
+     {
+      "rang": 1,
+      "nom": "Northern Brewer (GR)",
+      "id": "beermaverick-northern-brewer-gr",
+      "score": 74,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Cluster Fugget Blend",
+      "id": "beermaverick-cluster-fugget",
+      "score": 66,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Northern Brewer (US)",
+      "id": "beermaverick-northern-brewer-us",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Progress",
+      "id": "beermaverick-progress",
+      "score": 62,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Hallertau Tradition",
+      "id": "beermaverick-hallertau-tradition",
+      "score": 60,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Lambic",
+      "id": "beermaverick-lambic",
+      "score": 60,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Vanguard",
+      "id": "beermaverick-vanguard",
+      "score": 60,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Crystal",
+      "id": "beermaverick-crystal",
+      "score": 57,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Saaz (CZ)",
+      "id": "beermaverick-saaz-cz",
+      "score": 57,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Styrian Golding",
+      "id": "beermaverick-styrian-golding",
+      "score": 56,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     }
+    ],
+    "c": [
+     {
+      "rang": 1,
+      "nom": "Northern Brewer (GR)",
+      "id": "beermaverick-northern-brewer-gr",
+      "score": 68,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Cluster Fugget Blend",
+      "id": "beermaverick-cluster-fugget",
+      "score": 66,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Northern Brewer (US)",
+      "id": "beermaverick-northern-brewer-us",
+      "score": 59,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Progress",
+      "id": "beermaverick-progress",
+      "score": 59,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Saaz (CZ)",
+      "id": "beermaverick-saaz-cz",
+      "score": 55,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Hallertau Tradition",
+      "id": "beermaverick-hallertau-tradition",
+      "score": 54,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Lambic",
+      "id": "beermaverick-lambic",
+      "score": 54,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Vanguard",
+      "id": "beermaverick-vanguard",
+      "score": 53,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Perle (GR)",
+      "id": "beermaverick-perle-gr",
+      "score": 51,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Sussex",
+      "id": "beermaverick-sussex",
+      "score": 51,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     }
+    ],
+    "d": null
+   }
+  },
+  {
+   "houblon": "Magnum (US)",
+   "id": "beermaverick-magnum-us",
+   "colonnes": {
+    "b": [
+     {
+      "rang": 1,
+      "nom": "Pacific Jade",
+      "id": "beermaverick-pacific-jade",
+      "score": 71,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Santiam",
+      "id": "beermaverick-santiam",
+      "score": 68,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Magnum (GR)",
+      "id": "beermaverick-magnum-gr",
+      "score": 67,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Loral",
+      "id": "beermaverick-loral",
+      "score": 65,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Opal",
+      "id": "beermaverick-opal",
+      "score": 65,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Ella",
+      "id": "beermaverick-ella",
+      "score": 64,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Premiant",
+      "id": "beermaverick-premiant",
+      "score": 64,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Pacific Gem",
+      "id": "beermaverick-pacific-gem",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Sybilla",
+      "id": "beermaverick-sybilla",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Dana",
+      "id": "beermaverick-dana",
+      "score": 62,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     }
+    ],
+    "c": [
+     {
+      "rang": 1,
+      "nom": "Pacific Jade",
+      "id": "beermaverick-pacific-jade",
+      "score": 72,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Santiam",
+      "id": "beermaverick-santiam",
+      "score": 64,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Magnum (GR)",
+      "id": "beermaverick-magnum-gr",
+      "score": 63,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Crystal",
+      "id": "beermaverick-crystal",
+      "score": 59,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Opal",
+      "id": "beermaverick-opal",
+      "score": 59,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Pacific Gem",
+      "id": "beermaverick-pacific-gem",
+      "score": 57,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Boomerang",
+      "id": "beermaverick-boomerang",
+      "score": 56,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Green Bullet",
+      "id": "beermaverick-green-bullet",
+      "score": 56,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Loral",
+      "id": "beermaverick-loral",
+      "score": 55,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Bohemie",
+      "id": "beermaverick-bohemie",
+      "score": 52,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     }
+    ],
+    "d": null
+   }
+  },
+  {
+   "houblon": "Willamette",
+   "id": "beermaverick-willamette",
+   "colonnes": {
+    "b": [
+     {
+      "rang": 1,
+      "nom": "Delta",
+      "id": "beermaverick-delta",
+      "score": 68,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Celeia",
+      "id": "beermaverick-celeia",
+      "score": 65,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Triskel",
+      "id": "beermaverick-triskel",
+      "score": 64,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Bravo",
+      "id": "beermaverick-bravo",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Cluster",
+      "id": "beermaverick-cluster",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Saphir",
+      "id": "beermaverick-saphir",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Sylva",
+      "id": "beermaverick-sylva",
+      "score": 63,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Premiant",
+      "id": "beermaverick-premiant",
+      "score": 62,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Amethyst",
+      "id": "beermaverick-amethyst",
+      "score": 61,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Bohemie",
+      "id": "beermaverick-bohemie",
+      "score": 61,
+      "source": "listes-lambda.json reglage_prudent, recalcul identique"
+     }
+    ],
+    "c": [
+     {
+      "rang": 1,
+      "nom": "Delta",
+      "id": "beermaverick-delta",
+      "score": 62,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 2,
+      "nom": "Sylva",
+      "id": "beermaverick-sylva",
+      "score": 59,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 3,
+      "nom": "Triskel",
+      "id": "beermaverick-triskel",
+      "score": 57,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 4,
+      "nom": "Admiral",
+      "id": "beermaverick-admiral",
+      "score": 54,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 5,
+      "nom": "Celeia",
+      "id": "beermaverick-celeia",
+      "score": 54,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 6,
+      "nom": "Cluster",
+      "id": "beermaverick-cluster",
+      "score": 54,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 7,
+      "nom": "Summit",
+      "id": "beermaverick-summit",
+      "score": 54,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 8,
+      "nom": "Amethyst",
+      "id": "beermaverick-amethyst",
+      "score": 53,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 9,
+      "nom": "Saaz Late",
+      "id": "beermaverick-saaz-late",
+      "score": 53,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     },
+     {
+      "rang": 10,
+      "nom": "Horizon",
+      "id": "beermaverick-horizon",
+      "score": 52,
+      "source": "listes-lambda.json reglage_retenu, recalcul identique"
+     }
+    ],
+    "d": null
+   }
+  }
+ ]
+}
