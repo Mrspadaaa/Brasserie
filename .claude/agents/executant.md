@@ -23,6 +23,8 @@ critères dans `GATES.md` du même dossier. Tu ne décides rien hors de ce contr
   pas d'appel Gemini réel. Si la voie semble l'exiger : arrête-toi et écris ECHEC avec la raison.
 - Lance toi-même chaque commande `CHECK:` de GATES.md (depuis la racine du dépôt) et compare la
   sortie à `EXPECT:`.
+- Un fichier s'écrit avec Write ou Edit, jamais par un heredoc, un `sed` ou un `node -e` du Bash : le Bash de ce poste perd les
+  barres inverses sans erreur (26.10).
 
 ## Boucle courte (dans ta voie)
 Un critère échoue → lis le message, corrige, relance. Trois essais au plus par critère. Ne rends

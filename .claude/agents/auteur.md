@@ -31,6 +31,9 @@ est la base : rien ne la remplace, et `controle-choix.mjs` le vérifie (D105).
 - Honnêteté des données : une valeur vient d'une source citée. Le simulé est marqué. L'inconnu
   n'est jamais 0.
 - Une interface se prouve sur un vrai rendu : capture prise ET ouverte en image (L12).
+- Le code s'écrit avec Write ou Edit, jamais par un heredoc, un `sed` ou un `node -e` du Bash : le Bash de ce poste perd les
+  barres inverses des regex sans erreur (`\d` devient `d` ; quatre voies du 26.10). Après un script à regex : `node --check`, et
+  un test qui exerce la regex. Une chaîne de remplacement de `String.replace` lit `$&`, `$'` et `` $` `` : passe une fonction (L26).
 
 ## Boucle courte (dans ta voie)
 Lance chaque `CHECK:` de GATES.md depuis la racine et compare à `EXPECT:`. Un échec → corrige →
