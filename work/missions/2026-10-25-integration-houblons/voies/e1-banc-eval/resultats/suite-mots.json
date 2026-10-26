@@ -1,0 +1,2834 @@
+{
+ "suite": {
+  "issue": 181,
+  "graine": 181,
+  "rééchantillons": 1000,
+  "moitie": "parité de l’indice du houblon parmi les 217 triés par id : 0 apprentissage (109), 1 contrôle (108)",
+  "retenu": {
+   "genre": "tous",
+   "lambda": 0.25,
+   "garde": {
+    "min": 2,
+    "plafondDf": 8
+   }
+  },
+  "prudent": {
+   "genre": "tous",
+   "lambda": 0.5,
+   "garde": {
+    "min": 2,
+    "plafondDf": 8
+   }
+  },
+  "gardeLecture": "min : mots partagés au moins (sinon le terme « mots » vaut 0) ; plafondDf : un mot compte comme s’il figurait dans au moins ce nombre de fiches de houblons"
+ },
+ "choix": {
+  "tous les mots": {
+   "choisiSurMoitie0_jugeSurMoitie1": 0.25,
+   "choisiSurMoitie1_jugeSurMoitie0": 0
+  },
+  "mots hors famille seulement": {
+   "choisiSurMoitie0_jugeSurMoitie1": 1,
+   "choisiSurMoitie1_jugeSurMoitie0": 0.75
+  }
+ },
+ "lambda": {
+  "tous les mots": {
+   "λ=1": {
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.129,
+     "rappel10": 0.099,
+     "rangMedian": 27,
+     "ic95": {
+      "mrr": [
+       0.09,
+       0.174
+      ],
+      "rappel10": [
+       0.063,
+       0.14
+      ],
+      "rangMedian": [
+       19,
+       42
+      ]
+     },
+     "ecartAuMoteur_ic95": null
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.112,
+     "rappel10": 0.119,
+     "rangMedian": 26.5,
+     "ic95": {
+      "mrr": [
+       0.079,
+       0.149
+      ],
+      "rappel10": [
+       0.077,
+       0.171
+      ],
+      "rangMedian": [
+       19.5,
+       36
+      ]
+     },
+     "ecartAuMoteur_ic95": null
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.121,
+     "rappel10": 0.109,
+     "rangMedian": 27,
+     "ic95": {
+      "mrr": [
+       0.093,
+       0.15
+      ],
+      "rappel10": [
+       0.081,
+       0.142
+      ],
+      "rangMedian": [
+       21,
+       33
+      ]
+     },
+     "ecartAuMoteur_ic95": null
+    }
+   },
+   "λ=0.75": {
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.144,
+     "rappel10": 0.127,
+     "rangMedian": 21,
+     "ic95": {
+      "mrr": [
+       0.104,
+       0.19
+      ],
+      "rappel10": [
+       0.086,
+       0.174
+      ],
+      "rangMedian": [
+       15,
+       35
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.007,
+       0.036
+      ],
+      "rappel10": [
+       0.006,
+       0.057
+      ],
+      "rangMedian": [
+       -11,
+       -1
+      ]
+     }
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.167,
+     "rappel10": 0.145,
+     "rangMedian": 21.5,
+     "ic95": {
+      "mrr": [
+       0.119,
+       0.225
+      ],
+      "rappel10": [
+       0.097,
+       0.197
+      ],
+      "rangMedian": [
+       14.5,
+       26.5
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.025,
+       0.093
+      ],
+      "rappel10": [
+       0.004,
+       0.054
+      ],
+      "rangMedian": [
+       -11,
+       -2
+      ]
+     }
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.155,
+     "rappel10": 0.136,
+     "rangMedian": 21,
+     "ic95": {
+      "mrr": [
+       0.123,
+       0.19
+      ],
+      "rappel10": [
+       0.103,
+       0.171
+      ],
+      "rangMedian": [
+       16,
+       26
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.016,
+       0.056
+      ],
+      "rappel10": [
+       0.011,
+       0.045
+      ],
+      "rangMedian": [
+       -9,
+       -2
+      ]
+     }
+    }
+   },
+   "λ=0.5": {
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.16,
+     "rappel10": 0.145,
+     "rangMedian": 17,
+     "ic95": {
+      "mrr": [
+       0.119,
+       0.206
+      ],
+      "rappel10": [
+       0.103,
+       0.193
+      ],
+      "rangMedian": [
+       11,
+       30
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.002,
+       0.065
+      ],
+      "rappel10": [
+       0.021,
+       0.079
+      ],
+      "rangMedian": [
+       -16,
+       -1
+      ]
+     }
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.195,
+     "rappel10": 0.171,
+     "rangMedian": 17,
+     "ic95": {
+      "mrr": [
+       0.143,
+       0.258
+      ],
+      "rappel10": [
+       0.123,
+       0.223
+      ],
+      "rangMedian": [
+       12,
+       21.5
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.043,
+       0.129
+      ],
+      "rappel10": [
+       0.019,
+       0.085
+      ],
+      "rangMedian": [
+       -17,
+       -5
+      ]
+     }
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.177,
+     "rappel10": 0.158,
+     "rangMedian": 17,
+     "ic95": {
+      "mrr": [
+       0.144,
+       0.212
+      ],
+      "rappel10": [
+       0.123,
+       0.194
+      ],
+      "rangMedian": [
+       13,
+       22
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.031,
+       0.085
+      ],
+      "rappel10": [
+       0.028,
+       0.072
+      ],
+      "rangMedian": [
+       -15,
+       -5
+      ]
+     }
+    }
+   },
+   "λ=0.25": {
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.166,
+     "rappel10": 0.134,
+     "rangMedian": 16,
+     "ic95": {
+      "mrr": [
+       0.122,
+       0.211
+      ],
+      "rappel10": [
+       0.095,
+       0.18
+      ],
+      "rangMedian": [
+       12,
+       29
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.004,
+       0.079
+      ],
+      "rappel10": [
+       -0.004,
+       0.075
+      ],
+      "rangMedian": [
+       -18,
+       -1
+      ]
+     }
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.238,
+     "rappel10": 0.216,
+     "rangMedian": 12,
+     "ic95": {
+      "mrr": [
+       0.181,
+       0.302
+      ],
+      "rappel10": [
+       0.164,
+       0.275
+      ],
+      "rangMedian": [
+       7.5,
+       17
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.072,
+       0.183
+      ],
+      "rappel10": [
+       0.055,
+       0.144
+      ],
+      "rangMedian": [
+       -24,
+       -8
+      ]
+     }
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.202,
+     "rappel10": 0.175,
+     "rangMedian": 14,
+     "ic95": {
+      "mrr": [
+       0.164,
+       0.242
+      ],
+      "rappel10": [
+       0.14,
+       0.212
+      ],
+      "rangMedian": [
+       12,
+       19
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.047,
+       0.117
+      ],
+      "rappel10": [
+       0.037,
+       0.096
+      ],
+      "rangMedian": [
+       -19,
+       -8
+      ]
+     }
+    }
+   },
+   "λ=0": {
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.163,
+     "rappel10": 0.121,
+     "rangMedian": 21,
+     "ic95": {
+      "mrr": [
+       0.117,
+       0.214
+      ],
+      "rappel10": [
+       0.082,
+       0.162
+      ],
+      "rangMedian": [
+       14,
+       27
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.017,
+       0.085
+      ],
+      "rappel10": [
+       -0.021,
+       0.067
+      ],
+      "rangMedian": [
+       -18,
+       2
+      ]
+     }
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.252,
+     "rappel10": 0.232,
+     "rangMedian": 11,
+     "ic95": {
+      "mrr": [
+       0.191,
+       0.319
+      ],
+      "rappel10": [
+       0.174,
+       0.296
+      ],
+      "rangMedian": [
+       8,
+       15
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.075,
+       0.205
+      ],
+      "rappel10": [
+       0.06,
+       0.168
+      ],
+      "rangMedian": [
+       -25,
+       -8
+      ]
+     }
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.207,
+     "rappel10": 0.176,
+     "rangMedian": 15,
+     "ic95": {
+      "mrr": [
+       0.168,
+       0.249
+      ],
+      "rappel10": [
+       0.139,
+       0.216
+      ],
+      "rangMedian": [
+       12,
+       21
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.046,
+       0.127
+      ],
+      "rappel10": [
+       0.03,
+       0.102
+      ],
+      "rangMedian": [
+       -18,
+       -6
+      ]
+     }
+    }
+   }
+  },
+  "mots hors famille seulement": {
+   "λ=1": {
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.129,
+     "rappel10": 0.099,
+     "rangMedian": 27,
+     "ic95": {
+      "mrr": [
+       0.09,
+       0.174
+      ],
+      "rappel10": [
+       0.063,
+       0.14
+      ],
+      "rangMedian": [
+       19,
+       42
+      ]
+     },
+     "ecartAuMoteur_ic95": null
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.112,
+     "rappel10": 0.119,
+     "rangMedian": 26.5,
+     "ic95": {
+      "mrr": [
+       0.079,
+       0.149
+      ],
+      "rappel10": [
+       0.077,
+       0.171
+      ],
+      "rangMedian": [
+       19.5,
+       36
+      ]
+     },
+     "ecartAuMoteur_ic95": null
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.121,
+     "rappel10": 0.109,
+     "rangMedian": 27,
+     "ic95": {
+      "mrr": [
+       0.093,
+       0.15
+      ],
+      "rappel10": [
+       0.081,
+       0.142
+      ],
+      "rangMedian": [
+       21,
+       33
+      ]
+     },
+     "ecartAuMoteur_ic95": null
+    }
+   },
+   "λ=0.75": {
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.121,
+     "rappel10": 0.107,
+     "rangMedian": 24,
+     "ic95": {
+      "mrr": [
+       0.086,
+       0.163
+      ],
+      "rappel10": [
+       0.071,
+       0.148
+      ],
+      "rangMedian": [
+       18,
+       39
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.035,
+       0.018
+      ],
+      "rappel10": [
+       -0.005,
+       0.024
+      ],
+      "rangMedian": [
+       -8,
+       5
+      ]
+     }
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.127,
+     "rappel10": 0.112,
+     "rangMedian": 29.5,
+     "ic95": {
+      "mrr": [
+       0.088,
+       0.173
+      ],
+      "rappel10": [
+       0.069,
+       0.161
+      ],
+      "rangMedian": [
+       19.5,
+       38
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.013,
+       0.048
+      ],
+      "rappel10": [
+       -0.022,
+       0.006
+      ],
+      "rangMedian": [
+       -3,
+       8
+      ]
+     }
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.124,
+     "rappel10": 0.109,
+     "rangMedian": 26,
+     "ic95": {
+      "mrr": [
+       0.097,
+       0.153
+      ],
+      "rappel10": [
+       0.081,
+       0.141
+      ],
+      "rangMedian": [
+       20,
+       36
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.016,
+       0.024
+      ],
+      "rappel10": [
+       -0.01,
+       0.011
+      ],
+      "rangMedian": [
+       -4,
+       5
+      ]
+     }
+    }
+   },
+   "λ=0.5": {
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.112,
+     "rappel10": 0.099,
+     "rangMedian": 25,
+     "ic95": {
+      "mrr": [
+       0.081,
+       0.15
+      ],
+      "rappel10": [
+       0.064,
+       0.138
+      ],
+      "rangMedian": [
+       18,
+       39
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.051,
+       0.013
+      ],
+      "rappel10": [
+       -0.031,
+       0.023
+      ],
+      "rangMedian": [
+       -9,
+       7
+      ]
+     }
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.123,
+     "rappel10": 0.108,
+     "rangMedian": 32.5,
+     "ic95": {
+      "mrr": [
+       0.082,
+       0.175
+      ],
+      "rappel10": [
+       0.065,
+       0.156
+      ],
+      "rangMedian": [
+       24,
+       36
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.028,
+       0.054
+      ],
+      "rappel10": [
+       -0.033,
+       0.009
+      ],
+      "rangMedian": [
+       -2.5,
+       11.5
+      ]
+     }
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.117,
+     "rappel10": 0.103,
+     "rangMedian": 28,
+     "ic95": {
+      "mrr": [
+       0.092,
+       0.145
+      ],
+      "rappel10": [
+       0.076,
+       0.132
+      ],
+      "rangMedian": [
+       24,
+       35
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.03,
+       0.022
+      ],
+      "rappel10": [
+       -0.025,
+       0.01
+      ],
+      "rangMedian": [
+       -4,
+       8
+      ]
+     }
+    }
+   },
+   "λ=0.25": {
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.104,
+     "rappel10": 0.081,
+     "rangMedian": 28,
+     "ic95": {
+      "mrr": [
+       0.073,
+       0.142
+      ],
+      "rappel10": [
+       0.05,
+       0.119
+      ],
+      "rangMedian": [
+       22,
+       44
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.062,
+       0.008
+      ],
+      "rappel10": [
+       -0.05,
+       0.009
+      ],
+      "rangMedian": [
+       -7,
+       16
+      ]
+     }
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.113,
+     "rappel10": 0.083,
+     "rangMedian": 35.5,
+     "ic95": {
+      "mrr": [
+       0.075,
+       0.16
+      ],
+      "rappel10": [
+       0.05,
+       0.123
+      ],
+      "rangMedian": [
+       27,
+       39
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.038,
+       0.044
+      ],
+      "rappel10": [
+       -0.073,
+       -0.004
+      ],
+      "rangMedian": [
+       -0.5,
+       15
+      ]
+     }
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.109,
+     "rappel10": 0.082,
+     "rangMedian": 32,
+     "ic95": {
+      "mrr": [
+       0.083,
+       0.135
+      ],
+      "rappel10": [
+       0.059,
+       0.107
+      ],
+      "rangMedian": [
+       26,
+       38
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.038,
+       0.013
+      ],
+      "rappel10": [
+       -0.052,
+       -0.006
+      ],
+      "rangMedian": [
+       -1,
+       12
+      ]
+     }
+    }
+   },
+   "λ=0": {
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.104,
+     "rappel10": 0.078,
+     "rangMedian": 37,
+     "ic95": {
+      "mrr": [
+       0.069,
+       0.142
+      ],
+      "rappel10": [
+       0.046,
+       0.114
+      ],
+      "rangMedian": [
+       22,
+       55
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.065,
+       0.011
+      ],
+      "rappel10": [
+       -0.051,
+       0.006
+      ],
+      "rangMedian": [
+       -4,
+       27
+      ]
+     }
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.093,
+     "rappel10": 0.074,
+     "rangMedian": 36,
+     "ic95": {
+      "mrr": [
+       0.06,
+       0.135
+      ],
+      "rappel10": [
+       0.04,
+       0.116
+      ],
+      "rangMedian": [
+       26,
+       51
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.057,
+       0.021
+      ],
+      "rappel10": [
+       -0.082,
+       -0.013
+      ],
+      "rangMedian": [
+       0,
+       22.5
+      ]
+     }
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.098,
+     "rappel10": 0.076,
+     "rangMedian": 36,
+     "ic95": {
+      "mrr": [
+       0.074,
+       0.125
+      ],
+      "rappel10": [
+       0.053,
+       0.101
+      ],
+      "rangMedian": [
+       28,
+       49
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.049,
+       0.003
+      ],
+      "rappel10": [
+       -0.058,
+       -0.012
+      ],
+      "rangMedian": [
+       1,
+       20
+      ]
+     }
+    }
+   }
+  }
+ },
+ "unSeulMot": {
+  "nEntrants": 1878,
+  "unSeulMot": 408,
+  "aucunMot": 15,
+  "exemples": [
+   {
+    "original": "Relax",
+    "candidat": "Michigan Copper",
+    "rang": 10,
+    "rangMoteur": 38,
+    "mot": "hibiscus",
+    "idf": 4.67
+   },
+   {
+    "original": "Wurttemberg",
+    "candidat": "Marco Polo",
+    "rang": 6,
+    "rangMoteur": 186,
+    "mot": "oregano",
+    "idf": 4.67
+   },
+   {
+    "original": "Akoya",
+    "candidat": "BRU-1",
+    "rang": 7,
+    "rangMoteur": 173,
+    "mot": "green fruit",
+    "idf": 4.38
+   },
+   {
+    "original": "Akoya",
+    "candidat": "TNT Blend",
+    "rang": 2,
+    "rangMoteur": 84,
+    "mot": "green fruit",
+    "idf": 4.38
+   },
+   {
+    "original": "Gemini",
+    "candidat": "Idaho 7",
+    "rang": 7,
+    "rangMoteur": 33,
+    "mot": "black tea",
+    "idf": 4.38
+   },
+   {
+    "original": "Monroe",
+    "candidat": "Yakima Gold",
+    "rang": 7,
+    "rangMoteur": 96,
+    "mot": "smooth",
+    "idf": 4.38
+   },
+   {
+    "original": "Pahto",
+    "candidat": "Yakima Gold",
+    "rang": 5,
+    "rangMoteur": 210,
+    "mot": "smooth",
+    "idf": 4.38
+   },
+   {
+    "original": "TNT Blend",
+    "candidat": "Akoya",
+    "rang": 2,
+    "rangMoteur": 58,
+    "mot": "green fruit",
+    "idf": 4.38
+   },
+   {
+    "original": "Emerald Spire",
+    "candidat": "Gemini",
+    "rang": 10,
+    "rangMoteur": 27,
+    "mot": "honeydew",
+    "idf": 4.16
+   },
+   {
+    "original": "Gaia",
+    "candidat": "Sylva",
+    "rang": 4,
+    "rangMoteur": 217,
+    "mot": "hoppy",
+    "idf": 4.16
+   },
+   {
+    "original": "Gaia",
+    "candidat": "Willamette",
+    "rang": 9,
+    "rangMoteur": 107,
+    "mot": "hoppy",
+    "idf": 4.16
+   },
+   {
+    "original": "Gemini",
+    "candidat": "Emerald Spire",
+    "rang": 4,
+    "rangMoteur": 42,
+    "mot": "honeydew",
+    "idf": 4.16
+   },
+   {
+    "original": "Glacier",
+    "candidat": "Pacific Gem",
+    "rang": 5,
+    "rangMoteur": 43,
+    "mot": "blackberry",
+    "idf": 4.16
+   },
+   {
+    "original": "Hallertau (US)",
+    "candidat": "Saaz (US)",
+    "rang": 2,
+    "rangMoteur": 18,
+    "mot": "slightly spicy",
+    "idf": 4.16
+   },
+   {
+    "original": "Harmonie",
+    "candidat": "Jarrylo",
+    "rang": 8,
+    "rangMoteur": 194,
+    "mot": "banana",
+    "idf": 4.16
+   },
+   {
+    "original": "Idaho Gem",
+    "candidat": "Southern Passion",
+    "rang": 6,
+    "rangMoteur": 63,
+    "mot": "redberry",
+    "idf": 4.16
+   },
+   {
+    "original": "Lumberjack",
+    "candidat": "Pulawski",
+    "rang": 9,
+    "rangMoteur": 64,
+    "mot": "clove",
+    "idf": 4.16
+   },
+   {
+    "original": "Pacific Gem",
+    "candidat": "Glacier",
+    "rang": 5,
+    "rangMoteur": 95,
+    "mot": "blackberry",
+    "idf": 4.16
+   },
+   {
+    "original": "Perle (US)",
+    "candidat": "Saaz (US)",
+    "rang": 3,
+    "rangMoteur": 34,
+    "mot": "slightly spicy",
+    "idf": 4.16
+   },
+   {
+    "original": "Pilot",
+    "candidat": "Zenia",
+    "rang": 5,
+    "rangMoteur": 80,
+    "mot": "marmalade",
+    "idf": 4.16
+   },
+   {
+    "original": "Pulawski",
+    "candidat": "Topaz",
+    "rang": 4,
+    "rangMoteur": 83,
+    "mot": "clove",
+    "idf": 4.16
+   },
+   {
+    "original": "Saaz (US)",
+    "candidat": "Perle (US)",
+    "rang": 2,
+    "rangMoteur": 18,
+    "mot": "slightly spicy",
+    "idf": 4.16
+   },
+   {
+    "original": "Shaddock",
+    "candidat": "Walhalla",
+    "rang": 1,
+    "rangMoteur": 24,
+    "mot": "garlic",
+    "idf": 4.16
+   },
+   {
+    "original": "Styrian Eagle",
+    "candidat": "Jarrylo",
+    "rang": 5,
+    "rangMoteur": 121,
+    "mot": "banana",
+    "idf": 4.16
+   },
+   {
+    "original": "Sylva",
+    "candidat": "Gaia",
+    "rang": 8,
+    "rangMoteur": 248,
+    "mot": "hoppy",
+    "idf": 4.16
+   }
+  ],
+  "dankCannabis": [
+   {
+    "original": "African Queen",
+    "candidat": "Chinook",
+    "rang": 5,
+    "rangMoteur": 11,
+    "partages": [
+     "dank"
+    ]
+   },
+   {
+    "original": "Bergamot",
+    "candidat": "Southern Sublime",
+    "rang": 10,
+    "rangMoteur": 26,
+    "partages": [
+     "dank",
+     "mango",
+     "orange"
+    ]
+   },
+   {
+    "original": "Chinook",
+    "candidat": "Summit",
+    "rang": 4,
+    "rangMoteur": 23,
+    "partages": [
+     "agrumes",
+     "cannabis",
+     "dank",
+     "grapefruit",
+     "résineux"
+    ]
+   },
+   {
+    "original": "Columbus",
+    "candidat": "Southern Sublime",
+    "rang": 8,
+    "rangMoteur": 83,
+    "partages": [
+     "citrus",
+     "dank",
+     "pungent"
+    ]
+   },
+   {
+    "original": "Columbus",
+    "candidat": "Galaxy",
+    "rang": 10,
+    "rangMoteur": 183,
+    "partages": [
+     "cannabis",
+     "citrus",
+     "dank"
+    ]
+   },
+   {
+    "original": "CTZ",
+    "candidat": "Galaxy",
+    "rang": 7,
+    "rangMoteur": 169,
+    "partages": [
+     "cannabis",
+     "citrus",
+     "dank"
+    ]
+   },
+   {
+    "original": "CTZ",
+    "candidat": "Chinook",
+    "rang": 10,
+    "rangMoteur": 77,
+    "partages": [
+     "cannabis",
+     "dank",
+     "herbacé"
+    ]
+   },
+   {
+    "original": "Eureka",
+    "candidat": "Chinook",
+    "rang": 10,
+    "rangMoteur": 16,
+    "partages": [
+     "agrumes",
+     "dank",
+     "fruité",
+     "herbacé",
+     "pine",
+     "résineux"
+    ]
+   },
+   {
+    "original": "Galaxy",
+    "candidat": "Strata",
+    "rang": 5,
+    "rangMoteur": 47,
+    "partages": [
+     "cannabis",
+     "dank",
+     "passion fruit"
+    ]
+   },
+   {
+    "original": "Galaxy",
+    "candidat": "Amarillo",
+    "rang": 9,
+    "rangMoteur": 66,
+    "partages": [
+     "citrus",
+     "dank",
+     "peach",
+     "tropical fruit"
+    ]
+   },
+   {
+    "original": "Lawton",
+    "candidat": "Sticky Fingers Blend",
+    "rang": 3,
+    "rangMoteur": 38,
+    "partages": [
+     "dank",
+     "earthy"
+    ]
+   },
+   {
+    "original": "Lawton",
+    "candidat": "Southern Sublime",
+    "rang": 7,
+    "rangMoteur": 249,
+    "partages": [
+     "dank",
+     "pungent"
+    ]
+   },
+   {
+    "original": "Lawton",
+    "candidat": "Columbus",
+    "rang": 9,
+    "rangMoteur": 111,
+    "partages": [
+     "dank",
+     "earthy",
+     "pungent"
+    ]
+   },
+   {
+    "original": "McKenzie",
+    "candidat": "Amarillo",
+    "rang": 1,
+    "rangMoteur": 33,
+    "partages": [
+     "dank",
+     "floral",
+     "grapefruit",
+     "lemon",
+     "melon"
+    ]
+   },
+   {
+    "original": "Paradigm",
+    "candidat": "Galaxy",
+    "rang": 8,
+    "rangMoteur": 41,
+    "partages": [
+     "dank",
+     "tropical fruit"
+    ]
+   },
+   {
+    "original": "Southern Sublime",
+    "candidat": "Columbus",
+    "rang": 4,
+    "rangMoteur": 76,
+    "partages": [
+     "citrus",
+     "dank",
+     "pungent"
+    ]
+   },
+   {
+    "original": "Southern Sublime",
+    "candidat": "Bergamot",
+    "rang": 6,
+    "rangMoteur": 15,
+    "partages": [
+     "dank",
+     "mango",
+     "orange"
+    ]
+   },
+   {
+    "original": "Sticky Fingers Blend",
+    "candidat": "Lawton",
+    "rang": 7,
+    "rangMoteur": 63,
+    "partages": [
+     "dank",
+     "earthy"
+    ]
+   },
+   {
+    "original": "Strata",
+    "candidat": "Galaxy",
+    "rang": 1,
+    "rangMoteur": 36,
+    "partages": [
+     "cannabis",
+     "dank",
+     "passion fruit"
+    ]
+   },
+   {
+    "original": "Strata",
+    "candidat": "Amarillo",
+    "rang": 3,
+    "rangMoteur": 83,
+    "partages": [
+     "dank",
+     "grapefruit"
+    ]
+   },
+   {
+    "original": "Strata",
+    "candidat": "CTZ",
+    "rang": 9,
+    "rangMoteur": 111,
+    "partages": [
+     "cannabis",
+     "dank"
+    ]
+   },
+   {
+    "original": "Summit",
+    "candidat": "Apollo",
+    "rang": 3,
+    "rangMoteur": 14,
+    "partages": [
+     "cannabis",
+     "citrus",
+     "dank",
+     "grapefruit",
+     "orange",
+     "résineux",
+     "épicé"
+    ]
+   },
+   {
+    "original": "Summit",
+    "candidat": "Chinook",
+    "rang": 6,
+    "rangMoteur": 35,
+    "partages": [
+     "agrumes",
+     "cannabis",
+     "dank",
+     "grapefruit",
+     "résineux"
+    ]
+   },
+   {
+    "original": "Tropica",
+    "candidat": "Galaxy",
+    "rang": 1,
+    "rangMoteur": 15,
+    "partages": [
+     "dank",
+     "pineapple",
+     "tropical fruit"
+    ]
+   },
+   {
+    "original": "Tropica",
+    "candidat": "Amarillo",
+    "rang": 9,
+    "rangMoteur": 81,
+    "partages": [
+     "dank",
+     "orange",
+     "tropical fruit"
+    ]
+   },
+   {
+    "original": "Zenia",
+    "candidat": "Summit",
+    "rang": 3,
+    "rangMoteur": 55,
+    "partages": [
+     "citrus",
+     "dank",
+     "garlic",
+     "onion",
+     "orange"
+    ]
+   }
+  ],
+  "gardes": [
+   {
+    "garde": "aucune",
+    "lambda": 0.25,
+    "entrantsDansLesDix": 1878,
+    "dontUnSeulMot": 408,
+    "dontAucunMot": 15,
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.166,
+     "rappel10": 0.134,
+     "rangMedian": 16,
+     "ic95": {
+      "mrr": [
+       0.122,
+       0.211
+      ],
+      "rappel10": [
+       0.095,
+       0.18
+      ],
+      "rangMedian": [
+       12,
+       29
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.004,
+       0.079
+      ],
+      "rappel10": [
+       -0.004,
+       0.075
+      ],
+      "rangMedian": [
+       -18,
+       -1
+      ]
+     }
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.238,
+     "rappel10": 0.216,
+     "rangMedian": 12,
+     "ic95": {
+      "mrr": [
+       0.181,
+       0.302
+      ],
+      "rappel10": [
+       0.164,
+       0.275
+      ],
+      "rangMedian": [
+       7.5,
+       17
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.072,
+       0.183
+      ],
+      "rappel10": [
+       0.055,
+       0.144
+      ],
+      "rangMedian": [
+       -24,
+       -8
+      ]
+     }
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.202,
+     "rappel10": 0.175,
+     "rangMedian": 14,
+     "ic95": {
+      "mrr": [
+       0.164,
+       0.242
+      ],
+      "rappel10": [
+       0.14,
+       0.212
+      ],
+      "rangMedian": [
+       12,
+       19
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.047,
+       0.117
+      ],
+      "rappel10": [
+       0.037,
+       0.096
+      ],
+      "rangMedian": [
+       -19,
+       -8
+      ]
+     }
+    }
+   },
+   {
+    "garde": "au moins 2 mots partagés",
+    "lambda": 0.25,
+    "entrantsDansLesDix": 1844,
+    "dontUnSeulMot": 57,
+    "dontAucunMot": 59,
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.168,
+     "rappel10": 0.151,
+     "rangMedian": 19,
+     "ic95": {
+      "mrr": [
+       0.124,
+       0.215
+      ],
+      "rappel10": [
+       0.109,
+       0.198
+      ],
+      "rangMedian": [
+       11,
+       28
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.002,
+       0.082
+      ],
+      "rappel10": [
+       0.022,
+       0.09
+      ],
+      "rangMedian": [
+       -18,
+       2
+      ]
+     }
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.248,
+     "rappel10": 0.228,
+     "rangMedian": 12,
+     "ic95": {
+      "mrr": [
+       0.191,
+       0.314
+      ],
+      "rappel10": [
+       0.176,
+       0.287
+      ],
+      "rangMedian": [
+       7,
+       15
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.081,
+       0.192
+      ],
+      "rappel10": [
+       0.066,
+       0.16
+      ],
+      "rangMedian": [
+       -24,
+       -9
+      ]
+     }
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.208,
+     "rappel10": 0.19,
+     "rangMedian": 13,
+     "ic95": {
+      "mrr": [
+       0.17,
+       0.249
+      ],
+      "rappel10": [
+       0.153,
+       0.229
+      ],
+      "rangMedian": [
+       10,
+       18
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.052,
+       0.123
+      ],
+      "rappel10": [
+       0.051,
+       0.108
+      ],
+      "rangMedian": [
+       -19,
+       -8
+      ]
+     }
+    }
+   },
+   {
+    "garde": "plafond de rareté (un mot compte au moins comme df = 8)",
+    "lambda": 0.25,
+    "entrantsDansLesDix": 1888,
+    "dontUnSeulMot": 377,
+    "dontAucunMot": 14,
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.169,
+     "rappel10": 0.149,
+     "rangMedian": 18,
+     "ic95": {
+      "mrr": [
+       0.123,
+       0.221
+      ],
+      "rappel10": [
+       0.109,
+       0.195
+      ],
+      "rangMedian": [
+       11,
+       28
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.005,
+       0.086
+      ],
+      "rappel10": [
+       0.021,
+       0.088
+      ],
+      "rangMedian": [
+       -19,
+       -3
+      ]
+     }
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.24,
+     "rappel10": 0.22,
+     "rangMedian": 12,
+     "ic95": {
+      "mrr": [
+       0.183,
+       0.308
+      ],
+      "rappel10": [
+       0.169,
+       0.28
+      ],
+      "rangMedian": [
+       8.5,
+       17
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.07,
+       0.189
+      ],
+      "rappel10": [
+       0.059,
+       0.151
+      ],
+      "rangMedian": [
+       -24,
+       -8
+      ]
+     }
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.204,
+     "rappel10": 0.185,
+     "rangMedian": 13,
+     "ic95": {
+      "mrr": [
+       0.167,
+       0.245
+      ],
+      "rappel10": [
+       0.147,
+       0.223
+      ],
+      "rangMedian": [
+       11,
+       19
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.048,
+       0.121
+      ],
+      "rappel10": [
+       0.048,
+       0.104
+      ],
+      "rangMedian": [
+       -19,
+       -7
+      ]
+     }
+    }
+   },
+   {
+    "garde": "les deux",
+    "lambda": 0.25,
+    "entrantsDansLesDix": 1885,
+    "dontUnSeulMot": 48,
+    "dontAucunMot": 58,
+    "apprentissage": {
+     "n": 109,
+     "mrr": 0.173,
+     "rappel10": 0.154,
+     "rangMedian": 18,
+     "ic95": {
+      "mrr": [
+       0.126,
+       0.224
+      ],
+      "rappel10": [
+       0.114,
+       0.2
+      ],
+      "rangMedian": [
+       10,
+       27
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       -0.001,
+       0.089
+      ],
+      "rappel10": [
+       0.025,
+       0.094
+      ],
+      "rangMedian": [
+       -18,
+       0
+      ]
+     }
+    },
+    "controle": {
+     "n": 108,
+     "mrr": 0.25,
+     "rappel10": 0.236,
+     "rangMedian": 10.5,
+     "ic95": {
+      "mrr": [
+       0.192,
+       0.317
+      ],
+      "rappel10": [
+       0.181,
+       0.299
+      ],
+      "rangMedian": [
+       7,
+       16
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.079,
+       0.203
+      ],
+      "rappel10": [
+       0.072,
+       0.169
+      ],
+      "rangMedian": [
+       -25,
+       -8.5
+      ]
+     }
+    },
+    "tous": {
+     "n": 217,
+     "mrr": 0.211,
+     "rappel10": 0.195,
+     "rangMedian": 13,
+     "ic95": {
+      "mrr": [
+       0.174,
+       0.254
+      ],
+      "rappel10": [
+       0.158,
+       0.235
+      ],
+      "rangMedian": [
+       9,
+       18
+      ]
+     },
+     "ecartAuMoteur_ic95": {
+      "mrr": [
+       0.054,
+       0.13
+      ],
+      "rappel10": [
+       0.056,
+       0.116
+      ],
+      "rangMedian": [
+       -19,
+       -8
+      ]
+     }
+    }
+   }
+  ]
+ },
+ "retenu": {
+  "lambda": 0.25,
+  "genre": "tous",
+  "garde": {
+   "min": 2,
+   "plafondDf": 8
+  },
+  "apprentissage": {
+   "n": 109,
+   "mrr": 0.173,
+   "rappel10": 0.154,
+   "rangMedian": 18,
+   "ic95": {
+    "mrr": [
+     0.126,
+     0.224
+    ],
+    "rappel10": [
+     0.114,
+     0.2
+    ],
+    "rangMedian": [
+     10,
+     27
+    ]
+   },
+   "ecartAuMoteur_ic95": {
+    "mrr": [
+     -0.001,
+     0.089
+    ],
+    "rappel10": [
+     0.025,
+     0.094
+    ],
+    "rangMedian": [
+     -18,
+     0
+    ]
+   }
+  },
+  "controle": {
+   "n": 108,
+   "mrr": 0.25,
+   "rappel10": 0.236,
+   "rangMedian": 10.5,
+   "ic95": {
+    "mrr": [
+     0.192,
+     0.317
+    ],
+    "rappel10": [
+     0.181,
+     0.299
+    ],
+    "rangMedian": [
+     7,
+     16
+    ]
+   },
+   "ecartAuMoteur_ic95": {
+    "mrr": [
+     0.079,
+     0.203
+    ],
+    "rappel10": [
+     0.072,
+     0.169
+    ],
+    "rangMedian": [
+     -25,
+     -8.5
+    ]
+   }
+  },
+  "tous": {
+   "n": 217,
+   "mrr": 0.211,
+   "rappel10": 0.195,
+   "rangMedian": 13,
+   "ic95": {
+    "mrr": [
+     0.174,
+     0.254
+    ],
+    "rappel10": [
+     0.158,
+     0.235
+    ],
+    "rangMedian": [
+     9,
+     18
+    ]
+   },
+   "ecartAuMoteur_ic95": {
+    "mrr": [
+     0.054,
+     0.13
+    ],
+    "rappel10": [
+     0.056,
+     0.116
+    ],
+    "rangMedian": [
+     -19,
+     -8
+    ]
+   }
+  }
+ },
+ "prudent": {
+  "lambda": 0.5,
+  "genre": "tous",
+  "garde": {
+   "min": 2,
+   "plafondDf": 8
+  },
+  "apprentissage": {
+   "n": 109,
+   "mrr": 0.173,
+   "rappel10": 0.164,
+   "rangMedian": 16,
+   "ic95": {
+    "mrr": [
+     0.129,
+     0.221
+    ],
+    "rappel10": [
+     0.12,
+     0.216
+    ],
+    "rangMedian": [
+     10,
+     30
+    ]
+   },
+   "ecartAuMoteur_ic95": {
+    "mrr": [
+     0.011,
+     0.077
+    ],
+    "rappel10": [
+     0.038,
+     0.1
+    ],
+    "rangMedian": [
+     -17,
+     1
+    ]
+   }
+  },
+  "controle": {
+   "n": 108,
+   "mrr": 0.208,
+   "rappel10": 0.188,
+   "rangMedian": 15,
+   "ic95": {
+    "mrr": [
+     0.156,
+     0.272
+    ],
+    "rappel10": [
+     0.139,
+     0.241
+    ],
+    "rangMedian": [
+     10,
+     19
+    ]
+   },
+   "ecartAuMoteur_ic95": {
+    "mrr": [
+     0.05,
+     0.144
+    ],
+    "rappel10": [
+     0.036,
+     0.105
+    ],
+    "rangMedian": [
+     -20,
+     -6.5
+    ]
+   }
+  },
+  "tous": {
+   "n": 217,
+   "mrr": 0.191,
+   "rappel10": 0.176,
+   "rangMedian": 15,
+   "ic95": {
+    "mrr": [
+     0.154,
+     0.227
+    ],
+    "rappel10": [
+     0.141,
+     0.213
+    ],
+    "rangMedian": [
+     11,
+     23
+    ]
+   },
+   "ecartAuMoteur_ic95": {
+    "mrr": [
+     0.043,
+     0.099
+    ],
+    "rappel10": [
+     0.045,
+     0.091
+    ],
+    "rangMedian": [
+     -17,
+     -7
+    ]
+   }
+  }
+ },
+ "explications": {
+  "original": "Nelson Sauvin",
+  "motsOriginal": [
+   "agrumes",
+   "fruity",
+   "fruité",
+   "gooseberry",
+   "grape",
+   "grapes",
+   "sauvignon blanc",
+   "white wine",
+   "épicé"
+  ],
+  "motsSansFamilleOriginal": [
+   "fruity",
+   "fruité",
+   "gooseberry",
+   "grape",
+   "grapes",
+   "sauvignon blanc",
+   "white wine"
+  ],
+  "candidats": [
+   {
+    "candidat": "Hallertau Blanc",
+    "parLambda": {
+     "tous λ=1": {
+      "rang": 155,
+      "arome": 53,
+      "aromeMoteur": 53,
+      "score": 52,
+      "motsPartages": [
+       "agrumes",
+       "fruité",
+       "gooseberry",
+       "grapes",
+       "sauvignon blanc",
+       "white wine",
+       "épicé"
+      ]
+     },
+     "tous λ=0.75": {
+      "rang": 94,
+      "arome": 55,
+      "aromeMoteur": 53,
+      "score": 53,
+      "motsPartages": [
+       "agrumes",
+       "fruité",
+       "gooseberry",
+       "grapes",
+       "sauvignon blanc",
+       "white wine",
+       "épicé"
+      ]
+     },
+     "tous λ=0.5": {
+      "rang": 40,
+      "arome": 57,
+      "aromeMoteur": 53,
+      "score": 54,
+      "motsPartages": [
+       "agrumes",
+       "fruité",
+       "gooseberry",
+       "grapes",
+       "sauvignon blanc",
+       "white wine",
+       "épicé"
+      ]
+     },
+     "tous λ=0.25": {
+      "rang": 2,
+      "arome": 58,
+      "aromeMoteur": 53,
+      "score": 55,
+      "motsPartages": [
+       "agrumes",
+       "fruité",
+       "gooseberry",
+       "grapes",
+       "sauvignon blanc",
+       "white wine",
+       "épicé"
+      ]
+     },
+     "tous λ=0": {
+      "rang": 1,
+      "arome": 60,
+      "aromeMoteur": 53,
+      "score": 56,
+      "motsPartages": [
+       "agrumes",
+       "fruité",
+       "gooseberry",
+       "grapes",
+       "sauvignon blanc",
+       "white wine",
+       "épicé"
+      ]
+     },
+     "hors-famille λ=1": {
+      "rang": 155,
+      "arome": 53,
+      "aromeMoteur": 53,
+      "score": 52,
+      "motsPartages": [
+       "fruité",
+       "gooseberry",
+       "grapes",
+       "sauvignon blanc",
+       "white wine"
+      ]
+     },
+     "hors-famille λ=0.75": {
+      "rang": 98,
+      "arome": 56,
+      "aromeMoteur": 53,
+      "score": 54,
+      "motsPartages": [
+       "fruité",
+       "gooseberry",
+       "grapes",
+       "sauvignon blanc",
+       "white wine"
+      ]
+     },
+     "hors-famille λ=0.5": {
+      "rang": 63,
+      "arome": 58,
+      "aromeMoteur": 53,
+      "score": 55,
+      "motsPartages": [
+       "fruité",
+       "gooseberry",
+       "grapes",
+       "sauvignon blanc",
+       "white wine"
+      ]
+     },
+     "hors-famille λ=0.25": {
+      "rang": 35,
+      "arome": 61,
+      "aromeMoteur": 53,
+      "score": 57,
+      "motsPartages": [
+       "fruité",
+       "gooseberry",
+       "grapes",
+       "sauvignon blanc",
+       "white wine"
+      ]
+     },
+     "hors-famille λ=0": {
+      "rang": 27,
+      "arome": 64,
+      "aromeMoteur": 53,
+      "score": 58,
+      "motsPartages": [
+       "fruité",
+       "gooseberry",
+       "grapes",
+       "sauvignon blanc",
+       "white wine"
+      ]
+     }
+    },
+    "cosinusFamilles": 0.53,
+    "motsDuCandidat": [
+     "agrumes",
+     "cassis",
+     "clean",
+     "coffee",
+     "fruité",
+     "gooseberry",
+     "grapes",
+     "lemongrass",
+     "passion fruit",
+     "pineapple",
+     "sauvignon blanc",
+     "white wine",
+     "épicé"
+    ]
+   },
+   {
+    "candidat": "Enigma",
+    "parLambda": {
+     "tous λ=1": {
+      "rang": 244,
+      "arome": 0,
+      "aromeMoteur": 0,
+      "score": 32,
+      "motsPartages": [
+       "white wine"
+      ]
+     },
+     "tous λ=0.75": {
+      "rang": 223,
+      "arome": 4,
+      "aromeMoteur": 0,
+      "score": 35,
+      "motsPartages": [
+       "white wine"
+      ]
+     },
+     "tous λ=0.5": {
+      "rang": 180,
+      "arome": 8,
+      "aromeMoteur": 0,
+      "score": 37,
+      "motsPartages": [
+       "white wine"
+      ]
+     },
+     "tous λ=0.25": {
+      "rang": 92,
+      "arome": 12,
+      "aromeMoteur": 0,
+      "score": 39,
+      "motsPartages": [
+       "white wine"
+      ]
+     },
+     "tous λ=0": {
+      "rang": 10,
+      "arome": 16,
+      "aromeMoteur": 0,
+      "score": 42,
+      "motsPartages": [
+       "white wine"
+      ]
+     },
+     "hors-famille λ=1": {
+      "rang": 244,
+      "arome": 0,
+      "aromeMoteur": 0,
+      "score": 32,
+      "motsPartages": [
+       "white wine"
+      ]
+     },
+     "hors-famille λ=0.75": {
+      "rang": 218,
+      "arome": 9,
+      "aromeMoteur": 0,
+      "score": 38,
+      "motsPartages": [
+       "white wine"
+      ]
+     },
+     "hors-famille λ=0.5": {
+      "rang": 150,
+      "arome": 19,
+      "aromeMoteur": 0,
+      "score": 44,
+      "motsPartages": [
+       "white wine"
+      ]
+     },
+     "hors-famille λ=0.25": {
+      "rang": 69,
+      "arome": 28,
+      "aromeMoteur": 0,
+      "score": 49,
+      "motsPartages": [
+       "white wine"
+      ]
+     },
+     "hors-famille λ=0": {
+      "rang": 35,
+      "arome": 38,
+      "aromeMoteur": 0,
+      "score": 55,
+      "motsPartages": [
+       "white wine"
+      ]
+     }
+    },
+    "cosinusFamilles": 0,
+    "motsDuCandidat": [
+     "berry",
+     "raspberry",
+     "redcurrant",
+     "stone fruit",
+     "tropical fruit",
+     "white wine"
+    ]
+   },
+   {
+    "candidat": "Motueka",
+    "parLambda": {
+     "tous λ=1": {
+      "rang": 89,
+      "arome": 67,
+      "aromeMoteur": 67,
+      "score": 62,
+      "motsPartages": [
+       "agrumes",
+       "fruité"
+      ]
+     },
+     "tous λ=0.75": {
+      "rang": 85,
+      "arome": 53,
+      "aromeMoteur": 67,
+      "score": 54,
+      "motsPartages": [
+       "agrumes",
+       "fruité"
+      ]
+     },
+     "tous λ=0.5": {
+      "rang": 102,
+      "arome": 38,
+      "aromeMoteur": 67,
+      "score": 45,
+      "motsPartages": [
+       "agrumes",
+       "fruité"
+      ]
+     },
+     "tous λ=0.25": {
+      "rang": 130,
+      "arome": 24,
+      "aromeMoteur": 67,
+      "score": 36,
+      "motsPartages": [
+       "agrumes",
+       "fruité"
+      ]
+     },
+     "tous λ=0": {
+      "rang": 174,
+      "arome": 9,
+      "aromeMoteur": 67,
+      "score": 27,
+      "motsPartages": [
+       "agrumes",
+       "fruité"
+      ]
+     },
+     "hors-famille λ=1": {
+      "rang": 89,
+      "arome": 67,
+      "aromeMoteur": 67,
+      "score": 62,
+      "motsPartages": [
+       "fruité"
+      ]
+     },
+     "hors-famille λ=0.75": {
+      "rang": 102,
+      "arome": 53,
+      "aromeMoteur": 67,
+      "score": 54,
+      "motsPartages": [
+       "fruité"
+      ]
+     },
+     "hors-famille λ=0.5": {
+      "rang": 146,
+      "arome": 38,
+      "aromeMoteur": 67,
+      "score": 45,
+      "motsPartages": [
+       "fruité"
+      ]
+     },
+     "hors-famille λ=0.25": {
+      "rang": 174,
+      "arome": 24,
+      "aromeMoteur": 67,
+      "score": 36,
+      "motsPartages": [
+       "fruité"
+      ]
+     },
+     "hors-famille λ=0": {
+      "rang": 218,
+      "arome": 9,
+      "aromeMoteur": 67,
+      "score": 27,
+      "motsPartages": [
+       "fruité"
+      ]
+     }
+    },
+    "cosinusFamilles": 0.67,
+    "motsDuCandidat": [
+     "agrumes",
+     "citrus",
+     "floral",
+     "fresh lime",
+     "fruité",
+     "lemon",
+     "lemon zest",
+     "lime",
+     "mojito",
+     "tropical fruit"
+    ]
+   },
+   {
+    "candidat": "Riwaka",
+    "parLambda": {
+     "tous λ=1": {
+      "rang": 206,
+      "arome": 50,
+      "aromeMoteur": 50,
+      "score": 44,
+      "motsPartages": [
+       "agrumes",
+       "fruité"
+      ]
+     },
+     "tous λ=0.75": {
+      "rang": 208,
+      "arome": 42,
+      "aromeMoteur": 50,
+      "score": 39,
+      "motsPartages": [
+       "agrumes",
+       "fruité"
+      ]
+     },
+     "tous λ=0.5": {
+      "rang": 210,
+      "arome": 34,
+      "aromeMoteur": 50,
+      "score": 34,
+      "motsPartages": [
+       "agrumes",
+       "fruité"
+      ]
+     },
+     "tous λ=0.25": {
+      "rang": 204,
+      "arome": 25,
+      "aromeMoteur": 50,
+      "score": 29,
+      "motsPartages": [
+       "agrumes",
+       "fruité"
+      ]
+     },
+     "tous λ=0": {
+      "rang": 199,
+      "arome": 17,
+      "aromeMoteur": 50,
+      "score": 24,
+      "motsPartages": [
+       "agrumes",
+       "fruité"
+      ]
+     },
+     "hors-famille λ=1": {
+      "rang": 206,
+      "arome": 50,
+      "aromeMoteur": 50,
+      "score": 44,
+      "motsPartages": [
+       "fruité"
+      ]
+     },
+     "hors-famille λ=0.75": {
+      "rang": 209,
+      "arome": 43,
+      "aromeMoteur": 50,
+      "score": 40,
+      "motsPartages": [
+       "fruité"
+      ]
+     },
+     "hors-famille λ=0.5": {
+      "rang": 212,
+      "arome": 36,
+      "aromeMoteur": 50,
+      "score": 35,
+      "motsPartages": [
+       "fruité"
+      ]
+     },
+     "hors-famille λ=0.25": {
+      "rang": 215,
+      "arome": 29,
+      "aromeMoteur": 50,
+      "score": 31,
+      "motsPartages": [
+       "fruité"
+      ]
+     },
+     "hors-famille λ=0": {
+      "rang": 219,
+      "arome": 22,
+      "aromeMoteur": 50,
+      "score": 27,
+      "motsPartages": [
+       "fruité"
+      ]
+     }
+    },
+    "cosinusFamilles": 0.5,
+    "motsDuCandidat": [
+     "agrumes",
+     "citrus",
+     "fruité",
+     "grapefruit",
+     "lime",
+     "passion fruit",
+     "tropical fruit"
+    ]
+   }
+  ],
+  "tete": {
+   "tous λ=0.5": [
+    {
+     "nom": "Herkules",
+     "motsPartages": [
+      "agrumes",
+      "fruité",
+      "épicé"
+     ]
+    },
+    {
+     "nom": "Boomerang",
+     "motsPartages": []
+    },
+    {
+     "nom": "Godiva",
+     "motsPartages": [
+      "gooseberry",
+      "white wine"
+     ]
+    },
+    {
+     "nom": "Phoenix",
+     "motsPartages": [
+      "agrumes"
+     ]
+    },
+    {
+     "nom": "Pacific Jade",
+     "motsPartages": []
+    }
+   ],
+   "tous λ=0.25": [
+    {
+     "nom": "Herkules",
+     "motsPartages": [
+      "agrumes",
+      "fruité",
+      "épicé"
+     ]
+    },
+    {
+     "nom": "Hallertau Blanc",
+     "motsPartages": [
+      "agrumes",
+      "fruité",
+      "gooseberry",
+      "grapes",
+      "sauvignon blanc",
+      "white wine",
+      "épicé"
+     ]
+    },
+    {
+     "nom": "Godiva",
+     "motsPartages": [
+      "gooseberry",
+      "white wine"
+     ]
+    },
+    {
+     "nom": "Sládek",
+     "motsPartages": [
+      "agrumes",
+      "fruity",
+      "fruité",
+      "épicé"
+     ]
+    },
+    {
+     "nom": "Admiral",
+     "motsPartages": [
+      "agrumes",
+      "fruity",
+      "fruité",
+      "épicé"
+     ]
+    }
+   ]
+  },
+  "motueka": {
+   "original": "Motueka",
+   "motsOriginal": [
+    "agrumes",
+    "citrus",
+    "floral",
+    "fresh lime",
+    "fruité",
+    "lemon",
+    "lemon zest",
+    "lime",
+    "mojito",
+    "tropical fruit"
+   ],
+   "candidatsBM": [
+    {
+     "candidat": "Saaz (US)",
+     "parLambda": {
+      "λ=1": {
+       "rang": 291,
+       "motsPartages": []
+      },
+      "λ=0.75": {
+       "rang": 291,
+       "motsPartages": []
+      },
+      "λ=0.5": {
+       "rang": 291,
+       "motsPartages": []
+      },
+      "λ=0.25": {
+       "rang": 289,
+       "motsPartages": []
+      },
+      "λ=0": {
+       "rang": 279,
+       "motsPartages": []
+      }
+     }
+    },
+    {
+     "candidat": "Sterling",
+     "parLambda": {
+      "λ=1": {
+       "rang": 198,
+       "motsPartages": [
+        "floral"
+       ]
+      },
+      "λ=0.75": {
+       "rang": 184,
+       "motsPartages": [
+        "floral"
+       ]
+      },
+      "λ=0.5": {
+       "rang": 159,
+       "motsPartages": [
+        "floral"
+       ]
+      },
+      "λ=0.25": {
+       "rang": 112,
+       "motsPartages": [
+        "floral"
+       ]
+      },
+      "λ=0": {
+       "rang": 42,
+       "motsPartages": [
+        "floral"
+       ]
+      }
+     }
+    }
+   ]
+  }
+ }
+}

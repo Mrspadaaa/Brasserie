@@ -62,3 +62,78 @@ Toutes mesurées hors ligne contre Beer Maverick (cohérence avec le marché, pa
 CONNAISSANCE : substitutes() n'a que deux classements (60′ et arôme) ; Suggérer ne départage pas les houblons qui citent les mêmes familles (liste en un groupe, ordre alphabétique) ; la référence Beer Maverick de substitution suit l'α plus que l'arôme ; les mots hors famille, mélangés à l'arôme, remontent Hallertau Blanc de la 155e à la 2e place chez Nelson Sauvin. Note à créer par le pilote dans cerveau/metier (sources : resultats/rapport.md).
 
 LEÇON PROPOSÉE : un critère de style mesuré sur les 10 premières voies est biaisé par le classement lui-même (il place en tête celles qui débordent le moins) ; mesurer sur toutes les voies, et vérifier avant que le test sépare au moins un cas connu (rôles : auteur, relecteur).
+
+
+---
+
+# Suite (avis du conseil sur l'option « mots »)
+
+Ligne : OK — λ jugé sur moitié de contrôle : gain net sur une moitié, douteux sur l'autre ; « hors famille seul » sans gain ; garde « ≥ 2 mots » mesurée ; listes écrites.
+
+## Fichiers
+- `scripts/eval-hop/suite-mots.ts`, `rapport-suite.ts` (nouveaux ; le banc d'origine et son `resultats.json` ne bougent pas).
+- `resultats/suite-mots.json`, `resultats/suite-mots.md` (tableaux complets avec intervalles), `resultats/listes-lambda.json`.
+- Lancement : `npx vite-node scripts/eval-hop/suite-mots.ts -- --sortie=<voie>/resultats` (46 s). Deux passes : sha256 identiques pour les trois fichiers (`suite-mots.json` : efb241f56661a881bf39e296504b7cbe2ba3a8b8df4e183da4961c86620eca23).
+- Rien dans `src/domain/hopIndex`. `git diff` montre `src/domain/hopDecision/adviceContentReference.ts` modifié : ce n'est pas moi (autre voie).
+- Réplique hors ligne sur des composantes entières : ±1 rang possible pour λ < 1 ; λ = 1 est le moteur lui-même.
+
+## 1. λ choisi sur une moitié, jugé sur l'autre (95 %, 1000 rééchantillons des houblons, graine 181)
+Moitié 0 = 109 houblons (parité de l'indice), moitié 1 = 108. Cellule : valeur [intervalle à 95 %].
+
+**Tous les mots** : λ choisi sur la moitié 0 = 0,25 ; sur la moitié 1 = 0.
+
+| λ | moitié 1 : MRR | rappel@10 | rang médian | moitié 0 : MRR | rappel@10 | rang médian |
+|---|---|---|---|---|---|---|
+| 1 (moteur) | 0,112 [0,079 ; 0,149] | 0,119 [0,077 ; 0,171] | 26,5 [19,5 ; 36] | 0,129 [0,090 ; 0,174] | 0,099 [0,063 ; 0,140] | 27 [19 ; 42] |
+| 0,75 | 0,167 [0,119 ; 0,225] | 0,145 [0,097 ; 0,197] | 21,5 [14,5 ; 26,5] | 0,144 [0,104 ; 0,190] | 0,127 [0,086 ; 0,174] | 21 [15 ; 35] |
+| 0,5 | 0,195 [0,143 ; 0,258] | 0,171 [0,123 ; 0,223] | 17 [12 ; 21,5] | 0,160 [0,119 ; 0,206] | 0,145 [0,103 ; 0,193] | 17 [11 ; 30] |
+| **0,25** | **0,238 [0,181 ; 0,302]** | **0,216 [0,164 ; 0,275]** | **12 [7,5 ; 17]** | 0,166 [0,122 ; 0,211] | 0,134 [0,095 ; 0,180] | 16 [12 ; 29] |
+| 0 | 0,252 [0,191 ; 0,319] | 0,232 [0,174 ; 0,296] | 11 [8 ; 15] | 0,163 [0,117 ; 0,214] | 0,121 [0,082 ; 0,162] | 21 [14 ; 27] |
+
+- λ = 0,25 (choisi sur la moitié 0), jugé sur la moitié 1 : écart au moteur MRR +0,072 à +0,183, rappel@10 +0,055 à +0,144, rang médian −24 à −8 : **l'intervalle exclut 0**.
+- λ = 0 (choisi sur la moitié 1), jugé sur la moitié 0 : écart MRR −0,017 à +0,085, rappel@10 −0,021 à +0,067 : **l'intervalle contient 0**. Sur cette moitié, λ = 0,5 donne +0,021 à +0,079 en rappel@10 (hors 0) mais MRR −0,002 à +0,065.
+- Le gain va dans le même sens sur les deux moitiés, mais il n'est net que sur l'une. Sur les 217 ensemble : MRR +0,054 à +0,121 (λ = 0,25).
+- λ = 0 (mots seuls) ne fait pas mieux que 0,25 sur la moitié 0 ; je ne retiens pas λ < 0,25.
+
+**Mots hors famille seulement** (cosinus des seuls mots sans famille) : λ choisi sur la moitié 0 = **1** (aucune valeur < 1 ne bat le moteur), sur la moitié 1 = 0,75. Sur toutes les lignes l'écart au moteur en MRR contient 0 ; à λ ≤ 0,25 le rappel@10 baisse (moitié 1 : −0,073 à −0,004). **Cette variante n'apporte rien de mesurable.** Le gain de « tous les mots » vient des mots rattachables à une famille mais plus fins que les 12 familles (grapefruit, lime, lemon, tropical fruit, mojito…), pas des mots hors famille. Elle remonte quand même Hallertau Blanc (155e → 35e à λ = 0,25) grâce à gooseberry, grapes, sauvignon blanc, white wine : utile pour Nelson Sauvin, sans effet mesurable ailleurs.
+
+## 2. Candidats remontés par un seul mot
+- À λ = 0,25 sans garde, 318 houblons pris comme original : 1878 entrants dans les 10 premiers ; **408 (22 %) partagent un seul mot** avec l'original, 15 aucun. Les plus rares : Relax → Michigan Copper (hibiscus), Wurttemberg → Marco Polo (oregano ; 186e chez le moteur), Akoya → TNT Blend (green fruit ; 84e), Gemini → Idaho 7 (black tea), Pahto → Yakima Gold (smooth ; 210e), Gaia → Sylva (hoppy ; 217e).
+- « dank » et « cannabis » (hors famille) : 26 entrants, presque tous avec plusieurs mots partagés (Chinook, Summit, Galaxy, Amarillo, Columbus, Strata se rapprochent) ; un seul par « dank » seul (African Queen → Chinook). Ces deux mots portent la dimension « dank » que les 12 familles ne voient pas (cas K1) : ils ne sont pas un artefact de mot unique.
+- Gardes à λ = 0,25, moitié 1 :
+
+| garde | entrants à un seul mot | MRR | rappel@10 | rang médian |
+|---|---|---|---|---|
+| aucune | 408 | 0,238 [0,181 ; 0,302] | 0,216 | 12 |
+| ≥ 2 mots partagés (sinon le terme « mots » vaut 0) | **57** | 0,248 [0,191 ; 0,314] | 0,228 | 12 |
+| plafond de rareté (un mot compte au moins comme df = 8) | 377 | 0,240 | 0,220 | 12 |
+| les deux | **48** | **0,250 [0,192 ; 0,317]** | **0,236** | 10,5 |
+
+  La garde « au moins 2 mots » supprime 86 % des entrants à un mot sans perte (MRR +0,010, dans le bruit). Le plafond de rareté seul est presque sans effet (les mots rares valent déjà idf 4 à 5 ; le plafond les baisse de 15 %). Les 48 à 57 restants montent parce que d'autres candidats redescendent. **Garde proposée : au moins 2 mots partagés.**
+- Limite : les mots ne sont pas dédoublonnés entre français et anglais (« fruity » et « fruité », « grape » et « grapes » comptent pour 2) ; la garde peut donc être satisfaite par un doublon de traduction. À régler avant tout code (table de synonymes) ; non mesuré ici.
+
+## 3. Pourquoi Nelson Sauvin, Motueka, Riwaka, Hallertau Blanc bougent (rangs chez Nelson Sauvin, dry hop)
+| candidat | λ 1 (moteur) | 0,75 | 0,5 | 0,25 | 0 | mots partagés avec Nelson Sauvin |
+|---|---|---|---|---|---|---|
+| Hallertau Blanc | 155 | 94 | 40 | **2** | 1 | agrumes, fruité, gooseberry, grapes, sauvignon blanc, white wine, épicé (7 des 13 mots du candidat) |
+| Enigma | 244 | 223 | 180 | 92 | 10 | white wine (un seul) |
+| Motueka | 89 | 85 | 102 | **130** | 174 | agrumes, fruité (2) |
+| Riwaka | 206 | 208 | 210 | 204 | 199 | agrumes, fruité (2) |
+
+- **Hallertau Blanc** : sept mots partagés, dont quatre hors famille (gooseberry, grapes, sauvignon blanc, white wine) ; le cosinus des 12 familles n'était que de 0,53 (il ne voit qu'agrumes et épicé). Son arôme ne passe que de 53 à 58 au λ 0,25 (score 52 → 55) : le saut de rang est surtout **relatif** : les candidats « arôme 90–100 » du moteur, sans mot commun, redescendent. D'où 155 → 94 → 40 → 2 : un seul réglage décide (confirmé).
+- **Enigma** : un seul mot partagé (white wine) ; n'entre dans les 10 premiers qu'à λ = 0 : le cas « un mot » que la garde étouffe.
+- **Motueka recule** (89 → 130) : son arôme du moteur (67) venait du cosinus des familles (agrumes marqué, comme Nelson Sauvin cite agrumes) ; ses dix mots (citrus, lime, lemon, lemon zest, mojito…) ne recoupent que « agrumes » et « fruité » parmi les neuf mots de Nelson Sauvin ; son arôme tombe à 24 au λ 0,25. Vu par les mots, Motueka n'a pas le vocabulaire vin blanc/groseille ; que ce recul soit juste pour le brasseur est à lui de le dire.
+- **Riwaka** reste à 204–210 : mêmes deux mots partagés, arôme de 50 à 25 ; il recule comme tout le monde, donc son rang relatif ne bouge pas. Les mots ne l'aident pas (pamplemousse, citron vert, fruit de la passion, pas de vin blanc) ; la référence le lie sans doute par l'origine et l'α, ce que les mots ne voient pas.
+- Conclusion honnête : λ ≥ 0,5 ne fait pas entrer Hallertau Blanc dans les 10 premiers ; seul λ ≤ 0,25 le fait.
+
+## 4. Listes avant/après
+`resultats/listes-lambda.json` : 11 houblons (Nelson Sauvin, Motueka, Citra, Galaxy, Saaz (CZ), Mosaic, Simcoe, Cascade, et trois ordinaires : Fuggle, Magnum (US), Willamette), au dry hop. Pour chacun les 10 premiers du moteur, du **réglage retenu** (λ = 0,25, garde ≥ 2 mots + plafond df 8 ; moitié 1 : MRR 0,250 [0,192 ; 0,317] ; moitié 0 : 0,173 [0,126 ; 0,224], écart au moteur −0,001 à +0,089) et d'un réglage **prudent** (λ = 0,5, même garde ; moitié 1 : 0,208 [0,156 ; 0,272] ; moitié 0 : 0,173 [0,129 ; 0,221], écart au moteur +0,011 à +0,077). Chaque candidat : nom, α, usage, score, mots partagés avec l'original ; aucune mention de Beer Maverick.
+- Nelson Sauvin, retenu : Herkules, Godiva, **Hallertau Blanc (3e)**, Sládek, Admiral, Cashmere… ; prudent : Herkules, Godiva, Boomerang, Pacific Jade, Phoenix… (Hallertau Blanc hors des 10).
+- Motueka, retenu : Cascade, Taiheke, Riwaka, Bravo, Mandarina Bavaria, Southern Cross… (Buzz Bullets et Shaddock sortent).
+
+## DÉCISION À PRENDRE (conseil) : adopter l'option mots, et à quel λ ?
+- **Recommandation** : oui, avec réserves. (1) Garde « au moins 2 mots partagés » (perte nulle, 86 % des entrants à un mot supprimés). (2) λ = 0,5 plutôt que 0,25 : l'intervalle de l'écart au moteur est au-dessus de 0 sur les deux moitiés (MRR +0,011 à +0,077 et +0,050 à +0,144 avec la garde) ; λ = 0,25 n'est net que sur la moitié 1. Mais Hallertau Blanc n'entre dans les 10 premiers de Nelson Sauvin qu'à 0,25 : il faut arbitrer entre un gain moyen robuste et le cas Nelson Sauvin du brasseur. (3) Avant tout code : une table de synonymes fr/en, sinon la garde est contournée.
+- Ce que cette suite ne montre pas : que le brasseur préfère les listes obtenues. Les listes de `listes-lambda.json` sont à lui montrer (ou au critique calibré). La référence reste Beer Maverick (mêmes pages que les mots : risque de corrélation de source).
+- Réponse aux trois points du conseil : (a) « un autre moteur » : à λ = 0,25 le terme mots pèse 75 % de l'arôme ; à 0,5, 50 % ; la variante « hors famille seulement » plus fidèle à l'idée de départ ne donne aucun gain ; (b) λ est maintenant choisi sur une moitié et jugé sur l'autre : résultat asymétrique (net sur l'une, douteux sur l'autre) ; (c) Hallertau Blanc dépend bien d'un seul réglage (155 → 94 → 40 → 2) ; Motueka recule car son vocabulaire (agrumes) recoupe peu celui de Nelson Sauvin ; Riwaka reste là où il est.
+
+CONNAISSANCE : la valeur de l'option « mots » vient des mots rattachables à une famille mais plus fins que les 12 familles ; les mots hors famille seuls n'apportent rien de mesurable (sauf Hallertau Blanc pour Nelson Sauvin). LEÇON PROPOSÉE : aucune.

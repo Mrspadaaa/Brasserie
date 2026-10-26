@@ -38,11 +38,15 @@ const stop = (message: string): never => { console.error(`✗ ${message}`); proc
 const VOIE = resolve('work/missions/2026-10-25-integration-houblons/voies/ia1-reclassement');
 const JOURNAL_REEL = resolve('work/finalisation-tickets-2026-10-08/gemini-journal.md');
 const LOCK_REEL = resolve('work/finalisation-tickets-2026-10-08/locks/gemini-journal');
-const ENVELOPPE = { appels: 100, microChf: 5_000_000 };
+/** Suite de l'essai : ia1 (100 appels, 5 CHF, 3.8 ou lite) ou ia2 (70 appels, 1 CHF, Flash-Lite seul). */
+const SUITE = (val('--section') ?? 'ia1') as 'ia1' | 'ia2';
+if (SUITE !== 'ia1' && SUITE !== 'ia2') stop(`--section inconnue : ${SUITE}`);
+const ENVELOPPE = SUITE === 'ia2' ? { appels: 70, microChf: 1_000_000 } : { appels: 100, microChf: 5_000_000 };
 const POOL = (val('--pool') ?? 'moteur') as 'moteur' | 'opt1';
 if (POOL !== 'moteur' && POOL !== 'opt1') stop(`--pool inconnu : ${POOL}`);
 const MODELE_ARG = val('--modele') ?? '3.8';
 const MODELE = MODELE_ARG === 'lite' ? GEMINI_LITE_MODEL : MODELE_ARG === '3.8' ? GEMINI_MODEL : stop(`--modele inconnu : ${MODELE_ARG} (3.8 ou lite)`);
+if (SUITE === 'ia2' && MODELE !== GEMINI_LITE_MODEL) stop('La suite ia2 est limitée à Flash-Lite (--modele=lite).');
 const DATE = val('--date') ?? new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Zurich' }).format(new Date());
 const GRAINE = 181, N_ECHANTILLON = 60, N_BANC = 30, TAILLE_POOL = 20, TAILLE_REPONSE = 10;
 const PROMPT_VERSION = 'v1';
@@ -166,7 +170,7 @@ function ficheTexte(h: CatalogueHop, etiquette: string): string {
 }
 interface CasFige { id: string; hop: string; hopNom: string; moment: MomentId; groupes: Groupe[]; candidats: { c: string; key: string; nom: string }[]; attendus: string[]; user: string }
 function construireCas(): CasFige[] {
-  return listeCas().filter((c) => POOL === 'moteur' || c.moment === 'dryActive').map(({ hop, moment, groupes }) => {
+  return listeCas().map(({ hop, moment, groupes }) => {
     const ordre = ordrePool(hop, moment).slice(0, TAILLE_POOL);
     const candidats = ordre.map((key, i) => ({ c: `c${String(i + 1).padStart(2, '0')}`, key, nom: nom(key) }));
     const libelle = moment === 'dryActive' ? 'dry hop, en fermentation active (l\'arôme prime)' : 'ébullition de 60 minutes (l\'amertume prime)';
@@ -222,16 +226,21 @@ function ordreIA(cas: CasFige, a: Analyse): string[] {
   return [...choisis, ...base.filter((k) => !choisis.includes(k))];
 }
 
-// ---------- Le journal (section « ia1 » de gemini-journal.md) ----------
-const SECTION = '## Essai IA de re-classement des substituts (ia1, #181) — enveloppe séparée';
-const COMPTEUR = /\*\*Compteur ia1 : (\d+) \/ 100 · (\d+(?:\.\d+)?) CHF \/ 5\*\*/;
+// ---------- Le journal (section « ia1 » ou « ia2 » de gemini-journal.md) ----------
+const SECTION = SUITE === 'ia2'
+  ? '## Suite de l\'essai IA de re-classement des substituts (ia2, #181) — enveloppe séparée'
+  : '## Essai IA de re-classement des substituts (ia1, #181) — enveloppe séparée';
+const COMPTEUR = new RegExp(`\\*\\*Compteur ${SUITE} : (\\d+) \\/ ${ENVELOPPE.appels} · (\\d+(?:\\.\\d+)?) CHF \\/ ${ENVELOPPE.microChf / 1e6}\\*\\*`);
+const texteCompteur = (used: number | string, micro: number) => `**Compteur ${SUITE} : ${used} / ${ENVELOPPE.appels} · ${(micro / 1e6).toFixed(4)} CHF / ${ENVELOPPE.microChf / 1e6}**`;
 const EN_TETE = [SECTION, '',
-  '- Accord du brasseur (26.10, matin) : « Je donne mon accord pour les deux. » ; enveloppe fixée par le pilote : **100 appels au plus, 5 CHF estimés** (`geminiCosts.ts`).',
-  '- Modèles : `gemini-3.8-flash` ; `gemini-3.5-flash-lite` permis s\'il est mesuré aussi bon et plus rapide ; champ `modelVersion` vérifié à chaque réponse.',
+  SUITE === 'ia2'
+    ? `- Accord de l'utilisateur pour l'essai d'IA (suite d'ia1) relayé par le pilote le 26.10 ; enveloppe : **${ENVELOPPE.appels} appels au plus, ${ENVELOPPE.microChf / 1e6} CHF estimé**, \`gemini-3.5-flash-lite\` seul (l'invite n'en admet pas d'autre dans cette suite).`
+    : `- Accord du brasseur (26.10, matin) : « Je donne mon accord pour les deux. » ; enveloppe fixée par le pilote : **${ENVELOPPE.appels} appels au plus, ${ENVELOPPE.microChf / 1e6} CHF estimés** (\`geminiCosts.ts\`).`,
+  '- Modèles : `gemini-3.8-flash` (ia1 seulement) et `gemini-3.5-flash-lite` ; champ `modelVersion` vérifié à chaque réponse.',
   '- Données : fiches du catalogue (Beer Maverick, Hopsteiner), aucune donnée du brasseur. Clé jamais journalisée. Jamais dans `npm test`.',
   '- Lanceur : `scripts/eval-hop/ia-reclassement.ts` (garde-fous de `scripts/gemini38LiveCore.ts`) ; entrées et sorties : `work/missions/2026-10-25-integration-houblons/voies/ia1-reclassement/resultats/<date>/`.',
   '- Compteur propre à cette section : ne pas le confondre avec les autres. Une ligne par appel parti, réservée avant l\'envoi.', '',
-  '**Compteur ia1 : 0 / 100 · 0.0000 CHF / 5**', '',
+  texteCompteur(0, 0), '',
   '| # | Heure | Issue | Test | Modèle observé | Tokens entrée / sortie | Coût estimé | Résultat |', '|---|---|---|---|---|---|---|---|'].join('\n');
 interface Journal { chemin: string; verrou: string }
 function reserver(j: Journal): number {
@@ -239,11 +248,11 @@ function reserver(j: Journal): number {
     let t = readFileSync(j.chemin, 'utf8');
     if (!t.includes(SECTION)) t = `${t.replace(/\n*$/, '\n')}\n${EN_TETE}\n`;
     const c = COMPTEUR.exec(t);
-    if (!c) throw new Error('Compteur ia1 illisible : aucun appel.');
+    if (!c) throw new Error(`Compteur ${SUITE} illisible : aucun appel.`);
     const used = Number(c[1]), micro = Math.round(Number(c[2]) * 1_000_000);
-    if (used + 1 > ENVELOPPE.appels) throw new Error(`Enveloppe ia1 atteinte (${used} / ${ENVELOPPE.appels}) : requête refusée avant l'envoi.`);
-    if (micro + 100_000 > ENVELOPPE.microChf) throw new Error(`Enveloppe de coût ia1 atteinte (${(micro / 1e6).toFixed(4)} CHF / 5) : requête refusée avant l'envoi.`);
-    writeFileSync(j.chemin, t.replace(COMPTEUR, `**Compteur ia1 : ${used + 1} / 100 · ${(micro / 1e6).toFixed(4)} CHF / 5**`));
+    if (used + 1 > ENVELOPPE.appels) throw new Error(`Enveloppe ${SUITE} atteinte (${used} / ${ENVELOPPE.appels}) : requête refusée avant l'envoi.`);
+    if (micro + Math.min(100_000, ENVELOPPE.microChf / 10) > ENVELOPPE.microChf) throw new Error(`Enveloppe de coût ${SUITE} atteinte (${(micro / 1e6).toFixed(4)} CHF) : requête refusée avant l'envoi.`);
+    writeFileSync(j.chemin, t.replace(COMPTEUR, () => texteCompteur(used + 1, micro)));
     return used + 1;
   });
 }
@@ -252,9 +261,9 @@ function ajouterLigne(j: Journal, call: LiveCall, test: string, resultat: string
     let t = readFileSync(j.chemin, 'utf8');
     const c = COMPTEUR.exec(t)!;
     const micro = Math.round(Number(c[2]) * 1_000_000) + (call.costMicroChf ?? 0);
-    t = t.replace(COMPTEUR, `**Compteur ia1 : ${c[1]} / 100 · ${(micro / 1e6).toFixed(4)} CHF / 5**`);
+    t = t.replace(COMPTEUR, () => texteCompteur(c[1], micro));
     const debut = t.indexOf(SECTION), suite = t.indexOf('\n## ', debut + SECTION.length), fin = suite < 0 ? t.length : suite;
-    const bloc = t.slice(debut, fin).replace(/\n*$/, '\n') + liveJournalRow(call, '#181 (ia1)', test, resultat) + '\n';
+    const bloc = t.slice(debut, fin).replace(/\n*$/, '\n') + liveJournalRow(call, `#181 (${SUITE})`, test, resultat) + '\n';
     writeFileSync(j.chemin, t.slice(0, debut) + bloc + (suite < 0 ? '' : '\n' + t.slice(suite + 1)));
   });
 }
@@ -412,6 +421,15 @@ function gainsParCas(ev: Evalue[], contre: 'moteur' | 'opt1') {
   moy.sort((a, b) => a - b);
   return { mieux, pire, egal: ev.length - mieux - pire, ecart: d.length ? d.reduce((a, b) => a + b, 0) / d.length : 0, bas: moy[Math.floor(0.025 * moy.length)] ?? 0, haut: moy[Math.floor(0.975 * moy.length)] ?? 0 };
 }
+/** Intervalle à 95 % d'une statistique des cas (rééchantillonnage avec remise, graine fixe). */
+function intervalle(obs: Obs[], stat: (o: Obs[]) => number | null): [number | null, number | null] {
+  const rnd = mulberry32(GRAINE + 11), vals: number[] = [];
+  for (let b = 0; b < 2000; b++) { const v = stat(obs.map(() => obs[Math.floor(rnd() * obs.length)])); if (v !== null) vals.push(v); }
+  vals.sort((a, c) => a - c);
+  return vals.length ? [vals[Math.floor(0.025 * vals.length)], vals[Math.min(vals.length - 1, Math.floor(0.975 * vals.length))]] : [null, null];
+}
+const ic = (obs: Obs[], stat: (o: Obs[]) => number | null, fmt: (x: number | null) => string) => { const [a, b] = intervalle(obs, stat); return `${fmt(a)} à ${fmt(b)}`; };
+const lignesIC = (nom: string, obs: Obs[]) => `| ${nom} | ${ic(obs, (o) => resume(o).mrr, f3)} | ${ic(obs, (o) => resume(o).rappel10, pct)} | ${ic(obs, (o) => resume(o).rangMedian, f1)} |`;
 const texteGains = (g: ReturnType<typeof gainsParCas>) => `le premier substitut monte dans ${g.mieux} cas, descend dans ${g.pire}, reste dans ${g.egal} ; écart de MRR ${g.ecart >= 0 ? '+' : ''}${f3(g.ecart)} (intervalle à 95 % : ${f3(g.bas)} à ${f3(g.haut)})`;
 function tableauComparatif(titre: string, ev: Evalue[], avecOpt1 = true): string {
   if (!ev.length) return `### ${titre}\n\n(aucun cas)\n`;
@@ -419,7 +437,8 @@ function tableauComparatif(titre: string, ev: Evalue[], avecOpt1 = true): string
   if (avecOpt1) lignes.push(ligneResume('option 1 (mots, λ = 0,25), hors ligne', resume(ev.map((e) => e.opt1))));
   lignes.push(ligneResume(`IA (${POOL === 'opt1' ? 'sur l\'option 1' : 'sur le moteur'})`, resume(ev.map((e) => e.ia))));
   const g1 = gainsParCas(ev, 'moteur'), g2 = gainsParCas(ev, 'opt1');
-  return `### ${titre}\n\n${ENTETE}\n${lignes.join('\n')}\n\nIA contre moteur : ${texteGains(g1)}.${avecOpt1 ? `\nIA contre option 1 : ${texteGains(g2)}.` : ''}\n`;
+  const tabIC = `\nIntervalles à 95 % (rééchantillonnage des cas, 2000 tirages, graine fixe) :\n\n| système | MRR | rappel@10 | rang médian du 1er |\n|---|---|---|---|\n${[lignesIC('moteur seul', ev.map((e) => e.moteur)), ...(avecOpt1 ? [lignesIC('option 1', ev.map((e) => e.opt1))] : []), lignesIC('IA', ev.map((e) => e.ia))].join('\n')}\n`;
+  return `### ${titre}\n\n${ENTETE}\n${lignes.join('\n')}\n${tabIC}\nIA contre moteur : ${texteGains(g1)}.${avecOpt1 ? `\nIA contre option 1 : ${texteGains(g2)}.` : ''}\n`;
 }
 function verifierContreE1(): { texte: string; ok: boolean } {
   const e1 = JSON.parse(readFileSync(resolve('work/missions/2026-10-25-integration-houblons/voies/e1-banc-eval/resultats/resultats.json'), 'utf8'));
@@ -476,7 +495,7 @@ function rapport(dossiers: { libelle: string; dossier: string }[], sortieDir: st
     const nelson = ev.find((e) => e.cas.id === 'nelson-sauvin@dry'), hb = 'beermaverick-hallertau-blanc';
     const rangHB = nelson ? nelson.ordreIA.indexOf(hb) + 1 : null;
     const seuilChiffres = gMrr >= 0.05 || gRap >= 5, seuilNelson = rangHB !== null && rangHB > 0 && rangHB <= 5;
-    parties.push(`**Seuil pour continuer** (+0,05 de MRR ou +5 points de rappel@10 sur le moteur seul, **et** Hallertau Blanc dans les 5 premiers de Nelson Sauvin au dry hop) : gain de MRR ${gMrr >= 0 ? '+' : ''}${f3(gMrr)}, de rappel@10 ${gRap >= 0 ? '+' : ''}${gRap.toFixed(1).replace('.', ',')} point(s) sur tous les cas → chiffres ${seuilChiffres ? 'atteints' : 'non atteints'} ; Hallertau Blanc ${rangHB ? `au rang ${rangHB} chez l'IA` : 'absent'} (moteur : ${nelson ? nelson.ordreMoteur.indexOf(hb) + 1 : '–'}, option 1 : ${nelson ? nelson.ordreOpt1.indexOf(hb) + 1 : '–'}) → ${seuilNelson ? 'tenu' : 'non tenu'}. **Seuil : ${seuilChiffres && seuilNelson ? 'ATTEINT' : 'NON ATTEINT'}.** Écart de l'IA à l'option 1 : MRR ${(ri.mrr ?? 0) - (ro.mrr ?? 0) >= 0 ? '+' : ''}${f3((ri.mrr ?? 0) - (ro.mrr ?? 0))}, rappel@10 ${((ri.rappel10 ?? 0) - (ro.rappel10 ?? 0)) * 100 >= 0 ? '+' : ''}${(((ri.rappel10 ?? 0) - (ro.rappel10 ?? 0)) * 100).toFixed(1).replace('.', ',')} point(s).\n`);
+    parties.push(`**Seuil pour continuer** (+0,05 de MRR ou +5 points de rappel@10 sur le moteur seul, **et** Hallertau Blanc dans les 5 premiers de Nelson Sauvin au dry hop) : gain de MRR ${gMrr >= 0 ? '+' : ''}${f3(gMrr)}, de rappel@10 ${gRap >= 0 ? '+' : ''}${gRap.toFixed(1).replace('.', ',')} point(s) sur tous les cas → chiffres ${seuilChiffres ? 'atteints' : 'non atteints'} ; Hallertau Blanc ${rangHB ? `au rang ${rangHB} chez l'IA` : 'absent'} (moteur : ${nelson ? nelson.ordreMoteur.indexOf(hb) + 1 : '–'}, option 1 : ${nelson ? nelson.ordreOpt1.indexOf(hb) + 1 : '–'}) → ${seuilNelson ? 'tenu' : 'non tenu'}. **Seuil : ${!nelson ? 'critère Hallertau Blanc non mesuré dans ce lot (Nelson Sauvin n\'y est pas)' : seuilChiffres && seuilNelson ? 'ATTEINT' : 'NON ATTEINT'}.** Écart de l'IA à l'option 1 : MRR ${(ri.mrr ?? 0) - (ro.mrr ?? 0) >= 0 ? '+' : ''}${f3((ri.mrr ?? 0) - (ro.mrr ?? 0))}, rappel@10 ${((ri.rappel10 ?? 0) - (ro.rappel10 ?? 0)) * 100 >= 0 ? '+' : ''}${(((ri.rappel10 ?? 0) - (ro.rappel10 ?? 0)) * 100).toFixed(1).replace('.', ',')} point(s).\n`);
 
     // Les phares : 10 premiers du moteur, de l'option 1 et de l'IA avec ses phrases.
     parties.push(`### Les 9 phares : les 10 premiers de chaque système\n`);
@@ -529,7 +548,7 @@ Hallertau Blanc chez Nelson Sauvin (dry hop) : ${hbA ? hbA.ordreIA.indexOf('beer
   if (flag('--figer')) return figer();
   if (flag('--simule') || val('--simule') !== undefined) {
     const mode = val('--simule') === 'fautes' ? 'fautes' : 'identite';
-    const nomSim = `simule${mode === 'fautes' ? '-fautes' : ''}`;
+    const nomSim = `simule${mode === 'fautes' ? '-fautes' : ''}${POOL === 'opt1' ? '-opt1' : ''}`;
     await passe(nomSim);
     return rapport([{ libelle: `Passe simulée (${mode})`, dossier: dossierReponses(nomSim) }], join(VOIE, 'resultats', nomSim), true);
   }

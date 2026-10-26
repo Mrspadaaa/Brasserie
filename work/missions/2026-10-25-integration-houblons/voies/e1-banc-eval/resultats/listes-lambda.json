@@ -1,0 +1,5093 @@
+{
+ "lecture": "Dix premiers de substitutes() au dry hop (poids d’arôme du moteur), du moteur et de deux réglages « mots » ; mots partagés = mots des fiches communs à l’original et au candidat.",
+ "reglages": {
+  "issue": 181,
+  "graine": 181,
+  "rééchantillons": 1000,
+  "moitie": "parité de l’indice du houblon parmi les 217 triés par id : 0 apprentissage (109), 1 contrôle (108)",
+  "retenu": {
+   "genre": "tous",
+   "lambda": 0.25,
+   "garde": {
+    "min": 2,
+    "plafondDf": 8
+   }
+  },
+  "prudent": {
+   "genre": "tous",
+   "lambda": 0.5,
+   "garde": {
+    "min": 2,
+    "plafondDf": 8
+   }
+  },
+  "gardeLecture": "min : mots partagés au moins (sinon le terme « mots » vaut 0) ; plafondDf : un mot compte comme s’il figurait dans au moins ce nombre de fiches de houblons"
+ },
+ "listes": [
+  {
+   "houblon": "Nelson Sauvin",
+   "alpha": [
+    10,
+    13
+   ],
+   "usage": "aroma",
+   "moteur": [
+    {
+     "rang": 1,
+     "nom": "Boomerang",
+     "alpha": [
+      10,
+      14
+     ],
+     "usage": "dual",
+     "score": 93,
+     "motsPartages": []
+    },
+    {
+     "rang": 2,
+     "nom": "Herkules",
+     "alpha": [
+      12,
+      17
+     ],
+     "usage": "bittering",
+     "score": 93,
+     "motsPartages": [
+      "agrumes",
+      "fruité",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Phoenix",
+     "alpha": [
+      8,
+      13.5
+     ],
+     "usage": "dual",
+     "score": 90,
+     "motsPartages": [
+      "agrumes"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Kazbek",
+     "alpha": [
+      5,
+      8
+     ],
+     "usage": "aroma",
+     "score": 89,
+     "motsPartages": []
+    },
+    {
+     "rang": 5,
+     "nom": "Marynka",
+     "alpha": [
+      7.5,
+      12
+     ],
+     "usage": "dual",
+     "score": 89,
+     "motsPartages": [
+      "épicé"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Pacific Jade",
+     "alpha": [
+      12,
+      14
+     ],
+     "usage": "dual",
+     "score": 89,
+     "motsPartages": []
+    },
+    {
+     "rang": 7,
+     "nom": "Summit",
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "bittering",
+     "score": 89,
+     "motsPartages": [
+      "agrumes",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "CTZ",
+     "alpha": [
+      14.5,
+      17
+     ],
+     "usage": "dual",
+     "score": 88,
+     "motsPartages": [
+      "épicé"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Godiva",
+     "alpha": [
+      6,
+      9
+     ],
+     "usage": "aroma",
+     "score": 88,
+     "motsPartages": [
+      "gooseberry",
+      "white wine"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Tomahawk",
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "dual",
+     "score": 88,
+     "motsPartages": [
+      "épicé"
+     ]
+    }
+   ],
+   "reglage_retenu": [
+    {
+     "rang": 1,
+     "nom": "Herkules",
+     "alpha": [
+      12,
+      17
+     ],
+     "usage": "bittering",
+     "score": 62,
+     "motsPartages": [
+      "agrumes",
+      "fruité",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Godiva",
+     "alpha": [
+      6,
+      9
+     ],
+     "usage": "aroma",
+     "score": 57,
+     "motsPartages": [
+      "gooseberry",
+      "white wine"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Hallertau Blanc",
+     "alpha": [
+      9,
+      12
+     ],
+     "usage": "aroma",
+     "score": 57,
+     "motsPartages": [
+      "agrumes",
+      "fruité",
+      "gooseberry",
+      "grapes",
+      "sauvignon blanc",
+      "white wine",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Sládek",
+     "alpha": [
+      4.5,
+      9
+     ],
+     "usage": "aroma",
+     "score": 56,
+     "motsPartages": [
+      "agrumes",
+      "fruity",
+      "fruité",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Admiral",
+     "alpha": [
+      13,
+      16.2
+     ],
+     "usage": "bittering",
+     "score": 54,
+     "motsPartages": [
+      "agrumes",
+      "fruity",
+      "fruité",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Cashmere",
+     "alpha": [
+      7.7,
+      9.1
+     ],
+     "usage": "dual",
+     "score": 53,
+     "motsPartages": [
+      "agrumes",
+      "fruity",
+      "fruité",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Galena",
+     "alpha": [
+      12,
+      15.5
+     ],
+     "usage": "aroma",
+     "score": 53,
+     "motsPartages": [
+      "fruity",
+      "gooseberry",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Pilgrim",
+     "alpha": [
+      9,
+      13
+     ],
+     "usage": "dual",
+     "score": 52,
+     "motsPartages": [
+      "agrumes",
+      "fruity",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Pacific Jade",
+     "alpha": [
+      12,
+      14
+     ],
+     "usage": "dual",
+     "score": 51,
+     "motsPartages": []
+    },
+    {
+     "rang": 10,
+     "nom": "Boomerang",
+     "alpha": [
+      10,
+      14
+     ],
+     "usage": "dual",
+     "score": 50,
+     "motsPartages": []
+    }
+   ],
+   "reglage_prudent": [
+    {
+     "rang": 1,
+     "nom": "Herkules",
+     "alpha": [
+      12,
+      17
+     ],
+     "usage": "bittering",
+     "score": 72,
+     "motsPartages": [
+      "agrumes",
+      "fruité",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Godiva",
+     "alpha": [
+      6,
+      9
+     ],
+     "usage": "aroma",
+     "score": 67,
+     "motsPartages": [
+      "gooseberry",
+      "white wine"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Boomerang",
+     "alpha": [
+      10,
+      14
+     ],
+     "usage": "dual",
+     "score": 65,
+     "motsPartages": []
+    },
+    {
+     "rang": 4,
+     "nom": "Pacific Jade",
+     "alpha": [
+      12,
+      14
+     ],
+     "usage": "dual",
+     "score": 64,
+     "motsPartages": []
+    },
+    {
+     "rang": 5,
+     "nom": "Phoenix",
+     "alpha": [
+      8,
+      13.5
+     ],
+     "usage": "dual",
+     "score": 63,
+     "motsPartages": [
+      "agrumes"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Summit",
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "bittering",
+     "score": 63,
+     "motsPartages": [
+      "agrumes",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Marynka",
+     "alpha": [
+      7.5,
+      12
+     ],
+     "usage": "dual",
+     "score": 62,
+     "motsPartages": [
+      "épicé"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Cashmere",
+     "alpha": [
+      7.7,
+      9.1
+     ],
+     "usage": "dual",
+     "score": 61,
+     "motsPartages": [
+      "agrumes",
+      "fruity",
+      "fruité",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Galena",
+     "alpha": [
+      12,
+      15.5
+     ],
+     "usage": "aroma",
+     "score": 61,
+     "motsPartages": [
+      "fruity",
+      "gooseberry",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Hallertau Taurus",
+     "alpha": [
+      12,
+      17.9
+     ],
+     "usage": "dual",
+     "score": 61,
+     "motsPartages": [
+      "fruité",
+      "épicé"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Motueka",
+   "alpha": [
+    5,
+    8.5
+   ],
+   "usage": "dual",
+   "moteur": [
+    {
+     "rang": 1,
+     "nom": "Buzz Bullets",
+     "alpha": [
+      8,
+      10
+     ],
+     "usage": "dual",
+     "score": 94,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Shaddock",
+     "alpha": [
+      4.96,
+      4.96
+     ],
+     "usage": "aroma",
+     "score": 90,
+     "motsPartages": [
+      "lime"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Cascade",
+     "alpha": [
+      4.5,
+      9
+     ],
+     "usage": "dual",
+     "score": 87,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "floral",
+      "fruité",
+      "lime"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Southern Sublime",
+     "alpha": [
+      10.8,
+      13.4
+     ],
+     "usage": "aroma",
+     "score": 85,
+     "motsPartages": [
+      "citrus"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Mandarina Bavaria",
+     "alpha": [
+      7,
+      10.5
+     ],
+     "usage": "dual",
+     "score": 84,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "lemon",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Pilot",
+     "alpha": [
+      8,
+      11.5
+     ],
+     "usage": "bittering",
+     "score": 84,
+     "motsPartages": [
+      "lemon"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Multihead",
+     "alpha": [
+      3.5,
+      4.5
+     ],
+     "usage": "aroma",
+     "score": 83,
+     "motsPartages": [
+      "citrus",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Taiheke",
+     "alpha": [
+      5,
+      9
+     ],
+     "usage": "dual",
+     "score": 83,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "lemon",
+      "lime",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Yakima Gold",
+     "alpha": [
+      7,
+      8
+     ],
+     "usage": "dual",
+     "score": 83,
+     "motsPartages": [
+      "lemon"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Herald",
+     "alpha": [
+      9,
+      13
+     ],
+     "usage": "dual",
+     "score": 82,
+     "motsPartages": [
+      "citrus"
+     ]
+    }
+   ],
+   "reglage_retenu": [
+    {
+     "rang": 1,
+     "nom": "Cascade",
+     "alpha": [
+      4.5,
+      9
+     ],
+     "usage": "dual",
+     "score": 63,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "floral",
+      "fruité",
+      "lime"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Taiheke",
+     "alpha": [
+      5,
+      9
+     ],
+     "usage": "dual",
+     "score": 61,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "lemon",
+      "lime",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Riwaka",
+     "alpha": [
+      4.5,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 58,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "fruité",
+      "lime",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Bravo",
+     "alpha": [
+      13,
+      18
+     ],
+     "usage": "bittering",
+     "score": 53,
+     "motsPartages": [
+      "agrumes",
+      "floral",
+      "fruité",
+      "lime"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Mandarina Bavaria",
+     "alpha": [
+      7,
+      10.5
+     ],
+     "usage": "dual",
+     "score": 53,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "lemon",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Southern Cross",
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "score": 53,
+     "motsPartages": [
+      "citrus",
+      "lemon",
+      "lime",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Atlas",
+     "alpha": [
+      5,
+      11
+     ],
+     "usage": "dual",
+     "score": 52,
+     "motsPartages": [
+      "floral",
+      "lime"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Triskel",
+     "alpha": [
+      3,
+      9
+     ],
+     "usage": "aroma",
+     "score": 52,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "floral",
+      "fruité"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Barbe Rouge",
+     "alpha": [
+      3.8,
+      10
+     ],
+     "usage": "aroma",
+     "score": 50,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "lime"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Comet",
+     "alpha": [
+      8,
+      12.4
+     ],
+     "usage": "dual",
+     "score": 50,
+     "motsPartages": [
+      "agrumes",
+      "fruité"
+     ]
+    }
+   ],
+   "reglage_prudent": [
+    {
+     "rang": 1,
+     "nom": "Cascade",
+     "alpha": [
+      4.5,
+      9
+     ],
+     "usage": "dual",
+     "score": 71,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "floral",
+      "fruité",
+      "lime"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Taiheke",
+     "alpha": [
+      5,
+      9
+     ],
+     "usage": "dual",
+     "score": 68,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "lemon",
+      "lime",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Mandarina Bavaria",
+     "alpha": [
+      7,
+      10.5
+     ],
+     "usage": "dual",
+     "score": 63,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "lemon",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Riwaka",
+     "alpha": [
+      4.5,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 63,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "fruité",
+      "lime",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Triskel",
+     "alpha": [
+      3,
+      9
+     ],
+     "usage": "aroma",
+     "score": 62,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "floral",
+      "fruité"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Bravo",
+     "alpha": [
+      13,
+      18
+     ],
+     "usage": "bittering",
+     "score": 61,
+     "motsPartages": [
+      "agrumes",
+      "floral",
+      "fruité",
+      "lime"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Southern Cross",
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "score": 61,
+     "motsPartages": [
+      "citrus",
+      "lemon",
+      "lime",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Barbe Rouge",
+     "alpha": [
+      3.8,
+      10
+     ],
+     "usage": "aroma",
+     "score": 60,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "lime"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Buzz Bullets",
+     "alpha": [
+      8,
+      10
+     ],
+     "usage": "dual",
+     "score": 60,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Comet",
+     "alpha": [
+      8,
+      12.4
+     ],
+     "usage": "dual",
+     "score": 59,
+     "motsPartages": [
+      "agrumes",
+      "fruité"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Citra",
+   "alpha": [
+    10,
+    15
+   ],
+   "usage": "dual",
+   "moteur": [
+    {
+     "rang": 1,
+     "nom": "Bitter Gold",
+     "alpha": [
+      12,
+      18.8
+     ],
+     "usage": "dual",
+     "score": 88,
+     "motsPartages": [
+      "floral",
+      "grapefruit"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Hydra",
+     "alpha": [
+      10.5,
+      13.7
+     ],
+     "usage": "dual",
+     "score": 88,
+     "motsPartages": [
+      "citrus",
+      "lime",
+      "peach"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Mistral",
+     "alpha": [
+      6.5,
+      8.5
+     ],
+     "usage": "dual",
+     "score": 88,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "melon",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "McKenzie",
+     "alpha": [
+      9,
+      11
+     ],
+     "usage": "aroma",
+     "score": 85,
+     "motsPartages": [
+      "floral",
+      "grapefruit",
+      "melon"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Palisade",
+     "alpha": [
+      5.5,
+      10
+     ],
+     "usage": "dual",
+     "score": 85,
+     "motsPartages": [
+      "floral",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Southern Sublime",
+     "alpha": [
+      10.8,
+      13.4
+     ],
+     "usage": "aroma",
+     "score": 84,
+     "motsPartages": [
+      "citrus"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Sabro",
+     "alpha": [
+      12,
+      17
+     ],
+     "usage": "aroma",
+     "score": 83,
+     "motsPartages": [
+      "citrus"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Amarillo",
+     "alpha": [
+      7,
+      11
+     ],
+     "usage": "aroma",
+     "score": 82,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "grapefruit",
+      "melon",
+      "peach"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Styrian Cardinal",
+     "alpha": [
+      8,
+      15
+     ],
+     "usage": "aroma",
+     "score": 82,
+     "motsPartages": [
+      "citrus",
+      "gooseberry",
+      "lime"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Taiheke",
+     "alpha": [
+      5,
+      9
+     ],
+     "usage": "dual",
+     "score": 82,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "grapefruit",
+      "lime"
+     ]
+    }
+   ],
+   "reglage_retenu": [
+    {
+     "rang": 1,
+     "nom": "NZH-107",
+     "alpha": [
+      8,
+      11
+     ],
+     "usage": "dual",
+     "score": 67,
+     "motsPartages": [
+      "citrus",
+      "grapefruit",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Nectaron",
+     "alpha": [
+      9.5,
+      12
+     ],
+     "usage": "aroma",
+     "score": 64,
+     "motsPartages": [
+      "citrus",
+      "grapefruit",
+      "passion fruit",
+      "peach"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Riwaka",
+     "alpha": [
+      4.5,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 63,
+     "motsPartages": [
+      "citrus",
+      "grapefruit",
+      "lime",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Sitiva Blend",
+     "alpha": [
+      7.2,
+      7.6
+     ],
+     "usage": "aroma",
+     "score": 62,
+     "motsPartages": [
+      "floral",
+      "lime",
+      "peach"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Taiheke",
+     "alpha": [
+      5,
+      9
+     ],
+     "usage": "dual",
+     "score": 62,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "grapefruit",
+      "lime"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Amarillo",
+     "alpha": [
+      7,
+      11
+     ],
+     "usage": "aroma",
+     "score": 61,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "grapefruit",
+      "melon",
+      "peach"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Harlequin",
+     "alpha": [
+      9,
+      12
+     ],
+     "usage": "dual",
+     "score": 59,
+     "motsPartages": [
+      "passion fruit",
+      "peach"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "YQH-1380",
+     "alpha": [
+      9.3,
+      11
+     ],
+     "usage": "dual",
+     "score": 59,
+     "motsPartages": [
+      "lime",
+      "peach"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Mistral",
+     "alpha": [
+      6.5,
+      8.5
+     ],
+     "usage": "dual",
+     "score": 58,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "melon",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Styrian Cardinal",
+     "alpha": [
+      8,
+      15
+     ],
+     "usage": "aroma",
+     "score": 58,
+     "motsPartages": [
+      "citrus",
+      "gooseberry",
+      "lime"
+     ]
+    }
+   ],
+   "reglage_prudent": [
+    {
+     "rang": 1,
+     "nom": "Nectaron",
+     "alpha": [
+      9.5,
+      12
+     ],
+     "usage": "aroma",
+     "score": 70,
+     "motsPartages": [
+      "citrus",
+      "grapefruit",
+      "passion fruit",
+      "peach"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "NZH-107",
+     "alpha": [
+      8,
+      11
+     ],
+     "usage": "dual",
+     "score": 70,
+     "motsPartages": [
+      "citrus",
+      "grapefruit",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Amarillo",
+     "alpha": [
+      7,
+      11
+     ],
+     "usage": "aroma",
+     "score": 68,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "grapefruit",
+      "melon",
+      "peach"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Mistral",
+     "alpha": [
+      6.5,
+      8.5
+     ],
+     "usage": "dual",
+     "score": 68,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "melon",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Riwaka",
+     "alpha": [
+      4.5,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 68,
+     "motsPartages": [
+      "citrus",
+      "grapefruit",
+      "lime",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Taiheke",
+     "alpha": [
+      5,
+      9
+     ],
+     "usage": "dual",
+     "score": 68,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "grapefruit",
+      "lime"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Sitiva Blend",
+     "alpha": [
+      7.2,
+      7.6
+     ],
+     "usage": "aroma",
+     "score": 67,
+     "motsPartages": [
+      "floral",
+      "lime",
+      "peach"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Hydra",
+     "alpha": [
+      10.5,
+      13.7
+     ],
+     "usage": "dual",
+     "score": 66,
+     "motsPartages": [
+      "citrus",
+      "lime",
+      "peach"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "YQH-1380",
+     "alpha": [
+      9.3,
+      11
+     ],
+     "usage": "dual",
+     "score": 66,
+     "motsPartages": [
+      "lime",
+      "peach"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Bitter Gold",
+     "alpha": [
+      12,
+      18.8
+     ],
+     "usage": "dual",
+     "score": 65,
+     "motsPartages": [
+      "floral",
+      "grapefruit"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Galaxy",
+   "alpha": [
+    11,
+    16
+   ],
+   "usage": "dual",
+   "moteur": [
+    {
+     "rang": 1,
+     "nom": "Samba",
+     "alpha": [
+      8,
+      12
+     ],
+     "usage": "aroma",
+     "score": 97,
+     "motsPartages": [
+      "pineapple",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Zamba Blend",
+     "alpha": [
+      8,
+      12
+     ],
+     "usage": "aroma",
+     "score": 92,
+     "motsPartages": [
+      "pineapple"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Harlequin",
+     "alpha": [
+      9,
+      12
+     ],
+     "usage": "dual",
+     "score": 91,
+     "motsPartages": [
+      "passion fruit",
+      "peach",
+      "pineapple"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Nectaron",
+     "alpha": [
+      9.5,
+      12
+     ],
+     "usage": "aroma",
+     "score": 89,
+     "motsPartages": [
+      "citrus",
+      "passion fruit",
+      "peach",
+      "pineapple",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Idaho Gem",
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "score": 88,
+     "motsPartages": [
+      "citrus",
+      "pineapple"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "NZH-107",
+     "alpha": [
+      8,
+      11
+     ],
+     "usage": "dual",
+     "score": 88,
+     "motsPartages": [
+      "citrus",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "YQH-1380",
+     "alpha": [
+      9.3,
+      11
+     ],
+     "usage": "dual",
+     "score": 88,
+     "motsPartages": [
+      "peach",
+      "pineapple"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Trident",
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "score": 87,
+     "motsPartages": [
+      "citrus",
+      "passion fruit",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Tropica",
+     "alpha": [
+      8.8,
+      8.8
+     ],
+     "usage": "dual",
+     "score": 87,
+     "motsPartages": [
+      "dank",
+      "pineapple",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Southern Sublime",
+     "alpha": [
+      10.8,
+      13.4
+     ],
+     "usage": "aroma",
+     "score": 86,
+     "motsPartages": [
+      "citrus",
+      "dank"
+     ]
+    }
+   ],
+   "reglage_retenu": [
+    {
+     "rang": 1,
+     "nom": "Harlequin",
+     "alpha": [
+      9,
+      12
+     ],
+     "usage": "dual",
+     "score": 79,
+     "motsPartages": [
+      "passion fruit",
+      "peach",
+      "pineapple"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Nectaron",
+     "alpha": [
+      9.5,
+      12
+     ],
+     "usage": "aroma",
+     "score": 67,
+     "motsPartages": [
+      "citrus",
+      "passion fruit",
+      "peach",
+      "pineapple",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Vic Secret",
+     "alpha": [
+      14,
+      21.8
+     ],
+     "usage": "dual",
+     "score": 64,
+     "motsPartages": [
+      "passion fruit",
+      "pineapple",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Strata",
+     "alpha": [
+      11,
+      12.5
+     ],
+     "usage": "dual",
+     "score": 63,
+     "motsPartages": [
+      "cannabis",
+      "dank",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "NZH-107",
+     "alpha": [
+      8,
+      11
+     ],
+     "usage": "dual",
+     "score": 61,
+     "motsPartages": [
+      "citrus",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Tango",
+     "alpha": [
+      7.5,
+      11
+     ],
+     "usage": "dual",
+     "score": 61,
+     "motsPartages": [
+      "citrus",
+      "passion fruit",
+      "pineapple"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Southern Sublime",
+     "alpha": [
+      10.8,
+      13.4
+     ],
+     "usage": "aroma",
+     "score": 58,
+     "motsPartages": [
+      "citrus",
+      "dank"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Sultana (Denali)",
+     "alpha": [
+      13,
+      16
+     ],
+     "usage": "dual",
+     "score": 58,
+     "motsPartages": [
+      "citrus",
+      "pineapple",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Tropica",
+     "alpha": [
+      8.8,
+      8.8
+     ],
+     "usage": "dual",
+     "score": 58,
+     "motsPartages": [
+      "dank",
+      "pineapple",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Amarillo",
+     "alpha": [
+      7,
+      11
+     ],
+     "usage": "aroma",
+     "score": 57,
+     "motsPartages": [
+      "citrus",
+      "dank",
+      "peach",
+      "tropical fruit"
+     ]
+    }
+   ],
+   "reglage_prudent": [
+    {
+     "rang": 1,
+     "nom": "Harlequin",
+     "alpha": [
+      9,
+      12
+     ],
+     "usage": "dual",
+     "score": 83,
+     "motsPartages": [
+      "passion fruit",
+      "peach",
+      "pineapple"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Nectaron",
+     "alpha": [
+      9.5,
+      12
+     ],
+     "usage": "aroma",
+     "score": 74,
+     "motsPartages": [
+      "citrus",
+      "passion fruit",
+      "peach",
+      "pineapple",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "NZH-107",
+     "alpha": [
+      8,
+      11
+     ],
+     "usage": "dual",
+     "score": 70,
+     "motsPartages": [
+      "citrus",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Tango",
+     "alpha": [
+      7.5,
+      11
+     ],
+     "usage": "dual",
+     "score": 68,
+     "motsPartages": [
+      "citrus",
+      "passion fruit",
+      "pineapple"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Southern Sublime",
+     "alpha": [
+      10.8,
+      13.4
+     ],
+     "usage": "aroma",
+     "score": 67,
+     "motsPartages": [
+      "citrus",
+      "dank"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Tropica",
+     "alpha": [
+      8.8,
+      8.8
+     ],
+     "usage": "dual",
+     "score": 67,
+     "motsPartages": [
+      "dank",
+      "pineapple",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "YQH-1380",
+     "alpha": [
+      9.3,
+      11
+     ],
+     "usage": "dual",
+     "score": 67,
+     "motsPartages": [
+      "peach",
+      "pineapple"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Strata",
+     "alpha": [
+      11,
+      12.5
+     ],
+     "usage": "dual",
+     "score": 66,
+     "motsPartages": [
+      "cannabis",
+      "dank",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Vic Secret",
+     "alpha": [
+      14,
+      21.8
+     ],
+     "usage": "dual",
+     "score": 66,
+     "motsPartages": [
+      "passion fruit",
+      "pineapple",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Sultana (Denali)",
+     "alpha": [
+      13,
+      16
+     ],
+     "usage": "dual",
+     "score": 64,
+     "motsPartages": [
+      "citrus",
+      "pineapple",
+      "tropical fruit"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Saaz (CZ)",
+   "alpha": [
+    2,
+    5
+   ],
+   "usage": "aroma",
+   "moteur": [
+    {
+     "rang": 1,
+     "nom": "Pacific Crest",
+     "alpha": [
+      3.9,
+      3.9
+     ],
+     "usage": "aroma",
+     "score": 84,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "noble"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Tettnang (US)",
+     "alpha": [
+      2.5,
+      5.5
+     ],
+     "usage": "aroma",
+     "score": 82,
+     "motsPartages": [
+      "noble"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Aurum",
+     "alpha": [
+      3.5,
+      5.7
+     ],
+     "usage": "aroma",
+     "score": 81,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "mild",
+      "noble"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Styrian Golding",
+     "alpha": [
+      3.5,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 81,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "lemon",
+      "noble"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Hallertau Tradition",
+     "alpha": [
+      4.6,
+      7
+     ],
+     "usage": "aroma",
+     "score": 80,
+     "motsPartages": [
+      "earthy",
+      "noble"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Sussex",
+     "alpha": [
+      4.3,
+      5.8
+     ],
+     "usage": "aroma",
+     "score": 80,
+     "motsPartages": [
+      "earthy"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Spalter Select",
+     "alpha": [
+      3,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 79,
+     "motsPartages": [
+      "épicé"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Aramis",
+     "alpha": [
+      5.5,
+      8.5
+     ],
+     "usage": "aroma",
+     "score": 78,
+     "motsPartages": [
+      "floral",
+      "herbal",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Marynka",
+     "alpha": [
+      7.5,
+      12
+     ],
+     "usage": "dual",
+     "score": 77,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "lemon",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Strisselspalt",
+     "alpha": [
+      1,
+      4
+     ],
+     "usage": "aroma",
+     "score": 77,
+     "motsPartages": [
+      "floral",
+      "herbal"
+     ]
+    }
+   ],
+   "reglage_retenu": [
+    {
+     "rang": 1,
+     "nom": "Aurum",
+     "alpha": [
+      3.5,
+      5.7
+     ],
+     "usage": "aroma",
+     "score": 71,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "mild",
+      "noble"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Spalt",
+     "alpha": [
+      2.5,
+      5.7
+     ],
+     "usage": "aroma",
+     "score": 71,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "noble"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Saaz Late",
+     "alpha": [
+      3.5,
+      6
+     ],
+     "usage": "aroma",
+     "score": 66,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Celeia",
+     "alpha": [
+      3,
+      6
+     ],
+     "usage": "aroma",
+     "score": 61,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "lemon",
+      "noble"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Pacific Crest",
+     "alpha": [
+      3.9,
+      3.9
+     ],
+     "usage": "aroma",
+     "score": 61,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "noble"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Wild Loyalist",
+     "alpha": [
+      3.7,
+      5.6
+     ],
+     "usage": "aroma",
+     "score": 60,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "noble"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Styrian Golding",
+     "alpha": [
+      3.5,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 58,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "lemon",
+      "noble"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Saaz (US)",
+     "alpha": [
+      3,
+      4.5
+     ],
+     "usage": "aroma",
+     "score": 57,
+     "motsPartages": [
+      "earthy",
+      "noble"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Strisselspalt",
+     "alpha": [
+      1,
+      4
+     ],
+     "usage": "aroma",
+     "score": 57,
+     "motsPartages": [
+      "floral",
+      "herbal"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Crystal",
+     "alpha": [
+      2.8,
+      6
+     ],
+     "usage": "aroma",
+     "score": 56,
+     "motsPartages": [
+      "floral",
+      "grass"
+     ]
+    }
+   ],
+   "reglage_prudent": [
+    {
+     "rang": 1,
+     "nom": "Aurum",
+     "alpha": [
+      3.5,
+      5.7
+     ],
+     "usage": "aroma",
+     "score": 75,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "mild",
+      "noble"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Spalt",
+     "alpha": [
+      2.5,
+      5.7
+     ],
+     "usage": "aroma",
+     "score": 71,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "noble"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Pacific Crest",
+     "alpha": [
+      3.9,
+      3.9
+     ],
+     "usage": "aroma",
+     "score": 69,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "noble"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Saaz Late",
+     "alpha": [
+      3.5,
+      6
+     ],
+     "usage": "aroma",
+     "score": 69,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Celeia",
+     "alpha": [
+      3,
+      6
+     ],
+     "usage": "aroma",
+     "score": 66,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "lemon",
+      "noble"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Styrian Golding",
+     "alpha": [
+      3.5,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 66,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "lemon",
+      "noble"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Wild Loyalist",
+     "alpha": [
+      3.7,
+      5.6
+     ],
+     "usage": "aroma",
+     "score": 64,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbal",
+      "noble"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Saaz (US)",
+     "alpha": [
+      3,
+      4.5
+     ],
+     "usage": "aroma",
+     "score": 63,
+     "motsPartages": [
+      "earthy",
+      "noble"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Strisselspalt",
+     "alpha": [
+      1,
+      4
+     ],
+     "usage": "aroma",
+     "score": 63,
+     "motsPartages": [
+      "floral",
+      "herbal"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Crystal",
+     "alpha": [
+      2.8,
+      6
+     ],
+     "usage": "aroma",
+     "score": 62,
+     "motsPartages": [
+      "floral",
+      "grass"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Mosaic",
+   "alpha": [
+    11.5,
+    13.5
+   ],
+   "usage": "dual",
+   "moteur": [
+    {
+     "rang": 1,
+     "nom": "Styrian Fox",
+     "alpha": [
+      5.7,
+      12
+     ],
+     "usage": "dual",
+     "score": 89,
+     "motsPartages": [
+      "citrus",
+      "pine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Idaho 7",
+     "alpha": [
+      9.5,
+      14.9
+     ],
+     "usage": "aroma",
+     "score": 88,
+     "motsPartages": [
+      "citrus",
+      "earthy",
+      "papaya",
+      "pine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Simcoe",
+     "alpha": [
+      11,
+      15
+     ],
+     "usage": "dual",
+     "score": 78,
+     "motsPartages": [
+      "bubblegum",
+      "citrus",
+      "earthy",
+      "pine"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Galena",
+     "alpha": [
+      12,
+      15.5
+     ],
+     "usage": "aroma",
+     "score": 77,
+     "motsPartages": [
+      "earthy",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Brewer's Gold (US)",
+     "alpha": [
+      8,
+      11
+     ],
+     "usage": "bittering",
+     "score": 76,
+     "motsPartages": [
+      "spicy"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Hydra",
+     "alpha": [
+      10.5,
+      13.7
+     ],
+     "usage": "dual",
+     "score": 76,
+     "motsPartages": [
+      "citrus",
+      "rose",
+      "tangerine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Styrian Eagle",
+     "alpha": [
+      12.5,
+      17.5
+     ],
+     "usage": "dual",
+     "score": 75,
+     "motsPartages": [
+      "pine"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Strata",
+     "alpha": [
+      11,
+      12.5
+     ],
+     "usage": "dual",
+     "score": 74,
+     "motsPartages": []
+    },
+    {
+     "rang": 9,
+     "nom": "Falconer's Flight",
+     "alpha": [
+      9.5,
+      12
+     ],
+     "usage": "aroma",
+     "score": 73,
+     "motsPartages": [
+      "pine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Nugget",
+     "alpha": [
+      9.5,
+      16
+     ],
+     "usage": "dual",
+     "score": 73,
+     "motsPartages": [
+      "citrus",
+      "earthy"
+     ]
+    }
+   ],
+   "reglage_retenu": [
+    {
+     "rang": 1,
+     "nom": "Idaho 7",
+     "alpha": [
+      9.5,
+      14.9
+     ],
+     "usage": "aroma",
+     "score": 64,
+     "motsPartages": [
+      "citrus",
+      "earthy",
+      "papaya",
+      "pine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Azacca",
+     "alpha": [
+      14,
+      16
+     ],
+     "usage": "dual",
+     "score": 60,
+     "motsPartages": [
+      "citrus",
+      "grassy",
+      "papaya",
+      "spicy",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Simcoe",
+     "alpha": [
+      11,
+      15
+     ],
+     "usage": "dual",
+     "score": 59,
+     "motsPartages": [
+      "bubblegum",
+      "citrus",
+      "earthy",
+      "pine"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Zythos",
+     "alpha": [
+      10,
+      12.5
+     ],
+     "usage": "dual",
+     "score": 59,
+     "motsPartages": [
+      "citrus",
+      "pine",
+      "tangerine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Hydra",
+     "alpha": [
+      10.5,
+      13.7
+     ],
+     "usage": "dual",
+     "score": 58,
+     "motsPartages": [
+      "citrus",
+      "rose",
+      "tangerine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Mandarina Bavaria",
+     "alpha": [
+      7,
+      10.5
+     ],
+     "usage": "dual",
+     "score": 58,
+     "motsPartages": [
+      "bubblegum",
+      "citrus",
+      "tangerine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Sultana (Denali)",
+     "alpha": [
+      13,
+      16
+     ],
+     "usage": "dual",
+     "score": 56,
+     "motsPartages": [
+      "citrus",
+      "pine",
+      "spicy",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Falconer's Flight",
+     "alpha": [
+      9.5,
+      12
+     ],
+     "usage": "aroma",
+     "score": 55,
+     "motsPartages": [
+      "pine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Styrian Fox",
+     "alpha": [
+      5.7,
+      12
+     ],
+     "usage": "dual",
+     "score": 55,
+     "motsPartages": [
+      "citrus",
+      "pine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Falconer's Flight 7CS",
+     "alpha": [
+      9,
+      10.5
+     ],
+     "usage": "dual",
+     "score": 54,
+     "motsPartages": [
+      "citrus",
+      "earthy",
+      "spicy"
+     ]
+    }
+   ],
+   "reglage_prudent": [
+    {
+     "rang": 1,
+     "nom": "Idaho 7",
+     "alpha": [
+      9.5,
+      14.9
+     ],
+     "usage": "aroma",
+     "score": 73,
+     "motsPartages": [
+      "citrus",
+      "earthy",
+      "papaya",
+      "pine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Styrian Fox",
+     "alpha": [
+      5.7,
+      12
+     ],
+     "usage": "dual",
+     "score": 66,
+     "motsPartages": [
+      "citrus",
+      "pine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Simcoe",
+     "alpha": [
+      11,
+      15
+     ],
+     "usage": "dual",
+     "score": 65,
+     "motsPartages": [
+      "bubblegum",
+      "citrus",
+      "earthy",
+      "pine"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Azacca",
+     "alpha": [
+      14,
+      16
+     ],
+     "usage": "dual",
+     "score": 64,
+     "motsPartages": [
+      "citrus",
+      "grassy",
+      "papaya",
+      "spicy",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Hydra",
+     "alpha": [
+      10.5,
+      13.7
+     ],
+     "usage": "dual",
+     "score": 64,
+     "motsPartages": [
+      "citrus",
+      "rose",
+      "tangerine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Zythos",
+     "alpha": [
+      10,
+      12.5
+     ],
+     "usage": "dual",
+     "score": 63,
+     "motsPartages": [
+      "citrus",
+      "pine",
+      "tangerine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Falconer's Flight",
+     "alpha": [
+      9.5,
+      12
+     ],
+     "usage": "aroma",
+     "score": 61,
+     "motsPartages": [
+      "pine",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Southern Cross",
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "score": 61,
+     "motsPartages": [
+      "citrus",
+      "pine",
+      "spicy",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Sultana (Denali)",
+     "alpha": [
+      13,
+      16
+     ],
+     "usage": "dual",
+     "score": 61,
+     "motsPartages": [
+      "citrus",
+      "pine",
+      "spicy",
+      "tropical fruit"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Bitter Gold",
+     "alpha": [
+      12,
+      18.8
+     ],
+     "usage": "dual",
+     "score": 59,
+     "motsPartages": [
+      "grassy",
+      "pine",
+      "tropical fruit"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Simcoe",
+   "alpha": [
+    11,
+    15
+   ],
+   "usage": "dual",
+   "moteur": [
+    {
+     "rang": 1,
+     "nom": "Idaho 7",
+     "alpha": [
+      9.5,
+      14.9
+     ],
+     "usage": "aroma",
+     "score": 89,
+     "motsPartages": [
+      "apricot",
+      "citrus",
+      "earthy",
+      "grapefruit",
+      "pine"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "HBC 630",
+     "alpha": [
+      12,
+      15
+     ],
+     "usage": "dual",
+     "score": 78,
+     "motsPartages": [
+      "citrus",
+      "fruity"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Hydra",
+     "alpha": [
+      10.5,
+      13.7
+     ],
+     "usage": "dual",
+     "score": 78,
+     "motsPartages": [
+      "apricot",
+      "berry",
+      "citrus"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Mosaic",
+     "alpha": [
+      11.5,
+      13.5
+     ],
+     "usage": "dual",
+     "score": 78,
+     "motsPartages": [
+      "bubblegum",
+      "citrus",
+      "earthy",
+      "pine"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Sabro",
+     "alpha": [
+      12,
+      17
+     ],
+     "usage": "aroma",
+     "score": 76,
+     "motsPartages": [
+      "citrus"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Strata",
+     "alpha": [
+      11,
+      12.5
+     ],
+     "usage": "dual",
+     "score": 76,
+     "motsPartages": [
+      "grapefruit",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Talus",
+     "alpha": [
+      8.1,
+      9.5
+     ],
+     "usage": "aroma",
+     "score": 76,
+     "motsPartages": [
+      "citrus",
+      "grapefruit",
+      "pine"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "XJA2/436",
+     "alpha": [
+      11.5,
+      16.4
+     ],
+     "usage": "bittering",
+     "score": 75,
+     "motsPartages": [
+      "citrus"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Zythos",
+     "alpha": [
+      10,
+      12.5
+     ],
+     "usage": "dual",
+     "score": 74,
+     "motsPartages": [
+      "citrus",
+      "grapefruit",
+      "pine"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Newport",
+     "alpha": [
+      10.5,
+      17
+     ],
+     "usage": "bittering",
+     "score": 73,
+     "motsPartages": [
+      "citrus",
+      "earthy"
+     ]
+    }
+   ],
+   "reglage_retenu": [
+    {
+     "rang": 1,
+     "nom": "Idaho 7",
+     "alpha": [
+      9.5,
+      14.9
+     ],
+     "usage": "aroma",
+     "score": 65,
+     "motsPartages": [
+      "apricot",
+      "citrus",
+      "earthy",
+      "grapefruit",
+      "pine"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Vic Secret",
+     "alpha": [
+      14,
+      21.8
+     ],
+     "usage": "dual",
+     "score": 61,
+     "motsPartages": [
+      "earthy",
+      "passion fruit",
+      "pine"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Falconer's Flight 7CS",
+     "alpha": [
+      9,
+      10.5
+     ],
+     "usage": "dual",
+     "score": 60,
+     "motsPartages": [
+      "citrus",
+      "earthy",
+      "fruity"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Mandarina Bavaria",
+     "alpha": [
+      7,
+      10.5
+     ],
+     "usage": "dual",
+     "score": 59,
+     "motsPartages": [
+      "bubblegum",
+      "citrus",
+      "grapefruit"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Mosaic",
+     "alpha": [
+      11.5,
+      13.5
+     ],
+     "usage": "dual",
+     "score": 59,
+     "motsPartages": [
+      "bubblegum",
+      "citrus",
+      "earthy",
+      "pine"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Sticklebract",
+     "alpha": [
+      12,
+      15
+     ],
+     "usage": "dual",
+     "score": 58,
+     "motsPartages": [
+      "citrus",
+      "pine"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Zythos",
+     "alpha": [
+      10,
+      12.5
+     ],
+     "usage": "dual",
+     "score": 57,
+     "motsPartages": [
+      "citrus",
+      "grapefruit",
+      "pine"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Falconer's Flight",
+     "alpha": [
+      9.5,
+      12
+     ],
+     "usage": "aroma",
+     "score": 56,
+     "motsPartages": [
+      "grapefruit",
+      "pine"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Palisade",
+     "alpha": [
+      5.5,
+      10
+     ],
+     "usage": "dual",
+     "score": 56,
+     "motsPartages": [
+      "apricot",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Hydra",
+     "alpha": [
+      10.5,
+      13.7
+     ],
+     "usage": "dual",
+     "score": 55,
+     "motsPartages": [
+      "apricot",
+      "berry",
+      "citrus"
+     ]
+    }
+   ],
+   "reglage_prudent": [
+    {
+     "rang": 1,
+     "nom": "Idaho 7",
+     "alpha": [
+      9.5,
+      14.9
+     ],
+     "usage": "aroma",
+     "score": 74,
+     "motsPartages": [
+      "apricot",
+      "citrus",
+      "earthy",
+      "grapefruit",
+      "pine"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Mosaic",
+     "alpha": [
+      11.5,
+      13.5
+     ],
+     "usage": "dual",
+     "score": 65,
+     "motsPartages": [
+      "bubblegum",
+      "citrus",
+      "earthy",
+      "pine"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Vic Secret",
+     "alpha": [
+      14,
+      21.8
+     ],
+     "usage": "dual",
+     "score": 65,
+     "motsPartages": [
+      "earthy",
+      "passion fruit",
+      "pine"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Zythos",
+     "alpha": [
+      10,
+      12.5
+     ],
+     "usage": "dual",
+     "score": 63,
+     "motsPartages": [
+      "citrus",
+      "grapefruit",
+      "pine"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Hydra",
+     "alpha": [
+      10.5,
+      13.7
+     ],
+     "usage": "dual",
+     "score": 62,
+     "motsPartages": [
+      "apricot",
+      "berry",
+      "citrus"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Mandarina Bavaria",
+     "alpha": [
+      7,
+      10.5
+     ],
+     "usage": "dual",
+     "score": 62,
+     "motsPartages": [
+      "bubblegum",
+      "citrus",
+      "grapefruit"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Palisade",
+     "alpha": [
+      5.5,
+      10
+     ],
+     "usage": "dual",
+     "score": 62,
+     "motsPartages": [
+      "apricot",
+      "passion fruit"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Sticklebract",
+     "alpha": [
+      12,
+      15
+     ],
+     "usage": "dual",
+     "score": 62,
+     "motsPartages": [
+      "citrus",
+      "pine"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Falconer's Flight",
+     "alpha": [
+      9.5,
+      12
+     ],
+     "usage": "aroma",
+     "score": 61,
+     "motsPartages": [
+      "grapefruit",
+      "pine"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Falconer's Flight 7CS",
+     "alpha": [
+      9,
+      10.5
+     ],
+     "usage": "dual",
+     "score": 61,
+     "motsPartages": [
+      "citrus",
+      "earthy",
+      "fruity"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Cascade",
+   "alpha": [
+    4.5,
+    9
+   ],
+   "usage": "dual",
+   "moteur": [
+    {
+     "rang": 1,
+     "nom": "Barbe Rouge",
+     "alpha": [
+      3.8,
+      10
+     ],
+     "usage": "aroma",
+     "score": 92,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "lime"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Mandarina Bavaria",
+     "alpha": [
+      7,
+      10.5
+     ],
+     "usage": "dual",
+     "score": 91,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "grapefruit"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Sasquatch",
+     "alpha": [
+      6.6,
+      9
+     ],
+     "usage": "dual",
+     "score": 91,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Olympic",
+     "alpha": [
+      10.6,
+      13.8
+     ],
+     "usage": "dual",
+     "score": 89,
+     "motsPartages": [
+      "citrus",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Taiheke",
+     "alpha": [
+      5,
+      9
+     ],
+     "usage": "dual",
+     "score": 89,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "grapefruit",
+      "lime",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Buzz Bullets",
+     "alpha": [
+      8,
+      10
+     ],
+     "usage": "dual",
+     "score": 87,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Herald",
+     "alpha": [
+      9,
+      13
+     ],
+     "usage": "dual",
+     "score": 87,
+     "motsPartages": [
+      "citrus",
+      "grapefruit"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "HORT9909",
+     "alpha": [
+      6,
+      10
+     ],
+     "usage": "dual",
+     "score": 87,
+     "motsPartages": [
+      "citrus",
+      "lime",
+      "pine",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Motueka",
+     "alpha": [
+      5,
+      8.5
+     ],
+     "usage": "dual",
+     "score": 87,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "floral",
+      "fruité",
+      "lime"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Southern Cross",
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "score": 87,
+     "motsPartages": [
+      "citrus",
+      "lime",
+      "pine",
+      "spicy"
+     ]
+    }
+   ],
+   "reglage_retenu": [
+    {
+     "rang": 1,
+     "nom": "Taiheke",
+     "alpha": [
+      5,
+      9
+     ],
+     "usage": "dual",
+     "score": 73,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "grapefruit",
+      "lime",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Cluster",
+     "alpha": [
+      5.5,
+      9
+     ],
+     "usage": "dual",
+     "score": 71,
+     "motsPartages": [
+      "agrumes",
+      "floral",
+      "fruité",
+      "grapefruit",
+      "herbacé",
+      "pine"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Atlas",
+     "alpha": [
+      5,
+      11
+     ],
+     "usage": "dual",
+     "score": 69,
+     "motsPartages": [
+      "floral",
+      "lime",
+      "pine"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Bravo",
+     "alpha": [
+      13,
+      18
+     ],
+     "usage": "bittering",
+     "score": 69,
+     "motsPartages": [
+      "agrumes",
+      "floral",
+      "fruité",
+      "herbacé",
+      "lime"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Riwaka",
+     "alpha": [
+      4.5,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 66,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "fruité",
+      "grapefruit",
+      "lime"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Brewer's Gold (US)",
+     "alpha": [
+      8,
+      11
+     ],
+     "usage": "bittering",
+     "score": 64,
+     "motsPartages": [
+      "black currant",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Southern Cross",
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "score": 64,
+     "motsPartages": [
+      "citrus",
+      "lime",
+      "pine",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Bullion",
+     "alpha": [
+      5.3,
+      12.5
+     ],
+     "usage": "dual",
+     "score": 63,
+     "motsPartages": [
+      "black currant",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Motueka",
+     "alpha": [
+      5,
+      8.5
+     ],
+     "usage": "dual",
+     "score": 63,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "floral",
+      "fruité",
+      "lime"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Endeavour",
+     "alpha": [
+      5,
+      10.6
+     ],
+     "usage": "dual",
+     "score": 62,
+     "motsPartages": [
+      "black currant",
+      "grapefruit",
+      "lime",
+      "spicy"
+     ]
+    }
+   ],
+   "reglage_prudent": [
+    {
+     "rang": 1,
+     "nom": "Taiheke",
+     "alpha": [
+      5,
+      9
+     ],
+     "usage": "dual",
+     "score": 78,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "grapefruit",
+      "lime",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Cluster",
+     "alpha": [
+      5.5,
+      9
+     ],
+     "usage": "dual",
+     "score": 75,
+     "motsPartages": [
+      "agrumes",
+      "floral",
+      "fruité",
+      "grapefruit",
+      "herbacé",
+      "pine"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Bravo",
+     "alpha": [
+      13,
+      18
+     ],
+     "usage": "bittering",
+     "score": 74,
+     "motsPartages": [
+      "agrumes",
+      "floral",
+      "fruité",
+      "herbacé",
+      "lime"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Mandarina Bavaria",
+     "alpha": [
+      7,
+      10.5
+     ],
+     "usage": "dual",
+     "score": 71,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "grapefruit"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Motueka",
+     "alpha": [
+      5,
+      8.5
+     ],
+     "usage": "dual",
+     "score": 71,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "floral",
+      "fruité",
+      "lime"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Southern Cross",
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "score": 71,
+     "motsPartages": [
+      "citrus",
+      "lime",
+      "pine",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Atlas",
+     "alpha": [
+      5,
+      11
+     ],
+     "usage": "dual",
+     "score": 70,
+     "motsPartages": [
+      "floral",
+      "lime",
+      "pine"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "HORT9909",
+     "alpha": [
+      6,
+      10
+     ],
+     "usage": "dual",
+     "score": 70,
+     "motsPartages": [
+      "citrus",
+      "lime",
+      "pine",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Olympic",
+     "alpha": [
+      10.6,
+      13.8
+     ],
+     "usage": "dual",
+     "score": 70,
+     "motsPartages": [
+      "citrus",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Barbe Rouge",
+     "alpha": [
+      3.8,
+      10
+     ],
+     "usage": "aroma",
+     "score": 69,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "lime"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Fuggle",
+   "alpha": [
+    2.4,
+    6.1
+   ],
+   "usage": "aroma",
+   "moteur": [
+    {
+     "rang": 1,
+     "nom": "Northern Brewer (GR)",
+     "alpha": [
+      6,
+      10
+     ],
+     "usage": "bittering",
+     "score": 87,
+     "motsPartages": [
+      "grassy",
+      "mint"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Challenger",
+     "alpha": [
+      6.5,
+      9
+     ],
+     "usage": "dual",
+     "score": 84,
+     "motsPartages": [
+      "épicé"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Crystal",
+     "alpha": [
+      2.8,
+      6
+     ],
+     "usage": "aroma",
+     "score": 84,
+     "motsPartages": [
+      "woody"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Glacier",
+     "alpha": [
+      3.3,
+      9.7
+     ],
+     "usage": "dual",
+     "score": 79,
+     "motsPartages": [
+      "woody"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Vanguard",
+     "alpha": [
+      4,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 76,
+     "motsPartages": [
+      "grassy",
+      "woody",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Styrian Golding",
+     "alpha": [
+      3.5,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 75,
+     "motsPartages": [
+      "earthy"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Hallertau Tradition",
+     "alpha": [
+      4.6,
+      7
+     ],
+     "usage": "aroma",
+     "score": 74,
+     "motsPartages": [
+      "earthy",
+      "grassy"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Adeena",
+     "alpha": [
+      3.5,
+      5
+     ],
+     "usage": "aroma",
+     "score": 73,
+     "motsPartages": []
+    },
+    {
+     "rang": 9,
+     "nom": "Northern Brewer (US)",
+     "alpha": [
+      7,
+      10
+     ],
+     "usage": "bittering",
+     "score": 73,
+     "motsPartages": [
+      "mint",
+      "woody"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Lambic",
+     "alpha": [
+      1,
+      2
+     ],
+     "usage": "aroma",
+     "score": 71,
+     "motsPartages": [
+      "grassy",
+      "woody"
+     ]
+    }
+   ],
+   "reglage_retenu": [
+    {
+     "rang": 1,
+     "nom": "Northern Brewer (GR)",
+     "alpha": [
+      6,
+      10
+     ],
+     "usage": "bittering",
+     "score": 68,
+     "motsPartages": [
+      "grassy",
+      "mint"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Cluster Fugget Blend",
+     "alpha": [
+      8,
+      8.2
+     ],
+     "usage": "dual",
+     "score": 66,
+     "motsPartages": [
+      "earthy",
+      "grassy",
+      "woody"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Northern Brewer (US)",
+     "alpha": [
+      7,
+      10
+     ],
+     "usage": "bittering",
+     "score": 59,
+     "motsPartages": [
+      "mint",
+      "woody"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Progress",
+     "alpha": [
+      5,
+      7.5
+     ],
+     "usage": "aroma",
+     "score": 59,
+     "motsPartages": [
+      "grassy",
+      "mint",
+      "résineux",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Saaz (CZ)",
+     "alpha": [
+      2,
+      5
+     ],
+     "usage": "aroma",
+     "score": 55,
+     "motsPartages": [
+      "earthy",
+      "mild",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Hallertau Tradition",
+     "alpha": [
+      4.6,
+      7
+     ],
+     "usage": "aroma",
+     "score": 54,
+     "motsPartages": [
+      "earthy",
+      "grassy"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Lambic",
+     "alpha": [
+      1,
+      2
+     ],
+     "usage": "aroma",
+     "score": 54,
+     "motsPartages": [
+      "grassy",
+      "woody"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Vanguard",
+     "alpha": [
+      4,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 53,
+     "motsPartages": [
+      "grassy",
+      "woody",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Perle (GR)",
+     "alpha": [
+      4,
+      9
+     ],
+     "usage": "aroma",
+     "score": 51,
+     "motsPartages": [
+      "earthy",
+      "mint"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Sussex",
+     "alpha": [
+      4.3,
+      5.8
+     ],
+     "usage": "aroma",
+     "score": 51,
+     "motsPartages": [
+      "earthy",
+      "grassy",
+      "mint"
+     ]
+    }
+   ],
+   "reglage_prudent": [
+    {
+     "rang": 1,
+     "nom": "Northern Brewer (GR)",
+     "alpha": [
+      6,
+      10
+     ],
+     "usage": "bittering",
+     "score": 74,
+     "motsPartages": [
+      "grassy",
+      "mint"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Cluster Fugget Blend",
+     "alpha": [
+      8,
+      8.2
+     ],
+     "usage": "dual",
+     "score": 66,
+     "motsPartages": [
+      "earthy",
+      "grassy",
+      "woody"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Northern Brewer (US)",
+     "alpha": [
+      7,
+      10
+     ],
+     "usage": "bittering",
+     "score": 63,
+     "motsPartages": [
+      "mint",
+      "woody"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Progress",
+     "alpha": [
+      5,
+      7.5
+     ],
+     "usage": "aroma",
+     "score": 62,
+     "motsPartages": [
+      "grassy",
+      "mint",
+      "résineux",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Hallertau Tradition",
+     "alpha": [
+      4.6,
+      7
+     ],
+     "usage": "aroma",
+     "score": 60,
+     "motsPartages": [
+      "earthy",
+      "grassy"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Lambic",
+     "alpha": [
+      1,
+      2
+     ],
+     "usage": "aroma",
+     "score": 60,
+     "motsPartages": [
+      "grassy",
+      "woody"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Vanguard",
+     "alpha": [
+      4,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 60,
+     "motsPartages": [
+      "grassy",
+      "woody",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Crystal",
+     "alpha": [
+      2.8,
+      6
+     ],
+     "usage": "aroma",
+     "score": 57,
+     "motsPartages": [
+      "woody"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Saaz (CZ)",
+     "alpha": [
+      2,
+      5
+     ],
+     "usage": "aroma",
+     "score": 57,
+     "motsPartages": [
+      "earthy",
+      "mild",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Styrian Golding",
+     "alpha": [
+      3.5,
+      6.5
+     ],
+     "usage": "aroma",
+     "score": 56,
+     "motsPartages": [
+      "earthy"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Magnum (US)",
+   "alpha": [
+    10,
+    16
+   ],
+   "usage": "bittering",
+   "moteur": [
+    {
+     "rang": 1,
+     "nom": "Arcadian",
+     "alpha": [
+      9.8,
+      9.8
+     ],
+     "usage": "aroma",
+     "score": 90,
+     "motsPartages": [
+      "floral"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Premiant",
+     "alpha": [
+      7,
+      9
+     ],
+     "usage": "bittering",
+     "score": 89,
+     "motsPartages": []
+    },
+    {
+     "rang": 3,
+     "nom": "Agnus",
+     "alpha": [
+      9,
+      14
+     ],
+     "usage": "bittering",
+     "score": 88,
+     "motsPartages": [
+      "citrus",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Ella",
+     "alpha": [
+      13.3,
+      19.2
+     ],
+     "usage": "dual",
+     "score": 88,
+     "motsPartages": [
+      "floral",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Saphir",
+     "alpha": [
+      2,
+      4.5
+     ],
+     "usage": "aroma",
+     "score": 87,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Sybilla",
+     "alpha": [
+      6,
+      8
+     ],
+     "usage": "aroma",
+     "score": 87,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Horizon",
+     "alpha": [
+      8.8,
+      12
+     ],
+     "usage": "dual",
+     "score": 86,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Willamette",
+     "alpha": [
+      4,
+      7.2
+     ],
+     "usage": "dual",
+     "score": 84,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Chelan",
+     "alpha": [
+      12,
+      15
+     ],
+     "usage": "bittering",
+     "score": 83,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Loral",
+     "alpha": [
+      10,
+      17
+     ],
+     "usage": "aroma",
+     "score": 83,
+     "motsPartages": [
+      "black pepper",
+      "citrus",
+      "floral"
+     ]
+    }
+   ],
+   "reglage_retenu": [
+    {
+     "rang": 1,
+     "nom": "Pacific Jade",
+     "alpha": [
+      12,
+      14
+     ],
+     "usage": "dual",
+     "score": 72,
+     "motsPartages": [
+      "black pepper",
+      "citrus",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Santiam",
+     "alpha": [
+      5,
+      8.5
+     ],
+     "usage": "aroma",
+     "score": 64,
+     "motsPartages": [
+      "black pepper",
+      "floral",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Magnum (GR)",
+     "alpha": [
+      11,
+      16
+     ],
+     "usage": "bittering",
+     "score": 63,
+     "motsPartages": [
+      "black pepper",
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Crystal",
+     "alpha": [
+      2.8,
+      6
+     ],
+     "usage": "aroma",
+     "score": 59,
+     "motsPartages": [
+      "black pepper",
+      "citrus",
+      "floral",
+      "nutmeg",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Opal",
+     "alpha": [
+      5,
+      14
+     ],
+     "usage": "dual",
+     "score": 59,
+     "motsPartages": [
+      "black pepper",
+      "citrus",
+      "floral",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Pacific Gem",
+     "alpha": [
+      13,
+      15
+     ],
+     "usage": "bittering",
+     "score": 57,
+     "motsPartages": [
+      "black pepper",
+      "floral"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Boomerang",
+     "alpha": [
+      10,
+      14
+     ],
+     "usage": "dual",
+     "score": 56,
+     "motsPartages": [
+      "citrus",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Green Bullet",
+     "alpha": [
+      11,
+      15
+     ],
+     "usage": "dual",
+     "score": 56,
+     "motsPartages": [
+      "black pepper",
+      "floral"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Loral",
+     "alpha": [
+      10,
+      17
+     ],
+     "usage": "aroma",
+     "score": 55,
+     "motsPartages": [
+      "black pepper",
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Bohemie",
+     "alpha": [
+      5,
+      8
+     ],
+     "usage": "aroma",
+     "score": 52,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "spicy"
+     ]
+    }
+   ],
+   "reglage_prudent": [
+    {
+     "rang": 1,
+     "nom": "Pacific Jade",
+     "alpha": [
+      12,
+      14
+     ],
+     "usage": "dual",
+     "score": 71,
+     "motsPartages": [
+      "black pepper",
+      "citrus",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Santiam",
+     "alpha": [
+      5,
+      8.5
+     ],
+     "usage": "aroma",
+     "score": 68,
+     "motsPartages": [
+      "black pepper",
+      "floral",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Magnum (GR)",
+     "alpha": [
+      11,
+      16
+     ],
+     "usage": "bittering",
+     "score": 67,
+     "motsPartages": [
+      "black pepper",
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Loral",
+     "alpha": [
+      10,
+      17
+     ],
+     "usage": "aroma",
+     "score": 65,
+     "motsPartages": [
+      "black pepper",
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Opal",
+     "alpha": [
+      5,
+      14
+     ],
+     "usage": "dual",
+     "score": 65,
+     "motsPartages": [
+      "black pepper",
+      "citrus",
+      "floral",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Ella",
+     "alpha": [
+      13.3,
+      19.2
+     ],
+     "usage": "dual",
+     "score": 64,
+     "motsPartages": [
+      "floral",
+      "spicy"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Premiant",
+     "alpha": [
+      7,
+      9
+     ],
+     "usage": "bittering",
+     "score": 64,
+     "motsPartages": []
+    },
+    {
+     "rang": 8,
+     "nom": "Pacific Gem",
+     "alpha": [
+      13,
+      15
+     ],
+     "usage": "bittering",
+     "score": 63,
+     "motsPartages": [
+      "black pepper",
+      "floral"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Sybilla",
+     "alpha": [
+      6,
+      8
+     ],
+     "usage": "aroma",
+     "score": 63,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Dana",
+     "alpha": [
+      7.2,
+      13
+     ],
+     "usage": "dual",
+     "score": 62,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Willamette",
+   "alpha": [
+    4,
+    7.2
+   ],
+   "usage": "dual",
+   "moteur": [
+    {
+     "rang": 1,
+     "nom": "Premiant",
+     "alpha": [
+      7,
+      9
+     ],
+     "usage": "bittering",
+     "score": 90,
+     "motsPartages": []
+    },
+    {
+     "rang": 2,
+     "nom": "Saphir",
+     "alpha": [
+      2,
+      4.5
+     ],
+     "usage": "aroma",
+     "score": 90,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "herbacé"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Bravo",
+     "alpha": [
+      13,
+      18
+     ],
+     "usage": "bittering",
+     "score": 87,
+     "motsPartages": [
+      "agrumes",
+      "floral",
+      "herbacé"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Agnus",
+     "alpha": [
+      9,
+      14
+     ],
+     "usage": "bittering",
+     "score": 85,
+     "motsPartages": [
+      "citrus"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Celeia",
+     "alpha": [
+      3,
+      6
+     ],
+     "usage": "aroma",
+     "score": 85,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbacé"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Magnum (US)",
+     "alpha": [
+      10,
+      16
+     ],
+     "usage": "bittering",
+     "score": 84,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Buzz Bullets",
+     "alpha": [
+      8,
+      10
+     ],
+     "usage": "dual",
+     "score": 83,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Ella",
+     "alpha": [
+      13.3,
+      19.2
+     ],
+     "usage": "dual",
+     "score": 83,
+     "motsPartages": [
+      "floral"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Mount Rainier",
+     "alpha": [
+      5,
+      9.4
+     ],
+     "usage": "dual",
+     "score": 83,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Dana",
+     "alpha": [
+      7.2,
+      13
+     ],
+     "usage": "dual",
+     "score": 82,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    }
+   ],
+   "reglage_retenu": [
+    {
+     "rang": 1,
+     "nom": "Delta",
+     "alpha": [
+      5.5,
+      7
+     ],
+     "usage": "aroma",
+     "score": 62,
+     "motsPartages": [
+      "citrus",
+      "earthy",
+      "floral",
+      "ginger",
+      "herbacé",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Sylva",
+     "alpha": [
+      4,
+      7.3
+     ],
+     "usage": "aroma",
+     "score": 59,
+     "motsPartages": [
+      "floral",
+      "hoppy"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Triskel",
+     "alpha": [
+      3,
+      9
+     ],
+     "usage": "aroma",
+     "score": 57,
+     "motsPartages": [
+      "agrumes",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Admiral",
+     "alpha": [
+      13,
+      16.2
+     ],
+     "usage": "bittering",
+     "score": 54,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "citrusy",
+      "herbacé",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Celeia",
+     "alpha": [
+      3,
+      6
+     ],
+     "usage": "aroma",
+     "score": 54,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbacé"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Cluster",
+     "alpha": [
+      5.5,
+      9
+     ],
+     "usage": "dual",
+     "score": 54,
+     "motsPartages": [
+      "agrumes",
+      "earthy",
+      "floral",
+      "herbacé"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Summit",
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "bittering",
+     "score": 54,
+     "motsPartages": [
+      "agrumes",
+      "citrus",
+      "citrusy",
+      "earthy",
+      "incense",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Amethyst",
+     "alpha": [
+      3.5,
+      6
+     ],
+     "usage": "aroma",
+     "score": 53,
+     "motsPartages": [
+      "citrus",
+      "earthy"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Saaz Late",
+     "alpha": [
+      3.5,
+      6
+     ],
+     "usage": "aroma",
+     "score": 53,
+     "motsPartages": [
+      "earthy",
+      "floral"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Horizon",
+     "alpha": [
+      8.8,
+      12
+     ],
+     "usage": "dual",
+     "score": 52,
+     "motsPartages": [
+      "citrus",
+      "citrusy",
+      "floral"
+     ]
+    }
+   ],
+   "reglage_prudent": [
+    {
+     "rang": 1,
+     "nom": "Delta",
+     "alpha": [
+      5.5,
+      7
+     ],
+     "usage": "aroma",
+     "score": 68,
+     "motsPartages": [
+      "citrus",
+      "earthy",
+      "floral",
+      "ginger",
+      "herbacé",
+      "épicé"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Celeia",
+     "alpha": [
+      3,
+      6
+     ],
+     "usage": "aroma",
+     "score": 65,
+     "motsPartages": [
+      "earthy",
+      "floral",
+      "herbacé"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Triskel",
+     "alpha": [
+      3,
+      9
+     ],
+     "usage": "aroma",
+     "score": 64,
+     "motsPartages": [
+      "agrumes",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Bravo",
+     "alpha": [
+      13,
+      18
+     ],
+     "usage": "bittering",
+     "score": 63,
+     "motsPartages": [
+      "agrumes",
+      "floral",
+      "herbacé"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Cluster",
+     "alpha": [
+      5.5,
+      9
+     ],
+     "usage": "dual",
+     "score": 63,
+     "motsPartages": [
+      "agrumes",
+      "earthy",
+      "floral",
+      "herbacé"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Saphir",
+     "alpha": [
+      2,
+      4.5
+     ],
+     "usage": "aroma",
+     "score": 63,
+     "motsPartages": [
+      "citrus",
+      "floral",
+      "herbacé"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Sylva",
+     "alpha": [
+      4,
+      7.3
+     ],
+     "usage": "aroma",
+     "score": 63,
+     "motsPartages": [
+      "floral",
+      "hoppy"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Premiant",
+     "alpha": [
+      7,
+      9
+     ],
+     "usage": "bittering",
+     "score": 62,
+     "motsPartages": []
+    },
+    {
+     "rang": 9,
+     "nom": "Amethyst",
+     "alpha": [
+      3.5,
+      6
+     ],
+     "usage": "aroma",
+     "score": 61,
+     "motsPartages": [
+      "citrus",
+      "earthy"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Bohemie",
+     "alpha": [
+      5,
+      8
+     ],
+     "usage": "aroma",
+     "score": 61,
+     "motsPartages": [
+      "citrus",
+      "floral"
+     ]
+    }
+   ]
+  }
+ ]
+}
