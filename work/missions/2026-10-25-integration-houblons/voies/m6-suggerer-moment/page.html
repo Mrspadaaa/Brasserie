@@ -1,0 +1,185 @@
+<title>Suggérer à 60′ comme au dry hop · 26.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+/* Page de choix (L24, D126), disposition qu'il aime (24.10) : sa référence d'abord, les variantes en vignettes côte à côte,
+   chacune s'ouvre en grand à côté de l'actuel. Quatre par rangée à l'ordinateur, deux au téléphone ; rien ne défile en
+   largeur. Page claire (D106). Les quatre vues sont des captures de la vraie app (fixtures). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 4px 14px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 var(--texte); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 64px;
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 20px; }
+h1 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; font-size: clamp(1.6rem, 6vw, 2.3rem); font-weight: 800; letter-spacing: -0.02em; }
+p { margin: 0; max-width: 70ch; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; max-width: 84ch; }
+.pastille { justify-self: start; display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.5; padding: 0 9px; border-radius: 999px; color: #fff; white-space: nowrap; }
+.p-ref { background: #2f6b1f; }
+.p-choix { background: #2a6fb0; }
+.planche { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 10px; align-items: start; }
+@media (min-width: 900px) { .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px 16px; } }
+.vue { margin: 0; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; aspect-ratio: 780 / 2080; }
+.ecran img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.vue[data-reference] .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--ambre), var(--ombre); }
+.vue figcaption { display: grid; gap: 4px; }
+.vue figcaption b { font-family: var(--titre); font-size: 1rem; line-height: 1.2; }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: calc(64px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)); background: #0e100c; }
+.vis-titre { font: 800 1.05rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-corps { display: grid; gap: 28px; max-width: 1240px; margin: 0 auto; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.vis-panneau { flex: 0 0 86%; scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau img { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.vis-panneau.ref img { box-shadow: 0 0 0 3px var(--ambre); }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #f6d38f; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; flex-wrap: wrap; }
+  .vis-panneau { flex: 0 1 400px; min-width: 290px; }
+  .vis-glisse { display: none; }
+}
+</style>
+<style>
+/* m6 : une section, A d'abord ; le nom de chaque vignette en une ligne ; captures : l’écran entier, de haut en bas. */
+h1 { font-size: clamp(1.45rem, 5.6vw, 2.1rem); }
+.houblon { display: grid; gap: 10px; padding-top: 6px; border-top: 1px solid var(--trait); }
+.note { margin: 0; font-size: .95rem; line-height: 1.35; }
+.vue figcaption b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+</style>
+
+<div class="page">
+  <header id="a-choisir">
+    <p class="sur-titre">L'Affinée · houblons · Suggérer (q2b), Hazy du jeudi 21C, plus d'agrumes · 26.10</p>
+    <h1>Comment choisir 60′ ou dry hop dans Suggérer ?</h1>
+  </header>
+  <p class="encart">Ton écran Suggérer, rien de caché : chaque variante ajoute seulement. Aujourd'hui, aucun ajout à 60′ et aucun dry hop sur cette recette. Les vignettes à deux états montrent aussi le toucher.</p>
+  <section class="houblon" data-choix="m6" aria-label="Les variantes, A en référence" data-ref-imgs="img/a-actuel.png" data-ref-etats="A · l'actuel">
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 2182" data-nom="A · l'actuel" data-imgs="img/a-actuel.png" data-etats="A · l'actuel"><img src="img/a-actuel.png" width="780" height="2182" alt="A · l'actuel"></button>
+        <figcaption><b>A · l'actuel</b></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 3896" data-nom="M1 · 60′ et dry hop en groupes" data-imgs="img/m1-groupes-60-dryhop.png" data-etats="M1 · groupes 60′ et dry hop"><img src="img/m1-groupes-60-dryhop.png" width="780" height="3896" alt="M1 · 60′ et dry hop en groupes"></button>
+        <figcaption><b>M1 · 60′ et dry hop en groupes</b></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 2302" data-nom="M2 · carte « Plus d'amertume »" data-imgs="img/m2-carte-amertume.png|img/m2-carte-touchee.png" data-etats="M2 · au repos|M2 · carte touchée : le groupe 60′"><img src="img/m2-carte-amertume.png" width="780" height="2302" alt="M2 · carte « Plus d'amertume »"></button>
+        <figcaption><b>M2 · carte « Plus d'amertume »</b></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 4016" data-nom="M1 + M2 · ma préférée" data-imgs="img/m1m2.png|img/m1m2-polaris-touche.png" data-etats="M1 + M2 · au repos|M1 + M2 · Polaris touché"><img src="img/m1m2.png" width="780" height="4016" alt="M1 + M2 · ma préférée"></button>
+        <figcaption><b>M1 + M2 · ma préférée</b></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 3980" data-nom="M3 · puces « Quand ? »" data-imgs="img/m3-puces-quand.png" data-etats="M3 · trois puces, rien filtré"><img src="img/m3-puces-quand.png" width="780" height="3980" alt="M3 · puces « Quand ? »"></button>
+        <figcaption><b>M3 · puces « Quand ? »</b></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 4112" data-nom="F · la frise du brassin" data-imgs="img/f-frise-brassin.png" data-etats="F · frise du brassin"><img src="img/f-frise-brassin.png" width="780" height="4112" alt="F · la frise du brassin"></button>
+        <figcaption><b>F · la frise du brassin</b></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" style="aspect-ratio: 780 / 4016" data-nom="M1 + M2 · avec l'IA" data-imgs="img/m1m2-ia.png|img/m1m2-ia-phrase.png" data-etats="IA · puce au dry hop|IA · Galaxy touché : sa phrase"><img src="img/m1m2-ia.png" width="780" height="4016" alt="M1 + M2 · avec l'IA"></button>
+        <figcaption><b>M1 + M2 · avec l'IA</b></figcaption>
+      </figure>
+    </div>
+    <p class="note">60′ : les cinq de g1 qui font +10 IBU avec le moins de grammes (Polaris 4,5 g à Eureka 5 g ; IBU 27,9 → 37,9). Dry hop actif : les cinq premiers de 23 ex æquo à 40 g, rangés par l'alphabet.</p>
+    <p class="note">La phrase de l'IA est un exemple écrit pour la maquette : aucune IA n'a été appelée.</p>
+  </section>
+</div>
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+  <div class="vis-tete">
+    <p class="vis-titre" id="vis-titre"></p>
+    <div class="vis-boutons">
+      <button type="button" id="vis-prec" aria-label="Vue précédente">◀</button>
+      <button type="button" id="vis-suiv" aria-label="Vue suivante">▶</button>
+      <button type="button" class="fermer" id="vis-fermer">Fermer</button>
+    </div>
+  </div>
+  <div class="vis-corps" id="vis-corps"></div>
+</div>
+
+<script>
+// En grand : la variante à côté de l'actuel (A). Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var corps = document.getElementById('vis-corps');
+  var titre = document.getElementById('vis-titre');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function liste(el, cle) { return (el.getAttribute(cle) || '').split('|').filter(Boolean); }
+  function panneaux(b) {
+    var sec = b.closest('[data-choix]');
+    var etats = liste(b, 'data-etats');
+    var v = liste(b, 'data-imgs').map(function (s, i) { return { src: s, leg: etats[i] || '' }; });
+    if (b.closest('[data-reference]')) return v;
+    var refEtats = liste(sec, 'data-ref-etats');
+    return v.concat(liste(sec, 'data-ref-imgs').map(function (s, i) { return { src: s, leg: refEtats[i] || '', ref: true }; }));
+  }
+  function panneau(p) {
+    var f = document.createElement('figure');
+    f.className = 'vis-panneau' + (p.ref ? ' ref' : '');
+    var c = document.createElement('figcaption'); c.textContent = p.leg;
+    var i = document.createElement('img'); i.src = p.src; i.alt = p.leg;
+    f.appendChild(c); f.appendChild(i);
+    return f;
+  }
+  function ouvrir(n, depuis) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    corps.textContent = '';
+    var ps = panneaux(b);
+    if (ps.length > 1) { var g = document.createElement('p'); g.className = 'vis-glisse'; g.textContent = 'Glisse : ' + ps.slice(1).map(function (p) { return p.leg; }).join(', ') + ' →'; corps.appendChild(g); }
+    var d = document.createElement('div'); d.className = 'vis-rangee';
+    ps.forEach(function (p) { d.appendChild(panneau(p)); });
+    corps.appendChild(d);
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; corps.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.planche .ecran');
+    if (b) ouvrir(boutons.indexOf(b), b);
+  });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

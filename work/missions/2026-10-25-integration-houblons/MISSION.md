@@ -67,6 +67,7 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
 | Remplaçants à 60′, A contre v2 (D86) | 26.10 v1 | https://claude.ai/artifact/VoB2WMtR4oifyvUAohENAD | `voies/m4-listes-60/page.html` |
 | Dryhopper à froid : amertume, hop creep, limites | 26.10 v1 | https://claude.ai/artifact/WW2mmg7gWgUVSnT4PTWTFf | `voies/m5-dryhopper-froid/page.html` |
 | Récap du 26.10, 13 h | 26.10 v2 | https://claude.ai/artifact/EFGywfPa5yLiwTgDzQb16v | scratchpad de la session (`recap-2026-10-26-13h.html`) |
+| Suggérer à 60′ comme au dry hop (q2b, M1 à M3, IA) | 26.10 v1 | https://claude.ai/artifact/Npss86xUpf259xJaemSKjH | `voies/m6-suggerer-moment/page.html` |
 
 ## Boucle de retour
 - Un critère rouge : l'agent corrige dans sa voie, 3 essais ; puis SendMessage au même agent (2 relances) ; puis le pilote
