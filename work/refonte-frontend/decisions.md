@@ -982,3 +982,7 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     fichier, et la production a servi une page 404 pendant environ 3 minutes. Je l'ai vu en lisant la page servie. Le renvoi a envoyé
     242 fichiers et la production est rétablie (`index-Tex7XoAl.js`). Leçon ajoutée à L17.
   - Une PR vers main est ouverte et sera fusionnée une fois le rejeu de fb0d14e3 vert.
+- D111 (pilote, 26.10, voie f6) : dès que la préchauffe a eu lieu, Suggérer fait l'appel complet d'emblée. Cela donne 0 px de saut,
+  aucun vide, et 232 ms au premier affichage, contre 194 ms différé et 206 ms sur HEAD. Sans préchauffe, l'arrivée reste différée, avec
+  une place réservée à sa hauteur. f6 a aussi ajouté une règle, gardée : une visée « moins de… » fait l'appel complet d'emblée. Sans
+  cela, « Aucune voie houblon » s'affichait, puis tout descendait de 463 px. Voie f7.
