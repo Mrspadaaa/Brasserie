@@ -3,7 +3,7 @@ import { suggestedHopVarieties } from '../styleSelection';
 import { AXES, catalogue as catalogueDuMoteur, local, stock as stockDuMoteur, varietyById, YEASTS, hopRef } from './data';
 import { borneHoublons, Lru } from './lru';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
-import { citations } from './hops';
+import { citations, marquee } from './hops';
 import {
   MOMENTS, additionIbu, gramsForIbu, ibuPerGram, matrixContext, recipeIbu, recipeProfile, searchDoses, tripletOf, yeastInfo,
   type Addition, type FamilyEstimate, type MatrixContext, type MomentId, type Profile, type Recipe, type RecipeProfile, type YeastInfo,
@@ -90,7 +90,7 @@ export interface VoieOptions {
 }
 
 export const RANKING = [
-  'conflits (exclusions V5.5 : famille « moins » citée par le houblon ajouté ; famille indésirable du style citée ; IBU sorti de la plage du style)',
+  'conflits (exclusions V5.5 : famille « moins » marquée chez le houblon ajouté, c’est-à-dire citée par la moitié au moins de ses fiches (D90) ; famille indésirable du style marquée de même ; famille exclue par les goûts citée dans une fiche ; IBU sorti de la plage du style)',
   'débordement de style (somme des crans hors bande imputables à la voie ; base : repère central de la recette, ou aucune présence établie)',
   'distance à la cible en unités du style (somme sur les familles visées de |variation prévue − variation visée| / largeur de bande ; inconnue en dernier)',
   'effets de bord dans la bande (somme des crans des familles neutres ou indésirables non visées poussées vers le haut)',
@@ -106,6 +106,13 @@ const nameOf = (key: string) => hopRef(key)?.name ?? key;
 const citees = () => local('voies:citees', () => new Lru<number>(borneHoublons(catalogueDuMoteur().length + stockDuMoteur().length)));
 function cites(varietyId: string, f: FamilyId): boolean {
   const m = citees().obtenir(varietyId, () => { const c = citations(varietyId); return FAMILIES.reduce((b, g, i) => (c[g].status === 'cité' ? b | (1 << i) : b), 0); });
+  return (m & (1 << FAMILIES.indexOf(f))) !== 0;
+}
+// D90 (g2c) : familles MARQUÉES d'une variété (la moitié au moins de ses fiches, hops.ts marquee), lues une fois par moteur comme `citees`.
+// Seules elles EXCLUENT (famille indésirable du style, famille « moins » de la visée) ; cites reste la règle de l'apport établi et des goûts du brasseur.
+const marquees = () => local('voies:marquees', () => new Lru<number>(borneHoublons(catalogueDuMoteur().length + stockDuMoteur().length)));
+function marque(varietyId: string, f: FamilyId): boolean {
+  const m = marquees().obtenir(varietyId, () => FAMILIES.reduce((b, g, i) => (marquee(varietyId, g) ? b | (1 << i) : b), 0));
   return (m & (1 << FAMILIES.indexOf(f))) !== 0;
 }
 
@@ -194,9 +201,13 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const buyPool = (requirePlus: boolean) => pools.get(requirePlus) ?? pools.set(requirePlus, buyPoolDe(requirePlus)).get(requirePlus)!;
   const buyPoolDe = (requirePlus: boolean) => catalogueDuMoteur().filter((c) => !available.has(c.id) && allowed(c.id))
     .map((c) => ({ c, plus: plus.filter((f) => cites(c.id, f)).length, fit: expected.filter((f) => cites(c.id, f)).length,
-      bad: avoid.some((f) => cites(c.id, f)) || FAMILIES.some((f) => style.families[f].status === 'indésirable' && cites(c.id, f)) }))
+      // D90 : une famille « moins » ou indésirable du style exclut si elle est marquée ; une famille exclue par les goûts du brasseur, dès qu'une fiche la cite.
+      bad: minus.some((f) => marque(c.id, f)) || excludedFamilies.some((f) => cites(c.id, f)) || FAMILIES.some((f) => style.families[f].status === 'indésirable' && marque(c.id, f)),
+      // Une fiche isolée n'exclut plus, mais le houblon passe après ceux dont aucune fiche ne cite une famille à éviter, à nombre égal de familles visées :
+      // sans cela, les houblons re-admis prennent les `maxBuy` places du pool sur leur seule couverture et laissent moins de bonnes voies (mesuré en stout S1).
+      mineure: [...minus, ...FAMILIES.filter((f) => style.families[f].status === 'indésirable')].some((f) => cites(c.id, f)) }))
     .filter((r) => !r.bad && (!requirePlus || r.plus > 0))
-    .sort((a, b) => b.plus - a.plus || b.fit - a.fit || Number(suggested.has(b.c.id)) - Number(suggested.has(a.c.id)) || a.c.name.localeCompare(b.c.name, 'fr'))
+    .sort((a, b) => b.plus - a.plus || Number(a.mineure) - Number(b.mineure) || b.fit - a.fit || Number(suggested.has(b.c.id)) - Number(suggested.has(a.c.id)) || a.c.name.localeCompare(b.c.name, 'fr'))
     .slice(0, maxBuy).map((r) => stockDuMoteur().find((s) => s.varietyId === r.c.id && s.form !== 'cryo')?.key ?? r.c.id);
 
   let n = 0;
@@ -215,8 +226,8 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       const h = hopRef(c.addition.hopKey)!;
       const replaced = changes.find((x) => x.sign < 0 && x.addition.hopKey === c.addition.hopKey);
       if (replaced && replaced.addition.grams >= c.addition.grams) continue; // diminution du même houblon
-      for (const f of minus) if (cites(h.varietyId, f)) conflicts.push(`${h.name} : ${FAMILY_NAMES[f].toLowerCase()} cité dans une fiche, exclu par ta direction.`);
-      for (const f of FAMILIES) if (style.families[f].status === 'indésirable' && cites(h.varietyId, f)) conflicts.push(`${h.name} : ${FAMILY_NAMES[f].toLowerCase()} exclu par le style, cité dans une fiche.`);
+      for (const f of minus) if (marque(h.varietyId, f)) conflicts.push(`${h.name} : ${FAMILY_NAMES[f].toLowerCase()} cité dans une fiche, exclu par ta direction.`);
+      for (const f of FAMILIES) if (style.families[f].status === 'indésirable' && marque(h.varietyId, f)) conflicts.push(`${h.name} : ${FAMILY_NAMES[f].toLowerCase()} exclu par le style, cité dans une fiche.`);
       for (const f of excludedFamilies) if (!minus.includes(f) && cites(h.varietyId, f)) conflicts.push(`${h.name} : ${FAMILY_NAMES[f].toLowerCase()} cité dans une fiche, exclu par tes goûts.`);
       for (const k of checkHopExclusions(predictionDe(tripletOf(c.addition, next)), avoid, AXES)) if (k.status === 'conflict') conflicts.push(`${h.name} : ${k.message}`);
       if (!(c.addition.grams > 0)) conflicts.push('Dose invalide.');

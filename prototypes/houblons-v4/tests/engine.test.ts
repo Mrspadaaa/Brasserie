@@ -38,10 +38,15 @@ describe('Moteur v4 sur le moteur V5.5 importé', () => {
     expect(floral.delta).toBeCloseTo(scale.families.floral.cran, 1);
     expect(resin.delta).toBeCloseTo(-scale.families.resin.cran, 1);
     expect(floral.targetAbsolute).toBeCloseTo(s1.before.profile.floral.central! + floral.delta, 1);
-    // Exclusion en plus de la cible : un houblon cité résineux (Cascade : « pine ») est en conflit.
-    const cascade = proposeVoies(s1Recipe(), { floral: 1, resin: -1 }, { limit: 40, perHop: 4 }).voies.filter((v) => v.actions.some((a) => a.hopKey === 'beermaverick-cascade'));
+    // Exclusion en plus de la cible (D90, g2c, 26.10) : un houblon dont la MOITIÉ au moins des fiches citent le résineux est en conflit (Idaho 7 : 5 fiches sur 6) ;
+    // une citation minoritaire n'exclut plus (Cascade : 3 fiches sur 9, avant D90 une fiche suffisait et ses voies étaient toutes en conflit).
+    const voies = proposeVoies(s1Recipe(), { floral: 1, resin: -1 }, { limit: 60, perHop: 4 }).voies;
+    const idaho = voies.filter((v) => v.actions.some((a) => a.hopKey === 'beermaverick-idaho-7' && a.op === 'ajouter'));
+    expect(idaho.length).toBeGreaterThan(0);
+    for (const v of idaho) expect(v.conflicts.join(' ')).toMatch(/exclu par ta direction/);
+    const cascade = voies.filter((v) => v.actions.some((a) => a.hopKey === 'beermaverick-cascade' && a.op === 'ajouter'));
     expect(cascade.length).toBeGreaterThan(0);
-    for (const v of cascade) expect(v.conflicts.join(' ')).toMatch(/exclu par ta direction/);
+    for (const v of cascade) expect(v.conflicts.join(' ')).not.toMatch(/exclu par ta direction/);
     // Deux crans visent deux fois plus loin.
     expect(proposeVoies(s1Recipe(), { floral: 2 }).direction[0].delta).toBeCloseTo(2 * scale.families.floral.cran, 1);
   });

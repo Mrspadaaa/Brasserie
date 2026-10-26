@@ -1,0 +1,965 @@
+{
+ "etat": "prod",
+ "catalogue": 318,
+ "partieA": [
+  {
+   "cas": "style 21C",
+   "retirees": 138,
+   "variétésDeBase": 297,
+   "variétésRestantes": 159,
+   "exemples": [
+    "Adeena",
+    "Admiral",
+    "Akoya",
+    "Aramis",
+    "Ariana",
+    "Astra",
+    "Aurora",
+    "Aurum",
+    "Azacca",
+    "Barbe Rouge",
+    "Bitter Gold",
+    "Bohemie"
+   ]
+  },
+  {
+   "cas": "style 16D",
+   "retirees": 0,
+   "variétésDeBase": 297,
+   "variétésRestantes": 297,
+   "exemples": []
+  },
+  {
+   "cas": "style 23A",
+   "retirees": 297,
+   "variétésDeBase": 297,
+   "variétésRestantes": 0,
+   "exemples": [
+    "Adeena",
+    "Admiral",
+    "African Queen",
+    "Agnus",
+    "Ahhhroma",
+    "Ahtanum",
+    "Akoya",
+    "Aloha Blend",
+    "Altus",
+    "Amarillo",
+    "Amethyst",
+    "Apollo"
+   ]
+  },
+  {
+   "cas": "style 23G",
+   "retirees": 297,
+   "variétésDeBase": 297,
+   "variétésRestantes": 0,
+   "exemples": [
+    "Adeena",
+    "Admiral",
+    "African Queen",
+    "Agnus",
+    "Ahhhroma",
+    "Ahtanum",
+    "Akoya",
+    "Aloha Blend",
+    "Altus",
+    "Amarillo",
+    "Amethyst",
+    "Apollo"
+   ]
+  },
+  {
+   "cas": "visée « moins de résineux » · 16D",
+   "retirees": 99,
+   "variétésDeBase": 294,
+   "variétésRestantes": 195,
+   "exemples": [
+    "Adeena",
+    "Admiral",
+    "Ahtanum",
+    "Altus",
+    "Apollo",
+    "Ariana",
+    "Atlas",
+    "Bitter Gold",
+    "Bobek",
+    "Bor",
+    "Caliente",
+    "Callista"
+   ]
+  },
+  {
+   "cas": "visée « moins de résineux » · 21C",
+   "retirees": 49,
+   "variétésDeBase": 156,
+   "variétésRestantes": 107,
+   "exemples": [
+    "Ahtanum",
+    "Altus",
+    "Apollo",
+    "Atlas",
+    "Bobek",
+    "Caliente",
+    "Callista",
+    "Canadian Redvine",
+    "Dana",
+    "Sultana (Denali)",
+    "Eclipse",
+    "Elixir"
+   ]
+  }
+ ],
+ "partieB": [
+  {
+   "houblon": "Citra",
+   "cite": [],
+   "herbal": {
+    "sources": 0,
+    "sur": 1,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "green": {
+    "sources": 0,
+    "sur": 1,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "resin": {
+    "sources": 0,
+    "sur": 1,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "exclu21C": false,
+   "exclu23A": true,
+   "excluMoinsResine16D": false,
+   "excluMoinsResine21C": false
+  },
+  {
+   "houblon": "Nelson Sauvin",
+   "cite": [],
+   "herbal": {
+    "sources": 0,
+    "sur": 2,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "green": {
+    "sources": 0,
+    "sur": 2,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "resin": {
+    "sources": 0,
+    "sur": 2,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "exclu21C": false,
+   "exclu23A": true,
+   "excluMoinsResine16D": false,
+   "excluMoinsResine21C": false
+  },
+  {
+   "houblon": "Motueka",
+   "cite": [],
+   "herbal": {
+    "sources": 0,
+    "sur": 2,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "green": {
+    "sources": 0,
+    "sur": 2,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "resin": {
+    "sources": 0,
+    "sur": 2,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "exclu21C": false,
+   "exclu23A": true,
+   "excluMoinsResine16D": false,
+   "excluMoinsResine21C": false
+  },
+  {
+   "houblon": "Galaxy",
+   "cite": [],
+   "herbal": {
+    "sources": 0,
+    "sur": 1,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "green": {
+    "sources": 0,
+    "sur": 1,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "resin": {
+    "sources": 0,
+    "sur": 1,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "exclu21C": false,
+   "exclu23A": true,
+   "excluMoinsResine16D": false,
+   "excluMoinsResine21C": false
+  },
+  {
+   "houblon": "Mosaic",
+   "cite": [
+    "green",
+    "resin"
+   ],
+   "herbal": {
+    "sources": 0,
+    "sur": 1,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "green": {
+    "sources": 1,
+    "sur": 1,
+    "niveau": "cité",
+    "moitie": true
+   },
+   "resin": {
+    "sources": 1,
+    "sur": 1,
+    "niveau": "cité",
+    "moitie": true
+   },
+   "exclu21C": true,
+   "exclu23A": true,
+   "excluMoinsResine16D": true,
+   "excluMoinsResine21C": false
+  },
+  {
+   "houblon": "Hallertau Blanc",
+   "cite": [],
+   "herbal": {
+    "sources": 0,
+    "sur": 2,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "green": {
+    "sources": 0,
+    "sur": 2,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "resin": {
+    "sources": 0,
+    "sur": 2,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "exclu21C": false,
+   "exclu23A": true,
+   "excluMoinsResine16D": false,
+   "excluMoinsResine21C": false
+  },
+  {
+   "houblon": "Cascade",
+   "cite": [
+    "herbal",
+    "resin"
+   ],
+   "herbal": {
+    "sources": 1,
+    "sur": 2,
+    "niveau": "cité",
+    "moitie": true
+   },
+   "green": {
+    "sources": 0,
+    "sur": 2,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "resin": {
+    "sources": 1,
+    "sur": 2,
+    "niveau": "cité",
+    "moitie": true
+   },
+   "exclu21C": true,
+   "exclu23A": true,
+   "excluMoinsResine16D": true,
+   "excluMoinsResine21C": false
+  },
+  {
+   "houblon": "Idaho 7",
+   "cite": [
+    "herbal",
+    "resin"
+   ],
+   "herbal": {
+    "sources": 1,
+    "sur": 1,
+    "niveau": "cité",
+    "moitie": true
+   },
+   "green": {
+    "sources": 0,
+    "sur": 1,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "resin": {
+    "sources": 1,
+    "sur": 1,
+    "niveau": "cité",
+    "moitie": true
+   },
+   "exclu21C": true,
+   "exclu23A": true,
+   "excluMoinsResine16D": true,
+   "excluMoinsResine21C": false
+  },
+  {
+   "houblon": "Simcoe",
+   "cite": [
+    "resin"
+   ],
+   "herbal": {
+    "sources": 0,
+    "sur": 1,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "green": {
+    "sources": 0,
+    "sur": 1,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "resin": {
+    "sources": 1,
+    "sur": 1,
+    "niveau": "cité",
+    "moitie": true
+   },
+   "exclu21C": false,
+   "exclu23A": true,
+   "excluMoinsResine16D": true,
+   "excluMoinsResine21C": true
+  },
+  {
+   "houblon": "Strata",
+   "cite": [],
+   "herbal": {
+    "sources": 0,
+    "sur": 1,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "green": {
+    "sources": 0,
+    "sur": 1,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "resin": {
+    "sources": 0,
+    "sur": 1,
+    "niveau": "non décrit",
+    "moitie": false
+   },
+   "exclu21C": false,
+   "exclu23A": true,
+   "excluMoinsResine16D": false,
+   "excluMoinsResine21C": false
+  }
+ ],
+ "partieC": [
+  {
+   "jeu": "fixtures",
+   "visee": "plus d’agrumes",
+   "voies": [
+    {
+     "rang": 1,
+     "label": "Ajouter Galaxy · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.012
+    },
+    {
+     "rang": 2,
+     "label": "Ajouter Belma · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "à acheter",
+     "distance": 0.012
+    },
+    {
+     "rang": 3,
+     "label": "Ajouter El Dorado · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "à acheter",
+     "distance": 0.012
+    },
+    {
+     "rang": 4,
+     "label": "Assembler Galaxy + Motueka · 10′ · 20 g + 20 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.012
+    },
+    {
+     "rang": 5,
+     "label": "Assembler Galaxy + Hallertau Blanc · 10′ · 20 g + 20 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.012
+    },
+    {
+     "rang": 6,
+     "label": "Ajouter Galaxy · whirlpool · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.063
+    },
+    {
+     "rang": 7,
+     "label": "Ajouter Belma · whirlpool · 40 g",
+     "conflits": 0,
+     "domaine": "à acheter",
+     "distance": 0.063
+    },
+    {
+     "rang": 8,
+     "label": "Ajouter El Dorado · whirlpool · 40 g",
+     "conflits": 0,
+     "domaine": "à acheter",
+     "distance": 0.063
+    },
+    {
+     "rang": 9,
+     "label": "Ajouter Motueka · whirlpool · 20 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.067
+    },
+    {
+     "rang": 10,
+     "label": "Ajouter Hallertau Blanc · whirlpool · 20 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.067
+    }
+   ]
+  },
+  {
+   "jeu": "fixtures",
+   "visee": "plus de tropical",
+   "voies": [
+    {
+     "rang": 1,
+     "label": "Ajouter Galaxy · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.016
+    },
+    {
+     "rang": 2,
+     "label": "Ajouter Belma · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "à acheter",
+     "distance": 0.016
+    },
+    {
+     "rang": 3,
+     "label": "Ajouter El Dorado · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "à acheter",
+     "distance": 0.016
+    },
+    {
+     "rang": 4,
+     "label": "Assembler Galaxy + Motueka · 10′ · 20 g + 20 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.016
+    },
+    {
+     "rang": 5,
+     "label": "Assembler Galaxy + Hallertau Blanc · 10′ · 20 g + 20 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.016
+    },
+    {
+     "rang": 6,
+     "label": "Ajouter Galaxy · dry hop en fermentation active · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.062
+    },
+    {
+     "rang": 7,
+     "label": "Ajouter Belma · dry hop en fermentation active · 40 g",
+     "conflits": 0,
+     "domaine": "à acheter",
+     "distance": 0.062
+    },
+    {
+     "rang": 7,
+     "label": "Ajouter El Dorado · dry hop en fermentation active · 40 g",
+     "conflits": 0,
+     "domaine": "à acheter",
+     "distance": 0.062
+    },
+    {
+     "rang": 9,
+     "label": "Ajouter Motueka · dry hop en fermentation active · 20 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.063
+    },
+    {
+     "rang": 10,
+     "label": "Ajouter Motueka · whirlpool · 20 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.064
+    }
+   ]
+  },
+  {
+   "jeu": "catalogue entier en stock",
+   "visee": "plus d’agrumes",
+   "voies": [
+    {
+     "rang": 1,
+     "label": "Ajouter Monroe · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.012
+    },
+    {
+     "rang": 2,
+     "label": "Assembler Monroe + Medusa · 10′ · 20 g + 20 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.012
+    },
+    {
+     "rang": 2,
+     "label": "Assembler Monroe + Multihead · 10′ · 20 g + 20 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.012
+    },
+    {
+     "rang": 4,
+     "label": "Ajouter Medusa · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.012
+    },
+    {
+     "rang": 4,
+     "label": "Ajouter Multihead · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.012
+    },
+    {
+     "rang": 6,
+     "label": "Ajouter Shaddock · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.012
+    },
+    {
+     "rang": 7,
+     "label": "Ajouter Riwaka · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.012
+    },
+    {
+     "rang": 8,
+     "label": "Ajouter Yellow Sub · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.012
+    },
+    {
+     "rang": 9,
+     "label": "Ajouter Columbia · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.012
+    },
+    {
+     "rang": 10,
+     "label": "Ajouter Huell Melon · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.012
+    }
+   ]
+  },
+  {
+   "jeu": "catalogue entier en stock",
+   "visee": "plus de tropical",
+   "voies": [
+    {
+     "rang": 1,
+     "label": "Ajouter Monroe · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.016
+    },
+    {
+     "rang": 2,
+     "label": "Assembler Monroe + Medusa · 10′ · 20 g + 20 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.016
+    },
+    {
+     "rang": 2,
+     "label": "Assembler Monroe + Multihead · 10′ · 20 g + 20 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.016
+    },
+    {
+     "rang": 4,
+     "label": "Ajouter Medusa · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.016
+    },
+    {
+     "rang": 4,
+     "label": "Ajouter Multihead · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.016
+    },
+    {
+     "rang": 6,
+     "label": "Ajouter Riwaka · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.016
+    },
+    {
+     "rang": 7,
+     "label": "Ajouter Kohatu · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.016
+    },
+    {
+     "rang": 8,
+     "label": "Ajouter Columbia · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.016
+    },
+    {
+     "rang": 9,
+     "label": "Ajouter Vienna Gold · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.016
+    },
+    {
+     "rang": 10,
+     "label": "Ajouter Tropica · 10′ · 40 g",
+     "conflits": 0,
+     "domaine": "stock",
+     "distance": 0.016
+    }
+   ]
+  }
+ ],
+ "partieD": [
+  {
+   "original": "Galaxy",
+   "candidats": 317,
+   "avecConflitStyle": 138,
+   "dix": [
+    {
+     "rang": 1,
+     "nom": "Samba",
+     "score": 97,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 2,
+     "nom": "Zamba Blend",
+     "score": 92,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 3,
+     "nom": "Harlequin",
+     "score": 91,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 4,
+     "nom": "Nectaron",
+     "score": 89,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 5,
+     "nom": "NZH-107",
+     "score": 88,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 5,
+     "nom": "YQH-1380",
+     "score": 88,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 7,
+     "nom": "Trident",
+     "score": 87,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 7,
+     "nom": "Tropica",
+     "score": 87,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 9,
+     "nom": "Solero",
+     "score": 86,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 9,
+     "nom": "Southern Sublime",
+     "score": 86,
+     "conflitsStyle": []
+    }
+   ],
+   "phares": [
+    {
+     "nom": "Citra",
+     "rang": 25,
+     "score": 78,
+     "conflitsStyle": []
+    },
+    {
+     "nom": "Nelson Sauvin",
+     "rang": 95,
+     "score": 47,
+     "conflitsStyle": []
+    },
+    {
+     "nom": "Motueka",
+     "rang": 49,
+     "score": 64,
+     "conflitsStyle": []
+    },
+    {
+     "nom": "Mosaic",
+     "rang": 209,
+     "score": 57,
+     "conflitsStyle": [
+      "green"
+     ]
+    },
+    {
+     "nom": "Hallertau Blanc",
+     "rang": 25,
+     "score": 78,
+     "conflitsStyle": []
+    },
+    {
+     "nom": "Cascade",
+     "rang": 214,
+     "score": 54,
+     "conflitsStyle": [
+      "herbal"
+     ]
+    },
+    {
+     "nom": "Idaho 7",
+     "rang": 203,
+     "score": 66,
+     "conflitsStyle": [
+      "herbal"
+     ]
+    },
+    {
+     "nom": "Simcoe",
+     "rang": 31,
+     "score": 75,
+     "conflitsStyle": []
+    },
+    {
+     "nom": "Strata",
+     "rang": 39,
+     "score": 70,
+     "conflitsStyle": []
+    }
+   ]
+  },
+  {
+   "original": "Nelson Sauvin",
+   "candidats": 317,
+   "avecConflitStyle": 138,
+   "dix": [
+    {
+     "rang": 1,
+     "nom": "Herkules",
+     "score": 93,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 2,
+     "nom": "Boomerang",
+     "score": 92,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 3,
+     "nom": "Phoenix",
+     "score": 90,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 4,
+     "nom": "Kazbek",
+     "score": 88,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 5,
+     "nom": "Godiva",
+     "score": 87,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 6,
+     "nom": "Olympic",
+     "score": 85,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 7,
+     "nom": "Southern Cross",
+     "score": 84,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 8,
+     "nom": "Altus",
+     "score": 83,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 8,
+     "nom": "Diamant",
+     "score": 83,
+     "conflitsStyle": []
+    },
+    {
+     "rang": 8,
+     "nom": "Jarrylo",
+     "score": 83,
+     "conflitsStyle": []
+    }
+   ],
+   "phares": [
+    {
+     "nom": "Citra",
+     "rang": 78,
+     "score": 57,
+     "conflitsStyle": []
+    },
+    {
+     "nom": "Motueka",
+     "rang": 43,
+     "score": 69,
+     "conflitsStyle": []
+    },
+    {
+     "nom": "Galaxy",
+     "rang": 104,
+     "score": 47,
+     "conflitsStyle": []
+    },
+    {
+     "nom": "Mosaic",
+     "rang": 253,
+     "score": 52,
+     "conflitsStyle": [
+      "green"
+     ]
+    },
+    {
+     "nom": "Hallertau Blanc",
+     "rang": 98,
+     "score": 49,
+     "conflitsStyle": []
+    },
+    {
+     "nom": "Cascade",
+     "rang": 188,
+     "score": 80,
+     "conflitsStyle": [
+      "herbal"
+     ]
+    },
+    {
+     "nom": "Idaho 7",
+     "rang": 274,
+     "score": 46,
+     "conflitsStyle": [
+      "herbal"
+     ]
+    },
+    {
+     "nom": "Simcoe",
+     "rang": 83,
+     "score": 55,
+     "conflitsStyle": []
+    },
+    {
+     "nom": "Strata",
+     "rang": 65,
+     "score": 62,
+     "conflitsStyle": []
+    }
+   ]
+  }
+ ],
+ "partieE": {
+  "catalogue": 318,
+  "21C : herbacé ou végétal vert": {
+   "uneFiche": 138,
+   "niveauMarque": 52,
+   "moitie": 138
+  },
+  "moins de résineux : résineux": {
+   "uneFiche": 102,
+   "niveauMarque": 31,
+   "moitie": 102
+  }
+ }
+}

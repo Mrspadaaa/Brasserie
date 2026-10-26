@@ -18,7 +18,8 @@ const DIR = { floral: 1, resin: -1 } as const;
 // remplacants : 81efdc544613 → d646d7130b2f au commit 883e1c9b (mots sans famille distincts) : voir client-async.test.ts.
 // 26.10 (d4 et e2) : les quatre empreintes changent, raisons dans client-async.test.ts.
 // remplacants 6561a4d6240b → 32e2ef725fec (t1, D160) : champs « autres » traduits, aucun score ni rang.
-const EMPREINTES = { substitutes: 'cac6de6d0c72', suggerer: '166a7dbd9516', proposer: '3584e2c7dabd', remplacants: '32e2ef725fec' };
+// proposer 3584e2c7dabd → 31d7feb6324c (g2c, D90, 26.10) : raison dans client-async.test.ts (exclusion par la moitié au moins des fiches).
+const EMPREINTES = { substitutes: 'cac6de6d0c72', suggerer: '166a7dbd9516', proposer: '31d7feb6324c', remplacants: '32e2ef725fec' };
 const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recette as never, style: adapter.style(recette.styleCode), stockFirst: true, limit: 8 });
 
 /** Le worker joué dans le même processus : messages clonés dans les deux sens, une tâche plus tard. */

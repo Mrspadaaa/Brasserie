@@ -7,7 +7,7 @@
 import { catalogue as catalogueDuMoteur, courant, local, hopRef, type CatalogueHop, type HopRef } from './data';
 import { Lru, borneHoublons } from './lru';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
-import { REFERENCE, describeFamilies, familyWords } from './hops';
+import { REFERENCE, describeFamilies, familyWords, marquee } from './hops';
 import { MOMENTS, ibuPerGram, type MomentId, type Recipe } from './recipe';
 import { hopRole, roleFromAlpha, type HopRoleValue } from './roles';
 import type { StyleScale } from './style/scale';
@@ -49,7 +49,7 @@ export const RANKING = [
   'Trois jeux de poids (groupes amertume · huile · arôme, fixés sur la moitié d’apprentissage des substituts Beer Maverick, jugés sur l’autre). Moment d’amertume (premier moût, 60′, 30′, 15′) : 0,7 · 0,2 · 0,1. Arôme chaud (10′ et après, whirlpool) : 0,3 · 0,2 · 0,5, mots 0,75 de l’arôme hors radar. À froid (dry hop) : 0,2 · 0,3 · 0,5, mots 0,75. À l’intérieur d’un groupe, les poids sont fixés à la main selon le moment (cohumulone, humulène et caryophyllène comptent à l’amertume ; linalol, huile totale et mots pèsent plus à froid). Le radar compte pour 0,1 de l’arôme, aux moments d’arôme seulement.',
   'Contexte amertume, en brasseur : l’arôme de l’original part à l’ébullition, l’arôme ne compte que par la part étrangère du remplaçant (1 − part de son vecteur sur des familles que l’original ne cite pas) ; un α plus haut vaut 1 (moins de matière pour le même IBU) ; amérisant et double tiennent le même rôle ; ni les mots ni le radar n’y comptent.',
   'Composantes affichées : un score par groupe (amertume, huile, arôme), moyenne pondérée des variables connues du groupe ; « inconnue » seulement quand aucune variable du groupe n’est connue des deux houblons. Couverture : bonne (arôme et au moins deux variables d’huile), partielle (moins de deux variables d’huile), faible (ni familles ni mots) ; un score faible n’est jamais présenté comme une ressemblance d’arôme.',
-  'Classement lexicographique : 1) avec un style, conflit derrière (le remplaçant cite une famille indésirable du style que l’original ne cite pas) ; 2) couverture faible derrière ; 3) à un moment d’amertume, produit d’arôme ou houblon aromatique derrière (règle suivante) ; 4) si « en stock d’abord » : palier du score (très proche ≥ 80, proche ≥ 65, partiel ≥ 50, éloigné), puis en stock suffisant, en stock insuffisant, à acheter (épuisé compris) : le stock ne passe jamais devant un palier meilleur ; 5) score décroissant (entier) ; 6) nom. Égalité de toutes les clés : même rang.',
+  'Classement lexicographique : 1) avec un style, conflit derrière (le remplaçant marque une famille indésirable du style que l’original ne cite pas : la moitié au moins de ses fiches la citent, D90) ; 2) couverture faible derrière ; 3) à un moment d’amertume, produit d’arôme ou houblon aromatique derrière (règle suivante) ; 4) si « en stock d’abord » : palier du score (très proche ≥ 80, proche ≥ 65, partiel ≥ 50, éloigné), puis en stock suffisant, en stock insuffisant, à acheter (épuisé compris) : le stock ne passe jamais devant un palier meilleur ; 5) score décroissant (entier) ; 6) nom. Égalité de toutes les clés : même rang.',
   'Amertume en brasseur (premier moût, 60′, 30′, 15′) : un brasseur n’amérise pas avec un produit d’arôme ni avec un houblon aromatique (usage et coût). Les produits cryo, lupuline ou poudre (lus dans le nom, les alias ou la forme de la fiche ou de l’article du stock) et les houblons de rôle aromatique (rôle du moteur : fournisseur, sinon règle rôle-α v1) passent après les amérisants et doubles usages, même à score égal ou supérieur ; raison écrite « produit d’arôme, cher pour amériser » ou « houblon aromatique, cher pour amériser ». Ne s’applique pas si l’original est lui-même aromatique ou un produit d’arôme (choix délibéré du brasseur). Le score ne change pas : seul l’ordre change.',
   'Dose : même IBU au même moment (BrewingMath.hopIbu, linéaire en α) : g du remplaçant = IBU de l’original ÷ IBU par gramme du remplaçant ; plage par l’α du remplaçant (lot, sinon plage variétale). À froid, ou sans IBU au moment choisi : à masse égale.',
   'Gains et pertes : familles dont le niveau de fiche (0 non décrit, 1 cité, 2 marqué) monte ou descend. C’est une citation dans les fiches, pas une intensité dans la bière.',
@@ -90,6 +90,8 @@ interface MotsPoids { w: Map<string, number>; n2: number }
 interface Features {
   key: string; ref: HopRef;
   levels: Record<FamilyId, Level>;
+  /** D90 (g2c) : familles marquées (citées par la moitié au moins des fiches) : seules elles font un conflit de style. */
+  marquees: Record<FamilyId, boolean>;
   /** Vecteur d'arôme (niveau / 2 × N/M) ; null si aucune famille citée. */
   aroma: Record<FamilyId, number> | null;
   /** Plages des variables de composition, indexées par variable (V_ALPHA, V_BETA, V_COHU, V_HUILE, V_MYR… V_LIN) ; null : inconnue. */
@@ -147,9 +149,10 @@ function features(key: string): Features {
   if (!ref) throw Error(`Houblon inconnu : ${key}`);
   const c = ref.catalogue, desc = describeFamilies(ref.varietyId);
   // Une passe sur les familles (mêmes valeurs que les Object.fromEntries d'avant ; ordre des clés : FAMILIES).
-  const levels = {} as Record<FamilyId, Level>, levelsV: Level[] = [];
+  const levels = {} as Record<FamilyId, Level>, levelsV: Level[] = [], marquees = {} as Record<FamilyId, boolean>;
   let cited = false, marked = false;
   for (const f of FAMILIES) {
+    marquees[f] = marquee(ref.varietyId, f);
     const l: Level = desc[f].level === 'marqué' ? 2 : desc[f].level === 'cité' ? 1 : 0;
     levels[f] = l; levelsV.push(l);
     if (l > 0) cited = true;
@@ -162,7 +165,7 @@ function features(key: string): Features {
   }
   const pl = plagesDe(c), mots = motsDuCatalogue().get(ref.varietyId) ?? null;
   const out: Features = {
-    key, ref, levels, aroma, pl,
+    key, ref, levels, marquees, aroma, pl,
     role: pl[V_ALPHA] ? roleFromAlpha(mid(pl[V_ALPHA]), marked) : null,
     mots: mots && mots.w.size ? mots : null,
     radar: c.bm?.arome && c.bm.arome.some((x) => x > 0) ? c.bm.arome : null,
@@ -392,7 +395,7 @@ export function substitutes(key: string, options: SubstitutionOptions = {}): Sub
   const exclue = demotionExclue(orig.ref, context);
   const W = FAMILIES.map((f) => (style?.documented && style.families[f].status === 'attendue' ? 2 : 1));
   const sg = sigmas(), s = new Float64Array(NV);
-  // Familles indésirables au style que l'original ne cite pas : un conflit si le candidat en cite une (ordre de FAMILIES).
+  // Familles indésirables au style que l'original ne cite pas : un conflit si le candidat en marque une (D90 ; ordre de FAMILIES).
   const indesirables = style ? FAMILIES.filter((f) => style.families[f].status === 'indésirable' && orig.levels[f] === 0) : [];
   for (const k of pool) {
     if (k === key) continue;
@@ -407,7 +410,8 @@ export function substitutes(key: string, options: SubstitutionOptions = {}): Sub
     const etat = !st ? 'à acheter' : libre! > 0 ? 'en stock' : 'épuisé';
     const dose = etat === 'en stock' ? doseOf(orig.ref, sub.ref, moment, grams, recipe) : null;
     const stock: Substitute['stock'] = { etat, libre, suffisant: etat === 'en stock' ? libre! >= dose!.grams : null };
-    const conflitsStyle = indesirables.length ? indesirables.filter((f) => sub.levels[f] > 0) : indesirables;
+    // D90 (g2c) : un conflit de style seulement si la famille indésirable est marquée chez le candidat (plus pour une fiche isolée).
+    const conflitsStyle = indesirables.length ? indesirables.filter((f) => sub.marquees[f]) : indesirables;
     const amertumeDeconseillee = exclue ? null : sub.demotion !== undefined ? sub.demotion : (sub.demotion = demotionDe(sub.ref));
     const palier = palierOf(score);
     const c0 = conflitsStyle.length ? 1 : 0, c1 = fiabilite === 'faible' ? 1 : 0, c2 = amertumeDeconseillee ? 1 : 0;

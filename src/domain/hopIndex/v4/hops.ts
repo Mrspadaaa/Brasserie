@@ -144,6 +144,16 @@ function decrireFamilles(varietyId: string): Record<FamilyId, FamilyDescription>
   return out;
 }
 
+/** D90 (g2c, 26.10) : une famille est « marquée » pour un houblon quand la moitié au moins de ses fiches la citent : la règle des gros points de
+ * la fiche (« cité par ses fiches, gros : la moitié au moins »). C'est la seule citation qui EXCLUT : une famille indésirable du style ou une famille
+ * « moins » de la visée n'écarte plus un houblon pour une fiche isolée (Nelson Sauvin : « végétal vert » dans 1 fiche sur 9). Sans fiche (aucune ne la
+ * cite, ou houblon sans fiche lue), jamais marquée : la même issue qu'avant, où une famille non citée n'excluait pas. Ce n'est pas le niveau
+ * `marqué` de describeFamilies (deux fiches, ou premier descripteur), plus large : D90 écrit « la moitié au moins ». */
+export function marquee(varietyId: string, f: FamilyId): boolean {
+  const d = describeFamilies(varietyId)[f];
+  return d.sources > 0 && 2 * d.sources >= d.of;
+}
+
 /** Les mots des fiches qui font chaque famille (#140, 19.10 : « sa fiche est plus fourni avec les
  * labels »). Chaque description est coupée comme firstItem (après « : », aux virgules, points-virgules
  * et « and ») ; chaque mot est rattaché par hopDescriptorEvidence, la règle des niveaux. Beer Maverick :
@@ -227,7 +237,8 @@ export function styleFit(keys: string[], scale: StyleScale): StyleFit[] {
     const h = hopRef(key)!;
     const cit = citations(h.varietyId);
     const documented = FAMILIES.some((f) => cit[f].status !== 'sans descripteur');
-    const conflicts = scale.documented ? FAMILIES.filter((f) => scale.families[f].status === 'indésirable' && cit[f].status === 'cité').map((f) => `${f} exclu par le style, cité dans la fiche`) : [];
+    // D90 (g2c) : « hors style » seulement pour une famille indésirable MARQUÉE (la moitié au moins des fiches), plus pour une fiche isolée.
+    const conflicts = scale.documented ? FAMILIES.filter((f) => scale.families[f].status === 'indésirable' && marquee(h.varietyId, f)).map((f) => `${f} exclu par le style, cité dans la fiche`) : [];
     const supports = scale.documented ? scale.order.filter((f) => scale.families[f].status === 'attendue' && cit[f].status === 'cité') : [];
     const usage = suggested.has(h.varietyId);
     const fit: FitClass = conflicts.length ? 'hors style' : usage ? 'usage attesté' : !documented ? 'non documenté' : supports.length ? 'cohérent' : 'peu documenté';

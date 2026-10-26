@@ -170,9 +170,15 @@
     "selecteur_choisie": "[aria-label=\"Ajouter Aurum à la comparaison\"]",
     "geste": "toucher",
     "attendu": [
-     "Comparer (3)"
+     "Comparer (4)"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Comparer (3)"
+     ]
+    },
+    "note": "D90, g2c, 26.10 : une famille « moins » n’exclut plus un houblon pour une fiche isolée (Target, Cascade, Citra cryo n’ont plus de conflit sur la stout) ; dessin identique : la page s'ouvre avec trois voies cochées au lieu de deux (Target, sans conflit, l'est maintenant), donc « + » sur Aurum donne « Comparer (4) » ; même ✓ sur Aurum, même barre. (capture après regardée : work/missions/2026-10-25-integration-houblons/voies/g2c-exclusion-style/captures/etat-sugg-plus-construite.png ; l’avant est la même page sur HEAD (ETATS OK 138/138).)"
    }
   },
   {
@@ -358,10 +364,21 @@
      "Dry hop",
      "actif",
      "Motueka",
-     "20 g",
-     "creep"
+     "Target",
+     "creep",
+     "5 g"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Dry hop",
+      "actif",
+      "Motueka",
+      "20 g",
+      "creep"
+     ]
+    },
+    "note": "D90, g2c, 26.10 : une famille « moins » n’exclut plus un houblon pour une fiche isolée (Target, Cascade, Citra cryo n’ont plus de conflit sur la stout) ; dessin identique : la section « Dry hop · actif · estimé » s'ouvre sur Target 5 g (sans conflit, devant Motueka 20 g) ; mêmes pastilles de biotransformation et « creep », même barre. (capture après regardée : work/missions/2026-10-25-integration-houblons/voies/g2c-exclusion-style/captures/etat-sugg-dry-hop-construite.png ; l’avant est la même page sur HEAD (ETATS OK 138/138).)"
    }
   },
   {

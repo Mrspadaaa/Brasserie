@@ -25,7 +25,10 @@ const ATTENDU = {
   // la formule d'e2 lit les mots des fiches (substitution.ts:127), donc les fiches ajoutées changent ses rangs. À recalculer si substitution.ts bouge.
   // e2, 26.10 (après d4) : 4db3b8f4… → ea61f2e1… : les poids de groupe sont réappris sur les données d4 (substitution.ts, WEIGHTS_MOMENT :
   // amertume 0,7 · 0,2 · 0,1 ; chaud 0,3 · 0,2 · 0,5 ; froid 0,2 · 0,3 · 0,5). Calculée avec voies/d4-descripteurs/empreintes.ts.
-  substituts: 'ea61f2e194f7121c5b87f27f47d383160eeebd3d34d8d4c7c5812b4594762e1e',
+  // D90, g2c (26.10) : ea61f2e1… → 3a8bf578… Seule la phrase de la règle de classement change (« le remplaçant marque une famille indésirable… la moitié au moins
+  // de ses fiches la citent », substitution.ts, RANKING) : sans le champ `regle`, l'empreinte reste 97779b94… avant et après (même scores, mêmes rangs, mêmes doses).
+  // Aucun style n'est donné ici : le conflit de style, seul changé par D90, n'entre pas dans ces 12 classements ; il est testé dans exclusionStyle.test.ts.
+  substituts: '3a8bf5785469fdfd8bab2106f6c90395643ed89413e611838648f73f3b980d39',
 };
 // Les auteurs que d4 ajoute (prototypes/houblons-v4/scripts/build-data.mjs, SOURCES_MOTS et l'agrégat communautaire).
 const AUTEURS_D4 = ['BarthHaas', 'Charles Faram', 'Crosby Hops', 'Hop Products Australia', 'John I. Haas', 'NZ Hops', 'Freestyle Hops', 'British Hop Association', 'BSG', 'Yakima Valley Hops', 'USA Hops', 'HopDatabase / hops-json'];

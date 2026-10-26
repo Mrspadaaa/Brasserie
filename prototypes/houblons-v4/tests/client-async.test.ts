@@ -22,7 +22,10 @@ const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recett
 // les niveaux de famille que lisent ces deux calculs ; ils n'importent pas substitution.ts).
 // remplacants 6561a4d6240b → 32e2ef725fec (t1, D160, 26.10) : seuls les champs « autres » changent, par la traduction des
 // descripteurs des nouvelles sources ; aucun score ni rang (voies/t1-traduction/RESULTAT.md).
-const EMPREINTES = { substitutes: 'cac6de6d0c72', suggerer: '166a7dbd9516', proposer: '3584e2c7dabd', remplacants: '32e2ef725fec' };
+// proposer 3584e2c7dabd → 31d7feb6324c (g2c, D90, 26.10) : une famille « moins » n'exclut plus un houblon que si la moitié au moins de ses fiches la citent ;
+// Citra cryo (résineux : 1 fiche sur 7) n'est plus en conflit sur la stout, et « Remplacer Nugget par Citra cryo » (24 g) prend la place de « Retirer Nugget » (voies/g2c-exclusion-style).
+// Les trois autres empreintes ne bougent pas (stout 16D : aucune famille indésirable ; substitutes sans conflit de style).
+const EMPREINTES = { substitutes: 'cac6de6d0c72', suggerer: '166a7dbd9516', proposer: '31d7feb6324c', remplacants: '32e2ef725fec' };
 const forme = {
   substitutes: (sr: ReturnType<typeof CALCULS.substitutes>) => empreinte(sr.remplacants.map((r) => [r.key, r.rank, r.score, r.dose, r.stock, r.raison, r.amertumeDeconseillee])),
   suggerer: (c: ReturnType<typeof CALCULS.suggerer>) => empreinte(c.map((x) => [x.cle, x.visee, x.besoin])),

@@ -283,9 +283,15 @@
     "selecteur_choisie": "[aria-label=\"Ajouter Aurum à la comparaison\"]",
     "geste": "toucher",
     "attendu": [
-     "Comparer (3)"
+     "Comparer (4)"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Comparer (3)"
+     ]
+    },
+    "note": "D90, g2c, 26.10 : une famille « moins » n’exclut plus un houblon pour une fiche isolée (Target, Cascade, Citra cryo n’ont plus de conflit sur la stout) ; dessin identique : même geste que etat-sugg-plus (« + » sur Aurum) ; trois voies cochées d'avance, donc « Comparer (4) ». (capture après regardée : work/missions/2026-10-25-integration-houblons/voies/g2c-exclusion-style/captures/etat-acquis-plus-comparer-construite.png ; l’avant est la même page sur HEAD (ETATS OK 138/138).)"
    }
   },
   {
