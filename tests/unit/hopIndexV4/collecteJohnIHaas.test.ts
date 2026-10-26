@@ -72,6 +72,12 @@ describe('collecte John I. Haas — pages', () => {
     expect(a.listes.substituts).toEqual([{ nom: 'Autre™', aromes: 'Citrus, floral' }]);
     expect(a.listes.usage).toEqual(['Dual Purpose']);
   });
+  it('fiche HopFrance : unité nue après le libellé (« TOTAL OILS ml/100g », « FARNESENE mg/100g »), voie c3g', () => {
+    const a = analyserPdfTexte('ALPHA ACIDS (%) 5,5 - 7,5\nTOTAL OILS ml/100g 1,2 - 1,6\nFARNESENE mg/100g 2 - 4\nLINALOOL mg/100g 10 - 16');
+    expect(a.champs.huile_totale ?? a.champs.huileTotale).toMatchObject({ min: 1.2, max: 1.6, unite: 'mL/100 g' });
+    expect(a.champs.farnesene).toMatchObject({ min: 2, max: 4, unite: 'mg/100 g' });
+    expect(a.champs.linalol).toMatchObject({ min: 10, max: 16, unite: 'mg/100 g' });
+  });
   it('page d’atterrissage : seulement une vraie liste de styles', () => {
     expect(stylesDepuisAtterrissage('RECOMMENDED STYLES Wheat Ale, Golden Ale, India Pale Ale (IPA) Hear the latest HopCast')).toEqual(['Wheat Ale', 'Golden Ale', 'India Pale Ale (IPA)']);
     expect(stylesDepuisAtterrissage('Recommended styles As a dual-purpose hop, it works in all beer styles. Hear the latest')).toEqual([]);

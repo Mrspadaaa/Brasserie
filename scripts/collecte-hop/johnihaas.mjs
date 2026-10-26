@@ -21,11 +21,11 @@ const txt = e => nettoyer(e?.textContent ?? '');
 
 // ───────────────────────── PDF ─────────────────────────
 
-const NOMS = '(?:humul[eè]ne\\s*/\\s*caryophyll[eè]ne|alpha[- ]?acids?|alpha|beta[- ]?acids?|beta|cohum(?:ulone)?|hsi|colupulone|total oil|myrcene|humul[eè]ne|caryophyll[eè]ne|farn[eé]s[eè]ne|farnesen|linalool|geraniol|selinene|(?:beta-|β-)?pinene|citronellol|nerol|total polyphenols|polyphenols|xanthohumol|monoterp[eè]nes?|sesquiterp[eè]nes?|(?:humul[eè]ne|humulene)\\s*/\\s*caryophyll[eè]ne)';
+const NOMS = '(?:humul[eè]ne\\s*/\\s*caryophyll[eè]ne|alpha[- ]?acids?|alpha|beta[- ]?acids?|beta|cohum(?:ulone)?|hsi|colupulone|total oils?|myrcene|humul[eè]ne|caryophyll[eè]ne|farn[eé]s[eè]ne|farnesen|linalool|geraniol|selinene|(?:beta-|β-)?pinene|citronellol|nerol|total polyphenols|polyphenols|xanthohumol|monoterp[eè]nes?|sesquiterp[eè]nes?|(?:humul[eè]ne|humulene)\\s*/\\s*caryophyll[eè]ne)';
 const NB = '\\d+(?:[.,]\\d+)?';
 const VAL = `(?:(?:≤|<|up to|max\\.?)\\s*)?${NB}(?:\\s*(?:-|–|to)\\s*${NB})?`;
 const UNITE = '(?:\\s*(?:%|ml\\s*/\\s*100\\s?g|µg/kg|mg/kg))?';
-const LIGNE = new RegExp(`\\b(${NOMS}(?:\\s*\\([^)]*\\))?\\*?)\\s*[:=]?\\s*(${VAL})(${UNITE})`, 'gi');
+const LIGNE = new RegExp(`\\b(${NOMS}(?:\\s*\\([^)]*\\))?(?:\\s+(?:ml|mg)\\s*/\\s*100\\s?g)?\\*?)\\s*[:=]?\\s*(${VAL})(${UNITE})`, 'gi');
 const SEUL = new RegExp(`^(${NOMS}(?:\\s*\\([^)]*\\))?\\*?)$`, 'i');
 const JETON = new RegExp(`(?:(?:≤|<|up to)\\s*)?${NB}(?:\\s*[-–]\\s*${NB})?`, 'gi');
 

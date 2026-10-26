@@ -24,6 +24,11 @@ describe('lecteur Indie Hops', () => {
     expect(v.champs.huileTotale).toMatchObject({ min: 40, operateur: '>' });
     expect(v.champs.huileTotale.baseImplicite).toBeUndefined();
   });
+  it('lit « mls/100grams », « ml/100gr » et « 8.% » (voie c3g)', () => {
+    const v = lireVarieteIndie(page(['Alpha Acid', '5 – 6.5%', 'Total Oil', '1.1 – 1.6mls/100grams', 'Caryophyllene', '4 – 8.%', 'Humulene', '1.8-2.2 ml/100gr']))!;
+    expect(v.champs.huileTotale).toMatchObject({ min: 1.1, max: 1.6, unite: 'mL/100 g' });
+    expect(v.champs.caryophyllene).toMatchObject({ min: 4, max: 8, unite: '%' });
+  });
   it('une page sans Chemistry rend null', () => {
     expect(lireVarieteIndie('<html><body><div>Accueil</div></body></html>')).toBeNull();
   });

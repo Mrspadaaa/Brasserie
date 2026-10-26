@@ -47,6 +47,46 @@
           "unite": "mL/100 g",
           "base": null,
           "baseImplicite": "mL/100 g"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "31.3 % - 45.4 %",
+          "valeur": null,
+          "min": 31.3,
+          "max": 45.4,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "27.3 % - 29.43 %",
+          "valeur": null,
+          "min": 27.3,
+          "max": 29.43,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "14.6 % - 21.9 %",
+          "valeur": null,
+          "min": 14.6,
+          "max": 21.9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "4.3 % - 6.6 %",
+          "valeur": null,
+          "min": 4.3,
+          "max": 6.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
         }
       },
       "listes": {
@@ -189,6 +229,17 @@
           "base": null,
           "baseImplicite": "% (poids)"
         },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "up to 1.9 ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 1.9,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
+        },
         "myrcene": {
           "champ": "Myrcene",
           "brut": "16.7-70%",
@@ -197,6 +248,50 @@
           "max": 70,
           "unite": "%",
           "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "up to 8.3%",
+          "valeur": null,
+          "min": null,
+          "max": 8.3,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "up to 6.8%",
+          "valeur": null,
+          "min": null,
+          "max": 6.8,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "up to 1%",
+          "valeur": null,
+          "min": null,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "up to 0.4%",
+          "valeur": null,
+          "min": null,
+          "max": 0.4,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
           "baseImplicite": "% de l'huile"
         }
       },
@@ -1628,6 +1723,28 @@
           "base": null,
           "baseImplicite": "% de l'huile"
         },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Up to 6.6%",
+          "valeur": null,
+          "min": null,
+          "max": 6.6,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 1.1%",
+          "valeur": null,
+          "min": null,
+          "max": 1.1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
         "geraniol": {
           "champ": "Geraniol",
           "brut": "0.3-1.5%",
@@ -1832,6 +1949,17 @@
           "max": 11,
           "unite": "%",
           "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 6.2%",
+          "valeur": null,
+          "min": null,
+          "max": 6.2,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
           "baseImplicite": "% de l'huile"
         },
         "linalol": {
@@ -2121,6 +2249,17 @@
           "base": null,
           "baseImplicite": "% (poids)"
         },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "Up to 2.8 ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 2.8,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
+        },
         "myrcene": {
           "champ": "Myrcene",
           "brut": "29-66%",
@@ -2149,6 +2288,17 @@
           "max": 9,
           "unite": "%",
           "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 0.6%",
+          "valeur": null,
+          "min": null,
+          "max": 0.6,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
           "baseImplicite": "% de l'huile"
         },
         "linalol": {
@@ -2321,6 +2471,17 @@
           "base": null,
           "baseImplicite": "% (poids)"
         },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "Up to 4.5 ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 4.5,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
+        },
         "humulene": {
           "champ": "Humulene",
           "brut": "8.3-30.6%",
@@ -2349,6 +2510,17 @@
           "max": 15.1,
           "unite": "%",
           "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 5.2%",
+          "valeur": null,
+          "min": null,
+          "max": 5.2,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
           "baseImplicite": "% de l'huile"
         },
         "geraniol": {
@@ -2626,6 +2798,17 @@
           "base": null,
           "baseImplicite": "% (poids)"
         },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "Up to 3.3 ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 3.3,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
+        },
         "myrcene": {
           "champ": "Myrcene",
           "brut": "38-51%",
@@ -2634,6 +2817,28 @@
           "max": 51,
           "unite": "%",
           "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Up to 0.2%",
+          "valeur": null,
+          "min": null,
+          "max": 0.2,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "Up to 0.2%",
+          "valeur": null,
+          "min": null,
+          "max": 0.2,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
           "baseImplicite": "% de l'huile"
         },
         "humulene": {
@@ -2871,6 +3076,28 @@
           "max": 55,
           "unite": "%",
           "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 1%",
+          "valeur": null,
+          "min": null,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Up to 1%",
+          "valeur": null,
+          "min": null,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
           "baseImplicite": "% de l'huile"
         },
         "geraniol": {
@@ -3158,6 +3385,61 @@
           "unite": "mL/100 g",
           "base": null,
           "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Up to 33.7%",
+          "valeur": null,
+          "min": null,
+          "max": 33.7,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Up to 8.7%",
+          "valeur": null,
+          "min": null,
+          "max": 8.7,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 13.2%",
+          "valeur": null,
+          "min": null,
+          "max": 13.2,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Up to 0.2%",
+          "valeur": null,
+          "min": null,
+          "max": 0.2,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Up to 31.6%",
+          "valeur": null,
+          "min": null,
+          "max": 31.6,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
         }
       },
       "listes": {
@@ -3316,6 +3598,17 @@
           "base": null,
           "baseImplicite": "% (poids)"
         },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "Up to 1.3-2.2 ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 1.3,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
+        },
         "humulene": {
           "champ": "Humulene",
           "brut": "7-21.6%",
@@ -3344,6 +3637,17 @@
           "max": 10,
           "unite": "%",
           "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "Up to 0.7%",
+          "valeur": null,
+          "min": null,
+          "max": 0.7,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
           "baseImplicite": "% de l'huile"
         },
         "linalol": {
@@ -3637,6 +3941,16 @@
           "base": null,
           "baseImplicite": "mL/100 g"
         },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.93%",
+          "valeur": 0.93,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
         "myrcene": {
           "champ": "Myrcene",
           "brut": "54%",
@@ -3655,6 +3969,17 @@
           "max": null,
           "unite": "%",
           "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "Less than 0.25%",
+          "valeur": null,
+          "min": null,
+          "max": 0.25,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
           "baseImplicite": "% de l'huile"
         }
       },
@@ -5905,6 +6230,61 @@
           "unite": "mL/100 g",
           "base": null,
           "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Up to 67.5%",
+          "valeur": null,
+          "min": null,
+          "max": 67.5,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Up to 0.5%",
+          "valeur": null,
+          "min": null,
+          "max": 0.5,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Up to 0.6%",
+          "valeur": null,
+          "min": null,
+          "max": 0.6,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "geraniol": {
+          "champ": "Gernaniol",
+          "brut": "Up to 0.1%",
+          "valeur": null,
+          "min": null,
+          "max": 0.1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Up to 0.6%%",
+          "valeur": null,
+          "min": null,
+          "max": 0.6,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
         }
       },
       "listes": {
@@ -5952,6 +6332,72 @@
           "unite": "%",
           "base": null,
           "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "Up to 1.5 ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Up to 22.7%",
+          "valeur": null,
+          "min": null,
+          "max": 22.7,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Up to 50.1%",
+          "valeur": null,
+          "min": null,
+          "max": 50.1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Up to 6.1%",
+          "valeur": null,
+          "min": null,
+          "max": 6.1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 3.1%",
+          "valeur": null,
+          "min": null,
+          "max": 3.1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Up to 0.7%",
+          "valeur": null,
+          "min": null,
+          "max": 0.7,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
         }
       },
       "listes": {
@@ -6012,6 +6458,61 @@
           "unite": "mL/100 g",
           "base": null,
           "baseImplicite": "mL/100 g"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Up to 33.7%",
+          "valeur": null,
+          "min": null,
+          "max": 33.7,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Up to 42%",
+          "valeur": null,
+          "min": null,
+          "max": 42,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Up to 9.3%",
+          "valeur": null,
+          "min": null,
+          "max": 9.3,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 0.1%",
+          "valeur": null,
+          "min": null,
+          "max": 0.1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Up to 1%",
+          "valeur": null,
+          "min": null,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
         }
       },
       "listes": {
@@ -6075,6 +6576,61 @@
           "unite": "mL/100 g",
           "base": null,
           "baseImplicite": "mL/100 g"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Up to 12%",
+          "valeur": null,
+          "min": null,
+          "max": 12,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Up to 62%",
+          "valeur": null,
+          "min": null,
+          "max": 62,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Up to 4.1%",
+          "valeur": null,
+          "min": null,
+          "max": 4.1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 6.9%",
+          "valeur": null,
+          "min": null,
+          "max": 6.9,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Up to 1.2%",
+          "valeur": null,
+          "min": null,
+          "max": 1.2,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
         }
       },
       "listes": {
@@ -7157,6 +7713,72 @@
           "unite": "%",
           "base": null,
           "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "Up to 3.5 ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 3.5,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "Up to 1.2%",
+          "valeur": null,
+          "min": null,
+          "max": 1.2,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Up to 47%",
+          "valeur": null,
+          "min": null,
+          "max": 47,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Up to 1.7%",
+          "valeur": null,
+          "min": null,
+          "max": 1.7,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 8.5%",
+          "valeur": null,
+          "min": null,
+          "max": 8.5,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Up to 0.3%",
+          "valeur": null,
+          "min": null,
+          "max": 0.3,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
         }
       },
       "listes": {
@@ -7564,6 +8186,28 @@
           "unite": "%",
           "base": null,
           "baseImplicite": "% de l'huile"
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "Up to 3%",
+          "valeur": null,
+          "min": null,
+          "max": 3,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Up to 1.2%",
+          "valeur": null,
+          "min": null,
+          "max": 1.2,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
         }
       },
       "listes": {
@@ -7939,6 +8583,49 @@
           "unite": "%",
           "base": null,
           "baseImplicite": "% de l'huile"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Up to 45.9%",
+          "valeur": null,
+          "min": null,
+          "max": 45.9,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Up to 7.6%",
+          "valeur": null,
+          "min": null,
+          "max": 7.6,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "Up to 0.2%",
+          "valeur": null,
+          "min": null,
+          "max": 0.2,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "thiols": {
+          "champ": "Thiols",
+          "brut": "Up to 2.3 µg/kg",
+          "valeur": null,
+          "min": null,
+          "max": 2.3,
+          "unite": "µg/kg",
+          "base": null,
+          "operateur": "<"
         }
       },
       "listes": {
@@ -7969,7 +8656,96 @@
       "publie": null,
       "page": "variete",
       "code": null,
-      "champs": {},
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "Up to 12.1%",
+          "valeur": null,
+          "min": null,
+          "max": 12.1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "Up to 9.7%",
+          "valeur": null,
+          "min": null,
+          "max": 9.7,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "Up to 2.8ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 2.8,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Up to 14.2%",
+          "valeur": null,
+          "min": null,
+          "max": 14.2,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Up to 33.6%",
+          "valeur": null,
+          "min": null,
+          "max": 33.6,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Up to 4.5%",
+          "valeur": null,
+          "min": null,
+          "max": 4.5,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 1.5%",
+          "valeur": null,
+          "min": null,
+          "max": 1.5,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Up to 0.3%%",
+          "valeur": null,
+          "min": null,
+          "max": 0.3,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        }
+      },
       "listes": {
         "formats": [
           "T-90"
@@ -8572,6 +9348,17 @@
           "base": null,
           "baseImplicite": "% (poids)"
         },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "Up to 2 ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 2,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
+        },
         "humulene": {
           "champ": "Humulene",
           "brut": "18-13%",
@@ -8600,6 +9387,17 @@
           "max": 16,
           "unite": "%",
           "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 1%",
+          "valeur": null,
+          "min": null,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
           "baseImplicite": "% de l'huile"
         },
         "linalol": {
@@ -10143,6 +10941,61 @@
           "unite": "mL/100 g",
           "base": null,
           "baseImplicite": "mL/100 g"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Up to 34%",
+          "valeur": null,
+          "min": null,
+          "max": 34,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Up to 33%",
+          "valeur": null,
+          "min": null,
+          "max": 33,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Up to 14%",
+          "valeur": null,
+          "min": null,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 0.3%",
+          "valeur": null,
+          "min": null,
+          "max": 0.3,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "Up to 0.3%",
+          "valeur": null,
+          "min": null,
+          "max": 0.3,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
         }
       },
       "listes": {
@@ -10426,6 +11279,61 @@
           "unite": "mL/100 g",
           "base": null,
           "baseImplicite": "mL/100 g"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Up to 7.5%",
+          "valeur": null,
+          "min": null,
+          "max": 7.5,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Up to 10%",
+          "valeur": null,
+          "min": null,
+          "max": 10,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Up to 3.5%",
+          "valeur": null,
+          "min": null,
+          "max": 3.5,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 0.3%",
+          "valeur": null,
+          "min": null,
+          "max": 0.3,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Up to 0.3%",
+          "valeur": null,
+          "min": null,
+          "max": 0.3,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
         }
       },
       "listes": {
@@ -10902,6 +11810,72 @@
           "unite": "%",
           "base": null,
           "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "Up to 1.5 ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Up to 5.3",
+          "valeur": null,
+          "min": null,
+          "max": 5.3,
+          "unite": null,
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Up to 37%",
+          "valeur": null,
+          "min": null,
+          "max": 37,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Up to 2.1%",
+          "valeur": null,
+          "min": null,
+          "max": 2.1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 6.5%",
+          "valeur": null,
+          "min": null,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Up to 0.8%",
+          "valeur": null,
+          "min": null,
+          "max": 0.8,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
         }
       },
       "listes": {
@@ -11505,6 +12479,72 @@
           "unite": "%",
           "base": null,
           "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "Up to 0.6 ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 0.6,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Up to 5.3%",
+          "valeur": null,
+          "min": null,
+          "max": 5.3,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Up to 0.9%",
+          "valeur": null,
+          "min": null,
+          "max": 0.9,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Up to 1.7%",
+          "valeur": null,
+          "min": null,
+          "max": 1.7,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Up to 4%",
+          "valeur": null,
+          "min": null,
+          "max": 4,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Up to 0.8%",
+          "valeur": null,
+          "min": null,
+          "max": 0.8,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "% de l'huile"
         }
       },
       "listes": {
@@ -11548,6 +12588,17 @@
           "unite": "%",
           "base": null,
           "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "up to 2.0 ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 2,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
         },
         "myrcene": {
           "champ": "Myrcene",
@@ -11640,6 +12691,17 @@
           "unite": "%",
           "base": null,
           "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "up to 2.0 ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 2,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
         },
         "myrcene": {
           "champ": "Myrcene",
@@ -12452,6 +13514,17 @@
           "base": null,
           "baseImplicite": "% (poids)"
         },
+        "huileTotale": {
+          "champ": "Total Oils",
+          "brut": "Up to 2.9 ml/100g",
+          "valeur": null,
+          "min": null,
+          "max": 2.9,
+          "unite": "mL/100 g",
+          "base": null,
+          "operateur": "<",
+          "baseImplicite": "mL/100 g"
+        },
         "humulene": {
           "champ": "Humulene",
           "brut": "9.4-10.9%",
@@ -12480,6 +13553,17 @@
           "max": 10.7,
           "unite": "%",
           "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "Up to 0.1%",
+          "valeur": null,
+          "min": null,
+          "max": 0.1,
+          "unite": "%",
+          "base": null,
+          "operateur": "<",
           "baseImplicite": "% de l'huile"
         },
         "linalol": {
@@ -13347,12 +14431,13 @@
         "farnesene": {
           "champ": "Farnesene",
           "brut": "0%",
-          "valeur": 0,
+          "valeur": null,
           "min": null,
           "max": null,
           "unite": "%",
           "base": null,
-          "baseImplicite": "% de l'huile"
+          "baseImplicite": "% de l'huile",
+          "zeroPublie": true
         },
         "linalol": {
           "champ": "Linalool",

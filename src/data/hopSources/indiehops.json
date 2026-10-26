@@ -47,6 +47,16 @@
           "base": null,
           "baseImplicite": "% des α"
         },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.1 – 1.5 ml/100 gr",
+          "valeur": null,
+          "min": 1.1,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
         "myrcene": {
           "champ": "Myrcene",
           "brut": "25 – 30%",
@@ -559,6 +569,26 @@
       "publie": 2021,
       "page": "variete",
       "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4.0%-5.5%",
+          "valeur": null,
+          "min": 4,
+          "max": 5.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "7.0%-9.0%",
+          "valeur": null,
+          "min": 7,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
         "cohumulone": {
           "champ": "Cohumulone",
           "brut": "22.6%",
@@ -568,6 +598,16 @@
           "unite": "%",
           "base": null,
           "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.8-2.2 ml/100gr",
+          "valeur": null,
+          "min": 1.8,
+          "max": 2.2,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
         },
         "myrcene": {
           "champ": "Myrcene",
@@ -694,12 +734,13 @@
         "farnesene": {
           "champ": "Farnesene",
           "brut": "0%",
-          "valeur": 0,
+          "valeur": null,
           "min": null,
           "max": null,
           "unite": "%",
           "base": null,
-          "baseImplicite": "% de l'huile"
+          "baseImplicite": "% de l'huile",
+          "zeroPublie": true
         }
       },
       "listes": {}
@@ -743,6 +784,16 @@
           "base": null,
           "baseImplicite": "% des α"
         },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.1 – 1.6mls/100grams",
+          "valeur": null,
+          "min": 1.1,
+          "max": 1.6,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
         "myrcene": {
           "champ": "Myrcene",
           "brut": "40 – 64.4%",
@@ -765,11 +816,11 @@
         },
         "caryophyllene": {
           "champ": "Caryophyllene",
-          "brut": "",
+          "brut": "4 – 8.%",
           "valeur": null,
-          "min": null,
-          "max": null,
-          "unite": null,
+          "min": 4,
+          "max": 8,
+          "unite": "%",
           "base": null,
           "baseImplicite": "% de l'huile"
         },

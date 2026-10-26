@@ -326,6 +326,16 @@
      "base": "% des β",
      "baseLue": false
     },
+    "huile_totale": {
+     "nom": "TOTAL OILS ml/100g",
+     "brut": "1,2 - 1,6",
+     "valeur": null,
+     "min": 1.2,
+     "max": 1.6,
+     "unite": "mL/100 g",
+     "base": "mL/100 g",
+     "baseLue": true
+    },
     "myrcene": {
      "nom": "MYRCENE (%)",
      "brut": "38 - 41",
@@ -354,6 +364,26 @@
      "max": 2.7,
      "unite": null,
      "base": null
+    },
+    "farnesene": {
+     "nom": "FARNESENE mg/100g",
+     "brut": "2 - 4",
+     "valeur": null,
+     "min": 2,
+     "max": 4,
+     "unite": "mg/100 g",
+     "base": "mg/100 g",
+     "baseLue": true
+    },
+    "linalol": {
+     "nom": "LINALOOL mg/100g",
+     "brut": "10 - 16",
+     "valeur": null,
+     "min": 10,
+     "max": 16,
+     "unite": "mg/100 g",
+     "base": "mg/100 g",
+     "baseLue": true
     },
     "xanthohumol": {
      "nom": "XANTHOHUMOL (%)",
@@ -669,6 +699,16 @@
      "base": "% des β",
      "baseLue": false
     },
+    "huile_totale": {
+     "nom": "TOTAL OILS ml/100g",
+     "brut": "1,8 - 2,2",
+     "valeur": null,
+     "min": 1.8,
+     "max": 2.2,
+     "unite": "mL/100 g",
+     "base": "mL/100 g",
+     "baseLue": true
+    },
     "myrcene": {
      "nom": "MYRCENE (%)",
      "brut": "52 - 58",
@@ -697,6 +737,26 @@
      "max": 3.3,
      "unite": null,
      "base": null
+    },
+    "farnesene": {
+     "nom": "FARNESENE mg/100g",
+     "brut": "0 - 3",
+     "valeur": null,
+     "min": 0,
+     "max": 3,
+     "unite": "mg/100 g",
+     "base": "mg/100 g",
+     "baseLue": true
+    },
+    "linalol": {
+     "nom": "LINALOOL mg/100g",
+     "brut": "12 - 16",
+     "valeur": null,
+     "min": 12,
+     "max": 16,
+     "unite": "mg/100 g",
+     "base": "mg/100 g",
+     "baseLue": true
     },
     "xanthohumol": {
      "nom": "XANTHOHUMOL (%)",
@@ -2967,6 +3027,26 @@
      "base": "% des β",
      "baseLue": false
     },
+    "huile_totale": {
+     "nom": "TOTAL OILS ml/100g",
+     "brut": "1.85",
+     "valeur": 1.85,
+     "min": null,
+     "max": null,
+     "unite": "mL/100 g",
+     "base": "mL/100 g",
+     "baseLue": true
+    },
+    "farnesene": {
+     "nom": "FARNESENE mg/100g",
+     "brut": "1.17",
+     "valeur": 1.17,
+     "min": null,
+     "max": null,
+     "unite": "mg/100 g",
+     "base": "mg/100 g",
+     "baseLue": true
+    },
     "myrcene": {
      "nom": "MYRCENE (%)",
      "brut": "65.5",
@@ -3023,6 +3103,16 @@
      "unite": "%",
      "base": "% m/m",
      "baseLue": false
+    },
+    "linalol": {
+     "nom": "LINALOOL mg/100g",
+     "brut": "6",
+     "valeur": 6,
+     "min": null,
+     "max": null,
+     "unite": "mg/100 g",
+     "base": "mg/100 g",
+     "baseLue": true
     }
    },
    "listes": {
@@ -3388,6 +3478,16 @@
      "base": "% des β",
      "baseLue": false
     },
+    "huile_totale": {
+     "nom": "TOTAL OILS ml/100g",
+     "brut": "0.5-1",
+     "valeur": null,
+     "min": 0.5,
+     "max": 1,
+     "unite": "mL/100 g",
+     "base": "mL/100 g",
+     "baseLue": true
+    },
     "myrcene": {
      "nom": "MYRCENE (%)",
      "brut": "24-30",
@@ -3434,6 +3534,16 @@
      "max": 3.5,
      "unite": null,
      "base": null
+    },
+    "linalol": {
+     "nom": "LINALOOL ml/100g",
+     "brut": "5",
+     "valeur": 5,
+     "min": null,
+     "max": null,
+     "unite": "mL/100 g",
+     "base": "mL/100 g",
+     "baseLue": true
     }
    },
    "listes": {
@@ -5923,6 +6033,16 @@
      "base": "% des β",
      "baseLue": false
     },
+    "huile_totale": {
+     "nom": "TOTAL OILS ml/100g",
+     "brut": "0,8 - 1,5",
+     "valeur": null,
+     "min": 0.8,
+     "max": 1.5,
+     "unite": "mL/100 g",
+     "base": "mL/100 g",
+     "baseLue": true
+    },
     "myrcene": {
      "nom": "MYRCENE (%)",
      "brut": "50 - 65",
@@ -5951,6 +6071,26 @@
      "max": 3.15,
      "unite": null,
      "base": null
+    },
+    "farnesene": {
+     "nom": "FARNESENE mg/100g",
+     "brut": "27 - 34",
+     "valeur": null,
+     "min": 27,
+     "max": 34,
+     "unite": "mg/100 g",
+     "base": "mg/100 g",
+     "baseLue": true
+    },
+    "linalol": {
+     "nom": "LINALOOL mg/100g",
+     "brut": "4 - 7",
+     "valeur": null,
+     "min": 4,
+     "max": 7,
+     "unite": "mg/100 g",
+     "base": "mg/100 g",
+     "baseLue": true
     },
     "xanthohumol": {
      "nom": "XANTHOHUMOL (%)",
@@ -7901,6 +8041,16 @@
      "base": "% des β",
      "baseLue": false
     },
+    "huile_totale": {
+     "nom": "TOTAL OILS ml/100g",
+     "brut": "0,6 - 0,8",
+     "valeur": null,
+     "min": 0.6,
+     "max": 0.8,
+     "unite": "mL/100 g",
+     "base": "mL/100 g",
+     "baseLue": true
+    },
     "myrcene": {
      "nom": "MYRCENE (%)",
      "brut": "35 - 52",
@@ -7929,6 +8079,26 @@
      "max": null,
      "unite": null,
      "base": null
+    },
+    "farnesene": {
+     "nom": "FARNESENE mg/100g",
+     "brut": "1",
+     "valeur": 1,
+     "min": null,
+     "max": null,
+     "unite": "mg/100 g",
+     "base": "mg/100 g",
+     "baseLue": true
+    },
+    "linalol": {
+     "nom": "LINALOOL mg/100g",
+     "brut": "7",
+     "valeur": 7,
+     "min": null,
+     "max": null,
+     "unite": "mg/100 g",
+     "base": "mg/100 g",
+     "baseLue": true
     },
     "xanthohumol": {
      "nom": "XANTHOHUMOL (%)",
@@ -8827,6 +8997,16 @@
      "base": "% des β",
      "baseLue": false
     },
+    "huile_totale": {
+     "nom": "TOTAL OILS ml/100g",
+     "brut": "1,2 - 2",
+     "valeur": null,
+     "min": 1.2,
+     "max": 2,
+     "unite": "mL/100 g",
+     "base": "mL/100 g",
+     "baseLue": true
+    },
     "myrcene": {
      "nom": "MYRCENE (%)",
      "brut": "55 - 60",
@@ -8855,6 +9035,26 @@
      "max": 2.8,
      "unite": null,
      "base": null
+    },
+    "farnesene": {
+     "nom": "FARNESENE mg/100g",
+     "brut": "0 - 1",
+     "valeur": null,
+     "min": 0,
+     "max": 1,
+     "unite": "mg/100 g",
+     "base": "mg/100 g",
+     "baseLue": true
+    },
+    "linalol": {
+     "nom": "LINALOOL mg/100g",
+     "brut": "10 - 15",
+     "valeur": null,
+     "min": 10,
+     "max": 15,
+     "unite": "mg/100 g",
+     "base": "mg/100 g",
+     "baseLue": true
     },
     "xanthohumol": {
      "nom": "XANTHOHUMOL (%)",

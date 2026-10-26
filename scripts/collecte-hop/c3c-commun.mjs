@@ -87,11 +87,11 @@ async function lirePdfBinaire(url, hl) {
 }
 
 /** Texte d'un PDF (pdftotext du poste, déjà installé ; aucun paquet ajouté). Vide si le PDF est une image. */
-export function textePdf(octets, { disposition = true } = {}) {
+export function textePdf(octets, { disposition = true, brut = false } = {}) {
   const dossier = mkdtempSync(join(tmpdir(), 'c3c-pdf-'));
   try {
     const f = join(dossier, 'x.pdf'); writeFileSync(f, octets);
-    return execFileSync('pdftotext', ['-enc', 'UTF-8', ...(disposition ? ['-layout'] : []), f, '-'], { encoding: 'utf8', maxBuffer: 1 << 26 });
+    return execFileSync('pdftotext', ['-enc', 'UTF-8', ...(brut ? ['-raw'] : disposition ? ['-layout'] : []), f, '-'], { encoding: 'utf8', maxBuffer: 1 << 26 });
   } catch { return ''; } finally { rmSync(dossier, { recursive: true, force: true }); }
 }
 
@@ -144,7 +144,8 @@ export function lireValeur(brut, { base = null } = {}) {
   let m;
   if ((m = /^([>≥])\s*(\d+(?:[.,]\d+)?)/.exec(sans))) { sortie.min = num(m[2]); sortie.operateur = '>'; }
   else if ((m = /^([<≤]|&lt;)\s*(\d+(?:[.,]\d+)?)/.exec(sans))) { sortie.max = num(m[2]); sortie.operateur = '<'; }
-  else if ((m = /(\d+(?:[.,]\d+)?)\s*(?:-|to|à)\s*(\d+(?:[.,]\d+)?)/i.exec(sans))) { sortie.min = num(m[1]); sortie.max = num(m[2]); }
+  else if ((m = /^(?:up to|max\.?|less than)\s*(\d+(?:[.,]\d+)?)/i.exec(sans))) { sortie.max = num(m[1]); sortie.operateur = '<'; }   // « Up to 33.7% » (Crosby)
+  else if ((m = /(\d+(?:[.,]\d+)?)\s*%?\s*(?:-|to|à)\s*(\d+(?:[.,]\d+)?)/i.exec(sans))) { sortie.min = num(m[1]); sortie.max = num(m[2]); }   // le % du milieu : « 31.3 % - 45.4 % », « 3% to 5.5% »
   else if ((m = /(\d+(?:[.,]\d+)?)/.exec(sans))) sortie.valeur = num(m[1]);
   return sortie;
 }
@@ -163,11 +164,12 @@ export function cleChamp(libelle) {
   if (/caryophyl/.test(t)) return 'caryophyllene';
   if (/farnesene/.test(t)) return 'farnesene';
   if (/linalo/.test(t)) return 'linalol';
-  if (/geraniol/.test(t)) return 'geraniol';
+  if (/ger(?:n)?aniol/.test(t)) return 'geraniol';   // « Gernaniol » : faute de la page Crosby Hallertau Blanc, lue comme écrite
   if (/selinene/.test(t)) return 'selinene';
   if (/citronellol/.test(t)) return 'citronellol';
   if (/\bnerol\b/.test(t)) return 'nerol';
   if (/xanthohumol/.test(t)) return 'xanthohumol';
+  if (/^thiols?\b/.test(t)) return 'thiols';   // Crosby : « Thiols — Up to 2.3 µg/kg »
   if (/storage|hsi|conservation/.test(t)) return 'conservation';
   if (/yield/.test(t)) return 'rendement';
   if (/maturity/.test(t)) return 'maturite';
@@ -195,11 +197,11 @@ export function champ(libelle, brut, { contexte = null } = {}) {
   return { cle: k, valeur: { champ: libelle.trim(), ...v, ...(contexte ? { contexte } : {}) } };
 }
 
-const NOMBRE_OU_PLAGE = /^([<>≤≥]\s*)?\d+([.,]\d+)?(\s*[–—-]\s*\d+([.,]\d+)?)?\s*(%|m[lL]s?\s*\/\s*100\s*g|ml)?(\s*\([^)]*\))?(\s*of .*)?$/i;
+const NOMBRE_OU_PLAGE = /^(up to\s+|less than\s+|[<>≤≥]\s*)?\d+([.,]\d+)?\.?\s*%*(\s*[–—-]\s*\d+([.,]\d+)?\.?\s*%*)?\s*(m[lL]s?\s*\/\s*100\s*g(?:r|rams?|m)?|ml|[µu]g\/kg|mg\/kg)?(\s*\([^)]*\))?(\s*of .*)?$/i;   // « ml/100gr » (Indie Hops)
 export const ressembleValeur = s => NOMBRE_OU_PLAGE.test(decoder(s).trim()) || /^(unknown|n\/a|-|—)$/i.test(s.trim());
 
 /** Rassemble libellé/valeur dans une suite de lignes, pour les libellés connus. */
-export function champsDepuisLignes(l, { libelles = /^(alpha|beta|co-?humulone|colupulone|total oils?|oil|myrcene|humulene|caryophyl\w*|farnesene|linalool|geraniol|selinene|citronellol|nerol|storage|hsi)\b/i } = {}) {
+export function champsDepuisLignes(l, { libelles = /^(alpha|beta|co-?humulone|colupulone|total oils?|oil|myrcene|humulene|caryophyl\w*|farnesene|linalool|geraniol|gernaniol|(?:beta|b|β)-pinene|thiols?|selinene|citronellol|nerol|storage|hsi)\b/i } = {}) {
   const champs = {};
   for (let i = 0; i < l.length - 1; i++) {
     if (!libelles.test(l[i]) || l[i].length > 60) continue;
@@ -207,6 +209,7 @@ export function champsDepuisLignes(l, { libelles = /^(alpha|beta|co-?humulone|co
     if (!ressembleValeur(suivant) && !/^[A-Za-z ]+$/.test(suivant)) continue;
     if (/^[A-Za-z ]+$/.test(suivant) && !/^(very good|good|fair|poor|excellent|moderate|low|high|medium|unknown)$/i.test(suivant)) continue;
     const { cle: k, valeur } = champ(l[i], suivant);
+    if (valeur.valeur === 0) { valeur.valeur = null; valeur.zeroPublie = true; }   // « Myrcene 0 » : remplissage de page, l'inconnu n'est jamais 0
     if (!(k in champs)) champs[k] = valeur;
   }
   return champs;

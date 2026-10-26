@@ -29,6 +29,28 @@ describe('lecteur Crosby Hops', () => {
     expect(p.champs.farnesene).toMatchObject({ max: 1, operateur: '<', min: null });
     expect(p.champs.conservation).toMatchObject({ brut: 'Very Good', valeur: null });
   });
+  it('lit « Up to », « 31.3 % - 45.4 % », « Less than », « %% », « B-Pinene » et la faute « Gernaniol » (voie c3g)', () => {
+    const html = lignes('Exemplum', 'Brewing Values', 'Alpha Acids', '3.5 - 5.5%', 'Humulene', '31.3 % - 45.4 %', 'Myrcene', 'Up to 33.7%',
+      'Linalool', 'Up to 0.6%%', 'Gernaniol', 'Up to 0.1%', 'B-Pinene', '0.93%', 'Farnesene', 'Less than 0.25%', 'Sensory Analysis', 'Avis.');
+    const v = lireVarieteCrosby(html)!;
+    expect(v.champs.humulene).toMatchObject({ min: 31.3, max: 45.4 });
+    expect(v.champs.myrcene).toMatchObject({ max: 33.7, min: null, operateur: '<' });
+    expect(v.champs.linalol).toMatchObject({ max: 0.6 });
+    expect(v.champs.geraniol).toMatchObject({ max: 0.1 });
+    expect(v.champs.betaPinene).toMatchObject({ valeur: 0.93 });
+    expect(v.champs.farnesene).toMatchObject({ max: 0.25 });
+  });
+  it('lit les thiols en µg/kg (« Up to 2.3 µg/kg »), voie c3g', () => {
+    const v = lireVarieteCrosby(lignes('Exemplum', 'Brewing Values', 'Alpha Acids', '9-18%', 'Thiols', 'Up to 2.3 µg/kg', 'Sensory Analysis', 'Avis.'))!;
+    expect(v.champs.thiols).toMatchObject({ max: 2.3, min: null, unite: 'µg/kg' });
+  });
+  it('un « 0 » ou « NA - NA » de remplissage reste null, jamais 0 (voie c3g)', () => {
+    const html = lignes('Exemplum', 'Aroma Profile', 'Herbal', 'Alpha', '4 - 6 %', 'Cohumulone', 'NA - NA %', 'Myrcene', '0');
+    const p = lireProduitCrosby(html)!;
+    expect(p.champs.cohumulone?.valeur ?? null).toBeNull();
+    expect(p.champs.cohumulone?.min ?? null).toBeNull();
+    expect(p.champs.myrcene?.valeur ?? null).toBeNull();
+  });
   it('rend null pour une page sans données (« No information currently available »)', () => {
     expect(lireProduitCrosby(lignes('Cluster', 'No information currently available.'))).toBeNull();
     expect(lireVarieteCrosby(lignes('Autre', 'Rien ici'))).toBeNull();

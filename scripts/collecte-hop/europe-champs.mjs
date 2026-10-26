@@ -80,6 +80,9 @@ export function canoniser(nomChamp) {
     else if (/µ?u?g\/kg/i.test(dansLibelle)) { u = 'µg/kg'; b = 'µg/kg'; lue = true; }
     else if (/mg\/kg/i.test(dansLibelle)) { u = 'mg/kg'; b = 'mg/kg'; lue = true; }
     else if (/ml\/100/i.test(dansLibelle)) { u = 'mL/100 g'; b = 'mL/100 g'; lue = true; }
+    // Voie c3g : unité nue après le libellé, sans parenthèses (fiches HopFrance : « TOTAL OILS ml/100g », « FARNESENE mg/100g »).
+    else if (/\bmg\/100\s?g\b/i.test(n)) { u = 'mg/100 g'; b = 'mg/100 g'; lue = true; }
+    else if (/\bml\/100\s?g\b/i.test(n)) { u = 'mL/100 g'; b = 'mL/100 g'; lue = true; }
     return { cle, unite: u, base: b, baseLue: lue };
   }
   const libre = n.toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');

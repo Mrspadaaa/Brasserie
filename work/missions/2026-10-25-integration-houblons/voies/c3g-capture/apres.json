@@ -1,0 +1,2262 @@
+[
+  {
+    "id": "barthhaas",
+    "fiches": 97,
+    "auditees": 97,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 97,
+        "capture": 97,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 96,
+        "capture": 95,
+        "manques": 1
+      },
+      "cohumulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 97,
+        "capture": 97,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 95,
+        "capture": 95,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 88,
+        "capture": 88,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 84,
+        "capture": 84,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 79,
+        "capture": 78,
+        "manques": 1
+      },
+      "linalol": {
+        "publie": 76,
+        "capture": 76,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 60,
+        "capture": 59,
+        "manques": 1
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 28,
+        "capture": 28,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 22,
+        "capture": 22,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "brewersfriend",
+    "fiches": 1112,
+    "auditees": 1,
+    "horsCache": 1111,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "britishhops",
+    "fiches": 34,
+    "auditees": 34,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 34,
+        "capture": 34,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 34,
+        "capture": 34,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 34,
+        "capture": 34,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 34,
+        "capture": 34,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 34,
+        "capture": 34,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 33,
+        "capture": 33,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 20,
+        "capture": 20,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 3,
+        "capture": 3,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "bsg",
+    "fiches": 77,
+    "auditees": 77,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 2,
+        "capture": 2,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 75,
+      "beta": 70,
+      "cohumulone": 69,
+      "colupulone": 0,
+      "huile totale": 74,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "charlesfaram",
+    "fiches": 157,
+    "auditees": 157,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 157,
+        "capture": 157,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 157,
+        "capture": 156,
+        "manques": 1
+      },
+      "cohumulone": {
+        "publie": 157,
+        "capture": 157,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 157,
+        "capture": 156,
+        "manques": 1
+      },
+      "myrcène": {
+        "publie": 155,
+        "capture": 155,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 153,
+        "capture": 149,
+        "manques": 4
+      },
+      "caryophyllène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 134,
+        "capture": 134,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "crosbyhops",
+    "fiches": 139,
+    "auditees": 139,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 139,
+        "capture": 137,
+        "manques": 2
+      },
+      "beta": {
+        "publie": 139,
+        "capture": 139,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 80,
+        "capture": 77,
+        "manques": 3
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 138,
+        "capture": 138,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 121,
+        "capture": 121,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 114,
+        "capture": 114,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 47,
+        "capture": 47,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 110,
+        "capture": 110,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 38,
+        "capture": 38,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 15,
+        "capture": 15,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 72,
+      "farnésène": 1,
+      "linalol": 0,
+      "géraniol": 1,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "freestylehops",
+    "fiches": 19,
+    "auditees": 19,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 1,
+        "capture": 0,
+        "manques": 1
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "hopdatabase",
+    "fiches": 220,
+    "auditees": 0,
+    "horsCache": 220,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "hopsdirect",
+    "fiches": 49,
+    "auditees": 49,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 49,
+        "capture": 49,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "hopsjson",
+    "fiches": 119,
+    "auditees": 0,
+    "horsCache": 0,
+    "partagees": 119,
+    "parChamp": {
+      "alpha": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "hopslist",
+    "fiches": 268,
+    "auditees": 268,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 262,
+        "capture": 262,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 255,
+        "capture": 255,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 247,
+        "capture": 247,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 242,
+        "capture": 241,
+        "manques": 1
+      },
+      "myrcène": {
+        "publie": 229,
+        "capture": 229,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 228,
+        "capture": 226,
+        "manques": 2
+      },
+      "caryophyllène": {
+        "publie": 225,
+        "capture": 222,
+        "manques": 3
+      },
+      "farnésène": {
+        "publie": 201,
+        "capture": 200,
+        "manques": 1
+      },
+      "linalol": {
+        "publie": 3,
+        "capture": 3,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 2,
+        "capture": 1,
+        "manques": 1
+      },
+      "sélinène": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 4,
+        "capture": 3,
+        "manques": 1
+      },
+      "polyphénols": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 1,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 177
+    }
+  },
+  {
+    "id": "hopsteiner",
+    "fiches": 102,
+    "auditees": 102,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 102,
+        "capture": 102,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 101,
+        "capture": 101,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 102,
+        "capture": 102,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 102,
+        "capture": 102,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 81,
+        "capture": 81,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 77,
+        "capture": 77,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 1,
+        "capture": 0,
+        "manques": 1
+      },
+      "xanthohumol": {
+        "publie": 78,
+        "capture": 78,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 37,
+        "capture": 37,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 70,
+        "capture": 70,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "hpa",
+    "fiches": 48,
+    "auditees": 46,
+    "horsCache": 0,
+    "partagees": 2,
+    "parChamp": {
+      "alpha": {
+        "publie": 46,
+        "capture": 45,
+        "manques": 1
+      },
+      "beta": {
+        "publie": 45,
+        "capture": 45,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 27,
+        "capture": 26,
+        "manques": 1
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 45,
+        "capture": 45,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 40,
+        "capture": 40,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 28,
+        "capture": 28,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 29,
+        "capture": 28,
+        "manques": 1
+      },
+      "farnésène": {
+        "publie": 27,
+        "capture": 24,
+        "manques": 3
+      },
+      "linalol": {
+        "publie": 31,
+        "capture": 29,
+        "manques": 2
+      },
+      "géraniol": {
+        "publie": 4,
+        "capture": 2,
+        "manques": 2
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 7,
+        "capture": 7,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 19,
+        "capture": 14,
+        "manques": 5
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 1,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 1,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "ihps",
+    "fiches": 23,
+    "auditees": 0,
+    "horsCache": 0,
+    "partagees": 23,
+    "parChamp": {
+      "alpha": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "indiehops",
+    "fiches": 19,
+    "auditees": 19,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 19,
+        "capture": 19,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 19,
+        "capture": 19,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 16,
+        "capture": 16,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 19,
+        "capture": 19,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 16,
+        "capture": 16,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 16,
+        "capture": 16,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 16,
+        "capture": 16,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 9,
+        "capture": 7,
+        "manques": 2
+      },
+      "linalol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 1,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "johnihaas",
+    "fiches": 81,
+    "auditees": 81,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 74,
+        "capture": 74,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 74,
+        "capture": 74,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 70,
+        "capture": 69,
+        "manques": 1
+      },
+      "colupulone": {
+        "publie": 7,
+        "capture": 7,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 74,
+        "capture": 74,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 65,
+        "capture": 65,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 64,
+        "capture": 64,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 62,
+        "capture": 57,
+        "manques": 5
+      },
+      "farnésène": {
+        "publie": 64,
+        "capture": 60,
+        "manques": 4
+      },
+      "linalol": {
+        "publie": 42,
+        "capture": 40,
+        "manques": 2
+      },
+      "géraniol": {
+        "publie": 3,
+        "capture": 3,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 3,
+        "capture": 3,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 6,
+        "capture": 6,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 25,
+        "capture": 17,
+        "manques": 8
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 3,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 7,
+      "humulène": 5,
+      "caryophyllène": 5,
+      "farnésène": 4,
+      "linalol": 3,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 3,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 1
+    }
+  },
+  {
+    "id": "nzhops",
+    "fiches": 40,
+    "auditees": 40,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 20,
+        "capture": 20,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 17,
+        "capture": 16,
+        "manques": 1
+      },
+      "cohumulone": {
+        "publie": 2,
+        "capture": 1,
+        "manques": 1
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 17,
+        "capture": 16,
+        "manques": 1
+      },
+      "myrcène": {
+        "publie": 14,
+        "capture": 14,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 11,
+        "capture": 11,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 16,
+        "capture": 16,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 14,
+        "capture": 14,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 14,
+        "capture": 14,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 11,
+        "capture": 11,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 20,
+      "beta": 4,
+      "cohumulone": 4,
+      "colupulone": 0,
+      "huile totale": 4,
+      "myrcène": 6,
+      "humulène": 9,
+      "caryophyllène": 4,
+      "farnésène": 19,
+      "linalol": 6,
+      "géraniol": 6,
+      "β-pinène": 8,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "usahops",
+    "fiches": 80,
+    "auditees": 3,
+    "horsCache": 0,
+    "partagees": 77,
+    "parChamp": {
+      "alpha": {
+        "publie": 2,
+        "capture": 2,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 1,
+        "capture": 0,
+        "manques": 1
+      },
+      "HSI / conservation": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 1,
+      "myrcène": 0,
+      "humulène": 1,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  },
+  {
+    "id": "usda",
+    "fiches": 2,
+    "auditees": 2,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 2,
+        "capture": 2,
+        "manques": 0
+      },
+      "beta": {
+        "publie": 2,
+        "capture": 2,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 2,
+        "capture": 2,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "HSI / conservation": {
+        "publie": 1,
+        "capture": 0,
+        "manques": 1
+      }
+    },
+    "extras": {
+      "alpha": 0,
+      "beta": 0,
+      "cohumulone": 0,
+      "colupulone": 0,
+      "huile totale": 2,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 0,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 1
+    }
+  },
+  {
+    "id": "yakimavalleyhops",
+    "fiches": 146,
+    "auditees": 146,
+    "horsCache": 0,
+    "partagees": 0,
+    "parChamp": {
+      "alpha": {
+        "publie": 129,
+        "capture": 128,
+        "manques": 1
+      },
+      "beta": {
+        "publie": 109,
+        "capture": 109,
+        "manques": 0
+      },
+      "cohumulone": {
+        "publie": 83,
+        "capture": 83,
+        "manques": 0
+      },
+      "colupulone": {
+        "publie": 2,
+        "capture": 2,
+        "manques": 0
+      },
+      "huile totale": {
+        "publie": 118,
+        "capture": 118,
+        "manques": 0
+      },
+      "myrcène": {
+        "publie": 94,
+        "capture": 94,
+        "manques": 0
+      },
+      "humulène": {
+        "publie": 87,
+        "capture": 87,
+        "manques": 0
+      },
+      "caryophyllène": {
+        "publie": 77,
+        "capture": 77,
+        "manques": 0
+      },
+      "farnésène": {
+        "publie": 81,
+        "capture": 81,
+        "manques": 0
+      },
+      "linalol": {
+        "publie": 30,
+        "capture": 30,
+        "manques": 0
+      },
+      "géraniol": {
+        "publie": 5,
+        "capture": 5,
+        "manques": 0
+      },
+      "β-pinène": {
+        "publie": 1,
+        "capture": 1,
+        "manques": 0
+      },
+      "sélinène": {
+        "publie": 9,
+        "capture": 9,
+        "manques": 0
+      },
+      "xanthohumol": {
+        "publie": 0,
+        "capture": 0,
+        "manques": 0
+      },
+      "polyphénols": {
+        "publie": 3,
+        "capture": 3,
+        "manques": 0
+      },
+      "thiols": {
+        "publie": 1,
+        "capture": 0,
+        "manques": 1
+      },
+      "HSI / conservation": {
+        "publie": 4,
+        "capture": 4,
+        "manques": 0
+      }
+    },
+    "extras": {
+      "alpha": 6,
+      "beta": 0,
+      "cohumulone": 4,
+      "colupulone": 0,
+      "huile totale": 0,
+      "myrcène": 0,
+      "humulène": 0,
+      "caryophyllène": 0,
+      "farnésène": 2,
+      "linalol": 0,
+      "géraniol": 0,
+      "β-pinène": 0,
+      "sélinène": 0,
+      "xanthohumol": 0,
+      "polyphénols": 0,
+      "thiols": 0,
+      "HSI / conservation": 0
+    }
+  }
+]

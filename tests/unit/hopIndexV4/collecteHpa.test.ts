@@ -42,6 +42,23 @@ describe('lecteur HPA', () => {
     expect(f.champs.linalol).toMatchObject({ min: 2, max: 4 });
     expect(f.descripteurs).toEqual(['Mandarine', 'citron', 'melon']);
   });
+  it('voie c3g : une cellule « — » décale les colonnes (-layout) ; l’ordre de lecture (-raw) garde chaque valeur avec son libellé', () => {
+    const colonnes = ['Alpha (%)      11.5-13.5', 'Total Oil (ml/100g)', 'Myrcene (% of Total Oil)    1-1.5', 'Humulene (% of Total Oil)   47-53', 'Linalool (% of Total Oil)'].join('\n');
+    const brut = ['Alpha (%) 11.5-13.5', 'Total Oil (ml/100g) 1-1.5', 'Myrcene (% of Total Oil) 47-53', 'Humulene (% of Total Oil) 13-16', 'Linalool (% of Total Oil) —'].join('\n');
+    const f = lireFichePdfHpa(colonnes, brut);
+    expect(f.champs.huileTotale).toMatchObject({ min: 1, max: 1.5, unite: 'mL/100 g' });
+    expect(f.champs.myrcene).toMatchObject({ min: 47, max: 53 });
+    expect(f.champs.humulene).toMatchObject({ min: 13, max: 16 });
+    expect(f.champs.linalol).toMatchObject({ min: null, max: null, valeur: null });
+  });
+  it('voie c3g : fiche à blocs (libellés, puis valeurs dans le même ordre)', () => {
+    const f = lireFichePdfHpa(['Alpha Acids*', 'Beta Acids', 'Total Oil', '13.0 – 15.0%', '8.0 – 10.0%', '1.5 – 2.0 ml/100g', 'Myrcene', 'Humulene', '50 – 55%', '7 – 8%'].join('\n'));
+    expect(f.champs.alpha).toMatchObject({ min: 13, max: 15 });
+    expect(f.champs.beta).toMatchObject({ min: 8, max: 10 });
+    expect(f.champs.huileTotale).toMatchObject({ min: 1.5, max: 2 });
+    expect(f.champs.myrcene).toMatchObject({ min: 50, max: 55 });
+    expect(f.champs.humulene).toMatchObject({ min: 7, max: 8 });
+  });
 });
 
 describe('outils communs de la voie c3c', () => {
