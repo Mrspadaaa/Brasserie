@@ -77,7 +77,23 @@ export interface StockHop {
  * stock du brasseur. Les connaissances V5.5 (axes, levures, modèle, solveur) restent des documents versionnés, communs. */
 export interface DonneesMoteur { catalogue: CatalogueHop[]; stock: StockHop[] }
 /** Données par défaut : celles du prototype (fixture). Seuls la fabrique et le moteur par défaut les lisent. */
-export const DONNEES_FIXTURE: DonneesMoteur = { catalogue: protoData.varieties as unknown as CatalogueHop[], stock: protoData.stock as unknown as StockHop[] };
+/** Forme compacte des descripteurs des sources (d4-descripteurs, D83) : table de sources [auteur, nature, contexte, site], dictionnaire de mots, et par
+ * variété `fiches` = [[index de source, année (0 : non publiée), index de mot…]…]. Voir prototypes/houblons-v4/scripts/build-data.mjs. */
+export interface DescripteursCompacts { descSources: [string, HopVariety['descriptions'][number]['source']['kind'], HopVariety['descriptions'][number]['context'], string][]; descMots: string[] }
+export type FichesCompactes = number[][];
+const LOCATOR_FICHE = 'Adresse de la fiche : voir les compléments (complements.json). La référence est le site de la source.';
+/** Les descriptions d'une fiche compacte, dans la forme complète { text, context, source } : une description par source, mots dans l'ordre de la source. */
+export function descriptionsDe(fiches: FichesCompactes | undefined, t: DescripteursCompacts): HopVariety['descriptions'] {
+  return (fiches ?? []).map(([s, annee, ...mots]) => {
+    const [author, kind, context, reference] = t.descSources[s];
+    return { text: `Descripteurs de la fiche : ${mots.map((i) => t.descMots[i]).join(', ')}`, context, source: { title: `${author} · fiche variété`, author, year: annee || null, kind, reference, locator: LOCATOR_FICHE } };
+  });
+}
+/** Le catalogue tel que les lecteurs le connaissent : les descriptions des sources dépliées à la suite de celles de Beer Maverick, Hopsteiner et des faits cités. */
+export function depliee(brut: { varieties: unknown[] } & DescripteursCompacts): CatalogueHop[] {
+  return (brut.varieties as (CatalogueHop & { fiches?: FichesCompactes })[]).map(({ fiches, ...h }) => (fiches ? { ...h, descriptions: [...h.descriptions, ...descriptionsDe(fiches, brut)] } : h));
+}
+export const DONNEES_FIXTURE: DonneesMoteur = { catalogue: depliee(protoData as unknown as { varieties: unknown[] } & DescripteursCompacts), stock: protoData.stock as unknown as StockHop[] };
 /** Les fixtures, pour les écrans qui les citent (cas du parcours) ; aucun module du moteur ne les lit. */
 export const CATALOGUE = DONNEES_FIXTURE.catalogue;
 export const STOCK = DONNEES_FIXTURE.stock;

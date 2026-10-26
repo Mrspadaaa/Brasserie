@@ -26,13 +26,14 @@ afterEach(cleanup);
 const LOTUS = 'beermaverick-lotus';
 
 describe('légende : les mots hors des 12 familles viennent d\'autresDe', () => {
-  it('Lotus : mêmes mots que « autres 44 % », traduits, chacun une fois (vanille et vanilla = un mot)', () => {
+  // d4-descripteurs (26.10) : « autres 44 % » est devenu « autres 40 % » (Charles Faram ajoute « lemon », rattaché à Agrumes) ; les mots sont les mêmes.
+  it('Lotus : mêmes mots que « autres 40 % », traduits, chacun une fois (vanille et vanilla = un mot)', () => {
     const a = autresDe(LOTUS)!;
     const sp = speciauxDe(LOTUS);
     expect(sp.sans.map((x) => x.mot)).toEqual(a.mots.map((m) => m.mot));
     expect(sp.sans.map((x) => x.mot)).toEqual(['vanille', 'crème', 'fruité', 'doux']);
     expect(sp.sans).toHaveLength(a.n);
-    expect(sp.sans.find((x) => x.mot === 'vanille')!.sources).toEqual(['Beer Maverick', 'Hopsteiner']);
+    expect(sp.sans.find((x) => x.mot === 'vanille')!.sources).toEqual(['Beer Maverick', 'Hopsteiner', 'Charles Faram']);
   });
 
   it('la ligne ◇ écrit ces mots, et le chiffre de la carte en compte autant', () => {

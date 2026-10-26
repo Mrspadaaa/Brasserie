@@ -71,6 +71,112 @@ const usageOf = (v) => {
 const facts = JSON.parse(fs.readFileSync(path.join(here, '..', '..', 'src', 'data', 'hopV4', 'faits-cites.json'), 'utf8')).facts;
 for (const f of facts) if (!bm.some((v) => v.id === f.varietyId)) throw Error(`Fait cité sur une variété absente : ${f.id}`);
 
+// ---- Descripteurs d'arôme des sources de src/data/hopSources (d4-descripteurs, #180, D157) ----
+// Chaque source qui publie des mots d'arôme pour une variété devient UNE description du catalogue (une fiche pour le moteur : la fiche se
+// reconnaît à auteur + référence). Les mots restent en anglais d'origine (le lexique du moteur les lit tels quels) ; la traduction suit le
+// chemin de l'app (tagsFr, versFr), jamais ici. Compact : mots seuls, une ligne par source (budget B5 : le catalogue est dans le chunk des outils).
+// Règles (voie d4, VOIE.md) :
+// - une source = une fiche, même si elle publie plusieurs listes ou plusieurs pages : les mots sont réunis, la référence est la première page qui en porte ;
+// - le contexte vient de la source : Charles Faram « frotté » = houblon brut (rawHop), « bière » = beer (le moteur l'ignore : non reprise, D83) ;
+//   les autres sources ne le disent pas : unspecified ;
+// - les rattachements écartés à la fusion (complements-non-rattachees.json, raison « écarté à la fusion ») restent écartés ici ;
+// - les catégories (familles de la source : bsg, johnihaas, usahops), les intensités (Charles Faram, BHA, Hopsteiner arome_*, BarthHaas rose) et la
+//   prose (profilCourt de Crosby, NZ Hops, Hops Direct) ne deviennent pas des descripteurs : décisions à prendre, voir RESULTAT.md de la voie ;
+// - HopDatabase et hops-json recopient d'autres sources : au plus UNE fiche « communautaire » par houblon, écartée quand au moins la moitié de ses
+//   mots se retrouvent chez les sources primaires de la même variété (mesure : RESULTAT.md), gardée sinon ou quand aucune source primaire n'existe.
+const DESC_DIR = path.join(repo, 'src/data/hopSources');
+// Charles Faram écrit chaque descripteur par son texte alternatif d'icône (« Citrus », « black pepper »). Pour une icône sans texte lisible, le texte
+// alternatif est un nom de fichier (« CharlesFaram-icon-citrus-04-lemon ») ou la légende d'une publicité (« floral / herbal for Epic Hops, Fox hops ») :
+// on prend alors l'identifiant de la même place dans l'autre liste (« lemon ») s'il est lisible, sinon on omet (« floralherbal » est une catégorie).
+const BRUIT_CF = /icon|\bfor\b|\//i;
+const motsCharlesFaram = (alt = [], id = []) => alt.map((a, i) => (!BRUIT_CF.test(a) ? a : id[i] && !BRUIT_CF.test(id[i]) && id[i] !== 'floralherbal' ? id[i] : null)).filter(Boolean);
+const SOURCES_MOTS = [
+  { id: 'barthhaas', author: 'BarthHaas', kind: 'manufacturer', mots: (l) => l.descripteurs },
+  { id: 'charlesfaram', author: 'Charles Faram', kind: 'manufacturer', mots: (l) => motsCharlesFaram(l.altRub, l.descripteursRub), ctx: 'rawHop', bière: (l) => motsCharlesFaram(l.altBiere, l.descripteursBiere) },
+  { id: 'crosbyhops', author: 'Crosby Hops', kind: 'manufacturer', mots: (l) => l.aromes },
+  { id: 'hpa', author: 'Hop Products Australia', kind: 'manufacturer', mots: (l) => l.descripteurs },
+  { id: 'johnihaas', author: 'John I. Haas', kind: 'manufacturer', mots: (l) => l.descripteurs },
+  { id: 'nzhops', author: 'NZ Hops', kind: 'manufacturer', mots: (l) => l.descripteursCouverture },
+  { id: 'freestylehops', author: 'Freestyle Hops', kind: 'manufacturer', mots: (l) => l.descripteurs },
+  { id: 'britishhops', author: 'British Hop Association', kind: 'manufacturer', mots: (l) => l.descripteurs },
+  { id: 'bsg', author: 'BSG', kind: 'review', mots: (l) => l.aromes },
+  { id: 'yakimavalleyhops', author: 'Yakima Valley Hops', kind: 'review', mots: (l) => l.aromes },
+  { id: 'usahops', author: 'USA Hops', kind: 'manufacturer', mots: (l) => l.aromes },
+];
+const SOURCES_COMMUNAUTAIRES = [{ id: 'hopdatabase', nom: 'HopDatabase (kasperg3)' }, { id: 'hopsjson', nom: 'hops-json (stuartraetaylor)' }];
+const ECARTEES = new Set(read('src/data/hopV4/complements-non-rattachees.json').fiches.filter((x) => /^écarté à la fusion/.test(x.raison)).map((x) => `${x.source}|${x.nom}`));
+const motNet = (s) => String(s).replace(/,/g, ' ').replace(/^[\s#]+|[\s.]+$/g, '').replace(/\s+/g, ' ');
+const lireSource = (id) => JSON.parse(fs.readFileSync(path.join(DESC_DIR, `${id}.json`), 'utf8'));
+const anneeDe = (f) => { const p = f.publie; const s = typeof p === 'string' ? p : p && typeof p === 'object' ? p.date ?? null : null; const m = typeof s === 'string' ? s.match(/^(\d{4})/) : null; return m ? Number(m[1]) : null; };
+// varietyId → [{ id, mots, bière, url, annee }] dans l'ordre des fiches de la source
+const lues = new Map();
+for (const s of [...SOURCES_MOTS, ...SOURCES_COMMUNAUTAIRES]) {
+  const j = lireSource(s.id);
+  for (const f of j.fiches) {
+    if (!f.varietyId || ECARTEES.has(`${s.id}|${f.nom}`)) continue;
+    const l = f.listes ?? {};
+    const mots = (s.mots ? s.mots(l) : l.descripteurs) ?? [];
+    const biere = s.bière ? s.bière(l) ?? [] : [];
+    if (!mots.length && !biere.length) continue;
+    const par = lues.get(f.varietyId) ?? new Map();
+    lues.set(f.varietyId, par);
+    const cur = par.get(s.id) ?? { mots: [], biere: [], url: null, annee: null, nom: f.nom };
+    par.set(s.id, cur);
+    for (const [liste, vers] of [[mots, cur.mots], [biere, cur.biere]]) for (const v of liste) { const t = motNet(v); if (t && !vers.some((x) => x.toLowerCase() === t.toLowerCase())) vers.push(t); }
+    if (mots.length && !cur.url) { cur.url = f.url ?? null; cur.annee = anneeDe(f); }
+    if (!mots.length && !cur.url && cur.biere.length) { cur.urlBiere ??= f.url ?? null; cur.anneeBiere ??= anneeDe(f); }
+  }
+}
+const jetons = (s) => String(s).toLowerCase().normalize('NFKD').replace(/\p{M}/gu, '').split(/[^a-z]+/).filter(Boolean).map((t) => t.replace(/s$/, ''));
+/** Vrai quand un mot de l'agrégat dit la même chose qu'un mot d'une source primaire (mêmes jetons, ou l'un contenu dans l'autre). */
+const recopie = (mot, primaires) => { const a = jetons(mot); return a.length > 0 && primaires.some((p) => { const b = jetons(p); return a.every((t) => b.includes(t)) || b.every((t) => a.includes(t)); }); };
+// Forme compacte (D83, 26.10 ; budget B5, le catalogue est dans le chunk des outils) : une table de sources `descSources`, un dictionnaire de mots
+// `descMots`, et par variété `fiches` = [[index de source, année (0 : non publiée), index de mot…]…]. Le chargeur de data.ts (descriptionsDe) rend aux
+// lecteurs les mêmes objets { text, context, source } qu'une description complète : `reference` = le site de la source (l'adresse de chaque fiche est
+// dans complements.json, chargé à la demande), `title` = « <auteur> · fiche variété ». Le contexte « bière » de Charles Faram n'est pas repris (le moteur l'ignore).
+const hotes = new Map(), tableSources = [], dicoMots = [], indexMot = new Map();
+for (const s of [...SOURCES_MOTS, ...SOURCES_COMMUNAUTAIRES]) hotes.set(s.id, lireSource(s.id).source.hote);
+const sourceIdx = (cle, author, kind, ctx, reference) => {
+  let i = tableSources.findIndex((t) => t[4] === cle);
+  if (i < 0) { i = tableSources.length; tableSources.push([author, kind, ctx, reference, cle]); }
+  return i;
+};
+const motIdx = (m) => { let i = indexMot.get(m); if (i === undefined) { i = dicoMots.length; dicoMots.push(m); indexMot.set(m, i); } return i; };
+const stats = { varietesAvecFiche: 0, fiches: 0, communautairesGardees: 0, communautairesEcartees: 0, parSource: {} };
+/** Les descriptions de sources d'une variété ; `hopsteiner` : ses descriptions déjà lues (primaires aussi). */
+function descriptionsSources(varietyId, hopsteiner) {
+  const par = lues.get(varietyId);
+  if (!par) return [];
+  const out = [];
+  const primaires = [...hopsteiner.flatMap((d) => (d.text.split(':').slice(1).join(':') || d.text).split(/,|;/).map(motNet))];
+  for (const s of SOURCES_MOTS) {
+    const x = par.get(s.id);
+    if (!x) continue;
+    if (x.mots.length) {
+      out.push([sourceIdx(s.id, s.author, s.kind, s.ctx ?? 'unspecified', `https://${hotes.get(s.id)}`), x.annee ?? 0, ...x.mots.map(motIdx)]);
+      primaires.push(...x.mots);
+    }
+    stats.parSource[s.id] = (stats.parSource[s.id] ?? 0) + (x.mots.length ? 1 : 0);
+  }
+  // Agrégats : une seule fiche communautaire (HopDatabase puis hops-json, mots réunis), si elle n'est pas une recopie.
+  const com = SOURCES_COMMUNAUTAIRES.map((s) => ({ s, x: par.get(s.id) })).filter((c) => c.x?.mots.length);
+  if (com.length) {
+    const mots = [];
+    // Mots seuls : une entrée de plus de quatre mots est une phrase du texte libre de hops-json (« Very mild with pleasant hoppy notes »), pas un descripteur.
+    for (const { x } of com) for (const m of x.mots) if (m.split(' ').length <= 4 && !mots.some((y) => y.toLowerCase() === m.toLowerCase())) mots.push(m);
+    const part = primaires.length ? mots.filter((m) => recopie(m, primaires)).length / mots.length : 0;
+    if (!mots.length || part >= 0.5) stats.communautairesEcartees++;
+    else {
+      stats.communautairesGardees++;
+      out.push([sourceIdx('communaute', 'HopDatabase / hops-json', 'community', 'unspecified', `https://${hotes.get('hopdatabase')}`), 0, ...mots.map(motIdx)]);
+    }
+  }
+  if (out.length) { stats.varietesAvecFiche++; stats.fiches += out.length; }
+  return out;
+}
+/** Le champ `fiches` d'une variété (absent quand aucune source ne publie de mots). */
+const fichesDe = (varietyId, hopsteiner) => { const f = descriptionsSources(varietyId, hopsteiner); return f.length ? { fiches: f } : {}; };
+
 // Le bloc `bm` d'une variété : ce que sa page Beer Maverick publie en plus, avec ses dates (l'adresse est le champ `url` ; le reçu sha256 reste dans le fichier d'amorçage).
 // Forme compacte (budget B5 : le catalogue est dans le chunk des outils) : dates sans l'heure, houblons cités par leur identifiant sans
 // « beermaverick- » (ou { name } quand le nom ne se résout pas), accords en paires [houblon, nombre de bières], radar en 9 nombres dans
@@ -103,6 +209,7 @@ const varieties = bm.map((v) => {
     tags, tagsFr: tags.map((t) => FR[t] || t),
     descriptions: [...(v.descriptions || []).filter((d) => /Tags documentaires/.test(d.text)), ...(h ? h.descriptions : []),
       ...facts.filter((f) => f.varietyId === id).map((f) => f.description)],
+    ...fichesDe(id, h ? h.descriptions : []),
     citedFacts: facts.filter((f) => f.varietyId === id).map((f) => f.id),
     hopsteinerId: h?.id ?? null, hsLinalool: h?.linalool ?? null, hsThiol: h?.thiol ?? null,
     hs: h ? { name: h.name, alpha: h.analysis.alpha, beta: h.analysis.beta, totalOil: h.analysis.totalOil, reference: h.reference, year: h.year } : null,
@@ -158,7 +265,10 @@ const out = {
     styles: 'BJCP 2021, statistiques, src/data/brewingStylesBootstrap.json',
     stock: `Stock de production, lecture seule, ${FIXTURE}`,
     facts: `Faits cités un à un, data/faits-cites.json (${facts.length})`,
+    descripteurs: `Descripteurs d'arôme des sources, src/data/hopSources (${stats.fiches} fiches sur ${stats.varietesAvecFiche} variétés), forme compacte : descSources, descMots, fiches`,
   },
+  // [auteur, nature, contexte, site de la source] ; mots de toutes les fiches (voir descriptionsDe, data.ts).
+  descSources: tableSources.map((t) => t.slice(0, 4)), descMots: dicoMots,
   varieties, stock, unlinked, styles,
 };
 fs.mkdirSync(path.join(here, '..', '..', 'src', 'data', 'hopV4'), { recursive: true });

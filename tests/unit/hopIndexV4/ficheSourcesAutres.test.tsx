@@ -39,17 +39,19 @@ afterEach(cleanup);
 
 const LOTUS = 'beermaverick-lotus';
 
-describe('« autres 44 % » : le chiffre et la liste viennent du même calcul', () => {
-  it('Lotus : 44 % = 4 de ses 9 mots distincts, vanille (Beer Maverick) et vanilla (Hopsteiner) comptés une fois', () => {
+// d4-descripteurs (26.10) : Charles Faram (houblon frotté : orange, vanilla, lemon) entre dans les fiches de Lotus. « lemon » rejoint Agrumes
+// (un mot de plus, rattaché) : 4 mots sur 10 au lieu de 4 sur 9, soit 40 % au lieu de 44 % ; « vanilla » est dit par une fiche de plus.
+describe('« autres 40 % » : le chiffre et la liste viennent du même calcul', () => {
+  it('Lotus : 40 % = 4 de ses 10 mots distincts, vanille (Beer Maverick), vanilla (Hopsteiner, Charles Faram) comptés une fois', () => {
     const h = houblon(LOTUS);
     const a = autresDe(LOTUS)!;
-    expect(h.partSansFamille).toBe(0.44);
-    expect(a.part).toBe(0.44);
-    expect([a.n, a.total]).toEqual([4, 9]);
-    expect(ligneAutres(a)).toBe('4 de ses 9 mots n’entrent dans aucune des 12 familles');
+    expect(h.partSansFamille).toBe(0.4);
+    expect(a.part).toBe(0.4);
+    expect([a.n, a.total]).toEqual([4, 10]);
+    expect(ligneAutres(a)).toBe('4 de ses 10 mots n’entrent dans aucune des 12 familles');
     // Les mots sont traduits (« vanilla » de Hopsteiner devient « vanille ») : un mot, deux fiches qui le disent.
     expect(a.mots.map((m) => m.mot)).toEqual(['vanille', 'crème', 'fruité', 'doux']);
-    expect(a.mots.find((m) => m.mot === 'vanille')!.fiches).toEqual(['Beer Maverick', 'Hopsteiner']);
+    expect(a.mots.find((m) => m.mot === 'vanille')!.fiches).toEqual(['Beer Maverick', 'Hopsteiner', 'Charles Faram']);
   });
 
   it('carte, fiche et « ? » : le même nombre et la même liste (une seule source de calcul)', () => {
@@ -60,7 +62,7 @@ describe('« autres 44 % » : le chiffre et la liste viennent du même calcul', 
     expect(new Set(h.motsSansFamille).size).toBe(h.motsSansFamille.length);
     const { container } = render(<div><Autres h={h} /></div>);
     fireEvent.click(container.querySelector('[data-role="autres-bouton"]')!);
-    expect(container.querySelector('[data-role="autres-bouton"]')!.textContent).toContain('autres 44 %');
+    expect(container.querySelector('[data-role="autres-bouton"]')!.textContent).toContain('autres 40 %');
     expect([...container.querySelectorAll('li')].map((l) => l.getAttribute('data-mot'))).toEqual(h.motsSansFamille);
     expect(container.querySelector('[data-role="autres-explication"]')!.getAttribute('data-n')).toBe(String(a.n));
   });
@@ -107,11 +109,11 @@ describe('« autres 44 % » : le chiffre et la liste viennent du même calcul', 
   it('au toucher de la mention, la ligne de calcul et la liste s’ouvrent ; un second toucher les referme', () => {
     const { container } = render(<div><Autres h={houblon(LOTUS)} /></div>);
     const b = container.querySelector<HTMLButtonElement>('[data-role="autres-bouton"]')!;
-    expect(b.textContent).toContain('autres 44 %');
+    expect(b.textContent).toContain('autres 40 %');
     expect(container.querySelector('[data-role="autres-explication"]')).toBeNull();
     fireEvent.click(b);
     const e = container.querySelector('[data-role="autres-explication"]')!;
-    expect(e.querySelector('[data-role="autres-calcul"]')!.textContent).toBe('4 de ses 9 mots n’entrent dans aucune des 12 familles.');
+    expect(e.querySelector('[data-role="autres-calcul"]')!.textContent).toBe('4 de ses 10 mots n’entrent dans aucune des 12 familles.');
     expect([...e.querySelectorAll('li')].map((l) => l.getAttribute('data-mot'))).toEqual(['vanille', 'crème', 'fruité', 'doux']);
     expect(b.getAttribute('aria-expanded')).toBe('true');
     fireEvent.click(b);

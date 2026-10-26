@@ -12,7 +12,7 @@
 // Usage :
 //   node scripts/check-hop-budget.mjs --dist <dossier du build> [--boot index,App,firebase] [--step Host]
 //   node scripts/check-hop-budget.mjs --adapter <adaptateur> [--tap "libellé"]
-//   --chunk-outils <préfixe> [--deja a,b] : B5 = JavaScript ajouté à l'ouverture d'un outil v4 (#167) ≤ 150 ko gzip : la fermeture du
+//   --chunk-outils <préfixe> [--deja a,b] : B5 = JavaScript ajouté à l'ouverture d'un outil v4 (#167) ≤ 160 ko gzip (D83, 26.10) : la fermeture du
 //      chunk des outils hors démarrage, moins celle des écrans déjà ouverts dessous (--deja, p. ex. BrewWizardEntry).
 //   --witness : le sujet DOIT dépasser au moins un budget (témoin négatif).
 import fs from 'node:fs';
@@ -23,7 +23,8 @@ import { pathToFileURL } from 'node:url';
 
 const arg = (k, d) => { const i = process.argv.indexOf('--' + k); return i > 0 ? process.argv[i + 1] : d; };
 const witness = process.argv.includes('--witness');
-const BUDGET = { B1: 350_000, B2: 150_000, B3: 1000, B4: 120 * 1024 * 1024 };
+// B5 : 150 ko jusqu'au 26.10 ; 160 ko depuis. D83, 26.10 : descripteurs de 12 sources ajoutés à la demande du brasseur ; le morceau des outils est préchargé au repos.
+const BUDGET = { B1: 350_000, B2: 150_000, B3: 1000, B4: 120 * 1024 * 1024, B5: 160_000 };
 const results = [];
 const kb = (n) => `${Math.round(n / 1000)} ko`;
 
@@ -46,7 +47,7 @@ if (arg('dist')) {
     const outils = close([find(arg('chunk-outils'))], new Set(boot));
     for (const f of [...boot, ...deja]) outils.delete(f);
     const outilsGz = gz(outils);
-    results.push({ id: 'B5', label: 'ouverture d’un outil v4', value: outilsGz, budget: BUDGET.B2, text: `${(outilsGz / 1000).toFixed(1)} ko gzip ajoutés (${[...outils].join(', ')})` });
+    results.push({ id: 'B5', label: 'ouverture d’un outil v4', value: outilsGz, budget: BUDGET.B5, text: `${(outilsGz / 1000).toFixed(1)} ko gzip ajoutés (${[...outils].join(', ')})` });
   }
 }
 

@@ -1,0 +1,9654 @@
+{
+ "issue": 181,
+ "voie": "e2-moteur-substitution",
+ "graine": 181,
+ "rééchantillons": 1000,
+ "moitie": "parité de l’indice du houblon parmi les 217 triés par id : 0 apprentissage, 1 contrôle",
+ "effectifs": {
+  "cibles": 217,
+  "apprentissage": 109,
+  "controle": 108,
+  "amerisantsApprentissage": 20,
+  "amerisantsControle": 17
+ },
+ "donnees": {
+  "alpha": {
+   "catalogue": 318,
+   "complements": 0,
+   "inconnu": 0
+  },
+  "radar": {
+   "catalogue": 181,
+   "complements": 0,
+   "inconnu": 137
+  },
+  "familles": {
+   "catalogue": 299,
+   "complements": 0,
+   "inconnu": 19
+  },
+  "mots": {
+   "catalogue": 302,
+   "complements": 0,
+   "inconnu": 16
+  },
+  "usage": {
+   "catalogue": 318,
+   "complements": 0,
+   "inconnu": 0
+  },
+  "beta": {
+   "catalogue": 311,
+   "complements": 0,
+   "inconnu": 7
+  },
+  "cohumulone": {
+   "catalogue": 287,
+   "complements": 0,
+   "inconnu": 31
+  },
+  "huile": {
+   "catalogue": 301,
+   "complements": 0,
+   "inconnu": 17
+  },
+  "myrcène": {
+   "catalogue": 257,
+   "complements": 0,
+   "inconnu": 61
+  },
+  "humulène": {
+   "catalogue": 251,
+   "complements": 0,
+   "inconnu": 67
+  },
+  "caryophyllène": {
+   "catalogue": 237,
+   "complements": 0,
+   "inconnu": 81
+  },
+  "farnésène": {
+   "catalogue": 249,
+   "complements": 0,
+   "inconnu": 69
+  },
+  "linalol": {
+   "catalogue": 64,
+   "complements": 0,
+   "inconnu": 254
+  },
+  "géraniol": {
+   "catalogue": 0,
+   "complements": 0,
+   "inconnu": 318
+  }
+ },
+ "sigma": {
+  "0": 0,
+  "1": 0,
+  "2": 7.5,
+  "3": 0,
+  "4": 0,
+  "5": 13.31,
+  "6": 11.29,
+  "7": 4.16,
+  "8": 4.52,
+  "9": 0.4,
+  "10": null,
+  "11": 0,
+  "12": 0,
+  "13": 0
+ },
+ "profils": {
+  "am": {
+   "amertume": [
+    0.4,
+    0.2,
+    0.2,
+    0.2
+   ],
+   "huile": [
+    0.25,
+    0.05,
+    0.3,
+    0.25,
+    0.05,
+    0.05,
+    0.05
+   ]
+  },
+  "ch": {
+   "amertume": [
+    0.3,
+    0.2,
+    0.1,
+    0.4
+   ],
+   "huile": [
+    0.2,
+    0.15,
+    0.15,
+    0.1,
+    0.1,
+    0.2,
+    0.1
+   ]
+  },
+  "fr": {
+   "amertume": [
+    0.25,
+    0.15,
+    0.1,
+    0.5
+   ],
+   "huile": [
+    0.25,
+    0.1,
+    0.1,
+    0.05,
+    0.1,
+    0.25,
+    0.15
+   ]
+  }
+ },
+ "appris": {
+  "v2": {
+   "am": {
+    "g": [
+     0.7,
+     0.2,
+     0.1
+    ],
+    "partMots": 0.5,
+    "mrrApp": 0.286,
+    "rappelApp": 0.184,
+    "dix": [
+     {
+      "g": [
+       0.7,
+       0.2,
+       0.1
+      ],
+      "partMots": 0.5,
+      "mrr": 0.286
+     },
+     {
+      "g": [
+       0.8,
+       0.1,
+       0.1
+      ],
+      "partMots": 0.5,
+      "mrr": 0.259
+     },
+     {
+      "g": [
+       0.6,
+       0.3,
+       0.1
+      ],
+      "partMots": 0.5,
+      "mrr": 0.245
+     },
+     {
+      "g": [
+       0.5,
+       0.4,
+       0.1
+      ],
+      "partMots": 0.5,
+      "mrr": 0.243
+     },
+     {
+      "g": [
+       0.8,
+       0.2,
+       0
+      ],
+      "partMots": 0.5,
+      "mrr": 0.241
+     },
+     {
+      "g": [
+       0.9,
+       0,
+       0.1
+      ],
+      "partMots": 0.5,
+      "mrr": 0.228
+     },
+     {
+      "g": [
+       0.7,
+       0.1,
+       0.2
+      ],
+      "partMots": 0.5,
+      "mrr": 0.214
+     },
+     {
+      "g": [
+       0.6,
+       0.2,
+       0.2
+      ],
+      "partMots": 0.5,
+      "mrr": 0.211
+     },
+     {
+      "g": [
+       0.7,
+       0.3,
+       0
+      ],
+      "partMots": 0.5,
+      "mrr": 0.207
+     },
+     {
+      "g": [
+       0.8,
+       0,
+       0.2
+      ],
+      "partMots": 0.5,
+      "mrr": 0.204
+     }
+    ]
+   },
+   "ch": {
+    "g": [
+     0.3,
+     0.2,
+     0.5
+    ],
+    "partMots": 0.75,
+    "mrrApp": 0.28,
+    "rappelApp": 0.225,
+    "dix": [
+     {
+      "g": [
+       0.3,
+       0.2,
+       0.5
+      ],
+      "partMots": 0.75,
+      "mrr": 0.28
+     },
+     {
+      "g": [
+       0.3,
+       0.3,
+       0.4
+      ],
+      "partMots": 0.75,
+      "mrr": 0.279
+     },
+     {
+      "g": [
+       0.2,
+       0.4,
+       0.4
+      ],
+      "partMots": 0.75,
+      "mrr": 0.277
+     },
+     {
+      "g": [
+       0.2,
+       0.3,
+       0.5
+      ],
+      "partMots": 0.75,
+      "mrr": 0.266
+     },
+     {
+      "g": [
+       0.3,
+       0.4,
+       0.3
+      ],
+      "partMots": 0.75,
+      "mrr": 0.266
+     },
+     {
+      "g": [
+       0.2,
+       0.2,
+       0.6
+      ],
+      "partMots": 0.75,
+      "mrr": 0.262
+     },
+     {
+      "g": [
+       0.2,
+       0.6,
+       0.2
+      ],
+      "partMots": 0.75,
+      "mrr": 0.262
+     },
+     {
+      "g": [
+       0.3,
+       0.5,
+       0.2
+      ],
+      "partMots": 0.75,
+      "mrr": 0.258
+     },
+     {
+      "g": [
+       0.3,
+       0.2,
+       0.5
+      ],
+      "partMots": 0.5,
+      "mrr": 0.257
+     },
+     {
+      "g": [
+       0.3,
+       0.1,
+       0.6
+      ],
+      "partMots": 0.75,
+      "mrr": 0.255
+     }
+    ]
+   },
+   "fr": {
+    "g": [
+     0.2,
+     0.3,
+     0.5
+    ],
+    "partMots": 0.75,
+    "mrrApp": 0.264,
+    "rappelApp": 0.219,
+    "dix": [
+     {
+      "g": [
+       0.2,
+       0.3,
+       0.5
+      ],
+      "partMots": 0.75,
+      "mrr": 0.264
+     },
+     {
+      "g": [
+       0.2,
+       0.2,
+       0.6
+      ],
+      "partMots": 0.75,
+      "mrr": 0.247
+     },
+     {
+      "g": [
+       0,
+       0.5,
+       0.5
+      ],
+      "partMots": 0.75,
+      "mrr": 0.247
+     },
+     {
+      "g": [
+       0.1,
+       0.4,
+       0.5
+      ],
+      "partMots": 0.75,
+      "mrr": 0.246
+     },
+     {
+      "g": [
+       0.1,
+       0.3,
+       0.6
+      ],
+      "partMots": 0.75,
+      "mrr": 0.241
+     },
+     {
+      "g": [
+       0.2,
+       0.3,
+       0.5
+      ],
+      "partMots": 0.5,
+      "mrr": 0.237
+     },
+     {
+      "g": [
+       0.2,
+       0.2,
+       0.6
+      ],
+      "partMots": 0.5,
+      "mrr": 0.235
+     },
+     {
+      "g": [
+       0,
+       0.5,
+       0.5
+      ],
+      "partMots": 0.5,
+      "mrr": 0.23
+     },
+     {
+      "g": [
+       0.1,
+       0.4,
+       0.5
+      ],
+      "partMots": 0.5,
+      "mrr": 0.23
+     },
+     {
+      "g": [
+       0,
+       0.4,
+       0.6
+      ],
+      "partMots": 0.75,
+      "mrr": 0.228
+     }
+    ]
+   }
+  },
+  "v2libre": {
+   "am": {
+    "g": [
+     0.7,
+     0.2,
+     0.1
+    ],
+    "partMots": 0.5,
+    "mrrApp": 0.286,
+    "rappelApp": 0.184,
+    "dix": [
+     {
+      "g": [
+       0.7,
+       0.2,
+       0.1
+      ],
+      "partMots": 0.5,
+      "mrr": 0.286
+     },
+     {
+      "g": [
+       0.8,
+       0.1,
+       0.1
+      ],
+      "partMots": 0.5,
+      "mrr": 0.259
+     },
+     {
+      "g": [
+       0.6,
+       0.3,
+       0.1
+      ],
+      "partMots": 0.5,
+      "mrr": 0.245
+     },
+     {
+      "g": [
+       0.5,
+       0.4,
+       0.1
+      ],
+      "partMots": 0.5,
+      "mrr": 0.243
+     },
+     {
+      "g": [
+       0.8,
+       0.2,
+       0
+      ],
+      "partMots": 0.5,
+      "mrr": 0.241
+     },
+     {
+      "g": [
+       0.9,
+       0,
+       0.1
+      ],
+      "partMots": 0.5,
+      "mrr": 0.228
+     },
+     {
+      "g": [
+       0.7,
+       0.1,
+       0.2
+      ],
+      "partMots": 0.5,
+      "mrr": 0.214
+     },
+     {
+      "g": [
+       0.6,
+       0.2,
+       0.2
+      ],
+      "partMots": 0.5,
+      "mrr": 0.211
+     },
+     {
+      "g": [
+       0.7,
+       0.3,
+       0
+      ],
+      "partMots": 0.5,
+      "mrr": 0.207
+     },
+     {
+      "g": [
+       0.8,
+       0,
+       0.2
+      ],
+      "partMots": 0.5,
+      "mrr": 0.204
+     }
+    ]
+   },
+   "ch": {
+    "g": [
+     0.4,
+     0.2,
+     0.4
+    ],
+    "partMots": 0.75,
+    "mrrApp": 0.285,
+    "rappelApp": 0.221,
+    "dix": [
+     {
+      "g": [
+       0.4,
+       0.2,
+       0.4
+      ],
+      "partMots": 0.75,
+      "mrr": 0.285
+     },
+     {
+      "g": [
+       0.5,
+       0.1,
+       0.4
+      ],
+      "partMots": 0.75,
+      "mrr": 0.28
+     },
+     {
+      "g": [
+       0.3,
+       0.2,
+       0.5
+      ],
+      "partMots": 0.75,
+      "mrr": 0.28
+     },
+     {
+      "g": [
+       0.3,
+       0.3,
+       0.4
+      ],
+      "partMots": 0.75,
+      "mrr": 0.279
+     },
+     {
+      "g": [
+       0.2,
+       0.4,
+       0.4
+      ],
+      "partMots": 0.75,
+      "mrr": 0.277
+     },
+     {
+      "g": [
+       0.5,
+       0.1,
+       0.4
+      ],
+      "partMots": 0.5,
+      "mrr": 0.272
+     },
+     {
+      "g": [
+       0.4,
+       0.3,
+       0.3
+      ],
+      "partMots": 0.75,
+      "mrr": 0.272
+     },
+     {
+      "g": [
+       0.5,
+       0.2,
+       0.3
+      ],
+      "partMots": 0.75,
+      "mrr": 0.272
+     },
+     {
+      "g": [
+       0.6,
+       0.1,
+       0.3
+      ],
+      "partMots": 0.75,
+      "mrr": 0.271
+     },
+     {
+      "g": [
+       0.4,
+       0.2,
+       0.4
+      ],
+      "partMots": 0.5,
+      "mrr": 0.271
+     }
+    ]
+   },
+   "fr": {
+    "g": [
+     0.5,
+     0.2,
+     0.3
+    ],
+    "partMots": 0.5,
+    "mrrApp": 0.27,
+    "rappelApp": 0.198,
+    "dix": [
+     {
+      "g": [
+       0.5,
+       0.2,
+       0.3
+      ],
+      "partMots": 0.5,
+      "mrr": 0.27
+     },
+     {
+      "g": [
+       0.2,
+       0.4,
+       0.4
+      ],
+      "partMots": 0.75,
+      "mrr": 0.268
+     },
+     {
+      "g": [
+       0.5,
+       0.2,
+       0.3
+      ],
+      "partMots": 0.75,
+      "mrr": 0.268
+     },
+     {
+      "g": [
+       0.3,
+       0.3,
+       0.4
+      ],
+      "partMots": 0.75,
+      "mrr": 0.268
+     },
+     {
+      "g": [
+       0.6,
+       0.2,
+       0.2
+      ],
+      "partMots": 0.75,
+      "mrr": 0.267
+     },
+     {
+      "g": [
+       0.6,
+       0.1,
+       0.3
+      ],
+      "partMots": 0.75,
+      "mrr": 0.266
+     },
+     {
+      "g": [
+       0.6,
+       0.1,
+       0.3
+      ],
+      "partMots": 0.5,
+      "mrr": 0.266
+     },
+     {
+      "g": [
+       0.7,
+       0,
+       0.3
+      ],
+      "partMots": 0.5,
+      "mrr": 0.265
+     },
+     {
+      "g": [
+       0.5,
+       0.1,
+       0.4
+      ],
+      "partMots": 0.5,
+      "mrr": 0.265
+     },
+     {
+      "g": [
+       0.2,
+       0.3,
+       0.5
+      ],
+      "partMots": 0.75,
+      "mrr": 0.264
+     }
+    ]
+   }
+  }
+ },
+ "amerTous": {
+  "g": [
+   0.5,
+   0.4,
+   0.1
+  ],
+  "partMots": 0.5,
+  "mrrApp": 0.159,
+  "rappelApp": 0.144,
+  "dix": [
+   {
+    "g": [
+     0.5,
+     0.4,
+     0.1
+    ],
+    "partMots": 0.5,
+    "mrr": 0.159
+   },
+   {
+    "g": [
+     0.6,
+     0.3,
+     0.1
+    ],
+    "partMots": 0.5,
+    "mrr": 0.159
+   },
+   {
+    "g": [
+     0.7,
+     0.2,
+     0.1
+    ],
+    "partMots": 0.5,
+    "mrr": 0.159
+   },
+   {
+    "g": [
+     0.9,
+     0,
+     0.1
+    ],
+    "partMots": 0.5,
+    "mrr": 0.155
+   },
+   {
+    "g": [
+     0.8,
+     0.1,
+     0.1
+    ],
+    "partMots": 0.5,
+    "mrr": 0.153
+   },
+   {
+    "g": [
+     0.8,
+     0,
+     0.2
+    ],
+    "partMots": 0.5,
+    "mrr": 0.145
+   },
+   {
+    "g": [
+     0.7,
+     0.1,
+     0.2
+    ],
+    "partMots": 0.5,
+    "mrr": 0.144
+   },
+   {
+    "g": [
+     0.8,
+     0.2,
+     0
+    ],
+    "partMots": 0.5,
+    "mrr": 0.14
+   },
+   {
+    "g": [
+     0.6,
+     0.1,
+     0.3
+    ],
+    "partMots": 0.5,
+    "mrr": 0.139
+   },
+   {
+    "g": [
+     0.9,
+     0.1,
+     0
+    ],
+    "partMots": 0.5,
+    "mrr": 0.136
+   }
+  ]
+ },
+ "essais": {
+  "am": [
+   {
+    "famille": "k1",
+    "definition": "amertume ≤ 0,3",
+    "g": [
+     0.7,
+     0.2,
+     0.1
+    ],
+    "partMots": 0.5,
+    "mrrApp": 0.286,
+    "rappelApp": 0.184,
+    "mrrCtl": 0.276,
+    "rappel10Ctl": 0.262,
+    "rangMedianCtl": 6,
+    "ecartA": [
+     0.019,
+     0.153
+    ],
+    "ecartAPoint": 0.08,
+    "ecartC": [
+     0.019,
+     0.153
+    ],
+    "ecartCPoint": 0.08,
+    "mrrCtlTous": 0.162,
+    "bDans10": 3,
+    "bRangMedian": 72,
+    "retenu": true
+   },
+   {
+    "famille": "k2",
+    "definition": "amertume ≤ 0,3 et arôme ≥ 0,4",
+    "g": [
+     0.7,
+     0.2,
+     0.1
+    ],
+    "partMots": 0.5,
+    "mrrApp": 0.286,
+    "rappelApp": 0.184,
+    "mrrCtl": 0.276,
+    "rappel10Ctl": 0.262,
+    "rangMedianCtl": 6,
+    "ecartA": [
+     0.019,
+     0.153
+    ],
+    "ecartAPoint": 0.08,
+    "ecartC": [
+     0.019,
+     0.153
+    ],
+    "ecartCPoint": 0.08,
+    "mrrCtlTous": 0.162,
+    "bDans10": 3,
+    "bRangMedian": 72,
+    "retenu": false
+   },
+   {
+    "famille": "k3",
+    "definition": "amertume ≤ 0,2 et arôme ≥ 0,5",
+    "g": [
+     0.7,
+     0.2,
+     0.1
+    ],
+    "partMots": 0.5,
+    "mrrApp": 0.286,
+    "rappelApp": 0.184,
+    "mrrCtl": 0.276,
+    "rappel10Ctl": 0.262,
+    "rangMedianCtl": 6,
+    "ecartA": [
+     0.019,
+     0.153
+    ],
+    "ecartAPoint": 0.08,
+    "ecartC": [
+     0.019,
+     0.153
+    ],
+    "ecartCPoint": 0.08,
+    "mrrCtlTous": 0.162,
+    "bDans10": 3,
+    "bRangMedian": 72,
+    "retenu": false
+   },
+   {
+    "famille": "k4",
+    "definition": "arôme ≥ 0,6 (comme A et C)",
+    "g": [
+     0.7,
+     0.2,
+     0.1
+    ],
+    "partMots": 0.5,
+    "mrrApp": 0.286,
+    "rappelApp": 0.184,
+    "mrrCtl": 0.276,
+    "rappel10Ctl": 0.262,
+    "rangMedianCtl": 6,
+    "ecartA": [
+     0.019,
+     0.153
+    ],
+    "ecartAPoint": 0.08,
+    "ecartC": [
+     0.019,
+     0.153
+    ],
+    "ecartCPoint": 0.08,
+    "mrrCtlTous": 0.162,
+    "bDans10": 3,
+    "bRangMedian": 72,
+    "retenu": false
+   },
+   {
+    "famille": "libre",
+    "definition": "aucune contrainte",
+    "g": [
+     0.7,
+     0.2,
+     0.1
+    ],
+    "partMots": 0.5,
+    "mrrApp": 0.286,
+    "rappelApp": 0.184,
+    "mrrCtl": 0.276,
+    "rappel10Ctl": 0.262,
+    "rangMedianCtl": 6,
+    "ecartA": [
+     0.019,
+     0.153
+    ],
+    "ecartAPoint": 0.08,
+    "ecartC": [
+     0.019,
+     0.153
+    ],
+    "ecartCPoint": 0.08,
+    "mrrCtlTous": 0.162,
+    "bDans10": 3,
+    "bRangMedian": 72,
+    "retenu": false
+   }
+  ],
+  "ch": [
+   {
+    "famille": "k1",
+    "definition": "amertume ≤ 0,3",
+    "g": [
+     0.3,
+     0.2,
+     0.5
+    ],
+    "partMots": 0.75,
+    "mrrApp": 0.28,
+    "rappelApp": 0.225,
+    "mrrCtl": 0.282,
+    "rappel10Ctl": 0.287,
+    "rangMedianCtl": 9,
+    "ecartA": [
+     0.031,
+     0.17
+    ],
+    "ecartAPoint": 0.099,
+    "ecartC": [
+     0.011,
+     0.091
+    ],
+    "ecartCPoint": 0.05,
+    "mrrCtlTous": null,
+    "bDans10": 16,
+    "bRangMedian": 5,
+    "retenu": true
+   },
+   {
+    "famille": "k2",
+    "definition": "amertume ≤ 0,3 et arôme ≥ 0,4",
+    "g": [
+     0.3,
+     0.2,
+     0.5
+    ],
+    "partMots": 0.75,
+    "mrrApp": 0.28,
+    "rappelApp": 0.225,
+    "mrrCtl": 0.282,
+    "rappel10Ctl": 0.287,
+    "rangMedianCtl": 9,
+    "ecartA": [
+     0.031,
+     0.17
+    ],
+    "ecartAPoint": 0.099,
+    "ecartC": [
+     0.011,
+     0.091
+    ],
+    "ecartCPoint": 0.05,
+    "mrrCtlTous": null,
+    "bDans10": 16,
+    "bRangMedian": 5,
+    "retenu": false
+   },
+   {
+    "famille": "k3",
+    "definition": "amertume ≤ 0,2 et arôme ≥ 0,5",
+    "g": [
+     0.2,
+     0.3,
+     0.5
+    ],
+    "partMots": 0.75,
+    "mrrApp": 0.266,
+    "rappelApp": 0.225,
+    "mrrCtl": 0.28,
+    "rappel10Ctl": 0.328,
+    "rangMedianCtl": 8,
+    "ecartA": [
+     0.037,
+     0.164
+    ],
+    "ecartAPoint": 0.098,
+    "ecartC": [
+     0.013,
+     0.082
+    ],
+    "ecartCPoint": 0.049,
+    "mrrCtlTous": null,
+    "bDans10": 15,
+    "bRangMedian": 5.5,
+    "retenu": false
+   },
+   {
+    "famille": "k4",
+    "definition": "arôme ≥ 0,6 (comme A et C)",
+    "g": [
+     0.2,
+     0.2,
+     0.6
+    ],
+    "partMots": 0.75,
+    "mrrApp": 0.262,
+    "rappelApp": 0.21,
+    "mrrCtl": 0.267,
+    "rappel10Ctl": 0.284,
+    "rangMedianCtl": 9,
+    "ecartA": [
+     0.022,
+     0.149
+    ],
+    "ecartAPoint": 0.084,
+    "ecartC": [
+     0.002,
+     0.067
+    ],
+    "ecartCPoint": 0.035,
+    "mrrCtlTous": null,
+    "bDans10": 15,
+    "bRangMedian": 5,
+    "retenu": false
+   },
+   {
+    "famille": "libre",
+    "definition": "aucune contrainte",
+    "g": [
+     0.4,
+     0.2,
+     0.4
+    ],
+    "partMots": 0.75,
+    "mrrApp": 0.285,
+    "rappelApp": 0.221,
+    "mrrCtl": 0.293,
+    "rappel10Ctl": 0.29,
+    "rangMedianCtl": 8.5,
+    "ecartA": [
+     0.045,
+     0.187
+    ],
+    "ecartAPoint": 0.111,
+    "ecartC": [
+     0.017,
+     0.104
+    ],
+    "ecartCPoint": 0.062,
+    "mrrCtlTous": null,
+    "bDans10": 15,
+    "bRangMedian": 6,
+    "retenu": false
+   }
+  ],
+  "fr": [
+   {
+    "famille": "k1",
+    "definition": "amertume ≤ 0,3",
+    "g": [
+     0.2,
+     0.4,
+     0.4
+    ],
+    "partMots": 0.75,
+    "mrrApp": 0.268,
+    "rappelApp": 0.234,
+    "mrrCtl": 0.301,
+    "rappel10Ctl": 0.309,
+    "rangMedianCtl": 8,
+    "ecartA": [
+     0.059,
+     0.189
+    ],
+    "ecartAPoint": 0.119,
+    "ecartC": [
+     0.026,
+     0.111
+    ],
+    "ecartCPoint": 0.069,
+    "mrrCtlTous": null,
+    "bDans10": 13,
+    "bRangMedian": 7,
+    "retenu": false
+   },
+   {
+    "famille": "k2",
+    "definition": "amertume ≤ 0,3 et arôme ≥ 0,4",
+    "g": [
+     0.2,
+     0.4,
+     0.4
+    ],
+    "partMots": 0.75,
+    "mrrApp": 0.268,
+    "rappelApp": 0.234,
+    "mrrCtl": 0.301,
+    "rappel10Ctl": 0.309,
+    "rangMedianCtl": 8,
+    "ecartA": [
+     0.059,
+     0.189
+    ],
+    "ecartAPoint": 0.119,
+    "ecartC": [
+     0.026,
+     0.111
+    ],
+    "ecartCPoint": 0.069,
+    "mrrCtlTous": null,
+    "bDans10": 13,
+    "bRangMedian": 7,
+    "retenu": false
+   },
+   {
+    "famille": "k3",
+    "definition": "amertume ≤ 0,2 et arôme ≥ 0,5",
+    "g": [
+     0.2,
+     0.3,
+     0.5
+    ],
+    "partMots": 0.75,
+    "mrrApp": 0.264,
+    "rappelApp": 0.219,
+    "mrrCtl": 0.297,
+    "rappel10Ctl": 0.324,
+    "rangMedianCtl": 7.5,
+    "ecartA": [
+     0.052,
+     0.183
+    ],
+    "ecartAPoint": 0.114,
+    "ecartC": [
+     0.023,
+     0.109
+    ],
+    "ecartCPoint": 0.065,
+    "mrrCtlTous": null,
+    "bDans10": 14,
+    "bRangMedian": 5.5,
+    "retenu": true
+   },
+   {
+    "famille": "k4",
+    "definition": "arôme ≥ 0,6 (comme A et C)",
+    "g": [
+     0.2,
+     0.2,
+     0.6
+    ],
+    "partMots": 0.75,
+    "mrrApp": 0.247,
+    "rappelApp": 0.194,
+    "mrrCtl": 0.273,
+    "rappel10Ctl": 0.282,
+    "rangMedianCtl": 9,
+    "ecartA": [
+     0.027,
+     0.159
+    ],
+    "ecartAPoint": 0.091,
+    "ecartC": [
+     0.004,
+     0.078
+    ],
+    "ecartCPoint": 0.042,
+    "mrrCtlTous": null,
+    "bDans10": 14,
+    "bRangMedian": 6,
+    "retenu": false
+   },
+   {
+    "famille": "libre",
+    "definition": "aucune contrainte",
+    "g": [
+     0.5,
+     0.2,
+     0.3
+    ],
+    "partMots": 0.5,
+    "mrrApp": 0.27,
+    "rappelApp": 0.198,
+    "mrrCtl": 0.307,
+    "rappel10Ctl": 0.287,
+    "rangMedianCtl": 8.5,
+    "ecartA": [
+     0.062,
+     0.198
+    ],
+    "ecartAPoint": 0.125,
+    "ecartC": [
+     0.027,
+     0.129
+    ],
+    "ecartCPoint": 0.076,
+    "mrrCtlTous": null,
+    "bDans10": 12,
+    "bRangMedian": 11,
+    "retenu": false
+   }
+  ]
+ },
+ "seuilB": {
+  "A": 11,
+  "C": 16,
+  "seuil": 15,
+  "famillesChoisies": {
+   "am": "k1",
+   "ch": "k1",
+   "fr": "k3"
+  },
+  "definitions": {
+   "k1": "amertume ≤ 0,3",
+   "k2": "amertume ≤ 0,3 et arôme ≥ 0,4",
+   "k3": "amertume ≤ 0,2 et arôme ≥ 0,5",
+   "k4": "arôme ≥ 0,6 (comme A et C)",
+   "libre": "aucune contrainte"
+  }
+ },
+ "poids": {
+  "fam-k1": {
+   "am": {
+    "α": 0.28,
+    "β": 0.14,
+    "cohumulone": 0.14,
+    "usage": 0.14,
+    "huile totale": 0.05,
+    "myrcène": 0.01,
+    "humulène": 0.06,
+    "caryophyllène": 0.05,
+    "farnésène": 0.01,
+    "linalol": 0.01,
+    "géraniol": 0.01,
+    "familles": 0.1,
+    "mots": 0,
+    "radar BM": 0
+   },
+   "ch": {
+    "α": 0.09,
+    "β": 0.06,
+    "cohumulone": 0.03,
+    "usage": 0.12,
+    "huile totale": 0.04,
+    "myrcène": 0.03,
+    "humulène": 0.03,
+    "caryophyllène": 0.02,
+    "farnésène": 0.02,
+    "linalol": 0.04,
+    "géraniol": 0.02,
+    "familles": 0.113,
+    "mots": 0.338,
+    "radar BM": 0.05
+   },
+   "fr": {
+    "α": 0.05,
+    "β": 0.03,
+    "cohumulone": 0.02,
+    "usage": 0.1,
+    "huile totale": 0.1,
+    "myrcène": 0.04,
+    "humulène": 0.04,
+    "caryophyllène": 0.02,
+    "farnésène": 0.04,
+    "linalol": 0.1,
+    "géraniol": 0.06,
+    "familles": 0.09,
+    "mots": 0.27,
+    "radar BM": 0.04
+   }
+  },
+  "fam-k2": {
+   "am": {
+    "α": 0.28,
+    "β": 0.14,
+    "cohumulone": 0.14,
+    "usage": 0.14,
+    "huile totale": 0.05,
+    "myrcène": 0.01,
+    "humulène": 0.06,
+    "caryophyllène": 0.05,
+    "farnésène": 0.01,
+    "linalol": 0.01,
+    "géraniol": 0.01,
+    "familles": 0.1,
+    "mots": 0,
+    "radar BM": 0
+   },
+   "ch": {
+    "α": 0.09,
+    "β": 0.06,
+    "cohumulone": 0.03,
+    "usage": 0.12,
+    "huile totale": 0.04,
+    "myrcène": 0.03,
+    "humulène": 0.03,
+    "caryophyllène": 0.02,
+    "farnésène": 0.02,
+    "linalol": 0.04,
+    "géraniol": 0.02,
+    "familles": 0.113,
+    "mots": 0.338,
+    "radar BM": 0.05
+   },
+   "fr": {
+    "α": 0.05,
+    "β": 0.03,
+    "cohumulone": 0.02,
+    "usage": 0.1,
+    "huile totale": 0.1,
+    "myrcène": 0.04,
+    "humulène": 0.04,
+    "caryophyllène": 0.02,
+    "farnésène": 0.04,
+    "linalol": 0.1,
+    "géraniol": 0.06,
+    "familles": 0.09,
+    "mots": 0.27,
+    "radar BM": 0.04
+   }
+  },
+  "fam-k3": {
+   "am": {
+    "α": 0.28,
+    "β": 0.14,
+    "cohumulone": 0.14,
+    "usage": 0.14,
+    "huile totale": 0.05,
+    "myrcène": 0.01,
+    "humulène": 0.06,
+    "caryophyllène": 0.05,
+    "farnésène": 0.01,
+    "linalol": 0.01,
+    "géraniol": 0.01,
+    "familles": 0.1,
+    "mots": 0,
+    "radar BM": 0
+   },
+   "ch": {
+    "α": 0.06,
+    "β": 0.04,
+    "cohumulone": 0.02,
+    "usage": 0.08,
+    "huile totale": 0.06,
+    "myrcène": 0.045,
+    "humulène": 0.045,
+    "caryophyllène": 0.03,
+    "farnésène": 0.03,
+    "linalol": 0.06,
+    "géraniol": 0.03,
+    "familles": 0.113,
+    "mots": 0.338,
+    "radar BM": 0.05
+   },
+   "fr": {
+    "α": 0.05,
+    "β": 0.03,
+    "cohumulone": 0.02,
+    "usage": 0.1,
+    "huile totale": 0.075,
+    "myrcène": 0.03,
+    "humulène": 0.03,
+    "caryophyllène": 0.015,
+    "farnésène": 0.03,
+    "linalol": 0.075,
+    "géraniol": 0.045,
+    "familles": 0.113,
+    "mots": 0.338,
+    "radar BM": 0.05
+   }
+  },
+  "fam-k4": {
+   "am": {
+    "α": 0.28,
+    "β": 0.14,
+    "cohumulone": 0.14,
+    "usage": 0.14,
+    "huile totale": 0.05,
+    "myrcène": 0.01,
+    "humulène": 0.06,
+    "caryophyllène": 0.05,
+    "farnésène": 0.01,
+    "linalol": 0.01,
+    "géraniol": 0.01,
+    "familles": 0.1,
+    "mots": 0,
+    "radar BM": 0
+   },
+   "ch": {
+    "α": 0.06,
+    "β": 0.04,
+    "cohumulone": 0.02,
+    "usage": 0.08,
+    "huile totale": 0.04,
+    "myrcène": 0.03,
+    "humulène": 0.03,
+    "caryophyllène": 0.02,
+    "farnésène": 0.02,
+    "linalol": 0.04,
+    "géraniol": 0.02,
+    "familles": 0.135,
+    "mots": 0.405,
+    "radar BM": 0.06
+   },
+   "fr": {
+    "α": 0.05,
+    "β": 0.03,
+    "cohumulone": 0.02,
+    "usage": 0.1,
+    "huile totale": 0.05,
+    "myrcène": 0.02,
+    "humulène": 0.02,
+    "caryophyllène": 0.01,
+    "farnésène": 0.02,
+    "linalol": 0.05,
+    "géraniol": 0.03,
+    "familles": 0.135,
+    "mots": 0.405,
+    "radar BM": 0.06
+   }
+  },
+  "fam-libre": {
+   "am": {
+    "α": 0.28,
+    "β": 0.14,
+    "cohumulone": 0.14,
+    "usage": 0.14,
+    "huile totale": 0.05,
+    "myrcène": 0.01,
+    "humulène": 0.06,
+    "caryophyllène": 0.05,
+    "farnésène": 0.01,
+    "linalol": 0.01,
+    "géraniol": 0.01,
+    "familles": 0.1,
+    "mots": 0,
+    "radar BM": 0
+   },
+   "ch": {
+    "α": 0.12,
+    "β": 0.08,
+    "cohumulone": 0.04,
+    "usage": 0.16,
+    "huile totale": 0.04,
+    "myrcène": 0.03,
+    "humulène": 0.03,
+    "caryophyllène": 0.02,
+    "farnésène": 0.02,
+    "linalol": 0.04,
+    "géraniol": 0.02,
+    "familles": 0.09,
+    "mots": 0.27,
+    "radar BM": 0.04
+   },
+   "fr": {
+    "α": 0.125,
+    "β": 0.075,
+    "cohumulone": 0.05,
+    "usage": 0.25,
+    "huile totale": 0.05,
+    "myrcène": 0.02,
+    "humulène": 0.02,
+    "caryophyllène": 0.01,
+    "farnésène": 0.02,
+    "linalol": 0.05,
+    "géraniol": 0.03,
+    "familles": 0.135,
+    "mots": 0.135,
+    "radar BM": 0.03
+   }
+  },
+  "v2": {
+   "am": {
+    "α": 0.28,
+    "β": 0.14,
+    "cohumulone": 0.14,
+    "usage": 0.14,
+    "huile totale": 0.05,
+    "myrcène": 0.01,
+    "humulène": 0.06,
+    "caryophyllène": 0.05,
+    "farnésène": 0.01,
+    "linalol": 0.01,
+    "géraniol": 0.01,
+    "familles": 0.1,
+    "mots": 0,
+    "radar BM": 0
+   },
+   "ch": {
+    "α": 0.09,
+    "β": 0.06,
+    "cohumulone": 0.03,
+    "usage": 0.12,
+    "huile totale": 0.04,
+    "myrcène": 0.03,
+    "humulène": 0.03,
+    "caryophyllène": 0.02,
+    "farnésène": 0.02,
+    "linalol": 0.04,
+    "géraniol": 0.02,
+    "familles": 0.113,
+    "mots": 0.338,
+    "radar BM": 0.05
+   },
+   "fr": {
+    "α": 0.05,
+    "β": 0.03,
+    "cohumulone": 0.02,
+    "usage": 0.1,
+    "huile totale": 0.075,
+    "myrcène": 0.03,
+    "humulène": 0.03,
+    "caryophyllène": 0.015,
+    "farnésène": 0.03,
+    "linalol": 0.075,
+    "géraniol": 0.045,
+    "familles": 0.113,
+    "mots": 0.338,
+    "radar BM": 0.05
+   }
+  },
+  "v2libre": {
+   "am": {
+    "α": 0.28,
+    "β": 0.14,
+    "cohumulone": 0.14,
+    "usage": 0.14,
+    "huile totale": 0.05,
+    "myrcène": 0.01,
+    "humulène": 0.06,
+    "caryophyllène": 0.05,
+    "farnésène": 0.01,
+    "linalol": 0.01,
+    "géraniol": 0.01,
+    "familles": 0.1,
+    "mots": 0,
+    "radar BM": 0
+   },
+   "ch": {
+    "α": 0.12,
+    "β": 0.08,
+    "cohumulone": 0.04,
+    "usage": 0.16,
+    "huile totale": 0.04,
+    "myrcène": 0.03,
+    "humulène": 0.03,
+    "caryophyllène": 0.02,
+    "farnésène": 0.02,
+    "linalol": 0.04,
+    "géraniol": 0.02,
+    "familles": 0.09,
+    "mots": 0.27,
+    "radar BM": 0.04
+   },
+   "fr": {
+    "α": 0.125,
+    "β": 0.075,
+    "cohumulone": 0.05,
+    "usage": 0.25,
+    "huile totale": 0.05,
+    "myrcène": 0.02,
+    "humulène": 0.02,
+    "caryophyllène": 0.01,
+    "farnésène": 0.02,
+    "linalol": 0.05,
+    "géraniol": 0.03,
+    "familles": 0.135,
+    "mots": 0.135,
+    "radar BM": 0.03
+   }
+  },
+  "v2tous": {
+   "am": {
+    "α": 0.2,
+    "β": 0.1,
+    "cohumulone": 0.1,
+    "usage": 0.1,
+    "huile totale": 0.1,
+    "myrcène": 0.02,
+    "humulène": 0.12,
+    "caryophyllène": 0.1,
+    "farnésène": 0.02,
+    "linalol": 0.02,
+    "géraniol": 0.02,
+    "familles": 0.1,
+    "mots": 0,
+    "radar BM": 0
+   },
+   "ch": {
+    "α": 0.09,
+    "β": 0.06,
+    "cohumulone": 0.03,
+    "usage": 0.12,
+    "huile totale": 0.04,
+    "myrcène": 0.03,
+    "humulène": 0.03,
+    "caryophyllène": 0.02,
+    "farnésène": 0.02,
+    "linalol": 0.04,
+    "géraniol": 0.02,
+    "familles": 0.113,
+    "mots": 0.338,
+    "radar BM": 0.05
+   },
+   "fr": {
+    "α": 0.05,
+    "β": 0.03,
+    "cohumulone": 0.02,
+    "usage": 0.1,
+    "huile totale": 0.075,
+    "myrcène": 0.03,
+    "humulène": 0.03,
+    "caryophyllène": 0.015,
+    "farnésène": 0.03,
+    "linalol": 0.075,
+    "géraniol": 0.045,
+    "familles": 0.113,
+    "mots": 0.338,
+    "radar BM": 0.05
+   }
+  }
+ },
+ "hasard": {
+  "tous": {
+   "mrr": 0.0468787488478657,
+   "rappel10": 0.036468070252792514,
+   "rangMedian": 73
+  },
+  "amer": {
+   "mrr": 0.06030315547583579,
+   "rappel10": 0.03744281045751634,
+   "rangMedian": 52.5
+  }
+ },
+ "resultatsA": {
+  "am": {
+   "tous les houblons": {
+    "app": {
+     "A (actuel)": {
+      "n": 109,
+      "mrr": 0.121,
+      "rappel10": 0.115,
+      "rangMedian": 37,
+      "ic95": {
+       "mrr": [
+        0.081,
+        0.166
+       ],
+       "rappel10": [
+        0.073,
+        0.161
+       ],
+       "rangMedian": [
+        23,
+        59
+       ]
+      },
+      "ecart": null,
+      "ecartPoint": null,
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "C (mots, λ 0,25)": {
+      "n": 109,
+      "mrr": 0.121,
+      "rappel10": 0.115,
+      "rangMedian": 37,
+      "ic95": {
+       "mrr": [
+        0.081,
+        0.166
+       ],
+       "rappel10": [
+        0.073,
+        0.161
+       ],
+       "rangMedian": [
+        23,
+        59
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0,
+        0
+       ],
+       "rappel10": [
+        0,
+        0
+       ],
+       "rangMedian": [
+        0,
+        0
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0,
+       "rappel10": 0,
+       "rangMedian": 0
+      },
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "v2": {
+      "n": 109,
+      "mrr": 0.159,
+      "rappel10": 0.155,
+      "rangMedian": 29,
+      "ic95": {
+       "mrr": [
+        0.114,
+        0.213
+       ],
+       "rappel10": [
+        0.111,
+        0.204
+       ],
+       "rangMedian": [
+        19,
+        44
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.011,
+        0.068
+       ],
+       "rappel10": [
+        0.008,
+        0.076
+       ],
+       "rangMedian": [
+        -19,
+        3
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.038,
+       "rappel10": 0.04,
+       "rangMedian": -8
+      },
+      "contreC": {
+       "mrr": [
+        0.011,
+        0.068
+       ],
+       "rappel10": [
+        0.008,
+        0.076
+       ],
+       "rangMedian": [
+        -19,
+        3
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.038,
+       "rappel10": 0.04
+      }
+     },
+     "v2 libre (sans contrainte)": {
+      "n": 109,
+      "mrr": 0.159,
+      "rappel10": 0.155,
+      "rangMedian": 29,
+      "ic95": {
+       "mrr": [
+        0.114,
+        0.213
+       ],
+       "rappel10": [
+        0.111,
+        0.204
+       ],
+       "rangMedian": [
+        19,
+        44
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.011,
+        0.068
+       ],
+       "rappel10": [
+        0.008,
+        0.076
+       ],
+       "rangMedian": [
+        -19,
+        3
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.038,
+       "rappel10": 0.04,
+       "rangMedian": -8
+      },
+      "contreC": {
+       "mrr": [
+        0.011,
+        0.068
+       ],
+       "rappel10": [
+        0.008,
+        0.076
+       ],
+       "rangMedian": [
+        -19,
+        3
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.038,
+       "rappel10": 0.04
+      }
+     },
+     "v2 (amertume apprise sur tous)": {
+      "n": 109,
+      "mrr": 0.159,
+      "rappel10": 0.144,
+      "rangMedian": 35,
+      "ic95": {
+       "mrr": [
+        0.111,
+        0.213
+       ],
+       "rappel10": [
+        0.101,
+        0.19
+       ],
+       "rangMedian": [
+        25,
+        46
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        -0.001,
+        0.08
+       ],
+       "rappel10": [
+        -0.009,
+        0.069
+       ],
+       "rangMedian": [
+        -16,
+        8
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.038,
+       "rappel10": 0.029,
+       "rangMedian": -2
+      },
+      "contreC": {
+       "mrr": [
+        -0.001,
+        0.08
+       ],
+       "rappel10": [
+        -0.009,
+        0.069
+       ],
+       "rangMedian": [
+        -16,
+        8
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.038,
+       "rappel10": 0.029
+      }
+     }
+    },
+    "ctl": {
+     "A (actuel)": {
+      "n": 108,
+      "mrr": 0.102,
+      "rappel10": 0.13,
+      "rangMedian": 32.5,
+      "ic95": {
+       "mrr": [
+        0.07,
+        0.143
+       ],
+       "rappel10": [
+        0.083,
+        0.184
+       ],
+       "rangMedian": [
+        26.5,
+        44.5
+       ]
+      },
+      "ecart": null,
+      "ecartPoint": null,
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "C (mots, λ 0,25)": {
+      "n": 108,
+      "mrr": 0.102,
+      "rappel10": 0.13,
+      "rangMedian": 32.5,
+      "ic95": {
+       "mrr": [
+        0.07,
+        0.143
+       ],
+       "rappel10": [
+        0.083,
+        0.184
+       ],
+       "rangMedian": [
+        26.5,
+        44.5
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0,
+        0
+       ],
+       "rappel10": [
+        0,
+        0
+       ],
+       "rangMedian": [
+        0,
+        0
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0,
+       "rappel10": 0,
+       "rangMedian": 0
+      },
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "v2": {
+      "n": 108,
+      "mrr": 0.162,
+      "rappel10": 0.168,
+      "rangMedian": 27,
+      "ic95": {
+       "mrr": [
+        0.113,
+        0.221
+       ],
+       "rappel10": [
+        0.112,
+        0.226
+       ],
+       "rangMedian": [
+        16,
+        43
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.034,
+        0.092
+       ],
+       "rappel10": [
+        0.008,
+        0.07
+       ],
+       "rangMedian": [
+        -15,
+        7
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.06,
+       "rappel10": 0.037,
+       "rangMedian": -5.5
+      },
+      "contreC": {
+       "mrr": [
+        0.034,
+        0.092
+       ],
+       "rappel10": [
+        0.008,
+        0.07
+       ],
+       "rangMedian": [
+        -15,
+        7
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.06,
+       "rappel10": 0.037
+      }
+     },
+     "v2 libre (sans contrainte)": {
+      "n": 108,
+      "mrr": 0.162,
+      "rappel10": 0.168,
+      "rangMedian": 27,
+      "ic95": {
+       "mrr": [
+        0.113,
+        0.221
+       ],
+       "rappel10": [
+        0.112,
+        0.226
+       ],
+       "rangMedian": [
+        16,
+        43
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.034,
+        0.092
+       ],
+       "rappel10": [
+        0.008,
+        0.07
+       ],
+       "rangMedian": [
+        -15,
+        7
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.06,
+       "rappel10": 0.037,
+       "rangMedian": -5.5
+      },
+      "contreC": {
+       "mrr": [
+        0.034,
+        0.092
+       ],
+       "rappel10": [
+        0.008,
+        0.07
+       ],
+       "rangMedian": [
+        -15,
+        7
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.06,
+       "rappel10": 0.037
+      }
+     },
+     "v2 (amertume apprise sur tous)": {
+      "n": 108,
+      "mrr": 0.164,
+      "rappel10": 0.165,
+      "rangMedian": 29.5,
+      "ic95": {
+       "mrr": [
+        0.113,
+        0.223
+       ],
+       "rappel10": [
+        0.11,
+        0.224
+       ],
+       "rangMedian": [
+        16,
+        38
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.026,
+        0.1
+       ],
+       "rappel10": [
+        -0.001,
+        0.073
+       ],
+       "rangMedian": [
+        -15,
+        3
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.062,
+       "rappel10": 0.035,
+       "rangMedian": -3
+      },
+      "contreC": {
+       "mrr": [
+        0.026,
+        0.1
+       ],
+       "rappel10": [
+        -0.001,
+        0.073
+       ],
+       "rangMedian": [
+        -15,
+        3
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.062,
+       "rappel10": 0.035
+      }
+     }
+    },
+    "tous": {
+     "A (actuel)": {
+      "n": 217,
+      "mrr": 0.112,
+      "rappel10": 0.123,
+      "rangMedian": 35,
+      "ic95": {
+       "mrr": [
+        0.085,
+        0.139
+       ],
+       "rappel10": [
+        0.09,
+        0.157
+       ],
+       "rangMedian": [
+        27,
+        45
+       ]
+      },
+      "ecart": null,
+      "ecartPoint": null,
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "C (mots, λ 0,25)": {
+      "n": 217,
+      "mrr": 0.112,
+      "rappel10": 0.123,
+      "rangMedian": 35,
+      "ic95": {
+       "mrr": [
+        0.085,
+        0.139
+       ],
+       "rappel10": [
+        0.09,
+        0.157
+       ],
+       "rangMedian": [
+        27,
+        45
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0,
+        0
+       ],
+       "rappel10": [
+        0,
+        0
+       ],
+       "rangMedian": [
+        0,
+        0
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0,
+       "rappel10": 0,
+       "rangMedian": 0
+      },
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "v2": {
+      "n": 217,
+      "mrr": 0.16,
+      "rappel10": 0.161,
+      "rangMedian": 29,
+      "ic95": {
+       "mrr": [
+        0.127,
+        0.196
+       ],
+       "rappel10": [
+        0.125,
+        0.201
+       ],
+       "rangMedian": [
+        20,
+        42
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.029,
+        0.069
+       ],
+       "rappel10": [
+        0.017,
+        0.062
+       ],
+       "rangMedian": [
+        -13,
+        3
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.048,
+       "rappel10": 0.039,
+       "rangMedian": -6
+      },
+      "contreC": {
+       "mrr": [
+        0.029,
+        0.069
+       ],
+       "rappel10": [
+        0.017,
+        0.062
+       ],
+       "rangMedian": [
+        -13,
+        3
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.048,
+       "rappel10": 0.039
+      }
+     },
+     "v2 libre (sans contrainte)": {
+      "n": 217,
+      "mrr": 0.16,
+      "rappel10": 0.161,
+      "rangMedian": 29,
+      "ic95": {
+       "mrr": [
+        0.127,
+        0.196
+       ],
+       "rappel10": [
+        0.125,
+        0.201
+       ],
+       "rangMedian": [
+        20,
+        42
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.029,
+        0.069
+       ],
+       "rappel10": [
+        0.017,
+        0.062
+       ],
+       "rangMedian": [
+        -13,
+        3
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.048,
+       "rappel10": 0.039,
+       "rangMedian": -6
+      },
+      "contreC": {
+       "mrr": [
+        0.029,
+        0.069
+       ],
+       "rappel10": [
+        0.017,
+        0.062
+       ],
+       "rangMedian": [
+        -13,
+        3
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.048,
+       "rappel10": 0.039
+      }
+     },
+     "v2 (amertume apprise sur tous)": {
+      "n": 217,
+      "mrr": 0.162,
+      "rappel10": 0.154,
+      "rangMedian": 32,
+      "ic95": {
+       "mrr": [
+        0.124,
+        0.202
+       ],
+       "rappel10": [
+        0.121,
+        0.193
+       ],
+       "rangMedian": [
+        24,
+        42
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.024,
+        0.077
+       ],
+       "rappel10": [
+        0.006,
+        0.058
+       ],
+       "rangMedian": [
+        -11,
+        3
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.05,
+       "rappel10": 0.032,
+       "rangMedian": -3
+      },
+      "contreC": {
+       "mrr": [
+        0.024,
+        0.077
+       ],
+       "rappel10": [
+        0.006,
+        0.058
+       ],
+       "rangMedian": [
+        -11,
+        3
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.05,
+       "rappel10": 0.032
+      }
+     }
+    }
+   },
+   "amérisants (usage BM : bittering)": {
+    "app": {
+     "A (actuel)": {
+      "n": 20,
+      "mrr": 0.179,
+      "rappel10": 0.129,
+      "rangMedian": 15.5,
+      "ic95": {
+       "mrr": [
+        0.068,
+        0.322
+       ],
+       "rappel10": [
+        0.05,
+        0.211
+       ],
+       "rangMedian": [
+        8,
+        33
+       ]
+      },
+      "ecart": null,
+      "ecartPoint": null,
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "C (mots, λ 0,25)": {
+      "n": 20,
+      "mrr": 0.179,
+      "rappel10": 0.129,
+      "rangMedian": 15.5,
+      "ic95": {
+       "mrr": [
+        0.068,
+        0.322
+       ],
+       "rappel10": [
+        0.05,
+        0.211
+       ],
+       "rangMedian": [
+        8,
+        33
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0,
+        0
+       ],
+       "rappel10": [
+        0,
+        0
+       ],
+       "rangMedian": [
+        0,
+        0
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0,
+       "rappel10": 0,
+       "rangMedian": 0
+      },
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "v2": {
+      "n": 20,
+      "mrr": 0.286,
+      "rappel10": 0.184,
+      "rangMedian": 16.5,
+      "ic95": {
+       "mrr": [
+        0.141,
+        0.465
+       ],
+       "rappel10": [
+        0.09,
+        0.285
+       ],
+       "rangMedian": [
+        4,
+        48.5
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.023,
+        0.21
+       ],
+       "rappel10": [
+        -0.006,
+        0.131
+       ],
+       "rangMedian": [
+        -11.5,
+        21.5
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.107,
+       "rappel10": 0.056,
+       "rangMedian": 1
+      },
+      "contreC": {
+       "mrr": [
+        0.023,
+        0.21
+       ],
+       "rappel10": [
+        -0.006,
+        0.131
+       ],
+       "rangMedian": [
+        -11.5,
+        21.5
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.107,
+       "rappel10": 0.056
+      }
+     },
+     "v2 libre (sans contrainte)": {
+      "n": 20,
+      "mrr": 0.286,
+      "rappel10": 0.184,
+      "rangMedian": 16.5,
+      "ic95": {
+       "mrr": [
+        0.141,
+        0.465
+       ],
+       "rappel10": [
+        0.09,
+        0.285
+       ],
+       "rangMedian": [
+        4,
+        48.5
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.023,
+        0.21
+       ],
+       "rappel10": [
+        -0.006,
+        0.131
+       ],
+       "rangMedian": [
+        -11.5,
+        21.5
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.107,
+       "rappel10": 0.056,
+       "rangMedian": 1
+      },
+      "contreC": {
+       "mrr": [
+        0.023,
+        0.21
+       ],
+       "rappel10": [
+        -0.006,
+        0.131
+       ],
+       "rangMedian": [
+        -11.5,
+        21.5
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.107,
+       "rappel10": 0.056
+      }
+     },
+     "v2 (amertume apprise sur tous)": {
+      "n": 20,
+      "mrr": 0.243,
+      "rappel10": 0.184,
+      "rangMedian": 16,
+      "ic95": {
+       "mrr": [
+        0.113,
+        0.4
+       ],
+       "rappel10": [
+        0.097,
+        0.274
+       ],
+       "rangMedian": [
+        4,
+        55
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        -0.063,
+        0.187
+       ],
+       "rappel10": [
+        -0.006,
+        0.131
+       ],
+       "rangMedian": [
+        -11,
+        24.5
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.064,
+       "rappel10": 0.056,
+       "rangMedian": 0.5
+      },
+      "contreC": {
+       "mrr": [
+        -0.063,
+        0.187
+       ],
+       "rappel10": [
+        -0.006,
+        0.131
+       ],
+       "rangMedian": [
+        -11,
+        24.5
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.064,
+       "rappel10": 0.056
+      }
+     }
+    },
+    "ctl": {
+     "A (actuel)": {
+      "n": 17,
+      "mrr": 0.197,
+      "rappel10": 0.197,
+      "rangMedian": 13,
+      "ic95": {
+       "mrr": [
+        0.09,
+        0.338
+       ],
+       "rappel10": [
+        0.083,
+        0.337
+       ],
+       "rangMedian": [
+        5,
+        44
+       ]
+      },
+      "ecart": null,
+      "ecartPoint": null,
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "C (mots, λ 0,25)": {
+      "n": 17,
+      "mrr": 0.197,
+      "rappel10": 0.197,
+      "rangMedian": 13,
+      "ic95": {
+       "mrr": [
+        0.09,
+        0.338
+       ],
+       "rappel10": [
+        0.083,
+        0.337
+       ],
+       "rangMedian": [
+        5,
+        44
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0,
+        0
+       ],
+       "rappel10": [
+        0,
+        0
+       ],
+       "rangMedian": [
+        0,
+        0
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0,
+       "rappel10": 0,
+       "rangMedian": 0
+      },
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "v2": {
+      "n": 17,
+      "mrr": 0.276,
+      "rappel10": 0.262,
+      "rangMedian": 6,
+      "ic95": {
+       "mrr": [
+        0.142,
+        0.441
+       ],
+       "rappel10": [
+        0.142,
+        0.395
+       ],
+       "rangMedian": [
+        3,
+        51
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.019,
+        0.153
+       ],
+       "rappel10": [
+        0.013,
+        0.139
+       ],
+       "rangMedian": [
+        -23,
+        26
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.08,
+       "rappel10": 0.065,
+       "rangMedian": -7
+      },
+      "contreC": {
+       "mrr": [
+        0.019,
+        0.153
+       ],
+       "rappel10": [
+        0.013,
+        0.139
+       ],
+       "rangMedian": [
+        -23,
+        26
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.08,
+       "rappel10": 0.065
+      }
+     },
+     "v2 libre (sans contrainte)": {
+      "n": 17,
+      "mrr": 0.276,
+      "rappel10": 0.262,
+      "rangMedian": 6,
+      "ic95": {
+       "mrr": [
+        0.142,
+        0.441
+       ],
+       "rappel10": [
+        0.142,
+        0.395
+       ],
+       "rangMedian": [
+        3,
+        51
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.019,
+        0.153
+       ],
+       "rappel10": [
+        0.013,
+        0.139
+       ],
+       "rangMedian": [
+        -23,
+        26
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.08,
+       "rappel10": 0.065,
+       "rangMedian": -7
+      },
+      "contreC": {
+       "mrr": [
+        0.019,
+        0.153
+       ],
+       "rappel10": [
+        0.013,
+        0.139
+       ],
+       "rangMedian": [
+        -23,
+        26
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.08,
+       "rappel10": 0.065
+      }
+     },
+     "v2 (amertume apprise sur tous)": {
+      "n": 17,
+      "mrr": 0.307,
+      "rappel10": 0.231,
+      "rangMedian": 6,
+      "ic95": {
+       "mrr": [
+        0.147,
+        0.492
+       ],
+       "rappel10": [
+        0.116,
+        0.352
+       ],
+       "rangMedian": [
+        2,
+        35
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.018,
+        0.215
+       ],
+       "rappel10": [
+        -0.039,
+        0.113
+       ],
+       "rangMedian": [
+        -23,
+        20
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.11,
+       "rappel10": 0.034,
+       "rangMedian": -7
+      },
+      "contreC": {
+       "mrr": [
+        0.018,
+        0.215
+       ],
+       "rappel10": [
+        -0.039,
+        0.113
+       ],
+       "rangMedian": [
+        -23,
+        20
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.11,
+       "rappel10": 0.034
+      }
+     }
+    },
+    "tous": {
+     "A (actuel)": {
+      "n": 37,
+      "mrr": 0.187,
+      "rappel10": 0.16,
+      "rangMedian": 13,
+      "ic95": {
+       "mrr": [
+        0.105,
+        0.287
+       ],
+       "rappel10": [
+        0.089,
+        0.24
+       ],
+       "rangMedian": [
+        7,
+        29
+       ]
+      },
+      "ecart": null,
+      "ecartPoint": null,
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "C (mots, λ 0,25)": {
+      "n": 37,
+      "mrr": 0.187,
+      "rappel10": 0.16,
+      "rangMedian": 13,
+      "ic95": {
+       "mrr": [
+        0.105,
+        0.287
+       ],
+       "rappel10": [
+        0.089,
+        0.24
+       ],
+       "rangMedian": [
+        7,
+        29
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0,
+        0
+       ],
+       "rappel10": [
+        0,
+        0
+       ],
+       "rangMedian": [
+        0,
+        0
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0,
+       "rappel10": 0,
+       "rangMedian": 0
+      },
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "v2": {
+      "n": 37,
+      "mrr": 0.282,
+      "rappel10": 0.22,
+      "rangMedian": 6,
+      "ic95": {
+       "mrr": [
+        0.169,
+        0.403
+       ],
+       "rappel10": [
+        0.144,
+        0.312
+       ],
+       "rangMedian": [
+        4,
+        42
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.039,
+        0.159
+       ],
+       "rappel10": [
+        0.019,
+        0.111
+       ],
+       "rangMedian": [
+        -18,
+        16
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.095,
+       "rappel10": 0.06,
+       "rangMedian": -7
+      },
+      "contreC": {
+       "mrr": [
+        0.039,
+        0.159
+       ],
+       "rappel10": [
+        0.019,
+        0.111
+       ],
+       "rangMedian": [
+        -18,
+        16
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.095,
+       "rappel10": 0.06
+      }
+     },
+     "v2 libre (sans contrainte)": {
+      "n": 37,
+      "mrr": 0.282,
+      "rappel10": 0.22,
+      "rangMedian": 6,
+      "ic95": {
+       "mrr": [
+        0.169,
+        0.403
+       ],
+       "rappel10": [
+        0.144,
+        0.312
+       ],
+       "rangMedian": [
+        4,
+        42
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.039,
+        0.159
+       ],
+       "rappel10": [
+        0.019,
+        0.111
+       ],
+       "rangMedian": [
+        -18,
+        16
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.095,
+       "rappel10": 0.06,
+       "rangMedian": -7
+      },
+      "contreC": {
+       "mrr": [
+        0.039,
+        0.159
+       ],
+       "rappel10": [
+        0.019,
+        0.111
+       ],
+       "rangMedian": [
+        -18,
+        16
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.095,
+       "rappel10": 0.06
+      }
+     },
+     "v2 (amertume apprise sur tous)": {
+      "n": 37,
+      "mrr": 0.272,
+      "rappel10": 0.206,
+      "rangMedian": 7,
+      "ic95": {
+       "mrr": [
+        0.16,
+        0.391
+       ],
+       "rappel10": [
+        0.134,
+        0.291
+       ],
+       "rangMedian": [
+        4,
+        35
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0,
+        0.168
+       ],
+       "rappel10": [
+        0.001,
+        0.099
+       ],
+       "rangMedian": [
+        -15,
+        12
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.085,
+       "rappel10": 0.046,
+       "rangMedian": -6
+      },
+      "contreC": {
+       "mrr": [
+        0,
+        0.168
+       ],
+       "rappel10": [
+        0.001,
+        0.099
+       ],
+       "rangMedian": [
+        -15,
+        12
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.085,
+       "rappel10": 0.046
+      }
+     }
+    }
+   }
+  },
+  "ch": {
+   "tous les houblons": {
+    "app": {
+     "A (actuel)": {
+      "n": 109,
+      "mrr": 0.134,
+      "rappel10": 0.133,
+      "rangMedian": 19,
+      "ic95": {
+       "mrr": [
+        0.098,
+        0.176
+       ],
+       "rappel10": [
+        0.093,
+        0.182
+       ],
+       "rangMedian": [
+        14,
+        27
+       ]
+      },
+      "ecart": null,
+      "ecartPoint": null,
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "C (mots, λ 0,25)": {
+      "n": 109,
+      "mrr": 0.236,
+      "rappel10": 0.199,
+      "rangMedian": 11,
+      "ic95": {
+       "mrr": [
+        0.175,
+        0.298
+       ],
+       "rappel10": [
+        0.148,
+        0.254
+       ],
+       "rangMedian": [
+        7,
+        21
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.045,
+        0.158
+       ],
+       "rappel10": [
+        0.025,
+        0.107
+       ],
+       "rangMedian": [
+        -13,
+        0
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.102,
+       "rappel10": 0.066,
+       "rangMedian": -8
+      },
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "v2": {
+      "n": 109,
+      "mrr": 0.28,
+      "rappel10": 0.225,
+      "rangMedian": 10,
+      "ic95": {
+       "mrr": [
+        0.214,
+        0.346
+       ],
+       "rappel10": [
+        0.171,
+        0.284
+       ],
+       "rangMedian": [
+        6,
+        18
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.088,
+        0.208
+       ],
+       "rappel10": [
+        0.037,
+        0.148
+       ],
+       "rangMedian": [
+        -15,
+        -1
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.145,
+       "rappel10": 0.091,
+       "rangMedian": -9
+      },
+      "contreC": {
+       "mrr": [
+        -0.002,
+        0.091
+       ],
+       "rappel10": [
+        -0.015,
+        0.065
+       ],
+       "rangMedian": [
+        -7,
+        5
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.043,
+       "rappel10": 0.026
+      }
+     },
+     "v2 libre (sans contrainte)": {
+      "n": 109,
+      "mrr": 0.285,
+      "rappel10": 0.221,
+      "rangMedian": 11,
+      "ic95": {
+       "mrr": [
+        0.218,
+        0.358
+       ],
+       "rappel10": [
+        0.167,
+        0.279
+       ],
+       "rangMedian": [
+        7,
+        20
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.089,
+        0.216
+       ],
+       "rappel10": [
+        0.03,
+        0.148
+       ],
+       "rangMedian": [
+        -15,
+        0
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.15,
+       "rappel10": 0.088,
+       "rangMedian": -8
+      },
+      "contreC": {
+       "mrr": [
+        -0.002,
+        0.101
+       ],
+       "rappel10": [
+        -0.024,
+        0.07
+       ],
+       "rangMedian": [
+        -7,
+        6
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.048,
+       "rappel10": 0.022
+      }
+     },
+     "v2 (amertume apprise sur tous)": {
+      "n": 109,
+      "mrr": 0.28,
+      "rappel10": 0.225,
+      "rangMedian": 10,
+      "ic95": {
+       "mrr": [
+        0.214,
+        0.346
+       ],
+       "rappel10": [
+        0.171,
+        0.284
+       ],
+       "rangMedian": [
+        6,
+        18
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.088,
+        0.208
+       ],
+       "rappel10": [
+        0.037,
+        0.148
+       ],
+       "rangMedian": [
+        -15,
+        -1
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.145,
+       "rappel10": 0.091,
+       "rangMedian": -9
+      },
+      "contreC": {
+       "mrr": [
+        -0.002,
+        0.091
+       ],
+       "rappel10": [
+        -0.015,
+        0.065
+       ],
+       "rangMedian": [
+        -7,
+        5
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.043,
+       "rappel10": 0.026
+      }
+     }
+    },
+    "ctl": {
+     "A (actuel)": {
+      "n": 108,
+      "mrr": 0.182,
+      "rappel10": 0.153,
+      "rangMedian": 18.5,
+      "ic95": {
+       "mrr": [
+        0.131,
+        0.241
+       ],
+       "rappel10": [
+        0.113,
+        0.199
+       ],
+       "rangMedian": [
+        13,
+        24.5
+       ]
+      },
+      "ecart": null,
+      "ecartPoint": null,
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "C (mots, λ 0,25)": {
+      "n": 108,
+      "mrr": 0.232,
+      "rappel10": 0.252,
+      "rangMedian": 10.5,
+      "ic95": {
+       "mrr": [
+        0.175,
+        0.298
+       ],
+       "rappel10": [
+        0.194,
+        0.313
+       ],
+       "rangMedian": [
+        8,
+        14.5
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        -0.014,
+        0.113
+       ],
+       "rappel10": [
+        0.036,
+        0.168
+       ],
+       "rangMedian": [
+        -14,
+        -3
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.049,
+       "rappel10": 0.099,
+       "rangMedian": -8
+      },
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "v2": {
+      "n": 108,
+      "mrr": 0.282,
+      "rappel10": 0.287,
+      "rangMedian": 9,
+      "ic95": {
+       "mrr": [
+        0.217,
+        0.355
+       ],
+       "rappel10": [
+        0.226,
+        0.356
+       ],
+       "rangMedian": [
+        6,
+        12
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.031,
+        0.17
+       ],
+       "rappel10": [
+        0.068,
+        0.208
+       ],
+       "rangMedian": [
+        -16,
+        -5
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.099,
+       "rappel10": 0.135,
+       "rangMedian": -9.5
+      },
+      "contreC": {
+       "mrr": [
+        0.011,
+        0.091
+       ],
+       "rappel10": [
+        -0.008,
+        0.085
+       ],
+       "rangMedian": [
+        -5,
+        1
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.05,
+       "rappel10": 0.036
+      }
+     },
+     "v2 libre (sans contrainte)": {
+      "n": 108,
+      "mrr": 0.293,
+      "rappel10": 0.29,
+      "rangMedian": 8.5,
+      "ic95": {
+       "mrr": [
+        0.228,
+        0.368
+       ],
+       "rappel10": [
+        0.235,
+        0.356
+       ],
+       "rangMedian": [
+        6,
+        12
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.045,
+        0.187
+       ],
+       "rappel10": [
+        0.074,
+        0.21
+       ],
+       "rangMedian": [
+        -16,
+        -5
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.111,
+       "rappel10": 0.137,
+       "rangMedian": -10
+      },
+      "contreC": {
+       "mrr": [
+        0.017,
+        0.104
+       ],
+       "rappel10": [
+        -0.02,
+        0.094
+       ],
+       "rangMedian": [
+        -5,
+        1.5
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.062,
+       "rappel10": 0.038
+      }
+     },
+     "v2 (amertume apprise sur tous)": {
+      "n": 108,
+      "mrr": 0.282,
+      "rappel10": 0.287,
+      "rangMedian": 9,
+      "ic95": {
+       "mrr": [
+        0.217,
+        0.355
+       ],
+       "rappel10": [
+        0.226,
+        0.356
+       ],
+       "rangMedian": [
+        6,
+        12
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.031,
+        0.17
+       ],
+       "rappel10": [
+        0.068,
+        0.208
+       ],
+       "rangMedian": [
+        -16,
+        -5
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.099,
+       "rappel10": 0.135,
+       "rangMedian": -9.5
+      },
+      "contreC": {
+       "mrr": [
+        0.011,
+        0.091
+       ],
+       "rappel10": [
+        -0.008,
+        0.085
+       ],
+       "rangMedian": [
+        -5,
+        1
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.05,
+       "rappel10": 0.036
+      }
+     }
+    },
+    "tous": {
+     "A (actuel)": {
+      "n": 217,
+      "mrr": 0.158,
+      "rappel10": 0.143,
+      "rangMedian": 19,
+      "ic95": {
+       "mrr": [
+        0.126,
+        0.194
+       ],
+       "rappel10": [
+        0.114,
+        0.178
+       ],
+       "rangMedian": [
+        15,
+        23
+       ]
+      },
+      "ecart": null,
+      "ecartPoint": null,
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "C (mots, λ 0,25)": {
+      "n": 217,
+      "mrr": 0.234,
+      "rappel10": 0.225,
+      "rangMedian": 11,
+      "ic95": {
+       "mrr": [
+        0.193,
+        0.277
+       ],
+       "rappel10": [
+        0.189,
+        0.267
+       ],
+       "rangMedian": [
+        9,
+        15
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.034,
+        0.118
+       ],
+       "rappel10": [
+        0.046,
+        0.126
+       ],
+       "rangMedian": [
+        -12,
+        -4
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.076,
+       "rappel10": 0.082,
+       "rangMedian": -8
+      },
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "v2": {
+      "n": 217,
+      "mrr": 0.281,
+      "rappel10": 0.256,
+      "rangMedian": 9,
+      "ic95": {
+       "mrr": [
+        0.233,
+        0.326
+       ],
+       "rappel10": [
+        0.216,
+        0.3
+       ],
+       "rangMedian": [
+        7,
+        12
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.079,
+        0.167
+       ],
+       "rappel10": [
+        0.069,
+        0.16
+       ],
+       "rangMedian": [
+        -14,
+        -6
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.122,
+       "rappel10": 0.113,
+       "rangMedian": -10
+      },
+      "contreC": {
+       "mrr": [
+        0.016,
+        0.079
+       ],
+       "rappel10": [
+        -0.003,
+        0.061
+       ],
+       "rangMedian": [
+        -4,
+        1
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.047,
+       "rappel10": 0.031
+      }
+     },
+     "v2 libre (sans contrainte)": {
+      "n": 217,
+      "mrr": 0.289,
+      "rappel10": 0.255,
+      "rangMedian": 9,
+      "ic95": {
+       "mrr": [
+        0.243,
+        0.335
+       ],
+       "rappel10": [
+        0.213,
+        0.299
+       ],
+       "rangMedian": [
+        7,
+        13
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.088,
+        0.178
+       ],
+       "rappel10": [
+        0.07,
+        0.154
+       ],
+       "rangMedian": [
+        -14,
+        -5
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.131,
+       "rappel10": 0.112,
+       "rangMedian": -10
+      },
+      "contreC": {
+       "mrr": [
+        0.02,
+        0.091
+       ],
+       "rappel10": [
+        -0.008,
+        0.07
+       ],
+       "rangMedian": [
+        -4,
+        2
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.055,
+       "rappel10": 0.03
+      }
+     },
+     "v2 (amertume apprise sur tous)": {
+      "n": 217,
+      "mrr": 0.281,
+      "rappel10": 0.256,
+      "rangMedian": 9,
+      "ic95": {
+       "mrr": [
+        0.233,
+        0.326
+       ],
+       "rappel10": [
+        0.216,
+        0.3
+       ],
+       "rangMedian": [
+        7,
+        12
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.079,
+        0.167
+       ],
+       "rappel10": [
+        0.069,
+        0.16
+       ],
+       "rangMedian": [
+        -14,
+        -6
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.122,
+       "rappel10": 0.113,
+       "rangMedian": -10
+      },
+      "contreC": {
+       "mrr": [
+        0.016,
+        0.079
+       ],
+       "rappel10": [
+        -0.003,
+        0.061
+       ],
+       "rangMedian": [
+        -4,
+        1
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.047,
+       "rappel10": 0.031
+      }
+     }
+    }
+   }
+  },
+  "fr": {
+   "tous les houblons": {
+    "app": {
+     "A (actuel)": {
+      "n": 109,
+      "mrr": 0.134,
+      "rappel10": 0.133,
+      "rangMedian": 19,
+      "ic95": {
+       "mrr": [
+        0.098,
+        0.176
+       ],
+       "rappel10": [
+        0.093,
+        0.182
+       ],
+       "rangMedian": [
+        14,
+        27
+       ]
+      },
+      "ecart": null,
+      "ecartPoint": null,
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "C (mots, λ 0,25)": {
+      "n": 109,
+      "mrr": 0.236,
+      "rappel10": 0.199,
+      "rangMedian": 11,
+      "ic95": {
+       "mrr": [
+        0.175,
+        0.298
+       ],
+       "rappel10": [
+        0.148,
+        0.254
+       ],
+       "rangMedian": [
+        7,
+        21
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.045,
+        0.158
+       ],
+       "rappel10": [
+        0.025,
+        0.107
+       ],
+       "rangMedian": [
+        -13,
+        0
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.102,
+       "rappel10": 0.066,
+       "rangMedian": -8
+      },
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "v2": {
+      "n": 109,
+      "mrr": 0.264,
+      "rappel10": 0.219,
+      "rangMedian": 12,
+      "ic95": {
+       "mrr": [
+        0.201,
+        0.328
+       ],
+       "rappel10": [
+        0.163,
+        0.277
+       ],
+       "rangMedian": [
+        6,
+        21
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.076,
+        0.188
+       ],
+       "rappel10": [
+        0.029,
+        0.142
+       ],
+       "rangMedian": [
+        -14,
+        0
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.129,
+       "rappel10": 0.086,
+       "rangMedian": -7
+      },
+      "contreC": {
+       "mrr": [
+        -0.008,
+        0.067
+       ],
+       "rappel10": [
+        -0.025,
+        0.062
+       ],
+       "rangMedian": [
+        -6,
+        7
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.027,
+       "rappel10": 0.02
+      }
+     },
+     "v2 libre (sans contrainte)": {
+      "n": 109,
+      "mrr": 0.27,
+      "rappel10": 0.198,
+      "rangMedian": 16,
+      "ic95": {
+       "mrr": [
+        0.208,
+        0.336
+       ],
+       "rappel10": [
+        0.147,
+        0.252
+       ],
+       "rangMedian": [
+        7,
+        24
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.079,
+        0.197
+       ],
+       "rappel10": [
+        0.006,
+        0.121
+       ],
+       "rangMedian": [
+        -13,
+        4
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.135,
+       "rappel10": 0.064,
+       "rangMedian": -3
+      },
+      "contreC": {
+       "mrr": [
+        -0.022,
+        0.088
+       ],
+       "rappel10": [
+        -0.057,
+        0.056
+       ],
+       "rangMedian": [
+        -6,
+        11
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.033,
+       "rappel10": -0.002
+      }
+     },
+     "v2 (amertume apprise sur tous)": {
+      "n": 109,
+      "mrr": 0.264,
+      "rappel10": 0.219,
+      "rangMedian": 12,
+      "ic95": {
+       "mrr": [
+        0.201,
+        0.328
+       ],
+       "rappel10": [
+        0.163,
+        0.277
+       ],
+       "rangMedian": [
+        6,
+        21
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.076,
+        0.188
+       ],
+       "rappel10": [
+        0.029,
+        0.142
+       ],
+       "rangMedian": [
+        -14,
+        0
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.129,
+       "rappel10": 0.086,
+       "rangMedian": -7
+      },
+      "contreC": {
+       "mrr": [
+        -0.008,
+        0.067
+       ],
+       "rappel10": [
+        -0.025,
+        0.062
+       ],
+       "rangMedian": [
+        -6,
+        7
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.027,
+       "rappel10": 0.02
+      }
+     }
+    },
+    "ctl": {
+     "A (actuel)": {
+      "n": 108,
+      "mrr": 0.182,
+      "rappel10": 0.153,
+      "rangMedian": 18.5,
+      "ic95": {
+       "mrr": [
+        0.131,
+        0.241
+       ],
+       "rappel10": [
+        0.113,
+        0.199
+       ],
+       "rangMedian": [
+        13,
+        24.5
+       ]
+      },
+      "ecart": null,
+      "ecartPoint": null,
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "C (mots, λ 0,25)": {
+      "n": 108,
+      "mrr": 0.232,
+      "rappel10": 0.252,
+      "rangMedian": 10.5,
+      "ic95": {
+       "mrr": [
+        0.175,
+        0.298
+       ],
+       "rappel10": [
+        0.194,
+        0.313
+       ],
+       "rangMedian": [
+        8,
+        14.5
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        -0.014,
+        0.113
+       ],
+       "rappel10": [
+        0.036,
+        0.168
+       ],
+       "rangMedian": [
+        -14,
+        -3
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.049,
+       "rappel10": 0.099,
+       "rangMedian": -8
+      },
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "v2": {
+      "n": 108,
+      "mrr": 0.297,
+      "rappel10": 0.324,
+      "rangMedian": 7.5,
+      "ic95": {
+       "mrr": [
+        0.23,
+        0.371
+       ],
+       "rappel10": [
+        0.263,
+        0.394
+       ],
+       "rangMedian": [
+        5.5,
+        10
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.052,
+        0.183
+       ],
+       "rappel10": [
+        0.101,
+        0.25
+       ],
+       "rangMedian": [
+        -17,
+        -6
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.114,
+       "rappel10": 0.171,
+       "rangMedian": -11
+      },
+      "contreC": {
+       "mrr": [
+        0.023,
+        0.109
+       ],
+       "rappel10": [
+        0.027,
+        0.121
+       ],
+       "rangMedian": [
+        -6,
+        -1
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.065,
+       "rappel10": 0.072
+      }
+     },
+     "v2 libre (sans contrainte)": {
+      "n": 108,
+      "mrr": 0.307,
+      "rappel10": 0.287,
+      "rangMedian": 8.5,
+      "ic95": {
+       "mrr": [
+        0.241,
+        0.384
+       ],
+       "rappel10": [
+        0.226,
+        0.354
+       ],
+       "rangMedian": [
+        4,
+        13.5
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.062,
+        0.198
+       ],
+       "rappel10": [
+        0.077,
+        0.202
+       ],
+       "rangMedian": [
+        -15.5,
+        -4.5
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.125,
+       "rappel10": 0.134,
+       "rangMedian": -10
+      },
+      "contreC": {
+       "mrr": [
+        0.027,
+        0.129
+       ],
+       "rappel10": [
+        -0.029,
+        0.102
+       ],
+       "rangMedian": [
+        -6,
+        2.5
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.076,
+       "rappel10": 0.035
+      }
+     },
+     "v2 (amertume apprise sur tous)": {
+      "n": 108,
+      "mrr": 0.297,
+      "rappel10": 0.324,
+      "rangMedian": 7.5,
+      "ic95": {
+       "mrr": [
+        0.23,
+        0.371
+       ],
+       "rappel10": [
+        0.263,
+        0.394
+       ],
+       "rangMedian": [
+        5.5,
+        10
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.052,
+        0.183
+       ],
+       "rappel10": [
+        0.101,
+        0.25
+       ],
+       "rangMedian": [
+        -17,
+        -6
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.114,
+       "rappel10": 0.171,
+       "rangMedian": -11
+      },
+      "contreC": {
+       "mrr": [
+        0.023,
+        0.109
+       ],
+       "rappel10": [
+        0.027,
+        0.121
+       ],
+       "rangMedian": [
+        -6,
+        -1
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.065,
+       "rappel10": 0.072
+      }
+     }
+    },
+    "tous": {
+     "A (actuel)": {
+      "n": 217,
+      "mrr": 0.158,
+      "rappel10": 0.143,
+      "rangMedian": 19,
+      "ic95": {
+       "mrr": [
+        0.126,
+        0.194
+       ],
+       "rappel10": [
+        0.114,
+        0.178
+       ],
+       "rangMedian": [
+        15,
+        23
+       ]
+      },
+      "ecart": null,
+      "ecartPoint": null,
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "C (mots, λ 0,25)": {
+      "n": 217,
+      "mrr": 0.234,
+      "rappel10": 0.225,
+      "rangMedian": 11,
+      "ic95": {
+       "mrr": [
+        0.193,
+        0.277
+       ],
+       "rappel10": [
+        0.189,
+        0.267
+       ],
+       "rangMedian": [
+        9,
+        15
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.034,
+        0.118
+       ],
+       "rappel10": [
+        0.046,
+        0.126
+       ],
+       "rangMedian": [
+        -12,
+        -4
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.076,
+       "rappel10": 0.082,
+       "rangMedian": -8
+      },
+      "contreC": null,
+      "contreCPoint": null
+     },
+     "v2": {
+      "n": 217,
+      "mrr": 0.28,
+      "rappel10": 0.271,
+      "rangMedian": 9,
+      "ic95": {
+       "mrr": [
+        0.233,
+        0.324
+       ],
+       "rappel10": [
+        0.228,
+        0.315
+       ],
+       "rangMedian": [
+        7,
+        12
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.082,
+        0.165
+       ],
+       "rappel10": [
+        0.082,
+        0.175
+       ],
+       "rangMedian": [
+        -14,
+        -6
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.122,
+       "rappel10": 0.128,
+       "rangMedian": -10
+      },
+      "contreC": {
+       "mrr": [
+        0.016,
+        0.077
+       ],
+       "rappel10": [
+        0.013,
+        0.076
+       ],
+       "rangMedian": [
+        -4,
+        1
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.046,
+       "rappel10": 0.046
+      }
+     },
+     "v2 libre (sans contrainte)": {
+      "n": 217,
+      "mrr": 0.288,
+      "rappel10": 0.242,
+      "rangMedian": 10,
+      "ic95": {
+       "mrr": [
+        0.241,
+        0.335
+       ],
+       "rappel10": [
+        0.203,
+        0.288
+       ],
+       "rangMedian": [
+        7,
+        16
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.088,
+        0.174
+       ],
+       "rappel10": [
+        0.059,
+        0.144
+       ],
+       "rangMedian": [
+        -13,
+        -4
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.13,
+       "rappel10": 0.099,
+       "rangMedian": -9
+      },
+      "contreC": {
+       "mrr": [
+        0.016,
+        0.094
+       ],
+       "rappel10": [
+        -0.028,
+        0.063
+       ],
+       "rangMedian": [
+        -3,
+        4
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.054,
+       "rappel10": 0.017
+      }
+     },
+     "v2 (amertume apprise sur tous)": {
+      "n": 217,
+      "mrr": 0.28,
+      "rappel10": 0.271,
+      "rangMedian": 9,
+      "ic95": {
+       "mrr": [
+        0.233,
+        0.324
+       ],
+       "rappel10": [
+        0.228,
+        0.315
+       ],
+       "rangMedian": [
+        7,
+        12
+       ]
+      },
+      "ecart": {
+       "mrr": [
+        0.082,
+        0.165
+       ],
+       "rappel10": [
+        0.082,
+        0.175
+       ],
+       "rangMedian": [
+        -14,
+        -6
+       ]
+      },
+      "ecartPoint": {
+       "mrr": 0.122,
+       "rappel10": 0.128,
+       "rangMedian": -10
+      },
+      "contreC": {
+       "mrr": [
+        0.016,
+        0.077
+       ],
+       "rappel10": [
+        0.013,
+        0.076
+       ],
+       "rangMedian": [
+        -4,
+        1
+       ]
+      },
+      "contreCPoint": {
+       "mrr": 0.046,
+       "rappel10": 0.046
+      }
+     }
+    }
+   }
+  }
+ },
+ "ablation": {
+  "am | tous les houblons": [
+   {
+    "variable": "α",
+    "poids": 0.28,
+    "mrrSans": 0.15,
+    "ecartMrr": -0.011,
+    "ecartRappel10": 0.01,
+    "ic": {
+     "mrr": [
+      -0.045,
+      0.021
+     ],
+     "rappel10": [
+      -0.017,
+      0.04
+     ],
+     "rangMedian": [
+      -15,
+      4.5
+     ]
+    }
+   },
+   {
+    "variable": "β",
+    "poids": 0.14,
+    "mrrSans": 0.105,
+    "ecartMrr": -0.057,
+    "ecartRappel10": -0.022,
+    "ic": {
+     "mrr": [
+      -0.092,
+      -0.027
+     ],
+     "rappel10": [
+      -0.062,
+      0.021
+     ],
+     "rangMedian": [
+      -11.5,
+      9
+     ]
+    }
+   },
+   {
+    "variable": "cohumulone",
+    "poids": 0.14,
+    "mrrSans": 0.131,
+    "ecartMrr": -0.031,
+    "ecartRappel10": -0.022,
+    "ic": {
+     "mrr": [
+      -0.058,
+      -0.009
+     ],
+     "rappel10": [
+      -0.05,
+      0.002
+     ],
+     "rangMedian": [
+      -8,
+      11.5
+     ]
+    }
+   },
+   {
+    "variable": "usage",
+    "poids": 0.14,
+    "mrrSans": 0.145,
+    "ecartMrr": -0.017,
+    "ecartRappel10": -0.022,
+    "ic": {
+     "mrr": [
+      -0.038,
+      0.002
+     ],
+     "rappel10": [
+      -0.04,
+      -0.006
+     ],
+     "rangMedian": [
+      -3,
+      14
+     ]
+    }
+   },
+   {
+    "variable": "huile totale",
+    "poids": 0.05,
+    "mrrSans": 0.157,
+    "ecartMrr": -0.005,
+    "ecartRappel10": -0.007,
+    "ic": {
+     "mrr": [
+      -0.02,
+      0.009
+     ],
+     "rappel10": [
+      -0.022,
+      0.004
+     ],
+     "rangMedian": [
+      -5.5,
+      7.5
+     ]
+    }
+   },
+   {
+    "variable": "myrcène",
+    "poids": 0.01,
+    "mrrSans": 0.165,
+    "ecartMrr": 0.003,
+    "ecartRappel10": -0.01,
+    "ic": {
+     "mrr": [
+      -0.005,
+      0.013
+     ],
+     "rappel10": [
+      -0.036,
+      0.007
+     ],
+     "rangMedian": [
+      -4,
+      2.5
+     ]
+    }
+   },
+   {
+    "variable": "humulène",
+    "poids": 0.06,
+    "mrrSans": 0.19,
+    "ecartMrr": 0.028,
+    "ecartRappel10": 0.007,
+    "ic": {
+     "mrr": [
+      0.009,
+      0.056
+     ],
+     "rappel10": [
+      -0.022,
+      0.035
+     ],
+     "rangMedian": [
+      -9,
+      5
+     ]
+    }
+   },
+   {
+    "variable": "caryophyllène",
+    "poids": 0.05,
+    "mrrSans": 0.165,
+    "ecartMrr": 0.003,
+    "ecartRappel10": -0.006,
+    "ic": {
+     "mrr": [
+      -0.01,
+      0.017
+     ],
+     "rappel10": [
+      -0.028,
+      0.007
+     ],
+     "rangMedian": [
+      -9,
+      4
+     ]
+    }
+   },
+   {
+    "variable": "farnésène",
+    "poids": 0.01,
+    "mrrSans": 0.16,
+    "ecartMrr": -0.002,
+    "ecartRappel10": -0.003,
+    "ic": {
+     "mrr": [
+      -0.006,
+      0
+     ],
+     "rappel10": [
+      -0.009,
+      0
+     ],
+     "rangMedian": [
+      -2,
+      3
+     ]
+    }
+   },
+   {
+    "variable": "linalol",
+    "poids": 0.01,
+    "mrrSans": 0.162,
+    "ecartMrr": 0,
+    "ecartRappel10": -0.002,
+    "ic": {
+     "mrr": [
+      -0.001,
+      0.001
+     ],
+     "rappel10": [
+      -0.007,
+      0
+     ],
+     "rangMedian": [
+      0,
+      1
+     ]
+    }
+   },
+   {
+    "variable": "géraniol",
+    "poids": 0.01,
+    "mrrSans": 0.162,
+    "ecartMrr": 0,
+    "ecartRappel10": 0,
+    "ic": {
+     "mrr": [
+      0,
+      0
+     ],
+     "rappel10": [
+      0,
+      0
+     ],
+     "rangMedian": [
+      0,
+      0
+     ]
+    }
+   },
+   {
+    "variable": "familles",
+    "poids": 0.1,
+    "mrrSans": 0.133,
+    "ecartMrr": -0.029,
+    "ecartRappel10": 0.007,
+    "ic": {
+     "mrr": [
+      -0.055,
+      -0.007
+     ],
+     "rappel10": [
+      -0.025,
+      0.043
+     ],
+     "rangMedian": [
+      0,
+      15.5
+     ]
+    }
+   },
+   {
+    "variable": "mots",
+    "poids": 0,
+    "mrrSans": 0.162,
+    "ecartMrr": 0,
+    "ecartRappel10": 0,
+    "ic": {
+     "mrr": [
+      0,
+      0
+     ],
+     "rappel10": [
+      0,
+      0
+     ],
+     "rangMedian": [
+      0,
+      0
+     ]
+    }
+   },
+   {
+    "variable": "radar BM",
+    "poids": 0,
+    "mrrSans": 0.162,
+    "ecartMrr": 0,
+    "ecartRappel10": 0,
+    "ic": {
+     "mrr": [
+      0,
+      0
+     ],
+     "rappel10": [
+      0,
+      0
+     ],
+     "rangMedian": [
+      0,
+      0
+     ]
+    }
+   },
+   {
+    "variable": "groupe amertume",
+    "poids": 0.7,
+    "mrrSans": 0.057,
+    "ecartMrr": -0.105,
+    "ecartRappel10": -0.091,
+    "ic": {
+     "mrr": [
+      -0.154,
+      -0.062
+     ],
+     "rappel10": [
+      -0.14,
+      -0.044
+     ],
+     "rangMedian": [
+      -2,
+      26
+     ]
+    }
+   },
+   {
+    "variable": "groupe huile",
+    "poids": 0.2,
+    "mrrSans": 0.162,
+    "ecartMrr": 0,
+    "ecartRappel10": -0.014,
+    "ic": {
+     "mrr": [
+      -0.024,
+      0.022
+     ],
+     "rappel10": [
+      -0.045,
+      0.012
+     ],
+     "rangMedian": [
+      -8,
+      13
+     ]
+    }
+   },
+   {
+    "variable": "groupe arôme",
+    "poids": 0.1,
+    "mrrSans": 0.133,
+    "ecartMrr": -0.029,
+    "ecartRappel10": 0.007,
+    "ic": {
+     "mrr": [
+      -0.055,
+      -0.007
+     ],
+     "rappel10": [
+      -0.025,
+      0.043
+     ],
+     "rangMedian": [
+      0,
+      15.5
+     ]
+    }
+   }
+  ],
+  "am | amérisants (usage BM : bittering)": [
+   {
+    "variable": "α",
+    "poids": 0.28,
+    "mrrSans": 0.211,
+    "ecartMrr": -0.066,
+    "ecartRappel10": -0.044,
+    "ic": {
+     "mrr": [
+      -0.167,
+      0.012
+     ],
+     "rappel10": [
+      -0.132,
+      0.02
+     ],
+     "rangMedian": [
+      -16,
+      7
+     ]
+    }
+   },
+   {
+    "variable": "β",
+    "poids": 0.14,
+    "mrrSans": 0.166,
+    "ecartMrr": -0.111,
+    "ecartRappel10": -0.044,
+    "ic": {
+     "mrr": [
+      -0.196,
+      -0.041
+     ],
+     "rappel10": [
+      -0.127,
+      0.029
+     ],
+     "rangMedian": [
+      -22,
+      21
+     ]
+    }
+   },
+   {
+    "variable": "cohumulone",
+    "poids": 0.14,
+    "mrrSans": 0.228,
+    "ecartMrr": -0.049,
+    "ecartRappel10": -0.042,
+    "ic": {
+     "mrr": [
+      -0.161,
+      0.058
+     ],
+     "rappel10": [
+      -0.088,
+      0
+     ],
+     "rangMedian": [
+      -26,
+      8
+     ]
+    }
+   },
+   {
+    "variable": "usage",
+    "poids": 0.14,
+    "mrrSans": 0.272,
+    "ecartMrr": -0.005,
+    "ecartRappel10": 0,
+    "ic": {
+     "mrr": [
+      -0.029,
+      0.015
+     ],
+     "rappel10": [
+      0,
+      0
+     ],
+     "rangMedian": [
+      -7,
+      3
+     ]
+    }
+   },
+   {
+    "variable": "huile totale",
+    "poids": 0.05,
+    "mrrSans": 0.256,
+    "ecartMrr": -0.021,
+    "ecartRappel10": -0.007,
+    "ic": {
+     "mrr": [
+      -0.048,
+      0
+     ],
+     "rappel10": [
+      -0.02,
+      0
+     ],
+     "rangMedian": [
+      -2,
+      19
+     ]
+    }
+   },
+   {
+    "variable": "myrcène",
+    "poids": 0.01,
+    "mrrSans": 0.277,
+    "ecartMrr": 0,
+    "ecartRappel10": 0,
+    "ic": {
+     "mrr": [
+      0,
+      0
+     ],
+     "rappel10": [
+      0,
+      0
+     ],
+     "rangMedian": [
+      -4,
+      2
+     ]
+    }
+   },
+   {
+    "variable": "humulène",
+    "poids": 0.06,
+    "mrrSans": 0.292,
+    "ecartMrr": 0.016,
+    "ecartRappel10": 0.008,
+    "ic": {
+     "mrr": [
+      -0.01,
+      0.06
+     ],
+     "rappel10": [
+      -0.02,
+      0.044
+     ],
+     "rangMedian": [
+      -2,
+      10
+     ]
+    }
+   },
+   {
+    "variable": "caryophyllène",
+    "poids": 0.05,
+    "mrrSans": 0.32,
+    "ecartMrr": 0.043,
+    "ecartRappel10": 0,
+    "ic": {
+     "mrr": [
+      -0.016,
+      0.108
+     ],
+     "rappel10": [
+      0,
+      0
+     ],
+     "rangMedian": [
+      -8,
+      1
+     ]
+    }
+   },
+   {
+    "variable": "farnésène",
+    "poids": 0.01,
+    "mrrSans": 0.276,
+    "ecartMrr": -0.001,
+    "ecartRappel10": 0,
+    "ic": {
+     "mrr": [
+      -0.002,
+      0
+     ],
+     "rappel10": [
+      0,
+      0
+     ],
+     "rangMedian": [
+      0,
+      1
+     ]
+    }
+   },
+   {
+    "variable": "linalol",
+    "poids": 0.01,
+    "mrrSans": 0.276,
+    "ecartMrr": 0,
+    "ecartRappel10": 0,
+    "ic": {
+     "mrr": [
+      0,
+      0
+     ],
+     "rappel10": [
+      0,
+      0
+     ],
+     "rangMedian": [
+      0,
+      0
+     ]
+    }
+   },
+   {
+    "variable": "géraniol",
+    "poids": 0.01,
+    "mrrSans": 0.276,
+    "ecartMrr": 0,
+    "ecartRappel10": 0,
+    "ic": {
+     "mrr": [
+      0,
+      0
+     ],
+     "rappel10": [
+      0,
+      0
+     ],
+     "rangMedian": [
+      0,
+      0
+     ]
+    }
+   },
+   {
+    "variable": "familles",
+    "poids": 0.1,
+    "mrrSans": 0.271,
+    "ecartMrr": -0.005,
+    "ecartRappel10": -0.03,
+    "ic": {
+     "mrr": [
+      -0.091,
+      0.074
+     ],
+     "rappel10": [
+      -0.077,
+      0.009
+     ],
+     "rangMedian": [
+      -1,
+      31
+     ]
+    }
+   },
+   {
+    "variable": "mots",
+    "poids": 0,
+    "mrrSans": 0.276,
+    "ecartMrr": 0,
+    "ecartRappel10": 0,
+    "ic": {
+     "mrr": [
+      0,
+      0
+     ],
+     "rappel10": [
+      0,
+      0
+     ],
+     "rangMedian": [
+      0,
+      0
+     ]
+    }
+   },
+   {
+    "variable": "radar BM",
+    "poids": 0,
+    "mrrSans": 0.276,
+    "ecartMrr": 0,
+    "ecartRappel10": 0,
+    "ic": {
+     "mrr": [
+      0,
+      0
+     ],
+     "rappel10": [
+      0,
+      0
+     ],
+     "rangMedian": [
+      0,
+      0
+     ]
+    }
+   },
+   {
+    "variable": "groupe amertume",
+    "poids": 0.7,
+    "mrrSans": 0.101,
+    "ecartMrr": -0.175,
+    "ecartRappel10": -0.118,
+    "ic": {
+     "mrr": [
+      -0.314,
+      -0.068
+     ],
+     "rappel10": [
+      -0.22,
+      -0.027
+     ],
+     "rangMedian": [
+      -27,
+      19
+     ]
+    }
+   },
+   {
+    "variable": "groupe huile",
+    "poids": 0.2,
+    "mrrSans": 0.288,
+    "ecartMrr": 0.011,
+    "ecartRappel10": -0.007,
+    "ic": {
+     "mrr": [
+      -0.037,
+      0.076
+     ],
+     "rappel10": [
+      -0.02,
+      0
+     ],
+     "rangMedian": [
+      -2,
+      6
+     ]
+    }
+   },
+   {
+    "variable": "groupe arôme",
+    "poids": 0.1,
+    "mrrSans": 0.271,
+    "ecartMrr": -0.005,
+    "ecartRappel10": -0.03,
+    "ic": {
+     "mrr": [
+      -0.091,
+      0.074
+     ],
+     "rappel10": [
+      -0.077,
+      0.009
+     ],
+     "rangMedian": [
+      -1,
+      31
+     ]
+    }
+   }
+  ],
+  "ch | tous les houblons": [
+   {
+    "variable": "α",
+    "poids": 0.09,
+    "mrrSans": 0.273,
+    "ecartMrr": -0.009,
+    "ecartRappel10": -0.018,
+    "ic": {
+     "mrr": [
+      -0.029,
+      0.012
+     ],
+     "rappel10": [
+      -0.049,
+      0.013
+     ],
+     "rangMedian": [
+      -1.5,
+      2.5
+     ]
+    }
+   },
+   {
+    "variable": "β",
+    "poids": 0.06,
+    "mrrSans": 0.274,
+    "ecartMrr": -0.007,
+    "ecartRappel10": 0.013,
+    "ic": {
+     "mrr": [
+      -0.03,
+      0.014
+     ],
+     "rappel10": [
+      -0.028,
+      0.054
+     ],
+     "rangMedian": [
+      -2,
+      1
+     ]
+    }
+   },
+   {
+    "variable": "cohumulone",
+    "poids": 0.03,
+    "mrrSans": 0.273,
+    "ecartMrr": -0.009,
+    "ecartRappel10": -0.019,
+    "ic": {
+     "mrr": [
+      -0.029,
+      0.012
+     ],
+     "rappel10": [
+      -0.047,
+      0.007
+     ],
+     "rangMedian": [
+      -2,
+      2
+     ]
+    }
+   },
+   {
+    "variable": "usage",
+    "poids": 0.12,
+    "mrrSans": 0.276,
+    "ecartMrr": -0.006,
+    "ecartRappel10": 0.015,
+    "ic": {
+     "mrr": [
+      -0.028,
+      0.013
+     ],
+     "rappel10": [
+      -0.016,
+      0.047
+     ],
+     "rangMedian": [
+      -2,
+      1.5
+     ]
+    }
+   },
+   {
+    "variable": "huile totale",
+    "poids": 0.04,
+    "mrrSans": 0.27,
+    "ecartMrr": -0.012,
+    "ecartRappel10": -0.008,
+    "ic": {
+     "mrr": [
+      -0.027,
+      -0.001
+     ],
+     "rappel10": [
+      -0.038,
+      0.021
+     ],
+     "rangMedian": [
+      -3,
+      1
+     ]
+    }
+   },
+   {
+    "variable": "myrcène",
+    "poids": 0.03,
+    "mrrSans": 0.28,
+    "ecartMrr": -0.002,
+    "ecartRappel10": 0.006,
+    "ic": {
+     "mrr": [
+      -0.017,
+      0.01
+     ],
+     "rappel10": [
+      -0.014,
+      0.025
+     ],
+     "rangMedian": [
+      -2,
+      1
+     ]
+    }
+   },
+   {
+    "variable": "humulène",
+    "poids": 0.03,
+    "mrrSans": 0.272,
+    "ecartMrr": -0.01,
+    "ecartRappel10": -0.009,
+    "ic": {
+     "mrr": [
+      -0.02,
+      -0.002
+     ],
+     "rappel10": [
+      -0.041,
+      0.022
+     ],
+     "rangMedian": [
+      -2,
+      1
+     ]
+    }
+   },
+   {
+    "variable": "caryophyllène",
+    "poids": 0.02,
+    "mrrSans": 0.272,
+    "ecartMrr": -0.01,
+    "ecartRappel10": -0.014,
+    "ic": {
+     "mrr": [
+      -0.026,
+      0.001
+     ],
+     "rappel10": [
+      -0.044,
+      0.014
+     ],
+     "rangMedian": [
+      -1,
+      1.5
+     ]
+    }
+   },
+   {
+    "variable": "farnésène",
+    "poids": 0.02,
+    "mrrSans": 0.271,
+    "ecartMrr": -0.011,
+    "ecartRappel10": -0.006,
+    "ic": {
+     "mrr": [
+      -0.026,
+      0
+     ],
+     "rappel10": [
+      -0.033,
+      0.02
+     ],
+     "rangMedian": [
+      -1.5,
+      1.5
+     ]
+    }
+   },
+   {
+    "variable": "linalol",
+    "poids": 0.04,
+    "mrrSans": 0.276,
+    "ecartMrr": -0.006,
+    "ecartRappel10": -0.009,
+    "ic": {
+     "mrr": [
+      -0.018,
+      0
+     ],
+     "rappel10": [
+      -0.034,
+      0.004
+     ],
+     "rangMedian": [
+      0,
+      2
+     ]
+    }
+   },
+   {
+    "variable": "géraniol",
+    "poids": 0.02,
+    "mrrSans": 0.282,
+    "ecartMrr": 0,
+    "ecartRappel10": 0,
+    "ic": {
+     "mrr": [
+      0,
+      0
+     ],
+     "rappel10": [
+      0,
+      0
+     ],
+     "rangMedian": [
+      0,
+      0
+     ]
+    }
+   },
+   {
+    "variable": "familles",
+    "poids": 0.113,
+    "mrrSans": 0.265,
+    "ecartMrr": -0.017,
+    "ecartRappel10": -0.002,
+    "ic": {
+     "mrr": [
+      -0.039,
+      0.001
+     ],
+     "rappel10": [
+      -0.027,
+      0.023
+     ],
+     "rangMedian": [
+      -1.5,
+      2
+     ]
+    }
+   },
+   {
+    "variable": "mots",
+    "poids": 0.338,
+    "mrrSans": 0.27,
+    "ecartMrr": -0.012,
+    "ecartRappel10": -0.038,
+    "ic": {
+     "mrr": [
+      -0.071,
+      0.053
+     ],
+     "rappel10": [
+      -0.093,
+      0.014
+     ],
+     "rangMedian": [
+      -0.5,
+      12.5
+     ]
+    }
+   },
+   {
+    "variable": "radar BM",
+    "poids": 0.05,
+    "mrrSans": 0.281,
+    "ecartMrr": -0.001,
+    "ecartRappel10": -0.016,
+    "ic": {
+     "mrr": [
+      -0.013,
+      0.014
+     ],
+     "rappel10": [
+      -0.05,
+      0.012
+     ],
+     "rangMedian": [
+      -1,
+      2
+     ]
+    }
+   },
+   {
+    "variable": "groupe amertume",
+    "poids": 0.3,
+    "mrrSans": 0.242,
+    "ecartMrr": -0.04,
+    "ecartRappel10": -0.039,
+    "ic": {
+     "mrr": [
+      -0.073,
+      -0.007
+     ],
+     "rappel10": [
+      -0.099,
+      0.014
+     ],
+     "rangMedian": [
+      -1.5,
+      5
+     ]
+    }
+   },
+   {
+    "variable": "groupe huile",
+    "poids": 0.2,
+    "mrrSans": 0.256,
+    "ecartMrr": -0.025,
+    "ecartRappel10": -0.049,
+    "ic": {
+     "mrr": [
+      -0.047,
+      -0.006
+     ],
+     "rappel10": [
+      -0.088,
+      -0.01
+     ],
+     "rangMedian": [
+      -0.5,
+      6
+     ]
+    }
+   },
+   {
+    "variable": "groupe arôme",
+    "poids": 0.5,
+    "mrrSans": 0.179,
+    "ecartMrr": -0.102,
+    "ecartRappel10": -0.097,
+    "ic": {
+     "mrr": [
+      -0.172,
+      -0.036
+     ],
+     "rappel10": [
+      -0.157,
+      -0.039
+     ],
+     "rangMedian": [
+      5,
+      25.5
+     ]
+    }
+   }
+  ],
+  "fr | tous les houblons": [
+   {
+    "variable": "α",
+    "poids": 0.05,
+    "mrrSans": 0.281,
+    "ecartMrr": -0.016,
+    "ecartRappel10": -0.012,
+    "ic": {
+     "mrr": [
+      -0.033,
+      -0.002
+     ],
+     "rappel10": [
+      -0.04,
+      0.012
+     ],
+     "rangMedian": [
+      -1,
+      2
+     ]
+    }
+   },
+   {
+    "variable": "β",
+    "poids": 0.03,
+    "mrrSans": 0.287,
+    "ecartMrr": -0.009,
+    "ecartRappel10": -0.016,
+    "ic": {
+     "mrr": [
+      -0.027,
+      0.003
+     ],
+     "rappel10": [
+      -0.036,
+      0.002
+     ],
+     "rangMedian": [
+      -1,
+      1.5
+     ]
+    }
+   },
+   {
+    "variable": "cohumulone",
+    "poids": 0.02,
+    "mrrSans": 0.288,
+    "ecartMrr": -0.008,
+    "ecartRappel10": -0.024,
+    "ic": {
+     "mrr": [
+      -0.02,
+      0.001
+     ],
+     "rappel10": [
+      -0.049,
+      -0.003
+     ],
+     "rangMedian": [
+      -0.5,
+      2
+     ]
+    }
+   },
+   {
+    "variable": "usage",
+    "poids": 0.1,
+    "mrrSans": 0.278,
+    "ecartMrr": -0.018,
+    "ecartRappel10": -0.026,
+    "ic": {
+     "mrr": [
+      -0.037,
+      -0.004
+     ],
+     "rappel10": [
+      -0.072,
+      0.015
+     ],
+     "rangMedian": [
+      -1,
+      2
+     ]
+    }
+   },
+   {
+    "variable": "huile totale",
+    "poids": 0.075,
+    "mrrSans": 0.267,
+    "ecartMrr": -0.029,
+    "ecartRappel10": -0.052,
+    "ic": {
+     "mrr": [
+      -0.057,
+      -0.006
+     ],
+     "rappel10": [
+      -0.094,
+      -0.014
+     ],
+     "rangMedian": [
+      -1,
+      3.5
+     ]
+    }
+   },
+   {
+    "variable": "myrcène",
+    "poids": 0.03,
+    "mrrSans": 0.292,
+    "ecartMrr": -0.005,
+    "ecartRappel10": -0.015,
+    "ic": {
+     "mrr": [
+      -0.012,
+      0.002
+     ],
+     "rappel10": [
+      -0.037,
+      0.007
+     ],
+     "rangMedian": [
+      -1,
+      2
+     ]
+    }
+   },
+   {
+    "variable": "humulène",
+    "poids": 0.03,
+    "mrrSans": 0.29,
+    "ecartMrr": -0.007,
+    "ecartRappel10": -0.043,
+    "ic": {
+     "mrr": [
+      -0.021,
+      0.008
+     ],
+     "rappel10": [
+      -0.078,
+      -0.015
+     ],
+     "rangMedian": [
+      -0.5,
+      2.5
+     ]
+    }
+   },
+   {
+    "variable": "caryophyllène",
+    "poids": 0.015,
+    "mrrSans": 0.289,
+    "ecartMrr": -0.008,
+    "ecartRappel10": -0.023,
+    "ic": {
+     "mrr": [
+      -0.023,
+      0.002
+     ],
+     "rappel10": [
+      -0.05,
+      -0.006
+     ],
+     "rangMedian": [
+      -1,
+      1
+     ]
+    }
+   },
+   {
+    "variable": "farnésène",
+    "poids": 0.03,
+    "mrrSans": 0.269,
+    "ecartMrr": -0.027,
+    "ecartRappel10": -0.04,
+    "ic": {
+     "mrr": [
+      -0.052,
+      -0.009
+     ],
+     "rappel10": [
+      -0.075,
+      -0.012
+     ],
+     "rangMedian": [
+      -0.5,
+      2
+     ]
+    }
+   },
+   {
+    "variable": "linalol",
+    "poids": 0.075,
+    "mrrSans": 0.286,
+    "ecartMrr": -0.01,
+    "ecartRappel10": -0.019,
+    "ic": {
+     "mrr": [
+      -0.026,
+      0.002
+     ],
+     "rappel10": [
+      -0.044,
+      -0.002
+     ],
+     "rangMedian": [
+      0,
+      2.5
+     ]
+    }
+   },
+   {
+    "variable": "géraniol",
+    "poids": 0.045,
+    "mrrSans": 0.297,
+    "ecartMrr": 0,
+    "ecartRappel10": 0,
+    "ic": {
+     "mrr": [
+      0,
+      0
+     ],
+     "rappel10": [
+      0,
+      0
+     ],
+     "rangMedian": [
+      0,
+      0
+     ]
+    }
+   },
+   {
+    "variable": "familles",
+    "poids": 0.113,
+    "mrrSans": 0.275,
+    "ecartMrr": -0.021,
+    "ecartRappel10": -0.037,
+    "ic": {
+     "mrr": [
+      -0.048,
+      0.002
+     ],
+     "rappel10": [
+      -0.069,
+      -0.008
+     ],
+     "rangMedian": [
+      0,
+      4
+     ]
+    }
+   },
+   {
+    "variable": "mots",
+    "poids": 0.338,
+    "mrrSans": 0.268,
+    "ecartMrr": -0.029,
+    "ecartRappel10": -0.087,
+    "ic": {
+     "mrr": [
+      -0.084,
+      0.028
+     ],
+     "rappel10": [
+      -0.146,
+      -0.029
+     ],
+     "rangMedian": [
+      0.5,
+      14.5
+     ]
+    }
+   },
+   {
+    "variable": "radar BM",
+    "poids": 0.05,
+    "mrrSans": 0.287,
+    "ecartMrr": -0.009,
+    "ecartRappel10": -0.017,
+    "ic": {
+     "mrr": [
+      -0.028,
+      0.008
+     ],
+     "rappel10": [
+      -0.047,
+      0.01
+     ],
+     "rangMedian": [
+      -0.5,
+      2
+     ]
+    }
+   },
+   {
+    "variable": "groupe amertume",
+    "poids": 0.2,
+    "mrrSans": 0.264,
+    "ecartMrr": -0.033,
+    "ecartRappel10": -0.05,
+    "ic": {
+     "mrr": [
+      -0.058,
+      -0.01
+     ],
+     "rappel10": [
+      -0.103,
+      -0.002
+     ],
+     "rangMedian": [
+      -0.5,
+      4.5
+     ]
+    }
+   },
+   {
+    "variable": "groupe huile",
+    "poids": 0.3,
+    "mrrSans": 0.246,
+    "ecartMrr": -0.05,
+    "ecartRappel10": -0.09,
+    "ic": {
+     "mrr": [
+      -0.085,
+      -0.019
+     ],
+     "rappel10": [
+      -0.14,
+      -0.045
+     ],
+     "rangMedian": [
+      1,
+      8
+     ]
+    }
+   },
+   {
+    "variable": "groupe arôme",
+    "poids": 0.5,
+    "mrrSans": 0.143,
+    "ecartMrr": -0.154,
+    "ecartRappel10": -0.163,
+    "ic": {
+     "mrr": [
+      -0.224,
+      -0.088
+     ],
+     "rappel10": [
+      -0.225,
+      -0.1
+     ],
+     "rangMedian": [
+      8,
+      23
+     ]
+    }
+   }
+  ]
+ },
+ "refB": {
+  "am": {
+   "A (actuel)": {
+    "parPhare": [
+     {
+      "phare": "Nelson Sauvin",
+      "rangs": [
+       109,
+       31,
+       174
+      ]
+     },
+     {
+      "phare": "Citra",
+      "rangs": [
+       11,
+       30,
+       45
+      ]
+     },
+     {
+      "phare": "Motueka",
+      "rangs": [
+       15,
+       227,
+       213
+      ]
+     },
+     {
+      "phare": "Mosaic",
+      "rangs": [
+       8,
+       13,
+       10
+      ]
+     },
+     {
+      "phare": "Galaxy",
+      "rangs": [
+       216,
+       14,
+       219
+      ]
+     },
+     {
+      "phare": "Simcoe",
+      "rangs": [
+       214,
+       3,
+       20
+      ]
+     },
+     {
+      "phare": "Saaz (CZ)",
+      "rangs": [
+       6,
+       22,
+       9
+      ]
+     },
+     {
+      "phare": "Cascade",
+      "rangs": [
+       119,
+       23,
+       43
+      ]
+     }
+    ],
+    "dansLes10": 5,
+    "sur": 24,
+    "rangMedian": 26.5,
+    "rangMoyen": 74.8
+   },
+   "C (mots, λ 0,25)": {
+    "parPhare": [
+     {
+      "phare": "Nelson Sauvin",
+      "rangs": [
+       109,
+       31,
+       174
+      ]
+     },
+     {
+      "phare": "Citra",
+      "rangs": [
+       11,
+       30,
+       45
+      ]
+     },
+     {
+      "phare": "Motueka",
+      "rangs": [
+       15,
+       227,
+       213
+      ]
+     },
+     {
+      "phare": "Mosaic",
+      "rangs": [
+       8,
+       13,
+       10
+      ]
+     },
+     {
+      "phare": "Galaxy",
+      "rangs": [
+       216,
+       14,
+       219
+      ]
+     },
+     {
+      "phare": "Simcoe",
+      "rangs": [
+       214,
+       3,
+       20
+      ]
+     },
+     {
+      "phare": "Saaz (CZ)",
+      "rangs": [
+       6,
+       22,
+       9
+      ]
+     },
+     {
+      "phare": "Cascade",
+      "rangs": [
+       119,
+       23,
+       43
+      ]
+     }
+    ],
+    "dansLes10": 5,
+    "sur": 24,
+    "rangMedian": 26.5,
+    "rangMoyen": 74.8
+   },
+   "v2": {
+    "parPhare": [
+     {
+      "phare": "Nelson Sauvin",
+      "rangs": [
+       73,
+       7,
+       180
+      ]
+     },
+     {
+      "phare": "Citra",
+      "rangs": [
+       25,
+       73,
+       65
+      ]
+     },
+     {
+      "phare": "Motueka",
+      "rangs": [
+       19,
+       223,
+       216
+      ]
+     },
+     {
+      "phare": "Mosaic",
+      "rangs": [
+       23,
+       27,
+       97
+      ]
+     },
+     {
+      "phare": "Galaxy",
+      "rangs": [
+       218,
+       71,
+       223
+      ]
+     },
+     {
+      "phare": "Simcoe",
+      "rangs": [
+       215,
+       32,
+       75
+      ]
+     },
+     {
+      "phare": "Saaz (CZ)",
+      "rangs": [
+       3,
+       19,
+       6
+      ]
+     },
+     {
+      "phare": "Cascade",
+      "rangs": [
+       97,
+       12,
+       112
+      ]
+     }
+    ],
+    "dansLes10": 3,
+    "sur": 24,
+    "rangMedian": 72,
+    "rangMoyen": 88
+   },
+   "v2 libre": {
+    "parPhare": [
+     {
+      "phare": "Nelson Sauvin",
+      "rangs": [
+       73,
+       7,
+       180
+      ]
+     },
+     {
+      "phare": "Citra",
+      "rangs": [
+       25,
+       73,
+       65
+      ]
+     },
+     {
+      "phare": "Motueka",
+      "rangs": [
+       19,
+       223,
+       216
+      ]
+     },
+     {
+      "phare": "Mosaic",
+      "rangs": [
+       23,
+       27,
+       97
+      ]
+     },
+     {
+      "phare": "Galaxy",
+      "rangs": [
+       218,
+       71,
+       223
+      ]
+     },
+     {
+      "phare": "Simcoe",
+      "rangs": [
+       215,
+       32,
+       75
+      ]
+     },
+     {
+      "phare": "Saaz (CZ)",
+      "rangs": [
+       3,
+       19,
+       6
+      ]
+     },
+     {
+      "phare": "Cascade",
+      "rangs": [
+       97,
+       12,
+       112
+      ]
+     }
+    ],
+    "dansLes10": 3,
+    "sur": 24,
+    "rangMedian": 72,
+    "rangMoyen": 88
+   }
+  },
+  "ch": {
+   "A (actuel)": {
+    "parPhare": [
+     {
+      "phare": "Nelson Sauvin",
+      "rangs": [
+       69,
+       156,
+       153
+      ]
+     },
+     {
+      "phare": "Citra",
+      "rangs": [
+       3,
+       36,
+       8
+      ]
+     },
+     {
+      "phare": "Motueka",
+      "rangs": [
+       5,
+       21,
+       2
+      ]
+     },
+     {
+      "phare": "Mosaic",
+      "rangs": [
+       24,
+       1,
+       7
+      ]
+     },
+     {
+      "phare": "Galaxy",
+      "rangs": [
+       8,
+       42,
+       71
+      ]
+     },
+     {
+      "phare": "Simcoe",
+      "rangs": [
+       19,
+       1,
+       3
+      ]
+     },
+     {
+      "phare": "Saaz (CZ)",
+      "rangs": [
+       5,
+       53,
+       21
+      ]
+     },
+     {
+      "phare": "Cascade",
+      "rangs": [
+       20,
+       2,
+       22
+      ]
+     }
+    ],
+    "dansLes10": 11,
+    "sur": 24,
+    "rangMedian": 19.5,
+    "rangMoyen": 31.3
+   },
+   "C (mots, λ 0,25)": {
+    "parPhare": [
+     {
+      "phare": "Nelson Sauvin",
+      "rangs": [
+       11,
+       62,
+       92
+      ]
+     },
+     {
+      "phare": "Citra",
+      "rangs": [
+       5,
+       17,
+       8
+      ]
+     },
+     {
+      "phare": "Motueka",
+      "rangs": [
+       3,
+       10,
+       2
+      ]
+     },
+     {
+      "phare": "Mosaic",
+      "rangs": [
+       1,
+       2,
+       3
+      ]
+     },
+     {
+      "phare": "Galaxy",
+      "rangs": [
+       5,
+       23,
+       40
+      ]
+     },
+     {
+      "phare": "Simcoe",
+      "rangs": [
+       1,
+       3,
+       13
+      ]
+     },
+     {
+      "phare": "Saaz (CZ)",
+      "rangs": [
+       1,
+       28,
+       7
+      ]
+     },
+     {
+      "phare": "Cascade",
+      "rangs": [
+       5,
+       1,
+       4
+      ]
+     }
+    ],
+    "dansLes10": 16,
+    "sur": 24,
+    "rangMedian": 5,
+    "rangMoyen": 14.5
+   },
+   "v2": {
+    "parPhare": [
+     {
+      "phare": "Nelson Sauvin",
+      "rangs": [
+       1,
+       38,
+       71
+      ]
+     },
+     {
+      "phare": "Citra",
+      "rangs": [
+       6,
+       19,
+       10
+      ]
+     },
+     {
+      "phare": "Motueka",
+      "rangs": [
+       1,
+       17,
+       3
+      ]
+     },
+     {
+      "phare": "Mosaic",
+      "rangs": [
+       1,
+       3,
+       4
+      ]
+     },
+     {
+      "phare": "Galaxy",
+      "rangs": [
+       3,
+       39,
+       29
+      ]
+     },
+     {
+      "phare": "Simcoe",
+      "rangs": [
+       1,
+       4,
+       35
+      ]
+     },
+     {
+      "phare": "Saaz (CZ)",
+      "rangs": [
+       2,
+       10,
+       6
+      ]
+     },
+     {
+      "phare": "Cascade",
+      "rangs": [
+       4,
+       1,
+       25
+      ]
+     }
+    ],
+    "dansLes10": 16,
+    "sur": 24,
+    "rangMedian": 5,
+    "rangMoyen": 13.9
+   },
+   "v2 libre": {
+    "parPhare": [
+     {
+      "phare": "Nelson Sauvin",
+      "rangs": [
+       1,
+       32,
+       109
+      ]
+     },
+     {
+      "phare": "Citra",
+      "rangs": [
+       4,
+       23,
+       14
+      ]
+     },
+     {
+      "phare": "Motueka",
+      "rangs": [
+       1,
+       46,
+       2
+      ]
+     },
+     {
+      "phare": "Mosaic",
+      "rangs": [
+       1,
+       3,
+       5
+      ]
+     },
+     {
+      "phare": "Galaxy",
+      "rangs": [
+       7,
+       40,
+       31
+      ]
+     },
+     {
+      "phare": "Simcoe",
+      "rangs": [
+       1,
+       4,
+       42
+      ]
+     },
+     {
+      "phare": "Saaz (CZ)",
+      "rangs": [
+       1,
+       8,
+       3
+      ]
+     },
+     {
+      "phare": "Cascade",
+      "rangs": [
+       8,
+       1,
+       31
+      ]
+     }
+    ],
+    "dansLes10": 15,
+    "sur": 24,
+    "rangMedian": 6,
+    "rangMoyen": 17.4
+   }
+  },
+  "fr": {
+   "A (actuel)": {
+    "parPhare": [
+     {
+      "phare": "Nelson Sauvin",
+      "rangs": [
+       69,
+       156,
+       153
+      ]
+     },
+     {
+      "phare": "Citra",
+      "rangs": [
+       3,
+       36,
+       8
+      ]
+     },
+     {
+      "phare": "Motueka",
+      "rangs": [
+       5,
+       21,
+       2
+      ]
+     },
+     {
+      "phare": "Mosaic",
+      "rangs": [
+       24,
+       1,
+       7
+      ]
+     },
+     {
+      "phare": "Galaxy",
+      "rangs": [
+       8,
+       42,
+       71
+      ]
+     },
+     {
+      "phare": "Simcoe",
+      "rangs": [
+       19,
+       1,
+       3
+      ]
+     },
+     {
+      "phare": "Saaz (CZ)",
+      "rangs": [
+       5,
+       53,
+       21
+      ]
+     },
+     {
+      "phare": "Cascade",
+      "rangs": [
+       20,
+       2,
+       22
+      ]
+     }
+    ],
+    "dansLes10": 11,
+    "sur": 24,
+    "rangMedian": 19.5,
+    "rangMoyen": 31.3
+   },
+   "C (mots, λ 0,25)": {
+    "parPhare": [
+     {
+      "phare": "Nelson Sauvin",
+      "rangs": [
+       11,
+       62,
+       92
+      ]
+     },
+     {
+      "phare": "Citra",
+      "rangs": [
+       5,
+       17,
+       8
+      ]
+     },
+     {
+      "phare": "Motueka",
+      "rangs": [
+       3,
+       10,
+       2
+      ]
+     },
+     {
+      "phare": "Mosaic",
+      "rangs": [
+       1,
+       2,
+       3
+      ]
+     },
+     {
+      "phare": "Galaxy",
+      "rangs": [
+       5,
+       23,
+       40
+      ]
+     },
+     {
+      "phare": "Simcoe",
+      "rangs": [
+       1,
+       3,
+       13
+      ]
+     },
+     {
+      "phare": "Saaz (CZ)",
+      "rangs": [
+       1,
+       28,
+       7
+      ]
+     },
+     {
+      "phare": "Cascade",
+      "rangs": [
+       5,
+       1,
+       4
+      ]
+     }
+    ],
+    "dansLes10": 16,
+    "sur": 24,
+    "rangMedian": 5,
+    "rangMoyen": 14.5
+   },
+   "v2": {
+    "parPhare": [
+     {
+      "phare": "Nelson Sauvin",
+      "rangs": [
+       1,
+       46,
+       54
+      ]
+     },
+     {
+      "phare": "Citra",
+      "rangs": [
+       7,
+       22,
+       11
+      ]
+     },
+     {
+      "phare": "Motueka",
+      "rangs": [
+       3,
+       18,
+       2
+      ]
+     },
+     {
+      "phare": "Mosaic",
+      "rangs": [
+       1,
+       2,
+       5
+      ]
+     },
+     {
+      "phare": "Galaxy",
+      "rangs": [
+       4,
+       33,
+       21
+      ]
+     },
+     {
+      "phare": "Simcoe",
+      "rangs": [
+       1,
+       5,
+       22
+      ]
+     },
+     {
+      "phare": "Saaz (CZ)",
+      "rangs": [
+       1,
+       11,
+       3
+      ]
+     },
+     {
+      "phare": "Cascade",
+      "rangs": [
+       6,
+       2,
+       20
+      ]
+     }
+    ],
+    "dansLes10": 14,
+    "sur": 24,
+    "rangMedian": 5.5,
+    "rangMoyen": 12.5
+   },
+   "v2 libre": {
+    "parPhare": [
+     {
+      "phare": "Nelson Sauvin",
+      "rangs": [
+       1,
+       44,
+       145
+      ]
+     },
+     {
+      "phare": "Citra",
+      "rangs": [
+       5,
+       35,
+       20
+      ]
+     },
+     {
+      "phare": "Motueka",
+      "rangs": [
+       1,
+       117,
+       2
+      ]
+     },
+     {
+      "phare": "Mosaic",
+      "rangs": [
+       2,
+       3,
+       14
+      ]
+     },
+     {
+      "phare": "Galaxy",
+      "rangs": [
+       24,
+       48,
+       40
+      ]
+     },
+     {
+      "phare": "Simcoe",
+      "rangs": [
+       1,
+       3,
+       43
+      ]
+     },
+     {
+      "phare": "Saaz (CZ)",
+      "rangs": [
+       1,
+       8,
+       2
+      ]
+     },
+     {
+      "phare": "Cascade",
+      "rangs": [
+       26,
+       1,
+       40
+      ]
+     }
+    ],
+    "dansLes10": 12,
+    "sur": 24,
+    "rangMedian": 11,
+    "rangMoyen": 26.1
+   }
+  }
+ },
+ "topPhares": [
+  {
+   "phare": "Nelson Sauvin",
+   "d": [
+    "Hallertau Blanc",
+    "African Queen",
+    "Godiva"
+   ],
+   "bm": [
+    "Hallertau Blanc",
+    "Enigma",
+    "Motueka",
+    "Riwaka"
+   ],
+   "parMoment": {
+    "am": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "TNT Blend",
+       "score": 98,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Southern Passion",
+       "score": 97,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Hallertau Taurus",
+       "score": 95,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Pacific Jade",
+       "score": 94,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Southern Tropic",
+       "score": 94,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Lumberjack",
+       "score": 92,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "African Queen",
+       "score": 91,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 8,
+       "nom": "Brooklyn",
+       "score": 91,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Sorachi Ace",
+       "score": 91,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Trident",
+       "score": 91,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Hallertau Blanc",
+       "rang": 73
+      },
+      {
+       "nom": "Enigma",
+       "rang": 149
+      },
+      {
+       "nom": "Motueka",
+       "rang": 187
+      },
+      {
+       "nom": "Riwaka",
+       "rang": 247
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Hallertau Blanc",
+       "rang": 73
+      },
+      {
+       "nom": "African Queen",
+       "rang": 7
+      },
+      {
+       "nom": "Godiva",
+       "rang": 180
+      }
+     ]
+    },
+    "ch": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Hallertau Blanc",
+       "score": 66,
+       "bm": true,
+       "d": true
+      },
+      {
+       "rang": 2,
+       "nom": "Trident",
+       "score": 62,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Cashmere",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Southern Sublime",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Pacific Sunrise",
+       "score": 60,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Sládek",
+       "score": 60,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Styrian Dragon",
+       "score": 60,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Zythos",
+       "score": 60,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Solero",
+       "score": 59,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Southern Passion",
+       "score": 59,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Hallertau Blanc",
+       "rang": 1
+      },
+      {
+       "nom": "Enigma",
+       "rang": 97
+      },
+      {
+       "nom": "Motueka",
+       "rang": 84
+      },
+      {
+       "nom": "Riwaka",
+       "rang": 105
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Hallertau Blanc",
+       "rang": 1
+      },
+      {
+       "nom": "African Queen",
+       "rang": 38
+      },
+      {
+       "nom": "Godiva",
+       "rang": 71
+      }
+     ]
+    },
+    "fr": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Hallertau Blanc",
+       "score": 65,
+       "bm": true,
+       "d": true
+      },
+      {
+       "rang": 2,
+       "nom": "Cashmere",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Sládek",
+       "score": 60,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Mandarina Bavaria",
+       "score": 58,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Southern Sublime",
+       "score": 58,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Styrian Dragon",
+       "score": 58,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Trident",
+       "score": 58,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Zythos",
+       "score": 58,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Solero",
+       "score": 57,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Pacific Sunrise",
+       "score": 56,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Hallertau Blanc",
+       "rang": 1
+      },
+      {
+       "nom": "Enigma",
+       "rang": 111
+      },
+      {
+       "nom": "Motueka",
+       "rang": 56
+      },
+      {
+       "nom": "Riwaka",
+       "rang": 48
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Hallertau Blanc",
+       "rang": 1
+      },
+      {
+       "nom": "African Queen",
+       "rang": 46
+      },
+      {
+       "nom": "Godiva",
+       "rang": 54
+      }
+     ]
+    }
+   }
+  },
+  {
+   "phare": "Citra",
+   "d": [
+    "Nectaron",
+    "Galaxy",
+    "NZH-107"
+   ],
+   "bm": [
+    "Simcoe",
+    "Mosaic",
+    "Centennial",
+    "Cascade"
+   ],
+   "parMoment": {
+    "am": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Trident",
+       "score": 97,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Bravo",
+       "score": 96,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Mosaic",
+       "score": 96,
+       "bm": true,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Loral",
+       "score": 94,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Southern Sublime",
+       "score": 94,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Zenia",
+       "score": 94,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Caliente",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Idaho 7",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Sabro",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Styrian Wolf",
+       "score": 93,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Simcoe",
+       "rang": 27
+      },
+      {
+       "nom": "Mosaic",
+       "rang": 3
+      },
+      {
+       "nom": "Centennial",
+       "rang": 30
+      },
+      {
+       "nom": "Cascade",
+       "rang": 170
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Nectaron",
+       "rang": 25
+      },
+      {
+       "nom": "Galaxy",
+       "rang": 73
+      },
+      {
+       "nom": "NZH-107",
+       "rang": 65
+      }
+     ]
+    },
+    "ch": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Mosaic",
+       "score": 69,
+       "bm": true,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Falconer's Flight",
+       "score": 68,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "YQH-1380",
+       "score": 68,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Styrian Cardinal",
+       "score": 67,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Comet",
+       "score": 66,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Nectaron",
+       "score": 66,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 7,
+       "nom": "Zamba Blend",
+       "score": 66,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Azacca",
+       "score": 64,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Idaho 7",
+       "score": 64,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "NZH-107",
+       "score": 64,
+       "bm": false,
+       "d": true
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Simcoe",
+       "rang": 14
+      },
+      {
+       "nom": "Mosaic",
+       "rang": 1
+      },
+      {
+       "nom": "Centennial",
+       "rang": 23
+      },
+      {
+       "nom": "Cascade",
+       "rang": 46
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Nectaron",
+       "rang": 6
+      },
+      {
+       "nom": "Galaxy",
+       "rang": 19
+      },
+      {
+       "nom": "NZH-107",
+       "rang": 10
+      }
+     ]
+    },
+    "fr": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Falconer's Flight",
+       "score": 67,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "YQH-1380",
+       "score": 67,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Comet",
+       "score": 65,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Mosaic",
+       "score": 65,
+       "bm": true,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Zamba Blend",
+       "score": 65,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Azacca",
+       "score": 64,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Nectaron",
+       "score": 64,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 8,
+       "nom": "HBC 586",
+       "score": 63,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Pacific Sunrise",
+       "score": 63,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Styrian Cardinal",
+       "score": 63,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Simcoe",
+       "rang": 16
+      },
+      {
+       "nom": "Mosaic",
+       "rang": 4
+      },
+      {
+       "nom": "Centennial",
+       "rang": 25
+      },
+      {
+       "nom": "Cascade",
+       "rang": 40
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Nectaron",
+       "rang": 7
+      },
+      {
+       "nom": "Galaxy",
+       "rang": 22
+      },
+      {
+       "nom": "NZH-107",
+       "rang": 11
+      }
+     ]
+    }
+   }
+  },
+  {
+   "phare": "Motueka",
+   "d": [
+    "Taiheke",
+    "Riwaka",
+    "Cascade"
+   ],
+   "bm": [
+    "Saaz (US)",
+    "Sterling"
+   ],
+   "parMoment": {
+    "am": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Vienna Gold",
+       "score": 100,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Buzz Bullets",
+       "score": 99,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Sun",
+       "score": 99,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Petoskey",
+       "score": 97,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Zula",
+       "score": 97,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Walhalla",
+       "score": 95,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Arcadian",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Olicana",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Trident",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Samba",
+       "score": 92,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Saaz (US)",
+       "rang": 281
+      },
+      {
+       "nom": "Sterling",
+       "rang": 41
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Taiheke",
+       "rang": 19
+      },
+      {
+       "nom": "Riwaka",
+       "rang": 223
+      },
+      {
+       "nom": "Cascade",
+       "rang": 216
+      }
+     ]
+    },
+    "ch": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Taiheke",
+       "score": 63,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 2,
+       "nom": "Zythos",
+       "score": 62,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Cascade",
+       "score": 61,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 4,
+       "nom": "Astra",
+       "score": 59,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Wakatu",
+       "score": 59,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Mandarina Bavaria",
+       "score": 58,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Cluster",
+       "score": 56,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Falconer's Flight",
+       "score": 56,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Sitiva Blend",
+       "score": 56,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Southern Cross",
+       "score": 56,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Saaz (US)",
+       "rang": 276
+      },
+      {
+       "nom": "Sterling",
+       "rang": 35
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Taiheke",
+       "rang": 1
+      },
+      {
+       "nom": "Riwaka",
+       "rang": 17
+      },
+      {
+       "nom": "Cascade",
+       "rang": 3
+      }
+     ]
+    },
+    "fr": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Zythos",
+       "score": 60,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Cascade",
+       "score": 58,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 3,
+       "nom": "Taiheke",
+       "score": 58,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 4,
+       "nom": "Wakatu",
+       "score": 57,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Mandarina Bavaria",
+       "score": 56,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Astra",
+       "score": 54,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Cluster",
+       "score": 53,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Comet",
+       "score": 53,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Sitiva Blend",
+       "score": 53,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Southern Cross",
+       "score": 53,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Saaz (US)",
+       "rang": 248
+      },
+      {
+       "nom": "Sterling",
+       "rang": 27
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Taiheke",
+       "rang": 3
+      },
+      {
+       "nom": "Riwaka",
+       "rang": 18
+      },
+      {
+       "nom": "Cascade",
+       "rang": 2
+      }
+     ]
+    }
+   }
+  },
+  {
+   "phare": "Mosaic",
+   "d": [
+    "Simcoe",
+    "Idaho 7",
+    "Azacca"
+   ],
+   "bm": [
+    "Citra",
+    "Simcoe"
+   ],
+   "parMoment": {
+    "am": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "TNT Blend",
+       "score": 98,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Citra",
+       "score": 96,
+       "bm": true,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Loral",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Magnat",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Trident",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Zenia",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Nugget",
+       "score": 92,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Southern Sublime",
+       "score": 92,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Yeoman",
+       "score": 92,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Nectaron",
+       "score": 91,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Citra",
+       "rang": 2
+      },
+      {
+       "nom": "Simcoe",
+       "rang": 23
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Simcoe",
+       "rang": 23
+      },
+      {
+       "nom": "Idaho 7",
+       "rang": 27
+      },
+      {
+       "nom": "Azacca",
+       "rang": 97
+      }
+     ]
+    },
+    "ch": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Simcoe",
+       "score": 73,
+       "bm": true,
+       "d": true
+      },
+      {
+       "rang": 2,
+       "nom": "Citra",
+       "score": 69,
+       "bm": true,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Idaho 7",
+       "score": 68,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 4,
+       "nom": "Azacca",
+       "score": 66,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 5,
+       "nom": "Nectaron",
+       "score": 66,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Falconer's Flight",
+       "score": 64,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Galaxy",
+       "score": 63,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Mandarina Bavaria",
+       "score": 63,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Rakau",
+       "score": 63,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Southern Cross",
+       "score": 63,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Citra",
+       "rang": 2
+      },
+      {
+       "nom": "Simcoe",
+       "rang": 1
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Simcoe",
+       "rang": 1
+      },
+      {
+       "nom": "Idaho 7",
+       "rang": 3
+      },
+      {
+       "nom": "Azacca",
+       "rang": 4
+      }
+     ]
+    },
+    "fr": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Simcoe",
+       "score": 70,
+       "bm": true,
+       "d": true
+      },
+      {
+       "rang": 2,
+       "nom": "Idaho 7",
+       "score": 66,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 3,
+       "nom": "Citra",
+       "score": 65,
+       "bm": true,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Nectaron",
+       "score": 65,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Azacca",
+       "score": 64,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 6,
+       "nom": "Mandarina Bavaria",
+       "score": 63,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Moutere",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Rakau",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Zamba Blend",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Zythos",
+       "score": 61,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Citra",
+       "rang": 3
+      },
+      {
+       "nom": "Simcoe",
+       "rang": 1
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Simcoe",
+       "rang": 1
+      },
+      {
+       "nom": "Idaho 7",
+       "rang": 2
+      },
+      {
+       "nom": "Azacca",
+       "rang": 5
+      }
+     ]
+    }
+   }
+  },
+  {
+   "phare": "Galaxy",
+   "d": [
+    "Nectaron",
+    "Vic Secret",
+    "Strata"
+   ],
+   "bm": [
+    "Simcoe",
+    "Citra",
+    "Amarillo"
+   ],
+   "parMoment": {
+    "am": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "HPA-016",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Eclipse",
+       "score": 92,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Ahhhroma",
+       "score": 90,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Enigma",
+       "score": 90,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Satus",
+       "score": 90,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Bitter Gold",
+       "score": 89,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "El Dorado",
+       "score": 89,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "BRU-1",
+       "score": 87,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Caliente",
+       "score": 87,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Galena",
+       "score": 87,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Simcoe",
+       "rang": 133
+      },
+      {
+       "nom": "Citra",
+       "rang": 216
+      },
+      {
+       "nom": "Amarillo",
+       "rang": 135
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Nectaron",
+       "rang": 218
+      },
+      {
+       "nom": "Vic Secret",
+       "rang": 71
+      },
+      {
+       "nom": "Strata",
+       "rang": 223
+      }
+     ]
+    },
+    "ch": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Harlequin",
+       "score": 69,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Mosaic",
+       "score": 63,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Nectaron",
+       "score": 62,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 4,
+       "nom": "Azacca",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Citra",
+       "score": 61,
+       "bm": true,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Rakau",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Zamba Blend",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Comet",
+       "score": 60,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Trident",
+       "score": 60,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Ariana",
+       "score": 59,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Simcoe",
+       "rang": 51
+      },
+      {
+       "nom": "Citra",
+       "rang": 5
+      },
+      {
+       "nom": "Amarillo",
+       "rang": 54
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Nectaron",
+       "rang": 3
+      },
+      {
+       "nom": "Vic Secret",
+       "rang": 39
+      },
+      {
+       "nom": "Strata",
+       "rang": 29
+      }
+     ]
+    },
+    "fr": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Harlequin",
+       "score": 65,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Mosaic",
+       "score": 60,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Citra",
+       "score": 59,
+       "bm": true,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Nectaron",
+       "score": 59,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 5,
+       "nom": "Rakau",
+       "score": 59,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Zamba Blend",
+       "score": 59,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Azacca",
+       "score": 58,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Comet",
+       "score": 58,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Trident",
+       "score": 58,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Sabro",
+       "score": 57,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Simcoe",
+       "rang": 50
+      },
+      {
+       "nom": "Citra",
+       "rang": 3
+      },
+      {
+       "nom": "Amarillo",
+       "rang": 56
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Nectaron",
+       "rang": 4
+      },
+      {
+       "nom": "Vic Secret",
+       "rang": 33
+      },
+      {
+       "nom": "Strata",
+       "rang": 21
+      }
+     ]
+    }
+   }
+  },
+  {
+   "phare": "Simcoe",
+   "d": [
+    "Mosaic",
+    "Idaho 7",
+    "Vic Secret"
+   ],
+   "bm": [
+    "Summit",
+    "Magnum (US)",
+    "Amarillo",
+    "Mosaic",
+    "Cascade",
+    "Centennial",
+    "Citra",
+    "Columbus"
+   ],
+   "parMoment": {
+    "am": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Zenia",
+       "score": 94,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Trident",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Yeoman",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "HBC 630",
+       "score": 92,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Sabro",
+       "score": 92,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Warrior",
+       "score": 92,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Hartwick",
+       "score": 91,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Magnat",
+       "score": 91,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Loral",
+       "score": 90,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Nugget",
+       "score": 90,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Summit",
+       "rang": 25
+      },
+      {
+       "nom": "Magnum (US)",
+       "rang": 52
+      },
+      {
+       "nom": "Amarillo",
+       "rang": 79
+      },
+      {
+       "nom": "Mosaic",
+       "rang": 215
+      },
+      {
+       "nom": "Cascade",
+       "rang": 227
+      },
+      {
+       "nom": "Centennial",
+       "rang": 39
+      },
+      {
+       "nom": "Citra",
+       "rang": 214
+      },
+      {
+       "nom": "Columbus",
+       "rang": 58
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Mosaic",
+       "rang": 215
+      },
+      {
+       "nom": "Idaho 7",
+       "rang": 32
+      },
+      {
+       "nom": "Vic Secret",
+       "rang": 75
+      }
+     ]
+    },
+    "ch": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Mosaic",
+       "score": 73,
+       "bm": true,
+       "d": true
+      },
+      {
+       "rang": 2,
+       "nom": "Rakau",
+       "score": 70,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Falconer's Flight",
+       "score": 67,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Idaho 7",
+       "score": 66,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 5,
+       "nom": "Moutere",
+       "score": 65,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Southern Cross",
+       "score": 65,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Citra",
+       "score": 63,
+       "bm": true,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Trident",
+       "score": 63,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Chinook",
+       "score": 62,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Falconer's Flight 7CS",
+       "score": 62,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Summit",
+       "rang": 34
+      },
+      {
+       "nom": "Magnum (US)",
+       "rang": 121
+      },
+      {
+       "nom": "Amarillo",
+       "rang": 58
+      },
+      {
+       "nom": "Mosaic",
+       "rang": 1
+      },
+      {
+       "nom": "Cascade",
+       "rang": 116
+      },
+      {
+       "nom": "Centennial",
+       "rang": 18
+      },
+      {
+       "nom": "Citra",
+       "rang": 7
+      },
+      {
+       "nom": "Columbus",
+       "rang": 95
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Mosaic",
+       "rang": 1
+      },
+      {
+       "nom": "Idaho 7",
+       "rang": 4
+      },
+      {
+       "nom": "Vic Secret",
+       "rang": 35
+      }
+     ]
+    },
+    "fr": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Mosaic",
+       "score": 70,
+       "bm": true,
+       "d": true
+      },
+      {
+       "rang": 2,
+       "nom": "Rakau",
+       "score": 70,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Moutere",
+       "score": 66,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Falconer's Flight",
+       "score": 65,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Idaho 7",
+       "score": 64,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 6,
+       "nom": "Southern Cross",
+       "score": 63,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Falconer's Flight 7CS",
+       "score": 62,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Citra",
+       "score": 61,
+       "bm": true,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Mandarina Bavaria",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Trident",
+       "score": 61,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Summit",
+       "rang": 31
+      },
+      {
+       "nom": "Magnum (US)",
+       "rang": 121
+      },
+      {
+       "nom": "Amarillo",
+       "rang": 65
+      },
+      {
+       "nom": "Mosaic",
+       "rang": 1
+      },
+      {
+       "nom": "Cascade",
+       "rang": 90
+      },
+      {
+       "nom": "Centennial",
+       "rang": 15
+      },
+      {
+       "nom": "Citra",
+       "rang": 8
+      },
+      {
+       "nom": "Columbus",
+       "rang": 104
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Mosaic",
+       "rang": 1
+      },
+      {
+       "nom": "Idaho 7",
+       "rang": 5
+      },
+      {
+       "nom": "Vic Secret",
+       "rang": 22
+      }
+     ]
+    }
+   }
+  },
+  {
+   "phare": "Saaz (CZ)",
+   "d": [
+    "Saaz Late",
+    "Saaz (US)",
+    "Spalt"
+   ],
+   "bm": [
+    "Saaz (US)",
+    "Sterling"
+   ],
+   "parMoment": {
+    "am": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Wild Loyalist",
+       "score": 99,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Amethyst",
+       "score": 96,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Saaz Late",
+       "score": 96,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 4,
+       "nom": "Sylva",
+       "score": 95,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Crystal",
+       "score": 94,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Spalt",
+       "score": 94,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 7,
+       "nom": "Tettnang (US)",
+       "score": 94,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Tettnanger",
+       "score": 94,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Mount Hood",
+       "score": 93,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Southern Aroma",
+       "score": 93,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Saaz (US)",
+       "rang": 19
+      },
+      {
+       "nom": "Sterling",
+       "rang": 38
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Saaz Late",
+       "rang": 3
+      },
+      {
+       "nom": "Saaz (US)",
+       "rang": 19
+      },
+      {
+       "nom": "Spalt",
+       "rang": 6
+      }
+     ]
+    },
+    "ch": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Aurum",
+       "score": 65,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Saaz Late",
+       "score": 65,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 3,
+       "nom": "Tettnang (US)",
+       "score": 63,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Wild Loyalist",
+       "score": 63,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Hersbrucker",
+       "score": 62,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Spalt",
+       "score": 62,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 7,
+       "nom": "Tettnanger",
+       "score": 62,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Fuggle",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Pacific Crest",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Saaz (US)",
+       "score": 60,
+       "bm": true,
+       "d": true
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Saaz (US)",
+       "rang": 10
+      },
+      {
+       "nom": "Sterling",
+       "rang": 35
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Saaz Late",
+       "rang": 2
+      },
+      {
+       "nom": "Saaz (US)",
+       "rang": 10
+      },
+      {
+       "nom": "Spalt",
+       "rang": 6
+      }
+     ]
+    },
+    "fr": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Saaz Late",
+       "score": 64,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 2,
+       "nom": "Aurum",
+       "score": 63,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Spalt",
+       "score": 62,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 4,
+       "nom": "Tettnang (US)",
+       "score": 62,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Tettnanger",
+       "score": 62,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Fuggle",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Wild Loyalist",
+       "score": 60,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Hersbrucker",
+       "score": 59,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Pacific Crest",
+       "score": 59,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Southern Aroma",
+       "score": 59,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Saaz (US)",
+       "rang": 11
+      },
+      {
+       "nom": "Sterling",
+       "rang": 31
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Saaz Late",
+       "rang": 1
+      },
+      {
+       "nom": "Saaz (US)",
+       "rang": 11
+      },
+      {
+       "nom": "Spalt",
+       "rang": 3
+      }
+     ]
+    }
+   }
+  },
+  {
+   "phare": "Cascade",
+   "d": [
+    "Centennial",
+    "Taiheke",
+    "Falconer's Flight"
+   ],
+   "bm": [
+    "Amarillo",
+    "Centennial",
+    "Ahtanum",
+    "Summit"
+   ],
+   "parMoment": {
+    "am": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Petoskey",
+       "score": 100,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Vienna Gold",
+       "score": 100,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Aloha Blend",
+       "score": 99,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Hartwick",
+       "score": 99,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Mandarina Bavaria",
+       "score": 99,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Solero",
+       "score": 99,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Sun",
+       "score": 99,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "TNT Blend",
+       "score": 99,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Yellow Sub",
+       "score": 99,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Buzz Bullets",
+       "score": 98,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Amarillo",
+       "rang": 140
+      },
+      {
+       "nom": "Centennial",
+       "rang": 97
+      },
+      {
+       "nom": "Ahtanum",
+       "rang": 211
+      },
+      {
+       "nom": "Summit",
+       "rang": 120
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Centennial",
+       "rang": 97
+      },
+      {
+       "nom": "Taiheke",
+       "rang": 12
+      },
+      {
+       "nom": "Falconer's Flight",
+       "rang": 112
+      }
+     ]
+    },
+    "ch": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Taiheke",
+       "score": 66,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 2,
+       "nom": "Cluster",
+       "score": 65,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 3,
+       "nom": "Mandarina Bavaria",
+       "score": 64,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Centennial",
+       "score": 62,
+       "bm": true,
+       "d": true
+      },
+      {
+       "rang": 5,
+       "nom": "Motueka",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Sasquatch",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 7,
+       "nom": "Aramis",
+       "score": 60,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Atlas",
+       "score": 60,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Bravo",
+       "score": 60,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Endeavour",
+       "score": 60,
+       "bm": false,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Amarillo",
+       "rang": 15
+      },
+      {
+       "nom": "Centennial",
+       "rang": 4
+      },
+      {
+       "nom": "Ahtanum",
+       "rang": 52
+      },
+      {
+       "nom": "Summit",
+       "rang": 83
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Centennial",
+       "rang": 4
+      },
+      {
+       "nom": "Taiheke",
+       "rang": 1
+      },
+      {
+       "nom": "Falconer's Flight",
+       "rang": 25
+      }
+     ]
+    },
+    "fr": {
+     "dix": [
+      {
+       "rang": 1,
+       "nom": "Mandarina Bavaria",
+       "score": 63,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 2,
+       "nom": "Taiheke",
+       "score": 63,
+       "bm": false,
+       "d": true
+      },
+      {
+       "rang": 3,
+       "nom": "Cluster",
+       "score": 62,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 4,
+       "nom": "Bravo",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 5,
+       "nom": "Sorachi Ace",
+       "score": 61,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 6,
+       "nom": "Centennial",
+       "score": 60,
+       "bm": true,
+       "d": true
+      },
+      {
+       "rang": 7,
+       "nom": "Comet",
+       "score": 59,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 8,
+       "nom": "Endeavour",
+       "score": 59,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 9,
+       "nom": "Target",
+       "score": 59,
+       "bm": false,
+       "d": false
+      },
+      {
+       "rang": 10,
+       "nom": "Amarillo",
+       "score": 58,
+       "bm": true,
+       "d": false
+      }
+     ],
+     "rangsBM": [
+      {
+       "nom": "Amarillo",
+       "rang": 10
+      },
+      {
+       "nom": "Centennial",
+       "rang": 6
+      },
+      {
+       "nom": "Ahtanum",
+       "rang": 52
+      },
+      {
+       "nom": "Summit",
+       "rang": 59
+      }
+     ],
+     "rangsD": [
+      {
+       "nom": "Centennial",
+       "rang": 6
+      },
+      {
+       "nom": "Taiheke",
+       "rang": 2
+      },
+      {
+       "nom": "Falconer's Flight",
+       "rang": 20
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "recouvrement60": [
+  {
+   "houblon": "Nelson Sauvin",
+   "communs": 5
+  },
+  {
+   "houblon": "Citra",
+   "communs": 7
+  },
+  {
+   "houblon": "Motueka",
+   "communs": 8
+  },
+  {
+   "houblon": "Mosaic",
+   "communs": 5
+  },
+  {
+   "houblon": "Galaxy",
+   "communs": 3
+  },
+  {
+   "houblon": "Simcoe",
+   "communs": 7
+  },
+  {
+   "houblon": "Saaz (CZ)",
+   "communs": 8
+  },
+  {
+   "houblon": "Cascade",
+   "communs": 7
+  },
+  {
+   "houblon": "Magnum (US)",
+   "communs": 5
+  },
+  {
+   "houblon": "Nugget",
+   "communs": 6
+  },
+  {
+   "houblon": "Columbus",
+   "communs": 5
+  },
+  {
+   "houblon": "Warrior",
+   "communs": 5
+  },
+  {
+   "houblon": "Herkules",
+   "communs": 6
+  },
+  {
+   "houblon": "Apollo",
+   "communs": 3
+  },
+  {
+   "houblon": "Summit",
+   "communs": 8
+  },
+  {
+   "houblon": "Target",
+   "communs": 5
+  }
+ ],
+ "verdict": {
+  "amertume60": {
+   "amerisantsControle": {
+    "A": 0.197,
+    "v2": 0.276
+   },
+   "tousControle": {
+    "A": 0.102,
+    "v2": 0.162
+   }
+  },
+  "chaud": {
+   "C": 0.232,
+   "v2": 0.282,
+   "A": 0.182
+  },
+  "froid": {
+   "C": 0.232,
+   "v2": 0.297,
+   "A": 0.182
+  }
+ }
+}

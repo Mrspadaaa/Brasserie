@@ -17,7 +17,10 @@ const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recett
 // Empreintes de RESULTAT.md de t5-causes (banc ×1, après la fabrique) : la même forme que le banc les calcule.
 // remplacants : 81efdc544613 → d646d7130b2f au commit 883e1c9b (« autres n % » : mots sans famille distincts après traduction) ;
 // seuls partSansFamille et motsSansFamille de deux houblons changent, aucun score ni rang (voie r180-pack, RESULTAT.md).
-const EMPREINTES = { substitutes: '9ef77aa53ecc', suggerer: '85aab6303283', proposer: 'b42c299e6ebf', remplacants: 'd646d7130b2f' };
+// 26.10, voies d4 (descripteurs de 12 sources) et e2 (moteur de substitution v2) : substitutes 9ef77aa53ecc → cac6de6d0c72 et remplacants d646d7130b2f →
+// 6561a4d6240b (v2 sur les fiches de d4) ; suggerer 85aab6303283 → 166a7dbd9516 et proposer b42c299e6ebf → 3584e2c7dabd (les fiches de d4 changent
+// les niveaux de famille que lisent ces deux calculs ; ils n'importent pas substitution.ts).
+const EMPREINTES = { substitutes: 'cac6de6d0c72', suggerer: '166a7dbd9516', proposer: '3584e2c7dabd', remplacants: '6561a4d6240b' };
 const forme = {
   substitutes: (sr: ReturnType<typeof CALCULS.substitutes>) => empreinte(sr.remplacants.map((r) => [r.key, r.rank, r.score, r.dose, r.stock, r.raison, r.amertumeDeconseillee])),
   suggerer: (c: ReturnType<typeof CALCULS.suggerer>) => empreinte(c.map((x) => [x.cle, x.visee, x.besoin])),

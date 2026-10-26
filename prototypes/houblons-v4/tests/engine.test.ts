@@ -83,10 +83,12 @@ describe('Moteur v4 sur le moteur V5.5 importé', () => {
 
   it('stock libre = stock moins les ajouts de la recette', () => {
     const r = proposeVoies(stout([...s1Recipe().additions, { id: 'm', hopKey: 'beermaverick-motueka', moment: 'dryPost', grams: 15 }]), { floral: 1 }, { limit: 40, perHop: 6 });
-    const v = r.voies.find((x) => x.actions.length === 1 && x.actions[0].hopKey === 'beermaverick-motueka' && x.actions[0].grams === 10);
+    const v = r.voies.find((x) => x.actions.length === 1 && x.actions[0].hopKey === 'beermaverick-motueka' && x.actions[0].grams === 22.5);
+    // d4 (26.10) : avec 7 fiches de plus pour Motueka, la grille ne propose plus la voie à 10 g (manque 5) ; la voie à 22,5 g (+ 7,5 g sur les 15 g de la recette)
+    // éprouve la même arithmétique : stock libre = 20 g de stock moins les 15 g de la recette = 5 g ; il manque 7,5 − 5 = 2,5 g.
     expect(v).toBeDefined();
     expect(v!.stock.status).toBe('manque');
-    expect(v!.stock.missing[0].grams).toBe(5);
+    expect(v!.stock.missing[0].grams).toBe(2.5);
   });
 
   it('remplacer un ajout d’amertume à IBU égal, à 0,5 IBU près', () => {

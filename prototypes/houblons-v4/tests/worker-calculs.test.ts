@@ -16,7 +16,8 @@ const empreinte = (x: unknown) => createHash('sha1').update(JSON.stringify(x)).d
 const recette = recetteDegustee();
 const DIR = { floral: 1, resin: -1 } as const;
 // remplacants : 81efdc544613 → d646d7130b2f au commit 883e1c9b (mots sans famille distincts) : voir client-async.test.ts.
-const EMPREINTES = { substitutes: '9ef77aa53ecc', suggerer: '85aab6303283', proposer: 'b42c299e6ebf', remplacants: 'd646d7130b2f' };
+// 26.10 (d4 et e2) : les quatre empreintes changent, raisons dans client-async.test.ts.
+const EMPREINTES = { substitutes: 'cac6de6d0c72', suggerer: '166a7dbd9516', proposer: '3584e2c7dabd', remplacants: '6561a4d6240b' };
 const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recette as never, style: adapter.style(recette.styleCode), stockFirst: true, limit: 8 });
 
 /** Le worker joué dans le même processus : messages clonés dans les deux sens, une tâche plus tard. */
