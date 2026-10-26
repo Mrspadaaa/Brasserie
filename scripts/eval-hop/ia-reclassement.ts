@@ -511,8 +511,8 @@ function rapport(dossiers: { libelle: string; dossier: string }[], sortieDir: st
     const saazChezGalaxy = rangDe('beermaverick-galaxy', 'dryActive', 'beermaverick-saaz-cz'), galaxyChezSaaz = rangDe('beermaverick-saaz-cz', 'dryActive', 'beermaverick-galaxy');
     parties.push(`### Les cinq cas du brasseur (K1 à K5)\n\n| cas | lecture | résultat |\n|---|---|---|\n` +
       `| K1 · Stout « plus floral » | Suggérer, pas Substituer : hors du périmètre de ce banc | non applicable ici |\n| K2 · résineux, stout contre lager | Suggérer (échelles de style) | non applicable ici |\n| K3 · agrumes, IPA contre lager | Suggérer (échelles de style) | non applicable ici |\n` +
-      `| K4 · Nelson Sauvin (vin blanc) | Hallertau Blanc dans les 5 premiers au dry hop | IA : rang ${hbNelson || 'hors des 20 candidats'} ; moteur : ${nelson ? nelson.ordreMoteur.indexOf(hb) + 1 : '–'} ; option 1 : ${nelson ? nelson.ordreOpt1.indexOf(hb) + 1 : '–'} → ${hbNelson && hbNelson <= 5 ? 'tenu' : 'non tenu'} |\n` +
-      `| K5 · Galaxy n'est pas Saaz | Saaz hors des 10 premiers de Galaxy et Galaxy hors des 10 premiers de Saaz, au dry hop | Saaz chez Galaxy : rang ${saazChezGalaxy || '–'} ; Galaxy chez Saaz : rang ${galaxyChezSaaz || '–'} → ${(saazChezGalaxy ?? 0) > 10 || !saazChezGalaxy ? 'tenu' : 'non tenu'} / ${(galaxyChezSaaz ?? 0) > 10 || !galaxyChezSaaz ? 'tenu' : 'non tenu'} |\n\n` +
+      `| K4 · Nelson Sauvin (vin blanc) | Hallertau Blanc dans les 5 premiers au dry hop | ${nelson ? '' : 'non mesuré dans ce lot (Nelson Sauvin absent) · '}IA : rang ${hbNelson || 'hors des 20 candidats'} ; moteur : ${nelson ? nelson.ordreMoteur.indexOf(hb) + 1 : '–'} ; option 1 : ${nelson ? nelson.ordreOpt1.indexOf(hb) + 1 : '–'} → ${hbNelson && hbNelson <= 5 ? 'tenu' : 'non tenu'} |\n` +
+      `| K5 · Galaxy n'est pas Saaz | Saaz hors des 10 premiers de Galaxy et Galaxy hors des 10 premiers de Saaz, au dry hop | ${saazChezGalaxy === null ? 'non mesuré dans ce lot (Galaxy ou Saaz absent) · ' : ''}Saaz chez Galaxy : rang ${saazChezGalaxy || '–'} ; Galaxy chez Saaz : rang ${galaxyChezSaaz || '–'} → ${(saazChezGalaxy ?? 0) > 10 || !saazChezGalaxy ? 'tenu' : 'non tenu'} / ${(galaxyChezSaaz ?? 0) > 10 || !galaxyChezSaaz ? 'tenu' : 'non tenu'} |\n\n` +
       `K1 à K3 portent sur Suggérer (visées de recette et échelles de style), pas sur le classement des substituts : l'IA de ce banc n'y touche pas. Ils restent à juger sur un essai de Suggérer.\n`);
     // Durée, jetons, coût.
     const q = (p: number) => percentile(lat, p);
@@ -543,9 +543,43 @@ Hallertau Blanc chez Nelson Sauvin (dry hop) : ${hbA ? hbA.ordreIA.indexOf('beer
   return resultats;
 }
 
+// ---------- Côte à côte pour le brasseur (aucun appel : réponses déjà gardées) ----------
+const COTE_PHARES = ['nelson-sauvin', 'citra', 'motueka', 'mosaic', 'galaxy', 'simcoe', 'saaz-cz', 'cascade'];
+function coteACote() {
+  if (POOL !== 'opt1') stop('--cote-a-cote : utiliser --pool=opt1 (les réponses de la fenêtre de l\'option 1).');
+  const req = lireRequetes();
+  const base = join(VOIE, 'resultats', '2026-10-26');
+  const sources = [['lite', join(base, 'reponses-opt1-lite')], ['3.8', join(base, 'reponses-opt1-3.8')]] as const;
+  const dix = (ordre: string[]) => ordre.slice(0, 10).map((k, i) => ({ rang: i + 1, nom: nom(k) }));
+  const phares = COTE_PHARES.map((s) => {
+    const id = `beermaverick-${s}`, h = parId.get(id)!, c = req.cas.find((x) => x.id === idCas(id, 'dryActive'))!;
+    let rep: Reponse | undefined, modele = '';
+    for (const [m2, dossier] of sources) { const r = chargerReponses(dossier).get(c.id); if (r) { rep = r; modele = r.modeleObserve ?? m2; break; } }
+    if (!rep) throw new Error(`Aucune réponse gardée pour ${c.id} : pas de nouvel appel dans ce mode.`);
+    const a = analyser(rep.texte ?? undefined, c);
+    if (!a.valide) throw new Error(`Réponse invalide pour ${c.id}.`);
+    const om = ordreMoteur(id, 'dryActive'), oo = ordreOpt1(id, 'dryActive'), oi = ordreIA(c, a);
+    const iaDix = a.ordre.map((cc, i) => ({ rang: i + 1, nom: c.candidats.find((x) => x.c === cc)!.nom, phrase: a.phrases[cc] }));
+    const bm = (h.bm?.substituts ?? []).map((l) => {
+      const lien = bmLienId(l);
+      if (!lien || !parId.has(lien)) return { nom: typeof l === 'string' ? l : l.name, relie: false, rangMoteur: null, rangOption1: null, rangOption1PlusIA: null, dansLes10: { moteur: false, option1: false, option1PlusIA: false } };
+      const r = (o: string[]) => o.indexOf(lien) + 1 || null;
+      return { nom: nom(lien), relie: true, rangMoteur: r(om), rangOption1: r(oo), rangOption1PlusIA: r(oi), dansLes10: { moteur: (r(om) ?? 99) <= 10, option1: (r(oo) ?? 99) <= 10, option1PlusIA: (r(oi) ?? 99) <= 10 } };
+    });
+    return { nom: h.name, id, moment: 'dry hop (fermentation active)', usage: h.purpose ?? null, alphaPct: h.alpha, mots: h.tagsFr,
+      moteur: dix(om), option1: dix(oo), option1PlusIA: iaDix, modeleIA: modele, reponse: `resultats/2026-10-26/reponses-opt1-${modele.includes('lite') ? 'lite' : '3.8'}/${c.id.replace('@', '_')}.json`, beerMaverick: bm };
+  });
+  const sortie = join(VOIE, 'resultats', 'cote-a-cote.json');
+  writeFileSync(sortie, JSON.stringify({ version: 1, genere: 'scripts/eval-hop/ia-reclassement.ts --cote-a-cote --pool=opt1',
+    note: 'Réponses déjà gardées, aucun nouvel appel. « Moteur » = substitutes() de l\'app ; « option 1 » = le même moteur avec l\'arôme mêlé aux mots hors famille (λ = 0,25, hors ligne) ; « option 1 + IA » = l\'IA reclasse les 20 premiers de l\'option 1 (une phrase par choix, écrite par le modèle). « Beer Maverick » = substituts choisis par des brasseurs sur leur page, avec leur rang dans chaque liste (null : non relié au catalogue). Un meilleur rang veut dire plus proche de Beer Maverick, pas jugé par le brasseur.',
+    systemes: ['moteur', 'option1', 'option1PlusIA'], phares }, null, 1) + '\n');
+  console.log(`côte à côte écrit : ${sortie} (${phares.length} phares ; modèles : ${phares.map((p) => `${p.nom} ${p.modeleIA}`).join(', ')})`);
+}
+
 // ---------- Aiguillage ----------
 (async () => {
   if (flag('--figer')) return figer();
+  if (flag('--cote-a-cote')) return coteACote();
   if (flag('--simule') || val('--simule') !== undefined) {
     const mode = val('--simule') === 'fautes' ? 'fautes' : 'identite';
     const nomSim = `simule${mode === 'fautes' ? '-fautes' : ''}${POOL === 'opt1' ? '-opt1' : ''}`;

@@ -1,0 +1,46 @@
+{
+ "casId": "brewers-gold-us@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "c33028ac72b45f2c",
+ "simule": false,
+ "appel": 6,
+ "http": 200,
+ "latenceMs": 2111,
+ "finishReason": "STOP",
+ "jetonsEntree": 3835,
+ "jetonsSortie": 540,
+ "coutMicroChf": 3126,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Le profil aromatique de cassis et épicé est très proche, tout comme la teneur en cohumulone, mais l'alpha est un peu plus large.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage les notes de cassis et de baies pour l'aromatique, mais son usage dual et ses alpha-acides légèrement supérieurs demandent un léger ajustement.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Bon profil d'amertume avec un usage similaire, mais les notes de lavande et tabac s'éloignent du cassis original.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Apporte des notes épicées communes, mais l'absence de cassis et un alpha plus faible réduisent la puissance d'amertume.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Usage dual avec des notes épicées proches, mais l'orientation agrumes diffère du profil cassis recherché.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Taux de cohumulone et alpha proches, mais le profil fruité et agrumes remplace les notes de cassis.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Usage amérisant bien adapté avec des touches épicées, mais le profil global manque de la typicité cassis.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Bon équilibre pour l'ébullition, mais les notes florales et d'agrumes s'éloignent du caractère épicé et cassis.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Partage le côté épicé et un bon niveau d'alpha, mais oriente l'amertume vers les agrumes plutôt que le cassis.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Usage amérisant fort et notes de baies proches, mais l'ajout de pin et de chêne modifie nettement le profil.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c01",
+   "c12",
+   "c04",
+   "c14",
+   "c11",
+   "c05",
+   "c16",
+   "c07",
+   "c19"
+  ],
+  "phrases": {
+   "c02": "Le profil aromatique de cassis et épicé est très proche, tout comme la teneur en cohumulone, mais l'alpha est un peu plus large.",
+   "c01": "Partage les notes de cassis et de baies pour l'aromatique, mais son usage dual et ses alpha-acides légèrement supérieurs demandent un léger ajustement.",
+   "c12": "Bon profil d'amertume avec un usage similaire, mais les notes de lavande et tabac s'éloignent du cassis original.",
+   "c04": "Apporte des notes épicées communes, mais l'absence de cassis et un alpha plus faible réduisent la puissance d'amertume.",
+   "c14": "Usage dual avec des notes épicées proches, mais l'orientation agrumes diffère du profil cassis recherché.",
+   "c11": "Taux de cohumulone et alpha proches, mais le profil fruité et agrumes remplace les notes de cassis.",
+   "c05": "Usage amérisant bien adapté avec des touches épicées, mais le profil global manque de la typicité cassis.",
+   "c16": "Bon équilibre pour l'ébullition, mais les notes florales et d'agrumes s'éloignent du caractère épicé et cassis.",
+   "c07": "Partage le côté épicé et un bon niveau d'alpha, mais oriente l'amertume vers les agrumes plutôt que le cassis.",
+   "c19": "Usage amérisant fort et notes de baies proches, mais l'ajout de pin et de chêne modifie nettement le profil."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

@@ -1,0 +1,46 @@
+{
+ "casId": "green-bullet@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "b3c3d774a6792272",
+ "simule": false,
+ "appel": 30,
+ "http": 200,
+ "latenceMs": 2264,
+ "finishReason": "STOP",
+ "jetonsEntree": 3718,
+ "jetonsSortie": 550,
+ "coutMicroChf": 3113,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Pacific Gem partage l'alpha élevé, le profil résineux et le poivre noir, offrant un remplacement d'amertume très proche malgré des baies en plus.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Warrior convient bien à 60 minutes grâce à son alpha élevé et ses notes de pin et résine, bien que légèrement plus doux.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Magnum (US) assure une amertume nette et propre avec un alpha comparable, mais apporte des touches d'agrumes absentes chez le Green Bullet.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Magnum (GR) offre une amertume équilibrée pour l'ébullition avec un bon niveau d'alpha, tout en introduisant une note de pomme fruitée.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Dr. Rudi possède un profil résineux et pin du même terroir néo-zélandais, avec un alpha légèrement inférieur mais un bon compromis.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Sticklebract partage l'origine et l'usage dual, avec des notes de pin proches, bien que son myrcène soit très variable.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Zeus procure un fort taux d'alpha et des notes de poivre noir similaires, mais son profil est plus intense en résine.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Hallertau Taurus offre un bon alpha pour l'ébullition et des notes épicées et poivrées, malgré un profil aromatique global plus terreux.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Super Pride dispose de l'alpha requis et d'une résine marquée, mais son huile totale est nettement plus élevée et fruitée.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Vital propose un bon niveau d'alpha et une touche de prune commune, mais son profil penche vers la lavande et la réglisse.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c08",
+   "c04",
+   "c20",
+   "c06",
+   "c07",
+   "c19",
+   "c14",
+   "c05",
+   "c16"
+  ],
+  "phrases": {
+   "c01": "Pacific Gem partage l'alpha élevé, le profil résineux et le poivre noir, offrant un remplacement d'amertume très proche malgré des baies en plus.",
+   "c08": "Warrior convient bien à 60 minutes grâce à son alpha élevé et ses notes de pin et résine, bien que légèrement plus doux.",
+   "c04": "Magnum (US) assure une amertume nette et propre avec un alpha comparable, mais apporte des touches d'agrumes absentes chez le Green Bullet.",
+   "c20": "Magnum (GR) offre une amertume équilibrée pour l'ébullition avec un bon niveau d'alpha, tout en introduisant une note de pomme fruitée.",
+   "c06": "Dr. Rudi possède un profil résineux et pin du même terroir néo-zélandais, avec un alpha légèrement inférieur mais un bon compromis.",
+   "c07": "Sticklebract partage l'origine et l'usage dual, avec des notes de pin proches, bien que son myrcène soit très variable.",
+   "c19": "Zeus procure un fort taux d'alpha et des notes de poivre noir similaires, mais son profil est plus intense en résine.",
+   "c14": "Hallertau Taurus offre un bon alpha pour l'ébullition et des notes épicées et poivrées, malgré un profil aromatique global plus terreux.",
+   "c05": "Super Pride dispose de l'alpha requis et d'une résine marquée, mais son huile totale est nettement plus élevée et fruitée.",
+   "c16": "Vital propose un bon niveau d'alpha et une touche de prune commune, mais son profil penche vers la lavande et la réglisse."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

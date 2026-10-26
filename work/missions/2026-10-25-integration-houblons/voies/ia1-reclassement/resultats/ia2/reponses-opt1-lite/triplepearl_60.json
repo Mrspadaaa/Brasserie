@@ -1,0 +1,46 @@
+{
+ "casId": "triplepearl@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "a336d653c22f201b",
+ "simule": false,
+ "appel": 8,
+ "http": 200,
+ "latenceMs": 1730,
+ "finishReason": "STOP",
+ "jetonsEntree": 3700,
+ "jetonsSortie": 517,
+ "coutMicroChf": 3004,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Herald partage le profil d'agrumes et d'orange avec un usage dual, mais sa cohumulone est plus haute.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Olympic offre un profil d'agrumes et un taux d'alpha proche, bien que ses notes épicées soient plus discrètes.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Dana propose un profil floral et agrumes avec un usage dual, mais avec plus de farnésène.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Zenith a un alpha et une cohumulone proches, mais son usage est amérisant et ses notes florales dominent.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Lumberjack partage des notes de melon et d'agrumes, mais sa composition exacte en huiles reste largement inconnue.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Pilot convient pour l'amertume avec un alpha similaire, mais son profil penche plus vers le citron.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Loral intègre des notes florales et d'agrumes, mais son usage est purement aromatique et l'alpha varie.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Yeoman possède un bon alpha pour l'ébullition, mais ses arômes nobles diffèrent du registre orangé d'origine.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Marco Polo apporte des notes fruitées originales, mais l'origan et la groseille s'éloignent du profil épicé et résineux.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Sticklebract convient pour l'amertume à 60 minutes, mais ses notes de pin et d'agrumes diffèrent du bois et du poivre.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c09",
+   "c10",
+   "c08",
+   "c16",
+   "c04",
+   "c06",
+   "c02",
+   "c15",
+   "c19",
+   "c20"
+  ],
+  "phrases": {
+   "c09": "Herald partage le profil d'agrumes et d'orange avec un usage dual, mais sa cohumulone est plus haute.",
+   "c10": "Olympic offre un profil d'agrumes et un taux d'alpha proche, bien que ses notes épicées soient plus discrètes.",
+   "c08": "Dana propose un profil floral et agrumes avec un usage dual, mais avec plus de farnésène.",
+   "c16": "Zenith a un alpha et une cohumulone proches, mais son usage est amérisant et ses notes florales dominent.",
+   "c04": "Lumberjack partage des notes de melon et d'agrumes, mais sa composition exacte en huiles reste largement inconnue.",
+   "c06": "Pilot convient pour l'amertume avec un alpha similaire, mais son profil penche plus vers le citron.",
+   "c02": "Loral intègre des notes florales et d'agrumes, mais son usage est purement aromatique et l'alpha varie.",
+   "c15": "Yeoman possède un bon alpha pour l'ébullition, mais ses arômes nobles diffèrent du registre orangé d'origine.",
+   "c19": "Marco Polo apporte des notes fruitées originales, mais l'origan et la groseille s'éloignent du profil épicé et résineux.",
+   "c20": "Sticklebract convient pour l'amertume à 60 minutes, mais ses notes de pin et d'agrumes diffèrent du bois et du poivre."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

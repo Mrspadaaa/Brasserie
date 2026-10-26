@@ -1,0 +1,46 @@
+{
+ "casId": "herald@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "a16d747c36ea032c",
+ "simule": false,
+ "appel": 26,
+ "http": 200,
+ "latenceMs": 2207,
+ "finishReason": "STOP",
+ "jetonsEntree": 3746,
+ "jetonsSortie": 591,
+ "coutMicroChf": 3252,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Proche par ses origines britanniques et son profil dual, Yeoman offre un taux d'alpha plus élevé mais partage des notes d'agrumes proches de Herald.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Admiral convient bien à 60 minutes grâce à son profil amérisant, mais sa cohumulone est plus haute et ses notes tendent vers la résine.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Olympic apporte un profil dual similaire en ébullition, avec des acides alpha proches et des notes d'agrumes qui rappellent la parenté de Herald.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Herkules est un excellent amérisant d'ébullition avec un alpha comparable, bien que ses huiles et ses notes de melon diffèrent de Herald.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Satus assure une amertume nette à 60 minutes avec des alpha proches, mais son usage purement amérisant et ses bêta plus élevés l'éloignent.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"CTZ garantit une solide amertume d'ébullition avec des alpha proches, mais ses arômes de terre et de résine divergent des agrumes de Herald.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Tomahawk offre des alpha puissants pour l'ébullition, mais son profil aromatique épicé et terreux s'éloigne des agrumes nets de Herald.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Columbus partage la puissance d'alpha pour l'ébullition, mais ses notes prononcées de cannabis et de poivre contrastent avec le profil agrumes de Herald.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Zythos s'éloigne de l'amertume pure de 60 minutes par son orientation arôme, mais ses notes d'agrumes rejoignent en partie celles de Herald.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Caliente offre un bon usage dual en ébullition, mais ses notes de pêche et de pin le distinguent des agrumes purs de Herald.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c18",
+   "c03",
+   "c15",
+   "c02",
+   "c06",
+   "c10",
+   "c19",
+   "c13",
+   "c14"
+  ],
+  "phrases": {
+   "c01": "Proche par ses origines britanniques et son profil dual, Yeoman offre un taux d'alpha plus élevé mais partage des notes d'agrumes proches de Herald.",
+   "c18": "Admiral convient bien à 60 minutes grâce à son profil amérisant, mais sa cohumulone est plus haute et ses notes tendent vers la résine.",
+   "c03": "Olympic apporte un profil dual similaire en ébullition, avec des acides alpha proches et des notes d'agrumes qui rappellent la parenté de Herald.",
+   "c15": "Herkules est un excellent amérisant d'ébullition avec un alpha comparable, bien que ses huiles et ses notes de melon diffèrent de Herald.",
+   "c02": "Satus assure une amertume nette à 60 minutes avec des alpha proches, mais son usage purement amérisant et ses bêta plus élevés l'éloignent.",
+   "c06": "CTZ garantit une solide amertume d'ébullition avec des alpha proches, mais ses arômes de terre et de résine divergent des agrumes de Herald.",
+   "c10": "Tomahawk offre des alpha puissants pour l'ébullition, mais son profil aromatique épicé et terreux s'éloigne des agrumes nets de Herald.",
+   "c19": "Columbus partage la puissance d'alpha pour l'ébullition, mais ses notes prononcées de cannabis et de poivre contrastent avec le profil agrumes de Herald.",
+   "c13": "Zythos s'éloigne de l'amertume pure de 60 minutes par son orientation arôme, mais ses notes d'agrumes rejoignent en partie celles de Herald.",
+   "c14": "Caliente offre un bon usage dual en ébullition, mais ses notes de pêche et de pin le distinguent des agrumes purs de Herald."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

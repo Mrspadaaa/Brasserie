@@ -1,4 +1,4 @@
-OK — essai d'IA mené (100 appels, 1,098 CHF) : +0,085 de MRR sur le moteur, seuil Hallertau Blanc tenu seulement sur l'option 1
+OK — ia1 (100 appels, 1,098 CHF) puis ia2 (60 appels lite, 0,184 CHF) : option 1 + IA lite = MRR 0,206 contre 0,107 (option 1) sur 30 houblons ; côte à côte prêt
 
 ## Fichiers écrits
 - `scripts/eval-hop/ia-reclassement.ts` : `--figer`, `--simule[=fautes]`, `--reel --confirm-paid-ai --max=N`, `--rapport` (options `--pool=moteur|opt1`, `--modele=3.8|lite`, `--cas`, `--moment`, `--date`). Réemploie `gemini38LiveCore.ts` (hôte et modèle de la liste blanche, ligne de journal par appel parti, coût estimé), `paid-ai-test-guard.mjs` (consentement), `models.ts`. Ajoute sa propre réservation de compteur (100 / 5 CHF), car le compteur du noyau est figé à 40. `banc-eval.ts` et `metriques.ts` : non modifiés (`metriques.ts` importé ; la logique de classement de e1 est copiée, car importer `banc-eval.ts` réécrit ses résultats).
@@ -31,3 +31,46 @@ DÉCISION À PRENDRE : brancher l'IA, l'option 1 seule, ou les deux ? Options : 
 CONNAISSANCE : (1) un classement reclassé par une IA sur une fenêtre de 20 ne peut pas remonter ce que le moteur a rejeté : 25 cas sur 78 seulement ont un substitut de référence dans les 20, et Hallertau Blanc (155e) est hors de la fenêtre du moteur pour Nelson Sauvin ; (2) mesures de l'essai du 26.10 : Flash-Lite, ~3 900 jetons en entrée et ~540 en sortie, p95 2,8 s, 0,0031 CHF par appel ; 3.8 `low` p95 7,4 s, 0,0121 CHF. Note proposée : `cerveau/metier/` « reclassement-ia-substituts ».
 
 LEÇON PROPOSÉE : (a) Avant d'écrire un protocole d'essai à fenêtre (le moteur présélectionne, le modèle reclasse), vérifier que le cas-clé du brasseur tient dans la fenêtre : ici le critère Nelson Sauvin / Hallertau Blanc était impossible par construction (155e du moteur, fenêtre de 20) ; contrôle : rang du cas-clé dans la fenêtre avant tout appel payant. (b) Étendre L26 à toute édition scriptée : un `String.replace` avec une chaîne de remplacement lit `$'`, `` $` `` et `$&` ; passer une fonction ou `split/join` (cela a corrompu un fichier de cette voie, vu avant exécution).
+
+---
+
+# Section ia2 — suite sous une nouvelle enveloppe (70 appels, 1 CHF, Flash-Lite seul), 26.10
+
+## Fichiers (ia2)
+- `scripts/eval-hop/ia-reclassement.ts` : `--section=ia2` (compteur 70 / 1 CHF, section « ia2 » du journal, refus de tout autre modèle que Flash-Lite), cas 60′ de la variante option 1, intervalles à 95 % de chaque système, `--cote-a-cote`.
+- `requetes/requetes-opt1.json` figé de nouveau : 78 cas (30 houblons de l'échantillon et 9 phares, 60′ et dry hop), empreinte `8c201f044632d98f` vérifiée avant l'envoi (les 39 cas du dry hop d'ia1 sont identiques mot pour mot ; `requetes-moteur.json` inchangé, `0dfecaf4cfa656bb`).
+- `resultats/ia2/` : `rapport-opt1.md`, `metriques-opt1.json`, `reponses-opt1-lite/` (60 réponses brutes) ; `resultats/simule-opt1/`, `simule-fautes-opt1/` (passe à vide) ; `resultats/cote-a-cote.json`.
+- Journal : section « ia2 », 60 lignes, compteur « 60 / 70 · 0.1835 CHF / 1 » ; 60 réponses observées en `gemini-3.5-flash-lite`, rien d'autre. Reste 10 appels, 0,82 CHF.
+
+## Passe à vide d'abord
+Fournisseur simulé, journal temporaire : l'IA qui rend l'ordre de l'option 1 redonne exactement les métriques de l'option 1 (MRR 0,107, rappel@10 10,1 %, rang médian 31,5 sur 60 cas) ; avec fautes injectées, 33 réponses sur 60 refusées sans casser le classement.
+
+## 1. Variante « option 1 + IA lite » sur les 30 houblons de l'échantillon (60 cas, graine 181)
+Intervalles à 95 % : rééchantillonnage des cas, 2000 tirages, graine fixe. 60 réponses sur 60 valides.
+
+| système | MRR | rappel@10 | rang médian du 1er |
+|---|---|---|---|
+| moteur seul | 0,086 (0,050 à 0,128) | 9,3 % (3,7 à 15,5) | 37,5 (23,5 à 52) |
+| option 1 (hors ligne) | 0,107 (0,066 à 0,155) | 10,1 % (4,6 à 16,3) | 31,5 (17 à 44,5) |
+| **option 1 + IA lite** | **0,206 (0,120 à 0,299)** | **14,5 % (7,6 à 21,9)** | 31,5 (16 à 44,5) |
+
+- IA contre option 1 : **+0,100 de MRR (intervalle +0,039 à +0,170)**, +4,4 points de rappel@10 ; le premier substitut monte dans 15 cas, descend dans 7, ne bouge pas dans 38. IA contre moteur : +0,121 (+0,057 à +0,196), +5,2 points de rappel@10.
+- Dry hop (30 cas) : option 1 0,130 → 0,199 (+0,069, intervalle **0,000** à +0,149 : limite), rappel@10 13,6 → 21,5 %, rang médian 17 → 15. 60′ (30 cas) : 0,083 → 0,214 (+0,130, +0,043 à +0,241), mais le rappel@10 ne passe que de 6,5 à 7,4 % et le rang médian ne bouge pas (49) : le gain vient de 5 cas qui montent (1 descend).
+- **Plafond de la fenêtre** : un substitut de référence est parmi les 20 candidats dans 24 cas sur 60 ; MRR maximal d'une IA parfaite 0,412. Le rang médian ne bouge pas, comme en ia1.
+- **Durée** : médiane 2,0 s, **p95 2,17 s** (max 2,73 s) → tient la limite de 3 s. Jetons : 3 794 en entrée et 524 en sortie en moyenne. **Coût** : 0,0031 CHF par usage (0,1837 CHF pour 60).
+- Le critère Hallertau Blanc n'est pas mesurable ici (Nelson Sauvin n'est pas dans l'échantillon) ; il reste tenu sur les 4 phares d'ia1 (1er, lite).
+
+## 2. `resultats/cote-a-cote.json` (pour le brasseur)
+8 phares au dry hop (Nelson Sauvin, Citra, Motueka, Mosaic, Galaxy, Simcoe, Saaz (CZ), Cascade). Pour chacun : 10 premiers du moteur, de l'option 1 et de l'option 1 + IA (nom, rang, phrase de l'IA pour sa colonne), substituts Beer Maverick avec leur rang dans chaque liste (`null` : non relié au catalogue), mots et α du houblon, modèle et fichier de la réponse. **Aucun nouvel appel** : les réponses d'ia1 servent ; **4 sont de Flash-Lite** (Nelson Sauvin, Citra, Motueka, Mosaic) **et 4 de 3.8** (Galaxy, Simcoe, Saaz, Cascade), le champ `modeleIA` le dit pour chaque phare. Pour une colonne uniforme en Flash-Lite : 4 appels (≈ 0,012 CHF) sur l'enveloppe restante, à ta décision.
+
+## Doutes et limites (ia2)
+- Un passage par cas, aucune répétition ; même source que la référence (le modèle a pu lire Beer Maverick). Le gain sur 30 houblons moins célèbres que les phares est cependant net.
+- Au dry hop seul, la borne basse de l'écart à l'option 1 touche zéro : le gain y est probable, pas établi. À 60′ il tient sur peu de cas.
+- Meilleur rang = plus proche de Beer Maverick, pas jugé par le brasseur : le côte à côte sert à cela.
+- Le texte d'opt-in affiché au lancement dit encore « ia1 » (étiquette), sans effet sur le compteur ni le journal.
+
+DÉCISION À PRENDRE : brancher l'IA par-dessus l'option 1 ? Les mesures d'ia2 confirment la recommandation C : +0,100 de MRR sur l'option 1 (intervalle > 0), 2,2 s au p95, 0,003 CHF par geste. Options : (1) brancher l'option 1 seule (hors ligne) ; (2) option 1 + geste « Affiner avec l'IA » en Flash-Lite, repli sur l'option 1 ; (3) attendre le jugement du brasseur sur `cote-a-cote.json` avant (2). Recommandation : (3) puis (2) : c'est lui qui juge si les phrases et les listes valent mieux que Beer Maverick ; le geste reste à la demande, jamais dans le calcul automatique.
+
+CONNAISSANCE : Flash-Lite sur 60 cas, fenêtre de 20 de l'option 1 : p95 2,17 s, 0,0031 CHF, 100 % de réponses valides, MRR 0,206 contre 0,107 ; plafond 0,412 tant que la fenêtre ne contient un substitut de référence que dans 24 cas sur 60.
+
+LEÇON PROPOSÉE : aucune nouvelle.

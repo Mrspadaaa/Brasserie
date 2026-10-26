@@ -1,0 +1,46 @@
+{
+ "casId": "agnus@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "322d6ee7be86431c",
+ "simule": false,
+ "appel": 34,
+ "http": 200,
+ "latenceMs": 1994,
+ "finishReason": "STOP",
+ "jetonsEntree": 3837,
+ "jetonsSortie": 508,
+ "coutMicroChf": 3027,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Magnum partage l'usage amérisant et un profil épicé proche, mais offre un taux d'humulène supérieur.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Olympic offre un alpha et un profil épicé similaires, bien que ses notes d'agrumes soient plus marquées.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Boomerang propose des acides alpha proches et des notes épicées, mais présente un profil d'huiles plus large.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Yeoman remplace convenablement l'amertume grâce à son taux d'alpha élevé, malgré un caractère noble distinct.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Herald s'approche des taux d'alpha, mais s'en écarte par ses arômes fruités d'orange et de pamplemousse.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Chelan assure une bonne amertume similaire, bien qu'il apporte des notes florales et fruitées plus douces.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Satus convient pour l'ébullition grâce à son alpha, mais manque de complexité épicée et boisée.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Bravo possède l'usage amérisant requis, mais ses notes vanillées et citronnées diffèrent du profil herbal.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Zeus apporte l'amertume recherchée avec un alpha fort, mais ses notes poivrées masquent le côté lavande.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Summit offre un fort pouvoir amérisant, mais ses arômes d'ail et d'oignon s'éloignent nettement de l'Agnus.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c20",
+   "c04",
+   "c07",
+   "c02",
+   "c03",
+   "c19",
+   "c14",
+   "c08",
+   "c12",
+   "c17"
+  ],
+  "phrases": {
+   "c20": "Magnum partage l'usage amérisant et un profil épicé proche, mais offre un taux d'humulène supérieur.",
+   "c04": "Olympic offre un alpha et un profil épicé similaires, bien que ses notes d'agrumes soient plus marquées.",
+   "c07": "Boomerang propose des acides alpha proches et des notes épicées, mais présente un profil d'huiles plus large.",
+   "c02": "Yeoman remplace convenablement l'amertume grâce à son taux d'alpha élevé, malgré un caractère noble distinct.",
+   "c03": "Herald s'approche des taux d'alpha, mais s'en écarte par ses arômes fruités d'orange et de pamplemousse.",
+   "c19": "Chelan assure une bonne amertume similaire, bien qu'il apporte des notes florales et fruitées plus douces.",
+   "c14": "Satus convient pour l'ébullition grâce à son alpha, mais manque de complexité épicée et boisée.",
+   "c08": "Bravo possède l'usage amérisant requis, mais ses notes vanillées et citronnées diffèrent du profil herbal.",
+   "c12": "Zeus apporte l'amertume recherchée avec un alpha fort, mais ses notes poivrées masquent le côté lavande.",
+   "c17": "Summit offre un fort pouvoir amérisant, mais ses arômes d'ail et d'oignon s'éloignent nettement de l'Agnus."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

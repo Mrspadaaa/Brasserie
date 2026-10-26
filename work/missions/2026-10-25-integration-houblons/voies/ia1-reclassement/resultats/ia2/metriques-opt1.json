@@ -1,0 +1,104 @@
+{
+ "controleE1": true,
+ "Réponses réelles : opt1-lite (ia2)": {
+  "n": 60,
+  "valides": 60,
+  "moteur": {
+   "n": 60,
+   "rappel5": 0.064,
+   "rappel10": 0.093,
+   "touche10": 0.233,
+   "rangMedian": 37.5,
+   "mrr": 0.086,
+   "sansRang": 0
+  },
+  "opt1": {
+   "n": 60,
+   "rappel5": 0.069,
+   "rappel10": 0.101,
+   "touche10": 0.25,
+   "rangMedian": 31.5,
+   "mrr": 0.107,
+   "sansRang": 0
+  },
+  "ia": {
+   "n": 60,
+   "rappel5": 0.084,
+   "rappel10": 0.145,
+   "touche10": 0.283,
+   "rangMedian": 31.5,
+   "mrr": 0.206,
+   "sansRang": 0
+  },
+  "echantillon": {
+   "moteur": {
+    "n": 60,
+    "rappel5": 0.064,
+    "rappel10": 0.093,
+    "touche10": 0.233,
+    "rangMedian": 37.5,
+    "mrr": 0.086,
+    "sansRang": 0
+   },
+   "opt1": {
+    "n": 60,
+    "rappel5": 0.069,
+    "rappel10": 0.101,
+    "touche10": 0.25,
+    "rangMedian": 31.5,
+    "mrr": 0.107,
+    "sansRang": 0
+   },
+   "ia": {
+    "n": 60,
+    "rappel5": 0.084,
+    "rappel10": 0.145,
+    "touche10": 0.283,
+    "rangMedian": 31.5,
+    "mrr": 0.206,
+    "sansRang": 0
+   }
+  },
+  "phares": {
+   "moteur": {
+    "n": 0,
+    "rappel5": null,
+    "rappel10": null,
+    "touche10": null,
+    "rangMedian": null,
+    "mrr": null,
+    "sansRang": 0
+   },
+   "opt1": {
+    "n": 0,
+    "rappel5": null,
+    "rappel10": null,
+    "touche10": null,
+    "rangMedian": null,
+    "mrr": null,
+    "sansRang": 0
+   },
+   "ia": {
+    "n": 0,
+    "rappel5": null,
+    "rappel10": null,
+    "touche10": null,
+    "rangMedian": null,
+    "mrr": null,
+    "sansRang": 0
+   }
+  },
+  "plafond": {
+   "dansPool": 24,
+   "n": 60,
+   "mrrOracle": 0.412
+  },
+  "seuil": {
+   "chiffres": true,
+   "nelson": false,
+   "rangHB": null
+  },
+  "latenceP95": 2171,
+  "coutMicroChf": 183660
+ }
+}

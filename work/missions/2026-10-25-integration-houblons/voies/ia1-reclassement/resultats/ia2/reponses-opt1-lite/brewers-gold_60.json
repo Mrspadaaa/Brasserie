@@ -1,0 +1,46 @@
+{
+ "casId": "brewers-gold@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "45b6d1ea8a74f56f",
+ "simule": false,
+ "appel": 4,
+ "http": 200,
+ "latenceMs": 1751,
+ "finishReason": "STOP",
+ "jetonsEntree": 3644,
+ "jetonsSortie": 520,
+ "coutMicroChf": 2992,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Même variété de terroir américain, profil alpha et cohumulone très proches, conserve les notes de cassis et épicées avec plus de puissance.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Usage dual et profils d'acides alpha proches, partage les notes de cassis et épicé, mais avec un cohumulone légèrement supérieur.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Houblon allemand au profil épicé et aux acides alpha proches, cohumulone plus bas offrant une amertume un peu plus douce.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Usage dual avec des notes de cassis communes, alpha plus élevé nécessitant un ajustement de dose, profil d'huiles partiellement inconnu.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Profil épicé et acides alpha proches, apporte une touche pinacée en plus du caractère épicé d'origine.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Usage dual et acides alpha comparables, nuances herbacées et épicées proches malgré l'absence de cassis.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Usage dual aux acides alpha ajustables, partage les notes épicées mais ajoute des nuances poivrées et herbacées.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Profil aromatique épicé proche, acides alpha légèrement inférieurs et cohumulone plus élevé modifiant l'amertume.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Acides alpha beaucoup plus élevés pour l'ébullition, apporte des notes épicées similaires mais diverge avec des touches chocolatées.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Usage dual avec des acides alpha plus forts, partage le caractère épicé mais intègre des notes d'agrumes absentes à l'origine.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c03",
+   "c04",
+   "c02",
+   "c01",
+   "c06",
+   "c10",
+   "c14",
+   "c09",
+   "c08",
+   "c18"
+  ],
+  "phrases": {
+   "c03": "Même variété de terroir américain, profil alpha et cohumulone très proches, conserve les notes de cassis et épicées avec plus de puissance.",
+   "c04": "Usage dual et profils d'acides alpha proches, partage les notes de cassis et épicé, mais avec un cohumulone légèrement supérieur.",
+   "c02": "Houblon allemand au profil épicé et aux acides alpha proches, cohumulone plus bas offrant une amertume un peu plus douce.",
+   "c01": "Usage dual avec des notes de cassis communes, alpha plus élevé nécessitant un ajustement de dose, profil d'huiles partiellement inconnu.",
+   "c06": "Profil épicé et acides alpha proches, apporte une touche pinacée en plus du caractère épicé d'origine.",
+   "c10": "Usage dual et acides alpha comparables, nuances herbacées et épicées proches malgré l'absence de cassis.",
+   "c14": "Usage dual aux acides alpha ajustables, partage les notes épicées mais ajoute des nuances poivrées et herbacées.",
+   "c09": "Profil aromatique épicé proche, acides alpha légèrement inférieurs et cohumulone plus élevé modifiant l'amertume.",
+   "c08": "Acides alpha beaucoup plus élevés pour l'ébullition, apporte des notes épicées similaires mais diverge avec des touches chocolatées.",
+   "c18": "Usage dual avec des acides alpha plus forts, partage le caractère épicé mais intègre des notes d'agrumes absentes à l'origine."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

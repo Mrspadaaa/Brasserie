@@ -1,0 +1,46 @@
+{
+ "casId": "cashmere@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "5e8e249e3e340e79",
+ "simule": false,
+ "appel": 51,
+ "http": 200,
+ "latenceMs": 1960,
+ "finishReason": "STOP",
+ "jetonsEntree": 3967,
+ "jetonsSortie": 524,
+ "coutMicroChf": 3126,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Triumph partage les notes de pêche, citron vert et fruits du Cashmere, avec un profil d'huiles très proche pour le dry hop.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Amarillo offre un profil d'agrumes et de melon proche du Cashmere, bien que son intensité florale soit un peu plus marquée.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Huell Melon apporte des notes prononcées de melon et de fruits doux qui rappellent le registre fruité et confiserie du Cashmere.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Southern Passion intègre la noix de coco et le melon du Cashmere, tout en divergeant par des accents plus tropicaux.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Southern Tropic propose de la noix de coco et du melon comme le Cashmere, mais se montre plus intense en fruits tropicaux.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Summer combine melon, abricot et pêche, se rapprochant de la palette fruitée du Cashmere malgré un usage aromatique plus herbacé.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Sládek partage des touches de pêche et de fruité avec le Cashmere, mais manque de sa signature distinctive de noix de coco.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Calypso apporte citron vert, pêche et fruits à noyau comme le Cashmere, mais son amertume et son cohumulone sont plus élevés.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Ekuanot propose des notes de citron vert et de melon proches du Cashmere, mais avec une puissance aromatique et des huiles bien supérieures.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Delta possède le melon et les agrumes du Cashmere, mais son intensité aromatique globale est nettement plus faible en dry hop.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c05",
+   "c10",
+   "c09",
+   "c08",
+   "c03",
+   "c20",
+   "c02",
+   "c18",
+   "c11",
+   "c06"
+  ],
+  "phrases": {
+   "c05": "Triumph partage les notes de pêche, citron vert et fruits du Cashmere, avec un profil d'huiles très proche pour le dry hop.",
+   "c10": "Amarillo offre un profil d'agrumes et de melon proche du Cashmere, bien que son intensité florale soit un peu plus marquée.",
+   "c09": "Huell Melon apporte des notes prononcées de melon et de fruits doux qui rappellent le registre fruité et confiserie du Cashmere.",
+   "c08": "Southern Passion intègre la noix de coco et le melon du Cashmere, tout en divergeant par des accents plus tropicaux.",
+   "c03": "Southern Tropic propose de la noix de coco et du melon comme le Cashmere, mais se montre plus intense en fruits tropicaux.",
+   "c20": "Summer combine melon, abricot et pêche, se rapprochant de la palette fruitée du Cashmere malgré un usage aromatique plus herbacé.",
+   "c02": "Sládek partage des touches de pêche et de fruité avec le Cashmere, mais manque de sa signature distinctive de noix de coco.",
+   "c18": "Calypso apporte citron vert, pêche et fruits à noyau comme le Cashmere, mais son amertume et son cohumulone sont plus élevés.",
+   "c11": "Ekuanot propose des notes de citron vert et de melon proches du Cashmere, mais avec une puissance aromatique et des huiles bien supérieures.",
+   "c06": "Delta possède le melon et les agrumes du Cashmere, mais son intensité aromatique globale est nettement plus faible en dry hop."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

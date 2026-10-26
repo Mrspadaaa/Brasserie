@@ -1,0 +1,46 @@
+{
+ "casId": "agnus@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "0caddeaf0a000bb5",
+ "simule": false,
+ "appel": 33,
+ "http": 200,
+ "latenceMs": 1878,
+ "finishReason": "STOP",
+ "jetonsEntree": 3778,
+ "jetonsSortie": 539,
+ "coutMicroChf": 3102,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Partage la lavande et l'aspect épicé d'Agnus, mais apporte des notes de prune et de réglisse en dry hop.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Reprend le cuir et le tabac d'Agnus avec un profil boisé, mais ajoute des notes florales et d'agrumes intenses.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Partage le tabac et le caractère terreux d'Agnus, mais avec une intensité aromatique plus faible et un alpha plus bas.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Possède un alpha proche et des notes épicées communes, mais introduit des agrumes absents de la fiche d'Agnus.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Offre un profil épicé similaire et un bon niveau d'huile, mais se distingue par une présence marquée d'agrumes.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"propose des notes épicées et fruitées proches, mais sa cohumulone élevée le différencie nettement du profil d'Agnus.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage le caractère épicé d'Agnus, mais avec un profil plus floral et herbacé, et un alpha plus faible.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Possède une dominante épicée qui rappelle Agnus, mais son intensité aromatique globale est plus discrète en fermentation.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Combine des notes épicées et florales proches, mais penche davantage vers les agrumes que le houblon d'origine.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Partage la note épicée d'Agnus, mais s'en éloigne par une explosion fruitée et tropicale très éloignée du profil initial.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c20",
+   "c15",
+   "c08",
+   "c03",
+   "c06",
+   "c16",
+   "c01",
+   "c18",
+   "c04",
+   "c10"
+  ],
+  "phrases": {
+   "c20": "Partage la lavande et l'aspect épicé d'Agnus, mais apporte des notes de prune et de réglisse en dry hop.",
+   "c15": "Reprend le cuir et le tabac d'Agnus avec un profil boisé, mais ajoute des notes florales et d'agrumes intenses.",
+   "c08": "Partage le tabac et le caractère terreux d'Agnus, mais avec une intensité aromatique plus faible et un alpha plus bas.",
+   "c03": "Possède un alpha proche et des notes épicées communes, mais introduit des agrumes absents de la fiche d'Agnus.",
+   "c06": "Offre un profil épicé similaire et un bon niveau d'huile, mais se distingue par une présence marquée d'agrumes.",
+   "c16": "propose des notes épicées et fruitées proches, mais sa cohumulone élevée le différencie nettement du profil d'Agnus.",
+   "c01": "Partage le caractère épicé d'Agnus, mais avec un profil plus floral et herbacé, et un alpha plus faible.",
+   "c18": "Possède une dominante épicée qui rappelle Agnus, mais son intensité aromatique globale est plus discrète en fermentation.",
+   "c04": "Combine des notes épicées et florales proches, mais penche davantage vers les agrumes que le houblon d'origine.",
+   "c10": "Partage la note épicée d'Agnus, mais s'en éloigne par une explosion fruitée et tropicale très éloignée du profil initial."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

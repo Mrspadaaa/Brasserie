@@ -1,0 +1,46 @@
+{
+ "casId": "kohatu@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "b93463dd914bf980",
+ "simule": false,
+ "appel": 44,
+ "http": 200,
+ "latenceMs": 1887,
+ "finishReason": "STOP",
+ "jetonsEntree": 3577,
+ "jetonsSortie": 477,
+ "coutMicroChf": 2832,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Vienna Gold offre un profil fruité et un usage dual proche, mais ses acides alpha sont légèrement plus élevés.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Trident partage le profil de fruits tropicaux et l'usage dual, avec des alpha plus hauts pour l'ébullition.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Zula propose des notes de fruits tropicaux et un usage dual adapté, malgré un alpha supérieur.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Solero apporte des fruits tropicaux intenses, mais son usage est purement aromatique et ses alpha plus hauts.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Samba présente des fruits tropicaux marqués, mais il est classé en arôme et possède plus d'acides alpha.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Southern Passion offre des notes exotiques proches, mais son usage est aromatique et son alpha supérieur.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Melba se rapproche par son taux d'alpha modéré, mais ses arômes tendent vers le pamplemousse.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Sládek convient pour l'amertume avec des alpha proches, mais son profil penche vers le noble et la pêche.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Columbia propose un usage dual et des alpha proches, mais ses notes d'agrumes diffèrent du fruit tropical.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Tropica partage l'usage dual et les fruits tropicaux, mais son profil penche nettement vers l'ananas.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c05",
+   "c06",
+   "c03",
+   "c02",
+   "c04",
+   "c11",
+   "c19",
+   "c20",
+   "c09"
+  ],
+  "phrases": {
+   "c01": "Vienna Gold offre un profil fruité et un usage dual proche, mais ses acides alpha sont légèrement plus élevés.",
+   "c05": "Trident partage le profil de fruits tropicaux et l'usage dual, avec des alpha plus hauts pour l'ébullition.",
+   "c06": "Zula propose des notes de fruits tropicaux et un usage dual adapté, malgré un alpha supérieur.",
+   "c03": "Solero apporte des fruits tropicaux intenses, mais son usage est purement aromatique et ses alpha plus hauts.",
+   "c02": "Samba présente des fruits tropicaux marqués, mais il est classé en arôme et possède plus d'acides alpha.",
+   "c04": "Southern Passion offre des notes exotiques proches, mais son usage est aromatique et son alpha supérieur.",
+   "c11": "Melba se rapproche par son taux d'alpha modéré, mais ses arômes tendent vers le pamplemousse.",
+   "c19": "Sládek convient pour l'amertume avec des alpha proches, mais son profil penche vers le noble et la pêche.",
+   "c20": "Columbia propose un usage dual et des alpha proches, mais ses notes d'agrumes diffèrent du fruit tropical.",
+   "c09": "Tropica partage l'usage dual et les fruits tropicaux, mais son profil penche nettement vers l'ananas."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

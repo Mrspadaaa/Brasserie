@@ -1,0 +1,46 @@
+{
+ "casId": "callista@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "c571cd7824bbf63c",
+ "simule": false,
+ "appel": 27,
+ "http": 200,
+ "latenceMs": 1966,
+ "finishReason": "STOP",
+ "jetonsEntree": 3714,
+ "jetonsSortie": 480,
+ "coutMicroChf": 2893,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage la pêche et les fruits rouges avec Callista, idéal pour le dry hop malgré un myrcène inconnu.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Proche par sa dominante de fruits rouges et de fruits de la passion, mais manque de notes de pin.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Offre des arômes d'abricot et d'orange proches, avec un alpha légèrement supérieur mais un profil aromatique compatible.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Reprend les notes d'abricot et de pêche, bien que l'humulène soit plus élevé et le myrcène plus bas.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Sa palette pêche et abricot convient au dry hop, malgré un cohumulone un peu plus haut.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Partage les notes de pêche et d'abricot, mais intègre des nuances épicées absentes chez Callista.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Apporte des agrumes et de la pêche pour le dry hop, avec un profil proche malgré un cohumulone élevé.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Possède des notes de pêche et de fruit de la passion adaptées, avec un alpha bas similaire.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Partage les notes de pêche et de fruit de la passion, mais son alpha est un peu plus large.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Offre une complexité agrumes et pêche intéressante pour le dry hop, malgré un alpha supérieur.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c02",
+   "c03",
+   "c04",
+   "c05",
+   "c09",
+   "c10",
+   "c12",
+   "c13",
+   "c14"
+  ],
+  "phrases": {
+   "c01": "Partage la pêche et les fruits rouges avec Callista, idéal pour le dry hop malgré un myrcène inconnu.",
+   "c02": "Proche par sa dominante de fruits rouges et de fruits de la passion, mais manque de notes de pin.",
+   "c03": "Offre des arômes d'abricot et d'orange proches, avec un alpha légèrement supérieur mais un profil aromatique compatible.",
+   "c04": "Reprend les notes d'abricot et de pêche, bien que l'humulène soit plus élevé et le myrcène plus bas.",
+   "c05": "Sa palette pêche et abricot convient au dry hop, malgré un cohumulone un peu plus haut.",
+   "c09": "Partage les notes de pêche et d'abricot, mais intègre des nuances épicées absentes chez Callista.",
+   "c10": "Apporte des agrumes et de la pêche pour le dry hop, avec un profil proche malgré un cohumulone élevé.",
+   "c12": "Possède des notes de pêche et de fruit de la passion adaptées, avec un alpha bas similaire.",
+   "c13": "Partage les notes de pêche et de fruit de la passion, mais son alpha est un peu plus large.",
+   "c14": "Offre une complexité agrumes et pêche intéressante pour le dry hop, malgré un alpha supérieur."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

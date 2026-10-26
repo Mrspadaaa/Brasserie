@@ -1,0 +1,46 @@
+{
+ "casId": "magnum-us@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "e2f713b521d345d7",
+ "simule": false,
+ "appel": 19,
+ "http": 200,
+ "latenceMs": 1925,
+ "finishReason": "STOP",
+ "jetonsEntree": 3830,
+ "jetonsSortie": 515,
+ "coutMicroChf": 3046,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Pacific Jade partage un profil épicé et poivré proche, mais apporte une touche d'agrumes plus marquée que le Magnum d'origine.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Magnum allemand offre le même profil neutre et épicé, mais diffère légèrement par ses notes fruitées absentes de la version américaine.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Loral intègre des notes florales et de poivre noir similaires, bien que son profil développe des fruits sombres plus prononcés.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Santiam reprend les notes florales et épicées, mais se distingue par une teneur en farnésène nettement plus élevée.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Opal présente des nuances poivrées et florales communes, tout en introduisant une complexité anisée absente du Magnum.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Horizon combine des notes florales et épicées comparables, mais possède une proportion d'huiles et de linalol différente.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Bohemie offre un profil herbacé et épicé proche, mais se montre plus discret sur les aspects poivrés purs.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Strisselspalt partage la dimension florale et épicée, mais son intensité aromatique globale reste plus modérée.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Boomerang s'accorde sur les notes épicées, mais déploie un caractère agrume plus direct que le houblon remplacé.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Northern Brewer conserve la composante poivrée, mais oriente l'aromatique davantage vers le pin et la menthe.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c03",
+   "c15",
+   "c04",
+   "c05",
+   "c17",
+   "c12",
+   "c20",
+   "c06",
+   "c18"
+  ],
+  "phrases": {
+   "c01": "Pacific Jade partage un profil épicé et poivré proche, mais apporte une touche d'agrumes plus marquée que le Magnum d'origine.",
+   "c03": "Magnum allemand offre le même profil neutre et épicé, mais diffère légèrement par ses notes fruitées absentes de la version américaine.",
+   "c15": "Loral intègre des notes florales et de poivre noir similaires, bien que son profil développe des fruits sombres plus prononcés.",
+   "c04": "Santiam reprend les notes florales et épicées, mais se distingue par une teneur en farnésène nettement plus élevée.",
+   "c05": "Opal présente des nuances poivrées et florales communes, tout en introduisant une complexité anisée absente du Magnum.",
+   "c17": "Horizon combine des notes florales et épicées comparables, mais possède une proportion d'huiles et de linalol différente.",
+   "c12": "Bohemie offre un profil herbacé et épicé proche, mais se montre plus discret sur les aspects poivrés purs.",
+   "c20": "Strisselspalt partage la dimension florale et épicée, mais son intensité aromatique globale reste plus modérée.",
+   "c06": "Boomerang s'accorde sur les notes épicées, mais déploie un caractère agrume plus direct que le houblon remplacé.",
+   "c18": "Northern Brewer conserve la composante poivrée, mais oriente l'aromatique davantage vers le pin et la menthe."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

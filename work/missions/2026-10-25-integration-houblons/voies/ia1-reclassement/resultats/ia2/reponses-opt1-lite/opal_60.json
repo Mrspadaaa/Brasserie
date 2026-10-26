@@ -1,0 +1,46 @@
+{
+ "casId": "opal@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "9c9360f98222799d",
+ "simule": false,
+ "appel": 40,
+ "http": 200,
+ "latenceMs": 1943,
+ "finishReason": "STOP",
+ "jetonsEntree": 3613,
+ "jetonsSortie": 531,
+ "coutMicroChf": 3015,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Pacific Jade partage un profil épicé et poivré proche d'Opal, avec des alpha acides parfaits pour l'amertume à soixante minutes.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Aurora offre des notes florales et épicées similaires, avec un usage dual et des alpha acides corrects pour l'ébullition.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Magnum apporte un profil floral et poivré comparable, mais son usage purement amérisant offre des alpha acides plus élevés.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Hallertau Taurus présente des notes épicées et poivrées proches, mais son taux d'alpha acides est nettement supérieur pour l'amertume.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Phoenix intègre des touches florales et épicées communes, avec un usage dual adapté et un taux d'alpha adéquat.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Akoya propose des nuances épicées et poivrées intéressantes, mais son usage est orienté arôme malgré des alpha proches.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Herald possède un profil agrumes et des alpha acceptables, mais s'éloigne du registre floral et épicé d'Opal.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Olympic partage un caractère épicé et des alpha corrects, mais ses notes d'agrumes dominent davantage que chez Opal.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Marco Polo offre un usage dual et des alpha proches, mais ses notes de groseille s'écartent du poivre d'Opal.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Yeoman dispose d'alpha adaptés à l'amertume, mais son profil noble et agrumes diffère des épices d'Opal.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c15",
+   "c05",
+   "c03",
+   "c08",
+   "c07",
+   "c01",
+   "c18",
+   "c20",
+   "c10",
+   "c11"
+  ],
+  "phrases": {
+   "c15": "Pacific Jade partage un profil épicé et poivré proche d'Opal, avec des alpha acides parfaits pour l'amertume à soixante minutes.",
+   "c05": "Aurora offre des notes florales et épicées similaires, avec un usage dual et des alpha acides corrects pour l'ébullition.",
+   "c03": "Magnum apporte un profil floral et poivré comparable, mais son usage purement amérisant offre des alpha acides plus élevés.",
+   "c08": "Hallertau Taurus présente des notes épicées et poivrées proches, mais son taux d'alpha acides est nettement supérieur pour l'amertume.",
+   "c07": "Phoenix intègre des touches florales et épicées communes, avec un usage dual adapté et un taux d'alpha adéquat.",
+   "c01": "Akoya propose des nuances épicées et poivrées intéressantes, mais son usage est orienté arôme malgré des alpha proches.",
+   "c18": "Herald possède un profil agrumes et des alpha acceptables, mais s'éloigne du registre floral et épicé d'Opal.",
+   "c20": "Olympic partage un caractère épicé et des alpha corrects, mais ses notes d'agrumes dominent davantage que chez Opal.",
+   "c10": "Marco Polo offre un usage dual et des alpha proches, mais ses notes de groseille s'écartent du poivre d'Opal.",
+   "c11": "Yeoman dispose d'alpha adaptés à l'amertume, mais son profil noble et agrumes diffère des épices d'Opal."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

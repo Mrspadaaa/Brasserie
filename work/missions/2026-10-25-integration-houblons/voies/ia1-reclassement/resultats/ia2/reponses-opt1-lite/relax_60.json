@@ -1,0 +1,46 @@
+{
+ "casId": "relax@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "5c70058e32fbb971",
+ "simule": false,
+ "appel": 48,
+ "http": 200,
+ "latenceMs": 2168,
+ "finishReason": "STOP",
+ "jetonsEntree": 3524,
+ "jetonsSortie": 550,
+ "coutMicroChf": 3041,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Elixir partage les notes de cognac et de cuir de Relax, offrant une complexité aromatique proche malgré un profil d'acides alpha légèrement supérieur.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Grungeist offre un taux d'acides alpha très proche et des notes florales de lavande similaires, tout en introduisant des nuances de fruits du verger.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Medusa propose un taux d'acides alpha bas et des notes de melon partagées avec Relax, bien que ses agrumes soient plus dominants.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Callista présente un profil d'acides alpha bas adapté à l'ébullition, mais ses fruits rouges et sa poire s'éloignent du melon de Relax.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Teamaker possède des acides alpha très faibles comme Relax, mais son profil floral est beaucoup plus discret et manque de complexité fruitée.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Sylva offre un niveau d'acides alpha comparable pour l'amertume, mais ses notes boisées et bohèmes contrastent avec le profil original.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Wakatu a des acides alpha un peu plus hauts et apporte des notes citronnées qui remplacent difficilement la subtilité herbacée de Relax.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Fantasia Blend se situe dans la même gamme d'alpha, mais ses notes de caramel et de crème s'éloignent des fruits et cuirs de Relax.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Zagrava présente des acides alpha proches, mais ses accents épicés et herbacés dominent le profil par rapport aux fruits mûrs de Relax.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Southern Aroma propose des acides alpha modérés, mais son orientation foin et paille diffère nettement des notes exotiques et florales de Relax.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c17",
+   "c02",
+   "c07",
+   "c18",
+   "c15",
+   "c11",
+   "c08",
+   "c12",
+   "c09",
+   "c20"
+  ],
+  "phrases": {
+   "c17": "Elixir partage les notes de cognac et de cuir de Relax, offrant une complexité aromatique proche malgré un profil d'acides alpha légèrement supérieur.",
+   "c02": "Grungeist offre un taux d'acides alpha très proche et des notes florales de lavande similaires, tout en introduisant des nuances de fruits du verger.",
+   "c07": "Medusa propose un taux d'acides alpha bas et des notes de melon partagées avec Relax, bien que ses agrumes soient plus dominants.",
+   "c18": "Callista présente un profil d'acides alpha bas adapté à l'ébullition, mais ses fruits rouges et sa poire s'éloignent du melon de Relax.",
+   "c15": "Teamaker possède des acides alpha très faibles comme Relax, mais son profil floral est beaucoup plus discret et manque de complexité fruitée.",
+   "c11": "Sylva offre un niveau d'acides alpha comparable pour l'amertume, mais ses notes boisées et bohèmes contrastent avec le profil original.",
+   "c08": "Wakatu a des acides alpha un peu plus hauts et apporte des notes citronnées qui remplacent difficilement la subtilité herbacée de Relax.",
+   "c12": "Fantasia Blend se situe dans la même gamme d'alpha, mais ses notes de caramel et de crème s'éloignent des fruits et cuirs de Relax.",
+   "c09": "Zagrava présente des acides alpha proches, mais ses accents épicés et herbacés dominent le profil par rapport aux fruits mûrs de Relax.",
+   "c20": "Southern Aroma propose des acides alpha modérés, mais son orientation foin et paille diffère nettement des notes exotiques et florales de Relax."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

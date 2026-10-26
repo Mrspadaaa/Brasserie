@@ -1,0 +1,46 @@
+{
+ "casId": "el-dorado@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "66c408326e5db9fb",
+ "simule": false,
+ "appel": 53,
+ "http": 200,
+ "latenceMs": 1584,
+ "finishReason": "STOP",
+ "jetonsEntree": 3960,
+ "jetonsSortie": 373,
+ "coutMicroChf": 2651,
+ "texte": "{\"classement\":[{\"id\":\"c08\",\"phrase\":\"Calypso partage les notes de poire et fruits à noyau, mais son profil d'huiles diffère avec moins de myrcène.\"},{\"id\":\"c01\",\"phrase\":\"Bitter Gold offre poire et fruits tropicaux proches, mais son cohumulone est plus élevé et les thiols faibles.\"},{\"id\":\"c02\",\"phrase\":\"Hydra propose pastèque et fruits tropicaux similaires, avec un myrcène proche mais un usage dual légèrement plus faible en alpha.\"},{\"id\":\"c03\",\"phrase\":\"Ahhhroma affiche poire et fruits tropicaux, avec un myrcène comparable mais un alpha supérieur et un cohumulone plus haut.\"},{\"id\":\"c05\",\"phrase\":\"Zamba Blend se rapproche par ses fruits à noyau et son fort myrcène, mais son alpha est plus bas.\"},{\"id\":\"c07\",\"phrase\":\"HBC 630 partage les notes fruitées et de bonbon, mais avec des huiles et un cohumulone plus bas.\"},{\"id\":\"c15\",\"phrase\":\"Nectaron présente fruits tropicaux et pêche, mais son myrcène est plus élevé et son alpha inférieur.\"},{\"id\":\"c16\",\"phrase\":\"Paradigm évoque la poire et les fruits à noyau, mais se sépare par un myrcène plus bas et des notes herbacées.\"},{\"id\":\"c18\",\"phrase\":\"Galaxy livre des fruits tropicaux intenses, mais son profil d'humulène et de cohumulone s'éloigne d'El Dorado.\"},{\"id\":\"c20\",\"phrase\":\"Galena offre poire et fruité, mais son total d'huiles est plus faible et son cohumulone plus élevé.\"}]}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c08",
+   "c01",
+   "c02",
+   "c03",
+   "c05",
+   "c07",
+   "c15",
+   "c16",
+   "c18",
+   "c20"
+  ],
+  "phrases": {
+   "c08": "Calypso partage les notes de poire et fruits à noyau, mais son profil d'huiles diffère avec moins de myrcène.",
+   "c01": "Bitter Gold offre poire et fruits tropicaux proches, mais son cohumulone est plus élevé et les thiols faibles.",
+   "c02": "Hydra propose pastèque et fruits tropicaux similaires, avec un myrcène proche mais un usage dual légèrement plus faible en alpha.",
+   "c03": "Ahhhroma affiche poire et fruits tropicaux, avec un myrcène comparable mais un alpha supérieur et un cohumulone plus haut.",
+   "c05": "Zamba Blend se rapproche par ses fruits à noyau et son fort myrcène, mais son alpha est plus bas.",
+   "c07": "HBC 630 partage les notes fruitées et de bonbon, mais avec des huiles et un cohumulone plus bas.",
+   "c15": "Nectaron présente fruits tropicaux et pêche, mais son myrcène est plus élevé et son alpha inférieur.",
+   "c16": "Paradigm évoque la poire et les fruits à noyau, mais se sépare par un myrcène plus bas et des notes herbacées.",
+   "c18": "Galaxy livre des fruits tropicaux intenses, mais son profil d'humulène et de cohumulone s'éloigne d'El Dorado.",
+   "c20": "Galena offre poire et fruité, mais son total d'huiles est plus faible et son cohumulone plus élevé."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

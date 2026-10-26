@@ -1,0 +1,46 @@
+{
+ "casId": "santiam@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "17d0e73879b75ef9",
+ "simule": false,
+ "appel": 32,
+ "http": 200,
+ "latenceMs": 1871,
+ "finishReason": "STOP",
+ "jetonsEntree": 3642,
+ "jetonsSortie": 529,
+ "coutMicroChf": 3019,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Sterling partage le profil noble, herbacé et épicé ainsi que le farnésène élevé, mais possède un myrcène plus haut.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Aurora offre des notes florales et épicées proches avec un alpha un peu plus large mais un farnésène inférieur.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Diamant s'approche par son usage aroma et sa cohumulone basse, mais il apporte des notes de lavande et fenouil.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Bohemie convient bien par ses alpha et cohumulone proches, mais son profil penche plus vers l'herbacé et le myrcène.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Opal intègre le poivre noir et l'épicé, mais son humulène est plus fort et son alpha peut monter plus haut.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Mount Rainier possède des aspects floraux et épicés similaires, mais se distingue par un myrcène nettement plus élevé.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Stirling affiche un profil épicé et floral proche, mais son usage dual et son myrcène diffèrent de Santiam.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Magnum (US) apporte le poivre noir recherché pour l'ébullition, mais c'est un houblon purement amérisant aux alpha plus élevés.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Hallertau Taurus intègre la note poivrée et épicée, mais son alpha est plus haut et son profil inclut chocolat et banane.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Pacific Gem partage le poivre noir, mais sa cohumulone est plus haute et son usage est strictement amérisant.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c09",
+   "c03",
+   "c02",
+   "c04",
+   "c20",
+   "c19",
+   "c10",
+   "c14",
+   "c17",
+   "c16"
+  ],
+  "phrases": {
+   "c09": "Sterling partage le profil noble, herbacé et épicé ainsi que le farnésène élevé, mais possède un myrcène plus haut.",
+   "c03": "Aurora offre des notes florales et épicées proches avec un alpha un peu plus large mais un farnésène inférieur.",
+   "c02": "Diamant s'approche par son usage aroma et sa cohumulone basse, mais il apporte des notes de lavande et fenouil.",
+   "c04": "Bohemie convient bien par ses alpha et cohumulone proches, mais son profil penche plus vers l'herbacé et le myrcène.",
+   "c20": "Opal intègre le poivre noir et l'épicé, mais son humulène est plus fort et son alpha peut monter plus haut.",
+   "c19": "Mount Rainier possède des aspects floraux et épicés similaires, mais se distingue par un myrcène nettement plus élevé.",
+   "c10": "Stirling affiche un profil épicé et floral proche, mais son usage dual et son myrcène diffèrent de Santiam.",
+   "c14": "Magnum (US) apporte le poivre noir recherché pour l'ébullition, mais c'est un houblon purement amérisant aux alpha plus élevés.",
+   "c17": "Hallertau Taurus intègre la note poivrée et épicée, mais son alpha est plus haut et son profil inclut chocolat et banane.",
+   "c16": "Pacific Gem partage le poivre noir, mais sa cohumulone est plus haute et son usage est strictement amérisant."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

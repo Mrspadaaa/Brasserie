@@ -1,0 +1,46 @@
+{
+ "casId": "brewers-gold@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "b1c58c3f6cd9078e",
+ "simule": false,
+ "appel": 3,
+ "http": 200,
+ "latenceMs": 1718,
+ "finishReason": "STOP",
+ "jetonsEntree": 3821,
+ "jetonsSortie": 479,
+ "coutMicroChf": 2930,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Même profil aromatique de cassis et épicé, mais avec des alpha-acides plus élevés et une huile totale supérieure.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Proche par ses notes de cassis et d'épices et sa composition en myrcène, avec un cohumulone légèrement plus haut.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Partage les notes de cassis et un profil d'huiles proche, mais l'usage dual apporte des nuances vanillées.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Offre des arômes de cassis et de baies bien adaptés au dry hop, malgré un usage dual.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Excellentes notes de cassis et de fruits rouges, bien qu'avec un taux de myrcène inférieur.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Apporte des notes de cassis et herbacées proches, mais se distingue par un farnésène très élevé.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Profil aromatique centré sur le cassis et le floral, mais avec une huile totale plus faible.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Combine des notes de cassis et de fruits tropicaux, avec un taux de myrcène supérieur.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Partage la note de cassis mais s'en éloigne par un profil fruité beaucoup plus large.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Conserve la note de cassis mais l'enrichit d'une palette tropicale et résineuse beaucoup plus intense.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c01",
+   "c10",
+   "c06",
+   "c08",
+   "c15",
+   "c17",
+   "c14",
+   "c12",
+   "c09"
+  ],
+  "phrases": {
+   "c02": "Même profil aromatique de cassis et épicé, mais avec des alpha-acides plus élevés et une huile totale supérieure.",
+   "c01": "Proche par ses notes de cassis et d'épices et sa composition en myrcène, avec un cohumulone légèrement plus haut.",
+   "c10": "Partage les notes de cassis et un profil d'huiles proche, mais l'usage dual apporte des nuances vanillées.",
+   "c06": "Offre des arômes de cassis et de baies bien adaptés au dry hop, malgré un usage dual.",
+   "c08": "Excellentes notes de cassis et de fruits rouges, bien qu'avec un taux de myrcène inférieur.",
+   "c15": "Apporte des notes de cassis et herbacées proches, mais se distingue par un farnésène très élevé.",
+   "c17": "Profil aromatique centré sur le cassis et le floral, mais avec une huile totale plus faible.",
+   "c14": "Combine des notes de cassis et de fruits tropicaux, avec un taux de myrcène supérieur.",
+   "c12": "Partage la note de cassis mais s'en éloigne par un profil fruité beaucoup plus large.",
+   "c09": "Conserve la note de cassis mais l'enrichit d'une palette tropicale et résineuse beaucoup plus intense."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

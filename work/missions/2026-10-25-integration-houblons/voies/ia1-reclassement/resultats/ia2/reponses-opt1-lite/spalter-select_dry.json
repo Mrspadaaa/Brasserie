@@ -1,0 +1,46 @@
+{
+ "casId": "spalter-select@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "6914a3ba0e30f027",
+ "simule": false,
+ "appel": 41,
+ "http": 200,
+ "latenceMs": 1567,
+ "finishReason": "STOP",
+ "jetonsEntree": 3808,
+ "jetonsSortie": 365,
+ "coutMicroChf": 2569,
+ "texte": "{\"classement\":[{\"id\":\"c01\",\"phrase\":\"Tettnang US partage le profil noble, épicé et herbe coupée, mais son farnésène est plus bas.\"},{\"id\":\"c10\",\"phrase\":\"Sterling offre des notes épicées et herbacées proches, avec un taux de farnésène élevé qui imite bien Spalter Select.\"},{\"id\":\"c08\",\"phrase\":\"Santiam possède un farnésène élevé et des notes épicées, s'éloignant légèrement par son profil floral prononcé.\"},{\"id\":\"c05\",\"phrase\":\"Tettnanger allemand est très proche par ses notes épicées et son farnésène, idéal en arôme.\"},{\"id\":\"c09\",\"phrase\":\"Celeia se rapproche par son profil noble et épicé, mais introduit des notes florales et lavande absentes à l'origine.\"},{\"id\":\"c02\",\"phrase\":\"Aramis apporte des notes herbacées et épicées similaires, mais se distingue par une touche d'agrumes plus marquée.\"},{\"id\":\"c12\",\"phrase\":\"Mount Hood convient pour son profil noble et épicé, malgré un farnésène plus faible.\"},{\"id\":\"c04\",\"phrase\":\"Pacific Crest partage les notes d'herbe coupée et épicées, mais affiche des nuances terreuses et de pin.\"},{\"id\":\"c06\",\"phrase\":\"Bouclier présente des notes herbacées et épicées proches, mais sa cohumulone est nettement plus élevée.\"},{\"id\":\"c11\",\"phrase\":\"Ernest possède des notes d'herbe coupée et épicées, mais sa cohumulone et son myrcène diffèrent notablement.\"}]}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c10",
+   "c08",
+   "c05",
+   "c09",
+   "c02",
+   "c12",
+   "c04",
+   "c06",
+   "c11"
+  ],
+  "phrases": {
+   "c01": "Tettnang US partage le profil noble, épicé et herbe coupée, mais son farnésène est plus bas.",
+   "c10": "Sterling offre des notes épicées et herbacées proches, avec un taux de farnésène élevé qui imite bien Spalter Select.",
+   "c08": "Santiam possède un farnésène élevé et des notes épicées, s'éloignant légèrement par son profil floral prononcé.",
+   "c05": "Tettnanger allemand est très proche par ses notes épicées et son farnésène, idéal en arôme.",
+   "c09": "Celeia se rapproche par son profil noble et épicé, mais introduit des notes florales et lavande absentes à l'origine.",
+   "c02": "Aramis apporte des notes herbacées et épicées similaires, mais se distingue par une touche d'agrumes plus marquée.",
+   "c12": "Mount Hood convient pour son profil noble et épicé, malgré un farnésène plus faible.",
+   "c04": "Pacific Crest partage les notes d'herbe coupée et épicées, mais affiche des nuances terreuses et de pin.",
+   "c06": "Bouclier présente des notes herbacées et épicées proches, mais sa cohumulone est nettement plus élevée.",
+   "c11": "Ernest possède des notes d'herbe coupée et épicées, mais sa cohumulone et son myrcène diffèrent notablement."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

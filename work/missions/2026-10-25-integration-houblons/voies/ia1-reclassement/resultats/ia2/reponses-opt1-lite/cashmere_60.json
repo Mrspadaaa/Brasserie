@@ -1,0 +1,46 @@
+{
+ "casId": "cashmere@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "95b8ddbce56ca0c4",
+ "simule": false,
+ "appel": 52,
+ "http": 200,
+ "latenceMs": 2044,
+ "finishReason": "STOP",
+ "jetonsEntree": 3662,
+ "jetonsSortie": 533,
+ "coutMicroChf": 3039,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Partage le melon et la noix de coco du Cashmere, mais son alpha est nettement plus élevé et son usage est amérisant.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Proche par son taux d'alpha modéré et son profil fruité, bien que ses arômes nobles diffèrent des notes de citron du Cashmere.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Offre des notes de melon et d'agrumes proches du Cashmere, avec un alpha légèrement supérieur adapté à l'ébullition.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Son alpha est comparable au Cashmere et ses agrumes conviennent bien, mais il manque la touche caractéristique de noix de coco.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Proche en alpha et par ses notes de citron, il s'en sépare par des notes épicées absentes du profil du Cashmere.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Possède un alpha correct pour remplacer le Cashmere et un profil agrumes, mais manque de complexité sur la noix de coco.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Partage le melon et les agrumes du Cashmere, mais son alpha et son myrcène sont plus élevés, modifiant l'amertume.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Partage la gourmandise fruitée et le côté bonbon du Cashmere, mais son usage est purement aromatique et l'alpha varie.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Apporte des notes d'agrumes et de fruits, mais son cohumulone est bien plus haut que celui du Cashmere.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Offre un bon profil fruité et agrumes pour l'ébullition, mais son alpha est supérieur et sa composition en huiles diffère.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c03",
+   "c10",
+   "c17",
+   "c19",
+   "c20",
+   "c04",
+   "c05",
+   "c02",
+   "c06",
+   "c09"
+  ],
+  "phrases": {
+   "c03": "Partage le melon et la noix de coco du Cashmere, mais son alpha est nettement plus élevé et son usage est amérisant.",
+   "c10": "Proche par son taux d'alpha modéré et son profil fruité, bien que ses arômes nobles diffèrent des notes de citron du Cashmere.",
+   "c17": "Offre des notes de melon et d'agrumes proches du Cashmere, avec un alpha légèrement supérieur adapté à l'ébullition.",
+   "c19": "Son alpha est comparable au Cashmere et ses agrumes conviennent bien, mais il manque la touche caractéristique de noix de coco.",
+   "c20": "Proche en alpha et par ses notes de citron, il s'en sépare par des notes épicées absentes du profil du Cashmere.",
+   "c04": "Possède un alpha correct pour remplacer le Cashmere et un profil agrumes, mais manque de complexité sur la noix de coco.",
+   "c05": "Partage le melon et les agrumes du Cashmere, mais son alpha et son myrcène sont plus élevés, modifiant l'amertume.",
+   "c02": "Partage la gourmandise fruitée et le côté bonbon du Cashmere, mais son usage est purement aromatique et l'alpha varie.",
+   "c06": "Apporte des notes d'agrumes et de fruits, mais son cohumulone est bien plus haut que celui du Cashmere.",
+   "c09": "Offre un bon profil fruité et agrumes pour l'ébullition, mais son alpha est supérieur et sa composition en huiles diffère."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

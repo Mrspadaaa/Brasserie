@@ -1,0 +1,46 @@
+{
+ "casId": "idaho-gem@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "39f6cb8afc335f1c",
+ "simule": false,
+ "appel": 15,
+ "http": 200,
+ "latenceMs": 1885,
+ "finishReason": "STOP",
+ "jetonsEntree": 3876,
+ "jetonsSortie": 543,
+ "coutMicroChf": 3151,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Tango partage les notes d'ananas et d'agrumes mais apporte une touche de fruit de la passion absente chez l'Idaho Gem.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Merkur reprend l'ananas et la menthe de l'Idaho Gem, mais son profil penche vers des aspects plus terreux.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Polaris offre une menthe puissante similaire à l'Idaho Gem, mais s'en éloigne par son intensité et son caractère mentholé.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Bergamot combine cerise et agrumes comme l'Idaho Gem, tout en introduisant des notes prononcées de zeste et de citronnelle.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Motueka intègre la note mojito et citron vert de l'Idaho Gem, mais avec des alpha-acides nettement plus faibles.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Samba propose un profil tropical centré sur l'ananas proche de l'Idaho Gem, mais manque de ses nuances herbacées.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Sultana rivalise sur l'ananas et les agrumes de l'Idaho Gem, tout en ajoutant une composante résineuse de pin.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"YQH-1380 présente des notes d'ananas et de pêche s'accordant avec l'Idaho Gem, malgré un profil de fruits légèrement différent.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Nectaron mime le registre tropical et l'ananas de l'Idaho Gem, mais se focalise davantage sur la pierre et la nectarine.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Galaxy partage la vivacité de l'ananas et des agrumes de l'Idaho Gem, mais possède un caractère dank plus marqué.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c04",
+   "c08",
+   "c10",
+   "c12",
+   "c18",
+   "c03",
+   "c07",
+   "c16",
+   "c15",
+   "c13"
+  ],
+  "phrases": {
+   "c04": "Tango partage les notes d'ananas et d'agrumes mais apporte une touche de fruit de la passion absente chez l'Idaho Gem.",
+   "c08": "Merkur reprend l'ananas et la menthe de l'Idaho Gem, mais son profil penche vers des aspects plus terreux.",
+   "c10": "Polaris offre une menthe puissante similaire à l'Idaho Gem, mais s'en éloigne par son intensité et son caractère mentholé.",
+   "c12": "Bergamot combine cerise et agrumes comme l'Idaho Gem, tout en introduisant des notes prononcées de zeste et de citronnelle.",
+   "c18": "Motueka intègre la note mojito et citron vert de l'Idaho Gem, mais avec des alpha-acides nettement plus faibles.",
+   "c03": "Samba propose un profil tropical centré sur l'ananas proche de l'Idaho Gem, mais manque de ses nuances herbacées.",
+   "c07": "Sultana rivalise sur l'ananas et les agrumes de l'Idaho Gem, tout en ajoutant une composante résineuse de pin.",
+   "c16": "YQH-1380 présente des notes d'ananas et de pêche s'accordant avec l'Idaho Gem, malgré un profil de fruits légèrement différent.",
+   "c15": "Nectaron mime le registre tropical et l'ananas de l'Idaho Gem, mais se focalise davantage sur la pierre et la nectarine.",
+   "c13": "Galaxy partage la vivacité de l'ananas et des agrumes de l'Idaho Gem, mais possède un caractère dank plus marqué."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

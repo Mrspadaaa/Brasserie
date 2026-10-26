@@ -1,0 +1,46 @@
+{
+ "casId": "calypso@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "8e864a6e79db315e",
+ "simule": false,
+ "appel": 24,
+ "http": 200,
+ "latenceMs": 2063,
+ "finishReason": "STOP",
+ "jetonsEntree": 3831,
+ "jetonsSortie": 558,
+ "coutMicroChf": 3181,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Caliente offre un alpha proche et des notes similaires de fruits à noyau et agrumes, idéal pour l'ébullition malgré un profil un peu plus résineux.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Yeoman partage un alpha similaire et un usage dual pertinent, mais apporte des notes plus nobles et moins de fruits à noyau.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Admiral convient pour l'amertume avec son alpha proche, mais se sépare de Calypso par ses notes prononcées de pin et de résine.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Millennium assure une forte amertume grâce à son alpha élevé, mais s'éloigne du fruité de Calypso avec ses accents résineux et de poire.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Magnum offre une amertume propre et un alpha comparable, mais manque de la complexité fruitée spécifique de Calypso.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Southern Star présente un bon alpha pour l'ébullition et des fruits proches, mais avec une palette plus large incluant baies et floral.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"HBC 630 possède un alpha correct pour l'ébullition, mais son profil aromatique s'oriente vers la cerise et la framboise plutôt que la pomme.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Idaho Gem offre un alpha adapté, mais ses notes de menthe et de cerise candie divergent nettement du fruité classique de Calypso.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Merkur dispose d'un bon alpha pour l'amertume, mais sa cohumulone est plus basse et ses notes de menthe s'écartent de Calypso.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Sun convient pour l'amertume avec son alpha similaire, mais son profil purement herbacé le sépare totalement des arômes fruités de Calypso.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c14",
+   "c03",
+   "c04",
+   "c10",
+   "c17",
+   "c12",
+   "c15",
+   "c16",
+   "c06",
+   "c01"
+  ],
+  "phrases": {
+   "c14": "Caliente offre un alpha proche et des notes similaires de fruits à noyau et agrumes, idéal pour l'ébullition malgré un profil un peu plus résineux.",
+   "c03": "Yeoman partage un alpha similaire et un usage dual pertinent, mais apporte des notes plus nobles et moins de fruits à noyau.",
+   "c04": "Admiral convient pour l'amertume avec son alpha proche, mais se sépare de Calypso par ses notes prononcées de pin et de résine.",
+   "c10": "Millennium assure une forte amertume grâce à son alpha élevé, mais s'éloigne du fruité de Calypso avec ses accents résineux et de poire.",
+   "c17": "Magnum offre une amertume propre et un alpha comparable, mais manque de la complexité fruitée spécifique de Calypso.",
+   "c12": "Southern Star présente un bon alpha pour l'ébullition et des fruits proches, mais avec une palette plus large incluant baies et floral.",
+   "c15": "HBC 630 possède un alpha correct pour l'ébullition, mais son profil aromatique s'oriente vers la cerise et la framboise plutôt que la pomme.",
+   "c16": "Idaho Gem offre un alpha adapté, mais ses notes de menthe et de cerise candie divergent nettement du fruité classique de Calypso.",
+   "c06": "Merkur dispose d'un bon alpha pour l'amertume, mais sa cohumulone est plus basse et ses notes de menthe s'écartent de Calypso.",
+   "c01": "Sun convient pour l'amertume avec son alpha similaire, mais son profil purement herbacé le sépare totalement des arômes fruités de Calypso."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

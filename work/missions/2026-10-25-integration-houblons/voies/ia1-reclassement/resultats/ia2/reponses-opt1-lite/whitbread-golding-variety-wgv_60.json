@@ -1,0 +1,46 @@
+{
+ "casId": "whitbread-golding-variety-wgv@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "af29dc3902dfd331",
+ "simule": false,
+ "appel": 12,
+ "http": 200,
+ "latenceMs": 1900,
+ "finishReason": "STOP",
+ "jetonsEntree": 3665,
+ "jetonsSortie": 514,
+ "coutMicroChf": 2981,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Progress partage l'origine britannique, un profil alpha proche et des notes douces et herbacées, bien que légèrement plus fruitées.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Northdown offre un profil dual britannique robuste avec une forte teneur en humulène et des notes florales proches du WGV.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"First Gold propose un profil dual britannique similaire en usage, mais avec des notes plus prononcées de mandarine et d'épices.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Bramling Cross est un choix britannique intéressant, apportant des notes de cassis et d'épices qui complètent le fond terreux.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Wild Wolf présente un usage dual et des notes terreuses et fruitées, malgré un profil d'huiles moins documenté.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Cluster Fugget Blend combine des notes terreuses et boisées proches, avec un usage dual adapté à l'ébullition.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Perle allemand offre un alpha proche et des notes herbacées et terreuses, mais introduit une touche mentholée absente du WGV.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Perle US partage des caractéristiques similaires au Perle allemand, avec un profil herbacé correct pour l'amertume.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Boadicea apporte des notes florales et fruitées anglaises, mais son profil d'huiles diffère par un taux de myrcène plus élevé.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Aurora propose un usage dual et un bon profil d'huiles, mais ses notes de citronnelle s'éloignent du profil terreux initial.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c05",
+   "c17",
+   "c12",
+   "c15",
+   "c03",
+   "c16",
+   "c01",
+   "c08",
+   "c13",
+   "c06"
+  ],
+  "phrases": {
+   "c05": "Progress partage l'origine britannique, un profil alpha proche et des notes douces et herbacées, bien que légèrement plus fruitées.",
+   "c17": "Northdown offre un profil dual britannique robuste avec une forte teneur en humulène et des notes florales proches du WGV.",
+   "c12": "First Gold propose un profil dual britannique similaire en usage, mais avec des notes plus prononcées de mandarine et d'épices.",
+   "c15": "Bramling Cross est un choix britannique intéressant, apportant des notes de cassis et d'épices qui complètent le fond terreux.",
+   "c03": "Wild Wolf présente un usage dual et des notes terreuses et fruitées, malgré un profil d'huiles moins documenté.",
+   "c16": "Cluster Fugget Blend combine des notes terreuses et boisées proches, avec un usage dual adapté à l'ébullition.",
+   "c01": "Perle allemand offre un alpha proche et des notes herbacées et terreuses, mais introduit une touche mentholée absente du WGV.",
+   "c08": "Perle US partage des caractéristiques similaires au Perle allemand, avec un profil herbacé correct pour l'amertume.",
+   "c13": "Boadicea apporte des notes florales et fruitées anglaises, mais son profil d'huiles diffère par un taux de myrcène plus élevé.",
+   "c06": "Aurora propose un usage dual et un bon profil d'huiles, mais ses notes de citronnelle s'éloignent du profil terreux initial."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

@@ -1,0 +1,46 @@
+{
+ "casId": "hallertau-taurus@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "f3f9111f7128a07e",
+ "simule": false,
+ "appel": 2,
+ "http": 200,
+ "latenceMs": 2058,
+ "finishReason": "STOP",
+ "jetonsEntree": 3852,
+ "jetonsSortie": 563,
+ "coutMicroChf": 3204,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Herkules offre une amertume puissante et des acides alpha proches, mais s'éloigne du profil épicé et terreux du Taurus par des notes d'agrumes.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Columbus partage l'usage dual et le taux d'alpha élevé, tout en rejoignant le Taurus sur les notes terreuses et poivrées.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"CTZ procure une amertume dense et des notes épicées de poivre et curry proches du Taurus, malgré un cohumulone légèrement supérieur.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Tomahawk se rapproche du Taurus par son profil épicé et poivré, offrant une excellente amertume de fin de cuisson malgré des agrumes plus marqués.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Sticky Fingers Blend convient bien pour l'amertume avec ses notes terreuses et épicées, même si ses acides alpha sont un peu plus faibles.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Pacific Jade possède un taux de cohumulone et des huiles proches du Taurus, avec un registre épicé et poivré comparable.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Yeoman assure une bonne amertume duale et un alpha proche, mais apporte une composante agrumes plus nette que le Taurus.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Jarrylo propose un taux d'alpha élevé pour l'ébullition et une note de banane commune, mais se distingue par des accents fruités de citron.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Gaia convient pour l'amertume avec son profil épicé, mais manque de la complexité terreuse et chocolatée spécifique du Taurus.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Herald offre un bon niveau d'alpha pour l'amertume, mais s'écarte du Taurus en privilégiant des arômes francs d'orange et pamplemousse.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c11",
+   "c06",
+   "c08",
+   "c02",
+   "c20",
+   "c04",
+   "c17",
+   "c16",
+   "c12"
+  ],
+  "phrases": {
+   "c01": "Herkules offre une amertume puissante et des acides alpha proches, mais s'éloigne du profil épicé et terreux du Taurus par des notes d'agrumes.",
+   "c11": "Columbus partage l'usage dual et le taux d'alpha élevé, tout en rejoignant le Taurus sur les notes terreuses et poivrées.",
+   "c06": "CTZ procure une amertume dense et des notes épicées de poivre et curry proches du Taurus, malgré un cohumulone légèrement supérieur.",
+   "c08": "Tomahawk se rapproche du Taurus par son profil épicé et poivré, offrant une excellente amertume de fin de cuisson malgré des agrumes plus marqués.",
+   "c02": "Sticky Fingers Blend convient bien pour l'amertume avec ses notes terreuses et épicées, même si ses acides alpha sont un peu plus faibles.",
+   "c20": "Pacific Jade possède un taux de cohumulone et des huiles proches du Taurus, avec un registre épicé et poivré comparable.",
+   "c04": "Yeoman assure une bonne amertume duale et un alpha proche, mais apporte une composante agrumes plus nette que le Taurus.",
+   "c17": "Jarrylo propose un taux d'alpha élevé pour l'ébullition et une note de banane commune, mais se distingue par des accents fruités de citron.",
+   "c16": "Gaia convient pour l'amertume avec son profil épicé, mais manque de la complexité terreuse et chocolatée spécifique du Taurus.",
+   "c12": "Herald offre un bon niveau d'alpha pour l'amertume, mais s'écarte du Taurus en privilégiant des arômes francs d'orange et pamplemousse."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

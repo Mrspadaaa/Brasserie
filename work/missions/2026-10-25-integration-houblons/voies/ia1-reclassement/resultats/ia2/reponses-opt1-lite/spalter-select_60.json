@@ -1,0 +1,46 @@
+{
+ "casId": "spalter-select@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "de05d79f6701dbcb",
+ "simule": false,
+ "appel": 42,
+ "http": 200,
+ "latenceMs": 1801,
+ "finishReason": "STOP",
+ "jetonsEntree": 3774,
+ "jetonsSortie": 529,
+ "coutMicroChf": 3069,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Spalt offre un profil noble, terreux et herbacé très proche, avec un taux d'acides alpha et des huiles quasi identiques.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Tettnang US partage le profil épicé et herbacé, mais son myrcène légèrement plus haut modifie la fraîcheur perçue.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Tettnanger possède les notes épicées et poivrées attendues, avec un usage dual proche des acides alpha du Spalter Select.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Hallertau US apporte des notes florales et herbacées similaires, malgré un taux d'huile totale supérieur et un farnésène plus bas.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Celeia propose un profil noble et épicé adéquat, mais son cohumulone est légèrement plus élevé que le Spalter Select.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Lubelska se rapproche par son farnésène et ses notes florales et épicées, bien que son humulène soit plus élevé.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Sylva intègre un taux de farnésène comparable, mais ses arômes boisés et bohèmes s'éloignent du profil herbacé original.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Sterling présente un farnésène proche et des notes épicées, mais son alpha est nettement plus haut pour une ébullition.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Mount Hood offre des notes herbacées et épicées, mais son alpha supérieur et son huile totale plus forte changent le dosage.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Liberty possède des notes herbacées et nobles, mais son profil penche davantage vers le citron et un humulène plus haut.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c15",
+   "c01",
+   "c05",
+   "c03",
+   "c07",
+   "c09",
+   "c12",
+   "c20",
+   "c10",
+   "c08"
+  ],
+  "phrases": {
+   "c15": "Spalt offre un profil noble, terreux et herbacé très proche, avec un taux d'acides alpha et des huiles quasi identiques.",
+   "c01": "Tettnang US partage le profil épicé et herbacé, mais son myrcène légèrement plus haut modifie la fraîcheur perçue.",
+   "c05": "Tettnanger possède les notes épicées et poivrées attendues, avec un usage dual proche des acides alpha du Spalter Select.",
+   "c03": "Hallertau US apporte des notes florales et herbacées similaires, malgré un taux d'huile totale supérieur et un farnésène plus bas.",
+   "c07": "Celeia propose un profil noble et épicé adéquat, mais son cohumulone est légèrement plus élevé que le Spalter Select.",
+   "c09": "Lubelska se rapproche par son farnésène et ses notes florales et épicées, bien que son humulène soit plus élevé.",
+   "c12": "Sylva intègre un taux de farnésène comparable, mais ses arômes boisés et bohèmes s'éloignent du profil herbacé original.",
+   "c20": "Sterling présente un farnésène proche et des notes épicées, mais son alpha est nettement plus haut pour une ébullition.",
+   "c10": "Mount Hood offre des notes herbacées et épicées, mais son alpha supérieur et son huile totale plus forte changent le dosage.",
+   "c08": "Liberty possède des notes herbacées et nobles, mais son profil penche davantage vers le citron et un humulène plus haut."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}
