@@ -13,7 +13,7 @@
 // Chaque état porte data-etat sur son déclencheur (controle-etats.mjs). Classes pq-biere- (L26).
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { COURT, Legende, ROUE, nombre, type Echelle } from '../suggerer/commun';
-import { Alerte, Bandeau, NomFamille, PisteBase, levureCaracterisee, nomLevureBase } from '../maBiere/Base';
+import { Alerte, Bandeau, NomFamille, PisteBase, PuceInterpole, aInterpole, levureCaracterisee, nomLevureBase } from '../maBiere/Base';
 import { Lentille } from '../maBiere/Lentille';
 import { RadarBiere, auDessus, type Note } from '../maBiere/RadarBiere';
 import { donnees, style } from '../parcours/adaptateur';
@@ -159,6 +159,7 @@ export default function Biere() {
             <div className="flex items-center gap-1.5 flex-wrap">
               {deguste && <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full border border-cave-700 text-sm text-cave-200"><i className="w-3.5 h-3.5 rounded-full bg-cave-50" />dégusté{dateDeguste ? ` ${dateDeguste}` : ''}</span>}
               <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full border border-cave-700 text-sm text-cave-200"><i className="w-3.5 h-3.5 rounded-full border-[3px] border-cave-50" />prévu</span>
+              {aInterpole(biere) && <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full border border-cave-700 text-sm text-cave-200"><PuceInterpole />interpolé</span>}
               <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full border border-cave-700 text-sm text-cave-200"><i className="w-3.5 h-3.5 rounded-full border border-dashed border-cave-400" />non situé</span>
               <span className="ml-auto"><Legende>
                 <p><b>Zone grise</b> : la bande du style {sc.code} ; le pointillé, au-dessus du style. En absolu : faible, moyen, marqué.</p>

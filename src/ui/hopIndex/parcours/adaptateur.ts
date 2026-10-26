@@ -42,6 +42,8 @@ export interface FamilleLue {
   raison: string | null;
   /** D177 : la valeur simulée compte au moins un ajout d'ébullition interpolé entre 60′ et 10′ (aucune mesure à sa minute). */
   interpole?: boolean;
+  /** D113 : la valeur simulée repose sur une température de whirlpool supposée (préréglage du moteur) : le survol le dit. */
+  suppose?: string;
 }
 export type ProfilLu = Record<FamilyId, FamilleLue>;
 export interface BiereLue {
@@ -54,6 +56,8 @@ export interface BiereLue {
   nonSimules: { ajoutId: string; raison: string }[];
   /** D177 : ajouts d'ébullition entre 10′ et 60′ exclus, dont l'arôme est INTERPOLÉ entre les deux moments simulés (jamais mesuré). */
   interpoles: { ajoutId: string; minutes: number }[];
+  /** D113 : whirlpools sans température dans la recette, simulés au préréglage de 80 °C (le texte à dire : « 80 °C supposé »). */
+  supposes: { ajoutId: string; raison: string }[];
   /** Un ajout dégusté a été retiré ou changé : sa part simulée est retranchée du profil dégusté. */
   retraits: string[];
   confiance: CasSimule['confiance'];
@@ -98,12 +102,17 @@ export function ibuAjout(a: AjoutParcours, recette: RecetteParcours): IbuLu {
 
 // ---------- Profil simulé de la bière ----------
 const ARÔME_EBULLITION: Record<number, MomentSimule> = { 60: 'b60', 10: 'b10' };
+/** D113 : le texte dit au survol quand la température d'un whirlpool manque et que l'arôme est simulé à 80 °C (préréglage du moteur). */
+export const WHIRLPOOL_SUPPOSE = '80 °C supposé';
+/** Whirlpool dont SEULE la température manque (durée connue : la conversion donne `momentInconnu` « température de whirlpool inconnue »).
+ * L'arôme du moteur ne dépend pas de la température : il se simule au préréglage de 80 °C, comme l'IBU de l'adaptateur. */
+const sansTemperature = (a: AjoutParcours) => a.moment === 'wp' && !!a.momentInconnu?.startsWith('température de whirlpool');
 /** Un ajout du parcours dans le simulateur, ou la raison pour laquelle il n'y entre pas. */
 export function versSimule(a: AjoutParcours, recette: RecetteParcours): AjoutSimule | { raison: string } {
   const q = quandDe(a, recette);
   const base = { id: a.id, houblon: a.hopKey, dose_gL: a.grams / recette.volumeL };
   if (!moteur().hopRef(a.hopKey)) return { raison: 'houblon absent des fiches du moteur : arôme non simulé' };
-  if (a.momentInconnu) return { raison: a.momentInconnu };
+  if (a.momentInconnu && !sansTemperature(a)) return { raison: a.momentInconnu };
   if (q.type === 'premierMout') return { raison: 'premier moût : arôme non simulé par le moteur' };
   if (q.type === 'whirlpool') return { ...base, moment: 'wp' };
   if (q.type === 'ebullition') {
@@ -159,10 +168,17 @@ export const lireBiere = memo('lireBiere', (r: RecetteParcours) => cleRecette(r)
   const nouveaux = recette.additions.filter((a) => !gardes.some((b) => b.id === a.id));
   const nonSimules: BiereLue['nonSimules'] = [];
   const ajouts: AjoutSimule[] = [];
+  const supposes: BiereLue['supposes'] = [];
   for (const a of nouveaux) {
     const s = versSimule(a, recette);
     if ('raison' in s) nonSimules.push({ ajoutId: a.id, raison: s.raison }); else ajouts.push(s);
+    if (!('raison' in s) && sansTemperature(a)) supposes.push({ ajoutId: a.id, raison: WHIRLPOOL_SUPPOSE });
   }
+  // D113 : la raison au survol d'une barre hachurée est celle de l'ajout qui n'entre pas dans le simulateur (« ébullition 5′ : … »,
+  // « houblon absent des fiches du moteur »). Quand d'autres ajouts sont simulés, la famille peut aussi ne pas être décrite par
+  // leurs fiches : les deux raisons se disent. Sans ajout non simulé, le message de la famille (fiches) reste.
+  const raisonsAjouts = [...new Set(nonSimules.map((n) => n.raison))].join(' ; ');
+  const raisonHachuree = (propre: string | null) => (!raisonsAjouts ? propre : ajouts.length && propre ? `${raisonsAjouts} ; ${propre}` : raisonsAjouts);
   const rBase = recettePouvoir(recette, base.additions);
   const cas = moteur().simulerCas({ id: 'ma-biere', titre: recette.name, ajouts, levure, recette: rBase, degustation: deg?.tasting ?? null, complet: false });
   let p: ProfilFamilles = cas.apres;
@@ -190,8 +206,10 @@ export const lireBiere = memo('lireBiere', (r: RecetteParcours) => cleRecette(r)
       // houblon, le modèle ne voit que le fond de levure US-05 ») ; la levure est la source de la famille placée.
       if (fond) { const e = fond[f]; return e.situated && e.range ? lu(f, { bas: e.range.min, centre: e.central ?? (e.range.min + e.range.max) / 2, haut: e.range.max, source: 'simulé' }, sc, true) : lu(f, { bas: 0, centre: 0, haut: 0, source: 'simulé', inconnu: 'sans houblon : la levure seule ne la situe pas' }, sc, false); }
       const x = lu(f, p[f], sc, recette.additions.some((a) => houblon(a.hopKey).familles[f].niveau !== 'non décrit') || levureSeule(recette, levure)[f].centre > 0.05);
-      return cas.interpoles.length && x.valeur && x.source === 'simulé' ? { ...x, interpole: true } : x;
-    }), nonSimules, interpoles: cas.interpoles.map((i) => ({ ajoutId: i.ajout, minutes: i.minutes })), retraits: retires.map((b) => b.id), confiance: cas.confiance, drapeaux: cas.drapeauxIds,
+      if (!x.valeur) return nonSimules.length ? { ...x, raison: raisonHachuree(x.raison) } : x;
+      const simulee = x.source === 'simulé';
+      return { ...x, ...(cas.interpoles.length && simulee ? { interpole: true } : {}), ...(supposes.length && simulee ? { suppose: WHIRLPOOL_SUPPOSE } : {}) };
+    }), nonSimules, interpoles: cas.interpoles.map((i) => ({ ajoutId: i.ajout, minutes: i.minutes })), supposes, retraits: retires.map((b) => b.id), confiance: cas.confiance, drapeaux: cas.drapeauxIds,
   };
 });
 

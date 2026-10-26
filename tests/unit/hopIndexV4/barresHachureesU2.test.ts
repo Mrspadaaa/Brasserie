@@ -118,10 +118,16 @@ describe('D177 : ce qui reste non simulé, avec sa raison (aucun chiffre invent�
       expect(x.b.interpoles).toEqual([]);
     }
   });
-  it('whirlpool sans température : toujours non simulé (autre cause, à décider), avec sa raison', () => {
+  it('whirlpool sans température : simulé au préréglage de 80 °C (D113, voie u3), plus hachuré en entier', () => {
     const x = lire([lotus({ stage: 'whirlpool', timeMin: 20 })]);
+    expect(x.hachurees).toBeLessThan(12);
+    expect(x.b.nonSimules).toEqual([]);
+    expect(x.b.supposes).toEqual([{ ajoutId: 'a1', raison: '80 °C supposé' }]);
+  });
+  it('whirlpool sans durée : toujours non simulé, avec sa raison', () => {
+    const x = lire([lotus({ stage: 'whirlpool' })]);
     expect(x.hachurees).toBe(12);
-    expect(x.b.nonSimules[0].raison).toMatch(/température de whirlpool inconnue/);
+    expect(x.b.nonSimules[0].raison).toMatch(/durée de whirlpool inconnue/);
   });
   it('houblon hors des fiches (Krush) : 12 hachurées, « houblon absent des fiches du moteur »', () => {
     const x = lire([{ name: 'Houblon inventé', alpha: 10, weightG: 30, stage: 'boil', timeMin: 40 }]);
