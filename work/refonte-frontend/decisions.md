@@ -771,3 +771,12 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   560 ko : il ne sert qu'à la maquette jouable, l'app n'est pas concernée. Le moteur v2 de Substituer est rejoué sur ces données :
   Galaxy au dry hop donne Harlequin, Mosaic, Citra, Nectaron, Rakau, Zamba Blend… ; il jugera sur les listes. Nouvelle source
   envoyée par lui : Beer Analytics (statistiques de recettes : styles, doses, moments, accords), voie c3h.
+- D86 (pilote, 26.10, commit ca7e1afd) : le moteur v2 de Substituer est branché dans l'app (non déployé). Il a 14 variables et
+  trois jeux de poids (amertume, arôme chaud, à froid), appris sur une moitié des houblons et jugés sur l'autre, avec les
+  descripteurs de 12 sources.
+  - Sur la moitié de contrôle, il bat l'actuel partout, et C aux moments d'arôme.
+  - Trois reculs du bon sens, signalés par e2, lui seront montrés :
+    - Saaz Late et Spalt ne se reconnaissent plus ;
+    - Cascade au dry hop sort du style 16D ;
+    - Citra gagne un cran tropical à 60′.
+  - Page m4 : listes à 60′, Galaxy et ces trois cas, A contre v2, dans son écran u4.
