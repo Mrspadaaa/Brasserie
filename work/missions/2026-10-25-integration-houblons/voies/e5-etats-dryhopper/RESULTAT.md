@@ -41,3 +41,21 @@ Douteux :
 
 CONNAISSANCE : aucune
 LEÇON PROPOSÉE : aucune (la comparaison de données par indices (`fiches`) a d'abord été lue comme un changement de mots ; le `descSources[s]` de `fiches[0]` a été identifié après coup. Règle : lire la structure d'encodage (`data.ts` descriptionsDe) avant de décoder.)
+
+## Mise à jour (26.10)
+
+La ligne 1 reste le verdict du premier rejeu. Cette section le corrige.
+
+Cause : 846b76aa (c6, rattachements par alias ; le commit regroupe D99 et c6), classe a retenue par le pilote. Relevé 6e368cbd (20/20 OK) → fb0d14e3 (10/20) : chaque valeur de la fiche barres et du bandeau baisse de 1 point (floral 29→28, baies 26→25, résineux 22→21, herbacé 13→12, terreux 9→8, agrumes 21→20, tropicaux 26→25, noyau 15→14, végétal 9→8). Épicé (3) et pépins (0) ne bougent pas. Les « ~+9 » et « ~+15 » sans correspondance du rapport étaient Terreux/Végétal et Noyau de 6e.
+
+Table vérifiée sur le texte complet (ctl relu, copie propre sur fb0d14e3, `scratchpad/e5/ctl-texte-relu.log` ; 6e : `scratchpad/e5/ctl-texte-6e.log`). Elle tient, avec deux compléments : etat-dryh-etape-apres affiche aussi résineux ~+28 (sans attendu) ; etat-dryh-etape-ebullition affiche bandeau floral ~+3 (conforme). Les autres valeurs du rapport sont exactes.
+
+Registre modifié : `work/refonte-frontend/v4/choix/etats/dryhopper.json`, 10 états. `verif.attendu` passe aux valeurs trouvées ; `verif.choisie` reste à l'ancien (convention e3/e4, page p4b2f statique) ; `verif.note` reçoit « c6 (846b76aa) : rattachements par alias, profil de la stout S1 −1 point, « trop amer » au contre ★. ». `etat-dryh-avant-inconnu` non touché.
+
+Contrôle dans la copie propre (fb0d14e3 + ce registre), sans `--ecran` :
+`ETATS OK (138/138) ; 15 voulu(s) non rejoué(s) ; 1 en attente de son choix : etat-dryh-avant-inconnu (données (D83, 26.10) : plus aucune famille de la bière « avant » n'est inconnue avec Idaho 7 dans la fixture, donc « ? → » ne s'écrit plus ; à rejouer avec une fixture qui l'exhibe (RESULTAT, DÉCISION À PRENDRE))`
+Journal : `scratchpad/e5/controle-etats-complet.log` (0 ECHEC, 138 OK). Copie restaurée (`git status` vide).
+
+Douteux : l'attribution à c6 seul n'est pas isolée (846b76aa mêle D99 et c6). Le registre garde `choisie` ancien : `--choisie` affiche donc toujours les anciennes valeurs de p4b2f, par convention.
+
+Essais : 1 par critère (aucune correction de contrôle n'a été nécessaire).
