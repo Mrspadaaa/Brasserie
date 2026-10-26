@@ -780,3 +780,31 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     - Cascade au dry hop sort du style 16D ;
     - Citra gagne un cran tropical à 60′.
   - Page m4 : listes à 60′, Galaxy et ces trois cas, A contre v2, dans son écran u4.
+- D87 (pilote, 26.10, voie g1) : Suggérer est diagnostiqué ; le diagnostic tient en deux points.
+  - Il ne propose aucun ajout à 60′. Les moments sont fixés en dur : 10′, whirlpool, dry hop.
+  - Au dry hop, il range les ex æquo par ordre alphabétique : 23 en tête sur la 21C, pour « plus d'agrumes ».
+
+  Lecture de « la suggestion doit être pour du 60' comme pour du dryhopping » (L01, lecture étroite) : Suggérer doit pouvoir
+  proposer à 60′ (amertume, IBU visée) comme au dry hop (arôme), et le brasseur choisit le moment. L'autre lecture reste
+  signalée : « les visées d'arôme valent aussi à 60′ ».
+
+  Plan :
+  - g2a, le départage ;
+  - m6, les mini maquettes du moment dans q2b, que le brasseur choisira ;
+  - g2b, le jeu à 60′ ;
+  - l'IA de Suggérer, après i2 et g2a.
+- D88 (pilote, 26.10, avis croisé Brasseur et Contradicteur, `work/missions/2026-10-25-integration-houblons/conseil-suggerer-rang/question.md`)
+  - **A, le départage au dry hop et à chaud.** Les deux regards refusent un départage fondé sur le seul vocabulaire. Il
+    rejouerait « nelson sauvin est un houbon ordinaire » (L14). Trois clés seront mesurées sous une option du moteur, dont le
+    défaut reste `'aucun'` :
+    - K1 : la cascade de g1 ;
+    - K2 : la part des fiches, puis l'huile propre à la famille, les ex æquo restant affichés ;
+    - K3 : le radar Beer Maverick de la famille.
+
+    Pour choisir, on confronte d'abord les houblons phares, puis on découpe le banc en deux moitiés (L20). Le brasseur juge
+    ensuite les listes. Le critère se valide par sa justesse sur les houblons phares, pas par son nombre de valeurs distinctes
+    (Contradicteur).
+  - **B, l'ordre à 60′.** Les clés : d'abord l'usage (amérisant ou double avant arôme), puis l'α (moins de grammes). La
+    cohumulone et le β sortent du rang : ce sont des conventions de goût, données en information à un toucher. La bande d'IBU
+    du style devient un drapeau sur la carte. Le conflit de famille reste une exclusion, comme dans `voies.ts`. « Remplacer à
+    IBU égal » suit la même règle d'usage.
