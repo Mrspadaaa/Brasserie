@@ -182,7 +182,7 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
 
 ## Signature
 
-## Reprise (26.10, vers 15 h 30) : ARRÊT, quota hebdomadaire à 99 %, demandé par l'utilisateur
+## Reprise (26.10, vers 15 h 30) : arrêt levé à 15 h 50 (quota réel à 89 % ; sa règle : plus d’agent dès 98 %, arrêt à 99 %)
 « À 99% d'usage hebdo fait attention. Enregistrer bien TOUT pour la reprise et arrêt ». Le quota est remis à zéro le 31.10 vers 03 h.
 Le contexte de cette session était à 50 % (500 k) : reprendre dans une **session neuve**, depuis ce paragraphe.
 
