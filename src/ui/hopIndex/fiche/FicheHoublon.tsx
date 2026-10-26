@@ -24,7 +24,7 @@ import { Matrice, NonDecrites } from './Matrice';
 import { noterFermeture, useGestesFiche } from './gestes';
 import { RadarFiche } from './RadarFiche';
 import { Replis, ReplisBoutons, useReplis } from './Replis';
-import { nomSource, sourcesFiche, type SourcesFiche } from './sources';
+import { sourcesFiche, type SourcesFiche } from './sources';
 import './fiche.css';
 
 /** Goûts du brasseur, en mémoire (maquette) : « j'aime » ou « pas pour moi » par houblon (D20). */
@@ -169,7 +169,7 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span data-element="g1-alpha" role="group"
-              aria-label={`Acides alpha ${texteAlpha}${recente ? ` (${nomSource(recente)})` : ''}${lot != null ? `, mon lot ${nombre(lot, 1)} %` : ''}`}
+              aria-label={`Acides alpha ${texteAlpha}${lot != null ? `, mon lot ${nombre(lot, 1)} %` : ''}`}
               className="inline-flex items-baseline gap-2 min-w-0">
               <span data-role="fiche-alpha" className="text-xl font-semibold text-cave-50 whitespace-nowrap tabular-nums">
                 <span {...(lot == null ? { 'data-role': 'alpha', 'data-houblon': cle, 'data-source': 'fiches' } : {})}>

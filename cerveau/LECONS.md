@@ -67,7 +67,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L11 — Fini veut dire utilisable, pas un reçu
 - Erreur : 08.10, des reçus, des registres « qualifiés » et des couches V3/V4/V5.5 donnaient l'impression d'avancer, sans fonction utilisable.
 - Cause : on comptait des preuves déclarées au lieu de parcours réels.
-- Faire : une chose est finie si elle est branchée, atteinte par un vrai parcours dans Chrome, typée, testée, avec un build vert. Le quota sert d'abord ce qu'il verra : montrer tôt, outiller seulement ce qui bloque (24.10, SPEC § 1).
+- Faire : une chose est finie si elle est branchée, atteinte par un vrai parcours dans Chrome, typée, testée, avec un build vert. Le quota sert d'abord ce qu'il verra : montrer tôt, outiller seulement ce qui bloque (SPEC § 1).
 - Rôles : pilote, relecteur, exécutant
 - Contrôle : aucun
 
@@ -81,7 +81,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L13 — Une plainte devient un contrôle qui échoue sur la version rejetée, avant toute correction
 - Erreur : 18.10, les mêmes défauts revenaient de v2 à v4 (trop de texte, cockpit) ; 20.10, « épicé » critiqué une deuxième fois (lots 15 et 21), la première plainte n'étant pas un contrôle.
 - Cause : les corrections étaient des règles écrites, lues par des agents, et non des contrôles bloquants.
-- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet, et partir d'une référence qu'il connaît (25.10 : [[beermaverick-radar]]). Une plainte ambiguë ne fige pas une seule lecture en contrôle bloquant : chaque lecture devient un axe de variantes (25.10 : « les pic » lu « sans pointe », D144). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de `portee-defauts.json` entrent dans les GATES ; un mort est adapté ou caduc (D4). Rejouer chaque critère sur HEAD avant la voie (24.10, r14).
+- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet, et partir d'une référence qu'il connaît (25.10 : [[beermaverick-radar]]). Une plainte ambiguë ne fige pas une seule lecture en contrôle bloquant : chaque lecture devient un axe de variantes (25.10 : « les pic » lu « sans pointe », D144). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de `portee-defauts.json` entrent dans les GATES ; un mort est adapté ou caduc (D4). Rejouer chaque critère sur HEAD avant la voie (r14).
 - Rôles : pilote, auteur
 - Contrôle : `systeme.mjs mission` (portée) ; cablage (« OK 0/0 », portée inconnue)
 
@@ -95,16 +95,16 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Agents et outils
 
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
-- Erreur : lot 21 et 22.10, des fichiers de travail à la racine (`pistes-l5f.png`, `loupe.html`). 25.10, T4 : un déménagement sans les importeurs hors dossier.
+- Erreur : lot 21 et 22.10, des fichiers de travail à la racine. 25.10, T4 : un déménagement sans les importeurs hors dossier.
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
-- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Le pilote commite par chemins (`git commit -- <chemins>`) : le `git mv` d'une voie en vol est déjà indexé (25.10). Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine. Déménagement ou format changé : `grep` des lecteurs, leurs tests rejoués (D79). Un critère non plus n'écrit dans un livrable (24.10). Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()`, jamais en remplaçant le fichier (26.10).
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Le pilote commite par chemins (`git commit -- <chemins>`). Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine. Déménagement ou format changé : `grep` des lecteurs, leurs tests rejoués (D79). Un critère non plus n'écrit dans un livrable (24.10). Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()` (26.10). Déployer d'un dossier que nul autre n'écrit, puis lire « found N files » et la page servie (26.10 : 1 fichier, 404).
 - Rôles : pilote, auteur, exécutant, concepteur
 - Contrôle : aucun
 
 ### L18 — Plafonner chaque voie, et réserver le jugement à ce qui en demande
-- Erreur : lots 5 à 21, 8 à 12 auteurs en vol (3 prévus), 130 à 350 k jetons chacun. 25.10 : ports de code et finitions au concepteur Opus ; « pas tout le temps Opus, mais bien hiku ou si vraiment sonnet ».
+- Erreur : lots 5 à 21, 8 à 12 auteurs (3 prévus), 130 à 350 k jetons chacun. 25.10 : ports et finitions à Opus ; « pas tout le temps Opus, mais bien hiku ou si vraiment sonnet ».
 - Cause : pas de plafond par voie, tout au modèle le plus cher, un retour sans format.
-- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports dans l'app compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne. Le plafond porte sur les agents et les tours, jamais sur les variantes (M13).
+- Faire : un plafond de tours par agent (maxTurns), Haiku pour le mécanique (rejeux, captures), Sonnet pour le code (ports dans l'app compris), Opus pour dessiner ce qu'il voit, planifier, signer (L25). Retour en une ligne. Plafond sur agents et tours, jamais sur les variantes (M13). Petite suite : Haiku neuf, pas l'agent au long contexte (300 k, 26.10).
 - Rôles : pilote
 - Contrôle : `node scripts/agents/systeme.mjs agents`
 
@@ -150,7 +150,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Cause : les classes de la variante partageaient l'espace de noms du socle, et le code client était assemblé par remplacement de chaînes.
 - Faire : préfixer ses classes (`r6x-…`), un nom par rôle, et ses globales JS (script dans une fonction immédiate) ; assembler le code par `split/join` ou des indices ; capturer aussi l'état ouvert et la fiche, et les ouvrir (L12). Un composant de l'app réemployé apporte ses boutons (24.10 : le × du Sheet) : les contrôles de route le couvrent.
 - Rôles : concepteur, auteur
-- Contrôle : aucun ; revenu 4 fois le 23.10 : à mécaniser
+- Contrôle : aucun ; revenu 4 fois : à mécaniser
 
 ### L27 — Un juge qui parle pour le brasseur s'étalonne sur ses vrais verdicts
 - Erreur : 22.10, le critique Fable a étoilé 4 variantes du lot 22 que l'utilisateur trouve peu concluantes, « pas super calibré », et rejeté r6a, que le brasseur a choisie. Son portrait n'avait jamais été confronté à ses verdicts.

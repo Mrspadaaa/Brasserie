@@ -5,9 +5,10 @@
  * contenu métier : les écrans de la maquette viendront ici (T12), sous le drapeau `hopV4`. Tant qu'il est éteint,
  * seul le crochet de développement (`devHook.ts`) l'ouvre.
  */
-import React, { lazy, Suspense, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { PageShell } from '../../pages/PageShell';
 import { hopV4Enabled } from './flags';
+import { fermerJusquaLEtape } from './ouvrirCouche';
 import type { LayerRoute } from '../../pages/useFullScreenRoute';
 import { chargerOutils, outilsCharges, type Outils } from './chargement';
 
@@ -50,7 +51,20 @@ const EcranTiming = lazy(() => import('./dryhopper/EcranApp'));
 // Substituer (T15c, #174) : l'écran u4, son choix, chargé à la demande, drapeau hopV4 allumé seulement.
 const EcranSubstituer = lazy(() => import('./substituer/EcranApp'));
 
+// Ma bière (p6, #174) : l'onglet de sa base v4.10, son choix (« Ça aussi »), chargé à la demande, drapeau hopV4 allumé seulement.
+const EcranBiere = lazy(() => import('./biere/EcranApp'));
+
 export default function HopToolLayer({ route, level, onClose }: { route: HopToolRoute; level: number; onClose: () => void }) {
+  // D118 (23.10 : « Je veux juste retour au "menu" pas principal ») : la croix de Suggérer et de Comparer, empilés sur Ma bière,
+  // ferme toute la pile et ramène à l'étape Houblons. L'onglet « Ma bière » garde `onClose` (un niveau). Rien dessous : `onClose`.
+  const onCloseAll = useCallback(() => { if (!fermerJusquaLEtape()) onClose(); }, [onClose]);
+  if (route.view === 'hopBeer' && comparerActif) {
+    return (
+      <Suspense fallback={<PageShell title="Ma bière" onClose={onClose}><p data-hop-tool-layer="hopBeer" data-hop-tool-level={level} className="text-xs text-cave-400">Ouverture de Ma bière…</p></PageShell>}>
+        <EcranBiere recipeId={route.recipeId} onClose={onClose} />
+      </Suspense>
+    );
+  }
   if (route.view === 'hopTiming' && comparerActif) {
     const titre = hopToolTitle(route);
     return (
@@ -68,25 +82,25 @@ export default function HopToolLayer({ route, level, onClose }: { route: HopTool
   }
   if (route.view === 'hopCompare' && comparerActif) {
     return (
-      <Suspense fallback={<PageShell title="Comparer" onClose={onClose}><p data-hop-tool-layer="hopCompare" data-hop-tool-level={level} className="text-xs text-cave-400">Ouverture de Comparer…</p></PageShell>}>
-        <EcranComparer houblons={route.hops} pin={route.pinned} recipeId={route.recipeId} onClose={onClose} />
+      <Suspense fallback={<PageShell title="Comparer" onClose={onCloseAll}><p data-hop-tool-layer="hopCompare" data-hop-tool-level={level} className="text-xs text-cave-400">Ouverture de Comparer…</p></PageShell>}>
+        <EcranComparer houblons={route.hops} pin={route.pinned} recipeId={route.recipeId} onClose={onClose} onCloseAll={onCloseAll} />
       </Suspense>
     );
   }
   if (route.view === 'hopSuggest' && comparerActif) {
     return (
-      <Suspense fallback={<PageShell title="Suggérer" onClose={onClose}><p data-hop-tool-layer="hopSuggest" data-hop-tool-level={level} className="text-xs text-cave-400">Ouverture de Suggérer…</p></PageShell>}>
-        <EcranSuggerer recipeId={route.recipeId} onClose={onClose} />
+      <Suspense fallback={<PageShell title="Suggérer" onClose={onCloseAll}><p data-hop-tool-layer="hopSuggest" data-hop-tool-level={level} className="text-xs text-cave-400">Ouverture de Suggérer…</p></PageShell>}>
+        <EcranSuggerer recipeId={route.recipeId} onClose={onClose} onCloseAll={onCloseAll} />
       </Suspense>
     );
   }
   return <CoucheProvisoire route={route} level={level} onClose={onClose} />;
 }
 
-// a2 (D84) : la couche `hopBeer` (« Ma bière », l'analyse) n'a pas d'écran dans la pile : elle tombe ici. Son entrée,
-// « Ouvrir l'analyse de ma bière » (maBiere/index.tsx, variante B de D121 ; `aller({ ecran: 'biere' })` → EtapeHoublons.tsx,
-// `coucheDe('biere')`), ne s'affiche plus en production (`const analyse` de maBiere/index.tsx) ; elle reste en développement.
-// Rebrancher : ajouter ici le cas `hopBeer` (écran d'analyse chargé à la demande, comme Comparer) puis mettre `analyse` à true.
+// a2 (D84), puis p6 : la couche `hopBeer` (« Ma bière », l'analyse) a maintenant son écran (./biere/EcranApp.tsx) ; elle ne tombe plus
+// ici que drapeau hopV4 éteint. Son entrée, « Ouvrir l'analyse de ma bière » (maBiere/index.tsx, variante B de D121 ; `aller({ ecran:
+// 'biere' })` → EtapeHoublons.tsx, `coucheDe('biere')`), reste cachée en production tant que `const analyse` de maBiere/index.tsx
+// n'est pas à true (voie s2 dans ce fichier : le pilote applique la ligne, voir RESULTAT.md de p6).
 function CoucheProvisoire({ route, level, onClose }: { route: HopToolRoute; level: number; onClose: () => void }) {
   const { outils, echec, reessayer } = useOutils();
   return (

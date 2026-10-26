@@ -1,0 +1,1032 @@
+{
+ "voie": "f1-affinage-diagnostic, parties 3 et 4",
+ "repliqueVerifiee": {
+  "scoresComparesASubstitutes": 100172,
+  "ecarts": 0
+ },
+ "jeux": [
+  {
+   "nom": "actuel",
+   "groupesAmertumeHuileArome": [
+    0.7,
+    0.2,
+    0.1
+   ],
+   "interneAmertume_alpha_beta_cohu_usage": [
+    0.4,
+    0.2,
+    0.2,
+    0.2
+   ],
+   "partDuStyle": 0
+  },
+  {
+   "nom": "J1 α allégé (même groupes)",
+   "groupesAmertumeHuileArome": [
+    0.7,
+    0.2,
+    0.1
+   ],
+   "interneAmertume_alpha_beta_cohu_usage": [
+    0.15,
+    0.25,
+    0.3,
+    0.3
+   ],
+   "partDuStyle": 0
+  },
+  {
+   "nom": "J2 α allégé, huile et arôme restant plus lourds",
+   "groupesAmertumeHuileArome": [
+    0.5,
+    0.3,
+    0.2
+   ],
+   "interneAmertume_alpha_beta_cohu_usage": [
+    0.2,
+    0.25,
+    0.25,
+    0.3
+   ],
+   "partDuStyle": 0
+  },
+  {
+   "nom": "J3 = J2 + part du style (0,15)",
+   "groupesAmertumeHuileArome": [
+    0.5,
+    0.3,
+    0.2
+   ],
+   "interneAmertume_alpha_beta_cohu_usage": [
+    0.2,
+    0.25,
+    0.25,
+    0.3
+   ],
+   "partDuStyle": 0.15
+  }
+ ],
+ "partie3a_poidsDeLAlpha": {
+  "actuel": {
+   "groupes": [
+    0.7,
+    0.2,
+    0.1
+   ],
+   "interneAmertume": [
+    0.4,
+    0.2,
+    0.2,
+    0.2
+   ],
+   "tousLesHoublons": {
+    "originaux": 317,
+    "ceQueCeJeuChangeALEcran": {
+     "chevauchementTop10AvecLeJeuActuel": 1,
+     "memePremierQueLeJeuActuel": 1
+    },
+    "partDeLaDispersionDesScores": {
+     "α": 0.433,
+     "β": 0.105,
+     "cohumulone": 0.131,
+     "usage (rôle)": 0.184,
+     "huile": 0.086,
+     "arôme restant": 0.061
+    },
+    "chevauchementTop10SansAlpha": 0.652,
+    "premierChangeSansAlpha": 0.467,
+    "spearmanAvecLeClassementSansAlpha": 0.93,
+    "chevauchementTop10AvecAlphaSeul": 0.105,
+    "spearmanAvecAlphaSeul": 0.666
+   },
+   "amerisantsEtDoubleUsage": {
+    "originaux": 183,
+    "ceQueCeJeuChangeALEcran": {
+     "chevauchementTop10AvecLeJeuActuel": 1,
+     "memePremierQueLeJeuActuel": 1
+    },
+    "partDeLaDispersionDesScores": {
+     "α": 0.502,
+     "β": 0.077,
+     "cohumulone": 0.108,
+     "usage (rôle)": 0.18,
+     "huile": 0.089,
+     "arôme restant": 0.044
+    },
+    "chevauchementTop10SansAlpha": 0.604,
+    "premierChangeSansAlpha": 0.536,
+    "spearmanAvecLeClassementSansAlpha": 0.927,
+    "chevauchementTop10AvecAlphaSeul": 0.136,
+    "spearmanAvecAlphaSeul": 0.811
+   },
+   "moitieA": {
+    "originaux": 159,
+    "ceQueCeJeuChangeALEcran": {
+     "chevauchementTop10AvecLeJeuActuel": 1,
+     "memePremierQueLeJeuActuel": 1
+    },
+    "partDeLaDispersionDesScores": {
+     "α": 0.451,
+     "β": 0.101,
+     "cohumulone": 0.124,
+     "usage (rôle)": 0.186,
+     "huile": 0.08,
+     "arôme restant": 0.057
+    },
+    "chevauchementTop10SansAlpha": 0.65,
+    "premierChangeSansAlpha": 0.478,
+    "spearmanAvecLeClassementSansAlpha": 0.932,
+    "chevauchementTop10AvecAlphaSeul": 0.108,
+    "spearmanAvecAlphaSeul": 0.7
+   },
+   "moitieB": {
+    "originaux": 158,
+    "ceQueCeJeuChangeALEcran": {
+     "chevauchementTop10AvecLeJeuActuel": 1,
+     "memePremierQueLeJeuActuel": 1
+    },
+    "partDeLaDispersionDesScores": {
+     "α": 0.415,
+     "β": 0.109,
+     "cohumulone": 0.138,
+     "usage (rôle)": 0.182,
+     "huile": 0.091,
+     "arôme restant": 0.066
+    },
+    "chevauchementTop10SansAlpha": 0.654,
+    "premierChangeSansAlpha": 0.456,
+    "spearmanAvecLeClassementSansAlpha": 0.928,
+    "chevauchementTop10AvecAlphaSeul": 0.102,
+    "spearmanAvecAlphaSeul": 0.633
+   }
+  },
+  "J1 α allégé (même groupes)": {
+   "groupes": [
+    0.7,
+    0.2,
+    0.1
+   ],
+   "interneAmertume": [
+    0.15,
+    0.25,
+    0.3,
+    0.3
+   ],
+   "tousLesHoublons": {
+    "originaux": 317,
+    "ceQueCeJeuChangeALEcran": {
+     "chevauchementTop10AvecLeJeuActuel": 0.791,
+     "memePremierQueLeJeuActuel": 0.782
+    },
+    "partDeLaDispersionDesScores": {
+     "α": 0.142,
+     "β": 0.142,
+     "cohumulone": 0.253,
+     "usage (rôle)": 0.316,
+     "huile": 0.084,
+     "arôme restant": 0.063
+    },
+    "chevauchementTop10SansAlpha": 0.794,
+    "premierChangeSansAlpha": 0.394,
+    "spearmanAvecLeClassementSansAlpha": 0.988,
+    "chevauchementTop10AvecAlphaSeul": 0.075,
+    "spearmanAvecAlphaSeul": 0.577
+   },
+   "amerisantsEtDoubleUsage": {
+    "originaux": 183,
+    "ceQueCeJeuChangeALEcran": {
+     "chevauchementTop10AvecLeJeuActuel": 0.778,
+     "memePremierQueLeJeuActuel": 0.765
+    },
+    "partDeLaDispersionDesScores": {
+     "α": 0.181,
+     "β": 0.122,
+     "cohumulone": 0.243,
+     "usage (rôle)": 0.306,
+     "huile": 0.093,
+     "arôme restant": 0.055
+    },
+    "chevauchementTop10SansAlpha": 0.757,
+    "premierChangeSansAlpha": 0.47,
+    "spearmanAvecLeClassementSansAlpha": 0.986,
+    "chevauchementTop10AvecAlphaSeul": 0.096,
+    "spearmanAvecAlphaSeul": 0.72
+   },
+   "moitieA": {
+    "originaux": 159,
+    "ceQueCeJeuChangeALEcran": {
+     "chevauchementTop10AvecLeJeuActuel": 0.803,
+     "memePremierQueLeJeuActuel": 0.792
+    },
+    "partDeLaDispersionDesScores": {
+     "α": 0.152,
+     "β": 0.141,
+     "cohumulone": 0.249,
+     "usage (rôle)": 0.315,
+     "huile": 0.081,
+     "arôme restant": 0.061
+    },
+    "chevauchementTop10SansAlpha": 0.789,
+    "premierChangeSansAlpha": 0.403,
+    "spearmanAvecLeClassementSansAlpha": 0.988,
+    "chevauchementTop10AvecAlphaSeul": 0.084,
+    "spearmanAvecAlphaSeul": 0.613
+   },
+   "moitieB": {
+    "originaux": 158,
+    "ceQueCeJeuChangeALEcran": {
+     "chevauchementTop10AvecLeJeuActuel": 0.78,
+     "memePremierQueLeJeuActuel": 0.772
+    },
+    "partDeLaDispersionDesScores": {
+     "α": 0.132,
+     "β": 0.142,
+     "cohumulone": 0.257,
+     "usage (rôle)": 0.317,
+     "huile": 0.087,
+     "arôme restant": 0.065
+    },
+    "chevauchementTop10SansAlpha": 0.8,
+    "premierChangeSansAlpha": 0.386,
+    "spearmanAvecLeClassementSansAlpha": 0.987,
+    "chevauchementTop10AvecAlphaSeul": 0.067,
+    "spearmanAvecAlphaSeul": 0.54
+   }
+  },
+  "J2 α allégé, huile et arôme restant plus lourds": {
+   "groupes": [
+    0.5,
+    0.3,
+    0.2
+   ],
+   "interneAmertume": [
+    0.2,
+    0.25,
+    0.25,
+    0.3
+   ],
+   "tousLesHoublons": {
+    "originaux": 317,
+    "ceQueCeJeuChangeALEcran": {
+     "chevauchementTop10AvecLeJeuActuel": 0.701,
+     "memePremierQueLeJeuActuel": 0.7
+    },
+    "partDeLaDispersionDesScores": {
+     "α": 0.144,
+     "β": 0.104,
+     "cohumulone": 0.122,
+     "usage (rôle)": 0.222,
+     "huile": 0.18,
+     "arôme restant": 0.228
+    },
+    "chevauchementTop10SansAlpha": 0.843,
+    "premierChangeSansAlpha": 0.334,
+    "spearmanAvecLeClassementSansAlpha": 0.988,
+    "chevauchementTop10AvecAlphaSeul": 0.067,
+    "spearmanAvecAlphaSeul": 0.585
+   },
+   "amerisantsEtDoubleUsage": {
+    "originaux": 183,
+    "ceQueCeJeuChangeALEcran": {
+     "chevauchementTop10AvecLeJeuActuel": 0.672,
+     "memePremierQueLeJeuActuel": 0.667
+    },
+    "partDeLaDispersionDesScores": {
+     "α": 0.181,
+     "β": 0.091,
+     "cohumulone": 0.118,
+     "usage (rôle)": 0.218,
+     "huile": 0.193,
+     "arôme restant": 0.2
+    },
+    "chevauchementTop10SansAlpha": 0.815,
+    "premierChangeSansAlpha": 0.383,
+    "spearmanAvecLeClassementSansAlpha": 0.987,
+    "chevauchementTop10AvecAlphaSeul": 0.085,
+    "spearmanAvecAlphaSeul": 0.725
+   },
+   "moitieA": {
+    "originaux": 159,
+    "ceQueCeJeuChangeALEcran": {
+     "chevauchementTop10AvecLeJeuActuel": 0.696,
+     "memePremierQueLeJeuActuel": 0.723
+    },
+    "partDeLaDispersionDesScores": {
+     "α": 0.153,
+     "β": 0.104,
+     "cohumulone": 0.121,
+     "usage (rôle)": 0.224,
+     "huile": 0.175,
+     "arôme restant": 0.222
+    },
+    "chevauchementTop10SansAlpha": 0.842,
+    "premierChangeSansAlpha": 0.346,
+    "spearmanAvecLeClassementSansAlpha": 0.988,
+    "chevauchementTop10AvecAlphaSeul": 0.074,
+    "spearmanAvecAlphaSeul": 0.62
+   },
+   "moitieB": {
+    "originaux": 158,
+    "ceQueCeJeuChangeALEcran": {
+     "chevauchementTop10AvecLeJeuActuel": 0.706,
+     "memePremierQueLeJeuActuel": 0.677
+    },
+    "partDeLaDispersionDesScores": {
+     "α": 0.136,
+     "β": 0.103,
+     "cohumulone": 0.122,
+     "usage (rôle)": 0.22,
+     "huile": 0.185,
+     "arôme restant": 0.235
+    },
+    "chevauchementTop10SansAlpha": 0.845,
+    "premierChangeSansAlpha": 0.323,
+    "spearmanAvecLeClassementSansAlpha": 0.988,
+    "chevauchementTop10AvecAlphaSeul": 0.059,
+    "spearmanAvecAlphaSeul": 0.55
+   }
+  }
+ },
+ "partie4": {
+  "references": {
+   "hopsteinerBrewhouse": {
+    "originaux": 33,
+    "paires": 52
+   },
+   "hopslistEtHopsDirect": {
+    "originaux": 74,
+    "paires": 181
+   },
+   "bmAlphaConstant": {
+    "originaux": 131
+   },
+   "nonResolus": {
+    "hopsteiner": 45,
+    "hopslist": 94,
+    "hopsdirect": 13
+   },
+   "couvertureStylesProducteurs": 0.202
+  },
+  "parMoitie": {
+   "actuel": {
+    "A": {
+     "P1a_hopsteiner": {
+      "n": 14,
+      "mrr": 0.147,
+      "rappel10": 0.286,
+      "rangMedian": 31
+     },
+     "P1b_hopslist_hopsdirect": {
+      "n": 39,
+      "mrr": 0.07,
+      "rappel10": 0.13,
+      "rangMedian": 54
+     },
+     "P3_BM_alphaConstant": {
+      "n": 52,
+      "mrr": 0.229,
+      "rappel10": 0.313,
+      "rangMedian": 14
+     },
+     "composite": 0.1487
+    },
+    "B": {
+     "P1a_hopsteiner": {
+      "n": 19,
+      "mrr": 0.074,
+      "rappel10": 0.193,
+      "rangMedian": 34
+     },
+     "P1b_hopslist_hopsdirect": {
+      "n": 35,
+      "mrr": 0.125,
+      "rappel10": 0.185,
+      "rangMedian": 25
+     },
+     "P3_BM_alphaConstant": {
+      "n": 45,
+      "mrr": 0.227,
+      "rappel10": 0.266,
+      "rangMedian": 17
+     },
+     "composite": 0.142
+    }
+   },
+   "J1 α allégé (même groupes)": {
+    "A": {
+     "P1a_hopsteiner": {
+      "n": 14,
+      "mrr": 0.139,
+      "rappel10": 0.229,
+      "rangMedian": 40.5
+     },
+     "P1b_hopslist_hopsdirect": {
+      "n": 39,
+      "mrr": 0.068,
+      "rappel10": 0.118,
+      "rangMedian": 50
+     },
+     "P3_BM_alphaConstant": {
+      "n": 52,
+      "mrr": 0.229,
+      "rappel10": 0.338,
+      "rangMedian": 10.5
+     },
+     "composite": 0.1453
+    },
+    "B": {
+     "P1a_hopsteiner": {
+      "n": 19,
+      "mrr": 0.106,
+      "rappel10": 0.175,
+      "rangMedian": 22
+     },
+     "P1b_hopslist_hopsdirect": {
+      "n": 35,
+      "mrr": 0.123,
+      "rappel10": 0.192,
+      "rangMedian": 29
+     },
+     "P3_BM_alphaConstant": {
+      "n": 45,
+      "mrr": 0.243,
+      "rappel10": 0.259,
+      "rangMedian": 15
+     },
+     "composite": 0.1573
+    }
+   },
+   "J2 α allégé, huile et arôme restant plus lourds": {
+    "A": {
+     "P1a_hopsteiner": {
+      "n": 14,
+      "mrr": 0.134,
+      "rappel10": 0.3,
+      "rangMedian": 40
+     },
+     "P1b_hopslist_hopsdirect": {
+      "n": 39,
+      "mrr": 0.05,
+      "rappel10": 0.105,
+      "rangMedian": 38
+     },
+     "P3_BM_alphaConstant": {
+      "n": 52,
+      "mrr": 0.183,
+      "rappel10": 0.28,
+      "rangMedian": 13.5
+     },
+     "composite": 0.1223
+    },
+    "B": {
+     "P1a_hopsteiner": {
+      "n": 19,
+      "mrr": 0.097,
+      "rappel10": 0.175,
+      "rangMedian": 34
+     },
+     "P1b_hopslist_hopsdirect": {
+      "n": 35,
+      "mrr": 0.1,
+      "rappel10": 0.159,
+      "rangMedian": 25
+     },
+     "P3_BM_alphaConstant": {
+      "n": 45,
+      "mrr": 0.211,
+      "rappel10": 0.27,
+      "rangMedian": 12
+     },
+     "composite": 0.136
+    }
+   }
+  },
+  "jugements": [
+   {
+    "choisiSur": "A",
+    "jugeSur": "B",
+    "jeuChoisi": "actuel",
+    "ecartsAuJeuActuel": [
+     {
+      "indicateur": "P1a",
+      "n": 19,
+      "ecartMrr": 0,
+      "ic95": [
+       0,
+       0
+      ]
+     },
+     {
+      "indicateur": "P1b",
+      "n": 35,
+      "ecartMrr": 0,
+      "ic95": [
+       0,
+       0
+      ]
+     },
+     {
+      "indicateur": "P3",
+      "n": 45,
+      "ecartMrr": 0,
+      "ic95": [
+       0,
+       0
+      ]
+     }
+    ]
+   },
+   {
+    "choisiSur": "B",
+    "jugeSur": "A",
+    "jeuChoisi": "J1 α allégé (même groupes)",
+    "ecartsAuJeuActuel": [
+     {
+      "indicateur": "P1a",
+      "n": 14,
+      "ecartMrr": -0.0084,
+      "ic95": [
+       -0.0399,
+       0.0199
+      ]
+     },
+     {
+      "indicateur": "P1b",
+      "n": 39,
+      "ecartMrr": -0.0019,
+      "ic95": [
+       -0.0213,
+       0.0172
+      ]
+     },
+     {
+      "indicateur": "P3",
+      "n": 52,
+      "ecartMrr": 0.0001,
+      "ic95": [
+       -0.0241,
+       0.0199
+      ]
+     }
+    ]
+   }
+  ],
+  "P2_brasseur": {
+   "lecture": "Au dry hop (moment de ses listes), rang dans le moteur des 3 premiers de D par phare ; K4 : rang de Hallertau Blanc chez Nelson Sauvin ; K5 : rang de Saaz chez Galaxy (doit rester loin). Au 60′ : aucun jugement du brasseur.",
+   "phares": [
+    {
+     "phare": "Nelson Sauvin",
+     "attendus": [
+      "Hallertau Blanc",
+      "African Queen",
+      "Godiva"
+     ],
+     "rangsDansLeMoteurDryHop": [
+      1,
+      46,
+      55
+     ],
+     "premier": 1
+    },
+    {
+     "phare": "Citra",
+     "attendus": [
+      "Nectaron",
+      "Galaxy",
+      "NZH-107"
+     ],
+     "rangsDansLeMoteurDryHop": [
+      7,
+      22,
+      11
+     ],
+     "premier": 7
+    },
+    {
+     "phare": "Motueka",
+     "attendus": [
+      "Taiheke",
+      "Riwaka",
+      "Cascade"
+     ],
+     "rangsDansLeMoteurDryHop": [
+      2,
+      18,
+      4
+     ],
+     "premier": 2
+    },
+    {
+     "phare": "Mosaic",
+     "attendus": [
+      "Simcoe",
+      "Idaho 7",
+      "Azacca"
+     ],
+     "rangsDansLeMoteurDryHop": [
+      1,
+      2,
+      5
+     ],
+     "premier": 1
+    },
+    {
+     "phare": "Galaxy",
+     "attendus": [
+      "Nectaron",
+      "Vic Secret",
+      "Strata"
+     ],
+     "rangsDansLeMoteurDryHop": [
+      8,
+      33,
+      21
+     ],
+     "premier": 8
+    },
+    {
+     "phare": "Simcoe",
+     "attendus": [
+      "Mosaic",
+      "Idaho 7",
+      "Vic Secret"
+     ],
+     "rangsDansLeMoteurDryHop": [
+      1,
+      5,
+      21
+     ],
+     "premier": 1
+    },
+    {
+     "phare": "Saaz (CZ)",
+     "attendus": [
+      "Saaz Late",
+      "Saaz (US)",
+      "Spalt"
+     ],
+     "rangsDansLeMoteurDryHop": [
+      4,
+      9,
+      10
+     ],
+     "premier": 4
+    },
+    {
+     "phare": "Cascade",
+     "attendus": [
+      "Centennial",
+      "Taiheke",
+      "Falconer's Flight"
+     ],
+     "rangsDansLeMoteurDryHop": [
+      5,
+      1,
+      45
+     ],
+     "premier": 1
+    }
+   ],
+   "K4": 1,
+   "K5": 265
+  },
+  "P4_style": {
+   "couvertureStylesProducteurs": 0.202,
+   "parStyle": {
+    "21C": {
+     "actuel": {
+      "tous": {
+       "originaux": 9,
+       "partDesDixPremiersAuStyle": 1,
+       "partDesDixPremiersAuStyleConnu": 0.289
+      },
+      "moitieA": {
+       "originaux": 6,
+       "partDesDixPremiersAuStyle": 1,
+       "partDesDixPremiersAuStyleConnu": 0.317
+      },
+      "moitieB": {
+       "originaux": 3,
+       "partDesDixPremiersAuStyle": 1,
+       "partDesDixPremiersAuStyleConnu": 0.233
+      }
+     },
+     "J1 α allégé (même groupes)": {
+      "tous": {
+       "originaux": 9,
+       "partDesDixPremiersAuStyle": 1,
+       "partDesDixPremiersAuStyleConnu": 0.211
+      },
+      "moitieA": {
+       "originaux": 6,
+       "partDesDixPremiersAuStyle": 1,
+       "partDesDixPremiersAuStyleConnu": 0.2
+      },
+      "moitieB": {
+       "originaux": 3,
+       "partDesDixPremiersAuStyle": 1,
+       "partDesDixPremiersAuStyleConnu": 0.233
+      }
+     },
+     "J2 α allégé, huile et arôme restant plus lourds": {
+      "tous": {
+       "originaux": 9,
+       "partDesDixPremiersAuStyle": 1,
+       "partDesDixPremiersAuStyleConnu": 0.211
+      },
+      "moitieA": {
+       "originaux": 6,
+       "partDesDixPremiersAuStyle": 1,
+       "partDesDixPremiersAuStyleConnu": 0.2
+      },
+      "moitieB": {
+       "originaux": 3,
+       "partDesDixPremiersAuStyle": 1,
+       "partDesDixPremiersAuStyleConnu": 0.233
+      }
+     },
+     "J3 = J2 + part du style (0,15)": {
+      "tous": {
+       "originaux": 9,
+       "partDesDixPremiersAuStyle": 1,
+       "partDesDixPremiersAuStyleConnu": 0.3
+      },
+      "moitieA": {
+       "originaux": 6,
+       "partDesDixPremiersAuStyle": 1,
+       "partDesDixPremiersAuStyleConnu": 0.317
+      },
+      "moitieB": {
+       "originaux": 3,
+       "partDesDixPremiersAuStyle": 1,
+       "partDesDixPremiersAuStyleConnu": 0.267
+      }
+     }
+    },
+    "16D": {
+     "actuel": {
+      "tous": {
+       "originaux": 9,
+       "partDesDixPremiersAuStyle": 0,
+       "partDesDixPremiersAuStyleConnu": 0.289
+      },
+      "moitieA": {
+       "originaux": 6,
+       "partDesDixPremiersAuStyle": 0,
+       "partDesDixPremiersAuStyleConnu": 0.317
+      },
+      "moitieB": {
+       "originaux": 3,
+       "partDesDixPremiersAuStyle": 0,
+       "partDesDixPremiersAuStyleConnu": 0.233
+      }
+     },
+     "J1 α allégé (même groupes)": {
+      "tous": {
+       "originaux": 9,
+       "partDesDixPremiersAuStyle": 0,
+       "partDesDixPremiersAuStyleConnu": 0.211
+      },
+      "moitieA": {
+       "originaux": 6,
+       "partDesDixPremiersAuStyle": 0,
+       "partDesDixPremiersAuStyleConnu": 0.2
+      },
+      "moitieB": {
+       "originaux": 3,
+       "partDesDixPremiersAuStyle": 0,
+       "partDesDixPremiersAuStyleConnu": 0.233
+      }
+     },
+     "J2 α allégé, huile et arôme restant plus lourds": {
+      "tous": {
+       "originaux": 9,
+       "partDesDixPremiersAuStyle": 0,
+       "partDesDixPremiersAuStyleConnu": 0.211
+      },
+      "moitieA": {
+       "originaux": 6,
+       "partDesDixPremiersAuStyle": 0,
+       "partDesDixPremiersAuStyleConnu": 0.2
+      },
+      "moitieB": {
+       "originaux": 3,
+       "partDesDixPremiersAuStyle": 0,
+       "partDesDixPremiersAuStyleConnu": 0.233
+      }
+     },
+     "J3 = J2 + part du style (0,15)": {
+      "tous": {
+       "originaux": 9,
+       "partDesDixPremiersAuStyle": null,
+       "partDesDixPremiersAuStyleConnu": 0
+      },
+      "moitieA": {
+       "originaux": 6,
+       "partDesDixPremiersAuStyle": null,
+       "partDesDixPremiersAuStyleConnu": 0
+      },
+      "moitieB": {
+       "originaux": 3,
+       "partDesDixPremiersAuStyle": null,
+       "partDesDixPremiersAuStyleConnu": 0
+      }
+     }
+    }
+   },
+   "originauxUtilises": [
+    "Nugget",
+    "Warrior",
+    "Columbus",
+    "Chinook",
+    "Galena",
+    "Herkules",
+    "Summit",
+    "Apollo",
+    "Zeus"
+   ]
+  }
+ },
+ "partie3b_suggerer60": [
+  {
+   "recette": "21C",
+   "candidats": 204,
+   "tete10Actuelle": [
+    "Moutere α18.5",
+    "Vic Secret α17.9",
+    "Apollo α17.8",
+    "Eclipse α17.4",
+    "Ahhhroma α17.1",
+    "Topaz α16.9",
+    "Waimea α16.8",
+    "Ella α16.3",
+    "Summit α16.3",
+    "Columbus α16"
+   ],
+   "alphaTop10": {
+    "min": 16,
+    "max": 18.5
+   },
+   "rhoParClasse": [
+    {
+     "classe": "amérisant ou double usage",
+     "n": 127,
+     "spearmanPositionContreAlpha": -1
+    },
+    {
+     "classe": "arôme",
+     "n": 77,
+     "spearmanPositionContreAlpha": -1
+    }
+   ],
+   "partAuStyleActuel": 1,
+   "connusActuel": 5,
+   "alternatives": {
+    "S1 : usage puis ressemblance à Nugget (jeu J1)": {
+     "top10": [
+      "Feux-Coeur Francais α14",
+      "Trident α12.5",
+      "Yeoman α14",
+      "Centennial α9.5",
+      "Magnat α13.5",
+      "Zenia α12.5",
+      "Bravo α15.5",
+      "Citra α12.5",
+      "Phoenix α10.8",
+      "Sultana (Denali) α14.5"
+     ],
+     "chevauchementAvecLeRangActuel": 0,
+     "alphaMoyenTop10": 12.9,
+     "partAuStyle": 1,
+     "connus": 4
+    },
+    "S2 : usage puis ressemblance à Nugget (jeu J2)": {
+     "top10": [
+      "Feux-Coeur Francais α14",
+      "Trident α12.5",
+      "Yeoman α14",
+      "Magnat α13.5",
+      "Zenia α12.5",
+      "Bravo α15.5",
+      "Centennial α9.5",
+      "Citra α12.5",
+      "Pacific Sunrise α13.5",
+      "Simcoe α13"
+     ],
+     "chevauchementAvecLeRangActuel": 0,
+     "alphaMoyenTop10": 13.1,
+     "partAuStyle": 1,
+     "connus": 5
+    },
+    "S3 : usage puis J3 (J2 + style)": {
+     "top10": [
+      "Feux-Coeur Francais α14",
+      "Trident α12.5",
+      "Yeoman α14",
+      "Centennial α9.5",
+      "Citra α12.5",
+      "Magnat α13.5",
+      "Zenia α12.5",
+      "Bravo α15.5",
+      "Simcoe α13",
+      "Chinook α13.3"
+     ],
+     "chevauchementAvecLeRangActuel": 0,
+     "alphaMoyenTop10": 13,
+     "partAuStyle": 1,
+     "connus": 5
+    }
+   }
+  },
+  {
+   "recette": "16D",
+   "candidats": 317,
+   "tete10Actuelle": [
+    "Polaris α20.5",
+    "HBC 586 α20",
+    "Helios α18.9",
+    "Brooklyn α18.5",
+    "Eureka α18.5",
+    "Moutere α18.5",
+    "Pahto α18.5",
+    "Vic Secret α17.9",
+    "Apollo α17.8",
+    "Eclipse α17.4"
+   ],
+   "alphaTop10": {
+    "min": 17.35,
+    "max": 20.5
+   },
+   "rhoParClasse": [
+    {
+     "classe": "amérisant ou double usage",
+     "n": 183,
+     "spearmanPositionContreAlpha": -1
+    },
+    {
+     "classe": "arôme",
+     "n": 134,
+     "spearmanPositionContreAlpha": -1
+    }
+   ],
+   "partAuStyleActuel": 0,
+   "connusActuel": 5,
+   "alternatives": {
+    "S1 : usage puis ressemblance à Nugget (jeu J1)": {
+     "top10": [
+      "Feux-Coeur Francais α14",
+      "Trident α12.5",
+      "Yeoman α14",
+      "Helios α18.9",
+      "Centennial α9.5",
+      "Magnat α13.5",
+      "Zenia α12.5",
+      "Bravo α15.5",
+      "Citra α12.5",
+      "Warrior α16.3"
+     ],
+     "chevauchementAvecLeRangActuel": 0.1,
+     "alphaMoyenTop10": 13.9,
+     "partAuStyle": 0,
+     "connus": 3
+    },
+    "S2 : usage puis ressemblance à Nugget (jeu J2)": {
+     "top10": [
+      "Feux-Coeur Francais α14",
+      "Trident α12.5",
+      "Yeoman α14",
+      "Helios α18.9",
+      "Magnat α13.5",
+      "Millennium α16.5",
+      "Zenia α12.5",
+      "Bravo α15.5",
+      "Centennial α9.5",
+      "Citra α12.5"
+     ],
+     "chevauchementAvecLeRangActuel": 0.1,
+     "alphaMoyenTop10": 13.9,
+     "partAuStyle": 0,
+     "connus": 3
+    },
+    "S3 : usage puis J3 (J2 + style)": {
+     "top10": [
+      "Feux-Coeur Francais α14",
+      "Yeoman α14",
+      "Helios α18.9",
+      "Magnat α13.5",
+      "Millennium α16.5",
+      "Zenia α12.5",
+      "Bravo α15.5",
+      "Warrior α16.3",
+      "Aloha Blend α9.6",
+      "HBC 630 α13.5"
+     ],
+     "chevauchementAvecLeRangActuel": 0.1,
+     "alphaMoyenTop10": 14.4,
+     "partAuStyle": null,
+     "connus": 0
+    }
+   }
+  }
+ ]
+}

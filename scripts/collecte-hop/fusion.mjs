@@ -15,6 +15,9 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// c6 (26.10) : le rattachement d'une fiche à une variété (alias, origine non répertoriée, variétés que le catalogue n'a pas) vit dans
+// src/data/hopV4/rattachement.mjs, partagé avec prototypes/houblons-v4/scripts/build-data.mjs.
+import { analyser, lireSources, lireTable, verifierTable, SOURCES_NOMS, cleFiche } from '../../src/data/hopV4/rattachement.mjs';
 
 const racine = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const DIR_SOURCES = resolve(racine, 'src/data/hopSources');
@@ -119,6 +122,7 @@ const RAISONS = {
   'h-contradiction': ['hors', 'unité et base se contredisent'],
   'h-echelle': ['hors', 'échelle non publiée'],
   'h-sens': ['hors', 'sens du champ non établi'],
+  'h-origine': ['hors', 'origine non répertoriée : fiche d\'une origine que la variété n\'a pas au catalogue (astérisque)'],
   's-sup100': ['suspect', 'pourcentage au-dessus de 100'],
   's-somme': ['suspect', 'les minimums des composés de la fiche somment au-delà de 100'],
   's-huile6': ['suspect', 'huile totale au-delà de 6 mL/100 g'],
@@ -201,48 +205,17 @@ function lireValeur(canon, v, sid) {
   return { lo, hi, hors };
 }
 
-// ───────────────────────── Rattachement : vérification ─────────────────────────
-const catalogue = lire(resolve(racine, 'src/data/hopV4/proto-data.json')).varieties;
-const parId = new Map(catalogue.map((v) => [v.id, v]));
+// ───────────────────────── Rattachement : décision de rattachement.mjs (c6) ─────────────────────────
+// Le catalogue de base : les variétés Beer Maverick de proto-data.json (les ajouts de c6 n'y comptent pas : ils viennent des sources
+// elles-mêmes), sans les identifiants fusionnés (Equinox est Ekuanot).
+const table = lireTable();
+const catalogue = lire(resolve(racine, 'src/data/hopV4/proto-data.json')).varieties.filter((v) => v.id.startsWith('beermaverick-') && !table.idsFusionnes[v.id]);
 const norm = (s) => String(s).normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-const ORIGINES = {
-  us: 'États-Unis', usa: 'États-Unis', american: 'États-Unis', 'united states': 'États-Unis',
-  de: 'Allemagne', gr: 'Allemagne', ger: 'Allemagne', germany: 'Allemagne',
-  uk: 'Royaume-Uni', english: 'Royaume-Uni', 'united kingdom': 'Royaume-Uni', england: 'Royaume-Uni', 'great britain': 'Royaume-Uni',
-  nz: 'Nouvelle-Zélande', 'new zealand': 'Nouvelle-Zélande',
-  au: 'Australie', aus: 'Australie', australia: 'Australie',
-  cz: 'Tchéquie', czech: 'Tchéquie', 'czech republic': 'Tchéquie', czechia: 'Tchéquie',
-  si: 'Slovénie', slovenia: 'Slovénie', fr: 'France', france: 'France',
-  bc: 'Canada', canada: 'Canada', rsa: 'Afrique du Sud', 'south africa': 'Afrique du Sud',
-  pl: 'Pologne', poland: 'Pologne', jp: 'Japon', japan: 'Japon',
-};
-/** Origines que le nom ou la fiche annoncent (suffixe « (UK) », préfixe « NZ »), en français comme le catalogue. */
-function originesAnnoncees(fiche) {
-  const out = new Set();
-  const nom = String(fiche.nom);
-  for (const m of nom.matchAll(/\(([^)]+)\)/g)) { const o = ORIGINES[m[1].trim().toLowerCase()]; if (o) out.add(o); }
-  const pre = nom.match(/^([A-Za-z]{2,6})\s+\S/);
-  if (pre && ORIGINES[pre[1].toLowerCase()]) out.add(ORIGINES[pre[1].toLowerCase()]);
-  const lo = fiche.listes?.origine;
-  if (fiche.__source === 'hopslist' && Array.isArray(lo)) for (const x of lo) { const o = ORIGINES[String(x).trim().toLowerCase()]; if (o) out.add(o); }
-  return out;
-}
-// Cas relus à la main (26.10) : le nom est ambigu même si l'origine ne l'est pas.
-const REJETS_MANUELS = {
-  'hopdatabase|Wai': 'abréviation : l\'URL est celle de NZ Wai-iti, pas de Waimea',
-};
-/** Rend { ok, raison } pour un rattachement proposé par la voie de collecte. */
-function verifierRattachement(sid, fiche) {
-  const v = parId.get(fiche.varietyId);
-  if (!v) return { ok: false, raison: 'identifiant absent du catalogue' };
-  const manuel = REJETS_MANUELS[`${sid}|${fiche.nom}`];
-  if (manuel) return { ok: false, raison: manuel };
-  const annoncees = originesAnnoncees(fiche);
-  if (annoncees.size > 0 && v.origin && !annoncees.has(v.origin)) {
-    return { ok: false, raison: `origine annoncée (${[...annoncees].join(', ')}) différente de celle du catalogue (${v.origin})` };
-  }
-  return { ok: true, raison: null };
-}
+const decision = analyser(lireSources(SOURCES_NOMS), catalogue, table);
+const erreursTable = verifierTable(table, decision.index);
+if (erreursTable.length) throw new Error(`alias-noms.json : ${erreursTable.join(' ; ')}`);
+const parId = new Map(catalogue.map((v) => [v.id, v]));
+for (const v of decision.nouvelles) parId.set(v.id, { id: v.id, name: v.name, origin: v.origin, aliases: v.aliases });
 
 // ───────────────────────── Fusion ─────────────────────────
 const anneeDe = (f) => {
@@ -257,6 +230,7 @@ const stats = { fiches: {}, rattachees: {}, ecartees: {}, valeurs: {}, hors: {},
 const nonRattachees = [];
 const ecartees = [];
 const aRelire = [];
+const reroutees = []; // c6 : fiches rattachées par la table d'alias, par nom ou par une origine non répertoriée (et non par la collecte)
 const champsNonRepris = {};
 const suspectsListe = [];
 const illisibles = [];
@@ -269,29 +243,30 @@ for (const s of SOURCES) {
   const src = j.source;
   tableSources.push({ id: s.id, nom: src.nom, hote: src.hote, diffusion: s.diffusion, lu: s.lu, ...(s.decision ? { decision: s.decision } : {}), type: src.type ?? null, releve: String(src.releve ?? '').slice(0, 10) || null });
   const sidx = listeSources.indexOf(s.id);
-  for (const fiche of j.fiches) {
+  for (const [rang, fiche] of j.fiches.entries()) {
     fiche.__source = s.id;
     bump(stats.fiches, s.id);
     const champs = fiche.champs ?? {};
-    if (!fiche.varietyId) {
-      if (s.id !== 'brewersfriend') {
-        nonRattachees.push({ source: s.id, nom: fiche.nom, url: fiche.url ?? null, candidats: fiche.rattachement?.candidats ?? [], raison: fiche.rattachement?.via ?? fiche.rattachement ?? 'non résolu par la collecte' });
+    const dec = decision.decisions.get(cleFiche(s.id, rang));
+    if (!dec?.id) {
+      if (dec?.statut === 'ecarte') {
+        bump(stats.ecartees, s.id);
+        ecartees.push({ source: s.id, nom: fiche.nom, propose: dec.propose, raison: dec.raison, url: fiche.url ?? null });
+        const frere = catalogue.filter((v) => norm(v.name).startsWith(norm(parId.get(dec.propose)?.name ?? '').replace(/ (us|gr|cz)$/, '')) && v.id !== dec.propose).map((v) => v.id);
+        nonRattachees.push({ source: s.id, nom: fiche.nom, url: fiche.url ?? null, candidats: [dec.propose, ...frere].slice(0, 4), raison: `écarté à la fusion : ${dec.raison}` });
+      } else if (s.id !== 'brewersfriend') {
+        nonRattachees.push({ source: s.id, nom: fiche.nom, url: fiche.url ?? null, candidats: fiche.rattachement?.candidats ?? [], raison: dec?.statut === 'aconfirmer' ? `à confirmer (c6) : ${dec.raison}` : dec?.statut === 'exclu' ? `pas une variété (c6) : ${dec.raison}` : fiche.rattachement?.via ?? fiche.rattachement ?? 'non résolu par la collecte' });
       }
       continue;
     }
-    const ver = verifierRattachement(s.id, fiche);
-    if (!ver.ok) {
-      bump(stats.ecartees, s.id);
-      ecartees.push({ source: s.id, nom: fiche.nom, propose: fiche.varietyId, raison: ver.raison, url: fiche.url ?? null });
-      const frere = catalogue.filter((v) => norm(v.name).startsWith(norm(parId.get(fiche.varietyId)?.name ?? '').replace(/ (us|gr|cz)$/, '')) && v.id !== fiche.varietyId).map((v) => v.id);
-      nonRattachees.push({ source: s.id, nom: fiche.nom, url: fiche.url ?? null, candidats: [fiche.varietyId, ...frere].slice(0, 4), raison: `écarté à la fusion : ${ver.raison}` });
-      continue;
-    }
+    const idFiche = dec.id;
+    const origineLue = dec.origineNonRepertoriee ?? null;
     bump(stats.rattachees, s.id);
     // Rattachements à relire : par alias, code ou nom différent du catalogue.
-    const via = typeof fiche.rattachement === 'string' ? fiche.rattachement : fiche.rattachement?.via ?? fiche.rattachement?.methode ?? null;
-    const v0 = parId.get(fiche.varietyId);
-    if (norm(fiche.nom) !== norm(v0.name)) aRelire.push({ source: s.id, nom: fiche.nom, id: fiche.varietyId, nomCatalogue: v0.name, via: via ?? 'nom différent' });
+    const via = dec.via !== 'collecte' ? dec.via : typeof fiche.rattachement === 'string' ? fiche.rattachement : fiche.rattachement?.via ?? fiche.rattachement?.methode ?? null;
+    const v0 = parId.get(idFiche);
+    if (norm(fiche.nom) !== norm(v0.name)) aRelire.push({ source: s.id, nom: fiche.nom, id: idFiche, nomCatalogue: v0.name, via: via ?? 'nom différent' });
+    if (dec.via !== 'collecte') reroutees.push({ source: s.id, nom: fiche.nom, id: idFiche, nomCatalogue: v0.name, via: dec.via, origine: origineLue });
 
     // Valeurs de la fiche, puis règle de la somme des minimums des composés de l'huile.
     const lues = [];
@@ -300,16 +275,18 @@ for (const s of SOURCES) {
       if (!canon) { if (num(v.min) != null || num(v.max) != null || num(v.valeur) != null) bump(champsNonRepris, `${s.id}.${cle2}`); continue; }
       const r = lireValeur(canon, v, s.id);
       if (!r) {
-        if (typeof v.brut === 'string' && /^\s*-\s*\d+(\.\d+)?\s*-/.test(v.brut)) illisibles.push({ source: s.id, nom: fiche.nom, champ: canon, brut: v.brut, id: fiche.varietyId });
+        if (typeof v.brut === 'string' && /^\s*-\s*\d+(\.\d+)?\s*-/.test(v.brut)) illisibles.push({ source: s.id, nom: fiche.nom, champ: canon, brut: v.brut, id: idFiche });
         continue;
       }
+      // c6 : la fiche d'une origine que la variété n'a pas au catalogue (Cascade CHE, NZ Cascade) reste visible, hors de l'enveloppe.
+      if (origineLue && !r.hors) r.hors = 'h-origine';
       lues.push({ canon, ...r });
     }
     if (!lues.length) continue; // une fiche sans valeur n'entre pas dans le fichier
-    const fv = varietes.get(fiche.varietyId) ?? { fiches: new Map(), liste: [], champs: new Map() };
-    varietes.set(fiche.varietyId, fv);
+    const fv = varietes.get(idFiche) ?? { fiches: new Map(), liste: [], champs: new Map() };
+    varietes.set(idFiche, fv);
     const cle = `${sidx}|${fiche.url ?? ''}`;
-    if (!fv.fiches.has(cle)) { fv.fiches.set(cle, fv.liste.length); fv.liste.push([sidx, fiche.url ?? null, anneeDe(fiche)]); }
+    if (!fv.fiches.has(cle)) { fv.fiches.set(cle, fv.liste.length); fv.liste.push(origineLue ? [sidx, fiche.url ?? null, anneeDe(fiche), origineLue] : [sidx, fiche.url ?? null, anneeDe(fiche)]); }
     const fi = fv.fiches.get(cle);
     const somme = lues.filter((x) => COMPOSES_HUILE.includes(x.canon) && !x.hors && x.lo != null).reduce((t, x) => t + x.lo, 0);
     for (const x of lues) if (!x.hors && COMPOSES_HUILE.includes(x.canon) && somme > 100) x.hors = 's-somme';
@@ -610,7 +587,7 @@ L('Charles Faram : « Flavour Intensity » sans échelle écrite (hors enveloppe
 L();
 L('## Fiches non rattachées et rattachements vérifiés');
 L();
-L('Aucune variété n\'est ajoutée au catalogue ici. Les fiches sans variété (ambiguës, absentes, ou écartées par la vérification) sont dans `src/data/hopV4/complements-non-rattachees.json` avec leurs candidats ; leurs valeurs restent dans `src/data/hopSources/`.');
+L(`c6 (26.10, D98) : les variétés que les sources citent et que Beer Maverick n'a pas entrent dans ce fichier sous un identifiant \`sources-<nom>\` (${decision.nouvelles.length} variétés, ${decision.nouvelles.filter((v) => varietes.has(v.id)).length} avec au moins une valeur). Les fiches sans variété (à confirmer, produits de forme, écartées par la vérification) sont dans \`src/data/hopV4/complements-non-rattachees.json\` avec leurs candidats ; leurs valeurs restent dans \`src/data/hopSources/\`.`);
 L();
 L('| Source | Fiches | Rattachées | Écartées à la fusion | Non rattachées (total) |');
 L('|---|---:|---:|---:|---:|');
@@ -623,6 +600,22 @@ L();
 L('Règle : l\'origine annoncée par le nom (« (UK) », « NZ », « GR »…) ou par la page Hopslist doit être celle de la variété du catalogue ; sinon la fiche est écartée.');
 L();
 for (const e of ecartees.sort((a, b) => a.source.localeCompare(b.source) || a.nom.localeCompare(b.nom))) L(`- ${e.source} : « ${e.nom} » → ${parId.get(e.propose)?.name ?? e.propose} : ${e.raison}`);
+L();
+L('### Rattachées par la table d\'alias ou par le nom (c6), pas par la collecte');
+L();
+L('Table : `src/data/hopV4/alias-noms.json`. Une fiche dont l\'origine (nom ou page) n\'est pas celle de la variété du catalogue se rattache à la variété la plus proche, marquée « * origine non répertoriée » : ses valeurs sont gardées hors de l\'enveloppe (raison `h-origine`) et la fiche porte l\'origine lue en 4e élément de `f`. Equinox est Ekuanot (un seul identifiant).');
+L();
+const reroutParSource = {};
+for (const r of reroutees.filter((x) => x.source !== 'brewersfriend')) (reroutParSource[r.source] ??= new Map()).set(r.nom, `${r.nom} → ${r.nomCatalogue}${r.origine ? ` * ${r.origine}` : ''}`);
+for (const s of SOURCES) if (reroutParSource[s.id]) L(`- **${s.id}** (${reroutParSource[s.id].size}) : ${[...reroutParSource[s.id].values()].sort().join(' ; ')}`);
+L();
+L('### À confirmer (rien n\'est rattaché)');
+L();
+for (const c of decision.aConfirmer) L(`- ${c.noms.join(' | ')} (${c.sources.join(', ')}) : ${c.raison}`);
+L();
+L('### Variétés ajoutées (c6)');
+L();
+L(`${decision.nouvelles.length} variétés citées par au moins une source (hors produits de forme) : ${decision.nouvelles.filter((v) => v.sources.filter((x) => x !== 'brewersfriend').length >= 2).length} par 2 sources ou plus (sans Brewer's Friend, index sans valeur), ${decision.nouvelles.filter((v) => v.sources.every((x) => x === 'brewersfriend')).length} par Brewer's Friend seul.`);
 L();
 L('### Rattachements à relire (nom différent du catalogue, acceptés)');
 L();

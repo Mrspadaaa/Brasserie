@@ -60,7 +60,8 @@ describe('la part des fiches : le fait de départ', () => {
 });
 
 describe('(c) rang seul : le débordement d\'une famille non marquée ne compte plus dans le rang, les barres ne bougent pas', () => {
-  const ref = m.proposeVoies(R21C, { citrus: 1 }, GRAND).voies;
+  // D99 : la référence est 'aucun' (l'ancien défaut) ; l'option absente vaut désormais 'c' au dry hop.
+  const ref = m.proposeVoies(R21C, { citrus: 1 }, { ...GRAND, apportMinoritaire: 'aucun' }).voies;
   const c = m.proposeVoies(R21C, { citrus: 1 }, { ...GRAND, apportMinoritaire: 'c' }).voies;
   it('mêmes voies, mêmes effets, mêmes débordements affichés : seul l\'ordre peut changer', () => {
     expect(c.length).toBe(ref.length);

@@ -1,0 +1,1032 @@
+{
+ "voie": "f1-affinage-diagnostic, partie 6",
+ "parSource": {
+  "barthhaas": {
+   "fiches": 97,
+   "touchees": 18
+  },
+  "brewersfriend": {
+   "fiches": 1112,
+   "touchees": 51
+  },
+  "britishhops": {
+   "fiches": 34,
+   "touchees": 0
+  },
+  "bsg": {
+   "fiches": 77,
+   "touchees": 7
+  },
+  "charlesfaram": {
+   "fiches": 157,
+   "touchees": 0
+  },
+  "crosbyhops": {
+   "fiches": 139,
+   "touchees": 0
+  },
+  "freestylehops": {
+   "fiches": 19,
+   "touchees": 0
+  },
+  "hopdatabase": {
+   "fiches": 220,
+   "touchees": 1
+  },
+  "hopsdirect": {
+   "fiches": 49,
+   "touchees": 0
+  },
+  "hopsjson": {
+   "fiches": 119,
+   "touchees": 0
+  },
+  "hopslist": {
+   "fiches": 268,
+   "touchees": 0
+  },
+  "hopsteiner": {
+   "fiches": 102,
+   "touchees": 0
+  },
+  "hpa": {
+   "fiches": 48,
+   "touchees": 0
+  },
+  "ihps": {
+   "fiches": 23,
+   "touchees": 0
+  },
+  "indiehops": {
+   "fiches": 19,
+   "touchees": 4
+  },
+  "johnihaas": {
+   "fiches": 81,
+   "touchees": 3
+  },
+  "nzhops": {
+   "fiches": 40,
+   "touchees": 0
+  },
+  "usahops": {
+   "fiches": 80,
+   "touchees": 0
+  },
+  "usda": {
+   "fiches": 2,
+   "touchees": 0
+  },
+  "yakimavalleyhops": {
+   "fiches": 146,
+   "touchees": 0
+  }
+ },
+ "parForme": {
+  "Lupomax (Yakima Valley Hops)": {
+   "fiches": 20,
+   "sources": [
+    "barthhaas",
+    "brewersfriend",
+    "johnihaas"
+   ],
+   "variétés": 19
+  },
+  "Spectrum (BarthHaas)": {
+   "fiches": 7,
+   "sources": [
+    "barthhaas",
+    "johnihaas"
+   ],
+   "variétés": 6
+  },
+  "Incognito (BarthHaas)": {
+   "fiches": 16,
+   "sources": [
+    "barthhaas",
+    "brewersfriend",
+    "johnihaas"
+   ],
+   "variétés": 15
+  },
+  "lupuline / poudre": {
+   "fiches": 12,
+   "sources": [
+    "brewersfriend"
+   ],
+   "variétés": 12
+  },
+  "Cryo / LupuLN2 (Yakima Chief)": {
+   "fiches": 28,
+   "sources": [
+    "brewersfriend",
+    "bsg",
+    "hopdatabase",
+    "indiehops"
+   ],
+   "variétés": 28
+  },
+  "HyperBoost (Indie Hops)": {
+   "fiches": 1,
+   "sources": [
+    "indiehops"
+   ],
+   "variétés": 1
+  }
+ },
+ "total": 84,
+ "produitsAvecAlpha": 61,
+ "produitsAvecHuile": 9,
+ "produitsAvecDose": 0,
+ "nonRattachees": {
+  "total": 61,
+  "formes": [
+   {
+    "source": "hopdatabase",
+    "nom": "Cryo poporiginal blend",
+    "forme": "Cryo / LupuLN2 (Yakima Chief)",
+    "url": "https://www.yakimachief.com/commercial/hop-varieties/cryo-pop-original-blend.html",
+    "raison": "non résolu par la collecte"
+   },
+   {
+    "source": "indiehops",
+    "nom": "Strata Cryo",
+    "forme": "Cryo / LupuLN2 (Yakima Chief)",
+    "url": "https://indiehops.com/hops/strata-cryo",
+    "raison": "non résolu par la collecte"
+   },
+   {
+    "source": "indiehops",
+    "nom": "Strata HyperBoost",
+    "forme": "HyperBoost (Indie Hops)",
+    "url": "https://indiehops.com/hops/strata-hyperboost",
+    "raison": "non résolu par la collecte"
+   }
+  ]
+ },
+ "lignes": [
+  {
+   "source": "barthhaas",
+   "produit": "Amarillo",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": "beermaverick-amarillo",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/amarillor-vgxp01-cv",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Lupomax®) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Ariana",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": "beermaverick-ariana",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/ariana",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Lupomax®) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Azacca",
+   "forme": "Spectrum (BarthHaas)",
+   "variete": "beermaverick-azacca",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/azaccatm",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Lupomax®, Spectrum) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Bru-1",
+   "forme": "Spectrum (BarthHaas)",
+   "variete": "beermaverick-bru-1",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/bru-1tm",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Spectrum) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Callista",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": "beermaverick-callista",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/callista",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Lupomax®) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Cascade",
+   "forme": "Spectrum (BarthHaas)",
+   "variete": "beermaverick-cascade",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/cascade",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Spectrum) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Centennial",
+   "forme": "Incognito (BarthHaas)",
+   "variete": "beermaverick-centennial",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/centennial",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Incognito®) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Chinook",
+   "forme": "Incognito (BarthHaas)",
+   "variete": "beermaverick-chinook",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/chinook",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Incognito®) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Citra",
+   "forme": "Incognito (BarthHaas)",
+   "variete": "beermaverick-citra",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/citrar",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Lupomax®, Incognito®, Spectrum) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Columbus",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": "beermaverick-columbus",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/columbus",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Lupomax®) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Eclipse",
+   "forme": "Spectrum (BarthHaas)",
+   "variete": "beermaverick-eclipse",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/eclipse",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Spectrum) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Ekuanot",
+   "forme": "Incognito (BarthHaas)",
+   "variete": "beermaverick-ekuanot",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/ekuanotr",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Lupomax®, Incognito®) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Galaxy",
+   "forme": "Spectrum (BarthHaas)",
+   "variete": "beermaverick-galaxy",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/galaxy",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Spectrum) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Huell Melon",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": "beermaverick-huell-melon",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/huell-melon",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Lupomax®) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Mosaic",
+   "forme": "Incognito (BarthHaas)",
+   "variete": "beermaverick-mosaic",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/mosaicr",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Lupomax®, Incognito®, Spectrum) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Saaz Late",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": "beermaverick-saaz-late",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/saaz-late",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Lupomax®) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Sabro",
+   "forme": "Incognito (BarthHaas)",
+   "variete": "beermaverick-sabro",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/sabror",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Lupomax®, Incognito®) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "barthhaas",
+   "produit": "Vic Secret",
+   "forme": "Spectrum (BarthHaas)",
+   "variete": "beermaverick-vic-secret",
+   "url": "https://www.barthhaas.com/hops-and-products/hops/vic-secret",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (Spectrum) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Artisan - Hull Melon",
+   "forme": "lupuline / poudre",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/artisan-hull-melon/",
+   "alpha": "6.9 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "BSG - Sabro",
+   "forme": "lupuline / poudre",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/bsg-sabro/",
+   "alpha": "14.1 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Barth-Haas - Ahtanum",
+   "forme": "lupuline / poudre",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/barth-haas-ahtanum/",
+   "alpha": "5.9 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Barth-Haas - INCOGNITO Ekuanot",
+   "forme": "Incognito (BarthHaas)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/barth-haas-incognito-ekuanot/",
+   "alpha": "46.8 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Barth-Haas - INCOGNITO Sabro",
+   "forme": "Incognito (BarthHaas)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/barth-haas-incognito-sabro/",
+   "alpha": "45.8 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Barth-Haas - Sladek",
+   "forme": "lupuline / poudre",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/barth-haas-sladek/",
+   "alpha": "6.5 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Charles Faram - Hallertau Blanc",
+   "forme": "lupuline / poudre",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/charles-faram-hallertau-blanc/",
+   "alpha": "11.6 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Charles Faram - Styrian Cardinal",
+   "forme": "lupuline / poudre",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/charles-faram-styrian-cardinal/",
+   "alpha": "9.3 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Crosby Hop Farm - Columbus",
+   "forme": "lupuline / poudre",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/crosby-hop-farm-columbus/",
+   "alpha": "16.3 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Hopsteiner - Columbus/Tomahawk",
+   "forme": "lupuline / poudre",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/hopsteiner-columbus-tomahawk/",
+   "alpha": "15.7 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Hopsteiner - Comet Lupulin",
+   "forme": "lupuline / poudre",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/hopsteiner-comet-lupulin/",
+   "alpha": "15.5 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Hopsteiner - Lotus Lupulin Pellets",
+   "forme": "lupuline / poudre",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/hopsteiner-lotus-lupulin-pellets/",
+   "alpha": "24.2 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Hopsteiner - SMARAGD",
+   "forme": "lupuline / poudre",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/hopsteiner-smaragd/",
+   "alpha": "5.2 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Hopsteiner - Sultana Lupulin",
+   "forme": "lupuline / poudre",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/hopsteiner-sultana-lupulin/",
+   "alpha": "24.2 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Incognito - Centennial",
+   "forme": "Incognito (BarthHaas)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/incognito-centennial/",
+   "alpha": "42.3 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Incognito - Chinook",
+   "forme": "Incognito (BarthHaas)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/incognito-chinook/",
+   "alpha": "40.6 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Incognito - Citra",
+   "forme": "Incognito (BarthHaas)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/incognito-citra/",
+   "alpha": "49.1 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Incognito - Ekuanot",
+   "forme": "Incognito (BarthHaas)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/incognito-ekuanot/",
+   "alpha": "45.2 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Incognito - El Dorado",
+   "forme": "Incognito (BarthHaas)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/incognito-el-dorado/",
+   "alpha": "44.8 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Incognito - Mosaic",
+   "forme": "Incognito (BarthHaas)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/incognito-mosaic/",
+   "alpha": "47 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Incognito - Sabro",
+   "forme": "Incognito (BarthHaas)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/incognito-sabro/",
+   "alpha": "47.5 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Amarillo Cryo",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-chief-hops-amarillo-cryo/",
+   "alpha": "16 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Azacca Cryo",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-chief-hops-azacca-cryo/",
+   "alpha": "19.6 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Cascade LupuLN2 (Cryo)",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/ych-cascade-lupuln2-(cryo)/",
+   "alpha": "12.4 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Cashmere Cryo",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-chief-hops-cashmere-cryo/",
+   "alpha": "17.5 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Cashmere LupuLN2 (cryo)",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-chief-hops-cashmere-lupuln2-(cryo)/",
+   "alpha": "19.4 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Citra LupuLN2 (Cryo)",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/ych-citra-lupuln2-(cryo)/",
+   "alpha": "24.6 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Columbus LupuLN2 (Cryo)",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/ych-columbus-lupuln2-(cryo)/",
+   "alpha": "24.7 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Ekuanot LupuLN2 (Cryo)",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/ych-ekuanot-lupuln2-(cryo)/",
+   "alpha": "24.6 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - El Dorado Cryo",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-chief-hops-el-dorado-cryo/",
+   "alpha": "23.8 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Idaho 7 Cryo",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-chief-hops-idaho-7-cryo/",
+   "alpha": "22.3 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Loral LupuLN2 (Cryo)",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/ych-loral-lupuln2-(cryo)/",
+   "alpha": "19.9 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Mosaic LupuLN2 (Cryo)",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/ych-mosaic-lupuln2-(cryo)/",
+   "alpha": "22.1 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Nelson Cryo",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-chief-hops-nelson-cryo/",
+   "alpha": "26.8 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Simcoe LupuLN2 (Cryo)",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/ych-simcoe-lupuln2-(cryo)/",
+   "alpha": "23.3 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - Strata Cryo",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-chief-hops-strata-cryo/",
+   "alpha": "23.9 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Chief Hops - nelson sauvin cryo",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-chief-hops-nelson-sauvin-cryo/",
+   "alpha": "26.8 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Valley Hops - Cashmere LUPOMAX",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-valley-hops-cashmere-lupomax/",
+   "alpha": "13.5 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Valley Hops - Krush Lupomax",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-valley-hops-krush-lupomax/",
+   "alpha": "18 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Valley Hops - LUPOMAX Amarillo",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-valley-hops-lupomax-amarillo/",
+   "alpha": "14 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Valley Hops - LUPOMAX Azacca",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-valley-hops-lupomax-azacca/",
+   "alpha": "16.6 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Valley Hops - LUPOMAX BRU-1",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-valley-hops-lupomax-bru-1/",
+   "alpha": "19.3 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Valley Hops - LUPOMAX Cashmere",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-valley-hops-lupomax-cashmere/",
+   "alpha": "13.7 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Valley Hops - LUPOMAX Citra",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-valley-hops-lupomax-citra/",
+   "alpha": "18.5 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Valley Hops - LUPOMAX Columbus",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-valley-hops-lupomax-columbus/",
+   "alpha": "20 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Valley Hops - LUPOMAX Ekuanot",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-valley-hops-lupomax-ekuanot/",
+   "alpha": "18.9 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Valley Hops - LUPOMAX El Dorado",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-valley-hops-lupomax-el-dorado/",
+   "alpha": "19 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Valley Hops - LUPOMAX HBC 586",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-valley-hops-lupomax-hbc-586/",
+   "alpha": "16.5 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Valley Hops - LUPOMAX Mosaic",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-valley-hops-lupomax-mosaic/",
+   "alpha": "17.7 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "Yakima Valley Hops - LUPOMAX Sabro",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/yakima-valley-hops-lupomax-sabro/",
+   "alpha": "19.8 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "brewersfriend",
+   "produit": "michigan hop aliiance - Simcoe Cryo",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.brewersfriend.com/hops/michigan-hop-aliiance-simcoe-cryo/",
+   "alpha": "25.2 % (moyenne des recettes d'utilisateurs, pas une analyse)",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "bsg",
+   "produit": "Cascade",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": "beermaverick-cascade",
+   "url": "https://www.rahrbsg.com/cryo-cascade-11-lb/p",
+   "alpha": "11 - 18%",
+   "huile": "1.5 - 4 mL/100g",
+   "doseConseillee": null
+  },
+  {
+   "source": "bsg",
+   "produit": "Citra",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": "beermaverick-citra",
+   "url": "https://www.rahrbsg.com/cryo-citra-11-lb/p",
+   "alpha": "21 - 28%",
+   "huile": "2 - 6 mL/100g",
+   "doseConseillee": null
+  },
+  {
+   "source": "bsg",
+   "produit": "Columbus",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": "beermaverick-columbus",
+   "url": "https://www.rahrbsg.com/cryo-columbus-11-lb/p",
+   "alpha": "23.4%",
+   "huile": "2.5 mL/100g",
+   "doseConseillee": null
+  },
+  {
+   "source": "bsg",
+   "produit": "Krush",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.rahrbsg.com/cryo-krush-11-lb/p",
+   "alpha": "18 - 22%",
+   "huile": "1-5%",
+   "doseConseillee": null
+  },
+  {
+   "source": "bsg",
+   "produit": "Loral",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": "beermaverick-loral",
+   "url": "https://www.rahrbsg.com/cryo-hops-loral-11-lb/p",
+   "alpha": "10 - 13%",
+   "huile": null,
+   "doseConseillee": null
+  },
+  {
+   "source": "bsg",
+   "produit": "Mosaic",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": "beermaverick-mosaic",
+   "url": "https://www.rahrbsg.com/cryo-mosaic-11-lb/p",
+   "alpha": "18 - 26%",
+   "huile": "1.5 - 4.5 mL/100g",
+   "doseConseillee": null
+  },
+  {
+   "source": "bsg",
+   "produit": "Simcoe",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": "beermaverick-simcoe",
+   "url": "https://www.rahrbsg.com/cryo-simcoe/p",
+   "alpha": "21 - 28%",
+   "huile": "2 - 5 mL/100g",
+   "doseConseillee": null
+  },
+  {
+   "source": "hopdatabase",
+   "produit": "Cryo poporiginal blend",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://www.yakimachief.com/commercial/hop-varieties/cryo-pop-original-blend.html",
+   "alpha": "18–22",
+   "huile": "2–4",
+   "doseConseillee": null
+  },
+  {
+   "source": "indiehops",
+   "produit": "Strata",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": "beermaverick-strata",
+   "url": "https://indiehops.com/hops/strata",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (T90s & Whole Cone Hops, Cryogenic Lupulin Pellets, Oil-Boosted Hop Extract) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "indiehops",
+   "produit": "Strata CGX",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://indiehops.com/hops/strata-cgx",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (T90s & Whole Cone Hops, Cryogenic Lupulin Pellets, Oil-Boosted Hop Extract) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "indiehops",
+   "produit": "Strata Cryo",
+   "forme": "Cryo / LupuLN2 (Yakima Chief)",
+   "variete": null,
+   "url": "https://indiehops.com/hops/strata-cryo",
+   "alpha": "22.6 – 23.9%",
+   "huile": "2.9 – 3.4%",
+   "doseConseillee": null
+  },
+  {
+   "source": "indiehops",
+   "produit": "Strata HyperBoost",
+   "forme": "HyperBoost (Indie Hops)",
+   "variete": null,
+   "url": "https://indiehops.com/hops/strata-hyperboost",
+   "alpha": "15 – 40% (w/w)",
+   "huile": "> 40% (w/w)",
+   "doseConseillee": null
+  },
+  {
+   "source": "johnihaas",
+   "produit": "Amarillo",
+   "forme": "Lupomax (Yakima Valley Hops)",
+   "variete": "beermaverick-amarillo",
+   "url": "https://www.johnihaas.com/products/hops/amarillo/",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (T-90 PELLETS, Lupocore, Lupomax) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "johnihaas",
+   "produit": "CITRA",
+   "forme": "Incognito (BarthHaas)",
+   "variete": "beermaverick-citra",
+   "url": "https://www.johnihaas.com/products/hops/citra/",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (T-90 PELLETS, Lupocore, Lupomax, INCOGNITO, SPECTRUM, Prysma, PHA, CO2 Hop Extract) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  },
+  {
+   "source": "johnihaas",
+   "produit": "Cascade",
+   "forme": "Spectrum (BarthHaas)",
+   "variete": "beermaverick-cascade",
+   "url": "https://www.johnihaas.com/products/hops/cascade/",
+   "alpha": null,
+   "huile": null,
+   "doseConseillee": null,
+   "note": "forme citée dans la liste des formes vendues (T-90 PELLETS, Lupocore, Lupomax, SPECTRUM, Prysma, PHA Hop Extract) : α et huile de la fiche sont ceux de la variété, pas du produit"
+  }
+ ]
+}

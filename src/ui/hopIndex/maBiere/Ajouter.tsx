@@ -19,9 +19,10 @@ import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 import { donnees, houblon, ibuAjout, style } from '../parcours/adaptateur';
 import type { QuickAdd } from '../../../domain/hopIndex/v4';
 import { buildFromEmpty, hopRole, quickAdds } from '../parcours/v4';
-import { AlphaLu, StockIcone } from './briques';
+import { AlphaLu, StockIcone, titreUsage } from './briques';
 import { useGestesFiche } from './gestesFiche';
-import { BoutonLegende, useLegende } from './LegendeGroupe';
+import { BoutonLegende } from './LegendeGroupe';
+import { useEtatCartes } from './carteOuverte';
 import { BandeOuverte, effetSiAjoute, LignesV2a, TonsV2a } from './legende-bande';
 import { libelleDe, momentLong, valeurDe } from './Frise';
 
@@ -52,10 +53,14 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
   const { route } = useNavigation();
   const fiche = useGestesFiche((cle) => { if (route.ecran !== 'fiche') ouvrir({ ecran: 'fiche', houblon: cle }); });
   const [cherche, setCherche] = useState('');
-  const [legende, basculerLegende] = useLegende();
   // La légende leg3-v2a (D140) : la bande d'une ligne s'ouvre case à case sous ses pastilles (toucher la bande, ou le « ? »
-  // pour la première ligne) ; une seule ouverte à la fois.
-  const [bandeOuverte, setBandeOuverte] = useState<string | null>(null);
+  // pour la première ligne). D169 : une seule carte dépliée dans toute l'étape (les cartes du rail comprises), fermée quand on
+  // change de vue : l'état est celui de l'étape (carteOuverte.tsx), l'identifiant d'une ligne est `rapide:<clé>`.
+  const { etat: etatCartes, poser } = useEtatCartes();
+  const bandeOuverte = etatCartes?.bande && etatCartes.id.startsWith('rapide:') ? etatCartes.id.slice(7) : null;
+  const legende = !!etatCartes?.legende && bandeOuverte != null;
+  const setBandeOuverte = (cle: string | null) => poser(cle ? { id: `rapide:${cle}`, bande: true, legende: false } : null);
+  const basculerLegende = () => poser(legende ? null : liste[0] ? { id: `rapide:${liste[0].cle}`, bande: true, legende: true } : null);
   // L'appui long sur les carrés ouvre toujours la fiche : seul un toucher court ouvre la bande.
   const appuiBande = useRef(0);
   const [goutOuvert, setGoutOuvert] = useState<string | null>(null);
@@ -117,7 +122,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
         <Input ref={champRef} inputMode="search" value={cherche} onChange={(e) => setCherche(e.target.value)} placeholder="Ajouter — houblon…"
           data-etat="etat-etape-champ-ajouter" aria-label="Ajouter un houblon : stock ou catalogue"
           className="flex-1 min-w-0 h-10 px-4 py-2 leading-6 rounded-full border border-cave-700 bg-cave-900 text-base text-cave-50 placeholder:text-cave-400" />
-        {liste.length > 0 && <BoutonLegende ouverte={legende} onBasculer={() => { setBandeOuverte(legende ? null : liste[0]?.cle ?? null); basculerLegende(); }} groupe="les icônes des ajouts proposés" controle="pq-ma-biere-legende-rapides" />}
+        {liste.length > 0 && <BoutonLegende ouverte={legende} onBasculer={basculerLegende} groupe="les icônes des ajouts proposés" controle="pq-ma-biere-legende-rapides" />}
       </div>
       <ul className="space-y-1" aria-label="Ajouts proposés par le moteur, chacun à son moment suggéré">
         {liste.flatMap((p, k) => {
@@ -189,7 +194,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
               </span>
               {ouvreBande && (
                 <div className="pq-mb-lg-li" onPointerDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-                  <BandeOuverte h={h} ordre={sc.order} onFermer={() => { setBandeOuverte(null); if (legende) basculerLegende(); }} />
+                  <BandeOuverte h={h} ordre={sc.order} onFermer={() => setBandeOuverte(null)} />
                   <LignesV2a h={h} siAjoute={{ moment: libelleDe(v), effet: effetSiAjoute(p.ajout, recette) }} />
                   <TonsV2a />
                   {legende && (
@@ -227,7 +232,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
 /** L'usage en mot, comme les ajouts de sa base (« double », « aromatique », « amérisant ») : D90. */
 function UsageMot({ cle }: { cle: string }) {
   const r = hopRole(cle);
-  return <span data-role="usage" data-usage={r.value ?? 'inconnu'} data-source={/^fournisseur/.test(r.source) ? 'fournisseur' : 'règle'} title={r.source}
+  return <span data-role="usage" data-usage={r.value ?? 'inconnu'} data-source={/^fournisseur/.test(r.source) ? 'fournisseur' : 'règle'} title={titreUsage(r.source)}
     className="text-xs text-cave-400 whitespace-nowrap">{r.value ?? 'usage ?'}</span>;
 }
 

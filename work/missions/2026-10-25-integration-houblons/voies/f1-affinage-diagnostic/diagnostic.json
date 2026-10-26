@@ -1,0 +1,2674 @@
+{
+ "voie": "f1-affinage-diagnostic, parties 1 et 2",
+ "stockFixtures": {
+  "citraCryo": {
+   "cle": "beermaverick-citra:cryo",
+   "grams": 65,
+   "alpha": 24.8,
+   "alphaFrom": "lu sur l’article",
+   "items": [
+    "Houblon Cryo Hops Citra 24.8%"
+   ]
+  }
+ },
+ "alphaUtilise": {
+  "citraCryo": {
+   "value": 24.8,
+   "min": 24.8,
+   "max": 24.8,
+   "from": "lu sur l’article"
+  },
+  "citraSimple": {
+   "value": 12.5,
+   "min": 10,
+   "max": 15,
+   "from": "plage variétale (Beer Maverick)"
+  },
+  "fichePlageVarietale": [
+   10,
+   15
+  ]
+ },
+ "partie1a": [
+  {
+   "recette": "21C",
+   "original": "Nugget",
+   "moment": "b60",
+   "candidats": 317,
+   "poids": {
+    "arome": 0.1,
+    "huiles": 0.2,
+    "amertume": 0.7
+   },
+   "citra": {
+    "beermaverick-citra": {
+     "rang": 214,
+     "rangDansLaListeTriee": 214,
+     "score": 95,
+     "palier": "très proche",
+     "composantes": {
+      "arome": 97,
+      "huiles": 91,
+      "amertume": 96
+     },
+     "stock": "à acheter",
+     "libreG": null,
+     "doseG": 20.8,
+     "doseRegle": "même IBU",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": "houblon aromatique (fournisseur : Crosby Hops, Citra — Crosby Hops), cher pour amériser",
+     "conflitsStyle": []
+    },
+    "beermaverick-citra:cryo": {
+     "rang": 214,
+     "rangDansLaListeTriee": 215,
+     "score": 95,
+     "palier": "très proche",
+     "composantes": {
+      "arome": 97,
+      "huiles": 91,
+      "amertume": 96
+     },
+     "stock": "en stock",
+     "libreG": 65,
+     "doseG": 10.5,
+     "doseRegle": "même IBU",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": "produit d’arôme (cryo), cher pour amériser",
+     "conflitsStyle": []
+    }
+   },
+   "citraStockFirst": {
+    "beermaverick-citra": {
+     "rang": 216,
+     "rangDansLaListeTriee": 216,
+     "score": 95,
+     "palier": "très proche",
+     "composantes": {
+      "arome": 97,
+      "huiles": 91,
+      "amertume": 96
+     },
+     "stock": "à acheter",
+     "libreG": null,
+     "doseG": 20.8,
+     "doseRegle": "même IBU",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": "houblon aromatique (fournisseur : Crosby Hops, Citra — Crosby Hops), cher pour amériser",
+     "conflitsStyle": []
+    },
+    "beermaverick-citra:cryo": {
+     "rang": 214,
+     "rangDansLaListeTriee": 214,
+     "score": 95,
+     "palier": "très proche",
+     "composantes": {
+      "arome": 97,
+      "huiles": 91,
+      "amertume": 96
+     },
+     "stock": "en stock",
+     "libreG": 65,
+     "doseG": 10.5,
+     "doseRegle": "même IBU",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": "produit d’arôme (cryo), cher pour amériser",
+     "conflitsStyle": []
+    }
+   },
+   "ecran": {
+    "aAcheter": [
+     "1 Yeoman 100",
+     "2 Trident 99",
+     "3 Helios 97",
+     "3 Magnat 97",
+     "5 Altus 96"
+    ],
+    "enStock": [
+     "14 Sabro 94 (en stock)",
+     "22 Idaho 7 93 (en stock)",
+     "88 Nelson Sauvin 85 (en stock)"
+    ],
+    "citraSimpleVisible": false,
+    "citraCryoVisible": false
+   },
+   "rangDeCitraParmiLesAAcheter": 208,
+   "rangDeCryoParmiLeStock": 7,
+   "nEnStock": 8,
+   "ficheEnStockFirst": [
+    "Sabro 94 (rang général 14)",
+    "Nelson Sauvin 85 (rang général 88)",
+    "Hallertau Blanc 83 (rang général 104)"
+   ],
+   "tete10": [
+    "1 Yeoman 100",
+    "2 Trident 99",
+    "3 Helios 97",
+    "3 Magnat 97",
+    "5 Altus 96",
+    "5 Bravo 96",
+    "5 Loral 96",
+    "5 Zenia 96",
+    "9 Falconer's Flight 95",
+    "9 Millennium 95"
+   ],
+   "teteStockFirst10": [
+    "Sabro 94 en stock",
+    "Nelson Sauvin 85 en stock",
+    "Hallertau Blanc 83 en stock",
+    "Galaxy 82 en stock",
+    "Idaho 7 93 en stock",
+    "Yeoman 100 à acheter",
+    "Trident 99 à acheter",
+    "Helios 97 à acheter",
+    "Magnat 97 à acheter",
+    "Altus 96 à acheter"
+   ]
+  },
+  {
+   "recette": "21C",
+   "original": "Nugget",
+   "moment": "dryActive",
+   "candidats": 317,
+   "poids": {
+    "arome": 0.5,
+    "huiles": 0.3,
+    "amertume": 0.2
+   },
+   "citra": {
+    "beermaverick-citra": {
+     "rang": 10,
+     "rangDansLaListeTriee": 11,
+     "score": 58,
+     "palier": "partiel",
+     "composantes": {
+      "arome": 31,
+      "huiles": 91,
+      "amertume": 97
+     },
+     "stock": "à acheter",
+     "libreG": null,
+     "doseG": 20,
+     "doseRegle": "masse égale",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": null,
+     "conflitsStyle": []
+    },
+    "beermaverick-citra:cryo": {
+     "rang": 10,
+     "rangDansLaListeTriee": 12,
+     "score": 58,
+     "palier": "partiel",
+     "composantes": {
+      "arome": 31,
+      "huiles": 91,
+      "amertume": 97
+     },
+     "stock": "en stock",
+     "libreG": 65,
+     "doseG": 20,
+     "doseRegle": "masse égale",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": null,
+     "conflitsStyle": []
+    }
+   },
+   "citraStockFirst": {
+    "beermaverick-citra": {
+     "rang": 14,
+     "rangDansLaListeTriee": 15,
+     "score": 58,
+     "palier": "partiel",
+     "composantes": {
+      "arome": 31,
+      "huiles": 91,
+      "amertume": 97
+     },
+     "stock": "à acheter",
+     "libreG": null,
+     "doseG": 20,
+     "doseRegle": "masse égale",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": null,
+     "conflitsStyle": []
+    },
+    "beermaverick-citra:cryo": {
+     "rang": 2,
+     "rangDansLaListeTriee": 2,
+     "score": 58,
+     "palier": "partiel",
+     "composantes": {
+      "arome": 31,
+      "huiles": 91,
+      "amertume": 97
+     },
+     "stock": "en stock",
+     "libreG": 65,
+     "doseG": 20,
+     "doseRegle": "masse égale",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": null,
+     "conflitsStyle": []
+    }
+   },
+   "ecran": {
+    "aAcheter": [
+     "1 Centennial 64",
+     "2 Loral 62",
+     "4 Warrior 61",
+     "5 Bitter Gold 60",
+     "5 Falconer's Flight 60"
+    ],
+    "enStock": [
+     "2 Sabro 62 (en stock)",
+     "10 Citra cryo 58 (en stock)",
+     "14 Idaho 7 57 (en stock)"
+    ],
+    "citraSimpleVisible": false,
+    "citraCryoVisible": true
+   },
+   "rangDeCitraParmiLesAAcheter": 10,
+   "rangDeCryoParmiLeStock": 2,
+   "nEnStock": 8,
+   "ficheEnStockFirst": [
+    "Sabro 62 (rang général 2)",
+    "Citra cryo 58 (rang général 10)",
+    "Idaho 7 57 (rang général 14)"
+   ],
+   "tete10": [
+    "1 Centennial 64",
+    "2 Loral 62",
+    "2 Sabro 62",
+    "4 Warrior 61",
+    "5 Bitter Gold 60",
+    "5 Falconer's Flight 60",
+    "5 Talus 60",
+    "8 Simcoe 59",
+    "8 Sorachi Ace 59",
+    "10 Bravo 58"
+   ],
+   "teteStockFirst10": [
+    "Sabro 62 en stock",
+    "Citra cryo 58 en stock",
+    "Idaho 7 57 en stock",
+    "Hallertau Blanc 52 en stock",
+    "Target 55 en stock",
+    "Centennial 64 à acheter",
+    "Loral 62 à acheter",
+    "Warrior 61 à acheter",
+    "Bitter Gold 60 à acheter",
+    "Falconer's Flight 60 à acheter"
+   ]
+  },
+  {
+   "recette": "16D",
+   "original": "Nugget",
+   "moment": "b60",
+   "candidats": 317,
+   "poids": {
+    "arome": 0.1,
+    "huiles": 0.2,
+    "amertume": 0.7
+   },
+   "citra": {
+    "beermaverick-citra": {
+     "rang": 214,
+     "rangDansLaListeTriee": 214,
+     "score": 95,
+     "palier": "très proche",
+     "composantes": {
+      "arome": 98,
+      "huiles": 91,
+      "amertume": 96
+     },
+     "stock": "à acheter",
+     "libreG": null,
+     "doseG": 47.8,
+     "doseRegle": "même IBU",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": "houblon aromatique (fournisseur : Crosby Hops, Citra — Crosby Hops), cher pour amériser",
+     "conflitsStyle": []
+    },
+    "beermaverick-citra:cryo": {
+     "rang": 214,
+     "rangDansLaListeTriee": 215,
+     "score": 95,
+     "palier": "très proche",
+     "composantes": {
+      "arome": 98,
+      "huiles": 91,
+      "amertume": 96
+     },
+     "stock": "en stock",
+     "libreG": 65,
+     "doseG": 24.1,
+     "doseRegle": "même IBU",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": "produit d’arôme (cryo), cher pour amériser",
+     "conflitsStyle": []
+    }
+   },
+   "citraStockFirst": {
+    "beermaverick-citra": {
+     "rang": 216,
+     "rangDansLaListeTriee": 216,
+     "score": 95,
+     "palier": "très proche",
+     "composantes": {
+      "arome": 98,
+      "huiles": 91,
+      "amertume": 96
+     },
+     "stock": "à acheter",
+     "libreG": null,
+     "doseG": 47.8,
+     "doseRegle": "même IBU",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": "houblon aromatique (fournisseur : Crosby Hops, Citra — Crosby Hops), cher pour amériser",
+     "conflitsStyle": []
+    },
+    "beermaverick-citra:cryo": {
+     "rang": 214,
+     "rangDansLaListeTriee": 214,
+     "score": 95,
+     "palier": "très proche",
+     "composantes": {
+      "arome": 98,
+      "huiles": 91,
+      "amertume": 96
+     },
+     "stock": "en stock",
+     "libreG": 65,
+     "doseG": 24.1,
+     "doseRegle": "même IBU",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": "produit d’arôme (cryo), cher pour amériser",
+     "conflitsStyle": []
+    }
+   },
+   "ecran": {
+    "aAcheter": [
+     "1 Yeoman 100",
+     "2 Trident 99",
+     "3 Helios 97",
+     "3 Magnat 97",
+     "5 Altus 96"
+    ],
+    "enStock": [
+     "14 Sabro 94 (en stock)",
+     "22 Idaho 7 93 (en stock)",
+     "88 Nelson Sauvin 85 (en stock)"
+    ],
+    "citraSimpleVisible": false,
+    "citraCryoVisible": false
+   },
+   "rangDeCitraParmiLesAAcheter": 208,
+   "rangDeCryoParmiLeStock": 7,
+   "nEnStock": 9,
+   "ficheEnStockFirst": [
+    "Nelson Sauvin 85 (rang général 88)",
+    "Galaxy 82 (rang général 111)",
+    "Sabro 94 (rang général 14)"
+   ],
+   "tete10": [
+    "1 Yeoman 100",
+    "2 Trident 99",
+    "3 Helios 97",
+    "3 Magnat 97",
+    "5 Altus 96",
+    "5 Bravo 96",
+    "5 Loral 96",
+    "5 Zenia 96",
+    "9 Falconer's Flight 95",
+    "9 Millennium 95"
+   ],
+   "teteStockFirst10": [
+    "Nelson Sauvin 85 en stock",
+    "Galaxy 82 en stock",
+    "Sabro 94 en stock",
+    "Idaho 7 93 en stock",
+    "Hallertau Blanc 83 en stock",
+    "Yeoman 100 à acheter",
+    "Trident 99 à acheter",
+    "Helios 97 à acheter",
+    "Magnat 97 à acheter",
+    "Altus 96 à acheter"
+   ]
+  },
+  {
+   "recette": "16D",
+   "original": "Nugget",
+   "moment": "dryActive",
+   "candidats": 317,
+   "poids": {
+    "arome": 0.5,
+    "huiles": 0.3,
+    "amertume": 0.2
+   },
+   "citra": {
+    "beermaverick-citra": {
+     "rang": 15,
+     "rangDansLaListeTriee": 16,
+     "score": 56,
+     "palier": "partiel",
+     "composantes": {
+      "arome": 27,
+      "huiles": 91,
+      "amertume": 97
+     },
+     "stock": "à acheter",
+     "libreG": null,
+     "doseG": 46,
+     "doseRegle": "masse égale",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": null,
+     "conflitsStyle": []
+    },
+    "beermaverick-citra:cryo": {
+     "rang": 15,
+     "rangDansLaListeTriee": 17,
+     "score": 56,
+     "palier": "partiel",
+     "composantes": {
+      "arome": 27,
+      "huiles": 91,
+      "amertume": 97
+     },
+     "stock": "en stock",
+     "libreG": 65,
+     "doseG": 46,
+     "doseRegle": "masse égale",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": null,
+     "conflitsStyle": []
+    }
+   },
+   "citraStockFirst": {
+    "beermaverick-citra": {
+     "rang": 20,
+     "rangDansLaListeTriee": 21,
+     "score": 56,
+     "palier": "partiel",
+     "composantes": {
+      "arome": 27,
+      "huiles": 91,
+      "amertume": 97
+     },
+     "stock": "à acheter",
+     "libreG": null,
+     "doseG": 46,
+     "doseRegle": "masse égale",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": null,
+     "conflitsStyle": []
+    },
+    "beermaverick-citra:cryo": {
+     "rang": 1,
+     "rangDansLaListeTriee": 1,
+     "score": 56,
+     "palier": "partiel",
+     "composantes": {
+      "arome": 27,
+      "huiles": 91,
+      "amertume": 97
+     },
+     "stock": "en stock",
+     "libreG": 65,
+     "doseG": 46,
+     "doseRegle": "masse égale",
+     "fiabilite": "bonne",
+     "memeVariete": false,
+     "demotion": null,
+     "conflitsStyle": []
+    }
+   },
+   "ecran": {
+    "aAcheter": [
+     "1 Centennial 63",
+     "2 Warrior 62",
+     "3 Loral 61",
+     "4 Falconer's Flight 60",
+     "4 Talus 60"
+    ],
+    "enStock": [
+     "4 Sabro 60 (en stock)",
+     "15 Citra cryo 56 (en stock)",
+     "15 Idaho 7 56 (en stock)"
+    ],
+    "citraSimpleVisible": false,
+    "citraCryoVisible": true
+   },
+   "rangDeCitraParmiLesAAcheter": 15,
+   "rangDeCryoParmiLeStock": 2,
+   "nEnStock": 9,
+   "ficheEnStockFirst": [
+    "Citra cryo 56 (rang général 15)",
+    "Cascade 55 (rang général 27)",
+    "Sabro 60 (rang général 4)"
+   ],
+   "tete10": [
+    "1 Centennial 63",
+    "2 Warrior 62",
+    "3 Loral 61",
+    "4 Falconer's Flight 60",
+    "4 Sabro 60",
+    "4 Talus 60",
+    "7 Millennium 59",
+    "7 Sorachi Ace 59",
+    "9 Bitter Gold 58",
+    "9 Bravo 58"
+   ],
+   "teteStockFirst10": [
+    "Citra cryo 56 en stock",
+    "Cascade 55 en stock",
+    "Sabro 60 en stock",
+    "Idaho 7 56 en stock",
+    "Target 56 en stock",
+    "Hallertau Blanc 51 en stock",
+    "Centennial 63 à acheter",
+    "Warrior 62 à acheter",
+    "Loral 61 à acheter",
+    "Falconer's Flight 60 à acheter"
+   ]
+  }
+ ],
+ "partie1b": [
+  {
+   "recette": "21C",
+   "visee": "plus d’agrumes",
+   "defaut": {
+    "voies": 14,
+    "citraSimple": [],
+    "citraCryo": [
+     {
+      "rang": 4,
+      "label": "Assembler Sabro + Citra cryo · dry hop en fermentation active · 15 g + 15 g",
+      "type": "assemblage",
+      "domaine": "stock",
+      "stock": "suffisant",
+      "distance": 0.017,
+      "debordement": 1.5,
+      "conflits": 0,
+      "effetSurLaFamille": null,
+      "etabli": null,
+      "dose": null,
+      "enStock": null,
+      "palier": null,
+      "ibuApres": 27.9
+     },
+     {
+      "rang": 6,
+      "label": "Assembler Hallertau Blanc + Citra cryo · dry hop en fermentation active · 15 g + 15 g",
+      "type": "assemblage",
+      "domaine": "stock",
+      "stock": "suffisant",
+      "distance": 0.017,
+      "debordement": 2.74,
+      "conflits": 0,
+      "effetSurLaFamille": null,
+      "etabli": null,
+      "dose": null,
+      "enStock": null,
+      "palier": null,
+      "ibuApres": 27.9
+     },
+     {
+      "rang": 11,
+      "label": "Ajouter Citra cryo · whirlpool · 20 g",
+      "type": "ajouter",
+      "domaine": "stock",
+      "stock": "suffisant",
+      "distance": 0.067,
+      "debordement": 0,
+      "conflits": 0,
+      "effetSurLaFamille": null,
+      "etabli": null,
+      "dose": null,
+      "enStock": null,
+      "palier": null,
+      "ibuApres": 36
+     },
+     {
+      "rang": 13,
+      "label": "Ajouter Citra cryo · 10′ · 20 g",
+      "type": "ajouter",
+      "domaine": "stock",
+      "stock": "suffisant",
+      "distance": 0.086,
+      "debordement": 0,
+      "conflits": 0,
+      "effetSurLaFamille": null,
+      "etabli": null,
+      "dose": null,
+      "enStock": null,
+      "palier": null,
+      "ibuApres": 47.2
+     }
+    ],
+    "palier60": null,
+    "dryActif": null,
+    "dryApres": null
+   },
+   "g2b": {
+    "voies": 14,
+    "citraSimple": [],
+    "citraCryo": [
+     {
+      "rang": 4,
+      "label": "Assembler Sabro + Citra cryo · dry hop en fermentation active · 15 g + 15 g",
+      "type": "assemblage",
+      "domaine": "stock",
+      "stock": "suffisant",
+      "distance": 0.017,
+      "debordement": 1.5,
+      "conflits": 0,
+      "effetSurLaFamille": null,
+      "etabli": null,
+      "dose": null,
+      "enStock": null,
+      "palier": null,
+      "ibuApres": 27.9
+     },
+     {
+      "rang": 6,
+      "label": "Assembler Hallertau Blanc + Citra cryo · dry hop en fermentation active · 15 g + 15 g",
+      "type": "assemblage",
+      "domaine": "stock",
+      "stock": "suffisant",
+      "distance": 0.017,
+      "debordement": 2.74,
+      "conflits": 0,
+      "effetSurLaFamille": null,
+      "etabli": null,
+      "dose": null,
+      "enStock": null,
+      "palier": null,
+      "ibuApres": 27.9
+     },
+     {
+      "rang": 11,
+      "label": "Ajouter Citra cryo · whirlpool · 20 g",
+      "type": "ajouter",
+      "domaine": "stock",
+      "stock": "suffisant",
+      "distance": 0.067,
+      "debordement": 0,
+      "conflits": 0,
+      "effetSurLaFamille": null,
+      "etabli": null,
+      "dose": null,
+      "enStock": null,
+      "palier": null,
+      "ibuApres": 36
+     },
+     {
+      "rang": 13,
+      "label": "Ajouter Citra cryo · 10′ · 20 g",
+      "type": "ajouter",
+      "domaine": "stock",
+      "stock": "suffisant",
+      "distance": 0.086,
+      "debordement": 0,
+      "conflits": 0,
+      "effetSurLaFamille": null,
+      "etabli": null,
+      "dose": null,
+      "enStock": null,
+      "palier": null,
+      "ibuApres": 47.2
+     }
+    ],
+    "palier60": {
+     "n": 11,
+     "citraSimple": [],
+     "citraCryo": [
+      {
+       "rang": 1,
+       "label": "Ajouter Citra cryo · 60′ · 3.8 g (+10 IBU)",
+       "type": "ajouter",
+       "domaine": "stock",
+       "stock": "suffisant",
+       "distance": 0.329,
+       "debordement": 0,
+       "conflits": 0,
+       "effetSurLaFamille": null,
+       "etabli": null,
+       "dose": null,
+       "enStock": 65,
+       "palier": {
+        "usage": "dual",
+        "alpha": 24.8,
+        "rang": [
+         0,
+         3.757
+        ]
+       },
+       "ibuApres": 38
+      }
+     ],
+     "tete": [
+      "1 Ajouter Citra cryo · 60′ · 3.8 g (+10 IBU)",
+      "2 Ajouter Moutere · 60′ · 5 g (+10 IBU)",
+      "3 Ajouter Vic Secret · 60′ · 5 g (+10 IBU)",
+      "4 Ajouter Apollo · 60′ · 5 g (+10 IBU)",
+      "5 Ajouter Eclipse · 60′ · 5.5 g (+10 IBU)"
+     ]
+    },
+    "dryActif": {
+     "n": 13,
+     "citraSimple": [],
+     "citraCryo": [
+      {
+       "rang": 6,
+       "label": "Ajouter Citra cryo · dry hop en fermentation active · 30 g (1.5 g/L)",
+       "type": "ajouter",
+       "domaine": "stock",
+       "stock": "suffisant",
+       "distance": 0.017,
+       "debordement": 0.84,
+       "conflits": 0,
+       "effetSurLaFamille": null,
+       "etabli": null,
+       "dose": {
+        "gPerL": 1.5,
+        "borne": null
+       },
+       "enStock": 65,
+       "palier": null,
+       "ibuApres": 27.9
+      }
+     ],
+     "tete": [
+      "1 Ajouter Galaxy · dry hop en fermentation active · 30 g (1.5 g/L)",
+      "2 Ajouter African Queen · dry hop en fermentation active · 30 g (1.5 g/L)",
+      "2 Ajouter Belma · dry hop en fermentation active · 30 g (1.5 g/L)",
+      "2 Ajouter Herald · dry hop en fermentation active · 30 g (1.5 g/L)",
+      "2 Ajouter Medusa · dry hop en fermentation active · 30 g (1.5 g/L)"
+     ]
+    },
+    "dryApres": {
+     "n": 13,
+     "citraSimple": [],
+     "citraCryo": [
+      {
+       "rang": 6,
+       "label": "Ajouter Citra cryo · dry hop après fermentation · 20 g (1 g/L)",
+       "type": "ajouter",
+       "domaine": "stock",
+       "stock": "suffisant",
+       "distance": 0.011,
+       "debordement": 0.62,
+       "conflits": 0,
+       "effetSurLaFamille": null,
+       "etabli": null,
+       "dose": {
+        "gPerL": 1,
+        "borne": null
+       },
+       "enStock": 65,
+       "palier": null,
+       "ibuApres": 27.9
+      }
+     ]
+    }
+   },
+   "g2bSansStockDesFixtures": {
+    "voies": 4,
+    "citraSimple": [],
+    "citraCryo": [],
+    "palier60": {
+     "n": 4,
+     "citraSimple": [],
+     "citraCryo": [],
+     "tete": [
+      "1 Ajouter Moutere · 60′ · 5 g (+10 IBU)",
+      "2 Ajouter Vic Secret · 60′ · 5 g (+10 IBU)",
+      "3 Ajouter Apollo · 60′ · 5 g (+10 IBU)",
+      "4 Ajouter Eclipse · 60′ · 5.5 g (+10 IBU)"
+     ]
+    },
+    "dryActif": {
+     "n": 4,
+     "citraSimple": [],
+     "citraCryo": [],
+     "tete": [
+      "1 Ajouter African Queen · dry hop en fermentation active · 30 g (1.5 g/L)",
+      "1 Ajouter Belma · dry hop en fermentation active · 30 g (1.5 g/L)",
+      "1 Ajouter Galaxy · dry hop en fermentation active · 30 g (1.5 g/L)",
+      "1 Ajouter Herald · dry hop en fermentation active · 30 g (1.5 g/L)"
+     ]
+    },
+    "dryApres": {
+     "n": 4,
+     "citraSimple": [],
+     "citraCryo": []
+    }
+   },
+   "effetAjout30gDryActif": [
+    {
+     "cle": "beermaverick-citra",
+     "effetSurLaFamille": 35
+    },
+    {
+     "cle": "beermaverick-citra:cryo",
+     "effetSurLaFamille": 35
+    }
+   ]
+  },
+  {
+   "recette": "16D",
+   "visee": "moins de résineux",
+   "defaut": {
+    "voies": 11,
+    "citraSimple": [],
+    "citraCryo": [
+     {
+      "rang": 9,
+      "label": "Remplacer Nugget par Citra cryo · 60′ · 24 g",
+      "type": "remplacer à IBU égal",
+      "domaine": "stock",
+      "stock": "suffisant",
+      "distance": 0.307,
+      "debordement": 0,
+      "conflits": 0,
+      "effetSurLaFamille": null,
+      "etabli": null,
+      "dose": null,
+      "enStock": null,
+      "palier": null,
+      "ibuApres": 59.5
+     }
+    ],
+    "palier60": null,
+    "dryActif": null,
+    "dryApres": null
+   },
+   "g2b": {
+    "voies": 11,
+    "citraSimple": [],
+    "citraCryo": [
+     {
+      "rang": 5,
+      "label": "Remplacer Nugget par Citra cryo · 60′ · 24 g",
+      "type": "remplacer à IBU égal",
+      "domaine": "stock",
+      "stock": "suffisant",
+      "distance": 0.307,
+      "debordement": 0,
+      "conflits": 0,
+      "effetSurLaFamille": null,
+      "etabli": null,
+      "dose": null,
+      "enStock": null,
+      "palier": {
+       "usage": "dual",
+       "alpha": 24.8,
+       "rang": [
+        0,
+        24
+       ]
+      },
+      "ibuApres": 59.5
+     }
+    ],
+    "palier60": {
+     "n": 12,
+     "citraSimple": [],
+     "citraCryo": [
+      {
+       "rang": 1,
+       "label": "Ajouter Citra cryo · 60′ · 4 g (+10 IBU)",
+       "type": "ajouter",
+       "domaine": "stock",
+       "stock": "suffisant",
+       "distance": 0.347,
+       "debordement": 0,
+       "conflits": 0,
+       "effetSurLaFamille": null,
+       "etabli": null,
+       "dose": null,
+       "enStock": 65,
+       "palier": {
+        "usage": "dual",
+        "alpha": 24.8,
+        "rang": [
+         0,
+         4.037
+        ]
+       },
+       "ibuApres": 69.6
+      }
+     ],
+     "tete": [
+      "1 Ajouter Citra cryo · 60′ · 4 g (+10 IBU)",
+      "2 Ajouter Polaris · 60′ · 5 g (+10 IBU)",
+      "3 Ajouter HBC 586 · 60′ · 5 g (+10 IBU)",
+      "4 Ajouter Brooklyn · 60′ · 5.5 g (+10 IBU)",
+      "5 Ajouter Galaxy · 60′ · 6 g (+10 IBU)"
+     ]
+    },
+    "dryActif": {
+     "n": 0,
+     "citraSimple": [],
+     "citraCryo": [],
+     "tete": []
+    },
+    "dryApres": {
+     "n": 0,
+     "citraSimple": [],
+     "citraCryo": []
+    }
+   },
+   "g2bSansStockDesFixtures": {
+    "voies": 6,
+    "citraSimple": [],
+    "citraCryo": [],
+    "palier60": {
+     "n": 4,
+     "citraSimple": [],
+     "citraCryo": [],
+     "tete": [
+      "1 Ajouter Polaris · 60′ · 5 g (+10 IBU)",
+      "2 Ajouter HBC 586 · 60′ · 5 g (+10 IBU)",
+      "3 Ajouter Brooklyn · 60′ · 5.5 g (+10 IBU)",
+      "4 Ajouter Ahhhroma · 60′ · 6 g (+10 IBU)"
+     ]
+    },
+    "dryActif": {
+     "n": 0,
+     "citraSimple": [],
+     "citraCryo": [],
+     "tete": []
+    },
+    "dryApres": {
+     "n": 0,
+     "citraSimple": [],
+     "citraCryo": []
+    }
+   },
+   "effetAjout30gDryActif": [
+    {
+     "cle": "beermaverick-citra",
+     "effetSurLaFamille": 34.2
+    },
+    {
+     "cle": "beermaverick-citra:cryo",
+     "effetSurLaFamille": 34.2
+    }
+   ]
+  },
+  {
+   "recette": "16D",
+   "visee": "plus floral",
+   "defaut": {
+    "voies": 14,
+    "citraSimple": [],
+    "citraCryo": [
+     {
+      "rang": 11,
+      "label": "Ajouter Citra cryo · 10′ · 10 g",
+      "type": "ajouter",
+      "domaine": "stock",
+      "stock": "suffisant",
+      "distance": 0.044,
+      "debordement": 0,
+      "conflits": 0,
+      "effetSurLaFamille": null,
+      "etabli": null,
+      "dose": null,
+      "enStock": null,
+      "palier": null,
+      "ibuApres": 68.7
+     }
+    ],
+    "palier60": null,
+    "dryActif": null,
+    "dryApres": null
+   },
+   "g2b": {
+    "voies": 14,
+    "citraSimple": [],
+    "citraCryo": [
+     {
+      "rang": 11,
+      "label": "Ajouter Citra cryo · 10′ · 10 g",
+      "type": "ajouter",
+      "domaine": "stock",
+      "stock": "suffisant",
+      "distance": 0.044,
+      "debordement": 0,
+      "conflits": 0,
+      "effetSurLaFamille": null,
+      "etabli": null,
+      "dose": null,
+      "enStock": null,
+      "palier": null,
+      "ibuApres": 68.7
+     }
+    ],
+    "palier60": {
+     "n": 13,
+     "citraSimple": [],
+     "citraCryo": [
+      {
+       "rang": 1,
+       "label": "Ajouter Citra cryo · 60′ · 4 g (+10 IBU)",
+       "type": "ajouter",
+       "domaine": "stock",
+       "stock": "suffisant",
+       "distance": 0.325,
+       "debordement": 0,
+       "conflits": 0,
+       "effetSurLaFamille": null,
+       "etabli": null,
+       "dose": null,
+       "enStock": 65,
+       "palier": {
+        "usage": "dual",
+        "alpha": 24.8,
+        "rang": [
+         0,
+         4.037
+        ]
+       },
+       "ibuApres": 69.6
+      }
+     ],
+     "tete": [
+      "1 Ajouter Citra cryo · 60′ · 4 g (+10 IBU)",
+      "2 Ajouter Polaris · 60′ · 5 g (+10 IBU)",
+      "3 Ajouter HBC 586 · 60′ · 5 g (+10 IBU)",
+      "4 Ajouter Helios · 60′ · 5.5 g (+10 IBU)",
+      "5 Ajouter Brooklyn · 60′ · 5.5 g (+10 IBU)"
+     ]
+    },
+    "dryActif": {
+     "n": 10,
+     "citraSimple": [],
+     "citraCryo": [
+      {
+       "rang": 9,
+       "label": "Ajouter Citra cryo · dry hop en fermentation active · 10 g (0.5 g/L)",
+       "type": "ajouter",
+       "domaine": "stock",
+       "stock": "suffisant",
+       "distance": 0.033,
+       "debordement": 0,
+       "conflits": 0,
+       "effetSurLaFamille": null,
+       "etabli": null,
+       "dose": {
+        "gPerL": 0.5,
+        "borne": null
+       },
+       "enStock": 65,
+       "palier": null,
+       "ibuApres": 59.7
+      }
+     ],
+     "tete": [
+      "1 Ajouter Marco Polo · dry hop en fermentation active · 10 g (0.5 g/L)",
+      "1 Ajouter Teamaker · dry hop en fermentation active · 10 g (0.5 g/L)",
+      "1 Ajouter Ultra · dry hop en fermentation active · 10 g (0.5 g/L)",
+      "1 Ajouter Yakima Cluster · dry hop en fermentation active · 10 g (0.5 g/L)",
+      "5 Ajouter Motueka · dry hop en fermentation active · 10 g (0.5 g/L)"
+     ]
+    },
+    "dryApres": {
+     "n": 10,
+     "citraSimple": [],
+     "citraCryo": [
+      {
+       "rang": 9,
+       "label": "Ajouter Citra cryo · dry hop après fermentation · 10 g (0.5 g/L)",
+       "type": "ajouter",
+       "domaine": "stock",
+       "stock": "suffisant",
+       "distance": 0.042,
+       "debordement": 0,
+       "conflits": 0,
+       "effetSurLaFamille": null,
+       "etabli": null,
+       "dose": {
+        "gPerL": 0.5,
+        "borne": "min"
+       },
+       "enStock": 65,
+       "palier": null,
+       "ibuApres": 59.7
+      }
+     ]
+    }
+   },
+   "g2bSansStockDesFixtures": {
+    "voies": 4,
+    "citraSimple": [],
+    "citraCryo": [],
+    "palier60": {
+     "n": 4,
+     "citraSimple": [],
+     "citraCryo": [],
+     "tete": [
+      "1 Ajouter Polaris · 60′ · 5 g (+10 IBU)",
+      "2 Ajouter HBC 586 · 60′ · 5 g (+10 IBU)",
+      "3 Ajouter Helios · 60′ · 5.5 g (+10 IBU)",
+      "4 Ajouter Brooklyn · 60′ · 5.5 g (+10 IBU)"
+     ]
+    },
+    "dryActif": {
+     "n": 4,
+     "citraSimple": [],
+     "citraCryo": [],
+     "tete": [
+      "1 Ajouter Marco Polo · dry hop en fermentation active · 10 g (0.5 g/L)",
+      "1 Ajouter Teamaker · dry hop en fermentation active · 10 g (0.5 g/L)",
+      "1 Ajouter Ultra · dry hop en fermentation active · 10 g (0.5 g/L)",
+      "1 Ajouter Yakima Cluster · dry hop en fermentation active · 10 g (0.5 g/L)"
+     ]
+    },
+    "dryApres": {
+     "n": 4,
+     "citraSimple": [],
+     "citraCryo": []
+    }
+   },
+   "effetAjout30gDryActif": [
+    {
+     "cle": "beermaverick-citra",
+     "effetSurLaFamille": 34.2
+    },
+    {
+     "cle": "beermaverick-citra:cryo",
+     "effetSurLaFamille": 34.2
+    }
+   ]
+  }
+ ],
+ "partie1c": [
+  {
+   "recette": "21C",
+   "visee": "plus d’agrumes",
+   "apportMinoritaire": "aucun",
+   "jeu": "avec le stock des fixtures",
+   "citraSimple": {
+    "palier60": null,
+    "dryActif": null,
+    "dryApres": null
+   },
+   "citraCryo": {
+    "palier60": {
+     "position": 1,
+     "rang": 1,
+     "sur": 204,
+     "g": 3.8,
+     "distance": 0.329,
+     "debordement": 0
+    },
+    "dryActif": {
+     "position": 53,
+     "rang": 53,
+     "sur": 155,
+     "g": 30,
+     "distance": 0.017,
+     "debordement": 0.84
+    },
+    "dryApres": {
+     "position": 53,
+     "rang": 53,
+     "sur": 155,
+     "g": 20,
+     "distance": 0.011,
+     "debordement": 0.62
+    }
+   },
+   "parLeNom60": [
+    "1 Citra cryo 3.8 g α24.8",
+    "2 Moutere 5 g α18.5",
+    "3 Vic Secret 5 g α17.9",
+    "4 Apollo 5 g α17.8",
+    "5 Eclipse 5.5 g α17.4",
+    "6 Galaxy 5.5 g α17.2",
+    "7 Ahhhroma 5.5 g α17.1",
+    "8 Topaz 5.5 g α16.9",
+    "9 Waimea 5.5 g α16.8",
+    "10 Ella 6 g α16.3",
+    "10 Summit 6 g α16.3",
+    "12 Columbus 6 g α16"
+   ]
+  },
+  {
+   "recette": "21C",
+   "visee": "plus d’agrumes",
+   "apportMinoritaire": "aucun",
+   "jeu": "sans stock",
+   "citraSimple": {
+    "palier60": {
+     "position": 46,
+     "rang": 46,
+     "sur": 204,
+     "g": 7.5,
+     "distance": 0.325,
+     "debordement": 0
+    },
+    "dryActif": {
+     "position": 60,
+     "rang": 53,
+     "sur": 153,
+     "g": 30,
+     "distance": 0.017,
+     "debordement": 0.84
+    },
+    "dryApres": {
+     "position": 60,
+     "rang": 53,
+     "sur": 153,
+     "g": 20,
+     "distance": 0.011,
+     "debordement": 0.62
+    }
+   },
+   "citraCryo": {
+    "palier60": null,
+    "dryActif": null,
+    "dryApres": null
+   },
+   "parLeNom60": [
+    "1 Moutere 5 g α18.5",
+    "2 Vic Secret 5 g α17.9",
+    "3 Apollo 5 g α17.8",
+    "4 Eclipse 5.5 g α17.4",
+    "5 Ahhhroma 5.5 g α17.1",
+    "6 Topaz 5.5 g α16.9",
+    "7 Waimea 5.5 g α16.8",
+    "8 Ella 6 g α16.3",
+    "8 Summit 6 g α16.3",
+    "10 Columbus 6 g α16",
+    "10 Jarrylo 6 g α16",
+    "12 CTZ 6 g α15.8"
+   ]
+  },
+  {
+   "recette": "21C",
+   "visee": "plus d’agrumes",
+   "apportMinoritaire": "c",
+   "jeu": "avec le stock des fixtures",
+   "citraSimple": {
+    "palier60": null,
+    "dryActif": null,
+    "dryApres": null
+   },
+   "citraCryo": {
+    "palier60": {
+     "position": 1,
+     "rang": 1,
+     "sur": 204,
+     "g": 3.8,
+     "distance": 0.329,
+     "debordement": 0
+    },
+    "dryActif": {
+     "position": 29,
+     "rang": 29,
+     "sur": 155,
+     "g": 30,
+     "distance": 0.017,
+     "debordement": 0.84
+    },
+    "dryApres": {
+     "position": 29,
+     "rang": 29,
+     "sur": 155,
+     "g": 20,
+     "distance": 0.011,
+     "debordement": 0.62
+    }
+   },
+   "parLeNom60": [
+    "1 Citra cryo 3.8 g α24.8",
+    "2 Moutere 5 g α18.5",
+    "3 Vic Secret 5 g α17.9",
+    "4 Apollo 5 g α17.8",
+    "5 Eclipse 5.5 g α17.4",
+    "6 Galaxy 5.5 g α17.2",
+    "7 Ahhhroma 5.5 g α17.1",
+    "8 Topaz 5.5 g α16.9",
+    "9 Waimea 5.5 g α16.8",
+    "10 Ella 6 g α16.3",
+    "10 Summit 6 g α16.3",
+    "12 Columbus 6 g α16"
+   ]
+  },
+  {
+   "recette": "21C",
+   "visee": "plus d’agrumes",
+   "apportMinoritaire": "c",
+   "jeu": "sans stock",
+   "citraSimple": {
+    "palier60": {
+     "position": 46,
+     "rang": 46,
+     "sur": 204,
+     "g": 7.5,
+     "distance": 0.325,
+     "debordement": 0
+    },
+    "dryActif": {
+     "position": 30,
+     "rang": 29,
+     "sur": 153,
+     "g": 30,
+     "distance": 0.017,
+     "debordement": 0.84
+    },
+    "dryApres": {
+     "position": 30,
+     "rang": 29,
+     "sur": 153,
+     "g": 20,
+     "distance": 0.011,
+     "debordement": 0.62
+    }
+   },
+   "citraCryo": {
+    "palier60": null,
+    "dryActif": null,
+    "dryApres": null
+   },
+   "parLeNom60": [
+    "1 Moutere 5 g α18.5",
+    "2 Vic Secret 5 g α17.9",
+    "3 Apollo 5 g α17.8",
+    "4 Eclipse 5.5 g α17.4",
+    "5 Ahhhroma 5.5 g α17.1",
+    "6 Topaz 5.5 g α16.9",
+    "7 Waimea 5.5 g α16.8",
+    "8 Ella 6 g α16.3",
+    "8 Summit 6 g α16.3",
+    "10 Columbus 6 g α16",
+    "10 Jarrylo 6 g α16",
+    "12 CTZ 6 g α15.8"
+   ]
+  },
+  {
+   "recette": "16D",
+   "visee": "plus floral",
+   "apportMinoritaire": "aucun",
+   "jeu": "avec le stock des fixtures",
+   "citraSimple": {
+    "palier60": null,
+    "dryActif": null,
+    "dryApres": null
+   },
+   "citraCryo": {
+    "palier60": {
+     "position": 1,
+     "rang": 1,
+     "sur": 317,
+     "g": 4,
+     "distance": 0.325,
+     "debordement": 0
+    },
+    "dryActif": {
+     "position": 142,
+     "rang": 142,
+     "sur": 155,
+     "g": 10,
+     "distance": 0.033,
+     "debordement": 0
+    },
+    "dryApres": {
+     "position": 142,
+     "rang": 142,
+     "sur": 155,
+     "g": 10,
+     "distance": 0.042,
+     "debordement": 0
+    }
+   },
+   "parLeNom60": [
+    "1 Citra cryo 4 g α24.8",
+    "2 Polaris 5 g α20.5",
+    "3 HBC 586 5 g α20",
+    "4 Helios 5.5 g α18.9",
+    "5 Brooklyn 5.5 g α18.5",
+    "5 Eureka 5.5 g α18.5",
+    "5 Moutere 5.5 g α18.5",
+    "5 Pahto 5.5 g α18.5",
+    "9 Vic Secret 5.5 g α17.9",
+    "10 Apollo 5.5 g α17.8",
+    "11 Eclipse 6 g α17.4",
+    "12 Galaxy 6 g α17.2"
+   ]
+  },
+  {
+   "recette": "16D",
+   "visee": "plus floral",
+   "apportMinoritaire": "aucun",
+   "jeu": "sans stock",
+   "citraSimple": {
+    "palier60": {
+     "position": 65,
+     "rang": 65,
+     "sur": 317,
+     "g": 8,
+     "distance": 0.318,
+     "debordement": 0
+    },
+    "dryActif": {
+     "position": 143,
+     "rang": 142,
+     "sur": 155,
+     "g": 10,
+     "distance": 0.033,
+     "debordement": 0
+    },
+    "dryApres": {
+     "position": 143,
+     "rang": 142,
+     "sur": 155,
+     "g": 10,
+     "distance": 0.042,
+     "debordement": 0
+    }
+   },
+   "citraCryo": {
+    "palier60": null,
+    "dryActif": null,
+    "dryApres": null
+   },
+   "parLeNom60": [
+    "1 Polaris 5 g α20.5",
+    "2 HBC 586 5 g α20",
+    "3 Helios 5.5 g α18.9",
+    "4 Brooklyn 5.5 g α18.5",
+    "4 Eureka 5.5 g α18.5",
+    "4 Moutere 5.5 g α18.5",
+    "4 Pahto 5.5 g α18.5",
+    "8 Vic Secret 5.5 g α17.9",
+    "9 Apollo 5.5 g α17.8",
+    "10 Eclipse 6 g α17.4",
+    "11 Ahhhroma 6 g α17.1",
+    "12 Topaz 6 g α16.9"
+   ]
+  },
+  {
+   "recette": "16D",
+   "visee": "plus floral",
+   "apportMinoritaire": "c",
+   "jeu": "avec le stock des fixtures",
+   "citraSimple": {
+    "palier60": null,
+    "dryActif": null,
+    "dryApres": null
+   },
+   "citraCryo": {
+    "palier60": {
+     "position": 1,
+     "rang": 1,
+     "sur": 317,
+     "g": 4,
+     "distance": 0.325,
+     "debordement": 0
+    },
+    "dryActif": {
+     "position": 142,
+     "rang": 142,
+     "sur": 155,
+     "g": 10,
+     "distance": 0.033,
+     "debordement": 0
+    },
+    "dryApres": {
+     "position": 142,
+     "rang": 142,
+     "sur": 155,
+     "g": 10,
+     "distance": 0.042,
+     "debordement": 0
+    }
+   },
+   "parLeNom60": [
+    "1 Citra cryo 4 g α24.8",
+    "2 Polaris 5 g α20.5",
+    "3 HBC 586 5 g α20",
+    "4 Helios 5.5 g α18.9",
+    "5 Brooklyn 5.5 g α18.5",
+    "5 Eureka 5.5 g α18.5",
+    "5 Moutere 5.5 g α18.5",
+    "5 Pahto 5.5 g α18.5",
+    "9 Vic Secret 5.5 g α17.9",
+    "10 Apollo 5.5 g α17.8",
+    "11 Eclipse 6 g α17.4",
+    "12 Galaxy 6 g α17.2"
+   ]
+  },
+  {
+   "recette": "16D",
+   "visee": "plus floral",
+   "apportMinoritaire": "c",
+   "jeu": "sans stock",
+   "citraSimple": {
+    "palier60": {
+     "position": 65,
+     "rang": 65,
+     "sur": 317,
+     "g": 8,
+     "distance": 0.318,
+     "debordement": 0
+    },
+    "dryActif": {
+     "position": 143,
+     "rang": 142,
+     "sur": 155,
+     "g": 10,
+     "distance": 0.033,
+     "debordement": 0
+    },
+    "dryApres": {
+     "position": 143,
+     "rang": 142,
+     "sur": 155,
+     "g": 10,
+     "distance": 0.042,
+     "debordement": 0
+    }
+   },
+   "citraCryo": {
+    "palier60": null,
+    "dryActif": null,
+    "dryApres": null
+   },
+   "parLeNom60": [
+    "1 Polaris 5 g α20.5",
+    "2 HBC 586 5 g α20",
+    "3 Helios 5.5 g α18.9",
+    "4 Brooklyn 5.5 g α18.5",
+    "4 Eureka 5.5 g α18.5",
+    "4 Moutere 5.5 g α18.5",
+    "4 Pahto 5.5 g α18.5",
+    "8 Vic Secret 5.5 g α17.9",
+    "9 Apollo 5.5 g α17.8",
+    "10 Eclipse 6 g α17.4",
+    "11 Ahhhroma 6 g α17.1",
+    "12 Topaz 6 g α16.9"
+   ]
+  }
+ ],
+ "partie2": {
+  "substituer": [
+   {
+    "recette": "21C",
+    "moment": "b60",
+    "candidats": 317,
+    "ecran": {
+     "total": 8,
+     "retires": 309
+    },
+    "fenetreIA": {
+     "total": 20,
+     "retires": 297
+    },
+    "derriere": {
+     "conflitStyle": 0,
+     "couvertureFaible": 15,
+     "amertumeDeconseillee": 94
+    },
+    "sansLesClesAvantLeScore": {
+     "entrentDansLes20": 4,
+     "noms": [
+      "Feux-Coeur Francais 99",
+      "Citra 95",
+      "Citra 95",
+      "Mosaic 94"
+     ]
+    },
+    "phares": [
+     {
+      "nom": "Citra",
+      "rang": 214,
+      "score": 95,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "à acheter",
+      "derriere": "amertume déconseillée"
+     },
+     {
+      "nom": "Nelson Sauvin",
+      "rang": 88,
+      "score": 85,
+      "visibleSurLEcran": true,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Galaxy",
+      "rang": 110,
+      "score": 82,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Mosaic",
+      "rang": 216,
+      "score": 94,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "à acheter",
+      "derriere": "amertume déconseillée"
+     },
+     {
+      "nom": "Motueka",
+      "rang": 188,
+      "score": 70,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Idaho 7",
+      "rang": 22,
+      "score": 93,
+      "visibleSurLEcran": true,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Strata",
+      "rang": 219,
+      "score": 86,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "à acheter",
+      "derriere": "amertume déconseillée"
+     },
+     {
+      "nom": "Simcoe",
+      "rang": 14,
+      "score": 94,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": true,
+      "stock": "épuisé",
+      "derriere": null
+     },
+     {
+      "nom": "Cascade",
+      "rang": 225,
+      "score": 73,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "épuisé",
+      "derriere": "amertume déconseillée"
+     },
+     {
+      "nom": "Hallertau Blanc",
+      "rang": 104,
+      "score": 83,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     }
+    ]
+   },
+   {
+    "recette": "21C",
+    "moment": "dryActive",
+    "candidats": 317,
+    "ecran": {
+     "total": 8,
+     "retires": 309
+    },
+    "fenetreIA": {
+     "total": 20,
+     "retires": 297
+    },
+    "derriere": {
+     "conflitStyle": 0,
+     "couvertureFaible": 15,
+     "amertumeDeconseillee": 0
+    },
+    "sansLesClesAvantLeScore": {
+     "entrentDansLes20": 9,
+     "noms": [
+      "Omega 90",
+      "Hallertau Gold 85",
+      "Smooth Cone 75",
+      "Aquila 73",
+      "Banner 71",
+      "Feux-Coeur Francais 69",
+      "Bianca 65",
+      "Eroica 63"
+     ]
+    },
+    "phares": [
+     {
+      "nom": "Citra",
+      "rang": 10,
+      "score": 58,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": true,
+      "stock": "à acheter",
+      "derriere": null
+     },
+     {
+      "nom": "Nelson Sauvin",
+      "rang": 114,
+      "score": 48,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Galaxy",
+      "rang": 159,
+      "score": 45,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Mosaic",
+      "rang": 38,
+      "score": 54,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "à acheter",
+      "derriere": null
+     },
+     {
+      "nom": "Motueka",
+      "rang": 178,
+      "score": 43,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Idaho 7",
+      "rang": 14,
+      "score": 57,
+      "visibleSurLEcran": true,
+      "dansLaFenetreIA20": true,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Strata",
+      "rang": 80,
+      "score": 50,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "à acheter",
+      "derriere": null
+     },
+     {
+      "nom": "Simcoe",
+      "rang": 8,
+      "score": 59,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": true,
+      "stock": "épuisé",
+      "derriere": null
+     },
+     {
+      "nom": "Cascade",
+      "rang": 29,
+      "score": 55,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "épuisé",
+      "derriere": null
+     },
+     {
+      "nom": "Hallertau Blanc",
+      "rang": 59,
+      "score": 52,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     }
+    ]
+   },
+   {
+    "recette": "16D",
+    "moment": "b60",
+    "candidats": 317,
+    "ecran": {
+     "total": 8,
+     "retires": 309
+    },
+    "fenetreIA": {
+     "total": 20,
+     "retires": 297
+    },
+    "derriere": {
+     "conflitStyle": 0,
+     "couvertureFaible": 15,
+     "amertumeDeconseillee": 94
+    },
+    "sansLesClesAvantLeScore": {
+     "entrentDansLes20": 4,
+     "noms": [
+      "Feux-Coeur Francais 99",
+      "Citra 95",
+      "Citra 95",
+      "Mosaic 94"
+     ]
+    },
+    "phares": [
+     {
+      "nom": "Citra",
+      "rang": 214,
+      "score": 95,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "à acheter",
+      "derriere": "amertume déconseillée"
+     },
+     {
+      "nom": "Nelson Sauvin",
+      "rang": 88,
+      "score": 85,
+      "visibleSurLEcran": true,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Galaxy",
+      "rang": 111,
+      "score": 82,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Mosaic",
+      "rang": 216,
+      "score": 94,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "à acheter",
+      "derriere": "amertume déconseillée"
+     },
+     {
+      "nom": "Motueka",
+      "rang": 188,
+      "score": 70,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Idaho 7",
+      "rang": 22,
+      "score": 93,
+      "visibleSurLEcran": true,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Strata",
+      "rang": 219,
+      "score": 87,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "à acheter",
+      "derriere": "amertume déconseillée"
+     },
+     {
+      "nom": "Simcoe",
+      "rang": 14,
+      "score": 94,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": true,
+      "stock": "épuisé",
+      "derriere": null
+     },
+     {
+      "nom": "Cascade",
+      "rang": 225,
+      "score": 73,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": "amertume déconseillée"
+     },
+     {
+      "nom": "Hallertau Blanc",
+      "rang": 105,
+      "score": 83,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     }
+    ]
+   },
+   {
+    "recette": "16D",
+    "moment": "dryActive",
+    "candidats": 317,
+    "ecran": {
+     "total": 8,
+     "retires": 309
+    },
+    "fenetreIA": {
+     "total": 20,
+     "retires": 297
+    },
+    "derriere": {
+     "conflitStyle": 0,
+     "couvertureFaible": 15,
+     "amertumeDeconseillee": 0
+    },
+    "sansLesClesAvantLeScore": {
+     "entrentDansLes20": 9,
+     "noms": [
+      "Omega 90",
+      "Hallertau Gold 85",
+      "Smooth Cone 75",
+      "Aquila 73",
+      "Banner 71",
+      "Feux-Coeur Francais 69",
+      "Bianca 65",
+      "Eroica 63"
+     ]
+    },
+    "phares": [
+     {
+      "nom": "Citra",
+      "rang": 15,
+      "score": 56,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": true,
+      "stock": "à acheter",
+      "derriere": null
+     },
+     {
+      "nom": "Nelson Sauvin",
+      "rang": 133,
+      "score": 46,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Galaxy",
+      "rang": 174,
+      "score": 43,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Mosaic",
+      "rang": 51,
+      "score": 52,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "à acheter",
+      "derriere": null
+     },
+     {
+      "nom": "Motueka",
+      "rang": 196,
+      "score": 41,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Idaho 7",
+      "rang": 15,
+      "score": 56,
+      "visibleSurLEcran": true,
+      "dansLaFenetreIA20": true,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Strata",
+      "rang": 64,
+      "score": 51,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "à acheter",
+      "derriere": null
+     },
+     {
+      "nom": "Simcoe",
+      "rang": 15,
+      "score": 56,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "épuisé",
+      "derriere": null
+     },
+     {
+      "nom": "Cascade",
+      "rang": 27,
+      "score": 55,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     },
+     {
+      "nom": "Hallertau Blanc",
+      "rang": 64,
+      "score": 51,
+      "visibleSurLEcran": false,
+      "dansLaFenetreIA20": false,
+      "stock": "en stock",
+      "derriere": null
+     }
+    ]
+   }
+  ],
+  "suggerer": [
+   {
+    "recette": "21C",
+    "visee": "plus d’agrumes",
+    "catalogue": 317,
+    "avantLeClassement": {
+     "enStockLibre": 9,
+     "exclusParUneFamilleMarquee": 111,
+     "sansFamilleVisee": 51,
+     "poolAAcheterEligible": 146,
+     "coupeParMaxBuy6": 140
+    },
+    "pharesAvantLeClassement": [
+     {
+      "nom": "Citra",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": false
+     },
+     {
+      "nom": "Nelson Sauvin",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": false
+     },
+     {
+      "nom": "Galaxy",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": false
+     },
+     {
+      "nom": "Mosaic",
+      "enStock": false,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": true
+     },
+     {
+      "nom": "Motueka",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": false
+     },
+     {
+      "nom": "Idaho 7",
+      "enStock": true,
+      "exclu": "herbal",
+      "famillesVisees": 1,
+      "eligible": false
+     },
+     {
+      "nom": "Strata",
+      "enStock": false,
+      "exclu": "herbal",
+      "famillesVisees": 1,
+      "eligible": false
+     },
+     {
+      "nom": "Simcoe",
+      "enStock": false,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": true
+     },
+     {
+      "nom": "Cascade",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": false
+     },
+     {
+      "nom": "Hallertau Blanc",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": false
+     }
+    ],
+    "parOuverture": [
+     {
+      "ouverture": "défaut (maxBuy 6, limit 10, buyLimit 4, perHop 2, 2 assemblages)",
+      "voies": 14,
+      "evalues": 233,
+      "houblonsDistinctsAjoutes": 8,
+      "phares": [
+       "Citra",
+       "Nelson Sauvin",
+       "Galaxy",
+       "Motueka",
+       "Hallertau Blanc"
+      ],
+      "notes": [
+       "25 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ]
+     },
+     {
+      "ouverture": "maxBuy 400",
+      "voies": 14,
+      "evalues": 2308,
+      "houblonsDistinctsAjoutes": 10,
+      "phares": [
+       "Citra",
+       "Nelson Sauvin",
+       "Galaxy",
+       "Motueka",
+       "Hallertau Blanc"
+      ],
+      "notes": [
+       "309 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ]
+     },
+     {
+      "ouverture": "maxBuy 400 + limit/buyLimit 2000",
+      "voies": 314,
+      "evalues": 2308,
+      "houblonsDistinctsAjoutes": 154,
+      "phares": [
+       "Citra",
+       "Nelson Sauvin",
+       "Galaxy",
+       "Mosaic",
+       "Motueka",
+       "Idaho 7",
+       "Simcoe",
+       "Hallertau Blanc"
+      ],
+      "notes": [
+       "309 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ]
+     },
+     {
+      "ouverture": "tout ouvert (+ perHop 100)",
+      "voies": 733,
+      "evalues": 2308,
+      "houblonsDistinctsAjoutes": 155,
+      "phares": [
+       "Citra",
+       "Nelson Sauvin",
+       "Galaxy",
+       "Mosaic",
+       "Motueka",
+       "Idaho 7",
+       "Simcoe",
+       "Cascade",
+       "Hallertau Blanc"
+      ],
+      "notes": [
+       "309 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ]
+     }
+    ],
+    "palier60": {
+     "n": 11,
+     "notes": [
+      "113 houblons exclus à 60′ par un conflit de famille (direction, style ou goûts)."
+     ],
+     "phares": [
+      "Citra",
+      "Nelson Sauvin",
+      "Galaxy",
+      "Motueka",
+      "Cascade",
+      "Hallertau Blanc"
+     ],
+     "sansPlafond": {
+      "n": 204,
+      "phares": [
+       "Citra",
+       "Nelson Sauvin",
+       "Galaxy",
+       "Mosaic",
+       "Motueka",
+       "Simcoe",
+       "Cascade",
+       "Hallertau Blanc"
+      ]
+     }
+    },
+    "dryHopActif": {
+     "n": 13,
+     "phares": [
+      "Citra",
+      "Nelson Sauvin",
+      "Galaxy",
+      "Motueka",
+      "Idaho 7",
+      "Cascade",
+      "Hallertau Blanc"
+     ],
+     "sansPlafond": {
+      "n": 155,
+      "phares": [
+       "Citra",
+       "Nelson Sauvin",
+       "Galaxy",
+       "Mosaic",
+       "Motueka",
+       "Idaho 7",
+       "Simcoe",
+       "Cascade",
+       "Hallertau Blanc"
+      ]
+     }
+    }
+   },
+   {
+    "recette": "16D",
+    "visee": "moins de résineux",
+    "catalogue": 317,
+    "avantLeClassement": {
+     "enStockLibre": 9,
+     "exclusParUneFamilleMarquee": 90,
+     "sansFamilleVisee": null,
+     "poolAAcheterEligible": 218,
+     "coupeParMaxBuy6": 212
+    },
+    "pharesAvantLeClassement": [
+     {
+      "nom": "Citra",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 0,
+      "eligible": false
+     },
+     {
+      "nom": "Nelson Sauvin",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 0,
+      "eligible": false
+     },
+     {
+      "nom": "Galaxy",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 0,
+      "eligible": false
+     },
+     {
+      "nom": "Mosaic",
+      "enStock": false,
+      "exclu": null,
+      "famillesVisees": 0,
+      "eligible": true
+     },
+     {
+      "nom": "Motueka",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 0,
+      "eligible": false
+     },
+     {
+      "nom": "Idaho 7",
+      "enStock": true,
+      "exclu": "resin",
+      "famillesVisees": 0,
+      "eligible": false
+     },
+     {
+      "nom": "Strata",
+      "enStock": false,
+      "exclu": null,
+      "famillesVisees": 0,
+      "eligible": true
+     },
+     {
+      "nom": "Simcoe",
+      "enStock": false,
+      "exclu": "resin",
+      "famillesVisees": 0,
+      "eligible": false
+     },
+     {
+      "nom": "Cascade",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 0,
+      "eligible": false
+     },
+     {
+      "nom": "Hallertau Blanc",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 0,
+      "eligible": false
+     }
+    ],
+    "parOuverture": [
+     {
+      "ouverture": "défaut (maxBuy 6, limit 10, buyLimit 4, perHop 2, 2 assemblages)",
+      "voies": 11,
+      "evalues": 20,
+      "houblonsDistinctsAjoutes": 0,
+      "phares": [],
+      "notes": [
+       "6 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ]
+     },
+     {
+      "ouverture": "maxBuy 400",
+      "voies": 11,
+      "evalues": 231,
+      "houblonsDistinctsAjoutes": 0,
+      "phares": [],
+      "notes": [
+       "33 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ]
+     },
+     {
+      "ouverture": "maxBuy 400 + limit/buyLimit 2000",
+      "voies": 197,
+      "evalues": 231,
+      "houblonsDistinctsAjoutes": 0,
+      "phares": [],
+      "notes": [
+       "33 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ]
+     },
+     {
+      "ouverture": "tout ouvert (+ perHop 100)",
+      "voies": 198,
+      "evalues": 231,
+      "houblonsDistinctsAjoutes": 0,
+      "phares": [],
+      "notes": [
+       "33 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ]
+     }
+    ],
+    "palier60": {
+     "n": 12,
+     "notes": [
+      "91 houblons exclus à 60′ par un conflit de famille (direction, style ou goûts)."
+     ],
+     "phares": [
+      "Citra",
+      "Nelson Sauvin",
+      "Galaxy",
+      "Motueka",
+      "Cascade",
+      "Hallertau Blanc"
+     ],
+     "sansPlafond": {
+      "n": 226,
+      "phares": [
+       "Citra",
+       "Nelson Sauvin",
+       "Galaxy",
+       "Mosaic",
+       "Motueka",
+       "Strata",
+       "Cascade",
+       "Hallertau Blanc"
+      ]
+     }
+    },
+    "dryHopActif": {
+     "n": 0,
+     "phares": [],
+     "sansPlafond": {
+      "n": 0,
+      "phares": []
+     }
+    }
+   },
+   {
+    "recette": "16D",
+    "visee": "plus floral",
+    "catalogue": 317,
+    "avantLeClassement": {
+     "enStockLibre": 9,
+     "exclusParUneFamilleMarquee": 0,
+     "sansFamilleVisee": 159,
+     "poolAAcheterEligible": 149,
+     "coupeParMaxBuy6": 143
+    },
+    "pharesAvantLeClassement": [
+     {
+      "nom": "Citra",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": false
+     },
+     {
+      "nom": "Nelson Sauvin",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 0,
+      "eligible": false
+     },
+     {
+      "nom": "Galaxy",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 0,
+      "eligible": false
+     },
+     {
+      "nom": "Mosaic",
+      "enStock": false,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": true
+     },
+     {
+      "nom": "Motueka",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": false
+     },
+     {
+      "nom": "Idaho 7",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": false
+     },
+     {
+      "nom": "Strata",
+      "enStock": false,
+      "exclu": null,
+      "famillesVisees": 0,
+      "eligible": false
+     },
+     {
+      "nom": "Simcoe",
+      "enStock": false,
+      "exclu": null,
+      "famillesVisees": 0,
+      "eligible": false
+     },
+     {
+      "nom": "Cascade",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": false
+     },
+     {
+      "nom": "Hallertau Blanc",
+      "enStock": true,
+      "exclu": null,
+      "famillesVisees": 1,
+      "eligible": false
+     }
+    ],
+    "parOuverture": [
+     {
+      "ouverture": "défaut (maxBuy 6, limit 10, buyLimit 4, perHop 2, 2 assemblages)",
+      "voies": 14,
+      "evalues": 230,
+      "houblonsDistinctsAjoutes": 10,
+      "phares": [
+       "Citra",
+       "Motueka",
+       "Idaho 7",
+       "Cascade",
+       "Hallertau Blanc"
+      ],
+      "notes": [
+       "21 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ]
+     },
+     {
+      "ouverture": "maxBuy 400",
+      "voies": 14,
+      "evalues": 2247,
+      "houblonsDistinctsAjoutes": 10,
+      "phares": [
+       "Citra",
+       "Motueka",
+       "Idaho 7",
+       "Cascade",
+       "Hallertau Blanc"
+      ],
+      "notes": [
+       "203 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ]
+     },
+     {
+      "ouverture": "maxBuy 400 + limit/buyLimit 2000",
+      "voies": 312,
+      "evalues": 2247,
+      "houblonsDistinctsAjoutes": 155,
+      "phares": [
+       "Citra",
+       "Mosaic",
+       "Motueka",
+       "Idaho 7",
+       "Cascade",
+       "Hallertau Blanc"
+      ],
+      "notes": [
+       "203 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ]
+     },
+     {
+      "ouverture": "tout ouvert (+ perHop 100)",
+      "voies": 752,
+      "evalues": 2247,
+      "houblonsDistinctsAjoutes": 155,
+      "phares": [
+       "Citra",
+       "Mosaic",
+       "Motueka",
+       "Idaho 7",
+       "Cascade",
+       "Hallertau Blanc"
+      ],
+      "notes": [
+       "203 voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées."
+      ]
+     }
+    ],
+    "palier60": {
+     "n": 13,
+     "notes": [],
+     "phares": [
+      "Citra",
+      "Nelson Sauvin",
+      "Galaxy",
+      "Motueka",
+      "Idaho 7",
+      "Cascade",
+      "Hallertau Blanc"
+     ],
+     "sansPlafond": {
+      "n": 317,
+      "phares": [
+       "Citra",
+       "Nelson Sauvin",
+       "Galaxy",
+       "Mosaic",
+       "Motueka",
+       "Idaho 7",
+       "Strata",
+       "Simcoe",
+       "Cascade",
+       "Hallertau Blanc"
+      ]
+     }
+    },
+    "dryHopActif": {
+     "n": 10,
+     "phares": [
+      "Citra",
+      "Motueka",
+      "Idaho 7",
+      "Cascade",
+      "Hallertau Blanc"
+     ],
+     "sansPlafond": {
+      "n": 155,
+      "phares": [
+       "Citra",
+       "Mosaic",
+       "Motueka",
+       "Idaho 7",
+       "Cascade",
+       "Hallertau Blanc"
+      ]
+     }
+    }
+   }
+  ]
+ }
+}

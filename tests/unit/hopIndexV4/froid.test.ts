@@ -57,11 +57,12 @@ describe('1. Cascade en 21C, 4 g/L, dry hop après, 3 j (sa capture)', () => {
     const f = famillesProchesDeLaLimite(r21, cascade());
     expect(f.statut).toBe('évalué');
     const resin = f.familles.find((x) => x.famille === 'resin')!;
-    expect(resin.apport).toBeCloseTo(26.76, 1);
+    // c6 (26.10) : la fiche Freestyle Hops (Nouvelle-Zélande) n'est plus un mot de Cascade (origine non répertoriée, hors descripteurs) : 26,76 → 26,50, 27,51 → 27,20, 2,49 → 2,80.
+    expect(resin.apport).toBeCloseTo(26.5, 1);
     expect(Math.round(resin.apport)).toBe(27);
     expect(resin.borne).toBe(30);
-    expect(resin.valeur).toBeCloseTo(27.51, 1);
-    expect(resin.marge).toBeCloseTo(2.49, 1);
+    expect(resin.valeur).toBeCloseTo(27.2, 1);
+    expect(resin.marge).toBeCloseTo(2.8, 1);
     expect(resin.cran).toBe(10);
     expect(resin.approche).toBe(true);
     expect(resin.depasse).toBe(false);
@@ -108,7 +109,7 @@ describe('2. Nugget en 16D, 4 g/L, dry hop après, 3 j', () => {
     expect(resin.borne).toBe(30);
     expect(resin.approche).toBe(true);
     expect(resin.marge).toBeGreaterThanOrEqual(0);
-    expect(resin.marge).toBeLessThan(1);
+    expect(resin.marge).toBeLessThan(2); // c6 : 0,9 → 1,46 (descripteurs de 26 variétés rattachés par la table d'alias, d'où d'autres fréquences)
     expect(f.familles.some((x) => x.famille === 'floral' || x.famille === 'herbal' || x.famille === 'earthy')).toBe(false);
     // Le melon n’est décrit par aucune fiche de Nugget : non situé, jamais compté pour 0.
     expect(f.nonSituees.map((x) => x.famille)).toContain('melon');

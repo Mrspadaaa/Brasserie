@@ -44,7 +44,7 @@ export function Matrice({ h, cle, recette, seuleFiche }: { h: HoublonLu; cle: st
         : <p className="pq-fiche-mx-q">Lui seul : <b>aucun mot</b>, ses remplaçants disent aussi les siens</p>}
       <div id={idLegende} data-role="legende" hidden={!legende} className="pq-fiche-mx-leg">
         <p>Lignes : ses mots, traduits ; ◇ hors des 12 familles. Colonnes : lui, puis ses {colonnes.length} premiers remplaçants de Substituer{dansRecette ? ', à son ajout' : ', hors de ma recette'} (score sur 100).</p>
-        <p>Noir : il le dit{N > 1 ? ` (${N}/${N} : ses ${N} fiches)` : ''}. Gris : le remplaçant le dit aussi. Vide : non. Creux : Hopsteiner le range dans cette famille, sans mot qui le décrive.</p>
+        <p>Noir : il le dit{N > 1 ? ` (${N}/${N} : ses ${N} fiches)` : ''}. Gris : le remplaçant le dit aussi. Vide : non. Creux : une fiche le range dans cette famille, sans mot qui le décrive.</p>
         <p>autres : la part de ses mots hors des 12 familles (touche « autres » pour le détail).</p>
       </div>
       <div id={idAutres} data-role="legende-autres" hidden={!autres} className="pq-fiche-mx-leg">{autres && <ExplicationAutres cle={cle} />}</div>
@@ -80,14 +80,14 @@ export function Matrice({ h, cle, recette, seuleFiche }: { h: HoublonLu; cle: st
               {l.classe
                 ? (
                   <>
-                    <i role="img" aria-label="Hopsteiner le range dans cette famille, sans mot qui le décrive" title="Hopsteiner le range dans cette famille, sans mot qui le décrive"
+                    <i role="img" aria-label="une fiche le range dans cette famille, sans mot qui le décrive" title="une fiche le range dans cette famille, sans mot qui le décrive"
                       className="pq-fiche-mx-d pq-fiche-mx-dc" />
                     {N > 1 && <span className="pq-fiche-mx-n">1/{N}</span>}
                   </>
                 )
                 : (
                   <>
-                    <i role="img" aria-label={`${l.fiches.join(', ')}`} className={`pq-fiche-mx-d${plein ? ' pq-fiche-mx-d2' : ''}`} />
+                    <i role="img" aria-label={`dit par ${l.fiches.length} fiche${l.fiches.length > 1 ? 's' : ''}`} className={`pq-fiche-mx-d${plein ? ' pq-fiche-mx-d2' : ''}`} />
                     {/* g1 : rien à une seule fiche, jamais « 1/1 ». */}
                     {N > 1 && <span className="pq-fiche-mx-n">{l.fiches.length}/{N}</span>}
                   </>

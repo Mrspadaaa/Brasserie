@@ -7,7 +7,8 @@ import { Dock } from '../Pont';
 import type { CadreComparerProps } from './hote';
 import './cadre-app.css';
 
-export interface ActionsCadre { fermer: () => void; suggerer: () => void; nbHoublons: number }
+/** `fermer` : un niveau (l'onglet « Ma bière » y revient). `fermerTout` : la croix (D118), jusqu'à l'étape Houblons ; absent : `fermer`. */
+export interface ActionsCadre { fermer: () => void; fermerTout?: () => void; suggerer: () => void; nbHoublons: number }
 export const CadreCtx = createContext<ActionsCadre | null>(null);
 
 function Croix({ fermer }: { fermer: () => void }) {
@@ -26,7 +27,7 @@ function Onglets({ a }: { a: ActionsCadre }) {
   ];
   return (
     <div data-role="onglets" data-page-titlebar className="pq-tete flex items-center gap-1.5">
-      <Croix fermer={a.fermer} />
+      <Croix fermer={a.fermerTout ?? a.fermer} />
       <div role="tablist" className="pq-onglets flex-1 grid grid-cols-3 gap-0.5 rounded-full bg-cave-850 p-0.5">
         {onglets.map((o) => (
           <button key={o.id} type="button" role="tab" aria-selected={o.id === 'comparer'} data-onglet={o.id} onClick={o.va}
@@ -43,7 +44,7 @@ export function CadreApp({ ecran, question, questionVisible = true, elementTete,
   const a = useContext(CadreCtx);
   if (!a) throw new Error('CadreApp hors de CadreCtx');
   return (
-    <PageShell title={question} onClose={a.fermer} footer={dock ? <Dock>{dock}</Dock> : undefined}
+    <PageShell title={question} onClose={a.fermerTout ?? a.fermer} footer={dock ? <Dock>{dock}</Dock> : undefined}
       mobileHeader={<div {...(elementTete ? { 'data-element': elementTete } : {})}><Onglets a={a} /></div>}
       className={`pq-outil pq-outil-${ecran} pq-cadre-retour`}>
       <div data-ecran={ecran} {...(etat ? { 'data-etat': etat } : {})} className="space-y-2">

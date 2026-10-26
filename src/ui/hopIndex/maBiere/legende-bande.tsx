@@ -15,6 +15,7 @@ import { COULEURS, COURT } from './commun';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { additionEffect, describeFamilies, familyWords, hopRef, FAMILY_NAMES } from '../parcours/v4';
 import { autresDe } from '../fiche/autres';
+import { motAffiche } from '../fiche/traduction';
 import { style, type HoublonLu } from '../parcours/adaptateur';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 
@@ -24,11 +25,11 @@ const GENERIQUES = new Set(['agrumes', 'citrus', 'citrique', 'floral', 'florale'
   'berry', 'berries', 'melon', 'noyau', 'fruits à noyau', 'stone fruit', 'pépins', 'fruits à pépins', 'fruité', 'fruity']);
 
 // Les mots tels que v2a les montre (règle n° 1 ; « Fais ce que v2a fait », 25.10). La table vient de v2a, rien d'autre :
-// - un mot anglais dont l'équivalent français est déjà là disparaît (Pineapple / ananas, Fresh lime / citron vert) ; un mot
-//   anglais seul que v2a traduit se traduit (lemon zest → zeste de citron) ; les autres restent tels quels (woody, resiny) ;
+// - un mot anglais se traduit par la table de t1 (« pineapple » et « ananas » deviennent un mot, « lemon zest » : zeste de citron) ;
 // - un mot contenu dans un autre mot gardé disparaît (citron, dans citron vert) ;
-// - les sources et les thiols s'écrivent comme dans v2a (Hopsteiner US ; thiols moyens).
-const EQUIVALENTS: Record<string, string> = { pineapple: 'ananas', 'fresh lime': 'citron vert', 'lemon zest': 'zeste de citron' };
+// - les thiols s'écrivent comme dans v2a (thiols moyens).
+// D168 (26.10) : plus aucun nom de source sur la carte ; les noms vivent dans la section « Sources » de la fiche. Les sources de
+// chaque mot restent dans la donnée (`sans[].sources`), pas à l'écran.
 const SOURCES: Record<string, string> = { 'Hopsteiner (boutique US)': 'Hopsteiner US' };
 const THIOLS: Record<string, string> = { moyenne: 'moyens' };
 
@@ -55,9 +56,11 @@ export function speciauxDe(cle: string): Speciaux {
   for (const f of Object.keys(w.mots) as FamilyId[]) {
     const vus = new Map<string, string>();
     const generiques = new Set([...GENERIQUES, FAMILY_NAMES[f].toLowerCase(), COURT[f].toLowerCase()]);
+    // D170 : tout mot montré passe par la table de traduction de t1 (fiche/traduction.ts, `motAffiche`), comme les cinq autres écrans.
+    // Ce chemin-ci ne l'appelait pas (il n'avait qu'EQUIVALENTS, trois mots) : « orange · lemon » et « tropical fruits » restaient anglais.
     for (const s of w.mots[f]) for (const m of s.mots) {
-      const brut = m.trim(), fr = EQUIVALENTS[brut.toLowerCase()] ?? brut, k = fr.toLowerCase();
-      if (k && !generiques.has(k) && !vus.has(k)) vus.set(k, fr);
+      const fr = motAffiche(m), k = fr?.toLowerCase();
+      if (fr && k && !generiques.has(k) && !vus.has(k)) vus.set(k, fr);
     }
     const mots = [...vus.values()];
     const gardes = mots.filter((m) => !mots.some((x) => x !== m && ` ${x.toLowerCase()} `.includes(` ${m.toLowerCase()} `)));
@@ -153,9 +156,9 @@ export function LignesV2a({ h, siAjoute }: { h: HoublonLu; siAjoute?: { moment: 
         <span key={f} className="pq-mb-lg-precis"><svg width="15" height="15" viewBox="0 0 24 24" data-famille={f} role="img" aria-label={COURT[f]}><use href={`#p-${f}`} /></svg>
           <i style={{ color: f === 'citrus' ? COULEURS[f].texte : undefined }}>{sp.precis[f]!.join(' · ')}</i></span>))}</span>}
       {sp.sans.length > 0 && <span className="pq-mb-lg-ligne"><b className="pq-mb-lg-los" aria-label="hors des 12 familles">◇</b>{sp.sans.map((x, k) => (
-        <span key={x.mot}>{k > 0 && <i className="pq-mb-lg-sep">·</i>}{x.mot}<small> {x.sources.join(', ')}</small></span>))}</span>}
+        <span key={x.mot}>{k > 0 && <i className="pq-mb-lg-sep">·</i>}{x.mot}</span>))}</span>}
       <span className="pq-mb-lg-ligne">{fiches.map((x) => <span key={x.nom}>{x.nom} {val(x.valeur)}</span>)}</span>
-      <span className="pq-mb-lg-ligne"><span>huiles {val(huiles?.valeur)}</span><small>{sp.source ?? 'non publié'}</small></span>
+      <span className="pq-mb-lg-ligne"><span>huiles {val(huiles?.valeur)}</span></span>
       {siAjoute && <span className="pq-mb-lg-ligne"><span className="pq-mb-lg-gris">si ajouté</span>{' '}<b className="pq-mb-lg-si">à {siAjoute.moment} : {siAjoute.effet}</b></span>}
       <span className="pq-mb-lg-cle">
         <span className="pq-mb-lg-trk pq-mb-lg-trk-cle"><i style={{ width: '50%', background: '#888' }} /></span> fiches qui la disent ·

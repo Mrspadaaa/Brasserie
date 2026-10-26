@@ -886,3 +886,99 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   attestées par au moins une source, et toutes les formes produit rattachées à leur variété. Rien n'est exclu à l'entrée. Ce qui a peu
   de données est marqué « peu de données », et ce qui n'est plus vendu est marqué « non commercialisé » si une source le dit. Le tri
   et les exclusions se font dans les écrans, par des règles écrites (D90), et le plus tard possible (D175).
+- D100 (l'utilisateur, 26.10, vers 15 h 45), réponses mot pour mot :
+  - « Je fais le test à l'aveugle moteur contre IA (10 houblons, environ 0,1 CHF) ? Tu as un budget de 0.5chf » ;
+  - « Je fais l'essai de l'IA dans Suggérer (30 appels, environ 0,1 CHF) ? Tu as un budget de 0.5 » ;
+  - « Je fusionne la PR #183 dans main ? oui » ;
+  - « J'écris les nouvelles données dans le catalogue Firestore ? oui » ;
+  - « Je teste l'app dans ton Chrome, en lecture seule ? oui ».
+
+  Exécution :
+  - PR #183 fusionnée dans main le 26.10, commit de fusion 59702c18, état CLEAN.
+  - Remis à la reprise, à cause du quota hebdomadaire à 99 % :
+    - le test à l'aveugle, à 0,5 CHF au plus ;
+    - l'essai et la production de l'IA dans Suggérer, à 0,5 CHF au plus pour l'essai ;
+    - l'écriture du catalogue Firestore : d'abord un script, un essai sur émulateur, une sauvegarde, puis l'écriture ;
+    - le test dans son Chrome, en lecture seule, sans jamais cliquer sur +, −, ×, Ajouter, Appliquer, Placer, Remplacer, Abandonner,
+      Enregistrer, Supprimer ni Modifier.
+- D99 (pilote, 26.10, mesure g2d) : l'option c devient le défaut au dry hop, actif et après. Le débordement de style ne compte dans le
+  rang que pour une famille marquée (moitié des fiches).
+  - Sur la 21C, « plus d'agrumes » : Citra passe de la 54e à la 2e place, Mosaic de la 134e à la 20e, Nelson Sauvin de la 107e à la 31e.
+  - 0 barre changée, 0 ms.
+  - L'option est réversible. Les options m et w restent mesurées : elles changeraient les barres et retireraient Galaxy.
+  - Voie d99. Le lot m7 attend ce défaut.
+- D101 (pilote, 26.10, sur « architectures db différentes, ou … index … À regarder si ça vaut le coût ») : pas de changement de base
+  de données (SQLite dans le navigateur, etc.). Avec environ 570 houblons, la recherche prend moins d'une milliseconde ; le temps est
+  dans le moteur : simulation 1,4 à 6 ms, liste de Suggérer 27 ms à chaud et 110 ms à froid, liste complète environ 1 s.
+  - Après les mesures de c6, une voie de profil attribuera le temps (L20) entre lecture, moteur et rendu.
+  - Les options seront ensuite chiffrées :
+    1. des index calculés au build : famille vers houblons, vecteurs de caractéristiques, top 50 des candidats de Substituer par houblon
+       et par moment ;
+    2. le catalogue analysé mis en cache dans Dexie ;
+    3. plus de calcul dans le worker (D65, conseil du 25.10).
+  - On choisit sur la mesure, rien avant.
+- D102 (pilote, 26.10, diagnostic f1) : on fait maintenant, sans lui, ce qui ne change pas son écran (voie f2).
+  - **A** : Citra Cryo et Citra simple ont chacun leur place. Recul des produits d'arôme à 60′. Rang calculé sur l'α de la variété.
+  - **B1** : on classe tout, et on ne coupe qu'à l'affichage.
+  - **C**, jeu J1 : l'α passe de 0,4 à 0,15 à 60′ dans Substituer. Même justesse mesurée, et c'est son principe.
+  - **D** : un banc à références indépendantes (Hopsteiner par moment, Hopslist, Hops Direct, ses jugements). Jamais Beer Maverick seul.
+
+  Lui seront montrés en mini maquettes :
+  - B2 : l'affichage de Substituer (8 + 3, ou « autres de même score ») ;
+  - F : les formes, modèle (b), avec un sélecteur « Citra · pellets / cryo » ;
+  - S : Suggérer à 60′ par ressemblance, après le test à l'aveugle E (accordé, D100).
+
+  B3 (D90 en drapeau au lieu d'une exclusion) n'est pas décidé.
+- D103 (26.10, vers 17 h) : l'hébergement seul est redéployé depuis la copie propre, au commit 6e368cbd.
+  - **Contenu** : les sources à un seul endroit (D168), la carte de Ma bière qui se referme (D169), les mots en français (D170) et
+    l'appui long sur les grammes (D173).
+  - **Rejeu complet** :
+    - tsc vert ;
+    - vitest 8173 sur 8174, le seul échec étant un délai sous charge, vert quand on le relance seul ;
+    - build vert, B5 à 158,5 ko ;
+    - six contrôles Chrome OK ;
+    - états de la maquette 138/138 après e4.
+  - **Pas encore en ligne** :
+    - Ma bière et sa croix (p6, p6b) ;
+    - D99 ;
+    - le catalogue complet (c6, c7) ;
+    - l'affinage f2.
+
+    Ils partiront ensemble après la mesure de B5 et de la fluidité.
+- D104 (l'utilisateur, 26.10, sur « 160,6 ko, pour une limite de 160 ») : « C'est ok ». Le budget B5 passe à 162 ko
+  (`scripts/check-hop-budget.mjs`), pour le catalogue complet branché (c7). On le revérifie après f2.
+- D105 (pilote, 26.10, voie f2) :
+  1. **Le style avant les effets de bord.** `ordrePool` passe avant `sideTotal` : classer tout le pool ne doit plus favoriser un
+     houblon à une seule fiche, comme Teamaker devant East Kent Goldings.
+  2. **L'usage plutôt qu'un seuil d'α.** Le témoin « α ≥ 10 % » laisse place à « aucun houblon d'arôme dans les 10 premiers à 60′ » :
+     l'α se règle par la dose. Centennial à 9,5 % y entre.
+  3. **La fluidité est bloquante.** B1 coûtait 205 → 750 ms à froid, et 316 → 731 ms pour le premier écran. On mémorise l'évaluation
+     par houblon et par moment, et on n'évalue que les doses utiles. Si ça ne suffit pas, le pool est borné aux 60 meilleurs
+     « à acheter » par `ordrePool`. Aucun budget relevé.
+- D106 (pilote, 26.10, voie f4) :
+  - **Le coût de B1 reste bloquant.** Avec la borne de 80, Suggérer passe à 113 ms à chaud et à 449 ms à froid. Les remplacements à IBU
+    égal se calculeront au repos ou après le premier affichage.
+  - **Les tests de départage sont adaptés.** La clé `ordrePool` est désormais dans le rang.
+  - **À 60′, Substituer recule les remplaçants d'usage « arôme »**, avec la même lecture que Suggérer.
+- D107 (pilote, 26.10, diagnostic f3 de la liste « Ajouter », voie f5) : on fait maintenant ce qui ne change que l'ordre ou le coût.
+  - **P1, le tri K3** : seules les familles indésirables pénalisent, et les familles neutres viennent en frein après les attendues.
+    Mosaic passe de la 23e à la 2e place des achats en IPA.
+  - **P2, la comparaison par clé** : Citra simple redevient candidat.
+  - **P3, `ibuParMoment` paresseux** : 2,4 à 3,5 ms de moins.
+  - **P5 A, la règle écrite honnêtement** : « dose de départ, pas une dose de style ».
+  - **P6, les témoins.**
+
+  P4 (places et formes) et P5 B et C (dose et moment par houblon) seront montrés en mini maquettes.
+- D108 (pilote, 26.10, f4 puis f6) :
+  - **Préchauffe.** `proposerRapide` se préchauffe au repos, dès l'étape Houblons. Avant, le premier calcul à froid prenait 409 ms,
+    contre 206 sur HEAD ; le toucher est déjà passé à 201 ms, contre 220.
+  - **Place réservée.** Le groupe « Remplacer », calculé en différé, a sa place réservée : 0 px de saut.
+  - **Banc.** Le banc de fluidité mesure `proposerRapide`, c'est-à-dire le premier affichage.
+  - **B5.** Il mesure 163,0 ko pour 162. On cherche d'abord ce qui a grossi ; le brasseur décide.
+- D109 (l'utilisateur, 26.10, sur « B5 à 163,0 ko pour 162 : 164 ko ? ») : « Je l'accepte ». Le budget B5 passe à 164 ko.
+- D110 (l'utilisateur, 26.10 : « Tu peux déjà déployé en l'état. Fait une pr et tu merge une fois que c'est propre ») :
+  - L'hébergement est déployé au commit **fb0d14e3** : Ma bière et sa croix (p6, p6b), D99, catalogue et alias (c6), états (e4).
+  - **Incident.** Le premier envoi, vers 18 h 32, est parti pendant que le rejeu reconstruisait `dist` dans la même copie : 1 seul
+    fichier, et la production a servi une page 404 pendant environ 3 minutes. Je l'ai vu en lisant la page servie. Le renvoi a envoyé
+    242 fichiers et la production est rétablie (`index-Tex7XoAl.js`). Leçon ajoutée à L17.
+  - Une PR vers main est ouverte et sera fusionnée une fois le rejeu de fb0d14e3 vert.

@@ -430,7 +430,7 @@ function SesMots({ cols, mots, retenu }: { cols: ColonneLue[]; mots: Record<stri
               {l.length === 0 && <span className="pq-comparer-mots-rien">—</span>}
               {l.map(({ m, f }) => (
                 <span key={m.mot} className={cx('pq-comparer-mot', m.seul && 'pq-comparer-mot-seul')} data-mot={m.mot} data-seul={m.seul ? '' : undefined} data-fiches={m.fiches.length} data-force={f ?? ''}
-                  title={`${m.mot} : ${m.fiches.join(', ')}${m.aussi.length ? ` ; aussi chez ${m.aussi.join(', ')}` : ' ; lui seul ici'}${m.famille ? ` ; famille ${COURT[m.famille].toLowerCase()}` : ' ; hors des 12 familles'}`}>
+                  title={`${m.mot}${m.aussi.length ? ` ; aussi chez ${m.aussi.join(', ')}` : ' ; lui seul ici'}${m.famille ? ` ; famille ${COURT[m.famille].toLowerCase()}` : ' ; hors des 12 familles'}`}>
                   {m.famille ? <Picto famille={m.famille} taille={12} /> : <Hors16D />}<span className="pq-comparer-mot-t">{m.mot.split(' ').map(coupure).join(' ')}</span>
                 </span>
               ))}
@@ -585,7 +585,7 @@ function HuileTete({ cle, nom, couleur }: { cle: string; nom: string; couleur: s
   const x = (n: number) => `${(Math.min(n, HUILE_MAX) / HUILE_MAX * 100).toFixed(1)}%`;
   return (
     <span className="cmb-huile" data-greffe="rpz2-huiles" data-role="huile" data-houblon={cle}
-      aria-label={v ? `${nom} : huile totale ${v.texte} mL/100 g (${v.source})${saaz ? `, Saaz ${saaz.texte}` : ''}` : `${nom} : huile totale inconnue`}>
+      aria-label={v ? `${nom} : huile totale ${v.texte} mL/100 g${saaz ? `, Saaz ${saaz.texte}` : ''}` : `${nom} : huile totale inconnue`}>
       <IconeGoutte taille={12} />
       {v
         ? <span className="cmb-huile-p" aria-hidden="true">

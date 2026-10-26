@@ -11,6 +11,20 @@ let ouvreur: ((route: LayerRoute) => void) | null = null;
 
 export function poserOuvreurCouche(f: ((route: LayerRoute) => void) | null): void { ouvreur = f; }
 
+let fermeur: (() => boolean) | null = null;
+
+/** La pile pose ici sa fermeture « jusqu'à l'étape » (devHook.ts) : elle rend false quand elle n'a rien à faire. */
+export function poserFermeurJusquaLEtape(f: (() => boolean) | null): void { fermeur = f; }
+
+/**
+ * D118 : la croix d'une couche empilée sur Ma bière (Suggérer, Comparer) ramène à l'étape Houblons, jamais à Ma bière. Ferme
+ * toute la pile d'un saut d'historique. false (rien fermé) : pas de pile posée, ou aucune couche Ma bière dessous ; l'appelant
+ * garde alors sa fermeture d'un niveau.
+ */
+export function fermerJusquaLEtape(): boolean {
+  return fermeur ? fermeur() : false;
+}
+
 /** Ouvre la couche ; false si aucune pile n'est posée. */
 export function ouvrirCouche(route: LayerRoute): boolean {
   if (!ouvreur) return false;

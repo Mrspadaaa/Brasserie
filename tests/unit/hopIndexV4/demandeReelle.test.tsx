@@ -156,14 +156,14 @@ describe('sans visée ni dégustation (recette 21C) : les écrans disent le styl
     expect(container.textContent).not.toMatch(DEMANDE_DITE);
   });
 
-  it('Ma bière : pas de puce « + floral » (ni aucune puce de demande) ; « Ouvrir l\'analyse » caché en production', async () => {
+  it('Ma bière : pas de puce « + floral » (ni aucune puce de demande) ; « Ouvrir l\'analyse » présent en production (p6)', async () => {
     vi.stubEnv('DEV', false);
     const { container } = render(<EtapeHoublons recipe={RECETTE} boilOg={1.058} draftId="REC-A2" onChange={() => {}} onAller={() => {}} />);
     await waitFor(() => expect(container.querySelector('[data-ecran="ma-biere"]')).not.toBeNull());
     expect([...container.querySelectorAll('[data-role^="pont-"]')].map((e) => e.textContent?.trim()).filter((t) => /^[+−] /.test(t ?? ''))).toEqual([]);
     expect(container.querySelector('[data-role="pont-floral"]')).toBeNull();
-    expect(container.querySelector('[data-role="pont-biere"]')).toBeNull();
-    expect(container.textContent).not.toMatch(/Ouvrir l.analyse/);
+    expect(container.querySelector('[data-role="pont-biere"]')).not.toBeNull();
+    expect(container.textContent).toMatch(/Ouvrir l.analyse/);
   });
 
   it('Ma bière en développement : l\'entrée de l\'analyse reste (pour la rebrancher)', async () => {

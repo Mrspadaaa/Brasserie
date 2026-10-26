@@ -22,7 +22,7 @@ import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 import { ibuByMoment } from '../parcours/v4';
 import { complementsFiche, type SourcesFiche } from './sources';
 import { useComplements } from './complements-ui';
-import { ContenuSources, Etiquettes, LienUrl, NomPlage, Rangee, pl } from './SourcesFiche';
+import { ContenuSources, Etiquettes, Rangee, pl } from './SourcesFiche';
 
 export type Section = 'styles' | 'huiles' | 'sources' | 'substituts';
 const TITRES: [Section, string][] = [['styles', 'Styles'], ['huiles', 'Huiles'], ['sources', 'Sources'], ['substituts', 'Substituts']];
@@ -77,16 +77,17 @@ export function Replis({ h, cle, s, recette, ouverte, onRemplacer }: {
     switch (ouverte) {
       case 'styles': return (
         <>
+          {/* D168 : plus de nom de source ici ; ils vivent dans « Sources › », à côté. */}
           {s.styles.length ? <Etiquettes mots={s.styles} /> : <p className="text-sm text-cave-400">{s.stylesRaison}</p>}
-          {s.usages.some((u) => u.source) && <p className="mt-1.5 text-sm text-cave-400">{s.usages.filter((u) => u.source).map((u, i) => <span key={i}>{i > 0 ? ' ; ' : ''}<LienUrl nom={u.source!} url={u.url && /^https?:\/\//i.test(u.url) ? u.url : null} /></span>)}</p>}
         </>
       );
       case 'huiles': return (
         <>
           <div className="divide-y divide-cave-800">
-            {s.huileTotale.length ? s.huileTotale.map((x) => <Rangee key={x.source} nom={<>totale, <NomPlage x={x} /></>} valeur={`${pl(x)} mL/100 g`} />) : <Rangee nom="totale" valeur="non renseigné" />}
-            {s.composants.map((c) => <Rangee key={c.nom} nom={c.nom} valeur={c.plage ? <>{pl(c.plage)} %, <NomPlage x={c.plage} /></> : c.raison ?? 'non renseigné'} />)}
-            <Rangee nom="thiols, Hopsteiner" valeur={s.thiol ? `classe ${s.thiol}` : 'non publié'} />
+            {/* Une rangée par plage qui diffère (deux fiches d'accord n'en font qu'une) ; leurs noms sont dans « Sources › » (D168). */}
+            {s.huileTotale.length ? s.huileTotale.filter((x, i, l) => l.findIndex((y) => pl(y) === pl(x)) === i).map((x) => <Rangee key={pl(x)} nom="totale" valeur={`${pl(x)} mL/100 g`} />) : <Rangee nom="totale" valeur="non renseigné" />}
+            {s.composants.map((c) => <Rangee key={c.nom} nom={c.nom} valeur={c.plage ? `${pl(c.plage)} %` : c.raison ?? 'non renseigné'} />)}
+            <Rangee nom="thiols" valeur={s.thiol ? `classe ${s.thiol}` : 'non publié'} />
           </div>
           {s.accord.huile && <p className="mt-1 text-xs text-cave-400">Huile totale : fiches {s.accord.huile}. Composants en % de l’huile.</p>}
         </>
@@ -129,7 +130,7 @@ export function Replis({ h, cle, s, recette, ouverte, onRemplacer }: {
                   })}
                 </ol>
               )}
-            <p className="mt-1 text-xs text-cave-400">Comme dans Substituer : rangés par le pire cas ; hachuré, une composante inconnue (de 0 à 100). Scores de Beer Maverick non importés. Prix inconnu.</p>
+            <p className="mt-1 text-xs text-cave-400">Comme dans Substituer : rangés par le pire cas ; hachuré, une composante inconnue (de 0 à 100). Scores déjà publiés non importés. Prix inconnu.</p>
             {onRemplacer && <div className="mt-2 flex justify-end"><Pont nom="remplacer-fiche" onClick={onRemplacer}>Remplacer {h.nom}</Pont></div>}
           </>
         );

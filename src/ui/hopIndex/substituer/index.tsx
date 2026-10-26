@@ -393,9 +393,9 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
     const cible = T.biere === 'stout' ? 'stout' : sc.name.toLowerCase();
     const stout = m.styles.some((s) => s.toLowerCase().includes(cible));
     const emploi = m.styles.length
-      ? <> Employé en <span data-role="styles-usage" data-houblon={x.nom}>{m.styles.join(', ')}</span>{m.stylesSource ? ` (${m.stylesSource})` : ''}&nbsp;; {T.biere === 'stout' ? (stout ? 'stout citée.' : 'aucune stout citée.') : (stout ? `${sc.name} cité.` : `${sc.name} non cité.`)}</>
+      ? <> Employé en <span data-role="styles-usage" data-houblon={x.nom}>{m.styles.join(', ')}</span>&nbsp;; {T.biere === 'stout' ? (stout ? 'stout citée.' : 'aucune stout citée.') : (stout ? `${sc.name} cité.` : `${sc.name} non cité.`)}</>
       : <> Aucun style d’emploi dans le dépôt.</>;
-    const mots = m.mots.length ? <> <span data-role="descripteurs" data-houblon={x.nom}>{m.mots.join(', ')}</span> ({m.motsSource}).</> : null;
+    const mots = m.mots.length ? <> <span data-role="descripteurs" data-houblon={x.nom}>{m.mots.join(', ')}</span>.</> : null;
     if (x.original) {
       const dit = cites.length === attendues.length ? `cite ${attendues.length === 3 ? 'les trois' : 'toutes'}` : cites.length ? `cite ${liste(cites.map((f) => COURT[f].toLowerCase()))}` : `ne cite aucune des ${attendues.length}`;
       return <><b>{x.nom}</b> {dit}{marques.length ? ` (${liste(marques.map((f) => COURT[f].toLowerCase()))} marqué${marques.length > 1 ? 's' : ''})` : ''}.{emploi}</>;
@@ -514,7 +514,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
           </div>
         ))}
       </div>
-      <p className="pq-substituer-note">Points&#8239;: cité par ses fiches (gros&#8239;: la moitié au moins), cercle&#8239;: le mot est rangé dans une famille chez lui. <b>?</b>&#8239;: aucune fiche ne donne la valeur, ce n’est pas zéro. Huiles en % de l’huile (Beer Maverick, Hopsteiner, dépôt).</p>
+      <p className="pq-substituer-note">Points&#8239;: cité par ses fiches (gros&#8239;: la moitié au moins), cercle&#8239;: le mot est rangé dans une famille chez lui. <b>?</b>&#8239;: aucune fiche ne donne la valeur, ce n’est pas zéro. Huiles en % de l’huile.</p>
     </section>
   );
   // D130 bis : au dry hop, le tableau des arômes de u4e5 au premier écran, dans u4 enrichi (« Très bien »).
@@ -841,7 +841,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
           <div>{faces.map((x) => <Rangee key={x.cle} dom={domB} nom={x.nom} couleur={x.couleur} traits={M[x.cle].beta.traits} mesure="beta" />)}</div>
         </div>
         <p className="pq-substituer-note">
-          α et β&#8239;: traits fins, un par plage qui diffère (des sources d’accord n’en font qu’un, leurs noms au survol)&#8239;; trait noir, milieu moyen des sources
+          α et β&#8239;: traits fins, un par plage qui diffère (des sources d’accord n’en font qu’un ; leurs noms sont dans la section Sources de la fiche)&#8239;; trait noir, milieu moyen des sources
           {aPlageDose.length ? <>&#8239;; plage de dose de {liste(aPlageDose.map((x) => `${x.nom} selon son α (${plage(M[x.cle].alpha.src[0]?.r[0] ?? 0, M[x.cle].alpha.src[0]?.r[1] ?? 0)})`))}</> : null}.
           {sousPlage.map((x) => <> L’{M[x.cle].alpha.lot!.origine === 'article' ? 'article' : 'lot'} de {x.nom} ({fr(M[x.cle].alpha.lot!.v)}) est sous sa plage variétale&#8239;: la dose de {nombre(x.dose!.grams, 1)}&nbsp;g en tient compte.</>)}
           {surPlage.map((x) => <> Le lot de {x.nom} ({fr(M[x.cle].alpha.lot!.v)}) est au-dessus de sa plage variétale&#8239;: la dose de {nombre(x.dose!.grams, 1)}&nbsp;g en tient compte.</>)}
@@ -856,7 +856,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
               {faces.map((x) => <Rangee key={x.cle} dom={domH(k)} nom={x.nom} couleur={x.couleur} traits={M[x.cle].huilesTraits[k]} mesure={n} />)}
             </div>
           ))}
-          <p className="pq-substituer-note">{huileInconnue.length ? `${liste(huileInconnue)} non renseigné${huileInconnue.length > 1 ? 's' : ''}, ce n’est pas zéro. ` : ''}Farnésène publié par Beer Maverick, non importé.</p>
+          <p className="pq-substituer-note">{huileInconnue.length ? `${liste(huileInconnue)} non renseigné${huileInconnue.length > 1 ? 's' : ''}, ce n’est pas zéro. ` : ''}Farnésène publié, non importé.</p>
         </section>
 
         <section className="pq-substituer-style" data-etat="etat-subst-style">
@@ -907,7 +907,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
         <details open className="pq-substituer-details" data-etat="etat-subst-lire">
           <summary data-etat="etat-subst-lire-fermer">Lire ces scores</summary>
           <div className="pq-substituer-regle">
-            <p><b>Calculés depuis nos fiches</b>, pas les scores de substitution de Beer Maverick (non importés). Prix, rareté et cohumulone&nbsp;: inconnus.</p>
+            <p><b>Calculés depuis nos fiches</b>, pas des scores de substitution déjà publiés (non importés). Prix, rareté et cohumulone&nbsp;: inconnus.</p>
             {ouverts[0] && <p><b>La plage</b>&nbsp;: le moteur calcule le score sans la composante inconnue (poids renormalisés), ce qui donne {ouverts[0].moteur} à {ouverts[0].nom}. Ici, l’inconnue est laissée ouverte de 0 à 100&nbsp;: {moment} (poids arôme {nombre(lecture.poids.arome, 1)}, huiles {nombre(lecture.poids.huiles, 1)}, amertume {nombre(lecture.poids.amertume, 1)}), {ouverts[0].nom} vaut entre {ouverts[0].min} et {ouverts[0].max}. Les composantes connues restent celles du moteur, sans plage propre.</p>}
             <p><b>Sans inconnue ne veut pas dire sûr</b>&nbsp;: chaque composante connue vient de peu de fiches ({faces.map((x) => `${x.nom} : ${x.h.familles.citrus.sur}`).join(', ')}). Le score n’a pas d’intervalle statistique, seulement cette plage.</p>
             {amertume && <p><b>{Moment}, l’arôme compte peu</b>&nbsp;: il ne mesure que ce que le remplaçant apporte de plus que {h0.nom}, pas ce qu’il perd (l’arôme de {h0.nom} part à l’ébullition). Un remplaçant qui perd six familles peut y valoir 100&#8239;: c’est pour cela que l’écran ne l’affiche pas seul.</p>}

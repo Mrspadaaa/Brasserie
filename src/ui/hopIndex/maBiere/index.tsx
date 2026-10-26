@@ -15,7 +15,7 @@ import { useDemande } from '../comparer/demande';
 import { BoutonLegende, PanneauLegende, useLegende } from './LegendeGroupe';
 import { ActionsCoquille, useOuvrir } from './hote';
 import { useNavigation } from './hote';
-import { useBiere, useHote, useRecette } from './hote';
+import { useBiere, useRecette } from './hote';
 import type { RecetteParcours } from '../parcours/types';
 import { donnees, houblon, lireBiere, style } from '../parcours/adaptateur';
 import { Ajouter } from './Ajouter';
@@ -23,6 +23,7 @@ import { Alerte, Bandeau, NomFamille, PisteBase, nomLevureBase } from './Base';
 import { Frise } from './Frise';
 import { Lentille } from './Lentille';
 import { useRepere } from './repere';
+import { FournisseurCartes, useCartesOuvertes } from './carteOuverte';
 import './ma-biere.css';
 import './rail.css';
 
@@ -67,15 +68,14 @@ export function EtapeHoublonsContenu({ bandeau = true }: { /** Faux dans le wiza
   const { route, aller } = useNavigation();
   const sc = style(recette.styleCode);
   const demande = useDemande(recette);
-  // a2 (D84) : l'écran d'analyse de ma bière (l'onglet « Ma bière » de la maquette) n'existe pas encore dans l'app : la couche
-  // `hopBeer` n'y montre que « Écran provisoire… données du prototype, non réelles » (HopToolLayer.tsx, CoucheProvisoire).
-  // L'entrée « Ouvrir l'analyse de ma bière » (la variante B de D121, son choix) et les gestes qui y mènent (toucher le profil,
-  // variantes A et C) ne s'affichent donc plus en production ; ils restent pour la maquette (hôte sans `allerWizard`) et en
-  // développement (`import.meta.env.DEV`). À REBRANCHER quand l'écran d'analyse sera dans la pile : mettre `analyse` à true.
-  const enApp = !!useHote().allerWizard;
-  const analyse = !enApp || import.meta.env.DEV;
+  // p6 : l'écran d'analyse de ma bière (l'onglet « Ma bière » de sa base v4.10) est dans l'app (couche `hopBeer`, biere/EcranApp.tsx) :
+  // l'entrée « Ouvrir l'analyse de ma bière » (variante B de D121) et le toucher du profil (A et C) s'affichent en production.
+  const analyse = true;
   const [echelle, setEchelle] = useState<Echelle>('style');
   const [legende, basculerLegende] = useLegende();
+  // D169 : une seule carte dépliée, fermée quand on change de vue ou qu'un outil recouvre l'étape (carteOuverte.tsx).
+  const racine = useRef<HTMLDivElement>(null);
+  const cartes = useCartesOuvertes(route.ecran, racine);
   // Ma bière est à l'écran sur sa route et sous la fiche ; la coquille ne la monte pas sous un outil plein écran.
   const { avant, effacer } = useRepere(recette, route.ecran === 'ma-biere' || route.ecran === 'fiche');
   const biereAvant = useMemo(() => (avant ? lireBiere(avant) : null), [avant]);
@@ -107,7 +107,8 @@ export function EtapeHoublonsContenu({ bandeau = true }: { /** Faux dans le wiza
   const colonnes = [sc.order.slice(0, moitie), sc.order.slice(moitie)];
 
   return (
-      <div data-ecran="ma-biere" data-etat="etat-etape-repos-1280" className="pq-ma-biere space-y-1">
+    <FournisseurCartes value={cartes}>
+      <div ref={racine} data-ecran="ma-biere" data-etat="etat-etape-repos-1280" className="pq-ma-biere space-y-1">
         {bandeau && (
           <div data-etat={document.body.dataset.cas === 'k3' ? 'etat-etape-cas-k3' : undefined}>
             <Bandeau biere={biere} avant={biereAvant} element="etape-bandeau" ecart={ecart} />
@@ -179,6 +180,7 @@ export function EtapeHoublonsContenu({ bandeau = true }: { /** Faux dans le wiza
           )}
         </section>
       </div>
+    </FournisseurCartes>
   );
 }
 

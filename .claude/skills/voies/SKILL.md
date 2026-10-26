@@ -37,6 +37,9 @@ Référence complète : `docs/agents/systeme.md`. Ce skill est la marche à suiv
    dans cette queue mécanique : i2, avec l'émulateur et ses captures ; p5, avec la fidélité et la maquette ; g2c, avec la
    mesure et les empreintes. Le plafond de l'auteur est passé à 120 tours. Il reste un garde-fou de dépense (L18), pas une
    cible.
+   **Le relais vers Haiku.** Un sous-agent ne peut pas lancer un sous-agent. Quand un `concepteur`, un `critique` ou un `auteur` rend
+   une section `DEMANDE EXECUTANT :` dans son RESULTAT.md, le pilote la confie aussitôt à un `executant` neuf, sans réécrire la
+   demande. Puis il renvoie le résultat à l'agent d'origine par `SendMessage`, pour qu'il juge (demande de l'utilisateur, 26.10).
 4. Router chaque décision connue d'avance avec la grille de `docs/agents/systeme.md` § Décider
    (voie, pilote, conseil, brasseur, utilisateur). Si le lot fixe une direction que les suivants
    suivront (carte, nouvel outil, convention du moteur), réunir le conseil complet **avant**

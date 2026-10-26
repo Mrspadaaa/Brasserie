@@ -15,10 +15,11 @@ const GRAND = { maxBuy: 400, limit: 2000, buyLimit: 2000, perHop: 100, assemblag
 const voies = (departage: Departage | undefined, moment: 'dryActive' | 'b10', dir: Record<string, number> = { citrus: 1 }) =>
   m.proposeVoies(R21C, dir, { ...GRAND, moments: [moment], ...(departage ? { departage } : {}) }).voies.filter((v) => v.type === 'ajouter');
 const nom = (v: Voie) => v.actions[0].hopName;
-/** Les voies qui partagent conflits, débordement et distance : le groupe d'ex æquo que le départage a le droit de réordonner. */
+/** Les voies qui partagent conflits, débordement et distance : le groupe d'ex æquo que le départage a le droit de réordonner.
+ * D99 : le débordement du rang est overflowRang au dry hop (option c par défaut), overflowTotal ailleurs. */
 const groupes = (vs: Voie[]) => {
   const g = new Map<string, Voie[]>();
-  for (const v of vs) { const k = `${v.conflicts.length}|${v.overflowTotal}|${v.distance.total}`; (g.get(k) ?? g.set(k, []).get(k)!).push(v); }
+  for (const v of vs) { const k = `${v.conflicts.length}|${v.overflowRang ?? v.overflowTotal}|${v.distance.total}`; (g.get(k) ?? g.set(k, []).get(k)!).push(v); }
   return [...g.values()];
 };
 

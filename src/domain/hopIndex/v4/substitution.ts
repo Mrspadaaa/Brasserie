@@ -431,7 +431,8 @@ export function substitutes(key: string, options: SubstitutionOptions = {}): Sub
     const seuil = Float64Array.from(lignes, (l) => l.rang).sort()[limite - 1];
     tries = lignes.filter((l) => l.rang <= seuil);
   }
-  tries.sort((x, y) => cmp(x, y) || NOMS.compare(x.name, y.name));
+  // c6 (D175) : à égalité de rang, une variété à peu de données (une source, pas d'α) ne passe jamais devant une variété documentée ; puis le nom.
+  tries.sort((x, y) => cmp(x, y) || Number(!!x.sub.ref.catalogue.peuDeDonnees) - Number(!!y.sub.ref.catalogue.peuDeDonnees) || NOMS.compare(x.name, y.name));
 
   // 2) Les rendus seulement : composantes, couverture, familles, dose, raison.
   const rendus = tries.slice(0, limite);

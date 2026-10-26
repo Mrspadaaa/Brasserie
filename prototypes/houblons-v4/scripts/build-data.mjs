@@ -8,6 +8,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+// c6 (26.10) : la décision de rattachement d'une fiche à une variété (alias, origine non répertoriée, variétés ajoutées) est celle de fusion.mjs.
+import { analyser, lireSources, lireTable, verifierTable, SOURCES_NOMS, cleFiche } from '../../../src/data/hopV4/rattachement.mjs';
 
 const here = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const repo = path.resolve(here, '../..');
@@ -41,6 +43,13 @@ const ORIGIN = [[/USA|United States/, 'États-Unis'], [/UK|United Kingdom/, 'Roy
 const origin = (o) => ORIGIN.find(([re]) => re.test(o || ''))?.[1] || o || null;
 // Origines corrigées par la v3 (revue Fable 18.10.2026) : la fiche Hopsteiner prime.
 const ORIGIN_FIX = { 'hallertau-taurus': 'Allemagne', northdown: 'Royaume-Uni' };
+// c6 : Equinox est Ekuanot (un seul identifiant) ; ses noms deviennent des alias d'Ekuanot. Table : src/data/hopV4/alias-noms.json.
+const table = lireTable();
+const bmBase = bm.filter((v) => !table.idsFusionnes[v.id]);
+const aliasFusionnes = new Map();
+for (const v of bm) { const cible = table.idsFusionnes[v.id]; if (cible) aliasFusionnes.set(cible, [...(aliasFusionnes.get(cible) ?? []), v.name, ...(v.aliases || [])]); }
+const aliasesDe = (v) => [...new Set([...(v.aliases || []), ...(aliasFusionnes.get(v.id) ?? [])])];
+const originDe = (v) => ORIGIN_FIX[v.id.replace(/^beermaverick-/, '')] || origin(v.origin);
 
 // Hopsteiner : descriptions sur houblon brut (familles déclarées, descripteurs), reliées par le nom.
 const hsByName = new Map();
@@ -104,7 +113,11 @@ const SOURCES_MOTS = [
   { id: 'usahops', author: 'USA Hops', kind: 'manufacturer', mots: (l) => l.aromes },
 ];
 const SOURCES_COMMUNAUTAIRES = [{ id: 'hopdatabase', nom: 'HopDatabase (kasperg3)' }, { id: 'hopsjson', nom: 'hops-json (stuartraetaylor)' }];
-const ECARTEES = new Set(read('src/data/hopV4/complements-non-rattachees.json').fiches.filter((x) => /^écarté à la fusion/.test(x.raison)).map((x) => `${x.source}|${x.nom}`));
+// c6 : la décision de rattachement de chaque fiche (les rattachements écartés à la fusion restent écartés, les alias et les variétés ajoutées entrent) ;
+// les fiches d'une origine non répertoriée (Cascade CHE) restent dans les compléments, hors des mots du catalogue.
+const decision = analyser(lireSources(SOURCES_NOMS), bmBase.map((v) => ({ id: v.id, name: v.name, aliases: aliasesDe(v), origin: originDe(v) })), table);
+const erreursTable = verifierTable(table, decision.index);
+if (erreursTable.length) throw Error(`alias-noms.json : ${erreursTable.join(' ; ')}`);
 const motNet = (s) => String(s).replace(/,/g, ' ').replace(/^[\s#]+|[\s.]+$/g, '').replace(/\s+/g, ' ');
 const lireSource = (id) => JSON.parse(fs.readFileSync(path.join(DESC_DIR, `${id}.json`), 'utf8'));
 const anneeDe = (f) => { const p = f.publie; const s = typeof p === 'string' ? p : p && typeof p === 'object' ? p.date ?? null : null; const m = typeof s === 'string' ? s.match(/^(\d{4})/) : null; return m ? Number(m[1]) : null; };
@@ -112,8 +125,10 @@ const anneeDe = (f) => { const p = f.publie; const s = typeof p === 'string' ? p
 const lues = new Map();
 for (const s of [...SOURCES_MOTS, ...SOURCES_COMMUNAUTAIRES]) {
   const j = lireSource(s.id);
-  for (const f of j.fiches) {
-    if (!f.varietyId || ECARTEES.has(`${s.id}|${f.nom}`)) continue;
+  for (const [rang, f] of j.fiches.entries()) {
+    const dec = decision.decisions.get(cleFiche(s.id, rang));
+    if (!dec?.id || dec.origineNonRepertoriee) continue;
+    f.varietyId = dec.id;
     const l = f.listes ?? {};
     const mots = (s.mots ? s.mots(l) : l.descripteurs) ?? [];
     const biere = s.bière ? s.bière(l) ?? [] : [];
@@ -196,7 +211,7 @@ const bmDe = (f) => ({
 });
 
 // Descriptions conservées pour le moteur : seulement celles qui portent des descripteurs.
-const varieties = bm.map((v) => {
+const varieties = bmBase.map((v) => {
   const id = v.id;
   const key = fold(v.name);
   const h = hsByName.get(key) || hsByName.get(HS_ALIAS[key]) || (v.aliases || []).map((a) => hsByName.get(fold(a))).find(Boolean) || null;
@@ -204,7 +219,7 @@ const varieties = bm.map((v) => {
   const tags = tagsOf(v);
   const f = bmFiches.get(id);
   return {
-    id, name: v.name, aliases: v.aliases || [], origin: ORIGIN_FIX[short] || origin(v.origin), form: v.form,
+    id, name: v.name, aliases: aliasesDe(v), origin: ORIGIN_FIX[short] || origin(v.origin), form: v.form,
     alpha: range(v, 'alpha'), beta: range(v, 'beta'), oil: range(v, 'totalOil'),
     tags, tagsFr: tags.map((t) => FR[t] || t),
     descriptions: [...(v.descriptions || []).filter((d) => /Tags documentaires/.test(d.text)), ...(h ? h.descriptions : []),
@@ -257,8 +272,50 @@ const styles = bjcp.styles.map((s) => ({
   url: s.source?.reference || null,
 }));
 
+// ---- c6 : les variétés que les sources citent et que Beer Maverick n'a pas (D98 : toutes, rien n'est exclu à l'entrée) ----
+// Valeurs : seulement l'enveloppe des valeurs VALIDES de complements.json (la fusion a déjà écarté les valeurs suspectes) ; une borne manquante
+// laisse le champ inconnu (null), jamais 0. Aucun descripteur de Beer Maverick : les mots viennent des sources (fiches compactes).
+// `peuDeDonnees` : moins de deux sources (Brewer's Friend, index sans valeur, ne compte pas) ou pas d'α. Les ajouts ne sont pas dans le démarrage :
+// fichier à part, chargé à la demande (src/data/hopV4/catalogue-ajouts.json, chargerAjouts de data.ts). C6_TIER1 = aucune (défaut : B5 160 ko gzip tenu, 25 variétés documentées dans le démarrage le dépassent à 161,1 ko) | documentees | toutes : mesure seulement.
+const complements = read('src/data/hopV4/complements.json');
+const paire = (e) => (Array.isArray(e) && Number.isFinite(e[0]) && Number.isFinite(e[1]) ? [e[0], e[1]] : null);
+const env = (id, champ) => paire(complements.varietes[id]?.c?.[champ]?.e);
+const premiereUrl = new Map();
+const sourcesNoms = lireSources(SOURCES_NOMS);
+for (const tour of [(sid) => sid !== 'brewersfriend', (sid) => sid === 'brewersfriend']) {
+  for (const [sid, fiches] of sourcesNoms) {
+    if (!tour(sid)) continue;
+    fiches.forEach((f, i) => { const d = decision.decisions.get(cleFiche(sid, i)); if (d?.via === 'nouvelle variété' && f.url && !premiereUrl.has(d.id)) premiereUrl.set(d.id, f.url); });
+  }
+}
+const ajoutBase = (n) => {
+  const nbSources = n.sources.filter((s) => s !== 'brewersfriend').length;
+  const alpha = env(n.id, 'alpha');
+  return { n, nbSources, alpha, peuDeDonnees: nbSources < 2 || !alpha };
+};
+const ajoutComplet = ({ n, nbSources, alpha, peuDeDonnees }) => ({
+  id: n.id, name: n.name, aliases: n.aliases, origin: n.origin, form: 'unknown',
+  alpha, beta: env(n.id, 'beta'), oil: env(n.id, 'huile'),
+  tags: [], tagsFr: [], descriptions: [], ...fichesDe(n.id, []),
+  citedFacts: [], hopsteinerId: null, hsLinalool: null, hsThiol: null, hs: null,
+  oils: { myrcene: env(n.id, 'myrcene'), humulene: env(n.id, 'humulene'), caryophyllene: env(n.id, 'caryophyllene'), farnesene: env(n.id, 'farnesene'), others: null },
+  cohumulone: env(n.id, 'cohumulone'), purpose: null, bm: null, bmYear: null, usage: null, url: premiereUrl.get(n.id) ?? null,
+  peuDeDonnees, nbSources,
+});
+const TIER1 = process.env.C6_TIER1 ?? 'aucune';
+const bases = decision.nouvelles.map(ajoutBase);
+const tier1 = bases.filter((b) => (TIER1 === 'toutes' ? true : TIER1 === 'aucune' ? false : !b.peuDeDonnees)).map(ajoutComplet);
+// Les dictionnaires du catalogue de démarrage s'arrêtent ici ; le fichier des ajouts à la demande a ses propres mots.
+const descMotsDemarrage = dicoMots.slice();
+const tier2Brut = bases.filter((b) => !(TIER1 === 'toutes' ? true : TIER1 === 'aucune' ? false : !b.peuDeDonnees)).map(ajoutComplet);
+const motsAjouts = [], indexAjouts = new Map();
+const versAjouts = (v) => (v.fiches ? { ...v, fiches: v.fiches.map(([s, an, ...mots]) => [s, an, ...mots.map((i) => { const m = dicoMots[i]; if (!indexAjouts.has(m)) { indexAjouts.set(m, motsAjouts.length); motsAjouts.push(m); } return indexAjouts.get(m); })]) } : v);
+const tier2 = tier2Brut.map(versAjouts);
+
 const out = {
   fixture: FIXTURE, fixtureSource: prod.source,
+  // c6 : un identifiant fusionné (Equinox → Ekuanot) reste lisible : le stock et les recettes qui le portent le suivent.
+  idsFusionnes: table.idsFusionnes,
   sources: {
     varieties: 'Beer Maverick (descripteurs, plages historiques, cohumulone, farnésène, usage, styles, substituts, accords), src/data/hopBeerMaverickBootstrap.json',
     hopsteiner: 'Hopsteiner 2025, familles déclarées et descripteurs, src/data/hopManufacturerBootstrap.json',
@@ -268,10 +325,16 @@ const out = {
     descripteurs: `Descripteurs d'arôme des sources, src/data/hopSources (${stats.fiches} fiches sur ${stats.varietesAvecFiche} variétés), forme compacte : descSources, descMots, fiches`,
   },
   // [auteur, nature, contexte, site de la source] ; mots de toutes les fiches (voir descriptionsDe, data.ts).
-  descSources: tableSources.map((t) => t.slice(0, 4)), descMots: dicoMots,
-  varieties, stock, unlinked, styles,
+  descSources: tableSources.map((t) => t.slice(0, 4)), descMots: descMotsDemarrage,
+  varieties: [...varieties, ...tier1], stock, unlinked, styles,
 };
 fs.mkdirSync(path.join(here, '..', '..', 'src', 'data', 'hopV4'), { recursive: true });
 fs.writeFileSync(path.join(here, '..', '..', 'src', 'data', 'hopV4', 'proto-data.json'), JSON.stringify(out));
+fs.writeFileSync(path.join(here, '..', '..', 'src', 'data', 'hopV4', 'catalogue-ajouts.json'), JSON.stringify({
+  version: 1,
+  note: 'c6 (26.10, D98) : variétés citées par les sources et absentes de Beer Maverick, à peu de données (une seule source, ou pas d\'α). Chargé à la demande, jamais au démarrage. Même forme que proto-data.json (descSources, descMots, varieties).',
+  descSources: tableSources.map((t) => t.slice(0, 4)), descMots: motsAjouts, varieties: tier2,
+}));
+console.log(`AJOUTS c6 ${decision.nouvelles.length} variétés des sources : ${tier1.length} au démarrage, ${tier2.length} à la demande (dont ${tier2.filter((v) => v.peuDeDonnees).length} peuDeDonnees) ; C6_TIER1=${TIER1}`);
 const inStock = stock.filter((s) => s.grams > 0);
 console.log(`DATA-V4 ${varieties.length} variétés (${varieties.filter((v) => v.tags.length).length} avec descripteurs, ${varieties.filter((v) => v.hopsteinerId).length} reliées à Hopsteiner), ${styles.length} styles, ${inStock.length} houblons en stock (${inStock.reduce((t, s) => t + s.grams, 0)} g), ${stock.length - inStock.length} épuisés` + (unlinked.length ? ` ; non reliés : ${unlinked.join(', ')}` : ''));
