@@ -232,7 +232,6 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
           <text className="pq-dry-lb" x={px(m.k) + 6} y={YAX - 4}>{m.texte}</text>
         </g>
       ))}
-      {best >= 0 && <text className="pq-dry-etoile" x={px(best)} y={TOP - 3} textAnchor="middle">★</text>}
       {/* Le trait du doigt et ses anneaux : il traverse les courbes au moment tenu ; les chiffres sont dans le bandeau. */}
       <g data-role="trait-doigt">
         <line x1={px(i)} x2={px(i)} y1={TOP} y2={YAX} stroke="rgb(var(--cave-50))" strokeWidth="2" />
@@ -241,6 +240,9 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
           return v == null ? null : <circle key={f} cx={px(i)} cy={yc(v)} r="6" fill="#fff" stroke={COULEURS[f].texte} strokeWidth="2.4" />;
         })}
       </g>
+      {/* ★ en dernier, donc au-dessus de tout : quand le gain dépasse le haut de l'échelle (floral +29 à 1 j), l'anneau du doigt est
+          calé sur TOP et recouvrait le ★ (a3-etoile). Contrôle : tests/integration/controle-etoile-dryhopper.mjs. */}
+      {best >= 0 && <text className="pq-dry-etoile" x={px(best)} y={TOP - 3} textAnchor="middle" style={{ strokeWidth: 1.5 }}>★</text>}
     </svg>
   );
 
