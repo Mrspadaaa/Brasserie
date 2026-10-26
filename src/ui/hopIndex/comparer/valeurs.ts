@@ -1,7 +1,7 @@
 // Les vraies valeurs de Comparer (acquis v1, chimie, panel OSU), lues dans les données du moteur v4 et des lots,
 // importées telles quelles (jamais recopiées) :
 //  - α, β : catalogue du moteur (Beer Maverick) et fiche Hopsteiner reliée ; ton lot si sa fiche de stock le dit ;
-//  - huile et composés : src/data/hopV4/composes-houblon.json (plages par source, « à confirmer ») ;
+//  - huile et composés : src/data/hopV4/composes-houblon.json (plages par source, « à confirmer »), complétés par le catalogue du moteur (BM, HS) ;
 //  - linalol mesuré en bière : mesuresEnBiere du même fichier, et l'étude E03 (McCabe 2023) ;
 //  - panel OSU : l'étude E04 (Lafontaine 2018, H22), Cascade seul.
 // Une valeur absente reste absente (« inconnu »), jamais 0. Plage = du plus bas au plus haut des sources.
@@ -86,7 +86,20 @@ export const CHIMIE: { cle: string; famille: FamilyId; nom: string; unite: strin
   { cle: 'caryophyllene', famille: 'spice', nom: 'caryo­phyllène', unite: '% huile' },
   { cle: '4MMP', famille: 'tropical', nom: '4MMP', unite: 'µg/kg' },
 ];
-export const compose = (cle: string, c: string) => enveloppe(VARIETES[cle]?.composes?.[c]?.valeurs);
+/** Ce que le catalogue du moteur porte pour un composé de la chimie : l'huile de Beer Maverick (BM) et le linalol de
+ * Hopsteiner (HS), chacun avec sa page source. Le géraniol et le 4MMP n'y sont pas : la liste reste vide, jamais 0. */
+function duCatalogue(cle: string, c: string): Val[] {
+  const cat = hopRef(cle)?.catalogue;
+  if (!cat) return [];
+  const bm = c === 'myrcene' || c === 'humulene' || c === 'caryophyllene' ? cat.oils?.[c] : null;
+  if (bm) return [{ plage: bm, sources: ['BM'] }];
+  const hs = c === 'linalol' ? cat.hsLinalool?.range : null;
+  return hs ? [{ plage: hs, sources: ['HS'] }] : [];
+}
+/** Une ligne de la chimie : les fiches de composés, plus le catalogue du moteur quand il porte la valeur. La plage reste
+ * l'enveloppe de toutes les sources ; « inconnu » seulement si aucune n'a la valeur (les houblons sans fiche de composés,
+ * comme Mosaic, prennent alors Beer Maverick et Hopsteiner). */
+export const compose = (cle: string, c: string) => enveloppe([...(VARIETES[cle]?.composes?.[c]?.valeurs ?? []), ...duCatalogue(cle, c)]);
 
 // ---------- en bière, mesuré ----------
 type Mesure = { variete?: string; compose?: string; valeur?: number; ecart?: number; unite?: string; dose_gL?: number; descripteur?: string };

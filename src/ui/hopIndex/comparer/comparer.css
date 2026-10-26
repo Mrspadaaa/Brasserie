@@ -106,6 +106,8 @@
 /* vraies valeurs */
 .pq-comparer-vraies:not([hidden]), .pq-comparer-egaler:not([hidden]) { display: flex; flex-direction: column; gap: 6px; padding-top: 6px; border-top: 1px solid rgb(var(--cave-800)); }
 .pq-comparer-vh { font-size: 12px; font-weight: 700; }
+/* la colonne des noms tient « picto + caryophyllène » (16 + 4 + 79 px) sur une ligne : aucun nom de composé ne se coupe */
+.pq-comparer-vh, .pq-comparer-vg { grid-template-columns: 102px repeat(var(--pq-n, 3), minmax(0, 1fr)); }
 .pq-comparer-vg { align-items: start; padding: 3px 0; border-top: 1px solid rgb(var(--cave-800)); }
 .pq-comparer-chim { display: flex; flex-direction: column; gap: 6px; }
 .pq-comparer-vn { display: flex; align-items: flex-start; gap: 4px; font-size: 12px; }
@@ -200,7 +202,8 @@
 .pq-comparer[data-colonnes="4"] .pq-comparer-et-v { font-size: 12px; }
 .pq-comparer[data-colonnes="4"] .pq-comparer-et-ref-n > span { display: none; }
 .pq-comparer-vc-ibu { gap: 0; }
-.pq-comparer-vi-l { font-size: 12px; white-space: nowrap; }
+/* un nom d'étape long (« dry hop après à froid ») passe à la ligne dans sa colonne, sans déborder sur la voisine */
+.pq-comparer-vi-l { font-size: 12px; min-width: 0; overflow-wrap: anywhere; }
 .pq-comparer-et-ba { display: flex; align-items: center; gap: 3px; }
 .pq-comparer-et-ba > .pq-comparer-et-pis, .pq-comparer-et-ba > .pq-comparer-et-pr { flex: 1; min-width: 0; }
 .pq-comparer-et-gris .pq-comparer-et-pis > i, .pq-comparer-et-gris .pq-comparer-et-pr > i { opacity: .7; }

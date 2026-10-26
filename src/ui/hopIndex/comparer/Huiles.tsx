@@ -34,7 +34,7 @@ export function HuilesVue({ cols, reference }: { cols: ColonneLue[]; reference: 
 // chimies. Les mettre lune au dessus de l'autre pour bien voir les différences »). Un groupe par composé, une barre par
 // houblon comparé l'une au-dessus de l'autre, à sa couleur, sur la même échelle 0–100 % : pâle de 0 au bas de la plage,
 // franche du bas au haut, un trait fin au milieu, la plage écrite à gauche. Données : `oils` du catalogue du moteur
-// (Beer Maverick), en % de l'huile totale ; « Autres » = 100 − la somme des trois, en plage, bornée à 0. Inconnu :
+// (Beer Maverick), en % de l'huile totale ; « Autres » = la valeur publiée « All Others » (repli : 100 − les composés, bornée à 0). Inconnu :
 // barre hachurée et « ? », jamais 0.
 type Plage = [number, number] | null;
 const COMPOSES: { id: 'myrcene' | 'humulene' | 'caryophyllene' | 'autres'; nom: string; aromes: string }[] = [
@@ -47,8 +47,11 @@ function plageDe(cle: string, id: (typeof COMPOSES)[number]['id']): Plage {
   const o = hopRef(cle)?.catalogue.oils;
   if (!o) return null;
   if (id !== 'autres') return o[id] ?? null;
-  const t = [o.myrcene, o.humulene, o.caryophyllene];
-  if (t.some((p) => !p)) return null;
+  // « Autres » = la valeur publiée « All Others » de Beer Maverick (β-pinène, linalol, géraniol, sélinène) ; le calcul
+  // (100 − les trois composés, moins le farnésène s'il est publié) ne sert qu'en repli, quand elle manque.
+  if (o.others) return o.others;
+  const t = [o.myrcene, o.humulene, o.caryophyllene, ...(o.farnesene ? [o.farnesene] : [])];
+  if (t.slice(0, 3).some((p) => !p)) return null;
   const lo = Math.max(0, 100 - t.reduce((s, p) => s + p![1], 0)), hi = Math.max(0, 100 - t.reduce((s, p) => s + p![0], 0));
   return [lo, hi];
 }

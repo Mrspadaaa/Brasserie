@@ -46,7 +46,8 @@ export function hopSheet(key: string, ctx: HopSheetContext) {
       totale: { unite: 'mL/100 g', sources: oilRows, divergence: overlap(oilRows) },
       composants: {
         myrcene: comp(c.oils.myrcene), humulene: comp(c.oils.humulene), caryophyllene: comp(c.oils.caryophyllene),
-        farnesene: null, farneseneRaison: 'Publié par Beer Maverick, non importé dans le dépôt.',
+        farnesene: comp(c.oils.farnesene ?? null),
+        ...(c.oils.farnesene ? {} : { farneseneRaison: 'Beer Maverick ne publie pas de farnésène pour ce houblon (« Unknown » ou fiche absente).' }),
         linalool: c.hsLinalool ? { min: c.hsLinalool.range[0], max: c.hsLinalool.range[1], unite: '% de l’huile', source: 'Hopsteiner', annee: c.hsLinalool.year, url: c.hsLinalool.reference } : null,
       },
     },

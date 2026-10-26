@@ -391,10 +391,10 @@ export function FeuilleValeurs({ cols, sel, quatre, etapes, familles, onPreuve }
               const v = etapes[c.cle]?.[e.code];
               return (
                 <span key={e.code} className="pq-comparer-vi-l">
-                  <span className="pq-comparer-vu-in">{e.nom}</span>{' '}
+                  <span className="pq-comparer-vu-in">{e.nom}</span>{' '}
                   {v?.ibu
                     ? <span className="pq-comparer-vv" data-nature="simule" data-ibu={e.code} title={`calculé, ${nombre(v.ibu.min, 0)}–${nombre(v.ibu.max, 0)} par la plage d’α`}>~{nombre(v.ibu.valeur, 0)}</span>
-                    : <span className="pq-comparer-vi" data-inconnu="">{v?.raisonIbu?.startsWith('à froid') ? 'à froid : ?' : '?'}</span>}
+                    : <span className="pq-comparer-vi" data-inconnu="" title={v?.raisonIbu?.startsWith('à froid') ? 'à froid : IBU non modélisé' : undefined}>?</span>}
                 </span>
               );
             })}
