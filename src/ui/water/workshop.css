@@ -1,5 +1,5 @@
 .water-workshop :is(button,:is(input, textarea:where([data-single-line])), summary):focus-visible {
-  outline: 2px solid #f2c14e;
+  outline: 2px solid rgb(var(--ebc-straw));
   outline-offset: 3px;
 }
 
@@ -96,7 +96,7 @@
     font-size: 13px;
     line-height: 1.2;
     font-weight: normal;
-    color: #9a8a7e;
+    color: rgb(var(--cave-texte-400));
   }
 
   .water-ratio-compact .ratio-readings {
@@ -152,23 +152,23 @@
   }
 
   /* Dock the action button beside the tabs, away from the weighing fields. */
-  body:has(.floating-actions) [data-water-step="sels"] .water-mobile-nav {
+  body[data-has-fab] [data-water-step="sels"] .water-mobile-nav {
     padding-right: 48px;
   }
 
-  body:has(.floating-actions):has([data-water-step="sels"]) .brewer-chat-launch {
+  body[data-has-fab][data-has-water-sels] .brewer-chat-launch {
     display: none;
   }
 
-  body:has(.brewer-activity-pill) [data-water-step="sels"] .water-mobile-nav {
+  body[data-has-activity-pill] [data-water-step="sels"] .water-mobile-nav {
     padding-right: 92px;
   }
 
-  body:has(.brewer-activity-pill):has([data-water-step="sels"]) .floating-actions {
+  body[data-has-activity-pill][data-has-water-sels] .floating-actions {
     right: 58px;
   }
 
-  body:has([data-water-step="sels"]) .floating-actions {
+  body[data-has-water-sels] .floating-actions {
     top: var(--water-navigation-top, 51px);
     right: 14px;
     bottom: auto;
@@ -176,12 +176,12 @@
 
   /* Docké dans la rangée d'onglets, le bouton reprend une taille de barre :
      sa taille de pouce déborderait sur les champs de pesée. */
-  body:has([data-water-step="sels"]) .floating-actions > button {
+  body[data-has-water-sels] .floating-actions > button {
     width: 40px;
     height: 40px;
   }
 
-  body:has([data-water-step="sels"]) .brewer-activity-pill {
+  body[data-has-water-sels] .brewer-activity-pill {
     top: var(--water-navigation-top, 51px);
     bottom: auto;
     right: 14px;
@@ -192,7 +192,7 @@
     padding: 8px;
   }
 
-  body:has([data-water-step="sels"]) .brewer-activity-pill > span {
+  body[data-has-water-sels] .brewer-activity-pill > span {
     position: absolute;
     width: 1px;
     height: 1px;

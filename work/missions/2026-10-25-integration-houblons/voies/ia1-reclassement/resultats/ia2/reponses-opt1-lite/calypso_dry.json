@@ -1,0 +1,46 @@
+{
+ "casId": "calypso@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "b7591ade9686a39d",
+ "simule": false,
+ "appel": 23,
+ "http": 200,
+ "latenceMs": 1910,
+ "finishReason": "STOP",
+ "jetonsEntree": 4006,
+ "jetonsSortie": 579,
+ "coutMicroChf": 3312,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Partage des notes de fruits à noyau, poire et profil fruité intense. Éloigné par un myrcène plus haut et l'absence de citron vert.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Proche par la poire, les fruits à noyau et un fort myrcène. Sépare par une herbe coupée plus vive et moins d'agrumes.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Offre des notes de poire, fruits tropicaux et agrumes proches de Calypso. Sépare par un profil plus doux, sans le côté pomme.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Partage la pêche, le citron vert et le côté fruité. Sépare par des acides alpha plus bas et des notes de noix de coco.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Reprend le citron vert, la pomme et les agrumes de Calypso. Sépare par un profil tropical plus large et moins de fruits à noyau.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Apporte la poire, le fruité et les agrumes. Sépare par un usage dual modéré, un myrcène plus bas et des notes épicées.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Partage la pêche, le citron vert et l'orange. Sépare par des notes prononcées de pin et d'épices absentes chez Calypso.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Rapproche par la pêche, l'abricot et les fruits à noyau. Sépare par un alpha plus faible et l'absence de notes de pomme.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Partage la poire, les baies et les agrumes. Sépare par un farnésène élevé et des notes de cassis et de rose.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Possède le citron vert, la poire et l'orange. Sépare par des notes marquées de banane et de vin blanc très éloignées.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c15",
+   "c08",
+   "c07",
+   "c12",
+   "c03",
+   "c09",
+   "c06",
+   "c16",
+   "c10",
+   "c11"
+  ],
+  "phrases": {
+   "c15": "Partage des notes de fruits à noyau, poire et profil fruité intense. Éloigné par un myrcène plus haut et l'absence de citron vert.",
+   "c08": "Proche par la poire, les fruits à noyau et un fort myrcène. Sépare par une herbe coupée plus vive et moins d'agrumes.",
+   "c07": "Offre des notes de poire, fruits tropicaux et agrumes proches de Calypso. Sépare par un profil plus doux, sans le côté pomme.",
+   "c12": "Partage la pêche, le citron vert et le côté fruité. Sépare par des acides alpha plus bas et des notes de noix de coco.",
+   "c03": "Reprend le citron vert, la pomme et les agrumes de Calypso. Sépare par un profil tropical plus large et moins de fruits à noyau.",
+   "c09": "Apporte la poire, le fruité et les agrumes. Sépare par un usage dual modéré, un myrcène plus bas et des notes épicées.",
+   "c06": "Partage la pêche, le citron vert et l'orange. Sépare par des notes prononcées de pin et d'épices absentes chez Calypso.",
+   "c16": "Rapproche par la pêche, l'abricot et les fruits à noyau. Sépare par un alpha plus faible et l'absence de notes de pomme.",
+   "c10": "Partage la poire, les baies et les agrumes. Sépare par un farnésène élevé et des notes de cassis et de rose.",
+   "c11": "Possède le citron vert, la poire et l'orange. Sépare par des notes marquées de banane et de vin blanc très éloignées."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

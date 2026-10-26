@@ -50,27 +50,27 @@
    contenu réserve sa place, sans plus — 48 px, 16 px de décalage, 8 px d'air,
    zone sûre — pour que le dernier champ défile AU-DESSUS du bouton et reçoive
    le toucher ; la même marge garde un champ atteint au clavier hors de dessous. */
-body:has(.floating-actions[data-floating-actions-docked="false"]) [data-floating-actions-gap="page"] {
+:root body[data-has-fab-floating] [data-floating-actions-gap="page"] {
   padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
 }
 
-body:has(.floating-actions[data-floating-actions-docked="false"]) [data-page-shell] > main {
+:root body[data-has-fab-floating] [data-page-shell] > main {
   scroll-padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
 }
 
 /* Avec un pied, c'est lui qui porte la zone sûre et le bouton se pose dessus :
    elle n'est pas comptée une seconde fois. */
-body:has(.floating-actions[data-floating-actions-docked="false"]) [data-page-shell]:has(> footer) [data-floating-actions-gap="page"] {
+:root body[data-has-fab-floating] [data-page-shell][data-page-footer] [data-floating-actions-gap="page"] {
   padding-bottom: 4.5rem;
 }
 
-body:has(.floating-actions[data-floating-actions-docked="false"]) [data-page-shell]:has(> footer) > main {
+:root body[data-has-fab-floating] [data-page-shell][data-page-footer] > main {
   scroll-padding-bottom: 4.5rem;
 }
 
 /* Ancienne réserve, gardée telle quelle pour une surface qui porterait encore
    l'attribut nu (`data-floating-actions-gap` rendu `="true"`). */
-body:has(.floating-actions) [data-floating-actions-gap="true"] {
+body[data-has-fab] [data-floating-actions-gap="true"] {
   padding-bottom: 4.5rem;
 }
 
@@ -79,8 +79,8 @@ body:has(.floating-actions) [data-floating-actions-gap="true"] {
    reste réservée : la page ne saute pas à l'ouverture de la feuille. C'est la
    racine qui s'efface : le bouton porte son `display` en ligne, pour qu'aucune
    feuille d'écran ne le retire de sa case hors de ces deux cas. */
-body:has([role="dialog"][aria-modal="true"]) .floating-actions,
-body:has([data-vaul-drawer][data-state='open']) .floating-actions {
+:root body[data-has-modal] .floating-actions,
+:root body[data-has-drawer-open] .floating-actions {
   display: none;
 }
 
@@ -89,15 +89,15 @@ body:has([data-vaul-drawer][data-state='open']) .floating-actions {
    vide : elle se retire, et la fin du contenu ne réserve rien pour un bouton
    posé en haut (12 px, la marge ordinaire). Même borne que l'atelier. */
 @media (max-width: 639px) {
-  body:has([data-water-step="sels"]) [data-action-dock^="page"] {
+  body[data-has-water-sels] [data-action-dock^="page"] {
     display: none;
   }
 
-  body:has([data-water-step="sels"]) [data-page-shell] [data-floating-actions-gap="page"] {
+  body[data-has-water-sels] [data-page-shell] [data-floating-actions-gap="page"] {
     padding-bottom: 12px;
   }
 
-  body:has([data-water-step="sels"]):has(.floating-actions) [data-page-shell] > main {
+  body[data-has-water-sels][data-has-fab] [data-page-shell] > main {
     scroll-padding-bottom: 0;
   }
 }

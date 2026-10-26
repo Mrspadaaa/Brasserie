@@ -1,6 +1,6 @@
 // Mesure de proposer() (voies du moteur, Suggérer de q2b) sur le cas de la maquette : à froid puis à chaud.
 // Usage (depuis prototypes/houblons-v4) : npx vite-node parcours/outils/mesurer-voies.ts
-import { proposeVoies } from '../../src/engine';
+import { proposeVoies } from '../../../../src/domain/hopIndex/v4';
 import { DEGUSTATION, recetteDegustee } from '../src/donnees/cas';
 
 const r = recetteDegustee();

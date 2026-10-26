@@ -1,0 +1,46 @@
+{
+ "casId": "relax@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "5c70058e32fbb971",
+ "simule": false,
+ "appel": 66,
+ "http": 200,
+ "latenceMs": 6098,
+ "finishReason": "STOP",
+ "jetonsEntree": 3524,
+ "jetonsSortie": 530,
+ "coutMicroChf": 11577,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Avec son taux d'acides alpha quasi nul et ses bêtas élevés, il garantit la même amertume infime et délicate à l'ébullition.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Son taux d'alpha très bas et sa faible cohumulone apportent une amertume douce et modérée parfaitement comparable à Relax.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Son niveau d'alpha doux et sa faible cohumulone assurent une base amère propre et discrète, tout en partageant des origines allemandes.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Bien que sa cohumulone soit plus élevée, son taux d'alpha très faible permet d'obtenir une amertume légère similaire.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Ses acides alpha restent modérés et son profil riche en bêta-acides assure une amertume douce convenable à soixante minutes.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Ses alphas modérés permettent de doser facilement une amertume mesurée, sans risquer de faux goûts durs.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Sa faible cohumulone et ses alphas contenus offrent une amertume propre et noble, bien qu'un peu plus marquée que Relax.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Ses acides alpha relativement bas et sa faible cohumulone fournissent une amertume fine et bien équilibrée.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Ses alphas sont légèrement supérieurs mais restent modérés, procurant une amertume propre et contrôlable en début d'ébullition.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Avec une cohumulone basse et un potentiel amérisant modéré, il apporte une amertume douce malgré des alphas un peu plus élevés.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c15",
+   "c02",
+   "c18",
+   "c07",
+   "c09",
+   "c12",
+   "c20",
+   "c11",
+   "c17",
+   "c14"
+  ],
+  "phrases": {
+   "c15": "Avec son taux d'acides alpha quasi nul et ses bêtas élevés, il garantit la même amertume infime et délicate à l'ébullition.",
+   "c02": "Son taux d'alpha très bas et sa faible cohumulone apportent une amertume douce et modérée parfaitement comparable à Relax.",
+   "c18": "Son niveau d'alpha doux et sa faible cohumulone assurent une base amère propre et discrète, tout en partageant des origines allemandes.",
+   "c07": "Bien que sa cohumulone soit plus élevée, son taux d'alpha très faible permet d'obtenir une amertume légère similaire.",
+   "c09": "Ses acides alpha restent modérés et son profil riche en bêta-acides assure une amertume douce convenable à soixante minutes.",
+   "c12": "Ses alphas modérés permettent de doser facilement une amertume mesurée, sans risquer de faux goûts durs.",
+   "c20": "Sa faible cohumulone et ses alphas contenus offrent une amertume propre et noble, bien qu'un peu plus marquée que Relax.",
+   "c11": "Ses acides alpha relativement bas et sa faible cohumulone fournissent une amertume fine et bien équilibrée.",
+   "c17": "Ses alphas sont légèrement supérieurs mais restent modérés, procurant une amertume propre et contrôlable en début d'ébullition.",
+   "c14": "Avec une cohumulone basse et un potentiel amérisant modéré, il apporte une amertume douce malgré des alphas un peu plus élevés."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

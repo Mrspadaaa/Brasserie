@@ -27,10 +27,10 @@ import { isArchived } from '../../domain/catalogOrganization';
 
 const number = (value: number) => value.toLocaleString('fr-CH', { maximumFractionDigits: 1 });
 const chartTooltip = {
-  backgroundColor: '#221D19',
-  border: '1px solid #574A42',
+  backgroundColor: 'rgb(var(--cave-850))',
+  border: '1px solid rgb(var(--cave-600))',
   borderRadius: 10,
-  color: '#F5F0EA'
+  color: 'rgb(var(--cave-texte-50))'
 };
 function Distribution({
   title,
@@ -262,13 +262,13 @@ export function CatalogAnalysis({
               >
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={production.months} margin={{ left: -22, right: 0, bottom: 4 }}>
-                    <CartesianGrid vertical={false} stroke="#3D342E" />
+                    <CartesianGrid vertical={false} stroke="rgb(var(--cave-700))" />
                     <XAxis
                       dataKey="month"
-                      tick={{ fill: '#9A8A7E', fontSize: 12 }}
+                      tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }}
                       tickFormatter={(value) => `${value.slice(5)}/${value.slice(2, 4)}`}
                     />
-                    <YAxis tick={{ fill: '#9A8A7E', fontSize: 12 }} unit=" L" />
+                    <YAxis tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }} unit=" L" />
                     <Tooltip
                       contentStyle={chartTooltip}
                       formatter={(value: number) => `${number(value)} L`}
@@ -277,14 +277,14 @@ export function CatalogAnalysis({
                     <Bar
                       dataKey="brewed"
                       name="Brassés"
-                      fill="#F2C14E"
+                      fill="rgb(var(--ebc-straw))"
                       radius={[3, 3, 0, 0]}
                       isAnimationActive={false}
                     />
                     <Bar
                       dataKey="packaged"
                       name="Conditionnés"
-                      fill="#5B8AA6"
+                      fill="rgb(var(--water))"
                       radius={[3, 3, 0, 0]}
                       isAnimationActive={false}
                     />
@@ -348,7 +348,7 @@ export function CatalogAnalysis({
               data={countGroups(entries, 'style')}
               total={entries.length}
               onSelect={(name) => onFilter('style', name)}
-              color="#F2C14E"
+              color="rgb(var(--ebc-straw))"
             />
             <Distribution
               title="Houblons les plus utilisés"
@@ -376,7 +376,7 @@ export function CatalogAnalysis({
                   BATCH_STATUSES.find((s) => statusOf(s).label === label)!
                 )
               }
-              color="#5B8AA6"
+              color="rgb(var(--water))"
             />
           )}
           <section className="panel p-4 space-y-3" aria-label="Comparaison alcool et amertume">
@@ -396,17 +396,17 @@ export function CatalogAnalysis({
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     <ScatterChart margin={{ top: 5, left: -15, bottom: 14, right: 10 }}>
-                      <CartesianGrid stroke="#3D342E" />
+                      <CartesianGrid stroke="rgb(var(--cave-700))" />
                       <XAxis
                         type="number"
                         dataKey="abv"
                         name="Alcool"
                         unit=" %"
-                        tick={{ fill: '#9A8A7E', fontSize: 12 }}
+                        tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }}
                         label={{
                           value: 'Alcool (%)',
                           position: 'bottom',
-                          fill: '#9A8A7E',
+                          fill: 'rgb(var(--cave-texte-400))',
                           fontSize: 12
                         }}
                       />
@@ -415,7 +415,7 @@ export function CatalogAnalysis({
                         dataKey="ibu"
                         name="Amertume cible"
                         unit=" IBU"
-                        tick={{ fill: '#9A8A7E', fontSize: 12 }}
+                        tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }}
                       />
                       <ZAxis range={[65, 65]} />
                       <Tooltip
@@ -432,7 +432,7 @@ export function CatalogAnalysis({
                           ) : null
                         }
                       />
-                      <Scatter data={points} fill="#F2C14E" isAnimationActive={false} />
+                      <Scatter data={points} fill="rgb(var(--ebc-straw))" isAnimationActive={false} />
                     </ScatterChart>
                   </ResponsiveContainer>
                 </div>

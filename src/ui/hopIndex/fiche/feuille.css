@@ -1,0 +1,14 @@
+/* La tête de la feuille (Feuille.tsx) : celle de g1, la fiche qu'il a choisie, et la croix des outils (D109).
+   Surcharge du Sheet de l'app (src/ui/Sheet.tsx, non modifié), propre aux outils houblons v4 : classe pq-feuille sur la feuille. */
+.pq-feuille > header { min-height: 56px; padding: 4px 8px 4px 16px; gap: 12px; border-bottom-color: transparent; }
+.pq-feuille > header h2 { font-size: 1.375rem; font-weight: 700; line-height: 1.2; }
+/* Une seule croix : ronde, 44 × 44 px, icône de 20 px à l'encre, en haut à droite. */
+.pq-feuille > header > button[aria-label="Fermer"] {
+  width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 9999px;
+  color: rgb(var(--cave-texte-800, var(--cave-50))); background: rgb(var(--cave-900)); box-shadow: inset 0 0 0 1px rgb(var(--cave-800));
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.pq-feuille > header > button[aria-label="Fermer"] > svg { width: 20px; height: 20px; stroke-width: 2.25; }
+.pq-feuille > header > button[aria-label="Fermer"]:hover { background: rgb(var(--cave-850)); color: rgb(var(--cave-texte-800, var(--cave-50))); }
+.pq-feuille > header > button[aria-label="Fermer"]:active { background: rgb(var(--cave-800)); }
+.pq-feuille > header > button[aria-label="Fermer"]:focus-visible { outline: 2px solid rgb(var(--cave-50)); outline-offset: 1px; }

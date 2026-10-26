@@ -13,21 +13,21 @@
 // FICHE-BASELINE OK, ou FICHE-BASELINE ECHEC et la liste.
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { versUrl, existe, liste } from './lib/cible.mjs';
 import puppeteer from 'puppeteer-core';
 
 const args = process.argv.slice(2);
 const dir = path.resolve(args.find((a) => !a.startsWith('--')) || '.');
 const only = args.filter((a) => !a.startsWith('--')).slice(1);
 const pg = (args.find((a) => a.startsWith('--page=')) || '--page=etat-b.html').slice(7);
-const ids = (only.length ? only : fs.readdirSync(dir).filter((d) => fs.existsSync(path.join(dir, d, pg)))).sort();
+const ids = (only.length ? only : liste(dir).filter((d) => existe(path.join(dir, d, pg)))).sort();
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const problems = [];
 for (const id of ids) {
   const page = await browser.newPage();
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-  await page.goto(pathToFileURL(path.join(dir, id, pg)).href, { waitUntil: 'networkidle0', timeout: 30000 });
+  await page.goto(versUrl(path.join(dir, id, pg)).href, { waitUntil: 'networkidle0', timeout: 30000 });
   await wait(300);
   // Le langage de la page, relevé avant d'ouvrir la fiche.
   const avant = await page.evaluate(() => {

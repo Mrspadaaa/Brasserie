@@ -1,0 +1,46 @@
+{
+ "casId": "super-pride@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "0a79bbc33e138dcd",
+ "simule": false,
+ "appel": 57,
+ "http": 200,
+ "latenceMs": 1827,
+ "finishReason": "STOP",
+ "jetonsEntree": 3868,
+ "jetonsSortie": 487,
+ "coutMicroChf": 2973,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Warrior partage le profil résineux et doux de Super Pride, mais offre moins d'huiles totales pour le dry hop.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Dr. Rudi apporte des notes résineuses proches de Super Pride, avec toutefois un taux de myrcène plus faible.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Topaz convient pour son profil résineux et fruité, mais sa cohumulone élevée diffère de la douceur de Super Pride.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Green Bullet intègre des notes résineuses et fruitées similaires à Super Pride, malgré un profil d'huiles plus boisé.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Sticklebract propose un accent résineux comparable à Super Pride, bien que son taux de farnésène soit supérieur.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Rakau partage l'usage dual et les notes fruitées et résineuses, mais son myrcène est nettement plus élevé.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Galena reprend le caractère fruité de Super Pride avec une bonne intensité, mais avec des esters plus tropicaux.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Idaho 7 offre une complexité fruitée et résineuse idéale en dry hop, surpassant Super Pride en diversité d'arômes.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Admiral s'approche du profil résineux de Super Pride, mais son orientation reste plus herbacée et thé.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Chinook complète ce classement par ses puissantes notes résineuses, bien qu'il soit plus épicé que Super Pride.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c03",
+   "c05",
+   "c06",
+   "c10",
+   "c14",
+   "c16",
+   "c18",
+   "c19",
+   "c20"
+  ],
+  "phrases": {
+   "c01": "Warrior partage le profil résineux et doux de Super Pride, mais offre moins d'huiles totales pour le dry hop.",
+   "c03": "Dr. Rudi apporte des notes résineuses proches de Super Pride, avec toutefois un taux de myrcène plus faible.",
+   "c05": "Topaz convient pour son profil résineux et fruité, mais sa cohumulone élevée diffère de la douceur de Super Pride.",
+   "c06": "Green Bullet intègre des notes résineuses et fruitées similaires à Super Pride, malgré un profil d'huiles plus boisé.",
+   "c10": "Sticklebract propose un accent résineux comparable à Super Pride, bien que son taux de farnésène soit supérieur.",
+   "c14": "Rakau partage l'usage dual et les notes fruitées et résineuses, mais son myrcène est nettement plus élevé.",
+   "c16": "Galena reprend le caractère fruité de Super Pride avec une bonne intensité, mais avec des esters plus tropicaux.",
+   "c18": "Idaho 7 offre une complexité fruitée et résineuse idéale en dry hop, surpassant Super Pride en diversité d'arômes.",
+   "c19": "Admiral s'approche du profil résineux de Super Pride, mais son orientation reste plus herbacée et thé.",
+   "c20": "Chinook complète ce classement par ses puissantes notes résineuses, bien qu'il soit plus épicé que Super Pride."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

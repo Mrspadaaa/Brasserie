@@ -1,0 +1,46 @@
+{
+ "casId": "opal@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "e31670bb9e3ed29c",
+ "simule": false,
+ "appel": 39,
+ "http": 200,
+ "latenceMs": 2042,
+ "finishReason": "STOP",
+ "jetonsEntree": 3895,
+ "jetonsSortie": 542,
+ "coutMicroChf": 3155,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Smaragd partage l'anis, l'épicé et le floral, mais son usage bittering s'éloigne de la polyvalence d'Opal.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Marynka reprend l'anis, l'herbacé et les agrumes d'Opal, mais propose un profil plus terreux et un taux d'huile supérieur.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Pacific Jade offre le poivre noir et les agrumes d'Opal, mais avec une intensité alpha et des huiles plus élevées.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Santiam combine floral, épicé et poivre noir comme Opal, mais son farnésène est nettement plus haut.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Aurora propose un profil floral et épicé proche d'Opal, complété par une belle présence de linalol.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Ella intègre l'anis, le floral et l'épicé d'Opal, mais apporte des notes tropicales plus marquées.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Delta s'accorde avec les notes épicées et les agrumes d'Opal, avec des profils d'huiles et de linalol très proches.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Bohemie reprend l'herbacé, le floral et l'épicé d'Opal, tout en restant sur un usage strictement aromatique.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Strisselspalt partage le registre épicé, floral et agrumes d'Opal, bien que son alpha soit beaucoup plus faible.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Magnum GR rapproche son poivre noir et son floral d'Opal, malgré son orientation initiale vers l'amertume.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c02",
+   "c03",
+   "c04",
+   "c07",
+   "c09",
+   "c10",
+   "c13",
+   "c16",
+   "c18"
+  ],
+  "phrases": {
+   "c01": "Smaragd partage l'anis, l'épicé et le floral, mais son usage bittering s'éloigne de la polyvalence d'Opal.",
+   "c02": "Marynka reprend l'anis, l'herbacé et les agrumes d'Opal, mais propose un profil plus terreux et un taux d'huile supérieur.",
+   "c03": "Pacific Jade offre le poivre noir et les agrumes d'Opal, mais avec une intensité alpha et des huiles plus élevées.",
+   "c04": "Santiam combine floral, épicé et poivre noir comme Opal, mais son farnésène est nettement plus haut.",
+   "c07": "Aurora propose un profil floral et épicé proche d'Opal, complété par une belle présence de linalol.",
+   "c09": "Ella intègre l'anis, le floral et l'épicé d'Opal, mais apporte des notes tropicales plus marquées.",
+   "c10": "Delta s'accorde avec les notes épicées et les agrumes d'Opal, avec des profils d'huiles et de linalol très proches.",
+   "c13": "Bohemie reprend l'herbacé, le floral et l'épicé d'Opal, tout en restant sur un usage strictement aromatique.",
+   "c16": "Strisselspalt partage le registre épicé, floral et agrumes d'Opal, bien que son alpha soit beaucoup plus faible.",
+   "c18": "Magnum GR rapproche son poivre noir et son floral d'Opal, malgré son orientation initiale vers l'amertume."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

@@ -1,0 +1,46 @@
+{
+ "casId": "hallertau-taurus@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "1627689458ac58a5",
+ "simule": false,
+ "appel": 1,
+ "http": 200,
+ "latenceMs": 2734,
+ "finishReason": "STOP",
+ "jetonsEntree": 3863,
+ "jetonsSortie": 561,
+ "coutMicroChf": 3202,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Columbus partage les notes de poivre noir, curry et terreux, avec une forte intensité aromatique idéale en dry hop malgré un usage initial mixte.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Zeus offre un profil épicé proche avec du poivre et du curry, mais son usage purement amérisant demande la prudence en fermentation active.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Phoenix possède des notes chocolatées et épicées similaires, et son profil dual convient bien au dry hop, bien que le myrcène soit légèrement plus bas.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Pacific Jade apporte une composante épicée et de poivre noir marquée, avec des acides alpha solides pour un usage dual en fermentation active.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Opal se rapproche par son côté épicé et poivré ainsi que son linalol, mais ses acides alpha sont plus faibles que le Taurus d'origine.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Falconer's Flight 7CS propose un mélange d'arômes épicés et terreux, mais sa cohumulone est nettement plus élevée que celle du Taurus.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Jarrylo intègre une note de banane et d'épices commune, mais ses huiles totales sont beaucoup plus élevées et dominées par des agrumes.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Triumph partage un caractère épicé mais dévie vers des notes fruitées d'orange et de pêche absentes sur le profil original du Taurus.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Tettnanger évoque le poivre et l'épice, mais son profil penche trop vers le floral et le thé, avec une intensité d'huile plus faible.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Cluster Fugget Blend reprend les notes terreuses et épicées, mais son profil manque de la complexité du cacao et de la banane.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c15",
+   "c10",
+   "c01",
+   "c20",
+   "c03",
+   "c11",
+   "c07",
+   "c04",
+   "c17",
+   "c18"
+  ],
+  "phrases": {
+   "c15": "Columbus partage les notes de poivre noir, curry et terreux, avec une forte intensité aromatique idéale en dry hop malgré un usage initial mixte.",
+   "c10": "Zeus offre un profil épicé proche avec du poivre et du curry, mais son usage purement amérisant demande la prudence en fermentation active.",
+   "c01": "Phoenix possède des notes chocolatées et épicées similaires, et son profil dual convient bien au dry hop, bien que le myrcène soit légèrement plus bas.",
+   "c20": "Pacific Jade apporte une composante épicée et de poivre noir marquée, avec des acides alpha solides pour un usage dual en fermentation active.",
+   "c03": "Opal se rapproche par son côté épicé et poivré ainsi que son linalol, mais ses acides alpha sont plus faibles que le Taurus d'origine.",
+   "c11": "Falconer's Flight 7CS propose un mélange d'arômes épicés et terreux, mais sa cohumulone est nettement plus élevée que celle du Taurus.",
+   "c07": "Jarrylo intègre une note de banane et d'épices commune, mais ses huiles totales sont beaucoup plus élevées et dominées par des agrumes.",
+   "c04": "Triumph partage un caractère épicé mais dévie vers des notes fruitées d'orange et de pêche absentes sur le profil original du Taurus.",
+   "c17": "Tettnanger évoque le poivre et l'épice, mais son profil penche trop vers le floral et le thé, avec une intensité d'huile plus faible.",
+   "c18": "Cluster Fugget Blend reprend les notes terreuses et épicées, mais son profil manque de la complexité du cacao et de la banane."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

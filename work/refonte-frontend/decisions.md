@@ -592,3 +592,297 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   bien dessiné et relié, mais le moteur en direct ne déplace Floral que de 2,5 % de la barre (Agrumes 5,7 %, Tropicaux 1,7 %)
   pour 10 g de Motueka à 10′ ; sa base, aux chiffres figés, montrait 12 → 40 %. Pas d'écart grossi : les valeurs du moteur
   restent ; « floral +1 » sur la carte dit l'effet. Signalé au brasseur. Ouvert : capturer en pleine page les états sous le pli.
+- D54 (le brasseur, 24.10 soir, commentaire sur le rail : « il y a un peu de délai pour "sortir" du mode rail ») : D134, les
+  propositions d'ajout rapide se recalculent après la première image (useDeferredValue dans Ajouter.tsx) ; 142 → 8 ms du lever
+  du doigt à la première image ; `controle-sortie-rail.mjs` dans la batterie. Le retour des rangées (240 ms) reste celui de sa base.
+- D55 (le brasseur, 24.10 soir, commentaires sur la fiche publiée ; pilote pour la forme) : D135, « Substituts › » ouvre
+  Substituer pour un houblon de ma recette (hors recette, la liste se déplie dans la fiche : Substituer remplace un ajout) ;
+  D136, « classé » devient un point creux et « 1/2 », le compte du radar, la légende dit « Hopsteiner le range dans cette
+  famille, sans mot qui le décrive ». `controle-fiche-pied.mjs` dans la batterie.
+- D56 (le brasseur, 24.10 soir, Comparer : « pas de possibilité d'enlever, remplacer un houblon choisi, ni en recherche un ») :
+  D137, chaque houblon choisi (sauf l'épinglé de Substituer) porte ⇄ et × sous sa tête ; ⇄ ouvre la feuille « Remplacer X » ;
+  la feuille cherche tout le catalogue (nom et alias). `controle-comparer-choix.mjs` dans la batterie.
+- D57 (le brasseur, 24.10 soir : « Sauver cette maquette on est quasiment à du 100% ») : la maquette du soir, D134 à D137
+  compris, est figée comme référence (étiquette git locale, copie de la construction, cerveau) ; la réactivité (D138) et le
+  report des choix d'un écran à l'autre (D139) sont les points suivants.
+- D58 (le brasseur, 24.10 soir, commentaires sur la maquette publiée ; pilote pour la forme, réversible) : le nom de l'étape
+  retiré de l'en-tête (le fil d'étapes le dit) ; la ligne de tête d'une carte du rail passe à la ligne (plus de défilement en
+  largeur, le × reste) ; « Plus utilisé les icône hors 16d » lu « utilise plus les icônes » (ses trois autres commentaires
+  demandent des icônes) : le ◇ et le premier mot hors des 12 sur chaque ajout proposé, le ◇ devant « lui seul » / « hors 16D » de
+  Suggérer et en dernière case des effets (discret, les mots au toucher) ; la phrase « X seul dit … » de « Ses mots » de Comparer
+  retirée (la vue reste à reprendre) ; les légendes sous les pastilles, en mini maquettes (lot leg) ; le moment proposé par le
+  moteur (10′) : noté pour la vraie app.
+- D59 (le brasseur, 24.10 soir : « Faire des mini maquettes du dryhopping avec mes feedback ») : lot de douze variantes sur sa
+  p4b2f (règle n° 1 : la base reste), trois séries : la frise de y1b retravaillée (dga), les trois plans de w2 (dgb), libre
+  (dgz, Fable) ; critique dg ; planche dans un artefact neuf.
+- D60 (le brasseur, 24.10 soir : « Faire en Todo la recherche avancée, mettre dans le git. Pas si utile pour le moment. Ajoute
+  les mini maquettes ») : #151 passe en P3 et `status:deferred` ; les douze mini maquettes, leurs captures et les verdicts sont
+  commités (7f9cac8c), la branche poussée, les images posées dans l'issue.
+- D61 (le brasseur, 24.10 soir : « Tu peux intégrer légende type leg3-v2a · Les barres n/N mais barre leg3-v2e · Les spéciaux
+  repliés ») : la légende des pastilles devient leg3-v2f, intégrée sous les pastilles des cartes du rail et des ajouts
+  proposés ; registre `choix/ecrans.json` (complément de l'étape) à mettre à jour après la reprise.
+- D62 (le brasseur, 24.10 nuit : « Je veux qqch comme ça moi ???? », sur sa capture de la carte ouverte de Nugget dans
+  leg3-v2a) : D61 relue. « Les spéciaux repliés » est le nom de la vignette v2e, pas une consigne. La légende des pastilles
+  est v2a telle quelle (mots précis avec leurs pictos, ◇ et ses sources, ce que disent les fiches, huiles, ligne-clé, ouverts
+  sous la bande, puis marquée, citée, non décrite, « ? » et « Sans X › »), avec seulement la petite barre de v2e et le point
+  « en tête » ; plus de pastille repliée. Contrôle D140 : `controle-legende-v2a.mjs`.
+- D63 (le brasseur, 24.10 nuit : « Les commentaires pour le dryhopping était pour la partie compare ») : ses mots sur la frise
+  de y1b et les trois plans de w2 visent Comparer. Ils vont au lot r6a++ (Comparer sur r6a, critique rp) ; la planche
+  « Dryhopper, tes retours » (D59) les greffait sur Dryhopper : elle reste en ligne, marquée, et ne sert pas de choix pour
+  Comparer. La base de Dryhopper reste l'écran jouable (« la meilleure version est celle de l'app jouable »).
+- D64 (le brasseur, 24.10 nuit : « Tu peux commencer la mise en place pour l'intégration dans la vrai application. Faire une
+  liste des tâche, mettre à jour git et suivre tout ça. Jusqu'à l'intégration. La fluidité, l'optimisation de code est très
+  importante vu qu'il y aura beaucoup de données !! ») : la porte B s'ouvre. Épopée #159, mission
+  `work/missions/2026-10-25-integration-houblons/` ; état des lieux mesuré (voie i0), puis conseil complet sur l'architecture
+  de fluidité avant le premier code dans `src/`. Push, PR, fusion et déploiement restent sur son accord.
+- D65 (conseil complet, 24.10 nuit, `cerveau/decisions/2026-10-25-integration-architecture.md`) : pile de routes dans App, le
+  wizard reste monté sous les outils ; une seule porte d'écriture (`applyHopV4Change` sur `writeRecipeDraft`, ou `saveRecipeConfirmed`
+  pour RecipePage, patch de `hops` seul) ; calcul : causes mesurées d'abord (T5), interface asynchrone dès T6, worker persistant
+  seulement si le banc ×4 échoue ; catalogue en JSON à la demande ; V5.5 sous drapeau. Ordre : T1, T14, T3, T4, T5, T6, T17, T9,
+  T11, T8, T12, T7 (si besoin), T10, T13, T15, T16, T18 (issues #160 à #176, épopée #159).
+- D66 (le brasseur, 25.10 : « Je veux partir de la version de base, celle sur la maquette jouable ») : un nouveau lot de Comparer,
+  `ecran-1/fils25-comparer/`, part de l'écran Comparer de la maquette jouable (figé dans `maquettes/parcours-cmp-base`, capture
+  `captures/base-jouable.png`), et non de r6a. Obligatoire : choisir quand comparer (60′, 10′, dry hop…), les hors 16D bien montrés, les
+  huiles, moins de texte (≤ 100 mots au premier écran, la base en a 114), et tous ses commentaires sur Comparer. La planche r6a++ reste
+  montrée, marquée « bâtie sur r6a ». Dérogation M13 : « Refait une série » (trois séries de quatre, critique, planche).
+- D67 (pilote, 25.10, lecture du critère de D142) : « Pas normalisé au timing. Pareil pour les barre » se lit par famille :
+  au moment choisi, la plus grande barre de chaque famille non nulle remplit 40 % de sa piste au moins (option A de
+  `voies/cm-normalise/RESULTAT.md`). Un apport quasi nul (sous 0,05 cran) ne se grossit pas : il s'affiche « ~0 », sans barre,
+  et n'est pas jugé. Réversible : `--barres=globale` rend la lecture à la lettre.
+- D68 (le brasseur, 25.10 : « Attention à la normalisation, elle est en terme de style et de timing toujours de style mais
+  dynamique en terme de timing. SI choisi absolu, plus de normalisation, pour le radar et pour les barre et le reste !! ») :
+  règle transversale de toutes les vues. « Au style » : lecture par rapport au style, échelle qui suit le moment choisi
+  (radar et barres ; D67 pour les barres). « Absolu » : aucune normalisation, nulle part — valeurs brutes en crans, échelle
+  fixe commune à tous les moments et à tous les axes, barres et nombres bruts. Précise D67 (qui ne vaut qu'« Au style »).
+- D69 (le brasseur, 25.10 : « Parfait pour Une bande teintée cmc2k », sur cmc2g « C'est quasiment parfait » ; et pour ses mots
+  « il doit tout y avoir avec en ordre décroissant du plus fort au plus faible ») : son choix pour Comparer est cmc2k, il remplace
+  D107 (« r6a pour la forme » et les étapes de x3b). Registres (voie rc-registres-comparer) : choix, inventaire de 57 éléments ;
+  états comp-etat-moment et comp-reference voulus, car leur texte a été retiré à sa demande (« Aussi encore pas mal de légende et
+  texte inutile, qui n'apporte rien ») et leur sens est dans la feuille « ? » ; « Face à ta stout, par » et « IBU » retirés.
+  Contrôles adaptés sans affaiblir D107 : controle-comparer-etapes (référence aux mêmes étapes, défilement vertical permis :
+  actif et après sous le dock parce que le radar est mis en avant) et controle-comparer-familles (deux écrans, `--strict` garde
+  l'ancienne règle). controle-teinte inchangé (16 contre 16).
+- D70 (pilote, 25.10, Comparer dans l'app, voie t15b) : (1) fluidité — l'ouverture mesure 500 ms (886 ms au processeur ×4) sur
+  le serveur de développement, dont 20 ms de moteur et le reste en rendu React ; avant tout compromis, mesurer sur un build de
+  production (banc à faire, Haiku), puis alléger le rendu dans #179 (SesMots, colonnes) ; sa règle reste : si ça bloque, un
+  compromis chiffré lui est proposé. (2) « Placer » et « Souche » écrivent l'ajout dans le brouillon avant la confirmation de
+  Dryhopper ou de Levure : gardé (simple, annulable dans Dryhopper, une seule porte d'écriture), à revoir si le brasseur le veut
+  autrement.
+- D71 (l'utilisateur, 25.10 : « Tu peux deployé la vrai app pour que je puisse un peu jouer avec cette implemtation ») :
+  hébergement seul déployé en production (https://brasserie-l-affinee.web.app), depuis d53cbcfe, construit avec
+  `VITE_HOP_V4=on` ; ni règles Firestore ni fonctions. Contrôles avant : build vert, `check-no-dev-auth` propre, drapeau
+  corrigé pour ne plus embarquer tout l'environnement (d53cbcfe). Vérifié en ligne en lecture seule : page de connexion en
+  thème clair, aucune erreur de console. Retour arrière possible : version du 17.10 dans la console Hosting.
+- D72 (25.10, soir) : redéploiement de l'hébergement seul, depuis une copie propre de 63130965 (worktree temporaire, `.env` et
+  `seedData.ts` locaux copiés), pour ne pas embarquer la voie t12d en cours. Contenu : IBU de ses vraies recettes (D152), haut
+  d'écran commun aux 7 étapes, la fiche et Suggérer. Rejeu Haiku vert (313 tests, 52 d'intégration, CHOIX, ETATS 139/139,
+  RADAR-BASE, MOTS-TOUS, FINITIONS). La fiche reste une feuille locale (le retour du téléphone ne la ferme pas), comme la maquette.
+- D73 (25.10, soir) : redéploiement de l'hébergement seul depuis la copie propre, au commit 238e6756 : rail en ébullition 120′,
+  bandeau et IBU compact présentés comme avant, phrase « Changement appliqué » masquée, renvois (Ébullition → Identité, levure),
+  demande de test S1 retirée de l'app, picto framboise des Baies. Rejeu Haiku dans la copie : types, 317 tests, 52 d'intégration,
+  audit des champs, FONCTIONS-RAIL 37/37, RADAR-BASE, ETATS 139/139 et build verts ; CHOIX et copies-de-work en échec dans la
+  copie seulement, faute des captures et fichiers de travail ignorés par git (verts sur l'arbre complet au commit précédent).
+- D74 (26.10, nuit) : redéploiement de l'hébergement seul depuis la copie propre, au commit 36ba5643 : Substituer, Dryhopper et
+  Levure dans l'app (fin de #174) ; la fiche, avec ses Sources (Beer Maverick en premier, puis tout le houblon) et « autres n % »
+  expliqué sur les mots distincts (Lotus : 4 sur 9, 44 %) ; Suggérer reçoit la visée posée ; le bandeau se masque pendant tout
+  glisser du rail, sans perdre l'IBU au relâcher. Rejeu Haiku dans la copie : types, 190 tests hopIndexV4 et designTokens,
+  52 d'intégration, audit des champs, FONCTIONS-RAIL 37/37, RADAR-BASE (9 vues), ETATS 139/139, build et `check-no-dev-auth`
+  verts. Le bundle ne porte que les valeurs d'environnement lues par leur code (l'IBAN dans `companyDefaults`, comme sur main).
+- D75 (pilote, 26.10, #180, voie d2-import-bm, commit 79ca35f5) : le catalogue est complété depuis le cache local des 318 pages
+  Beer Maverick (relevé le 08.09), en mode hors ligne strict : aucune nouvelle collecte, aucun accès Firestore. Cohumulone 90 %,
+  farnésène 78 %, autres huiles 81 %, usage 100 %, styles 82 %, substituts 68 % (101 pages n'en donnent aucun), profil d'arôme
+  57 % ; le moteur rend les mêmes résultats (empreintes identiques). Décisions :
+  (1) le profil d'arôme Beer Maverick (9 axes, 0 à 5) est affiché dans Sources mais pas branché au moteur : ses axes ne
+  recoupent pas les 12 familles, il faudrait une convention (conseil) ;
+  (2) la ligne « Autres » de Comparer lit la valeur publiée « All Others » (β-pinène, linalol, géraniol, sélinène), le calcul
+  100 − 3 en repli ; une ligne Farnésène serait un ajout visuel, à lui montrer en mini maquette ;
+  (3) B5 tient à 148,3 ko sur 150 : à la prochaine extension, le bloc `bm` sortira vers un fichier chargé à l'ouverture de Sources.
+  Linalol (79 % manquant) et géraniol (99 %) restent à combler par des fiches fournisseurs, collecte à son accord.
+- D76 (26.10, nuit) : redéploiement de l'hébergement seul depuis la copie propre, au commit 1ea6ddd1 : le catalogue complété
+  (D75) et sa feuille Sources ; la feuille Valeurs de Comparer sans débordement à la ligne IBU, sans mot coupé, avec les valeurs
+  du catalogue au lieu d'« inconnu » (Mosaic), « Autres » publié. Rejeu Haiku dans la copie : types, 227 tests, audit des champs,
+  COMPARER VALEURS OK (390 et 1280), FONCTIONS-RAIL 37/37, RADAR-BASE, ETATS 139/139, build et `check-no-dev-auth` verts ;
+  B5 148,3 ko tenu (B1 et B2 au-dessus depuis avant). `.env.local` de la copie (émulateurs) est sans effet en production : la
+  garde est `import.meta.env.DEV`. Vu ensuite par le pilote et rendu à la voie c2 : l'huile de Mosaic encore « inconnu »,
+  l'encadré ⇄ à vérifier, et l'en-tête « Nelson Sauvin Citra » collé, une régression de la colonne des noms.
+- D77 (pilote, 26.10, #181, avis croisé : Brasseur en Fable, Contradicteur en Opus ; dossier `work/missions/2026-10-25-integration-houblons/conseil-substituts/question.md`) :
+  rien n'est branché dans Substituer, ni l'option 1 de e1, ni l'IA. Raisons du contradicteur, vérifiées dans le rapport de e1 :
+  - l'option 1 met 75 % du poids de l'arôme sur tous les mots (λ = 0,25), et non un simple ajout des mots hors famille ;
+  - λ a été choisi sans moitié de contrôle, et Hallertau Blanc dépend de ce seul réglage ;
+  - Motueka recule de 89e à 130e.
+  Suite : λ rejoué sur une moitié de contrôle, garde contre le mot rare unique, puis listes côte à côte (moteur, réglages retenus,
+  réglage + IA) sur ses houblons phares, sans mention de Beer Maverick, en mini maquettes dans u4 : **il choisit**. Le regard
+  Brasseur : montrer les mots partagés en couleur, « pourquoi en un mot ». L'IA en production (Gemini facturé) attend en plus
+  l'accord de l'utilisateur.
+- D78 (l'utilisateur, 26.10) : sur les conditions de Hopsteiner et de John I. Haas (accord écrit pour la reproduction ou
+  l'affichage public), mot pour mot : « C'est pas plublic donc pas de problème ». Leurs valeurs entrent dans l'app comme les
+  autres ; le champ `diffusion` de chaque source garde la trace des conditions lues. Rappel fait une fois : les fichiers JS de
+  l'hébergement restent téléchargeables par qui connaît leur adresse, même si l'app demande une connexion.
+- D79 (pilote, 26.10) : régression en ligne depuis D76, trouvée par la voie r177. La voie d2 a ajouté la clé
+  `hopBeerMaverickFiches` dans `hopBeerMaverickBootstrap.json`, qui est aussi un pack installable (`HopKnowledgePanel`,
+  `installPack`) : la validation de `backupCore` refuse la collection, et l'installation de Beer Maverick du panneau « Sources et
+  modèles » échoue. Le reste de l'app n'est pas touché. Cause de méthode : d2 et le rejeu avant déploiement n'ont joué que les tests
+  de leur dossier, sans chercher les autres lecteurs du fichier changé. Correction : voie r180-pack (les fiches sortent dans
+  `hopBeerMaverickFiches.json`, le pack redevient celui d'avant d2), puis redéploiement. L17 complétée.
+- D80 (l'utilisateur, 26.10, sur la page m3 et la question « Je branche D … avec Gemini facturé en production ? ») : « non D, C + IA
+  mais je pense que le moteur doit être revue ». Choix : D (C par défaut hors ligne, puis IA Flash-Lite), accord donné pour Gemini
+  facturé en production sur cet usage (~0,003 CHF par recherche). Rien n'est branché avant la revue du moteur de substitution,
+  qu'il demande, à la lumière de l'article de Beer Maverick « Your hop substitutions are wrong » (lecture en cours, vérification
+  anti-robot passée par lui-même dans son Chrome).
+- D81 (l'utilisateur, 26.10) : « Tu peux y aller, j'ai eu leur autorisation explicite. Pour un usage non commerciales, c'est bon,
+  tu dois juste pas être trop intrusif » (Yakima Chief et Freestyle Hops).
+  - Freestyle Hops : son `robots.txt` refuse nos robots. Collecte lancée (voie c3f), au plus une requête toutes les 2 s et
+    80 requêtes en tout, avec l'autorisation inscrite dans la source.
+  - Yakima Chief : son site oppose une vérification anti-robot (Vercel Security Checkpoint, 429). Le pilote ne la contourne pas,
+    même autorisé : c'est hors de ce qu'il peut faire. Il propose que l'utilisateur enregistre lui-même les pages ou le guide PDF
+    de Yakima Chief, qui seront lus en local ; ou qu'il passe la vérification dans son Chrome pour une lecture page par page.
+- D82 (26.10) : redéploiement de l'hébergement seul depuis la copie propre, au commit 49907352. Contenu :
+  - toutes les données collectées et fusionnées (`complements.json`, 18 sources), lues par Comparer et la fiche Sources, chargées
+    au repos ;
+  - les huiles séparées dans la composition (D154) ;
+  - l'accélération de Comparer et de Ma bière (#179) ;
+  - le pack Beer Maverick de nouveau installable (D79) ;
+  - les 197 tests V5.5 (#177).
+
+  Rejeu dans la copie : `npm test` complet (3 fichiers rouges, tous dus à la copie : `.mjs` en CRLF, corrigé par
+  `.gitattributes` ; témoins lus dans des dossiers ignorés, copiés dans les fixtures ; un module de collecte oublié, ajouté ;
+  `AppRoutePile` passe seul) ; puis `tests/unit/hopIndexV4` 394/394 et prototype 157/157 dans la copie. COMPARER VALEURS OK
+  (390 et 1280), FONCTIONS-RAIL 37/37, RADAR-BASE, ETATS 139/139, build, `check-no-dev-auth`, aucun ordre imposé dans le bundle,
+  B5 148,3 ko tenu.
+
+  Reste connu : l'erreur de worker des tours froids V5.5 (exit 1 sans échec). Yakima Chief : ticket #186.
+- D83 (pilote, 26.10, voie d4) : les descripteurs d'arôme de 12 sources entrent dans les fiches du catalogue (D157 : Galaxy passe
+  de 1 à 5 fiches lues, Nelson Sauvin de 2 à 9). Ils pèsent 21 ko gzip dans le morceau des outils (B5 149,5 → 170,8 ko pour un
+  budget de 150). Choix : la forme compacte (sources en table, mots en dictionnaire, adresses laissées dans `complements.json`
+  chargé à la demande, ~7 ko), avec un chargeur qui rend les mêmes `descriptions`, et le budget B5 relevé à 160 ko. Le morceau des
+  outils est préchargé au repos : l'ouverture n'attend pas. Les 22 tests du prototype qui fixent l'ancien catalogue sont repris un
+  par un, avec leur preuve, par la voie e2, avec le rejeu de son moteur v2 sur ces données.
+- D84 (pilote, 26.10, D158, audit de la voie a1) : la demande de test S1 de la maquette du 18.10 (« plus floral, moins résineux »)
+  s'affichait comme sa demande dans Comparer, Dryhopper, Levure et la puce « + floral » de Ma bière (sa capture de Dryhopper :
+  « floral ?, baies ?, résineux ? »). Règle : jamais une demande inventée.
+  - Sa visée, si elle existe ; sinon sa dégustation ;
+  - sinon les familles attendues du style de la recette, dites « attendu en <style> » ;
+  - la puce de Ma bière seulement avec une visée ou une dégustation.
+
+  L'entrée « Ouvrir l'analyse de ma bière » (écran provisoire, données du prototype) est cachée en production tant que l'écran
+  n'existe pas. Le trait « ta bière » de Comparer et de Suggérer passe au-dessus des séries, comme le contour de Substituer (D156).
+  Voie a2-demande-reelle.
+- D85 (pilote, 26.10) : le pack du prototype passe de 510 à 551 ko avec les descripteurs de d4. Son plafond est relevé de 500 à
+  560 ko : il ne sert qu'à la maquette jouable, l'app n'est pas concernée. Le moteur v2 de Substituer est rejoué sur ces données :
+  Galaxy au dry hop donne Harlequin, Mosaic, Citra, Nectaron, Rakau, Zamba Blend… ; il jugera sur les listes. Nouvelle source
+  envoyée par lui : Beer Analytics (statistiques de recettes : styles, doses, moments, accords), voie c3h.
+- D86 (pilote, 26.10, commit ca7e1afd) : le moteur v2 de Substituer est branché dans l'app (non déployé). Il a 14 variables et
+  trois jeux de poids (amertume, arôme chaud, à froid), appris sur une moitié des houblons et jugés sur l'autre, avec les
+  descripteurs de 12 sources.
+  - Sur la moitié de contrôle, il bat l'actuel partout, et C aux moments d'arôme.
+  - Trois reculs du bon sens, signalés par e2, lui seront montrés :
+    - Saaz Late et Spalt ne se reconnaissent plus ;
+    - Cascade au dry hop sort du style 16D ;
+    - Citra gagne un cran tropical à 60′.
+  - Page m4 : listes à 60′, Galaxy et ces trois cas, A contre v2, dans son écran u4.
+- D87 (pilote, 26.10, voie g1) : Suggérer est diagnostiqué ; le diagnostic tient en deux points.
+  - Il ne propose aucun ajout à 60′. Les moments sont fixés en dur : 10′, whirlpool, dry hop.
+  - Au dry hop, il range les ex æquo par ordre alphabétique : 23 en tête sur la 21C, pour « plus d'agrumes ».
+
+  Lecture de « la suggestion doit être pour du 60' comme pour du dryhopping » (L01, lecture étroite) : Suggérer doit pouvoir
+  proposer à 60′ (amertume, IBU visée) comme au dry hop (arôme), et le brasseur choisit le moment. L'autre lecture reste
+  signalée : « les visées d'arôme valent aussi à 60′ ».
+
+  Plan :
+  - g2a, le départage ;
+  - m6, les mini maquettes du moment dans q2b, que le brasseur choisira ;
+  - g2b, le jeu à 60′ ;
+  - l'IA de Suggérer, après i2 et g2a.
+- D88 (pilote, 26.10, avis croisé Brasseur et Contradicteur, `work/missions/2026-10-25-integration-houblons/conseil-suggerer-rang/question.md`)
+  - **A, le départage au dry hop et à chaud.** Les deux regards refusent un départage fondé sur le seul vocabulaire. Il
+    rejouerait « nelson sauvin est un houbon ordinaire » (L14). Trois clés seront mesurées sous une option du moteur, dont le
+    défaut reste `'aucun'` :
+    - K1 : la cascade de g1 ;
+    - K2 : la part des fiches, puis l'huile propre à la famille, les ex æquo restant affichés ;
+    - K3 : le radar Beer Maverick de la famille.
+
+    Pour choisir, on confronte d'abord les houblons phares, puis on découpe le banc en deux moitiés (L20). Le brasseur juge
+    ensuite les listes. Le critère se valide par sa justesse sur les houblons phares, pas par son nombre de valeurs distinctes
+    (Contradicteur).
+  - **B, l'ordre à 60′.** Les clés : d'abord l'usage (amérisant ou double avant arôme), puis l'α (moins de grammes). La
+    cohumulone et le β sortent du rang : ce sont des conventions de goût, données en information à un toucher. La bande d'IBU
+    du style devient un drapeau sur la carte. Le conflit de famille reste une exclusion, comme dans `voies.ts`. « Remplacer à
+    IBU égal » suit la même règle d'usage.
+- D89 (brasseur, 26.10, page m5 WW2mmg7gWgUVSnT4PTWTFf) : « La meilleure D · trois mini graphes ». C'est D seul, sans la greffe D + F
+  (lecture étroite, L01). Registre : `choix/ecrans.json`, dryhopper, `complements`. Le port est la voie p5-dryhopper-froid (Sonnet),
+  puis le critique juge.
+- D90 (pilote, 26.10, voie g2c, relevé par g2a) : une famille indésirable du style, ou une famille « moins » de la visée, n'exclut plus
+  un houblon que si elle est **marquée**, c'est-à-dire citée par la moitié au moins de ses fiches. Jusqu'ici, une seule fiche
+  suffisait.
+  - Sur la 21C (Hazy IPA), cinq houblons sortaient du pool : Nelson Sauvin, Motueka, Mosaic, Hallertau Blanc et Cascade.
+  - d4 a fait entrer les fiches de 12 sources, et ces exclusions se sont multipliées. d4 n'est pas encore en production : la
+    production est 49907352.
+  - Le déploiement attend g2c. La règle est réversible, et c'est la même convention que les gros points de la fiche.
+- D91 (pilote, 26.10, voie g2a) : on montrera au brasseur les listes de la clé k1 et de la clé k3, dans son écran q2b. La clé k2 est
+  écartée : elle laisse 110 ex æquo.
+  - k1 départage le plus, mais c'est la clé qui coule Galaxy.
+  - k3 (radar Beer Maverick) place Citra 4e et Galaxy 16e en agrumes, mais ne couvre que 181 variétés sur 318.
+
+  Le défaut reste `'aucun'` jusqu'à son choix. Ces listes se feront après g2c ; sans g2c, Nelson Sauvin et Motueka en seraient absents.
+- D92 (pilote, 26.10, sous l'accord D80) : le callable `hopReclasserIA` est déployé seul, en europe-west6 (Node 22, 2e génération).
+  - Commande : `firebase deploy --only functions:hopReclasserIA`, lancée sur b350620a ; journal dans `%TEMP%/rejeu-deeb/70-deploy-fonction.log`.
+  - Le CLI a accordé `secretAccessor` sur `GEMINI_API_KEY` au compte de service de calcul par défaut. C'est le geste standard de
+    `defineSecret`.
+  - Rien ne l'appelle encore : le client part avec l'hébergement, qui attend les corrections de la puce et la voie g2c.
+- D93 (pilote, 26.10, voie g2c, commit b020da5e) : D90 est appliqué. Une famille n'exclut un houblon que si au moins la moitié de
+  ses fiches la citent ; on garde la règle de la moitié plutôt que le niveau d'affichage `marqué`.
+  - Sur la 21C, le pool exclu passe de 175 à 113 houblons.
+  - Pour Galaxy, dans Substituer, Mosaic passe de la 143e à la 2e place.
+  - Idaho 7 (herbacé, 3 fiches sur 6) et Strata (3 sur 4) restent exclus d'une Hazy : à montrer au brasseur, pour l'éprouver contre
+    la réputation de ces houblons (L14).
+  - Une clé `mineure` fait passer un houblon cité par une minorité de fiches après ceux qu'aucune fiche ne cite. Sans elle, East
+    Kent Goldings sortait de la liste de la stout S1.
+  - Leçon proposée par g2c : un assouplissement se mesure sur la liste que le brasseur voit, pas sur le pool seul. Elle est
+    couverte par L14 et L20 (confronter ce qu'il voit), donc pas d'entrée nouvelle (plafond de LECONS).
+- D94 (brasseur, 26.10, page m6 Npss86xUpf259xJaemSKjH) : « M1 + M2 · avec l'IA semble le mieux mais pallier 60' toujours pas très
+  clair et pas de vrai dry hopping ».
+  - Base retenue avec réserves : M1 + M2 + IA (registre `choix/ecrans.json`, suggerer, `complements`). Rien n'est porté avant les
+    corrections.
+  - D166 : moteur d'abord (voie g2b). Un vrai groupe dry hop, actif et après, avec une dose par règle (D161) ; le palier 60′ par une
+    dose exacte pour +n IBU.
+  - D165 est ambigu (L13). Ses trois lectures deviennent les axes du lot m7 :
+    - la barre « +10 IBU » ;
+    - le lien entre l'en-tête et la carte 28 → 38 ;
+    - ce que chaque rangée apporte.
+
+    Ce lot m7 se fait sur les valeurs de g2b.
+- D95 (26.10, vers 14 h) : l'hébergement seul est redéployé depuis la copie propre, au commit 9dba6971.
+  - **Contenu** :
+    - les descripteurs de 12 sources (d4) ;
+    - Substituer v2, avec l'IA : la puce dans la tête et le titre qui suit la liste ;
+    - les audits de données (c3g, d3a) et les traductions (t1) ;
+    - un trait par source qui diffère (s1) ;
+    - les contours au-dessus des séries (a1, a2) ;
+    - le ★ ;
+    - son choix D dans Dryhopper (p5 : 18 px réservés, bulle du jour corrigée) ;
+    - D90 (exclusion seulement si la moitié des fiches cite la famille).
+  - **Preuves** :
+    - rejeu complet de b020da5e : tsc, vitest (deux tests lents rejoués seuls, verts), build, états 138/138, contrôles Chrome ;
+    - rejeu ciblé de 9dba6971 : 753 tests, build, B5 157,7 ko, états, ★, FROID OK.
+  - La production sert `index-CqHKOn9T.js`, le même que le build. L'app appelle désormais `hopReclasserIA` (D92).
+- D96 (pilote, 26.10, voie g2b, commit e511311b) : le moteur sait proposer un palier 60′ et un vrai dry hop, sous option. Le défaut
+  est inchangé à l'octet : rien n'est encore à l'écran. Deux suites :
+  - **La dose de dry hop.** La règle visée +1 cran donne 1,5 g/L en actif et 1 g/L après fermentation. Ce n'est pas le « vrai dry
+    hopping » qu'il attend d'une Hazy, et aucune source de dose par style n'est dans le dépôt. Les mini maquettes m7 lui
+    montreront la dose de la règle, 4 g/L et 8 g/L, marquées « générique ». La dose usuelle est un savoir de brasseur : il
+    choisira en regardant.
+  - **D167.** Une citation minoritaire donne tout son effet, et Citra, Nelson Sauvin, Motueka et Mosaic tombent loin. La voie g2d
+    mesure trois options (rang seul, effet si marquée, effet pondéré) avant toute décision. Les listes de m7 ne lui seront pas
+    montrées avant.
+- D97 (pilote, 26.10, voie u1) : la cause de D171 est b68d7935 (a2, D84). L'entrée « Ouvrir l'analyse de ma bière » ne menait qu'à un
+  écran provisoire ; en production, l'entrée a été cachée et le panneau ne répond plus.
+  - Remettre l'écran provisoire est refusé : il l'a déjà jugé inutile.
+  - Son onglet « Ma bière » (base v4.10, « Ça aussi ») est porté dans l'app par la voie p6, puis l'entrée sera rebranchée.
+  - Les 12 familles hachurées ne sont pas une régression. Aucun ajout de sa recette n'est simulé quand le moment est hors de 60′,
+    10′, whirlpool et dry hop (par exemple 20′), quand le whirlpool n'a pas de température, ou quand le houblon n'est pas dans les
+    fiches. C'est une hypothèse très probable, car sa recette réelle n'a pas été lue.
+  - D177 : interpoler entre 60′ et 10′, en le dessinant comme tel (D65), est à faire.
+- D98 (pilote, 26.10, en réponse à « Il faut tout mettre ?? Pas exclure certains ?? ») : au catalogue, on met toutes les variétés
+  attestées par au moins une source, et toutes les formes produit rattachées à leur variété. Rien n'est exclu à l'entrée. Ce qui a peu
+  de données est marqué « peu de données », et ce qui n'est plus vendu est marqué « non commercialisé » si une source le dit. Le tri
+  et les exclusions se font dans les écrans, par des règles écrites (D90), et le plus tard possible (D175).

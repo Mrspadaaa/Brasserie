@@ -1,7 +1,7 @@
 // Lentilles Barres et Radar (booster C1) : mêmes données, autre forme. Chaque famille a sa
 // piste zoomée sur la bande du style (trackPosition du moteur v4) ; la cible de la
 // direction est un repère d'accent. Contenu d'essai : l'écran viendra du fil de fer consolidé.
-import { trackPosition, type FamilyId, type StyleScale } from '../../src/engine';
+import { trackPosition, type FamilyId, type StyleScale } from '../../../../src/domain/hopIndex/v4';
 import { FAMILY_NAMES, nombre } from './donnees';
 
 export type LentilleId = 'barres' | 'radar';

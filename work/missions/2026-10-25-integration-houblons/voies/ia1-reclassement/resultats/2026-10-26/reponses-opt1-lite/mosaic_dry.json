@@ -1,0 +1,46 @@
+{
+ "casId": "mosaic@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "40de2f1fcc67025a",
+ "simule": false,
+ "appel": 100,
+ "http": 200,
+ "latenceMs": 1771,
+ "finishReason": "STOP",
+ "jetonsEntree": 4036,
+ "jetonsSortie": 448,
+ "coutMicroChf": 2914,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Simcoe partage le profil fruité et pin, s'en éloignant par moins de fruits tropicaux.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Idaho 7 apporte des fruits tropicaux proches de Mosaic, mais avec plus de résine.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Azacca offre mangue et papaye comme Mosaic, mais avec une touche citronnée plus marquée.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Zythos combine agrumes et fruits tropicaux, s'éloignant par son côté floral prononcé.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Falconer's Flight imite le pamplemousse et les fruits tropicaux, avec moins de nuances terreuses.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Hydra brille par ses agrumes et fruits tropicaux, différant par des notes de pêche.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Sultana partage l'ananas et les fruits tropicaux, mais avec une intensité d'huile supérieure.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Mackinac propose fruits tropicaux et papaye, s'écartant par son poivre noir distinctif.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Centennial offre pin et agrumes proches, mais manque de complexité tropicale.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Mandarina Bavaria partage les agrumes, mais se focalise trop sur la mandarine.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c03",
+   "c01",
+   "c02",
+   "c05",
+   "c08",
+   "c06",
+   "c07",
+   "c14",
+   "c17",
+   "c04"
+  ],
+  "phrases": {
+   "c03": "Simcoe partage le profil fruité et pin, s'en éloignant par moins de fruits tropicaux.",
+   "c01": "Idaho 7 apporte des fruits tropicaux proches de Mosaic, mais avec plus de résine.",
+   "c02": "Azacca offre mangue et papaye comme Mosaic, mais avec une touche citronnée plus marquée.",
+   "c05": "Zythos combine agrumes et fruits tropicaux, s'éloignant par son côté floral prononcé.",
+   "c08": "Falconer's Flight imite le pamplemousse et les fruits tropicaux, avec moins de nuances terreuses.",
+   "c06": "Hydra brille par ses agrumes et fruits tropicaux, différant par des notes de pêche.",
+   "c07": "Sultana partage l'ananas et les fruits tropicaux, mais avec une intensité d'huile supérieure.",
+   "c14": "Mackinac propose fruits tropicaux et papaye, s'écartant par son poivre noir distinctif.",
+   "c17": "Centennial offre pin et agrumes proches, mais manque de complexité tropicale.",
+   "c04": "Mandarina Bavaria partage les agrumes, mais se focalise trop sur la mandarine."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

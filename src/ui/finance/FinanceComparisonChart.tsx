@@ -33,15 +33,15 @@ export function FinanceComparisonChart({data,cashComplete,cashCents,selectedMont
   const compactNumber=(value:number)=>new Intl.NumberFormat('fr-CH',{notation:'compact',maximumFractionDigits:1}).format(Number(value));
   return <div className="finance-chart" data-finance-chart role="group" aria-label="Scénario mensuel à venir en francs suisses : reste dû sur les factures, plans et estimations, avec solde projeté. Sélectionne un mois dans la courbe ou le tableau pour voir les opérations par origine." style={{cursor:'pointer'}}>
     <ResponsiveContainer width="100%" height="100%"><AreaChart data={data} margin={{top:8,right:hasBalance?4:12,left:0,bottom:0}} accessibilityLayer>
-      <CartesianGrid stroke="#3D342E" vertical={false}/>
-      <XAxis dataKey="month" tick={{fill:'#D8CEC5',fontSize:12}} tickFormatter={value=>periodLabel(value).split(' ')[0].slice(0,4)} minTickGap={28}/>
-      <YAxis yAxisId="flows" width={44} tick={{fill:'#D8CEC5',fontSize:12}} tickFormatter={compactNumber}/>
-      {hasBalance&&<YAxis yAxisId="balance" orientation="right" width={52} tick={{fill:'#D8CEC5',fontSize:12}} tickFormatter={compactNumber}/>}
-      <Tooltip contentStyle={{background:'#221D19',border:'1px solid #574A42',borderRadius:8}} labelFormatter={value=>periodLabel(String(value))} formatter={(value:number,name:string)=>[formatCHF(Math.round(Number(value)*100)),name]}/>
-      <Area yAxisId="flows" type="linear" name="Sorties prévues · CHF" dataKey="expense" stroke="#86B9E6" fill="#86B9E6" fillOpacity={.08} dot={periodDot('expense','#86B9E6')} activeDot={{r:7,strokeWidth:2}} isAnimationActive={false}/>
-      <Area yAxisId="flows" type="linear" name="Entrées prévues · CHF" dataKey="income" stroke="#A3C97A" fill="#A3C97A" fillOpacity={.08} dot={periodDot('income','#A3C97A')} activeDot={{r:7,strokeWidth:2}} isAnimationActive={false}/>
-      {hasBalance&&<Area yAxisId="balance" type="linear" name="Solde estimé · CHF" dataKey="balance" stroke="#D8CEC5" strokeDasharray="5 4" fill="transparent" dot={periodDot('balance','#D8CEC5')} activeDot={{r:7,strokeWidth:2}} isAnimationActive={false}/>}
-      {selectedMonth&&<ReferenceLine x={selectedMonth} stroke="#F5F0EA" strokeDasharray="3 3" ifOverflow="extendDomain"/>}
+      <CartesianGrid stroke="rgb(var(--cave-700))" vertical={false}/>
+      <XAxis dataKey="month" tick={{fill:'rgb(var(--cave-texte-200))',fontSize:12}} tickFormatter={value=>periodLabel(value).split(' ')[0].slice(0,4)} minTickGap={28}/>
+      <YAxis yAxisId="flows" width={44} tick={{fill:'rgb(var(--cave-texte-200))',fontSize:12}} tickFormatter={compactNumber}/>
+      {hasBalance&&<YAxis yAxisId="balance" orientation="right" width={52} tick={{fill:'rgb(var(--cave-texte-200))',fontSize:12}} tickFormatter={compactNumber}/>}
+      <Tooltip contentStyle={{background:'rgb(var(--cave-850))',border:'1px solid rgb(var(--cave-600))',borderRadius:8}} labelFormatter={value=>periodLabel(String(value))} formatter={(value:number,name:string)=>[formatCHF(Math.round(Number(value)*100)),name]}/>
+      <Area yAxisId="flows" type="linear" name="Sorties prévues · CHF" dataKey="expense" stroke="rgb(var(--area-finances))" fill="rgb(var(--area-finances))" fillOpacity={.08} dot={periodDot('expense','rgb(var(--area-finances))')} activeDot={{r:7,strokeWidth:2}} isAnimationActive={false}/>
+      <Area yAxisId="flows" type="linear" name="Entrées prévues · CHF" dataKey="income" stroke="rgb(var(--area-stocks))" fill="rgb(var(--area-stocks))" fillOpacity={.08} dot={periodDot('income','rgb(var(--area-stocks))')} activeDot={{r:7,strokeWidth:2}} isAnimationActive={false}/>
+      {hasBalance&&<Area yAxisId="balance" type="linear" name="Solde estimé · CHF" dataKey="balance" stroke="rgb(var(--cave-texte-200))" strokeDasharray="5 4" fill="transparent" dot={periodDot('balance','rgb(var(--cave-texte-200))')} activeDot={{r:7,strokeWidth:2}} isAnimationActive={false}/>}
+      {selectedMonth&&<ReferenceLine x={selectedMonth} stroke="rgb(var(--cave-texte-50))" strokeDasharray="3 3" ifOverflow="extendDomain"/>}
     </AreaChart></ResponsiveContainer>
   </div>;
 }

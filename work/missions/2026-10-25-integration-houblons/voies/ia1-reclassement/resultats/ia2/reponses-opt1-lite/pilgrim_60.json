@@ -1,0 +1,46 @@
+{
+ "casId": "pilgrim@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "158b94dfb46be16a",
+ "simule": false,
+ "appel": 60,
+ "http": 200,
+ "latenceMs": 1992,
+ "finishReason": "STOP",
+ "jetonsEntree": 3840,
+ "jetonsSortie": 532,
+ "coutMicroChf": 3103,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Herald partage l'origine britannique, l'usage dual et un profil alpha et cohumulone très proche, mais mise plus sur l'orange.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Herkules offre une amertume puissante et un taux de cohumulone similaire, bien que son profil aromatique lorgne davantage vers le melon.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Phoenix propose un pedigree britannique et des alpha proches, mais se distingue par des notes de mélasse et de chocolat absentes chez Pilgrim.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Flyer convient pour son profil dual et ses alpha proches, malgré une huile totale plus faible et des notes de réglisse.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Chinook assure une excellente amertume à 60 minutes avec des alpha et cohumulone proches, mais apporte une résine de pin plus marquée.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Yeoman apporte des racines britanniques et un bon niveau d'alpha, mais son profil tend vers des aspects plus nobles et herbacés.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Southern Dawn offre un usage dual et des alpha proches, mais s'écarte avec des arômes originaux de gingembre et de citronnelle.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Boomerang possède les alpha et l'usage dual recherchés, mais son profil se montre plus épicé et moins axé sur les agrumes.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Warrior garantit une amertume propre avec des alpha élevés, mais manque de la complexité fruitée et agrumée propre à Pilgrim.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Southern Cross convient pour l'ébullition grâce à ses alpha, mais privilégie nettement les notes de citron vert et de fruits tropicaux.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c05",
+   "c14",
+   "c18",
+   "c03",
+   "c20",
+   "c12",
+   "c07",
+   "c11",
+   "c09",
+   "c19"
+  ],
+  "phrases": {
+   "c05": "Herald partage l'origine britannique, l'usage dual et un profil alpha et cohumulone très proche, mais mise plus sur l'orange.",
+   "c14": "Herkules offre une amertume puissante et un taux de cohumulone similaire, bien que son profil aromatique lorgne davantage vers le melon.",
+   "c18": "Phoenix propose un pedigree britannique et des alpha proches, mais se distingue par des notes de mélasse et de chocolat absentes chez Pilgrim.",
+   "c03": "Flyer convient pour son profil dual et ses alpha proches, malgré une huile totale plus faible et des notes de réglisse.",
+   "c20": "Chinook assure une excellente amertume à 60 minutes avec des alpha et cohumulone proches, mais apporte une résine de pin plus marquée.",
+   "c12": "Yeoman apporte des racines britanniques et un bon niveau d'alpha, mais son profil tend vers des aspects plus nobles et herbacés.",
+   "c07": "Southern Dawn offre un usage dual et des alpha proches, mais s'écarte avec des arômes originaux de gingembre et de citronnelle.",
+   "c11": "Boomerang possède les alpha et l'usage dual recherchés, mais son profil se montre plus épicé et moins axé sur les agrumes.",
+   "c09": "Warrior garantit une amertume propre avec des alpha élevés, mais manque de la complexité fruitée et agrumée propre à Pilgrim.",
+   "c19": "Southern Cross convient pour l'ébullition grâce à ses alpha, mais privilégie nettement les notes de citron vert et de fruits tropicaux."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

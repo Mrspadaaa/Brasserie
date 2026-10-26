@@ -1,0 +1,46 @@
+{
+ "casId": "stirling@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "2081d8655309dca0",
+ "simule": true,
+ "appel": 55,
+ "http": 200,
+ "latenceMs": 0,
+ "finishReason": "STOP",
+ "jetonsEntree": 2177,
+ "jetonsSortie": 108,
+ "coutMicroChf": 5095,
+ "texte": "{\"classement\":[{\"id\":\"c01\",\"phrase\":\"Hors liste.\"},{\"id\":\"c02\",\"phrase\":\"Hors liste.\"},{\"id\":\"c03\",\"phrase\":\"Hors liste.\"},{\"id\":\"c04\",\"phrase\":\"Hors liste.\"},{\"id\":\"c05\",\"phrase\":\"Hors liste.\"},{\"id\":\"c06\",\"phrase\":\"Hors liste.\"},{\"id\":\"c07\",\"phrase\":\"Hors liste.\"},{\"id\":\"c08\",\"phrase\":\"Hors liste.\"},{\"id\":\"c09\",\"phrase\":\"Hors liste.\"},{\"id\":\"c99\",\"phrase\":\"Hors liste.\"}]}",
+ "analyse": {
+  "valide": false,
+  "ordre": [
+   "c01",
+   "c02",
+   "c03",
+   "c04",
+   "c05",
+   "c06",
+   "c07",
+   "c08",
+   "c09"
+  ],
+  "phrases": {
+   "c01": "Hors liste.",
+   "c02": "Hors liste.",
+   "c03": "Hors liste.",
+   "c04": "Hors liste.",
+   "c05": "Hors liste.",
+   "c06": "Hors liste.",
+   "c07": "Hors liste.",
+   "c08": "Hors liste.",
+   "c09": "Hors liste."
+  },
+  "erreurs": [
+   "identifiant hors liste : c99"
+  ]
+ },
+ "erreurReseau": null
+}

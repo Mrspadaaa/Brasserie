@@ -1,0 +1,46 @@
+{
+ "casId": "citra@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "3617b2016c8f915f",
+ "simule": false,
+ "appel": 3,
+ "http": 200,
+ "latenceMs": 6771,
+ "finishReason": "STOP",
+ "jetonsEntree": 3852,
+ "jetonsSortie": 563,
+ "coutMicroChf": 12501,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Partage l'alliance parfaite de pamplemousse, fruit de la passion et pêche, avec un profil d'huiles très proche, mais un côté ananas plus marqué.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Offre cette signature intense d'agrumes et fruit de la passion avec un taux de myrcène identique, bien qu'un peu plus dank et herbacé.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Apporte des notes très proches d'agrumes, melon et pêche, mais développe une facette plus florale et épicée que le Citra.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Combine parfaitement agrumes, citron vert et pêche dans un registre très juteux, avec toutefois une touche résineuse supplémentaire.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Retrouve le fruit de la passion et la groseille à maquereau avec un potentiel thiol similaire, malgré des nuances plus douces et herbacées.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Rejoint le Citra sur le citron vert et la rare groseille à maquereau, tout en tirant davantage vers la goyave et le jasmin.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Un taux de myrcène comparable portant le citron vert et la pêche, mais avec une dominante goyave-ananas plus exotique.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Propose le pamplemousse, le melon et les fruits à noyau caractéristiques, enrichis toutefois de notes de résine de pin et de thym.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Profil d'huiles quasi identique et fruité éclatant d'agrumes et fruits à noyau, mais sans les touches de groseille ou fruits de la passion.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Partage le pamplemousse, le melon et une richesse en myrcène similaire, tout en s'orientant nettement vers la fraise et les baies.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c14",
+   "c19",
+   "c08",
+   "c02",
+   "c12",
+   "c09",
+   "c15",
+   "c04",
+   "c11",
+   "c13"
+  ],
+  "phrases": {
+   "c14": "Partage l'alliance parfaite de pamplemousse, fruit de la passion et pêche, avec un profil d'huiles très proche, mais un côté ananas plus marqué.",
+   "c19": "Offre cette signature intense d'agrumes et fruit de la passion avec un taux de myrcène identique, bien qu'un peu plus dank et herbacé.",
+   "c08": "Apporte des notes très proches d'agrumes, melon et pêche, mais développe une facette plus florale et épicée que le Citra.",
+   "c02": "Combine parfaitement agrumes, citron vert et pêche dans un registre très juteux, avec toutefois une touche résineuse supplémentaire.",
+   "c12": "Retrouve le fruit de la passion et la groseille à maquereau avec un potentiel thiol similaire, malgré des nuances plus douces et herbacées.",
+   "c09": "Rejoint le Citra sur le citron vert et la rare groseille à maquereau, tout en tirant davantage vers la goyave et le jasmin.",
+   "c15": "Un taux de myrcène comparable portant le citron vert et la pêche, mais avec une dominante goyave-ananas plus exotique.",
+   "c04": "Propose le pamplemousse, le melon et les fruits à noyau caractéristiques, enrichis toutefois de notes de résine de pin et de thym.",
+   "c11": "Profil d'huiles quasi identique et fruité éclatant d'agrumes et fruits à noyau, mais sans les touches de groseille ou fruits de la passion.",
+   "c13": "Partage le pamplemousse, le melon et une richesse en myrcène similaire, tout en s'orientant nettement vers la fraise et les baies."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

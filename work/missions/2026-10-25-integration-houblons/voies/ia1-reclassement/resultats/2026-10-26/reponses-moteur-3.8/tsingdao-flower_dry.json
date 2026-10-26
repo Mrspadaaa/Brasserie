@@ -1,0 +1,46 @@
+{
+ "casId": "tsingdao-flower@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "ac0a7533f95d0d5a",
+ "simule": false,
+ "appel": 39,
+ "http": 200,
+ "latenceMs": 6593,
+ "finishReason": "STOP",
+ "jetonsEntree": 3637,
+ "jetonsSortie": 550,
+ "coutMicroChf": 11976,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Partage le profil complet melon, agrumes et terreux, avec une touche d'épices supplémentaire parfaitement adaptée au dry hop.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Retrouve les notes clés d'agrumes et de melon avec un profil aromatique doux, bien qu'il manque la nuance terreuse d'origine.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Offre les facettes citron, agrumes et terreux recherchées en fermentation active, malgré des accents boisés et résineux additionnels.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Combine très fidèlement le citron, les agrumes et le fond terreux, tout en apportant des touches florales et miellées plaisantes.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Associe agrumes et fond terreux dans un registre aromatique noble, quoiqu'un peu plus épicé et dépourvu du côté melon.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Apporte agrumes et terreux avec une belle intensité fruitée pour le dry hop, mais montre un profil plus percutant et moderne.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Exprime bien le duo agrumes et terreux, complété par de l'ananas frais au détriment de la note spécifique de melon.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Offre la base terreuse et d'agrumes avec une teneur en huile similaire, mais tire davantage sur l'herbe et la menthe.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Propose l'alliance agrumes et terreux, mais son orientation balsamique et vineuse l'éloigne de la fraîcheur du citron et melon.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Rappelle le terreux et les agrumes via le pamplemousse, mais tend vers des baies plus sombres absentes du profil initial.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c17",
+   "c12",
+   "c13",
+   "c11",
+   "c07",
+   "c18",
+   "c03",
+   "c01",
+   "c05"
+  ],
+  "phrases": {
+   "c02": "Partage le profil complet melon, agrumes et terreux, avec une touche d'épices supplémentaire parfaitement adaptée au dry hop.",
+   "c17": "Retrouve les notes clés d'agrumes et de melon avec un profil aromatique doux, bien qu'il manque la nuance terreuse d'origine.",
+   "c12": "Offre les facettes citron, agrumes et terreux recherchées en fermentation active, malgré des accents boisés et résineux additionnels.",
+   "c13": "Combine très fidèlement le citron, les agrumes et le fond terreux, tout en apportant des touches florales et miellées plaisantes.",
+   "c11": "Associe agrumes et fond terreux dans un registre aromatique noble, quoiqu'un peu plus épicé et dépourvu du côté melon.",
+   "c07": "Apporte agrumes et terreux avec une belle intensité fruitée pour le dry hop, mais montre un profil plus percutant et moderne.",
+   "c18": "Exprime bien le duo agrumes et terreux, complété par de l'ananas frais au détriment de la note spécifique de melon.",
+   "c03": "Offre la base terreuse et d'agrumes avec une teneur en huile similaire, mais tire davantage sur l'herbe et la menthe.",
+   "c01": "Propose l'alliance agrumes et terreux, mais son orientation balsamique et vineuse l'éloigne de la fraîcheur du citron et melon.",
+   "c05": "Rappelle le terreux et les agrumes via le pamplemousse, mais tend vers des baies plus sombres absentes du profil initial."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

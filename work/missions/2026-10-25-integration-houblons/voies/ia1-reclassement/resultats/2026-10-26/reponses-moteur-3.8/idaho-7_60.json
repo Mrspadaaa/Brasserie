@@ -1,0 +1,46 @@
+{
+ "casId": "idaho-7@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "e455d6197c8e2fc1",
+ "simule": false,
+ "appel": 18,
+ "http": 200,
+ "latenceMs": 5921,
+ "finishReason": "STOP",
+ "jetonsEntree": 3727,
+ "jetonsSortie": 564,
+ "coutMicroChf": 12276,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Taux d'acides alpha et profil de cohumulone quasi identiques, idéal pour fournir une amertume franche similaire à 60 minutes.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Teneur en alpha et cohumulone très proches, assurant un niveau d'amertume et une amertume perçue équivalents à l'ébullition.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Même plage d'acides alpha et niveau de cohumulone élevé comparable, garantissant un mordant similaire sans impact aromatique résiduel.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Cohumulone et acides alpha parfaitement alignés pour restituer l'intensité d'amertume attendue de l'Idaho 7 à pleine ébullition.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Usage amérisant avec des taux d'alpha et de cohumulone voisins, apportant une base amère solide et propre à l'ébullition.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Taux d'alpha et cohumulone équivalents, ce qui en fait un substitut très fidèle pour l'amertume malgré son profil aromatique différent.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Taux d'alpha similaires et cohumulone légèrement inférieure, offrant une amertume comparable bien que subtilement plus douce.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Potentiel d'amérisation très proche en alpha, avec une cohumulone un peu plus basse donnant une amertume légèrement plus ronde.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Plage d'alpha très similaire mais cohumulone modérée, produisant une amertume un peu plus propre et moins tranchante.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Alpha comparables garantissant l'extraction d'amertume, bien que sa cohumulone nettement plus basse apporte une amertume plus douce.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c15",
+   "c02",
+   "c20",
+   "c06",
+   "c01",
+   "c10",
+   "c17",
+   "c04",
+   "c07",
+   "c03"
+  ],
+  "phrases": {
+   "c15": "Taux d'acides alpha et profil de cohumulone quasi identiques, idéal pour fournir une amertume franche similaire à 60 minutes.",
+   "c02": "Teneur en alpha et cohumulone très proches, assurant un niveau d'amertume et une amertume perçue équivalents à l'ébullition.",
+   "c20": "Même plage d'acides alpha et niveau de cohumulone élevé comparable, garantissant un mordant similaire sans impact aromatique résiduel.",
+   "c06": "Cohumulone et acides alpha parfaitement alignés pour restituer l'intensité d'amertume attendue de l'Idaho 7 à pleine ébullition.",
+   "c01": "Usage amérisant avec des taux d'alpha et de cohumulone voisins, apportant une base amère solide et propre à l'ébullition.",
+   "c10": "Taux d'alpha et cohumulone équivalents, ce qui en fait un substitut très fidèle pour l'amertume malgré son profil aromatique différent.",
+   "c17": "Taux d'alpha similaires et cohumulone légèrement inférieure, offrant une amertume comparable bien que subtilement plus douce.",
+   "c04": "Potentiel d'amérisation très proche en alpha, avec une cohumulone un peu plus basse donnant une amertume légèrement plus ronde.",
+   "c07": "Plage d'alpha très similaire mais cohumulone modérée, produisant une amertume un peu plus propre et moins tranchante.",
+   "c03": "Alpha comparables garantissant l'extraction d'amertume, bien que sa cohumulone nettement plus basse apporte une amertume plus douce."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

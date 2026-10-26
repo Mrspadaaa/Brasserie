@@ -1,0 +1,46 @@
+{
+ "casId": "pilgrim@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "cb50fb2b3417c943",
+ "simule": false,
+ "appel": 59,
+ "http": 200,
+ "latenceMs": 1996,
+ "finishReason": "STOP",
+ "jetonsEntree": 4007,
+ "jetonsSortie": 547,
+ "coutMicroChf": 3212,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Calypso partage le profil fruité, poire et agrumes avec un bon usage dual, mais apporte des notes de pomme absentes du Pilgrim.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Galena offre les notes fruitées, poire et agrumes recherchées et un alpha proche, mais se distingue par un usage aromatique strict.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Jarrylo reprend les agrumes et la poire du Pilgrim avec un usage dual, mais introduit des notes nettes de banane et de vin blanc.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Triumph combine agrumes et fruits comme le Pilgrim et un usage dual, mais accentue fortement le pin et l'orange douce.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Southern Star propose des baies et des fruits proches du Pilgrim, mais s'en sépare par un profil tropical et des notes florales marquées.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Ekuanot partage les notes de citron et baies avec un usage aromatique, mais offre une complexité tropicale et herbacée bien plus intense.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Boomerang offre un usage dual et des agrumes proches, mais omet les notes de baies et de poire caractéristiques du Pilgrim.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Southern Promise intègre des baies et des agrumes similaires, mais se différencie par une dominante boisée et herbacée plus prononcée.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Chinook propose un usage dual et des agrumes, mais s'éloigne du profil du Pilgrim en misant tout sur la résine et le pin.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Sládek partage des touches fruitées et d'agrumes, mais son profil noble et ses notes de fruit de la passion l'éloignent du Pilgrim.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c13",
+   "c01",
+   "c14",
+   "c16",
+   "c08",
+   "c18",
+   "c05",
+   "c11",
+   "c06",
+   "c20"
+  ],
+  "phrases": {
+   "c13": "Calypso partage le profil fruité, poire et agrumes avec un bon usage dual, mais apporte des notes de pomme absentes du Pilgrim.",
+   "c01": "Galena offre les notes fruitées, poire et agrumes recherchées et un alpha proche, mais se distingue par un usage aromatique strict.",
+   "c14": "Jarrylo reprend les agrumes et la poire du Pilgrim avec un usage dual, mais introduit des notes nettes de banane et de vin blanc.",
+   "c16": "Triumph combine agrumes et fruits comme le Pilgrim et un usage dual, mais accentue fortement le pin et l'orange douce.",
+   "c08": "Southern Star propose des baies et des fruits proches du Pilgrim, mais s'en sépare par un profil tropical et des notes florales marquées.",
+   "c18": "Ekuanot partage les notes de citron et baies avec un usage aromatique, mais offre une complexité tropicale et herbacée bien plus intense.",
+   "c05": "Boomerang offre un usage dual et des agrumes proches, mais omet les notes de baies et de poire caractéristiques du Pilgrim.",
+   "c11": "Southern Promise intègre des baies et des agrumes similaires, mais se différencie par une dominante boisée et herbacée plus prononcée.",
+   "c06": "Chinook propose un usage dual et des agrumes, mais s'éloigne du profil du Pilgrim en misant tout sur la résine et le pin.",
+   "c20": "Sládek partage des touches fruitées et d'agrumes, mais son profil noble et ses notes de fruit de la passion l'éloignent du Pilgrim."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

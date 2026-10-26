@@ -1,0 +1,46 @@
+{
+ "casId": "sticklebract@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "15a1f765181400c7",
+ "simule": false,
+ "appel": 17,
+ "http": 200,
+ "latenceMs": 1962,
+ "finishReason": "STOP",
+ "jetonsEntree": 3735,
+ "jetonsSortie": 520,
+ "coutMicroChf": 3026,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Chinook partage le profil résineux, pin, agrumes et le taux de cohumulone, mais apporte plus de notes terreuses et dank.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Dr. Rudi offre des notes similaires de pin et résine avec un taux de cohumulone proche, bien que plus herbacé.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Southern Cross garde l'esprit néo-zélandais avec des notes de pin et d'agrumes, mais se montre plus citronné.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Waimea combine pin et agrumes avec un profil puissant, mais ajoute une touche mandarine absente chez Sticklebract.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Eclipse propose une intensité aromatique élevée axée sur le pin et les agrumes, mais avec des notes fruitées plus marquées.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Dana présente un profil pin et agrumes proche mais avec des acides alpha plus faibles et des notes florales.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Warrior assure des notes de pin et de résine intenses, mais son profil est plus doux et moins axé sur les agrumes.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"HPA-016 offre des notes de pin et d'agrumes, mais son profil aromatique se focalise davantage sur la mandarine.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Zythos intègre du pin et des agrumes mais s'en éloigne par un fruité tropical et des mandarines plus prononcés.\"\n    },\n    {\n      \"id\": \"c18\",\n        \"phrase\": \"Triumph partage le pin et les agrumes mais se distingue par des arômes complexes de pêche et d'épices.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c16",
+   "c13",
+   "c07",
+   "c14",
+   "c03",
+   "c01",
+   "c08",
+   "c04",
+   "c02",
+   "c18"
+  ],
+  "phrases": {
+   "c16": "Chinook partage le profil résineux, pin, agrumes et le taux de cohumulone, mais apporte plus de notes terreuses et dank.",
+   "c13": "Dr. Rudi offre des notes similaires de pin et résine avec un taux de cohumulone proche, bien que plus herbacé.",
+   "c07": "Southern Cross garde l'esprit néo-zélandais avec des notes de pin et d'agrumes, mais se montre plus citronné.",
+   "c14": "Waimea combine pin et agrumes avec un profil puissant, mais ajoute une touche mandarine absente chez Sticklebract.",
+   "c03": "Eclipse propose une intensité aromatique élevée axée sur le pin et les agrumes, mais avec des notes fruitées plus marquées.",
+   "c01": "Dana présente un profil pin et agrumes proche mais avec des acides alpha plus faibles et des notes florales.",
+   "c08": "Warrior assure des notes de pin et de résine intenses, mais son profil est plus doux et moins axé sur les agrumes.",
+   "c04": "HPA-016 offre des notes de pin et d'agrumes, mais son profil aromatique se focalise davantage sur la mandarine.",
+   "c02": "Zythos intègre du pin et des agrumes mais s'en éloigne par un fruité tropical et des mandarines plus prononcés.",
+   "c18": "Triumph partage le pin et les agrumes mais se distingue par des arômes complexes de pêche et d'épices."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

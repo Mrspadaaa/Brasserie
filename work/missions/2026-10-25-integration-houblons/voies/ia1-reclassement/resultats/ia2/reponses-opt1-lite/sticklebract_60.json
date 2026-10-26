@@ -1,0 +1,46 @@
+{
+ "casId": "sticklebract@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "22ca2921b198b76c",
+ "simule": false,
+ "appel": 18,
+ "http": 200,
+ "latenceMs": 1993,
+ "finishReason": "STOP",
+ "jetonsEntree": 3845,
+ "jetonsSortie": 518,
+ "coutMicroChf": 3061,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Proche par son profil d'alpha et ses notes de pin et résine, idéal pour l'ébullition malgré un cohumulone légèrement plus bas.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage les notes d'agrumes et de pin ainsi qu'un bon taux d'alpha, mais offre un profil fruité plus moderne.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Excellente amertume avec des acides alpha élevés, partageant les notes de pin et d'agrumes, bien que plus intense en résine.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Origine néo-zélandaise commune et profil résineux proche, mais des acides alpha légèrement inférieurs pour l'ébullition.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Apporte les notes de pin et d'agrumes recherchées et une bonne aptitude au brassage, avec un profil un peu plus fruité.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Très haut niveau d'alpha et notes de pin et d'agrumes similaires, mais avec un myrcène plus élevé.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Usage dual et amertume comparable, teinté de résine et d'agrumes, mais un peu plus doux.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Utilisation amérisante efficace avec des acides alpha proches, mais un profil aromatique plus neutre.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Fournit l'amertume nécessaire avec un alpha adapté, mais apporte des notes terreuses et vineuses plus complexes.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Niveaux d'alpha corrects pour l'ébullition et notes d'agrumes, mais un profil moins résineux.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c05",
+   "c01",
+   "c08",
+   "c09",
+   "c20",
+   "c15",
+   "c04",
+   "c03",
+   "c10",
+   "c13"
+  ],
+  "phrases": {
+   "c05": "Proche par son profil d'alpha et ses notes de pin et résine, idéal pour l'ébullition malgré un cohumulone légèrement plus bas.",
+   "c01": "Partage les notes d'agrumes et de pin ainsi qu'un bon taux d'alpha, mais offre un profil fruité plus moderne.",
+   "c08": "Excellente amertume avec des acides alpha élevés, partageant les notes de pin et d'agrumes, bien que plus intense en résine.",
+   "c09": "Origine néo-zélandaise commune et profil résineux proche, mais des acides alpha légèrement inférieurs pour l'ébullition.",
+   "c20": "Apporte les notes de pin et d'agrumes recherchées et une bonne aptitude au brassage, avec un profil un peu plus fruité.",
+   "c15": "Très haut niveau d'alpha et notes de pin et d'agrumes similaires, mais avec un myrcène plus élevé.",
+   "c04": "Usage dual et amertume comparable, teinté de résine et d'agrumes, mais un peu plus doux.",
+   "c03": "Utilisation amérisante efficace avec des acides alpha proches, mais un profil aromatique plus neutre.",
+   "c10": "Fournit l'amertume nécessaire avec un alpha adapté, mais apporte des notes terreuses et vineuses plus complexes.",
+   "c13": "Niveaux d'alpha corrects pour l'ébullition et notes d'agrumes, mais un profil moins résineux."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

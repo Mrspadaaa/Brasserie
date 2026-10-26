@@ -113,6 +113,6 @@ if (isMain) {
     scale: { min: 0, max: 100, classes: { faible: [0, 33], moyenne: [33, 66], forte: [66, 100] }, from: 'Axes V5.5, src/data/hopKnowledgeBootstrap.json' },
     families: FAMILIES, words: WORDS, familyWords: FAMILY_WORDS, rules: RULES, track: TRACK, styles,
   };
-  fs.writeFileSync(path.join(here, 'data', 'style-bands.json'), JSON.stringify(out, null, 1) + '\n');
+  fs.writeFileSync(path.join(here, '..', '..', 'src', 'data', 'hopV4', 'style-bands.json'), JSON.stringify(out, null, 1) + '\n');
   console.log(`BANDS-V4 ${Object.keys(styles).length} styles documentés (table ${WORDS.version})`);
 }

@@ -1,0 +1,46 @@
+{
+ "casId": "progress@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "9756e8bf32686e15",
+ "simule": false,
+ "appel": 54,
+ "http": 200,
+ "latenceMs": 6751,
+ "finishReason": "STOP",
+ "jetonsEntree": 3634,
+ "jetonsSortie": 543,
+ "coutMicroChf": 11905,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Parent direct du Progress, il offre une amertume très similaire avec un taux d'alpha et de cohumulone quasi identique à l'ébullition.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Autre descendant direct de Northern Brewer, ses taux d'alpha et sa cohumulone modérée garantissent une amertume nette et équilibrée.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Classique britannique dont les acides alpha et la cohumulone modérée fournissent une amertume franche, très proche de la douceur du Progress.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Son niveau d'alpha et son taux de cohumulone bas apportent une amertume propre et fine, tout à fait adaptée à 60 minutes.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Variété anglaise moderne avec une teneur en alpha et une cohumulone comparables, assurant une amertume douce sans rudesse.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Version américaine du Northern Brewer, son profil d'amertume reste très cohérent malgré des alphas légèrement supérieurs.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Sa plage d'alpha chevauche bien celle de Progress et sa cohumulone modérée produit une amertume noble et équilibrée.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Équivalent américain du Perle, il apporte un profil d'acides alpha adapté avec une cohumulone contenue pour une amertume propre.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Variété britannique avec une cohumulone basse et des alphas un peu plus élevés, offrant une amertume délicate à doser légèrement à la baisse.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Alphas très proches, bien que sa cohumulone plus élevée confère une amertume légèrement plus tranchante que le Progress.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c03",
+   "c05",
+   "c14",
+   "c07",
+   "c04",
+   "c12",
+   "c13",
+   "c06",
+   "c15",
+   "c10"
+  ],
+  "phrases": {
+   "c03": "Parent direct du Progress, il offre une amertume très similaire avec un taux d'alpha et de cohumulone quasi identique à l'ébullition.",
+   "c05": "Autre descendant direct de Northern Brewer, ses taux d'alpha et sa cohumulone modérée garantissent une amertume nette et équilibrée.",
+   "c14": "Classique britannique dont les acides alpha et la cohumulone modérée fournissent une amertume franche, très proche de la douceur du Progress.",
+   "c07": "Son niveau d'alpha et son taux de cohumulone bas apportent une amertume propre et fine, tout à fait adaptée à 60 minutes.",
+   "c04": "Variété anglaise moderne avec une teneur en alpha et une cohumulone comparables, assurant une amertume douce sans rudesse.",
+   "c12": "Version américaine du Northern Brewer, son profil d'amertume reste très cohérent malgré des alphas légèrement supérieurs.",
+   "c13": "Sa plage d'alpha chevauche bien celle de Progress et sa cohumulone modérée produit une amertume noble et équilibrée.",
+   "c06": "Équivalent américain du Perle, il apporte un profil d'acides alpha adapté avec une cohumulone contenue pour une amertume propre.",
+   "c15": "Variété britannique avec une cohumulone basse et des alphas un peu plus élevés, offrant une amertume délicate à doser légèrement à la baisse.",
+   "c10": "Alphas très proches, bien que sa cohumulone plus élevée confère une amertume légèrement plus tranchante que le Progress."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

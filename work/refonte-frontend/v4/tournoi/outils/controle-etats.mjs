@@ -37,7 +37,8 @@
 // --montre ajoute, par état, ce que le geste a fait apparaître (pour mesurer un « attendu »).
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { versUrl, existe } from './lib/cible.mjs';
 import puppeteer from 'puppeteer-core';
 
 const ici = path.dirname(fileURLToPath(import.meta.url));
@@ -76,12 +77,22 @@ const norm = (s) => String(s).normalize('NFC').toLowerCase().replace(/[\u00a0\u2
 // 1. Les états à rejouer.
 const fichiers = (seulEcran ? [seulEcran] : FICHIERS);
 const parFichier = {};
+// e3 (26.10) : deux ajouts, pour que les données puissent changer sans toucher à sa maquette choisie.
+//  - « verif.choisie » : des valeurs (attendu, rang, avant, max_mots…) qui prennent le pas sur « verif » quand l'état est joué
+//    sur sa maquette choisie (--choisie). Une maquette choisie est une page statique aux données du jour de son choix (u4 :
+//    « Magnat et Yeoman, 99 sans inconnue » ; p4b2f : « actif · 2 j ») ; la maquette construite lit les données courantes. Sans
+//    cela, mettre à jour un « attendu » de donnée rendrait le témoin positif rouge. « verif » garde la valeur de la construite.
+//  - « avant » : « fichier:état » vise un état d'un autre fichier.
+const verifDe = (e) => (choisie && e.verif?.choisie ? { ...e.verif, ...e.verif.choisie } : (e.verif ?? {}));
+const voisins = {};
+const etatsDe = (f) => { try { return new Map(JSON.parse(fs.readFileSync(path.join(dossierEtats, `${f}.json`), 'utf8')).etats.map((s) => [s.id, s])); } catch (err) { return new Map(); } };
+const carte = (f) => parFichier[f] ?? (voisins[f] ??= etatsDe(f));
 const aJouer = [];
 let voulus = 0;
 const enAttente = [];
 for (const f of fichiers) {
   const chemin = path.join(dossierEtats, `${f}.json`);
-  if (!fs.existsSync(chemin)) {
+  if (!existe(chemin)) {
     if (A_VENIR.has(f) && !seulEcran) continue;
     console.log(`ETATS ECHEC : ${path.relative(RACINE, chemin)} absent`); process.exit(1);
   }
@@ -151,7 +162,7 @@ const empreinte = async (page) => {
 
 // 3. Trouver l'élément d'un état : sur la maquette construite (data-etat) ou sur sa maquette choisie (sélecteur).
 const trouver = async (page, e, mode) => {
-  const v = e.verif;
+  const v = verifDe(e);
   if (mode === 'construite') {
     const h = await page.$$(`[data-etat~="${e.id}"]`);
     if (h[0] || !repli) return h[0] ?? null;
@@ -249,7 +260,7 @@ const auPremierPlan = (page, f) => {
 };
 const trace = process.env.ETATS_TRACE ? (id, quoi) => process.stderr.write(`[${((Date.now() - T0) / 1000).toFixed(1)} s] ${id} ${quoi}\n`) : () => {};
 const jouerEtat = async (fichier, e) => {
-  const v = e.verif ?? {};
+  const v = verifDe(e);
   const mode = choisie ? 'choisie' : 'construite';
   const manques = [];
   if (!v.route || !v.geste) return { ko: [`verif incomplète (route, geste) dans ${fichier}.json`] };
@@ -257,12 +268,12 @@ const jouerEtat = async (fichier, e) => {
   if (choisie) {
     if (!v.page_choisie || !v.selecteur_choisie) return { ko: ['verif incomplète (page_choisie, selecteur_choisie)'] };
     const f = path.resolve(RACINE, v.page_choisie);
-    if (!fs.existsSync(f)) return { ko: [`page choisie absente (${v.page_choisie})`] };
-    adresse = pathToFileURL(f).href;
+    if (!existe(f)) return { ko: [`page choisie absente (${v.page_choisie})`] };
+    adresse = versUrl(f).href;
   } else {
     const f = path.join(dossier, v.route, v.page_construite ?? 'etat.html');
-    if (!fs.existsSync(f)) return { ko: [`page absente (${path.relative(RACINE, f)})`] };
-    adresse = pathToFileURL(f).href;
+    if (!existe(f)) return { ko: [`page absente (${path.relative(RACINE, f)})`] };
+    adresse = versUrl(f).href;
   }
   const [lw, lh] = (v.viewport ?? '390x844').split('x').map(Number);
   const page = await auPremierPlan(null, () => navigateur.newPage());
@@ -282,20 +293,22 @@ const jouerEtat = async (fichier, e) => {
     };
     // Les préalables (« avant »), eux-mêmes précédés des leurs, dans l'ordre, sans jamais rejouer deux fois le même.
     const ordre = [];
-    const empiler = (ids, pile = []) => {
+    const empiler = (ids, fich, pile = []) => {
       for (const idAvant of ids) {
-        const pre = parFichier[fichier].get(idAvant);
+        // e3 (26.10) : « fichier:état » vise un état d'un autre fichier (« etape:etat-etape-champ-ajouter »).
+        const [f2, i2] = idAvant.includes(':') ? idAvant.split(':') : [fich, idAvant];
+        const pre = carte(f2).get(i2);
         if (!pre) { manques.push(`avant : état ${idAvant} inconnu`); continue; }
-        if (pile.includes(idAvant)) { manques.push(`avant : boucle sur ${idAvant}`); continue; }
-        empiler(pre.verif?.avant ?? [], [...pile, idAvant]);
+        if (pile.includes(`${f2}:${i2}`)) { manques.push(`avant : boucle sur ${idAvant}`); continue; }
+        empiler(verifDe(pre).avant ?? [], f2, [...pile, `${f2}:${i2}`]);
         if (!ordre.includes(pre)) ordre.push(pre);
       }
     };
-    empiler(v.avant ?? []);
+    empiler(v.avant ?? [], fichier);
     for (const pre of ordre) {
       const hp = await trouve(pre);
       if (!hp) break;
-      await geste(page, hp, pre.verif, () => trouver(page, pre, mode));
+      await geste(page, hp, verifDe(pre), () => trouver(page, pre, mode));
     }
     if (manques.length) return { ko: manques };
     const h = await trouve(e);

@@ -1,0 +1,46 @@
+{
+ "casId": "herald@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "296e07d726cb2a2b",
+ "simule": false,
+ "appel": 25,
+ "http": 200,
+ "latenceMs": 1923,
+ "finishReason": "STOP",
+ "jetonsEntree": 3880,
+ "jetonsSortie": 551,
+ "coutMicroChf": 3177,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Pioneer partage l'origine britannique et des notes nettes de pamplemousse et citron, mais offre un profil herbacé plus prononcé.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Zythos apporte des notes d'agrumes et de pamplemousse proches d'Herald, bien que son profil intègre davantage de fruits tropicaux.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Taiheke propose des arômes d'agrumes et de pamplemousse adaptés au dry hop, s'éloignant toutefois par une touche tropicale plus vive.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"NZH-107 met en avant pamplemousse et agrumes comme Herald, mais se distingue par un taux de myrcène nettement supérieur.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Falconer's Flight convient au dry hop avec ses notes de pamplemousse et citron, tout en amenant une complexité tropicale.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Azacca conserve l'orange et le pamplemousse d'Herald, mais développe un profil beaucoup plus intense en fruits tropicaux et mangue.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Mandarina Bavaria partage les notes d'agrumes et d'orange, mais s'en distingue nettement par sa dominante marquée de mandarine.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Palisade intègre des notes d'orange proches d'Herald, mais s'écarte par des accents floraux et de fruits à noyau.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Jarrylo offre des agrumes et de l'orange comparables à Herald, mais introduit des notes atypiques de poire et vin blanc.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Ekuanot propose un panel d'agrumes et d'orange similaire, mais sa palette aromatique est beaucoup plus vaste et herbacée.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c04",
+   "c05",
+   "c12",
+   "c19",
+   "c14",
+   "c17",
+   "c06",
+   "c03",
+   "c15",
+   "c18"
+  ],
+  "phrases": {
+   "c04": "Pioneer partage l'origine britannique et des notes nettes de pamplemousse et citron, mais offre un profil herbacé plus prononcé.",
+   "c05": "Zythos apporte des notes d'agrumes et de pamplemousse proches d'Herald, bien que son profil intègre davantage de fruits tropicaux.",
+   "c12": "Taiheke propose des arômes d'agrumes et de pamplemousse adaptés au dry hop, s'éloignant toutefois par une touche tropicale plus vive.",
+   "c19": "NZH-107 met en avant pamplemousse et agrumes comme Herald, mais se distingue par un taux de myrcène nettement supérieur.",
+   "c14": "Falconer's Flight convient au dry hop avec ses notes de pamplemousse et citron, tout en amenant une complexité tropicale.",
+   "c17": "Azacca conserve l'orange et le pamplemousse d'Herald, mais développe un profil beaucoup plus intense en fruits tropicaux et mangue.",
+   "c06": "Mandarina Bavaria partage les notes d'agrumes et d'orange, mais s'en distingue nettement par sa dominante marquée de mandarine.",
+   "c03": "Palisade intègre des notes d'orange proches d'Herald, mais s'écarte par des accents floraux et de fruits à noyau.",
+   "c15": "Jarrylo offre des agrumes et de l'orange comparables à Herald, mais introduit des notes atypiques de poire et vin blanc.",
+   "c18": "Ekuanot propose un panel d'agrumes et d'orange similaire, mais sa palette aromatique est beaucoup plus vaste et herbacée."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

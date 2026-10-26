@@ -1,0 +1,46 @@
+{
+ "casId": "multihead@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "48b7fb79b742f090",
+ "simule": false,
+ "appel": 50,
+ "http": 200,
+ "latenceMs": 1950,
+ "finishReason": "STOP",
+ "jetonsEntree": 3599,
+ "jetonsSortie": 500,
+ "coutMicroChf": 2913,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Medusa partage les notes de pêche et d'agrumes avec un alpha proche, mais son profil penche plus vers le melon.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Summer offre la pêche et les fruits tropicaux, avec un alpha légèrement supérieur mais un profil herbacé plus prononcé.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Sládek intègre la pêche et les agrumes, mais son alpha est plus haut et son profil intègre des notes nobles.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Riwaka apporte des fruits tropicaux intenses proches, mais son alpha est un peu plus élevé et il manque la pêche.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Meridian propose agrumes et fruits tropicaux avec un alpha comparable, mais se distingue par des notes de menthe.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Fantasia Blend convient par son usage et son alpha proche, mais remplace la pêche par des notes de crème et caramel.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Galaxy partage les fruits tropicaux et la pêche, mais son alpha est nettement plus élevé, modifiant l'amertume.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Kohatu propose des fruits tropicaux mais son alpha est supérieur et il s'éloigne des agrumes de Multihead.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Palisade offre abricot et agrumes, mais son alpha et son profil floral l'éloignent de la simplicité de Multihead.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Samba présente des fruits tropicaux et la pêche, mais son alpha est bien trop élevé pour un substitut à 60 minutes.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c04",
+   "c11",
+   "c20",
+   "c03",
+   "c10",
+   "c01",
+   "c05",
+   "c16",
+   "c17",
+   "c18"
+  ],
+  "phrases": {
+   "c04": "Medusa partage les notes de pêche et d'agrumes avec un alpha proche, mais son profil penche plus vers le melon.",
+   "c11": "Summer offre la pêche et les fruits tropicaux, avec un alpha légèrement supérieur mais un profil herbacé plus prononcé.",
+   "c20": "Sládek intègre la pêche et les agrumes, mais son alpha est plus haut et son profil intègre des notes nobles.",
+   "c03": "Riwaka apporte des fruits tropicaux intenses proches, mais son alpha est un peu plus élevé et il manque la pêche.",
+   "c10": "Meridian propose agrumes et fruits tropicaux avec un alpha comparable, mais se distingue par des notes de menthe.",
+   "c01": "Fantasia Blend convient par son usage et son alpha proche, mais remplace la pêche par des notes de crème et caramel.",
+   "c05": "Galaxy partage les fruits tropicaux et la pêche, mais son alpha est nettement plus élevé, modifiant l'amertume.",
+   "c16": "Kohatu propose des fruits tropicaux mais son alpha est supérieur et il s'éloigne des agrumes de Multihead.",
+   "c17": "Palisade offre abricot et agrumes, mais son alpha et son profil floral l'éloignent de la simplicité de Multihead.",
+   "c18": "Samba présente des fruits tropicaux et la pêche, mais son alpha est bien trop élevé pour un substitut à 60 minutes."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

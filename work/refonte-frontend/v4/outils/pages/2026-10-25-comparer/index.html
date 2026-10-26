@@ -1,0 +1,270 @@
+<title>Comparer, depuis ta base · 25.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+/* La disposition qu'il aime (24.10, soir) : une rangée par endroit, le nom à gauche (au téléphone : au-dessus) ; sa
+   référence puis les huit jeux en vignettes serrées, six par rangée à l'ordinateur, trois au téléphone. Rien ne défile
+   en largeur (D126). Chaque vignette s'ouvre en grand, à côté de sa référence. Page claire (D106). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 4px 14px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 var(--texte); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 64px;
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.25rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--houblon); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 84ch; }
+.encart .canal { font-weight: 700; }
+.sommaire { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.pastille { justify-self: start; display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.5; padding: 0 9px; border-radius: 999px; color: #fff; white-space: nowrap; }
+.p-ref { background: #2f6b1f; }
+.p-froide { background: #2a6fb0; }
+.p-tiede { background: #85600a; }
+.p-chaude { background: #a8431a; }
+.pastilles { display: flex; flex-wrap: wrap; gap: 3px 4px; }
+.verdict { display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.4; padding: 0 7px; border-radius: 999px; border: 1.5px solid currentColor; white-space: nowrap; }
+.v-accepte { color: #2f6b1f; } .v-tete { color: #fff; background: #2f6b1f; border-color: #2f6b1f; }
+.legende-pastilles { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 0.875rem; color: var(--discret); align-items: center; }
+.rangee { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.nom { display: grid; gap: 4px; align-content: start; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.05rem; color: var(--houblon); }
+.note { font-size: 0.875rem; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 8px; align-items: start; }
+@media (min-width: 900px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 20px; }
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px 14px; }
+}
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; aspect-ratio: 780 / 1688; }
+.ecran img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.vue[data-reference] .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--ambre), var(--ombre); }
+.vue figcaption { display: grid; gap: 3px; }
+.vue figcaption b { font-family: var(--titre); font-size: 0.95rem; line-height: 1.2; }
+.id { font-size: 0.875rem; color: var(--discret); font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
+.ligne { font-size: 0.875rem; font-style: italic; color: var(--encre); line-height: 1.35; }
+.reserves { display: grid; gap: 6px; font-size: 0.95rem; }
+footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: calc(64px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)); background: #0e100c; }
+.vis-titre { font: 800 1.05rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-corps { display: grid; gap: 28px; max-width: 1240px; margin: 0 auto; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.vis-panneau { flex: 0 0 86%; scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau img { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.vis-panneau.ref img { box-shadow: 0 0 0 3px var(--ambre); }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #f6d38f; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; flex-wrap: wrap; }
+  .vis-panneau { flex: 0 1 400px; min-width: 290px; }
+  .vis-glisse { display: none; }
+}
+</style>
+
+<style>.v-ecarte { color: #9a3b1e; }</style>
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · houblons · Comparer, depuis ta base · 25.10</p>
+    <h1>Comparer : ta base, le moment au choix</h1>
+  </header>
+
+  <section id="a-choisir" aria-label="À choisir">
+    <div class="encart">
+      <p><b>À choisir :</b> douze versions de ton écran Comparer de la maquette jouable, ta base de reprise.</p>
+      <p>Tes mots : « surtout pouvoir choisir quand comparé. 60' 10' dryhopping... » ; « les style hors 16d soit bien montré » ; « L'ajout des huiles aussi est bien » ; « un peu trop de text inutile ».</p>
+      <p>Chaque version se joue : un toucher sur un moment change ce qui est comparé ; 100 mots au plus au premier écran (ta base : 114).</p>
+      <p class="canal">Commente la mini maquette que tu choisis : je lis les commentaires.</p>
+      <p class="legende-pastilles"><span class="pastille p-ref">ta base</span> la maquette jouable <span class="verdict v-tete">en tête</span> le critique la met devant <span class="verdict v-ecarte">écartée</span> perd une fonction de ta base, montrée quand même</p>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-cma" data-choix="quand-sur-la-base" aria-labelledby="t-cma" data-ref-nom="Ta base de reprise" data-ref-imgs="img/base-jouable.png|img/brasseur-base-reprise.jpg" data-ref-etats="la base construite|ta capture">
+    <div class="nom">
+      <h2 id="t-cma">Le moment, sur ta base</h2>
+      <p class="question">« surtout pouvoir choisir quand comparé »</p>
+      <p class="note">Ta base presque intacte ; ses étapes deviennent le choix.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Ta base de reprise" data-imgs="img/base-jouable.png|img/brasseur-base-reprise.jpg" data-etats="la base construite|ta capture"><img src="img/base-jouable.png" width="780" height="1688" alt="Ta base de reprise"></button>
+        <figcaption><span class="pastille p-ref">ta base</span><b>Comparer de la maquette jouable</b><span class="id">base</span><span class="ligne">Ce que tu as dit « la base de reprise ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="cma1 · Les étapes, à toucher" data-imgs="img/cma1.png|img/cma1-moment.png|img/cma1-nelson.png" data-etats="repos|un autre moment|Motueka face à Nelson Sauvin"><img src="img/cma1.png" width="780" height="1688" alt="cma1"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>Les étapes, à toucher</b><span class="id">cma1</span><span class="ligne">Les étapes deviennent le choix.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="cma2 · La tête parle le moment" data-imgs="img/cma2.png|img/cma2-moment.png|img/cma2-nelson.png" data-etats="repos|un autre moment|Motueka face à Nelson Sauvin"><img src="img/cma2.png" width="780" height="1688" alt="cma2"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>La tête parle le moment</b><span class="id">cma2</span><span class="ligne">Les têtes disent le moment choisi.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="cma3 · Lui seul, une rangée" data-imgs="img/cma3.png|img/cma3-moment.png|img/cma3-nelson.png" data-etats="repos|un autre moment|Motueka face à Nelson Sauvin"><img src="img/cma3.png" width="780" height="1688" alt="cma3"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>Lui seul, une rangée</b><span class="id">cma3</span><span class="ligne">Ce que dit chacun seul, en une rangée.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="cma4 · Le brassin, de la chaudière à la cuve" data-imgs="img/cma4.png|img/cma4-moment.png|img/cma4-nelson.png" data-etats="repos|un autre moment|Motueka face à Nelson Sauvin"><img src="img/cma4.png" width="780" height="1688" alt="cma4"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>Le brassin, de la chaudière à la cuve</b><span class="id">cma4</span><span class="ligne">De la chaudière à la cuve.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-cmb" data-choix="greffes-r6a-plus" aria-labelledby="t-cmb" data-ref-nom="Ta base de reprise" data-ref-imgs="img/base-jouable.png|img/brasseur-base-reprise.jpg" data-ref-etats="la base construite|ta capture">
+    <div class="nom">
+      <h2 id="t-cmb">Les bonnes idées, sur ta base</h2>
+      <p class="question">« L'ajout des huiles aussi est bien »</p>
+      <p class="note">Les greffes de r6a++, reprises sur ta base.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Ta base de reprise" data-imgs="img/base-jouable.png|img/brasseur-base-reprise.jpg" data-etats="la base construite|ta capture"><img src="img/base-jouable.png" width="780" height="1688" alt="Ta base de reprise"></button>
+        <figcaption><span class="pastille p-ref">ta base</span><b>Comparer de la maquette jouable</b><span class="id">base</span><span class="ligne">Pour comparer.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="cmb1 · le moment choisi (rpb1), en rail" data-imgs="img/cmb1.png|img/cmb1-moment.png|img/cmb1-nelson.png" data-etats="repos|un autre moment|Motueka face à Nelson Sauvin"><img src="img/cmb1.png" width="780" height="1688" alt="cmb1"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>le moment choisi (rpb1), en rail</b><span class="id">cmb1</span><span class="ligne">Le moment choisi, en rail.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="cmb2 · l écart chiffré (rpz4), sélecteur segmenté" data-imgs="img/cmb2.png|img/cmb2-moment.png|img/cmb2-nelson.png" data-etats="repos|un autre moment|Motueka face à Nelson Sauvin"><img src="img/cmb2.png" width="780" height="1688" alt="cmb2"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-tete">en tête</span></span><b>l écart chiffré (rpz4), sélecteur segmenté</b><span class="id">cmb2</span><span class="ligne">L'écart chiffré face au retenu.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="cmb3 · la frise (rpb3) comme sélecteur" data-imgs="img/cmb3.png|img/cmb3-moment.png|img/cmb3-nelson.png" data-etats="repos|un autre moment|Motueka face à Nelson Sauvin"><img src="img/cmb3.png" width="780" height="1688" alt="cmb3"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>la frise (rpb3) comme sélecteur</b><span class="id">cmb3</span><span class="ligne">La frise comme sélecteur.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="cmb4 · les trois plans (w2) : chacun à son moment" data-imgs="img/cmb4.png|img/cmb4-moment.png|img/cmb4-nelson.png" data-etats="repos|un autre moment|Motueka face à Nelson Sauvin"><img src="img/cmb4.png" width="780" height="1688" alt="cmb4"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-accepte">accepté</span></span><b>les trois plans (w2) : chacun à son moment</b><span class="id">cmb4</span><span class="ligne">Les trois plans, chacun à son moment.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-cmz" data-choix="autres-quand" aria-labelledby="t-cmz" data-ref-nom="Ta base de reprise" data-ref-imgs="img/base-jouable.png|img/brasseur-base-reprise.jpg" data-ref-etats="la base construite|ta capture">
+    <div class="nom">
+      <h2 id="t-cmz">D'autres façons de choisir</h2>
+      <p class="question">« Mais ça couvre pas tout »</p>
+      <p class="note">Une représentation libre du moment.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Ta base de reprise" data-imgs="img/base-jouable.png|img/brasseur-base-reprise.jpg" data-etats="la base construite|ta capture"><img src="img/base-jouable.png" width="780" height="1688" alt="Ta base de reprise"></button>
+        <figcaption><span class="pastille p-ref">ta base</span><b>Comparer de la maquette jouable</b><span class="id">base</span><span class="ligne">Pour comparer.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="cmz1 · Comparer, dans la brasserie" data-imgs="img/cmz1.png|img/cmz1-moment.png|img/cmz1-nelson.png" data-etats="repos|un autre moment|Motueka face à Nelson Sauvin"><img src="img/cmz1.png" width="780" height="1688" alt="cmz1"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-ecarte">écartée</span></span><b>Comparer, dans la brasserie</b><span class="id">cmz1</span><span class="ligne">La brasserie : chaudière, cuve.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="cmz2 · Comparer, au cadran" data-imgs="img/cmz2.png|img/cmz2-moment.png|img/cmz2-nelson.png" data-etats="repos|un autre moment|Motueka face à Nelson Sauvin"><img src="img/cmz2.png" width="780" height="1688" alt="cmz2"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-ecarte">écartée</span></span><b>Comparer, au cadran</b><span class="id">cmz2</span><span class="ligne">Le cadran des moments.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="cmz3 · Comparer, en pellicule" data-imgs="img/cmz3.png|img/cmz3-moment.png|img/cmz3-nelson.png" data-etats="repos|un autre moment|Motueka face à Nelson Sauvin"><img src="img/cmz3.png" width="780" height="1688" alt="cmz3"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-ecarte">écartée</span></span><b>Comparer, en pellicule</b><span class="id">cmz3</span><span class="ligne">La pellicule, image par image.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="cmz4 · Comparer, qui gagne quand" data-imgs="img/cmz4.png|img/cmz4-moment.png|img/cmz4-nelson.png" data-etats="repos|un autre moment|Motueka face à Nelson Sauvin"><img src="img/cmz4.png" width="780" height="1688" alt="cmz4"></button>
+        <figcaption><span class="pastilles"><span class="verdict v-ecarte">écartée</span></span><b>Comparer, qui gagne quand</b><span class="id">cmz4</span><span class="ligne">Qui gagne à quel moment.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <p>Douze versions sur ta base de reprise, jugées une à une par le critique. Rien n'entre dans la maquette avant ton choix. Source : <span class="id">ecran-1/fils25-comparer/</span>.</p>
+  </footer>
+</div>
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+  <div class="vis-tete">
+    <p class="vis-titre" id="vis-titre"></p>
+    <div class="vis-boutons">
+      <button type="button" id="vis-prec" aria-label="Vue précédente">◀</button>
+      <button type="button" id="vis-suiv" aria-label="Vue suivante">▶</button>
+      <button type="button" class="fermer" id="vis-fermer">Fermer</button>
+    </div>
+  </div>
+  <div class="vis-corps" id="vis-corps"></div>
+</div>
+
+<script>
+// En grand : chaque état du jeu à côté de la maquette telle quelle. Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var corps = document.getElementById('vis-corps');
+  var titre = document.getElementById('vis-titre');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function liste(el, cle) { return (el.getAttribute(cle) || '').split('|').filter(Boolean); }
+  function panneaux(b) {
+    var sec = b.closest('[data-choix]');
+    var etats = liste(b, 'data-etats');
+    var v = liste(b, 'data-imgs').map(function (s, i) { return { src: s, leg: etats[i] || '' }; });
+    if (b.closest('[data-reference]') || !sec.getAttribute('data-ref-imgs')) return v;
+    var refEtats = liste(sec, 'data-ref-etats');
+    return v.concat(liste(sec, 'data-ref-imgs').map(function (s, i) { return { src: s, leg: 'maquette telle quelle · ' + (refEtats[i] || ''), ref: true }; }));
+  }
+  function panneau(p) {
+    var f = document.createElement('figure');
+    f.className = 'vis-panneau' + (p.ref ? ' ref' : '');
+    var c = document.createElement('figcaption'); c.textContent = p.leg;
+    var i = document.createElement('img'); i.src = p.src; i.alt = p.leg;
+    f.appendChild(c); f.appendChild(i);
+    return f;
+  }
+  function ouvrir(n, depuis) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    corps.textContent = '';
+    var ps = panneaux(b);
+    if (ps.length > 1) { var g = document.createElement('p'); g.className = 'vis-glisse'; g.textContent = 'Glisse : ' + ps.slice(1).map(function (p) { return p.leg; }).join(', ') + ' →'; corps.appendChild(g); }
+    var d = document.createElement('div'); d.className = 'vis-rangee';
+    ps.forEach(function (p) { d.appendChild(panneau(p)); });
+    corps.appendChild(d);
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; corps.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.planche .ecran');
+    if (b) ouvrir(boutons.indexOf(b), b);
+  });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

@@ -1,0 +1,46 @@
+{
+ "casId": "idaho-7@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "015805f4692f4505",
+ "simule": false,
+ "appel": 87,
+ "http": 200,
+ "latenceMs": 6262,
+ "finishReason": "STOP",
+ "jetonsEntree": 4060,
+ "jetonsSortie": 587,
+ "coutMicroChf": 13116,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage le duo fruits tropicaux/abricot et la note résineuse de pin caractéristique d'Idaho 7, avec un profil d'huiles très proche.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Excellente alternative en biotransformation pour ses notes intenses de papaye, agrumes et pin, bien qu'il apporte une touche de myrtille inédite.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Rejoint Idaho 7 sur la papaye, les agrumes et les notes herbacées/thé noir, avec une charge aromatique puissante en houblonnage à cru.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Offre le même punch tropical dominé par la papaye et les agrumes, mais fait l'impasse sur le côté pin résineux.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Reproduit parfaitement l'équilibre entre pamplemousse rose, fruits tropicaux et côté résineux de pin, tout en tirant plus sur le floral potpourri.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Combine habilement les agrumes vifs, l'abricot et la résine d'Idaho 7, complétés par de discrètes notes de pastèque et fruits rouges.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Mélange bien les agrumes, les fruits tropicaux et le pin, mais manque de la profondeur abricot et thé noir d'Idaho 7.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Retrouve les facettes d'orange, abricot et pamplemousse avec un fond dank, tout en restant plus doux et moins résineux.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Apporte un profil très complémentaire axé sur les fruits à noyau (abricot) et la résine de pin, sans le côté agrumes tranchant.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Offre l'arôme rare de cassis partagé avec Idaho 7 ainsi que des touches tropicales et de pin, dans un registre un peu plus herbacé.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c03",
+   "c13",
+   "c04",
+   "c14",
+   "c07",
+   "c02",
+   "c05",
+   "c16",
+   "c11"
+  ],
+  "phrases": {
+   "c01": "Partage le duo fruits tropicaux/abricot et la note résineuse de pin caractéristique d'Idaho 7, avec un profil d'huiles très proche.",
+   "c03": "Excellente alternative en biotransformation pour ses notes intenses de papaye, agrumes et pin, bien qu'il apporte une touche de myrtille inédite.",
+   "c13": "Rejoint Idaho 7 sur la papaye, les agrumes et les notes herbacées/thé noir, avec une charge aromatique puissante en houblonnage à cru.",
+   "c04": "Offre le même punch tropical dominé par la papaye et les agrumes, mais fait l'impasse sur le côté pin résineux.",
+   "c14": "Reproduit parfaitement l'équilibre entre pamplemousse rose, fruits tropicaux et côté résineux de pin, tout en tirant plus sur le floral potpourri.",
+   "c07": "Combine habilement les agrumes vifs, l'abricot et la résine d'Idaho 7, complétés par de discrètes notes de pastèque et fruits rouges.",
+   "c02": "Mélange bien les agrumes, les fruits tropicaux et le pin, mais manque de la profondeur abricot et thé noir d'Idaho 7.",
+   "c05": "Retrouve les facettes d'orange, abricot et pamplemousse avec un fond dank, tout en restant plus doux et moins résineux.",
+   "c16": "Apporte un profil très complémentaire axé sur les fruits à noyau (abricot) et la résine de pin, sans le côté agrumes tranchant.",
+   "c11": "Offre l'arôme rare de cassis partagé avec Idaho 7 ainsi que des touches tropicales et de pin, dans un registre un peu plus herbacé."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

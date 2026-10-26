@@ -2,39 +2,39 @@
 .tax-intro { display:flex; justify-content:space-between; align-items:start; gap:8px; margin-bottom:8px; }
 .tax-intro .finance-status { flex-shrink:0; }
 .tax-intro h3 { font-size:15px; }
-.tax-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:3px; border-bottom:1px solid #3D342E; }
-.tax-steps button { display:flex; gap:5px; align-items:center; justify-content:center; min-height:32px; border-bottom:2px solid transparent; font-size:13px; color:#D8CEC5; }
-.tax-steps button > span { border:1px solid #574A42; border-radius:50%; width:18px; height:18px; display:grid; place-items:center; font-size:12px; }
-.tax-steps button[aria-selected=true] { border-color:#86B9E6; color:#86B9E6; font-weight:600; }
-.tax-steps button[aria-selected=true] > span { color:#86B9E6; background:#86B9E61A; border-color:#86B9E6; }
-.tax-status { display:flex; gap:6px; margin:8px 0; font-size:13px; line-height:1.4; color:#D8CEC5; }
-.tax-status > span { flex-shrink:0; margin-top:1px; color:#E3B55D; }
-.tax-next-task { display:flex; gap:8px; flex-wrap:wrap; align-items:center; padding:8px; margin:8px 0; border:1px solid #574A42; border-radius:8px; background:#1A1613; }
+.tax-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:3px; border-bottom:1px solid rgb(var(--cave-700)); }
+.tax-steps button { display:flex; gap:5px; align-items:center; justify-content:center; min-height:32px; border-bottom:2px solid transparent; font-size:13px; color:rgb(var(--cave-texte-200)); }
+.tax-steps button > span { border:1px solid rgb(var(--cave-600)); border-radius:50%; width:18px; height:18px; display:grid; place-items:center; font-size:12px; }
+.tax-steps button[aria-selected=true] { border-color:rgb(var(--area-finances)); color:rgb(var(--area-finances-texte)); font-weight:600; }
+.tax-steps button[aria-selected=true] > span { color:rgb(var(--area-finances-texte)); background:rgb(var(--area-finances) / 0.10); border-color:rgb(var(--area-finances)); }
+.tax-status { display:flex; gap:6px; margin:8px 0; font-size:13px; line-height:1.4; color:rgb(var(--cave-texte-200)); }
+.tax-status > span { flex-shrink:0; margin-top:1px; color:rgb(var(--attention-texte)); }
+.tax-next-task { display:flex; gap:8px; flex-wrap:wrap; align-items:center; padding:8px; margin:8px 0; border:1px solid rgb(var(--cave-600)); border-radius:8px; background:rgb(var(--cave-900)); }
 .tax-next-task > div { flex:1 1 200px; min-width:0; }
 .tax-next-task strong { font-size:14px; font-weight:600; }
 .tax-next-task p { margin-top:2px; }
-.tax-issues { list-style:disc; padding:0 0 0 18px; color:#D8CEC5; font-size:13px; line-height:1.4; }
+.tax-issues { list-style:disc; padding:0 0 0 18px; color:rgb(var(--cave-texte-200)); font-size:13px; line-height:1.4; }
 .tax-issues li { margin:4px 0; }
 .tax-next { width:auto; margin-top:10px; }
-.tax-copy-card { border-bottom:1px solid #3D342E; padding:8px 0 10px; }
+.tax-copy-card { border-bottom:1px solid rgb(var(--cave-700)); padding:8px 0 10px; }
 .tax-copy-heading { display:flex; align-items:start; gap:8px; justify-content:space-between; margin-bottom:4px; }
-.tax-code { display:block; flex-shrink:0; font-size:12px; padding:2px 4px; border:1px solid #574A42; border-radius:4px; color:#86B9E6; }
+.tax-code { display:block; flex-shrink:0; font-size:12px; padding:2px 4px; border:1px solid rgb(var(--cave-600)); border-radius:4px; color:rgb(var(--area-finances-texte)); }
 .tax-copy-value { display:flex; gap:6px; align-items:center; margin:8px 0 6px; }
-.tax-copy-value :is(input, textarea:where([data-single-line])) { min-width:0; width:100%; flex:1; min-height:32px; font-size:16px; font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums; background:#221D19; border:1px solid #574A42; padding:3px 6px; border-radius:8px; }
-.tax-copy-value :is(input, textarea:where([data-single-line])):focus-visible { outline:2px solid #86B9E6; }
-.tax-copy-value > span { font-size:12px; color:#D8CEC5; }
+.tax-copy-value :is(input, textarea:where([data-single-line])) { min-width:0; width:100%; flex:1; min-height:32px; font-size:16px; font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums; background:rgb(var(--cave-850)); border:1px solid rgb(var(--cave-600)); padding:3px 6px; border-radius:8px; }
+.tax-copy-value :is(input, textarea:where([data-single-line])):focus-visible { outline:2px solid rgb(var(--area-finances)); }
+.tax-copy-value > span { font-size:12px; color:rgb(var(--cave-texte-200)); }
 .tax-copy-value button { flex-shrink:0; }
-.tax-copy-pending { font-size:12px; color:#E3B55D; margin-top:4px; }
+.tax-copy-pending { font-size:12px; color:rgb(var(--attention-texte)); margin-top:4px; }
 .tax-document-intro { display:flex; gap:8px; margin:8px 0; align-items:start; }
-.tax-document-intro > svg { flex-shrink:0; color:#86B9E6; margin-top:2px; width:20px; height:20px; }
+.tax-document-intro > svg { flex-shrink:0; color:rgb(var(--area-finances-texte)); margin-top:2px; width:20px; height:20px; }
 .tax-review-list { display:grid; gap:8px; }
-.tax-review-list > div { padding-bottom:8px; border-bottom:1px solid #3D342E; }
+.tax-review-list > div { padding-bottom:8px; border-bottom:1px solid rgb(var(--cave-700)); }
 .tax-review-list p { margin:2px 0 0 24px; }
 .tax-review-list .finance-check { align-items:start; }
 .tax-review-list :is(input, textarea:where([data-single-line])) { margin-top:2px; }
-.tax-reconciliation { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:8px; border:1px solid #574A42; border-radius:8px; }
-.tax-reconciliation span { font-size:12px; color:#D8CEC5; min-width:0; }
-.tax-reconciliation strong { display:block; font-size:16px; margin-top:4px; color:#F5F0EA; overflow-wrap:anywhere; }
+.tax-reconciliation { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:8px; border:1px solid rgb(var(--cave-600)); border-radius:8px; }
+.tax-reconciliation span { font-size:12px; color:rgb(var(--cave-texte-200)); min-width:0; }
+.tax-reconciliation strong { display:block; font-size:16px; margin-top:4px; color:rgb(var(--cave-texte-50)); overflow-wrap:anywhere; }
 .tax-file-name { display:flex; gap:6px; align-items:start; overflow-wrap:anywhere; font-size:13px; }
 .tax-file-name svg { flex-shrink:0; }
 @media (max-width:380px) { .tax-intro, .tax-copy-heading { flex-wrap:wrap; gap:4px; } .tax-steps button { gap:4px; font-size:12px; } }

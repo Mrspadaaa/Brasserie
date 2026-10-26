@@ -1,0 +1,26 @@
+{
+ "casId": "triplepearl@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "acc70377b8b482e2",
+ "simule": true,
+ "appel": 7,
+ "http": 200,
+ "latenceMs": 0,
+ "finishReason": "STOP",
+ "jetonsEntree": 2359,
+ "jetonsSortie": 14,
+ "coutMicroChf": 929,
+ "texte": "{\"classement\": [{\"id\": \"c01\", \"phrase\": \"coupé",
+ "analyse": {
+  "valide": false,
+  "ordre": [],
+  "phrases": {},
+  "erreurs": [
+   "JSON illisible"
+  ]
+ },
+ "erreurReseau": null
+}

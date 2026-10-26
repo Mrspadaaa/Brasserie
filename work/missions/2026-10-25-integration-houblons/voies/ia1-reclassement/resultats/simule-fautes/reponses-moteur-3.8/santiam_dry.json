@@ -1,0 +1,26 @@
+{
+ "casId": "santiam@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "10a35673208f99ac",
+ "simule": true,
+ "appel": 49,
+ "http": 200,
+ "latenceMs": 0,
+ "finishReason": "STOP",
+ "jetonsEntree": 2174,
+ "jetonsSortie": 14,
+ "coutMicroChf": 4208,
+ "texte": "{\"classement\": [{\"id\": \"c01\", \"phrase\": \"coupé",
+ "analyse": {
+  "valide": false,
+  "ordre": [],
+  "phrases": {},
+  "erreurs": [
+   "JSON illisible"
+  ]
+ },
+ "erreurReseau": null
+}

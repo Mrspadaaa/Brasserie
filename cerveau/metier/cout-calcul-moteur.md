@@ -2,8 +2,8 @@
 name: cout-calcul-moteur
 description: Temps mesuré de simulerCas (léger et complet) sur le cas stout, sur un ajout, et sur tout le catalogue (318 houblons) — base du choix de calcul dans le navigateur.
 type: metier
-maj: 2026-10-24
-sources: prototypes/houblons-v4/src/engine/profil-simule.ts (simulerCas, l. 471-477) ; prototypes/houblons-v4/scripts/profil-simule-cas.ts ; prototypes/houblons-v4/src/pack/buildPack.ts (s1Recipe, S1_TASTING) ; prototypes/houblons-v4/src/engine/index.ts ; work/refonte-frontend/v4/ecran-1/fils21-choisir/donnees/PROFIL-SIMULE.md ; work/refonte-frontend/v4/ecran-1/fils21-choisir/donnees/profils-simules.json ; annexe work/missions/2026-10-22-reprise-lot21/voies/r2-cout-calcul/ANNEXE.md (script bench.ts, sortie brute)
+maj: 2026-10-26
+sources: scripts/bench-hop-prod.mjs (rendu, 26.10) ; scripts/bench-hop-v4.ts (banc du 25.10, fabrique creerMoteur) ; work/missions/2026-10-25-integration-houblons/voies/t5-causes/RESULTAT.md ; src/domain/hopIndex/v4/profil-simule.ts (simulerCas ; déplacé le 25.10 depuis prototypes/houblons-v4/src/engine) ; prototypes/houblons-v4/scripts/profil-simule-cas.ts ; prototypes/houblons-v4/src/pack/buildPack.ts (s1Recipe, S1_TASTING) ; prototypes/houblons-v4/src/engine/index.ts ; work/refonte-frontend/v4/ecran-1/fils21-choisir/donnees/PROFIL-SIMULE.md ; work/refonte-frontend/v4/ecran-1/fils21-choisir/donnees/profils-simules.json ; annexe work/missions/2026-10-22-reprise-lot21/voies/r2-cout-calcul/ANNEXE.md (script bench.ts, sortie brute)
 ---
 
 Mesure du moteur de simulation, sans modifier le moteur ni les données. Léger = `complet: false` (grille) ; complet = `complet: true` (drapeaux et parJour). Détail, script et sortie brute : ANNEXE.md de la voie r2-cout-calcul.
@@ -36,3 +36,14 @@ Mesure du moteur de simulation, sans modifier le moteur ni les données. Léger 
 - `proposeVoies` à froid : 90 à 130 ms ; frise de Dryhopper : 40 ms à l'ouverture (30 `lireBiere`), puis 0,9 ms par cran.
 - Préchauffer au repos fait passer les premiers touchers de Suggérer et de Substituer de 798 et 728 ms à 288 et 184 ms.
 - Limites de ce que le moteur simule : [[moteur-parcours-limites]].
+**Banc du 25.10** (`npx vite-node scripts/bench-hop-v4.ts -- --echelle=K --json`, jeu ×K construit par la fabrique ; même PC). Les balayages
+complets du 22.10 ci-dessus sont périmés : le complet est environ 9 fois plus rapide depuis le 23.10 (ETAT-DES-LIEUX de l'intégration).
+- ×10 (3 180 houblons, stock 160) : `substitutes` froid 82 à 86 ms (était 1 470), chaud 3,3 à 5,6 ms (était 43) ; `remplacants` 4,5 ms ;
+  `comparer` 12 houblons 18 ms ; `lireBiere` 3,4 ms froid, 0,7 ms par entrée ; `suggerer` 154 ms froid, 125 ms par cran de dose (90 candidats).
+- `proposer` ×10 froid ≈ 1,1 s (14 voies, 1 499 évaluées) : la fabrique voit tout le stock, l'ancien banc non. À tenir par T17 (#166) ou un worker (#171).
+- Causes retirées : preuves documentaires sans cache (premier mot, `describeFamilies` refait), LRU qui supprimait et remettait à chaque lecture,
+  `toLocaleString` à chaque appel. Un geste sur une recette reste sous 15 ms quelle que soit la taille du catalogue.
+**Rendu en production** (26.10, `scripts/bench-hop-prod.mjs`, build de production, jusqu'à l'image peinte ; voie p1-banc-prod) : le moteur
+pèse ~13 ms par ouverture de Comparer ; le recalcul de style forcé par `getBoundingClientRect` et `focus()` domine (Comparer ouvert :
+restyle complet 70 ms à ×1 pour 2 153 nœuds). Ouvertures à ×1 : Comparer 112 à 176 ms, Suggérer 48 à 72, fiche 48 à 98 ; à ×4, 1,6 à
+14 fois les budgets du téléphone. Les `:has()` ne freinent pas les ouvertures. Correctifs : voie p2-rendu (#179).

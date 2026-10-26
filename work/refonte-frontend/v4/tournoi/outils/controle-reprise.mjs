@@ -32,7 +32,8 @@
 // --premier-ecran (un élément à un toucher) ; reprise-sans-raison (un écart sans raison) → ECHEC.
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { versUrl, existe, lire } from './lib/cible.mjs';
 
 const ICI = path.dirname(fileURLToPath(import.meta.url));
 const RACINE = path.resolve(ICI, '../../../../..');
@@ -74,7 +75,7 @@ const lireInventaire = () => {
     if (typeof e.date === 'string' && !/^\d{4}-\d{2}-\d{2}$/.test(e.date)) fautes.push(nom + ' : date hors du format AAAA-MM-JJ');
     if (typeof e.mots === 'string' && e.mots.trim() && !spec.includes(norm(e.mots))) fautes.push(nom + ' : ses mots ne se retrouvent pas dans SPEC-BRASSEUR (« ' + norm(e.mots).slice(0, 60) + ' »)');
     if (typeof e.reserve === 'string' && e.reserve.trim() && !spec.includes(norm(e.reserve))) fautes.push(nom + ' : sa réserve ne se retrouve pas dans SPEC-BRASSEUR (« ' + norm(e.reserve).slice(0, 60) + ' »)');
-    if (typeof e.capture === 'string' && e.capture.trim() && !fs.existsSync(path.resolve(RACINE, e.capture))) fautes.push(nom + ' : capture absente (' + e.capture + ')');
+    if (typeof e.capture === 'string' && e.capture.trim() && !existe(path.resolve(RACINE, e.capture))) fautes.push(nom + ' : capture absente (' + e.capture + ')');
     if (typeof e.facteur === 'string' && !FACTEUR.test(e.facteur)) fautes.push(nom + ' : facteur « ' + e.facteur + ' » (variété, contexte, ou « outil : Dryhopper | Levure | Suggérer | fiche »)');
   });
   return { fautes, elements };
@@ -101,9 +102,9 @@ const parId = new Map(inv.elements.map((e) => [e.id, e]));
 const fNote = path.resolve(dossier, id, 'NOTE.md');
 const fPage = path.resolve(dossier, id, page);
 const lignes = new Map(); // id -> { statut, texte }
-if (!fs.existsSync(fNote)) problemes.push('NOTE.md absente (' + path.relative(RACINE, fNote) + ')');
+if (!existe(fNote)) problemes.push('NOTE.md absente (' + path.relative(RACINE, fNote) + ')');
 else {
-  const note = fs.readFileSync(fNote, 'utf8');
+  const note = lire(fNote);
   const m = note.match(/^##\s+Reprise\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m);
   if (!m) problemes.push('NOTE : pas de section « ## Reprise »');
   else {
@@ -131,7 +132,7 @@ if (inv.elements.length && ecartes.length * 4 > inv.elements.length) problemes.p
 // La page : rendu réel, au repos puis à un toucher.
 const montres = [...lignes].filter(([, v]) => v.statut !== 'écarté').map(([eid]) => eid);
 let compte = { repris: 0, contexte: 0, pont: 0 };
-if (!fs.existsSync(fPage)) problemes.push('page absente (' + path.relative(RACINE, fPage) + ')');
+if (!existe(fPage)) problemes.push('page absente (' + path.relative(RACINE, fPage) + ')');
 else if (montres.length) {
   const { default: puppeteer } = await import('puppeteer-core');
   const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
@@ -139,7 +140,7 @@ else if (montres.length) {
   await p.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
   const DECL = 'button, summary, [role="button"]';
   const charger = async () => {
-    await p.goto(pathToFileURL(fPage).href, { waitUntil: 'networkidle0', timeout: 30000 }).catch(() => {});
+    await p.goto(versUrl(fPage).href, { waitUntil: 'networkidle0', timeout: 30000 }).catch(() => {});
     await new Promise((r) => setTimeout(r, 300));
   };
   // Mesure, pour chaque id : visible ? dans le premier écran ? dans la ligne de contexte ? un lien vers l'outil ?

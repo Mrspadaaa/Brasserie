@@ -1,0 +1,46 @@
+{
+ "casId": "progress@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "239026fdc7f4fce1",
+ "simule": false,
+ "appel": 35,
+ "http": 200,
+ "latenceMs": 1905,
+ "finishReason": "STOP",
+ "jetonsEntree": 3930,
+ "jetonsSortie": 544,
+ "coutMicroChf": 3174,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Sovereign partage les notes de menthe et de fruité ainsi qu'un profil d'huiles proche, mais diffère par une teneur en farnésène plus élevée.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Fuggle offre des notes douces, de menthe et d'herbe coupée, tout en s'éloignant par son profil boisé et un farnésène plus haut.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Bramling Cross conserve la note de cassis du Progress mais se distingue par un usage dual et des touches nettes de vanille.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Southern Aroma intègre le cassis et un profil floral proche, mais s'écarte par des notes de foin et de paille plus sèches.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Perle présente menthe, fruité et floral, mais s'en éloigne par un profil plus herbacé, terreux et épicé.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Hallertau Tradition se rapproche par l'herbe coupée et le fruité, mais propose un caractère noble et terreux plus marqué.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Golding apporte douceur et floral, mais manque de la menthe et du cassis caractéristiques du Progress.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Northern Brewer partage la menthe et l'herbe coupée, mais se destine à l'amertume et introduit des notes de pin.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Brewer's Gold reprend la note de cassis mais son usage amérisant et son cohumulone élevé l'éloignent en dry hop.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"East Kent Goldings offre des notes florales et miellées proches, mais diverge par ses arômes marqués de citron et de lavande.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c15",
+   "c02",
+   "c16",
+   "c17",
+   "c04",
+   "c07",
+   "c03",
+   "c01",
+   "c18",
+   "c05"
+  ],
+  "phrases": {
+   "c15": "Sovereign partage les notes de menthe et de fruité ainsi qu'un profil d'huiles proche, mais diffère par une teneur en farnésène plus élevée.",
+   "c02": "Fuggle offre des notes douces, de menthe et d'herbe coupée, tout en s'éloignant par son profil boisé et un farnésène plus haut.",
+   "c16": "Bramling Cross conserve la note de cassis du Progress mais se distingue par un usage dual et des touches nettes de vanille.",
+   "c17": "Southern Aroma intègre le cassis et un profil floral proche, mais s'écarte par des notes de foin et de paille plus sèches.",
+   "c04": "Perle présente menthe, fruité et floral, mais s'en éloigne par un profil plus herbacé, terreux et épicé.",
+   "c07": "Hallertau Tradition se rapproche par l'herbe coupée et le fruité, mais propose un caractère noble et terreux plus marqué.",
+   "c03": "Golding apporte douceur et floral, mais manque de la menthe et du cassis caractéristiques du Progress.",
+   "c01": "Northern Brewer partage la menthe et l'herbe coupée, mais se destine à l'amertume et introduit des notes de pin.",
+   "c18": "Brewer's Gold reprend la note de cassis mais son usage amérisant et son cohumulone élevé l'éloignent en dry hop.",
+   "c05": "East Kent Goldings offre des notes florales et miellées proches, mais diverge par ses arômes marqués de citron et de lavande."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

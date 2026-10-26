@@ -1,0 +1,46 @@
+{
+ "casId": "nelson-sauvin@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "5bb816708a5834eb",
+ "simule": false,
+ "appel": 88,
+ "http": 200,
+ "latenceMs": 2827,
+ "finishReason": "STOP",
+ "jetonsEntree": 3897,
+ "jetonsSortie": 553,
+ "coutMicroChf": 3190,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Godiva partage les notes uniques de vin blanc et groseille à maquereau du Nelson Sauvin, mais son huile totale est plus faible.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Jarrylo évoque le vin blanc et le fruit comme le Nelson Sauvin, mais son profil penche plus vers les agrumes et la banane.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Altus possède une classe de thiols forte similaire au Nelson Sauvin, mais se distingue par un profil plus résineux et mandarine.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Southern Cross vient de Nouvelle-Zélande et offre des notes de citron et fruits tropicaux proches, malgré une composante épicée plus marquée.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Summit affiche une classe forte de thiols comme le Nelson Sauvin, mais apporte des notes terreuses et d'agrumes beaucoup plus envahissantes.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Triumph propose un beau fruité et des agrumes adaptés au dry hop, mais manque la signature caractéristique de raisin blanc du substitué.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Pacific Jade est néo-zélandais et offre un usage dual intéressant, mais ses arômes tournent autour du poivre et de l'herbacé.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Kazbek est un houblon d'arôme avec un alpha modéré, mais ses notes citronnées et épicées s'éloignent du profil vineux original.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Delta présente un bon taux de linalol pour le dry hop, mais ses arômes de melon et d'agrumes diffèrent du raisin de Nelson.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Boomerang offre un bon potentiel aromatique en dry hop, mais ses notes épicées et d'agrumes n'égalent pas la complexité du vin blanc.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c09",
+   "c17",
+   "c20",
+   "c18",
+   "c07",
+   "c12",
+   "c06",
+   "c04",
+   "c11",
+   "c01"
+  ],
+  "phrases": {
+   "c09": "Godiva partage les notes uniques de vin blanc et groseille à maquereau du Nelson Sauvin, mais son huile totale est plus faible.",
+   "c17": "Jarrylo évoque le vin blanc et le fruit comme le Nelson Sauvin, mais son profil penche plus vers les agrumes et la banane.",
+   "c20": "Altus possède une classe de thiols forte similaire au Nelson Sauvin, mais se distingue par un profil plus résineux et mandarine.",
+   "c18": "Southern Cross vient de Nouvelle-Zélande et offre des notes de citron et fruits tropicaux proches, malgré une composante épicée plus marquée.",
+   "c07": "Summit affiche une classe forte de thiols comme le Nelson Sauvin, mais apporte des notes terreuses et d'agrumes beaucoup plus envahissantes.",
+   "c12": "Triumph propose un beau fruité et des agrumes adaptés au dry hop, mais manque la signature caractéristique de raisin blanc du substitué.",
+   "c06": "Pacific Jade est néo-zélandais et offre un usage dual intéressant, mais ses arômes tournent autour du poivre et de l'herbacé.",
+   "c04": "Kazbek est un houblon d'arôme avec un alpha modéré, mais ses notes citronnées et épicées s'éloignent du profil vineux original.",
+   "c11": "Delta présente un bon taux de linalol pour le dry hop, mais ses arômes de melon et d'agrumes diffèrent du raisin de Nelson.",
+   "c01": "Boomerang offre un bon potentiel aromatique en dry hop, mais ses notes épicées et d'agrumes n'égalent pas la complexité du vin blanc."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

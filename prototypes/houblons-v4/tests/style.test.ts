@@ -1,9 +1,9 @@
 import './temoin'; // témoin négatif de check:engine (B3)
 import { describe, expect, it } from 'vitest';
-import bandsFile from '../data/style-bands.json';
+import bandsFile from '../../../src/data/hopV4/style-bands.json';
 import { deriveStyle } from '../scripts/build-bands.mjs';
 import { STATEMENTS } from '../scripts/bjcp-statements.mjs';
-import { FAMILIES, gapVerdict, getStyleScale, hopProfile, trackPosition, trackShare, valueVerdict } from '../src/engine';
+import { FAMILIES, gapVerdict, getStyleScale, hopProfile, trackPosition, trackShare, valueVerdict } from '../../../src/domain/hopIndex/v4';
 
 const point = (x: number) => ({ range: { min: x, max: x } });
 
@@ -61,7 +61,7 @@ describe('Échelles au style', () => {
     expect(getStyleScale('21C').families.herbal).toMatchObject({ status: 'indésirable', band: [0, 5] });
   });
 
-  it('data/style-bands.json est versionné, « à valider », et identique aux règles appliquées aux phrases BJCP', () => {
+  it('src/data/hopV4/style-bands.json est versionné, « à valider », et identique aux règles appliquées aux phrases BJCP', () => {
     expect(bandsFile.status).toBe('à valider par le brasseur');
     expect(bandsFile.words.version).toBe('mots-bjcp-v1');
     for (const [code, statements] of Object.entries(STATEMENTS)) {

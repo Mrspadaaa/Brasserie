@@ -1,0 +1,46 @@
+{
+ "casId": "stirling@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "9b54e000c8d492d9",
+ "simule": false,
+ "appel": 56,
+ "http": 200,
+ "latenceMs": 6124,
+ "finishReason": "STOP",
+ "jetonsEntree": 3721,
+ "jetonsSortie": 553,
+ "coutMicroChf": 12162,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Variante quasi identique au profil d'acides alpha et de cohumulone très proche, garantissant une amertume propre et noble tout à fait équivalente.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Taux d'acides alpha et taux de cohumulone très similaires, conférant une amertume douce et bien équilibrée à 60 minutes.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Plage d'acides alpha et cohumulone modérée parfaitement comparables, assurant une amertume nette sans rugosité excessive à l'ébullition.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Profil en acides alpha et niveau de cohumulone doux très proches, idéal pour reproduire fidèlement l'amertume fine du Stirling.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Teneurs en alpha et cohumulone parfaitement alignées sur le Stirling, bien que son potentiel amérisant global soit légèrement plus bas.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Taux d'alpha et de cohumulone bien concordants, procurant une amertume franche avec des proportions d'huiles similaires.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Taux d'alpha très similaire et cohumulone contenue pour une extraction d'amertume propre, même si les acides alpha sont plus resserrés.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Cohumulone basse offrant une amertume très douce et qualitative, avec un potentiel alpha souvent un peu plus élevé à doser.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Cohumulone modérée et acides alpha chevauchants, convenant bien en ébullition malgré une amertume potentiellement plus incisive.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Cohumulone légèrement plus haute et alpha plus élevés nécessitant un dosage réduit, mais amertume générale facile à ajuster.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c06",
+   "c04",
+   "c14",
+   "c18",
+   "c20",
+   "c07",
+   "c10",
+   "c09",
+   "c19",
+   "c01"
+  ],
+  "phrases": {
+   "c06": "Variante quasi identique au profil d'acides alpha et de cohumulone très proche, garantissant une amertume propre et noble tout à fait équivalente.",
+   "c04": "Taux d'acides alpha et taux de cohumulone très similaires, conférant une amertume douce et bien équilibrée à 60 minutes.",
+   "c14": "Plage d'acides alpha et cohumulone modérée parfaitement comparables, assurant une amertume nette sans rugosité excessive à l'ébullition.",
+   "c18": "Profil en acides alpha et niveau de cohumulone doux très proches, idéal pour reproduire fidèlement l'amertume fine du Stirling.",
+   "c20": "Teneurs en alpha et cohumulone parfaitement alignées sur le Stirling, bien que son potentiel amérisant global soit légèrement plus bas.",
+   "c07": "Taux d'alpha et de cohumulone bien concordants, procurant une amertume franche avec des proportions d'huiles similaires.",
+   "c10": "Taux d'alpha très similaire et cohumulone contenue pour une extraction d'amertume propre, même si les acides alpha sont plus resserrés.",
+   "c09": "Cohumulone basse offrant une amertume très douce et qualitative, avec un potentiel alpha souvent un peu plus élevé à doser.",
+   "c19": "Cohumulone modérée et acides alpha chevauchants, convenant bien en ébullition malgré une amertume potentiellement plus incisive.",
+   "c01": "Cohumulone légèrement plus haute et alpha plus élevés nécessitant un dosage réduit, mais amertume générale facile à ajuster."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

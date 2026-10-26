@@ -1,0 +1,26 @@
+{
+ "casId": "stirling@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "9b54e000c8d492d9",
+ "simule": true,
+ "appel": 56,
+ "http": 200,
+ "latenceMs": 0,
+ "finishReason": "STOP",
+ "jetonsEntree": 2137,
+ "jetonsSortie": 14,
+ "coutMicroChf": 4139,
+ "texte": "{\"classement\": [{\"id\": \"c01\", \"phrase\": \"coupé",
+ "analyse": {
+  "valide": false,
+  "ordre": [],
+  "phrases": {},
+  "erreurs": [
+   "JSON illisible"
+  ]
+ },
+ "erreurReseau": null
+}

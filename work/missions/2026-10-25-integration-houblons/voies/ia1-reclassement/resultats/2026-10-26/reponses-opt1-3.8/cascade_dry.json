@@ -1,0 +1,46 @@
+{
+ "casId": "cascade@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "0d621205b76bcdd8",
+ "simule": false,
+ "appel": 86,
+ "http": 200,
+ "latenceMs": 5549,
+ "finishReason": "STOP",
+ "jetonsEntree": 3914,
+ "jetonsSortie": 480,
+ "coutMicroChf": 11839,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c14\", \"phrase\": \"Considéré comme un super Cascade, il partage son profil pamplemousse, floral et pin, idéal en dry hop malgré un peu plus de puissance.\"},\n    {\"id\": \"c01\", \"phrase\": \"Issu du Cascade néo-zélandais, il reproduit fidèlement la trame agrumes, pamplemousse et floral, enrichie d'une touche tropicale typique du terroir.\"},\n    {\"id\": \"c20\", \"phrase\": \"Cet assemblage centré sur le profil nord-américain offre exactement l'équilibre pamplemousse, pin et floral recherché pour une bière portée sur le houblon.\"},\n    {\"id\": \"c10\", \"phrase\": \"Parfait pour le dry hop, il apporte une signature agrumes, pamplemousse et pin très proche, avec une nuance de mandarine plus marquée.\"},\n    {\"id\": \"c11\", \"phrase\": \"Son équilibre floral, agrumes et résineux rappelle bien le Cascade, avec une touche continentale un peu plus herbacée en biotransformation.\"},\n    {\"id\": \"c07\", \"phrase\": \"Il combine les notes de pin, d'agrumes et d'épices du Cascade, bien que son côté fruité soit plus exotique.\"},\n    {\"id\": \"c18\", \"phrase\": \"Il livre un profil pamplemousse et floral très aromatique, complété par des notes de baies inexistantes chez le Cascade.\"},\n    {\"id\": \"c05\", \"phrase\": \"Centré sur le pamplemousse et les agrumes, il sera beaucoup plus exubérant et tropical que le Cascade en fin de fermentation.\"},\n    {\"id\": \"c03\", \"phrase\": \"Partage les descripteurs floral, pin et agrumes avec un bon niveau de myrcène, mais son profil reste plus discret.\"},\n    {\"id\": \"c16\", \"phrase\": \"Apporte la fraîcheur d'agrumes et le côté floral du Cascade, mais tire distinctement sur le citron vert et le mojito.\"}\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c14",
+   "c01",
+   "c20",
+   "c10",
+   "c11",
+   "c07",
+   "c18",
+   "c05",
+   "c03",
+   "c16"
+  ],
+  "phrases": {
+   "c14": "Considéré comme un super Cascade, il partage son profil pamplemousse, floral et pin, idéal en dry hop malgré un peu plus de puissance.",
+   "c01": "Issu du Cascade néo-zélandais, il reproduit fidèlement la trame agrumes, pamplemousse et floral, enrichie d'une touche tropicale typique du terroir.",
+   "c20": "Cet assemblage centré sur le profil nord-américain offre exactement l'équilibre pamplemousse, pin et floral recherché pour une bière portée sur le houblon.",
+   "c10": "Parfait pour le dry hop, il apporte une signature agrumes, pamplemousse et pin très proche, avec une nuance de mandarine plus marquée.",
+   "c11": "Son équilibre floral, agrumes et résineux rappelle bien le Cascade, avec une touche continentale un peu plus herbacée en biotransformation.",
+   "c07": "Il combine les notes de pin, d'agrumes et d'épices du Cascade, bien que son côté fruité soit plus exotique.",
+   "c18": "Il livre un profil pamplemousse et floral très aromatique, complété par des notes de baies inexistantes chez le Cascade.",
+   "c05": "Centré sur le pamplemousse et les agrumes, il sera beaucoup plus exubérant et tropical que le Cascade en fin de fermentation.",
+   "c03": "Partage les descripteurs floral, pin et agrumes avec un bon niveau de myrcène, mais son profil reste plus discret.",
+   "c16": "Apporte la fraîcheur d'agrumes et le côté floral du Cascade, mais tire distinctement sur le citron vert et le mojito."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

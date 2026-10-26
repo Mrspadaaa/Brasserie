@@ -36,11 +36,11 @@ export function FermentationCurveChart({ batch }: { batch: Batch }) {
           >
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={points} margin={{ left: -15, right: 8, top: 10 }}>
-                <XAxis dataKey="name" tick={{ fill: '#9A8A7E', fontSize: 12 }} />
+                <XAxis dataKey="name" tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }} />
                 <YAxis
                   domain={['auto', 'auto']}
                   tickFormatter={(value: number) => value.toFixed(3)}
-                  tick={{ fill: '#9A8A7E', fontSize: 12 }}
+                  tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }}
                 />
                 <Tooltip
                   content={({ active, payload }) => {
@@ -62,7 +62,7 @@ export function FermentationCurveChart({ batch }: { batch: Batch }) {
                   <ReferenceLine
                     y={target}
                     ifOverflow="extendDomain"
-                    stroke="#6E9B5B"
+                    stroke="rgb(var(--hop))"
                     strokeDasharray="4 4"
                     label={{
                       value: 'FG cible',
@@ -75,7 +75,7 @@ export function FermentationCurveChart({ batch }: { batch: Batch }) {
                 <Line
                   type="linear"
                   dataKey="sg"
-                  stroke="#F2C14E"
+                  stroke="rgb(var(--ebc-straw))"
                   strokeWidth={2}
                   dot={{ r: 4 }}
                   isAnimationActive={false}

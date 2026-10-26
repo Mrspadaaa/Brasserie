@@ -1,0 +1,46 @@
+{
+ "casId": "calypso@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "8e864a6e79db315e",
+ "simule": false,
+ "appel": 42,
+ "http": 200,
+ "latenceMs": 5820,
+ "finishReason": "STOP",
+ "jetonsEntree": 3831,
+ "jetonsSortie": 548,
+ "coutMicroChf": 12321,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Taux d'alpha et de cohumulone quasi identiques pour une amertume tranchante très similaire à 60 minutes, malgré une origine britannique.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Même plage d'alpha et niveau élevé de cohumulone pour ce houblon amérisant américain qui produira une amertume comparable.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Profil en acides alpha et cohumulone très proche de Calypso, garantissant une amertume équivalente à l'ébullition.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Alpha-acides et cohumulone bien alignés sur Calypso, fournissant un niveau d'amertume et une tenue tout à fait comparables.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Taux d'alpha très similaires et cohumulone assez proche, idéal pour extraire la même quantité et qualité d'amertume.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Fourchette d'alpha-acides identique avec une cohumulone soutenue, procurant une amertume franche similaire après ébullition prolongée.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Houblon amérisant avec des acides alpha et une cohumulone proches, bien que ses bêtas plus élevés diffèrent légèrement.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Alpha-acides comparables pour un amérisant net, mais une cohumulone légèrement plus basse qui rendra l'amertume un peu plus ronde.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Niveau de cohumulone identique à Calypso mais des acides alpha potentiellement plus élevés nécessitant d'ajuster le dosage.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Même plage d'acides alpha mais un taux de cohumulone sensiblement plus bas, produisant une amertume plus douce.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c04",
+   "c01",
+   "c16",
+   "c14",
+   "c09",
+   "c08",
+   "c19",
+   "c10",
+   "c20",
+   "c03"
+  ],
+  "phrases": {
+   "c04": "Taux d'alpha et de cohumulone quasi identiques pour une amertume tranchante très similaire à 60 minutes, malgré une origine britannique.",
+   "c01": "Même plage d'alpha et niveau élevé de cohumulone pour ce houblon amérisant américain qui produira une amertume comparable.",
+   "c16": "Profil en acides alpha et cohumulone très proche de Calypso, garantissant une amertume équivalente à l'ébullition.",
+   "c14": "Alpha-acides et cohumulone bien alignés sur Calypso, fournissant un niveau d'amertume et une tenue tout à fait comparables.",
+   "c09": "Taux d'alpha très similaires et cohumulone assez proche, idéal pour extraire la même quantité et qualité d'amertume.",
+   "c08": "Fourchette d'alpha-acides identique avec une cohumulone soutenue, procurant une amertume franche similaire après ébullition prolongée.",
+   "c19": "Houblon amérisant avec des acides alpha et une cohumulone proches, bien que ses bêtas plus élevés diffèrent légèrement.",
+   "c10": "Alpha-acides comparables pour un amérisant net, mais une cohumulone légèrement plus basse qui rendra l'amertume un peu plus ronde.",
+   "c20": "Niveau de cohumulone identique à Calypso mais des acides alpha potentiellement plus élevés nécessitant d'ajuster le dosage.",
+   "c03": "Même plage d'acides alpha mais un taux de cohumulone sensiblement plus bas, produisant une amertume plus douce."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

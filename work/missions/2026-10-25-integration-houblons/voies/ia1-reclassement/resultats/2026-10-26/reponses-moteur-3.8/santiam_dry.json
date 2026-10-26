@@ -1,0 +1,50 @@
+{
+ "casId": "santiam@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "10a35673208f99ac",
+ "simule": false,
+ "appel": 49,
+ "http": 200,
+ "latenceMs": 6067,
+ "finishReason": "STOP",
+ "jetonsEntree": 3800,
+ "jetonsSortie": 515,
+ "coutMicroChf": 11954,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c02\", \"phrase\": \"Profil floral et épicé très semblable, avec une teneur en farnésène parfaitement comparable pour un dry hop noble réussi.\"},\n    {\"id\": \"c11\", \"phrase\": \"Partage l'arôme de poivre noir si distinctif du Santiam ainsi que ses notes florales et épicées, malgré un profil plus riche en humulène.\"},\n    {\"id\": \"c16\", \"phrase\": \"Taux de farnésène très similaire et profil aromatique centré sur les notes florales et épicées, avec toutefois une nuance d'agrumes plus marquée.\"},\n    {\"id\": \"c05\", \"phrase\": \"Excellent profil floral et épicé avec une belle proportion de farnésène, bien qu'il tire légèrement sur la lavande.\"},\n    {\"id\": \"c01\", \"phrase\": \"Allie finesse florale et épicée noble avec une composition d'huiles proche, mais ajoute une pointe de citronnelle.\"},\n    {\"id\": \"c10\", \"phrase\": \"Bon équilibre entre notes florales et épicées d'inspiration noble, même s'il contient nettement moins de farnésène que le Santiam.\"},\n    {\"id\": \"c18\", \"phrase\": \"Riche en farnésène comme le Santiam avec des notes florales et épicées, mais développe un côté fruité plus appuyé.\"},\n    {\"id\": \"c09\", \"phrase\": \"Apporte la vivacité épicée et piquante typique du Santiam, mais son profil d'huiles montre une absence quasi totale de farnésène.\"},\n    {\"id\": \"c08\", \"phrase\": \"Profil floral et légèrement épicé très proche des lignées nobles américaines, avec un côté herbacé un peu plus présent.\"},\n    {\"id\": \"c14\", \"phrase\": \"Retrouve la note précise de poivre noir et le côté épicé-floral, mais s'avère plus chargé en résines amérisantes.\"},\n    {\"id\": \"c20\", \"phrase\": \"Offre une signature noble, florale et épicée très élégante, bien que sa palette aromatique tire davantage sur la terre et la lavande.\"}\n  ]\n}",
+ "analyse": {
+  "valide": false,
+  "ordre": [
+   "c02",
+   "c11",
+   "c16",
+   "c05",
+   "c01",
+   "c10",
+   "c18",
+   "c09",
+   "c08",
+   "c14",
+   "c20"
+  ],
+  "phrases": {
+   "c02": "Profil floral et épicé très semblable, avec une teneur en farnésène parfaitement comparable pour un dry hop noble réussi.",
+   "c11": "Partage l'arôme de poivre noir si distinctif du Santiam ainsi que ses notes florales et épicées, malgré un profil plus riche en humulène.",
+   "c16": "Taux de farnésène très similaire et profil aromatique centré sur les notes florales et épicées, avec toutefois une nuance d'agrumes plus marquée.",
+   "c05": "Excellent profil floral et épicé avec une belle proportion de farnésène, bien qu'il tire légèrement sur la lavande.",
+   "c01": "Allie finesse florale et épicée noble avec une composition d'huiles proche, mais ajoute une pointe de citronnelle.",
+   "c10": "Bon équilibre entre notes florales et épicées d'inspiration noble, même s'il contient nettement moins de farnésène que le Santiam.",
+   "c18": "Riche en farnésène comme le Santiam avec des notes florales et épicées, mais développe un côté fruité plus appuyé.",
+   "c09": "Apporte la vivacité épicée et piquante typique du Santiam, mais son profil d'huiles montre une absence quasi totale de farnésène.",
+   "c08": "Profil floral et légèrement épicé très proche des lignées nobles américaines, avec un côté herbacé un peu plus présent.",
+   "c14": "Retrouve la note précise de poivre noir et le côté épicé-floral, mais s'avère plus chargé en résines amérisantes.",
+   "c20": "Offre une signature noble, florale et épicée très élégante, bien que sa palette aromatique tire davantage sur la terre et la lavande."
+  },
+  "erreurs": [
+   "11 entrées au lieu de 10"
+  ]
+ },
+ "erreurReseau": null
+}

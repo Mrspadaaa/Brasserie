@@ -45,7 +45,7 @@
 // graduations qui passent sur les ajouts) ; temoins/geste-froid-ok → OK (le même sans le débordement).
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { versUrl, existe } from './lib/cible.mjs';
 import puppeteer from 'puppeteer-core';
 
 const args = process.argv.slice(2);
@@ -54,7 +54,7 @@ const opt = (n, d) => ((args.find((a) => a.startsWith('--' + n + '=')) || '').sl
 const houblon = opt('houblon', 'Nugget');
 const pageArg = opt('page', '');
 const fichier = pageArg ? path.join(dir, pageArg)
-  : fs.existsSync(path.join(dir, 'ma-biere', 'etat.html')) ? path.join(dir, 'ma-biere', 'etat.html') : path.join(dir, 'etat.html');
+  : existe(path.join(dir, 'ma-biere', 'etat.html')) ? path.join(dir, 'ma-biere', 'etat.html') : path.join(dir, 'etat.html');
 const attente = (ms) => new Promise((r) => setTimeout(r, ms));
 const problems = [];
 const froid = args.includes('--froid');
@@ -63,7 +63,7 @@ const fin = (infos) => {
   if (problems.length) { console.log('GESTE-ETAPE ECHEC ' + problems.length + ' problème(s)'); for (const x of problems) console.log('- ' + (froid ? 'D123' : 'D111') + ' ' + x); process.exit(1); }
   console.log(froid ? 'GESTE-ETAPE OK (froid, 3 segments)' : 'GESTE-ETAPE OK');
 };
-if (!fs.existsSync(fichier)) { problems.push('page absente : ' + fichier); fin([]); }
+if (!existe(fichier)) { problems.push('page absente : ' + fichier); fin([]); }
 
 // Lecture injectée : ce qui est visible et sa place, jamais le code.
 function lire(nom, momentTexte, doigt) {
@@ -278,7 +278,7 @@ async function sequenceFroid(navigateur) {
   const mots = [/dry[\s-]?hop/i, /\?\s*IBU/i, /(^|[^\w+])\d+\s*j(?![\w+])/i, /(après|avant)\s*·/i];
   for (const cible of cibles) {
     const qui = cible.id + ' pendant';
-    await page.goto(pathToFileURL(fichier).href, { waitUntil: 'load', timeout: 30000 });
+    await page.goto(versUrl(fichier).href, { waitUntil: 'load', timeout: 30000 });
     let h = null;
     for (let i = 0; i < 60 && !h; i++) { h = await poignee(); if (!h) await attente(100); }
     await attente(400);
@@ -370,7 +370,7 @@ try {
   else {
   const page = await navigateur.newPage();
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-  await page.goto(pathToFileURL(fichier).href, { waitUntil: 'load', timeout: 30000 });
+  await page.goto(versUrl(fichier).href, { waitUntil: 'load', timeout: 30000 });
   const poignee = () => page.evaluate(() => {
     const vis = (e) => { const b = e.getBoundingClientRect(); const cs = getComputedStyle(e); return b.width > 0 && b.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' && Number(cs.opacity) > 0.05; };
     const s = [...document.querySelectorAll('[data-role="glisser-moment"]')].find(vis);

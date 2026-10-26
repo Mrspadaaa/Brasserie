@@ -1,0 +1,13 @@
+{
+ "option": "c",
+ "liste de l'app (limites 10 et 4, 21C, plus d'agrumes), ms": {
+  "froid": 111,
+  "chaudMediane": 29
+ },
+ "liste complète (152 houblons, dry hop actif), ms": {
+  "froid": 1205,
+  "chaudMediane": 1082
+ },
+ "additionEffect sur les 318 variétés (Ma bière), ms au total": 99,
+ "note": "Durées : non déterministes, hors du sha256. Un processus par option."
+}

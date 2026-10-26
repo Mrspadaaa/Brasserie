@@ -1,0 +1,46 @@
+{
+ "casId": "green-bullet@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "6808b0e551b0ca7f",
+ "simule": false,
+ "appel": 29,
+ "http": 200,
+ "latenceMs": 2083,
+ "finishReason": "STOP",
+ "jetonsEntree": 3846,
+ "jetonsSortie": 565,
+ "coutMicroChf": 3208,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Dr. Rudi partage le profil résineux et pin du Green Bullet néo-zélandais, mais apporte de la citronnelle au lieu de la prune.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Glacier offre des notes de prune et mûre proches, mais son amertume plus douce et ses touches boisées s'éloignent de la résine.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Northern Brewer concorde sur le pin et le poivre noir, mais son profil penche vers le mentholé, perdant la prune fruitée.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Pacific Gem partage l'origine néo-zélandaise, le poivre noir et le pin, tout en introduisant des baies mûres pour remplacer la prune.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Sticklebract conserve les notes résineuses et de pin, mais troque les fruits secs et la prune contre des accents d'agrumes vifs.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Warrior fournit une base résineuse et de pin intense pour le dry hop, mais manque totalement de complexité fruitée et de prune.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Magnum US propose le poivre noir et le floral, mais se montre plus épicé et musqué, sans la résine profonde du Green Bullet.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Pacific Jade apporte le poivre noir et l'origine néo-zélandaise, mais privilégie les agrumes et l'herbacé au détriment de la résine.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Chinook s'aligne bien sur le pin et la résine pour le dry hop, mais le pamplemousse domine la prune et les fruits secs.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Triumph intègre des notes épicées et fruitées proches, mais ses agrumes prononcés remplacent le caractère résineux et boisé originel.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c02",
+   "c03",
+   "c04",
+   "c05",
+   "c06",
+   "c08",
+   "c09",
+   "c18",
+   "c10"
+  ],
+  "phrases": {
+   "c01": "Dr. Rudi partage le profil résineux et pin du Green Bullet néo-zélandais, mais apporte de la citronnelle au lieu de la prune.",
+   "c02": "Glacier offre des notes de prune et mûre proches, mais son amertume plus douce et ses touches boisées s'éloignent de la résine.",
+   "c03": "Northern Brewer concorde sur le pin et le poivre noir, mais son profil penche vers le mentholé, perdant la prune fruitée.",
+   "c04": "Pacific Gem partage l'origine néo-zélandaise, le poivre noir et le pin, tout en introduisant des baies mûres pour remplacer la prune.",
+   "c05": "Sticklebract conserve les notes résineuses et de pin, mais troque les fruits secs et la prune contre des accents d'agrumes vifs.",
+   "c06": "Warrior fournit une base résineuse et de pin intense pour le dry hop, mais manque totalement de complexité fruitée et de prune.",
+   "c08": "Magnum US propose le poivre noir et le floral, mais se montre plus épicé et musqué, sans la résine profonde du Green Bullet.",
+   "c09": "Pacific Jade apporte le poivre noir et l'origine néo-zélandaise, mais privilégie les agrumes et l'herbacé au détriment de la résine.",
+   "c18": "Chinook s'aligne bien sur le pin et la résine pour le dry hop, mais le pamplemousse domine la prune et les fruits secs.",
+   "c10": "Triumph intègre des notes épicées et fruitées proches, mais ses agrumes prononcés remplacent le caractère résineux et boisé originel."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

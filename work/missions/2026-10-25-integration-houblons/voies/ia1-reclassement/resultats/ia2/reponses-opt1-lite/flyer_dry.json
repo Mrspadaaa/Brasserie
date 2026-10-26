@@ -1,0 +1,46 @@
+{
+ "casId": "flyer@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "97772558146d3b51",
+ "simule": false,
+ "appel": 55,
+ "http": 200,
+ "latenceMs": 1743,
+ "finishReason": "STOP",
+ "jetonsEntree": 3927,
+ "jetonsSortie": 462,
+ "coutMicroChf": 2917,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Partage les notes épicées et d'agrumes, avec un profil d'huiles proche, mais un alpha plus élevé.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Reprend le côté épicé et réglisse, mais son myrcène très haut s'éloigne du profil initial.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Apporte réglisse et agrumes comme Flyer, mais avec des notes herbacées plus prononcées.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Offre des arômes fruités et agrumes proches, bien que le cohumulone soit supérieur.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Partage l'aspect épicé et agrumes, avec un humulène comparable mais plus de fruité.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Partage la réglisse et les épices, mais le côté résineux et dank domine plus.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Mêmes notes de réglisse et d'agrumes, mais un profil globalement beaucoup plus résineux.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Possède les notes de réglisse et agrumes, mais l'huile totale est nettement plus forte.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Conserve le profil épicé, mais introduit des notes chocolatées absentes chez Flyer.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Partage agrumes et caramel, mais son alpha et son myrcène diffèrent sensiblement.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c01",
+   "c05",
+   "c03",
+   "c09",
+   "c18",
+   "c19",
+   "c14",
+   "c07",
+   "c16"
+  ],
+  "phrases": {
+   "c02": "Partage les notes épicées et d'agrumes, avec un profil d'huiles proche, mais un alpha plus élevé.",
+   "c01": "Reprend le côté épicé et réglisse, mais son myrcène très haut s'éloigne du profil initial.",
+   "c05": "Apporte réglisse et agrumes comme Flyer, mais avec des notes herbacées plus prononcées.",
+   "c03": "Offre des arômes fruités et agrumes proches, bien que le cohumulone soit supérieur.",
+   "c09": "Partage l'aspect épicé et agrumes, avec un humulène comparable mais plus de fruité.",
+   "c18": "Partage la réglisse et les épices, mais le côté résineux et dank domine plus.",
+   "c19": "Mêmes notes de réglisse et d'agrumes, mais un profil globalement beaucoup plus résineux.",
+   "c14": "Possède les notes de réglisse et agrumes, mais l'huile totale est nettement plus forte.",
+   "c07": "Conserve le profil épicé, mais introduit des notes chocolatées absentes chez Flyer.",
+   "c16": "Partage agrumes et caramel, mais son alpha et son myrcène diffèrent sensiblement."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

@@ -2,7 +2,28 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import tailwindConfig from '../../tailwind.config.js';
 
-const colors = tailwindConfig.theme.extend.colors;
+/**
+ * Depuis #144, tailwind.config.js lit les couleurs en variables par thème (src/theme/themes.css). Ce contrôle garde le
+ * thème « cave » (les valeurs du frontmatter de DESIGN.md) : ses valeurs se lisent dans le bloc [data-theme='cave'].
+ * Le clair a son propre contrôle : scripts/theme/contraste.mjs.
+ */
+const cave = Object.fromEntries(
+  [...(readFileSync(new URL('../../src/theme/themes.css', import.meta.url), 'utf8')
+    .match(/\[data-theme='cave'\]\s*\{([^}]*)\}/u)?.[1] ?? '')
+    .matchAll(/--([\w-]+):\s*(\d+)\s+(\d+)\s+(\d+);/gu)]
+    .map((m) => [m[1], `#${[m[2], m[3], m[4]].map((c) => Number(c).toString(16).padStart(2, '0')).join('').toUpperCase()}`])
+) as Record<string, string>;
+const DEGRES = ['950', '900', '850', '800', '700', '600', '400', '200', '50'] as const;
+const colors = {
+  cave: Object.fromEntries(DEGRES.map((d) => [d, cave[`cave-${d}`]])) as Record<(typeof DEGRES)[number], string>,
+  ebc: { ...tailwindConfig.theme.extend.colors.ebc, straw: cave['ebc-straw'] } as Record<string, string>,
+  area: Object.fromEntries(['production', 'finances', 'stocks', 'agenda'].map((a) => [a, cave[`area-${a}`]])),
+  attention: cave.attention,
+  'alert-strong': cave['alert-strong'],
+  alert: cave.alert,
+  hop: cave.hop,
+  water: cave.water
+};
 const accents: Record<string, string> = {
   ...Object.fromEntries(Object.entries(colors.area).map(([area, color]) => [`area-${area}`, color])),
   attention: colors.attention,

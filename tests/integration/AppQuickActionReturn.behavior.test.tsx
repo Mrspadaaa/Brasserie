@@ -73,6 +73,8 @@ vi.mock('../../src/services/brewerJobs', () => ({
   isBrewerWorking: () => false
 }));
 vi.mock('../../src/pages/PageShell', async () => {
+  // p2-rendu (#179) : le vrai module est évalué pour son observateur d'attributs de <body> (data-has-modal…), que le CSS du lanceur lit à la place de body:has(...).
+  await vi.importActual('../../src/pages/PageShell');
   const React = await import('react');
   return {
     ActionDock: () => React.createElement('div', { 'data-action-dock': 'nav', 'aria-hidden': 'true' }),

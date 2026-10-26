@@ -1,0 +1,46 @@
+{
+ "casId": "magnum-us@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "b4c6be93894f6527",
+ "simule": false,
+ "appel": 20,
+ "http": 200,
+ "latenceMs": 2076,
+ "finishReason": "STOP",
+ "jetonsEntree": 3767,
+ "jetonsSortie": 555,
+ "coutMicroChf": 3147,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Magnum allemand est le substitut parfait : même profil aromatique épicé et floral, acides alpha et huiles rigoureusement identiques pour l'ébullition.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Herkules offre une amertume propre et un taux d'acides alpha élevé similaire, mais ses notes de melon s'éloignent du profil originel.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Pacific Jade partage l'usage dual et les notes poivrées et agrumes, mais son profil d'huiles diffère légèrement sur l'humulène.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Boomerang propose un bon niveau d'acides alpha et des notes épicées proches, bien que son usage dual apporte plus de complexité aromatique.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Yeoman convient pour l'amertume avec ses alpha élevés et son côté noble, mais manque des nuances de muscade du Magnum.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Satus est un bon amérisant aux alpha proches et notes nettes d'agrumes, mais il lui manque la composante florale et épicée.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Agnus possède les acides alpha requis pour l'ébullition et des touches épicées, mais dérive vers le tabac et la lavande.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Hallertau Taurus assure l'amertume avec de forts alpha, mais ses notes de banane et chocolat s'écartent nettement du style Magnum.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Olympic apporte des notes agrumes et épicées acceptables pour l'ébullition, mais ses acides alpha sont un peu plus bas.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Gaia convient pour l'amertume grâce à ses alpha élevés, mais sa teneur en humulène est très basse comparée au Magnum.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c06",
+   "c01",
+   "c08",
+   "c07",
+   "c09",
+   "c11",
+   "c13",
+   "c03",
+   "c17",
+   "c10"
+  ],
+  "phrases": {
+   "c06": "Magnum allemand est le substitut parfait : même profil aromatique épicé et floral, acides alpha et huiles rigoureusement identiques pour l'ébullition.",
+   "c01": "Herkules offre une amertume propre et un taux d'acides alpha élevé similaire, mais ses notes de melon s'éloignent du profil originel.",
+   "c08": "Pacific Jade partage l'usage dual et les notes poivrées et agrumes, mais son profil d'huiles diffère légèrement sur l'humulène.",
+   "c07": "Boomerang propose un bon niveau d'acides alpha et des notes épicées proches, bien que son usage dual apporte plus de complexité aromatique.",
+   "c09": "Yeoman convient pour l'amertume avec ses alpha élevés et son côté noble, mais manque des nuances de muscade du Magnum.",
+   "c11": "Satus est un bon amérisant aux alpha proches et notes nettes d'agrumes, mais il lui manque la composante florale et épicée.",
+   "c13": "Agnus possède les acides alpha requis pour l'ébullition et des touches épicées, mais dérive vers le tabac et la lavande.",
+   "c03": "Hallertau Taurus assure l'amertume avec de forts alpha, mais ses notes de banane et chocolat s'écartent nettement du style Magnum.",
+   "c17": "Olympic apporte des notes agrumes et épicées acceptables pour l'ébullition, mais ses acides alpha sont un peu plus bas.",
+   "c10": "Gaia convient pour l'amertume grâce à ses alpha élevés, mais sa teneur en humulène est très basse comparée au Magnum."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

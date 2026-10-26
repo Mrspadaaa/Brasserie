@@ -1,0 +1,255 @@
+// Voie m2-listes-substituts : les listes de remplaçants côte à côte, dans la vraie ligne de Substituer (u4).
+// Données, sans rien recalculer :
+//  - A, B, C : voies/e1-banc-eval/resultats/listes-lambda.json (moteur, reglage_prudent, reglage_retenu), α, usage et mots
+//    partagés tels quels ;
+//  - D : voies/ia1-reclassement/resultats/cote-a-cote.json (option1PlusIA, 8 phares), la phrase de l'IA telle quelle ; α et
+//    usage du candidat lus dans le catalogue (src/data/hopV4/proto-data.json : alpha, purpose, la source de e1).
+// Méthode de m1 : Substituer ouvert dans l'app (`?dev-local&etape=houblons`, fixtures, VITE_HOP_V4=on), puis dans la page rendue
+// la vraie ligne d'un remplaçant est clonée pour chaque candidat ; nœuds ajoutés en classe m2l-…, retirés après chaque capture.
+// Les mots partagés passent en français par versFr (fiche/traduction.ts) et prennent la famille où le moteur les range
+// (familyWords de l'original, puis du candidat) ; un mot qu'aucune famille ne range reste gris.
+// Usage (racine) :
+//   node scripts/with_server.mjs --server "npm run dev -- --port 5241 --strictPort" --port 5241 --env VITE_HOP_V4=on -- node work/missions/2026-10-25-integration-houblons/voies/m2-listes-substituts/capturer.mjs
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+const ICI = import.meta.dirname;
+const RACINE = path.resolve(ICI, '..', '..', '..', '..', '..');
+const { ouvrir } = await import(pathToFileURL(path.join(RACINE, '.claude/skills/webapp-testing/examples/_lanceur.mjs')).href);
+const IMG = path.join(ICI, 'img');
+fs.mkdirSync(IMG, { recursive: true });
+const lire = (p) => JSON.parse(fs.readFileSync(path.join(RACINE, p), 'utf8'));
+const VOIES = 'work/missions/2026-10-25-integration-houblons/voies';
+const LISTES = lire(`${VOIES}/e1-banc-eval/resultats/listes-lambda.json`).listes;
+const CAC = path.join(RACINE, VOIES, 'ia1-reclassement/resultats/cote-a-cote.json');
+const PHARES = fs.existsSync(CAC) ? JSON.parse(fs.readFileSync(CAC, 'utf8')).phares : [];
+const CAT = lire('src/data/hopV4/proto-data.json').varieties;
+const PICTOS = fs.readFileSync(path.join(RACINE, 'src/data/hopV4/pictos-familles.svg'), 'utf8');
+const JETONS = lire('src/data/hopV4/jetons-familles.json');
+const parNom = (n) => CAT.find((v) => v.name === n) ?? CAT.find((v) => (v.aliases ?? []).includes(n));
+
+const ORDRE = ['Nelson Sauvin', 'Motueka', 'Citra', 'Galaxy', 'Saaz (CZ)', 'Mosaic', 'Simcoe', 'Cascade', 'Fuggle', 'Magnum (US)', 'Willamette'];
+export const COLONNES = [
+  { lettre: 'a', nom: "A · l'actuel", cle: 'moteur' },
+  { lettre: 'b', nom: 'B · mots, prudent', cle: 'reglage_prudent' },
+  { lettre: 'c', nom: 'C · mots, fort', cle: 'reglage_retenu' },
+  { lettre: 'd', nom: 'D · C + IA', cle: 'ia' },
+];
+const fichier = (h) => h.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const jeux = [];
+for (const nom of ORDRE) {
+  const l = LISTES.find((x) => x.houblon === nom);
+  if (!l) throw new Error(`liste absente : ${nom}`);
+  const ph = PHARES.find((x) => x.nom === nom);
+  for (const col of COLONNES) {
+    let rangs;
+    if (col.cle === 'ia') {
+      if (!ph) continue;
+      rangs = ph.option1PlusIA.map((r) => {
+        const v = parNom(r.nom);
+        if (!v) throw new Error(`absent du catalogue : ${r.nom}`);
+        return { rang: r.rang, nom: r.nom, alpha: v.alpha, usage: v.purpose, mots: null, phrase: r.phrase };
+      });
+    } else rangs = l[col.cle].map((r) => ({ rang: r.rang, nom: r.nom, alpha: r.alpha, usage: r.usage, mots: r.motsPartages, phrase: null }));
+    jeux.push({ houblon: nom, alpha: l.alpha, usage: l.usage, colonne: col.lettre, image: `${fichier(nom)}-${col.lettre}.png`, rangs });
+  }
+}
+console.log(`${jeux.length} vues, ${PHARES.length ? `colonne D pour ${PHARES.length} houblons` : 'sans colonne D'}`);
+
+const base = `http://localhost:${process.env.WITH_SERVER_PORTS}`;
+const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
+const LARGEUR = 390;
+const { browser, page, journal } = await ouvrir({ largeur: LARGEUR, hauteur: 844 });
+await page.goto(`${base}/?dev-local&etape=houblons`, { waitUntil: 'networkidle0' });
+await page.waitForSelector('[data-ecran="ma-biere"]', { timeout: 120000 });
+await dormir(800);
+await page.evaluate(() => window.__hopPile.open({ view: 'hopSubstitute', hopKey: 'beermaverick-nugget' }));
+await page.waitForSelector('[data-ecran="substituer"] [data-remplacant]', { timeout: 90000 });
+await dormir(1500);
+// Les outils de l'app (modules servis par Vite) : traduction des mots et rangement par famille, comme l'app.
+await page.evaluate(async (pictos, jetons) => {
+  const tr = await import('/src/ui/hopIndex/fiche/traduction.ts');
+  const v4 = await import('/src/ui/hopIndex/parcours/v4.ts');
+  const planche = new DOMParser().parseFromString(pictos, 'image/svg+xml');
+  window.__m2l = { tr, v4, planche, jetons, familles: new Map() };
+}, PICTOS, JETONS);
+
+// Construit la vue d'une colonne dans la page rendue. Tout nœud ajouté porte m2l-ajout ; les nœuds de l'app sont masqués
+// par la classe m2l-actif posée sur <html>, jamais retirés ni modifiés.
+async function construire(jeu) {
+  return page.evaluate((jeu) => {
+    const M = window.__m2l;
+    const ecran = document.querySelector('[data-ecran="substituer"]');
+    const racine = ecran.querySelector('.pq-substituer');
+    const AJ = 'm2l-ajout';
+    const style = document.createElement('style');
+    style.className = AJ;
+    style.textContent = `
+      html.m2l-actif .pq-substituer > :not(.m2l-ajout) { display: none !important; }
+      html.m2l-actif .m2l-cache, html.m2l-actif [data-role="choix-dock"] { display: none !important; }
+      .m2l-liste { display: flex; flex-direction: column; }
+      .m2l-liste .pq-substituer-r { grid-template-columns: 1fr; height: auto; min-height: 44px; padding: 5px 0 6px; cursor: default; }
+      .m2l-l1 { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+      .m2l-rang { flex: none; width: 17px; text-align: right; font-size: 12px; color: #8a8a8a; font-variant-numeric: tabular-nums; }
+      .m2l-l1 .pq-substituer-nom { flex: 1 1 auto; min-width: 0; font-size: 14px; }
+      .m2l-alpha { flex: none; font-size: 13px; color: #555; white-space: nowrap; font-variant-numeric: tabular-nums; }
+      .m2l-alpha b { color: #111; font-weight: 650; }
+      .m2l-mots { display: flex; flex-wrap: wrap; gap: 2px 9px; padding-left: 25px; margin-top: 3px; font-size: 12.5px; line-height: 16px; }
+      .m2l-mot { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; font-weight: 600; }
+      .m2l-mot svg { flex: none; }
+      .m2l-mot-hors { color: #111; }
+      .m2l-mot-gen { color: #6e6e6e; font-weight: 400; }
+      .m2l-aucun { color: #8a8a8a; font-style: italic; font-weight: 400; }
+      .m2l-phrase { padding-left: 25px; margin: 3px 0 0; font-size: 12.5px; line-height: 1.3; color: #555; }
+      .m2l-liste .pq-substituer-l[data-role="original-rang"] .pq-substituer-r { padding-bottom: 8px; }
+    `;
+    document.head.appendChild(style);
+    document.documentElement.classList.add('m2l-actif');
+
+    // 1. Le titre de l'outil : le houblon de la liste à la place de Nugget.
+    const titres = [...document.querySelectorAll('h1, h2, header *, [data-role="tete-outil"] *')]
+      .filter((e) => !e.closest('.pq-substituer') && e.children.length === 0 && e.textContent.trim() === 'Nugget');
+    const t = titres[0];
+    if (t) { const c = t.cloneNode(true); c.classList.add(AJ); c.textContent = jeu.houblon; t.classList.add('m2l-cache'); t.after(c); }
+
+    // 2. La puce des moments, au dry hop (les listes sont celles du dry hop) ; sans « recette » : pas de recette ici.
+    const puce = racine.querySelector('.pq-substituer-moments');
+    const p2 = puce.cloneNode(true); p2.classList.add(AJ);
+    p2.querySelectorAll('.pq-substituer-moment-r').forEach((n) => n.remove());
+    p2.querySelectorAll('.pq-substituer-moment').forEach((b) => { const on = b.getAttribute('data-moment') === 'dryhop'; b.classList.toggle('pq-substituer-moment-on', on); b.setAttribute('aria-checked', String(on)); });
+    racine.prepend(p2);
+
+    // 3. Les lignes : l'original, puis les dix candidats, clonés de la vraie ligne d'un remplaçant non comparé.
+    const fr = (x) => String(Math.round(x * 10) / 10).replace('.', ',');
+    const plage = (a) => (!a ? '?' : a[0] === a[1] ? fr(a[0]) : `${fr(a[0])}–${fr(a[1])}`);
+    const USAGE = { aroma: 'aromatique', dual: 'double', bittering: 'amérisant' };
+    const picto = (f, taille) => {
+      const s = M.planche.getElementById(`p-${f}`);
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', taille); svg.setAttribute('height', taille); svg.setAttribute('viewBox', s.getAttribute('viewBox'));
+      svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('data-famille', f);
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      for (const a of ['fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin']) if (s.getAttribute(a)) g.setAttribute(a, s.getAttribute(a));
+      g.innerHTML = s.innerHTML; svg.appendChild(g);
+      return svg;
+    };
+    // Rangement des mots par famille : celui du moteur (familyWords) pour l'original et pour le candidat.
+    const FAMS = Object.keys(M.jetons);
+    const rangement = (nom) => {
+      if (M.familles.has(nom)) return M.familles.get(nom);
+      const cle = 'beermaverick-' + nom.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const ref = M.v4.hopRef(cle);
+      const m = new Map();
+      if (ref) {
+        const w = M.v4.familyWords(ref.varietyId, ref.catalogue);
+        for (const f of FAMS) for (const r of w.mots[f] ?? []) for (const x of r.mots) {
+          for (const k of [x.toLowerCase().trim(), M.tr.versFr(x)]) if (!m.has(k)) m.set(k, f);
+        }
+      }
+      M.familles.set(nom, m);
+      return m;
+    };
+    const familleDe = (mot, noms) => { for (const n of noms) { const m = rangement(n); const k = m.get(mot.toLowerCase().trim()) ?? m.get(M.tr.versFr(mot)); if (k) return k; } return null; };
+
+    const modele = [...racine.querySelectorAll('.pq-substituer-rangs > .pq-substituer-l')].find((l) => l.querySelector('[data-remplacant][aria-pressed="false"]'));
+    const orig = racine.querySelector('[data-role="original-rang"]');
+    const liste = document.createElement('section');
+    liste.className = `pq-substituer-rangs m2l-liste ${AJ}`;
+    liste.setAttribute('aria-label', `Remplaçants de ${jeu.houblon}, au dry hop`);
+    const ligne1 = (r, nom, alpha, usage) => {
+      const nb = r.querySelector('.pq-substituer-nb');
+      const nomEl = nb.querySelector('.pq-substituer-nom');
+      nomEl.querySelector('svg')?.remove(); // le stock : inconnu ici, pas d'icône inventée
+      const n = nomEl.querySelector('span:last-child');
+      n.textContent = nom; n.removeAttribute('data-houblon-nom');
+      nb.querySelector('.pq-substituer-mc')?.remove();
+      r.querySelector('.pq-substituer-tr')?.remove();
+      const l1 = document.createElement('span'); l1.className = 'm2l-l1';
+      const a = document.createElement('span'); a.className = 'm2l-alpha'; a.innerHTML = `<b>α ${plage(alpha)}</b> · ${USAGE[usage] ?? usage ?? 'usage ?'}`;
+      nomEl.before(l1); l1.append(nomEl, a);
+      return { nb, l1 };
+    };
+    // L'original.
+    const o = orig.cloneNode(true); o.classList.add(AJ);
+    const ro = o.querySelector('.pq-substituer-r');
+    const { nb: nbo } = ligne1(ro, jeu.houblon, jeu.alpha, jeu.usage);
+    nbo.querySelector('.m2l-l1').prepend(Object.assign(document.createElement('span'), { className: 'm2l-rang' }));
+    const lo = document.createElement('span'); lo.className = 'm2l-phrase'; lo.textContent = 'l’original'; nbo.append(lo);
+    liste.append(o);
+    for (const c of jeu.rangs) {
+      const l = modele.cloneNode(true); l.classList.add(AJ);
+      const r = l.querySelector('[data-remplacant]');
+      for (const a of ['data-remplacant', 'data-houblon-rang', 'data-min', 'data-max', 'title', 'data-etat']) r.removeAttribute(a);
+      r.setAttribute('data-m2l-rang', c.rang);
+      const { nb, l1 } = ligne1(r, c.nom, c.alpha, c.usage);
+      l1.prepend(Object.assign(document.createElement('span'), { className: 'm2l-rang', textContent: c.rang }));
+      const plus = l.querySelector('[data-role="ajout-comparer"]');
+      plus.removeAttribute('data-houblon-comparer'); plus.setAttribute('aria-label', `Ajouter ${c.nom} à Comparer`);
+      if (c.phrase) {
+        const p = document.createElement('span'); p.className = 'm2l-phrase'; p.textContent = c.phrase; nb.append(p);
+      } else {
+        const box = document.createElement('span'); box.className = 'm2l-mots';
+        const vus = new Map();
+        for (const m of c.mots) { const f = M.tr.versFr(m); if (!vus.has(f)) vus.set(f, familleDe(m, [jeu.houblon, c.nom])); }
+        // Les mots rangés d'abord, puis ceux qu'aucune famille ne range (en noir : c'est là qu'est le caractère, D130), puis
+        // les mots génériques en gris (la règle GENERIQUE de substituer/donnees.ts : « fruité », « doux »…).
+        const GEN = /^(fruit(é|ée|y|s|ée?s)?|fruits? tropicaux|tropical|aromatique|arôme|houblon|doux|léger|intense|complexe|agréable)$/i;
+        const poids = ([m, f]) => (f ? 0 : GEN.test(m) ? 2 : 1);
+        const tri = [...vus.entries()].sort((p, q) => poids(p) - poids(q));
+        if (!tri.length) box.append(Object.assign(document.createElement('span'), { className: 'm2l-mot m2l-aucun', textContent: 'aucun mot en commun' }));
+        for (const [mot, f] of tri) {
+          const s = document.createElement('span');
+          s.className = `m2l-mot ${f ? '' : GEN.test(mot) ? 'm2l-mot-gen' : 'm2l-mot-hors'}`;
+          if (f) { s.style.color = M.jetons[f].texte; s.setAttribute('data-famille', f); s.append(picto(f, 13)); }
+          s.append(document.createTextNode(mot));
+          box.append(s);
+        }
+        nb.append(box);
+      }
+      liste.append(l);
+    }
+    racine.append(liste);
+    // Défilement en haut.
+    let sc = racine; while (sc && !(sc.scrollHeight > sc.clientHeight + 5 && /(auto|scroll)/.test(getComputedStyle(sc).overflowY))) sc = sc.parentElement;
+    if (sc) sc.scrollTop = 0;
+    const dock = document.querySelector('[data-role="pont-remplacer"]')?.closest('div[class]');
+    const fin = liste.getBoundingClientRect().bottom;
+    const piedHaut = [...document.querySelectorAll('[data-role="pont-remplacer"]')].map((b) => b.parentElement.parentElement.getBoundingClientRect().top)[0] ?? innerHeight;
+    return { finListe: Math.round(fin + (sc ? sc.scrollTop : 0)), piedHaut: Math.round(piedHaut), vue: innerHeight, sansFamille: [...liste.querySelectorAll('.m2l-mot-hors, .m2l-mot-gen')].map((n) => n.textContent) };
+  }, jeu);
+}
+async function nettoyer() {
+  await page.evaluate(() => {
+    document.querySelectorAll('.m2l-ajout').forEach((n) => n.remove());
+    document.querySelectorAll('.m2l-cache').forEach((n) => n.classList.remove('m2l-cache'));
+    document.documentElement.classList.remove('m2l-actif');
+  });
+}
+
+// Passe 1 : la hauteur commune aux colonnes d'un houblon (sa plus longue liste, au-dessus du pied), 844 au moins.
+const besoin = new Map();
+for (const j of jeux) {
+  const m = await construire(j);
+  besoin.set(j.houblon, Math.max(besoin.get(j.houblon) ?? 844, m.finListe + (m.vue - m.piedHaut) + 10));
+  await nettoyer();
+}
+for (const j of jeux) j.hauteur = Math.ceil(besoin.get(j.houblon) / 4) * 4;
+console.log('hauteurs :', [...besoin.keys()].map((h) => `${h} ${Math.ceil(besoin.get(h) / 4) * 4}`).join(', '));
+const hors = new Map();
+let vue = 0;
+for (const j of jeux) {
+  if (j.hauteur !== vue) { vue = j.hauteur; await page.setViewport({ width: LARGEUR, height: vue, deviceScaleFactor: 2, isMobile: true, hasTouch: true }); await dormir(600); }
+  const m = await construire(j);
+  await dormir(150);
+  await page.screenshot({ path: path.join(IMG, j.image) });
+  for (const w of m.sansFamille) hors.set(w, (hors.get(w) ?? 0) + 1);
+  if (m.finListe > m.piedHaut) console.log('DÉBORDE', j.image, JSON.stringify(m));
+  await nettoyer();
+}
+console.log('mots sans famille (gris) :', [...hors.entries()].sort((a, b) => b[1] - a[1]).map(([w, n]) => `${w} ${n}`).join(', '));
+const erreurs = journal.erreurs.filter((e) => !/Firestore|firebase|net::ERR/i.test(e));
+console.log(erreurs.length ? 'erreurs de page : ' + erreurs.slice(0, 3).join(' | ') : 'aucune erreur de page');
+fs.writeFileSync(path.join(IMG, 'jeux.json'), JSON.stringify(jeux.map(({ houblon, colonne, image, hauteur, alpha, usage }) => ({ houblon, colonne, image, hauteur, alpha, usage })), null, 1));
+await browser.close();
+console.log('CAPTURES', IMG);

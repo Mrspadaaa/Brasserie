@@ -1,0 +1,61 @@
+
+  [32m[1mVITE[22m v6.4.3[39m  [2mready in [0m[1m197[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5254[22m/[39m
+
+  [32m[1mVITE[22m v6.4.3[39m  [2mready in [0m[1m222[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5254[22m/[39m
+
+  [32m[1mVITE[22m v6.4.3[39m  [2mready in [0m[1m217[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5254[22m/[39m
+
+  [32m[1mVITE[22m v6.4.3[39m  [2mready in [0m[1m205[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5254[22m/[39m
+[2m12:27:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mwork/missions/2026-10-25-integration-houblons/voies/m5-dryhopper-froid/page.html[22m
+
+  [32m[1mVITE[22m v6.4.3[39m  [2mready in [0m[1m204[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5254[22m/[39m
+[2m12:46:11[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/domain/hopIndex/v4/substitution.ts[22m
+[2m12:46:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/domain/hopIndex/v4/substitution.ts[22m
+[2m12:46:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/domain/hopIndex/v4/substitution.ts[22m
+[2m12:46:14[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/App.tsx, /src/ui/hopIndex/HopToolLayer.tsx, /src/pages/BrewWizard.tsx[22m
+[2m12:46:15[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/App.tsx, /src/ui/hopIndex/HopToolLayer.tsx, /src/pages/BrewWizard.tsx[22m
+[2m12:46:16[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/ui/hopIndex/HopToolLayer.tsx[22m Could not Fast Refresh ("hopToolTitle" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m12:46:16[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/App.tsx[22m
+[2m12:46:21[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/App.tsx, /src/ui/hopIndex/HopToolLayer.tsx, /src/ui/hopIndex/maBiere/EtapeHoublons.tsx, /src/pages/BrewWizard.tsx, /src/ui/hopIndex/maBiere/Base.tsx, /src/ui/hopIndex/maBiere/Frise.tsx, /src/ui/hopIndex/maBiere/Ajouter.tsx, /src/ui/hopIndex/maBiere/Carte.tsx, /src/ui/hopIndex/maBiere/hote.tsx, /src/ui/hopIndex/maBiere/index.tsx, /src/ui/hopIndex/fiche/FicheHoublon.tsx, /src/ui/hopIndex/fiche/hote.tsx, /src/ui/hopIndex/maBiere/legende-bande.tsx, /src/ui/hopIndex/fiche/Replis.tsx, /src/ui/hopIndex/fiche/Matrice.tsx, /src/ui/hopIndex/fiche/SourcesFiche.tsx, /src/ui/hopIndex/fiche/FicheApp.tsx, /src/ui/hopIndex/maBiere/briques.tsx[22m
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/ui/hopIndex/HopToolLayer.tsx[22m Could not Fast Refresh ("hopToolTitle" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/App.tsx[22m
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/ui/hopIndex/maBiere/Base.tsx[22m Could not Fast Refresh ("ibuIncalculable" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/ui/hopIndex/maBiere/index.tsx, /src/ui/hopIndex/maBiere/Frise.tsx, /src/ui/hopIndex/maBiere/Carte.tsx[22m
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/ui/hopIndex/maBiere/Frise.tsx[22m Could not Fast Refresh ("appliquerValeur" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/ui/hopIndex/maBiere/index.tsx, /src/ui/hopIndex/maBiere/Ajouter.tsx, /src/ui/hopIndex/maBiere/Carte.tsx[22m
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/ui/hopIndex/maBiere/Carte.tsx[22m Could not Fast Refresh ("effetDe" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/ui/hopIndex/maBiere/Frise.tsx[22m
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/ui/hopIndex/maBiere/hote.tsx[22m Could not Fast Refresh ("useBiere" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/ui/hopIndex/maBiere/EtapeHoublons.tsx, /src/ui/hopIndex/maBiere/index.tsx, /src/ui/hopIndex/maBiere/Frise.tsx, /src/ui/hopIndex/maBiere/Ajouter.tsx, /src/ui/hopIndex/maBiere/Carte.tsx[22m
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/ui/hopIndex/fiche/FicheHoublon.tsx[22m Could not Fast Refresh ("useFiche" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/ui/hopIndex/fiche/FicheApp.tsx[22m
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/ui/hopIndex/fiche/hote.tsx[22m Could not Fast Refresh ("useBiere" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/ui/hopIndex/fiche/FicheApp.tsx, /src/ui/hopIndex/fiche/FicheHoublon.tsx[22m
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/ui/hopIndex/maBiere/legende-bande.tsx[22m Could not Fast Refresh ("effetSiAjoute" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/ui/hopIndex/maBiere/Ajouter.tsx, /src/ui/hopIndex/maBiere/Carte.tsx[22m
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/ui/hopIndex/fiche/Replis.tsx[22m Could not Fast Refresh ("useReplis" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/ui/hopIndex/fiche/FicheHoublon.tsx[22m
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/ui/hopIndex/fiche/SourcesFiche.tsx[22m Could not Fast Refresh ("pl" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/ui/hopIndex/fiche/Replis.tsx[22m
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/ui/hopIndex/maBiere/briques.tsx[22m Could not Fast Refresh ("sourceAlpha" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/ui/hopIndex/maBiere/Ajouter.tsx, /src/ui/hopIndex/fiche/FicheHoublon.tsx, /src/ui/hopIndex/fiche/Matrice.tsx, /src/ui/hopIndex/substituer/index.tsx, /src/ui/hopIndex/maBiere/Carte.tsx[22m
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/ui/hopIndex/substituer/index.tsx[22m Could not Fast Refresh ("doseExacte" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m12:46:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/ui/hopIndex/substituer/EcranApp.tsx[22m
+
+  [32m[1mVITE[22m v6.4.3[39m  [2mready in [0m[1m210[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5254[22m/[39m
+
+  [32m[1mVITE[22m v6.4.3[39m  [2mready in [0m[1m224[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5254[22m/[39m

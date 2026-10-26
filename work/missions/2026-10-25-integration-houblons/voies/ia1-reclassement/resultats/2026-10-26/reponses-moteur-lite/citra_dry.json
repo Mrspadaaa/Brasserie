@@ -1,0 +1,46 @@
+{
+ "casId": "citra@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "3617b2016c8f915f",
+ "simule": false,
+ "appel": 89,
+ "http": 200,
+ "latenceMs": 1985,
+ "finishReason": "STOP",
+ "jetonsEntree": 3852,
+ "jetonsSortie": 569,
+ "coutMicroChf": 3223,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Nectaron partage le profil tropical, la pêche et le fruit de la passion du Citra, bien que son profil penche plus vers la stone fruit.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Amarillo offre des notes d'agrumes et d'orange proches du Citra, mais avec un caractère floral et épicé plus marqué et moins de fruits tropicaux.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"McKenzie évoque le pamplemousse et le citron du Citra, mais s'en éloigne par des touches résineuses et herbacées de thym.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Styrian Cardinal s'aligne sur les agrumes et la groseille à maquereau du Citra, tout en introduisant des notes florales de jasmin.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Ariana rejoint le Citra par ses arômes d'agrumes et de fruit de la passion, mais possède un taux de cohumulone nettement plus élevé.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Hydra reproduit le citron vert et la pêche du Citra, mais se distingue par une présence marquée de résine et de baies.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Taiheke propose un pamplemousse et des agrumes dignes du Citra, mais intègre une composante épicée plus prononcée.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Riwaka capture le fruit de la passion et les agrumes du Citra, mais avec une intensité globale plus faible due à un alpha plus bas.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Mistral partage la touche de fruit de la passion du Citra, mais diverge nettement avec des arômes de raisin et de vin blanc.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Belma évoque le pamplemousse et les agrumes du Citra, mais se sépare de lui par des notes prononcées de fraise et de melon.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c14",
+   "c08",
+   "c04",
+   "c09",
+   "c12",
+   "c02",
+   "c10",
+   "c19",
+   "c03",
+   "c13"
+  ],
+  "phrases": {
+   "c14": "Nectaron partage le profil tropical, la pêche et le fruit de la passion du Citra, bien que son profil penche plus vers la stone fruit.",
+   "c08": "Amarillo offre des notes d'agrumes et d'orange proches du Citra, mais avec un caractère floral et épicé plus marqué et moins de fruits tropicaux.",
+   "c04": "McKenzie évoque le pamplemousse et le citron du Citra, mais s'en éloigne par des touches résineuses et herbacées de thym.",
+   "c09": "Styrian Cardinal s'aligne sur les agrumes et la groseille à maquereau du Citra, tout en introduisant des notes florales de jasmin.",
+   "c12": "Ariana rejoint le Citra par ses arômes d'agrumes et de fruit de la passion, mais possède un taux de cohumulone nettement plus élevé.",
+   "c02": "Hydra reproduit le citron vert et la pêche du Citra, mais se distingue par une présence marquée de résine et de baies.",
+   "c10": "Taiheke propose un pamplemousse et des agrumes dignes du Citra, mais intègre une composante épicée plus prononcée.",
+   "c19": "Riwaka capture le fruit de la passion et les agrumes du Citra, mais avec une intensité globale plus faible due à un alpha plus bas.",
+   "c03": "Mistral partage la touche de fruit de la passion du Citra, mais diverge nettement avec des arômes de raisin et de vin blanc.",
+   "c13": "Belma évoque le pamplemousse et les agrumes du Citra, mais se sépare de lui par des notes prononcées de fraise et de melon."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

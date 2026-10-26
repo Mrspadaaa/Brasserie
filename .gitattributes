@@ -7,3 +7,5 @@ src/data/yeastCatalogueLibrary.json text eol=lf
 tests/fixtures/public-history/*.json -text
 # Keep the received, unapplied Q09 patch bound to its published SHA-256.
 docs/validation/q09-team-pro.pending.patch -text
+# Les scripts .mjs commencent souvent par un shebang : en CRLF, vitest ne les importe plus (rejeu du 26.10, copie propre avec autocrlf).
+*.mjs text eol=lf

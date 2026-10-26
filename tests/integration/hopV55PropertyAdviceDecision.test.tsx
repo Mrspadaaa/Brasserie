@@ -5,6 +5,9 @@ import userEvent from '@testing-library/user-event';
 import { buildHopPropertyAdvice } from '../../src/domain/hopDecision/propertyAdvice';
 import { createHopPropertyAdviceDossier, type HopPropertyAdviceRequest } from '../../src/domain/hopDecision/propertyAdviceSchema';
 import { getHopPropertyAdviceCorpus } from '../../src/domain/hopDecision/propertyAdviceEvidence';
+
+// Volume de calcul (validation canonique + SHA-256 de gros dossiers, jsdom) : aucun état à attendre, la durée dépend du CPU. Plafond explicite (#177).
+vi.setConfig({ testTimeout: 120_000 });
 import { HopV55PropertyAdviceDecision, type HopV55PropertyAdviceDossierSaveRequest,
   type HopV55PropertyAdviceReinterpretRequest } from '../../src/ui/hopV55/PropertyAdviceDecision';
 

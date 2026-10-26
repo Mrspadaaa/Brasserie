@@ -1,0 +1,5770 @@
+{
+ "banc": {
+  "version": 1,
+  "issue": 181,
+  "graineEchantillon": 181,
+  "poolSubstituer": "318 variétés du catalogue, sans stock",
+  "moteur": "creerMoteur({ catalogue: CATALOGUE, stock: [] })"
+ },
+ "verite": {
+  "houblonsAvecSubstituts": 217,
+  "substitutsReferences": 697,
+  "substitutsNonReliesIgnores": 31,
+  "reciprocite": {
+   "paires": 697,
+   "reciproques": 174
+  },
+  "attendusParHoublonMedian": 3,
+  "parUsage": {
+   "aroma": 86,
+   "dual": 94,
+   "bittering": 37
+  }
+ },
+ "substituer": {
+  "nonRelies": {
+   "distincts": 10,
+   "retrouvables": 7,
+   "lignes": [
+    {
+     "nom": "East Kent Golding",
+     "candidats": [
+      "East Kent Goldings"
+     ]
+    },
+    {
+     "nom": "Lubelski",
+     "candidats": []
+    },
+    {
+     "nom": "Magnum",
+     "candidats": [
+      "Magnum (GR)",
+      "Magnum (US)"
+     ]
+    },
+    {
+     "nom": "Mount Ranier",
+     "candidats": []
+    },
+    {
+     "nom": "Northern Brewer",
+     "candidats": [
+      "Northern Brewer (GR)",
+      "Northern Brewer (US)"
+     ]
+    },
+    {
+     "nom": "Polish Lublin",
+     "candidats": []
+    },
+    {
+     "nom": "Saaz (CH)",
+     "candidats": [
+      "Saaz (CZ)",
+      "Saaz Late",
+      "Saaz (US)"
+     ]
+    },
+    {
+     "nom": "Taurus",
+     "candidats": [
+      "Hallertau Taurus"
+     ]
+    },
+    {
+     "nom": "Tettnang",
+     "candidats": [
+      "Tettnang (US)",
+      "Tettnanger"
+     ]
+    },
+    {
+     "nom": "Whitbread Golding Variety",
+     "candidats": [
+      "Whitbread Golding Variety (WGV)"
+     ]
+    }
+   ]
+  },
+  "parMoment": {
+   "60′": {
+    "tous": {
+     "n": 217,
+     "rappel5": 0.062,
+     "rappel10": 0.099,
+     "touche10": 0.24,
+     "rangMedian": 36,
+     "mrr": 0.118,
+     "sansRang": 0
+    },
+    "parUsage": {
+     "aroma": {
+      "n": 86,
+      "rappel5": 0.07,
+      "rappel10": 0.097,
+      "touche10": 0.233,
+      "rangMedian": 33,
+      "mrr": 0.12,
+      "sansRang": 0
+     },
+     "dual": {
+      "n": 94,
+      "rappel5": 0.062,
+      "rappel10": 0.093,
+      "touche10": 0.181,
+      "rangMedian": 46,
+      "mrr": 0.1,
+      "sansRang": 0
+     },
+     "bittering": {
+      "n": 37,
+      "rappel5": 0.046,
+      "rappel10": 0.121,
+      "touche10": 0.405,
+      "rangMedian": 15,
+      "mrr": 0.155,
+      "sansRang": 0
+     }
+    }
+   },
+   "10′": {
+    "tous": {
+     "n": 217,
+     "rappel5": 0.065,
+     "rappel10": 0.109,
+     "touche10": 0.258,
+     "rangMedian": 27,
+     "mrr": 0.121,
+     "sansRang": 0
+    },
+    "parUsage": {
+     "aroma": {
+      "n": 86,
+      "rappel5": 0.084,
+      "rappel10": 0.146,
+      "touche10": 0.291,
+      "rangMedian": 23.5,
+      "mrr": 0.124,
+      "sansRang": 0
+     },
+     "dual": {
+      "n": 94,
+      "rappel5": 0.047,
+      "rappel10": 0.074,
+      "touche10": 0.181,
+      "rangMedian": 31,
+      "mrr": 0.103,
+      "sansRang": 0
+     },
+     "bittering": {
+      "n": 37,
+      "rappel5": 0.066,
+      "rappel10": 0.115,
+      "touche10": 0.378,
+      "rangMedian": 20,
+      "mrr": 0.157,
+      "sansRang": 0
+     }
+    }
+   },
+   "whirlpool": {
+    "tous": {
+     "n": 217,
+     "rappel5": 0.065,
+     "rappel10": 0.109,
+     "touche10": 0.258,
+     "rangMedian": 27,
+     "mrr": 0.121,
+     "sansRang": 0
+    },
+    "parUsage": {
+     "aroma": {
+      "n": 86,
+      "rappel5": 0.084,
+      "rappel10": 0.146,
+      "touche10": 0.291,
+      "rangMedian": 23.5,
+      "mrr": 0.124,
+      "sansRang": 0
+     },
+     "dual": {
+      "n": 94,
+      "rappel5": 0.047,
+      "rappel10": 0.074,
+      "touche10": 0.181,
+      "rangMedian": 31,
+      "mrr": 0.103,
+      "sansRang": 0
+     },
+     "bittering": {
+      "n": 37,
+      "rappel5": 0.066,
+      "rappel10": 0.115,
+      "touche10": 0.378,
+      "rangMedian": 20,
+      "mrr": 0.157,
+      "sansRang": 0
+     }
+    }
+   },
+   "dry hop actif": {
+    "tous": {
+     "n": 217,
+     "rappel5": 0.065,
+     "rappel10": 0.109,
+     "touche10": 0.258,
+     "rangMedian": 27,
+     "mrr": 0.121,
+     "sansRang": 0
+    },
+    "parUsage": {
+     "aroma": {
+      "n": 86,
+      "rappel5": 0.084,
+      "rappel10": 0.146,
+      "touche10": 0.291,
+      "rangMedian": 23.5,
+      "mrr": 0.124,
+      "sansRang": 0
+     },
+     "dual": {
+      "n": 94,
+      "rappel5": 0.047,
+      "rappel10": 0.074,
+      "touche10": 0.181,
+      "rangMedian": 31,
+      "mrr": 0.103,
+      "sansRang": 0
+     },
+     "bittering": {
+      "n": 37,
+      "rappel5": 0.066,
+      "rappel10": 0.115,
+      "touche10": 0.378,
+      "rangMedian": 20,
+      "mrr": 0.157,
+      "sansRang": 0
+     }
+    }
+   }
+  },
+  "rankingsIdentiques": {
+   "b10_wp": 217,
+   "b10_dry": 217,
+   "sur": 217
+  },
+  "aleatoire": {
+   "n": 4340,
+   "rappel5": 0.015,
+   "rappel10": 0.034,
+   "touche10": 0.101,
+   "rangMedian": 70,
+   "mrr": 0.047,
+   "sansRang": 0
+  },
+  "drapeauxReference": {
+   "paires": 697,
+   "usageOppose": 66,
+   "alphaDouble": 68,
+   "sansFamilleCommune": 36,
+   "auMoinsUn": 156
+  },
+  "exemplesFaux": [
+   {
+    "cible": "beermaverick-dana",
+    "sub": "beermaverick-fuggle",
+    "rangArome": 254,
+    "rang60": 280,
+    "scoreArome": 32,
+    "drapeaux": [
+     "α à plus du double"
+    ],
+    "cibleNom": "Dana",
+    "subNom": "Fuggle",
+    "usage": [
+     "dual",
+     "aroma"
+    ],
+    "alpha": [
+     [
+      7.2,
+      13
+     ],
+     [
+      2.4,
+      6.1
+     ]
+    ],
+    "tagsCible": [
+     "floral",
+     "agrumes",
+     "pin"
+    ],
+    "tagsSub": [
+     "boisé",
+     "herbe coupée",
+     "menthe",
+     "doux"
+    ]
+   },
+   {
+    "cible": "beermaverick-loral",
+    "sub": "beermaverick-glacier",
+    "rangArome": 277,
+    "rang60": 206,
+    "scoreArome": 23,
+    "drapeaux": [
+     "α à plus du double",
+     "aucune famille en commun"
+    ],
+    "cibleNom": "Loral",
+    "subNom": "Glacier",
+    "usage": [
+     "aroma",
+     "dual"
+    ],
+    "alpha": [
+     [
+      10,
+      17
+     ],
+     [
+      3.3,
+      9.7
+     ]
+    ],
+    "tagsCible": [
+     "floral",
+     "poivre noir",
+     "agrumes",
+     "dark fruit",
+     "fruité"
+    ],
+    "tagsSub": [
+     "prune",
+     "mûre",
+     "boisé",
+     "cèdre"
+    ]
+   },
+   {
+    "cible": "beermaverick-falconers-flight-7cs",
+    "sub": "beermaverick-crystal",
+    "rangArome": 214,
+    "rang60": 256,
+    "scoreArome": 43,
+    "drapeaux": [
+     "α à plus du double"
+    ],
+    "cibleNom": "Falconer's Flight 7CS",
+    "subNom": "Crystal",
+    "usage": [
+     "dual",
+     "aroma"
+    ],
+    "alpha": [
+     [
+      9,
+      10.5
+     ],
+     [
+      2.8,
+      6
+     ]
+    ],
+    "tagsCible": [
+     "fruité",
+     "agrumes",
+     "épicé",
+     "terreux"
+    ],
+    "tagsSub": [
+     "boisé",
+     "floral",
+     "vert",
+     "fruité",
+     "épicé",
+     "cannelle"
+    ]
+   },
+   {
+    "cible": "beermaverick-bobek",
+    "sub": "beermaverick-fuggle",
+    "rangArome": 180,
+    "rang60": 288,
+    "scoreArome": 42,
+    "drapeaux": [
+     "usage opposé"
+    ],
+    "cibleNom": "Bobek",
+    "subNom": "Fuggle",
+    "usage": [
+     "bittering",
+     "aroma"
+    ],
+    "alpha": [
+     [
+      3.5,
+      9.3
+     ],
+     [
+      2.4,
+      6.1
+     ]
+    ],
+    "tagsCible": [
+     "pin",
+     "floral"
+    ],
+    "tagsSub": [
+     "boisé",
+     "herbe coupée",
+     "menthe",
+     "doux"
+    ]
+   },
+   {
+    "cible": "beermaverick-pekko",
+    "sub": "beermaverick-saaz-cz",
+    "rangArome": 195,
+    "rang60": 269,
+    "scoreArome": 45,
+    "drapeaux": [
+     "α à plus du double"
+    ],
+    "cibleNom": "Pekko",
+    "subNom": "Saaz (CZ)",
+    "usage": [
+     "dual",
+     "aroma"
+    ],
+    "alpha": [
+     [
+      13,
+      16
+     ],
+     [
+      2,
+      5
+     ]
+    ],
+    "tagsCible": [
+     "pleasant",
+     "floral",
+     "agrumes",
+     "menthe",
+     "herbacé",
+     "mellow"
+    ],
+    "tagsSub": [
+     "terreux",
+     "herbacé",
+     "floral",
+     "doux",
+     "noble"
+    ]
+   }
+  ]
+ },
+ "phares": [
+  {
+   "libelle": "Nelson Sauvin",
+   "id": "beermaverick-nelson-sauvin",
+   "usage": "aroma",
+   "alpha": [
+    10,
+    13
+   ],
+   "nbFamilles": 2,
+   "mots": 9,
+   "partSansFamille": 0.78,
+   "dry": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Boomerang",
+      "score": 93,
+      "arome": 95,
+      "huiles": 92,
+      "amertume": 82,
+      "usage": "dual",
+      "alpha": [
+       10,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 2,
+      "nom": "Herkules",
+      "score": 93,
+      "arome": 93,
+      "huiles": 100,
+      "amertume": 70,
+      "usage": "bittering",
+      "alpha": [
+       12,
+       17
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 3,
+      "nom": "Phoenix",
+      "score": 90,
+      "arome": 90,
+      "huiles": 95,
+      "amertume": 76,
+      "usage": "dual",
+      "alpha": [
+       8,
+       13.5
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 4,
+      "nom": "Kazbek",
+      "score": 89,
+      "arome": 95,
+      "huiles": 88,
+      "amertume": 56,
+      "usage": "aroma",
+      "alpha": [
+       5,
+       8
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 5,
+      "nom": "Marynka",
+      "score": 89,
+      "arome": 89,
+      "huiles": 95,
+      "amertume": 67,
+      "usage": "dual",
+      "alpha": [
+       7.5,
+       12
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 6,
+      "nom": "Pacific Jade",
+      "score": 89,
+      "arome": 87,
+      "huiles": 98,
+      "amertume": 79,
+      "usage": "dual",
+      "alpha": [
+       12,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 7,
+      "nom": "Summit",
+      "score": 89,
+      "arome": 96,
+      "huiles": 83,
+      "amertume": 67,
+      "usage": "bittering",
+      "alpha": [
+       15,
+       17.5
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 8,
+      "nom": "CTZ",
+      "score": 88,
+      "arome": 98,
+      "huiles": 75,
+      "amertume": 67,
+      "usage": "dual",
+      "alpha": [
+       14.5,
+       17
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 9,
+      "nom": "Godiva",
+      "score": 88,
+      "arome": 95,
+      "huiles": null,
+      "amertume": 46,
+      "usage": "aroma",
+      "alpha": [
+       6,
+       9
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 10,
+      "nom": "Tomahawk",
+      "score": 88,
+      "arome": 98,
+      "huiles": 75,
+      "amertume": 67,
+      "usage": "dual",
+      "alpha": [
+       15,
+       17.5
+      ],
+      "familles": 2
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Hallertau Blanc",
+      "relie": true,
+      "rang": 155,
+      "score": 52
+     },
+     {
+      "nom": "Enigma",
+      "relie": true,
+      "rang": 244,
+      "score": 32
+     },
+     {
+      "nom": "Motueka",
+      "relie": true,
+      "rang": 89,
+      "score": 62
+     },
+     {
+      "nom": "Riwaka",
+      "relie": true,
+      "rang": 206,
+      "score": 44
+     }
+    ]
+   },
+   "a60": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Boomerang",
+      "score": 96,
+      "arome": 100,
+      "huiles": 92,
+      "amertume": 97,
+      "usage": "dual",
+      "alpha": [
+       10,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 2,
+      "nom": "Herkules",
+      "score": 93,
+      "arome": 86,
+      "huiles": 100,
+      "amertume": 93,
+      "usage": "bittering",
+      "alpha": [
+       12,
+       17
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 3,
+      "nom": "Pacific Jade",
+      "score": 93,
+      "arome": 75,
+      "huiles": 98,
+      "amertume": 97,
+      "usage": "dual",
+      "alpha": [
+       12,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 4,
+      "nom": "Satus",
+      "score": 93,
+      "arome": 100,
+      "huiles": 83,
+      "amertume": 93,
+      "usage": "bittering",
+      "alpha": [
+       12,
+       14.5
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 5,
+      "nom": "Gaia",
+      "score": 91,
+      "arome": 100,
+      "huiles": 67,
+      "amertume": 97,
+      "usage": "bittering",
+      "alpha": [
+       12,
+       15
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 6,
+      "nom": "Herald",
+      "score": 91,
+      "arome": 100,
+      "huiles": 81,
+      "amertume": 92,
+      "usage": "dual",
+      "alpha": [
+       9,
+       13
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 7,
+      "nom": "Yeoman",
+      "score": 91,
+      "arome": 100,
+      "huiles": 78,
+      "amertume": 92,
+      "usage": "dual",
+      "alpha": [
+       12,
+       16
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 8,
+      "nom": "Hallertau Taurus",
+      "score": 90,
+      "arome": 83,
+      "huiles": 85,
+      "amertume": 94,
+      "usage": "dual",
+      "alpha": [
+       12,
+       17.9
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 9,
+      "nom": "Jarrylo",
+      "score": 90,
+      "arome": 75,
+      "huiles": 78,
+      "amertume": 99,
+      "usage": "dual",
+      "alpha": [
+       15,
+       17
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 10,
+      "nom": "Tomahawk",
+      "score": 90,
+      "arome": 89,
+      "huiles": 75,
+      "amertume": 95,
+      "usage": "dual",
+      "alpha": [
+       15,
+       17.5
+      ],
+      "familles": 2
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Hallertau Blanc",
+      "relie": true,
+      "rang": 125,
+      "score": 71
+     },
+     {
+      "nom": "Enigma",
+      "relie": true,
+      "rang": 95,
+      "score": 75
+     },
+     {
+      "nom": "Motueka",
+      "relie": true,
+      "rang": 163,
+      "score": 66
+     },
+     {
+      "nom": "Riwaka",
+      "relie": true,
+      "rang": 250,
+      "score": 37
+     }
+    ]
+   },
+   "verdict": {
+    "dry": "Non. Tête : Boomerang, Herkules, Phoenix, Kazbek… des houblons à peine décrits ou nobles/neutres ; aucun ne dit vin blanc ni sauvignon. Hallertau Blanc, le plus proche pour un brasseur, est 155e ; Riwaka 206e. Nelson Sauvin n’a que 2 familles décrites et 78 % de mots sans famille (L14).",
+    "a60": "Défendable pour de l’amertume (Boomerang, Herkules, Pacific Jade sont des α 10–14 propres), mais Hallertau Blanc 125e et Riwaka 250e : la liste ne garde rien de l’identité du houblon."
+   }
+  },
+  {
+   "libelle": "Citra",
+   "id": "beermaverick-citra",
+   "usage": "dual",
+   "alpha": [
+    10,
+    15
+   ],
+   "nbFamilles": 5,
+   "mots": 9,
+   "partSansFamille": 0.11,
+   "dry": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Bitter Gold",
+      "score": 88,
+      "arome": 85,
+      "huiles": 97,
+      "amertume": 79,
+      "usage": "dual",
+      "alpha": [
+       12,
+       18.8
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 2,
+      "nom": "Hydra",
+      "score": 88,
+      "arome": 89,
+      "huiles": 86,
+      "amertume": 84,
+      "usage": "dual",
+      "alpha": [
+       10.5,
+       13.7
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 3,
+      "nom": "Mistral",
+      "score": 88,
+      "arome": 88,
+      "huiles": 92,
+      "amertume": 75,
+      "usage": "dual",
+      "alpha": [
+       6.5,
+       8.5
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 4,
+      "nom": "McKenzie",
+      "score": 85,
+      "arome": 88,
+      "huiles": null,
+      "amertume": 71,
+      "usage": "aroma",
+      "alpha": [
+       9,
+       11
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 5,
+      "nom": "Palisade",
+      "score": 85,
+      "arome": 94,
+      "huiles": 75,
+      "amertume": 65,
+      "usage": "dual",
+      "alpha": [
+       5.5,
+       10
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 6,
+      "nom": "Southern Sublime",
+      "score": 84,
+      "arome": 87,
+      "huiles": 78,
+      "amertume": 92,
+      "usage": "aroma",
+      "alpha": [
+       10.8,
+       13.4
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 7,
+      "nom": "Sabro",
+      "score": 83,
+      "arome": 75,
+      "huiles": 97,
+      "amertume": 85,
+      "usage": "aroma",
+      "alpha": [
+       12,
+       17
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 8,
+      "nom": "Amarillo",
+      "score": 82,
+      "arome": 82,
+      "huiles": 85,
+      "amertume": 72,
+      "usage": "aroma",
+      "alpha": [
+       7,
+       11
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 9,
+      "nom": "Styrian Cardinal",
+      "score": 82,
+      "arome": 87,
+      "huiles": 68,
+      "amertume": 95,
+      "usage": "aroma",
+      "alpha": [
+       8,
+       15
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 10,
+      "nom": "Taiheke",
+      "score": 82,
+      "arome": 80,
+      "huiles": 92,
+      "amertume": 66,
+      "usage": "dual",
+      "alpha": [
+       5,
+       9
+      ],
+      "familles": 3
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Simcoe",
+      "relie": true,
+      "rang": 103,
+      "score": 63
+     },
+     {
+      "nom": "Mosaic",
+      "relie": true,
+      "rang": 106,
+      "score": 62
+     },
+     {
+      "nom": "Centennial",
+      "relie": true,
+      "rang": 39,
+      "score": 74
+     },
+     {
+      "nom": "Cascade",
+      "relie": true,
+      "rang": 33,
+      "score": 75
+     }
+    ]
+   },
+   "a60": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Trident",
+      "score": 97,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 96,
+      "usage": "dual",
+      "alpha": [
+       11,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 2,
+      "nom": "Bravo",
+      "score": 93,
+      "arome": 89,
+      "huiles": 86,
+      "amertume": 97,
+      "usage": "bittering",
+      "alpha": [
+       13,
+       18
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 3,
+      "nom": "Nectaron",
+      "score": 92,
+      "arome": 100,
+      "huiles": 95,
+      "amertume": 88,
+      "usage": "aroma",
+      "alpha": [
+       9.5,
+       12
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 4,
+      "nom": "Caliente",
+      "score": 91,
+      "arome": 75,
+      "huiles": null,
+      "amertume": 97,
+      "usage": "dual",
+      "alpha": [
+       14,
+       16
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 5,
+      "nom": "Loral",
+      "score": 91,
+      "arome": 75,
+      "huiles": 84,
+      "amertume": 99,
+      "usage": "aroma",
+      "alpha": [
+       10,
+       17
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 6,
+      "nom": "Southern Sublime",
+      "score": 91,
+      "arome": 100,
+      "huiles": 78,
+      "amertume": 92,
+      "usage": "aroma",
+      "alpha": [
+       10.8,
+       13.4
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 7,
+      "nom": "Styrian Cardinal",
+      "score": 91,
+      "arome": 100,
+      "huiles": 68,
+      "amertume": 95,
+      "usage": "aroma",
+      "alpha": [
+       8,
+       15
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 8,
+      "nom": "Petoskey",
+      "score": 90,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 87,
+      "usage": "aroma",
+      "alpha": [
+       12.1,
+       12.1
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 9,
+      "nom": "Styrian Wolf",
+      "score": 90,
+      "arome": 70,
+      "huiles": 87,
+      "amertume": 98,
+      "usage": "dual",
+      "alpha": [
+       10,
+       18.5
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 10,
+      "nom": "Yeoman",
+      "score": 90,
+      "arome": 100,
+      "huiles": 63,
+      "amertume": 96,
+      "usage": "dual",
+      "alpha": [
+       12,
+       16
+      ],
+      "familles": 1
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Simcoe",
+      "relie": true,
+      "rang": 55,
+      "score": 82
+     },
+     {
+      "nom": "Mosaic",
+      "relie": true,
+      "rang": 37,
+      "score": 84
+     },
+     {
+      "nom": "Centennial",
+      "relie": true,
+      "rang": 49,
+      "score": 82
+     },
+     {
+      "nom": "Cascade",
+      "relie": true,
+      "rang": 163,
+      "score": 66
+     }
+    ]
+   },
+   "verdict": {
+    "dry": "Moyen. Amarillo (8e) et Sabro sont de bons voisins ; Bitter Gold, Mistral et Palisade en tête ne sont pas des houblons de Citra. Centennial 39e, Cascade 33e, Simcoe 103e, Mosaic 106e (les quatre de la page Beer Maverick).",
+    "a60": "Défendable : à 60′ on remplace une amertume (Bravo, Loral, Nectaron, α hauts). Mais Trident, Caliente, Petoskey n’ont pas de rapport avec Citra, et Cascade est 163e."
+   }
+  },
+  {
+   "libelle": "Motueka",
+   "id": "beermaverick-motueka",
+   "usage": "dual",
+   "alpha": [
+    5,
+    8.5
+   ],
+   "nbFamilles": 3,
+   "mots": 10,
+   "partSansFamille": 0.2,
+   "dry": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Buzz Bullets",
+      "score": 94,
+      "arome": 95,
+      "huiles": null,
+      "amertume": 86,
+      "usage": "dual",
+      "alpha": [
+       8,
+       10
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 2,
+      "nom": "Shaddock",
+      "score": 90,
+      "arome": 94,
+      "huiles": null,
+      "amertume": 65,
+      "usage": "aroma",
+      "alpha": [
+       4.96,
+       4.96
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 3,
+      "nom": "Cascade",
+      "score": 87,
+      "arome": 87,
+      "huiles": 83,
+      "amertume": 96,
+      "usage": "dual",
+      "alpha": [
+       4.5,
+       9
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 4,
+      "nom": "Southern Sublime",
+      "score": 85,
+      "arome": 87,
+      "huiles": 86,
+      "amertume": 72,
+      "usage": "aroma",
+      "alpha": [
+       10.8,
+       13.4
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 5,
+      "nom": "Mandarina Bavaria",
+      "score": 84,
+      "arome": 92,
+      "huiles": 69,
+      "amertume": 85,
+      "usage": "dual",
+      "alpha": [
+       7,
+       10.5
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 6,
+      "nom": "Pilot",
+      "score": 84,
+      "arome": 84,
+      "huiles": 84,
+      "amertume": 78,
+      "usage": "bittering",
+      "alpha": [
+       8,
+       11.5
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 7,
+      "nom": "Multihead",
+      "score": 83,
+      "arome": 87,
+      "huiles": null,
+      "amertume": 58,
+      "usage": "aroma",
+      "alpha": [
+       3.5,
+       4.5
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 8,
+      "nom": "Taiheke",
+      "score": 83,
+      "arome": 89,
+      "huiles": 66,
+      "amertume": 98,
+      "usage": "dual",
+      "alpha": [
+       5,
+       9
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 9,
+      "nom": "Yakima Gold",
+      "score": 83,
+      "arome": 94,
+      "huiles": 57,
+      "amertume": 89,
+      "usage": "dual",
+      "alpha": [
+       7,
+       8
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 10,
+      "nom": "Herald",
+      "score": 82,
+      "arome": 94,
+      "huiles": 60,
+      "amertume": 77,
+      "usage": "dual",
+      "alpha": [
+       9,
+       13
+      ],
+      "familles": 1
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Saaz (US)",
+      "relie": true,
+      "rang": 291,
+      "score": 10
+     },
+     {
+      "nom": "Sterling",
+      "relie": true,
+      "rang": 198,
+      "score": 39
+     }
+    ]
+   },
+   "a60": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Vienna Gold",
+      "score": 100,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 100,
+      "usage": "dual",
+      "alpha": [
+       6,
+       10
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 2,
+      "nom": "Zula",
+      "score": 100,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 99,
+      "usage": "dual",
+      "alpha": [
+       8,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 3,
+      "nom": "Buzz Bullets",
+      "score": 99,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 99,
+      "usage": "dual",
+      "alpha": [
+       8,
+       10
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 4,
+      "nom": "Petoskey",
+      "score": 97,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 96,
+      "usage": "aroma",
+      "alpha": [
+       12.1,
+       12.1
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 5,
+      "nom": "Trident",
+      "score": 97,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 96,
+      "usage": "dual",
+      "alpha": [
+       11,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 6,
+      "nom": "Arcadian",
+      "score": 94,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 92,
+      "usage": "aroma",
+      "alpha": [
+       9.8,
+       9.8
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 7,
+      "nom": "Solero",
+      "score": 94,
+      "arome": 86,
+      "huiles": null,
+      "amertume": 97,
+      "usage": "aroma",
+      "alpha": [
+       9,
+       11.2
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 8,
+      "nom": "NZH-107",
+      "score": 93,
+      "arome": 100,
+      "huiles": 72,
+      "amertume": 97,
+      "usage": "dual",
+      "alpha": [
+       8,
+       11
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 9,
+      "nom": "Samba",
+      "score": 93,
+      "arome": 75,
+      "huiles": null,
+      "amertume": 99,
+      "usage": "aroma",
+      "alpha": [
+       8,
+       12
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 10,
+      "nom": "Ariana",
+      "score": 92,
+      "arome": 67,
+      "huiles": null,
+      "amertume": 100,
+      "usage": "aroma",
+      "alpha": [
+       9,
+       13
+      ],
+      "familles": 3
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Saaz (US)",
+      "relie": true,
+      "rang": 292,
+      "score": 35
+     },
+     {
+      "nom": "Sterling",
+      "relie": true,
+      "rang": 87,
+      "score": 80
+     }
+    ]
+   },
+   "verdict": {
+    "dry": "Plausible côté agrumes (Shaddock, Mandarina Bavaria, Cascade, Southern Sublime), ce qui colle à « citron vert ». Mais ne dit rien du mojito ni du tropical. Les deux substituts Beer Maverick (Saaz US 291e, Sterling 198e) n’ont presque rien en commun avec la liste : la référence est discutable ici.",
+    "a60": "Peu parlant : des α de 4–6 % ou inconnus (Vienna Gold, Zula, Buzz Bullets, huiles inconnues) arrivent en tête avec un « arôme 100 » qui ne dit que l’absence d’arôme étranger."
+   }
+  },
+  {
+   "libelle": "Mosaic",
+   "id": "beermaverick-mosaic",
+   "usage": "dual",
+   "alpha": [
+    11.5,
+    13.5
+   ],
+   "nbFamilles": 8,
+   "mots": 12,
+   "partSansFamille": 0.17,
+   "dry": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Styrian Fox",
+      "score": 89,
+      "arome": 85,
+      "huiles": 100,
+      "amertume": 81,
+      "usage": "dual",
+      "alpha": [
+       5.7,
+       12
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 2,
+      "nom": "Idaho 7",
+      "score": 88,
+      "arome": 82,
+      "huiles": 99,
+      "amertume": 95,
+      "usage": "aroma",
+      "alpha": [
+       9.5,
+       14.9
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 3,
+      "nom": "Simcoe",
+      "score": 78,
+      "arome": 74,
+      "huiles": 85,
+      "amertume": 83,
+      "usage": "dual",
+      "alpha": [
+       11,
+       15
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 4,
+      "nom": "Galena",
+      "score": 77,
+      "arome": 67,
+      "huiles": 98,
+      "amertume": 77,
+      "usage": "aroma",
+      "alpha": [
+       12,
+       15.5
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 5,
+      "nom": "Brewer's Gold (US)",
+      "score": 76,
+      "arome": 67,
+      "huiles": 91,
+      "amertume": 79,
+      "usage": "bittering",
+      "alpha": [
+       8,
+       11
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 6,
+      "nom": "Hydra",
+      "score": 76,
+      "arome": 67,
+      "huiles": 92,
+      "amertume": 83,
+      "usage": "dual",
+      "alpha": [
+       10.5,
+       13.7
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 7,
+      "nom": "Styrian Eagle",
+      "score": 75,
+      "arome": 68,
+      "huiles": 85,
+      "amertume": 86,
+      "usage": "dual",
+      "alpha": [
+       12.5,
+       17.5
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 8,
+      "nom": "Strata",
+      "score": 74,
+      "arome": 70,
+      "huiles": 82,
+      "amertume": 73,
+      "usage": "dual",
+      "alpha": [
+       11,
+       12.5
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 9,
+      "nom": "Falconer's Flight",
+      "score": 73,
+      "arome": 57,
+      "huiles": 100,
+      "amertume": 88,
+      "usage": "aroma",
+      "alpha": [
+       9.5,
+       12
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 10,
+      "nom": "Nugget",
+      "score": 73,
+      "arome": 58,
+      "huiles": 96,
+      "amertume": 94,
+      "usage": "dual",
+      "alpha": [
+       9.5,
+       16
+      ],
+      "familles": 6
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Citra",
+      "relie": true,
+      "rang": 63,
+      "score": 62
+     },
+     {
+      "nom": "Simcoe",
+      "relie": true,
+      "rang": 3,
+      "score": 78
+     }
+    ]
+   },
+   "a60": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "TNT Blend",
+      "score": 99,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 99,
+      "usage": "aroma",
+      "alpha": [
+       11.5,
+       13
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 2,
+      "nom": "Loral",
+      "score": 97,
+      "arome": 100,
+      "huiles": 95,
+      "amertume": 97,
+      "usage": "aroma",
+      "alpha": [
+       10,
+       17
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 3,
+      "nom": "Altus",
+      "score": 96,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 94,
+      "usage": "aroma",
+      "alpha": [
+       15,
+       18.5
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 4,
+      "nom": "Trident",
+      "score": 96,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 95,
+      "usage": "dual",
+      "alpha": [
+       11,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 5,
+      "nom": "Bravo",
+      "score": 95,
+      "arome": 89,
+      "huiles": 100,
+      "amertume": 96,
+      "usage": "bittering",
+      "alpha": [
+       13,
+       18
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 6,
+      "nom": "Zenia",
+      "score": 95,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 93,
+      "usage": "dual",
+      "alpha": [
+       11,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 7,
+      "nom": "Azacca",
+      "score": 94,
+      "arome": 100,
+      "huiles": 90,
+      "amertume": 93,
+      "usage": "dual",
+      "alpha": [
+       14,
+       16
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 8,
+      "nom": "Magnat",
+      "score": 94,
+      "arome": 100,
+      "huiles": 94,
+      "amertume": 93,
+      "usage": "dual",
+      "alpha": [
+       11,
+       16
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 9,
+      "nom": "Olympic",
+      "score": 94,
+      "arome": 100,
+      "huiles": 94,
+      "amertume": 91,
+      "usage": "dual",
+      "alpha": [
+       10.6,
+       13.8
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 10,
+      "nom": "Sticky Fingers Blend",
+      "score": 94,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 92,
+      "usage": "dual",
+      "alpha": [
+       11.92,
+       11.92
+      ],
+      "familles": 2
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Citra",
+      "relie": true,
+      "rang": 30,
+      "score": 90
+     },
+     {
+      "nom": "Simcoe",
+      "relie": true,
+      "rang": 22,
+      "score": 92
+     }
+    ]
+   },
+   "verdict": {
+    "dry": "Presque juste. Idaho 7 (2e) et Simcoe (3e) sont ce qu’un brasseur répond ; Styrian Fox 1er est discutable ; Galena et Brewer’s Gold sont des amérisants résineux, pas Mosaic. Citra 63e (référence : Citra, Simcoe).",
+    "a60": "Défendable : Loral, Bravo, Azacca, Magnat. Simcoe 22e et Citra 30e restent derrière TNT Blend, Altus, Trident et Zenia, des profils sans huiles dont l’« arôme 100 » ne veut rien dire."
+   }
+  },
+  {
+   "libelle": "Galaxy",
+   "id": "beermaverick-galaxy",
+   "usage": "dual",
+   "alpha": [
+    11,
+    16
+   ],
+   "nbFamilles": 3,
+   "mots": 7,
+   "partSansFamille": 0.29,
+   "dry": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Samba",
+      "score": 97,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 79,
+      "usage": "aroma",
+      "alpha": [
+       8,
+       12
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 2,
+      "nom": "Zamba Blend",
+      "score": 92,
+      "arome": 100,
+      "huiles": 80,
+      "amertume": 79,
+      "usage": "aroma",
+      "alpha": [
+       8,
+       12
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 3,
+      "nom": "Harlequin",
+      "score": 91,
+      "arome": 91,
+      "huiles": 94,
+      "amertume": 86,
+      "usage": "dual",
+      "alpha": [
+       9,
+       12
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 4,
+      "nom": "Nectaron",
+      "score": 89,
+      "arome": 100,
+      "huiles": 69,
+      "amertume": 81,
+      "usage": "aroma",
+      "alpha": [
+       9.5,
+       12
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 5,
+      "nom": "Idaho Gem",
+      "score": 88,
+      "arome": 87,
+      "huiles": null,
+      "amertume": 93,
+      "usage": "dual",
+      "alpha": [
+       11,
+       14
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 6,
+      "nom": "NZH-107",
+      "score": 88,
+      "arome": 91,
+      "huiles": 85,
+      "amertume": 80,
+      "usage": "dual",
+      "alpha": [
+       8,
+       11
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 7,
+      "nom": "YQH-1380",
+      "score": 88,
+      "arome": 100,
+      "huiles": 65,
+      "amertume": 87,
+      "usage": "dual",
+      "alpha": [
+       9.3,
+       11
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 8,
+      "nom": "Trident",
+      "score": 87,
+      "arome": 87,
+      "huiles": null,
+      "amertume": 86,
+      "usage": "dual",
+      "alpha": [
+       11,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 9,
+      "nom": "Tropica",
+      "score": 87,
+      "arome": 91,
+      "huiles": null,
+      "amertume": 61,
+      "usage": "dual",
+      "alpha": [
+       8.8,
+       8.8
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 10,
+      "nom": "Southern Sublime",
+      "score": 86,
+      "arome": 83,
+      "huiles": 91,
+      "amertume": 87,
+      "usage": "aroma",
+      "alpha": [
+       10.8,
+       13.4
+      ],
+      "familles": 3
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Simcoe",
+      "relie": true,
+      "rang": 43,
+      "score": 71
+     },
+     {
+      "nom": "Citra",
+      "relie": true,
+      "rang": 32,
+      "score": 76
+     },
+     {
+      "nom": "Amarillo",
+      "relie": true,
+      "rang": 66,
+      "score": 63
+     }
+    ]
+   },
+   "a60": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Eclipse",
+      "score": 92,
+      "arome": 67,
+      "huiles": 100,
+      "amertume": 99,
+      "usage": "dual",
+      "alpha": [
+       15.7,
+       19
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 2,
+      "nom": "HPA-016",
+      "score": 92,
+      "arome": 67,
+      "huiles": 100,
+      "amertume": 99,
+      "usage": "aroma",
+      "alpha": [
+       15.7,
+       18.7
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 3,
+      "nom": "Satus",
+      "score": 92,
+      "arome": 100,
+      "huiles": 79,
+      "amertume": 94,
+      "usage": "bittering",
+      "alpha": [
+       12,
+       14.5
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 4,
+      "nom": "Southern Sublime",
+      "score": 90,
+      "arome": 100,
+      "huiles": 91,
+      "amertume": 87,
+      "usage": "aroma",
+      "alpha": [
+       10.8,
+       13.4
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 5,
+      "nom": "Tillicum",
+      "score": 90,
+      "arome": 100,
+      "huiles": 78,
+      "amertume": 91,
+      "usage": "bittering",
+      "alpha": [
+       13.5,
+       15.5
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 6,
+      "nom": "Trident",
+      "score": 90,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 86,
+      "usage": "dual",
+      "alpha": [
+       11,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 7,
+      "nom": "El Dorado",
+      "score": 89,
+      "arome": 64,
+      "huiles": 82,
+      "amertume": 99,
+      "usage": "dual",
+      "alpha": [
+       13,
+       17
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 8,
+      "nom": "Yeoman",
+      "score": 89,
+      "arome": 100,
+      "huiles": 74,
+      "amertume": 90,
+      "usage": "dual",
+      "alpha": [
+       12,
+       16
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 9,
+      "nom": "Zula",
+      "score": 89,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 85,
+      "usage": "dual",
+      "alpha": [
+       8,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 10,
+      "nom": "BRU-1",
+      "score": 88,
+      "arome": 67,
+      "huiles": 92,
+      "amertume": 94,
+      "usage": "aroma",
+      "alpha": [
+       13,
+       15
+      ],
+      "familles": 1
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Simcoe",
+      "relie": true,
+      "rang": 73,
+      "score": 77
+     },
+     {
+      "nom": "Citra",
+      "relie": true,
+      "rang": 216,
+      "score": 79
+     },
+     {
+      "nom": "Amarillo",
+      "relie": true,
+      "rang": 101,
+      "score": 72
+     }
+    ]
+   },
+   "verdict": {
+    "dry": "Plausible (Nectaron, Samba, Zamba Blend, Idaho Gem : tropicaux), mais la liste est faite de blends et de codes expérimentaux (YQH-1380, NZH-107) peu utiles à un brasseur ; Citra 32e, Simcoe 43e, Amarillo 66e.",
+    "a60": "Hors de propos pour le goût (Eclipse, HPA-016, Satus) ; correct seulement comme amertume. Citra 216e."
+   }
+  },
+  {
+   "libelle": "Simcoe",
+   "id": "beermaverick-simcoe",
+   "usage": "dual",
+   "alpha": [
+    11,
+    15
+   ],
+   "nbFamilles": 6,
+   "mots": 9,
+   "partSansFamille": 0.22,
+   "dry": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Idaho 7",
+      "score": 89,
+      "arome": 86,
+      "huiles": 98,
+      "amertume": 83,
+      "usage": "aroma",
+      "alpha": [
+       9.5,
+       14.9
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 2,
+      "nom": "HBC 630",
+      "score": 78,
+      "arome": 68,
+      "huiles": 100,
+      "amertume": 77,
+      "usage": "dual",
+      "alpha": [
+       12,
+       15
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 3,
+      "nom": "Hydra",
+      "score": 78,
+      "arome": 77,
+      "huiles": 82,
+      "amertume": 71,
+      "usage": "dual",
+      "alpha": [
+       10.5,
+       13.7
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 4,
+      "nom": "Mosaic",
+      "score": 78,
+      "arome": 74,
+      "huiles": 85,
+      "amertume": 83,
+      "usage": "dual",
+      "alpha": [
+       11.5,
+       13.5
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 5,
+      "nom": "Sabro",
+      "score": 76,
+      "arome": 72,
+      "huiles": 85,
+      "amertume": 75,
+      "usage": "aroma",
+      "alpha": [
+       12,
+       17
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 6,
+      "nom": "Strata",
+      "score": 76,
+      "arome": 71,
+      "huiles": 83,
+      "amertume": 86,
+      "usage": "dual",
+      "alpha": [
+       11,
+       12.5
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 7,
+      "nom": "Talus",
+      "score": 76,
+      "arome": 68,
+      "huiles": 100,
+      "amertume": 51,
+      "usage": "aroma",
+      "alpha": [
+       8.1,
+       9.5
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 8,
+      "nom": "XJA2/436",
+      "score": 75,
+      "arome": 77,
+      "huiles": 72,
+      "amertume": 68,
+      "usage": "bittering",
+      "alpha": [
+       11.5,
+       16.4
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 9,
+      "nom": "Zythos",
+      "score": 74,
+      "arome": 62,
+      "huiles": 99,
+      "amertume": 74,
+      "usage": "dual",
+      "alpha": [
+       10,
+       12.5
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 10,
+      "nom": "Newport",
+      "score": 73,
+      "arome": 58,
+      "huiles": 100,
+      "amertume": 84,
+      "usage": "bittering",
+      "alpha": [
+       10.5,
+       17
+      ],
+      "familles": 2
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Summit",
+      "relie": true,
+      "rang": 91,
+      "score": 59
+     },
+     {
+      "nom": "Magnum (US)",
+      "relie": true,
+      "rang": 216,
+      "score": 41
+     },
+     {
+      "nom": "Amarillo",
+      "relie": true,
+      "rang": 83,
+      "score": 59
+     },
+     {
+      "nom": "Mosaic",
+      "relie": true,
+      "rang": 4,
+      "score": 78
+     },
+     {
+      "nom": "Cascade",
+      "relie": true,
+      "rang": 51,
+      "score": 64
+     },
+     {
+      "nom": "Centennial",
+      "relie": true,
+      "rang": 96,
+      "score": 58
+     },
+     {
+      "nom": "Citra",
+      "relie": true,
+      "rang": 55,
+      "score": 63
+     },
+     {
+      "nom": "Columbus",
+      "relie": true,
+      "rang": 86,
+      "score": 59
+     }
+    ]
+   },
+   "a60": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Caliente",
+      "score": 99,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 98,
+      "usage": "dual",
+      "alpha": [
+       14,
+       16
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 2,
+      "nom": "Yeoman",
+      "score": 98,
+      "arome": 100,
+      "huiles": 99,
+      "amertume": 97,
+      "usage": "dual",
+      "alpha": [
+       12,
+       16
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 3,
+      "nom": "Trident",
+      "score": 97,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 96,
+      "usage": "dual",
+      "alpha": [
+       11,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 4,
+      "nom": "Warrior",
+      "score": 97,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 94,
+      "usage": "dual",
+      "alpha": [
+       14.5,
+       18
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 5,
+      "nom": "Zenia",
+      "score": 96,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 94,
+      "usage": "dual",
+      "alpha": [
+       11,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 6,
+      "nom": "Idaho 7",
+      "score": 93,
+      "arome": 78,
+      "huiles": 98,
+      "amertume": 96,
+      "usage": "aroma",
+      "alpha": [
+       9.5,
+       14.9
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 7,
+      "nom": "African Queen",
+      "score": 92,
+      "arome": 100,
+      "huiles": 74,
+      "amertume": 95,
+      "usage": "dual",
+      "alpha": [
+       10,
+       17
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 8,
+      "nom": "Hartwick",
+      "score": 92,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 89,
+      "usage": "aroma",
+      "alpha": [
+       12.28,
+       12.28
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 9,
+      "nom": "Newport",
+      "score": 92,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 86,
+      "usage": "bittering",
+      "alpha": [
+       10.5,
+       17
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 10,
+      "nom": "Sticklebract",
+      "score": 92,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 86,
+      "usage": "dual",
+      "alpha": [
+       12,
+       15
+      ],
+      "familles": 2
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Summit",
+      "relie": true,
+      "rang": 46,
+      "score": 85
+     },
+     {
+      "nom": "Magnum (US)",
+      "relie": true,
+      "rang": 121,
+      "score": 75
+     },
+     {
+      "nom": "Amarillo",
+      "relie": true,
+      "rang": 144,
+      "score": 71
+     },
+     {
+      "nom": "Mosaic",
+      "relie": true,
+      "rang": 213,
+      "score": 88
+     },
+     {
+      "nom": "Cascade",
+      "relie": true,
+      "rang": 223,
+      "score": 68
+     },
+     {
+      "nom": "Centennial",
+      "relie": true,
+      "rang": 106,
+      "score": 77
+     },
+     {
+      "nom": "Citra",
+      "relie": true,
+      "rang": 216,
+      "score": 84
+     },
+     {
+      "nom": "Columbus",
+      "relie": true,
+      "rang": 43,
+      "score": 85
+     }
+    ]
+   },
+   "verdict": {
+    "dry": "Bon début : Idaho 7, Mosaic, Strata, Sabro sont de vrais voisins. Newport et Talus (amérisant/résineux) sont plus loin. Mosaic 4e, Cascade 51e, Citra 55e.",
+    "a60": "Correct pour l’amertume : Warrior, Yeoman, Newport (α hauts, propres) ; Summit 46e (Beer Maverick l’a en premier)."
+   }
+  },
+  {
+   "libelle": "Saaz",
+   "id": "beermaverick-saaz-cz",
+   "usage": "aroma",
+   "alpha": [
+    2,
+    5
+   ],
+   "nbFamilles": 6,
+   "mots": 8,
+   "partSansFamille": 0.25,
+   "dry": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Pacific Crest",
+      "score": 84,
+      "arome": 84,
+      "huiles": 86,
+      "amertume": 79,
+      "usage": "aroma",
+      "alpha": [
+       3.9,
+       3.9
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 2,
+      "nom": "Tettnang (US)",
+      "score": 82,
+      "arome": 73,
+      "huiles": 100,
+      "amertume": 85,
+      "usage": "aroma",
+      "alpha": [
+       2.5,
+       5.5
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 3,
+      "nom": "Aurum",
+      "score": 81,
+      "arome": 82,
+      "huiles": null,
+      "amertume": 73,
+      "usage": "aroma",
+      "alpha": [
+       3.5,
+       5.7
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 4,
+      "nom": "Styrian Golding",
+      "score": 81,
+      "arome": 84,
+      "huiles": 80,
+      "amertume": 68,
+      "usage": "aroma",
+      "alpha": [
+       3.5,
+       6.5
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 5,
+      "nom": "Hallertau Tradition",
+      "score": 80,
+      "arome": 89,
+      "huiles": 64,
+      "amertume": 70,
+      "usage": "aroma",
+      "alpha": [
+       4.6,
+       7
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 6,
+      "nom": "Sussex",
+      "score": 80,
+      "arome": 78,
+      "huiles": 90,
+      "amertume": 66,
+      "usage": "aroma",
+      "alpha": [
+       4.3,
+       5.8
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 7,
+      "nom": "Spalter Select",
+      "score": 79,
+      "arome": 80,
+      "huiles": 79,
+      "amertume": 75,
+      "usage": "aroma",
+      "alpha": [
+       3,
+       6.5
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 8,
+      "nom": "Aramis",
+      "score": 78,
+      "arome": 74,
+      "huiles": 96,
+      "amertume": 48,
+      "usage": "aroma",
+      "alpha": [
+       5.5,
+       8.5
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 9,
+      "nom": "Marynka",
+      "score": 77,
+      "arome": 82,
+      "huiles": 84,
+      "amertume": 26,
+      "usage": "dual",
+      "alpha": [
+       7.5,
+       12
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 10,
+      "nom": "Strisselspalt",
+      "score": 77,
+      "arome": 68,
+      "huiles": 95,
+      "amertume": 78,
+      "usage": "aroma",
+      "alpha": [
+       1,
+       4
+      ],
+      "familles": 4
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Polish Lublin",
+      "relie": false,
+      "rang": null,
+      "score": null
+     },
+     {
+      "nom": "Saaz (US)",
+      "relie": true,
+      "rang": 19,
+      "score": 74
+     },
+     {
+      "nom": "Sterling",
+      "relie": true,
+      "rang": 40,
+      "score": 67
+     },
+     {
+      "nom": "Tettnang",
+      "relie": false,
+      "rang": null,
+      "score": null
+     }
+    ]
+   },
+   "a60": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Wild Loyalist",
+      "score": 99,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 99,
+      "usage": "aroma",
+      "alpha": [
+       3.7,
+       5.6
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 2,
+      "nom": "Mount Hood",
+      "score": 98,
+      "arome": 100,
+      "huiles": 94,
+      "amertume": 98,
+      "usage": "aroma",
+      "alpha": [
+       3.9,
+       8
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 3,
+      "nom": "Saaz Late",
+      "score": 98,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 97,
+      "usage": "aroma",
+      "alpha": [
+       3.5,
+       6
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 4,
+      "nom": "Amethyst",
+      "score": 95,
+      "arome": 100,
+      "huiles": 92,
+      "amertume": 95,
+      "usage": "aroma",
+      "alpha": [
+       3.5,
+       6
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 5,
+      "nom": "Spalt",
+      "score": 94,
+      "arome": 100,
+      "huiles": 96,
+      "amertume": 91,
+      "usage": "aroma",
+      "alpha": [
+       2.5,
+       5.7
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 6,
+      "nom": "Tettnang (US)",
+      "score": 94,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 91,
+      "usage": "aroma",
+      "alpha": [
+       2.5,
+       5.5
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 7,
+      "nom": "Willamette",
+      "score": 94,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 89,
+      "usage": "dual",
+      "alpha": [
+       4,
+       7.2
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 8,
+      "nom": "Contessa",
+      "score": 93,
+      "arome": 75,
+      "huiles": null,
+      "amertume": 99,
+      "usage": "bittering",
+      "alpha": [
+       3,
+       5
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 9,
+      "nom": "Saphir",
+      "score": 93,
+      "arome": 100,
+      "huiles": 79,
+      "amertume": 95,
+      "usage": "aroma",
+      "alpha": [
+       2,
+       4.5
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 10,
+      "nom": "Tettnanger",
+      "score": 93,
+      "arome": 100,
+      "huiles": 94,
+      "amertume": 91,
+      "usage": "dual",
+      "alpha": [
+       2.5,
+       5.8
+      ],
+      "familles": 3
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Polish Lublin",
+      "relie": false,
+      "rang": null,
+      "score": null
+     },
+     {
+      "nom": "Saaz (US)",
+      "relie": true,
+      "rang": 21,
+      "score": 90
+     },
+     {
+      "nom": "Sterling",
+      "relie": true,
+      "rang": 43,
+      "score": 88
+     },
+     {
+      "nom": "Tettnang",
+      "relie": false,
+      "rang": null,
+      "score": null
+     }
+    ]
+   },
+   "verdict": {
+    "dry": "Oui. Pacific Crest, Tettnang US, Styrian Golding, Hallertau Tradition, Spalter Select : la famille noble que le brasseur attend. Saaz US 19e et Sterling 40e (Beer Maverick). Tettnang et Polish Lublin non reliés dans les données.",
+    "a60": "Oui : Mount Hood, Saaz Late, Spalt, Tettnang US, Saphir, Tettnanger ; le mot « noble » tient."
+   }
+  },
+  {
+   "libelle": "Cascade",
+   "id": "beermaverick-cascade",
+   "usage": "dual",
+   "alpha": [
+    4.5,
+    9
+   ],
+   "nbFamilles": 6,
+   "mots": 10,
+   "partSansFamille": 0.1,
+   "dry": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Barbe Rouge",
+      "score": 92,
+      "arome": 91,
+      "huiles": 95,
+      "amertume": 89,
+      "usage": "aroma",
+      "alpha": [
+       3.8,
+       10
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 2,
+      "nom": "Mandarina Bavaria",
+      "score": 91,
+      "arome": 90,
+      "huiles": 94,
+      "amertume": 88,
+      "usage": "dual",
+      "alpha": [
+       7,
+       10.5
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 3,
+      "nom": "Sasquatch",
+      "score": 91,
+      "arome": 89,
+      "huiles": 95,
+      "amertume": 87,
+      "usage": "dual",
+      "alpha": [
+       6.6,
+       9
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 4,
+      "nom": "Olympic",
+      "score": 89,
+      "arome": 88,
+      "huiles": 97,
+      "amertume": 68,
+      "usage": "dual",
+      "alpha": [
+       10.6,
+       13.8
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 5,
+      "nom": "Taiheke",
+      "score": 89,
+      "arome": 82,
+      "huiles": 100,
+      "amertume": 95,
+      "usage": "dual",
+      "alpha": [
+       5,
+       9
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 6,
+      "nom": "Buzz Bullets",
+      "score": 87,
+      "arome": 88,
+      "huiles": null,
+      "amertume": 84,
+      "usage": "dual",
+      "alpha": [
+       8,
+       10
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 7,
+      "nom": "Herald",
+      "score": 87,
+      "arome": 87,
+      "huiles": 90,
+      "amertume": 73,
+      "usage": "dual",
+      "alpha": [
+       9,
+       13
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 8,
+      "nom": "HORT9909",
+      "score": 87,
+      "arome": 82,
+      "huiles": 100,
+      "amertume": 79,
+      "usage": "dual",
+      "alpha": [
+       6,
+       10
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 9,
+      "nom": "Motueka",
+      "score": 87,
+      "arome": 87,
+      "huiles": 83,
+      "amertume": 96,
+      "usage": "dual",
+      "alpha": [
+       5,
+       8.5
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 10,
+      "nom": "Southern Cross",
+      "score": 87,
+      "arome": 82,
+      "huiles": 100,
+      "amertume": 71,
+      "usage": "dual",
+      "alpha": [
+       11,
+       14
+      ],
+      "familles": 3
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Amarillo",
+      "relie": true,
+      "rang": 108,
+      "score": 67
+     },
+     {
+      "nom": "Centennial",
+      "relie": true,
+      "rang": 51,
+      "score": 79
+     },
+     {
+      "nom": "Ahtanum",
+      "relie": true,
+      "rang": 17,
+      "score": 84
+     },
+     {
+      "nom": "Summit",
+      "relie": true,
+      "rang": 61,
+      "score": 76
+     }
+    ]
+   },
+   "a60": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Aloha Blend",
+      "score": 100,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 100,
+      "usage": "dual",
+      "alpha": [
+       8.8,
+       10.3
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 2,
+      "nom": "Diamant",
+      "score": 100,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 100,
+      "usage": "aroma",
+      "alpha": [
+       7,
+       7.5
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 3,
+      "nom": "Sun",
+      "score": 99,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 98,
+      "usage": "bittering",
+      "alpha": [
+       12,
+       16
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 4,
+      "nom": "Agnus",
+      "score": 98,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 96,
+      "usage": "bittering",
+      "alpha": [
+       9,
+       14
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 5,
+      "nom": "Buzz Bullets",
+      "score": 98,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 97,
+      "usage": "dual",
+      "alpha": [
+       8,
+       10
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 6,
+      "nom": "Sticklebract",
+      "score": 98,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 96,
+      "usage": "dual",
+      "alpha": [
+       12,
+       15
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 7,
+      "nom": "Tomahawk",
+      "score": 98,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 96,
+      "usage": "dual",
+      "alpha": [
+       15,
+       17.5
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 8,
+      "nom": "Zeus",
+      "score": 98,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 96,
+      "usage": "bittering",
+      "alpha": [
+       13,
+       17.5
+      ],
+      "familles": 4
+     },
+     {
+      "rang": 9,
+      "nom": "Arcadian",
+      "score": 97,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 95,
+      "usage": "aroma",
+      "alpha": [
+       9.8,
+       9.8
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 10,
+      "nom": "Brewer's Gold (US)",
+      "score": 97,
+      "arome": 100,
+      "huiles": 94,
+      "amertume": 96,
+      "usage": "bittering",
+      "alpha": [
+       8,
+       11
+      ],
+      "familles": 2
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Amarillo",
+      "relie": true,
+      "rang": 86,
+      "score": 89
+     },
+     {
+      "nom": "Centennial",
+      "relie": true,
+      "rang": 57,
+      "score": 92
+     },
+     {
+      "nom": "Ahtanum",
+      "relie": true,
+      "rang": 208,
+      "score": 76
+     },
+     {
+      "nom": "Summit",
+      "relie": true,
+      "rang": 81,
+      "score": 90
+     }
+    ]
+   },
+   "verdict": {
+    "dry": "Plausible (agrumes : Mandarina Bavaria, Sasquatch, Olympic, Southern Cross), mais les voisins classiques américains sont loin : Ahtanum 17e, Centennial 51e, Summit 61e, Amarillo 108e.",
+    "a60": "Hors de propos pour l’identité (Aloha Blend, Diamant, Sun) ; défendable comme amertume seulement. Ahtanum 208e."
+   }
+  },
+  {
+   "libelle": "Idaho 7",
+   "id": "beermaverick-idaho-7",
+   "usage": "aroma",
+   "alpha": [
+    9.5,
+    14.9
+   ],
+   "nbFamilles": 8,
+   "mots": 12,
+   "partSansFamille": 0,
+   "dry": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Simcoe",
+      "score": 89,
+      "arome": 86,
+      "huiles": 98,
+      "amertume": 83,
+      "usage": "dual",
+      "alpha": [
+       11,
+       15
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 2,
+      "nom": "Mosaic",
+      "score": 88,
+      "arome": 82,
+      "huiles": 99,
+      "amertume": 95,
+      "usage": "dual",
+      "alpha": [
+       11.5,
+       13.5
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 3,
+      "nom": "Styrian Fox",
+      "score": 87,
+      "arome": 85,
+      "huiles": 94,
+      "amertume": 78,
+      "usage": "dual",
+      "alpha": [
+       5.7,
+       12
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 4,
+      "nom": "Hydra",
+      "score": 84,
+      "arome": 76,
+      "huiles": 97,
+      "amertume": 88,
+      "usage": "dual",
+      "alpha": [
+       10.5,
+       13.7
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 5,
+      "nom": "HBC 630",
+      "score": 83,
+      "arome": 80,
+      "huiles": 88,
+      "amertume": 88,
+      "usage": "dual",
+      "alpha": [
+       12,
+       15
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 6,
+      "nom": "Ariana",
+      "score": 79,
+      "arome": 77,
+      "huiles": null,
+      "amertume": 90,
+      "usage": "aroma",
+      "alpha": [
+       9,
+       13
+      ],
+      "familles": 7
+     },
+     {
+      "rang": 7,
+      "nom": "Nugget",
+      "score": 79,
+      "arome": 65,
+      "huiles": 100,
+      "amertume": 97,
+      "usage": "dual",
+      "alpha": [
+       9.5,
+       16
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 8,
+      "nom": "Talus",
+      "score": 78,
+      "arome": 70,
+      "huiles": 96,
+      "amertume": 67,
+      "usage": "aroma",
+      "alpha": [
+       8.1,
+       9.5
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 9,
+      "nom": "Sabro",
+      "score": 76,
+      "arome": 64,
+      "huiles": 97,
+      "amertume": 86,
+      "usage": "aroma",
+      "alpha": [
+       12,
+       17
+      ],
+      "familles": 5
+     },
+     {
+      "rang": 10,
+      "nom": "Strata",
+      "score": 76,
+      "arome": 70,
+      "huiles": 87,
+      "amertume": 78,
+      "usage": "dual",
+      "alpha": [
+       11,
+       12.5
+      ],
+      "familles": 3
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Azacca",
+      "relie": true,
+      "rang": 98,
+      "score": 59
+     },
+     {
+      "nom": "El Dorado",
+      "relie": true,
+      "rang": 101,
+      "score": 59
+     },
+     {
+      "nom": "Cashmere",
+      "relie": true,
+      "rang": 154,
+      "score": 54
+     },
+     {
+      "nom": "Citra",
+      "relie": true,
+      "rang": 43,
+      "score": 67
+     },
+     {
+      "nom": "Idaho Gem",
+      "relie": true,
+      "rang": 105,
+      "score": 59
+     },
+     {
+      "nom": "Amarillo",
+      "relie": true,
+      "rang": 46,
+      "score": 66
+     },
+     {
+      "nom": "Chinook",
+      "relie": true,
+      "rang": 81,
+      "score": 61
+     },
+     {
+      "nom": "Columbus",
+      "relie": true,
+      "rang": 70,
+      "score": 62
+     }
+    ]
+   },
+   "a60": {
+    "top10": [
+     {
+      "rang": 1,
+      "nom": "Bravo",
+      "score": 100,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 100,
+      "usage": "bittering",
+      "alpha": [
+       13,
+       18
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 2,
+      "nom": "Caliente",
+      "score": 100,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 100,
+      "usage": "dual",
+      "alpha": [
+       14,
+       16
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 3,
+      "nom": "Simcoe",
+      "score": 99,
+      "arome": 100,
+      "huiles": 98,
+      "amertume": 99,
+      "usage": "dual",
+      "alpha": [
+       11,
+       15
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 4,
+      "nom": "Trident",
+      "score": 99,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 99,
+      "usage": "dual",
+      "alpha": [
+       11,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 5,
+      "nom": "Magnat",
+      "score": 98,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 97,
+      "usage": "dual",
+      "alpha": [
+       11,
+       16
+      ],
+      "familles": 3
+     },
+     {
+      "rang": 6,
+      "nom": "Marco Polo",
+      "score": 98,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 96,
+      "usage": "dual",
+      "alpha": [
+       12,
+       13
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 7,
+      "nom": "Nugget",
+      "score": 98,
+      "arome": 90,
+      "huiles": 100,
+      "amertume": 99,
+      "usage": "dual",
+      "alpha": [
+       9.5,
+       16
+      ],
+      "familles": 6
+     },
+     {
+      "rang": 8,
+      "nom": "Yeoman",
+      "score": 98,
+      "arome": 100,
+      "huiles": 96,
+      "amertume": 99,
+      "usage": "dual",
+      "alpha": [
+       12,
+       16
+      ],
+      "familles": 1
+     },
+     {
+      "rang": 9,
+      "nom": "Zenia",
+      "score": 98,
+      "arome": 100,
+      "huiles": null,
+      "amertume": 97,
+      "usage": "dual",
+      "alpha": [
+       11,
+       14
+      ],
+      "familles": 2
+     },
+     {
+      "rang": 10,
+      "nom": "Styrian Cardinal",
+      "score": 97,
+      "arome": 100,
+      "huiles": 100,
+      "amertume": 95,
+      "usage": "aroma",
+      "alpha": [
+       8,
+       15
+      ],
+      "familles": 3
+     }
+    ],
+    "bm": [
+     {
+      "nom": "Azacca",
+      "relie": true,
+      "rang": 217,
+      "score": 90
+     },
+     {
+      "nom": "El Dorado",
+      "relie": true,
+      "rang": 86,
+      "score": 85
+     },
+     {
+      "nom": "Cashmere",
+      "relie": true,
+      "rang": 223,
+      "score": 72
+     },
+     {
+      "nom": "Citra",
+      "relie": true,
+      "rang": 214,
+      "score": 92
+     },
+     {
+      "nom": "Idaho Gem",
+      "relie": true,
+      "rang": 52,
+      "score": 90
+     },
+     {
+      "nom": "Amarillo",
+      "relie": true,
+      "rang": 136,
+      "score": 79
+     },
+     {
+      "nom": "Chinook",
+      "relie": true,
+      "rang": 47,
+      "score": 90
+     },
+     {
+      "nom": "Columbus",
+      "relie": true,
+      "rang": 48,
+      "score": 90
+     }
+    ]
+   },
+   "verdict": {
+    "dry": "Oui pour la tête : Simcoe, Mosaic, HBC 630, Hydra, Strata. Mais les substituts de Beer Maverick (Azacca 98e, El Dorado 101e, Citra 43e, Amarillo 46e) sont loin derrière Nugget (7e).",
+    "a60": "Défendable pour l’amertume (Bravo, Simcoe, Magnat, Marco Polo, Nugget) ; la liste dit « α élevé propre », pas « Idaho 7 ». Citra 214e."
+   }
+  }
+ ],
+ "suggerer": {
+  "resume": {
+   "echantillon": 67,
+   "graine": 181,
+   "tailleDemandee": 60,
+   "neutre": {
+    "houblons": 67,
+    "X": {
+     "dansLaListe": 67,
+     "rangMoyenMedian": 51.5,
+     "dansLesDix": 11,
+     "premierGroupeMedian": 102,
+     "groupesDistinctsMedian": 1,
+     "listeMediane": 138
+    },
+    "substitutsBM": {
+     "n": 67,
+     "rappel5": 0,
+     "rappel10": 0.009,
+     "touche10": 0.03,
+     "rangMedian": 51.5,
+     "mrr": 0.024,
+     "sansRang": 5
+    },
+    "absentsDeLaListe": {
+     "absents": 54,
+     "total": 211
+    }
+   },
+   "ipa21A": {
+    "houblons": 20,
+    "X": {
+     "dansLaListe": 20,
+     "rangMoyenMedian": 29.75,
+     "dansLesDix": 1,
+     "premierGroupeMedian": 45,
+     "groupesDistinctsMedian": 9,
+     "listeMediane": 137
+    },
+    "substitutsBM": {
+     "n": 20,
+     "rappel5": 0,
+     "rappel10": 0,
+     "touche10": 0,
+     "rangMedian": 30,
+     "mrr": 0.037,
+     "sansRang": 0
+    },
+    "absentsDeLaListe": {
+     "absents": 15,
+     "total": 73
+    }
+   },
+   "referenceAleatoire": {
+    "n": 1340,
+    "rappel5": 0.012,
+    "rappel10": 0.035,
+    "touche10": 0.103,
+    "rangMedian": 75,
+    "mrr": 0.044,
+    "sansRang": 0
+   }
+  },
+  "inconnuLuCommeZero": {
+   "voies": 670,
+   "avecFamilleVisee_inconnue": 12
+  },
+  "levure": {
+   "houblons": 10,
+   "ecartMoyenDuRangDeX": 0,
+   "recouvrementPremierGroupe": 1
+  },
+  "echantillon": [
+   {
+    "x": "beermaverick-adeena",
+    "dir": [
+     "herbal"
+    ],
+    "nListe": 120,
+    "rangX": 60.5,
+    "groupeX": 120,
+    "premierGroupe": 120,
+    "rangsBM": [
+     60.5,
+     60.5
+    ]
+   },
+   {
+    "x": "beermaverick-agnus",
+    "dir": [
+     "floral"
+    ],
+    "nListe": 136,
+    "rangX": 68.5,
+    "groupeX": 136,
+    "premierGroupe": 136,
+    "rangsBM": [
+     68.5,
+     68.5,
+     68.5,
+     68.5
+    ]
+   },
+   {
+    "x": "beermaverick-brewers-gold",
+    "dir": [
+     "berries"
+    ],
+    "nListe": 50,
+    "rangX": 25.5,
+    "groupeX": 50,
+    "premierGroupe": 50,
+    "rangsBM": [
+     null,
+     25.5,
+     null,
+     25.5
+    ]
+   },
+   {
+    "x": "beermaverick-brewers-gold-us",
+    "dir": [
+     "berries"
+    ],
+    "nListe": 50,
+    "rangX": 25.5,
+    "groupeX": 50,
+    "premierGroupe": 50,
+    "rangsBM": [
+     25.5,
+     25.5,
+     null,
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-callista",
+    "dir": [
+     "tropical",
+     "stoneFruit",
+     "berries"
+    ],
+    "nListe": 149,
+    "rangX": 5.5,
+    "groupeX": 10,
+    "premierGroupe": 10,
+    "rangsBM": [
+     null,
+     33
+    ]
+   },
+   {
+    "x": "beermaverick-calypso",
+    "dir": [
+     "pomeFruit"
+    ],
+    "nListe": 19,
+    "rangX": 10,
+    "groupeX": 19,
+    "premierGroupe": 19,
+    "rangsBM": [
+     10,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-cascade",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     106,
+     106,
+     106,
+     106
+    ]
+   },
+   {
+    "x": "beermaverick-cashmere",
+    "dir": [
+     "citrus",
+     "melon",
+     "spice"
+    ],
+    "nListe": 256,
+    "rangX": 4.5,
+    "groupeX": 8,
+    "premierGroupe": 8,
+    "rangsBM": [
+     62.5
+    ]
+   },
+   {
+    "x": "beermaverick-centennial",
+    "dir": [
+     "citrus",
+     "floral",
+     "resin"
+    ],
+    "nListe": 271,
+    "rangX": 18.5,
+    "groupeX": 36,
+    "premierGroupe": 36,
+    "rangsBM": [
+     18.5,
+     93,
+     93,
+     231.5,
+     93,
+     231.5,
+     93
+    ]
+   },
+   {
+    "x": "beermaverick-citra",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     106,
+     106,
+     106,
+     106
+    ]
+   },
+   {
+    "x": "beermaverick-el-dorado",
+    "dir": [
+     "tropical",
+     "stoneFruit",
+     "pomeFruit"
+    ],
+    "nListe": 135,
+    "rangX": 3.5,
+    "groupeX": 6,
+    "premierGroupe": 6,
+    "rangsBM": [
+     24.5,
+     null,
+     89
+    ]
+   },
+   {
+    "x": "beermaverick-ella",
+    "dir": [
+     "floral"
+    ],
+    "nListe": 136,
+    "rangX": 68.5,
+    "groupeX": 136,
+    "premierGroupe": 136,
+    "rangsBM": [
+     68.5,
+     68.5,
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-enigma",
+    "dir": [
+     "tropical"
+    ],
+    "nListe": 102,
+    "rangX": 51.5,
+    "groupeX": 102,
+    "premierGroupe": 102,
+    "rangsBM": [
+     null,
+     51.5
+    ]
+   },
+   {
+    "x": "beermaverick-falconers-flight-7cs",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     106,
+     106,
+     106,
+     106,
+     106,
+     106,
+     106,
+     106
+    ]
+   },
+   {
+    "x": "beermaverick-first-gold",
+    "dir": [
+     "herbal",
+     "citrus"
+    ],
+    "nListe": 254,
+    "rangX": 39,
+    "groupeX": 77,
+    "premierGroupe": 77,
+    "rangsBM": [
+     39
+    ]
+   },
+   {
+    "x": "beermaverick-flyer",
+    "dir": [
+     "spice"
+    ],
+    "nListe": 138,
+    "rangX": 69.5,
+    "groupeX": 138,
+    "premierGroupe": 138,
+    "rangsBM": [
+     69.5,
+     69.5
+    ]
+   },
+   {
+    "x": "beermaverick-galaxy",
+    "dir": [
+     "tropical"
+    ],
+    "nListe": 102,
+    "rangX": 51.5,
+    "groupeX": 102,
+    "premierGroupe": 102,
+    "rangsBM": [
+     51.5,
+     51.5,
+     51.5
+    ]
+   },
+   {
+    "x": "beermaverick-galena",
+    "dir": [
+     "citrus",
+     "resin",
+     "spice"
+    ],
+    "nListe": 267,
+    "rangX": 16.5,
+    "groupeX": 32,
+    "premierGroupe": 32,
+    "rangsBM": [
+     172.5,
+     98.5,
+     98.5,
+     16.5,
+     98.5,
+     16.5
+    ]
+   },
+   {
+    "x": "beermaverick-golding",
+    "dir": [
+     "floral",
+     "spice"
+    ],
+    "nListe": 210,
+    "rangX": 32.5,
+    "groupeX": 64,
+    "premierGroupe": 64,
+    "rangsBM": [
+     136.5,
+     32.5,
+     32.5,
+     32.5
+    ]
+   },
+   {
+    "x": "beermaverick-green-bullet",
+    "dir": [
+     "resin"
+    ],
+    "nListe": 102,
+    "rangX": 51.5,
+    "groupeX": 102,
+    "premierGroupe": 102,
+    "rangsBM": [
+     null,
+     null,
+     null,
+     null,
+     51.5
+    ]
+   },
+   {
+    "x": "beermaverick-hallertau-taurus",
+    "dir": [
+     "spice"
+    ],
+    "nListe": 138,
+    "rangX": 69.5,
+    "groupeX": 138,
+    "premierGroupe": 138,
+    "rangsBM": [
+     69.5,
+     69.5,
+     null,
+     69.5,
+     null,
+     69.5
+    ]
+   },
+   {
+    "x": "beermaverick-herald",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     106,
+     106
+    ]
+   },
+   {
+    "x": "beermaverick-idaho-7",
+    "dir": [
+     "berries"
+    ],
+    "nListe": 50,
+    "rangX": 25.5,
+    "groupeX": 50,
+    "premierGroupe": 50,
+    "rangsBM": [
+     null,
+     null,
+     25.5,
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-idaho-gem",
+    "dir": [
+     "tropical"
+    ],
+    "nListe": 102,
+    "rangX": 51.5,
+    "groupeX": 102,
+    "premierGroupe": 102,
+    "rangsBM": [
+     51.5,
+     51.5,
+     51.5,
+     51.5,
+     51.5,
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-kohatu",
+    "dir": [
+     "tropical"
+    ],
+    "nListe": 102,
+    "rangX": 51.5,
+    "groupeX": 102,
+    "premierGroupe": 102,
+    "rangsBM": [
+     null,
+     51.5
+    ]
+   },
+   {
+    "x": "beermaverick-magnum-us",
+    "dir": [
+     "floral"
+    ],
+    "nListe": 136,
+    "rangX": 68.5,
+    "groupeX": 136,
+    "premierGroupe": 136,
+    "rangsBM": [
+     null,
+     68.5,
+     68.5,
+     68.5,
+     68.5,
+     68.5,
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-mandarina-bavaria",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     106,
+     106,
+     106,
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-marynka",
+    "dir": [
+     "citrus",
+     "spice",
+     "green"
+    ],
+    "nListe": 263,
+    "rangX": 10,
+    "groupeX": 19,
+    "premierGroupe": 19,
+    "rangsBM": [
+     143.5
+    ]
+   },
+   {
+    "x": "beermaverick-medusa",
+    "dir": [
+     "tropical"
+    ],
+    "nListe": 102,
+    "rangX": 51.5,
+    "groupeX": 102,
+    "premierGroupe": 102,
+    "rangsBM": [
+     51.5
+    ]
+   },
+   {
+    "x": "beermaverick-melba",
+    "dir": [
+     "citrus",
+     "tropical"
+    ],
+    "nListe": 227,
+    "rangX": 43.5,
+    "groupeX": 86,
+    "premierGroupe": 86,
+    "rangsBM": [
+     43.5
+    ]
+   },
+   {
+    "x": "beermaverick-meridian",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     106,
+     null,
+     106
+    ]
+   },
+   {
+    "x": "beermaverick-millennium",
+    "dir": [
+     "pomeFruit"
+    ],
+    "nListe": 19,
+    "rangX": 10,
+    "groupeX": 19,
+    "premierGroupe": 19,
+    "rangsBM": [
+     null,
+     null,
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-mosaic",
+    "dir": [
+     "berries"
+    ],
+    "nListe": 50,
+    "rangX": 25.5,
+    "groupeX": 50,
+    "premierGroupe": 50,
+    "rangsBM": [
+     null,
+     25.5
+    ]
+   },
+   {
+    "x": "beermaverick-motueka",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     null,
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-multihead",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     106
+    ]
+   },
+   {
+    "x": "beermaverick-nelson-sauvin",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     106,
+     null,
+     106,
+     106
+    ]
+   },
+   {
+    "x": "beermaverick-newport",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     null,
+     null,
+     106,
+     106,
+     106,
+     106
+    ]
+   },
+   {
+    "x": "beermaverick-olympic",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     null,
+     106,
+     106
+    ]
+   },
+   {
+    "x": "beermaverick-opal",
+    "dir": [
+     "spice"
+    ],
+    "nListe": 138,
+    "rangX": 69.5,
+    "groupeX": 138,
+    "premierGroupe": 138,
+    "rangsBM": [
+     69.5,
+     69.5
+    ]
+   },
+   {
+    "x": "beermaverick-pacific-sunrise",
+    "dir": [
+     "resin"
+    ],
+    "nListe": 102,
+    "rangX": 51.5,
+    "groupeX": 102,
+    "premierGroupe": 102,
+    "rangsBM": [
+     51.5
+    ]
+   },
+   {
+    "x": "beermaverick-pilgrim",
+    "dir": [
+     "citrus",
+     "pomeFruit",
+     "spice"
+    ],
+    "nListe": 255,
+    "rangX": 3.5,
+    "groupeX": 6,
+    "premierGroupe": 6,
+    "rangsBM": [
+     128,
+     202
+    ]
+   },
+   {
+    "x": "beermaverick-pride-of-ringwood",
+    "dir": [
+     "herbal",
+     "resin"
+    ],
+    "nListe": 179,
+    "rangX": 22,
+    "groupeX": 43,
+    "premierGroupe": 43,
+    "rangsBM": [
+     22,
+     72,
+     22
+    ]
+   },
+   {
+    "x": "beermaverick-progress",
+    "dir": [
+     "berries",
+     "floral",
+     "herbal"
+    ],
+    "nListe": 212,
+    "rangX": 6,
+    "groupeX": 11,
+    "premierGroupe": 11,
+    "rangsBM": [
+     50,
+     189.5
+    ]
+   },
+   {
+    "x": "beermaverick-relax",
+    "dir": [
+     "melon"
+    ],
+    "nListe": 32,
+    "rangX": 16.5,
+    "groupeX": 32,
+    "premierGroupe": 32,
+    "rangsBM": [
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-saaz-cz",
+    "dir": [
+     "spice",
+     "green",
+     "earthy"
+    ],
+    "nListe": 182,
+    "rangX": 5,
+    "groupeX": 9,
+    "premierGroupe": 9,
+    "rangsBM": [
+     17.5,
+     116
+    ]
+   },
+   {
+    "x": "beermaverick-saaz-late",
+    "dir": [
+     "earthy"
+    ],
+    "nListe": 48,
+    "rangX": 24.5,
+    "groupeX": 48,
+    "premierGroupe": 48,
+    "rangsBM": [
+     24.5,
+     24.5
+    ]
+   },
+   {
+    "x": "beermaverick-santiam",
+    "dir": [
+     "floral",
+     "spice",
+     "herbal"
+    ],
+    "nListe": 234,
+    "rangX": 21.5,
+    "groupeX": 42,
+    "premierGroupe": 42,
+    "rangsBM": [
+     163.5,
+     90.5,
+     21.5
+    ]
+   },
+   {
+    "x": "beermaverick-satus",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     106,
+     106
+    ]
+   },
+   {
+    "x": "beermaverick-simcoe",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     106,
+     106,
+     106,
+     106,
+     106,
+     106,
+     106,
+     106
+    ]
+   },
+   {
+    "x": "beermaverick-sonnet",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     106,
+     106,
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-southern-brewer",
+    "dir": [
+     "earthy"
+    ],
+    "nListe": 48,
+    "rangX": 24.5,
+    "groupeX": 48,
+    "premierGroupe": 48,
+    "rangsBM": [
+     null,
+     24.5
+    ]
+   },
+   {
+    "x": "beermaverick-sovereign",
+    "dir": [
+     "pomeFruit",
+     "herbal"
+    ],
+    "nListe": 130,
+    "rangX": 5,
+    "groupeX": 9,
+    "premierGroupe": 9,
+    "rangsBM": [
+     74
+    ]
+   },
+   {
+    "x": "beermaverick-spalter-select",
+    "dir": [
+     "spice",
+     "green"
+    ],
+    "nListe": 165,
+    "rangX": 15,
+    "groupeX": 29,
+    "premierGroupe": 29,
+    "rangsBM": [
+     96.5,
+     15,
+     null,
+     96.5,
+     15
+    ]
+   },
+   {
+    "x": "beermaverick-sticklebract",
+    "dir": [
+     "resin"
+    ],
+    "nListe": 102,
+    "rangX": 51.5,
+    "groupeX": 102,
+    "premierGroupe": 102,
+    "rangsBM": [
+     51.5,
+     null,
+     null,
+     51.5,
+     51.5
+    ]
+   },
+   {
+    "x": "beermaverick-stirling",
+    "dir": [
+     "herbal"
+    ],
+    "nListe": 120,
+    "rangX": 60.5,
+    "groupeX": 120,
+    "premierGroupe": 120,
+    "rangsBM": [
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-styrian-golding",
+    "dir": [
+     "citrus",
+     "herbal",
+     "earthy"
+    ],
+    "nListe": 260,
+    "rangX": 9,
+    "groupeX": 17,
+    "premierGroupe": 17,
+    "rangsBM": [
+     22,
+     9,
+     199.5
+    ]
+   },
+   {
+    "x": "beermaverick-super-pride",
+    "dir": [
+     "resin"
+    ],
+    "nListe": 102,
+    "rangX": 51.5,
+    "groupeX": 102,
+    "premierGroupe": 102,
+    "rangsBM": [
+     51.5
+    ]
+   },
+   {
+    "x": "beermaverick-sybilla",
+    "dir": [
+     "floral"
+    ],
+    "nListe": 136,
+    "rangX": 68.5,
+    "groupeX": 136,
+    "premierGroupe": 136,
+    "rangsBM": [
+     68.5,
+     68.5,
+     null,
+     null,
+     68.5,
+     68.5,
+     68.5,
+     68.5
+    ]
+   },
+   {
+    "x": "beermaverick-tardif-de-bourgogne",
+    "dir": [
+     "floral"
+    ],
+    "nListe": 136,
+    "rangX": 68.5,
+    "groupeX": 136,
+    "premierGroupe": 136,
+    "rangsBM": [
+     68.5
+    ]
+   },
+   {
+    "x": "beermaverick-tettnanger",
+    "dir": [
+     "herbal",
+     "spice"
+    ],
+    "nListe": 186,
+    "rangX": 36.5,
+    "groupeX": 72,
+    "premierGroupe": 72,
+    "rangsBM": [
+     104.5,
+     36.5,
+     161.5,
+     36.5
+    ]
+   },
+   {
+    "x": "beermaverick-triplepearl",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-triumph",
+    "dir": [
+     "spice"
+    ],
+    "nListe": 138,
+    "rangX": 69.5,
+    "groupeX": 138,
+    "premierGroupe": 138,
+    "rangsBM": [
+     69.5,
+     69.5
+    ]
+   },
+   {
+    "x": "beermaverick-tsingdao-flower",
+    "dir": [
+     "earthy"
+    ],
+    "nListe": 48,
+    "rangX": 24.5,
+    "groupeX": 48,
+    "premierGroupe": 48,
+    "rangsBM": [
+     24.5
+    ]
+   },
+   {
+    "x": "beermaverick-wakatu",
+    "dir": [
+     "floral"
+    ],
+    "nListe": 136,
+    "rangX": 68.5,
+    "groupeX": 136,
+    "premierGroupe": 136,
+    "rangsBM": [
+     68.5,
+     null
+    ]
+   },
+   {
+    "x": "beermaverick-whitbread-golding-variety-wgv",
+    "dir": [
+     "earthy"
+    ],
+    "nListe": 48,
+    "rangX": 24.5,
+    "groupeX": 48,
+    "premierGroupe": 48,
+    "rangsBM": [
+     24.5
+    ]
+   },
+   {
+    "x": "beermaverick-wild-loyalist",
+    "dir": [
+     "herbal"
+    ],
+    "nListe": 120,
+    "rangX": 60.5,
+    "groupeX": 120,
+    "premierGroupe": 120,
+    "rangsBM": [
+     null,
+     60.5
+    ]
+   },
+   {
+    "x": "beermaverick-xja2-436",
+    "dir": [
+     "citrus"
+    ],
+    "nListe": 211,
+    "rangX": 106,
+    "groupeX": 211,
+    "premierGroupe": 211,
+    "rangsBM": [
+     106,
+     106,
+     106
+    ]
+   }
+  ],
+  "cas": [
+   {
+    "id": "K1",
+    "titre": "Stout 16D « trop résineuse, plus floral »",
+    "mots": "« ma stout est trop résineuses, je la veux plus floral » (SPEC-BRASSEUR.md § 1, 18.10)",
+    "attendu": "Les 5 premiers houblons proposés citent le floral dans leurs fiches et ne citent pas le résineux ; aucune des 10 premières voies en conflit ; aucun ne porte un mot résineux sans famille (dank, cannabis, pin).",
+    "observe": {
+     "top5": [
+      "Golding",
+      "Motueka",
+      "Aurum",
+      "East Kent Goldings",
+      "Columbus"
+     ],
+     "floralSansResine": 5,
+     "conflitsDansLesDix": 0,
+     "reservesMotsResineuxSansFamille": [
+      {
+       "nom": "Columbus",
+       "mots": [
+        "dank",
+        "cannabis"
+       ]
+      }
+     ]
+    },
+    "ok": false
+   },
+   {
+    "id": "K2",
+    "titre": "« Plus résineux » : la stout le tolère, la lager non",
+    "mots": "« un peu plus résineux pour une stout est pas très problématique, pour une lager kolsch très » (SPEC-BRASSEUR.md § 1, 18.10)",
+    "attendu": "Pour la même visée (résineux +1), la part des voies hors style est plus forte sur la lager 3B que sur la stout 16D, d’au moins 25 points ; l’échelle du résineux n’est pas la même.",
+    "observe": {
+     "stout": {
+      "voies": 102,
+      "horsStyle": 102,
+      "part": 1
+     },
+     "lager": {
+      "voies": 102,
+      "horsStyle": 102,
+      "part": 1
+     },
+     "echelleResineux16D": {
+      "statut": "neutre",
+      "bande": [
+       0,
+       30
+      ],
+      "cran": 10
+     },
+     "echelleResineux3B": {
+      "statut": "neutre",
+      "bande": [
+       0,
+       30
+      ],
+      "cran": 10
+     }
+    },
+    "ok": false
+   },
+   {
+    "id": "K3",
+    "titre": "Agrumes : un écart faible en IPA est grand en lager",
+    "mots": "« le côté agrumes pour une ipa est infiniment plus subtil pour une cezc lager. Les échelles doivent être revu en fonction du style » (SPEC-BRASSEUR.md § 2, 18.10)",
+    "attendu": "Le cran « plus agrumes » (points sur 0–100) est plus petit en lager 3B qu’en IPA 21A, au moins deux fois plus petit.",
+    "observe": {
+     "cran21A": 33.3,
+     "cran3B": 10,
+     "bande21A": [
+      0,
+      100
+     ],
+     "bande3B": [
+      0,
+      30
+     ]
+    },
+    "ok": true
+   },
+   {
+    "id": "K4",
+    "titre": "Nelson Sauvin : « sauvignon blanc », « houblon incroyable »",
+    "mots": "« nelson sauvin est un houbon ordinaire alors que c’est un un houbon incroyable » (l5f, SPEC-BRASSEUR.md § 1) ; « on voit pas que c’est Sauvignon blanc » (24.10)",
+    "attendu": "Au dry hop, au moins deux des quatre substituts de Beer Maverick (Hallertau Blanc, Enigma, Motueka, Riwaka) dans les 10 premiers ; Hallertau Blanc (« white wine ») en fait partie.",
+    "observe": {
+     "rangsBM": [
+      {
+       "nom": "Hallertau Blanc",
+       "rang": 155
+      },
+      {
+       "nom": "Enigma",
+       "rang": 244
+      },
+      {
+       "nom": "Motueka",
+       "rang": 89
+      },
+      {
+       "nom": "Riwaka",
+       "rang": 206
+      }
+     ],
+     "top3": [
+      "Boomerang",
+      "Herkules",
+      "Phoenix"
+     ]
+    },
+    "ok": false
+   },
+   {
+    "id": "K5",
+    "titre": "Galaxy n’est pas Saaz",
+    "mots": "« différencier un houblon hyper aromatique type Galaxy d’un houblon plus fade type Saaz » ; « il faut aussi que on voit comme il faut les différences » (SPEC-BRASSEUR.md § 3, D131 ter)",
+    "attendu": "Au dry hop, Galaxy n’est pas « très proche » (score ≥ 80) de Saaz, ni Saaz de Galaxy.",
+    "observe": {
+     "saazChezGalaxy": 30,
+     "galaxyChezSaaz": 30,
+     "rangSaazChezGalaxy": 223,
+     "rangGalaxyChezSaaz": 253
+    },
+    "ok": true
+   }
+  ]
+ },
+ "erreurs": {
+  "causes": {
+   "60′": {
+    "substitutsReferences": 697,
+    "horsDesDix": 613,
+    "partHorsDesDix": 0.879,
+    "exclusif": {
+     "données manquantes": 78,
+     "amérisant écarté à 60′": 108,
+     "profil creux (inconnus lus comme zéros)": 112,
+     "mots sans famille": 11,
+     "poids de l’amertume": 13,
+     "levure": 0,
+     "non expliqué (référence discutable ou vrai écart)": 291
+    },
+    "inclusif": {
+     "données manquantes": 78,
+     "amérisant écarté à 60′": 126,
+     "profil creux (inconnus lus comme zéros)": 177,
+     "mots sans famille": 36,
+     "poids de l’amertume": 24,
+     "levure": 0,
+     "non expliqué (référence discutable ou vrai écart)": 291
+    }
+   },
+   "arôme (10′, whirlpool, dry hop)": {
+    "substitutsReferences": 697,
+    "horsDesDix": 621,
+    "partHorsDesDix": 0.891,
+    "exclusif": {
+     "données manquantes": 77,
+     "amérisant écarté à 60′": 0,
+     "profil creux (inconnus lus comme zéros)": 142,
+     "mots sans famille": 17,
+     "poids de l’amertume": 41,
+     "levure": 0,
+     "non expliqué (référence discutable ou vrai écart)": 344
+    },
+    "inclusif": {
+     "données manquantes": 77,
+     "amérisant écarté à 60′": 0,
+     "profil creux (inconnus lus comme zéros)": 184,
+     "mots sans famille": 37,
+     "poids de l’amertume": 71,
+     "levure": 0,
+     "non expliqué (référence discutable ou vrai écart)": 344
+    }
+   }
+  },
+  "inventaire": {
+   "varietes": 318,
+   "sansAucuneFamille": 21,
+   "auPlusDeuxFamilles": 91,
+   "huilesInsuffisantes": 65,
+   "motsSansFamilleAu50pc": 13
+  }
+ },
+ "options": {
+  "poids": {
+   "60′": {
+    "courants": {
+     "poids": {
+      "arome": 0.2,
+      "huiles": 0.2,
+      "amertume": 0.6
+     },
+     "tous": {
+      "n": 217,
+      "rappel5": 0.064,
+      "rappel10": 0.1,
+      "touche10": 0.244,
+      "rangMedian": 36,
+      "mrr": 0.119,
+      "sansRang": 0
+     },
+     "controle": {
+      "n": 108,
+      "rappel5": 0.065,
+      "rappel10": 0.111,
+      "touche10": 0.25,
+      "rangMedian": 34.5,
+      "mrr": 0.122,
+      "sansRang": 0
+     }
+    },
+    "meilleurs_sur_moitie_apprentissage": {
+     "poids": {
+      "arome": 0.1,
+      "huiles": 0.1,
+      "amertume": 0.8
+     },
+     "apprentissage": {
+      "n": 109,
+      "rappel5": 0.055,
+      "rappel10": 0.121,
+      "touche10": 0.275,
+      "rangMedian": 35,
+      "mrr": 0.134,
+      "sansRang": 0
+     },
+     "controle": {
+      "n": 108,
+      "rappel5": 0.098,
+      "rappel10": 0.131,
+      "touche10": 0.278,
+      "rangMedian": 35,
+      "mrr": 0.13,
+      "sansRang": 0
+     },
+     "tous": {
+      "n": 217,
+      "rappel5": 0.077,
+      "rappel10": 0.126,
+      "touche10": 0.276,
+      "rangMedian": 35,
+      "mrr": 0.132,
+      "sansRang": 0
+     }
+    },
+    "dix_meilleurs_apprentissage": [
+     {
+      "poids": {
+       "arome": 0.1,
+       "huiles": 0.1,
+       "amertume": 0.8
+      },
+      "mrr": 0.134,
+      "rappel10": 0.121
+     },
+     {
+      "poids": {
+       "arome": 0.1,
+       "huiles": 0.2,
+       "amertume": 0.7
+      },
+      "mrr": 0.132,
+      "rappel10": 0.117
+     },
+     {
+      "poids": {
+       "arome": 0.1,
+       "huiles": 0.3,
+       "amertume": 0.6
+      },
+      "mrr": 0.13,
+      "rappel10": 0.108
+     },
+     {
+      "poids": {
+       "arome": 0.1,
+       "huiles": 0.5,
+       "amertume": 0.4
+      },
+      "mrr": 0.125,
+      "rappel10": 0.085
+     },
+     {
+      "poids": {
+       "arome": 0.1,
+       "huiles": 0.6,
+       "amertume": 0.3
+      },
+      "mrr": 0.123,
+      "rappel10": 0.095
+     },
+     {
+      "poids": {
+       "arome": 0.1,
+       "huiles": 0.4,
+       "amertume": 0.5
+      },
+      "mrr": 0.119,
+      "rappel10": 0.094
+     },
+     {
+      "poids": {
+       "arome": 0.2,
+       "huiles": 0.1,
+       "amertume": 0.7
+      },
+      "mrr": 0.119,
+      "rappel10": 0.094
+     },
+     {
+      "poids": {
+       "arome": 0.1,
+       "huiles": 0.7,
+       "amertume": 0.2
+      },
+      "mrr": 0.118,
+      "rappel10": 0.082
+     },
+     {
+      "poids": {
+       "arome": 0.1,
+       "huiles": 0,
+       "amertume": 0.9
+      },
+      "mrr": 0.117,
+      "rappel10": 0.13
+     },
+     {
+      "poids": {
+       "arome": 0.8,
+       "huiles": 0,
+       "amertume": 0.2
+      },
+      "mrr": 0.116,
+      "rappel10": 0.064
+     }
+    ],
+    "sans_amertume": {
+     "poids": {
+      "arome": 0.7,
+      "huiles": 0.3,
+      "amertume": 0
+     },
+     "tous": {
+      "n": 217,
+      "rappel5": 0.024,
+      "rappel10": 0.049,
+      "touche10": 0.138,
+      "rangMedian": 51,
+      "mrr": 0.061,
+      "sansRang": 0
+     }
+    },
+    "arome_seul": {
+     "poids": {
+      "arome": 1,
+      "huiles": 0,
+      "amertume": 0
+     },
+     "tous": {
+      "n": 217,
+      "rappel5": 0.018,
+      "rappel10": 0.037,
+      "touche10": 0.134,
+      "rangMedian": 53,
+      "mrr": 0.054,
+      "sansRang": 0
+     }
+    },
+    "huiles_seules": {
+     "poids": {
+      "arome": 0,
+      "huiles": 1,
+      "amertume": 0
+     },
+     "tous": {
+      "n": 217,
+      "rappel5": 0.025,
+      "rappel10": 0.067,
+      "touche10": 0.184,
+      "rangMedian": 47,
+      "mrr": 0.078,
+      "sansRang": 0
+     }
+    },
+    "amertume_seule": {
+     "poids": {
+      "arome": 0,
+      "huiles": 0,
+      "amertume": 1
+     },
+     "tous": {
+      "n": 217,
+      "rappel5": 0.046,
+      "rappel10": 0.096,
+      "touche10": 0.207,
+      "rangMedian": 35,
+      "mrr": 0.094,
+      "sansRang": 0
+     }
+    }
+   },
+   "arôme (10′, whirlpool, dry hop)": {
+    "courants": {
+     "poids": {
+      "arome": 0.6,
+      "huiles": 0.3,
+      "amertume": 0.1
+     },
+     "tous": {
+      "n": 217,
+      "rappel5": 0.061,
+      "rappel10": 0.111,
+      "touche10": 0.263,
+      "rangMedian": 27,
+      "mrr": 0.116,
+      "sansRang": 0
+     },
+     "controle": {
+      "n": 108,
+      "rappel5": 0.065,
+      "rappel10": 0.119,
+      "touche10": 0.259,
+      "rangMedian": 26.5,
+      "mrr": 0.111,
+      "sansRang": 0
+     }
+    },
+    "meilleurs_sur_moitie_apprentissage": {
+     "poids": {
+      "arome": 0.1,
+      "huiles": 0.1,
+      "amertume": 0.8
+     },
+     "apprentissage": {
+      "n": 109,
+      "rappel5": 0.082,
+      "rappel10": 0.13,
+      "touche10": 0.303,
+      "rangMedian": 24,
+      "mrr": 0.172,
+      "sansRang": 0
+     },
+     "controle": {
+      "n": 108,
+      "rappel5": 0.124,
+      "rappel10": 0.16,
+      "touche10": 0.352,
+      "rangMedian": 25.5,
+      "mrr": 0.19,
+      "sansRang": 0
+     },
+     "tous": {
+      "n": 217,
+      "rappel5": 0.103,
+      "rappel10": 0.145,
+      "touche10": 0.327,
+      "rangMedian": 25,
+      "mrr": 0.181,
+      "sansRang": 0
+     }
+    },
+    "dix_meilleurs_apprentissage": [
+     {
+      "poids": {
+       "arome": 0.1,
+       "huiles": 0.1,
+       "amertume": 0.8
+      },
+      "mrr": 0.172,
+      "rappel10": 0.13
+     },
+     {
+      "poids": {
+       "arome": 0.2,
+       "huiles": 0.5,
+       "amertume": 0.3
+      },
+      "mrr": 0.164,
+      "rappel10": 0.153
+     },
+     {
+      "poids": {
+       "arome": 0.1,
+       "huiles": 0.2,
+       "amertume": 0.7
+      },
+      "mrr": 0.161,
+      "rappel10": 0.135
+     },
+     {
+      "poids": {
+       "arome": 0.2,
+       "huiles": 0.6,
+       "amertume": 0.2
+      },
+      "mrr": 0.161,
+      "rappel10": 0.132
+     },
+     {
+      "poids": {
+       "arome": 0.2,
+       "huiles": 0.2,
+       "amertume": 0.6
+      },
+      "mrr": 0.159,
+      "rappel10": 0.138
+     },
+     {
+      "poids": {
+       "arome": 0.3,
+       "huiles": 0.5,
+       "amertume": 0.2
+      },
+      "mrr": 0.157,
+      "rappel10": 0.113
+     },
+     {
+      "poids": {
+       "arome": 0.1,
+       "huiles": 0.6,
+       "amertume": 0.3
+      },
+      "mrr": 0.156,
+      "rappel10": 0.148
+     },
+     {
+      "poids": {
+       "arome": 0.1,
+       "huiles": 0,
+       "amertume": 0.9
+      },
+      "mrr": 0.156,
+      "rappel10": 0.112
+     },
+     {
+      "poids": {
+       "arome": 0,
+       "huiles": 0.1,
+       "amertume": 0.9
+      },
+      "mrr": 0.156,
+      "rappel10": 0.104
+     },
+     {
+      "poids": {
+       "arome": 0.1,
+       "huiles": 0.7,
+       "amertume": 0.2
+      },
+      "mrr": 0.153,
+      "rappel10": 0.145
+     }
+    ],
+    "sans_amertume": {
+     "poids": {
+      "arome": 0.7,
+      "huiles": 0.3,
+      "amertume": 0
+     },
+     "tous": {
+      "n": 217,
+      "rappel5": 0.055,
+      "rappel10": 0.098,
+      "touche10": 0.235,
+      "rangMedian": 31,
+      "mrr": 0.105,
+      "sansRang": 0
+     }
+    },
+    "arome_seul": {
+     "poids": {
+      "arome": 1,
+      "huiles": 0,
+      "amertume": 0
+     },
+     "tous": {
+      "n": 217,
+      "rappel5": 0.046,
+      "rappel10": 0.079,
+      "touche10": 0.194,
+      "rangMedian": 35,
+      "mrr": 0.108,
+      "sansRang": 0
+     }
+    },
+    "huiles_seules": {
+     "poids": {
+      "arome": 0,
+      "huiles": 1,
+      "amertume": 0
+     },
+     "tous": {
+      "n": 217,
+      "rappel5": 0.031,
+      "rappel10": 0.077,
+      "touche10": 0.207,
+      "rangMedian": 39,
+      "mrr": 0.085,
+      "sansRang": 0
+     }
+    },
+    "amertume_seule": {
+     "poids": {
+      "arome": 0,
+      "huiles": 0,
+      "amertume": 1
+     },
+     "tous": {
+      "n": 217,
+      "rappel5": 0.08,
+      "rappel10": 0.115,
+      "touche10": 0.272,
+      "rangMedian": 32,
+      "mrr": 0.138,
+      "sansRang": 0
+     }
+    }
+   }
+  },
+  "poidsControleExact": {
+   "60′": {
+    "poids": {
+     "arome": 0.1,
+     "huiles": 0.1,
+     "amertume": 0.8
+    },
+    "tous": {
+     "n": 217,
+     "rappel5": 0.073,
+     "rappel10": 0.128,
+     "touche10": 0.276,
+     "rangMedian": 35,
+     "mrr": 0.131,
+     "sansRang": 0
+    }
+   },
+   "arôme (10′, whirlpool, dry hop)": {
+    "poids": {
+     "arome": 0.1,
+     "huiles": 0.1,
+     "amertume": 0.8
+    },
+    "tous": {
+     "n": 217,
+     "rappel5": 0.103,
+     "rappel10": 0.141,
+     "touche10": 0.323,
+     "rangMedian": 24,
+     "mrr": 0.18,
+     "sansRang": 0
+    }
+   }
+  },
+  "motsSansFamille": {
+   "λ=1": {
+    "n": 217,
+    "rappel5": 0.061,
+    "rappel10": 0.111,
+    "touche10": 0.263,
+    "rangMedian": 27,
+    "mrr": 0.116,
+    "sansRang": 0
+   },
+   "λ=0.75": {
+    "n": 217,
+    "rappel5": 0.104,
+    "rappel10": 0.136,
+    "touche10": 0.318,
+    "rangMedian": 21,
+    "mrr": 0.155,
+    "sansRang": 0
+   },
+   "λ=0.5": {
+    "n": 217,
+    "rappel5": 0.107,
+    "rappel10": 0.158,
+    "touche10": 0.382,
+    "rangMedian": 17,
+    "mrr": 0.177,
+    "sansRang": 0
+   },
+   "λ=0.25": {
+    "n": 217,
+    "rappel5": 0.121,
+    "rappel10": 0.175,
+    "touche10": 0.415,
+    "rangMedian": 14,
+    "mrr": 0.202,
+    "sansRang": 0
+   },
+   "λ=0": {
+    "n": 217,
+    "rappel5": 0.124,
+    "rappel10": 0.176,
+    "touche10": 0.387,
+    "rangMedian": 15,
+    "mrr": 0.207,
+    "sansRang": 0
+   }
+  },
+  "radarBM": {
+   "tous": {
+    "λ=1": {
+     "n": 217,
+     "rappel5": 0.061,
+     "rappel10": 0.111,
+     "touche10": 0.263,
+     "rangMedian": 27,
+     "mrr": 0.116,
+     "sansRang": 0
+    },
+    "λ=0.75": {
+     "n": 217,
+     "rappel5": 0.065,
+     "rappel10": 0.122,
+     "touche10": 0.276,
+     "rangMedian": 26,
+     "mrr": 0.125,
+     "sansRang": 0
+    },
+    "λ=0.5": {
+     "n": 217,
+     "rappel5": 0.065,
+     "rappel10": 0.116,
+     "touche10": 0.263,
+     "rangMedian": 25,
+     "mrr": 0.129,
+     "sansRang": 0
+    },
+    "λ=0.25": {
+     "n": 217,
+     "rappel5": 0.075,
+     "rappel10": 0.117,
+     "touche10": 0.286,
+     "rangMedian": 28,
+     "mrr": 0.148,
+     "sansRang": 0
+    },
+    "λ=0": {
+     "n": 217,
+     "rappel5": 0.078,
+     "rappel10": 0.119,
+     "touche10": 0.29,
+     "rangMedian": 34,
+     "mrr": 0.154,
+     "sansRang": 0
+    }
+   },
+   "surHoublonsAvecRadar": {
+    "λ=1": {
+     "n": 138,
+     "rappel5": 0.089,
+     "rappel10": 0.143,
+     "touche10": 0.348,
+     "rangMedian": 19,
+     "mrr": 0.148,
+     "sansRang": 0
+    },
+    "λ=0.75": {
+     "n": 138,
+     "rappel5": 0.096,
+     "rappel10": 0.162,
+     "touche10": 0.37,
+     "rangMedian": 18.5,
+     "mrr": 0.162,
+     "sansRang": 0
+    },
+    "λ=0.5": {
+     "n": 138,
+     "rappel5": 0.095,
+     "rappel10": 0.151,
+     "touche10": 0.348,
+     "rangMedian": 17,
+     "mrr": 0.168,
+     "sansRang": 0
+    },
+    "λ=0.25": {
+     "n": 138,
+     "rappel5": 0.11,
+     "rappel10": 0.154,
+     "touche10": 0.384,
+     "rangMedian": 20,
+     "mrr": 0.198,
+     "sansRang": 0
+    },
+    "λ=0": {
+     "n": 138,
+     "rappel5": 0.116,
+     "rappel10": 0.157,
+     "touche10": 0.391,
+     "rangMedian": 19,
+     "mrr": 0.207,
+     "sansRang": 0
+    }
+   },
+   "nHoublonsAvecRadar": 138
+  },
+  "motsSurHoublonsAvecRadar": {
+   "λ=1": {
+    "n": 138,
+    "rappel5": 0.089,
+    "rappel10": 0.143,
+    "touche10": 0.348,
+    "rangMedian": 19,
+    "mrr": 0.148,
+    "sansRang": 0
+   },
+   "λ=0.75": {
+    "n": 138,
+    "rappel5": 0.128,
+    "rappel10": 0.165,
+    "touche10": 0.391,
+    "rangMedian": 15,
+    "mrr": 0.197,
+    "sansRang": 0
+   },
+   "λ=0.5": {
+    "n": 138,
+    "rappel5": 0.138,
+    "rappel10": 0.188,
+    "touche10": 0.464,
+    "rangMedian": 13,
+    "mrr": 0.228,
+    "sansRang": 0
+   },
+   "λ=0.25": {
+    "n": 138,
+    "rappel5": 0.147,
+    "rappel10": 0.199,
+    "touche10": 0.478,
+    "rangMedian": 11.5,
+    "mrr": 0.241,
+    "sansRang": 0
+   },
+   "λ=0": {
+    "n": 138,
+    "rappel5": 0.145,
+    "rappel10": 0.2,
+    "touche10": 0.457,
+    "rangMedian": 12,
+    "mrr": 0.254,
+    "sansRang": 0
+   }
+  },
+  "motsPlusPoids": {
+   "poids": {
+    "arome": 0.1,
+    "huiles": 0.1,
+    "amertume": 0.8
+   },
+   "lambda": 0.25,
+   "tous": {
+    "n": 217,
+    "rappel5": 0.097,
+    "rappel10": 0.129,
+    "touche10": 0.304,
+    "rangMedian": 27,
+    "mrr": 0.178,
+    "sansRang": 0
+   },
+   "controle": {
+    "n": 108,
+    "rappel5": 0.117,
+    "rappel10": 0.153,
+    "touche10": 0.333,
+    "rangMedian": 27,
+    "mrr": 0.186,
+    "sansRang": 0
+   },
+   "apprentissage": {
+    "n": 109,
+    "rappel5": 0.077,
+    "rappel10": 0.105,
+    "touche10": 0.275,
+    "rangMedian": 26,
+    "mrr": 0.171,
+    "sansRang": 0
+   }
+  },
+  "motsNelsonSauvin": {
+   "λ=0.5": [
+    {
+     "nom": "Hallertau Blanc",
+     "rang": 40
+    },
+    {
+     "nom": "Enigma",
+     "rang": 180
+    },
+    {
+     "nom": "Motueka",
+     "rang": 102
+    },
+    {
+     "nom": "Riwaka",
+     "rang": 210
+    }
+   ],
+   "λ=0.25": [
+    {
+     "nom": "Hallertau Blanc",
+     "rang": 2
+    },
+    {
+     "nom": "Enigma",
+     "rang": 92
+    },
+    {
+     "nom": "Motueka",
+     "rang": 130
+    },
+    {
+     "nom": "Riwaka",
+     "rang": 204
+    }
+   ],
+   "λ=0": [
+    {
+     "nom": "Hallertau Blanc",
+     "rang": 1
+    },
+    {
+     "nom": "Enigma",
+     "rang": 10
+    },
+    {
+     "nom": "Motueka",
+     "rang": 174
+    },
+    {
+     "nom": "Riwaka",
+     "rang": 199
+    }
+   ]
+  }
+ }
+}

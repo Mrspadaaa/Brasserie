@@ -1,0 +1,46 @@
+{
+ "casId": "super-pride@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "0bef5f03f98b5afa",
+ "simule": false,
+ "appel": 75,
+ "http": 200,
+ "latenceMs": 6278,
+ "finishReason": "STOP",
+ "jetonsEntree": 3719,
+ "jetonsSortie": 526,
+ "coutMicroChf": 11905,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Originaire d'Australie avec un profil d'huiles quasi identique, il apporte ce fruité doux et résineux recherché en fermentation active.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Ce cousin australien partage les mêmes proportions d'huiles et allie notes de pin et fruité doux mandarine avec brio.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Son équilibre entre pin résineux et ananas fruité mime parfaitement l'aromatique résineuse et fruitée du Super Pride en dry hop.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Combine résine et fruité doux rappelant le profil d'origine, malgré des touches épicées plus marquées.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Présente les descripteurs résine et fruité souhaités, mais son côté dank et alliacé demandera une surveillance attentive.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Excellent profil résineux et fruité idéal en biofermentation, bien qu'il soit plus typé pamplemousse et dank que le Super Pride.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Retrouve les notes résineuses et douces avec un taux de myrcène comparable, mais demeure aromatiquement plus discret sur le fruit.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Offre des arômes francs de pin et d'agrumes fruités avec une base d'huiles similaire, mais tire moins sur le fruité doux.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Très fruité avec une touche boisée, il compense le manque de résine franche par une belle rondeur aromatique en fermentation.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Apporte la résine caractéristique, complétée par une fraîcheur citronnée qui s'écarte un peu du côté doux originel.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c18",
+   "c17",
+   "c01",
+   "c07",
+   "c12",
+   "c16",
+   "c03",
+   "c02",
+   "c15",
+   "c04"
+  ],
+  "phrases": {
+   "c18": "Originaire d'Australie avec un profil d'huiles quasi identique, il apporte ce fruité doux et résineux recherché en fermentation active.",
+   "c17": "Ce cousin australien partage les mêmes proportions d'huiles et allie notes de pin et fruité doux mandarine avec brio.",
+   "c01": "Son équilibre entre pin résineux et ananas fruité mime parfaitement l'aromatique résineuse et fruitée du Super Pride en dry hop.",
+   "c07": "Combine résine et fruité doux rappelant le profil d'origine, malgré des touches épicées plus marquées.",
+   "c12": "Présente les descripteurs résine et fruité souhaités, mais son côté dank et alliacé demandera une surveillance attentive.",
+   "c16": "Excellent profil résineux et fruité idéal en biofermentation, bien qu'il soit plus typé pamplemousse et dank que le Super Pride.",
+   "c03": "Retrouve les notes résineuses et douces avec un taux de myrcène comparable, mais demeure aromatiquement plus discret sur le fruit.",
+   "c02": "Offre des arômes francs de pin et d'agrumes fruités avec une base d'huiles similaire, mais tire moins sur le fruité doux.",
+   "c15": "Très fruité avec une touche boisée, il compense le manque de résine franche par une belle rondeur aromatique en fermentation.",
+   "c04": "Apporte la résine caractéristique, complétée par une fraîcheur citronnée qui s'écarte un peu du côté doux originel."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

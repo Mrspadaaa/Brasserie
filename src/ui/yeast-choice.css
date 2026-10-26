@@ -93,7 +93,7 @@
 .yeast-choice .yc-compare-chips button { display: grid; place-items: center; flex: 0 0 auto; width: 30px; height: 30px; padding: 0; border: 0; background: transparent; }
 .yeast-choice .yc-compare-tray-actions { display: flex; align-items: center; gap: 10px; }
 /* Collé en bas de page, le tiroir passe sous le lanceur flottant (#114) : « Vider » se range à sa gauche. */
-body:has(.floating-actions[data-floating-actions-docked="false"]) .yeast-choice .yc-compare-tray-actions { padding-right: 3.25rem; }
+:root body[data-has-fab-floating] .yeast-choice .yc-compare-tray-actions { padding-right: 3.25rem; }
 .yeast-choice .yc-compare-open { flex: 1; min-height: 42px; border-color: theme('colors.area.production'); background: theme('colors.area.production'); color: theme('colors.cave.950'); font-weight: 700; }
 .yeast-choice .yc-compare-open[aria-expanded='true'] { background: theme('colors.cave.850'); color: theme('colors.cave.50'); }
 

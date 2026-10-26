@@ -1,0 +1,46 @@
+{
+ "casId": "progress@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "e7c355e5feac1fd2",
+ "simule": false,
+ "appel": 53,
+ "http": 200,
+ "latenceMs": 6299,
+ "finishReason": "STOP",
+ "jetonsEntree": 3847,
+ "jetonsSortie": 526,
+ "coutMicroChf": 12145,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage le profil herbacé et cette note distinctive de cassis, avec un niveau d'humulène toutefois un peu plus bas.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Offre des arômes proches de menthe, floral et fruits avec une composition d'huiles très similaire, bien qu'un peu plus épicé.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Rejoint parfaitement Progress sur l'herbe coupée et la menthe avec des huiles équivalentes, malgré un côté résineux plus affirmé.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Évoque l'herbe fraîche et la douceur fruitée avec un profil d'huiles classique très proche, mais sans la touche mentholée.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Reproduit fidèlement les notes de cassis et d'herbe en dry hop, bien que beaucoup plus riche en farnésène.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Héritage britannique oblige, on retrouve la douceur de miel et le floral, complétés par des agrumes absents chez Progress.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Proche parent anglais aux notes florales et de baies avec des huiles semblables, mais tirant davantage sur le bois résineux.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Retrouve le côté doux et floral caractéristique des houblons anglais traditionnels, mais avec moins de complexité fruitée et herbacée.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Combine bien les aspects herbacé, boisé et petits fruits, malgré une puissance générale et une amertume potentielle plus élevées.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Partage le côté fruits rouges et floral noble convenant au dry hop, bien que plus orienté vers les fleurs délicates.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c04",
+   "c10",
+   "c09",
+   "c19",
+   "c06",
+   "c05",
+   "c03",
+   "c12",
+   "c13"
+  ],
+  "phrases": {
+   "c01": "Partage le profil herbacé et cette note distinctive de cassis, avec un niveau d'humulène toutefois un peu plus bas.",
+   "c04": "Offre des arômes proches de menthe, floral et fruits avec une composition d'huiles très similaire, bien qu'un peu plus épicé.",
+   "c10": "Rejoint parfaitement Progress sur l'herbe coupée et la menthe avec des huiles équivalentes, malgré un côté résineux plus affirmé.",
+   "c09": "Évoque l'herbe fraîche et la douceur fruitée avec un profil d'huiles classique très proche, mais sans la touche mentholée.",
+   "c19": "Reproduit fidèlement les notes de cassis et d'herbe en dry hop, bien que beaucoup plus riche en farnésène.",
+   "c06": "Héritage britannique oblige, on retrouve la douceur de miel et le floral, complétés par des agrumes absents chez Progress.",
+   "c05": "Proche parent anglais aux notes florales et de baies avec des huiles semblables, mais tirant davantage sur le bois résineux.",
+   "c03": "Retrouve le côté doux et floral caractéristique des houblons anglais traditionnels, mais avec moins de complexité fruitée et herbacée.",
+   "c12": "Combine bien les aspects herbacé, boisé et petits fruits, malgré une puissance générale et une amertume potentielle plus élevées.",
+   "c13": "Partage le côté fruits rouges et floral noble convenant au dry hop, bien que plus orienté vers les fleurs délicates."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

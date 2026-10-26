@@ -1,12 +1,12 @@
 import './temoin'; // témoin négatif de check:engine (B3)
 import { describe, expect, it } from 'vitest';
-import facts from '../data/faits-cites.json';
-import { NO_GOUTS, afterCrans, beerCrans, citations, hopRef, shoppingList, targetCrans } from '../src/engine';
-import { CHARACTERIZED_YEASTS, applyVoie, compareRankKeys, yeastDoubleImpact, yeastSignals } from '../src/engine';
-import { ROUE_AROMES, afterLevelsDelta, hopSheet, beerContinuous, targetContinuous, afterContinuous } from '../src/engine';
-import { buildFromEmpty, hopAlpha, hopRole, ibuTables, DRY_HOP_DAY, MINUTES_5, BOIL_LENGTHS, WP_TEMPERATURES, WP_MINUTES, densityFactors } from '../src/engine';
-import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, loadedRecipe, momentCatalogue, quickAddKey, recipeIbu, recipeLines, targetLevels, tastingMention, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
-import { CATALOGUE, familyWords } from '../src/engine';
+import facts from '../../../src/data/hopV4/faits-cites.json';
+import { NO_GOUTS, afterCrans, beerCrans, citations, hopRef, shoppingList, targetCrans } from '../../../src/domain/hopIndex/v4';
+import { CHARACTERIZED_YEASTS, applyVoie, compareRankKeys, yeastDoubleImpact, yeastSignals } from '../../../src/domain/hopIndex/v4';
+import { ROUE_AROMES, afterLevelsDelta, hopSheet, beerContinuous, targetContinuous, afterContinuous } from '../../../src/domain/hopIndex/v4';
+import { buildFromEmpty, hopAlpha, hopRole, ibuTables, DRY_HOP_DAY, MINUTES_5, BOIL_LENGTHS, WP_TEMPERATURES, WP_MINUTES, densityFactors } from '../../../src/domain/hopIndex/v4';
+import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, loadedRecipe, momentCatalogue, quickAddKey, recipeIbu, recipeLines, targetLevels, tastingMention, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../../../src/domain/hopIndex/v4';
+import { CATALOGUE, familyWords } from '../../../src/domain/hopIndex/v4';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
 describe('Les quatre objets de l’écran (niveaux)', () => {
@@ -43,8 +43,8 @@ describe('Les quatre objets de l’écran (niveaux)', () => {
       expect(after.find((a) => a.family === 'resin')!.level).toBe(3);
     }
     for (const f of ficheLevels('beermaverick-nugget', s16d)) expect([0, 1, 2]).toContain(f.level);
-    expect(ficheLevels('beermaverick-nugget', s16d).find((f) => f.family === 'resin')).toMatchObject({ level: 2, sources: 2, of: 4 });
-    expect(ficheLevels('beermaverick-nugget', s16d).find((f) => f.family === 'stoneFruit')).toMatchObject({ level: 0, sources: 0 });
+    expect(ficheLevels('beermaverick-nugget', s16d).find((f) => f.family === 'resin')).toMatchObject({ level: 2, sources: 3, of: 10 }); // d4 (26.10) : 10 fiches lues pour Nugget (4 avant), 3 citent la résine (2 avant)
+    expect(ficheLevels('beermaverick-nugget', s16d).find((f) => f.family === 'melon')).toMatchObject({ level: 0, sources: 0 }); // d4 : le fruit à noyau de Nugget est décrit (2 sources) ; le melon reste non décrit
   });
 });
 
@@ -140,7 +140,7 @@ describe('Penser comme un brasseur : alpha, rôle, recette vide construite', () 
       expect(a.dose).toMatchObject({ grams: 20, gramsPerLitre: 1 });
       expect(['aromatique', 'double']).toContain(a.role.value);
       expect(c.amerisants.some((b) => b.key === a.key)).toBe(false);
-      expect(a.ibu!.value).toBeLessThan(10);
+      expect(a.ibu!.value).toBeLessThan(11); // d4 : Sun (α 14 %, double usage) entre parmi les aromatiques : 10,1 IBU à 20 g à 10′ (avant : moins de 10)
       expect(a.fiches).toHaveLength(12);
       expect(['en stock', 'épuisé', 'hors stock']).toContain(a.stock.etat);
     }
@@ -177,7 +177,7 @@ describe('Radars en intensité absolue (D24) et fiches houblons', () => {
     expect(floral0.value).toBeCloseTo(beer.find((b) => b.family === 'floral')!.basis!.central! / (100 / 3), 2);
     for (const a of avant.filter((x) => x.source === 'non situé')) expect(a.value).toBeNull();
     const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING });
-    const golding = r.voies.find((v) => v.actions.some((a) => a.hopKey === 'beermaverick-golding'))!;
+    const golding = r.voies.find((v) => v.actions.some((a) => a.hopKey === 'beermaverick-east-kent-goldings'))!;
     const apres = afterContinuous(beer, golding.effect);
     expect(apres.find((a) => a.family === 'floral')!.value!).toBeGreaterThan(floral0.value! + 0.4);
     for (const a of apres) if (!golding.effect[a.family].established) expect(a.value).toBeNull();
@@ -193,17 +193,22 @@ describe('Radars en intensité absolue (D24) et fiches houblons', () => {
     expect(f.alpha.divergence).toBe('recouvrantes');
     expect(f.alpha.retenu).toMatchObject({ value: 13, from: 'fiche de stock' });
     expect(f.huiles.composants.myrcene).toMatchObject({ min: 48, max: 59, unite: '% de l’huile' });
-    expect(f.huiles.composants.farnesene).toBeNull();
-    expect(f.huiles.composants.farneseneRaison).toMatch(/non importé/);
+    // d2 (#180) : le farnésène de Nugget est publié par sa page Beer Maverick (« 0-1% ») et importé ; avant d2 il était null « non importé ».
+    expect(f.huiles.composants.farnesene).toMatchObject({ min: 0, max: 1, unite: '% de l’huile' });
+    expect(f.huiles.composants.farneseneRaison).toBeUndefined();
+    // Un houblon dont la page ne publie pas de farnésène (« Unknown » : 69 sur 318) reste null avec sa raison, jamais 0.
+    const sans = hopSheet('beermaverick-akoya', ctx);
+    expect(sans.huiles.composants.farnesene).toBeNull();
+    expect(sans.huiles.composants.farneseneRaison).toMatch(/ne publie pas de farnésène/);
     expect(f.substituts).toBeNull();
-    expect(f.dansRecette.map((d) => [d.scenario, d.grams])).toEqual([['S1', 46], ['S5', 42.5]]);
+    expect(f.dansRecette.map((d) => [d.scenario, d.grams])).toEqual([['S1', 46], ['S5', 41]]);
     expect(f.dansRecette[0].ibu).toBeCloseTo(59.7, 1);
     const b60 = f.ibuParGramme.moments.find((m) => m.code === 'b60')!;
     expect(b60.ibuPerGram!.value).toBeCloseTo(1.3, 1);
     expect(f.ibuParGramme.moments.find((m) => m.code === 'dryPost')).toMatchObject({ ibuPerGram: null });
     expect(f.gout).toEqual({ aime: false, exclu: false });
-    expect(f.aromes.find((a) => a.family === 'resin')).toMatchObject({ level: 2, sources: 2, of: 4 });
-    expect(f.stock).toMatchObject({ etat: 'épuisé', libre: { S1: -46, S5: -42.5 } });
+    expect(f.aromes.find((a) => a.family === 'resin')).toMatchObject({ level: 2, sources: 3, of: 10 }); // d4 (26.10) : 10 fiches lues pour Nugget (4 avant), 3 citent la résine (2 avant)
+    expect(f.stock).toMatchObject({ etat: 'épuisé', libre: { S1: -46, S5: -41 } });
     expect(hopSheet('beermaverick-saaz-late', ctx).stock.etat).toBe('hors stock');
   });
 });
@@ -266,8 +271,8 @@ describe('Crans du style (objets 1, 2 et 4)', () => {
     for (const p of pos.filter((x) => x.crans !== null)) expect([-1, 0, 1, 2, 3, 4]).toContain(p.crans);
   });
 
-  it('Golding fait passer le floral de 0 à 1 cran ; deltaCrans « ≈ » sous le seuil, « non établi » sans effet', () => {
-    const golding = r.voies.find((v) => v.actions.some((a) => a.hopKey === 'beermaverick-golding'))!;
+  it('East Kent Goldings (d4 : la voie Golding n’est plus proposée, EKG la remplace) fait passer le floral de 0 à 1 cran ; deltaCrans « ≈ » sous le seuil, « non établi » sans effet', () => {
+    const golding = r.voies.find((v) => v.actions.some((a) => a.hopKey === 'beermaverick-east-kent-goldings'))!;
     const after = afterCrans(beer, golding.effect, s16d);
     expect(after.find((a) => a.family === 'floral')).toMatchObject({ crans: 1, deltaCrans: 1 });
     for (const v of r.voies) for (const a of afterCrans(beer, v.effect, s16d)) {
@@ -404,7 +409,7 @@ describe('Lecture commune (reading)', () => {
     const s = readingSummary(reading);
     expect(Object.values(s.counts).reduce((a, b) => a + b, 0)).toBe(12);
     expect(s.sentence).toContain(`${s.counts['au style']} au style`);
-    expect(s.sentence).toContain(`${s.counts['non situé']} non situées`);
+    expect(s.sentence).toContain(`${s.counts['non situé']} ${s.counts['non situé'] === 1 ? 'non située' : 'non situées'}`); // d4 : la pierre à noyau est située, il en reste 1
     expect(s.sentence.startsWith('Boisé et résineux trop marqué')).toBe(true);
     const r1 = proposeVoies(s1Recipe(), S1_DIRECTION);
     const v = voiesSummary(r1);
@@ -428,7 +433,7 @@ describe('Données citées, niveaux de citation, dégustation (D25)', () => {
       expect(f.description.source.locator).toMatch(/18\.10\.2026/);
     }
     const d = describeFamilies('beermaverick-nugget');
-    expect(d.resin).toMatchObject({ level: 'marqué', sources: 2, of: 4 });
+    expect(d.resin).toMatchObject({ level: 'marqué', sources: 3, of: 10 }); // d4 : 10 fiches lues (4 avant) ; Yakima Valley Hops s'ajoute aux deux sources d'avant
     expect(d.resin.authors).toEqual(expect.arrayContaining(['Hopsteiner (boutique US)', 'Yakima Chief Hops']));
   });
 
@@ -439,7 +444,8 @@ describe('Données citées, niveaux de citation, dégustation (D25)', () => {
     for (const v of nugget) {
       expect(v.effect.resin.established).toBe(true);
       expect(v.effect.resin.central!).toBeLessThan(0);
-      expect(v.conflicts).toEqual([]);
+      // d4 : la voie « retirer Nugget » entre dans la liste (la résine de Nugget est établie par 3 fiches) ; son seul conflit est vrai : sans amérisant, IBU 0.
+      expect(v.conflicts).toEqual(v.type === 'retirer' ? ['IBU 0 hors de la plage du style (50–70).'] : []);
       expect(v.rank).toBeGreaterThan(0);
     }
     expect(nugget.some((v) => v.type === 'remplacer à IBU égal')).toBe(true);
@@ -473,19 +479,21 @@ describe('Données citées, niveaux de citation, dégustation (D25)', () => {
     }
     const n = familyWords('beermaverick-nugget', CATALOGUE.find((c) => c.id === 'beermaverick-nugget'));
     expect(n.mots.tropical).toEqual(expect.arrayContaining([{ source: 'Beer Maverick', mots: ['ananas', 'litchi', 'noix de coco'] }]));
-    expect(n.premier.spice).toEqual(['Hopsteiner']);
+    expect(n.premier.spice).toEqual(['Hopsteiner', 'Charles Faram', 'Yakima Valley Hops']); // d4 : deux sources de plus nomment l'épicé en premier
     expect(n.sansFamille).toEqual(expect.arrayContaining([{ source: 'Beer Maverick', mot: 'gingembre' }]));
   });
 
   it('trois niveaux : non décrit, cité, marqué ; un « non décrit » reste « non décrit », jamais 0', () => {
     const d = describeFamilies('beermaverick-nugget');
-    expect(d.stoneFruit).toMatchObject({ level: 'non décrit', sources: 0, of: 4 });
-    expect(d.citrus).toMatchObject({ level: 'cité', sources: 1, first: false });
+    // d4 (26.10) : Crosby et Yakima Valley Hops décrivent le fruit à noyau de Nugget (avant : non décrit, 0 sur 4) ; le « non décrit » se lit sur le melon (0 sur 10).
+    expect(d.stoneFruit).toMatchObject({ level: 'marqué', sources: 2, of: 10 });
+    expect(d.melon).toMatchObject({ level: 'non décrit', sources: 0, of: 10 });
+    expect(d.citrus).toMatchObject({ level: 'marqué', sources: 5, first: true }); // d4 : 5 sources sur 10 (avant : cité, 1 source)
     expect(d.herbal.first).toBe(true);
     expect(d.herbal.level).toBe('marqué');
     const p = hopProfile('beermaverick-nugget');
-    expect(p.families.stoneFruit.description.level).toBe('non décrit');
-    expect(p.families.stoneFruit.description).not.toHaveProperty('intensity');
+    expect(p.families.melon.description.level).toBe('non décrit'); // d4 : le fruit à noyau est décrit, le melon reste non décrit
+    expect(p.families.melon.description).not.toHaveProperty('intensity');
   });
 
   it('pistes hors houblon pour « moins résineux » : liste fixe, sourcée, sans chiffres, hors modèle', () => {
@@ -504,7 +512,7 @@ describe('Données citées, niveaux de citation, dégustation (D25)', () => {
   it('plages pleines : « non situé », jamais affichées en 0–100', () => {
     for (const e of Object.values(hopProfile('beermaverick-saaz-cz').families)) if (e.completeDomain) expect(e.situated).toBe(false);
     const before = recipeProfile(s1Recipe()).profile;
-    expect(before.stoneFruit.situated).toBe(false);
+    expect(before.stoneFruit.situated).toBe(true); // d4 : Nugget (S1) décrit le fruit à noyau : le modèle le situe (avant : non situé)
     expect(before.floral.situated).toBe(true);
   });
 
@@ -516,7 +524,7 @@ describe('Données citées, niveaux de citation, dégustation (D25)', () => {
     const situated = situateBeer(recipeProfile(s1Recipe()).profile, S1_TASTING, getStyleScale('16D'));
     expect(situated.resin).toMatchObject({ basis: 'dégustation', verdict: 'trop' });
     expect(situated.floral.basis).toBe('modèle');
-    expect(situated.stoneFruit.basis).toBe('non situé');
+    expect(situated.stoneFruit.basis).toBe('modèle'); // d4 : idem, la base est le modèle (avant : non situé)
     const none = situateBeer(recipeProfile(s1Recipe()).profile, tastingFrom({}, { origin: 'test', date: '2026-10-18', quote: null, source: 'test' }), getStyleScale('16D'));
     expect(FAMILIES.filter((f) => none[f].basis === 'dégustation')).toEqual([]);
   });

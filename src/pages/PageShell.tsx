@@ -1,7 +1,47 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ChevronLeft } from 'lucide-react';
+import { ThemeToggle } from '../theme/ThemeToggle';
 import { useCoarsePointer, useDensity, useKeyboardInset } from '../ui/useViewport';
 import './page-shell.css';
+
+/*
+ * p2-rendu (#179) : des attributs sur <body> à la place des règles `body:has(...)`.
+ *
+ * ⚠️ Une règle `body:has(.x)` oblige le navigateur à ré-évaluer, à CHAQUE changement du DOM, le sélecteur pour toute la
+ * page (mesuré : −20 à −50 % sur le changement de moment de Comparer et sur les grammes de Ma bière une fois retirées).
+ * Un observateur léger pose donc l'attribut une fois par lot de mutations, et les CSS (floating-actions, water/workshop,
+ * brewer-chat, brewer-navigation, yeast-choice) lisent `body[data-has-…]`. Le sens est le même qu'avant : « existe-t-il un
+ * tel élément dans la page ? ». L'attribut suit l'élément avec une micro-tâche de retard, avant la peinture.
+ */
+const BODY_FLAGS: ReadonlyArray<readonly [string, string]> = [
+  ['data-has-modal', '[role="dialog"][aria-modal="true"]'],
+  ['data-has-drawer-open', "[data-vaul-drawer][data-state='open']"],
+  ['data-has-fab', '.floating-actions'],
+  ['data-has-fab-floating', '.floating-actions[data-floating-actions-docked="false"]'],
+  ['data-has-water-sels', '[data-water-step="sels"]'],
+  ['data-has-activity-pill', '.brewer-activity-pill'],
+];
+function syncBodyFlags() {
+  const body = document.body;
+  if (!body) return;
+  for (const [name, selector] of BODY_FLAGS) {
+    const present = body.querySelector(selector) !== null;
+    if (present !== body.hasAttribute(name)) {
+      if (present) body.setAttribute(name, ''); else body.removeAttribute(name);
+    }
+  }
+}
+let bodyFlagsObserver: MutationObserver | undefined;
+function watchBodyFlags() {
+  if (typeof document === 'undefined' || typeof MutationObserver === 'undefined' || bodyFlagsObserver || !document.body) return;
+  syncBodyFlags();
+  bodyFlagsObserver = new MutationObserver(syncBodyFlags);
+  bodyFlagsObserver.observe(document.body, {
+    childList: true, subtree: true, attributes: true,
+    attributeFilter: ['data-state', 'aria-modal', 'role', 'data-floating-actions-docked', 'data-water-step']
+  });
+}
+watchBodyFlags();
 
 /*
  * Zones d'action réservées au lanceur global (`FloatingActions`).
@@ -257,6 +297,16 @@ interface PageShellProps {
   /** Barre collée en bas — validation, étape suivante. */
   footer?: React.ReactNode;
   /**
+   * Actions de fin de contenu (Retour, Suivant du wizard), non collées : la dernière rangée de la page.
+   *
+   * ⚠️ Le lanceur flottant (#114) se posait sur « Suivant » à chaque fois qu'on le croisait en défilant (T12b, #170).
+   * Ici la rangée lui laisse son coin : elle garde à droite la largeur du bouton (48 px + 16 px de bord), et la fin du
+   * contenu ne réserve plus sa hauteur. Au bas de la page, le bouton se pose au bout de la rangée, à sa hauteur ; en
+   * défilant, Retour et Suivant ne passent jamais dessous. Clavier ouvert, le lanceur va dans l'en-tête : la rangée
+   * reprend toute sa largeur.
+   */
+  endActions?: React.ReactNode;
+  /**
    * Sans effet depuis #114 : le lanceur ne réserve plus de case dans le pied,
    * il flotte au-dessus de la page.
    */
@@ -280,6 +330,7 @@ export const PageShell: React.FC<PageShellProps> = ({
   actions,
   progress,
   footer,
+  endActions,
   mobileHeader,
   wide = false,
   className = '',
@@ -324,7 +375,9 @@ export const PageShell: React.FC<PageShellProps> = ({
 
   useLayoutEffect(() => {
     const header = headerRef.current;
-    if (!launcherPresent || !header) return;
+    // p2-rendu (#179) : ce résultat ne sert que clavier ouvert (dockInHeader) ; hors de là, la chaîne d'ancêtres n'est plus
+    // relue par getComputedStyle (8 appels, dont le premier force le recalcul de style de toute la page, à chaque ouverture).
+    if (!launcherPresent || !tight || !header) return;
     // Rendu au sens de la mise en page seulement : un `aria-hidden` posé par une
     // modale sur la branche ne retire pas l'en-tête de l'écran.
     const check = () => {
@@ -339,7 +392,7 @@ export const PageShell: React.FC<PageShellProps> = ({
     const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(check);
     observer?.observe(header);
     return () => observer?.disconnect();
-  }, [launcherPresent, className]);
+  }, [launcherPresent, tight, className]);
 
   useLayoutEffect(() => {
     const page = pageRef.current;
@@ -354,7 +407,14 @@ export const PageShell: React.FC<PageShellProps> = ({
     pageOpenerSources.set(page, opener);
     refreshPageIsolation();
     if (!isolationObserver) {
-      isolationObserver = new MutationObserver(refreshPageIsolation);
+      // p2-rendu (#179) : une mutation interne à la page de devant ne change ni les couches à isoler ni le focus permis
+      // (portails et annonces sont HORS de la page ; ses dialogues internes sont déjà permis par sa branche). On ne refait
+      // donc pas la passe, qui relit getComputedStyle sur la chaîne d'ancêtres (~78 ms par toucher sur « + »).
+      isolationObserver = new MutationObserver((records) => {
+        const front = foregroundPage();
+        if (front && records.every(record => record.target !== front && front.contains(record.target))) return;
+        refreshPageIsolation();
+      });
       isolationObserver.observe(document.body, {
         childList: true, subtree: true, attributes: true,
         attributeFilter: ['open', 'hidden', 'data-state', 'role', 'aria-live']
@@ -406,7 +466,11 @@ export const PageShell: React.FC<PageShellProps> = ({
     };
   }, [opener]);
 
+  const firstScrollKey = useRef(true);
   useLayoutEffect(() => {
+    // Au montage la page est déjà en haut et l'effet d'isolation vient de lui donner le focus : ne rien refaire (écrire
+    // scrollTop force une mise en page, focus() un recalcul de style). Seul un changement de scrollKey remonte et refocalise.
+    if (firstScrollKey.current) { firstScrollKey.current = false; return; }
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
     // A field can disappear when Enter changes steps. Keep rail/button focus when it survives.
     if (foregroundPage() === pageRef.current && !pageRef.current?.contains(document.activeElement) && !hasPageDialog()) {
@@ -489,6 +553,7 @@ export const PageShell: React.FC<PageShellProps> = ({
     <div
       ref={pageRef}
       data-page-shell
+      {...(footerShown ? { 'data-page-footer': '' } : {})}
       style={{
         bottom: keyboardInset || undefined
       }}
@@ -536,6 +601,7 @@ export const PageShell: React.FC<PageShellProps> = ({
                   )}
                 </div>
 
+                <ThemeToggle />
                 {actions && <div className="page-title-actions shrink-0">{actions}</div>}
               </div>
 
@@ -578,7 +644,8 @@ export const PageShell: React.FC<PageShellProps> = ({
                 )}
               </div>
 
-              {actions && <div className="page-title-actions shrink-0">{actions}</div>}
+              <ThemeToggle />
+                {actions && <div className="page-title-actions shrink-0">{actions}</div>}
             </div>
 
             {progress && (
@@ -601,7 +668,8 @@ export const PageShell: React.FC<PageShellProps> = ({
       <main ref={scrollRef} tabIndex={-1} aria-label={subtitle || title}
         className="flex-1 min-h-0 overflow-y-auto overscroll-contain focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw focus-visible:-outline-offset-2">
         <div
-          data-floating-actions-gap="page"
+          // Avec une rangée de fin, c'est elle qui laisse le coin au lanceur : la fin du contenu ne réserve plus sa hauteur.
+          data-floating-actions-gap={endActions ? 'page-row' : 'page'}
           className={`${frame} mx-auto pb-3 ${
             tight
               ? 'px-2.5 py-1.5 space-y-1.5'
@@ -611,6 +679,11 @@ export const PageShell: React.FC<PageShellProps> = ({
           }`}
         >
           {children}
+          {endActions && (
+            <div data-page-end-actions className={`pb-safe ${launcherPresent && !dockInHeader ? 'pr-16' : ''}`}>
+              {endActions}
+            </div>
+          )}
         </div>
       </main>
 

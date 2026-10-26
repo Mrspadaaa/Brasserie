@@ -1,19 +1,19 @@
 .finance-journal { min-width:0; }
 .journal-toolbar { display:grid; gap:4px; margin-bottom:4px; }
 .journal-scopes { display:flex; gap:4px; }
-.journal-scopes button, .journal-chip { display:inline-flex; align-items:center; gap:4px; white-space:nowrap; min-width:28px; min-height:28px; padding:3px 7px; border:1px solid #574A42; border-radius:10px; color:#D8CEC5; font-size:13px; line-height:18px; background:transparent; }
-.journal-scopes button[aria-pressed=true], .journal-chip[aria-pressed=true], .journal-active-filter .journal-chip { color:var(--finance-accent,#86B9E6); border-color:var(--finance-accent,#86B9E6); background:#1D2933; font-weight:600; }
-.journal-scopes button:hover, .journal-chip:hover { border-color:#D8CEC5; }
+.journal-scopes button, .journal-chip { display:inline-flex; align-items:center; gap:4px; white-space:nowrap; min-width:28px; min-height:28px; padding:3px 7px; border:1px solid rgb(var(--cave-600)); border-radius:10px; color:rgb(var(--cave-texte-200)); font-size:13px; line-height:18px; background:transparent; }
+.journal-scopes button[aria-pressed=true], .journal-chip[aria-pressed=true], .journal-active-filter .journal-chip { color:var(--finance-accent,rgb(var(--area-finances-texte))); border-color:var(--finance-accent,rgb(var(--area-finances))); background:rgb(var(--c-1d2933)); font-weight:600; }
+.journal-scopes button:hover, .journal-chip:hover { border-color:rgb(var(--cave-200)); }
 .journal-chip:disabled { opacity:.45; cursor:not-allowed; }
-.journal-period-reading { display:grid; gap:1px; font-size:12px; color:#D8CEC5; }
-.journal-period-reading strong { font-size:13px; color:#F5F0EA; font-weight:600; }
+.journal-period-reading { display:grid; gap:1px; font-size:12px; color:rgb(var(--cave-texte-200)); }
+.journal-period-reading strong { font-size:13px; color:rgb(var(--cave-texte-50)); font-weight:600; }
 .journal-search-category { display:flex; align-items:center; gap:6px; min-width:0; }
 .journal-search-category > .journal-search { flex:1 1 auto; min-width:0; }
 /* Le filtre de catégorie garde son étiquette accessible et perd son bloc :
    une commande occasionnelle n'a pas à occuper une demi-largeur permanente. */
-.journal-select { flex:0 1 auto; max-width:46%; min-width:0; min-height:32px; padding:3px 6px; border:1px solid #574A42;
-  border-radius:10px; background:#221D19; color:#F5F0EA; font-size:16px; line-height:1.4; }
-.journal-select:focus-visible { outline:2px solid #86B9E6; outline-offset:1px; }
+.journal-select { flex:0 1 auto; max-width:46%; min-width:0; min-height:32px; padding:3px 6px; border:1px solid rgb(var(--cave-600));
+  border-radius:10px; background:rgb(var(--cave-850)); color:rgb(var(--cave-texte-50)); font-size:16px; line-height:1.4; }
+.journal-select:focus-visible { outline:2px solid rgb(var(--area-finances)); outline-offset:1px; }
 /* Périmètre et état sur une seule glissière : deux rangées de puces
    repoussaient la première écriture sous la moitié de l'écran. */
 .journal-rail { display:flex; align-items:center; gap:4px; min-width:0; overflow-x:auto; overscroll-behavior-x:contain;
@@ -21,49 +21,49 @@
 .journal-rail::-webkit-scrollbar { display:none; }
 .journal-rail > * { flex:0 0 auto; }
 .journal-rail .journal-scopes, .journal-rail .journal-filters, .journal-rail .journal-active-filter { flex-wrap:nowrap; }
-.journal-rail-split { width:1px; align-self:stretch; background:#3D342E; margin:2px 2px; }
+.journal-rail-split { width:1px; align-self:stretch; background:rgb(var(--cave-700)); margin:2px 2px; }
 /* En-tête de jour : la date une fois, avec ce que le jour a coûté ou rapporté. */
 .journal-day-group + .journal-day-group { margin-top:2px; }
 .journal-day { display:flex; align-items:baseline; justify-content:space-between; gap:8px; padding:4px 0 2px;
-  border-bottom:1px solid #3D342E; font-size:12px; color:#9A8A7E; }
-.journal-day strong { color:#D8CEC5; font-size:12px; font-weight:600; }
+  border-bottom:1px solid rgb(var(--cave-700)); font-size:12px; color:rgb(var(--cave-texte-400)); }
+.journal-day strong { color:rgb(var(--cave-texte-200)); font-size:12px; font-weight:600; }
 .journal-day > span { display:flex; align-items:baseline; gap:6px; white-space:nowrap; }
-.journal-day .finance-money { color:#F5F0EA; font-size:13px; }
+.journal-day .finance-money { color:rgb(var(--cave-texte-50)); font-size:13px; }
 .finance-journal .finance-field { gap:2px; font-size:12px; line-height:16px; }
 .finance-journal .finance-field :is(input, textarea:where([data-single-line])):not([type=checkbox]), .finance-journal .finance-field select { min-height:32px; padding:3px 6px; font-size:16px; line-height:24px; }
 .finance-journal .finance-field input[type=month] { padding-block:2px; }
-.finance-journal .finance-field :is(input, textarea:where([data-single-line])):disabled { color:#B3A397; opacity:.6; }
-.journal-search-control { display:flex; align-items:center; min-width:0; min-height:32px; background:#221D19; border:1px solid #574A42; border-radius:10px; padding-left:6px; }
-.journal-search-control > svg { flex-shrink:0; color:#B3A397; }
+.finance-journal .finance-field :is(input, textarea:where([data-single-line])):disabled { color:rgb(var(--ct-b3a397)); opacity:.6; }
+.journal-search-control { display:flex; align-items:center; min-width:0; min-height:32px; background:rgb(var(--cave-850)); border:1px solid rgb(var(--cave-600)); border-radius:10px; padding-left:6px; }
+.journal-search-control > svg { flex-shrink:0; color:rgb(var(--ct-b3a397)); }
 .finance-journal .finance-field .journal-search-control :is(input, textarea:where([data-single-line])) { flex:1; width:0; min-width:0; min-height:30px; border:0; padding:2px 4px; background:transparent; outline:none; }
-.journal-search-control:focus-within { outline:2px solid #F2C14E; outline-offset:1px; }
-.journal-search-control :is(input, textarea:where([data-single-line]))::placeholder { color:#B3A397; opacity:1; }
-.journal-search-control button { display:grid; place-items:center; min-width:28px; min-height:28px; margin-right:1px; color:#D8CEC5; border-radius:8px; flex-shrink:0; }
+.journal-search-control:focus-within { outline:2px solid rgb(var(--ebc-straw)); outline-offset:1px; }
+.journal-search-control :is(input, textarea:where([data-single-line]))::placeholder { color:rgb(var(--ct-b3a397)); opacity:1; }
+.journal-search-control button { display:grid; place-items:center; min-width:28px; min-height:28px; margin-right:1px; color:rgb(var(--cave-texte-200)); border-radius:8px; flex-shrink:0; }
 .journal-search-control button:focus-visible { outline-offset:0; }
 .journal-filters, .journal-active-filter { display:flex; flex-wrap:wrap; gap:4px; }
 .journal-filters .journal-chip { padding-inline:6px; }
 /* Le compte de chaque état : lisible, jamais plus fort que le libellé. */
 .journal-chip-count { font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums;
-  font-size:12px; line-height:16px; color:#F5F0EA; }
-.journal-chip[aria-pressed=true] .journal-chip-count { color:var(--finance-accent,#86B9E6); }
-.journal-chip-count[data-empty] { color:#9A8A7E; }
+  font-size:12px; line-height:16px; color:rgb(var(--cave-texte-50)); }
+.journal-chip[aria-pressed=true] .journal-chip-count { color:var(--finance-accent,rgb(var(--area-finances-texte))); }
+.journal-chip-count[data-empty] { color:rgb(var(--cave-texte-400)); }
 /* Une échéance dépassée est la seule chasse qui coûte de l’argent : elle se
    signale, sans devenir une alerte rouge tant que rien n’est cassé. */
-.journal-chip[data-urgent] { border-color:#E3B55D; color:#E3B55D; }
-.journal-chip[data-urgent] .journal-chip-count { color:#E3B55D; }
-.journal-chip[data-urgent][aria-pressed=true] { background:#302719; }
+.journal-chip[data-urgent] { border-color:rgb(var(--attention)); color:rgb(var(--attention-texte)); }
+.journal-chip[data-urgent] .journal-chip-count { color:rgb(var(--attention-texte)); }
+.journal-chip[data-urgent][aria-pressed=true] { background:rgb(var(--c-302719)); }
 .journal-active-filter .journal-chip { display:flex; align-items:center; gap:6px; }
-.journal-extra > summary { cursor:pointer; width:fit-content; min-height:24px; padding:2px 0; color:#D8CEC5; font-size:13px; line-height:20px; }
+.journal-extra > summary { cursor:pointer; width:fit-content; min-height:24px; padding:2px 0; color:rgb(var(--cave-texte-200)); font-size:13px; line-height:20px; }
 .journal-extra > div { display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; padding:4px 0 6px; }
-.journal-text-action { display:inline-flex; align-items:center; justify-content:flex-start; gap:4px; min-height:28px; color:var(--finance-accent,#86B9E6); font-size:13px; line-height:18px; text-align:left; }
+.journal-text-action { display:inline-flex; align-items:center; justify-content:flex-start; gap:4px; min-height:28px; color:var(--finance-accent,rgb(var(--area-finances-texte))); font-size:13px; line-height:18px; text-align:left; }
 .journal-text-action:hover { text-decoration:underline; text-underline-offset:3px; }
 .journal-text-action svg { flex-shrink:0; }
-.finance-journal .finance-archive-followup { font-size:12px; line-height:16px; padding-top:6px; color:#D8CEC5; }
+.finance-journal .finance-archive-followup { font-size:12px; line-height:16px; padding-top:6px; color:rgb(var(--cave-texte-200)); }
 .finance-journal .finance-pagination { margin:8px 0; gap:8px; font-size:13px; }
 .finance-journal .finance-pagination button { display:grid; place-items:center; min-width:28px; }
-.journal-empty { border-bottom:1px solid #3D342E; padding:10px 0; }
+.journal-empty { border-bottom:1px solid rgb(var(--cave-700)); padding:10px 0; }
 .finance .journal-empty h3 { font-size:14px; line-height:20px; margin:0; }
-.journal-empty p { margin:4px 0; color:#D8CEC5; font-size:13px; line-height:18px; overflow-wrap:anywhere; }
+.journal-empty p { margin:4px 0; color:rgb(var(--cave-texte-200)); font-size:13px; line-height:18px; overflow-wrap:anywhere; }
 .journal-empty > div, .journal-actions { display:flex; flex-wrap:wrap; gap:4px 12px; }
 .journal-actions { margin-top:6px; }
 @media (min-width:640px) {

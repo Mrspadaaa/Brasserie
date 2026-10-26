@@ -1,0 +1,104 @@
+{
+ "controleE1": true,
+ "Passe simulée (fautes)": {
+  "n": 78,
+  "valides": 36,
+  "moteur": {
+   "n": 78,
+   "rappel5": 0.057,
+   "rappel10": 0.079,
+   "touche10": 0.205,
+   "rangMedian": 38,
+   "mrr": 0.079,
+   "sansRang": 0
+  },
+  "opt1": {
+   "n": 78,
+   "rappel5": 0.067,
+   "rappel10": 0.096,
+   "touche10": 0.256,
+   "rangMedian": 28,
+   "mrr": 0.106,
+   "sansRang": 0
+  },
+  "ia": {
+   "n": 78,
+   "rappel5": 0.044,
+   "rappel10": 0.079,
+   "touche10": 0.205,
+   "rangMedian": 38,
+   "mrr": 0.077,
+   "sansRang": 0
+  },
+  "echantillon": {
+   "moteur": {
+    "n": 60,
+    "rappel5": 0.064,
+    "rappel10": 0.093,
+    "touche10": 0.233,
+    "rangMedian": 37.5,
+    "mrr": 0.086,
+    "sansRang": 0
+   },
+   "opt1": {
+    "n": 60,
+    "rappel5": 0.069,
+    "rappel10": 0.101,
+    "touche10": 0.25,
+    "rangMedian": 31.5,
+    "mrr": 0.107,
+    "sansRang": 0
+   },
+   "ia": {
+    "n": 60,
+    "rappel5": 0.047,
+    "rappel10": 0.093,
+    "touche10": 0.233,
+    "rangMedian": 37.5,
+    "mrr": 0.084,
+    "sansRang": 0
+   }
+  },
+  "phares": {
+   "moteur": {
+    "n": 18,
+    "rappel5": 0.035,
+    "rappel10": 0.035,
+    "touche10": 0.111,
+    "rangMedian": 40,
+    "mrr": 0.056,
+    "sansRang": 0
+   },
+   "opt1": {
+    "n": 18,
+    "rappel5": 0.063,
+    "rappel10": 0.081,
+    "touche10": 0.278,
+    "rangMedian": 21.5,
+    "mrr": 0.102,
+    "sansRang": 0
+   },
+   "ia": {
+    "n": 18,
+    "rappel5": 0.035,
+    "rappel10": 0.035,
+    "touche10": 0.111,
+    "rangMedian": 40,
+    "mrr": 0.056,
+    "sansRang": 0
+   }
+  },
+  "plafond": {
+   "dansPool": 25,
+   "n": 78,
+   "mrrOracle": 0.333
+  },
+  "seuil": {
+   "chiffres": false,
+   "nelson": false,
+   "rangHB": 155
+  },
+  "latenceP95": 0,
+  "coutMicroChf": 405027
+ }
+}

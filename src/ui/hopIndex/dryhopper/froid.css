@@ -1,0 +1,35 @@
+/* Dryhopper, son choix D du 26.10 (m5, « La meilleure D · trois mini graphes ») : le dessin de m5/capturer.mjs (variante D, avec les
+   corrections du critique : étiquettes à 13 px au gris des légendes, « moyen » au noir), classes propres pq-dry-froid- (L26).
+   La zone est l'espace vide qu'il a barré : 38 px sous la bande IBU, côté ébullition (x 19 à 202 à 390 px) ; la zone prend 18 px de
+   plus au bas pour les pictos de la limite, et le rail descend d'autant (hauteur fixe : aucun saut d'un jour ou d'une dose à l'autre). */
+.pq-dry-froid-z { position: relative; margin-top: -38px; height: 56px; z-index: 1; pointer-events: none; font-family: system-ui, sans-serif; color: rgb(var(--cave-50)); }
+/* Aux moments chauds : la place seule (les 18 px de plus que la zone vide de A), rien de dessiné. */
+.pq-dry-froid-reserve { height: 18px; }
+.pq-dry-froid-z button { pointer-events: auto; }
+.pq-dry-froid-mono { font: 700 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+.pq-dry-froid-gris { color: var(--pq-dry-gris); }
+.pq-dry-froid-acc { color: #c2410c; }
+.pq-dry-froid-d { position: absolute; left: 0; top: 1px; width: 183px; display: grid; grid-template-columns: 72px 44px 56px; gap: 4px; }
+.pq-dry-froid-cel { display: grid; gap: 1px; align-content: start; justify-items: start; padding: 1px 2px 2px; border-radius: 6px; background: transparent; border: 0; text-align: left; height: 56px; min-height: 0; }
+.pq-dry-froid-cel > span:first-child { font: 400 13px/15px system-ui, sans-serif; color: var(--pq-dry-gris); }
+.pq-dry-froid-cel svg { display: block; overflow: visible; }
+.pq-dry-froid-cel-on { background: #f1f2f5; box-shadow: 0 0 0 1px #c9cdd6 inset; }
+.pq-dry-froid-vide { font: 700 12px/26px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--pq-dry-gris); }
+.pq-dry-froid-pics { display: flex; gap: 0; margin-top: 1px; font: 400 13px/12px system-ui, sans-serif; }
+.pq-dry-froid-pic { width: 13px; display: flex; justify-content: center; }
+
+/* La feuille ouverte au toucher, sous la zone : elle repousse le rail. */
+.pq-dry-froid-feuille { position: relative; margin: 2px 0 2px; padding: 6px 8px 7px; background: #fff; border: 1px solid #c9cad2; border-radius: 8px; font: 400 13px/17px system-ui, sans-serif; color: rgb(var(--cave-50)); display: grid; gap: 3px; }
+.pq-dry-froid-feuille h4 { margin: 0; font: 700 14px/18px system-ui, sans-serif; display: flex; flex-wrap: wrap; align-items: center; gap: 0 6px; }
+.pq-dry-froid-feuille h4 small { font: 400 12px system-ui, sans-serif; color: rgb(var(--cave-400)); }
+.pq-dry-froid-feuille p { margin: 0; }
+.pq-dry-froid-feuille .pq-dry-froid-src { font-size: 12px; color: rgb(var(--cave-400)); }
+.pq-dry-froid-feuille svg { display: block; overflow: visible; }
+.pq-dry-froid-jauge { display: inline-flex; gap: 1.5px; align-items: flex-end; }
+.pq-dry-froid-jauge i { display: block; width: 4px; border-radius: 1px; background: #d5d8df; }
+.pq-dry-froid-jauge i:nth-child(1) { height: 5px; } .pq-dry-froid-jauge i:nth-child(2) { height: 8px; } .pq-dry-froid-jauge i:nth-child(3) { height: 11px; }
+.pq-dry-froid-jauge i.pq-dry-froid-on { background: rgb(var(--cave-50)); }
+.pq-dry-froid-lim { display: grid; grid-template-columns: 16px 64px 1fr 62px; align-items: center; gap: 5px; font-size: 13px; }
+.pq-dry-froid-lim i { display: block; position: relative; height: 8px; background: #f1f2f5; border-radius: 2px; }
+.pq-dry-froid-lim i b { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; }
+.pq-dry-froid-lim i u { position: absolute; top: -3px; bottom: -3px; width: 2px; background: rgb(var(--cave-50)); text-decoration: none; }

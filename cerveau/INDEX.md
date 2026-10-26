@@ -62,7 +62,7 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 - [[agents-sans-openai]] — plus d'agent OpenAI depuis le 08.10
 - [[controles-mecanises]] — leçons devenues contrôles, sorties de LECONS (plafond de 8 lignes)
 - [[autonomie-decisions]] — pas de question bloquante ; l'irréversible attend l'utilisateur
-- [[fermeture-et-quota]] — fermer sans bloquant ; paliers de quota ; session neuve au-delà de 450 k
+- [[fermeture-et-quota]] — fermer sans bloquant ; fenêtre 5 h, pas de plafond hebdo ; 450 k
 - [[verification-locale]] — ?dev-local, scripts de contrôle locaux
 - [[monkey-testing]] — trois règles, deux angles morts, le cumul de stock
 - [[pieges-controles-maquette]] — pièges des contrôles Chrome de la maquette
@@ -71,7 +71,9 @@ sont chargés à chaque session par CLAUDE.md. Les notes se lisent à la demande
 
 ### sources/ — références externes
 - [[moneaudebrassage]] — la référence visuelle de l'atelier de l'eau
+- [[beermaverick-radar]] — le radar de référence : anneaux chiffrés, zéro hors du centre
 
 ### decisions/ — transcriptions du conseil
 - [[2026-10-22-carte-outils-houblons]] — un facteur libre par écran
 - [[2026-10-24-lot-d125-vues]] — u4 choisi ; Dryhopper passe 4 ; liste de la fiche en entonnoir
+- [[2026-10-25-integration-architecture]] — pile dans App, porte unique, calcul async ; T1, T14

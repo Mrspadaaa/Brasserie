@@ -1,0 +1,46 @@
+{
+ "casId": "marynka@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "e00c5399cfa5a973",
+ "simule": false,
+ "appel": 31,
+ "http": 200,
+ "latenceMs": 6248,
+ "finishReason": "STOP",
+ "jetonsEntree": 3904,
+ "jetonsSortie": 564,
+ "coutMicroChf": 12608,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Opal partage fidèlement l'équilibre entre notes d'anis, d'agrumes et d'herbacé, avec un profil d'huiles très proche de Marynka.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Sa note anisée marquée par le fenouil et ses agrumes rappellent directement la réglisse et le citron de Marynka.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Il combine agrumes et facettes herbacées et épicées, avec un ratio myrcène/humulène très similaire, bien qu'un peu plus poivré.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Pilgrim retrouve précisément le duo citron et pamplemousse avec un fond épicé, tout en restant dans un registre aromatique classique.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Il apporte la note caractéristique de réglisse et de terreux, complétée d'agrumes, mais s'avère nettement plus dank et lourd en myrcène.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Identique au Columbus, il reproduit bien la réglisse et les agrumes, avec un côté résineux plus puissant que chez Marynka.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Même profil réglissé et hespéridé, mais avec des nuances d'ail et d'oignon absentes de la variété d'origine.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Il capture l'anis, le pamplemousse et l'aspect terreux, mais délivre un caractère dank et soufré beaucoup plus intense en dry hop.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Kazbek réplique le citron épicé avec une belle élégance européenne, bien qu'il lui manque les notes anisées et de réglisse.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Il partage les notes de foin et de pamplemousse, mais introduit des fruits tropicaux bien plus exubérants.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c09",
+   "c06",
+   "c04",
+   "c18",
+   "c15",
+   "c17",
+   "c20",
+   "c05",
+   "c13",
+   "c12"
+  ],
+  "phrases": {
+   "c09": "Opal partage fidèlement l'équilibre entre notes d'anis, d'agrumes et d'herbacé, avec un profil d'huiles très proche de Marynka.",
+   "c06": "Sa note anisée marquée par le fenouil et ses agrumes rappellent directement la réglisse et le citron de Marynka.",
+   "c04": "Il combine agrumes et facettes herbacées et épicées, avec un ratio myrcène/humulène très similaire, bien qu'un peu plus poivré.",
+   "c18": "Pilgrim retrouve précisément le duo citron et pamplemousse avec un fond épicé, tout en restant dans un registre aromatique classique.",
+   "c15": "Il apporte la note caractéristique de réglisse et de terreux, complétée d'agrumes, mais s'avère nettement plus dank et lourd en myrcène.",
+   "c17": "Identique au Columbus, il reproduit bien la réglisse et les agrumes, avec un côté résineux plus puissant que chez Marynka.",
+   "c20": "Même profil réglissé et hespéridé, mais avec des nuances d'ail et d'oignon absentes de la variété d'origine.",
+   "c05": "Il capture l'anis, le pamplemousse et l'aspect terreux, mais délivre un caractère dank et soufré beaucoup plus intense en dry hop.",
+   "c13": "Kazbek réplique le citron épicé avec une belle élégance européenne, bien qu'il lui manque les notes anisées et de réglisse.",
+   "c12": "Il partage les notes de foin et de pamplemousse, mais introduit des fruits tropicaux bien plus exubérants."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

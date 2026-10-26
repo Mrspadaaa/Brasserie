@@ -1,0 +1,6238 @@
+{
+ "lecture": "Dix premiers au 60′ (moment d’amertume : premier moût, 60′, 30′, 15′ donnent le même classement) : A = substitutes() de l’app ; v2 = moteur v2 (phase 1). Sans stock : le catalogue entier. « dansBeerMaverick » : le substitut figure sur la page Beer Maverick de l’original (référence imparfaite). « aromatiqueDeconseille » : produit d’arôme ou houblon aromatique, passé derrière les amérisants (règle du moteur actuel, conservée). Le brasseur les juge dans son écran u4, dessiné à 60′ ; il n’a pas encore de liste de référence à lui à ce moment.",
+ "poidsV2": {
+  "groupe": [
+   0.7,
+   0.2,
+   0.1
+  ],
+  "variables": {
+   "α": 0.28,
+   "β": 0.14,
+   "cohumulone": 0.14,
+   "usage": 0.14,
+   "huile totale": 0.05,
+   "myrcène": 0.01,
+   "humulène": 0.06,
+   "caryophyllène": 0.05,
+   "farnésène": 0.01,
+   "linalol": 0.01,
+   "géraniol": 0.01,
+   "familles": 0.1,
+   "mots": 0,
+   "radar BM": 0
+  }
+ },
+ "houblons": [
+  {
+   "houblon": "Nelson Sauvin",
+   "id": "beermaverick-nelson-sauvin",
+   "sorte": "phare",
+   "alpha": [
+    10,
+    13
+   ],
+   "usage": "aroma",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "TNT Blend",
+     "id": "beermaverick-tnt-blend",
+     "score": 100,
+     "alpha": [
+      11.5,
+      13
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Southern Tropic",
+     "id": "beermaverick-southern-tropic",
+     "score": 98,
+     "alpha": [
+      12.6,
+      18.1
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Boomerang",
+     "id": "beermaverick-boomerang",
+     "score": 96,
+     "alpha": [
+      10,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Southern Passion",
+     "id": "beermaverick-southern-passion",
+     "score": 95,
+     "alpha": [
+      11,
+      14.2
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Zula",
+     "id": "beermaverick-zula",
+     "score": 95,
+     "alpha": [
+      8,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Brooklyn",
+     "id": "beermaverick-brooklyn",
+     "score": 94,
+     "alpha": [
+      17.5,
+      19.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Herkules",
+     "id": "beermaverick-herkules",
+     "score": 94,
+     "alpha": [
+      12,
+      17
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "Topaz",
+     "id": "beermaverick-topaz",
+     "score": 94,
+     "alpha": [
+      13.7,
+      20.1
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Trident",
+     "id": "beermaverick-trident",
+     "score": 94,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Green Bullet",
+     "id": "beermaverick-green-bullet",
+     "score": 93,
+     "alpha": [
+      11,
+      15
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "TNT Blend",
+     "id": "beermaverick-tnt-blend",
+     "score": 98,
+     "alpha": [
+      11.5,
+      13
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 82,
+      "arôme": 100
+     },
+     "couverturePoids": 0.57,
+     "variablesInconnues": [
+      "β",
+      "cohumulone",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Southern Passion",
+     "id": "beermaverick-southern-passion",
+     "score": 97,
+     "alpha": [
+      11,
+      14.2
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 96,
+      "arôme": 75
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Hallertau Taurus",
+     "id": "beermaverick-hallertau-taurus",
+     "score": 95,
+     "alpha": [
+      12,
+      17.9
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": 96,
+      "arôme": 91
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Pacific Jade",
+     "id": "beermaverick-pacific-jade",
+     "score": 94,
+     "alpha": [
+      12,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 95,
+      "arôme": 68
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Southern Tropic",
+     "id": "beermaverick-southern-tropic",
+     "score": 94,
+     "alpha": [
+      12.6,
+      18.1
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": 92,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Lumberjack",
+     "id": "beermaverick-lumberjack",
+     "score": 92,
+     "alpha": [
+      9,
+      12
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 94,
+      "huile": null,
+      "arôme": 80
+     },
+     "couverturePoids": 0.52,
+     "variablesInconnues": [
+      "β",
+      "cohumulone",
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "African Queen",
+     "id": "beermaverick-african-queen",
+     "score": 91,
+     "alpha": [
+      10,
+      17
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": 89,
+      "arôme": 64
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Brooklyn",
+     "id": "beermaverick-brooklyn",
+     "score": 91,
+     "alpha": [
+      17.5,
+      19.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 91,
+      "huile": 64,
+      "arôme": 100
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Sorachi Ace",
+     "id": "beermaverick-sorachi-ace",
+     "score": 91,
+     "alpha": [
+      11,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 77,
+      "arôme": 65
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Trident",
+     "id": "beermaverick-trident",
+     "score": 91,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": 39,
+      "arôme": 100
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Citra",
+   "id": "beermaverick-citra",
+   "sorte": "phare",
+   "alpha": [
+    10,
+    15
+   ],
+   "usage": "dual",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "Caliente",
+     "id": "beermaverick-caliente",
+     "score": 98,
+     "alpha": [
+      14,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Trident",
+     "id": "beermaverick-trident",
+     "score": 97,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Mosaic",
+     "id": "beermaverick-mosaic",
+     "score": 96,
+     "alpha": [
+      11.5,
+      13.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Zenia",
+     "id": "beermaverick-zenia",
+     "score": 96,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Sabro",
+     "id": "beermaverick-sabro",
+     "score": 94,
+     "alpha": [
+      12,
+      17
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Sequoia Blend",
+     "id": "beermaverick-sequoia",
+     "score": 93,
+     "alpha": [
+      9,
+      12
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Styrian Eagle",
+     "id": "beermaverick-styrian-eagle",
+     "score": 93,
+     "alpha": [
+      12.5,
+      17.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "Bravo",
+     "id": "beermaverick-bravo",
+     "score": 92,
+     "alpha": [
+      13,
+      18
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Hartwick",
+     "id": "beermaverick-hartwick",
+     "score": 92,
+     "alpha": [
+      12.28,
+      12.28
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Idaho 7",
+     "id": "beermaverick-idaho-7",
+     "score": 92,
+     "alpha": [
+      9.5,
+      14.9
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "Trident",
+     "id": "beermaverick-trident",
+     "score": 97,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 100,
+      "arôme": 100
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Bravo",
+     "id": "beermaverick-bravo",
+     "score": 96,
+     "alpha": [
+      13,
+      18
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 94,
+      "arôme": 82
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Mosaic",
+     "id": "beermaverick-mosaic",
+     "score": 96,
+     "alpha": [
+      11.5,
+      13.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 83,
+      "arôme": 94
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Loral",
+     "id": "beermaverick-loral",
+     "score": 94,
+     "alpha": [
+      10,
+      17
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 88,
+      "arôme": 77
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Southern Sublime",
+     "id": "beermaverick-southern-sublime",
+     "score": 94,
+     "alpha": [
+      10.8,
+      13.4
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 94,
+      "huile": 86,
+      "arôme": 100
+     },
+     "couverturePoids": 0.93,
+     "variablesInconnues": [
+      "huile totale",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Zenia",
+     "id": "beermaverick-zenia",
+     "score": 94,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": 69,
+      "arôme": 100
+     },
+     "couverturePoids": 0.71,
+     "variablesInconnues": [
+      "cohumulone",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Caliente",
+     "id": "beermaverick-caliente",
+     "score": 93,
+     "alpha": [
+      14,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": 85,
+      "arôme": 100
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Idaho 7",
+     "id": "beermaverick-idaho-7",
+     "score": 93,
+     "alpha": [
+      9.5,
+      14.9
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": 86,
+      "arôme": 87
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Sabro",
+     "id": "beermaverick-sabro",
+     "score": 93,
+     "alpha": [
+      12,
+      17
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 92,
+      "huile": 93,
+      "arôme": 97
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Styrian Wolf",
+     "id": "beermaverick-styrian-wolf",
+     "score": 93,
+     "alpha": [
+      10,
+      18.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 83,
+      "arôme": 80
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Motueka",
+   "id": "beermaverick-motueka",
+   "sorte": "phare",
+   "alpha": [
+    5,
+    8.5
+   ],
+   "usage": "dual",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "Vienna Gold",
+     "id": "beermaverick-vienna-gold",
+     "score": 100,
+     "alpha": [
+      6,
+      10
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Zula",
+     "id": "beermaverick-zula",
+     "score": 100,
+     "alpha": [
+      8,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Buzz Bullets",
+     "id": "beermaverick-buzz-bullets",
+     "score": 99,
+     "alpha": [
+      8,
+      10
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Sun",
+     "id": "beermaverick-sun",
+     "score": 98,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Petoskey",
+     "id": "beermaverick-petoskey",
+     "score": 97,
+     "alpha": [
+      12.1,
+      12.1
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Trident",
+     "id": "beermaverick-trident",
+     "score": 97,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Arcadian",
+     "id": "beermaverick-arcadian",
+     "score": 94,
+     "alpha": [
+      9.8,
+      9.8
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "Solero",
+     "id": "beermaverick-solero",
+     "score": 94,
+     "alpha": [
+      9,
+      11.2
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "NZH-107",
+     "id": "beermaverick-nzh-107",
+     "score": 93,
+     "alpha": [
+      8,
+      11
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Samba",
+     "id": "beermaverick-samba",
+     "score": 93,
+     "alpha": [
+      8,
+      12
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "Vienna Gold",
+     "id": "beermaverick-vienna-gold",
+     "score": 100,
+     "alpha": [
+      6,
+      10
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.52,
+     "variablesInconnues": [
+      "β",
+      "cohumulone",
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Buzz Bullets",
+     "id": "beermaverick-buzz-bullets",
+     "score": 99,
+     "alpha": [
+      8,
+      10
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.66,
+     "variablesInconnues": [
+      "cohumulone",
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Sun",
+     "id": "beermaverick-sun",
+     "score": 99,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.8,
+     "variablesInconnues": [
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Petoskey",
+     "id": "beermaverick-petoskey",
+     "score": 97,
+     "alpha": [
+      12.1,
+      12.1
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.66,
+     "variablesInconnues": [
+      "cohumulone",
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Zula",
+     "id": "beermaverick-zula",
+     "score": 97,
+     "alpha": [
+      8,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 51,
+      "arôme": 100
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Walhalla",
+     "id": "beermaverick-walhalla",
+     "score": 95,
+     "alpha": [
+      5.97,
+      10
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": null,
+      "arôme": 75
+     },
+     "couverturePoids": 0.66,
+     "variablesInconnues": [
+      "cohumulone",
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Arcadian",
+     "id": "beermaverick-arcadian",
+     "score": 93,
+     "alpha": [
+      9.8,
+      9.8
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 92,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.66,
+     "variablesInconnues": [
+      "cohumulone",
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Olicana",
+     "id": "beermaverick-olicana",
+     "score": 93,
+     "alpha": [
+      7,
+      9
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 55,
+      "arôme": 100
+     },
+     "couverturePoids": 0.93,
+     "variablesInconnues": [
+      "caryophyllène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Trident",
+     "id": "beermaverick-trident",
+     "score": 93,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 17,
+      "arôme": 100
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Samba",
+     "id": "beermaverick-samba",
+     "score": 92,
+     "alpha": [
+      8,
+      12
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 27,
+      "arôme": 75
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Mosaic",
+   "id": "beermaverick-mosaic",
+   "sorte": "phare",
+   "alpha": [
+    11.5,
+    13.5
+   ],
+   "usage": "dual",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "TNT Blend",
+     "id": "beermaverick-tnt-blend",
+     "score": 99,
+     "alpha": [
+      11.5,
+      13
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Caliente",
+     "id": "beermaverick-caliente",
+     "score": 97,
+     "alpha": [
+      14,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Loral",
+     "id": "beermaverick-loral",
+     "score": 97,
+     "alpha": [
+      10,
+      17
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 96,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Citra",
+     "id": "beermaverick-citra",
+     "score": 96,
+     "alpha": [
+      10,
+      15
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Trident",
+     "id": "beermaverick-trident",
+     "score": 96,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Bravo",
+     "id": "beermaverick-bravo",
+     "score": 95,
+     "alpha": [
+      13,
+      18
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "Simcoe",
+     "id": "beermaverick-simcoe",
+     "score": 95,
+     "alpha": [
+      11,
+      15
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Zenia",
+     "id": "beermaverick-zenia",
+     "score": 95,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Azacca",
+     "id": "beermaverick-azacca",
+     "score": 94,
+     "alpha": [
+      14,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "TNT Blend",
+     "id": "beermaverick-tnt-blend",
+     "score": 98,
+     "alpha": [
+      11.5,
+      13
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 90,
+      "arôme": 100
+     },
+     "couverturePoids": 0.57,
+     "variablesInconnues": [
+      "β",
+      "cohumulone",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Citra",
+     "id": "beermaverick-citra",
+     "score": 96,
+     "alpha": [
+      10,
+      15
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 83,
+      "arôme": 97
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Loral",
+     "id": "beermaverick-loral",
+     "score": 93,
+     "alpha": [
+      10,
+      17
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 79,
+      "arôme": 96
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Magnat",
+     "id": "beermaverick-magnat",
+     "score": 93,
+     "alpha": [
+      11,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": 87,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Trident",
+     "id": "beermaverick-trident",
+     "score": 93,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 46,
+      "arôme": 100
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Zenia",
+     "id": "beermaverick-zenia",
+     "score": 93,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": 78,
+      "arôme": 100
+     },
+     "couverturePoids": 0.71,
+     "variablesInconnues": [
+      "cohumulone",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Nugget",
+     "id": "beermaverick-nugget",
+     "score": 92,
+     "alpha": [
+      9.5,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 84,
+      "arôme": 74
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Southern Sublime",
+     "id": "beermaverick-southern-sublime",
+     "score": 92,
+     "alpha": [
+      10.8,
+      13.4
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 92,
+      "huile": 84,
+      "arôme": 100
+     },
+     "couverturePoids": 0.93,
+     "variablesInconnues": [
+      "huile totale",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Yeoman",
+     "id": "beermaverick-yeoman",
+     "score": 92,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 72,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Nectaron",
+     "id": "beermaverick-nectaron",
+     "score": 91,
+     "alpha": [
+      9.5,
+      12
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 88,
+      "huile": 96,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Galaxy",
+   "id": "beermaverick-galaxy",
+   "sorte": "phare",
+   "alpha": [
+    11,
+    16
+   ],
+   "usage": "dual",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "HPA-016",
+     "id": "beermaverick-hpa-016",
+     "score": 92,
+     "alpha": [
+      15.7,
+      18.7
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Satus",
+     "id": "beermaverick-satus",
+     "score": 92,
+     "alpha": [
+      12,
+      14.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "HBC 630",
+     "id": "beermaverick-hbc-630",
+     "score": 91,
+     "alpha": [
+      12,
+      15
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Sabro",
+     "id": "beermaverick-sabro",
+     "score": 91,
+     "alpha": [
+      12,
+      17
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Southern Sublime",
+     "id": "beermaverick-southern-sublime",
+     "score": 90,
+     "alpha": [
+      10.8,
+      13.4
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Tillicum",
+     "id": "beermaverick-tillicum",
+     "score": 90,
+     "alpha": [
+      13.5,
+      15.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Topaz",
+     "id": "beermaverick-topaz",
+     "score": 90,
+     "alpha": [
+      13.7,
+      20.1
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "Trident",
+     "id": "beermaverick-trident",
+     "score": 90,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Eclipse",
+     "id": "beermaverick-eclipse",
+     "score": 89,
+     "alpha": [
+      15.7,
+      19
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Yeoman",
+     "id": "beermaverick-yeoman",
+     "score": 89,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "HPA-016",
+     "id": "beermaverick-hpa-016",
+     "score": 93,
+     "alpha": [
+      15.7,
+      18.7
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 82,
+      "arôme": 67
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Eclipse",
+     "id": "beermaverick-eclipse",
+     "score": 92,
+     "alpha": [
+      15.7,
+      19
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 88,
+      "arôme": 47
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Ahhhroma",
+     "id": "beermaverick-ahhhroma",
+     "score": 90,
+     "alpha": [
+      15.4,
+      18.8
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 74,
+      "arôme": 60
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Enigma",
+     "id": "beermaverick-enigma",
+     "score": 90,
+     "alpha": [
+      13.5,
+      19.4
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 64,
+      "arôme": 93
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Satus",
+     "id": "beermaverick-satus",
+     "score": 90,
+     "alpha": [
+      12,
+      14.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": 65,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Bitter Gold",
+     "id": "beermaverick-bitter-gold",
+     "score": 89,
+     "alpha": [
+      12,
+      18.8
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 78,
+      "arôme": 47
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "El Dorado",
+     "id": "beermaverick-el-dorado",
+     "score": 89,
+     "alpha": [
+      13,
+      17
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 77,
+      "arôme": 60
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "BRU-1",
+     "id": "beermaverick-bru-1",
+     "score": 87,
+     "alpha": [
+      13,
+      15
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": 73,
+      "arôme": 57
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Caliente",
+     "id": "beermaverick-caliente",
+     "score": 87,
+     "alpha": [
+      14,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 91,
+      "huile": 47,
+      "arôme": 75
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Galena",
+     "id": "beermaverick-galena",
+     "score": 87,
+     "alpha": [
+      12,
+      15.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 60,
+      "arôme": 61
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Simcoe",
+   "id": "beermaverick-simcoe",
+   "sorte": "phare",
+   "alpha": [
+    11,
+    15
+   ],
+   "usage": "dual",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "Caliente",
+     "id": "beermaverick-caliente",
+     "score": 99,
+     "alpha": [
+      14,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Yeoman",
+     "id": "beermaverick-yeoman",
+     "score": 98,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Idaho 7",
+     "id": "beermaverick-idaho-7",
+     "score": 97,
+     "alpha": [
+      9.5,
+      14.9
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Trident",
+     "id": "beermaverick-trident",
+     "score": 97,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Zenia",
+     "id": "beermaverick-zenia",
+     "score": 96,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Warrior",
+     "id": "beermaverick-warrior",
+     "score": 95,
+     "alpha": [
+      14.5,
+      18
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Sun",
+     "id": "beermaverick-sun",
+     "score": 94,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "HBC 630",
+     "id": "beermaverick-hbc-630",
+     "score": 93,
+     "alpha": [
+      12,
+      15
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Magnat",
+     "id": "beermaverick-magnat",
+     "score": 93,
+     "alpha": [
+      11,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Sabro",
+     "id": "beermaverick-sabro",
+     "score": 93,
+     "alpha": [
+      12,
+      17
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "Zenia",
+     "id": "beermaverick-zenia",
+     "score": 94,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 94,
+      "huile": 80,
+      "arôme": 100
+     },
+     "couverturePoids": 0.71,
+     "variablesInconnues": [
+      "cohumulone",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Trident",
+     "id": "beermaverick-trident",
+     "score": 93,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 92,
+      "huile": 89,
+      "arôme": 100
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Yeoman",
+     "id": "beermaverick-yeoman",
+     "score": 93,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 91,
+      "huile": 98,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "HBC 630",
+     "id": "beermaverick-hbc-630",
+     "score": 92,
+     "alpha": [
+      12,
+      15
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 90,
+      "huile": 97,
+      "arôme": 94
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Sabro",
+     "id": "beermaverick-sabro",
+     "score": 92,
+     "alpha": [
+      12,
+      17
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 92,
+      "huile": 86,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Warrior",
+     "id": "beermaverick-warrior",
+     "score": 92,
+     "alpha": [
+      14.5,
+      18
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 91,
+      "huile": 97,
+      "arôme": 93
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Hartwick",
+     "id": "beermaverick-hartwick",
+     "score": 91,
+     "alpha": [
+      12.28,
+      12.28
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 89,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.66,
+     "variablesInconnues": [
+      "cohumulone",
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Magnat",
+     "id": "beermaverick-magnat",
+     "score": 91,
+     "alpha": [
+      11,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": 84,
+      "arôme": 86
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Loral",
+     "id": "beermaverick-loral",
+     "score": 90,
+     "alpha": [
+      10,
+      17
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 81,
+      "arôme": 50
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Nugget",
+     "id": "beermaverick-nugget",
+     "score": 90,
+     "alpha": [
+      9.5,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 92,
+      "huile": 97,
+      "arôme": 68
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Saaz (CZ)",
+   "id": "beermaverick-saaz-cz",
+   "sorte": "phare",
+   "alpha": [
+    2,
+    5
+   ],
+   "usage": "aroma",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "Wild Loyalist",
+     "id": "beermaverick-wild-loyalist",
+     "score": 99,
+     "alpha": [
+      3.7,
+      5.6
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Mount Hood",
+     "id": "beermaverick-mount-hood",
+     "score": 98,
+     "alpha": [
+      3.9,
+      8
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Sylva",
+     "id": "beermaverick-sylva",
+     "score": 98,
+     "alpha": [
+      4,
+      7.3
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Crystal",
+     "id": "beermaverick-crystal",
+     "score": 97,
+     "alpha": [
+      2.8,
+      6
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Amethyst",
+     "id": "beermaverick-amethyst",
+     "score": 95,
+     "alpha": [
+      3.5,
+      6
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Saaz Late",
+     "id": "beermaverick-saaz-late",
+     "score": 95,
+     "alpha": [
+      3.5,
+      6
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Tardif de Bourgogne",
+     "id": "beermaverick-tardif-de-bourgogne",
+     "score": 95,
+     "alpha": [
+      2.2,
+      5.3
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "Ahtanum",
+     "id": "beermaverick-ahtanum",
+     "score": 94,
+     "alpha": [
+      3.5,
+      6.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Spalt",
+     "id": "beermaverick-spalt",
+     "score": 94,
+     "alpha": [
+      2.5,
+      5.7
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Tettnang (US)",
+     "id": "beermaverick-tettnang-us",
+     "score": 94,
+     "alpha": [
+      2.5,
+      5.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "Wild Loyalist",
+     "id": "beermaverick-wild-loyalist",
+     "score": 99,
+     "alpha": [
+      3.7,
+      5.6
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.66,
+     "variablesInconnues": [
+      "cohumulone",
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Amethyst",
+     "id": "beermaverick-amethyst",
+     "score": 96,
+     "alpha": [
+      3.5,
+      6
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 93,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Saaz Late",
+     "id": "beermaverick-saaz-late",
+     "score": 96,
+     "alpha": [
+      3.5,
+      6
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 98,
+      "arôme": 86
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Sylva",
+     "id": "beermaverick-sylva",
+     "score": 95,
+     "alpha": [
+      4,
+      7.3
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 84,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Crystal",
+     "id": "beermaverick-crystal",
+     "score": 94,
+     "alpha": [
+      2.8,
+      6
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 74,
+      "arôme": 96
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Spalt",
+     "id": "beermaverick-spalt",
+     "score": 94,
+     "alpha": [
+      2.5,
+      5.7
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": 97,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Tettnang (US)",
+     "id": "beermaverick-tettnang-us",
+     "score": 94,
+     "alpha": [
+      2.5,
+      5.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": 95,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Tettnanger",
+     "id": "beermaverick-tettnanger",
+     "score": 94,
+     "alpha": [
+      2.5,
+      5.8
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": 95,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Mount Hood",
+     "id": "beermaverick-mount-hood",
+     "score": 93,
+     "alpha": [
+      3.9,
+      8
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 73,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Southern Aroma",
+     "id": "beermaverick-southern-aroma",
+     "score": 93,
+     "alpha": [
+      3.6,
+      7.3
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 76,
+      "arôme": 80
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Cascade",
+   "id": "beermaverick-cascade",
+   "sorte": "phare",
+   "alpha": [
+    4.5,
+    9
+   ],
+   "usage": "dual",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "Aloha Blend",
+     "id": "beermaverick-aloha",
+     "score": 100,
+     "alpha": [
+      8.8,
+      10.3
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Diamant",
+     "id": "beermaverick-diamant",
+     "score": 100,
+     "alpha": [
+      7,
+      7.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Idaho Gem",
+     "id": "beermaverick-idaho-gem",
+     "score": 100,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Petoskey",
+     "id": "beermaverick-petoskey",
+     "score": 100,
+     "alpha": [
+      12.1,
+      12.1
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Solero",
+     "id": "beermaverick-solero",
+     "score": 100,
+     "alpha": [
+      9,
+      11.2
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Southern Cross",
+     "id": "beermaverick-southern-cross",
+     "score": 100,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "TNT Blend",
+     "id": "beermaverick-tnt-blend",
+     "score": 100,
+     "alpha": [
+      11.5,
+      13
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "Vienna Gold",
+     "id": "beermaverick-vienna-gold",
+     "score": 100,
+     "alpha": [
+      6,
+      10
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Yellow Sub",
+     "id": "beermaverick-yellow-sub",
+     "score": 100,
+     "alpha": [
+      6.2,
+      7.2
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Hartwick",
+     "id": "beermaverick-hartwick",
+     "score": 99,
+     "alpha": [
+      12.28,
+      12.28
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "Petoskey",
+     "id": "beermaverick-petoskey",
+     "score": 100,
+     "alpha": [
+      12.1,
+      12.1
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.66,
+     "variablesInconnues": [
+      "cohumulone",
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Vienna Gold",
+     "id": "beermaverick-vienna-gold",
+     "score": 100,
+     "alpha": [
+      6,
+      10
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.52,
+     "variablesInconnues": [
+      "β",
+      "cohumulone",
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Aloha Blend",
+     "id": "beermaverick-aloha",
+     "score": 99,
+     "alpha": [
+      8.8,
+      10.3
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 87,
+      "arôme": 100
+     },
+     "couverturePoids": 0.57,
+     "variablesInconnues": [
+      "β",
+      "cohumulone",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Hartwick",
+     "id": "beermaverick-hartwick",
+     "score": 99,
+     "alpha": [
+      12.28,
+      12.28
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.66,
+     "variablesInconnues": [
+      "cohumulone",
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Mandarina Bavaria",
+     "id": "beermaverick-mandarina-bavaria",
+     "score": 99,
+     "alpha": [
+      7,
+      10.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 94,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Solero",
+     "id": "beermaverick-solero",
+     "score": 99,
+     "alpha": [
+      9,
+      11.2
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 93,
+      "arôme": 100
+     },
+     "couverturePoids": 0.86,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Sun",
+     "id": "beermaverick-sun",
+     "score": 99,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.8,
+     "variablesInconnues": [
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "TNT Blend",
+     "id": "beermaverick-tnt-blend",
+     "score": 99,
+     "alpha": [
+      11.5,
+      13
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 88,
+      "arôme": 100
+     },
+     "couverturePoids": 0.57,
+     "variablesInconnues": [
+      "β",
+      "cohumulone",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Yellow Sub",
+     "id": "beermaverick-yellow-sub",
+     "score": 99,
+     "alpha": [
+      6.2,
+      7.2
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 88,
+      "arôme": 100
+     },
+     "couverturePoids": 0.57,
+     "variablesInconnues": [
+      "β",
+      "cohumulone",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Buzz Bullets",
+     "id": "beermaverick-buzz-bullets",
+     "score": 98,
+     "alpha": [
+      8,
+      10
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.66,
+     "variablesInconnues": [
+      "cohumulone",
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Magnum (US)",
+   "id": "beermaverick-magnum-us",
+   "sorte": "amérisant courant",
+   "alpha": [
+    10,
+    16
+   ],
+   "usage": "bittering",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "Hallertau Taurus",
+     "id": "beermaverick-hallertau-taurus",
+     "score": 94,
+     "alpha": [
+      12,
+      17.9
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Marco Polo",
+     "id": "beermaverick-marco-polo",
+     "score": 93,
+     "alpha": [
+      12,
+      13
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Boomerang",
+     "id": "beermaverick-boomerang",
+     "score": 91,
+     "alpha": [
+      10,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Yeoman",
+     "id": "beermaverick-yeoman",
+     "score": 91,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Gaia",
+     "id": "beermaverick-gaia",
+     "score": 90,
+     "alpha": [
+      12,
+      15
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Magnum (GR)",
+     "id": "beermaverick-magnum-gr",
+     "score": 90,
+     "alpha": [
+      11,
+      16
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Satus",
+     "id": "beermaverick-satus",
+     "score": 90,
+     "alpha": [
+      12,
+      14.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "Ella",
+     "id": "beermaverick-ella",
+     "score": 89,
+     "alpha": [
+      13.3,
+      19.2
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Herkules",
+     "id": "beermaverick-herkules",
+     "score": 89,
+     "alpha": [
+      12,
+      17
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Tomahawk",
+     "id": "beermaverick-tomahawk",
+     "score": 89,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "Magnum (GR)",
+     "id": "beermaverick-magnum-gr",
+     "score": 94,
+     "alpha": [
+      11,
+      16
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 98,
+      "arôme": 50
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Hallertau Taurus",
+     "id": "beermaverick-hallertau-taurus",
+     "score": 93,
+     "alpha": [
+      12,
+      17.9
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 77,
+      "arôme": 91
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Yeoman",
+     "id": "beermaverick-yeoman",
+     "score": 92,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 76,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Boomerang",
+     "id": "beermaverick-boomerang",
+     "score": 91,
+     "alpha": [
+      10,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 92,
+      "huile": 82,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Petoskey",
+     "id": "beermaverick-petoskey",
+     "score": 91,
+     "alpha": [
+      12.1,
+      12.1
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": null,
+      "arôme": 67
+     },
+     "couverturePoids": 0.66,
+     "variablesInconnues": [
+      "cohumulone",
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 90,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 57,
+      "arôme": 67
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Summit",
+     "id": "beermaverick-summit",
+     "score": 90,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 74,
+      "arôme": 56
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Apollo",
+     "id": "beermaverick-apollo",
+     "score": 89,
+     "alpha": [
+      15,
+      20.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 73,
+      "arôme": 57
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Gaia",
+     "id": "beermaverick-gaia",
+     "score": 89,
+     "alpha": [
+      12,
+      15
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": 60,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Pacific Jade",
+     "id": "beermaverick-pacific-jade",
+     "score": 89,
+     "alpha": [
+      12,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": 84,
+      "arôme": 59
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Nugget",
+   "id": "beermaverick-nugget",
+   "sorte": "amérisant courant",
+   "alpha": [
+    9.5,
+    16
+   ],
+   "usage": "dual",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "Caliente",
+     "id": "beermaverick-caliente",
+     "score": 100,
+     "alpha": [
+      14,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 99,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Magnat",
+     "id": "beermaverick-magnat",
+     "score": 99,
+     "alpha": [
+      11,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Trident",
+     "id": "beermaverick-trident",
+     "score": 99,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Yeoman",
+     "id": "beermaverick-yeoman",
+     "score": 99,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Idaho 7",
+     "id": "beermaverick-idaho-7",
+     "score": 98,
+     "alpha": [
+      9.5,
+      14.9
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Simcoe",
+     "id": "beermaverick-simcoe",
+     "score": 98,
+     "alpha": [
+      11,
+      15
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "TNT Blend",
+     "id": "beermaverick-tnt-blend",
+     "score": 98,
+     "alpha": [
+      11.5,
+      13
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Zenia",
+     "id": "beermaverick-zenia",
+     "score": 98,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Helios",
+     "id": "beermaverick-helios",
+     "score": 97,
+     "alpha": [
+      16.8,
+      21
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "Yeoman",
+     "id": "beermaverick-yeoman",
+     "score": 100,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 99,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Trident",
+     "id": "beermaverick-trident",
+     "score": 99,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 94,
+      "arôme": 100
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Helios",
+     "id": "beermaverick-helios",
+     "score": 97,
+     "alpha": [
+      16.8,
+      21
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 91,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Magnat",
+     "id": "beermaverick-magnat",
+     "score": 97,
+     "alpha": [
+      11,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 89,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 96,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 57,
+      "arôme": 100
+     },
+     "couverturePoids": 0.86,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Bravo",
+     "id": "beermaverick-bravo",
+     "score": 96,
+     "alpha": [
+      13,
+      18
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 91,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Loral",
+     "id": "beermaverick-loral",
+     "score": 96,
+     "alpha": [
+      10,
+      17
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 89,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Zenia",
+     "id": "beermaverick-zenia",
+     "score": 96,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 75,
+      "arôme": 100
+     },
+     "couverturePoids": 0.71,
+     "variablesInconnues": [
+      "cohumulone",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Falconer's Flight",
+     "id": "beermaverick-falconers-flight",
+     "score": 95,
+     "alpha": [
+      9.5,
+      12
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": 99,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Millennium",
+     "id": "beermaverick-millennium",
+     "score": 95,
+     "alpha": [
+      14.5,
+      18.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 94,
+      "huile": 98,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Columbus",
+   "id": "beermaverick-columbus",
+   "sorte": "amérisant courant",
+   "alpha": [
+    14,
+    18
+   ],
+   "usage": "dual",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "Tomahawk",
+     "id": "beermaverick-tomahawk",
+     "score": 100,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "CTZ",
+     "id": "beermaverick-ctz",
+     "score": 99,
+     "alpha": [
+      14.5,
+      17
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Zeus",
+     "id": "beermaverick-zeus",
+     "score": 99,
+     "alpha": [
+      13,
+      17.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 98,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Sultana (Denali)",
+     "id": "beermaverick-denali",
+     "score": 96,
+     "alpha": [
+      13,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Warrior",
+     "id": "beermaverick-warrior",
+     "score": 96,
+     "alpha": [
+      14.5,
+      18
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Pahto",
+     "id": "beermaverick-pahto",
+     "score": 95,
+     "alpha": [
+      17,
+      20
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "Polaris",
+     "id": "beermaverick-polaris",
+     "score": 95,
+     "alpha": [
+      18,
+      23
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Topaz",
+     "id": "beermaverick-topaz",
+     "score": 95,
+     "alpha": [
+      13.7,
+      20.1
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Helios",
+     "id": "beermaverick-helios",
+     "score": 94,
+     "alpha": [
+      16.8,
+      21
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "Tomahawk",
+     "id": "beermaverick-tomahawk",
+     "score": 100,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 100,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "CTZ",
+     "id": "beermaverick-ctz",
+     "score": 99,
+     "alpha": [
+      14.5,
+      17
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 100,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Zeus",
+     "id": "beermaverick-zeus",
+     "score": 99,
+     "alpha": [
+      13,
+      17.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 100,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 96,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 87,
+      "arôme": 100
+     },
+     "couverturePoids": 0.86,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Pahto",
+     "id": "beermaverick-pahto",
+     "score": 95,
+     "alpha": [
+      17,
+      20
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 75,
+      "arôme": 94
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Sun",
+     "id": "beermaverick-sun",
+     "score": 94,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.8,
+     "variablesInconnues": [
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Bravo",
+     "id": "beermaverick-bravo",
+     "score": 93,
+     "alpha": [
+      13,
+      18
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": 91,
+      "arôme": 86
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Ekuanot",
+     "id": "beermaverick-ekuanot",
+     "score": 93,
+     "alpha": [
+      13,
+      15.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 94,
+      "huile": 95,
+      "arôme": 80
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Summit",
+     "id": "beermaverick-summit",
+     "score": 93,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 66,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Ella",
+     "id": "beermaverick-ella",
+     "score": 92,
+     "alpha": [
+      13.3,
+      19.2
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 83,
+      "arôme": 79
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Warrior",
+   "id": "beermaverick-warrior",
+   "sorte": "amérisant courant",
+   "alpha": [
+    14.5,
+    18
+   ],
+   "usage": "dual",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 98,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Summit",
+     "id": "beermaverick-summit",
+     "score": 97,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Tomahawk",
+     "id": "beermaverick-tomahawk",
+     "score": 97,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "CTZ",
+     "id": "beermaverick-ctz",
+     "score": 96,
+     "alpha": [
+      14.5,
+      17
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Zeus",
+     "id": "beermaverick-zeus",
+     "score": 95,
+     "alpha": [
+      13,
+      17.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Caliente",
+     "id": "beermaverick-caliente",
+     "score": 94,
+     "alpha": [
+      14,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Columbus",
+     "id": "beermaverick-columbus",
+     "score": 94,
+     "alpha": [
+      14,
+      18
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "Helios",
+     "id": "beermaverick-helios",
+     "score": 94,
+     "alpha": [
+      16.8,
+      21
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Apollo",
+     "id": "beermaverick-apollo",
+     "score": 93,
+     "alpha": [
+      15,
+      20.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Sun",
+     "id": "beermaverick-sun",
+     "score": 93,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "Summit",
+     "id": "beermaverick-summit",
+     "score": 95,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 90,
+      "arôme": 97
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Apollo",
+     "id": "beermaverick-apollo",
+     "score": 93,
+     "alpha": [
+      15,
+      20.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": 81,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 92,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 32,
+      "arôme": 100
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Helios",
+     "id": "beermaverick-helios",
+     "score": 92,
+     "alpha": [
+      16.8,
+      21
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": 85,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Yeoman",
+     "id": "beermaverick-yeoman",
+     "score": 92,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 92,
+      "huile": 86,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Pahto",
+     "id": "beermaverick-pahto",
+     "score": 91,
+     "alpha": [
+      17,
+      20
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 67,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Hallertau Taurus",
+     "id": "beermaverick-hallertau-taurus",
+     "score": 90,
+     "alpha": [
+      12,
+      17.9
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 58,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Magnat",
+     "id": "beermaverick-magnat",
+     "score": 90,
+     "alpha": [
+      11,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 92,
+      "huile": 80,
+      "arôme": 93
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Polaris",
+     "id": "beermaverick-polaris",
+     "score": 90,
+     "alpha": [
+      18,
+      23
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 66,
+      "arôme": 72
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Tomahawk",
+     "id": "beermaverick-tomahawk",
+     "score": 90,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": 69,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Herkules",
+   "id": "beermaverick-herkules",
+   "sorte": "amérisant courant",
+   "alpha": [
+    12,
+    17
+   ],
+   "usage": "bittering",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 99,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Caliente",
+     "id": "beermaverick-caliente",
+     "score": 98,
+     "alpha": [
+      14,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Zenia",
+     "id": "beermaverick-zenia",
+     "score": 95,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Yeoman",
+     "id": "beermaverick-yeoman",
+     "score": 94,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Hallertau Taurus",
+     "id": "beermaverick-hallertau-taurus",
+     "score": 93,
+     "alpha": [
+      12,
+      17.9
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "CTZ",
+     "id": "beermaverick-ctz",
+     "score": 92,
+     "alpha": [
+      14.5,
+      17
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Southern Tropic",
+     "id": "beermaverick-southern-tropic",
+     "score": 92,
+     "alpha": [
+      12.6,
+      18.1
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "TNT Blend",
+     "id": "beermaverick-tnt-blend",
+     "score": 92,
+     "alpha": [
+      11.5,
+      13
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Zeus",
+     "id": "beermaverick-zeus",
+     "score": 92,
+     "alpha": [
+      13,
+      17.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Apollo",
+     "id": "beermaverick-apollo",
+     "score": 91,
+     "alpha": [
+      15,
+      20.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "Caliente",
+     "id": "beermaverick-caliente",
+     "score": 99,
+     "alpha": [
+      14,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 100,
+      "arôme": 100
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Zenia",
+     "id": "beermaverick-zenia",
+     "score": 94,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 93,
+      "huile": 84,
+      "arôme": 100
+     },
+     "couverturePoids": 0.71,
+     "variablesInconnues": [
+      "cohumulone",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Lotus",
+     "id": "beermaverick-lotus",
+     "score": 91,
+     "alpha": [
+      13,
+      17
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 97,
+      "arôme": 40
+     },
+     "couverturePoids": 0.94,
+     "variablesInconnues": [
+      "caryophyllène",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 90,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 92,
+      "huile": 43,
+      "arôme": 100
+     },
+     "couverturePoids": 0.86,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "TNT Blend",
+     "id": "beermaverick-tnt-blend",
+     "score": 90,
+     "alpha": [
+      11.5,
+      13
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 90,
+      "huile": 72,
+      "arôme": 100
+     },
+     "couverturePoids": 0.57,
+     "variablesInconnues": [
+      "β",
+      "cohumulone",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Zeus",
+     "id": "beermaverick-zeus",
+     "score": 90,
+     "alpha": [
+      13,
+      17.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 60,
+      "arôme": 89
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Admiral",
+     "id": "beermaverick-admiral",
+     "score": 89,
+     "alpha": [
+      13,
+      16.2
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 94,
+      "huile": 76,
+      "arôme": 77
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "CTZ",
+     "id": "beermaverick-ctz",
+     "score": 89,
+     "alpha": [
+      14.5,
+      17
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 56,
+      "arôme": 89
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Tomahawk",
+     "id": "beermaverick-tomahawk",
+     "score": 89,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 56,
+      "arôme": 89
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Ekuanot",
+     "id": "beermaverick-ekuanot",
+     "score": 88,
+     "alpha": [
+      13,
+      15.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 63,
+      "arôme": 56
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Apollo",
+   "id": "beermaverick-apollo",
+   "sorte": "amérisant courant",
+   "alpha": [
+    15,
+    20.5
+   ],
+   "usage": "bittering",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 91,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "HPA-016",
+     "id": "beermaverick-hpa-016",
+     "score": 87,
+     "alpha": [
+      15.7,
+      18.7
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Eclipse",
+     "id": "beermaverick-eclipse",
+     "score": 86,
+     "alpha": [
+      15.7,
+      19
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Summit",
+     "id": "beermaverick-summit",
+     "score": 86,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Vic Secret",
+     "id": "beermaverick-vic-secret",
+     "score": 86,
+     "alpha": [
+      14,
+      21.8
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Brooklyn",
+     "id": "beermaverick-brooklyn",
+     "score": 85,
+     "alpha": [
+      17.5,
+      19.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Sticklebract",
+     "id": "beermaverick-sticklebract",
+     "score": 85,
+     "alpha": [
+      12,
+      15
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "Tomahawk",
+     "id": "beermaverick-tomahawk",
+     "score": 85,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Boomerang",
+     "id": "beermaverick-boomerang",
+     "score": 83,
+     "alpha": [
+      10,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "CTZ",
+     "id": "beermaverick-ctz",
+     "score": 83,
+     "alpha": [
+      14.5,
+      17
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "Brooklyn",
+     "id": "beermaverick-brooklyn",
+     "score": 91,
+     "alpha": [
+      17.5,
+      19.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": 97,
+      "arôme": 60
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Summit",
+     "id": "beermaverick-summit",
+     "score": 88,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 91,
+      "huile": 86,
+      "arôme": 69
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 87,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 91,
+      "huile": 26,
+      "arôme": 100
+     },
+     "couverturePoids": 0.86,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Warrior",
+     "id": "beermaverick-warrior",
+     "score": 86,
+     "alpha": [
+      14.5,
+      18
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 92,
+      "huile": 81,
+      "arôme": 57
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Helios",
+     "id": "beermaverick-helios",
+     "score": 84,
+     "alpha": [
+      16.8,
+      21
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 90,
+      "huile": 73,
+      "arôme": 60
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Moutere",
+     "id": "beermaverick-moutere",
+     "score": 84,
+     "alpha": [
+      17.5,
+      19.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": 57,
+      "arôme": 60
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Polaris",
+     "id": "beermaverick-polaris",
+     "score": 84,
+     "alpha": [
+      18,
+      23
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 63,
+      "arôme": 40
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Hallertau Taurus",
+     "id": "beermaverick-hallertau-taurus",
+     "score": 83,
+     "alpha": [
+      12,
+      17.9
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 88,
+      "huile": 64,
+      "arôme": 91
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Sorachi Ace",
+     "id": "beermaverick-sorachi-ace",
+     "score": 83,
+     "alpha": [
+      11,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 89,
+      "huile": 76,
+      "arôme": 52
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Southern Star",
+     "id": "beermaverick-southern-star",
+     "score": 83,
+     "alpha": [
+      12,
+      18.6
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 92,
+      "huile": 85,
+      "arôme": 20
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Summit",
+   "id": "beermaverick-summit",
+   "sorte": "amérisant courant",
+   "alpha": [
+    15,
+    17.5
+   ],
+   "usage": "bittering",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 98,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Warrior",
+     "id": "beermaverick-warrior",
+     "score": 97,
+     "alpha": [
+      14.5,
+      18
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Vic Secret",
+     "id": "beermaverick-vic-secret",
+     "score": 95,
+     "alpha": [
+      14,
+      21.8
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Apollo",
+     "id": "beermaverick-apollo",
+     "score": 94,
+     "alpha": [
+      15,
+      20.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Polaris",
+     "id": "beermaverick-polaris",
+     "score": 94,
+     "alpha": [
+      18,
+      23
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Tomahawk",
+     "id": "beermaverick-tomahawk",
+     "score": 94,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Columbus",
+     "id": "beermaverick-columbus",
+     "score": 93,
+     "alpha": [
+      14,
+      18
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "CTZ",
+     "id": "beermaverick-ctz",
+     "score": 93,
+     "alpha": [
+      14.5,
+      17
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Sun",
+     "id": "beermaverick-sun",
+     "score": 93,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Zeus",
+     "id": "beermaverick-zeus",
+     "score": 93,
+     "alpha": [
+      13,
+      17.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 95,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 56,
+      "arôme": 100
+     },
+     "couverturePoids": 0.86,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Warrior",
+     "id": "beermaverick-warrior",
+     "score": 95,
+     "alpha": [
+      14.5,
+      18
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 90,
+      "arôme": 97
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Apollo",
+     "id": "beermaverick-apollo",
+     "score": 93,
+     "alpha": [
+      15,
+      20.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 94,
+      "huile": 86,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Columbus",
+     "id": "beermaverick-columbus",
+     "score": 93,
+     "alpha": [
+      14,
+      18
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 66,
+      "arôme": 97
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Polaris",
+     "id": "beermaverick-polaris",
+     "score": 93,
+     "alpha": [
+      18,
+      23
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 72,
+      "arôme": 96
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Tomahawk",
+     "id": "beermaverick-tomahawk",
+     "score": 93,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 66,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Zeus",
+     "id": "beermaverick-zeus",
+     "score": 93,
+     "alpha": [
+      13,
+      17.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 73,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "CTZ",
+     "id": "beermaverick-ctz",
+     "score": 92,
+     "alpha": [
+      14.5,
+      17
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 66,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Helios",
+     "id": "beermaverick-helios",
+     "score": 92,
+     "alpha": [
+      16.8,
+      21
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 95,
+      "huile": 78,
+      "arôme": 100
+     },
+     "couverturePoids": 0.99,
+     "variablesInconnues": [
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Millennium",
+     "id": "beermaverick-millennium",
+     "score": 92,
+     "alpha": [
+      14.5,
+      18.5
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": true,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 88,
+      "arôme": 46
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  },
+  {
+   "houblon": "Target",
+   "id": "beermaverick-target",
+   "sorte": "amérisant courant",
+   "alpha": [
+    8.5,
+    13.5
+   ],
+   "usage": "bittering",
+   "A": [
+    {
+     "rang": 1,
+     "nom": "Marco Polo",
+     "id": "beermaverick-marco-polo",
+     "score": 100,
+     "alpha": [
+      12,
+      13
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 2,
+     "nom": "Agnus",
+     "id": "beermaverick-agnus",
+     "score": 99,
+     "alpha": [
+      9,
+      14
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 3,
+     "nom": "Altus",
+     "id": "beermaverick-altus",
+     "score": 99,
+     "alpha": [
+      15,
+      18.5
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 4,
+     "nom": "Magnat",
+     "id": "beermaverick-magnat",
+     "score": 99,
+     "alpha": [
+      11,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 5,
+     "nom": "Yeoman",
+     "id": "beermaverick-yeoman",
+     "score": 99,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 6,
+     "nom": "Zenia",
+     "id": "beermaverick-zenia",
+     "score": 99,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 7,
+     "nom": "Olympic",
+     "id": "beermaverick-olympic",
+     "score": 98,
+     "alpha": [
+      10.6,
+      13.8
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 8,
+     "nom": "Sun",
+     "id": "beermaverick-sun",
+     "score": 98,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 9,
+     "nom": "Tomahawk",
+     "id": "beermaverick-tomahawk",
+     "score": 98,
+     "alpha": [
+      15,
+      17.5
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    },
+    {
+     "rang": 10,
+     "nom": "Admiral",
+     "id": "beermaverick-admiral",
+     "score": 97,
+     "alpha": [
+      13,
+      16.2
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false
+    }
+   ],
+   "v2": [
+    {
+     "rang": 1,
+     "nom": "Sun",
+     "id": "beermaverick-sun",
+     "score": 98,
+     "alpha": [
+      12,
+      16
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": null,
+      "arôme": 100
+     },
+     "couverturePoids": 0.8,
+     "variablesInconnues": [
+      "huile totale",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 2,
+     "nom": "Admiral",
+     "id": "beermaverick-admiral",
+     "score": 97,
+     "alpha": [
+      13,
+      16.2
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 90,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 3,
+     "nom": "Herald",
+     "id": "beermaverick-herald",
+     "score": 97,
+     "alpha": [
+      9,
+      13
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 100,
+      "huile": 86,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 4,
+     "nom": "Marco Polo",
+     "id": "beermaverick-marco-polo",
+     "score": 97,
+     "alpha": [
+      12,
+      13
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 98,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 5,
+     "nom": "Zenia",
+     "id": "beermaverick-zenia",
+     "score": 97,
+     "alpha": [
+      11,
+      14
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 74,
+      "arôme": 100
+     },
+     "couverturePoids": 0.71,
+     "variablesInconnues": [
+      "cohumulone",
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 6,
+     "nom": "Pilgrim",
+     "id": "beermaverick-pilgrim",
+     "score": 96,
+     "alpha": [
+      9,
+      13
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 99,
+      "huile": 90,
+      "arôme": 77
+     },
+     "couverturePoids": 0.93,
+     "variablesInconnues": [
+      "caryophyllène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 7,
+     "nom": "Agnus",
+     "id": "beermaverick-agnus",
+     "score": 95,
+     "alpha": [
+      9,
+      14
+     ],
+     "usage": "bittering",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 98,
+      "huile": 74,
+      "arôme": 100
+     },
+     "couverturePoids": 0.93,
+     "variablesInconnues": [
+      "caryophyllène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 8,
+     "nom": "Caliente",
+     "id": "beermaverick-caliente",
+     "score": 94,
+     "alpha": [
+      14,
+      16
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 96,
+      "huile": 58,
+      "arôme": 100
+     },
+     "couverturePoids": 0.85,
+     "variablesInconnues": [
+      "myrcène",
+      "humulène",
+      "caryophyllène",
+      "farnésène",
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 9,
+     "nom": "Green Bullet",
+     "id": "beermaverick-green-bullet",
+     "score": 93,
+     "alpha": [
+      11,
+      15
+     ],
+     "usage": "dual",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 94,
+      "huile": 88,
+      "arôme": 100
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    },
+    {
+     "rang": 10,
+     "nom": "Idaho 7",
+     "id": "beermaverick-idaho-7",
+     "score": 93,
+     "alpha": [
+      9.5,
+      14.9
+     ],
+     "usage": "aroma",
+     "dansBeerMaverick": false,
+     "aromatiqueDeconseille": false,
+     "parGroupe": {
+      "amertume": 97,
+      "huile": 93,
+      "arôme": 69
+     },
+     "couverturePoids": 0.98,
+     "variablesInconnues": [
+      "linalol",
+      "géraniol"
+     ]
+    }
+   ]
+  }
+ ]
+}

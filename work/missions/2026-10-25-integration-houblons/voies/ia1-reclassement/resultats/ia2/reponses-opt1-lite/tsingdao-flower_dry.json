@@ -1,0 +1,46 @@
+{
+ "casId": "tsingdao-flower@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "f6c59b3c31fcea16",
+ "simule": false,
+ "appel": 21,
+ "http": 200,
+ "latenceMs": 2018,
+ "finishReason": "STOP",
+ "jetonsEntree": 3688,
+ "jetonsSortie": 519,
+ "coutMicroChf": 3005,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Kazbek partage les notes de citron et l'alpha proche, mais apporte une dimension épicée plus marquée que Tsingdao Flower.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Cashmere offre un profil melon et citron très proche pour le dry hop, enrichi de nuances de noix de coco.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Lemondrop se rapproche par ses notes intenses de citron et de melon, bien que son profil floral diffère un peu.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Delta convient bien au dry hop avec ses notes de melon et d'agrumes, s'éloignant peu du profil terreux d'origine.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Amethyst reprend les notes terreuses et d'agrumes, mais son alpha est plus bas et l'usage est strictement aromatique.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Ahtanum propose des agrumes et un fond terreux adapté, mais insiste davantage sur le pamplemousse et le pin.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Amarillo partage les notes d'agrumes et de melon, mais sa puissance aromatique dépasse largement celle de Tsingdao Flower.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Lumberjack combine melon et agrumes avec un usage dual, mais introduit des épices plus lourdes comme le clou de girofle.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Pacific Sunrise possède les notes de melon et citron recherchées, mais son profil tend vers des alpha et des huiles bien plus élevés.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Falconer's Flight 7CS apporte fruité et agrumes pour le dry hop, mais sa cohumulone et ses huiles sont nettement plus intenses.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c09",
+   "c13",
+   "c16",
+   "c02",
+   "c01",
+   "c12",
+   "c11",
+   "c06",
+   "c10",
+   "c03"
+  ],
+  "phrases": {
+   "c09": "Kazbek partage les notes de citron et l'alpha proche, mais apporte une dimension épicée plus marquée que Tsingdao Flower.",
+   "c13": "Cashmere offre un profil melon et citron très proche pour le dry hop, enrichi de nuances de noix de coco.",
+   "c16": "Lemondrop se rapproche par ses notes intenses de citron et de melon, bien que son profil floral diffère un peu.",
+   "c02": "Delta convient bien au dry hop avec ses notes de melon et d'agrumes, s'éloignant peu du profil terreux d'origine.",
+   "c01": "Amethyst reprend les notes terreuses et d'agrumes, mais son alpha est plus bas et l'usage est strictement aromatique.",
+   "c12": "Ahtanum propose des agrumes et un fond terreux adapté, mais insiste davantage sur le pamplemousse et le pin.",
+   "c11": "Amarillo partage les notes d'agrumes et de melon, mais sa puissance aromatique dépasse largement celle de Tsingdao Flower.",
+   "c06": "Lumberjack combine melon et agrumes avec un usage dual, mais introduit des épices plus lourdes comme le clou de girofle.",
+   "c10": "Pacific Sunrise possède les notes de melon et citron recherchées, mais son profil tend vers des alpha et des huiles bien plus élevés.",
+   "c03": "Falconer's Flight 7CS apporte fruité et agrumes pour le dry hop, mais sa cohumulone et ses huiles sont nettement plus intenses."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

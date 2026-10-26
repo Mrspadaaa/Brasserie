@@ -140,7 +140,7 @@ async function assertV4Published(record: ReturnType<typeof latestV4Record>, inpu
   selectedReadingReference: string; legacyReadingReference: string; parentV3RecordReference: string;
 }) {
   try {
-    await waitFor(() => expect(document.querySelector('.hv-property-advice.hv4')).toBeTruthy(), { timeout: 15000 });
+    await waitFor(() => expect(document.querySelector('.hv-property-advice.hv4')).toBeTruthy(), { timeout: 60000 });
     return;
   } catch { /* report the committed receipt and visible Page state below */ }
   const notices = [...document.querySelectorAll('[role="status"],[role="alert"]')]

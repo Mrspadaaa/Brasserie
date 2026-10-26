@@ -170,9 +170,15 @@
     "selecteur_choisie": "[aria-label=\"Ajouter Aurum à la comparaison\"]",
     "geste": "toucher",
     "attendu": [
-     "Comparer (3)"
+     "Comparer (4)"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Comparer (3)"
+     ]
+    },
+    "note": "D90, g2c, 26.10 : une famille « moins » n’exclut plus un houblon pour une fiche isolée (Target, Cascade, Citra cryo n’ont plus de conflit sur la stout) ; dessin identique : la page s'ouvre avec trois voies cochées au lieu de deux (Target, sans conflit, l'est maintenant), donc « + » sur Aurum donne « Comparer (4) » ; même ✓ sur Aurum, même barre. (capture après regardée : work/missions/2026-10-25-integration-houblons/voies/g2c-exclusion-style/captures/etat-sugg-plus-construite.png ; l’avant est la même page sur HEAD (ETATS OK 138/138).)"
    }
   },
   {
@@ -189,7 +195,7 @@
     "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
    },
    "verdict_5345f6ad": "present",
-   "ecart": "Maquette : ouvre #/comparer?h=motueka,idaho-7 (Comparer r6a, son choix) ; q2b ouvrait son Comparer statique, remplacé par r6a (D107).",
+   "ecart": "Maquette : ouvre #/comparer?h=motueka,idaho-7 (Comparer r6a, son choix) ; q2b ouvrait son Comparer statique, remplacé par r6a (D107). D69 (25.10) : « IBU » n'est plus sur Comparer (« encore pas mal de légende et texte inutile »), il est dans la feuille Valeurs.",
    "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-sugg-comparer-n-5345f6ad.png",
    "voulu": "",
    "verif": {
@@ -198,7 +204,6 @@
     "selecteur_choisie": "a[data-role=\"comparer\"]",
     "geste": "toucher",
     "attendu": [
-     "IBU",
      "Motueka"
     ],
     "interdit": []
@@ -288,10 +293,18 @@
     "geste": "repos",
     "attendu": [
      "Assembler 5 + 5 g",
-     "Motueka + Citra cryo",
-     "Motueka + Nelson Sauvin"
+     "Motueka + Hallertau Blanc",
+     "Motueka + Galaxy"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Assembler 5 + 5 g",
+      "Motueka + Citra cryo",
+      "Motueka + Nelson Sauvin"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : le moteur propose d'autres voies (Motueka + Hallertau Blanc, Motueka + Galaxy) ; même liste, mêmes cartes, même « Assembler 5 + 5 g ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-sugg-assembler.png.)"
    }
   },
   {
@@ -351,10 +364,21 @@
      "Dry hop",
      "actif",
      "Motueka",
-     "20 g",
-     "creep"
+     "Target",
+     "creep",
+     "5 g"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Dry hop",
+      "actif",
+      "Motueka",
+      "20 g",
+      "creep"
+     ]
+    },
+    "note": "D90, g2c, 26.10 : une famille « moins » n’exclut plus un houblon pour une fiche isolée (Target, Cascade, Citra cryo n’ont plus de conflit sur la stout) ; dessin identique : la section « Dry hop · actif · estimé » s'ouvre sur Target 5 g (sans conflit, devant Motueka 20 g) ; mêmes pastilles de biotransformation et « creep », même barre. (capture après regardée : work/missions/2026-10-25-integration-houblons/voies/g2c-exclusion-style/captures/etat-sugg-dry-hop-construite.png ; l’avant est la même page sur HEAD (ETATS OK 138/138).)"
    }
   },
   {

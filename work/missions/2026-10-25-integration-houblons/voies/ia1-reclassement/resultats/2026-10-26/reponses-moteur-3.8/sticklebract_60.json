@@ -1,0 +1,46 @@
+{
+ "casId": "sticklebract@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "22ca2921b198b76c",
+ "simule": false,
+ "appel": 36,
+ "http": 200,
+ "latenceMs": 5831,
+ "finishReason": "STOP",
+ "jetonsEntree": 3845,
+ "jetonsSortie": 527,
+ "coutMicroChf": 12150,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Taux d'acides alpha et niveau de cohumulone quasi identiques, assurant une amertume mordante très similaire à 60 minutes.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Excellente correspondance en alpha et cohumulone élevée, apportant un profil d'amertume et un rendement parfaitement comparables à l'ébullition.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Taux d'alpha très proche et large plage de cohumulone pouvant imiter précisément l'intensité et le tranchant du Sticklebract.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Alpha identiques et cohumulone proche pour une amertume franche et nette, bien que légèrement plus douce.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Cohumulone équivalente mais alpha légèrement supérieurs nécessitant de recalculer le dosage pour obtenir la même amertume.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Même niveau élevé de cohumulone et origine néo-zélandaise, avec seulement un taux d'alpha légèrement plus bas à compenser.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Plage de cohumulone très proche, avec des acides alpha un peu plus élevés qui demandent de réduire la dose.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Taux de cohumulone parfaitement aligné, mais potentiel amérisant globalement inférieur exigeant un grammage légèrement supérieur.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Teneur en alpha équivalente, fournissant une amertume solide et propre malgré une cohumulone un peu moins agressive.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Alpha très comparables et même terroir néo-zélandais, bien que sa cohumulone plus basse procure une amertume plus ronde.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c10",
+   "c12",
+   "c04",
+   "c03",
+   "c01",
+   "c09",
+   "c14",
+   "c13",
+   "c19",
+   "c20"
+  ],
+  "phrases": {
+   "c10": "Taux d'acides alpha et niveau de cohumulone quasi identiques, assurant une amertume mordante très similaire à 60 minutes.",
+   "c12": "Excellente correspondance en alpha et cohumulone élevée, apportant un profil d'amertume et un rendement parfaitement comparables à l'ébullition.",
+   "c04": "Taux d'alpha très proche et large plage de cohumulone pouvant imiter précisément l'intensité et le tranchant du Sticklebract.",
+   "c03": "Alpha identiques et cohumulone proche pour une amertume franche et nette, bien que légèrement plus douce.",
+   "c01": "Cohumulone équivalente mais alpha légèrement supérieurs nécessitant de recalculer le dosage pour obtenir la même amertume.",
+   "c09": "Même niveau élevé de cohumulone et origine néo-zélandaise, avec seulement un taux d'alpha légèrement plus bas à compenser.",
+   "c14": "Plage de cohumulone très proche, avec des acides alpha un peu plus élevés qui demandent de réduire la dose.",
+   "c13": "Taux de cohumulone parfaitement aligné, mais potentiel amérisant globalement inférieur exigeant un grammage légèrement supérieur.",
+   "c19": "Teneur en alpha équivalente, fournissant une amertume solide et propre malgré une cohumulone un peu moins agressive.",
+   "c20": "Alpha très comparables et même terroir néo-zélandais, bien que sa cohumulone plus basse procure une amertume plus ronde."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

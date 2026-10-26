@@ -1,0 +1,46 @@
+{
+ "casId": "idaho-gem@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "48f9d2ea5bd5b7b7",
+ "simule": false,
+ "appel": 33,
+ "http": 200,
+ "latenceMs": 6817,
+ "finishReason": "STOP",
+ "jetonsEntree": 3752,
+ "jetonsSortie": 528,
+ "coutMicroChf": 11985,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Partage les notes d'ananas, de bonbon et de fruits à noyau, mais manque du côté mentholé et fruits rouges.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Offre l'ananas, les fruits à noyau et la fraîcheur citron vert du profil mojito, sans toutefois les fruits rouges.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Rejoint Idaho Gem sur l'ananas, les agrumes et la touche herbacée-épicée, avec cependant un profil plus franchement tropical.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Apporte la douceur des fruits à noyau, de l'ananas et de l'orange, sans la facette menthe fraîche.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Parfait pour recréer l'accord singulier ananas et menthe fraîche, mais nettement plus mentholé et dépourvu de baies rouges.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Excellente intensité en dry hop avec ananas et agrumes, mais son côté résineux dank diffère des notes confites.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Offre une bombe aromatique d'ananas et de pêche très fruitée, bien que sans les nuances épicées et herbacées.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Très axé sur l'ananas et les notes résineuses-épicées, il s'éloigne toutefois du caractère cerise et bonbon doux.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Combine fruits intenses et nuances épicées-herbacées en fermentation, mais tire davantage sur la mangue que les fruits rouges.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Restitue bien le duo ananas et pêche douce en dry hop, sans égaler la complexité mojito et fruits rouges.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c06",
+   "c05",
+   "c14",
+   "c07",
+   "c09",
+   "c02",
+   "c03",
+   "c13",
+   "c01",
+   "c15"
+  ],
+  "phrases": {
+   "c06": "Partage les notes d'ananas, de bonbon et de fruits à noyau, mais manque du côté mentholé et fruits rouges.",
+   "c05": "Offre l'ananas, les fruits à noyau et la fraîcheur citron vert du profil mojito, sans toutefois les fruits rouges.",
+   "c14": "Rejoint Idaho Gem sur l'ananas, les agrumes et la touche herbacée-épicée, avec cependant un profil plus franchement tropical.",
+   "c07": "Apporte la douceur des fruits à noyau, de l'ananas et de l'orange, sans la facette menthe fraîche.",
+   "c09": "Parfait pour recréer l'accord singulier ananas et menthe fraîche, mais nettement plus mentholé et dépourvu de baies rouges.",
+   "c02": "Excellente intensité en dry hop avec ananas et agrumes, mais son côté résineux dank diffère des notes confites.",
+   "c03": "Offre une bombe aromatique d'ananas et de pêche très fruitée, bien que sans les nuances épicées et herbacées.",
+   "c13": "Très axé sur l'ananas et les notes résineuses-épicées, il s'éloigne toutefois du caractère cerise et bonbon doux.",
+   "c01": "Combine fruits intenses et nuances épicées-herbacées en fermentation, mais tire davantage sur la mangue que les fruits rouges.",
+   "c15": "Restitue bien le duo ananas et pêche douce en dry hop, sans égaler la complexité mojito et fruits rouges."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

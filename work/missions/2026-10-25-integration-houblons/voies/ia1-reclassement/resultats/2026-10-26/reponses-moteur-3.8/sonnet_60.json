@@ -1,0 +1,46 @@
+{
+ "casId": "sonnet@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "4810dd294fa4448b",
+ "simule": false,
+ "appel": 28,
+ "http": 200,
+ "latenceMs": 6260,
+ "finishReason": "STOP",
+ "jetonsEntree": 3681,
+ "jetonsSortie": 552,
+ "coutMicroChf": 12077,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Dérivé direct de la famille Golding avec des acides alpha très proches et une faible cohumulone, idéale pour une amertume propre.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Taux d'acides alpha similaire et profil doux parfait pour l'ébullition, bien qu'il présente un spectre d'amertume légèrement plus traditionnel.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Plage d'alpha très similaire et cohumulone modérée garantissant une amertume douce et noble, sans risque d'astringence.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Cohumulone basse et teneur en acides alpha identique, assurant une amertume délicate tout à fait équivalente à celle de Sonnet.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Alpha parfaitement superposables et cohumulone modérée pour une base amère fine, malgré une lignée plus continentale.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Taux d'alpha et de cohumulone très proches, apportant le même type d'amertume subtile et mesurée à 60 minutes.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Teneur en alpha et bêta concordante, idéale pour un dosage équivalent, mais avec une cohumulone légèrement plus marquée.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Plage d'alpha comparable pour le calcul des IBU, mais sa cohumulone un peu plus haute donnera une amertume plus présente.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Cohumulone très basse assurant une amertume très douce, même si ses acides alpha peuvent parfois monter un peu plus haut.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Taux d'alpha et cohumulone très bien alignés pour une amertume propre, bien qu'il ait un taux d'acides bêta plus élevé.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c14",
+   "c09",
+   "c20",
+   "c18",
+   "c07",
+   "c10",
+   "c02",
+   "c08",
+   "c03",
+   "c06"
+  ],
+  "phrases": {
+   "c14": "Dérivé direct de la famille Golding avec des acides alpha très proches et une faible cohumulone, idéale pour une amertume propre.",
+   "c09": "Taux d'acides alpha similaire et profil doux parfait pour l'ébullition, bien qu'il présente un spectre d'amertume légèrement plus traditionnel.",
+   "c20": "Plage d'alpha très similaire et cohumulone modérée garantissant une amertume douce et noble, sans risque d'astringence.",
+   "c18": "Cohumulone basse et teneur en acides alpha identique, assurant une amertume délicate tout à fait équivalente à celle de Sonnet.",
+   "c07": "Alpha parfaitement superposables et cohumulone modérée pour une base amère fine, malgré une lignée plus continentale.",
+   "c10": "Taux d'alpha et de cohumulone très proches, apportant le même type d'amertume subtile et mesurée à 60 minutes.",
+   "c02": "Teneur en alpha et bêta concordante, idéale pour un dosage équivalent, mais avec une cohumulone légèrement plus marquée.",
+   "c08": "Plage d'alpha comparable pour le calcul des IBU, mais sa cohumulone un peu plus haute donnera une amertume plus présente.",
+   "c03": "Cohumulone très basse assurant une amertume très douce, même si ses acides alpha peuvent parfois monter un peu plus haut.",
+   "c06": "Taux d'alpha et cohumulone très bien alignés pour une amertume propre, bien qu'il ait un taux d'acides bêta plus élevé."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

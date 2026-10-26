@@ -1,0 +1,19 @@
+# cmb2c — pastilles et leur phrase, radar en héros
+
+- Passe 2 de cmb2. Pastilles : sous la barre, une phrase dit le moment choisi en clair (« ébullition, 60 min avant la fin », « dry hop après fermentation, 3 j »). Radar : pleine largeur, rayon 128 : la figure du premier écran.
+
+## Ce qui reste de cmb2 (règle n° 1) et les corrections communes
+- cmb2 telle quelle : base jouable, écart chiffré face au retenu à droite de chaque barre (rpz4), barre segmentée des cinq moments, étapes ensemble alignées, huiles en tête, Panel OSU ›, moteur en direct (⇄, ×, ＋ recherche, fiche à l appui long).
+- 1. Pastilles : la pastille du critère redit son mot (« floral ⌄ ») ; « WP » devient « whirlpool » ; la manière propre à chaque version est ci-dessus.
+- 2. « vraiment hors 16D, avec le icône » : dans chaque tête, les mots de ses fiches hors des 12 familles seulement, derrière un losange dessiné au trait (le ◇ de sa capture), en gras ceux que lui seul dit ; la clé « hors 16D » dans la colonne Ta stout ; sous les rangées, la liste complète « hors 16D » ; rien hors 16D : un tiret gris (Cascade, Idaho 7 n en ont pas dans leurs fiches).
+- 3. Radar au style normalisé au moment : chaque axe dit ce que le houblon ajoute à ta stout, en crans de ta 16D, à l échelle du meilleur apport du moment sur cet axe (0,3 cran au moins) ; la zone pâle = la marge avant de sortir de ta 16D ; à 60′ les trois formes se séparent (captures `-moment`). Absolu inchangé (sur 125).
+- Défauts de cmb2 trouvés : « lui seul » montrait des mots de famille (citron vert, orange) ; la pastille critère sans mot ; WP / actif / après sibyllins ; le radar écrasé à 60′ et 10′ (échelle du domaine) ; pastille noire vide pour « rien » ; la colonne retenue sans écart ; 100 mots pile ; à deux houblons proches, « ~0,1★ » serré.
+- Défauts qui restent : la colonne retenue reste sans chiffre ; au style, le radar ne montre plus ta stout (elle est le centre : rien ajouté), elle reste en Absolu ; à 60′, une petite différence (0,1 cran) pèse un tiers de l axe.
+- Contrôles (25.10) : VARIANTES-CMP-4 ; TRAIT OK (44 pictos, 0 faute) ; QUAND OK ; MOTS OK (cmb2a 99, cmb2b 93, cmb2c 92, cmb2d 96).
+- Captures : `captures/<id>.png`, `<id>-moment.png` (60′), `<id>-nelson.png`, `<id>-long.png`. Source : `source/`.
+
+## Retouches de la critique (§ Passe 2)
+- Commentaire 2 en entier : « ses mots » reviennent comme sur sa capture : dans chaque tête, d'abord les mots hors des 12 familles (losange au trait), puis le mot précis d'une famille avec son picto (Cascade « citron vert », Idaho 7 « orange », Galaxy « cannabis ») ; sous les rangées, la liste complète (citron vert, pamplemousse, cassis, pin…), picto de sa famille ou losange, en gras ce que lui seul dit ; « — » seulement si ses fiches ne disent rien. Le « +n » qui débordait de la puce est retiré : la suite est dans la liste.
+- L'échelle du radar au style est écrite au pied du radar : « bord : le meilleur » (le détail, 0,3 cran au moins, au survol et dans l'aria-label).
+- cmb2d : la clé « ses mots » de la colonne Ta stout est masquée pour tenir 100 mots avec la clé des couleurs.
+- Contrôles rejoués : VARIANTES-CMP-4 ; TRAIT OK (59 pictos, 0 faute) ; QUAND OK ; MOTS OK (cmb2a 100, cmb2b 97, cmb2c 96, cmb2d 100).

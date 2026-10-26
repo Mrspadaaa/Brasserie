@@ -1,0 +1,46 @@
+{
+ "casId": "agnus@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "3b797ebc0900e7a5",
+ "simule": false,
+ "appel": 51,
+ "http": 200,
+ "latenceMs": 6226,
+ "finishReason": "STOP",
+ "jetonsEntree": 3764,
+ "jetonsSortie": 544,
+ "coutMicroChf": 12158,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Loral capture bien le côté floral-lavande et les agrumes d'Agnus, tout en remplaçant le cuir par des notes poivrées.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Ses notes d'encens et de curry rappellent le cuir et le tabac d'Agnus, complétées par des touches florales et d'agrumes.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Sa réglisse évoque la rusticité du tabac d'Agnus, combinée à une belle trame florale, épicée et hespéridée.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Le profil épicé et muscade fait écho au caractère sombre et rustique d'Agnus, mais sans sa nuance lavande.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Ella reproduit le duo agrumes et épices avec une touche anisée, mais apporte des fruits tropicaux absents d'Agnus.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Horizon offre une signature classique floral, agrumes et épices, bien que plus légère et sans les notes fumées.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"L'origan offre un profil herbacé et aromatique proche des herbes d'Agnus, bien que la groseille soit plus fruitée.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Bon profil agrumes et épicé pour un dry hop percutant, mais orienté trop nettement vers les fruits exotiques.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Son équilibre épicé, floral et mandarine fait le lien avec Agnus, malgré une intensité aromatique plus délicate.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Dana assure le côté agrumes et épicé avec une nuance de pin, mais ignore l'aspect cuir et tabac.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c15",
+   "c07",
+   "c10",
+   "c03",
+   "c02",
+   "c12",
+   "c17",
+   "c16",
+   "c11"
+  ],
+  "phrases": {
+   "c01": "Loral capture bien le côté floral-lavande et les agrumes d'Agnus, tout en remplaçant le cuir par des notes poivrées.",
+   "c15": "Ses notes d'encens et de curry rappellent le cuir et le tabac d'Agnus, complétées par des touches florales et d'agrumes.",
+   "c07": "Sa réglisse évoque la rusticité du tabac d'Agnus, combinée à une belle trame florale, épicée et hespéridée.",
+   "c10": "Le profil épicé et muscade fait écho au caractère sombre et rustique d'Agnus, mais sans sa nuance lavande.",
+   "c03": "Ella reproduit le duo agrumes et épices avec une touche anisée, mais apporte des fruits tropicaux absents d'Agnus.",
+   "c02": "Horizon offre une signature classique floral, agrumes et épices, bien que plus légère et sans les notes fumées.",
+   "c12": "L'origan offre un profil herbacé et aromatique proche des herbes d'Agnus, bien que la groseille soit plus fruitée.",
+   "c17": "Bon profil agrumes et épicé pour un dry hop percutant, mais orienté trop nettement vers les fruits exotiques.",
+   "c16": "Son équilibre épicé, floral et mandarine fait le lien avec Agnus, malgré une intensité aromatique plus délicate.",
+   "c11": "Dana assure le côté agrumes et épicé avec une nuance de pin, mais ignore l'aspect cuir et tabac."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

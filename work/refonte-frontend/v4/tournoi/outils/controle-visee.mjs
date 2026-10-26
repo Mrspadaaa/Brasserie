@@ -35,7 +35,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
+import { versUrl, existe } from './lib/cible.mjs';
 
 const ICI = path.dirname(fileURLToPath(import.meta.url));
 const RACINE = path.resolve(ICI, '../../../../..');
@@ -49,7 +50,7 @@ const famille = opt('famille', 'tropical');
 const pageOpt = opt('page', '');
 if (!pageOpt && !pos[0]) { console.log('Usage : node controle-visee.mjs <dossier> [--famille=tropical] [--page=chemin]'); process.exit(2); }
 const fPage = path.resolve(pageOpt || path.join(pos[0], 'biere', 'etat.html'));
-if (!fs.existsSync(fPage)) { console.log('VISEE ECHEC : page absente (' + fPage + ')'); process.exit(2); }
+if (!existe(fPage)) { console.log('VISEE ECHEC : page absente (' + fPage + ')'); process.exit(2); }
 
 const SEL = '[data-famille-ligne="' + famille + '"]';
 const attente = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -57,7 +58,7 @@ const browser = await puppeteer.launch({ executablePath: CHROME, headless: true 
 const p = await browser.newPage();
 await p.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
 const charger = async () => {
-  await p.goto(pathToFileURL(fPage).href, { waitUntil: 'networkidle0', timeout: 30000 }).catch(() => {});
+  await p.goto(versUrl(fPage).href, { waitUntil: 'networkidle0', timeout: 30000 }).catch(() => {});
   await attente(500);
 };
 

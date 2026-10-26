@@ -1,0 +1,46 @@
+{
+ "casId": "flyer@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "601b420a9b51927f",
+ "simule": false,
+ "appel": 56,
+ "http": 200,
+ "latenceMs": 1949,
+ "finishReason": "STOP",
+ "jetonsEntree": 3724,
+ "jetonsSortie": 560,
+ "coutMicroChf": 3147,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Pilgrim partage l'origine britannique, un usage dual et des acides alpha proches, avec des notes épicées et d'agrumes similaires pour l'ébullition.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Phoenix offre un profil britannique similaire avec des acides alpha adaptés et des notes épicées, bien que son profil penche vers le chocolat.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Herald apporte une amertume britannique comparable grâce à ses acides alpha, mais se distingue par un profil plus axé sur l'orange.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Boomerang propose un usage dual et des acides alpha proches, combinant des notes épicées et d'agrumes qui conviennent bien à l'ébullition.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Olympic présente des acides alpha et un usage dual très proches, avec une dominante d'agrumes et d'épices adaptée au brassage.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Caliente offre un bon niveau d'acides alpha pour l'amertume, mais ses notes fruitées et de fruits à noyau diffèrent du profil épicé initial.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Sticklebract possède les acides alpha requis pour l'ébullition, mais ses arômes de pin s'éloignent des notes de réglisse et de caramel.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Hallertau Taurus convient pour l'amertume avec de bons acides alpha, mais ses notes de chocolat et de banane contrastent avec Flyer.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Southern Cross assure une amertume correcte par ses acides alpha, mais ses arômes de citron et fruits tropicaux changent le profil épicé.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Chinook fournit l'amertume recherchée grâce à ses acides alpha, mais ses notes marquées de résine et de pin s'écartent du modèle.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c07",
+   "c19",
+   "c08",
+   "c13",
+   "c18",
+   "c03",
+   "c04",
+   "c10",
+   "c20",
+   "c17"
+  ],
+  "phrases": {
+   "c07": "Pilgrim partage l'origine britannique, un usage dual et des acides alpha proches, avec des notes épicées et d'agrumes similaires pour l'ébullition.",
+   "c19": "Phoenix offre un profil britannique similaire avec des acides alpha adaptés et des notes épicées, bien que son profil penche vers le chocolat.",
+   "c08": "Herald apporte une amertume britannique comparable grâce à ses acides alpha, mais se distingue par un profil plus axé sur l'orange.",
+   "c13": "Boomerang propose un usage dual et des acides alpha proches, combinant des notes épicées et d'agrumes qui conviennent bien à l'ébullition.",
+   "c18": "Olympic présente des acides alpha et un usage dual très proches, avec une dominante d'agrumes et d'épices adaptée au brassage.",
+   "c03": "Caliente offre un bon niveau d'acides alpha pour l'amertume, mais ses notes fruitées et de fruits à noyau diffèrent du profil épicé initial.",
+   "c04": "Sticklebract possède les acides alpha requis pour l'ébullition, mais ses arômes de pin s'éloignent des notes de réglisse et de caramel.",
+   "c10": "Hallertau Taurus convient pour l'amertume avec de bons acides alpha, mais ses notes de chocolat et de banane contrastent avec Flyer.",
+   "c20": "Southern Cross assure une amertume correcte par ses acides alpha, mais ses arômes de citron et fruits tropicaux changent le profil épicé.",
+   "c17": "Chinook fournit l'amertume recherchée grâce à ses acides alpha, mais ses notes marquées de résine et de pin s'écartent du modèle."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

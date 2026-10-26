@@ -1,0 +1,46 @@
+{
+ "casId": "idaho-gem@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "1aff815dcfbaf4b1",
+ "simule": false,
+ "appel": 16,
+ "http": 200,
+ "latenceMs": 2004,
+ "finishReason": "STOP",
+ "jetonsEntree": 3750,
+ "jetonsSortie": 540,
+ "coutMicroChf": 3094,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Le Polaris offre un alpha élevé pour l'ébullition et partage les notes de menthe et d'ananas, bien qu'il soit plus résineux.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Southern Cross offre des acides alpha proches et des notes d'agrumes, mais se distingue par son profil plus herbacé et résineux.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Galaxy présente des acides alpha similaires et des notes fruitées d'ananas, mais possède un profil tropical beaucoup plus intense.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Sabro partage les notes de menthe et d'agrumes avec un bon alpha, mais apporte des accents prononcés de noix de coco.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Boomerang offre des acides alpha adaptés à l'ébullition et des touches d'agrumes, mais manque la complexité fruitée de l'Idaho Gem.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Pacific Jade convient pour l'amertume avec ses acides alpha proches et ses agrumes, mais est plus épicé et moins fruité.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Sorachi Ace propose un alpha similaire et des agrumes, mais ses notes distinctes d'aneth et de céleri s'éloignent de l'Idaho Gem.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Yeoman assure une bonne amertume grâce à son alpha, mais son profil noble et herbacé diffère nettement des fruits de l'Idaho Gem.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Olympic offre un usage dual et des agrumes corrects, mais son profil aromatique est plus discret et moins exotique.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Zula couvre la même plage d'acides alpha et propose des fruits tropicaux, mais ses notes manquent de la signature mentholée.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c13",
+   "c05",
+   "c17",
+   "c11",
+   "c10",
+   "c12",
+   "c16",
+   "c09",
+   "c20"
+  ],
+  "phrases": {
+   "c01": "Le Polaris offre un alpha élevé pour l'ébullition et partage les notes de menthe et d'ananas, bien qu'il soit plus résineux.",
+   "c13": "Southern Cross offre des acides alpha proches et des notes d'agrumes, mais se distingue par son profil plus herbacé et résineux.",
+   "c05": "Galaxy présente des acides alpha similaires et des notes fruitées d'ananas, mais possède un profil tropical beaucoup plus intense.",
+   "c17": "Sabro partage les notes de menthe et d'agrumes avec un bon alpha, mais apporte des accents prononcés de noix de coco.",
+   "c11": "Boomerang offre des acides alpha adaptés à l'ébullition et des touches d'agrumes, mais manque la complexité fruitée de l'Idaho Gem.",
+   "c10": "Pacific Jade convient pour l'amertume avec ses acides alpha proches et ses agrumes, mais est plus épicé et moins fruité.",
+   "c12": "Sorachi Ace propose un alpha similaire et des agrumes, mais ses notes distinctes d'aneth et de céleri s'éloignent de l'Idaho Gem.",
+   "c16": "Yeoman assure une bonne amertume grâce à son alpha, mais son profil noble et herbacé diffère nettement des fruits de l'Idaho Gem.",
+   "c09": "Olympic offre un usage dual et des agrumes corrects, mais son profil aromatique est plus discret et moins exotique.",
+   "c20": "Zula couvre la même plage d'acides alpha et propose des fruits tropicaux, mais ses notes manquent de la signature mentholée."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

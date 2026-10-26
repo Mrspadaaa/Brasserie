@@ -1,0 +1,46 @@
+{
+ "casId": "green-bullet@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "b3c3d774a6792272",
+ "simule": true,
+ "appel": 48,
+ "http": 200,
+ "latenceMs": 0,
+ "finishReason": "STOP",
+ "jetonsEntree": 2163,
+ "jetonsSortie": 148,
+ "coutMicroChf": 5444,
+ "texte": "{\"classement\":[{\"id\":\"c01\",\"phrase\":\"Simulé : ordre du moteur.\"},{\"id\":\"c02\",\"phrase\":\"Simulé : ordre du moteur.\"},{\"id\":\"c03\",\"phrase\":\"Simulé : ordre du moteur.\"},{\"id\":\"c04\",\"phrase\":\"Simulé : ordre du moteur.\"},{\"id\":\"c05\",\"phrase\":\"Simulé : ordre du moteur.\"},{\"id\":\"c06\",\"phrase\":\"Simulé : ordre du moteur.\"},{\"id\":\"c07\",\"phrase\":\"Simulé : ordre du moteur.\"},{\"id\":\"c08\",\"phrase\":\"Simulé : ordre du moteur.\"},{\"id\":\"c09\",\"phrase\":\"Simulé : ordre du moteur.\"},{\"id\":\"c10\",\"phrase\":\"Simulé : ordre du moteur.\"}]}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c02",
+   "c03",
+   "c04",
+   "c05",
+   "c06",
+   "c07",
+   "c08",
+   "c09",
+   "c10"
+  ],
+  "phrases": {
+   "c01": "Simulé : ordre du moteur.",
+   "c02": "Simulé : ordre du moteur.",
+   "c03": "Simulé : ordre du moteur.",
+   "c04": "Simulé : ordre du moteur.",
+   "c05": "Simulé : ordre du moteur.",
+   "c06": "Simulé : ordre du moteur.",
+   "c07": "Simulé : ordre du moteur.",
+   "c08": "Simulé : ordre du moteur.",
+   "c09": "Simulé : ordre du moteur.",
+   "c10": "Simulé : ordre du moteur."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

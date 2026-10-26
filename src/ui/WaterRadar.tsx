@@ -70,11 +70,11 @@ const HALF = 24;
 /** Un anneau tous les 50 ppm — c'est la graduation qu'on lit sur la toile. */
 const RING_STEP = 50;
 
-const GREEN = '#6E9B5B'; // hop — la fourchette du style
-const STRAW = '#F2C14E'; // ebc-straw — l'eau corrigée
-const BLUE = '#5B8AA6'; // water — l'eau de départ
+const GREEN = 'rgb(var(--hop))'; // hop — la fourchette du style
+const STRAW = 'rgb(var(--ebc-straw))'; // ebc-straw — l'eau corrigée
+const BLUE = 'rgb(var(--water))'; // water — l'eau de départ
 const AMBER = '#C87A2C'; // ebc-amber — hors fourchette
-const GRID = '#2C2521'; // cave-800
+const GRID = 'rgb(var(--cave-800))'; // cave-800
 
 const rad = (d: number) => (d * Math.PI) / 180;
 const angle = (i: number) => -90 + i * 60;
@@ -307,8 +307,8 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
               cx={x}
               cy={y}
               r={lit.has(a.ion) ? 6 : 4.5}
-              fill={!a.targeted ? '#9A8A7E' : a.alarm ? AMBER : GREEN}
-              stroke="#12100E"
+              fill={!a.targeted ? 'rgb(var(--cave-texte-400))' : a.alarm ? AMBER : GREEN}
+              stroke="rgb(var(--cave-950))"
               strokeWidth={1.5}
             />
           );
@@ -334,7 +334,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
               y={ty - 2}
               textAnchor="middle"
               fontSize={10}
-              fill="#9A8A7E"
+              fill="rgb(var(--cave-texte-400))"
             >
               {ppm}
             </text>
@@ -349,7 +349,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
             </tspan>
           );
           const valeur = (
-            <tspan fontSize={fitToControls ? 19 : 17} fontWeight={700} fill={a.alarm ? AMBER : '#D8CEC5'}>
+            <tspan fontSize={fitToControls ? 19 : 17} fontWeight={700} fill={a.alarm ? AMBER : 'rgb(var(--cave-texte-200))'}>
               {a.reading}
               {flèche}
             </tspan>
@@ -361,7 +361,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
                 y={a.ly}
                 textAnchor={a.anchor}
                 fontSize={fitToControls ? 14 : 12.5}
-                fill={lit.has(a.ion) ? STRAW : '#9A8A7E'}
+                fill={lit.has(a.ion) ? STRAW : 'rgb(var(--cave-texte-400))'}
               >
                 {ION_SYMBOL[a.ion]}
                 {a.serre && <> {valeur}</>}
@@ -385,7 +385,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
                 y={a.ly + (a.serre ? 17 : 31)}
                 textAnchor={a.anchor}
                 fontSize={fitToControls ? 13 : 11.5}
-                fill={lit.has(a.ion) ? STRAW : '#9A8A7E'}
+                fill={lit.has(a.ion) ? STRAW : 'rgb(var(--cave-texte-400))'}
               >
                 {a.targeted ? `${a.band.min}–${a.band.max}` : 'sans cible'}
               </text>

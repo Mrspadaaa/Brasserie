@@ -1,0 +1,46 @@
+{
+ "casId": "progress@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "9756e8bf32686e15",
+ "simule": false,
+ "appel": 36,
+ "http": 200,
+ "latenceMs": 2083,
+ "finishReason": "STOP",
+ "jetonsEntree": 3634,
+ "jetonsSortie": 530,
+ "coutMicroChf": 3019,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Bramling Cross partage le profil britannique, le cassis et les acides alpha proches, mais ajoute des notes vanillées absentes du Progress.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"WGV offre un profil britannique et des acides alpha similaires, bien que sa cohumulone soit plus haute et ses arômes plus terreux.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Perle allemand propose un alpha et un profil mentholé et fruité proches, mais s'éloigne par des notes de fruits à noyau.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Northern Brewer allemand possède la menthe et l'herbe coupée du Progress avec un bon alpha, mais apporte des notes de pin.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Perle US convient pour son usage dual et son alpha, mais son profil herbacé et épicé est moins fruité.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Northdown offre des acides alpha et des huiles proches du Progress, mais penche davantage vers le pin et le cèdre.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Challenger dispose d'un alpha adapté à l'ébullition, mais ses notes de thé vert et de cèdre diffèrent du miel originel.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Boadicea présente un alpha proche pour l'amertume, mais ses accents floraux prononcés remplacent le cassis et la menthe.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Diamant a un alpha similaire, mais ses notes de fenouil et lavande s'éloignent clairement du profil fruité et mentholé.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Godiva correspond bien en alpha, mais ses arômes de vin blanc et groseille diffèrent nettement des notes douces et de cassis.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c18",
+   "c10",
+   "c13",
+   "c03",
+   "c06",
+   "c05",
+   "c14",
+   "c15",
+   "c02",
+   "c04"
+  ],
+  "phrases": {
+   "c18": "Bramling Cross partage le profil britannique, le cassis et les acides alpha proches, mais ajoute des notes vanillées absentes du Progress.",
+   "c10": "WGV offre un profil britannique et des acides alpha similaires, bien que sa cohumulone soit plus haute et ses arômes plus terreux.",
+   "c13": "Perle allemand propose un alpha et un profil mentholé et fruité proches, mais s'éloigne par des notes de fruits à noyau.",
+   "c03": "Northern Brewer allemand possède la menthe et l'herbe coupée du Progress avec un bon alpha, mais apporte des notes de pin.",
+   "c06": "Perle US convient pour son usage dual et son alpha, mais son profil herbacé et épicé est moins fruité.",
+   "c05": "Northdown offre des acides alpha et des huiles proches du Progress, mais penche davantage vers le pin et le cèdre.",
+   "c14": "Challenger dispose d'un alpha adapté à l'ébullition, mais ses notes de thé vert et de cèdre diffèrent du miel originel.",
+   "c15": "Boadicea présente un alpha proche pour l'amertume, mais ses accents floraux prononcés remplacent le cassis et la menthe.",
+   "c02": "Diamant a un alpha similaire, mais ses notes de fenouil et lavande s'éloignent clairement du profil fruité et mentholé.",
+   "c04": "Godiva correspond bien en alpha, mais ses arômes de vin blanc et groseille diffèrent nettement des notes douces et de cassis."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

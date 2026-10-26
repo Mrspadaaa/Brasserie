@@ -1,0 +1,1599 @@
+{
+  "meta": {
+    "commit": "36ba5643",
+    "fichiersModifiesSrcEtPrototypes": 0,
+    "machine": "Intel(R) Core(TM) i5-14600KF · 20 cœurs",
+    "node": "v24.19.0",
+    "n": 8,
+    "taux": [
+      1,
+      4
+    ],
+    "build": "production (vite build --mode banc, import.meta.env.DEV=true, VITE_HOP_V4=on)",
+    "dossier": "C:\\Users\\mrspa\\AppData\\Local\\Temp\\affinee-banc-hop-prod\\dist",
+    "fixture": "?dev-local&etape=houblons (Stout export 16D, Nugget 46 g à 60′, stock vide), Comparer sur Cascade/Idaho 7/Galaxy puis Citra/Mosaic/Simcoe",
+    "erreurs": [],
+    "bloquees": [
+      "fonts.googleapis.com"
+    ]
+  },
+  "taux": {
+    "1": {
+      "mesures": [
+        {
+          "id": "ecran:etape-houblons",
+          "genre": "ecran",
+          "nom": "premier écran : de la navigation à l'étape Houblons montée (auth factice, fixture, hors préchauffage)",
+          "taux": 1,
+          "image": [
+            489.89999997615814
+          ],
+          "pose": [
+            489.89999997615814
+          ],
+          "domPret": [
+            489.89999997615814
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 1,
+            "imageMed": 489.89999997615814,
+            "imageP95": 489.89999997615814,
+            "poseMed": 489.89999997615814,
+            "poseP95": 489.89999997615814,
+            "budget": "p95 ≤ 625,0",
+            "verdict": "OK"
+          }
+        },
+        {
+          "id": "plancher",
+          "genre": "info",
+          "nom": "plancher d'image : une action vide (1 à 2 images)",
+          "taux": 1,
+          "image": [
+            0.8999999761581421,
+            0.2999999523162842,
+            0.19999998807907104,
+            0.30000001192092896,
+            0.3999999761581421,
+            0.19999998807907104,
+            0.3999999761581421,
+            0.40000003576278687,
+            0.19999998807907104,
+            0.30000001192092896,
+            0.20000004768371582,
+            0.30000001192092896
+          ],
+          "pose": [
+            0.8999999761581421,
+            0.2999999523162842,
+            0.19999998807907104,
+            0.30000001192092896,
+            0.3999999761581421,
+            0.19999998807907104,
+            0.3999999761581421,
+            0.40000003576278687,
+            0.19999998807907104,
+            0.30000001192092896,
+            0.20000004768371582,
+            0.30000001192092896
+          ],
+          "domPret": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 12,
+            "imageMed": 0.30000001192092896,
+            "imageP95": 0.8999999761581421,
+            "poseMed": 0.30000001192092896,
+            "poseP95": 0.8999999761581421,
+            "budget": "—",
+            "verdict": "rapporté"
+          }
+        },
+        {
+          "id": "comparer:ouverture-froid",
+          "genre": "toucher",
+          "nom": "ouvrir Comparer (3 houblons : Cascade, Idaho 7, Galaxy) — 1re ouverture, chunk et calculs à froid",
+          "taux": 1,
+          "image": [
+            464.60000002384186
+          ],
+          "pose": [
+            464.60000002384186
+          ],
+          "domPret": [
+            458.80000001192093
+          ],
+          "atteint": true,
+          "froid": true,
+          "stats": {
+            "n": 1,
+            "imageMed": 464.60000002384186,
+            "imageP95": 464.60000002384186,
+            "poseMed": 464.60000002384186,
+            "poseP95": 464.60000002384186,
+            "budget": "p95 ≤ 25,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "comparer:ouverture",
+          "genre": "toucher",
+          "nom": "ouvrir Comparer (3 houblons : Cascade, Idaho 7, Galaxy) — réouverture",
+          "taux": 1,
+          "image": [
+            191.5,
+            108.09999996423721,
+            115.39999997615814,
+            191.5999999642372,
+            75.69999998807907,
+            73.59999996423721,
+            164.80000001192093,
+            75.29999995231628
+          ],
+          "pose": [
+            191.5,
+            108.09999996423721,
+            115.39999997615814,
+            191.5999999642372,
+            75.69999998807907,
+            73.59999996423721,
+            164.80000001192093,
+            75.29999995231628
+          ],
+          "domPret": [
+            184.70000004768372,
+            104.69999998807907,
+            109.09999996423721,
+            185.0999999642372,
+            72.29999995231628,
+            70.5,
+            158.80000001192093,
+            72
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 111.74999997019768,
+            "imageP95": 191.5999999642372,
+            "poseMed": 111.74999997019768,
+            "poseP95": 191.5999999642372,
+            "budget": "p95 ≤ 25,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "suggerer:ouverture-froid",
+          "genre": "toucher",
+          "nom": "ouvrir Suggérer (visée de la fixture) — 1re ouverture, chunk et calculs à froid",
+          "taux": 1,
+          "image": [
+            326.69999998807907
+          ],
+          "pose": [
+            333.19999998807907
+          ],
+          "domPret": [
+            325.39999997615814
+          ],
+          "atteint": true,
+          "froid": true,
+          "stats": {
+            "n": 1,
+            "imageMed": 326.69999998807907,
+            "imageP95": 326.69999998807907,
+            "poseMed": 333.19999998807907,
+            "poseP95": 333.19999998807907,
+            "budget": "p95 ≤ 25,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "suggerer:ouverture",
+          "genre": "toucher",
+          "nom": "ouvrir Suggérer (visée de la fixture) — réouverture",
+          "taux": 1,
+          "image": [
+            61.19999998807907,
+            83,
+            34.40000003576279,
+            32.5,
+            89.5,
+            35.200000047683716,
+            69.70000004768372,
+            33.5
+          ],
+          "pose": [
+            61.19999998807907,
+            83,
+            34.40000003576279,
+            32.5,
+            89.5,
+            35.200000047683716,
+            69.70000004768372,
+            33.5
+          ],
+          "domPret": [
+            58.30000001192093,
+            80.10000002384186,
+            33.10000002384186,
+            31.19999998807907,
+            86.69999998807907,
+            33.90000003576279,
+            67,
+            32.19999998807907
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 48.20000001788139,
+            "imageP95": 89.5,
+            "poseMed": 48.20000001788139,
+            "poseP95": 89.5,
+            "budget": "p95 ≤ 25,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "fiche:ouverture-froid",
+          "genre": "toucher",
+          "nom": "ouvrir la fiche d'un houblon (appui long sur la carte de Ma bière) — 1re ouverture",
+          "taux": 1,
+          "image": [
+            125.89999997615814
+          ],
+          "pose": [
+            125.89999997615814
+          ],
+          "domPret": [
+            118.69999998807907
+          ],
+          "atteint": true,
+          "froid": true,
+          "stats": {
+            "n": 1,
+            "imageMed": 125.89999997615814,
+            "imageP95": 125.89999997615814,
+            "poseMed": 125.89999997615814,
+            "poseP95": 125.89999997615814,
+            "budget": "p95 ≤ 25,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "fiche:ouverture",
+          "genre": "toucher",
+          "nom": "ouvrir la fiche d'un houblon (appui long ; 450 ms d'appui retirées, +0 à 4 ms de minuterie)",
+          "taux": 1,
+          "image": [
+            44.5,
+            133.60000002384186,
+            43.39999997615814,
+            97.69999998807907,
+            48,
+            48.69999998807907,
+            44.89999997615814,
+            107.40000003576279
+          ],
+          "pose": [
+            44.5,
+            133.60000002384186,
+            43.39999997615814,
+            97.69999998807907,
+            48,
+            48.69999998807907,
+            44.89999997615814,
+            107.40000003576279
+          ],
+          "domPret": [
+            41.80000001192093,
+            128.69999998807907,
+            41,
+            92.90000003576279,
+            45.5,
+            46.30000001192093,
+            42.39999997615814,
+            102.10000002384186
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 48.349999994039536,
+            "imageP95": 133.60000002384186,
+            "poseMed": 48.349999994039536,
+            "poseP95": 133.60000002384186,
+            "budget": "p95 ≤ 25,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "comparer:moment-cache",
+          "genre": "glisser",
+          "nom": "Comparer, changement de moment déjà calculé (retour sur 60′ ↔ dry hop après)",
+          "taux": 1,
+          "image": [
+            14.699999988079071,
+            15.600000023841858,
+            32.59999996423721,
+            20.900000035762787,
+            17,
+            18,
+            23.599999964237213,
+            15.300000011920929
+          ],
+          "pose": [
+            14.699999988079071,
+            15.600000023841858,
+            32.59999996423721,
+            20.900000035762787,
+            17,
+            18,
+            23.599999964237213,
+            15.300000011920929
+          ],
+          "domPret": [
+            11.899999976158142,
+            12.300000011920929,
+            27.30000001192093,
+            14.900000035762787,
+            11.599999964237213,
+            13,
+            20.5,
+            12.300000011920929
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 17.5,
+            "imageP95": 32.59999996423721,
+            "poseMed": 17.5,
+            "poseP95": 32.59999996423721,
+            "budget": "4,0 · 8,3",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "comparer:moment",
+          "genre": "glisser",
+          "nom": "Comparer, changement de moment jamais calculé (2 ensembles × 4 moments)",
+          "taux": 1,
+          "image": [
+            18.100000023841858,
+            31,
+            16.30000001192093,
+            33.10000002384186,
+            14.400000035762787,
+            14,
+            27.600000023841858,
+            15
+          ],
+          "pose": [
+            18.100000023841858,
+            31,
+            16.30000001192093,
+            33.10000002384186,
+            14.400000035762787,
+            14,
+            27.600000023841858,
+            15
+          ],
+          "domPret": [
+            14.900000035762787,
+            25.80000001192093,
+            13.699999988079071,
+            27.19999998807907,
+            11.5,
+            11.199999988079071,
+            22.600000023841858,
+            12
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 17.200000017881393,
+            "imageP95": 33.10000002384186,
+            "poseMed": 17.200000017881393,
+            "poseP95": 33.10000002384186,
+            "budget": "4,0 · 8,3",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "dose:plus",
+          "genre": "glisser",
+          "nom": "Ma bière, toucher sur + des grammes (pas de dose, dose jamais vue)",
+          "taux": 1,
+          "image": [
+            42.90000003576279,
+            25,
+            28.400000035762787,
+            29.19999998807907,
+            14.099999964237213,
+            21.900000035762787,
+            13.799999952316284,
+            13.599999964237213
+          ],
+          "pose": [
+            69,
+            53.700000047683716,
+            50.5,
+            51.69999998807907,
+            24.599999964237213,
+            27.5,
+            24.19999998807907,
+            24.599999964237213
+          ],
+          "domPret": [
+            28.30000001192093,
+            12.400000035762787,
+            16.19999998807907,
+            15.699999988079071,
+            7.699999988079071,
+            7.900000035762787,
+            7.5,
+            7.300000011920929
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 23.450000017881393,
+            "imageP95": 42.90000003576279,
+            "poseMed": 39,
+            "poseP95": 69,
+            "budget": "4,0 · 8,3",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "dose:moins",
+          "genre": "info",
+          "nom": "Ma bière, toucher sur − des grammes (retour ; rapporté)",
+          "taux": 1,
+          "image": [
+            19.899999976158142,
+            18.80000001192093,
+            17.899999976158142,
+            22.600000023841858,
+            28.100000023841858,
+            13.100000023841858,
+            14.300000011920929,
+            29
+          ],
+          "pose": [
+            35.799999952316284,
+            23.900000035762787,
+            19.599999964237213,
+            34.700000047683716,
+            41.60000002384186,
+            18.600000023841858,
+            21.5,
+            44.80000001192093
+          ],
+          "domPret": [
+            0.2999999523162842,
+            0.40000003576278687,
+            0.2999999523162842,
+            0.30000001192092896,
+            0.40000003576278687,
+            0.3999999761581421,
+            0.5,
+            0.5
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 19.349999994039536,
+            "imageP95": 29,
+            "poseMed": 29.30000004172325,
+            "poseP95": 44.80000001192093,
+            "budget": "—",
+            "verdict": "rapporté"
+          }
+        }
+      ],
+      "tasMo": 39.18472862243652
+    },
+    "4": {
+      "mesures": [
+        {
+          "id": "ecran:etape-houblons",
+          "genre": "ecran",
+          "nom": "premier écran : de la navigation à l'étape Houblons montée (auth factice, fixture, hors préchauffage)",
+          "taux": 4,
+          "image": [
+            1369.6000000238419
+          ],
+          "pose": [
+            1369.6000000238419
+          ],
+          "domPret": [
+            1369.6000000238419
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 1,
+            "imageMed": 1369.6000000238419,
+            "imageP95": 1369.6000000238419,
+            "poseMed": 1369.6000000238419,
+            "poseP95": 1369.6000000238419,
+            "budget": "p95 ≤ 2 500,0",
+            "verdict": "OK"
+          }
+        },
+        {
+          "id": "plancher",
+          "genre": "info",
+          "nom": "plancher d'image : une action vide (1 à 2 images)",
+          "taux": 4,
+          "image": [
+            5.5,
+            0.5,
+            0.5,
+            0.5999999642372131,
+            0.5999999642372131,
+            2.400000035762787,
+            0.3999999761581421,
+            0.7000000476837158,
+            1.199999988079071,
+            0.6000000238418579,
+            0.8999999761581421,
+            0.40000003576278687
+          ],
+          "pose": [
+            5.5,
+            0.5,
+            0.5,
+            0.5999999642372131,
+            0.5999999642372131,
+            2.400000035762787,
+            0.3999999761581421,
+            0.7000000476837158,
+            1.199999988079071,
+            0.6000000238418579,
+            0.8999999761581421,
+            0.40000003576278687
+          ],
+          "domPret": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 12,
+            "imageMed": 0.5999999940395355,
+            "imageP95": 5.5,
+            "poseMed": 0.5999999940395355,
+            "poseP95": 5.5,
+            "budget": "—",
+            "verdict": "rapporté"
+          }
+        },
+        {
+          "id": "comparer:ouverture-froid",
+          "genre": "toucher",
+          "nom": "ouvrir Comparer (3 houblons : Cascade, Idaho 7, Galaxy) — 1re ouverture, chunk et calculs à froid",
+          "taux": 4,
+          "image": [
+            904.2999999523163
+          ],
+          "pose": [
+            904.2999999523163
+          ],
+          "domPret": [
+            883.6999999880791
+          ],
+          "atteint": true,
+          "froid": true,
+          "stats": {
+            "n": 1,
+            "imageMed": 904.2999999523163,
+            "imageP95": 904.2999999523163,
+            "poseMed": 904.2999999523163,
+            "poseP95": 904.2999999523163,
+            "budget": "p95 ≤ 100,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "comparer:ouverture",
+          "genre": "toucher",
+          "nom": "ouvrir Comparer (3 houblons : Cascade, Idaho 7, Galaxy) — réouverture",
+          "taux": 4,
+          "image": [
+            491.19999998807907,
+            359.39999997615814,
+            1137.6000000238419,
+            432.9000000357628,
+            330.69999998807907,
+            497.80000001192093,
+            670.1999999880791,
+            626.8999999761581
+          ],
+          "pose": [
+            491.19999998807907,
+            359.39999997615814,
+            1137.6000000238419,
+            432.9000000357628,
+            330.69999998807907,
+            497.80000001192093,
+            670.1999999880791,
+            626.8999999761581
+          ],
+          "domPret": [
+            481.0999999642372,
+            348.89999997615814,
+            1121.1000000238419,
+            423.80000001192093,
+            321.69999998807907,
+            479.5,
+            656,
+            615.5
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 494.5,
+            "imageP95": 1137.6000000238419,
+            "poseMed": 494.5,
+            "poseP95": 1137.6000000238419,
+            "budget": "p95 ≤ 100,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "suggerer:ouverture-froid",
+          "genre": "toucher",
+          "nom": "ouvrir Suggérer (visée de la fixture) — 1re ouverture, chunk et calculs à froid",
+          "taux": 4,
+          "image": [
+            406.9000000357628
+          ],
+          "pose": [
+            433.2000000476837
+          ],
+          "domPret": [
+            399.80000001192093
+          ],
+          "atteint": true,
+          "froid": true,
+          "stats": {
+            "n": 1,
+            "imageMed": 406.9000000357628,
+            "imageP95": 406.9000000357628,
+            "poseMed": 433.2000000476837,
+            "poseP95": 433.2000000476837,
+            "budget": "p95 ≤ 100,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "suggerer:ouverture",
+          "genre": "toucher",
+          "nom": "ouvrir Suggérer (visée de la fixture) — réouverture",
+          "taux": 4,
+          "image": [
+            127.30000001192093,
+            123,
+            142,
+            424.5,
+            175.19999998807907,
+            151.39999997615814,
+            641.5999999642372,
+            168.60000002384186
+          ],
+          "pose": [
+            127.30000001192093,
+            123,
+            142,
+            424.5,
+            175.19999998807907,
+            151.39999997615814,
+            641.5999999642372,
+            168.60000002384186
+          ],
+          "domPret": [
+            122.89999997615814,
+            119,
+            138.39999997615814,
+            409.7000000476837,
+            171.29999995231628,
+            147.30000001192093,
+            627.6999999880791,
+            154.80000001192093
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 160,
+            "imageP95": 641.5999999642372,
+            "poseMed": 160,
+            "poseP95": 641.5999999642372,
+            "budget": "p95 ≤ 100,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "fiche:ouverture-froid",
+          "genre": "toucher",
+          "nom": "ouvrir la fiche d'un houblon (appui long sur la carte de Ma bière) — 1re ouverture",
+          "taux": 4,
+          "image": [
+            255.60000002384186
+          ],
+          "pose": [
+            255.60000002384186
+          ],
+          "domPret": [
+            244.20000004768372
+          ],
+          "atteint": true,
+          "froid": true,
+          "stats": {
+            "n": 1,
+            "imageMed": 255.60000002384186,
+            "imageP95": 255.60000002384186,
+            "poseMed": 255.60000002384186,
+            "poseP95": 255.60000002384186,
+            "budget": "p95 ≤ 100,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "fiche:ouverture",
+          "genre": "toucher",
+          "nom": "ouvrir la fiche d'un houblon (appui long ; 450 ms d'appui retirées, +0 à 4 ms de minuterie)",
+          "taux": 4,
+          "image": [
+            268.4000000357628,
+            325.69999998807907,
+            304.9000000357628,
+            265.7000000476837,
+            603.6000000238419,
+            327.69999998807907,
+            232.19999998807907,
+            212.30000001192093
+          ],
+          "pose": [
+            268.4000000357628,
+            325.69999998807907,
+            304.9000000357628,
+            265.7000000476837,
+            603.6000000238419,
+            327.69999998807907,
+            232.19999998807907,
+            212.30000001192093
+          ],
+          "domPret": [
+            259,
+            318,
+            297.60000002384186,
+            253,
+            582.8000000119209,
+            315.7999999523163,
+            225.5,
+            205.0999999642372
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 286.6500000357628,
+            "imageP95": 603.6000000238419,
+            "poseMed": 286.6500000357628,
+            "poseP95": 603.6000000238419,
+            "budget": "p95 ≤ 100,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "comparer:moment-cache",
+          "genre": "glisser",
+          "nom": "Comparer, changement de moment déjà calculé (retour sur 60′ ↔ dry hop après)",
+          "taux": 4,
+          "image": [
+            316.89999997615814,
+            56.80000001192093,
+            132.80000001192093,
+            253.5,
+            53.200000047683716,
+            69.40000003576279,
+            77.5,
+            204.0999999642372
+          ],
+          "pose": [
+            316.89999997615814,
+            56.80000001192093,
+            132.80000001192093,
+            253.5,
+            53.200000047683716,
+            69.40000003576279,
+            77.5,
+            204.0999999642372
+          ],
+          "domPret": [
+            265.69999998807907,
+            48,
+            123.59999996423721,
+            211.9000000357628,
+            45.200000047683716,
+            59.90000003576279,
+            61.09999996423721,
+            171.79999995231628
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 105.15000000596046,
+            "imageP95": 316.89999997615814,
+            "poseMed": 105.15000000596046,
+            "poseP95": 316.89999997615814,
+            "budget": "16,0 · 33,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "comparer:moment",
+          "genre": "glisser",
+          "nom": "Comparer, changement de moment jamais calculé (2 ensembles × 4 moments)",
+          "taux": 4,
+          "image": [
+            63.10000002384186,
+            61.09999996423721,
+            270.0999999642372,
+            74.90000003576279,
+            263.69999998807907,
+            149.60000002384186,
+            47.39999997615814,
+            53.299999952316284
+          ],
+          "pose": [
+            63.10000002384186,
+            61.09999996423721,
+            270.0999999642372,
+            74.90000003576279,
+            263.69999998807907,
+            149.60000002384186,
+            47.39999997615814,
+            53.299999952316284
+          ],
+          "domPret": [
+            46.60000002384186,
+            54.09999996423721,
+            228.89999997615814,
+            64.80000001192093,
+            214.19999998807907,
+            140.89999997615814,
+            39.69999998807907,
+            42.5
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 69.00000002980232,
+            "imageP95": 270.0999999642372,
+            "poseMed": 69.00000002980232,
+            "poseP95": 270.0999999642372,
+            "budget": "16,0 · 33,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "dose:plus",
+          "genre": "glisser",
+          "nom": "Ma bière, toucher sur + des grammes (pas de dose, dose jamais vue)",
+          "taux": 4,
+          "image": [
+            90,
+            123.90000003576279,
+            48.80000001192093,
+            53.10000002384186,
+            51.5,
+            63.10000002384186,
+            204.9000000357628,
+            84.69999998807907
+          ],
+          "pose": [
+            154.39999997615814,
+            182.19999998807907,
+            86.40000003576279,
+            88.39999997615814,
+            94,
+            95.10000002384186,
+            351.9000000357628,
+            119.29999995231628
+          ],
+          "domPret": [
+            63.69999998807907,
+            33.30000001192093,
+            27,
+            31.399999976158142,
+            26.5,
+            43.19999998807907,
+            106.60000002384186,
+            62.5
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 73.90000000596046,
+            "imageP95": 204.9000000357628,
+            "poseMed": 107.19999998807907,
+            "poseP95": 351.9000000357628,
+            "budget": "16,0 · 33,0",
+            "verdict": "DÉPASSÉ"
+          }
+        },
+        {
+          "id": "dose:moins",
+          "genre": "info",
+          "nom": "Ma bière, toucher sur − des grammes (retour ; rapporté)",
+          "taux": 4,
+          "image": [
+            47.89999997615814,
+            45.80000001192093,
+            49.19999998807907,
+            48,
+            44.80000001192093,
+            46.60000002384186,
+            52.69999998807907,
+            43.40000003576279
+          ],
+          "pose": [
+            74.39999997615814,
+            71.19999998807907,
+            73.89999997615814,
+            73,
+            71.80000001192093,
+            71.80000001192093,
+            76.30000001192093,
+            69.90000003576279
+          ],
+          "domPret": [
+            1.5,
+            1.600000023841858,
+            0.8999999761581421,
+            1.100000023841858,
+            0.9000000357627869,
+            1.399999976158142,
+            1,
+            1.100000023841858
+          ],
+          "atteint": true,
+          "stats": {
+            "n": 8,
+            "imageMed": 47.25,
+            "imageP95": 52.69999998807907,
+            "poseMed": 72.40000000596046,
+            "poseP95": 76.30000001192093,
+            "budget": "—",
+            "verdict": "rapporté"
+          }
+        }
+      ],
+      "tasMo": 43.588478088378906
+    }
+  },
+  "profil": {
+    "comparer-ouverture": {
+      "reps": 4,
+      "scriptActifMs": 1246.2175,
+      "gcMs": 20.06075,
+      "programmeNatifMs": 135.042,
+      "composants": [
+        {
+          "composant": "URLSearchParams · (natif)",
+          "msInclusif": 0.132
+        }
+      ],
+      "fonctions": [
+        {
+          "fonction": "(anonyme) · src/pages/PageShell.tsx",
+          "msPropre": 608.07425
+        },
+        {
+          "fonction": "getBoundingClientRect · (natif)",
+          "msPropre": 393.8925
+        },
+        {
+          "fonction": "focus · (natif)",
+          "msPropre": 100.02975
+        },
+        {
+          "fonction": "il · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 8.78475
+        },
+        {
+          "fonction": "(anonyme) · src/domain/hopIndex/v4/profil-simule.ts",
+          "msPropre": 7.969
+        },
+        {
+          "fonction": "querySelectorAll · (natif)",
+          "msPropre": 6.82225
+        },
+        {
+          "fonction": "setAttribute · (natif)",
+          "msPropre": 5.99
+        },
+        {
+          "fonction": "pt · src/domain/hopIndex/v4/moteur.ts",
+          "msPropre": 3.9465
+        },
+        {
+          "fonction": "nn · src/domain/hopIndex/v4/moteur.ts",
+          "msPropre": 3.77025
+        },
+        {
+          "fonction": "$f · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 3.63575
+        },
+        {
+          "fonction": "appendChild · (natif)",
+          "msPropre": 3.2945
+        },
+        {
+          "fonction": "removeChild · (natif)",
+          "msPropre": 3.16575
+        },
+        {
+          "fonction": "createElementNS · (natif)",
+          "msPropre": 2.84425
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/nombres.ts",
+          "msPropre": 2.47375
+        },
+        {
+          "fonction": "set webkitSpeechRecognitionEvent · (natif)",
+          "msPropre": 2.27375
+        },
+        {
+          "fonction": "Or · src/domain/hopIndex/v4/profil-simule.ts",
+          "msPropre": 2.15925
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/parcours/mesure.ts",
+          "msPropre": 2.1465
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/parcours/adaptateur.ts",
+          "msPropre": 2.0445
+        },
+        {
+          "fonction": "Ud · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.9485
+        },
+        {
+          "fonction": "nd · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.89525
+        },
+        {
+          "fonction": "ws · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.8555
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/comparer/index.tsx",
+          "msPropre": 1.852
+        },
+        {
+          "fonction": "sl · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.6375
+        },
+        {
+          "fonction": "Vi · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.586
+        },
+        {
+          "fonction": "_c · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.574
+        }
+      ],
+      "metriquesParRepetitionMs": {
+        "ScriptDuration": 154.86275,
+        "LayoutDuration": 32.25449999999999,
+        "RecalcStyleDuration": 1069.28175,
+        "TaskDuration": 1408.02075
+      }
+    },
+    "suggerer-ouverture": {
+      "reps": 4,
+      "scriptActifMs": 281.4475,
+      "gcMs": 2.44575,
+      "programmeNatifMs": 84.2315,
+      "composants": [
+        {
+          "composant": "URLSearchParams · (natif)",
+          "msInclusif": 0.222
+        }
+      ],
+      "fonctions": [
+        {
+          "fonction": "(anonyme) · src/pages/PageShell.tsx",
+          "msPropre": 150.47775
+        },
+        {
+          "fonction": "focus · (natif)",
+          "msPropre": 39.091
+        },
+        {
+          "fonction": "(anonyme) · src/hopExtrapolationCore.ts",
+          "msPropre": 10.26725
+        },
+        {
+          "fonction": "(anonyme) · src/hopRecipePrediction.ts",
+          "msPropre": 8.9225
+        },
+        {
+          "fonction": "pt · src/domain/hopIndex/v4/moteur.ts",
+          "msPropre": 4.32225
+        },
+        {
+          "fonction": "il · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 4.18875
+        },
+        {
+          "fonction": "nn · src/domain/hopIndex/v4/moteur.ts",
+          "msPropre": 4.0685
+        },
+        {
+          "fonction": "querySelectorAll · (natif)",
+          "msPropre": 2.48825
+        },
+        {
+          "fonction": "(anonyme) · src/domain/hopIndex/v4/voies.ts",
+          "msPropre": 2.253
+        },
+        {
+          "fonction": "$f · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 2.089
+        },
+        {
+          "fonction": "(anonyme) · src/domain/hopIndex/styleSelection.ts",
+          "msPropre": 2.00625
+        },
+        {
+          "fonction": "ac · src/hopRecipePrediction.ts",
+          "msPropre": 1.79
+        },
+        {
+          "fonction": "Fs · src/domain/hopIndex/v4/voies.ts",
+          "msPropre": 1.6085
+        },
+        {
+          "fonction": "b · src/domain/hopIndex/styleSelection.ts",
+          "msPropre": 1.5605
+        },
+        {
+          "fonction": "ai · src/hopExtrapolationCore.ts",
+          "msPropre": 1.2305
+        },
+        {
+          "fonction": "set webkitSpeechRecognitionEvent · (natif)",
+          "msPropre": 1.18375
+        },
+        {
+          "fonction": "(anonyme) · (natif)",
+          "msPropre": 1.172
+        },
+        {
+          "fonction": "oi · src/hopRecipePrediction.ts",
+          "msPropre": 1.071
+        },
+        {
+          "fonction": "Ct · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.9155
+        },
+        {
+          "fonction": "(anonyme) · node_modules/lucide-react/dist/esm/Icon.mjs",
+          "msPropre": 0.913
+        },
+        {
+          "fonction": "_c · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.90475
+        },
+        {
+          "fonction": "ws · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.8465
+        },
+        {
+          "fonction": "h · src/domain/hopIndex/styleSelection.ts",
+          "msPropre": 0.8115
+        },
+        {
+          "fonction": "removeChild · (natif)",
+          "msPropre": 0.81
+        },
+        {
+          "fonction": "pushState · (natif)",
+          "msPropre": 0.7855
+        }
+      ],
+      "metriquesParRepetitionMs": {
+        "ScriptDuration": 93.97574999999998,
+        "LayoutDuration": 4.156750000000002,
+        "RecalcStyleDuration": 184.67899999999986,
+        "TaskDuration": 380.2154999999998
+      }
+    },
+    "fiche-ouverture": {
+      "reps": 4,
+      "scriptActifMs": 682.28925,
+      "gcMs": 5.2475,
+      "programmeNatifMs": 238.031,
+      "composants": [
+        {
+          "composant": "URLSearchParams · (natif)",
+          "msInclusif": 0.2655
+        },
+        {
+          "composant": "CustomEvent · (natif)",
+          "msInclusif": 0.13475
+        }
+      ],
+      "fonctions": [
+        {
+          "fonction": "focus · (natif)",
+          "msPropre": 148.73675
+        },
+        {
+          "fonction": "removeChild · (natif)",
+          "msPropre": 147.80375
+        },
+        {
+          "fonction": "getBoundingClientRect · (natif)",
+          "msPropre": 139.83925
+        },
+        {
+          "fonction": "(anonyme) · src/pages/PageShell.tsx",
+          "msPropre": 83.6635
+        },
+        {
+          "fonction": "xe · node_modules/@radix-ui/react-presence/dist/index.mjs",
+          "msPropre": 53.83875
+        },
+        {
+          "fonction": "l · node_modules/vaul/dist/index.mjs",
+          "msPropre": 38.80025
+        },
+        {
+          "fonction": "querySelectorAll · (natif)",
+          "msPropre": 4.31775
+        },
+        {
+          "fonction": "il · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 4.03125
+        },
+        {
+          "fonction": "(anonyme) · (natif)",
+          "msPropre": 2.82625
+        },
+        {
+          "fonction": "setAttribute · (natif)",
+          "msPropre": 2.501
+        },
+        {
+          "fonction": "(anonyme) · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 2.11
+        },
+        {
+          "fonction": "nextNode · (natif)",
+          "msPropre": 1.701
+        },
+        {
+          "fonction": "ws · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.3335
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/commun/RadarBase.tsx",
+          "msPropre": 1.17875
+        },
+        {
+          "fonction": "querySelector · (natif)",
+          "msPropre": 1.1765
+        },
+        {
+          "fonction": "set toTemporalInstant · (natif)",
+          "msPropre": 1.10975
+        },
+        {
+          "fonction": "(anonyme) · node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs",
+          "msPropre": 1.0625
+        },
+        {
+          "fonction": "Ud · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.97375
+        },
+        {
+          "fonction": "appendChild · (natif)",
+          "msPropre": 0.96575
+        },
+        {
+          "fonction": "createElementNS · (natif)",
+          "msPropre": 0.9515
+        },
+        {
+          "fonction": "Ba · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.9465
+        },
+        {
+          "fonction": "_c · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.93025
+        },
+        {
+          "fonction": "(anonyme) · node_modules/lucide-react/dist/esm/Icon.mjs",
+          "msPropre": 0.8425
+        },
+        {
+          "fonction": "postMessage · (natif)",
+          "msPropre": 0.8
+        },
+        {
+          "fonction": "#i · pptr:internal",
+          "msPropre": 0.78275
+        }
+      ],
+      "metriquesParRepetitionMs": {
+        "ScriptDuration": 69.23150000000004,
+        "LayoutDuration": 9.625499999999988,
+        "RecalcStyleDuration": 711.7272499999999,
+        "TaskDuration": 939.0080000000003
+      }
+    },
+    "comparer-moment": {
+      "reps": 8,
+      "scriptActifMs": 88.15625,
+      "gcMs": 2.6,
+      "programmeNatifMs": 69.57175,
+      "composants": [],
+      "fonctions": [
+        {
+          "fonction": "getBoundingClientRect · (natif)",
+          "msPropre": 63.127125
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/commun/RadarBase.tsx",
+          "msPropre": 1.230625
+        },
+        {
+          "fonction": "querySelectorAll · (natif)",
+          "msPropre": 1.167625
+        },
+        {
+          "fonction": "(anonyme) · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.12575
+        },
+        {
+          "fonction": "ii · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.0085
+        },
+        {
+          "fonction": "setAttribute · (natif)",
+          "msPropre": 0.989625
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/comparer/index.tsx",
+          "msPropre": 0.941125
+        },
+        {
+          "fonction": "Ba · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.867375
+        },
+        {
+          "fonction": "Jc · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.82225
+        },
+        {
+          "fonction": "_c · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.781375
+        },
+        {
+          "fonction": "querySelector · (natif)",
+          "msPropre": 0.715125
+        },
+        {
+          "fonction": "$f · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.657875
+        },
+        {
+          "fonction": "il · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.642
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/comparer/Ensemble.tsx",
+          "msPropre": 0.6145
+        },
+        {
+          "fonction": "sf · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.612
+        },
+        {
+          "fonction": "(anonyme) · (natif)",
+          "msPropre": 0.504625
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/nombres.ts",
+          "msPropre": 0.50025
+        },
+        {
+          "fonction": "Ct · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.456
+        },
+        {
+          "fonction": "Ud · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.403
+        },
+        {
+          "fonction": "fi · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.380625
+        },
+        {
+          "fonction": "Q · node_modules/react/cjs/react-jsx-runtime.production.js",
+          "msPropre": 0.365
+        },
+        {
+          "fonction": "S · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.338875
+        },
+        {
+          "fonction": "ws · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.333625
+        },
+        {
+          "fonction": "vr · src/ui/hopIndex/comparer/index.tsx",
+          "msPropre": 0.309625
+        },
+        {
+          "fonction": "Ku · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.285375
+        }
+      ],
+      "metriquesParRepetitionMs": {
+        "ScriptDuration": 26.536625000000015,
+        "LayoutDuration": 4.117874999999998,
+        "RecalcStyleDuration": 63.464125000000195,
+        "TaskDuration": 165.82175000000007
+      }
+    },
+    "dose-plus": {
+      "reps": 8,
+      "scriptActifMs": 177.164,
+      "gcMs": 5.099875,
+      "programmeNatifMs": 60.7625,
+      "composants": [
+        {
+          "composant": "URL · (natif)",
+          "msInclusif": 0.0655
+        }
+      ],
+      "fonctions": [
+        {
+          "fonction": "(anonyme) · src/pages/PageShell.tsx",
+          "msPropre": 107.735625
+        },
+        {
+          "fonction": "il · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 6.090125
+        },
+        {
+          "fonction": "(anonyme) · src/hopRecipePrediction.ts",
+          "msPropre": 3.08325
+        },
+        {
+          "fonction": "set webkitSpeechRecognitionEvent · (natif)",
+          "msPropre": 2.523
+        },
+        {
+          "fonction": "(anonyme) · src/pages/BrewWizard.tsx",
+          "msPropre": 2.277625
+        },
+        {
+          "fonction": "querySelectorAll · (natif)",
+          "msPropre": 2.211
+        },
+        {
+          "fonction": "(anonyme) · src/domain/hopIndex/v4/hops.ts",
+          "msPropre": 1.949875
+        },
+        {
+          "fonction": "$f · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.599
+        },
+        {
+          "fonction": "(anonyme) · src/ui/hopIndex/maBiere/Ajouter.tsx",
+          "msPropre": 1.554625
+        },
+        {
+          "fonction": "l · message-circle-CQ65uIZQ.js",
+          "msPropre": 1.47075
+        },
+        {
+          "fonction": "hopIbu · src/services/brewingMath.ts",
+          "msPropre": 1.426875
+        },
+        {
+          "fonction": "Uo · src/pages/BrewWizard.tsx",
+          "msPropre": 1.26025
+        },
+        {
+          "fonction": "(anonyme) · src/domain/hopIndex/v4/quickAdd.ts",
+          "msPropre": 1.049875
+        },
+        {
+          "fonction": "Ct · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 1.00575
+        },
+        {
+          "fonction": "nn · src/domain/hopIndex/v4/moteur.ts",
+          "msPropre": 0.923625
+        },
+        {
+          "fonction": "(anonyme) · node_modules/lucide-react/dist/esm/Icon.mjs",
+          "msPropre": 0.88475
+        },
+        {
+          "fonction": "Ud · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.868
+        },
+        {
+          "fonction": "(anonyme) · src/domain/hopIndex/v4/profil-simule.ts",
+          "msPropre": 0.812625
+        },
+        {
+          "fonction": "pt · src/domain/hopIndex/v4/moteur.ts",
+          "msPropre": 0.790125
+        },
+        {
+          "fonction": "ws · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.7855
+        },
+        {
+          "fonction": "_c · node_modules/react-dom/cjs/react-dom-client.production.js",
+          "msPropre": 0.730875
+        },
+        {
+          "fonction": "rl · src/services/recipeDraft.ts",
+          "msPropre": 0.709375
+        },
+        {
+          "fonction": "(anonyme) · src/domain/hopIndex/styleSelection.ts",
+          "msPropre": 0.655625
+        },
+        {
+          "fonction": "(anonyme) · src/domain/hopIndex/v4/ibuMoments.ts",
+          "msPropre": 0.615875
+        },
+        {
+          "fonction": "ac · src/hopRecipePrediction.ts",
+          "msPropre": 0.606875
+        }
+      ],
+      "metriquesParRepetitionMs": {
+        "ScriptDuration": 71.97412499999996,
+        "LayoutDuration": 5.462125,
+        "RecalcStyleDuration": 101.8454999999999,
+        "TaskDuration": 247.16187500000024
+      }
+    }
+  }
+}

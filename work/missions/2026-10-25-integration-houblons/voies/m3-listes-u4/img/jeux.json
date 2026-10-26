@@ -1,0 +1,2196 @@
+[
+ {
+  "houblon": "Nelson Sauvin",
+  "colonne": "a",
+  "etat": "repos",
+  "image": "nelson-sauvin-a.png",
+  "lignes": [
+   {
+    "nom": "Boomerang",
+    "min": 93,
+    "max": 93
+   },
+   {
+    "nom": "Herkules",
+    "min": 93,
+    "max": 93
+   },
+   {
+    "nom": "Kazbek",
+    "min": 89,
+    "max": 89
+   },
+   {
+    "nom": "Phoenix",
+    "min": 89,
+    "max": 89
+   },
+   {
+    "nom": "Godiva",
+    "min": 62,
+    "max": 92
+   }
+  ]
+ },
+ {
+  "houblon": "Nelson Sauvin",
+  "colonne": "a",
+  "etat": "scores",
+  "image": "nelson-sauvin-a-scores.png",
+  "lignes": [
+   {
+    "nom": "Boomerang",
+    "min": 93,
+    "max": 93
+   },
+   {
+    "nom": "Herkules",
+    "min": 93,
+    "max": 93
+   },
+   {
+    "nom": "Kazbek",
+    "min": 89,
+    "max": 89
+   },
+   {
+    "nom": "Phoenix",
+    "min": 89,
+    "max": 89
+   },
+   {
+    "nom": "Godiva",
+    "min": 62,
+    "max": 92
+   }
+  ]
+ },
+ {
+  "houblon": "Nelson Sauvin",
+  "colonne": "b",
+  "etat": "repos",
+  "image": "nelson-sauvin-b.png",
+  "lignes": [
+   {
+    "nom": "Herkules",
+    "min": 72,
+    "max": 72
+   },
+   {
+    "nom": "Godiva",
+    "min": 67,
+    "max": 67
+   },
+   {
+    "nom": "Boomerang",
+    "min": 65,
+    "max": 65
+   },
+   {
+    "nom": "Pacific Jade",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Phoenix",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Summit",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Marynka",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Cashmere",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Galena",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Hallertau Taurus",
+    "min": 61,
+    "max": 61
+   }
+  ]
+ },
+ {
+  "houblon": "Nelson Sauvin",
+  "colonne": "c",
+  "etat": "repos",
+  "image": "nelson-sauvin-c.png",
+  "lignes": [
+   {
+    "nom": "Herkules",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Godiva",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Hallertau Blanc",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Sládek",
+    "min": 56,
+    "max": 56
+   },
+   {
+    "nom": "Admiral",
+    "min": 54,
+    "max": 54
+   },
+   {
+    "nom": "Cashmere",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Galena",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Pilgrim",
+    "min": 52,
+    "max": 52
+   },
+   {
+    "nom": "Pacific Jade",
+    "min": 51,
+    "max": 51
+   },
+   {
+    "nom": "Boomerang",
+    "min": 50,
+    "max": 50
+   }
+  ]
+ },
+ {
+  "houblon": "Nelson Sauvin",
+  "colonne": "c",
+  "etat": "scores",
+  "image": "nelson-sauvin-c-scores.png",
+  "lignes": [
+   {
+    "nom": "Herkules",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Godiva",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Hallertau Blanc",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Sládek",
+    "min": 56,
+    "max": 56
+   },
+   {
+    "nom": "Admiral",
+    "min": 54,
+    "max": 54
+   },
+   {
+    "nom": "Cashmere",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Galena",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Pilgrim",
+    "min": 52,
+    "max": 52
+   },
+   {
+    "nom": "Pacific Jade",
+    "min": 51,
+    "max": 51
+   },
+   {
+    "nom": "Boomerang",
+    "min": 50,
+    "max": 50
+   }
+  ]
+ },
+ {
+  "houblon": "Nelson Sauvin",
+  "colonne": "d",
+  "etat": "repos",
+  "image": "nelson-sauvin-d.png",
+  "lignes": [
+   {
+    "nom": "Hallertau Blanc",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "African Queen",
+    "min": 44,
+    "max": 44
+   },
+   {
+    "nom": "Godiva",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Galena",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Jarrylo",
+    "min": 44,
+    "max": 44
+   },
+   {
+    "nom": "Cashmere",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Summit",
+    "min": 50,
+    "max": 50
+   },
+   {
+    "nom": "Cascade",
+    "min": 49,
+    "max": 49
+   },
+   {
+    "nom": "Sládek",
+    "min": 56,
+    "max": 56
+   },
+   {
+    "nom": "Hallertau Taurus",
+    "min": 50,
+    "max": 50
+   }
+  ]
+ },
+ {
+  "houblon": "Motueka",
+  "colonne": "a",
+  "etat": "repos",
+  "image": "motueka-a.png",
+  "lignes": [
+   {
+    "nom": "Cascade",
+    "min": 86,
+    "max": 86
+   },
+   {
+    "nom": "Southern Sublime",
+    "min": 84,
+    "max": 84
+   },
+   {
+    "nom": "Taiheke",
+    "min": 83,
+    "max": 83
+   },
+   {
+    "nom": "Buzz Bullets",
+    "min": 65,
+    "max": 95
+   },
+   {
+    "nom": "Shaddock",
+    "min": 62,
+    "max": 92
+   }
+  ]
+ },
+ {
+  "houblon": "Motueka",
+  "colonne": "b",
+  "etat": "repos",
+  "image": "motueka-b.png",
+  "lignes": [
+   {
+    "nom": "Cascade",
+    "min": 71,
+    "max": 71
+   },
+   {
+    "nom": "Taiheke",
+    "min": 68,
+    "max": 68
+   },
+   {
+    "nom": "Mandarina Bavaria",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Riwaka",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Triskel",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Bravo",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Southern Cross",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Barbe Rouge",
+    "min": 60,
+    "max": 60
+   },
+   {
+    "nom": "Buzz Bullets",
+    "min": 60,
+    "max": 60
+   },
+   {
+    "nom": "Comet",
+    "min": 59,
+    "max": 59
+   }
+  ]
+ },
+ {
+  "houblon": "Motueka",
+  "colonne": "c",
+  "etat": "repos",
+  "image": "motueka-c.png",
+  "lignes": [
+   {
+    "nom": "Cascade",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Taiheke",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Riwaka",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "Bravo",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Mandarina Bavaria",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Southern Cross",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Atlas",
+    "min": 52,
+    "max": 52
+   },
+   {
+    "nom": "Triskel",
+    "min": 52,
+    "max": 52
+   },
+   {
+    "nom": "Barbe Rouge",
+    "min": 50,
+    "max": 50
+   },
+   {
+    "nom": "Comet",
+    "min": 50,
+    "max": 50
+   }
+  ]
+ },
+ {
+  "houblon": "Motueka",
+  "colonne": "d",
+  "etat": "repos",
+  "image": "motueka-d.png",
+  "lignes": [
+   {
+    "nom": "Taiheke",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Riwaka",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "Cascade",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Mandarina Bavaria",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Southern Cross",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Barbe Rouge",
+    "min": 50,
+    "max": 50
+   },
+   {
+    "nom": "Atlas",
+    "min": 52,
+    "max": 52
+   },
+   {
+    "nom": "HORT9909",
+    "min": 50,
+    "max": 50
+   },
+   {
+    "nom": "Meridian",
+    "min": 47,
+    "max": 47
+   },
+   {
+    "nom": "Falconer's Flight",
+    "min": 50,
+    "max": 50
+   }
+  ]
+ },
+ {
+  "houblon": "Citra",
+  "colonne": "a",
+  "etat": "repos",
+  "image": "citra-a.png",
+  "lignes": [
+   {
+    "nom": "Bitter Gold",
+    "min": 89,
+    "max": 89
+   },
+   {
+    "nom": "Hydra",
+    "min": 89,
+    "max": 89
+   },
+   {
+    "nom": "Mistral",
+    "min": 88,
+    "max": 88
+   },
+   {
+    "nom": "Palisade",
+    "min": 86,
+    "max": 86
+   },
+   {
+    "nom": "McKenzie",
+    "min": 61,
+    "max": 91
+   }
+  ]
+ },
+ {
+  "houblon": "Citra",
+  "colonne": "b",
+  "etat": "repos",
+  "image": "citra-b.png",
+  "lignes": [
+   {
+    "nom": "Nectaron",
+    "min": 70,
+    "max": 70
+   },
+   {
+    "nom": "NZH-107",
+    "min": 70,
+    "max": 70
+   },
+   {
+    "nom": "Amarillo",
+    "min": 68,
+    "max": 68
+   },
+   {
+    "nom": "Mistral",
+    "min": 68,
+    "max": 68
+   },
+   {
+    "nom": "Riwaka",
+    "min": 68,
+    "max": 68
+   },
+   {
+    "nom": "Taiheke",
+    "min": 68,
+    "max": 68
+   },
+   {
+    "nom": "Sitiva Blend",
+    "min": 67,
+    "max": 67
+   },
+   {
+    "nom": "Hydra",
+    "min": 66,
+    "max": 66
+   },
+   {
+    "nom": "YQH-1380",
+    "min": 66,
+    "max": 66
+   },
+   {
+    "nom": "Bitter Gold",
+    "min": 65,
+    "max": 65
+   }
+  ]
+ },
+ {
+  "houblon": "Citra",
+  "colonne": "c",
+  "etat": "repos",
+  "image": "citra-c.png",
+  "lignes": [
+   {
+    "nom": "NZH-107",
+    "min": 67,
+    "max": 67
+   },
+   {
+    "nom": "Nectaron",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Riwaka",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Sitiva Blend",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Taiheke",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Amarillo",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Harlequin",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "YQH-1380",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Mistral",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "Styrian Cardinal",
+    "min": 58,
+    "max": 58
+   }
+  ]
+ },
+ {
+  "houblon": "Citra",
+  "colonne": "d",
+  "etat": "repos",
+  "image": "citra-d.png",
+  "lignes": [
+   {
+    "nom": "Nectaron",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Galaxy",
+    "min": 55,
+    "max": 55
+   },
+   {
+    "nom": "NZH-107",
+    "min": 67,
+    "max": 67
+   },
+   {
+    "nom": "Amarillo",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Hydra",
+    "min": 55,
+    "max": 55
+   },
+   {
+    "nom": "Riwaka",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Styrian Cardinal",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "HBC 586",
+    "min": 56,
+    "max": 56
+   },
+   {
+    "nom": "Falconer's Flight",
+    "min": 54,
+    "max": 54
+   },
+   {
+    "nom": "Mistral",
+    "min": 58,
+    "max": 58
+   }
+  ]
+ },
+ {
+  "houblon": "Galaxy",
+  "colonne": "a",
+  "etat": "repos",
+  "image": "galaxy-a.png",
+  "lignes": [
+   {
+    "nom": "Zamba Blend",
+    "min": 92,
+    "max": 92
+   },
+   {
+    "nom": "Harlequin",
+    "min": 91,
+    "max": 91
+   },
+   {
+    "nom": "Nectaron",
+    "min": 89,
+    "max": 89
+   },
+   {
+    "nom": "NZH-107",
+    "min": 88,
+    "max": 88
+   },
+   {
+    "nom": "Samba",
+    "min": 68,
+    "max": 98
+   }
+  ]
+ },
+ {
+  "houblon": "Galaxy",
+  "colonne": "b",
+  "etat": "repos",
+  "image": "galaxy-b.png",
+  "lignes": [
+   {
+    "nom": "Harlequin",
+    "min": 83,
+    "max": 83
+   },
+   {
+    "nom": "Nectaron",
+    "min": 74,
+    "max": 74
+   },
+   {
+    "nom": "NZH-107",
+    "min": 70,
+    "max": 70
+   },
+   {
+    "nom": "Tango",
+    "min": 68,
+    "max": 68
+   },
+   {
+    "nom": "Southern Sublime",
+    "min": 67,
+    "max": 67
+   },
+   {
+    "nom": "Tropica",
+    "min": 67,
+    "max": 67
+   },
+   {
+    "nom": "YQH-1380",
+    "min": 67,
+    "max": 67
+   },
+   {
+    "nom": "Strata",
+    "min": 66,
+    "max": 66
+   },
+   {
+    "nom": "Vic Secret",
+    "min": 66,
+    "max": 66
+   },
+   {
+    "nom": "Sultana (Denali)",
+    "min": 64,
+    "max": 64
+   }
+  ]
+ },
+ {
+  "houblon": "Galaxy",
+  "colonne": "c",
+  "etat": "repos",
+  "image": "galaxy-c.png",
+  "lignes": [
+   {
+    "nom": "Harlequin",
+    "min": 79,
+    "max": 79
+   },
+   {
+    "nom": "Nectaron",
+    "min": 67,
+    "max": 67
+   },
+   {
+    "nom": "Vic Secret",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Strata",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "NZH-107",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Tango",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Southern Sublime",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "Sultana (Denali)",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "Tropica",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "Amarillo",
+    "min": 57,
+    "max": 57
+   }
+  ]
+ },
+ {
+  "houblon": "Galaxy",
+  "colonne": "d",
+  "etat": "repos",
+  "image": "galaxy-d.png",
+  "lignes": [
+   {
+    "nom": "Nectaron",
+    "min": 67,
+    "max": 67
+   },
+   {
+    "nom": "Vic Secret",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Strata",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Citra",
+    "min": 55,
+    "max": 55
+   },
+   {
+    "nom": "Harlequin",
+    "min": 79,
+    "max": 79
+   },
+   {
+    "nom": "NZH-107",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "BRU-1",
+    "min": 48,
+    "max": 48
+   },
+   {
+    "nom": "Tropica",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "YQH-1380",
+    "min": 56,
+    "max": 56
+   },
+   {
+    "nom": "Azacca",
+    "min": 54,
+    "max": 54
+   }
+  ]
+ },
+ {
+  "houblon": "Saaz (CZ)",
+  "colonne": "a",
+  "etat": "repos",
+  "image": "saaz-cz-a.png",
+  "lignes": [
+   {
+    "nom": "Pacific Crest",
+    "min": 86,
+    "max": 86
+   },
+   {
+    "nom": "Saaz Late",
+    "min": 84,
+    "max": 84
+   },
+   {
+    "nom": "Styrian Golding",
+    "min": 83,
+    "max": 83
+   },
+   {
+    "nom": "Sussex",
+    "min": 83,
+    "max": 83
+   },
+   {
+    "nom": "Aurum",
+    "min": 59,
+    "max": 89
+   }
+  ]
+ },
+ {
+  "houblon": "Saaz (CZ)",
+  "colonne": "b",
+  "etat": "repos",
+  "image": "saaz-cz-b.png",
+  "lignes": [
+   {
+    "nom": "Aurum",
+    "min": 75,
+    "max": 75
+   },
+   {
+    "nom": "Spalt",
+    "min": 71,
+    "max": 71
+   },
+   {
+    "nom": "Pacific Crest",
+    "min": 69,
+    "max": 69
+   },
+   {
+    "nom": "Saaz Late",
+    "min": 69,
+    "max": 69
+   },
+   {
+    "nom": "Celeia",
+    "min": 66,
+    "max": 66
+   },
+   {
+    "nom": "Styrian Golding",
+    "min": 66,
+    "max": 66
+   },
+   {
+    "nom": "Wild Loyalist",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Saaz (US)",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Strisselspalt",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Crystal",
+    "min": 62,
+    "max": 62
+   }
+  ]
+ },
+ {
+  "houblon": "Saaz (CZ)",
+  "colonne": "c",
+  "etat": "repos",
+  "image": "saaz-cz-c.png",
+  "lignes": [
+   {
+    "nom": "Aurum",
+    "min": 71,
+    "max": 71
+   },
+   {
+    "nom": "Spalt",
+    "min": 71,
+    "max": 71
+   },
+   {
+    "nom": "Saaz Late",
+    "min": 66,
+    "max": 66
+   },
+   {
+    "nom": "Celeia",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Pacific Crest",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Wild Loyalist",
+    "min": 60,
+    "max": 60
+   },
+   {
+    "nom": "Styrian Golding",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "Saaz (US)",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Strisselspalt",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Crystal",
+    "min": 56,
+    "max": 56
+   }
+  ]
+ },
+ {
+  "houblon": "Saaz (CZ)",
+  "colonne": "d",
+  "etat": "repos",
+  "image": "saaz-cz-d.png",
+  "lignes": [
+   {
+    "nom": "Saaz Late",
+    "min": 66,
+    "max": 66
+   },
+   {
+    "nom": "Saaz (US)",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Spalt",
+    "min": 71,
+    "max": 71
+   },
+   {
+    "nom": "Sterling",
+    "min": 54,
+    "max": 54
+   },
+   {
+    "nom": "Aurum",
+    "min": 71,
+    "max": 71
+   },
+   {
+    "nom": "Wild Loyalist",
+    "min": 60,
+    "max": 60
+   },
+   {
+    "nom": "Celeia",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Tettnang (US)",
+    "min": 49,
+    "max": 49
+   },
+   {
+    "nom": "Styrian Golding",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "Zagrava",
+    "min": 52,
+    "max": 52
+   }
+  ]
+ },
+ {
+  "houblon": "Mosaic",
+  "colonne": "a",
+  "etat": "repos",
+  "image": "mosaic-a.png",
+  "lignes": [
+   {
+    "nom": "Idaho 7",
+    "min": 88,
+    "max": 88
+   },
+   {
+    "nom": "Styrian Fox",
+    "min": 88,
+    "max": 88
+   },
+   {
+    "nom": "Simcoe",
+    "min": 78,
+    "max": 78
+   },
+   {
+    "nom": "Galena",
+    "min": 76,
+    "max": 76
+   },
+   {
+    "nom": "Hydra",
+    "min": 76,
+    "max": 76
+   }
+  ]
+ },
+ {
+  "houblon": "Mosaic",
+  "colonne": "b",
+  "etat": "repos",
+  "image": "mosaic-b.png",
+  "lignes": [
+   {
+    "nom": "Idaho 7",
+    "min": 73,
+    "max": 73
+   },
+   {
+    "nom": "Styrian Fox",
+    "min": 66,
+    "max": 66
+   },
+   {
+    "nom": "Simcoe",
+    "min": 65,
+    "max": 65
+   },
+   {
+    "nom": "Azacca",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Hydra",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Zythos",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Falconer's Flight",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Southern Cross",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Sultana (Denali)",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Bitter Gold",
+    "min": 59,
+    "max": 59
+   }
+  ]
+ },
+ {
+  "houblon": "Mosaic",
+  "colonne": "c",
+  "etat": "repos",
+  "image": "mosaic-c.png",
+  "lignes": [
+   {
+    "nom": "Idaho 7",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Azacca",
+    "min": 60,
+    "max": 60
+   },
+   {
+    "nom": "Simcoe",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Zythos",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Hydra",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "Mandarina Bavaria",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "Sultana (Denali)",
+    "min": 56,
+    "max": 56
+   },
+   {
+    "nom": "Falconer's Flight",
+    "min": 55,
+    "max": 55
+   },
+   {
+    "nom": "Styrian Fox",
+    "min": 55,
+    "max": 55
+   },
+   {
+    "nom": "Falconer's Flight 7CS",
+    "min": 54,
+    "max": 54
+   }
+  ]
+ },
+ {
+  "houblon": "Mosaic",
+  "colonne": "d",
+  "etat": "repos",
+  "image": "mosaic-d.png",
+  "lignes": [
+   {
+    "nom": "Simcoe",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Idaho 7",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Azacca",
+    "min": 60,
+    "max": 60
+   },
+   {
+    "nom": "Zythos",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Falconer's Flight",
+    "min": 55,
+    "max": 55
+   },
+   {
+    "nom": "Hydra",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "Sultana (Denali)",
+    "min": 56,
+    "max": 56
+   },
+   {
+    "nom": "Mackinac",
+    "min": 52,
+    "max": 52
+   },
+   {
+    "nom": "Centennial",
+    "min": 51,
+    "max": 51
+   },
+   {
+    "nom": "Mandarina Bavaria",
+    "min": 58,
+    "max": 58
+   }
+  ]
+ },
+ {
+  "houblon": "Simcoe",
+  "colonne": "a",
+  "etat": "repos",
+  "image": "simcoe-a.png",
+  "lignes": [
+   {
+    "nom": "Idaho 7",
+    "min": 86,
+    "max": 86
+   },
+   {
+    "nom": "Mosaic",
+    "min": 78,
+    "max": 78
+   },
+   {
+    "nom": "Newport",
+    "min": 78,
+    "max": 78
+   },
+   {
+    "nom": "Vic Secret",
+    "min": 74,
+    "max": 74
+   },
+   {
+    "nom": "Hydra",
+    "min": 73,
+    "max": 73
+   }
+  ]
+ },
+ {
+  "houblon": "Simcoe",
+  "colonne": "b",
+  "etat": "repos",
+  "image": "simcoe-b.png",
+  "lignes": [
+   {
+    "nom": "Idaho 7",
+    "min": 74,
+    "max": 74
+   },
+   {
+    "nom": "Mosaic",
+    "min": 65,
+    "max": 65
+   },
+   {
+    "nom": "Vic Secret",
+    "min": 65,
+    "max": 65
+   },
+   {
+    "nom": "Zythos",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Hydra",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Mandarina Bavaria",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Palisade",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Sticklebract",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Falconer's Flight",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Falconer's Flight 7CS",
+    "min": 61,
+    "max": 61
+   }
+  ]
+ },
+ {
+  "houblon": "Simcoe",
+  "colonne": "c",
+  "etat": "repos",
+  "image": "simcoe-c.png",
+  "lignes": [
+   {
+    "nom": "Idaho 7",
+    "min": 65,
+    "max": 65
+   },
+   {
+    "nom": "Vic Secret",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Falconer's Flight 7CS",
+    "min": 60,
+    "max": 60
+   },
+   {
+    "nom": "Mandarina Bavaria",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Mosaic",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Sticklebract",
+    "min": 58,
+    "max": 58
+   },
+   {
+    "nom": "Zythos",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Falconer's Flight",
+    "min": 56,
+    "max": 56
+   },
+   {
+    "nom": "Palisade",
+    "min": 56,
+    "max": 56
+   },
+   {
+    "nom": "Hydra",
+    "min": 55,
+    "max": 55
+   }
+  ]
+ },
+ {
+  "houblon": "Simcoe",
+  "colonne": "d",
+  "etat": "repos",
+  "image": "simcoe-d.png",
+  "lignes": [
+   {
+    "nom": "Mosaic",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Idaho 7",
+    "min": 65,
+    "max": 65
+   },
+   {
+    "nom": "Vic Secret",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Moutere",
+    "min": 52,
+    "max": 52
+   },
+   {
+    "nom": "Chinook",
+    "min": 52,
+    "max": 52
+   },
+   {
+    "nom": "Falconer's Flight",
+    "min": 56,
+    "max": 56
+   },
+   {
+    "nom": "Zythos",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Amarillo",
+    "min": 54,
+    "max": 54
+   },
+   {
+    "nom": "Hydra",
+    "min": 55,
+    "max": 55
+   },
+   {
+    "nom": "Ahtanum",
+    "min": 53,
+    "max": 53
+   }
+  ]
+ },
+ {
+  "houblon": "Cascade",
+  "colonne": "a",
+  "etat": "repos",
+  "image": "cascade-a.png",
+  "lignes": [
+   {
+    "nom": "Barbe Rouge",
+    "min": 92,
+    "max": 92
+   },
+   {
+    "nom": "Mandarina Bavaria",
+    "min": 90,
+    "max": 90
+   },
+   {
+    "nom": "Sasquatch",
+    "min": 90,
+    "max": 90
+   },
+   {
+    "nom": "Taiheke",
+    "min": 88,
+    "max": 88
+   },
+   {
+    "nom": "Motueka",
+    "min": 86,
+    "max": 86
+   }
+  ]
+ },
+ {
+  "houblon": "Cascade",
+  "colonne": "b",
+  "etat": "repos",
+  "image": "cascade-b.png",
+  "lignes": [
+   {
+    "nom": "Taiheke",
+    "min": 78,
+    "max": 78
+   },
+   {
+    "nom": "Cluster",
+    "min": 75,
+    "max": 75
+   },
+   {
+    "nom": "Bravo",
+    "min": 74,
+    "max": 74
+   },
+   {
+    "nom": "Mandarina Bavaria",
+    "min": 71,
+    "max": 71
+   },
+   {
+    "nom": "Motueka",
+    "min": 71,
+    "max": 71
+   },
+   {
+    "nom": "Southern Cross",
+    "min": 71,
+    "max": 71
+   },
+   {
+    "nom": "Atlas",
+    "min": 70,
+    "max": 70
+   },
+   {
+    "nom": "HORT9909",
+    "min": 70,
+    "max": 70
+   },
+   {
+    "nom": "Olympic",
+    "min": 70,
+    "max": 70
+   },
+   {
+    "nom": "Barbe Rouge",
+    "min": 69,
+    "max": 69
+   }
+  ]
+ },
+ {
+  "houblon": "Cascade",
+  "colonne": "c",
+  "etat": "repos",
+  "image": "cascade-c.png",
+  "lignes": [
+   {
+    "nom": "Taiheke",
+    "min": 73,
+    "max": 73
+   },
+   {
+    "nom": "Cluster",
+    "min": 71,
+    "max": 71
+   },
+   {
+    "nom": "Atlas",
+    "min": 69,
+    "max": 69
+   },
+   {
+    "nom": "Bravo",
+    "min": 69,
+    "max": 69
+   },
+   {
+    "nom": "Riwaka",
+    "min": 66,
+    "max": 66
+   },
+   {
+    "nom": "Brewer's Gold (US)",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Southern Cross",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Bullion",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Motueka",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Endeavour",
+    "min": 62,
+    "max": 62
+   }
+  ]
+ },
+ {
+  "houblon": "Cascade",
+  "colonne": "d",
+  "etat": "repos",
+  "image": "cascade-d.png",
+  "lignes": [
+   {
+    "nom": "Centennial",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Taiheke",
+    "min": 73,
+    "max": 73
+   },
+   {
+    "nom": "Falconer's Flight",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Zythos",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Dana",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Southern Cross",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Styrian Dragon",
+    "min": 60,
+    "max": 60
+   },
+   {
+    "nom": "Riwaka",
+    "min": 66,
+    "max": 66
+   },
+   {
+    "nom": "Atlas",
+    "min": 69,
+    "max": 69
+   },
+   {
+    "nom": "Motueka",
+    "min": 63,
+    "max": 63
+   }
+  ]
+ },
+ {
+  "houblon": "Fuggle",
+  "colonne": "a",
+  "etat": "repos",
+  "image": "fuggle-a.png",
+  "lignes": [
+   {
+    "nom": "Northern Brewer (GR)",
+    "min": 87,
+    "max": 87
+   },
+   {
+    "nom": "Challenger",
+    "min": 84,
+    "max": 84
+   },
+   {
+    "nom": "Crystal",
+    "min": 83,
+    "max": 83
+   },
+   {
+    "nom": "Glacier",
+    "min": 80,
+    "max": 80
+   },
+   {
+    "nom": "Styrian Golding",
+    "min": 78,
+    "max": 78
+   }
+  ]
+ },
+ {
+  "houblon": "Fuggle",
+  "colonne": "b",
+  "etat": "repos",
+  "image": "fuggle-b.png",
+  "lignes": [
+   {
+    "nom": "Northern Brewer (GR)",
+    "min": 74,
+    "max": 74
+   },
+   {
+    "nom": "Cluster Fugget Blend",
+    "min": 66,
+    "max": 66
+   },
+   {
+    "nom": "Northern Brewer (US)",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Progress",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Hallertau Tradition",
+    "min": 60,
+    "max": 60
+   },
+   {
+    "nom": "Lambic",
+    "min": 60,
+    "max": 60
+   },
+   {
+    "nom": "Vanguard",
+    "min": 60,
+    "max": 60
+   },
+   {
+    "nom": "Crystal",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Saaz (CZ)",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Styrian Golding",
+    "min": 56,
+    "max": 56
+   }
+  ]
+ },
+ {
+  "houblon": "Fuggle",
+  "colonne": "c",
+  "etat": "repos",
+  "image": "fuggle-c.png",
+  "lignes": [
+   {
+    "nom": "Northern Brewer (GR)",
+    "min": 68,
+    "max": 68
+   },
+   {
+    "nom": "Cluster Fugget Blend",
+    "min": 66,
+    "max": 66
+   },
+   {
+    "nom": "Northern Brewer (US)",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Progress",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Saaz (CZ)",
+    "min": 55,
+    "max": 55
+   },
+   {
+    "nom": "Hallertau Tradition",
+    "min": 54,
+    "max": 54
+   },
+   {
+    "nom": "Lambic",
+    "min": 54,
+    "max": 54
+   },
+   {
+    "nom": "Vanguard",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Perle (GR)",
+    "min": 51,
+    "max": 51
+   },
+   {
+    "nom": "Sussex",
+    "min": 51,
+    "max": 51
+   }
+  ]
+ },
+ {
+  "houblon": "Magnum (US)",
+  "colonne": "a",
+  "etat": "repos",
+  "image": "magnum-us-a.png",
+  "lignes": [
+   {
+    "nom": "Premiant",
+    "min": 92,
+    "max": 92
+   },
+   {
+    "nom": "Sybilla",
+    "min": 91,
+    "max": 91
+   },
+   {
+    "nom": "Ella",
+    "min": 90,
+    "max": 90
+   },
+   {
+    "nom": "Agnus",
+    "min": 88,
+    "max": 88
+   },
+   {
+    "nom": "Arcadian",
+    "min": 65,
+    "max": 95
+   }
+  ]
+ },
+ {
+  "houblon": "Magnum (US)",
+  "colonne": "b",
+  "etat": "repos",
+  "image": "magnum-us-b.png",
+  "lignes": [
+   {
+    "nom": "Pacific Jade",
+    "min": 71,
+    "max": 71
+   },
+   {
+    "nom": "Santiam",
+    "min": 68,
+    "max": 68
+   },
+   {
+    "nom": "Magnum (GR)",
+    "min": 67,
+    "max": 67
+   },
+   {
+    "nom": "Loral",
+    "min": 65,
+    "max": 65
+   },
+   {
+    "nom": "Opal",
+    "min": 65,
+    "max": 65
+   },
+   {
+    "nom": "Ella",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Premiant",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Pacific Gem",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Sybilla",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Dana",
+    "min": 62,
+    "max": 62
+   }
+  ]
+ },
+ {
+  "houblon": "Magnum (US)",
+  "colonne": "c",
+  "etat": "repos",
+  "image": "magnum-us-c.png",
+  "lignes": [
+   {
+    "nom": "Pacific Jade",
+    "min": 72,
+    "max": 72
+   },
+   {
+    "nom": "Santiam",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Magnum (GR)",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Crystal",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Opal",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Pacific Gem",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Boomerang",
+    "min": 56,
+    "max": 56
+   },
+   {
+    "nom": "Green Bullet",
+    "min": 56,
+    "max": 56
+   },
+   {
+    "nom": "Loral",
+    "min": 55,
+    "max": 55
+   },
+   {
+    "nom": "Bohemie",
+    "min": 52,
+    "max": 52
+   }
+  ]
+ },
+ {
+  "houblon": "Willamette",
+  "colonne": "a",
+  "etat": "repos",
+  "image": "willamette-a.png",
+  "lignes": [
+   {
+    "nom": "Premiant",
+    "min": 90,
+    "max": 90
+   },
+   {
+    "nom": "Saphir",
+    "min": 90,
+    "max": 90
+   },
+   {
+    "nom": "Bravo",
+    "min": 87,
+    "max": 87
+   },
+   {
+    "nom": "Celeia",
+    "min": 86,
+    "max": 86
+   },
+   {
+    "nom": "Agnus",
+    "min": 85,
+    "max": 85
+   }
+  ]
+ },
+ {
+  "houblon": "Willamette",
+  "colonne": "b",
+  "etat": "repos",
+  "image": "willamette-b.png",
+  "lignes": [
+   {
+    "nom": "Delta",
+    "min": 68,
+    "max": 68
+   },
+   {
+    "nom": "Celeia",
+    "min": 65,
+    "max": 65
+   },
+   {
+    "nom": "Triskel",
+    "min": 64,
+    "max": 64
+   },
+   {
+    "nom": "Bravo",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Cluster",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Saphir",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Sylva",
+    "min": 63,
+    "max": 63
+   },
+   {
+    "nom": "Premiant",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Amethyst",
+    "min": 61,
+    "max": 61
+   },
+   {
+    "nom": "Bohemie",
+    "min": 61,
+    "max": 61
+   }
+  ]
+ },
+ {
+  "houblon": "Willamette",
+  "colonne": "c",
+  "etat": "repos",
+  "image": "willamette-c.png",
+  "lignes": [
+   {
+    "nom": "Delta",
+    "min": 62,
+    "max": 62
+   },
+   {
+    "nom": "Sylva",
+    "min": 59,
+    "max": 59
+   },
+   {
+    "nom": "Triskel",
+    "min": 57,
+    "max": 57
+   },
+   {
+    "nom": "Admiral",
+    "min": 54,
+    "max": 54
+   },
+   {
+    "nom": "Celeia",
+    "min": 54,
+    "max": 54
+   },
+   {
+    "nom": "Cluster",
+    "min": 54,
+    "max": 54
+   },
+   {
+    "nom": "Summit",
+    "min": 54,
+    "max": 54
+   },
+   {
+    "nom": "Amethyst",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Saaz Late",
+    "min": 53,
+    "max": 53
+   },
+   {
+    "nom": "Horizon",
+    "min": 52,
+    "max": 52
+   }
+  ]
+ }
+]

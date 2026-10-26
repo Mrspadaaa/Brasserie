@@ -1,0 +1,26 @@
+{
+ "casId": "flyer@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "601b420a9b51927f",
+ "simule": true,
+ "appel": 56,
+ "http": 200,
+ "latenceMs": 0,
+ "finishReason": "STOP",
+ "jetonsEntree": 2221,
+ "jetonsSortie": 14,
+ "coutMicroChf": 877,
+ "texte": "{\"classement\": [{\"id\": \"c01\", \"phrase\": \"coupé",
+ "analyse": {
+  "valide": false,
+  "ordre": [],
+  "phrases": {},
+  "erreurs": [
+   "JSON illisible"
+  ]
+ },
+ "erreurReseau": null
+}

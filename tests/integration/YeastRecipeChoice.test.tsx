@@ -12,6 +12,9 @@ import { fullRecipe } from '../fixtures/fullRecipe';
 import { yeastFlowRecipe } from '../fixtures/yeastRecipeFlow';
 import type { Recipe } from '../../src/types';
 
+// Volume de calcul (validation canonique + SHA-256 de gros dossiers, jsdom) : aucun état à attendre, la durée dépend du CPU. Plafond explicite (#177).
+vi.setConfig({ testTimeout: 120_000 });
+
 const knowledge = vi.hoisted(() => ({ rows: [] as HopKnowledge[] }));
 const ai = vi.hoisted(() => ({ run: vi.fn() }));
 vi.mock('../../src/hooks/useLiveData', () => ({ useStorageValue: () => knowledge.rows }));

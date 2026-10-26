@@ -61,12 +61,12 @@ export default {
         const coche = g.querySelector('[data-famille="resin"] [aria-checked="true"]');
         return (coche && coche.className.includes('pq-biere-deg-trop')) || 'résineux non noté marqué (orangé)';
       } },
-    { nom: 'radar : toucher le sommet de Résineux', faire: 'toucher', cible: '[data-cible-sommet="resin"]',
+    { nom: 'radar : toucher le sommet de Résineux', faire: 'toucher', cible: 'svg[data-objet="biere"] [data-sommet="resin"]',
       verifier: () => /Résineux : marqué, au-dessus du style/.test(document.querySelector('[data-role="bulle-radar"]')?.textContent ?? '') || 'bulle absente' },
     { nom: 'radar : noter le floral moyen', faire: 'toucher', cible: '[data-famille="floral"] [aria-label="Floral : moyen"]',
-      verifier: () => !!document.querySelector('[data-cible-sommet="floral"]') || 'le floral noté ne fait pas de sommet' },
+      verifier: () => !!document.querySelector('svg[data-objet="biere"] circle[data-point="floral"]') || 'le floral noté ne fait pas de point' },
     { nom: 'radar : le retoucher, pas goûté', faire: 'toucher', cible: '[data-famille="floral"] [aria-checked="true"]',
-      verifier: () => !document.querySelector('[data-cible-sommet="floral"]') || 'le floral reste noté' },
+      verifier: () => (!document.querySelector('svg[data-objet="biere"] circle[data-point="floral"]') && !!document.querySelector('svg[data-objet="biere"] [data-inconnu="floral"]')) || 'le floral reste noté, ou son secteur n’est pas hachuré' },
     { nom: 'barres', faire: 'toucher', cible: '[data-vue="barres"]', attendre: '[data-barre="resin"]' },
     { nom: 'plus floral vers Suggestions', faire: 'toucher', cible: '[data-role="pont-floral"]', attendre: '[data-ecran="suggerer"]',
       verifier: (p) => p.route === '#/suggerer' || `route ${p.route}` },

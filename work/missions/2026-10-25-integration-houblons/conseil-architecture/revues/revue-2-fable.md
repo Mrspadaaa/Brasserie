@@ -1,0 +1,7 @@
+**1. La plus solide : F**, suivie de près par A. F ancre le lag sur les mesures t2 (`toLocaleString` 21 % d'un glisser, cache par identité de tableau), sépare ce qui croît (Firestore : recettes, brassins, dégustations) du catalogue, cite `ETAT-DES-LIEUX.md:124` (« cadre de mesure, pas une prévision »), et propose de changer le résolveur commun d'`etat.html` plutôt que 71 scripts. A apporte la pièce mécanique que F suppose : `useFullScreenRoute.ts:64-66` renvoie à `tabs` à chaque `popstate` (vérifié), donc « une entrée d'historique par niveau » (F) ferme le wizard sans pile de routes dans `App`. F + pile de A = la voie.
+
+**2. Plus gros angle mort : D.** Ses « 8 meilleurs remplaçants précalculés au build » oublient que `substitutes` croise le stock de l'utilisateur (O(n²) stock × catalogue, `question.md`) : le stock n'existe pas au build. Et migrer `writeRecipeDraft` vers Dexie touche des brouillons réels persistés : décision utilisateur, non signalée. E nomme (c) mais décrit en fait `writeRecipeDraft` existant.
+
+**3. Toutes ont manqué :** `RecipePage` (recette enregistrée, sans brouillon) n'a d'hôte ni de porte d'écriture chez personne ; et le mode `--url` lira un DOM porté avec les composants de l'app (L26 : le Sheet apporte ses boutons), donc les 71 scripts échoueront même avec un résolveur changé. Enfin, aucune ne fixe le premier écran montré au brasseur (L11).
+
+LEÇON PROPOSÉE : avant d'arbitrer un calcul « au build », écrire quelles entrées sont des données utilisateur (stock, recettes) ; elles ne se précalculent pas.

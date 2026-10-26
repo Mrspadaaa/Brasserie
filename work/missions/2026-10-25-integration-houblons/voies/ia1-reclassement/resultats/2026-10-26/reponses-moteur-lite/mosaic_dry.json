@@ -1,0 +1,46 @@
+{
+ "casId": "mosaic@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "9e9da08790795f36",
+ "simule": false,
+ "appel": 91,
+ "http": 200,
+ "latenceMs": 1851,
+ "finishReason": "STOP",
+ "jetonsEntree": 4009,
+ "jetonsSortie": 503,
+ "coutMicroChf": 3076,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Simcoe partage le profil résineux, fruité et les notes de baies et agrumes du Mosaic, avec un alpha proche.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Idaho 7 offre des notes tropicales et d'agrumes proches du Mosaic, bien que plus résineuses et moins florales.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Hydra apporte mandarine et fruits tropicaux comme le Mosaic, mais avec une charge d'huiles totales plus modérée.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Strata combine fruits de la passion et pamplemousse rappelant le Mosaic, mais avec un profil herbacé plus marqué.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Falconer's Flight imite les fruits tropicaux et le pamplemousse du Mosaic, mais manque de sa complexité florale.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Sultana propose ananas et agrumes dans l'esprit du Mosaic, avec une intensité aromatique plus puissante.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Taiheke rappelle le profil agrumes et fruits tropicaux du Mosaic, mais avec des acides alpha plus faibles.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Styrian Fox évoque fruits tropicaux et pin comme le Mosaic, mais présente un profil d'amertume plus herbacé.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Southern Cross partage agrumes et notes tropicales avec le Mosaic, mais s'en sépare par un profil résineux plus discret.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Ariana offre agrumes et fruits de la passion proches du Mosaic, mais sa cohumulone est nettement plus élevée.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c03",
+   "c02",
+   "c06",
+   "c08",
+   "c09",
+   "c14",
+   "c20",
+   "c01",
+   "c11",
+   "c15"
+  ],
+  "phrases": {
+   "c03": "Simcoe partage le profil résineux, fruité et les notes de baies et agrumes du Mosaic, avec un alpha proche.",
+   "c02": "Idaho 7 offre des notes tropicales et d'agrumes proches du Mosaic, bien que plus résineuses et moins florales.",
+   "c06": "Hydra apporte mandarine et fruits tropicaux comme le Mosaic, mais avec une charge d'huiles totales plus modérée.",
+   "c08": "Strata combine fruits de la passion et pamplemousse rappelant le Mosaic, mais avec un profil herbacé plus marqué.",
+   "c09": "Falconer's Flight imite les fruits tropicaux et le pamplemousse du Mosaic, mais manque de sa complexité florale.",
+   "c14": "Sultana propose ananas et agrumes dans l'esprit du Mosaic, avec une intensité aromatique plus puissante.",
+   "c20": "Taiheke rappelle le profil agrumes et fruits tropicaux du Mosaic, mais avec des acides alpha plus faibles.",
+   "c01": "Styrian Fox évoque fruits tropicaux et pin comme le Mosaic, mais présente un profil d'amertume plus herbacé.",
+   "c11": "Southern Cross partage agrumes et notes tropicales avec le Mosaic, mais s'en sépare par un profil résineux plus discret.",
+   "c15": "Ariana offre agrumes et fruits de la passion proches du Mosaic, mais sa cohumulone est nettement plus élevée."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

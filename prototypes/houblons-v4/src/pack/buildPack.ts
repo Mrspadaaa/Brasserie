@@ -9,8 +9,8 @@ import {
   SUBSTITUTION_METHOD, SUBSTITUTION_RANKING, SUBSTITUTION_WEIGHTS, SUBSTITUTION_PALIERS, oilScales,
   toleranceScale, ecartTolerances, TOLERANCE_RULE, afterLevelsDelta, ROUE_AROMES, hopSheet, sheetKeys, hopAlpha, hopRole, buildFromEmpty, ibuTables, TABLES_RULE, DRY_HOP_DAY, MINUTES_5, BOIL_LENGTHS, WP_TEMPERATURES, WP_MINUTES, densityFactors, beerContinuous, targetContinuous, afterContinuous, CONTINU_RULE,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie, type FicheLevel,
-} from '../engine';
-import facts from '../../data/faits-cites.json';
+} from '../../../../src/domain/hopIndex/v4';
+import facts from '../../../../src/data/hopV4/faits-cites.json';
 
 export const PACK_DATE = '2026-10-18';
 export const PACK_STYLES = ['16D', '3A', '3B', '21A'] as const;
@@ -286,9 +286,9 @@ function buildPackCore() {
     meta: {
       name: 'Pack de données des mini-prototypes houblons v4', date: PACK_DATE, status: 'à valider par le brasseur',
       engine: { v55: ['functions/src/hopPredictionCore.ts', 'functions/src/hopExtrapolationCore.ts', 'functions/src/hopRecipePrediction.ts', 'src/domain/hopIndex/solver.ts (checkHopExclusions)', 'src/services/brewingMath.ts (hopIbu)'],
-        recipeEngine: HOP_RECIPE_ENGINE_VERSION, v4: 'prototypes/houblons-v4/src/engine (direction relative, stock, voies, échelles au style)' },
-      bands: { version: SCALE_PARAMETERS.version, words: SCALE_PARAMETERS.words, status: SCALE_PARAMETERS.status, file: 'prototypes/houblons-v4/data/style-bands.json' },
-      facts: { version: facts.version, file: 'prototypes/houblons-v4/data/faits-cites.json', status: facts.status,
+        recipeEngine: HOP_RECIPE_ENGINE_VERSION, v4: 'src/domain/hopIndex/v4 (direction relative, stock, voies, échelles au style)' },
+      bands: { version: SCALE_PARAMETERS.version, words: SCALE_PARAMETERS.words, status: SCALE_PARAMETERS.status, file: 'src/data/hopV4/style-bands.json' },
+      facts: { version: facts.version, file: 'src/data/hopV4/faits-cites.json', status: facts.status,
         items: facts.facts.map((f) => ({ id: f.id, varietyId: f.varietyId, families: f.families, quote: f.quote, source: f.description.source.title, url: f.description.source.reference })) },
       sources: {
         varieties: 'Beer Maverick (318 variétés, descripteurs), src/data/hopBeerMaverickBootstrap.json',

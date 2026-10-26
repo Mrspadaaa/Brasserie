@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   FAMILIES, additionIbu, applyVoie, compareRankKeys, gramsForIbu, hopProfile, hopRef, matrixContext, proposeVoies, recipeIbu, recipeProfile, styleFit, getStyleScale, yeastInfo, STOCK, CATALOGUE,
   type Recipe,
-} from '../src/engine';
+} from '../../../src/domain/hopIndex/v4';
 import { s1Recipe } from '../src/pack/buildPack';
 
 const stout = (additions: Recipe['additions'], yeastId: string | null = 'fermentis-us05'): Recipe => ({ ...s1Recipe(), yeastId, additions });
@@ -38,10 +38,15 @@ describe('Moteur v4 sur le moteur V5.5 importé', () => {
     expect(floral.delta).toBeCloseTo(scale.families.floral.cran, 1);
     expect(resin.delta).toBeCloseTo(-scale.families.resin.cran, 1);
     expect(floral.targetAbsolute).toBeCloseTo(s1.before.profile.floral.central! + floral.delta, 1);
-    // Exclusion en plus de la cible : un houblon cité résineux (Cascade : « pine ») est en conflit.
-    const cascade = proposeVoies(s1Recipe(), { floral: 1, resin: -1 }, { limit: 40, perHop: 4 }).voies.filter((v) => v.actions.some((a) => a.hopKey === 'beermaverick-cascade'));
+    // Exclusion en plus de la cible (D90, g2c, 26.10) : un houblon dont la MOITIÉ au moins des fiches citent le résineux est en conflit (Idaho 7 : 5 fiches sur 6) ;
+    // une citation minoritaire n'exclut plus (Cascade : 3 fiches sur 9, avant D90 une fiche suffisait et ses voies étaient toutes en conflit).
+    const voies = proposeVoies(s1Recipe(), { floral: 1, resin: -1 }, { limit: 60, perHop: 4 }).voies;
+    const idaho = voies.filter((v) => v.actions.some((a) => a.hopKey === 'beermaverick-idaho-7' && a.op === 'ajouter'));
+    expect(idaho.length).toBeGreaterThan(0);
+    for (const v of idaho) expect(v.conflicts.join(' ')).toMatch(/exclu par ta direction/);
+    const cascade = voies.filter((v) => v.actions.some((a) => a.hopKey === 'beermaverick-cascade' && a.op === 'ajouter'));
     expect(cascade.length).toBeGreaterThan(0);
-    for (const v of cascade) expect(v.conflicts.join(' ')).toMatch(/exclu par ta direction/);
+    for (const v of cascade) expect(v.conflicts.join(' ')).not.toMatch(/exclu par ta direction/);
     // Deux crans visent deux fois plus loin.
     expect(proposeVoies(s1Recipe(), { floral: 2 }).direction[0].delta).toBeCloseTo(2 * scale.families.floral.cran, 1);
   });
@@ -83,10 +88,12 @@ describe('Moteur v4 sur le moteur V5.5 importé', () => {
 
   it('stock libre = stock moins les ajouts de la recette', () => {
     const r = proposeVoies(stout([...s1Recipe().additions, { id: 'm', hopKey: 'beermaverick-motueka', moment: 'dryPost', grams: 15 }]), { floral: 1 }, { limit: 40, perHop: 6 });
-    const v = r.voies.find((x) => x.actions.length === 1 && x.actions[0].hopKey === 'beermaverick-motueka' && x.actions[0].grams === 10);
+    const v = r.voies.find((x) => x.actions.length === 1 && x.actions[0].hopKey === 'beermaverick-motueka' && x.actions[0].grams === 22.5);
+    // d4 (26.10) : avec 7 fiches de plus pour Motueka, la grille ne propose plus la voie à 10 g (manque 5) ; la voie à 22,5 g (+ 7,5 g sur les 15 g de la recette)
+    // éprouve la même arithmétique : stock libre = 20 g de stock moins les 15 g de la recette = 5 g ; il manque 7,5 − 5 = 2,5 g.
     expect(v).toBeDefined();
     expect(v!.stock.status).toBe('manque');
-    expect(v!.stock.missing[0].grams).toBe(5);
+    expect(v!.stock.missing[0].grams).toBe(2.5);
   });
 
   it('remplacer un ajout d’amertume à IBU égal, à 0,5 IBU près', () => {

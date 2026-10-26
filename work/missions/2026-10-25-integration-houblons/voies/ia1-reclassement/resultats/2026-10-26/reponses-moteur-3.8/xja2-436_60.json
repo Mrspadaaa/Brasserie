@@ -1,0 +1,46 @@
+{
+ "casId": "xja2-436@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "7d30674de10eb257",
+ "simule": false,
+ "appel": 64,
+ "http": 200,
+ "latenceMs": 7499,
+ "finishReason": "STOP",
+ "jetonsEntree": 3847,
+ "jetonsSortie": 577,
+ "coutMicroChf": 12623,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Originaire du même terroir et typé amérisant, ses taux d'alpha et sa cohumulone modérée reproduisent fidèlement le profil d'amertume recherché.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Proche parent sud-africain avec un taux d'alpha équivalent et une cohumulone semblable garantissant une amertume très similaire à 60 minutes.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Variété amérisante pure avec des acides alpha et une cohumulone très proches, apportant une base amère nette et sans aspérité.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Avec sa teneur en alpha comparable et sa cohumulone basse, il délivre une amertume franche et propre au profil technique très voisin.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Houblon amérisant solide dans la même plage d'acides alpha, bien que sa cohumulone légèrement plus haute donne une amertume un peu plus incisive.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Excellent amérisant avec une cohumulone basse assurant une amertume propre, mais ses alpha plus élevés demanderont un léger réajustement du dosage.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Référence pour l'ébullition offrant une amertume très douce grâce à sa faible cohumulone, avec un potentiel alpha légèrement supérieur.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Même origine et cohumulone identique garantissant une excellente structure amère, malgré une plage d'acides alpha parfois un peu plus variable.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Taux d'alpha très similaire pour l'ébullition, mais sa cohumulone nettement plus élevée risque d'apporter une amertume légèrement plus rugueuse.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Des acides alpha comparables quoique situés dans le bas de la fourchette, avec une cohumulone un peu plus prononcée en amertume.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c20",
+   "c15",
+   "c05",
+   "c19",
+   "c14",
+   "c06",
+   "c11",
+   "c09",
+   "c01",
+   "c02"
+  ],
+  "phrases": {
+   "c20": "Originaire du même terroir et typé amérisant, ses taux d'alpha et sa cohumulone modérée reproduisent fidèlement le profil d'amertume recherché.",
+   "c15": "Proche parent sud-africain avec un taux d'alpha équivalent et une cohumulone semblable garantissant une amertume très similaire à 60 minutes.",
+   "c05": "Variété amérisante pure avec des acides alpha et une cohumulone très proches, apportant une base amère nette et sans aspérité.",
+   "c19": "Avec sa teneur en alpha comparable et sa cohumulone basse, il délivre une amertume franche et propre au profil technique très voisin.",
+   "c14": "Houblon amérisant solide dans la même plage d'acides alpha, bien que sa cohumulone légèrement plus haute donne une amertume un peu plus incisive.",
+   "c06": "Excellent amérisant avec une cohumulone basse assurant une amertume propre, mais ses alpha plus élevés demanderont un léger réajustement du dosage.",
+   "c11": "Référence pour l'ébullition offrant une amertume très douce grâce à sa faible cohumulone, avec un potentiel alpha légèrement supérieur.",
+   "c09": "Même origine et cohumulone identique garantissant une excellente structure amère, malgré une plage d'acides alpha parfois un peu plus variable.",
+   "c01": "Taux d'alpha très similaire pour l'ébullition, mais sa cohumulone nettement plus élevée risque d'apporter une amertume légèrement plus rugueuse.",
+   "c02": "Des acides alpha comparables quoique situés dans le bas de la fourchette, avec une cohumulone un peu plus prononcée en amertume."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

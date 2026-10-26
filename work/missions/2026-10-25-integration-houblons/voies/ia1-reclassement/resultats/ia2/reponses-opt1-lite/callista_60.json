@@ -1,0 +1,46 @@
+{
+ "casId": "callista@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "c1fbc1aa9e196fe6",
+ "simule": false,
+ "appel": 28,
+ "http": 200,
+ "latenceMs": 2000,
+ "finishReason": "STOP",
+ "jetonsEntree": 3671,
+ "jetonsSortie": 527,
+ "coutMicroChf": 3024,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Proche par son alpha faible et ses notes de pêche et abricot, il se distingue par un profil orienté agrumes et melon.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Partage un alpha bas similaire et des arômes fruités de fraise et orange, mais manque de complexité sur les fruits tropicaux.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Offre un niveau d'alpha proche et des notes de fruits à noyau, s'écartant du profil tropical par une touche de crème.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Possède un alpha comparable et des notes de pêche, mais son cohumulone est plus élevé et apporte des agrumes marqués.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Même gamme d'alpha et notes de fruit de la passion communes, mais se sépare par une dominante d'agrumes et de pamplemousse.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Partage un alpha modéré et des notes d'abricot, mais se différencie par un usage amérisant et des notes de miel.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Proche par son alpha et ses notes de pin, mais s'en éloigne par une forte amertume et des baies rouges.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Rejoint le profil par la pêche et le fruit de la passion, mais présente un alpha nettement supérieur et un usage dual.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Partage les notes de poire et de fruits à noyau, mais son alpha élevé et son profil tropical puissant le distinguent nettement.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Partage des notes de baies et agrumes, mais son alpha et son cohumulone sont plus élevés, avec une touche mentholée.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c11",
+   "c12",
+   "c01",
+   "c02",
+   "c08",
+   "c03",
+   "c04",
+   "c10",
+   "c19",
+   "c05"
+  ],
+  "phrases": {
+   "c11": "Proche par son alpha faible et ses notes de pêche et abricot, il se distingue par un profil orienté agrumes et melon.",
+   "c12": "Partage un alpha bas similaire et des arômes fruités de fraise et orange, mais manque de complexité sur les fruits tropicaux.",
+   "c01": "Offre un niveau d'alpha proche et des notes de fruits à noyau, s'écartant du profil tropical par une touche de crème.",
+   "c02": "Possède un alpha comparable et des notes de pêche, mais son cohumulone est plus élevé et apporte des agrumes marqués.",
+   "c08": "Même gamme d'alpha et notes de fruit de la passion communes, mais se sépare par une dominante d'agrumes et de pamplemousse.",
+   "c03": "Partage un alpha modéré et des notes d'abricot, mais se différencie par un usage amérisant et des notes de miel.",
+   "c04": "Proche par son alpha et ses notes de pin, mais s'en éloigne par une forte amertume et des baies rouges.",
+   "c10": "Rejoint le profil par la pêche et le fruit de la passion, mais présente un alpha nettement supérieur et un usage dual.",
+   "c19": "Partage les notes de poire et de fruits à noyau, mais son alpha élevé et son profil tropical puissant le distinguent nettement.",
+   "c05": "Partage des notes de baies et agrumes, mais son alpha et son cohumulone sont plus élevés, avec une touche mentholée."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

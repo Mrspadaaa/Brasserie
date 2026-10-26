@@ -1,0 +1,46 @@
+{
+ "casId": "agnus@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "322d6ee7be86431c",
+ "simule": false,
+ "appel": 52,
+ "http": 200,
+ "latenceMs": 6906,
+ "finishReason": "STOP",
+ "jetonsEntree": 3837,
+ "jetonsSortie": 591,
+ "coutMicroChf": 12735,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Originaire de Tchéquie comme Agnus, il partage un taux d'acides alpha et de cohumulone quasi identique, assurant une amertume très comparable.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Son taux d'alpha et sa cohumulone moyenne fournissent une amertume nette et mordante, très fidèle au rôle amérisant d'Agnus à 60 minutes.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Ses plages d'acides alpha et de cohumulone se superposent parfaitement à celles d'Agnus pour un rendement d'amertume très similaire en chaudière.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Taux d'acides alpha et de cohumulone parfaitement alignés pour 60 minutes, procurant une amertume d'intensité et de mordant équivalentes.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Plage d'alpha très proche et cohumulone dans le haut de gamme comme Agnus, offrant un profil d'amertume franche et incisive.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Amérisant avec des taux d'alpha et de cohumulone tout à fait adaptés pour reproduire la force d'amertume d'Agnus.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Bien que légèrement plus concentré en alpha, son niveau de cohumulone apporte cette amertume rustique et puissante propre à Agnus.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Excellente base amérisante neutre et propre, bien que sa cohumulone légèrement plus basse confère une amertume un peu plus ronde.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Spécialisé pour l'amertume avec un bon potentiel alpha et une cohumulone similaire, malgré un profil aromatique résiduel plus fruité.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Teneur en alpha équivalente assurant un bon rendement, mais sa cohumulone plus basse donnera une amertume légèrement plus douce.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c07",
+   "c14",
+   "c04",
+   "c01",
+   "c03",
+   "c19",
+   "c12",
+   "c20",
+   "c08",
+   "c02"
+  ],
+  "phrases": {
+   "c07": "Originaire de Tchéquie comme Agnus, il partage un taux d'acides alpha et de cohumulone quasi identique, assurant une amertume très comparable.",
+   "c14": "Son taux d'alpha et sa cohumulone moyenne fournissent une amertume nette et mordante, très fidèle au rôle amérisant d'Agnus à 60 minutes.",
+   "c04": "Ses plages d'acides alpha et de cohumulone se superposent parfaitement à celles d'Agnus pour un rendement d'amertume très similaire en chaudière.",
+   "c01": "Taux d'acides alpha et de cohumulone parfaitement alignés pour 60 minutes, procurant une amertume d'intensité et de mordant équivalentes.",
+   "c03": "Plage d'alpha très proche et cohumulone dans le haut de gamme comme Agnus, offrant un profil d'amertume franche et incisive.",
+   "c19": "Amérisant avec des taux d'alpha et de cohumulone tout à fait adaptés pour reproduire la force d'amertume d'Agnus.",
+   "c12": "Bien que légèrement plus concentré en alpha, son niveau de cohumulone apporte cette amertume rustique et puissante propre à Agnus.",
+   "c20": "Excellente base amérisante neutre et propre, bien que sa cohumulone légèrement plus basse confère une amertume un peu plus ronde.",
+   "c08": "Spécialisé pour l'amertume avec un bon potentiel alpha et une cohumulone similaire, malgré un profil aromatique résiduel plus fruité.",
+   "c02": "Teneur en alpha équivalente assurant un bon rendement, mais sa cohumulone plus basse donnera une amertume légèrement plus douce."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

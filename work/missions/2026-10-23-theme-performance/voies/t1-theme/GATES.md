@@ -1,6 +1,6 @@
 # Gates: voie t1-theme — le thème clair des maquettes dans toute l'app
 
-OWNS: tailwind.config.js, src/index.css, src/main.tsx, src/theme, scripts/theme, DESIGN.md, work/missions/2026-10-23-theme-performance/voies/t1-theme
+OWNS: tailwind.config.js, src/index.css, src/main.tsx, src/theme, scripts/theme, DESIGN.md, src/pages/PageShell.tsx, src/pages/BrewWizard.tsx, src/components, src/ui, work/missions/2026-10-23-theme-performance/voies/t1-theme
 
 Scope: toute l'app en clair par défaut et en cave au choix, contrastes mesurés, écrans vérifiés en deux thèmes, build et tests verts.
 

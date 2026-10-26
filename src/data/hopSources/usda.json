@@ -1,0 +1,444 @@
+{
+ "source": {
+  "nom": "USDA ARS, collection mondiale de cultivars de houblon (Corvallis)",
+  "hote": "www.ars.usda.gov",
+  "type": "institut public (États-Unis)",
+  "conditions": "Disponibilité écrite sur les fiches : « commercial cultivar, no restrictions » pour Cascade ; aucune licence de réutilisation affirmée sur le site",
+  "robots": "Disallow /bin/ /config/ /css/ /Jquery/ /views/ /scripts/ /umbraco/ … ; pas de Crawl-delay",
+  "parcours": "fiches suivies de lien en lien depuis Cascade (21092) ; pas d’index public",
+  "releve": "2026-10-26T06:26:49.133Z",
+  "pagesLues": 2,
+  "pagesAbsentes": 1,
+  "arret": null
+ },
+ "fiches": [
+  {
+   "nom": "Cascade",
+   "alias": [],
+   "varietyId": "beermaverick-cascade",
+   "accession": "21092",
+   "titre": "Cascade (21092)",
+   "url": "https://www.ars.usda.gov/ARSUserFiles/2450/hopcultivars/21092.html",
+   "publie": null,
+   "champs": {
+    "maturite": {
+     "etiquette": "MATURITY",
+     "brut": "Medium to medium late",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "couleurFeuille": {
+     "etiquette": "LEAF COLOR",
+     "brut": "Medium green to dark green",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "sexe": {
+     "etiquette": "SEX",
+     "brut": "Female; occasionally produces a few sterile flowers",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "maladies": {
+     "etiquette": "DISEASES",
+     "brut": "Downy Mildew: resistant in the crown, moderately susceptible in shoots and cones Verticillium wilt: moderately resistant or tolerant Viruses: free of Prunus Necrotic Ringspot virus and Apple mosaic Virus; infected with Hop Mosaic, Hop Latent, and American Hop Latent viruses.",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "vigueur": {
+     "etiquette": "VIGOR",
+     "brut": "Very good",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "rendement": {
+     "etiquette": "YIELD",
+     "brut": "Very good, 1800-2200 lbs/acre",
+     "valeur": null,
+     "min": 1800,
+     "max": 2200,
+     "unite": "lbs/acre",
+     "base": null
+    },
+    "longueurBranches": {
+     "etiquette": "SIDEARM LENGTH",
+     "brut": "20-30 inches",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "alpha": {
+     "etiquette": "ALPHA ACIDS",
+     "brut": "6.3% (7-year range 5.1-8.9%)",
+     "valeur": 6.3,
+     "min": 5.1,
+     "max": 8.9,
+     "unite": "%",
+     "base": null,
+     "moyenne": 6.3,
+     "anneesPlage": 7
+    },
+    "beta": {
+     "etiquette": "BETA ACIDS",
+     "brut": "5.6% (7-year range 3.6-7.5%)",
+     "valeur": 5.6,
+     "min": 3.6,
+     "max": 7.5,
+     "unite": "%",
+     "base": null,
+     "moyenne": 5.6,
+     "anneesPlage": 7
+    },
+    "cohumulone": {
+     "etiquette": "COHUMULONE",
+     "brut": "36-40%",
+     "valeur": null,
+     "min": 36,
+     "max": 40,
+     "unite": "%",
+     "base": "% des α"
+    },
+    "conservation": {
+     "etiquette": "STORAGE STABILITY",
+     "brut": "poor (retained 40% of original alpha acids after 6 months room temperature storage)",
+     "valeur": 40,
+     "min": 40,
+     "max": 40,
+     "unite": "% des α restants",
+     "base": null,
+     "moisStockage": 6
+    },
+    "huileTotale": {
+     "etiquette": "OIL",
+     "brut": "1.24 ml/100 g",
+     "valeur": 1.24,
+     "min": 1.24,
+     "max": 1.24,
+     "unite": "mL/100 g",
+     "base": null
+    },
+    "farnesene": {
+     "etiquette": "MAJOR TRAITS",
+     "brut": "farnesene (about 4%)",
+     "valeur": 4,
+     "min": 4,
+     "max": 4,
+     "unite": "%",
+     "base": null,
+     "approx": true
+    },
+    "humulene": {
+     "etiquette": "MAJOR TRAITS",
+     "brut": "10% humulene",
+     "valeur": 10,
+     "min": 10,
+     "max": 10,
+     "unite": "%",
+     "base": null
+    },
+    "rapportHC": {
+     "etiquette": "MAJOR TRAITS",
+     "brut": "H/C ratio - 2.67",
+     "valeur": 2.67,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "autre_selection": {
+     "etiquette": "SELECTION",
+     "brut": "Not applicable",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "autre_genus": {
+     "etiquette": "GENUS",
+     "brut": "Humulus",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "autre_species": {
+     "etiquette": "SPECIES",
+     "brut": "lupulus",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "autre_primary_site": {
+     "etiquette": "PRIMARY SITE",
+     "brut": "USDA World Hop Cultivar Collection, OSU East Farm, Corvallis",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "autre_method_received": {
+     "etiquette": "METHOD RECEIVED",
+     "brut": "Rooted cutting",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "autre_availability": {
+     "etiquette": "AVAILABILITY",
+     "brut": "commercial cultivar, no restrictions",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "autre_date_received": {
+     "etiquette": "DATE RECEIVED",
+     "brut": "1974; USDA Accession No. assigned in 1974.",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "lignee": [
+     "[Fuggle x (Serebrianka-Fuggle Seedling)] x OP; Open pollinated seed collected on USDA 19124 in 1955"
+    ],
+    "origine": [
+     "Heat-treated/meristem tip cultured USDA 56013 by C.B. Skotland, Prosser, WA"
+    ],
+    "references": [
+     "Brooks, S.N., C.E. Homer, S.T. Likens, and C.E. Zimmermann. Registration of Cascade hop (Registration No. 1). Crop Sci. 12:394. 1972.",
+     "Homer, C.E., S.T. Likens, C.E. Zimmermann, and A. Haunold. Cascade, a new continental-type hop variety for the U.S. Brewer's Digest 47:56-62. 1972.",
+     "Haunold, A. Development of hop varieties. Zymurgy 13(4): 15-23. 1990.",
+     "Probasco, G. Hop varieties grown in the U.S.A. Brauwelt International, 1985(1):30-34. 1985.",
+     "USDA Annual Report for Hop Research 1974, pp. 19-20."
+    ]
+   },
+   "proseNonCopiee": {
+    "autresInformations": 63,
+    "traitsPrincipaux": 27
+   },
+   "releve": "2026-10-26T06:25:22.306Z",
+   "sha256": "2fbc8d0923ab69ce3f3b0fd2f2ce2bbefbeedc644050d5b15a5b1e7d8d396ae9"
+  },
+  {
+   "nom": "Cascade",
+   "alias": [],
+   "varietyId": "beermaverick-cascade",
+   "accession": "56013",
+   "titre": "Cascade (56013)",
+   "url": "https://www.ars.usda.gov/ARSUserFiles/2450/hopcultivars/56013.html",
+   "publie": null,
+   "champs": {
+    "maturite": {
+     "etiquette": "MATURITY",
+     "brut": "Medium to medium late",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "couleurFeuille": {
+     "etiquette": "LEAF COLOR",
+     "brut": "Medium green to dark green",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "sexe": {
+     "etiquette": "SEX",
+     "brut": "Female, occasionally produces a few sterile male",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "maladies": {
+     "etiquette": "DISEASES",
+     "brut": "Downy Mildew: resistant in the crown, moderately susceptible in shoots and cones flowers Verticillium wilt: moderately resistant Viruses: initially infected with all hop viruses but cleaned up by meristem tip culture and heat treatment and re-released under the new Accession No. USDA 21092.",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "vigueur": {
+     "etiquette": "VIGOR",
+     "brut": "Very good",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "rendement": {
+     "etiquette": "YIELD",
+     "brut": "Very good, 1800-2200 lbs/acre",
+     "valeur": null,
+     "min": 1800,
+     "max": 2200,
+     "unite": "lbs/acre",
+     "base": null
+    },
+    "alpha": {
+     "etiquette": "ALPHA ACIDS",
+     "brut": "6.2% (ten year range: 5.1 to 8.5%)",
+     "valeur": 6.2,
+     "min": 6.2,
+     "max": 6.2,
+     "unite": "%",
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BETA ACIDS",
+     "brut": "5.0% (ten year range: 4.0 to 6.6%)",
+     "valeur": 5,
+     "min": 5,
+     "max": 5,
+     "unite": "%",
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "COHUMULONE",
+     "brut": "33-36%",
+     "valeur": null,
+     "min": 33,
+     "max": 36,
+     "unite": "%",
+     "base": "% des α"
+    },
+    "conservation": {
+     "etiquette": "STORAGE STABILITY",
+     "brut": "Poor",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "OIL",
+     "brut": "1.27 ml/100 g (10 year range: 0.62 to 1.89)",
+     "valeur": 1.27,
+     "min": 1.27,
+     "max": 1.27,
+     "unite": "mL/100 g",
+     "base": null
+    },
+    "autre_selection": {
+     "etiquette": "SELECTION",
+     "brut": "Seedling selection 55187 made in 1956 at Corvallis, Oregon",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "autre_genus": {
+     "etiquette": "GENUS",
+     "brut": "Humulus",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "autre_species": {
+     "etiquette": "SPECIES",
+     "brut": "lupulus",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "autre_primary_site": {
+     "etiquette": "PRIMARY SITE",
+     "brut": "USDA World Hop Variety Collection, OSU East Farm",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "autre_method_received": {
+     "etiquette": "METHOD RECEIVED",
+     "brut": "Seedling selection",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "autre_availability": {
+     "etiquette": "AVAILABILITY",
+     "brut": "Commercial cultivar, no restrictions.",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    },
+    "autre_date_received": {
+     "etiquette": "DATE RECEIVED",
+     "brut": "Selected in 1956",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "lignee": [
+     "OP seed collected on USDA 19124 in 1955; [Fuggle x (Serebrianka-Fuggle S)] x OP"
+    ],
+    "origine": [
+     "Open pollinated seed collected in 1955, seedling selected in 1956 by S. N. Brooks."
+    ],
+    "references": [
+     "Brooks, S. N., C. E. Homer, S. T. Likens, and C. E. Zimmermann. Registration of Cascade hop (Registration No. 1). Crop Sci. 12:394. 1972.",
+     "Homer, T. E., S. T. Likens, C. E. Zimmermann, and A. Haunold. Cascade, a new continental-type hop variety for the U.S. Brewer's Digest 47:56-62. 1972.",
+     "Romanko, R. R. In: Steiner's Guide to American Hops, 2nd. ed. 1986."
+    ]
+   },
+   "proseNonCopiee": {
+    "autresInformations": 38,
+    "traitsPrincipaux": 13
+   },
+   "releve": "2026-10-26T06:26:49.133Z",
+   "sha256": "dbde5c362e84826fed186afb5e07859a1a0ea9c8d0aa3b05ab700648f7a02fed"
+  }
+ ]
+}

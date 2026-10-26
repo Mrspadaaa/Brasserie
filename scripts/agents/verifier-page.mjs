@@ -86,7 +86,10 @@ try {
   const tel = pageLot ? await p.evaluate(lisibilite, { ...seuils, vignettes: true }) : null;
   if (captures) {
     await p.screenshot({ path: `${captures}-haut.png` });
-    await p.screenshot({ path: `${captures}-page.png`, fullPage: true });
+    // Une page très haute (la galerie de 1 000 mini maquettes, 24.10) dépasse ce que Chrome capture d'un coup : la capture
+    // « page » s'arrête alors à 16 000 px, le reste est contrôlé par les mesures, pas par l'image.
+    const haut = await p.evaluate(() => document.documentElement.scrollHeight);
+    await p.screenshot(haut > 16000 ? { path: `${captures}-page.png`, clip: { x: 0, y: 0, width: 390, height: 16000 }, captureBeyondViewport: true } : { path: `${captures}-page.png`, fullPage: true });
   }
   if (pageLot) {
     await p.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });

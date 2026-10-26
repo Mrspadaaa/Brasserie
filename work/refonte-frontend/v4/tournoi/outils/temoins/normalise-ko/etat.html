@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Témoin NÉGATIF de controle-normalise-moment : tout garde l échelle du dry hop (SIMULÉ)</title>
+<style>
+  body { font: 14px system-ui, sans-serif; margin: 0; padding: 10px; background: #fff; color: #1c1917; }
+  h1 { font-size: 15px; margin: 0 0 6px; }
+  .nm-note { font-size: 11px; color: #57534e; margin: 0 0 8px; }
+  .nm-seg { display: flex; gap: 4px; margin: 6px 0 10px; }
+  .nm-s { flex: 1; min-height: 40px; border: 1px solid #1c1917; background: #fff; font: inherit; }
+  .nm-s[aria-checked="true"] { background: #1c1917; color: #fff; }
+  .nm-tete, .nm-ligne { display: grid; grid-template-columns: 70px 1fr 1fr 1fr; gap: 6px; align-items: center; margin: 3px 0; }
+  .nm-tete b { font-size: 12px; }
+  .nm-pis { position: relative; display: block; height: 12px; background: #f3e8f7; }
+  .nm-ba { position: absolute; left: 0; top: 0; height: 100%; background: #9840bc; display: block; }
+  .nm-radar { display: block; margin: 12px auto 0; }
+  .nm-grille { stroke: #a8a29e; stroke-width: 1; }
+</style>
+</head>
+<body>
+<h1>Cascade, Idaho 7 ou Galaxy</h1>
+<p class="nm-note">Témoin SIMULÉ (valeurs inventées, en crans) pour controle-normalise-moment.mjs. Chaque famille est mise à l'échelle de son plus fort apport du moment ; un apport sous 0,05 cran s'affiche « ~0 », sans barre ; le radar à l'échelle du plus fort apport du moment.</p>
+<div class="nm-seg" role="radiogroup" aria-label="Quand comparer" data-role="quand-comparer">
+  <button type="button" role="radio" aria-checked="true" data-moment="60" class="nm-s">60′</button>
+  <button type="button" role="radio" aria-checked="false" data-moment="10" class="nm-s">10′</button>
+  <button type="button" role="radio" aria-checked="false" data-moment="whirlpool" class="nm-s">WP</button>
+  <button type="button" role="radio" aria-checked="false" data-moment="dryhop-actif" class="nm-s">actif</button>
+  <button type="button" role="radio" aria-checked="false" data-moment="dryhop-apres" class="nm-s">après</button>
+</div>
+<div class="nm-tete"><span></span><b>Cascade</b><b>Idaho 7</b><b>Galaxy</b></div>
+<div id="nm-rangees"></div>
+<svg id="nm-radar" class="nm-radar" data-role="radar" width="240" height="220" viewBox="0 0 240 220" role="img" aria-label="Radar des apports au moment choisi"></svg>
+<script>
+(function () {
+  // Apports simulés en crans, par moment : [famille][houblon] (Cascade, Idaho 7, Galaxy). null = inconnu.
+  var FAMILLES = ['floral', 'citrus', 'tropical', 'herbal', 'resin'];
+  var NOMS = { floral: 'Floral', citrus: 'Agrumes', tropical: 'Tropicaux', herbal: 'Herbacé', resin: 'Résineux' };
+  var HOUBLONS = ['cascade', 'idaho-7', 'galaxy'];
+  var DONNEES = {
+    '60':           { floral: [0.02, 0.05, 0.08], citrus: [0.10, 0.04, 0.20], tropical: [0.03, 0.06, 0.14], herbal: [0.01, 0.02, 0.01], resin: [0, 0, 0] },
+    '10':           { floral: [0.10, 0.20, 0.30], citrus: [0.40, 0.20, 0.70], tropical: [0.10, 0.30, 0.60], herbal: [0.05, 0.10, 0.06], resin: [0, 0, 0] },
+    'whirlpool':    { floral: [0.20, 0.40, 0.50], citrus: [0.50, 0.30, 0.90], tropical: [0.20, 0.50, 0.90], herbal: [0.10, 0.20, 0.10], resin: [0, 0, 0] },
+    'dryhop-actif': { floral: [0.90, 1.30, 0.80], citrus: [0.60, 0.50, 1.40], tropical: [0.40, 0.90, 1.60], herbal: [0.20, 0.50, 0.30], resin: [0, 0, 0] },
+    'dryhop-apres': { floral: [1.00, 1.30, 0.70], citrus: [0.70, 0.60, 1.50], tropical: [0.50, 1.00, 1.70], herbal: [0.30, 0.60, 0.30], resin: [0, 0, 0] }
+  };
+  // Mettre false pour le témoin négatif : tout garde l'échelle du dry hop (le défaut D142).
+  var NORMALISE = false;
+  var ECHELLE_DRYHOP = 1.7;
+
+  var etat = '60';
+  var rangees = document.getElementById('nm-rangees');
+  var radar = document.getElementById('nm-radar');
+
+  function echelle(m, f) {
+    if (!NORMALISE) return ECHELLE_DRYHOP;
+    var max = Math.max.apply(null, DONNEES[m][f]);
+    return max > 0 ? max : 1;
+  }
+  function echelleRadar(m) {
+    if (!NORMALISE) return ECHELLE_DRYHOP;
+    var max = 0;
+    FAMILLES.forEach(function (f) { max = Math.max(max, Math.max.apply(null, DONNEES[m][f])); });
+    return max > 0 ? max : 1;
+  }
+  function dessiner() {
+    var html = '';
+    FAMILLES.forEach(function (f) {
+      html += '<div class="nm-ligne" data-famille-ligne="' + f + '"><span>' + NOMS[f] + '</span>';
+      HOUBLONS.forEach(function (h, i) {
+        var v = DONNEES[etat][f][i];
+        var pct = v === null ? null : Math.min(100, (v / echelle(etat, f)) * 100);
+        var quasiNul = v !== null && v < 0.05;
+        html += '<span class="nm-cel" data-col="' + h + '" data-valeur="' + (v === null ? '' : v) + '">' +
+          (pct === null ? '' : quasiNul ? '~0' : '<span class="nm-pis" data-role="piste-famille"><i class="nm-ba" data-role="barre-famille" data-famille="' + f + '" style="width:' + pct.toFixed(1) + '%"></i></span>') +
+          '</span>';
+      });
+      html += '</div>';
+    });
+    rangees.innerHTML = html;
+
+    var cx = 120, cy = 110, R = 90, n = FAMILLES.length;
+    var s = '';
+    FAMILLES.forEach(function (f, k) {
+      var a = -Math.PI / 2 + (2 * Math.PI * k) / n;
+      s += '<line class="nm-grille" x1="' + cx + '" y1="' + cy + '" x2="' + (cx + R * Math.cos(a)).toFixed(1) + '" y2="' + (cy + R * Math.sin(a)).toFixed(1) + '"></line>';
+    });
+    var cols = ['#781838', '#e80030', '#681878'];
+    var nomsH = ['Cascade', 'Idaho 7', 'Galaxy'];
+    var e = echelleRadar(etat);
+    HOUBLONS.forEach(function (h, i) {
+      var pts = FAMILLES.map(function (f, k) {
+        var a = -Math.PI / 2 + (2 * Math.PI * k) / n;
+        var r = R * Math.min(1, DONNEES[etat][f][i] / e);
+        return (cx + r * Math.cos(a)).toFixed(1) + ',' + (cy + r * Math.sin(a)).toFixed(1);
+      }).join(' ');
+      s += '<polygon data-serie="' + nomsH[i] + '" points="' + pts + '" fill="' + cols[i] + '" fill-opacity="0.18" stroke="' + cols[i] + '" stroke-width="2"></polygon>';
+    });
+    radar.innerHTML = s;
+  }
+  document.querySelectorAll('[data-role="quand-comparer"] [data-moment]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      etat = b.getAttribute('data-moment');
+      document.querySelectorAll('[data-role="quand-comparer"] [data-moment]').forEach(function (x) {
+        x.setAttribute('aria-checked', x === b ? 'true' : 'false');
+      });
+      dessiner();
+    });
+  });
+  dessiner();
+})();
+</script>
+</body>
+</html>

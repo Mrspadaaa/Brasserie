@@ -8,7 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { applyVoie, describeFamilies, getStyleScale, hopRef, hopRole, STOCK, offModelLeads, proposeVoies, recipeIbu, yeastSignals, FAMILIES, FAMILY_NAMES,
-  type FamilyId, type Gouts, type Recipe, type Voie } from '../src/engine';
+  type FamilyId, type Gouts, type Recipe, type Voie } from '../../../src/domain/hopIndex/v4';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
 const out = path.resolve(process.argv[2] || '.');

@@ -1,0 +1,46 @@
+{
+ "casId": "whitbread-golding-variety-wgv@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "9da4877d3783e3a4",
+ "simule": false,
+ "appel": 29,
+ "http": 200,
+ "latenceMs": 6475,
+ "finishReason": "STOP",
+ "jetonsEntree": 3717,
+ "jetonsSortie": 584,
+ "coutMicroChf": 12445,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Proche parent anglais, il partage le profil floral, mielleux et fruité ainsi qu'une composition d'huiles très similaire, avec des notes d'agrumes plus nettes.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Ce classique britannique offre le même équilibre doux, floral, fruité et herbacé, avec un profil d'huiles quasi identique malgré des nuances de menthe.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Variante américaine du Golding partageant les notes florales et douces ainsi que les huiles majeures, bien qu'il soit un peu moins terreux.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Issu de la lignée Fuggle/Golding, il apporte un bel accord terreux et épicé avec des taux d'humulène très comparables au WGV.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Offre des arômes terreux, nobles et fruités très proches, complétés par une répartition en myrcène et humulène particulièrement fidèle.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Son côté fruité, floral et terreux rappelle bien le WGV en dry hop, avec une composition d'huiles compatible malgré une touche mentholée.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Ce descendant de Golding restitue parfaitement la facette florale, douce et terreuse en fermentation active, mais présente un profil légèrement plus citronné.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage les descripteurs terreux, herbacés et floraux ainsi qu'une base myrcène semblable, bien que son taux de farnésène soit nettement supérieur.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Reprend l'aromatique terreuse, herbacée et florale recherchée, mais son empreinte en humulène est plus basse et le farnésène plus marqué.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Apporte des tonalités florales et terreuses traditionnelles cohérentes avec le style anglais, bien qu'il soit légèrement plus lavandé et épicé.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c09",
+   "c18",
+   "c07",
+   "c06",
+   "c02",
+   "c05",
+   "c19",
+   "c01",
+   "c04",
+   "c16"
+  ],
+  "phrases": {
+   "c09": "Proche parent anglais, il partage le profil floral, mielleux et fruité ainsi qu'une composition d'huiles très similaire, avec des notes d'agrumes plus nettes.",
+   "c18": "Ce classique britannique offre le même équilibre doux, floral, fruité et herbacé, avec un profil d'huiles quasi identique malgré des nuances de menthe.",
+   "c07": "Variante américaine du Golding partageant les notes florales et douces ainsi que les huiles majeures, bien qu'il soit un peu moins terreux.",
+   "c06": "Issu de la lignée Fuggle/Golding, il apporte un bel accord terreux et épicé avec des taux d'humulène très comparables au WGV.",
+   "c02": "Offre des arômes terreux, nobles et fruités très proches, complétés par une répartition en myrcène et humulène particulièrement fidèle.",
+   "c05": "Son côté fruité, floral et terreux rappelle bien le WGV en dry hop, avec une composition d'huiles compatible malgré une touche mentholée.",
+   "c19": "Ce descendant de Golding restitue parfaitement la facette florale, douce et terreuse en fermentation active, mais présente un profil légèrement plus citronné.",
+   "c01": "Partage les descripteurs terreux, herbacés et floraux ainsi qu'une base myrcène semblable, bien que son taux de farnésène soit nettement supérieur.",
+   "c04": "Reprend l'aromatique terreuse, herbacée et florale recherchée, mais son empreinte en humulène est plus basse et le farnésène plus marqué.",
+   "c16": "Apporte des tonalités florales et terreuses traditionnelles cohérentes avec le style anglais, bien qu'il soit légèrement plus lavandé et épicé."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

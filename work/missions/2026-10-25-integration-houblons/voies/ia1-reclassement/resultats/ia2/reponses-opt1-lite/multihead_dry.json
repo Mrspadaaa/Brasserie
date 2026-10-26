@@ -1,0 +1,46 @@
+{
+ "casId": "multihead@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "ba3462ef89af3781",
+ "simule": false,
+ "appel": 49,
+ "http": 200,
+ "latenceMs": 2013,
+ "finishReason": "STOP",
+ "jetonsEntree": 3775,
+ "jetonsSortie": 530,
+ "coutMicroChf": 3072,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage les notes de pêche, fruits tropicaux et agrumes avec un profil d'acides alpha et d'huiles très proche pour le dry hop.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Proche par son faible taux d'acides alpha et ses notes de pêche et agrumes, bien que l'huile totale soit plus faible.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Offre un profil aromatique dominé par la pêche et les agrumes avec un alpha bas, idéal pour remplacer le côté délicat.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Substitut aromatique intéressant grâce à ses notes de pêche et d'agrumes, avec un taux d'alpha modéré et proche.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Apporte des notes de pêche et d'abricot s'accordant bien, malgré un usage aroma et des huiles un peu différentes.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Partage des notes nettes de pêche et d'agrumes, mais avec un niveau d'acides alpha légèrement supérieur pour un dry hop.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Excellente intensité en fruits tropicaux et pêche, mais surpasse largement le houblon d'origine en acides alpha.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Partage les notes de pêche, d'agrumes et de fruits tropicaux, mais possède un alpha et un myrcène bien plus élevés.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Possède les notes recherchées de pêche et de fruit de la passion, mais présente un profil d'huiles très incomplet.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Convient pour ses notes de pêche et d'agrumes, mais son usage dual et son alpha supérieur divergent du profil initial.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c12",
+   "c10",
+   "c04",
+   "c08",
+   "c06",
+   "c05",
+   "c07",
+   "c15",
+   "c20"
+  ],
+  "phrases": {
+   "c01": "Partage les notes de pêche, fruits tropicaux et agrumes avec un profil d'acides alpha et d'huiles très proche pour le dry hop.",
+   "c12": "Proche par son faible taux d'acides alpha et ses notes de pêche et agrumes, bien que l'huile totale soit plus faible.",
+   "c10": "Offre un profil aromatique dominé par la pêche et les agrumes avec un alpha bas, idéal pour remplacer le côté délicat.",
+   "c04": "Substitut aromatique intéressant grâce à ses notes de pêche et d'agrumes, avec un taux d'alpha modéré et proche.",
+   "c08": "Apporte des notes de pêche et d'abricot s'accordant bien, malgré un usage aroma et des huiles un peu différentes.",
+   "c06": "Partage des notes nettes de pêche et d'agrumes, mais avec un niveau d'acides alpha légèrement supérieur pour un dry hop.",
+   "c05": "Excellente intensité en fruits tropicaux et pêche, mais surpasse largement le houblon d'origine en acides alpha.",
+   "c07": "Partage les notes de pêche, d'agrumes et de fruits tropicaux, mais possède un alpha et un myrcène bien plus élevés.",
+   "c15": "Possède les notes recherchées de pêche et de fruit de la passion, mais présente un profil d'huiles très incomplet.",
+   "c20": "Convient pour ses notes de pêche et d'agrumes, mais son usage dual et son alpha supérieur divergent du profil initial."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

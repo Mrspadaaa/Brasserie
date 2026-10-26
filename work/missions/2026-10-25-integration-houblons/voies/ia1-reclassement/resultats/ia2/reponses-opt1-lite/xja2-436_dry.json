@@ -1,0 +1,46 @@
+{
+ "casId": "xja2-436@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "93922b0f6e9f10ab",
+ "simule": false,
+ "appel": 45,
+ "http": 200,
+ "latenceMs": 2076,
+ "finishReason": "STOP",
+ "jetonsEntree": 4058,
+ "jetonsSortie": 532,
+ "coutMicroChf": 3185,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"African Queen partage des notes de groseille à maquereau et agrumes mais apporte un profil dank et cassis plus prononcé.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Styrian Cardinal offre cette même touche de groseille à maquereau et d'agrumes, avec un taux d'huiles totales plus élevé.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Southern Star reprend le profil sud-africain avec des fruits tropicaux et agrumes, mais délaisse la groseille pour le fruit de la passion.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Southern Cross intègre les agrumes et le zeste, mais se sépare du profil par des notes épicées et de pin.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Ekuanot propose une palette riche en agrumes et papaye, bien que plus fruitée et moins résineuse que XJA2/436.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Azacca partage la papaye et les agrumes en dry hop, mais s'en éloigne par une dominante marquée de mangue.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Nelson Sauvin et XJA2/436 partagent la groseille à maquereau, mais Nelson apporte son caractère unique de vin blanc.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Southern Tropic vient d'Afrique du Sud et évoque les agrumes, mais penche vers la noix de coco et le melon.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Chinook possède des acides alpha proches, mais mise sur le pin et la résine plutôt que sur les fruits tropicaux.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Apollo remplace l'alpha et les agrumes, mais son profil résineux et dank est beaucoup plus puissant.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c19",
+   "c17",
+   "c02",
+   "c04",
+   "c12",
+   "c10",
+   "c18",
+   "c03",
+   "c08"
+  ],
+  "phrases": {
+   "c01": "African Queen partage des notes de groseille à maquereau et agrumes mais apporte un profil dank et cassis plus prononcé.",
+   "c19": "Styrian Cardinal offre cette même touche de groseille à maquereau et d'agrumes, avec un taux d'huiles totales plus élevé.",
+   "c17": "Southern Star reprend le profil sud-africain avec des fruits tropicaux et agrumes, mais délaisse la groseille pour le fruit de la passion.",
+   "c02": "Southern Cross intègre les agrumes et le zeste, mais se sépare du profil par des notes épicées et de pin.",
+   "c04": "Ekuanot propose une palette riche en agrumes et papaye, bien que plus fruitée et moins résineuse que XJA2/436.",
+   "c12": "Azacca partage la papaye et les agrumes en dry hop, mais s'en éloigne par une dominante marquée de mangue.",
+   "c10": "Nelson Sauvin et XJA2/436 partagent la groseille à maquereau, mais Nelson apporte son caractère unique de vin blanc.",
+   "c18": "Southern Tropic vient d'Afrique du Sud et évoque les agrumes, mais penche vers la noix de coco et le melon.",
+   "c03": "Chinook possède des acides alpha proches, mais mise sur le pin et la résine plutôt que sur les fruits tropicaux.",
+   "c08": "Apollo remplace l'alpha et les agrumes, mais son profil résineux et dank est beaucoup plus puissant."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

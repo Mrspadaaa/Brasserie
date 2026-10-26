@@ -246,7 +246,18 @@
      "Beer Maverick"
     ],
     "interdit": [],
-    "rang": 1
+    "rang": 1,
+    "avant": [
+     "etape:etat-etape-champ-ajouter"
+    ],
+    "choisie": {
+     "attendu": [
+      "pellets",
+      "Beer Maverick"
+     ],
+     "avant": []
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : l'ajout rapide « Citra cryo » n'est plus proposé par le moteur ; la fiche courte de Citra cryo (« Ça c'est très bien », 19.10) s'obtient par l'appui long sur sa ligne après avoir tapé « cit » dans « Ajouter — houblon… » (« avant » : etape:etat-etape-champ-ajouter). Sur la maquette choisie rien ne change. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-acquis-fiche-citra-cryo.png.)"
    }
   },
   {
@@ -272,9 +283,15 @@
     "selecteur_choisie": "[aria-label=\"Ajouter Aurum à la comparaison\"]",
     "geste": "toucher",
     "attendu": [
-     "Comparer (3)"
+     "Comparer (4)"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Comparer (3)"
+     ]
+    },
+    "note": "D90, g2c, 26.10 : une famille « moins » n’exclut plus un houblon pour une fiche isolée (Target, Cascade, Citra cryo n’ont plus de conflit sur la stout) ; dessin identique : même geste que etat-sugg-plus (« + » sur Aurum) ; trois voies cochées d'avance, donc « Comparer (4) ». (capture après regardée : work/missions/2026-10-25-integration-houblons/voies/g2c-exclusion-style/captures/etat-acquis-plus-comparer-construite.png ; l’avant est la même page sur HEAD (ETATS OK 138/138).)"
    }
   },
   {
@@ -301,11 +318,20 @@
     "geste": "repos",
     "attendu": [
      "East Kent Goldings",
-     "Columbus",
+     "Boadicea",
      "Celeia",
-     "Motueka + Citra cryo"
+     "Motueka + Hallertau Blanc"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "East Kent Goldings",
+      "Columbus",
+      "Celeia",
+      "Motueka + Citra cryo"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : les candidats ont changé de noms (Boadicea à la place de Columbus, Motueka + Hallertau Blanc) ; même liste, mêmes colonnes (usage, nom, α, stock, ♡, +). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-acquis-q2b-suite-s5.png.)"
    }
   },
   {
@@ -444,16 +470,15 @@
     "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
    },
    "verdict_5345f6ad": "different",
-   "ecart": "Maquette : réponse en ligne, plan d'avant (Nugget), « contre ★ » et Égaler repris ; critère, défi, tirage de 20 bières, frise, pastilles levure et jauge d'amertume non repris (voir etat-comp-defi, -critere, -preuve, -frise-levure).",
+   "ecart": "Maquette : réponse en ligne, plan d'avant (Nugget), « contre ★ » et Égaler repris ; critère, défi, tirage de 20 bières, frise, pastilles levure et jauge d'amertume non repris (voir etat-comp-defi, -critere, -preuve, -frise-levure). D69 (25.10) : « Face à ta stout, par » est retiré avec la réponse en ligne (« Trop de blanc inutil, d'espace pour rien », sur cmc2g) ; la pastille « floral ⌄ » du sélecteur reste.",
    "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-acquis-r6a-elements-notes-5345f6ad.png",
    "voulu": "",
    "verif": {
     "route": "comparer",
-    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6n2/etat.html",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils25-comparer/cmc2k/etat.html",
     "selecteur_choisie": "texte=Défi 2/4",
     "geste": "repos",
     "attendu": [
-     "Face à ta stout, par",
      "floral",
      "Défi 2/4",
      "Preuve",

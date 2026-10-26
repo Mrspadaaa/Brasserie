@@ -1,6 +1,6 @@
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { configure, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { BrewerContext } from '../../functions/src/companionTypes';
 import type { HopSource, HopVariety } from '../../functions/src/hopIndexSchema';
 import { applyHopAdviceEvent, createHopAdviceDossier, hopAdviceEventContentReference, readHopAdviceEvent,
@@ -46,6 +46,9 @@ vi.mock('../../src/ui/hopV55/SensoryComparison', () => ({ HopV55SensoryCompariso
 vi.mock('../../src/ui/hopV55/NuanceExplorer', () => ({ HopV55NuanceExplorer: () => null }));
 
 import { HopV55Page } from '../../src/ui/hopV55/Page';
+// Charge CPU de la suite : un état attendu (findBy/waitFor) reste attendu jusqu'à son arrivée, au lieu des 1000 ms par défaut (#177).
+configure({ asyncUtilTimeout: 30_000 });
+vi.setConfig({ testTimeout: 60_000 });
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
@@ -566,8 +569,8 @@ describe('Page V5.5 — Q09 avec catalogue local complet', () => {
     harness.failNextWorkspaceSave();
     const writesBeforePreparation = harness.save.mock.calls.length;
     fireEvent.click(screen.getByRole('button', { name: 'Préparer l’étude qualifiée' }));
-    await waitFor(() => expect(harness.save).toHaveBeenCalledTimes(writesBeforePreparation + 1), { timeout: 15000 });
-    await screen.findByText('Échec transitoire du CAS workspace fixture.', {}, { timeout: 15000 });
+    await waitFor(() => expect(harness.save).toHaveBeenCalledTimes(writesBeforePreparation + 1), { timeout: 60000 });
+    await screen.findByText('Échec transitoire du CAS workspace fixture.', {}, { timeout: 60000 });
     const failedWorkspace = await harness.stored();
     expect(failedWorkspace.qualifiedStudyPreparations).toBeUndefined();
     expect(spies.adviceBuilder).toHaveBeenCalledTimes(1);
@@ -575,7 +578,7 @@ describe('Page V5.5 — Q09 avec catalogue local complet', () => {
     const retryPreparation = screen.getByRole('button', { name: 'Réessayer la même demande' });
     await waitFor(() => expect(retryPreparation).toBeEnabled());
     fireEvent.click(retryPreparation);
-    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 15000 });
+    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 60000 });
     mark('study-visible-after-CAS-retry');
 
     const preparedWorkspace = harness.lastSaved();
@@ -631,7 +634,7 @@ describe('Page V5.5 — Q09 avec catalogue local complet', () => {
     await waitFor(() => expect(screen.getAllByRole('button', { name: 'Conserver cette étude de conseil' })[0]).toBeEnabled());
     mark('create-button-enabled');
     fireEvent.click(screen.getAllByRole('button', { name: 'Conserver cette étude de conseil' })[0]);
-    await screen.findByText('Échec transitoire du DAO advice fixture.', {}, { timeout: 15000 });
+    await screen.findByText('Échec transitoire du DAO advice fixture.', {}, { timeout: 60000 });
     mark('dao-retry-ready');
     expect(harness.qualifiedStudies.successfulCreates).toBe(0);
     const retryStudy = screen.getByRole('button', { name: 'Conserver cette étude de conseil' });
@@ -640,7 +643,7 @@ describe('Page V5.5 — Q09 avec catalogue local complet', () => {
     mark('DAO-retry-button-enabled');
     fireEvent.click(screen.getByRole('button', { name: 'Conserver cette étude de conseil' }));
     mark('dao-retry-clicked');
-    await screen.findByText('Étude des emplois et matières conservée avec ses sources exactes.', {}, { timeout: 15000 });
+    await screen.findByText('Étude des emplois et matières conservée avec ses sources exactes.', {}, { timeout: 60000 });
     mark('study-saved-after-DAO-retry');
     expect(harness.qualifiedStudies.createCalls).toBe(2);
     expect(harness.qualifiedStudies.successfulCreates).toBe(1);
@@ -662,7 +665,7 @@ describe('Page V5.5 — Q09 avec catalogue local complet', () => {
     mark('before-preference-submit');
     fireEvent.click(screen.getByRole('button', { name: 'Conserver cette préférence' }));
     mark('preference-submit-clicked');
-    await screen.findByText('Choix documentaire conservé dans l’étude exacte.', {}, { timeout: 15000 });
+    await screen.findByText('Choix documentaire conservé dans l’étude exacte.', {}, { timeout: 60000 });
     mark('preference-appended');
     expect(spies.preferenceCapture).toHaveBeenCalledTimes(1);
 
@@ -693,7 +696,7 @@ describe('Page V5.5 — Q09 avec catalogue local complet', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Historique', exact: true }));
     fireEvent.click(await screen.findByText(/Études produit et conseils qualifiés · 1/u));
     fireEvent.click(await screen.findByRole('button', { name: 'Relire cette étude exacte' }));
-    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 15000 });
+    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 60000 });
     mark('history-reloaded');
     expect(screen.getByText('Étude archivée')).toBeInTheDocument();
     fireEvent.click(screen.getByText('Historique de conservation'));
@@ -708,6 +711,6 @@ describe('Page V5.5 — Q09 avec catalogue local complet', () => {
     expect(harness.qualifiedStudies.appendCalls).toBe(appendsBeforeHistoricalRead);
     expect(harness.lastSaved()).toEqual(preferredWorkspace);
     mark('complete');
-  }, 60000);
+  }, 240000);
 
 });

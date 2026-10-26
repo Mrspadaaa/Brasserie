@@ -1,0 +1,138 @@
+{
+  "plafond": 80,
+  "requetes": [
+    {
+      "url": "https://www.freestylehops.com/robots.txt",
+      "quand": "2026-10-26T09:01:40.229Z",
+      "statut": 200,
+      "octets": 2676
+    },
+    {
+      "url": "https://www.freestylehops.com/sitemap.xml",
+      "quand": "2026-10-26T09:01:47.773Z",
+      "statut": 200,
+      "octets": 374
+    },
+    {
+      "url": "https://www.freestylehops.com/sitemap.xml/sitemap/SilverStripe-CMS-Model-SiteTree/1",
+      "quand": "2026-10-26T09:01:51.772Z",
+      "statut": 200,
+      "octets": 124056
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/nelson-sauvin/",
+      "quand": "2026-10-26T09:02:05.414Z",
+      "statut": 200,
+      "octets": 27757
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/kohia-nelson/",
+      "quand": "2026-10-26T09:02:30.845Z",
+      "statut": 200,
+      "octets": 28574
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/maui-nelson-2/",
+      "quand": "2026-10-26T09:02:32.946Z",
+      "statut": 200,
+      "octets": 27552
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/maui-nelson/",
+      "quand": "2026-10-26T09:02:35.048Z",
+      "statut": 200,
+      "octets": 28065
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/mega-motueka/",
+      "quand": "2026-10-26T09:02:37.148Z",
+      "statut": 200,
+      "octets": 29166
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/motueka/",
+      "quand": "2026-10-26T09:02:39.247Z",
+      "statut": 200,
+      "octets": 27826
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/nectaron/",
+      "quand": "2026-10-26T09:02:41.347Z",
+      "statut": 200,
+      "octets": 27358
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/nz-cascade/",
+      "quand": "2026-10-26T09:02:43.446Z",
+      "statut": 200,
+      "octets": 27615
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/pacifica/",
+      "quand": "2026-10-26T09:02:45.546Z",
+      "statut": 200,
+      "octets": 26909
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/peacharine/",
+      "quand": "2026-10-26T09:02:47.647Z",
+      "statut": 200,
+      "octets": 27584
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/rakau/",
+      "quand": "2026-10-26T09:02:49.748Z",
+      "statut": 200,
+      "octets": 27458
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/riwaka/",
+      "quand": "2026-10-26T09:02:51.849Z",
+      "statut": 200,
+      "octets": 27347
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/singles-collection/",
+      "quand": "2026-10-26T09:02:53.948Z",
+      "statut": 200,
+      "octets": 28209
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/southern-cross/",
+      "quand": "2026-10-26T09:02:56.049Z",
+      "statut": 200,
+      "octets": 27819
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/subzero-hop-kief/",
+      "quand": "2026-10-26T09:02:58.150Z",
+      "statut": 200,
+      "octets": 29760
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/super-sauvin/",
+      "quand": "2026-10-26T09:03:00.250Z",
+      "statut": 200,
+      "octets": 28655
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/tropical-fusion/",
+      "quand": "2026-10-26T09:03:02.351Z",
+      "statut": 200,
+      "octets": 27313
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/waimea/",
+      "quand": "2026-10-26T09:03:04.452Z",
+      "statut": 200,
+      "octets": 27533
+    },
+    {
+      "url": "https://www.freestylehops.com/hop-varieties/wakatu/",
+      "quand": "2026-10-26T09:03:06.553Z",
+      "statut": 200,
+      "octets": 27158
+    }
+  ],
+  "arret": null
+}

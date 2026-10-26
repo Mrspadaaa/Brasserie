@@ -28,7 +28,7 @@ if (!existsSync(DIST)) {
 }
 
 /** Ce qui trahirait la présence du contournement dans le bundle. */
-const MARQUEURS = ['dev-local', 'devLocalUser', '__HOP_RECIPE_QA_ONLY__', '__hopQa', 'Banc local', 'Appel distant exclu du banc QA'];
+const MARQUEURS = ['dev-local', 'devLocalUser', '__HOP_RECIPE_QA_ONLY__', '__hopQa', 'Banc local', 'Appel distant exclu du banc QA', '__hopSubstituerOrdre'];
 
 function fichiers(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {

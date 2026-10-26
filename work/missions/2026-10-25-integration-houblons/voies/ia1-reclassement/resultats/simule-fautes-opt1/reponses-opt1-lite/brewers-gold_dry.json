@@ -1,0 +1,46 @@
+{
+ "casId": "brewers-gold@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "b1c58c3f6cd9078e",
+ "simule": true,
+ "appel": 3,
+ "http": 200,
+ "latenceMs": 0,
+ "finishReason": "STOP",
+ "jetonsEntree": 2206,
+ "jetonsSortie": 99,
+ "coutMicroChf": 1137,
+ "texte": "{\"classement\":[{\"id\":\"c01\",\"phrase\":\"Doublon.\"},{\"id\":\"c01\",\"phrase\":\"Doublon.\"},{\"id\":\"c02\",\"phrase\":\"Doublon.\"},{\"id\":\"c03\",\"phrase\":\"Doublon.\"},{\"id\":\"c04\",\"phrase\":\"Doublon.\"},{\"id\":\"c05\",\"phrase\":\"Doublon.\"},{\"id\":\"c06\",\"phrase\":\"Doublon.\"},{\"id\":\"c07\",\"phrase\":\"Doublon.\"},{\"id\":\"c08\",\"phrase\":\"Doublon.\"},{\"id\":\"c09\",\"phrase\":\"Doublon.\"}]}",
+ "analyse": {
+  "valide": false,
+  "ordre": [
+   "c01",
+   "c02",
+   "c03",
+   "c04",
+   "c05",
+   "c06",
+   "c07",
+   "c08",
+   "c09"
+  ],
+  "phrases": {
+   "c01": "Doublon.",
+   "c02": "Doublon.",
+   "c03": "Doublon.",
+   "c04": "Doublon.",
+   "c05": "Doublon.",
+   "c06": "Doublon.",
+   "c07": "Doublon.",
+   "c08": "Doublon.",
+   "c09": "Doublon."
+  },
+  "erreurs": [
+   "identifiant en double : c01"
+  ]
+ },
+ "erreurReseau": null
+}

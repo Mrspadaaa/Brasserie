@@ -1,0 +1,46 @@
+{
+ "casId": "simcoe@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "9cab0744263ab66b",
+ "simule": false,
+ "appel": 84,
+ "http": 200,
+ "latenceMs": 7440,
+ "finishReason": "STOP",
+ "jetonsEntree": 4041,
+ "jetonsSortie": 587,
+ "coutMicroChf": 13080,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Partage l'ADN aromatique du Simcoe avec des notes marquées de pin, fruits tropicaux, terreux et chewing-gum, malgré un profil un peu plus myrtille.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Offre un équilibre parfait entre agrumes, fruits tropicaux, abricot et résine de pin, bien qu'il présente une facette thé noir absente du Simcoe.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Rejoint très fidèlement la combinaison pin, fruit de la passion et terreux du Simcoe, mais se montre globalement plus axé sur l'ananas.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Combine admirablement le fruit de la passion, le pamplemousse, le pin et le côté terreux, avec une touche herbacée de foin en plus.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Recrée impeccablement la trame résineuse, pin et pamplemousse du Simcoe, tout en manquant de sa dimension fruitée tropicale.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Ce mélange moderne délivre les tonalités attendues de pin, pamplemousse et fruits tropicaux, avec un accent floral plus prononcé.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Apporte les marqueurs agrumes, pamplemousse et pin du Simcoe en dry hop, avec une intensité globale un soupçon plus modérée.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Retrouve le pamplemousse, l'abricot et le côté dank si typiques, mais tire davantage sur l'orange douce que sur le pin résineux.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Excellente alternative fruitée mêlant résine, agrumes, abricot et baies, même si le profil s'avère plus doux et orienté melon-pêche.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Partage le spectre pamplemousse, pin et terreux propre au Simcoe, mais avec une intensité fruitée et tropicale nettement plus discrète.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c05",
+   "c01",
+   "c03",
+   "c19",
+   "c14",
+   "c08",
+   "c07",
+   "c12",
+   "c10",
+   "c16"
+  ],
+  "phrases": {
+   "c05": "Partage l'ADN aromatique du Simcoe avec des notes marquées de pin, fruits tropicaux, terreux et chewing-gum, malgré un profil un peu plus myrtille.",
+   "c01": "Offre un équilibre parfait entre agrumes, fruits tropicaux, abricot et résine de pin, bien qu'il présente une facette thé noir absente du Simcoe.",
+   "c03": "Rejoint très fidèlement la combinaison pin, fruit de la passion et terreux du Simcoe, mais se montre globalement plus axé sur l'ananas.",
+   "c19": "Combine admirablement le fruit de la passion, le pamplemousse, le pin et le côté terreux, avec une touche herbacée de foin en plus.",
+   "c14": "Recrée impeccablement la trame résineuse, pin et pamplemousse du Simcoe, tout en manquant de sa dimension fruitée tropicale.",
+   "c08": "Ce mélange moderne délivre les tonalités attendues de pin, pamplemousse et fruits tropicaux, avec un accent floral plus prononcé.",
+   "c07": "Apporte les marqueurs agrumes, pamplemousse et pin du Simcoe en dry hop, avec une intensité globale un soupçon plus modérée.",
+   "c12": "Retrouve le pamplemousse, l'abricot et le côté dank si typiques, mais tire davantage sur l'orange douce que sur le pin résineux.",
+   "c10": "Excellente alternative fruitée mêlant résine, agrumes, abricot et baies, même si le profil s'avère plus doux et orienté melon-pêche.",
+   "c16": "Partage le spectre pamplemousse, pin et terreux propre au Simcoe, mais avec une intensité fruitée et tropicale nettement plus discrète."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

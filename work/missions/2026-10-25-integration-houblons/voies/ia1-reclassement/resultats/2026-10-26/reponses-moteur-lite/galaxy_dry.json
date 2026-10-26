@@ -1,0 +1,46 @@
+{
+ "casId": "galaxy@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "fbeeba9660045d6e",
+ "simule": false,
+ "appel": 92,
+ "http": 200,
+ "latenceMs": 2082,
+ "finishReason": "STOP",
+ "jetonsEntree": 3617,
+ "jetonsSortie": 540,
+ "coutMicroChf": 3044,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Nectaron partage les profils fruit de la passion et ananas du Galaxy avec un myrcène proche, mais offre un côté pierreux plus net.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Harlequin imite bien le fruit de la passion et la pêche du Galaxy, mais avec une teneur en farnésène nettement plus élevée.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Solero apporte les notes tropicales et de fruit de la passion recherchées grâce à ses thiols puissants, malgré des alpha-acides plus modérés.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"NZH-107 s'accorde sur le fruit de la passion et les agrumes du Galaxy avec un myrcène similaire, bien que l'ananas soit absent.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Samba convient pour ses fruits tropicaux et son ananas proches du Galaxy, mais son profil penche plus vers la mangue.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Zamba Blend évoque le Galaxy par ses fruits tropicaux, mais se distingue par une dominance marquée d'orange et de mangue.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"YQH-1380 reprend l'ananas et la pêche du Galaxy avec un myrcène élevé, mais ajoute une touche prononcée de citron vert.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Tango offre une belle alternative fruit de la passion et ananas comme le Galaxy, mais possède des bêta-acides bien plus élevés.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Melba rappelle le Galaxy par son fruit de la passion et ses agrumes, mais son usage purement aromatique est plus doux.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Trident partage la palette fruit de la passion et agrumes du Galaxy, mais son profil aromatique global reste plus confus.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c04",
+   "c03",
+   "c13",
+   "c06",
+   "c01",
+   "c02",
+   "c07",
+   "c15",
+   "c16",
+   "c08"
+  ],
+  "phrases": {
+   "c04": "Nectaron partage les profils fruit de la passion et ananas du Galaxy avec un myrcène proche, mais offre un côté pierreux plus net.",
+   "c03": "Harlequin imite bien le fruit de la passion et la pêche du Galaxy, mais avec une teneur en farnésène nettement plus élevée.",
+   "c13": "Solero apporte les notes tropicales et de fruit de la passion recherchées grâce à ses thiols puissants, malgré des alpha-acides plus modérés.",
+   "c06": "NZH-107 s'accorde sur le fruit de la passion et les agrumes du Galaxy avec un myrcène similaire, bien que l'ananas soit absent.",
+   "c01": "Samba convient pour ses fruits tropicaux et son ananas proches du Galaxy, mais son profil penche plus vers la mangue.",
+   "c02": "Zamba Blend évoque le Galaxy par ses fruits tropicaux, mais se distingue par une dominance marquée d'orange et de mangue.",
+   "c07": "YQH-1380 reprend l'ananas et la pêche du Galaxy avec un myrcène élevé, mais ajoute une touche prononcée de citron vert.",
+   "c15": "Tango offre une belle alternative fruit de la passion et ananas comme le Galaxy, mais possède des bêta-acides bien plus élevés.",
+   "c16": "Melba rappelle le Galaxy par son fruit de la passion et ses agrumes, mais son usage purement aromatique est plus doux.",
+   "c08": "Trident partage la palette fruit de la passion et agrumes du Galaxy, mais son profil aromatique global reste plus confus."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

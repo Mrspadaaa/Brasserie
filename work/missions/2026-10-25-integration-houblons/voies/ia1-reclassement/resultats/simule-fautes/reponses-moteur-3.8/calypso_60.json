@@ -1,0 +1,26 @@
+{
+ "casId": "calypso@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "8e864a6e79db315e",
+ "simule": true,
+ "appel": 42,
+ "http": 200,
+ "latenceMs": 0,
+ "finishReason": "STOP",
+ "jetonsEntree": 2293,
+ "jetonsSortie": 14,
+ "coutMicroChf": 4431,
+ "texte": "{\"classement\": [{\"id\": \"c01\", \"phrase\": \"coupé",
+ "analyse": {
+  "valide": false,
+  "ordre": [],
+  "phrases": {},
+  "erreurs": [
+   "JSON illisible"
+  ]
+ },
+ "erreurReseau": null
+}

@@ -1,0 +1,46 @@
+{
+ "casId": "sticklebract@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "9944ed606fb2a44e",
+ "simule": false,
+ "appel": 35,
+ "http": 200,
+ "latenceMs": 5804,
+ "finishReason": "STOP",
+ "jetonsEntree": 3819,
+ "jetonsSortie": 543,
+ "coutMicroChf": 12252,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Même terroir néo-zélandais et profil parfait pin et agrumes avec du farnésène présent, bien qu'il soit un peu plus intense en mandarine.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Néo-zélandais au profil pin et agrumes citronnés très fidèle, avec un taux de farnésène comparable et une touche tropicale légère en plus.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage l'axe dominant pin et agrumes avec une belle intensité pour un dry hop, mais apporte une note résineuse dank plus marquée.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Originaire de Nouvelle-Zélande, il reproduit bien la fraîcheur du pin et des notes d'agrumes citronnés, avec un côté citronnelle plus herbacé.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Offre précisément l'association agrumes et pin recherchée en fermentation active, avec toutefois une dominante mandarine plus fruitée.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Profil aromatique identique à Eclipse centré sur le pin et les agrumes, mais son expression fruitée globale est légèrement plus douce.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Classique américain axé sur le pin et les agrumes, très performant en dry hop, avec une nuance florale supplémentaire.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Combine harmonieusement les notes de pin et d'agrumes, mais présente une orientation fruitée et tropicale plus large.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Variété néo-zélandaise offrant un bel accord pin et agrumes, bien que son côté fruits exotiques soit plus prononcé.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Fournit un duo pin et agrumes puissant pour le dry hop, mais son caractère dank et résineux est nettement plus lourd.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c08",
+   "c16",
+   "c01",
+   "c06",
+   "c12",
+   "c13",
+   "c14",
+   "c18",
+   "c07",
+   "c09"
+  ],
+  "phrases": {
+   "c08": "Même terroir néo-zélandais et profil parfait pin et agrumes avec du farnésène présent, bien qu'il soit un peu plus intense en mandarine.",
+   "c16": "Néo-zélandais au profil pin et agrumes citronnés très fidèle, avec un taux de farnésène comparable et une touche tropicale légère en plus.",
+   "c01": "Partage l'axe dominant pin et agrumes avec une belle intensité pour un dry hop, mais apporte une note résineuse dank plus marquée.",
+   "c06": "Originaire de Nouvelle-Zélande, il reproduit bien la fraîcheur du pin et des notes d'agrumes citronnés, avec un côté citronnelle plus herbacé.",
+   "c12": "Offre précisément l'association agrumes et pin recherchée en fermentation active, avec toutefois une dominante mandarine plus fruitée.",
+   "c13": "Profil aromatique identique à Eclipse centré sur le pin et les agrumes, mais son expression fruitée globale est légèrement plus douce.",
+   "c14": "Classique américain axé sur le pin et les agrumes, très performant en dry hop, avec une nuance florale supplémentaire.",
+   "c18": "Combine harmonieusement les notes de pin et d'agrumes, mais présente une orientation fruitée et tropicale plus large.",
+   "c07": "Variété néo-zélandaise offrant un bel accord pin et agrumes, bien que son côté fruits exotiques soit plus prononcé.",
+   "c09": "Fournit un duo pin et agrumes puissant pour le dry hop, mais son caractère dank et résineux est nettement plus lourd."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

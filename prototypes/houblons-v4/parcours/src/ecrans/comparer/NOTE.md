@@ -1,153 +1,102 @@
-# Comparer — « Cascade, Idaho 7 ou Galaxy pour ma stout ? »
+# Comparer — cmc2k, son choix (« Parfait pour Une bande teintée cmc2k »), dans la maquette jouable
 
-Voie p3-comparer (mission 2026-10-23-maquette-parcours). r6a, son choix redit le 23.10 (« r6a reste le meilleur, tu
-peux ajouter ça, dans la vue interactive. Avec les quelques petites améliorations des autres versions »), portée en
-React dans le socle et calculée en direct. Fichiers : `index.tsx` (l'écran), `calcul.ts` (ce qu'il lit du moteur),
-`Etapes.tsx` (aux étapes, D107), `Radar.tsx` (radar r2), `valeurs.ts` (vraies valeurs, chimie, panel OSU), `comparer.css` (classes `pq-comparer-…`),
-`jeu.mjs` (gestes joués).
+Voie t15a-comparer (mission 2026-10-25-integration-houblons, 25.10) : l'écran passe de cmc2h à **cmc2k**, repris tel quel de
+`work/refonte-frontend/v4/ecran-1/fils25-comparer/cmc2k/source/` (`index.tsx`, `Ensemble.tsx`, `Etapes.tsx`, `comparer.css`
+copiés ; les autres fichiers étaient identiques). Deux écarts seulement :
+- **Radar** : toujours `RadarBase` (commun de l'app, `@app/ui/hopIndex/commun/RadarBase`), par `Radar.tsx` de cmc2h, avec
+  le moment passé (`moment={moment}`) ; le `Radar.tsx` propre de cmc2k et `RadarOutils.ts` ne sont pas repris.
+- **« Ses mots » (D151)** : « Le +2 de idao7 ça va pas du tout, il doit tout y avoir avec en ordre décroissant du plus fort au
+  plus faible. » Tous les mots de chaque houblon, sans « +n », triés par force décroissante. **La force** (parForce), clés dans
+  l'ordre : (1) le nombre de ses fiches qui citent le mot ; (2) l'apport de sa famille chez ce houblon selon le moteur, au
+  moment comparé (le `dCran` de sa rangée « Par famille », juste au-dessus) ; un mot hors des 12 familles, ou d'une famille
+  inconnue, n'a pas de force moteur et vient après ; (3) « lui seul » (gras) d'abord ; puis l'ordre de `sesMots`. Repères :
+  `data-n-mots` (la longueur de la liste) sur chaque colonne, `data-fiches` et `data-force` sur chaque mot. Au catalogue
+  actuel, chaque mot n'est cité que par une fiche : c'est la force moteur qui ordonne. L'ordre suit donc le moment : à dry hop,
+  Idaho 7 commence par cassis (2,27) et résine (1,97), et finit par thé noir (0,41).
+- Contrôle : `work/refonte-frontend/v4/tournoi/outils/controle-mots-tous.mjs` (ECHEC sur cmc2k : « +2 », liste inconnue ; OK ici).
 
-## Base
+## Pour le port dans l'app (phase 2 de t15a, à l'agent Sonnet)
 
-r6a (`work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/`). Son premier écran reste le sien : titre en question,
-ligne de contexte, radar r2 au style (lentille Absolu), puis le tableau : la colonne « Ta stout » (trop ♣, plus ❀),
-une colonne par houblon (nom, α, rôle en mot, familles de ses fiches, verdict face à la 16D, stock en icône), une
-rangée par famille avec la barre l5b de chaque houblon face à la zone de ta 16D, son intervalle et le trait de ta
-stout ; les écarts chiffrés sur Floral ↑ et Résineux ↓ ; les familles inconnues pour tous en une rangée hachurée.
-Sous les têtes, **aux étapes** (D107, à la manière de x3b) : chaque houblon posé à 60′, à 10′ et au dry hop, avec ton
-Nugget en référence ; puis les rangées de toutes les familles au dry hop, après 3 j (le moment du radar). Sous le
-tableau, trois touchers : « Chimie et vraies valeurs », « Égaler », « Panel OSU » (D114).
+Fait (25.10, vérifié) : **l'écran vit déjà dans l'app, une seule copie** : `src/ui/hopIndex/comparer/` (index.tsx, calcul.ts,
+Ensemble, Etapes, Feuilles, Huiles, Radar, icones, valeurs, comparer.css, déplacés d'ici). Ce dossier-ci ne garde que l'hôte
+maquette (`index.tsx`), `calcul.ts` (réexport pour Dryhopper : `couleurHoublon`), `jeu.mjs` et cette note. Après le
+déménagement : maquette construite, MOTS-TOUS, QUAND, NORMALISE, CENTRE, RADAR-BASE, CHOIX OK, ETATS 139/139 ; `tsc` de l'app vert.
+Rien de l'app n'importe encore `comparer/` : démarrage inchangé.
 
-Un seul facteur libre : le houblon. Un toucher sur une colonne la retient (le radar la remplit, la réponse et le
-pont la suivent) ; le « + » en ajoute une 4ᵉ de ton stock ; × la retire. Dose (4 g/L chacun) et levure (celle de la
-recette, US-05) sont fixées sur la ligne de contexte. Le moment n'y est plus (D107) : les étapes se lisent ensemble,
-au repos, dans « aux étapes » (ni curseur ni sélecteur) ; le radar et les rangées restent au dry hop, après 3 j, et
-le disent. Départ : le plus floral qui reste dans ta
-16D (règle de r6a), ici Idaho 7.
+- **Hôte** (`src/ui/hopIndex/comparer/hote.tsx`, même principe que `maBiere/hote.tsx`) : `recette`, `route` (`pin` de
+  Substituer), `aller` (la fiche pousse une entrée d'historique), `ouvrir` (dryhopper, levure, suggerer), `Cadre` (en-tête,
+  onglets, dock), `Fiche` optionnelle (absente : l'appui long n'ouvre rien). L'écran n'importe plus rien de la maquette.
+- **Remplacements faits** : `donnees/cas` → `comparer/cas.ts` (VISEE, H, LEVURES, nomLevure ; CONDITIONS de `parcours/conditions`) ;
+  `S1_DIRECTION` (prototype) → `DEMANDE_DEGUSTEE` de `parcours/visee.ts` (même valeur : floral +1, résineux −1) ; moteur →
+  `parcours/adaptateur` et `parcours/v4` ; `commun` → `comparer/commun.ts` (communs de l'app, CadreOutil par l'hôte).
+- **À faire** : l'hôte de l'app (`EcranApp.tsx`, chargé par `HopToolLayer` pour `hopCompare`, dans le chunk des outils, React.lazy) :
+  - recette = brouillon converti (`toHopRecipe`, comme `maBiere/EtapeHoublons.tsx`), données par `useHopData` + `configurerDonnees` ;
+  - « Placer <houblon> » : `ajouter(recette, ajoutPlace)` (dose `CONDITIONS.doseGL × volumeL`, dry hop actif 3 j : voir
+    `etat/etapes.ts` `ajoutPlace`), puis `versPatch` → `onChange` (applyHopV4Change), puis `ouvrirCouche({ view: 'hopTiming', additionId })` ;
+  - Cadre : `PageShell` de l'app ; les onglets de la maquette (`commun/Onglets.tsx`) dépendent de sa coquille : à refaire.
+- **Piège 1, la porte** : la couche est AU-DESSUS du wizard ; elle n'a ni le brouillon ni `applyHopV4Change`. Il faut un pont
+  (par ex. `comparer/porte.ts` : `poserPorteEtape({ recipe, boilOg, draftId, onChange })`), posé par `maBiere/EtapeHoublons.tsx`
+  (voie rb2-ma-biere ; une ligne d'effet). `EtapeHoublons` n'a pas non plus de route « comparer » dans `coucheDe` : l'entrée
+  « Comparer (n) » de Ma bière ou Suggérer est à brancher.
+- **Piège 2, textes du cas S1** : l'écran dit « … pour ma stout ? », « Ta stout », « dégustation du 18.10 », visée floral. Sur
+  une autre recette de l'app, c'est faux : nom de la bière, dégustation (`useHopData().degustation`, null = tout simulé) et
+  demande sont à passer par l'hôte avant de le montrer sur une vraie recette.
+- **Piège 3, calcul** : `lireColonnes` simule en direct sur le fil principal, une fois au dry hop (`cols`) et une fois par
+  moment (`vue`), plus `lireEtapes` (5 moments × houblons). Mesurer ouverture et changement de moment ×4 ; les deux `useMemo`
+  ne recalculent que ce qui change. Compromis si trop lent : moments au worker (`domain/hopIndex/v4/client.ts`), ou étapes après.
+- **Piège 4, CSS** : `comparer.css` suppose le thème clair de la maquette et ses `pq-outil` (`commun/retour.css`, `feuille.css`) ;
+  à comparer en capture à côté de cmc2k.
 
-Calcul en direct : chaque colonne est `comparer(recette, houblons)` de l'adaptateur (simulerCas, 4 g/L, dry hop
-après fermentation, 3 j), recalculée à chaque changement de houblons ou de recette. Aucune grille figée. Les α, β,
-huiles et composés viennent des données du moteur v4 (`proto-data.json`, `composes-houblon.json`) ; le linalol en
-bière et le panel OSU, des études E03 et E04 (`fils21-choisir/donnees/comparatifs-dryhop.json`), importées.
+## Note précédente (cmc2h)
 
-Ponts : « Placer <retenu> › » (dock sous le pouce) ouvre Dryhopper avec ce houblon en brouillon ; l'appui long
-(ou le survol long à l'ordinateur) sur un nom ouvre la fiche de la voie p1 (`src/ecrans/fiche/`), par-dessus
-Comparer, avec une entrée d'historique : le retour du téléphone la referme. Substituer arrive avec un houblon
-épinglé : `#/comparer?h=…&pin=<houblon>` le met en colonne 1, marqué ⌖ (lu dans la route du socle, `route.pin`).
+# Comparer — cmc2h, son choix (« C'est quasiment parfait », sur cmc2g), dans la maquette jouable
 
-## Idées reprises
+Voie rb-radar-commun (mission 2026-10-23-maquette-parcours, 25.10) : l'écran est **cmc2h tout entier**, repris tel quel de
+`work/refonte-frontend/v4/ecran-1/fils25-comparer/cmc2h/source/` (construit au miroir comme `var/cmc2h`). Un seul
+changement : son radar vit dans `src/commun/RadarBase.tsx` (« utiliser ce radar graph comme Baseline et l'utiliser
+partout dans les vue où il y en a »). `Radar.tsx` ne fait plus que lui donner les valeurs que cmc2h lisait (dCran au
+style, centre / cran en Absolu, ta stout en trait noir en Absolu, la zone de ta 16D au style) ; les classes `cmc-` du
+radar sont devenues `rb-` (commun/radar-base.css). `RadarOutils.ts` (passe 3, jamais importé par cmc2h) n'est pas repris.
+Le balisage du radar est le même que celui de cmc2h, aux attributs de contrôle près (`data-radar="base"`, `data-mode`,
+`data-moment`, `data-centre`, `data-valeurs`, `data-role`, `data-anneau`) et à l'id du motif hachuré (useId).
 
-D107 (23.10, soir), « je voulais comparé au moins : les étapes 60' 10' dryhopping ect comme la maquette de base. Et
-aussi le houblon de base ou bière de base » ; sa maquette de base est **x3b** (lot 21) : « Montrait vraiment l'état du
-moment de l'ajout facile ». Pris de x3b, sans sa densité (« dur à lire ») :
-- **Les étapes, ensemble** : une rangée par étape (60′, 10′, dry hop après 3 j) dans les colonnes du tableau, sous
-  les têtes ; chaque case dit le floral gagné en crans (« ~0,7 »), sa bande, et le résineux gagné (bande orangée :
-  ta stout est déjà trop résineuse). Calculé en direct : `comparer(recette, cles, { quand })` pour chaque étape.
-- **La bière de base en pointillé** : le pointillé au départ de chaque bande, c'est ta stout sans rien ; la bande
-  monte à l'étape où le houblon entre (la marche de x3b, tournée d'un quart : l'axe va de 60′ au dry hop).
-- **Le houblon de base en référence** : ton Nugget (le premier ajout à chaud de ta recette), aux mêmes étapes et à la
-  même dose, dans la colonne de gauche, en gris, et en trait pointillé gris dans chaque bande.
-- Le plus floral de chaque étape en gras.
-- L'IBU de chaque étape (calculé, BrewingMath) : dans l'aria-label de chaque case et dans « Chimie et vraies
-  valeurs » (rangée IBU, 60′ / 10′ / dry hop), pas au premier écran (80 mots).
-- Laissés de x3b : les jours (J4), le curseur « tenir », la levure active ou au repos, la biotransfo : ils sont à
-  Dryhopper et à Levure (« 2 dry hop: levure » se lit comme la suite de la frise, après « Placer »). Le whirlpool et
-  le dry hop actif : le moteur les simule, mais au premier écran ils coûtent 10 mots ; whirlpool ≈ 10′ et actif ≈
-  après pour le floral dans ce cas (écarts < 0,05 cran).
+L'ancienne note de l'écran (r6a, D107 à D141 : ponts, appui long, épingle de Substituer) : `git show 28989963:prototypes/houblons-v4/parcours/src/ecrans/comparer/NOTE.md` ; ses ponts sont gardés par cmc2h. La note de cmc2h suit, telle quelle.
 
-D114 (« Beaucoup trop mis en avant ») : le panel OSU (un acquis, « la panel osu j'aime assez ») passe derrière un
-toucher, « Panel OSU », au rang de « Chimie et vraies valeurs » et d'« Égaler » ; son titre n'est plus en gras.
-D119 : la question de r6a devient le titre de l'écran, en tête du contenu (h2, `r6a-question`), quand l'en-tête
-commun (voie p2) ne la porte plus ; tant qu'il la porte, elle n'est pas répétée.
+## cmc2h — cmc2g, son choix (« C'est quasiment parfait »), avec quatre retouches
 
-Avant D107 :
+cmc2g à l'identique (radar à une échelle par axe, au style), plus ses mots sur cmc2g : « il y a pas de transition entre les type de données, il y a un ? Qui prend toute la place le + toujours pas centré. Trop de blanc inutil, d'espace pour rien ».
 
-Prises (peu, et sans changer la forme de r6a) :
-- **La réponse face à ta stout**, de r6n2 (y1b) : une ligne sous le contexte, « ★ Idaho 7 devant Cascade ~+0,4
-  cran ❀ », recalculée par le moteur. ★ = la règle de départ de r6a.
-- **« contre ★ » chiffré**, de r6p2 : retenir une autre colonne réécrit la ligne, « Cascade ~−0,4 cran ❀ contre
-  ★ Idaho 7 » (et ~⚠ avec le picto de la famille qui sort, pour Galaxy). C'est le réglage qui fait bouger le
-  simulé (D95).
-- **Le radar qui ne sature plus**, de r6n1 et r6n2 (D103) : un centre au-delà du domaine s'arrête au bord et une
-  flèche orangée sort au bout de l'axe (le résineux) ; l'intervalle du retenu est un trait fin par axe, coupé « // »
-  au bord, au lieu de la grande étoile pâle ; moustache adoucie (35 %, 1 px) comme r6p1 l'a demandé au critique
-  (« radar très rose »).
-- **La flèche de ta demande au radar**, de r6n2 (h4) : verte vers l'extérieur sur Floral.
-- **Le « + » pour une 4ᵉ colonne**, de r6n2 (p4) : sous « Ta stout » ; à quatre colonnes, les rangées passent au
-  picto seul et les noms à 12 px (correction du critique sur r6n2, passe 2 : « Casca », « Galax » coupés).
-- **Le verdict des têtes en signe**, de r6n2 : ~✓ dans ta 16D, ~⚠ et le picto qui sort ; le mot est dans la
-  légende et l'aria-label. Il paie, avec « après, 3 j » (r6n2) et « inconnus » seul, les mots de la réponse.
-- **Les « ? » écrits du radar retirés**, de r6p3 : le secteur hachuré et le picto pâle disent l'inconnu.
-- **« Égaler »**, de r6n1 et r6n2 (y3), à un toucher sous le tableau : la dose de chaque autre houblon qui donne
-  le floral du retenu à 4 g/L, cherchée par le moteur (0,5–16 g/L), ou « ~jamais, même à 16 g/L ».
-- **La part « autres » d'un houblon aux mots hors familles** (D100), comme r6n2 : une barre grise nommée dans la
-  tête, au-delà de 50 % (Nelson Sauvin, s'il est ajouté).
-- **Le dock sous le pouce**, de r6n2 (y1b) : seulement le pont « Placer », pas les six feuilles.
+- **Transitions** : un filet et un titre d'une ligne, « Par famille » au-dessus des rangées et « Ses mots » au-dessus des mots. L'huile garde son titre « De Saaz à … » avec son filet.
+- **Le « ? » des étapes** : il ne prend plus de ligne. Il est au bout de la ligne de titre « Par famille », juste sous le tableau, et sa feuille explique aussi les rangées (zone 16D, trait noir de ta stout, orangé, écart chiffré).
+- **Le + centré** : il est au centre de la colonne « Ta stout » et au milieu de la rangée des têtes (écart 0,0 px et 0,0 px). Contrôle neuf : `work/refonte-frontend/v4/tournoi/outils/controle-centre-plus.mjs`, qui échoue sur cmc2g (−16 px et −22 px) et passe sur cmc2h.
+- **Moins de blanc** :
+  - « ses mots » perd 62 px de marge morte (marge haute de 34 px et retrait haut de 28 px) ; le titre porte le filet ;
+  - la ligne du « ? » (32 px) disparaît ;
+  - marges entre blocs resserrées : huile 6 et 4 px, pied 2 px.
+  - Rien d'utile n'est retiré.
+- Contrôles : QUAND OK, NORMALISE OK, MOTS 100 (OK), CENTRE OK.
 
-Laissées de côté, et pourquoi :
-- La pastille de critère « par [floral ⌄] » (r6n2, r6p2) : la visée est fixée par ta demande (floral) ; un
-  critère de plus chargerait la tête de r6a.
-- Le dock à six feuilles (Défi, Égaler, Valeurs, Preuve, Frise, Souche) de r6n2 et r6p1 : r6a l'a emporté sans lui ;
-  seul Égaler est repris, en toucher.
-- Les deux pistes du défi au premier écran (r6p3) : elles coûtent 10 mots et 28 px de radar ; les rangées Floral ↑
-  et Résineux ↓ portent déjà la demande.
-- « On gagne / on paie » (r6p4) : une rangée neuve sous les têtes change la forme de r6a.
-- La fiche avec la teneur du lot publié (CoA, r6p1) : la fiche est celle de la voie p1 ; à lui proposer.
-- Le titre « Lequel pour ma stout ? » (r6p2, r6p4) : le titre nomme les houblons dans l'ordre des colonnes,
-  ce qui règle le reproche du critique sans perdre les noms.
-- Les 20 bières tirées, la frise jour après jour, la souche (r6n1, r6n2) : hors de la question de Comparer.
+Base commune (cmc2d, reprise telle quelle dans cmc2e, cmc2f et cmc2g ; seul le radar diffère) :
+- **Radar** : son rdg5 (secteur « sans donnée » en bas). Les points connus de chaque houblon sont reliés en trait plein entre deux axes voisins connus, et en tireté (5 4), de sa couleur et de son épaisseur, là où le segment enjambe un inconnu ou le secteur « sans donnée » (« Il y a pas les traits haché comme demandé »). Le remplissage ne suit que les tronçons pleins, du contour au petit anneau du zéro, jamais sous un tireté ni au centre. L'inconnu d'un seul houblon est une pastille « ? » à sa couleur, au bord, sans point.
+- **Huiles** (« Non la première partie doit être en dessous. La seconde dans l'autre vue... ») : l'huile totale « De Saaz à … » est sous le bloc « ses mots », juste avant Biotransformation et Enchaîner. La composition des huiles (Beer Maverick, barres superposées) est dans la feuille « Valeurs », sous la ligne « huile ». Sous les étapes, on passe directement aux rangées des familles. Doublon gardé : la chimie de la feuille a déjà ses lignes myrcène, humulène et caryophyllène. Leurs plages viennent de `composes-houblon.json` (BM, HS…), alors que la composition vient de `oils` du catalogue (BM) : Cascade, myrcène 40–60 contre 45–60.
+- **Étapes** (« Ajouter un ? Explicatif pour ces données. Utiliser les pastilles comme c'etait de base ») : le tableau de la base jouable. Le moment choisi est dans une pastille noire ; chaque valeur a sa petite barre, à la couleur de la famille de la pastille, et le trait gris de ton Nugget. Nos cinq moments, les nombres et les ★ sont gardés. Un « ? » rond au bout du tableau ouvre l'explication (le nombre, ★, ton Nugget en gris, « ~ », « ~0 », Au style ou Absolu, dry hop 3 j).
+- **Normalisation** (« SI choisi absolu, plus de normalisation… ») :
+  - « Au style » : les anneaux suivent le moment. Chaque rangée de famille est mise à l'échelle de son plus fort apport du moment, et son plancher passe de 0,3 à 0,05 cran (D67) : à 60′, la barre de l'épicé tombait à 30 %. Les petites barres des étapes, ligne par ligne ; un apport sous 0,05 cran s'écrit « ~0 ».
+  - « Absolu » : le radar est sur une échelle fixe et commune, de 0 à 12,5 crans, à tous les moments. Les barres des rangées et des étapes sont brutes (sur 125, et 0 à 4 crans pour les étapes) ; rien ne se rechiffre.
+- **Bouton ⇄** (« un poil plus large ») : 33 px au lieu de 24, sur un fond léger ; le × est tel quel.
+- **Texte retiré** (« encore pas mal de légende et texte inutile ») ; son sens est passé dans la feuille « ? » d'en haut, en une ligne chacun :
+  - la légende en carrés sous le radar (houblons, 16D) : couleurs des têtes, bascule « Au style » ;
+  - « ~ dans la cuve, au moment comparé ; dry hop : 3 j de contact » (aussi dans le « ? » des étapes) ;
+  - « Résineux déjà au-delà, ta dégustation : chaque gain s'y ajoute » ;
+  - « ~ simulé, 4 g/L chacun ; trait fin : incertitude » ;
+  - « inconnus, pas zéro » (garde ses pictos et la case hachurée) ;
+  - « ses mots » (les deux étiquettes) ;
+  - le « ~ » devant ✓ et ⚠ (le signe et le picto restent) ; « hors » reste à côté du ⚠ (« le fait que les style hors 16d soit bien montré ») ;
+  - la ligne « Le radar » de la feuille « ? », réécrite pour ce radar ;
+  - les arômes de « Autres » réduits à trois mots : « β-pinène, linalol, géraniol ».
+- **Mots au premier écran** : cmc2d passe de 106 à 95.
 
-- Ses mots (D128 bis), de flb5 (« J'aime beaucoup le 9 […] À montré aussi, notamment pour la comparaison », 24.10) — sous le premier écran (80 mots) : le bandeau « <retenu> seul dit … » (flb5), puis sous chaque colonne ses mots tirés de ses fiches (familyWords du moteur, traduits D97, sans nom de famille ni « fruité »), en gras ce que lui seul dit face aux autres houblons comparés, ◇ hors des 12 familles
-
-## Écarts
-
-Aux étapes (D107, moteur en direct, 23.10, nuit ; 4 g/L, US-05, dry hop après 3 j), crans gagnés sur ta stout :
-
-| | floral 60′ | 10′ | dry hop | résineux 60′ | 10′ | dry hop | IBU 60′ | 10′ |
-|---|---|---|---|---|---|---|---|---|
-| Cascade | ~0,07 | ~0,51 | ~0,89 | ~0,15 | ~0,80 | ~1,91 | ~52 | ~19 |
-| Idaho 7 | ~0,11 | ~0,73 | ~1,25 | ~0,15 | ~0,80 | ~1,97 | ~102 | ~37 |
-| Galaxy | ~0,13 | ~0,94 | ~0,85 | ~0,14 | ~0,64 | ~1,97 | ~137 | ~50 |
-| ton Nugget (réf.) | ~0,14 | ~0,96 | ~1,02 | ~0,19 | ~1,02 | ~2,17 | ~104 | ~38 |
-
-- Le dry hop reprend les nombres de r6a (même moment) ; 60′ et 10′ n'existaient pas dans r6a.
-- Ce que les étapes montrent : Galaxy est le plus floral à 10′ (et au whirlpool, ~0,94), Idaho 7 au dry hop ; le
-  résineux double du 10′ au dry hop. Ton Nugget, à 4 g/L, ferait autant de floral que les autres à 10′ : c'est le
-  moteur (géraniol et linalol de ses fiches) ; à confronter à ta connaissance du Nugget (L14).
-- Whirlpool et dry hop actif, simulés mais non montrés : whirlpool ≈ 10′ (écart < 0,05 cran, IBU ~40 % de celui du
-  10′), actif ≈ après (Idaho 7 : ~1,21 contre ~1,25).
-- IBU : calculé (BrewingMath de l'app) à l'α du lot ou au milieu de la plage des fiches ; à froid, non modélisé
-  (écrit « ? », jamais 0).
-
-Avant D107 :
-
-Aux nombres de r6a (moteur en direct, 23.10, contre la grille `comparer-stout.json` du 22.10) :
-- floral, en crans : Cascade ~+0,9, Idaho 7 ~+1,3 (1,25), Galaxy ~+0,9 (0,85) : identiques aux arrondis ;
-- résineux : ~+1,9 / ~+2 / ~+2 : identiques ;
-- tropicaux de Galaxy au-dessus de ta 16D (~⚠ 🍍) : identique ; Cascade et Idaho 7 restent dedans ;
-- inconnus : pépins et melon pour les trois ; terreux et noyau pour Cascade, herbacé et terreux pour Galaxy :
-  identiques. Baies de Galaxy : connu (18,9 sur 100), comme r6a, bien que ses fiches ne citent pas les baies ;
-- un seul écart de dessin : là où ta stout est inconnue (baies, noyau), r6a posait son trait noir à 0 ; il n'est
-  plus dessiné (inconnu ≠ 0). L'apport du houblon s'y lit depuis 0, comme r6a ;
-- α et β des vraies valeurs : enveloppe Beer Maverick + Hopsteiner du catalogue du moteur (r6a : les sources de
-  son JSON, les mêmes deux fiches) ; huile et composés : `composes-houblon.json`, la source que r6a citait.
-- Le contexte dit « après, 3 j » (r6a : « après fermentation, 3 j ») et « 4 g/L chacun » (r6a : « dose égale
-  4 g/L ») ; la légende dit le reste.
-- Le fond de l'écran passe au papier le plus clair du thème (cave-850) : sur le papier de l'app, l'orangé et les
-  couleurs de famille tombaient sous 4,5:1 (CONTRASTE).
-
-## Pour l'app
-
-- Aux étapes (D107) : `Etapes.tsx` → `src/ui/hops/HopCompareStages.tsx` ; `lireEtapes`, `houblonDeBase` (calcul.ts) →
-  `src/domain/hopTools/compare.ts` ; 3 étapes × (n + 1) simulations par changement de houblons (~12 × 1,4 ms).
-
-- `index.tsx` → `src/ui/hops/HopCompare.tsx` ; `calcul.ts` → `src/domain/hopTools/compare.ts` (types `ColonneLue`,
-  `CelluleLue`, `Reponse` à créer) ; `Radar.tsx` → `src/ui/hops/CompareRadar.tsx` ; `valeurs.ts` →
-  `src/domain/hops/realValues.ts`, sur le catalogue de production (#120) au lieu de `composes-houblon.json`.
-- Route : `{ view: 'hopCompare', recipeId, hops: string[], pin?: string }` (le `pin` de Substituer, déjà dans la route de la maquette).
-- « Égaler » fait ~7 simulations par houblon (dichotomie) : sur le fil principal à 3 houblons (< 50 ms) ; au
-  catalogue entier, dans le worker de Suggérer.
-- La fiche s'ouvre par une entrée d'historique (comme une route `useFullScreenRoute`), pas par un état local :
-  le retour du téléphone la ferme sans quitter Comparer.
+Données : moteur en direct, dépôt au commit 2f1c0b01ac5941b4e4e9c278527c2ea3d5eb9b92. Huile totale : `huileDe` (enveloppe des sources de `valeurs.ts`, BM et HS, sinon `oil` du catalogue). Composition : `hopRef(cle).catalogue.oils` (Beer Maverick) ; Autres = 100 − la somme des trois.
 
 ## Reprise
 
@@ -203,3 +152,8 @@ Aux nombres de r6a (moteur en direct, 23.10, contre la grille `comparer-stout.js
 - d107-etapes : repris — la bande des étapes sur les rangées (D128) : chaque houblon à 60′, 10′ et dry hop, ensemble, au repos, au premier écran, calculés par le moteur ; chaque ligne est un toucher qui pose ce moment sur les rangées et le radar
 - d107-etat-au-moment : repris — toucher 60′, 10′ ou dry hop : le radar, les rangées et les verdicts ~ dans / ~ hors passent à ce moment, le moteur posant chaque houblon là (D128)
 - d107-reference : repris — ton Nugget (houblon de base de la recette) aux mêmes étapes, à la même dose, en gris dans la colonne de gauche
+- d128-selecteur-etapes : repris — le sélecteur segmenté du moment (60′, 10′, WP, actif, après) sous les têtes : il pose le moment sur le radar, les têtes et les rangées
+- d128bis-ses-mots : repris — « Ses mots » sous les rangées : tous les mots de chaque houblon, picto de famille ou losange hors des 12 familles, sans « +n », du plus fort au plus faible
+- flb5-lui-seul : repris — dans « Ses mots », en gras ce que ce houblon est seul à dire, en gris ce qu'un autre dit aussi
+- x3b-plans : repris — la feuille « Étapes » du dock : les plans des étapes de la comparaison, à un toucher
+- x3b-biotransfo : repris — la feuille « Biotransformation » du dock : ce que la levure change au dry hop, à un toucher

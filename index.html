@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr" class="h-full bg-[#12100E] text-[#D8CEC5] antialiased selection:bg-[#F2C14E] selection:text-[#12100E]">
+<html lang="fr" data-theme="clair" class="h-full bg-cave-950 text-cave-200 antialiased selection:bg-ebc-straw selection:text-cave-950">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍺</text></svg>" />
@@ -7,7 +7,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="L'Affinée" />
-    <meta name="theme-color" content="#12100E" />
+    <meta name="theme-color" content="#FFFFFF" />
+    <script>
+      // Thème gardé sur l'appareil, posé avant le premier rendu (sans clignotement). Clé : src/theme/theme.ts.
+      try { if (localStorage.getItem('laffinee.theme') === 'cave') { document.documentElement.dataset.theme = 'cave'; document.querySelector('meta[name="theme-color"]').setAttribute('content', '#12100E'); } } catch (e) {}
+    </script>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
@@ -19,7 +23,7 @@
     />
     <title>L'Affinée — Micro-Brasserie</title>
   </head>
-  <body class="h-full overflow-x-hidden bg-[#12100E] font-sans">
+  <body class="h-full overflow-x-hidden bg-cave-950 font-sans">
     <div id="root" class="min-h-full flex flex-col"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

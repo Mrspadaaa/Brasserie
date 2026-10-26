@@ -1,5 +1,5 @@
 {
- "maj": "2026-10-24",
+ "maj": "2026-10-25",
  "defauts": [
   {
    "id": "D1",
@@ -1744,7 +1744,9 @@
    "id": "D126",
    "mots": "« Mais il y a très peu de mini maquettes ??? J'ai pratiquement aucun choix ?? Et j'ai pas du coté à cote » (24.10, soir, sur « Choix de vues · 24.10 »)",
    "controle": "controle-page-choix.mjs <page.html> [--min=11] (C1 aucune variante cachée dans une bande, C2 trois par rangée à 1280 et deux à 390, C3 onze variantes au moins par choix (« Je dirais 11 par vue »), C4 référence marquée, C5 agrandissement au toucher)",
-   "portee": ["page-lot"],
+   "portee": [
+    "page-lot"
+   ],
    "tourne": "oui",
    "resultat": "Mesuré le 24.10 : 2026-10-24-choix-vues PAGE-CHOIX ECHEC (9/9 : bandes qui défilent, 3 à 11 variantes, aucune référence marquée) ; 2026-10-23-dryhopper-v0 ECHEC (une par rangée à 390, pas de référence marquée).",
    "verdict": "garde",
@@ -1754,7 +1756,9 @@
    "id": "D127",
    "mots": "« bien mais trop centré ibu, il faudrait aussi pas que à 60' mais aussi en dry hop. SI non plutôt bien. Attention à toujours utilisé la baseline. Aussi ajouter à comparé doit être facile. Et le remplacement aussi. Ainsi que ferme la vue » (24.10, soir, sur u4)",
    "controle": "controle-substituer-gestes.mjs <dossier construit> (S1 dry hop, S2 ajouter à Comparer, S3 remplacer, S4 fermer)",
-   "portee": ["substituer"],
+   "portee": [
+    "substituer"
+   ],
    "tourne": "oui",
    "resultat": "Mesuré le 24.10 : maquettes/parcours SUBSTITUER-GESTES ECHEC (2/4 : pas de dry hop, aucun bouton Comparer).",
    "verdict": "garde",
@@ -1764,7 +1768,9 @@
    "id": "D128",
    "mots": "« C'est pas du tout cette vue là réf ??? » (24.10, soir, sur la référence « r6a » de la pastille)",
    "controle": "controle-comparer-familles.mjs <page.html> [--min=9] (rangées de familles de r6a au premier écran)",
-   "portee": ["comparer"],
+   "portee": [
+    "comparer"
+   ],
    "tourne": "oui",
    "resultat": "Mesuré le 24.10 : sa r6a FAMILLES OK (10 au premier écran) ; maquettes/parcours/comparer FAMILLES ECHEC (0 au premier écran, 9 à partir de 872 px).",
    "verdict": "garde",
@@ -1774,7 +1780,9 @@
    "id": "D129",
    "mots": "« Fait attention aux header, footer, sur la continuité de l'app ect... » (24.10, soir)",
    "controle": "controle-continuite.mjs <dossier construit> (K1 croix, K2 en-tête, K3 titre des outils, K4 pied en bas)",
-   "portee": ["tout-ecran"],
+   "portee": [
+    "tout-ecran"
+   ],
    "tourne": "oui",
    "resultat": "Mesuré le 24.10 au soir : maquettes/parcours CONTINUITE ECHEC (4 : titres des outils 20 et 15 px ; pied de Dryhopper au-dessus du rail).",
    "verdict": "garde",
@@ -1784,7 +1792,11 @@
    "id": "D130",
    "mots": "« Les type spéciaux des houblons hors 16d ! C'est très important surtout dans la comparaison !!!! » (24.10, soir, sur flb5b)",
    "controle": "controle-hors-16d.mjs <page.html> [--min=N] [--premier-ecran] (contrat data-role=hors-16d)",
-   "portee": ["comparer","substituer","fiche"],
+   "portee": [
+    "comparer",
+    "substituer",
+    "fiche"
+   ],
    "tourne": "oui",
    "resultat": "Mesuré le 24.10 au soir : maquettes/parcours, Comparer (--min=3 --premier-ecran) et Substituer (--min=2) HORS-16D ECHEC (0 élément).",
    "verdict": "garde",
@@ -1794,7 +1806,9 @@
    "id": "D132",
    "mots": "« la carte du houblons doit bien contenir de façon exhaustive TOUTES ses informations » ; « Le footer est top » (flu2b) ; « C'est pas exhaustif sur les infos du houblons » (24.10, soir, sur flb5b)",
    "controle": "controle-fiche-exhaustive.mjs <page.html> [--houblon=<nom>] (P1 pied de flu2b, P2 toute information du pack)",
-   "portee": ["fiche"],
+   "portee": [
+    "fiche"
+   ],
    "tourne": "oui",
    "resultat": "Mesuré le 24.10 au soir : flb5b EXHAUSTIVE ECHEC (P1, α, β, huiles, composés, origine, styles, sources, IBU/g) ; maquettes/parcours-fiche (r14 en cours) ECHEC (stock, IBU/g).",
    "verdict": "garde",
@@ -1804,11 +1818,73 @@
    "id": "D133",
    "mots": "« le spidergraph doit être en pic pas juste des traits... Enfin comme sur les mini maquettes » (24.10, soir, radar de la fiche)",
    "controle": "controle-radar-pics.mjs <page.html>… (R1 aucun sommet au centre, R2 un pic isolé garde une base)",
-   "portee": ["fiche"],
+   "portee": [
+    "fiche"
+   ],
    "tourne": "oui",
    "resultat": "Mesuré le 24.10 au soir : maquette PICS ECHEC (Nugget et Nelson Sauvin, 0 % du rayon) ; g1 PICS OK (10 %) ; après la reprise de l'échelle de g1, PICS OK (Nugget, Nelson Sauvin, Galaxy).",
    "verdict": "garde",
    "script": "controle-radar-pics.mjs"
+  },
+  {
+   "id": "D134",
+   "mots": "« il y a un peu de délai pour \"sortir\" du mode rail » (24.10, soir, commentaire sur la maquette publiée)",
+   "controle": "controle-sortie-rail.mjs <dossier construit> [--max=50] (S1 du lever du doigt à la première image, S2 plus de mode geste)",
+   "portee": [
+    "rail"
+   ],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquette publiée SORTIE-RAIL ECHEC (142 ms, essais 99, 142, 143) ; propositions différées (useDeferredValue) : SORTIE-RAIL OK (8 ms).",
+   "verdict": "garde",
+   "script": "controle-sortie-rail.mjs"
+  },
+  {
+   "id": "D135",
+   "mots": "« Substitut doit tout de suite ouvrir l'onglet » (24.10, soir, pied de la fiche)",
+   "controle": "controle-fiche-pied.mjs <dossier construit> (F1 « Substituts › » ouvre Substituer)",
+   "portee": [
+    "fiche"
+   ],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquette publiée FICHE-PIED ECHEC (route #/fiche/nugget) ; corrigée FICHE-PIED OK.",
+   "verdict": "garde",
+   "script": "controle-fiche-pied.mjs"
+  },
+  {
+   "id": "D136",
+   "mots": "« Que veux dire classé ? C'est pas du tout clair » (24.10, soir, matrice de la fiche)",
+   "controle": "controle-fiche-pied.mjs <dossier construit> (F2 pas de « classé » dans la fiche)",
+   "portee": [
+    "fiche"
+   ],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquette publiée FICHE-PIED ECHEC (« classé ») ; corrigée : point creux et « 1/2 », comme le radar.",
+   "verdict": "garde",
+   "script": "controle-fiche-pied.mjs"
+  },
+  {
+   "id": "D137",
+   "mots": "« pas de possibilité d'enlever, remplacer un houblon choisi, ni en recherche un » (24.10, soir, Comparer)",
+   "controle": "controle-comparer-choix.mjs <dossier construit> (K1 retirer, K2 remplacer à sa place, K3 chercher « nelson »)",
+   "portee": [
+    "comparer"
+   ],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 au soir : maquette publiée COMPARER-CHOIX ECHEC (K1, K2, K3) ; corrigée COMPARER-CHOIX OK, FAMILLES OK (9).",
+   "verdict": "garde",
+   "script": "controle-comparer-choix.mjs"
+  },
+  {
+   "id": "D140",
+   "mots": "« Je veux qqch comme ça moi ???? » ; « Modifié juste ça par les vrai barre pas de stepper » (24.10, nuit, ses captures de leg3-v2a)",
+   "controle": "controle-legende-v2a.mjs <dossier construit> (V1 lignes de v2a ouvertes, V2 pas de pastille repliée, V3 ordre de v2a, V4 une barre de v2e par picto, V5 mots égaux à v2a pour Nugget et Motueka)",
+   "portee": [
+    "ma-biere"
+   ],
+   "tourne": "oui",
+   "resultat": "Mesuré le 24.10 nuit : construction v2f de HEAD → LEGENDE-V2A ECHEC 15, puis V5 ECHEC 4 sur la première reprise ; corrigée → LEGENDE-V2A OK, BATTERIE 46/46, ETATS 141/141.",
+   "verdict": "garde",
+   "script": "controle-legende-v2a.mjs"
   }
  ]
 }

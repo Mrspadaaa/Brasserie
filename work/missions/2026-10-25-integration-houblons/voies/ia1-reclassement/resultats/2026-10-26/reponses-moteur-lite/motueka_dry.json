@@ -1,0 +1,46 @@
+{
+ "casId": "motueka@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "85902b8d958e948a",
+ "simule": false,
+ "appel": 90,
+ "http": 200,
+ "latenceMs": 2145,
+ "finishReason": "STOP",
+ "jetonsEntree": 3584,
+ "jetonsSortie": 560,
+ "coutMicroChf": 3094,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Taiheke partage les profils agrumes et citron vert du Motueka, avec un myrcène proche, mais possède un profil herbacé plus prononcé.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Mandarina Bavaria offre des notes de citron et fruits tropicaux proches du Motueka, mais diverge par sa dominance nette de mandarine.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Styrian Cardinal s'accorde par ses notes de citron vert et fruits tropicaux, s'en séparant par des huiles totales plus abondantes.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Barbe Rouge apporte des agrumes et du citron vert rappelant le Motueka, mais se distingue par des notes marquées de baies rouges.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Cascade évoque le profil agrumes du Motueka avec un myrcène similaire, mais s'en éloigne par des notes résineuses et épicées plus intenses.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Mistral propose des fruits de la passion et des agrumes adaptés au dry hop, bien que ses notes vineuses l'éloignent du Motueka.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Diamond Springs possède les notes de citron et agrumes du Motueka, mais ajoute une touche de menthe absente chez l'original.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Wurttemberg partage les notes de citron vert et d'agrumes, mais se sépare du Motueka par des accents boisés et d'origan.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Shaddock rappelle le citron vert du Motueka pour le dry hop, mais introduit des notes indésirables d'oignon et d'ail.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Multihead offre des fruits tropicaux et agrumes adaptés, mais son taux de cohumulone est plus élevé que celui du Motueka.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c08",
+   "c05",
+   "c14",
+   "c12",
+   "c03",
+   "c20",
+   "c13",
+   "c17",
+   "c02",
+   "c07"
+  ],
+  "phrases": {
+   "c08": "Taiheke partage les profils agrumes et citron vert du Motueka, avec un myrcène proche, mais possède un profil herbacé plus prononcé.",
+   "c05": "Mandarina Bavaria offre des notes de citron et fruits tropicaux proches du Motueka, mais diverge par sa dominance nette de mandarine.",
+   "c14": "Styrian Cardinal s'accorde par ses notes de citron vert et fruits tropicaux, s'en séparant par des huiles totales plus abondantes.",
+   "c12": "Barbe Rouge apporte des agrumes et du citron vert rappelant le Motueka, mais se distingue par des notes marquées de baies rouges.",
+   "c03": "Cascade évoque le profil agrumes du Motueka avec un myrcène similaire, mais s'en éloigne par des notes résineuses et épicées plus intenses.",
+   "c20": "Mistral propose des fruits de la passion et des agrumes adaptés au dry hop, bien que ses notes vineuses l'éloignent du Motueka.",
+   "c13": "Diamond Springs possède les notes de citron et agrumes du Motueka, mais ajoute une touche de menthe absente chez l'original.",
+   "c17": "Wurttemberg partage les notes de citron vert et d'agrumes, mais se sépare du Motueka par des accents boisés et d'origan.",
+   "c02": "Shaddock rappelle le citron vert du Motueka pour le dry hop, mais introduit des notes indésirables d'oignon et d'ail.",
+   "c07": "Multihead offre des fruits tropicaux et agrumes adaptés, mais son taux de cohumulone est plus élevé que celui du Motueka."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

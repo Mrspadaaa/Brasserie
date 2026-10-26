@@ -1,0 +1,1597 @@
+{
+  "source": {
+    "id": "hopsdirect",
+    "nom": "Hops Direct",
+    "hote": "hopsdirect.com",
+    "type": "ferme et revendeur (États-Unis)",
+    "conditions": "robots.txt Shopify : /products/ permis ; /cart, /checkout, /account, /admin interdits ; aucune licence lue",
+    "releve": "2026-10-26"
+  },
+  "fiches": [
+    {
+      "nom": "Amarillo",
+      "alias": [],
+      "varietyId": "beermaverick-amarillo",
+      "url": "https://hopsdirect.com/products/amarillo-2024-pellets",
+      "releve": "2026-10-26",
+      "publie": 2024,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "10.0%",
+          "valeur": 10,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2024"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Cascade",
+          "Centennial"
+        ],
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma variety with floral, citrus and peach notes; complemented"
+        ]
+      }
+    },
+    {
+      "nom": "Amarillo",
+      "alias": [],
+      "varietyId": "beermaverick-amarillo",
+      "url": "https://hopsdirect.com/products/amarillo-2026-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "9.1%",
+          "valeur": 9.1,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Aroma hop with a very appealing floral, citrus, and peach aroma, complimented by undertones of orange and grapefruit."
+        ]
+      }
+    },
+    {
+      "nom": "Cascade",
+      "alias": [],
+      "varietyId": "beermaverick-cascade",
+      "url": "https://hopsdirect.com/products/cascade-2026-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "8.4%",
+          "valeur": 8.4,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Centennial",
+          "Amarillo"
+        ],
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Aroma hop with a pleasingly smooth floral, citrus grapefruit, lychee fruit, pear, slight grape and wood aroma."
+        ]
+      }
+    },
+    {
+      "nom": "Cashmere",
+      "alias": [],
+      "varietyId": "beermaverick-cashmere",
+      "url": "https://hopsdirect.com/products/cashmere-2024-pellets",
+      "releve": "2026-10-26",
+      "publie": 2024,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "9.4%",
+          "valeur": 9.4,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2024"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ]
+      }
+    },
+    {
+      "nom": "Cashmere",
+      "alias": [],
+      "varietyId": "beermaverick-cashmere",
+      "url": "https://hopsdirect.com/products/cashmere-2025-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "9.3%",
+          "valeur": 9.3,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ]
+      }
+    },
+    {
+      "nom": "Cashmere",
+      "alias": [],
+      "varietyId": "beermaverick-cashmere",
+      "url": "https://hopsdirect.com/products/cashmere-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "10.6%",
+          "valeur": 10.6,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Leaf"
+        ]
+      }
+    },
+    {
+      "nom": "Centennial",
+      "alias": [],
+      "varietyId": "beermaverick-centennial",
+      "url": "https://hopsdirect.com/products/centennial-2026-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11.1%",
+          "valeur": 11.1,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Cascade",
+          "Columbus",
+          "Chinook"
+        ],
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Dual Purpose hop with crisp, clean, floral, herbal, and lemon citrus, pineapple notes."
+        ]
+      }
+    },
+    {
+      "nom": "Chinook",
+      "alias": [],
+      "varietyId": "beermaverick-chinook",
+      "url": "https://hopsdirect.com/products/chinook-2025-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "12.5%",
+          "valeur": 12.5,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "styles": [
+          "US Pale Ale",
+          "IPA",
+          "Stout",
+          "Barley Wine",
+          "Lager"
+        ],
+        "substituts": [
+          "Nugget",
+          "Columbus",
+          "Northern Brewer",
+          "Simcoe"
+        ],
+        "forme": [
+          "PELLETS"
+        ],
+        "profilCourt": [
+          "Dual Purpose hop with a spicy, pine, distinctive grapefruit aroma."
+        ]
+      }
+    },
+    {
+      "nom": "Chinook",
+      "alias": [],
+      "varietyId": "beermaverick-chinook",
+      "url": "https://hopsdirect.com/products/chinook-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11.7%",
+          "valeur": 11.7,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "styles": [
+          "US Pale Ale",
+          "IPA",
+          "Stout",
+          "Barley Wine",
+          "Lager"
+        ],
+        "substituts": [
+          "Nugget",
+          "Columbus",
+          "Northern Brewer",
+          "Simcoe"
+        ],
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Dual Purpose hop with a spicy, pine, distinctive grapefruit aroma."
+        ]
+      }
+    },
+    {
+      "nom": "Citra Hbc 394",
+      "alias": [],
+      "varietyId": "beermaverick-citra",
+      "url": "https://hopsdirect.com/products/citra-hbc-394-2025-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "13.9%",
+          "valeur": 13.9,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "styles": [
+          "American Ale",
+          "IPA",
+          "Pale Ale",
+          "Hazy IPA",
+          "NEIPA"
+        ],
+        "forme": [
+          "PELLETS"
+        ]
+      }
+    },
+    {
+      "nom": "Cluster",
+      "alias": [],
+      "varietyId": "beermaverick-cluster",
+      "url": "https://hopsdirect.com/products/cluster-2023-pellets-1",
+      "releve": "2026-10-26",
+      "publie": 2023,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "7.2%",
+          "valeur": 7.2,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2023"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Legacy",
+          "Galena"
+        ],
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Dual Purpose variety with a floral, lemon, and spice aroma"
+        ]
+      }
+    },
+    {
+      "nom": "Columbus",
+      "alias": [],
+      "varietyId": "beermaverick-columbus",
+      "url": "https://hopsdirect.com/products/columbus-2023-pellets",
+      "releve": "2026-10-26",
+      "publie": 2023,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "15.3%",
+          "valeur": 15.3,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2023"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Bittering variety with a well-rounded, herbal, citrus and pleasantly pungent aroma"
+        ]
+      }
+    },
+    {
+      "nom": "Columbus",
+      "alias": [],
+      "varietyId": "beermaverick-columbus",
+      "url": "https://hopsdirect.com/products/columbus-2024-pellets",
+      "releve": "2026-10-26",
+      "publie": 2024,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "12.9%",
+          "valeur": 12.9,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2024"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Bittering variety with a well-rounded, herbal, citrus and pleasantly pungent aroma."
+        ]
+      }
+    },
+    {
+      "nom": "Columbus",
+      "alias": [],
+      "varietyId": "beermaverick-columbus",
+      "url": "https://hopsdirect.com/products/columbus-2024-pellets-copy",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "15.1%",
+          "valeur": 15.1,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Bittering variety with a well-rounded, herbal, citrus and pleasantly pungent aroma."
+        ]
+      }
+    },
+    {
+      "nom": "Columbus",
+      "alias": [],
+      "varietyId": "beermaverick-columbus",
+      "url": "https://hopsdirect.com/products/columbus-2026-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "18.0%",
+          "valeur": 18,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Chinook",
+          "Galena",
+          "Nugget"
+        ],
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Well-rounded bittering hop with herbal, citrus and a pungent yet pleasant aroma."
+        ]
+      }
+    },
+    {
+      "nom": "Columbus",
+      "alias": [],
+      "varietyId": "beermaverick-columbus",
+      "url": "https://hopsdirect.com/products/columbus-2026-pellets",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "15.8%",
+          "valeur": 15.8,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Bittering variety with a well-rounded, herbal, citrus and pleasantly pungent aroma."
+        ]
+      }
+    },
+    {
+      "nom": "Comet",
+      "alias": [],
+      "varietyId": "beermaverick-comet",
+      "url": "https://hopsdirect.com/products/comet-2024-pellets",
+      "releve": "2026-10-26",
+      "publie": 2024,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "10.0%",
+          "valeur": 10,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2024"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Galena"
+        ],
+        "forme": [
+          "Pellets"
+        ]
+      }
+    },
+    {
+      "nom": "Comet",
+      "alias": [],
+      "varietyId": "beermaverick-comet",
+      "url": "https://hopsdirect.com/products/comet-2025-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "10.0-12.0%",
+          "valeur": null,
+          "min": 10,
+          "max": 12,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Galena"
+        ],
+        "forme": [
+          "Pellets"
+        ]
+      }
+    },
+    {
+      "nom": "Comet",
+      "alias": [],
+      "varietyId": "beermaverick-comet",
+      "url": "https://hopsdirect.com/products/comet-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "12.0%",
+          "valeur": 12,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Galena"
+        ],
+        "forme": [
+          "Leaf"
+        ]
+      }
+    },
+    {
+      "nom": "Crystal",
+      "alias": [],
+      "varietyId": "beermaverick-crystal",
+      "url": "https://hopsdirect.com/products/crystal-pellets",
+      "releve": "2026-10-26",
+      "publie": 2024,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "3.3%",
+          "valeur": 3.3,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2024"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Mt. Hood",
+          "Hersbrucker",
+          "Hallertau",
+          "Ultra",
+          "Liberty",
+          "French Strisselspalt"
+        ],
+        "forme": [
+          "Pellets"
+        ]
+      }
+    },
+    {
+      "nom": "Eclipse",
+      "alias": [],
+      "varietyId": "beermaverick-eclipse",
+      "url": "https://hopsdirect.com/products/eclipse-2023-pellets",
+      "releve": "2026-10-26",
+      "publie": 2023,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "18.7%",
+          "valeur": 18.7,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2023"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Amarillo",
+          "Centennial",
+          "Citra Imported Hop Pellets"
+        ],
+        "forme": [
+          "Pellets"
+        ]
+      }
+    },
+    {
+      "nom": "Fuggles Us",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://hopsdirect.com/products/fuggles-us-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5.3%",
+          "valeur": 5.3,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma variety with a mild wood, slight fruit, pleasant aroma"
+        ]
+      }
+    },
+    {
+      "nom": "Galena",
+      "alias": [],
+      "varietyId": "beermaverick-galena",
+      "url": "https://hopsdirect.com/products/galena-2026-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "13.3%",
+          "valeur": 13.3,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Nugget"
+        ],
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Bittering hops with an intense citrus aroma."
+        ]
+      }
+    },
+    {
+      "nom": "Golding Us",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://hopsdirect.com/products/golding-us-2025-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "6.6%",
+          "valeur": 6.6,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "East Kent Golding",
+          "Fuggle",
+          "Styrian Golding",
+          "Willamette"
+        ],
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma variety with delicate floral notes. Classic English style aroma"
+        ]
+      }
+    },
+    {
+      "nom": "Golding Us",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://hopsdirect.com/products/golding-us-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4.1%",
+          "valeur": 4.1,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Aroma hop with mildly fragrant floral tones, a classic English type aroma ."
+        ]
+      }
+    },
+    {
+      "nom": "Golding Us",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://hopsdirect.com/products/us-golding-2023-pellets",
+      "releve": "2026-10-26",
+      "publie": 2023,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "3.7%",
+          "valeur": 3.7,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2023"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "East Kent Golding",
+          "Fuggle",
+          "Styrian Golding",
+          "Willamette"
+        ],
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma variety with delicate floral notes. Classic English style aroma"
+        ]
+      }
+    },
+    {
+      "nom": "Hallertau Mittelfruh Us",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://hopsdirect.com/products/hallertau-mittelfruh-us-2025-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5.1%",
+          "valeur": 5.1,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Hallertau Tradition",
+          "Mt. Hood",
+          "Crystal",
+          "Liberty"
+        ],
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma variety with mild, clean, spicy, floral notes"
+        ]
+      }
+    },
+    {
+      "nom": "Hallertau Mittelfruh Us",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://hopsdirect.com/products/hallertau-us-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "3.6%",
+          "valeur": 3.6,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Mt. Hood",
+          "Crystal",
+          "Liberty"
+        ],
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Aroma hop with mild, clean, spicy, floral notes."
+        ]
+      }
+    },
+    {
+      "nom": "Hallertau Tradition Gr",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://hopsdirect.com/products/copy-of-hallertau-tradition-gr-2025-pellets",
+      "releve": "2026-10-26",
+      "publie": 2024,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5.6%",
+          "valeur": 5.6,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2024"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma Variety that is mild and pleasant"
+        ]
+      }
+    },
+    {
+      "nom": "Idaho 7",
+      "alias": [],
+      "varietyId": "beermaverick-idaho-7",
+      "url": "https://hopsdirect.com/products/idaho-7-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "14.4%",
+          "valeur": 14.4,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Citra"
+        ],
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Dual Purpose variety with zesty orange, tangerine, marmalade, pine and black tea notes"
+        ]
+      }
+    },
+    {
+      "nom": "Magnum Us",
+      "alias": [],
+      "varietyId": "beermaverick-magnum-us",
+      "url": "https://hopsdirect.com/products/magnum-2026-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "13.6%",
+          "valeur": 13.6,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Gr. Magnum",
+          "Simcoe"
+        ],
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Bittering hop with a citrus, clean aroma."
+        ]
+      }
+    },
+    {
+      "nom": "Mt. Hood",
+      "alias": [],
+      "varietyId": "beermaverick-mount-hood",
+      "url": "https://hopsdirect.com/products/mt-hood-2024-pellets",
+      "releve": "2026-10-26",
+      "publie": 2024,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "6.2%",
+          "valeur": 6.2,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2024"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Crystal",
+          "Hersbrucker"
+        ],
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma Variety with a mild, somewhat pungent aroma of light grapefruit and lemon notes"
+        ]
+      }
+    },
+    {
+      "nom": "Mt. Hood",
+      "alias": [],
+      "varietyId": "beermaverick-mount-hood",
+      "url": "https://hopsdirect.com/products/mt-hood-2025-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5.0%",
+          "valeur": 5,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Crystal",
+          "Hersbrucker"
+        ],
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma Variety with a mild, somewhat pungent aroma of light grapefruit and lemon notes."
+        ]
+      }
+    },
+    {
+      "nom": "Nugget",
+      "alias": [],
+      "varietyId": "beermaverick-nugget",
+      "url": "https://hopsdirect.com/products/nugget-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "14.8%",
+          "valeur": 14.8,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "styles": [
+          "Ale",
+          "Stout",
+          "Barley Wine"
+        ],
+        "substituts": [
+          "Chinook",
+          "Galena",
+          "Cluster",
+          "Warrior",
+          "Simcoe"
+        ],
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Dual Purpose variety with a strong herbal and spicy aroma and notes of pear and peach."
+        ]
+      }
+    },
+    {
+      "nom": "Perle Gr",
+      "alias": [],
+      "varietyId": "beermaverick-perle-gr",
+      "url": "https://hopsdirect.com/products/perle-gr-2025-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "7.0%",
+          "valeur": 7,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Dual purpose hop with a floral and slightly spicy aroma"
+        ]
+      }
+    },
+    {
+      "nom": "Pink (Id-158)",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://hopsdirect.com/products/pink-id-158-2025-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "14.8%",
+          "valeur": 14.8,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "New hop variety from Jackson Farms who brought us Idaho 7™ ."
+        ]
+      }
+    },
+    {
+      "nom": "Saaz Us",
+      "alias": [],
+      "varietyId": "beermaverick-saaz-us",
+      "url": "https://hopsdirect.com/products/saaz-us-2023-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5.5%",
+          "valeur": 5.5,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma variety with mild, spicy, and earthy notes"
+        ]
+      }
+    },
+    {
+      "nom": "Saaz Us",
+      "alias": [],
+      "varietyId": "beermaverick-saaz-us",
+      "url": "https://hopsdirect.com/products/saaz-us-2024-pellets",
+      "releve": "2026-10-26",
+      "publie": 2024,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4.6%",
+          "valeur": 4.6,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2024"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma variety with mild, spicy, and earthy notes"
+        ]
+      }
+    },
+    {
+      "nom": "Saaz Us",
+      "alias": [],
+      "varietyId": "beermaverick-saaz-us",
+      "url": "https://hopsdirect.com/products/saaz-us-2026-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "6.1%",
+          "valeur": 6.1,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Aroma hop with mild, spicy, and earthy notes."
+        ]
+      }
+    },
+    {
+      "nom": "Simcoe",
+      "alias": [],
+      "varietyId": "beermaverick-simcoe",
+      "url": "https://hopsdirect.com/products/simcoe-2025-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "15.0%",
+          "valeur": 15,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Citra",
+          "Magnum",
+          "Mosaic",
+          "Summit"
+        ],
+        "forme": [
+          "Pellets"
+        ]
+      }
+    },
+    {
+      "nom": "Sorachi Ace",
+      "alias": [],
+      "varietyId": "beermaverick-sorachi-ace",
+      "url": "https://hopsdirect.com/products/sorachi-ace-2026-pellets",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "10.8%",
+          "valeur": 10.8,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma hop with crisp lemongrass bitterness, mild dill undertones, & lemon citrus top notes"
+        ]
+      }
+    },
+    {
+      "nom": "Sorachi Ace",
+      "alias": [],
+      "varietyId": "beermaverick-sorachi-ace",
+      "url": "https://hopsdirect.com/products/sorachi-ace-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11.7%",
+          "valeur": 11.7,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Bittering hop with crisp lemongrass bitterness, mild dill undertones, and lemony citrus top notes."
+        ]
+      }
+    },
+    {
+      "nom": "Summit",
+      "alias": [],
+      "varietyId": "beermaverick-summit",
+      "url": "https://hopsdirect.com/products/summit-2024-pellets",
+      "releve": "2026-10-26",
+      "publie": 2024,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "16.8%",
+          "valeur": 16.8,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2024"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ]
+      }
+    },
+    {
+      "nom": "Tettnanger Us",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://hopsdirect.com/products/tettnanger-us-2024-pellets",
+      "releve": "2026-10-26",
+      "publie": 2024,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4.9%",
+          "valeur": 4.9,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2024"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma variety with a mild and pleasantly spicy aroma"
+        ]
+      }
+    },
+    {
+      "nom": "Tettnanger Us",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://hopsdirect.com/products/tettnanger-us-2025-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4.3%",
+          "valeur": 4.3,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma variety with a mild and pleasantly spicy aroma"
+        ]
+      }
+    },
+    {
+      "nom": "Tettnanger Us",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://hopsdirect.com/products/tettnanger-us-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4.7%",
+          "valeur": 4.7,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "Gr. Tettnanger"
+        ],
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Aroma Variety with mild spicy notes."
+        ]
+      }
+    },
+    {
+      "nom": "Willamette",
+      "alias": [],
+      "varietyId": "beermaverick-willamette",
+      "url": "https://hopsdirect.com/products/willamette-2023-pellets",
+      "releve": "2026-10-26",
+      "publie": 2023,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "3.7%",
+          "valeur": 3.7,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2023"
+        }
+      },
+      "listes": {
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma variety with a mild, pleasant, slightly spicy aroma"
+        ]
+      }
+    },
+    {
+      "nom": "Willamette",
+      "alias": [],
+      "varietyId": "beermaverick-willamette",
+      "url": "https://hopsdirect.com/products/willamette-2025-pellets",
+      "releve": "2026-10-26",
+      "publie": 2025,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4.9%",
+          "valeur": 4.9,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2025"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "US Fuggle",
+          "US Tettnanger"
+        ],
+        "forme": [
+          "Pellets"
+        ],
+        "profilCourt": [
+          "Aroma hop with a mild, spicy aroma."
+        ]
+      }
+    },
+    {
+      "nom": "Willamette",
+      "alias": [],
+      "varietyId": "beermaverick-willamette",
+      "url": "https://hopsdirect.com/products/willamette-leaf",
+      "releve": "2026-10-26",
+      "publie": 2026,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5.1%",
+          "valeur": 5.1,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "contexte": "lot 2026"
+        }
+      },
+      "listes": {
+        "substituts": [
+          "US Fuggle",
+          "US Tettnanger",
+          "Styrian Golding"
+        ],
+        "forme": [
+          "Leaf"
+        ],
+        "profilCourt": [
+          "Aroma hop with a mild, spicy aroma."
+        ]
+      }
+    }
+  ]
+}

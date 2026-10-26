@@ -18,6 +18,9 @@ import { readHopV55ExplorationTrialPreparationV1, readHopV55ExplorationTrialRece
 import { readHopV55ContextualComparisonSnapshot } from '../../src/ui/hopV55/contextualExplorationModel';
 import { HopV55Page } from '../../src/ui/hopV55/Page';
 
+// Volume de calcul (validation canonique + SHA-256 de gros dossiers, jsdom) : aucun état à attendre, la durée dépend du CPU. Plafond explicite (#177).
+vi.setConfig({ testTimeout: 120_000 });
+
 const pageExplorationTrialState = vi.hoisted(() => ({ entries: [] as unknown[], profileReferences: [] as string[] }));
 
 vi.mock('../../src/ui/hopV55/Explorer', async () => {

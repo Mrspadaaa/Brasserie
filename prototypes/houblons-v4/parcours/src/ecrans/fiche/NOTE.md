@@ -168,3 +168,12 @@ La route fiche est Ma bière avec la feuille ouverte au chargement. Trois contr�
 `mots` compte Ma bière sous la feuille (194 mots). `fiche` (D25/D49) attend une fiche fermée à ouvrir. `legende` prend le premier
 bouton de légende, celui de Ma bière. Le geste de la fiche est couvert par ETATS (16/16) et `controle-fiche` (FICHE OK 1/1).
 Reste ouvert : rendre ces trois contrôles conscients d'une feuille ouverte.
+
+## Le radar commun (voie rb-radar-commun, 25.10)
+
+« Ensuite utiliser ce radar graph comme Baseline et l'utiliser partout dans les vue où il y en a » : `RadarFiche.tsx`
+pose le radar de cmc2h (`src/commun/RadarBase.tsx`). Ses valeurs restent celles de g1, le nombre de fiches qui citent
+chaque famille ; un houblon seul, sans bascule : échelle fixe de 0 à toutes ses fiches (2 au moins), anneaux chiffrés en
+fiches. Les familles non décrites (inconnues, jamais 0) rejoignent le secteur « sans donnée ». Les pictos remplacent les
+noms d'axes ; « 2/4 » se lit sur les anneaux et dans la bulle. La flèche de la demande est à côté du picto. La bulle, le
+toucher d'un secteur, le survol et `data-etat="etat-fiche-radar-sommet"` (Melon) sont gardés.

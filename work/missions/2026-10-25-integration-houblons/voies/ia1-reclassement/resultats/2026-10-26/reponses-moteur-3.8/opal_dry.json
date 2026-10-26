@@ -1,0 +1,46 @@
+{
+ "casId": "opal@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "b2666ebf1ac5f2a1",
+ "simule": false,
+ "appel": 57,
+ "http": 200,
+ "latenceMs": 6600,
+ "finishReason": "STOP",
+ "jetonsEntree": 3768,
+ "jetonsSortie": 570,
+ "coutMicroChf": 12409,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Offre les notes d'anis, d'agrumes et d'herbes d'Opal avec un profil d'huiles très proche, apportant juste un côté plus terreux.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Partage les notes d'anis et d'épices nobles avec une composition d'huiles quasi identique, bien qu'un peu moins porté sur les agrumes.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Son alliance d'agrumes et de fenouil rappelle parfaitement les facettes citronnées et anisées d'Opal en fermentation active.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Retrouve le côté poivré et épicé d'Opal, avec des arômes de fruits verts et de thé au détriment des agrumes vifs.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Combine idéalement le citron et les notes épicées avec une forte présence aromatique, mais sans la facette anisée.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Recrée le mariage agrumes et épices avec un profil d'huiles similaire, mais apporte un fruité melon plus doux qu'Opal.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Exprime très bien l'équilibre floral, herbacé, épicé et agrumes typique d'Opal, malgré une intensité d'huile globale un peu plus faible.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Propose une palette noble mêlant citron, herbe et épices très cohérente, mais dans un registre aromatique un peu plus délicat.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Apporte la composante agrumes et épicée recherchée avec une belle charge d'huiles, mais manque de la finesse florale et anisée.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Capture l'aspect épicé et hespéridé d'Opal, mais élargit le spectre vers des fruits plus doux comme la pêche.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c18",
+   "c04",
+   "c05",
+   "c15",
+   "c09",
+   "c13",
+   "c20",
+   "c17",
+   "c11",
+   "c14"
+  ],
+  "phrases": {
+   "c18": "Offre les notes d'anis, d'agrumes et d'herbes d'Opal avec un profil d'huiles très proche, apportant juste un côté plus terreux.",
+   "c04": "Partage les notes d'anis et d'épices nobles avec une composition d'huiles quasi identique, bien qu'un peu moins porté sur les agrumes.",
+   "c05": "Son alliance d'agrumes et de fenouil rappelle parfaitement les facettes citronnées et anisées d'Opal en fermentation active.",
+   "c15": "Retrouve le côté poivré et épicé d'Opal, avec des arômes de fruits verts et de thé au détriment des agrumes vifs.",
+   "c09": "Combine idéalement le citron et les notes épicées avec une forte présence aromatique, mais sans la facette anisée.",
+   "c13": "Recrée le mariage agrumes et épices avec un profil d'huiles similaire, mais apporte un fruité melon plus doux qu'Opal.",
+   "c20": "Exprime très bien l'équilibre floral, herbacé, épicé et agrumes typique d'Opal, malgré une intensité d'huile globale un peu plus faible.",
+   "c17": "Propose une palette noble mêlant citron, herbe et épices très cohérente, mais dans un registre aromatique un peu plus délicat.",
+   "c11": "Apporte la composante agrumes et épicée recherchée avec une belle charge d'huiles, mais manque de la finesse florale et anisée.",
+   "c14": "Capture l'aspect épicé et hespéridé d'Opal, mais élargit le spectre vers des fruits plus doux comme la pêche."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

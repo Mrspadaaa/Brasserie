@@ -1,0 +1,46 @@
+{
+ "casId": "cascade@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "d3cb7313bf46cfd1",
+ "simule": false,
+ "appel": 15,
+ "http": 200,
+ "latenceMs": 6009,
+ "finishReason": "STOP",
+ "jetonsEntree": 3793,
+ "jetonsSortie": 536,
+ "coutMicroChf": 12137,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Sélectionné comme le Cascade néo-zélandais, il reproduit fidèlement le profil pamplemousse, floral et épicé avec une touche plus exotique.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Très proche par ses notes d'agrumes, de pamplemousse, de pin et de fleurs, avec un profil d'huiles très similaire.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Descendant direct du Cascade, il offre le même équilibre agrumes, pamplemousse et pin, bien qu'un peu plus boisé.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Ce mélange pensé pour le style américain apporte exactement les notes de pamplemousse, mandarine, pin et floral recherchées.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Met en avant des arômes marqués d'orange et de pamplemousse, bien que le côté floral et pin soit plus discret.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Partage le duo citron-pamplemousse et un bon taux de farnésène, avec toutefois un caractère globalement plus doux.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Retrouve le classicisme américain axé sur les agrumes et les épices, malgré l'absence des nuances florales délicates.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Apporte la résine de pin et les agrumes caractéristiques, mais tire davantage vers le citron vert et les fruits tropicaux.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Partage une belle intensité thiolée et d'agrumes avec une touche résineuse, mais orientée vers la mandarine douce.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Offre une belle fraîcheur d'agrumes et de fleurs, mais se distingue par des notes nettes de mandarine et de menthe.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c05",
+   "c17",
+   "c15",
+   "c16",
+   "c07",
+   "c12",
+   "c04",
+   "c10",
+   "c02",
+   "c03"
+  ],
+  "phrases": {
+   "c05": "Sélectionné comme le Cascade néo-zélandais, il reproduit fidèlement le profil pamplemousse, floral et épicé avec une touche plus exotique.",
+   "c17": "Très proche par ses notes d'agrumes, de pamplemousse, de pin et de fleurs, avec un profil d'huiles très similaire.",
+   "c15": "Descendant direct du Cascade, il offre le même équilibre agrumes, pamplemousse et pin, bien qu'un peu plus boisé.",
+   "c16": "Ce mélange pensé pour le style américain apporte exactement les notes de pamplemousse, mandarine, pin et floral recherchées.",
+   "c07": "Met en avant des arômes marqués d'orange et de pamplemousse, bien que le côté floral et pin soit plus discret.",
+   "c12": "Partage le duo citron-pamplemousse et un bon taux de farnésène, avec toutefois un caractère globalement plus doux.",
+   "c04": "Retrouve le classicisme américain axé sur les agrumes et les épices, malgré l'absence des nuances florales délicates.",
+   "c10": "Apporte la résine de pin et les agrumes caractéristiques, mais tire davantage vers le citron vert et les fruits tropicaux.",
+   "c02": "Partage une belle intensité thiolée et d'agrumes avec une touche résineuse, mais orientée vers la mandarine douce.",
+   "c03": "Offre une belle fraîcheur d'agrumes et de fleurs, mais se distingue par des notes nettes de mandarine et de menthe."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

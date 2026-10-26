@@ -2,8 +2,8 @@
 name: moteur-parcours-limites
 description: Ce que le moteur de la maquette jouable ne sait pas simuler (moments, levure, visée en palier) et ce qu'on en tire honnêtement à l'écran.
 type: metier
-maj: 2026-10-24
-sources: prototypes/houblons-v4/parcours/src/moteur/index.ts (MOMENTS_SIMULES, l. 107) ; RESULTAT.md des voies p3-comparer, p4-dryhopper, r4-suggerer, dh4a, dh4b, jc-levure de work/missions/2026-10-23-maquette-parcours/voies/
+maj: 2026-10-26
+sources: prototypes/houblons-v4/parcours/src/moteur/index.ts (MOMENTS_SIMULES, l. 107) ; work/missions/2026-10-25-integration-houblons/voies/g1-suggerer-moments/rapport.md ; RESULTAT.md des voies p3-comparer, p4-dryhopper, r4-suggerer, dh4a, dh4b, jc-levure de work/missions/2026-10-23-maquette-parcours/voies/
 ---
 
 Relevé par les voies de la maquette jouable (24.10). Le moteur reste celui de [[modele-brassage]] ; son coût est dans
@@ -22,3 +22,11 @@ Relevé par les voies de la maquette jouable (24.10). Le moteur reste celui de [
   (~37 contre ~15 pour Idaho 7).
 - **Galaxy** : le moteur simule 18,9 sur 100 de baies alors qu'aucune fiche ne les cite, et la stout y est inconnue :
   l'écart d'une bière inconnue se mesure depuis 0, ce qui le grossit.
+- **Suggérer ne départage pas les variétés** (g1, 26.10). Dans `proposeVoies`, l'effet d'une famille citée ne dépend que du
+  moment et de la dose, jamais de la variété : on mesure une seule valeur pour les 233 houblons qui citent l'agrume. L'ordre
+  est donc :
+  1. le nombre de familles citées ;
+  2. la dérive d'IBU ;
+  3. l'ordre alphabétique (21C, agrumes au dry hop : 23 ex æquo en tête).
+
+  Les moments sont fixés en dur (10′, whirlpool, dry hop) : aucun ajout à 60′, aucune visée d'IBU.

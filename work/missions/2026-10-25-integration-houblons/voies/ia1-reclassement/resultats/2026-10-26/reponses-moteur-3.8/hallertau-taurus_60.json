@@ -1,0 +1,46 @@
+{
+ "casId": "hallertau-taurus@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "f3f9111f7128a07e",
+ "simule": false,
+ "appel": 20,
+ "http": 200,
+ "latenceMs": 6589,
+ "finishReason": "STOP",
+ "jetonsEntree": 3852,
+ "jetonsSortie": 584,
+ "coutMicroChf": 12698,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Taux d'alpha et de cohumulone quasi identiques pour une amertume douce et noble très proche, malgré un profil d'huiles néo-zélandais plus épicé.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Plage d'alpha très similaire et cohumulone basse à 25 % garantissant une amertume propre et ronde, avec une origine britannique différente.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Alpha comparable et faible taux de cohumulone assurant une amertume fine à 60 minutes, bien que son ratio d'humulène soit nettement inférieur.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Variété allemande amérisante au taux d'alpha parfait, mais sa cohumulone plus élevée produira une amertume un peu plus incisive que le Taurus.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Teneur en acides alpha très proche et cohumulone modérée pour un amer propre à l'ébullition, malgré un volume d'huile bien supérieur.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Fourchette d'alpha et cohumulone basse parfaitement adaptées pour une amertume douce, même si son profil aromatique complexe est ici sacrifié à l'ébullition.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Alpha élevé idéal pour l'amérisant à 60 minutes, apportant une amertume nette malgré une cohumulone légèrement plus mordante.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Potentiel amérisant identique en alpha, mais sa cohumulone supérieure apportera un tranchant plus rude que la douceur du houblon d'origine.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Mêmes caractéristiques techniques que Columbus pour une amertume efficace à 60 minutes, quoique sensiblement plus agressive en bouche.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Clône de CTZ offrant exactement la même densité d'alpha pour l'ébullition, mais avec une cohumulone plus marquée que chez Taurus.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c20",
+   "c04",
+   "c16",
+   "c01",
+   "c03",
+   "c18",
+   "c05",
+   "c11",
+   "c06",
+   "c08"
+  ],
+  "phrases": {
+   "c20": "Taux d'alpha et de cohumulone quasi identiques pour une amertume douce et noble très proche, malgré un profil d'huiles néo-zélandais plus épicé.",
+   "c04": "Plage d'alpha très similaire et cohumulone basse à 25 % garantissant une amertume propre et ronde, avec une origine britannique différente.",
+   "c16": "Alpha comparable et faible taux de cohumulone assurant une amertume fine à 60 minutes, bien que son ratio d'humulène soit nettement inférieur.",
+   "c01": "Variété allemande amérisante au taux d'alpha parfait, mais sa cohumulone plus élevée produira une amertume un peu plus incisive que le Taurus.",
+   "c03": "Teneur en acides alpha très proche et cohumulone modérée pour un amer propre à l'ébullition, malgré un volume d'huile bien supérieur.",
+   "c18": "Fourchette d'alpha et cohumulone basse parfaitement adaptées pour une amertume douce, même si son profil aromatique complexe est ici sacrifié à l'ébullition.",
+   "c05": "Alpha élevé idéal pour l'amérisant à 60 minutes, apportant une amertume nette malgré une cohumulone légèrement plus mordante.",
+   "c11": "Potentiel amérisant identique en alpha, mais sa cohumulone supérieure apportera un tranchant plus rude que la douceur du houblon d'origine.",
+   "c06": "Mêmes caractéristiques techniques que Columbus pour une amertume efficace à 60 minutes, quoique sensiblement plus agressive en bouche.",
+   "c08": "Clône de CTZ offrant exactement la même densité d'alpha pour l'ébullition, mais avec une cohumulone plus marquée que chez Taurus."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

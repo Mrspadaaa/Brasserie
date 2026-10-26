@@ -1,0 +1,46 @@
+{
+ "casId": "tsingdao-flower@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "f7b82233714456b1",
+ "simule": false,
+ "appel": 22,
+ "http": 200,
+ "latenceMs": 2057,
+ "finishReason": "STOP",
+ "jetonsEntree": 3704,
+ "jetonsSortie": 536,
+ "coutMicroChf": 3064,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Yakima Gold partage l'alpha et les notes de citron, mais apporte du pamplemousse au lieu du profil terreux et melon de Tsingdao Flower.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Mistral offre un profil melon et agrumes proche, mais avec des notes de vin et de fruits de la passion plus complexes.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"TriplePearl combine des acides alpha adaptés et des notes de zeste et de melon, avec une touche épicée en plus.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Lumberjack propose des notes de melon, agrumes et terreux similaires, mais son alpha est légèrement supérieur pour l'ébullition.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"HORT9909 intègre citron et agrumes avec un alpha proche, bien que le pin remplace le côté terreux d'origine.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Herkules fournit l'amertume avec des notes d'agrumes et de melon, mais son alpha est beaucoup plus élevé que Tsingdao.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Herald correspond bien pour l'amertume et les agrumes, mais penche vers l'orange plutôt que le citron et le terreux.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Falconer's Flight 7CS apporte des agrumes et un fond terreux, mais un cohumulone plus haut durcira un peu l'amertume.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Olympic offre un usage dual et des agrumes, mais son alpha et son profil manquent de la douceur terreuse originelle.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Yakima Cluster reprend le côté terreux et fruité, mais avec des acides alpha plus bas et un cohumulone plus élevé.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c12",
+   "c13",
+   "c03",
+   "c18",
+   "c07",
+   "c04",
+   "c14",
+   "c15",
+   "c10"
+  ],
+  "phrases": {
+   "c01": "Yakima Gold partage l'alpha et les notes de citron, mais apporte du pamplemousse au lieu du profil terreux et melon de Tsingdao Flower.",
+   "c12": "Mistral offre un profil melon et agrumes proche, mais avec des notes de vin et de fruits de la passion plus complexes.",
+   "c13": "TriplePearl combine des acides alpha adaptés et des notes de zeste et de melon, avec une touche épicée en plus.",
+   "c03": "Lumberjack propose des notes de melon, agrumes et terreux similaires, mais son alpha est légèrement supérieur pour l'ébullition.",
+   "c18": "HORT9909 intègre citron et agrumes avec un alpha proche, bien que le pin remplace le côté terreux d'origine.",
+   "c07": "Herkules fournit l'amertume avec des notes d'agrumes et de melon, mais son alpha est beaucoup plus élevé que Tsingdao.",
+   "c04": "Herald correspond bien pour l'amertume et les agrumes, mais penche vers l'orange plutôt que le citron et le terreux.",
+   "c14": "Falconer's Flight 7CS apporte des agrumes et un fond terreux, mais un cohumulone plus haut durcira un peu l'amertume.",
+   "c15": "Olympic offre un usage dual et des agrumes, mais son alpha et son profil manquent de la douceur terreuse originelle.",
+   "c10": "Yakima Cluster reprend le côté terreux et fruité, mais avec des acides alpha plus bas et un cohumulone plus élevé."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

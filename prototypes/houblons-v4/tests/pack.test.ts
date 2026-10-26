@@ -23,7 +23,8 @@ describe('Pack des mini-prototypes', () => {
 
   it('forme : JSON simple sous 400 ko, 12 familles, 3 styles, stock et catalogue, 3 scénarios', () => {
     // Plafond relevé de 400 à 500 ko (décision réversible du 18.10.2026, voir scripts/build-pack.ts).
-    expect(Buffer.byteLength(text)).toBeLessThan(500 * 1024);
+    // D85, 26.10 : plafond relevé à 560 ko ; descripteurs de 12 sources (d4) ; prototype seulement, l'app n'est pas concernée.
+    expect(Buffer.byteLength(text)).toBeLessThan(560 * 1024);
     expect(stored.meta.status).toBe('à valider par le brasseur');
     expect(stored.meta.bands.version).toBeTruthy();
     expect(stored.families.map((f: { order: number }) => f.order)).toEqual([...Array(12).keys()]);

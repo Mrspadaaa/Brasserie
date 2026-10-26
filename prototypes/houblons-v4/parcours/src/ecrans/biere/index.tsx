@@ -14,14 +14,16 @@ import { PageShell } from '@app/pages/PageShell';
 import { COURT, Legende, Onglets, ROUE, nombre, type Echelle } from '../../commun';
 import { useNavigation } from '../../coquille/navigation';
 import { useBiere, useGestes, useRecette, useVisee } from '../../etat/EtatParcours';
-import { donnees, proposer, style } from '../../moteur';
-import { voiesSummary, type FamilyId } from '../../../../src/engine';
-import { Alerte, Bandeau, NomFamille, PisteBase, nomLevureBase } from '../ma-biere/Base';
-import { Lentille } from '../ma-biere/Lentille';
-import { RadarBiere, auDessus, type Note } from '../ma-biere/RadarBiere';
-import { objectifsDe } from '../suggerer/voies';
+import { donnees, style } from '../../moteur';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { voiesSummary } from '../../moteur/v4';
+import { useCalcul } from '../../moteur/useCalcul';
+import { Alerte, Bandeau, NomFamille, PisteBase, nomLevureBase } from '@app/ui/hopIndex/maBiere/Base';
+import { Lentille } from '@app/ui/hopIndex/maBiere/Lentille';
+import { RadarBiere, auDessus, type Note } from '@app/ui/hopIndex/maBiere/RadarBiere';
+import { directionDe, objectifsDe } from '../suggerer/voies';
 import { GrilleDegustation } from './Degustation';
-import '../ma-biere/ma-biere.css';
+import '@app/ui/hopIndex/maBiere/ma-biere.css';
 import './biere.css';
 import { DEMANDE_DEGUSTEE, descendre, enNiveau, enPoints, monter, nomPalier, sensDe, type Sens } from '../../etat/visee';
 
@@ -76,13 +78,15 @@ export default function Biere() {
   };
   // Sous les puces, pour chaque visée posée : le résumé des voies du moteur (voiesSummary, comme la base), sur la même
   // direction que Suggérer (objectifsDe), et le « › » qui l'ouvre.
+  // proposer passe par le client asynchrone (#165) : tout de suite sur le fil principal ; d'un worker, les liens d'avant
+  // restent jusqu'à la réponse (aucun état d'attente).
+  const direction = useMemo(() => (Object.keys(visee).length ? directionDe(objectifsDe(recette, biere, visee)) : null), [recette, biere, visee]);
+  const proposes = useCalcul('proposer', direction ? [recette, direction] : null);
   const liens = useMemo(() => {
     const dirs = Object.keys(visee) as FamilyId[];
-    if (!dirs.length) return [];
-    const obj = objectifsDe(recette, biere, visee);
-    const res = proposer(recette, Object.fromEntries(obj.map((o) => [o.f, o.requis / o.cran])));
-    return voiesSummary(res).byFamily.filter((r) => dirs.includes(r.family));
-  }, [recette, biere, visee]);
+    if (!dirs.length || !proposes) return [];
+    return voiesSummary(proposes.valeur).byFamily.filter((r) => dirs.includes(r.family));
+  }, [proposes, visee]);
   // « + … » ouvre la famille suivante à viser (dans l'ordre du style, située, sans visée, hors des puces).
   const ouvrirAutre = () => {
     const candidates = sc.order.filter((f) => biere.profil[f].valeur && visee[f] == null && !(f in sens));
@@ -178,10 +182,10 @@ export default function Biere() {
               <RadarBiere notes={notes} haut={haut} attendues={attendues} etatSommet="etat-biere-radar-sommet" ouvrirSur={sommet} />
               {/* Un « ? » par groupe (D113) ; la base n'écrit pas de légende sur le radar (« Pas besoin d'écrire la légende »). */}
               <span className="absolute left-0 top-0"><Legende>
-                <p><b>Zone grise</b> : la bande du style {sc.code}.</p>
-                <p><b>Bleu</b> : ma dégustation, de pas senti à marqué ; l'orangé, au-dessus du style.</p>
-                <p><b>« ? » et hachuré</b> : pas goûté, inconnu (ce n'est pas zéro).</p>
-                <p><b>Toucher un sommet</b> : la famille en mots. <b>Une pastille</b> : la note ; la retoucher, pas goûté.</p>
+                <p><b>Zone verte</b> : la bande du style {sc.code}. <b>Cerné</b> : le style l'attend.</p>
+                <p><b>Bleu</b> : ma dégustation, de pas senti (le petit anneau) à marqué ; l'orangé, au-dessus du style.</p>
+                <p><b>Hachuré, « ? »</b> : pas goûté, inconnu : aucun point (ce n'est pas zéro).</p>
+                <p><b>Toucher une famille</b> : sa note en mots. <b>Une pastille</b> : la note ; la retoucher, pas goûté.</p>
               </Legende></span>
             </div>
             <GrilleDegustation notes={notes} haut={haut} attendues={attendues} noter={(f, n) => setNotes((x) => ({ ...x, [f]: n }))} />

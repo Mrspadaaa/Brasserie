@@ -1,30 +1,30 @@
 /* Parc de fûts et matériel : état et travail à faire avant détails secondaires. */
 .equipment-list { min-width: 0; }
 .equipment-filters { flex-wrap: wrap; padding: 0; gap: .25rem; border: 0; background: transparent; }
-.equipment-filters > [role="radio"] { flex: 0 1 auto; min-height: 1.75rem; padding: .125rem .375rem; font-size: .75rem; line-height: 1rem; border: 1px solid #3d342e; }
-.equipment-filters > [role="radio"][aria-checked="true"] { background: #2c2521; color: #f5f0ea; border-color: #9a8a7e; }
+.equipment-filters > [role="radio"] { flex: 0 1 auto; min-height: 1.75rem; padding: .125rem .375rem; font-size: .75rem; line-height: 1rem; border: 1px solid rgb(var(--cave-700)); }
+.equipment-filters > [role="radio"][aria-checked="true"] { background: rgb(var(--cave-800)); color: rgb(var(--cave-texte-50)); border-color: rgb(var(--cave-400)); }
 .keg-filters { flex-wrap: nowrap; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; padding: .125rem; scroll-padding-inline: .125rem; }
 .keg-filters::-webkit-scrollbar { display: none; }
 .keg-filters > [role="radio"] { flex: 0 0 auto; white-space: nowrap; }
-.equipment-row { display: grid; grid-template-columns: minmax(0, 1fr) auto .875rem; align-items: start; gap: .375rem; width: 100%; min-width: 0; padding: .375rem .5rem; border: 1px solid #2c2521; border-radius: .625rem; background: #1a1613; color: #d8cec5; text-align: left; font-size: .8125rem; line-height: 1.125rem; }
+.equipment-row { display: grid; grid-template-columns: minmax(0, 1fr) auto .875rem; align-items: start; gap: .375rem; width: 100%; min-width: 0; padding: .375rem .5rem; border: 1px solid rgb(var(--cave-800)); border-radius: .625rem; background: rgb(var(--cave-900)); color: rgb(var(--cave-texte-200)); text-align: left; font-size: .8125rem; line-height: 1.125rem; }
 .equipment-row-main { min-width: 0; display: grid; gap: .125rem; overflow-wrap: anywhere; }
 .equipment-item-row { grid-template-columns: minmax(0, 1fr) .875rem; }
 .equipment-meta-line { display: flex; flex-wrap: wrap; align-items: center; gap: .125rem .375rem; }
 .equipment-item-row .equipment-state { min-height: 1.25rem; padding-block: 0; }
-.equipment-row-title { margin: 0; color: #f5f0ea; font-size: .875rem; line-height: 1.125rem; font-weight: 600; }
-.equipment-row-meta { color: #9a8a7e; font-size: .75rem; line-height: 1rem; }
-.equipment-row-context { color: #d8cec5; }
-.equipment-row-chevron { color: #9a8a7e; margin-top: .1875rem; }
-.equipment-state { display: inline-flex; align-items: center; justify-content: center; gap: .25rem; max-width: 8.5rem; min-height: 1.5rem; padding: .0625rem .375rem; border: 1px solid #574a42; border-radius: .5rem; background: #221d19; color: #d8cec5; font-size: .75rem; line-height: 1rem; overflow-wrap: anywhere; }
+.equipment-row-title { margin: 0; color: rgb(var(--cave-texte-50)); font-size: .875rem; line-height: 1.125rem; font-weight: 600; }
+.equipment-row-meta { color: rgb(var(--cave-texte-400)); font-size: .75rem; line-height: 1rem; }
+.equipment-row-context { color: rgb(var(--cave-texte-200)); }
+.equipment-row-chevron { color: rgb(var(--cave-texte-400)); margin-top: .1875rem; }
+.equipment-state { display: inline-flex; align-items: center; justify-content: center; gap: .25rem; max-width: 8.5rem; min-height: 1.5rem; padding: .0625rem .375rem; border: 1px solid rgb(var(--cave-600)); border-radius: .5rem; background: rgb(var(--cave-850)); color: rgb(var(--cave-texte-200)); font-size: .75rem; line-height: 1rem; overflow-wrap: anywhere; }
 .equipment-state svg { flex-shrink: 0; }
 .equipment-state[data-equipment-state="À réparer"], .equipment-state[data-keg-state="lavage"] { @apply text-alert-strong bg-alert/15 border-alert/40; }
 .equipment-state[data-equipment-state="À entretenir"] { @apply text-attention bg-attention/10 border-attention/40; }
 .equipment-state[data-equipment-state="Neuf"], .equipment-state[data-keg-state="livre"] { @apply text-cave-200 bg-hop/15 border-hop/40; }
 .equipment-state[data-equipment-state="Bon"], .equipment-state[data-keg-state="propre"] { @apply text-cave-200 bg-water/15 border-water/40; }
-.equipment-state[data-keg-state="plein"] { color: #d8cec5; border-color: #9a8a7e; }
+.equipment-state[data-keg-state="plein"] { color: rgb(var(--cave-texte-200)); border-color: rgb(var(--cave-400)); }
 .equipment-reading { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.keg-identity { display: flex; align-items: baseline; flex-wrap: wrap; gap: .25rem .5rem; color: #f5f0ea; }
-.equipment-empty { display: grid; justify-items: center; gap: .5rem; padding: 1rem .5rem; color: #d8cec5; font-size: .875rem; line-height: 1.125rem; text-align: center; }
+.keg-identity { display: flex; align-items: baseline; flex-wrap: wrap; gap: .25rem .5rem; color: rgb(var(--cave-texte-50)); }
+.equipment-empty { display: grid; justify-items: center; gap: .5rem; padding: 1rem .5rem; color: rgb(var(--cave-texte-200)); font-size: .875rem; line-height: 1.125rem; text-align: center; }
 .equipment-form { display: grid; gap: .625rem; min-width: 0; }
 .equipment-form > *, .equipment-form-pair > * { min-width: 0; }
 .equipment-form-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: .5rem; }
@@ -37,20 +37,20 @@
 .equipment-date button { min-height: 1.5rem; padding: .125rem .375rem; font-size: .75rem; line-height: 1rem; }
 .equipment-form .equipment-choice { flex-wrap: wrap; }
 .equipment-choice > [role="radio"] { flex-basis: auto; min-height: 1.75rem; font-size: .75rem; line-height: 1rem; }
-.equipment-choice > [role="radio"][aria-checked="true"] { color: #f5f0ea; background: #3d342e; }
-.equipment-help { color: #9a8a7e; font-size: .75rem; line-height: 1rem; }
-.equipment-note { color: #d8cec5; font-size: .8125rem; line-height: 1.125rem; overflow-wrap: anywhere; }
-.equipment-note > span { color: #9a8a7e; }
+.equipment-choice > [role="radio"][aria-checked="true"] { color: rgb(var(--cave-texte-50)); background: rgb(var(--cave-700)); }
+.equipment-help { color: rgb(var(--cave-texte-400)); font-size: .75rem; line-height: 1rem; }
+.equipment-note { color: rgb(var(--cave-texte-200)); font-size: .8125rem; line-height: 1.125rem; overflow-wrap: anywhere; }
+.equipment-note > span { color: rgb(var(--cave-texte-400)); }
 .equipment-facts { display: grid; gap: .375rem; }
 .equipment-facts > div { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); align-items: baseline; gap: .375rem; }
-.equipment-facts dt { color: #9a8a7e; font-size: .75rem; }
-.equipment-facts dd { min-width: 0; margin: 0; color: #f5f0ea; font-size: .875rem; line-height: 1.125rem; overflow-wrap: anywhere; }
-.equipment-disclosure { border-top: 1px solid #3d342e; color: #d8cec5; font-size: .8125rem; }
+.equipment-facts dt { color: rgb(var(--cave-texte-400)); font-size: .75rem; }
+.equipment-facts dd { min-width: 0; margin: 0; color: rgb(var(--cave-texte-50)); font-size: .875rem; line-height: 1.125rem; overflow-wrap: anywhere; }
+.equipment-disclosure { border-top: 1px solid rgb(var(--cave-700)); color: rgb(var(--cave-texte-200)); font-size: .8125rem; }
 .equipment-disclosure > summary { min-height: 1.75rem; padding: .25rem 0; cursor: pointer; overflow-wrap: anywhere; line-height: 1.125rem; }
-.equipment-disclosure > summary > span { color: #9a8a7e; font-size: .75rem; }
+.equipment-disclosure > summary > span { color: rgb(var(--cave-texte-400)); font-size: .75rem; }
 .equipment-disclosure[open] > summary { margin-bottom: .375rem; }
 .equipment-management { margin-top: .75rem; }
 .equipment-footer { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: .375rem; }
-.equipment-row:focus-visible, .equipment-disclosure > summary:focus-visible { outline: 2px solid #f2c14e; outline-offset: 2px; }
-@media (hover: hover) { .equipment-row:is(button):hover { border-color: #574a42; background: #221d19; } }
+.equipment-row:focus-visible, .equipment-disclosure > summary:focus-visible { outline: 2px solid rgb(var(--ebc-straw)); outline-offset: 2px; }
+@media (hover: hover) { .equipment-row:is(button):hover { border-color: rgb(var(--cave-600)); background: rgb(var(--cave-850)); } }
 @media (max-width: 360px) { .equipment-form-pair { grid-template-columns: minmax(0, 1fr); } }

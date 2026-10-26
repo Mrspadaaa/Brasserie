@@ -1,0 +1,46 @@
+{
+ "casId": "marynka@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "a43dc6bf11b6cb79",
+ "simule": false,
+ "appel": 13,
+ "http": 200,
+ "latenceMs": 2110,
+ "finishReason": "STOP",
+ "jetonsEntree": 4016,
+ "jetonsSortie": 555,
+ "coutMicroChf": 3241,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Opal partage les notes d'anis et d'herbacé du Marynka, mais apporte plus de floral et un profil globalement plus fin.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Pilgrim offre des notes citronnées et épicées proches du Marynka, avec un profil fruité plus large mais un cohumulone plus élevé.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Ella reprend l'anis et les agrumes du Marynka, tout en poussant vers des fruits tropicaux plus intenses et un alpha élevé.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Pacific Jade combine agrumes et épices comme le Marynka, mais avec une composante poivrée plus marquée et moins de complexité herbacée.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Kazbek rappelle le Marynka par ses touches d'épices et de citron, bien qu'il soit plus typé noble et moins terreux.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Brooklyn partage le foin et les épices du Marynka, mais s'en éloigne nettement par ses notes de fruits de la passion.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Summit possède l'anis et les agrumes du Marynka, mais son profil est beaucoup plus agressif avec des notes de résine et d'ail.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Delta propose des agrumes et des épices légers, s'éloignant des notes de réglisse et de foin caractéristiques du Marynka.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Hersbrucker conserve le foin et les notes douces du Marynka, mais manque cruellement de puissance en agrumes pour ce dry hop.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Styrian Golding offre un profil terreux et épicé proche du Marynka, mais il lui manque la franchise des agrumes.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c03",
+   "c05",
+   "c06",
+   "c13",
+   "c12",
+   "c02",
+   "c07",
+   "c16",
+   "c17"
+  ],
+  "phrases": {
+   "c01": "Opal partage les notes d'anis et d'herbacé du Marynka, mais apporte plus de floral et un profil globalement plus fin.",
+   "c03": "Pilgrim offre des notes citronnées et épicées proches du Marynka, avec un profil fruité plus large mais un cohumulone plus élevé.",
+   "c05": "Ella reprend l'anis et les agrumes du Marynka, tout en poussant vers des fruits tropicaux plus intenses et un alpha élevé.",
+   "c06": "Pacific Jade combine agrumes et épices comme le Marynka, mais avec une composante poivrée plus marquée et moins de complexité herbacée.",
+   "c13": "Kazbek rappelle le Marynka par ses touches d'épices et de citron, bien qu'il soit plus typé noble et moins terreux.",
+   "c12": "Brooklyn partage le foin et les épices du Marynka, mais s'en éloigne nettement par ses notes de fruits de la passion.",
+   "c02": "Summit possède l'anis et les agrumes du Marynka, mais son profil est beaucoup plus agressif avec des notes de résine et d'ail.",
+   "c07": "Delta propose des agrumes et des épices légers, s'éloignant des notes de réglisse et de foin caractéristiques du Marynka.",
+   "c16": "Hersbrucker conserve le foin et les notes douces du Marynka, mais manque cruellement de puissance en agrumes pour ce dry hop.",
+   "c17": "Styrian Golding offre un profil terreux et épicé proche du Marynka, mais il lui manque la franchise des agrumes."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

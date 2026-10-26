@@ -50,8 +50,8 @@ export const CashflowBarChart: React.FC<CashflowBarChartProps> = ({
       <div className="h-40 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-            <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} />
-            <YAxis stroke="#64748b" fontSize={10} tickLine={false} tickFormatter={(v) => `${Math.round(v)}`} />
+            <XAxis dataKey="name" stroke="rgb(var(--cave-texte-400))" fontSize={11} tickLine={false} />
+            <YAxis stroke="rgb(var(--cave-texte-400))" fontSize={10} tickLine={false} tickFormatter={(v) => `${Math.round(v)}`} />
             <Tooltip content={<CustomTooltip />} />
             <Bar dataKey="amount" radius={[8, 8, 0, 0]}>
               {data.map((entry, index) => (

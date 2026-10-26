@@ -1,0 +1,46 @@
+{
+ "casId": "pilgrim@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "158b94dfb46be16a",
+ "simule": false,
+ "appel": 78,
+ "http": 200,
+ "latenceMs": 6220,
+ "finishReason": "STOP",
+ "jetonsEntree": 3840,
+ "jetonsSortie": 554,
+ "coutMicroChf": 12394,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Variété anglaise avec un taux d'acides alpha et un niveau de cohumulone quasi identiques, assurant une amertume équivalente à l'ébullition.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Teneur en cohumulone très proche et fort pouvoir amérisant, idéal pour apporter une amertume nette et franche à 60 minutes.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Son niveau élevé de cohumulone et ses acides alpha similaires garantissent le même tranchant d'amertume en début d'ébullition.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Origine britannique et plage d'acides alpha similaire, bien que sa cohumulone légèrement plus basse donne une amertume un peu plus ronde.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Cohumulone équivalente à celle de Pilgrim garantissant une texture d'amertume comparable, malgré des acides alpha légèrement plus élevés.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Autre houblon anglais avec un taux d'alpha similaire, offrant une amertume comparable bien que légèrement plus douce en bouche.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Taux d'alpha et de cohumulone assez proches pour délivrer une amertume marquée et solide après 60 minutes d'ébullition.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Fourchette d'acides alpha identique qui permet de cibler les mêmes IBU sans difficulté, avec une amertume un peu plus propre.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Teneur en acides alpha comparable et cohumulone intermédiaire, fournissant une amertume très proche au terme d'une heure d'ébullition.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Variété britannique amérisante de force similaire, bien que sa cohumulone plus faible apporte une amertume légèrement plus fine.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c05",
+   "c14",
+   "c08",
+   "c03",
+   "c13",
+   "c18",
+   "c20",
+   "c11",
+   "c07",
+   "c12"
+  ],
+  "phrases": {
+   "c05": "Variété anglaise avec un taux d'acides alpha et un niveau de cohumulone quasi identiques, assurant une amertume équivalente à l'ébullition.",
+   "c14": "Teneur en cohumulone très proche et fort pouvoir amérisant, idéal pour apporter une amertume nette et franche à 60 minutes.",
+   "c08": "Son niveau élevé de cohumulone et ses acides alpha similaires garantissent le même tranchant d'amertume en début d'ébullition.",
+   "c03": "Origine britannique et plage d'acides alpha similaire, bien que sa cohumulone légèrement plus basse donne une amertume un peu plus ronde.",
+   "c13": "Cohumulone équivalente à celle de Pilgrim garantissant une texture d'amertume comparable, malgré des acides alpha légèrement plus élevés.",
+   "c18": "Autre houblon anglais avec un taux d'alpha similaire, offrant une amertume comparable bien que légèrement plus douce en bouche.",
+   "c20": "Taux d'alpha et de cohumulone assez proches pour délivrer une amertume marquée et solide après 60 minutes d'ébullition.",
+   "c11": "Fourchette d'acides alpha identique qui permet de cibler les mêmes IBU sans difficulté, avec une amertume un peu plus propre.",
+   "c07": "Teneur en acides alpha comparable et cohumulone intermédiaire, fournissant une amertume très proche au terme d'une heure d'ébullition.",
+   "c12": "Variété britannique amérisante de force similaire, bien que sa cohumulone plus faible apporte une amertume légèrement plus fine."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

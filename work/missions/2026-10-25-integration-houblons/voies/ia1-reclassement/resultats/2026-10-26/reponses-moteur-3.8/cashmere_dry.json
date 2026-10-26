@@ -1,0 +1,46 @@
+{
+ "casId": "cashmere@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "4d01ebda23e106f2",
+ "simule": false,
+ "appel": 69,
+ "http": 200,
+ "latenceMs": 6603,
+ "finishReason": "STOP",
+ "jetonsEntree": 3904,
+ "jetonsSortie": 517,
+ "coutMicroChf": 12167,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Partage de façon frappante les notes de noix de coco, citronnelle et melon, malgré un profil d'amertume plus prononcé.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Rejoint parfaitement Cashmere sur le melon, la pêche et le citron, avec un profil d'huiles très adapté au dry hop.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Excellente alternative pour les saveurs douces et rondes de melon et de fruits, bien qu'il manque de noix de coco.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Retrouve le côté melon, agrumes et fruits à noyau, mais apportera des nuances résineuses et dank supplémentaires.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Offre des arômes intenses de citron vert, melon et herbes, mais avec un impact aromatique globalement plus lourd.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Apporte des arômes marqués de melon et d'agrumes doux très pertinents en fermentation active, malgré des notes de baies plus affirmées.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Capture la citronnelle et les fruits doux de manière intéressante, tout en ajoutant un côté petits fruits et dank.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Présente une belle base de melon et d'agrumes avec une composition d'huiles très proche, mais s'avère plus discret.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Partage la note de citronnelle et la douceur fruitée, mais s'oriente vers des touches florales et d'épices douces.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Reproduit bien la fraîcheur du citron et la texture douce, mais reste dépourvu des facettes melon et noix de coco.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c20",
+   "c05",
+   "c13",
+   "c07",
+   "c02",
+   "c15",
+   "c06",
+   "c17",
+   "c19"
+  ],
+  "phrases": {
+   "c01": "Partage de façon frappante les notes de noix de coco, citronnelle et melon, malgré un profil d'amertume plus prononcé.",
+   "c20": "Rejoint parfaitement Cashmere sur le melon, la pêche et le citron, avec un profil d'huiles très adapté au dry hop.",
+   "c05": "Excellente alternative pour les saveurs douces et rondes de melon et de fruits, bien qu'il manque de noix de coco.",
+   "c13": "Retrouve le côté melon, agrumes et fruits à noyau, mais apportera des nuances résineuses et dank supplémentaires.",
+   "c07": "Offre des arômes intenses de citron vert, melon et herbes, mais avec un impact aromatique globalement plus lourd.",
+   "c02": "Apporte des arômes marqués de melon et d'agrumes doux très pertinents en fermentation active, malgré des notes de baies plus affirmées.",
+   "c15": "Capture la citronnelle et les fruits doux de manière intéressante, tout en ajoutant un côté petits fruits et dank.",
+   "c06": "Présente une belle base de melon et d'agrumes avec une composition d'huiles très proche, mais s'avère plus discret.",
+   "c17": "Partage la note de citronnelle et la douceur fruitée, mais s'oriente vers des touches florales et d'épices douces.",
+   "c19": "Reproduit bien la fraîcheur du citron et la texture douce, mais reste dépourvu des facettes melon et noix de coco."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

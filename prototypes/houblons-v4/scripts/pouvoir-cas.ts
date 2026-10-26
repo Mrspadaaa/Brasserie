@@ -10,8 +10,8 @@ import { fileURLToPath } from 'node:url';
 import {
   FAMILIES, FAMILY_NAMES, MOMENTS_POUVOIR, POUVOIR_RULE, comparerComposes, comparerFamilles, pouvoirAjout, pouvoirRecette, profilParMoment, textePlage, verifications,
   type AjoutPouvoir, type ComposeId, type Plage, type PouvoirAjout, type PouvoirRecette, type RecettePouvoir, type SourceRef,
-} from '../src/engine';
-import { MOMENTS, type MomentId } from '../src/engine/recipe';
+} from '../../../src/domain/hopIndex/v4';
+import { MOMENTS, type MomentId } from '../../../src/domain/hopIndex/v4/recipe';
 import { s1Recipe } from '../src/pack/buildPack';
 
 const here = path.dirname(path.dirname(fileURLToPath(import.meta.url)));

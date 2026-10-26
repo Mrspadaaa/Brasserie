@@ -24,8 +24,8 @@
    "voulu": "",
    "verif": {
     "route": "comparer",
-    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils22-comparer/r6a/etat.html",
-    "selecteur_choisie": "p[data-role=\"contexte\"]",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils25-comparer/cmc2k/etat.html",
+    "selecteur_choisie": "contient=Ta stout",
     "geste": "repos",
     "attendu": [
      "Fixé pour les trois",
@@ -33,10 +33,17 @@
      "Idaho 7",
      "Galaxy",
      "~ simulé",
-     "inconnus, pas zéro"
+     "inconnus, pas zéro",
+     "Ta stout",
+     "60′",
+     "10′",
+     "WP",
+     "actif",
+     "après"
     ],
     "interdit": []
-   }
+   },
+   "mots_ajout": "D69 (25.10) : Comparer est cmc2k (« Parfait pour Une bande teintée cmc2k », sur cmc2g « C'est quasiment parfait ») ; l'état à chaque ajout (60′ … après) et la référence « Ta stout » se lisent au repos, gardés ici (x3b : « Montrait vraiment l'état du moment de l'ajout facile, je l'avais juste fait noté !! » ; « Et aussi le houblon de base ou bière de base »)"
   },
   {
    "id": "etat-comp-croix",
@@ -370,7 +377,7 @@
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : l'état à chaque ajout se lit en barres par étape (60′, 10′, dry hop) ; le curseur de jours (J4, « tenir ») n'y est pas, laissé à Dryhopper.",
    "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-etat-moment-5345f6ad.png",
-   "voulu": "",
+   "voulu": "D69 (25.10, « Aussi encore pas mal de légende et texte inutile, qui n'apporte rien », sur cmc2c) : la note « ~ dans la cuve, au moment comparé ; dry hop : 3 j de contact » est retirée de l'écran, son sens est dans la feuille « ? » des étapes ; l'état à chaque ajout est gardé par etat-comp-repos (60′, 10′, WP, actif, après) ; non rejoué",
    "verif": {
     "route": "comparer",
     "page_choisie": "work/refonte-frontend/v4/ecran-1/fils21-choisir/x3b/etat.html",
@@ -399,7 +406,7 @@
    "verdict_5345f6ad": "present",
    "ecart": "Maquette : colonne grise « Nugget α 13 % » aux mêmes étapes et pointillé gris dans chaque bande.",
    "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-comp-reference-5345f6ad.png",
-   "voulu": "",
+   "voulu": "D69 (25.10, « Aussi encore pas mal de légende et texte inutile, qui n'apporte rien », sur cmc2c) : la ligne « Résineux déjà au-delà, ta dégustation : chaque gain s'y ajoute » est retirée, son sens est dans la feuille « ? » ; la référence « Ta stout » aux mêmes étapes est gardée par etat-comp-repos et controle-comparer-etapes ; non rejoué",
    "verif": {
     "route": "comparer",
     "page_choisie": "work/refonte-frontend/v4/ecran-1/fils21-choisir/x3b/etat.html",

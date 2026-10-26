@@ -1,0 +1,46 @@
+{
+ "casId": "marynka@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "6529823da9e99990",
+ "simule": false,
+ "appel": 32,
+ "http": 200,
+ "latenceMs": 6335,
+ "finishReason": "STOP",
+ "jetonsEntree": 3655,
+ "jetonsSortie": 484,
+ "coutMicroChf": 11391,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c11\", \"phrase\": \"Taux d'acides alpha très similaire et taux de cohumulone quasi identique, offrant une amertume équilibrée et propre à l'ébullition.\"},\n    {\"id\": \"c08\", \"phrase\": \"Un amérisant classique avec des alphas et une cohumulone proches, assurant une amertume nette et droite sans faux-goûts.\"},\n    {\"id\": \"c04\", \"phrase\": \"Ses alphas proches et sa cohumulone modérée garantissent une amertume franche avec une pointe herbacée et épicée analogue.\"},\n    {\"id\": \"c02\", \"phrase\": \"Teneur en alpha-acides équivalente pour 60 minutes, bien que sa cohumulone légèrement supérieure donne une amertume un peu plus vive.\"},\n    {\"id\": \"c07\", \"phrase\": \"Même plage d'acides alpha pour calibrer l'amertume à l'ébullition, malgré des données d'huiles et de cohumulone inconnues.\"},\n    {\"id\": \"c13\", \"phrase\": \"Excellente amertume franche avec des alpha-acides et une cohumulone très comparables à Marynka lors d'un long bouillonnement.\"},\n    {\"id\": \"c17\", \"phrase\": \"Cohumulone similaire et alphas suffisants pour amériser proprement, même si son profil d'huiles résiduelles diffère un peu.\"},\n    {\"id\": \"c15\", \"phrase\": \"Acides alpha et niveau de cohumulone proches, garantissant une amertume équivalente malgré des bêtas un peu plus bas.\"},\n    {\"id\": \"c14\", \"phrase\": \"Usage amérisant adéquat pour 60 minutes avec une cohumulone concordante, bien que les alphas soient légèrement plus hauts.\"},\n    {\"id\": \"c10\", \"phrase\": \"Cohumulone très proche apportant une belle amertume, mais ses acides alpha très élevés nécessitent d'ajuster les dosages à la baisse.\"}\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c11",
+   "c08",
+   "c04",
+   "c02",
+   "c07",
+   "c13",
+   "c17",
+   "c15",
+   "c14",
+   "c10"
+  ],
+  "phrases": {
+   "c11": "Taux d'acides alpha très similaire et taux de cohumulone quasi identique, offrant une amertume équilibrée et propre à l'ébullition.",
+   "c08": "Un amérisant classique avec des alphas et une cohumulone proches, assurant une amertume nette et droite sans faux-goûts.",
+   "c04": "Ses alphas proches et sa cohumulone modérée garantissent une amertume franche avec une pointe herbacée et épicée analogue.",
+   "c02": "Teneur en alpha-acides équivalente pour 60 minutes, bien que sa cohumulone légèrement supérieure donne une amertume un peu plus vive.",
+   "c07": "Même plage d'acides alpha pour calibrer l'amertume à l'ébullition, malgré des données d'huiles et de cohumulone inconnues.",
+   "c13": "Excellente amertume franche avec des alpha-acides et une cohumulone très comparables à Marynka lors d'un long bouillonnement.",
+   "c17": "Cohumulone similaire et alphas suffisants pour amériser proprement, même si son profil d'huiles résiduelles diffère un peu.",
+   "c15": "Acides alpha et niveau de cohumulone proches, garantissant une amertume équivalente malgré des bêtas un peu plus bas.",
+   "c14": "Usage amérisant adéquat pour 60 minutes avec une cohumulone concordante, bien que les alphas soient légèrement plus hauts.",
+   "c10": "Cohumulone très proche apportant une belle amertume, mais ses acides alpha très élevés nécessitent d'ajuster les dosages à la baisse."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

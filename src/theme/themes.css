@@ -1,0 +1,175 @@
+/*
+ * Thèmes de l'app (#144, D106). Jetons en canaux RGB, lus par tailwind.config.js (`rgb(var(--x) / <alpha-value>)`) :
+ * les noms de l'app ne changent pas (`cave-*`, `ebc-straw`, `hop`…) et les opacités (`bg-water/50`) restent valides.
+ * Mécanisme repris de prototypes/houblons-v4/ecran/THEMES.md ; valeurs du clair = ses maquettes choisies
+ * (prototypes/houblons-v4/parcours/src/theme-maquettes.css) : page blanche, gris neutres, texte presque noir, action
+ * principale noire. Le « clair » à papier chaud du prototype est rejeté (« Pourquoi c'est en thème pastel horrible ??? »).
+ *
+ * `data-theme` est posé sur <html> avant le premier rendu (index.html, src/theme/theme.ts) ; clair par défaut, « cave »
+ * au choix (bouton de l'en-tête), gardé sur l'appareil. Seuils et contrastes mesurés : DESIGN.md, scripts/theme/contraste.mjs.
+ *
+ * Piège des noms, comme dans le prototype : texte et aplat ont des variables distinctes. En clair, `bg-cave-950` est la
+ * page blanche, mais `text-cave-950` reste une encre sombre, car l'app ne l'emploie que pour un texte posé sur la paille.
+ */
+
+/* Clair : le thème par défaut, ses maquettes choisies. */
+:root,
+[data-theme='clair'] {
+  color-scheme: light;
+
+  --cave-950: 255 255 255;
+  --cave-900: 245 245 245;
+  --cave-850: 235 235 235;
+  --cave-800: 221 221 221;
+  --cave-700: 191 191 191;
+  --cave-600: 158 158 158;
+  --cave-400: 102 102 102;
+  --cave-200: 51 51 51;
+  --cave-50: 17 17 17;
+
+  --cave-texte-950: 17 17 17;
+  --cave-texte-900: 17 17 17;
+  --cave-texte-850: 26 26 26;
+  --cave-texte-800: 34 34 34;
+  --cave-texte-700: 51 51 51;
+  --cave-texte-600: 102 102 102;
+  --cave-texte-400: 102 102 102;
+  --cave-texte-200: 51 51 51;
+  --cave-texte-50: 17 17 17;
+
+  /* L'action principale de ses maquettes est noire, texte blanc. */
+  --ebc-straw: 17 17 17;
+  --ebc-straw-texte: 17 17 17;
+  --ebc-straw-bord: 17 17 17;
+  --sur-paille: 255 255 255; /* texte posé sur l'aplat d'action (CSS des composants) */
+  /* L'échelle EBC décrit la bière : ses aplats ne changent pas ; ses textes foncent pour tenir 4,5:1 sur le blanc. */
+  --ebc-gold-texte: 122 90 18;
+  --ebc-amber-texte: 138 82 18;
+  --ebc-copper-texte: 141 68 44;
+
+  --area-production: 154 79 30;
+  --area-finances: 31 100 163;
+  --area-stocks: 76 107 42;
+  --area-agenda: 106 79 176;
+  --area-production-texte: 154 79 30;
+  --area-finances-texte: 31 100 163;
+  --area-stocks-texte: 76 107 42;
+  --area-agenda-texte: 106 79 176;
+
+  --attention: 156 112 32;
+  --attention-texte: 127 91 16;
+  --alert-strong: 179 51 43;
+  --alert-strong-texte: 168 41 31;
+  --alert: 200 56 47;
+  --alert-texte: 168 41 31;
+  --hop: 86 127 69;
+  --hop-texte: 63 107 46;
+  --water: 79 126 155;
+  --water-texte: 47 95 125;
+
+  /* Marque : la valeur de sa maquette (theme-maquettes.css), 2,25:1 ; employée par la maquette seule, pas par l'app. */
+  --marque: 158 158 158;
+  --repere: 17 17 17;
+  --repere-texte: 17 17 17;
+
+  /* Ombres : la profondeur vient d'une ombre légère sur le blanc. */
+  --ombre-lift: 0.16;
+  --ombre-sheet: 0.18;
+  --theme-color: #ffffff;
+}
+
+/* Cave : le thème sombre, valeurs de l'app avant le 25.10. Seuls trois textes colorés s'éclaircissent pour tenir 4,5:1. */
+[data-theme='cave'] {
+  color-scheme: dark;
+
+  --cave-950: 18 16 14;
+  --cave-900: 26 22 19;
+  --cave-850: 34 29 25;
+  --cave-800: 44 37 33;
+  --cave-700: 61 52 46;
+  --cave-600: 87 74 66;
+  --cave-400: 154 138 126;
+  --cave-200: 216 206 197;
+  --cave-50: 245 240 234;
+
+  --cave-texte-950: 18 16 14;
+  --cave-texte-900: 26 22 19;
+  --cave-texte-850: 34 29 25;
+  --cave-texte-800: 44 37 33;
+  --cave-texte-700: 61 52 46;
+  --cave-texte-600: 87 74 66;
+  --cave-texte-400: 154 138 126;
+  --cave-texte-200: 216 206 197;
+  --cave-texte-50: 245 240 234;
+
+  --ebc-straw: 242 193 78;
+  --ebc-straw-texte: 242 193 78;
+  --ebc-straw-bord: 242 193 78;
+  --sur-paille: 18 16 14;
+  --ebc-gold-texte: 224 160 46;
+  --ebc-amber-texte: 200 122 44;
+  --ebc-copper-texte: 181 120 91; /* #A0522D ne faisait que 2,97:1 sur cave-850 */
+
+  --area-production: 231 160 112;
+  --area-finances: 134 185 230;
+  --area-stocks: 163 201 122;
+  --area-agenda: 188 165 232;
+  --area-production-texte: 231 160 112;
+  --area-finances-texte: 134 185 230;
+  --area-stocks-texte: 163 201 122;
+  --area-agenda-texte: 188 165 232;
+
+  --attention: 227 181 93;
+  --attention-texte: 227 181 93;
+  --alert-strong: 242 146 137;
+  --alert-strong-texte: 242 146 137;
+  --alert: 214 69 61;
+  --alert-texte: 220 95 88; /* #D6453D : 3,80:1 sur cave-850 ; l'aplat garde sa valeur */
+  --hop: 110 155 91;
+  --hop-texte: 110 155 91;
+  --water: 91 138 166;
+  --water-texte: 94 140 168; /* #5B8AA6 : 4,48:1 sur cave-850 */
+
+  --marque: 154 138 126;
+  --repere: 242 193 78;
+  --repere-texte: 242 193 78;
+
+  --ombre-lift: 0.7;
+  --ombre-sheet: 0.8;
+  --theme-color: #12100e;
+}
+
+/* ---- Règles propres au clair (reprises de theme-maquettes.css) ---- */
+
+/* Un aplat d'action noir porte un texte blanc (l'app y pose text-cave-950, une encre sombre). */
+:root:not([data-theme='cave']) .bg-ebc-straw,
+:root:not([data-theme='cave']) .bg-ebc-straw * {
+  color: rgb(255 255 255);
+}
+/* Les boutons en dégradé paille → ambre deviennent l'action noire de ses maquettes. */
+:root:not([data-theme='cave']) .from-ebc-straw {
+  background-image: none;
+  background-color: rgb(var(--ebc-straw));
+  color: rgb(255 255 255);
+}
+/* Au survol, l'action noire s'éclaircit à peine au lieu de virer à l'or. */
+:root:not([data-theme='cave']) .hover\:bg-ebc-gold:hover,
+:root:not([data-theme='cave']) .hover\:from-ebc-gold:hover {
+  background-color: rgb(51 51 51);
+}
+:root:not([data-theme='cave']) .hover\:bg-ebc-gold:hover * {
+  color: rgb(255 255 255);
+}
+/* Sélection de texte : noire sur blanc. */
+:root:not([data-theme='cave']) ::selection {
+  background: rgb(17 17 17);
+  color: rgb(255 255 255);
+}
+
+/* Les chevrons dessinés par src/index.css passent à l'encre secondaire neutre. */
+:root:not([data-theme='cave']) summary:not(:has([class*='chevron'])) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+:root:not([data-theme='cave']) details[open] > summary:not(:has([class*='chevron'])) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
+}

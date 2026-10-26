@@ -26,6 +26,17 @@ Référence complète : `docs/agents/systeme.md`. Ce skill est la marche à suiv
    - **relecture hors interface → `relecteur` (Sonnet)**.
    `systeme.mjs mission` refuse une voie d'interface hors Opus ou Fable, et une relecture d'interface
    sans critique.
+   **Une voie de code** (`auteur`) **s'arrête à la preuve qui demande du jugement** :
+   - son code ;
+   - ses tests ;
+   - le build ;
+   - son contrôle, rouge puis vert.
+
+   La suite mécanique part dans une voie `executant` qui la suit : reconstruire la maquette, rejouer `controle-etats`,
+   l'émulateur, les captures avant et après, la copie propre. Le 26.10, trois voies Sonnet ont touché le plafond de 80 tours
+   dans cette queue mécanique : i2, avec l'émulateur et ses captures ; p5, avec la fidélité et la maquette ; g2c, avec la
+   mesure et les empreintes. Le plafond de l'auteur est passé à 120 tours. Il reste un garde-fou de dépense (L18), pas une
+   cible.
 4. Router chaque décision connue d'avance avec la grille de `docs/agents/systeme.md` § Décider
    (voie, pilote, conseil, brasseur, utilisateur). Si le lot fixe une direction que les suivants
    suivront (carte, nouvel outil, convention du moteur), réunir le conseil complet **avant**

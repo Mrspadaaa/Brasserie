@@ -1,0 +1,46 @@
+{
+ "casId": "mosaic@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "ad1488eb78adf004",
+ "simule": false,
+ "appel": 8,
+ "http": 200,
+ "latenceMs": 5855,
+ "finishReason": "STOP",
+ "jetonsEntree": 3821,
+ "jetonsSortie": 497,
+ "coutMicroChf": 11824,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c16\", \"phrase\": \"Taux d'acides alpha identiques et cohumulone très proche (25-28 %), offrant une amertume nette et propre tout à fait comparable à 60 minutes.\"},\n    {\"id\": \"c17\", \"phrase\": \"Taux d'alpha très similaire et cohumulone calquée à 25 %, assurant une amertume douce parfaitement interchangeable à l'ébullition.\"},\n    {\"id\": \"c12\", \"phrase\": \"Cohumulone identique (22-26 %) et alpha équivalents permettant d'obtenir la même texture d'amertume, malgré un potentiel d'alpha légèrement supérieur.\"},\n    {\"id\": \"c04\", \"phrase\": \"Fourchette d'acides alpha et taux de cohumulone superposables garantissant un niveau et une qualité d'amertume similaires à 60 minutes.\"},\n    {\"id\": \"c10\", \"phrase\": \"Alpha parfaitement alignés (11,9 %) et cohumulone légèrement plus haute assurant une amertume très proche sans rugosité excessive.\"},\n    {\"id\": \"c08\", \"phrase\": \"Cohumulone très basse et alpha similaires produisant une amertume fine et nette, idéale pour remplacer Mosaic au boil.\"},\n    {\"id\": \"c09\", \"phrase\": \"Teneur en alpha quasi identique, bien que sa cohumulone un peu plus haute apporte une amertume légèrement plus tranchante.\"},\n    {\"id\": \"c06\", \"phrase\": \"Acides alpha équivalents (11-14 %) convenant très bien pour le bittering, bien que le profil de cohumulone ne soit pas documenté.\"},\n    {\"id\": \"c01\", \"phrase\": \"Alpha strictement comparables assurant le bon calcul d'IBU à 60 minutes, même si la cohumulone reste inconnue.\"},\n    {\"id\": \"c20\", \"phrase\": \"Taux d'alpha très proche de Mosaic (12-13 %), avec une cohumulone un peu plus élevée procurant une amertume un peu plus mordante.\"}\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c16",
+   "c17",
+   "c12",
+   "c04",
+   "c10",
+   "c08",
+   "c09",
+   "c06",
+   "c01",
+   "c20"
+  ],
+  "phrases": {
+   "c16": "Taux d'acides alpha identiques et cohumulone très proche (25-28 %), offrant une amertume nette et propre tout à fait comparable à 60 minutes.",
+   "c17": "Taux d'alpha très similaire et cohumulone calquée à 25 %, assurant une amertume douce parfaitement interchangeable à l'ébullition.",
+   "c12": "Cohumulone identique (22-26 %) et alpha équivalents permettant d'obtenir la même texture d'amertume, malgré un potentiel d'alpha légèrement supérieur.",
+   "c04": "Fourchette d'acides alpha et taux de cohumulone superposables garantissant un niveau et une qualité d'amertume similaires à 60 minutes.",
+   "c10": "Alpha parfaitement alignés (11,9 %) et cohumulone légèrement plus haute assurant une amertume très proche sans rugosité excessive.",
+   "c08": "Cohumulone très basse et alpha similaires produisant une amertume fine et nette, idéale pour remplacer Mosaic au boil.",
+   "c09": "Teneur en alpha quasi identique, bien que sa cohumulone un peu plus haute apporte une amertume légèrement plus tranchante.",
+   "c06": "Acides alpha équivalents (11-14 %) convenant très bien pour le bittering, bien que le profil de cohumulone ne soit pas documenté.",
+   "c01": "Alpha strictement comparables assurant le bon calcul d'IBU à 60 minutes, même si la cohumulone reste inconnue.",
+   "c20": "Taux d'alpha très proche de Mosaic (12-13 %), avec une cohumulone un peu plus élevée procurant une amertume un peu plus mordante."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

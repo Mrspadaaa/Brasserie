@@ -61,7 +61,7 @@ export function HopAromaRadar({ prediction, axes, target, baseline }: { predicti
         <title>{axis.name} · échelle {hopRangeLabel(axis.scale)} · {r&&!completeScale(axis,r)?'simulation '+hopRangeLabel(r)+', confiance '+HOP_CONFIDENCE_LABELS[estimate.confidence]:'simulation indéterminée'}{baseline?' · conservé : '+(before&&!completeScale(axis,before)?hopRangeLabel(before):'indéterminé'):''}</title>
         <line x1="220" y1="190" x2={end[0]} y2={end[1]} stroke="currentColor" className="text-cave-700" strokeDasharray={center?undefined:'2 5'}/>
         {goalEnds&&<line data-aroma-goal x1={goalEnds[0]} y1={goalEnds[1]} x2={goalEnds[2]} y2={goalEnds[3]} stroke="currentColor" className="text-ebc-straw" strokeWidth="3" strokeLinecap="round"/>}
-        {previous[i]&&<circle data-aroma-baseline cx={previous[i]![0]} cy={previous[i]![1]} r="4" fill="#1A1613" stroke="currentColor" className="text-cave-400" strokeWidth="2"/>}
+        {previous[i]&&<circle data-aroma-baseline cx={previous[i]![0]} cy={previous[i]![1]} r="4" fill="rgb(var(--cave-900))" stroke="currentColor" className="text-cave-400" strokeWidth="2"/>}
         {center&&<circle data-aroma-point cx={center[0]} cy={center[1]} r="4" fill="currentColor" className="text-hop"/>}
         <text x={label[0]} y={label[1]-(lines.length-1)*11} textAnchor={anchor} dominantBaseline="middle" fill="currentColor" className={center?'text-cave-200':'text-cave-400'} fontSize="20">
           {lines.map((line,j)=><tspan key={j} x={label[0]} dy={j?22:0}>{line}</tspan>)}

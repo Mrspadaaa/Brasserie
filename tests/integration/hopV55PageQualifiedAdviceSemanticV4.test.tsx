@@ -32,6 +32,9 @@ import * as questionScopeReading from '../../src/services/hopV55/questionScopeRe
 import { reviseHopV55QuestionScopeLedgerV1 } from '../../src/services/hopV55/questionScopeReading';
 import { projectHopV55SemanticDecisionV1 } from '../../src/services/hopV55/decisionSemanticProjection';
 
+// Volume de calcul (validation canonique + SHA-256 de gros dossiers, jsdom) : aucun état à attendre, la durée dépend du CPU. Plafond explicite (#177).
+vi.setConfig({ testTimeout: 120_000 });
+
 // Keep the Page, Q09 parser, scope panel, advice controls, qualified-study panel,
 // host controllers, domain builders, archive readers and memory repositories real.
 // Only unrelated visual panels are isolated.
@@ -363,13 +366,13 @@ describe('Page V5.5 — étude qualifiée depuis une lecture sémantique V4', ()
     harness.failNextWorkspaceSave();
     const writesBeforePreparation = harness.save.mock.calls.length;
     fireEvent.click(within(controls).getByRole('button', { name: 'Préparer l’étude qualifiée' }));
-    const preparationError = await within(controls).findByRole('alert', {}, { timeout: 15000 });
+    const preparationError = await within(controls).findByRole('alert', {}, { timeout: 60000 });
     expect(preparationError.textContent).toBe('Échec transitoire du CAS workspace fixture.');
-    await waitFor(() => expect(harness.save).toHaveBeenCalledTimes(writesBeforePreparation + 1), { timeout: 15000 });
+    await waitFor(() => expect(harness.save).toHaveBeenCalledTimes(writesBeforePreparation + 1), { timeout: 60000 });
     expect((await harness.stored()).qualifiedStudyPreparations).toBeUndefined();
     expect(spies.adviceBuilder).toHaveBeenCalledTimes(1);
     fireEvent.click(within(controls).getByRole('button', { name: 'Réessayer la même demande' }));
-    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 15000 });
+    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 60000 });
 
     const preparedWorkspace = await harness.stored();
     const preparation = latestAdvicePreparation(preparedWorkspace);
@@ -436,7 +439,7 @@ describe('Page V5.5 — étude qualifiée depuis une lecture sémantique V4', ()
     expect(spies.parser).toHaveBeenCalledTimes(1);
 
     fireEvent.click(screen.getByRole('button', { name: 'Conserver cette étude de conseil' }));
-    await screen.findByText('Étude des emplois et matières conservée avec ses sources exactes.', {}, { timeout: 15000 });
+    await screen.findByText('Étude des emplois et matières conservée avec ses sources exactes.', {}, { timeout: 60000 });
     const linkedWorkspace = await harness.stored();
     const linkRead = readHopV55QualifiedStudyLink(linkedWorkspace.qualifiedStudyLinks?.[0]);
     expect(linkRead.status).toBe('available');
@@ -455,7 +458,7 @@ describe('Page V5.5 — étude qualifiée depuis une lecture sémantique V4', ()
     fireEvent.click(await screen.findByRole('button', { name: 'Historique' }));
     fireEvent.click(await screen.findByText(/Études produit et conseils qualifiés · 1/u));
     fireEvent.click(await screen.findByRole('button', { name: 'Relire cette étude exacte' }));
-    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 15000 });
+    await screen.findByRole('heading', { name: 'Comparer les voies pour cette question' }, { timeout: 60000 });
     expect(screen.getByText('Étude archivée')).toBeInTheDocument();
     const archivedCoverage = await screen.findByRole('region', { name: 'Couverture archivée de cette étude' });
     expect(archivedCoverage).toHaveTextContent('Quand avec ma levure, utiliser au mieux mes houblons');
@@ -465,7 +468,7 @@ describe('Page V5.5 — étude qualifiée depuis une lecture sémantique V4', ()
     expect(spies.scopeCoverageCalls.count).toBe(coverageCalls);
     expect(harness.qualifiedStudies.createCalls).toBe(createCalls);
     expect(await harness.stored()).toEqual(workspaceBeforeHistory);
-  }, 60000);
+  }, 240000);
 
   it.each([
     ['source', 'La recette exacte de cette étude n’est plus disponible'],
@@ -499,9 +502,9 @@ describe('Page V5.5 — étude qualifiée depuis une lecture sémantique V4', ()
     }
 
     fireEvent.click(screen.getByRole('button', { name: 'Préparer l’étude qualifiée' }));
-    await waitFor(() => expect(screen.getByTestId('hop-v55').textContent).toContain(expectedError), { timeout: 15000 });
+    await waitFor(() => expect(screen.getByTestId('hop-v55').textContent).toContain(expectedError), { timeout: 60000 });
     expect(spies.adviceBuilder).not.toHaveBeenCalled();
     expect((await harness.stored()).qualifiedStudyPreparations).toBeUndefined();
-  }, 45000);
+  }, 240000);
 });
 

@@ -1,0 +1,46 @@
+{
+ "casId": "callista@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "c1fbc1aa9e196fe6",
+ "simule": false,
+ "appel": 46,
+ "http": 200,
+ "latenceMs": 5625,
+ "finishReason": "STOP",
+ "jetonsEntree": 3671,
+ "jetonsSortie": 457,
+ "coutMicroChf": 11168,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c18\", \"phrase\": \"Taux d'acides alpha très proche et faible cohumulone garantissant une amertume aussi douce et fine que celle de Callista à 60 minutes.\"},\n    {\"id\": \"c03\", \"phrase\": \"Amérisant doux au taux d'alpha et de cohumulone bas très similaires, idéal pour reproduire l'amertume sans agressivité.\"},\n    {\"id\": \"c12\", \"phrase\": \"Teneur en alpha faible et profil doux d'origine allemande, parfait pour une amertume discrète malgré une cohumulone non renseignée.\"},\n    {\"id\": \"c01\", \"phrase\": \"Gamme d'alpha très voisine permettant de doser facilement une amertume modérée similaire en début d'ébullition.\"},\n    {\"id\": \"c08\", \"phrase\": \"Alpha modérés et cohumulone contenue assurant une amertume assez propre, bien que son potentiel aromatique soit ici sacrifié.\"},\n    {\"id\": \"c11\", \"phrase\": \"Acides alpha équivalents à Callista, mais sa cohumulone plus élevée risque d'apporter une amertume légèrement plus tranchante.\"},\n    {\"id\": \"c02\", \"phrase\": \"Alpha bas similaires, mais son taux de cohumulone très élevé donnera une amertume nettement plus incisive.\"},\n    {\"id\": \"c04\", \"phrase\": \"Teneur en alpha convenable pour le style, mais sa cohumulone importante durcit sensiblement le profil d'amertume.\"},\n    {\"id\": \"c05\", \"phrase\": \"Alpha bas compatibles avec le plan de houblonnage, compensés négativement par une cohumulone élevée qui altère la douceur.\"},\n    {\"id\": \"c10\", \"phrase\": \"Niveau d'alpha plus élevé nécessitant de réduire les doses, avec une cohumulone restant raisonnable pour un amérisant efficace.\"}\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c18",
+   "c03",
+   "c12",
+   "c01",
+   "c08",
+   "c11",
+   "c02",
+   "c04",
+   "c05",
+   "c10"
+  ],
+  "phrases": {
+   "c18": "Taux d'acides alpha très proche et faible cohumulone garantissant une amertume aussi douce et fine que celle de Callista à 60 minutes.",
+   "c03": "Amérisant doux au taux d'alpha et de cohumulone bas très similaires, idéal pour reproduire l'amertume sans agressivité.",
+   "c12": "Teneur en alpha faible et profil doux d'origine allemande, parfait pour une amertume discrète malgré une cohumulone non renseignée.",
+   "c01": "Gamme d'alpha très voisine permettant de doser facilement une amertume modérée similaire en début d'ébullition.",
+   "c08": "Alpha modérés et cohumulone contenue assurant une amertume assez propre, bien que son potentiel aromatique soit ici sacrifié.",
+   "c11": "Acides alpha équivalents à Callista, mais sa cohumulone plus élevée risque d'apporter une amertume légèrement plus tranchante.",
+   "c02": "Alpha bas similaires, mais son taux de cohumulone très élevé donnera une amertume nettement plus incisive.",
+   "c04": "Teneur en alpha convenable pour le style, mais sa cohumulone importante durcit sensiblement le profil d'amertume.",
+   "c05": "Alpha bas compatibles avec le plan de houblonnage, compensés négativement par une cohumulone élevée qui altère la douceur.",
+   "c10": "Niveau d'alpha plus élevé nécessitant de réduire les doses, avec une cohumulone restant raisonnable pour un amérisant efficace."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

@@ -1,0 +1,46 @@
+{
+ "casId": "cascade@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "d3cb7313bf46cfd1",
+ "simule": false,
+ "appel": 95,
+ "http": 200,
+ "latenceMs": 1921,
+ "finishReason": "STOP",
+ "jetonsEntree": 3793,
+ "jetonsSortie": 532,
+ "coutMicroChf": 3085,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Ahtanum partage le profil agrumes, pamplemousse et pin du Cascade, avec des notes florales proches mais un alpha un peu plus faible.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Tahoma offre un profil très proche en dry hop avec des notes de citron, pamplemousse et pin, mais un myrcène plus élevé.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Taiheke apporte les notes d'agrumes et de pamplemousse du Cascade, tout en ajoutant des nuances tropicales absentes chez l'original.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Zythos combine pamplemousse, agrumes et pin comme le Cascade, mais avec un alpha plus haut et un profil plus tropical.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Mandarina Bavaria partage le caractère agrumes du Cascade, mais se focalise sur la mandarine plutôt que sur le pamplemousse.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Herald propose des notes d'orange et de pamplemousse proches du Cascade, mais avec une intensité d'huile un peu différente.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Southern Cross conserve les notes de pin et de citron du Cascade, mais avec une puissance aromatique et un alpha supérieurs.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Motueka apporte agrumes et citron vert avec des thiols intéressants, s'éloignant toutefois du pamplemousse classique du Cascade.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Yakima Gold intègre pamplemousse et citron comme le Cascade, mais avec une huile totale plus faible et un usage plus doux.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Sasquatch évoque le citron et l'orange du Cascade, mais se distingue par des notes nettes de menthe en dry hop.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c17",
+   "c15",
+   "c05",
+   "c16",
+   "c02",
+   "c07",
+   "c10",
+   "c09",
+   "c12",
+   "c03"
+  ],
+  "phrases": {
+   "c17": "Ahtanum partage le profil agrumes, pamplemousse et pin du Cascade, avec des notes florales proches mais un alpha un peu plus faible.",
+   "c15": "Tahoma offre un profil très proche en dry hop avec des notes de citron, pamplemousse et pin, mais un myrcène plus élevé.",
+   "c05": "Taiheke apporte les notes d'agrumes et de pamplemousse du Cascade, tout en ajoutant des nuances tropicales absentes chez l'original.",
+   "c16": "Zythos combine pamplemousse, agrumes et pin comme le Cascade, mais avec un alpha plus haut et un profil plus tropical.",
+   "c02": "Mandarina Bavaria partage le caractère agrumes du Cascade, mais se focalise sur la mandarine plutôt que sur le pamplemousse.",
+   "c07": "Herald propose des notes d'orange et de pamplemousse proches du Cascade, mais avec une intensité d'huile un peu différente.",
+   "c10": "Southern Cross conserve les notes de pin et de citron du Cascade, mais avec une puissance aromatique et un alpha supérieurs.",
+   "c09": "Motueka apporte agrumes et citron vert avec des thiols intéressants, s'éloignant toutefois du pamplemousse classique du Cascade.",
+   "c12": "Yakima Gold intègre pamplemousse et citron comme le Cascade, mais avec une huile totale plus faible et un usage plus doux.",
+   "c03": "Sasquatch évoque le citron et l'orange du Cascade, mais se distingue par des notes nettes de menthe en dry hop."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

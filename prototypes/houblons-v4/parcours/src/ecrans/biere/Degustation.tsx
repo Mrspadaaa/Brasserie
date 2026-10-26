@@ -4,8 +4,8 @@
 // note la famille, le retoucher revient à « pas goûté » ; le radar au-dessus se redessine. La note au-dessus du style
 // passe à l'orangé, rien d'autre ne s'écrit. Classes préfixées pq-biere- (L26).
 import { COURT, Picto, ROUE } from '../../commun';
-import type { FamilyId } from '../../../../src/engine';
-import { NIVEAUX_DEGUSTATION, auDessus, type Note } from '../ma-biere/RadarBiere';
+import type { FamilyId } from '../../../../../../src/domain/hopIndex/v4';
+import { NIVEAUX_DEGUSTATION, auDessus, type Note } from '@app/ui/hopIndex/maBiere/RadarBiere';
 
 export function GrilleDegustation({ notes, haut, attendues, noter }: {
   notes: Record<FamilyId, Note>;

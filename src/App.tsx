@@ -10,7 +10,8 @@ import { ModalOpenerContext } from './ui/ModalShell';
 
 import type { WizardSeed } from './pages/BrewWizard';
 
-import { useFullScreenRoute } from './pages/useFullScreenRoute';
+import { useFullScreenRoute, type LayerRoute, type Route } from './pages/useFullScreenRoute';
+import { useHopPileDevHook } from './ui/hopIndex/devHook';
 import { CommandPalette, type CommandGroup } from './ui/CommandPalette';
 import { useStorageValue } from './hooks/useLiveData';
 import { FinancialArchiveService } from './services/financialArchiveService';
@@ -72,6 +73,15 @@ const StocksTab = lazy(() => import('./components/tabs/StocksTab').then(module =
 const ClientsTab = lazy(() => import('./components/tabs/ClientsTab').then(module => ({ default: module.ClientsTab })));
 const BrewWizard = lazy(() => import('./pages/BrewWizardEntry'));
 const HopV55Host = lazy(() => import('./ui/hopV55/Host').then(module => ({ default: module.HopV55Host })));
+// Écran provisoire des outils houblons v4 (#162) : atteint seulement par le crochet de développement tant que le
+// drapeau `hopV4` (src/ui/hopIndex/flags.ts) est éteint.
+// Une couche préchargée (precharge.ts) se rend d'un coup : la fabrique rend alors un thenable synchrone, car React garde sinon
+// 300 ms le repli de Suspense même quand le module est déjà là (mesuré : 311 ms à la première ouverture).
+type CoucheOutils = typeof import('./ui/hopIndex/HopToolLayer');
+let coucheOutils: CoucheOutils | undefined;
+const HopToolLayer = lazy(() => coucheOutils
+  ? ({ then: (ok: (m: CoucheOutils) => unknown) => ok(coucheOutils!) } as unknown as Promise<CoucheOutils>)
+  : import('./ui/hopIndex/HopToolLayer').then(m => (coucheOutils = m)));
 
 /**
  * Compte factice pour le DÉVELOPPEMENT LOCAL, et rien d'autre.
@@ -228,11 +238,34 @@ export const App: React.FC = () => {
    */
   const [createRequest, setCreateRequest] = useState<{ kind: FabIntent; at: number } | null>(null);
   const route = useFullScreenRoute();
+  /** Dernier rendu de la page de base, réemployé tel quel tant qu'une couche la couvre. */
+  const frozenBase = useRef<{ route: Route; element: React.ReactNode } | null>(null);
+  /*
+   * La pile (#162, D65) : la PAGE de base (onglets, recette, brassin, wizard) et, au-dessus, les COUCHES
+   * (atelier V5.5, outils houblons v4). La base reste montée sous les couches : le wizard garde son instance,
+   * son étape et son brouillon, sans repasser par la lecture du brouillon ni par `DraftFreshnessChoice`.
+   * Un crochet sans `pile` (faux crochet des tests) vaut une pile d'un seul étage : sa route est la base.
+   */
+  const routePile: Route[] = route.pile ?? [route.route];
+  const baseRoute: Route = route.base ?? route.route;
+  const layerRoutes: LayerRoute[] = route.layers ?? [];
+  const baseIndex = routePile.length - 1 - layerRoutes.length;
+  useHopPileDevHook({ open: route.open, close: route.close, closeTo: route.closeTo, pile: routePile });
+  // Outils houblons v4 (#167) : préchargés au repos, en ligne, drapeau allumé seulement ; rien sur le chemin du démarrage.
+  // Le drapeau est lu en clair : éteint, Vite retire tout le bloc (ni code ni requête) ; allumé, le programmateur est un petit
+  // chunk à part, demandé après le montage, qui attend la fin du chargement et un instant de repos avant de rien charger.
+  useEffect(() => {
+    if (import.meta.env.VITE_HOP_V4 !== 'on') return;
+    let annuler = () => {};
+    let demonte = false;
+    void import('./ui/hopIndex/precharge').then(m => { if (!demonte) annuler = m.prechargerOutilsAuRepos(c => { coucheOutils = c; }); });
+    return () => { demonte = true; annuler(); };
+  }, []);
   const [hopV55Journal, setHopV55Journal] = useState<{ batchId: string; journal: import('./types').BrewDayState }>();
   // A resolved background import should not still mount a Suspense fallback.
   // Lock the surface for this route so later data updates preserve local UI state.
   const RecipeSurface = useMemo(() => preparedRecipePage()?.RecipePage ?? RecipePage,
-    [route.route.view === 'recipe' ? route.route.recipeId : undefined]);
+    [baseRoute.view === 'recipe' ? baseRoute.recipeId : undefined]);
   const currentRoute = useRef(route.route);
   currentRoute.current = route.route;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -416,6 +449,25 @@ export const App: React.FC = () => {
       duplicate: !!duplicateOf, title: seed?.title, description: seed?.description });
   };
 
+  /*
+   * Banc local de l'étape Houblons (T12b, #170 ; contrôles de ses choix sur l'app, T14) : `?dev-local&etape=houblons`
+   * ouvre le wizard à l'étape 3 sur la recette de sa maquette (fixture), `&recette=vide` sur une recette neuve. Mêmes
+   * deux verrous que devLocalUser : `import.meta.env.DEV` (éliminé au build) et le compte dev-local ; une seule fois.
+   */
+  const apercuOuvert = useRef(false);
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      if (!isDevLocal || !isDataReady || apercuOuvert.current) return;
+      const q = new URLSearchParams(location.search);
+      if (q.get('etape') !== 'houblons') return;
+      apercuOuvert.current = true;
+      if (q.get('recette') === 'vide') { openWizard({ step: 'houblons' }); return; }
+      import('./ui/hopIndex/maBiere/apercuDev').then(({ recetteApercuEtapeHoublons }) =>
+        openWizard({ recipe: recetteApercuEtapeHoublons(), step: 'houblons' }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDevLocal, isDataReady]);
+
   /**
    * Le bouton + conserve l'action de création de l'écran courant
    * (article, recette, écriture…). Le compagnon dispose de son propre bouton.
@@ -456,14 +508,17 @@ export const App: React.FC = () => {
 
   // Déstructuré pour que TypeScript sache restreindre l'union : la
   // restriction ne traverse pas un accès de propriété (`route.route.view`).
+  // `view` : l'écran au premier plan ; `base` : la page restée montée sous les couches.
   const view = route.route;
-  const wizardDraftId = view.view === 'wizard' && view.recipeId
-    ? `${view.duplicate ? 'duplicate:' : ''}${view.recipeId}`
-    : view.view === 'wizard' && view.title ? `idea:${view.title}` : 'new';
+  const base = baseRoute;
+  const wizardDraftId = base.view === 'wizard' && base.recipeId
+    ? `${base.duplicate ? 'duplicate:' : ''}${base.recipeId}`
+    : base.view === 'wizard' && base.title ? `idea:${base.title}` : 'new';
   const routedRecipe =
-    view.view === 'recipe' ? recipes.find((r) => r.id === view.recipeId) : undefined;
+    base.view === 'recipe' ? recipes.find((r) => r.id === base.recipeId) : undefined;
   const routedBatch =
-    view.view === 'brewday' ? batches.find((b) => b.id === view.batchId) : undefined;
+    base.view === 'brewday' ? batches.find((b) => b.id === base.batchId) : undefined;
+  const baseCovered = layerRoutes.length > 0;
 
   /**
    * Ce dont le compagnon parle ici, affiché sous son entrée dans le menu.
@@ -688,6 +743,78 @@ export const App: React.FC = () => {
     );
   }
 
+  /*
+   * La page de base. Couverte par une couche, elle garde le MÊME élément React : React n'en refait ni le rendu ni le
+   * style (ouvrir une couche ne coûte que la couche), et son état vit tant qu'elle est montée. Découverte, elle
+   * reçoit de nouveau des props fraîches. Couverte, elle n'est jamais visible (couche opaque au-dessus, dans l'ordre
+   * du DOM) ni atteignable (PageShell rend inerte la branche sous la page du premier plan ; `aria-hidden` ici).
+   */
+  const baseContent = baseCovered && frozenBase.current?.route === base ? frozenBase.current.element : (
+    <LazySurface resetKey={base.view} fallback={<PageShell title="Chargement…" onClose={route.close}><p role="status">Ouverture de la page…</p></PageShell>}>
+    {routedRecipe && (
+      <RecipeSurface
+        key={routedRecipe.id}
+        recipe={routedRecipe}
+        batches={batches}
+        config={config}
+        onClose={route.close}
+        onEdit={() => openWizard({ recipe: routedRecipe })}
+        onDuplicate={() =>
+          openWizard({
+            recipe: {
+              ...routedRecipe,
+              archivedAt: null,
+              id: `REC-${Date.now().toString(36).toUpperCase()}`,
+              name: `${routedRecipe.name} (copie)`
+            }
+          }, routedRecipe.id)
+        }
+        onDelete={() => {
+          StorageService.deleteRecipe(routedRecipe.id);
+          showToast(`Recette « ${routedRecipe.name} » supprimée.`);
+          route.close();
+        }}
+        onBrew={() => { setBrewRecipeId(routedRecipe.id); setQuickAction('brew-batch'); }}
+        onOpenBatch={openBrewDay}
+        onOpenHopV55={() => route.open({ view: 'hopV55', recipeId: routedRecipe.id })}
+      />
+    )}
+  
+    {routedBatch && (
+      <BrewDayPage
+        key={routedBatch.id}
+        batch={routedBatch}
+        config={config}
+        stockItems={allStockItems}
+        onClose={route.close}
+        onSave={(b) => StorageService.updateBatch(b)}
+        onFinish={finishBrewDay}
+        onOpenHopV55={journal => { setHopV55Journal({ batchId: routedBatch.id, journal }); route.open({ view: 'hopV55', batchId: routedBatch.id }); }}
+      />
+    )}
+  
+    {base.view === 'wizard' && (
+      <BrewWizard
+        key={`${currentUser.uid}:${wizardDraftId}`}
+        draftKey={`${currentUser.uid}:${wizardDraftId}`}
+        ownerKey={currentUser.uid}
+        localOnly={isDevLocal}
+        seed={wizardSeed}
+        stockItems={allStockItems}
+        config={config}
+        onClose={route.close}
+        onCreateStockItem={createStockItem}
+        onLearnIngredient={learnIngredient}
+        onSaveWaterSource={saveWaterSource}
+        onSave={saveFromWizard}
+        writeError={writeError}
+        onDismissWriteError={() => setWriteError(null)}
+      />
+    )}
+    </LazySurface>
+  );
+  frozenBase.current = { route: base, element: baseContent };
+
   return (
     <div className="min-h-screen bg-cave-950 text-cave-50 flex flex-col font-sans">
       <BrewerActivity
@@ -857,7 +984,10 @@ export const App: React.FC = () => {
 
       {/* Le geste d'action : présent sur les onglets ET sur les pages plein écran,
           posé sur la case que la barre ou la page lui réserve. */}
-      <FloatingActions
+      {/* Une couche d'outil houblons v4 a son propre dock (Défi, Égaler, Valeurs…) : le lanceur flottant s'efface tant qu'elle
+          est ouverte (le « + » rond couvrait la colonne de Galaxy et « Placer »), et revient à sa fermeture. L'atelier V5.5
+          (hopV55) et le wizard (rangée endActions) gardent le lanceur. */}
+      {!layerRoutes.some(l => l.view !== 'hopV55') && <FloatingActions
         launcherRef={actionLauncherRef}
         // `quickAction` ne crée rien de propre à l'écran : il rouvrirait le
         // sommaire des saisies que le menu liste déjà en clair.
@@ -869,7 +999,7 @@ export const App: React.FC = () => {
         onSale={() => setQuickAction('quick-sale', actionLauncherRef.current)}
         onRecipe={() => openWizard()}
         onBrew={() => setQuickAction('brew-batch', actionLauncherRef.current)}
-      />
+      />}
 
       {/* Quick Action Modal (Scanner IA, Matching Stock interactif, Brassin, Vente) */}
       <ModalOpenerContext.Provider value={quickActionOpener.current}><DeferredSurface active={quickAction !== null} fallback={<Sheet open={quickAction !== null} title="Chargement…" onClose={() => setQuickAction(null)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal
@@ -919,74 +1049,31 @@ export const App: React.FC = () => {
           modales qu'elles remplacent. */}
 
       <HopV55SemanticAdviceCapabilityContext.Provider value={semanticAdviceCapability}>
-      <LazySurface resetKey={view.view} fallback={<PageShell title="Chargement…" onClose={route.close}><p role="status">Ouverture de la page…</p></PageShell>}>
-      {routedRecipe && (
-        <RecipeSurface
-          key={routedRecipe.id}
-          recipe={routedRecipe}
-          batches={batches}
-          config={config}
-          onClose={route.close}
-          onEdit={() => openWizard({ recipe: routedRecipe })}
-          onDuplicate={() =>
-            openWizard({
-              recipe: {
-                ...routedRecipe,
-                archivedAt: null,
-                id: `REC-${Date.now().toString(36).toUpperCase()}`,
-                name: `${routedRecipe.name} (copie)`
-              }
-            }, routedRecipe.id)
-          }
-          onDelete={() => {
-            StorageService.deleteRecipe(routedRecipe.id);
-            showToast(`Recette « ${routedRecipe.name} » supprimée.`);
-            route.close();
-          }}
-          onBrew={() => { setBrewRecipeId(routedRecipe.id); setQuickAction('brew-batch'); }}
-          onOpenBatch={openBrewDay}
-          onOpenHopV55={() => route.open({ view: 'hopV55', recipeId: routedRecipe.id })}
-        />
-      )}
+      {/* La base reste à la même place de l'arbre, couverte ou non : React garde son instance. Couverte, elle est
+          cachée (sans perdre sa mise en page ni son défilement) ; PageShell rend inerte la branche sous la couche. */}
+      <div data-route-base={base.view} aria-hidden={baseCovered || undefined} style={{ display: 'contents' }}>
+      {baseContent}
+      </div>
 
-      {routedBatch && (
-        <BrewDayPage
-          key={routedBatch.id}
-          batch={routedBatch}
-          config={config}
-          stockItems={allStockItems}
-          onClose={route.close}
-          onSave={(b) => StorageService.updateBatch(b)}
-          onFinish={finishBrewDay}
-          onOpenHopV55={journal => { setHopV55Journal({ batchId: routedBatch.id, journal }); route.open({ view: 'hopV55', batchId: routedBatch.id }); }}
-        />
-      )}
-
-      {view.view === 'hopV55' && <HopV55Host key={`${currentUser.uid}:${view.recipeId ?? view.batchId ?? 'explore'}`} ownerKey={currentUser.uid}
-        recipe={view.recipeId ? recipes.find(recipe => recipe.id === view.recipeId) : undefined}
-        batch={view.batchId ? batches.find(batch => batch.id === view.batchId) : undefined}
-        journal={view.batchId === hopV55Journal?.batchId ? hopV55Journal?.journal : undefined}
-        onClose={route.close} onOpenRecipe={openRecipe} writeError={writeError} onDismissWriteError={() => setWriteError(null)} />}
-
-      {view.view === 'wizard' && (
-        <BrewWizard
-          key={`${currentUser.uid}:${wizardDraftId}`}
-          draftKey={`${currentUser.uid}:${wizardDraftId}`}
-          ownerKey={currentUser.uid}
-          localOnly={isDevLocal}
-          seed={wizardSeed}
-          stockItems={allStockItems}
-          config={config}
-          onClose={route.close}
-          onCreateStockItem={createStockItem}
-          onLearnIngredient={learnIngredient}
-          onSaveWaterSource={saveWaterSource}
-          onSave={saveFromWizard}
-          writeError={writeError}
-          onDismissWriteError={() => setWriteError(null)}
-        />
-      )}
-      </LazySurface>
+      {/* Les couches, du bas vers le haut ; chacune garde sa place (clé = son niveau) et son chargement à part,
+          pour qu'une couche qui se charge ne masque pas celles du dessous. */}
+      {layerRoutes.map((layer, i) => {
+        const covered = i < layerRoutes.length - 1;
+        return (
+          <div key={`${baseIndex + 1 + i}:${layer.view}`} data-route-layer={layer.view} aria-hidden={covered || undefined}
+            style={{ display: 'contents' }}>
+            <LazySurface resetKey={layer.view} fallback={<PageShell title="Chargement…" onClose={route.close}><p role="status">Ouverture de la page…</p></PageShell>}>
+              {layer.view === 'hopV55'
+                ? <HopV55Host key={`${currentUser.uid}:${layer.recipeId ?? layer.batchId ?? 'explore'}`} ownerKey={currentUser.uid}
+                    recipe={layer.recipeId ? recipes.find(recipe => recipe.id === layer.recipeId) : undefined}
+                    batch={layer.batchId ? batches.find(batch => batch.id === layer.batchId) : undefined}
+                    journal={layer.batchId === hopV55Journal?.batchId ? hopV55Journal?.journal : undefined}
+                    onClose={route.close} onOpenRecipe={openRecipe} writeError={writeError} onDismissWriteError={() => setWriteError(null)} />
+                : <HopToolLayer route={layer} level={i + 1} onClose={route.close} />}
+            </LazySurface>
+          </div>
+        );
+      })}
       </HopV55SemanticAdviceCapabilityContext.Provider>
     </div>
   );

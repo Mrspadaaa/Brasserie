@@ -1,0 +1,46 @@
+{
+ "casId": "super-pride@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "8b90dc8b2f8c6251",
+ "simule": false,
+ "appel": 58,
+ "http": 200,
+ "latenceMs": 2100,
+ "finishReason": "STOP",
+ "jetonsEntree": 3804,
+ "jetonsSortie": 514,
+ "coutMicroChf": 3033,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Warrior offre un profil résineux et doux très proche de Super Pride, idéal pour une amertume propre à 60 minutes.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Millennium partage un profil résineux et herbacé adapté à l'ébullition, bien que son usage soit strictement amérisant.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Green Bullet apporte des notes résineuses et un alpha-acide proche, assurant une amertume cohérente malgré des nuances florales.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Dr. Rudi propose des notes de résine similaires, avec un taux d'alpha un peu plus bas mais un bon profil.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Topaz combine des notes résineuses et un fort taux d'alpha, convenant à l'amertume malgré des arômes fruités plus larges.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Magnat présente un taux d'alpha comparable et un usage dual, mais ses notes florales diffèrent nettement de la résine.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Sticklebract offre un usage dual et un bon alpha, mais s'oriente vers le pin et les agrumes plutôt que le fruité doux.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Southern Cross convient pour l'ébullition grâce à son alpha, mais ses notes citronnées s'écartent du profil original.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Bitter Gold couvre la plage d'alpha recherchée, mais son profil aromatique fruité et floral est plus complexe.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Vic Secret possède l'alpha requis pour l'ébullition, mais ses arômes tropicaux contrastent avec le profil doux et résineux.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c01",
+   "c13",
+   "c18",
+   "c07",
+   "c06",
+   "c12",
+   "c02",
+   "c20",
+   "c10",
+   "c15"
+  ],
+  "phrases": {
+   "c01": "Warrior offre un profil résineux et doux très proche de Super Pride, idéal pour une amertume propre à 60 minutes.",
+   "c13": "Millennium partage un profil résineux et herbacé adapté à l'ébullition, bien que son usage soit strictement amérisant.",
+   "c18": "Green Bullet apporte des notes résineuses et un alpha-acide proche, assurant une amertume cohérente malgré des nuances florales.",
+   "c07": "Dr. Rudi propose des notes de résine similaires, avec un taux d'alpha un peu plus bas mais un bon profil.",
+   "c06": "Topaz combine des notes résineuses et un fort taux d'alpha, convenant à l'amertume malgré des arômes fruités plus larges.",
+   "c12": "Magnat présente un taux d'alpha comparable et un usage dual, mais ses notes florales diffèrent nettement de la résine.",
+   "c02": "Sticklebract offre un usage dual et un bon alpha, mais s'oriente vers le pin et les agrumes plutôt que le fruité doux.",
+   "c20": "Southern Cross convient pour l'ébullition grâce à son alpha, mais ses notes citronnées s'écartent du profil original.",
+   "c10": "Bitter Gold couvre la plage d'alpha recherchée, mais son profil aromatique fruité et floral est plus complexe.",
+   "c15": "Vic Secret possède l'alpha requis pour l'ébullition, mais ses arômes tropicaux contrastent avec le profil doux et résineux."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

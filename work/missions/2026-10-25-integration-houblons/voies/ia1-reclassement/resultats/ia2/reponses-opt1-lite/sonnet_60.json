@@ -1,0 +1,46 @@
+{
+ "casId": "sonnet@60",
+ "pool": "opt1",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "4810dd294fa4448b",
+ "simule": false,
+ "appel": 10,
+ "http": 200,
+ "latenceMs": 1892,
+ "finishReason": "STOP",
+ "jetonsEntree": 3681,
+ "jetonsSortie": 487,
+ "coutMicroChf": 2903,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Proche par ses acides alpha et ses notes florales et citronnées, bien que l'East Kent Goldings apporte plus de complexité herbacée.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Le Golding offre un profil doux et floral très proche, idéal pour l'ébullition malgré un usage aroma.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Le Styrian Golding partage le profil noble, terreux et doux, avec des acides alpha similaires pour l'amertume.\"\n    },\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Sussex propose des acides alpha proches et des notes terreuses et agrumes, séparé par une touche mentholée.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Willamette est un houblon dual aux acides alpha comparables, unissant des notes florales et douces proches du Sonnet.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Celeia offre un profil noble, floral et terreux avec des acides alpha adaptés, mais moins de douceur mielleuse.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"WGV possède des acides alpha un peu plus hauts et des notes terreuses et fruitées proches du profil originel.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Triskel apporte des notes florales et fruitées, avec des acides alpha un peu plus larges mais acceptables.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Aurum présente un profil doux, floral et herbacé, proche par ses acides alpha modérés.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Hallertau Tradition offre des acides alpha corrects pour l'ébullition et des notes terreuses et douces.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c09",
+   "c14",
+   "c07",
+   "c02",
+   "c08",
+   "c10",
+   "c17",
+   "c03",
+   "c18",
+   "c20"
+  ],
+  "phrases": {
+   "c09": "Proche par ses acides alpha et ses notes florales et citronnées, bien que l'East Kent Goldings apporte plus de complexité herbacée.",
+   "c14": "Le Golding offre un profil doux et floral très proche, idéal pour l'ébullition malgré un usage aroma.",
+   "c07": "Le Styrian Golding partage le profil noble, terreux et doux, avec des acides alpha similaires pour l'amertume.",
+   "c02": "Sussex propose des acides alpha proches et des notes terreuses et agrumes, séparé par une touche mentholée.",
+   "c08": "Willamette est un houblon dual aux acides alpha comparables, unissant des notes florales et douces proches du Sonnet.",
+   "c10": "Celeia offre un profil noble, floral et terreux avec des acides alpha adaptés, mais moins de douceur mielleuse.",
+   "c17": "WGV possède des acides alpha un peu plus hauts et des notes terreuses et fruitées proches du profil originel.",
+   "c03": "Triskel apporte des notes florales et fruitées, avec des acides alpha un peu plus larges mais acceptables.",
+   "c18": "Aurum présente un profil doux, floral et herbacé, proche par ses acides alpha modérés.",
+   "c20": "Hallertau Tradition offre des acides alpha corrects pour l'ébullition et des notes terreuses et douces."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

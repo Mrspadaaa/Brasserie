@@ -12,7 +12,7 @@ import { fruty } from '../../../tests/fixtures/fruty';
 import { hotBitterness } from '../../../src/domain/hopBitterness';
 import { yeastRecipeBoilOg, yeastRecipeComputedOg } from '../../../src/domain/yeastProjection';
 import type { Recipe } from '../../../src/types';
-import { appliquerPatch, idAjout, toHopRecipe, versPatch } from '../parcours/src/integration/conversion';
+import { appliquerPatchHoublons as appliquerPatch, idAjout, toHopRecipe, versPatch } from '../../../src/domain/hopIndex/v4/recipeConversion';
 import { configurerDonnees, lireBiere } from '../parcours/src/moteur';
 import { changerDose, changerMoment, remplacer } from '../parcours/src/etat/operations';
 
@@ -77,19 +77,22 @@ describe('Conversion de la recette de l’app (B5)', () => {
     expect(lireBiere(toHopRecipe(app, { boilOg: boilOgApp(app) }).recette).ibu.valeur).toBeCloseTo(ibuPage, 9);
   });
 
-  it('α inconnu → inconnu, jamais 0 (à chaud : IBU inconnu ; à froid : α null)', () => {
+  it('α du lot absent (0, « non saisi ») → plage de la variété, jamais 0 ni « inconnu » (t12c) ; inconnu seulement hors du moteur', () => {
     const app = companionRecipe();
     app.hops[0] = { ...app.hops[0], alpha: 0 };
     const conv = toHopRecipe(app, { boilOg: boilOgApp(app) });
-    expect(conv.recette.additions[0].alphaLot).toBeNull();
+    expect(conv.recette.additions[0].alphaLot).toBeUndefined();
     const biere = lireBiere(conv.recette);
-    expect(biere.ibuParAjout.a1.ibu).toBeNull();
-    expect(biere.ibuParAjout.a1.raison).toMatch(/^α du lot inconnu/);
-    expect(biere.ibu.inconnus).toContain('a1');
-    expect(ibuApp(app).total).toBeNull();
-    // Dry hop à α 0 (Ariana de « Fruty », Mandarina de la Weissbier) : α null, pas 0.
-    expect(toHopRecipe(fruty()).recette.additions[0].alphaLot).toBeNull();
-    expect(toHopRecipe(yeastFlowRecipe()).recette.additions[1].alphaLot).toBeNull();
+    expect(biere.ibuParAjout.a1.ibu).not.toBeNull();
+    expect(biere.ibuParAjout.a1.ibu!.max).toBeGreaterThan(biere.ibuParAjout.a1.ibu!.min);
+    expect(biere.ibu.inconnus).not.toContain('a1');
+    expect(ibuApp(app).total).toBeNull(); // la page recette garde sa convention (α ≤ 0 = pas de lot)
+    // Une variété que le moteur ne connaît pas : α inconnu, IBU inconnu (jamais un 0).
+    const inconnue = companionRecipe();
+    inconnue.hops[0] = { ...inconnue.hops[0], name: 'Houblon maison XYZ', hopVarietyId: undefined, alpha: 0 };
+    const b2 = lireBiere(toHopRecipe(inconnue, { boilOg: boilOgApp(inconnue) }).recette);
+    expect(b2.ibuParAjout.a1.ibu).toBeNull();
+    expect(b2.ibu.inconnus).toContain('a1');
   });
 
   it('DI inconnue → IBU à chaud inconnus, jamais calculés sur 1,050', () => {

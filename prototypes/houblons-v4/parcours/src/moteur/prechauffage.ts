@@ -3,7 +3,8 @@
 // par moment de repos du navigateur (requestIdleCallback). Le toucher trouve alors le résultat dans les caches de
 // l'adaptateur. Rien ne change à l'écran : mêmes fonctions, mêmes arguments, mêmes résultats.
 // Les appels sont journalisés sous « prechauffage:<nom> » (mesure.ts), hors des recalculs que comptent les contrôles.
-// Dans l'app : ces tâches partent dans un Web Worker (ARCHITECTURE.md, « ## Performance ») ; le principe ne change pas.
+// Les voies de Suggérer (voiesDe sans calculs) passent par le client asynchrone (client.ts, #165) : servi par un worker,
+// le client garde la réponse préchauffée, et l'écran ouvert d'un toucher la lit sans attendre (aucun état d'attente).
 import { enPrechauffage } from './mesure';
 
 export type Tache = () => unknown;

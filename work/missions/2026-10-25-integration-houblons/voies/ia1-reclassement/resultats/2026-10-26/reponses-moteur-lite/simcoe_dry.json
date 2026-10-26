@@ -1,0 +1,46 @@
+{
+ "casId": "simcoe@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.5-flash-lite",
+ "modeleObserve": "gemini-3.5-flash-lite",
+ "promptVersion": "v1",
+ "empreinteRequete": "975081b80f800325",
+ "simule": false,
+ "appel": 93,
+ "http": 200,
+ "latenceMs": 1900,
+ "finishReason": "STOP",
+ "jetonsEntree": 4036,
+ "jetonsSortie": 511,
+ "coutMicroChf": 3111,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Zythos partage le profil agrumes et pin du Simcoe mais manque de complexité terreuse et de notes d'abricot.\"\n    },\n    {\n      \"id\": \"c12\",\n      \"phrase\": \"Falconer's Flight imite bien le pamplemousse et le pin du Simcoe avec une intensité fruitée légèrement plus tropicale.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Idaho 7 offre des notes résineuses et d'agrumes proches du Simcoe, mais avec plus de fruits tropicaux et de cassis.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Mosaic se rapproche du Simcoe par son pin et ses agrumes, bien qu'il apporte des notes distinctes de myrtille.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Strata combine le pamplemousse du Simcoe avec des touches herbacées, mais se sépare par un profil très dank.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Southern Cross évoque le pin et les agrumes du Simcoe mais se distingue par des notes plus nettes de citron.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Hydra présente des agrumes et une résine proches du Simcoe, tout en variant vers la pastèque et la pêche.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Talus garde le pamplemousse et le pin du Simcoe mais introduit des notes florales et de crème inhabituelles.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Vic Secret partage le pin du Simcoe mais s'oriente fortement vers l'ananas et le fruit de la passion.\"\n    },\n    {\n      \"id\": \"c18\",\n      \"phrase\": \"Galaxy offre la puissance aromatique recherchée mais remplace le pin du Simcoe par une explosion de fruits de la passion.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c09",
+   "c12",
+   "c01",
+   "c04",
+   "c06",
+   "c16",
+   "c03",
+   "c07",
+   "c11",
+   "c18"
+  ],
+  "phrases": {
+   "c09": "Zythos partage le profil agrumes et pin du Simcoe mais manque de complexité terreuse et de notes d'abricot.",
+   "c12": "Falconer's Flight imite bien le pamplemousse et le pin du Simcoe avec une intensité fruitée légèrement plus tropicale.",
+   "c01": "Idaho 7 offre des notes résineuses et d'agrumes proches du Simcoe, mais avec plus de fruits tropicaux et de cassis.",
+   "c04": "Mosaic se rapproche du Simcoe par son pin et ses agrumes, bien qu'il apporte des notes distinctes de myrtille.",
+   "c06": "Strata combine le pamplemousse du Simcoe avec des touches herbacées, mais se sépare par un profil très dank.",
+   "c16": "Southern Cross évoque le pin et les agrumes du Simcoe mais se distingue par des notes plus nettes de citron.",
+   "c03": "Hydra présente des agrumes et une résine proches du Simcoe, tout en variant vers la pastèque et la pêche.",
+   "c07": "Talus garde le pamplemousse et le pin du Simcoe mais introduit des notes florales et de crème inhabituelles.",
+   "c11": "Vic Secret partage le pin du Simcoe mais s'oriente fortement vers l'ananas et le fruit de la passion.",
+   "c18": "Galaxy offre la puissance aromatique recherchée mais remplace le pin du Simcoe par une explosion de fruits de la passion."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

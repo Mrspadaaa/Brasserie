@@ -1,0 +1,46 @@
+{
+ "casId": "whitbread-golding-variety-wgv@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "af29dc3902dfd331",
+ "simule": false,
+ "appel": 30,
+ "http": 200,
+ "latenceMs": 6173,
+ "finishReason": "STOP",
+ "jetonsEntree": 3665,
+ "jetonsSortie": 490,
+ "coutMicroChf": 11466,
+ "texte": "{\n  \"classement\": [\n    {\"id\": \"c09\", \"phrase\": \"Taux d'acides alpha et cohumulone quasi identiques au WGV, assurant une amertume et un profil terreux très proches à 60 minutes.\"},\n    {\"id\": \"c15\", \"phrase\": \"Un profil d'acides alpha et de cohumulone très similaire issu du terroir britannique, garantissant une amertume tout aussi douce et ronde.\"},\n    {\"id\": \"c16\", \"phrase\": \"Taux d'alpha très proche et niveau de cohumulone comparable, offrant un rendu d'amertume et une base terreuse équivalents en ébullition.\"},\n    {\"id\": \"c12\", \"phrase\": \"Variété anglaise aux alpha très similaires et cohumulone modérée, parfaite pour reproduire le tranchant d'amertume classique du WGV.\"},\n    {\"id\": \"c04\", \"phrase\": \"Cohumulone élevée très proche de celle du WGV pour un impact d'amertume similaire, bien que ses alpha légèrement supérieurs demandent d'ajuster le dosage.\"},\n    {\"id\": \"c07\", \"phrase\": \"Taux d'alpha et de cohumulone comparables, fournissant une amertume franche et propre tout à fait adaptée à une ébullition de 60 minutes.\"},\n    {\"id\": \"c01\", \"phrase\": \"Gamme d'acides alpha équivalente produisant une amertume propre, bien que son taux de cohumulone soit légèrement plus faible.\"},\n    {\"id\": \"c08\", \"phrase\": \"Très similaire à la version allemande avec des alpha comparables, il offre une amertume noble équilibrée malgré une cohumulone un peu inférieure.\"},\n    {\"id\": \"c05\", \"phrase\": \"Alpha identiques et terroir anglais commun, mais sa cohumulone nettement plus basse donnera une amertume légèrement plus douce et ronde.\"},\n    {\"id\": \"c17\", \"phrase\": \"Alpha proches et cohumulone modérée pour ce classique britannique, conférant une amertume propre et structurée facile à doser.\"}\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c09",
+   "c15",
+   "c16",
+   "c12",
+   "c04",
+   "c07",
+   "c01",
+   "c08",
+   "c05",
+   "c17"
+  ],
+  "phrases": {
+   "c09": "Taux d'acides alpha et cohumulone quasi identiques au WGV, assurant une amertume et un profil terreux très proches à 60 minutes.",
+   "c15": "Un profil d'acides alpha et de cohumulone très similaire issu du terroir britannique, garantissant une amertume tout aussi douce et ronde.",
+   "c16": "Taux d'alpha très proche et niveau de cohumulone comparable, offrant un rendu d'amertume et une base terreuse équivalents en ébullition.",
+   "c12": "Variété anglaise aux alpha très similaires et cohumulone modérée, parfaite pour reproduire le tranchant d'amertume classique du WGV.",
+   "c04": "Cohumulone élevée très proche de celle du WGV pour un impact d'amertume similaire, bien que ses alpha légèrement supérieurs demandent d'ajuster le dosage.",
+   "c07": "Taux d'alpha et de cohumulone comparables, fournissant une amertume franche et propre tout à fait adaptée à une ébullition de 60 minutes.",
+   "c01": "Gamme d'acides alpha équivalente produisant une amertume propre, bien que son taux de cohumulone soit légèrement plus faible.",
+   "c08": "Très similaire à la version allemande avec des alpha comparables, il offre une amertume noble équilibrée malgré une cohumulone un peu inférieure.",
+   "c05": "Alpha identiques et terroir anglais commun, mais sa cohumulone nettement plus basse donnera une amertume légèrement plus douce et ronde.",
+   "c17": "Alpha proches et cohumulone modérée pour ce classique britannique, conférant une amertume propre et structurée facile à doser."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

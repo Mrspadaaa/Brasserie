@@ -1,0 +1,46 @@
+{
+ "casId": "motueka@dry",
+ "pool": "opt1",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "bfa6d47e98c302b0",
+ "simule": false,
+ "appel": 81,
+ "http": 200,
+ "latenceMs": 7244,
+ "finishReason": "STOP",
+ "jetonsEntree": 3889,
+ "jetonsSortie": 585,
+ "coutMicroChf": 12777,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c02\",\n      \"phrase\": \"Ce cousin néo-zélandais partage l'ADN aromatique du Motueka avec ses notes intenses de citron vert, d'agrumes tropicaux et son profil d'huiles très proche.\"\n    },\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"L'association rare d'agrumes, de citron et de menthe fraîche rappelle parfaitement le profil mojito emblématique du Motueka pour un dry hopping expressif.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Autre néo-zélandais riche en agrumes vifs et citron vert, bien qu'il apporte une touche résineuse et épicée un peu plus prononcée.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Même terroir néo-zélandais offrant de puissantes notes de fruits tropicaux et d'agrumes, mais avec un côté pamplemousse et passion plus lourd.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Il capture l'arôme de citron vert et possède un taux élevé de farnésène similaire au Motueka, complété par de douces notes florales.\"\n    },\n    {\n      \"id\": \"c09\",\n      \"phrase\": \"Sélection néo-zélandaise centrée sur le citron et le citron vert, toutefois plus rustique et épicée que l'aromatique vive du Motueka.\"\n    },\n    {\n      \"id\": \"c08\",\n      \"phrase\": \"Sa teneur remarquable en farnésène et sa note franche de citron vert imitent bien la fraîcheur du Motueka, malgré une nuance boisée supplémentaire.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Classique américain offrant un équilibre agrumes et floral très efficace, mais tirant nettement sur le pamplemousse plutôt que sur la limette.\"\n    },\n    {\n      \"id\": \"c13\",\n      \"phrase\": \"Ce blend délivre une belle synergie de fruits tropicaux et de citron en dry hop, bien qu'il manque l'aspect mojito herbacé.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Il apporte une facette citron vert intéressante au dry hop, mais orientera le profil final vers les petits fruits rouges.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c02",
+   "c15",
+   "c05",
+   "c03",
+   "c16",
+   "c09",
+   "c08",
+   "c01",
+   "c13",
+   "c11"
+  ],
+  "phrases": {
+   "c02": "Ce cousin néo-zélandais partage l'ADN aromatique du Motueka avec ses notes intenses de citron vert, d'agrumes tropicaux et son profil d'huiles très proche.",
+   "c15": "L'association rare d'agrumes, de citron et de menthe fraîche rappelle parfaitement le profil mojito emblématique du Motueka pour un dry hopping expressif.",
+   "c05": "Autre néo-zélandais riche en agrumes vifs et citron vert, bien qu'il apporte une touche résineuse et épicée un peu plus prononcée.",
+   "c03": "Même terroir néo-zélandais offrant de puissantes notes de fruits tropicaux et d'agrumes, mais avec un côté pamplemousse et passion plus lourd.",
+   "c16": "Il capture l'arôme de citron vert et possède un taux élevé de farnésène similaire au Motueka, complété par de douces notes florales.",
+   "c09": "Sélection néo-zélandaise centrée sur le citron et le citron vert, toutefois plus rustique et épicée que l'aromatique vive du Motueka.",
+   "c08": "Sa teneur remarquable en farnésène et sa note franche de citron vert imitent bien la fraîcheur du Motueka, malgré une nuance boisée supplémentaire.",
+   "c01": "Classique américain offrant un équilibre agrumes et floral très efficace, mais tirant nettement sur le pamplemousse plutôt que sur la limette.",
+   "c13": "Ce blend délivre une belle synergie de fruits tropicaux et de citron en dry hop, bien qu'il manque l'aspect mojito herbacé.",
+   "c11": "Il apporte une facette citron vert intéressante au dry hop, mais orientera le profil final vers les petits fruits rouges."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

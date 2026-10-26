@@ -1,0 +1,46 @@
+{
+ "casId": "magnum-us@dry",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "7cd708f95265f4d1",
+ "simule": false,
+ "appel": 37,
+ "http": 200,
+ "latenceMs": 5444,
+ "finishReason": "STOP",
+ "jetonsEntree": 3770,
+ "jetonsSortie": 556,
+ "coutMicroChf": 12282,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Partage le profil floral, agrumes et le poivre noir distinctif du Magnum US, avec une intensité aromatique idéale pour un dry hop.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Son équilibre floral, agrumes et épicé rappelle parfaitement Magnum US, bien qu'il contienne une fraction d'humulène un peu plus basse.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Offre des notes florales, d'agrumes et d'épices très cohérentes, tout en développant une facette légèrement plus noble et anisée.\"\n    },\n    {\n      \"id\": \"c04\",\n      \"phrase\": \"Reproduit le côté floral et épicé avec une bonne présence d'agrumes, mais apportera des touches de fruits tropicaux absentes chez Magnum.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Rejoint Magnum sur les agrumes et les épices sèches, avec une richesse en huiles similaire, malgré des nuances de tabac supplémentaires.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Partage cette trame florale, épicée et zestée typique, bien que sa palette aromatique globale soit un peu plus délicate.\"\n    },\n    {\n      \"id\": \"c11\",\n      \"phrase\": \"Excellente proximité sur le floral et les agrumes, complétée par une touche de pin plutôt que de poivre noir.\"\n    },\n    {\n      \"id\": \"c06\",\n      \"phrase\": \"Son niveau élevé d'humulène et ses notes florales et épicées conviennent bien, malgré une fraîcheur citronnée plus marquée.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Apporte la fraîcheur florale et les agrumes attendus, bien qu'il manque de la complexité épicée et poivrée de la référence.\"\n    },\n    {\n      \"id\": \"c19\",\n      \"phrase\": \"Délivre les notes d'agrumes et de fleurs voulues avec des teneurs en huiles correctes, mais reste plus unidimensionnel en bouche.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c10",
+   "c07",
+   "c20",
+   "c04",
+   "c03",
+   "c05",
+   "c11",
+   "c06",
+   "c01",
+   "c19"
+  ],
+  "phrases": {
+   "c10": "Partage le profil floral, agrumes et le poivre noir distinctif du Magnum US, avec une intensité aromatique idéale pour un dry hop.",
+   "c07": "Son équilibre floral, agrumes et épicé rappelle parfaitement Magnum US, bien qu'il contienne une fraction d'humulène un peu plus basse.",
+   "c20": "Offre des notes florales, d'agrumes et d'épices très cohérentes, tout en développant une facette légèrement plus noble et anisée.",
+   "c04": "Reproduit le côté floral et épicé avec une bonne présence d'agrumes, mais apportera des touches de fruits tropicaux absentes chez Magnum.",
+   "c03": "Rejoint Magnum sur les agrumes et les épices sèches, avec une richesse en huiles similaire, malgré des nuances de tabac supplémentaires.",
+   "c05": "Partage cette trame florale, épicée et zestée typique, bien que sa palette aromatique globale soit un peu plus délicate.",
+   "c11": "Excellente proximité sur le floral et les agrumes, complétée par une touche de pin plutôt que de poivre noir.",
+   "c06": "Son niveau élevé d'humulène et ses notes florales et épicées conviennent bien, malgré une fraîcheur citronnée plus marquée.",
+   "c01": "Apporte la fraîcheur florale et les agrumes attendus, bien qu'il manque de la complexité épicée et poivrée de la référence.",
+   "c19": "Délivre les notes d'agrumes et de fleurs voulues avec des teneurs en huiles correctes, mais reste plus unidimensionnel en bouche."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}

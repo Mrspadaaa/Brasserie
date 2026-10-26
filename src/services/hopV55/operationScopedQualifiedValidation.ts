@@ -177,9 +177,43 @@ function isPlainCanonicalData(value: unknown, active = new WeakSet<object>(), ch
   return true;
 }
 
+/**
+ * Pure content memo for the fast path above (r177, #177). A reference is a function of the
+ * canonical content only, so a hit is returned only after `sameCanonicalData` proves the input
+ * equal to a private, frozen clone whose reference was computed by the same code. Identity is
+ * never trusted: a mutated or fresh-from-storage object is simply compared again, which is far
+ * cheaper than serialising and hashing it. Bounded; the clones are never handed out.
+ */
+const REFERENCE_MEMO_LIMIT = 8;
+const referenceMemo: Array<{ prefix: string; snapshot: unknown; reference: string }> = [];
+
+function memoizedReference(prefix: string, value: unknown): string | undefined {
+  for (let index = 0; index < referenceMemo.length; index++) {
+    const row = referenceMemo[index];
+    if (row.prefix !== prefix) continue;
+    let same = false;
+    try { same = sameCanonicalData(value, row.snapshot); } catch { same = false; }
+    if (!same) continue;
+    if (index > 0) { referenceMemo.splice(index, 1); referenceMemo.unshift(row); }
+    return row.reference;
+  }
+  return undefined;
+}
+
+function rememberReference(prefix: string, value: unknown, reference: string): void {
+  try {
+    const snapshot = structuredClone(value);
+    if (!deepFreeze(snapshot) || !sameCanonicalData(value, snapshot)) return;
+    referenceMemo.unshift({ prefix, snapshot, reference });
+    if (referenceMemo.length > REFERENCE_MEMO_LIMIT) referenceMemo.length = REFERENCE_MEMO_LIMIT;
+  } catch { /* Not clonable or not plain: no memo, the strict path stays. */ }
+}
+
 export function hopV55QualifiedContentReference(prefix: string, value: unknown): string {
   const unsupported = Symbol('not-plain-canonical-data');
   try {
+    const known = memoizedReference(prefix, value);
+    if (known !== undefined) return known;
     if (!isPlainCanonicalData(value)) throw unsupported;
     const references = new Map<string, Array<{ value: object; canonical: string }>>();
     const active = new WeakSet<object>();
@@ -229,6 +263,8 @@ export function hopV55QualifiedContentReference(prefix: string, value: unknown):
     const serialized = canonical(value);
     if (serialized === undefined) throw unsupported;
     const digest = sha256(new TextEncoder().encode(serialized));
-    return `${prefix}:sha256:${Array.from(digest, byte => byte.toString(16).padStart(2, '0')).join('')}`;
+    const reference = `${prefix}:sha256:${Array.from(digest, byte => byte.toString(16).padStart(2, '0')).join('')}`;
+    rememberReference(prefix, value, reference);
+    return reference;
   } catch { return hopAdviceContentReference(prefix, value); }
 }

@@ -1,0 +1,46 @@
+{
+ "casId": "galaxy@60",
+ "pool": "moteur",
+ "modele": "gemini-3.8-flash",
+ "modeleObserve": "gemini-3.8-flash",
+ "promptVersion": "v1",
+ "empreinteRequete": "f693a79f909be8d9",
+ "simule": false,
+ "appel": 10,
+ "http": 200,
+ "latenceMs": 5719,
+ "finishReason": "STOP",
+ "jetonsEntree": 3738,
+ "jetonsSortie": 566,
+ "coutMicroChf": 12315,
+ "texte": "{\n  \"classement\": [\n    {\n      \"id\": \"c15\",\n      \"phrase\": \"Taux d'alpha similaires et profil de cohumulone élevé parfaitement équivalent, idéal pour reproduire l'amertume tranchante du Galaxy à 60 minutes.\"\n    },\n    {\n      \"id\": \"c05\",\n      \"phrase\": \"Houblon purement amérisant affichant exactement la même teneur en alpha et cohumulone, apportant un profil d'amertume très fidèle.\"\n    },\n    {\n      \"id\": \"c03\",\n      \"phrase\": \"Destiné à l'amertume avec une cohumulone comparable et un potentiel d'alpha identique, garantissant une amertume nette et propre.\"\n    },\n    {\n      \"id\": \"c16\",\n      \"phrase\": \"Teneur en alpha et cohumulone de 35 % très proches, assurant une intensité d'amertume quasi identique à 60 minutes.\"\n    },\n    {\n      \"id\": \"c14\",\n      \"phrase\": \"Excellente correspondance en alpha et cohumulone élevée, reproduisant fidèlement le mordant caractéristique de l'amertume du Galaxy.\"\n    },\n    {\n      \"id\": \"c17\",\n      \"phrase\": \"Origine australienne et niveau de cohumulone très semblable, bien que ses acides alpha légèrement plus élevés demandent un léger réajustement.\"\n    },\n    {\n      \"id\": \"c01\",\n      \"phrase\": \"Cohumulone similaire et même terroir australien, mais ses alpha légèrement supérieurs nécessitent de doser avec un peu plus de modération.\"\n    },\n    {\n      \"id\": \"c10\",\n      \"phrase\": \"Taux d'acides alpha et de cohumulone très proches, garantissant une amertume comparable malgré un usage orienté arôme.\"\n    },\n    {\n      \"id\": \"c20\",\n      \"phrase\": \"Plage de cohumulone adéquate et niveau d'alpha suffisant pour extraire une amertume similaire après 60 minutes d'ébullition.\"\n    },\n    {\n      \"id\": \"c07\",\n      \"phrase\": \"Teneur en acides alpha équivalente, fournissant une amertume d'intensité similaire malgré un niveau de cohumulone un peu plus modéré.\"\n    }\n  ]\n}",
+ "analyse": {
+  "valide": true,
+  "ordre": [
+   "c15",
+   "c05",
+   "c03",
+   "c16",
+   "c14",
+   "c17",
+   "c01",
+   "c10",
+   "c20",
+   "c07"
+  ],
+  "phrases": {
+   "c15": "Taux d'alpha similaires et profil de cohumulone élevé parfaitement équivalent, idéal pour reproduire l'amertume tranchante du Galaxy à 60 minutes.",
+   "c05": "Houblon purement amérisant affichant exactement la même teneur en alpha et cohumulone, apportant un profil d'amertume très fidèle.",
+   "c03": "Destiné à l'amertume avec une cohumulone comparable et un potentiel d'alpha identique, garantissant une amertume nette et propre.",
+   "c16": "Teneur en alpha et cohumulone de 35 % très proches, assurant une intensité d'amertume quasi identique à 60 minutes.",
+   "c14": "Excellente correspondance en alpha et cohumulone élevée, reproduisant fidèlement le mordant caractéristique de l'amertume du Galaxy.",
+   "c17": "Origine australienne et niveau de cohumulone très semblable, bien que ses acides alpha légèrement plus élevés demandent un léger réajustement.",
+   "c01": "Cohumulone similaire et même terroir australien, mais ses alpha légèrement supérieurs nécessitent de doser avec un peu plus de modération.",
+   "c10": "Taux d'acides alpha et de cohumulone très proches, garantissant une amertume comparable malgré un usage orienté arôme.",
+   "c20": "Plage de cohumulone adéquate et niveau d'alpha suffisant pour extraire une amertume similaire après 60 minutes d'ébullition.",
+   "c07": "Teneur en acides alpha équivalente, fournissant une amertume d'intensité similaire malgré un niveau de cohumulone un peu plus modéré."
+  },
+  "erreurs": []
+ },
+ "erreurReseau": null
+}
