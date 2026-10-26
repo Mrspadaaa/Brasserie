@@ -886,3 +886,18 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   attestées par au moins une source, et toutes les formes produit rattachées à leur variété. Rien n'est exclu à l'entrée. Ce qui a peu
   de données est marqué « peu de données », et ce qui n'est plus vendu est marqué « non commercialisé » si une source le dit. Le tri
   et les exclusions se font dans les écrans, par des règles écrites (D90), et le plus tard possible (D175).
+- D100 (l'utilisateur, 26.10, vers 15 h 45), réponses mot pour mot :
+  - « Je fais le test à l'aveugle moteur contre IA (10 houblons, environ 0,1 CHF) ? Tu as un budget de 0.5chf » ;
+  - « Je fais l'essai de l'IA dans Suggérer (30 appels, environ 0,1 CHF) ? Tu as un budget de 0.5 » ;
+  - « Je fusionne la PR #183 dans main ? oui » ;
+  - « J'écris les nouvelles données dans le catalogue Firestore ? oui » ;
+  - « Je teste l'app dans ton Chrome, en lecture seule ? oui ».
+
+  Exécution :
+  - PR #183 fusionnée dans main le 26.10, commit de fusion 59702c18, état CLEAN.
+  - Remis à la reprise, à cause du quota hebdomadaire à 99 % :
+    - le test à l'aveugle, à 0,5 CHF au plus ;
+    - l'essai et la production de l'IA dans Suggérer, à 0,5 CHF au plus pour l'essai ;
+    - l'écriture du catalogue Firestore : d'abord un script, un essai sur émulateur, une sauvegarde, puis l'écriture ;
+    - le test dans son Chrome, en lecture seule, sans jamais cliquer sur +, −, ×, Ajouter, Appliquer, Placer, Remplacer, Abandonner,
+      Enregistrer, Supprimer ni Modifier.

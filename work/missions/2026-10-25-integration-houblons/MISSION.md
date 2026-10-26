@@ -229,11 +229,11 @@ Le contexte de cette session était à 50 % (500 k) : reprendre dans une **sessi
   Ma bière.
 - Choisir le défaut de départage des ex æquo (k1 ou k3, D91), à lui montrer dans q2b.
 
-### Questions posées au brasseur, sans réponse
+### Questions posées au brasseur (réponses du 26.10 : D100 ; PR #183 fusionnée, 59702c18)
 - Sa recette a-t-elle des ajouts à 15, 20 ou 30′ ? C'est la cause probable des barres hachurées ; D177 prévoit d'interpoler.
-- Le test à l'aveugle moteur contre IA : 10 houblons, environ 0,1 CHF.
-- L'essai de l'IA dans Suggérer : 30 appels, environ 0,1 CHF, puis la production.
-- Fusionner la PR #183 ; écrire dans le catalogue Firestore ; tester dans son Chrome en lecture seule.
+- Test à l’aveugle moteur contre IA : ACCORDÉ (budget 0,5 CHF), à faire.
+- Essai de l’IA dans Suggérer : ACCORDÉ (budget 0,5 CHF), puis production, à faire.
+- PR #183 FUSIONNÉE (59702c18). Écrire les nouvelles données dans le catalogue Firestore : ACCORDÉ (script, émulateur, sauvegarde, puis écriture). Test dans son Chrome en lecture seule : ACCORDÉ.
 - Choix encore ouverts sur ses pages : m1 (farnésène, cohumulone), m4 (remplaçants à 60′). Choix faits : m5 (D), m6 (M1 + M2 + IA,
   avec réserves).
 
