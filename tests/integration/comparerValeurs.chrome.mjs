@@ -36,13 +36,28 @@ const fiches = JSON.parse(fs.readFileSync(path.join(process.env.CATALOGUE_RACINE
 const deFiche = (id, c) => (fiches[id]?.composes?.[c]?.valeurs ?? []).some((v) => (!v.portee || v.portee === 'variété') && v.plage.some((x) => x != null));
 const ok = (c, m) => { if (!c) echecs.push(m); console.log(c ? 'OK   ' : 'ECHEC', m); };
 
+// d3b : les requêtes du morceau des compléments, par chargement de page. Une page peut se recharger toute seule en développement (Vite
+// ré-optimise ses dépendances et recharge) : « une fois par chargement de page » se compte donc par document, pas sur toute la session.
 const requetes = [];
-page.on('requestfinished', (r) => { if (/complements[^/]*.json/.test(r.url())) requetes.push(r.url().split('/').pop().slice(0, 50)); });
+let doc = 0, charge = false;
+// Un nouveau document = une requête de navigation du cadre principal (les changements d'URL par l'historique n'en font pas).
+page.on('request', (r) => { if (r.isNavigationRequest() && r.frame() === page.mainFrame()) { doc++; charge = false; } });
+page.on('load', () => { charge = true; });
+page.on('request', (r) => { if (r.url().includes('complements') && r.url().includes('.json')) requetes.push({ doc, avantLoad: !charge, url: r.url().split('/').slice(3).join('/').slice(0, 70) }); });
 await page.goto(`${base}/?dev-local&etape=houblons`, { waitUntil: 'networkidle0' });
 await page.waitForSelector('[data-ecran="ma-biere"]', { timeout: 120000 });
 await dormir(800);
+// d3b : le lancement au repos (precharge.ts : requestIdleCallback après le chargement de la page, 10 s au plus) demande le morceau tout seul :
+// on attend qu'il soit demandé, SANS ouvrir Comparer, puis on ouvre Comparer et on vérifie qu'il ne l'attend pas.
+const t0Repos = Date.now();
+while (!requetes.some((q) => q.doc === doc) && Date.now() - t0Repos < 14000) await dormir(100);
+const auRepos = requetes.filter((q) => q.doc === doc).length;
+console.log('morceau des compléments, au repos, avant d’ouvrir Comparer :', JSON.stringify(requetes), '· délai', Date.now() - t0Repos, 'ms');
+await dormir(600); // le temps d'arriver et d'être lu
+await page.evaluate(() => { window.__attenteVue = false; new MutationObserver(() => { if (document.querySelector('[data-role="comparer-attente"]')) window.__attenteVue = true; }).observe(document.body, { childList: true, subtree: true }); });
 await page.evaluate((h) => window.__hopPile.open({ view: 'hopCompare', hops: h }), HOUBLONS);
 await page.waitForSelector('[data-ecran="comparer"] [data-moment]', { timeout: 90000 });
+const attenteVue = await page.evaluate(() => window.__attenteVue);
 await dormir(1200);
 await page.click('[data-etat~="etat-comp-chimie"]');
 await page.waitForSelector('.pq-comparer-vraies', { timeout: 30000 });
@@ -160,10 +175,13 @@ for (const champ of ['geraniol', 'selinene', 'linalol']) {
   });
 }
 ok(nbComp > 0 || TRIO === 'saaz', `complements.json : au moins une valeur de ce trio vient des compléments seuls (${nbComp})`);
-// Rien ne change sous le doigt : au premier rendu de l'écran, le morceau des compléments était déjà arrivé (l'écran l'attend, 600 ms au plus).
-const chunk = requetes;
-console.log('morceau des compléments :', JSON.stringify(chunk));
-ok(chunk.length === 1, 'le morceau complements est chargé à l’ouverture de Comparer (chargement à la demande)');
+// Le morceau est demandé au repos (pas dans le démarrage), une seule fois par chargement de page, et Comparer s'ouvre sans l'attendre.
+console.log('morceau des compléments :', JSON.stringify(requetes));
+ok(requetes.length > 0 && requetes.every((q) => !q.avantLoad), 'le morceau complements n’est dans aucune requête du démarrage (aucune avant l’évènement load de la page)');
+ok(auRepos > 0, 'le morceau complements est demandé au repos, sans ouvrir Comparer (precharge.ts)');
+const parDoc = {}; for (const q of requetes) parDoc[q.doc] = (parDoc[q.doc] ?? 0) + 1;
+ok(Object.values(parDoc).every((n) => n === 1), `le morceau complements est demandé une seule fois par chargement de page (par document : ${JSON.stringify(parDoc)})`);
+ok(!attenteVue, 'Comparer s’ouvre sans attendre le morceau (aucun « Chargement de cet atelier… » vu)');
 
 // ---- o1 : la composition des huiles, une ligne par huile nommée (D154) ----
 // Une huile a une valeur pour un houblon si le catalogue (Beer Maverick, Hopsteiner) ou une fiche de composés la porte.

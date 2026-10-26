@@ -69,3 +69,14 @@ Lecture : aucune régression mesurable. L'écart entre séries (≈ 40 ms) est d
 - `comparerValeurs.chrome.mjs` : OK en 390, `--large`, `--trio saaz --large` (dev, `?dev-local`).
 - `npx vitest run tests/unit/hopIndexV4 tests/unit/designTokens.test.ts` : 47 fichiers, 365 tests verts, `moteurInchange` compris (le total a augmenté : d'autres voies ont ajouté des tests).
 - `npm run build` vert ; B5 148,3 ko gzip tenu ; morceau `complements-CicB0H6c.js` toujours à part ; `audit_inputs` : `INPUT PROTECTION AUDIT PASSED`.
+
+## Suite 2 (26.10) : l'assertion « morceau chargé à l'ouverture » réécrite, et les deux requêtes expliquées
+
+- **Les deux requêtes `complements.json?import` : un artefact de Vite en développement, pas un double chargement.** Le contrôle comptait les requêtes sur toute la session ; or le serveur de dev recharge la page une ou deux fois quand il ré-optimise ses dépendances. Preuve : en comptant par document (une requête de navigation du cadre principal = un nouveau document), un `npm run dev -- --force` donne `{"2":1,"3":1}` : une requête par document, deux documents. Sans `--force` : une requête, un document (6 rejeux). `chargerComplements()` partage déjà une seule promesse et `lancerComplements()` ne relance pas pendant un chargement : rien à dédoublonner dans `complements-ui.ts`. Build du banc (mesuré avec la sonde de la série précédente) : une seule demande de `complements-*.js`, au repos, rien d'ouvert.
+- **Assertion réécrite** (`comparerValeurs.chrome.mjs`, quatre contrôles) :
+  1. aucune requête du morceau avant l'évènement `load` du document (il n'est pas dans le démarrage) ;
+  2. il est demandé au repos, sans ouvrir Comparer (attente jusqu'à 14 s du lancement de `precharge.ts`, puis 0,6 s pour qu'il arrive) ;
+  3. une seule requête par document (`Object.values(par document).every(n => n === 1)`), une page rechargée par Vite n'est plus une erreur ;
+  4. Comparer s'ouvre sans attendre : un `MutationObserver` posé avant l'ouverture ne voit jamais « Chargement de cet atelier… ».
+  Le compteur de documents est fait avec `request.isNavigationRequest()` : mon premier essai comptait `framenavigated`, qui se déclenche aussi pour les changements d'URL de l'historique (faux « avant load »).
+- **Rejeux** : `COMPARER VALEURS OK` 3 fois de suite en 390, puis 3 fois en `--large` (serveur de dev sans `--force`) ; avec `--force` : OK aussi (2 documents).
