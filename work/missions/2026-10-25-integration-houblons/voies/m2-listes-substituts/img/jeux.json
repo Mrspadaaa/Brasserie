@@ -1,0 +1,453 @@
+[
+ {
+  "houblon": "Nelson Sauvin",
+  "colonne": "a",
+  "image": "nelson-sauvin-a.png",
+  "hauteur": 1036,
+  "alpha": [
+   10,
+   13
+  ],
+  "usage": "aroma"
+ },
+ {
+  "houblon": "Nelson Sauvin",
+  "colonne": "b",
+  "image": "nelson-sauvin-b.png",
+  "hauteur": 1036,
+  "alpha": [
+   10,
+   13
+  ],
+  "usage": "aroma"
+ },
+ {
+  "houblon": "Nelson Sauvin",
+  "colonne": "c",
+  "image": "nelson-sauvin-c.png",
+  "hauteur": 1036,
+  "alpha": [
+   10,
+   13
+  ],
+  "usage": "aroma"
+ },
+ {
+  "houblon": "Nelson Sauvin",
+  "colonne": "d",
+  "image": "nelson-sauvin-d.png",
+  "hauteur": 1036,
+  "alpha": [
+   10,
+   13
+  ],
+  "usage": "aroma"
+ },
+ {
+  "houblon": "Motueka",
+  "colonne": "a",
+  "image": "motueka-a.png",
+  "hauteur": 940,
+  "alpha": [
+   5,
+   8.5
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Motueka",
+  "colonne": "b",
+  "image": "motueka-b.png",
+  "hauteur": 940,
+  "alpha": [
+   5,
+   8.5
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Motueka",
+  "colonne": "c",
+  "image": "motueka-c.png",
+  "hauteur": 940,
+  "alpha": [
+   5,
+   8.5
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Motueka",
+  "colonne": "d",
+  "image": "motueka-d.png",
+  "hauteur": 940,
+  "alpha": [
+   5,
+   8.5
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Citra",
+  "colonne": "a",
+  "image": "citra-a.png",
+  "hauteur": 972,
+  "alpha": [
+   10,
+   15
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Citra",
+  "colonne": "b",
+  "image": "citra-b.png",
+  "hauteur": 972,
+  "alpha": [
+   10,
+   15
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Citra",
+  "colonne": "c",
+  "image": "citra-c.png",
+  "hauteur": 972,
+  "alpha": [
+   10,
+   15
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Citra",
+  "colonne": "d",
+  "image": "citra-d.png",
+  "hauteur": 972,
+  "alpha": [
+   10,
+   15
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Galaxy",
+  "colonne": "a",
+  "image": "galaxy-a.png",
+  "hauteur": 1068,
+  "alpha": [
+   11,
+   16
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Galaxy",
+  "colonne": "b",
+  "image": "galaxy-b.png",
+  "hauteur": 1068,
+  "alpha": [
+   11,
+   16
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Galaxy",
+  "colonne": "c",
+  "image": "galaxy-c.png",
+  "hauteur": 1068,
+  "alpha": [
+   11,
+   16
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Galaxy",
+  "colonne": "d",
+  "image": "galaxy-d.png",
+  "hauteur": 1068,
+  "alpha": [
+   11,
+   16
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Saaz (CZ)",
+  "colonne": "a",
+  "image": "saaz-cz-a.png",
+  "hauteur": 1052,
+  "alpha": [
+   2,
+   5
+  ],
+  "usage": "aroma"
+ },
+ {
+  "houblon": "Saaz (CZ)",
+  "colonne": "b",
+  "image": "saaz-cz-b.png",
+  "hauteur": 1052,
+  "alpha": [
+   2,
+   5
+  ],
+  "usage": "aroma"
+ },
+ {
+  "houblon": "Saaz (CZ)",
+  "colonne": "c",
+  "image": "saaz-cz-c.png",
+  "hauteur": 1052,
+  "alpha": [
+   2,
+   5
+  ],
+  "usage": "aroma"
+ },
+ {
+  "houblon": "Saaz (CZ)",
+  "colonne": "d",
+  "image": "saaz-cz-d.png",
+  "hauteur": 1052,
+  "alpha": [
+   2,
+   5
+  ],
+  "usage": "aroma"
+ },
+ {
+  "houblon": "Mosaic",
+  "colonne": "a",
+  "image": "mosaic-a.png",
+  "hauteur": 908,
+  "alpha": [
+   11.5,
+   13.5
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Mosaic",
+  "colonne": "b",
+  "image": "mosaic-b.png",
+  "hauteur": 908,
+  "alpha": [
+   11.5,
+   13.5
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Mosaic",
+  "colonne": "c",
+  "image": "mosaic-c.png",
+  "hauteur": 908,
+  "alpha": [
+   11.5,
+   13.5
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Mosaic",
+  "colonne": "d",
+  "image": "mosaic-d.png",
+  "hauteur": 908,
+  "alpha": [
+   11.5,
+   13.5
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Simcoe",
+  "colonne": "a",
+  "image": "simcoe-a.png",
+  "hauteur": 1068,
+  "alpha": [
+   11,
+   15
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Simcoe",
+  "colonne": "b",
+  "image": "simcoe-b.png",
+  "hauteur": 1068,
+  "alpha": [
+   11,
+   15
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Simcoe",
+  "colonne": "c",
+  "image": "simcoe-c.png",
+  "hauteur": 1068,
+  "alpha": [
+   11,
+   15
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Simcoe",
+  "colonne": "d",
+  "image": "simcoe-d.png",
+  "hauteur": 1068,
+  "alpha": [
+   11,
+   15
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Cascade",
+  "colonne": "a",
+  "image": "cascade-a.png",
+  "hauteur": 1052,
+  "alpha": [
+   4.5,
+   9
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Cascade",
+  "colonne": "b",
+  "image": "cascade-b.png",
+  "hauteur": 1052,
+  "alpha": [
+   4.5,
+   9
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Cascade",
+  "colonne": "c",
+  "image": "cascade-c.png",
+  "hauteur": 1052,
+  "alpha": [
+   4.5,
+   9
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Cascade",
+  "colonne": "d",
+  "image": "cascade-d.png",
+  "hauteur": 1052,
+  "alpha": [
+   4.5,
+   9
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Fuggle",
+  "colonne": "a",
+  "image": "fuggle-a.png",
+  "hauteur": 844,
+  "alpha": [
+   2.4,
+   6.1
+  ],
+  "usage": "aroma"
+ },
+ {
+  "houblon": "Fuggle",
+  "colonne": "b",
+  "image": "fuggle-b.png",
+  "hauteur": 844,
+  "alpha": [
+   2.4,
+   6.1
+  ],
+  "usage": "aroma"
+ },
+ {
+  "houblon": "Fuggle",
+  "colonne": "c",
+  "image": "fuggle-c.png",
+  "hauteur": 844,
+  "alpha": [
+   2.4,
+   6.1
+  ],
+  "usage": "aroma"
+ },
+ {
+  "houblon": "Magnum (US)",
+  "colonne": "a",
+  "image": "magnum-us-a.png",
+  "hauteur": 844,
+  "alpha": [
+   10,
+   16
+  ],
+  "usage": "bittering"
+ },
+ {
+  "houblon": "Magnum (US)",
+  "colonne": "b",
+  "image": "magnum-us-b.png",
+  "hauteur": 844,
+  "alpha": [
+   10,
+   16
+  ],
+  "usage": "bittering"
+ },
+ {
+  "houblon": "Magnum (US)",
+  "colonne": "c",
+  "image": "magnum-us-c.png",
+  "hauteur": 844,
+  "alpha": [
+   10,
+   16
+  ],
+  "usage": "bittering"
+ },
+ {
+  "houblon": "Willamette",
+  "colonne": "a",
+  "image": "willamette-a.png",
+  "hauteur": 844,
+  "alpha": [
+   4,
+   7.2
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Willamette",
+  "colonne": "b",
+  "image": "willamette-b.png",
+  "hauteur": 844,
+  "alpha": [
+   4,
+   7.2
+  ],
+  "usage": "dual"
+ },
+ {
+  "houblon": "Willamette",
+  "colonne": "c",
+  "image": "willamette-c.png",
+  "hauteur": 844,
+  "alpha": [
+   4,
+   7.2
+  ],
+  "usage": "dual"
+ }
+]
