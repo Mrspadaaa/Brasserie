@@ -130,6 +130,7 @@ const RAISONS = {
   's-pdf-ordre': ['suspect', 'fiche PDF appariée par l\'ordre du flux, non recoupée par une autre source'],
 };
 for (const c of COMPOSES_HUILE) RAISONS[`s-copie-${c}`] = ['suspect', `même valeur que ${CHAMPS[c].libelle}`];
+for (let n = 3; n <= 20; n++) RAISONS[`s-consensus-${n}`] = ['suspect', `hors du consensus de ${n} sources`];
 
 // ───────────────────────── Lecture d'une valeur ─────────────────────────
 const num = (x) => (typeof x === 'number' && Number.isFinite(x) ? x : null);
@@ -338,6 +339,22 @@ const milieu = (x) => (x.lo != null && x.hi != null ? (x.lo + x.hi) / 2 : x.lo ?
 const mediane = (l) => { const t = [...l].sort((a, b) => a - b); const m = t.length >> 1; return t.length % 2 ? t[m] : (t[m - 1] + t[m]) / 2; };
 const aberrantes = [];
 const pdfNonRecoupees = [];
+// Règle de consensus (s1, 26.10). Les copies ne comptent pas : HopDatabase et hops-json recopient d'autres sources ; les fiches HPA PDF et celles de John I. Haas
+// sont les mêmes fiches (une seule voix, « haas »). Une source qui a plusieurs fiches (Crosby : variété et produits) ne compte aussi qu'une fois.
+const COPIES = new Set(['hopdatabase', 'hopsjson']);
+const famille = (x) => { const s = listeSources[x.sid]; return s === 'johnihaas' || (s === 'hpa' && x.pdf) ? 'haas' : s; };
+/** Nombre maximal de voix distinctes (autres que celle de x) qui se recoupent en un même point, si x ne recoupe aucune d'elles ; sinon 0. */
+function consensusContre(x, valeurs, fam) {
+  const autres = valeurs.filter((y) => fam(y) !== fam(x));
+  if (autres.length < 3 || autres.some((y) => RECOUPE(x, y))) return 0;
+  let best = 0;
+  for (const p of new Set(autres.flatMap((y) => [y.lo ?? 0, y.hi ?? y.lo]))) {
+    best = Math.max(best, new Set(autres.filter((y) => (y.lo ?? 0) <= p && p <= (y.hi ?? Infinity)).map(fam)).size);
+  }
+  return best;
+}
+const consensusListe = [];
+const consensusSauvees = [];
 for (const [id, fv] of [...varietes.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
   for (const [canon, liste] of fv.champs) {
     const confirmantes = liste.filter((x) => !x.code && !x.pdf);
@@ -356,6 +373,22 @@ for (const [id, fv] of [...varietes.entries()].sort((a, b) => a[0].localeCompare
       const ratio = Math.max(m / med, med / m);
       if (ratio > 3) { x.nouveau = x.nouveau ?? 's-ecart'; aberrantes.push({ id, canon, x, med, ratio, nSources: new Set(apres.map((y) => y.sid)).size }); }
     }
+    // Règle de consensus : une valeur qui ne recoupe aucune autre source, alors qu'au moins 3 autres sources se recoupent en un même point.
+    const pairs = apres.filter((x) => !COPIES.has(listeSources[x.sid]));
+    for (const x of pairs) {
+      const best = consensusContre(x, pairs, famille);
+      if (best < 3) continue;
+      const autres = pairs.filter((y) => famille(y) !== famille(x));
+      const med = mediane(autres.map(milieu));
+      const m = milieu(x);
+      const ratio = med > 0 && m > 0 ? Math.max(m / med, med / m) : null;
+      const deja = x.nouveau === 's-ecart';
+      x.nouveau = x.nouveau ?? `s-consensus-${best}`;
+      consensusListe.push({ id, canon, x, med, ratio, n: best, deja });
+    }
+    // Mesure témoin : le même calcul si les copies comptaient pour des sources distinctes (fiches HPA et John I. Haas séparées, HopDatabase et hops-json comptés).
+    const tous = apres;
+    for (const x of tous) if (consensusContre(x, tous, (y) => y.sid) >= 3 && consensusContre(x, pairs, famille) < 3 && !x.nouveau) consensusSauvees.push({ id, canon, x });
   }
 }
 for (const fv of varietes.values()) for (const liste of fv.champs.values()) for (const x of liste) if (x.nouveau) { x.code = x.nouveau; delete x.nouveau; }
@@ -544,7 +577,22 @@ L();
 const copies = suspectsListe.filter((s) => s.code.startsWith('s-copie-'));
 L(`Copies de colonne (${copies.length}) : ${copies.slice(0, 40).map((s) => `${s.source} ${parId.get(s.id).name} ${CHAMPS[s.champ].libelle} ${plage(s.lo, s.hi)} (${RAISONS[s.code][1]})`).join(' ; ')}${copies.length > 40 ? ' ; …' : ''}.`);
 L();
-const cas = [['hopslist', 'beermaverick-nelson-sauvin', 'farnesene'], ['hpa', 'beermaverick-citra', 'farnesene'], ['hpa', 'beermaverick-mosaic', 'farnesene'], ['hpa', 'beermaverick-mosaic', 'myrcene']];
+L('### Règle de consensus (ajoutée après s1)');
+L();
+const enPlus = consensusListe.filter((a) => !a.deja);
+L('Une valeur dont l\'intervalle ne recoupe celui d\'aucune autre source, alors qu\'au moins 3 autres sources se recoupent en un même point, devient suspecte : « hors du consensus de n sources ». Ne comptent pas dans le consensus : HopDatabase et hops-json (copies d\'autres sources, de toute façon hors enveloppe faute d\'unité) ; les fiches HPA PDF et John I. Haas comptent pour une seule voix (mêmes fiches) ; une source qui a plusieurs fiches (Crosby) compte une fois.');
+L();
+L(`- Valeurs écartées par le consensus : **${consensusListe.length}**, dont **${enPlus.length} de plus** que la règle d'écart (${consensusListe.length - enPlus.length} l'étaient déjà), sur ${new Set(consensusListe.map((a) => `${a.id}|${a.canon}`)).size} couples variété × champ.`);
+L(`- Témoin : si les copies comptaient comme des sources distinctes, **${consensusSauvees.length} valeurs de plus** seraient écartées à tort ; elles restent valides.${consensusSauvees.length ? ` Exemples : ${consensusSauvees.slice(0, 8).map((a) => `${parId.get(a.id).name} ${CHAMPS[a.canon].libelle} ${listeSources[a.x.sid]} ${plage(a.x.lo, a.x.hi)}`).join(' ; ')}.` : ''}`);
+L();
+L(`Les plus fortes (30 au plus, par rapport au milieu de la valeur à la médiane des autres ; il y en a ${consensusListe.length}) :`);
+L();
+L('| Variété | Champ | Source | Valeur | Médiane des autres | Rapport | Consensus | Déjà écartée par l\'écart |');
+L('|---|---|---|---|---:|---:|---:|---|');
+consensusListe.sort((a, b) => (b.ratio ?? 0) - (a.ratio ?? 0) || b.n - a.n || a.id.localeCompare(b.id) || a.canon.localeCompare(b.canon) || a.x.sid - b.x.sid);
+for (const a of consensusListe.slice(0, 30)) L(`| ${parId.get(a.id).name} | ${CHAMPS[a.canon].libelle} | ${listeSources[a.x.sid]} | ${plage(a.x.lo, a.x.hi)} | ${fmt(a.med)} | ${a.ratio ? `×${a.ratio.toFixed(1).replace('.', ',')}` : '·'} | ${a.n} sources | ${a.deja ? 'oui' : 'non'} |`);
+L();
+const cas = [['bsg', 'beermaverick-citra', 'beta'], ['hopslist', 'beermaverick-nelson-sauvin', 'farnesene'], ['hpa', 'beermaverick-citra', 'farnesene'], ['hpa', 'beermaverick-mosaic', 'farnesene'], ['hpa', 'beermaverick-mosaic', 'myrcene']];
 L('Cas cités par d3b (doivent être hors enveloppe) :');
 for (const [src, id, c] of cas) {
   const l = (varietes.get(id)?.champs.get(c) ?? []).filter((x) => listeSources[x.sid] === src);

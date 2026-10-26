@@ -103,6 +103,33 @@ describe('valeurs fausses repérées par d3b : hors de l\'enveloppe', () => {
     expect(m.enveloppeDe('beermaverick-mosaic', 'farnesene')![1]!).toBeLessThan(5);
     expect(m.enveloppeDe('beermaverick-mosaic', 'myrcene')![0]!).toBeGreaterThan(10);
   });
+  it('consensus (s1) : Citra β, BSG 5–9, hors du consensus des autres sources → suspect ; la barre reste 2,7–4,5', () => {
+    const v = de('beermaverick-citra', 'beta', 'bsg').find((x) => x.min === 5 && x.max === 9)!;
+    expect(v.suspect).toBe(true);
+    expect(v.horsEnveloppe).toBe(true);
+    expect(v.raison).toMatch(/^hors du consensus de \d+ sources$/);
+    expect(m.enveloppeDe('beermaverick-citra', 'beta')).toEqual([2.7, 4.5]);
+  });
+  it('consensus : chaque valeur écartée a au moins 3 voix indépendantes qui se recoupent ; HopDatabase et hops-json ne comptent pas, HPA PDF et Haas font une voix', () => {
+    const voix = (src: string, url: string | null) => (src === 'johnihaas' || (src === 'hpa' && (url ?? '').endsWith('.pdf')) ? 'haas' : src);
+    let nb = 0;
+    for (const id of m.ids()) for (const champ of Object.keys(C.varietes[id].c) as Parameters<typeof m.valeursDe>[1][]) {
+      const l = m.valeursDe(id, champ);
+      const pairs = l.filter((x) => !['hopdatabase', 'hopsjson'].includes(x.source.id) && (!x.raison || /consensus|écart aux autres/.test(x.raison)));
+      for (const x of l.filter((y) => /^hors du consensus/.test(y.raison ?? ''))) {
+        nb++;
+        const n = Number(x.raison!.match(/(\d+) sources/)![1]);
+        expect(n).toBeGreaterThanOrEqual(3);
+        const autres = pairs.filter((y) => voix(y.source.id, y.url) !== voix(x.source.id, x.url));
+        expect(autres.some((y) => (x.min ?? 0) <= (y.max ?? Infinity) && (y.min ?? 0) <= (x.max ?? Infinity)), `${id} ${champ} ne doit recouper aucune autre voix`).toBe(false);
+        const points = autres.flatMap((y) => [y.min ?? 0, y.max ?? y.min ?? 0]);
+        const best = Math.max(...points.map((p) => new Set(autres.filter((y) => (y.min ?? 0) <= p && p <= (y.max ?? Infinity)).map((y) => voix(y.source.id, y.url))).size));
+        expect(best, `${id} ${champ} ${x.min}-${x.max}`).toBe(n);
+      }
+      for (const x of l.filter((y) => ['hopdatabase', 'hopsjson'].includes(y.source.id))) expect(x.horsEnveloppe, `${id} ${champ} copie`).toBe(true);
+    }
+    expect(nb).toBeGreaterThan(20);
+  });
   it('aucune valeur d\'une fiche PDF appariée ne reste dans l\'enveloppe sans recouper une autre source', () => {
     for (const id of m.ids()) for (const champ of Object.keys(C.varietes[id].c) as Parameters<typeof m.valeursDe>[1][]) {
       const l = m.valeursDe(id, champ);
@@ -184,7 +211,9 @@ describe('le moteur et le démarrage ne touchent pas aux compléments', () => {
     const donnees = fichiers.filter((f) => /from\s+['"][^'"]*complements\.json['"]|import\(\s*['"][^'"]*complements\.json/.test(readFileSync(f, 'utf8')));
     expect(donnees.map(rel)).toEqual(['src/domain/hopIndex/v4/complements.ts']);
     const lecteurs = fichiers.filter((f) => /from\s+['"][^'"]*\/complements['"]/.test(readFileSync(f, 'utf8')));
-    expect(lecteurs.map(rel).filter((f) => !/^src\/ui\/hopIndex\/(comparer|fiche)\//.test(f))).toEqual([]);
+    // s1 (26.10) : la lecture des sources d'une barre (α, β, huiles) est partagée par Substituer et Comparer : un seul fichier de plus,
+    // `commun/sourcesMesures.ts`, qui passe par le chargeur (jamais par le JSON) ; les écrans l'importent, pas le chargeur.
+    expect(lecteurs.map(rel).filter((f) => !/^src\/ui\/hopIndex\/(comparer|fiche)\//.test(f))).toEqual(['src/ui/hopIndex/commun/sourcesMesures.ts']);
     const sources = fichiers.filter((f) => /hopSources/.test(readFileSync(f, 'utf8')) && !/complements\.ts$/.test(f));
     expect(sources.map((f) => f.slice(racine.length + 1).replace(/\\/g, '/'))).toEqual([]);
   });
