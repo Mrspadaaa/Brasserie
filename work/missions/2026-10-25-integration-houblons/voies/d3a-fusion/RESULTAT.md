@@ -1,4 +1,4 @@
-OK — 18 sources fusionnées en complements.json (251 variétés, 57 ko gzip, chunk à part), chargeur, 11 tests, B5 148,3 ko tenu
+OK — 18 sources fusionnées en complements.json (251 variétés, 56 ko gzip, chunk à part), chargeur, tests ; suite : règles d’aberrance posées, B5 148,3 ko tenu
 
 ## Décision de l'utilisateur sur la diffusion (26.10), appliquée
 « accord écrit pour la reproduction/affichage public — C'est pas plublic donc pas de problème ». La convention 5 de VOIE.md a changé :
@@ -49,3 +49,22 @@ DÉCISION À PRENDRE : (1) règle « unité du README » pour HopDatabase et hop
 
 CONNAISSANCE : Charles Faram (Hop Oracle) publie des valeurs corrompues par un tableur (dates Excel 45050 / 41579, huile « 10.3 » pour 1,3, composés en fractions 0,42) ; la BHA a une page de conditions vide (« Lorem ipsum »). Après fusion, le linalol couvre 121 variétés sur 318 et le géraniol 55 ; le β-pinène reste à 0 (seule Vera, hors catalogue, le publie).
 LEÇON PROPOSÉE : un `sed` ou un script Python/Node passé par un heredoc du Bash de cet environnement perd les barres inverses des regex (`\d` devenu `d`) sans erreur : réécrire avec Edit et relancer `node --check` ET un test qui exerce la regex (déjà notée par c3c, revenue ici : à mécaniser).
+
+## Suite (demande du pilote après d3b) : valeurs fausses qui passaient les seuils
+Fichiers touchés : `scripts/collecte-hop/fusion.mjs`, `tests/unit/hopIndexV4/complements.test.ts` (4 tests de plus), les trois sorties régénérées. Rien dans `src/ui`, `proto-data.json`, ni les sources.
+1. **Règle d'écart** : ≥ 3 sources sur le champ, intervalle sans recoupement avec celui d'aucune autre source, facteur > 3 de la médiane des milieux des autres → `suspect`, raison « écart aux autres sources ». **14 valeurs** écartées sur tout le catalogue (3 137 enveloppes). Les 14 sont listées dans rapport.md (section « Aberrances entre sources » ; il n'y en a pas 30). Elles ne sont comparées qu'aux valeurs encore valides après les règles 2 et 3 (pas de cascade). Elle écarte surtout des « jusqu'à X » de BarthHaas (Saphir, Spalter Select), des artefacts Charles Faram (Eclipse humulène 10,4 ; Phoenix farnésène 10,5 ; Talus β 34–39 ; Sabro β 20–24) et Marynka β 2–2,7 (BarthHaas).
+2. **Copie de colonne** : un composé de l'huile aux deux bornes égales à celles d'un composé qui le précède dans la fiche (ordre myrcène, humulène, caryophyllène, farnésène, linalol, géraniol, β-pinène, sélinène), même source → `suspect`, raison « même valeur que <composé> ». **22 valeurs**. Choix : c'est le composé placé après qui est écarté, et seules les valeurs aux deux bornes comptent (deux « jusqu'à 0,6 % » égaux sont un hasard : la première version en écartait 29 dont des faux positifs BarthHaas).
+3. **Fiches PDF appariées par l'ordre du flux** : une valeur n'entre dans l'enveloppe que si elle recoupe une valeur valide d'une autre source qui n'est pas elle-même une fiche appariée ; sinon `suspect` (« fiche PDF appariée par l'ordre du flux, non recoupée par une autre source »). **36 valeurs** sur 260 lues de ces fiches. Remarque de lecture : dans `hpa.json` le champ `appariement` n'existe pas ; il n'existe que dans `johnihaas.json` (9 fiches HPA-Haas). J'ai donc traité comme appariées les 9 fiches Haas portant `appariement` **et** les fiches HPA `page: "fiche-pdf"` (PDF d'import, même mise en page). Si les PDF HPA ne sont pas tous appariés par flux, la règle est trop large pour eux : à confirmer.
+4. **Cas cités, tous hors enveloppe** (test `valeurs fausses repérées par d3b`) :
+   - Nelson Sauvin, farnésène Hopslist 10,7 → copie du caryophyllène ; enveloppe 0,1–1 (au lieu de 0,1–10,7).
+   - Citra, farnésène HPA 6–8 ; Mosaic, farnésène HPA 5–8 ; Mosaic, myrcène HPA 1–1,5 → fiche PDF non recoupée ; enveloppes Citra farnésène ≤ 1, Mosaic farnésène 0–1, Mosaic myrcène 24,5–65.
+
+Effets sur la couverture (rapport) : linalol 121 → 118, géraniol 55 → 53, sélinène 10 → 9, polyphénols 52 → 48 (les autres lignes de tête inchangées). Suspects : 143 → 215 ; valeurs dans une enveloppe : 6 824.
+
+Critères rejoués :
+- deux passes de `fusion.mjs` : sha256 identiques ; complements.json `d6d95a96…5ce2` (336 612 octets, 56 085 gzip), complements-non-rattachees.json `69a3c2e8…` (inchangé), rapport.md `bc8cec70…447c`.
+- `npx vitest run tests/unit/hopIndexV4` : 46 fichiers, 363 tests verts (moteurInchange compris).
+- `npm run build` : vert (« built in 21.86s ») ; B5 148,3 ko gzip, tenu.
+- `git diff --stat -- src/ui src/data/hopV4/proto-data.json` : vide.
+
+Limites : la règle d'écart ne protège pas un champ à une ou deux sources (la colonne décalée de Hopslist n'est vue que par la copie). Elle ne traite pas les valeurs qui recoupent une autre source tout en restant fausses (Charles Faram « 0.7-1.3 »).

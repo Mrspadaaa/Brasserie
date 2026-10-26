@@ -81,6 +81,49 @@ describe('cohérence de complements.json', () => {
   });
 });
 
+describe('valeurs fausses repérées par d3b : hors de l\'enveloppe', () => {
+  const m = lireComplements(C);
+  const de = (id: string, champ: Parameters<typeof m.valeursDe>[1], source: string) => m.valeursDe(id, champ).filter((x) => x.source.id === source);
+  it('Hopslist, Nelson Sauvin : farnésène 10,7 = son caryophyllène → suspect ; l\'enveloppe ne monte plus à 10,7', () => {
+    const v = de('beermaverick-nelson-sauvin', 'farnesene', 'hopslist');
+    expect(v.map((x) => [x.min, x.max])).toEqual([[10.7, 10.7]]);
+    expect(v[0].suspect).toBe(true);
+    expect(v[0].horsEnveloppe).toBe(true);
+    expect(v[0].raison).toBe('même valeur que caryophyllène');
+    expect(m.enveloppeDe('beermaverick-nelson-sauvin', 'farnesene')![1]!).toBeLessThan(5);
+  });
+  it('HPA, fiches PDF appariées par l\'ordre du flux : farnésène de Citra et de Mosaic, myrcène de Mosaic → suspects', () => {
+    for (const [id, champ, bornes] of [['beermaverick-citra', 'farnesene', [6, 8]], ['beermaverick-mosaic', 'farnesene', [5, 8]], ['beermaverick-mosaic', 'myrcene', [1, 1.5]]] as const) {
+      const v = de(id, champ, 'hpa');
+      expect(v.map((x) => [x.min, x.max]), `${id} ${champ}`).toContainEqual([...bornes]);
+      const x = v.find((y) => y.min === bornes[0] && y.max === bornes[1])!;
+      expect(x.suspect, `${id} ${champ}`).toBe(true);
+      expect(x.horsEnveloppe).toBe(true);
+    }
+    expect(m.enveloppeDe('beermaverick-citra', 'farnesene')![1]!).toBeLessThan(5);
+    expect(m.enveloppeDe('beermaverick-mosaic', 'farnesene')![1]!).toBeLessThan(5);
+    expect(m.enveloppeDe('beermaverick-mosaic', 'myrcene')![0]!).toBeGreaterThan(10);
+  });
+  it('aucune valeur d\'une fiche PDF appariée ne reste dans l\'enveloppe sans recouper une autre source', () => {
+    for (const id of m.ids()) for (const champ of Object.keys(C.varietes[id].c) as Parameters<typeof m.valeursDe>[1][]) {
+      const l = m.valeursDe(id, champ);
+      const valides = l.filter((x) => !x.horsEnveloppe);
+      const autres = (x: (typeof l)[number]) => valides.filter((y) => y.source.id !== x.source.id);
+      for (const x of valides.filter((y) => y.source.id === 'hpa' && (y.url ?? '').endsWith('.pdf'))) {
+        expect(autres(x).some((y) => (x.min ?? 0) <= (y.max ?? Infinity) && (y.min ?? 0) <= (x.max ?? Infinity)), `${id} ${champ} ${x.min}-${x.max}`).toBe(true);
+      }
+    }
+  });
+  it('les règles d\'aberrance écartent des valeurs, avec leur raison, et la copie nomme le composé copié', () => {
+    const raisons = new Set<string>();
+    for (const v of Object.values(C.varietes)) for (const c of Object.values(v.c)) for (const x of c.v) if (x[3]) raisons.add(x[3]);
+    expect(raisons.has('s-ecart')).toBe(true);
+    expect(raisons.has('s-pdf-ordre')).toBe(true);
+    expect([...raisons].some((r) => r.startsWith('s-copie-'))).toBe(true);
+    expect(C.raisons['s-ecart'][1]).toBe('écart aux autres sources');
+  });
+});
+
 describe('le chargeur', () => {
   const mini: ComplementsBrut = {
     version: 1,

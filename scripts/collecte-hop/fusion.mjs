@@ -123,7 +123,10 @@ const RAISONS = {
   's-inversee': ['suspect', 'plage inversée (min > max)'],
   's-negative': ['suspect', 'borne négative'],
   's-fraction': ['suspect', 'composé écrit sans signe % et ≤ 1 (0,42 = 42 % ? fraction probable, non convertie)'],
+  's-ecart': ['suspect', 'écart aux autres sources'],
+  's-pdf-ordre': ['suspect', 'fiche PDF appariée par l\'ordre du flux, non recoupée par une autre source'],
 };
+for (const c of COMPOSES_HUILE) RAISONS[`s-copie-${c}`] = ['suspect', `même valeur que ${CHAMPS[c].libelle}`];
 
 // ───────────────────────── Lecture d'une valeur ─────────────────────────
 const num = (x) => (typeof x === 'number' && Number.isFinite(x) ? x : null);
@@ -305,17 +308,62 @@ for (const s of SOURCES) {
     if (!fv.fiches.has(cle)) { fv.fiches.set(cle, fv.liste.length); fv.liste.push([sidx, fiche.url ?? null, anneeDe(fiche)]); }
     const fi = fv.fiches.get(cle);
     const somme = lues.filter((x) => COMPOSES_HUILE.includes(x.canon) && !x.hors && x.lo != null).reduce((t, x) => t + x.lo, 0);
+    for (const x of lues) if (!x.hors && COMPOSES_HUILE.includes(x.canon) && somme > 100) x.hors = 's-somme';
+    // Copie de colonne : un composé aux bornes identiques à celles d'un composé qui le précède dans la fiche (même source) est la copie probable d'une colonne décalée.
+    // Seules les valeurs aux deux bornes comptent : deux « jusqu'à 0,6 % » égaux sont un hasard fréquent, pas une copie.
+    const valides = lues.filter((x) => !x.hors && COMPOSES_HUILE.includes(x.canon) && x.lo != null && x.hi != null);
+    for (const x of valides) {
+      const avant = valides.find((y) => y !== x && COMPOSES_HUILE.indexOf(y.canon) < COMPOSES_HUILE.indexOf(x.canon) && y.lo === x.lo && y.hi === x.hi);
+      if (avant) x.hors = `s-copie-${avant.canon}`;
+    }
+    // Fiche PDF dont les libellés et les valeurs sont appariés par l'ordre du flux : ses valeurs doivent être recoupées par une autre source.
+    const pdfOrdre = Object.values(champs).some((c) => c && c.appariement) || (s.id === 'hpa' && fiche.page === 'fiche-pdf');
     for (const x of lues) {
-      if (!x.hors && COMPOSES_HUILE.includes(x.canon) && somme > 100) x.hors = 's-somme';
       const liste = fv.champs.get(x.canon) ?? [];
       fv.champs.set(x.canon, liste);
-      liste.push({ fi, sid: sidx, lo: x.lo, hi: x.hi, code: x.hors });
-      bump(stats.valeurs, s.id);
-      if (x.hors) {
-        if (RAISONS[x.hors][0] === 'suspect') { bump(stats.suspects, s.id); suspectsListe.push({ source: s.id, nom: fiche.nom, id: fiche.varietyId, champ: x.canon, lo: x.lo, hi: x.hi, code: x.hors, url: fiche.url ?? null }); }
-        else bump(stats.hors, `${s.id}|${x.hors}`);
-      }
+      liste.push({ fi, sid: sidx, lo: x.lo, hi: x.hi, code: x.hors, pdf: pdfOrdre, nom: fiche.nom, url: fiche.url ?? null });
     }
+  }
+}
+
+// ───────────────────────── Aberrances entre sources (suite de d3b, 26.10) ─────────────────────────
+// Règle 3 : une valeur de fiche PDF appariée par l'ordre du flux ne compte que si elle recoupe une valeur valide d'une autre source (hors fiche appariée).
+// Règle 1 : quand au moins 3 sources ont la valeur, une valeur dont l'intervalle ne recoupe celui d'aucune autre source et qui s'écarte d'un facteur > 3
+// de la médiane des milieux des autres devient suspecte. Calculée sur les valeurs encore valides après les règles 2 et 3 (pas d'effet en cascade).
+const RECOUPE = (a, b) => (a.lo ?? 0) <= (b.hi ?? Infinity) && (b.lo ?? 0) <= (a.hi ?? Infinity);
+const milieu = (x) => (x.lo != null && x.hi != null ? (x.lo + x.hi) / 2 : x.lo ?? x.hi);
+const mediane = (l) => { const t = [...l].sort((a, b) => a - b); const m = t.length >> 1; return t.length % 2 ? t[m] : (t[m - 1] + t[m]) / 2; };
+const aberrantes = [];
+const pdfNonRecoupees = [];
+for (const [id, fv] of [...varietes.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+  for (const [canon, liste] of fv.champs) {
+    const confirmantes = liste.filter((x) => !x.code && !x.pdf);
+    for (const x of liste) {
+      if (x.code || !x.pdf) continue;
+      if (!confirmantes.some((y) => y.sid !== x.sid && RECOUPE(x, y))) { x.nouveau = 's-pdf-ordre'; pdfNonRecoupees.push({ id, canon, x }); }
+    }
+    const apres = liste.filter((x) => !x.code && !x.nouveau);
+    if (new Set(apres.map((x) => x.sid)).size < 3) continue;
+    for (const x of apres) {
+      const autres = apres.filter((y) => y.sid !== x.sid);
+      if (autres.some((y) => RECOUPE(x, y))) continue;
+      const med = mediane(autres.map(milieu));
+      const m = milieu(x);
+      if (!(med > 0) || !(m > 0)) continue;
+      const ratio = Math.max(m / med, med / m);
+      if (ratio > 3) { x.nouveau = x.nouveau ?? 's-ecart'; aberrantes.push({ id, canon, x, med, ratio, nSources: new Set(apres.map((y) => y.sid)).size }); }
+    }
+  }
+}
+for (const fv of varietes.values()) for (const liste of fv.champs.values()) for (const x of liste) if (x.nouveau) { x.code = x.nouveau; delete x.nouveau; }
+// Statistiques et liste des suspects, une fois toutes les règles posées.
+for (const [id, fv] of [...varietes.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+  for (const [canon, liste] of fv.champs) for (const x of liste) {
+    const s = listeSources[x.sid];
+    bump(stats.valeurs, s);
+    if (!x.code) continue;
+    if (RAISONS[x.code][0] === 'suspect') { bump(stats.suspects, s); suspectsListe.push({ source: s, nom: x.nom, id, champ: canon, lo: x.lo, hi: x.hi, code: x.code, url: x.url }); }
+    else bump(stats.hors, `${s}|${x.code}`);
   }
 }
 
@@ -474,6 +522,31 @@ L();
 L('Bornes négatives illisibles (valeur nulle côté collecte, brut gardé : non fusionnées, listées ici) :');
 L();
 L(illisibles.length ? illisibles.map((x) => `- ${x.source} : ${x.nom} (${x.id ? parId.get(x.id).name : 'non rattachée'}), ${x.champ} « ${x.brut} »`).join('\n') : '- aucune sur des fiches rattachées (TerraFlux HBC 682 de BarthHaas n\'est pas rattachée au catalogue).');
+L();
+L('## Aberrances entre sources (règles ajoutées après d3b)');
+L();
+const nbCode = (f) => suspectsListe.filter((s) => f(s.code)).length;
+L(`- Règle d'écart (≥ 3 sources, intervalle sans recoupement, facteur > 3 de la médiane des autres) : **${nbCode((c) => c === 's-ecart')} valeurs** écartées de l'enveloppe, sur ${aberrantes.length ? new Set(aberrantes.map((a) => `${a.id}|${a.canon}`)).size : 0} couples variété × champ, sur ${nbEnv} enveloppes.`);
+L(`- Règle de copie de colonne (bornes égales à celles d'un composé précédent de la même fiche) : **${nbCode((c) => c.startsWith('s-copie-'))} valeurs**.`);
+L(`- Règle des fiches PDF appariées par l'ordre du flux (fiches HPA « fiche-pdf » et fiches John I. Haas portant \`appariement\`) : **${nbCode((c) => c === 's-pdf-ordre')} valeurs** sur ${[...varietes.values()].reduce((t, v) => t + [...v.champs.values()].reduce((u, l) => u + l.filter((x) => x.pdf).length, 0), 0)} lues de ces fiches ; les autres sont recoupées par une source qui n'est pas elle-même une fiche appariée.`);
+L('- Un composé n\'est comparé qu\'aux valeurs encore valides après la copie de colonne et la règle PDF (pas d\'effet en cascade). Une valeur d\'un champ à une seule ou deux sources n\'est jamais écartée par la règle d\'écart.');
+L();
+L(`Les plus fortes de la règle d'écart (30 au plus ; il y en a ${aberrantes.length} au total) :`);
+L();
+L('| Variété | Champ | Source | Valeur | Médiane des autres | Rapport | Sources |');
+L('|---|---|---|---|---:|---:|---:|');
+aberrantes.sort((a, b) => b.ratio - a.ratio || a.id.localeCompare(b.id) || a.canon.localeCompare(b.canon) || a.x.sid - b.x.sid);
+for (const a of aberrantes.slice(0, 30)) L(`| ${parId.get(a.id).name} | ${CHAMPS[a.canon].libelle} | ${listeSources[a.x.sid]} | ${plage(a.x.lo, a.x.hi)} | ${fmt(a.med)} | ×${a.ratio.toFixed(1).replace('.', ',')} | ${a.nSources} |`);
+L();
+const copies = suspectsListe.filter((s) => s.code.startsWith('s-copie-'));
+L(`Copies de colonne (${copies.length}) : ${copies.slice(0, 40).map((s) => `${s.source} ${parId.get(s.id).name} ${CHAMPS[s.champ].libelle} ${plage(s.lo, s.hi)} (${RAISONS[s.code][1]})`).join(' ; ')}${copies.length > 40 ? ' ; …' : ''}.`);
+L();
+const cas = [['hopslist', 'beermaverick-nelson-sauvin', 'farnesene'], ['hpa', 'beermaverick-citra', 'farnesene'], ['hpa', 'beermaverick-mosaic', 'farnesene'], ['hpa', 'beermaverick-mosaic', 'myrcene']];
+L('Cas cités par d3b (doivent être hors enveloppe) :');
+for (const [src, id, c] of cas) {
+  const l = (varietes.get(id)?.champs.get(c) ?? []).filter((x) => listeSources[x.sid] === src);
+  L(`- ${parId.get(id).name}, ${CHAMPS[c].libelle}, ${src} : ${l.map((x) => `${plage(x.lo, x.hi)} → ${x.code ? RAISONS[x.code][1] : 'dans l\'enveloppe'}`).join(' ; ') || 'aucune valeur'}. Enveloppe : ${(() => { const e = enveloppe(varietes.get(id).champs.get(c)); return e ? plage(e[0], e[1]) : 'aucune'; })()}.`);
+}
 L();
 L('## Valeurs hors enveloppe (unité ou base inconnue ou différente)');
 L();
