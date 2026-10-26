@@ -289,3 +289,36 @@ Les deux voies se mêlent dans `voies.ts`. On les commite ensemble après f4.
   - test dans son Chrome, en lecture seule ;
 - D172 (dry hop actif et levure), D177 (interpolation à 20′), D178 (Comparer sans houblon), #182 (surcouche compagnon), #187 (stock) ;
 - voie de profil (D101) pour les six budgets dépassés.
+
+## Reprise (26.10, vers 19 h 30) : état courant (remplace celle de 18 h)
+Quota hebdomadaire : 92 %. Règle : plus d'agent dès 98 %, arrêt à 99 %. Contexte du pilote : 81 %.
+
+**En ligne** : hébergement **fb0d14e3** (D110) : Ma bière dans l'app, sa croix, D99, catalogue et alias, sources à un seul endroit.
+PR #188 fusionnée (71dc41bb). Callable IA (D92).
+
+**Commité, pas encore poussé ni en ligne** :
+- lot moteur **689160fb** : c7 (505 variétés branchées), f2, f4, f5, f6, f7 ;
+- r2 **f5a53f99** : radar, tiretés le long du bord et points visibles ;
+- e5 **83aee2c1** : états de Dryhopper ;
+- B5 à 164 ko (D109, son accord).
+
+**En vol** :
+- **rejeu complet de f5a53f99** (Haiku, journaux dans `%TEMP%/rejeu-lot/`) ;
+- **r2-suite** : Comparer en mode Absolu, où les rayons tiretés restent (critique), et la capture de la marque « peu de données » ;
+- **m8** : mini maquettes du manque d'une série sur 3, au radar (D183).
+
+**Pour finir le lot** :
+1. commiter r2-suite ;
+2. rejouer les contrôles du radar sur ce commit ;
+3. déployer depuis la copie propre, quand plus rien n'y tourne, puis lire « found N files » et la page servie (L17) ;
+4. pousser, ouvrir une PR, la fusionner quand elle est propre (son accord D110 : « Fait une pr et tu merge une fois que c'est propre ») ;
+5. publier m8 après la critique.
+
+**Ensuite** :
+- m7 (rangées et vrai dry hop, à refaire sur le lot) ;
+- P4 et P5 de « Ajouter », B2 de Substituer, formes « Citra · pellets / cryo » : en mini maquettes ;
+- D182 (gooseberry) ;
+- accords D100 : test à l'aveugle, IA de Suggérer, écriture Firestore, test dans son Chrome ;
+- D172 (dry hop actif et levure), D177 (20′), D178 (Comparer sans houblon) ;
+- #182, #187 ;
+- voie de profil D101 (6 budgets).
