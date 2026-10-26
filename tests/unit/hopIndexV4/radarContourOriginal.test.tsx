@@ -37,10 +37,10 @@ describe('radar commun : le contour de l\'original', () => {
 
   it('laisse le point plein du remplaçant, et garde le contour seul d\'une série unique comme avant', () => {
     const duo = rendre([serie('Galaxy', 'contour', '#4d4d4d'), serie('Nectaron', 'retenu', '#0072B2')]);
-    const pointsNectaron = (duo.slice(rang(duo, 'Nectaron'), rang(duo, 'Galaxy')).match(/<circle[^>]*r="4"[^>]*>/g) ?? []);
+    const pointsNectaron = (duo.slice(rang(duo, 'Nectaron'), rang(duo, 'Galaxy')).match(/<circle[^>]*r="5"[^>]*>/g) ?? []); // D181 : la retenue passe de 4 à 5 (10 px de diamètre)
     expect(pointsNectaron).toHaveLength(3);
     const seul = rendre([serie('ma bière', 'contour', '#3d3d47')]);
     expect(seul).not.toContain('r="6.2"');
-    expect(seul).toContain('r="3"');
+    expect(seul).toContain('r="4.6"'); // D181 : un point de série passe de 3 à 4,6 (9 px)
   });
 });

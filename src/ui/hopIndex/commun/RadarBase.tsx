@@ -141,6 +141,40 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
   const groupe = enPlace ? [] : inc.map((x, i) => (x ? i : -1)).filter((i) => i >= 0);
   const marque = new Set(marquees ?? []);
 
+  // D180 (26.10, « si les traits haché traversent le graph, ça enlève de la visibilité ») : le tireté qui enjambe le secteur
+  // « sans donnée » regroupé le longe, sans passer par la corde qui coupait le radar en deux. De son point connu, un arc au
+  // même rayon jusqu'à l'arête du secteur, l'arête vers le bord, le tour du bord, puis la même chose en sens inverse.
+  // Chaque série prend un liseré plus intérieur (`ko`) : trois tiretés sur le même bord se recouvriraient.
+  // Un inconnu isolé entre deux axes voisins de plus de 30 % de rayon garde son tireté droit (il ne coupe pas le radar) ; s'il
+  // passerait à moins de 30 % du centre (plusieurs axes sans valeur de suite : Ma bière, une série qui manque en bas), il longe
+  // le bord de la même façon : la règle du contrôle `tests/integration/controle-radar-lisible.mjs`.
+  /** Le nombre d'axes de `i` à `j`, dans le sens des axes. */
+  const ecart = (i: number, j: number) => (((j - i) % N) + N) % N;
+  /** Le sens des axes de `i` à `j` traverse-t-il le secteur regroupé ? (il est contigu : tout ou rien) */
+  const tourSecteur = (i: number, j: number) => groupe.length > 0 && ecart(i, groupe[0]) > 0 && ecart(i, groupe[0]) < ecart(i, j);
+  /** La distance du centre au segment pq. */
+  const distCentre = (p: P2, q: P2) => {
+    const dx = q[0] - p[0], dy = q[1] - p[1], l2 = dx * dx + dy * dy;
+    const t = l2 ? Math.max(0, Math.min(1, ((CX - p[0]) * dx + (CY - p[1]) * dy) / l2)) : 0;
+    return Math.hypot(p[0] + t * dx - CX, p[1] + t * dy - CY);
+  };
+  /** Le seuil du contrôle : 30 % du rayon, ou 85 % du plus bas des deux points (un point bas reste bas : c'est la corde qui s'écarte). */
+  const seuilCorde = (rA: number, rB: number) => Math.min(0.3 * RR, 0.85 * Math.min(rA, rB));
+  const cheminAutour = (a: number, b: number, rA: number, rB: number, ko: number) => {
+    const n = ecart(a, b), d = 2 + 3 * ko, f = (RR - d) / RR;
+    const M1 = mil(a, RR), M2 = mil(a + n - 1, RR);
+    const L1 = Math.hypot(M1[0] - CX, M1[1] - CY), L2 = Math.hypot(M2[0] - CX, M2[1] - CY);
+    const r1 = Math.min(rA, f * L1), r2 = Math.min(rB, f * L2);
+    const sur = (M: P2, L: number, r: number): P2 => [CX + ((M[0] - CX) * r) / L, CY + ((M[1] - CY) * r) / L];
+    const bord = (p: P2): P2 => [CX + (p[0] - CX) * f, CY + (p[1] - CY) * f];
+    const arc = (r: number, p: P2) => `A${rd(r)} ${rd(r)} 0 0 1 ${xy(p)}`;
+    return [
+      `M${xy(pt(a, rA))}`, `L${xy(pt(a, r1))}`, arc(r1, sur(M1, L1, r1)),
+      `L${xy(bord(M1))}`, ...Array.from({ length: n - 1 }, (_, k) => `L${xy(bord(pt(a + 1 + k, RR)))}`), `L${xy(bord(M2))}`,
+      `L${xy(sur(M2, L2, r2))}`, arc(r2, pt(b, r2)), `L${xy(pt(b, rB))}`,
+    ].join(' ');
+  };
+
   const ancreBulle = bulle ? (() => {
     const i = axes.indexOf(bulle.famille); if (i < 0) return null;
     const s = series.find((x) => x.role === 'retenu') ?? series[0];
@@ -181,7 +215,7 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
         </g>
         {/* L'échelle : en absolu, chiffrée sur l'axe du haut ; au style, le maximum de chaque axe près de son picto. */}
         {!echelleCommune && echelleTexte}
-        {ordre.map((s) => {
+        {ordre.map((s, ko) => {
           const lui = s.role === 'retenu', seul = s.role === 'contour';
           const v = axes.map((f) => brut(s, f));
           const voile = lui ? 0.22 : seul ? 0 : 0.07;
@@ -206,6 +240,18 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
                 return <>
                   {voile > 0 && suites.map((sx) => (sx.length < 2 ? null : <polygon key={`f${sx[0]}`} data-role="voile" points={[...sx.map(P), ...sx.slice().reverse().map(Z)].map(xy).join(' ')} fill={s.couleur} fillOpacity={voile} stroke="none" />))}
                   {segs.map((sg) => { const p = P(sg.i), q = P(sg.j);
+                    // D180 : un tireté qui enjambe le secteur « sans donnée » ne le traverse plus en corde : il le longe.
+                    let de: number | null = null;
+                    if (!sg.plein) {
+                      const deux = K.length === 2, bas = distCentre(p, q) < seuilCorde(rvA(sg.i, v[sg.i]!), rvA(sg.j, v[sg.j]!)) + 1;
+                      if (tourSecteur(sg.i, sg.j)) de = sg.i;
+                      else if (deux && tourSecteur(sg.j, sg.i)) de = sg.j;
+                      else if (bas) de = deux && ecart(sg.j, sg.i) < ecart(sg.i, sg.j) ? sg.j : sg.i;
+                    }
+                    if (de != null) {
+                      const a = de, b = de === sg.i ? sg.j : sg.i;
+                      return <path key={`t${sg.i}`} data-role="tirete" data-contour="bord" d={cheminAutour(a, b, rvA(a, v[a]!), rvA(b, v[b]!), ko)} fill="none" {...trait} strokeDasharray="5 4" strokeLinecap="butt" />;
+                    }
                     return <line key={`t${sg.i}`} data-role={sg.plein ? 'trait' : 'tirete'} x1={rd(p[0])} y1={rd(p[1])} x2={rd(q[0])} y2={rd(q[1])} {...trait} {...(sg.plein ? {} : { strokeDasharray: '5 4', strokeLinecap: 'butt' as const })} />; })}
                 </>;
               })()}
@@ -216,8 +262,10 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
                 // le point plein d'un remplaçant au même niveau reste visible au centre.
                 if (seul && series.length > 1) return <circle key={axes[i]} data-valeur={chiffreRadar(x)} data-point={axes[i]} cx={rd(p[0])} cy={rd(p[1])} r={6.2}
                   fill="none" stroke={h ? ORANGE_HORS : s.couleur} strokeWidth={2} />;
-                return <circle key={axes[i]} data-valeur={chiffreRadar(x)} data-point={axes[i]} cx={rd(p[0])} cy={rd(p[1])} r={lui ? (h ? 4.8 : 4) : h ? 3.8 : 3}
-                  fill={h ? ORANGE_HORS : s.couleur} stroke={h || lui ? '#fff' : 'none'} strokeWidth={h || lui ? 1.2 : 0} />;
+                // D181 (« Les points bleu sont difficile à voir ») : 9 px de diamètre au moins (la retenue 10, hors du style 11), et
+                // un liseré clair de 1,6 qui les détache du trait et de l'aire des autres séries. Les couleurs ne changent pas.
+                return <circle key={axes[i]} data-valeur={chiffreRadar(x)} data-point={axes[i]} cx={rd(p[0])} cy={rd(p[1])} r={lui ? (h ? 5.6 : 5) : h ? 5.2 : 4.6}
+                  fill={h ? ORANGE_HORS : s.couleur} stroke="#fff" strokeWidth={1.6} />;
               })}
             </g>
           );
