@@ -241,7 +241,7 @@ Le contexte de cette session était à 50 % (500 k) : reprendre dans une **sessi
 1. Finir s2, puis rejeu, critique et redéploiement : les sources une seule fois, la carte qui se referme, l'anglais, l'appui long.
 2. Finir p6 (l'onglet Ma bière dans l'app), puis critique et redéploiement.
 3. D99, puis m7 : la planche des rangées et du vrai dry hop, à publier.
-4. f1 (affinage : Cryo, coupes, poids de l'α, formes produit), puis c5 (houblons manquants) et #187 (rattachement du stock).
+4. f1 (affinage : Cryo, coupes, poids de l’α, formes produit), puis c5 (houblons manquants) et #187 (rattachement du stock ; règle du 26.10 : une origine non répertoriée, comme Cascade CHE, se lie à la variété la plus proche, avec un astérisque).
 5. D172 : le dry hop actif dans Substituer, avec un diagnostic des données de levure. D177 : interpoler 20′.
 6. #182 : le compagnon. Il crée et enrichit déjà les houblons dans Firestore, mais les outils v4 ne le lisent pas : il faut une
    surcouche en lecture.
