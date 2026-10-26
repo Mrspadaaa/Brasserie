@@ -1,0 +1,134 @@
+{
+ "mode": "simule",
+ "etapes": [
+  {
+   "nom": "budget semé dans Firestore émulé",
+   "statut": 200,
+   "limite": "5 CHF (émulateur)"
+  },
+  {
+   "nom": "connexion émulée (Auth)",
+   "uid": "r60OB1…"
+  },
+  {
+   "nom": "capture 1-ouverture-liste-du-moteur.png"
+  },
+  {
+   "nom": "ouverture : premier appel (fonction froide)",
+   "puceALOuverture": null,
+   "msJusquALaPuce": 2498,
+   "puceALArrivee": "appliquee"
+  },
+  {
+   "nom": "capture 2-dryhop-liste-du-moteur.png"
+  },
+  {
+   "nom": "liste du moteur affichée tout de suite",
+   "apresMs": 452,
+   "lignes": [
+    "Hallertau Blanc 65-65",
+    "Cashmere 61-61",
+    "Sládek 60-60",
+    "Southern Sublime 58-58",
+    "Trident 58-58"
+   ],
+   "puce": null
+  },
+  {
+   "nom": "réponse de l’IA",
+   "msDepuisClic": 1796,
+   "etatALArrivee": "appliquee",
+   "puce": "appliquee",
+   "lignes": [
+    "Solero 57-57",
+    "Sládek 60-60",
+    "Hallertau Blanc 65-65",
+    "Cashmere 61-61",
+    "Southern Sublime 58-58"
+   ]
+  },
+  {
+   "nom": "capture 3-dryhop-apres-ordre-ia.png"
+  },
+  {
+   "nom": "capture 4-phrase-dans-le-face-a-face.png"
+  },
+  {
+   "nom": "phrase de l’IA au toucher d’une rangée",
+   "phrase": "IA Simulé (essai local) : remonté en tête, ses mots fruités sont proches de l’original."
+  },
+  {
+   "nom": "scores inchangés (ceux du moteur)",
+   "ok": true
+  },
+  {
+   "nom": "puce touchée : ordre du moteur rendu",
+   "identique": true,
+   "puce": "prete"
+  },
+  {
+   "nom": "capture 5-puce-ordre-moteur-rendu.png"
+  },
+  {
+   "nom": "réponse tardive : la liste ne bouge pas",
+   "msAvantPuce": 3193,
+   "identique": true,
+   "puce": "prete"
+  },
+  {
+   "nom": "capture 6-ordre-ia-pret-reponse-tardive.png"
+  },
+  {
+   "nom": "budget mensuel après les appels (Firestore émulé)",
+   "documents": [
+    {
+     "nom": "2026-10",
+     "champs": {
+      "month": "2026-10",
+      "reservedMicroChf": "0",
+      "usedMicroChf": "4873",
+      "updatedAt": "1793014083811"
+     }
+    }
+   ]
+  },
+  {
+   "nom": "requêtes reçues par le fournisseur",
+   "n": 3,
+   "detail": [
+    {
+     "modele": "gemini-3.5-flash-lite",
+     "ms": 1500,
+     "cle": "cle-fa…",
+     "entreeTokens": 2344,
+     "sortie": "{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra",
+     "reel": false
+    },
+    {
+     "modele": "gemini-3.5-flash-lite",
+     "ms": 1501,
+     "cle": "cle-fa…",
+     "entreeTokens": 2377,
+     "sortie": "{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra",
+     "reel": false
+    },
+    {
+     "modele": "gemini-3.5-flash-lite",
+     "ms": 3601,
+     "cle": "cle-fa…",
+     "entreeTokens": 2347,
+     "sortie": "{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra",
+     "reel": false
+    }
+   ]
+  },
+  {
+   "nom": "hôtes bloqués par le banc",
+   "n": 1,
+   "exemples": [
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5"
+   ]
+  }
+ ],
+ "erreurs": []
+}

@@ -28,6 +28,7 @@ import { arrondi, echantillon, mediane, moyenne, mulberry32, resume, type Obs, t
 import { requirePaidAiTestOptIn } from '../paid-ai-test-guard.mjs';
 import { guardLiveFetch, liveEndpoint, liveJournalRow, withJournalLock, type LiveCall } from '../gemini38LiveCore';
 import { GEMINI_LITE_MODEL, GEMINI_MODEL, GEMINI_MODELS } from '../../functions/src/models';
+import { GENERATION, PROMPT_VERSION, SCHEMA, SYSTEME, TAILLE_POOL, TAILLE_REPONSE, analyserReponse, construireInvite, ficheDeCatalogue, type Analyse as AnalyseCommune } from '../../functions/src/hopReclassCore';
 
 // ---------- Arguments ----------
 const args = process.argv.slice(2);
@@ -48,8 +49,9 @@ const MODELE_ARG = val('--modele') ?? '3.8';
 const MODELE = MODELE_ARG === 'lite' ? GEMINI_LITE_MODEL : MODELE_ARG === '3.8' ? GEMINI_MODEL : stop(`--modele inconnu : ${MODELE_ARG} (3.8 ou lite)`);
 if (SUITE === 'ia2' && MODELE !== GEMINI_LITE_MODEL) stop('La suite ia2 est limitée à Flash-Lite (--modele=lite).');
 const DATE = val('--date') ?? new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Zurich' }).format(new Date());
-const GRAINE = 181, N_ECHANTILLON = 60, N_BANC = 30, TAILLE_POOL = 20, TAILLE_REPONSE = 10;
-const PROMPT_VERSION = 'v1';
+const GRAINE = 181, N_ECHANTILLON = 60, N_BANC = 30;
+// L'invite, le schéma, la fiche courte et la lecture d'une réponse vivent dans functions/src/hopReclassCore.ts : le callable de
+// production (hopReclasserIA, voie i2) et cet essai partagent un seul texte (PROMPT_VERSION, TAILLE_POOL, TAILLE_REPONSE, SYSTEME…).
 
 // ---------- Données et moteur (copie de la logique de e1-banc-eval) ----------
 const m = creerMoteur({ catalogue: CATALOGUE, stock: [] });
@@ -134,49 +136,13 @@ function listeCas(): { hop: string; moment: MomentId; groupes: Groupe[] }[] {
   return hops.flatMap((hop) => MOMENTS.map(([moment]) => ({ hop, moment, groupes: [...(phareIds.includes(hop) ? ['phare' as const] : []), ...(sousEchantillon.includes(hop) ? ['echantillon' as const] : [])] })));
 }
 
-// ---------- L'invite ----------
-const SYSTEME = [
-  'Tu es un brasseur artisanal expert des houblons. Un brasseur veut remplacer un houblon par un autre, à un moment précis de son brassin.',
-  `Tu reçois la fiche du houblon à remplacer et ${TAILLE_POOL} candidats présélectionnés par un moteur de calcul, listés dans l'ordre du moteur (c01 = le plus proche selon lui). Choisis les ${TAILLE_REPONSE} meilleurs remplaçants parmi ces ${TAILLE_POOL} candidats seulement, du meilleur au dixième, avec une phrase par choix.`,
-  'Juge comme un brasseur, dans cet ordre :',
-  '1. Les arômes perçus (les mots des fiches), y compris ceux qu\'aucune famille classique ne range (vin blanc, groseille à maquereau, sauvignon blanc, mojito, noix de coco…). Un houblon qui sent autre chose n\'est pas un substitut, même avec le même α.',
-  '2. Le rôle au moment donné. À 60 minutes d\'ébullition, seule l\'amertume compte vraiment : α, cohumulone, finesse de l\'amertume ; l\'arôme est perdu à la chaleur. En dry hop, l\'arôme et les huiles priment ; l\'α est secondaire.',
-  '3. Les huiles (myrcène, humulène, caryophyllène, farnésène, linalol) et la classe thiol, qui disent le caractère quand les mots sont rares.',
-  '4. L\'usage déclaré (aroma, dual, bittering) : un amérisant neutre ne remplace pas un houblon d\'arôme au dry hop.',
-  'Règles : l\'ordre du moteur est une indication, pas une vérité : il se trompe quand une fiche est creuse ou que les mots sont hors des familles ; corrige-le quand ton jugement de brasseur le demande, sans le suivre ni le contredire par principe. « inconnu » veut dire que la donnée manque, pas qu\'elle vaut zéro : ne pénalise pas et ne favorise pas sur cette base. Ne choisis qu\'un identifiant (c01 à c20) donné dans la liste, une seule fois. Chaque phrase tient en 25 mots au plus, en français, et dit ce qui rapproche et ce qui sépare du houblon d\'origine.',
-].join('\n');
-const SCHEMA = {
-  type: 'OBJECT',
-  properties: { classement: { type: 'ARRAY', items: { type: 'OBJECT', properties: { id: { type: 'STRING' }, phrase: { type: 'STRING' } }, required: ['id', 'phrase'], propertyOrdering: ['id', 'phrase'] } } },
-  required: ['classement'],
-};
-const GENERATION = { temperature: 0, maxOutputTokens: 4000, thinkingLevel: 'low' };
-
-const plage = (r: [number, number] | null | undefined, unite = '') => (r ? `${r[0] === r[1] ? r[0] : `${r[0]}–${r[1]}`}${unite}` : 'inconnu');
-const virgule = (s: string) => s.replace(/(\d)\.(\d)/g, '$1,$2');
-function ficheTexte(h: CatalogueHop, etiquette: string): string {
-  const o = h.oils;
-  const parts = [
-    `${etiquette} · ${h.name} (${h.origin ?? 'origine inconnue'})`,
-    `usage ${h.purpose ?? 'inconnu'}`,
-    `α ${plage(h.alpha, ' %')}`, `β ${plage(h.beta, ' %')}`, `cohumulone ${plage(h.cohumulone, ' % des α')}`,
-    `huile totale ${plage(h.oil, ' mL/100 g')}`,
-    `myrcène ${plage(o.myrcene, ' %')}`, `humulène ${plage(o.humulene, ' %')}`, `caryophyllène ${plage(o.caryophyllene, ' %')}`, `farnésène ${plage(o.farnesene, ' %')}`,
-    `linalol (Hopsteiner) ${plage(h.hsLinalool?.range, ' % de l\'huile')}`,
-    `thiol (Hopsteiner) ${h.hsThiol?.class ? 'classe ' + h.hsThiol.class : 'inconnu'}`,
-    `mots : ${h.tagsFr.length ? h.tagsFr.join(', ') : 'aucun'}`,
-  ];
-  return virgule(parts.join(' · ') + ' (huiles en % de l\'huile totale)');
-}
+// ---------- L'invite : functions/src/hopReclassCore.ts (SYSTEME, SCHEMA, GENERATION, fiche courte, construireInvite) ----------
 interface CasFige { id: string; hop: string; hopNom: string; moment: MomentId; groupes: Groupe[]; candidats: { c: string; key: string; nom: string }[]; attendus: string[]; user: string }
 function construireCas(): CasFige[] {
   return listeCas().map(({ hop, moment, groupes }) => {
     const ordre = ordrePool(hop, moment).slice(0, TAILLE_POOL);
     const candidats = ordre.map((key, i) => ({ c: `c${String(i + 1).padStart(2, '0')}`, key, nom: nom(key) }));
-    const libelle = moment === 'dryActive' ? 'dry hop, en fermentation active (l\'arôme prime)' : 'ébullition de 60 minutes (l\'amertume prime)';
-    const user = [`Moment du houblon à remplacer : ${libelle}.`, '', "Houblon à remplacer (huiles en % de l'huile totale ; « inconnu » : donnée absente) :", ficheTexte(parId.get(hop)!, 'à remplacer'), '',
-      `Candidats (ordre du moteur) :`, ...candidats.map((x) => ficheTexte(parId.get(x.key)!, x.c)), '',
-      `Rends le classement des ${TAILLE_REPONSE} meilleurs remplaçants (identifiants c01 à c${String(TAILLE_POOL).padStart(2, '0')}), du meilleur au dixième, avec une phrase chacun.`].join('\n');
+    const user = construireInvite(moment === 'dryActive' ? { type: 'dryhop' } : { type: 'ebullition', minutes: 60 }, ficheDeCatalogue(parId.get(hop)!), candidats.map((x) => ficheDeCatalogue(parId.get(x.key)!)));
     return { id: idCas(hop, moment), hop, hopNom: nom(hop), moment, groupes, candidats, attendus: cibleDe.get(hop)!.attendus, user };
   });
 }
@@ -199,26 +165,9 @@ function lireRequetes(): { systeme: string; schema: unknown; generation: typeof 
 }
 
 // ---------- Lecture d'une réponse ----------
-interface Analyse { valide: boolean; ordre: string[]; phrases: Record<string, string>; erreurs: string[]; avertissements?: string[] }
-/** Un classement valide : 10 identifiants distincts, tous dans la liste donnée, chacun avec une phrase non vide. Au-delà de la dixième, les entrées sont ignorées (l'app garderait les 10 premières) et signalées. */
-function analyser(texte: string | undefined, cas: CasFige): Analyse {
-  const erreurs: string[] = [], ids = new Set(cas.candidats.map((c) => c.c));
-  let json: any;
-  try { json = JSON.parse(String(texte ?? '').replace(/```json/g, '').replace(/```/g, '').trim()); } catch { return { valide: false, ordre: [], phrases: {}, erreurs: ['JSON illisible'] }; }
-  const toutes: any[] = Array.isArray(json?.classement) ? json.classement : [];
-  const liste = toutes.slice(0, TAILLE_REPONSE), avertissements = toutes.length > TAILLE_REPONSE ? [`${toutes.length} entrées : les ${toutes.length - TAILLE_REPONSE} dernière(s) ignorée(s)`] : [];
-  if (!liste.length) erreurs.push('classement absent');
-  const ordre: string[] = [], phrases: Record<string, string> = {};
-  for (const x of liste) {
-    const id = typeof x?.id === 'string' ? x.id.trim().toLowerCase() : '';
-    if (!ids.has(id)) { erreurs.push(`identifiant hors liste : ${String(x?.id).slice(0, 12)}`); continue; }
-    if (ordre.includes(id)) { erreurs.push(`identifiant en double : ${id}`); continue; }
-    ordre.push(id); phrases[id] = typeof x.phrase === 'string' ? x.phrase.trim() : '';
-    if (!phrases[id]) erreurs.push(`phrase vide : ${id}`);
-  }
-  if (liste.length !== TAILLE_REPONSE) erreurs.push(`${liste.length} entrées au lieu de ${TAILLE_REPONSE}`);
-  return { valide: erreurs.length === 0 && ordre.length === TAILLE_REPONSE, ordre, phrases, erreurs, ...(avertissements.length ? { avertissements } : {}) };
-}
+type Analyse = AnalyseCommune;
+/** La lecture d'une réponse est celle du callable (functions/src/hopReclassCore.ts) : une seule règle. */
+function analyser(texte: string | undefined, cas: CasFige): Analyse { return analyserReponse(texte, cas.candidats.map((c) => c.c)); }
 /** L'ordre complet après l'IA : ses choix valides d'abord, puis le reste du pool et le reste de la liste dans l'ordre d'origine du pool. */
 function ordreIA(cas: CasFige, a: Analyse): string[] {
   const choisis = a.ordre.map((c) => cas.candidats.find((x) => x.c === c)!.key);

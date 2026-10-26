@@ -40,7 +40,11 @@ export interface Candidat {
 export interface Lecture {
   contexte: string; poids: { arome: number; huiles: number; amertume: number };
   candidats: Candidat[]; total: number; stockRangs: { nom: string; rang: number }[];
+  /** Les 20 premiers remplaçants du moteur (clés, dans son ordre) : ce que l'IA reclasse (voie i2). Vide : rien à lui demander. */
+  pool: string[];
 }
+/** Combien de remplaçants du moteur l'IA reçoit (functions/src/hopReclassCore.ts : TAILLE_POOL). */
+const TAILLE_POOL = 20;
 
 const etatDe = (s: { etat: string; suffisant: boolean | null }): EtatStock =>
   s.etat === 'à acheter' ? 'acheter' : s.etat === 'épuisé' ? 'epuise' : s.suffisant === false ? 'insuffisant' : 'suffisant';
@@ -53,28 +57,36 @@ const optionsDe = (recette: RecetteParcours, a: AjoutParcours): SubstitutionOpti
 
 /** Les huit remplaçants de u4 et la règle du moteur, pour un ajout. `res` : le classement déjà rendu par le client
  * asynchrone (useRemplacants) ; absent, il est demandé au client (tout de suite sur le fil principal). */
-export const lireRemplacants = memo<[RecetteParcours, AjoutParcours, SubstitutionResult?], Lecture>('substituer-u4', (r, a) => cleR(r, a) + cleOrdre(), (recette, a, res) =>
-  composer(res ?? calcul().lire('substitutes', a.hopKey, optionsDe(recette, a)) ?? sansReponse(a)));
+export const lireRemplacants = memo<[RecetteParcours, AjoutParcours, SubstitutionResult?, (readonly string[])?], Lecture>('substituer-u4', (r, a, _res, ia) => cleR(r, a) + cleOrdre() + (ia ? `|ia:${ia.join(',')}` : ''), (recette, a, res, ia) =>
+  composer(res ?? calcul().lire('substitutes', a.hopKey, optionsDe(recette, a)) ?? sansReponse(a), ia));
 
 /** Le client n'a pas de réponse immédiate (worker) : on n'invente rien, l'écran garde son dernier résultat (useRemplacants). */
 function sansReponse(a: AjoutParcours): never { throw new Error(`remplaçants de ${a.hopKey} : pas de réponse immédiate du client`); }
 
 /** Les remplaçants de u4 par le client asynchrone (#165) : tout de suite sur le fil principal ; d'un worker, la lecture
  * d'avant reste jusqu'à la réponse (aucun état d'attente). `a` null : rien de demandé, null. */
-export function useRemplacants(recette: RecetteParcours, a: AjoutParcours | null): Lecture | null {
+export function useRemplacants(recette: RecetteParcours, a: AjoutParcours | null, ordreIA: readonly string[] | null = null): Lecture | null {
   const args = useMemo(() => (a ? ([a.hopKey, optionsDe(recette, a)] as [string, SubstitutionOptions]) : null), [recette, a]);
   const recu = useCalcul('substitutes', args);
+  const cleIA = ordreIA ? ordreIA.join(',') : '';
   return useMemo(() => {
     if (!recu || !a || !args) return null;
     // La réponse de la demande courante : mise en cache sous sa clé ; une réponse gardée d'avant : composée seule.
     const courante = calcul().cle('substitutes', recu.args) === calcul().cle('substitutes', args);
-    return courante ? lireRemplacants(recette, a, recu.valeur) : composer(recu.valeur);
-  }, [recu, args]); // eslint-disable-line react-hooks/exhaustive-deps
+    return courante ? lireRemplacants(recette, a, recu.valeur, ordreIA ?? undefined) : composer(recu.valeur, ordreIA ?? undefined);
+  }, [recu, args, cleIA]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
-function composer(res: SubstitutionResult): Lecture {
+/** `ordreIA` (voie i2) : les clés que l'IA a rangées en tête, dans son ordre. Les remplaçants viennent alors d'abord dans cet ordre,
+ * puis les autres dans celui du moteur ; la liste garde ses huit (cinq du catalogue, trois du stock) et n'est plus rangée par le
+ * pire cas. Les scores restent ceux du moteur ; le rang du stock (« 5e ») reste celui du moteur. */
+function composer(res: SubstitutionResult, ordreIA?: readonly string[]): Lecture {
   const w = res.poids;
-  const tous = res.remplacants.filter((s) => proposable(s.key));
+  const moteur = res.remplacants.filter((s) => proposable(s.key));
+  const rangIA = new Map((ordreIA ?? []).map((k, i) => [k, i]));
+  const tous = ordreIA?.length
+    ? [...moteur.filter((s) => rangIA.has(s.key)).sort((x, y) => rangIA.get(x.key)! - rangIA.get(y.key)!), ...moteur.filter((s) => !rangIA.has(s.key))]
+    : moteur;
   const versCandidat = (s: (typeof tous)[number], vient: Candidat['vient']): Candidat => {
     const c = s.composantes;
     const inconnues = (Object.keys(w) as (keyof typeof w)[]).filter((k) => c[k] === null);
@@ -93,9 +105,13 @@ function composer(res: SubstitutionResult): Lecture {
   let stock = enStock.slice(0, 3);
   const suffit = enStock.find((s) => s.stock.suffisant !== false);
   if (suffit && !stock.includes(suffit)) stock = [...stock.slice(0, 2), suffit];
-  const candidats = [...catalogue, ...stock.map((s) => versCandidat(s, 'stock'))]
-    .sort((x, y) => y.min - x.min || y.max - x.max || x.nom.localeCompare(y.nom, 'fr'));
-  const stockRangs = stock.map((s) => ({ nom: s.name, rang: tous.indexOf(s) + 1 }));
+  const huit = [...catalogue, ...stock.map((s) => versCandidat(s, 'stock'))];
+  const place = new Map(tous.map((s, i) => [s.key, i]));
+  const candidats = ordreIA?.length
+    ? huit.sort((x, y) => place.get(x.cle)! - place.get(y.cle)!)
+    : huit.sort((x, y) => y.min - x.min || y.max - x.max || x.nom.localeCompare(y.nom, 'fr'));
+  const stockRangs = stock.map((s) => ({ nom: s.name, rang: moteur.indexOf(s) + 1 }));
+  const pool = moteur.slice(0, TAILLE_POOL).map((s) => s.key);
   // Développement seulement : un ordre imposé (voie m3), pour montrer l'écran tel quel avec une autre liste.
   // Le bloc entier est derrière `import.meta.env.DEV` : le build le supprime avec son message (aucune trace dans `dist/`).
   if (import.meta.env.DEV) {
@@ -110,11 +126,11 @@ function composer(res: SubstitutionResult): Lecture {
         contexte: res.contexte, poids: w, total: res.candidats,
         // Le score est celui de la colonne, un point (jamais une plage) ; tout le reste vient du moteur (stock, dose, familles).
         candidats: pris.map(({ s, score }) => ({ ...versCandidat(s, enStock(s) ? 'stock' : 'catalogue'), min: score, max: score })),
-        stockRangs: pris.filter(({ s }) => enStock(s)).map(({ s }) => ({ nom: s.name, rang: tous.indexOf(s) + 1 })),
+        stockRangs: pris.filter(({ s }) => enStock(s)).map(({ s }) => ({ nom: s.name, rang: tous.indexOf(s) + 1 })), pool: [],
       };
     }
   }
-  return { contexte: res.contexte, poids: w, candidats, total: res.candidats, stockRangs };
+  return { contexte: res.contexte, poids: w, candidats, total: res.candidats, stockRangs, pool };
 }
 
 // ---------- Développement seulement : l'ordre imposé de la voie m3 (listes de remplaçants) ----------

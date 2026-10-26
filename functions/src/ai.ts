@@ -156,7 +156,8 @@ export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiK
   return { ok:true, data:reviewed.result, model, tier:'fast', elapsedMs:Date.now() - started, cached:reviewed.cached, documentHash:reviewed.documentHash };
 }
 
-function assertAuthorized(request: CallableRequest): string {
+/** Aussi lue par `hopReclasserIA` : une seule liste de comptes, une seule règle. */
+export function assertAuthorized(request: CallableRequest): string {
   const email = request.auth?.token?.email?.toLowerCase().trim();
   if (!request.auth || !email) {
     throw new HttpsError('unauthenticated', 'Connexion requise.');

@@ -1,0 +1,117 @@
+{
+ "mode": "reel",
+ "etapes": [
+  {
+   "nom": "budget semé dans Firestore émulé",
+   "statut": 200,
+   "limite": "5 CHF (émulateur)"
+  },
+  {
+   "nom": "connexion émulée (Auth)",
+   "uid": "6Y9MLP…"
+  },
+  {
+   "nom": "capture 1-ouverture-liste-du-moteur.png"
+  },
+  {
+   "nom": "ouverture : premier appel (fonction froide)",
+   "puceALOuverture": null,
+   "msJusquALaPuce": 3048,
+   "puceALArrivee": "prete"
+  },
+  {
+   "nom": "capture 2-dryhop-liste-du-moteur.png"
+  },
+  {
+   "nom": "liste du moteur affichée tout de suite",
+   "apresMs": 524,
+   "lignes": [
+    "Hallertau Blanc 65-65",
+    "Cashmere 61-61",
+    "Sládek 60-60",
+    "Southern Sublime 58-58",
+    "Trident 58-58"
+   ],
+   "puce": null
+  },
+  {
+   "nom": "réponse de l’IA",
+   "msDepuisClic": 2596,
+   "etatALArrivee": "appliquee",
+   "puce": "appliquee",
+   "lignes": [
+    "Hallertau Blanc 65-65",
+    "Nectaron 55-55",
+    "Cashmere 61-61",
+    "Solero 57-57",
+    "Mandarina Bavaria 57-57"
+   ]
+  },
+  {
+   "nom": "capture 3-dryhop-apres-ordre-ia.png"
+  },
+  {
+   "nom": "capture 4-phrase-dans-le-face-a-face.png"
+  },
+  {
+   "nom": "phrase de l’IA au toucher d’une rangée",
+   "phrase": "IA Hallertau Blanc partage la groseille et le vin blanc, mais son myrcène est plus haut et l'humulène plus bas."
+  },
+  {
+   "nom": "scores inchangés (ceux du moteur)",
+   "ok": true
+  },
+  {
+   "nom": "puce touchée : ordre du moteur rendu",
+   "identique": true,
+   "puce": "prete"
+  },
+  {
+   "nom": "capture 5-puce-ordre-moteur-rendu.png"
+  },
+  {
+   "nom": "budget mensuel après les appels (Firestore émulé)",
+   "documents": [
+    {
+     "nom": "2026-10",
+     "champs": {
+      "month": "2026-10",
+      "reservedMicroChf": "0",
+      "usedMicroChf": "6100",
+      "updatedAt": "1793014225729"
+     }
+    }
+   ]
+  },
+  {
+   "nom": "requêtes reçues par le fournisseur",
+   "n": 2,
+   "detail": [
+    {
+     "modele": "gemini-3.5-flash-lite",
+     "ms": 2128,
+     "cle": "cle-fa…",
+     "entreeTokens": 2344,
+     "sortie": "{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"{\\n  \\\"classement\\\": [\\n    {\\n      \\\"id\\\": \\\"c01\\\",\\n      \\\"phrase\\\": \\\"Hallertau Blanc partage les notes de vin",
+     "reel": true
+    },
+    {
+     "modele": "gemini-3.5-flash-lite",
+     "ms": 2225,
+     "cle": "cle-fa…",
+     "entreeTokens": 2377,
+     "sortie": "{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"{\\n  \\\"classement\\\": [\\n    {\\n      \\\"id\\\": \\\"c01\\\",\\n      \\\"phrase\\\": \\\"Hallertau Blanc partage la groseille et ",
+     "reel": true
+    }
+   ]
+  },
+  {
+   "nom": "hôtes bloqués par le banc",
+   "n": 1,
+   "exemples": [
+    "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5"
+   ]
+  }
+ ],
+ "erreurs": []
+}
