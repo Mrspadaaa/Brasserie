@@ -12,7 +12,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ## Comprendre la demande
 
 ### L01 — Reformuler la portée d'une décision avant de la propager
-- Erreur : 12.10, « seul 3.8 », dit pour des tests, appliqué à toute l'app (G38 perdu). 24.10 : y1b et w2 visaient Comparer, greffés sur Dryhopper (D63). 25.10 : « traits trié » lu « plein », c'était « tiretés » (D147) ; « le + pas centré » (le signe dans son rond) lu comme la place du bouton (D149).
+- Erreur : 12.10, « seul 3.8 », pour des tests, appliqué partout (G38 perdu). 24.10 : y1b et w2 visaient Comparer, greffés sur Dryhopper (D63). 25.10 : « traits trié » lu « plein » pour « tiretés » (D147) ; « le + pas centré » lu bouton (D149). 26.10 : plages de Lotus lues « source à chaque mot » (D168).
 - Cause : la portée (tests seuls, un usage, toute l'app) n'a pas été écrite avant d'agir.
 - Faire : écrire la portée (et l'écran visé) en une ligne. Si elle est ambiguë, appliquer la lecture étroite et réversible, et le signaler. Un mot mal tapé : le terme du métier le plus proche, et dire sa lecture. Une plainte visuelle : le plus petit sens, sur sa capture zoomée.
 - Rôles : pilote, conseil
