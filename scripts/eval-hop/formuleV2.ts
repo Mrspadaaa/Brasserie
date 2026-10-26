@@ -18,7 +18,8 @@ export const GROUPE = [
 /** Poids à l'intérieur de chaque groupe, fixés à la main selon le moment (la somme d'un groupe vaut 1). Ordres : [α, β, cohumulone, usage] et
  * [huile totale, myrcène, humulène, caryophyllène, farnésène, linalol, géraniol]. Arôme : familles, mots, radar (voir poidsV2). */
 export const PROFILS: Record<Moment3, { amertume: number[]; huile: number[] }> = {
-  am: { amertume: [0.4, 0.2, 0.2, 0.2], huile: [0.25, 0.05, 0.3, 0.25, 0.05, 0.05, 0.05] },
+  // D102 (J1, 26.10) : α 0,4 → 0,15, β 0,25, cohumulone 0,3, usage 0,3, comme substitution.ts (le test substitutionV2 compare les deux). Avant : [0.4, 0.2, 0.2, 0.2].
+  am: { amertume: [0.15, 0.25, 0.3, 0.3], huile: [0.25, 0.05, 0.3, 0.25, 0.05, 0.05, 0.05] },
   ch: { amertume: [0.3, 0.2, 0.1, 0.4], huile: [0.2, 0.15, 0.15, 0.1, 0.1, 0.2, 0.1] },
   fr: { amertume: [0.25, 0.15, 0.1, 0.5], huile: [0.25, 0.1, 0.1, 0.05, 0.1, 0.25, 0.15] },
 };

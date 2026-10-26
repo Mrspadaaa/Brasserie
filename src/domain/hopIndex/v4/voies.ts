@@ -1,9 +1,9 @@
 import { checkHopExclusions } from '../solver';
 import { suggestedHopVarieties } from '../styleSelection';
-import { AXES, catalogue as catalogueDuMoteur, local, stock as stockDuMoteur, varietyById, YEASTS, hopRef } from './data';
+import { AXES, catalogue as catalogueDuMoteur, local, stock as stockDuMoteur, varietyById, YEASTS, hopRef, type HopRef } from './data';
 import { borneHoublons, Lru } from './lru';
 import { FAMILIES, FAMILY_NAMES, type FamilyId } from './families';
-import { citations, marquee } from './hops';
+import { citations, describeFamilies, marquee } from './hops';
 import {
   MOMENTS, additionIbu, gramsForIbu, ibuPerGram, matrixContext, recipeIbu, recipeProfile, searchDoses, tripletOf, yeastInfo,
   type Addition, type FamilyEstimate, type MatrixContext, type MomentId, type Profile, type Recipe, type RecipeProfile, type YeastInfo,
@@ -16,9 +16,13 @@ import { CHARACTERIZED_YEASTS, predictionDe, yeastChangeEffect } from './yeast';
 import { cleDeVoie, comparerCles, type CleDepartage, type Departage } from './departage';
 import { MOMENTS_APPORT_C_DEFAUT, partDesFiches, type ApportMinoritaire } from './minoritaire';
 import {
-  BORNES_DRYHOP_GL, GRILLE_DRYHOP_GL, RANKING_PALIER60, REGLE_DRYHOP, comparerGrammesPalier, comparerPalier, comparerUsagePalier, drapeauIbu, rangUsage,
+  BORNES_DRYHOP_GL, GRILLE_DRYHOP_GL, RANKING_PALIER60, REGLE_DRYHOP, comparerGrammesPalier, comparerPalier, comparerUsagePalier, drapeauIbu, rangUsageDe,
   type DoseDryHop, type InfoPalier, type RegleDryHop,
 } from './palier';
+import { produitDArome } from './substitution';
+
+/** D105 (B1) : le nombre de houblons « à acheter » que les listes principales classent (ajouter, remplacer), pris dans l'ordre de qualité du pool. Mesuré : voir RESULTAT.md de f2. */
+export const POOL_BORNE = 80;
 
 /** Direction relative à la recette : nombre de crans par famille (+1 « plus floral », −1 « moins résineux »). */
 export type Direction = Partial<Record<FamilyId, number>>;
@@ -96,10 +100,11 @@ export interface VoieResult {
   dryHop?: { actif: Voie[]; apres: Voie[]; regle: RegleDryHop; notes: string[] };
 }
 export interface VoieOptions {
-  /** Variétés « à acheter » examinées (défaut 6). */ maxBuy?: number;
-  /** Voies du stock retenues (défaut 10). */ limit?: number;
-  /** Voies à acheter retenues, classées avec celles du stock (défaut 4). */ buyLimit?: number;
-  /** Voies au plus par houblon ou couple de houblons (défaut 2). */ perHop?: number;
+  /** Houblons « à acheter » CLASSÉS par les listes principales (D102 B1, D105). Le défaut n'est plus 6 mais `POOL_BORNE` (80, une borne de coût : « la réactivité » ; les 80 premiers de l'ordre de
+   * qualité du pool : familles visées, documentation, familles attendues…). Les coupes d'affichage sont `limit`, `buyLimit`, `perHop`, après le rang. 400 : tout le pool (mesures et tests). */ maxBuy?: number;
+  /** Voies du stock MONTRÉES (défaut 10) : une coupe d'affichage, après le classement de tous les candidats (D102, B1). */ limit?: number;
+  /** Voies à acheter MONTRÉES, classées avec celles du stock (défaut 4) : une coupe d'affichage, après le rang (D102, B1). */ buyLimit?: number;
+  /** Voies au plus MONTRÉES par houblon ou couple de houblons (défaut 2) : une coupe d'affichage, après le rang (D102, B1). */ perHop?: number;
   moments?: MomentId[]; assemblages?: boolean;
   /** Départage à distance égale (g2a, D88) : 'aucun' (défaut, comportement d'avant) ou une des clés mesurées k1, k2, k3 (departage.ts).
    * La clé passe après la distance et ne change jamais l'effet calculé. */
@@ -117,6 +122,11 @@ export interface VoieOptions {
   dryHop?: boolean | { doseGL: number };
   /** Leviers levure (R43, R44) : changer de souche vers chaque souche caractérisée, houblonner à froid en fermentation active. */
   leviersLevure?: boolean;
+  /** D106 (coût de Suggérer) : `false` saute les voies « remplacer » (à IBU égal et à masse égale), qui portent l'essentiel du surcoût de B1 (leurs prédictions V5.5 changent de dose avec
+   * le houblon remplacé : rien à mémoriser d'un appel à l'autre). Le premier affichage de Suggérer les demande ainsi, et les remplacements arrivent au repos par l'appel complet.
+   * Les autres voies, leurs effets et leurs rangs sont ceux de l'appel complet, sauf que les places que les remplacements y prennent (`limit`, `buyLimit`, `perHop`) reviennent aux ajouts.
+   * Défaut : `true` (comportement d'avant, à l'octet près). */
+  remplacements?: boolean;
   /** Dégustation du brasseur : situe la bière et fixe la cible d'une famille jugée « trop » ou « peu ». */
   tasting?: Tasting | null;
   /** Goûts du brasseur (vides par défaut) : voir GOUTS_RULE. */
@@ -194,7 +204,7 @@ export function additionEffect(addition: Addition, recipe: Recipe, apportMode: A
 
 /** Voies pour pousser la recette dans la direction voulue : stock d'abord, puis à acheter. */
 export function proposeVoies(recipe: Recipe, direction: Direction, options: VoieOptions = {}): VoieResult {
-  const { maxBuy = 6, limit = 10, buyLimit = 4, perHop = 2, moments = ['b10', 'wp', 'dryActive', 'dryPost'], assemblages = true } = options;
+  const { limit = 10, buyLimit = 4, perHop = 2, moments = ['b10', 'wp', 'dryActive', 'dryPost'], assemblages = true } = options;
   const style = getStyleScale(recipe.styleCode);
   const before = recipeProfile(recipe);
   const ibu0 = recipeIbu(recipe);
@@ -233,24 +243,37 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const allowed = (key: string) => !excludedVarieties.has(hopRef(key)?.varietyId ?? key);
   const avoid = [...new Set([...minus, ...excludedFamilies])];
   const stockHops = stockDuMoteur().filter((s) => (free(s.key) ?? 0) > 0 && allowed(s.key)).map((s) => s.key);
-  // À acheter : variétés sans stock libre (épuisées comprises), classées par familles visées citées,
-  // puis familles attendues par le style citées, puis usage attesté, puis nom.
-  const available = new Set(stockDuMoteur().filter((s) => (free(s.key) ?? 0) > 0).map((s) => s.varietyId));
+  // À acheter : toute variété DONT LA CLÉ n'a pas de stock libre (épuisée comprise). D102 (A) : par clé, non par variété : Citra cryo en stock ne retire plus Citra simple
+  // (clé « citra », autre article, autre prix, autre α). Le pool est classé par familles visées citées, puis familles attendues par le style citées, puis usage attesté, puis nom ;
+  // D102 (B1) : cet ordre ne COUPE plus rien, il ne sert qu'à départager deux voies de rang égal (`ordrePool`).
+  const available = new Set(stockDuMoteur().filter((s) => (free(s.key) ?? 0) > 0).map((s) => s.key));
   const suggested = new Set(suggestedHopVarieties(catalogueDuMoteur().map((c) => varietyById().get(c.id)!), style.name).map((v) => v.id));
   const expected = style.documented ? FAMILIES.filter((f) => style.families[f].status === 'attendue') : [];
   // Calculé une fois par appel et par variante (le même pour chaque ajout remplacé).
   const pools = new Map<boolean, string[]>();
-  const buyPool = (requirePlus: boolean) => pools.get(requirePlus) ?? pools.set(requirePlus, buyPoolDe(requirePlus)).get(requirePlus)!;
-  const buyPoolDe = (requirePlus: boolean, max = maxBuy) => catalogueDuMoteur().filter((c) => !available.has(c.id) && allowed(c.id))
+  /** Le pool « à acheter » entier, dans l'ordre de qualité (voir `buyPoolDe`) : dry hop de g2b et palier 60′ le lisent sans borne. */
+  const buyPoolComplet = (requirePlus: boolean) => pools.get(requirePlus) ?? pools.set(requirePlus, buyPoolDe(requirePlus)).get(requirePlus)!;
+  /** D105 (B1, coût) : les voies des listes principales (ajouter, remplacer) classent les `POOL_BORNE` meilleurs du pool, dans cet ordre de qualité ; tout le reste du pool est coupé AVANT le rang,
+   * pour tenir le coût de calcul (« Attention au délais ajouter, la Responsive, réactivité »). Les phares sont bien documentés : ils sont en tête de l'ordre (documentation avant le nom). */
+  const buyPool = (requirePlus: boolean) => buyPoolComplet(requirePlus).slice(0, options.maxBuy ?? POOL_BORNE);
+  const buyPoolDe = (requirePlus: boolean) => catalogueDuMoteur().filter((c) => !available.has(c.id) && allowed(c.id))
     .map((c) => ({ c, plus: plus.filter((f) => citeVisee(c.id, f)).length, fit: expected.filter((f) => cites(c.id, f)).length,
+      // D105 : fiches lues (la documentation) : un houblon à une fiche ne passe pas devant un houblon à sept ; sert l'ordre du pool, jamais une exclusion.
+      doc: describeFamilies(c.id).citrus.of,
       // D90 : une famille « moins » ou indésirable du style exclut si elle est marquée ; une famille exclue par les goûts du brasseur, dès qu'une fiche la cite.
       bad: minus.some((f) => marque(c.id, f)) || excludedFamilies.some((f) => cites(c.id, f)) || FAMILIES.some((f) => style.families[f].status === 'indésirable' && marque(c.id, f)),
       // Une fiche isolée n'exclut plus, mais le houblon passe après ceux dont aucune fiche ne cite une famille à éviter, à nombre égal de familles visées :
-      // sans cela, les houblons re-admis prennent les `maxBuy` places du pool sur leur seule couverture et laissent moins de bonnes voies (mesuré en stout S1).
+      // sans cela, les houblons re-admis passeraient à égalité devant ceux que le style n'exclut d'aucune fiche (mesuré en stout S1, du temps où `maxBuy` coupait le pool).
       mineure: [...minus, ...FAMILIES.filter((f) => style.families[f].status === 'indésirable')].some((f) => cites(c.id, f)) }))
     .filter((r) => !r.bad && (!requirePlus || r.plus > 0))
-    .sort((a, b) => b.plus - a.plus || Number(a.mineure) - Number(b.mineure) || b.fit - a.fit || Number(suggested.has(b.c.id)) - Number(suggested.has(a.c.id)) || a.c.name.localeCompare(b.c.name, 'fr'))
-    .slice(0, max).map((r) => stockDuMoteur().find((s) => s.varietyId === r.c.id && s.form !== 'cryo')?.key ?? r.c.id);
+    .sort((a, b) => b.plus - a.plus || b.doc - a.doc || Number(a.mineure) - Number(b.mineure) || b.fit - a.fit || Number(suggested.has(b.c.id)) - Number(suggested.has(a.c.id)) || Number(!!a.c.peuDeDonnees) - Number(!!b.c.peuDeDonnees) || a.c.name.localeCompare(b.c.name, 'fr'))
+    .map((r) => stockDuMoteur().find((s) => s.varietyId === r.c.id && s.form !== 'cryo')?.key ?? r.c.id);
+  // D102/D105 (B1) : le rang de chaque houblon dans cet ordre de qualité du pool (0 : hors pool, ex. le houblon de la recette). C'est une clé du RANG (`compareRankKeys`), juste avant les effets
+  // de bord : le style (familles visées, familles attendues, suggéré pour le style, documenté) départage avant les effets de bord, qui récompensaient sinon les houblons à une fiche (1 famille
+  // citée = aucun effet de bord). Elle est lue dans `ORDRE_POOL`, posé sur les voies des listes principales seulement (jamais sur le palier 60′ ni le dry hop de g2b).
+  const ordrePool = new Map<string, number>();
+  buyPoolComplet(false).forEach((k, i) => ordrePool.set(k, i + 1));
+  const poolDe = (v: Voie) => v.actions.reduce((s, a) => s + (ordrePool.get(a.hopKey) ?? 0), 0);
 
   let n = 0;
   const evaluate = (type: VoieType, label: string, actions: Action[], changes: Change[], next: Recipe, extraEstimated: string[] = [], effectOverride?: Record<FamilyId, FamilyEffect> | null, ibuEnDrapeau = false): Voie => {
@@ -338,10 +361,23 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   };
   const act = (op: Action['op'], a: Addition, extra: Partial<Action> = {}): Action => ({ op, additionId: a.id, hopKey: a.hopKey, hopName: nameOf(a.hopKey), moment: a.moment, momentLabel: MOMENTS[a.moment].label, grams: round(a.grams), gramsPerLitre: round(a.grams / recipe.volumeL, 2), ...extra });
 
-  const infoPalierDe = (key: string, grams: number, ibuApres: number): InfoPalier => {
+  // D102 (A). `grams` : les grammes du houblon tel qu'il est (α du lot) ; `cible` : l'IBU à rendre au moment, et l'original remplacé s'il y en a un.
+  //  - Un PRODUIT d'arôme (cryo, lupuline, poudre : substitution.ts, produitDArome) passe après les amérisants et doubles usages (rangUsageDe), comme dans Substituer ; sauf si
+  //    l'original remplacé est lui-même un produit d'arôme (« choix délibéré du brasseur », même exception qu'à Substituer).
+  //  - Le rang d'un produit lit les grammes de l'α de la VARIÉTÉ (milieu de la plage de la fiche), jamais l'α du lot : un lot de cryo à 24,8 % ne gagne pas 60′ parce qu'il est concentré.
+  //    L'α affiché et la dose proposée restent ceux du lot (ce que le brasseur pèse). Sans plage de variété, le rang garde les grammes du lot.
+  const gramsDeVariete = (ref: HopRef, cible: { ibu: number; moment: MomentId }, gramsDuLot: number): number => {
+    const a = ref.catalogue.alpha;
+    const k = a && a[1] > 0 ? ibuPerGram((a[0] + a[1]) / 2, cible.moment, recipe) : 0;
+    return k > 0 ? cible.ibu / k : gramsDuLot;
+  };
+  const infoPalierDe = (key: string, grams: number, ibuApres: number, cible: { ibu: number; moment: MomentId; original?: string }): InfoPalier => {
     const ref = hopRef(key)!;
-    return { usage: ref.catalogue.purpose ?? null, alpha: ref.alpha ? round(ref.alpha.value) : null, rang: [rangUsage(ref.catalogue.purpose), round(grams, 3)],
-      bande: style.ibu, drapeau: drapeauIbu(ibuApres, style.ibu) };
+    const produit = produitDArome(key);
+    const demote = !!produit && !(cible.original && produitDArome(cible.original));
+    return { usage: ref.catalogue.purpose ?? null, alpha: ref.alpha ? round(ref.alpha.value) : null,
+      rang: [rangUsageDe(ref.catalogue.purpose, demote), round(produit ? gramsDeVariete(ref, cible, grams) : grams, 3)],
+      ...(produit ? { produit } : {}), bande: style.ibu, drapeau: drapeauIbu(ibuApres, style.ibu) };
   };
 
   const all: Voie[] = [];
@@ -387,7 +423,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
           [act('modifier', b, { previousGrams: round(a.grams) })], [{ addition: b, sign: 1 }, { addition: a, sign: -1 }], next));
       }
     }
-    for (const key of [...stockHops, ...buyPool(false)].filter((k) => k !== a.hopKey && allowed(k))) {
+    for (const key of options.remplacements === false ? [] : [...stockHops, ...buyPool(false)].filter((k) => k !== a.hopKey && allowed(k))) {
       const ref = hopRef(key)!;
       let grams = a.grams;
       if (bitter) {
@@ -402,7 +438,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       const remplacement = evaluate(type, `Remplacer ${nameOf(a.hopKey)} par ${ref.name} · ${MOMENTS[a.moment].label} · ${round(b.grams, 1)} g`,
         [act('modifier', b, { previousGrams: round(a.grams), previousHopKey: a.hopKey })], [{ addition: b, sign: 1 }, { addition: a, sign: -1 }], next);
       // g2b : « remplacer à IBU égal » suit la règle d'usage du palier 60′ (un houblon d'arôme à 60′ perd son arôme : il passe après les amérisants).
-      if (options.palier60 && bitter) remplacement.palier = infoPalierDe(key, b.grams, remplacement.ibu.after);
+      if (options.palier60 && bitter) remplacement.palier = infoPalierDe(key, b.grams, remplacement.ibu.after, { ibu: target.value, moment: a.moment, original: a.hopKey });
       all.push(remplacement);
     }
   }
@@ -434,6 +470,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const progress = (v: Voie) => targets.some((t) => v.effect[t.family].established && Math.sign(v.effect[t.family].central ?? 0) === Math.sign(t.delta));
   const withoutProgress = all.filter((v) => !progress(v)).length;
   if (withoutProgress) notes.push(`${withoutProgress} voies examinées n’apportent aucun mouvement établi vers la cible ; elles ne sont pas proposées.`);
+  for (const v of all) ORDRE_POOL.set(v, poolDe(v));
   for (const v of all.filter(progress).sort(compareVoies)) {
     if (perDomain[v.domain] >= (v.domain === 'stock' ? limit : buyLimit)) continue;
     const key = v.actions.map((a) => a.hopKey).sort().join('+');
@@ -484,6 +521,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     let voiesP: Voie[] = [];
     if (!(ibuVise > 0)) notesP.push('Palier 60′ : la visée d’IBU doit être positive ; aucun ajout proposé.');
     else {
+      // D102 (A) : par clé, comme le pool des voies (`available` ne porte que des clés du stock) : Citra simple est candidat même quand Citra cryo est en stock.
       const achetables = catalogueDuMoteur().filter((c) => !available.has(c.id) && allowed(c.id))
         .map((c) => stockDuMoteur().find((s) => s.varietyId === c.id && s.form !== 'cryo')?.key ?? c.id);
       let sansAlpha = 0, exclus = 0;
@@ -500,7 +538,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
         const next = { ...recipe, additions: [...recipe.additions, a] };
         const v = evaluate('ajouter', `Ajouter ${nameOf(key)} · ${MOMENTS.b60.label} · ${round(a.grams, 1)} g (+${round(ibuVise, 1)} IBU)`, [act('ajouter', a)], [{ addition: a, sign: 1 }], next, [], undefined, true);
         if (v.conflicts.length) { exclus++; continue; } // le conflit de famille reste une exclusion (D88 B, D90)
-        v.palier = infoPalierDe(key, exact, v.ibu.after); // le rang lit les grammes EXACTS : deux α voisins ne sont pas ex æquo parce que le gramme les arrondit pareil
+        v.palier = infoPalierDe(key, exact, v.ibu.after, { ibu: ibuVise, moment: 'b60' }); // le rang lit les grammes EXACTS : deux α voisins ne sont pas ex æquo parce que le gramme les arrondit pareil
         v.enStock = enStockDe(key);
         candidates.push(v);
       }
@@ -533,7 +571,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     const doseImposee = typeof options.dryHop === 'object' && options.dryHop.doseGL > 0 ? options.dryHop.doseGL : null;
     const groupe = (m: 'dryActive' | 'dryPost'): Voie[] => {
       const vs: Voie[] = [];
-      const pool = [...stockHops, ...buyPoolDe(true, Infinity)].filter((key) => plus.some((f) => citeVisee(hopRef(key)?.varietyId ?? '', f)));
+      const pool = [...stockHops, ...buyPoolComplet(true)].filter((key) => plus.some((f) => citeVisee(hopRef(key)?.varietyId ?? '', f)));
       for (const key of pool) {
         const dose: DoseDryHop | null = doseImposee !== null ? { gPerL: doseImposee, borne: null, imposee: 'dose générique, sans source de style' } : doseDe(key, m);
         if (!dose) continue;
@@ -569,6 +607,8 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
 }
 
 const STOCK_RANK = { suffisant: 0, manque: 1, 'à acheter': 2 } as const;
+/** D105 : rang du houblon d'une voie dans l'ordre de qualité du pool « à acheter » (voir `ordrePool` dans proposeVoies). Table faible : jamais dans la réponse, jamais clonée vers le worker ; absent = 0. */
+const ORDRE_POOL = new WeakMap<Voie, number>();
 /** Clés du classement lexicographique (voir RANKING). 0 = égalité réelle de toutes les clés. */
 export function compareRankKeys(a: Voie, b: Voie, avecDebordementRang = true): number {
   const da = a.distance.total, db = b.distance.total;
@@ -578,6 +618,7 @@ export function compareRankKeys(a: Voie, b: Voie, avecDebordementRang = true): n
     || (da === null ? (db === null ? 0 : 1) : db === null ? -1 : da - db)
     || comparerGrammesPalier(a.palier, b.palier) // g2b : puis moins de grammes (α) ; inerte sans l'option
     || comparerCles(a.departage?.cle, b.departage?.cle)
+    || (ORDRE_POOL.get(a) ?? 0) - (ORDRE_POOL.get(b) ?? 0) // D105 : le style départage avant les effets de bord (listes principales ; 0 ailleurs)
     || a.sideTotal - b.sideTotal
     || STOCK_RANK[a.stock.status] - STOCK_RANK[b.stock.status]
     || Math.abs(a.ibu.drift) - Math.abs(b.ibu.drift);

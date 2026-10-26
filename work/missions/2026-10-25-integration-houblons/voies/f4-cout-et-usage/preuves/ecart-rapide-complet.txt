@@ -1,0 +1,15 @@
+21C agrumes                      lignes principales : premier affichage 14, complet 14 ; remplacements 0 ; dans le complet seulement 0, au premier affichage seulement 0 ; même ordre sur les communes : true (préfixe)
+                                 effets des voies communes identiques : true
+                                 leviers levure : 3 voies, empreinte f1f522c2367f ; complet 604d27d73f7b ; identiques : false ; sans rank ni tieWith : true
+21C floral + agrumes − résineux  lignes principales : premier affichage 14, complet 14 ; remplacements 0 ; dans le complet seulement 0, au premier affichage seulement 0 ; même ordre sur les communes : true (préfixe)
+                                 effets des voies communes identiques : true
+                                 leviers levure : 3 voies, empreinte a0a0a4c3631b ; complet 4898d5a10b69 ; identiques : false ; sans rank ni tieWith : true
+16D floral                       lignes principales : premier affichage 14, complet 13 ; remplacements 1 ; dans le complet seulement 0, au premier affichage seulement 1 ; même ordre sur les communes : true (préfixe)
+                                 effets des voies communes identiques : true
+                                 leviers levure : 3 voies, empreinte c661497e20c3 ; complet c557cb054ec0 ; identiques : false ; sans rank ni tieWith : true
+16D moins résineux               lignes principales : premier affichage 2, complet 2 ; remplacements 9 ; dans le complet seulement 0, au premier affichage seulement 0 ; même ordre sur les communes : true (préfixe)
+                                 effets des voies communes identiques : true
+                                 leviers levure : 2 voies, empreinte f799618ed711 ; complet 62748bb9a4f9 ; identiques : false ; sans rank ni tieWith : true
+16D floral + tropical            lignes principales : premier affichage 14, complet 14 ; remplacements 0 ; dans le complet seulement 0, au premier affichage seulement 0 ; même ordre sur les communes : true (préfixe)
+                                 effets des voies communes identiques : true
+                                 leviers levure : 3 voies, empreinte 4b23b5f2ee7e ; complet 48874a4b1942 ; identiques : false ; sans rank ni tieWith : true

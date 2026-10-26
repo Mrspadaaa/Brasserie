@@ -1,0 +1,6 @@
+21C-agrumes : ouverture 1507 ms · groupe Remplacer absent · dry hop 1785.2 → 1785.2 (écart 0 px) · levure 1944.2 → 1944.2 (écart 0 px) · verdicts changés : aucun · lignes principales 15 → 15
+21C-floral-agrumes-moins-resineux : ouverture 1143 ms · groupe Remplacer absent · dry hop 2039.7 → 2039.7 (écart 0 px) · levure 2214.7 → 2214.7 (écart 0 px) · verdicts changés : aucun · lignes principales 15 → 15
+16D-floral : ouverture 1023 ms · groupe Remplacer 1 lignes · dry hop 1744.2 → 1786.2 (écart 42 px) · levure 1903.2 → 1945.2 (écart 42 px) · verdicts changés : aucun · lignes principales 15 → 14
+16D-moins-resineux : ouverture 727 ms · groupe Remplacer 10 lignes · dry hop null → null (écart null px) · levure 1365.9 → 1365.9 (écart 0 px) · verdicts changés : aucun · lignes principales 0 → 0
+16D-floral-tropical : ouverture 1077 ms · groupe Remplacer absent · dry hop 1768.7 → 1768.7 (écart 0 px) · levure 1961.9 → 1961.9 (écart 0 px) · verdicts changés : aucun · lignes principales 15 → 15
+CAPTURE OK

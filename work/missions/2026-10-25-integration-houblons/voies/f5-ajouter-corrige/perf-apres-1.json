@@ -1,0 +1,47 @@
+{
+ "etiquette": "apres-1",
+ "varietes": 505,
+ "medianeDesPasses": 8.57,
+ "passes": [
+  {
+   "parRecette": {
+    "21A": 9.95,
+    "21C": 9.86,
+    "16D": 8.63
+   },
+   "mediane": 9.86
+  },
+  {
+   "parRecette": {
+    "21A": 8.74,
+    "21C": 9.03,
+    "16D": 8.39
+   },
+   "mediane": 8.74
+  },
+  {
+   "parRecette": {
+    "21A": 8.57,
+    "21C": 8.63,
+    "16D": 8.25
+   },
+   "mediane": 8.57
+  },
+  {
+   "parRecette": {
+    "21A": 8.53,
+    "21C": 8.58,
+    "16D": 8.3
+   },
+   "mediane": 8.53
+  },
+  {
+   "parRecette": {
+    "21A": 8.49,
+    "21C": 8.49,
+    "16D": 8.24
+   },
+   "mediane": 8.49
+  }
+ ]
+}

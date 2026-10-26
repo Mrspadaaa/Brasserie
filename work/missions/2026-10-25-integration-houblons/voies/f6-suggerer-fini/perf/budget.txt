@@ -1,0 +1,1 @@
+BUDGET FAIL B1 démarrage : 921 ko gzip (3 fichiers) (budget 350 ko) DÉPASSÉ ; B2 étape Houblons : 773 ko gzip ajoutés (21 fichiers) (budget 150 ko) DÉPASSÉ ; B5 ouverture d’un outil v4 : 163.0 ko gzip ajoutés (profil-simule-ClAJMbFf.js, hopExtrapolationBootstrap-DwwEfl2H.js, styleSelection-D1QY3TKp.js) (budget 164 ko) tenu

@@ -1,0 +1,377 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [31m❯[39m prototypes/houblons-v4/tests/substitution.test.ts [2m([22m[2m15 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 117[2mms[22m[39m
+   [32m✓[39m Substitution de houblons : témoins de bon sens[2m > [22mles Goldings se trouvent entre eux (32 fiches : premier quart ; catalogue : EKG ↔ Golding premiers)[32m 1[2mms[22m[39m
+   [32m✓[39m Substitution de houblons : témoins de bon sens[2m > [22mles nobles Saaz (CZ), Saaz Late, Spalt se trouvent entre eux ; Mittelfrüh trouve Saaz (CZ) et Spalt[32m 0[2mms[22m[39m
+   [32m✓[39m Substitution de houblons : témoins de bon sens[2m > [22mCitra cryo trouve Galaxy, Idaho 7 et Nectaron avant Fuggle[32m 0[2mms[22m[39m
+   [32m✓[39m Substitution de houblons : témoins de bon sens[2m > [22mNugget à 60′ trouve des amérisants (Columbus, Pahto) avant les aromatiques ; aucun houblon de rôle aromatique dans ses 10 premiers sans démotion écrite (D105) ; Target rétrogradé avec sa source[32m 0[2mms[22m[39m
+   [32m✓[39m Substitution de houblons : témoins de bon sens[2m > [22msans moment, les poids sont ceux de l'arôme chaud et Pahto reste devant Fuggle[32m 11[2mms[22m[39m
+   [32m✓[39m Substitution de houblons : témoins de bon sens[2m > [22mtémoin négatif : poids à zéro, chaque témoin échoue[32m 4[2mms[22m[39m
+   [32m✓[39m Substitution de houblons : score, couverture, dose, classement[2m > [22mchaque remplaçant porte score 0–100, composantes, couverture, gains et pertes, dose, raison[32m 33[2mms[22m[39m
+   [32m✓[39m Substitution de houblons : score, couverture, dose, classement[2m > [22mun score sans arôme connu est marqué faible et passe derrière[32m 13[2mms[22m[39m
+   [32m✓[39m Substitution de houblons : score, couverture, dose, classement[2m > [22mdose à IBU égal au même moment, plage tirée de l’α ; à froid, à masse égale[32m 7[2mms[22m[39m
+   [32m✓[39m Substitution de houblons : score, couverture, dose, classement[2m > [22mcontexte : le moment règle les poids ; à l’amertume, un α plus haut ne coûte rien[32m 12[2mms[22m[39m
+   [32m✓[39m Substitution de houblons : score, couverture, dose, classement[2m > [22m« en stock d’abord » : jamais devant un palier meilleur ; dans un palier, le stock passe devant[32m 8[2mms[22m[39m
+[31m   [31m×[31m Substitution de houblons : score, couverture, dose, classement[2m > [22mamertume en brasseur : Nugget à 60′, stock d’abord → aucun cryo en tête, premier du stock amérisant ou double usage en quantité suffisante[39m[32m 7[2mms[22m[39m
+[31m     → expected true to be false // Object.is equality[39m
+   [32m✓[39m Substitution de houblons : score, couverture, dose, classement[2m > [22mla raison écrit l’α qui fait la dose : celui du lot, pour lire « α 9,6 % (lot) » avec « 62 g »[32m 8[2mms[22m[39m
+   [32m✓[39m Substitution de houblons : score, couverture, dose, classement[2m > [22mstyle : une famille indésirable gagnée met le remplaçant en conflit, derrière les autres[32m 9[2mms[22m[39m
+   [32m✓[39m Substitution dans le pack[2m > [22mchaque fiche porte ses remplaçants calculés (top 5, méthode, date) ; substituts reste null ; pack sous 560 ko[32m 3[2mms[22m[39m
+ [31m❯[39m prototypes/houblons-v4/tests/client-async.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 498[2mms[22m[39m
+   [33m[2m✓[22m[39m client asynchrone : mêmes résultats que l'appel direct[2m > [22mle banc ×1 : l'appel direct de l'adaptateur rend les empreintes de t5 [33m 387[2mms[22m[39m
+[31m   [31m×[31m client asynchrone : mêmes résultats que l'appel direct[2m > [22mserveur du fil principal : mêmes empreintes par le client[39m[32m 8[2mms[22m[39m
+[31m     → expected '289ca4efaed4' to be 'c6399d7b6596' // Object.is equality[39m
+[31m   [31m×[31m client asynchrone : mêmes résultats que l'appel direct[2m > [22mserveur du fil principal différé (comme un worker) : mêmes empreintes par le client[39m[32m 7[2mms[22m[39m
+[31m     → expected '289ca4efaed4' to be 'c6399d7b6596' // Object.is equality[39m
+   [32m✓[39m client asynchrone : mêmes résultats que l'appel direct[2m > [22mlire : tout de suite sur le fil principal ; d'un serveur différé, seulement une réponse déjà reçue (préchauffée)[32m 3[2mms[22m[39m
+   [32m✓[39m client asynchrone : une réponse périmée est ignorée[2m > [22mdeux requêtes sur un canal, la plus ancienne répond APRÈS : seule la plus récente est rendue[32m 1[2mms[22m[39m
+   [32m✓[39m client asynchrone : une réponse périmée est ignorée[2m > [22mdans l'ordre aussi : la première, rendue périmée par la seconde, est ignorée[32m 0[2mms[22m[39m
+   [32m✓[39m client asynchrone : une réponse périmée est ignorée[2m > [22mcanal fermé (écran démonté) : la réponse en vol est ignorée[32m 0[2mms[22m[39m
+   [32m✓[39m client asynchrone : une réponse périmée est ignorée[2m > [22mdeux canaux sont indépendants (deux écrans)[32m 0[2mms[22m[39m
+   [32m✓[39m client asynchrone : une réponse périmée est ignorée[2m > [22mune erreur du calcul traverse le contrat en message et rejette la requête la plus récente seulement[32m 1[2mms[22m[39m
+   [32m✓[39m contrat pour un worker (T7)[2m > [22mla table de la maquette sert les quatre calculs lourds de D65[32m 0[2mms[22m[39m
+   [32m✓[39m contrat pour un worker (T7)[2m > [22mrequêtes et réponses sont des données simples : un aller-retour structuredClone (postMessage) les garde[32m 88[2mms[22m[39m
+ [31m❯[39m prototypes/houblons-v4/tests/worker-calculs.test.ts [2m([22m[2m5 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 566[2mms[22m[39m
+[31m   [31m×[31m worker des calculs : mêmes résultats que l'appel direct[2m > [22mproposer, suggerer, remplacants, substitutes : les empreintes du banc ×1, à travers des messages clonés[39m[33m 403[2mms[22m[39m
+[31m     → expected '289ca4efaed4' to be 'c6399d7b6596' // Object.is equality[39m
+   [32m✓[39m worker des calculs : mêmes résultats que l'appel direct[2m > [22mchaque résultat de la table se clone sans perte (ni fonction, ni classe) : égal au résultat direct[32m 161[2mms[22m[39m
+   [32m✓[39m worker des calculs : données injectées[2m > [22mfixtures : rien à envoyer (le worker les a) ; k2 (sans dégustation) : la dégustation à null[32m 1[2mms[22m[39m
+   [32m✓[39m worker des calculs : données injectées[2m > [22mune dégustation passe en valeur, et le worker la rend en recette neuve à chaque appel[32m 1[2mms[22m[39m
+   [32m✓[39m worker des calculs : données injectées[2m > [22mun α du lot calculé par une fonction propre : non clonable, pas de worker (null)[32m 0[2mms[22m[39m
+ [32m✓[39m prototypes/houblons-v4/tests/pack.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/apportMinoritaire.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 6781[2mms[22m[39m
+   [33m[2m✓[22m[39m (c) rang seul : le débordement d'une famille non marquée ne compte plus dans le rang, les barres ne bougent pas[2m > [22mà 10′ (plusieurs doses cherchées par houblon) : la dose gardée est la même, donc les barres aussi ; seul l'ordre peut changer [33m 1833[2mms[22m[39m
+   [33m[2m✓[22m[39m (m) effet si marquée : une famille citée par moins de la moitié des fiches n'apporte pas d'effet établi[2m > [22maucune voie n'établit d'effet par une famille non marquée ; le pool ne garde que des houblons qui portent la visée marquée [33m 1093[2mms[22m[39m
+   [33m[2m✓[22m[39m (m) effet si marquée : une famille citée par moins de la moitié des fiches n'apporte pas d'effet établi[2m > [22mNelson Sauvin (agrumes citée mais pas marquée ?) : sa présence dans la liste suit la règle, sans effet inventé [33m 1022[2mms[22m[39m
+   [33m[2m✓[22m[39m (m) effet si marquée : une famille citée par moins de la moitié des fiches n'apporte pas d'effet établi[2m > [22mle dry hop vrai (g2b) lit la même règle : chaque voie du groupe actif établit la visée [33m 1267[2mms[22m[39m
+   [33m[2m✓[22m[39m (w) effet pondéré : l'effet d'une famille est multiplié par la part des fiches qui la citent[2m > [22maucune clé de plus dans la réponse (ni overflowRang ni minoritaire) [33m 1396[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/departage.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 4427[2mms[22m[39m
+   [33m[2m✓[22m[39m le défaut reste « aucun », octet pour octet[2m > [22msans option, avec 'aucun' : même résultat, et aucune clé dans les voies [33m 2551[2mms[22m[39m
+   [33m[2m✓[22m[39m le défaut reste « aucun », octet pour octet[2m > [22mun appel d'écran (options par défaut, assemblages, leviers) est inchangé par 'aucun' [33m 347[2mms[22m[39m
+   [33m[2m✓[22m[39m à 10′ aussi, sans toucher aux effets[2m > [22mk2 réordonne, mêmes effets [33m 1498[2mms[22m[39m
+ [32m✓[39m prototypes/houblons-v4/tests/fabrique.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 1515[2mms[22m[39m
+   [33m[2m✓[22m[39m caches bornés (#164)[2m > [22mles bases simulées d'un moteur restent bornées quand la dose change à chaque appel [33m 1073[2mms[22m[39m
+   [33m[2m✓[22m[39m preuves documentaires chez l'appelant (t2, point 2) : mêmes niveaux que hopDescriptorEvidence seul[2m > [22mtout le catalogue, 12 familles : niveau, sources, premier, auteurs, citations [33m 340[2mms[22m[39m
+ [32m✓[39m prototypes/houblons-v4/tests/donnees.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 963[2mms[22m[39m
+ [32m✓[39m prototypes/houblons-v4/tests/voies-cache.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 1033[2mms[22m[39m
+   [33m[2m✓[22m[39m proposeVoies : prédictions en cache par moteur (#178)[2m > [22mles leviers levure relisent les prédictions de proposer : seules celles de la levure seule sont nouvelles [33m 321[2mms[22m[39m
+   [33m[2m✓[22m[39m proposeVoies : prédictions en cache par moteur (#178)[2m > [22mmêmes résultats, quel que soit l’ordre des appels et le cache déjà rempli [33m 534[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/complements.test.ts [2m([22m[2m17 tests[22m[2m)[22m[33m 885[2mms[22m[39m
+   [33m[2m✓[22m[39m déterminisme du script de fusion[2m > [22mdeux passes donnent le même sha256 pour les trois sorties, identique à celui des fichiers écrits [33m 428[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/ajouterClassement.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 756[2mms[22m[39m
+ [32m✓[39m prototypes/houblons-v4/tests/engine.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 629[2mms[22m[39m
+ [32m✓[39m prototypes/houblons-v4/tests/pouvoir.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 585[2mms[22m[39m
+   [33m[2m✓[22m[39m Aucune valeur inconnue n’est 0 ; chaque chiffre porte sa base, sa source et son niveau[2m > [22msorties : toute grandeur chiffrée a une base, des sources datées ou expliquées et un niveau ; aucun zéro [33m 544[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/substitutionV2.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 478[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/traductionMots.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 209[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/empreinteDonnees.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 186[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/moteurInchange.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 161[2mms[22m[39m
+ [32m✓[39m prototypes/houblons-v4/tests/profil-simule.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 88[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/catalogueComplet.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 94[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteJohnIHaas.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 67[2mms[22m[39m
+[90mstdout[2m | prototypes/houblons-v4/tests/conversion-recette.test.ts[2m > [22m[2mConversion de la recette de l’app (B5)[2m > [22m[2mécart d’IBU sans la DI d’ébullition de l’app : un apport tardif (mangue) baisse la DI d’ébullition, la conversion le dit
+[22m[39mÉCART IBU (session NEIPA + 1,5 kg de mangue en fermentation) : moteur 15.86 (DI 1.034) − page 16.59 (DI d’ébullition 1.0290) = -0.73 IBU
+
+ [32m✓[39m prototypes/houblons-v4/tests/conversion-recette.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/comparerValeursCatalogue.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 78[2mms[22m[39m
+ [32m✓[39m prototypes/houblons-v4/tests/houblon-inconnu.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/exclusionStyle.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/recipeConversion.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/hopToolsTransport.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/affinageD102.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 38423[2mms[22m[39m
+   [33m[2m✓[22m[39m D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer)[2m > [22m'21C plus d’agrumes' : chaque liste qui montre le cryo montre aussi le simple (voies, 60′, dry hop actif et après ; à α de lot égal pour les remplacements) [33m 4302[2mms[22m[39m
+   [33m[2m✓[22m[39m D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer)[2m > [22m'16D plus floral' : chaque liste qui montre le cryo montre aussi le simple (voies, 60′, dry hop actif et après ; à α de lot égal pour les remplacements) [33m 4619[2mms[22m[39m
+   [33m[2m✓[22m[39m D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer)[2m > [22m'16D moins de résineux' : chaque liste qui montre le cryo montre aussi le simple (voies, 60′, dry hop actif et après ; à α de lot égal pour les remplacements) [33m 1182[2mms[22m[39m
+   [33m[2m✓[22m[39m D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer)[2m > [22m'21C plus d’agrumes', 60′ : Citra cryo n’est plus 1er, et il passe après Citra simple (produit d’arôme) [33m 3054[2mms[22m[39m
+   [33m[2m✓[22m[39m D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer)[2m > [22m'16D plus floral', 60′ : Citra cryo n’est plus 1er, et il passe après Citra simple (produit d’arôme) [33m 2946[2mms[22m[39m
+   [33m[2m✓[22m[39m D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer)[2m > [22m60′ : le rang de palier du cryo se calcule sur l’α de la variété, mais l’α affiché reste celui du lot [33m 3201[2mms[22m[39m
+   [33m[2m✓[22m[39m D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer)[2m > [22m60′ : un lot ordinaire (pas un produit) garde le rang sur son propre α [33m 2959[2mms[22m[39m
+   [33m[2m✓[22m[39m D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer)[2m > [22m« remplacer à IBU égal » : le cryo suit la même règle d’usage et de rang [33m 2759[2mms[22m[39m
+   [33m[2m✓[22m[39m D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90)[2m > [22m'21C plus d’agrumes' : tout phare de la visée, non exclu par D90, est classé (ni maxBuy ni autre plafond avant le rang) [33m 1914[2mms[22m[39m
+   [33m[2m✓[22m[39m D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90)[2m > [22m'16D plus floral' : tout phare de la visée, non exclu par D90, est classé (ni maxBuy ni autre plafond avant le rang) [33m 1440[2mms[22m[39m
+   [33m[2m✓[22m[39m D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90)[2m > [22mles exclusions D90 restent écrites : Strata (21C) et Simcoe (16D « moins de résineux ») sont refusés par une famille marquée [33m 1838[2mms[22m[39m
+   [33m[2m✓[22m[39m D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90)[2m > [22mD105 : la borne de coût (80) garde les phares de la stout « moins de résineux » (Strata y est), 6 les coupait [33m 672[2mms[22m[39m
+   [33m[2m✓[22m[39m D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90)[2m > [22m'21C plus d’agrumes' : `maxBuy` est une borne de coût (défaut 80, 400 = tout), et la liste par défaut est le haut du classement [33m 3622[2mms[22m[39m
+   [33m[2m✓[22m[39m D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90)[2m > [22m'16D plus floral' : `maxBuy` est une borne de coût (défaut 80, 400 = tout), et la liste par défaut est le haut du classement [33m 2878[2mms[22m[39m
+   [33m[2m✓[22m[39m D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90)[2m > [22m'16D moins de résineux' : `maxBuy` est une borne de coût (défaut 80, 400 = tout), et la liste par défaut est le haut du classement [33m 533[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/coherenceCatalogue.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/plagesSources.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/descripteursSources.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteNzhops.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/froid.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/packInstallable.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteBarthHaas.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/cacheHorsLigne.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+[90mstderr[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : accès[2m > [22m[2mrefuse sans connexion, sans adresse vérifiée et hors des comptes autorisés, sans rien dépenser
+[22m[39m{"email":"intrus@example.invalid","severity":"WARNING","message":"Accès IA refusé"}
+
+[90mstdout[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : une réponse valide[2m > [22m[2mréserve le budget (mensuel et quotidien) avant l’envoi, appelle Flash-Lite seul, rend l’ordre sous les clés du client
+[22m[39m{"model":"gemini-3.5-flash-lite","elapsedMs":1,"email":"reclass-test@example.invalid","severity":"INFO","message":"Reclassement IA rendu"}
+
+[90mstdout[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : une réponse valide[2m > [22m[2ml’ordre rendu peut différer de celui du moteur : c07 d’abord, les clés suivent
+[22m[39m{"model":"gemini-3.5-flash-lite","elapsedMs":0,"email":"reclass-test@example.invalid","severity":"INFO","message":"Reclassement IA rendu"}
+
+[90mstdout[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : une réponse valide[2m > [22m[2mun client ne choisit ni le modèle ni la clé : un champ « model » est ignoré
+[22m[39m{"model":"gemini-3.5-flash-lite","elapsedMs":1,"email":"reclass-test@example.invalid","severity":"INFO","message":"Reclassement IA rendu"}
+
+[90mstderr[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : jamais un ordre inventé[2m > [22m[2mrefuse : identifiant hors liste
+[22m[39m{"erreurs":["identifiant hors liste : c99"],"elapsedMs":0,"severity":"WARNING","message":"Reclassement IA refusé"}
+
+[90mstderr[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : jamais un ordre inventé[2m > [22m[2mrefuse : identifiant en double
+[22m[39m{"erreurs":["identifiant en double : c01"],"elapsedMs":1,"severity":"WARNING","message":"Reclassement IA refusé"}
+
+[90mstderr[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : jamais un ordre inventé[2m > [22m[2mrefuse : JSON coupé
+[22m[39m{"erreurs":["JSON illisible"],"elapsedMs":0,"severity":"WARNING","message":"Reclassement IA refusé"}
+
+[90mstderr[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : jamais un ordre inventé[2m > [22m[2mrefuse : neuf entrées
+[22m[39m{"erreurs":["9 entrées au lieu de 10"],"elapsedMs":0,"severity":"WARNING","message":"Reclassement IA refusé"}
+
+[90mstderr[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : jamais un ordre inventé[2m > [22m[2mrefuse : identifiant au-delà de la liste envoyée
+[22m[39m{"erreurs":["identifiant hors liste : c21"],"elapsedMs":0,"severity":"WARNING","message":"Reclassement IA refusé"}
+
+[90mstderr[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : jamais un ordre inventé[2m > [22m[2mrefuse : phrase vide
+[22m[39m{"erreurs":["phrase vide : c04"],"elapsedMs":0,"severity":"WARNING","message":"Reclassement IA refusé"}
+
+[90mstderr[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : jamais un ordre inventé[2m > [22m[2mrefuse : sans classement
+[22m[39m{"erreurs":["classement absent","0 entrées au lieu de 10"],"elapsedMs":0,"severity":"WARNING","message":"Reclassement IA refusé"}
+
+[90mstdout[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : jamais un ordre inventé[2m > [22m[2mignore au-delà de la dixième entrée, comme l’essai
+[22m[39m{"model":"gemini-3.5-flash-lite","elapsedMs":0,"email":"reclass-test@example.invalid","severity":"INFO","message":"Reclassement IA rendu"}
+
+[90mstderr[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : refus, pannes, entrée[2m > [22m[2mune panne du fournisseur n’est pas retentée : une seule requête, jamais 3.8
+[22m[39m{"kind":"server","status":503,"elapsedMs":1,"severity":"WARNING","message":"Reclassement IA : Gemini en échec"}
+
+[90mstderr[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : refus, pannes, entrée[2m > [22m[2mun délai dépassé rend une erreur propre
+[22m[39m{"name":"TimeoutError","message":"Reclassement IA en échec","elapsedMs":0,"severity":"WARNING"}
+
+[90mstdout[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : refus, pannes, entrée[2m > [22m[2mhors émulateur, aucune variable ne détourne l’appel de Google
+[22m[39m{"model":"gemini-3.5-flash-lite","elapsedMs":0,"email":"reclass-test@example.invalid","severity":"INFO","message":"Reclassement IA rendu"}
+
+[90mstdout[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : refus, pannes, entrée[2m > [22m[2mdans l’émulateur, et là seulement, le fournisseur simulé local est atteint (sans clé)
+[22m[39m{"model":"gemini-3.5-flash-lite","elapsedMs":1,"email":"reclass-test@example.invalid","severity":"INFO","message":"Reclassement IA rendu"}
+
+[90mstdout[2m | tests/unit/hopIndexV4/hopReclasserIA.test.ts[2m > [22m[2mhopReclasserIA : refus, pannes, entrée[2m > [22m[2mdans l’émulateur, et là seulement, le fournisseur simulé local est atteint (sans clé)
+[22m[39m{"model":"gemini-3.5-flash-lite","elapsedMs":0,"email":"reclass-test@example.invalid","severity":"INFO","message":"Reclassement IA rendu"}
+
+ [32m✓[39m tests/unit/hopIndexV4/hopReclasserIA.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m prototypes/houblons-v4/tests/style.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/radarContourOriginal.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/froidDryhopper.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/comparerComplements.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteYakimavalleyhops.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteIhps.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteFreestylehops.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteCharlesFaram.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteBritishHops.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteHpa.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteBeerAnalytics.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteCrosbyhops.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteBrewersfriend.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 6[2mms[22m[39m
+[90mstdout[2m | prototypes/houblons-v4/tests/tolerance.test.ts[2m > [22m[2mtolérance par style (D54)[2m > [22m[2mtable de lecture (rapport)
+[22m[39m┌─────────┬───────┬──────┬──────┬────────────┬──────────┬───────┬──────┬──────┐
+│ (index) │ style │ m    │ f    │ resine     │ bande    │ T     │ a20  │ a35  │
+├─────────┼───────┼──────┼──────┼────────────┼──────────┼───────┼──────┼──────┤
+│ 0       │ [32m'16D'[39m │ [33m0.88[39m │ [33m0.92[39m │ [32m'neutre'[39m   │ [32m'0–27.6'[39m │ [33m9.2[39m   │ [33m0[39m    │ [33m0.8[39m  │
+│ 1       │ [32m'15B'[39m │ [33m0.45[39m │ [33m0.64[39m │ [32m'neutre'[39m   │ [32m'0–19.2'[39m │ [33m6.4[39m   │ [33m0.13[39m │ [33m2.47[39m │
+│ 2       │ [32m'5B'[39m  │ [33m0.13[39m │ [33m0.43[39m │ [32m'neutre'[39m   │ [32m'0–12.9'[39m │ [33m5[39m     │ [33m1.42[39m │ [33m4.42[39m │
+│ 3       │ [32m'3B'[39m  │ [33m0.27[39m │ [33m0.53[39m │ [32m'neutre'[39m   │ [32m'0–15.9'[39m │ [33m5.3[39m   │ [33m0.77[39m │ [33m3.6[39m  │
+│ 4       │ [32m'1A'[39m  │ [33m0[39m    │ [33m0.35[39m │ [32m'neutre'[39m   │ [32m'0–10.5'[39m │ [33m5[39m     │ [33m1.9[39m  │ [33m4.9[39m  │
+│ 5       │ [32m'21A'[39m │ [33m0.54[39m │ [33m0.7[39m  │ [32m'attendue'[39m │ [32m'0–100'[39m  │ [33m23.33[39m │ [33m0[39m    │ [33m0[39m    │
+└─────────┴───────┴──────┴──────┴────────────┴──────────┴───────┴──────┴──────┘
+
+ [32m✓[39m prototypes/houblons-v4/tests/tolerance.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+[90mstdout[2m | tests/unit/hopIndexV4/donneesApp.test.ts[2m > [22m[2mfixture de production du 17.10 (houblons-2026-10-17)[2m > [22m[2mrelie 18 articles sur 18 ; aucun non relié, et la liste le dit
+[22m[39mFIXTURE PRODUCTION : 18 reliés, 0 non reliés ; clés : ariana, cascade, citra:cryo, east-kent-goldings, fuggle, galaxy, hallertau-blanc, idaho-7, lotus, motueka, nectaron, nelson-sauvin, nugget, sabro, simcoe, target
+
+ [32m✓[39m tests/unit/hopIndexV4/donneesApp.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteIndiehops.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteCommunautaire.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteUsahops.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteBsg.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteHopsteiner.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteHopslist.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteHopsdirect.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteHopdatabase.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteUsda.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/bancEvalMetriques.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m prototypes/houblons-v4/tests/copies-de-work.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/collecteHopsjson.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/couvertureCatalogue.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/croixPile.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 5904[2mms[22m[39m
+   [33m[2m✓[22m[39m D118 · la croix d'une couche empilée sur Ma bière ramène à l'étape Houblons[2m > [22mMa bière → Suggestions → croix : l'étape Houblons, toute la pile fermée [33m 2488[2mms[22m[39m
+   [33m[2m✓[22m[39m D118 · la croix d'une couche empilée sur Ma bière ramène à l'étape Houblons[2m > [22mMa bière → Comparer → croix : l'étape Houblons [33m 939[2mms[22m[39m
+   [33m[2m✓[22m[39m D118 · la croix d'une couche empilée sur Ma bière ramène à l'étape Houblons[2m > [22mMa bière → Suggestions → Comparer → croix : l'étape Houblons, et non Suggérer [33m 1108[2mms[22m[39m
+   [33m[2m✓[22m[39m D118 · la croix d'une couche empilée sur Ma bière ramène à l'étape Houblons[2m > [22ml'onglet « Ma bière » de Suggérer reste le chemin d'un niveau : il revient à l'analyse [33m 908[2mms[22m[39m
+   [33m[2m✓[22m[39m D118 · la croix d'une couche empilée sur Ma bière ramène à l'étape Houblons[2m > [22mtémoin : Suggérer ouvert depuis l'étape (rien de Ma bière dessous) : la croix ferme d'un niveau, comme avant [33m 461[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/palierDryhop.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 48288[2mms[22m[39m
+   [33m[2m✓[22m[39m le défaut reste inchangé : aucune des options, aucune clé de plus[2m > [22ml'option dryHop ne change pas la liste principale (mêmes voies, mêmes rangs), elle ajoute un groupe [33m 307[2mms[22m[39m
+   [33m[2m✓[22m[39m le palier 60′ : la dose exacte pour +n IBU[2m > [22m+5 IBU : chaque ajout à 60′ rend +n IBU à ± 0,5 (au gramme, sinon au demi-gramme, sinon au dixième) [33m 689[2mms[22m[39m
+   [33m[2m✓[22m[39m le palier 60′ : la dose exacte pour +n IBU[2m > [22m+10 IBU : chaque ajout à 60′ rend +n IBU à ± 0,5 (au gramme, sinon au demi-gramme, sinon au dixième) [33m 491[2mms[22m[39m
+   [33m[2m✓[22m[39m le palier 60′ : la dose exacte pour +n IBU[2m > [22m+25 IBU : chaque ajout à 60′ rend +n IBU à ± 0,5 (au gramme, sinon au demi-gramme, sinon au dixième) [33m 509[2mms[22m[39m
+   [33m[2m✓[22m[39m le palier 60′ : la dose exacte pour +n IBU[2m > [22ml'IBU avant → après, la bande du style et le drapeau [33m 954[2mms[22m[39m
+   [33m[2m✓[22m[39m le palier 60′ : la dose exacte pour +n IBU[2m > [22maucun houblon d'arôme avant un amérisant : usage, puis α (moins de grammes) ; l'usage inconnu passe en dernier [33m 4275[2mms[22m[39m
+   [33m[2m✓[22m[39m le palier 60′ : la dose exacte pour +n IBU[2m > [22mle conflit de famille exclut (D90) ; la bande d'IBU n'exclut pas [33m 8682[2mms[22m[39m
+   [33m[2m✓[22m[39m le palier 60′ : la dose exacte pour +n IBU[2m > [22m« remplacer à IBU égal » suit la même règle d'usage : sans l'option un arôme peut passer avant un amérisant, avec elle jamais [33m 9172[2mms[22m[39m
+   [33m[2m✓[22m[39m le palier 60′ : la dose exacte pour +n IBU[2m > [22mle reste du stock se dit à part et ne fixe pas la dose ; une visée négative ne propose rien [33m 4386[2mms[22m[39m
+   [33m[2m✓[22m[39m le vrai dry hop : actif et après, chacun à la dose de la règle[2m > [22mune visée hors des bornes borne la dose et le dit : « max » pour une visée énorme, « min » pour une visée minuscule [33m 2022[2mms[22m[39m
+   [33m[2m✓[22m[39m le vrai dry hop : actif et après, chacun à la dose de la règle[2m > [22mun dry hop cumulé au-dessus du repère de revue (8 g/L) est signalé, jamais exclu [33m 923[2mms[22m[39m
+   [33m[2m✓[22m[39m le vrai dry hop : actif et après, chacun à la dose de la règle[2m > [22mle stock restant n'impose aucune dose : il se dit à part [33m 4376[2mms[22m[39m
+   [33m[2m✓[22m[39m le vrai dry hop : actif et après, chacun à la dose de la règle[2m > [22mune dose imposée (4 ou 8 g/L) : la même liste à cette dose, marquée générique ; la règle ne bouge pas [33m 2050[2mms[22m[39m
+   [33m[2m✓[22m[39m le vrai dry hop : actif et après, chacun à la dose de la règle[2m > [22mle départage (g2a) se lit dans chaque groupe : k1 et k3 rétrécissent le premier groupe d'ex æquo, mêmes voies, mêmes doses [33m 9110[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/outilsApp.test.tsx [2m([22m[2m12 tests[22m[2m)[22m[33m 1634[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer dans l'app (T15c)[2m > [22m« Remplacer » écrit un patch de hops par la porte unique, puis ferme la couche [33m 300[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/catalogueBranche.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1479[2mms[22m[39m
+   [33m[2m✓[22m[39m D175 : une variété à peu de données ne passe jamais devant une variété documentée à égalité, dans Suggérer[2m > [22mles voies d’achat de Suggérer : chaque houblon en deux jumeaux, le documenté passe avant le jumeau à peu de données, même derrière par le nom [33m 1205[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/biereApp.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1140[2mms[22m[39m
+   [33m[2m✓[22m[39m la couche hopBeer (HopToolLayer)[2m > [22mdrapeau hopV4 allumé : le vrai écran, plus « Écran provisoire » [33m 339[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/comparerApp.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 1079[2mms[22m[39m
+   [33m[2m✓[22m[39m Comparer dans l'app (T15b)[2m > [22ms'ouvre sur les houblons de la route et le brouillon ouvert dessous, sans les mots du cas S1 [33m 359[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/substituerIA.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 9957[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer et l’IA : ce que la liste fait[2m > [22mla liste du moteur est là tout de suite, l’appel part à l’ouverture avec les 20 premiers du moteur [33m 844[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer et l’IA : ce que la liste fait[2m > [22mréponse en moins de 3 s, liste intacte : l’ordre de l’IA remplace la liste, une puce « classé par l’IA », scores du moteur [33m 691[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer et l’IA : ce que la liste fait[2m > [22mun toucher sur la puce rend l’ordre du moteur, un second rend celui de l’IA [33m 1022[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer et l’IA : ce que la liste fait[2m > [22mB1 : la puce vit dans la tête fixe, à droite du titre, jamais dans le flux de la page : son arrivée ne décale rien [33m 556[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer et l’IA : ce que la liste fait[2m > [22mB2 : appliqué, le titre nomme le premier de la liste affichée et reprend sa phrase ; rendu, il rend le titre du moteur [33m 898[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer et l’IA : ce que la liste fait[2m > [22mC3 : un rang gris devant chaque score quand l’ordre IA est appliqué, aucun sinon [33m 854[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer et l’IA : ce que la liste fait[2m > [22mréponse après 3 s : la liste ne bouge pas, « appliquer l’ordre IA », un toucher l’applique [33m 726[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer et l’IA : ce que la liste fait[2m > [22mréponse rapide mais après un toucher sur la liste : la liste ne bouge pas, « appliquer l’ordre IA » [33m 546[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer et l’IA : ce que la liste fait[2m > [22mhors ligne : aucun appel, l’ordre du moteur, rien de dit [33m 335[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer et l’IA : ce que la liste fait[2m > [22mun appel en échec : l’ordre du moteur, sans message ni puce [33m 399[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer et l’IA : ce que la liste fait[2m > [22mune réponse « ok » à l’ordre invalide (hors liste, double, trop courte) est ignorée : jamais un ordre inventé [33m 1599[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer et l’IA : ce que la liste fait[2m > [22mla phrase de l’IA se lit dans le face à face, à un toucher de la rangée ; pas avant, pas sans l’ordre IA [33m 914[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer et l’IA : ce que la liste fait[2m > [22ml’écran ne parle ni de modèle ni de fournisseur [33m 573[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/demandeReelle.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 1078[2mms[22m[39m
+   [33m[2m✓[22m[39m sans visée ni dégustation (recette 21C) : les écrans disent le style, jamais S1[2m > [22mComparer : « Ta bière » dit « attendu en 21C », ni flèche ni « ta demande » ; le critère part d'une famille attendue [33m 382[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/ficheSuggererApp.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 1128[2mms[22m[39m
+   [33m[2m✓[22m[39m Suggérer dans l'app (T13)[2m > [22m« Appliquer » (mode Radar) écrit un patch de hops par la porte unique [33m 428[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/sourcesLignes.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1079[2mms[22m[39m
+   [33m[2m✓[22m[39m Substituer : un trait par plage qui diffère (α, β, huiles)[2m > [22mLotus et Citra au face à face, Galaxy à remplacer : aucun trait en double, aucune plage sans trait [33m 334[2mms[22m[39m
+   [33m[2m✓[22m[39m Comparer, feuille Valeurs : une barre par houblon, les références de toutes ses sources, une fois chacune[2m > [22mα et β de Lotus, Citra et Galaxy : une barre, l'enveloppe de toutes les sources, aucune référence en double [33m 334[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/ficheComplements.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 885[2mms[22m[39m
+   [33m[2m✓[22m[39m Sources › avec les compléments des 18 sources[2m > [22mchaque champ de complements.json présent pour un houblon s'affiche dans Sources [33m 709[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/ficheSourcesAutres.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 625[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/etapeHoublons.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 610[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/etapeHoublonsRecetteReelle.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 550[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/biereUnMot.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 451[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/suggererViseePosee.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 560[2mms[22m[39m
+   [33m[2m✓[22m[39m Suggérer reçoit la visée posée dans Ma bière[2m > [22mla visée posée (poserVisee) arrive à Suggérer, sans prop, et se retire avec elle [33m 365[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/chargementOutils.test.tsx [2m([22m[2m22 tests[22m[2m)[22m[32m 231[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/useHopData.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 386[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/renvoisEtDemande.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 212[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/communsHopIndex.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[32m 87[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/radarBiere.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/biereAppDegustee.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 194[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/legendeBandeAutres.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/cartesOuvertes.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/appuiRepete.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/substituerOrdreImpose.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/ecritureBrouillon.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/apportCDefaut.test.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 101757[2mms[22m[39m
+   [33m[2m✓[22m[39m D167 : sur la 21C, « plus d'agrumes », dry hop actif, les houblons établis remontent[2m > [22mdry hop après fermentation : les trois remontent aussi [33m 2012[2mms[22m[39m
+   [33m[2m✓[22m[39m D167 : sur la 21C, « plus d'agrumes », dry hop actif, les houblons établis remontent[2m > [22mle vrai dry hop (g2b) : le groupe actif est classé avec la même règle, ses voies sont les mêmes [33m 7731[2mms[22m[39m
+   [33m[2m✓[22m[39m où c agit par défaut : seulement les voies dont tous les ajouts sont au dry hop[2m > [22mau dry hop, chaque ajout porte overflowRang, jamais au-dessus de overflowTotal [33m 2380[2mms[22m[39m
+   [33m[2m✓[22m[39m où c agit par défaut : seulement les voies dont tous les ajouts sont au dry hop[2m > [22mà 10′ et en whirlpool : une voie qui ajoute à ce moment n'a aucune clé de plus et reste telle qu'avant, à l'octet près [33m 8114[2mms[22m[39m
+   [33m[2m✓[22m[39m où c agit par défaut : seulement les voies dont tous les ajouts sont au dry hop[2m > [22mles voies sur l'ajout de dry hop DÉJÀ dans la recette (retirer, augmenter, diminuer Cascade) sont des voies de dry hop : c y agit ; aucune autre voie hors dry hop [33m 1221[2mms[22m[39m
+   [33m[2m✓[22m[39m les barres ne changent pas : voie par voie, à chaque moment, sur deux recettes et plusieurs visées[2m > [22m21C · b10 : mêmes voies, mêmes barres, mêmes doses, mêmes débordements affichés (5 visées) [33m 9508[2mms[22m[39m
+   [33m[2m✓[22m[39m les barres ne changent pas : voie par voie, à chaque moment, sur deux recettes et plusieurs visées[2m > [22m21C · wp : mêmes voies, mêmes barres, mêmes doses, mêmes débordements affichés (5 visées) [33m 9145[2mms[22m[39m
+   [33m[2m✓[22m[39m les barres ne changent pas : voie par voie, à chaque moment, sur deux recettes et plusieurs visées[2m > [22m21C · dryActive : mêmes voies, mêmes barres, mêmes doses, mêmes débordements affichés (5 visées) [33m 8905[2mms[22m[39m
+   [33m[2m✓[22m[39m les barres ne changent pas : voie par voie, à chaque moment, sur deux recettes et plusieurs visées[2m > [22m21C · dryPost : mêmes voies, mêmes barres, mêmes doses, mêmes débordements affichés (5 visées) [33m 8639[2mms[22m[39m
+   [33m[2m✓[22m[39m les barres ne changent pas : voie par voie, à chaque moment, sur deux recettes et plusieurs visées[2m > [22mstout 16D · b10 : mêmes voies, mêmes barres, mêmes doses, mêmes débordements affichés (5 visées) [33m 7897[2mms[22m[39m
+   [33m[2m✓[22m[39m les barres ne changent pas : voie par voie, à chaque moment, sur deux recettes et plusieurs visées[2m > [22mstout 16D · wp : mêmes voies, mêmes barres, mêmes doses, mêmes débordements affichés (5 visées) [33m 7638[2mms[22m[39m
+   [33m[2m✓[22m[39m les barres ne changent pas : voie par voie, à chaque moment, sur deux recettes et plusieurs visées[2m > [22mstout 16D · dryActive : mêmes voies, mêmes barres, mêmes doses, mêmes débordements affichés (5 visées) [33m 7982[2mms[22m[39m
+   [33m[2m✓[22m[39m les barres ne changent pas : voie par voie, à chaque moment, sur deux recettes et plusieurs visées[2m > [22mstout 16D · dryPost : mêmes voies, mêmes barres, mêmes doses, mêmes débordements affichés (5 visées) [33m 7875[2mms[22m[39m
+   [33m[2m✓[22m[39m les barres ne changent pas : voie par voie, à chaque moment, sur deux recettes et plusieurs visées[2m > [22mle groupe du vrai dry hop : mêmes doses, mêmes barres [33m 12391[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m prototypes/houblons-v4/tests/client-async.test.ts[2m > [22mclient asynchrone : mêmes résultats que l'appel direct[2m > [22mserveur du fil principal : mêmes empreintes par le client
+[31m[1mAssertionError[22m: expected '289ca4efaed4' to be 'c6399d7b6596' // Object.is equality[39m
+
+Expected: [32m"c6399d7b6596"[39m
+Received: [31m"289ca4efaed4"[39m
+
+[36m [2m❯[22m prototypes/houblons-v4/tests/client-async.test.ts:[2m59:93[22m[39m
+    [90m 57| [39m      expect(forme.suggerer(await c.demander('suggerer', recette, 'flo…
+    [90m 58| [39m      expect(forme.remplacants(await c.demander('remplacants', recette…
+    [90m 59| [39m      expect(forme.substitutes(await c.demander('substitutes', H.nugge…
+    [90m   | [39m                                                                                            [31m^[39m
+    [90m 60| [39m    })[33m;[39m
+    [90m 61| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m prototypes/houblons-v4/tests/client-async.test.ts[2m > [22mclient asynchrone : mêmes résultats que l'appel direct[2m > [22mserveur du fil principal différé (comme un worker) : mêmes empreintes par le client
+[31m[1mAssertionError[22m: expected '289ca4efaed4' to be 'c6399d7b6596' // Object.is equality[39m
+
+Expected: [32m"c6399d7b6596"[39m
+Received: [31m"289ca4efaed4"[39m
+
+[36m [2m❯[22m prototypes/houblons-v4/tests/client-async.test.ts:[2m59:93[22m[39m
+    [90m 57| [39m      expect(forme.suggerer(await c.demander('suggerer', recette, 'flo…
+    [90m 58| [39m      expect(forme.remplacants(await c.demander('remplacants', recette…
+    [90m 59| [39m      expect(forme.substitutes(await c.demander('substitutes', H.nugge…
+    [90m   | [39m                                                                                            [31m^[39m
+    [90m 60| [39m    })[33m;[39m
+    [90m 61| [39m  }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m prototypes/houblons-v4/tests/substitution.test.ts[2m > [22mSubstitution de houblons : score, couverture, dose, classement[2m > [22mamertume en brasseur : Nugget à 60′, stock d’abord → aucun cryo en tête, premier du stock amérisant ou double usage en quantité suffisante
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m prototypes/houblons-v4/tests/substitution.test.ts:[2m191:65[22m[39m
+    [90m189| [39m    const l = r.remplacants, stock = l.filter((s) => s.stock.etat === …
+    [90m190| [39m    expect(l.slice(0, 3).some((s) => /cryo/i.test(s.name))).toBe(false…
+    [90m191| [39m    expect(stock.slice(0, 3).some((s) => /cryo/i.test(s.name))).toBe(f…
+    [90m   | [39m                                                                [31m^[39m
+    [90m192| [39m    // Rôle du moteur (fournisseur, sinon règle rôle-α v1), et usage «…
+    [90m193| [39m    const bitter = (key: string) => hopRole(key).value !== 'aromatique…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m prototypes/houblons-v4/tests/worker-calculs.test.ts[2m > [22mworker des calculs : mêmes résultats que l'appel direct[2m > [22mproposer, suggerer, remplacants, substitutes : les empreintes du banc ×1, à travers des messages clonés
+[31m[1mAssertionError[22m: expected '289ca4efaed4' to be 'c6399d7b6596' // Object.is equality[39m
+
+Expected: [32m"c6399d7b6596"[39m
+Received: [31m"289ca4efaed4"[39m
+
+[36m [2m❯[22m prototypes/houblons-v4/tests/worker-calculs.test.ts:[2m49:127[22m[39m
+    [90m 47| [39m    expect(empreinte(await c.demander('remplacants', recette, recette.…
+    [90m 48| [39m    const sr = await c.demander('substitutes', H.nugget, optionsNugget…
+    [90m 49| [39m    expect(empreinte(sr.remplacants.map((r) => [r.key, r.rank, r.score…
+    [90m   | [39m                                                                                                                              [31m^[39m
+    [90m 50| [39m  })[33m;[39m
+    [90m 51| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Errors [49m[22m[31m⎯⎯⎯⎯⎯⎯[39m
+[31m[1m
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Error [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: [vitest-worker]: Timeout calling "onTaskUpdate"[39m
+[90m [2m❯[22m Object.onTimeoutError ../../../../Documents/Brasserie/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:[2m53:10[22m[39m
+[90m [2m❯[22m Timeout._onTimeout ../../../../Documents/Brasserie/node_modules/vitest/dist/chunks/index.B521nVV-.js:[2m59:62[22m[39m
+[90m [2m❯[22m listOnTimeout node:internal/timers:[2m635:17[22m[39m
+[90m [2m❯[22m processTimers node:internal/timers:[2m571:7[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m89 passed[39m[22m[90m (92)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m890 passed[39m[22m[90m (894)[39m
+[2m     Errors [22m [1m[31m1 error[39m[22m
+[2m   Start at [22m 17:27:24
+[2m   Duration [22m 105.16s[2m (transform 4.98s, setup 8.36s, collect 37.93s, tests 238.76s, environment 15.34s, prepare 5.14s)[22m
+
+FIN

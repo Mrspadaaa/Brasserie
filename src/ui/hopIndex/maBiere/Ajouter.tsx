@@ -25,6 +25,8 @@ import { BoutonLegende } from './LegendeGroupe';
 import { useEtatCartes } from './carteOuverte';
 import { BandeOuverte, effetSiAjoute, LignesV2a, TonsV2a } from './legende-bande';
 import { libelleDe, momentLong, valeurDe } from './Frise';
+import { MarquesCatalogue, useCataloguePlein } from '../fiche/marques';
+import { cataloguePleinCharge } from '../../../domain/hopIndex/v4/data';
 
 type Gout = 'aimer' | 'neutre' | 'exclure';
 /** Mes goûts (base : ETAT.gouts), pour la page : un houblon exclu ne se propose plus. */
@@ -35,7 +37,8 @@ interface Proposition { cle: string; ajout: AjoutParcours; alternative: boolean;
 const cleRecette = (r: RecetteParcours) => JSON.stringify([r.styleCode, r.volumeL, r.og, r.boilMin, r.yeastId, r.additions]);
 const memoire = new Map<string, ReturnType<typeof quickAdds>>();
 function propositionsMoteur(r: RecetteParcours) {
-  const k = cleRecette(r);
+  // La clé lit aussi le catalogue (317 puis 505) et le stock des données courantes : un stock qui change (snapshot) ou les ajouts qui arrivent refont les propositions.
+  const k = cleRecette(r) + (cataloguePleinCharge() ? ':plein:' : ':base:') + donnees().stock.map((s) => `${s.key}=${s.grams}`).join(',');
   if (!memoire.has(k)) {
     if (memoire.size > 24) memoire.clear();
     memoire.set(k, quickAdds(r, style(r.styleCode), donnees().degustation?.tasting ?? null, { catalogueLimit: 10000, aromatique: true }));
@@ -49,6 +52,8 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
   recette: RecetteParcours; onGeste: () => void; onAjout: (id: string) => void; champRef: React.RefObject<InputElement | null>;
 }) {
   const gestes = useGestes();
+  // c7 : les variétés ajoutées arrivent au repos ; la recherche et les propositions se recalculent à leur arrivée.
+  const pleinVu = useCataloguePlein();
   const ouvrir = useOuvrir();
   const { route } = useNavigation();
   const fiche = useGestesFiche((cle) => { if (route.ecran !== 'fiche') ouvrir({ ecran: 'fiche', houblon: cle }); });
@@ -105,7 +110,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
     const m = propositionsMoteur(recette);
     const st = m.disponibles.filter((r) => ok(r.key)), ca = m.catalogue.filter((r) => ok(r.key)).slice(0, 1);
     return [...st.slice(0, n - ca.length), ...ca].map((r) => poser(r.key, r.dose?.grams ?? 10, momentDe(r.moment), false, statutDe(r)));
-  }, [recetteProposee, cherche, ebu, sc]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [recetteProposee, cherche, ebu, sc, pleinVu, donnees().stock]); // eslint-disable-line react-hooks/exhaustive-deps
   // Le temps d'un rendu, la liste vient de la recette d'avant : un houblon que la recette vient de prendre n'y paraît pas.
   const liste = useMemo(() => {
     const pris = new Set(recette.additions.map((a) => a.hopKey));
@@ -148,6 +153,7 @@ export function Ajouter({ recette, onGeste, onAjout, champRef }: {
                   <AlphaLu h={h} mode="court" />
                   <UsageMot cle={h.cle} />
                   {p.statut === 'catalogue' ? <ShoppingCart role="img" aria-label="à acheter" className="w-3.5 h-3.5 text-cave-400 shrink-0" /> : <StockIcone h={h} />}
+                  <MarquesCatalogue cle={h.cle} />
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="font-mono text-sm text-cave-200">{nombre(p.ajout.grams, p.ajout.grams % 1 ? 1 : 0)}<span className="font-sans text-cave-400">{' '}g</span> {ibu ? `+${nombre(ibu.valeur)}` : '?'}<span className="font-sans text-cave-400">{' '}IBU</span></span>

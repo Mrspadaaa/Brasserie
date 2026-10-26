@@ -64,6 +64,20 @@ export function prechargerOutilsAuRepos(auChargementCouche?: (couche: typeof imp
     quandEnLigne: (f) => { window.addEventListener('online', f, { once: true }); return () => window.removeEventListener('online', f); },
     // d3b (#180) : les compléments des 18 sources (morceau à part, 57 ko gzip) arrivent au même repos : Comparer et la fiche les trouvent
     // déjà là. `lancerComplements()` ne rejette jamais (échec : catalogue seul, l'ouverture réessaie).
-    charger: () => Promise.all([import('./HopToolLayer').then(m => { auChargementCouche?.(m); return m; }), chargerOutils(), import('./fiche/complements-ui').then(m => m.lancerComplements())])
+    // c7 : les 188 variétés ajoutées (un morceau à part, 10,7 ko gzip) arrivent après les outils, au même repos ; un échec n'empêche rien
+    // (catalogue de base seul ; l'étape Houblons réessaie à son ouverture).
+    charger: () => Promise.all([import('./HopToolLayer').then(m => { auChargementCouche?.(m); return m; }), chargerOutils().then(o => o.chargerAjouts().catch(() => {})), import('./fiche/complements-ui').then(m => m.lancerComplements())])
   });
+}
+
+/** c7 : charge au repos les variétés ajoutées (catalogue plein) quand l'étape Houblons s'est affichée : jamais avant le premier rendu, jamais sur le chemin
+ * du démarrage. Sans effet si elles sont déjà là ou en route (un seul chargement partagé). Rend l'annulation. Un échec (hors ligne sans le morceau) est
+ * silencieux : le catalogue de base sert, et le prochain affichage réessaie. */
+export function chargerCataloguePleinAuRepos(): () => void {
+  if (typeof window === 'undefined') return () => {};
+  const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (n: number) => void };
+  const lancer = () => { chargerOutils().then((o) => o.chargerAjouts()).catch(() => {}); };
+  if (w.requestIdleCallback) { const n = w.requestIdleCallback(lancer, { timeout: 3000 }); return () => w.cancelIdleCallback?.(n); }
+  const t = window.setTimeout(lancer, 300);
+  return () => window.clearTimeout(t);
 }

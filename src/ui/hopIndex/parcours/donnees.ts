@@ -9,6 +9,7 @@
 // moteur (mêmes caches) ; les écrans qui importent encore le moteur v4 directement lisent le moteur par défaut (fixtures).
 import { CATALOGUE, STOCK, creerMoteur, type CatalogueHop, type Moteur, type StockHop, type Tasting } from '../../../domain/hopIndex/v4';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { cataloguePleinCharge, siCataloguePleinArrive } from '../../../domain/hopIndex/v4/data';
 import type { AjoutParcours, RecetteParcours } from './types';
 
 /** La demande de la maquette (fixture S1, sa dégustation du 18.10 : « trop résineuse, je la veux plus florale »), en crans du style.
@@ -70,12 +71,19 @@ const ecouteurs: (() => void)[] = [];
 /** Les données lues par l'adaptateur. */
 export const donnees = (): DonneesParcours => courantes;
 /** true quand le catalogue est celui du moteur (aucun filtre à appliquer). */
-export const catalogueDuMoteur = (): boolean => courantes.catalogue === CATALOGUE;
+export const catalogueDuMoteur = (): boolean => courantes.catalogue === CATALOGUE || courantes.catalogue === cataloguePleinCharge();
+/** Le dernier appel de `configurerDonnees` (null : jamais appelé) : rejoué à l'arrivée du catalogue plein. */
+let dernierPartiel: Partial<DonneesParcours> | null = null;
+siCataloguePleinArrive(() => { if (dernierPartiel) configurerDonnees(dernierPartiel); });
 
 /** Remplace tout ou partie des données (les autres gardent leur valeur par défaut) et vide les caches de l'adaptateur.
  * Sans argument : revient aux fixtures. À appeler avant le premier calcul, ou quand le stock ou la dégustation changent. */
 export function configurerDonnees(d: Partial<DonneesParcours> = {}): void {
-  courantes = { ...DEFAUT, ...(Object.keys(d).length ? { demande: {} } : {}), ...d };
+  dernierPartiel = d;
+  // c7 : le catalogue plein (505 variétés) remplace celui du démarrage dès qu'il est arrivé, sauf si l'appelant donne le sien.
+  const plein = cataloguePleinCharge();
+  const base = plein ? { ...DEFAUT, catalogue: plein, fiches: plein } : DEFAUT;
+  courantes = { ...base, ...(Object.keys(d).length ? { demande: {} } : {}), ...d };
   index = { stock: new Map(courantes.stock.map((s) => [s.key, s])), catalogue: new Map(courantes.catalogue.map((h) => [h.id, h])) };
   moteurCourant = creerMoteur({ catalogue: courantes.fiches, stock: courantes.stock });
   for (const f of ecouteurs) f();

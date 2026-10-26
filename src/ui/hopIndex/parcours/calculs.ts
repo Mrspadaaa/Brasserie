@@ -3,7 +3,7 @@
 // (clonables). Servie sur le fil principal (client.ts) ou par le worker persistant (calcul.worker.ts, #171) : la même
 // table, importée par les deux.
 import type { SubstitutionOptions } from '../../../domain/hopIndex/v4';
-import { leviersLevure, proposer, remplacants, suggerer } from './adaptateur';
+import { leviersLevure, proposer, proposerRapide, remplacants, suggerer } from './adaptateur';
 import { moteur } from './donnees';
 import { memo } from './mesure';
 
@@ -12,6 +12,8 @@ export const cleSubstitutes = (cle: string, o: SubstitutionOptions) => JSON.stri
 
 export const CALCULS = {
   proposer,
+  /** D106 : proposer sans les remplacements (premier affichage de Suggérer). */
+  proposerRapide,
   suggerer,
   remplacants,
   /** substitutes du moteur des données injectées (pas celui des fixtures). */

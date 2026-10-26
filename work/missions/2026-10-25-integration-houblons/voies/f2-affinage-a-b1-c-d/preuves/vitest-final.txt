@@ -1,0 +1,6 @@
+   × clé k1 > l'ordre à l'intérieur du groupe d'ex æquo du dry hop change, et les voies sont les mêmes 9ms
+   × clé k2 > l'ordre à l'intérieur du groupe d'ex æquo du dry hop change, et les voies sont les mêmes 1ms
+   × clé k3 > l'ordre à l'intérieur du groupe d'ex æquo du dry hop change, et les voies sont les mêmes 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed | 90 passed (91)
+      Tests  3 failed | 882 passed (885)

@@ -7,3 +7,5 @@
  * d'outil ou au repos (`precharge.ts`). Les écrans portés (T12) passent par là.
  */
 export * as moteur from '../../domain/hopIndex/v4';
+// c7 : le catalogue plein (505 variétés), chargé au repos ; hors de l'API du moteur (ce ne sont pas des fonctions liées à un contexte).
+export { cataloguePleinCharge, siCataloguePleinArrive, chargerAjouts } from '../../domain/hopIndex/v4/data';

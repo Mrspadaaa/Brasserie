@@ -1,0 +1,21 @@
+{
+ "etiquette": "avant",
+ "style": null,
+ "lignes": [
+  {
+   "cle": "beermaverick-citra:cryo",
+   "texte": "Citra cryoα 24,8 %aromatique12 g +9 IBUgroseille à maquereau, fruit, fruit sucré10′",
+   "plus": "Ajouter Citra cryo, 12 g, suggéré à 10 minutes d'ébullition : +9 IBU"
+  },
+  {
+   "cle": "beermaverick-galaxy",
+   "texte": "Galaxyα 17,2 %double12 g +6 IBUcannabis, dank, groseille à maquereau10′",
+   "plus": "Ajouter Galaxy, 12 g, suggéré à 10 minutes d'ébullition : +6 IBU"
+  },
+  {
+   "cle": "beermaverick-pacific-sunrise",
+   "texte": "Pacific Sunriseα 12,5–14,5 %double12 g +5 IBU10′",
+   "plus": "Ajouter Pacific Sunrise, 12 g, suggéré à 10 minutes d'ébullition : +5 IBU"
+  }
+ ]
+}

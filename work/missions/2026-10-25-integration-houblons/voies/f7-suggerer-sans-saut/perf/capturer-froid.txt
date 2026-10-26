@@ -1,0 +1,16 @@
+Serveur 1/1 : npm run dev -- --port 5293 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-IM2K8o\serveur-1-5293.log)
+Attente du port 5293…
+Serveur prêt sur le port 5293
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-10-25-integration-houblons/voies/f7-suggerer-sans-saut/capturer.mjs --mode=froid --etiquette=froid
+
+21C-agrumes [froid] : préchauffe [] · ouverture 1494 ms · Remplacer 0 → 0 lignes · place 1/1 (42/42 px) · vide avant dry hop 0 → 0 px · dry hop 1827.2 → 1827.2 (écart 0 px) · levure 1986.2 → 1986.2 (écart 0 px) · verdicts changés : aucun · lignes principales 15 → 15
+21C-floral-agrumes-moins-resineux [froid] : préchauffe [] · ouverture 1179 ms · Remplacer 0 → 0 lignes · place 0/0 (0/0 px) · vide avant dry hop 0 → 0 px · dry hop 2039.7 → 2039.7 (écart 0 px) · levure 2214.7 → 2214.7 (écart 0 px) · verdicts changés : aucun · lignes principales 15 → 15
+16D-floral [froid] : préchauffe [] · ouverture 1074 ms · Remplacer 0 → 1 lignes · place 1/0 (42/0 px) · vide avant dry hop 0 → 0 px · dry hop 1786.2 → 1786.2 (écart 0 px) · levure 1945.2 → 1945.2 (écart 0 px) · verdicts changés : aucun · lignes principales 15 → 14
+16D-moins-resineux [froid] : préchauffe [] · ouverture 732 ms · Remplacer 10 → 10 lignes · place 0/0 (0/0 px) · vide avant dry hop null → null px · dry hop null → null (écart null px) · levure 1365.9 → 1365.9 (écart 0 px) · verdicts changés : aucun · lignes principales 0 → 0
+16D-floral-tropical [froid] : préchauffe [] · ouverture 1111 ms · Remplacer 0 → 0 lignes · place 1/1 (42/42 px) · vide avant dry hop 0 → 0 px · dry hop 1810.7 → 1810.7 (écart 0 px) · levure 2003.9 → 2003.9 (écart 0 px) · verdicts changés : aucun · lignes principales 15 → 15
+CAPTURE OK
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

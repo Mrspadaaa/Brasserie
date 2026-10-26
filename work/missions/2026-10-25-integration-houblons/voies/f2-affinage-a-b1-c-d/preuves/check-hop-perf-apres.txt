@@ -1,0 +1,34 @@
+
+> brasserie-laffinee-admin@1.0.0 check:hop-perf
+> node scripts/check-hop-tools-perf.mjs
+
+PERF-OUTILS : fluidité des outils houblons sur un jeu réaliste (#166)
+  machine : Intel(R) Core(TM) i5-14600KF · 20 cœurs · Node v24.19.0
+  facteur ×4 (hypothèse écrite, aucun vrai téléphone mesuré) : budgets de l'épopée #159 divisés par 4 → glisser 4,00 ms (méd) et 8,25 ms (p95), toucher 25,00 ms, tranche de repos 50 ms, premier écran 625 ms
+
+Verdict sur le jeu ×1 (bloquant) — glisser, toucher, repos
+  jeu : 317 houblons · stock 59 · 10 recettes · 10 dégustations (simulées) · empreinte 9d1f885c8803 · tas 1 264,40 Mo
+  glisser | un cran de moment ou de jours : Ma bière relue (cran jamais vu) | méd 1,05 ms · p95 1,65 ms (n=126) | budget méd ≤ 4,00 · p95 ≤ 8,25 ms | OK
+  glisser | un cran : aperçu de la levure (US-05 face à Pomona) | méd 0,36 ms · p95 1,61 ms (n=126) | budget méd ≤ 4,00 · p95 ≤ 8,25 ms | OK
+  glisser | un pas de dose du stepper de Ma bière (houblon dégusté, deux lectures) | méd 1,23 ms · p95 2,83 ms (n=80) | budget méd ≤ 4,00 · p95 ≤ 8,25 ms | OK
+  glisser | un cran déjà calculé à l'ouverture (cache) | méd 0,01 ms · p95 0,01 ms (n=120) | budget méd ≤ 4,00 · p95 ≤ 8,25 ms | OK
+  toucher | ouvrir Dryhopper : la frise complète (24 crans, non préchauffée) | méd 23,90 ms · p95 41,19 ms (n=10) | budget p95 ≤ 25,00 ms | DÉPASSÉ
+  toucher | ouvrir Levure : l'effet des 4 souches | méd 13,22 ms · p95 16,54 ms (n=10) | budget p95 ≤ 25,00 ms | OK
+  toucher | ouvrir Substituer : le classement du moteur (non préchauffé) | méd 3,82 ms · p95 12,73 ms (n=10) | budget p95 ≤ 25,00 ms | OK
+  toucher | ouvrir Comparer : 12 houblons côte à côte | méd 21,26 ms · p95 34,85 ms (n=10) | budget p95 ≤ 25,00 ms | DÉPASSÉ
+  toucher | Comparer, feuille « jour après jour » (12 houblons × 7 jours) | méd 117,23 ms · p95 134,14 ms (n=10) | budget p95 ≤ 25,00 ms | DÉPASSÉ
+  toucher | ouvrir Suggérer par son adresse, sans préchauffage (visée jamais vue) | méd 311,43 ms · p95 451,30 ms (n=10) | budget p95 ≤ 25,00 ms | DÉPASSÉ
+  toucher | ouvrir Suggérer après le préchauffage (cache) | méd 0,04 ms · p95 0,08 ms (n=10) | budget p95 ≤ 25,00 ms | OK
+  toucher | revenir sur Ma bière après un outil (recette changée) | méd 1,58 ms · p95 1,68 ms (n=10) | budget p95 ≤ 25,00 ms | OK
+  toucher | ouvrir la fiche d'un houblon | méd 0,00 ms · p95 0,01 ms (n=120) | budget p95 ≤ 25,00 ms | OK
+  repos   | créer le moteur sur les données | méd 0,25 ms · p95 4,91 ms (n=10) | budget p95 ≤ 50,00 ms | OK
+  repos   | premier écran : Ma bière lue | méd 5,92 ms · p95 13,71 ms (n=10) | budget p95 ≤ 50,00 ms | OK
+  repos   | tranche de préchauffage : voies de Suggérer (proposer + leviers levure) | méd 715,02 ms · p95 1 416,57 ms (n=10) | budget p95 ≤ 50,00 ms | DÉPASSÉ
+  repos   |   dont proposer (composante de la tranche) | méd 559,22 ms · p95 1 157,70 ms (n=10) | budget p95 ≤ 50,00 ms | rapporté
+  repos   |   dont leviers levure (composante de la tranche) | méd 163,57 ms · p95 258,87 ms (n=10) | budget p95 ≤ 50,00 ms | rapporté
+  repos   | tranche de préchauffage : remplaçants d'un ajout | méd 1,74 ms · p95 3,86 ms (n=49) | budget p95 ≤ 50,00 ms | OK
+  repos   | le tout : premier écran + tout le préchauffage | méd 731,22 ms · p95 1 503,88 ms (n=10) | budget p95 ≤ 625,00 ms | DÉPASSÉ
+  repos   | snapshot identique : recréer le moteur sur des tableaux neufs | méd 6,29 ms · p95 7,94 ms (n=5) | budget p95 ≤ 50,00 ms | OK
+  repos   | snapshot identique : le premier calcul après recréation (0,67 ms, n=5) face au même moteur rappelé (0,54 ms) | aucun calcul relancé | budget aucun calcul relancé | OK
+
+PERF-OUTILS ECHEC (6)

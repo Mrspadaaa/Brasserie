@@ -12,7 +12,7 @@
 // bande « ‹ visée | visée › » ne revient pas (D91). Le groupe « Changer de levure » de q2b revient (D44, 24.10 : « Celle
 // ci aussi est toujours meilleures ») ; chaque houblon dit ses mots hors des familles de la 16D (« lui seul : … », flb5b,
 // D130), chaque levure ce que sa fiche dit d'elle en propre.
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { Heart } from 'lucide-react';
 import { COULEURS, COURT, Legende, nombre, Picto, ROUE, type Echelle } from './commun';
 import { CadreOutil, FicheHote as Fiche, useBiere, useCas, useComparaison, useGestes, useNavigation, useOuvrir, useRecette, useVisee, type RouteSuggerer } from './hote';
@@ -21,6 +21,8 @@ import { style } from '../parcours/adaptateur';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { offModelLeads } from '../parcours/v4';
 import { useCalcul } from '../parcours/useCalcul';
+import { PLACE_REMPLACER_PX, useCalculApres } from './differe';
+import { estChauffee } from './prechauffe';
 import { useGestesFiche } from '../fiche/gestes';
 import { Bandeau } from '../maBiere/Base';
 import { AlphaCourt, Calme, CaseInconnue, Lecture, Stock, Traits, traitsDe, Usage, type NiveauFiches } from './briques';
@@ -73,7 +75,20 @@ export default function Suggerer() {
   // Les calculs lourds des voies passent par le client asynchrone (#165) : tout de suite sur le fil principal ; d'un
   // worker, l'écran garde ses voies d'avant jusqu'à la réponse (aucun état d'attente : ses maquettes n'en ont pas).
   const direction = useMemo(() => directionDe(objectifs), [objectifs]);
-  const proposes = useCalcul('proposer', [recette, direction]);
+  // D106 (coût) : le premier affichage ne calcule pas les remplacements « à IBU égal » (deux tiers du surcoût de B1) ; l'appel complet part au repos, une fois l'écran peint, et le groupe
+  // « Remplacer … » arrive alors (suggerer/differe.ts). Tant qu'il manque, la liste principale reste celle du premier affichage.
+  // D108 (f6) : une visée « moins de… » (cran négatif, « sans… » compris) se lit dans les remplacements, qui y sont la réponse (16D « moins résineux » : le premier affichage dit « Aucune voie houblon »,
+  // puis le groupe « Remplacer Nugget » arrive : 4 lignes, +463 px, mesuré). Elle calcule donc l'appel complet tout de suite : rien n'arrive après, rien ne bouge. Les visées « plus de… » gardent le premier affichage rapide.
+  // D111 (f7) : si la préchauffe de l'étape a eu lieu pour cette recette (les apports sont chauds), l'appel complet ne coûte que ~38 ms de plus que le rapide (231,8 contre 193,9 ms, f6) : il est lu
+  // d'emblée aussi pour les visées « plus de… », groupe « Remplacer » compris, sans arrivée ni place réservée. Décidé à l'ouverture (une fois : la réponse ne change pas de chemin en route).
+  // Sans préchauffe (ouverture directe à froid), les visées « plus de… » gardent le premier affichage rapide, l'appel complet au repos, et la place réservée (PLACE_REMPLACER_PX, 0 px de saut).
+  const avecMoins = Object.values(direction).some((d) => d < 0);
+  const [chauffee] = useState(() => estChauffee(recette));
+  const dEmblee = avecMoins || chauffee;
+  const rapide = useCalcul('proposerRapide', dEmblee ? null : [recette, direction]);
+  const complet = useCalculApres('proposer', dEmblee ? null : [recette, direction]);
+  const completTout = useCalcul('proposer', dEmblee ? [recette, direction] : null);
+  const proposes = completTout ?? complet ?? rapide;
   const leviers = useCalcul('leviers', [recette, direction]);
   const lus = useMemo(() => (proposes && leviers ? { recette: proposes.args[0], calculs: { proposes: proposes.valeur, leviers: leviers.valeur } } : null), [proposes, leviers]);
   const tous = useMemo(() => (lus ? voiesDe(lus.recette, objectifs, ROUE, bannis, 4, lus.calculs) : []), [lus, objectifs, bannis]);
@@ -156,6 +171,11 @@ export default function Suggerer() {
   const avecIbu = lignes.filter((l) => l.ibuApres != null);
   // La piste regardée par controle-etats (etat-sugg-piste-objectif) : celle d'un objectif atteint, comme sa maquette.
   const fPiste = (objectifs.find((o) => o.sens > 0 && verdict(o, groupes).mot === 'Atteint') ?? objectifs.find((o) => o.sens > 0))?.f;
+  // D108 : où se pose le groupe « Remplacer … » : avant le dry hop (sinon avant la levure, donc après le dernier groupe).
+  const remplacer = groupes.some((g) => g.id === 'remplacer');
+  // D111 : la place n'existe que sur le chemin différé (ouverture à froid, visée « plus de… ») ; d'emblée, le groupe est là ou n'y sera jamais : aucune réserve, aucun vide.
+  const place = dEmblee ? 0 : PLACE_REMPLACER_PX;
+  const rangPlace = (() => { const d = groupes.findIndex((g) => g.geste === 'dryhop'); return d >= 0 ? d : groupes.length; })();
   const groupe2 =groupes.filter((g) => g.id.startsWith('meme-'))[1] ?? groupes.find((g) => g.id.startsWith('meme-'));
 
   return (
@@ -207,11 +227,16 @@ export default function Suggerer() {
                 </p>
               )}
               <Graphe objectifs={objectifs} echelle={echelle} cran={cran}>
-                {groupes.map((g) => (
-                  <BlocGroupe key={g.id} g={g} objectifs={objectifs} echelle={echelle} cran={cran} bande={bande} choisie={choisie} basculer={basculer}
+                {groupes.map((g, i) => (
+                  <Fragment key={g.id}>
+                  {/* D108 : la place du groupe « Remplacer … » (q2b : après « Assembler », avant le dry hop), gardée tant qu'il n'est pas arrivé, et s'il n'y a aucun remplacement. */}
+                  {i === rangPlace && !remplacer && place > 0 && <section data-groupe="remplacer-place" aria-hidden="true" style={{ minHeight: place }} />}
+                  <BlocGroupe g={g} objectifs={objectifs} echelle={echelle} cran={cran} bande={bande} choisie={choisie} basculer={basculer} reserve={g.id === 'remplacer' ? place : 0}
                     gestesFiche={gestesFiche} etat={g === groupe2 ? 'etat-sugg-groupes-effet' : g.geste === 'assembler' ? 'etat-sugg-assembler' : g.geste === 'remplacer' ? 'etat-sugg-remplacer' : g.geste === 'dryhop' ? 'etat-sugg-dry-hop' : undefined}
                     premiere={g === groupes[0]} lignePlus={lignePlus?.id ?? null} gouts={gouts} goutOuvert={goutOuvert} setGoutOuvert={setGoutOuvert} noter={noter} hors16d={hors16d} />
+                  </Fragment>
                 ))}
+                {rangPlace >= groupes.length && !remplacer && place > 0 && <section data-groupe="remplacer-place" aria-hidden="true" style={{ minHeight: place }} />}
                 {levures && <BlocLevure g={levures} objectifs={objectifs} echelle={echelle} cran={cran} bande={bande} />}
               </Graphe>
             </div>
@@ -298,7 +323,9 @@ function Carte({ o, groupes, biere, teinte, famHors, pistesHors, horsHoublon, on
   );
 }
 
-function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, gestesFiche, etat, premiere, lignePlus, gouts, goutOuvert, setGoutOuvert, noter, hors16d }: {
+function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, gestesFiche, etat, premiere, lignePlus, gouts, goutOuvert, setGoutOuvert, noter, hors16d, reserve = 0 }: {
+  /** D108 : hauteur minimale du groupe (px), celle de la place réservée à « Remplacer … ». */
+  reserve?: number;
   g: Groupe; objectifs: Objectif[]; echelle: Echelle; cran: (f: FamilyId) => number; bande: (f: FamilyId) => [number, number] | null;
   choisie: (l: Ligne) => boolean; basculer: (l: Ligne) => void; gestesFiche: ReturnType<typeof useGestesFiche>; etat?: string; premiere: boolean;
   lignePlus: string | null; gouts: Map<string, Gout>; goutOuvert: string | null; setGoutOuvert: (c: string | null) => void; noter: (c: string, g: Gout) => void;
@@ -321,7 +348,7 @@ function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, ges
     ? <span className="pq-suggerer-moment pq-sg-sur-axe gap-1"><svg width="12" height="14" viewBox="0 0 14 16" aria-hidden="true"><path d="M2 1 H12 V9 L7 15 L2 9 Z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><circle cx="5.5" cy="7" r="1.2" fill="currentColor" /><circle cx="8.5" cy="4.5" r="1.2" fill="currentColor" /></svg>{g.moment}</span>
     : <span className="pq-suggerer-moment pq-sg-sur-axe">{g.moment}</span>;
   return (
-    <section data-groupe={g.id} {...(element ? { 'data-element': element } : {})} {...(etat ? { 'data-etat': etat } : {})} className="relative pt-2">
+    <section data-groupe={g.id} {...(element ? { 'data-element': element } : {})} {...(etat ? { 'data-etat': etat } : {})} {...(reserve > 0 ? { style: { minHeight: reserve } } : {})} className="relative pt-2">
       <h3 className="relative flex items-center gap-2 px-1 min-h-[1.875rem] text-[0.9375rem] font-bold text-cave-50 leading-tight">
         <span className="pq-sg-sur-axe inline-flex items-center gap-1.5">
           {meme && g.titre !== 'Ajouter' && <span aria-hidden="true" className="pq-suggerer-egal" />}

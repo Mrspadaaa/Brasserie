@@ -1,0 +1,1248 @@
+{
+ "etat": "avant",
+ "recettes": "21C (Nugget 20 g 60′, Cascade 80 g dry hop actif) et 16D (Nugget 46 g 60′), 20 L, stock des fixtures (Citra cryo 65 g, α 24,8 %)",
+ "suggerer": [
+  {
+   "visee": "21C plus d’agrumes",
+   "evalues": {
+    "defaut": 860,
+    "classementEntier": 854
+   },
+   "houblonsDistinctsDansLaListeParDefaut": 8,
+   "phares": {
+    "Citra": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 204
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 155
+     }
+    },
+    "Nelson Sauvin": {
+     "voies": {
+      "defaut": 14,
+      "classementEntier": 26
+     },
+     "palier60": {
+      "defaut": 10,
+      "classementEntier": 150,
+      "sur": 204
+     },
+     "dryHopActif": {
+      "defaut": 8,
+      "classementEntier": 35,
+      "sur": 155
+     }
+    },
+    "Galaxy": {
+     "voies": {
+      "defaut": 1,
+      "classementEntier": 1
+     },
+     "palier60": {
+      "defaut": 6,
+      "classementEntier": 6,
+      "sur": 204
+     },
+     "dryHopActif": {
+      "defaut": 1,
+      "classementEntier": 1,
+      "sur": 155
+     }
+    },
+    "Mosaic": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": 48,
+      "sur": 204
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": 43,
+      "sur": 155
+     }
+    },
+    "Motueka": {
+     "voies": {
+      "defaut": 12,
+      "classementEntier": 14
+     },
+     "palier60": {
+      "defaut": 7,
+      "classementEntier": 98,
+      "sur": 204
+     },
+     "dryHopActif": {
+      "defaut": 10,
+      "classementEntier": 77,
+      "sur": 155
+     }
+    },
+    "Idaho 7": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": 61
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 204
+     },
+     "dryHopActif": {
+      "defaut": 13,
+      "classementEntier": 155,
+      "sur": 155
+     }
+    },
+    "Strata": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 204
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 155
+     }
+    },
+    "Simcoe": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": 46,
+      "sur": 204
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": 138,
+      "sur": 155
+     }
+    },
+    "Cascade": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": 8,
+      "classementEntier": 116,
+      "sur": 204
+     },
+     "dryHopActif": {
+      "defaut": 11,
+      "classementEntier": 106,
+      "sur": 155
+     }
+    },
+    "Hallertau Blanc": {
+     "voies": {
+      "defaut": 6,
+      "classementEntier": 5
+     },
+     "palier60": {
+      "defaut": 11,
+      "classementEntier": 151,
+      "sur": 204
+     },
+     "dryHopActif": {
+      "defaut": 9,
+      "classementEntier": 40,
+      "sur": 155
+     }
+    }
+   },
+   "citra": {
+    "simple": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 204
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 155
+     }
+    },
+    "cryo": {
+     "voies": {
+      "defaut": 4,
+      "classementEntier": 9
+     },
+     "palier60": {
+      "defaut": 1,
+      "classementEntier": 1,
+      "sur": 204
+     },
+     "dryHopActif": {
+      "defaut": 6,
+      "classementEntier": 29,
+      "sur": 155
+     }
+    }
+   },
+   "palier60Tete": [
+    "1 Citra cryo",
+    "2 Moutere",
+    "3 Vic Secret",
+    "4 Apollo",
+    "5 Eclipse"
+   ],
+   "dryHopActifTete": [
+    "1 Galaxy",
+    "2 African Queen",
+    "2 Belma",
+    "2 Herald",
+    "2 Medusa"
+   ]
+  },
+  {
+   "visee": "16D plus floral",
+   "evalues": {
+    "defaut": 857,
+    "classementEntier": 851
+   },
+   "houblonsDistinctsDansLaListeParDefaut": 10,
+   "phares": {
+    "Citra": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 317
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 155
+     }
+    },
+    "Nelson Sauvin": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": 12,
+      "classementEntier": 212,
+      "sur": 317
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 155
+     }
+    },
+    "Galaxy": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": 6,
+      "classementEntier": 12,
+      "sur": 317
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 155
+     }
+    },
+    "Mosaic": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": 68,
+      "sur": 317
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": 152,
+      "sur": 155
+     }
+    },
+    "Motueka": {
+     "voies": {
+      "defaut": 1,
+      "classementEntier": 1
+     },
+     "palier60": {
+      "defaut": 8,
+      "classementEntier": 137,
+      "sur": 317
+     },
+     "dryHopActif": {
+      "defaut": 5,
+      "classementEntier": 26,
+      "sur": 155
+     }
+    },
+    "Idaho 7": {
+     "voies": {
+      "defaut": 10,
+      "classementEntier": 9
+     },
+     "palier60": {
+      "defaut": 11,
+      "classementEntier": 193,
+      "sur": 317
+     },
+     "dryHopActif": {
+      "defaut": 8,
+      "classementEntier": 133,
+      "sur": 155
+     }
+    },
+    "Strata": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": 81,
+      "sur": 317
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 155
+     }
+    },
+    "Simcoe": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": 65,
+      "sur": 317
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 155
+     }
+    },
+    "Cascade": {
+     "voies": {
+      "defaut": 12,
+      "classementEntier": 12
+     },
+     "palier60": {
+      "defaut": 9,
+      "classementEntier": 164,
+      "sur": 317
+     },
+     "dryHopActif": {
+      "defaut": 10,
+      "classementEntier": 146,
+      "sur": 155
+     }
+    },
+    "Hallertau Blanc": {
+     "voies": {
+      "defaut": 5,
+      "classementEntier": 8
+     },
+     "palier60": {
+      "defaut": 13,
+      "classementEntier": 213,
+      "sur": 317
+     },
+     "dryHopActif": {
+      "defaut": 7,
+      "classementEntier": 119,
+      "sur": 155
+     }
+    }
+   },
+   "citra": {
+    "simple": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 317
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 155
+     }
+    },
+    "cryo": {
+     "voies": {
+      "defaut": 11,
+      "classementEntier": 11
+     },
+     "palier60": {
+      "defaut": 1,
+      "classementEntier": 1,
+      "sur": 317
+     },
+     "dryHopActif": {
+      "defaut": 9,
+      "classementEntier": 142,
+      "sur": 155
+     }
+    }
+   },
+   "palier60Tete": [
+    "1 Citra cryo",
+    "2 Polaris",
+    "3 HBC 586",
+    "4 Helios",
+    "5 Brooklyn"
+   ],
+   "dryHopActifTete": [
+    "1 Marco Polo",
+    "1 Teamaker",
+    "1 Ultra",
+    "1 Yakima Cluster",
+    "5 Motueka"
+   ]
+  },
+  {
+   "visee": "16D moins de résineux",
+   "evalues": {
+    "defaut": 337,
+    "classementEntier": 337
+   },
+   "houblonsDistinctsDansLaListeParDefaut": 10,
+   "phares": {
+    "Citra": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 226
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 0
+     }
+    },
+    "Nelson Sauvin": {
+     "voies": {
+      "defaut": 7,
+      "classementEntier": 6
+     },
+     "palier60": {
+      "defaut": 11,
+      "classementEntier": 142,
+      "sur": 226
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 0
+     }
+    },
+    "Galaxy": {
+     "voies": {
+      "defaut": 1,
+      "classementEntier": 1
+     },
+     "palier60": {
+      "defaut": 5,
+      "classementEntier": 5,
+      "sur": 226
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 0
+     }
+    },
+    "Mosaic": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": 42,
+      "sur": 226
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 0
+     }
+    },
+    "Motueka": {
+     "voies": {
+      "defaut": 3,
+      "classementEntier": 3
+     },
+     "palier60": {
+      "defaut": 8,
+      "classementEntier": 90,
+      "sur": 226
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 0
+     }
+    },
+    "Idaho 7": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 226
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 0
+     }
+    },
+    "Strata": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": 50,
+      "sur": 226
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 0
+     }
+    },
+    "Simcoe": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 226
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 0
+     }
+    },
+    "Cascade": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": 9,
+      "classementEntier": 108,
+      "sur": 226
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 0
+     }
+    },
+    "Hallertau Blanc": {
+     "voies": {
+      "defaut": 8,
+      "classementEntier": 7
+     },
+     "palier60": {
+      "defaut": 12,
+      "classementEntier": 143,
+      "sur": 226
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 0
+     }
+    }
+   },
+   "citra": {
+    "simple": {
+     "voies": {
+      "defaut": null,
+      "classementEntier": null
+     },
+     "palier60": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 226
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 0
+     }
+    },
+    "cryo": {
+     "voies": {
+      "defaut": 5,
+      "classementEntier": 5
+     },
+     "palier60": {
+      "defaut": 1,
+      "classementEntier": 1,
+      "sur": 226
+     },
+     "dryHopActif": {
+      "defaut": null,
+      "classementEntier": null,
+      "sur": 0
+     }
+    }
+   },
+   "palier60Tete": [
+    "1 Citra cryo",
+    "2 Polaris",
+    "3 HBC 586",
+    "4 Brooklyn",
+    "5 Galaxy"
+   ],
+   "dryHopActifTete": []
+  }
+ ],
+ "substituer": [
+  {
+   "recette": "21C",
+   "original": "Nugget",
+   "moment": "b60",
+   "phares": {
+    "Citra": {
+     "rang": 214,
+     "score": 95,
+     "palier": "très proche",
+     "doseG": 20.8,
+     "demotion": true
+    },
+    "Nelson Sauvin": {
+     "rang": 90,
+     "score": 85,
+     "palier": "très proche",
+     "doseG": 27.1,
+     "demotion": false
+    },
+    "Galaxy": {
+     "rang": 113,
+     "score": 82,
+     "palier": "très proche",
+     "doseG": 15.1,
+     "demotion": false
+    },
+    "Mosaic": {
+     "rang": 216,
+     "score": 94,
+     "palier": "très proche",
+     "doseG": 20.8,
+     "demotion": true
+    },
+    "Motueka": {
+     "rang": 189,
+     "score": 70,
+     "palier": "proche",
+     "doseG": 32.1,
+     "demotion": false
+    },
+    "Idaho 7": {
+     "rang": 24,
+     "score": 93,
+     "palier": "très proche",
+     "doseG": 20.5,
+     "demotion": false
+    },
+    "Strata": {
+     "rang": 219,
+     "score": 86,
+     "palier": "très proche",
+     "doseG": 22.1,
+     "demotion": true
+    },
+    "Simcoe": {
+     "rang": 20,
+     "score": 94,
+     "palier": "très proche",
+     "doseG": 20,
+     "demotion": false
+    },
+    "Cascade": {
+     "rang": 225,
+     "score": 73,
+     "palier": "proche",
+     "doseG": 40,
+     "demotion": true
+    },
+    "Hallertau Blanc": {
+     "rang": 108,
+     "score": 83,
+     "palier": "très proche",
+     "doseG": 27.4,
+     "demotion": false
+    }
+   },
+   "citra": {
+    "simple": {
+     "rang": 214,
+     "score": 95,
+     "palier": "très proche",
+     "doseG": 20.8,
+     "demotion": true
+    },
+    "cryo": {
+     "rang": 215,
+     "score": 95,
+     "palier": "très proche",
+     "doseG": 10.5,
+     "demotion": true
+    }
+   },
+   "tete10": [
+    "Yeoman 100",
+    "Trident 99",
+    "Helios 97",
+    "Magnat 97",
+    "Altus 96",
+    "Bravo 96",
+    "Loral 96",
+    "Zenia 96",
+    "Falconer's Flight 95",
+    "Millennium 95"
+   ]
+  },
+  {
+   "recette": "21C",
+   "original": "Nugget",
+   "moment": "dryActive",
+   "phares": {
+    "Citra": {
+     "rang": 11,
+     "score": 58,
+     "palier": "partiel",
+     "doseG": 20,
+     "demotion": false
+    },
+    "Nelson Sauvin": {
+     "rang": 121,
+     "score": 48,
+     "palier": "éloigné",
+     "doseG": 20,
+     "demotion": false
+    },
+    "Galaxy": {
+     "rang": 161,
+     "score": 45,
+     "palier": "éloigné",
+     "doseG": 20,
+     "demotion": false
+    },
+    "Mosaic": {
+     "rang": 44,
+     "score": 54,
+     "palier": "partiel",
+     "doseG": 20,
+     "demotion": false
+    },
+    "Motueka": {
+     "rang": 181,
+     "score": 43,
+     "palier": "éloigné",
+     "doseG": 20,
+     "demotion": false
+    },
+    "Idaho 7": {
+     "rang": 16,
+     "score": 57,
+     "palier": "partiel",
+     "doseG": 20,
+     "demotion": false
+    },
+    "Strata": {
+     "rang": 92,
+     "score": 50,
+     "palier": "partiel",
+     "doseG": 20,
+     "demotion": false
+    },
+    "Simcoe": {
+     "rang": 8,
+     "score": 59,
+     "palier": "partiel",
+     "doseG": 20,
+     "demotion": false
+    },
+    "Cascade": {
+     "rang": 29,
+     "score": 55,
+     "palier": "partiel",
+     "doseG": 20,
+     "demotion": false
+    },
+    "Hallertau Blanc": {
+     "rang": 63,
+     "score": 52,
+     "palier": "partiel",
+     "doseG": 20,
+     "demotion": false
+    }
+   },
+   "citra": {
+    "simple": {
+     "rang": 11,
+     "score": 58,
+     "palier": "partiel",
+     "doseG": 20,
+     "demotion": false
+    },
+    "cryo": {
+     "rang": 12,
+     "score": 58,
+     "palier": "partiel",
+     "doseG": 20,
+     "demotion": false
+    }
+   },
+   "tete10": [
+    "Centennial 64",
+    "Loral 62",
+    "Sabro 62",
+    "Warrior 61",
+    "Bitter Gold 60",
+    "Falconer's Flight 60",
+    "Talus 60",
+    "Simcoe 59",
+    "Sorachi Ace 59",
+    "Bravo 58"
+   ]
+  },
+  {
+   "recette": "16D",
+   "original": "Nugget",
+   "moment": "b60",
+   "phares": {
+    "Citra": {
+     "rang": 214,
+     "score": 95,
+     "palier": "très proche",
+     "doseG": 47.8,
+     "demotion": true
+    },
+    "Nelson Sauvin": {
+     "rang": 90,
+     "score": 85,
+     "palier": "très proche",
+     "doseG": 62.3,
+     "demotion": false
+    },
+    "Galaxy": {
+     "rang": 114,
+     "score": 82,
+     "palier": "très proche",
+     "doseG": 34.8,
+     "demotion": false
+    },
+    "Mosaic": {
+     "rang": 216,
+     "score": 94,
+     "palier": "très proche",
+     "doseG": 47.8,
+     "demotion": true
+    },
+    "Motueka": {
+     "rang": 189,
+     "score": 70,
+     "palier": "proche",
+     "doseG": 73.8,
+     "demotion": false
+    },
+    "Idaho 7": {
+     "rang": 24,
+     "score": 93,
+     "palier": "très proche",
+     "doseG": 47.1,
+     "demotion": false
+    },
+    "Strata": {
+     "rang": 219,
+     "score": 87,
+     "palier": "très proche",
+     "doseG": 50.9,
+     "demotion": true
+    },
+    "Simcoe": {
+     "rang": 20,
+     "score": 94,
+     "palier": "très proche",
+     "doseG": 46,
+     "demotion": false
+    },
+    "Cascade": {
+     "rang": 225,
+     "score": 73,
+     "palier": "proche",
+     "doseG": 92,
+     "demotion": true
+    },
+    "Hallertau Blanc": {
+     "rang": 109,
+     "score": 83,
+     "palier": "très proche",
+     "doseG": 62.9,
+     "demotion": false
+    }
+   },
+   "citra": {
+    "simple": {
+     "rang": 214,
+     "score": 95,
+     "palier": "très proche",
+     "doseG": 47.8,
+     "demotion": true
+    },
+    "cryo": {
+     "rang": 215,
+     "score": 95,
+     "palier": "très proche",
+     "doseG": 24.1,
+     "demotion": true
+    }
+   },
+   "tete10": [
+    "Yeoman 100",
+    "Trident 99",
+    "Helios 97",
+    "Magnat 97",
+    "Altus 96",
+    "Bravo 96",
+    "Loral 96",
+    "Zenia 96",
+    "Falconer's Flight 95",
+    "Millennium 95"
+   ]
+  },
+  {
+   "recette": "16D",
+   "original": "Nugget",
+   "moment": "dryActive",
+   "phares": {
+    "Citra": {
+     "rang": 16,
+     "score": 56,
+     "palier": "partiel",
+     "doseG": 46,
+     "demotion": false
+    },
+    "Nelson Sauvin": {
+     "rang": 138,
+     "score": 46,
+     "palier": "éloigné",
+     "doseG": 46,
+     "demotion": false
+    },
+    "Galaxy": {
+     "rang": 176,
+     "score": 43,
+     "palier": "éloigné",
+     "doseG": 46,
+     "demotion": false
+    },
+    "Mosaic": {
+     "rang": 57,
+     "score": 52,
+     "palier": "partiel",
+     "doseG": 46,
+     "demotion": false
+    },
+    "Motueka": {
+     "rang": 198,
+     "score": 41,
+     "palier": "éloigné",
+     "doseG": 46,
+     "demotion": false
+    },
+    "Idaho 7": {
+     "rang": 19,
+     "score": 56,
+     "palier": "partiel",
+     "doseG": 46,
+     "demotion": false
+    },
+    "Strata": {
+     "rang": 74,
+     "score": 51,
+     "palier": "partiel",
+     "doseG": 46,
+     "demotion": false
+    },
+    "Simcoe": {
+     "rang": 23,
+     "score": 56,
+     "palier": "partiel",
+     "doseG": 46,
+     "demotion": false
+    },
+    "Cascade": {
+     "rang": 28,
+     "score": 55,
+     "palier": "partiel",
+     "doseG": 46,
+     "demotion": false
+    },
+    "Hallertau Blanc": {
+     "rang": 69,
+     "score": 51,
+     "palier": "partiel",
+     "doseG": 46,
+     "demotion": false
+    }
+   },
+   "citra": {
+    "simple": {
+     "rang": 16,
+     "score": 56,
+     "palier": "partiel",
+     "doseG": 46,
+     "demotion": false
+    },
+    "cryo": {
+     "rang": 17,
+     "score": 56,
+     "palier": "partiel",
+     "doseG": 46,
+     "demotion": false
+    }
+   },
+   "tete10": [
+    "Centennial 63",
+    "Warrior 62",
+    "Loral 61",
+    "Falconer's Flight 60",
+    "Sabro 60",
+    "Talus 60",
+    "Millennium 59",
+    "Sorachi Ace 59",
+    "Bitter Gold 58",
+    "Bravo 58"
+   ]
+  }
+ ],
+ "remplacantsDesPhares": [
+  {
+   "phare": "Citra",
+   "b60": [
+    "Trident 97",
+    "Bravo 96",
+    "Mosaic 96",
+    "Loral 94",
+    "Southern Sublime 94"
+   ],
+   "dryActive": [
+    "Falconer's Flight 67",
+    "YQH-1380 67",
+    "Comet 65",
+    "Mosaic 65",
+    "Zamba Blend 65"
+   ]
+  },
+  {
+   "phare": "Nelson Sauvin",
+   "b60": [
+    "TNT Blend 98",
+    "Southern Passion 97",
+    "Hallertau Taurus 95",
+    "Pacific Jade 94",
+    "Southern Tropic 94"
+   ],
+   "dryActive": [
+    "Hallertau Blanc 65",
+    "Cashmere 61",
+    "Sládek 60",
+    "Mandarina Bavaria 58",
+    "Southern Sublime 58"
+   ]
+  },
+  {
+   "phare": "Galaxy",
+   "b60": [
+    "HPA-016 93",
+    "Eclipse 92",
+    "Ahhhroma 90",
+    "Enigma 90",
+    "Satus 90"
+   ],
+   "dryActive": [
+    "Harlequin 65",
+    "Mosaic 60",
+    "Citra 59",
+    "Rakau 59",
+    "Zamba Blend 59"
+   ]
+  },
+  {
+   "phare": "Mosaic",
+   "b60": [
+    "TNT Blend 98",
+    "Citra 96",
+    "Loral 93",
+    "Magnat 93",
+    "Trident 93"
+   ],
+   "dryActive": [
+    "Simcoe 70",
+    "Idaho 7 67",
+    "Citra 65",
+    "Nectaron 65",
+    "Azacca 64"
+   ]
+  },
+  {
+   "phare": "Motueka",
+   "b60": [
+    "Vienna Gold 100",
+    "Buzz Bullets 99",
+    "Sun 99",
+    "Petoskey 97",
+    "Zula 97"
+   ],
+   "dryActive": [
+    "Zythos 60",
+    "Taiheke 58",
+    "Wakatu 57",
+    "Cascade 56",
+    "Mandarina Bavaria 56"
+   ]
+  },
+  {
+   "phare": "Idaho 7",
+   "b60": [
+    "Caliente 99",
+    "Bravo 98",
+    "Zenia 98",
+    "Marco Polo 96",
+    "Herald 95"
+   ],
+   "dryActive": [
+    "Azacca 68",
+    "Mosaic 67",
+    "Mandarina Bavaria 66",
+    "Falconer's Flight 65",
+    "Simcoe 64"
+   ]
+  },
+  {
+   "phare": "Strata",
+   "b60": [
+    "Merkur 94",
+    "HBC 630 93",
+    "Trident 93",
+    "Nelson Sauvin 92",
+    "Sabro 92"
+   ],
+   "dryActive": [
+    "Idaho 7 60",
+    "Amarillo 58",
+    "Belma 58",
+    "Falconer's Flight 57",
+    "Simcoe 56"
+   ]
+  },
+  {
+   "phare": "Simcoe",
+   "b60": [
+    "Zenia 94",
+    "Trident 93",
+    "Yeoman 93",
+    "HBC 630 92",
+    "Sabro 92"
+   ],
+   "dryActive": [
+    "Mosaic 70",
+    "Rakau 70",
+    "Moutere 66",
+    "Falconer's Flight 65",
+    "Idaho 7 64"
+   ]
+  },
+  {
+   "phare": "Cascade",
+   "b60": [
+    "Petoskey 100",
+    "Vienna Gold 100",
+    "Aloha Blend 99",
+    "Hartwick 99",
+    "Mandarina Bavaria 99"
+   ],
+   "dryActive": [
+    "Taiheke 64",
+    "Cluster 62",
+    "Mandarina Bavaria 62",
+    "Bravo 61",
+    "Centennial 61"
+   ]
+  },
+  {
+   "phare": "Hallertau Blanc",
+   "b60": [
+    "Zula 100",
+    "TNT Blend 99",
+    "Petoskey 98",
+    "Sun 98",
+    "Trident 95"
+   ],
+   "dryActive": [
+    "Nelson Sauvin 65",
+    "Comet 64",
+    "Mandarina Bavaria 63",
+    "Galena 60",
+    "Nectaron 59"
+   ]
+  }
+ ]
+}

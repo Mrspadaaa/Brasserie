@@ -1,0 +1,256 @@
+[
+ {
+  "cas": "21C-agrumes",
+  "place": 0,
+  "ouvertureMs": 1487,
+  "tachesLiberees": 2,
+  "arriveeMs": 4901,
+  "avant": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "meme-2",
+    "meme-3",
+    "ajouter",
+    "remplacer-place",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 1785.2,
+   "levure": 1944.2,
+   "remplacer": null,
+   "place": 1785.2,
+   "hauteurPage": 844,
+   "verdicts": {
+    "citrus": "Atteint"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "apres": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "meme-2",
+    "meme-3",
+    "ajouter",
+    "remplacer-place",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 1785.2,
+   "levure": 1944.2,
+   "remplacer": null,
+   "place": 1785.2,
+   "hauteurPage": 844,
+   "verdicts": {
+    "citrus": "Atteint"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "ecartDryhop": 0,
+  "ecartLevure": 0,
+  "verdictsChanges": []
+ },
+ {
+  "cas": "21C-floral-agrumes-moins-resineux",
+  "place": 0,
+  "ouvertureMs": 1048,
+  "tachesLiberees": 0,
+  "arriveeMs": 4900,
+  "avant": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "ajouter",
+    "remplacer-place",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 2039.7,
+   "levure": 2214.7,
+   "remplacer": null,
+   "place": 2039.7,
+   "hauteurPage": 844,
+   "verdicts": {
+    "resin": "Aucune",
+    "floral": "Aucune",
+    "citrus": "Atteint"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "apres": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "ajouter",
+    "remplacer-place",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 2039.7,
+   "levure": 2214.7,
+   "remplacer": null,
+   "place": 2039.7,
+   "hauteurPage": 844,
+   "verdicts": {
+    "resin": "Aucune",
+    "floral": "Aucune",
+    "citrus": "Atteint"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "ecartDryhop": 0,
+  "ecartLevure": 0,
+  "verdictsChanges": []
+ },
+ {
+  "cas": "16D-floral",
+  "place": 0,
+  "ouvertureMs": 1045,
+  "tachesLiberees": 2,
+  "arriveeMs": 1153,
+  "avant": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "meme-2",
+    "ajouter",
+    "remplacer-place",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 1744.2,
+   "levure": 1903.2,
+   "remplacer": null,
+   "place": 1744.2,
+   "hauteurPage": 844,
+   "verdicts": {
+    "floral": "Aucune"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "apres": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "meme-2",
+    "ajouter",
+    "remplacer",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 1786.2,
+   "levure": 1945.2,
+   "remplacer": 1655.2,
+   "place": null,
+   "hauteurPage": 844,
+   "verdicts": {
+    "floral": "Aucune"
+   },
+   "lignes": 14,
+   "lignesRemplacer": 1
+  },
+  "ecartDryhop": 42,
+  "ecartLevure": 42,
+  "verdictsChanges": []
+ },
+ {
+  "cas": "16D-moins-resineux",
+  "place": 0,
+  "ouvertureMs": 603,
+  "tachesLiberees": 0,
+  "arriveeMs": 906,
+  "avant": {
+   "groupes": [
+    "remplacer",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 1365.9,
+   "remplacer": 274.4,
+   "place": null,
+   "hauteurPage": 844,
+   "verdicts": {
+    "resin": "Aucune"
+   },
+   "lignes": 0,
+   "lignesRemplacer": 10
+  },
+  "apres": {
+   "groupes": [
+    "remplacer",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 1365.9,
+   "remplacer": 274.4,
+   "place": null,
+   "hauteurPage": 844,
+   "verdicts": {
+    "resin": "Aucune"
+   },
+   "lignes": 0,
+   "lignesRemplacer": 10
+  },
+  "ecartDryhop": null,
+  "ecartLevure": 0,
+  "verdictsChanges": []
+ },
+ {
+  "cas": "16D-floral-tropical",
+  "place": 0,
+  "ouvertureMs": 1142,
+  "tachesLiberees": 2,
+  "arriveeMs": 4900,
+  "avant": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "ajouter",
+    "remplacer-place",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 1768.7,
+   "levure": 1961.9,
+   "remplacer": null,
+   "place": 1768.7,
+   "hauteurPage": 844,
+   "verdicts": {
+    "tropical": "Aucune",
+    "floral": "Aucune"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "apres": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "ajouter",
+    "remplacer-place",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 1768.7,
+   "levure": 1961.9,
+   "remplacer": null,
+   "place": 1768.7,
+   "hauteurPage": 844,
+   "verdicts": {
+    "tropical": "Aucune",
+    "floral": "Aucune"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "ecartDryhop": 0,
+  "ecartLevure": 0,
+  "verdictsChanges": []
+ }
+]

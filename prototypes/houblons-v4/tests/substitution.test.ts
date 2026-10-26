@@ -75,7 +75,11 @@ function temoins(weights?: SubstitutionWeights) {
       && ['galaxy', 'idaho-7', 'nectaron'].some((id) => enTete('beermaverick-citra:cryo', K(id), fiches)),
     nugget: ['columbus', 'pahto'].every((id) => enTete(K('nugget'), K(id), at60(fiches))
         && ['fuggle', 'saaz-cz', 'east-kent-goldings'].every((aroma) => devant(K('nugget'), K(id), K(aroma), at60(fiches))))
-      && nuggetTop10.every((s) => { const a = hopRef(s.key)!.catalogue.alpha!; return (a[0] + a[1]) / 2 >= 10; })
+      // D105 : le témoin « α ≥ 10 % » est remplacé par le principe du brasseur (« l'α se règle par la dose, il compte mais pas seul ») : avec J1 (D102, α 0,15 à 60′) Centennial et Akoya (9,5 %)
+      // entrent dans les 10 premiers, à bon droit. Ce qui reste exigé : aucun houblon d'usage « arôme » n'entre dans les 10 premiers de Nugget à 60′, sauf démotion écrite.
+      // D106 (3) : lu à la lettre. L'usage « arôme » de Beer Maverick (la lecture de Suggérer à 60′), puis le rôle du moteur (fournisseur, sinon règle rôle-α) : l'un ou l'autre demande une démotion écrite.
+      && nuggetTop10.every((s) => (hopRef(s.key)?.catalogue.purpose !== 'aroma' && hopRole(s.key).value !== 'aromatique') || !!s.amertumeDeconseillee)
+      && nuggetTop10.every((s) => hopRef(s.key)?.catalogue.purpose !== 'aroma')
       && /fournisseur : Alter Ego Brewing/.test(find(K('nugget'), K('target'), at60(fiches)).amertumeDeconseillee ?? ''),
   };
 }
@@ -85,7 +89,7 @@ describe('Substitution de houblons : témoins de bon sens', () => {
   it('les Goldings se trouvent entre eux (32 fiches : premier quart ; catalogue : EKG ↔ Golding premiers)', () => expect(t.goldings).toBe(true));
   it('les nobles Saaz (CZ), Saaz Late, Spalt se trouvent entre eux ; Mittelfrüh trouve Saaz (CZ) et Spalt', () => expect(t.nobles).toBe(true));
   it('Citra cryo trouve Galaxy, Idaho 7 et Nectaron avant Fuggle', () => expect(t.citra).toBe(true));
-  it('Nugget à 60′ trouve des amérisants (Columbus, Pahto) avant les aromatiques ; ses 10 premiers ont α ≥ 10 % ; Target rétrogradé avec sa source', () => expect(t.nugget).toBe(true));
+  it('Nugget à 60′ trouve des amérisants (Columbus, Pahto) avant les aromatiques ; aucun houblon de rôle aromatique dans ses 10 premiers sans démotion écrite (D105) ; Target rétrogradé avec sa source', () => expect(t.nugget).toBe(true));
   it('sans moment, les poids sont ceux de l\'arôme chaud et Pahto reste devant Fuggle', () => {
     // v1 : « Nugget garde Target dans ses deux premiers » (poids 0,5 · 0,25 · 0,25). v2 (e2, 26.10) : sans moment, la formule lit l'arôme
     // chaud (mots et familles 0,6) : Target, amérisant, n'y est plus en tête (14e). L'amérisant se lit à 60′ (témoin « nugget » ci-dessus).
@@ -184,11 +188,17 @@ describe('Substitution de houblons : score, couverture, dose, classement', () =>
     const r = substitutes(K('nugget'), { moment: 'b60', grams: 46, recipe: s1Recipe(), stockFirst: true });
     const l = r.remplacants, stock = l.filter((s) => s.stock.etat === 'en stock');
     expect(l.slice(0, 3).some((s) => /cryo/i.test(s.name))).toBe(false);
-    expect(stock.slice(0, 3).some((s) => /cryo/i.test(s.name))).toBe(false);
-    // Rôle du moteur (fournisseur, sinon règle rôle-α v1).
-    const bitter = (key: string) => hopRole(key).value !== 'aromatique' && !/cryo|lupul|poudre|powder/i.test(hopRef(key)!.name);
-    const fit = stock.filter((s) => bitter(s.key) && s.stock.suffisant);
-    if (fit.length) expect(stock[0]).toMatchObject({ key: fit[0].key, amertumeDeconseillee: null, stock: { suffisant: true } });
+    // D106 (3) : l'usage « arôme » démote aussi Nelson Sauvin, Sabro, Idaho 7 et Hallertau Blanc : il ne reste que deux houblons du stock sans démotion (Motueka, Galaxy). « Aucun cryo en tête » :
+    // aucun cryo parmi les houblons non démotés (qui passent tous avant), et Citra cryo, démoté, ne vient qu'après eux (il garde son score, 95, en tête des démotés).
+    const nonDemotes = stock.filter((s) => !s.amertumeDeconseillee);
+    expect(stock.slice(0, nonDemotes.length).some((s) => /cryo/i.test(s.name))).toBe(false);
+    expect(nonDemotes.length).toBeGreaterThan(0);
+    // Rôle du moteur (fournisseur, sinon règle rôle-α v1), et usage « arôme » de Beer Maverick (D106, 3 : la lecture de Suggérer à 60′).
+    const bitter = (key: string) => hopRole(key).value !== 'aromatique' && hopRef(key)!.catalogue.purpose !== 'aroma' && !/cryo|lupul|poudre|powder/i.test(hopRef(key)!.name);
+    // D106 (3) : le premier du stock est un amérisant ou double usage non démoté (Motueka, 80). Sa quantité (insuffisante pour 46 g) ne le fait pas reculer derrière Galaxy (77, suffisant) : « stock d'abord »
+    // ne passe jamais devant un palier meilleur (test précédent). Avant D106 Nelson Sauvin (usage « arôme », α 12 %) était lu amérisant et ouvrait la liste.
+    const fit = stock.filter((s) => bitter(s.key));
+    if (fit.length) expect(stock[0]).toMatchObject({ key: fit[0].key, amertumeDeconseillee: null });
     else expect(stock[0].raison).toMatch(/cher pour amériser/);
     // Citra cryo garde son score, mais passe après tous les amérisants et doubles usages, avec la raison écrite.
     const cryo = l.find((s) => s.key === 'beermaverick-citra:cryo')!;

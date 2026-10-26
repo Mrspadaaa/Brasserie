@@ -1,0 +1,234 @@
+[
+ {
+  "cas": "21C-agrumes",
+  "place": 0,
+  "ouvertureMs": 859,
+  "tachesLiberees": 2,
+  "arriveeMs": 4901,
+  "avant": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "remplacer-place",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 709.4,
+   "remplacer": null,
+   "place": 709.4,
+   "hauteurPage": 844,
+   "verdicts": {
+    "citrus": "Aucune"
+   },
+   "lignes": 4,
+   "lignesRemplacer": 0
+  },
+  "apres": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "remplacer-place",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 709.4,
+   "remplacer": null,
+   "place": 709.4,
+   "hauteurPage": 844,
+   "verdicts": {
+    "citrus": "Aucune"
+   },
+   "lignes": 4,
+   "lignesRemplacer": 0
+  },
+  "ecartDryhop": null,
+  "ecartLevure": 0,
+  "verdictsChanges": []
+ },
+ {
+  "cas": "21C-floral-agrumes-moins-resineux",
+  "place": 0,
+  "ouvertureMs": 458,
+  "tachesLiberees": 2,
+  "arriveeMs": 4900,
+  "avant": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "remplacer-place",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 808.4,
+   "remplacer": null,
+   "place": 808.4,
+   "hauteurPage": 844,
+   "verdicts": {
+    "resin": "Aucune",
+    "citrus": "Aucune",
+    "floral": "Aucune"
+   },
+   "lignes": 4,
+   "lignesRemplacer": 0
+  },
+  "apres": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "remplacer-place",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 808.4,
+   "remplacer": null,
+   "place": 808.4,
+   "hauteurPage": 844,
+   "verdicts": {
+    "resin": "Aucune",
+    "citrus": "Aucune",
+    "floral": "Aucune"
+   },
+   "lignes": 4,
+   "lignesRemplacer": 0
+  },
+  "ecartDryhop": null,
+  "ecartLevure": 0,
+  "verdictsChanges": []
+ },
+ {
+  "cas": "16D-floral",
+  "place": 0,
+  "ouvertureMs": 547,
+  "tachesLiberees": 2,
+  "arriveeMs": 4900,
+  "avant": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "remplacer-place",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 709.4,
+   "remplacer": null,
+   "place": 709.4,
+   "hauteurPage": 844,
+   "verdicts": {
+    "floral": "Aucune"
+   },
+   "lignes": 4,
+   "lignesRemplacer": 0
+  },
+  "apres": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "remplacer-place",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 709.4,
+   "remplacer": null,
+   "place": 709.4,
+   "hauteurPage": 844,
+   "verdicts": {
+    "floral": "Aucune"
+   },
+   "lignes": 4,
+   "lignesRemplacer": 0
+  },
+  "ecartDryhop": null,
+  "ecartLevure": 0,
+  "verdictsChanges": []
+ },
+ {
+  "cas": "16D-moins-resineux",
+  "place": 0,
+  "ouvertureMs": 427,
+  "tachesLiberees": 2,
+  "arriveeMs": 1019,
+  "avant": {
+   "groupes": [
+    "remplacer-place",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 274.4,
+   "remplacer": null,
+   "place": 274.4,
+   "hauteurPage": 844,
+   "verdicts": {
+    "resin": "Aucune"
+   },
+   "lignes": 0,
+   "lignesRemplacer": 0
+  },
+  "apres": {
+   "groupes": [
+    "remplacer",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 737.4,
+   "remplacer": 274.4,
+   "place": null,
+   "hauteurPage": 844,
+   "verdicts": {
+    "resin": "Aucune"
+   },
+   "lignes": 0,
+   "lignesRemplacer": 4
+  },
+  "ecartDryhop": null,
+  "ecartLevure": 463,
+  "verdictsChanges": []
+ },
+ {
+  "cas": "16D-floral-tropical",
+  "place": 0,
+  "ouvertureMs": 613,
+  "tachesLiberees": 2,
+  "arriveeMs": 4901,
+  "avant": {
+   "groupes": [
+    "meme-0",
+    "ajouter",
+    "remplacer-place",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 783.7,
+   "remplacer": null,
+   "place": 783.7,
+   "hauteurPage": 844,
+   "verdicts": {
+    "tropical": "Aucune",
+    "floral": "Aucune"
+   },
+   "lignes": 4,
+   "lignesRemplacer": 0
+  },
+  "apres": {
+   "groupes": [
+    "meme-0",
+    "ajouter",
+    "remplacer-place",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 783.7,
+   "remplacer": null,
+   "place": 783.7,
+   "hauteurPage": 844,
+   "verdicts": {
+    "tropical": "Aucune",
+    "floral": "Aucune"
+   },
+   "lignes": 4,
+   "lignesRemplacer": 0
+  },
+  "ecartDryhop": null,
+  "ecartLevure": 0,
+  "verdictsChanges": []
+ }
+]

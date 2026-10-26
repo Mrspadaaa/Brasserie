@@ -19,6 +19,7 @@ import { ContexteFicheApp, FicheDeLApp } from '../fiche/FicheApp';
 import { HoteEtapeProvider, type HoteEtape, type RouteEtape } from './hote';
 import { EtapeHoublonsContenu } from './index';
 import { JeuPictos } from '../Pictos';
+import { usePrechauffeSuggerer } from '../suggerer/prechauffe';
 import './theme-app.css';
 
 export interface EtapeHoublonsProps {
@@ -77,6 +78,7 @@ export default function EtapeHoublons({ recipe, boilOg, draftId, onChange, onMes
   useEffect(() => { setLocale(null); }, [conversion]);
   const recette = locale ?? conversion.recette;
   const recetteRef = useRef(recette); recetteRef.current = recette;
+  usePrechauffeSuggerer(recette);
   const mesures = useMemo<MesuresEtape>(() => { const b = lireBiere(recette); return { ibu: b.ibu, ebc: b.ebc, og: b.og, bande: b.bandeIbu }; }, [recette]);
   useEffect(() => { onMesures?.(mesures); }, [mesures, onMesures]);
   const [erreur, setErreur] = useState<string | null>(null);

@@ -1,0 +1,15 @@
+  direction {"citrus":8,"floral":4,"resin":1} · visée {"floral":2.5,"citrus":2.5,"resin":2.5}
+differe / plus-de-tout : liste visible après 1 ms (15 lignes, groupes meme-0,meme-1,meme-2,meme-3,ajouter,remplacer-place,dryhop,levure) ; après le repos : 15 lignes, Remplacer 0 lignes, groupes meme-0,meme-1,meme-2,meme-3,ajouter,remplacer-place,dryhop,levure ; serveur null ; erreurs console 0
+  direction {"floral":1,"citrus":1,"resin":-8} · visée {"resin":0}
+differe / moins-resineux : liste visible après 2 ms (15 lignes, groupes meme-0,meme-1,ajouter,assembler,remplacer,dryhop,levure) ; après le repos : 15 lignes, Remplacer 2 lignes, groupes meme-0,meme-1,ajouter,assembler,remplacer,dryhop,levure ; serveur null ; erreurs console 0
+  direction {"citrus":8,"floral":4,"resin":1} · visée {"floral":2.5,"citrus":2.5,"resin":2.5}
+worker / plus-de-tout : liste visible après 5 ms (15 lignes, groupes meme-0,meme-1,meme-2,meme-3,ajouter,remplacer-place,dryhop,levure) ; après le repos : 15 lignes, Remplacer 0 lignes, groupes meme-0,meme-1,meme-2,meme-3,ajouter,remplacer-place,dryhop,levure ; serveur null ; erreurs console 0
+  direction {"floral":1,"citrus":1,"resin":-8} · visée {"resin":0}
+worker / moins-resineux : liste visible après 1 ms (15 lignes, groupes meme-0,meme-1,ajouter,assembler,remplacer,dryhop,levure) ; après le repos : 15 lignes, Remplacer 2 lignes, groupes meme-0,meme-1,ajouter,assembler,remplacer,dryhop,levure ; serveur null ; erreurs console 0
+  direction {"citrus":8,"floral":4,"resin":1} · visée {"floral":2.5,"citrus":2.5,"resin":2.5}
+immediat / plus-de-tout : liste visible après 1 ms (15 lignes, groupes meme-0,meme-1,meme-2,meme-3,ajouter,remplacer-place,dryhop,levure) ; après le repos : 15 lignes, Remplacer 0 lignes, groupes meme-0,meme-1,meme-2,meme-3,ajouter,remplacer-place,dryhop,levure ; serveur null ; erreurs console 0
+  direction {"floral":1,"citrus":1,"resin":-8} · visée {"resin":0}
+immediat / moins-resineux : liste visible après 2 ms (15 lignes, groupes meme-0,meme-1,ajouter,assembler,remplacer,dryhop,levure) ; après le repos : 15 lignes, Remplacer 2 lignes, groupes meme-0,meme-1,ajouter,assembler,remplacer,dryhop,levure ; serveur null ; erreurs console 0
+MAQUETTE OK
+Commande terminée, code 0.
+Arrêt de 1 serveur(s)…

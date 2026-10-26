@@ -354,7 +354,7 @@ describe('IBU par moment (ibuParMoment)', () => {
 });
 
 describe('Ajout en un toucher (ajoutsRapides)', () => {
-  const keyOf = (r: QuickAdd) => [['usage attesté', 'cohérent', 'peu documenté', 'non documenté', 'hors style'].indexOf(r.fit), r.tastingConflicts.length ? 1 : 0, r.offStyleWeight, -r.supports.length, -r.stock.free];
+  const keyOf = (r: QuickAdd) => [['usage attesté', 'cohérent', 'peu documenté', 'non documenté', 'hors style'].indexOf(r.fit), r.tastingConflicts.length ? 1 : 0, r.poids.indesirables, -r.poids.attendues, r.poids.neutres, -r.stock.free]; // D107 (K3)
   const ordered = (list: QuickAdd[]) => { for (let i = 1; i < list.length; i++) { const a = keyOf(list[i - 1]), b = keyOf(list[i]); const d = a.findIndex((x, j) => x !== b[j]); if (d >= 0) expect(a[d]).toBeLessThan(b[d]); expect(quickAddKey(list[i - 1])).toEqual(a); } };
 
   it('16D avec la dégustation : un houblon qui cite la famille « trop » ne passe pas devant un houblon qui ne la cite pas, à catégorie égale', () => {

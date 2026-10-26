@@ -276,13 +276,17 @@ export const simulerMoment = (recette: RecetteParcours, ajout: AjoutParcours, q:
  * ajouter (10′, whirlpool, dry hop), augmenter, diminuer, retirer, remplacer à IBU égal, assembler deux houblons du
  * stock ; classées par le moteur (RANKING) avec les achats possibles. C'est la source des voies de q2b, groupées par
  * effet à l'écran. Mémoïsé par recette et direction. */
-export const proposer = memo<[RecetteParcours, Direction], VoieResult>('proposer', (r, d) => cleRecette(r) + JSON.stringify(d),
-  (recette, direction) => {
-    const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: true });
-    // Catalogue injecté (app : catalogue de production, #120) : seules les voies dont tous les houblons sont
-    // proposables restent. Catalogue du moteur (maquette) : rien n'est filtré.
-    return catalogueDuMoteur() ? res : { ...res, voies: res.voies.filter((v) => v.actions.every((x) => x.op === 'retirer' || proposable(x.hopKey))) };
-  });
+const voiesProposees = (recette: RecetteParcours, direction: Direction, remplacements: boolean): VoieResult => {
+  const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: true, ...(remplacements ? {} : { remplacements: false }) });
+  // Catalogue injecté (app : catalogue de production, #120) : seules les voies dont tous les houblons sont
+  // proposables restent. Catalogue du moteur (maquette) : rien n'est filtré.
+  return catalogueDuMoteur() ? res : { ...res, voies: res.voies.filter((v) => v.actions.every((x) => x.op === 'retirer' || proposable(x.hopKey))) };
+};
+export const proposer = memo<[RecetteParcours, Direction], VoieResult>('proposer', (r, d) => cleRecette(r) + JSON.stringify(d), (recette, direction) => voiesProposees(recette, direction, true));
+/** D106 (coût de Suggérer, « Attention au délais ajouter, la Responsive, réactivité ») : les mêmes voies SANS les remplacements (« remplacer à IBU égal » et à masse égale), qui portent l'essentiel du
+ * surcoût de B1. C'est ce que Suggérer calcule à son premier affichage ; les remplacements arrivent ensuite, au repos, par l'appel complet (`proposer`), qui est celui de Ma bière et du préchauffage.
+ * Mémoïsé à part : un résultat complet déjà gardé n'est pas relu ici (clé différente), mais l'écran le préfère dès qu'il l'a (suggerer/differe.ts). */
+export const proposerRapide = memo<[RecetteParcours, Direction], VoieResult>('proposerRapide', (r, d) => cleRecette(r) + JSON.stringify(d), (recette, direction) => voiesProposees(recette, direction, false));
 
 /** Les leviers levure du moteur (R43, R44), par recette et direction : le houblonnage à froid en fermentation active
  * (dry hop « actif ») et les changements de souche. Un calcul lourd (proposeVoies), servi par le client asynchrone. */
@@ -292,7 +296,7 @@ siDonneesChangent(() => LEVIERS.clear());
 export function leviersLevure(recette: RecetteParcours, direction: Record<string, number>): LeviersLevure {
   const cle = JSON.stringify([recette.styleCode, recette.volumeL, recette.og, recette.boilMin, recette.yeastId, recette.additions, direction]);
   if (!LEVIERS.has(cle)) {
-    const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: false, leviersLevure: true });
+    const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: false, leviersLevure: true, remplacements: false, maxBuy: 0, moments: ['dryActive'] }); // D106 : les leviers ne lisent que le dry hop actif du STOCK et les souches : ni remplacements, ni pool à acheter, ni autres moments (inutile de les calculer)
     LEVIERS.set(cle, {
       dry: res.voies.filter((v) => v.type === 'levure' && !v.yeastChange && v.actions.length > 0 && v.actions.every((x) => x.op === 'ajouter' && x.moment === 'dryActive'))
         .filter((v) => catalogueDuMoteur() || v.actions.every((x) => proposable(x.hopKey))),
