@@ -21,7 +21,9 @@ import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { additionEffect, FAMILY_NAMES, yeastSignals } from '../parcours/v4';
 import { AlphaLu, Autres, StockIcone, Usage } from './briques';
 import { useGestesFiche } from './gestesFiche';
-import { BoutonLegende, useLegende } from './LegendeGroupe';
+import { BoutonLegende } from './LegendeGroupe';
+import { useEtatCartes } from './carteOuverte';
+import { useAppuiRepete } from './appuiRepete';
 import { BandeOuverte, LignesV2a, TonsV2a } from './legende-bande';
 import { nomLevureBase } from './Base';
 import { WP_MINUTES, J_MAX } from './rail';
@@ -112,17 +114,33 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
     onPointerCancel: (e: React.PointerEvent) => { appui.onPointerCancel?.(e as never); relache(); },
     onPointerLeave: (e: React.PointerEvent) => { appui.onPointerLeave?.(e as never); relache(); },
   };
-  const [legende, basculerLegende] = useLegende();
   // D140 : leg3-v2a telle quelle. Toucher la bande l'ouvre (bande, lignes, tons) ; le « ? » l'ouvre aussi, avec la ligne des
-  // autres icônes en plus (v2a.html).
-  const [bandeTouchee, setBandeTouchee] = useState(false);
+  // autres icônes en plus (v2a.html). D169 : une seule carte dépliée à la fois dans l'étape, fermée quand on change de vue
+  // (carteOuverte.tsx) ; l'état est celui de l'étape, pas celui de cette carte.
+  const { etat: etatCartes, poser } = useEtatCartes();
+  const moi = etatCartes?.id === a.id ? etatCartes : null;
+  const bandeTouchee = !!moi?.bande;
+  const legende = !!moi?.legende;
+  const setBandeTouchee = (b: boolean) => poser(b ? { id: a.id, bande: true, legende } : legende ? { id: a.id, bande: false, legende } : null);
+  const basculerLegende = () => poser(legende ? (bandeTouchee ? { id: a.id, bande: true, legende: false } : null) : { id: a.id, bande: bandeTouchee, legende: true });
   // L'appui long sur les carrés ouvre toujours la fiche (D111) : seul un toucher court ouvre la bande.
   const appuiBande = useRef(0);
   const ouverte = bandeTouchee || legende;
-  const fermer = () => { setBandeTouchee(false); if (legende) basculerLegende(); };
+  const fermer = () => poser(null);
   const idLegende = `pq-ma-biere-legende-${a.id}`;
   const bouton = 'w-7 h-7 inline-flex items-center justify-center rounded-full border border-cave-700 text-cave-200';
-  const doser = (d: number) => { onGeste(); gestes.dose('recette', a.id, Math.max(0, Math.round((a.grams + d) * 10) / 10)); };
+  // D173 : un appui long sur − ou + répète le pas en continu (appuiRepete.ts). Pendant la répétition, la valeur courante se lit dans
+  // une réserve mise à jour à chaque pas : la carte n'a pas toujours fini son rendu entre deux pas. Borne : 0 g au minimum.
+  const gramsCourants = useRef(a.grams); gramsCourants.current = a.grams;
+  const doser = (d: number): boolean => {
+    const suivant = Math.max(0, Math.round((gramsCourants.current + d) * 10) / 10);
+    if (suivant === gramsCourants.current) return false;
+    gramsCourants.current = suivant;
+    onGeste(); gestes.dose('recette', a.id, suivant);
+    return true;
+  };
+  const repeterMoins = useAppuiRepete(() => doser(-PAS_DOSE));
+  const repeterPlus = useAppuiRepete(() => doser(PAS_DOSE));
   const minutesWp = a.minutes ?? 20;
   const iWp = WP_MINUTES.indexOf(minutesWp);
   const jour = a.day ?? 3;
@@ -147,10 +165,10 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
           </button>
         </span>
         <span className="pq-mb-pas ml-auto inline-flex items-center gap-1 shrink-0" {...stop}>
-          <button type="button" data-role="dose-moins" data-etat={premier ? 'etat-etape-dose-moins' : undefined} aria-label={`Retirer ${PAS_DOSE} g de ${h.nom}`} onClick={() => doser(-PAS_DOSE)} className={bouton}>
+          <button type="button" data-role="dose-moins" data-etat={premier ? 'etat-etape-dose-moins' : undefined} aria-label={`Retirer ${PAS_DOSE} g de ${h.nom}`} {...repeterMoins} className={bouton}>
             <Minus className="w-4 h-4" aria-hidden="true" /></button>
           <output data-role="dose" className="min-w-[2.5rem] text-center font-mono font-semibold text-base text-cave-50 tabular-nums">{nombre(a.grams, a.grams % 1 ? 1 : 0)}<span className="font-sans font-normal text-sm text-cave-400">{' '}g</span></output>
-          <button type="button" data-role="dose-plus" data-etat={premier ? 'etat-etape-dose-plus' : undefined} aria-label={`Ajouter ${PAS_DOSE} g de ${h.nom}`} onClick={() => doser(PAS_DOSE)} className={bouton}>
+          <button type="button" data-role="dose-plus" data-etat={premier ? 'etat-etape-dose-plus' : undefined} aria-label={`Ajouter ${PAS_DOSE} g de ${h.nom}`} {...repeterPlus} className={bouton}>
             <Plus className="w-4 h-4" aria-hidden="true" /></button>
           <button type="button" data-role="retirer" data-etat={premier ? 'etat-etape-retirer' : undefined} aria-label={`Retirer ${h.nom} de la recette`} onClick={() => { onGeste(); gestes.retirer('recette', a.id); }}
             className="w-6 h-7 inline-flex items-center justify-center text-cave-400"><X className="w-4 h-4" aria-hidden="true" /></button>

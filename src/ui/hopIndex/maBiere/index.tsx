@@ -23,6 +23,7 @@ import { Alerte, Bandeau, NomFamille, PisteBase, nomLevureBase } from './Base';
 import { Frise } from './Frise';
 import { Lentille } from './Lentille';
 import { useRepere } from './repere';
+import { FournisseurCartes, useCartesOuvertes } from './carteOuverte';
 import './ma-biere.css';
 import './rail.css';
 
@@ -76,6 +77,9 @@ export function EtapeHoublonsContenu({ bandeau = true }: { /** Faux dans le wiza
   const analyse = !enApp || import.meta.env.DEV;
   const [echelle, setEchelle] = useState<Echelle>('style');
   const [legende, basculerLegende] = useLegende();
+  // D169 : une seule carte dépliée, fermée quand on change de vue ou qu'un outil recouvre l'étape (carteOuverte.tsx).
+  const racine = useRef<HTMLDivElement>(null);
+  const cartes = useCartesOuvertes(route.ecran, racine);
   // Ma bière est à l'écran sur sa route et sous la fiche ; la coquille ne la monte pas sous un outil plein écran.
   const { avant, effacer } = useRepere(recette, route.ecran === 'ma-biere' || route.ecran === 'fiche');
   const biereAvant = useMemo(() => (avant ? lireBiere(avant) : null), [avant]);
@@ -107,7 +111,8 @@ export function EtapeHoublonsContenu({ bandeau = true }: { /** Faux dans le wiza
   const colonnes = [sc.order.slice(0, moitie), sc.order.slice(moitie)];
 
   return (
-      <div data-ecran="ma-biere" data-etat="etat-etape-repos-1280" className="pq-ma-biere space-y-1">
+    <FournisseurCartes value={cartes}>
+      <div ref={racine} data-ecran="ma-biere" data-etat="etat-etape-repos-1280" className="pq-ma-biere space-y-1">
         {bandeau && (
           <div data-etat={document.body.dataset.cas === 'k3' ? 'etat-etape-cas-k3' : undefined}>
             <Bandeau biere={biere} avant={biereAvant} element="etape-bandeau" ecart={ecart} />
@@ -179,6 +184,7 @@ export function EtapeHoublonsContenu({ bandeau = true }: { /** Faux dans le wiza
           )}
         </section>
       </div>
+    </FournisseurCartes>
   );
 }
 

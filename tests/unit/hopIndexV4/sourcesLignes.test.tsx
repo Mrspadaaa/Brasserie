@@ -126,8 +126,11 @@ describe('Substituer : un trait par plage qui diffère (α, β, huiles)', () => 
     const tb = (m: string) => [...container.querySelectorAll<HTMLElement>(`.pq-substituer-tb[data-mesure="${m}"]`)].find((e) => e.getAttribute('data-houblon') === 'Lotus')!;
     expect([...tb('beta').querySelectorAll<HTMLElement>('.pq-substituer-tb-src')].map((t) => [t.dataset.min, t.dataset.max])).toEqual([['5', '6'], ['5.5', '6']]);
     expect([...tb('alpha').querySelectorAll('.pq-substituer-tb-src')]).toHaveLength(1);
-    // Le survol du trait de Lotus 13–17 nomme les trois sources qui s'accordent.
-    expect(tb('alpha').querySelector('.pq-substituer-tb-src')!.getAttribute('title')).toBe('Beer Maverick, Hopsteiner, Charles Faram : 13–17');
+    // s2 (D168) : le survol du trait de Lotus 13–17 dit la plage et que trois sources s'accordent, sans les nommer ; leurs noms restent
+    // dans la donnée du trait (data-sources) et dans la section Sources de la fiche.
+    const t = tb('alpha').querySelector<HTMLElement>('.pq-substituer-tb-src')!;
+    expect(t.getAttribute('title')).toBe('13–17 · 3 sources d’accord');
+    expect(t.dataset.sources).toBe('Beer Maverick ; Hopsteiner ; Charles Faram');
   }, 30000);
 });
 
@@ -149,7 +152,10 @@ describe('Comparer, feuille Valeurs : une barre par houblon, les références de
         const c = cellules[j];
         const barres = c.querySelectorAll('.pq-comparer-vb > i:not(.pq-comparer-vlot)');
         if (barres.length !== 1) fautes.push(`${champ} ${id} : ${barres.length} barres`);
-        const refs = (c.querySelector('.pq-comparer-vr')?.textContent ?? '').replace(/ · .*/, '').split(' ').filter(Boolean);
+        // s2 (D168) : plus de référence écrite à côté de la valeur ; elles restent dans la donnée de la valeur (data-source : « BM Beer Maverick ; HS … »).
+        const vu = (c.querySelector('.pq-comparer-vr')?.textContent ?? '');
+        if (/(BM|HS|BH|CF|CRO|HPA)/.test(vu)) fautes.push(`${champ} ${id} : une référence de source écrite (${vu})`);
+        const refs = (c.querySelector('.pq-comparer-vv')?.getAttribute('data-source') ?? '').split(' ; ').map((x) => x.split(' ')[0]).filter(Boolean);
         if (new Set(refs).size !== refs.length) fautes.push(`${champ} ${id} : une référence en double (${refs.join(' ')})`);
         const ps = plagesDe(id, champ);
         const lo = Math.min(...ps.map((p) => p[0])), hi = Math.max(...ps.map((p) => p[1]));

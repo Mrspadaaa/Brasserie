@@ -51,7 +51,9 @@ export function milieuMoyen(traits: TraitSource[]): number | null {
   return n ? traits.reduce((t, x) => t + ((x.r[0] + x.r[1]) / 2) * x.noms.length, 0) / n : null;
 }
 
-/** La légende d'un trait au survol : « Beer Maverick, Hopsteiner : 5,5–6 ». */
+/** La légende d'un trait au survol : « 5,5–6 » ou « 5,5–6 · 2 sources d'accord ». D168 (26.10) : aucun nom de source ici (« un endroit
+ * qui renvoie la source suffit » : la section Sources de la fiche) ; les noms restent dans `noms` pour la donnée (data-sources). */
 export function titreTrait(t: TraitSource, ecrire: (lo: number, hi: number) => string): string {
-  return `${t.noms.join(', ')} : ${ecrire(t.r[0], t.r[1])}`;
+  const texte = ecrire(t.r[0], t.r[1]);
+  return t.noms.length > 1 ? `${texte} · ${t.noms.length} sources d’accord` : texte;
 }

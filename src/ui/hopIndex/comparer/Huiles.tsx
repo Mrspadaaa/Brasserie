@@ -6,7 +6,7 @@ import { HUILE_MAX, SAAZ, huileDe, type ColonneLue } from './calcul';
 import { hopRef } from '../parcours/v4';
 import { IconeFiole, IconeGoutte } from './icones';
 import { useComplements } from '../fiche/complements-ui';
-import { compose, titreRef } from './valeurs';
+import { compose } from './valeurs';
 
 const ECH = HUILE_MAX + 0.5;
 export function HuilesVue({ cols, reference }: { cols: ColonneLue[]; reference: string | null }) {
@@ -24,7 +24,7 @@ export function HuilesVue({ cols, reference }: { cols: ColonneLue[]; reference: 
       {lignes.map((l) => (
         <div key={l.cle} className="p4-hu-l" data-houblon={l.cle}>
           <span className="p4-hu-n"><i style={{ background: l.couleur }} />{l.nom}</span>
-          <span className="p4-hu-p">{l.v && <i className={l.etalon ? 'p4-hu-b p4-hu-etalon' : 'p4-hu-b'} style={{ left: pc(l.v.lo), width: `calc(${pc(l.v.hi)} - ${pc(l.v.lo)})`, background: l.etalon ? undefined : l.couleur }} title={`${l.v.texte} mL/100 g (${l.v.source})`} />}</span>
+          <span className="p4-hu-p">{l.v && <i className={l.etalon ? 'p4-hu-b p4-hu-etalon' : 'p4-hu-b'} style={{ left: pc(l.v.lo), width: `calc(${pc(l.v.hi)} - ${pc(l.v.lo)})`, background: l.etalon ? undefined : l.couleur }} title={`${l.v.texte} mL/100 g`} />}</span>
           <span className={l.etalon || l.cle === reference ? 'p4-hu-v p4-hu-gris' : 'p4-hu-v'}>{l.v ? l.v.texte : '?'}</span>
         </div>
       ))}
@@ -106,10 +106,10 @@ export function CompositionVue({ cols }: { cols: ColonneLue[] }) {
         <div key={k.id} className="cmc-co-g" data-compose={k.id}>
           <p className="cmc-co-n"><b>{k.nom}</b><span>{k.aromes}</span></p>
           {cols.map((c, i) => {
-            const { p, refs } = ms[i];
+            const { p } = ms[i];
             // Les huiles rares (< 10 %) gardent la décimale : « 0,5–2 % » ne devient pas « 1–2 % ».
             const plage = p ? (p[1] >= 10 ? `${ent(p[0])}–${ent(p[1])} %` : `${dec(p[0])}–${dec(p[1])} %`) : null;
-            const lab = `${c.houblon.nom}, ${k.nom.toLowerCase()} : ${plage ?? 'inconnu'}${refs.length ? ` (${[...new Set(refs.map(titreRef))].join(', ')})` : ''}`;
+            const lab = `${c.houblon.nom}, ${k.nom.toLowerCase()} : ${plage ?? 'inconnu'}`;
             return (
               <div key={c.cle} className="cmc-co-l" data-houblon={c.cle} aria-label={lab} title={lab}>
                 <span className="cmc-co-v" style={{ color: c.couleur }}>{plage ?? '?'}</span>

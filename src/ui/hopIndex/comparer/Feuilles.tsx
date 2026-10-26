@@ -338,7 +338,7 @@ function LigneValeurs({ cle, nom, unite, famille, icone, cols, cellules, note, q
           <span key={col.cle} className={cx('pq-comparer-vc', i === top && 'pq-comparer-vc-max', v.aConfirmer && 'pq-comparer-vc-verif')} style={{ ['--pq-h' as string]: col.couleur }}>
             <span className="pq-comparer-vv" data-nature="mesure" data-source={refs}>{v.texte}{!quatre && !unite.includes(' g') && <span className="pq-comparer-vu-in"> {unite.split(' ')[0]}</span>}</span>
             <span className="pq-comparer-vb"><i style={{ left: `${l.toFixed(1)}%`, width: `${Math.max(3, r - l).toFixed(1)}%` }} />{v.lot != null && <i className="pq-comparer-vlot" style={{ left: `${((v.lot / mx) * 100).toFixed(1)}%` }} aria-label={`ton lot ${nombre(v.lot, 1)} %`} />}</span>
-            <span className="pq-comparer-vr">{v.refs.join(' ')}{v.aConfirmer ? ' · à confirmer' : ''}{v.note ? ` · ${v.note}` : ''}</span>
+            {(v.aConfirmer || v.note) && <span className="pq-comparer-vr">{[v.aConfirmer ? 'à confirmer' : null, v.note].filter(Boolean).join(' · ')}</span>}
           </span>
         );
       })}
@@ -367,14 +367,12 @@ function Fiches({ cols, familles }: { cols: ColonneLue[]; familles: FamilyId[] }
 }
 export function FeuilleValeurs({ cols, sel, quatre, etapes, familles, onPreuve }: { cols: ColonneLue[]; sel: ColonneLue; quatre: boolean; etapes: Etapes; familles: FamilyId[]; onPreuve: () => void }) {
   useComplements(); // d3b : les valeurs des compléments entrent dans compose() et huile() ; un nouveau rendu à leur arrivée
-  const refs = new Set<string>();
-  const garder = (v: ValeurReelle | null) => { v?.refs.forEach((r) => refs.add(r)); return v; };
-  const alpha = cols.map((c) => garder(acides(c.cle, 'alpha')));
-  const beta = cols.map((c) => garder(acides(c.cle, 'beta')));
-  const hu = cols.map((c) => garder(huile(c.cle)));
-  const chimie = CHIMIE.map((x) => ({ ...x, cellules: cols.map((c) => garder(compose(c.cle, x.cle))) }));
-  const lin = cols.map((c) => garder(linalolEnBiere(c.cle, c.houblon.nom)));
-  ['H22', 'H77'].forEach((r) => refs.add(r));
+  // D168 (26.10) : plus de référence de source à côté d'une valeur, ni de légende des références ; les noms vivent dans la section Sources de la fiche.
+  const alpha = cols.map((c) => acides(c.cle, 'alpha'));
+  const beta = cols.map((c) => acides(c.cle, 'beta'));
+  const hu = cols.map((c) => huile(c.cle));
+  const chimie = CHIMIE.map((x) => ({ ...x, cellules: cols.map((c) => compose(c.cle, x.cle)) }));
+  const lin = cols.map((c) => linalolEnBiere(c.cle, c.houblon.nom));
   return (
     <div className="pq-comparer-vraies" data-acquis="valeurs" aria-label="Vraies valeurs et chimie"
       data-element="r6a-chimie v1-vraies-valeurs v1-linalol-en-biere d1-tout-ouvert p03-plages-sources">
@@ -419,7 +417,6 @@ export function FeuilleValeurs({ cols, sel, quatre, etapes, familles, onPreuve }
         <button type="button" className="pq-comparer-lien" onClick={onPreuve}>La courbe : Preuve ›</button>
       </p>
       <p className="pq-comparer-vsrc">mesuré : fiches et études ; plage = du plus bas au plus haut des sources ; la plus haute de chaque rangée à la couleur de son houblon.</p>
-      <p className="pq-comparer-vrefs">{[...refs].sort((a, b) => a.localeCompare(b, 'fr', { numeric: true })).map((r) => <span key={r}><b>{r}</b> {titreRef(r)}</span>)}</p>
     </div>
   );
 }

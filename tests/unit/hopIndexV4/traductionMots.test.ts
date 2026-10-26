@@ -10,6 +10,7 @@ import { sesMots } from '../../../src/ui/hopIndex/comparer/calcul';
 import { autresDe } from '../../../src/ui/hopIndex/fiche/autres';
 import { motsFiche } from '../../../src/ui/hopIndex/fiche/donnees-matrice';
 import { bas, estNonArome, tableFr } from '../../../src/ui/hopIndex/fiche/traduction';
+import { speciauxDe } from '../../../src/ui/hopIndex/maBiere/legende-bande';
 import { motsHors as horsSubstituer } from '../../../src/ui/hopIndex/substituer/donnees';
 import { motsHors as horsSuggerer } from '../../../src/ui/hopIndex/suggerer/hors16d';
 
@@ -33,6 +34,11 @@ function montres(id: string): { ecran: string; mot: string }[] {
   for (const m of horsSubstituer(id).hors) out.push({ ecran: 'lui seul (Substituer)', mot: m.mot });
   for (const m of horsSuggerer(id)) out.push({ ecran: 'lui seul (Suggérer)', mot: m.mot });
   for (const m of autresDe(id)?.mots ?? []) out.push({ ecran: 'autres (fiche)', mot: m.mot });
+  // s2 (D170, 26.10) : la carte dépliée de Ma bière (« orange · lemon », « tropical fruits » sur Lotus) : ses mots précis par famille
+  // (legende-bande.tsx, speciauxDe) et ses mots hors des 12 familles. Ce chemin-là n'appelait pas la table : il manquait à ce contrôle.
+  const carte = speciauxDe(id);
+  for (const mots of Object.values(carte.precis)) for (const m of mots ?? []) out.push({ ecran: 'carte de Ma bière (mots par famille)', mot: m });
+  for (const m of carte.sans) out.push({ ecran: 'carte de Ma bière (◇)', mot: m.mot });
   return out;
 }
 
@@ -61,6 +67,11 @@ describe('D160 : les mots montrés sont en français', () => {
   it('le tri reconnaît les phrases du constat et ne prend pas un arôme pour une phrase', () => {
     for (const p of ['no distinct aroma characteristics', 'clean bitterness', 'Good for bittering', 'net', 'medium intensity', 'very mild']) expect(estNonArome(p)).toBe(true);
     for (const a of ['muscade', 'lemon', 'white wine', 'pine', 'tropical fruit', 'dank', 'strong zesty aroma']) expect(estNonArome(a)).toBe(false);
+  });
+  it('la carte de Lotus : « orange · citron », plus de « lemon » ni de « tropical fruits »', () => {
+    const mots = Object.values(speciauxDe('beermaverick-lotus').precis).flat().map((m) => bas(m ?? ''));
+    expect(mots).toContain('citron');
+    expect(mots.some((m) => /lemon|tropical/.test(m))).toBe(false);
   });
   it('Magnum (US) et Magnum (GR) : plus de phrase anglaise, leurs mots d\'arôme restent', () => {
     for (const id of ['beermaverick-magnum-us', 'beermaverick-magnum-gr']) {

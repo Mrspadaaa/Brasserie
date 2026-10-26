@@ -42,16 +42,19 @@ export function AlphaLu({ h, mode = 'ligne', balise = h.cle }: { h: HoublonLu; m
   );
 }
 
+/** D168 : le survol de l'usage ne nomme pas le fournisseur (« fournisseur : Hopsteiner » devient « attesté par un fournisseur »). */
+export const titreUsage = (source: string) => (/^fournisseur/.test(source) ? 'attesté par un fournisseur' : source);
+
 /** Usage en mot, jamais en picto seul (D90) : data-usage et data-source comme hopRole. */
 /** `mot` : le mot court en gris, sans pilule, comme la carte de l'étape de sa base (« α 13 double ⊙ », consolide-390.png). */
 export function Usage({ h, long = false, mot: nu = false }: { h: HoublonLu; long?: boolean; mot?: boolean }) {
   const r = hopRole(h.cle);
   const valeur = r.value ?? 'inconnu';
-  if (nu) return <span data-role="usage" data-usage={valeur} data-source={/^fournisseur/.test(r.source) ? 'fournisseur' : 'règle'} title={r.source}
+  if (nu) return <span data-role="usage" data-usage={valeur} data-source={/^fournisseur/.test(r.source) ? 'fournisseur' : 'règle'} title={titreUsage(r.source)}
     className="text-sm text-cave-400 whitespace-nowrap">{r.value ?? 'usage ?'}</span>;
   const mot = r.value === 'double' ? (long ? 'double usage' : 'mixte') : r.value ?? 'usage ?';
   return (
-    <span data-role="usage" data-usage={valeur} data-source={/^fournisseur/.test(r.source) ? 'fournisseur' : 'règle'} title={r.source}
+    <span data-role="usage" data-usage={valeur} data-source={/^fournisseur/.test(r.source) ? 'fournisseur' : 'règle'} title={titreUsage(r.source)}
       className="inline-flex items-center h-5 px-1.5 rounded-full bg-cave-800 text-xs text-cave-200 whitespace-nowrap">{mot}</span>
   );
 }
@@ -95,7 +98,7 @@ export function ExplicationAutres({ cle, id }: { cle: string; id?: string }) {
       <p data-role="autres-calcul">{ligneAutres(a)}.</p>
       <ul className="mt-1 flex flex-wrap gap-x-2.5 gap-y-1">
         {a.mots.map((m) => (
-          <li key={m.mot} data-mot={m.mot} data-fiches={m.fiches.length} title={m.fiches.join(', ')} className="inline-flex items-center gap-1 whitespace-nowrap text-cave-50">
+          <li key={m.mot} data-mot={m.mot} data-fiches={m.fiches.length} className="inline-flex items-center gap-1 whitespace-nowrap text-cave-50">
             <i aria-hidden="true" className="pq-fiche-mx-hf" style={{ width: 7, height: 7, margin: '0 2px', borderWidth: 1.5 }} />
             <span className="sr-only">hors des 12 familles : </span>{m.mot}
           </li>

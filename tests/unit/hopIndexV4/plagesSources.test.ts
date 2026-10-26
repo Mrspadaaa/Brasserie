@@ -63,9 +63,14 @@ describe('dedoublonnerPlages : la même plage n\'a qu\'un trait', () => {
     expect(milieuMoyen([])).toBeNull();
   });
 
-  it('le survol nomme toutes les sources du trait', () => {
+  // s2 (D168, 26.10) : le survol ne nomme plus aucune source (leurs noms vivent dans la section Sources de la fiche) ; il dit la plage
+  // et combien de sources la donnent. Les noms restent dans la donnée du trait (`noms`).
+  it('le survol dit la plage et le nombre de sources, sans les nommer', () => {
     const [t] = dedoublonnerPlages([s('Beer Maverick', 5.5, 6), s('Hopsteiner', 5.5, 6)]);
-    expect(titreTrait(t, (a, b) => `${a}–${b}`)).toBe('Beer Maverick, Hopsteiner : 5.5–6');
+    expect(titreTrait(t, (a, b) => `${a}–${b}`)).toBe('5.5–6 · 2 sources d’accord');
+    expect(t.noms).toEqual(['Beer Maverick', 'Hopsteiner']);
+    const [u] = dedoublonnerPlages([s('Beer Maverick', 5.5, 6)]);
+    expect(titreTrait(u, (a, b) => `${a}–${b}`)).toBe('5.5–6');
   });
 });
 
