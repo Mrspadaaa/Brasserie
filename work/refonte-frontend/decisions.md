@@ -901,3 +901,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     - l'écriture du catalogue Firestore : d'abord un script, un essai sur émulateur, une sauvegarde, puis l'écriture ;
     - le test dans son Chrome, en lecture seule, sans jamais cliquer sur +, −, ×, Ajouter, Appliquer, Placer, Remplacer, Abandonner,
       Enregistrer, Supprimer ni Modifier.
+- D99 (pilote, 26.10, mesure g2d) : l'option c devient le défaut au dry hop, actif et après. Le débordement de style ne compte dans le
+  rang que pour une famille marquée (moitié des fiches).
+  - Sur la 21C, « plus d'agrumes » : Citra passe de la 54e à la 2e place, Mosaic de la 134e à la 20e, Nelson Sauvin de la 107e à la 31e.
+  - 0 barre changée, 0 ms.
+  - L'option est réversible. Les options m et w restent mesurées : elles changeraient les barres et retireraient Galaxy.
+  - Voie d99. Le lot m7 attend ce défaut.
