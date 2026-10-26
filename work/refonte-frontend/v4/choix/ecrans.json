@@ -64,6 +64,13 @@
    "controles": [
     "work/refonte-frontend/v4/tournoi/outils/controle-traits.mjs {dossier}",
     "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=suggerer"
+   ],
+   "complements": [
+    {
+     "mots": "M1 + M2 · avec l'IA semble le mieux mais pallier 60' toujours pas très clair et pas de vrai dry hopping",
+     "capture": "work/missions/2026-10-25-integration-houblons/voies/m6-suggerer-moment/img/m1m2-ia.png",
+     "quoi": "Base retenue pour Suggérer à 60′ comme au dry hop (page m6, https://claude.ai/artifact/Npss86xUpf259xJaemSKjH, 26.10) : groupe « Amérisant · 60′ » (M1), carte « Plus d'amertume +n IBU » (M2), puce et phrase de l'IA. Avec réserves, à reprendre avant tout port : le palier 60′ n'est pas clair (D165) ; il n'y a pas de vrai dry hop (D166)."
+    }
    ]
   },
   {

@@ -839,3 +839,15 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     Kent Goldings sortait de la liste de la stout S1.
   - Leçon proposée par g2c : un assouplissement se mesure sur la liste que le brasseur voit, pas sur le pool seul. Elle est
     couverte par L14 et L20 (confronter ce qu'il voit), donc pas d'entrée nouvelle (plafond de LECONS).
+- D94 (brasseur, 26.10, page m6 Npss86xUpf259xJaemSKjH) : « M1 + M2 · avec l'IA semble le mieux mais pallier 60' toujours pas très
+  clair et pas de vrai dry hopping ».
+  - Base retenue avec réserves : M1 + M2 + IA (registre `choix/ecrans.json`, suggerer, `complements`). Rien n'est porté avant les
+    corrections.
+  - D166 : moteur d'abord (voie g2b). Un vrai groupe dry hop, actif et après, avec une dose par règle (D161) ; le palier 60′ par une
+    dose exacte pour +n IBU.
+  - D165 est ambigu (L13). Ses trois lectures deviennent les axes du lot m7 :
+    - la barre « +10 IBU » ;
+    - le lien entre l'en-tête et la carte 28 → 38 ;
+    - ce que chaque rangée apporte.
+
+    Ce lot m7 se fait sur les valeurs de g2b.
