@@ -1004,3 +1004,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     pas ce cas.
   - Registre : `choix/ecrans.json`, comparer et substituer, `complements`.
   - Port confié à la voie p7.
+- D115 (pilote, 26.10, voie e6) : la préchauffe de Suggérer bloque le fil principal 1207 ms d'un coup, à processeur ×4 (f6). Le
+  déploiement est bloqué jusqu'au passage dans le worker (voie w1).
+  - Face à face de Substituer : le choix par défaut du stock saute les candidats reculés à 60′ (produits ou usage « arôme »). Cela
+    corrige « Nugget → Citra cryo » (D102 A).
+  - e6 : le test V5.5 avait un délai trop court. Aucun commit n'était fautif. 13 états sont actualisés, aucun acquis n'est perdu.
+    Le repère `etat-acquis-plus-comparer` est posé sur la ligne « + ».

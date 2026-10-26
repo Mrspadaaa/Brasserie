@@ -338,3 +338,15 @@ PR #188 fusionnée (71dc41bb). Callable IA (D92).
 
   En vol : **e6** (diagnostic et corrections sûres). Ensuite : rejeu ciblé de HEAD, déploiement, PR.
 - D185 : deux scripts de levure à aligner sur l'export concis.
+
+## Reprise (26.10, vers 21 h) : complément
+- Le quota hebdomadaire est à 94 % et le contexte du pilote à 89 % (compaction à 97 %).
+- Commités, non poussés :
+  - e6 (e4e12edf) ;
+  - D114 : son choix G, le trou du 0, à porter sur Substituer et Comparer ;
+  - D186 : les points confondus.
+- En vol :
+  - **p7** : G et les points confondus, dans `commun/` ;
+  - **w1** : la préchauffe dans le worker, et le face à face sans produit d'arôme à 60′. Cette voie bloque le déploiement.
+- Ensuite : un rejeu ciblé de HEAD, puis le déploiement depuis la copie propre (personne d'autre n'y écrit ; lire « found N files »
+  et la page servie). Puis push, PR, et fusion une fois propre.
