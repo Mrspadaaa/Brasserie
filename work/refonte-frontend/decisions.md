@@ -767,3 +767,7 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   L'entrée « Ouvrir l'analyse de ma bière » (écran provisoire, données du prototype) est cachée en production tant que l'écran
   n'existe pas. Le trait « ta bière » de Comparer et de Suggérer passe au-dessus des séries, comme le contour de Substituer (D156).
   Voie a2-demande-reelle.
+- D85 (pilote, 26.10) : le pack du prototype passe de 510 à 551 ko avec les descripteurs de d4. Son plafond est relevé de 500 à
+  560 ko : il ne sert qu'à la maquette jouable, l'app n'est pas concernée. Le moteur v2 de Substituer est rejoué sur ces données :
+  Galaxy au dry hop donne Harlequin, Mosaic, Citra, Nectaron, Rakau, Zamba Blend… ; il jugera sur les listes. Nouvelle source
+  envoyée par lui : Beer Analytics (statistiques de recettes : styles, doses, moments, accords), voie c3h.
