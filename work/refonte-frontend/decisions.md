@@ -1010,3 +1010,17 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     corrige « Nugget → Citra cryo » (D102 A).
   - e6 : le test V5.5 avait un délai trop court. Aucun commit n'était fautif. 13 états sont actualisés, aucun acquis n'est perdu.
     Le repère `etat-acquis-plus-comparer` est posé sur la ligne « + ».
+- D116 (26.10, vers 23 h) : l'hébergement est redéployé au commit **be15e480**, depuis la copie propre où personne d'autre n'écrivait.
+  Firebase a envoyé 246 fichiers, et la page servie porte le titre de l'app et `index-BCQv3ZH1.js`.
+  - **Contenu** :
+    - les 505 variétés branchées (c7) ;
+    - l'affinage (f2, f4, f5) ;
+    - Suggérer sans saut, avec la préchauffe dans le worker (f6, f7, w1) ;
+    - le face à face sans produit d'arôme à 60′ ;
+    - le radar : tiretés le long du bord, points visibles, trou du 0 (son choix G), points écartés (r2, p7) ;
+    - l'interpolation de 10′ à 60′ (u2, u3) ;
+    - l'export concis (x2), sans NaN (e7).
+  - **Preuves** :
+    - rejeu complet de b1d73ea1 : tsc, vitest, build, B5 à 163,5 ko pour 164, worker de production, 10 contrôles Chrome ;
+    - rejeu ciblé de be15e480 : 996 tests verts sur 996 (dont le monkey testing), états 138/138, RADAR-BASE OK, WORKER PROD OK.
+  - **Reste ouvert** : les 6 budgets de fluidité déjà dépassés, et des tâches de 100 à 250 ms après la préchauffe (D101).
