@@ -97,7 +97,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L17 — Une voie n'écrit que dans ce qu'elle possède
 - Erreur : lot 21 et 22.10, des fichiers de travail à la racine (`pistes-l5f.png`, `loupe.html`). 25.10, T4 : un déménagement sans les importeurs hors dossier.
 - Cause : aucun périmètre d'écriture n'était déclaré, et personne n'a regardé `git status` après la voie.
-- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Le pilote commite par chemins (`git commit -- <chemins>`) : le `git mv` d'une voie en vol est déjà indexé (25.10). Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine. Un déménagement : `grep` de l'ancien chemin partout avant l'OWNS. Un critère non plus n'écrit dans un livrable (24.10). Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()`, jamais en remplaçant le fichier (26.10).
+- Faire : déclarer OWNS dans chaque VOIE.md, et lancer `git status --short` après chaque retour de voie. Le pilote commite par chemins (`git commit -- <chemins>`) : le `git mv` d'une voie en vol est déjà indexé (25.10). Les fichiers de travail d'une voie vont dans son OWNS ou dans `os.tmpdir()`, jamais à la racine. Un déménagement ou un format changé : `grep` de ses lecteurs partout, leurs tests rejoués (D79). Un critère non plus n'écrit dans un livrable (24.10). Référence de HEAD : `git show HEAD:<f>` vers `os.tmpdir()`, jamais en remplaçant le fichier (26.10).
 - Rôles : pilote, auteur, exécutant, concepteur
 - Contrôle : aucun
 
