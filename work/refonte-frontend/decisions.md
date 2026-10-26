@@ -824,3 +824,8 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - k3 (radar Beer Maverick) place Citra 4e et Galaxy 16e en agrumes, mais ne couvre que 181 variétés sur 318.
 
   Le défaut reste `'aucun'` jusqu'à son choix. Ces listes se feront après g2c ; sans g2c, Nelson Sauvin et Motueka en seraient absents.
+- D92 (pilote, 26.10, sous l'accord D80) : le callable `hopReclasserIA` est déployé seul, en europe-west6 (Node 22, 2e génération).
+  - Commande : `firebase deploy --only functions:hopReclasserIA`, lancée sur b350620a ; journal dans `%TEMP%/rejeu-deeb/70-deploy-fonction.log`.
+  - Le CLI a accordé `secretAccessor` sur `GEMINI_API_KEY` au compte de service de calcul par défaut. C'est le geste standard de
+    `defineSecret`.
+  - Rien ne l'appelle encore : le client part avec l'hébergement, qui attend les corrections de la puce et la voie g2c.
