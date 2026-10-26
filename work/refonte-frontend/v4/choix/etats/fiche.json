@@ -155,7 +155,20 @@
      "inconnu"
     ],
     "interdit": [],
-    "rang": 1
+    "rang": 1,
+    "avant": [
+     "etape:etat-etape-champ-ajouter"
+    ],
+    "choisie": {
+     "attendu": [
+      "pellets",
+      "fiche du cryo manque",
+      "Beer Maverick",
+      "inconnu"
+     ],
+     "avant": []
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : l'ajout rapide « Citra cryo » n'est plus proposé par le moteur (Hallertau Blanc et Wild Wolf le remplacent dans la liste) ; la fiche courte de Citra cryo s'obtient comme avant par l'appui long sur sa ligne, désormais après avoir tapé « cit » dans « Ajouter — houblon… » (« avant » : etape:etat-etape-champ-ajouter). Mêmes mots lus dans la fiche. Sur la maquette choisie, la ligne Citra cryo est déjà dans la liste : rien ne change. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-fiche-appui-long-citra.png.)"
    }
   },
   {

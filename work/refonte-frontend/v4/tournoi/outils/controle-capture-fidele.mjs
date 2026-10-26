@@ -11,8 +11,8 @@
 //      (`avant`) puis avec (`apres`), et l'écrit dans `fidelite.json`, à côté de lui. Un écran qui compte moins de nœuds
 //      visibles hors rangées, ou qui perd un bloc (data-role, data-etat, titres, résumés), après l'injection est refusé.
 //      `avant` : l'écran tel que l'app le rend, avec la liste de la colonne, avant que le script y touche ; `apres` : l'écran à la
-//      prise de vue. Un script qui masque, retire ou remplace des nœuds entre les deux perd des nœuds. `referenceA` (facultatif) :
-//      les blocs de la colonne A, sans injection, que la colonne doit garder (les nœuds, eux, suivent les données).
+//      prise de vue. Un script qui masque, retire ou remplace des nœuds entre les deux perd des nœuds. `reference` (ou `referenceA`,
+//      facultatif) : les blocs de la colonne sans injection (le moteur de l'app), que la colonne doit garder (les nœuds, eux, suivent les données).
 // Format de fidelite.json :
 //   { "mesures": [ { "image": "…png", "houblon": "…", "colonne": "b", "avant": { "noeudsHorsRangs": 212, "blocs": ["…"] }, "apres": { … },
 //                    "referenceA": { "blocs": ["…"] } } ] }
@@ -67,7 +67,7 @@ export function mesurePerdante(json) {
     if (perdus.length) defauts.push(`${nom} : blocs perdus après l'injection : ${perdus.slice(0, 5).join(', ')}`);
     // La colonne A (le moteur, sans injection) est la référence des blocs : les nœuds, eux, dépendent des données (les deux comparés
     // du face à face changent avec la liste), pas les blocs.
-    const perdusA = (x.referenceA?.blocs ?? []).filter((k) => !(b.blocs ?? []).includes(k));
+    const perdusA = ((x.reference ?? x.referenceA)?.blocs ?? []).filter((k) => !(b.blocs ?? []).includes(k));
     if (perdusA.length) defauts.push(`${nom} : blocs de la colonne A absents : ${perdusA.slice(0, 5).join(', ')}`);
   }
   return defauts;

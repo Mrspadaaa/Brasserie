@@ -28,11 +28,20 @@
     "geste": "repos",
     "attendu": [
      "au style",
-     "non situées",
+     "non située",
      "Résineux",
      "Prévu avec SafAle US-05"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "au style",
+      "non situées",
+      "Résineux",
+      "Prévu avec SafAle US-05"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : « 10 au style · 1 non située » (Noyau, Pépins, Baies, Végétal décrits par d4) ; mêmes douze lignes, même ordre, seul Melon reste hachuré. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-biere-repos.png.)"
    }
   },
   {

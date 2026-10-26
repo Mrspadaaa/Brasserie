@@ -318,11 +318,20 @@
     "geste": "toucher",
     "attendu": [
      "au style",
-     "non situées",
+     "non située",
      "Barres",
      "Radar"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "au style",
+      "non situées",
+      "Barres",
+      "Radar"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : « 10 au style · 1 non située » (Noyau, Pépins, Baies, Végétal sont décrits par les fiches de d4) ; mêmes barres, mêmes pastilles, même ligne Résineux ouverte. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-etape-analyse.png.)"
    }
   },
   {

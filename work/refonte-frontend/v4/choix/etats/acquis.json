@@ -246,7 +246,18 @@
      "Beer Maverick"
     ],
     "interdit": [],
-    "rang": 1
+    "rang": 1,
+    "avant": [
+     "etape:etat-etape-champ-ajouter"
+    ],
+    "choisie": {
+     "attendu": [
+      "pellets",
+      "Beer Maverick"
+     ],
+     "avant": []
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : l'ajout rapide « Citra cryo » n'est plus proposé par le moteur ; la fiche courte de Citra cryo (« Ça c'est très bien », 19.10) s'obtient par l'appui long sur sa ligne après avoir tapé « cit » dans « Ajouter — houblon… » (« avant » : etape:etat-etape-champ-ajouter). Sur la maquette choisie rien ne change. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-acquis-fiche-citra-cryo.png.)"
    }
   },
   {
@@ -301,11 +312,20 @@
     "geste": "repos",
     "attendu": [
      "East Kent Goldings",
-     "Columbus",
+     "Boadicea",
      "Celeia",
-     "Motueka + Citra cryo"
+     "Motueka + Hallertau Blanc"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "East Kent Goldings",
+      "Columbus",
+      "Celeia",
+      "Motueka + Citra cryo"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : les candidats ont changé de noms (Boadicea à la place de Columbus, Motueka + Hallertau Blanc) ; même liste, mêmes colonnes (usage, nom, α, stock, ♡, +). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-acquis-q2b-suite-s5.png.)"
    }
   },
   {

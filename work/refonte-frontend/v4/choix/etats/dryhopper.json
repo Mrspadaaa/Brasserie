@@ -37,11 +37,29 @@
      "US-05",
      "Stout 16D",
      "Face à ta stout",
-     "~+22",
+     "~+29",
      "★",
-     "actif · 2 j"
+     "actif · 1 j"
     ],
-    "max_mots": 96
+    "max_mots": 98,
+    "choisie": {
+     "attendu": [
+      "Quand ajouter Idaho 7 ?",
+      "Idaho 7",
+      "12,7",
+      "9,5–14,9",
+      "mixte",
+      "4 g/L",
+      "US-05",
+      "Stout 16D",
+      "Face à ta stout",
+      "~+22",
+      "★",
+      "actif · 2 j"
+     ],
+     "max_mots": 96
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : ★ à 1 j (floral ~+29) au lieu de 2 j (~+22). 98 mots au premier écran pour 96 : la hausse vient de DEUX nombres de données, Pépins « ~0 » et Végétal « ~+9 » (avant : « ? », non compté comme mot), aucun texte ajouté. Les chiffres « ?→~+8 » et « ?→~+21 » valaient chacun un mot, remplacés par un seul nombre. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-repos.png.)"
    }
   },
   {
@@ -65,9 +83,16 @@
     "geste": "repos",
     "attendu": [
      "★",
-     "actif · 2 j"
+     "actif · 1 j"
     ],
-    "couleurs_min": 1
+    "couleurs_min": 1,
+    "choisie": {
+     "attendu": [
+      "★",
+      "actif · 2 j"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : ★ à 1 j. Attention : au moment ★ l'anneau de la courbe monte jusqu'en haut du graphique et recouvre le glyphe ★ du rail (mesuré : un cercle est sous le centre de l'étoile) ; le mot ★ reste lu dans la pastille « ★ actif · 1 j ». Voir RESULTAT. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-etoile.png.)"
    }
   },
   {
@@ -90,13 +115,23 @@
     "selecteur_choisie": "#p4b2f-call",
     "geste": "repos",
     "attendu": [
+     "~+29",
+     "~+26",
      "~+22",
-     "~+21",
-     "~+14",
      "IBU",
      "60+?"
     ],
-    "couleurs_min": 2
+    "couleurs_min": 2,
+    "choisie": {
+     "attendu": [
+      "~+22",
+      "~+21",
+      "~+14",
+      "IBU",
+      "60+?"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : floral ~+29, baies ~+26, résineux ~+22 au lieu de ~+22, ~+21, ~+14 ; mêmes trois pastilles et « IBU 60+? ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-bandeau.png.)"
    }
   },
   {
@@ -259,14 +294,31 @@
      "WP",
      "1 j",
      "2 j",
-     "≈+14",
-     "~+14",
-     "~+22",
-     "~+8",
+     "≈+19",
+     "~+19",
+     "~+29",
+     "~+15",
      "~75",
-     "contre ★ : floral ~−9 · résineux ~−6",
+     "contre ★ : floral ~−10 · baies ~−8 · résineux ~−8",
      "trop amer"
-    ]
+    ],
+    "choisie": {
+     "attendu": [
+      "5′",
+      "0′",
+      "WP",
+      "1 j",
+      "2 j",
+      "≈+14",
+      "~+14",
+      "~+22",
+      "~+8",
+      "~75",
+      "contre ★ : floral ~−9 · résineux ~−6",
+      "trop amer"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : floral ~+19 à WP, ~+29 à 1 j et 2 j ; la ligne « contre ★ » énumère aussi Baies (~−8), une famille de la demande maintenant décrite. Même rail (5′, 0′, WP, 1 j, 2 j), mêmes pastilles, même « trop amer ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-loupe.png.)"
    }
   },
   {
@@ -290,12 +342,23 @@
     "geste": "toucher",
     "attendu": [
      "60′",
-     "~+2",
-     "contre ★ : floral ~−20 · résineux ~−12",
+     "~+3",
+     "contre ★ : floral ~−26 · baies ~−23 · résineux ~−19",
      "trop amer",
      "jamais mesuré à ce moment",
      "rien ne change ici"
-    ]
+    ],
+    "choisie": {
+     "attendu": [
+      "60′",
+      "~+2",
+      "contre ★ : floral ~−20 · résineux ~−12",
+      "trop amer",
+      "jamais mesuré à ce moment",
+      "rien ne change ici"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : floral ~+3 à l'ébullition ; « contre ★ » énumère aussi Baies. Même curseur à 60′, même « jamais mesuré à ce moment ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-etape-ebullition.png.)"
    }
   },
   {
@@ -319,13 +382,25 @@
     "geste": "toucher",
     "attendu": [
      "WP",
-     "~+14",
-     "~+8",
+     "~+19",
+     "~+15",
      "~75",
-     "contre ★ : floral ~−9 · résineux ~−6",
+     "contre ★ : floral ~−10 · baies ~−8 · résineux ~−8",
      "trop amer",
      "jamais mesuré à ce moment"
-    ]
+    ],
+    "choisie": {
+     "attendu": [
+      "WP",
+      "~+14",
+      "~+8",
+      "~75",
+      "contre ★ : floral ~−9 · résineux ~−6",
+      "trop amer",
+      "jamais mesuré à ce moment"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : floral ~+19, résineux ~+15 au whirlpool ; « contre ★ » énumère aussi Baies. Même curseur WP, même « jamais mesuré à ce moment ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-etape-wp.png.)"
    }
   },
   {
@@ -348,16 +423,30 @@
     "selecteur_choisie": "[data-etape=\"3\"]",
     "geste": "toucher",
     "attendu": [
-     "~+23",
-     "~+20",
+     "~+29",
+     "~+27",
      "60+?",
-     "contre ★ : floral ~+1 · résineux ~+6",
+     "contre ★ : floral ~+1 · baies ~+2 · résineux ~+7",
      "mesuré",
      "1 h ≈ 96 h",
      "au nez",
      "Titus 2021",
      "rien ne change ici"
-    ]
+    ],
+    "choisie": {
+     "attendu": [
+      "~+23",
+      "~+20",
+      "60+?",
+      "contre ★ : floral ~+1 · résineux ~+6",
+      "mesuré",
+      "1 h ≈ 96 h",
+      "au nez",
+      "Titus 2021",
+      "rien ne change ici"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : floral ~+29 et baies ~+27 après fermentation ; « contre ★ » énumère aussi Baies. Même mesure « 1 h ≈ 96 h au nez (Titus 2021) », même « rien ne change ici ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-etape-apres.png.)"
    }
   },
   {
@@ -376,17 +465,34 @@
    "verif": {
     "route": "dryhopper",
     "page_choisie": "work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html",
-    "interdit": [],
+    "interdit": [
+     "contre ★"
+    ],
     "selecteur_choisie": "[data-jour=\"1\"]",
     "geste": "toucher",
     "attendu": [
      "1 j",
+     "~+29",
+     "~+26",
      "~+22",
-     "~+20",
-     "~+13",
-     "contre ★ : floral ~+0 · résineux ~+0",
      "38 µg/L"
-    ]
+    ],
+    "avant": [
+     "etat-dryh-jour-7"
+    ],
+    "choisie": {
+     "attendu": [
+      "1 j",
+      "~+22",
+      "~+20",
+      "~+13",
+      "contre ★ : floral ~+0 · résineux ~+0",
+      "38 µg/L"
+     ],
+     "avant": [],
+     "interdit": []
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : ★ est maintenant à 1 j, qui est donc le jour déjà choisi à l'ouverture : toucher « 1 j » ne changeait plus rien (la page ne bougeait pas). Le geste est rejoué depuis 7 j (« avant » : etat-dryh-jour-7) ; à ★ la ligne « contre ★ » ne s'écrit pas (interdit). Sur la maquette choisie (★ à 2 j), rien ne change. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-jour-1.png.)"
    }
   },
   {
@@ -410,12 +516,23 @@
     "geste": "toucher",
     "attendu": [
      "7 j",
-     "~+22",
-     "~+21",
-     "~+14",
-     "contre ★ : floral ~+0 · résineux ~+0",
+     "~+29",
+     "~+26",
+     "~+23",
+     "contre ★ : floral ~+1 · baies ~+1 · résineux ~+0",
      "Pomona ~+13 agrumes"
-    ]
+    ],
+    "choisie": {
+     "attendu": [
+      "7 j",
+      "~+22",
+      "~+21",
+      "~+14",
+      "contre ★ : floral ~+0 · résineux ~+0",
+      "Pomona ~+13 agrumes"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : à 7 j floral ~+29, baies ~+26, résineux ~+23 ; « contre ★ » énumère aussi Baies. Même jour 7 j, même « Pomona ~+13 agrumes ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-jour-7.png.)"
    }
   },
   {
@@ -450,15 +567,40 @@
      "Résineux",
      "Épicé",
      "Végétal",
-     "~+22",
-     "~+6",
-     "~+8",
+     "~+29",
      "~+13",
-     "~+16",
-     "~+14",
-     "~+2"
+     "~+9",
+     "~+21",
+     "~+26",
+     "~+22",
+     "~+3",
+     "~+15"
     ],
-    "couleurs_min": 6
+    "couleurs_min": 6,
+    "choisie": {
+     "attendu": [
+      "Floral",
+      "Herbacé",
+      "Terreux",
+      "Agrumes",
+      "Tropicaux",
+      "Noyau",
+      "Pépins",
+      "Baies",
+      "Melon",
+      "Résineux",
+      "Épicé",
+      "Végétal",
+      "~+22",
+      "~+6",
+      "~+8",
+      "~+13",
+      "~+16",
+      "~+14",
+      "~+2"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : douze lignes dans le même ordre (Floral à Végétal) ; Noyau (~+15), Pépins (~0) et Végétal (~+9) sont maintenant décrits (avant « ?→ » ou « ? »). Mêmes barres, mêmes ronds, même zone hachurée pour Melon. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-barres.png.)"
    }
   },
   {
@@ -483,8 +625,10 @@
     "attendu": [
      "?→~+8",
      "?→~+21"
-    ]
-   }
+    ],
+    "note": "D83/D86, 26.10 : données changées, dessin identique, mais l'état n'est plus montrable : Noyau et Baies (« ?→~+8 », « ?→~+21 ») sont décrits par les fiches de d4 pour la bière « avant » ; aucune ligne n'écrit plus « ? → » (les lignes « ? » restantes, Melon, ne sont plus des « avant inconnu »). L'élément « ? → » du dessin choisi (p4b2f : « ta bière avant n'est pas décrite ») n'est donc plus exercé par cette fixture. Rangé « en attente » (compté à part, nommé dans la dernière ligne du contrôle), non supprimé. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-avant-inconnu.png.)"
+   },
+   "attend_choix": "données (D83, 26.10) : plus aucune famille de la bière « avant » n'est inconnue avec Idaho 7 dans la fixture, donc « ? → » ne s'écrit plus ; à rejouer avec une fixture qui l'exhibe (RESULTAT, DÉCISION À PRENDRE)"
   },
   {
    "id": "etat-dryh-absolu",
@@ -509,8 +653,17 @@
      "Au style",
      "Absolu",
      "Résineux",
-     "~+14"
-    ]
+     "~+22"
+    ],
+    "choisie": {
+     "attendu": [
+      "Au style",
+      "Absolu",
+      "Résineux",
+      "~+14"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : résineux ~+22 ; même bascule « Absolu », mêmes barres sur l'échelle absolue. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-absolu.png.)"
    }
   },
   {

@@ -287,10 +287,18 @@
     "geste": "repos",
     "attendu": [
      "Assembler 5 + 5 g",
-     "Motueka + Citra cryo",
-     "Motueka + Nelson Sauvin"
+     "Motueka + Hallertau Blanc",
+     "Motueka + Galaxy"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Assembler 5 + 5 g",
+      "Motueka + Citra cryo",
+      "Motueka + Nelson Sauvin"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : le moteur propose d'autres voies (Motueka + Hallertau Blanc, Motueka + Galaxy) ; même liste, mêmes cartes, même « Assembler 5 + 5 g ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-sugg-assembler.png.)"
    }
   },
   {

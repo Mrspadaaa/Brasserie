@@ -33,10 +33,19 @@
      "Nugget",
      "remplaçants",
      "à 60′",
-     "Magnat et Yeoman, 99 sans inconnue.",
-     "Altus, Trident, Zenia vont de 78 à 99."
+     "Yeoman, 100 sans inconnue."
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Nugget",
+      "remplaçants",
+      "à 60′",
+      "Magnat et Yeoman, 99 sans inconnue.",
+      "Altus, Trident, Zenia vont de 78 à 99."
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : la réponse en gras devient « Yeoman, 100 sans inconnue. » ; la ligne « Altus, Trident, Zenia vont de 78 à 99. » n'existe plus car plus aucun candidat n'a de composante inconnue (la ligne ne s'écrit que pour une plage). Même tête, même bascule 60′/whirlpool/dry hop, même échelle. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-repos.png.)"
    }
   },
   {
@@ -72,7 +81,7 @@
      "Nelson Sauvin",
      "Altus",
      "Trident",
-     "Zenia",
+     "Helios",
      "50",
      "65",
      "80",
@@ -81,7 +90,29 @@
      "En stock, suffisant",
      "En stock, insuffisant"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "partiel",
+      "proche",
+      "très proche",
+      "Magnat",
+      "Yeoman",
+      "Sabro",
+      "Nelson Sauvin",
+      "Altus",
+      "Trident",
+      "Zenia",
+      "50",
+      "65",
+      "80",
+      "100",
+      "À acheter",
+      "En stock, suffisant",
+      "En stock, insuffisant"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : Helios prend la place de Zenia parmi les huit candidats ; même échelle 50–100, mêmes trois paliers, mêmes icônes de stock. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-echelle.png.)"
    }
   },
   {
@@ -109,13 +140,26 @@
     "geste": "repos",
     "attendu": [
      "tout connu",
-     "plage, une composante inconnue",
-     "79",
+     "97",
      "99",
-     "78",
-     "98"
+     "96",
+     "94",
+     "100",
+     "93",
+     "85"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "tout connu",
+      "plage, une composante inconnue",
+      "79",
+      "99",
+      "78",
+      "98"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : plus aucun candidat de Nugget à 60′ n'a de composante inconnue, donc aucune plage hachurée n'est dessinée (« plage, une composante inconnue » n'est plus lu) ; seuls des points « tout connu » (100, 99, 97, 96, 94, 93, 85). Le dessin de la plage existe toujours dans le code (src/ui/hopIndex/substituer/index.tsx) mais n'est plus joué par cette fixture : voir RESULTAT, DÉCISION À PRENDRE. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-plage.png.)"
    }
   },
   {
@@ -174,14 +218,28 @@
      "Face à face, même IBU",
      "Nugget",
      "46 g",
-     "Magnat",
-     "37–54 g",
+     "Yeoman",
+     "37–50 g",
      "Nelson Sauvin",
      "62",
      "amérisant",
      "Épuisé"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Face à face, même IBU",
+      "Nugget",
+      "46 g",
+      "Magnat",
+      "37–54 g",
+      "Nelson Sauvin",
+      "62",
+      "amérisant",
+      "Épuisé"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : le premier remplaçant sûr à acheter est Yeoman (37–50 g) et non Magnat (37–54 g) ; même bande « Face à face, même IBU », mêmes trois cartes. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-face.png.)"
    }
   },
   {
@@ -208,13 +266,23 @@
     "selecteur_choisie": "#m-alpha",
     "geste": "repos",
     "attendu": [
-     "9,5–16",
-     "11–16",
-     "10–14",
+     "9–16",
+     "12–16",
+     "10–14,5",
      "lot 13",
      "article 9,6"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "9,5–16",
+      "11–16",
+      "10–14",
+      "lot 13",
+      "article 9,6"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : α de Yeoman 12–16 à la place de Magnat 11–16 ; mêmes trois lignes, même repère « lot 13 » et « article 9,6 ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-alpha.png.) — 2e passe, commit deeb4d23 : dessin voulu, pas une régression (s1, exigence du brasseur du 26.10 : un trait par plage de source qui diffère, sources d'accord fusionnées, rangées plus hautes ; t1, D160 : mots traduits) : Nugget α 9–16 (au lieu de 9,5–16) et Nelson Sauvin 10–14,5 (au lieu de 10–14) parce que les compléments de d4 ajoutent des sources ; la rangée α porte un trait fin par plage qui diffère. Mêmes trois lignes, mêmes repères « lot 13 » et « article 9,6 ». (captures avant (98fac6b2) et après (deeb4d23) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires-s1t1/etat-subst-alpha.png.)"
    }
   },
   {
@@ -251,15 +319,41 @@
      "Tropicaux",
      "Résineux",
      "Épicé",
-     "Noyau, Pépins, Baies, Melon, Végétal",
-     "aucune des trois fiches ne les décrit, ce n’est pas zéro",
      "Fiches lues",
-     "Nugget 4",
-     "Magnat 1",
-     "Nelson Sauvin 2",
-     "Pointillé"
+     "Nugget 10",
+     "Yeoman 1",
+     "Nelson Sauvin 9",
+     "Pointillé",
+     "Noyau",
+     "Pépins",
+     "Baies",
+     "Melon",
+     "Végétal",
+     "sans famille"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Arômes",
+      "16D",
+      "Floral",
+      "Herbacé",
+      "Terreux",
+      "Hors 16D",
+      "Agrumes",
+      "Tropicaux",
+      "Résineux",
+      "Épicé",
+      "Noyau, Pépins, Baies, Melon, Végétal",
+      "aucune des trois fiches ne les décrit, ce n’est pas zéro",
+      "Fiches lues",
+      "Nugget 4",
+      "Magnat 1",
+      "Nelson Sauvin 2",
+      "Pointillé"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : les fiches décrivent maintenant les douze familles, donc la note « Noyau, Pépins, Baies, Melon, Végétal : aucune des trois fiches ne les décrit » n'est plus écrite (elle ne l'est que pour une famille sans donnée) ; ces cinq familles ont leur ligne dans « Hors 16D ». Mêmes colonnes, mêmes deux groupes (16D, hors 16D), même ligne « sans famille ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-aromes.png.)"
    }
   },
   {
@@ -286,14 +380,24 @@
     "selecteur_choisie": "svg[data-radar]",
     "geste": "repos",
     "attendu": [
-     "Radar des citations : Nugget, Magnat, Nelson Sauvin",
+     "Radar des citations : Nugget, Yeoman, Nelson Sauvin",
      "Nugget (l’original, contour seul)",
      "gras : attendu en 16D",
      "Du centre vers le bord",
      "non décrit, cité, marqué"
     ],
     "interdit": [],
-    "couleurs_min": 2
+    "couleurs_min": 2,
+    "choisie": {
+     "attendu": [
+      "Radar des citations : Nugget, Magnat, Nelson Sauvin",
+      "Nugget (l’original, contour seul)",
+      "gras : attendu en 16D",
+      "Du centre vers le bord",
+      "non décrit, cité, marqué"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : le radar compare Nugget, Yeoman, Nelson Sauvin ; la zone hachurée « sans donnée » a disparu parce que les douze axes sont décrits (mêmes anneaux, mêmes cercles gras pour les familles attendues en 16D). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-radar.png.)"
    }
   },
   {
@@ -320,13 +424,23 @@
     "selecteur_choisie": "#m-beta",
     "geste": "repos",
     "attendu": [
-     "3–6",
-     "2,8–7",
+     "3–8",
+     "4–5",
      "4,5–8",
-     "une source chacun (Beer Maverick, Hopsteiner)",
+     "un par plage qui diffère",
      "milieu moyen des sources"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "3–6",
+      "2,8–7",
+      "4,5–8",
+      "une source chacun (Beer Maverick, Hopsteiner)",
+      "milieu moyen des sources"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : β de Yeoman 4–5 à la place de Magnat 2,8–7 ; mêmes trois lignes, même légende. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-beta.png.) — 2e passe, commit deeb4d23 : dessin voulu, pas une régression (s1, exigence du brasseur du 26.10 : un trait par plage de source qui diffère, sources d'accord fusionnées, rangées plus hautes ; t1, D160 : mots traduits) : la légende « α et β : traits fins, une source chacun (Beer Maverick, Hopsteiner) » devient « un par plage qui diffère (des sources d'accord n'en font qu'un, leurs noms au survol) » ; Nugget β 3–8 (au lieu de 3–6). (captures avant (98fac6b2) et après (deeb4d23) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires-s1t1/etat-subst-beta.png.)"
    }
   },
   {
@@ -360,10 +474,24 @@
      "Caryophyllène",
      "Linalol",
      "non renseigné",
-     "48–59",
+     "27–60",
      "Farnésène publié par Beer Maverick, non importé"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Huiles, composants",
+      "% de l’huile",
+      "Myrcène",
+      "Humulène",
+      "Caryophyllène",
+      "Linalol",
+      "non renseigné",
+      "48–59",
+      "Farnésène publié par Beer Maverick, non importé"
+     ]
+    },
+    "note": "D83/D86 puis s1/t1, 26.10 : dessin voulu, pas une régression (s1, exigence du brasseur du 26.10 : un trait par plage de source qui diffère, sources d'accord fusionnées, rangées plus hautes ; t1, D160 : mots traduits) : Nugget myrcène 27–60 (au lieu de 48–59), un trait fin par plage qui diffère sous chaque barre ; mêmes trois lignes par composant, mêmes titres, même note « Linalol de Yeoman non renseigné ». (captures avant (98fac6b2) et après (deeb4d23) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires-s1t1/etat-subst-huiles.png.)"
    }
   },
   {
@@ -395,13 +523,28 @@
      "IBU 50–70",
      "la recette est à 59,7 et chaque dose la garde",
      "cite les trois",
-     "garde floral (cité), perd herbacé et terreux",
+     "noble, agrumes",
      "ne cite aucune des trois",
      "vin blanc, fruité, groseille à maquereau, raisin, sauvignon blanc",
      "aucune stout citée",
      "Aucun style d’emploi dans le dépôt"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "16D Foreign Extra Stout",
+      "attend floral, herbacé, terreux",
+      "IBU 50–70",
+      "la recette est à 59,7 et chaque dose la garde",
+      "cite les trois",
+      "garde floral (cité), perd herbacé et terreux",
+      "ne cite aucune des trois",
+      "vin blanc, fruité, groseille à maquereau, raisin, sauvignon blanc",
+      "aucune stout citée",
+      "Aucun style d’emploi dans le dépôt"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : la ligne du premier remplaçant est celle de Yeoman (« ne cite aucune des trois. noble, agrumes (Beer Maverick) ») et non de Magnat (« garde floral (cité), perd herbacé et terreux ») ; même liste de quatre lignes (16D, Nugget, remplaçant, Nelson Sauvin). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-style.png.)"
    }
   },
   {
@@ -428,11 +571,19 @@
     "selecteur_choisie": ".choisir",
     "geste": "repos",
     "attendu": [
-     "Ajouter Magnat aux achats",
+     "Ajouter Yeoman aux achats",
      "Remplacer",
      "Nelson Sauvin"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Ajouter Magnat aux achats",
+      "Remplacer",
+      "Nelson Sauvin"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : le bouton nomme Yeoman (premier remplaçant sûr à acheter) ; mêmes « Ma bière avec chacun », même bouton, même pied. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-actions.png.)"
    }
   },
   {
@@ -463,14 +614,27 @@
      "Calculés depuis nos fiches",
      "pas les scores de substitution de Beer Maverick",
      "Prix, rareté et cohumulone",
-     "La plage",
-     "Altus vaut entre 79 et 99",
      "Sans inconnue ne veut pas dire sûr",
      "Le pire cas d’abord",
      "premiers du catalogue",
      "premier du stock qui suffit"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Lire ces scores",
+      "Calculés depuis nos fiches",
+      "pas les scores de substitution de Beer Maverick",
+      "Prix, rareté et cohumulone",
+      "La plage",
+      "Altus vaut entre 79 et 99",
+      "Sans inconnue ne veut pas dire sûr",
+      "Le pire cas d’abord",
+      "premiers du catalogue",
+      "premier du stock qui suffit"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : le paragraphe « La plage : … Altus vaut entre 79 et 99 » n'est écrit que s'il existe un candidat à composante inconnue (aucun avec ces données) ; les cinq autres paragraphes restent dans le même ordre. « La plage » n'était plus lu que par coïncidence (« bas de la plage »). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-lire.png.)"
    }
   },
   {
