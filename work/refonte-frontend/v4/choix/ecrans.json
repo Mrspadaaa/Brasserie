@@ -142,7 +142,14 @@
     "work/refonte-frontend/v4/tournoi/outils/controle-etats.mjs {dossier} --ecran=dryhopper"
    ],
    "note": "Choisi le 24.10 au soir, à la place d'a1 (provisoire) ; reprise r13-dryhopper : ses états relevés sur p4b2f (choix/etats/dryhopper.json), puis rendus dans la maquette.",
-   "contexte": "24.10, soir, sur p4b2f dans « Planches · 24.10 » ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »"
+   "contexte": "24.10, soir, sur p4b2f dans « Planches · 24.10 » ; sur p4b2 : « Ça j'aime beaucoup mais c'est encore assez peu lisible »",
+   "complements": [
+    {
+     "mots": "La meilleure D · trois mini graphes",
+     "capture": "work/missions/2026-10-25-integration-houblons/voies/m5-dryhopper-froid/img/d-mini-graphes.png",
+     "quoi": "Sous la bande IBU, côté ébullition, à la place de l'espace vide qu'il a barré (« Amertume, hop creep ? Résineux ? »), trois mini graphes : la plage d'amertume à froid autour de l'IBU à chaud, la jauge du hop creep en 3 crans, les familles rapportées à leur limite. Chacun s'ouvre en feuille à un toucher (img/d-ouvert-amer.png, d-ouvert-creep.png, d-ouvert-limite.png). Page https://claude.ai/artifact/WW2mmg7gWgUVSnT4PTWTFf, 26.10 ; D seul, sans la bande de F."
+    }
+   ]
   },
   {
    "ecran": "substituer",
