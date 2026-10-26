@@ -14,6 +14,7 @@ import type { Tasting } from './tasting';
 import { goutsSets, type Gouts } from './gouts';
 import { CHARACTERIZED_YEASTS, predictionDe, yeastChangeEffect } from './yeast';
 import { cleDeVoie, comparerCles, type CleDepartage, type Departage } from './departage';
+import { partDesFiches, type ApportMinoritaire } from './minoritaire';
 import {
   BORNES_DRYHOP_GL, GRILLE_DRYHOP_GL, RANKING_PALIER60, REGLE_DRYHOP, comparerGrammesPalier, comparerPalier, comparerUsagePalier, drapeauIbu, rangUsage,
   type DoseDryHop, type InfoPalier, type RegleDryHop,
@@ -36,6 +37,9 @@ export interface FamilyEffect {
   established: boolean;
   /** Une partie des ajouts changés ne cite pas la famille : leur apport n'est pas compté. */
   partial: boolean;
+  /** g2d, option `apportMinoritaire: 'm'` : la famille est citée (une fiche au moins) mais par moins de la moitié des fiches : aucun effet établi, mais elle reste visible comme citée.
+   * Absent sans l'option et quand la famille n'est pas dans ce cas. */
+  minoritaire?: true;
 }
 export interface DirectedTarget {
   family: FamilyId; name: string; crans: number; status: string;
@@ -58,6 +62,9 @@ export interface Voie {
   /** Débordement de style imputable à la voie : famille poussée au-dessus de la bande d'une famille
    * neutre ou indésirable, ou hors de la bande d'une famille attendue, en crans du style. */
   styleOverflow: StyleOverflow[]; overflowTotal: number;
+  /** g2d, option `apportMinoritaire: 'c'` : le débordement qui compte dans le RANG, seulement celui d'une famille marquée (la moitié des fiches au moins) chez un houblon changé.
+   * `overflowTotal` et `styleOverflow` restent ceux d'avant. Absent sans l'option : le rang lit `overflowTotal`. */
+  overflowRang?: number;
   /** Effets de bord dans la bande : familles neutres ou indésirables non visées poussées vers le
    * haut par un apport établi, en crans du style (même sans sortir de la bande). */
   sideEffects: { family: FamilyId; status: string; crans: number }[]; sideTotal: number;
@@ -97,12 +104,16 @@ export interface VoieOptions {
   /** Départage à distance égale (g2a, D88) : 'aucun' (défaut, comportement d'avant) ou une des clés mesurées k1, k2, k3 (departage.ts).
    * La clé passe après la distance et ne change jamais l'effet calculé. */
   departage?: Departage;
+  /** Apport minoritaire (g2d) : 'aucun' (défaut, comportement d'avant à l'octet près), 'c' (le débordement d'une famille non marquée ne compte plus dans le rang), 'm' (une famille citée par moins de
+   * la moitié des fiches n'apporte pas d'effet établi), 'w' (l'effet d'une famille est multiplié par la part des fiches qui la citent). Voir minoritaire.ts. Mesure seulement : jamais activée par défaut. */
+  apportMinoritaire?: ApportMinoritaire;
   /** Palier 60′ (g2b, D88 B, D165) : une visée d'IBU `{ ibu: +n }`. Ajoute `VoieResult.palier60` (un ajout à 60′ par houblon, à la dose exacte pour +n IBU) et range
    * « remplacer à IBU égal » par usage puis α. Absent : comportement d'avant, à l'octet près. */
   palier60?: { ibu: number };
   /** Vrai dry hop (g2b, D161, D166) : ajoute `VoieResult.dryHop` (groupes actif et après, dose cherchée par la règle de palier.ts, jamais trois crans ni le reste du stock).
+   * `{ doseGL }` : la même liste à une dose imposée (4 ou 8 g/L pour montrer un dry hop de Hazy), marquée « dose générique, sans source de style » ; elle ne remplace jamais la règle.
    * Absent : comportement d'avant, à l'octet près. */
-  dryHop?: boolean;
+  dryHop?: boolean | { doseGL: number };
   /** Leviers levure (R43, R44) : changer de souche vers chaque souche caractérisée, houblonner à froid en fermentation active. */
   leviersLevure?: boolean;
   /** Dégustation du brasseur : situe la bière et fixe la cible d'une famille jugée « trop » ou « peu ». */
@@ -159,21 +170,26 @@ function apport(a: Addition, recipe: Recipe): Record<FamilyId, number | null> | 
  * totale du moment et pondéré par cette part (convention de cumul V5.5 : dose cumulée par phase,
  * descripteurs pondérés par les doses), jamais en additionnant deux courbes saturées. */
 interface Change { addition: Addition; sign: 1 | -1; share?: number }
-function effectOf(changes: Change[], recipe: Recipe): Record<FamilyId, FamilyEffect> | null {
+function effectOf(changes: Change[], recipe: Recipe, apportMode: ApportMinoritaire = 'aucun'): Record<FamilyId, FamilyEffect> | null {
   const rows = changes.map((c) => {
     const pooled = c.share === undefined ? c.addition : { ...c.addition, grams: round(c.addition.grams / c.share) };
     return { ...c, weight: c.share ?? 1, apport: apport(pooled, recipe), varietyId: hopRef(c.addition.hopKey)?.varietyId ?? '' };
   });
   if (rows.some((r) => !r.apport)) return null;
+  // g2d : 'm' ne retient que les familles MARQUÉES (D90) ; 'w' garde les familles citées et pèse chaque apport par la part des fiches qui la citent ; 'aucun' et 'c' : cites, poids 1.
+  const compte = apportMode === 'm' ? marque : cites;
   return Object.fromEntries(FAMILIES.map((f) => {
-    const est = rows.filter((r) => cites(r.varietyId, f) && r.apport![f] !== null);
-    const central = est.length ? round(est.reduce((s, r) => s + r.sign * r.weight * r.apport![f]!, 0)) : null;
-    return [f, { family: f, central, established: est.length > 0, partial: est.length > 0 && est.length < rows.length }];
+    const est = rows.filter((r) => compte(r.varietyId, f) && r.apport![f] !== null);
+    const poids = (r: (typeof rows)[number]) => (apportMode === 'w' ? partDesFiches(r.varietyId, f) : 1);
+    const central = est.length ? round(est.reduce((s, r) => s + r.sign * r.weight * poids(r) * r.apport![f]!, 0)) : null;
+    // 'm' : citée par une fiche au moins, mais pas marquée : aucun effet établi, la famille reste visible comme citée.
+    const minoritaire = apportMode === 'm' && est.length === 0 && rows.some((r) => cites(r.varietyId, f) && r.apport![f] !== null);
+    return [f, { family: f, central, established: est.length > 0, partial: est.length > 0 && est.length < rows.length, ...(minoritaire ? { minoritaire: true as const } : {}) }];
   })) as Record<FamilyId, FamilyEffect>;
 }
 
-/** Effet d'un ajout seul sur la recette (apports V5.5 des familles citées). */
-export function additionEffect(addition: Addition, recipe: Recipe) { return effectOf([{ addition, sign: 1 }], recipe); }
+/** Effet d'un ajout seul sur la recette (apports V5.5 des familles citées). `apportMode` (g2d) : voir `VoieOptions.apportMinoritaire` ; absent : comportement d'avant. */
+export function additionEffect(addition: Addition, recipe: Recipe, apportMode: ApportMinoritaire = 'aucun') { return effectOf([{ addition, sign: 1 }], recipe, apportMode); }
 
 /** Voies pour pousser la recette dans la direction voulue : stock d'abord, puis à acheter. */
 export function proposeVoies(recipe: Recipe, direction: Direction, options: VoieOptions = {}): VoieResult {
@@ -184,6 +200,9 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const plus = FAMILIES.filter((f) => (direction[f] ?? 0) > 0), minus = FAMILIES.filter((f) => (direction[f] ?? 0) < 0);
   const directed = [...plus, ...minus];
   const departageMode: Departage = options.departage ?? 'aucun';
+  const apportMode: ApportMinoritaire = options.apportMinoritaire ?? 'aucun';
+  // g2d : sous 'm', une famille visée n'apporte que si elle est marquée chez le houblon : le pool « à acheter » et le groupe dry hop ne comptent donc que celles-là.
+  const citeVisee = apportMode === 'm' ? marque : cites;
   const skipped: VoieResult['skipped'] = [];
   const notes: string[] = [];
 
@@ -222,7 +241,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const pools = new Map<boolean, string[]>();
   const buyPool = (requirePlus: boolean) => pools.get(requirePlus) ?? pools.set(requirePlus, buyPoolDe(requirePlus)).get(requirePlus)!;
   const buyPoolDe = (requirePlus: boolean, max = maxBuy) => catalogueDuMoteur().filter((c) => !available.has(c.id) && allowed(c.id))
-    .map((c) => ({ c, plus: plus.filter((f) => cites(c.id, f)).length, fit: expected.filter((f) => cites(c.id, f)).length,
+    .map((c) => ({ c, plus: plus.filter((f) => citeVisee(c.id, f)).length, fit: expected.filter((f) => cites(c.id, f)).length,
       // D90 : une famille « moins » ou indésirable du style exclut si elle est marquée ; une famille exclue par les goûts du brasseur, dès qu'une fiche la cite.
       bad: minus.some((f) => marque(c.id, f)) || excludedFamilies.some((f) => cites(c.id, f)) || FAMILIES.some((f) => style.families[f].status === 'indésirable' && marque(c.id, f)),
       // Une fiche isolée n'exclut plus, mais le houblon passe après ceux dont aucune fiche ne cite une famille à éviter, à nombre égal de familles visées :
@@ -235,7 +254,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   let n = 0;
   const evaluate = (type: VoieType, label: string, actions: Action[], changes: Change[], next: Recipe, extraEstimated: string[] = [], effectOverride?: Record<FamilyId, FamilyEffect> | null, ibuEnDrapeau = false): Voie => {
     n++;
-    const effect = effectOverride !== undefined ? effectOverride : effectOf(changes, recipe);
+    const effect = effectOverride !== undefined ? effectOverride : effectOf(changes, recipe, apportMode);
     const byFamily: Voie['distance']['byFamily'] = {};
     let total: number | null = effect ? 0 : null;
     for (const t of targets) {
@@ -291,6 +310,10 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       if (fs.status !== 'attendue' && !directed.includes(f) && e.central > 0) sideEffects.push({ family: f, status: fs.status, crans: round(e.central / fs.cran, 2) });
     }
     const overflowTotal = round(styleOverflow.reduce((s, o) => s + o.crans, 0), 2);
+    // g2d 'c' : le rang ne lit que le débordement d'une famille marquée chez un houblon changé (ajouté ou retiré) ; une voie sans houblon changé (levure) garde tout son débordement.
+    const overflowRang = apportMode === 'c'
+      ? round(styleOverflow.filter((o) => !changes.length || changes.some((c) => marque(hopRef(c.addition.hopKey)?.varietyId ?? '', o.family))).reduce((s, o) => s + o.crans, 0), 2)
+      : null;
     const sideTotal = round(sideEffects.reduce((s, o) => s + o.crans, 0), 2);
     // Départage (g2a) : un ajout qui monte, sauf une diminution du même houblon (la voie « diminuer » est neutre).
     const reduction = actions.length === 1 && actions[0].op === 'modifier' && actions[0].previousHopKey === undefined && actions[0].grams < (actions[0].previousGrams ?? Infinity);
@@ -305,6 +328,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       distance: { total: total === null ? null : round(total, 3), byFamily },
       stock: { status, missing }, ibu: { before: round(ibu0.value), after: round(ibu1.value), drift: round(ibu1.value - ibu0.value), unknown: ibu1.unknown.length > 0 },
       styleOverflow, overflowTotal, sideEffects, sideTotal,
+      ...(overflowRang !== null ? { overflowRang } : {}),
       after: null, rank: 0, tieWith: [],
       ...(departage ? { departage } : {}),
     };
@@ -330,7 +354,8 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
         const a: Addition = { id: `v-${key}-${m}`, hopKey: key, moment: m, grams: round(grams) };
         const next = { ...recipe, additions: [...recipe.additions, a] };
         const v = evaluate('ajouter', `Ajouter ${nameOf(key)} · ${MOMENTS[m].label} · ${round(a.grams, 0)} g`, [act('ajouter', a)], [{ addition: a, sign: 1 }], next);
-        if (!best || compareVoies(v, best) < 0) best = v;
+        // g2d 'c' (rang seul) : la dose gardée pour un houblon ne suit pas overflowRang, sinon les barres changeraient ; seul l'ordre des voies le lit.
+        if (!best || compareVoies(v, best, false) < 0) best = v;
       }
       if (best) all.push(best);
     }
@@ -492,7 +517,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     const doseDe = (key: string, m: MomentId): DoseDryHop | null => {
       let best: { gl: number; d: number; ecart: number } | null = null;
       for (const gl of GRILLE_DRYHOP_GL) {
-        const effect = effectOf([{ addition: { id: 'dose', hopKey: key, moment: m, grams: round(gl * recipe.volumeL) }, sign: 1 }], recipe);
+        const effect = effectOf([{ addition: { id: 'dose', hopKey: key, moment: m, grams: round(gl * recipe.volumeL) }, sign: 1 }], recipe, apportMode);
         if (!effect) return null;
         const d = targets.reduce((s, t) => s + Math.abs((effect[t.family].central ?? 0) - t.delta) / t.width, 0);
         // Écart signé sur les familles qui montent : > 0 la visée est dépassée, < 0 elle n'est pas atteinte.
@@ -502,11 +527,12 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       const borne = best!.gl === BORNES_DRYHOP_GL.min && best!.ecart > 0 ? 'min' : best!.gl === BORNES_DRYHOP_GL.max && best!.ecart < 0 ? 'max' : null;
       return { gPerL: best!.gl, borne };
     };
+    const doseImposee = typeof options.dryHop === 'object' && options.dryHop.doseGL > 0 ? options.dryHop.doseGL : null;
     const groupe = (m: 'dryActive' | 'dryPost'): Voie[] => {
       const vs: Voie[] = [];
-      const pool = [...stockHops, ...buyPoolDe(true, Infinity)].filter((key) => plus.some((f) => cites(hopRef(key)?.varietyId ?? '', f)));
+      const pool = [...stockHops, ...buyPoolDe(true, Infinity)].filter((key) => plus.some((f) => citeVisee(hopRef(key)?.varietyId ?? '', f)));
       for (const key of pool) {
-        const dose = doseDe(key, m);
+        const dose: DoseDryHop | null = doseImposee !== null ? { gPerL: doseImposee, borne: null, imposee: 'dose générique, sans source de style' } : doseDe(key, m);
         if (!dose) continue;
         const a: Addition = { id: `v-${key}-${m}`, hopKey: key, moment: m, grams: round(dose.gPerL * recipe.volumeL) };
         const next = { ...recipe, additions: [...recipe.additions, a] };
@@ -541,11 +567,11 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
 
 const STOCK_RANK = { suffisant: 0, manque: 1, 'à acheter': 2 } as const;
 /** Clés du classement lexicographique (voir RANKING). 0 = égalité réelle de toutes les clés. */
-export function compareRankKeys(a: Voie, b: Voie): number {
+export function compareRankKeys(a: Voie, b: Voie, avecDebordementRang = true): number {
   const da = a.distance.total, db = b.distance.total;
   return a.conflicts.length - b.conflicts.length
     || comparerUsagePalier(a.palier, b.palier) // g2b (D88 B) : à 60′ l'usage passe d'abord ; sans l'option `palier60`, aucune voie n'a de palier : égalité
-    || a.overflowTotal - b.overflowTotal
+    || (avecDebordementRang ? (a.overflowRang ?? a.overflowTotal) - (b.overflowRang ?? b.overflowTotal) : a.overflowTotal - b.overflowTotal) // g2d : sous 'c', seulement le débordement d'une famille marquée ; sinon overflowTotal, comme avant
     || (da === null ? (db === null ? 0 : 1) : db === null ? -1 : da - db)
     || comparerGrammesPalier(a.palier, b.palier) // g2b : puis moins de grammes (α) ; inerte sans l'option
     || comparerCles(a.departage?.cle, b.departage?.cle)
@@ -554,8 +580,8 @@ export function compareRankKeys(a: Voie, b: Voie): number {
     || Math.abs(a.ibu.drift) - Math.abs(b.ibu.drift);
 }
 /** Ordre d'affichage : clés de classement, puis libellé pour une liste stable (sans changer le rang). */
-export function compareVoies(a: Voie, b: Voie): number {
-  return compareRankKeys(a, b) || a.label.localeCompare(b.label, 'fr') || a.id.localeCompare(b.id);
+export function compareVoies(a: Voie, b: Voie, avecDebordementRang = true): number {
+  return compareRankKeys(a, b, avecDebordementRang) || a.label.localeCompare(b.label, 'fr') || a.id.localeCompare(b.id);
 }
 
 /** Recette après la voie (pour « poser la voie » ; l'annulation garde la recette d'avant). */

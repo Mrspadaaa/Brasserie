@@ -66,6 +66,8 @@ export interface DoseDryHop {
   gPerL: number;
   /** null : la dose est celle qui s'approche le plus de la visée dans les bornes ; 'min' ou 'max' : la visée est hors des bornes, la dose est bornée. */
   borne: 'min' | 'max' | null;
+  /** Présent quand la dose est imposée par l'appelant (`dryHop: { doseGL }`) : une dose générique, sans source de style, jamais celle de la règle. */
+  imposee?: 'dose générique, sans source de style';
 }
 export interface RegleDryHop {
   bornes: { min: number; max: number; pas: number };

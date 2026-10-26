@@ -204,6 +204,21 @@ describe('le vrai dry hop : actif et après, chacun à la dose de la règle', ()
     }
     expect(base.enStock).toBeNull();
   });
+  it('une dose imposée (4 ou 8 g/L) : la même liste à cette dose, marquée générique ; la règle ne bouge pas', () => {
+    const regle = m.proposeVoies(R21C, { citrus: 1 }, { ...MOYEN, dryHop: true }).dryHop!.actif;
+    for (const dose of [4, 8]) {
+      const imp = m.proposeVoies(R21C, { citrus: 1 }, { ...MOYEN, dryHop: { doseGL: dose } }).dryHop!;
+      expect(imp.actif.length).toBeGreaterThan(30);
+      expect(imp.actif.every((v) => gl(v) === dose && v.dose!.imposee === 'dose générique, sans source de style' && v.dose!.borne === null)).toBe(true);
+      expect(imp.apres.every((v) => gl(v) === dose)).toBe(true);
+      // 80 g déjà en dry hop (4 g/L) : 4 g/L de plus font 8, pas au-dessus du repère ; 8 g/L de plus font 12, signalés.
+      expect(imp.actif.every((v) => (v.drapeaux?.length ?? 0) === (dose === 8 ? 1 : 0))).toBe(true);
+    }
+    expect(regle.every((v) => v.dose!.imposee === undefined && gl(v) < 4)).toBe(true);
+    // L'effet monte puis sature : de 1,5 à 4 g/L plus que de 4 à 8, par g/L.
+    const pts = (g: number) => m.additionEffect({ id: 'x', hopKey: 'beermaverick-citra', moment: 'dryActive', grams: g * 20 }, R21C)!.citrus.central!;
+    expect((pts(4) - pts(1.5)) / 2.5).toBeGreaterThan(2 * ((pts(8) - pts(4)) / 4));
+  });
   it('une famille qui ne monte pas : aucun groupe, une note', () => {
     const moins = m.proposeVoies(R21C, { resin: -1 }, { ...MOYEN, dryHop: true }).dryHop!;
     expect(moins.actif).toEqual([]);
