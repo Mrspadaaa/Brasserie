@@ -1,0 +1,691 @@
+{
+ "voie": "f1-affinage-diagnostic, partie 5",
+ "lecture": "Moteur v2 actuel, même moment que chaque cas ; aucun appel neuf.",
+ "cas": [
+  {
+   "phare": "Nelson Sauvin",
+   "moment": "dryActive",
+   "iaTop10DansLeMoteurV2": [
+    {
+     "nom": "Hallertau Blanc",
+     "rangMoteur": 1,
+     "score": 65
+    },
+    {
+     "nom": "African Queen",
+     "rangMoteur": 46,
+     "score": 50
+    },
+    {
+     "nom": "Godiva",
+     "rangMoteur": 51,
+     "score": 49
+    },
+    {
+     "nom": "Galena",
+     "rangMoteur": 38,
+     "score": 51
+    },
+    {
+     "nom": "Jarrylo",
+     "rangMoteur": 149,
+     "score": 41
+    },
+    {
+     "nom": "Cashmere",
+     "rangMoteur": 2,
+     "score": 61
+    },
+    {
+     "nom": "Summit",
+     "rangMoteur": 10,
+     "score": 56
+    },
+    {
+     "nom": "Cascade",
+     "rangMoteur": 46,
+     "score": 50
+    },
+    {
+     "nom": "Sládek",
+     "rangMoteur": 3,
+     "score": 60
+    },
+    {
+     "nom": "Hallertau Taurus",
+     "rangMoteur": 51,
+     "score": 49
+    }
+   ],
+   "chevauchementTop10": 3,
+   "rangMoteurMedianDesChoixIA": 46,
+   "scoreMoyen": {
+    "moteurTop10": 58.9,
+    "iaTop10": 53.2
+   },
+   "ecartAlpha": {
+    "moteurTop10": 0.196,
+    "iaTop10": 0.318
+   },
+   "partAroma": {
+    "moteurTop10": 0.5,
+    "iaTop10": 0.4
+   },
+   "motsPartagesAvecLOriginal": {
+    "moteurTop10": 6,
+    "iaTop10": 5.8
+   },
+   "themesDesPhrases": {
+    "α, cohumulone, amertume": 2,
+    "huiles (totale, myrcène, humulène…)": 5,
+    "descripteurs précis (mots)": 9,
+    "usage ou classe": 2
+   }
+  },
+  {
+   "phare": "Citra",
+   "moment": "dryActive",
+   "iaTop10DansLeMoteurV2": [
+    {
+     "nom": "Nectaron",
+     "rangMoteur": 6,
+     "score": 64
+    },
+    {
+     "nom": "Galaxy",
+     "rangMoteur": 20,
+     "score": 59
+    },
+    {
+     "nom": "NZH-107",
+     "rangMoteur": 11,
+     "score": 62
+    },
+    {
+     "nom": "Amarillo",
+     "rangMoteur": 32,
+     "score": 56
+    },
+    {
+     "nom": "Hydra",
+     "rangMoteur": 32,
+     "score": 56
+    },
+    {
+     "nom": "Riwaka",
+     "rangMoteur": 37,
+     "score": 55
+    },
+    {
+     "nom": "Styrian Cardinal",
+     "rangMoteur": 8,
+     "score": 63
+    },
+    {
+     "nom": "HBC 586",
+     "rangMoteur": 8,
+     "score": 63
+    },
+    {
+     "nom": "Falconer's Flight",
+     "rangMoteur": 1,
+     "score": 67
+    },
+    {
+     "nom": "Mistral",
+     "rangMoteur": 29,
+     "score": 57
+    }
+   ],
+   "chevauchementTop10": 4,
+   "rangMoteurMedianDesChoixIA": 20,
+   "scoreMoyen": {
+    "moteurTop10": 64.6,
+    "iaTop10": 60.2
+   },
+   "ecartAlpha": {
+    "moteurTop10": 0.175,
+    "iaTop10": 0.29
+   },
+   "partAroma": {
+    "moteurTop10": 0.4,
+    "iaTop10": 0.5
+   },
+   "motsPartagesAvecLOriginal": {
+    "moteurTop10": 6.8,
+    "iaTop10": 5.9
+   },
+   "themesDesPhrases": {
+    "α, cohumulone, amertume": 2,
+    "huiles (totale, myrcène, humulène…)": 2,
+    "descripteurs précis (mots)": 10,
+    "usage ou classe": 3
+   }
+  },
+  {
+   "phare": "Motueka",
+   "moment": "dryActive",
+   "iaTop10DansLeMoteurV2": [
+    {
+     "nom": "Taiheke",
+     "rangMoteur": 2,
+     "score": 58
+    },
+    {
+     "nom": "Riwaka",
+     "rangMoteur": 17,
+     "score": 50
+    },
+    {
+     "nom": "Cascade",
+     "rangMoteur": 4,
+     "score": 56
+    },
+    {
+     "nom": "Mandarina Bavaria",
+     "rangMoteur": 4,
+     "score": 56
+    },
+    {
+     "nom": "Southern Cross",
+     "rangMoteur": 6,
+     "score": 54
+    },
+    {
+     "nom": "Barbe Rouge",
+     "rangMoteur": 37,
+     "score": 47
+    },
+    {
+     "nom": "Atlas",
+     "rangMoteur": 11,
+     "score": 52
+    },
+    {
+     "nom": "HORT9909",
+     "rangMoteur": 29,
+     "score": 48
+    },
+    {
+     "nom": "Meridian",
+     "rangMoteur": 98,
+     "score": 41
+    },
+    {
+     "nom": "Falconer's Flight",
+     "rangMoteur": 13,
+     "score": 51
+    }
+   ],
+   "chevauchementTop10": 4,
+   "rangMoteurMedianDesChoixIA": 13,
+   "scoreMoyen": {
+    "moteurTop10": 55.4,
+    "iaTop10": 51.3
+   },
+   "ecartAlpha": {
+    "moteurTop10": 0.234,
+    "iaTop10": 0.206
+   },
+   "partAroma": {
+    "moteurTop10": 0.1,
+    "iaTop10": 0.4
+   },
+   "motsPartagesAvecLOriginal": {
+    "moteurTop10": 5.7,
+    "iaTop10": 5.5
+   },
+   "themesDesPhrases": {
+    "α, cohumulone, amertume": 1,
+    "huiles (totale, myrcène, humulène…)": 1,
+    "descripteurs précis (mots)": 6,
+    "usage ou classe": 0
+   }
+  },
+  {
+   "phare": "Mosaic",
+   "moment": "dryActive",
+   "iaTop10DansLeMoteurV2": [
+    {
+     "nom": "Simcoe",
+     "rangMoteur": 1,
+     "score": 70
+    },
+    {
+     "nom": "Idaho 7",
+     "rangMoteur": 2,
+     "score": 67
+    },
+    {
+     "nom": "Azacca",
+     "rangMoteur": 5,
+     "score": 64
+    },
+    {
+     "nom": "Zythos",
+     "rangMoteur": 7,
+     "score": 61
+    },
+    {
+     "nom": "Falconer's Flight",
+     "rangMoteur": 11,
+     "score": 60
+    },
+    {
+     "nom": "Hydra",
+     "rangMoteur": 11,
+     "score": 60
+    },
+    {
+     "nom": "Sultana (Denali)",
+     "rangMoteur": 26,
+     "score": 55
+    },
+    {
+     "nom": "Mackinac",
+     "rangMoteur": 26,
+     "score": 55
+    },
+    {
+     "nom": "Centennial",
+     "rangMoteur": 41,
+     "score": 53
+    },
+    {
+     "nom": "Mandarina Bavaria",
+     "rangMoteur": 6,
+     "score": 63
+    }
+   ],
+   "chevauchementTop10": 5,
+   "rangMoteurMedianDesChoixIA": 11,
+   "scoreMoyen": {
+    "moteurTop10": 63.8,
+    "iaTop10": 60.8
+   },
+   "ecartAlpha": {
+    "moteurTop10": 0.165,
+    "iaTop10": 0.14
+   },
+   "partAroma": {
+    "moteurTop10": 0.3,
+    "iaTop10": 0.3
+   },
+   "motsPartagesAvecLOriginal": {
+    "moteurTop10": 9.7,
+    "iaTop10": 8.6
+   },
+   "themesDesPhrases": {
+    "α, cohumulone, amertume": 0,
+    "huiles (totale, myrcène, humulène…)": 1,
+    "descripteurs précis (mots)": 10,
+    "usage ou classe": 0
+   }
+  },
+  {
+   "phare": "Galaxy",
+   "moment": "dryActive",
+   "iaTop10DansLeMoteurV2": [
+    {
+     "nom": "Nectaron",
+     "rangMoteur": 6,
+     "score": 58
+    },
+    {
+     "nom": "Vic Secret",
+     "rangMoteur": 28,
+     "score": 52
+    },
+    {
+     "nom": "Strata",
+     "rangMoteur": 16,
+     "score": 55
+    },
+    {
+     "nom": "Citra",
+     "rangMoteur": 3,
+     "score": 59
+    },
+    {
+     "nom": "Harlequin",
+     "rangMoteur": 1,
+     "score": 65
+    },
+    {
+     "nom": "NZH-107",
+     "rangMoteur": 16,
+     "score": 55
+    },
+    {
+     "nom": "BRU-1",
+     "rangMoteur": 56,
+     "score": 47
+    },
+    {
+     "nom": "Tropica",
+     "rangMoteur": 56,
+     "score": 47
+    },
+    {
+     "nom": "YQH-1380",
+     "rangMoteur": 23,
+     "score": 54
+    },
+    {
+     "nom": "Azacca",
+     "rangMoteur": 6,
+     "score": 58
+    }
+   ],
+   "chevauchementTop10": 4,
+   "rangMoteurMedianDesChoixIA": 16,
+   "scoreMoyen": {
+    "moteurTop10": 59.1,
+    "iaTop10": 55
+   },
+   "ecartAlpha": {
+    "moteurTop10": 0.172,
+    "iaTop10": 0.218
+   },
+   "partAroma": {
+    "moteurTop10": 0.3,
+    "iaTop10": 0.2
+   },
+   "motsPartagesAvecLOriginal": {
+    "moteurTop10": 5.2,
+    "iaTop10": 3.8
+   },
+   "themesDesPhrases": {
+    "α, cohumulone, amertume": 0,
+    "huiles (totale, myrcène, humulène…)": 3,
+    "descripteurs précis (mots)": 9,
+    "usage ou classe": 1
+   }
+  },
+  {
+   "phare": "Simcoe",
+   "moment": "dryActive",
+   "iaTop10DansLeMoteurV2": [
+    {
+     "nom": "Mosaic",
+     "rangMoteur": 1,
+     "score": 70
+    },
+    {
+     "nom": "Idaho 7",
+     "rangMoteur": 5,
+     "score": 64
+    },
+    {
+     "nom": "Vic Secret",
+     "rangMoteur": 19,
+     "score": 58
+    },
+    {
+     "nom": "Moutere",
+     "rangMoteur": 3,
+     "score": 66
+    },
+    {
+     "nom": "Chinook",
+     "rangMoteur": 11,
+     "score": 60
+    },
+    {
+     "nom": "Falconer's Flight",
+     "rangMoteur": 4,
+     "score": 65
+    },
+    {
+     "nom": "Zythos",
+     "rangMoteur": 32,
+     "score": 55
+    },
+    {
+     "nom": "Amarillo",
+     "rangMoteur": 66,
+     "score": 50
+    },
+    {
+     "nom": "Hydra",
+     "rangMoteur": 32,
+     "score": 55
+    },
+    {
+     "nom": "Ahtanum",
+     "rangMoteur": 169,
+     "score": 41
+    }
+   ],
+   "chevauchementTop10": 4,
+   "rangMoteurMedianDesChoixIA": 19,
+   "scoreMoyen": {
+    "moteurTop10": 64.3,
+    "iaTop10": 58.4
+   },
+   "ecartAlpha": {
+    "moteurTop10": 0.166,
+    "iaTop10": 0.252
+   },
+   "partAroma": {
+    "moteurTop10": 0.2,
+    "iaTop10": 0.4
+   },
+   "motsPartagesAvecLOriginal": {
+    "moteurTop10": 7.6,
+    "iaTop10": 6.6
+   },
+   "themesDesPhrases": {
+    "α, cohumulone, amertume": 0,
+    "huiles (totale, myrcène, humulène…)": 0,
+    "descripteurs précis (mots)": 10,
+    "usage ou classe": 1
+   }
+  },
+  {
+   "phare": "Saaz (CZ)",
+   "moment": "dryActive",
+   "iaTop10DansLeMoteurV2": [
+    {
+     "nom": "Saaz Late",
+     "rangMoteur": 4,
+     "score": 59
+    },
+    {
+     "nom": "Saaz (US)",
+     "rangMoteur": 7,
+     "score": 57
+    },
+    {
+     "nom": "Spalt",
+     "rangMoteur": 7,
+     "score": 57
+    },
+    {
+     "nom": "Sterling",
+     "rangMoteur": 31,
+     "score": 48
+    },
+    {
+     "nom": "Aurum",
+     "rangMoteur": 5,
+     "score": 58
+    },
+    {
+     "nom": "Wild Loyalist",
+     "rangMoteur": 13,
+     "score": 55
+    },
+    {
+     "nom": "Celeia",
+     "rangMoteur": 13,
+     "score": 55
+    },
+    {
+     "nom": "Tettnang (US)",
+     "rangMoteur": 3,
+     "score": 60
+    },
+    {
+     "nom": "Styrian Golding",
+     "rangMoteur": 11,
+     "score": 56
+    },
+    {
+     "nom": "Zagrava",
+     "rangMoteur": 39,
+     "score": 46
+    }
+   ],
+   "chevauchementTop10": 5,
+   "rangMoteurMedianDesChoixIA": 11,
+   "scoreMoyen": {
+    "moteurTop10": 59,
+    "iaTop10": 55.1
+   },
+   "ecartAlpha": {
+    "moteurTop10": 0.205,
+    "iaTop10": 0.298
+   },
+   "partAroma": {
+    "moteurTop10": 0.9,
+    "iaTop10": 0.9
+   },
+   "motsPartagesAvecLOriginal": {
+    "moteurTop10": 6.1,
+    "iaTop10": 5.4
+   },
+   "themesDesPhrases": {
+    "α, cohumulone, amertume": 0,
+    "huiles (totale, myrcène, humulène…)": 8,
+    "descripteurs précis (mots)": 2,
+    "usage ou classe": 3
+   }
+  },
+  {
+   "phare": "Cascade",
+   "moment": "dryActive",
+   "iaTop10DansLeMoteurV2": [
+    {
+     "nom": "Centennial",
+     "rangMoteur": 4,
+     "score": 61
+    },
+    {
+     "nom": "Taiheke",
+     "rangMoteur": 1,
+     "score": 64
+    },
+    {
+     "nom": "Falconer's Flight",
+     "rangMoteur": 40,
+     "score": 54
+    },
+    {
+     "nom": "Zythos",
+     "rangMoteur": 67,
+     "score": 51
+    },
+    {
+     "nom": "Dana",
+     "rangMoteur": 31,
+     "score": 55
+    },
+    {
+     "nom": "Southern Cross",
+     "rangMoteur": 20,
+     "score": 56
+    },
+    {
+     "nom": "Styrian Dragon",
+     "rangMoteur": 14,
+     "score": 57
+    },
+    {
+     "nom": "Riwaka",
+     "rangMoteur": 40,
+     "score": 54
+    },
+    {
+     "nom": "Atlas",
+     "rangMoteur": 8,
+     "score": 59
+    },
+    {
+     "nom": "Motueka",
+     "rangMoteur": 20,
+     "score": 56
+    }
+   ],
+   "chevauchementTop10": 3,
+   "rangMoteurMedianDesChoixIA": 20,
+   "scoreMoyen": {
+    "moteurTop10": 60.8,
+    "iaTop10": 56.7
+   },
+   "ecartAlpha": {
+    "moteurTop10": 0.307,
+    "iaTop10": 0.298
+   },
+   "partAroma": {
+    "moteurTop10": 0.1,
+    "iaTop10": 0.3
+   },
+   "motsPartagesAvecLOriginal": {
+    "moteurTop10": 7.7,
+    "iaTop10": 6.5
+   },
+   "themesDesPhrases": {
+    "α, cohumulone, amertume": 0,
+    "huiles (totale, myrcène, humulène…)": 1,
+    "descripteurs précis (mots)": 10,
+    "usage ou classe": 1
+   }
+  }
+ ],
+ "synthese": {
+  "cas": 8,
+  "chevauchementMoyenTop10": 4,
+  "rangMoteurMedianMoyenDesChoixIA": 19.5,
+  "scoreMoyen": {
+   "moteur": 60.74,
+   "ia": 56.34
+  },
+  "ecartAlpha": {
+   "moteur": 0.2,
+   "ia": 0.25
+  },
+  "partAroma": {
+   "moteur": 0.35,
+   "ia": 0.43
+  },
+  "motsPartages": {
+   "moteur": 6.85,
+   "ia": 6.01
+  },
+  "phrases": {
+   "α, cohumulone, amertume": 5,
+   "huiles (totale, myrcène, humulène…)": 21,
+   "descripteurs précis (mots)": 66,
+   "usage ou classe": 11
+  },
+  "nPhrases": 80
+ },
+ "essaiReelI2": {
+  "listeDuMoteur": [
+   "Hallertau Blanc 65-65",
+   "Cashmere 61-61",
+   "Sládek 60-60",
+   "Southern Sublime 58-58",
+   "Trident 58-58"
+  ],
+  "ordreDeLIA": [
+   "Hallertau Blanc 65-65",
+   "Nectaron 55-55",
+   "Cashmere 61-61",
+   "Solero 57-57",
+   "Mandarina Bavaria 57-57"
+  ],
+  "lecture": "Cinq premières rangées (nom, score du moteur). L’IA fait monter Nectaron (55), Solero (57), Mandarina Bavaria (57) devant Sládek (60), Southern Sublime (58), Trident (58)."
+ }
+}

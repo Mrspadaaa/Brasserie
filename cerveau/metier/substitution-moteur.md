@@ -43,3 +43,10 @@ Relevé par le lot Substituer (D125, 24.10 ; u4 choisi, D34).
   - L'α ne doit jamais décider seul d'un remplaçant ni d'un amérisant, et un banc qui récompense l'α est faux.
   - La justesse se juge selon le style de la recette.
   - « Il faudrait pas que l'algo trie trop ou exclue trop tôt des potentiels candidats surtout. »
+- **Références indépendantes de Beer Maverick** (f1, 26.10) :
+  - Hopsteiner publie ses substituts **par moment** : « Brewhouse », 42 houblons, et « Dry Hopping », 29. Ils sont dans
+    `src/data/hopSources/hopsteiner.json`.
+  - Hopslist (173) et Hops Direct (26) les donnent sans moment.
+
+  Ce sont des bancs petits : un jeu « aussi bon » n'est pas « meilleur ». Le Citra Cryo « boosté » à 60′ venait de l'α du lot (24,8
+  contre 12,5) et d'un pool par variété.

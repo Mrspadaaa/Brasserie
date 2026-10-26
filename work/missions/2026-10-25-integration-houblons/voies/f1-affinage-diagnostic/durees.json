@@ -1,0 +1,96 @@
+{
+ "lecture": "Millisecondes mesurées (non déterministes, hors empreinte de diagnostic.json). Froid : moteur neuf, premier appel.",
+ "substituer": {
+  "limit 8 (rendus)": {
+   "froidMs": [
+    1.4,
+    1.1,
+    0.8
+   ],
+   "chaudMs": [
+    0.9,
+    0.8,
+    0.8,
+    0.9,
+    0.6
+   ]
+  },
+  "limit 20": {
+   "froidMs": [
+    0.7,
+    0.8,
+    0.7
+   ],
+   "chaudMs": [
+    0.7,
+    0.7,
+    0.7,
+    0.8,
+    0.8
+   ]
+  },
+  "sans limite (ce que l'écran demande)": {
+   "froidMs": [
+    3.7,
+    3.5,
+    3.4
+   ],
+   "chaudMs": [
+    3.6,
+    3.5,
+    3.6,
+    6.7,
+    3.8
+   ]
+  }
+ },
+ "suggerer": {
+  "défaut (maxBuy 6, limit 10, buyLimit 4, perHop 2, 2 assemblages)": {
+   "froidMs": [
+    110
+   ],
+   "chaudMs": [
+    75,
+    74.8,
+    85.5
+   ]
+  },
+  "maxBuy 400": {
+   "froidMs": [
+    378.3
+   ],
+   "chaudMs": [
+    125.5,
+    142.6,
+    140.1
+   ]
+  },
+  "maxBuy 400 + limit/buyLimit 2000": {
+   "froidMs": [
+    1449.5
+   ],
+   "chaudMs": [
+    1448,
+    1451.3,
+    1497.7
+   ]
+  },
+  "tout ouvert (+ perHop 100)": {
+   "froidMs": [
+    3289.4
+   ],
+   "chaudMs": [
+    3150.2,
+    3490.5,
+    3232
+   ]
+  },
+  "options g2b (limites par défaut)": {
+   "froidMs": 726,
+   "chaudMs": 393
+  },
+  "options g2b, tout ouvert": {
+   "froidMs": 5991
+  }
+ }
+}

@@ -917,3 +917,15 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     2. le catalogue analysé mis en cache dans Dexie ;
     3. plus de calcul dans le worker (D65, conseil du 25.10).
   - On choisit sur la mesure, rien avant.
+- D102 (pilote, 26.10, diagnostic f1) : on fait maintenant, sans lui, ce qui ne change pas son écran (voie f2).
+  - **A** : Citra Cryo et Citra simple ont chacun leur place. Recul des produits d'arôme à 60′. Rang calculé sur l'α de la variété.
+  - **B1** : on classe tout, et on ne coupe qu'à l'affichage.
+  - **C**, jeu J1 : l'α passe de 0,4 à 0,15 à 60′ dans Substituer. Même justesse mesurée, et c'est son principe.
+  - **D** : un banc à références indépendantes (Hopsteiner par moment, Hopslist, Hops Direct, ses jugements). Jamais Beer Maverick seul.
+
+  Lui seront montrés en mini maquettes :
+  - B2 : l'affichage de Substituer (8 + 3, ou « autres de même score ») ;
+  - F : les formes, modèle (b), avec un sélecteur « Citra · pellets / cryo » ;
+  - S : Suggérer à 60′ par ressemblance, après le test à l'aveugle E (accordé, D100).
+
+  B3 (D90 en drapeau au lieu d'une exclusion) n'est pas décidé.
