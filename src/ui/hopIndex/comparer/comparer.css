@@ -79,6 +79,9 @@
 .pq-comparer-rn { display: flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; letter-spacing: -.01em; }
 .pq-comparer-dem { font-size: 14px; color: rgb(var(--cave-50)); }
 .pq-comparer-dem-trop { color: #c2410c; }
+/* a2 : sans demande du brasseur, les familles attendues du style sont en gras (la légende le dit : « attendu en 21C »), sans flèche. */
+.pq-comparer-rn[data-attendu] { font-weight: 800; }
+.pq-comparer-ta-att { gap: 2px; }
 .pq-comparer-cel { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 1px; min-height: 22px; padding: 0 5px; }
 .pq-comparer-cel.pq-comparer-sel { background: rgb(var(--cave-900)); box-shadow: inset 2px 0 0 var(--pq-h), inset -2px 0 0 var(--pq-h); }
 .pq-comparer-derniere .pq-comparer-cel.pq-comparer-sel { border-radius: 0 0 8px 8px; box-shadow: inset 2px 0 0 var(--pq-h), inset -2px 0 0 var(--pq-h), inset 0 -2px 0 var(--pq-h); }

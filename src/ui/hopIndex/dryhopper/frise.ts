@@ -75,16 +75,21 @@ export function calculerFrise(base: RecetteParcours, ajout: AjoutParcours, jours
   });
 }
 
-/** ★ : le meilleur cran pour sa demande du 18.10 (« trop résineuse, je la veux plus florale ») : floral gagné moins
- * résineux gagné, l'amertume restant dans la bande du style ; à 0,05 près, le plus tôt (a1). Seulement parmi les crans
- * calculés : un cran interpolé (≈) ne peut pas être « le meilleur ». */
-export function meilleur(points: Point[], bandeIbu: [number, number] | null): number {
+/** La demande que ★ vise : les familles à monter et celles à descendre (sa visée, sa dégustation, sinon les attendues du style :
+ * comparer/demande.ts). Aucune par défaut : une demande ne s'invente pas. */
+export interface ViseeFrise { plus: FamilyId[]; moins: FamilyId[] }
+
+/** ★ : le meilleur cran pour sa demande : les familles à monter gagnées moins celles à descendre, l'amertume restant dans la
+ * bande du style ; à 0,05 près, le plus tôt (a1). Seulement parmi les crans calculés : un cran interpolé (≈) ne peut pas être
+ * « le meilleur ». Une famille inconnue à ce cran ne compte pas (jamais 0) ; sans aucune famille connue, le cran est écarté. */
+export function meilleur(points: Point[], bandeIbu: [number, number] | null, visee: ViseeFrise): number {
   let best = -1, sb = -Infinity;
   for (const p of points) {
     if (p.interp || (bandeIbu && p.ibu > bandeIbu[1])) continue;
-    const fl = p.ecart.floral, rs = p.ecart.resin;
-    if (fl == null || rs == null) continue;
-    const s = fl - rs;
+    let s = 0, connues = 0;
+    for (const f of visee.plus) { const e = p.ecart[f]; if (e != null) { s += e; connues++; } }
+    for (const f of visee.moins) { const e = p.ecart[f]; if (e != null) { s -= e; connues++; } }
+    if (!connues) continue;
     if (best < 0 || s > sb + 0.05) { best = p.k; sb = s; }
   }
   return best;

@@ -181,11 +181,6 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
         </g>
         {/* L'échelle : en absolu, chiffrée sur l'axe du haut ; au style, le maximum de chaque axe près de son picto. */}
         {!echelleCommune && echelleTexte}
-        {/* La référence (ta stout, ma bière) : le trait noir, coupé là où elle est inconnue. */}
-        {reference && (() => {
-          const P = axes.map((f, i) => { const s = ref(f); return s == null ? null : pt(i, rvA(i, s)); }).filter((p): p is P2 => p != null);
-          return P.length >= 2 ? <polygon data-reference={reference.nom} data-role="reference" points={P.map(xy).join(' ')} className="rb-stout" fill="none" /> : null;
-        })()}
         {ordre.map((s) => {
           const lui = s.role === 'retenu', seul = s.role === 'contour';
           const v = axes.map((f) => brut(s, f));
@@ -227,6 +222,18 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
             </g>
           );
         })}
+        {/* La référence (ta bière, ma bière) : le trait noir, coupé là où elle est inconnue. a2 (D156, même défaut que le contour de
+            Galaxy) : elle se dessine APRÈS les séries. Dessous, une série qui décrit la même famille au même niveau la recouvrait
+            à valeur égale. Avec d'autres séries, son trait est plus épais et ses sommets sont des anneaux creux (le point plein
+            de la série reste visible au centre) ; seule, elle garde son dessin d'avant. */}
+        {reference && (() => {
+          const connus = axes.map((f, i) => { const s = ref(f); return s == null ? null : pt(i, rvA(i, s)); }).filter((p): p is P2 => p != null);
+          const avecSeries = series.length > 0;
+          return connus.length >= 2 ? <g data-role="reference-groupe">
+            <polygon data-reference={reference.nom} data-role="reference" points={connus.map(xy).join(' ')} className="rb-stout" fill="none" {...(avecSeries ? { style: { strokeWidth: 2.4 } } : {})} />
+            {avecSeries && connus.map((p, i) => <circle key={i} data-role="reference-sommet" cx={rd(p[0])} cy={rd(p[1])} r={5.6} fill="none" className="rb-stout" style={{ strokeWidth: 1.8 }} />)}
+          </g> : null;
+        })()}
         {/* Une échelle de mots (pas senti… marqué) passe au-dessus des séries : son halo la garde lisible. */}
         {echelleCommune && echelleTexte}
         {/* Les pictos des familles au bout des axes, et au style le maximum de chaque axe. */}

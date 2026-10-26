@@ -83,6 +83,10 @@ export default function HopToolLayer({ route, level, onClose }: { route: HopTool
   return <CoucheProvisoire route={route} level={level} onClose={onClose} />;
 }
 
+// a2 (D84) : la couche `hopBeer` (« Ma bière », l'analyse) n'a pas d'écran dans la pile : elle tombe ici. Son entrée,
+// « Ouvrir l'analyse de ma bière » (maBiere/index.tsx, variante B de D121 ; `aller({ ecran: 'biere' })` → EtapeHoublons.tsx,
+// `coucheDe('biere')`), ne s'affiche plus en production (`const analyse` de maBiere/index.tsx) ; elle reste en développement.
+// Rebrancher : ajouter ici le cas `hopBeer` (écran d'analyse chargé à la demande, comme Comparer) puis mettre `analyse` à true.
 function CoucheProvisoire({ route, level, onClose }: { route: HopToolRoute; level: number; onClose: () => void }) {
   const { outils, echec, reessayer } = useOutils();
   return (

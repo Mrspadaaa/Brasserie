@@ -6,8 +6,9 @@
 // à Dryhopper. Classes propres préfixées pq-lev- (L26). Place future : src/ui/hops/HopTiming.tsx (étape levure).
 import { useState } from 'react';
 import { BarreStyle, COULEURS, COURT, Inconnu, JetonHoublon, Legende, LigneContexte, Picto, Pont, nombre, signe, type Echelle } from '../dryhopper/commun';
-import { CadreOutil, PiedAnnuler, useBrouillon, useFicheSurOutil, useGestes, useNavigation, useTermes } from '../dryhopper/hote';
+import { CadreOutil, PiedAnnuler, useBrouillon, useFicheSurOutil, useEstMaquette, useGestes, useNavigation, useTermes } from '../dryhopper/hote';
 import { CONDITIONS, LEVURES, nomLevure } from '../comparer/cas';
+import { famillesDeLaDemande, useDemande } from '../comparer/demande';
 import { quandDe, trouver } from '../parcours/operations';
 import { ecart, effetLevure, houblon, lireBiere, style, type EffetLevure } from '../parcours/adaptateur';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
@@ -42,6 +43,8 @@ export default function Levure({ ajoutId }: { ajoutId: string }) {
   const ajout = trouver(recette, ajoutId);
   const fiche = useFicheSurOutil(ajout?.hopKey ?? '');
   const T = useTermes();
+  const demande = useDemande(recette);
+  const maquette = useEstMaquette();
   if (!ajout) return null;
 
   const h = houblon(ajout.hopKey);
@@ -64,7 +67,10 @@ export default function Levure({ ajoutId }: { ajoutId: string }) {
   // x3b réduit : ma bière (Nugget seul), puis + Idaho 7 avec US-05, puis la levure choisie.
   const maBiere = lireBiere(base);
   const etapes = choisie === ref ? [maBiere, refLu] : [maBiere, refLu, effet.lu];
-  const FX: FamilyId[] = ['floral', 'citrus', 'resin'];
+  // Les trois familles de la grille : sa demande (visée, dégustation), complétée par les attendues du style (plus « floral,
+  // agrumes, résineux » de la maquette : D84).
+  // La maquette (hôte sans `termes`) garde sa grille choisie : floral, agrumes, résineux.
+  const FX: FamilyId[] = maquette ? ['floral', 'citrus', 'resin'] : famillesDeLaDemande(demande, sc, 3);
   const nugget = base.additions[0] ? houblon(base.additions[0].hopKey) : null;
   // a2b : ce que le houblon apporte (Idaho 7 avec US-05, face à ta stout) et ce que la levure ajoute ; le total.
   const parHoublon = Object.fromEntries(Object.entries(ecart(maBiere.profil, refLu.profil)).map(([f, e]) => [f, e ? e.centre : null])) as Record<FamilyId, number | null>;

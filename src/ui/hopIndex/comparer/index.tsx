@@ -10,14 +10,15 @@ import { CadreOutil, COULEURS, COURT, Legende, LigneContexte, Picto, Pont, nombr
 import { useNavigation } from './hote';
 import { termes } from './hote';
 import { useOuvrir } from './hote';
-import { CONDITIONS, H, VISEE, nomLevure } from './cas';
+import { CONDITIONS, H, nomLevure } from './cas';
+import { criteresDe, critereParDefaut, useDemande, type DemandeEcran } from './demande';
 import { useRecette } from './hote';
 import { nouvelId } from '../parcours/operations';
 import { donnees, houblon, style } from '../parcours/adaptateur';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { hopRef } from '../parcours/v4';
 import { FicheHote as Fiche } from './hote';
-import { ABSOLU, CRITERES, ETAPES, HUILE_MAX, SAAZ, etape, huileDe, ORANGE, depart, type CodeEtape, houblonDeBase, lireColonnes, lireEtapes, reponse, scoreDefi, sesMots, type MotLu, type CelluleLue, type ColonneLue, type Critere } from './calcul';
+import { ABSOLU, ETAPES, HUILE_MAX, SAAZ, etape, huileDe, ORANGE, depart, type CodeEtape, houblonDeBase, lireColonnes, lireEtapes, reponse, scoreDefi, sesMots, type MotLu, type CelluleLue, type ColonneLue, type Critere } from './calcul';
 import { BandeEtapes, PiedEtapes } from './Etapes';
 import { HuilesVue } from './Huiles';
 import {
@@ -28,8 +29,6 @@ import { Radar } from './Radar';
 import { AideEtapes, EtapesEnsemble } from './Ensemble';
 import './comparer.css';
 
-/** Ta dégustation du 18.10 : « trop résineuse, je la veux plus florale ». */
-const TROP: FamilyId = 'resin';
 const MAX_COLONNES = 4;
 /** cmb : les glyphes des boutons dessinés au trait (⇄, ×, +, ↑, ↓) : la même lecture, sans compter pour des mots. */
 const Trait = ({ d, t = 16, label }: { d: string; t?: number; label?: string }) => (
@@ -84,8 +83,12 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   // Échelle de chaque famille au moment choisi (radar et barres) : le plus fort apport, 0,3 cran au moins.
   const echF = useMemo(() => Object.fromEntries(sc.order.map((f) => [f, Math.max(0.05, ...vue.map((c) => c.cellules[f].dCran).filter((x): x is number => x != null))])) as Record<FamilyId, number>, [vue, sc]);
   const etapes = useMemo(() => lireEtapes(recette, reference ? [...cles, reference] : cles), [recette, cles, reference]);
-  // Le critère de classement (r6n2) : floral au départ (ta demande). Il change le ★, la réponse et le mis en avant.
-  const [critere, setCritere] = useState<Critere>(CRITERES[0]);
+  // Le critère de classement (r6n2) : au départ, la première famille de sa demande (visée, sinon dégustation, sinon les
+  // familles attendues du style : D84). Il change le ★, la réponse et le mis en avant.
+  const demande = useDemande(recette);
+  const criteres = useMemo(() => criteresDe(demande), [demande]);
+  const [critereChoisi, setCritere] = useState<Critere | null>(null);
+  const critere = critereChoisi ?? critereParDefaut(demande, sc);
   const [retenu, setRetenu] = useState<string | null>(null);
   const cleRetenue = retenu && cols.some((c) => c.cle === retenu) ? retenu : depart(cols, critere.famille, critere.sens) ?? cols[0]?.cle ?? '';
   const sel = cols.find((c) => c.cle === cleRetenue) ?? null;
@@ -132,7 +135,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
   // des étapes, juste au-dessus, la chiffre déjà à chaque moment (le même nombre, 80 mots au premier écran).
   // D128 (80 mots, la ligne « Face à ta stout, par » rendue) : au repos, l'écart chiffré vit dans la bande des étapes
   // (la famille du critère, à chaque moment) ; sur les rangées, celui de ta demande qui n'est ni le critère ni le trop.
-  const chiffre = (f: FamilyId) => f === VISEE.famille && f !== critere.famille;
+  const chiffre = (f: FamilyId) => demande.voulue && demande.plus.includes(f) && f !== critere.famille;
   const lignes = sc.order.filter((f) => !cols.every((c) => c.cellules[f].inconnu));
   const tousInconnus = sc.order.filter((f) => cols.length > 0 && cols.every((c) => c.cellules[f].inconnu));
   const noms = cols.map((c) => c.houblon.nom);
@@ -188,7 +191,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
             { cle: 'dose', contenu: <span className="pq-comparer-dose" aria-label={`dose égale : ${nombre(CONDITIONS.doseGL)} g/L chacun`}>{nombre(CONDITIONS.doseGL)} g/L</span> },
             { cle: 'levure', contenu: <span data-element="y1b-levure-pastilles a2b-ce-que-la-levure-change">{nomLevure(recette.yeastId)}</span> },
           ]} sansMot />
-          <span data-element="l8b-legende-cachee" data-etat="etat-comp-legende"><Legende><ContenuLegende /></Legende></span>
+          <span data-element="l8b-legende-cachee" data-etat="etat-comp-legende"><Legende><ContenuLegende demande={demande} /></Legende></span>
         </div>
       }
       dock={sel && (
@@ -211,7 +214,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
               <button type="button" role="radio" data-e="absolu" data-etat="etat-comp-absolu" aria-checked={absolu} onClick={() => setAbsolu(true)}>Absolu</button>
             </span>
           </div>
-          {sel && <Radar axes={sc.order} cols={vue} retenu={cleRetenue} absolu={absolu} visee={VISEE.famille} trop={TROP} moment={moment} />}
+          {sel && <Radar axes={sc.order} cols={vue} retenu={cleRetenue} absolu={absolu} moment={moment} />}
         </section>
 
         <section ref={refTab} className="pq-comparer-tab cmc-tab" data-role="simulation" aria-label="Les houblons, côte à côte"
@@ -222,7 +225,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
           </>}
           <div className="pq-comparer-grille-tab pq-comparer-tetes" role="radiogroup" aria-label="Houblon retenu" data-libre="houblon"
             data-element="r6a-tetes l5f-carte-role-alpha w2-cartes-verdict p06-grille-familles g1-fiche fiche-citra-cryo l8b-verdicts-pictos-trait">
-            <TaStout quatre={quatre} plein={cols.length >= MAX_COLONNES} ouvert={feuille === 'ajouter' && !aRemplacer} onPlus={() => { setARemplacer(null); basculer('ajouter'); }} />
+            <TaStout demande={demande} quatre={quatre} plein={cols.length >= MAX_COLONNES} ouvert={feuille === 'ajouter' && !aRemplacer} onPlus={() => { setARemplacer(null); basculer('ajouter'); }} />
             {vue.map((c) => (
               <TeteColonne key={c.cle} c={c} retenu={c.cle === cleRetenue} quatre={quatre} epinglee={c.cle === pin} mots={horsStyle[c.cle] ?? []}
                 retirable={c.cle !== pin && vue.length > 1} remplacable={c.cle !== pin}
@@ -235,7 +238,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
               famille qu'elle chiffre, ★ au meilleur de chaque étape (la réponse de y1b, à chaque moment). */}
           <BandeEtapes cols={cols} etapes={etapes} reference={reference} nomReference={reference ? hopRef(reference)?.name ?? reference : null} retenu={cleRetenue}
             moment={moment} onMoment={setMoment} critere={critere}
-            pastille={<PastilleCritere critere={critere} onChoisir={(c) => { setCritere(c); setRetenu(null); }} onPourquoi={() => basculer('pourquoi')} />}
+            pastille={<PastilleCritere critere={critere} criteres={criteres} onChoisir={(c) => { setCritere(c); setRetenu(null); }} onPourquoi={() => basculer('pourquoi')} />}
             aide={<AideEtapes nomReference={reference ? hopRef(reference)?.name ?? reference : null} famille={COURT[critere.famille].toLowerCase()} />} />
           <EtapesEnsemble onMoment={setMoment} cols={cols} etapes={etapes} reference={reference} nomReference={reference ? hopRef(reference)?.name ?? reference : null}
             moment={moment} critere={critere} absolu={absolu} />
@@ -248,17 +251,18 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
           <div className="pq-comparer-rgs" data-element="r6a-rangees" data-moment={moment}>
             {lignes.map((f, i) => (
               <div key={f} className={cx('pq-comparer-grille-tab pq-comparer-rg', chiffre(f) && 'pq-comparer-demande', i === lignes.length - 1 && 'pq-comparer-derniere')} data-famille-ligne={f}
-                {...(f === VISEE.famille || f === TROP ? { 'data-element': 'r6a-ecarts' } : {})}>
-                <span className="pq-comparer-rn" style={{ color: COULEURS[f].texte }}>
+                {...(demande.voulue && (demande.plus.includes(f) || demande.moins.includes(f)) ? { 'data-element': 'r6a-ecarts' } : {})}>
+                <span className="pq-comparer-rn" style={{ color: COULEURS[f].texte }}
+                  {...(!demande.voulue && demande.plus.includes(f) ? { 'data-attendu': '', title: demande.mot } : {})}>
                   <Picto famille={f} />{!quatre && <span>{COURT[f]}</span>}
-                  {f === VISEE.famille && <span className="pq-comparer-dem"><Trait d={G_HAUT} t={13} label="ta demande : plus de floral" /></span>}
-                  {f === TROP && <span className="pq-comparer-dem pq-comparer-dem-trop"><Trait d={G_BAS} t={13} label="ta dégustation : trop de résineux" /></span>}
+                  {demande.voulue && demande.plus.includes(f) && <span className="pq-comparer-dem"><Trait d={G_HAUT} t={13} label={`${demande.mot} : plus de ${COURT[f].toLowerCase()}`} /></span>}
+                  {demande.voulue && demande.moins.includes(f) && <span className="pq-comparer-dem pq-comparer-dem-trop"><Trait d={G_BAS} t={13} label={`${demande.mot} : ${demande.origine === 'degustation' ? 'trop' : 'moins'} de ${COURT[f].toLowerCase()}`} /></span>}
                 </span>
                 {vue.map((c) => {
                   const r = vue.find((x) => x.cle === cleRetenue)?.cellules[f];
                   const a = c.cellules[f];
                   const ecart = c.cle === cleRetenue ? undefined : (!r || r.inconnu || a.inconnu ? null : (a.centre - r.centre) / a.cran);
-                  return <Cellule key={c.cle} c={c} cel={a} retenu={c.cle === cleRetenue} absolu={absolu} montre={false} moment={moment} ecart={ecart} nomRetenu={sel?.houblon.nom ?? ''} ech={echF[f]} />;
+                  return <Cellule key={c.cle} c={c} cel={a} retenu={c.cle === cleRetenue} absolu={absolu} montre={false} moment={moment} demande={demande} ecart={ecart} nomRetenu={sel?.houblon.nom ?? ''} ech={echF[f]} />;
                 })}
               </div>
             ))}
@@ -292,7 +296,7 @@ export default function Comparer({ houblons }: { houblons: string[] }) {
         )}
       </div>
 
-      {sel && feuille === 'defi' && <FeuilleDock titre="Ton défi" onFermer={fermer}><FeuilleDefi cols={cols} retenu={cleRetenue} etapes={etapes} onSuggerer={() => ouvrir({ ecran: 'suggerer' })} /></FeuilleDock>}
+      {sel && feuille === 'defi' && <FeuilleDock titre="Ton défi" onFermer={fermer}><FeuilleDefi cols={cols} retenu={cleRetenue} etapes={etapes} demande={demande} onSuggerer={() => ouvrir({ ecran: 'suggerer' })} /></FeuilleDock>}
       {sel && feuille === 'egaler' && <FeuilleDock titre="Pour égaler" id="pq-comparer-egaler" onFermer={fermer}><FeuilleEgaler cols={cols} sel={sel} critere={critere} etapes={etapes} /></FeuilleDock>}
       {sel && feuille === 'valeurs' && <FeuilleDock titre="Vraies valeurs et chimie" onFermer={fermer}><FeuilleValeurs cols={cols} sel={sel} quatre={quatre} etapes={etapes} familles={sc.order} onPreuve={() => setFeuille('preuve')} /></FeuilleDock>}
       {sel && feuille === 'preuve' && <FeuilleDock titre="La preuve : mesuré et tiré" onFermer={fermer}><FeuillePreuve cols={cols} familles={lignes} /></FeuilleDock>}
@@ -328,7 +332,7 @@ function BoutonDock({ nom, actif, etat, ouvre, controle, onClick, icone, label, 
 }
 
 // ---------- « Face à ta stout, par [floral ⌄] » (y1b, r6n2) ----------
-function PastilleCritere({ critere, onChoisir, onPourquoi }: { critere: Critere; onChoisir: (c: Critere) => void; onPourquoi: () => void }) {
+function PastilleCritere({ critere, criteres, onChoisir, onPourquoi }: { critere: Critere; criteres: Critere[]; onChoisir: (c: Critere) => void; onPourquoi: () => void }) {
   const [ouvert, setOuvert] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
@@ -348,7 +352,7 @@ function PastilleCritere({ critere, onChoisir, onPourquoi }: { critere: Critere;
       </button>
       {ouvert && (
         <span className="pq-comparer-menu pq-comparer-crit-m" role="listbox" aria-label="Critère de classement">
-          {CRITERES.map((c) => (
+          {criteres.map((c) => (
             <button key={c.id} type="button" role="option" aria-selected={c.id === critere.id} onClick={() => { setOuvert(false); onChoisir(c); }}>
               <Picto famille={c.famille} taille={16} />{c.nom}
             </button>
@@ -444,12 +448,25 @@ function Hors16D({ taille = 12 }: { taille?: number }) {
 }
 
 // ---------- Ta stout, et le « + » (p4, r6n2) ----------
-function TaStout({ quatre, plein, ouvert, onPlus }: { quatre: boolean; plein: boolean; ouvert: boolean; onPlus: () => void }) {
+/** Ce que dit la rangée « Ta bière » : sa demande (↑ ↓) ; sans demande, les familles attendues du style, sans flèche. */
+function ditLaDemande(d: DemandeEcran, deg: string | null): string {
+  const noms = (l: FamilyId[]) => l.map((f) => COURT[f].toLowerCase()).join(', ');
+  if (!d.voulue) return `${d.mot} : ${noms(d.plus) || 'aucune famille nommée'}`;
+  const dit = [d.plus.length ? `plus de ${noms(d.plus)}` : '', d.moins.length ? `${d.origine === 'degustation' ? 'trop de' : 'moins de'} ${noms(d.moins)}` : ''].filter(Boolean).join(', ');
+  return `${dit} (${d.mot}${d.origine === 'degustation' && deg ? ` du ${deg}` : ''})`;
+}
+function TaStout({ demande, quatre, plein, ouvert, onPlus }: { demande: DemandeEcran; quatre: boolean; plein: boolean; ouvert: boolean; onPlus: () => void }) {
   return (
-    <div className="pq-comparer-ta" data-element="r6a-ta-stout m4-radar-degustation" aria-label={`Ta ${termes().biere} : ${termes().degustation ? `trop résineuse, tu la veux plus florale (dégustation du ${termes().degustation})` : "plus de floral, moins de résineux (ta demande)"}`}>
+    <div className="pq-comparer-ta" data-element="r6a-ta-stout m4-radar-degustation" data-demande={demande.origine} aria-label={`Ta ${termes().biere} : ${ditLaDemande(demande, termes().degustation)}`}>
       <span className="pq-comparer-ta-n"><i className="pq-comparer-trait" aria-hidden="true" />{!quatre && <b>Ta {termes().biere}</b>}</span>
-      <span className="pq-comparer-ta-l"><Picto famille={TROP} taille={14} /><Trait d={G_BAS} t={13} /></span>
-      <span className="pq-comparer-ta-l"><Picto famille={VISEE.famille} taille={14} /><Trait d={G_HAUT} t={13} /></span>
+      {demande.voulue
+        ? <>
+            {demande.moins.slice(0, 2).map((f) => <span key={`m${f}`} className="pq-comparer-ta-l"><Picto famille={f} taille={14} /><Trait d={G_BAS} t={13} /></span>)}
+            {demande.plus.slice(0, 2).map((f) => <span key={`p${f}`} className="pq-comparer-ta-l"><Picto famille={f} taille={14} /><Trait d={G_HAUT} t={13} /></span>)}
+          </>
+        : demande.plus.length > 0 && (
+          <span className="pq-comparer-ta-l pq-comparer-ta-att" title={demande.mot}>{demande.plus.slice(0, 4).map((f) => <Picto key={f} famille={f} taille={14} />)}</span>
+        )}
       {!plein && (
         <button type="button" className="pq-comparer-plus" data-role="ajouter-colonne" data-etat="etat-comp-colonne-plus" data-element="p4-plus-comparaison" aria-haspopup="dialog" aria-expanded={ouvert}
           aria-label="Ajouter un houblon à la comparaison" onClick={onPlus}><Trait d={G_PLUS} t={26} /></button>
@@ -581,11 +598,12 @@ function HuileTete({ cle, nom, couleur }: { cle: string; nom: string; couleur: s
 }
 
 // ---------- une cellule : la barre de l5b face à ta 16D ----------
-function Cellule({ c, cel, retenu, absolu, montre, moment, ecart, nomRetenu, ech }: { c: ColonneLue; cel: CelluleLue; retenu: boolean; absolu: boolean; montre: boolean; moment: CodeEtape; ecart?: number | null; nomRetenu?: string; ech?: number }) {
+function Cellule({ c, cel, retenu, absolu, montre, moment, demande, ecart, nomRetenu, ech }: { c: ColonneLue; cel: CelluleLue; retenu: boolean; absolu: boolean; montre: boolean; moment: CodeEtape; demande: DemandeEcran; ecart?: number | null; nomRetenu?: string; ech?: number }) {
   // rpz4 (« Ça c'est très bien, on voit direct les différences ») : à droite de la barre, l'écart face au houblon retenu,
   // au moment choisi, en crans de ta 16D ; « ≈ » sous 0,1 cran ; « ? » si l'un des deux est inconnu (jamais 0).
   // Couleur selon ta demande du 18.10 : vert dans son sens (plus floral, moins résineux), orangé contre ; neutre ailleurs.
-  const voeu = cel.famille === VISEE.famille ? 1 : cel.famille === TROP ? -1 : 0;
+  // Sans demande du brasseur (le style seul), aucune couleur « dans son sens » : un écart n'est ni bien ni contre.
+  const voeu = !demande.voulue ? 0 : demande.plus.includes(cel.famille) ? 1 : demande.moins.includes(cel.famille) ? -1 : 0;
   const ec = ecart === undefined ? null : (
     <span className={cx('cmb2-ec', ecart != null && Math.abs(ecart) >= 0.1 && voeu !== 0 && (Math.sign(ecart) === voeu ? 'cmb2-ec-bien' : 'cmb2-ec-contre'))} data-greffe="rpz4-ecart-chiffre" data-nature="simule"
       aria-label={ecart == null ? `face à ${nomRetenu} : inconnu` : `face à ${nomRetenu} : ${signeCran(ecart)} cran`}>
@@ -621,13 +639,13 @@ function Cellule({ c, cel, retenu, absolu, montre, moment, ecart, nomRetenu, ech
         {depasse && <i className="pq-comparer-fl" style={{ borderLeftColor: ORANGE }} aria-hidden="true" />}
       </span>
       {ec}
-      {montre && d != null && <span className={cx('pq-comparer-dl', cel.hors || (cel.famille === TROP && d > 0) ? 'pq-comparer-dl-hors' : '')} data-nature="simule">{signeCran(d)}</span>}
+      {montre && d != null && <span className={cx('pq-comparer-dl', cel.hors || (voeu < 0 && d > 0) ? 'pq-comparer-dl-hors' : '')} data-nature="simule">{signeCran(d)}</span>}
     </span>
   );
 }
 
 // ---------- légende, derrière « ? » (D89), dans la forme de r6a ----------
-function ContenuLegende() {
+function ContenuLegende({ demande }: { demande: DemandeEcran }) {
   const sc = style(useRecette().styleCode);
   return (
     <div className="pq-comparer-leg">
@@ -635,11 +653,13 @@ function ContenuLegende() {
       <p className="pq-comparer-leg-f">{sc.order.map((f) => <span key={f} style={{ color: COULEURS[f].texte }}><Picto famille={f} taille={12} />{COURT[f]}</span>)}</p>
       <p><b>Une barre, par houblon</b></p>
       <p>zone pâle : ce que ta {termes().style} permet ; barre : ~ simulé à 4 g/L ; trait fin : sa bande d’incertitude ; trait noir : ta {termes().biere} aujourd’hui ; orangé : au-dessus de ta {termes().style} ; hachuré : inconnu, jamais zéro.</p>
-      <p><b>~+1,9</b> : crans du style gagnés. ↑ ↓ : ta demande{termes().degustation ? ` du ${termes().degustation}` : ""} (Ta {termes().biere} : plus floral, moins résineux).</p>
-      <p><b>Les étapes</b> (60′, 10′, dry hop), sur les rangées : chaque houblon posé à ce moment, à 4 g/L ; le nombre : crans gagnés de la famille de la pastille ; ★ : le meilleur de l’étape ; à gauche et en pointillé gris : ton Nugget au même moment. Toucher une étape la pose sur le radar et les rangées ; au départ, le dry hop, après 3 j.</p>
+      <p><b>~+1,9</b> : crans du style gagnés. {demande.voulue
+        ? <>↑ ↓ : {demande.mot}{demande.origine === 'degustation' && termes().degustation ? ` du ${termes().degustation}` : ''} (Ta {termes().biere} : {ditLaDemande(demande, null).replace(/ \(.*$/, '')}).</>
+        : <>Les familles en gras : {demande.mot}. Tu n’as posé ni visée ni dégustation : rien n’est demandé à ta {termes().biere}.</>}</p>
+      <p><b>Les étapes</b> (60′, 10′, dry hop), sur les rangées : chaque houblon posé à ce moment, à 4 g/L ; le nombre : crans gagnés de la famille de la pastille ; ★ : le meilleur de l’étape ; à gauche et en pointillé gris : le houblon de base de ta recette au même moment. Toucher une étape la pose sur le radar et les rangées ; au départ, le dry hop, après 3 j.</p>
       <p><b>Le radar</b> : chaque houblon à la couleur de sa tête, le retenu en plein ; trait plein entre deux familles connues voisines, tireté au-dessus d’un inconnu ; « ? » au bord : inconnu pour ce houblon ; « sans donnée » : inconnu pour tous ; vert pâle : ta {termes().style} (Au style).</p>
       <p>~ dans la cuve, au moment comparé ; dry hop : {CONDITIONS.jours} j de contact.</p>
-      <p>Résineux déjà au-delà dans ta dégustation : chaque gain s’y ajoute.</p>
+      {demande.origine === 'degustation' && demande.moins.length > 0 && <p>{COURT[demande.moins[0]]} déjà au-delà dans ta dégustation : chaque gain s’y ajoute.</p>}
       <p>~ simulé, {nombre(CONDITIONS.doseGL)} g/L chacun ; trait fin : incertitude.</p>
       <p>Hachuré : inconnu, pas zéro.</p>
       <p>Au style, chaque famille du radar a son échelle : le bord vaut le plus fort des houblons comparés, écrit près du picto ; anneaux en parts. En Absolu : échelle commune.</p>

@@ -10,10 +10,12 @@ import type { InputElement } from '../../Input';
 import { PageShell } from '../../../pages/PageShell';
 import { WizardStepRail } from '../../WizardStepBar';
 import { Pont, type Echelle } from './commun';
+import { COURT } from '../familyTokens';
+import { useDemande } from '../comparer/demande';
 import { BoutonLegende, PanneauLegende, useLegende } from './LegendeGroupe';
 import { ActionsCoquille, useOuvrir } from './hote';
 import { useNavigation } from './hote';
-import { useBiere, useRecette } from './hote';
+import { useBiere, useHote, useRecette } from './hote';
 import type { RecetteParcours } from '../parcours/types';
 import { donnees, houblon, lireBiere, style } from '../parcours/adaptateur';
 import { Ajouter } from './Ajouter';
@@ -64,6 +66,14 @@ export function EtapeHoublonsContenu({ bandeau = true }: { /** Faux dans le wiza
   const ouvrir = useOuvrir();
   const { route, aller } = useNavigation();
   const sc = style(recette.styleCode);
+  const demande = useDemande(recette);
+  // a2 (D84) : l'écran d'analyse de ma bière (l'onglet « Ma bière » de la maquette) n'existe pas encore dans l'app : la couche
+  // `hopBeer` n'y montre que « Écran provisoire… données du prototype, non réelles » (HopToolLayer.tsx, CoucheProvisoire).
+  // L'entrée « Ouvrir l'analyse de ma bière » (la variante B de D121, son choix) et les gestes qui y mènent (toucher le profil,
+  // variantes A et C) ne s'affichent donc plus en production ; ils restent pour la maquette (hôte sans `allerWizard`) et en
+  // développement (`import.meta.env.DEV`). À REBRANCHER quand l'écran d'analyse sera dans la pile : mettre `analyse` à true.
+  const enApp = !!useHote().allerWizard;
+  const analyse = !enApp || import.meta.env.DEV;
   const [echelle, setEchelle] = useState<Echelle>('style');
   const [legende, basculerLegende] = useLegende();
   // Ma bière est à l'écran sur sa route et sous la fiche ; la coquille ne la monte pas sous un outil plein écran.
@@ -114,18 +124,18 @@ export function EtapeHoublonsContenu({ bandeau = true }: { /** Faux dans le wiza
             (« ? », « + floral », Au style / Absolu) gardent leur geste. Variante de la version : A ; B et C sur la planche
             variantes-d121/ (drapeau ?d121=b|c). */}
         <section data-element="etape-profil" data-role="profil" data-etat="etat-etape-pied-profil" data-variante-d121={D121}
-          aria-label={`Profil de ma bière, ${echelle === 'style' ? `au style ${sc.code}` : 'absolu'} ; toucher pour ouvrir l'analyse`}
-          onClick={(e) => { if (!(e.target as Element).closest('button, a, input, [role="radiogroup"], [role="radio"], [data-role="legende"]')) aller({ ecran: 'biere' }); }}
+          aria-label={`Profil de ma bière, ${echelle === 'style' ? `au style ${sc.code}` : 'absolu'}${analyse ? ' ; toucher pour ouvrir l\'analyse' : ''}`}
+          onClick={(e) => { if (analyse && !(e.target as Element).closest('button, a, input, [role="radiogroup"], [role="radio"], [data-role="legende"]')) aller({ ecran: 'biere' }); }}
           className={`pq-ma-biere-profil pq-ma-biere-profil-${D121} space-y-1`}>
           <div className="flex items-center gap-2">
-            {D121 === 'c'
+            {D121 === 'c' && analyse
               ? <button type="button" data-role="pont-biere" onClick={() => aller({ ecran: 'biere' })} className="min-w-0 flex items-center gap-1.5 text-left">
                   <Alerte biere={biere} ordre={sc.order} /><span className="pq-ma-biere-profil-mot shrink-0">· détail</span><ChevronRight className="w-4 h-4 shrink-0" aria-hidden="true" />
                 </button>
               : !recette.additions.length && videOuverture.current
                 ? <p data-role="decompte" className="text-base text-cave-200">{`${sc.order.filter((f) => biere.profil[f].valeur && !biere.profil[f].horsStyle).length} au style · ${sc.order.filter((f) => !biere.profil[f].valeur).length} non situées`}</p>
                 : <Alerte biere={biere} ordre={sc.order} long />}
-            {D121 === 'a' && (
+            {D121 === 'a' && analyse && (
               <button type="button" data-role="pont-biere" data-etat="etat-etape-analyse" aria-label="Ouvrir l'analyse : l'onglet Ma bière" onClick={() => aller({ ecran: 'biere' })}
                 className="pq-ma-biere-pont-analyse ml-auto shrink-0 inline-flex items-center gap-0.5 h-8 pl-3.5 pr-2 rounded-full text-sm font-semibold">
                 analyse<ChevronRight className="w-4 h-4" aria-hidden="true" />
@@ -134,14 +144,19 @@ export function EtapeHoublonsContenu({ bandeau = true }: { /** Faux dans le wiza
           </div>
           <div className="flex items-center gap-2">
             <BoutonLegende ouverte={legende} onBasculer={basculerLegende} groupe="le profil de ma bière" controle="pq-ma-biere-legende-profil" />
-            <Pont nom="floral" principal={false} onClick={() => ouvrir({ ecran: 'suggerer' })}>+ floral</Pont>
+            {/* a2 (D84) : la puce vient de sa demande (visée posée, sinon dégustation) ; ni l'une ni l'autre : rien. Plus de « + floral »
+                de la dégustation de test S1 sur toute recette. Elle ouvrait Suggérer ; le bouton « Suggérer » du cadre y mène aussi. */}
+            {demande.voulue && (demande.plus[0] ?? demande.moins[0]) && (() => {
+              const f = (demande.plus[0] ?? demande.moins[0])!;
+              return <Pont nom={f} principal={false} onClick={() => ouvrir({ ecran: 'suggerer' })}>{demande.plus[0] ? '+' : '−'} {COURT[f].toLowerCase()}</Pont>;
+            })()}
             <span className="ml-auto" />
             <Lentille label="Échelle" marques="e" value={echelle} onChange={setEchelle} options={[{ value: 'style', label: 'Au style' }, { value: 'absolu', label: 'Absolu' }]} />
           </div>
           <PanneauLegende id="pq-ma-biere-legende-profil" ouverte={legende}>
             <p><b>Barre</b> : la zone grise est le style {sc.code} ; le pointillé, au-dessus du style.</p>
             <p><b>Point plein</b> : dégusté{(() => { const d = donnees().degustation?.tasting.date; return d ? ` le ${d.slice(8, 10)}.${d.slice(5, 7)}` : ''; })()}. <b>Rond</b> : prévu, simulé (~). <b>Hachuré</b> : non situé, jamais zéro.</p>
-            <p><b>Toucher le profil</b> : l'analyse dans l'onglet Ma bière (barres au style, visées, radar).</p>
+            {analyse && <p><b>Toucher le profil</b> : l'analyse dans l'onglet Ma bière (barres au style, visées, radar).</p>}
             <p><b>Rail</b> : glisser la pastille d’un ajout (« 60′ ») : ébullition par 5′, whirlpool en °C, à froid de J+0 à J+14.</p>
           </PanneauLegende>
           <div className="grid grid-cols-2 gap-x-4">
@@ -156,7 +171,7 @@ export function EtapeHoublonsContenu({ bandeau = true }: { /** Faux dans le wiza
               </div>
             ))}
           </div>
-          {D121 === 'b' && (
+          {D121 === 'b' && analyse && (
             <button type="button" data-role="pont-biere" data-etat="etat-etape-analyse" onClick={() => aller({ ecran: 'biere' })}
               className="pq-ma-biere-pont-analyse w-full h-11 inline-flex items-center justify-center gap-1 rounded-full text-base font-semibold">
               Ouvrir l'analyse de ma bière<ChevronRight className="w-4 h-4" aria-hidden="true" />

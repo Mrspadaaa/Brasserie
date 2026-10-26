@@ -8,7 +8,7 @@ import { etape, type CodeEtape, type ColonneLue } from './calcul';
 //   - au style : ce que le houblon ajoute à ta stout, en crans, (centre − ta stout) / cran (dCran du moteur, au moment
 //     du sélecteur) ; la zone : ce que ta 16D laisse au-dessus de ta stout ;
 //   - en Absolu : la bière entière, centre / cran, et ta stout en trait noir ; échelle fixe 0 à 12,5 crans (D68).
-type Props = { axes: FamilyId[]; cols: ColonneLue[]; retenu: string; absolu: boolean; visee: FamilyId; trop: FamilyId; moment?: CodeEtape };
+type Props = { axes: FamilyId[]; cols: ColonneLue[]; retenu: string; absolu: boolean; moment?: CodeEtape };
 
 export function Radar({ axes, cols, retenu, absolu, moment }: Props) {
   const parFamille = (lire: (f: FamilyId) => number | null) => Object.fromEntries(axes.map((f) => [f, lire(f)])) as Record<FamilyId, number | null>;

@@ -10,8 +10,9 @@
 // Classes propres préfixées pq-dry- (L26). Place future : src/ui/hops/HopTiming.tsx.
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { COULEURS, COURT, JetonHoublon, Legende, LigneContexte, Picto, nombre, signe, type Echelle } from './commun';
-import { CadreOutil, PiedAnnuler, useBrouillon, useFicheSurOutil, useGestes, useNavigation, useRecette, useTermes, useAjoutNeuf } from './hote';
+import { CadreOutil, PiedAnnuler, useBrouillon, useFicheSurOutil, useGestes, useNavigation, useRecette, useTermes, useAjoutNeuf, useEstMaquette } from './hote';
 import { nomLevure } from '../comparer/cas';
+import { famillesDeLaDemande, useDemande } from '../comparer/demande';
 import { quandDe, trouver } from '../parcours/operations';
 import { effetLevure, houblon, lireBiere, style, type ProfilLu } from '../parcours/adaptateur';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
@@ -27,10 +28,8 @@ export const ACC = '#c2410c';
 const JOURS_RAIL = [1, 2, 3, 5, 7];
 const JOURS = [1, 2, 3, 7];
 const POMONA = 'lalbrew-pomona';
-/** L'ordre des barres de p4b2f : les trois attendues de la stout d'abord, puis la roue. */
-const ORDRE: FamilyId[] = ['floral', 'herbal', 'earthy', 'citrus', 'tropical', 'stoneFruit', 'pomeFruit', 'berries', 'melon', 'resin', 'spice', 'green'];
-const COURBES: FamilyId[] = ['resin', 'berries', 'floral'];
-const BANDEAU: FamilyId[] = ['floral', 'berries', 'resin'];
+// L'ordre des barres, les trois courbes et le bandeau ne sont plus ceux de la stout du 18.10 (floral, baies, résineux) : ils
+// suivent la demande de l'écran (comparer/demande.ts : sa visée, sa dégustation, sinon les familles attendues du style).
 /** La géométrie du dessin de p4b2f (unités du viewBox). */
 const W = 366, H = 242, TOP = 16, YC = 160, YI0 = 184, YI1 = 202, YAX = 212, GAIN = 26;
 /** Pas entre deux cases de la loupe (p4b2f : 66 px). */
@@ -97,7 +96,20 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
     [cleBase, ajout?.hopKey, ajout?.grams, jours]);
   const x = useMemo(() => positions(points), [points]);
   const sc = style(recette.styleCode);
-  const best = useMemo(() => meilleur(points, sc.ibu), [points, sc.ibu]);
+  const demande = useDemande(recette);
+  // Les trois familles montrées d'abord (bandeau, courbes) : celles de la demande, complétées par les attendues du style ; la
+  // première porte l'aire pleine, la loupe et « Face à ta bière ». Les 12 barres : l'ordre du style (attendues d'abord).
+  // La maquette (hôte sans `termes`) garde le dessin choisi de p4b2f : floral, baies, résineux, et ses mots (D43).
+  const maquette = useEstMaquette();
+  const fams = useMemo<FamilyId[]>(() => (maquette ? ['floral', 'berries', 'resin'] : famillesDeLaDemande(demande, sc, 3)), [demande, sc, maquette]);
+  const COURBES = useMemo(() => [...fams].reverse(), [fams]);
+  const BANDEAU = fams;
+  const principale = fams[0];
+  const liste = (l: string[]) => (l.length > 1 ? `${l.slice(0, -1).join(', ')} et ${l[l.length - 1]}` : l[0] ?? '');
+  // Pour qui est ★ : sa demande (la maquette dit « ta demande du 18.10 »), ou, sans demande, les familles du style.
+  const quiVise = demande.voulue ? `${maquette ? 'ta demande' : demande.mot}${demande.origine === 'degustation' ? T.duDeg : ''}` : `les familles du style (${demande.mot})`;
+  const detailVise = maquette ? 'plus floral, moins résineux' : [demande.plus.length ? `plus : ${demande.plus.map((f) => COURT[f].toLowerCase()).join(', ')}` : '', demande.moins.length ? `moins : ${demande.moins.map((f) => COURT[f].toLowerCase()).join(', ')}` : ''].filter(Boolean).join(' ; ');
+  const best = useMemo(() => meilleur(points, sc.ibu, demande), [points, sc.ibu, demande]);
 
   // p4b2f s'ouvre sur ★ : un ajout neuf (pas encore dans ma bière) y est posé une fois, dans le brouillon seulement.
   useEffect(() => {
@@ -148,7 +160,7 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
     return (Math.min(4.2, g * 0.85) / 100) * W * 1.15;
   };
   const kDe = (seg: number, j: number) => points.findIndex((q) => q.seg === seg && (seg < 2 || (q.q.type === 'dryhop' && q.q.jours === j)));
-  const mesureActif = mesureDe(h.nom, 2);
+  const mesureActif = mesureDe(h.nom, 2, fams);
   const duree = dureeDeContact();
   const marques = [
     { k: kDe(2, 2), texte: mesureActif?.texte ?? null },
@@ -164,7 +176,7 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
   })();
   const aire = (() => {
     let d = `M${px(0)} ${YC}`;
-    for (let k = 0; k <= N; k++) d += ` L${px(k)} ${yc(gain(points[k], 'floral').v)}`;
+    for (let k = 0; k <= N; k++) d += ` L${px(k)} ${yc(gain(points[k], principale).v)}`;
     return `${d} L${px(N)} ${YC} Z`;
   })();
 
@@ -205,7 +217,7 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
         return (
           <g key={f} data-courbe={f}>
             {pts.slice(1).map((pt, n) => (
-              <line key={n} x1={pts[n][0]} y1={pts[n][1]} x2={pt[0]} y2={pt[1]} stroke={c} strokeWidth={f === 'floral' ? 4 : 2.5} strokeLinecap="round"
+              <line key={n} x1={pts[n][0]} y1={pts[n][1]} x2={pt[0]} y2={pt[1]} stroke={c} strokeWidth={f === principale ? 4 : 2.5} strokeLinecap="round"
                 className={pt[2] || pts[n][2] ? 'pq-dry-ip' : undefined} />
             ))}
             {pts.map((pt, k) => (pt[2] ? null : <circle key={k} cx={pt[0]} cy={pt[1]} r="3.5" fill={c} />))}
@@ -255,7 +267,7 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
     const t = (n: number) => `${sg(p)}${n >= 0 ? '+' : '−'}${Math.abs(n)}`;
     return (
       <span className="pq-dry-contre" data-role="contre">
-        contre ★ : floral {t(g('floral'))} · résineux {t(g('resin'))}{trop(p) && <> · <b className="pq-dry-moins">trop amer</b></>}
+        contre ★ : {BANDEAU.map((f, k) => <span key={f}>{k > 0 && ' · '}{COURT[f].toLowerCase()} {t(g(f))}</span>)}{trop(p) && <> · <b className="pq-dry-moins">trop amer</b></>}
       </span>
     );
   })();
@@ -272,7 +284,7 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
   // ---------- La vraie valeur du moment, toujours celle du houblon en brouillon (L14) ; « jamais mesuré » sinon.
   const mesure: ReactNode = (() => {
     if (p.seg === 2) {
-      const m = mesureDe(h.nom, 2);
+      const m = mesureDe(h.nom, 2, fams);
       if (m) return <>{m.famille && <Picto famille={m.famille} taille={14} />}<span><b>mesuré</b> {m.compose} <span data-nature="mesure" data-source={m.cle}>{m.texte}</span> {`(${m.source})`}</span></>;
     }
     if (p.seg === 3 && duree) return <span><b>mesuré</b> <span data-nature="mesure" data-source={duree.cle}>{duree.texte}</span> {`au nez (${duree.source}, sur ${duree.variete})`}</span>;
@@ -338,19 +350,19 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
         { cle: 'base', contenu: `${T.Biere} ${sc.code}` },
       ]} />
         <span data-etat="etat-dryh-legende" className="inline-block"><Legende>
-          <p>Courbes : ce qu’{h.nom} ajoute à ta {T.biere} en floral, baies et résineux à chaque moment du brassin. Point plein : calculé par le moteur ; pointillé : interpolé entre 60′, 10′ et whirlpool.</p>
+          <p>Courbes : ce qu’{h.nom} ajoute à ta {T.biere} en {liste(BANDEAU.map((f) => COURT[f].toLowerCase()))} à chaque moment du brassin{maquette ? '' : ` (${quiVise})`}. Point plein : calculé par le moteur ; pointillé : interpolé entre 60′, 10′ et whirlpool.</p>
           <p>Cases sous l’axe : l’amertume de la bière, orangée au-delà de ton style ({bande ? `${bande[0]}–${bande[1]}` : '?'} IBU) ; hachurée à cru (non modélisée). Calculée à la minute.</p>
           <p>Sous l’axe, dans l’actif : la levure travaille (biotransformation possible, non quantifiée) ; fin vers J+5, à confirmer à la densité.</p>
           <p>Glisse le pouce sur le rail, par 5′ : le trait traverse les courbes ; la loupe chiffre les moments voisins. ● sur l’axe : un moment mesuré.</p>
-          <p>Barres : les 12 familles au style, rond : avant ; hachuré « ? » : jamais décrit, pas zéro. « ? → » : ta {T.biere} avant n’est pas décrite. ★ : le meilleur pour ta demande{T.duDeg}.</p>
+          <p>Barres : les 12 familles au style, rond : avant ; hachuré « ? » : jamais décrit, pas zéro. « ? → » : ta {T.biere} avant n’est pas décrite. ★ : le meilleur pour {quiVise}.</p>
         </Legende></span>
         <Lentille echelle={echelle} choisir={setEchelle} />
       </div>
       <div className="pq-dry-rep" aria-live="polite" data-role="reponse" data-etat="etat-dryh-repos">
         <span className="pq-dry-face">Face à ta {T.biere}</span>
-        <span className="pq-dry-fl"><Picto famille="floral" taille={18} /><span data-role="floral-moment">{fmt(p, gain(p, 'floral').v)}</span></span>
+        <span className="pq-dry-fl" data-famille={principale}><Picto famille={principale} taille={18} /><span data-role="principale-moment">{fmt(p, gain(p, principale).v)}</span></span>
         {pb && (
-          <span className={`pq-dry-star ${i === best ? 'pq-dry-star-ici' : ''}`} data-role="critere" data-etat="etat-dryh-etoile" title={`le meilleur moment pour ta demande${T.duDeg} : plus floral, moins résineux, l’amertume dans le style`}>
+          <span className={`pq-dry-star ${i === best ? 'pq-dry-star-ici' : ''}`} data-role="critere" data-etat="etat-dryh-etoile" title={`le meilleur moment pour ${quiVise} : ${detailVise}, l’amertume dans le style`}>
             ★ <b>{pb.lib}</b>
           </span>
         )}
@@ -402,9 +414,9 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
           {touche && (
             <div className="pq-dry-loupe" aria-hidden="true" data-role="loupe">
               {fenetre.map((q) => {
-                const g = gain(q, 'floral').v;
+                const g = gain(q, principale).v;
                 const prec = q.k > 0 ? points[q.k - 1] : null;
-                const sansGain = q.seg >= 2 && !!prec && prec.seg === q.seg && Math.abs((g ?? 0) - (gain(prec, 'floral').v ?? 0)) < 0.1;
+                const sansGain = q.seg >= 2 && !!prec && prec.seg === q.seg && Math.abs((g ?? 0) - (gain(prec, principale).v ?? 0)) < 0.1;
                 return (
                   <span key={q.k} data-cran={q.k} className={`${q.k === i ? 'pq-dry-ici' : ''} ${q.interp ? 'pq-dry-lip' : ''}`}
                     style={{ left: `calc(50% + ${(q.k - centreLoupe) * PAS_LOUPE}px)` }}>
@@ -421,7 +433,7 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
           {JOURS.map((j, n) => {
             const k = kJour(j), on = k >= 0;
             const prec = on && n > 0 ? points[kJour(JOURS[n - 1])] : null;
-            const sansGain = on && !!prec && Math.abs((gain(points[k], 'floral').v ?? 0) - (gain(prec, 'floral').v ?? 0)) < 0.1;
+            const sansGain = on && !!prec && Math.abs((gain(points[k], principale).v ?? 0) - (gain(prec, principale).v ?? 0)) < 0.1;
             return (
               <button key={j} type="button" data-jour={j} data-etat={j === 1 || j === 7 ? `etat-dryh-jour-${j}` : undefined} aria-pressed={on && p.q.type === 'dryhop' && p.q.jours === j} aria-disabled={!on}
                 className={sansGain ? 'pq-dry-sg' : undefined} onClick={() => { if (on) poser(k); }}>{j} j</button>
@@ -430,7 +442,7 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
         </div>
       </section>
       <section className="pq-dry-bloc pq-dry-bars" data-etat="etat-dryh-barres etat-dryh-avant-inconnu" aria-label="Les 12 familles d’arômes au style, à ce moment">
-        {ORDRE.map(barre)}
+        {sc.order.map(barre)}
       </section>
       {fiche.feuille}
       </div>

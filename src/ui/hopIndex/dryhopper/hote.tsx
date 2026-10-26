@@ -117,4 +117,8 @@ export function useTermes(): TermesOutil & { Biere: string; duDeg: string } {
   return { ...t, Biere: t.biere.charAt(0).toUpperCase() + t.biere.slice(1), duDeg: t.degustation ? ` du ${t.degustation}` : '' };
 }
 
+/** Vrai pour l'hôte de la maquette (sans `termes` : cas S1 du 18.10). Seul le dessin de la maquette y garde ses trois familles
+ * (floral, baies, résineux) ; l'app passe toujours ses `termes` (outilApp.tsx) et suit sa demande (comparer/demande.ts). */
+export const useEstMaquette = (): boolean => !useHoteOutil().termes;
+
 export const useAjoutNeuf = (): ((ajoutId: string) => boolean) => useHoteOutil().ajoutNeuf ?? (() => false);

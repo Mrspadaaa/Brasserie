@@ -41,8 +41,8 @@ function phases(e: Etude): Seg[] {
   return [];
 }
 
-/** Ordre de préférence : le floral d'abord (sa demande : « plus florale »), puis les autres familles. */
-const rang = (f: FamilyId | null) => (f === 'floral' ? 0 : f ? 1 : 2);
+/** Ordre de préférence : les familles de sa demande d'abord (dans l'ordre donné), puis les autres familles, puis le reste. */
+const rangDans = (prefere: FamilyId[]) => (f: FamilyId | null) => { const i = f ? prefere.indexOf(f) : -1; return i >= 0 ? i : f ? prefere.length : prefere.length + 1; };
 
 /** p4b2f, après fermentation : la durée de contact mesurée au nez (E10, Titus 2021 : « 1 h ≈ 96 h », non distinguables
  * par le panel en bière jeune). L'étude porte sur Cascade, pas sur le houblon en brouillon (L14) : la variété est rendue
@@ -60,9 +60,10 @@ export function dureeDeContact(): Duree | null {
   return { texte: `${m[1]} ≈ ${m[2]}`, source: `${auteur} ${annee}`.trim(), variete, cle: `E10 ${auteur} ${annee} · ${variete}` };
 }
 
-export function mesureDe(nomHoublon: string, seg: Seg): Mesure | null {
+export function mesureDe(nomHoublon: string, seg: Seg, prefere: FamilyId[]): Mesure | null {
   if (seg < 2) return null;
   const n = norm(nomHoublon);
+  const rang = rangDans(prefere);
   const cands: (Mesure & { r: number })[] = [];
   for (const v of verifications()) {
     if (norm(v.houblon) !== n || v.mesure.min == null) continue;

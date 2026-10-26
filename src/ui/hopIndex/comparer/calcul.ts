@@ -167,13 +167,8 @@ export function houblonDeBase(recette: RecetteParcours, compares: string[]): str
 /** Critère de classement (y1b, r6n2 : « Face à ta stout, par [floral ⌄] ») : la famille et le sens qu'on veut. La
  * pastille change le ★, la réponse, la colonne mise en avant et le Défi ; l'ordre des colonnes reste celui de la
  * question (le premier écran de r6a). */
-export interface Critere { id: string; famille: FamilyId; sens: 1 | -1; nom: string }
-export const CRITERES: Critere[] = [
-  { id: 'floral', famille: 'floral', sens: 1, nom: 'floral' },
-  { id: 'agrumes', famille: 'citrus', sens: 1, nom: 'agrumes' },
-  { id: 'tropicaux', famille: 'tropical', sens: 1, nom: 'tropicaux' },
-  { id: 'moins-resineux', famille: 'resin', sens: -1, nom: 'moins résineux' },
-];
+// (définis dans ./demande.ts, qui ne tire ni le moteur de Comparer ni ses données : Ma bière l'importe aussi)
+export { CRITERES, type Critere } from './demande';
 
 /** Mis en avant au départ (règle de r6a, écrite dans la légende) : le plus de la famille visée sans sortir de ta
  * 16D ; à défaut, le plus de la famille visée. Sens −1 : le moins (« moins résineux »). */
@@ -242,11 +237,11 @@ export function verdict(d: number | null, visee: number): Verdict {
 }
 /** Le score du Défi (r6n2 « Défi 2/4 ») : plus floral, moins résineux, amertume tenue, dans ta 16D. L'amertume du
  * dry hop n'est pas modélisée à cru : jamais comptée comme tenue (inconnu ≠ réussi). */
-export function scoreDefi(c: ColonneLue): { points: number; sur: number } {
+export function scoreDefi(c: ColonneLue, demande: Partial<Record<FamilyId, number>> = visees()): { points: number; sur: number } {
   let points = 0;
-  for (const [f, v] of Object.entries(visees()) as [FamilyId, number][]) if (verdict(c.cellules[f].dCran, v) === 'atteint') points++;
+  for (const [f, v] of Object.entries(demande) as [FamilyId, number][]) if (verdict(c.cellules[f].dCran, v) === 'atteint') points++;
   if (!c.sorties.length) points++;
-  return { points, sur: Object.keys(visees()).length + 2 };
+  return { points, sur: Object.keys(demande).length + 2 };
 }
 
 /** Graine fixe (mulberry32) : le même tirage à chaque rendu ; « 20 autres » change la graine. */

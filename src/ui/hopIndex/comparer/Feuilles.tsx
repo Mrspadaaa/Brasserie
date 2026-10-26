@@ -11,12 +11,13 @@ import { COULEURS, COURT, Picto, nombre, plage } from './commun';
 import { CONDITIONS, H, nomLevure } from './cas';
 import { useRecette } from './hote';
 import { termes } from './hote';
+import { famillesDeLaDemande, useDemande, type DemandeEcran } from './demande';
 import { placer, quandDe } from '../parcours/quand';
 import { donnees, houblon, ibuAjout, lireBiere, style } from '../parcours/adaptateur';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { hopRef } from '../parcours/v4';
 import {
-  ETAPES, ORANGE, visees, biotransformation, couleurHoublon, egaler, enActif, jourApresJour, scoreDefi, souche, tirer, verdict,
+  ETAPES, ORANGE, biotransformation, couleurHoublon, egaler, enActif, jourApresJour, scoreDefi, souche, tirer, verdict,
   type ColonneLue, type Critere, type Etapes, type Verdict,
 } from './calcul';
 import {
@@ -107,10 +108,12 @@ function PisteDefi({ cols, f, visee, retenu, ini }: { cols: ColonneLue[]; f: Fam
     </div>
   );
 }
-export function FeuilleDefi({ cols, retenu, etapes, onSuggerer }: { cols: ColonneLue[]; retenu: string; etapes: Etapes; onSuggerer: () => void }) {
+export function FeuilleDefi({ cols, retenu, etapes, onSuggerer, demande }: { cols: ColonneLue[]; retenu: string; etapes: Etapes; onSuggerer: () => void; demande: DemandeEcran }) {
   const recette = useRecette();
   const ini = initiales(cols);
-  const objectifs = Object.entries(visees()) as [FamilyId, number][];
+  // Les objectifs sont ceux de sa visée ou de sa dégustation ; sans l'une ni l'autre il n'y en a pas (le style n'est pas un objectif).
+  const objectifs = Object.entries(demande.visees) as [FamilyId, number][];
+  const noms = (l: FamilyId[]) => l.map((f) => COURT[f].toLowerCase()).join(', ');
   const biere = lireBiere(recette);
   const chauds = recette.additions.filter((a) => { const q = quandDe(a, recette); return q.type === 'ebullition' || q.type === 'premierMout'; });
   const dose10 = (cle: string) => { const i = etapes[cle]?.b10?.ibu?.valeur; return i ? (10 * CONDITIONS.doseGL) / i : null; };
@@ -119,9 +122,12 @@ export function FeuilleDefi({ cols, retenu, etapes, onSuggerer }: { cols: Colonn
   const atteints = (f: FamilyId, v: number) => cols.filter((c) => verdict(c.cellules[f].dCran, v) === 'atteint');
   return (
     <div className="pq-comparer-defi" data-element="y1b-defi w2-piste-commune l5b-pistes-objectif l8b-verdicts-pictos-trait y1b-jauge-amertume s5-deux-objectifs">
-      <p className="pq-comparer-defi-q">{termes().degustation ? <>« ma {termes().biere} est trop résineuses, je la veux plus floral »<span>ta dégustation du {termes().degustation}</span></> : <>plus floral, moins résineux<span>ta demande</span></>}</p>
+      <p className="pq-comparer-defi-q" data-demande={demande.origine}>{!demande.voulue
+        ? <>Rien n’est visé : ni visée posée, ni dégustation<span>{demande.mot}{demande.plus.length ? ` : ${noms(demande.plus)}` : ''}</span></>
+        : <>{[demande.plus.length ? `plus de ${noms(demande.plus)}` : '', demande.moins.length ? `${demande.origine === 'degustation' ? 'trop de' : 'moins de'} ${noms(demande.moins)}` : ''].filter(Boolean).join(', ')}
+            <span>{demande.mot}{demande.origine === 'degustation' && termes().degustation ? ` du ${termes().degustation}` : ''}</span></>}</p>
       <div className="pq-comparer-defi-sc">
-        {cols.map((c) => { const s = scoreDefi(c); return (
+        {cols.map((c) => { const s = scoreDefi(c, demande.visees); return (
           <span key={c.cle} className={cx('pq-comparer-defi-sc-c', c.cle === retenu && 'pq-comparer-sel')} style={{ ['--pq-h' as string]: c.couleur }}>
             <span>{c.houblon.nom}</span><b className="pq-comparer-nb">{s.points} sur {s.sur}</b>
           </span>
@@ -201,7 +207,8 @@ export function FeuilleDefi({ cols, retenu, etapes, onSuggerer }: { cols: Colonn
 const DOSE_MAX = 8;
 export function FeuilleEgaler({ cols, sel, critere, etapes }: { cols: ColonneLue[]; sel: ColonneLue; critere: Critere; etapes: Etapes }) {
   const recette = useRecette();
-  const f0 = critere.sens > 0 ? critere.famille : 'floral';
+  const demande = useDemande(recette);
+  const f0: FamilyId = critere.sens > 0 ? critere.famille : demande.plus[0] ?? style(recette.styleCode).order[0];
   const sections = useMemo(() => {
     const out: { ref: ColonneLue; famille: FamilyId; res: { cle: string; doseGL: number | null }[] }[] = [];
     const prises = new Set<FamilyId>();
@@ -489,7 +496,10 @@ export function FeuilleFrise({ cols, sel, onDryhopper }: { cols: ColonneLue[]; s
   const sc = style(recette.styleCode);
   const cles = cols.map((c) => c.cle);
   const actif = useMemo(() => enActif(recette, cles), [recette, cles.join()]);
-  const jours = useMemo(() => jourApresJour(recette, cles, 'floral'), [recette, cles.join()]);
+  // La famille suivie jour après jour : la première de sa demande (visée, dégustation), sinon la première attendue du style.
+  const demande = useDemande(recette);
+  const fam = famillesDeLaDemande(demande, sc, 1)[0];
+  const jours = useMemo(() => jourApresJour(recette, cles, fam), [recette, cles.join(), fam]);
   const arrets = [{ n: '60′', ici: true }, { n: '10′', ici: true }, { n: 'whirlpool' }, { n: 'actif' }, { n: 'après', ici: true }, { n: 'puis' }];
   const W = 340, x = (i: number) => 14 + (i * (W - 28)) / (arrets.length - 1);
   const pt = (v: number | null) => (v == null ? '?' : `~${nombre(v, 1)}`);
@@ -522,10 +532,10 @@ export function FeuilleFrise({ cols, sel, onDryhopper }: { cols: ColonneLue[]; s
         {(() => {
           const plat = cles.every((k) => { const v = jours[k]; return v.slice(1).every((y) => y != null && v[1] != null && Math.abs(y - v[1]!) < 0.05); });
           return <>
-            <p className="pq-comparer-note">À {nombre(CONDITIONS.doseGL)} g/L, {plat ? 'le moteur ne distingue que le premier jour : de 2 à 7 j, même profil. ' : ''}Le {COURT.floral.toLowerCase()}, sur 100 :</p>
+            <p className="pq-comparer-note">À {nombre(CONDITIONS.doseGL)} g/L, {plat ? 'le moteur ne distingue que le premier jour : de 2 à 7 j, même profil. ' : ''}Le {COURT[fam].toLowerCase()}, sur 100 :</p>
             {cols.map((c) => { const v = jours[c.cle]; return (
               <p key={c.cle} className="pq-comparer-eg-l"><Point c={c} /><b>{c.houblon.nom}</b>
-                <span className="pq-comparer-nb pq-comparer-mv" style={{ color: COULEURS.floral.texte }} data-nature="simule"><Picto famille="floral" taille={14} />1 j {pt(v[0])} → {plat ? `2 à 7 j ${pt(v[1])}` : `3 j ${pt(v[2])} → 7 j ${pt(v[6])}`}</span>
+                <span className="pq-comparer-nb pq-comparer-mv" style={{ color: COULEURS[fam].texte }} data-nature="simule"><Picto famille={fam} taille={14} />1 j {pt(v[0])} → {plat ? `2 à 7 j ${pt(v[1])}` : `3 j ${pt(v[2])} → 7 j ${pt(v[6])}`}</span>
               </p>
             ); })}
           </>;
@@ -643,7 +653,7 @@ export function FeuillePourquoi({ cols, critere }: { cols: ColonneLue[]; critere
           <span className="pq-comparer-nb" data-nature="simule">{cel.dCran == null ? '?' : signeCran(cel.dCran)}</span>
         </p>
       ); })}
-      <p className="pq-comparer-note">{recouvre ? 'Les bandes se recouvrent toutes : un écart de moins d’un cran est un indice, pas une preuve.' : 'Les bandes ne se recouvrent pas toutes : l’écart est plus qu’un indice.'} Le moteur ne connaît pas ta bière noire (seuil non mesuré).</p>
+      <p className="pq-comparer-note">{recouvre ? 'Les bandes se recouvrent toutes : un écart de moins d’un cran est un indice, pas une preuve.' : 'Les bandes ne se recouvrent pas toutes : l’écart est plus qu’un indice.'} Le seuil de perception dans ta {termes().biere} n’est pas mesuré.</p>
     </div>
   );
 }
@@ -680,8 +690,12 @@ export function VoletBio({ cols }: { cols: ColonneLue[] }) {
 export function VoletPlans({ cols, retenu, onDryhopper }: { cols: ColonneLue[]; retenu: string; onDryhopper: () => void }) {
   const recette = useRecette();
   const sc = style(recette.styleCode);
+  // Les deux familles que les plans chiffrent : celles de sa demande (visée, dégustation), sinon les attendues du style.
+  const demande = useDemande(recette);
+  const fams = famillesDeLaDemande(demande, sc, 2);
   const a = cols.find((c) => c.cle === retenu) ?? cols[0];
-  const b = [...cols].filter((c) => c.cle !== a?.cle).sort((x, y) => (y.cellules.floral.dCran ?? -9) - (x.cellules.floral.dCran ?? -9))[0];
+  const sens = (f: FamilyId) => (demande.moins.includes(f) ? -1 : 1);
+  const b = [...cols].filter((c) => c.cle !== a?.cle).sort((x, y) => sens(fams[0]) * ((y.cellules[fams[0]].dCran ?? -9 * sens(fams[0])) - (x.cellules[fams[0]].dCran ?? -9 * sens(fams[0]))))[0];
   // Les plans de x3b eux-mêmes, pour ta stout (« Ma cuve, jour après jour ») : ton Citra cryo du stock, 2 g/L chacun,
   // pendant la fermentation active ; « ma bière de base -> 1 dry hop, 2 dry hop » (sa note sur x3b, 20.10).
   const citra = donnees().stock.find((x) => x.key.startsWith('beermaverick-citra') && x.grams > 0)?.key ?? null;
@@ -710,9 +724,10 @@ export function VoletPlans({ cols, retenu, onDryhopper }: { cols: ColonneLue[]; 
       const apres = lireBiere({ ...recette, additions: [...recette.additions, ...p.ajouts.map(poser)] }).profil;
       const d = (f: FamilyId) => { const x = apres[f].valeur, y = avant[f].valeur; return x && y ? (x.centre - y.centre) / sc.families[f].cran : null; };
       const sorties = sc.order.filter((f) => apres[f].horsStyle === 'au-dessus' && avant[f].horsStyle !== 'au-dessus');
-      return { ...p, floral: d('floral'), resin: d('resin'), sorties };
+      return { ...p, crans: fams.map((f) => d(f)), sorties };
     });
-  }, [recette, a?.cle, b?.cle, citra]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recette, a?.cle, b?.cle, citra, fams.join()]);
   if (!a) return null;
   const p = plans[Math.min(i, plans.length - 1)];
   const puce = (x: (typeof plans)[number], k: number) => <button key={x.nom} type="button" role="radio" aria-checked={k === i} onClick={() => setI(k)}>{x.nom}</button>;
@@ -731,8 +746,11 @@ export function VoletPlans({ cols, retenu, onDryhopper }: { cols: ColonneLue[]; 
       {p && (
         <p className="pq-comparer-eg-l" aria-live="polite">
           <b>{p.nom}</b>
-          <span className="pq-comparer-nb pq-comparer-mv" style={{ color: COULEURS.floral.texte }} data-nature="simule"><Picto famille="floral" taille={14} />{p.floral == null ? '?' : signeCran(p.floral)}</span>
-          <span className="pq-comparer-nb pq-comparer-mv pq-comparer-dl-hors" data-nature="simule"><Picto famille="resin" taille={14} />{p.resin == null ? '?' : signeCran(p.resin)}</span>
+          {fams.map((f, k) => (
+            <span key={f} className={cx('pq-comparer-nb pq-comparer-mv', demande.moins.includes(f) && 'pq-comparer-dl-hors')} style={demande.moins.includes(f) ? undefined : { color: COULEURS[f].texte }} data-nature="simule">
+              <Picto famille={f} taille={14} />{p.crans[k] == null ? '?' : signeCran(p.crans[k]!)}
+            </span>
+          ))}
           {p.sorties.length > 0 ? <span className="pq-comparer-hors-mini">~<IconeRisque />{p.sorties.map((f) => <Picto key={f} famille={f} taille={12} />)}</span> : <span className="pq-comparer-vd-dans"><IconeOk /></span>}
         </p>
       )}
