@@ -13,6 +13,7 @@ import { valueVerdict } from './style/verdict';
 import type { Tasting } from './tasting';
 import { goutsSets, type Gouts } from './gouts';
 import { CHARACTERIZED_YEASTS, predictionDe, yeastChangeEffect } from './yeast';
+import { cleDeVoie, comparerCles, type CleDepartage, type Departage } from './departage';
 
 /** Direction relative à la recette : nombre de crans par famille (+1 « plus floral », −1 « moins résineux »). */
 export type Direction = Partial<Record<FamilyId, number>>;
@@ -61,6 +62,8 @@ export interface Voie {
   yeastChange?: { from: string | null; to: string; toName: string };
   /** Rang partagé par les voies dont toutes les clés de classement sont égales. */
   rank: number; tieWith: string[];
+  /** Clé de départage (g2a) : présente seulement si `options.departage` n'est pas 'aucun' et qu'une famille monte. Jamais un effet. */
+  departage?: CleDepartage;
 }
 export interface StyleOverflow { family: FamilyId; status: string; band: [number, number]; crans: number; why: string }
 export interface VoieResult {
@@ -75,6 +78,9 @@ export interface VoieOptions {
   /** Voies à acheter retenues, classées avec celles du stock (défaut 4). */ buyLimit?: number;
   /** Voies au plus par houblon ou couple de houblons (défaut 2). */ perHop?: number;
   moments?: MomentId[]; assemblages?: boolean;
+  /** Départage à distance égale (g2a, D88) : 'aucun' (défaut, comportement d'avant) ou une des clés mesurées k1, k2, k3 (departage.ts).
+   * La clé passe après la distance et ne change jamais l'effet calculé. */
+  departage?: Departage;
   /** Leviers levure (R43, R44) : changer de souche vers chaque souche caractérisée, houblonner à froid en fermentation active. */
   leviersLevure?: boolean;
   /** Dégustation du brasseur : situe la bière et fixe la cible d'une famille jugée « trop » ou « peu ». */
@@ -148,6 +154,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const ibu0 = recipeIbu(recipe);
   const plus = FAMILIES.filter((f) => (direction[f] ?? 0) > 0), minus = FAMILIES.filter((f) => (direction[f] ?? 0) < 0);
   const directed = [...plus, ...minus];
+  const departageMode: Departage = options.departage ?? 'aucun';
   const skipped: VoieResult['skipped'] = [];
   const notes: string[] = [];
 
@@ -251,6 +258,11 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     }
     const overflowTotal = round(styleOverflow.reduce((s, o) => s + o.crans, 0), 2);
     const sideTotal = round(sideEffects.reduce((s, o) => s + o.crans, 0), 2);
+    // Départage (g2a) : un ajout qui monte, sauf une diminution du même houblon (la voie « diminuer » est neutre).
+    const reduction = actions.length === 1 && actions[0].op === 'modifier' && actions[0].previousHopKey === undefined && actions[0].grams < (actions[0].previousGrams ?? Infinity);
+    const departage = departageMode !== 'aucun' && plus.length
+      ? cleDeVoie(departageMode, reduction ? [] : changes.filter((c) => c.sign > 0).map((c) => ({ varietyId: hopRef(c.addition.hopKey)?.varietyId ?? '', poids: c.share ?? 1 })), plus)
+      : null;
     return {
       id: `${type}|${actions.map((a) => `${a.hopKey}@${a.moment}:${round(a.grams)}`).join('+')}`, type, label,
       domain: needed.every((k) => stockDuMoteur().some((s) => s.key === k && s.grams > 0)) ? 'stock' : 'à acheter',
@@ -260,6 +272,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       stock: { status, missing }, ibu: { before: round(ibu0.value), after: round(ibu1.value), drift: round(ibu1.value - ibu0.value), unknown: ibu1.unknown.length > 0 },
       styleOverflow, overflowTotal, sideEffects, sideTotal,
       after: null, rank: 0, tieWith: [],
+      ...(departage ? { departage } : {}),
     };
   };
   const act = (op: Action['op'], a: Addition, extra: Partial<Action> = {}): Action => ({ op, additionId: a.id, hopKey: a.hopKey, hopName: nameOf(a.hopKey), moment: a.moment, momentLabel: MOMENTS[a.moment].label, grams: round(a.grams), gramsPerLitre: round(a.grams / recipe.volumeL, 2), ...extra });
@@ -399,6 +412,7 @@ export function compareRankKeys(a: Voie, b: Voie): number {
   return a.conflicts.length - b.conflicts.length
     || a.overflowTotal - b.overflowTotal
     || (da === null ? (db === null ? 0 : 1) : db === null ? -1 : da - db)
+    || comparerCles(a.departage?.cle, b.departage?.cle)
     || a.sideTotal - b.sideTotal
     || STOCK_RANK[a.stock.status] - STOCK_RANK[b.stock.status]
     || Math.abs(a.ibu.drift) - Math.abs(b.ibu.drift);
