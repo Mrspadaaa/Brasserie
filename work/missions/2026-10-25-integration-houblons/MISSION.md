@@ -365,3 +365,12 @@ PR #188 fusionnée (71dc41bb). Callable IA (D92).
   - les accords D100 ;
   - D172, D178, D182, D185, #182, #187 ;
   - la voie de profil D101, avec les tâches de 100 à 250 ms qui restent après la préchauffe (w1), dont l'arrivée du catalogue plein de c7.
+
+## Reprise (26.10, vers 22 h 30) : complément
+- Rejeu de b1d73ea1 : typage, build, B5 (163,5 ko), worker de production et 10 contrôles Chrome sont verts. Trois bloquants restent ;
+  la voie **e7** les traite :
+  1. « NaN » dans l'assistant de recette (`monkey.test.tsx`, graine 11, échoue aussi seul) ;
+  2. 6 états de Substituer attendent l'ancien face à face (Citra cryo) ;
+  3. `controle-radar-base` ne trouve plus 9 pages, sans doute depuis p7.
+- Après e7 : un rejeu ciblé (monkey, `hopIndexV4`, build, `construire`, états, radar-base), puis le déploiement depuis la copie
+  propre, le push et la PR.
