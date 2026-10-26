@@ -1024,3 +1024,5 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     - rejeu complet de b1d73ea1 : tsc, vitest, build, B5 à 163,5 ko pour 164, worker de production, 10 contrôles Chrome ;
     - rejeu ciblé de be15e480 : 996 tests verts sur 996 (dont le monkey testing), états 138/138, RADAR-BASE OK, WORKER PROD OK.
   - **Reste ouvert** : les 6 budgets de fluidité déjà dépassés, et des tâches de 100 à 250 ms après la préchauffe (D101).
+- D117 (26.10) : la PR #189 est fusionnée dans main. Sa tête était verrouillée sur 0d943dfd, qui contient be15e480, déjà en ligne et
+  rejoué.
