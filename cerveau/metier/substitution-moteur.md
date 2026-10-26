@@ -2,8 +2,8 @@
 name: substitution-moteur
 description: Ce que mesure le score de substitutes() selon le moment (60′, 10′, whirlpool), et pourquoi Substituer ne répond pas à « moins résineuse » sur la stout.
 type: metier
-maj: 2026-10-24
-sources: RESULTAT.md des voies p1-ma-biere, sb-a, sb-b, sb-c, sb-d, sb-u, sb-z, r6-substituer de work/missions/2026-10-23-maquette-parcours/voies/ ; work/refonte-frontend/v4/ecran-1/fils24-substituer/
+maj: 2026-10-26
+sources: work/missions/2026-10-25-integration-houblons/voies/e1-banc-eval/resultats/rapport.md ; RESULTAT.md des voies p1-ma-biere, sb-a, sb-b, sb-c, sb-d, sb-u, sb-z, r6-substituer de work/missions/2026-10-23-maquette-parcours/voies/ ; work/refonte-frontend/v4/ecran-1/fils24-substituer/
 ---
 
 Relevé par le lot Substituer (D125, 24.10 ; u4 choisi, D34).
@@ -18,3 +18,9 @@ Relevé par le lot Substituer (D125, 24.10 ; u4 choisi, D34).
   la 73e à la 236e place ; Target (94, 213e) et Citra cryo (88, 215e) sont « chers pour amériser ».
 - **Outil** : `vite-node --root C:/Users/mrspa <script.ts>` fait tourner `substitutes()` hors du projet (le root large
   lève la garde `server.fs`).
+- **Banc du 26.10** (`scripts/eval-hop/banc-eval.ts`, voie e1-banc-eval, contre les substituts Beer Maverick, référence
+  imparfaite : réciproque à 25 %, elle suit l'α plus que l'arôme). `substitutes()` n'a que deux classements, 60′ et arôme (10′,
+  whirlpool et dry hop identiques) ; rappel à 10 de 10 à 11 %, MRR 0,12, environ trois fois le hasard. Nelson Sauvin faux :
+  Hallertau Blanc 155e. Les mots hors famille, pondérés par leur rareté et mêlés à l'arôme (λ 0,25), le remontent au 2e rang et
+  portent le MRR à 0,18–0,20. Suggérer ne départage pas les houblons qui citent les mêmes familles : un seul groupe, rangé par
+  ordre alphabétique (l'effet d'une famille citée ne dépend pas de la variété).

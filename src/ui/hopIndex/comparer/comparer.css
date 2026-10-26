@@ -106,6 +106,8 @@
 /* vraies valeurs */
 .pq-comparer-vraies:not([hidden]), .pq-comparer-egaler:not([hidden]) { display: flex; flex-direction: column; gap: 6px; padding-top: 6px; border-top: 1px solid rgb(var(--cave-800)); }
 .pq-comparer-vh { font-size: 12px; font-weight: 700; }
+/* au moins 8 px entre deux noms d'en-tête (4 d'écart de grille + 4 + 2 de marge) : un nom trop large passe à la ligne entre deux mots */
+.pq-comparer-vh > span + span { padding: 0 4px 0 2px; }
 /* la colonne des noms tient « picto + caryophyllène » (16 + 4 + 79 px) sur une ligne : aucun nom de composé ne se coupe */
 .pq-comparer-vh, .pq-comparer-vg { grid-template-columns: 102px repeat(var(--pq-n, 3), minmax(0, 1fr)); }
 .pq-comparer-vg { align-items: start; padding: 3px 0; border-top: 1px solid rgb(var(--cave-800)); }

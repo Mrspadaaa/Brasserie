@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { CATALOGUE } from '../../../src/domain/hopIndex/v4/data';
 import { hopSheet } from '../../../src/domain/hopIndex/v4/fiches';
 import type { Recipe } from '../../../src/domain/hopIndex/v4/recipe';
-import { compose } from '../../../src/ui/hopIndex/comparer/valeurs';
+import { compose, huile } from '../../../src/ui/hopIndex/comparer/valeurs';
 
 const MOSAIC = 'beermaverick-mosaic', NELSON = 'beermaverick-nelson-sauvin', CITRA = 'beermaverick-citra';
 const cat = (id: string) => CATALOGUE.find((h) => h.id === id)!;
@@ -38,6 +38,22 @@ describe('la chimie de Comparer prend le catalogue quand la fiche de composés m
     expect(c.lo).toBeCloseTo(28.6, 5);
     expect(c.hi).toBe(70);
     expect(c.refs).toEqual(expect.arrayContaining(['H1', 'H7c', 'H8', 'BM']));
+  });
+});
+
+describe('l’huile totale prend le catalogue (BM oil, HS totalOil) quand la fiche de composés manque', () => {
+  it('Mosaic : 1–1,5 mL/100 g, Beer Maverick', () => {
+    expect(cat(MOSAIC).oil).toEqual([1, 1.5]);
+    expect(huile(MOSAIC)).toMatchObject({ lo: 1, hi: 1.5, refs: ['BM'] });
+  });
+  it('Nelson Sauvin : l’enveloppe garde BM et HS', () => {
+    const v = huile(NELSON)!;
+    expect(v.refs).toEqual(expect.arrayContaining(['BM', 'HS']));
+    for (const p of [cat(NELSON).oil, cat(NELSON).hs?.totalOil]) if (p) { expect(v.lo).toBeLessThanOrEqual(p[0]); expect(v.hi!).toBeGreaterThanOrEqual(p[1]); }
+  });
+  it('un houblon sans aucune huile publiée reste null (jamais 0)', () => {
+    const sans = CATALOGUE.find((h) => !h.oil && !h.hs?.totalOil && !compose(h.id, 'myrcene'));
+    if (sans) expect(huile(sans.id)).toBeNull();
   });
 });
 

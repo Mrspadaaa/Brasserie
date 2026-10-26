@@ -302,7 +302,7 @@ function EnAPlus({ cols, sel }: { cols: ColonneLue[]; sel: ColonneLue }) {
               {k > 0 && <i style={{ [gauche ? 'right' : 'left']: '50%', width: `${(k * 50).toFixed(1)}%`, background: gauche ? sel.couleur : b.couleur }} />}
             </span>
             <span className="pq-comparer-nb pq-comparer-plus-r" data-nature="mesure">
-              {r == null ? '? borne seule' : pareil ? '≈ pareil' : `${gauche ? sel.houblon.nom : b.houblon.nom} ×${nombre(gauche ? r : 1 / r, 1)}`}
+              {r == null ? (l.a && l.b ? '? borne seule' : '? inconnu') : pareil ? '≈ pareil' : `${gauche ? sel.houblon.nom : b.houblon.nom} ×${nombre(gauche ? r : 1 / r, 1)}`}
             </span>
           </p>
         );

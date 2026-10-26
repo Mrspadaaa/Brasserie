@@ -75,7 +75,15 @@ export function acides(cle: string, quoi: 'alpha' | 'beta'): ValeurReelle | null
   return { ...e, ...(lot != null ? { lot } : {}) };
 }
 
-export const huile = (cle: string) => enveloppe(VARIETES[cle]?.huile?.valeurs);
+/** Huile totale (mL/100 g) : les fiches de composés, plus le catalogue du moteur : Beer Maverick (`oil`, BM) et la fiche
+ * Hopsteiner reliée (`hs.totalOil`, HS). L'enveloppe de toutes les sources ; « inconnu » seulement si aucune n'a la valeur. */
+export function huile(cle: string): ValeurReelle | null {
+  const cat = hopRef(cle)?.catalogue;
+  const vals: Val[] = [...(VARIETES[cle]?.huile?.valeurs ?? [])];
+  if (cat?.oil) vals.push({ plage: cat.oil, sources: ['BM'] });
+  if (cat?.hs?.totalOil) vals.push({ plage: cat.hs.totalOil, sources: ['HS'] });
+  return enveloppe(vals);
+}
 
 /** La chimie rangée par famille (r6a) : composé, famille, unité. */
 export const CHIMIE: { cle: string; famille: FamilyId; nom: string; unite: string }[] = [

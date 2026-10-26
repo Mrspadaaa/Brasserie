@@ -90,23 +90,30 @@ const mesure = await page.evaluate(() => {
       }
     }
   }
+  // 3b. en-tête : écart entre le texte de deux noms voisins (au moins 8 px, sinon le nom passe à la ligne entre deux mots).
+  const entete = [...feuille.querySelectorAll('.pq-comparer-vh > span')].slice(1).map((sp) => {
+    const t = rectsTexte(sp); return { nom: sp.textContent.trim(), g: Math.min(...t.map((r) => r.g)), d: Math.max(...t.map((r) => r.d)) };
+  });
+  const ecarts = entete.slice(1).map((e, i) => ({ entre: entete[i].nom + ' | ' + e.nom, px: Math.round((e.g - entete[i].d) * 10) / 10 }));
   // 4. cellules inconnues, par ligne de composé.
   const inconnus = {};
   for (const row of feuille.querySelectorAll('.pq-comparer-vg[data-compose]')) {
     const k = row.getAttribute('data-compose');
     inconnus[k] = [...row.querySelectorAll(':scope > .pq-comparer-vc')].map((c) => c.classList.contains('pq-comparer-vc-inc'));
   }
-  return { debord, recouv, coupes: [...new Set(coupes)], inconnus, nbEtiq: etiq.length, nbLignes: feuille.querySelectorAll('.pq-comparer-vg').length };
+  return { ecarts, debord, recouv, coupes: [...new Set(coupes)], inconnus, nbEtiq: etiq.length, nbLignes: feuille.querySelectorAll('.pq-comparer-vg').length };
 });
 
 console.log('lignes de la feuille :', mesure.nbLignes, '· étiquettes IBU :', mesure.nbEtiq);
 ok(mesure.nbEtiq > 0, 'la ligne IBU aux étapes est rendue');
 ok(mesure.debord.length === 0, 'aucune cellule ne déborde (scrollWidth ≤ clientWidth + 1)' + (mesure.debord.length ? ' : ' + JSON.stringify(mesure.debord.slice(0, 6)) : ''));
 ok(mesure.recouv.length === 0, 'aucun texte ne sort de sa cellule ni ne recouvre la colonne voisine' + (mesure.recouv.length ? ' : ' + JSON.stringify(mesure.recouv.slice(0, 6)) : ''));
+console.log('écarts entre noms d’en-tête :', JSON.stringify(mesure.ecarts));
+ok(mesure.ecarts.length === 2 && mesure.ecarts.every((e) => e.px >= 8), 'au moins 8 px entre deux noms d’en-tête : ' + mesure.ecarts.map((e) => e.px).join(' / ') + ' px');
 ok(mesure.coupes.length === 0, 'aucun mot coupé' + (mesure.coupes.length ? ' : ' + mesure.coupes.join(', ') : ''));
 
 // « inconnu » seulement si aucune source n'a la valeur : le catalogue du moteur fait foi pour ces quatre lignes.
-const attendu = { myrcene: (v) => v.oils?.myrcene, humulene: (v) => v.oils?.humulene, caryophyllene: (v) => v.oils?.caryophyllene, linalol: (v) => v.hsLinalool?.range };
+const attendu = { huile: (v) => v.oil ?? v.hs?.totalOil, myrcene: (v) => v.oils?.myrcene, humulene: (v) => v.oils?.humulene, caryophyllene: (v) => v.oils?.caryophyllene, linalol: (v) => v.hsLinalool?.range };
 for (const [cle, lit] of Object.entries(attendu)) {
   const ligne = mesure.inconnus[cle];
   ok(!!ligne && ligne.length === 3, `la ligne ${cle} existe avec 3 cellules`);
@@ -119,10 +126,50 @@ for (const [cle, lit] of Object.entries(attendu)) {
 }
 ok(!HOUBLONS.some((id, i) => !catalogue.find((x) => x.id === id)?.oils && !mesure.inconnus.myrcene?.[i]), 'pas de valeur inventée sans source');
 
+// L'encadré « X en a plus » lit les mêmes valeurs que le tableau : « ? » seulement si une cellule du tableau est inconnue ou n'a qu'une borne.
+const CLE_LIGNE = { 'myrcène': 'myrcene', 'linalol': 'linalol', 'géraniol': 'geraniol', 'humulène': 'humulene', 'caryophyllène': 'caryophyllene', '4MMP': '4MMP', 'huile totale': 'huile' };
+const lireEncadre = () => page.evaluate(() => {
+  const h = document.querySelector('.pq-comparer-plus-h');
+  if (!h) return null;
+  const noms = [...h.querySelectorAll('b')].map((b) => b.textContent.trim());
+  const entetes = [...document.querySelectorAll('.pq-comparer-vh > span')].slice(1).map((x) => x.textContent.trim());
+  const lignes = [...document.querySelectorAll('.pq-comparer-plus-l')].map((l) => {
+    const nom = l.querySelector('.pq-comparer-plus-n').textContent.replace(/­/g, '').trim();
+    return { nom, texte: l.querySelector('.pq-comparer-plus-r').textContent.trim() };
+  });
+  return { noms, entetes, lignes };
+});
+const tableau = () => page.evaluate(() => {
+  const out = {};
+  for (const row of document.querySelectorAll('.pq-comparer-vraies .pq-comparer-vg[data-compose]')) {
+    out[row.getAttribute('data-compose')] = [...row.querySelectorAll(':scope > .pq-comparer-vc')].map((c) => ({ inconnu: c.classList.contains('pq-comparer-vc-inc'), borne: /^[<>]/.test(c.querySelector('.pq-comparer-vv')?.textContent.trim() ?? '') }));
+  }
+  return out;
+});
+const verifierEncadre = async (tag) => {
+  const e = await lireEncadre(), t = await tableau();
+  ok(!!e && e.lignes.length === 7, `encadré ${tag} : 7 lignes (6 composés + huile totale)`);
+  if (!e) return;
+  const iA = e.entetes.indexOf(e.noms[0]), iB = e.entetes.indexOf(e.noms[1]);
+  ok(iA >= 0 && iB >= 0, `encadré ${tag} : ${e.noms.join(' / ')} retrouvés dans les colonnes`);
+  for (const l of e.lignes) {
+    const cle = CLE_LIGNE[l.nom], cA = t[cle]?.[iA], cB = t[cle]?.[iB];
+    if (!cA || !cB) { ok(false, `encadré ${tag} : ligne « ${l.nom} » sans ligne de tableau`); continue; }
+    const manque = cA.inconnu || cB.inconnu || cA.borne || cB.borne;
+    ok(l.texte.startsWith('?') === manque, `encadré ${tag} · ${l.nom} : « ${l.texte} » (tableau : ${manque ? 'donnée manquante ou borne seule' : 'deux plages'})`);
+    if (l.texte.startsWith('?')) ok(/borne seule/.test(l.texte) === !(cA.inconnu || cB.inconnu), `encadré ${tag} · ${l.nom} : « borne seule » seulement si les deux valeurs existent`);
+  }
+};
+await page.evaluate(() => document.querySelector('.pq-comparer-plus-c')?.scrollIntoView({ block: 'start' }));
+await verifierEncadre('1');
+const echange = await page.$('.pq-comparer-plus-h .pq-comparer-rond');
+if (echange) { await echange.click(); await dormir(500); await verifierEncadre('2 (après ⇄)'); }
 if (dossier) {
   const tag = large ? '1280' : '390';
   const sc = await page.evaluateHandle(() => { let x = document.querySelector('.pq-comparer-vraies'); while (x && !(x.scrollHeight > x.clientHeight + 5 && /(auto|scroll)/.test(getComputedStyle(x).overflowY))) x = x.parentElement; return x; });
   const aller = async (sel, bloc = 'start') => { await page.evaluate((s, b) => document.querySelector(s)?.scrollIntoView({ block: b }), sel, bloc); await dormir(500); };
+  await sc.evaluate((x) => { x.scrollTop = 0; }); await dormir(400);
+  await page.screenshot({ path: path.join(dossier, `haut-${tag}.png`) });
   await aller('[data-role="composition-huiles"]');
   await page.screenshot({ path: path.join(dossier, `composition-${tag}.png`) });
   await aller('.pq-comparer-chim [data-compose="myrcene"]');

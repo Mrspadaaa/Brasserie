@@ -37,3 +37,25 @@ OK — feuille Valeurs de Comparer : mot entier, « inconnu » levé (Mosaic), �
 DÉCISION À PRENDRE : aucune.
 CONNAISSANCE : la colonne des noms de la feuille Valeurs (76 px) ne tient pas « picto + caryophyllène » (99 px) ; 102 px la fait tenir. Un banc d'arbre propre dans `os.tmpdir()` exige `.env`, `.env.local`, `src/data/seedData.ts` et `prototypes/houblons/data.json` copiés (ignorés par git), sinon « Impossible de charger la brasserie ».
 LEÇON PROPOSÉE : aucune
+
+---
+## Suite (message du coordinateur, trois défauts de plus) — ARRÊT PROPRE demandé à 79 % du quota
+
+Fait et prouvé :
+1. **Huile totale** : `huile()` (valeurs.ts) prend l'enveloppe des fiches de composés, de `oil` (BM) et de `hs.totalOil` (HS). Mosaic affiche « 1–1,5 » (BM), capture `captures/haut-390.png` ouverte. `huileDe` (calcul.ts, non possédé) lisait déjà `huile()` : les têtes et l'outil Huiles prennent donc la même enveloppe (Nelson Sauvin garde HS + BM).
+2. **Encadré ⇄** : il lisait déjà `compose()`/`huile()` (une seule source) ; après le correctif, ses lignes concordent avec le tableau. Seul défaut restant : « ? borne seule » s'affichait aussi quand la donnée manque. Maintenant : « ? inconnu » si une valeur manque, « ? borne seule » seulement si les deux existent et que l'une n'a qu'une borne (Feuilles.tsx, 1 ligne).
+3. **En-tête** : `.pq-comparer-vh > span + span { padding: 0 4px 0 2px }` donne 10 px d'écart au plus étroit ; « Nelson Sauvin » passe à la ligne entre deux mots (« Nelson / Sauvin »), police inchangée (12 px). Mesure : 5,1 px avant, 46,1 px après (texte de la première ligne la plus large vs le nom suivant).
+
+Contrôle (`tests/integration/comparerValeurs.chrome.mjs`) : trois cas ajoutés (huile dans les lignes attendues, encadré ⇄ comparé au tableau avant et après ⇄, écart d'en-tête ≥ 8 px).
+- Rouge sur 1ea6ddd1 (arbre jetable, supprimé) : 10 échecs : écart 5,1 px ; huile Mosaic « inconnu » ; « borne seule » à tort sur linalol, géraniol, 4MMP, huile totale (encadré 1 et 2).
+- Vert sur l'arbre final, 390 × 844 (`COMPARER VALEURS OK`).
+- `npx vitest run tests/unit/hopIndexV4 tests/unit/designTokens.test.ts` : 25 fichiers, 236 tests verts, moteurInchange compris (3 tests de plus pour l'huile).
+- `npm run build` vert ; `INPUT PROTECTION AUDIT PASSED`.
+- Capture ouverte : `captures/haut-390.png` (en-tête, encadré ⇄ après échange, α, β, huile).
+
+Fichiers modifiés, NON commités : `src/ui/hopIndex/comparer/valeurs.ts`, `Feuilles.tsx`, `comparer.css`, `tests/integration/comparerValeurs.chrome.mjs`, `tests/unit/hopIndexV4/comparerValeursCatalogue.test.ts`, `captures/` de la voie. (`index.tsx`, PageShell et les autres CSS modifiés dans l'arbre ne sont pas à moi.)
+
+Reste à faire :
+- Contrôle et captures en **1280 × 800** du haut de la feuille : non rejoués après ces trois correctifs (`node tests/integration/comparerValeurs.chrome.mjs --large --captures <dossier>`) ; les captures 1280 du dossier datent de la première passe.
+- Commit des fichiers ci-dessus, par chemins.
+- Le commentaire d'en-tête de valeurs.ts cite encore seulement composes-houblon.json (cosmétique).
