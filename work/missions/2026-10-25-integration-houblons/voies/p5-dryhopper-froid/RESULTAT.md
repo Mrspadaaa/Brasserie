@@ -43,7 +43,21 @@ Fichiers partagés, mes lignes seulement (celles d'i2 intactes) :
 ## Essais
 1 par critère ; un second passage de `comparer.mjs` après les corrections de la feuille Creep. Un worktree temporaire de HEAD (essai de preuve du budget) a laissé un dossier `.git/worktrees/head` que le système refuse de supprimer (Permission denied) : à purger par `git worktree prune`.
 
-DÉCISION À PRENDRE : aux moments chauds (ébullition, WP) l'écran garde A, sans mini graphes, comme demandé. Conséquence : le passage de « après » à « ébullition » au rail fait remonter le rail et les barres de 18 px. Options : (a) laisser (écran A identique à avant) ; (b) réserver les 18 px vides à chaud (aucun saut, mais un blanc de plus qu'avant). Recommandation : (a), lui montrer le cas. Elle reste au pilote.
+## Passe 2 (pilote : b0474128 commité) : 18 px réservés aux moments chauds, et la bulle du pouce
+Décision du pilote (option b) : aux moments chauds (ébullition, WP) la zone reste vide, rien n'est dessiné, mais ses 18 px du bas sont réservés (`div.pq-dry-froid-reserve`, `index.tsx` + `froid.css`). Le rail ne bouge plus sous le doigt (D149).
+- Contrôle ajouté (`controle-froid-dryhopper.mjs`, § 4) : y du rail identique (±1 px, depuis le haut du dessin) à ébullition, WP, actif et après. ROUGE sur b0474128 (« FROID ECHEC 2 » : rail à 234,7 au lieu de 252,7 à l'ébullition et au WP), puis `FROID OK`.
+- Capture `ebullition.png` du contrôle, ouverte : zone vide sous la bande IBU, rien de dessiné, rail à sa place.
+
+Plainte du brasseur (« Pas super la superposition ici ») : la bulle « ● 3 j » du pouce recouvrait le haut du bouton « 7 j ». Lecture étroite : écart vertical seul (L01), ni la place horizontale ni le contenu.
+- Cause mesurée : la bulle (20 px de haut) était à 28 px sous le haut du pouce ; elle finissait 6 px sous le haut de la rangée des jours.
+- Correction : `.pq-dry-pl { top: 28px }` devient `20px` (`dryhopper.css`, une valeur). La bulle tient entre le rail et la rangée, à environ 2 px au-dessus d'elle, comme p4b2f. Cette ligne CSS est dans mon lot ; la voie i2 n'y a rien écrit.
+- Contrôle ajouté (§ 5) : la boîte de la bulle ne coupe aucun bouton de jour et ne remonte pas sur le rail ; 390 et 1280 px ; ébullition, actif et après ; 1, 2, 3 et 7 j (26 cas). ROUGE sur b0474128 (« FROID ECHEC 24 », par ex. « 390 px, après, 3 j : la bulle (503,7 à 523,7) coupe le bouton « 7 j » (haut 517,7) »), puis `FROID OK`.
+- Capture de sa scène (21C, Cascade 4 g/L, après, 3 j), ouverte recadrée : `fidelite/bulle-apres-3j-zoom.png` (entière : `bulle-apres-3j.png`). La bulle est entre le rail et la rangée, sans toucher « 7 j ».
+- Rejoués après la passe : `froidDryhopper.test.ts` 14/14, `npm run build` vert, `construire.mjs` (CONSTRUIT OK), `controle-etats.mjs --ecran=dryhopper` : ETATS OK (20/20), `controle-etoile-dryhopper.mjs` : ETOILE OK.
+- Note : `fidelite/cote-a-cote-*.png` (prises avant la passe) montrent encore l'ancienne bulle ; la fidélité des cellules (écarts ≤ 0,1 px) n'est pas touchée par ces deux changements.
+- Poste : le lien `node_modules` du dépôt de travail avait disparu (après mon essai de worktree de HEAD) ; je l'ai recréé vers `C:/Users/mrspa/Documents/Brasserie/node_modules`.
+
+DÉCISION À PRENDRE : aucune (la décision (b) du pilote est appliquée).
 
 CONNAISSANCE : aucune
 LEÇON PROPOSÉE : aucune (sauf mécanisation : un contrôle de mise en page doit lire les hauteurs depuis le haut du dessin, un clic de jour défile la page).

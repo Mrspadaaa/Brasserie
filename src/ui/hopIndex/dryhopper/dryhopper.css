@@ -71,7 +71,9 @@
 .pq-dry-calc { position: absolute; top: 11px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: rgb(var(--cave-50)); opacity: .55; }
 .pq-dry-cran { position: absolute; top: 6px; width: 1px; height: 14px; background: rgb(var(--cave-50)); }
 .pq-dry-pouce { position: absolute; top: 3px; width: 20px; height: 20px; margin-left: -10px; border-radius: 50%; background: rgb(var(--cave-50)); border: 3px solid #fff; box-shadow: 0 0 0 1px rgb(var(--cave-50)); z-index: 2; }
-.pq-dry-pl { position: absolute; top: 28px; left: 50%; transform: translateX(-50%); white-space: nowrap; display: inline-flex; align-items: center; gap: 5px;
+/* La bulle du pouce tient entre le rail et la rangée des jours, ~2 px au-dessus d'elle (p4b2f ; le brasseur, 26.10 : « Pas super la
+   superposition ici » : à 28 px elle recouvrait le haut de « 7 j »). Contrôle : tests/integration/controle-froid-dryhopper.mjs (5). */
+.pq-dry-pl { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); white-space: nowrap; display: inline-flex; align-items: center; gap: 5px;
   background: rgb(var(--cave-50)); color: #fff; font: 600 13px/18px system-ui, sans-serif; padding: 1px 8px; border-radius: 10px; pointer-events: none; }
 .pq-dry-pt { display: inline-block; width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid #fff; }
 .pq-dry-touche .pq-dry-pl { visibility: hidden; }

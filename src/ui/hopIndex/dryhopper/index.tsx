@@ -393,8 +393,9 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
         </div>
         {graphe}
         {/* Son choix D du 26.10 (m5) : trois mini graphes dans l'espace vide sous la bande IBU, au dry hop seulement (actif, après) ; aux
-            moments chauds l'écran reste celui d'avant. */}
-        {p.seg >= 2 && <FroidDryhopper recette={recette} ajout={ajout} ibuBase={ibuBase} biere={T.biere} />}
+            moments chauds rien n'y est dessiné, mais les 18 px du bas de la zone sont réservés : le rail, que son doigt glisse, ne bouge pas
+            d'une étape à l'autre (D149 ; tests/integration/controle-froid-dryhopper.mjs). */}
+        {p.seg >= 2 ? <FroidDryhopper recette={recette} ajout={ajout} ibuBase={ibuBase} biere={T.biere} /> : <div className="pq-dry-froid-reserve" data-role="froid-reserve" aria-hidden="true" />}
         <div className={`pq-dry-geste ${touche ? 'pq-dry-touche' : ''}`} data-role="frise" data-acquis="geste">
           <div ref={railRef} role="slider" tabIndex={0} data-role="reglage" data-etat="etat-dryh-rail etat-dryh-loupe" data-pas="5" aria-label="Moment de l’ajout"
             aria-valuemin={0} aria-valuemax={N} aria-valuenow={i} aria-valuetext={p.lib} className="pq-dry-rail"

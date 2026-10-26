@@ -3,6 +3,8 @@
    La zone est l'espace vide qu'il a barré : 38 px sous la bande IBU, côté ébullition (x 19 à 202 à 390 px) ; la zone prend 18 px de
    plus au bas pour les pictos de la limite, et le rail descend d'autant (hauteur fixe : aucun saut d'un jour ou d'une dose à l'autre). */
 .pq-dry-froid-z { position: relative; margin-top: -38px; height: 56px; z-index: 1; pointer-events: none; font-family: system-ui, sans-serif; color: rgb(var(--cave-50)); }
+/* Aux moments chauds : la place seule (les 18 px de plus que la zone vide de A), rien de dessiné. */
+.pq-dry-froid-reserve { height: 18px; }
 .pq-dry-froid-z button { pointer-events: auto; }
 .pq-dry-froid-mono { font: 700 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
 .pq-dry-froid-gris { color: var(--pq-dry-gris); }

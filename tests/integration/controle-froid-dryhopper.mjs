@@ -126,18 +126,59 @@ for (const j of [1, 2, 3, 7]) {
 // Le creep suit le jour : 7 j compte 1 point de plus que 3 j (durée ≥ 7 j, H68) ; sinon le jour tenu n'est pas lu.
 if (!(Number(parJour[7].points) > Number(parJour[3].points))) ko(`le creep ne suit pas le jour : ${parJour[3].points} point(s) à 3 j, ${parJour[7].points} à 7 j (attendu plus à 7 j)`);
 
-// 4. Aux moments chauds, l'écran reste celui d'avant : aucune cellule, rail à sa place d'origine (plus haut).
-await page.click('.pq-dry-seg [data-etape="0"]');
-await dormir(400);
-const chaud = await page.evaluate(MESURE);
-await page.screenshot({ path: path.join(SORTIE, 'ebullition.png') });
-if (chaud.dessus) ko(`ébullition : ${chaud.dessus} élément(s) de froid dessinés (attendu aucun)`);
+// 4. Aux moments chauds, l'écran reste A (aucune cellule dessinée), mais la place des cellules est réservée : le rail est ce que son
+// doigt glisse, il ne bouge pas de plus d'1 px d'une étape à l'autre (D149 : un rail qui bouge sous le doigt est refusé).
+const chaud = {};
+for (const [seg, nom] of [[0, 'ébullition'], [1, 'whirlpool'], [2, 'actif'], [3, 'après']]) {
+  await page.click(`.pq-dry-seg [data-etape="${seg}"]`);
+  await dormir(400);
+  const m = await page.evaluate(MESURE);
+  chaud[nom] = { dessus: m.dessus, rail: m.rail?.y };
+  if (seg === 0) await page.screenshot({ path: path.join(SORTIE, 'ebullition.png') });
+  if (seg < 2 && m.dessus) ko(`${nom} : ${m.dessus} élément(s) de froid dessinés (attendu aucun)`);
+  if (seg >= 2 && !m.dessus) ko(`${nom} : les mini graphes manquent au dry hop`);
+  if (m.rail == null || Math.abs(m.rail.y - hauteurRepos) > 1) ko(`${nom} : le rail est à ${m.rail?.y?.toFixed(1)} px du haut du dessin, pas à ${hauteurRepos.toFixed(1)} (±1 px) : il bouge sous le doigt`);
+}
 await page.click('.pq-dry-seg [data-etape="3"]');
 await dormir(400);
 
+// 5. La bulle du pouce (« ● 3 j ») tient entre le rail et la rangée des jours, sans toucher aucun bouton (le brasseur, 26.10 : « Pas
+// super la superposition ici » ; sa maquette p4b2f : la bulle suit le pouce, à environ 2 px au-dessus de la rangée). Lue sans toucher
+// le rail ; 390 et 1280 px ; ébullition, actif et après ; 1, 2, 3 et 7 j.
+const BULLE = () => {
+  const b = (e) => { const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, r: r.right, b: r.bottom }; };
+  const pl = document.querySelector('.pq-dry-pl'), rail = document.querySelector('.pq-dry-rail');
+  return { bulle: pl ? b(pl) : null, rail: rail ? b(rail) : null, jours: [...document.querySelectorAll('.pq-dry-jr button')].map((e) => ({ j: e.getAttribute('data-jour'), ...b(e) })), texte: pl?.textContent.trim() ?? null };
+};
+const bulles = {};
+for (const [largeur, hauteur, mobile] of [[390, 844, true], [1280, 800, false]]) {
+  await page.setViewport({ width: largeur, height: hauteur, deviceScaleFactor: 2, isMobile: mobile, hasTouch: mobile });
+  // Changer de gabarit change toute la coquille (téléphone / ordinateur) : on rouvre Dryhopper sur le même brouillon.
+  await page.goto(`${base}/?dev-local&etape=houblons&recette=vide`, { waitUntil: 'networkidle0' });
+  await page.waitForSelector('[data-role="ligne-houblon"]', { timeout: 120000 });
+  await dormir(1000);
+  await page.evaluate(() => window.__hopPile.open({ view: 'hopTiming', additionId: 'a2' }));
+  await page.waitForSelector('[data-ecran="dryhopper"] [data-bandeau]', { timeout: 120000 });
+  await dormir(1500);
+  const cas = [['ébullition', 0, null], ...[2, 3].flatMap((seg) => [1, 2, 3, 7].map((j) => [seg === 2 ? 'actif' : 'après', seg, j]))];
+  for (const [nom, seg, j] of cas) {
+    await page.click(`.pq-dry-seg [data-etape="${seg}"]`);
+    if (j) await page.click(`.pq-dry-jr [data-jour="${j}"]`);
+    await dormir(250);
+    const m = await page.evaluate(BULLE);
+    const cle = `${largeur} px, ${nom}${j ? `, ${j} j` : ''}`;
+    bulles[cle] = m.bulle && { haut: +m.bulle.y.toFixed(1), bas: +m.bulle.b.toFixed(1), rangee: +Math.min(...m.jours.map((x) => x.y)).toFixed(1), rail: m.rail && +m.rail.b.toFixed(1) };
+    if (!m.bulle) { ko(`${cle} : la bulle du pouce est absente`); continue; }
+    for (const bt of m.jours) if (croise(m.bulle, bt)) ko(`${cle} : la bulle « ${m.texte} » (${m.bulle.y.toFixed(1)} à ${m.bulle.b.toFixed(1)}) coupe le bouton « ${bt.j} j » (haut ${bt.y.toFixed(1)})`);
+    if (m.rail && m.bulle.y < m.rail.b - 1) ko(`${cle} : la bulle remonte sur le rail (haut ${m.bulle.y.toFixed(1)} < bas du rail ${m.rail.b.toFixed(1)})`);
+    if (largeur === 390 && nom === 'après' && j === 3) await page.screenshot({ path: path.join(SORTIE, 'bulle-apres-3j.png') });
+  }
+}
+await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+
 const erreurs = journal.erreurs.filter((e) => !/Firestore|firebase|net::ERR/i.test(e));
 if (erreurs.length) ko(`erreurs de page : ${erreurs.slice(0, 2).join(' | ')}`);
-fs.writeFileSync(path.join(SORTIE, 'bilan.json'), JSON.stringify({ repos, parJour, chaud: { dessus: chaud.dessus, rail: chaud.rail?.y } }, null, 1) + '\n');
+fs.writeFileSync(path.join(SORTIE, 'bilan.json'), JSON.stringify({ repos, parJour, chaud, bulles }, null, 1) + '\n');
 console.log(JSON.stringify({ cellules: repos.cels, texte: repos.texte, parJour }));
 await browser.close();
 if (echecs.length) { console.log(`FROID ECHEC ${echecs.length}`); for (const e of echecs) console.log(' - ' + e); process.exit(1); }
