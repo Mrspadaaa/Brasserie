@@ -8,6 +8,8 @@
 import composes from '../../../data/hopV4/composes-houblon.json';
 import comparatifs from '../../../data/hopV4/comparatifs-dryhop.json'; // copie de work/…/fils21-choisir/donnees (src/data/hopV4/copies-de-work.mjs)
 import type { FamilyId } from '../../../domain/hopIndex/v4';
+import { complementsCharges, type ChampComplement } from '../../../domain/hopIndex/v4/complements';
+import { refDe, titreComplement } from '../fiche/complements-ui';
 import { hopRef, nombreFr } from '../parcours/v4';
 
 export interface ValeurReelle {
@@ -41,7 +43,7 @@ export function titreRef(id: string): string {
   if (id === 'E03') return 'McCabe 2023';
   if (id === 'E04') return 'Lafontaine 2018';
   const r = SOURCES[id];
-  if (!r?.titre) return id;
+  if (!r?.titre) return titreComplement(id) ?? id;
   return r.titre.split(/[,:]/)[0].replace(/\s+et al\.?$/, '') + (r.annee ? ` ${r.annee}` : '');
 }
 
@@ -58,6 +60,15 @@ function enveloppe(vals: Val[] | null | undefined): ValeurReelle | null {
     lo: ouvertB || lo == null ? 0 : lo, hi: hi ?? (ouvertH ? null : Math.max(...maxs)), texte,
     refs: [...new Set(vs.flatMap((v) => v.sources.map(court)))], aConfirmer: vs.some((v) => !!v.aConfirmer),
   };
+}
+
+/** Les valeurs de complements.json (d3a) d'un champ, hors enveloppe exclues (suspectes, unité ou base inconnue) : une valeur par
+ * source et par fiche, avec la référence courte de sa source. Vide tant que le morceau n'est pas chargé (le catalogue seul). */
+function desComplements(cle: string, champ: ChampComplement): Val[] {
+  const c = complementsCharges();
+  if (!c) return [];
+  const id = hopRef(cle)?.catalogue.id ?? cle;
+  return c.valeursDe(id, champ).filter((v) => !v.horsEnveloppe && (v.min != null || v.max != null)).map((v) => ({ plage: [v.min, v.max] as [number | null, number | null], sources: [refDe(v)] }));
 }
 
 /** α ou β : Beer Maverick (catalogue) et Hopsteiner (fiche reliée) ; ton lot si sa fiche de stock le donne. */
@@ -82,6 +93,7 @@ export function huile(cle: string): ValeurReelle | null {
   const vals: Val[] = [...(VARIETES[cle]?.huile?.valeurs ?? [])];
   if (cat?.oil) vals.push({ plage: cat.oil, sources: ['BM'] });
   if (cat?.hs?.totalOil) vals.push({ plage: cat.hs.totalOil, sources: ['HS'] });
+  vals.push(...desComplements(cle, 'huile'));
   return enveloppe(vals);
 }
 
@@ -107,7 +119,10 @@ function duCatalogue(cle: string, c: string): Val[] {
 /** Une ligne de la chimie : les fiches de composés, plus le catalogue du moteur quand il porte la valeur. La plage reste
  * l'enveloppe de toutes les sources ; « inconnu » seulement si aucune n'a la valeur (les houblons sans fiche de composés,
  * comme Mosaic, prennent alors Beer Maverick et Hopsteiner). */
-export const compose = (cle: string, c: string) => enveloppe([...(VARIETES[cle]?.composes?.[c]?.valeurs ?? []), ...duCatalogue(cle, c)]);
+export const compose = (cle: string, c: string) => enveloppe([
+  ...(VARIETES[cle]?.composes?.[c]?.valeurs ?? []), ...duCatalogue(cle, c),
+  ...(c === '4MMP' ? [] : desComplements(cle, c as ChampComplement)),
+]);
 
 // ---------- en bière, mesuré ----------
 type Mesure = { variete?: string; compose?: string; valeur?: number; ecart?: number; unite?: string; dose_gL?: number; descripteur?: string };

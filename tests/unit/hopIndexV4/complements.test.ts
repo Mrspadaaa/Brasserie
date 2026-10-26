@@ -135,10 +135,14 @@ describe('le chargeur', () => {
 
 describe('le moteur et le démarrage ne touchent pas aux compléments', () => {
   const lister = (d: string): string[] => readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? lister(p) : /\.(ts|tsx)$/.test(f) ? [p] : []; });
-  it('seul le chargeur importe complements.json ; aucun fichier de src n\'importe src/data/hopSources', () => {
+  it('seul le chargeur importe complements.json ; le moteur et le démarrage ne passent pas par lui ; aucun fichier de src n\'importe src/data/hopSources', () => {
     const fichiers = [...lister(resolve(racine, 'src')), ...lister(resolve(racine, 'functions/src'))];
-    const importeurs = fichiers.filter((f) => /from\s+['"][^'"]*complements[^'"]*['"]|import\(\s*['"][^'"]*complements/.test(readFileSync(f, 'utf8')));
-    expect(importeurs.map((f) => f.slice(racine.length + 1).replace(/\\/g, '/'))).toEqual(['src/domain/hopIndex/v4/complements.ts']);
+    const rel = (f: string) => f.slice(racine.length + 1).replace(/\\/g, '/');
+    // d3b (#180) : le fichier de données n'est lu que par le chargeur ; l'affichage passe par le chargeur, dans Comparer et la fiche seulement.
+    const donnees = fichiers.filter((f) => /from\s+['"][^'"]*complements\.json['"]|import\(\s*['"][^'"]*complements\.json/.test(readFileSync(f, 'utf8')));
+    expect(donnees.map(rel)).toEqual(['src/domain/hopIndex/v4/complements.ts']);
+    const lecteurs = fichiers.filter((f) => /from\s+['"][^'"]*\/complements['"]/.test(readFileSync(f, 'utf8')));
+    expect(lecteurs.map(rel).filter((f) => !/^src\/ui\/hopIndex\/(comparer|fiche)\//.test(f))).toEqual([]);
     const sources = fichiers.filter((f) => /hopSources/.test(readFileSync(f, 'utf8')) && !/complements\.ts$/.test(f));
     expect(sources.map((f) => f.slice(racine.length + 1).replace(/\\/g, '/'))).toEqual([]);
   });

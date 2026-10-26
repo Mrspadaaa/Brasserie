@@ -11,7 +11,7 @@
 // jamais autrement les mêmes houblons ; huit, comme g1), au moment de l'ajout, ou sans moment hors de ma recette (comme
 // la matrice), et le pont « Remplacer › » vers cet outil quand il est dans ma recette. L'inconnu s'écrit « ? » ou
 // « non renseigné », jamais 0 (D65). Classes préfixées pq-fiche- (L26).
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Package } from 'lucide-react';
 import { nombre } from './commun';
 import { Pont } from '../Pont';
@@ -20,7 +20,8 @@ import { quandDe } from '../parcours/quand';
 import { useRemplacants } from '../substituer/donnees';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
 import { ibuByMoment } from '../parcours/v4';
-import type { SourcesFiche } from './sources';
+import { complementsFiche, type SourcesFiche } from './sources';
+import { useComplements } from './complements-ui';
 import { ContenuSources, Etiquettes, LienUrl, NomPlage, Rangee, pl } from './SourcesFiche';
 
 export type Section = 'styles' | 'huiles' | 'sources' | 'substituts';
@@ -57,6 +58,10 @@ export function Replis({ h, cle, s, recette, ouverte, onRemplacer }: {
   h: HoublonLu; cle: string; s: SourcesFiche; recette: RecetteParcours; ouverte: Section | null; onRemplacer: (() => void) | null;
 }) {
   const zone = useRef<HTMLDivElement | null>(null);
+  // d3b (#180) : les compléments se chargent dès l'ouverture de la fiche ; la feuille Sources attend leur arrivée (au plus 1,5 s) pour
+  // ne rien pousser en s'allongeant ; hors ligne : le catalogue seul.
+  const { attente, c: complements } = useComplements(1500);
+  const comp = useMemo(() => (complements ? complementsFiche(cle, complements) : null), [complements, cle]);
   // Déplié : la section vient sous le doigt (g1 : scrollIntoView « nearest »).
   useEffect(() => { if (ouverte) zone.current?.querySelector('section')?.scrollIntoView({ block: 'nearest' }); }, [ouverte]);
   const ajouts = recette.additions.filter((a) => a.hopKey === cle);
@@ -86,7 +91,9 @@ export function Replis({ h, cle, s, recette, ouverte, onRemplacer }: {
           {s.accord.huile && <p className="mt-1 text-xs text-cave-400">Huile totale : fiches {s.accord.huile}. Composants en % de l’huile.</p>}
         </>
       );
-      case 'sources': return <ContenuSources h={h} cle={cle} s={s} recette={recette} />;
+      case 'sources': return attente
+        ? <div data-role="sources-attente" aria-busy="true" className="min-h-[240px]" />
+        : <ContenuSources h={h} cle={cle} s={s} recette={recette} comp={comp} />;
       case 'substituts': {
         const q = ajout ? quandDe(ajout, recette) : null;
         return (

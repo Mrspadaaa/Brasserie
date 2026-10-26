@@ -6,6 +6,8 @@
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { BM_AXES, BM_CLASSES_HSI, bmLienId, type BmAxe, type BmLien, type CatalogueHop } from '../../../domain/hopIndex/v4/data';
 import { FAMILIES, describeFamilies, familyWords, hopRef } from '../parcours/v4';
+import { CHAMPS_COMPLEMENTS, type ChampComplement, type Complements, type EnveloppeComplement, type ValeurSource } from '../../../domain/hopIndex/v4/complements';
+import { nomCourt, texteUnite } from './complements-ui';
 
 export interface PlageSource { source: string; annee: number | null; min: number; max: number; url: string | null }
 /** Le reste de la page Beer Maverick (d2-import-bm, #180), en français, prêt à afficher. `ref` : la page, pour le lien de chaque ligne. */
@@ -214,3 +216,55 @@ export function sourcesFiche(cle: string): SourcesFiche | null {
 
 /** « Beer Maverick 2023 ». */
 export const nomSource = (s: PlageSource) => s.source + (s.annee ? ` ${s.annee}` : '');
+
+// ---------- d3b (#180) : les compléments des 18 sources, champ par champ ----------
+/** Un champ de complements.json pour un houblon : toutes les valeurs de toutes les sources, et l'enveloppe des valeurs valides
+ * (null : aucune valeur valide, `?` ; les valeurs suspectes ou hors enveloppe restent dans `valeurs`, marquées). */
+export interface ChampComp {
+  champ: ChampComplement; libelle: string; unite: string; uniteCourte: string;
+  enveloppe: EnveloppeComplement | null; valeurs: ValeurSource[];
+}
+export interface ComplementsFiche { champs: ChampComp[]; parChamp: Partial<Record<ChampComplement, ChampComp>>; liens: LienSource[] }
+const ADRESSE = (u: string | null) => (u && /^https?:\/\//i.test(u) ? u : null);
+/** Ce que complements.json dit d'un houblon : null s'il n'a aucune valeur. Pur : les compléments sont passés (chargés par l'écran). */
+export function complementsFiche(cle: string, c: Complements): ComplementsFiche | null {
+  const id = hopRef(cle)?.catalogue.id ?? cle;
+  const champs: ChampComp[] = [];
+  for (const champ of CHAMPS_COMPLEMENTS) {
+    const valeurs = c.valeursDe(id, champ);
+    if (!valeurs.length) continue;
+    const def = c.champs[champ];
+    champs.push({ champ, libelle: def?.libelle ?? champ, unite: def ? texteUnite(def) : '', uniteCourte: def?.unite ?? '', enveloppe: c.enveloppeDe(id, champ), valeurs });
+  }
+  if (!champs.length) return null;
+  // Les fiches citées (une par adresse), avec ce qu'elles apportent.
+  const liens: LienSource[] = [];
+  for (const k of champs) for (const v of k.valeurs) {
+    const url = ADRESSE(v.url);
+    const nom = nomCourt(v);
+    const deja = liens.find((l) => (url ? l.url === url : l.url === null && l.nom === nom && l.annee === v.annee));
+    const sert = k.champ.startsWith('arome_') ? 'arômes notés' : k.libelle;
+    if (deja) { if (!deja.sert.includes(sert)) deja.sert.push(sert); if (!deja.annee && v.annee) deja.annee = v.annee; continue; }
+    liens.push({ nom, auteur: nom, annee: v.annee, url, sert: [sert], note: null });
+  }
+  return { champs, parChamp: Object.fromEntries(champs.map((k) => [k.champ, k])) as ComplementsFiche['parChamp'], liens };
+}
+/** Les liens de la feuille Sources : la page Beer Maverick d'abord (ses mots, 25.10), puis les fiches fournisseurs qui ont une adresse
+ * (celles du catalogue, puis celles des compléments, une fois par adresse), puis les sources sans adresse. */
+export function liensAvecComplements(liens: LienSource[], comp: ComplementsFiche | null): LienSource[] {
+  if (!comp) return liens;
+  const sortie = liens.map((l) => ({ ...l, sert: [...l.sert] }));
+  for (const n of comp.liens) {
+    const deja = n.url ? sortie.find((l) => l.url === n.url) : sortie.find((l) => l.url === null && l.nom === n.nom && l.annee === n.annee);
+    if (deja) {
+      // Ce que la fiche apporte déjà (« α, β, huile totale ») n'est pas répété ; seul le nouveau s'ajoute.
+      const connus = new Set(deja.sert.flatMap((x) => x.split(/[,;]/).map((y) => y.trim().toLowerCase())));
+      for (const x of n.sert) if (!connus.has(x.toLowerCase())) deja.sert.push(x);
+      if (!deja.annee && n.annee) deja.annee = n.annee;
+    }
+    else sortie.push({ ...n, sert: [...n.sert] });
+  }
+  const bm = sortie.filter((l) => l.auteur === 'Beer Maverick');
+  const reste = sortie.filter((l) => l.auteur !== 'Beer Maverick');
+  return [...bm, ...reste.filter((l) => l.url), ...reste.filter((l) => !l.url)];
+}

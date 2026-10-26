@@ -5,10 +5,12 @@
 import { HUILE_MAX, SAAZ, huileDe, type ColonneLue } from './calcul';
 import { hopRef } from '../parcours/v4';
 import { IconeFiole, IconeGoutte } from './icones';
+import { useComplements } from '../fiche/complements-ui';
 import { compose, titreRef } from './valeurs';
 
 const ECH = HUILE_MAX + 0.5;
 export function HuilesVue({ cols, reference }: { cols: ColonneLue[]; reference: string | null }) {
+  useComplements();
   const lignes = [
     { cle: SAAZ, nom: hopRef(SAAZ)?.name ?? 'Saaz', couleur: '#8a8580', etalon: true },
     ...cols.map((c) => ({ cle: c.cle, nom: c.houblon.nom, couleur: c.couleur, etalon: false })),
@@ -46,7 +48,7 @@ export function HuilesVue({ cols, reference }: { cols: ColonneLue[]; reference: 
 //    les plages du linalol et du géraniol quand elles sont connues (intervalles, bornée à 0). Repli sans valeur publiée :
 //    100 − myrcène − humulène − caryophyllène − farnésène, avec la même soustraction.
 type Plage = [number, number] | null;
-type Id = 'myrcene' | 'humulene' | 'caryophyllene' | 'farnesene' | 'linalol' | 'geraniol' | 'autres';
+type Id = 'myrcene' | 'humulene' | 'caryophyllene' | 'farnesene' | 'linalol' | 'geraniol' | 'selinene' | 'autres';
 // Mots d'arôme : farnésène « frais, vert, floral », linalol « floral, lavande, agrumes », géraniol « rose, floral » sont
 // les descripteurs de la consigne de la voie o1 (linalol et géraniol : famille floral de `FAMILLE_COMPOSE`, dryhopper/mesures.ts) ;
 // aucune fiche de données ne les porte mot pour mot.
@@ -57,22 +59,24 @@ export const COMPOSES: { id: Id; nom: string; aromes: string }[] = [
   { id: 'farnesene', nom: 'Farnésène', aromes: 'frais, vert, floral' },
   { id: 'linalol', nom: 'Linalol', aromes: 'floral, lavande, agrumes' },
   { id: 'geraniol', nom: 'Géraniol', aromes: 'rose, floral' },
-  // Le seul groupe : β-pinène et sélinène ne sont séparés nulle part tant que la collecte (voies c3) n'a rien rapporté.
-  { id: 'autres', nom: 'Autres', aromes: 'β-pinène, sélinène…' },
+  // d3b (#180) : le sélinène a sa ligne quand un houblon comparé l'a (complements.json) ; le reste ne nomme que le β-pinène, qu'aucune source
+  // du catalogue ne publie. Les valeurs de linalol, géraniol, sélinène et farnésène viennent de compose() : fiches de composés, catalogue et compléments.
+  { id: 'selinene', nom: 'Sélinène', aromes: 'sesquiterpène' },
+  { id: 'autres', nom: 'Autres', aromes: 'β-pinène' },
 ];
 interface Mesure { p: Plage; refs: string[] }
 const SANS: Mesure = { p: null, refs: [] };
 // Une plage ouverte en haut (« > x ») n'a pas de borne : elle reste inconnue ici, comme la « borne seule » du tableau.
-const deCompose = (cle: string, c: 'farnesene' | 'linalol' | 'geraniol'): Mesure => {
+const deCompose = (cle: string, c: 'farnesene' | 'linalol' | 'geraniol' | 'selinene'): Mesure => {
   const v = compose(cle, c);
   return v && v.hi != null ? { p: [v.lo, v.hi], refs: v.refs } : SANS;
 };
 export function mesureDe(cle: string, id: Id): Mesure {
-  if (id === 'farnesene' || id === 'linalol' || id === 'geraniol') return deCompose(cle, id);
+  if (id === 'farnesene' || id === 'linalol' || id === 'geraniol' || id === 'selinene') return deCompose(cle, id);
   const o = hopRef(cle)?.catalogue.oils;
   if (!o) return SANS;
   if (id !== 'autres') return o[id] ? { p: o[id], refs: ['BM'] } : SANS;
-  const lin = deCompose(cle, 'linalol').p, ger = deCompose(cle, 'geraniol').p;
+  const lin = deCompose(cle, 'linalol').p, ger = deCompose(cle, 'geraniol').p, sel = deCompose(cle, 'selinene').p;
   let base: Plage = null;
   if (o.others) base = o.others;
   else {
@@ -86,7 +90,7 @@ export function mesureDe(cle: string, id: Id): Mesure {
   // Pas de double compte : chaque huile qui a sa propre ligne ET une valeur pour ce houblon sort du reste (arithmétique
   // d'intervalles : le bas moins les hauts, le haut moins les bas, bornés à 0). Une huile sans valeur reste dans le reste publié.
   let lo = base[0], hi = base[1];
-  for (const x of [lin, ger]) if (x) { lo -= x[1]; hi -= x[0]; }
+  for (const x of [lin, ger, sel]) if (x) { lo -= x[1]; hi -= x[0]; }
   return { p: [Math.max(0, lo), Math.max(0, hi)], refs: ['BM'] };
 }
 const ent = (x: number) => String(Math.round(x));
@@ -94,9 +98,10 @@ const dec = (x: number) => String(Math.round(x * 10) / 10).replace('.', ',');
 // Une ligne sans valeur chez aucun houblon comparé ne s'affiche pas ; un reste dont aucun houblon n'atteint 1 % n'apprend rien.
 const utile = (id: Id, ms: Mesure[]) => (id === 'autres' ? ms.some((m) => m.p && m.p[1] >= 1) : ms.some((m) => m.p));
 export function CompositionVue({ cols }: { cols: ColonneLue[] }) {
+  useComplements(); // d3b : se redessine à l'arrivée des compléments (l'écran les attend avant de s'ouvrir)
   return (
-    <section className="cmc-co" data-role="composition-huiles" aria-label="Composition des huiles, en % de l'huile totale, Beer Maverick">
-      <p className="p4-hu-t"><b>Composition des huiles</b><span>% de l'huile totale</span><span className="p4-hu-m"><IconeFiole taille={13} />mesuré · Beer Maverick</span></p>
+    <section className="cmc-co" data-role="composition-huiles" aria-label="Composition des huiles, en % de l'huile totale, enveloppe des sources">
+      <p className="p4-hu-t"><b>Composition des huiles</b><span>% de l'huile totale</span><span className="p4-hu-m"><IconeFiole taille={13} />mesuré · sources</span></p>
       {COMPOSES.map((k) => ({ k, ms: cols.map((c) => mesureDe(c.cle, k.id)) })).filter(({ k, ms }) => utile(k.id, ms)).map(({ k, ms }) => (
         <div key={k.id} className="cmc-co-g" data-compose={k.id}>
           <p className="cmc-co-n"><b>{k.nom}</b><span>{k.aromes}</span></p>

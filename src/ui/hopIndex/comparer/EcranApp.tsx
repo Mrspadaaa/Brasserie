@@ -9,6 +9,7 @@ import { configurerDonnees } from '../parcours/adaptateur';
 import { ajouter } from '../parcours/operations';
 import { placer } from '../parcours/quand';
 import type { AjoutParcours, RecetteParcours } from '../parcours/types';
+import { useComplements } from '../fiche/complements-ui';
 import { ContexteFicheApp, FicheDeLApp } from '../fiche/FicheApp';
 import { JeuPictos } from '../Pictos';
 import { ouvrirCouche } from '../ouvrirCouche';
@@ -49,6 +50,9 @@ export default function EcranComparerApp(p: EcranComparerProps) {
 
 function Contenu({ houblons, pin, onClose, porte }: EcranComparerProps & { porte: PorteEtape }) {
   const { recipe, boilOg, draftId } = porte;
+  // d3b (#180) : les compléments des 18 sources se chargent dès l'ouverture (morceau à part). L'écran attend leur arrivée, au plus 600 ms,
+  // pour ne rien montrer d'incomplet (un « ? » qui devient une valeur, une barre qui s'allonge) ; hors ligne, le catalogue seul.
+  const { attente } = useComplements(600);
   const donnees = useHopData(recipe);
   // La conversion ne se refait que si la porte change d'identité (son contenu lu change : porte.ts) ou le stock.
   const conversion = useMemo(() => toHopRecipe(recipe, {
@@ -114,6 +118,7 @@ function Contenu({ houblons, pin, onClose, porte }: EcranComparerProps & { porte
   const brouillon = useMemo(() => ({ recette, draftId }), [recette, draftId]);
   const cadre = useMemo(() => ({ fermer: onClose, suggerer: () => { ouvrirCouche({ view: 'hopSuggest', recipeId: draftId }); }, nbHoublons: houblons.length }), [onClose, draftId, houblons.length]);
 
+  if (attente) return <div role="status" data-role="comparer-attente" className="py-3 text-sm text-cave-400">Chargement de cet atelier…</div>;
   return (
     <CadreCtx.Provider value={cadre}>
       <HoteComparerProvider valeur={valeur}>

@@ -23,6 +23,7 @@ import {
   IconeAmpoule, IconeAucune, IconeApproche, IconeCroix, IconeEchanger, IconeFleche, IconeGoutte, IconeLivre, IconeOk, IconePanel,
   IconePanier, IconeRisque, IconeSigma, IconeSimule, IconeStock, IconeTirer,
 } from './icones';
+import { useComplements } from '../fiche/complements-ui';
 import { CHIMIE, acides, compose, huile, linalolEnBiere, panelOSU, titreRef, type ValeurReelle } from './valeurs';
 
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ');
@@ -358,6 +359,7 @@ function Fiches({ cols, familles }: { cols: ColonneLue[]; familles: FamilyId[] }
   );
 }
 export function FeuilleValeurs({ cols, sel, quatre, etapes, familles, onPreuve }: { cols: ColonneLue[]; sel: ColonneLue; quatre: boolean; etapes: Etapes; familles: FamilyId[]; onPreuve: () => void }) {
+  useComplements(); // d3b : les valeurs des compléments entrent dans compose() et huile() ; un nouveau rendu à leur arrivée
   const refs = new Set<string>();
   const garder = (v: ValeurReelle | null) => { v?.refs.forEach((r) => refs.add(r)); return v; };
   const alpha = cols.map((c) => garder(acides(c.cle, 'alpha')));

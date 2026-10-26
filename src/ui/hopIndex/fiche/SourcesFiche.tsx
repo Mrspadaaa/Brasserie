@@ -14,7 +14,9 @@ import { quandDe } from '../parcours/quand';
 import type { RecetteParcours } from '../parcours/types';
 import { ibuByMoment } from '../parcours/v4';
 import { motsFiche } from './donnees-matrice';
-import { nomSource, type Accord, type PlageSource, type SourcesFiche } from './sources';
+import { liensAvecComplements, nomSource, type Accord, type ChampComp, type ComplementsFiche, type PlageSource, type SourcesFiche } from './sources';
+import type { ChampComplement } from '../../../domain/hopIndex/v4/complements';
+import { nomCourt, texteBornes } from './complements-ui';
 
 export const pl = (s: PlageSource) => plage(s.min, s.max, 1);
 const accordTexte = (a: Accord) => (a ? `fiches ${a}` : null);
@@ -49,6 +51,50 @@ export function Etiquettes({ mots }: { mots: string[] }) {
   );
 }
 
+/** d3b (#180) : un champ des compléments (18 sources). La rangée porte l'enveloppe des valeurs valides ; le détail replié donne
+ * chaque valeur avec sa source, son année et le lien vers sa fiche. Une valeur suspecte ou hors enveloppe n'entre pas dans
+ * l'enveloppe : elle reste dans le détail, marquée d'un signe, sa raison au survol. Un champ à une seule valeur valide : une rangée sans repli. */
+export function RangeeChamp({ k }: { k: ChampComp }) {
+  const env = k.enveloppe;
+  const texte = env ? `${texteBornes(env[0], env[1])}${k.unite ? ` ${k.unite}` : ''}` : '?';
+  const marquee = k.valeurs.some((v) => v.horsEnveloppe);
+  const nom = k.libelle;
+  if (k.valeurs.length === 1 && !marquee) {
+    const v = k.valeurs[0];
+    return <div data-champ={k.champ}><Rangee nom={<>{nom} <LienUrl nom={nomCourt(v)} url={v.url} /> <span className="text-xs text-cave-400">{v.annee ?? 'date ?'}</span></>} valeur={texte} inconnu={!env} /></div>;
+  }
+  return (
+    <details data-champ={k.champ} className="pq-fiche-champ">
+      <summary className="pq-fiche-rangee flex items-baseline justify-between gap-3 py-1.5 text-sm cursor-pointer">
+        <span className="text-cave-200 min-w-0 max-w-[58%]">{nom} <span className="text-xs text-cave-400">· {k.valeurs.length} {k.valeurs.length > 1 ? "fiches" : "fiche"}</span></span>
+        <span className={`${env ? 'text-cave-50' : 'text-cave-400'} text-right tabular-nums min-w-0`}>{texte}</span>
+      </summary>
+      <ul className="pb-1.5 space-y-0.5">
+        {k.valeurs.map((v, i) => {
+          const ecartee = v.horsEnveloppe;
+          return (
+            <li key={i} data-source={v.source.id} data-statut={v.suspect ? 'suspect' : ecartee ? 'hors-enveloppe' : 'valide'}
+              className={`flex items-baseline justify-between gap-3 text-xs ${ecartee ? 'text-cave-400' : 'text-cave-200'}`}>
+              <span className="min-w-0"><LienUrl nom={nomCourt(v)} url={v.url} /> · {v.annee ?? 'date ?'}
+                {ecartee && <span role="img" aria-label={`écartée de l’enveloppe : ${v.raison ?? ''}`} title={`écartée de l’enveloppe : ${v.raison ?? ''}`} className="ml-1 text-attention cursor-help">⚠</span>}
+              </span>
+              <span className="text-right tabular-nums">{texteBornes(v.min, v.max)}{k.uniteCourte ? ` ${k.uniteCourte}` : ''}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </details>
+  );
+}
+/** Les champs des compléments d'un thème, dans l'ordre de complements.json. */
+const ChampsTheme = ({ comp, champs }: { comp: ComplementsFiche | null | undefined; champs: readonly ChampComplement[] }) => (
+  <>{champs.map((c) => comp?.parChamp[c] ? <RangeeChamp key={c} k={comp.parChamp[c]!} /> : null)}</>
+);
+const T_ACIDES = ['alpha', 'beta', 'cohumulone', 'colupulone', 'resinesDures'] as const;
+const T_HUILE = ['huile', 'myrcene', 'humulene', 'caryophyllene', 'farnesene', 'linalol', 'geraniol', 'betaPinene', 'selinene', 'undecanone2', 'esters_alcools_terpeniques', 'cetones', 'isobutyrates', 'monoterpenes', 'sesquiterpenes', 'rapportHC', 'linalolAcide', 'thiols'] as const;
+const T_AROMES = ['arome_citrusy', 'arome_fruity', 'arome_floral', 'arome_herbal', 'arome_spicy', 'arome_resinous', 'arome_sugarlike', 'arome_divers'] as const;
+const CHAMP_DE: Record<string, ChampComplement | undefined> = { 'myrcène': 'myrcene', 'humulène': 'humulene', 'caryophyllène': 'caryophyllene', 'farnésène': 'farnesene', linalol: 'linalol' };
+
 /** Un thème : titre discret, lignes dessous ; replié quand c'est long. */
 function Theme({ id, titre, ouvert = true, children }: { id: string; titre: string; ouvert?: boolean; children: React.ReactNode }) {
   return (
@@ -59,17 +105,21 @@ function Theme({ id, titre, ouvert = true, children }: { id: string; titre: stri
   );
 }
 
-export function ContenuSources({ h, cle, s, recette }: { h: HoublonLu; cle: string; s: SourcesFiche; recette: RecetteParcours }) {
+export function ContenuSources({ h, cle, s, recette, comp }: { h: HoublonLu; cle: string; s: SourcesFiche; recette: RecetteParcours; comp?: ComplementsFiche | null }) {
   const st = s.stock;
   const ajouts = recette.additions.filter((a) => a.hopKey === cle);
   const lot = h.alpha && !/^plage/.test(h.alpha.source) ? h.alpha.valeur : null;
   const mots = motsFiche(cle);
-  const bm = s.liens.find((l) => l.auteur === 'Beer Maverick');
+  const liens = liensAvecComplements(s.liens, comp ?? null);
+  const bm = liens.find((l) => l.auteur === 'Beer Maverick');
+  const a = (c: ChampComplement) => !!comp?.parChamp[c];
+  const dejaListes = new Set<ChampComplement>([...T_ACIDES, ...T_HUILE, ...T_AROMES]);
+  const autresMesures = (comp?.champs ?? []).filter((k) => !dejaListes.has(k.champ));
   return (
     <div data-role="sources-feuille" data-houblon={cle}>
       {/* 1. Les liens, d'abord : la page Beer Maverick, puis les fiches fournisseurs ; sans adresse : sans lien. */}
       <ul data-role="sources-liens" aria-label="Sources citées" className="space-y-1.5 pb-2">
-        {s.liens.map((l) => (
+        {liens.map((l) => (
           <li key={l.url ?? `${l.nom}|${l.annee}`} data-source-nom={l.nom} className="text-sm leading-snug">
             <LienUrl nom={l.nom} url={l.url} role={l === bm ? 'lien-beer-maverick' : 'lien-source'} />
             <span className="block text-xs text-cave-400">
@@ -97,7 +147,8 @@ export function ContenuSources({ h, cle, s, recette }: { h: HoublonLu; cle: stri
         {s.beta.length ? s.beta.map((x) => <Rangee key={`b${x.source}`} nom={<>β <NomPlage x={x} /></>} valeur={`${pl(x)} %`} />) : <Rangee nom="β" valeur="?" inconnu />}
         {s.cohumulone
           ? <Rangee nom={<>cohumulone <NomPlage x={s.cohumulone} /></>} valeur={`${pl(s.cohumulone)} % des α`} />
-          : <Rangee nom="cohumulone" valeur="?" inconnu />}
+          : !a('cohumulone') && <Rangee nom="cohumulone" valeur="?" inconnu />}
+        <ChampsTheme comp={comp} champs={T_ACIDES} />
         {s.bm?.rapportAB && <Rangee nom={<>rapport α/β <LienUrl nom={s.bm.ref.nom} url={s.bm.ref.url} /></>} valeur={s.bm.rapportAB} />}
         {s.bm?.stockage && <Rangee nom={<>stockage (HSI) <LienUrl nom={s.bm.ref.nom} url={s.bm.ref.url} /></>} valeur={s.bm.stockage} />}
         {(s.accord.alpha || s.accord.beta) && (
@@ -109,17 +160,19 @@ export function ContenuSources({ h, cle, s, recette }: { h: HoublonLu; cle: stri
         {s.huileTotale.length
           ? s.huileTotale.map((x) => <Rangee key={`h${x.source}`} nom={<>huile totale <NomPlage x={x} /></>} valeur={`${pl(x)} mL/100 g`} />)
           : <Rangee nom="huile totale" valeur="?" inconnu />}
-        {s.composants.map((c) => (
+        {s.composants.filter((c) => c.plage || !(CHAMP_DE[c.nom] && a(CHAMP_DE[c.nom]!))).map((c) => (
           <Rangee key={c.nom} nom={c.plage ? <>{c.nom} <NomPlage x={c.plage} /></> : c.nom}
             valeur={c.plage ? `${pl(c.plage)} % de l’huile` : '?'} inconnu={!c.plage} />
         ))}
-        <Rangee nom="géraniol" valeur="?" inconnu />
+        {!a('geraniol') && <Rangee nom="géraniol" valeur="?" inconnu />}
+        <ChampsTheme comp={comp} champs={T_HUILE} />
         {s.composants.some((c) => c.nom === 'autres huiles' && c.plage) && <p className="text-xs text-cave-400">autres huiles : β-pinène, linalol, géraniol et sélinène, non séparés par la page Beer Maverick.</p>}
         <Rangee nom="thiols, Hopsteiner" valeur={s.thiol ? `classe ${s.thiol}` : '?'} inconnu={!s.thiol} />
         {s.composants.filter((c) => !c.plage && c.raison && c.raison !== 'non renseigné').map((c) => <p key={c.nom} className="text-xs text-cave-400">{c.nom} : {c.raison}</p>)}
       </Theme>
 
       <Theme id="aromes" titre="Arômes">
+        {T_AROMES.some(a) && <div data-role="sources-aromes-notes" className="pb-1"><ChampsTheme comp={comp} champs={T_AROMES} /></div>}
         {mots.length > 0 ? (
           <ul data-role="sources-mots" aria-label="Ses mots, traduits" className="flex flex-wrap gap-x-3 gap-y-1.5 py-1">
             {mots.map((m) => (
@@ -162,6 +215,12 @@ export function ContenuSources({ h, cle, s, recette }: { h: HoublonLu; cle: stri
           </details>
         )}
       </Theme>
+
+      {autresMesures.length > 0 && (
+        <Theme id="mesures" titre="Autres mesures">
+          {autresMesures.map((k) => <RangeeChamp key={k.champ} k={k} />)}
+        </Theme>
+      )}
 
       <Theme id="styles" titre="Styles et usages">
         {s.bm && s.bm.styles.length > 0 && (
@@ -208,7 +267,7 @@ export function ContenuSources({ h, cle, s, recette }: { h: HoublonLu; cle: stri
       ) : null}
 
       <Theme id="inconnus" titre="Pas dans les fiches">
-        {s.inconnus.map((c) => <Rangee key={c.nom} nom={c.nom} valeur={<span title={c.raison}>?</span>} inconnu />)}
+        {s.inconnus.filter((c) => !(c.nom === 'géraniol' && a('geraniol')) && !(c.nom === 'cohumulone' && a('cohumulone')) && !(c.nom === 'stockage (HSI)' && a('hsi'))).map((c) => <Rangee key={c.nom} nom={c.nom} valeur={<span title={c.raison}>?</span>} inconnu />)}
         <p className="text-xs text-cave-400">Remplaçants calculés par le moteur : Substituts ›.</p>
       </Theme>
 
