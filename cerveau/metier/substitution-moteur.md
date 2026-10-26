@@ -3,7 +3,7 @@ name: substitution-moteur
 description: Ce que mesure le score de substitutes() selon le moment (60′, 10′, whirlpool), et pourquoi Substituer ne répond pas à « moins résineuse » sur la stout.
 type: metier
 maj: 2026-10-26
-sources: work/missions/2026-10-25-integration-houblons/voies/e1-banc-eval/resultats/rapport.md ; RESULTAT.md des voies p1-ma-biere, sb-a, sb-b, sb-c, sb-d, sb-u, sb-z, r6-substituer de work/missions/2026-10-23-maquette-parcours/voies/ ; work/refonte-frontend/v4/ecran-1/fils24-substituer/
+sources: https://beermaverick.com/your-hop-substitutions-are-wrong/ (lu le 26.10) ; work/missions/2026-10-25-integration-houblons/voies/e1-banc-eval/resultats/rapport.md ; RESULTAT.md des voies p1-ma-biere, sb-a, sb-b, sb-c, sb-d, sb-u, sb-z, r6-substituer de work/missions/2026-10-23-maquette-parcours/voies/ ; work/refonte-frontend/v4/ecran-1/fils24-substituer/
 ---
 
 Relevé par le lot Substituer (D125, 24.10 ; u4 choisi, D34).
@@ -30,3 +30,10 @@ Relevé par le lot Substituer (D125, 24.10 ; u4 choisi, D34).
   ne remonte jamais ce que la liste a rejeté : vérifier que le cas clé tient dans la fenêtre avant tout appel payant. Sur la
   liste de l'option 1, Flash-Lite ajoute +0,10 de MRR (60 cas), p95 2,2 s, 0,003 CHF par geste. Le brasseur juge sur les listes
   (`voies/m2-listes-substituts/`) ; ses mots : « pas forcé d'utiliser l'ai » si l'algorithme suffit.
+- **La méthode de Beer Maverick** (article « Your Hop Substitutions are Wrong! », 02.11.2020, lu le 26.10 dans le Chrome du
+  brasseur) : une corrélation de Pearson sur 70 nombres par houblon. Ces nombres : α, β et cohumulone (moyenne, min, max) ; huile
+  totale ; myrcène, humulène, caryophyllène et farnésène ; usage codé 1 à 3 ; pays par palier ; tags populaires codés ; radar à
+  9 axes. Deux jeux de poids, arôme et amertume (le mixte est leur somme), tirés d'articles de recherche. Seuils : 0,94 acceptable,
+  0,98 très proche. Conséquence pour notre banc : juger contre ses substituts, c'est en partie juger la ressemblance à sa propre
+  formule. Ses faiblesses : un Pearson sur des unités mêlées, des codes arbitraires (pays, tags) lus comme des nombres, des zéros
+  de radar qui veulent dire « pas de donnée ».
