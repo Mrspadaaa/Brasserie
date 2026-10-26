@@ -4,7 +4,7 @@ description: Voie de jugement de L'Affinée (Sonnet) - concevoir une maquette ou
 tools: Read, Glob, Grep, Bash, Write, Edit
 model: sonnet
 effort: high
-maxTurns: 80
+maxTurns: 120
 ---
 # Auteur d'une voie
 
