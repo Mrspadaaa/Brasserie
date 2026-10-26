@@ -323,3 +323,18 @@ PR #188 fusionnée (71dc41bb). Callable IA (D92).
 - D172 (dry hop actif et levure), D177 (20′), D178 (Comparer sans houblon) ;
 - #182, #187 ;
 - voie de profil D101 (6 budgets).
+
+## Reprise (26.10, vers 20 h 30) : complément
+- Commités depuis 19 h 30, pas encore poussés ni en ligne :
+  - r2-suite (d2d8d69f) ;
+  - u2 (61eff519) : interpolation entre 10′ et 60′ ;
+  - u3 (a403041d) : rond pointillé, raison au survol, whirlpool à 80 °C supposé ;
+  - x2 (7f811c2c) : export concis ;
+  - m8 publié (Gd66AfKhbqzdQ7xdt19Wiq). Son choix est attendu ; le critique classe C, B, E en tête.
+- Le rejeu de f5a53f99 n'est pas déployable :
+  - le test V5.5 `hopV55PagePropertyAdviceV3` est rouge ;
+  - 14 états sont en échec ;
+  - la préchauffe au repos est plus lente.
+
+  En vol : **e6** (diagnostic et corrections sûres). Ensuite : rejeu ciblé de HEAD, déploiement, PR.
+- D185 : deux scripts de levure à aligner sur l'export concis.
