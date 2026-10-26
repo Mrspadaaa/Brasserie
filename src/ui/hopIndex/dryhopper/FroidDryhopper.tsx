@@ -120,7 +120,7 @@ function FeuilleCreep({ c }: { c: VueCreep }) {
       {c.pourquoi && <p>{c.pourquoi}</p>}
       {c.effets.length > 0 && <p>Effets : {c.effets.join(', ')}.</p>}
       <p>Publié : {c.publie ? <b>{sg1(c.publie[0])} à {sg1(c.publie[1])} % vol.</b> : <b>?</b>} à 10 g/L · ce brassin : <b>?</b></p>
-      <p className="pq-dry-froid-src">Niveau {c.points ?? '?'}/6 : une convention, pas une mesure{c.inconnus.length ? ` · Inconnus : ${c.inconnus.join(', ')}` : ''}{c.sources.length ? ` · ${c.sources.join(', ')}` : ''}</p>
+      <p className="pq-dry-froid-src">Le niveau est une convention, pas une mesure{c.inconnus.length ? ` · Inconnus : ${c.inconnus.join(', ')}` : ''}{c.sources.length ? ` · ${c.sources.join(', ')}` : ''}</p>
     </>
   );
 }
