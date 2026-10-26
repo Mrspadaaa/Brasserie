@@ -998,3 +998,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   1. Une valeur interpolée se marque d'un rond en pointillé, et la légende « interpolé » n'apparaît que si le cas existe.
   2. La raison au survol est propre à l'ajout : « ajout à 40′ hors des moments simulés ».
   3. Un whirlpool sans température est simulé à 80 °C, avec « 80 °C supposé ».
+- D114 (brasseur, 26.10, page m8) : « G le trou du o, met ça sur tout les radar de comparaison btw ». Le disque du 0 (« non décrit ») est
+  teinté de gris, et un point qui y tombe est creux.
+  - Lecture étroite (L01) : les radars qui comparent des houblons, Substituer et Comparer (style et absolu). Ma bière et la fiche n'ont
+    pas ce cas.
+  - Registre : `choix/ecrans.json`, comparer et substituer, `complements`.
+  - Port confié à la voie p7.
