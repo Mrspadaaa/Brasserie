@@ -4,9 +4,9 @@ Généré par `node scripts/collecte-hop/fusion.mjs` (hors ligne, déterministe)
 
 ## Résumé
 
-- Fiches lues : 2777 (dont Brewer's Friend : 1112 lignes d'index sans valeur chimique). Rattachées et fusionnées : 1413. Écartées à la fusion : 23. Non rattachées (liste à part) : 369.
+- Fiches lues : 2790 (dont Brewer's Friend : 1112 lignes d'index sans valeur chimique). Rattachées et fusionnées : 1421. Écartées à la fusion : 23. Non rattachées (liste à part) : 374.
 - Variétés du catalogue touchées : 251 sur 318.
-- Valeurs fusionnées : 8877. Dans une enveloppe : 6978. Hors enveloppe (unité ou base inconnue ou différente) : 1668. Suspectes : 231. Enveloppes calculées : 3172 (variété × champ).
+- Valeurs fusionnées : 9156. Dans une enveloppe : 7259. Hors enveloppe (unité ou base inconnue ou différente) : 1693. Suspectes : 204. Enveloppes calculées : 3185 (variété × champ).
 - Règles : une liste de valeurs par source et par champ, avec URL et année publiée ; enveloppe = du plus bas au plus haut des valeurs valides, jamais une moyenne ; un inconnu est absent, jamais 0.
 - Les composés de l'huile dont la base « % de l'huile » a été déduite par la voie de collecte (BarthHaas, Charles Faram, BHA : `baseLue: false`) entrent dans l'enveloppe : le libellé du composé suffit. Les champs d'une source sans base (Crosby, Indie, USA Hops : `baseImplicite`) entrent aussi quand la collecte a posé la base ; un pourcentage sans aucune base reste hors enveloppe.
 - Rendement : les lb/acre sont converties en kg/ha (× 1,12085), arrondies à 0,1.
@@ -45,19 +45,19 @@ Décision de l'utilisateur (26.10) : « accord écrit pour la reproduction/affic
 
 | Champ | Avant | Après | Gain | Sans Hopsteiner ni Haas | Hors enveloppe seul |
 |---|---:|---:|---:|---:|---:|
-| **linalol** (`linalol`, % de l'huile) | 64 (20,1 %) | 127 (39,9 %) | +63 | 123 (38,7 %) | 5 |
-| **géraniol** (`geraniol`, % de l'huile) | 0 (0,0 %) | 68 (21,4 %) | +68 | 68 (21,4 %) | 6 |
+| **linalol** (`linalol`, % de l'huile) | 64 (20,1 %) | 130 (40,9 %) | +66 | 126 (39,6 %) | 7 |
+| **géraniol** (`geraniol`, % de l'huile) | 0 (0,0 %) | 68 (21,4 %) | +68 | 68 (21,4 %) | 5 |
 | **farnésène** (`farnesene`, % de l'huile) | 249 (78,3 %) | 268 (84,3 %) | +19 | 264 (83,0 %) | 0 |
 | **β-pinène** (`betaPinene`, % de l'huile) | 0 (0,0 %) | 10 (3,1 %) | +10 | 10 (3,1 %) | 7 |
 | **sélinène** (`selinene`, % de l'huile) | 0 (0,0 %) | 9 (2,8 %) | +9 | 9 (2,8 %) | 2 |
 | **cohumulone** (`cohumulone`, % des α) | 287 (90,3 %) | 288 (90,6 %) | +1 | 288 (90,6 %) | 0 |
 | **thiols** (`thiols`, µg/kg) | 0 (0,0 %) | 20 (6,3 %) | +20 | 20 (6,3 %) | 0 |
-| **polyphénols** (`polyphenols`, % de la masse) | 0 (0,0 %) | 48 (15,1 %) | +48 | 28 (8,8 %) | 5 |
+| **polyphénols** (`polyphenols`, % de la masse) | 0 (0,0 %) | 48 (15,1 %) | +48 | 28 (8,8 %) | 2 |
 | **intensité d'arôme** (`intensite_arome`, sur 10) | 0 (0,0 %) | 30 (9,4 %) | +30 | 30 (9,4 %) | 105 |
 | α (`alpha`, % de la masse) | 318 (100,0 %) | 318 (100,0 %) | +0 | 318 (100,0 %) | 0 |
 | β (`beta`, % de la masse) | 311 (97,8 %) | 312 (98,1 %) | +1 | 312 (98,1 %) | 0 |
 | huile totale (`huile`, mL/100 g) | 301 (94,7 %) | 301 (94,7 %) | +0 | 301 (94,7 %) | 1 |
-| colupulone (`colupulone`, % des β) | 0 (0,0 %) | 7 (2,2 %) | +7 | 0 (0,0 %) | 1 |
+| colupulone (`colupulone`, % des β) | 0 (0,0 %) | 7 (2,2 %) | +7 | 2 (0,6 %) | 1 |
 | myrcène (`myrcene`, % de l'huile) | 257 (80,8 %) | 271 (85,2 %) | +14 | 271 (85,2 %) | 0 |
 | humulène (`humulene`, % de l'huile) | 251 (78,9 %) | 267 (84,0 %) | +16 | 267 (84,0 %) | 6 |
 | caryophyllène (`caryophyllene`, % de l'huile) | 238 (74,8 %) | 255 (80,2 %) | +17 | 254 (79,9 %) | 0 |
@@ -89,7 +89,7 @@ Notes : « avant » du linalol = `hsLinalool` (Hopsteiner, 64 variétés dans le
 
 Rapport entre le milieu de plage le plus haut et le plus bas, entre deux sources différentes, sur les valeurs valides (dans l'enveloppe). Milieux ≥ 0,1 seulement (les traces font des rapports sans sens). Aucune réconciliation : l'enveloppe garde les deux.
 
-101 désaccords au total.
+103 désaccords au total.
 
 | Variété | Champ | Rapport | Plus haut | Plus bas |
 |---|---|---:|---|---|
@@ -101,30 +101,26 @@ Rapport entre le milieu de plage le plus haut et le plus bas, entre deux sources
 | Spalter Select | farnésène | ×14,8 | John I. Haas 15–22 | Hopsteiner 1–1,5 |
 | Hersbrucker | farnésène | ×13,8 | BarthHaas ·–6,9 | Hopslist 0–1 |
 | Comet | farnésène | ×13,5 | Hopsteiner 1,2–1,5 | Hopslist 0,1 |
+| Jester | farnésène | ×13,3 | Yakima Valley Hops 2–· | British Hop Association 0,1–0,2 |
 | Chinook | farnésène | ×12,4 | BarthHaas ·–6,2 | Hopslist 0–1 |
 | Columbus | farnésène | ×10,4 | BarthHaas ·–5,2 | Hopslist 0–1 |
 | El Dorado | farnésène | ×10,0 | Crosby Hops ·–1 | Hopslist 0,1 |
+| Hallertau Tradition | farnésène | ×10,0 | Yakima Valley Hops ·–1 | BarthHaas ·–0,1 |
 | Zeus | farnésène | ×10,0 | BarthHaas ·–1 | Hopsteiner ·–0,1 |
 | Huell Melon | farnésène | ×9,9 | Hopsteiner 0–19,8 | Charles Faram ·–1 |
 | Pilot | humulène | ×8,7 | Charles Faram 30,5 | British Hop Association 3,5 |
 | Galena | linalol | ×8,0 | BarthHaas ·–1,6 | Hopsteiner 0,1–0,3 |
 | Bitter Gold | farnésène | ×8,0 | Hopslist 1,2 | Hopsteiner 0,1–0,2 |
 | Epic | farnésène | ×7,0 | Charles Faram 10,5 | British Hop Association 1,5 |
-| Jester | farnésène | ×7,0 | Charles Faram 0,1–2 | British Hop Association 0,1–0,2 |
-| Tettnang (US) | farnésène | ×5,8 | Charles Faram 12–34 | Yakima Valley Hops 4 |
-| Styrian Dragon | farnésène | ×5,5 | Hopsteiner 4,5–6,5 | Charles Faram ·–1 |
+| Hallertau Mittelfrüh | farnésène | ×6,2 | Crosby Hops ·–3,1 | Hopsteiner 0–1 |
 
 ## Valeurs suspectes (gardées, hors enveloppe)
 
-α au-delà de 25 % : 3 ; même valeur que caryophyllène : 6 ; même valeur que farnésène : 12 ; même valeur que humulène : 3 ; même valeur que linalol : 5 ; même valeur que myrcène : 6 ; écart aux autres sources : 20 ; composé écrit sans signe % et ≤ 1 (0,42 = 42 % ? fraction probable, non convertie) : 29 ; huile totale au-delà de 6 mL/100 g : 78 ; plage inversée (min > max) : 12 ; fiche PDF appariée par l'ordre du flux, non recoupée par une autre source : 36 ; les minimums des composés de la fiche somment au-delà de 100 : 13 ; pourcentage au-dessus de 100 : 8
+α au-delà de 25 % : 3 ; même valeur que caryophyllène : 7 ; même valeur que farnésène : 10 ; même valeur que humulène : 3 ; même valeur que linalol : 5 ; même valeur que myrcène : 7 ; écart aux autres sources : 21 ; composé écrit sans signe % et ≤ 1 (0,42 = 42 % ? fraction probable, non convertie) : 29 ; huile totale au-delà de 6 mL/100 g : 78 ; plage inversée (min > max) : 12 ; fiche PDF appariée par l'ordre du flux, non recoupée par une autre source : 8 ; les minimums des composés de la fiche somment au-delà de 100 : 13 ; pourcentage au-dessus de 100 : 8
 
 | Source | Variété (fiche) | Champ | Valeur | Raison |
 |---|---|---|---|---|
 | barthhaas | Marynka → Marynka | beta | 2–2,7 | écart aux autres sources |
-| barthhaas | Saphir → Saphir | caryophyllene | ·–3,5 | écart aux autres sources |
-| barthhaas | Saphir → Saphir | humulene | ·–7,5 | écart aux autres sources |
-| barthhaas | Saphir → Saphir | linalol | ·–0,3 | écart aux autres sources |
-| barthhaas | Saphir → Saphir | myrcene | ·–10 | écart aux autres sources |
 | barthhaas | Spalter Select → Spalter Select | caryophyllene | ·–2,1 | écart aux autres sources |
 | barthhaas | Spalter Select → Spalter Select | humulene | ·–5,3 | écart aux autres sources |
 | barthhaas | Tango → Tango | geraniol | 0,5–0,6 | même valeur que caryophyllène |
@@ -240,7 +236,11 @@ Rapport entre le milieu de plage le plus haut et le plus bas, entre deux sources
 | charlesfaram | Taiheke → Taiheke | huile | 10,1 | huile totale au-delà de 6 mL/100 g |
 | charlesfaram | Taiheke → Taiheke | humulene | 140,5 | pourcentage au-dessus de 100 |
 | charlesfaram | Taiheke → Taiheke | myrcene | 5,31 | écart aux autres sources |
-| … | 111 autres suspectes dans `complements.json` (raison commençant par « s- »). | | | |
+| charlesfaram | Talus → Talus | beta | 34–39 | écart aux autres sources |
+| charlesfaram | Talus → Talus | huile | 1–20,2 | huile totale au-delà de 6 mL/100 g |
+| charlesfaram | Target → Target | myrcene | 0,45 | composé écrit sans signe % et ≤ 1 (0,42 = 42 % ? fraction probable, non convertie) |
+| charlesfaram | Triskel → Triskel | huile | 10,5–20 | huile totale au-delà de 6 mL/100 g |
+| … | 84 autres suspectes dans `complements.json` (raison commençant par « s- »). | | | |
 
 Charles Faram : sa page porte des artefacts de tableur — huile « 10.3 » ou « 20.4-30.9 » pour 1,3 ou 2,4–3,9 ; β « 45050 » et cohumulone « 41579 » (numéros de date Excel) ; myrcène « 0.42 » pour 42 %. Les valeurs qui dépassent les seuils sont suspectes ; celles qui restent dans les seuils (« 0.7-1.3 » lisible) n'ont aucun moyen d'être distinguées : à relire avant d'afficher une huile de Charles Faram.
 BSG : le rendement « 2,200 – 2,400 lbs/acre » avait été lu 2.2–2.4 par la collecte (séparateur de milliers perdu) ; corrigé à la fusion d’après le texte brut (× 1000), puis converti en kg/ha.
@@ -251,15 +251,16 @@ Bornes négatives illisibles (valeur nulle côté collecte, brut gardé : non fu
 
 ## Aberrances entre sources (règles ajoutées après d3b)
 
-- Règle d'écart (≥ 3 sources, intervalle sans recoupement, facteur > 3 de la médiane des autres) : **20 valeurs** écartées de l'enveloppe, sur 20 couples variété × champ, sur 3172 enveloppes.
+- Règle d'écart (≥ 3 sources, intervalle sans recoupement, facteur > 3 de la médiane des autres) : **21 valeurs** écartées de l'enveloppe, sur 21 couples variété × champ, sur 3185 enveloppes.
 - Règle de copie de colonne (bornes égales à celles d'un composé précédent de la même fiche) : **32 valeurs**.
-- Règle des fiches PDF appariées par l'ordre du flux (fiches HPA « fiche-pdf » et fiches John I. Haas portant `appariement`) : **36 valeurs** sur 260 lues de ces fiches ; les autres sont recoupées par une source qui n'est pas elle-même une fiche appariée.
+- Règle des fiches PDF appariées par l'ordre du flux (fiches HPA « fiche-pdf » et fiches John I. Haas portant `appariement`) : **8 valeurs** sur 252 lues de ces fiches ; les autres sont recoupées par une source qui n'est pas elle-même une fiche appariée.
 - Un composé n'est comparé qu'aux valeurs encore valides après la copie de colonne et la règle PDF (pas d'effet en cascade). Une valeur d'un champ à une seule ou deux sources n'est jamais écartée par la règle d'écart.
 
-Les plus fortes de la règle d'écart (30 au plus ; il y en a 20 au total) :
+Les plus fortes de la règle d'écart (30 au plus ; il y en a 21 au total) :
 
 | Variété | Champ | Source | Valeur | Médiane des autres | Rapport | Sources |
 |---|---|---|---|---:|---:|---:|
+| Tettnanger | myrcène | crosbyhops | ·–0,9 | 34,05 | ×37,8 | 3 |
 | Green Bullet | farnésène | hopslist | 9,2–20 | 0,8 | ×18,3 | 3 |
 | Riwaka | linalol | hopsteiner | 0–0,1 | 0,85 | ×17,0 | 3 |
 | Moutere | myrcène | charlesfaram | 2,2 | 25 | ×11,4 | 3 |
@@ -270,24 +271,24 @@ Les plus fortes de la règle d'écart (30 au plus ; il y en a 20 au total) :
 | Phoenix | farnésène | charlesfaram | 10,5 | 1,5 | ×7,0 | 5 |
 | Moutere | farnésène | crosbyhops | 1–3 | 0,3 | ×6,7 | 3 |
 | Marynka | β | barthhaas | 2–2,7 | 11,5 | ×4,9 | 4 |
+| Tettnanger | farnésène | crosbyhops | ·–4 | 19 | ×4,8 | 4 |
 | First Gold | farnésène | hopsteiner | 0–1 | 2,25 | ×4,5 | 4 |
-| Talus | β | charlesfaram | 34–39 | 9,1 | ×4,0 | 3 |
+| Tettnanger | humulène | crosbyhops | ·–5,3 | 23,7 | ×4,5 | 3 |
+| Tettnanger | caryophyllène | crosbyhops | ·–1,7 | 7,35 | ×4,3 | 3 |
+| Comet | linalol | hopsteiner | 0,6–1 | 0,2 | ×4,0 | 3 |
 | Sabro | β | charlesfaram | 20–24 | 5,5 | ×4,0 | 4 |
-| Saphir | linalol | barthhaas | ·–0,3 | 1,05 | ×3,5 | 4 |
-| Saphir | humulène | barthhaas | ·–7,5 | 25 | ×3,3 | 6 |
+| Talus | β | charlesfaram | 34–39 | 9,25 | ×3,9 | 4 |
 | Spalter Select | caryophyllène | barthhaas | ·–2,1 | 7 | ×3,3 | 3 |
 | Spalter Select | humulène | barthhaas | ·–5,3 | 17,5 | ×3,3 | 4 |
-| Saphir | caryophyllène | barthhaas | ·–3,5 | 11,5 | ×3,3 | 5 |
-| Saphir | myrcène | barthhaas | ·–10 | 32,5 | ×3,3 | 6 |
 | Callista | cohumulone | charlesfaram | 54–64 | 18,25 | ×3,2 | 5 |
 
-Copies de colonne (32) : barthhaas Tango géraniol 0,5–0,6 (même valeur que caryophyllène) ; britishhops Boadicea sélinène 5 (même valeur que farnésène) ; britishhops Mystic humulène 35 (même valeur que myrcène) ; charlesfaram Aurora humulène 20–25 (même valeur que myrcène) ; crosbyhops Cascade farnésène 3–9 (même valeur que caryophyllène) ; crosbyhops Magnum (GR) humulène 30–45 (même valeur que myrcène) ; hopslist Canadian Redvine caryophyllène 2 (même valeur que humulène) ; hopslist Eroica farnésène 0–1 (même valeur que humulène) ; hopslist Nelson Sauvin farnésène 10,7 (même valeur que caryophyllène) ; hopslist Target farnésène 0–1 (même valeur que caryophyllène) ; hopsteiner Horizon linalol 2–3 (même valeur que farnésène) ; hopsteiner Spalter Select linalol 1–1,5 (même valeur que farnésène) ; hpa Amarillo linalol 2–4 (même valeur que farnésène) ; hpa Talus linalol 0–1 (même valeur que farnésène) ; johnihaas Amarillo farnésène 2–4 (même valeur que caryophyllène) ; johnihaas Amarillo farnésène 2–4 (même valeur que caryophyllène) ; johnihaas BRU-1 géraniol 0–1 (même valeur que farnésène) ; johnihaas BRU-1 linalol 0–1 (même valeur que farnésène) ; johnihaas Talus linalol 0–1 (même valeur que farnésène) ; nzhops Kohatu linalol 0,5–1 (même valeur que farnésène) ; nzhops Motueka β-pinène 0,7–1 (même valeur que linalol) ; nzhops Moutere β-pinène 0,1–0,5 (même valeur que farnésène) ; nzhops Pacific Jade β-pinène 0,4–0,6 (même valeur que linalol) ; nzhops Pacifica géraniol 0,1–1 (même valeur que farnésène) ; nzhops Pacifica humulène 30–40 (même valeur que myrcène) ; nzhops Riwaka β-pinène 0,5–1 (même valeur que farnésène) ; nzhops Southern Cross β-pinène 0,5–1 (même valeur que linalol) ; nzhops Southern Cross géraniol 0,5–1 (même valeur que linalol) ; nzhops Wai-iti β-pinène 0,3–0,5 (même valeur que linalol) ; yakimavalleyhops Mystic humulène 30–40 (même valeur que myrcène) ; yakimavalleyhops Pacific Jade humulène 31–35 (même valeur que myrcène) ; yakimavalleyhops Styrian Wolf farnésène 5–10 (même valeur que humulène).
+Copies de colonne (32) : barthhaas Tango géraniol 0,5–0,6 (même valeur que caryophyllène) ; britishhops Boadicea sélinène 5 (même valeur que farnésène) ; britishhops Mystic humulène 35 (même valeur que myrcène) ; charlesfaram Aurora humulène 20–25 (même valeur que myrcène) ; crosbyhops Cascade farnésène 3–9 (même valeur que caryophyllène) ; crosbyhops Magnum (GR) humulène 30–45 (même valeur que myrcène) ; hopslist Canadian Redvine caryophyllène 2 (même valeur que humulène) ; hopslist Eroica farnésène 0–1 (même valeur que humulène) ; hopslist Nelson Sauvin farnésène 10,7 (même valeur que caryophyllène) ; hopslist Target farnésène 0–1 (même valeur que caryophyllène) ; hopsteiner Horizon linalol 2–3 (même valeur que farnésène) ; hopsteiner Spalter Select linalol 1–1,5 (même valeur que farnésène) ; hpa Amarillo farnésène 2–4 (même valeur que caryophyllène) ; johnihaas Amarillo farnésène 2–4 (même valeur que caryophyllène) ; johnihaas Amarillo farnésène 2–4 (même valeur que caryophyllène) ; johnihaas BRU-1 géraniol 0–1 (même valeur que farnésène) ; johnihaas BRU-1 linalol 0–1 (même valeur que farnésène) ; johnihaas Talus linalol 0–1 (même valeur que farnésène) ; nzhops Kohatu linalol 0,5–1 (même valeur que farnésène) ; nzhops Motueka β-pinène 0,7–1 (même valeur que linalol) ; nzhops Moutere β-pinène 0,1–0,5 (même valeur que farnésène) ; nzhops Pacific Jade β-pinène 0,4–0,6 (même valeur que linalol) ; nzhops Pacifica géraniol 0,1–1 (même valeur que farnésène) ; nzhops Pacifica humulène 30–40 (même valeur que myrcène) ; nzhops Riwaka β-pinène 0,5–1 (même valeur que farnésène) ; nzhops Southern Cross β-pinène 0,5–1 (même valeur que linalol) ; nzhops Southern Cross géraniol 0,5–1 (même valeur que linalol) ; nzhops Wai-iti β-pinène 0,3–0,5 (même valeur que linalol) ; yakimavalleyhops African Queen humulène 20–30 (même valeur que myrcène) ; yakimavalleyhops Mystic humulène 30–40 (même valeur que myrcène) ; yakimavalleyhops Pacific Jade humulène 31–35 (même valeur que myrcène) ; yakimavalleyhops Styrian Wolf farnésène 5–10 (même valeur que humulène).
 
 Cas cités par d3b (doivent être hors enveloppe) :
 - Nelson Sauvin, farnésène, hopslist : 10,7 → même valeur que caryophyllène. Enveloppe : 0,1–1.
-- Citra, farnésène, hpa : 6–8 → fiche PDF appariée par l'ordre du flux, non recoupée par une autre source. Enveloppe : 1.
-- Mosaic, farnésène, hpa : 5–8 → fiche PDF appariée par l'ordre du flux, non recoupée par une autre source. Enveloppe : 0–1.
-- Mosaic, myrcène, hpa : 1–1,5 → fiche PDF appariée par l'ordre du flux, non recoupée par une autre source. Enveloppe : 24,5–65.
+- Citra, farnésène, hpa : ·–1 → dans l'enveloppe. Enveloppe : 1.
+- Mosaic, farnésène, hpa : aucune valeur. Enveloppe : 0–1.
+- Mosaic, myrcène, hpa : 47–53 → dans l'enveloppe. Enveloppe : 24,5–65.
 
 ## Valeurs hors enveloppe (unité ou base inconnue ou différente)
 
@@ -304,8 +305,12 @@ Cas cités par d3b (doivent être hors enveloppe) :
 | hopslist | huile écrite en %, pas en mL/100 g (base inconnue) | 1 |
 | hpa | unité non écrite par la source | 6 |
 | johnihaas | unité non écrite par la source | 4 |
+| johnihaas | unité différente de celle du champ | 13 |
 | nzhops | huile écrite en %, pas en mL/100 g (base inconnue) | 2 |
 | usda | base non publiée (sur quoi porte le pourcentage ?) | 2 |
+| yakimavalleyhops | unité et base se contredisent | 3 |
+| yakimavalleyhops | huile écrite en %, pas en mL/100 g (base inconnue) | 1 |
+| yakimavalleyhops | unité non écrite par la source | 8 |
 
 HopDatabase et hops-json n'écrivent aucune unité : tout est gardé, rien n'entre dans une enveloppe. Les chiffres de leur README suggèrent α, β, cohumulone en % et huile en mL/100 g ; HopDatabase est un agrégat de catalogues de fournisseurs déjà fusionnés ici (doublon probable). À trancher si l'on veut les compter : une règle « unité du README » les ferait entrer.
 Charles Faram : « Flavour Intensity » sans échelle écrite (hors enveloppe) ; seule la BHA (sur 10) entre dans l'enveloppe d'intensité d'arôme.
@@ -333,7 +338,7 @@ Aucune variété n'est ajoutée au catalogue ici. Les fiches sans variété (amb
 | nzhops | 40 | 34 | 4 | 6 |
 | usahops | 80 | 68 | 0 | 12 |
 | usda | 2 | 2 | 0 | 0 |
-| yakimavalleyhops | 133 | 97 | 1 | 36 |
+| yakimavalleyhops | 146 | 105 | 1 | 41 |
 
 Brewer's Friend : index sans valeur chimique ; ses lignes non rattachées ne sont pas listées.
 
@@ -402,15 +407,15 @@ Relus à la main (26.10) : `heb` Hersbrucker Spät → Hersbrucker (même varié
 - **johnihaas** : 17 (3 avec candidats, 14 absentes du catalogue). Candidats : Northern Brewer [northern-brewer-gr, northern-brewer-us] ; Perle [perle-gr, perle-us] ; Saaz [saaz-cz, saaz-us].
 - **nzhops** : 6 (4 avec candidats, 2 absentes du catalogue). Candidats : NZ Chinook [chinook] ; NZ Chinook [chinook] ; NZ Fuggle [fuggle] ; NZ Fuggle [fuggle].
 - **usahops** : 12 (0 avec candidats, 12 absentes du catalogue).
-- **yakimavalleyhops** : 36 (1 avec candidats, 35 absentes du catalogue). Candidats : Uk Golding [golding].
+- **yakimavalleyhops** : 41 (1 avec candidats, 40 absentes du catalogue). Candidats : Uk Golding [golding].
 
 ## Champs numériques non repris
 
-hopsteiner.premiere_mise_sur_le_marche (16), hopsteiner.surface (40), nzhops.autresComposes (2), nzhops.autresComposesConnus (1), nzhops.composesInconnus (1), nzhops.limonene (1), nzhops.produitsAgrumesResineux (3), nzhops.produitsFloralEsters (3), nzhops.produitsOxydation (1), nzhops.rapportAlpha (1), nzhops.rapportHumuleneCaryophyllene (1).
+hopsteiner.premiere_mise_sur_le_marche (16), hopsteiner.surface (40), nzhops.autresComposes (2), nzhops.autresComposesConnus (1), nzhops.composesInconnus (1), nzhops.limonene (1), nzhops.produitsAgrumesResineux (3), nzhops.produitsFloralEsters (3), nzhops.produitsOxydation (1), nzhops.rapportAlpha (1), nzhops.rapportHumuleneCaryophyllene (1), yakimavalleyhops.rapportAlphaBeta (5).
 Non repris aussi (listes et textes, hors enveloppe) : descripteurs, substituts, styles, accords, roses aromatiques de BarthHaas (12 axes), classe « Thiol impact » de Hopsteiner, maturité, résistances, origine, lignée, formes. Ils restent dans `src/data/hopSources/` pour l'étape de l'interface.
 
 ## Poids
 
-- `complements.json` : 341974 octets bruts (342.0 ko), 57726 octets gzip (57.7 ko). 251 variétés.
-- `complements-non-rattachees.json` : 64450 octets (jamais importé par l'app).
+- `complements.json` : 346757 octets bruts (346.8 ko), 58682 octets gzip (58.7 ko). 251 variétés.
+- `complements-non-rattachees.json` : 65265 octets (jamais importé par l'app).
 - Chargé à la demande par `chargerComplements()` (import dynamique, `src/domain/hopIndex/v4/complements.ts`) : hors du démarrage et des outils. Mesure B5 : voir RESULTAT.md.

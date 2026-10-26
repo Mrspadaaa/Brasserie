@@ -93,13 +93,11 @@ describe('valeurs fausses repérées par d3b : hors de l\'enveloppe', () => {
     expect(v[0].raison).toBe('même valeur que caryophyllène');
     expect(m.enveloppeDe('beermaverick-nelson-sauvin', 'farnesene')![1]!).toBeLessThan(5);
   });
-  it('HPA, fiches PDF appariées par l\'ordre du flux : farnésène de Citra et de Mosaic, myrcène de Mosaic → suspects', () => {
+  it('HPA, fiches PDF : plus de valeurs décalées d\'une ligne (c3g, 26.10 : le myrcène de Mosaic prenait l\'huile totale)', () => {
+    // Avant c3g, le lecteur décalait 35 fiches sur 48 : Mosaic myrcène « 1–1,5 », farnésène de Citra « 6–8 » et de Mosaic « 5–8 ».
+    expect(de('beermaverick-mosaic', 'myrcene', 'hpa').map((x) => [x.min, x.max])).toContainEqual([47, 53]);
     for (const [id, champ, bornes] of [['beermaverick-citra', 'farnesene', [6, 8]], ['beermaverick-mosaic', 'farnesene', [5, 8]], ['beermaverick-mosaic', 'myrcene', [1, 1.5]]] as const) {
-      const v = de(id, champ, 'hpa');
-      expect(v.map((x) => [x.min, x.max]), `${id} ${champ}`).toContainEqual([...bornes]);
-      const x = v.find((y) => y.min === bornes[0] && y.max === bornes[1])!;
-      expect(x.suspect, `${id} ${champ}`).toBe(true);
-      expect(x.horsEnveloppe).toBe(true);
+      expect(de(id, champ, 'hpa').map((x) => [x.min, x.max]), `${id} ${champ}`).not.toContainEqual([...bornes]);
     }
     expect(m.enveloppeDe('beermaverick-citra', 'farnesene')![1]!).toBeLessThan(5);
     expect(m.enveloppeDe('beermaverick-mosaic', 'farnesene')![1]!).toBeLessThan(5);
