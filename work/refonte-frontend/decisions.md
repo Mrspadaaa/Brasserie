@@ -947,3 +947,11 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     Ils partiront ensemble après la mesure de B5 et de la fluidité.
 - D104 (l'utilisateur, 26.10, sur « 160,6 ko, pour une limite de 160 ») : « C'est ok ». Le budget B5 passe à 162 ko
   (`scripts/check-hop-budget.mjs`), pour le catalogue complet branché (c7). On le revérifie après f2.
+- D105 (pilote, 26.10, voie f2) :
+  1. **Le style avant les effets de bord.** `ordrePool` passe avant `sideTotal` : classer tout le pool ne doit plus favoriser un
+     houblon à une seule fiche, comme Teamaker devant East Kent Goldings.
+  2. **L'usage plutôt qu'un seuil d'α.** Le témoin « α ≥ 10 % » laisse place à « aucun houblon d'arôme dans les 10 premiers à 60′ » :
+     l'α se règle par la dose. Centennial à 9,5 % y entre.
+  3. **La fluidité est bloquante.** B1 coûtait 205 → 750 ms à froid, et 316 → 731 ms pour le premier écran. On mémorise l'évaluation
+     par houblon et par moment, et on n'évalue que les doses utiles. Si ça ne suffit pas, le pool est borné aux 60 meilleurs
+     « à acheter » par `ordrePool`. Aucun budget relevé.
