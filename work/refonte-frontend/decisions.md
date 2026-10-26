@@ -945,3 +945,5 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     - l'affinage f2.
 
     Ils partiront ensemble après la mesure de B5 et de la fluidité.
+- D104 (l'utilisateur, 26.10, sur « 160,6 ko, pour une limite de 160 ») : « C'est ok ». Le budget B5 passe à 162 ko
+  (`scripts/check-hop-budget.mjs`), pour le catalogue complet branché (c7). On le revérifie après f2.

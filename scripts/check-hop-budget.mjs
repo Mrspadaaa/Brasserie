@@ -12,7 +12,7 @@
 // Usage :
 //   node scripts/check-hop-budget.mjs --dist <dossier du build> [--boot index,App,firebase] [--step Host]
 //   node scripts/check-hop-budget.mjs --adapter <adaptateur> [--tap "libellé"]
-//   --chunk-outils <préfixe> [--deja a,b] : B5 = JavaScript ajouté à l'ouverture d'un outil v4 (#167) ≤ 160 ko gzip (D83, 26.10) : la fermeture du
+//   --chunk-outils <préfixe> [--deja a,b] : B5 = JavaScript ajouté à l'ouverture d'un outil v4 (#167) ≤ 162 ko gzip (D104, 26.10) : la fermeture du
 //      chunk des outils hors démarrage, moins celle des écrans déjà ouverts dessous (--deja, p. ex. BrewWizardEntry).
 //   --witness : le sujet DOIT dépasser au moins un budget (témoin négatif).
 import fs from 'node:fs';
@@ -23,8 +23,8 @@ import { pathToFileURL } from 'node:url';
 
 const arg = (k, d) => { const i = process.argv.indexOf('--' + k); return i > 0 ? process.argv[i + 1] : d; };
 const witness = process.argv.includes('--witness');
-// B5 : 150 ko jusqu'au 26.10 ; 160 ko depuis. D83, 26.10 : descripteurs de 12 sources ajoutés à la demande du brasseur ; le morceau des outils est préchargé au repos.
-const BUDGET = { B1: 350_000, B2: 150_000, B3: 1000, B4: 120 * 1024 * 1024, B5: 160_000 };
+// B5 : 150 ko jusqu'au 26.10 ; 160 ko depuis ; 162 ko depuis D104 (26.10, accord du brasseur : « C'est ok » pour 160,6 ko, catalogue complet branché). D83, 26.10 : descripteurs de 12 sources ajoutés à la demande du brasseur ; le morceau des outils est préchargé au repos.
+const BUDGET = { B1: 350_000, B2: 150_000, B3: 1000, B4: 120 * 1024 * 1024, B5: 162_000 };
 const results = [];
 const kb = (n) => `${Math.round(n / 1000)} ko`;
 
