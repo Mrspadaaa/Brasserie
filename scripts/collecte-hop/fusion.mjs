@@ -6,6 +6,9 @@
 //   work/missions/2026-10-25-integration-houblons/voies/d3a-fusion/rapport.md
 // Conventions (pilote, réversibles) : voir VOIE.md. Décision du 26.10 : toutes les sources entrent dans complements.json, `diffusion` reste dans la table.
 // Lancement : node scripts/collecte-hop/fusion.mjs [--sans-ecriture]
+// Fins de ligne : les sorties sont en LF, et le sha256 affiché est celui du texte LF. Un dépôt en core.autocrlf=true les extrait en CRLF :
+// le sha256 d'un fichier extrait se compare donc après remplacement de CRLF par LF (le test de déterminisme le fait). Les entrées sont lues
+// par JSON.parse : leurs fins de ligne n'ont aucun effet. Aucune entrée hors des fichiers suivis par git (src/data/hopSources, proto-data.json).
 
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -611,7 +614,7 @@ const rapport = lignes.join('\n') + '\n';
 const sorties = [[SORTIE, texte], [SORTIE_NR, nrTexte], [RAPPORT, rapport]];
 const sansEcriture = process.argv.includes('--sans-ecriture');
 for (const [p, t] of sorties) {
-  if (!sansEcriture && (!existsSync(p) || readFileSync(p, 'utf8') !== t)) writeFileSync(p, t);
+  if (!sansEcriture && (!existsSync(p) || readFileSync(p, 'utf8').replace(/\r\n/g, '\n') !== t)) writeFileSync(p, t);
   console.log(`${p.slice(racine.length + 1).replace(/\\/g, '/')} sha256 ${sha(t)} (${Buffer.byteLength(t)} octets)`);
 }
 console.log(`variétés ${varietes.size}, valeurs ${nbValeurs}, hors enveloppe ${nbHors}, suspectes ${nbSusp}, écartées ${ecartees.length}, non rattachées ${nonRattachees.length}`);

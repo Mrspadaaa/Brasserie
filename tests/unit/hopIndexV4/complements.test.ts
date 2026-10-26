@@ -13,7 +13,8 @@ import { chargerComplements, complementsCharges, enveloppeDe, lireComplements, v
 const racine = resolve(__dirname, '../../..');
 const C = brut as unknown as ComplementsBrut;
 const idsCatalogue = new Set((protoData.varieties as { id: string }[]).map((v) => v.id));
-const sha = (p: string) => createHash('sha256').update(readFileSync(resolve(racine, p))).digest('hex');
+// Le hash d'un fichier extrait en CRLF (core.autocrlf=true, copie propre de Windows) se prend sur son texte LF : le script produit du LF.
+const sha = (p: string) => createHash('sha256').update(readFileSync(resolve(racine, p), 'utf8').replace(/\r\n/g, '\n')).digest('hex');
 const FICHIERS = ['src/data/hopV4/complements.json', 'src/data/hopV4/complements-non-rattachees.json', 'work/missions/2026-10-25-integration-houblons/voies/d3a-fusion/rapport.md'];
 
 describe('cohérence de complements.json', () => {
