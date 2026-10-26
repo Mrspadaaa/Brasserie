@@ -976,3 +976,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - **Banc.** Le banc de fluidité mesure `proposerRapide`, c'est-à-dire le premier affichage.
   - **B5.** Il mesure 163,0 ko pour 162. On cherche d'abord ce qui a grossi ; le brasseur décide.
 - D109 (l'utilisateur, 26.10, sur « B5 à 163,0 ko pour 162 : 164 ko ? ») : « Je l'accepte ». Le budget B5 passe à 164 ko.
+- D110 (l'utilisateur, 26.10 : « Tu peux déjà déployé en l'état. Fait une pr et tu merge une fois que c'est propre ») :
+  - L'hébergement est déployé au commit **fb0d14e3** : Ma bière et sa croix (p6, p6b), D99, catalogue et alias (c6), états (e4).
+  - **Incident.** Le premier envoi, vers 18 h 32, est parti pendant que le rejeu reconstruisait `dist` dans la même copie : 1 seul
+    fichier, et la production a servi une page 404 pendant environ 3 minutes. Je l'ai vu en lisant la page servie. Le renvoi a envoyé
+    242 fichiers et la production est rétablie (`index-Tex7XoAl.js`). Leçon ajoutée à L17.
+  - Une PR vers main est ouverte et sera fusionnée une fois le rejeu de fb0d14e3 vert.
