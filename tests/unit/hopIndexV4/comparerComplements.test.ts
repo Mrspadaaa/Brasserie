@@ -63,7 +63,8 @@ describe('après le chargement : la fusion des trois sources dans compose() et h
   });
 
   it('un houblon sans valeur reste inconnu (pas de 0) et le 4MMP n\'est pas fusionné', () => {
-    expect(compose('beermaverick-nelson-sauvin', 'geraniol')).toBeNull();
+    // Nelson Sauvin a un géraniol depuis les fiches NZ Hops (voie c3e, 26.10) : le cas « sans valeur » prend Adeena.
+    expect(compose('beermaverick-adeena', 'geraniol')).toBeNull();
     // Le 4MMP reste celui des fiches de composés : les thiols des compléments (µg/kg, tous thiols) n'y entrent pas.
     expect(compose(CITRA, '4MMP')!.refs).toEqual(['H11']);
   });
