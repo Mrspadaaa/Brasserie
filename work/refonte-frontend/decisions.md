@@ -808,3 +808,19 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     cohumulone et le β sortent du rang : ce sont des conventions de goût, données en information à un toucher. La bande d'IBU
     du style devient un drapeau sur la carte. Le conflit de famille reste une exclusion, comme dans `voies.ts`. « Remplacer à
     IBU égal » suit la même règle d'usage.
+- D89 (brasseur, 26.10, page m5 WW2mmg7gWgUVSnT4PTWTFf) : « La meilleure D · trois mini graphes ». C'est D seul, sans la greffe D + F
+  (lecture étroite, L01). Registre : `choix/ecrans.json`, dryhopper, `complements`. Le port est la voie p5-dryhopper-froid (Sonnet),
+  puis le critique juge.
+- D90 (pilote, 26.10, voie g2c, relevé par g2a) : une famille indésirable du style, ou une famille « moins » de la visée, n'exclut plus
+  un houblon que si elle est **marquée**, c'est-à-dire citée par la moitié au moins de ses fiches. Jusqu'ici, une seule fiche
+  suffisait.
+  - Sur la 21C (Hazy IPA), cinq houblons sortaient du pool : Nelson Sauvin, Motueka, Mosaic, Hallertau Blanc et Cascade.
+  - d4 a fait entrer les fiches de 12 sources, et ces exclusions se sont multipliées. d4 n'est pas encore en production : la
+    production est 49907352.
+  - Le déploiement attend g2c. La règle est réversible, et c'est la même convention que les gros points de la fiche.
+- D91 (pilote, 26.10, voie g2a) : on montrera au brasseur les listes de la clé k1 et de la clé k3, dans son écran q2b. La clé k2 est
+  écartée : elle laisse 110 ex æquo.
+  - k1 départage le plus, mais c'est la clé qui coule Galaxy.
+  - k3 (radar Beer Maverick) place Citra 4e et Galaxy 16e en agrumes, mais ne couvre que 181 variétés sur 318.
+
+  Le défaut reste `'aucun'` jusqu'à son choix. Ces listes se feront après g2c ; sans g2c, Nelson Sauvin et Motueka en seraient absents.

@@ -125,9 +125,9 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : aucun
 
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
-- Erreur : 20 et 22.10, la « grille 1,8 Mo » (fichier de maquette) lue comme coût de calcul ; un conseiller voulait abandonner le repli « dry hop et biotransformation seulement si c'est trop lourd » sans chronométrer.
+- Erreur : 20 et 22.10, la « grille 1,8 Mo » (fichier de maquette) lue en coût de calcul ; un conseiller voulait abandonner le repli « dry hop et biotransformation seulement si c'est trop lourd » sans chronométrer.
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
-- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel et le premier passage à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77). Banc externe : lire d'abord la clé de l'ordre (g1 : l'α à 60′).
+- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77). Un banc ne juge ni un artefact de l'ordre ni les données de la clé (g1, g2a).
 - Rôles : pilote, conseil, auteur, exécutant
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
