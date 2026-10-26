@@ -986,3 +986,10 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   aucun vide, et 232 ms au premier affichage, contre 194 ms différé et 206 ms sur HEAD. Sans préchauffe, l'arrivée reste différée, avec
   une place réservée à sa hauteur. f6 a aussi ajouté une règle, gardée : une visée « moins de… » fait l'appel complet d'emblée. Sans
   cela, « Aucune voie houblon » s'affichait, puis tout descendait de 463 px. Voie f7.
+- D112 (26.10) : la PR #188 est fusionnée dans main, en verrouillant sa tête sur 2cccbdc0 (fb0d14e3 et des documents, en ligne et
+  rejoués). Le commit de fusion est 71dc41bb.
+  - Les 10 états de Dryhopper en échec venaient de c6 : les rattachements par alias changent le profil de la stout S1 d'environ
+    1 point, et « trop amer » apparaît au contre ★. C'est un effet des données, établi par bissection. Ils sont mis à jour (e5,
+    83aee2c1).
+  - Le contrôle « sources une fois » ne passait pas à cause de l'état laissé par le contrôle précédent. Seul, il passe.
+  - Le lot moteur (689160fb) n'est pas encore poussé : rejeu, puis deuxième déploiement, puis nouvelle PR.
