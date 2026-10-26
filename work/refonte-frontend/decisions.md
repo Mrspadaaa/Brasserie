@@ -751,3 +751,9 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   B5 148,3 ko tenu.
 
   Reste connu : l'erreur de worker des tours froids V5.5 (exit 1 sans échec). Yakima Chief : ticket #186.
+- D83 (pilote, 26.10, voie d4) : les descripteurs d'arôme de 12 sources entrent dans les fiches du catalogue (D157 : Galaxy passe
+  de 1 à 5 fiches lues, Nelson Sauvin de 2 à 9). Ils pèsent 21 ko gzip dans le morceau des outils (B5 149,5 → 170,8 ko pour un
+  budget de 150). Choix : la forme compacte (sources en table, mots en dictionnaire, adresses laissées dans `complements.json`
+  chargé à la demande, ~7 ko), avec un chargeur qui rend les mêmes `descriptions`, et le budget B5 relevé à 160 ko. Le morceau des
+  outils est préchargé au repos : l'ouverture n'attend pas. Les 22 tests du prototype qui fixent l'ancien catalogue sont repris un
+  par un, avec leur preuve, par la voie e2, avec le rejeu de son moteur v2 sur ces données.
