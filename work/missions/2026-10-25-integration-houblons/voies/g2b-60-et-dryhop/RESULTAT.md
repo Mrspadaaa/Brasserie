@@ -3,16 +3,16 @@ OK — palier 60′ (+n IBU exacts, usage puis α) et vrai dry hop (actif, aprè
 ## Fichiers écrits
 - `src/domain/hopIndex/v4/palier.ts` (nouveau) : usage, bornes et règle de dose du dry hop, drapeau d'IBU, comparaisons de rang.
 - `src/domain/hopIndex/v4/voies.ts` : options `palier60: { ibu }` et `dryHop: true`, champs `VoieResult.palier60` et `VoieResult.dryHop`, champs de voie `palier`, `dose`, `enStock`, `drapeaux` (tous absents sans option), deux clés dans `compareRankKeys` (inertes sans option). `departage.ts` : inchangé.
-- `tests/unit/hopIndexV4/palierDryhop.test.ts` : 20 tests.
+- `tests/unit/hopIndexV4/palierDryhop.test.ts` : 21 tests.
 - `scripts/eval-hop/suggerer-m7.ts` (sortie des mini maquettes), `scripts/eval-hop/palier-octet.ts` (preuve « à l'octet » contre HEAD).
-- `voies/g2b-60-et-dryhop/sortie-m7.json` (289 232 octets).
+- `voies/g2b-60-et-dryhop/sortie-m7.json` (452 350 octets).
 - Hors ma voie, non touchés : `api.ts` (les nouveaux types s'importent de `./palier`), adaptateur, client async, worker : aucun ne passe encore les options.
 
 ## Critères (VOIE.md ; il n'y a pas de GATES.md dans le dossier)
-- `npx vitest run tests/unit/hopIndexV4 prototypes/houblons-v4/tests` : **80 fichiers, 771 tests verts**. Empreintes de `moteurInchange.test.ts` inchangées.
+- `npx vitest run tests/unit/hopIndexV4 prototypes/houblons-v4/tests` : **80 fichiers, 772 tests verts**. Empreintes de `moteurInchange.test.ts` inchangées.
 - Défaut inchangé à l'octet : `npx vite-node scripts/eval-hop/palier-octet.ts` : 144 appels (105 219 681 octets, deux moteurs, deux recettes, six directions, six jeux d'options dont k1, k3 et leviers), sha256 **f2f5e374…187d** des deux côtés (HEAD et actuel). Test : la réponse sans option ne contient aucune des clés nouvelles.
 - `npm run build` : vert (sortie 0).
-- Déterminisme : deux lancements de `suggerer-m7.ts` en parallèle, `cmp` identique, sha256 **3b32981ba87bcd532aa580424f4a3be98869401c34767e81a6b86d51ebcf2d6f**.
+- Déterminisme : deux lancements de `suggerer-m7.ts` en parallèle, `cmp` identique, sha256 **9d0a33710c07a42983a2950cce9494307f74a573273da51409803fc89902dd99** (complément inclus).
 - Les tests couvrent chaque option : +n IBU à ± 0,5 (5, 10, 25 ; chaque ajout, par `additionIbu`), aucun arôme avant un amérisant (liste de 205, et « remplacer à IBU égal » avec témoin du défaut où ils se mêlent), actif et après, dose = la règle recalculée hors du moteur, bornes « min » et « max », drapeau de revue, stock sans dose (37, 10, 200 g : 30 g partout), départage k1 et k3 (premier groupe 23 → 1).
 - Essais : un par critère ; un test corrigé (la tête de liste est parfois « double usage », mon assertion supposait « amérisant »).
 
@@ -28,6 +28,17 @@ OK — palier 60′ (+n IBU exacts, usage puis α) et vrai dry hop (actif, aprè
 Dans `sortie-m7.json`, par rangée : `apporte.effets` (12 familles, points et crans du style, `null` = aucune fiche ne cite la famille), `apporte.fiche` (cohumulone, β, huile totale, plage d'α ; `null` si inconnu), IBU ajouté / après, grammes, g/L ; au dry hop aussi `amertumeAFroid` (froid.ts : statut « conditional », équivalent mg/L éq. iso-α, 19,7 à 42,3 sur la 21C, jamais un IBU) et `motDeLaFiche` (mots que la rangée est seule à porter parmi les cinq). Par groupe : `cequiDistingue` (constant ou variable, sur les 5 premières et sur tout le groupe).
 - **À 60′** : l'IBU ajouté est le même **à 0,5 près** (9,5 à 10,5, l'arrondi du gramme). Ce qui varie : α (15,3 à 17,8), grammes (5 à 6), cohumulone (25,5 à 34), β, huile totale (1,3 à 3). L'arôme restant est négligeable : 0,5 à 0,6 point d'agrumes, soit **0,02 cran** (contre 33 au dry hop). À dire dans la maquette : à 60′ la rangée n'apporte que de l'amertume.
 - **Au dry hop** : sur les 5 premières, l'effet sur les familles visées est **identique** (35 points d'agrumes, 34,2 de tropical), l'IBU après idem (27,4, le dry hop n'en ajoute pas) et l'amertume à froid idem. Ce qui varie : α, cohumulone, β, huile totale, **les mots** (Medusa seul « lemon, lime » ; Samba seul « orange » ; Galaxy « cannabis, dank, gooseberry » hors familles ; Nectaron « nectar »). Le moteur ne distingue pas deux houblons qui citent les mêmes familles : seul le départage et les mots les séparent.
+
+## Complément (26.10, « pas de vrai dry hopping ») : 4 et 8 g/L, et la saturation
+- Moteur : `dryHop: { doseGL }` impose une dose à tout le groupe ; `dose.imposee` = « dose générique, sans source de style ». La règle (1 à 1,5 g/L) ne bouge pas (test). Défaut inchangé : même preuve à l'octet (144 appels, sha256 f2f5e374…).
+- `sortie-m7.json`, `jeux[i].dryHop.dosesImposees["4 g/L" | "8 g/L"]` : groupes actif et après, ordre k3, 5 premiers avec, par rangée : `apporte.effets` (12 familles), `debordement` (crans, familles, effets de bord), `amertumeAFroid`, `motDeLaFiche`, `doseImposee`, `drapeaux` ; `cequiDistingue` ; rangs des 5 phares ; `cumulAuDessusDuRepereDeRevue`. `dryHop.saturation` : la courbe et la ligne dite.
+- **Ça sature** (agrumes, ajout seul, 21C ; Citra, identique pour tout houblon qui cite la famille) :
+  - actif : 35 points à 1,5 g/L (1,05 cran), 55,6 à 4 (1,67), 64,8 à 8 (1,94). +20,6 de 1,5 à 4 g/L (8,2 points par g/L), +9,2 de 4 à 8 (2,3 par g/L) : pente ÷ 3,6.
+  - après : 42,1 (1,26 cran), 64,1 (1,92), 73 (2,19) ; +22 puis +8,9 : pente ÷ 4.
+  - Doubler de 4 à 8 g/L (160 g sur 20 L) ajoute 0,27 cran d'agrumes. Convention du moteur, non mesurée sur bière hors du Cascade de Lafontaine (domaine 0 à 16 g/L).
+- Ce que 4 et 8 g/L changent dans les listes (k3, actif ; après : mêmes ordres à ± 1) : tête NZH-107, Galaxy, Medusa, Nectaron, Samba, **la même qu'à 1,5 g/L** ; Galaxy 2e ; Citra 54e, Mosaic 132e, Nelson Sauvin 98e, Motueka 101e. Le débordement du style (crans au-dessus de la bande, `overflowTotal`) **grandit avec la dose** : Citra 0,84 → 4,18 → 5,88 (1,5, 4, 8 g/L) ; Nelson Sauvin 3,88 → 8,99 → 12,12 ; Mosaic 5,14 → 15,26 → 20,94 ; Motueka 3,6 → 9,07 → 12,42 ; Galaxy 0 aux trois doses. Leur rang ne bouge pas parce qu'il est déjà bas. À 4 et 8 g/L ces quatre houblons débordent la bande de façon visible : la DÉCISION sur le débordement plus bas reste entière et pèse davantage.
+- **À 8 g/L**, le dry hop cumulé avec les 80 g de Cascade déjà là fait 12 g/L : les 152 voies portent le drapeau de revue (> 8 g/L). **À 4 et 8 g/L, l'amertume à froid devient « incomplete », sans valeur** : la dose cumulée (8 et 12 g/L) dépasse le domaine des essais (7,73 g/L, froid.ts). À 1,5 g/L (cumul 5,5) elle est « conditional », 19,7 à 42,3 mg/L éq. iso-α. La maquette ne peut donc pas afficher une amertume à froid à ces doses : « hors du domaine des essais ».
+- Distance à la visée : à 4 g/L elle est de 0,2 environ (dépassement de la visée de +1 cran), à 8 g/L 0,3 : la visée « +1 cran » n'est plus la question à ces doses, la dose est choisie par le brasseur, pas par la visée.
 
 ## Les listes (21C, plus d'agrumes ; 152 houblons par groupe de dry hop ; 205 à 60′)
 - **60′, +10 IBU** : Moutere (α 18,5 %), Vic Secret, Apollo, Eclipse, Ahhhroma ; 113 houblons exclus par conflit de famille. « Remplacer Nugget à IBU égal » : Cascade 38 g, Cashmere, Mandarina Bavaria, Centennial, Triumph (plus de Callista ni de Monroe 94 g en tête).

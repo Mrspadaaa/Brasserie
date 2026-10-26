@@ -117,6 +117,9 @@ function ligneDry(m: Moteur, v: Voie, i: number, tous: Voie[], cle: Departage, s
     ...apport(v, style, idVariete(m, v)),
     rang: v.rank, houblon: a.hopName, id: idVariete(m, v), moment: a.momentLabel, grammes: a.grams, gParL: d.gPerL, borne: d.borne,
     effetAgrumes: v.effect.citrus.central, ibuAvant: v.ibu.before, ibuApres: v.ibu.after,
+    // Débordement de la bande du style imputable à cette dose, en crans (famille, statut, crans) ; les effets de bord dans la bande à part.
+    debordement: { totalCrans: v.overflowTotal, familles: v.styleOverflow.map((o) => ({ famille: FAMILY_NAMES[o.family], statut: o.status, crans: o.crans })), effetsDeBordDansLaBandeCrans: v.sideTotal },
+    ...(d.imposee ? { doseImposee: d.imposee } : {}),
     amertumeAFroid: { statut: f.statut, doseCumuleeGL: f.doseGL === null ? null : r1(f.doseGL), equivalentFinalMgL: arrondiPlage(f.equivalentFinal), ajouteMgL: arrondiPlage(f.delta), nature: f.nature, raisons: f.raisons },
     motDeLaFiche: mot, distance: v.distance.total, domaine: v.domain, stock: v.stock.status, enStockG: v.enStock ?? null,
     cle: v.departage ? { mode: cle, valeurs: v.departage.cle, origines: v.departage.origine } : null,
@@ -164,6 +167,28 @@ function jeu(m: Moteur, nom: string) {
     };
     dry[cle] = { actif: groupe(d.actif), apres: groupe(d.apres) };
   }
+  // Complément (message du 26.10) : la même liste à 4 et à 8 g/L, doses GÉNÉRIQUES sans source de style (la règle de 1 à 1,5 g/L reste celle ci-dessus), ordre sous k3.
+  const fixes: Record<string, unknown> = {};
+  for (const doseGL of [4, 8]) {
+    const d = m.proposeVoies(R21C, VISEE, { ...GRAND, dryHop: { doseGL }, departage: 'k3' }).dryHop!;
+    const groupe = (vs: Voie[]) => {
+      const cinq = vs.slice(0, 5), mdist = motsDistinctifs(m, cinq.map((v) => idVariete(m, v)), 'citrus');
+      return { nombreDeVoies: vs.length, premierGroupe: tete(vs), premiers: cinq.map((v, i) => ligneDry(m, v, i, vs, 'k3', style, mdist[i])),
+        cequiDistingue: { lesCinqPremieres: distinguer(cinq, style, gDry), toutLeGroupe: distinguer(vs, style, gDry) }, phares: rangsDe(m, vs), cumulAuDessusDuRepereDeRevue: vs.filter((v) => (v.drapeaux?.length ?? 0) > 0).length };
+    };
+    fixes[`${doseGL} g/L`] = { marque: 'dose générique, sans source de style', doseGL, ordre: 'k3 (radar Beer Maverick, ordre seulement)', actif: groupe(d.actif), apres: groupe(d.apres) };
+  }
+  dry.dosesImposees = fixes;
+  // Est-ce que ça sature ? L'effet de l'ajout seul (convention du moteur) de Citra à 1,5, 4 et 8 g/L, par moment ; la montée en points et en crans.
+  const cran = style.families.citrus.cran;
+  const courbe = (moment: 'dryActive' | 'dryPost') => {
+    const pts = Object.fromEntries([1.5, 4, 8].map((gl) => [gl, m.additionEffect({ id: 'x', hopKey: 'beermaverick-citra', moment, grams: gl * R21C.volumeL }, R21C)!.citrus.central!])) as Record<number, number>;
+    const a = pts[4] - pts[1.5], b = pts[8] - pts[4];
+    return { pointsAgrumes: pts, cransAgrumes: Object.fromEntries(Object.entries(pts).map(([k, x]) => [k, r2(x / cran)])),
+      de1_5a4: { points: r1(a), parGParL: r2(a / 2.5) }, de4a8: { points: r1(b), parGParL: r2(b / 4) }, rapportDesPentes: r2((b / 4) / (a / 2.5)),
+      ligne: `${moment === 'dryActive' ? 'Actif' : 'Après'} : ${pts[1.5]} points à 1,5 g/L, ${pts[4]} à 4, ${pts[8]} à 8 : +${r1(a)} de 1,5 à 4 g/L (${r2(a / 2.5)} point par g/L), +${r1(b)} de 4 à 8 g/L (${r2(b / 4)} point par g/L). ${b / 4 < 0.5 * (a / 2.5) ? 'Ça sature' : 'Ça ne sature pas'} : la pente est divisée par ${r1((a / 2.5) / (b / 4))} entre les deux tronçons.` };
+  };
+  dry.saturation = { houblon: 'Citra (l’effet d’une famille citée est le même pour tous les houblons qui la citent)', famille: 'agrumes', convention: 'effet de l’ajout seul, sans le Cascade déjà dans la recette ; échelle 0 à 100 du moteur, cran du style = ' + r1(cran) + ' points', actif: courbe('dryActive'), apres: courbe('dryPost') };
   sortie.dryHop = dry;
   return sortie;
 }
