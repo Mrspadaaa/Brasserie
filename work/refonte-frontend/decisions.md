@@ -975,3 +975,4 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - **Place réservée.** Le groupe « Remplacer », calculé en différé, a sa place réservée : 0 px de saut.
   - **Banc.** Le banc de fluidité mesure `proposerRapide`, c'est-à-dire le premier affichage.
   - **B5.** Il mesure 163,0 ko pour 162. On cherche d'abord ce qui a grossi ; le brasseur décide.
+- D109 (l'utilisateur, 26.10, sur « B5 à 163,0 ko pour 162 : 164 ko ? ») : « Je l'accepte ». Le budget B5 passe à 164 ko.
