@@ -960,3 +960,12 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     égal se calculeront au repos ou après le premier affichage.
   - **Les tests de départage sont adaptés.** La clé `ordrePool` est désormais dans le rang.
   - **À 60′, Substituer recule les remplaçants d'usage « arôme »**, avec la même lecture que Suggérer.
+- D107 (pilote, 26.10, diagnostic f3 de la liste « Ajouter », voie f5) : on fait maintenant ce qui ne change que l'ordre ou le coût.
+  - **P1, le tri K3** : seules les familles indésirables pénalisent, et les familles neutres viennent en frein après les attendues.
+    Mosaic passe de la 23e à la 2e place des achats en IPA.
+  - **P2, la comparaison par clé** : Citra simple redevient candidat.
+  - **P3, `ibuParMoment` paresseux** : 2,4 à 3,5 ms de moins.
+  - **P5 A, la règle écrite honnêtement** : « dose de départ, pas une dose de style ».
+  - **P6, les témoins.**
+
+  P4 (places et formes) et P5 B et C (dose et moment par houblon) seront montrés en mini maquettes.

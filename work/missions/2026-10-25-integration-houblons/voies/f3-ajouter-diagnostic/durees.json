@@ -1,0 +1,23 @@
+{
+ "durees": [
+  {
+   "catalogue": "base 317 (317 variétés)",
+   "premierCalculAvecContexteMs": 19,
+   "recetteNouvelleMedianeMs": 9,
+   "min": 8.7,
+   "max": 10.1,
+   "dontIbuParMomentPourToutesLesLignesMs": 2.2,
+   "triParVarianteSurToutesLesLignesMs": 0.18
+  },
+  {
+   "catalogue": "plein 505 (505 variétés)",
+   "premierCalculAvecContexteMs": 13,
+   "recetteNouvelleMedianeMs": 12.5,
+   "min": 12.2,
+   "max": 14.3,
+   "dontIbuParMomentPourToutesLesLignesMs": 3.2,
+   "triParVarianteSurToutesLesLignesMs": 0.21
+  }
+ ],
+ "note": "ms, vite-node, non déterministe"
+}
