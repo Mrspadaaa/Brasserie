@@ -190,7 +190,7 @@ Le contexte de cette session était à 50 % (500 k) : reprendre dans une **sessi
 - Hébergement au commit **9dba6971** (D95) : d4, Substituer v2 avec l'IA (puce dans la tête), D90, son choix D dans Dryhopper, s1, t1,
   le ★, la bulle du jour.
 - Callable **hopReclasserIA** déployé seul, en europe-west6 (D92).
-- La branche `claude/refonte-houblons-v4` a été poussée jusqu'à 292a45c1. Les commits locaux suivants **ne sont pas poussés**.
+- Branche `claude/refonte-houblons-v4` poussée jusqu’à 2c87c4d8 (tous les commits) ; le travail des voies arrêtées n’est pas commité (ci-dessous).
 
 ### Commité, non déployé (après 9dba6971)
 - g2b (e511311b, 31aa9605) : options `palier60` et `dryHop`, la sortie de m7.
