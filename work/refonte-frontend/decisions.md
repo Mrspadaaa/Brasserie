@@ -724,3 +724,8 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   modèles » échoue. Le reste de l'app n'est pas touché. Cause de méthode : d2 et le rejeu avant déploiement n'ont joué que les tests
   de leur dossier, sans chercher les autres lecteurs du fichier changé. Correction : voie r180-pack (les fiches sortent dans
   `hopBeerMaverickFiches.json`, le pack redevient celui d'avant d2), puis redéploiement. L17 complétée.
+- D80 (l'utilisateur, 26.10, sur la page m3 et la question « Je branche D … avec Gemini facturé en production ? ») : « non D, C + IA
+  mais je pense que le moteur doit être revue ». Choix : D (C par défaut hors ligne, puis IA Flash-Lite), accord donné pour Gemini
+  facturé en production sur cet usage (~0,003 CHF par recherche). Rien n'est branché avant la revue du moteur de substitution,
+  qu'il demande, à la lumière de l'article de Beer Maverick « Your hop substitutions are wrong » (lecture en cours, vérification
+  anti-robot passée par lui-même dans son Chrome).
