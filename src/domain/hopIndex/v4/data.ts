@@ -101,19 +101,37 @@ export function depliee(brut: { varieties: unknown[] } & DescripteursCompacts): 
 export const ID_FUSIONNES: Readonly<Record<string, string>> = (protoData as unknown as { idsFusionnes?: Record<string, string> }).idsFusionnes ?? {};
 let ajoutsCharges: CatalogueHop[] | null = null;
 let ajoutsEnCours: Promise<CatalogueHop[]> | null = null;
+// c7 : le catalogue plein (Beer Maverick puis les ajouts) est UN tableau, construit une fois à l'arrivée des ajouts : son identité est stable,
+// donc un moteur créé sur lui est reconnu par identité (moteur.ts) et ses caches survivent. Les écrans s'abonnent à l'arrivée.
+let pleinCharge: CatalogueHop[] | null = null;
+const ecouteursPlein: (() => void)[] = [];
+/** Le catalogue plein (505 variétés) s'il est arrivé, sinon null : jamais de chargement implicite. Même tableau à chaque lecture. */
+export const cataloguePleinCharge = (): CatalogueHop[] | null => pleinCharge;
+/** Appelle `f` une fois à l'arrivée des ajouts (tout de suite si déjà arrivés) ; rend le désabonnement. */
+export function siCataloguePleinArrive(f: () => void): () => void {
+  if (pleinCharge) { f(); return () => {}; }
+  ecouteursPlein.push(f);
+  return () => { const i = ecouteursPlein.indexOf(f); if (i >= 0) ecouteursPlein.splice(i, 1); };
+}
 /** Les variétés ajoutées par c6 (citées par les sources, absentes de Beer Maverick), chargées à la demande : un morceau à part, jamais dans le démarrage
  * ni dans le chunk des outils (budget B5). Un seul chargement, partagé. Le moteur par défaut ne les lit pas : un appelant qui les veut crée son moteur
  * avec `chargerCataloguePlein()`. */
 export function chargerAjouts(): Promise<CatalogueHop[]> {
   ajoutsEnCours ??= import('../../../data/hopV4/catalogue-ajouts.json')
-    .then((m) => (ajoutsCharges = depliee((m.default ?? m) as unknown as { varieties: unknown[] } & DescripteursCompacts)))
+    .then((m) => {
+      ajoutsCharges = depliee((m.default ?? m) as unknown as { varieties: unknown[] } & DescripteursCompacts);
+      pleinCharge = [...CATALOGUE, ...ajoutsCharges];
+      // Les abonnés dans l'ordre : la configuration des données (parcours/donnees.ts) passe avant les écrans qui se réaffichent.
+      for (const f of ecouteursPlein.splice(0)) { try { f(); } catch (e) { console.error('catalogue plein : un abonné a échoué', e); } }
+      return ajoutsCharges;
+    })
     .catch((e) => { ajoutsEnCours = null; throw e; });
   return ajoutsEnCours;
 }
 /** Les ajouts déjà chargés, sinon null (jamais de chargement implicite). */
 export const ajoutsDejaCharges = (): CatalogueHop[] | null => ajoutsCharges;
 /** Beer Maverick puis les variétés des sources : le catalogue complet, dans un ordre fixe (les documentées d'abord n'est pas promis : voir `peuDeDonnees`). */
-export const chargerCataloguePlein = async (): Promise<CatalogueHop[]> => [...CATALOGUE, ...(await chargerAjouts())];
+export const chargerCataloguePlein = async (): Promise<CatalogueHop[]> => { await chargerAjouts(); return pleinCharge!; };
 export const DONNEES_FIXTURE: DonneesMoteur ={ catalogue: depliee(protoData as unknown as { varieties: unknown[] } & DescripteursCompacts), stock: protoData.stock as unknown as StockHop[] };
 /** Les fixtures, pour les écrans qui les citent (cas du parcours) ; aucun module du moteur ne les lit. */
 export const CATALOGUE = DONNEES_FIXTURE.catalogue;

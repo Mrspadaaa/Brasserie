@@ -19,3 +19,5 @@
 .rb-qi { font-size: 12px; font-weight: 700; fill: rgb(var(--cave-400)); }
 .rb-marque-pale { stroke: rgb(var(--cave-400)); stroke-dasharray: 3 2; }
 .rb-secteur-pale { opacity: .5; }
+/* Le trou du 0 (D114, variante G de m8) : gris uni très clair, liseré gris, ni hachures ni mot. */
+.rb-trou { fill: #e6e8eb; stroke: #9ea3aa; stroke-width: 1.2; }

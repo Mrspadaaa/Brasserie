@@ -1,0 +1,6 @@
+POOL_BORNE 80
+21C agrumes          phares attendus 8, manquants : aucun
+16D floral           phares attendus 6, manquants : aucun
+16D moins résineux   phares attendus 8, manquants : mosaic, cascade
+chaud 21C agrumes 106 ms ; 16D floral 86 ms
+FIN

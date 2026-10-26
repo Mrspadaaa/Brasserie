@@ -1,0 +1,218 @@
+{
+ "lotus": "beermaverick-lotus",
+ "fiche": {
+  "echelle": 1,
+  "secteurSansDonnee": true,
+  "tiretes": [
+   {
+    "serie": "Lotus",
+    "balise": "line",
+    "auCentre": 42,
+    "seuil": 30,
+    "ok": true
+   }
+  ],
+  "pointsMin": 8,
+  "points": 4,
+  "aireMin": 9.84,
+  "fondMin": 9.84
+ },
+ "substituerCompares": [
+  "Solero",
+  "Calypso"
+ ],
+ "substituer": {
+  "echelle": 1,
+  "secteurSansDonnee": true,
+  "tiretes": [
+   {
+    "serie": "Solero",
+    "balise": "line",
+    "auCentre": 17,
+    "seuil": 28,
+    "ok": false
+   },
+   {
+    "serie": "Calypso",
+    "balise": "line",
+    "auCentre": 24,
+    "seuil": 28,
+    "ok": false
+   },
+   {
+    "serie": "Lotus",
+    "balise": "line",
+    "auCentre": 24,
+    "seuil": 28,
+    "ok": false
+   }
+  ],
+  "pointsMin": 6,
+  "points": 18,
+  "aireMin": 3.1,
+  "fondMin": 3.42
+ },
+ "comparer-absolu": {
+  "echelle": 1,
+  "secteurSansDonnee": true,
+  "tiretes": [
+   {
+    "serie": "Lotus",
+    "balise": "line",
+    "auCentre": 27,
+    "seuil": 23,
+    "ok": true
+   },
+   {
+    "serie": "Lotus",
+    "balise": "line",
+    "auCentre": 0,
+    "seuil": 30,
+    "ok": false
+   },
+   {
+    "serie": "Lotus",
+    "balise": "line",
+    "auCentre": 23,
+    "seuil": 23,
+    "ok": false
+   },
+   {
+    "serie": "Calypso",
+    "balise": "line",
+    "auCentre": 20,
+    "seuil": 30,
+    "ok": false
+   },
+   {
+    "serie": "Calypso",
+    "balise": "line",
+    "auCentre": 30,
+    "seuil": 27,
+    "ok": true
+   },
+   {
+    "serie": "Calypso",
+    "balise": "line",
+    "auCentre": 20,
+    "seuil": 21,
+    "ok": false
+   },
+   {
+    "serie": "Solero",
+    "balise": "line",
+    "auCentre": 28,
+    "seuil": 24,
+    "ok": true
+   },
+   {
+    "serie": "Solero",
+    "balise": "line",
+    "auCentre": 21,
+    "seuil": 30,
+    "ok": false
+   }
+  ],
+  "pointsMin": 6,
+  "points": 14,
+  "aireMin": 3.16,
+  "fondMin": 5.18
+ },
+ "comparer-style": {
+  "echelle": 1,
+  "secteurSansDonnee": true,
+  "tiretes": [
+   {
+    "serie": "Lotus",
+    "balise": "line",
+    "auCentre": 79,
+    "seuil": 30,
+    "ok": true
+   },
+   {
+    "serie": "Lotus",
+    "balise": "line",
+    "auCentre": 0,
+    "seuil": 30,
+    "ok": false
+   },
+   {
+    "serie": "Lotus",
+    "balise": "line",
+    "auCentre": 65,
+    "seuil": 30,
+    "ok": true
+   },
+   {
+    "serie": "Calypso",
+    "balise": "line",
+    "auCentre": 50,
+    "seuil": 30,
+    "ok": true
+   },
+   {
+    "serie": "Calypso",
+    "balise": "line",
+    "auCentre": 87,
+    "seuil": 30,
+    "ok": true
+   },
+   {
+    "serie": "Calypso",
+    "balise": "line",
+    "auCentre": 71,
+    "seuil": 30,
+    "ok": true
+   },
+   {
+    "serie": "Solero",
+    "balise": "line",
+    "auCentre": 81,
+    "seuil": 30,
+    "ok": true
+   },
+   {
+    "serie": "Solero",
+    "balise": "line",
+    "auCentre": 50,
+    "seuil": 30,
+    "ok": true
+   }
+  ],
+  "pointsMin": 6,
+  "points": 14,
+  "aireMin": 3.16,
+  "fondMin": 5.18
+ },
+ "ma-biere": {
+  "echelle": 1,
+  "secteurSansDonnee": false,
+  "tiretes": [
+   {
+    "serie": "ma dégustation",
+    "balise": "line",
+    "auCentre": 50,
+    "seuil": 30,
+    "ok": true
+   },
+   {
+    "serie": "ma dégustation",
+    "balise": "line",
+    "auCentre": 35,
+    "seuil": 30,
+    "ok": true
+   },
+   {
+    "serie": "ma dégustation",
+    "balise": "line",
+    "auCentre": 16,
+    "seuil": 30,
+    "ok": false
+   }
+  ],
+  "pointsMin": 8,
+  "points": 5,
+  "aireMin": 5.18,
+  "fondMin": 5.18
+ }
+}

@@ -28,7 +28,7 @@ export function Radar({ axes, cols, retenu, absolu, moment }: Props) {
   }));
   return (
     <RadarBase familles={axes} series={series} mode={absolu ? 'absolu' : 'style'} moment={moment ? etape(moment).dit : undefined}
-      zone={zone} reference={absolu ? { nom: `ta ${termes().biere}`, valeurs: stout } : undefined} objet="houblons" className="pq-comparer-radar"
+      zone={zone} reference={absolu ? { nom: `ta ${termes().biere}`, valeurs: stout } : undefined} objet="houblons" className="pq-comparer-radar" trouDuZero ecarterConfondus
       label={(haut) => `Radar ${absolu ? 'absolu' : 'au style'}${nomRetenu ? ` : ${nomRetenu} plein` : ''}, de 0 à ${haut} crans : ${cols.map((c) => c.houblon.nom).join(', ')}`} />
   );
 }

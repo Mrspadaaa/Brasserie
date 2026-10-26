@@ -1,0 +1,15 @@
+{"mode":"rapide","chauffe-ms":456.6,"premier-appel-ms":195.2}
+{"mode":"rapide","chauffe-ms":414.9,"premier-appel-ms":193.9}
+{"mode":"rapide","chauffe-ms":432.1,"premier-appel-ms":195.5}
+{"mode":"rapide","chauffe-ms":527.4,"premier-appel-ms":187.6}
+{"mode":"rapide","chauffe-ms":417.6,"premier-appel-ms":190.7}
+{"mode":"complet","chauffe-ms":414.8,"premier-appel-ms":229.9}
+{"mode":"complet","chauffe-ms":471.5,"premier-appel-ms":234.8}
+{"mode":"complet","chauffe-ms":428.7,"premier-appel-ms":231.8}
+{"mode":"complet","chauffe-ms":495.4,"premier-appel-ms":230.8}
+{"mode":"complet","chauffe-ms":470.5,"premier-appel-ms":274.9}
+{"mode":"complet-sans-chauffe","premier-appel-ms":462.9}
+{"mode":"complet-sans-chauffe","premier-appel-ms":441}
+{"mode":"complet-sans-chauffe","premier-appel-ms":524.1}
+{"mode":"complet-sans-chauffe","premier-appel-ms":450.6}
+{"mode":"complet-sans-chauffe","premier-appel-ms":528.4}

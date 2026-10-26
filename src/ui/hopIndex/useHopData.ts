@@ -69,7 +69,11 @@ export function useHopData(recette?: Pick<Recipe, 'id' | 'batchRef'> | null): Do
   const articles = useStorageValue(lireArticles);
   const brassins = useStorageValue(lireBrassins);
   const degustations = useStorageValue(lireDegustations);
-  const catalogue = outils ? outils.moteur.CATALOGUE : null;
+  // c7 : les variétés ajoutées (188) arrivent au repos, après le premier rendu ; le stock se relie alors aux 505 variétés (Krush, Dolcita…).
+  const [, majPlein] = useState(0);
+  const plein = outils ? outils.cataloguePleinCharge() : null;
+  useEffect(() => { if (outils && !plein) return outils.siCataloguePleinArrive(() => majPlein((n) => n + 1)); }, [outils, plein]);
+  const catalogue = outils ? (plein ?? outils.moteur.CATALOGUE) : null;
 
   const reliure = useMemo(() => (catalogue ? relierStock(articles, catalogue) : null), [articles, catalogue]);
   const signatureStock = reliure ? JSON.stringify(reliure.stock) : '';
@@ -77,7 +81,7 @@ export function useHopData(recette?: Pick<Recipe, 'id' | 'batchRef'> | null): Do
   const relies = stable(reliure?.relies ?? [], reliure ? JSON.stringify(reliure.relies) : '');
   const nonRelies = stable(reliure?.nonRelies ?? [], reliure ? JSON.stringify(reliure.nonRelies) : '');
 
-  const moteur = useMemo(() => (outils ? outils.moteur.creerMoteur({ catalogue: outils.moteur.CATALOGUE, stock }) : null), [outils, stock]);
+  const moteur = useMemo(() => (outils && catalogue ? outils.moteur.creerMoteur({ catalogue, stock }) : null), [outils, catalogue, stock]);
 
   const trouvee = degustationDeRecette(recette, brassins, degustations);
   const niveaux = trouvee ? niveauxDegustes(trouvee.degustation) : null;

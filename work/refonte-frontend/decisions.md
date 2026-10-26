@@ -982,3 +982,45 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     fichier, et la production a servi une page 404 pendant environ 3 minutes. Je l'ai vu en lisant la page servie. Le renvoi a envoyé
     242 fichiers et la production est rétablie (`index-Tex7XoAl.js`). Leçon ajoutée à L17.
   - Une PR vers main est ouverte et sera fusionnée une fois le rejeu de fb0d14e3 vert.
+- D111 (pilote, 26.10, voie f6) : dès que la préchauffe a eu lieu, Suggérer fait l'appel complet d'emblée. Cela donne 0 px de saut,
+  aucun vide, et 232 ms au premier affichage, contre 194 ms différé et 206 ms sur HEAD. Sans préchauffe, l'arrivée reste différée, avec
+  une place réservée à sa hauteur. f6 a aussi ajouté une règle, gardée : une visée « moins de… » fait l'appel complet d'emblée. Sans
+  cela, « Aucune voie houblon » s'affichait, puis tout descendait de 463 px. Voie f7.
+- D112 (26.10) : la PR #188 est fusionnée dans main, en verrouillant sa tête sur 2cccbdc0 (fb0d14e3 et des documents, en ligne et
+  rejoués). Le commit de fusion est 71dc41bb.
+  - Les 10 états de Dryhopper en échec venaient de c6 : les rattachements par alias changent le profil de la stout S1 d'environ
+    1 point, et « trop amer » apparaît au contre ★. C'est un effet des données, établi par bissection. Ils sont mis à jour (e5,
+    83aee2c1).
+  - Le contrôle « sources une fois » ne passait pas à cause de l'état laissé par le contrôle précédent. Seul, il passe.
+  - Le lot moteur (689160fb) n'est pas encore poussé : rejeu, puis deuxième déploiement, puis nouvelle PR.
+- D113 (pilote, 26.10, voie u2) : un ajout d'ébullition entre 10′ et 60′ est interpolé (D177). Les finitions sont confiées à la voie
+  u3 :
+  1. Une valeur interpolée se marque d'un rond en pointillé, et la légende « interpolé » n'apparaît que si le cas existe.
+  2. La raison au survol est propre à l'ajout : « ajout à 40′ hors des moments simulés ».
+  3. Un whirlpool sans température est simulé à 80 °C, avec « 80 °C supposé ».
+- D114 (brasseur, 26.10, page m8) : « G le trou du o, met ça sur tout les radar de comparaison btw ». Le disque du 0 (« non décrit ») est
+  teinté de gris, et un point qui y tombe est creux.
+  - Lecture étroite (L01) : les radars qui comparent des houblons, Substituer et Comparer (style et absolu). Ma bière et la fiche n'ont
+    pas ce cas.
+  - Registre : `choix/ecrans.json`, comparer et substituer, `complements`.
+  - Port confié à la voie p7.
+- D115 (pilote, 26.10, voie e6) : la préchauffe de Suggérer bloque le fil principal 1207 ms d'un coup, à processeur ×4 (f6). Le
+  déploiement est bloqué jusqu'au passage dans le worker (voie w1).
+  - Face à face de Substituer : le choix par défaut du stock saute les candidats reculés à 60′ (produits ou usage « arôme »). Cela
+    corrige « Nugget → Citra cryo » (D102 A).
+  - e6 : le test V5.5 avait un délai trop court. Aucun commit n'était fautif. 13 états sont actualisés, aucun acquis n'est perdu.
+    Le repère `etat-acquis-plus-comparer` est posé sur la ligne « + ».
+- D116 (26.10, vers 23 h) : l'hébergement est redéployé au commit **be15e480**, depuis la copie propre où personne d'autre n'écrivait.
+  Firebase a envoyé 246 fichiers, et la page servie porte le titre de l'app et `index-BCQv3ZH1.js`.
+  - **Contenu** :
+    - les 505 variétés branchées (c7) ;
+    - l'affinage (f2, f4, f5) ;
+    - Suggérer sans saut, avec la préchauffe dans le worker (f6, f7, w1) ;
+    - le face à face sans produit d'arôme à 60′ ;
+    - le radar : tiretés le long du bord, points visibles, trou du 0 (son choix G), points écartés (r2, p7) ;
+    - l'interpolation de 10′ à 60′ (u2, u3) ;
+    - l'export concis (x2), sans NaN (e7).
+  - **Preuves** :
+    - rejeu complet de b1d73ea1 : tsc, vitest, build, B5 à 163,5 ko pour 164, worker de production, 10 contrôles Chrome ;
+    - rejeu ciblé de be15e480 : 996 tests verts sur 996 (dont le monkey testing), états 138/138, RADAR-BASE OK, WORKER PROD OK.
+  - **Reste ouvert** : les 6 budgets de fluidité déjà dépassés, et des tâches de 100 à 250 ms après la préchauffe (D101).

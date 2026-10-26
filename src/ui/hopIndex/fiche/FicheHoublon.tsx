@@ -23,6 +23,7 @@ import { sourceAlpha, StockIcone, Usage } from './briques';
 import { Matrice, NonDecrites } from './Matrice';
 import { noterFermeture, useGestesFiche } from './gestes';
 import { RadarFiche } from './RadarFiche';
+import { MarquesCatalogue } from './marques';
 import { Replis, ReplisBoutons, useReplis } from './Replis';
 import { sourcesFiche, type SourcesFiche } from './sources';
 import './fiche.css';
@@ -183,6 +184,7 @@ export function FicheHoublon({ cle, onFermer }: { cle: string; onFermer: () => v
             </span>
             <span data-element="g1-usage" className="ml-auto shrink-0 inline-flex items-center gap-1.5"><StockIcone h={h} /><Usage h={h} long /></span>
           </div>
+          <div data-element="g1-marques" className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0 empty:hidden"><MarquesCatalogue cle={cle} /></div>
           {noteAlpha && <p data-role="fiche-note-alpha" className="text-sm text-cave-400 leading-snug">{noteAlpha}</p>}
         </div>
 

@@ -29,7 +29,12 @@ const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recett
 // empreintes sont rejouées et NE BOUGENT PAS (mesuré : la liste retenue de ce cas, stout, floral +1 / résineux −1, garde les mêmes voies dans le même ordre) ; l'ordre de
 // Suggérer au dry hop est contrôlé dans tests/unit/hopIndexV4/apportCDefaut.test.ts.
 // c6 (26.10, catalogue-complet) : suggerer 166a7dbd9516 → af7f2ecc1069 (Equinox est Ekuanot ; 26 variétés rattachées à des fiches de plus par la table d'alias).
-const EMPREINTES = { substitutes: 'cac6de6d0c72', suggerer: 'af7f2ecc1069', proposer: '31d7feb6324c', remplacants: '32e2ef725fec' };
+// D102 (voie f2-affinage-a-b1-c-d, 26.10), trois empreintes sur quatre : suggerer ne bouge pas.
+//  - proposer 31d7feb6324c → 3b946ac8a4ff (B1, D105 : le pool « à acheter » n'est plus coupé à 6 avant le classement mais à 80, et l'ordre de qualité du pool (documentation d'abord)
+//    départage avant les effets de bord : les 4 voies « à acheter » de S1 passent d'Aurum, East Kent Goldings, Boadicea, Celeia à East Kent Goldings, Hallertau Tradition, Huell Melon, Saphir. 14 rangées, 230 → 932 voies évaluées).
+//  - D106 (voie f4, 3) : remplacants e6b71ac8e04d → 5c602de7c804 (à 60′, un houblon d'usage « arôme » de Beer Maverick recule avec sa raison écrite, comme Suggérer le lit) et substitutes c6399d7b6596 → 289ca4efaed4 ; proposer et suggerer ne bougent pas.
+//  - remplacants 32e2ef725fec → e6b71ac8e04d et substitutes cac6de6d0c72 → c6399d7b6596 (C, J1 : à 60′ l'α passe de 0,4 à 0,15 dans l'amertume ; β 0,25, cohumulone 0,3, usage 0,3)).
+const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: 'af7f2ecc1069', proposer: '3b946ac8a4ff', remplacants: '5c602de7c804' };
 const forme = {
   substitutes: (sr: ReturnType<typeof CALCULS.substitutes>) => empreinte(sr.remplacants.map((r) => [r.key, r.rank, r.score, r.dose, r.stock, r.raison, r.amertumeDeconseillee])),
   suggerer: (c: ReturnType<typeof CALCULS.suggerer>) => empreinte(c.map((x) => [x.cle, x.visee, x.besoin])),

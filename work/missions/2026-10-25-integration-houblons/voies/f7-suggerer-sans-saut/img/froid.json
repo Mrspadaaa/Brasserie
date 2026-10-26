@@ -1,0 +1,279 @@
+[
+ {
+  "cas": "21C-agrumes",
+  "mode": "froid",
+  "preChauffeAvantOuverture": [],
+  "ouvertureMs": 1494,
+  "tachesLiberees": 2,
+  "arriveeMs": 4901,
+  "avant": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "meme-2",
+    "meme-3",
+    "ajouter",
+    "remplacer-place",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 1827.2,
+   "levure": 1986.2,
+   "remplacer": null,
+   "place": 1,
+   "placeHauteur": 42,
+   "videAvantDryhop": 0,
+   "hauteurPage": 844,
+   "verdicts": {
+    "citrus": "Atteint"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "apres": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "meme-2",
+    "meme-3",
+    "ajouter",
+    "remplacer-place",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 1827.2,
+   "levure": 1986.2,
+   "remplacer": null,
+   "place": 1,
+   "placeHauteur": 42,
+   "videAvantDryhop": 0,
+   "hauteurPage": 844,
+   "verdicts": {
+    "citrus": "Atteint"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "ecartDryhop": 0,
+  "ecartLevure": 0,
+  "verdictsChanges": []
+ },
+ {
+  "cas": "21C-floral-agrumes-moins-resineux",
+  "mode": "froid",
+  "preChauffeAvantOuverture": [],
+  "ouvertureMs": 1179,
+  "tachesLiberees": 0,
+  "arriveeMs": 4901,
+  "avant": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "ajouter",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 2039.7,
+   "levure": 2214.7,
+   "remplacer": null,
+   "place": 0,
+   "placeHauteur": 0,
+   "videAvantDryhop": 0,
+   "hauteurPage": 844,
+   "verdicts": {
+    "resin": "Aucune",
+    "floral": "Aucune",
+    "citrus": "Atteint"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "apres": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "ajouter",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 2039.7,
+   "levure": 2214.7,
+   "remplacer": null,
+   "place": 0,
+   "placeHauteur": 0,
+   "videAvantDryhop": 0,
+   "hauteurPage": 844,
+   "verdicts": {
+    "resin": "Aucune",
+    "floral": "Aucune",
+    "citrus": "Atteint"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "ecartDryhop": 0,
+  "ecartLevure": 0,
+  "verdictsChanges": []
+ },
+ {
+  "cas": "16D-floral",
+  "mode": "froid",
+  "preChauffeAvantOuverture": [],
+  "ouvertureMs": 1074,
+  "tachesLiberees": 2,
+  "arriveeMs": 1147,
+  "avant": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "meme-2",
+    "ajouter",
+    "remplacer-place",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 1786.2,
+   "levure": 1945.2,
+   "remplacer": null,
+   "place": 1,
+   "placeHauteur": 42,
+   "videAvantDryhop": 0,
+   "hauteurPage": 844,
+   "verdicts": {
+    "floral": "Aucune"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "apres": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "meme-2",
+    "ajouter",
+    "remplacer",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 1786.2,
+   "levure": 1945.2,
+   "remplacer": 1655.2,
+   "place": 0,
+   "placeHauteur": 0,
+   "videAvantDryhop": 0,
+   "hauteurPage": 844,
+   "verdicts": {
+    "floral": "Aucune"
+   },
+   "lignes": 14,
+   "lignesRemplacer": 1
+  },
+  "ecartDryhop": 0,
+  "ecartLevure": 0,
+  "verdictsChanges": []
+ },
+ {
+  "cas": "16D-moins-resineux",
+  "mode": "froid",
+  "preChauffeAvantOuverture": [],
+  "ouvertureMs": 732,
+  "tachesLiberees": 0,
+  "arriveeMs": 905,
+  "avant": {
+   "groupes": [
+    "remplacer",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 1365.9,
+   "remplacer": 274.4,
+   "place": 0,
+   "placeHauteur": 0,
+   "videAvantDryhop": null,
+   "hauteurPage": 844,
+   "verdicts": {
+    "resin": "Aucune"
+   },
+   "lignes": 0,
+   "lignesRemplacer": 10
+  },
+  "apres": {
+   "groupes": [
+    "remplacer",
+    "levure"
+   ],
+   "dryhop": null,
+   "levure": 1365.9,
+   "remplacer": 274.4,
+   "place": 0,
+   "placeHauteur": 0,
+   "videAvantDryhop": null,
+   "hauteurPage": 844,
+   "verdicts": {
+    "resin": "Aucune"
+   },
+   "lignes": 0,
+   "lignesRemplacer": 10
+  },
+  "ecartDryhop": null,
+  "ecartLevure": 0,
+  "verdictsChanges": []
+ },
+ {
+  "cas": "16D-floral-tropical",
+  "mode": "froid",
+  "preChauffeAvantOuverture": [],
+  "ouvertureMs": 1111,
+  "tachesLiberees": 2,
+  "arriveeMs": 4902,
+  "avant": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "ajouter",
+    "remplacer-place",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 1810.7,
+   "levure": 2003.9,
+   "remplacer": null,
+   "place": 1,
+   "placeHauteur": 42,
+   "videAvantDryhop": 0,
+   "hauteurPage": 844,
+   "verdicts": {
+    "tropical": "Aucune",
+    "floral": "Aucune"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "apres": {
+   "groupes": [
+    "meme-0",
+    "meme-1",
+    "ajouter",
+    "remplacer-place",
+    "dryhop",
+    "levure"
+   ],
+   "dryhop": 1810.7,
+   "levure": 2003.9,
+   "remplacer": null,
+   "place": 1,
+   "placeHauteur": 42,
+   "videAvantDryhop": 0,
+   "hauteurPage": 844,
+   "verdicts": {
+    "tropical": "Aucune",
+    "floral": "Aucune"
+   },
+   "lignes": 15,
+   "lignesRemplacer": 0
+  },
+  "ecartDryhop": 0,
+  "ecartLevure": 0,
+  "verdictsChanges": []
+ }
+]

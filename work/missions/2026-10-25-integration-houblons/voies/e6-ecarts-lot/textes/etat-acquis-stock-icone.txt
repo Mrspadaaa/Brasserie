@@ -1,0 +1,442 @@
+Ma bière
+Suggestions
+Comparer (3)
+IBU
+60
+OG
+1,066
+EBC
+70
+Au style
+Absolu
+?
+Barres
+Radar
+Moins résineux
+Aucune
+voie houblon
+Hors houblon
+Plus floral
+Approche
+Plus agrumes
+Atteint
+même effet sur tes objectifs
+10 g
+10′
++1 cran
++2 crans
+
+mixte
+Motueka 8,1%
+◇lui seul : mojito
+
+◇
+
+mixte
+mixte
+Motueka + Hallertau Blanc 8,1% 9,5%
+5+5 g
+◇Hallertau Blanc, lui seul : café, concombre
+
+◇
+
+mixte
+Hallertau Blanc 9,5%
+
+amer
+East Kent Goldings 5,5%
+◇lui seul : pain d'épices, aspérule
+
+◇
+
+arôme
+Hallertau Tradition 5,8%
+◇lui seul : nectar, noble
+
+◇
+
+mixte
+Huell Melon 7,5%
+◇lui seul : vanille, yaourt
+
+◇
+
+arôme
+Saphir 3,3%
+◇lui seul : genièvre
+
+◇
+même effet
+10 g
+10′
++2 crans
+
+mixte
+Galaxy 17,2%
+◇hors 16D : groseille à maquereau, cannabis
+
+◇
+
+mixte
+Nelson Sauvin 9,6%
+◇lui seul : feuille de tomate, piquant
+
+◇
+Ajouter
+10′
+
+arôme
+Target 11,3%
+5 g
+◇lui seul : tabac, marmelade
+
+◇
+
+arôme
+Target 11,3%
+5 g
+
+Assembler 5 + 5 g
+10′
+estimé
+
+mixte
+mixte
+Motueka + Galaxy 8,1% 17,2%
+5+5 g
+
+Remplacer Nugget
+60′
+
+mixte
+Motueka 8,1%
+74 g
+
+mixte
+Hallertau Blanc 9,5%
+63 g
+
+Dry hop
+actif
+estimé
+
+arôme
+Target 11,3%
+5 g
+→
+creep
+
+Changer de levure
+levure
+estimé
+
+LalBrew Verdant IPA
+elle : abricot dominant, POF négative
+
+LalBrew Pomona
+elle : pêche, POF négative
+
+IBU après chaque voie (ma bière 59,7 ; style 50–70)
+Hors houblon · résineux (4 pistes)
+
+US-05 · les voies viennent du moteur ; « ~ » simulé.
+
+Comparer (3)
+Fermer
+Fermer : retour à l’étape Houblons
+Quel houblon ajouter à ma bière ?
+style 50–70 IBU
+Échelle
+Lire la légende
+Vue
+Objectifs
+Moins résineux : aucune voie houblon ne l’y ramène
+Hors houblon : les pistes pour le résineux
+Plus floral : la meilleure voie, Motueka, approche la visée (2,3 → 18,2, visée 20,6)
+Plus agrumes : la meilleure voie, Motueka, atteint la visée (1,9 → 17,6, visée 11,9)
+Voies du moteur
+Résineux : effet non établi
+Floral +0,9 cran
+Agrumes +1,6 cran
+usage : mixte, déduit de l’α
+en stock
+Effet sur les familles
+Floral +0,9 cran
+Agrumes +1,6 cran
+Résineux : effet non établi
+Tropicaux +1,6 cran
+Melon : ne bouge pas
+Noyau : ne bouge pas
+Baies : ne bouge pas
+Végétal : ne bouge pas
+Herbacé +0,5 cran
+Épicé : ne bouge pas
+Terreux : ne bouge pas
+hors des 12 familles : mojito
+mojito
+Mon goût pour Motueka : neutre
+Retirer Motueka de la comparaison
+usage : mixte, déduit de l’α
+usage : mixte, déduit de l’α
+en stock
+Effet sur les familles
+Floral +0,9 cran
+Agrumes +1,6 cran
+Résineux : effet non établi
+Tropicaux +1,6 cran
+Melon : ne bouge pas
+Noyau : ne bouge pas
+Baies +0,8 cran
+Végétal +0,5 cran
+Herbacé +0,5 cran
+Épicé +0,8 cran
+Terreux : ne bouge pas
+hors des 12 familles : café, concombre
+café, concombre
+Mon goût pour Motueka et Hallertau Blanc : neutre
+Ajouter Motueka et Hallertau Blanc à la comparaison
+usage : mixte, déduit de l’α
+en stock
+Effet sur les familles
+Floral +0,9 cran
+Agrumes +1,6 cran
+Résineux : effet non établi
+Tropicaux +1,6 cran
+Melon : ne bouge pas
+Noyau : ne bouge pas
+Baies +1,6 cran
+Végétal +0,9 cran
+Herbacé +0,5 cran
+Épicé +1,6 cran
+Terreux : ne bouge pas
+Mon goût pour Hallertau Blanc : neutre
+Ajouter Hallertau Blanc à la comparaison
+usage : amérisant
+à acheter
+Effet sur les familles
+Floral +0,9 cran
+Agrumes +1,6 cran
+Résineux : effet non établi
+Tropicaux : ne bouge pas
+Melon : ne bouge pas
+Noyau : ne bouge pas
+Baies : ne bouge pas
+Végétal : ne bouge pas
+Herbacé +0,5 cran
+Épicé +1,6 cran
+Terreux +0,9 cran
+hors des 12 familles : pain d'épices, aspérule
+pain d'épices, aspérule
+Mon goût pour East Kent Goldings : neutre
+Ajouter East Kent Goldings à la comparaison
+usage : aromatique, déduit de l’α
+à acheter
+Effet sur les familles
+Floral +0,9 cran
+Agrumes +1,6 cran
+Résineux : effet non établi
+Tropicaux : ne bouge pas
+Melon : ne bouge pas
+Noyau +1,6 cran
+Baies +1,6 cran
+Végétal +0,9 cran
+Herbacé +0,5 cran
+Épicé +1,6 cran
+Terreux +0,9 cran
+hors des 12 familles : nectar, noble
+nectar, noble
+Mon goût pour Hallertau Tradition : neutre
+Ajouter Hallertau Tradition à la comparaison
+usage : mixte, déduit de l’α
+à acheter
+Effet sur les familles
+Floral +0,9 cran
+Agrumes +1,6 cran
+Résineux : effet non établi
+Tropicaux +1,6 cran
+Melon +1,6 cran
+Noyau +1,6 cran
+Baies +1,6 cran
+Végétal : ne bouge pas
+Herbacé +0,5 cran
+Épicé : ne bouge pas
+Terreux : ne bouge pas
+hors des 12 familles : vanille, yaourt
+vanille, yaourt
+Mon goût pour Huell Melon : neutre
+Ajouter Huell Melon à la comparaison
+usage : aromatique, déduit de l’α
+à acheter
+Effet sur les familles
+Floral +0,9 cran
+Agrumes +1,6 cran
+Résineux : effet non établi
+Tropicaux : ne bouge pas
+Melon : ne bouge pas
+Noyau : ne bouge pas
+Baies +1,6 cran
+Végétal +0,9 cran
+Herbacé +0,5 cran
+Épicé +1,6 cran
+Terreux : ne bouge pas
+hors des 12 familles : genièvre
+genièvre
+Mon goût pour Saphir : neutre
+Ajouter Saphir à la comparaison
+Résineux : effet non établi
+Floral : effet non établi
+Agrumes +1,6 cran
+usage : mixte, déduit de l’α
+α 17,2 %, hors de la plage des fiches
+en stock
+Effet sur les familles
+Floral : effet non établi
+Agrumes +1,6 cran
+Résineux : effet non établi
+Tropicaux +1,6 cran
+Melon : ne bouge pas
+Noyau +1,6 cran
+Baies +1,6 cran
+Végétal : ne bouge pas
+Épicé : ne bouge pas
+hors des 12 familles : groseille à maquereau, cannabis
+groseille à maquereau, cannabis
+Mon goût pour Galaxy : neutre
+Retirer Galaxy de la comparaison
+usage : mixte, déduit de l’α
+α 9,6 %, hors de la plage des fiches
+en stock
+Effet sur les familles
+Floral : effet non établi
+Agrumes +1,6 cran
+Résineux : effet non établi
+Tropicaux +1,6 cran
+Melon +1,6 cran
+Noyau +1,6 cran
+Baies : ne bouge pas
+Végétal +0,9 cran
+Épicé +1,6 cran
+hors des 12 familles : feuille de tomate, piquant
+feuille de tomate, piquant
+Mon goût pour Nelson Sauvin : neutre
+Ajouter Nelson Sauvin à la comparaison
+usage : aromatique
+en stock
+Effet sur les familles
+Floral +0,5 cran
+Agrumes +0,9 cran
+Résineux +0,9 cran
+Noyau +0,9 cran
+Herbacé +0,3 cran
+Épicé +0,9 cran
+hors des 12 familles : tabac, marmelade
+tabac, marmelade
+Mon goût pour Target : neutre
+Retirer Target de la comparaison
+Floral +0,5 cran
+Agrumes +0,9 cran
+Résineux +0,9 cran
+usage : aromatique
+en stock
+Effet sur les familles
+Floral +0,5 cran
+Agrumes +0,9 cran
+Résineux +0,9 cran
+Noyau +0,9 cran
+Herbacé +0,3 cran
+Épicé +0,9 cran
+Mon goût pour Target : neutre
+Retirer Target de la comparaison
+Floral +0,5 cran
+Agrumes +0,9 cran
+Résineux +0,9 cran
+usage : mixte, déduit de l’α
+usage : mixte, déduit de l’α
+α 17,2 %, hors de la plage des fiches
+en stock
+Effet sur les familles
+Floral +0,4 cran
+Agrumes +1,6 cran
+Résineux : effet non établi
+Tropicaux +1,6 cran
+Noyau +0,8 cran
+Baies +0,8 cran
+Herbacé +0,3 cran
+Mon goût pour Motueka et Galaxy : neutre
+Retirer Motueka et Galaxy de la comparaison
+Résineux : effet non établi
+Floral +0,4 cran
+Agrumes +1,6 cran
+usage : mixte, déduit de l’α
+en stock, pas assez
+Effet sur les familles
+Floral +0,0 cran
+Agrumes +0,1 cran
+Résineux −0,3 cran
+Tropicaux +0,1 cran
+Noyau −0,3 cran
+Pépins −0,3 cran
+Baies −0,3 cran
+Végétal −0,2 cran
+Herbacé +0,0 cran
+Épicé −0,3 cran
+Terreux −0,1 cran
+Mon goût pour Motueka : neutre
+Retirer Motueka de la comparaison
+Résineux −0,3 cran
+Floral +0 cran
+Agrumes +0,1 cran
+usage : mixte, déduit de l’α
+en stock, pas assez
+Effet sur les familles
+Floral : ne bouge pas
+Agrumes : ne bouge pas
+Résineux −0,3 cran
+Tropicaux : ne bouge pas
+Noyau −0,3 cran
+Pépins −0,3 cran
+Baies : ne bouge pas
+Végétal : ne bouge pas
+Herbacé : ne bouge pas
+Épicé : ne bouge pas
+Terreux −0,1 cran
+Mon goût pour Hallertau Blanc : neutre
+Ajouter Hallertau Blanc à la comparaison
+Résineux −0,3 cran
+Floral +0 cran
+Agrumes +0 cran
+usage : aromatique
+en stock
+Biotransformation possible, ampleur non quantifiée
+Effet sur les familles
+Floral +0,5 cran
+Agrumes +0,8 cran
+Résineux +0,9 cran
+Noyau +0,9 cran
+Herbacé +0,2 cran
+Épicé +0,9 cran
+Mon goût pour Target : neutre
+Retirer Target de la comparaison
+Floral +0,5 cran
+Agrumes +0,8 cran
+Résineux +0,9 cran
+Effet sur les familles
+Floral : effet non établi
+Agrumes +1,3 cran
+Résineux : effet non établi
+Tropicaux +2,2 cran
+Noyau +4,4 cran, hors style
+Retenir LalBrew Verdant IPA
+Résineux : effet non établi
+Floral : effet non établi
+Agrumes +1,3 cran
+Effet sur les familles
+Floral : effet non établi
+Agrumes +2,8 cran, hors style
+Résineux : effet non établi
+Tropicaux +3,1 cran, hors style
+Noyau +4,3 cran, hors style
+Retenir LalBrew Pomona
+Résineux : effet non établi
+Floral : effet non établi
+Agrumes +2,8 cran, hors style

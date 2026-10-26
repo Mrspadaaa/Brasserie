@@ -1,0 +1,43 @@
+   × D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer) > '21C plus d’agrumes' : chaque liste qui montre le cryo montre aussi le simple (voies, 60′, dry hop actif et après ; à α de lot égal pour les remplacements) 1924ms
+     → voies : Citra cryo sans Citra simple: expected false to be true // Object.is equality
+   × D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer) > '16D plus floral' : chaque liste qui montre le cryo montre aussi le simple (voies, 60′, dry hop actif et après ; à α de lot égal pour les remplacements) 2666ms
+     → voies : Citra cryo sans Citra simple: expected false to be true // Object.is equality
+   × D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer) > '16D moins de résineux' : chaque liste qui montre le cryo montre aussi le simple (voies, 60′, dry hop actif et après ; à α de lot égal pour les remplacements) 822ms
+     → palier 60′ : Citra cryo sans Citra simple: expected false to be true // Object.is equality
+   ✓ D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer) > '21C plus d’agrumes' : à nombres d’affichage par défaut, la liste principale ne perd pas le stock pour autant 89ms
+   ✓ D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer) > '16D plus floral' : à nombres d’affichage par défaut, la liste principale ne perd pas le stock pour autant 59ms
+   ✓ D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer) > '16D moins de résineux' : à nombres d’affichage par défaut, la liste principale ne perd pas le stock pour autant 31ms
+   × D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer) > '21C plus d’agrumes', 60′ : Citra cryo n’est plus 1er, et il passe après Citra simple (produit d’arôme) 1174ms
+     → expected 'beermaverick-citra:cryo' not to be 'beermaverick-citra:cryo' // Object.is equality
+   × D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer) > '16D plus floral', 60′ : Citra cryo n’est plus 1er, et il passe après Citra simple (produit d’arôme) 1159ms
+     → expected 'beermaverick-citra:cryo' not to be 'beermaverick-citra:cryo' // Object.is equality
+   × D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer) > 60′ : le rang de palier du cryo se calcule sur l’α de la variété, mais l’α affiché reste celui du lot 1114ms
+     → Cannot read properties of undefined (reading 'palier')
+   ✓ D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer) > 60′ : un lot ordinaire (pas un produit) garde le rang sur son propre α  1075ms
+   × D174 : Citra simple apparaît partout où Citra cryo apparaît (Suggérer) > « remplacer à IBU égal » : le cryo suit la même règle d’usage et de rang 1182ms
+     → expected +0 to be 1 // Object.is equality
+   × D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90) > '21C plus d’agrumes' : tout phare de la visée, non exclu par D90, est classé (ni maxBuy ni autre plafond avant le rang) 285ms
+     → phares coupés : beermaverick-mosaic, beermaverick-simcoe, beermaverick-cascade: expected [ 'beermaverick-mosaic', …(2) ] to deeply equal []
+   × D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90) > '16D plus floral' : tout phare de la visée, non exclu par D90, est classé (ni maxBuy ni autre plafond avant le rang) 187ms
+     → phares coupés : beermaverick-mosaic: expected [ 'beermaverick-mosaic' ] to deeply equal []
+   ✓ D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90) > les exclusions D90 restent écrites : Strata (21C) et Simcoe (16D « moins de résineux ») sont refusés par une famille marquée 269ms
+   × D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90) > '21C plus d’agrumes' : `maxBuy` est retiré (ignoré), et la liste par défaut est le haut du classement entier 483ms
+     → expected '{"recipe":{"name":"Hazy du jeudi (21C…' to be '{"recipe":{"name":"Hazy du jeudi (21C…' // Object.is equality
+   × D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90) > '16D plus floral' : `maxBuy` est retiré (ignoré), et la liste par défaut est le haut du classement entier 347ms
+     → expected '{"recipe":{"name":"Stout export (16D)…' to be '{"recipe":{"name":"Stout export (16D)…' // Object.is equality
+   × D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90) > '16D moins de résineux' : `maxBuy` est retiré (ignoré), et la liste par défaut est le haut du classement entier 126ms
+     → expected '{"recipe":{"name":"Stout export (16D)…' to be '{"recipe":{"name":"Stout export (16D)…' // Object.is equality
+   × D175 : aucun phare coupé avant le rang final, sauf par une exclusion écrite (D90) > sans visée à la hausse (remplacements), le pool « à acheter » n’est pas coupé non plus 40ms
+     → expected 11 to be greater than 20
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: voies : Citra cryo sans Citra simple: expected false to be true // Object.is equality
+AssertionError: palier 60′ : Citra cryo sans Citra simple: expected false to be true // Object.is equality
+AssertionError: expected 'beermaverick-citra:cryo' not to be 'beermaverick-citra:cryo' // Object.is equality
+TypeError: Cannot read properties of undefined (reading 'palier')
+AssertionError: expected +0 to be 1 // Object.is equality
+AssertionError: phares coupés : beermaverick-mosaic, beermaverick-simcoe, beermaverick-cascade: expected [ 'beermaverick-mosaic', …(2) ] to deeply equal []
+AssertionError: phares coupés : beermaverick-mosaic: expected [ 'beermaverick-mosaic' ] to deeply equal []
+AssertionError: expected '{"recipe":{"name":"Hazy du jeudi (21C…' to be '{"recipe":{"name":"Hazy du jeudi (21C…' // Object.is equality
+AssertionError: expected '{"recipe":{"name":"Stout export (16D)…' to be '{"recipe":{"name":"Stout export (16D)…' // Object.is equality
+AssertionError: expected 11 to be greater than 20
+      Tests  13 failed | 5 passed (18)

@@ -1,0 +1,39 @@
+L’AFFINÉE — RECETTE v3
+Stout export — 16D
+20 L en fermenteur · ébullition 60 min · 26.10.2026
+IBU 60 · rendement 75 %
+
+HOUBLONS
+────────
+  Ébullition :
+    46 g    Nugget  (60 min · 13 % AA · 59.7 IBU)
+
+LEVURE
+──────
+  Fermentis SafAle US-05 — quantité inconnue (sèche)
+  fermentation 18–26 °C · atténuation 78–82 %
+
+EMPÂTAGE
+────────
+  Rinçage : par lots
+  67 °C     60 min — Saccharification
+
+EAU
+───
+  Source : Réseau — Villars-sur-Glâne · profil visé : Équilibré (sans style)
+  Empâtage 0 L · sans rinçage
+  Eau traitée, moyenne pondérée après acide : Ca 43 · Mg 7 · Na 4 · SO₄ 14 · Cl 11 · HCO₃ 125 (ppm, avant extraction et ébullition)
+  Alcalinité résiduelle après acide : 68 ppm CaCO3
+  Source non diluée : Ca 85 · Mg 14 · Na 8 · SO₄ 28 · Cl 22 · HCO₃ 250 ppm
+  Départ dilué : Ca 42.5 · Mg 7 · Na 4 · SO₄ 14 · Cl 11 · HCO₃ 125 ppm
+  Cibles d'eau : Ca 50–120 · Mg 0–20 · Na 0–50 · SO₄ 50–120 · Cl 50–120 · HCO₃ 0–100 ppm · SO₄/Cl visé 0.7–1.4
+  Acide lactique 80 % : aucun ajout retenu
+
+FERMENTATION
+────────────
+  19 °C     10 j — Fermentation primaire
+  4 °C      5 j — Maturation
+
+— Données de réimport (ne pas modifier) —
+{"format":3,"name":"Stout export","style":"16D","volumeL":20,"brewDate":"","ogTarget":1.066,"fgTarget":null,"abvTarget":null,"ibuTarget":60,"colorEbc":70,"preBoilL":0,"preBoilHotL":0,"installation":{"manualWaterSplit":false},"boilMin":60,"totalGristKg":0,"fermentables":[],"hops":[{"name":"Nugget","weightG":46,"alpha":13,"stage":"boil","timeMin":60}],"yeast":{"name":"SafAle US-05","hopIndexId":"fermentis-us05","lab":"Fermentis","fermentationFacts":{"version":1,"strainName":"SafAle US-05 (Fermentis)","source":{"title":"SafAle US‑05™","author":"Fermentis","year":null,"kind":"manufacturer","reference":"https://fermentis.com/en/product/safale-us-05/"},"retrievedAt":"2026-09-08","conditions":"Fiche de souche : aucune relation quantitative NOLO ni assimilation non publiée déduite. https://fermentis.com/en/product/safale-us-05/ ; https://fermentis.com/en/product/safale-us-05/","sugars":{},"pof":"unknown","hydrolysis":"unknown","pitchGL":{"min":0.5,"max":0.8},"temperatureC":{"min":18,"max":26}},"technicalFacts":[{"key":"temperature","reported":"50 to 80 g/hl at ideally 18-26°C (64.4-78.8°F).","origin":"manufacturer","range":{"min":18,"max":26},"unit":"°C","qualifier":"range","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"pitchRate","reported":"50 to 80 g/hl at ideally 18-26°C (64.4-78.8°F).","origin":"manufacturer","range":{"min":50,"max":80},"unit":"g/hL","qualifier":"range","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"esters","reported":"Low","origin":"manufacturer","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"attenuation","reported":"78-82%","origin":"manufacturer","range":{"min":78,"max":82},"unit":"%","qualifier":"range","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"alcoholTolerance","reported":"9-11%","origin":"manufacturer","range":{"min":9,"max":11},"unit":"%","qualifier":"range","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"species","reported":"Saccharomyces cerevisiae","origin":"manufacturer","source":"SafAle US‑05™ · https://fermentis.com/en/product/safale-us-05/","sourceUrl":"https://fermentis.com/en/product/safale-us-05/","retrievedAt":"2026-09-08T10:39:48.975Z"},{"key":"form","reported":"sèche","origin":"manufacturer","source":"https://fermentis.com/fr/produit/safale-us-05/"}],"technicalSource":"https://fermentis.com/fr/produit/safale-us-05/","form":"sèche","fermTempMinC":18,"fermTempMaxC":26},"mash":{"mashoutTempC":76,"heatingRateCPerMin":0.43333333333333335,"spargeTempC":76,"spargeType":"batch","steps":[{"name":"Saccharification","tempC":67,"durationMin":60}]},"waterPlan":{"sourceId":"reseau","sourceSnapshot":{"id":"reseau","name":"Réseau — Villars-sur-Glâne","ca":85,"mg":14,"na":8,"so4":28,"cl":22,"hco3":250,"ph":7.4,"note":"Valeurs de départ, à remplacer par l’analyse du distributeur."},"treatmentVersion":2,"diRatioPct":50,"targetProfileId":"—","targetProfileOrigin":"style","startIons":{"ca":42.5,"mg":7,"na":4,"so4":14,"cl":11,"hco3":125},"wortIons":{"ca":42.5,"mg":7,"na":4,"so4":14,"cl":11,"hco3":125},"mashWaterL":0,"spargeWaterL":0,"allSaltsInMash":true,"mash":{},"sparge":{},"acid":{"id":"lactique","mash":0,"sparge":0},"disabled":[],"targetPh":5.4},"fermentation":[{"kind":"primaire","name":"Fermentation primaire","tempC":19,"days":10},{"kind":"garde","name":"Maturation","tempC":4,"days":5}],"steps":[],"notes":[]}
+FIN DE RECETTE

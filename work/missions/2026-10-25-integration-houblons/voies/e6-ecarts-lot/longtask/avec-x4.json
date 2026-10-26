@@ -1,0 +1,29 @@
+[
+ {
+  "essai": 1,
+  "variante": "avec",
+  "cpu": 4,
+  "enAttente": 5,
+  "liberees": 5,
+  "finChauffe": true,
+  "chauffe": {
+   "debut": 303,
+   "appelMs": 1207
+  },
+  "tachesLongues": [
+   {
+    "debut": 1593,
+    "ms": 122
+   }
+  ],
+  "plusLongue": 122,
+  "touchers": {
+   "n": 78,
+   "mediane": 4,
+   "max": 1205,
+   "au_dessus_de_50": 1,
+   "au_dessus_de_100": 1
+  },
+  "echecs": []
+ }
+]

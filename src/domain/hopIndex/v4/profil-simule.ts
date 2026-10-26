@@ -55,7 +55,12 @@ export interface ValeurFamille {
 }
 export type ProfilFamilles = Record<FamilyId, ValeurFamille>;
 export interface DeltaFamille { bas: number; centre: number; haut: number; crans: number | '≈' }
-export interface AjoutSimule { id?: string; houblon: string; dose_gL: number; moment: MomentSimule; jourDebut?: number | null; jours?: number | null }
+/** `minutes` (D177) : la minute d'ajout réelle d'une ébullition entre 10′ et 60′ exclus (15′, 40′…), posée avec `moment: 'b60'`.
+ * Le simulateur n'a de mesure qu'à 60′ et à 10′ : l'activité de cet ajout est alors INTERPOLÉE linéairement en minutes entre
+ * les deux (voir `poidsInterpole`). Sans `minutes`, ou hors de ]10 ; 60[, le moment est celui qu'il dit. */
+export interface AjoutSimule { id?: string; houblon: string; dose_gL: number; moment: MomentSimule; jourDebut?: number | null; jours?: number | null; minutes?: number | null }
+/** Un ajout dont l'arôme est interpolé entre deux moments simulés (D177), dit comme tel dans le résultat. */
+export interface AjoutInterpole { ajout: string; houblon: string; nom: string; minutes: number; entre: ['b60', 'b10']; poidsB60: number }
 export interface DrapeauSimule { id: string; titre: string; statut: string; pourquoi: string; sources: string[]; ajout?: string; familles?: FamilyId[] }
 export interface MesureReelle {
   type: 'alpha' | 'huile' | 'chargeHuile' | 'dose' | 'jours' | 'compose' | 'ibu' | 'mesureEnBiere' | 'publiee';
@@ -74,6 +79,8 @@ export interface CasSimule {
   id: string; titre: string; simule: true; mention: string;
   ajouts: { id: string; houblon: string; nom: string; dose_gL: number; moment: MomentSimule; jourDebut: number | null; jours: number | null; levure: string }[];
   levure: string;
+  /** D177 : les ajouts d'ébullition entre 60′ et 10′ dont l'effet est interpolé (jamais une mesure) ; [] sinon. */
+  interpoles: AjoutInterpole[];
   avant: ProfilFamilles; apres: ProfilFamilles; delta: Record<FamilyId, DeltaFamille>;
   parJour: { jour: number; jourRecette: number | null; familles: Record<FamilyId, { bas: number; centre: number; haut: number; crans: number | null; largeur: number | 'inconnu' }> }[];
   apportsParHoublon: ApportHoublon[];
@@ -296,6 +303,31 @@ function activiteSansDonnees(b: Base, recette: RecettePouvoir, contactJours: num
   return { R: {}, F: r.F, A, ouverts, citronellol: null, thiolsLiberes: null, raisonBio: 'houblon sans données de composés : biotransformation non évaluable' };
 }
 const activiteDe = (b: Base, recette: RecettePouvoir, contactJours: number | null) => (b.sansDonnees ? activiteSansDonnees(b, recette, contactJours) : activite(b, contactJours));
+/** D177 : poids du 60′ dans l'interpolation d'un ajout d'ébullition entre 10′ et 60′ exclus, 0 à 10′ et 1 à 60′, linéaire en
+ * minutes [convention : aucune mesure entre les deux, la part retrouvée décroît de 10′ à 60′]. null : l'ajout n'est pas interpolé. */
+export function poidsInterpole(a: { moment: string; minutes?: number | null }): number | null {
+  const m = a.minutes;
+  return a.moment === 'b60' && typeof m === 'number' && Number.isFinite(m) && m > 10 && m < 60 ? (m - 10) / 50 : null;
+}
+/** L'activité d'un ajout : celle de son moment, ou, interpolé, le mélange linéaire de son activité à 60′ et à 10′ (même houblon, même
+ * dose, même recette). Le mélange est borné par les deux : une famille ne sort jamais de l'intervalle [10′ ; 60′]. La borne haute
+ * partielle (`ouverts`) est l'union des deux. La biotransformation est nulle à chaud. */
+function activiteAjout(b: Base, a: AjoutSimule, recette: RecettePouvoir, contactJours: number | null): Activite {
+  const w = poidsInterpole(a);
+  const x = activiteDe(b, recette, contactJours);
+  if (w == null) return x;
+  const b10 = baseAjout({ ...a, id: `${b.id}~10`, moment: 'b10', minutes: null }, recette);
+  const y = activiteDe(b10, recette, contactJours);
+  const mel = (p: Tri, q: Tri): Tri => plus(fois(p, w), fois(q, 1 - w));
+  const R: Activite['R'] = {};
+  for (const c of new Set([...Object.keys(x.R), ...Object.keys(y.R)]) as Set<CompSim>) R[c] = x.R[c] && y.R[c] ? mel(x.R[c]!, y.R[c]!) : (x.R[c] ?? y.R[c]);
+  return {
+    R, F: mel(x.F, y.F),
+    A: Object.fromEntries(FAMILIES.map((f) => [f, mel(x.A[f], y.A[f])])) as Record<FamilyId, Tri>,
+    ouverts: Object.fromEntries(FAMILIES.map((f) => [f, [...new Set([...x.ouverts[f], ...y.ouverts[f]])]])) as Record<FamilyId, string[]>,
+    citronellol: null, thiolsLiberes: null, raisonBio: x.raisonBio ?? y.raisonBio,
+  };
+}
 interface Somme { A: Record<FamilyId, Tri>; ouverts: Record<FamilyId, string[]> }
 const sommeA = (xs: Activite[]): Somme => ({
   A: Object.fromEntries(FAMILIES.map((f) => [f, xs.reduce((s, x) => plus(s, x.A[f]), ZERO())])) as Record<FamilyId, Tri>,
@@ -338,10 +370,12 @@ function deltaDe(av: ProfilFamilles, ap: ProfilFamilles, scale: StyleScale): Rec
 }
 
 // ---------- Confiance ----------
-function confianceDe(bases: Base[], levure: string): { niveau: Confiance; pourquoi: string[] } {
+function confianceDe(bases: Base[], levure: string, interpoles: AjoutInterpole[] = []): { niveau: Confiance; pourquoi: string[] } {
   const faible: string[] = [], moyenne: string[] = [];
   for (const b of bases) {
     const m = b.a.moment;
+    const inter = interpoles.find((x) => x.ajout === b.id);
+    if (inter) { faible.push(`${b.nom} à ${inter.minutes}′ : interpolé entre 60′ et 10′ (linéaire en minutes), aucune mesure à ce moment [convention]`); continue; }
     if (b.sansDonnees) faible.push(`${b.nom} : aucune donnée de composés ; forme des fiches seules, force de Cascade [convention]`);
     else if (!b.conc['4MMP'] && !b.conc['3MH'] && estSec(m)) faible.push(`${b.nom} : thiols non chiffrés dans H (tropical par les fiches seules)`);
     if (m === 'b60') faible.push(`${b.nom} à 60′ : part retrouvée bornée en haut seulement ; centre [convention] au dixième`);
@@ -471,7 +505,14 @@ export interface CasEntree {
   /** Par défaut : mesures, drapeaux complets et parJour (J0–J10). false pour la grille (drapeaux en identifiants). */
   complet?: boolean;
 }
-const ajoutDeBase = (x: AjoutPouvoir, r: RecettePouvoir): AjoutSimule => ({ id: x.id, houblon: x.hopKey, dose_gL: x.grams / r.volumeL, moment: x.moment as MomentSimule, jourDebut: x.day ?? null, jours: x.dureeJours ?? null });
+/** Un ajout de la bière de départ vers le simulateur. D177 : une ébullition dont la minute tombe entre 10′ et 60′ exclus (la classe
+ * du moteur dit b30 ou b15, ou b60 à 55′) est interpolée ; `minutes` n'est lue que pour une ébullition. */
+function ajoutDeBase(x: AjoutPouvoir, r: RecettePouvoir): AjoutSimule {
+  const minutes = (x as { minutes?: number }).minutes;
+  const ebullition = MOMENTS[x.moment]?.timing === 'boil';
+  const entre = ebullition && typeof minutes === 'number' && minutes > 10 && minutes < 60;
+  return { id: x.id, houblon: x.hopKey, dose_gL: x.grams / r.volumeL, moment: entre ? 'b60' : (x.moment as MomentSimule), ...(entre ? { minutes } : {}), jourDebut: x.day ?? null, jours: x.dureeJours ?? null };
+}
 const fam = <T>(fn: (f: FamilyId) => T) => Object.fromEntries(FAMILIES.map((f) => [f, fn(f)])) as Record<FamilyId, T>;
 /** Profil simulé d'un cas : avant (la bière de départ), après (avec les ajouts), écart, par jour, part de chacun,
  * saturation, biotransformation, drapeaux, confiance, mesures réelles. */
@@ -480,11 +521,13 @@ export function simulerCas(e: CasEntree): CasSimule {
   const recette: RecettePouvoir = { ...e.recette, yeastId: e.levure };
   const scale = scaleDe(recette.styleCode);
   const ajouts = e.ajouts.map((a, i) => ({ ...a, id: a.id ?? `ajout${i + 1}` }));
-  const basesAvant = recette.additions.map((x) => baseAjout(ajoutDeBase(x, recette), recette));
+  const ajoutsAvant = recette.additions.map((x) => ajoutDeBase(x, recette));
+  const basesAvant = ajoutsAvant.map((a) => baseAjout(a, recette));
   const bases = ajouts.map((a) => baseAjout(a, recette));
-  const Sav = sommeA(basesAvant.map((b) => activiteDe(b, recette, null)));
+  const Sav = sommeA(basesAvant.map((b, i) => activiteAjout(b, ajoutsAvant[i], recette, null)));
   const avant = profils(Sav, null, scale, e.degustation);
-  const acts = bases.map((b) => activiteDe(b, recette, null));
+  const acts = bases.map((b, i) => activiteAjout(b, ajouts[i], recette, null));
+  const interpoles: AjoutInterpole[] = ajouts.flatMap((a, i) => { const w = poidsInterpole(a); return w == null ? [] : [{ ajout: bases[i].id, houblon: a.houblon, nom: bases[i].nom, minutes: a.minutes!, entre: ['b60', 'b10'] as ['b60', 'b10'], poidsB60: arrondi(w) }]; });
   const Sadd = sommeA(acts);
   const apres = profils(Sav, Sadd, scale, e.degustation);
   const delta = deltaDe(avant, apres, scale);
@@ -502,7 +545,7 @@ export function simulerCas(e: CasEntree): CasSimule {
   const secs = ajouts.filter((a) => estSec(a.moment));
   const j0 = secs.length ? Math.min(...secs.map((a) => a.jourDebut ?? 0)) : null;
   const parJour = complet && j0 != null ? Array.from({ length: 11 }, (_, t) => {
-    const actsT = bases.map((b) => (estSec(b.a.moment) ? activiteDe(b, recette, Math.max(0, Math.min(t - ((b.a.jourDebut ?? 0) - j0), b.a.jours ?? 3))) : activiteDe(b, recette, null)));
+    const actsT = bases.map((b, i) => (estSec(b.a.moment) ? activiteDe(b, recette, Math.max(0, Math.min(t - ((b.a.jourDebut ?? 0) - j0), b.a.jours ?? 3))) : acts[i]));
     const p = profils(Sav, sommeA(actsT), scale, e.degustation);
     return { jour: t, jourRecette: secs.some((a) => a.jourDebut != null) ? j0 + t : null,
       familles: fam((f) => ({ bas: p[f].bas, centre: p[f].centre, haut: p[f].haut, crans: p[f].crans, largeur: p[f].largeur })) };
@@ -512,14 +555,14 @@ export function simulerCas(e: CasEntree): CasSimule {
   return {
     id: e.id, titre: e.titre, simule: true, mention: MENTION_SIMULE,
     ajouts: bases.map((b) => ({ id: b.id, houblon: b.a.houblon, nom: b.nom, dose_gL: b.a.dose_gL, moment: b.a.moment, jourDebut: b.a.jourDebut ?? null, jours: estSec(b.a.moment) ? b.a.jours ?? 3 : null, levure: e.levure })),
-    levure: e.levure, avant, apres, delta, parJour, apportsParHoublon,
+    levure: e.levure, interpoles, avant, apres, delta, parJour, apportsParHoublon,
     saturation: { doseTotale_gL: arrondi(doseTotale), doseACru_gL: arrondi(doseACru), zone, dansZone: doseACru >= zone[0] && doseACru <= zone[1], facteur,
       texte: `${DONNEES_POUVOIR.saturation.texte} Preuve : ${DONNEES_POUVOIR.saturation.portee}. Simulé : une courbe de saturation sur l’activité totale ; « facteur » = écart d’ensemble ÷ somme des écarts de chacun seul.` },
     biotransformation: { actif: bio.actif, levure: e.levure, geraniolCitronellol: bio.conv, rendementThiolsPct: bio.rend,
       parAjout: bases.map((b, i) => ({ ajout: b.id, citronellol_ugL: acts[i].citronellol && arrondiTri(acts[i].citronellol!), thiolsLiberes_ngL: acts[i].thiolsLiberes && arrondiTri(acts[i].thiolsLiberes!), raison: acts[i].raisonBio })) },
     drapeaux: complet ? [...drapeauxSimules(bases, avant, apres, e.levure, scale, doseACru), ...drapeauxMoteur(pr!, bases)] : [],
     drapeauxIds: idsDrapeaux(bases, avant, apres, e.levure, doseACru),
-    confiance: confianceDe(bases, e.levure),
+    confiance: confianceDe(bases, e.levure, interpoles),
     mesures: complet ? [...bases.flatMap(mesuresAjout), ...mesuresRecette(pr!, bases)] : [],
   };
 }

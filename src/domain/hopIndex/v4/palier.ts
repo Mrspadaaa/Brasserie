@@ -9,14 +9,21 @@ export type Usage = 'bittering' | 'dual' | 'aroma';
 export const USAGE_RANG: Record<Usage, number> = { bittering: 0, dual: 0, aroma: 1 };
 export const rangUsage = (u: Usage | null | undefined): number => (u ? USAGE_RANG[u] : 2);
 export const USAGE_FR: Record<Usage, string> = { bittering: 'amérisant', dual: 'double usage', aroma: 'arôme' };
+/** D102 (A) : à 60′, un PRODUIT d'arôme (cryo, lupuline, poudre : substitution.ts, produitDArome) passe après les amérisants et doubles usages, comme dans Substituer
+ * (« un brasseur n'amérise pas avec un produit d'arôme : usage et coût »), quel que soit l'usage de sa variété : il tombe dans le palier des arômes (1), jamais au-dessus.
+ * Un usage inconnu (2) reste derrière. Le score et l'α affichés ne changent pas : seul le rang change. */
+export const rangUsageDe = (u: Usage | null | undefined, produit: boolean): number => (produit ? Math.max(rangUsage(u), 1) : rangUsage(u));
 
 /** Ce que Suggérer sait dire d'un ajout d'amertume (60′ et « remplacer à IBU égal »). */
 export interface InfoPalier {
   usage: Usage | null;
-  /** α retenu (lot ou plage variétale), en % ; null : inconnu. */
+  /** α retenu (lot ou plage variétale), en % ; null : inconnu. Celui qu'on pèse : pour un produit (cryo…), l'α du LOT ; le rang, lui, lit l'α de la variété (voir `rang`). */
   alpha: number | null;
-  /** Clé de rang D88 B : [rang d'usage, grammes] (moins de grammes = α plus haut). */
+  /** Clé de rang D88 B : [rang d'usage, grammes] (moins de grammes = α plus haut). D102 (A) : pour un produit d'arôme, le rang d'usage est au moins 1 (`rangUsageDe`)
+   * et les grammes sont ceux de l'α de la VARIÉTÉ : l'α d'un lot de cryo (24,8 %) ne le fait plus passer devant tous les pellets. */
   rang: [number, number];
+  /** D102 (A) : la forme de produit d'arôme lue dans le nom, les alias ou l'article (« cryo », « lupuline », « poudre »), seulement pour un produit ; absent sinon. */
+  produit?: string;
   /** Bande d'IBU du style et position de l'IBU après : un drapeau, jamais une exclusion (D88 B). */
   bande: [number, number] | null;
   drapeau: 'sous la bande' | 'au-dessus de la bande' | null;
@@ -88,7 +95,7 @@ export const REGLE_DRYHOP: RegleDryHop = {
 
 export const RANKING_PALIER60 = [
   'conflits : une famille « moins » ou indésirable du style marquée chez le houblon, ou une famille exclue par les goûts, EXCLUT la voie (D90) ; l’IBU hors de la bande du style n’exclut pas : drapeau',
-  'usage : amérisant ou double usage, puis arôme (inconnu en dernier) (D88 B)',
-  'α : moins de grammes pour l’IBU visée (cohumulone et β hors du rang)',
+  'usage : amérisant ou double usage, puis arôme ou produit d’arôme (cryo, lupuline, poudre : un brasseur n’amérise pas avec) ; inconnu en dernier (D88 B, D102)',
+  'α : moins de grammes pour l’IBU visée (cohumulone et β hors du rang) ; pour un produit, l’α de la variété, pas celui du lot (D102)',
   'stock : suffisant, puis manque, puis à acheter',
 ];

@@ -65,6 +65,16 @@ function indexDe(catalogue: CatalogueHop[]): Index {
   return i;
 }
 
+// ---------- L'origine qu'un nom écrit (c7, #187) ----------
+// « Cascade CHE », « NZ Cascade », « Cascade (UK) » : un code d'origine (2 ou 3 capitales) en queue, en tête ou entre parenthèses. Cette lecture relie
+// l'article à sa variété (varieteDe) ; sa traduction en pays, et l'astérisque, sont dans ui/hopIndex/fiche/MarquesVue.tsx (chargé à la demande).
+/** Le code d'origine écrit dans un nom, et le nom sans lui ; null si le nom n'en écrit pas. Le pourcentage d'α de l'étiquette est ignoré. */
+export function origineDuNom(nom: string): { ecrit: string; sansOrigine: string } | null {
+  const mots = nom.replace(/\s+\d+(?:[.,]\d+)?\s*%.*$/, '').split(/[\s(),/]+/).filter(Boolean);
+  const i = mots.length < 2 ? -1 : /^[A-Z]{2,3}$/.test(mots[mots.length - 1]) ? mots.length - 1 : /^[A-Z]{2,3}$/.test(mots[0]) ? 0 : -1;
+  return i < 0 ? null : { ecrit: mots[i], sansOrigine: mots.filter((_, k) => k !== i).join(' ') };
+}
+
 /** La variété du moteur d'un article : le nom, sinon un alias, sinon (un seul candidat) le début du nom. Sinon une raison. */
 export function varieteDe(article: string, catalogue: CatalogueHop[]): { h: CatalogueHop; lien: LienStock } | { raison: string } {
   const n = nomDeVariete(article);
@@ -78,6 +88,10 @@ export function varieteDe(article: string, catalogue: CatalogueHop[]): { h: Cata
   const parAlias = choix(alias, 'alias'); if (parAlias) return parAlias;
   const debuts = i.liste.filter((x) => x.nom.startsWith(`${n} `));
   if (debuts.length === 1) return { h: debuts[0].h, lien: 'préfixe' };
+  // c7 : « Cascade CHE », « NZ Cascade » : le nom sans le code d'origine, s'il désigne une seule variété (l'origine écrite reste lue par
+  // origineDuNom : l'écran met un astérisque quand elle diffère de celle du catalogue).
+  const o = origineDuNom(article);
+  if (o) { const r = varieteDe(o.sansOrigine, catalogue); if ('h' in r) return r; }
   return { raison: debuts.length > 1 ? `plusieurs variétés commencent par « ${n} » : ${debuts.slice(0, 4).map((x) => x.h.name).join(', ')}` : 'aucune variété du catalogue du moteur ne porte ce nom ni cet alias' };
 }
 

@@ -1,0 +1,14 @@
+Serveur 1/1 : npm run dev -- --port 5293 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-UYl7PG\serveur-1-5293.log)
+Attente du port 5293…
+Serveur prêt sur le port 5293
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-10-25-integration-houblons/voies/w1-worker-app/mesure-w1.mjs --client=worker --visee=1 --essais=3 --sortie=work/missions/2026-10-25-integration-houblons/voies/w1-worker-app/mesures-visee
+
+essai 1 (worker, visée, ×4) : préchauffe {"debut":303,"appelMs":2,"resoluMs":290,"rappels":[1,0,2,0,0]} · tâches longues (API) ["374+167"] · plus long blocage (battement) 240 ms [{"t":556,"ecart":240}] · envois [{"type":"donnees","t":-2086,"ms":0,"catalogue":false,"inchange":false},{"type":"donnees","t":-2061,"ms":0,"catalogue":false,"inchange":false},{"type":"donnees","t":347,"ms":9.4,"catalogue":true,"inchange":false}] · toucher : médiane 4 ms, max 183 ms, > 50 ms 1/79, > 100 ms 1/79 · ouverture de Suggérer : {"listeVue":true,"versLigneMs":192,"plusLongBlocageMs":508,"tachesLongues":[197,153,223,255,62]}
+essai 2 (worker, visée, ×4) : préchauffe {"debut":307,"appelMs":2,"resoluMs":307,"rappels":[2,0,2,0,0]} · tâches longues (API) ["348+206"] · plus long blocage (battement) 246 ms [{"t":342,"ecart":31},{"t":587,"ecart":246},{"t":630,"ecart":43}] · envois [{"type":"donnees","t":-2057,"ms":0.1,"catalogue":false,"inchange":false},{"type":"donnees","t":-2031,"ms":0.1,"catalogue":false,"inchange":false},{"type":"donnees","t":331,"ms":9.8,"catalogue":true,"inchange":false}] · toucher : médiane 4 ms, max 19 ms, > 50 ms 0/78, > 100 ms 0/78 · ouverture de Suggérer : {"listeVue":true,"versLigneMs":145,"plusLongBlocageMs":324,"tachesLongues":[147,109,131,248,55]}
+essai 3 (worker, visée, ×4) : préchauffe {"debut":306,"appelMs":5,"resoluMs":269,"rappels":[0,0,5,0,0]} · tâches longues (API) ["382+144"] · plus long blocage (battement) 171 ms [{"t":373,"ecart":52},{"t":544,"ecart":171}] · envois [{"type":"donnees","t":-2053,"ms":0,"catalogue":false,"inchange":false},{"type":"donnees","t":-2030,"ms":0,"catalogue":false,"inchange":false},{"type":"donnees","t":355,"ms":9.7,"catalogue":true,"inchange":false}] · toucher : médiane 4 ms, max 147 ms, > 50 ms 1/78, > 100 ms 1/78 · ouverture de Suggérer : {"listeVue":true,"versLigneMs":116,"plusLongBlocageMs":344,"tachesLongues":[118,128,139,248,86]}
+MESURE OK
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

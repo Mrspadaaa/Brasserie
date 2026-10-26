@@ -1,0 +1,12 @@
+passes : complet 3, rapide 3
+| mesure | complet : méd (p95) | rapide : méd (p95) | écart de la médiane |
+|---|---|---|---|
+| toucher:suggerer-sans-prechauffage | 217,39 (282,00) | 201,01 (223,67) | -16,38 |
+| toucher:suggerer-prechauffe-cache | 0,03 (0,09) | 0,04 (0,08) | 0,01 |
+| repos:tranche-voies-de-suggerer | 511,02 (849,70) | 397,77 (689,99) | -113,25 |
+| repos:voies-proposer | 421,35 (755,82) | 307,70 (598,38) | -113,65 |
+| repos:voies-leviers-levure | 82,07 (100,84) | 80,09 (116,83) | -1,98 |
+| repos:remplacements-au-repos-apres-rapide | — (—) | 228,18 (278,82) | — |
+| repos:total-premier-ecran-et-prechauffage | 526,31 (982,36) | 639,92 (1 083,47) | 113,61 |
+| toucher:ma-biere-apres-un-outil | 1,57 (1,80) | 1,59 (2,76) | 0,02 |
+| toucher:substituer-classement | 4,04 (8,94) | 3,91 (8,53) | -0,13 |

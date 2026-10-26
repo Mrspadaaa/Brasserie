@@ -1,0 +1,90 @@
+[
+ {
+  "essai": 1,
+  "client": "worker",
+  "cpu": 4,
+  "enAttente": 5,
+  "liberees": 5,
+  "resolue": true,
+  "chauffe": {
+   "debut": 303,
+   "appelMs": 0,
+   "resoluMs": 296,
+   "rappels": [
+    1,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "tachesLongues": [
+   {
+    "debut": 347,
+    "ms": 62
+   },
+   {
+    "debut": 435,
+    "ms": 124
+   }
+  ],
+  "plusLongue": 124,
+  "plusLongBlocageMs": 245,
+  "touchers": {
+   "n": 80,
+   "mediane": 4,
+   "max": 145,
+   "au_dessus_de_50": 1,
+   "au_dessus_de_100": 1
+  },
+  "envois": [
+   {
+    "type": "donnees",
+    "t": -2098,
+    "ms": 0.1,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "donnees",
+    "t": -2052,
+    "ms": 0,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "prechauffer",
+    "nom": "proposerRapide",
+    "t": 303,
+    "ms": 0.1,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "donnees",
+    "t": 394,
+    "ms": 14.9,
+    "catalogue": true,
+    "inchange": false
+   }
+  ],
+  "blocages": [
+   {
+    "t": 590,
+    "ecart": 245
+   }
+  ],
+  "ouverture": {
+   "listeVue": true,
+   "versLigneMs": 239,
+   "plusLongBlocageMs": 266,
+   "tachesLongues": [
+    242,
+    134,
+    54
+   ]
+  },
+  "journal": [],
+  "echecs": []
+ }
+]

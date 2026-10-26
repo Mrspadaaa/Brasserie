@@ -37,7 +37,7 @@
      "US-05",
      "Stout 16D",
      "Face à ta stout",
-     "~+29",
+     "~+28",
      "★",
      "actif · 1 j"
     ],
@@ -59,7 +59,7 @@
      ],
      "max_mots": 96
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : ★ à 1 j (floral ~+29) au lieu de 2 j (~+22). 98 mots au premier écran pour 96 : la hausse vient de DEUX nombres de données, Pépins « ~0 » et Végétal « ~+9 » (avant : « ? », non compté comme mot), aucun texte ajouté. Les chiffres « ?→~+8 » et « ?→~+21 » valaient chacun un mot, remplacés par un seul nombre. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-repos.png.) ||| p5 (26.10), son choix D du 26.10 (m5, « La meilleure D · trois mini graphes ») : 104 mots au premier écran pour 98. Les 6 mots ajoutés sont ceux des trois mini graphes sous la bande IBU, au dry hop : « amer ? » et ses trois nombres (40, 60), « creep moyen », « limite » ; rien d'autre ne change. Avant (HEAD, avant le port) : 98 mots, ETATS OK sur cet état ; après (composant FroidDryhopper) : 104, joué par controle-etats.mjs et capture ouverte (voies/p5-dryhopper-froid/fidelite/maquette-dryhopper-repos.png). L'état « choisie » (sa page p4b2f, antérieure au choix D) garde 96."
+    "note": "c6 (846b76aa) : rattachements par alias, profil de la stout S1 −1 point, « trop amer » au contre ★. D83/D86, 26.10 : données changées, dessin identique : ★ à 1 j (floral ~+29) au lieu de 2 j (~+22). 98 mots au premier écran pour 96 : la hausse vient de DEUX nombres de données, Pépins « ~0 » et Végétal « ~+9 » (avant : « ? », non compté comme mot), aucun texte ajouté. Les chiffres « ?→~+8 » et « ?→~+21 » valaient chacun un mot, remplacés par un seul nombre. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-repos.png.) ||| p5 (26.10), son choix D du 26.10 (m5, « La meilleure D · trois mini graphes ») : 104 mots au premier écran pour 98. Les 6 mots ajoutés sont ceux des trois mini graphes sous la bande IBU, au dry hop : « amer ? » et ses trois nombres (40, 60), « creep moyen », « limite » ; rien d'autre ne change. Avant (HEAD, avant le port) : 98 mots, ETATS OK sur cet état ; après (composant FroidDryhopper) : 104, joué par controle-etats.mjs et capture ouverte (voies/p5-dryhopper-froid/fidelite/maquette-dryhopper-repos.png). L'état « choisie » (sa page p4b2f, antérieure au choix D) garde 96."
    }
   },
   {
@@ -115,9 +115,9 @@
     "selecteur_choisie": "#p4b2f-call",
     "geste": "repos",
     "attendu": [
-     "~+29",
-     "~+26",
-     "~+22",
+     "~+28",
+     "~+25",
+     "~+21",
      "IBU",
      "60+?"
     ],
@@ -131,7 +131,7 @@
       "60+?"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : floral ~+29, baies ~+26, résineux ~+22 au lieu de ~+22, ~+21, ~+14 ; mêmes trois pastilles et « IBU 60+? ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-bandeau.png.)"
+    "note": "c6 (846b76aa) : rattachements par alias, profil de la stout S1 −1 point, « trop amer » au contre ★. D83/D86, 26.10 : données changées, dessin identique : floral ~+29, baies ~+26, résineux ~+22 au lieu de ~+22, ~+21, ~+14 ; mêmes trois pastilles et « IBU 60+? ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-bandeau.png.)"
    }
   },
   {
@@ -294,12 +294,12 @@
      "WP",
      "1 j",
      "2 j",
-     "≈+19",
-     "~+19",
-     "~+29",
-     "~+15",
+     "≈+18",
+     "~+18",
+     "~+28",
+     "~+14",
      "~75",
-     "contre ★ : floral ~−10 · baies ~−8 · résineux ~−8",
+     "contre ★ : floral ~−9 · baies ~−8 · résineux ~−7",
      "trop amer"
     ],
     "choisie": {
@@ -318,7 +318,7 @@
       "trop amer"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : floral ~+19 à WP, ~+29 à 1 j et 2 j ; la ligne « contre ★ » énumère aussi Baies (~−8), une famille de la demande maintenant décrite. Même rail (5′, 0′, WP, 1 j, 2 j), mêmes pastilles, même « trop amer ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-loupe.png.)"
+    "note": "c6 (846b76aa) : rattachements par alias, profil de la stout S1 −1 point, « trop amer » au contre ★. D83/D86, 26.10 : données changées, dessin identique : floral ~+19 à WP, ~+29 à 1 j et 2 j ; la ligne « contre ★ » énumère aussi Baies (~−8), une famille de la demande maintenant décrite. Même rail (5′, 0′, WP, 1 j, 2 j), mêmes pastilles, même « trop amer ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-loupe.png.)"
    }
   },
   {
@@ -343,7 +343,7 @@
     "attendu": [
      "60′",
      "~+3",
-     "contre ★ : floral ~−26 · baies ~−23 · résineux ~−19",
+     "contre ★ : floral ~−25 · baies ~−22 · résineux ~−19",
      "trop amer",
      "jamais mesuré à ce moment",
      "rien ne change ici"
@@ -358,7 +358,7 @@
       "rien ne change ici"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : floral ~+3 à l'ébullition ; « contre ★ » énumère aussi Baies. Même curseur à 60′, même « jamais mesuré à ce moment ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-etape-ebullition.png.)"
+    "note": "c6 (846b76aa) : rattachements par alias, profil de la stout S1 −1 point, « trop amer » au contre ★. D83/D86, 26.10 : données changées, dessin identique : floral ~+3 à l'ébullition ; « contre ★ » énumère aussi Baies. Même curseur à 60′, même « jamais mesuré à ce moment ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-etape-ebullition.png.)"
    }
   },
   {
@@ -382,10 +382,10 @@
     "geste": "toucher",
     "attendu": [
      "WP",
-     "~+19",
-     "~+15",
+     "~+18",
+     "~+14",
      "~75",
-     "contre ★ : floral ~−10 · baies ~−8 · résineux ~−8",
+     "contre ★ : floral ~−9 · baies ~−8 · résineux ~−7",
      "trop amer",
      "jamais mesuré à ce moment"
     ],
@@ -400,7 +400,7 @@
       "jamais mesuré à ce moment"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : floral ~+19, résineux ~+15 au whirlpool ; « contre ★ » énumère aussi Baies. Même curseur WP, même « jamais mesuré à ce moment ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-etape-wp.png.)"
+    "note": "c6 (846b76aa) : rattachements par alias, profil de la stout S1 −1 point, « trop amer » au contre ★. D83/D86, 26.10 : données changées, dessin identique : floral ~+19, résineux ~+15 au whirlpool ; « contre ★ » énumère aussi Baies. Même curseur WP, même « jamais mesuré à ce moment ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-etape-wp.png.)"
    }
   },
   {
@@ -423,8 +423,8 @@
     "selecteur_choisie": "[data-etape=\"3\"]",
     "geste": "toucher",
     "attendu": [
-     "~+29",
-     "~+27",
+     "~+28",
+     "~+26",
      "60+?",
      "contre ★ : floral ~+1 · baies ~+2 · résineux ~+7",
      "mesuré",
@@ -446,7 +446,7 @@
       "rien ne change ici"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : floral ~+29 et baies ~+27 après fermentation ; « contre ★ » énumère aussi Baies. Même mesure « 1 h ≈ 96 h au nez (Titus 2021) », même « rien ne change ici ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-etape-apres.png.)"
+    "note": "c6 (846b76aa) : rattachements par alias, profil de la stout S1 −1 point, « trop amer » au contre ★. D83/D86, 26.10 : données changées, dessin identique : floral ~+29 et baies ~+27 après fermentation ; « contre ★ » énumère aussi Baies. Même mesure « 1 h ≈ 96 h au nez (Titus 2021) », même « rien ne change ici ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-etape-apres.png.)"
    }
   },
   {
@@ -472,9 +472,9 @@
     "geste": "toucher",
     "attendu": [
      "1 j",
-     "~+29",
-     "~+26",
-     "~+22",
+     "~+28",
+     "~+25",
+     "~+21",
      "38 µg/L"
     ],
     "avant": [
@@ -492,7 +492,7 @@
      "avant": [],
      "interdit": []
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : ★ est maintenant à 1 j, qui est donc le jour déjà choisi à l'ouverture : toucher « 1 j » ne changeait plus rien (la page ne bougeait pas). Le geste est rejoué depuis 7 j (« avant » : etat-dryh-jour-7) ; à ★ la ligne « contre ★ » ne s'écrit pas (interdit). Sur la maquette choisie (★ à 2 j), rien ne change. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-jour-1.png.)"
+    "note": "c6 (846b76aa) : rattachements par alias, profil de la stout S1 −1 point, « trop amer » au contre ★. D83/D86, 26.10 : données changées, dessin identique : ★ est maintenant à 1 j, qui est donc le jour déjà choisi à l'ouverture : toucher « 1 j » ne changeait plus rien (la page ne bougeait pas). Le geste est rejoué depuis 7 j (« avant » : etat-dryh-jour-7) ; à ★ la ligne « contre ★ » ne s'écrit pas (interdit). Sur la maquette choisie (★ à 2 j), rien ne change. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-jour-1.png.)"
    }
   },
   {
@@ -516,9 +516,9 @@
     "geste": "toucher",
     "attendu": [
      "7 j",
-     "~+29",
-     "~+26",
-     "~+23",
+     "~+28",
+     "~+25",
+     "~+22",
      "contre ★ : floral ~+1 · baies ~+1 · résineux ~+0",
      "Pomona ~+13 agrumes"
     ],
@@ -532,7 +532,7 @@
       "Pomona ~+13 agrumes"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : à 7 j floral ~+29, baies ~+26, résineux ~+23 ; « contre ★ » énumère aussi Baies. Même jour 7 j, même « Pomona ~+13 agrumes ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-jour-7.png.)"
+    "note": "c6 (846b76aa) : rattachements par alias, profil de la stout S1 −1 point, « trop amer » au contre ★. D83/D86, 26.10 : données changées, dessin identique : à 7 j floral ~+29, baies ~+26, résineux ~+23 ; « contre ★ » énumère aussi Baies. Même jour 7 j, même « Pomona ~+13 agrumes ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-jour-7.png.)"
    }
   },
   {
@@ -567,14 +567,14 @@
      "Résineux",
      "Épicé",
      "Végétal",
-     "~+29",
-     "~+13",
-     "~+9",
+     "~+28",
+     "~+12",
+     "~+8",
+     "~+20",
+     "~+25",
      "~+21",
-     "~+26",
-     "~+22",
      "~+3",
-     "~+15"
+     "~+14"
     ],
     "couleurs_min": 6,
     "choisie": {
@@ -600,7 +600,7 @@
       "~+2"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : douze lignes dans le même ordre (Floral à Végétal) ; Noyau (~+15), Pépins (~0) et Végétal (~+9) sont maintenant décrits (avant « ?→ » ou « ? »). Mêmes barres, mêmes ronds, même zone hachurée pour Melon. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-barres.png.)"
+    "note": "c6 (846b76aa) : rattachements par alias, profil de la stout S1 −1 point, « trop amer » au contre ★. D83/D86, 26.10 : données changées, dessin identique : douze lignes dans le même ordre (Floral à Végétal) ; Noyau (~+15), Pépins (~0) et Végétal (~+9) sont maintenant décrits (avant « ?→ » ou « ? »). Mêmes barres, mêmes ronds, même zone hachurée pour Melon. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-barres.png.)"
    }
   },
   {
@@ -653,7 +653,7 @@
      "Au style",
      "Absolu",
      "Résineux",
-     "~+22"
+     "~+21"
     ],
     "choisie": {
      "attendu": [
@@ -663,7 +663,7 @@
       "~+14"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : résineux ~+22 ; même bascule « Absolu », mêmes barres sur l'échelle absolue. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-absolu.png.)"
+    "note": "c6 (846b76aa) : rattachements par alias, profil de la stout S1 −1 point, « trop amer » au contre ★. D83/D86, 26.10 : données changées, dessin identique : résineux ~+22 ; même bascule « Absolu », mêmes barres sur l'échelle absolue. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-absolu.png.)"
    }
   },
   {

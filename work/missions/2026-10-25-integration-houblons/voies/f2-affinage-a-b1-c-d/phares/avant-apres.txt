@@ -1,0 +1,59 @@
+== 21C plus d’agrumes | houblons distincts (liste par défaut) 8 -> 9 | évaluées (classement entier) 854 -> 1892
+   [voies défaut/entier | 60′ défaut/entier/sur | dry actif défaut/entier/sur]
+   Citra            -/-/-/-/204/-/-/155      => -/12/-/46/205/-/31/156
+   Nelson Sauvin    14/26/10/150/204/8/35/155 => 14/64/10/151/205/8/36/156
+   Galaxy           1/1/6/6/204/1/1/155      => 1/1/5/5/205/1/1/156
+   Mosaic           -/-/-/48/204/-/43/155    => -/68/-/48/205/-/44/156
+   Motueka          12/14/7/98/204/10/77/155 => 12/36/6/98/205/10/78/156
+   Idaho 7          -/61/-/-/204/13/155/155  => -/406/-/-/205/13/156/156
+   Strata           -/-/-/-/204/-/-/155      => -/-/-/-/205/-/-/156
+   Simcoe           -/-/-/46/204/-/138/155   => -/163/-/45/205/-/139/156
+   Cascade          -/-/8/116/204/11/106/155 => -/116/7/116/205/11/107/156
+   Hallertau Blanc  6/5/11/151/204/9/40/155  => 7/6/11/152/205/9/41/156
+   Citra simple -/-/-/-/204/-/-/155 => -/12/-/46/205/-/31/156
+   Citra cryo   4/9/1/1/204/6/29/155 => 5/11/9/136/205/6/29/156
+   tête 60′ avant: 1 Citra cryo | 2 Moutere | 3 Vic Secret | 4 Apollo | 5 Eclipse
+   tête 60′ après: 1 Moutere | 2 Vic Secret | 3 Apollo | 4 Eclipse | 5 Galaxy
+== 16D plus floral | houblons distincts (liste par défaut) 10 -> 10 | évaluées (classement entier) 851 -> 1815
+   [voies défaut/entier | 60′ défaut/entier/sur | dry actif défaut/entier/sur]
+   Citra            -/-/-/-/317/-/-/155      => -/24/-/65/318/-/144/156
+   Nelson Sauvin    -/-/12/212/317/-/-/155   => -/-/12/213/318/-/-/156
+   Galaxy           -/-/6/12/317/-/-/155     => -/-/5/11/318/-/-/156
+   Mosaic           -/-/-/68/317/-/152/155   => -/15/-/68/318/-/153/156
+   Motueka          1/1/8/137/317/5/26/155   => 1/1/7/137/318/5/26/156
+   Idaho 7          10/9/11/193/317/8/133/155 => 6/4/10/193/318/8/133/156
+   Strata           -/-/-/81/317/-/-/155     => -/-/-/81/318/-/-/156
+   Simcoe           -/-/-/65/317/-/-/155     => -/-/-/64/318/-/-/156
+   Cascade          12/12/9/164/317/10/146/155 => 8/6/8/164/318/10/147/156
+   Hallertau Blanc  5/8/13/213/317/7/119/155 => 3/3/13/214/318/7/119/156
+   Citra simple -/-/-/-/317/-/-/155 => -/24/-/65/318/-/144/156
+   Citra cryo   11/11/1/1/317/9/142/155 => 7/5/11/195/318/9/142/156
+   tête 60′ avant: 1 Citra cryo | 2 Polaris | 3 HBC 586 | 4 Helios | 5 Brooklyn
+   tête 60′ après: 1 Polaris | 2 HBC 586 | 3 Helios | 4 Brooklyn | 5 Galaxy
+== 16D moins de résineux | houblons distincts (liste par défaut) 10 -> 10 | évaluées (classement entier) 337 -> 411
+   [voies défaut/entier | 60′ défaut/entier/sur | dry actif défaut/entier/sur]
+   Citra            -/-/-/-/226/-/-/0        => -/-/-/39/227/-/-/0
+   Nelson Sauvin    7/6/11/142/226/-/-/0     => 8/37/11/143/227/-/-/0
+   Galaxy           1/1/5/5/226/-/-/0        => 1/1/4/4/227/-/-/0
+   Mosaic           -/-/-/42/226/-/-/0       => -/-/-/42/227/-/-/0
+   Motueka          3/3/8/90/226/-/-/0       => 6/14/7/90/227/-/-/0
+   Idaho 7          -/-/-/-/226/-/-/0        => -/-/-/-/227/-/-/0
+   Strata           -/-/-/50/226/-/-/0       => -/7/-/50/227/-/-/0
+   Simcoe           -/-/-/-/226/-/-/0        => -/-/-/-/227/-/-/0
+   Cascade          -/-/9/108/226/-/-/0      => -/-/8/108/227/-/-/0
+   Hallertau Blanc  8/7/12/143/226/-/-/0     => 9/38/12/144/227/-/-/0
+   Citra simple -/-/-/-/226/-/-/0 => -/-/-/39/227/-/-/0
+   Citra cryo   5/5/1/1/226/-/-/0 => 10/57/10/131/227/-/-/0
+   tête 60′ avant: 1 Citra cryo | 2 Polaris | 3 HBC 586 | 4 Brooklyn | 5 Galaxy
+   tête 60′ après: 1 Polaris | 2 HBC 586 | 3 Brooklyn | 4 Galaxy | 5 Ahhhroma
+== Substituer, original Nugget 21C b60 (rang des phares)
+   Citra 214=>214 ; Nelson Sauvin 90=>111 ; Galaxy 113=>169 ; Mosaic 216=>216 ; Motueka 189=>144 ; Idaho 7 24=>42 ; Strata 219=>219 ; Simcoe 20=>37 ; Cascade 225=>225 ; Hallertau Blanc 108=>108
+   Citra simple 214 => 214 ; Citra cryo 215 => 215
+   tête avant Yeoman 100, Trident 99, Helios 97, Magnat 97, Altus 96, Bravo 96
+   tête après Trident 99, Yeoman 99, Falconer's Flight 98, Helios 97, Altus 96, Centennial 96
+== Substituer, original Nugget 21C dryActive (rang des phares)
+   Citra 11=>11 ; Nelson Sauvin 121=>121 ; Galaxy 161=>161 ; Mosaic 44=>44 ; Motueka 181=>181 ; Idaho 7 16=>16 ; Strata 92=>92 ; Simcoe 8=>8 ; Cascade 29=>29 ; Hallertau Blanc 63=>63
+   Citra simple 11 => 11 ; Citra cryo 12 => 12
+   tête avant Centennial 64, Loral 62, Sabro 62, Warrior 61, Bitter Gold 60, Falconer's Flight 60
+   tête après Centennial 64, Loral 62, Sabro 62, Warrior 61, Bitter Gold 60, Falconer's Flight 60
+== remplaçants des 10 phares comme ORIGINAL à 60′ : sur 50 places (5 × 10), entrants 11 ; premier changé chez 2 phares sur 10. Dry hop : même liste true

@@ -1,0 +1,87 @@
+[
+ {
+  "essai": 1,
+  "variante": "avec",
+  "cpu": 4,
+  "enAttente": 5,
+  "liberees": 5,
+  "finChauffe": true,
+  "chauffe": {
+   "debut": 304,
+   "appelMs": 1691
+  },
+  "tachesLongues": [
+   {
+    "debut": 2025,
+    "ms": 72
+   },
+   {
+    "debut": 2105,
+    "ms": 336
+   }
+  ],
+  "plusLongue": 336,
+  "touchers": {
+   "n": 77,
+   "mediane": 4,
+   "max": 59,
+   "au_dessus_de_50": 1,
+   "au_dessus_de_100": 0
+  },
+  "echecs": []
+ },
+ {
+  "essai": 2,
+  "variante": "avec",
+  "cpu": 4,
+  "enAttente": 5,
+  "liberees": 5,
+  "finChauffe": true,
+  "chauffe": {
+   "debut": 305,
+   "appelMs": 1887
+  },
+  "tachesLongues": [
+   {
+    "debut": 2264,
+    "ms": 314
+   }
+  ],
+  "plusLongue": 314,
+  "touchers": {
+   "n": 77,
+   "mediane": 4,
+   "max": 1875,
+   "au_dessus_de_50": 1,
+   "au_dessus_de_100": 1
+  },
+  "echecs": []
+ },
+ {
+  "essai": 3,
+  "variante": "avec",
+  "cpu": 4,
+  "enAttente": 5,
+  "liberees": 5,
+  "finChauffe": true,
+  "chauffe": {
+   "debut": 305,
+   "appelMs": 1957
+  },
+  "tachesLongues": [
+   {
+    "debut": 2355,
+    "ms": 288
+   }
+  ],
+  "plusLongue": 288,
+  "touchers": {
+   "n": 78,
+   "mediane": 4,
+   "max": 1952,
+   "au_dessus_de_50": 2,
+   "au_dessus_de_100": 2
+  },
+  "echecs": []
+ }
+]

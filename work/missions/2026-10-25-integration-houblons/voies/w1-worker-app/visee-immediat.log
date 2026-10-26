@@ -1,0 +1,14 @@
+Serveur 1/1 : npm run dev -- --port 5293 --strictPort  (journal : C:\Users\mrspa\AppData\Local\Temp\with-server-2W2JpV\serveur-1-5293.log)
+Attente du port 5293…
+Serveur prêt sur le port 5293
+
+Tous les serveurs sont prêts. Lancement : node work/missions/2026-10-25-integration-houblons/voies/w1-worker-app/mesure-w1.mjs --client=immediat --visee=1 --essais=3 --sortie=work/missions/2026-10-25-integration-houblons/voies/w1-worker-app/mesures-visee
+
+essai 1 (immediat, visée, ×4) : préchauffe {"appelMs":378,"resoluMs":null,"rappels":[1,0,378,0,0]} · tâches longues (API) ["700+82"] · plus long blocage (battement) 390 ms [{"t":688,"ecart":390},{"t":790,"ecart":101}] · envois [] · toucher : médiane 4 ms, max 79 ms, > 50 ms 1/75, > 100 ms 0/75 · ouverture de Suggérer : {"listeVue":true,"versLigneMs":246,"plusLongBlocageMs":312,"tachesLongues":[252,104,153,234,60]}
+essai 2 (immediat, visée, ×4) : préchauffe {"appelMs":446,"resoluMs":null,"rappels":[0,0,446,0,0]} · tâches longues (API) ["806+65"] · plus long blocage (battement) 454 ms [{"t":279,"ecart":32},{"t":755,"ecart":454},{"t":802,"ecart":47},{"t":883,"ecart":81}] · envois [] · toucher : médiane 4 ms, max 427 ms, > 50 ms 1/73, > 100 ms 1/73 · ouverture de Suggérer : {"listeVue":true,"versLigneMs":126,"plusLongBlocageMs":451,"tachesLongues":[128,91,190,233,66]}
+essai 3 (immediat, visée, ×4) : préchauffe {"appelMs":421,"resoluMs":null,"rappels":[0,0,421,0,0]} · tâches longues (API) ["745+79"] · plus long blocage (battement) 429 ms [{"t":731,"ecart":429},{"t":836,"ecart":92}] · envois [] · toucher : médiane 4 ms, max 77 ms, > 50 ms 1/75, > 100 ms 0/75 · ouverture de Suggérer : {"listeVue":true,"versLigneMs":134,"plusLongBlocageMs":405,"tachesLongues":[137,106,137,240,58]}
+MESURE OK
+
+Commande terminée, code 0.
+
+Arrêt de 1 serveur(s)…

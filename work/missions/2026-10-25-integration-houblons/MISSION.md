@@ -68,6 +68,7 @@ etape-houblons choisie : « Partir sur cette version » (base v4.10, D107) et «
 | Dryhopper à froid : amertume, hop creep, limites | 26.10 v1 | https://claude.ai/artifact/WW2mmg7gWgUVSnT4PTWTFf | `voies/m5-dryhopper-froid/page.html` |
 | Récap du 26.10, 13 h | 26.10 v2 | https://claude.ai/artifact/EFGywfPa5yLiwTgDzQb16v | scratchpad de la session (`recap-2026-10-26-13h.html`) |
 | Suggérer à 60′ comme au dry hop (q2b, M1 à M3, IA) | 26.10 v1 | https://claude.ai/artifact/Npss86xUpf259xJaemSKjH | `voies/m6-suggerer-moment/page.html` |
+| Radar : voir le manque d'un houblon sur trois (D183) | 26.10 v1 | https://claude.ai/artifact/Gd66AfKhbqzdQ7xdt19Wiq | `voies/m8-radar-manque-partiel/page.html` |
 
 ## Boucle de retour
 - Un critère rouge : l'agent corrige dans sa voie, 3 essais ; puis SendMessage au même agent (2 relances) ; puis le pilote
@@ -289,3 +290,87 @@ Les deux voies se mêlent dans `voies.ts`. On les commite ensemble après f4.
   - test dans son Chrome, en lecture seule ;
 - D172 (dry hop actif et levure), D177 (interpolation à 20′), D178 (Comparer sans houblon), #182 (surcouche compagnon), #187 (stock) ;
 - voie de profil (D101) pour les six budgets dépassés.
+
+## Reprise (26.10, vers 19 h 30) : état courant (remplace celle de 18 h)
+Quota hebdomadaire : 92 %. Règle : plus d'agent dès 98 %, arrêt à 99 %. Contexte du pilote : 81 %.
+
+**En ligne** : hébergement **fb0d14e3** (D110) : Ma bière dans l'app, sa croix, D99, catalogue et alias, sources à un seul endroit.
+PR #188 fusionnée (71dc41bb). Callable IA (D92).
+
+**Commité, pas encore poussé ni en ligne** :
+- lot moteur **689160fb** : c7 (505 variétés branchées), f2, f4, f5, f6, f7 ;
+- r2 **f5a53f99** : radar, tiretés le long du bord et points visibles ;
+- e5 **83aee2c1** : états de Dryhopper ;
+- B5 à 164 ko (D109, son accord).
+
+**En vol** :
+- **rejeu complet de f5a53f99** (Haiku, journaux dans `%TEMP%/rejeu-lot/`) ;
+- **r2-suite** : Comparer en mode Absolu, où les rayons tiretés restent (critique), et la capture de la marque « peu de données » ;
+- **m8** : mini maquettes du manque d'une série sur 3, au radar (D183).
+
+**Pour finir le lot** :
+1. commiter r2-suite ;
+2. rejouer les contrôles du radar sur ce commit ;
+3. déployer depuis la copie propre, quand plus rien n'y tourne, puis lire « found N files » et la page servie (L17) ;
+4. pousser, ouvrir une PR, la fusionner quand elle est propre (son accord D110 : « Fait une pr et tu merge une fois que c'est propre ») ;
+5. publier m8 après la critique.
+
+**Ensuite** :
+- m7 (rangées et vrai dry hop, à refaire sur le lot) ;
+- P4 et P5 de « Ajouter », B2 de Substituer, formes « Citra · pellets / cryo » : en mini maquettes ;
+- D182 (gooseberry) ;
+- accords D100 : test à l'aveugle, IA de Suggérer, écriture Firestore, test dans son Chrome ;
+- D172 (dry hop actif et levure), D177 (20′), D178 (Comparer sans houblon) ;
+- #182, #187 ;
+- voie de profil D101 (6 budgets).
+
+## Reprise (26.10, vers 20 h 30) : complément
+- Commités depuis 19 h 30, pas encore poussés ni en ligne :
+  - r2-suite (d2d8d69f) ;
+  - u2 (61eff519) : interpolation entre 10′ et 60′ ;
+  - u3 (a403041d) : rond pointillé, raison au survol, whirlpool à 80 °C supposé ;
+  - x2 (7f811c2c) : export concis ;
+  - m8 publié (Gd66AfKhbqzdQ7xdt19Wiq). Son choix est attendu ; le critique classe C, B, E en tête.
+- Le rejeu de f5a53f99 n'est pas déployable :
+  - le test V5.5 `hopV55PagePropertyAdviceV3` est rouge ;
+  - 14 états sont en échec ;
+  - la préchauffe au repos est plus lente.
+
+  En vol : **e6** (diagnostic et corrections sûres). Ensuite : rejeu ciblé de HEAD, déploiement, PR.
+- D185 : deux scripts de levure à aligner sur l'export concis.
+
+## Reprise (26.10, vers 21 h) : complément
+- Le quota hebdomadaire est à 94 % et le contexte du pilote à 89 % (compaction à 97 %).
+- Commités, non poussés :
+  - e6 (e4e12edf) ;
+  - D114 : son choix G, le trou du 0, à porter sur Substituer et Comparer ;
+  - D186 : les points confondus.
+- En vol :
+  - **p7** : G et les points confondus, dans `commun/` ;
+  - **w1** : la préchauffe dans le worker, et le face à face sans produit d'arôme à 60′. Cette voie bloque le déploiement.
+- Ensuite : un rejeu ciblé de HEAD, puis le déploiement depuis la copie propre (personne d'autre n'y écrit ; lire « found N files »
+  et la page servie). Puis push, PR, et fusion une fois propre.
+
+## Reprise (26.10, vers 21 h 45) : complément
+- Commités : p7 (a3bb8346 : G, le trou du 0, et les points confondus) et w1 (b1d73ea1 : la préchauffe dans le worker, le face à face
+  sans produit d'arôme). Rien n'est encore poussé depuis 2cccbdc0.
+- En vol : **le rejeu complet de b1d73ea1** (Haiku, journaux dans `%TEMP%/rejeu-b1d7/`). S'il est vert :
+  1. déployer depuis la copie propre (lire « found N files » et la page servie, L17) ;
+  2. pousser ;
+  3. ouvrir une PR et la fusionner, avec `--match-head-commit`.
+- Ensuite :
+  - la page des listes k1/k3 sur sa Double IPA (D91) ;
+  - m7 ;
+  - les mini maquettes P4 et P5 de « Ajouter », B2 et les formes ;
+  - les accords D100 ;
+  - D172, D178, D182, D185, #182, #187 ;
+  - la voie de profil D101, avec les tâches de 100 à 250 ms qui restent après la préchauffe (w1), dont l'arrivée du catalogue plein de c7.
+
+## Reprise (26.10, vers 22 h 30) : complément
+- Rejeu de b1d73ea1 : typage, build, B5 (163,5 ko), worker de production et 10 contrôles Chrome sont verts. Trois bloquants restent ;
+  la voie **e7** les traite :
+  1. « NaN » dans l'assistant de recette (`monkey.test.tsx`, graine 11, échoue aussi seul) ;
+  2. 6 états de Substituer attendent l'ancien face à face (Citra cryo) ;
+  3. `controle-radar-base` ne trouve plus 9 pages, sans doute depuis p7.
+- Après e7 : un rejeu ciblé (monkey, `hopIndexV4`, build, `construire`, états, radar-base), puis le déploiement depuis la copie
+  propre, le push et la PR.

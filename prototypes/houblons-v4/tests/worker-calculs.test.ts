@@ -21,7 +21,8 @@ const DIR = { floral: 1, resin: -1 } as const;
 // remplacants 6561a4d6240b → 32e2ef725fec (t1, D160) : champs « autres » traduits, aucun score ni rang.
 // proposer 3584e2c7dabd → 31d7feb6324c (g2c, D90, 26.10) : raison dans client-async.test.ts (exclusion par la moitié au moins des fiches).
 // c6 (26.10, catalogue-complet) : suggerer 166a7dbd9516 → af7f2ecc1069 (Equinox est Ekuanot ; 26 variétés rattachées à des fiches de plus par la table d'alias).
-const EMPREINTES = { substitutes: 'cac6de6d0c72', suggerer: 'af7f2ecc1069', proposer: '31d7feb6324c', remplacants: '32e2ef725fec' };
+// D102 (voie f2-affinage-a-b1-c-d, 26.10) : proposer → 3b946ac8a4ff (B1, D105, pool non coupé), remplacants → e6b71ac8e04d et substitutes → c6399d7b6596 (C, J1 : α 0,15 à 60′) ; raisons dans client-async.test.ts.
+const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: 'af7f2ecc1069', proposer: '3b946ac8a4ff', remplacants: '5c602de7c804' };
 const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recette as never, style: adapter.style(recette.styleCode), stockFirst: true, limit: 8 });
 
 /** Le worker joué dans le même processus : messages clonés dans les deux sens, une tâche plus tard. */

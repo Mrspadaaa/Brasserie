@@ -98,8 +98,10 @@ export function PisteBase({ x, avant, echelle, fine = false, visee = null, crans
   const hors = x.horsStyle === 'au-dessus';
   const deguste = x.source === 'dégustation';
   const h = fine ? 'h-2.5' : 'h-3';
+  // D113 : une valeur interpolée (ébullition entre 10′ et 60′) a le rond « prévu » en pointillé ; un whirlpool sans température dit « 80 °C supposé » au survol.
+  const interpole = !!x.interpole && !deguste;
   return (
-    <span data-barre={f} data-echelle={echelle} className={`relative block ${h} min-w-0`} title={inconnu ? x.raison ?? 'non situé' : undefined}>
+    <span data-barre={f} data-echelle={echelle} className={`relative block ${h} min-w-0`} title={inconnu ? x.raison ?? 'non situé' : x.suppose}>
       <i className={`absolute inset-y-0 left-0 rounded-full ${inconnu ? 'pq-hachure' : 'bg-cave-800/60'}`} style={{ width: dessus ? '80%' : '100%' }} />
       {zone && !inconnu && <i data-role="zone" className="absolute inset-y-0 rounded-full bg-cave-700/70" style={{ left: pc(zone.de), width: pc(zone.a - zone.de) }} />}
       {/* La zone du style en trois crans, comme la base (biere.html, .zone-f.crans) : deux traits fins, au style seulement,
@@ -133,13 +135,18 @@ export function PisteBase({ x, avant, echelle, fine = false, visee = null, crans
           className="pq-ma-biere-visee absolute top-1/2" style={{ left: d ? `calc(${pc(Math.min(100, Math.max(0, a! + 0)))} + ${d}px)` : pc(b) }} />;
       })()}
       {x.valeur && (
-        <i data-role="point" data-biere-point="" data-source={deguste ? 'dégustation' : 'simulé'}
-          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full ${fine ? 'w-3.5 h-3.5' : 'w-4 h-4'} ${hors ? 'border-0' : deguste ? 'border-0 bg-cave-50' : 'border-[3px] border-cave-50 bg-cave-900'}`}
-          style={{ left: pc(pos(x.valeur.centre)), ...(hors ? { background: '#c2410c' } : !deguste ? { borderColor: COULEURS[f].texte } : {}) }} />
+        <i data-role="point" data-biere-point="" data-source={deguste ? 'dégustation' : 'simulé'} {...(interpole ? { 'data-interpole': '' } : {})}
+          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full ${fine ? 'w-3.5 h-3.5' : 'w-4 h-4'} ${hors && !interpole ? 'border-0' : deguste ? 'border-0 bg-cave-50' : `border-[3px] ${interpole ? 'border-dashed' : ''} border-cave-50 bg-cave-900`}`}
+          style={{ left: pc(pos(x.valeur.centre)), ...(hors ? (interpole ? { borderColor: '#c2410c' } : { background: '#c2410c' }) : !deguste ? { borderColor: COULEURS[f].texte } : {}) }} />
       )}
     </span>
   );
 }
+
+/** D113 : une famille de la bière est-elle interpolée (ébullition entre 10′ et 60′) ? La légende n'ajoute sa puce que si oui. */
+export const aInterpole = (biere: Pick<BiereLue, 'profil'>) => Object.values(biere.profil).some((x) => !!x.interpole && x.source === 'simulé');
+/** La puce « interpolé » : le rond « prévu » (épais, clair) en pointillé, distinct du rond fin et grisé de « non situé ». */
+export const PuceInterpole = () => <i data-role="puce-interpole" aria-hidden="true" className="inline-block w-3.5 h-3.5 rounded-full border-[3px] border-dashed border-cave-50 align-[-2px]" />;
 
 /** Nom de la famille, au trait de la page : picto, gras si le style l'attend, rouge si hors du style. */
 export function NomFamille({ x, petit = false, bannie = false }: { x: FamilleLue; petit?: boolean; bannie?: boolean }) {

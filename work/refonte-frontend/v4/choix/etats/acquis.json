@@ -325,8 +325,8 @@
     "geste": "repos",
     "attendu": [
      "East Kent Goldings",
-     "Boadicea",
-     "Celeia",
+     "Hallertau Tradition",
+     "Huell Melon",
      "Motueka + Hallertau Blanc"
     ],
     "interdit": [],
@@ -338,7 +338,7 @@
       "Motueka + Citra cryo"
      ]
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : les candidats ont changé de noms (Boadicea à la place de Columbus, Motueka + Hallertau Blanc) ; même liste, mêmes colonnes (usage, nom, α, stock, ♡, +). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-acquis-q2b-suite-s5.png.)"
+    "note": "D83/D86, 26.10 : données changées, dessin identique : les candidats ont changé de noms (Boadicea à la place de Columbus, Motueka + Hallertau Blanc) ; même liste, mêmes colonnes (usage, nom, α, stock, ♡, +). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-acquis-q2b-suite-s5.png.) — e6, 26.10 : classe (a), dessin identique : D105 (B1) : le pool « à acheter » est classé par qualité (fiches lues avant le nom) et borné à 80, puis départage avant les effets de bord ; Aurum, Boadicea et Celeia (une fiche chacun) ne sont plus parmi les voies « plus floral » ni « plus agrumes » (sonde voies/e6-ecarts-lot/sonde-voies.ts : présents aux rangs 2 à 4 sur fb0d14e3, absents sur HEAD). Mêmes lignes (usage, nom, α, stock, ♡, +), mêmes colonnes. Les lignes « plus floral » deviennent Motueka, Motueka + Hallertau Blanc, Hallertau Blanc, East Kent Goldings, Hallertau Tradition, Huell Melon, Saphir (Boadicea et Celeia retirés). (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-acquis-q2b-suite-s5.png.)"
    }
   },
   {
@@ -779,9 +779,17 @@
     "selecteur_choisie": "section[data-role=\"objectif\"]",
     "geste": "repos",
     "attendu": [
-     "Aurum"
+     "Motueka",
+     "en stock",
+     "à acheter"
     ],
-    "interdit": []
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Aurum"
+     ]
+    },
+    "note": "e6, 26.10 : classe (a), dessin identique : D105 (B1) : le pool « à acheter » est classé par qualité (fiches lues avant le nom) et borné à 80, puis départage avant les effets de bord ; Aurum, Boadicea et Celeia (une fiche chacun) ne sont plus parmi les voies « plus floral » ni « plus agrumes » (sonde voies/e6-ecarts-lot/sonde-voies.ts : présents aux rangs 2 à 4 sur fb0d14e3, absents sur HEAD). Mêmes lignes (usage, nom, α, stock, ♡, +), mêmes colonnes. L’icône boîte (en stock) est sur Motueka et Hallertau Blanc, le panier (à acheter) sur East Kent Goldings, Hallertau Tradition, Huell Melon, Saphir ; les libellés « en stock » et « à acheter » sont lus. Aurum n’est plus proposé. (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-acquis-stock-icone.png.)"
    }
   },
   {

@@ -28,6 +28,7 @@ import { BandeOuverte, LignesV2a, TonsV2a } from './legende-bande';
 import { nomLevureBase } from './Base';
 import { WP_MINUTES, J_MAX } from './rail';
 import { useModifier } from './Frise';
+import { MarquesCatalogue } from '../fiche/marques';
 
 const SEUIL = 0.5;
 const COURT_SIGNAL: Partial<Record<FamilyId, string>> = { resin: 'résine', herbal: 'herbe', earthy: 'terre', spice: 'épice', stoneFruit: 'noyau', pomeFruit: 'pépins', tropical: 'tropical', citrus: 'agrumes' };
@@ -178,6 +179,7 @@ export function Carte({ a, recette, biere, repere, nouveau, premier, onGeste }: 
         <AlphaLu h={h} mode="court" />
         <Usage h={h} mot />
         <StockIcone h={h} />
+        <MarquesCatalogue cle={a.hopKey} />
         {signal && (
           <span data-role="signal" className={`inline-flex items-center h-6 px-2 rounded-full border-2 text-sm whitespace-nowrap ${biere.profil[signal].horsStyle ? 'border-alert text-alert' : 'border-cave-700 text-cave-200'}`}>
             {COURT_SIGNAL[signal] ?? COURT[signal].toLowerCase()} {h.familles[signal].fiches}/{h.familles[signal].sur}

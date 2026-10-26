@@ -71,7 +71,10 @@ const HUILE_VARS = [V_HUILE, V_MYR, V_HUM, V_CAR, V_FAR, V_LIN, V_GER];
 /** Poids à l'intérieur de chaque groupe, fixés à la main selon le moment (la somme d'un groupe vaut 1) : [α, β, cohumulone, usage] et
  * [huile totale, myrcène, humulène, caryophyllène, farnésène, linalol, géraniol]. */
 const PROFILS: Record<MomentSubstitution, { amertume: number[]; huile: number[] }> = {
-  amertume: { amertume: [0.4, 0.2, 0.2, 0.2], huile: [0.25, 0.05, 0.3, 0.25, 0.05, 0.05, 0.05] },
+  // D102 (J1, 26.10) : à 60′ l'α passe de 0,4 à 0,15 dans le groupe d'amertume (β 0,25, cohumulone 0,3, usage 0,3). L'α portait 43 % de la dispersion des scores (50 % chez les amérisants) ;
+  // il en porte 14 %. Principe du brasseur : l'α se règle par la dose (doseOf : même IBU), il compte mais pas seul, et selon le style. Mesuré par f1 (partie 3) sur l'autre moitié :
+  // |ΔMRR| ≤ 0,01, intervalles autour de zéro : ni gain ni perte mesurés, la raison est le principe, pas un gain de banc. Dry hop et arôme chaud : inchangés.
+  amertume: { amertume: [0.15, 0.25, 0.3, 0.3], huile: [0.25, 0.05, 0.3, 0.25, 0.05, 0.05, 0.05] },
   chaud: { amertume: [0.3, 0.2, 0.1, 0.4], huile: [0.2, 0.15, 0.15, 0.1, 0.1, 0.2, 0.1] },
   froid: { amertume: [0.25, 0.15, 0.1, 0.5], huile: [0.25, 0.1, 0.1, 0.05, 0.1, 0.25, 0.15] },
 };
@@ -328,14 +331,20 @@ const engineRole = (key: string) => roleCache().obtenir(key, () => hopRole(key))
 /** Produit d'arôme d'un houblon, une fois par moteur (lu à chaque classement d'amertume, pour chaque candidat). */
 const produitCache = () => local('substitution:produits', () => new Lru<string | null>(borneHoublons(courant().catalogue.length + courant().stock.length)));
 const produitDe = (ref: HopRef) => produitCache().obtenir(ref.key, () => aromaProduct(ref));
+/** D102 (A) : la forme de produit d'arôme (« cryo », « lupuline », « poudre ») d'un houblon, par sa clé, ou null. La même lecture que la démotion d'amertume de Substituer :
+ * Suggérer la partage à 60′ (voies.ts, infoPalierDe) pour que les deux écrans disent la même chose d'un cryo. */
+export const produitDArome = (key: string): string | null => { const ref = hopRef(key); return ref ? produitDe(ref) : null; };
 /** Raison de passer après les amérisants et doubles usages à un moment d'amertume, ou null. */
 /** L'original échappe-t-il à la règle (contexte d'arôme, ou lui-même produit d'arôme ou aromatique) ? */
-const demotionExclue = (orig: HopRef, context: SubstitutionContext) => context !== 'amertume' || !!produitDe(orig) || engineRole(orig.key).value === 'aromatique';
+const demotionExclue = (orig: HopRef, context: SubstitutionContext) => context !== 'amertume' || !!produitDe(orig) || engineRole(orig.key).value === 'aromatique' || orig.catalogue.purpose === 'aroma';
 function demotionDe(sub: HopRef): string | null {
   const product = produitDe(sub);
   if (product) return `produit d’arôme (${product}), cher pour amériser`;
   const role = engineRole(sub.key);
-  return role.value === 'aromatique' ? `houblon aromatique (${role.source}), cher pour amériser` : null;
+  if (role.value === 'aromatique') return `houblon aromatique (${role.source}), cher pour amériser`;
+  // D106 (3) : la même lecture que Suggérer à 60′ (rangUsage : l'usage « arôme » de Beer Maverick passe après les amérisants et doubles usages). Le moteur lit le rôle par l'α : un houblon d'usage
+  // « arôme » à α 9 à 18 % (Falconer's Flight, Altus, Akoya, Loral, Sequoia Blend) lui paraissait amérisant ; il recule aussi ici, avec sa raison écrite. L'α reste réglé par la dose.
+  return sub.catalogue.purpose === 'aroma' ? 'usage « arôme » (Beer Maverick), cher pour amériser' : null;
 }
 
 const names = (fs: FamilyId[]) => fs.map((f) => FAMILY_NAMES[f].toLowerCase()).join(', ');

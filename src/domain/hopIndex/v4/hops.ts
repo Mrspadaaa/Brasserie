@@ -246,7 +246,7 @@ export function styleFit(keys: string[], scale: StyleScale): StyleFit[] {
     return { key, name: h.name, grams: h.stock?.grams ?? 0, fit, conflicts, supports, usage, reasons };
   });
   const order: Record<FitClass, number> = { 'usage attesté': 0, cohérent: 1, 'peu documenté': 2, 'non documenté': 3, 'hors style': 4 };
-  return rows.sort((a, b) => order[a.fit] - order[b.fit] || Number(b.grams > 0) - Number(a.grams > 0) || b.supports.length - a.supports.length || b.grams - a.grams || a.name.localeCompare(b.name, 'fr'));
+  return rows.sort((a, b) => order[a.fit] - order[b.fit] || Number(b.grams > 0) - Number(a.grams > 0) || b.supports.length - a.supports.length || b.grams - a.grams || Number(!!hopRef(a.key)!.catalogue.peuDeDonnees) - Number(!!hopRef(b.key)!.catalogue.peuDeDonnees) || a.name.localeCompare(b.name, 'fr'));
 }
 export const stockKeys = (inStockOnly = false) => stockDuMoteur().filter((s) => !inStockOnly || s.grams > 0).map((s) => s.key);
 export const engineVarieties = () => engineData().varieties;

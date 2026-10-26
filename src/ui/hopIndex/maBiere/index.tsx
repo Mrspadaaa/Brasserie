@@ -19,7 +19,7 @@ import { useBiere, useRecette } from './hote';
 import type { RecetteParcours } from '../parcours/types';
 import { donnees, houblon, lireBiere, style } from '../parcours/adaptateur';
 import { Ajouter } from './Ajouter';
-import { Alerte, Bandeau, NomFamille, PisteBase, nomLevureBase } from './Base';
+import { Alerte, Bandeau, NomFamille, PisteBase, PuceInterpole, aInterpole, nomLevureBase } from './Base';
 import { Frise } from './Frise';
 import { Lentille } from './Lentille';
 import { useRepere } from './repere';
@@ -156,7 +156,7 @@ export function EtapeHoublonsContenu({ bandeau = true }: { /** Faux dans le wiza
           </div>
           <PanneauLegende id="pq-ma-biere-legende-profil" ouverte={legende}>
             <p><b>Barre</b> : la zone grise est le style {sc.code} ; le pointillé, au-dessus du style.</p>
-            <p><b>Point plein</b> : dégusté{(() => { const d = donnees().degustation?.tasting.date; return d ? ` le ${d.slice(8, 10)}.${d.slice(5, 7)}` : ''; })()}. <b>Rond</b> : prévu, simulé (~). <b>Hachuré</b> : non situé, jamais zéro.</p>
+            <p><b>Point plein</b> : dégusté{(() => { const d = donnees().degustation?.tasting.date; return d ? ` le ${d.slice(8, 10)}.${d.slice(5, 7)}` : ''; })()}. <b>Rond</b> : prévu, simulé (~). {aInterpole(biere) && <><PuceInterpole /> <b>Pointillé</b> : interpolé. </>}<b>Hachuré</b> : non situé, jamais zéro.</p>
             {analyse && <p><b>Toucher le profil</b> : l'analyse dans l'onglet Ma bière (barres au style, visées, radar).</p>}
             <p><b>Rail</b> : glisser la pastille d’un ajout (« 60′ ») : ébullition par 5′, whirlpool en °C, à froid de J+0 à J+14.</p>
           </PanneauLegende>

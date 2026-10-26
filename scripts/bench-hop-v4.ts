@@ -204,7 +204,8 @@ function volume() {
     if (GROUPES.includes('repos')) {
     noter('repos:creation-du-moteur', creation);
     mesure('repos:premier-ecran-ma-biere', () => adapter.lireBiere(c.recette));
-    const [, tProposer] = t(() => adapter.proposer(c.recette, c.direction as any));
+    // D108 (f6) : le banc mesure le PREMIER AFFICHAGE de Suggérer (proposerRapide, sans les remplacements) ; l'appel complet (proposer) part ensuite au repos, hors de ce banc.
+    const [, tProposer] = t(() => adapter.proposerRapide(c.recette, c.direction as any));
     const [, tLeviers] = t(() => adapter.leviersLevure(c.recette, c.direction));
     noter('repos:voies-proposer', tProposer); noter('repos:voies-leviers-levure', tLeviers); noter('repos:tranche-voies-de-suggerer', tProposer + tLeviers);
     for (const a of c.recette.additions) mesure('repos:tranche-remplacants', () => adapter.remplacants(c.recette, a.id, 6));
@@ -222,8 +223,8 @@ function volume() {
     mesure('toucher:comparer-12-houblons', () => adapter.comparer(c.recette, comparables));
     mesure('toucher:comparer-jour-apres-jour', () => { for (let j = 1; j <= 7; j++) adapter.comparer(c.recette, comparables, { quand: { type: 'dryhop', phase: 'apres', jours: j } }); });
     const dir2 = Object.fromEntries(Object.entries(c.direction).map(([f, k]) => [f, k * 2]));
-    mesure('toucher:suggerer-sans-prechauffage', () => { adapter.proposer(c.recette, dir2 as any); adapter.leviersLevure(c.recette, dir2); });
-    mesure('toucher:suggerer-prechauffe-cache', () => { adapter.proposer(c.recette, c.direction as any); adapter.leviersLevure(c.recette, c.direction); });
+    mesure('toucher:suggerer-sans-prechauffage', () => { adapter.proposerRapide(c.recette, dir2 as any); adapter.leviersLevure(c.recette, dir2); });
+    mesure('toucher:suggerer-prechauffe-cache', () => { adapter.proposerRapide(c.recette, c.direction as any); adapter.leviersLevure(c.recette, c.direction); });
     mesure('toucher:ma-biere-apres-un-outil', () => adapter.lireBiere({ ...c.recette, additions: c.recette.additions.map((x) => (x.id === 'n1' ? { ...x, grams: x.grams + 7 } : x)) }));
     for (const cle of comparables) mesure('toucher:fiche-houblon', () => adapter.houblon(cle));
 

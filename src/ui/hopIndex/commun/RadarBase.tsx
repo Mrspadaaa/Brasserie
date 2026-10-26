@@ -75,7 +75,20 @@ export interface RadarBaseProps {
   cibles?: { toucher: (f: FamilyId) => void; survol?: (f: FamilyId | null) => void; etats?: Partial<Record<FamilyId, string>> };
   /** Une bulle posée près d'un axe (x, y en fraction du radar). */
   bulle?: { famille: FamilyId; rendu: (ancre: { x: number; y: number }) => ReactNode };
+  /** Le trou du 0 (D114, sa variante G de m8 : « G le trou du o, met ça sur tout les radar de comparaison ») : le disque du
+   *  petit anneau du zéro teinté d'un gris uni très clair, sans hachures ni mot ; un point à 0 (non décrit) devient un rond
+   *  creux. Substituer et Comparer l'activent ; Ma bière et la fiche, non. */
+  trouDuZero?: boolean;
+  /** Points confondus (D186, « sur certains points, on ne voit pas le bleu ») : sur un même axe, des points de même rayon (à
+   *  6 près, en unités du radar) s'écartent le long de l'anneau, d'environ 8 px à 390. L'original reste au centre, les autres
+   *  suivent dans l'ordre des séries (celui de la légende). Seuls les points bougent : traits, aires et tiretés restent sur
+   *  la valeur exacte. Substituer et Comparer l'activent. */
+  ecarterConfondus?: boolean;
 }
+
+/** L'écart entre deux points confondus, en unités du radar (W = 358 : 7,3 donne 8 px à 390) ; sous 6, des points d'un même axe se recouvrent. */
+const ECART_CONFONDUS = 7.3;
+const SEUIL_CONFONDUS = 6;
 
 const rd = (x: number) => Math.round(x * 10) / 10;
 type P2 = [number, number];
@@ -90,7 +103,7 @@ function echelle(max: number) {
 }
 export const chiffreRadar = (x: number) => String(Math.round(x * 100) / 100).replace('.', ',');
 
-export function RadarBase({ familles, series, mode, moment, zone: zoneP, reference, echelleAbsolue, echelleCommune, enPlace, seuilHors = 1e-6, objet, label, className, marquees, fleches, cibles, bulle }: RadarBaseProps) {
+export function RadarBase({ familles, series, mode, moment, zone: zoneP, reference, echelleAbsolue, echelleCommune, enPlace, seuilHors = 1e-6, objet, label, className, marquees, fleches, cibles, bulle, trouDuZero, ecarterConfondus }: RadarBaseProps) {
   const absolu = mode === 'absolu';
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   const brut = (s: { valeurs: Valeurs }, f: FamilyId): number | null => { const v = s.valeurs[f]; return v == null || !Number.isFinite(v) ? null : Math.max(0, v); };
@@ -132,6 +145,26 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
   const secteur = (i: number, j: number, r: number) => { const s: P2[] = [[CX, CY], mil(i - 1, r)]; for (let a = i; a <= j; a++) s.push(pt(a, r)); s.push(mil(j, r)); return s.map(xy).join(' '); };
   const id = `rb-h-${uid}`;
 
+  // D186 : le décalage de chaque point confondu, le long de l'anneau (la tangente de l'axe), clé « série|axe ». Les points d'un axe
+  // se regroupent de proche en proche (moins de 6 d'écart de rayon). Dans un groupe : l'original au centre, puis les séries dans
+  // l'ordre donné (0, −1, +1, −2, +2 crans) ; sans original, répartis de part et d'autre du centre, dans l'ordre des séries.
+  const decal = new Map<string, number>();
+  /** L'écart d'un point décalé, lu par les contrôles (data-decale) ; rien pour un point à sa place. */
+  const decale = (dt: number) => (dt ? { 'data-decale': rd(dt) } : {});
+  if (ecarterConfondus) {
+    const legende = [...series.filter((s) => s.role === 'contour'), ...series.filter((s) => s.role !== 'contour')];
+    axes.forEach((f, i) => {
+      const pts = legende.flatMap((s) => { const v = brut(s, f); return v == null ? [] : [{ s, r: rvA(i, v) }]; }).sort((a, b) => a.r - b.r);
+      const groupes: (typeof pts)[] = [];
+      for (const p of pts) { const g = groupes[groupes.length - 1]; if (g && p.r - g[g.length - 1].r <= SEUIL_CONFONDUS) g.push(p); else groupes.push([p]); }
+      for (const g of groupes) {
+        if (g.length < 2) continue;
+        const l = legende.filter((s) => g.some((p) => p.s === s)), avecOriginal = l[0].role === 'contour';
+        l.forEach((s, k) => decal.set(`${s.cle}|${i}`, (avecOriginal ? [0, -1, 1, -2, 2, -3, 3][k] ?? 0 : k - (l.length - 1) / 2) * ECART_CONFONDUS));
+      }
+    });
+  }
+
   // Les séries : les autres d'abord, la retenue par-dessus, et le contour seul (l'original) tout en haut. Un remplaçant
   // décrit souvent la même famille au même niveau que l'original (échelle à trois crans) : dessiné dessous, le contour
   // disparaissait sous son trait et ses points (D156 : « sur le radargraph, on voit pas Galaxy »). Dessus, il reste visible :
@@ -140,6 +173,51 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
   const ordre = [...series].sort((a, b) => rang(a) - rang(b));
   const groupe = enPlace ? [] : inc.map((x, i) => (x ? i : -1)).filter((i) => i >= 0);
   const marque = new Set(marquees ?? []);
+
+  // D180 (26.10, « si les traits haché traversent le graph, ça enlève de la visibilité ») : le tireté qui enjambe le secteur
+  // « sans donnée » regroupé le longe, sans passer par la corde qui coupait le radar en deux. De son point connu, un arc au
+  // même rayon jusqu'à l'arête du secteur, l'arête vers le bord, le tour du bord, puis la même chose en sens inverse.
+  // Chaque série prend un liseré plus intérieur (`ko`) : trois tiretés sur le même bord se recouvriraient.
+  // Un inconnu isolé entre deux axes voisins de plus de 30 % de rayon garde son tireté droit (il ne coupe pas le radar) ; s'il
+  // passerait à moins de 30 % du centre (plusieurs axes sans valeur de suite : Ma bière, une série qui manque en bas), il longe
+  // le bord de la même façon : la règle du contrôle `tests/integration/controle-radar-lisible.mjs`.
+  /** Le nombre d'axes de `i` à `j`, dans le sens des axes. */
+  const ecart = (i: number, j: number) => (((j - i) % N) + N) % N;
+  /** Le sens des axes de `i` à `j` traverse-t-il le secteur regroupé ? (il est contigu : tout ou rien) */
+  const tourSecteur = (i: number, j: number) => groupe.length > 0 && ecart(i, groupe[0]) > 0 && ecart(i, groupe[0]) < ecart(i, j);
+  /** La distance du centre au segment pq. */
+  const distCentre = (p: P2, q: P2) => {
+    const dx = q[0] - p[0], dy = q[1] - p[1], l2 = dx * dx + dy * dy;
+    const t = l2 ? Math.max(0, Math.min(1, ((CX - p[0]) * dx + (CY - p[1]) * dy) / l2)) : 0;
+    return Math.hypot(p[0] + t * dx - CX, p[1] + t * dy - CY);
+  };
+  /** Le seuil du contrôle : 30 % du rayon, ou 85 % du plus bas des deux points (un point bas reste bas : c'est la corde qui s'écarte). */
+  const seuilCorde = (rA: number, rB: number) => Math.min(0.3 * RR, 0.85 * Math.min(rA, rB));
+  /** Tous les axes entre `a` et `b` sont-ils hachurés (inconnus de toutes les séries) ? Alors le tireté longe leur bord. */
+  const toutHachure = (a: number, b: number) => { for (let k = (a + 1) % N; k !== b; k = (k + 1) % N) if (!inc[k]) return false; return true; };
+  /** Une corde basse sur des axes que seule cette série ignore : un arc d'anneau au rayon du plus bas des deux points. Il ne
+   *  monte pas au bord (critique r2 : en Absolu, des rayons de tiretés du contour au bord couvraient la vue). */
+  const cheminArc = (a: number, b: number, rA: number, rB: number) => {
+    const r = Math.min(rA, rB), n = ecart(a, b);
+    return [`M${xy(pt(a, rA))}`, `L${xy(pt(a, r))}`, `A${rd(r)} ${rd(r)} 0 ${n * PAS > Math.PI ? 1 : 0} 1 ${xy(pt(b, r))}`, `L${xy(pt(b, rB))}`].join(' ');
+  };
+  /** Le tour du bord d'un secteur hachuré : de `a`, un arc d'anneau (au rayon du plus bas des deux points) jusqu'à l'arête du
+   *  secteur, l'arête vers le bord, le tour, et le retour. Le secteur couvre les axes `u` à `w` (indices dépliés, après `a`) :
+   *  le groupe seul si d'autres axes sans valeur de cette série le précèdent ou le suivent (l'arc les traverse, il ne monte pas). */
+  const cheminAutour = (a: number, b: number, rA: number, rB: number, ko: number, u: number, w: number) => {
+    const d = 2 + 3 * ko, f = (RR - d) / RR, n = ecart(a, b);
+    const M1 = mil(u - 1, RR), M2 = mil(w, RR);
+    const L1 = Math.hypot(M1[0] - CX, M1[1] - CY), L2 = Math.hypot(M2[0] - CX, M2[1] - CY);
+    const r = Math.min(rA, rB, f * L1, f * L2);
+    const sur = (M: P2, L: number): P2 => [CX + ((M[0] - CX) * r) / L, CY + ((M[1] - CY) * r) / L];
+    const bord = (p: P2): P2 => [CX + (p[0] - CX) * f, CY + (p[1] - CY) * f];
+    const arc = (p: P2, ang: number) => `A${rd(r)} ${rd(r)} 0 ${ang > Math.PI ? 1 : 0} 1 ${xy(p)}`;
+    return [
+      `M${xy(pt(a, rA))}`, `L${xy(pt(a, r))}`, arc(sur(M1, L1), (u - 0.5 - a) * PAS),
+      `L${xy(bord(M1))}`, ...Array.from({ length: w - u + 1 }, (_, k) => `L${xy(bord(pt(u + k, RR)))}`), `L${xy(bord(M2))}`,
+      `L${xy(sur(M2, L2))}`, arc(pt(b, r), (a + n - w - 0.5) * PAS), `L${xy(pt(b, rB))}`,
+    ].join(' ');
+  };
 
   const ancreBulle = bulle ? (() => {
     const i = axes.indexOf(bulle.famille); if (i < 0) return null;
@@ -173,6 +251,9 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
         {groupe.length > 0 && <polygon data-inconnu={groupe.map((i) => axes[i]).join(' ')} data-role="secteur-sans-donnee" points={secteur(groupe[0], groupe[groupe.length - 1], RR)} fill={`url(#${id})`} />}
         {/* En place : un secteur hachuré par axe inconnu de tous, sous la grille. */}
         {enPlace && axes.map((f, i) => (inc[i] ? <polygon key={`h${f}`} data-inconnu={f} data-role="secteur-inconnu" points={secteur(i, i, RR)} fill={`url(#${id})`} className="rb-secteur-pale" /> : null))}
+        {/* Le trou du 0 (D114, variante G) : le disque du petit anneau du zéro, gris uni très clair, sous la grille et les aires. Il
+            recouvre la pointe du secteur « sans donnée » sans prendre son habit (ni hachures ni mot). */}
+        {trouDuZero && <polygon data-role="trou-du-zero" points={axes.map((_f, i) => xy(pt(i, rvA(i, 0)))).join(' ')} className="rb-trou" />}
         {/* La grille : anneaux réguliers, rayons. */}
         <g className="rb-grille" data-role="anneaux" data-anneaux={parAxe ? 5 : nb + 1} fill="none" strokeWidth="1">
           {axes.map((f, i) => { if (inc[i] && !enPlace) return null; const e = pt(i, RR); return <line key={`a${f}`} x1={CX} y1={CY} x2={rd(e[0])} y2={rd(e[1])} />; })}
@@ -181,7 +262,7 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
         </g>
         {/* L'échelle : en absolu, chiffrée sur l'axe du haut ; au style, le maximum de chaque axe près de son picto. */}
         {!echelleCommune && echelleTexte}
-        {ordre.map((s) => {
+        {ordre.map((s, ko) => {
           const lui = s.role === 'retenu', seul = s.role === 'contour';
           const v = axes.map((f) => brut(s, f));
           const voile = lui ? 0.22 : seul ? 0 : 0.07;
@@ -206,18 +287,45 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
                 return <>
                   {voile > 0 && suites.map((sx) => (sx.length < 2 ? null : <polygon key={`f${sx[0]}`} data-role="voile" points={[...sx.map(P), ...sx.slice().reverse().map(Z)].map(xy).join(' ')} fill={s.couleur} fillOpacity={voile} stroke="none" />))}
                   {segs.map((sg) => { const p = P(sg.i), q = P(sg.j);
+                    // D180 : un tireté qui enjambe le secteur « sans donnée » ne le traverse plus en corde : il le longe.
+                    let de: number | null = null;
+                    if (!sg.plein) {
+                      const deux = K.length === 2, bas = distCentre(p, q) < seuilCorde(rvA(sg.i, v[sg.i]!), rvA(sg.j, v[sg.j]!)) + 1;
+                      if (tourSecteur(sg.i, sg.j)) de = sg.i;
+                      else if (deux && tourSecteur(sg.j, sg.i)) de = sg.j;
+                      else if (bas) de = deux && ecart(sg.j, sg.i) < ecart(sg.i, sg.j) ? sg.j : sg.i;
+                    }
+                    if (de != null) {
+                      const a = de, b = de === sg.i ? sg.j : sg.i;
+                      // Le bord pour un secteur hachuré (regroupé en bas, ou « pas goûté » de Ma bière) ; sinon un arc d'anneau.
+                      const bord = tourSecteur(a, b) || toutHachure(a, b);
+                      // Le secteur longé : le groupe, s'il est dans l'enjambée ; sinon tous les axes entre a et b (tous hachurés).
+                      const u = tourSecteur(a, b) ? a + ecart(a, groupe[0]) : a + 1, w = tourSecteur(a, b) ? a + ecart(a, groupe[groupe.length - 1]) : a + ecart(a, b) - 1;
+                      return <path key={`t${sg.i}`} data-role="tirete" data-contour={bord ? 'bord' : 'arc'} d={bord ? cheminAutour(a, b, rvA(a, v[a]!), rvA(b, v[b]!), ko, u, w) : cheminArc(a, b, rvA(a, v[a]!), rvA(b, v[b]!))} fill="none" {...trait} strokeDasharray="5 4" strokeLinecap="butt" />;
+                    }
                     return <line key={`t${sg.i}`} data-role={sg.plein ? 'trait' : 'tirete'} x1={rd(p[0])} y1={rd(p[1])} x2={rd(q[0])} y2={rd(q[1])} {...trait} {...(sg.plein ? {} : { strokeDasharray: '5 4', strokeLinecap: 'butt' as const })} />; })}
                 </>;
               })()}
               {v.map((x, i) => {
                 if (x == null) return null;
-                const p = pt(i, rvA(i, x)), h = hors(s, axes[i]);
+                const p0 = pt(i, rvA(i, x)), dt = decal.get(`${s.cle}|${i}`) ?? 0, h = hors(s, axes[i]);
+                // D186 : un point confondu s'écarte le long de l'anneau ; la valeur, le trait et l'aire restent à leur place exacte.
+                const p: P2 = dt ? [p0[0] + Math.cos(i * PAS) * dt, p0[1] + Math.sin(i * PAS) * dt] : p0;
                 // Le contour seul : un anneau creux autour du sommet (la légende de Substituer : disque blanc cerclé), pour que
                 // le point plein d'un remplaçant au même niveau reste visible au centre.
-                if (seul && series.length > 1) return <circle key={axes[i]} data-valeur={chiffreRadar(x)} data-point={axes[i]} cx={rd(p[0])} cy={rd(p[1])} r={6.2}
+                if (seul && series.length > 1) return <circle key={axes[i]} data-valeur={chiffreRadar(x)} data-point={axes[i]} {...decale(dt)} cx={rd(p[0])} cy={rd(p[1])} r={6.2}
                   fill="none" stroke={h ? ORANGE_HORS : s.couleur} strokeWidth={2} />;
-                return <circle key={axes[i]} data-valeur={chiffreRadar(x)} data-point={axes[i]} cx={rd(p[0])} cy={rd(p[1])} r={lui ? (h ? 4.8 : 4) : h ? 3.8 : 3}
-                  fill={h ? ORANGE_HORS : s.couleur} stroke={h || lui ? '#fff' : 'none'} strokeWidth={h || lui ? 1.2 : 0} />;
+                // Le trou du 0 : un point à 0 (non décrit) tombe dans le disque teinté ; il y devient un rond creux (4,2, trait de la
+                // couleur de la série, 2), posé sur un fond blanc et un liseré clair de 1,6 comme les autres points (D181). Le rond
+                // lui-même est sans remplissage : comme l'anneau de l'original, il est hors de la règle des points pleins.
+                if (trouDuZero && x === 0) return <g key={axes[i]}>
+                  <circle data-role="creux-fond" cx={rd(p[0])} cy={rd(p[1])} r={5.2} fill="#fff" stroke="#fff" strokeWidth={1.6} aria-hidden="true" />
+                  <circle data-valeur={chiffreRadar(x)} data-point={axes[i]} data-creux="0" {...decale(dt)} cx={rd(p[0])} cy={rd(p[1])} r={4.2} fill="none" stroke={s.couleur} strokeWidth={2} />
+                </g>;
+                // D181 (« Les points bleu sont difficile à voir ») : 9 px de diamètre au moins (la retenue 10, hors du style 11), et
+                // un liseré clair de 1,6 qui les détache du trait et de l'aire des autres séries. Les couleurs ne changent pas.
+                return <circle key={axes[i]} data-valeur={chiffreRadar(x)} data-point={axes[i]} {...decale(dt)} cx={rd(p[0])} cy={rd(p[1])} r={lui ? (h ? 5.6 : 5) : h ? 5.2 : 4.6}
+                  fill={h ? ORANGE_HORS : s.couleur} stroke="#fff" strokeWidth={1.6} />;
               })}
             </g>
           );

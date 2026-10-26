@@ -1,0 +1,272 @@
+[
+ {
+  "essai": 1,
+  "client": "worker",
+  "cpu": 4,
+  "enAttente": 5,
+  "liberees": 5,
+  "resolue": true,
+  "chauffe": {
+   "debut": 303,
+   "appelMs": 2,
+   "resoluMs": 290,
+   "rappels": [
+    1,
+    0,
+    2,
+    0,
+    0
+   ]
+  },
+  "tachesLongues": [
+   {
+    "debut": 374,
+    "ms": 167
+   }
+  ],
+  "plusLongue": 167,
+  "plusLongBlocageMs": 240,
+  "touchers": {
+   "n": 79,
+   "mediane": 4,
+   "max": 183,
+   "au_dessus_de_50": 1,
+   "au_dessus_de_100": 1
+  },
+  "envois": [
+   {
+    "type": "donnees",
+    "t": -2086,
+    "ms": 0,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "donnees",
+    "t": -2061,
+    "ms": 0,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "prechauffer",
+    "nom": "proposerRapide",
+    "t": 303,
+    "ms": 0.2,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "donnees",
+    "t": 347,
+    "ms": 9.4,
+    "catalogue": true,
+    "inchange": false
+   }
+  ],
+  "blocages": [
+   {
+    "t": 556,
+    "ecart": 240
+   }
+  ],
+  "ouverture": {
+   "listeVue": true,
+   "versLigneMs": 192,
+   "plusLongBlocageMs": 508,
+   "tachesLongues": [
+    197,
+    153,
+    223,
+    255,
+    62
+   ]
+  },
+  "journal": [],
+  "echecs": []
+ },
+ {
+  "essai": 2,
+  "client": "worker",
+  "cpu": 4,
+  "enAttente": 5,
+  "liberees": 5,
+  "resolue": true,
+  "chauffe": {
+   "debut": 307,
+   "appelMs": 2,
+   "resoluMs": 307,
+   "rappels": [
+    2,
+    0,
+    2,
+    0,
+    0
+   ]
+  },
+  "tachesLongues": [
+   {
+    "debut": 348,
+    "ms": 206
+   }
+  ],
+  "plusLongue": 206,
+  "plusLongBlocageMs": 246,
+  "touchers": {
+   "n": 78,
+   "mediane": 4,
+   "max": 19,
+   "au_dessus_de_50": 0,
+   "au_dessus_de_100": 0
+  },
+  "envois": [
+   {
+    "type": "donnees",
+    "t": -2057,
+    "ms": 0.1,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "donnees",
+    "t": -2031,
+    "ms": 0.1,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "prechauffer",
+    "nom": "proposerRapide",
+    "t": 307,
+    "ms": 0.1,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "donnees",
+    "t": 331,
+    "ms": 9.8,
+    "catalogue": true,
+    "inchange": false
+   }
+  ],
+  "blocages": [
+   {
+    "t": 342,
+    "ecart": 31
+   },
+   {
+    "t": 587,
+    "ecart": 246
+   },
+   {
+    "t": 630,
+    "ecart": 43
+   }
+  ],
+  "ouverture": {
+   "listeVue": true,
+   "versLigneMs": 145,
+   "plusLongBlocageMs": 324,
+   "tachesLongues": [
+    147,
+    109,
+    131,
+    248,
+    55
+   ]
+  },
+  "journal": [],
+  "echecs": []
+ },
+ {
+  "essai": 3,
+  "client": "worker",
+  "cpu": 4,
+  "enAttente": 5,
+  "liberees": 5,
+  "resolue": true,
+  "chauffe": {
+   "debut": 306,
+   "appelMs": 5,
+   "resoluMs": 269,
+   "rappels": [
+    0,
+    0,
+    5,
+    0,
+    0
+   ]
+  },
+  "tachesLongues": [
+   {
+    "debut": 382,
+    "ms": 144
+   }
+  ],
+  "plusLongue": 144,
+  "plusLongBlocageMs": 171,
+  "touchers": {
+   "n": 78,
+   "mediane": 4,
+   "max": 147,
+   "au_dessus_de_50": 1,
+   "au_dessus_de_100": 1
+  },
+  "envois": [
+   {
+    "type": "donnees",
+    "t": -2053,
+    "ms": 0,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "donnees",
+    "t": -2030,
+    "ms": 0,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "prechauffer",
+    "nom": "proposerRapide",
+    "t": 306,
+    "ms": 0.1,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "donnees",
+    "t": 355,
+    "ms": 9.7,
+    "catalogue": true,
+    "inchange": false
+   }
+  ],
+  "blocages": [
+   {
+    "t": 373,
+    "ecart": 52
+   },
+   {
+    "t": 544,
+    "ecart": 171
+   }
+  ],
+  "ouverture": {
+   "listeVue": true,
+   "versLigneMs": 116,
+   "plusLongBlocageMs": 344,
+   "tachesLongues": [
+    118,
+    128,
+    139,
+    248,
+    86
+   ]
+  },
+  "journal": [],
+  "echecs": []
+ }
+]

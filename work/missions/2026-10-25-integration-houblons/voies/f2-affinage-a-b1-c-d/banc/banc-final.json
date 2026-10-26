@@ -1,0 +1,237 @@
+{
+ "etat": "final",
+ "lecture": "Banc sur le vrai moteur (substitutes), catalogue sans stock. 60′ : contexte d’amertume ; dry hop : dryActive. MRR plus haut = mieux ; rang médian plus bas = mieux. Jamais BM seul : composite60 = moyenne de P1a, P1b et P3 ; composite60SansBM = P1a et P1b.",
+ "donnees": {
+  "houblons": 317,
+  "idsSha": "e4e173794892f375"
+ },
+ "references": {
+  "P1a_hopsteiner_brewhouse": {
+   "originaux": 33,
+   "paires": 52
+  },
+  "P1b_hopslist_hopsdirect_amerisants": {
+   "originaux": 74,
+   "paires": 181
+  },
+  "P1c_hopsteiner_dryhopping": {
+   "originaux": 23,
+   "paires": 32
+  },
+  "P3_BM_amerisants": {
+   "originaux": 131
+  },
+  "nonResolus": {
+   "hopsteinerBrewhouse": 45,
+   "hopsteinerDryHopping": 21,
+   "hopslist": 94,
+   "hopsdirect": 13
+  }
+ },
+ "moitiesEtTotal": {
+  "A": {
+   "P1a_hopsteiner_brewhouse_60": {
+    "n": 14,
+    "mrr": 0.139,
+    "rappel10": 0.229,
+    "rangMedian": 40.5
+   },
+   "P1b_hopslist_hopsdirect_60": {
+    "n": 39,
+    "mrr": 0.068,
+    "rappel10": 0.118,
+    "rangMedian": 50
+   },
+   "P3_BM_alphaVoisin_60": {
+    "n": 52,
+    "mrr": 0.229,
+    "rappel10": 0.338,
+    "rangMedian": 10.5
+   },
+   "P1c_hopsteiner_dryhopping_dryhop": {
+    "n": 8,
+    "mrr": 0.384,
+    "rappel10": 0.667,
+    "rangMedian": 6.5
+   },
+   "composite60": 0.1453,
+   "composite60SansBM": 0.1035
+  },
+  "B": {
+   "P1a_hopsteiner_brewhouse_60": {
+    "n": 19,
+    "mrr": 0.106,
+    "rappel10": 0.175,
+    "rangMedian": 22
+   },
+   "P1b_hopslist_hopsdirect_60": {
+    "n": 35,
+    "mrr": 0.123,
+    "rappel10": 0.192,
+    "rangMedian": 29
+   },
+   "P3_BM_alphaVoisin_60": {
+    "n": 45,
+    "mrr": 0.243,
+    "rappel10": 0.259,
+    "rangMedian": 15
+   },
+   "P1c_hopsteiner_dryhopping_dryhop": {
+    "n": 15,
+    "mrr": 0.369,
+    "rappel10": 0.7,
+    "rangMedian": 4
+   },
+   "composite60": 0.1573,
+   "composite60SansBM": 0.1145
+  },
+  "toutes": {
+   "P1a_hopsteiner_brewhouse_60": {
+    "n": 33,
+    "mrr": 0.12,
+    "rappel10": 0.198,
+    "rangMedian": 31
+   },
+   "P1b_hopslist_hopsdirect_60": {
+    "n": 74,
+    "mrr": 0.094,
+    "rappel10": 0.153,
+    "rangMedian": 40.5
+   },
+   "P3_BM_alphaVoisin_60": {
+    "n": 97,
+    "mrr": 0.235,
+    "rappel10": 0.301,
+    "rangMedian": 12
+   },
+   "P1c_hopsteiner_dryhopping_dryhop": {
+    "n": 23,
+    "mrr": 0.374,
+    "rappel10": 0.688,
+    "rangMedian": 5
+   },
+   "composite60": 0.1497,
+   "composite60SansBM": 0.107
+  }
+ },
+ "P2_brasseur": {
+  "lecture": "Dry hop : rang dans le moteur des 3 premiers de « option 1 + IA » par phare ; K4 : rang de Hallertau Blanc chez Nelson Sauvin (1 attendu) ; K5 : rang de Saaz chez Galaxy (doit rester loin). Au 60′ : aucun jugement du brasseur.",
+  "mrr": 0.627,
+  "phares": [
+   {
+    "phare": "Nelson Sauvin",
+    "attendus": [
+     "Hallertau Blanc",
+     "African Queen",
+     "Godiva"
+    ],
+    "rangs": [
+     1,
+     46,
+     55
+    ],
+    "premier": 1
+   },
+   {
+    "phare": "Citra",
+    "attendus": [
+     "Nectaron",
+     "Galaxy",
+     "NZH-107"
+    ],
+    "rangs": [
+     7,
+     22,
+     11
+    ],
+    "premier": 7
+   },
+   {
+    "phare": "Motueka",
+    "attendus": [
+     "Taiheke",
+     "Riwaka",
+     "Cascade"
+    ],
+    "rangs": [
+     2,
+     18,
+     4
+    ],
+    "premier": 2
+   },
+   {
+    "phare": "Mosaic",
+    "attendus": [
+     "Simcoe",
+     "Idaho 7",
+     "Azacca"
+    ],
+    "rangs": [
+     1,
+     2,
+     5
+    ],
+    "premier": 1
+   },
+   {
+    "phare": "Galaxy",
+    "attendus": [
+     "Nectaron",
+     "Vic Secret",
+     "Strata"
+    ],
+    "rangs": [
+     8,
+     33,
+     21
+    ],
+    "premier": 8
+   },
+   {
+    "phare": "Simcoe",
+    "attendus": [
+     "Mosaic",
+     "Idaho 7",
+     "Vic Secret"
+    ],
+    "rangs": [
+     1,
+     5,
+     21
+    ],
+    "premier": 1
+   },
+   {
+    "phare": "Saaz (CZ)",
+    "attendus": [
+     "Saaz Late",
+     "Saaz (US)",
+     "Spalt"
+    ],
+    "rangs": [
+     4,
+     9,
+     10
+    ],
+    "premier": 4
+   },
+   {
+    "phare": "Cascade",
+    "attendus": [
+     "Centennial",
+     "Taiheke",
+     "Falconer's Flight"
+    ],
+    "rangs": [
+     5,
+     1,
+     45
+    ],
+    "premier": 1
+   }
+  ],
+  "K4": 1,
+  "K5": 265
+ }
+}

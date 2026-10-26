@@ -1,0 +1,25 @@
+{"mode":"complet","chauffe-ms":391.9,"premier-appel-ms":216.1}
+{"mode":"complet","chauffe-ms":407.3,"premier-appel-ms":231.4}
+{"mode":"complet","chauffe-ms":403.1,"premier-appel-ms":217.8}
+{"mode":"complet","chauffe-ms":355.6,"premier-appel-ms":232.9}
+{"mode":"complet","chauffe-ms":359.9,"premier-appel-ms":220.1}
+{"mode":"rapide","chauffe-ms":446.3,"premier-appel-ms":204.6}
+{"mode":"rapide","chauffe-ms":417.6,"premier-appel-ms":195.1}
+{"mode":"rapide","chauffe-ms":435.8,"premier-appel-ms":191.4}
+{"mode":"rapide","chauffe-ms":490.9,"premier-appel-ms":215.2}
+{"mode":"rapide","chauffe-ms":416.2,"premier-appel-ms":194.1}
+{"mode":"complet-sans-chauffe","premier-appel-ms":290.3}
+{"mode":"complet-sans-chauffe","premier-appel-ms":552.4}
+{"mode":"complet-sans-chauffe","premier-appel-ms":467.1}
+{"mode":"complet-sans-chauffe","premier-appel-ms":590.8}
+{"mode":"complet-sans-chauffe","premier-appel-ms":431.4}
+{"mode":"rapide-sans-chauffe","premier-appel-ms":480.1}
+{"mode":"rapide-sans-chauffe","premier-appel-ms":451.6}
+{"mode":"rapide-sans-chauffe","premier-appel-ms":554.7}
+{"mode":"rapide-sans-chauffe","premier-appel-ms":427.1}
+{"mode":"rapide-sans-chauffe","premier-appel-ms":388.5}
+f4-froid aucune {"chauffe":"aucune","premier-appel-ms":430.6}
+f4-froid aucune {"chauffe":"aucune","premier-appel-ms":460.5}
+f4-froid aucune {"chauffe":"aucune","premier-appel-ms":293.3}
+f4-froid aucune {"chauffe":"aucune","premier-appel-ms":431.3}
+f4-froid aucune {"chauffe":"aucune","premier-appel-ms":431.2}

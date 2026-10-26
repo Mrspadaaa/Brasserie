@@ -1,0 +1,4 @@
+A. un appel (proposerRapide, visée {floral:1}) : médiane 82.9 ms (min 74.8, max 159.7, n=5) ; 14 voies
+B. un appel par moment (même moteur, appels à la suite) : b10 51.2 ms · wp 52.1 ms · dryActive 58.1 ms · dryPost 56.6 ms · somme 218 ms
+C. un appel par taille de pool (maxBuy croissant, même moteur) : 10 → 57.6 ms · 20 → 57.9 ms · 30 → 58.6 ms · 40 → 61.6 ms · 50 → 65.5 ms · 60 → 65.3 ms · 70 → 69 ms · 80 → 69.3 ms · somme 504.9 ms
+D. premier appel sur une autre visée {citrus:1} : sans préchauffe 72.4 ms · après un bloc (A) 70.3 ms · après quatre appels par moment (B) 67.4 ms

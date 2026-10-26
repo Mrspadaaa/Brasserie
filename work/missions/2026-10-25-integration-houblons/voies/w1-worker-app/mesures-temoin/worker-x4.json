@@ -1,0 +1,155 @@
+[
+ {
+  "essai": 1,
+  "client": "worker",
+  "cpu": 4,
+  "enAttente": 5,
+  "liberees": 5,
+  "resolue": true,
+  "chauffe": {
+   "debut": null,
+   "appelMs": null,
+   "resoluMs": null,
+   "rappels": [
+    0,
+    0,
+    1,
+    0,
+    0
+   ]
+  },
+  "tachesLongues": [
+   {
+    "debut": 334,
+    "ms": 111
+   }
+  ],
+  "plusLongue": 111,
+  "plusLongBlocageMs": 118,
+  "touchers": {
+   "n": 73,
+   "mediane": 4,
+   "max": 120,
+   "au_dessus_de_50": 1,
+   "au_dessus_de_100": 1
+  },
+  "envois": [
+   {
+    "type": "donnees",
+    "t": -2093,
+    "ms": 0,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "donnees",
+    "t": -2045,
+    "ms": 0,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "donnees",
+    "t": 330,
+    "ms": 3.5,
+    "catalogue": true,
+    "inchange": false
+   }
+  ],
+  "blocages": [
+   {
+    "t": 452,
+    "ecart": 118
+   }
+  ],
+  "ouverture": {
+   "listeVue": true,
+   "versLigneMs": 224,
+   "plusLongBlocageMs": 235,
+   "tachesLongues": [
+    226,
+    127,
+    55
+   ]
+  },
+  "journal": [],
+  "echecs": []
+ },
+ {
+  "essai": 2,
+  "client": "worker",
+  "cpu": 4,
+  "enAttente": 5,
+  "liberees": 5,
+  "resolue": true,
+  "chauffe": {
+   "debut": null,
+   "appelMs": null,
+   "resoluMs": null,
+   "rappels": [
+    1,
+    0,
+    1,
+    0,
+    0
+   ]
+  },
+  "tachesLongues": [
+   {
+    "debut": 384,
+    "ms": 94
+   }
+  ],
+  "plusLongue": 94,
+  "plusLongBlocageMs": 165,
+  "touchers": {
+   "n": 73,
+   "mediane": 4,
+   "max": 135,
+   "au_dessus_de_50": 1,
+   "au_dessus_de_100": 1
+  },
+  "envois": [
+   {
+    "type": "donnees",
+    "t": -2049,
+    "ms": 0,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "donnees",
+    "t": -2026,
+    "ms": 0,
+    "catalogue": false,
+    "inchange": false
+   },
+   {
+    "type": "donnees",
+    "t": 366,
+    "ms": 11,
+    "catalogue": true,
+    "inchange": false
+   }
+  ],
+  "blocages": [
+   {
+    "t": 489,
+    "ecart": 165
+   }
+  ],
+  "ouverture": {
+   "listeVue": true,
+   "versLigneMs": 115,
+   "plusLongBlocageMs": 136,
+   "tachesLongues": [
+    117,
+    129,
+    67,
+    57
+   ]
+  },
+  "journal": [],
+  "echecs": []
+ }
+]

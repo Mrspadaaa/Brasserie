@@ -10,7 +10,8 @@ import {
   AdjunctIngredient,
   Recipe
 } from '../types';
-import { writeRecipeText } from './recipeTransfer';
+import { recipeReimportLines, RECIPE_TEXT_HEADER_V3 } from './recipeTransfer';
+import type { YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 import { normalizeRecipeImport } from './recipeImport';
 import { readYeastRecipeDesign, yeastRecipeDesignChanged, YEAST_RECIPE_GOAL_LABELS, YEAST_STYLE_FAMILIES } from './yeastRecipeDesign';
 import { HOP_STAGE } from './hopStage';
@@ -102,6 +103,12 @@ const n = (v: number, dec = 1) =>
   Number.isFinite(v) ? String(Math.round(v * 10 ** dec) / 10 ** dec) : '—';
 
 /**
+ * Une valeur connue : ni absente, ni NaN. Un champ vidé dans l'assistant vaut NaN (`emptyValue`), et `!= null` le laisse passer :
+ * le texte copié disait « NaN j » (monkey, graine 11, x2). Inconnu s'écrit « inconnu », jamais NaN ni 0.
+ */
+const fini = (v: number | null | undefined): v is number => typeof v === 'number' && Number.isFinite(v);
+
+/**
  * Les masses passent par `Units`, jamais par une unité écrite à la main.
  *
  * ⚠️ `scripts/check-units.mjs` a refusé ma première version, et il avait
@@ -137,35 +144,100 @@ export function recipeYeastIntentText(recipe: Recipe): string | undefined {
     (snapshot.goalExplicit === false ? ' Aucun objectif aromatique n’est déduit du style.' : ' L’objectif aromatique ne prédit pas une intensité de goût.');
 }
 
+/** Un fait de levure par clé : les sources se fondent en une plage (74–80, 75–82, 76–80 → 74–82), sans fournisseur ni lien. */
+const yeastFacts = (y: YeastSpec): YeastTechnicalFact[] => [
+  ...(y.technicalFacts ?? []), ...(y.adoptedDocumentary?.technicalFacts ?? []), ...(y.localDocumentary?.technicalFacts ?? [])
+];
+const mergedRange = (facts: YeastTechnicalFact[], key: YeastTechnicalFact['key'], unit: string) => {
+  const ranges = facts.filter(f => f.key === key && f.range && f.unit === unit).map(f => f.range!);
+  return ranges.length
+    ? { min: Math.min(...ranges.map(x => x.min)), max: Math.max(...ranges.map(x => x.max)) } : undefined;
+};
+const plage = (r: { min: number; max: number }, unit: string) =>
+  `${r.min === r.max ? n(r.min) : `${n(r.min)}–${n(r.max)}`} ${unit}`;
+
+/** La levure en lignes lisibles : nom, laboratoire, dose, puis atténuation, température, floculation, chacune une fois. */
+function yeastLines(y: YeastSpec, intent?: string): string[] {
+  const out: string[] = [];
+  const facts = yeastFacts(y);
+  const dose = Number.isFinite(y.qty) ? `${n(y.qty, 3)} ${y.unit || '(unité inconnue)'}` : 'quantité inconnue';
+  const lab = y.lab && !y.name.toLowerCase().startsWith(y.lab.toLowerCase()) ? y.lab : undefined;
+  out.push(`  ${[lab, y.name].filter(Boolean).join(' ')} — ${dose}${y.form ? ` (${y.form})` : ' · forme inconnue'}`);
+  const documentaryAtt = mergedRange(facts, 'attenuation', '%');
+  const documentaryTemp = mergedRange(facts, 'temperature', '°C');
+  const same = (a?: { min: number; max: number }, b?: { min: number; max: number }) => !!a && !!b && a.min === b.min && a.max === b.max;
+  const attenuation = y.attenuationPct != null
+    ? `atténuation ${n(y.attenuationPct)} %${documentaryAtt && !same(documentaryAtt, { min: y.attenuationPct, max: y.attenuationPct }) ? ` (fiches ${plage(documentaryAtt, '%')})` : ''}`
+    : documentaryAtt ? `atténuation ${plage(documentaryAtt, '%')}` : null;
+  const ownTemp = y.fermTempMinC != null && y.fermTempMaxC != null ? { min: y.fermTempMinC, max: y.fermTempMaxC } : undefined;
+  const temperature = ownTemp
+    ? `fermentation ${plage(ownTemp, '°C')}${documentaryTemp && !same(documentaryTemp, ownTemp) ? ` (fiches ${plage(documentaryTemp, '°C')})` : ''}`
+    : documentaryTemp ? `fermentation ${plage(documentaryTemp, '°C')}` : null;
+  const bare = (s: string) => s.trim().replace(/^floculation\s*:?\s*/i, '');
+  const reported = [...new Set(facts.filter(f => f.key === 'flocculation').map(f => bare(f.reported)).filter(Boolean))];
+  const flocculation = y.flocculation?.trim() ? `floculation ${bare(y.flocculation)}`
+    : reported.length ? `floculation ${reported.join(' / ').slice(0, 80)}` : null;
+  const cond = [
+    y.pitchTempC != null ? `ensemencement ${n(y.pitchTempC)} °C` : null,
+    temperature, attenuation, flocculation,
+    y.alcoholTolerancePct != null ? `tolérance ${n(y.alcoholTolerancePct)} % alc.` : null
+  ].filter(Boolean);
+  if (cond.length) out.push(`  ${cond.join(' · ')}`);
+  if (intent) out.push(`  Intention levure à la copie : ${intent}`);
+  return out;
+}
+
+/**
+ * L'export concis (D184). Le texte lisible vient des champs enregistrés de la recette (`recipe`), jamais de la projection
+ * de l'assistant, sauf pour ce qui se calcule (OG, FG, IBU, eau). Ce que l'import relit vit dans un seul bloc final.
+ */
 export function recipeToText(r: RecipeTextInput, date = new Date()): string {
   if (r.recipe) {
     // Check for rejected yeast/contact data before the writer can omit it.
     // The original business fields, not the normalized copy, are exported.
     normalizeRecipeImport(r.recipe, 'local', true);
-    return writeRecipeText(r.recipe, {
-      og: r.og, fg: r.fg, abv: r.abv, ibu: r.ibu, ebc: r.ebc,
-      mashIons: r.water?.mashIons, spargeIons: r.water?.spargeIons, ra: r.water?.ra,
-      yeastIntent: recipeYeastIntentText(r.recipe)
-    });
+    const rec = r.recipe;
+    const saved: RecipeTextInput = {
+      ...r, name: rec.name, style: rec.style ?? '', volumeL: rec.volumeL, boilMin: rec.boilMin,
+      carboTarget: rec.carboTarget, adjuncts: rec.adjuncts,
+      fermentables: rec.fermentables, totalGristKg: rec.totalGristKg, hops: rec.hops, yeast: rec.yeast,
+      mashSteps: rec.mash?.steps ?? [], fermentation: rec.fermentation ?? [],
+      mashRatioLPerKg: r.mashRatioLPerKg ?? rec.mash?.ratioLPerKg, spargeType: r.spargeType ?? rec.mash?.spargeType,
+      notes: r.notes ?? (rec.notes ?? []).filter(x => x.trim()).join('\n')
+    };
+    return [
+      RECIPE_TEXT_HEADER_V3,
+      ...readableLines(saved, date, recipeYeastIntentText(rec)),
+      '',
+      ...recipeReimportLines(rec)
+    ].join('\n');
   }
+  return readableLines(r, date).join('\n');
+}
+
+function readableLines(r: RecipeTextInput, date: Date, intent?: string): string[] {
   const l: string[] = [];
 
   l.push(`${r.name || 'Recette sans nom'}${r.style ? ` — ${r.style}` : ''}`);
   l.push(
-    `${n(r.volumeL)} L en fermenteur · ébullition ${r.boilMin} min · ${date.toLocaleDateString('fr-CH')}`
+    `${n(r.volumeL)} L en fermenteur · ébullition ${fini(r.boilMin) ? `${r.boilMin} min` : 'durée inconnue'} · ${date.toLocaleDateString('fr-CH')}`
   );
+  const house = r.recipe?.brewhouse;
+  if (house?.name)
+    l.push(`Matériel : ${[house.name, house.volumeL != null ? `${n(house.volumeL)} L visés` : null,
+      house.efficiencyPct != null ? `rendement ${n(house.efficiencyPct)} %` : null].filter(Boolean).join(' · ')}`);
 
   /*
    * Les cibles d'abord : c'est ce qu'on regarde pour décider si la recette
    * ressemble à ce qu'on cherche, avant même de lire les ingrédients.
    */
   const cibles = [
-    r.og != null ? `OG ${r.og.toFixed(3)}` : null,
-    r.fg != null ? `FG ${r.fg.toFixed(3)}` : null,
-    r.abv != null ? `ABV ${n(r.abv)} %` : null,
-    r.ibu != null ? `IBU ${Math.round(r.ibu)}` : null,
-    r.ebc != null ? `EBC ${n(r.ebc)}` : null,
-    r.efficiencyPct != null ? `rendement ${Math.round(r.efficiencyPct)} %` : null
+    fini(r.og) ? `OG ${r.og.toFixed(3)}` : null,
+    fini(r.fg) ? `FG ${r.fg.toFixed(3)}` : null,
+    fini(r.abv) ? `ABV ${n(r.abv)} %` : null,
+    fini(r.ibu) ? `IBU ${Math.round(r.ibu)}` : null,
+    fini(r.ebc) ? `EBC ${n(r.ebc)}` : null,
+    fini(r.efficiencyPct) ? `rendement ${Math.round(r.efficiencyPct)} %` : null
   ].filter(Boolean);
   if (cibles.length) l.push(cibles.join(' · '));
 
@@ -174,16 +246,16 @@ export function recipeToText(r: RecipeTextInput, date = new Date()): string {
     l.push(...titre(`Fermentescibles — ${masse(r.totalGristKg)}`));
     r.fermentables.forEach((f) => {
       const part =
-        r.totalGristKg > 0 && f.kind === 'grain'
+        r.totalGristKg > 0 && f.kind === 'grain' && fini(f.weightKg)
           ? `${Math.round((f.weightKg / r.totalGristKg) * 100)} %`
           : null;
       const detail = [
         part,
-        f.colorEbc != null ? `${f.colorEbc} EBC` : null,
-        f.potentialPpg != null ? `${f.potentialPpg} PPG` : null,
+        fini(f.colorEbc) ? `${f.colorEbc} EBC` : null,
+        fini(f.potentialPpg) ? `${f.potentialPpg} PPG` : null,
         f.use,
-        f.dayOffset != null ? `jour ${f.dayOffset}` : null,
-        f.fermentabilityPct != null ? `${f.fermentabilityPct} % fermentescible` : null,
+        fini(f.dayOffset) ? `jour ${f.dayOffset}` : null,
+        fini(f.fermentabilityPct) ? `${f.fermentabilityPct} % fermentescible` : null,
         f.kind !== 'grain' ? f.kind : null
       ]
         .filter(Boolean)
@@ -212,11 +284,11 @@ export function recipeToText(r: RecipeTextInput, date = new Date()): string {
       }
       const quand =
         h.stage === 'dryHop'
-          ? h.dayOffset != null
-            ? `J+${h.dayOffset}`
-            : null
-          : h.timeMin != null
-            ? `${h.timeMin} min${h.tempC != null ? ` à ${h.tempC} °C` : ''}`
+          ? [fini(h.dayOffset) ? `J+${h.dayOffset}` : null,
+              h.timeMin && fini(h.timeMin) ? (h.timeMin >= 60 ? `${n(h.timeMin / 60)} h` : `${h.timeMin} min`) : null]
+              .filter(Boolean).join(' · ') || null
+          : fini(h.timeMin)
+            ? `${h.timeMin} min${fini(h.tempC) ? ` à ${h.tempC} °C` : ''}`
             : null;
       const ibu = r.hopIbu?.(h);
       const detail = [quand, h.alpha ? `${n(h.alpha)} % AA` : null, ibu ? `${n(ibu)} IBU` : null]
@@ -229,17 +301,7 @@ export function recipeToText(r: RecipeTextInput, date = new Date()): string {
   // --- Levure --------------------------------------------------------------
   if (r.yeast?.name) {
     l.push(...titre('Levure'));
-    const y = r.yeast;
-    const dose = Number.isFinite(y.qty) ? `${n(y.qty, 3)} ${y.unit || '(unité inconnue)'}` : 'quantité inconnue';
-    l.push(`  ${[y.lab, y.name].filter(Boolean).join(' ')} — ${dose}${y.form ? ` (${y.form})` : ' · forme inconnue'}`);
-    const cond = [
-      y.pitchTempC != null ? `ensemencement ${n(y.pitchTempC)} °C` : null,
-      y.fermTempMinC != null && y.fermTempMaxC != null
-        ? `fermentation ${n(y.fermTempMinC)}–${n(y.fermTempMaxC)} °C`
-        : null,
-      y.attenuationPct != null ? `atténuation ${Math.round(y.attenuationPct)} %` : null
-    ].filter(Boolean);
-    if (cond.length) l.push(`  ${cond.join(' · ')}`);
+    l.push(...yeastLines(r.yeast, intent));
   }
 
   // --- Empâtage ------------------------------------------------------------
@@ -247,7 +309,7 @@ export function recipeToText(r: RecipeTextInput, date = new Date()): string {
   if (r.adjuncts?.length) {
     l.push(...titre('Autres ajouts'));
     r.adjuncts.forEach((a) =>
-      l.push(`  ${a.name} — ${a.amount} ${a.unit} · ${a.step}${a.notes ? ` · ${a.notes}` : ''}`)
+      l.push(`  ${a.name} — ${fini(a.amount) ? `${a.amount} ${a.unit}` : 'quantité inconnue'} · ${a.step}${a.notes ? ` · ${a.notes.replace(/\s*\n\s*/g, ' ')}` : ''}`)
     );
   }
   if (r.mashSteps.length) {
@@ -258,7 +320,8 @@ export function recipeToText(r: RecipeTextInput, date = new Date()): string {
         `  Rinçage : ${{ batch: 'par lots', fly: 'continu', none: 'aucun' }[r.spargeType] ?? r.spargeType}`
       );
     r.mashSteps.forEach((s) =>
-      l.push(`  ${`${n(s.tempC)} °C`.padEnd(9)} ${s.durationMin} min — ${s.name}`)
+      l.push(`  ${fini(s.tempC) ? `${n(s.tempC)} °C` : 'T° inconnue'}`.padEnd(11) +
+        ` ${fini(s.durationMin) ? `${s.durationMin} min` : 'durée inconnue'} — ${s.name}`)
     );
   }
 
@@ -290,30 +353,33 @@ export function recipeToText(r: RecipeTextInput, date = new Date()): string {
         `  Eau traitée, moyenne pondérée après acide : ${ions} (ppm, avant extraction et ébullition)`
       );
     }
-    if (w.ra != null) l.push(`  Alcalinité résiduelle après acide : ${Math.round(w.ra)} ppm CaCO3`);
-    if (w.raBefore != null)
+    // Une valeur ne s'écrit qu'une fois : l'alcalinité avant acide n'apparaît que si l'acide la change.
+    if (w.ra != null)
+      l.push(`  Alcalinité résiduelle après acide : ${Math.round(w.ra)} ppm CaCO3` +
+        (w.raBefore != null && Math.round(w.raBefore) !== Math.round(w.ra) ? ` (avant acide : ${Math.round(w.raBefore)})` : ''));
+    else if (w.raBefore != null)
       l.push(`  Alcalinité résiduelle avant acide : ${Math.round(w.raBefore)} ppm CaCO3`);
+    const ionsLine = (ions: WaterIons) => Object.keys(ION_SYMBOL_SHORT)
+      .map((k: keyof WaterIons) => `${ION_SYMBOL_SHORT[k]} ${n(ions[k])}`).join(' · ');
+    // L'empâtage et le rinçage après acide ne reviennent que s'ils diffèrent du départ dilué.
+    let precedent = '';
     for (const [label, ions] of [
       ['Source non diluée', w.sourceIons],
       ['Départ dilué', w.startIons],
       ['Empâtage après acide', w.mashIons],
       ['Rinçage après acide', w.spargeIons]
     ] as const) {
-      if (ions)
-        l.push(
-          `  ${label} : ${Object.keys(ION_SYMBOL_SHORT)
-            .map((k: keyof WaterIons) => `${ION_SYMBOL_SHORT[k]} ${n(ions[k])}`)
-            .join(' · ')} ppm`
-        );
+      if (!ions) continue;
+      const ligne = ionsLine(ions);
+      if (label.endsWith('après acide') && (ligne === precedent || ligne === (w.startIons ? ionsLine(w.startIons) : ''))) continue;
+      l.push(`  ${label} : ${ligne} ppm`);
+      precedent = ligne;
     }
     if (w.style) {
       l.push(
         `  Cibles d'eau : ${Object.entries(w.style.ions)
           .map(([k, band]) => `${ION_SYMBOL_SHORT[k]} ${band.min}–${band.max}`)
-          .join(' · ')} ppm`
-      );
-      l.push(
-        `  SO4/Cl visé : ${w.style.ratio.min}–${w.style.ratio.max} ; HCO3 indicatif, à confronter à la facture et au pH.`
+          .join(' · ')} ppm · SO₄/Cl visé ${w.style.ratio.min}–${w.style.ratio.max}`
       );
     }
 
@@ -337,13 +403,26 @@ export function recipeToText(r: RecipeTextInput, date = new Date()): string {
       `  ${ACIDS[w.acidId].name} : ${acides.length ? acides.join(' · ') : 'aucun ajout retenu'}`
     );
     if (w.mashPh != null) l.push(`  pH d’empâtage relevé : ${n(w.mashPh, 2)}`);
+  } else if (r.recipe?.waterPlan) {
+    // Sans calcul de l'assistant : le traitement enregistré est dans le bloc de réimport, ici seulement son résumé.
+    const p = r.recipe.waterPlan;
+    const sels = Object.keys(SALTS).map((id) => {
+      const g = (p.mash?.[id as SaltId] ?? 0) + (p.sparge?.[id as SaltId] ?? 0);
+      return g > 0 ? `${SALTS[id as SaltId].name} ${n(g, 2)} g` : null;
+    }).filter(Boolean);
+    l.push(...titre('Eau'));
+    l.push(`  ${[p.sourceSnapshot?.name ?? p.sourceId, p.targetName ? `profil visé : ${p.targetName}` : null,
+      p.mashWaterL != null ? `empâtage ${n(p.mashWaterL)} L` : null, p.spargeWaterL != null ? `rinçage ${n(p.spargeWaterL)} L` : null]
+      .filter(Boolean).join(' · ')}`);
+    if (sels.length) l.push(`  Sels : ${sels.join(' · ')}`);
   }
 
   // --- Fermentation --------------------------------------------------------
   if (r.fermentation.length) {
     l.push(...titre('Fermentation'));
     r.fermentation.forEach((s) =>
-      l.push(`  ${`${n(s.tempC)} °C`.padEnd(9)} ${s.days} j — ${s.name}`)
+      l.push(`  ${fini(s.tempC) ? `${n(s.tempC)} °C` : 'T° inconnue'}`.padEnd(11) +
+        ` ${fini(s.days) ? `${s.days} j` : 'durée inconnue'} — ${s.name}`)
     );
   }
 
@@ -355,5 +434,5 @@ export function recipeToText(r: RecipeTextInput, date = new Date()): string {
       .forEach((ligne) => l.push(`  ${ligne}`));
   }
 
-  return l.join('\n');
+  return l;
 }

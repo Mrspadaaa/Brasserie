@@ -457,10 +457,7 @@ function readField(field: Field, value: unknown, strict: boolean, path: string):
     : fail();
 }
 
-export function writeRecipeText(
-  recipe: RecipeTextInput,
-  calculated?: Record<string, unknown>
-): string {
+function assertWritable(recipe: RecipeTextInput) {
   if (recipe.yeast?.localDocumentary !== undefined && recipe.yeast.adoptedDocumentary !== undefined)
     throw new Error('Les fiches locale et catalogue ne peuvent pas être fusionnées sans choix de portée.');
   if (recipe.yeast?.adoptedDocumentary !== undefined &&
@@ -468,6 +465,84 @@ export function writeRecipeText(
     throw new Error('La fiche documentaire adoptée est invalide ou liée à une autre souche.');
   if (recipe.yeast?.localDocumentary !== undefined && !readYeastLocalDocumentary(recipe.yeast.localDocumentary))
     throw new Error('La fiche documentaire locale est invalide.');
+}
+
+/**
+ * Export concis (D184) : le texte lisible est écrit ailleurs (`recipeText.ts`) ; ce qui sert à l'import tient dans UN bloc
+ * final, une ligne de JSON minifié. Le format complet (`writeRecipeText`) reste lisible par `readRecipeText`.
+ *
+ * Deux économies, sans perte :
+ *  - ni estimations ni intention de copie : l'import les recalcule ou les ignore déjà (`estimates` n'était jamais relu) ;
+ *  - le scénario de levure garde une copie de la levure, des paliers, de la fermentation, des fermentescibles et des houblons
+ *    tels qu'adoptés (`applied`). Quand une copie est identique à la recette, elle n'est pas répétée : `applied.same` la nomme
+ *    et la lecture la restitue. Une copie différente (l'ancien plan de houblons) reste dans le bloc : `yeastRecipeDesignChanged`
+ *    s'en sert pour avertir que le scénario est ancien.
+ */
+export const RECIPE_TEXT_HEADER_V3 = 'L’AFFINÉE — RECETTE v3';
+export const RECIPE_REIMPORT_MARKER = '— Données de réimport (ne pas modifier) —';
+const SNAPSHOT_COPIES: Record<string, (recipe: any) => unknown> = {
+  yeast: recipe => recipe.yeast,
+  fermentation: recipe => recipe.fermentation,
+  mashSteps: recipe => recipe.mash?.steps,
+  hops: recipe => recipe.hops,
+  fermentables: recipe => recipe.fermentables,
+  styleRef: recipe => recipe.styleRef
+};
+
+export function recipeReimportLines(recipe: RecipeTextInput): string[] {
+  assertWritable(recipe);
+  const coldContactSummary = coldContactTransferSummary(recipe.hopV55ColdEvidenceAssociations);
+  const clean = readField(root, {
+    ...recipe,
+    ...(coldContactSummary ? { transferArchive: { coldContactEvidenceSummary: coldContactSummary } } : {})
+  }, false, 'Recette') as Record<string, any>;
+  rebindNoloCopy(recipe, clean);
+  const applied = clean.yeastDesign?.applied;
+  if (applied) {
+    const same: string[] = [];
+    for (const [key, current] of Object.entries(SNAPSHOT_COPIES)) {
+      const now = current(clean);
+      if (applied[key] !== undefined && now !== undefined && sameField(applied[key], now)) {
+        delete applied[key];
+        same.push(key);
+      }
+    }
+    if (same.length) applied.same = same;
+  }
+  return [RECIPE_REIMPORT_MARKER, JSON.stringify({ format: 3, ...clean }), 'FIN DE RECETTE'];
+}
+
+function readReimportBlock(lines: string[]): unknown {
+  const at = lines.lastIndexOf(RECIPE_REIMPORT_MARKER);
+  if (at < 0 || lines.length !== at + 3 || lines[at + 2] !== 'FIN DE RECETTE')
+    throw new Error('Données de réimport manquantes ou incomplètes. Recopie le texte complet.');
+  let parsed: any;
+  try { parsed = JSON.parse(lines[at + 1]); }
+  catch { throw new Error('Données de réimport illisibles. Recopie le texte complet, sans modifier la dernière ligne.'); }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || parsed.format !== 3)
+    throw new Error('Version des données de réimport non prise en charge.');
+  delete parsed.format;
+  const applied = parsed.yeastDesign?.applied;
+  if (applied?.same !== undefined) {
+    const same = applied.same;
+    if (!Array.isArray(same) || new Set(same).size !== same.length ||
+        same.some((key: unknown) => typeof key !== 'string' || !hasOwn(SNAPSHOT_COPIES, key) || hasOwn(applied, key)))
+      throw new Error('Données de réimport incohérentes : copies du scénario de levure.');
+    for (const key of same as string[]) {
+      const value = SNAPSHOT_COPIES[key](parsed);
+      if (value === undefined) throw new Error(`Données de réimport incohérentes : ${key} du scénario de levure.`);
+      applied[key] = structuredClone(value);
+    }
+    delete applied.same;
+  }
+  return parsed;
+}
+
+export function writeRecipeText(
+  recipe: RecipeTextInput,
+  calculated?: Record<string, unknown>
+): string {
+  assertWritable(recipe);
   const coldContactSummary = coldContactTransferSummary(recipe.hopV55ColdEvidenceAssociations);
   const clean = readField(root, {
     ...recipe,
@@ -512,7 +587,7 @@ export function readRecipeText(raw: string): RecipeContent | null {
   if (text.length > 2_000_000) throw new Error('Recette trop volumineuse.');
   const lines = text.trimStart().split('\n');
   const header = lines.shift();
-  if (header !== RECIPE_TEXT_HEADER && header !== RECIPE_TEXT_HEADER_V2)
+  if (header !== RECIPE_TEXT_HEADER && header !== RECIPE_TEXT_HEADER_V2 && header !== RECIPE_TEXT_HEADER_V3)
     throw new Error('Version de recette non prise en charge.');
   if (lines[0] === '') lines.shift();
   let i = 0;
@@ -557,10 +632,14 @@ export function readRecipeText(raw: string): RecipeContent | null {
     }
     return out;
   }
-  if (lines.pop() !== 'FIN DE RECETTE')
-    throw new Error('Fin de recette manquante. Recopie le texte complet.');
-  const parsed = parse(root, 0);
-  if (i !== lines.length) throw new Error('Fin de recette invalide.');
+  let parsed: unknown;
+  if (header === RECIPE_TEXT_HEADER_V3) parsed = readReimportBlock(lines);
+  else {
+    if (lines.pop() !== 'FIN DE RECETTE')
+      throw new Error('Fin de recette manquante. Recopie le texte complet.');
+    parsed = parse(root, 0);
+    if (i !== lines.length) throw new Error('Fin de recette invalide.');
+  }
   const transferSummary = (parsed as any).transferArchive?.coldContactEvidenceSummary;
   if (header === RECIPE_TEXT_HEADER_V2 && (typeof transferSummary !== 'string' || !transferSummary.trim()))
     throw new Error('Annexe de preuves froides absente du format v2.');

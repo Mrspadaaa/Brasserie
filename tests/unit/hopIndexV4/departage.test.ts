@@ -42,7 +42,14 @@ describe.each(['k1', 'k2', 'k3'] as const)('clé %s', (cle) => {
   const base = voies(undefined, 'dryActive'), avec = voies(cle, 'dryActive');
   it('l\'ordre à l\'intérieur du groupe d\'ex æquo du dry hop change, et les voies sont les mêmes', () => {
     expect(avec.map((v) => v.id).sort()).toEqual(base.map((v) => v.id).sort());
-    const tete = (vs: Voie[]) => vs.filter((v) => v.rank === 1).length;
+    // D106 (option a de f2) : depuis D105, l'ordre de qualité du pool est une clé du rang (après la distance, les grammes et le départage, avant les effets de bord) : deux houblons
+    // n'ont plus jamais le même `rank` 1. La tête de ce test est donc le groupe d'ex æquo que le départage réordonne : les voies de la première voie qui partagent avec elle
+    // toutes les clés placées AVANT l'ordre du pool (conflits, débordement du rang, distance, et la clé de départage quand elle est posée). Le moteur ne change pas.
+    const tete = (vs: Voie[]) => {
+      const p = vs[0];
+      return vs.filter((v) => v.conflicts.length === p.conflicts.length && (v.overflowRang ?? v.overflowTotal) === (p.overflowRang ?? p.overflowTotal)
+        && v.distance.total === p.distance.total && comparerCles(v.departage?.cle, p.departage?.cle) === 0).length;
+    };
     expect(tete(base)).toBeGreaterThan(10); // le groupe d'ex æquo existe aujourd'hui (g1 : 23 sur la 21C)
     expect(avec.slice(0, 10).map(nom)).not.toEqual(base.slice(0, 10).map(nom));
     expect(tete(avec)).toBeLessThan(tete(base)); // la clé départage : le premier groupe rétrécit

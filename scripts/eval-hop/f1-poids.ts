@@ -87,7 +87,9 @@ function scoreDe(o: number, j: number, w: Float64Array, styleX = Number.NaN, wSt
   return tw > 0 ? Math.round((100 * num) / tw) : 0;
 }
 for (let o = 0; o < N; o++) for (let j = 0; j < N; j++) if (o !== j && scoreDe(o, j, W.get(ACTUEL)!) !== SCORE_MOTEUR[o * N + j]) ecartsReplique++;
-if (ecartsReplique) throw new Error(`réplique : ${ecartsReplique} scores diffèrent de substitutes()`);
+// D102 (26.10) : le moteur a reçu J1 (α 0,15 à 60′) ; ce script garde le jeu « actuel » d'AVANT (α 0,4) pour rejouer la mesure de f1. Sur le moteur d'après D102 la réplique d'avant ne
+// redonne donc plus ses scores : l'écart est dit, pas fatal. Le banc qui juge le moteur tel qu'il est : banc-justesse.ts (même références, vrai moteur).
+if (ecartsReplique) console.warn(`réplique de l'état d'avant D102 : ${ecartsReplique} scores diffèrent de substitutes() (attendu : le moteur est passé à J1)`);
 
 /** Classement d'un original (indices des candidats), mêmes clés que le moteur : couverture faible, démotion, score, nom. */
 function ordre(o: number, w: Float64Array, styleDe?: (j: number) => number, wStyle = 0, sansCles = false): number[] {

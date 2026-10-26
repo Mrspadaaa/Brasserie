@@ -1,0 +1,152 @@
+{
+ "lotus": "beermaverick-lotus",
+ "liste": [
+  {
+   "cle": "beermaverick-solero",
+   "nom": "Solero"
+  },
+  {
+   "cle": "beermaverick-calypso",
+   "nom": "Calypso"
+  },
+  {
+   "cle": "beermaverick-trident",
+   "nom": "Trident"
+  },
+  {
+   "cle": "beermaverick-ariana",
+   "nom": "Ariana"
+  },
+  {
+   "cle": "beermaverick-herkules",
+   "nom": "Herkules"
+  }
+ ],
+ "fiches": {
+  "beermaverick-lotus": {
+   "nom": "Lotus",
+   "familles": {
+    "citrus": "marqué 3/3",
+    "tropical": "marqué 2/3",
+    "melon": "non décrit 0/3",
+    "stoneFruit": "non décrit 0/3",
+    "pomeFruit": "non décrit 0/3",
+    "berries": "marqué 2/3",
+    "floral": "cité 1/3",
+    "green": "non décrit 0/3",
+    "herbal": "non décrit 0/3",
+    "spice": "non décrit 0/3",
+    "earthy": "non décrit 0/3",
+    "resin": "non décrit 0/3"
+   }
+  },
+  "beermaverick-solero": {
+   "nom": "Solero",
+   "familles": {
+    "citrus": "cité 1/2",
+    "tropical": "marqué 2/2",
+    "melon": "non décrit 0/2",
+    "stoneFruit": "non décrit 0/2",
+    "pomeFruit": "non décrit 0/2",
+    "berries": "non décrit 0/2",
+    "floral": "cité 1/2",
+    "green": "non décrit 0/2",
+    "herbal": "non décrit 0/2",
+    "spice": "non décrit 0/2",
+    "earthy": "non décrit 0/2",
+    "resin": "cité 1/2"
+   }
+  },
+  "beermaverick-calypso": {
+   "nom": "Calypso",
+   "familles": {
+    "citrus": "cité 1/4",
+    "tropical": "marqué 2/4",
+    "melon": "cité 1/4",
+    "stoneFruit": "marqué 2/4",
+    "pomeFruit": "marqué 4/4",
+    "berries": "non décrit 0/4",
+    "floral": "non décrit 0/4",
+    "green": "non décrit 0/4",
+    "herbal": "cité 1/4",
+    "spice": "non décrit 0/4",
+    "earthy": "non décrit 0/4",
+    "resin": "non décrit 0/4"
+   }
+  },
+  "beermaverick-trident": {
+   "nom": "Trident",
+   "familles": {
+    "citrus": "marqué 2/2",
+    "tropical": "marqué 2/2",
+    "melon": "non décrit 0/2",
+    "stoneFruit": "non décrit 0/2",
+    "pomeFruit": "non décrit 0/2",
+    "berries": "non décrit 0/2",
+    "floral": "non décrit 0/2",
+    "green": "non décrit 0/2",
+    "herbal": "non décrit 0/2",
+    "spice": "non décrit 0/2",
+    "earthy": "non décrit 0/2",
+    "resin": "non décrit 0/2"
+   }
+  },
+  "beermaverick-ariana": {
+   "nom": "Ariana",
+   "familles": {
+    "citrus": "marqué 5/6",
+    "tropical": "marqué 4/6",
+    "melon": "non décrit 0/6",
+    "stoneFruit": "marqué 2/6",
+    "pomeFruit": "marqué 3/6",
+    "berries": "marqué 4/6",
+    "floral": "marqué 3/6",
+    "green": "non décrit 0/6",
+    "herbal": "marqué 2/6",
+    "spice": "cité 1/6",
+    "earthy": "non décrit 0/6",
+    "resin": "cité 1/6"
+   }
+  },
+  "beermaverick-herkules": {
+   "nom": "Herkules",
+   "familles": {
+    "citrus": "marqué 4/5",
+    "tropical": "non décrit 0/5",
+    "melon": "marqué 2/5",
+    "stoneFruit": "cité 1/5",
+    "pomeFruit": "non décrit 0/5",
+    "berries": "non décrit 0/5",
+    "floral": "non décrit 0/5",
+    "green": "cité 1/5",
+    "herbal": "non décrit 0/5",
+    "spice": "marqué 2/5",
+    "earthy": "non décrit 0/5",
+    "resin": "marqué 1/5"
+   }
+  }
+ },
+ "radar": {
+  "axes": "citrus,tropical,melon,stoneFruit,pomeFruit,green,spice,earthy,berries,floral,herbal,resin",
+  "series": [
+   {
+    "nom": "Solero",
+    "couleur": "#0072B2",
+    "role": "contour",
+    "valeurs": "1,2,0,0,0,,,,0,1,0,1"
+   },
+   {
+    "nom": "Calypso",
+    "couleur": "#009E73",
+    "role": "plein",
+    "valeurs": "1,2,1,2,2,,,,0,0,1,0"
+   },
+   {
+    "nom": "Lotus",
+    "couleur": "#4d4d4d",
+    "role": "contour",
+    "valeurs": "2,2,0,0,0,,,,2,1,0,0"
+   }
+  ]
+ }
+}

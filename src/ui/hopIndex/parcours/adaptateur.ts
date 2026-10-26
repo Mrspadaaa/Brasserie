@@ -40,6 +40,10 @@ export interface FamilleLue {
   /** Borne haute partielle (composés sans borne publiée) : le vrai haut peut être plus haut. */
   hautPartiel: boolean;
   raison: string | null;
+  /** D177 : la valeur simulée compte au moins un ajout d'ébullition interpolé entre 60′ et 10′ (aucune mesure à sa minute). */
+  interpole?: boolean;
+  /** D113 : la valeur simulée repose sur une température de whirlpool supposée (préréglage du moteur) : le survol le dit. */
+  suppose?: string;
 }
 export type ProfilLu = Record<FamilyId, FamilleLue>;
 export interface BiereLue {
@@ -50,6 +54,10 @@ export interface BiereLue {
   profil: ProfilLu;
   /** Ajouts dont l'arôme n'est pas simulé (moment hors du simulateur) : le profil les ignore. */
   nonSimules: { ajoutId: string; raison: string }[];
+  /** D177 : ajouts d'ébullition entre 10′ et 60′ exclus, dont l'arôme est INTERPOLÉ entre les deux moments simulés (jamais mesuré). */
+  interpoles: { ajoutId: string; minutes: number }[];
+  /** D113 : whirlpools sans température dans la recette, simulés au préréglage de 80 °C (le texte à dire : « 80 °C supposé »). */
+  supposes: { ajoutId: string; raison: string }[];
   /** Un ajout dégusté a été retiré ou changé : sa part simulée est retranchée du profil dégusté. */
   retraits: string[];
   confiance: CasSimule['confiance'];
@@ -94,17 +102,26 @@ export function ibuAjout(a: AjoutParcours, recette: RecetteParcours): IbuLu {
 
 // ---------- Profil simulé de la bière ----------
 const ARÔME_EBULLITION: Record<number, MomentSimule> = { 60: 'b60', 10: 'b10' };
+/** D113 : le texte dit au survol quand la température d'un whirlpool manque et que l'arôme est simulé à 80 °C (préréglage du moteur). */
+export const WHIRLPOOL_SUPPOSE = '80 °C supposé';
+/** Whirlpool dont SEULE la température manque (durée connue : la conversion donne `momentInconnu` « température de whirlpool inconnue »).
+ * L'arôme du moteur ne dépend pas de la température : il se simule au préréglage de 80 °C, comme l'IBU de l'adaptateur. */
+const sansTemperature = (a: AjoutParcours) => a.moment === 'wp' && !!a.momentInconnu?.startsWith('température de whirlpool');
 /** Un ajout du parcours dans le simulateur, ou la raison pour laquelle il n'y entre pas. */
 export function versSimule(a: AjoutParcours, recette: RecetteParcours): AjoutSimule | { raison: string } {
   const q = quandDe(a, recette);
   const base = { id: a.id, houblon: a.hopKey, dose_gL: a.grams / recette.volumeL };
   if (!moteur().hopRef(a.hopKey)) return { raison: 'houblon absent des fiches du moteur : arôme non simulé' };
-  if (a.momentInconnu) return { raison: a.momentInconnu };
+  if (a.momentInconnu && !sansTemperature(a)) return { raison: a.momentInconnu };
   if (q.type === 'premierMout') return { raison: 'premier moût : arôme non simulé par le moteur' };
   if (q.type === 'whirlpool') return { ...base, moment: 'wp' };
   if (q.type === 'ebullition') {
     const m = ARÔME_EBULLITION[q.minutes];
-    return m ? { ...base, moment: m } : { raison: `ébullition ${q.minutes}′ : le moteur simule l'arôme à 60′ et 10′ seulement` };
+    if (m) return { ...base, moment: m };
+    // D177 : entre 10′ et 60′ exclus, l'arôme est interpolé entre les deux moments simulés (moteur : poidsInterpole), pas ignoré.
+    // Au-delà de 60′ ou en deçà de 10′ (5′, flame-out), rien n'est mesuré : l'extrapoler serait inventer, l'ajout reste non simulé.
+    if (q.minutes > 10 && q.minutes < 60) return { ...base, moment: 'b60', minutes: q.minutes };
+    return { raison: `ébullition ${q.minutes}′ : le moteur simule l'arôme de 10′ à 60′ seulement (interpolé entre les deux)` };
   }
   const moment: MomentSimule = q.phase === 'actif' ? 'dryActive' : 'dryPost';
   return { ...base, moment, jourDebut: a.day ?? CONDITIONS.jourDebut[moment], jours: q.jours };
@@ -151,10 +168,17 @@ export const lireBiere = memo('lireBiere', (r: RecetteParcours) => cleRecette(r)
   const nouveaux = recette.additions.filter((a) => !gardes.some((b) => b.id === a.id));
   const nonSimules: BiereLue['nonSimules'] = [];
   const ajouts: AjoutSimule[] = [];
+  const supposes: BiereLue['supposes'] = [];
   for (const a of nouveaux) {
     const s = versSimule(a, recette);
     if ('raison' in s) nonSimules.push({ ajoutId: a.id, raison: s.raison }); else ajouts.push(s);
+    if (!('raison' in s) && sansTemperature(a)) supposes.push({ ajoutId: a.id, raison: WHIRLPOOL_SUPPOSE });
   }
+  // D113 : la raison au survol d'une barre hachurée est celle de l'ajout qui n'entre pas dans le simulateur (« ébullition 5′ : … »,
+  // « houblon absent des fiches du moteur »). Quand d'autres ajouts sont simulés, la famille peut aussi ne pas être décrite par
+  // leurs fiches : les deux raisons se disent. Sans ajout non simulé, le message de la famille (fiches) reste.
+  const raisonsAjouts = [...new Set(nonSimules.map((n) => n.raison))].join(' ; ');
+  const raisonHachuree = (propre: string | null) => (!raisonsAjouts ? propre : ajouts.length && propre ? `${raisonsAjouts} ; ${propre}` : raisonsAjouts);
   const rBase = recettePouvoir(recette, base.additions);
   const cas = moteur().simulerCas({ id: 'ma-biere', titre: recette.name, ajouts, levure, recette: rBase, degustation: deg?.tasting ?? null, complet: false });
   let p: ProfilFamilles = cas.apres;
@@ -181,8 +205,11 @@ export const lireBiere = memo('lireBiere', (r: RecetteParcours) => cleRecette(r)
       // Sans houblon ni dégustation (sa page cas-k2) : le fond de levure du modèle (recipeProfile, comme son pack S4 : « sans
       // houblon, le modèle ne voit que le fond de levure US-05 ») ; la levure est la source de la famille placée.
       if (fond) { const e = fond[f]; return e.situated && e.range ? lu(f, { bas: e.range.min, centre: e.central ?? (e.range.min + e.range.max) / 2, haut: e.range.max, source: 'simulé' }, sc, true) : lu(f, { bas: 0, centre: 0, haut: 0, source: 'simulé', inconnu: 'sans houblon : la levure seule ne la situe pas' }, sc, false); }
-      return lu(f, p[f], sc, recette.additions.some((a) => houblon(a.hopKey).familles[f].niveau !== 'non décrit') || levureSeule(recette, levure)[f].centre > 0.05);
-    }), nonSimules, retraits: retires.map((b) => b.id), confiance: cas.confiance, drapeaux: cas.drapeauxIds,
+      const x = lu(f, p[f], sc, recette.additions.some((a) => houblon(a.hopKey).familles[f].niveau !== 'non décrit') || levureSeule(recette, levure)[f].centre > 0.05);
+      if (!x.valeur) return nonSimules.length ? { ...x, raison: raisonHachuree(x.raison) } : x;
+      const simulee = x.source === 'simulé';
+      return { ...x, ...(cas.interpoles.length && simulee ? { interpole: true } : {}), ...(supposes.length && simulee ? { suppose: WHIRLPOOL_SUPPOSE } : {}) };
+    }), nonSimules, interpoles: cas.interpoles.map((i) => ({ ajoutId: i.ajout, minutes: i.minutes })), supposes, retraits: retires.map((b) => b.id), confiance: cas.confiance, drapeaux: cas.drapeauxIds,
   };
 });
 
@@ -276,13 +303,17 @@ export const simulerMoment = (recette: RecetteParcours, ajout: AjoutParcours, q:
  * ajouter (10′, whirlpool, dry hop), augmenter, diminuer, retirer, remplacer à IBU égal, assembler deux houblons du
  * stock ; classées par le moteur (RANKING) avec les achats possibles. C'est la source des voies de q2b, groupées par
  * effet à l'écran. Mémoïsé par recette et direction. */
-export const proposer = memo<[RecetteParcours, Direction], VoieResult>('proposer', (r, d) => cleRecette(r) + JSON.stringify(d),
-  (recette, direction) => {
-    const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: true });
-    // Catalogue injecté (app : catalogue de production, #120) : seules les voies dont tous les houblons sont
-    // proposables restent. Catalogue du moteur (maquette) : rien n'est filtré.
-    return catalogueDuMoteur() ? res : { ...res, voies: res.voies.filter((v) => v.actions.every((x) => x.op === 'retirer' || proposable(x.hopKey))) };
-  });
+const voiesProposees = (recette: RecetteParcours, direction: Direction, remplacements: boolean): VoieResult => {
+  const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: true, ...(remplacements ? {} : { remplacements: false }) });
+  // Catalogue injecté (app : catalogue de production, #120) : seules les voies dont tous les houblons sont
+  // proposables restent. Catalogue du moteur (maquette) : rien n'est filtré.
+  return catalogueDuMoteur() ? res : { ...res, voies: res.voies.filter((v) => v.actions.every((x) => x.op === 'retirer' || proposable(x.hopKey))) };
+};
+export const proposer = memo<[RecetteParcours, Direction], VoieResult>('proposer', (r, d) => cleRecette(r) + JSON.stringify(d), (recette, direction) => voiesProposees(recette, direction, true));
+/** D106 (coût de Suggérer, « Attention au délais ajouter, la Responsive, réactivité ») : les mêmes voies SANS les remplacements (« remplacer à IBU égal » et à masse égale), qui portent l'essentiel du
+ * surcoût de B1. C'est ce que Suggérer calcule à son premier affichage ; les remplacements arrivent ensuite, au repos, par l'appel complet (`proposer`), qui est celui de Ma bière et du préchauffage.
+ * Mémoïsé à part : un résultat complet déjà gardé n'est pas relu ici (clé différente), mais l'écran le préfère dès qu'il l'a (suggerer/differe.ts). */
+export const proposerRapide = memo<[RecetteParcours, Direction], VoieResult>('proposerRapide', (r, d) => cleRecette(r) + JSON.stringify(d), (recette, direction) => voiesProposees(recette, direction, false));
 
 /** Les leviers levure du moteur (R43, R44), par recette et direction : le houblonnage à froid en fermentation active
  * (dry hop « actif ») et les changements de souche. Un calcul lourd (proposeVoies), servi par le client asynchrone. */
@@ -292,7 +323,7 @@ siDonneesChangent(() => LEVIERS.clear());
 export function leviersLevure(recette: RecetteParcours, direction: Record<string, number>): LeviersLevure {
   const cle = JSON.stringify([recette.styleCode, recette.volumeL, recette.og, recette.boilMin, recette.yeastId, recette.additions, direction]);
   if (!LEVIERS.has(cle)) {
-    const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: false, leviersLevure: true });
+    const res = moteur().proposeVoies(recette, direction, { tasting: donnees().degustation?.tasting ?? null, assemblages: false, leviersLevure: true, remplacements: false, maxBuy: 0, moments: ['dryActive'] }); // D106 : les leviers ne lisent que le dry hop actif du STOCK et les souches : ni remplacements, ni pool à acheter, ni autres moments (inutile de les calculer)
     LEVIERS.set(cle, {
       dry: res.voies.filter((v) => v.type === 'levure' && !v.yeastChange && v.actions.length > 0 && v.actions.every((x) => x.op === 'ajouter' && x.moment === 'dryActive'))
         .filter((v) => catalogueDuMoteur() || v.actions.every((x) => proposable(x.hopKey))),
