@@ -61,6 +61,17 @@ async function mesurer(nom, selecteur) {
       const ok = mini >= seuil - 0.01;
       tires.push({ serie: t.closest('[data-serie]')?.getAttribute('data-serie'), balise: t.tagName, auCentre: Math.round((100 * mini) / RR), seuil: Math.round((100 * seuil) / RR), ok });
       if (!ok) echecs.push(`tireté de « ${t.closest('[data-serie]')?.getAttribute('data-serie')} » à ${Math.round((100 * mini) / RR)} % du rayon du centre (seuil ${Math.round((100 * seuil) / RR)} %) : il coupe le radar`);
+      // Critique r2 (Comparer, Absolu) : un tireté ne monte pas au bord en rayon. Au-delà du plus haut de ses deux points (+ 2),
+      // il n'a le droit d'être que le long d'un secteur hachuré (sans donnée, ou « pas goûté » de Ma bière), à 4 px près.
+      const haut = Math.max(dist(a), dist(b)) + 2, hach = [...svgE.querySelectorAll('[data-role="secteur-sans-donnee"], [data-role="secteur-inconnu"]')];
+      let hors = 0;
+      for (let s = 0; s <= 120; s++) {
+        const p = t.getPointAtLength((L * s) / 120);
+        if (dist(p) <= haut) continue;
+        const pres = hach.some((h) => [[0, 0], [4, 0], [-4, 0], [0, 4], [0, -4]].some(([dx, dy]) => h.isPointInFill(new DOMPoint(p.x + dx, p.y + dy))));
+        if (!pres) hors++;
+      }
+      if (hors > 2) echecs.push(`tireté de « ${t.closest('[data-serie]')?.getAttribute('data-serie')} » : monte au bord hors de tout secteur hachuré (${hors} points sur 121 plus loin que ses extrémités) : un rayon qui traverse la vue`);
     }
     // D181 : les points pleins.
     const voiles = [...svgE.querySelectorAll('g[data-serie] [data-role="voile"]')];

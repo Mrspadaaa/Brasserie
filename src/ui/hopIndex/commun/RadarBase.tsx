@@ -160,18 +160,29 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
   };
   /** Le seuil du contrôle : 30 % du rayon, ou 85 % du plus bas des deux points (un point bas reste bas : c'est la corde qui s'écarte). */
   const seuilCorde = (rA: number, rB: number) => Math.min(0.3 * RR, 0.85 * Math.min(rA, rB));
-  const cheminAutour = (a: number, b: number, rA: number, rB: number, ko: number) => {
-    const n = ecart(a, b), d = 2 + 3 * ko, f = (RR - d) / RR;
-    const M1 = mil(a, RR), M2 = mil(a + n - 1, RR);
+  /** Tous les axes entre `a` et `b` sont-ils hachurés (inconnus de toutes les séries) ? Alors le tireté longe leur bord. */
+  const toutHachure = (a: number, b: number) => { for (let k = (a + 1) % N; k !== b; k = (k + 1) % N) if (!inc[k]) return false; return true; };
+  /** Une corde basse sur des axes que seule cette série ignore : un arc d'anneau au rayon du plus bas des deux points. Il ne
+   *  monte pas au bord (critique r2 : en Absolu, des rayons de tiretés du contour au bord couvraient la vue). */
+  const cheminArc = (a: number, b: number, rA: number, rB: number) => {
+    const r = Math.min(rA, rB), n = ecart(a, b);
+    return [`M${xy(pt(a, rA))}`, `L${xy(pt(a, r))}`, `A${rd(r)} ${rd(r)} 0 ${n * PAS > Math.PI ? 1 : 0} 1 ${xy(pt(b, r))}`, `L${xy(pt(b, rB))}`].join(' ');
+  };
+  /** Le tour du bord d'un secteur hachuré : de `a`, un arc d'anneau (au rayon du plus bas des deux points) jusqu'à l'arête du
+   *  secteur, l'arête vers le bord, le tour, et le retour. Le secteur couvre les axes `u` à `w` (indices dépliés, après `a`) :
+   *  le groupe seul si d'autres axes sans valeur de cette série le précèdent ou le suivent (l'arc les traverse, il ne monte pas). */
+  const cheminAutour = (a: number, b: number, rA: number, rB: number, ko: number, u: number, w: number) => {
+    const d = 2 + 3 * ko, f = (RR - d) / RR, n = ecart(a, b);
+    const M1 = mil(u - 1, RR), M2 = mil(w, RR);
     const L1 = Math.hypot(M1[0] - CX, M1[1] - CY), L2 = Math.hypot(M2[0] - CX, M2[1] - CY);
-    const r1 = Math.min(rA, f * L1), r2 = Math.min(rB, f * L2);
-    const sur = (M: P2, L: number, r: number): P2 => [CX + ((M[0] - CX) * r) / L, CY + ((M[1] - CY) * r) / L];
+    const r = Math.min(rA, rB, f * L1, f * L2);
+    const sur = (M: P2, L: number): P2 => [CX + ((M[0] - CX) * r) / L, CY + ((M[1] - CY) * r) / L];
     const bord = (p: P2): P2 => [CX + (p[0] - CX) * f, CY + (p[1] - CY) * f];
-    const arc = (r: number, p: P2) => `A${rd(r)} ${rd(r)} 0 0 1 ${xy(p)}`;
+    const arc = (p: P2, ang: number) => `A${rd(r)} ${rd(r)} 0 ${ang > Math.PI ? 1 : 0} 1 ${xy(p)}`;
     return [
-      `M${xy(pt(a, rA))}`, `L${xy(pt(a, r1))}`, arc(r1, sur(M1, L1, r1)),
-      `L${xy(bord(M1))}`, ...Array.from({ length: n - 1 }, (_, k) => `L${xy(bord(pt(a + 1 + k, RR)))}`), `L${xy(bord(M2))}`,
-      `L${xy(sur(M2, L2, r2))}`, arc(r2, pt(b, r2)), `L${xy(pt(b, rB))}`,
+      `M${xy(pt(a, rA))}`, `L${xy(pt(a, r))}`, arc(sur(M1, L1), (u - 0.5 - a) * PAS),
+      `L${xy(bord(M1))}`, ...Array.from({ length: w - u + 1 }, (_, k) => `L${xy(bord(pt(u + k, RR)))}`), `L${xy(bord(M2))}`,
+      `L${xy(sur(M2, L2))}`, arc(pt(b, r), (a + n - w - 0.5) * PAS), `L${xy(pt(b, rB))}`,
     ].join(' ');
   };
 
@@ -250,7 +261,11 @@ export function RadarBase({ familles, series, mode, moment, zone: zoneP, referen
                     }
                     if (de != null) {
                       const a = de, b = de === sg.i ? sg.j : sg.i;
-                      return <path key={`t${sg.i}`} data-role="tirete" data-contour="bord" d={cheminAutour(a, b, rvA(a, v[a]!), rvA(b, v[b]!), ko)} fill="none" {...trait} strokeDasharray="5 4" strokeLinecap="butt" />;
+                      // Le bord pour un secteur hachuré (regroupé en bas, ou « pas goûté » de Ma bière) ; sinon un arc d'anneau.
+                      const bord = tourSecteur(a, b) || toutHachure(a, b);
+                      // Le secteur longé : le groupe, s'il est dans l'enjambée ; sinon tous les axes entre a et b (tous hachurés).
+                      const u = tourSecteur(a, b) ? a + ecart(a, groupe[0]) : a + 1, w = tourSecteur(a, b) ? a + ecart(a, groupe[groupe.length - 1]) : a + ecart(a, b) - 1;
+                      return <path key={`t${sg.i}`} data-role="tirete" data-contour={bord ? 'bord' : 'arc'} d={bord ? cheminAutour(a, b, rvA(a, v[a]!), rvA(b, v[b]!), ko, u, w) : cheminArc(a, b, rvA(a, v[a]!), rvA(b, v[b]!))} fill="none" {...trait} strokeDasharray="5 4" strokeLinecap="butt" />;
                     }
                     return <line key={`t${sg.i}`} data-role={sg.plein ? 'trait' : 'tirete'} x1={rd(p[0])} y1={rd(p[1])} x2={rd(q[0])} y2={rd(q[1])} {...trait} {...(sg.plein ? {} : { strokeDasharray: '5 4', strokeLinecap: 'butt' as const })} />; })}
                 </>;

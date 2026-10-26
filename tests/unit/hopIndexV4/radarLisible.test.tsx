@@ -67,6 +67,20 @@ describe('radar commun D180 : le tireté longe le secteur « sans donnée »', (
   });
 });
 
+describe('radar commun D180, Comparer en Absolu (critique r2) : une corde basse ne monte pas au bord', () => {
+  it('une série à qui il manque trois familles que les autres décrivent : un arc d\'anneau, pas de rayon vers le bord', () => {
+    const bas1 = Object.fromEntries(FAMILLES.map((f) => [f, 1]));
+    const h = rendre([serie('A', 'retenu', '#009E73', { ...bas1, stoneFruit: null, pomeFruit: null, berries: null }), serie('B', 'autre', '#0072B2', bas1)]);
+    const t = tires(h);
+    expect(t).toHaveLength(1);
+    expect(t[0].html).toContain('data-contour="arc"');
+    const jetons = t[0].d!.match(/[MLA][^MLA]*/g)!;
+    const rayons = jetons.map((j) => { const n = j.slice(1).trim().split(/[ ,]+/).map(Number); return j[0] === 'A' ? n[0] : Math.hypot(n[0] - CX, n[1] - CY); });
+    expect(Math.max(...rayons)).toBeLessThan(0.55 * RR); // les deux points sont à 50 % : rien au-delà
+    expect(distMin(t[0])).toBeGreaterThanOrEqual(0.3 * RR - 0.5);
+  });
+});
+
 describe('radar commun D181 : des points qu\'on voit', () => {
   const html = rendre([serie('Caliente', 'autre', '#0072B2'), serie('Citra cryo', 'retenu', '#009E73', { ...bas, citrus: 2 })]);
   const cercles = (nom: string) => (html.slice(html.indexOf(`data-serie="${nom}"`)).match(/<circle[^>]*data-point[^>]*>/g) ?? []);
