@@ -736,3 +736,18 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - Yakima Chief : son site oppose une vérification anti-robot (Vercel Security Checkpoint, 429). Le pilote ne la contourne pas,
     même autorisé : c'est hors de ce qu'il peut faire. Il propose que l'utilisateur enregistre lui-même les pages ou le guide PDF
     de Yakima Chief, qui seront lus en local ; ou qu'il passe la vérification dans son Chrome pour une lecture page par page.
+- D82 (26.10) : redéploiement de l'hébergement seul depuis la copie propre, au commit 49907352. Contenu :
+  - toutes les données collectées et fusionnées (`complements.json`, 18 sources), lues par Comparer et la fiche Sources, chargées
+    au repos ;
+  - les huiles séparées dans la composition (D154) ;
+  - l'accélération de Comparer et de Ma bière (#179) ;
+  - le pack Beer Maverick de nouveau installable (D79) ;
+  - les 197 tests V5.5 (#177).
+
+  Rejeu dans la copie : `npm test` complet (3 fichiers rouges, tous dus à la copie : `.mjs` en CRLF, corrigé par
+  `.gitattributes` ; témoins lus dans des dossiers ignorés, copiés dans les fixtures ; un module de collecte oublié, ajouté ;
+  `AppRoutePile` passe seul) ; puis `tests/unit/hopIndexV4` 394/394 et prototype 157/157 dans la copie. COMPARER VALEURS OK
+  (390 et 1280), FONCTIONS-RAIL 37/37, RADAR-BASE, ETATS 139/139, build, `check-no-dev-auth`, aucun ordre imposé dans le bundle,
+  B5 148,3 ko tenu.
+
+  Reste connu : l'erreur de worker des tours froids V5.5 (exit 1 sans échec). Yakima Chief : ticket #186.
