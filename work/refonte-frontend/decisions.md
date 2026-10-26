@@ -955,3 +955,8 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   3. **La fluidité est bloquante.** B1 coûtait 205 → 750 ms à froid, et 316 → 731 ms pour le premier écran. On mémorise l'évaluation
      par houblon et par moment, et on n'évalue que les doses utiles. Si ça ne suffit pas, le pool est borné aux 60 meilleurs
      « à acheter » par `ordrePool`. Aucun budget relevé.
+- D106 (pilote, 26.10, voie f4) :
+  - **Le coût de B1 reste bloquant.** Avec la borne de 80, Suggérer passe à 113 ms à chaud et à 449 ms à froid. Les remplacements à IBU
+    égal se calculeront au repos ou après le premier affichage.
+  - **Les tests de départage sont adaptés.** La clé `ordrePool` est désormais dans le rang.
+  - **À 60′, Substituer recule les remplaçants d'usage « arôme »**, avec la même lecture que Suggérer.

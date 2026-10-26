@@ -248,3 +248,44 @@ Le contexte de cette session était à 50 % (500 k) : reprendre dans une **sessi
 
 Méthode (skill voies, 26.10) : une voie de code s'arrête au code, aux tests, au build et à son contrôle ; la suite mécanique va à un
 exécutant Haiku. Le plafond de l'auteur est de 120 tours (nouvelle session).
+
+## Reprise (26.10, vers 18 h) : état courant (remplace la file de 15 h 30)
+Quota hebdomadaire : 91 % (`get_usage`). Sa règle : plus d'agent dès 98 %, arrêt à 99 %. Contexte du pilote : 70 %.
+
+**En ligne** : hébergement **6e368cbd** (D103), callable `hopReclasserIA` (D92). PR #183 fusionnée dans main (59702c18). La branche
+continue et est poussée.
+
+**Commité, pas en ligne :**
+- p6 (418a514e) et p6b (c4e20c5e) : Ma bière dans l'app, la croix qui ramène à l'étape (D118 élargi) ;
+- d99 et c6 (846b76aa) : option c au dry hop, 505 variétés au catalogue, alias ;
+- e4 (b41a8194) : états mis à jour après D168 ;
+- D104 : B5 à 162 ko ;
+- p6 : toucher de la visée à 237 ms en dev, à mesurer en production.
+
+**Non commité (arbre de travail) :**
+- **c7**, les 188 variétés branchées : recherche, Substituer, Suggérer, marques, astérisque ;
+- **f2**, A, B1 borné à 80, C (J1), D (banc), D105.
+
+Les deux voies se mêlent dans `voies.ts`. On les commite ensemble après f4.
+
+**En vol :**
+- **f4** (D106 : coût de Suggérer, tests de départage, usage à 60′) ;
+- **f3** (diagnostic de la liste « Ajouter », D179).
+
+**Puis :**
+1. commiter c7, f2 et f4 ;
+2. rejeu complet Haiku (`DEMANDE EXECUTANT` de c7 comprise : `check:hop-perf`, B5, captures) ;
+3. critique de c7 (marques, astérisque) ;
+4. déploiement de Ma bière, D99, du catalogue et de l'affinage.
+
+**Ensuite :**
+- f3, puis la correction de « Ajouter » ;
+- m7 (planche des rangées, D165 et D166, à refaire sur D99) ;
+- B2 et les formes (modèle b) en mini maquettes ;
+- accords D100 :
+  - test à l'aveugle, 0,5 CHF ;
+  - IA de Suggérer, 0,5 CHF ;
+  - Firestore : script, émulateur, sauvegarde ;
+  - test dans son Chrome, en lecture seule ;
+- D172 (dry hop actif et levure), D177 (interpolation à 20′), D178 (Comparer sans houblon), #182 (surcouche compagnon), #187 (stock) ;
+- voie de profil (D101) pour les six budgets dépassés.
