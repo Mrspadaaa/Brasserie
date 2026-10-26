@@ -171,7 +171,9 @@ for (const champ of ['geraniol', 'selinene', 'linalol']) {
     const lo = e[0] ?? 0, hi = e[1];
     const attendue = hi >= 10 ? `${Math.round(lo)}–${Math.round(hi)} %` : `${frDec(lo)}–${frDec(hi)} %`;
     ok(g?.cases[i]?.v === attendue, `complements.json · ${champ} · ${noms[i]} : « ${g?.cases[i]?.v} » attendu « ${attendue} »`);
-    ok(/ \(.*(BarthHaas|Hopsteiner|Charles Faram|Hopslist|HPA|Haas|USDA|Yakima|Crosby|Indie|NZ|BSG|HopDatabase|hops-json|British|USA|Hops Direct)/i.test(g?.cases[i]?.titre ?? ''), `complements.json · ${champ} · ${noms[i]} : la source est au survol : ${g?.cases[i]?.titre}`);
+    // s2 (D168, 26.10) : « sur les infos de houblons, un endroit qui renvoie la source suffit » : plus aucun nom de source au survol
+    // (les noms vivent dans la section Sources de la fiche) ; le survol dit seulement la valeur.
+    ok(!/(Beer Maverick|BarthHaas|Hopsteiner|Charles Faram|Hopslist|HPA|Haas|USDA|Yakima|Crosby|Indie|NZ Hops|BSG|HopDatabase|hops-json|British|USA Hops|Hops Direct)/i.test(g?.cases[i]?.titre ?? ''), `complements.json · ${champ} · ${noms[i]} : aucun nom de source au survol : ${g?.cases[i]?.titre}`);
   });
 }
 ok(nbComp > 0 || TRIO === 'saaz', `complements.json : au moins une valeur de ce trio vient des compléments seuls (${nbComp})`);
