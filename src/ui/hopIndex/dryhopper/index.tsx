@@ -19,6 +19,7 @@ import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { couleurHoublon } from '../comparer/calcul';
 import { BORNES_SEG, calculerFrise, meilleur, memeQuand, positions, type Point } from './frise';
 import { dureeDeContact, mesureDe } from './mesures';
+import FroidDryhopper from './FroidDryhopper';
 import './pied-annuler.css';
 import './dryhopper.css';
 
@@ -391,6 +392,9 @@ export default function Dryhopper({ ajoutId }: { ajoutId: string }) {
           </span>
         </div>
         {graphe}
+        {/* Son choix D du 26.10 (m5) : trois mini graphes dans l'espace vide sous la bande IBU, au dry hop seulement (actif, après) ; aux
+            moments chauds l'écran reste celui d'avant. */}
+        {p.seg >= 2 && <FroidDryhopper recette={recette} ajout={ajout} ibuBase={ibuBase} biere={T.biere} />}
         <div className={`pq-dry-geste ${touche ? 'pq-dry-touche' : ''}`} data-role="frise" data-acquis="geste">
           <div ref={railRef} role="slider" tabIndex={0} data-role="reglage" data-etat="etat-dryh-rail etat-dryh-loupe" data-pas="5" aria-label="Moment de l’ajout"
             aria-valuemin={0} aria-valuemax={N} aria-valuenow={i} aria-valuetext={p.lib} className="pq-dry-rail"

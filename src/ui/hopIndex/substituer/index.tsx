@@ -243,6 +243,8 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
   const ia = useClassementIA(demande);
   const lecture = useRemplacants(b.recette, ajout, ia.appliquee ? ia.ordre : null);
   const cands = lecture?.candidats ?? [];
+  // Les scores ne sont plus monotones sous l'ordre de l'IA : le rang de la liste, en gris, devant le score (jamais un score).
+  const rangIA = (c: Candidat) => (ia.appliquee ? <i className="pq-substituer-rang-ia" data-role="rang-ia" aria-label={`rang ${cands.indexOf(c) + 1} selon l’IA`}>{cands.indexOf(c) + 1}</i> : null);
   // Le fondu n'existe qu'après un premier ordre appliqué : jamais au premier rendu, ni quand l'ordre arrive tard et attend.
   const [aEuIA, setAEuIA] = useState(false);
   useEffect(() => { if (ia.appliquee) setAEuIA(true); }, [ia.appliquee]);
@@ -327,7 +329,12 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
   const hautSur = surs.length ? Math.max(...surs.map((c) => c.min)) : null;
   const tete = surs.filter((c) => c.min === hautSur);
   const ouverts = cands.filter((c) => c.min < c.max);
-  const reponse = tete.length ? `${liste(tete.map((c) => c.nom))}, ${hautSur} sans inconnue.` : `Aucun remplaçant sans inconnue.`;
+  // Voie i2 (D139, « un choix sur un endroit [doit être] reporté partout ») : quand l'ordre de l'IA est celui de la liste, le titre nomme
+  // le premier de la liste affichée, avec son score du moteur ; la puce touchée rend le titre du moteur.
+  const premierIA = ia.appliquee ? cands[0] ?? null : null;
+  const reponse = premierIA ? `${premierIA.nom}, ${premierIA.min === premierIA.max ? `${premierIA.min} sans inconnue` : `${premierIA.min} à ${premierIA.max}`}.`
+    : tete.length ? `${liste(tete.map((c) => c.nom))}, ${hautSur} sans inconnue.` : `Aucun remplaçant sans inconnue.`;
+  const phraseTitre = premierIA ? ia.phrases[premierIA.cle] ?? null : null;
   const sousReponse = ouverts.length ? `${ouverts.map((c) => c.nom).join(", ")} ${ouverts.length > 1 ? 'vont' : 'va'} de ${Math.min(...ouverts.map((c) => c.min))} à ${Math.max(...ouverts.map((c) => c.max))}.` : null;
 
   // 2. L'échelle 50–100 : paliers partiel 50, proche 65, très proche 80.
@@ -405,7 +412,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
   // recette inscrite (la stout : résineux), quatre au plus.
   const colsAro = [...attendues, ...FAMILIES.filter((f) => biereInscrite.profil[f].horsStyle && !attendues.includes(f))].slice(0, 4);
   // Au whirlpool et au dry hop, le premier se dit aussi par les familles de sa stout (D127 : l'arôme répond).
-  const premier = tete[0] ?? cands[0] ?? null;
+  const premier = premierIA ?? tete[0] ?? cands[0] ?? null;
   const aromeTete = (() => {
     if (!premier) return null;
     const n0 = (f: FamilyId) => NIV[h0.familles[f].niveau], n1 = (f: FamilyId) => NIV[premier.h.familles[f].niveau];
@@ -601,7 +608,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
                 onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toucher(c.cle); } }}>
                 <span className="pq-substituer-nom"><IconeStock etat={c.stock} /><span data-houblon-nom={c.nom} {...fiche.nom(c.cle)}>{c.nom}</span></span>
                 {cellules(c.h)}
-                <span className="pq-substituer-tf-s">{c.min === c.max
+                <span className="pq-substituer-tf-s">{rangIA(c)}{c.min === c.max
                   ? <><i className="pq-substituer-tf-pt" /><b>{c.min}</b></>
                   : <span className="pq-substituer-tf-pl"><b>{c.min}–{c.max}</b></span>}</span>
               </div>
@@ -634,8 +641,21 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
     </PiedAnnuler>
   );
 
+  // Voie i2 : la seule trace de l'IA au premier plan, dans la tête fixe à droite du titre (place de « remplaçants à 60′ » dans u4) :
+  // hors du flux, donc aucun décalage à son arrivée, et la bascule reste sous le pouce pendant le défilement. Un toucher applique
+  // l'ordre de l'IA ou rend celui du moteur ; elle ne donne aucun score.
+  const puceIA = ia.disponible ? (
+    <button type="button" className={`pq-substituer-ia ${ia.appliquee ? 'pq-substituer-ia-on' : ''}`} data-role="puce-ia" data-ia={ia.appliquee ? 'appliquee' : 'prete'}
+      aria-pressed={ia.appliquee} onClick={ia.basculer}
+      aria-label={ia.appliquee ? 'Classé par l’IA. Toucher pour revenir à l’ordre du moteur.' : 'Appliquer l’ordre de l’IA.'}
+      title={ia.appliquee ? 'Les 20 premiers du moteur, reclassés par l’IA ; les scores restent ceux du moteur. Toucher : ordre du moteur.' : 'L’IA a reclassé les 20 premiers du moteur. Toucher : appliquer son ordre.'}>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5l1.5 4.2 4.2 1.5-4.2 1.5L8 12.9 6.5 8.7 2.3 7.2l4.2-1.5z" fill="currentColor" /></svg>
+      {ia.appliquee ? 'classé par l’IA' : 'appliquer l’ordre IA'}
+    </button>
+  ) : null;
+
   return (
-    <CadreOutil ecran="substituer" question={h0.nom}
+    <CadreOutil ecran="substituer" question={h0.nom} droite={puceIA}
       // u4e4 : la barre « Comparer (n) › » au-dessus du pied ; sinon le pied seul, comme u4 enrichi.
       dock={VARIANTE === 'u4e4' ? <div className="pq-substituer-dock-pile">
         {VARIANTE === 'u4e4' && envoyes.length > 0 && (
@@ -647,7 +667,6 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
       </div> : pied}>
       <div className="pq-substituer" data-u4e={VARIANTE ?? undefined}>
 
-        <div className="pq-substituer-ligne-moments">
         {VARIANTE === 'u4e1' ? (
           <div className="pq-substituer-frise" role="radiogroup" aria-label={`Moment des remplaçants de ${h0.nom}, sur le brassin : ${moment}`} data-contexte="moment" data-role="puce-moment" data-etat="etat-subst-repos">
             <span className="pq-substituer-frise-trait" aria-hidden="true"><i /><i /></span>
@@ -667,17 +686,6 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
             </button>
           ))}
         </div>}
-        {ia.disponible && (
-          // Voie i2 : la seule trace de l'IA au premier plan. Un toucher applique son ordre ou rend celui du moteur ; ses scores n'existent pas.
-          <button type="button" className={`pq-substituer-ia ${ia.appliquee ? 'pq-substituer-ia-on' : ''}`} data-role="puce-ia" data-ia={ia.appliquee ? 'appliquee' : 'prete'}
-            aria-pressed={ia.appliquee} onClick={ia.basculer}
-            aria-label={ia.appliquee ? 'Classé par l’IA. Toucher pour revenir à l’ordre du moteur.' : 'Ordre de l’IA prêt. Toucher pour l’appliquer.'}
-            title={ia.appliquee ? 'Les 20 premiers du moteur, reclassés par l’IA ; les scores restent ceux du moteur. Toucher : ordre du moteur.' : 'L’IA a reclassé les 20 premiers du moteur. Toucher : appliquer son ordre.'}>
-            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5l1.5 4.2 4.2 1.5-4.2 1.5L8 12.9 6.5 8.7 2.3 7.2l4.2-1.5z" fill="currentColor" /></svg>
-            {ia.appliquee ? 'classé par l’IA' : 'ordre IA prêt'}
-          </button>
-        )}
-        </div>
         {deplace && (
           <p className="pq-substituer-effet" data-role="moment-effet">
             <b>{Moment}, l’arôme fait le score.</b>{' '}
@@ -692,8 +700,12 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
           </section>
         ) : <section className="pq-substituer-reponse" data-role="reponse">
           <strong>{reponse}</strong>
-          {sousReponse && <span>{sousReponse}</span>}
-          {!amertume && aromeTete && <span data-role="reponse-aromes">{aromeTete}</span>}
+          {phraseTitre
+            ? <span data-role="reponse-ia"><i className="pq-substituer-ia-mot">IA</i> Classé 1er&#8239;: {phraseTitre}</span>
+            : <>
+              {sousReponse && <span>{sousReponse}</span>}
+              {!amertume && aromeTete && <span data-role="reponse-aromes">{aromeTete}</span>}
+            </>}
         </section>}
 
         {tableauAuFroid ? <>{tableauFroid}{avecMatrices && matrices}</> : <>
@@ -737,7 +749,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
                     {...fiche.appui(c.cle, () => toucher(c.cle))}
                     onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toucher(c.cle); } }}>
                     <span className="pq-substituer-nb">
-                      <span className="pq-substituer-nom"><IconeStock etat={c.stock} /><span data-houblon-nom={c.nom} {...fiche.nom(c.cle)}>{c.nom}</span></span>
+                      <span className="pq-substituer-nom">{rangIA(c)}<IconeStock etat={c.stock} /><span data-houblon-nom={c.nom} {...fiche.nom(c.cle)}>{c.nom}</span></span>
                       <CransRang h={c.h} familles={colsAro} attendues={attendues} />
                     </span>
                     <span className="pq-substituer-tr">
@@ -900,7 +912,7 @@ export default function Substituer({ houblon: cle }: { houblon: string }) {
             <p><b>Sans inconnue ne veut pas dire sûr</b>&nbsp;: chaque composante connue vient de peu de fiches ({faces.map((x) => `${x.nom} : ${x.h.familles.citrus.sur}`).join(', ')}). Le score n’a pas d’intervalle statistique, seulement cette plage.</p>
             {amertume && <p><b>{Moment}, l’arôme compte peu</b>&nbsp;: il ne mesure que ce que le remplaçant apporte de plus que {h0.nom}, pas ce qu’il perd (l’arôme de {h0.nom} part à l’ébullition). Un remplaçant qui perd six familles peut y valoir 100&#8239;: c’est pour cela que l’écran ne l’affiche pas seul.</p>}
             {ia.appliquee
-              ? <p data-role="lire-ia"><b>Classé par l’IA</b>&nbsp;: elle reclasse les {Math.min(lecture.pool.length, 20)} premiers du moteur et dit une phrase par choix, sans donner de score. Les scores restent ceux du moteur, donc pas toujours dans l’ordre ; la puce rend l’ordre du moteur.</p>
+              ? <p data-role="lire-ia"><b>Classé par l’IA</b>&nbsp;: elle reclasse les {Math.min(lecture.pool.length, 20)} premiers du moteur, sans score. Les scores restent ceux du moteur, donc pas toujours dans l’ordre&#8239;: le chiffre gris est le rang.</p>
               : <p><b>Le pire cas d’abord</b>&nbsp;: rangés par le bas de la plage. Le moteur, lui, range par score, puis par nom.</p>}
             <p><b>{cands.length} des {lecture.total}</b>&nbsp;: les {cands.filter((c) => c.vient === 'catalogue').length} premiers du catalogue et les {lecture.stockRangs.length} premiers de ton stock ({lecture.stockRangs.map((s) => `${s.nom} ${s.rang}e`).join(', ')}).</p>
             <p><b>Face à face</b>&nbsp;: {faces[1] ? `${faces[1].nom}, ${faces[1].stock === 'suffisant' ? 'en stock' : 'premier sûr à acheter'}` : ''}{faces[2] ? ` ; ${faces[2].nom}, ${faces[2].stock === 'suffisant' ? 'premier du stock qui suffit' : faces[2].stock === 'acheter' ? 'à acheter' : 'en stock, ne suffit pas'}` : ''}. Arômes&nbsp;: citations dans les fiches, pas une intensité dans la bière.</p>

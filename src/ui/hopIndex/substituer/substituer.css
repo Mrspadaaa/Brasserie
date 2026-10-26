@@ -245,13 +245,16 @@
 
 /* Voie i2 : l'IA reclasse les 20 premiers du moteur (D80). La puce est la seule trace au premier plan, à côté du moment ;
    la phrase de l'IA vit dans la bande du face à face, à un toucher de sa rangée. */
-.pq-substituer-ligne-moments { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
-.pq-substituer-ia { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 11px 0 9px; border-radius: 16px; border: 1px dashed #8a8a8a; background: #fff; color: #444; font-size: 13px; font-weight: 600; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+.pq-substituer-ia { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 10px 0 8px; border-radius: 16px; border: 1px dashed #8a8a8a; background: #fff; color: #444; font-size: 13px; font-weight: 600; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+.pq-substituer-rang-ia { font-style: normal; font-size: 12px; font-weight: 600; color: #767676; font-variant-numeric: tabular-nums; margin-right: 4px; flex: none; }
+.pq-substituer-tf-s .pq-substituer-rang-ia { margin: 0; }
+.pq-substituer-tf-s:has(.pq-substituer-rang-ia) { gap: 2px; }
+.pq-substituer-ia-mot { font-style: normal; font-size: 12px; font-weight: 700; letter-spacing: .04em; color: #0072B2; margin-right: 2px; }
 .pq-substituer-ia svg { width: 12px; height: 12px; color: #0072B2; flex: none; }
 .pq-substituer-ia-on { border-style: solid; border-color: #d4d4d4; background: #efefef; color: #111; }
 .pq-substituer-ia:focus-visible { outline: 2px solid #0072B2; outline-offset: 2px; }
-.pq-substituer-ia-phrase { grid-column: 1 / -1; order: 4; margin-top: 3px; font-size: 13px; line-height: 1.3; color: #333; }
-.pq-substituer-ia-phrase i { font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .04em; color: #0072B2; margin-right: 2px; }
+.pq-substituer-ia-phrase { grid-column: 1 / -1; order: 4; margin-top: 3px; font-size: 14px; line-height: 1.3; color: #333; }
+.pq-substituer-ia-phrase i { font-style: normal; font-size: 12px; font-weight: 700; letter-spacing: .04em; color: #0072B2; margin-right: 2px; }
 .pq-substituer-ia-fondu { animation: pq-substituer-ia-fondu .24s ease-out; }
 @keyframes pq-substituer-ia-fondu { from { opacity: .3; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .pq-substituer-ia-fondu { animation: none; } }

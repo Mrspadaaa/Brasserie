@@ -239,11 +239,11 @@ async function interne() {
     await page.click('[data-ecran="substituer"] .pq-substituer-moments [data-moment="dryhop"]');
     const t0 = Date.now();
     await attendreSel('[data-ecran="substituer"] [data-remplacant]', 20_000); await sleep(250);
-    const avant = await lignes(); const puceAvant = await puceEtat();
+    const avant = await lignes(); const puceAvant = await puceEtat(); const yAvant = await page.evaluate(() => document.querySelector('[data-role="moment-effet"]')?.getBoundingClientRect().top ?? null);
     await photo('2-dryhop-liste-du-moteur');
     etape('liste du moteur affichée tout de suite', { apresMs: Date.now() - t0, lignes: avant, puce: puceAvant });
     const attente = await attendrePuce('*', MODE === 'reel' ? 25_000 : 8_000);
-    const etatArrivee = await puceEtat(), depuisClic = Date.now() - t0;
+    const etatArrivee = await puceEtat(), depuisClic = Date.now() - t0; const yApres = await page.evaluate(() => document.querySelector('[data-role="moment-effet"]')?.getBoundingClientRect().top ?? null); etape('B1 : position de « Au dry hop, l’arôme… » avant et après l’arrivée de l’IA', { yAvant, yApres, ecartPx: yAvant === null || yApres === null ? null : yApres - yAvant });
     await sleep(450);
     const apres = await lignes();
     etape('réponse de l’IA', { msDepuisClic: depuisClic, etatALArrivee: etatArrivee, puce: await puceEtat(), lignes: apres });
@@ -258,6 +258,8 @@ async function interne() {
     await page.evaluate(() => document.querySelector('[data-role="phrase-ia"]')?.scrollIntoView({ block: 'center' })); await sleep(300);
     await photo('4-phrase-dans-le-face-a-face');
     etape('phrase de l’IA au toucher d’une rangée', { phrase });
+    await page.evaluate(() => document.querySelector('[data-role="lire-ia"]')?.scrollIntoView({ block: 'center' })); await sleep(300); await photo('7-lire-ces-scores-ouvert');
+    etape('Lire ces scores, ligne IA', { texte: await page.evaluate(() => document.querySelector('[data-role="lire-ia"]')?.textContent ?? null) });
     const scoresIdentiques = apres.every((l) => { const nom = l.split(' ')[0] + ' ' + l.split(' ')[1]; const a = avant.find((x: string) => x.startsWith(nom)); return !a || a.slice(nom.length) === l.slice(nom.length); });
     etape('scores inchangés (ceux du moteur)', { ok: scoresIdentiques });
     // un toucher sur la puce rend l'ordre du moteur
@@ -276,12 +278,13 @@ async function interne() {
       const apresW = await lignes();
       etape('réponse tardive : la liste ne bouge pas', { msAvantPuce: ms, identique: JSON.stringify(avantW) === JSON.stringify(apresW), puce: await puceEtat() });
       await page.evaluate(() => window.scrollTo(0, 0)); await photo('6-ordre-ia-pret-reponse-tardive');
+      await page.evaluate(() => (document.querySelector('[data-role="puce-ia"]') as HTMLElement).click()); await sleep(500); await page.evaluate(() => window.scrollTo(0, 0)); await photo('8-whirlpool-ordre-ia-applique');
     }
     const budget = await (await fetch(`${doc}/brewerAiCosts`, { headers: { Authorization: 'Bearer owner' } })).json().catch(() => null);
     etape('budget mensuel après les appels (Firestore émulé)', { documents: (budget?.documents ?? []).map((d: any) => ({ nom: String(d.name).split('/').pop(), champs: Object.fromEntries(Object.entries(d.fields ?? {}).map(([k, v]: [string, any]) => [k, v.integerValue ?? v.stringValue ?? v.doubleValue])) })) });
     etape('requêtes reçues par le fournisseur', { n: fournisseur.demandes.length, detail: fournisseur.demandes });
     etape('hôtes bloqués par le banc', { n: bloques.length, exemples: bloques.slice(0, 3) });
-    if (MODE === 'simule' && (puceAvant !== null || attente < 0 || etatArrivee !== 'appliquee' || phrase === null || !scoresIdentiques)) echec = true;
+    if (MODE === 'simule' && (puceAvant !== null || attente < 0 || etatArrivee !== 'appliquee' || phrase === null || !scoresIdentiques || yAvant !== yApres)) echec = true;
     if (MODE === 'reel' && (attente < 0 || phrase === null)) echec = true;
   } catch (e) {
     echec = true; rapport.erreurs.push(`banc: ${(e as Error).stack?.slice(0, 600)}`); console.error(e);

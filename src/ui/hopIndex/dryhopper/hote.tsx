@@ -5,6 +5,7 @@
 // Même principe que comparer/hote.tsx et suggerer/hote.tsx. Les noms des crochets sont ceux que les écrans employaient dans la
 // maquette (useBrouillon, useGestes…), pour que leur code ne change pas.
 import { createContext, useContext, type ComponentType, type ReactNode } from 'react';
+import type { HopKnowledge } from '../../../../functions/src/hopPredictionSchema';
 import type { AjoutParcours, Brouillon, Cible, Quand, RecetteParcours } from '../parcours/types';
 
 /** Les écrans que ces outils ouvrent (routes de la maquette ; l'app les traduit en couches ou en étape de la couche). */
@@ -14,6 +15,8 @@ export type RouteOutil =
 
 export interface CadreOutilProps {
   ecran: 'substituer' | 'dryhopper' | 'levure'; question: string; contexte?: ReactNode; dock?: ReactNode; etat?: string; children: ReactNode;
+  /** À droite du titre, dans la tête fixe (voie i2 : la puce de l'IA de Substituer, place de « remplaçants à 60′ » dans u4). Hors du flux : aucun décalage. */
+  droite?: ReactNode;
 }
 
 export interface GestesOutil {
@@ -59,6 +62,8 @@ export interface HoteOutil {
   termes?: TermesOutil;
   /** Dryhopper s'ouvre sur ★ pour un ajout neuf (posé par « Placer »), une fois. Maquette : un ajout absent de la recette inscrite. L'app : Placer écrit l'ajout tout de suite, la porte ne dit pas qu'il est neuf ; l'hôte le reconnaît à sa signature (EcranApp.tsx). */
   ajoutNeuf?: (ajoutId: string) => boolean;
+  /** Les révisions de connaissances du brasseur (StorageService.getHopKnowledge) : l'amertume au dry hop en lit la sienne (x1). L'app les passe, la maquette non. */
+  connaissances?: HopKnowledge[];
 }
 
 const Ctx = createContext<HoteOutil | null>(null);
@@ -121,4 +126,8 @@ export function useTermes(): TermesOutil & { Biere: string; duDeg: string } {
  * (floral, baies, résineux) ; l'app passe toujours ses `termes` (outilApp.tsx) et suit sa demande (comparer/demande.ts). */
 export const useEstMaquette = (): boolean => !useHoteOutil().termes;
 
-export const useAjoutNeuf = (): ((ajoutId: string) => boolean) => useHoteOutil().ajoutNeuf ?? (() => false);
+/** Les connaissances du brasseur (révisions enregistrées) que l'hôte a lues ; absentes (maquette) : x1 prend la graine livrée avec
+ * l'app. Une révision désactivée y prime sur la graine : l'amertume au dry hop est alors dite « incomplète », jamais calculée. */
+export const useConnaissances = (): HopKnowledge[] | undefined => useHoteOutil().connaissances;
+
+export const useAjoutNeuf =(): ((ajoutId: string) => boolean) => useHoteOutil().ajoutNeuf ?? (() => false);

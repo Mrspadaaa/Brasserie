@@ -41,7 +41,7 @@
      "★",
      "actif · 1 j"
     ],
-    "max_mots": 98,
+    "max_mots": 104,
     "choisie": {
      "attendu": [
       "Quand ajouter Idaho 7 ?",
@@ -59,7 +59,7 @@
      ],
      "max_mots": 96
     },
-    "note": "D83/D86, 26.10 : données changées, dessin identique : ★ à 1 j (floral ~+29) au lieu de 2 j (~+22). 98 mots au premier écran pour 96 : la hausse vient de DEUX nombres de données, Pépins « ~0 » et Végétal « ~+9 » (avant : « ? », non compté comme mot), aucun texte ajouté. Les chiffres « ?→~+8 » et « ?→~+21 » valaient chacun un mot, remplacés par un seul nombre. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-repos.png.)"
+    "note": "D83/D86, 26.10 : données changées, dessin identique : ★ à 1 j (floral ~+29) au lieu de 2 j (~+22). 98 mots au premier écran pour 96 : la hausse vient de DEUX nombres de données, Pépins « ~0 » et Végétal « ~+9 » (avant : « ? », non compté comme mot), aucun texte ajouté. Les chiffres « ?→~+8 » et « ?→~+21 » valaient chacun un mot, remplacés par un seul nombre. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-dryh-repos.png.) ||| p5 (26.10), son choix D du 26.10 (m5, « La meilleure D · trois mini graphes ») : 104 mots au premier écran pour 98. Les 6 mots ajoutés sont ceux des trois mini graphes sous la bande IBU, au dry hop : « amer ? » et ses trois nombres (40, 60), « creep moyen », « limite » ; rien d'autre ne change. Avant (HEAD, avant le port) : 98 mots, ETATS OK sur cet état ; après (composant FroidDryhopper) : 104, joué par controle-etats.mjs et capture ouverte (voies/p5-dryhopper-froid/fidelite/maquette-dryhopper-repos.png). L'état « choisie » (sa page p4b2f, antérieure au choix D) garde 96."
    }
   },
   {

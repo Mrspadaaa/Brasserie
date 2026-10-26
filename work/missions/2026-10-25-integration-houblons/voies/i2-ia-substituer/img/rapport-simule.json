@@ -8,7 +8,7 @@
   },
   {
    "nom": "connexion émulée (Auth)",
-   "uid": "r60OB1…"
+   "uid": "LVb9fj…"
   },
   {
    "nom": "capture 1-ouverture-liste-du-moteur.png"
@@ -16,15 +16,15 @@
   {
    "nom": "ouverture : premier appel (fonction froide)",
    "puceALOuverture": null,
-   "msJusquALaPuce": 2498,
-   "puceALArrivee": "appliquee"
+   "msJusquALaPuce": 3200,
+   "puceALArrivee": "prete"
   },
   {
    "nom": "capture 2-dryhop-liste-du-moteur.png"
   },
   {
    "nom": "liste du moteur affichée tout de suite",
-   "apresMs": 452,
+   "apresMs": 489,
    "lignes": [
     "Hallertau Blanc 65-65",
     "Cashmere 61-61",
@@ -35,8 +35,14 @@
    "puce": null
   },
   {
+   "nom": "B1 : position de « Au dry hop, l’arôme… » avant et après l’arrivée de l’IA",
+   "yAvant": 115,
+   "yApres": 115,
+   "ecartPx": 0
+  },
+  {
    "nom": "réponse de l’IA",
-   "msDepuisClic": 1796,
+   "msDepuisClic": 1817,
    "etatALArrivee": "appliquee",
    "puce": "appliquee",
    "lignes": [
@@ -58,6 +64,13 @@
    "phrase": "IA Simulé (essai local) : remonté en tête, ses mots fruités sont proches de l’original."
   },
   {
+   "nom": "capture 7-lire-ces-scores-ouvert.png"
+  },
+  {
+   "nom": "Lire ces scores, ligne IA",
+   "texte": "Classé par l’IA : elle reclasse les 20 premiers du moteur, sans score. Les scores restent ceux du moteur, donc pas toujours dans l’ordre : le chiffre gris est le rang."
+  },
+  {
    "nom": "scores inchangés (ceux du moteur)",
    "ok": true
   },
@@ -71,12 +84,15 @@
   },
   {
    "nom": "réponse tardive : la liste ne bouge pas",
-   "msAvantPuce": 3193,
+   "msAvantPuce": 3174,
    "identique": true,
    "puce": "prete"
   },
   {
    "nom": "capture 6-ordre-ia-pret-reponse-tardive.png"
+  },
+  {
+   "nom": "capture 8-whirlpool-ordre-ia-applique.png"
   },
   {
    "nom": "budget mensuel après les appels (Firestore émulé)",
@@ -87,7 +103,7 @@
       "month": "2026-10",
       "reservedMicroChf": "0",
       "usedMicroChf": "4873",
-      "updatedAt": "1793014083811"
+      "updatedAt": "1793015465132"
      }
     }
    ]
@@ -106,7 +122,7 @@
     },
     {
      "modele": "gemini-3.5-flash-lite",
-     "ms": 1501,
+     "ms": 1500,
      "cle": "cle-fa…",
      "entreeTokens": 2377,
      "sortie": "{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra",
@@ -114,7 +130,7 @@
     },
     {
      "modele": "gemini-3.5-flash-lite",
-     "ms": 3601,
+     "ms": 3600,
      "cle": "cle-fa…",
      "entreeTokens": 2347,
      "sortie": "{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra",

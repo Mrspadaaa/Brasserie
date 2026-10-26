@@ -285,3 +285,198 @@ aucune erreur de page
 [36m[1mi  tasks:[22m[39m Stopping Cloud Tasks Emulator
 [36m[1mi  hub:[22m[39m Stopping emulator hub
 [36m[1mi  logging:[22m[39m Stopping Logging Emulator
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, functions, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-i2", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m+  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m+  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi  functions:[22m[39m Watching "C:\Users\mrspa\AppData\Local\Temp\affinee-i2-emu-ZUKTex\functions" for Cloud Functions...
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mpackage.json indicates an outdated version of firebase-functions. Please upgrade using [1mnpm install --save firebase-functions@latest[22m in your functions directory.
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mPlease note that there will be breaking changes when you upgrade.
+[33m[1m!  functions:[22m[39m Your requested "node" version "22" doesn't match your global version "24". Using node@24 from host.
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+Serving at port 8250
+
+[32m[1m+  functions:[22m[39m Loaded functions definitions from source: hopReclasserIA.
+[32m[1m+  functions[europe-west6-hopReclasserIA]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-i2/europe-west6/hopReclasserIA).
+[36m[1mi [22m[39m Running script: [1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\node_modules\vite-node\vite-node.mjs" --root "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\work\missions\2026-10-25-integration-houblons\voies\i2-ia-substituer\emulateur\emulateur.ts" -- --mode=simule[22m
+· budget semé dans Firestore émulé {"statut":200,"limite":"5 CHF (émulateur)"}
+· connexion émulée (Auth) {"uid":"7vZCum…"}
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+· capture 1-ouverture-liste-du-moteur.png {}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2.6198ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":1699,"email":"brasseur@demo-i2.test","severity":"INFO","message":"Reclassement IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1708.7417ms
+· ouverture : premier appel (fonction froide) {"puceALOuverture":null,"msJusquALaPuce":2284,"puceALArrivee":"appliquee"}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+· capture 2-dryhop-liste-du-moteur.png {}
+· liste du moteur affichée tout de suite {"apresMs":433,"lignes":["Hallertau Blanc 65-65","Cashmere 61-61","Sládek 60-60","Southern Sublime 58-58","Trident 58-58"],"puce":null}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":1555,"email":"brasseur@demo-i2.test","severity":"INFO","message":"Reclassement IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1558.7203ms
+· B1 : position de « Au dry hop, l’arôme… » avant et après l’arrivée de l’IA {"yAvant":115,"yApres":115,"ecartPx":0}
+· réponse de l’IA {"msDepuisClic":1772,"etatALArrivee":"appliquee","puce":"appliquee","lignes":["Solero 57-57","Sládek 60-60","Hallertau Blanc 65-65","Cashmere 61-61","Southern Sublime 58-58"]}
+· capture 3-dryhop-apres-ordre-ia.png {}
+· capture 4-phrase-dans-le-face-a-face.png {}
+· phrase de l’IA au toucher d’une rangée {"phrase":"IA Simulé (essai local) : remonté en tête, ses mots fruités sont proches de l’original."}
+· capture 7-lire-ces-scores-ouvert.png {}
+· Lire ces scores, ligne IA {"texte":"Classé par l’IA : elle reclasse les 20 premiers du moteur, sans score. Les scores restent ceux du moteur, donc pas toujours dans l’ordre : le chiffre gris est le rang."}
+· scores inchangés (ceux du moteur) {"ok":true}
+· puce touchée : ordre du moteur rendu {"identique":true,"puce":"prete"}
+· capture 5-puce-ordre-moteur-rendu.png {}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1.5598ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":3657,"email":"brasseur@demo-i2.test","severity":"INFO","message":"Reclassement IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 3660.0207ms
+· réponse tardive : la liste ne bouge pas {"msAvantPuce":3206,"identique":true,"puce":"prete"}
+· capture 6-ordre-ia-pret-reponse-tardive.png {}
+· capture 8-whirlpool-ordre-ia-applique.png {}
+· budget mensuel après les appels (Firestore émulé) {"documents":[{"nom":"2026-10","champs":{"month":"2026-10","reservedMicroChf":"0","usedMicroChf":"4873","updatedAt":"1793015194312"}}]}
+· requêtes reçues par le fournisseur {"n":3,"detail":[{"modele":"gemini-3.5-flash-lite","ms":1500,"cle":"cle-fa…","entreeTokens":2344,"sortie":"{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra","reel":false},{"modele":"gemini-3.5-flash-lite","ms":1502,"cle":"cle-fa…","entreeTokens":2377,"sortie":"{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra","reel":false},{"modele":"gemini-3.5-flash-lite","ms":3599,"cle":"cle-fa…","entreeTokens":2347,"sortie":"{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra","reel":false}]}
+· hôtes bloqués par le banc {"n":4,"exemples":["https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5","https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5","https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5"]}
+aucune erreur de page
+[32m[1m+ [22m[39m Script exited successfully (code 0)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  functions:[22m[39m Stopping Functions Emulator
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[33m[1m! [22m[39m Firestore Emulator has exited upon receiving signal: SIGINT
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  eventarc:[22m[39m Stopping Eventarc Emulator
+[36m[1mi  tasks:[22m[39m Stopping Cloud Tasks Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, functions, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-i2", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m+  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m+  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi  functions:[22m[39m Watching "C:\Users\mrspa\AppData\Local\Temp\affinee-i2-emu-SYHIKk\functions" for Cloud Functions...
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mpackage.json indicates an outdated version of firebase-functions. Please upgrade using [1mnpm install --save firebase-functions@latest[22m in your functions directory.
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mPlease note that there will be breaking changes when you upgrade.
+[33m[1m!  functions:[22m[39m Your requested "node" version "22" doesn't match your global version "24". Using node@24 from host.
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+Serving at port 8352
+
+[32m[1m+  functions:[22m[39m Loaded functions definitions from source: hopReclasserIA.
+[32m[1m+  functions[europe-west6-hopReclasserIA]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-i2/europe-west6/hopReclasserIA).
+[36m[1mi [22m[39m Running script: [1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\node_modules\vite-node\vite-node.mjs" --root "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\work\missions\2026-10-25-integration-houblons\voies\i2-ia-substituer\emulateur\emulateur.ts" -- --mode=simule[22m
+· budget semé dans Firestore émulé {"statut":200,"limite":"5 CHF (émulateur)"}
+· connexion émulée (Auth) {"uid":"6aX8gi…"}
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+· capture 1-ouverture-liste-du-moteur.png {}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 2.9314ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":1694,"email":"brasseur@demo-i2.test","severity":"INFO","message":"Reclassement IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1702.5843ms
+· ouverture : premier appel (fonction froide) {"puceALOuverture":null,"msJusquALaPuce":2516,"puceALArrivee":"appliquee"}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+· capture 2-dryhop-liste-du-moteur.png {}
+· liste du moteur affichée tout de suite {"apresMs":425,"lignes":["Hallertau Blanc 65-65","Cashmere 61-61","Sládek 60-60","Southern Sublime 58-58","Trident 58-58"],"puce":null}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":1551,"email":"brasseur@demo-i2.test","severity":"INFO","message":"Reclassement IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1553.271ms
+· B1 : position de « Au dry hop, l’arôme… » avant et après l’arrivée de l’IA {"yAvant":115,"yApres":115,"ecartPx":0}
+· réponse de l’IA {"msDepuisClic":1934,"etatALArrivee":"appliquee","puce":"appliquee","lignes":["Solero 57-57","Sládek 60-60","Hallertau Blanc 65-65","Cashmere 61-61","Southern Sublime 58-58"]}
+· capture 3-dryhop-apres-ordre-ia.png {}
+· capture 4-phrase-dans-le-face-a-face.png {}
+· phrase de l’IA au toucher d’une rangée {"phrase":"IA Simulé (essai local) : remonté en tête, ses mots fruités sont proches de l’original."}
+· capture 7-lire-ces-scores-ouvert.png {}
+· Lire ces scores, ligne IA {"texte":"Classé par l’IA : elle reclasse les 20 premiers du moteur, sans score. Les scores restent ceux du moteur, donc pas toujours dans l’ordre : le chiffre gris est le rang."}
+· scores inchangés (ceux du moteur) {"ok":true}
+· puce touchée : ordre du moteur rendu {"identique":true,"puce":"prete"}
+· capture 5-puce-ordre-moteur-rendu.png {}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1.6934ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":3652,"email":"brasseur@demo-i2.test","severity":"INFO","message":"Reclassement IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 3654.5987ms
+· réponse tardive : la liste ne bouge pas {"msAvantPuce":3194,"identique":true,"puce":"prete"}
+· capture 6-ordre-ia-pret-reponse-tardive.png {}
+· capture 8-whirlpool-ordre-ia-applique.png {}
+· budget mensuel après les appels (Firestore émulé) {"documents":[{"nom":"2026-10","champs":{"month":"2026-10","reservedMicroChf":"0","usedMicroChf":"4873","updatedAt":"1793015334279"}}]}
+· requêtes reçues par le fournisseur {"n":3,"detail":[{"modele":"gemini-3.5-flash-lite","ms":1500,"cle":"cle-fa…","entreeTokens":2344,"sortie":"{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra","reel":false},{"modele":"gemini-3.5-flash-lite","ms":1501,"cle":"cle-fa…","entreeTokens":2377,"sortie":"{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra","reel":false},{"modele":"gemini-3.5-flash-lite","ms":3602,"cle":"cle-fa…","entreeTokens":2347,"sortie":"{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra","reel":false}]}
+· hôtes bloqués par le banc {"n":1,"exemples":["https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5"]}
+aucune erreur de page
+[32m[1m+ [22m[39m Script exited successfully (code 0)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  functions:[22m[39m Stopping Functions Emulator
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[33m[1m! [22m[39m Firestore Emulator has exited upon receiving signal: SIGINT
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  eventarc:[22m[39m Stopping Eventarc Emulator
+[36m[1mi  tasks:[22m[39m Stopping Cloud Tasks Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, functions, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-i2", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m+  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m+  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi  functions:[22m[39m Watching "C:\Users\mrspa\AppData\Local\Temp\affinee-i2-emu-h9xf2t\functions" for Cloud Functions...
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mpackage.json indicates an outdated version of firebase-functions. Please upgrade using [1mnpm install --save firebase-functions@latest[22m in your functions directory.
+[33m[1m! [22m[39m [1m[33mfunctions: [39m[22mPlease note that there will be breaking changes when you upgrade.
+[33m[1m!  functions:[22m[39m Your requested "node" version "22" doesn't match your global version "24". Using node@24 from host.
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+Serving at port 8628
+
+[32m[1m+  functions:[22m[39m Loaded functions definitions from source: hopReclasserIA.
+[32m[1m+  functions[europe-west6-hopReclasserIA]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/demo-i2/europe-west6/hopReclasserIA).
+[36m[1mi [22m[39m Running script: [1m"C:\Program Files\nodejs\node.exe" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\node_modules\vite-node\vite-node.mjs" --root "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie" "C:\Users\mrspa\.codex\worktrees\openai-clean-start\Brasserie\work\missions\2026-10-25-integration-houblons\voies\i2-ia-substituer\emulateur\emulateur.ts" -- --mode=simule[22m
+· budget semé dans Firestore émulé {"statut":200,"limite":"5 CHF (émulateur)"}
+· connexion émulée (Auth) {"uid":"LVb9fj…"}
+[36m[1mi [22m[39m [36m[1mfunctions: [22m[39mLoaded environment variables from functions\.env
+· capture 1-ouverture-liste-du-moteur.png {}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 3.3154ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":1713,"email":"brasseur@demo-i2.test","severity":"INFO","message":"Reclassement IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1722.4166ms
+· ouverture : premier appel (fonction froide) {"puceALOuverture":null,"msJusquALaPuce":3200,"puceALArrivee":"prete"}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+· capture 2-dryhop-liste-du-moteur.png {}
+· liste du moteur affichée tout de suite {"apresMs":489,"lignes":["Hallertau Blanc 65-65","Cashmere 61-61","Sládek 60-60","Southern Sublime 58-58","Trident 58-58"],"puce":null}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":1548,"email":"brasseur@demo-i2.test","severity":"INFO","message":"Reclassement IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1550.5597ms
+· B1 : position de « Au dry hop, l’arôme… » avant et après l’arrivée de l’IA {"yAvant":115,"yApres":115,"ecartPx":0}
+· réponse de l’IA {"msDepuisClic":1817,"etatALArrivee":"appliquee","puce":"appliquee","lignes":["Solero 57-57","Sládek 60-60","Hallertau Blanc 65-65","Cashmere 61-61","Southern Sublime 58-58"]}
+· capture 3-dryhop-apres-ordre-ia.png {}
+· capture 4-phrase-dans-le-face-a-face.png {}
+· phrase de l’IA au toucher d’une rangée {"phrase":"IA Simulé (essai local) : remonté en tête, ses mots fruités sont proches de l’original."}
+· capture 7-lire-ces-scores-ouvert.png {}
+· Lire ces scores, ligne IA {"texte":"Classé par l’IA : elle reclasse les 20 premiers du moteur, sans score. Les scores restent ceux du moteur, donc pas toujours dans l’ordre : le chiffre gris est le rang."}
+· scores inchangés (ceux du moteur) {"ok":true}
+· puce touchée : ordre du moteur rendu {"identique":true,"puce":"prete"}
+· capture 5-puce-ordre-moteur-rendu.png {}
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 1.3755ms
+[36m[1mi  functions:[22m[39m Beginning execution of "europe-west6-hopReclasserIA"
+[90m> [39m {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"}
+[90m> [39m {"model":"gemini-3.5-flash-lite","elapsedMs":3647,"email":"brasseur@demo-i2.test","severity":"INFO","message":"Reclassement IA rendu"}
+[36m[1mi  functions:[22m[39m Finished "europe-west6-hopReclasserIA" in 3649.3052ms
+· réponse tardive : la liste ne bouge pas {"msAvantPuce":3174,"identique":true,"puce":"prete"}
+· capture 6-ordre-ia-pret-reponse-tardive.png {}
+· capture 8-whirlpool-ordre-ia-applique.png {}
+· budget mensuel après les appels (Firestore émulé) {"documents":[{"nom":"2026-10","champs":{"month":"2026-10","reservedMicroChf":"0","usedMicroChf":"4873","updatedAt":"1793015465132"}}]}
+· requêtes reçues par le fournisseur {"n":3,"detail":[{"modele":"gemini-3.5-flash-lite","ms":1500,"cle":"cle-fa…","entreeTokens":2344,"sortie":"{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra","reel":false},{"modele":"gemini-3.5-flash-lite","ms":1500,"cle":"cle-fa…","entreeTokens":2377,"sortie":"{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra","reel":false},{"modele":"gemini-3.5-flash-lite","ms":3600,"cle":"cle-fa…","entreeTokens":2347,"sortie":"{\"modelVersion\":\"gemini-3.5-flash-lite\",\"candidates\":[{\"finishReason\":\"STOP\",\"content\":{\"role\":\"model\",\"parts\":[{\"text\":\"{\\\"classement\\\":[{\\\"id\\\":\\\"c07\\\",\\\"phra","reel":false}]}
+· hôtes bloqués par le banc {"n":1,"exemples":["https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5"]}
+aucune erreur de page
+[32m[1m+ [22m[39m Script exited successfully (code 0)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  functions:[22m[39m Stopping Functions Emulator
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[33m[1m! [22m[39m Firestore Emulator has exited upon receiving signal: SIGINT
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  eventarc:[22m[39m Stopping Eventarc Emulator
+[36m[1mi  tasks:[22m[39m Stopping Cloud Tasks Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator

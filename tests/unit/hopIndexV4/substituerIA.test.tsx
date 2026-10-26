@@ -6,7 +6,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import type { Recipe } from '../../../src/types';
 
 vi.mock('../../../src/services/storage', () => ({
-  StorageService: { subscribe: () => () => {}, getStocks: () => ({ rawMaterials: [], cleaning: [], equipment: [], kegs: [] }), getBatches: () => [], getHopTastings: () => [] },
+  StorageService: { subscribe: () => () => {}, getStocks: () => ({ rawMaterials: [], cleaning: [], equipment: [], kegs: [] }), getBatches: () => [], getHopTastings: () => [], getHopKnowledge: () => [] },
 }));
 
 import EcranSubstituerApp from '../../../src/ui/hopIndex/substituer/EcranApp';
@@ -87,24 +87,69 @@ describe('Substituer et l’IA : ce que la liste fait', () => {
     await waitFor(() => expect(puce(c)?.getAttribute('data-ia')).toBe('appliquee'));
     const ia = rangs(c).map((r) => r.cle);
     fireEvent.click(puce(c)!);
-    expect(rangs(c).map((r) => r.cle)).toEqual(avant); expect(puce(c)!.getAttribute('data-ia')).toBe('prete'); expect(puce(c)!.textContent).toMatch(/ordre IA prêt/);
+    expect(rangs(c).map((r) => r.cle)).toEqual(avant); expect(puce(c)!.getAttribute('data-ia')).toBe('prete'); expect(puce(c)!.textContent).toMatch(/appliquer l’ordre IA/);
     fireEvent.click(puce(c)!);
     expect(rangs(c).map((r) => r.cle)).toEqual(ia); expect(puce(c)!.getAttribute('data-ia')).toBe('appliquee');
   });
 
-  it('réponse après 3 s : la liste ne bouge pas, « ordre IA prêt », un toucher l’applique', async () => {
+  it('B1 : la puce vit dans la tête fixe, à droite du titre, jamais dans le flux de la page : son arrivée ne décale rien', async () => {
+    const { t, etat } = transportManuel(); installerTransportIA(t);
+    const c = await monter();
+    await waitFor(() => expect(etat.demandes).toHaveLength(1));
+    const tete = c.querySelector('[data-page-titlebar]')!;
+    expect(tete.querySelector('[data-role="puce-ia"]')).toBeNull();
+    await attendre(() => etat.repondre(ordreIA(etat.demandes[0])));
+    await waitFor(() => expect(puce(c)).not.toBeNull());
+    expect(tete.contains(puce(c))).toBe(true);
+    expect(tete.querySelector('h1')!.nextElementSibling!.contains(puce(c))).toBe(true);   // juste après le titre
+    expect(c.querySelector('.pq-substituer')!.contains(puce(c))).toBe(false);              // hors du flux de l'écran
+    // La ligne des moments et ce qui la suit gardent leur place dans le flux : même structure avant et après.
+    expect(c.querySelector('.pq-substituer')!.firstElementChild!.getAttribute('data-role')).toBe('puce-moment');
+  });
+
+  it('B2 : appliqué, le titre nomme le premier de la liste affichée et reprend sa phrase ; rendu, il rend le titre du moteur', async () => {
+    const { t, etat } = transportManuel(); installerTransportIA(t);
+    const c = await monter();
+    const titre = () => c.querySelector('[data-role="reponse"] strong')!.textContent!;
+    const titreMoteur = titre();
+    await waitFor(() => expect(etat.demandes).toHaveLength(1));
+    await attendre(() => etat.repondre(ordreIA(etat.demandes[0])));
+    await waitFor(() => expect(puce(c)?.getAttribute('data-ia')).toBe('appliquee'));
+    const premier = c.querySelector('[data-ecran="substituer"] [data-remplacant]')!;
+    const nom = premier.getAttribute('data-houblon-rang')!;
+    expect(titre().startsWith(`${nom}, `)).toBe(true);
+    expect(titre()).toMatch(new RegExp(`${premier.getAttribute('data-min')}`));
+    expect(c.querySelector('[data-role="reponse-ia"]')!.textContent).toContain(`Phrase de ${premier.getAttribute('data-remplacant')}.`);
+    fireEvent.click(puce(c)!);
+    expect(titre()).toBe(titreMoteur); expect(c.querySelector('[data-role="reponse-ia"]')).toBeNull();
+  });
+
+  it('C3 : un rang gris devant chaque score quand l’ordre IA est appliqué, aucun sinon', async () => {
+    const { t, etat } = transportManuel(); installerTransportIA(t);
+    const c = await monter();
+    expect(c.querySelectorAll('[data-role="rang-ia"]')).toHaveLength(0);
+    await waitFor(() => expect(etat.demandes).toHaveLength(1));
+    await attendre(() => etat.repondre(ordreIA(etat.demandes[0])));
+    await waitFor(() => expect(puce(c)?.getAttribute('data-ia')).toBe('appliquee'));
+    const rangsIA = [...c.querySelectorAll('[data-role="rang-ia"]')].map((e) => e.textContent);
+    expect(rangsIA).toEqual(rangs(c).map((_, i) => String(i + 1)));
+    fireEvent.click(puce(c)!);
+    expect(c.querySelectorAll('[data-role="rang-ia"]')).toHaveLength(0);
+  });
+
+  it('réponse après 3 s : la liste ne bouge pas, « appliquer l’ordre IA », un toucher l’applique', async () => {
     const { t, etat } = transportManuel(); installerTransportIA(t);
     const c = await monter(); const avant = rangs(c).map((r) => r.cle);
     await waitFor(() => expect(etat.demandes).toHaveLength(1));
     await attendre(() => { vi.setSystemTime(Date.now() + FENETRE_MS + 500); etat.repondre(ordreIA(etat.demandes[0])); });
     await waitFor(() => expect(puce(c)?.getAttribute('data-ia')).toBe('prete'));
-    expect(puce(c)!.textContent).toMatch(/ordre IA prêt/);
+    expect(puce(c)!.textContent).toMatch(/appliquer l’ordre IA/);
     expect(rangs(c).map((r) => r.cle)).toEqual(avant);
     fireEvent.click(puce(c)!);
     expect(puce(c)!.getAttribute('data-ia')).toBe('appliquee'); expect(rangs(c)[0].cle).toBe(etat.demandes[0].candidats[6].id);
   });
 
-  it('réponse rapide mais après un toucher sur la liste : la liste ne bouge pas, « ordre IA prêt »', async () => {
+  it('réponse rapide mais après un toucher sur la liste : la liste ne bouge pas, « appliquer l’ordre IA »', async () => {
     const { t, etat } = transportManuel(); installerTransportIA(t);
     const c = await monter(); const avant = rangs(c).map((r) => r.cle);
     await waitFor(() => expect(etat.demandes).toHaveLength(1));

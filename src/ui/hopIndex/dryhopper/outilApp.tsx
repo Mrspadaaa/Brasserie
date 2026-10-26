@@ -10,6 +10,8 @@
 // donc ni le brouillon enregistré ni le wizard.
 import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
 import { PageShell } from '../../../pages/PageShell';
+import { useStorageValue } from '../../../hooks/useLiveData';
+import { StorageService } from '../../../services/storage';
 import { toHopRecipe, versPatch } from '../../../domain/hopIndex/v4/recipeConversion';
 import { useAppuiLong } from '../gestes';
 import { configurerDonnees } from '../parcours/adaptateur';
@@ -31,6 +33,10 @@ function useFicheApp(): FicheLocale {
   const g = useGestesFiche(setCle);
   return { ...g, rendu: cle ? <FicheDeLApp houblon={cle} onFermer={() => setCle(null)} /> : null };
 }
+
+/** Les révisions de connaissances du brasseur ; undefined quand le stockage ne les lit pas (les doublures de test de plusieurs suites
+ * n'ont que les lectures de l'étape Houblons) : x1 prend alors la graine livrée avec l'app. */
+const lireConnaissances = () => (typeof StorageService.getHopKnowledge === 'function' ? StorageService.getHopKnowledge() : undefined);
 
 const SURVOL_MS = 650;
 /** La fiche posée sur Dryhopper et Levure : appui long au doigt, survol long à l'ordinateur (comme la maquette), sans entrée
@@ -90,6 +96,8 @@ export function OutilApp(p: OutilAppProps) {
 function Contenu({ onClose, titre, creer, absent, versLevure, retour, ajoutNeuf, porte, children }: OutilAppProps & { porte: PorteEtape }) {
   const { recipe, boilOg, draftId } = porte;
   const donnees = useHopData(recipe);
+  // Les révisions de connaissances du brasseur : l'amertume au dry hop lit la sienne (froid.ts, x1), désactivée comprise.
+  const connaissances = useStorageValue(lireConnaissances);
   // La conversion ne se refait que si la porte change d'identité (son contenu lu change : porte.ts) ou le stock.
   const conversion = useMemo(() => toHopRecipe(recipe, {
     ...(boilOg === undefined ? {} : { boilOg }),
@@ -167,9 +175,9 @@ function Contenu({ onClose, titre, creer, absent, versLevure, retour, ajoutNeuf,
   const brouillon = brouillonRef.current ?? null;
   const valeur = useMemo<HoteOutil>(() => ({
     brouillon, recette, aComparer: comparaison, gestes, aller, retour: retour ?? onClose, revenirMaBiere: onClose, annuler: onClose,
-    Cadre: CadreApp, useFiche: useFicheApp, useFicheSurOutil: useFicheSurOutilApp, termes,
+    Cadre: CadreApp, useFiche: useFicheApp, useFicheSurOutil: useFicheSurOutilApp, termes, connaissances,
     ...(ajoutNeuf ? { ajoutNeuf: (id: string) => ajoutNeuf(recette, id) } : {}),
-  }), [brouillon, recette, comparaison, gestes, aller, retour, onClose, termes, ajoutNeuf]);
+  }), [brouillon, recette, comparaison, gestes, aller, retour, onClose, termes, ajoutNeuf, connaissances]);
   const pourFiche = useMemo(() => ({ recette, draftId }), [recette, draftId]);
   const cadre = useMemo(() => ({ fermer: onClose }), [onClose]);
 
