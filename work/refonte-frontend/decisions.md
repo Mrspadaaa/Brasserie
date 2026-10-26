@@ -851,3 +851,17 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     - ce que chaque rangée apporte.
 
     Ce lot m7 se fait sur les valeurs de g2b.
+- D95 (26.10, vers 14 h) : l'hébergement seul est redéployé depuis la copie propre, au commit 9dba6971.
+  - **Contenu** :
+    - les descripteurs de 12 sources (d4) ;
+    - Substituer v2, avec l'IA : la puce dans la tête et le titre qui suit la liste ;
+    - les audits de données (c3g, d3a) et les traductions (t1) ;
+    - un trait par source qui diffère (s1) ;
+    - les contours au-dessus des séries (a1, a2) ;
+    - le ★ ;
+    - son choix D dans Dryhopper (p5 : 18 px réservés, bulle du jour corrigée) ;
+    - D90 (exclusion seulement si la moitié des fiches cite la famille).
+  - **Preuves** :
+    - rejeu complet de b020da5e : tsc, vitest (deux tests lents rejoués seuls, verts), build, états 138/138, contrôles Chrome ;
+    - rejeu ciblé de 9dba6971 : 753 tests, build, B5 157,7 ko, états, ★, FROID OK.
+  - La production sert `index-CqHKOn9T.js`, le même que le build. L'app appelle désormais `hopReclasserIA` (D92).
