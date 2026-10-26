@@ -37,3 +37,9 @@ Relevé par le lot Substituer (D125, 24.10 ; u4 choisi, D34).
   0,98 très proche. Conséquence pour notre banc : juger contre ses substituts, c'est en partie juger la ressemblance à sa propre
   formule. Ses faiblesses : un Pearson sur des unités mêlées, des codes arbitraires (pays, tags) lus comme des nombres, des zéros
   de radar qui veulent dire « pas de donnée ».
+- **Le principe du brasseur** (26.10, mot pour mot) : « elle récompense même surtout l'α c'est pas la bonne métrique. Surtout en
+  fonction du style... Et l'aa est la métrique la plus simple à contrôler, augmenté ou diminuer la dose. Elle doit compter mais pas
+  que. »
+  - L'α ne doit jamais décider seul d'un remplaçant ni d'un amérisant, et un banc qui récompense l'α est faux.
+  - La justesse se juge selon le style de la recette.
+  - « Il faudrait pas que l'algo trie trop ou exclue trop tôt des potentiels candidats surtout. »
