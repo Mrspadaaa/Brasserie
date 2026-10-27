@@ -1133,3 +1133,16 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     sous −25). Seuls le modèle et la réflexion changent (`ia4-banc.ts --modele= --reflexion=`).
   - Chaque essai a son compteur et sa section du journal, avec une enveloppe de 4,5 CHF ; les deux ensemble restent sous les 10 CHF.
   - Pour ce cas seulement, le seuil des agents passe de 98 % à 99 %.
+- D131 (pilote, 27.10, banc D130) : même avec Gemini 3.8 Flash, l'IA de Suggérer **reste éteinte**. Le banc garde les mêmes 30 cas, la même
+  référence figée et la même règle :
+
+  | modèle | moyenne | pire cas | latence médiane | coût des 30 cas |
+  |---|---|---|---|---|
+  | 3.5 Flash-Lite, réflexion basse (ia4) | +5 | −25 | 1,6 s | 0,071 CHF |
+  | 3.8 Flash, réflexion basse | +6,7 | −25 | 4,7 s | 0,265 CHF |
+  | 3.8 Flash, réflexion haute | +5,8 | −25 | 90 s | 3,468 CHF |
+
+  Les trois modèles gagnent et perdent sur presque les mêmes cas : en hausse 1A, 7B, 13C, 4A, 5B, 21A, 18B ; en baisse 16A, 20A, 15B, tous
+  en « plus floral ». La limite tient donc à la référence (« cité », pas « intense » ; le moteur est déjà confirmé dans 18 cas sur 30), pas
+  à la force du modèle. La réflexion haute ne fait pas mieux : elle met 90 s et coûte 13 fois plus. Dépense de D130 : 3,73 CHF sur 10.
+  Pour aller plus loin, il faut un autre arbitre, pas un autre modèle : une référence d'intensité, ou ses propres jugements à l'aveugle.
