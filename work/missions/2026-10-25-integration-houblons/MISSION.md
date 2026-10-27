@@ -414,3 +414,11 @@ documentaires d'après.
   - Suggérer ne montre que 4 rangées (`buyLimit = 4`).
   En vol : t2, c8.
 - 27.10 : **c8 et t2 commités** (37d9c32c, 4aa7cd33 ; D121). B5 à 147,3 ko ; typicité par défaut ; ETATS 138/138. **Rejeu complet de 4aa7cd33** lancé (Haiku, copie propre, `%TEMP%/rejeu-4aa7/`), avec les contrôles Chrome en composés à part et la mesure d'ouverture de c8. S'il est vert : déployer, PR, fusion. Quota hebdomadaire 96 %.
+- 27.10, 10 h 30 : **déployé** (dcec3133) et **PR #190 fusionnée** (20b58045 ; D122). Ouvert :
+  - son choix sur la page m9 (B8v5Ak1uXkrPnWyZDqNxG7), entre A, B, C et D ; C, la typicité, est le défaut ;
+  - défauts d'app : « 48 g » coupé, pastille du moment qui déborde, n° 1 affiché 4e avec A3, 4 rangées dans Suggérer ;
+  - D188 : l'IA dans Suggérer (accord D100, 0,5 CHF) et le bouton d'ajout à la recette ;
+  - les autres accords D100 ; m7, P4/P5, B2, les formes ;
+  - D172, D178, D182, D185, #182, #187 ;
+  - la voie de profil D101 (B1 921 ko, B2 773 ko).
+  Quota hebdomadaire : 96 %.

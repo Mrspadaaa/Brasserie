@@ -349,12 +349,12 @@ function BlocGroupe({ g, objectifs, echelle, cran, bande, choisie, basculer, ges
     : <span className="pq-suggerer-moment pq-sg-sur-axe">{g.moment}</span>;
   return (
     <section data-groupe={g.id} {...(element ? { 'data-element': element } : {})} {...(etat ? { 'data-etat': etat } : {})} {...(reserve > 0 ? { style: { minHeight: reserve } } : {})} className="relative pt-2">
-      <h3 className="relative flex items-center gap-2 px-1 min-h-[1.875rem] text-[0.9375rem] font-bold text-cave-50 leading-tight">
+      <h3 className="relative flex flex-wrap items-center gap-x-2 gap-y-1 px-1 min-h-[1.875rem] text-[0.9375rem] font-bold text-cave-50 leading-tight">
         <span className="pq-sg-sur-axe inline-flex items-center gap-1.5">
           {meme && g.titre !== 'Ajouter' && <span aria-hidden="true" className="pq-suggerer-egal" />}
           <span>{g.titre}</span>
         </span>
-        {g.dose && <span className="pq-sg-sur-axe font-semibold text-cave-200">{g.dose}</span>}
+        {g.dose && <span className="pq-sg-sur-axe font-semibold text-cave-200 whitespace-nowrap">{g.dose}</span>}
         {moment}
         {g.estime && <span className="pq-sg-sur-axe text-sm font-normal text-cave-400">estimé</span>}
       </h3>
