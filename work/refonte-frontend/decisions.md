@@ -1084,3 +1084,17 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   4. L'essai réel est rejoué après a4, car ses listes ont été prises pendant qu'a4 modifiait le moteur ; un banc Chrome perd sa page quand
      une voie voisine édite les sources.
   Dépense réelle d'ia3 : 13 appels, 0,0664 CHF, sur les 0,5 CHF accordés en D100.
+- D126 (pilote, 27.10, sur « Ça semble overfit mes paramètres et de loins... », D192) : l'IA de Suggérer (ia3) n'est **pas déployée**. On
+  a trouvé trois causes :
+  1. Mon contrat a taillé le pool de l'IA (30) pour couvrir ses six : c'est un réglage fait sur la moitié jugée (L20).
+  2. L'IA tire des houblons pris plus bas, hors du groupe au même effet, alors que sa maquette m6 posait la puce sur les ex æquo.
+  3. La phrase s'appuie sur la réputation du nom (« mandarine »), pas sur la fiche montrée (chewing gum, groseille, agrumes ●000).
+
+  La suite, voie ia4 :
+  - l'IA ne reclasse que les ex æquo du moteur ;
+  - la taille du pool vient d'une règle de coût, jamais de ses exemples ;
+  - une phrase qui sort de la fiche le dit, ou bien elle est retirée ;
+  - un banc à l'aveugle (accordé en D100) sur des cas qu'il n'a jamais nommés, avec des références indépendantes. L'IA ne se déploie que si
+    elle y bat le moteur.
+
+  a4 a été prévenue de ne rien régler sur ses six.

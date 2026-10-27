@@ -26,7 +26,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, l5b : barres reprises sans les pistes. 23 au 25.10 : maquette hors de ses choix, nom de vignette pris pour consigne, mini maquette au lieu de l'écran jouable (D105 à D141). 26.10 : u4 masqué par une capture (D155).
+- Erreur : 19.10, l5b : barres reprises sans les pistes. 23 au 25.10 : maquette hors de ses choix, nom de vignette pris pour consigne, mini maquette au lieu de l'écran jouable. 26.10 : u4 masqué par une capture (D155).
 - Cause : « X de la variante Y » lu au sens étroit.
 - Faire : lister dans Y tout ce qui relève de X avant de reprendre. Sa maquette choisie : règle n° 1 ; inventaire, captures côte à côte de chaque état, gestes compris, même pour une revue (D123). Un nom de vignette cité (`data-nom`) n'est pas une consigne. La base d'une reprise est l'écran de la maquette jouable. Ses captures, mesurées (D106) ; désignée vaguement : SPEC et inventaires.
 - Rôles : pilote, auteur, concepteur
@@ -81,7 +81,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L13 — Une plainte devient un contrôle qui échoue sur la version rejetée, avant toute correction
 - Erreur : 18.10, les mêmes défauts revenaient de v2 à v4 (trop de texte, cockpit) ; 20.10, « épicé » critiqué une deuxième fois (lots 15 et 21), la première plainte n'étant pas un contrôle.
 - Cause : les corrections étaient des règles écrites, lues par des agents, et non des contrôles bloquants.
-- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet, et partir d'une référence qu'il connaît (25.10 : [[beermaverick-radar]]). Une plainte ambiguë ne fige pas une seule lecture en contrôle bloquant : chaque lecture devient un axe de variantes (25.10 : « les pic » lu « sans pointe », D144). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de `portee-defauts.json` entrent dans les GATES ; un mort est adapté ou caduc (D4). Rejouer chaque critère sur HEAD avant la voie (r14).
+- Faire : ajouter la ligne à DEFAUTS-RECURRENTS avec ses mots, écrire le contrôle, vérifier qu'il échoue sur la version rejetée, puis corriger. Ne rien montrer sans LOT OK. Après deux refus du même élément, changer de genre de solution, pas d'objet, et partir d'une référence qu'il connaît (25.10 : [[beermaverick-radar]]). Une plainte ambiguë ne fige pas une seule lecture en contrôle bloquant : chaque lecture devient un axe de variantes (D144). Un contrôle ne garde que s'il tourne sur le format actuel : ceux de `portee-defauts.json` entrent dans les GATES ; un mort est adapté ou caduc (D4). Rejouer chaque critère sur HEAD avant la voie (r14).
 - Rôles : pilote, auteur
 - Contrôle : `systeme.mjs mission` (portée) ; cablage (« OK 0/0 », portée inconnue)
 
@@ -127,7 +127,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 ### L20 — Mesurer avant d'écarter un repli accepté par le brasseur
 - Erreur : 20 et 22.10, la « grille 1,8 Mo » (fichier de maquette) lue en coût de calcul ; un conseiller voulait abandonner sans chronométrer un repli qu'il avait accepté.
 - Cause : la taille des fichiers de maquette a servi de mesure du moteur.
-- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77). Un banc ne juge ni un artefact de l'ordre ni les données de la clé (g1, g2a).
+- Faire : chronométrer le moteur (`simulerCas`, léger et complet) sur le cas réel et sur tout le catalogue. Le repli tient jusqu'à la mesure. Mesurer aussi une entrée qui change à chaque appel, et à froid. Avant une architecture de calcul, attribuer le temps mesuré au profil (25.10). Un réglage se choisit sur une moitié des cas, se juge sur l'autre (D77) ; un brief ne taille rien sur ses exemples (27.10, « overfit »). Un banc ne juge ni un artefact de l'ordre ni les données de la clé (g1, g2a).
 - Rôles : pilote, conseil, auteur, exécutant
 - Contrôle : mesure faite le 22.10 ([[cout-calcul-moteur]]) ; pas de contrôle automatique
 
@@ -146,7 +146,7 @@ session par CLAUDE.md : relire avant de planifier, briefer ou livrer. Les défau
 - Contrôle : `systeme.mjs mission` refuse une voie d'interface hors Opus ou Fable, et une relecture d'interface sans critique
 
 ### L26 — Une variante qui reprend un socle préfixe ses classes et assemble son code sans remplacement de chaîne
-- Erreur : 22.10, lot 22, cinq variantes sur douze cassées en silence par le socle importé : classes partagées, un `$$` devenu `$` par `String.replace` ; contrôles verts.
+- Erreur : 22.10, lot 22, cinq variantes sur douze cassées en silence par le socle (classes partagées, `$$` devenu `$`) ; contrôles verts.
 - Cause : les classes de la variante partageaient l'espace de noms du socle, et le code client était assemblé par remplacement de chaînes.
 - Faire : préfixer ses classes (`r6x-…`), un nom par rôle, et ses globales JS (script dans une fonction immédiate) ; assembler le code par `split/join` ou des indices ; capturer aussi l'état ouvert et la fiche, et les ouvrir (L12). Un composant de l'app réemployé apporte ses boutons (24.10 : le × du Sheet) : les contrôles de route le couvrent.
 - Rôles : concepteur, auteur
