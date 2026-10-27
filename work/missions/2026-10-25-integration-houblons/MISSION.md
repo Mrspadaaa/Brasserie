@@ -397,3 +397,4 @@ documentaires d'après.
 6. **Les accords D100** : test à l'aveugle, IA de Suggérer, écriture Firestore, test dans son Chrome.
 7. D172, D178, D182, D185, #182, #187, et la voie de profil D101.
 - 27.10 : **r3 commité** (radar de Comparer, D187 et D189). Suggérer a sans doute le même défaut D189 : voie courte **r4** lancée. Ensuite : f8, puis rejeu, déploiement et PR.
+- 27.10 : **f8 commité** (D190 fait ; D191 non tenu, voir D119). Prochaine étape pour D191 : une intensité par variété dans l'effet (A3). Elle change les barres : conseil ou mini maquettes d'abord. En vol : **r4** (radar de Suggérer). Ensuite : rejeu, déploiement et PR du lot r3, f8 et r4 ; puis l'IA de Suggérer (D100) et le bouton d'ajout à la recette (D188).

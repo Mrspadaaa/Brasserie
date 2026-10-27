@@ -1029,3 +1029,10 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
 - D118 (pilote, 27.10, voie f8) : la clé k3 (radar Beer Maverick de la famille, avec k1 en repli) devient le départage par défaut de
   Suggérer. Il prend lui-même ce radar comme référence (Idaho 7). Une forme produit reprend les mots, les familles et les fiches de sa
   variété (D190). Contrôle D191 : ses 6 houblons de Double IPA.
+- D119 (pilote, 27.10, voie f8) : D190 est fait, Citra cryo reprend Citra. k3 avec k1 en repli devient le défaut. **D191 n'est pas
+  tenu** : 1 sur 6 de ses houblons de Double IPA dans les 10 premiers. Deux causes :
+  - le radar Beer Maverick est trop grossier : notes entières de 0 à 5, beaucoup d'ex æquo, 137 variétés sans radar ;
+  - il ne départage que des voies d'effet égal, et l'écran de Suggérer lit la liste principale, où la clé vient après la distance.
+
+  La vraie piste est une intensité par variété dans l'effet lui-même (A3, écartée en g1 parce qu'elle change les barres). C'est une
+  convention du moteur : à soumettre au conseil, ou à lui en mini maquettes, avant d'agir.
