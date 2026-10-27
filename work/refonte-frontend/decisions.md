@@ -1066,3 +1066,14 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   - B5 à 147,3 ko ;
   - ouverture d'un outil, médiane à chaud 467 → 453 ms.
 - D123 (pilote, 27.10) : le correctif d'affichage de Suggérer est déployé (005b11f8) et la PR #191 est fusionnée (a0fd0245).
+- D124 (pilote, 27.10, sur « Regarde surtout pour l'algo et implemtation avec l'ai. Il faudra évidemment enlever le panel des six houblons
+  dans la vrai app ») : il ne choisit pas de lettre. La typicité (C) reste le défaut. « Tes six » ne vient pas dans l'app : c'était un repère
+  de la page. Deux voies partent :
+  - **a4**, l'algorithme. Trois biais mesurés par f9 et m9 :
+    - El Dorado est freiné par le débordement de sa poire en 22A ;
+    - Calypso sort de la borne de 80 du pool (« exclure trop tôt ») ;
+    - une typicité inconnue passe après une typicité rare, alors que l'inconnu n'est pas une rareté : c'est le cas de Mandarina, 5e puis 18e.
+  - **ia3**, l'IA dans Suggérer, sur sa base choisie : m6, « M1 + M2 · avec l'IA », la puce « ✦ ordre IA prêt » et sa phrase
+    (`ecrans.json`). Elle reprend le callable `hopReclasserIA` (D92), avec un mode Suggérer. L'essai réel est accordé en D100 (0,5 CHF au
+    plus), simulé d'abord, journalisé, jamais dans `npm test`. « implemtation avec l'ai » dans « la vrai app » vaut accord pour la
+    production de ce mode, sous les plafonds mensuel et quotidien existants.
