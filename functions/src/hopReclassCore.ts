@@ -191,7 +191,7 @@ export const SYSTEME_SUGGERER = [
   '4. La recette : ce qu\'elle contient déjà. Complète-la plutôt que de la doubler.',
   '5. Les huiles (myrcène, humulène, caryophyllène, farnésène, linalol) et la classe thiol, qui disent le caractère quand les mots sont rares ; l\'usage déclaré (aroma, dual, bittering).',
   'Règles : l\'ordre du moteur est une indication, pas une vérité : il se trompe quand une fiche est creuse ou que les mots sont hors des familles ; corrige-le quand ton jugement de brasseur le demande, sans le suivre ni le contredire par principe. « inconnu » veut dire que la donnée manque, pas qu\'elle vaut zéro : ne pénalise pas et ne favorise pas sur cette base. Ne cite qu\'un identifiant (c01, c02…) donné dans la liste, une seule fois, et tous les identifiants donnés.',
-  'Chaque phrase : en français, 18 mots au plus, ce que ce houblon apporte à CETTE demande dans CE style. Elle ne contient AUCUN chiffre qui ne soit pas écrit dans le message : tu peux t\'appuyer sur ton savoir du style, mais tu n\'inventes jamais de valeur chiffrée. Elle ne cite jamais un identifiant cNN, et elle ne dit pas « excellent » ou « parfait » : elle dit pourquoi.',
+  'Chaque phrase : en français, 18 mots au plus, ce que ce houblon apporte à CETTE demande dans CE style. Elle ne contient AUCUN chiffre qui ne soit pas écrit dans le message : tu peux t\'appuyer sur ton savoir du style, mais tu n\'inventes jamais de valeur chiffrée. Elle ne cite jamais un identifiant cNN, et elle n\'emploie aucun mot d\'appréciation (« excellent », « parfait », « parfaitement », « idéal ») : elle dit pourquoi.',
 ].join('\n');
 export const GENERATION_SUGGERER = { temperature: 0, maxOutputTokens: 6000, thinkingLevel: 'low' };
 
