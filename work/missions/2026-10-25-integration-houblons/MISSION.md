@@ -446,3 +446,4 @@ documentaires d'après.
   - la voie de profil D101 ;
   - le bouton d'ajout direct à la recette (D188, mini maquettes) ;
   - les 4 rangées de Suggérer.
+- 27.10, vers 17 h : **ia5 commitée** (d661f266 ; D132) : 3.8 Flash à la demande. En vol : le rejeu de d661f266 (Haiku, `%TEMP%/rejeu-d661/`) et la critique de la puce (Fable). Ensuite : déployer `functions:hopReclasserIA`, puis l'hébergement ; puis la PR. **Défaut vu par le pilote** sur les captures d'ia5 (`voies/ia5-ia-a-la-demande/img/reel-1-…`) : une neipa v3 qui a déjà 144 g de Lotus au dry hop, demande « plus d'agrumes ». Le moteur propose des nobles (East Kent Goldings, Golding, Spalter Select, Mount Hood) et la carte dit « Aucune voie houblon » au-dessus de ces rangées. Cause probable : la saturation, et des débordements non neutres. a4 en mesurait 4 sur 62 à HEAD. À diagnostiquer (voie suivante).
