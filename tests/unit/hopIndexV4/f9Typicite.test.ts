@@ -72,15 +72,27 @@ describe('la clé k3k1t (typicité entre la famille citée et le radar)', () => 
 });
 
 describe('les options de proposeVoies (22A, sa recette)', () => {
-  it('éteintes par défaut : le résultat est identique, à l\'octet près, à celui d\'avant', () => {
+  it('D120 : la typicité seule est le défaut (A3 éteint) : sans option = { intensite: false, typicite: true } à l\'octet près ; { typicite: false } rend le comportement d\'avant (k3k1, aucun champ typicite)', () => {
     expect(INTENSITE_DEFAUT).toBe(false);
-    expect(TYPICITE_DEFAUT).toBe(false);
-    const a = m.proposeVoies(R22A, { citrus: 1 }, OPTS), b = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, intensite: false, typicite: false });
+    expect(TYPICITE_DEFAUT).toBe(true);
+    const a = m.proposeVoies(R22A, { citrus: 1 }, OPTS), b = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, intensite: false, typicite: true });
     expect(JSON.stringify(a.voies)).toBe(JSON.stringify(b.voies));
-    expect(a.voies.every((v) => v.typicite === undefined && v.a3 === undefined)).toBe(true);
+    expect(a.voies.every((v) => v.a3 === undefined)).toBe(true);
+    expect(a.voies[0].departage?.mode).toBe('k3k1t');
+    const avant = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, typicite: false });
+    expect(avant.voies.every((v) => v.typicite === undefined && v.a3 === undefined)).toBe(true);
+    expect(avant.voies[0].departage?.mode).toBe('k3k1');
+  });
+  it('D120 : sans table chargée, la typicité par défaut ne change que le champ typicite (inconnue, dite) et la clé : même ordre que { typicite: false }', () => {
+    poserTypicite(null);
+    try {
+      const sans = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, typicite: false }), defaut = m.proposeVoies(R22A, { citrus: 1 }, OPTS);
+      expect(defaut.voies.map((v) => v.id)).toEqual(sans.voies.map((v) => v.id));
+      expect(defaut.voies.filter((v) => v.type === 'ajouter').every((v) => v.typicite?.palier === null && /non chargée/.test(v.typicite.raison ?? ''))).toBe(true);
+    } finally { poserTypicite(table); }
   });
   it('la typicité n\'exclut rien : les mêmes houblons, dans un autre ordre, et chaque voie porte sa typicité (ou null, dite)', () => {
-    const sans = m.proposeVoies(R22A, { citrus: 1 }, OPTS), avec = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, typicite: true });
+    const sans = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, typicite: false }), avec = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, typicite: true });
     const ids = (r: typeof sans) => r.voies.filter((v) => v.type === 'ajouter').map((v) => v.id).sort();
     expect(ids(avec)).toEqual(ids(sans));
     const ajouts = avec.voies.filter((v) => v.type === 'ajouter');
@@ -92,7 +104,7 @@ describe('les options de proposeVoies (22A, sa recette)', () => {
     expect(facteurIntensite(CLE('citra'), 'citrus')).toEqual({ radar: 5, facteur: 1 + PENTE_INTENSITE * (5 - RADAR_NEUTRE) });
     expect(facteurIntensite(CLE('el-dorado'), 'citrus').facteur).toBe(1);
     expect(facteurIntensite(CLE('citra'), 'pomeFruit')).toEqual({ radar: null, facteur: 1 }); // pas d'axe de radar pour cette famille
-    const base = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, limit: 2000 }), a3 = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, intensite: true });
+    const base = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, limit: 2000, typicite: false }), a3 = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, intensite: true, typicite: false }); // D120 : A3 seul (la typicité est le défaut)
     const de = (r: typeof base, id: string) => r.voies.find((v) => v.type === 'ajouter' && v.actions[0].hopKey === CLE(id))!;
     expect(de(a3, 'citra').effect.citrus.intensite).toEqual({ radar: 5, facteur: 1.4 });
     expect(de(base, 'citra').effect.citrus.intensite).toBeUndefined();
@@ -100,7 +112,7 @@ describe('les options de proposeVoies (22A, sa recette)', () => {
     expect(a3.voies.every((v) => v.a3 === true)).toBe(true);
   });
   it('A3 : une variété plus intense atteint la visée à une dose plus basse, et passe devant (le manque seul compte, puis les grammes)', () => {
-    const r = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, maxBuy: 400, intensite: true });
+    const r = m.proposeVoies(R22A, { citrus: 1 }, { ...OPTS, maxBuy: 400, intensite: true, typicite: false }); // D120 : A3 seul
     const ajouts = r.voies.filter((v) => v.type === 'ajouter' && v.distance.total === 0);
     const radar = (v: (typeof ajouts)[number]) => facteurIntensite(v.actions[0].hopKey, 'citrus').radar;
     const forts = ajouts.filter((v) => radar(v) === 5), faibles = ajouts.filter((v) => radar(v) !== null && radar(v)! <= 2);

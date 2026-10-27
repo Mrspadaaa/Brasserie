@@ -23,7 +23,8 @@ const stockDe = (key: string, grams: number): StockHop => ({ key, varietyId: key
 describe('le défaut reste inchangé : aucune des options, aucune clé de plus', () => {
   const base = m.proposeVoies(R21C, { citrus: 1 }, { assemblages: true, leviersLevure: true });
   it('sans option, la réponse ne porte ni palier, ni dose, ni stock à part', () => {
-    const json = JSON.stringify(base);
+    // D120 (t2) : chaque voie porte sa typicité (défaut), objet qui a un champ `palier` à lui (3, 2, 1 ou null : celui du style, pas celui du dry hop) : on la met de côté pour chercher le palier du dry hop.
+    const json = JSON.stringify(base, (k, v) => (k === 'typicite' ? undefined : v));
     for (const cle of ['"palier":', '"palier60"', '"dryHop"', '"dose":', '"enStock"', '"drapeaux"']) expect(json).not.toContain(cle);
   });
   it('options absentes, undefined ou fausses : même résultat, à l\'octet près', () => {

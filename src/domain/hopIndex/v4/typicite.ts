@@ -12,7 +12,7 @@ const abonnes: (() => void)[] = [];
 /** La table si elle est arrivée, sinon null : sans elle la typicité est inconnue pour tous (neutre). */
 export const typiciteChargee = (): TableTypicite | null => table;
 /** Pose la table (tests, scripts, chargement) et prévient les abonnés. `null` l'oublie. */
-export function poserTypicite(t: TableTypicite | null): void { table = t; if (t) for (const f of abonnes.splice(0)) { try { f(); } catch (e) { console.error('typicité : un abonné a échoué', e); } } }
+export function poserTypicite(t: TableTypicite | null): void { table = t; enregistrerTypicite(MOTEUR); if (t) for (const f of abonnes.splice(0)) { try { f(); } catch (e) { console.error('typicité : un abonné a échoué', e); } } }
 /** Appelle `f` une fois à l'arrivée de la table (tout de suite si elle est là) ; rend le désabonnement. */
 export function siTypiciteArrive(f: () => void): () => void {
   if (table) { f(); return () => {}; }
@@ -68,4 +68,5 @@ export function typiciteDeVoie(positifs: { varietyId: string; poids: number }[],
   return { palier: palier as Typicite['palier'], part, origine: 'style', code: styleCode, concentration: null, auPlus: null, raison: null };
 }
 
-enregistrerTypicite({ typiciteDe: (v, s) => typiciteDe(v, s), typiciteDeVoie });
+// Pas d'effet à l'évaluation du module (D120, t2) : le worker de l'app l'importe pour `poserTypicite`, et la page ne doit pas l'embarquer par un import qu'elle n'appelle pas. Le registre est posé par `poserTypicite`.
+const MOTEUR = { typiciteDe: (v: string, s: string) => typiciteDe(v, s), typiciteDeVoie, table: () => table };

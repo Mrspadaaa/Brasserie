@@ -1,6 +1,7 @@
 // Client asynchrone des calculs lourds (#165, D65 § Recommandation 2) : mêmes résultats que l'appel direct (empreintes
 // du banc scripts/bench-hop-v4.ts à ×1, fixtures), une réponse périmée est ignorée, le contrat tient pour un worker.
 import { createHash } from 'node:crypto';
+import './typicite-posee'; // D120 : la table de typicité (défaut de Suggérer) est là, comme dans l'app ; empreinte `proposer` ci-dessous
 import { describe, expect, it } from 'vitest';
 import {
   CALCULS_LOURDS, creerClient, servir, servirSurFilPrincipal, verifierCalculs,
@@ -35,7 +36,10 @@ const optionsNugget = () => ({ moment: 'b60' as const, grams: 46, recipe: recett
 //  - D106 (voie f4, 3) : remplacants e6b71ac8e04d → 5c602de7c804 (à 60′, un houblon d'usage « arôme » de Beer Maverick recule avec sa raison écrite, comme Suggérer le lit) et substitutes c6399d7b6596 → 289ca4efaed4 ; proposer et suggerer ne bougent pas.
 //  - remplacants 32e2ef725fec → e6b71ac8e04d et substitutes cac6de6d0c72 → c6399d7b6596 (C, J1 : à 60′ l'α passe de 0,4 à 0,15 dans l'amertume ; β 0,25, cohumulone 0,3, usage 0,3)).
 // D118 (voie f8, 27.10) : suggerer af7f2ecc1069 → 45120c1bc857 (D190 : Citra cryo reprend la composition d'huile de Citra, donc son effet simulé sur la famille visée n'est plus 0 ; il se classe parmi les houblons du stock). proposer 3b946ac8a4ff → 3c7fcd571305. Le départage par intensité (k3k1) est le défaut : chaque voie porte sa clé (champ departage) et, à distance égale, les ajouts d'arôme se rangent par le radar Beer Maverick de la famille visée (S1, plus floral : Loral, Pekko, Barbe Rouge, Pacifica devant East Kent Goldings). substitutes, suggerer et remplacants ne bougent pas.
-const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: '45120c1bc857', proposer: '3c7fcd571305', remplacants: '5c602de7c804' };
+// D120 (voie t2-typicite-defaut, 27.10) : proposer 3c7fcd571305 → 3a04edf5a1af. La typicité du style (Beer Analytics) est le défaut : chaque voie porte son champ `typicite`, la clé de départage est k3k1t
+// (typicité entre la famille citée et le radar), et les 4 achats de S1 (plus floral, moins résineux) passent de Loral, Pekko, Barbe Rouge, Pacifica à East Kent Goldings, First Gold, Pekko, Barbe Rouge
+// (acquis D105 : Goldings devant Citra cryo). Table posée (typicite-posee.ts), comme dans l'app. Sans la table, l'ordre est celui de k3k1 (f9Typicite.test.ts). Les trois autres empreintes ne bougent pas.
+const EMPREINTES = { substitutes: '289ca4efaed4', suggerer: '45120c1bc857', proposer: '3a04edf5a1af', remplacants: '5c602de7c804' };
 const forme = {
   substitutes: (sr: ReturnType<typeof CALCULS.substitutes>) => empreinte(sr.remplacants.map((r) => [r.key, r.rank, r.score, r.dose, r.stock, r.raison, r.amertumeDeconseillee])),
   suggerer: (c: ReturnType<typeof CALCULS.suggerer>) => empreinte(c.map((x) => [x.cle, x.visee, x.besoin])),

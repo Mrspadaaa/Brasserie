@@ -78,9 +78,11 @@ describe('D191 (22A, groupes du vrai dry hop, actif)', () => {
   }, 120_000);
   it('la clé est dans chaque voie, avec ses origines, et le rang est un ordre total', () => {
     const v = agrumes.vs[0];
-    expect(v.departage?.mode).toBe('k3k1');
-    expect(v.departage!.cle).toHaveLength(ETAPES.k3k1.length);
-    expect(v.departage!.origine[1]).toMatch(/radar/);
+    // D120 (t2) : le défaut est k3k1t (la typicité du style entre la famille citée et le radar) ; la table n'est pas posée dans ce fichier, la typicité y est inconnue (null), le radar vient en 3e.
+    expect(v.departage?.mode).toBe('k3k1t');
+    expect(v.departage!.cle).toHaveLength(ETAPES.k3k1t.length);
+    expect(v.departage!.cle[1]).toBeNull();
+    expect(v.departage!.origine[2]).toMatch(/radar/);
     for (let i = 1; i < agrumes.vs.length; i++) expect(compareRankKeys(agrumes.vs[i - 1], agrumes.vs[i])).toBeLessThanOrEqual(0);
   });
 });

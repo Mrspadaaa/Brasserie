@@ -25,9 +25,11 @@ import { typiciteDeVoie, type Typicite } from './typicite-acces';
 
 /** D105 (B1) : le nombre de houblons « à acheter » que les listes principales classent (ajouter, remplacer), pris dans l'ordre de qualité du pool. Mesuré : voir RESULTAT.md de f2. */
 export const POOL_BORNE = 80;
-/** f9 : les deux mécanismes sont des options ; leur défaut est fixé par la mesure de D191 (voir RESULTAT.md de f9). */
+/** f9 : les deux mécanismes sont des options. D120 (t2) : la typicité du style seule est le défaut (elle ramène East Kent Goldings en tête du stout S1, acquis D105, et ne pousse pas
+ * Citra cryo, D174) ; A3 (intensité) reste une option éteinte, car avec la typicité il remonte Citra cryo. Réversible : `typicite: false`. Tant que la table n'est pas chargée
+ * (`chargerTypicite`, typicite-acces.ts), la typicité de chaque houblon est inconnue et le rang est celui de k3k1. */
 export const INTENSITE_DEFAUT = false;
-export const TYPICITE_DEFAUT = false;
+export const TYPICITE_DEFAUT = true;
 
 /** Direction relative à la recette : nombre de crans par famille (+1 « plus floral », −1 « moins résineux »). */
 export type Direction = Partial<Record<FamilyId, number>>;

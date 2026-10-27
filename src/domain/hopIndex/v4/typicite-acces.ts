@@ -33,10 +33,14 @@ export interface Typicite {
 export interface MoteurTypicite {
   typiciteDe(varietyId: string, styleCode: string): Typicite;
   typiciteDeVoie(positifs: { varietyId: string; poids: number }[], styleCode: string): Typicite | null;
+  /** La table posée (null : aucune). */
+  table(): TableTypicite | null;
 }
 let impl: MoteurTypicite | null = null;
-/** Enregistre le code de la typicité (typicite.ts le fait en s'évaluant). */
+/** Enregistre le code de la typicité (typicite.ts le fait à chaque `poserTypicite`, jamais à son évaluation : ainsi un module qui l'importe sans l'appeler ne l'embarque pas, D120). */
 export const enregistrerTypicite = (m: MoteurTypicite | null): void => { impl = m; };
+/** La table de typicité si elle est posée, sinon null (D120, t2) : la page l'envoie au worker, qui ne la charge pas lui-même (ordre des messages : la table arrive avant les requêtes qui la lisent). */
+export const tableTypicitePosee = (): TableTypicite | null => (impl ? impl.table() : null);
 const NON_CHARGEE: Typicite = { palier: null, part: null, origine: null, code: null, concentration: null, auPlus: null, raison: 'table de typicité non chargée' };
 export const typiciteDe = (varietyId: string, styleCode: string): Typicite => (impl ? impl.typiciteDe(varietyId, styleCode) : NON_CHARGEE);
 export const typiciteDeVoie = (positifs: { varietyId: string; poids: number }[], styleCode: string): Typicite | null => (positifs.length ? (impl ? impl.typiciteDeVoie(positifs, styleCode) : NON_CHARGEE) : null);

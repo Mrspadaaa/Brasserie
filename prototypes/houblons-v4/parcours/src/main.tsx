@@ -14,6 +14,7 @@ import { MOMENTS } from '../../../../src/domain/hopIndex/v4';
 import { classeEbullition } from './etat/quand';
 import { H } from './donnees/cas';
 import { configurerDonnees } from './moteur';
+import { lancerTypicite } from './moteur/donnees';
 
 /** Cas d'essai du rail (pages cas-ebu45.html, cas-ebu120.html ; cas-ebu200.html pour l'étape) : la même recette, ébullition de n minutes ; un
  * ajout d'ébullition plus long que l'ébullition passe à son début. */
@@ -45,6 +46,9 @@ const cas = document.body.dataset.cas;
 // D40 bis : sa page cas-k2 est une bière sans houblon et sans dégustation (« 1 au style · 11 non situées ») : la dégustation
 // du 18.10 appartient à la bière brassée avec Nugget.
 if (cas === 'k2') configurerDonnees({ degustation: null });
+// D120 (t2) : la typicité du style est le défaut de Suggérer ; la maquette n'a pas l'étape de l'app (EtapeHoublons, qui lance le chargement) : elle charge la table ici, avant tout geste.
+// Une seule ligne, hors des fichiers de la voie : sans elle les états « East Kent Goldings en tête du stout » (picto-épice, gr5-cran) ne peuvent pas repasser.
+void lancerTypicite();
 const depart0 = etatDeDepart(depart);
 const racine = document.getElementById('parcours')!;
 createRoot(racine).render(

@@ -1,4 +1,5 @@
 import './temoin'; // témoin négatif de check:engine (B3)
+import './typicite-posee'; // D120 : la table de typicité (défaut de Suggérer) est là, comme dans l'app
 import { describe, expect, it } from 'vitest';
 import {
   FAMILIES, additionIbu, applyVoie, compareRankKeys, gramsForIbu, hopProfile, hopRef, matrixContext, proposeVoies, recipeIbu, recipeProfile, styleFit, getStyleScale, yeastInfo, STOCK, CATALOGUE,
@@ -64,9 +65,9 @@ describe('Moteur v4 sur le moteur V5.5 importé', () => {
   });
 
   it('reste au style : en S1, une voie Goldings ou Celeia passe devant Citra cryo, et un débordement est exposé en crans', () => {
-    // D118 : cet acquis (D105) se lit sur l'ordre d'avant, 'aucun'. Avec le départage par intensité (défaut), les houblons au radar floral de 4 (Loral, Pekko, Barbe Rouge, Pacifica) prennent
-    // les 4 places d'achat devant East Kent Goldings (floral 1) et Celeia (floral 2) : voir f8-s1.ts et RESULTAT.md de f8.
-    const s1 = proposeVoies(s1Recipe(), { floral: 1, resin: -1 }, { departage: 'aucun' });
+    // D118 (f8) masquait cet acquis (D105) par `departage: 'aucun'` : avec le départage par le radar seul, Loral, Pekko, Barbe Rouge et Pacifica (floral 4) prenaient les 4 places d'achat devant East Kent
+    // Goldings (floral 1) et Celeia (floral 2). D120 (t2) : la typicité du style est le défaut, East Kent Goldings (36 % des recettes de Irish Stout) repasse en tête, sans masque (f8-s1.ts, f9-s1.ts).
+    const s1 = proposeVoies(s1Recipe(), { floral: 1, resin: -1 });
     const best = (pred: (k: string) => boolean) => Math.min(...s1.voies.filter((v) => v.actions.some((a) => pred(a.hopKey))).map((v) => v.rank));
     const goldings = best((k) => /golding|celeia/.test(k));
     const citra = best((k) => k === 'beermaverick-citra:cryo');
