@@ -161,7 +161,9 @@ for (const s of absolu.series) {
 // jusqu'à son dernier moment, et on lit chaque radar.
 await page.evaluate(() => window.__hopPile.close());
 await dormir(800);
-await page.evaluate(async () => { const m = await import('/src/ui/hopIndex/parcours/visee.ts'); m.poserVisee({ citrus: 2.5, tropical: 2.5 }); });
+// « plus floral » : des voies à chaud (10′), qui ont un moment à jouer. Avec a4 (D127), « plus d'agrumes et de tropicaux » sur cette stout
+// ne rend que des dry hop « après 3 j », sans sélecteur de moment (vue-radar : seulement les voies à chaud).
+await page.evaluate(async () => { const m = await import('/src/ui/hopIndex/parcours/visee.ts'); m.poserVisee({ floral: 2.5 }); });
 await page.evaluate(() => window.__hopPile.open({ view: 'hopSuggest' }));
 await page.waitForSelector('[data-ecran="suggerer"] [role="radio"]', { timeout: 90000 });
 await dormir(1500);
@@ -169,7 +171,9 @@ const SEL_S = '[data-ecran="suggerer"] svg[data-radar="base"][data-objet="sugger
 await page.evaluate(() => { [...document.querySelectorAll('[data-ecran="suggerer"] [role="radio"]')].find((b) => /^Radar$/.test(b.textContent.trim()))?.click(); });
 await page.waitForSelector(SEL_S, { timeout: 60000 });
 await dormir(1200);
-const VOIE1 = '[data-ecran="suggerer"] [data-voie-radar]';
+// La première voie QUI A un moment à jouer (« ‹ 10′ › ») : depuis a4 (D127), la tête de la stout du contrôle peut être un dry hop
+// « après 3 j » sans sélecteur de moment ; l'ordre des données ne doit pas éteindre le contrôle.
+const VOIE1 = '[data-ecran="suggerer"] [data-voie-radar]:has([data-role="quand"])';
 const quandVoie = () => page.evaluate((s) => document.querySelector(`${s} [data-role="quand"]`)?.textContent ?? null, VOIE1);
 /** Un pas de moment sur la première voie ; rend false quand le bouton est grisé (bout du décalage). */
 async function pas(sens) {
