@@ -1118,3 +1118,12 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   252 fichiers ; la page servie est `index-Bo4IBqOf.js`. La fonction IA n'est pas redéployée. La PR #192 est fusionnée (39236699).
   Le contrôle `controle-radar-echelles` est adapté : il prend une voie à chaud et pose « plus floral », car depuis a4 la stout du contrôle ne
   rend que des dry hop. Son témoin, 6906a3f4, échoue en 3 points.
+- D129 (pilote, 27.10, voie ia4) : l'IA de Suggérer **reste éteinte**. Sa règle de décision, écrite avant le banc, n'est pas tenue.
+  - **Le banc.** 30 cas qu'il n'a jamais nommés ; la référence indépendante (Hopsteiner et YCH) est figée avant tout appel. L'IA ne gagne
+    que +5 points en moyenne, pour +10 demandés, et son pire cas est à −25.
+  - **La cause.** Depuis a4, les 4 premières rangées du moteur sont déjà confirmées par la référence dans 18 cas sur 30 : l'IA n'y a presque
+    rien à corriger. Sur sa neipa v3, elle rend exactement l'ordre du moteur.
+  - **Le code gardé.** L'IA ne reclasse que les ex æquo (pool de 3 à 12, fixé par une règle de latence). Sa phrase s'appuie sur la fiche
+    (`suggerer-v2`, « Réputation : »). Ni `suggerer-v2` ni la fonction ne sont déployés.
+  - **Le coût réel.** ia3 et ia4 : 44 appels pour 0,137 CHF, sur les 0,5 CHF accordés en D100.
+  - **Pour la rallumer**, il faudra un banc sur une référence qui discrimine (floral, 10′, BarthHaas, Crosby), et seulement s'il le veut.

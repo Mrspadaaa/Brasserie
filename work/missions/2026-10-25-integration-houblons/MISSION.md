@@ -439,3 +439,10 @@ documentaires d'après.
   Quota hebdomadaire : 97 %.
 - 27.10, vers 15 h : **déployé** (3195332e ; hébergement seul, IA de Suggérer éteinte) et **PR #192 fusionnée** (39236699 ; D128). Reste : ia4 (l'IA sur les seuls ex æquo, une phrase fondée sur la fiche, un banc à l'aveugle), à lancer seulement sous 98 % du quota hebdomadaire.
 - 27.10, vers 15 h 15 : **ia4 en vol** (auteur). L'IA ne reclasse que les ex æquo ; phrase fondée sur la fiche (« Réputation : ») ; banc à l'aveugle sur 16 cas au moins qu'il n'a jamais nommés, avec une règle de décision écrite d'avance ; 0,4 CHF au plus. Quota hebdomadaire 97 % au lancement : **c'est la dernière voie avant 98 %**. Après elle : plus d'agent ; arrêt propre à 99 % (reprise, commit, push).
+- 27.10, vers 16 h : **ia4 commitée** (0dd14586 ; D129). Banc à l'aveugle : +5 points, règle non tenue, l'IA de Suggérer reste éteinte. Plus d'agent : le quota hebdomadaire est à 97–98 %. Ouvert, à la remise à zéro du quota (31.10) ou à sa demande :
+  - mettre le lot ia4 dans main (rejeu, puis PR ; rien de visible ne change) ;
+  - D172, D178, D182, D185, #182, #187 ;
+  - les accords D100 restants : l'écriture du catalogue Firestore, le test dans son Chrome ;
+  - la voie de profil D101 ;
+  - le bouton d'ajout direct à la recette (D188, mini maquettes) ;
+  - les 4 rangées de Suggérer.
