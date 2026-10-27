@@ -432,3 +432,8 @@ documentaires d'après.
   - le déploiement de l'hébergement et de `functions:hopReclasserIA` (accord : « implemtation avec l'ai » dans « la vrai app ») ;
   - la PR.
   Quota hebdomadaire : 96 % au lancement.
+- 27.10, vers 14 h : **a4 commitée** (b62af2b1 ; D127) ; la carte lit le même statut ; l'IA de Suggérer est éteinte (478355b6). Le brasseur, sur la capture d'ia3 : « Ça semble overfit mes paramètres et de loins... » (D192, D126 : pas de déploiement de l'IA). **Rejeu de 478355b6** lancé (Haiku, `%TEMP%/rejeu-4783/`). S'il est vert : déploiement de l'hébergement seul, puis PR et fusion. Ensuite, ia4 si le quota le permet (moins de 98 %) :
+  - l'IA ne reclasse que les ex æquo ;
+  - une phrase fondée sur la fiche ;
+  - un banc à l'aveugle sur des cas qu'il n'a jamais nommés.
+  Quota hebdomadaire : 97 %.

@@ -1098,3 +1098,19 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
     elle y bat le moteur.
 
   a4 a été prévenue de ne rien régler sur ses six.
+- D127 (pilote, 27.10, voie a4) : a4 est acceptée, et ses trois règles deviennent le défaut ; elles restent réversibles.
+  1. Le débordement d'une famille neutre ne compte plus dans le rang.
+  2. La présélection passe par la typicité.
+  3. Un inconnu borné se place entre courant et rare.
+
+  Ses règles ont été écrites avant les mesures et jugées sur 124 cas qu'il n'a jamais nommés. Le meilleur phare est dans les 5 premiers
+  100 fois sur 124 (avant : 83), et la médiane des phares passe de 17,5 à 5. Sur ses six, lus une seule fois à la fin :
+  - El Dorado passe de 74 à 15 en agrumes, et de 71 à 7 en tropicaux ;
+  - Calypso entre dans le classement (41e, 28e) ;
+  - Mandarina recule (23e) : elle est « courante », pas inconnue.
+
+  Il y a aussi 11 reculs de plus de 20 places au dry hop, dans 8 styles. Pour « plus d'agrumes » en 25A ou en 9C, les nobles passent derrière
+  Citra, Centennial et Amarillo. C'est la même cause que pour El Dorado : c'est accepté, à lui montrer s'il le demande.
+
+  La carte de Suggérer lit désormais le même statut que le rang (`horsDuStyle`, pilote) : il n'y a plus de « Aucune voie houblon »
+  au-dessus de rangées (CARTE-LISTE OK). L'IA de Suggérer est éteinte dans l'app (`VITE_IA_SUGGERER`) jusqu'au banc à l'aveugle (ia4).
