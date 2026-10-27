@@ -1058,3 +1058,10 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   3. Avec la typicité par défaut, Citra cryo passe premier dans 2 listes sur 16 (avant : 1). C'est en 21C : « plus floral » à 10′, et au
      dry hop. C'est accepté et dit au brasseur, parce que le gain vient de la même cause : Nelson Sauvin 99 → 18 et Mosaic 41 → 12 en 21C,
      East Kent Goldings premier du stout. La forme cryo hérite de la typicité de Citra : Beer Analytics n'a pas de fiche cryo à part.
+- D122 (pilote, 27.10) : l'hébergement est redéployé au commit dcec3133. Le lot comprend r3, f8, r4, f9, c8 et t2 ; la page servie est
+  `index-DnGTzMbZ.js`, et le morceau des composés répond en 200. La PR #190 est fusionnée dans main (20b58045, `--match-head-commit`), après
+  le rejeu complet de 4aa7cd33 :
+  - 11 contrôles Chrome, avec les composés chargés à part ;
+  - ETATS 138/138 ;
+  - B5 à 147,3 ko ;
+  - ouverture d'un outil, médiane à chaud 467 → 453 ms.
