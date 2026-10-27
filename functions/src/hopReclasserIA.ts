@@ -39,6 +39,10 @@ export interface ResultatReclassement {
   promptVersion?: string;
   /** Mode « suggérer » : le nombre de phrases retirées parce qu'elles citaient une valeur chiffrée absente du message. */
   phrasesRetirees?: number;
+  /** Parmi les retirées : celles qui nommaient un arôme absent des mots de la fiche (ia4). */
+  phrasesHorsFiche?: number;
+  /** Les phrases gardées qui commencent par « Réputation : » (ia4). */
+  phrasesReputation?: number;
   error?: string;
   reason?: 'entree' | 'budget' | 'invalide' | 'indisponible';
 }
@@ -55,13 +59,14 @@ function adresse(): { base: string; simule: boolean } {
 const inutilisable = (response: any) => unusableGeminiOutput(response)
   ?? (response?.candidates?.[0]?.finishReason === 'STOP' ? undefined : new GeminiUnusableOutputError('truncated'));
 
-/** Délai du mode « suggérer » : 30 phrases à écrire, un peu plus que les 10 de Substituer ; au-delà, la réponse ne servirait plus à rien. */
+/** Délai du mode « suggérer » : 3 à 12 candidats et 6 phrases ; au-delà, la réponse ne servirait plus à rien. */
 export const DELAI_SUGGERER_MS = 10000;
 
 /**
  * Mode « suggérer » (voie ia3) : même callable, mêmes gardes (compte, budget mensuel et quotidien réservé avant l'envoi, modèle choisi
- * ici, une tentative, jamais un ordre inventé), invite neuve `suggerer-v1`. Rend l'ordre de TOUS les candidats donnés (10 à 30) et une
- * phrase par clé quand elle ne cite aucune valeur chiffrée absente du message (`phrasesRetirees` en dit le nombre).
+ * ici, une tentative, jamais un ordre inventé), invite neuve `suggerer-v2`. Rend l'ordre de TOUS les candidats donnés (3 à 12 : les ex æquo du moteur) et une
+ * phrase par clé quand elle ne cite aucune valeur chiffrée absente du message ni un arôme absent des mots de la fiche, sauf
+ * si elle commence par « Réputation : » (`phrasesRetirees` en dit le nombre).
  */
 async function suggerer(data: unknown, started: number, email: string): Promise<ResultatReclassement> {
   let entree;
@@ -93,8 +98,8 @@ async function suggerer(data: unknown, started: number, email: string): Promise<
     const cle = (c: string) => entree.candidats[ids.indexOf(c)].id;
     const phrases: Record<string, string> = {};
     for (const c of analyse.ordre) if (analyse.phrases[c]) phrases[cle(c)] = analyse.phrases[c];
-    logger.info('Suggérer IA rendu', { model, elapsedMs, email, candidats: ids.length, phrasesRetirees: analyse.retirees.length });
-    return { ok: true, ordre: analyse.ordre.map(cle), phrases, model, elapsedMs, promptVersion: PROMPT_VERSION_SUGGERER, phrasesRetirees: analyse.retirees.length };
+    logger.info('Suggérer IA rendu', { model, elapsedMs, email, candidats: ids.length, phrasesRetirees: analyse.retirees.length, phrasesHorsFiche: analyse.horsFiche.length, phrasesReputation: analyse.reputations.length });
+    return { ok: true, ordre: analyse.ordre.map(cle), phrases, model, elapsedMs, promptVersion: PROMPT_VERSION_SUGGERER, phrasesRetirees: analyse.retirees.length, phrasesHorsFiche: analyse.horsFiche.length, phrasesReputation: analyse.reputations.length };
   } catch (err: any) {
     const elapsedMs = Date.now() - started;
     if (err instanceof BrewerBudgetError) return { ok: false, reason: 'budget', error: err.message, elapsedMs };

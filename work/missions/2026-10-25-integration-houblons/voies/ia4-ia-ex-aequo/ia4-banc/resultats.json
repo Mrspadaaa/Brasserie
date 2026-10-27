@@ -1,0 +1,1632 @@
+{
+ "decision": {
+  "casJoues": 30,
+  "casPrevus": 30,
+  "mesurables": 30,
+  "moyenneEcartPoints": 5,
+  "piorCasPoints": -25,
+  "moyenneTousCasInvalidesA0": 5,
+  "allume": false,
+  "invalides": 0,
+  "phrasesRetirees": 0,
+  "phrasesHorsFiche": 0,
+  "phrasesReputation": 0,
+  "phrasesGardees": 180,
+  "sousEnsemblePlusDe4": {
+   "n": 30,
+   "moyennePoints": 5
+  },
+  "msMediane": 1618,
+  "totalChf": 0.070997
+ },
+ "rows": [
+  {
+   "id": "15B|citrus|dryActive",
+   "style": "15B",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1748,
+   "tokens": [
+    2849,
+    400
+   ],
+   "chfMicro": 2319,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "target",
+     "east-kent-goldings",
+     "columbus",
+     "sabro"
+    ],
+    "ia": [
+     "citra",
+     "galaxy",
+     "mandarina-bavaria",
+     "lemondrop"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-citra": "Ce houblon présente des mots d'agrumes, de pamplemousse et de citron vert adaptés au dry hop.",
+    "beermaverick-galaxy": "Ses mots incluent agrumes et fruits tropicaux pour accentuer le profil aromatique recherché.",
+    "beermaverick-mandarina-bavaria": "Il apporte des notes de mandarine, citron et agrumes avec une classe thiol forte.",
+    "beermaverick-lemondrop": "La fiche mentionne agrumes et citron pour enrichir le brassin en dry hop.",
+    "beermaverick-sabro": "Ses mots contiennent agrumes, mandarine et fruits tropicaux pour un usage aromatique.",
+    "beermaverick-east-kent-goldings": "Il offre des mots de citron, orange et pamplemousse adaptés à la demande."
+   }
+  },
+  {
+   "id": "15B|floral|b10",
+   "style": "15B",
+   "demande": "plus floral",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1654,
+   "tokens": [
+    2788,
+    396
+   ],
+   "chfMicro": 2283,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 3,
+    "part": 0.75
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 2,
+    "part": 0.5
+   },
+   "mesurable": true,
+   "ecart": -0.25,
+   "tete": {
+    "moteur": [
+     "target",
+     "willamette",
+     "nugget",
+     "east-kent-goldings"
+    ],
+    "ia": [
+     "east-kent-goldings",
+     "willamette",
+     "columbus",
+     "cluster"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-east-kent-goldings": "Ce candidat mentionne le mot floral ainsi que lavande et citron pour répondre à la demande.",
+    "beermaverick-willamette": "La fiche indique explicitement le mot floral parmi ses descripteurs aromatiques pour cette addition.",
+    "beermaverick-columbus": "Le profil aromatique contient le mot floral et des huiles importantes pour un usage à dix minutes.",
+    "beermaverick-cluster": "Ses mots incluent floral pour orienter directement le profil de la bière selon la demande.",
+    "beermaverick-ahtanum": "La mention du mot floral dans les descripteurs soutient l'objectif recherché par le brasseur.",
+    "beermaverick-northdown": "Il intègre le mot floral dans sa fiche descriptive pour guider le choix du brassin."
+   }
+  },
+  {
+   "id": "15C|floral|dryActive",
+   "style": "15C",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1666,
+   "tokens": [
+    2772,
+    366
+   ],
+   "chfMicro": 2184,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 2,
+    "part": 0.5
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 2,
+    "part": 0.5
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "target",
+     "willamette",
+     "east-kent-goldings",
+     "columbus"
+    ],
+    "ia": [
+     "east-kent-goldings",
+     "willamette",
+     "cluster",
+     "motueka"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-east-kent-goldings": "Ce candidat apporte lavande et floral avec un taux élevé de linalol.",
+    "beermaverick-willamette": "Ses mots incluent floral et sureau pour rehausser le profil demandé.",
+    "beermaverick-cluster": "La fiche mentionne directement floral dans ses mots descripteurs.",
+    "beermaverick-motueka": "Il propose floral ainsi que mojito et des notes d'agrumes.",
+    "beermaverick-ahtanum": "Le mot floral est présent aux côtés du pin et des agrumes.",
+    "beermaverick-liberty": "Ses mots affichent floral et delicate avec une base herbacée."
+   }
+  },
+  {
+   "id": "16A|floral|dryActive",
+   "style": "16A",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1539,
+   "tokens": [
+    2767,
+    368
+   ],
+   "chfMicro": 2188,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 3,
+    "part": 0.75
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 2,
+    "part": 0.5
+   },
+   "mesurable": true,
+   "ecart": -0.25,
+   "tete": {
+    "moteur": [
+     "columbus",
+     "target",
+     "mount-hood",
+     "spalter-select"
+    ],
+    "ia": [
+     "golding",
+     "tettnanger",
+     "citra",
+     "lemondrop"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-golding": "Ce houblon présente les mots floral et doux, adaptés au dry hop recherché.",
+    "beermaverick-tettnanger": "La fiche mentionne explicitement l'arôme floral et épicé pour ce cultivar.",
+    "beermaverick-citra": "Les mots de la fiche incluent floral, agrumes et fruits.",
+    "beermaverick-lemondrop": "Le profil contient les termes floral et citron pour le dry hop.",
+    "beermaverick-columbus": "La description textuelle intègre les mots floral et épicé.",
+    "beermaverick-mosaic": "Les mots floraux et fleurs apparaissent clairement dans la fiche."
+   }
+  },
+  {
+   "id": "16B|citrus|b10",
+   "style": "16B",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1772,
+   "tokens": [
+    2844,
+    409
+   ],
+   "chfMicro": 2345,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "willamette",
+     "east-kent-goldings",
+     "columbus",
+     "nugget"
+    ],
+    "ia": [
+     "motueka",
+     "summit",
+     "east-kent-goldings",
+     "target"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-motueka": "Ce candidat apporte des agrumes, du citron vert et du citron avec un taux de farnésène élevé.",
+    "beermaverick-summit": "Il présente des notes d'orange, de pamplemousse, de mandarine et d'agrumes avec une classe thiol forte.",
+    "beermaverick-east-kent-goldings": "Sa fiche mentionne citron, orange et pamplemousse ainsi qu'un taux de linalol appréciable.",
+    "beermaverick-target": "Il propose des mots comme agrumes et marmelade pour renforcer la demande du brasseur.",
+    "beermaverick-columbus": "Il affiche le mot agrumes et une huile totale élevée pour l'ébullition.",
+    "beermaverick-sabro": "Il contient les mots agrumes, mandarine et une huile totale importante."
+   }
+  },
+  {
+   "id": "16C|citrus|b10",
+   "style": "16C",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1922,
+   "tokens": [
+    2865,
+    391
+   ],
+   "chfMicro": 2297,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "willamette",
+     "east-kent-goldings",
+     "columbus",
+     "nugget"
+    ],
+    "ia": [
+     "ekuanot",
+     "motueka",
+     "sabro",
+     "summit"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-ekuanot": "Ekuanot apporte citron, citron vert, orange et agrumes avec une forte teneur en huile totale.",
+    "beermaverick-motueka": "Motueka présente des mots d'agrumes, citron et citron vert adaptés à la demande.",
+    "beermaverick-sabro": "Sabro contient agrumes et mandarine avec des huiles totales élevées.",
+    "beermaverick-summit": "Summit affiche orange, pamplemousse, mandarine et agrumes avec un fort taux d'acides alpha.",
+    "beermaverick-east-kent-goldings": "East Kent Goldings intègre citron, orange et pamplemousse.",
+    "beermaverick-target": "Target possède les mots agrumes et marmelade."
+   }
+  },
+  {
+   "id": "20B|citrus|dryActive",
+   "style": "20B",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1589,
+   "tokens": [
+    2851,
+    397
+   ],
+   "chfMicro": 2310,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "willamette",
+     "east-kent-goldings",
+     "columbus",
+     "nugget"
+    ],
+    "ia": [
+     "motueka",
+     "east-kent-goldings",
+     "summit",
+     "sabro"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-motueka": "Ce candidat apporte des notes d'agrumes, citron et citron vert adaptées au dry hop.",
+    "beermaverick-east-kent-goldings": "Ses mots incluent citron, orange et pamplemousse pour rehausser le profil agrumes.",
+    "beermaverick-summit": "Il propose orange, pamplemousse, mandarine et agrumes avec une classe thiol forte.",
+    "beermaverick-sabro": "Il contient des mots comme agrumes et mandarine soutenus par une huile totale élevée.",
+    "beermaverick-galena": "Il affiche pamplemousse et citron vert pour accentuer la demande en agrumes.",
+    "beermaverick-target": "Ses mots portent sur les agrumes et la marmelade pour compléter la recette."
+   }
+  },
+  {
+   "id": "20C|citrus|dryActive",
+   "style": "20C",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1598,
+   "tokens": [
+    2851,
+    391
+   ],
+   "chfMicro": 2291,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "warrior",
+     "willamette",
+     "east-kent-goldings",
+     "columbus"
+    ],
+    "ia": [
+     "motueka",
+     "sabro",
+     "summit",
+     "east-kent-goldings"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-motueka": "Motueka apporte agrumes et citron vert avec un usage dual adapté au dry hop.",
+    "beermaverick-sabro": "Sabro présente agrumes et mandarine, parfait pour pousser cet arôme en fermentation active.",
+    "beermaverick-summit": "Summit affiche agrumes, orange et pamplemousse avec une classe thiol forte.",
+    "beermaverick-east-kent-goldings": "East Kent Goldings contient citron, orange et pamplemousse malgré son usage bittering.",
+    "beermaverick-columbus": "Columbus propose des notes d'agrumes et un taux d'huile totale élevé.",
+    "beermaverick-galena": "Galena intègre pamplemousse et citron vert pour enrichir la palette aromatique."
+   }
+  },
+  {
+   "id": "20C|floral|b10",
+   "style": "20C",
+   "demande": "plus floral",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1663,
+   "tokens": [
+    2789,
+    385
+   ],
+   "chfMicro": 2249,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 2,
+    "part": 0.5
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 2,
+    "part": 0.5
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "willamette",
+     "nugget",
+     "east-kent-goldings",
+     "columbus"
+    ],
+    "ia": [
+     "willamette",
+     "east-kent-goldings",
+     "columbus",
+     "horizon"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-willamette": "Ce candidat mentionne le mot floral et contient du myrcène ainsi que du linalol.",
+    "beermaverick-east-kent-goldings": "La fiche indique le mot floral avec du myrcène et un taux de linalol.",
+    "beermaverick-columbus": "Il porte le mot floral dans sa description et possède des huiles de myrcène.",
+    "beermaverick-horizon": "Ses mots incluent floral ainsi que des teneurs en myrcène et linalol.",
+    "beermaverick-cluster": "On trouve le terme floral associé à du myrcène et du linalol.",
+    "beermaverick-motueka": "Il présente le mot floral avec du myrcène et du linalol dans ses huiles."
+   }
+  },
+  {
+   "id": "20A|floral|b10",
+   "style": "20A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1470,
+   "tokens": [
+    2768,
+    358
+   ],
+   "chfMicro": 2157,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "willamette",
+     "nugget",
+     "glacier",
+     "strisselspalt"
+    ],
+    "ia": [
+     "willamette",
+     "strisselspalt",
+     "saphir",
+     "amarillo"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-willamette": "Ce houblon présente le mot floral dans sa fiche et convient à la demande.",
+    "beermaverick-strisselspalt": "La fiche mentionne le mot floral et un usage aroma adapté.",
+    "beermaverick-saphir": "Il porte le mot floral parmi ses descripteurs aromatiques.",
+    "beermaverick-amarillo": "Le mot floral est explicitement présent dans les mots de la fiche.",
+    "beermaverick-citra": "La fiche intègre le mot floral avec des huiles adaptées.",
+    "beermaverick-lemondrop": "Il affiche le mot floral dans ses caractéristiques."
+   }
+  },
+  {
+   "id": "13C|floral|dryActive",
+   "style": "13C",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1404,
+   "tokens": [
+    2753,
+    356
+   ],
+   "chfMicro": 2145,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 3,
+    "part": 0.75
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0.25,
+   "tete": {
+    "moteur": [
+     "willamette",
+     "fuggle",
+     "first-gold",
+     "ahtanum"
+    ],
+    "ia": [
+     "willamette",
+     "first-gold",
+     "ahtanum",
+     "strisselspalt"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-willamette": "Ce candidat contient le mot floral et présente du linalol.",
+    "beermaverick-first-gold": "La fiche mentionne explicitement le mot floral parmi ses descripteurs.",
+    "beermaverick-ahtanum": "Il intègre le mot floral dans sa description aromatique.",
+    "beermaverick-strisselspalt": "Le mot floral est présent dans la liste des descripteurs.",
+    "beermaverick-liberty": "La fiche comporte le mot floral ainsi que des notes herbacées.",
+    "beermaverick-saphir": "Il affiche le mot floral et un taux de linalol mesuré."
+   }
+  },
+  {
+   "id": "9C|floral|dryActive",
+   "style": "9C",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1630,
+   "tokens": [
+    2754,
+    393
+   ],
+   "chfMicro": 2261,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "ahtanum",
+     "target",
+     "mount-hood",
+     "saphir"
+    ],
+    "ia": [
+     "ahtanum",
+     "saphir",
+     "centennial",
+     "cascade"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-ahtanum": "Ce houblon présente les mots floral et géranium, adaptés à la demande de ce style.",
+    "beermaverick-saphir": "Ses mots incluent floral, ainsi que des notes fruitées et mandarine pour le dry hop.",
+    "beermaverick-centennial": "Sa fiche mentionne le mot floral avec un taux élevé de myrcène et du linalol.",
+    "beermaverick-cascade": "Il porte le mot floral et une classe thiol forte favorable à la fermentation active.",
+    "beermaverick-mosaic": "Ses mots intègrent rose et fleurs, complétés par des huiles adaptées au dry hop.",
+    "beermaverick-cluster": "Sa fiche affiche le mot floral au premier plan pour orienter l'arôme."
+   }
+  },
+  {
+   "id": "1A|citrus|b10",
+   "style": "1A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1832,
+   "tokens": [
+    2766,
+    418
+   ],
+   "chfMicro": 2344,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 2,
+    "part": 0.5
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0.5,
+   "tete": {
+    "moteur": [
+     "sorachi-ace",
+     "kazbek",
+     "liberty",
+     "mount-hood"
+    ],
+    "ia": [
+     "citra",
+     "mandarina-bavaria",
+     "motueka",
+     "centennial"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-citra": "Ce candidat présente des mots axés sur les agrumes, le citron vert, et un fort myrcène.",
+    "beermaverick-mandarina-bavaria": "Ses mots incluent mandarine, citron et agrumes avec un thiol de classe forte.",
+    "beermaverick-motueka": "La fiche mentionne agrumes, citron vert et citron avec une bonne proportion de myrcène.",
+    "beermaverick-centennial": "Il affiche pin, agrumes, pamplemousse et mandarine dans ses mots, ainsi qu'un fort myrcène.",
+    "beermaverick-amarillo": "Il porte les mots agrumes, orange, citron, pamplemousse et un taux élevé de myrcène.",
+    "beermaverick-cascade": "Ses mots contiennent pamplemousse et agrumes, soutenus par une forte teneur en myrcène."
+   }
+  },
+  {
+   "id": "3A|citrus|b10",
+   "style": "3A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1618,
+   "tokens": [
+    2767,
+    422
+   ],
+   "chfMicro": 2357,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "sterling",
+     "sladek",
+     "premiant",
+     "citra"
+    ],
+    "ia": [
+     "citra",
+     "centennial",
+     "amarillo",
+     "mandarina-bavaria"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-citra": "Ses mots contiennent agrumes, pamplemousse et citron vert, parfaits pour l'arôme visé à dix minutes.",
+    "beermaverick-centennial": "Ses mots incluent agrumes, pamplemousse et mandarine, répondant directement à la demande du brasseur.",
+    "beermaverick-amarillo": "Sa fiche mentionne agrumes, orange, citron et pamplemousse, ce qui soutient l'arôme recherché.",
+    "beermaverick-mandarina-bavaria": "Il porte les mots mandarine, citron et agrumes, avec une classe thiol forte.",
+    "beermaverick-simcoe": "Les mots pamplemousse et agrumes de sa fiche conviennent pour cette ébullition.",
+    "beermaverick-cascade": "Sa fiche affiche pamplemousse et agrumes pour orienter le brassin vers le profil demandé."
+   }
+  },
+  {
+   "id": "3B|citrus|dryActive",
+   "style": "3B",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1442,
+   "tokens": [
+    2774,
+    407
+   ],
+   "chfMicro": 2313,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "sladek",
+     "premiant",
+     "citra",
+     "centennial"
+    ],
+    "ia": [
+     "citra",
+     "centennial",
+     "amarillo",
+     "mandarina-bavaria"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-citra": "Ses mots portent explicitement les agrumes et le pamplemousse pour répondre directement à la demande.",
+    "beermaverick-centennial": "Il présente les mots agrumes et pamplemousse avec un linalol mesuré et une classe thiol moyenne.",
+    "beermaverick-amarillo": "Ses mots incluent agrumes, orange et citron, adaptés à la recherche d'agrumes en dry hop.",
+    "beermaverick-mandarina-bavaria": "Il affiche les mots mandarine, citron et agrumes avec une classe thiol forte.",
+    "beermaverick-simcoe": "Ses mots contiennent pamplemousse et agrumes pour renforcer le profil recherché pendant la fermentation.",
+    "beermaverick-galaxy": "Il mentionne les agrumes dans ses mots avec une huile totale élevée pour le dry hop."
+   }
+  },
+  {
+   "id": "4A|citrus|dryActive",
+   "style": "4A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1431,
+   "tokens": [
+    2804,
+    411
+   ],
+   "chfMicro": 2336,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "hersbrucker",
+     "citra",
+     "mandarina-bavaria",
+     "simcoe"
+    ],
+    "ia": [
+     "citra",
+     "azacca",
+     "mandarina-bavaria",
+     "lemondrop"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-citra": "Citra porte explicitement les mots agrumes, pamplemousse et citron vert, idéaux pour le dry hop.",
+    "beermaverick-azacca": "Azacca mentionne orange, pamplemousse, citron et agrumes avec un taux d'huile totale élevé.",
+    "beermaverick-mandarina-bavaria": "Mandarina Bavaria affiche mandarine, citron et agrumes ainsi qu'une classe thiol forte.",
+    "beermaverick-lemondrop": "Lemondrop intègre agrumes et citron avec du linalol et des huiles adaptées au moment.",
+    "beermaverick-mosaic": "Mosaic cite agrumes et mandarine pour renforcer le profil aromatique recherché.",
+    "beermaverick-summit": "Summit contient orange, pamplemousse, mandarine et agrumes avec une classe thiol forte."
+   }
+  },
+  {
+   "id": "4A|floral|b10",
+   "style": "4A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1558,
+   "tokens": [
+    2726,
+    405
+   ],
+   "chfMicro": 2288,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 3,
+    "part": 0.75
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0.25,
+   "tete": {
+    "moteur": [
+     "hersbrucker",
+     "saphir",
+     "wakatu",
+     "ahtanum"
+    ],
+    "ia": [
+     "ahtanum",
+     "saphir",
+     "wakatu",
+     "strisselspalt"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-ahtanum": "Ce candidat mentionne explicitement le mot floral ainsi que des agrumes et du pin dans ses mots.",
+    "beermaverick-saphir": "Ses mots incluent floral et fruité avec un taux de myrcène de 25 à 40 %.",
+    "beermaverick-wakatu": "La fiche contient le mot floral accompagné de notes de citron vert et de zeste.",
+    "beermaverick-strisselspalt": "Il porte le mot floral dans ses descripteurs avec des notes épicées et agrumes.",
+    "beermaverick-liberty": "Ses mots recensent floral, noble et herbacé pour un usage bittering adapté.",
+    "beermaverick-sterling": "Il présente le mot floral ainsi qu'un taux de farnésène de 15 à 19 %."
+   }
+  },
+  {
+   "id": "5B|floral|dryActive",
+   "style": "5B",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1504,
+   "tokens": [
+    2738,
+    442
+   ],
+   "chfMicro": 2408,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 3,
+    "part": 0.75
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0.25,
+   "tete": {
+    "moteur": [
+     "tettnanger",
+     "hersbrucker",
+     "saphir",
+     "spalter-select"
+    ],
+    "ia": [
+     "tettnanger",
+     "saphir",
+     "crystal",
+     "ahtanum"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-tettnanger": "Ce candidat présente les mots épicé, floral, poivre, thé noir, avec une classe thiol faible.",
+    "beermaverick-saphir": "La fiche mentionne épicé, fruité, floral, mandarine, ainsi qu un linalol de 0,8 à 1,3 % de l huile.",
+    "beermaverick-crystal": "Ses mots incluent boisé, floral, vert, fruité, épicé, cannelle, muscade, poivre noir avec une classe thiol forte.",
+    "beermaverick-ahtanum": "Il porte les mots agrumes, pamplemousse, géranium, pin, terreux, floral, cèdre, citron.",
+    "beermaverick-strisselspalt": "On trouve dans sa fiche épicé, floral, agrumes, herbacé.",
+    "beermaverick-liberty": "Les mots indiqués sont noble, floral, herbacé, épicé, delicate, agrumes, citron."
+   }
+  },
+  {
+   "id": "5D|floral|dryActive",
+   "style": "5D",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1698,
+   "tokens": [
+    2740,
+    427
+   ],
+   "chfMicro": 2362,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 3,
+    "part": 0.75
+   },
+   "mesurable": true,
+   "ecart": -0.25,
+   "tete": {
+    "moteur": [
+     "tettnanger",
+     "saphir",
+     "spalter-select",
+     "wakatu"
+    ],
+    "ia": [
+     "tettnanger",
+     "saphir",
+     "wakatu",
+     "motueka"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-tettnanger": "Ce candidat présente les mots épicé, floral, poivre, thé noir ainsi que du farnésène et du linalol.",
+    "beermaverick-saphir": "Ses mots incluent épicé, fruité, floral, mandarine avec un taux de linalol mesuré.",
+    "beermaverick-wakatu": "Il affiche explicitement floral, citron vert, fruits tropicaux, zeste dans ses descripteurs.",
+    "beermaverick-motueka": "La fiche mentionne agrumes, mojito, citron vert, citron, fruits tropicaux, floral et du linalol.",
+    "beermaverick-ahtanum": "Ses mots sont agrumes, pamplemousse, géranium, pin, terreux, floral, cèdre, citron.",
+    "beermaverick-strisselspalt": "Il comprend les mots épicé, floral, agrumes, herbacé pour guider le choix."
+   }
+  },
+  {
+   "id": "7B|citrus|b10",
+   "style": "7B",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1569,
+   "tokens": [
+    2790,
+    406
+   ],
+   "chfMicro": 2315,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 2,
+    "part": 0.5
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0.5,
+   "tete": {
+    "moteur": [
+     "spalter-select",
+     "tettnanger",
+     "mount-hood",
+     "citra"
+    ],
+    "ia": [
+     "citra",
+     "centennial",
+     "amarillo",
+     "mandarina-bavaria"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-citra": "Ses mots portent explicitement agrumes, pamplemousse et citron vert pour répondre directement à la demande.",
+    "beermaverick-centennial": "Sa fiche mentionne clairement les agrumes, pamplemousse et mandarine pour pousser l'arôme recherché.",
+    "beermaverick-amarillo": "Il présente les mots agrumes, orange et citron pour accentuer le profil aromatique visé.",
+    "beermaverick-mandarina-bavaria": "Les mots mandarine, citron et agrumes correspondent parfaitement à l'attente du brasseur.",
+    "beermaverick-simcoe": "Ses mots incluent pamplemousse et agrumes pour apporter la touche fruitée demandée.",
+    "beermaverick-galaxy": "Sa fiche affiche le mot agrumes parmi ses descripteurs tropicaux."
+   }
+  },
+  {
+   "id": "10A|citrus|b10",
+   "style": "10A",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1858,
+   "tokens": [
+    2767,
+    379
+   ],
+   "chfMicro": 2222,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "hersbrucker",
+     "mandarina-bavaria",
+     "wakatu",
+     "saphir"
+    ],
+    "ia": [
+     "mandarina-bavaria",
+     "centennial",
+     "cascade",
+     "lemondrop"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-mandarina-bavaria": "Mandarina Bavaria offre des mots mandarine, citron, agrumes avec un usage dual.",
+    "beermaverick-centennial": "Centennial apporte agrumes, pamplemousse, mandarine avec un usage dual adapté.",
+    "beermaverick-cascade": "Cascade propose pamplemousse, agrumes et un usage dual pertinent.",
+    "beermaverick-lemondrop": "Lemondrop contient agrumes, citron et un usage aroma.",
+    "beermaverick-amarillo": "Amarillo présente agrumes, orange, citron, pamplemousse.",
+    "beermaverick-citra": "Citra inclut agrumes, pamplemousse, citron vert."
+   }
+  },
+  {
+   "id": "24A|citrus|dryActive",
+   "style": "24A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1563,
+   "tokens": [
+    2817,
+    418
+   ],
+   "chfMicro": 2363,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "mandarina-bavaria",
+     "citra",
+     "centennial",
+     "amarillo"
+    ],
+    "ia": [
+     "mandarina-bavaria",
+     "citra",
+     "centennial",
+     "amarillo"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-mandarina-bavaria": "Ses mots incluent mandarine, citron, agrumes, avec un thiol classe forte pour ce dry hop.",
+    "beermaverick-citra": "Ses mots portent agrumes, pamplemousse, citron vert, et litchi pour la fermentation active.",
+    "beermaverick-centennial": "Ses mots affichent agrumes, pamplemousse, mandarine, et un linalol mesuré dans l'huile.",
+    "beermaverick-amarillo": "Ses mots contiennent agrumes, orange, citron, pamplemousse, avec des huiles adaptées au dry hop.",
+    "beermaverick-motueka": "Ses mots citent agrumes, citron vert, citron, et un thiol classe moyenne.",
+    "beermaverick-cascade": "Ses mots mentionnent pamplemousse et agrumes, soutenus par un thiol classe forte."
+   }
+  },
+  {
+   "id": "21A|citrus|dryActive",
+   "style": "21A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1601,
+   "tokens": [
+    2819,
+    403
+   ],
+   "chfMicro": 2317,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "citra",
+     "centennial",
+     "amarillo",
+     "simcoe"
+    ],
+    "ia": [
+     "citra",
+     "centennial",
+     "amarillo",
+     "simcoe"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-citra": "Ses mots incluent agrumes, pamplemousse et citron vert pour porter la demande d arôme.",
+    "beermaverick-centennial": "Il présente des mots d agrumes, pamplemousse et mandarine avec du linalol et des thiols.",
+    "beermaverick-amarillo": "Ses mots citent agrumes, orange, citron et pamplemousse pour satisfaire le brasseur.",
+    "beermaverick-simcoe": "Ses mots contiennent pamplemousse et agrumes pour accentuer le profil demandé.",
+    "beermaverick-nectaron": "Ses mots affichent agrumes et pamplemousse adaptés au dry hop recherché.",
+    "beermaverick-denali": "Il propose des mots d agrumes et citron avec une huile totale élevée."
+   }
+  },
+  {
+   "id": "21A|floral|b10",
+   "style": "21A",
+   "demande": "plus floral",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 2120,
+   "tokens": [
+    2820,
+    385
+   ],
+   "chfMicro": 2261,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 3,
+    "part": 0.75
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0.25,
+   "tete": {
+    "moteur": [
+     "centennial",
+     "cascade",
+     "mosaic",
+     "amarillo"
+    ],
+    "ia": [
+     "centennial",
+     "cascade",
+     "horizon",
+     "amarillo"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-centennial": "Ce candidat présente un profil floral soutenu associé à un bon taux de linalol.",
+    "beermaverick-cascade": "Sa fiche mentionne explicitement le mot floral ainsi qu'une classe thiol forte.",
+    "beermaverick-horizon": "Il combine des mots floraux et d'agrumes avec un taux remarquable de linalol.",
+    "beermaverick-amarillo": "Son usage aroma et ses mots incluent le terme floral pour cette ébullition.",
+    "beermaverick-ella": "Il propose un profil floral complété par des notes épicées et un usage dual.",
+    "beermaverick-ahtanum": "Ses mots recensent le floral et les agrumes pour un ajout aromatique pertinent."
+   }
+  },
+  {
+   "id": "12C|floral|b10",
+   "style": "12C",
+   "demande": "plus floral",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1526,
+   "tokens": [
+    2748,
+    365
+   ],
+   "chfMicro": 2172,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "target",
+     "ahtanum",
+     "first-gold",
+     "northdown"
+    ],
+    "ia": [
+     "ahtanum",
+     "first-gold",
+     "northdown",
+     "strisselspalt"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-ahtanum": "Porte le mot floral explicitement avec des agrumes adaptés à l'ébullition.",
+    "beermaverick-first-gold": "Contient le mot floral dans ses descripteurs avec un usage dual.",
+    "beermaverick-northdown": "Affiche le mot floral en tête de ses notes aromatiques.",
+    "beermaverick-strisselspalt": "Mentionne le mot floral parmi ses rares caractéristiques aromatiques.",
+    "beermaverick-liberty": "Possède le mot floral dans sa fiche avec un profil noble.",
+    "beermaverick-saphir": "Intègre le mot floral et un taux de linalol mesurable."
+   }
+  },
+  {
+   "id": "18B|floral|dryActive",
+   "style": "18B",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1532,
+   "tokens": [
+    2820,
+    375
+   ],
+   "chfMicro": 2230,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 3,
+    "part": 0.75
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0.25,
+   "tete": {
+    "moteur": [
+     "centennial",
+     "cascade",
+     "mosaic",
+     "amarillo"
+    ],
+    "ia": [
+     "centennial",
+     "cascade",
+     "ella",
+     "loral"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-centennial": "Centennial contient floral dans ses mots et un linalol mesuré pour le dry hop.",
+    "beermaverick-cascade": "Cascade affiche floral dans ses mots et un thiol de classe forte.",
+    "beermaverick-ella": "Ella porte floral dans ses mots avec un taux d'huile totale élevé.",
+    "beermaverick-loral": "Loral intègre floral dans ses mots et un bon volume d'huile totale.",
+    "beermaverick-pekko": "Pekko présente floral dans ses mots et des huiles adaptées au dry hop.",
+    "beermaverick-amarillo": "Amarillo inclut floral dans ses mots pour soutenir la demande du brasseur."
+   }
+  },
+  {
+   "id": "11B|floral|dryActive",
+   "style": "11B",
+   "demande": "plus floral",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1620,
+   "tokens": [
+    2754,
+    430
+   ],
+   "chfMicro": 2377,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 2,
+    "part": 0.5
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 2,
+    "part": 0.5
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "target",
+     "styrian-golding",
+     "golding",
+     "east-kent-goldings"
+    ],
+    "ia": [
+     "east-kent-goldings",
+     "golding",
+     "celeia",
+     "northdown"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-east-kent-goldings": "Ses mots incluent lavande, miel, citron, thym, orange, pamplemousse, floral et il possède du linalol.",
+    "beermaverick-golding": "Ses mots portent floral, delicate, doux et il contient du linalol.",
+    "beermaverick-celeia": "Ses mots affichent noble, floral, lavande, épicé, terreux, herbacé et il a du linalol.",
+    "beermaverick-northdown": "Ses mots mentionnent floral, pin, cèdre, baies, épicé avec une forte huile totale.",
+    "beermaverick-first-gold": "Ses mots comportent mandarine, abricot, magnolia, redberry, herbacé, orange, épicé, floral.",
+    "beermaverick-ahtanum": "Ses mots recouvrent agrumes, pamplemousse, géranium, pin, terreux, floral, cèdre, citron."
+   }
+  },
+  {
+   "id": "25B|citrus|b10",
+   "style": "25B",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1656,
+   "tokens": [
+    2784,
+    408
+   ],
+   "chfMicro": 2319,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "styrian-golding",
+     "mandarina-bavaria",
+     "motueka",
+     "lemondrop"
+    ],
+    "ia": [
+     "mandarina-bavaria",
+     "citra",
+     "centennial",
+     "amarillo"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-mandarina-bavaria": "Mandarina Bavaria apporte des mots mandarine, citron, agrumes avec un usage dual adapté à 10 minutes.",
+    "beermaverick-citra": "Citra propose agrumes, pamplemousse, citron vert et une huile totale élevée pour l'ébullition.",
+    "beermaverick-centennial": "Centennial contient pin, agrumes, pamplemousse, mandarine et un fort taux de linalol.",
+    "beermaverick-amarillo": "Amarillo offre agrumes, orange, citron, pamplemousse et un usage aroma adapté.",
+    "beermaverick-motueka": "Motueka affiche agrumes, citron vert, citron et un usage dual pertinent.",
+    "beermaverick-lemondrop": "Lemondrop présente agrumes, citron et un profil aromatique floral."
+   }
+  },
+  {
+   "id": "26C|citrus|b10",
+   "style": "26C",
+   "demande": "plus d’agrumes",
+   "moment": "10′",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1757,
+   "tokens": [
+    2784,
+    395
+   ],
+   "chfMicro": 2279,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "styrian-golding",
+     "celeia",
+     "strisselspalt",
+     "citra"
+    ],
+    "ia": [
+     "citra",
+     "centennial",
+     "mandarina-bavaria",
+     "cascade"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-citra": "Ses mots portent directement les agrumes et le citron vert recherchés pour l'ébullition.",
+    "beermaverick-centennial": "Ses mots affichent clairement les agrumes, le pamplemousse et la mandarine.",
+    "beermaverick-mandarina-bavaria": "Ses mots indiquent mandarine, citron et agrumes avec une forte classe thiol.",
+    "beermaverick-cascade": "Ses mots signalent le pamplemousse et les agrumes avec une classe thiol forte.",
+    "beermaverick-amarillo": "Ses mots contiennent agrumes, orange, citron et pamplemousse pour le profil.",
+    "beermaverick-motueka": "Ses mots affichent agrumes, citron vert et citron avec une classe thiol moyenne."
+   }
+  },
+  {
+   "id": "25A|citrus|dryActive",
+   "style": "25A",
+   "demande": "plus d’agrumes",
+   "moment": "dry hop actif",
+   "groupe": 12,
+   "ok": true,
+   "ms": 1490,
+   "tokens": [
+    2793,
+    432
+   ],
+   "chfMicro": 2398,
+   "moteur": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "ia": {
+    "couvertes": 4,
+    "confirmees": 4,
+    "part": 1
+   },
+   "mesurable": true,
+   "ecart": 0,
+   "tete": {
+    "moteur": [
+     "celeia",
+     "citra",
+     "centennial",
+     "amarillo"
+    ],
+    "ia": [
+     "citra",
+     "centennial",
+     "amarillo",
+     "mandarina-bavaria"
+    ]
+   },
+   "retirees": 0,
+   "horsFiche": 0,
+   "reputations": 0,
+   "phrases": {
+    "beermaverick-citra": "Ses mots incluent agrumes, pamplemousse, citron vert et ses huiles affichent un myrcène élevé pour le dry hop.",
+    "beermaverick-centennial": "Ses mots portent agrumes, pamplemousse et mandarine avec un linalol mesuré et une classe thiol moyenne.",
+    "beermaverick-amarillo": "Ses mots citent agrumes, orange, citron et pamplemousse, soutenus par un myrcène abondant.",
+    "beermaverick-mandarina-bavaria": "Ses mots affichent mandarine, citron et agrumes avec une classe thiol forte pour la fermentation.",
+    "beermaverick-cascade": "Ses mots contiennent pamplemousse et agrumes, associés à une classe thiol forte et du linalol.",
+    "beermaverick-motueka": "Ses mots portent agrumes, citron vert et citron, avec du linalol et un taux de farnésène."
+   }
+  }
+ ],
+ "six": {
+  "groupe": [
+   "citra",
+   "centennial",
+   "amarillo",
+   "simcoe",
+   "nectaron",
+   "denali",
+   "strata",
+   "galaxy",
+   "cascade",
+   "ekuanot",
+   "sabro",
+   "azacca"
+  ],
+  "ordreIA": [
+   "citra",
+   "centennial",
+   "amarillo",
+   "simcoe",
+   "nectaron",
+   "denali",
+   "strata",
+   "galaxy",
+   "cascade",
+   "ekuanot",
+   "sabro",
+   "azacca"
+  ],
+  "ses_six": [
+   {
+    "id": "el-dorado",
+    "rangMoteurBalayage": 15,
+    "dansLeGroupe": null,
+    "rangIA": null
+   },
+   {
+    "id": "mosaic",
+    "rangMoteurBalayage": 13,
+    "dansLeGroupe": null,
+    "rangIA": null
+   },
+   {
+    "id": "mandarina-bavaria",
+    "rangMoteurBalayage": 23,
+    "dansLeGroupe": null,
+    "rangIA": null
+   },
+   {
+    "id": "calypso",
+    "rangMoteurBalayage": null,
+    "dansLeGroupe": null,
+    "rangIA": null
+   },
+   {
+    "id": "pacific-jade",
+    "rangMoteurBalayage": null,
+    "dansLeGroupe": null,
+    "rangIA": null
+   },
+   {
+    "id": "idaho-7",
+    "rangMoteurBalayage": 14,
+    "dansLeGroupe": null,
+    "rangIA": null
+   }
+  ],
+  "phrases": {
+   "citra": "Ce houblon présente des notes d agrumes, pamplemousse et citron vert adaptées au dry hop.",
+   "centennial": "Il apporte agrumes, pamplemousse et mandarine avec un taux de linalol mesuré.",
+   "amarillo": "Ses mots incluent agrumes, orange, citron et pamplemousse pour soutenir la demande.",
+   "simcoe": "La fiche mentionne explicitement agrumes et pamplemousse pour la fermentation active.",
+   "nectaron": "Il offre des notes d agrumes et pamplemousse adaptées au profil recherché.",
+   "denali": "Il contient des notes d agrumes et citron utiles pour cette double IPA."
+  },
+  "retirees": 0,
+  "horsFiche": 0
+ }
+}

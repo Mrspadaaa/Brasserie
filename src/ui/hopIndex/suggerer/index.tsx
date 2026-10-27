@@ -22,7 +22,7 @@ import type { FamilyId, Voie } from '../../../domain/hopIndex/v4';
 import { offModelLeads } from '../parcours/v4';
 import { useCalcul } from '../parcours/useCalcul';
 import { PLACE_REMPLACER_PX, auReposDuNavigateur, useCalculApres } from './differe';
-import { MOMENTS_MAX, RANGEES_MINI, demandeSuggerer, iaPossible, useClassementsIA, type DemandeMoment, type EtatIA } from './ia';
+import { MOMENTS_MAX, RANGEES_MINI, demandeSuggerer, iaPossible, poolExAequo, useClassementsIA, type DemandeMoment, type EtatIA } from './ia';
 import { estChauffee } from './prechauffe';
 import { useGestesFiche } from '../fiche/gestes';
 import { Bandeau } from '../maBiere/Base';
@@ -94,18 +94,20 @@ export default function Suggerer() {
   const lus = useMemo(() => (proposes && leviers ? { recette: proposes.args[0], calculs: { proposes: proposes.valeur, leviers: leviers.valeur } } : null), [proposes, leviers]);
   const tousMoteur = useMemo(() => (lus ? voiesDe(lus.recette, objectifs, ROUE, bannis, 4, lus.calculs) : []), [lus, objectifs, bannis]);
   // Voie ia3 (D188, D124) : l'IA range les rangées des groupes que le moteur ne sait pas départager (trois rangées ou plus au même effet), un moment à la fois.
-  // Le moteur montre tout de suite ; au repos, le pool de 30 de chaque moment part à l'IA ; son ordre (en moins de 3 s, liste non touchée) remplace les rangées,
+  // Le moteur montre tout de suite ; au repos, le pool de chaque moment (les ex æquo du moteur, 12 au plus) part à l'IA ; son ordre (en moins de 3 s, liste non touchée) remplace les rangées,
   // sinon la puce « appliquer l'ordre IA » l'offre. Hors ligne, en échec, ou sous test : l'ordre du moteur, sans rien au premier plan.
   const momentsIA = useMemo(() => (iaPossible() ? [...new Set(tousMoteur.filter((g) => g.id.startsWith('meme-') && g.lignes.length >= RANGEES_MINI).map((g) => momentDuGroupe(g)!))].slice(0, MOMENTS_MAX) : []), [tousMoteur]);
   const [pools, setPools] = useState<{ cle: string; voies: Record<string, Voie[]> }>({ cle: '', voies: {} });
-  const cleIA = lus ? JSON.stringify([lus.recette.styleCode, lus.recette.volumeL, lus.recette.og, lus.recette.additions, direction, momentsIA]) : '';
+  const cleIA = lus ? JSON.stringify([lus.recette.styleCode, lus.recette.volumeL, lus.recette.og, lus.recette.additions, direction, momentsIA, bannis]) : '';
   useEffect(() => {
     if (!lus || !momentsIA.length) return;
-    // Un moment par tâche, au repos : le pool (un moment du moteur, 30 rangs) coûte plus qu'un affichage, il ne bloque jamais le premier.
+    // Un moment par tâche, au repos : le pool (les ex æquo d'un moment du moteur) coûte plus qu'un affichage, il ne bloque jamais le premier.
+    // Voie ia4 (D126) : le pool est le groupe « même effet » du moteur à ce moment (ses rangées et leurs suivantes au même effet et à la même dose), jamais un houblon pris plus bas.
     let vivant = true; const annuler: (() => void)[] = []; const voies: Record<string, Voie[]> = {};
     momentsIA.forEach((m, i) => annuler.push(auReposDuNavigateur(() => {
       if (!vivant) return;
-      voies[m] = poolSuggerer(lus.recette, direction, m as Voie['actions'][number]['moment']);
+      const rangees = tousMoteur.find((g) => g.id.startsWith('meme-') && momentDuGroupe(g) === m)?.lignes.map((l) => l.voie) ?? [];
+      voies[m] = poolExAequo(rangees, poolSuggerer(lus.recette, direction, m as Voie['actions'][number]['moment']), objectifs, bannis);
       if (i === momentsIA.length - 1) setPools({ cle: cleIA, voies: { ...voies } });
     })));
     return () => { vivant = false; annuler.forEach((f) => f()); };
@@ -118,9 +120,15 @@ export default function Suggerer() {
   const ia = useClassementsIA(demandes);
   const ordresIA = useMemo(() => {
     const o: Record<string, OrdreIA> = {};
-    for (const m of momentsIA) { const e = ia.de(m); if (e?.appliquee && pools.voies[m]) o[m] = { pool: pools.voies[m], ordre: e.ordre, phrases: e.phrases }; }
+    for (const m of momentsIA) {
+      const e = ia.de(m); if (!e?.appliquee || !pools.voies[m]) continue;
+      // L'IA n'ordonne que les ex æquo ; les autres rangées de ce moment suivent dans l'ordre du moteur.
+      const cles = new Set(pools.voies[m].map((v) => v.actions[0].hopKey));
+      const autres = tousMoteur.filter((g) => momentDuGroupe(g) === m).flatMap((g) => g.lignes.map((l) => l.voie)).filter((v) => !cles.has(v.actions[0].hopKey));
+      o[m] = { pool: [...pools.voies[m], ...autres], ordre: [...e.ordre, ...autres.map((v) => v.actions[0].hopKey)], phrases: e.phrases };
+    }
     return o;
-  }, [ia, momentsIA, pools]);
+  }, [ia, momentsIA, pools, tousMoteur]);
   const tous = useMemo(() => (lus && Object.keys(ordresIA).length ? voiesDe(lus.recette, objectifs, ROUE, bannis, 4, lus.calculs, ordresIA) : tousMoteur), [lus, objectifs, bannis, tousMoteur, ordresIA]);
   // « exclure » (♡) : les voies de ce houblon quittent la liste ; « Exclus » les rend.
   const exclus = [...gouts].filter(([, g]) => g === 'exclure').map(([c]) => c);

@@ -10,7 +10,9 @@ vi.mock('../../../src/services/storage', () => ({
 }));
 
 import EcranSuggererApp from '../../../src/ui/hopIndex/suggerer/EcranApp';
-import { FENETRE_MS, installerTransportSuggerer, momentIA, ordreValide, type ReponseSuggerer, type TransportSuggerer } from '../../../src/ui/hopIndex/suggerer/ia';
+import { FENETRE_MS, TAILLE_POOL, installerTransportSuggerer, momentIA, ordreValide, poolExAequo, type ReponseSuggerer, type TransportSuggerer } from '../../../src/ui/hopIndex/suggerer/ia';
+import type { Objectif } from '../../../src/ui/hopIndex/suggerer/voies';
+import type { Voie } from '../../../src/domain/hopIndex/v4';
 import { poserPorteEtape } from '../../../src/ui/hopIndex/comparer/porte';
 import { poserVisee } from '../../../src/ui/hopIndex/parcours/visee';
 import { viderComparaison } from '../../../src/ui/hopIndex/fiche/comparaison';
@@ -40,10 +42,10 @@ function transportManuel() {
   const t: TransportSuggerer = (d) => new Promise((ok, ko) => { etat.demandes.push(d); etat.repondre = (r) => (r instanceof Error ? ko(r) : ok(r)); });
   return { t, etat };
 }
-/** L'IA remonte le neuvième du moteur en tête, puis rend les autres dans l'ordre du moteur : tous les candidats, une phrase chacun. */
+/** L'IA remonte le dernier des ex æquo en tête, puis rend les autres dans l'ordre du moteur : tous les candidats, une phrase chacun. */
 const ordreIA = (d: EntreeSuggerer, phrases?: Record<string, string>): ReponseSuggerer => {
-  const ids = d.candidats.map((c) => c.id), neuf = ids[8];
-  const ordre = [neuf, ...ids.filter((k) => k !== neuf)];
+  const ids = d.candidats.map((c) => c.id), dernier = ids[ids.length - 1];
+  const ordre = [dernier, ...ids.filter((k) => k !== dernier)];
   return { ok: true, ordre, phrases: phrases ?? Object.fromEntries(ordre.map((k) => [k, `Phrase de ${k}.`])), model: 'gemini-3.5-flash-lite' };
 };
 const GROUPE = '[data-groupe="meme-0"]';
@@ -57,14 +59,17 @@ const puce = (c: HTMLElement) => c.querySelector<HTMLElement>('[data-role="puce-
 const attendre = async (action: () => void) => { await act(async () => { action(); await Promise.resolve(); await Promise.resolve(); }); };
 
 describe('Suggérer et l’IA : ce que la liste fait', () => {
-  it('le moteur est là tout de suite ; l’appel part au repos : 30 candidats du moteur, le style, la recette, la visée, le moment', async () => {
+  it('le moteur est là tout de suite ; l’appel part au repos : les ex æquo du moteur (3 à 12), le style, la recette, la visée, le moment', async () => {
     const { t, etat } = transportManuel(); installerTransportSuggerer(t);
     const c = await monter();
     expect(rangees(c).length).toBeGreaterThanOrEqual(4);
+    const montrees = rangees(c);
     expect(puce(c)).toBeNull();                                          // rien au premier plan tant que l'IA n'a pas répondu
     await waitFor(() => expect(etat.demandes).toHaveLength(1), { timeout: 20000 });
     const d = etat.demandes[0];
-    expect(d.mode).toBe('suggerer'); expect(d.style.code).toBe('22A'); expect(d.candidats.length).toBeGreaterThanOrEqual(25); expect(d.candidats.length).toBeLessThanOrEqual(30);
+    expect(d.mode).toBe('suggerer'); expect(d.style.code).toBe('22A'); expect(d.candidats.length).toBeGreaterThanOrEqual(3); expect(d.candidats.length).toBeLessThanOrEqual(12);
+    // le pool commence par les rangées montrées du groupe « même effet » (dans l'ordre du moteur) : les ex æquo, pas les 30 premiers du moteur
+    expect(d.candidats.slice(0, montrees.length).map((x) => x.id)).toEqual(montrees);
     expect(d.demande.moment).toEqual({ type: 'dryhop', phase: 'actif' });
     expect(d.demande.objectifs).toEqual([{ famille: 'agrumes', sens: 1, crans: expect.any(Number) }]);
     expect(d.recette.houblons).toContainEqual({ nom: 'Lotus', grammes: 144, moment: expect.stringContaining('dry hop') });
@@ -86,7 +91,7 @@ describe('Suggérer et l’IA : ce que la liste fait', () => {
     const apres = rangees(c);
     const ia = ordreIA(d).ordre!;
     expect(apres).toEqual(ia.slice(0, apres.length).map((k) => k));          // les rangées sont les premières de l'ordre de l'IA
-    expect(apres[0]).toBe(d.candidats[8].id); expect(avant).not.toEqual(apres);
+    expect(apres[0]).toBe(d.candidats[d.candidats.length - 1].id); expect(avant).not.toEqual(apres);
     expect(apres).toHaveLength(avant.length);                                // autant de rangées : le groupe garde sa hauteur
     expect(puce(c)!.textContent).toContain('classé par l’IA');
     expect(c.querySelector('[data-role="puce-ia-place"]')).toBeNull();
@@ -191,6 +196,23 @@ describe('Suggérer et l’IA : réponse tardive, liste touchée, hors ligne, é
     expect(rangees(c)).toEqual(avant); expect(puce(c)).toBeNull();
     expect(c.textContent).not.toMatch(/IA n’a pas|erreur|échec/i);
   }, 40000);
+});
+
+describe('le pool de l’IA : les ex æquo du moteur, jamais un houblon pris plus bas (D126)', () => {
+  const voie = (cle: string, central: number, grammes = 48) => ({ actions: [{ hopKey: cle, grams: grammes, moment: 'dryActive' }], effect: { citrus: { established: true, central } } }) as unknown as Voie;
+  const obj = [{ f: 'citrus', sens: 1, requis: 2.5, cran: 1 }] as unknown as Objectif[];
+  it('les rangées du groupe d’abord, puis les suivantes au même effet et à la même dose ; un autre effet ou une autre dose n’entre jamais', () => {
+    const rangees = [voie('a', 1), voie('b', 1), voie('c', 1)];
+    const pool = [voie('a', 1), voie('x', 3), voie('d', 1), voie('y', 1, 60), voie('b', 1), voie('e', 1), voie('z', 0)];
+    expect(poolExAequo(rangees, pool, obj).map((v) => v.actions[0].hopKey)).toEqual(['a', 'b', 'c', 'd', 'e']);
+  });
+  it('au plus TAILLE_POOL, dans l’ordre du moteur ; sans rangée, rien', () => {
+    const rangees = [voie('r1', 1), voie('r2', 1), voie('r3', 1)];
+    const pool = Array.from({ length: 40 }, (_, i) => voie(`p${i}`, 1));
+    const p = poolExAequo(rangees, pool, obj);
+    expect(p).toHaveLength(TAILLE_POOL); expect(p.slice(0, 3).map((v) => v.actions[0].hopKey)).toEqual(['r1', 'r2', 'r3']); expect(p[3].actions[0].hopKey).toBe('p0');
+    expect(poolExAequo([], pool, obj)).toEqual([]);
+  });
 });
 
 describe('le client : ses règles seules', () => {

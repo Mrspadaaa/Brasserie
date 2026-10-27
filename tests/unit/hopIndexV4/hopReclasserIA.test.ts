@@ -14,7 +14,7 @@ const gate = vi.hoisted(() => vi.fn());
 vi.mock('../../../functions/src/monthlyAiBudget', () => ({ runWithMonthlyAiBudget: gate }));
 import { hopReclasserIA } from '../../../functions/src/hopReclasserIA';
 import { BrewerBudgetError } from '../../../functions/src/brewerLimits';
-import { GENERATION, PROMPT_VERSION, PROMPT_VERSION_SUGGERER, PHRASES_SUGGERER, SCHEMA, SYSTEME, SYSTEME_SUGGERER, TAILLE_POOL, TAILLE_POOL_SUGGERER, analyserReponse, chiffresInventes, construireInvite, contexteDe, construireInviteSuggerer, ficheDeCatalogue, lireEntree, lireEntreeSuggerer } from '../../../functions/src/hopReclassCore';
+import { GENERATION, PROMPT_VERSION, PROMPT_VERSION_SUGGERER, MIN_POOL_SUGGERER, PHRASES_SUGGERER, SCHEMA, SYSTEME, SYSTEME_SUGGERER, TAILLE_POOL, TAILLE_POOL_SUGGERER, analyserReponse, aromesHorsFiche, estReputation, motsDeLigne, chiffresInventes, construireInvite, contexteDe, construireInviteSuggerer, ficheDeCatalogue, lireEntree, lireEntreeSuggerer } from '../../../functions/src/hopReclassCore';
 import { CATALOGUE } from '../../../src/domain/hopIndex/v4/data';
 
 const LITE = 'gemini-3.5-flash-lite';
@@ -166,27 +166,36 @@ describe('module partagé : l’invite de l’essai ia1, mot pour mot', () => {
   });
 });
 
-// ---------- Voie ia3 : le mode « suggérer » (invite neuve `suggerer-v1`) ----------
+// ---------- Voies ia3 et ia4 : le mode « suggérer » (invite neuve `suggerer-v2`) ----------
 const ids = (n: number) => Array.from({ length: n }, (_, i) => `c${String(i + 1).padStart(2, '0')}`);
+const PHRASE = 'Phrase du houblon, sans valeur.';
 const suggerer = (n = TAILLE_POOL_SUGGERER, plus: Record<string, unknown> = {}) => ({
   mode: 'suggerer', style: { code: '22A', nom: 'Double IPA' },
   recette: { og: 1.081, ibu: 80, volumeL: 24, houblons: [{ nom: 'Lotus', grammes: 78, moment: '20′' }, { nom: 'Lotus', grammes: 144, moment: 'dry hop' }] },
   demande: { objectifs: [{ famille: 'agrumes', sens: 1, crans: 1 }], moment: { type: 'dryhop', phase: 'actif' } },
   candidats: CATALOGUE.slice(1, 1 + n).map((h, i) => ({ id: `cle-${i + 1}`, fiche: ficheDeCatalogue(h) })), ...plus,
 });
-const trente = ids(30);
+const tous = ids(TAILLE_POOL_SUGGERER);
+const N = TAILLE_POOL_SUGGERER;
 
 describe('mode « suggérer » : l’invite, mot pour mot', () => {
   it('le système est neuf, versionné ; celui de Substituer (v1) ne bouge pas', () => {
-    expect(SYSTEME_SUGGERER).not.toBe(SYSTEME); expect(PROMPT_VERSION_SUGGERER).toBe('suggerer-v1');
-    expect(SYSTEME_SUGGERER).toContain('AUCUN chiffre'); expect(SYSTEME_SUGGERER).toContain('savoir du style');
+    expect(SYSTEME_SUGGERER).not.toBe(SYSTEME); expect(PROMPT_VERSION_SUGGERER).toBe('suggerer-v2');
+    expect(SYSTEME_SUGGERER).toContain('AUCUN chiffre'); expect(SYSTEME_SUGGERER).toContain('Réputation :'); expect(SYSTEME_SUGGERER).toContain('À ÉGALITÉ');
+    expect(SYSTEME_SUGGERER).not.toContain('savoir du style');
     expect(PROMPT_VERSION).toBe('v1');
   });
-  it('le message dit le style, la recette, la demande, le moment, et les candidats c01 à c30 dans l’ordre du moteur', () => {
+  it('le pool vient d’une règle de coût et de latence, jamais de ses houblons : 12 au plus, 3 au moins', () => {
+    expect(TAILLE_POOL_SUGGERER).toBe(12); expect(MIN_POOL_SUGGERER).toBe(3); expect(PHRASES_SUGGERER).toBe(6);
+    // latence ≈ 0,8 s + 2,5 ms × jetons de sortie (ia3) ; sortie ≈ 180 + 12 × candidats + 35 × phrases ; la fenêtre de l'écran est de 3 s
+    const sortie = 180 + 12 * TAILLE_POOL_SUGGERER + 35 * PHRASES_SUGGERER;
+    expect(0.8 + 0.0025 * sortie).toBeLessThan(2.5);
+  });
+  it('le message dit le style, la recette, la demande, le moment, et les candidats c01 à c12 dans l’ordre du moteur', () => {
     const m = construireInviteSuggerer(lireEntreeSuggerer(suggerer()));
     expect(m).toContain('Style : Double IPA (22A).'); expect(m).toContain('OG 1,081 · IBU 80 · 24 L');
     expect(m).toContain('Lotus 78 g (20′) ; Lotus 144 g (dry hop)'); expect(m).toContain('plus d\'agrumes (d\'un cran)');
-    expect(m).toContain('fermentation active'); expect(m).toContain('c01 · '); expect(m).toContain('c30 · '); expect(m).not.toContain('c31 · ');
+    expect(m).toContain('fermentation active'); expect(m).toContain('c01 · '); expect(m).toContain('c12 · '); expect(m).not.toContain('c13 · ');
     expect(m.indexOf('c02 · ')).toBeGreaterThan(m.indexOf('c01 · '));
   });
   it('un OG, un IBU ou un volume absents sont dits « inconnu », jamais 0', () => {
@@ -196,41 +205,42 @@ describe('mode « suggérer » : l’invite, mot pour mot', () => {
 });
 
 describe('mode « suggérer » : le callable', () => {
-  beforeEach(() => { fetchMock.mockResolvedValue(reponse(classement(trente))); });
+  const classementS = (xs: string[]) => classement(xs, PHRASE);
+  beforeEach(() => { fetchMock.mockResolvedValue(reponse(classementS(tous))); });
   it('une réponse valide : l’ordre de tous les candidats, sous les clés du client, une phrase chacun, budget réservé, Flash-Lite', async () => {
     const r: any = await hopReclasserIA.run(requete(suggerer()) as any);
-    expect(r).toMatchObject({ ok: true, model: LITE, promptVersion: 'suggerer-v1', phrasesRetirees: 0 });
-    expect(r.ordre).toEqual(trente.map((_, i) => `cle-${i + 1}`)); expect(Object.keys(r.phrases)).toHaveLength(30);
+    expect(r).toMatchObject({ ok: true, model: LITE, promptVersion: 'suggerer-v2', phrasesRetirees: 0, phrasesHorsFiche: 0, phrasesReputation: 0 });
+    expect(r.ordre).toEqual(tous.map((_, i) => `cle-${i + 1}`)); expect(Object.keys(r.phrases)).toHaveLength(N);
     expect(gate).toHaveBeenCalledOnce(); expect(gate.mock.calls[0][0]).toBe(LITE); expect(gate.mock.calls[0][3]).toEqual({ daily: true, inspect: expect.any(Function) });
     const b = corps();
     expect(b.systemInstruction.parts[0].text).toBe(SYSTEME_SUGGERER);
     expect(b.generationConfig).toMatchObject({ responseMimeType: 'application/json', temperature: 0, maxOutputTokens: 6000, thinkingConfig: { thinkingLevel: 'low' } });
-    expect(b.contents[0].parts[0].text).toContain('Rends le classement des 30 candidats');
+    expect(b.contents[0].parts[0].text).toContain('Rends le classement des 12 candidats');
   });
   it('l’ordre rendu peut différer de celui du moteur : c07 d’abord', async () => {
-    fetchMock.mockResolvedValue(reponse(classement(['c07', ...trente.filter((c) => c !== 'c07')])));
+    fetchMock.mockResolvedValue(reponse(classementS(['c07', ...tous.filter((c) => c !== 'c07')])));
     const r: any = await hopReclasserIA.run(requete(suggerer()) as any);
     expect(r.ordre.slice(0, 3)).toEqual(['cle-7', 'cle-1', 'cle-2']);
   });
   it('un nombre de candidats plus petit : l’ordre est celui de tous ceux donnés', async () => {
-    fetchMock.mockResolvedValue(reponse(classement(ids(12))));
-    const r: any = await hopReclasserIA.run(requete(suggerer(12)) as any);
-    expect(r.ok).toBe(true); expect(r.ordre).toHaveLength(12);
+    fetchMock.mockResolvedValue(reponse(classementS(ids(5))));
+    const r: any = await hopReclasserIA.run(requete(suggerer(5)) as any);
+    expect(r.ok).toBe(true); expect(r.ordre).toHaveLength(5);
   });
-  it('seuls les 10 premiers ont une phrase : les suivants peuvent l’avoir vide (jamais montrée), l’ordre reste celui de tous', async () => {
-    fetchMock.mockResolvedValue(reponse(JSON.stringify({ classement: trente.map((id, i) => ({ id, phrase: i < PHRASES_SUGGERER ? "Phrase du houblon, sans valeur." : '' })) })));
+  it('seuls les 6 premiers ont une phrase : les suivants peuvent l’avoir vide (jamais montrée), l’ordre reste celui de tous', async () => {
+    fetchMock.mockResolvedValue(reponse(JSON.stringify({ classement: tous.map((id, i) => ({ id, phrase: i < PHRASES_SUGGERER ? PHRASE : '' })) })));
     const r: any = await hopReclasserIA.run(requete(suggerer()) as any);
-    expect(r).toMatchObject({ ok: true, phrasesRetirees: 0 }); expect(r.ordre).toHaveLength(30); expect(Object.keys(r.phrases)).toHaveLength(PHRASES_SUGGERER);
-    expect(SYSTEME_SUGGERER).toContain('10 premiers seulement');
+    expect(r).toMatchObject({ ok: true, phrasesRetirees: 0 }); expect(r.ordre).toHaveLength(N); expect(Object.keys(r.phrases)).toHaveLength(PHRASES_SUGGERER);
+    expect(SYSTEME_SUGGERER).toContain('6 premiers seulement');
   });
   const refus = (r: any) => { expect(r).toMatchObject({ ok: false, reason: 'invalide' }); expect(r.ordre).toBeUndefined(); expect(r.phrases).toBeUndefined(); };
   it.each([
-    ['identifiant hors liste', classement([...trente.slice(0, 29), 'c99'])],
-    ['identifiant au-delà de la liste envoyée', classement([...trente.slice(0, 29), 'c31'])],
-    ['doublon', classement([trente[0], ...trente.slice(0, 29)])],
-    ['un candidat oublié', classement(trente.slice(0, 29))],
+    ['identifiant hors liste', classementS([...tous.slice(0, N - 1), 'c99'])],
+    ['identifiant au-delà de la liste envoyée', classementS([...tous.slice(0, N - 1), 'c13'])],
+    ['doublon', classementS([tous[0], ...tous.slice(0, N - 1)])],
+    ['un candidat oublié', classementS(tous.slice(0, N - 1))],
     ['JSON coupé', '{"classement": [{"id": "c01", "phrase": "coupé'],
-    ['phrase vide', JSON.stringify({ classement: trente.map((id, i) => ({ id, phrase: i === 4 ? ' ' : 'ok' })) })],
+    ['phrase vide', JSON.stringify({ classement: tous.map((id, i) => ({ id, phrase: i === 4 ? ' ' : 'ok' })) })],
     ['sans classement', '{}'],
   ])('refuse : %s, une seule requête, aucun ordre', async (_n, texte) => {
     fetchMock.mockResolvedValue(reponse(texte as string));
@@ -238,15 +248,15 @@ describe('mode « suggérer » : le callable', () => {
     expect(fetchMock).toHaveBeenCalledOnce();
   });
   it('refuse une réponse coupée au plafond de sortie', async () => {
-    fetchMock.mockResolvedValue(reponse(classement(trente), 'MAX_TOKENS'));
+    fetchMock.mockResolvedValue(reponse(classementS(tous), 'MAX_TOKENS'));
     refus(await hopReclasserIA.run(requete(suggerer()) as any));
   });
   it('une phrase avec une valeur chiffrée absente du message est retirée, l’ordre reste', async () => {
-    const lignes = trente.map((id, i) => ({ id, phrase: i === 0 ? 'Apporte 777 % de linalol, très typé.' : i === 1 ? 'Cité comme c05, proche.' : i === 2 ? 'Même famille que l’original, myrcène fort.' : 'Agrumes nets, dans l’esprit du style.' }));
+    const lignes = tous.map((id, i) => ({ id, phrase: i === 0 ? 'Apporte 777 % de linalol, très typé.' : i === 1 ? 'Cité comme c05, proche.' : i === 2 ? 'Même famille que l’original, myrcène fort.' : 'Nets, dans l’esprit du style.' }));
     fetchMock.mockResolvedValue(reponse(JSON.stringify({ classement: lignes })));
     const r: any = await hopReclasserIA.run(requete(suggerer()) as any);
-    expect(r).toMatchObject({ ok: true, phrasesRetirees: 2 });
-    expect(r.ordre).toHaveLength(30); expect(r.phrases['cle-1']).toBeUndefined(); expect(r.phrases['cle-2']).toBeUndefined(); expect(r.phrases['cle-3']).toContain('myrcène');
+    expect(r).toMatchObject({ ok: true, phrasesRetirees: 2, phrasesHorsFiche: 0 });
+    expect(r.ordre).toHaveLength(N); expect(r.phrases['cle-1']).toBeUndefined(); expect(r.phrases['cle-2']).toBeUndefined(); expect(r.phrases['cle-3']).toContain('myrcène');
   });
   it('une valeur écrite dans le message est permise (la dose du moment, l’OG)', () => {
     const e = lireEntreeSuggerer(suggerer());
@@ -270,7 +280,7 @@ describe('mode « suggérer » : le callable', () => {
     expect(gate).not.toHaveBeenCalled(); expect(fetchMock).not.toHaveBeenCalled();
   });
   it.each([
-    ['moins de 10 candidats', suggerer(9)], ['plus de 30 candidats', { ...suggerer(), candidats: [...suggerer().candidats, { id: 'cle-x', fiche: fiches[20] }] }],
+    ['moins de 3 candidats', suggerer(2)], ['plus de 12 candidats', { ...suggerer(), candidats: [...suggerer().candidats, { id: 'cle-x', fiche: fiches[20] }] }],
     ['moment inconnu', suggerer(12, { demande: { objectifs: [{ famille: 'agrumes', sens: 1, crans: 1 }], moment: { type: 'cave' } } })],
     ['phase de dry hop inconnue', suggerer(12, { demande: { objectifs: [{ famille: 'agrumes', sens: 1, crans: 1 }], moment: { type: 'dryhop', phase: 'jamais' } } })],
     ['sans objectif', suggerer(12, { demande: { objectifs: [], moment: { type: 'whirlpool' } } })],
@@ -286,5 +296,43 @@ describe('mode « suggérer » : le callable', () => {
     fetchMock.mockResolvedValue(reponse(classement(dix)));
     expect(await hopReclasserIA.run(requete(entree()) as any)).toMatchObject({ ok: true, promptVersion: 'v1' });
     expect(corps().systemInstruction.parts[0].text).toBe(SYSTEME);
+  });
+});
+
+// ---------- Voie ia4 : la phrase s'appuie sur la fiche montrée (D192) ----------
+describe('mode « suggérer » : une phrase qui sort de la fiche', () => {
+  const MOTS = [['citron', 'pin'], ['chewing gum', 'groseille'], ['agrumes'], [], ['mandarine']];
+  const avecMots = () => ({ ...suggerer(5), candidats: suggerer(5).candidats.map((c, i) => ({ ...c, fiche: { ...c.fiche, mots: MOTS[i] } })) });
+  const rendre = (phrases: string[]) => fetchMock.mockResolvedValue(reponse(JSON.stringify({ classement: ids(5).map((id, i) => ({ id, phrase: phrases[i] })) })));
+
+  it('lit les mots de la fiche dans la ligne du candidat', () => {
+    const m = construireInviteSuggerer(lireEntreeSuggerer(avecMots()));
+    expect(motsDeLigne(m, 'c01')).toEqual(['citron', 'pin']); expect(motsDeLigne(m, 'c04')).toEqual([]);
+  });
+  it('un arôme absent des mots, sans « Réputation : », est retiré ; l’ordre reste ; « Réputation : » est gardée et comptée', async () => {
+    rendre(['Agrumes et résine nets.', 'Notes intenses de mandarine.', 'Réputation : mandarine, souvent citée.', 'Rien de net à dire.', 'Mandarine franche.']);
+    const r: any = await hopReclasserIA.run(requete(avecMots()) as any);
+    expect(r).toMatchObject({ ok: true, phrasesRetirees: 1, phrasesHorsFiche: 1, phrasesReputation: 1 });
+    expect(r.ordre).toEqual(['cle-1', 'cle-2', 'cle-3', 'cle-4', 'cle-5']);
+    expect(r.phrases['cle-2']).toBeUndefined();                      // « mandarine » n'est pas dans ses mots (chewing gum, groseille)
+    expect(r.phrases['cle-1']).toBe('Agrumes et résine nets.');       // citron porte la famille agrumes, pin porte la résine
+    expect(r.phrases['cle-3']).toMatch(/^Réputation : /);             // elle le dit elle-même : gardée
+    expect(r.phrases['cle-5']).toBe('Mandarine franche.');            // son mot est dans la fiche
+  });
+  it('aromesHorsFiche : un arôme précis veut son mot ; la famille se contente d’un membre ; sans mots, tout arôme est hors fiche', () => {
+    expect(aromesHorsFiche('Notes de mandarine.', ['agrumes'])).toEqual(['mandarine']);
+    expect(aromesHorsFiche('Agrumes nets.', ['citron vert'])).toEqual([]);
+    expect(aromesHorsFiche('Mangue et ananas, très tropical.', ['mangue'])).toEqual(['ananas']);
+    expect(aromesHorsFiche('Résineux et épicé.', [])).toEqual(expect.arrayContaining(['resin', 'epice']));
+    expect(aromesHorsFiche('Amertume ronde, sans arôme net.', [])).toEqual([]);
+  });
+  it('estReputation : le préfixe « Réputation : », rien d’autre', () => {
+    expect(estReputation('Réputation : très fruité.')).toBe(true); expect(estReputation('reputation: connu')).toBe(true);
+    expect(estReputation('Sa réputation : fruité.')).toBe(false);
+  });
+  it('le pool accepte de 3 à 12 candidats (les ex æquo du moteur)', async () => {
+    expect(MIN_POOL_SUGGERER).toBe(3);
+    fetchMock.mockResolvedValue(reponse(classement(ids(3), PHRASE)));
+    expect(await hopReclasserIA.run(requete(suggerer(3)) as any)).toMatchObject({ ok: true, promptVersion: 'suggerer-v2' });
   });
 });

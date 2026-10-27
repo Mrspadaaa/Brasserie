@@ -1,7 +1,8 @@
 // L'IA dans Suggérer (voie ia3, sa base choisie : « M1 + M2 · avec l'IA semble le mieux », page m6 du 26.10 ; accord D80/D100 :
-// Flash-Lite, environ 0,003 CHF par appel). Même callable que Substituer (`hopReclasserIA`), mode « suggerer », invite `suggerer-v1`.
-// Le moteur range et montre tout de suite ; l'IA ne fait que reclasser les 30 premiers du moteur d'un moment (le pool) et dire une phrase
-// par houblon. Elle ne donne aucun score : les effets, les barres, les doses et le stock restent ceux du moteur.
+// Flash-Lite). Même callable que Substituer (`hopReclasserIA`), mode « suggerer », invite `suggerer-v2` (ia4, D126 et D192).
+// Le moteur range et montre tout de suite ; l'IA ne reclasse que les EX ÆQUO du moteur : le groupe « même effet » d'un moment (ses rangées et
+// leurs suivantes au même effet et à la même dose, jamais un houblon pris plus bas) et dit une phrase pour les premiers, d'après la fiche.
+// Elle ne donne aucun score : les effets, les barres, les doses et le stock restent ceux du moteur.
 //
 // Règles (celles de i2) :
 //  - l'appel part au repos, une fois l'écran peint, en ligne seulement, pour chaque moment dont le groupe a de quoi départager (le moteur
@@ -18,23 +19,23 @@ import { houblon, style } from '../parcours/adaptateur';
 import { quandDe } from '../parcours/quand';
 import type { Quand, RecetteParcours } from '../parcours/types';
 import { COURT } from './commun';
-import type { Objectif } from './voies';
+import { exclue, type Objectif } from './voies';
 
 /** Au-delà, la liste a déjà été lue : l'ordre de l'IA attend un toucher sur la puce. */
 export const FENETRE_MS = 3000;
-/** Le pool : les 30 premiers du moteur au moment (voir functions/src/hopReclassCore.ts, `TAILLE_POOL_SUGGERER`). */
-export const TAILLE_POOL = 30;
-const MIN_POOL = 10;
+/** Le pool : les ex æquo du moteur au moment, 12 au plus (règle de coût et de latence : functions/src/hopReclassCore.ts, `TAILLE_POOL_SUGGERER`). */
+export const TAILLE_POOL = 12;
+const MIN_POOL = 3;
 /** Un groupe « même effet » n'appelle l'IA que s'il a au moins trois rangées au même effet : le moteur ne les départage pas (deux ex æquo ne
  * valent pas un appel). Au plus deux moments par écran (les deux premiers groupes), pour borner le coût d'une ouverture (≈ 0,003 CHF l'appel). */
 export const RANGEES_MINI = 3;
 export const MOMENTS_MAX = 2;
 
-export interface ReponseSuggerer { ok: boolean; ordre?: string[]; phrases?: Record<string, string>; model?: string; error?: string; promptVersion?: string }
+export interface ReponseSuggerer { ok: boolean; ordre?: string[]; phrases?: Record<string, string>; model?: string; error?: string; promptVersion?: string; phrasesRetirees?: number; phrasesHorsFiche?: number; phrasesReputation?: number }
 export type TransportSuggerer = (demande: EntreeSuggerer) => Promise<ReponseSuggerer>;
 
 /** L'appel réel : le callable, par la Cloud Function (jamais une clé dans le navigateur). Importé à la demande : hors ligne ou en test,
- * Firebase n'est même pas chargé. Le délai (10 s) est celui du serveur : 30 phrases à écrire. */
+ * Firebase n'est même pas chargé. Le délai (10 s) est celui du serveur. */
 const transportFirebase: TransportSuggerer = async (demande) => {
   const [{ httpsCallable }, { functions }] = await Promise.all([import('firebase/functions'), import('../../../services/firebase')]);
   const r = await httpsCallable<EntreeSuggerer, ReponseSuggerer>(functions, 'hopReclasserIA', { timeout: 10000 })(demande);
@@ -53,6 +54,21 @@ export const iaPossible = (): boolean => transport !== null && !(typeof navigato
 
 // Une réponse par demande, gardée pour la séance : un double montage du mode strict, ou un retour à la même demande, ne refacture pas.
 const resultats = new Map<string, Promise<ReponseSuggerer | null>>();
+
+const effetCentral = (v: Voie, f: Objectif['f']): number | null => (v.effect[f].established && v.effect[f].central != null ? v.effect[f].central : null);
+const cleEffet = (v: Voie, objectifs: readonly Objectif[]): string => JSON.stringify([v.actions.reduce((s, a) => s + a.grams, 0), objectifs.map((o) => effetCentral(v, o.f))]);
+/** Le pool de l'IA : les EX ÆQUO du moteur. D'abord les rangées du groupe « même effet » (`rangees`, dans l'ordre du moteur), puis, dans le pool du
+ * moment (`pool`, l'ordre du moteur), les houblons au même effet sur les objectifs ET à la même dose totale : jamais un houblon d'un autre effet,
+ * jamais un houblon écarté par la visée (`bannis`). Au plus TAILLE_POOL. Vide : pas de rangée. */
+export function poolExAequo(rangees: readonly Voie[], pool: readonly Voie[], objectifs: readonly Objectif[], bannis: Parameters<typeof exclue>[1] = []): Voie[] {
+  if (!rangees.length) return [];
+  const cle = cleEffet(rangees[0], objectifs), vus = new Set<string>(), sortie: Voie[] = [];
+  for (const v of [...rangees, ...pool.filter((x) => cleEffet(x, objectifs) === cle && !exclue([houblon(x.actions[0].hopKey)], bannis))]) {
+    const k = v.actions[0].hopKey;
+    if (!vus.has(k)) { vus.add(k); sortie.push(v); }
+  }
+  return sortie.slice(0, TAILLE_POOL);
+}
 
 /** Le moment du moteur (MomentId) dit pour l'IA. null : un moment que l'IA ne sait pas dire (rien n'est inventé). */
 export function momentIA(moment: string): MomentSuggerer | null {

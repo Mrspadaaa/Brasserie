@@ -1,0 +1,6517 @@
+{
+ "regle": "voir l'en-tête de scripts/eval-hop/ia4-banc.ts",
+ "exclus": [
+  "22A",
+  "16D",
+  "21C"
+ ],
+ "sources": [
+  "hopsteiner.json (note ≥ 3 sur 5)",
+  "hopdatabase.json (descripteurs Yakima Chief)"
+ ],
+ "cas": [
+  {
+   "id": "15B|citrus|dryActive",
+   "style": "15B",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-target",
+    "beermaverick-east-kent-goldings",
+    "beermaverick-columbus",
+    "beermaverick-sabro",
+    "beermaverick-galena",
+    "beermaverick-summit",
+    "beermaverick-warrior",
+    "beermaverick-citra",
+    "beermaverick-mandarina-bavaria",
+    "beermaverick-simcoe",
+    "beermaverick-galaxy",
+    "beermaverick-lemondrop"
+   ],
+   "ref": {
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-east-kent-goldings": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "dill",
+      "earthy",
+      "gingerbread",
+      "lemon",
+      "woodruff"
+     ]
+    },
+    "beermaverick-columbus": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "fennel seeds",
+      "garlic",
+      "ginger",
+      "herbal/earthy",
+      "leek",
+      "tomato leaves"
+     ]
+    },
+    "beermaverick-sabro": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "coconut",
+      "cream",
+      "grapefruit",
+      "herbal",
+      "mango",
+      "passion fruit",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-galena": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "citrus",
+      "cognac",
+      "earthy",
+      "gooseberry",
+      "herbal",
+      "lemon",
+      "lime",
+      "onion",
+      "pear",
+      "pineapple",
+      "spicy",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-summit": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "citrus",
+      "citrusy",
+      "garlic",
+      "gooseberry",
+      "green pepper",
+      "herbal",
+      "incense",
+      "rosemary",
+      "spicy",
+      "stone fruit",
+      "wild garlic",
+      "woody"
+     ]
+    },
+    "beermaverick-warrior": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "chocolate",
+      "citrus",
+      "grassy",
+      "herbal",
+      "juniper",
+      "lemon grass",
+      "mate tea",
+      "stone fruit",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-mandarina-bavaria": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black currant",
+      "bubble gum",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "lime",
+      "orange",
+      "strawberry",
+      "sweet aromatic",
+      "tangerine",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-simcoe": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "grapefruit",
+      "stone fruit",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-galaxy": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "black currant",
+      "black current",
+      "blueberry",
+      "citrus",
+      "gooseberry",
+      "peach",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-lemondrop": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "green tea",
+      "lemon",
+      "light melon"
+     ]
+    }
+   }
+  },
+  {
+   "id": "15B|floral|b10",
+   "style": "15B",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-target",
+    "beermaverick-willamette",
+    "beermaverick-nugget",
+    "beermaverick-east-kent-goldings",
+    "beermaverick-columbus",
+    "beermaverick-cluster",
+    "beermaverick-motueka",
+    "beermaverick-northdown",
+    "beermaverick-ahtanum",
+    "beermaverick-strisselspalt",
+    "beermaverick-mount-hood",
+    "beermaverick-liberty"
+   ],
+   "ref": {
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-willamette": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "berry",
+      "cedar",
+      "citrus",
+      "citrusy",
+      "curry",
+      "earthy",
+      "ginger",
+      "hay",
+      "lemon",
+      "myrrh",
+      "red currant",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-nugget": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "floral",
+      "geranium",
+      "herbal/earthy",
+      "lemon",
+      "lychee",
+      "pear",
+      "pineapple",
+      "red currant",
+      "resinous",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-east-kent-goldings": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "dill",
+      "earthy",
+      "gingerbread",
+      "lemon",
+      "woodruff"
+     ]
+    },
+    "beermaverick-columbus": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "fennel seeds",
+      "garlic",
+      "ginger",
+      "herbal/earthy",
+      "leek",
+      "tomato leaves"
+     ]
+    },
+    "beermaverick-cluster": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "citrusy",
+      "cream",
+      "fruity",
+      "geranium",
+      "grapefruit",
+      "hay",
+      "herbal",
+      "pepper",
+      "pine",
+      "strawberry",
+      "woody"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 2,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-northdown": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "floral",
+      "pine",
+      "spicy",
+      "woody"
+     ]
+    },
+    "beermaverick-ahtanum": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "cedar",
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal"
+     ]
+    },
+    "beermaverick-strisselspalt": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "camomile blossom",
+      "eucalyptus",
+      "lemon",
+      "lemon grass",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mount-hood": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "honey",
+      "tarragon"
+     ]
+    },
+    "beermaverick-liberty": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "floral",
+      "herbal",
+      "rose",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    }
+   }
+  },
+  {
+   "id": "15C|floral|dryActive",
+   "style": "15C",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-target",
+    "beermaverick-willamette",
+    "beermaverick-east-kent-goldings",
+    "beermaverick-columbus",
+    "beermaverick-cluster",
+    "beermaverick-motueka",
+    "beermaverick-northdown",
+    "beermaverick-ahtanum",
+    "beermaverick-strisselspalt",
+    "beermaverick-mount-hood",
+    "beermaverick-liberty",
+    "beermaverick-saphir"
+   ],
+   "ref": {
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-willamette": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "berry",
+      "cedar",
+      "citrus",
+      "citrusy",
+      "curry",
+      "earthy",
+      "ginger",
+      "hay",
+      "lemon",
+      "myrrh",
+      "red currant",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-east-kent-goldings": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "dill",
+      "earthy",
+      "gingerbread",
+      "lemon",
+      "woodruff"
+     ]
+    },
+    "beermaverick-columbus": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "fennel seeds",
+      "garlic",
+      "ginger",
+      "herbal/earthy",
+      "leek",
+      "tomato leaves"
+     ]
+    },
+    "beermaverick-cluster": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "citrusy",
+      "cream",
+      "fruity",
+      "geranium",
+      "grapefruit",
+      "hay",
+      "herbal",
+      "pepper",
+      "pine",
+      "strawberry",
+      "woody"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 2,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-northdown": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "floral",
+      "pine",
+      "spicy",
+      "woody"
+     ]
+    },
+    "beermaverick-ahtanum": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "cedar",
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal"
+     ]
+    },
+    "beermaverick-strisselspalt": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "camomile blossom",
+      "eucalyptus",
+      "lemon",
+      "lemon grass",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mount-hood": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "honey",
+      "tarragon"
+     ]
+    },
+    "beermaverick-liberty": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "floral",
+      "herbal",
+      "rose",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-saphir": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black tea",
+      "citrus",
+      "citrusy",
+      "floral",
+      "juniper",
+      "lemon",
+      "lily of the valley",
+      "spicy",
+      "strawberry",
+      "tropical/fruit"
+     ]
+    }
+   }
+  },
+  {
+   "id": "16A|floral|dryActive",
+   "style": "16A",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-columbus",
+    "beermaverick-target",
+    "beermaverick-mount-hood",
+    "beermaverick-spalter-select",
+    "beermaverick-tettnanger",
+    "beermaverick-huell-melon",
+    "beermaverick-mosaic",
+    "beermaverick-golding",
+    "beermaverick-hersbrucker",
+    "beermaverick-citra",
+    "beermaverick-lemondrop",
+    "beermaverick-sladek"
+   ],
+   "ref": {
+    "beermaverick-columbus": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "fennel seeds",
+      "garlic",
+      "ginger",
+      "herbal/earthy",
+      "leek",
+      "tomato leaves"
+     ]
+    },
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-mount-hood": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "honey",
+      "tarragon"
+     ]
+    },
+    "beermaverick-spalter-select": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "cucumber",
+      "floral",
+      "grassy",
+      "green tea",
+      "herbal",
+      "lemon",
+      "lovage",
+      "spicy",
+      "thyme",
+      "woody"
+     ]
+    },
+    "beermaverick-tettnanger": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "black tea",
+      "floral",
+      "herbal/earthy",
+      "pepper",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-huell-melon": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 1,
+     "ych": [
+      "caramel",
+      "citrus",
+      "honeydew melon",
+      "melon",
+      "orange",
+      "peach",
+      "strawberry",
+      "tropical",
+      "tropical fruit",
+      "vanilla",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mosaic": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "berry",
+      "citrus",
+      "gooseberry",
+      "mango",
+      "onion",
+      "passion fruit",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-golding": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "earthy",
+      "floral",
+      "herbal",
+      "herbal/earthy",
+      "spicy",
+      "stone fruit"
+     ]
+    },
+    "beermaverick-hersbrucker": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 0,
+     "ych": [
+      "hay",
+      "herbal/earthy",
+      "orange",
+      "spicy",
+      "tobacco",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-lemondrop": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 1,
+     "ych": [
+      "green tea",
+      "lemon",
+      "light melon"
+     ]
+    },
+    "beermaverick-sladek": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 2,
+     "ych": [
+      "citrus",
+      "fruity",
+      "passion fruit"
+     ]
+    }
+   }
+  },
+  {
+   "id": "16B|citrus|b10",
+   "style": "16B",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-willamette",
+    "beermaverick-east-kent-goldings",
+    "beermaverick-columbus",
+    "beermaverick-nugget",
+    "beermaverick-motueka",
+    "beermaverick-sabro",
+    "beermaverick-cluster",
+    "beermaverick-galena",
+    "beermaverick-summit",
+    "beermaverick-warrior",
+    "beermaverick-target",
+    "beermaverick-glacier"
+   ],
+   "ref": {
+    "beermaverick-willamette": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "berry",
+      "cedar",
+      "citrus",
+      "citrusy",
+      "curry",
+      "earthy",
+      "ginger",
+      "hay",
+      "lemon",
+      "myrrh",
+      "red currant",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-east-kent-goldings": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "dill",
+      "earthy",
+      "gingerbread",
+      "lemon",
+      "woodruff"
+     ]
+    },
+    "beermaverick-columbus": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "fennel seeds",
+      "garlic",
+      "ginger",
+      "herbal/earthy",
+      "leek",
+      "tomato leaves"
+     ]
+    },
+    "beermaverick-nugget": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "citrus",
+      "floral",
+      "geranium",
+      "herbal/earthy",
+      "lemon",
+      "lychee",
+      "pear",
+      "pineapple",
+      "red currant",
+      "resinous",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-sabro": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "coconut",
+      "cream",
+      "grapefruit",
+      "herbal",
+      "mango",
+      "passion fruit",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-cluster": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrusy",
+      "cream",
+      "fruity",
+      "geranium",
+      "grapefruit",
+      "hay",
+      "herbal",
+      "pepper",
+      "pine",
+      "strawberry",
+      "woody"
+     ]
+    },
+    "beermaverick-galena": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "citrus",
+      "cognac",
+      "earthy",
+      "gooseberry",
+      "herbal",
+      "lemon",
+      "lime",
+      "onion",
+      "pear",
+      "pineapple",
+      "spicy",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-summit": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "citrus",
+      "citrusy",
+      "garlic",
+      "gooseberry",
+      "green pepper",
+      "herbal",
+      "incense",
+      "rosemary",
+      "spicy",
+      "stone fruit",
+      "wild garlic",
+      "woody"
+     ]
+    },
+    "beermaverick-warrior": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "chocolate",
+      "citrus",
+      "grassy",
+      "herbal",
+      "juniper",
+      "lemon grass",
+      "mate tea",
+      "stone fruit",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-glacier": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "artichoke",
+      "berry",
+      "blackberry",
+      "cedar",
+      "elderflower",
+      "fruity",
+      "grass",
+      "grassy",
+      "lemon",
+      "plum",
+      "woody"
+     ]
+    }
+   }
+  },
+  {
+   "id": "16C|citrus|b10",
+   "style": "16C",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-willamette",
+    "beermaverick-east-kent-goldings",
+    "beermaverick-columbus",
+    "beermaverick-nugget",
+    "beermaverick-motueka",
+    "beermaverick-ekuanot",
+    "beermaverick-sabro",
+    "beermaverick-cluster",
+    "beermaverick-galena",
+    "beermaverick-summit",
+    "beermaverick-warrior",
+    "beermaverick-target"
+   ],
+   "ref": {
+    "beermaverick-willamette": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "berry",
+      "cedar",
+      "citrus",
+      "citrusy",
+      "curry",
+      "earthy",
+      "ginger",
+      "hay",
+      "lemon",
+      "myrrh",
+      "red currant",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-east-kent-goldings": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "dill",
+      "earthy",
+      "gingerbread",
+      "lemon",
+      "woodruff"
+     ]
+    },
+    "beermaverick-columbus": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "fennel seeds",
+      "garlic",
+      "ginger",
+      "herbal/earthy",
+      "leek",
+      "tomato leaves"
+     ]
+    },
+    "beermaverick-nugget": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "citrus",
+      "floral",
+      "geranium",
+      "herbal/earthy",
+      "lemon",
+      "lychee",
+      "pear",
+      "pineapple",
+      "red currant",
+      "resinous",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-ekuanot": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "bubblegum",
+      "citrus",
+      "fennel",
+      "gooseberry",
+      "grapefruit",
+      "guava",
+      "orange",
+      "stone fruit",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-sabro": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "coconut",
+      "cream",
+      "grapefruit",
+      "herbal",
+      "mango",
+      "passion fruit",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-cluster": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrusy",
+      "cream",
+      "fruity",
+      "geranium",
+      "grapefruit",
+      "hay",
+      "herbal",
+      "pepper",
+      "pine",
+      "strawberry",
+      "woody"
+     ]
+    },
+    "beermaverick-galena": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "citrus",
+      "cognac",
+      "earthy",
+      "gooseberry",
+      "herbal",
+      "lemon",
+      "lime",
+      "onion",
+      "pear",
+      "pineapple",
+      "spicy",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-summit": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "citrus",
+      "citrusy",
+      "garlic",
+      "gooseberry",
+      "green pepper",
+      "herbal",
+      "incense",
+      "rosemary",
+      "spicy",
+      "stone fruit",
+      "wild garlic",
+      "woody"
+     ]
+    },
+    "beermaverick-warrior": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "chocolate",
+      "citrus",
+      "grassy",
+      "herbal",
+      "juniper",
+      "lemon grass",
+      "mate tea",
+      "stone fruit",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    }
+   }
+  },
+  {
+   "id": "20B|citrus|dryActive",
+   "style": "20B",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-willamette",
+    "beermaverick-east-kent-goldings",
+    "beermaverick-columbus",
+    "beermaverick-nugget",
+    "beermaverick-motueka",
+    "beermaverick-sabro",
+    "beermaverick-cluster",
+    "beermaverick-galena",
+    "beermaverick-summit",
+    "beermaverick-warrior",
+    "beermaverick-target",
+    "beermaverick-horizon"
+   ],
+   "ref": {
+    "beermaverick-willamette": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "berry",
+      "cedar",
+      "citrus",
+      "citrusy",
+      "curry",
+      "earthy",
+      "ginger",
+      "hay",
+      "lemon",
+      "myrrh",
+      "red currant",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-east-kent-goldings": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "dill",
+      "earthy",
+      "gingerbread",
+      "lemon",
+      "woodruff"
+     ]
+    },
+    "beermaverick-columbus": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "fennel seeds",
+      "garlic",
+      "ginger",
+      "herbal/earthy",
+      "leek",
+      "tomato leaves"
+     ]
+    },
+    "beermaverick-nugget": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "citrus",
+      "floral",
+      "geranium",
+      "herbal/earthy",
+      "lemon",
+      "lychee",
+      "pear",
+      "pineapple",
+      "red currant",
+      "resinous",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-sabro": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "coconut",
+      "cream",
+      "grapefruit",
+      "herbal",
+      "mango",
+      "passion fruit",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-cluster": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrusy",
+      "cream",
+      "fruity",
+      "geranium",
+      "grapefruit",
+      "hay",
+      "herbal",
+      "pepper",
+      "pine",
+      "strawberry",
+      "woody"
+     ]
+    },
+    "beermaverick-galena": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "citrus",
+      "cognac",
+      "earthy",
+      "gooseberry",
+      "herbal",
+      "lemon",
+      "lime",
+      "onion",
+      "pear",
+      "pineapple",
+      "spicy",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-summit": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "citrus",
+      "citrusy",
+      "garlic",
+      "gooseberry",
+      "green pepper",
+      "herbal",
+      "incense",
+      "rosemary",
+      "spicy",
+      "stone fruit",
+      "wild garlic",
+      "woody"
+     ]
+    },
+    "beermaverick-warrior": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "chocolate",
+      "citrus",
+      "grassy",
+      "herbal",
+      "juniper",
+      "lemon grass",
+      "mate tea",
+      "stone fruit",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-horizon": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "citrus",
+      "citrusy",
+      "floral",
+      "spicy"
+     ]
+    }
+   }
+  },
+  {
+   "id": "20C|citrus|dryActive",
+   "style": "20C",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-warrior",
+    "beermaverick-willamette",
+    "beermaverick-east-kent-goldings",
+    "beermaverick-columbus",
+    "beermaverick-nugget",
+    "beermaverick-motueka",
+    "beermaverick-sabro",
+    "beermaverick-cluster",
+    "beermaverick-galena",
+    "beermaverick-summit",
+    "beermaverick-target",
+    "beermaverick-horizon"
+   ],
+   "ref": {
+    "beermaverick-warrior": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "chocolate",
+      "citrus",
+      "grassy",
+      "herbal",
+      "juniper",
+      "lemon grass",
+      "mate tea",
+      "stone fruit",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-willamette": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "berry",
+      "cedar",
+      "citrus",
+      "citrusy",
+      "curry",
+      "earthy",
+      "ginger",
+      "hay",
+      "lemon",
+      "myrrh",
+      "red currant",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-east-kent-goldings": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "dill",
+      "earthy",
+      "gingerbread",
+      "lemon",
+      "woodruff"
+     ]
+    },
+    "beermaverick-columbus": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "fennel seeds",
+      "garlic",
+      "ginger",
+      "herbal/earthy",
+      "leek",
+      "tomato leaves"
+     ]
+    },
+    "beermaverick-nugget": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "citrus",
+      "floral",
+      "geranium",
+      "herbal/earthy",
+      "lemon",
+      "lychee",
+      "pear",
+      "pineapple",
+      "red currant",
+      "resinous",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-sabro": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "coconut",
+      "cream",
+      "grapefruit",
+      "herbal",
+      "mango",
+      "passion fruit",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-cluster": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrusy",
+      "cream",
+      "fruity",
+      "geranium",
+      "grapefruit",
+      "hay",
+      "herbal",
+      "pepper",
+      "pine",
+      "strawberry",
+      "woody"
+     ]
+    },
+    "beermaverick-galena": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "citrus",
+      "cognac",
+      "earthy",
+      "gooseberry",
+      "herbal",
+      "lemon",
+      "lime",
+      "onion",
+      "pear",
+      "pineapple",
+      "spicy",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-summit": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "citrus",
+      "citrusy",
+      "garlic",
+      "gooseberry",
+      "green pepper",
+      "herbal",
+      "incense",
+      "rosemary",
+      "spicy",
+      "stone fruit",
+      "wild garlic",
+      "woody"
+     ]
+    },
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-horizon": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "citrus",
+      "citrusy",
+      "floral",
+      "spicy"
+     ]
+    }
+   }
+  },
+  {
+   "id": "20C|floral|b10",
+   "style": "20C",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-willamette",
+    "beermaverick-nugget",
+    "beermaverick-east-kent-goldings",
+    "beermaverick-columbus",
+    "beermaverick-horizon",
+    "beermaverick-target",
+    "beermaverick-cluster",
+    "beermaverick-motueka",
+    "beermaverick-northdown",
+    "beermaverick-ahtanum",
+    "beermaverick-strisselspalt",
+    "beermaverick-mount-hood"
+   ],
+   "ref": {
+    "beermaverick-willamette": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "berry",
+      "cedar",
+      "citrus",
+      "citrusy",
+      "curry",
+      "earthy",
+      "ginger",
+      "hay",
+      "lemon",
+      "myrrh",
+      "red currant",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-nugget": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "floral",
+      "geranium",
+      "herbal/earthy",
+      "lemon",
+      "lychee",
+      "pear",
+      "pineapple",
+      "red currant",
+      "resinous",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-east-kent-goldings": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "dill",
+      "earthy",
+      "gingerbread",
+      "lemon",
+      "woodruff"
+     ]
+    },
+    "beermaverick-columbus": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "fennel seeds",
+      "garlic",
+      "ginger",
+      "herbal/earthy",
+      "leek",
+      "tomato leaves"
+     ]
+    },
+    "beermaverick-horizon": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "citrusy",
+      "floral",
+      "spicy"
+     ]
+    },
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-cluster": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "citrusy",
+      "cream",
+      "fruity",
+      "geranium",
+      "grapefruit",
+      "hay",
+      "herbal",
+      "pepper",
+      "pine",
+      "strawberry",
+      "woody"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 2,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-northdown": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "floral",
+      "pine",
+      "spicy",
+      "woody"
+     ]
+    },
+    "beermaverick-ahtanum": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "cedar",
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal"
+     ]
+    },
+    "beermaverick-strisselspalt": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "camomile blossom",
+      "eucalyptus",
+      "lemon",
+      "lemon grass",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mount-hood": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "honey",
+      "tarragon"
+     ]
+    }
+   }
+  },
+  {
+   "id": "20A|floral|b10",
+   "style": "20A",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-willamette",
+    "beermaverick-nugget",
+    "beermaverick-glacier",
+    "beermaverick-strisselspalt",
+    "beermaverick-saphir",
+    "beermaverick-spalter-select",
+    "beermaverick-huell-melon",
+    "beermaverick-mosaic",
+    "beermaverick-amarillo",
+    "beermaverick-hersbrucker",
+    "beermaverick-citra",
+    "beermaverick-lemondrop"
+   ],
+   "ref": {
+    "beermaverick-willamette": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "berry",
+      "cedar",
+      "citrus",
+      "citrusy",
+      "curry",
+      "earthy",
+      "ginger",
+      "hay",
+      "lemon",
+      "myrrh",
+      "red currant",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-nugget": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "floral",
+      "geranium",
+      "herbal/earthy",
+      "lemon",
+      "lychee",
+      "pear",
+      "pineapple",
+      "red currant",
+      "resinous",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-glacier": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "artichoke",
+      "berry",
+      "blackberry",
+      "cedar",
+      "elderflower",
+      "fruity",
+      "grass",
+      "grassy",
+      "lemon",
+      "plum",
+      "woody"
+     ]
+    },
+    "beermaverick-strisselspalt": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "camomile blossom",
+      "eucalyptus",
+      "lemon",
+      "lemon grass",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-saphir": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black tea",
+      "citrus",
+      "citrusy",
+      "floral",
+      "juniper",
+      "lemon",
+      "lily of the valley",
+      "spicy",
+      "strawberry",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-spalter-select": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "cucumber",
+      "floral",
+      "grassy",
+      "green tea",
+      "herbal",
+      "lemon",
+      "lovage",
+      "spicy",
+      "thyme",
+      "woody"
+     ]
+    },
+    "beermaverick-huell-melon": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 1,
+     "ych": [
+      "caramel",
+      "citrus",
+      "honeydew melon",
+      "melon",
+      "orange",
+      "peach",
+      "strawberry",
+      "tropical",
+      "tropical fruit",
+      "vanilla",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mosaic": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "berry",
+      "citrus",
+      "gooseberry",
+      "mango",
+      "onion",
+      "passion fruit",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-hersbrucker": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 0,
+     "ych": [
+      "hay",
+      "herbal/earthy",
+      "orange",
+      "spicy",
+      "tobacco",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-lemondrop": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 1,
+     "ych": [
+      "green tea",
+      "lemon",
+      "light melon"
+     ]
+    }
+   }
+  },
+  {
+   "id": "13C|floral|dryActive",
+   "style": "13C",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-willamette",
+    "beermaverick-fuggle",
+    "beermaverick-first-gold",
+    "beermaverick-ahtanum",
+    "beermaverick-target",
+    "beermaverick-strisselspalt",
+    "beermaverick-mount-hood",
+    "beermaverick-liberty",
+    "beermaverick-saphir",
+    "beermaverick-sterling",
+    "beermaverick-centennial",
+    "beermaverick-cascade"
+   ],
+   "ref": {
+    "beermaverick-willamette": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "berry",
+      "cedar",
+      "citrus",
+      "citrusy",
+      "curry",
+      "earthy",
+      "ginger",
+      "hay",
+      "lemon",
+      "myrrh",
+      "red currant",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-fuggle": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 0,
+     "ych": [
+      "celeriac",
+      "curry",
+      "earthy",
+      "grassy",
+      "green tea",
+      "hay",
+      "herbal",
+      "mild",
+      "mint",
+      "tonka bean",
+      "woody"
+     ]
+    },
+    "beermaverick-first-gold": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "celeriac",
+      "citrus",
+      "citrusy",
+      "cognac",
+      "floral",
+      "herbal",
+      "marjoram",
+      "orange",
+      "red berries",
+      "strawberry",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-ahtanum": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "cedar",
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal"
+     ]
+    },
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-strisselspalt": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "camomile blossom",
+      "eucalyptus",
+      "lemon",
+      "lemon grass",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mount-hood": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "honey",
+      "tarragon"
+     ]
+    },
+    "beermaverick-liberty": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "floral",
+      "herbal",
+      "rose",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-saphir": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black tea",
+      "citrus",
+      "citrusy",
+      "floral",
+      "juniper",
+      "lemon",
+      "lily of the valley",
+      "spicy",
+      "strawberry",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-sterling": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal/earthy",
+      "pepper",
+      "spicy",
+      "tea",
+      "tobacco"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    }
+   }
+  },
+  {
+   "id": "9C|floral|dryActive",
+   "style": "9C",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-ahtanum",
+    "beermaverick-target",
+    "beermaverick-mount-hood",
+    "beermaverick-saphir",
+    "beermaverick-centennial",
+    "beermaverick-cascade",
+    "beermaverick-huell-melon",
+    "beermaverick-mosaic",
+    "beermaverick-cluster",
+    "beermaverick-amarillo",
+    "beermaverick-golding",
+    "beermaverick-hersbrucker"
+   ],
+   "ref": {
+    "beermaverick-ahtanum": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "cedar",
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal"
+     ]
+    },
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-mount-hood": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "honey",
+      "tarragon"
+     ]
+    },
+    "beermaverick-saphir": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black tea",
+      "citrus",
+      "citrusy",
+      "floral",
+      "juniper",
+      "lemon",
+      "lily of the valley",
+      "spicy",
+      "strawberry",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    },
+    "beermaverick-huell-melon": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 1,
+     "ych": [
+      "caramel",
+      "citrus",
+      "honeydew melon",
+      "melon",
+      "orange",
+      "peach",
+      "strawberry",
+      "tropical",
+      "tropical fruit",
+      "vanilla",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mosaic": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "berry",
+      "citrus",
+      "gooseberry",
+      "mango",
+      "onion",
+      "passion fruit",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-cluster": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "citrusy",
+      "cream",
+      "fruity",
+      "geranium",
+      "grapefruit",
+      "hay",
+      "herbal",
+      "pepper",
+      "pine",
+      "strawberry",
+      "woody"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-golding": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "earthy",
+      "floral",
+      "herbal",
+      "herbal/earthy",
+      "spicy",
+      "stone fruit"
+     ]
+    },
+    "beermaverick-hersbrucker": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 0,
+     "ych": [
+      "hay",
+      "herbal/earthy",
+      "orange",
+      "spicy",
+      "tobacco",
+      "tropical/fruit"
+     ]
+    }
+   }
+  },
+  {
+   "id": "1A|citrus|b10",
+   "style": "1A",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-sorachi-ace",
+    "beermaverick-kazbek",
+    "beermaverick-liberty",
+    "beermaverick-mount-hood",
+    "beermaverick-citra",
+    "beermaverick-centennial",
+    "beermaverick-amarillo",
+    "beermaverick-mandarina-bavaria",
+    "beermaverick-simcoe",
+    "beermaverick-galaxy",
+    "beermaverick-motueka",
+    "beermaverick-cascade"
+   ],
+   "ref": {
+    "beermaverick-sorachi-ace": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "cedarwood",
+      "herbal",
+      "lemon",
+      "lemon grass",
+      "lychee",
+      "orange",
+      "plum",
+      "spicy",
+      "sweet",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-kazbek": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "earthy",
+      "lemon",
+      "mango",
+      "orange",
+      "pineapple",
+      "raspberry",
+      "spicy"
+     ]
+    },
+    "beermaverick-liberty": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "rose",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-mount-hood": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "honey",
+      "tarragon"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mandarina-bavaria": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black currant",
+      "bubble gum",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "lime",
+      "orange",
+      "strawberry",
+      "sweet aromatic",
+      "tangerine",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-simcoe": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "grapefruit",
+      "stone fruit",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-galaxy": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "black currant",
+      "black current",
+      "blueberry",
+      "citrus",
+      "gooseberry",
+      "peach",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    }
+   }
+  },
+  {
+   "id": "3A|citrus|b10",
+   "style": "3A",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-sterling",
+    "beermaverick-sladek",
+    "beermaverick-premiant",
+    "beermaverick-citra",
+    "beermaverick-centennial",
+    "beermaverick-amarillo",
+    "beermaverick-mandarina-bavaria",
+    "beermaverick-simcoe",
+    "beermaverick-galaxy",
+    "beermaverick-motueka",
+    "beermaverick-cascade",
+    "beermaverick-lemondrop"
+   ],
+   "ref": {
+    "beermaverick-sterling": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 0,
+     "ych": [
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal/earthy",
+      "pepper",
+      "spicy",
+      "tea",
+      "tobacco"
+     ]
+    },
+    "beermaverick-sladek": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fruity",
+      "passion fruit"
+     ]
+    },
+    "beermaverick-premiant": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "chocolate",
+      "curry",
+      "earthy",
+      "floral",
+      "fruity",
+      "herbal",
+      "lavender",
+      "leather",
+      "lemon",
+      "lemon grass"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mandarina-bavaria": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black currant",
+      "bubble gum",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "lime",
+      "orange",
+      "strawberry",
+      "sweet aromatic",
+      "tangerine",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-simcoe": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "grapefruit",
+      "stone fruit",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-galaxy": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "black currant",
+      "black current",
+      "blueberry",
+      "citrus",
+      "gooseberry",
+      "peach",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    },
+    "beermaverick-lemondrop": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "green tea",
+      "lemon",
+      "light melon"
+     ]
+    }
+   }
+  },
+  {
+   "id": "3B|citrus|dryActive",
+   "style": "3B",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-sladek",
+    "beermaverick-premiant",
+    "beermaverick-citra",
+    "beermaverick-centennial",
+    "beermaverick-amarillo",
+    "beermaverick-mandarina-bavaria",
+    "beermaverick-simcoe",
+    "beermaverick-galaxy",
+    "beermaverick-motueka",
+    "beermaverick-cascade",
+    "beermaverick-lemondrop",
+    "beermaverick-sorachi-ace"
+   ],
+   "ref": {
+    "beermaverick-sladek": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fruity",
+      "passion fruit"
+     ]
+    },
+    "beermaverick-premiant": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "chocolate",
+      "curry",
+      "earthy",
+      "floral",
+      "fruity",
+      "herbal",
+      "lavender",
+      "leather",
+      "lemon",
+      "lemon grass"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mandarina-bavaria": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black currant",
+      "bubble gum",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "lime",
+      "orange",
+      "strawberry",
+      "sweet aromatic",
+      "tangerine",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-simcoe": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "grapefruit",
+      "stone fruit",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-galaxy": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "black currant",
+      "black current",
+      "blueberry",
+      "citrus",
+      "gooseberry",
+      "peach",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    },
+    "beermaverick-lemondrop": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "green tea",
+      "lemon",
+      "light melon"
+     ]
+    },
+    "beermaverick-sorachi-ace": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "cedarwood",
+      "herbal",
+      "lemon",
+      "lemon grass",
+      "lychee",
+      "orange",
+      "plum",
+      "spicy",
+      "sweet",
+      "woody",
+      "yoghurt"
+     ]
+    }
+   }
+  },
+  {
+   "id": "4A|citrus|dryActive",
+   "style": "4A",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-hersbrucker",
+    "beermaverick-citra",
+    "beermaverick-mandarina-bavaria",
+    "beermaverick-simcoe",
+    "beermaverick-galaxy",
+    "beermaverick-lemondrop",
+    "beermaverick-sorachi-ace",
+    "beermaverick-azacca",
+    "beermaverick-mosaic",
+    "beermaverick-el-dorado",
+    "beermaverick-summit",
+    "beermaverick-warrior"
+   ],
+   "ref": {
+    "beermaverick-hersbrucker": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "hay",
+      "herbal/earthy",
+      "orange",
+      "spicy",
+      "tobacco",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-mandarina-bavaria": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black currant",
+      "bubble gum",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "lime",
+      "orange",
+      "strawberry",
+      "sweet aromatic",
+      "tangerine",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-simcoe": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "grapefruit",
+      "stone fruit",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-galaxy": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "black currant",
+      "black current",
+      "blueberry",
+      "citrus",
+      "gooseberry",
+      "peach",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-lemondrop": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "green tea",
+      "lemon",
+      "light melon"
+     ]
+    },
+    "beermaverick-sorachi-ace": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "cedarwood",
+      "herbal",
+      "lemon",
+      "lemon grass",
+      "lychee",
+      "orange",
+      "plum",
+      "spicy",
+      "sweet",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-azacca": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "basil",
+      "berry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "peach",
+      "pine",
+      "pineapple",
+      "piney/resinous",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-mosaic": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "berry",
+      "citrus",
+      "gooseberry",
+      "mango",
+      "onion",
+      "passion fruit",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-el-dorado": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "and candied lemon",
+      "apricot",
+      "citrus",
+      "menthol",
+      "pear",
+      "stone fruit",
+      "tangerine",
+      "tropical",
+      "tropical mango",
+      "tropical/fruit",
+      "watermelon",
+      "woody"
+     ]
+    },
+    "beermaverick-summit": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "citrus",
+      "citrusy",
+      "garlic",
+      "gooseberry",
+      "green pepper",
+      "herbal",
+      "incense",
+      "rosemary",
+      "spicy",
+      "stone fruit",
+      "wild garlic",
+      "woody"
+     ]
+    },
+    "beermaverick-warrior": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "chocolate",
+      "citrus",
+      "grassy",
+      "herbal",
+      "juniper",
+      "lemon grass",
+      "mate tea",
+      "stone fruit",
+      "tobacco",
+      "woody"
+     ]
+    }
+   }
+  },
+  {
+   "id": "4A|floral|b10",
+   "style": "4A",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-hersbrucker",
+    "beermaverick-saphir",
+    "beermaverick-wakatu",
+    "beermaverick-ahtanum",
+    "beermaverick-target",
+    "beermaverick-strisselspalt",
+    "beermaverick-mount-hood",
+    "beermaverick-liberty",
+    "beermaverick-sterling",
+    "beermaverick-centennial",
+    "beermaverick-cascade",
+    "beermaverick-willamette"
+   ],
+   "ref": {
+    "beermaverick-hersbrucker": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 0,
+     "ych": [
+      "hay",
+      "herbal/earthy",
+      "orange",
+      "spicy",
+      "tobacco",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-saphir": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black tea",
+      "citrus",
+      "citrusy",
+      "floral",
+      "juniper",
+      "lemon",
+      "lily of the valley",
+      "spicy",
+      "strawberry",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-wakatu": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "floral",
+      "grassy",
+      "woody"
+     ]
+    },
+    "beermaverick-ahtanum": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "cedar",
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal"
+     ]
+    },
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-strisselspalt": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "camomile blossom",
+      "eucalyptus",
+      "lemon",
+      "lemon grass",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mount-hood": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "honey",
+      "tarragon"
+     ]
+    },
+    "beermaverick-liberty": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "floral",
+      "herbal",
+      "rose",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-sterling": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal/earthy",
+      "pepper",
+      "spicy",
+      "tea",
+      "tobacco"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    },
+    "beermaverick-willamette": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "berry",
+      "cedar",
+      "citrus",
+      "citrusy",
+      "curry",
+      "earthy",
+      "ginger",
+      "hay",
+      "lemon",
+      "myrrh",
+      "red currant",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    }
+   }
+  },
+  {
+   "id": "5B|floral|dryActive",
+   "style": "5B",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-tettnanger",
+    "beermaverick-hersbrucker",
+    "beermaverick-saphir",
+    "beermaverick-spalter-select",
+    "beermaverick-huell-melon",
+    "beermaverick-crystal",
+    "beermaverick-ahtanum",
+    "beermaverick-target",
+    "beermaverick-strisselspalt",
+    "beermaverick-mount-hood",
+    "beermaverick-liberty",
+    "beermaverick-sterling"
+   ],
+   "ref": {
+    "beermaverick-tettnanger": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "black tea",
+      "floral",
+      "herbal/earthy",
+      "pepper",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-hersbrucker": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 0,
+     "ych": [
+      "hay",
+      "herbal/earthy",
+      "orange",
+      "spicy",
+      "tobacco",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-saphir": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black tea",
+      "citrus",
+      "citrusy",
+      "floral",
+      "juniper",
+      "lemon",
+      "lily of the valley",
+      "spicy",
+      "strawberry",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-spalter-select": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "cucumber",
+      "floral",
+      "grassy",
+      "green tea",
+      "herbal",
+      "lemon",
+      "lovage",
+      "spicy",
+      "thyme",
+      "woody"
+     ]
+    },
+    "beermaverick-huell-melon": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 1,
+     "ych": [
+      "caramel",
+      "citrus",
+      "honeydew melon",
+      "melon",
+      "orange",
+      "peach",
+      "strawberry",
+      "tropical",
+      "tropical fruit",
+      "vanilla",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-crystal": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "apricot",
+      "black tea",
+      "camomile blossom",
+      "citrus",
+      "citrusy",
+      "floral",
+      "grass",
+      "herbal",
+      "lemon grass",
+      "pine",
+      "plum",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "woody/tobacco"
+     ]
+    },
+    "beermaverick-ahtanum": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "cedar",
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal"
+     ]
+    },
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-strisselspalt": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "camomile blossom",
+      "eucalyptus",
+      "lemon",
+      "lemon grass",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mount-hood": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "honey",
+      "tarragon"
+     ]
+    },
+    "beermaverick-liberty": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "floral",
+      "herbal",
+      "rose",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-sterling": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal/earthy",
+      "pepper",
+      "spicy",
+      "tea",
+      "tobacco"
+     ]
+    }
+   }
+  },
+  {
+   "id": "5D|floral|dryActive",
+   "style": "5D",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-tettnanger",
+    "beermaverick-saphir",
+    "beermaverick-spalter-select",
+    "beermaverick-wakatu",
+    "beermaverick-motueka",
+    "beermaverick-ahtanum",
+    "beermaverick-target",
+    "beermaverick-strisselspalt",
+    "beermaverick-mount-hood",
+    "beermaverick-liberty",
+    "beermaverick-sterling",
+    "beermaverick-centennial"
+   ],
+   "ref": {
+    "beermaverick-tettnanger": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "black tea",
+      "floral",
+      "herbal/earthy",
+      "pepper",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-saphir": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black tea",
+      "citrus",
+      "citrusy",
+      "floral",
+      "juniper",
+      "lemon",
+      "lily of the valley",
+      "spicy",
+      "strawberry",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-spalter-select": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "cucumber",
+      "floral",
+      "grassy",
+      "green tea",
+      "herbal",
+      "lemon",
+      "lovage",
+      "spicy",
+      "thyme",
+      "woody"
+     ]
+    },
+    "beermaverick-wakatu": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "floral",
+      "grassy",
+      "woody"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 2,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-ahtanum": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "cedar",
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal"
+     ]
+    },
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-strisselspalt": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "camomile blossom",
+      "eucalyptus",
+      "lemon",
+      "lemon grass",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mount-hood": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "honey",
+      "tarragon"
+     ]
+    },
+    "beermaverick-liberty": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "floral",
+      "herbal",
+      "rose",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-sterling": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal/earthy",
+      "pepper",
+      "spicy",
+      "tea",
+      "tobacco"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    }
+   }
+  },
+  {
+   "id": "7B|citrus|b10",
+   "style": "7B",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-spalter-select",
+    "beermaverick-tettnanger",
+    "beermaverick-mount-hood",
+    "beermaverick-citra",
+    "beermaverick-centennial",
+    "beermaverick-amarillo",
+    "beermaverick-mandarina-bavaria",
+    "beermaverick-simcoe",
+    "beermaverick-galaxy",
+    "beermaverick-motueka",
+    "beermaverick-cascade",
+    "beermaverick-lemondrop"
+   ],
+   "ref": {
+    "beermaverick-spalter-select": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "cucumber",
+      "floral",
+      "grassy",
+      "green tea",
+      "herbal",
+      "lemon",
+      "lovage",
+      "spicy",
+      "thyme",
+      "woody"
+     ]
+    },
+    "beermaverick-tettnanger": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 1,
+     "ych": [
+      "black tea",
+      "floral",
+      "herbal/earthy",
+      "pepper",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-mount-hood": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "honey",
+      "tarragon"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mandarina-bavaria": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black currant",
+      "bubble gum",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "lime",
+      "orange",
+      "strawberry",
+      "sweet aromatic",
+      "tangerine",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-simcoe": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "grapefruit",
+      "stone fruit",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-galaxy": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "black currant",
+      "black current",
+      "blueberry",
+      "citrus",
+      "gooseberry",
+      "peach",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    },
+    "beermaverick-lemondrop": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "green tea",
+      "lemon",
+      "light melon"
+     ]
+    }
+   }
+  },
+  {
+   "id": "10A|citrus|b10",
+   "style": "10A",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-hersbrucker",
+    "beermaverick-mandarina-bavaria",
+    "beermaverick-wakatu",
+    "beermaverick-saphir",
+    "beermaverick-citra",
+    "beermaverick-centennial",
+    "beermaverick-amarillo",
+    "beermaverick-simcoe",
+    "beermaverick-galaxy",
+    "beermaverick-motueka",
+    "beermaverick-cascade",
+    "beermaverick-lemondrop"
+   ],
+   "ref": {
+    "beermaverick-hersbrucker": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "hay",
+      "herbal/earthy",
+      "orange",
+      "spicy",
+      "tobacco",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-mandarina-bavaria": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black currant",
+      "bubble gum",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "lime",
+      "orange",
+      "strawberry",
+      "sweet aromatic",
+      "tangerine",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-wakatu": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "floral",
+      "grassy",
+      "woody"
+     ]
+    },
+    "beermaverick-saphir": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "black tea",
+      "citrus",
+      "citrusy",
+      "floral",
+      "juniper",
+      "lemon",
+      "lily of the valley",
+      "spicy",
+      "strawberry",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-simcoe": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "grapefruit",
+      "stone fruit",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-galaxy": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "black currant",
+      "black current",
+      "blueberry",
+      "citrus",
+      "gooseberry",
+      "peach",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    },
+    "beermaverick-lemondrop": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "green tea",
+      "lemon",
+      "light melon"
+     ]
+    }
+   }
+  },
+  {
+   "id": "24A|citrus|dryActive",
+   "style": "24A",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-mandarina-bavaria",
+    "beermaverick-citra",
+    "beermaverick-centennial",
+    "beermaverick-amarillo",
+    "beermaverick-galaxy",
+    "beermaverick-motueka",
+    "beermaverick-cascade",
+    "beermaverick-azacca",
+    "beermaverick-cluster",
+    "beermaverick-mosaic",
+    "beermaverick-el-dorado",
+    "beermaverick-ahtanum"
+   ],
+   "ref": {
+    "beermaverick-mandarina-bavaria": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black currant",
+      "bubble gum",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "lime",
+      "orange",
+      "strawberry",
+      "sweet aromatic",
+      "tangerine",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-galaxy": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "black currant",
+      "black current",
+      "blueberry",
+      "citrus",
+      "gooseberry",
+      "peach",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    },
+    "beermaverick-azacca": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "basil",
+      "berry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "peach",
+      "pine",
+      "pineapple",
+      "piney/resinous",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-cluster": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrusy",
+      "cream",
+      "fruity",
+      "geranium",
+      "grapefruit",
+      "hay",
+      "herbal",
+      "pepper",
+      "pine",
+      "strawberry",
+      "woody"
+     ]
+    },
+    "beermaverick-mosaic": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "berry",
+      "citrus",
+      "gooseberry",
+      "mango",
+      "onion",
+      "passion fruit",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-el-dorado": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "and candied lemon",
+      "apricot",
+      "citrus",
+      "menthol",
+      "pear",
+      "stone fruit",
+      "tangerine",
+      "tropical",
+      "tropical mango",
+      "tropical/fruit",
+      "watermelon",
+      "woody"
+     ]
+    },
+    "beermaverick-ahtanum": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "cedar",
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal"
+     ]
+    }
+   }
+  },
+  {
+   "id": "21A|citrus|dryActive",
+   "style": "21A",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-citra",
+    "beermaverick-centennial",
+    "beermaverick-amarillo",
+    "beermaverick-simcoe",
+    "beermaverick-nectaron",
+    "beermaverick-denali",
+    "beermaverick-strata",
+    "beermaverick-galaxy",
+    "beermaverick-cascade",
+    "beermaverick-ekuanot",
+    "beermaverick-sabro",
+    "beermaverick-azacca"
+   ],
+   "ref": {
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-simcoe": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "grapefruit",
+      "stone fruit",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-nectaron": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-denali": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": null
+    },
+    "beermaverick-strata": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "pungent/dank",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-galaxy": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "black currant",
+      "black current",
+      "blueberry",
+      "citrus",
+      "gooseberry",
+      "peach",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    },
+    "beermaverick-ekuanot": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "bubblegum",
+      "citrus",
+      "fennel",
+      "gooseberry",
+      "grapefruit",
+      "guava",
+      "orange",
+      "stone fruit",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-sabro": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "coconut",
+      "cream",
+      "grapefruit",
+      "herbal",
+      "mango",
+      "passion fruit",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-azacca": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "basil",
+      "berry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "peach",
+      "pine",
+      "pineapple",
+      "piney/resinous",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit"
+     ]
+    }
+   }
+  },
+  {
+   "id": "21A|floral|b10",
+   "style": "21A",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-centennial",
+    "beermaverick-cascade",
+    "beermaverick-mosaic",
+    "beermaverick-amarillo",
+    "beermaverick-citra",
+    "beermaverick-bru-1",
+    "beermaverick-idaho-7",
+    "beermaverick-columbus",
+    "beermaverick-ahtanum",
+    "beermaverick-horizon",
+    "beermaverick-pacifica",
+    "beermaverick-ella"
+   ],
+   "ref": {
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    },
+    "beermaverick-mosaic": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "berry",
+      "citrus",
+      "gooseberry",
+      "mango",
+      "onion",
+      "passion fruit",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-bru-1": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "eucalyptus",
+      "fennel",
+      "mate tea",
+      "pineapple",
+      "rose",
+      "tropical"
+     ]
+    },
+    "beermaverick-idaho-7": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "berry",
+      "bubblegum",
+      "citrus",
+      "piney/resinous",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-columbus": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "fennel seeds",
+      "garlic",
+      "ginger",
+      "herbal/earthy",
+      "leek",
+      "tomato leaves"
+     ]
+    },
+    "beermaverick-ahtanum": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "cedar",
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal"
+     ]
+    },
+    "beermaverick-horizon": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "citrusy",
+      "floral",
+      "spicy"
+     ]
+    },
+    "beermaverick-pacifica": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "floral",
+      "orange"
+     ]
+    },
+    "beermaverick-ella": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "black currant",
+      "green pepper",
+      "lavender",
+      "lime",
+      "peach"
+     ]
+    }
+   }
+  },
+  {
+   "id": "12C|floral|b10",
+   "style": "12C",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-target",
+    "beermaverick-ahtanum",
+    "beermaverick-first-gold",
+    "beermaverick-northdown",
+    "beermaverick-strisselspalt",
+    "beermaverick-mount-hood",
+    "beermaverick-liberty",
+    "beermaverick-saphir",
+    "beermaverick-sterling",
+    "beermaverick-centennial",
+    "beermaverick-cascade",
+    "beermaverick-willamette"
+   ],
+   "ref": {
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-ahtanum": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "cedar",
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal"
+     ]
+    },
+    "beermaverick-first-gold": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "celeriac",
+      "citrus",
+      "citrusy",
+      "cognac",
+      "floral",
+      "herbal",
+      "marjoram",
+      "orange",
+      "red berries",
+      "strawberry",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-northdown": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "floral",
+      "pine",
+      "spicy",
+      "woody"
+     ]
+    },
+    "beermaverick-strisselspalt": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "camomile blossom",
+      "eucalyptus",
+      "lemon",
+      "lemon grass",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mount-hood": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "honey",
+      "tarragon"
+     ]
+    },
+    "beermaverick-liberty": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "floral",
+      "herbal",
+      "rose",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    },
+    "beermaverick-saphir": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black tea",
+      "citrus",
+      "citrusy",
+      "floral",
+      "juniper",
+      "lemon",
+      "lily of the valley",
+      "spicy",
+      "strawberry",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-sterling": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal/earthy",
+      "pepper",
+      "spicy",
+      "tea",
+      "tobacco"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    },
+    "beermaverick-willamette": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "berry",
+      "cedar",
+      "citrus",
+      "citrusy",
+      "curry",
+      "earthy",
+      "ginger",
+      "hay",
+      "lemon",
+      "myrrh",
+      "red currant",
+      "spicy",
+      "tea",
+      "woody"
+     ]
+    }
+   }
+  },
+  {
+   "id": "18B|floral|dryActive",
+   "style": "18B",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-centennial",
+    "beermaverick-cascade",
+    "beermaverick-mosaic",
+    "beermaverick-amarillo",
+    "beermaverick-citra",
+    "beermaverick-ahtanum",
+    "beermaverick-ella",
+    "beermaverick-southern-passion",
+    "beermaverick-taiheke",
+    "beermaverick-east-kent-goldings",
+    "beermaverick-loral",
+    "beermaverick-pekko"
+   ],
+   "ref": {
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    },
+    "beermaverick-mosaic": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "berry",
+      "citrus",
+      "gooseberry",
+      "mango",
+      "onion",
+      "passion fruit",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-ahtanum": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "cedar",
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal"
+     ]
+    },
+    "beermaverick-ella": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "black currant",
+      "green pepper",
+      "lavender",
+      "lime",
+      "peach"
+     ]
+    },
+    "beermaverick-southern-passion": {
+     "couverte": false,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": null
+    },
+    "beermaverick-taiheke": {
+     "couverte": false,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": null
+    },
+    "beermaverick-east-kent-goldings": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "dill",
+      "earthy",
+      "gingerbread",
+      "lemon",
+      "woodruff"
+     ]
+    },
+    "beermaverick-loral": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "bergamot",
+      "citrus",
+      "floral",
+      "fresh cut grass",
+      "geranium",
+      "herbal",
+      "lemon",
+      "red currant",
+      "thyme",
+      "tropical"
+     ]
+    },
+    "beermaverick-pekko": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "floral",
+      "herbal"
+     ]
+    }
+   }
+  },
+  {
+   "id": "11B|floral|dryActive",
+   "style": "11B",
+   "demande": "plus floral",
+   "famille": "floral",
+   "mot": "floral",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-target",
+    "beermaverick-styrian-golding",
+    "beermaverick-golding",
+    "beermaverick-east-kent-goldings",
+    "beermaverick-fuggle",
+    "beermaverick-northdown",
+    "beermaverick-celeia",
+    "beermaverick-first-gold",
+    "beermaverick-progress",
+    "beermaverick-ahtanum",
+    "beermaverick-strisselspalt",
+    "beermaverick-mount-hood"
+   ],
+   "ref": {
+    "beermaverick-target": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "caramel",
+      "citrusy",
+      "earthy",
+      "elderflower",
+      "floral",
+      "herbal",
+      "orange",
+      "plum",
+      "sage",
+      "spicy",
+      "tangerine",
+      "tobacco",
+      "woody"
+     ]
+    },
+    "beermaverick-styrian-golding": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 1,
+     "ych": [
+      "green tea",
+      "herbal",
+      "lemon"
+     ]
+    },
+    "beermaverick-golding": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "earthy",
+      "floral",
+      "herbal",
+      "herbal/earthy",
+      "spicy",
+      "stone fruit"
+     ]
+    },
+    "beermaverick-east-kent-goldings": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "dill",
+      "earthy",
+      "gingerbread",
+      "lemon",
+      "woodruff"
+     ]
+    },
+    "beermaverick-fuggle": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 0,
+     "ych": [
+      "celeriac",
+      "curry",
+      "earthy",
+      "grassy",
+      "green tea",
+      "hay",
+      "herbal",
+      "mild",
+      "mint",
+      "tonka bean",
+      "woody"
+     ]
+    },
+    "beermaverick-northdown": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "floral",
+      "pine",
+      "spicy",
+      "woody"
+     ]
+    },
+    "beermaverick-celeia": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": null,
+     "ych": [
+      "earthy",
+      "hay",
+      "herbal",
+      "incense",
+      "lemon",
+      "lime",
+      "pear",
+      "spicy",
+      "thyme",
+      "woody"
+     ]
+    },
+    "beermaverick-first-gold": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "celeriac",
+      "citrus",
+      "citrusy",
+      "cognac",
+      "floral",
+      "herbal",
+      "marjoram",
+      "orange",
+      "red berries",
+      "strawberry",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-progress": {
+     "couverte": true,
+     "confirmee": false,
+     "hopsteiner": 0,
+     "ych": [
+      "black currant",
+      "cassis",
+      "coriander",
+      "cream",
+      "currant",
+      "earthy",
+      "grassy",
+      "herbal",
+      "menthol",
+      "spicy",
+      "woody"
+     ]
+    },
+    "beermaverick-ahtanum": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "cedar",
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal"
+     ]
+    },
+    "beermaverick-strisselspalt": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "camomile blossom",
+      "eucalyptus",
+      "lemon",
+      "lemon grass",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mount-hood": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "floral",
+      "herbal",
+      "honey",
+      "tarragon"
+     ]
+    }
+   }
+  },
+  {
+   "id": "25B|citrus|b10",
+   "style": "25B",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-styrian-golding",
+    "beermaverick-mandarina-bavaria",
+    "beermaverick-motueka",
+    "beermaverick-lemondrop",
+    "beermaverick-sorachi-ace",
+    "beermaverick-sterling",
+    "beermaverick-celeia",
+    "beermaverick-strisselspalt",
+    "beermaverick-nelson-sauvin",
+    "beermaverick-citra",
+    "beermaverick-centennial",
+    "beermaverick-amarillo"
+   ],
+   "ref": {
+    "beermaverick-styrian-golding": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "green tea",
+      "herbal",
+      "lemon"
+     ]
+    },
+    "beermaverick-mandarina-bavaria": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black currant",
+      "bubble gum",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "lime",
+      "orange",
+      "strawberry",
+      "sweet aromatic",
+      "tangerine",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-lemondrop": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "green tea",
+      "lemon",
+      "light melon"
+     ]
+    },
+    "beermaverick-sorachi-ace": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "cedarwood",
+      "herbal",
+      "lemon",
+      "lemon grass",
+      "lychee",
+      "orange",
+      "plum",
+      "spicy",
+      "sweet",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-sterling": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 0,
+     "ych": [
+      "citrus",
+      "floral",
+      "grassy",
+      "herbal/earthy",
+      "pepper",
+      "spicy",
+      "tea",
+      "tobacco"
+     ]
+    },
+    "beermaverick-celeia": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "earthy",
+      "hay",
+      "herbal",
+      "incense",
+      "lemon",
+      "lime",
+      "pear",
+      "spicy",
+      "thyme",
+      "woody"
+     ]
+    },
+    "beermaverick-strisselspalt": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "camomile blossom",
+      "eucalyptus",
+      "lemon",
+      "lemon grass",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-nelson-sauvin": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "berry",
+      "citrus",
+      "fruity",
+      "gooseberries",
+      "grape",
+      "herbal/earthy",
+      "tropical",
+      "tropical/fruit",
+      "white wine"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    }
+   }
+  },
+  {
+   "id": "26C|citrus|b10",
+   "style": "26C",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "10′",
+   "momentId": "b10",
+   "houblons": [
+    "beermaverick-styrian-golding",
+    "beermaverick-celeia",
+    "beermaverick-strisselspalt",
+    "beermaverick-citra",
+    "beermaverick-centennial",
+    "beermaverick-amarillo",
+    "beermaverick-mandarina-bavaria",
+    "beermaverick-simcoe",
+    "beermaverick-galaxy",
+    "beermaverick-motueka",
+    "beermaverick-cascade",
+    "beermaverick-lemondrop"
+   ],
+   "ref": {
+    "beermaverick-styrian-golding": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 1,
+     "ych": [
+      "green tea",
+      "herbal",
+      "lemon"
+     ]
+    },
+    "beermaverick-celeia": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "earthy",
+      "hay",
+      "herbal",
+      "incense",
+      "lemon",
+      "lime",
+      "pear",
+      "spicy",
+      "thyme",
+      "woody"
+     ]
+    },
+    "beermaverick-strisselspalt": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "camomile blossom",
+      "eucalyptus",
+      "lemon",
+      "lemon grass",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mandarina-bavaria": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black currant",
+      "bubble gum",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "lime",
+      "orange",
+      "strawberry",
+      "sweet aromatic",
+      "tangerine",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-simcoe": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "citrus",
+      "grapefruit",
+      "stone fruit",
+      "tropical",
+      "woody"
+     ]
+    },
+    "beermaverick-galaxy": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "black currant",
+      "black current",
+      "blueberry",
+      "citrus",
+      "gooseberry",
+      "peach",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    },
+    "beermaverick-lemondrop": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "green tea",
+      "lemon",
+      "light melon"
+     ]
+    }
+   }
+  },
+  {
+   "id": "25A|citrus|dryActive",
+   "style": "25A",
+   "demande": "plus d’agrumes",
+   "famille": "citrus",
+   "mot": "agrumes",
+   "moment": "dry hop actif",
+   "momentId": "dryActive",
+   "houblons": [
+    "beermaverick-celeia",
+    "beermaverick-citra",
+    "beermaverick-centennial",
+    "beermaverick-amarillo",
+    "beermaverick-mandarina-bavaria",
+    "beermaverick-galaxy",
+    "beermaverick-motueka",
+    "beermaverick-cascade",
+    "beermaverick-lemondrop",
+    "beermaverick-sorachi-ace",
+    "beermaverick-azacca",
+    "beermaverick-cluster"
+   ],
+   "ref": {
+    "beermaverick-celeia": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "earthy",
+      "hay",
+      "herbal",
+      "incense",
+      "lemon",
+      "lime",
+      "pear",
+      "spicy",
+      "thyme",
+      "woody"
+     ]
+    },
+    "beermaverick-citra": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "blackberry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "mango",
+      "pineapple",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit",
+      "woody"
+     ]
+    },
+    "beermaverick-centennial": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "bergamot",
+      "cedar",
+      "citrus",
+      "floral",
+      "lemon",
+      "lychee",
+      "orange",
+      "pear",
+      "pineapple",
+      "pungent/dank",
+      "resinous",
+      "tropical",
+      "vanilla",
+      "woody"
+     ]
+    },
+    "beermaverick-amarillo": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "apricot",
+      "black tea",
+      "citrus",
+      "floral",
+      "grapefruit",
+      "herbal",
+      "honeydew melon",
+      "lemon",
+      "orange",
+      "pungent/dank",
+      "spicy",
+      "stone fruit",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-mandarina-bavaria": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 4,
+     "ych": [
+      "black currant",
+      "bubble gum",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "lime",
+      "orange",
+      "strawberry",
+      "sweet aromatic",
+      "tangerine",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-galaxy": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "black currant",
+      "black current",
+      "blueberry",
+      "citrus",
+      "gooseberry",
+      "peach",
+      "pineapple",
+      "stone fruit",
+      "tropical"
+     ]
+    },
+    "beermaverick-motueka": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrus",
+      "fresh lime",
+      "fruity",
+      "lemon",
+      "lemon zest",
+      "lime",
+      "mojito",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-cascade": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "black currant",
+      "blackberry",
+      "caramel",
+      "citrus",
+      "citrusy",
+      "floral",
+      "fruity",
+      "grapefruit",
+      "grassy",
+      "herbal",
+      "lime",
+      "pine",
+      "plum"
+     ]
+    },
+    "beermaverick-lemondrop": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "green tea",
+      "lemon",
+      "light melon"
+     ]
+    },
+    "beermaverick-sorachi-ace": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 2,
+     "ych": [
+      "cedarwood",
+      "herbal",
+      "lemon",
+      "lemon grass",
+      "lychee",
+      "orange",
+      "plum",
+      "spicy",
+      "sweet",
+      "woody",
+      "yoghurt"
+     ]
+    },
+    "beermaverick-azacca": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": null,
+     "ych": [
+      "basil",
+      "berry",
+      "citrus",
+      "gooseberry",
+      "grapefruit",
+      "peach",
+      "pine",
+      "pineapple",
+      "piney/resinous",
+      "stone fruit",
+      "tropical",
+      "tropical/fruit"
+     ]
+    },
+    "beermaverick-cluster": {
+     "couverte": true,
+     "confirmee": true,
+     "hopsteiner": 3,
+     "ych": [
+      "citrusy",
+      "cream",
+      "fruity",
+      "geranium",
+      "grapefruit",
+      "hay",
+      "herbal",
+      "pepper",
+      "pine",
+      "strawberry",
+      "woody"
+     ]
+    }
+   }
+  }
+ ]
+}
