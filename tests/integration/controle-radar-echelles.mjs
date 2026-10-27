@@ -16,6 +16,9 @@
 //    - aucune série de houblon (retenue, autres) n'est tassée au centre : son point le plus loin dépasse le petit anneau du zéro d'au
 //      moins 15 % de la distance de cet anneau au bord (le rayon utile ; le 0 est un petit anneau, jamais le centre, D114). Ta bière
 //      (trait noir) n'est pas jugée : sans houblon elle est honnêtement près de 0, et l'étirer inventerait une valeur.
+// r4 (27.10) étend le contrôle à Suggérer (vue Radar : `[data-ecran="suggerer"] svg[data-objet="suggerer"]`), mêmes règles, voir la fin du fichier : au
+// style, le maximum écrit près des pictos est identique du premier au dernier moment de la voie montrée (« ‹ 10′ › ») et la surface suit les
+// valeurs ; en Absolu, bande du style, échelle commune stable, série non tassée. Le haut de l'écran Comparer est d'abord joué (r3).
 // Ce n'est pas un test vitest (nom sans .test) : il lance Chrome. Usage (racine) :
 //   node scripts/with_server.mjs --server "npm run dev -- --port 5281 --strictPort" --port 5281 --env VITE_HOP_V4=on -- node tests/integration/controle-radar-echelles.mjs [--etat=avant|apres] [--rendre=<dossier>]
 // Pour l'état « avant » : le même contrôle contre une copie de HEAD (serveur lancé dans cette copie, port à part).
@@ -149,6 +152,126 @@ ok(absolu.series.length >= 2, `D187 : moins de deux séries lues en Absolu (${ab
 for (const s of absolu.series) {
   if (s.etendueMax == null || s.nom.startsWith('ref : ')) continue;
   ok(s.etendueMax >= SEUIL_TASSE, `D187 : « ${s.nom} » est tassée au centre : son point le plus loin n'est qu'à ${Math.round(s.etendueMax * 100)} % du rayon utile (seuil ${SEUIL_TASSE * 100} %)`);
+}
+
+// ---- r4 : D189 sur Suggérer (vue Radar, au style) : « Quand je change le timing... la taille du radar graph ». Le radar de Suggérer
+// (src/ui/hopIndex/suggerer/radar.tsx) lit un moment (« ‹ 10′ › » de la voie montrée) et prenait le bord de chaque axe sur la voie
+// de CE moment. Même règle que Comparer : le bord est le plus fort apport de la voie sur tous ses moments (et ma bière), le même à
+// tous les moments ; la forme grandit quand les valeurs grandissent. On joue la première voie : tout à l'avant, puis pas à pas
+// jusqu'à son dernier moment, et on lit chaque radar.
+await page.evaluate(() => window.__hopPile.close());
+await dormir(800);
+await page.evaluate(async () => { const m = await import('/src/ui/hopIndex/parcours/visee.ts'); m.poserVisee({ citrus: 2.5, tropical: 2.5 }); });
+await page.evaluate(() => window.__hopPile.open({ view: 'hopSuggest' }));
+await page.waitForSelector('[data-ecran="suggerer"] [role="radio"]', { timeout: 90000 });
+await dormir(1500);
+const SEL_S = '[data-ecran="suggerer"] svg[data-radar="base"][data-objet="suggerer"]';
+await page.evaluate(() => { [...document.querySelectorAll('[data-ecran="suggerer"] [role="radio"]')].find((b) => /^Radar$/.test(b.textContent.trim()))?.click(); });
+await page.waitForSelector(SEL_S, { timeout: 60000 });
+await dormir(1200);
+const VOIE1 = '[data-ecran="suggerer"] [data-voie-radar]';
+const quandVoie = () => page.evaluate((s) => document.querySelector(`${s} [data-role="quand"]`)?.textContent ?? null, VOIE1);
+/** Un pas de moment sur la première voie ; rend false quand le bouton est grisé (bout du décalage). */
+async function pas(sens) {
+  const avant = await quandVoie();
+  const fait = await page.evaluate((s, sens) => {
+    const b = document.querySelector(`${s} button[aria-label^="${sens > 0 ? 'Plus tard' : 'Plus tôt'}"]`);
+    if (!b || b.disabled) return false; b.click(); return true;
+  }, VOIE1, sens);
+  if (!fait) return false;
+  await page.waitForFunction((s, a) => document.querySelector(`${s} [data-role="quand"]`)?.textContent !== a, { timeout: 15000 }, VOIE1, avant).catch(() => {});
+  await dormir(500);
+  return true;
+}
+const suite = {};
+const ordre = [];
+{
+  while (await pas(-1)) { /* jusqu'au plus tôt */ }
+  let garde = 0;
+  do {
+    const q = await quandVoie();
+    const r = await radar2();
+    suite[q] = r; ordre.push(q);
+    if (ordre.length === 1) await capturerS('suggerer-tot');
+    garde++;
+  } while (garde < 40 && await pas(1));
+  await capturerS('suggerer-tard');
+}
+async function radar2() { return page.evaluate(lire, SEL_S); }
+async function capturerS(nom) {
+  const svg = await page.$(SEL_S);
+  await svg.evaluate((e) => e.scrollIntoView({ block: 'center' }));
+  await dormir(400);
+  await svg.screenshot({ path: path.join(SORTIE, `${nom}-${ETAT}.png`) });
+  await page.screenshot({ path: path.join(SORTIE, `${nom}-page-${ETAT}.png`) });
+}
+bilan.suggerer = Object.fromEntries(ordre.map((q) => [q, { moment: suite[q].moment, echelle: suite[q].parAxe, maxAxe: suite[q].maxAxe, series: suite[q].series.map((s) => ({ nom: s.nom, n: s.n, somme: s.somme == null ? null : Math.round(s.somme * 100) / 100, aire: s.aire == null ? null : Math.round(s.aire) })) }]));
+ok(ordre.length >= 3, `r4 : Suggérer n'a que ${ordre.length} moment(s) à jouer (3 au moins)`);
+for (const q of ordre) ok(suite[q].mode === 'style', `r4 : le radar de Suggérer n'est pas au style à « ${q} » (${suite[q].mode})`);
+{
+  // L'échelle ne bouge pas : le maximum écrit près de chaque picto, identique à tous les moments où la voie est dessinée.
+  const ref = suite[ordre[ordre.length - 1]].maxAxe;
+  let comparees = 0;
+  for (const q of ordre) {
+    const m = suite[q].maxAxe;
+    const communs = Object.keys(ref).filter((f) => f in m);
+    ok(communs.length >= 3, `r4 : à « ${q} », moins de 3 axes ont un maximum écrit en commun avec le dernier moment (${communs.length})`);
+    const diff = communs.filter((f) => m[f] !== ref[f]).map((f) => `${f} ${m[f]} ≠ ${ref[f]}`);
+    ok(diff.length === 0, `r4 : l'échelle de Suggérer change avec le moment (« ${q} » contre « ${ordre[ordre.length - 1]} ») : ${diff.join(' ; ')}`);
+    comparees++;
+  }
+  bilan.suggererMomentsComparés = comparees;
+  // La surface de la voie montrée suit ses valeurs (même règle que Comparer), sur les paires dont la somme change de 15 % ou plus.
+  const voie = (q) => suite[q].series.find((s) => s.retenue);
+  let jugees = 0;
+  for (let i = 0; i < ordre.length; i++) for (let j = i + 1; j < ordre.length; j++) {
+    const A = voie(ordre[i]), B = voie(ordre[j]);
+    if (!A || !B || A.n < 3 || B.n < 3 || !(A.somme > 0)) continue;
+    const dv = (B.somme - A.somme) / A.somme;
+    if (Math.abs(dv) < SEUIL_VALEURS) continue;
+    jugees++;
+    const da = A.aire > 0 ? (B.aire - A.aire) / A.aire : null;
+    ok(da != null && Math.sign(da) === Math.sign(dv), `r4 : de « ${ordre[i]} » à « ${ordre[j]} », les valeurs de la voie ${dv > 0 ? 'montent' : 'baissent'} de ${Math.abs(Math.round(dv * 100))} % et la surface du radar change de ${da == null ? '?' : Math.round(da * 100)} %`);
+  }
+  ok(jugees >= 1, 'r4 : aucune paire de moments de Suggérer dont les valeurs changent de 15 % ou plus : le contrôle ne prouve rien');
+  bilan.suggererPairesJugees = jugees;
+}
+// Coût : montrer une autre voie lit ses moments (une simulation par moment du décalage) ; mesuré sur le rendu, de l'appui à l'étiquette changée.
+{
+  const avantEt = await page.evaluate((s) => document.querySelector(s)?.getAttribute('aria-label'), SEL_S);
+  const t0 = Date.now();
+  const clic = await page.evaluate(() => { const b = document.querySelectorAll('[data-ecran="suggerer"] [data-voie-radar]')[1]?.querySelector('button[aria-label^="Montrer sur le radar"]'); if (!b) return false; b.click(); return true; });
+  if (clic) await page.waitForFunction((s, a) => document.querySelector(s)?.getAttribute('aria-label') !== a, { timeout: 15000 }, SEL_S, avantEt).catch(() => {});
+  bilan.suggererMontrerUneAutreVoieMs = clic ? Date.now() - t0 : null;
+  await dormir(500);
+}
+// D187 sur Suggérer, en Absolu : la plage type du style en bande, une échelle du 0 au plus fort (la voie à tous ses moments comprise), donc la
+// même quand on change de moment, et aucune série de la voie tassée au centre (mêmes seuils et mêmes mots que Comparer ci-dessus).
+await page.evaluate(() => document.querySelectorAll('[data-ecran="suggerer"] [data-voie-radar]')[0]?.querySelector('button[aria-label^="Montrer sur le radar"]')?.click());
+await dormir(600);
+await page.evaluate(() => { [...document.querySelectorAll('[data-ecran="suggerer"] [role="radio"]')].find((b) => /^Absolu$/.test(b.textContent.trim()))?.click(); });
+await page.waitForFunction((s) => document.querySelector(s)?.getAttribute('data-mode') === 'absolu', { timeout: 15000 }, SEL_S).catch(() => {});
+await dormir(900);
+{
+  // Tous les moments de la voie, du plus tôt au plus tard : l'échelle est la même ; la voie, à son moment le plus fort, n'est pas tassée
+  // (à un moment faible, comme le moût, elle est honnêtement petite sur la même échelle : ce n'est pas un défaut).
+  while (await pas(-1)) { /* au plus tôt */ }
+  await dormir(300);
+  const abs = {};
+  const ordreAbs = [];
+  let garde = 0;
+  do { const q = await quandVoie(); abs[q] = await radar2(); ordreAbs.push(q); if (q === '0′') await capturerS('suggerer-absolu-0'); garde++; } while (garde < 40 && await pas(1));
+  await capturerS('suggerer-absolu');
+  const dernier = abs[ordreAbs[ordreAbs.length - 1]];
+  for (const q of ordreAbs) ok(abs[q].mode === 'absolu', `r4 : le radar de Suggérer n'est pas en Absolu à « ${q} » (${abs[q].mode})`);
+  for (const q of ordreAbs) ok(abs[q].echelle === dernier.echelle, `r4 : en Absolu, l'échelle de Suggérer change avec le moment (${abs[q].echelle} à « ${q} », ${dernier.echelle} à « ${ordreAbs[ordreAbs.length - 1]} »)`);
+  ok(dernier.bande, 'r4 : en Absolu, la bande de la plage type du style n\'est pas dessinée sur Suggérer (data-role="bande-style")');
+  ok(!dernier.bande || dernier.sommetsBande >= 3, `r4 : la bande du style de Suggérer a ${dernier.sommetsBande} sommets`);
+  const etendues = ordreAbs.map((q) => abs[q].series.find((s) => s.retenue)?.etendueMax ?? null);
+  const fort = Math.max(...etendues.filter((e) => e != null), -1);
+  ok(fort >= 0, 'r4 : en Absolu, la voie montrée n\'est dessinée à aucun moment');
+  ok(fort < 0 || fort >= SEUIL_TASSE, `r4 : en Absolu, la voie montrée est tassée au centre même à son moment le plus fort : son point le plus loin n'est qu'à ${Math.round(fort * 100)} % du rayon utile (seuil ${SEUIL_TASSE * 100} %)`);
+  bilan.suggererAbsolu = { echelle: dernier.echelle, bande: dernier.bande, sommetsBande: dernier.sommetsBande, etendueMaxDeLaVoieParMoment: Object.fromEntries(ordreAbs.map((q, i) => [q, etendues[i] == null ? null : Math.round(etendues[i] * 100) / 100])) };
 }
 
 await browser.close();
