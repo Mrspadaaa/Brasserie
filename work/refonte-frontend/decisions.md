@@ -1157,3 +1157,13 @@ au-delà même du modéré (98) ; r9 vise 70 à 80.
   3. puis l'hébergement : 252 fichiers ; la page servie est `index-5hGOimnf.js`, après le cache du CDN.
   La construction des fonctions régénère `source4-portable-bundle-manifest-01.json` dans la copie propre : il est remis au commit avant le
   build de l'app.
+- D194 (l'utilisateur, 27.10) : « bannir soit être un objectif » (lu « doit »), « on doit avoir aucune suggestions sur ce chemin et si il y en a
+  de base ça suggère des houblons qui l'enlève » ; puis « Corrige jusqu'à finir même si 100% ». Ce qui a été fait (pilote) :
+  - `bannisDe` rend les familles bannies, alors qu'elle rendait une liste vide depuis la fin de l'exclusion V5.5.
+  - Une voie dont un houblon **ajouté** cite la famille est exclue. Le houblon remplacé ne compte pas.
+  - Un « remplacer à masse égale » qui la fait baisser est proposé. Avant, seul le remplacement à IBU égal était montré.
+  - Il y a un groupe « Remplacer X » par houblon remplacé.
+  - La carte : tenue quand ma bière n'en a presque pas (moins d'un demi-cran) et qu'une voie houblon est montrée ; sinon, elle lit aussi les
+    remplacements, même hors du style ailleurs.
+  - L'objectif « faire baisser » de D193 reste.
+  Le reste de D193 (le banni seulement rangé derrière) est remplacé.

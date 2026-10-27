@@ -101,11 +101,12 @@ export function objectifsDe(recette: RecetteParcours, biere: BiereLue, visee: Vi
     return [{ f, sens, nom: biere.profil[f].nom, cran, requis: k * cran, avant, visee: cible, palier: v, bannie: v === 0 }];
   }).sort((a, b) => b.requis / b.cran - a.requis / a.cran);
 }
-/** Plus aucune exclusion depuis D108 : bannir suit la base (une visée à 0, lue comme objectif par objectifsDe). Gardé pour
- * ses appelants ; rend toujours une liste vide. */
-export const bannisDe = (_visee: Visee): FamilyId[] => [];
-/** Règle V5.5 des exclusions (« famille citée par le houblon ajouté ») : une voie dont un houblon cite une famille
- * exclue n'est pas proposée. Seulement sur une liste explicite (voiesDe, `bannis`) ; bannir dans Ma bière n'exclut plus. */
+/** Les familles bannies (visée 0). D194 (27.10, le brasseur : « bannir doit être un objectif, on doit avoir aucune suggestions sur ce
+ * chemin et si il y en a de base ça suggère des houblons qui l'enlève ») : bannir est à la fois un objectif « faire baisser »
+ * (objectifsDe) et une exclusion. Aucune voie n'ajoute un houblon qui cite la famille ; un remplacement qui l'enlève est proposé. */
+export const bannisDe = (visee: Visee): FamilyId[] => (Object.keys(visee) as FamilyId[]).filter((f) => visee[f] === 0);
+/** Règle V5.5 des exclusions (« famille citée par le houblon ajouté ») : une voie dont un houblon AJOUTÉ cite une famille
+ * bannie n'est pas proposée. Le houblon retiré ou remplacé (`previousHopKey`) ne compte pas : le remplacer, c'est l'enlever. */
 export const exclue = (houblons: HoublonLu[], bannis: FamilyId[]) => houblons.some((h) => bannis.some((f) => h.familles[f].niveau !== 'non décrit'));
 
 /** La direction du moteur tirée des objectifs (crans signés : « + floral », « − résineux »). */
@@ -132,8 +133,10 @@ export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], famille
   const calc = lus ?? lireCalculs(recette, direction);
   if (!calc) return [];
   const res = calc.proposes;
-  const lignes = res.voies.filter((v) => v.type === 'ajouter' || v.type === 'assemblage' || v.type === 'remplacer à IBU égal')
-    .filter((v) => !exclue([...new Set(v.actions.map((a) => a.hopKey))].map((c) => houblon(c)), bannis)).map((v) => {
+  // D194 : quand ma bière porte une famille bannie, un remplacement (à IBU ou à masse égale) qui la fait baisser est proposé.
+  const enleveBannie = (v: Voie) => bannis.some((f) => v.effect[f].established && (v.effect[f].central ?? 0) < 0);
+  const lignes = res.voies.filter((v) => v.type === 'ajouter' || v.type === 'assemblage' || v.type === 'remplacer à IBU égal' || (v.type === 'remplacer à masse égale' && enleveBannie(v)))
+    .filter((v) => !exclue([...new Set(v.actions.filter((a) => a.op !== 'retirer').map((a) => a.hopKey))].map((c) => houblon(c)), bannis)).map((v) => {
     const cles = [...new Set(v.actions.filter((a) => a.op !== 'retirer').map((a) => a.hopKey))];
     const geste: Geste = v.type === 'assemblage' ? 'assembler' : v.type === 'ajouter' ? 'meme' : 'remplacer';
     return {
@@ -171,10 +174,10 @@ export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], famille
   if (ia) for (const [mom, o] of Object.entries(ia)) appliquerOrdreIA(groupes, mom, o, objectifs, familles);
   if (assembler.length) groupes.push({ id: 'assembler', geste: 'assembler', titre: 'Assembler 5 + 5 g', dose: null, moment: assembler[0].moment, estime: true, lignes: assembler.map((x) => x.ligne) });
   const remp = lignes.filter((x) => x.ligne.geste === 'remplacer');
-  if (remp.length) {
-    const avant = remp[0].v.actions[0].previousHopKey;
-    groupes.push({ id: 'remplacer', geste: 'remplacer', titre: `Remplacer ${avant ? houblon(avant).nom : ''}`.trim(), dose: null, moment: remp[0].moment, estime: false, lignes: remp.map((x) => x.ligne) });
-  }
+  // Un groupe par houblon remplacé (D194 : un remplacement qui enlève une famille bannie peut viser un autre ajout que celui à 60′).
+  const parAvant = new Map<string, typeof remp>();
+  for (const x of remp) { const k = x.v.actions[0].previousHopKey ?? ''; parAvant.set(k, [...(parAvant.get(k) ?? []), x]); }
+  [...parAvant].forEach(([avant, xs], j) => groupes.push({ id: j === 0 ? 'remplacer' : `remplacer-${j}`, geste: 'remplacer', titre: `Remplacer ${avant ? houblon(avant).nom : ''}`.trim(), dose: null, moment: xs[0].moment, estime: false, lignes: xs.map((x) => x.ligne) }));
   // Dry hop · actif (q2b) : le levier « houblonner à froid en fermentation active » du moteur, avec ses signaux.
   const dh = calc.leviers.dry.filter((v) => !exclue(v.actions.map((x) => houblon(x.hopKey)), bannis)).slice(0, dryhopMax);
   if (dh.length) groupes.push({ id: 'dryhop', geste: 'dryhop', titre: 'Dry hop', dose: null, moment: 'actif', estime: true,
@@ -237,13 +240,19 @@ export function estMuet(c: Candidat): boolean {
  * Approche : la moitié au moins ; Aucune : moins. */
 export function verdict(o: Objectif, groupes: Groupe[]): { mot: 'Atteint' | 'Approche' | 'Aucune'; meilleure: Ligne | null; effet: number | null } {
   // Comme q2b (generateur-q2b.mjs, meilleure) : la meilleure voie établie qui ne sort pas du style.
-  const ls = groupes.flatMap((g) => g.lignes).filter((l) => l.effets[o.f] != null && !l.hors.length);
-  if (!ls.length) return { mot: 'Aucune', meilleure: null, effet: null };
-  // Bannie et déjà à 0 : rien ne la fait baisser ; l'objectif est tenu si la meilleure voie ne la fait pas monter (un quart de cran au plus).
-  if (o.bannie && (o.avant ?? 0) < 0.05) {
-    const b = ls.reduce((x, l) => (l.effets[o.f]! < x.effets[o.f]! ? l : x)), eb = b.effets[o.f]!, tenu = eb <= 0.25 * o.cran;
-    return { mot: tenu ? 'Atteint' : 'Aucune', meilleure: tenu ? b : null, effet: eb };
+  // Bannie, et ma bière n'en a presque pas (moins d'un demi-cran) : aucune voie houblon montrée n'ajoute un houblon qui la cite
+  // (D194, exclusion de voiesDe), donc l'objectif est tenu dès qu'il y a une voie. La meilleure est celle qui la fait le moins monter.
+  if (o.bannie && (o.avant ?? 0) < 0.5 * o.cran) {
+    const toutes = groupes.flatMap((g) => g.lignes).filter((l) => l.geste !== 'levure');
+    if (!toutes.length) return { mot: 'Aucune', meilleure: null, effet: null };
+    const connues = toutes.filter((l) => l.effets[o.f] != null);
+    const b = connues.length ? connues.reduce((x, l) => (l.effets[o.f]! < x.effets[o.f]! ? l : x)) : toutes[0];
+    return { mot: 'Atteint', meilleure: b, effet: b.effets[o.f] ?? null };
   }
+  // Une famille bannie se lit sur toutes les voies montrées, remplacements compris (D194 : « ça suggère des houblons qui l'enlève ») :
+  // la carte ne dit jamais « Aucune » au-dessus d'un « Remplacer » qui la fait baisser.
+  const ls = groupes.flatMap((g) => g.lignes).filter((l) => l.effets[o.f] != null && (o.bannie || !l.hors.length));
+  if (!ls.length) return { mot: 'Aucune', meilleure: null, effet: null };
   const m = ls.reduce((b, l) => (o.sens * l.effets[o.f]! > o.sens * b.effets[o.f]! ? l : b));
   const e = m.effets[o.f]!, k = (o.sens * e) / Math.abs(o.requis);
   return { mot: k >= 1 ? 'Atteint' : k >= 0.5 ? 'Approche' : 'Aucune', meilleure: k > 0 ? m : null, effet: e };

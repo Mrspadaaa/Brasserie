@@ -2,7 +2,7 @@
 name: acquis-valides
 description: Éléments de l'outil houblons que le brasseur a validés. Chaque brief de lot les reprend et un contrôle vérifie leur présence (leçon L06).
 type: produit
-maj: 2026-10-24
+maj: 2026-10-27
 sources: work/refonte-frontend/v4/SPEC-BRASSEUR.md ; work/refonte-frontend/registre.md (retour du lot 21, 20.10) ; registre-archive-2026-10-17-au-20.md (lot 15, q2b)
 ---
 
@@ -40,6 +40,7 @@ Plancher à enrichir, pas plafond ([[le-brasseur-choisit]]).
 Contrôle de présence, écrit le 22.10 : `controle-acquis.mjs` (D99). Sur un écran Comparer, il exige
 le radar, la chimie, le panel OSU et les vraies valeurs, balisés `data-acquis`. À ajuster avant le
 lot 22 pour accepter un acquis « à un toucher ».
+- **Bannir une famille** (27.10, D194) : un objectif « Sans … » ; aucune suggestion dont un houblon ajouté la cite ; si la bière l'a déjà, un « Remplacer X » qui l'enlève. Contrôle : `tests/unit/hopIndexV4/bannirZero.test.ts`.
 Inventaire complet de ce qu'il a noté bon ou intéressant, avec ses mots, la variante et la capture :
 `work/refonte-frontend/v4/ecran-1/fils22-comparer/donnees/elements-notes.json` (37 éléments, 19 variantes, 22.10).
 Une variante de reprise le prouve par une section « ## Reprise » et des marqueurs `data-element` (D104,
